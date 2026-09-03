@@ -10,10 +10,10 @@
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0c1016;color:#fff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;touch-action:none}
 canvas{display:block;width:100vw;height:100vh}
 #hud{position:fixed;left:10px;top:10px;z-index:4;font-weight:900;text-shadow:0 2px 4px #000;pointer-events:none}
-.row{display:flex;gap:6px;flex-wrap:wrap}.pill,#quest,#area{background:#0a0e16dd;border:1px solid #ffffff55;border-radius:9px;padding:6px 8px;font-size:12px}
+.row{display:flex;gap:6px;flex-wrap:wrap}.pill,#quest,#hiddenQuest,#area{background:#0a0e16dd;border:1px solid #ffffff55;border-radius:9px;padding:6px 8px;font-size:12px}
 #hpBox{width:190px;height:15px;background:#2b0a0d;border:2px solid #ffffff88;border-radius:7px;overflow:hidden;margin-top:6px}#hp{height:100%;background:linear-gradient(90deg,#e8364f,#ff725f)}
 #xpBox{width:190px;height:9px;background:#071b2b;border:1px solid #ffffff66;border-radius:5px;overflow:hidden;margin-top:3px}#xp{height:100%;background:linear-gradient(90deg,#2ca9ff,#68dcff)}
-#quest,#area{margin-top:5px;max-width:340px}
+#quest,#hiddenQuest,#area{margin-top:5px;max-width:355px}#hiddenQuest{display:none;border-color:#b985ff;background:#201434dd;color:#eadbff}
 #joy{position:fixed;left:18px;bottom:20px;width:126px;height:126px;border-radius:50%;border:2px solid #ffffff55;background:#0006;z-index:5}
 #knob{position:absolute;left:34px;top:34px;width:56px;height:56px;border-radius:50%;background:#ffffff66;border:2px solid #ffffff99}
 .btn{position:fixed;border:2px solid #ffffff99;border-radius:50%;color:#fff;font-weight:900;z-index:5;text-shadow:0 2px 3px #000;box-shadow:0 5px 15px #0008}
@@ -33,21 +33,24 @@ canvas{display:block;width:100vw;height:100vh}
 <body>
 <canvas id="game"></canvas>
 <div id="hud">
- <div class="row"><span class="pill" id="lv">Lv.1</span><span class="pill" id="gold">0 G</span><span class="pill" id="atk">공격 3</span><span class="pill" id="weaponText">맨손</span><span class="pill" id="xpText">EXP 0/100</span></div>
+ <div class="row"><span class="pill" id="lv">Lv.1</span><span class="pill" id="gold">0 G</span><span class="pill" id="atk">공격 3</span><span class="pill" id="weaponText">맨손</span><span class="pill" id="armorText">방어구 없음</span><span class="pill" id="xpText">EXP 0/100</span></div>
  <div id="hpBox"><div id="hp"></div></div><div id="xpBox"><div id="xp"></div></div>
- <div id="quest">퀘스트: 촌장에게 말을 걸어라.</div><div id="area">현재 지역: 마을</div>
+ <div id="quest">퀘스트: 촌장에게 말을 걸어라.</div><div id="hiddenQuest"></div><div id="area">현재 지역: 마을</div>
 </div>
 <div id="joy"><div id="knob"></div></div>
 <button id="attack" class="btn">공격</button><button id="talk" class="btn">대화</button><button id="bagBtn" class="btn">가방</button><button id="soundBtn" class="btn">🔊</button><button id="actionBtn" class="btn"></button>
 <div id="speech"></div><div id="toast"></div>
-<div id="start" class="overlay"><div class="panel" style="text-align:center"><h1>⚔️ 대충 용사 RPG</h1><p>6개의 포탈과 동굴 던전을 탐험해라.<br><span class="small">BGM + 전투 BGM + 효과음 50종</span></p><button id="startBtn" class="main">게임 시작</button></div></div>
+<div id="start" class="overlay"><div class="panel" style="text-align:center"><h1>⚔️ 대충 용사 RPG</h1><p>7개의 포탈과 동굴, 숨겨진 기사 퀘스트를 탐험해라.<br><span class="small">BGM + 전투 BGM + 효과음 50종</span></p><button id="startBtn" class="main">게임 시작</button></div></div>
 <div id="bag" class="overlay"><div class="panel"><h2>가방</h2><div id="bagList"></div><button id="closeBag" class="main dark">닫기</button></div></div>
 <div id="weaponShop" class="overlay"><div class="panel"><h2>무기상인</h2><div id="weaponList"></div><button id="closeWeapon" class="main dark">닫기</button></div></div>
+<div id="armorShop" class="overlay"><div class="panel"><h2>갑옷상인</h2><div id="armorList"></div><button id="closeArmor" class="main dark">닫기</button></div></div>
+<div id="hiddenOffer" class="overlay"><div class="panel"><h2>⚰️ 이름 없는 기사의 비석</h2><p>“나는 용맹한 기사였고 군단의 대장이었다. 하지만 결국 여기서 쓰러졌다. 내가 모두 죽였다고 믿었던 적군 중 하나가 아직 남아 있다. 내 마지막 소원을 들어다오.”</p><button id="acceptHidden" class="main">죽여주겠다</button><button id="declineHidden" class="main dark">나중에</button></div></div>
 <div id="sellShop" class="overlay"><div class="panel"><h2>판매상인</h2><div id="sellList"></div><button id="sellAll" class="main">전부 판매</button><button id="closeSell" class="main dark">닫기</button></div></div>
 <div id="dead" class="overlay"><div class="panel" style="text-align:center"><h2>쓰러졌다</h2><p id="deadCost"></p><button id="respawn" class="main">마을에서 부활</button></div></div>
 <script>
 // 파일명: rpg.html
 // 그래픽/오디오는 외부 파일 0개. WebAudio + Canvas만 사용.
+// RPG_PATCH_V7_JUNGLE
 
 const c=document.getElementById('game'),ctx=c.getContext('2d');
 let W=innerWidth,H=innerHeight,D=Math.min(devicePixelRatio||1,2);
@@ -57,15 +60,17 @@ addEventListener('resize',resize);resize();
 const WORLD={w:1800,h:1200},ANIM_FRAMES=34;
 const BASE_SLIME={hp:30,atk:4,spd:40,r:15,xp:6,gold:3};
 const F={
- f1:{n:'1번 사냥터',l:'Lv.1',bg:'#5ca44f',m:[['초록 슬라임',1,30,4,40,15,6,3,13,'slime']]},
- f2:{n:'2번 사냥터',l:'Lv.2~3',bg:'#4d9b54',m:[['파란 슬라임',2,56,6,44,16,9,5,8,'blue'],['들멧돼지',3,88,9,55,19,13,7,6,'boar']]},
- f3:{n:'3번 사냥터',l:'Lv.4',bg:'#6f9648',m:[['회색 늑대',4,136,12,68,18,18,10,13,'wolf']]},
- f4:{n:'4번 사냥터',l:'Lv.5~6',bg:'#8a6d40',m:[['오크',5,200,15,48,21,24,14,8,'orc'],['붉은 늑대',6,270,19,73,19,31,18,6,'redwolf']]},
- f5:{n:'5번 사냥터',l:'Lv.7 이상',bg:'#51475f',m:[['균열 기사',7,380,24,56,22,42,25,7,'knight'],['균열 악마',8,500,30,61,23,55,32,5,'demon']]},
- f6:{n:'6번 사냥터',l:'Lv.8~10',bg:'#483a3e',m:[['해골 전사',8,650,32,58,21,65,38,5,'skeleton'],['고블린 정예',9,850,38,65,22,80,48,5,'eliteGoblin'],['오우거',10,1100,45,50,28,100,60,4,'ogre']]}
+ f1:{n:'1번 사냥터',l:'Lv.1',bg:'#5ca44f',m:[['초록 슬라임',1,30,4,40,15,6,3,6,'slime']]},
+ f2:{n:'2번 사냥터',l:'Lv.2~3',bg:'#4d9b54',m:[['파란 슬라임',2,56,6,44,16,9,5,4,'blue'],['들멧돼지',3,88,9,55,19,13,7,3,'boar']]},
+ f3:{n:'3번 사냥터',l:'Lv.4',bg:'#6f9648',m:[['회색 늑대',4,136,12,68,18,18,10,6,'wolf']]},
+ f4:{n:'4번 사냥터',l:'Lv.5~6',bg:'#8a6d40',m:[['오크',5,200,15,48,21,24,14,3,'orc'],['붉은 늑대',6,270,19,73,19,31,18,3,'redwolf']]},
+ f5:{n:'5번 사냥터',l:'Lv.7 이상',bg:'#51475f',m:[['균열 기사',7,380,24,56,22,42,25,3,'knight'],['균열 악마',8,500,30,61,23,55,32,2,'demon']]},
+ f6:{n:'6번 사냥터',l:'Lv.8~10',bg:'#483a3e',m:[['해골 전사',8,650,32,58,21,65,38,3,'skeleton'],['고블린 정예',9,850,38,65,22,80,48,2,'eliteGoblin'],['오우거',10,1100,45,50,28,100,60,1,'ogre']]},
+ f7:{n:'7번 정글',l:'Lv.11~12',bg:'#243d2c',m:[['정글 호랑이',11,1250,48,76,24,125,72,3,'tiger'],['원시인 전사',11,1450,52,58,22,138,78,3,'primitive'],['정글 표범',12,1700,58,82,22,155,88,2,'panther']]}
 };
-const P=[['f1',760,410,'1번 포탈','Lv.1'],['f2',950,410,'2번 포탈','Lv.2~3'],['f3',1140,410,'3번 포탈','Lv.4'],['f4',760,610,'4번 포탈','Lv.5~6'],['f5',950,610,'5번 포탈','Lv.7 이상'],['f6',1140,610,'6번 포탈','Lv.8~10']];
-const WEAPONS={'낡은 돌검':{price:100,damage:5},'철 도끼':{price:500,damage:12},'철 쌍검':{price:700,damage:20}};
+const P=[['f1',700,390,'1번 포탈','Lv.1'],['f2',890,390,'2번 포탈','Lv.2~3'],['f3',1080,390,'3번 포탈','Lv.4'],['f4',1270,390,'4번 포탈','Lv.5~6'],['f5',760,610,'5번 포탈','Lv.7 이상'],['f6',1010,610,'6번 포탈','Lv.8~10'],['f7',1260,610,'7번 포탈','Lv.11~12']];
+const WEAPONS={'낡은 돌검':{price:100,damage:5,cd:.35},'철 도끼':{price:500,damage:12,cd:.35},'철 쌍검':{price:700,damage:20,cd:.35},'철 망치':{price:500,damage:40,cd:1},'낡은 쌍절곤':{price:0,damage:30,cd:.35,hidden:true,desc:'이 무기는 외부는 낡았지만 내부와 무기의 주인은 절대로 낡지 않았습니다.'}};
+const ARMORS={'나무 갑옷':{price:50,hp:50},'철 갑옷':{price:200,hp:200}};
 const SELL_PRICE={'슬라임 젤리':5,'멧돼지 고기':12,'늑대 가죽':20,'오크 이빨':28,'균열 조각':45,'수상한 당근':25};
 const CAVE={
  entrance:{x:1660,y:1040},chest:{x:1490,y:600},exit:{x:1690,y:600},
@@ -73,6 +78,7 @@ const CAVE={
  archer:{n:'궁수 고블린',lv:4,hp:150,atk:10,spd:46,r:18,xp:30,g:18,type:'archer'},
  giant:{n:'거대 동굴슬라임',lv:5,hp:300,atk:16,spd:38,r:34,xp:80,g:45,type:'giantCaveSlime'}
 };
+const TOMB={x:930,y:610,enemyX:930,enemyY:760};
 
 // ==============================
 // 사운드: BGM 2종 + 효과음 50종
@@ -192,28 +198,25 @@ function toggleSound(){
  soundBtn.textContent=AUDIO.muted?'🔇':'🔊';sfx('uiClick');
 }
 
-let run=false,last=0,cam={x:0,y:0},keys={},j={x:0,y:0},ac=0,pc=0,flash=0,zone='town';
-let p,mons=[],drops=[],fx=[],arrows=[],q=0,chestOpened=false,guardianDead=false;
+let run=false,last=0,cam={x:0,y:0},keys={},j={x:0,y:0},ac=0,pc=0,flash=0,zone='town',combatTimer=0,portalMsgCd=0,townHeal=0;
+let p,mons=[],drops=[],fx=[],arrows=[],q=0,hq=0,chestOpened=false,guardianDead=false;
 const inv={'슬라임 젤리':0,'멧돼지 고기':0,'늑대 가죽':0,'오크 이빨':0,'균열 조각':0,'수상한 당근':0};
-const ownedWeapons={'낡은 돌검':false,'철 도끼':false,'철 쌍검':false};
-const npcs=[{x:520,y:610,n:'촌장',k:'chief'},{x:690,y:670,n:'대장장이',k:'smith'},{x:405,y:805,n:'무기상인',k:'weapon'},{x:610,y:830,n:'판매상인',k:'seller'}];
-
+const ownedWeapons={'낡은 돌검':false,'철 도끼':false,'철 쌍검':false,'철 망치':false,'낡은 쌍절곤':false};
+const ownedArmors={'나무 갑옷':false,'철 갑옷':false};
+const npcs=[{x:520,y:610,n:'촌장',k:'chief'},{x:690,y:670,n:'대장장이',k:'smith'},{x:405,y:805,n:'무기상인',k:'weapon'},{x:610,y:830,n:'판매상인',k:'seller'},{x:820,y:830,n:'갑옷상인',k:'armor'}];
+function armorBonus(){return p.armor&&ARMORS[p.armor]?ARMORS[p.armor].hp:0}
+function maxHp(){return p.baseHp+armorBonus()}
+function currentAtk(){return (WEAPONS[p.weapon]?.damage||3)+(p.bonusAtk||0)}
 function reset(){
- p={x:560,y:730,r:17,hp:100,mhp:100,lv:1,xp:0,nxp:100,g:0,atk:3,spd:185,dir:1,inv:0,weapon:'맨손',animState:'idle',animFrame:0,animTick:0};
- zone='town';mons=[];drops=[];fx=[];arrows=[];q=0;pc=0;chestOpened=false;guardianDead=false;window.sk=0;
- for(const k in inv)inv[k]=0;for(const k in ownedWeapons)ownedWeapons[k]=false;hud()
+ p={x:560,y:730,r:17,hp:100,baseHp:100,lv:1,xp:0,nxp:100,g:0,bonusAtk:0,spd:185,dir:1,inv:0,weapon:'맨손',armor:null,animState:'idle',animFrame:0,animTick:0};
+ zone='town';mons=[];drops=[];fx=[];arrows=[];q=0;hq=0;pc=0;chestOpened=false;guardianDead=false;combatTimer=0;window.sk=0;
+ for(const k in inv)inv[k]=0;for(const k in ownedWeapons)ownedWeapons[k]=false;for(const k in ownedArmors)ownedArmors[k]=false;hud()
 }
 function hud(){
- lv.textContent=`Lv.${p.lv}`;gold.textContent=`${p.g} G`;atk.textContent=`공격 ${Math.floor(p.atk)}`;weaponText.textContent=p.weapon;xpText.textContent=`EXP ${Math.floor(p.xp)}/${p.nxp}`;
- hp.style.width=`${Math.max(0,p.hp/p.mhp*100)}%`;xp.style.width=`${Math.min(100,p.xp/p.nxp*100)}%`;
- if(q===0)quest.textContent='퀘스트: 촌장에게 말을 걸어라.';
- else if(q===1)quest.textContent=`퀘스트: 슬라임 5마리 처치 (${Math.min(5,window.sk||0)}/5)`;
- else if(q===2)quest.textContent='완료: 촌장에게 돌아가 보상 50G 받기';
- else if(q===3)quest.textContent='퀘스트: 슬라임 왕을 처치하라.';
- else if(q===4)quest.textContent='완료: 촌장에게 돌아가 보상 50G 받기';
- else if(q===5)quest.textContent='퀘스트: 2번 포탈로 들어가라.';
- else if(q===6)quest.textContent='완료: 촌장에게 돌아가 보상 50G 받기';
- else quest.textContent='현재 메인 퀘스트 완료';
+ const mh=maxHp();lv.textContent=`Lv.${p.lv}`;gold.textContent=`${p.g} G`;atk.textContent=`공격 ${Math.floor(currentAtk())}`;weaponText.textContent=p.weapon;armorText.textContent=p.armor||'방어구 없음';xpText.textContent=`EXP ${Math.floor(p.xp)}/${p.nxp}`;
+ hp.style.width=`${Math.max(0,p.hp/mh*100)}%`;xp.style.width=`${Math.min(100,p.xp/p.nxp*100)}%`;
+ if(q===0)quest.textContent='퀘스트: 촌장에게 말을 걸어라.';else if(q===1)quest.textContent=`퀘스트: 슬라임 5마리 처치 (${Math.min(5,window.sk||0)}/5)`;else if(q===2)quest.textContent='완료: 촌장에게 돌아가 보상 50G 받기';else if(q===3)quest.textContent='퀘스트: 슬라임 왕을 처치하라.';else if(q===4)quest.textContent='완료: 촌장에게 돌아가 보상 50G 받기';else if(q===5)quest.textContent='퀘스트: 2번 포탈로 들어가라.';else if(q===6)quest.textContent='완료: 촌장에게 돌아가 보상 50G 받기';else quest.textContent='현재 메인 퀘스트 완료';
+ hiddenQuest.style.display=hq?'block':'none';hiddenQuest.textContent=hq===1?'히든 퀘스트: 기사의 마지막 원수를 처치하라.':hq>=2?'히든 퀘스트 완료 · 낡은 쌍절곤 획득':'';
  area.textContent=zone==='town'?'현재 지역: 마을':zone==='cave'?'현재 지역: 동굴 던전':`현재 지역: ${F[zone].n} · ${F[zone].l}`
 }
 function toastMsg(s){toast.textContent=s;toast.style.opacity=1;clearTimeout(toast.t);toast.t=setTimeout(()=>toast.style.opacity=0,1300)}
@@ -221,10 +224,10 @@ function say(n,s){sfx('talkOpen');speech.innerHTML=`<b>${n}</b><br>${s}<br><smal
 speech.onpointerdown=()=>{sfx('uiClose');speech.style.display='none'};
 
 function enter(z){
- const prev=zone;zone=z;mons=[];drops=[];fx=[];arrows=[];pc=1;setAggro(false);
+ const prev=zone;zone=z;mons=[];drops=[];fx=[];arrows=[];pc=1;combatTimer=0;setAggro(false);
  if(z==='town'){p.x=560;p.y=700;sfx(prev==='cave'?'caveExit':'portalExit');toastMsg('마을 · 촌장 옆으로 돌아왔다')}
  else if(z==='cave'){p.x=160;p.y=600;sfx('caveEnter');spawnCave();toastMsg('동굴 던전 입장')}
- else{p.x=185;p.y=600;sfx('portalEnter');spawnAll(z);toastMsg(`${F[z].n} 입장`);if(z==='f2'&&q===5){q=6;sfx('questComplete');toastMsg('목표 완료! 촌장에게 가서 보상받기')}}
+ else{p.x=185;p.y=600;sfx('portalEnter');spawnAll(z);if(z==='f5'&&hq===1)spawnHiddenEnemy();toastMsg(`${F[z].n} 입장`);if(z==='f2'&&q===5){q=6;sfx('questComplete');toastMsg('목표 완료! 촌장에게 가서 보상받기')}}
  hud()
 }
 function spawnAll(z){for(const s of F[z].m)for(let i=0;i<s[8];i++)spawn(s,480+Math.random()*1200,120+Math.random()*960,z)}
@@ -235,50 +238,55 @@ function spawn(s,px,py,z){
  mons.push({n:name,lv:lvv,x:px,y:py,hp:hpv,mhp:hpv,a:av,spd,r,xp:xpv,g:gv,type,baseType,z,hit:0,dead:false,shootCd:1+Math.random()*1.5,animState:'walk',animFrame:0,animTick:Math.random()*34,deathAge:0,dir:1,aggroed:false})
 }
 function spawnCave(){
- for(let i=0;i<9;i++)spawnCaveMonster(CAVE.caveSlime,360+Math.random()*900,140+Math.random()*920);
- for(let i=0;i<5;i++)spawnCaveMonster(CAVE.archer,500+Math.random()*760,140+Math.random()*920);
+ for(let i=0;i<4;i++)spawnCaveMonster(CAVE.caveSlime,360+Math.random()*900,140+Math.random()*920);
+ for(let i=0;i<2;i++)spawnCaveMonster(CAVE.archer,500+Math.random()*760,140+Math.random()*920);
  spawnCaveMonster(CAVE.giant,CAVE.chest.x-120,CAVE.chest.y)
 }
-function spawnCaveMonster(s,px,py){mons.push({n:s.n,lv:s.lv,x:px,y:py,hp:s.hp,mhp:s.hp,a:s.atk,spd:s.spd,r:s.r,xp:s.xp,g:s.g,type:s.type,baseType:s.type,z:'cave',hit:0,dead:false,shootCd:1+Math.random()*1.5,animState:'walk',animFrame:0,animTick:Math.random()*34,deathAge:0,dir:1,aggroed:false})}
-
+function spawnCaveMonster(s,px,py){mons.push({n:s.n,lv:s.lv,x:px,y:py,hp:s.hp,mhp:s.hp,a:s.atk,spd:s.spd,r:s.r,xp:s.xp,g:s.g,type:s.type,baseType:s.type,z:'cave',hit:0,dead:false,shootCd:1+Math.random()*1.5,animState:'walk',animFrame:0,animTick:0,deathAge:0,dir:1,aggroed:false})}
+function spawnHiddenEnemy(){if(mons.some(m=>m.type==='hiddenEnemy'&&!m.dead)||hq!==1)return;mons.push({n:'기사단의 마지막 원수',lv:8,x:TOMB.enemyX,y:TOMB.enemyY,hp:300,mhp:300,a:10,spd:58,r:23,xp:120,g:0,type:'hiddenEnemy',baseType:'hiddenEnemy',z:'f5',hit:0,dead:false,shootCd:0,animState:'walk',animFrame:0,animTick:0,deathAge:0,dir:1,aggroed:false})}
 function nearest(){if(zone!=='town')return null;let b=null,d=80;for(const n of npcs){const v=Math.hypot(n.x-p.x,n.y-p.y);if(v<d){d=v;b=n}}return b}
 function talkNow(){
- const n=nearest();if(!n){sfx('uiClick');toastMsg(zone==='town'?'근처에 대화할 사람이 없다':'여기서는 대화할 사람이 없다');return}
+ const n=nearest();if(!n){toastMsg(zone==='town'?'근처에 대화할 사람이 없다':'여기서는 대화할 사람이 없다');return}
  if(n.k==='chief'){
   if(q===0){q=1;window.sk=0;sfx('questAccept');say('촌장','1번 포탈에서 슬라임 5마리를 잡아라. 완료하면 내게 돌아와 보상을 받아라.')}
   else if(q===1)say('촌장',`슬라임 ${5-Math.min(5,window.sk||0)}마리 남았다.`);
-  else if(q===2){p.g+=50;q=3;sfx('questReward');sfx('coin');say('촌장','보상 <b>50골드</b>. 다음 퀘스트는 <b>슬라임 왕 처치</b>.')}
+  else if(q===2){p.g+=50;q=3;sfx('questReward');say('촌장','보상 <b>50골드</b>. 다음은 슬라임 왕 처치다.')}
   else if(q===3)say('촌장','슬라임 왕은 슬라임 스폰 때 10% 확률로 나타난다.');
-  else if(q===4){p.g+=50;q=5;sfx('questReward');sfx('coin');say('촌장','보상 <b>50골드</b>. 다음 퀘스트는 <b>2번 포탈 입장</b>.')}
+  else if(q===4){p.g+=50;q=5;sfx('questReward');say('촌장','보상 <b>50골드</b>. 다음은 2번 포탈 입장이다.')}
   else if(q===5)say('촌장','2번 포탈로 들어가라.');
-  else if(q===6){p.g+=50;q=7;sfx('questReward');sfx('coin');say('촌장','보상 <b>50골드</b>. 2번 사냥터 구석의 동굴도 찾아봐라.')}
-  else say('촌장','6번 포탈은 Lv.8~10 권장이다.')
+  else if(q===6){p.g+=50;q=7;sfx('questReward');say('촌장','보상 <b>50골드</b>. 이제 자유롭게 사냥해라.')}
+  else say('촌장','7번 포탈은 어두운 정글이다. Lv.11~12 권장.')
  }else if(n.k==='smith'){
-  if(p.g>=25){p.g-=25;p.atk+=2;sfx('smith');say('대장장이','25골드. 현재 공격력 +2.')}else{sfx('noGold');say('대장장이','강화는 25골드다.')}
- }else if(n.k==='weapon')openWeaponShop();else if(n.k==='seller')openSellShop();
+  if(p.weapon==='낡은 쌍절곤')say('대장장이','이건... <b>전설이 쓰는 무기는 강화 못한다.</b><br><br>“이 무기는 외부는 낡았지만 내부와 무기의 주인은 절대로 낡지 않았습니다.”');
+  else if(p.g>=25){p.g-=25;p.bonusAtk+=2;sfx('smith');say('대장장이','25골드. 현재 공격력 +2.')}else say('대장장이','강화는 25골드다.')
+ }else if(n.k==='weapon')openWeaponShop();else if(n.k==='seller')openSellShop();else if(n.k==='armor')openArmorShop();
  hud()
 }
-function openWeaponShop(){sfx('shopOpen');speech.style.display='none';renderWeaponShop();weaponShop.style.display='flex'}
-function renderWeaponShop(){weaponList.innerHTML=Object.entries(WEAPONS).map(([name,w])=>{const owned=ownedWeapons[name],equipped=p.weapon===name,label=equipped?'장착중':owned?'장착':`${w.price}G 구매`;return `<div class="slot"><span><b>${name}</b><br><span class="small">데미지 ${w.damage}</span></span><button data-weapon="${name}" ${equipped?'disabled':''}>${label}</button></div>`}).join('');weaponList.querySelectorAll('button[data-weapon]').forEach(b=>b.onclick=()=>buyOrEquipWeapon(b.dataset.weapon))}
-function buyOrEquipWeapon(name){const w=WEAPONS[name];if(!ownedWeapons[name]){if(p.g<w.price){sfx('noGold');toastMsg('골드가 부족하다');return}p.g-=w.price;ownedWeapons[name]=true;sfx('buy')}p.weapon=name;p.atk=Math.max(p.atk,w.damage);sfx('weaponEquip');toastMsg(`${name} 장착 · 공격 ${Math.floor(p.atk)}`);renderWeaponShop();hud()}
-function openSellShop(){sfx('shopOpen');speech.style.display='none';renderSellShop();sellShop.style.display='flex'}
-function renderSellShop(){sellList.innerHTML=Object.entries(SELL_PRICE).map(([name,price])=>`<div class="slot"><span>${name}<br><span class="small">${price}G / 개</span></span><span>×${inv[name]||0} <button data-sell="${name}" ${(inv[name]||0)<=0?'disabled':''}>판매</button></span></div>`).join('');sellList.querySelectorAll('button[data-sell]').forEach(b=>b.onclick=()=>sellItem(b.dataset.sell))}
-function sellItem(name){if((inv[name]||0)<=0)return;inv[name]--;p.g+=SELL_PRICE[name];sfx('sell');sfx('coin');toastMsg(`${name} 판매 +${SELL_PRICE[name]}G`);renderSellShop();hud()}
-function sellEverything(){let total=0;for(const [name,price] of Object.entries(SELL_PRICE)){const count=inv[name]||0;total+=count*price;inv[name]=0}if(total<=0){sfx('uiClick');toastMsg('판매할 아이템이 없다');return}p.g+=total;sfx('sell');sfx('coin');toastMsg(`전부 판매 +${total}G`);renderSellShop();hud()}
+function openWeaponShop(){sfx('shopOpen');renderWeaponShop();weaponShop.style.display='flex'}
+function renderWeaponShop(){weaponList.innerHTML=Object.entries(WEAPONS).filter(([,w])=>!w.hidden).map(([name,w])=>{const o=ownedWeapons[name],e=p.weapon===name,l=e?'장착중':o?'장착':`${w.price}G 구매`;return `<div class="slot"><span><b>${name}</b><br><span class="small">데미지 ${w.damage}${w.cd===1?' · 쿨타임 1초':''}</span></span><button data-weapon="${name}" ${e?'disabled':''}>${l}</button></div>`}).join('');weaponList.querySelectorAll('[data-weapon]').forEach(b=>b.onclick=()=>buyOrEquipWeapon(b.dataset.weapon))}
+function equipWeapon(name){p.weapon=name;sfx('weaponEquip');toastMsg(`${name} 장착 · 공격 ${Math.floor(currentAtk())}`);hud()}
+function buyOrEquipWeapon(name){const w=WEAPONS[name];if(!ownedWeapons[name]){if(p.g<w.price){sfx('noGold');toastMsg('골드가 부족하다');return}p.g-=w.price;ownedWeapons[name]=true;sfx('buy')}equipWeapon(name);renderWeaponShop()}
+function openArmorShop(){sfx('shopOpen');renderArmorShop();armorShop.style.display='flex'}
+function renderArmorShop(){armorList.innerHTML=Object.entries(ARMORS).map(([name,a])=>{const o=ownedArmors[name],e=p.armor===name,l=e?'착용중':o?'착용':`${a.price}G 구매`;return `<div class="slot"><span><b>${name}</b><br><span class="small">최대체력 +${a.hp}</span></span><button data-armor="${name}" ${e?'disabled':''}>${l}</button></div>`}).join('');armorList.querySelectorAll('[data-armor]').forEach(b=>b.onclick=()=>buyOrEquipArmor(b.dataset.armor))}
+function buyOrEquipArmor(name){const a=ARMORS[name],old=maxHp();if(!ownedArmors[name]){if(p.g<a.price){sfx('noGold');toastMsg('골드가 부족하다');return}p.g-=a.price;ownedArmors[name]=true;sfx('buy')}p.armor=name;p.hp=Math.min(maxHp(),p.hp+Math.max(0,maxHp()-old));sfx('weaponEquip');renderArmorShop();hud()}
+function openSellShop(){sfx('shopOpen');renderSellShop();sellShop.style.display='flex'}
+function renderSellShop(){sellList.innerHTML=Object.entries(SELL_PRICE).map(([name,price])=>`<div class="slot"><span>${name}<br><span class="small">${price}G / 개</span></span><span>×${inv[name]||0} <button data-sell="${name}" ${(inv[name]||0)<=0?'disabled':''}>판매</button></span></div>`).join('');sellList.querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>sellItem(b.dataset.sell))}
+function sellItem(name){if((inv[name]||0)<=0)return;inv[name]--;p.g+=SELL_PRICE[name];sfx('sell');renderSellShop();hud()}
+function sellEverything(){let t=0;for(const [n,pr] of Object.entries(SELL_PRICE)){t+=(inv[n]||0)*pr;inv[n]=0}if(!t){toastMsg('판매할 아이템이 없다');return}p.g+=t;sfx('sell');toastMsg(`전부 판매 +${t}G`);renderSellShop();hud()}
 
 function getAction(){
  if(zone==='f2'&&Math.hypot(p.x-CAVE.entrance.x,p.y-CAVE.entrance.y)<85)return {label:'들어가기',kind:'enterCave'};
+ if(zone==='f5'&&Math.hypot(p.x-TOMB.x,p.y-TOMB.y)<90&&hq===0)return {label:'비석 조사',kind:'tomb'};
  if(zone==='cave'&&!chestOpened&&Math.hypot(p.x-CAVE.chest.x,p.y-CAVE.chest.y)<85)return {label:guardianDead?'상자 열기':'상자 잠김',kind:'chest'};
- if(zone==='cave'&&Math.hypot(p.x-CAVE.exit.x,p.y-CAVE.exit.y)<85)return {label:'나가기',kind:'exitCave'};
- return null
+ if(zone==='cave'&&Math.hypot(p.x-CAVE.exit.x,p.y-CAVE.exit.y)<85)return {label:'나가기',kind:'exitCave'};return null
 }
 function updateActionButton(){const a=getAction();actionBtn.style.display=a?'block':'none';if(a)actionBtn.textContent=a.label}
-function useAction(){const a=getAction();if(!a)return;if(a.kind==='enterCave')enter('cave');else if(a.kind==='exitCave')enter('town');else if(a.kind==='chest'){if(!guardianDead){sfx('uiClick');toastMsg('거대 동굴슬라임을 먼저 잡아야 한다');return}chestOpened=true;p.g+=250;sfx('chestOpen');sfx('coin');sfx('dungeonClear');hud();toastMsg('보물상자 +250골드!')}}
+function useAction(){const a=getAction();if(!a)return;if(a.kind==='enterCave')enter('cave');else if(a.kind==='tomb')hiddenOffer.style.display='flex';else if(a.kind==='exitCave'){if(combatTimer>0){toastMsg('전투 중에는 마을로 갈 수 없다');return}enter('town')}else if(a.kind==='chest'){if(!guardianDead){toastMsg('거대 동굴슬라임을 먼저 잡아야 한다');return}chestOpened=true;p.g+=250;sfx('chestOpen');sfx('dungeonClear');toastMsg('보물상자 +250골드! 마을로 귀환');setTimeout(()=>enter('town'),600)}}
 
 function hitSoundFor(m){
  if(['slime','blue','caveSlime'].includes(m.type))return 'slimeHit';
  if(['slimeKing','giantCaveSlime'].includes(m.type))return 'bossHit';
- if(['boar','wolf','redwolf'].includes(m.type))return 'beastHit';
+ if(['boar','wolf','redwolf','tiger','panther'].includes(m.type))return 'beastHit';
  return 'humanoidHit'
 }
 function deathSoundFor(m){
@@ -288,58 +296,42 @@ function deathSoundFor(m){
  return 'humanoidDeath'
 }
 function attackNow(){
- if(!run||ac>0)return;ac=.35;p.animState='attack';p.animTick=0;p.animFrame=0;
- sfx('weaponSwing');if(p.weapon==='철 쌍검')sfx('dualHit');
+ if(!run||ac>0)return;const w=WEAPONS[p.weapon];ac=w?w.cd:.35;combatTimer=4;p.animState='attack';p.animTick=0;p.animFrame=0;sfx('weaponSwing');
  const ax=p.x+p.dir*30;fx.push({x:ax,y:p.y,t:.18,d:p.dir});
- let hitAny=false;
- for(const m of mons){if(m.dead)continue;if(Math.hypot(m.x-ax,m.y-p.y)<62+m.r){hitAny=true;m.hp-=p.atk;m.hit=.12;m.x+=p.dir*13;sfx(p.weapon==='철 도끼'?'axeHit':p.weapon==='철 쌍검'?'dualHit':'swordHit');sfx(hitSoundFor(m));if(m.hp<=0)kill(m)}}
- if(!hitAny)sfx('weaponSwing')
+ for(const m of mons){if(m.dead)continue;if(Math.hypot(m.x-ax,m.y-p.y)<62+m.r){m.hp-=currentAtk();m.hit=.12;m.x+=p.dir*13;sfx(p.weapon==='철 도끼'||p.weapon==='철 망치'?'axeHit':p.weapon==='철 쌍검'||p.weapon==='낡은 쌍절곤'?'dualHit':'swordHit');if(m.hp<=0)kill(m)}}
 }
 function kill(m){
- m.dead=true;m.animState='dead';m.animTick=0;m.animFrame=0;m.deathAge=0;sfx(deathSoundFor(m));
- p.xp+=m.xp;p.g+=m.g;sfx('coin');
- let item=null;if(['slime','blue','slimeKing','caveSlime','giantCaveSlime'].includes(m.type))item='슬라임 젤리';else if(m.type==='boar')item='멧돼지 고기';else if(['wolf','redwolf'].includes(m.type))item='늑대 가죽';else if(m.type==='orc')item='오크 이빨';else item='균열 조각';
- if(item)drops.push({x:m.x,y:m.y,item,t:12});
- if(zone==='f1'&&q===1&&m.type==='slime'){window.sk=(window.sk||0)+1;if(window.sk>=5){q=2;sfx('questComplete');toastMsg('완료! 촌장에게 돌아가 보상받기')}}
- else if(zone==='f1'&&q===3&&m.type==='slimeKing'){q=4;sfx('questComplete');toastMsg('완료! 촌장에게 돌아가 보상받기')}
+ m.dead=true;m.animState='dead';m.animTick=0;m.animFrame=0;m.deathAge=0;sfx(deathSoundFor(m));p.xp+=m.xp;p.g+=m.g;
+ let item=['slime','blue','slimeKing','caveSlime','giantCaveSlime'].includes(m.type)?'슬라임 젤리':m.type==='boar'?'멧돼지 고기':['wolf','redwolf','tiger','panther'].includes(m.type)?'늑대 가죽':m.type==='orc'?'오크 이빨':'균열 조각';if(m.type==='hiddenEnemy')item=null;if(item)drops.push({x:m.x,y:m.y,item,t:12});
+ if(zone==='f1'&&q===1&&m.type==='slime'){window.sk=(window.sk||0)+1;if(window.sk>=5){q=2;sfx('questComplete');toastMsg('완료! 촌장에게 돌아가 보상받기')}}else if(zone==='f1'&&q===3&&m.type==='slimeKing'){q=4;sfx('questComplete');toastMsg('완료! 촌장에게 돌아가 보상받기')}
  if(m.type==='giantCaveSlime'){guardianDead=true;sfx('chestUnlock');toastMsg('거대 동굴슬라임 처치! 보물상자가 열렸다')}
- while(p.xp>=p.nxp){p.xp-=p.nxp;p.lv++;p.nxp=p.lv*100;p.mhp+=15;p.hp=p.mhp;p.atk+=2;sfx('levelUp');toastMsg(`레벨 ${p.lv}! 다음 필요 EXP ${p.nxp}`)}
- const z=m.z,base=m.baseType;if(z!=='cave')setTimeout(()=>{if(!run||zone!==z)return;const spec=F[z].m.find(v=>v[9]===base);if(spec)spawn(spec,480+Math.random()*1200,120+Math.random()*960,z)},2200);
- hud()
+ if(m.type==='hiddenEnemy'){hq=2;ownedWeapons['낡은 쌍절곤']=true;sfx('questComplete');toastMsg('히든 퀘스트 완료! 낡은 쌍절곤 획득')}
+ while(p.xp>=p.nxp){p.xp-=p.nxp;p.lv++;p.nxp=p.lv*100;p.baseHp+=15;p.hp=maxHp();p.bonusAtk+=2;sfx('levelUp');toastMsg(`레벨 ${p.lv}! 다음 필요 EXP ${p.nxp}`)}
+ const z=m.z,base=m.baseType;if(z!=='cave'&&base!=='hiddenEnemy')setTimeout(()=>{if(!run||zone!==z)return;const spec=F[z]?.m.find(v=>v[9]===base);if(spec)spawn(spec,480+Math.random()*1200,120+Math.random()*960,z)},2600);hud()
 }
 function fireArrow(m){const a=Math.atan2(p.y-m.y,p.x-m.x),speed=p.spd*.6,homing=Math.random()<.30;sfx(homing?'homingArrow':'arrowShoot');arrows.push({x:m.x,y:m.y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:6,life:8,homing:homing?5:0,damage:m.a,flyTick:0})}
 function updateArrows(dt){for(let i=arrows.length-1;i>=0;i--){const a=arrows[i];a.life-=dt;a.flyTick+=dt;if(a.flyTick>.65){a.flyTick=0;sfx('arrowFly')}if(a.homing>0){a.homing-=dt;const speed=p.spd*.6,ang=Math.atan2(p.y-a.y,p.x-a.x),tx=Math.cos(ang)*speed,ty=Math.sin(ang)*speed;a.vx+=(tx-a.vx)*Math.min(1,dt*2.6);a.vy+=(ty-a.vy)*Math.min(1,dt*2.6)}a.x+=a.vx*dt;a.y+=a.vy*dt;if(Math.hypot(a.x-p.x,a.y-p.y)<a.r+p.r){sfx('arrowHit');damage(a.damage);arrows.splice(i,1);continue}if(a.life<=0||a.x<0||a.y<0||a.x>WORLD.w||a.y>WORLD.h)arrows.splice(i,1)}}
-function damage(v){if(p.inv>0)return;p.hp-=v;p.inv=.65;flash=.15;sfx('playerHit');if(p.hp>0&&p.hp/p.mhp<.25)sfx('playerLowHp');if(p.hp<=0){p.hp=0;run=false;setAggro(false);sfx('playerDeath');const cost=Math.min(p.g,Math.ceil(p.g*.2));p.g-=cost;deadCost.textContent=`치료비: ${cost}골드`;dead.style.display='flex'}hud()}
+function damage(v){if(p.inv>0)return;p.hp-=v;p.inv=.65;flash=.15;combatTimer=4;sfx('playerHit');if(p.hp<=0){p.hp=0;run=false;setAggro(false);sfx('playerDeath');const cost=Math.min(p.g,Math.ceil(p.g*.2));p.g-=cost;deadCost.textContent=`치료비: ${cost}골드`;dead.style.display='flex'}hud()}
 
-function portals(){if(pc>0||zone==='cave')return;if(zone==='town'){for(const a of P)if(Math.hypot(p.x-a[1],p.y-a[2])<42){enter(a[0]);return}}else if(Math.hypot(p.x-135,p.y-600)<42)enter('town')}
+function portals(){if(pc>0||zone==='cave')return;if(zone==='town'){for(const a of P)if(Math.hypot(p.x-a[1],p.y-a[2])<42){enter(a[0]);return}}else if(Math.hypot(p.x-135,p.y-600)<42){if(combatTimer>0){if(portalMsgCd<=0){toastMsg('전투 중에는 마을 포탈을 사용할 수 없다');portalMsgCd=1}return}enter('town')}}
 function stepAnim(e,dt,moving=false){e.animTick=(e.animTick||0)+dt*30;if(e.animState==='attack'){e.animFrame=Math.min(33,Math.floor(e.animTick));if(e.animFrame>=33){e.animState=moving?'walk':'idle';e.animTick=0;e.animFrame=0}}else if(e.animState==='dead'){e.animFrame=Math.min(33,Math.floor(e.animTick))}else{e.animState=moving?'walk':'idle';e.animFrame=Math.floor(e.animTick)%34}}
 function aggroSoundFor(m){if(['slime','blue','caveSlime'].includes(m.type))return 'slimeAggro';if(['slimeKing','giantCaveSlime','ogre'].includes(m.type))return 'bossAggro';if(['boar','wolf','redwolf'].includes(m.type))return 'beastAggro';return 'humanoidAggro'}
 function update(dt){
- ac-=dt;pc-=dt;p.inv-=dt;flash-=dt;
- let mx=j.x+(keys.a?-1:0)+(keys.d?1:0),my=j.y+(keys.w?-1:0)+(keys.s?1:0),l=Math.hypot(mx,my);if(l>1){mx/=l;my/=l}
- if(Math.abs(mx)>.05)p.dir=mx>0?1:-1;const moving=Math.hypot(mx,my)>.05;
+ ac-=dt;pc-=dt;flash-=dt;combatTimer=Math.max(0,combatTimer-dt);portalMsgCd-=dt;p.inv-=dt;
+ let mx=j.x+(keys.a?-1:0)+(keys.d?1:0),my=j.y+(keys.w?-1:0)+(keys.s?1:0),l=Math.hypot(mx,my);if(l>1){mx/=l;my/=l}if(Math.abs(mx)>.05)p.dir=mx>0?1:-1;const moving=Math.hypot(mx,my)>.05;
  p.x=Math.max(55,Math.min(WORLD.w-55,p.x+mx*p.spd*dt));p.y=Math.max(55,Math.min(WORLD.h-55,p.y+my*p.spd*dt));stepAnim(p,dt,moving);
- let anyAggro=false,bossAggro=false;
- if(zone!=='town')for(let i=mons.length-1;i>=0;i--){const m=mons[i];
-  if(m.dead){m.deathAge+=dt;stepAnim(m,dt,false);if(m.deathAge>3.0)mons.splice(i,1);continue}
-  m.hit-=dt;const d=Math.hypot(p.x-m.x,p.y-m.y);let mm=false;
-  if(d<300){anyAggro=true;if(['slimeKing','giantCaveSlime','ogre'].includes(m.type))bossAggro=true;if(!m.aggroed){m.aggroed=true;sfx(aggroSoundFor(m))}}
-  else if(d>430)m.aggroed=false;
-  if(m.type==='archer'){m.shootCd-=dt;if(d<500&&m.shootCd<=0){m.animState='attack';m.animTick=0;m.animFrame=0;fireArrow(m);m.shootCd=2.2+Math.random()*1.1}if(d<180){const a=Math.atan2(m.y-p.y,m.x-p.x);m.x+=Math.cos(a)*m.spd*dt;m.y+=Math.sin(a)*m.spd*dt;mm=true}else if(d>340&&d<520){const a=Math.atan2(p.y-m.y,p.x-m.x);m.x+=Math.cos(a)*m.spd*.45*dt;m.y+=Math.sin(a)*m.spd*.45*dt;mm=true}}
-  else{if(d<270){const a=Math.atan2(p.y-m.y,p.x-m.x);m.dir=Math.cos(a)>=0?1:-1;m.x+=Math.cos(a)*m.spd*dt;m.y+=Math.sin(a)*m.spd*dt;mm=true}if(d<p.r+m.r+2){if(m.animState!=='attack'){m.animState='attack';m.animTick=0;m.animFrame=0}damage(m.a)}}
-  stepAnim(m,dt,mm)
- }
- setAggro(anyAggro,bossAggro);updateArrows(dt);
- for(let i=drops.length-1;i>=0;i--){const d=drops[i];d.t-=dt;if(Math.hypot(d.x-p.x,d.y-p.y)<35){inv[d.item]=(inv[d.item]||0)+1;sfx('itemPickup');toastMsg(`${d.item} 획득`);drops.splice(i,1)}else if(d.t<=0)drops.splice(i,1)}
- for(let i=fx.length-1;i>=0;i--){fx[i].t-=dt;if(fx[i].t<=0)fx.splice(i,1)}
- portals();updateActionButton();cam.x=Math.max(0,Math.min(WORLD.w-W,p.x-W/2));cam.y=Math.max(0,Math.min(WORLD.h-H,p.y-H/2))
+ if(zone==='town'){townHeal+=dt;if(townHeal>=1){townHeal-=1;p.hp=Math.min(maxHp(),p.hp+10000);hud()}}else townHeal=0;
+ let anyAggro=false,bossAggro=false;if(zone!=='town')for(let i=mons.length-1;i>=0;i--){const m=mons[i];if(m.dead){m.deathAge+=dt;stepAnim(m,dt,false);if(m.deathAge>3)mons.splice(i,1);continue}m.hit-=dt;const d=Math.hypot(p.x-m.x,p.y-m.y);let mm=false;if(d<300){anyAggro=true;combatTimer=Math.max(combatTimer,.4);if(['slimeKing','giantCaveSlime','ogre','hiddenEnemy'].includes(m.type))bossAggro=true}
+  if(m.type==='archer'){m.shootCd-=dt;if(d<500&&m.shootCd<=0){m.animState='attack';m.animTick=0;fireArrow(m);m.shootCd=2.2+Math.random()}if(d<180){const a=Math.atan2(m.y-p.y,m.x-p.x);m.x+=Math.cos(a)*m.spd*dt;m.y+=Math.sin(a)*m.spd*dt;mm=true}else if(d>340&&d<520){const a=Math.atan2(p.y-m.y,p.x-m.x);m.x+=Math.cos(a)*m.spd*.45*dt;m.y+=Math.sin(a)*m.spd*.45*dt;mm=true}}
+  else{if(d<270){const a=Math.atan2(p.y-m.y,p.x-m.x);m.dir=Math.cos(a)>=0?1:-1;m.x+=Math.cos(a)*m.spd*dt;m.y+=Math.sin(a)*m.spd*dt;mm=true}if(d<p.r+m.r+2){m.animState='attack';m.animTick=0;damage(m.a)}}stepAnim(m,dt,mm)}
+ setAggro(anyAggro,bossAggro);updateArrows(dt);for(let i=drops.length-1;i>=0;i--){const d=drops[i];d.t-=dt;if(Math.hypot(d.x-p.x,d.y-p.y)<35){inv[d.item]=(inv[d.item]||0)+1;sfx('itemPickup');drops.splice(i,1)}else if(d.t<=0)drops.splice(i,1)}for(let i=fx.length-1;i>=0;i--){fx[i].t-=dt;if(fx[i].t<=0)fx.splice(i,1)}portals();updateActionButton();cam.x=Math.max(0,Math.min(WORLD.w-W,p.x-W/2));cam.y=Math.max(0,Math.min(WORLD.h-H,p.y-H/2))
 }
 
 function shadow(px,py,w=26){ctx.fillStyle='#0006';ctx.beginPath();ctx.ellipse(px,py+17,w,8,0,0,Math.PI*2);ctx.fill()}
 function pixelRect(px,py,w,h,col){ctx.fillStyle=col;ctx.fillRect(Math.round(px),Math.round(py),Math.round(w),Math.round(h))}
 function drawHuman(px,py,role,frame,state,flip=false){
  const t=frame/33,bob=state==='walk'?Math.sin(t*Math.PI*4)*3:0,att=state==='attack'?Math.sin(t*Math.PI):0,dead=state==='dead'?t:0;
- const pal={player:['#263f73','#4f7ed4','#f0c29b','#40291c'],chief:['#745126','#c99645','#e7b989','#ddd1a4'],smith:['#333943','#697887','#d7a47d','#2b2523'],weapon:['#543725','#a26037','#e2af80','#31221b'],seller:['#2f5b45','#55a06d','#e5b488','#39271e']}[role]||['#38495e','#6e88a5','#e2b184','#2f241e'];
+ const pal={player:['#263f73','#4f7ed4','#f0c29b','#40291c'],chief:['#745126','#c99645','#e7b989','#ddd1a4'],smith:['#333943','#697887','#d7a47d','#2b2523'],weapon:['#543725','#a26037','#e2af80','#31221b'],seller:['#2f5b45','#55a06d','#e5b488','#39271e'],armor:['#5f4931','#8b7354','#e5b488','#2e251e']}[role]||['#38495e','#6e88a5','#e2b184','#2f241e'];
  ctx.save();ctx.translate(px,py+bob);if(flip)ctx.scale(-1,1);ctx.rotate(dead*1.25);ctx.globalAlpha=1-dead*.85;shadow(0,0,18);
  const legSwing=state==='walk'?Math.sin(t*Math.PI*4)*5:0;pixelRect(-11,-2,8,22,pal[0]);pixelRect(3,-2,8,22,pal[0]);pixelRect(-12+legSwing*.25,16,9,6,'#232833');pixelRect(3-legSwing*.25,16,9,6,'#232833');
  pixelRect(-15,-28,30,29,pal[1]);pixelRect(-18,-22,5,18,pal[2]);pixelRect(13,-22,5,18,pal[2]);ctx.fillStyle=pal[2];ctx.beginPath();ctx.arc(0,-39,13,0,Math.PI*2);ctx.fill();
@@ -347,8 +339,8 @@ function drawHuman(px,py,role,frame,state,flip=false){
  if(role==='chief')pixelRect(-16,-52,32,5,'#d6b451');if(role==='smith')pixelRect(-15,-30,30,7,'#b8c1c7');if(role==='weapon'){pixelRect(-17,-31,34,5,'#765036');pixelRect(15,-24,4,22,'#c9cbd0')}if(role==='seller')pixelRect(-15,-30,30,5,'#d0a04b');
  if(state==='attack')ctx.rotate(-.6+att*1.3);ctx.restore()
 }
-function weaponDraw(){const swing=p.animState==='attack'?Math.sin(p.animFrame/33*Math.PI):0;ctx.save();ctx.translate(p.x,p.y-10);ctx.scale(p.dir,1);ctx.rotate(-.8+swing*1.55);if(p.weapon==='철 도끼'){pixelRect(8,-2,30,5,'#75502c');pixelRect(31,-10,13,17,'#bfc7cc');pixelRect(39,-8,5,13,'#e8eef1')}else{const col=p.weapon==='철 쌍검'?'#e4e9ef':p.weapon==='낡은 돌검'?'#989a94':'#7b5838';pixelRect(8,-2,32,5,col);pixelRect(34,-5,9,11,col);pixelRect(5,-5,6,11,'#7a4e27');if(p.weapon==='철 쌍검'){ctx.rotate(-.45);pixelRect(5,5,31,5,col);pixelRect(31,2,9,11,col)}}ctx.restore()}
-const MPALETTE={slime:['#51b84c','#8be56a','#1d5b28'],blue:['#398fc8','#73c9ee','#185b7d'],slimeKing:['#5ddc55','#b5ff8c','#357227'],caveSlime:['#4c7655','#789f76','#263e2b'],giantCaveSlime:['#315d3b','#6e9d67','#193620'],boar:['#6f412b','#a96b46','#2b1a13'],wolf:['#687382','#aab3bd','#2d343c'],redwolf:['#8b3731','#c45b4c','#411b1b'],orc:['#568a42','#8cbd62','#233a20'],knight:['#34394a','#788091','#161922'],demon:['#783c87','#c56bca','#34183c'],archer:['#527338','#88a956','#27351c'],skeleton:['#b9b5a0','#eee9d5','#55534c'],eliteGoblin:['#47742e','#8fbd55','#273719'],ogre:['#6b7240','#a8ae62','#393c25']};
+function weaponDraw(){const swing=p.animState==='attack'?Math.sin(p.animFrame/33*Math.PI):0;ctx.save();ctx.translate(p.x,p.y-10);ctx.scale(p.dir,1);ctx.rotate(-.8+swing*1.55);if(p.weapon==='철 도끼'||p.weapon==='철 망치'){pixelRect(8,-2,30,5,'#75502c');pixelRect(31,p.weapon==='철 망치'?-12:-10,p.weapon==='철 망치'?18:13,p.weapon==='철 망치'?22:17,'#bfc7cc')}else if(p.weapon==='낡은 쌍절곤'){pixelRect(7,-3,20,6,'#7b5732');ctx.strokeStyle='#c9b070';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(27,0);ctx.lineTo(38,8);ctx.stroke();pixelRect(38,5,20,6,'#7b5732')}else{const col=p.weapon==='철 쌍검'?'#e4e9ef':p.weapon==='낡은 돌검'?'#989a94':'#7b5838';pixelRect(8,-2,32,5,col);pixelRect(34,-5,9,11,col);pixelRect(5,-5,6,11,'#7a4e27');if(p.weapon==='철 쌍검'){ctx.rotate(-.45);pixelRect(5,5,31,5,col)}}ctx.restore()}
+const MPALETTE={slime:['#51b84c','#8be56a','#1d5b28'],blue:['#398fc8','#73c9ee','#185b7d'],slimeKing:['#5ddc55','#b5ff8c','#357227'],caveSlime:['#4c7655','#789f76','#263e2b'],giantCaveSlime:['#315d3b','#6e9d67','#193620'],boar:['#6f412b','#a96b46','#2b1a13'],wolf:['#687382','#aab3bd','#2d343c'],redwolf:['#8b3731','#c45b4c','#411b1b'],orc:['#568a42','#8cbd62','#233a20'],knight:['#34394a','#788091','#161922'],demon:['#783c87','#c56bca','#34183c'],archer:['#527338','#88a956','#27351c'],skeleton:['#b9b5a0','#eee9d5','#55534c'],eliteGoblin:['#47742e','#8fbd55','#273719'],ogre:['#6b7240','#a8ae62','#393c25'],hiddenEnemy:['#4b4050','#a08aa8','#251f29'],tiger:['#c47826','#f2a13c','#41220c'],primitive:['#6e492c','#a97545','#2d1b10'],panther:['#22252a','#565c66','#090a0b']};
 function drawMonsterSprite(m){
  const f=m.animFrame||0,t=f/33,walk=m.animState==='walk'?Math.sin(t*Math.PI*4)*3:0,att=m.animState==='attack'?Math.sin(t*Math.PI):0,dead=m.animState==='dead'?t:0,pal=MPALETTE[m.type]||MPALETTE.slime,sc=(m.r/18)*(m.type==='slimeKing'||m.type==='giantCaveSlime'?1.15:1);
  ctx.save();ctx.translate(m.x,m.y+walk);ctx.scale(m.dir||1,1);ctx.rotate(dead*1.4);ctx.globalAlpha=1-dead*.82;shadow(0,0,18*sc);
@@ -364,11 +356,15 @@ function portal(px,py,a,b,back=false){const pulse=1+Math.sin(performance.now()/1
 function tree(px,py,s=1){shadow(px,py,20*s);pixelRect(px-7*s,py-5*s,14*s,35*s,'#624026');ctx.fillStyle='#245f31';ctx.beginPath();ctx.arc(px,py-28*s,28*s,0,Math.PI*2);ctx.fill();ctx.fillStyle='#3d8b45';ctx.beginPath();ctx.arc(px-10*s,py-38*s,18*s,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(px+12*s,py-34*s,18*s,0,Math.PI*2);ctx.fill()}
 function rock(px,py,s=1){shadow(px,py,15*s);ctx.fillStyle='#666b70';ctx.beginPath();ctx.moveTo(px-19*s,py+8*s);ctx.lineTo(px-13*s,py-13*s);ctx.lineTo(px+5*s,py-20*s);ctx.lineTo(px+20*s,py-4*s);ctx.lineTo(px+13*s,py+11*s);ctx.closePath();ctx.fill();ctx.fillStyle='#8a9095';ctx.beginPath();ctx.moveTo(px-10*s,py-10*s);ctx.lineTo(px+4*s,py-17*s);ctx.lineTo(px+8*s,py-6*s);ctx.closePath();ctx.fill()}
 function bush(px,py,s=1){ctx.fillStyle='#2f783c';for(const [dx,dy,r] of [[-12,0,12],[0,-7,15],[14,1,11]]){ctx.beginPath();ctx.arc(px+dx*s,py+dy*s,r*s,0,Math.PI*2);ctx.fill()}}
-function drawDecor(z){if(z==='cave')return;const seed=z==='town'?1:Number(z.slice(1))+3;for(let i=0;i<44;i++){const px=190+((i*173+seed*251)%1490),py=120+((i*227+seed*131)%950);if(z==='town'&&px>280&&px<1320&&py>330&&py<930)continue;if(z==='f2'&&Math.hypot(px-CAVE.entrance.x,py-CAVE.entrance.y)<150)continue;if(i%5===0)tree(px,py,.9+(i%3)*.12);else if(i%5===1)rock(px,py,.8);else if(i%5===2)bush(px,py,.9);else{ctx.fillStyle='#ffffff22';ctx.fillRect(px,py,4,8);ctx.fillRect(px-4,py+4,12,3)}}}
+function palm(px,py,s=1){shadow(px,py,16*s);pixelRect(px-5*s,py-5*s,10*s,45*s,'#8b5c2f');ctx.strokeStyle='#2f7d46';ctx.lineWidth=9*s;for(let k=0;k<6;k++){const a=k*Math.PI/3;ctx.beginPath();ctx.moveTo(px,py-42*s);ctx.lineTo(px+Math.cos(a)*30*s,py-42*s+Math.sin(a)*18*s);ctx.stroke()}}
+function banana(px,py,s=1){pixelRect(px-4*s,py,8*s,35*s,'#76502f');ctx.fillStyle='#4d9a4b';for(let k=0;k<5;k++){ctx.beginPath();ctx.ellipse(px+(k-2)*7*s,py-25*s,8*s,20*s,(k-2)*.25,0,Math.PI*2);ctx.fill()}ctx.fillStyle='#e4c83a';ctx.beginPath();ctx.arc(px+12*s,py-16*s,5*s,0,Math.PI*2);ctx.fill()}
+function tropical(px,py,s=1){ctx.fillStyle='#367f4e';for(let k=0;k<7;k++){const a=k*Math.PI*2/7;ctx.beginPath();ctx.ellipse(px+Math.cos(a)*12*s,py+Math.sin(a)*7*s,5*s,18*s,a,0,Math.PI*2);ctx.fill()}}
+function drawDecor(z){if(z==='cave')return;if(z==='f7'){for(let i=0;i<48;i++){const px=180+((i*167+311)%1500),py=110+((i*229+147)%970);if(i%4===0)palm(px,py,.85);else if(i%4===1)banana(px,py,.9);else tropical(px,py,.9)}return}const seed=z==='town'?1:Number(z.slice(1))+3;for(let i=0;i<30;i++){const px=190+((i*173+seed*251)%1490),py=120+((i*227+seed*131)%950);if(z==='town'&&px>280&&px<1350&&py>330&&py<930)continue;if(z==='f2'&&Math.hypot(px-CAVE.entrance.x,py-CAVE.entrance.y)<150)continue;if(i%3===0)tree(px,py,.9);else if(i%3===1)rock(px,py,.8);else tropical(px,py,.6)}}
+function drawTomb(){pixelRect(TOMB.x-22,TOMB.y-42,44,64,'#77757a');pixelRect(TOMB.x-27,TOMB.y+16,54,10,'#5b5960');ctx.fillStyle='#d9d2e0';ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.fillText('이름 없는 기사',TOMB.x,TOMB.y-52);ctx.fillStyle='#444';ctx.fillText('⚔',TOMB.x,TOMB.y-8);ctx.textAlign='left'}
 function drawArrow(a){const ang=Math.atan2(a.vy,a.vx);ctx.save();ctx.translate(a.x,a.y);ctx.rotate(ang);ctx.strokeStyle=a.homing>0?'#ffd95c':'#e7d4a0';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-12,0);ctx.lineTo(12,0);ctx.stroke();ctx.fillStyle='#ddd';ctx.beginPath();ctx.moveTo(13,0);ctx.lineTo(6,-5);ctx.lineTo(6,5);ctx.fill();ctx.restore()}
 function drawCaveEntrance(){ctx.fillStyle='#262a30';ctx.beginPath();ctx.arc(CAVE.entrance.x,CAVE.entrance.y,62,Math.PI,0);ctx.fill();ctx.fillRect(CAVE.entrance.x-62,CAVE.entrance.y,124,48);ctx.fillStyle='#050607';ctx.beginPath();ctx.arc(CAVE.entrance.x,CAVE.entrance.y+7,38,Math.PI,0);ctx.fill();ctx.fillRect(CAVE.entrance.x-38,CAVE.entrance.y+6,76,36);ctx.fillStyle='#fff';ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.fillText('동굴 던전',CAVE.entrance.x,CAVE.entrance.y-68);ctx.textAlign='left'}
 function drawCaveObjects(){if(!chestOpened){pixelRect(CAVE.chest.x-30,CAVE.chest.y-22,60,44,'#895723');pixelRect(CAVE.chest.x-30,CAVE.chest.y-5,60,9,'#d7a733');pixelRect(CAVE.chest.x-6,CAVE.chest.y-22,12,44,'#d7a733')}else{ctx.strokeStyle='#d7a733';ctx.lineWidth=5;ctx.strokeRect(CAVE.chest.x-30,CAVE.chest.y-12,60,32)}pixelRect(CAVE.exit.x-36,CAVE.exit.y-52,72,104,'#20242b');pixelRect(CAVE.exit.x-23,CAVE.exit.y-40,46,80,'#050607');ctx.fillStyle='#fff';ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillText('마을 출구',CAVE.exit.x,CAVE.exit.y-62);ctx.textAlign='left'}
-function draw(){ctx.clearRect(0,0,W,H);ctx.save();ctx.translate(-cam.x,-cam.y);if(zone==='cave'){ctx.fillStyle='#25282f';ctx.fillRect(0,0,WORLD.w,WORLD.h);ctx.fillStyle='#333842';for(let yy=0;yy<WORLD.h;yy+=80)for(let xx=0;xx<WORLD.w;xx+=80)if((xx+yy)%160===0){ctx.fillRect(xx,yy,52,12);ctx.fillRect(xx+15,yy+25,20,6)}drawCaveObjects()}else{ctx.fillStyle=zone==='town'?'#5eaa54':F[zone].bg;ctx.fillRect(0,0,WORLD.w,WORLD.h);drawDecor(zone);if(zone==='town'){ctx.fillStyle='#ccb079';ctx.fillRect(250,500,1060,390);for(const n of npcs)drawNPC(n);ctx.fillStyle='#33261f';ctx.font='bold 22px sans-serif';ctx.fillText('사냥터 포탈 광장',820,300);for(const a of P)portal(a[1],a[2],a[3],a[4])}else{portal(135,600,'귀환 포탈','마을로 이동',true);ctx.fillStyle='#fff';ctx.font='bold 22px sans-serif';ctx.fillText(`${F[zone].n} · 권장 ${F[zone].l}`,270,85);if(zone==='f2')drawCaveEntrance()}}for(const d of drops){ctx.fillStyle='#ffe27a';ctx.beginPath();ctx.arc(d.x,d.y,9,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff8';ctx.stroke()}for(const m of mons)if(!m.dead||m.deathAge<=3)drawMonster(m);for(const a of arrows)drawArrow(a);drawPlayer();for(const f of fx){ctx.strokeStyle='#fff9';ctx.lineWidth=9;ctx.beginPath();ctx.arc(f.x,f.y,36,f.d>0?-.9:2.25,f.d>0?.9:4.05);ctx.stroke()}ctx.restore();if(flash>0){ctx.fillStyle='#f223';ctx.fillRect(0,0,W,H)}}
+function draw(){ctx.clearRect(0,0,W,H);ctx.save();ctx.translate(-cam.x,-cam.y);if(zone==='cave'){ctx.fillStyle='#25282f';ctx.fillRect(0,0,WORLD.w,WORLD.h);ctx.fillStyle='#333842';for(let yy=0;yy<WORLD.h;yy+=80)for(let xx=0;xx<WORLD.w;xx+=80)if((xx+yy)%160===0)ctx.fillRect(xx,yy,52,12);drawCaveObjects()}else{ctx.fillStyle=zone==='town'?'#5eaa54':F[zone].bg;ctx.fillRect(0,0,WORLD.w,WORLD.h);drawDecor(zone);if(zone==='f7'){ctx.fillStyle='#07120a55';ctx.fillRect(0,0,WORLD.w,WORLD.h)}if(zone==='town'){ctx.fillStyle='#ccb079';ctx.fillRect(250,500,1120,390);for(const n of npcs)drawNPC(n);for(const a of P)portal(a[1],a[2],a[3],a[4])}else{portal(135,600,'귀환 포탈','마을로 이동',true);ctx.fillStyle='#fff';ctx.font='bold 22px sans-serif';ctx.fillText(`${F[zone].n} · 권장 ${F[zone].l}`,270,85);if(zone==='f2')drawCaveEntrance();if(zone==='f5')drawTomb()}}for(const d of drops){ctx.fillStyle='#ffe27a';ctx.beginPath();ctx.arc(d.x,d.y,9,0,Math.PI*2);ctx.fill()}for(const m of mons)if(!m.dead||m.deathAge<=3)drawMonster(m);for(const a of arrows)drawArrow(a);drawPlayer();for(const f of fx){ctx.strokeStyle='#fff9';ctx.lineWidth=9;ctx.beginPath();ctx.arc(f.x,f.y,36,f.d>0?-.9:2.25,f.d>0?.9:4.05);ctx.stroke()}ctx.restore();if(flash>0){ctx.fillStyle='#f223';ctx.fillRect(0,0,W,H)}}
 function loop(t){requestAnimationFrame(loop);if(!run){draw();return}const dt=Math.min(.035,(t-last)/1000||0);last=t;update(dt);draw()}
 
 let jid=null,center={x:0,y:0};
@@ -378,10 +374,10 @@ function moveJoy(e){let dx=e.clientX-center.x,dy=e.clientY-center.y,l=Math.hypot
 function endJoy(){jid=null;j.x=0;j.y=0;knob.style.transform='translate(0,0)'}
 attack.onpointerdown=e=>{e.preventDefault();initAudio();attackNow()};talk.onpointerdown=e=>{e.preventDefault();initAudio();talkNow()};actionBtn.onpointerdown=e=>{e.preventDefault();initAudio();useAction()};soundBtn.onpointerdown=e=>{e.preventDefault();toggleSound()};
 addEventListener('keydown',e=>{initAudio();keys[e.key.toLowerCase()]=true;if(e.key===' ')attackNow();if(e.key.toLowerCase()==='e')useAction()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
-function renderBag(){bagList.innerHTML=`<div class="slot"><span><b>${p.weapon}</b><br><span class="small">현재 공격력 ${Math.floor(p.atk)}</span></span></div>`+Object.entries(inv).map(([k,v])=>`<div class="slot"><span>${k}</span><b>×${v}</b></div>`).join('')}
-bagBtn.onclick=()=>{initAudio();sfx('bagOpen');renderBag();bag.style.display='flex'};closeBag.onclick=()=>{sfx('bagClose');bag.style.display='none'};closeWeapon.onclick=()=>{sfx('shopClose');weaponShop.style.display='none'};closeSell.onclick=()=>{sfx('shopClose');sellShop.style.display='none'};sellAll.onclick=sellEverything;
-startBtn.onclick=()=>{initAudio();sfx('uiOpen');start.style.display='none';reset();run=true;last=performance.now()};
-respawn.onclick=()=>{sfx('respawn');dead.style.display='none';p.hp=p.mhp;p.inv=1;run=true;enter('town');last=performance.now()};
+function renderBag(){let weapons=Object.keys(ownedWeapons).filter(k=>ownedWeapons[k]).map(k=>`<div class="slot"><span><b>${k}</b><br><span class="small">공격 ${WEAPONS[k].damage}${WEAPONS[k].desc?'<br>'+WEAPONS[k].desc:''}</span></span><button data-equip="${k}" ${p.weapon===k?'disabled':''}>${p.weapon===k?'장착중':'장착'}</button></div>`).join('');bagList.innerHTML=`<div class="slot"><span>현재 방어구</span><b>${p.armor||'없음'}</b></div>`+weapons+Object.entries(inv).map(([k,v])=>`<div class="slot"><span>${k}</span><b>×${v}</b></div>`).join('');bagList.querySelectorAll('[data-equip]').forEach(b=>b.onclick=()=>{equipWeapon(b.dataset.equip);renderBag()})}
+bagBtn.onclick=()=>{initAudio();sfx('bagOpen');renderBag();bag.style.display='flex'};closeBag.onclick=()=>bag.style.display='none';closeWeapon.onclick=()=>weaponShop.style.display='none';closeArmor.onclick=()=>armorShop.style.display='none';closeSell.onclick=()=>sellShop.style.display='none';sellAll.onclick=sellEverything;
+acceptHidden.onclick=()=>{hq=1;hiddenOffer.style.display='none';sfx('questAccept');spawnHiddenEnemy();hud();toastMsg('히든 퀘스트 수락! 적이 비석 앞에 나타났다')};declineHidden.onclick=()=>hiddenOffer.style.display='none';
+startBtn.onclick=()=>{initAudio();start.style.display='none';reset();run=true;last=performance.now()};respawn.onclick=()=>{sfx('respawn');dead.style.display='none';p.hp=maxHp();p.inv=1;run=true;enter('town');last=performance.now()};
 reset();requestAnimationFrame(loop);
 </script>
 </body></html>
