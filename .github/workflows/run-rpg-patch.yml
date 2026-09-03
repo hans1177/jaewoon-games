@@ -1,0 +1,32 @@
+name: Run RPG Patch
+on:
+  push:
+    paths:
+      - '.github/workflows/run-rpg-patch.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Execute stored RPG patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          src=Path('.github/workflows/patch-rpg-jungle-hidden.yml').read_text(encoding='utf-8')
+          start="          python - <<'PY'\n"
+          end="\n          PY\n          node -e"
+          block=src.split(start,1)[1].split(end,1)[0]
+          code='\n'.join(line[10:] if line.startswith('          ') else line for line in block.splitlines())
+          exec(compile(code,'patch_rpg.py','exec'))
+          PY
+          node -e "const fs=require('fs');const s=fs.readFileSync('rpg.html','utf8');const m=s.match(/<script>([\s\S]*)<\/script>/);if(!m)process.exit(2);new Function(m[1]);console.log('JS syntax OK')"
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add rpg.html
+          git commit -m "RPG 히든 퀘스트 갑옷 7번 정글 추가"
+          git push
