@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0c1016">
 <title>대충 용사 RPG</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -19,6 +20,7 @@ canvas{display:block;width:100vw;height:100vh}
 #attack{right:20px;bottom:28px;width:92px;height:92px;background:#c73434e8;font-size:18px}
 #talk{right:112px;bottom:106px;width:67px;height:67px;background:#d28b22e8}
 #bagBtn{right:18px;top:18px;width:58px;height:58px;background:#405d9de8}
+#soundBtn{right:18px;top:84px;width:48px;height:48px;background:#2f6d64e8;font-size:20px}
 #actionBtn{right:112px;bottom:28px;width:90px;height:60px;border-radius:18px;background:#5d7bd9e8;display:none}
 .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:16px;background:#000d;z-index:10}
 .panel{width:min(92vw,430px);max-height:84vh;overflow:auto;background:#211c18;border:3px solid #e2b56d;border-radius:14px;padding:15px}
@@ -36,16 +38,16 @@ canvas{display:block;width:100vw;height:100vh}
  <div id="quest">퀘스트: 촌장에게 말을 걸어라.</div><div id="area">현재 지역: 마을</div>
 </div>
 <div id="joy"><div id="knob"></div></div>
-<button id="attack" class="btn">공격</button><button id="talk" class="btn">대화</button><button id="bagBtn" class="btn">가방</button><button id="actionBtn" class="btn"></button>
+<button id="attack" class="btn">공격</button><button id="talk" class="btn">대화</button><button id="bagBtn" class="btn">가방</button><button id="soundBtn" class="btn">🔊</button><button id="actionBtn" class="btn"></button>
 <div id="speech"></div><div id="toast"></div>
-<div id="start" class="overlay"><div class="panel" style="text-align:center"><h1>⚔️ 대충 용사 RPG</h1><p>6개의 포탈과 동굴 던전을 탐험해라.</p><button id="startBtn" class="main">게임 시작</button></div></div>
+<div id="start" class="overlay"><div class="panel" style="text-align:center"><h1>⚔️ 대충 용사 RPG</h1><p>6개의 포탈과 동굴 던전을 탐험해라.<br><span class="small">BGM + 전투 BGM + 효과음 50종</span></p><button id="startBtn" class="main">게임 시작</button></div></div>
 <div id="bag" class="overlay"><div class="panel"><h2>가방</h2><div id="bagList"></div><button id="closeBag" class="main dark">닫기</button></div></div>
 <div id="weaponShop" class="overlay"><div class="panel"><h2>무기상인</h2><div id="weaponList"></div><button id="closeWeapon" class="main dark">닫기</button></div></div>
 <div id="sellShop" class="overlay"><div class="panel"><h2>판매상인</h2><div id="sellList"></div><button id="sellAll" class="main">전부 판매</button><button id="closeSell" class="main dark">닫기</button></div></div>
 <div id="dead" class="overlay"><div class="panel" style="text-align:center"><h2>쓰러졌다</h2><p id="deadCost"></p><button id="respawn" class="main">마을에서 부활</button></div></div>
 <script>
 // 파일명: rpg.html
-// 외부 이미지 0개. 모든 그래픽은 게임 내부 로컬 스프라이트 렌더러로 생성.
+// 그래픽/오디오는 외부 파일 0개. WebAudio + Canvas만 사용.
 
 const c=document.getElementById('game'),ctx=c.getContext('2d');
 let W=innerWidth,H=innerHeight,D=Math.min(devicePixelRatio||1,2);
@@ -72,6 +74,124 @@ const CAVE={
  giant:{n:'거대 동굴슬라임',lv:5,hp:300,atk:16,spd:38,r:34,xp:80,g:45,type:'giantCaveSlime'}
 };
 
+// ==============================
+// 사운드: BGM 2종 + 효과음 50종
+// ==============================
+const SFX_NAMES=[
+'uiClick','uiOpen','uiClose','talkOpen','questAccept','questComplete','questReward','coin','itemPickup','sell',
+'buy','weaponEquip','weaponSwing','swordHit','axeHit','dualHit','playerHit','playerLowHp','playerDeath','respawn',
+'levelUp','portalEnter','portalExit','caveEnter','caveExit','chestUnlock','chestOpen','arrowShoot','arrowFly','arrowHit',
+'homingArrow','slimeAggro','beastAggro','humanoidAggro','bossAggro','slimeHit','beastHit','humanoidHit','bossHit','slimeDeath',
+'beastDeath','humanoidDeath','bossDeath','smith','shopOpen','shopClose','bagOpen','bagClose','noGold','dungeonClear'
+];
+const SFX_INDEX=Object.fromEntries(SFX_NAMES.map((n,i)=>[n,i]));
+const AUDIO={ctx:null,master:null,sfxBus:null,musicBus:null,aggroBus:null,muted:false,started:false,musicStep:0,timer:null,aggro:false,lastAggro:false};
+function initAudio(){
+ if(AUDIO.started)return;
+ const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+ const ac=new AC();AUDIO.ctx=ac;
+ AUDIO.master=ac.createGain();AUDIO.master.gain.value=.62;AUDIO.master.connect(ac.destination);
+ AUDIO.sfxBus=ac.createGain();AUDIO.sfxBus.gain.value=.85;AUDIO.sfxBus.connect(AUDIO.master);
+ AUDIO.musicBus=ac.createGain();AUDIO.musicBus.gain.value=.18;AUDIO.musicBus.connect(AUDIO.master);
+ AUDIO.aggroBus=ac.createGain();AUDIO.aggroBus.gain.value=0;AUDIO.aggroBus.connect(AUDIO.master);
+ AUDIO.started=true;startBgm();
+}
+function tone(freq,dur=.12,type='square',vol=.12,when=0,slide=1,bus=AUDIO.sfxBus){
+ if(!AUDIO.ctx||AUDIO.muted)return;
+ const ac=AUDIO.ctx,t=ac.currentTime+when,o=ac.createOscillator(),g=ac.createGain();
+ o.type=type;o.frequency.setValueAtTime(Math.max(35,freq),t);o.frequency.exponentialRampToValueAtTime(Math.max(35,freq*slide),t+dur);
+ g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(.0002,vol),t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+ o.connect(g);g.connect(bus);o.start(t);o.stop(t+dur+.02);
+}
+function noise(dur=.08,vol=.07,cut=1200,when=0,bus=AUDIO.sfxBus){
+ if(!AUDIO.ctx||AUDIO.muted)return;
+ const ac=AUDIO.ctx,rate=ac.sampleRate,len=Math.max(1,Math.floor(rate*dur)),buf=ac.createBuffer(1,len,rate),data=buf.getChannelData(0);
+ for(let i=0;i<len;i++)data[i]=(Math.random()*2-1)*(1-i/len);
+ const src=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain(),t=ac.currentTime+when;
+ src.buffer=buf;f.type='lowpass';f.frequency.value=cut;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+ src.connect(f);f.connect(g);g.connect(bus);src.start(t);
+}
+function sfx(name){
+ if(!AUDIO.started)initAudio();if(!AUDIO.ctx||AUDIO.muted)return;
+ const i=SFX_INDEX[name]??0,base=110+(i%10)*34,hi=base*(1.25+(i%4)*.12),wave=['square','triangle','sawtooth','sine'][i%4];
+ const special={
+  uiClick:()=>tone(640,.045,'square',.06,0,.82),
+  questAccept:()=>{tone(440,.11,'triangle',.1);tone(660,.14,'triangle',.09,.10,1.05)},
+  questComplete:()=>{tone(523,.12,'triangle',.11);tone(659,.12,'triangle',.1,.1);tone(784,.22,'triangle',.11,.2)},
+  questReward:()=>{tone(659,.09,'sine',.1);tone(880,.16,'sine',.1,.09)},
+  coin:()=>{tone(1000,.06,'square',.08);tone(1400,.08,'square',.06,.055)},
+  itemPickup:()=>{tone(520,.07,'triangle',.07);tone(760,.1,'triangle',.07,.06)},
+  sell:()=>{tone(720,.06,'square',.07);tone(920,.08,'square',.06,.05)},
+  buy:()=>{tone(420,.08,'triangle',.08);tone(620,.1,'triangle',.08,.07)},
+  weaponEquip:()=>{noise(.07,.08,1800);tone(230,.16,'sawtooth',.08,0,1.7)},
+  weaponSwing:()=>noise(.10,.08,2500),
+  swordHit:()=>{noise(.065,.1,3400);tone(180,.09,'square',.06,0,.7)},
+  axeHit:()=>{noise(.1,.12,1100);tone(100,.12,'square',.09,0,.55)},
+  dualHit:()=>{noise(.06,.08,3000);tone(240,.06,'square',.06);tone(310,.06,'square',.06,.045)},
+  playerHit:()=>{noise(.11,.1,900);tone(120,.13,'sawtooth',.09,0,.5)},
+  playerLowHp:()=>tone(80,.22,'sine',.12,0,.9),
+  playerDeath:()=>{tone(180,.45,'sawtooth',.14,0,.28);noise(.3,.08,500)},
+  respawn:()=>{tone(330,.16,'sine',.08);tone(494,.18,'sine',.08,.15);tone(660,.22,'sine',.08,.3)},
+  levelUp:()=>{[0,1,2,3].forEach(k=>tone([440,554,659,880][k],.16,'triangle',.09,k*.09))},
+  portalEnter:()=>{tone(220,.35,'sine',.1,0,2.2);tone(440,.32,'triangle',.06,.08,1.7)},
+  portalExit:()=>{tone(520,.25,'sine',.09,0,.55);tone(320,.22,'triangle',.06,.08,.65)},
+  caveEnter:()=>{tone(100,.5,'sine',.11,0,.5);noise(.35,.07,550)},
+  caveExit:()=>{tone(160,.25,'sine',.08,0,1.8);tone(350,.18,'triangle',.06,.16)},
+  chestUnlock:()=>{tone(300,.08,'square',.07);tone(470,.11,'square',.07,.07)},
+  chestOpen:()=>{noise(.12,.08,900);[0,1,2].forEach(k=>tone([520,780,1040][k],.15,'sine',.08,k*.07))},
+  arrowShoot:()=>noise(.07,.06,2500),
+  arrowFly:()=>tone(760,.055,'sine',.025,0,.8),
+  arrowHit:()=>{noise(.07,.08,1800);tone(260,.07,'square',.05)},
+  homingArrow:()=>{tone(850,.12,'sine',.05,0,1.3);tone(980,.12,'sine',.04,.08,.85)},
+  slimeAggro:()=>tone(190,.12,'square',.06,0,1.35),
+  beastAggro:()=>{tone(95,.22,'sawtooth',.09,0,.7);noise(.12,.05,600)},
+  humanoidAggro:()=>{tone(150,.16,'square',.07);tone(210,.12,'square',.06,.08)},
+  bossAggro:()=>{tone(60,.55,'sawtooth',.14);noise(.24,.1,350)},
+  slimeHit:()=>tone(240,.08,'sine',.06,0,.6),
+  beastHit:()=>{noise(.07,.07,850);tone(115,.08,'square',.05)},
+  humanoidHit:()=>{noise(.06,.08,1600);tone(170,.08,'square',.05)},
+  bossHit:()=>{noise(.11,.1,700);tone(75,.13,'sawtooth',.08)},
+  slimeDeath:()=>{tone(220,.18,'sine',.07,0,.35);noise(.08,.04,1200)},
+  beastDeath:()=>{tone(120,.26,'sawtooth',.08,0,.45);noise(.12,.06,700)},
+  humanoidDeath:()=>{tone(180,.28,'triangle',.07,0,.4);noise(.1,.05,900)},
+  bossDeath:()=>{tone(110,.6,'sawtooth',.12,0,.22);noise(.4,.1,500);tone(440,.22,'sine',.06,.42,.55)},
+  smith:()=>{noise(.045,.08,2800);tone(760,.05,'square',.06,.02)},
+  noGold:()=>{tone(170,.09,'square',.06);tone(130,.14,'square',.06,.08)},
+  dungeonClear:()=>{[0,1,2,3,4].forEach(k=>tone([330,440,550,660,880][k],.2,'triangle',.08,k*.1))}
+ };
+ if(special[name]){special[name]();return}
+ tone(base,.07+(i%5)*.018,wave,.045+(i%3)*.012,0,.72+(i%6)*.1);
+ tone(hi,.06+(i%4)*.015,wave,.035+(i%4)*.008,.045,1.05);
+ if(i%3===0)noise(.045+(i%4)*.012,.03+(i%3)*.012,700+(i%8)*280,.015);
+}
+function startBgm(){
+ if(AUDIO.timer)return;
+ const normal=[220,277,330,440,330,277,247,330,294,370,440,494,440,370,330,277];
+ const aggro=[110,110,147,110,165,147,196,147,110,220,147,196,165,147,110,98];
+ AUDIO.timer=setInterval(()=>{
+  if(!AUDIO.ctx||AUDIO.muted||!run)return;
+  const i=AUDIO.musicStep++%normal.length,zoneShift=zone==='town'?1:zone==='cave'?.75:1+Math.max(0,Number((zone||'f1').slice(1))-1)*.025;
+  tone(normal[i]*zoneShift,.28,'triangle',.045,0,1,AUDIO.musicBus);
+  if(i%2===0)tone(normal[(i+5)%normal.length]*.5,.5,'sine',.028,0,1,AUDIO.musicBus);
+  tone(aggro[i],.18,i%2?'square':'sawtooth',.052,0,.92,AUDIO.aggroBus);
+  if(i%4===0)noise(.055,.025,420,0,AUDIO.aggroBus);
+ },285);
+}
+function setAggro(v,boss=false){
+ if(!AUDIO.ctx)return;
+ const now=AUDIO.ctx.currentTime;
+ AUDIO.musicBus.gain.setTargetAtTime(v?.035:.18,now,.18);
+ AUDIO.aggroBus.gain.setTargetAtTime(v?.24:0,now,.12);
+ if(v&&!AUDIO.lastAggro)sfx(boss?'bossAggro':'humanoidAggro');
+ AUDIO.lastAggro=v;AUDIO.aggro=v;
+}
+function toggleSound(){
+ if(!AUDIO.started)initAudio();
+ AUDIO.muted=!AUDIO.muted;
+ if(AUDIO.master)AUDIO.master.gain.setTargetAtTime(AUDIO.muted?0:.62,AUDIO.ctx.currentTime,.04);
+ soundBtn.textContent=AUDIO.muted?'🔇':'🔊';sfx('uiClick');
+}
+
 let run=false,last=0,cam={x:0,y:0},keys={},j={x:0,y:0},ac=0,pc=0,flash=0,zone='town';
 let p,mons=[],drops=[],fx=[],arrows=[],q=0,chestOpened=false,guardianDead=false;
 const inv={'슬라임 젤리':0,'멧돼지 고기':0,'늑대 가죽':0,'오크 이빨':0,'균열 조각':0,'수상한 당근':0};
@@ -97,14 +217,14 @@ function hud(){
  area.textContent=zone==='town'?'현재 지역: 마을':zone==='cave'?'현재 지역: 동굴 던전':`현재 지역: ${F[zone].n} · ${F[zone].l}`
 }
 function toastMsg(s){toast.textContent=s;toast.style.opacity=1;clearTimeout(toast.t);toast.t=setTimeout(()=>toast.style.opacity=0,1300)}
-function say(n,s){speech.innerHTML=`<b>${n}</b><br>${s}<br><small>화면을 누르면 닫기</small>`;speech.style.display='block'}
-speech.onpointerdown=()=>speech.style.display='none';
+function say(n,s){sfx('talkOpen');speech.innerHTML=`<b>${n}</b><br>${s}<br><small>화면을 누르면 닫기</small>`;speech.style.display='block'}
+speech.onpointerdown=()=>{sfx('uiClose');speech.style.display='none'};
 
 function enter(z){
- zone=z;mons=[];drops=[];fx=[];arrows=[];pc=1;
- if(z==='town'){p.x=560;p.y=700;toastMsg('마을 · 촌장 옆으로 돌아왔다')}
- else if(z==='cave'){p.x=160;p.y=600;spawnCave();toastMsg('동굴 던전 입장')}
- else{p.x=185;p.y=600;spawnAll(z);toastMsg(`${F[z].n} 입장`);if(z==='f2'&&q===5){q=6;toastMsg('목표 완료! 촌장에게 가서 보상받기')}}
+ const prev=zone;zone=z;mons=[];drops=[];fx=[];arrows=[];pc=1;setAggro(false);
+ if(z==='town'){p.x=560;p.y=700;sfx(prev==='cave'?'caveExit':'portalExit');toastMsg('마을 · 촌장 옆으로 돌아왔다')}
+ else if(z==='cave'){p.x=160;p.y=600;sfx('caveEnter');spawnCave();toastMsg('동굴 던전 입장')}
+ else{p.x=185;p.y=600;sfx('portalEnter');spawnAll(z);toastMsg(`${F[z].n} 입장`);if(z==='f2'&&q===5){q=6;sfx('questComplete');toastMsg('목표 완료! 촌장에게 가서 보상받기')}}
  hud()
 }
 function spawnAll(z){for(const s of F[z].m)for(let i=0;i<s[8];i++)spawn(s,480+Math.random()*1200,120+Math.random()*960,z)}
@@ -112,39 +232,39 @@ function spawn(s,px,py,z){
  let [name,lvv,hpv,av,spd,r,xpv,gv,,type]=s,baseType=type;
  if((type==='slime'||type==='blue')&&Math.random()<.10){name='슬라임 왕';hpv=600;av=10;spd=34;r=30;xpv=70;gv=45;type='slimeKing'}
  if(z==='f5'&&p.lv>=9){let e=p.lv-8;hpv=Math.floor(hpv*(1+e*.12));av=Math.floor(av*(1+e*.08));lvv+=Math.floor(e/2);xpv=Math.floor(xpv*(1+e*.1));gv=Math.floor(gv*(1+e*.08))}
- mons.push({n:name,lv:lvv,x:px,y:py,hp:hpv,mhp:hpv,a:av,spd,r,xp:xpv,g:gv,type,baseType,z,hit:0,dead:false,shootCd:1+Math.random()*1.5,animState:'walk',animFrame:0,animTick:Math.random()*34,deathAge:0,dir:1})
+ mons.push({n:name,lv:lvv,x:px,y:py,hp:hpv,mhp:hpv,a:av,spd,r,xp:xpv,g:gv,type,baseType,z,hit:0,dead:false,shootCd:1+Math.random()*1.5,animState:'walk',animFrame:0,animTick:Math.random()*34,deathAge:0,dir:1,aggroed:false})
 }
 function spawnCave(){
  for(let i=0;i<9;i++)spawnCaveMonster(CAVE.caveSlime,360+Math.random()*900,140+Math.random()*920);
  for(let i=0;i<5;i++)spawnCaveMonster(CAVE.archer,500+Math.random()*760,140+Math.random()*920);
  spawnCaveMonster(CAVE.giant,CAVE.chest.x-120,CAVE.chest.y)
 }
-function spawnCaveMonster(s,px,py){mons.push({n:s.n,lv:s.lv,x:px,y:py,hp:s.hp,mhp:s.hp,a:s.atk,spd:s.spd,r:s.r,xp:s.xp,g:s.g,type:s.type,baseType:s.type,z:'cave',hit:0,dead:false,shootCd:1+Math.random()*1.5,animState:'walk',animFrame:0,animTick:Math.random()*34,deathAge:0,dir:1})}
+function spawnCaveMonster(s,px,py){mons.push({n:s.n,lv:s.lv,x:px,y:py,hp:s.hp,mhp:s.hp,a:s.atk,spd:s.spd,r:s.r,xp:s.xp,g:s.g,type:s.type,baseType:s.type,z:'cave',hit:0,dead:false,shootCd:1+Math.random()*1.5,animState:'walk',animFrame:0,animTick:Math.random()*34,deathAge:0,dir:1,aggroed:false})}
 
 function nearest(){if(zone!=='town')return null;let b=null,d=80;for(const n of npcs){const v=Math.hypot(n.x-p.x,n.y-p.y);if(v<d){d=v;b=n}}return b}
 function talkNow(){
- const n=nearest();if(!n){toastMsg(zone==='town'?'근처에 대화할 사람이 없다':'여기서는 대화할 사람이 없다');return}
+ const n=nearest();if(!n){sfx('uiClick');toastMsg(zone==='town'?'근처에 대화할 사람이 없다':'여기서는 대화할 사람이 없다');return}
  if(n.k==='chief'){
-  if(q===0){q=1;window.sk=0;say('촌장','1번 포탈에서 슬라임 5마리를 잡아라. 완료하면 내게 돌아와 보상을 받아라.')}
+  if(q===0){q=1;window.sk=0;sfx('questAccept');say('촌장','1번 포탈에서 슬라임 5마리를 잡아라. 완료하면 내게 돌아와 보상을 받아라.')}
   else if(q===1)say('촌장',`슬라임 ${5-Math.min(5,window.sk||0)}마리 남았다.`);
-  else if(q===2){p.g+=50;q=3;say('촌장','보상 <b>50골드</b>. 다음 퀘스트는 <b>슬라임 왕 처치</b>.')}
+  else if(q===2){p.g+=50;q=3;sfx('questReward');sfx('coin');say('촌장','보상 <b>50골드</b>. 다음 퀘스트는 <b>슬라임 왕 처치</b>.')}
   else if(q===3)say('촌장','슬라임 왕은 슬라임 스폰 때 10% 확률로 나타난다.');
-  else if(q===4){p.g+=50;q=5;say('촌장','보상 <b>50골드</b>. 다음 퀘스트는 <b>2번 포탈 입장</b>.')}
+  else if(q===4){p.g+=50;q=5;sfx('questReward');sfx('coin');say('촌장','보상 <b>50골드</b>. 다음 퀘스트는 <b>2번 포탈 입장</b>.')}
   else if(q===5)say('촌장','2번 포탈로 들어가라.');
-  else if(q===6){p.g+=50;q=7;say('촌장','보상 <b>50골드</b>. 2번 사냥터 구석의 동굴도 찾아봐라.')}
+  else if(q===6){p.g+=50;q=7;sfx('questReward');sfx('coin');say('촌장','보상 <b>50골드</b>. 2번 사냥터 구석의 동굴도 찾아봐라.')}
   else say('촌장','6번 포탈은 Lv.8~10 권장이다.')
  }else if(n.k==='smith'){
-  if(p.g>=25){p.g-=25;p.atk+=2;say('대장장이','25골드. 현재 공격력 +2.')}else say('대장장이','강화는 25골드다.')
+  if(p.g>=25){p.g-=25;p.atk+=2;sfx('smith');say('대장장이','25골드. 현재 공격력 +2.')}else{sfx('noGold');say('대장장이','강화는 25골드다.')}
  }else if(n.k==='weapon')openWeaponShop();else if(n.k==='seller')openSellShop();
  hud()
 }
-function openWeaponShop(){speech.style.display='none';renderWeaponShop();weaponShop.style.display='flex'}
+function openWeaponShop(){sfx('shopOpen');speech.style.display='none';renderWeaponShop();weaponShop.style.display='flex'}
 function renderWeaponShop(){weaponList.innerHTML=Object.entries(WEAPONS).map(([name,w])=>{const owned=ownedWeapons[name],equipped=p.weapon===name,label=equipped?'장착중':owned?'장착':`${w.price}G 구매`;return `<div class="slot"><span><b>${name}</b><br><span class="small">데미지 ${w.damage}</span></span><button data-weapon="${name}" ${equipped?'disabled':''}>${label}</button></div>`}).join('');weaponList.querySelectorAll('button[data-weapon]').forEach(b=>b.onclick=()=>buyOrEquipWeapon(b.dataset.weapon))}
-function buyOrEquipWeapon(name){const w=WEAPONS[name];if(!ownedWeapons[name]){if(p.g<w.price){toastMsg('골드가 부족하다');return}p.g-=w.price;ownedWeapons[name]=true}p.weapon=name;p.atk=Math.max(p.atk,w.damage);toastMsg(`${name} 장착 · 공격 ${Math.floor(p.atk)}`);renderWeaponShop();hud()}
-function openSellShop(){speech.style.display='none';renderSellShop();sellShop.style.display='flex'}
+function buyOrEquipWeapon(name){const w=WEAPONS[name];if(!ownedWeapons[name]){if(p.g<w.price){sfx('noGold');toastMsg('골드가 부족하다');return}p.g-=w.price;ownedWeapons[name]=true;sfx('buy')}p.weapon=name;p.atk=Math.max(p.atk,w.damage);sfx('weaponEquip');toastMsg(`${name} 장착 · 공격 ${Math.floor(p.atk)}`);renderWeaponShop();hud()}
+function openSellShop(){sfx('shopOpen');speech.style.display='none';renderSellShop();sellShop.style.display='flex'}
 function renderSellShop(){sellList.innerHTML=Object.entries(SELL_PRICE).map(([name,price])=>`<div class="slot"><span>${name}<br><span class="small">${price}G / 개</span></span><span>×${inv[name]||0} <button data-sell="${name}" ${(inv[name]||0)<=0?'disabled':''}>판매</button></span></div>`).join('');sellList.querySelectorAll('button[data-sell]').forEach(b=>b.onclick=()=>sellItem(b.dataset.sell))}
-function sellItem(name){if((inv[name]||0)<=0)return;inv[name]--;p.g+=SELL_PRICE[name];toastMsg(`${name} 판매 +${SELL_PRICE[name]}G`);renderSellShop();hud()}
-function sellEverything(){let total=0;for(const [name,price] of Object.entries(SELL_PRICE)){const count=inv[name]||0;total+=count*price;inv[name]=0}if(total<=0){toastMsg('판매할 아이템이 없다');return}p.g+=total;toastMsg(`전부 판매 +${total}G`);renderSellShop();hud()}
+function sellItem(name){if((inv[name]||0)<=0)return;inv[name]--;p.g+=SELL_PRICE[name];sfx('sell');sfx('coin');toastMsg(`${name} 판매 +${SELL_PRICE[name]}G`);renderSellShop();hud()}
+function sellEverything(){let total=0;for(const [name,price] of Object.entries(SELL_PRICE)){const count=inv[name]||0;total+=count*price;inv[name]=0}if(total<=0){sfx('uiClick');toastMsg('판매할 아이템이 없다');return}p.g+=total;sfx('sell');sfx('coin');toastMsg(`전부 판매 +${total}G`);renderSellShop();hud()}
 
 function getAction(){
  if(zone==='f2'&&Math.hypot(p.x-CAVE.entrance.x,p.y-CAVE.entrance.y)<85)return {label:'들어가기',kind:'enterCave'};
@@ -153,45 +273,64 @@ function getAction(){
  return null
 }
 function updateActionButton(){const a=getAction();actionBtn.style.display=a?'block':'none';if(a)actionBtn.textContent=a.label}
-function useAction(){const a=getAction();if(!a)return;if(a.kind==='enterCave')enter('cave');else if(a.kind==='exitCave')enter('town');else if(a.kind==='chest'){if(!guardianDead){toastMsg('거대 동굴슬라임을 먼저 잡아야 한다');return}chestOpened=true;p.g+=250;hud();toastMsg('보물상자 +250골드!');}}
+function useAction(){const a=getAction();if(!a)return;if(a.kind==='enterCave')enter('cave');else if(a.kind==='exitCave')enter('town');else if(a.kind==='chest'){if(!guardianDead){sfx('uiClick');toastMsg('거대 동굴슬라임을 먼저 잡아야 한다');return}chestOpened=true;p.g+=250;sfx('chestOpen');sfx('coin');sfx('dungeonClear');hud();toastMsg('보물상자 +250골드!')}}
 
+function hitSoundFor(m){
+ if(['slime','blue','caveSlime'].includes(m.type))return 'slimeHit';
+ if(['slimeKing','giantCaveSlime'].includes(m.type))return 'bossHit';
+ if(['boar','wolf','redwolf'].includes(m.type))return 'beastHit';
+ return 'humanoidHit'
+}
+function deathSoundFor(m){
+ if(['slime','blue','caveSlime'].includes(m.type))return 'slimeDeath';
+ if(['slimeKing','giantCaveSlime','ogre'].includes(m.type))return 'bossDeath';
+ if(['boar','wolf','redwolf'].includes(m.type))return 'beastDeath';
+ return 'humanoidDeath'
+}
 function attackNow(){
  if(!run||ac>0)return;ac=.35;p.animState='attack';p.animTick=0;p.animFrame=0;
+ sfx('weaponSwing');if(p.weapon==='철 쌍검')sfx('dualHit');
  const ax=p.x+p.dir*30;fx.push({x:ax,y:p.y,t:.18,d:p.dir});
- for(const m of mons){if(m.dead)continue;if(Math.hypot(m.x-ax,m.y-p.y)<62+m.r){m.hp-=p.atk;m.hit=.12;m.x+=p.dir*13;if(m.hp<=0)kill(m)}}
+ let hitAny=false;
+ for(const m of mons){if(m.dead)continue;if(Math.hypot(m.x-ax,m.y-p.y)<62+m.r){hitAny=true;m.hp-=p.atk;m.hit=.12;m.x+=p.dir*13;sfx(p.weapon==='철 도끼'?'axeHit':p.weapon==='철 쌍검'?'dualHit':'swordHit');sfx(hitSoundFor(m));if(m.hp<=0)kill(m)}}
+ if(!hitAny)sfx('weaponSwing')
 }
 function kill(m){
- m.dead=true;m.animState='dead';m.animTick=0;m.animFrame=0;m.deathAge=0;
- p.xp+=m.xp;p.g+=m.g;
+ m.dead=true;m.animState='dead';m.animTick=0;m.animFrame=0;m.deathAge=0;sfx(deathSoundFor(m));
+ p.xp+=m.xp;p.g+=m.g;sfx('coin');
  let item=null;if(['slime','blue','slimeKing','caveSlime','giantCaveSlime'].includes(m.type))item='슬라임 젤리';else if(m.type==='boar')item='멧돼지 고기';else if(['wolf','redwolf'].includes(m.type))item='늑대 가죽';else if(m.type==='orc')item='오크 이빨';else item='균열 조각';
  if(item)drops.push({x:m.x,y:m.y,item,t:12});
- if(zone==='f1'&&q===1&&m.type==='slime'){window.sk=(window.sk||0)+1;if(window.sk>=5){q=2;toastMsg('완료! 촌장에게 돌아가 보상받기')}}
- else if(zone==='f1'&&q===3&&m.type==='slimeKing'){q=4;toastMsg('완료! 촌장에게 돌아가 보상받기')}
- if(m.type==='giantCaveSlime'){guardianDead=true;toastMsg('거대 동굴슬라임 처치! 보물상자가 열렸다')}
- while(p.xp>=p.nxp){p.xp-=p.nxp;p.lv++;p.nxp=p.lv*100;p.mhp+=15;p.hp=p.mhp;p.atk+=2;toastMsg(`레벨 ${p.lv}! 다음 필요 EXP ${p.nxp}`)}
- const z=m.z,base=m.baseType;if(z!=='cave')setTimeout(()=>{if(!run||zone!==z)return;const s=F[z].m.find(v=>v[9]===base);if(s)spawn(s,480+Math.random()*1200,120+Math.random()*960,z)},2200);
+ if(zone==='f1'&&q===1&&m.type==='slime'){window.sk=(window.sk||0)+1;if(window.sk>=5){q=2;sfx('questComplete');toastMsg('완료! 촌장에게 돌아가 보상받기')}}
+ else if(zone==='f1'&&q===3&&m.type==='slimeKing'){q=4;sfx('questComplete');toastMsg('완료! 촌장에게 돌아가 보상받기')}
+ if(m.type==='giantCaveSlime'){guardianDead=true;sfx('chestUnlock');toastMsg('거대 동굴슬라임 처치! 보물상자가 열렸다')}
+ while(p.xp>=p.nxp){p.xp-=p.nxp;p.lv++;p.nxp=p.lv*100;p.mhp+=15;p.hp=p.mhp;p.atk+=2;sfx('levelUp');toastMsg(`레벨 ${p.lv}! 다음 필요 EXP ${p.nxp}`)}
+ const z=m.z,base=m.baseType;if(z!=='cave')setTimeout(()=>{if(!run||zone!==z)return;const spec=F[z].m.find(v=>v[9]===base);if(spec)spawn(spec,480+Math.random()*1200,120+Math.random()*960,z)},2200);
  hud()
 }
-function fireArrow(m){const a=Math.atan2(p.y-m.y,p.x-m.x),speed=p.spd*.6,homing=Math.random()<.30;arrows.push({x:m.x,y:m.y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:6,life:8,homing:homing?5:0,damage:m.a})}
-function updateArrows(dt){for(let i=arrows.length-1;i>=0;i--){const a=arrows[i];a.life-=dt;if(a.homing>0){a.homing-=dt;const speed=p.spd*.6,ang=Math.atan2(p.y-a.y,p.x-a.x),tx=Math.cos(ang)*speed,ty=Math.sin(ang)*speed;a.vx+=(tx-a.vx)*Math.min(1,dt*2.6);a.vy+=(ty-a.vy)*Math.min(1,dt*2.6)}a.x+=a.vx*dt;a.y+=a.vy*dt;if(Math.hypot(a.x-p.x,a.y-p.y)<a.r+p.r){damage(a.damage);arrows.splice(i,1);continue}if(a.life<=0||a.x<0||a.y<0||a.x>WORLD.w||a.y>WORLD.h)arrows.splice(i,1)}}
-function damage(v){if(p.inv>0)return;p.hp-=v;p.inv=.65;flash=.15;if(p.hp<=0){p.hp=0;run=false;const cost=Math.min(p.g,Math.ceil(p.g*.2));p.g-=cost;deadCost.textContent=`치료비: ${cost}골드`;dead.style.display='flex'}hud()}
+function fireArrow(m){const a=Math.atan2(p.y-m.y,p.x-m.x),speed=p.spd*.6,homing=Math.random()<.30;sfx(homing?'homingArrow':'arrowShoot');arrows.push({x:m.x,y:m.y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:6,life:8,homing:homing?5:0,damage:m.a,flyTick:0})}
+function updateArrows(dt){for(let i=arrows.length-1;i>=0;i--){const a=arrows[i];a.life-=dt;a.flyTick+=dt;if(a.flyTick>.65){a.flyTick=0;sfx('arrowFly')}if(a.homing>0){a.homing-=dt;const speed=p.spd*.6,ang=Math.atan2(p.y-a.y,p.x-a.x),tx=Math.cos(ang)*speed,ty=Math.sin(ang)*speed;a.vx+=(tx-a.vx)*Math.min(1,dt*2.6);a.vy+=(ty-a.vy)*Math.min(1,dt*2.6)}a.x+=a.vx*dt;a.y+=a.vy*dt;if(Math.hypot(a.x-p.x,a.y-p.y)<a.r+p.r){sfx('arrowHit');damage(a.damage);arrows.splice(i,1);continue}if(a.life<=0||a.x<0||a.y<0||a.x>WORLD.w||a.y>WORLD.h)arrows.splice(i,1)}}
+function damage(v){if(p.inv>0)return;p.hp-=v;p.inv=.65;flash=.15;sfx('playerHit');if(p.hp>0&&p.hp/p.mhp<.25)sfx('playerLowHp');if(p.hp<=0){p.hp=0;run=false;setAggro(false);sfx('playerDeath');const cost=Math.min(p.g,Math.ceil(p.g*.2));p.g-=cost;deadCost.textContent=`치료비: ${cost}골드`;dead.style.display='flex'}hud()}
 
 function portals(){if(pc>0||zone==='cave')return;if(zone==='town'){for(const a of P)if(Math.hypot(p.x-a[1],p.y-a[2])<42){enter(a[0]);return}}else if(Math.hypot(p.x-135,p.y-600)<42)enter('town')}
 function stepAnim(e,dt,moving=false){e.animTick=(e.animTick||0)+dt*30;if(e.animState==='attack'){e.animFrame=Math.min(33,Math.floor(e.animTick));if(e.animFrame>=33){e.animState=moving?'walk':'idle';e.animTick=0;e.animFrame=0}}else if(e.animState==='dead'){e.animFrame=Math.min(33,Math.floor(e.animTick))}else{e.animState=moving?'walk':'idle';e.animFrame=Math.floor(e.animTick)%34}}
+function aggroSoundFor(m){if(['slime','blue','caveSlime'].includes(m.type))return 'slimeAggro';if(['slimeKing','giantCaveSlime','ogre'].includes(m.type))return 'bossAggro';if(['boar','wolf','redwolf'].includes(m.type))return 'beastAggro';return 'humanoidAggro'}
 function update(dt){
  ac-=dt;pc-=dt;p.inv-=dt;flash-=dt;
  let mx=j.x+(keys.a?-1:0)+(keys.d?1:0),my=j.y+(keys.w?-1:0)+(keys.s?1:0),l=Math.hypot(mx,my);if(l>1){mx/=l;my/=l}
  if(Math.abs(mx)>.05)p.dir=mx>0?1:-1;const moving=Math.hypot(mx,my)>.05;
  p.x=Math.max(55,Math.min(WORLD.w-55,p.x+mx*p.spd*dt));p.y=Math.max(55,Math.min(WORLD.h-55,p.y+my*p.spd*dt));stepAnim(p,dt,moving);
+ let anyAggro=false,bossAggro=false;
  if(zone!=='town')for(let i=mons.length-1;i>=0;i--){const m=mons[i];
   if(m.dead){m.deathAge+=dt;stepAnim(m,dt,false);if(m.deathAge>3.0)mons.splice(i,1);continue}
   m.hit-=dt;const d=Math.hypot(p.x-m.x,p.y-m.y);let mm=false;
+  if(d<300){anyAggro=true;if(['slimeKing','giantCaveSlime','ogre'].includes(m.type))bossAggro=true;if(!m.aggroed){m.aggroed=true;sfx(aggroSoundFor(m))}}
+  else if(d>430)m.aggroed=false;
   if(m.type==='archer'){m.shootCd-=dt;if(d<500&&m.shootCd<=0){m.animState='attack';m.animTick=0;m.animFrame=0;fireArrow(m);m.shootCd=2.2+Math.random()*1.1}if(d<180){const a=Math.atan2(m.y-p.y,m.x-p.x);m.x+=Math.cos(a)*m.spd*dt;m.y+=Math.sin(a)*m.spd*dt;mm=true}else if(d>340&&d<520){const a=Math.atan2(p.y-m.y,p.x-m.x);m.x+=Math.cos(a)*m.spd*.45*dt;m.y+=Math.sin(a)*m.spd*.45*dt;mm=true}}
   else{if(d<270){const a=Math.atan2(p.y-m.y,p.x-m.x);m.dir=Math.cos(a)>=0?1:-1;m.x+=Math.cos(a)*m.spd*dt;m.y+=Math.sin(a)*m.spd*dt;mm=true}if(d<p.r+m.r+2){if(m.animState!=='attack'){m.animState='attack';m.animTick=0;m.animFrame=0}damage(m.a)}}
   stepAnim(m,dt,mm)
  }
- updateArrows(dt);
- for(let i=drops.length-1;i>=0;i--){const d=drops[i];d.t-=dt;if(Math.hypot(d.x-p.x,d.y-p.y)<35){inv[d.item]=(inv[d.item]||0)+1;toastMsg(`${d.item} 획득`);drops.splice(i,1)}else if(d.t<=0)drops.splice(i,1)}
+ setAggro(anyAggro,bossAggro);updateArrows(dt);
+ for(let i=drops.length-1;i>=0;i--){const d=drops[i];d.t-=dt;if(Math.hypot(d.x-p.x,d.y-p.y)<35){inv[d.item]=(inv[d.item]||0)+1;sfx('itemPickup');toastMsg(`${d.item} 획득`);drops.splice(i,1)}else if(d.t<=0)drops.splice(i,1)}
  for(let i=fx.length-1;i>=0;i--){fx[i].t-=dt;if(fx[i].t<=0)fx.splice(i,1)}
  portals();updateActionButton();cam.x=Math.max(0,Math.min(WORLD.w-W,p.x-W/2));cam.y=Math.max(0,Math.min(WORLD.h-H,p.y-H/2))
 }
@@ -199,23 +338,23 @@ function update(dt){
 function shadow(px,py,w=26){ctx.fillStyle='#0006';ctx.beginPath();ctx.ellipse(px,py+17,w,8,0,0,Math.PI*2);ctx.fill()}
 function pixelRect(px,py,w,h,col){ctx.fillStyle=col;ctx.fillRect(Math.round(px),Math.round(py),Math.round(w),Math.round(h))}
 function drawHuman(px,py,role,frame,state,flip=false){
- const t=frame/33,bob=state==='walk'?Math.sin(t*Math.PI*4)*3:0,atk=state==='attack'?Math.sin(t*Math.PI):0,dead=state==='dead'?t:0;
+ const t=frame/33,bob=state==='walk'?Math.sin(t*Math.PI*4)*3:0,att=state==='attack'?Math.sin(t*Math.PI):0,dead=state==='dead'?t:0;
  const pal={player:['#263f73','#4f7ed4','#f0c29b','#40291c'],chief:['#745126','#c99645','#e7b989','#ddd1a4'],smith:['#333943','#697887','#d7a47d','#2b2523'],weapon:['#543725','#a26037','#e2af80','#31221b'],seller:['#2f5b45','#55a06d','#e5b488','#39271e']}[role]||['#38495e','#6e88a5','#e2b184','#2f241e'];
  ctx.save();ctx.translate(px,py+bob);if(flip)ctx.scale(-1,1);ctx.rotate(dead*1.25);ctx.globalAlpha=1-dead*.85;shadow(0,0,18);
  const legSwing=state==='walk'?Math.sin(t*Math.PI*4)*5:0;pixelRect(-11,-2,8,22,pal[0]);pixelRect(3,-2,8,22,pal[0]);pixelRect(-12+legSwing*.25,16,9,6,'#232833');pixelRect(3-legSwing*.25,16,9,6,'#232833');
  pixelRect(-15,-28,30,29,pal[1]);pixelRect(-18,-22,5,18,pal[2]);pixelRect(13,-22,5,18,pal[2]);ctx.fillStyle=pal[2];ctx.beginPath();ctx.arc(0,-39,13,0,Math.PI*2);ctx.fill();
  pixelRect(-13,-50,26,10,pal[3]);pixelRect(-12,-43,5,8,pal[3]);pixelRect(7,-43,5,8,pal[3]);pixelRect(-6,-40,3,3,'#161616');pixelRect(4,-40,3,3,'#161616');
  if(role==='chief')pixelRect(-16,-52,32,5,'#d6b451');if(role==='smith')pixelRect(-15,-30,30,7,'#b8c1c7');if(role==='weapon'){pixelRect(-17,-31,34,5,'#765036');pixelRect(15,-24,4,22,'#c9cbd0')}if(role==='seller')pixelRect(-15,-30,30,5,'#d0a04b');
- if(state==='attack')ctx.rotate(-.6+atk*1.3);ctx.restore()
+ if(state==='attack')ctx.rotate(-.6+att*1.3);ctx.restore()
 }
 function weaponDraw(){const swing=p.animState==='attack'?Math.sin(p.animFrame/33*Math.PI):0;ctx.save();ctx.translate(p.x,p.y-10);ctx.scale(p.dir,1);ctx.rotate(-.8+swing*1.55);if(p.weapon==='철 도끼'){pixelRect(8,-2,30,5,'#75502c');pixelRect(31,-10,13,17,'#bfc7cc');pixelRect(39,-8,5,13,'#e8eef1')}else{const col=p.weapon==='철 쌍검'?'#e4e9ef':p.weapon==='낡은 돌검'?'#989a94':'#7b5838';pixelRect(8,-2,32,5,col);pixelRect(34,-5,9,11,col);pixelRect(5,-5,6,11,'#7a4e27');if(p.weapon==='철 쌍검'){ctx.rotate(-.45);pixelRect(5,5,31,5,col);pixelRect(31,2,9,11,col)}}ctx.restore()}
 const MPALETTE={slime:['#51b84c','#8be56a','#1d5b28'],blue:['#398fc8','#73c9ee','#185b7d'],slimeKing:['#5ddc55','#b5ff8c','#357227'],caveSlime:['#4c7655','#789f76','#263e2b'],giantCaveSlime:['#315d3b','#6e9d67','#193620'],boar:['#6f412b','#a96b46','#2b1a13'],wolf:['#687382','#aab3bd','#2d343c'],redwolf:['#8b3731','#c45b4c','#411b1b'],orc:['#568a42','#8cbd62','#233a20'],knight:['#34394a','#788091','#161922'],demon:['#783c87','#c56bca','#34183c'],archer:['#527338','#88a956','#27351c'],skeleton:['#b9b5a0','#eee9d5','#55534c'],eliteGoblin:['#47742e','#8fbd55','#273719'],ogre:['#6b7240','#a8ae62','#393c25']};
 function drawMonsterSprite(m){
- const f=m.animFrame||0,t=f/33,walk=m.animState==='walk'?Math.sin(t*Math.PI*4)*3:0,atk=m.animState==='attack'?Math.sin(t*Math.PI):0,dead=m.animState==='dead'?t:0,pal=MPALETTE[m.type]||MPALETTE.slime,sc=(m.r/18)*(m.type==='slimeKing'||m.type==='giantCaveSlime'?1.15:1);
+ const f=m.animFrame||0,t=f/33,walk=m.animState==='walk'?Math.sin(t*Math.PI*4)*3:0,att=m.animState==='attack'?Math.sin(t*Math.PI):0,dead=m.animState==='dead'?t:0,pal=MPALETTE[m.type]||MPALETTE.slime,sc=(m.r/18)*(m.type==='slimeKing'||m.type==='giantCaveSlime'?1.15:1);
  ctx.save();ctx.translate(m.x,m.y+walk);ctx.scale(m.dir||1,1);ctx.rotate(dead*1.4);ctx.globalAlpha=1-dead*.82;shadow(0,0,18*sc);
- if(['slime','blue','slimeKing','caveSlime','giantCaveSlime'].includes(m.type)){ctx.scale(1+atk*.16,1-atk*.14);ctx.fillStyle=pal[0];ctx.beginPath();ctx.ellipse(0,0,22*sc,18*sc,0,0,Math.PI*2);ctx.fill();ctx.fillStyle=pal[1];ctx.beginPath();ctx.ellipse(-5*sc,-7*sc,11*sc,6*sc,0,0,Math.PI*2);ctx.fill();pixelRect(-9*sc,-3*sc,4*sc,5*sc,pal[2]);pixelRect(6*sc,-3*sc,4*sc,5*sc,pal[2]);if(m.type==='slimeKing'){pixelRect(-15*sc,-25*sc,30*sc,7*sc,'#e7c84b');pixelRect(-12*sc,-31*sc,6*sc,8*sc,'#e7c84b');pixelRect(6*sc,-31*sc,6*sc,8*sc,'#e7c84b')}}
+ if(['slime','blue','slimeKing','caveSlime','giantCaveSlime'].includes(m.type)){ctx.scale(1+att*.16,1-att*.14);ctx.fillStyle=pal[0];ctx.beginPath();ctx.ellipse(0,0,22*sc,18*sc,0,0,Math.PI*2);ctx.fill();ctx.fillStyle=pal[1];ctx.beginPath();ctx.ellipse(-5*sc,-7*sc,11*sc,6*sc,0,0,Math.PI*2);ctx.fill();pixelRect(-9*sc,-3*sc,4*sc,5*sc,pal[2]);pixelRect(6*sc,-3*sc,4*sc,5*sc,pal[2]);if(m.type==='slimeKing'){pixelRect(-15*sc,-25*sc,30*sc,7*sc,'#e7c84b');pixelRect(-12*sc,-31*sc,6*sc,8*sc,'#e7c84b');pixelRect(6*sc,-31*sc,6*sc,8*sc,'#e7c84b')}}
  else if(['boar','wolf','redwolf'].includes(m.type)){ctx.fillStyle=pal[0];ctx.beginPath();ctx.ellipse(0,0,24*sc,15*sc,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(16*sc,-7*sc,10*sc,0,Math.PI*2);ctx.fill();pixelRect(14*sc,-10*sc,4*sc,4*sc,'#111');pixelRect(-15*sc,10*sc,5*sc,11*sc,pal[2]);pixelRect(9*sc,9*sc,5*sc,12*sc,pal[2]);ctx.fillStyle=pal[1];ctx.beginPath();ctx.moveTo(8*sc,-14*sc);ctx.lineTo(14*sc,-26*sc);ctx.lineTo(18*sc,-13*sc);ctx.fill()}
- else{pixelRect(-10*sc,0,8*sc,19*sc,pal[2]);pixelRect(3*sc,0,8*sc,19*sc,pal[2]);pixelRect(-15*sc,-26*sc,30*sc,29*sc,pal[0]);ctx.fillStyle=pal[1];ctx.beginPath();ctx.arc(0,-37*sc,13*sc,0,Math.PI*2);ctx.fill();pixelRect(-7*sc,-39*sc,4*sc,4*sc,'#171717');pixelRect(4*sc,-39*sc,4*sc,4*sc,'#171717');if(m.type==='skeleton'){pixelRect(-11*sc,-28*sc,22*sc,4*sc,'#eee9d5');pixelRect(-3*sc,-26*sc,6*sc,24*sc,'#eee9d5')}if(m.type==='knight')pixelRect(-14*sc,-47*sc,28*sc,9*sc,'#252936');if(m.type==='demon'){ctx.fillStyle='#d89be0';ctx.beginPath();ctx.moveTo(-10*sc,-47*sc);ctx.lineTo(-19*sc,-59*sc);ctx.lineTo(-3*sc,-49*sc);ctx.fill();ctx.beginPath();ctx.moveTo(10*sc,-47*sc);ctx.lineTo(19*sc,-59*sc);ctx.lineTo(3*sc,-49*sc);ctx.fill()}if(m.type==='archer'){ctx.strokeStyle='#d9ae64';ctx.lineWidth=3*sc;ctx.beginPath();ctx.arc(18*sc,-18*sc,12*sc,-1.2,1.2);ctx.stroke()}else{ctx.save();ctx.translate(15*sc,-9*sc);ctx.rotate(-.6+atk*1.15);pixelRect(0,-2*sc,25*sc,4*sc,'#c9ced1');ctx.restore()}}
+ else{pixelRect(-10*sc,0,8*sc,19*sc,pal[2]);pixelRect(3*sc,0,8*sc,19*sc,pal[2]);pixelRect(-15*sc,-26*sc,30*sc,29*sc,pal[0]);ctx.fillStyle=pal[1];ctx.beginPath();ctx.arc(0,-37*sc,13*sc,0,Math.PI*2);ctx.fill();pixelRect(-7*sc,-39*sc,4*sc,4*sc,'#171717');pixelRect(4*sc,-39*sc,4*sc,4*sc,'#171717');if(m.type==='skeleton'){pixelRect(-11*sc,-28*sc,22*sc,4*sc,'#eee9d5');pixelRect(-3*sc,-26*sc,6*sc,24*sc,'#eee9d5')}if(m.type==='knight')pixelRect(-14*sc,-47*sc,28*sc,9*sc,'#252936');if(m.type==='demon'){ctx.fillStyle='#d89be0';ctx.beginPath();ctx.moveTo(-10*sc,-47*sc);ctx.lineTo(-19*sc,-59*sc);ctx.lineTo(-3*sc,-49*sc);ctx.fill();ctx.beginPath();ctx.moveTo(10*sc,-47*sc);ctx.lineTo(19*sc,-59*sc);ctx.lineTo(3*sc,-49*sc);ctx.fill()}if(m.type==='archer'){ctx.strokeStyle='#d9ae64';ctx.lineWidth=3*sc;ctx.beginPath();ctx.arc(18*sc,-18*sc,12*sc,-1.2,1.2);ctx.stroke()}else{ctx.save();ctx.translate(15*sc,-9*sc);ctx.rotate(-.6+att*1.15);pixelRect(0,-2*sc,25*sc,4*sc,'#c9ced1');ctx.restore()}}
  ctx.restore()
 }
 function drawNPC(n){const frame=Math.floor(performance.now()/45)%34;drawHuman(n.x,n.y,n.k,frame,'idle',false);ctx.fillStyle='#17120e';ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillText(n.n,n.x,n.y-62);ctx.textAlign='left'}
@@ -233,15 +372,16 @@ function draw(){ctx.clearRect(0,0,W,H);ctx.save();ctx.translate(-cam.x,-cam.y);i
 function loop(t){requestAnimationFrame(loop);if(!run){draw();return}const dt=Math.min(.035,(t-last)/1000||0);last=t;update(dt);draw()}
 
 let jid=null,center={x:0,y:0};
-joy.onpointerdown=e=>{jid=e.pointerId;joy.setPointerCapture(jid);const r=joy.getBoundingClientRect();center={x:r.left+r.width/2,y:r.top+r.height/2};moveJoy(e)};
+joy.onpointerdown=e=>{initAudio();jid=e.pointerId;joy.setPointerCapture(jid);const r=joy.getBoundingClientRect();center={x:r.left+r.width/2,y:r.top+r.height/2};moveJoy(e)};
 joy.onpointermove=e=>{if(e.pointerId===jid)moveJoy(e)};joy.onpointerup=endJoy;joy.onpointercancel=endJoy;
 function moveJoy(e){let dx=e.clientX-center.x,dy=e.clientY-center.y,l=Math.hypot(dx,dy),m=42;if(l>m){dx=dx/l*m;dy=dy/l*m}j.x=dx/m;j.y=dy/m;knob.style.transform=`translate(${dx}px,${dy}px)`}
 function endJoy(){jid=null;j.x=0;j.y=0;knob.style.transform='translate(0,0)'}
-attack.onpointerdown=e=>{e.preventDefault();attackNow()};talk.onpointerdown=e=>{e.preventDefault();talkNow()};actionBtn.onpointerdown=e=>{e.preventDefault();useAction()};
-addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.key===' ')attackNow();if(e.key.toLowerCase()==='e')useAction()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+attack.onpointerdown=e=>{e.preventDefault();initAudio();attackNow()};talk.onpointerdown=e=>{e.preventDefault();initAudio();talkNow()};actionBtn.onpointerdown=e=>{e.preventDefault();initAudio();useAction()};soundBtn.onpointerdown=e=>{e.preventDefault();toggleSound()};
+addEventListener('keydown',e=>{initAudio();keys[e.key.toLowerCase()]=true;if(e.key===' ')attackNow();if(e.key.toLowerCase()==='e')useAction()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 function renderBag(){bagList.innerHTML=`<div class="slot"><span><b>${p.weapon}</b><br><span class="small">현재 공격력 ${Math.floor(p.atk)}</span></span></div>`+Object.entries(inv).map(([k,v])=>`<div class="slot"><span>${k}</span><b>×${v}</b></div>`).join('')}
-bagBtn.onclick=()=>{renderBag();bag.style.display='flex'};closeBag.onclick=()=>bag.style.display='none';closeWeapon.onclick=()=>weaponShop.style.display='none';closeSell.onclick=()=>sellShop.style.display='none';sellAll.onclick=sellEverything;
-startBtn.onclick=()=>{start.style.display='none';reset();run=true;last=performance.now()};respawn.onclick=()=>{dead.style.display='none';p.hp=p.mhp;p.inv=1;run=true;enter('town');last=performance.now()};
+bagBtn.onclick=()=>{initAudio();sfx('bagOpen');renderBag();bag.style.display='flex'};closeBag.onclick=()=>{sfx('bagClose');bag.style.display='none'};closeWeapon.onclick=()=>{sfx('shopClose');weaponShop.style.display='none'};closeSell.onclick=()=>{sfx('shopClose');sellShop.style.display='none'};sellAll.onclick=sellEverything;
+startBtn.onclick=()=>{initAudio();sfx('uiOpen');start.style.display='none';reset();run=true;last=performance.now()};
+respawn.onclick=()=>{sfx('respawn');dead.style.display='none';p.hp=p.mhp;p.inv=1;run=true;enter('town');last=performance.now()};
 reset();requestAnimationFrame(loop);
 </script>
 </body></html>
