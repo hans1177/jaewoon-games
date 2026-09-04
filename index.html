@@ -1,69 +1,82 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#8fdcff">
-<title>재운게임즈</title>
-<style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--blue:#308ff2;--blue2:#70c8ff;--green:#78c85c;--ink:#173154;--muted:#65809a;--wood1:#e4ad68;--wood2:#b87334}
-html{scroll-behavior:smooth}body{margin:0;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:var(--ink);background:#dff6ff;overflow-x:hidden}a{text-decoration:none;color:inherit}
-.page{position:relative;min-height:100vh;background:
-radial-gradient(circle at 12% 5%,#fff 0 32px,transparent 34px),
-radial-gradient(circle at 18% 5%,#fff 0 45px,transparent 47px),
-radial-gradient(circle at 84% 7%,#fff 0 34px,transparent 36px),
-radial-gradient(circle at 90% 7%,#fff 0 48px,transparent 50px),
-linear-gradient(180deg,#8edcff 0 24%,#dff6ff 43%,#ecf8d9 71%,#d8efbd 100%)}
-.page:before,.page:after{content:"";position:fixed;z-index:0;pointer-events:none;bottom:-40px;width:340px;height:620px;background:
-radial-gradient(ellipse at 50% 18%,#5db449 0 24%,transparent 25%),
-radial-gradient(ellipse at 26% 34%,#4ea13f 0 19%,transparent 20%),
-radial-gradient(ellipse at 72% 36%,#63bd4d 0 22%,transparent 23%),
-linear-gradient(90deg,transparent 41%,#8a572d 42% 57%,transparent 58%);filter:drop-shadow(0 10px 0 #326c2a33)}
-.page:before{left:-180px;transform:rotate(3deg)}.page:after{right:-190px;transform:scaleX(-1) rotate(2deg)}
-.shell{position:relative;z-index:1;width:min(100%,1180px);margin:auto;padding:18px 18px 34px}
-.top{display:flex;justify-content:center;align-items:center;padding:20px 0 8px}.sign,.note{display:none}
-.sign{position:relative;padding:18px 14px 16px;border:4px solid #75491f;border-radius:16px;background:linear-gradient(#e2aa67,#bc7536);box-shadow:0 7px 0 #66401d,0 14px 24px #3a6b8c2a;text-align:center;color:#fff6dc;transform:rotate(-1deg)}
-.sign:before,.sign:after{content:"";position:absolute;top:-26px;width:4px;height:27px;background:#664b36}.sign:before{left:26%}.sign:after{right:26%}.sign strong{display:block;font-size:31px;letter-spacing:-2px;text-shadow:0 3px 0 #68431f}.sign span{font-size:10px;font-weight:900;letter-spacing:1.3px}
-.logoWrap{text-align:center;position:relative;width:100%}.crown{position:absolute;top:-18px;left:50%;transform:translateX(-50%) rotate(-5deg);font-size:34px;filter:drop-shadow(0 4px 0 #bd7f1c)}
-.logo{display:inline-flex;align-items:center;gap:1px;font-weight:1000;font-size:clamp(45px,7.4vw,82px);letter-spacing:-5px;text-shadow:0 5px 0 #1f5c99,0 9px 18px #215e8f3a}.logo .a{color:#fff}.logo .b{color:#ffb23b}.logo .c{color:#7cc84d}.logo .d{color:#5bb7ff}.controller{display:inline-grid;place-items:center;margin-left:8px;width:.78em;height:.54em;border-radius:.2em;background:#fff;color:#2b66ab;font-size:.58em;transform:rotate(8deg);box-shadow:0 .09em 0 #1f5c99}
-.slogan{display:inline-block;margin-top:9px;padding:10px 34px 12px;border:4px solid #8e5829;border-radius:14px;background:linear-gradient(#e9bd7c,#c98745);box-shadow:0 5px 0 #70461f;color:#28180e;font-size:clamp(18px,2.7vw,28px);font-weight:1000;transform:rotate(-1deg)}
-.note{justify-self:end;color:#2b66af;font-size:14px;font-weight:1000;line-height:1.45;text-align:right;transform:rotate(5deg)}
-.heroFrame{position:relative;width:min(94%,900px);margin:24px auto 0;padding:8px;border-radius:32px;background:linear-gradient(145deg,#fff,#d7f1ff);box-shadow:0 20px 40px #24638532,0 0 0 4px #58a9e85d}
-.hero{position:relative;min-height:430px;overflow:hidden;border-radius:24px;background-image:linear-gradient(90deg,#143e34e8 0 38%,#143e348f 50%,transparent 70%),url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1800&q=90');background-size:cover;background-position:center}
-.hero:before{content:"";position:absolute;inset:auto 0 0;height:85px;background:linear-gradient(180deg,transparent,#295d2935),repeating-linear-gradient(103deg,#3b9b3a 0 10px,#5bb84c 10px 18px,#6fc75b 18px 27px);clip-path:polygon(0 32%,5% 5%,9% 30%,15% 2%,20% 31%,25% 9%,31% 35%,38% 5%,44% 30%,51% 2%,58% 35%,64% 7%,71% 33%,79% 3%,86% 30%,92% 8%,100% 31%,100% 100%,0 100%)}
-.hero:after{content:"🐜";position:absolute;right:7%;bottom:8%;font-size:110px;filter:drop-shadow(0 10px 0 #0002)}
-.heroCopy{position:absolute;left:28px;top:30px;width:min(49%,420px);color:#fff}.badge{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:#2bad74;font-size:12px;font-weight:1000;box-shadow:0 4px 0 #16724c}.hero h1{margin:14px 0 4px;font-size:clamp(38px,5vw,58px);letter-spacing:-2px}.hero h2{margin:0 0 12px;font-size:20px}.hero p{margin:0 0 14px;font-size:14px;line-height:1.65}.chips{display:flex;gap:7px;flex-wrap:wrap}.chips span{padding:7px 10px;border-radius:999px;background:#f1fff3;color:#315747;font-size:11px;font-weight:1000}.play{display:inline-flex;margin-top:16px;min-width:215px;min-height:58px;align-items:center;justify-content:center;border-radius:18px;background:linear-gradient(#5bc0ff,#227ef0);color:#fff;font-size:19px;font-weight:1000;box-shadow:0 6px 0 #0f5cb9}.heroNum{position:absolute;right:14px;bottom:13px;padding:7px 11px;border-radius:999px;background:#17335d;color:#fff;font-size:12px;font-weight:900}
-.sectionTitle{display:flex;align-items:flex-end;justify-content:space-between;margin:19px 4px 10px}.sectionTitle h2{margin:0;font-size:23px;letter-spacing:-1px}.sectionTitle span{color:#5c7891;font-size:12px;font-weight:900}
-.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}.card{position:relative;overflow:hidden;border-radius:19px;border:3px solid #d9edf7;background:#fff;box-shadow:0 12px 25px #2c5f7f20;transition:.18s}.card.active{border-color:#48a5ff;transform:translateY(-3px)}.card:after{content:"";position:absolute;inset:0 0 auto;height:3px;background:#fff8}.pic{height:120px;background-size:cover;background-position:center}.card:nth-child(1) .pic{background-image:linear-gradient(#8fd6ff10,#73c45a22),url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=700&q=88')}.card:nth-child(2) .pic{background-image:linear-gradient(#ffc87445,#8573ff2c),url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=700&q=88')}.card:nth-child(3) .pic{background-image:linear-gradient(#1754c955,#50e7ff2c),url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=700&q=88')}.card:nth-child(4) .pic{background-image:linear-gradient(#ffbdd044,#ffe27033),url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=700&q=88')}.card:nth-child(5) .pic{background-image:linear-gradient(#79bc5144,#f2aa4c44),url('https://images.unsplash.com/photo-1473445361085-b9a07f55608b?auto=format&fit=crop&w=700&q=88')}.cardText{padding:10px 8px 12px;text-align:center}.cardText strong{display:block;font-size:14px}.cardText span{display:block;margin-top:3px;font-size:10px;color:#6b8296}
-.detailStrip{margin-top:14px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}.detailStrip span{padding:7px 11px;background:#ffffffc9;border:2px solid #d8ebf4;border-radius:999px;color:#56748c;font-size:11px;font-weight:900;box-shadow:0 5px 12px #45728a14}
-.profile{margin-top:20px;position:relative;overflow:hidden;display:grid;grid-template-columns:230px 1fr 190px;gap:20px;padding:20px;border:3px solid #d8ebf5;border-radius:28px;background:linear-gradient(145deg,#ffffffef,#f7fdffef);box-shadow:0 18px 35px #2c607f20}.profile:before{content:"";position:absolute;right:-45px;top:-55px;width:180px;height:180px;border-radius:50%;background:#dff5ca}.profile:after{content:"";position:absolute;left:-40px;bottom:-55px;width:160px;height:160px;border-radius:50%;background:#d8f0ff}.photo{position:relative;z-index:1;padding:9px;background:#fff;border-radius:19px;box-shadow:0 10px 24px #23587a1e;transform:rotate(-1deg)}.photo img{display:block;width:100%;height:220px;object-fit:cover;border-radius:14px}.photo p{margin:9px 4px 1px;text-align:center;font-size:12px;color:#2e66a4;font-weight:900}.profileText{position:relative;z-index:1}.profileText small{font-weight:1000;color:#2770bf}.profileText h3{margin:4px 0 8px;font-size:34px;color:#275fa7}.quote{margin:0 0 14px;color:#425e76;font-weight:900}.facts{display:grid;gap:9px}.fact{display:grid;grid-template-columns:108px 1fr;gap:10px;font-size:13px}.fact b{color:#2d70b7}.fact span{color:#4f687d}.staff{margin-top:12px;font-size:12px;color:#607c91;font-weight:1000}.mascot{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center}.bubble{padding:10px 12px;border:2px solid #4b90db;border-radius:17px;background:#fff;color:#2d65aa;font-size:12px;font-weight:900;box-shadow:0 6px 14px #2a5f8a18}.kid{font-size:82px;filter:drop-shadow(0 7px 0 #0001)}
-.footer{margin-top:18px;padding:15px 18px;border:3px solid #73451f;border-radius:18px;background:linear-gradient(#ba7a40,#8f5a2f);box-shadow:0 7px 0 #67401f;display:flex;align-items:center;justify-content:space-between;gap:16px;color:#fff}.footer strong{font-size:14px}.footer a{font-weight:1000}.footer span{font-size:12px;opacity:.9}
-@media(max-width:760px){.shell{padding:8px 9px 24px}.top{display:flex;padding:17px 0 5px}.logo{font-size:clamp(43px,13vw,58px);letter-spacing:-3px}.crown{font-size:24px;top:-14px}.controller{margin-left:5px}.slogan{margin-top:7px;font-size:clamp(16px,4.7vw,20px);padding:7px 18px 8px;border-width:3px}.heroFrame{width:99%;margin-top:16px;border-radius:25px}.hero{min-height:415px;background-position:66% center}.heroCopy{left:14px;right:14px;top:14px;width:auto;padding:14px;background:#103f35cc;border-radius:17px}.hero h1{font-size:34px}.hero h2{font-size:17px}.hero p{font-size:12px}.hero:after{font-size:76px;right:3%;bottom:5%}.cards{grid-template-columns:repeat(5,78%);overflow-x:auto;scroll-snap-type:x mandatory;padding:3px 2px 12px}.card{scroll-snap-align:center}.pic{height:140px}.profile{grid-template-columns:1fr;padding:14px}.photo{max-width:255px;margin:auto}.photo img{height:240px}.mascot{display:none}.profileText h3{font-size:30px}.fact{grid-template-columns:92px 1fr;font-size:12px}.footer{flex-direction:column;align-items:flex-start}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#69c9ff">
+  <title>재운게임즈</title>
+  <style>
+    /* index.html · 기본 */
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    :root{--blue:#288cf4;--deep:#1559a4;--ink:#17375e;--glass:rgba(255,255,255,.94)}
+    html{scroll-behavior:smooth}
+    body{margin:0;min-width:320px;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:var(--ink);background:#bdeaff;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}
+    button{font:inherit}
+
+    /* 배경 */
+    .page{min-height:100vh;background:
+      radial-gradient(circle at 8% 5%,rgba(255,255,255,.95) 0 4.5rem,transparent 4.7rem),
+      radial-gradient(circle at 94% 9%,rgba(255,255,255,.88) 0 5.5rem,transparent 5.7rem),
+      linear-gradient(180deg,#74ceff 0%,#c9efff 48%,#eaf9ff 100%)}
+    .shell{width:min(100%,980px);margin:auto;padding:16px 14px 30px}
+
+    /* 로고 */
+    .brand{text-align:center;padding:20px 0 16px}
+    .logo{display:inline-flex;align-items:center;font-size:clamp(52px,10vw,84px);font-weight:1000;letter-spacing:-7px;line-height:1;color:#fff;text-shadow:0 5px 0 #195995,0 10px 20px rgba(24,84,139,.28)}
+    .logo .orange{color:#ffad2e}.logo .green{color:#76c744}.logo .blue{color:#5fc2ff}
+    .logo .gamepad{margin-left:8px;font-size:.55em;letter-spacing:0;transform:rotate(9deg);filter:drop-shadow(0 4px 0 #195995)}
+    .crown{position:absolute;margin:-22px 0 0 -10px;font-size:32px;filter:drop-shadow(0 3px 0 #ad7315)}
+    .tagline{display:table;margin:13px auto 0;padding:10px 30px;border:3px solid #8c582d;border-radius:13px;background:linear-gradient(#eac180,#ca8a49);box-shadow:0 5px 0 #70441f;color:#38210e;font-weight:1000;font-size:clamp(17px,3vw,24px);transform:rotate(-1deg)}
+
+    /* 대표 게임 */
+    .heroFrame{position:relative;padding:7px;border-radius:30px;background:linear-gradient(145deg,#fff,#d9f2ff);box-shadow:0 18px 38px rgba(31,101,151,.28),0 0 0 3px rgba(56,149,218,.28)}
+    .hero{position:relative;min-height:520px;overflow:hidden;border-radius:24px;background:#294e3a url("assets/insect-main.webp") center/cover no-repeat}
+    .hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,45,37,.9) 0%,rgba(5,45,37,.64) 42%,rgba(5,45,37,.05) 74%)}
+    .heroCopy{position:absolute;z-index:2;left:38px;top:34px;width:min(48%,430px);color:#fff}
+    .badge{display:inline-block;padding:9px 14px;border-radius:999px;background:#13a777;font-size:14px;font-weight:1000;box-shadow:0 4px 0 #087354}
+    .hero h1{margin:22px 0 6px;font-size:clamp(42px,7vw,62px);letter-spacing:-3px;line-height:1.05}
+    .hero h2{margin:0 0 15px;font-size:23px}.hero p{font-size:15px;line-height:1.7;margin:0 0 16px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}.chips span{padding:7px 11px;border:1px solid rgba(255,255,255,.75);border-radius:10px;background:rgba(8,47,39,.35);font-size:13px;font-weight:900}
+    .play{display:inline-flex;align-items:center;justify-content:center;min-width:255px;min-height:68px;margin-top:24px;border-radius:23px;background:linear-gradient(#58c0ff,#247ff0);box-shadow:0 7px 0 #0d59b6;color:#fff;font-size:24px;font-weight:1000}
+    .heroNum{position:absolute;z-index:3;right:18px;bottom:16px;padding:8px 13px;border-radius:999px;background:rgba(13,38,64,.82);color:#fff;font-size:14px;font-weight:900}
+
+    /* 하단 */
+    .footer{margin-top:18px;text-align:center;color:#487492;font-size:13px;font-weight:800}
+
+    /* 모바일 */
+    @media(max-width:640px){
+      .shell{padding:7px 9px 24px}.brand{padding:18px 0 13px}.logo{font-size:clamp(47px,13.5vw,61px);letter-spacing:-5px}.crown{font-size:25px;margin-top:-18px}.tagline{margin-top:10px;padding:8px 17px;font-size:clamp(15px,4.4vw,19px)}
+      .heroFrame{padding:6px;border-radius:25px}.hero{min-height:500px;border-radius:20px;background-position:54% center}.hero:after{background:linear-gradient(180deg,rgba(5,45,37,.87) 0%,rgba(5,45,37,.62) 58%,rgba(5,45,37,.04) 86%)}
+      .heroCopy{left:16px;right:16px;top:18px;width:auto}.badge{font-size:13px}.hero h1{margin-top:18px;font-size:39px}.hero h2{font-size:19px}.hero p{font-size:14px;line-height:1.6;max-width:330px}.chips{gap:6px}.chips span{padding:6px 9px;font-size:12px}.play{width:min(100%,300px);min-height:62px;margin-top:19px;font-size:22px}
+      .footer{font-size:12px}
+    }
+  </style>
 </head>
 <body>
-<div class="page"><main class="shell">
-<header class="top">
-<div class="sign"><strong>재운게임즈</strong><span>JAEWOON GAMES</span></div>
-<div class="logoWrap"><div class="crown">👑</div><div class="logo"><span class="a">재운</span><span class="b">게</span><span class="c">임</span><span class="d">즈</span><span class="controller">🎮</span></div><div><span class="slogan">작은 상상이 큰 재미가 되는 곳</span></div></div>
-<div class="note">오늘도<br>재미있는 하루!<br>— 재운게임즈 :)</div>
-</header>
-<section class="heroFrame"><div class="hero"><div class="heroCopy"><span class="badge">⭐ 추천 게임</span><h1>곤충 생존기</h1><h2>작은 세계, 큰 모험!</h2><p>작아진 당신의 눈앞에 펼쳐지는 거대한 자연의 세계.<br>채집하고, 만들고, 살아남아보세요!</p><div class="chips"><span>생존</span><span>제작</span><span>탐험</span><span>멀티플레이</span></div><a class="play" href="/play_survival_v4.html">▶ 게임 시작</a></div><div class="heroNum">1 / 5</div></div></section>
-<div class="sectionTitle"><h2>게임 선택</h2><span>좌우로 밀어서 선택</span></div>
-<section class="cards">
-<a class="card active" href="/play_survival_v4.html"><div class="pic"></div><div class="cardText"><strong>곤충 생존기</strong><span>작은 세계, 큰 모험</span></div></a>
-<a class="card" href="/rpg-play.html"><div class="pic"></div><div class="cardText"><strong>대충 용사 RPG</strong><span>나만의 영웅 이야기</span></div></a>
-<a class="card" href="https://crystal-defense-online.vercel.app/"><div class="pic"></div><div class="cardText"><strong>수정 디펜스</strong><span>함께 지키는 마지막 빛</span></div></a>
-<a class="card" href="https://human-rpg-web-test.vercel.app/"><div class="pic"></div><div class="cardText"><strong>카드 RPG</strong><span>뽑고 성장하고 도전!</span></div></a>
-<a class="card" href="https://bug-defense-game.anyanguy12.chatgpt.site/"><div class="pic"></div><div class="cardText"><strong>곤충 디펜스</strong><span>작지만 강한 전쟁</span></div></a>
-</section>
-<div class="detailStrip"><span>☁ 밝은 하늘</span><span>🌿 숲속 테마</span><span>🎮 모바일 최적화</span><span>✨ 카드형 선택</span></div>
-<section class="profile" id="developer">
-<div class="photo"><img src="https://avatars.githubusercontent.com/u/229349415?v=4" alt="개발자 한재운"><p>게임으로 더 즐거운 세상을 만들래요!</p></div>
-<div class="profileText"><small>🎮 개발자 소개</small><h3>한재운 👑</h3><p class="quote">“재밌는 걸 만드는 게 꿈이에요!”</p><div class="facts"><div class="fact"><b>📅 생년</b><span>2016년 9월</span></div><div class="fact"><b>⭐ 특기</b><span>따봉 날리기 · 맵찔이 · 물건 잃어버리기</span></div><div class="fact"><b>🏆 수상/경력</b><span>피아노 초급 · 태권도 초록띠 · 부천 피아노 콩쿠르 2등</span></div><div class="fact"><b>🎲 좋아하는 게임</b><span>마인크래프트 · 그라운디드 시리즈</span></div><div class="fact"><b>💙 좋아하는 인물</b><span>아빠</span></div></div><div class="staff">스텝 · 한준희</div></div>
-<div class="mascot"><div class="bubble">“다음엔 어떤 게임을<br>만들어볼까?”</div><div class="kid">🧒🏻</div></div>
-</section>
-<footer class="footer"><div><strong>재운게임즈</strong><br><span>작은 상상이 큰 재미가 되는 곳</span></div><a href="mailto:anyanguy12@gmail.com">anyanguy12@gmail.com</a></footer>
-</main></div>
-</body></html>
+  <div class="page">
+    <main class="shell">
+      <header class="brand" aria-label="재운게임즈">
+        <div class="logo"><span>재운</span><span class="orange">게</span><span class="green">임</span><span class="blue">즈</span><span class="gamepad">🎮</span><span class="crown">👑</span></div>
+        <div class="tagline">작은 상상이 큰 재미가 되는 곳</div>
+      </header>
+
+      <section class="heroFrame" aria-label="추천 게임">
+        <div class="hero">
+          <div class="heroCopy">
+            <span class="badge">★ 추천 게임</span>
+            <h1>곤충 생존기</h1>
+            <h2>작은 세계, 큰 모험</h2>
+            <p>거대한 자연 속에서 채집하고, 만들고, 탐험하며 살아남아보세요!</p>
+            <div class="chips"><span>생존</span><span>제작</span><span>탐험</span><span>협동 플레이</span></div>
+            <a class="play" href="/play_survival_v4.html">▶&nbsp; 게임 시작</a>
+          </div>
+          <div class="heroNum">1 / 5</div>
+        </div>
+      </section>
+
+      <footer class="footer">© 2026 재운게임즈. All rights reserved.</footer>
+    </main>
+  </div>
+</body>
+</html>
