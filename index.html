@@ -49,7 +49,7 @@
 
     /* 개발자 프로필 */
     .profile{margin:0 0 14px;padding:17px;border:2px solid rgba(255,255,255,.95);border-radius:22px;background:rgba(255,255,255,.91);box-shadow:0 10px 24px rgba(31,101,151,.14);color:#29445e}
-    .profileTitle{display:flex;align-items:center;gap:8px;margin:0 0 13px;color:#2465a2;font-size:18px}.profileGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.profileItem{padding:10px 12px;border-radius:14px;background:rgba(214,241,255,.76)}.profileItem strong{display:block;margin-bottom:4px;color:#2584c4;font-size:12px}.profileItem span{font-size:14px;font-weight:800;line-height:1.55}.profileContact{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:11px 13px;border-radius:14px;background:#43baf2;color:#fff}.profileContact strong{font-size:14px}.profileContact span{font-size:12px;font-weight:800}
+    .profileTitle{display:flex;align-items:center;gap:8px;margin:0 0 13px;color:#2465a2;font-size:18px}.profileBody{display:grid;grid-template-columns:180px 1fr;gap:14px;align-items:stretch}.profilePhoto{overflow:hidden;min-height:220px;border:4px solid #fff;border-radius:19px;background:#bfeeff;box-shadow:0 7px 16px rgba(30,102,151,.18)}.profilePhoto img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}.profileGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.profileItem{padding:10px 12px;border-radius:14px;background:rgba(214,241,255,.76)}.profileItem strong{display:block;margin-bottom:4px;color:#2584c4;font-size:12px}.profileItem span{font-size:14px;font-weight:800;line-height:1.55}.profileContact{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:11px 13px;border-radius:14px;background:#43baf2;color:#fff}.profileContact strong{font-size:14px}.profileContact span{font-size:12px;font-weight:800}
 
     /* 하단 */
     .footer{margin-top:18px;text-align:center;color:#487492;font-size:13px;font-weight:800}
@@ -62,7 +62,7 @@
       .heroCopy{left:14px;right:14px;top:8px;bottom:0;width:auto;padding-right:25px}.badge{padding:4px 2px;font-size:13px}.hero h1{margin-top:7px;font-size:25px}.hero h2{margin-bottom:5px;font-size:13px}.hero p{display:none}.chips{gap:3px}.chips span{padding:3px 6px;font-size:9px}.play{position:absolute;left:0;bottom:15px;width:205px;min-height:42px;margin:0;border-width:2px;border-radius:12px;font-size:16px;box-shadow:none}.heroNum{right:9px;bottom:8px;padding:4px 8px;font-size:10px}
       .news{grid-template-columns:auto auto minmax(0,1fr) auto;gap:6px;min-height:46px;margin-top:3px;padding:7px 9px;border-radius:16px}.newsTitle{font-size:12px}.newsNew{padding:3px 5px;font-size:9px}.newsText{font-size:11px}.newsCount{font-size:10px}
       .reviews{padding:10px;border-radius:16px}.reviewHead{margin-bottom:5px}.reviewHead strong{font-size:13px}.reviewView{gap:6px}.reviewText{font-size:11px}.reviewForm{grid-template-columns:62px 1fr auto}.reviewForm input{padding:0 7px}.reviewForm button{padding:0 9px}
-      .profile{padding:12px;border-radius:17px}.profileTitle{margin-bottom:9px;font-size:15px}.profileGrid{grid-template-columns:1fr;gap:6px}.profileItem{padding:8px 10px}.profileItem strong{font-size:11px}.profileItem span{font-size:12px}.profileContact{padding:9px 10px}.profileContact strong{font-size:12px}.profileContact span{font-size:11px}
+      .profile{padding:12px;border-radius:17px}.profileTitle{margin-bottom:9px;font-size:15px}.profileBody{grid-template-columns:105px 1fr;gap:8px;align-items:stretch}.profilePhoto{min-height:158px;border-width:3px;border-radius:15px}.profileGrid{grid-template-columns:1fr;gap:6px}.profileItem{padding:8px 10px}.profileItem strong{font-size:11px}.profileItem span{font-size:12px}.profileContact{padding:9px 10px}.profileContact strong{font-size:12px}.profileContact span{font-size:11px}
       .footer{font-size:12px}
     }
   </style>
@@ -109,14 +109,17 @@
 
       <section class="profile" aria-label="개발자 프로필">
         <h2 class="profileTitle">🎮 개발자 프로필</h2>
-        <div class="profileGrid">
-          <div class="profileItem"><strong>생년월</strong><span>2016년 9월 · 원숭이띠</span></div>
-          <div class="profileItem"><strong>특기</strong><span>따봉 날리기 · 물건 잃어버리기 · 맵찔이</span></div>
-          <div class="profileItem"><strong>수상 내역</strong><span>태권도 초록띠 · 에버랜드 방탈출 멤버</span></div>
-          <div class="profileItem"><strong>좋아하는 게임</strong><span>마인크래프트 · 그라운디드 시리즈</span></div>
-          <div class="profileItem"><strong>존경하는 인물</strong><span>아빠 · 엄마</span></div>
+        <div class="profileBody">
+          <div class="profilePhoto"><img src="assets/developer-original.jpg" alt="재운게임즈 개발자 원본 사진"></div>
+          <div class="profileGrid">
+            <div class="profileItem"><strong>생년월</strong><span>2016년 9월 · 원숭이띠</span></div>
+            <div class="profileItem"><strong>특기</strong><span>따봉 날리기 · 물건 잃어버리기 · 맵찔이</span></div>
+            <div class="profileItem"><strong>수상 내역</strong><span>태권도 초록띠 · 에버랜드 방탈출 멤버</span></div>
+            <div class="profileItem"><strong>좋아하는 게임</strong><span>마인크래프트 · 그라운디드 시리즈</span></div>
+            <div class="profileItem"><strong>존경하는 인물</strong><span>아빠 · 엄마</span></div>
+          </div>
         </div>
-        <div class="profileContact"><strong>📨 게임 스텝 모집 및 문의</strong><span>이메일 등록 예정</span></div>
+        <a class="profileContact" href="mailto:anyanguy2@naver.com"><strong>📨 게임 스텝 모집 및 문의</strong><span>anyanguy2@naver.com</span></a>
       </section>
 
       <footer class="footer">© 2026 재운게임즈. All rights reserved.</footer>
