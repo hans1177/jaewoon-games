@@ -98,7 +98,7 @@
             <div class="chips" id="gameTags"><span>생존</span><span>제작</span><span>탐험</span><span>협동 플레이</span></div>
             <a class="play" id="gameLink" href="/play_survival_v4.html">▶&nbsp; 게임 시작</a>
           </div>
-          <div class="heroNum" id="gameNumber">1 / 7</div>
+          <div class="heroNum" id="gameNumber">1 / 6</div>
         </div>
         </section>
         <button class="slideArrow next" id="nextGame" type="button" aria-label="다음 게임">›</button>
@@ -109,7 +109,7 @@
       <section class="news" aria-label="재운게임즈 새소식">
         <strong class="newsTitle">🧸 재운게임즈 새소식</strong>
         <span class="newsNew">NEW</span>
-        <span class="newsText" id="newsText">신작 코어 워즈가 추가됐어요!</span>
+        <span class="newsText" id="newsText">재운게임즈의 새로운 업데이트를 준비하고 있어요!</span>
         <span class="newsCount" id="newsCount">1 / 4</span>
       </section>
 
@@ -158,8 +158,7 @@
       {title:"곤충 디펜스",subtitle:"작지만 강한 전쟁",description:"곤충 부대를 모아 요새를 지키고 거대한 전투에서 승리하세요!",tags:["전략","디펜스","곤충","전투"],image:"assets/insect-war-v2.webp",link:"https://bug-defense-game.anyanguy12.chatgpt.site/"},
       {title:"휴먼 GO",subtitle:"뽑고, 성장하고, 도전!",description:"다양한 영웅 카드를 모으고 강력한 덱으로 새로운 모험에 도전하세요!",tags:["카드","수집","성장","모험"],image:"assets/card-rpg-v2.webp",link:"https://human-rpg-web-test.vercel.app/"},
       {title:"대충 RPG",subtitle:"나만의 영웅 이야기",description:"신비한 포탈을 지나 새로운 세계를 탐험하고 전설의 영웅이 되어보세요!",tags:["RPG","전투","탐험","스토리"],image:"assets/fantasy-rpg-v2.webp",link:"/rpg-play.html"},
-      {title:"무인도 마을",subtitle:"작은 섬, 커지는 마을",description:"자원을 모으고 주민에게 일을 맡겨 무인도를 활기찬 마을로 키워보세요!",tags:["경영","건설","채집","탐험"],image:"https://raw.githubusercontent.com/GeorgeQLe/assets-2d-city/main/assets/kenney/tiny-town/Sample.png",link:"/island.html"},
-      {title:"코어 워즈",subtitle:"세 종족의 실시간 전쟁",description:"종족을 선택하고 자원을 모아 병력을 생산해 두 적 진영을 모두 무너뜨리세요!",tags:["RTS","전략","1대1대1","실시간 전투"],image:"https://raw.githubusercontent.com/ETdoFresh/kenney.nl/master/kenney_rtssci-fi/Sample.png",link:"/rts.html"}
+      {title:"무인도 마을",subtitle:"작은 섬, 커지는 마을",description:"자원을 모으고 주민에게 일을 맡겨 무인도를 활기찬 마을로 키워보세요!",tags:["경영","건설","채집","탐험"],image:"https://raw.githubusercontent.com/GeorgeQLe/assets-2d-city/main/assets/kenney/tiny-town/Sample.png",link:"/island.html"}
     ];
     const hero=document.querySelector(".hero"),prevGame=document.querySelector("#prevGame"),nextGame=document.querySelector("#nextGame"),title=document.querySelector("#gameTitle"),subtitle=document.querySelector("#gameSubtitle"),description=document.querySelector("#gameDescription"),tags=document.querySelector("#gameTags"),link=document.querySelector("#gameLink"),number=document.querySelector("#gameNumber"),dots=document.querySelector("#gameDots");
     let current=0,startX=0,timer;
@@ -170,7 +169,7 @@
     games.forEach(game=>{const image=new Image();image.src=game.image});showGame(0);startAuto();
 
     // index.html · 새소식 자동 순환
-    const news=["신작 코어 워즈가 추가됐어요!","곤충 생존기 대표 이미지가 새로 바뀌었어요!","게임 7종을 좌우로 밀어서 선택할 수 있어요!","재운게임즈의 새로운 업데이트를 준비하고 있어요!"];
+    const news=["곤충 생존기 대표 이미지가 새로 바뀌었어요!","게임 6종을 좌우로 밀어서 선택할 수 있어요!","무인도 마을을 만나보세요!","재운게임즈의 새로운 업데이트를 준비하고 있어요!"];
     const newsText=document.querySelector("#newsText"),newsCount=document.querySelector("#newsCount");let newsIndex=0;
     setInterval(()=>{newsText.style.opacity="0";setTimeout(()=>{newsIndex=(newsIndex+1)%news.length;newsText.textContent=news[newsIndex];newsCount.textContent=`${newsIndex+1} / ${news.length}`;newsText.style.opacity="1"},200)},5000);
 
