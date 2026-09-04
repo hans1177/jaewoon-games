@@ -1,0 +1,56 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#07110c"><title>대충 용사 RPG</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07110c}iframe{position:fixed;inset:0;width:100%;height:100%;border:0;background:#07110c}</style></head><body><iframe id="v5" src="/rpg-play5.html?v=visual6" allow="autoplay"></iframe><script>
+const v5=document.getElementById('v5');let done=false;
+const tm=setInterval(()=>{if(done)return;try{
+ const d5=v5.contentDocument,f4=d5&&d5.getElementById('amazonGame');if(!f4)return;
+ const d4=f4.contentDocument,f3=d4&&d4.getElementById('jobGame');if(!f3)return;
+ const d3=f3.contentDocument,f2=d3&&d3.getElementById('outerGame');if(!f2)return;
+ const d2=f2.contentDocument,f1=d2&&d2.getElementById('gameFrame');if(!f1)return;
+ const w=f1.contentWindow,d=f1.contentDocument;if(!d||!d.getElementById('game')||!w.__AMAZON_SWAMP_PATCHED||typeof w.drawMonsterSprite!=='function'||typeof w.weaponDraw!=='function')return;
+ const sc=d.createElement('script');sc.textContent=`(()=>{
+ if(window.__VISUAL6_PATCHED)return;window.__VISUAL6_PATCHED=true;
+ function poly(ps,col){ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(ps[0][0],ps[0][1]);for(let i=1;i<ps.length;i++)ctx.lineTo(ps[i][0],ps[i][1]);ctx.closePath();ctx.fill()}
+ // 골렘: 노랑+주황 빛 눈, 무기 없이 돌팔로 공격
+ function golemNew(m){const f=m.animFrame||0,t=f/33,bob=m.animState==='walk'?Math.sin(t*Math.PI*4)*2:0,att=m.animState==='attack'?Math.sin(t*Math.PI):0,dead=m.animState==='dead'?t:0;ctx.save();ctx.translate(m.x,m.y+bob);ctx.scale(m.dir||1,1);ctx.rotate(dead*1.25);ctx.globalAlpha=1-dead*.82;shadow(0,7,37);
+  poly([[-24,5],[-27,-30],[-13,-55],[13,-57],[29,-31],[24,7]],'#555d58');poly([[-15,-43],[-7,-61],[12,-62],[23,-44],[12,-30],[-6,-31]],'#717975');
+  ctx.fillStyle='#ffda3b';ctx.shadowColor='#ff8a16';ctx.shadowBlur=9;ctx.fillRect(-9,-49,6,5);ctx.fillRect(7,-49,6,5);ctx.fillStyle='#ff8a16';ctx.fillRect(-7,-48,2,3);ctx.fillRect(9,-48,2,3);ctx.shadowBlur=0;
+  // 다리
+  poly([[-20,3],[-7,1],[-6,35],[-22,37]],'#474f4b');poly([[7,2],[21,3],[23,37],[7,35]],'#474f4b');
+  // 왼팔: 큰 바위 팔
+  ctx.save();ctx.translate(-30,-23);ctx.rotate(-.18-att*.8);poly([[-10,-14],[9,-17],[17,8],[2,25],[-15,11]],'#4a524e');poly([[-14,8],[4,9],[8,28],[-12,31],[-20,19]],'#626a65');ctx.restore();
+  // 오른팔: 공격 때 앞으로 크게 휘두름
+  ctx.save();ctx.translate(31,-22);ctx.rotate(.18+att*1.1);poly([[-8,-15],[13,-13],[18,10],[2,26],[-14,10]],'#4a524e');poly([[-2,19],[17,17],[23,32],[5,38],[-9,30]],'#656d67');ctx.restore();
+  ctx.fillStyle='#36583c';ctx.beginPath();ctx.ellipse(-12,-29,9,4,.2,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(15,-14,8,4,-.2,0,Math.PI*2);ctx.fill();ctx.restore()}
+ const oldMS=drawMonsterSprite;drawMonsterSprite=function(m){if(m.type==='rottenGolem'&&!m.dormant){golemNew(m);return}if(m.type==='crocodile'){const f=m.animFrame||0,t=f/33,walk=m.animState==='walk'?Math.sin(t*Math.PI*4)*2:0,att=m.animState==='attack'?Math.sin(t*Math.PI):0,dead=m.animState==='dead'?t:0;ctx.save();ctx.translate(m.x,m.y+walk);ctx.scale(m.dir||1,1);ctx.rotate(dead*1.15);ctx.globalAlpha=1-dead*.82;shadow(0,8,35);
+   // 긴 낮은 악어 몸통
+   ctx.fillStyle='#315f2d';ctx.beginPath();ctx.ellipse(-5,0,42,14,0,0,Math.PI*2);ctx.fill();
+   // 꼬리
+   ctx.beginPath();ctx.moveTo(-38,-7);ctx.lineTo(-70,0);ctx.lineTo(-40,9);ctx.closePath();ctx.fill();
+   // 머리/주둥이
+   ctx.save();ctx.translate(31,-2);ctx.rotate(att*.12);ctx.fillStyle='#47793a';ctx.beginPath();ctx.ellipse(8,0,25,11,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#2a5027';ctx.fillRect(7,3,27,7);ctx.fillStyle='#cdbd8a';for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(9+i*5,4);ctx.lineTo(12+i*5,10);ctx.lineTo(15+i*5,4);ctx.fill()}ctx.fillStyle='#f0d548';ctx.beginPath();ctx.arc(5,-7,3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#111';ctx.beginPath();ctx.arc(6,-7,1.3,0,Math.PI*2);ctx.fill();ctx.restore();
+   // 등 비늘
+   ctx.fillStyle='#6d8d47';for(let i=0;i<6;i++){ctx.beginPath();ctx.moveTo(-28+i*10,-11);ctx.lineTo(-22+i*10,-20-(i%2)*3);ctx.lineTo(-16+i*10,-11);ctx.fill()}
+   // 네 다리
+   ctx.strokeStyle='#294f27';ctx.lineWidth=7;for(const q of [[-24,8,-31,21],[-6,9,-8,23],[12,8,7,22],[28,6,25,19]]){ctx.beginPath();ctx.moveTo(q[0],q[1]);ctx.lineTo(q[2],q[3]);ctx.stroke()}
+   ctx.restore();return}oldMS(m)};
+ // 플레이어 무기 외형: 주먹처럼 보이던 강철 무기/철 도끼 수정
+ weaponDraw=function(){const swing=p.animState==='attack'?Math.sin(p.animFrame/33*Math.PI):0;ctx.save();ctx.translate(p.x,p.y-10);ctx.scale(p.dir,1);ctx.rotate(-.85+swing*1.6);const n=p.weapon;
+  if(n==='철 도끼'){
+   pixelRect(5,-2,36,6,'#704c28');pixelRect(32,-14,18,22,'#b9c3c9');pixelRect(40,-18,11,9,'#d8e0e4');
+  }else if(n==='철 망치'){
+   pixelRect(5,-2,36,6,'#704c28');pixelRect(32,-13,23,24,'#919ba2');
+  }else if(n==='강철 대검'){
+   ctx.fillStyle='#dce6ec';ctx.beginPath();ctx.moveTo(9,-4);ctx.lineTo(55,-9);ctx.lineTo(68,0);ctx.lineTo(55,9);ctx.lineTo(9,4);ctx.closePath();ctx.fill();pixelRect(5,-7,7,14,'#8f6a35');pixelRect(7,-13,5,26,'#c6a15b');
+  }else if(n==='강철 쌍검'){
+   ctx.fillStyle='#d5e3ea';ctx.beginPath();ctx.moveTo(8,-7);ctx.lineTo(49,-11);ctx.lineTo(58,-5);ctx.lineTo(49,1);ctx.lineTo(8,0);ctx.closePath();ctx.fill();ctx.save();ctx.rotate(-.45);ctx.beginPath();ctx.moveTo(8,7);ctx.lineTo(47,3);ctx.lineTo(56,9);ctx.lineTo(47,14);ctx.lineTo(8,14);ctx.closePath();ctx.fill();ctx.restore();pixelRect(4,-8,6,20,'#886031');
+  }else if(n==='철 쌍검'){
+   const col='#e4e9ef';pixelRect(8,-2,32,5,col);pixelRect(34,-5,9,11,col);pixelRect(5,-5,6,11,'#7a4e27');ctx.rotate(-.45);pixelRect(5,5,31,5,col);
+  }else if(n==='낡은 쌍절곤'){
+   pixelRect(7,-3,20,6,'#7b5732');ctx.strokeStyle='#c9b070';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(27,0);ctx.lineTo(38,8);ctx.stroke();pixelRect(38,5,20,6,'#7b5732');
+  }else if(n==='낡은 돌검'){
+   pixelRect(8,-2,32,5,'#989a94');pixelRect(34,-5,9,11,'#989a94');pixelRect(5,-5,6,11,'#7a4e27');
+  }ctx.restore()};
+ toastMsg('골렘 · 악어 · 무기 그래픽 수정 적용');
+})();`;
+ d.body.appendChild(sc);done=true;clearInterval(tm)
+}catch(e){}},160);
+</script></body></html>
