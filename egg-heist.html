@@ -8,7 +8,7 @@
 <body><canvas id="c"></canvas>
 <div class="hud"><a class="back" href="/">← 대문</a><div class="title">알 도둑 대작전</div><div class="money">💰 <span id="money">0</span></div></div>
 <div class="panel" id="panel"></div><div class="notice" id="notice"></div>
-<div class="shop"><button id="bagUp">가방 강화<br>💰 180</button><div class="rarityInfo">등급 수익<br>일반 +1/초<br>드문 +5/초<br>레어 +20/초<br>에픽 +50/초<br>전설 +200/초</div></div>
+<div class="shop"><button id="treadmillUp">런닝머신 Lv.1 강화<br>💰 200</button><button id="bagUp">가방 강화<br>💰 180</button><div class="rarityInfo">등급 수익<br>일반 +1/초<br>드문 +5/초<br>레어 +20/초<br>에픽 +50/초<br>전설 +200/초</div></div>
 <div class="joy" id="joy"><div class="stick" id="stick"></div></div><div class="actions"><button class="btn" id="dash">대시</button><button class="btn" id="drop">버리기</button><button class="btn" id="grab">훔치기</button></div>
 <div class="result" id="result"><div class="box"><h1>전설 펫 획득!</h1><p>최고 등급인 전설 펫을 부화시켰습니다. 계속 플레이하면서 더 많은 펫을 모을 수 있습니다.</p><button onclick="document.querySelector('#result').style.display='none'">계속 하기</button></div></div>
 <script>
@@ -43,7 +43,7 @@ const chances=[
 ];
 const zoneReq=['','드문 펫 필요','레어 펫 필요','에픽 펫 필요'];
 let player={x:170,y:850,r:17,speed:190,maxCarry:1,carry:[],dash:0};
-let money=0,zoneLevel=0,pets=[],eggs=[],guards=[],time=0,training=0,cam={x:0,y:0};
+let money=0,zoneLevel=0,pets=[],eggs=[],guards=[],time=0,training=0,treadmillLevel=1,cam={x:0,y:0};
 for(let i=0;i<zones.length;i++){for(let j=0;j<4;j++)spawnEgg(i,j)}
 function spawnEgg(z,j){const q=zones[z],a=(j/4)*Math.PI*2+Math.random()*.4;eggs.push({zone:z,x:q.x+Math.cos(a)*(55+Math.random()*35),y:q.y+Math.sin(a)*(55+Math.random()*35),r:14+z*2,taken:false,respawn:0})}
 for(let i=0;i<zones.length;i++){const q=zones[i],guardSpeed=72*Math.pow(5,i);for(let j=0;j<2+i;j++){guards.push({zone:i,x:q.x+(Math.random()-.5)*160,y:q.y+(Math.random()-.5)*160,r:16+i*2,speed:guardSpeed,alert:0})}}
@@ -58,7 +58,9 @@ function hatch(){if(!player.carry.length)return;const hatched=[];let highest=0;f
 function dropEgg(){if(!player.carry.length){msg('들고 있는 알이 없어');return}player.carry.pop();msg('알을 버렸어. 잠시 후 둥지에 다시 생겨')}
 function caught(){const lost=player.carry.length;player.carry=[];player.x=base.x;player.y=base.y;player.dash=0;guards.forEach(g=>g.alert=0);msg(lost?'경비에게 잡혔다! 알을 잃고 부화장으로 돌아왔다':'경비에게 잡혀 부화장으로 돌아왔다')}
 let joy={id:null,x:0,y:0};const joyEl=document.querySelector('#joy'),stick=document.querySelector('#stick');function joyMove(e){const r=joyEl.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,m=Math.hypot(dx,dy)||1,k=Math.min(1,45/m);joy.x=dx/m*k;joy.y=dy/m*k;stick.style.transform=`translate(${joy.x*30}px,${joy.y*30}px)`}joyEl.addEventListener('pointerdown',e=>{joy.id=e.pointerId;joyEl.setPointerCapture(e.pointerId);joyMove(e)});joyEl.addEventListener('pointermove',e=>{if(e.pointerId===joy.id)joyMove(e)});function joyEnd(e){if(e.pointerId!==joy.id)return;joy.id=null;joy.x=joy.y=0;stick.style.transform=''}joyEl.addEventListener('pointerup',joyEnd);joyEl.addEventListener('pointercancel',joyEnd);document.querySelector('#grab').onclick=grab;document.querySelector('#drop').onclick=dropEgg;document.querySelector('#dash').onclick=()=>{if(player.dash<=0){player.dash=.35;msg('대시!')}};
-function buyBag(){const cost=180+(player.maxCarry-1)*160;if(money<cost)return msg('돈이 부족해');money-=cost;player.maxCarry++;msg('가방 +1칸!')}document.querySelector('#bagUp').onclick=buyBag;
+function buyBag(){const cost=180+(player.maxCarry-1)*160;if(money<cost)return msg('돈이 부족해');money-=cost;player.maxCarry++;msg('가방 +1칸!')}
+function buyTreadmill(){const cost=200*Math.pow(2,treadmillLevel-1);if(money<cost)return msg('돈이 부족해');money-=cost;treadmillLevel++;player.speed+=10;msg('런닝머신 Lv.'+treadmillLevel+'! 스피드 +10')}
+document.querySelector('#bagUp').onclick=buyBag;document.querySelector('#treadmillUp').onclick=buyTreadmill;
 let keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=1;if(e.key===' ')grab()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=0);
 function update(dt){
 time+=dt;
@@ -72,15 +74,14 @@ for(const e of eggs){if(e.taken){e.respawn+=dt;if(e.respawn>18){e.taken=false;e.
 let income=pets.reduce((s,p)=>s+rarities[p.rarity].income,0);money+=income*dt;
 for(const p of pets){p.a+=dt*(1+p.rarity*.08);p.x=base.x+Math.cos(p.a)*75;p.y=base.y+Math.sin(p.a*1.3)*48}
 cam.x+=(Math.max(0,Math.min(world.w-W,player.x-W*.5))-cam.x)*Math.min(1,dt*6);cam.y+=(Math.max(0,Math.min(world.h-H,player.y-H*.5))-cam.y)*Math.min(1,dt*6);
-const counts=rarities.map((_,i)=>pets.filter(p=>p.rarity===i).length);
-panel.innerHTML=`🥚 보유 ${player.carry.length}/${player.maxCarry}<br>🐾 펫 ${pets.length}마리 · +${income.toFixed(0)}/초<br>🏃 스피드 ${player.speed}${onTreadmill()?' · 훈련 중':''}<br>🗺️ 구역 ${zoneLevel+1}/4<br>⭐ 최고 등급 ${pets.length?rarities[Math.max(...pets.map(p=>p.rarity))].name:'없음'}`;
-moneyEl.textContent=Math.floor(money);document.querySelector('#bagUp').innerHTML=`가방 강화<br>💰 ${180+(player.maxCarry-1)*160}`
+panel.innerHTML=`🥚 보유 ${player.carry.length}/${player.maxCarry}<br>🐾 펫 ${pets.length}마리 · +${income.toFixed(0)}/초<br>🏃 스피드 ${player.speed}${onTreadmill()?' · 훈련 중':''}<br>🏋️ 런닝머신 Lv.${treadmillLevel}<br>🗺️ 구역 ${zoneLevel+1}/4<br>⭐ 최고 등급 ${pets.length?rarities[Math.max(...pets.map(p=>p.rarity))].name:'없음'}`;
+moneyEl.textContent=Math.floor(money);document.querySelector('#bagUp').innerHTML=`가방 강화<br>💰 ${180+(player.maxCarry-1)*160}`;document.querySelector('#treadmillUp').innerHTML=`런닝머신 Lv.${treadmillLevel} 강화<br>💰 ${200*Math.pow(2,treadmillLevel-1)}`
 }
 function circle(x,y,r,fill,stroke){ctx.beginPath();ctx.arc(x-cam.x,y-cam.y,r,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke()}}
 function draw(){ctx.clearRect(0,0,W,H);ctx.fillStyle='#182638';ctx.fillRect(0,0,W,H);ctx.save();ctx.translate(-cam.x,-cam.y);ctx.fillStyle='#24384a';ctx.fillRect(0,0,world.w,world.h);for(let x=0;x<world.w;x+=90){for(let y=0;y<world.h;y+=90){ctx.fillStyle=((x+y)/90)%2?'#263d4e':'#294152';ctx.fillRect(x,y,90,90)}}ctx.restore();
 for(let i=0;i<zones.length;i++){const z=zones[i];circle(z.x,z.y,118,i<=zoneLevel?z.color:'#38414b','#ffffff55');ctx.fillStyle='#fff';ctx.font='900 13px system-ui';ctx.textAlign='center';ctx.fillText(i<=zoneLevel?z.name:'잠김 · '+zoneReq[i],z.x-cam.x,z.y-cam.y-126)}
 circle(base.x,base.y,base.r,'#294f82','#8dc5ff');ctx.fillStyle='#fff';ctx.font='900 15px system-ui';ctx.textAlign='center';ctx.fillText('내 부화장 · 안전지대',base.x-cam.x,base.y-cam.y-base.r-10);
-ctx.fillStyle='#233246';ctx.fillRect(treadmill.x-cam.x,treadmill.y-cam.y,treadmill.w,treadmill.h);ctx.strokeStyle='#8fd7ff';ctx.lineWidth=3;ctx.strokeRect(treadmill.x-cam.x,treadmill.y-cam.y,treadmill.w,treadmill.h);for(let i=0;i<5;i++){const xx=treadmill.x+10+((i*24+time*50)%100);ctx.fillStyle='#5c7188';ctx.fillRect(xx-cam.x,treadmill.y-cam.y+9,5,treadmill.h-18)}ctx.fillStyle='#fff';ctx.font='900 11px system-ui';ctx.textAlign='center';ctx.fillText('런닝머신 +1 / 0.5초',treadmill.x+treadmill.w/2-cam.x,treadmill.y-cam.y-7);
+ctx.fillStyle='#233246';ctx.fillRect(treadmill.x-cam.x,treadmill.y-cam.y,treadmill.w,treadmill.h);ctx.strokeStyle='#8fd7ff';ctx.lineWidth=3;ctx.strokeRect(treadmill.x-cam.x,treadmill.y-cam.y,treadmill.w,treadmill.h);for(let i=0;i<5;i++){const xx=treadmill.x+10+((i*24+time*50)%100);ctx.fillStyle='#5c7188';ctx.fillRect(xx-cam.x,treadmill.y-cam.y+9,5,treadmill.h-18)}ctx.fillStyle='#fff';ctx.font='900 11px system-ui';ctx.textAlign='center';ctx.fillText('런닝머신 Lv.'+treadmillLevel+' · +1 / 0.5초',treadmill.x+treadmill.w/2-cam.x,treadmill.y-cam.y-7);
 for(const e of eggs){if(e.taken||e.zone>zoneLevel)continue;const d=zoneEggs[e.zone];circle(e.x,e.y,e.r,d.color,'#fff');ctx.fillStyle='#ffffff88';ctx.beginPath();ctx.ellipse(e.x-cam.x-4,e.y-cam.y-5,e.r*.28,e.r*.45,-.6,0,Math.PI*2);ctx.fill()}
 for(const g of guards){if(g.zone>zoneLevel)continue;circle(g.x,g.y,g.r,g.alert>0?'#e44d4d':'#314056','#dce8ff');ctx.fillStyle='#fff';ctx.font='900 10px system-ui';ctx.textAlign='center';ctx.fillText(g.alert>0?'추격!':'경비',g.x-cam.x,g.y-cam.y+4)}
 for(const p of pets){const r=rarities[p.rarity];circle(p.x,p.y,11+p.rarity,r.color,'#fff');ctx.fillStyle='#111';ctx.fillRect(p.x-cam.x-4,p.y-cam.y-2,2,2);ctx.fillRect(p.x-cam.x+2,p.y-cam.y-2,2,2);ctx.fillStyle='#fff';ctx.font='800 8px system-ui';ctx.textAlign='center';ctx.fillText(r.name,p.x-cam.x,p.y-cam.y-15-p.rarity)}
