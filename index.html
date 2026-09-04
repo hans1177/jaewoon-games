@@ -24,7 +24,7 @@
 
     /* 대표 게임 */
     .heroFrame{position:relative;padding:7px;border-radius:30px;background:linear-gradient(145deg,#fff,#e9f8ff);box-shadow:0 18px 38px rgba(31,101,151,.24)}
-    .hero{position:relative;min-height:520px;overflow:hidden;border-radius:24px;background:#294e3a url("assets/insect-main.webp") center/cover no-repeat}
+    .hero{position:relative;min-height:455px;overflow:hidden;border-radius:24px;background:#294e3a url("assets/insect-main.webp?v=2") center/cover no-repeat}
     .hero{transition:background-image .35s ease}
     .hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(4,48,38,.82) 0%,rgba(4,48,38,.48) 42%,transparent 72%)}
     .heroCopy{position:absolute;z-index:2;left:38px;top:34px;width:min(48%,430px);color:#fff}
@@ -35,7 +35,7 @@
     .play{display:inline-flex;align-items:center;justify-content:center;min-width:255px;min-height:68px;margin-top:24px;border-radius:23px;background:linear-gradient(#58c0ff,#247ff0);box-shadow:0 7px 0 #0d59b6;color:#fff;font-size:24px;font-weight:1000}
     .heroNum{position:absolute;z-index:3;right:18px;bottom:16px;padding:8px 13px;border-radius:999px;background:rgba(13,38,64,.82);color:#fff;font-size:14px;font-weight:900}
     .arrow{position:absolute;z-index:5;top:50%;display:grid;place-items:center;width:54px;height:54px;border:0;border-radius:50%;background:rgba(255,255,255,.94);box-shadow:0 7px 18px rgba(26,80,125,.24);color:#2582e3;font-size:38px;font-weight:700;line-height:1;cursor:pointer;transform:translateY(-50%)}
-    .arrow.prev{left:-28px}.arrow.next{right:-28px}.arrow:active{transform:translateY(-50%) scale(.94)}
+    .arrow.prev{left:12px}.arrow.next{right:12px}.arrow:active{transform:translateY(-50%) scale(.94)}
     .dots{display:flex;justify-content:center;gap:9px;padding:15px 0 3px}.dot{width:11px;height:11px;padding:0;border:2px solid rgba(255,255,255,.92);border-radius:50%;background:rgba(39,134,218,.22);box-shadow:0 2px 5px rgba(26,92,140,.18)}.dot.active{background:#278ff5}
 
     /* 하단 */
@@ -44,9 +44,9 @@
     /* 모바일 */
     @media(max-width:640px){
       .shell{padding:0 9px 24px}.brand{margin:0 -9px;padding:0 0 10px}.brand img{width:100%}
-      .heroFrame{padding:6px;border-radius:25px}.hero{min-height:500px;border-radius:20px;background-position:51% center}.hero:after{background:linear-gradient(90deg,rgba(4,48,38,.82) 0%,rgba(4,48,38,.43) 48%,transparent 82%)}
-      .arrow{width:46px;height:46px;font-size:32px}.arrow.prev{left:-5px}.arrow.next{right:-5px}.dots{padding-top:12px}
-      .heroCopy{left:16px;right:16px;top:18px;width:auto}.badge{font-size:13px}.hero h1{margin-top:18px;font-size:39px}.hero h2{font-size:19px}.hero p{font-size:14px;line-height:1.6;max-width:330px}.chips{gap:6px}.chips span{padding:6px 9px;font-size:12px}.play{width:min(100%,300px);min-height:62px;margin-top:19px;font-size:22px}
+      .heroFrame{padding:5px;border-radius:24px}.hero{min-height:390px;border-radius:19px;background-position:51% center}.hero:after{background:linear-gradient(90deg,rgba(4,48,38,.8) 0%,rgba(4,48,38,.38) 51%,transparent 84%)}
+      .arrow{top:53%;width:42px;height:42px;font-size:31px;background:rgba(255,255,255,.96)}.arrow.prev{left:8px}.arrow.next{right:8px}.dots{padding:10px 0 2px}
+      .heroCopy{left:17px;right:17px;top:15px;width:auto;padding-right:30px}.badge{padding:7px 11px;font-size:12px}.hero h1{margin-top:14px;font-size:34px}.hero h2{margin-bottom:10px;font-size:17px}.hero p{font-size:13px;line-height:1.5;max-width:300px;margin-bottom:11px}.chips{gap:5px}.chips span{padding:5px 8px;font-size:11px}.play{width:min(100%,270px);min-height:54px;margin-top:14px;border-radius:18px;font-size:19px}.heroNum{right:12px;bottom:11px;padding:6px 10px;font-size:12px}
       .footer{font-size:12px}
     }
   </style>
@@ -81,11 +81,11 @@
   <script>
     // index.html · 메인 게임 슬라이드
     const games=[
-      {title:"곤충 생존기",subtitle:"작은 세계, 큰 모험",description:"거대한 자연 속에서 채집하고, 만들고, 탐험하며 살아남아보세요!",tags:["생존","제작","탐험","협동 플레이"],image:"assets/insect-main.webp",link:"/play_survival_v4.html"},
-      {title:"수정 디펜스",subtitle:"함께 지키는 마지막 빛",description:"영웅과 포탑을 성장시켜 몰려오는 적에게서 수정을 지켜내세요!",tags:["디펜스","협동","웨이브","보스"],image:"assets/crystal.webp",link:"https://crystal-defense-online.vercel.app/"},
-      {title:"곤충 디펜스",subtitle:"작지만 강한 전쟁",description:"곤충 부대를 모아 요새를 지키고 거대한 전투에서 승리하세요!",tags:["전략","디펜스","곤충","전투"],image:"assets/insect-war.webp",link:"https://bug-defense-game.anyanguy12.chatgpt.site/"},
-      {title:"카드 RPG",subtitle:"뽑고, 성장하고, 도전!",description:"다양한 영웅 카드를 모으고 강력한 덱으로 새로운 모험에 도전하세요!",tags:["카드","수집","성장","모험"],image:"assets/card-rpg.webp",link:"https://human-rpg-web-test.vercel.app/"},
-      {title:"판타지 RPG",subtitle:"나만의 영웅 이야기",description:"신비한 포탈을 지나 새로운 세계를 탐험하고 전설의 영웅이 되어보세요!",tags:["RPG","전투","탐험","스토리"],image:"assets/fantasy-rpg.webp",link:"/rpg-play.html"}
+      {title:"곤충 생존기",subtitle:"작은 세계, 큰 모험",description:"거대한 자연 속에서 채집하고, 만들고, 탐험하며 살아남아보세요!",tags:["생존","제작","탐험","협동 플레이"],image:"assets/insect-main.webp?v=2",link:"/play_survival_v4.html"},
+      {title:"수정 디펜스",subtitle:"함께 지키는 마지막 빛",description:"영웅과 포탑을 성장시켜 몰려오는 적에게서 수정을 지켜내세요!",tags:["디펜스","협동","웨이브","보스"],image:"assets/crystal.webp?v=2",link:"https://crystal-defense-online.vercel.app/"},
+      {title:"곤충 디펜스",subtitle:"작지만 강한 전쟁",description:"곤충 부대를 모아 요새를 지키고 거대한 전투에서 승리하세요!",tags:["전략","디펜스","곤충","전투"],image:"assets/insect-war.webp?v=2",link:"https://bug-defense-game.anyanguy12.chatgpt.site/"},
+      {title:"카드 RPG",subtitle:"뽑고, 성장하고, 도전!",description:"다양한 영웅 카드를 모으고 강력한 덱으로 새로운 모험에 도전하세요!",tags:["카드","수집","성장","모험"],image:"assets/card-rpg.webp?v=2",link:"https://human-rpg-web-test.vercel.app/"},
+      {title:"판타지 RPG",subtitle:"나만의 영웅 이야기",description:"신비한 포탈을 지나 새로운 세계를 탐험하고 전설의 영웅이 되어보세요!",tags:["RPG","전투","탐험","스토리"],image:"assets/fantasy-rpg.webp?v=2",link:"/rpg-play.html"}
     ];
     const hero=document.querySelector(".hero"),title=document.querySelector("#gameTitle"),subtitle=document.querySelector("#gameSubtitle"),description=document.querySelector("#gameDescription"),tags=document.querySelector("#gameTags"),link=document.querySelector("#gameLink"),number=document.querySelector("#gameNumber"),dots=document.querySelector("#gameDots");
     let current=0,startX=0,timer;
