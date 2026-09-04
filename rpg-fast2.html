@@ -1,0 +1,59 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#0c1016"><title>대충 용사 RPG</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0c1016}iframe{position:fixed;inset:0;width:100%;height:100%;border:0;background:#0c1016}</style></head><body><iframe id="fast" src="/rpg-fast.html?v=quest11" allow="autoplay"></iframe><script>
+const fast=document.getElementById('fast');let patched=false;
+const tm=setInterval(()=>{if(patched)return;try{const w=fast.contentWindow,d=fast.contentDocument,fr=d&&d.getElementById('gameFrame');if(!fr)return;const gw=fr.contentWindow,gd=fr.contentDocument;if(!gd||!gd.getElementById('game')||!gw.__FAST10_PATCHED||typeof gw.kill!=='function'||typeof gw.hud!=='function')return;const sc=gd.createElement('script');sc.textContent=`(()=>{
+if(window.__QUEST11_PATCHED)return;window.__QUEST11_PATCHED=true;
+let questKill10=0,jungleWalk=0,lastJungleX=p.x,lastJungleY=p.y,suppressF2Enter=false;
+function rewardNext(next,msg){p.g+=50;q=next;sfx('questReward');hud();toastMsg('퀘스트 완료! +50골드');if(msg)setTimeout(()=>toastMsg(msg),550)}
+function allArmorsOwned(){const names=Object.keys(ARMORS);return names.length>0&&names.every(n=>ownedArmors[n])}
+function autoQuestCheck(){
+ if(q===7&&p.lv>=5){rewardNext(8,'다음 퀘스트: 전직하기');return true}
+ if(q===8&&p.job&&p.job!=='미전직'){rewardNext(9,'다음 퀘스트: 오우거 처치');return true}
+ if(q===11&&allArmorsOwned()){rewardNext(12,'다음 퀘스트: 정글을 15초 동안 돌아다니기');jungleWalk=0;lastJungleX=p.x;lastJungleY=p.y;return true}
+ return false
+}
+// 2번 사냥터 입장만으로 기존 q5가 완료되는 로직 차단
+const enterQ0=enter;enter=function(z){if(q===5&&z==='f2'){suppressF2Enter=true;const keep=q;q=5005;enterQ0(z);q=keep;suppressF2Enter=false;hud();return}enterQ0(z)};
+// 새 퀘스트 HUD
+const hudQ0=hud;hud=function(){hudQ0();
+ if(q===5||q===5005)quest.textContent='퀘스트: 2번 사냥터에서 몬스터 1마리 처치';
+ else if(q===6)quest.textContent='퀘스트: 아무 무기나 1개 구매';
+ else if(q===7)quest.textContent='퀘스트: Lv.5까지 올리기';
+ else if(q===8)quest.textContent='퀘스트: 전직하기';
+ else if(q===9)quest.textContent='퀘스트: 오우거 처치하기';
+ else if(q===10)quest.textContent='퀘스트: 몬스터 10마리 처치 ('+Math.min(10,questKill10)+'/10)';
+ else if(q===11)quest.textContent='퀘스트: 갑옷 1개 구매';
+ else if(q===12)quest.textContent='퀘스트: 정글 15초 탐험 ('+Math.min(15,Math.floor(jungleWalk))+'/15초)';
+ else if(q>=13)quest.textContent='메인 퀘스트 완료';
+};
+// 촌장: 슬라임 왕 보상 뒤부터 새 퀘스트 라인 시작
+const talkQ0=talkNow;talkNow=function(){const n=nearest();if(n&&n.k==='chief'){
+ if(q===4){p.g+=50;q=5;sfx('questReward');hud();say('촌장','보상 <b>50골드</b>. 다음은 2번 사냥터에 들어가서 몬스터를 1마리 처치해라.');return}
+ if(q===5){say('촌장','2번 사냥터에서 아무 몬스터나 1마리 처치해라.');return}
+ if(q===6){say('촌장','무기상인에게서 아무 무기나 1개 사라.');return}
+ if(q===7){say('촌장','레벨 5까지 성장해라.');return}
+ if(q===8){say('촌장','세 전직관 중 한 명에게 전직해라. 이미 전직했다면 바로 인정해주지.');autoQuestCheck();return}
+ if(q===9){say('촌장','6번 사냥터의 오우거를 처치해라.');return}
+ if(q===10){say('촌장','아무 몬스터나 10마리 더 처치해라.');return}
+ if(q===11){if(autoQuestCheck())return;say('촌장','갑옷상인에게서 갑옷을 1개 사라. 갑옷을 전부 산 상태라면 바로 인정한다.');return}
+ if(q===12){say('촌장','7번 정글에서 15초 동안 직접 돌아다녀라.');return}
+ if(q>=13){say('촌장','메인 퀘스트를 모두 끝냈다. 이제 자유롭게 탐험해라.');return}
+ }talkQ0()};
+// 실제 처치 조건
+const killQ0=kill;kill=function(m){const alive=!m.dead,killZone=zone,killType=m.type;killQ0(m);if(!alive||!m.dead)return;
+ if(q===5&&killZone==='f2'){rewardNext(6,'다음 퀘스트: 아무 무기나 사기');return}
+ if(q===9&&killType==='ogre'){questKill10=0;rewardNext(10,'다음 퀘스트: 몬스터 10마리 처치');return}
+ if(q===10){questKill10++;if(questKill10>=10){rewardNext(11,'다음 퀘스트: 갑옷 사기');autoQuestCheck()}else hud()}
+};
+// 무기 실제 구매 감지
+const buyWQ0=buyOrEquipWeapon;buyOrEquipWeapon=function(name){const before=!!ownedWeapons[name];buyWQ0(name);if(q===6&&!before&&ownedWeapons[name]){rewardNext(7,'다음 퀘스트: Lv.5 달성');autoQuestCheck()}};
+// 전직 완료 감지
+if(typeof become==='function'){const becomeQ0=become;become=function(job){const before=p.job;becomeQ0(job);if(q===8&&before==='미전직'&&p.job&&p.job!=='미전직'){rewardNext(9,'다음 퀘스트: 오우거 처치')}}}
+// 갑옷 실제 구매 감지
+const buyAQ0=buyOrEquipArmor;buyOrEquipArmor=function(name){const before=!!ownedArmors[name];buyAQ0(name);if(q===11&&!before&&ownedArmors[name]){jungleWalk=0;lastJungleX=p.x;lastJungleY=p.y;rewardNext(12,'다음 퀘스트: 정글 15초 탐험')}};
+// Lv.5 / 이미 전직 / 갑옷 전부 보유 자동 인정 + 정글 실제 이동시간 측정
+const updateQ0=update;update=function(dt){updateQ0(dt);let changed=true,guard=0;while(changed&&guard++<4)changed=autoQuestCheck();if(q===12){if(zone==='f7'){const moved=Math.hypot(p.x-lastJungleX,p.y-lastJungleY)>1.2;if(moved)jungleWalk+=dt;lastJungleX=p.x;lastJungleY=p.y;if(jungleWalk>=15){jungleWalk=15;rewardNext(13,'메인 퀘스트 완료!')}else hud()}else{lastJungleX=p.x;lastJungleY=p.y}}};
+const resetQ0=reset;reset=function(){resetQ0();questKill10=0;jungleWalk=0;lastJungleX=p.x;lastJungleY=p.y};
+hud();toastMsg('새 메인 퀘스트 업데이트 적용');
+})();`;
+gd.body.appendChild(sc);patched=true;clearInterval(tm)}catch(e){}},60);
+</script></body></html>
