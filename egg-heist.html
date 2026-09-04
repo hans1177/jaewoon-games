@@ -46,7 +46,7 @@ let player={x:170,y:850,r:17,speed:190,maxCarry:1,carry:[],dash:0};
 let money=0,zoneLevel=0,pets=[],eggs=[],guards=[],time=0,training=0,cam={x:0,y:0};
 for(let i=0;i<zones.length;i++){for(let j=0;j<4;j++)spawnEgg(i,j)}
 function spawnEgg(z,j){const q=zones[z],a=(j/4)*Math.PI*2+Math.random()*.4;eggs.push({zone:z,x:q.x+Math.cos(a)*(55+Math.random()*35),y:q.y+Math.sin(a)*(55+Math.random()*35),r:14+z*2,taken:false,respawn:0})}
-for(let i=0;i<zones.length;i++){const q=zones[i];for(let j=0;j<2+i;j++){guards.push({zone:i,x:q.x+(Math.random()-.5)*160,y:q.y+(Math.random()-.5)*160,r:16+i*2,speed:72+i*16,alert:0})}}
+for(let i=0;i<zones.length;i++){const q=zones[i],guardSpeed=72*Math.pow(5,i);for(let j=0;j<2+i;j++){guards.push({zone:i,x:q.x+(Math.random()-.5)*160,y:q.y+(Math.random()-.5)*160,r:16+i*2,speed:guardSpeed,alert:0})}}
 function msg(t){notice.textContent=t;notice.style.opacity=1;clearTimeout(msg.t);msg.t=setTimeout(()=>notice.style.opacity=0,1350)}
 function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
 function insideBase(){return dist(player,base)<base.r-8}
