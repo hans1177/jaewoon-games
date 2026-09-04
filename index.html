@@ -26,16 +26,20 @@
 
     /* 대표 게임 */
     .heroFrame{position:relative;padding:7px;border-radius:30px;background:#fff;box-shadow:0 12px 26px rgba(27,89,135,.18),0 0 0 2px rgba(255,255,255,.96)}
-    .hero{position:relative;min-height:455px;overflow:hidden;border-radius:24px;background:#294e3a url("assets/insect-main-v2.webp") center/cover no-repeat}
-    .hero{transition:background-image .35s ease}
+    .hero{position:relative;min-height:455px;overflow:hidden;border-radius:24px;background:#294e3a url("assets/insect-main-v3.webp") center/cover no-repeat}
+    .hero{transition:background-image .35s ease}.hero.changing{animation:slideChange .42s ease}@keyframes slideChange{0%{opacity:.62;transform:scale(.992)}100%{opacity:1;transform:scale(1)}}
     .heroCopy{position:absolute;z-index:2;left:38px;top:34px;width:min(48%,430px);color:#fff;text-shadow:0 2px 5px rgba(0,32,28,.55)}
-    .badge{display:inline-block;padding:9px 14px;border-radius:999px;background:#25bb8a;font-family:"Arial Rounded MT Bold","Noto Sans KR",system-ui,sans-serif;font-size:14px;font-weight:1000;letter-spacing:-.4px;box-shadow:0 4px 0 #087d5a,0 2px 0 rgba(255,255,255,.35) inset}
+    .badge{display:inline-block;padding:3px 1px;background:transparent;font-family:"Arial Rounded MT Bold","Noto Sans KR",system-ui,sans-serif;font-size:16px;font-weight:1000;letter-spacing:-.5px;color:#fff;text-shadow:0 2px 0 #2184b9,0 3px 8px rgba(0,64,98,.45)}
     .hero h1{margin:22px 0 6px;font-size:clamp(42px,7vw,62px);letter-spacing:-3px;line-height:1.05}
     .hero h2{margin:0 0 15px;font-size:23px}.hero p{font-size:15px;line-height:1.7;margin:0 0 16px}
     .chips{display:flex;flex-wrap:wrap;gap:8px}.chips span{padding:7px 11px;border:1px solid rgba(255,255,255,.75);border-radius:10px;background:rgba(8,47,39,.35);font-size:13px;font-weight:900}
     .play{display:inline-flex;align-items:center;justify-content:center;min-width:255px;min-height:68px;margin-top:24px;border:2px solid #bceeff;border-radius:23px;background:linear-gradient(180deg,#8ce3ff 0%,#39baff 52%,#1598ee 100%);box-shadow:0 8px 0 #0e72bd,0 12px 20px rgba(19,116,188,.3),0 3px 0 rgba(255,255,255,.7) inset;color:#fff;font-size:24px;font-weight:1000;text-shadow:0 2px 0 #247fbd}
     .heroNum{position:absolute;z-index:3;right:18px;bottom:16px;padding:8px 13px;border-radius:999px;background:rgba(13,38,64,.82);color:#fff;font-size:14px;font-weight:900}
     .dots{display:flex;justify-content:center;gap:9px;padding:18px 0 8px}.dot{width:11px;height:11px;padding:0;border:2px solid rgba(255,255,255,.92);border-radius:50%;background:rgba(39,134,218,.22);box-shadow:0 2px 5px rgba(26,92,140,.18)}.dot.active{background:#278ff5}
+
+    /* 새소식 */
+    .news{display:grid;grid-template-columns:auto auto 1fr auto;align-items:center;gap:10px;min-height:56px;margin:5px 0 12px;padding:9px 15px;border:2px solid rgba(255,255,255,.94);border-radius:20px;background:rgba(255,255,255,.9);box-shadow:0 10px 24px rgba(31,101,151,.16);color:#245f9d}
+    .newsTitle{white-space:nowrap;font-weight:1000}.newsNew{padding:4px 7px;border-radius:7px;background:#338ff1;color:#fff;font-size:11px;font-weight:1000}.newsText{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#29445e;font-size:14px;font-weight:800;transition:opacity .2s}.newsCount{white-space:nowrap;color:#3587dc;font-size:12px;font-weight:1000}
 
     /* 하단 */
     .footer{margin-top:18px;text-align:center;color:#487492;font-size:13px;font-weight:800}
@@ -46,6 +50,7 @@
       .heroFrame{margin-top:0;padding:5px;border-radius:22px}.hero{min-height:224px;border-radius:18px;background-position:51% center}
       .dots{padding:15px 0 7px}
       .heroCopy{left:14px;right:14px;top:8px;bottom:0;width:auto;padding-right:25px}.badge{padding:5px 9px;font-size:11px}.hero h1{margin-top:7px;font-size:25px}.hero h2{margin-bottom:5px;font-size:13px}.hero p{display:none}.chips{gap:3px}.chips span{padding:3px 6px;font-size:9px}.play{position:absolute;left:0;bottom:15px;width:205px;min-height:42px;margin:0;border-width:2px;border-radius:14px;font-size:16px;box-shadow:0 6px 0 #0e72bd,0 10px 17px rgba(19,116,188,.28),0 2px 0 rgba(255,255,255,.75) inset}.heroNum{right:9px;bottom:8px;padding:4px 8px;font-size:10px}
+      .news{grid-template-columns:auto auto minmax(0,1fr) auto;gap:6px;min-height:46px;margin-top:3px;padding:7px 9px;border-radius:16px}.newsTitle{font-size:12px}.newsNew{padding:3px 5px;font-size:9px}.newsText{font-size:11px}.newsCount{font-size:10px}
       .footer{font-size:12px}
     }
   </style>
@@ -72,13 +77,20 @@
       </section>
       <div class="dots" id="gameDots" aria-label="게임 슬라이드"></div>
 
+      <section class="news" aria-label="재운게임즈 새소식">
+        <strong class="newsTitle">📣 재운게임즈 새소식</strong>
+        <span class="newsNew">NEW</span>
+        <span class="newsText" id="newsText">곤충 생존기 대표 이미지가 새로 바뀌었어요!</span>
+        <span class="newsCount" id="newsCount">1 / 3</span>
+      </section>
+
       <footer class="footer">© 2026 재운게임즈. All rights reserved.</footer>
     </main>
   </div>
   <script>
     // index.html · 메인 게임 슬라이드
     const games=[
-      {title:"곤충 생존기",subtitle:"작은 세계, 큰 모험",description:"거대한 자연 속에서 채집하고, 만들고, 탐험하며 살아남아보세요!",tags:["생존","제작","탐험","협동 플레이"],image:"assets/insect-main-v2.webp",link:"/play_survival_v4.html"},
+      {title:"곤충 생존기",subtitle:"작은 세계, 큰 모험",description:"거대한 자연 속에서 채집하고, 만들고, 탐험하며 살아남아보세요!",tags:["생존","제작","탐험","협동 플레이"],image:"assets/insect-main-v3.webp",link:"/play_survival_v4.html"},
       {title:"수정 디펜스",subtitle:"함께 지키는 마지막 빛",description:"영웅과 포탑을 성장시켜 몰려오는 적에게서 수정을 지켜내세요!",tags:["디펜스","협동","웨이브","보스"],image:"assets/crystal-v2.webp",link:"https://crystal-defense-online.vercel.app/"},
       {title:"곤충 디펜스",subtitle:"작지만 강한 전쟁",description:"곤충 부대를 모아 요새를 지키고 거대한 전투에서 승리하세요!",tags:["전략","디펜스","곤충","전투"],image:"assets/insect-war-v2.webp",link:"https://bug-defense-game.anyanguy12.chatgpt.site/"},
       {title:"카드 RPG",subtitle:"뽑고, 성장하고, 도전!",description:"다양한 영웅 카드를 모으고 강력한 덱으로 새로운 모험에 도전하세요!",tags:["카드","수집","성장","모험"],image:"assets/card-rpg-v2.webp",link:"https://human-rpg-web-test.vercel.app/"},
@@ -87,10 +99,15 @@
     const hero=document.querySelector(".hero"),title=document.querySelector("#gameTitle"),subtitle=document.querySelector("#gameSubtitle"),description=document.querySelector("#gameDescription"),tags=document.querySelector("#gameTags"),link=document.querySelector("#gameLink"),number=document.querySelector("#gameNumber"),dots=document.querySelector("#gameDots");
     let current=0,startX=0,timer;
     games.forEach((game,index)=>{const dot=document.createElement("button");dot.type="button";dot.className="dot";dot.setAttribute("aria-label",`${index+1}번째 게임`);dot.addEventListener("click",()=>showGame(index,true));dots.appendChild(dot)});
-    function showGame(index,restart=false){current=(index+games.length)%games.length;const game=games[current];hero.style.backgroundImage=`url("${game.image}")`;title.textContent=game.title;subtitle.textContent=game.subtitle;description.textContent=game.description;tags.innerHTML=game.tags.map(tag=>`<span>${tag}</span>`).join("");link.href=game.link;number.textContent=`${current+1} / ${games.length}`;[...dots.children].forEach((dot,i)=>dot.classList.toggle("active",i===current));if(restart)startAuto()}
+    function showGame(index,restart=false){current=(index+games.length)%games.length;const game=games[current];hero.style.backgroundImage=`url("${game.image}")`;hero.classList.remove("changing");void hero.offsetWidth;hero.classList.add("changing");title.textContent=game.title;subtitle.textContent=game.subtitle;description.textContent=game.description;tags.innerHTML=game.tags.map(tag=>`<span>${tag}</span>`).join("");link.href=game.link;number.textContent=`${current+1} / ${games.length}`;[...dots.children].forEach((dot,i)=>dot.classList.toggle("active",i===current));if(restart)startAuto()}
     function startAuto(){clearInterval(timer);timer=setInterval(()=>showGame(current+1),6500)}
     hero.addEventListener("touchstart",event=>{startX=event.touches[0].clientX},{passive:true});hero.addEventListener("touchend",event=>{const distance=event.changedTouches[0].clientX-startX;if(Math.abs(distance)>45)showGame(current+(distance<0?1:-1),true)},{passive:true});
-    showGame(0);startAuto();
+    games.forEach(game=>{const image=new Image();image.src=game.image});showGame(0);startAuto();
+
+    // index.html · 새소식 자동 순환
+    const news=["곤충 생존기 대표 이미지가 새로 바뀌었어요!","게임 5종을 좌우로 밀어서 선택할 수 있어요!","재운게임즈의 새로운 업데이트를 준비하고 있어요!"];
+    const newsText=document.querySelector("#newsText"),newsCount=document.querySelector("#newsCount");let newsIndex=0;
+    setInterval(()=>{newsText.style.opacity="0";setTimeout(()=>{newsIndex=(newsIndex+1)%news.length;newsText.textContent=news[newsIndex];newsCount.textContent=`${newsIndex+1} / ${news.length}`;newsText.style.opacity="1"},200)},5000);
   </script>
 </body>
 </html>
