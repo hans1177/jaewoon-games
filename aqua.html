@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#0a80bf">
+  <title>재운 아쿠아</title>
+  <style>
+    /* aqua.html · 기본 */
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    :root{--ink:#07324a;--blue:#0b8fd3;--deep:#075c95;--sky:#aeeeff;--glass:rgba(255,255,255,.92);--shadow:0 12px 30px rgba(0,65,105,.18)}
+    html,body{margin:0;min-width:320px;min-height:100%;background:#82daf5;color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;overscroll-behavior:none}
+    body{min-height:100dvh;overflow:hidden}
+    button{font:inherit;color:inherit;touch-action:manipulation}
+    .app{height:100dvh;display:grid;grid-template-rows:auto 1fr auto;background:linear-gradient(#bdf4ff 0 20%,#e7fbff 20% 21%,#7ad5f2 21% 100%);overflow:hidden}
+
+    /* 상단 */
+    .top{position:relative;z-index:20;display:flex;align-items:center;gap:8px;padding:max(8px,env(safe-area-inset-top)) 10px 8px;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(236,250,255,.9));border-bottom:1px solid rgba(9,100,150,.14);box-shadow:0 5px 18px rgba(7,83,127,.12)}
+    .back{width:38px;height:38px;border:0;border-radius:13px;background:#fff;box-shadow:0 3px 10px rgba(0,75,118,.12);font-weight:1000;font-size:20px}
+    .title{min-width:0;flex:1}.title b{display:block;font-size:18px;letter-spacing:-.7px}.title small{display:block;color:#4e7e95;font-size:10px;font-weight:800}
+    .money{white-space:nowrap;padding:8px 11px;border-radius:14px;background:#fff7d8;border:1px solid #f5d66c;box-shadow:0 3px 10px rgba(128,92,0,.1);font-size:14px;font-weight:1000;color:#805600}.money::before{content:"●";margin-right:5px;color:#f4b81d}
+
+    /* 화면 공통 */
+    .content{position:relative;overflow:hidden}.screen{display:none;width:100%;height:100%;overflow:auto;overscroll-behavior:contain}.screen.active{display:block}
+    .card{background:var(--glass);border:1px solid rgba(255,255,255,.95);border-radius:20px;box-shadow:var(--shadow)}
+    .sectionTitle{display:flex;align-items:end;justify-content:space-between;margin:0 0 10px}.sectionTitle h2{margin:0;font-size:20px;letter-spacing:-.8px}.sectionTitle span{color:#4f819a;font-size:11px;font-weight:800}
+    .btn{border:0;border-radius:16px;padding:13px 15px;background:linear-gradient(180deg,#34b9f1,#0a8dcc);box-shadow:0 5px 0 #066a9f,0 8px 18px rgba(0,102,156,.18);color:#fff;font-weight:1000}.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #066a9f}.btn.secondary{background:linear-gradient(180deg,#fff,#e8f8ff);color:#0a6f9f;box-shadow:0 4px 0 #b9dce9,0 7px 16px rgba(0,87,130,.12)}
+
+    /* 낚시 화면 */
+    #fishScreen{overflow:hidden;background:linear-gradient(#8de2ff 0 28%,#54c1e5 28% 32%,#1387bd 32% 100%)}
+    .lake{position:relative;height:100%;min-height:430px;overflow:hidden;background:linear-gradient(180deg,#8ee7ff 0 27%,#32b7df 27% 31%,#0c7eb5 31% 59%,#075c8d 100%)}
+    .sun{position:absolute;right:9%;top:5%;width:55px;height:55px;border-radius:50%;background:#fff3a2;box-shadow:0 0 35px #fff8bf}
+    .hill{position:absolute;left:-8%;top:18%;width:65%;height:20%;border-radius:50% 50% 0 0;background:#63b67c;transform:rotate(-3deg);box-shadow:inset 0 8px 0 rgba(255,255,255,.15)}
+    .hill.h2{left:43%;top:20%;width:70%;height:16%;background:#4ca976;transform:rotate(4deg)}
+    .surface{position:absolute;left:-5%;right:-5%;top:30%;height:25px;background:repeating-radial-gradient(ellipse at 50% 0,#b8f5ff 0 7px,rgba(255,255,255,0) 8px 23px);opacity:.7;animation:waterMove 6s linear infinite}@keyframes waterMove{to{transform:translateX(45px)}}
+    .dock{position:absolute;left:-4%;top:25.5%;width:45%;height:44px;background:repeating-linear-gradient(90deg,#9b663c 0 38px,#754929 39px 42px);transform:perspective(240px) rotateX(52deg);transform-origin:left top;box-shadow:0 12px 14px rgba(0,45,72,.22)}
+    .rod{position:absolute;left:31%;top:19%;width:4px;height:155px;border-radius:4px;background:linear-gradient(#6b421e,#24160d);transform:rotate(-57deg);transform-origin:bottom;z-index:4}
+    .line{position:absolute;left:55.7%;top:20%;width:1px;height:42%;background:rgba(255,255,255,.78);transform-origin:top;z-index:3;transition:height .3s}.line::after{content:"";position:absolute;bottom:-5px;left:-5px;width:10px;height:10px;border-radius:50%;background:#ff5959;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+    .lake.waiting .line::after{animation:bob .8s ease-in-out infinite}.lake.bite .line::after{animation:bite .18s ease-in-out infinite;background:#ffe05b}@keyframes bob{50%{transform:translateY(5px)}}@keyframes bite{50%{transform:translateY(11px) scale(1.3)}}
+    .underDecor{position:absolute;inset:32% 0 0;pointer-events:none;opacity:.9}.weed{position:absolute;bottom:-3px;width:62px;filter:drop-shadow(0 5px 3px rgba(0,52,77,.16))}.weed.w1{left:5%;height:105px}.weed.w2{right:7%;height:125px}.weed.w3{left:58%;height:85px}.rock{position:absolute;bottom:0;width:84px}.rock.r1{left:25%}.rock.r2{right:24%;width:62px}.sand{position:absolute;left:-5%;right:-5%;bottom:-15px;height:57px;background:linear-gradient(#f3d99d,#c89e64);border-radius:50% 50% 0 0}
+    .ghostFish{position:absolute;width:64px;opacity:.34;filter:saturate(.8) brightness(.9);animation:swimAcross 11s linear infinite}.ghostFish.g1{top:26%;left:-80px}.ghostFish.g2{top:58%;left:-110px;width:50px;animation-duration:14s;animation-delay:-5s}@keyframes swimAcross{to{transform:translateX(calc(100vw + 170px))}}
+    .hud{position:absolute;z-index:8;left:10px;right:10px;top:10px;display:flex;gap:7px;pointer-events:none}.pill{padding:7px 10px;border-radius:13px;background:rgba(255,255,255,.88);box-shadow:0 4px 14px rgba(0,65,100,.14);font-size:11px;font-weight:1000}.pill strong{color:#087bb2}
+    .status{position:absolute;z-index:8;left:50%;top:39%;transform:translateX(-50%);width:min(88%,430px);text-align:center;color:#fff;text-shadow:0 2px 7px rgba(0,52,80,.55);pointer-events:none}.status b{display:block;font-size:25px;letter-spacing:-1px}.status span{display:block;margin-top:4px;font-size:12px;font-weight:800;opacity:.9}
+    .fight{display:none;position:absolute;z-index:10;left:14px;right:14px;bottom:88px;padding:12px;border-radius:20px;background:rgba(4,45,70,.82);backdrop-filter:blur(9px);color:white}.fight.show{display:block}.fightRow{display:grid;grid-template-columns:58px 1fr;gap:9px;align-items:center;margin-bottom:8px}.fightRow:last-child{margin:0}.fightLabel{font-size:11px;font-weight:1000}.bar{height:14px;border-radius:999px;background:rgba(255,255,255,.18);overflow:hidden;border:1px solid rgba(255,255,255,.26)}.fill{height:100%;width:0;border-radius:inherit;transition:width .08s}.tension{background:linear-gradient(90deg,#60e8a8,#ffe35e,#ff5c5c)}.progress{background:linear-gradient(90deg,#67d8ff,#65f0d3)}
+    .controls{position:absolute;z-index:10;left:10px;right:10px;bottom:12px;display:grid;grid-template-columns:1fr;gap:8px}.castBtn,.reelBtn{min-height:61px;border:0;border-radius:20px;color:#fff;font-size:18px;font-weight:1000;letter-spacing:-.5px;box-shadow:0 7px 0 #075f8c,0 12px 24px rgba(0,52,82,.3)}.castBtn{background:linear-gradient(180deg,#36c5ff,#0788c7)}.reelBtn{display:none;background:linear-gradient(180deg,#ffcd56,#f18c25);box-shadow:0 7px 0 #a85a13,0 12px 24px rgba(0,52,82,.3)}.reelBtn.show{display:block}.castBtn.hide{display:none}.castBtn:active,.reelBtn.active{transform:translateY(4px);box-shadow:0 3px 0 #075f8c}
+
+    /* 수족관 */
+    #tankScreen{padding:12px;background:linear-gradient(#dff9ff,#9bdff2)}.tankWrap{height:54%;min-height:300px;position:relative;overflow:hidden;border:9px solid #d9eef4;border-bottom-width:15px;border-radius:24px;background:linear-gradient(#40c9ea,#098bc1 55%,#0872a5);box-shadow:inset 0 0 25px rgba(255,255,255,.28),0 13px 24px rgba(0,78,120,.2)}.tankWrap::before{content:"";position:absolute;inset:0;background:linear-gradient(105deg,rgba(255,255,255,.23),transparent 28% 70%,rgba(255,255,255,.09));pointer-events:none}.tankSand{position:absolute;left:-5%;right:-5%;bottom:-10px;height:58px;background:#e7c47a;border-radius:50% 50% 0 0}.tankWeed{position:absolute;bottom:20px;width:55px}.tankWeed.a{left:5%}.tankWeed.b{right:6%;width:72px}.tankWeed.c{left:53%;width:45px}.bubble{position:absolute;bottom:-20px;border:2px solid rgba(255,255,255,.7);border-radius:50%;animation:rise linear infinite;pointer-events:none}@keyframes rise{to{transform:translateY(-420px);opacity:0}}
+    .tankFish{position:absolute;width:58px;filter:drop-shadow(0 4px 4px rgba(0,50,75,.2));cursor:pointer;animation:swimTank var(--dur) ease-in-out infinite alternate;transform:scaleX(var(--dir));transition:filter .2s}.tankFish.gold{filter:drop-shadow(0 0 10px #ffe681) drop-shadow(0 4px 4px rgba(0,50,75,.2));animation:swimTank var(--dur) ease-in-out infinite alternate,goldGlow 1.2s ease-in-out infinite alternate}@keyframes swimTank{to{left:var(--to);top:var(--toy);transform:scaleX(calc(var(--dir) * -1))}}@keyframes goldGlow{to{filter:drop-shadow(0 0 18px #fff1a6) brightness(1.16)}}
+    .tankInfo{margin-top:10px;padding:12px 13px}.tankInfoTop{display:flex;justify-content:space-between;align-items:center;font-weight:1000}.tankInfo small{display:block;margin-top:4px;color:#5a8194;font-weight:700}.empty{text-align:center;padding:36px 15px;color:#54798a;font-weight:900}
+
+    /* 상점/도감 */
+    #shopScreen,#bookScreen{padding:13px;background:linear-gradient(#e9fbff,#b4e8f5)}.shopGrid{display:grid;gap:10px}.shopItem{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;padding:13px}.shopIcon{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:linear-gradient(#e3f9ff,#b7e9f5);font-size:30px}.shopItem h3{margin:0;font-size:15px}.shopItem p{margin:4px 0 0;color:#5e7e8e;font-size:11px;font-weight:700}.buy{min-width:78px;border:0;border-radius:14px;padding:10px;background:#0e91cc;color:#fff;font-weight:1000}.buy:disabled{background:#adc6d1;color:#eef6f8}.bookGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.bookCard{position:relative;min-height:155px;padding:12px;overflow:hidden}.bookCard.locked{filter:grayscale(1);opacity:.56}.bookCard img{display:block;width:88px;height:58px;object-fit:contain;margin:0 auto 6px}.bookCard h3{margin:0;font-size:14px}.bookCard p{margin:3px 0 0;color:#5d7d8b;font-size:10px;font-weight:800;line-height:1.4}.rarity{position:absolute;right:8px;top:8px;padding:4px 6px;border-radius:8px;background:#eaf7fb;font-size:9px;font-weight:1000}.rarity.legend{background:#fff3b7;color:#9a6a00}
+
+    /* 하단 탭 */
+    .tabs{position:relative;z-index:30;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:7px 8px calc(7px + env(safe-area-inset-bottom));background:rgba(248,253,255,.96);border-top:1px solid rgba(8,93,136,.14);box-shadow:0 -5px 20px rgba(0,68,105,.12)}.tab{border:0;border-radius:14px;padding:7px 3px;background:transparent;color:#6b8b9b;font-size:10px;font-weight:1000}.tab i{display:block;font-style:normal;font-size:21px;line-height:1.2}.tab.active{background:#dff6ff;color:#087db3}
+
+    /* 모달/토스트 */
+    .modal{position:fixed;z-index:80;inset:0;display:none;place-items:center;padding:18px;background:rgba(1,27,43,.55);backdrop-filter:blur(6px)}.modal.show{display:grid}.modalCard{width:min(100%,390px);padding:18px;border-radius:26px;background:linear-gradient(#fff,#eaf9ff);box-shadow:0 20px 60px rgba(0,35,58,.35);text-align:center}.catchGlow{position:relative;margin:auto;width:160px;height:120px;display:grid;place-items:center}.catchGlow::before{content:"";position:absolute;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,#fff4aa,rgba(255,255,255,0) 70%);opacity:.7}.catchFish{position:relative;width:130px;max-height:90px;filter:drop-shadow(0 6px 5px rgba(0,54,80,.22));animation:catchPop .55s cubic-bezier(.2,1.4,.4,1)}@keyframes catchPop{from{transform:scale(.35) rotate(-15deg);opacity:0}}.modalCard h2{margin:4px 0;font-size:25px}.catchMeta{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin:10px 0}.catchMeta span{padding:6px 9px;border-radius:10px;background:#e0f4fa;font-size:11px;font-weight:1000}.modalActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}.modalActions .btn{padding:12px 8px}.toast{position:fixed;z-index:100;left:50%;bottom:88px;transform:translate(-50%,20px);padding:10px 14px;border-radius:14px;background:rgba(4,40,60,.9);color:#fff;font-size:12px;font-weight:900;opacity:0;pointer-events:none;transition:.25s}.toast.show{opacity:1;transform:translate(-50%,0)}
+
+    @media(min-width:760px){body{display:grid;place-items:center;background:#d4f5ff}.app{width:min(100%,520px);height:min(100dvh,900px);border-radius:26px;box-shadow:0 20px 70px rgba(0,70,110,.22);overflow:hidden}.ghostFish{animation-name:swimAcrossDesktop}@keyframes swimAcrossDesktop{to{transform:translateX(690px)}}}
+    @media(max-height:620px){.top{padding-top:6px;padding-bottom:5px}.top .title small{display:none}.back{height:34px;width:34px}.tankWrap{min-height:240px}.controls{bottom:8px}.castBtn,.reelBtn{min-height:52px}.fight{bottom:72px}.status{top:37%}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <button class="back" type="button" aria-label="재운게임즈로 돌아가기" onclick="location.href='/'">‹</button>
+    <div class="title"><b>재운 아쿠아</b><small>낚고 · 모으고 · 키우는 작은 수족관</small></div>
+    <div class="money" id="money">100</div>
+  </header>
+
+  <main class="content">
+    <section class="screen active" id="fishScreen" data-screen="fish">
+      <div class="lake" id="lake">
+        <div class="sun"></div><div class="hill"></div><div class="hill h2"></div><div class="surface"></div><div class="dock"></div><div class="rod"></div><div class="line"></div>
+        <div class="underDecor">
+          <div class="sand"></div>
+          <img class="weed w1" alt="" src="https://raw.githubusercontent.com/Tiddybub/2d-assets/main/characters/fish-pack/Vector/seaweed_green_a.svg">
+          <img class="weed w2" alt="" src="https://raw.githubusercontent.com/Tiddybub/2d-assets/main/characters/fish-pack/Vector/seaweed_pink_a.svg">
+          <img class="weed w3" alt="" src="https://raw.githubusercontent.com/Tiddybub/2d-assets/main/characters/fish-pack/Vector/seaweed_orange_b.svg">
+          <img class="rock r1" alt="" src="https://raw.githubusercontent.com/Tiddybub/2d-assets/main/characters/fish-pack/Vector/rock_a.svg">
+          <img class="rock r2" alt="" src="https://raw.githubusercontent.com/Tiddybub/2d-assets/main/characters/fish-pack/Vector/rock_b.svg">
+          <img class="ghostFish g1" alt="" src="https://raw.githubusercontent.com/Tiddybub/2d-assets/main/characters/fish-pack/Vector/fish_blue.svg">
+          <img class="ghostFish g2" alt="" src="https://raw.githubusercontent.com/Tiddybub/2d-assets/main/characters/fish-pack/Vector/fish_pink.svg">
+        </div>
+        <div class="hud"><div class="pill">낚싯대 <strong id="rodLabel">Lv.1</strong></div><div class="pill">수족관 <strong id="tankCount">0 / 8</strong></div></div>
+        <div class="status"><b id="statusTitle">작은 연못</b><span id="statusText">낚싯줄을 던져 첫 물고기를 잡아보세요.</span></div>
+        <div class="fight" id="fightBox">
+          <div class="fightRow"><div class="fightLabel">장력</div><div class="bar"><div class="fill tension" id="tensionFill"></div></div></div>
+          <div class="fightRow"><div class="fightLabel">끌어오기</div><div class="bar"><div class="fill progress" id="progressFill"></div></div></div>
+        </div>
+        <div class="controls"><button class="castBtn" id="castBtn" type="button">🎣 낚싯줄 던지기</button><button class="reelBtn" id="reelBtn" type="button">꾹 눌러서 릴 감기</button></div>
+      </div>
+    </section>
+
+    <section class="screen" id="tankScreen" data-screen="tank">
+      <div class="sectionTitle"><h2>내 수족관</h2><span id="tankValue">총 가치 0원</span></div>
+      <div class="tankWrap" id="tankWrap">
+        <div class="tankSand"></div>
+        <img class="tankWeed a" alt="" src="https://raw.githubusercontent.com/Tiddybub/2d-assets/main/characters/fish-pack/Vector/seaweed_green_c.svg">
+        <img class="tankWeed b" alt="" src="https://raw.githubusercontent.com/Tiddybub/2d-assets/main/characters/fish-pack/Vector/seaweed_pink_c.svg">
+        <img class="tankWeed c" alt="" src="https://raw.githubusercontent.com/Tiddybub/2d-assets/main/characters/fish-pack/Vector/seaweed_orange_a.svg">
+      </div>
+      <div class="tankInfo card"><div class="tankInfoTop"><span>보관 <b id="tankCount2">0 / 8</b></span><span>최고 기록 <b id="bestWeight">0kg</b></span></div><small>물고기를 터치하면 상세 정보와 판매 버튼이 나옵니다.</small></div>
+    </section>
+
+    <section class="screen" id="shopScreen" data-screen="shop">
+      <div class="sectionTitle"><h2>낚시 상점</h2><span>잡은 물고기를 팔아 업그레이드</span></div>
+      <div class="shopGrid">
+        <article class="shopItem card"><div class="shopIcon">🎣</div><div><h3 id="rodShopTitle">나무 낚싯대</h3><p id="rodShopDesc">힘 +12% · 희귀 물고기 확률 증가</p></div><button class="buy" id="rodBuy" type="button">300원</button></article>
+        <article class="shopItem card"><div class="shopIcon">🐠</div><div><h3 id="tankShopTitle">수족관 확장</h3><p id="tankShopDesc">보관 공간을 8칸 → 12칸으로 확장</p></div><button class="buy" id="tankBuy" type="button">500원</button></article>
+        <article class="shopItem card"><div class="shopIcon">💡</div><div><h3>낚시 팁</h3><p>릴을 계속 누르면 장력이 급격히 올라갑니다. 빨간 구간 전에 손을 떼고 다시 감으세요.</p></div><button class="buy" type="button" disabled>무료</button></article>
+      </div>
+    </section>
+
+    <section class="screen" id="bookScreen" data-screen="book">
+      <div class="sectionTitle"><h2>물고기 도감</h2><span id="bookCount">0 / 6 발견</span></div>
+      <div class="bookGrid" id="bookGrid"></div>
+      <p style="margin:12px 3px;color:#5c7f90;font-size:10px;font-weight:700;line-height:1.5">그래픽: Kenney Fish Pack · CC0. 원본 에셋은 자유롭게 사용 가능한 공개 도메인 자료입니다.</p>
+    </section>
+  </main>
+
+  <nav class="tabs" aria-label="게임 메뉴">
+    <button class="tab active" data-go="fish" type="button"><i>🎣</i>낚시</button>
+    <button class="tab" data-go="tank" type="button"><i>🐠</i>수족관</button>
+    <button class="tab" data-go="shop" type="button"><i>🛒</i>상점</button>
+    <button class="tab" data-go="book" type="button"><i>📖</i>도감</button>
+  </nav>
+</div>
+
+<div class="modal" id="catchModal" aria-modal="true" role="dialog">
+  <div class="modalCard">
+    <div class="catchGlow"><img class="catchFish" id="catchFish" alt="잡은 물고기"></div>
+    <div id="catchRarity" style="font-size:11px;font-weight:1000;color:#0d84ba">일반</div>
+    <h2 id="catchName">붕어</h2>
+    <div class="catchMeta"><span id="catchLength">23cm</span><span id="catchWeight">0.8kg</span><span id="catchPrice">10원</span></div>
+    <div class="modalActions"><button class="btn secondary" id="keepBtn" type="button">수족관 보관</button><button class="btn" id="sellBtn" type="button">바로 판매</button></div>
+  </div>
+</div>
+
+<div class="modal" id="detailModal" aria-modal="true" role="dialog">
+  <div class="modalCard">
+    <div class="catchGlow"><img class="catchFish" id="detailFish" alt="수족관 물고기"></div>
+    <div id="detailRarity" style="font-size:11px;font-weight:1000;color:#0d84ba"></div><h2 id="detailName"></h2>
+    <div class="catchMeta"><span id="detailSize"></span><span id="detailPrice"></span></div>
+    <div class="modalActions"><button class="btn secondary" id="detailClose" type="button">닫기</button><button class="btn" id="detailSell" type="button">판매</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+  // aqua.html · 에셋/물고기 데이터
+  const ASSET='https://raw.githubusercontent.com/Tiddybub/2d-assets/main/characters/fish-pack/Vector/';
+  const FISH=[
+    {id:'crucian',name:'붕어',rarity:'일반',rank:1,src:'fish_brown.svg',chance:34,base:10,minL:16,maxL:38,diff:.75},
+    {id:'minnow',name:'피라미',rarity:'일반',rank:1,src:'fish_grey_long_a.svg',chance:28,base:15,minL:10,maxL:24,diff:.7},
+    {id:'carp',name:'잉어',rarity:'희귀',rank:2,src:'fish_red.svg',chance:20,base:40,minL:32,maxL:82,diff:1.0},
+    {id:'catfish',name:'메기',rarity:'레어',rank:3,src:'fish_grey_long_b.svg',chance:10,base:80,minL:38,maxL:105,diff:1.18},
+    {id:'goldfish',name:'금붕어',rarity:'에픽',rank:4,src:'fish_orange.svg',chance:6,base:150,minL:12,maxL:31,diff:1.35},
+    {id:'goldcarp',name:'황금잉어',rarity:'전설',rank:5,src:'fish_orange_outline.svg',chance:2,base:1000,minL:65,maxL:125,diff:1.58,gold:true}
+  ];
+  const ROD_NAMES=['낡은 낚싯대','나무 낚싯대','카본 낚싯대','황금 낚싯대','전설의 낚싯대'];
+  const ROD_COST=[0,300,1000,3000,8000];
+  const TANK_CAP=[8,12,16,24];
+  const TANK_COST=[0,500,1500,4500];
+  const SAVE_KEY='jaewoon_aqua_v1';
+
+  // aqua.html · 저장
+  const defaultSave=()=>({money:100,rod:0,tankLv:0,tank:[],seen:{},records:{},caught:0});
+  let save=defaultSave();
+  try{const raw=localStorage.getItem(SAVE_KEY);if(raw)save={...save,...JSON.parse(raw)}}catch(e){}
+  function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+
+  // aqua.html · 공통 UI
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const money=$('#money'),tankCount=$('#tankCount'),tankCount2=$('#tankCount2'),rodLabel=$('#rodLabel'),toast=$('#toast');
+  let toastTimer=0;
+  function fmt(n){return Math.round(n).toLocaleString('ko-KR')}
+  function say(text){toast.textContent=text;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),1700)}
+  function vibrate(ms=25){try{navigator.vibrate?.(ms)}catch(e){}}
+  function beep(type='tap'){
+    try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const c=beep.ctx||(beep.ctx=new A());const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);const now=c.currentTime;const f=type==='bite'?720:type==='catch'?520:300;o.frequency.setValueAtTime(f,now);if(type==='catch')o.frequency.exponentialRampToValueAtTime(920,now+.18);g.gain.setValueAtTime(.045,now);g.gain.exponentialRampToValueAtTime(.001,now+.2);o.start(now);o.stop(now+.21)}catch(e){}
+  }
+  function updateHeader(){money.textContent=fmt(save.money);rodLabel.textContent=`Lv.${save.rod+1}`;const cap=TANK_CAP[save.tankLv];tankCount.textContent=`${save.tank.length} / ${cap}`;tankCount2.textContent=`${save.tank.length} / ${cap}`}
+  $$('.tab').forEach(btn=>btn.addEventListener('click',()=>{const go=btn.dataset.go;$$('.screen').forEach(s=>s.classList.toggle('active',s.dataset.screen===go));$$('.tab').forEach(b=>b.classList.toggle('active',b===btn));if(go==='tank')renderTank();if(go==='shop')renderShop();if(go==='book')renderBook();beep()}));
+
+  // aqua.html · 낚시 상태
+  const lake=$('#lake'),castBtn=$('#castBtn'),reelBtn=$('#reelBtn'),fightBox=$('#fightBox'),statusTitle=$('#statusTitle'),statusText=$('#statusText'),tensionFill=$('#tensionFill'),progressFill=$('#progressFill');
+  let state='idle',target=null,biteTimer=0,escapeTimer=0,reeling=false,tension=28,progress=0,lastTime=0,lowTime=0;
+  function chooseFish(){
+    const bonus=save.rod*1.15;const weights=FISH.map(f=>f.chance*(f.rank>1?bonus:Math.max(.78,1-(bonus-1)*.28)));let roll=Math.random()*weights.reduce((a,b)=>a+b,0);
+    for(let i=0;i<FISH.length;i++){roll-=weights[i];if(roll<=0)return FISH[i]}return FISH[0];
+  }
+  function setIdle(text='낚싯줄을 던져 첫 물고기를 잡아보세요.'){
+    state='idle';target=null;reeling=false;lake.classList.remove('waiting','bite');castBtn.classList.remove('hide');reelBtn.classList.remove('show','active');fightBox.classList.remove('show');statusTitle.textContent='작은 연못';statusText.textContent=text;clearTimeout(biteTimer);clearTimeout(escapeTimer);
+  }
+  function cast(){if(state!=='idle')return;state='waiting';lake.classList.add('waiting');castBtn.classList.add('hide');statusTitle.textContent='찌를 보는 중…';statusText.textContent='물고기가 물 때까지 기다리세요.';beep();vibrate();const wait=1100+Math.random()*2300;biteTimer=setTimeout(startBite,wait)}
+  function startBite(){if(state!=='waiting')return;state='bite';lake.classList.remove('waiting');lake.classList.add('bite');target=chooseFish();statusTitle.textContent='지금!';statusText.textContent='찌를 터치해서 낚아채세요!';beep('bite');vibrate([30,30,45]);escapeTimer=setTimeout(()=>{if(state==='bite'){setIdle('너무 늦었어요. 물고기가 미끼만 먹고 도망갔습니다.');say('물고기가 도망갔어요!')}},1500)}
+  function hook(){if(state!=='bite')return;clearTimeout(escapeTimer);state='fight';lake.classList.remove('bite');fightBox.classList.add('show');reelBtn.classList.add('show');tension=30;progress=6;lowTime=0;statusTitle.textContent=target.name+'가 물었다!';statusText.textContent='장력이 빨간색에 닿기 전에 손을 떼세요.';beep();vibrate(45);lastTime=performance.now();requestAnimationFrame(fightLoop)}
+  function fightLoop(now){if(state!=='fight')return;const dt=Math.min(.04,(now-lastTime)/1000||.016);lastTime=now;const power=1+save.rod*.14;const diff=target.diff;
+    if(reeling){tension+=dt*(32+diff*18);progress+=dt*(21*power/(.72+diff*.42));}else{tension-=dt*(25+save.rod*1.4);progress-=dt*(3.1+diff*1.4)}
+    tension+=Math.sin(now/220)*dt*(2+diff*2);tension=Math.max(5,tension);progress=Math.max(0,progress);
+    if(tension>92){tension=100;drawFight();state='idle';setTimeout(()=>{setIdle('줄이 끊어졌어요. 장력이 높을 때는 릴에서 손을 떼세요.');say('낚싯줄이 끊어졌어요!');vibrate([80,40,80])},120);return}
+    if(tension<9){lowTime+=dt;if(lowTime>2.1){state='idle';setTimeout(()=>{setIdle('줄이 너무 느슨해져 물고기가 빠져나갔어요.');say('물고기가 빠져나갔어요!')},120);return}}else lowTime=0;
+    if(progress>=100){progress=100;drawFight();state='caught';setTimeout(landFish,260);return}
+    drawFight();requestAnimationFrame(fightLoop)
+  }
+  function drawFight(){tensionFill.style.width=tension+'%';progressFill.style.width=progress+'%'}
+  function landFish(){const f=target;const length=+(f.minL+Math.random()*(f.maxL-f.minL)).toFixed(1);const factor=(length/f.minL);const weight=+((length*length*length)/95000*(.6+f.rank*.18)).toFixed(2);const quality=.78+Math.min(1.8,factor)*.24;const price=Math.max(f.base,Math.round(f.base*quality*(.9+Math.random()*.22)));const item={uid:Date.now()+Math.random(),id:f.id,length,weight,price,caughtAt:Date.now()};save.caught++;save.seen[f.id]=true;const rec=save.records[f.id]||{length:0,weight:0};save.records[f.id]={length:Math.max(rec.length,length),weight:Math.max(rec.weight,weight)};persist();openCatch(item);beep('catch');vibrate([35,40,75])}
+  castBtn.addEventListener('click',cast);lake.addEventListener('click',e=>{if(state==='bite'&&!e.target.closest('button'))hook()});
+  const setReel=v=>{if(state!=='fight')return;reeling=v;reelBtn.classList.toggle('active',v);if(v){beep();vibrate(12)}};
+  reelBtn.addEventListener('pointerdown',e=>{e.preventDefault();setReel(true)});['pointerup','pointercancel','pointerleave'].forEach(ev=>reelBtn.addEventListener(ev,()=>setReel(false)));
+
+  // aqua.html · 포획 결과
+  const catchModal=$('#catchModal');let pending=null;
+  function fishById(id){return FISH.find(f=>f.id===id)}
+  function openCatch(item){pending=item;const f=fishById(item.id);$('#catchFish').src=ASSET+f.src;$('#catchFish').style.filter=f.gold?'drop-shadow(0 0 16px #ffd95c) brightness(1.18)':'drop-shadow(0 6px 5px rgba(0,54,80,.22))';$('#catchRarity').textContent=f.rarity;$('#catchRarity').style.color=f.gold?'#ad7600':'#0d84ba';$('#catchName').textContent=f.name;$('#catchLength').textContent=item.length+'cm';$('#catchWeight').textContent=item.weight+'kg';$('#catchPrice').textContent=fmt(item.price)+'원';$('#keepBtn').disabled=save.tank.length>=TANK_CAP[save.tankLv];$('#keepBtn').textContent=$('#keepBtn').disabled?'수족관 가득 참':'수족관 보관';catchModal.classList.add('show')}
+  function finishCatch(msg){pending=null;catchModal.classList.remove('show');updateHeader();renderBook();setIdle(msg)}
+  $('#keepBtn').addEventListener('click',()=>{if(!pending||save.tank.length>=TANK_CAP[save.tankLv])return;save.tank.push(pending);persist();finishCatch('수족관에 안전하게 보관했습니다.');say('수족관에 보관했어요!')});
+  $('#sellBtn').addEventListener('click',()=>{if(!pending)return;save.money+=pending.price;const p=pending.price;persist();finishCatch('판매 완료! 다시 낚아 더 큰 기록에 도전하세요.');say(`+${fmt(p)}원`)});
+
+  // aqua.html · 수족관
+  const tankWrap=$('#tankWrap');let detailIndex=-1;
+  function renderTank(){updateHeader();tankWrap.querySelectorAll('.tankFish,.bubble,.empty').forEach(n=>n.remove());const value=save.tank.reduce((a,b)=>a+b.price,0);$('#tankValue').textContent=`총 가치 ${fmt(value)}원`;$('#bestWeight').textContent=(save.tank.reduce((m,x)=>Math.max(m,x.weight),0)||0)+'kg';
+    if(!save.tank.length){const e=document.createElement('div');e.className='empty';e.textContent='아직 물고기가 없어요.\n낚시에서 잡은 물고기를 보관해보세요.';e.style.whiteSpace='pre-line';e.style.position='absolute';e.style.inset='25% 12px auto';e.style.color='rgba(255,255,255,.9)';tankWrap.appendChild(e)}
+    save.tank.forEach((item,i)=>{const f=fishById(item.id),img=document.createElement('img');img.src=ASSET+f.src;img.alt=f.name;img.className='tankFish'+(f.gold?' gold':'');const top=18+(i*17)%55,left=7+(i*23)%61;img.style.top=top+'%';img.style.left=left+'%';img.style.setProperty('--to',(18+(i*31)%63)+'%');img.style.setProperty('--toy',(12+(i*29)%60)+'%');img.style.setProperty('--dur',(4.5+(i%4)*1.1)+'s');img.style.setProperty('--dir',i%2?'-1':'1');img.style.width=(44+Math.min(34,item.length*.28))+'px';img.addEventListener('click',()=>openDetail(i));tankWrap.appendChild(img)});
+    for(let i=0;i<10;i++){const b=document.createElement('i');b.className='bubble';const s=5+(i%4)*3;b.style.width=s+'px';b.style.height=s+'px';b.style.left=(8+(i*19)%86)+'%';b.style.animationDuration=(5+(i%5))+'s';b.style.animationDelay=(-i*.7)+'s';tankWrap.appendChild(b)}
+  }
+  function openDetail(i){detailIndex=i;const item=save.tank[i],f=fishById(item.id);$('#detailFish').src=ASSET+f.src;$('#detailFish').style.filter=f.gold?'drop-shadow(0 0 16px #ffd95c) brightness(1.18)':'drop-shadow(0 6px 5px rgba(0,54,80,.22))';$('#detailRarity').textContent=f.rarity;$('#detailName').textContent=f.name;$('#detailSize').textContent=`${item.length}cm · ${item.weight}kg`;$('#detailPrice').textContent=`판매 ${fmt(item.price)}원`;$('#detailModal').classList.add('show')}
+  $('#detailClose').addEventListener('click',()=>$('#detailModal').classList.remove('show'));$('#detailSell').addEventListener('click',()=>{if(detailIndex<0||!save.tank[detailIndex])return;const item=save.tank.splice(detailIndex,1)[0];save.money+=item.price;persist();$('#detailModal').classList.remove('show');updateHeader();renderTank();say(`+${fmt(item.price)}원`)});
+
+  // aqua.html · 상점
+  function renderShop(){updateHeader();const nextRod=save.rod+1,rb=$('#rodBuy');if(nextRod>=ROD_NAMES.length){$('#rodShopTitle').textContent='전설의 낚싯대';$('#rodShopDesc').textContent='최고 등급 낚싯대를 보유 중';rb.textContent='MAX';rb.disabled=true}else{$('#rodShopTitle').textContent=ROD_NAMES[nextRod];$('#rodShopDesc').textContent=`힘 +${12+save.rod*3}% · 희귀 물고기 확률 증가`;rb.textContent=fmt(ROD_COST[nextRod])+'원';rb.disabled=save.money<ROD_COST[nextRod]}
+    const nextTank=save.tankLv+1,tb=$('#tankBuy');if(nextTank>=TANK_CAP.length){$('#tankShopDesc').textContent=`최대 ${TANK_CAP[save.tankLv]}칸 확장 완료`;tb.textContent='MAX';tb.disabled=true}else{$('#tankShopDesc').textContent=`보관 공간을 ${TANK_CAP[save.tankLv]}칸 → ${TANK_CAP[nextTank]}칸으로 확장`;tb.textContent=fmt(TANK_COST[nextTank])+'원';tb.disabled=save.money<TANK_COST[nextTank]}}
+  $('#rodBuy').addEventListener('click',()=>{const n=save.rod+1;if(n>=ROD_NAMES.length||save.money<ROD_COST[n])return;save.money-=ROD_COST[n];save.rod=n;persist();renderShop();updateHeader();say(`${ROD_NAMES[n]} 구매 완료!`);beep('catch')});
+  $('#tankBuy').addEventListener('click',()=>{const n=save.tankLv+1;if(n>=TANK_CAP.length||save.money<TANK_COST[n])return;save.money-=TANK_COST[n];save.tankLv=n;persist();renderShop();updateHeader();say(`수족관 ${TANK_CAP[n]}칸으로 확장!`);beep('catch')});
+
+  // aqua.html · 도감
+  function renderBook(){const grid=$('#bookGrid');grid.innerHTML='';let count=0;FISH.forEach(f=>{const seen=!!save.seen[f.id];if(seen)count++;const rec=save.records[f.id]||{};const el=document.createElement('article');el.className='bookCard card'+(seen?'':' locked');el.innerHTML=`<span class="rarity ${f.gold?'legend':''}">${seen?f.rarity:'미발견'}</span><img src="${ASSET+f.src}" alt="${seen?f.name:'미발견 물고기'}"><h3>${seen?f.name:'???'}</h3><p>${seen?`기록 ${rec.length||0}cm · ${rec.weight||0}kg<br>기본 판매가 ${fmt(f.base)}원`:'작은 연못에서 낚을 수 있습니다.'}</p>`;grid.appendChild(el)});$('#bookCount').textContent=`${count} / ${FISH.length} 발견`}
+
+  // aqua.html · 시작
+  updateHeader();renderBook();setIdle();
+</script>
+</body>
+</html>
