@@ -29,13 +29,14 @@
     /* 대표 게임 */
     .heroStage{position:relative;width:92%;margin:0 auto}.heroFrame{position:relative;width:84%;margin:0 auto;padding:7px;border-radius:30px;background:#fff;box-shadow:0 12px 26px rgba(27,89,135,.18),0 0 0 2px rgba(255,255,255,.96)}
     .hero{position:relative;min-height:455px;overflow:hidden;border-radius:24px;background:#294e3a url("assets/insect-main-v3.webp") center/cover no-repeat}
+    .hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(7,25,39,.64) 0%,rgba(7,25,39,.36) 43%,rgba(7,25,39,.05) 72%)}
     .hero{transition:background-image .35s ease}.hero.changing{animation:slideChange .42s ease}@keyframes slideChange{0%{opacity:.62;transform:scale(.992)}100%{opacity:1;transform:scale(1)}}
-    .heroCopy{position:absolute;z-index:2;left:38px;top:34px;width:min(48%,430px);color:#fff;text-shadow:0 2px 5px rgba(0,32,28,.55)}
-    .badge{position:relative;display:inline-block;padding:3px 4px 5px;background:transparent;font-family:"Black Han Sans","Noto Sans KR",sans-serif;font-size:20px;font-weight:1000;letter-spacing:-1px;color:#fff6a8;text-shadow:0 2px 0 #147bb3,0 0 8px rgba(255,240,92,.9);transform:rotate(-2deg);animation:badgePop 1.8s ease-in-out infinite}.badge:before{content:"✦";position:absolute;left:-11px;top:-7px;color:#fff36b;font-size:17px;animation:starTwinkle 1.2s ease-in-out infinite}.badge:after{content:"";position:absolute;left:1px;right:1px;bottom:1px;height:4px;border-radius:50%;background:#54c9ff;box-shadow:0 0 9px #fff36b}@keyframes badgePop{50%{transform:rotate(-2deg) scale(1.06)}}@keyframes starTwinkle{50%{opacity:.35;transform:scale(.65) rotate(25deg)}}@media(prefers-reduced-motion:reduce){.badge,.badge:before{animation:none}}
-    .hero h1{margin:22px 0 6px;font-size:clamp(42px,7vw,62px);letter-spacing:-3px;line-height:1.05}
-    .hero h2{margin:0 0 15px;font-size:23px}.hero p{font-size:15px;line-height:1.7;margin:0 0 16px}
-    .chips{display:flex;flex-wrap:wrap;gap:8px}.chips span{padding:7px 11px;border:1px solid rgba(255,255,255,.75);border-radius:10px;background:rgba(8,47,39,.35);font-size:13px;font-weight:900}
-    .play{display:inline-flex;align-items:center;justify-content:center;min-width:255px;min-height:68px;margin-top:24px;border:2px solid rgba(255,255,255,.9);border-radius:18px;background:#43baf2;box-shadow:none;color:#fff;font-size:24px;font-weight:1000;text-shadow:none}
+    .heroCopy{position:absolute;z-index:2;left:38px;top:34px;width:min(48%,430px);color:#fff;text-shadow:0 3px 8px rgba(0,0,0,.88),0 1px 1px rgba(0,0,0,.9)}
+    .badge{position:relative;display:inline-block;padding:7px 12px 8px;border:2px solid rgba(255,255,255,.95);border-radius:14px;background:rgba(24,120,202,.92);font-family:"Black Han Sans","Noto Sans KR",sans-serif;font-size:21px;font-weight:1000;letter-spacing:-1px;color:#fff8a6;text-shadow:0 2px 0 rgba(13,77,129,.95),0 0 7px rgba(255,245,111,.45);box-shadow:0 5px 12px rgba(0,0,0,.25);transform:rotate(-1deg);animation:badgePop 1.8s ease-in-out infinite}.badge:before{content:"★";margin-right:6px;color:#fff36b;font-size:18px}.badge:after{content:"";position:absolute;left:10px;right:10px;bottom:3px;height:2px;border-radius:2px;background:rgba(255,244,103,.88)}@keyframes badgePop{50%{transform:rotate(-1deg) scale(1.04)}}@media(prefers-reduced-motion:reduce){.badge{animation:none}}
+    .hero h1{margin:20px 0 7px;font-family:"Black Han Sans","Noto Sans KR",sans-serif;font-size:clamp(44px,7vw,64px);font-weight:900;letter-spacing:-2px;line-height:1.03;color:#fff;text-shadow:0 4px 0 rgba(11,54,91,.96),0 6px 16px rgba(0,0,0,.9),2px 0 0 rgba(9,47,79,.85),-2px 0 0 rgba(9,47,79,.85)}
+    .hero h2{margin:0 0 15px;font-size:23px;font-weight:900;text-shadow:0 3px 8px rgba(0,0,0,.9)}.hero p{font-size:15px;line-height:1.7;margin:0 0 16px;font-weight:800;text-shadow:0 2px 5px rgba(0,0,0,.9)}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}.chips span{padding:7px 11px;border:1px solid rgba(255,255,255,.85);border-radius:10px;background:rgba(8,47,39,.55);font-size:13px;font-weight:900}
+    .play{display:inline-flex;align-items:center;justify-content:center;min-width:255px;min-height:68px;margin-top:24px;border:2px solid rgba(255,255,255,.9);border-radius:18px;background:#43baf2;box-shadow:none;color:#fff;font-size:24px;font-weight:1000;text-shadow:0 2px 4px rgba(0,0,0,.35)}
     .slideArrow{position:absolute;z-index:8;top:50%;display:grid;place-items:center;width:36px;height:36px;padding:0;border:2px solid #fff;border-radius:50%;background:#fff;color:#278ff5;box-shadow:0 5px 12px rgba(28,86,131,.22);font-size:25px;font-weight:900;line-height:1;transform:translateY(-50%);cursor:pointer}.slideArrow.prev{left:2px}.slideArrow.next{right:2px}.slideArrow:active{transform:translateY(-50%) scale(.93);background:#eaf8ff}.heroNum{position:absolute;z-index:3;right:18px;bottom:16px;padding:8px 13px;border-radius:999px;background:rgba(13,38,64,.82);color:#fff;font-size:14px;font-weight:900}
     .dots{display:flex;justify-content:center;gap:9px;padding:18px 0 8px}.dot{width:11px;height:11px;padding:0;border:2px solid rgba(255,255,255,.92);border-radius:50%;background:rgba(39,134,218,.22);box-shadow:0 2px 5px rgba(26,92,140,.18)}.dot.active{background:#278ff5}
 
@@ -53,14 +54,14 @@
     .reviewForm{display:grid;grid-template-columns:75px 1fr auto;gap:6px;margin-top:9px}.reviewForm input{min-width:0;height:36px;padding:0 10px;border:1px solid #a9d9ef;border-radius:10px;outline:none;background:#fff;color:#29445e;font:700 12px inherit}.reviewForm input:focus{border-color:#43baf2}.reviewForm button{height:36px;padding:0 13px;border:0;border-radius:10px;background:#43baf2;color:#fff;font-size:12px;font-weight:1000}.reviewNotice{display:block;margin-top:6px;color:#69859b;font-size:10px}
 
     /* 개발자 프로필 */
-    .profile{margin:0 0 6px;padding:8px 4px 2px;border:0;border-radius:0;background:transparent;box-shadow:none;color:#29445e;font-family:"Jua","Noto Sans KR",sans-serif}
+    .profile{margin:0 0 6px;padding:10px 12px 8px;border:2px solid #d8ebf5;border-radius:20px;background:#fff!important;background-image:linear-gradient(#fff,#fff)!important;box-shadow:0 8px 18px rgba(31,101,151,.12);color:#29445e;font-family:"Jua","Noto Sans KR",sans-serif;forced-color-adjust:none}
     .profileTop{display:grid;grid-template-columns:165px 1fr;gap:20px;align-items:center}
-    .profilePhoto{overflow:hidden;aspect-ratio:4/5;height:auto;padding:5px;border:1px solid rgba(255,255,255,.92);border-radius:18px;background:#fff;box-shadow:0 6px 14px rgba(47,93,128,.16)}
+    .profilePhoto{overflow:hidden;aspect-ratio:4/5;height:auto;padding:5px;border:1px solid #dfeaf0;border-radius:18px;background:#fff;box-shadow:0 6px 14px rgba(47,93,128,.16)}
     .profilePhoto img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 44%;border-radius:13px}
     .profileDetails{min-width:0}.profileTitle{display:flex;align-items:center;gap:7px;margin:0 0 8px;color:#135da7;font-family:"Jua","Noto Sans KR",sans-serif;font-size:23px;font-weight:400;line-height:1}.profileName{font-family:"Jua","Noto Sans KR",sans-serif;font-size:31px;font-weight:400}.profileStar{color:#3c9ff0}
     .profileGrid{display:grid;gap:1px}.profileItem{display:grid;grid-template-columns:120px 1fr;align-items:center;min-height:28px;padding:1px 2px;border:0;background:transparent}.profileItem strong{margin:0;color:#1768ad;font-family:"Jua","Noto Sans KR",sans-serif;font-size:14px;font-weight:400}.profileItem span{color:#384c5e;font-family:"Jua","Noto Sans KR",sans-serif;font-size:17px;font-weight:400;line-height:1.25}
-    .profileActions{display:grid;grid-template-columns:1fr 1.08fr;gap:9px;margin-top:8px;padding-top:8px;border-top:1px dashed rgba(103,150,181,.45)}.staffLabel,.profileContact{display:flex;align-items:center;justify-content:center;gap:7px;min-height:39px;border-radius:12px;font-family:"Jua","Noto Sans KR",sans-serif;font-size:14px;font-weight:400}.staffLabel{color:#155ea5;background:rgba(255,255,255,.5)}.profileContact{background:linear-gradient(135deg,#59b8f8,#2f8dea);color:#fff;box-shadow:0 4px 9px rgba(37,135,237,.17)}
-    .profileQuote{margin:7px 0 0;padding-top:7px;border-top:1px solid rgba(122,157,179,.3);text-align:center;color:#394e60;font-family:"Jua","Noto Sans KR",sans-serif;font-size:19px;line-height:1.2}.profileQuote b{margin-right:6px;color:#f0b62e;font-size:22px}
+    .profileActions{display:grid;grid-template-columns:1fr 1.08fr;gap:9px;margin-top:8px;padding-top:8px;border-top:1px dashed rgba(103,150,181,.45)}.staffLabel,.profileContact{display:flex;align-items:center;justify-content:center;gap:7px;min-height:39px;border-radius:12px;font-family:"Jua","Noto Sans KR",sans-serif;font-size:14px;font-weight:400}.staffLabel{color:#155ea5;background:#f4fbff}.profileContact{background:linear-gradient(135deg,#59b8f8,#2f8dea);color:#fff;box-shadow:0 4px 9px rgba(37,135,237,.17)}
+    .profileQuote{margin:7px 0 0;padding-top:7px;border-top:1px solid #e1ebf1;text-align:center;color:#394e60;font-family:"Jua","Noto Sans KR",sans-serif;font-size:19px;line-height:1.2}.profileQuote b{margin-right:6px;color:#f0b62e;font-size:22px}
 
     /* 하단 */
     .footer{margin-top:12px;text-align:center;color:#487492;font-size:13px;font-weight:800}
@@ -68,12 +69,12 @@
     /* 모바일 */
     @media(max-width:640px){
       .shell{padding:0 9px 24px}.brand{margin:0;padding:5px 0 2px}.brand img{width:85%}
-      .heroFrame{width:94%;margin:0 auto;padding:5px;border-radius:22px}.slideArrow{width:26px;height:26px;border-width:1px;font-size:19px;box-shadow:0 3px 8px rgba(28,86,131,.2)}.slideArrow.prev{left:1px}.slideArrow.next{right:1px}.hero{min-height:224px;border-radius:18px;background-position:51% center}
+      .heroFrame{width:94%;margin:0 auto;padding:5px;border-radius:22px}.slideArrow{width:26px;height:26px;border-width:1px;font-size:19px;box-shadow:0 3px 8px rgba(28,86,131,.2)}.slideArrow.prev{left:1px}.slideArrow.next{right:1px}.hero{min-height:224px;border-radius:18px;background-position:51% center}.hero:after{background:linear-gradient(90deg,rgba(7,25,39,.72) 0%,rgba(7,25,39,.46) 54%,rgba(7,25,39,.08) 82%)}
       .below{width:94%;padding:0 8px 2px}.dots{padding:15px 0 7px}
-      .heroCopy{left:14px;right:14px;top:8px;bottom:0;width:auto;padding-right:25px}.badge{padding:3px 3px 4px;font-size:18px}.hero h1{margin-top:7px;font-size:25px}.hero h2{margin-bottom:5px;font-size:13px}.hero p{display:none}.chips{gap:3px}.chips span{padding:3px 6px;font-size:9px}.play{position:absolute;left:0;bottom:15px;width:205px;min-height:42px;margin:0;border-width:2px;border-radius:12px;font-size:16px;box-shadow:none}.heroNum{right:9px;bottom:8px;padding:4px 8px;font-size:10px}
+      .heroCopy{left:14px;right:14px;top:8px;bottom:0;width:auto;padding-right:25px}.badge{padding:5px 8px 6px;border-radius:10px;font-size:15px}.badge:before{font-size:13px;margin-right:4px}.hero h1{margin-top:8px;font-size:29px;letter-spacing:-1px;text-shadow:0 3px 0 rgba(11,54,91,.98),0 5px 11px rgba(0,0,0,.95),1px 0 0 rgba(9,47,79,.9),-1px 0 0 rgba(9,47,79,.9)}.hero h2{margin-bottom:5px;font-size:13px}.hero p{display:none}.chips{gap:3px}.chips span{padding:3px 6px;font-size:9px}.play{position:absolute;left:0;bottom:15px;width:205px;min-height:42px;margin:0;border-width:2px;border-radius:12px;font-size:16px;box-shadow:none}.heroNum{right:9px;bottom:8px;padding:4px 8px;font-size:10px}
       .news{grid-template-columns:auto auto minmax(0,1fr) auto;gap:6px;min-height:46px;margin-top:3px;padding:7px 9px;border-radius:16px}.newsTitle{font-size:16px}.newsNew{padding:3px 5px;font-size:9px}.newsText{font-size:15px}.newsCount{font-size:10px}
       .reviews{padding:10px;border-radius:16px}.reviewHead{margin-bottom:5px}.reviewHead strong{font-size:20px}.reviewView{gap:6px}.reviewText{font-size:16px}.reviewForm{grid-template-columns:62px 1fr auto}.reviewForm input{padding:0 7px}.reviewForm button{padding:0 9px}
-      .profile{margin-top:0;padding:5px 1px 0}.profileTop{grid-template-columns:92px 1fr;gap:9px;align-items:center}.profilePhoto{padding:3px;border-radius:13px}.profilePhoto img{border-radius:10px}.profileTitle{margin-bottom:5px;font-size:15px;gap:4px}.profileName{font-size:22px}.profileGrid{gap:0}.profileItem{display:grid;grid-template-columns:82px 1fr;min-height:22px;padding:0}.profileItem strong{font-size:12px;line-height:1.1}.profileItem span{font-size:12px;line-height:1.12}.profileActions{grid-template-columns:1fr 1.05fr;gap:6px;margin-top:7px;padding-top:7px}.staffLabel,.profileContact{min-height:34px;border-radius:10px;font-size:11px}.profileQuote{margin-top:6px;padding-top:6px;font-size:15px}.profileQuote b{margin-right:4px;font-size:18px}
+      .profile{margin-top:0;padding:8px 8px 6px;border-radius:16px}.profileTop{grid-template-columns:92px 1fr;gap:9px;align-items:center}.profilePhoto{padding:3px;border-radius:13px}.profilePhoto img{border-radius:10px}.profileTitle{margin-bottom:5px;font-size:15px;gap:4px}.profileName{font-size:22px}.profileGrid{gap:0}.profileItem{display:grid;grid-template-columns:82px 1fr;min-height:22px;padding:0}.profileItem strong{font-size:12px;line-height:1.1}.profileItem span{font-size:12px;line-height:1.12}.profileActions{grid-template-columns:1fr 1.05fr;gap:6px;margin-top:7px;padding-top:7px}.staffLabel,.profileContact{min-height:34px;border-radius:10px;font-size:11px}.profileQuote{margin-top:6px;padding-top:6px;font-size:15px}.profileQuote b{margin-right:4px;font-size:18px}
       .footer{font-size:12px}
     }
   </style>
@@ -90,14 +91,14 @@
         <section class="heroFrame" aria-label="추천 게임">
         <div class="hero">
           <div class="heroCopy">
-            <span class="badge">★ 추천 게임</span>
+            <span class="badge">추천 게임</span>
             <h1 id="gameTitle">곤충 생존기</h1>
             <h2 id="gameSubtitle">작은 세계, 큰 모험</h2>
             <p id="gameDescription">거대한 자연 속에서 채집하고, 만들고, 탐험하며 살아남아보세요!</p>
             <div class="chips" id="gameTags"><span>생존</span><span>제작</span><span>탐험</span><span>협동 플레이</span></div>
             <a class="play" id="gameLink" href="/play_survival_v4.html">▶&nbsp; 게임 시작</a>
           </div>
-          <div class="heroNum" id="gameNumber">1 / 7</div>
+          <div class="heroNum" id="gameNumber">1 / 6</div>
         </div>
         </section>
         <button class="slideArrow next" id="nextGame" type="button" aria-label="다음 게임">›</button>
@@ -108,8 +109,8 @@
       <section class="news" aria-label="재운게임즈 새소식">
         <strong class="newsTitle">🧸 재운게임즈 새소식</strong>
         <span class="newsNew">NEW</span>
-        <span class="newsText" id="newsText">신작 코어 워즈가 추가됐어요!</span>
-        <span class="newsCount" id="newsCount">1 / 5</span>
+        <span class="newsText" id="newsText">신작 무인도 마을이 추가됐어요!</span>
+        <span class="newsCount" id="newsCount">1 / 4</span>
       </section>
 
       <section class="reviews" aria-label="게임 한줄평">
@@ -157,8 +158,7 @@
       {title:"곤충 디펜스",subtitle:"작지만 강한 전쟁",description:"곤충 부대를 모아 요새를 지키고 거대한 전투에서 승리하세요!",tags:["전략","디펜스","곤충","전투"],image:"assets/insect-war-v2.webp",link:"https://bug-defense-game.anyanguy12.chatgpt.site/"},
       {title:"휴먼 GO",subtitle:"뽑고, 성장하고, 도전!",description:"다양한 영웅 카드를 모으고 강력한 덱으로 새로운 모험에 도전하세요!",tags:["카드","수집","성장","모험"],image:"assets/card-rpg-v2.webp",link:"https://human-rpg-web-test.vercel.app/"},
       {title:"대충 RPG",subtitle:"나만의 영웅 이야기",description:"신비한 포탈을 지나 새로운 세계를 탐험하고 전설의 영웅이 되어보세요!",tags:["RPG","전투","탐험","스토리"],image:"assets/fantasy-rpg-v2.webp",link:"/rpg-play.html"},
-      {title:"무인도 마을",subtitle:"작은 섬, 커지는 마을",description:"자원을 모으고 주민에게 일을 맡겨 무인도를 활기찬 마을로 키워보세요!",tags:["경영","건설","채집","탐험"],image:"https://raw.githubusercontent.com/GeorgeQLe/assets-2d-city/main/assets/kenney/tiny-town/Sample.png",link:"/island.html"},
-      {title:"코어 워즈",subtitle:"세 종족, 최후의 하나",description:"종족을 고르고 자원을 모아 병력을 생산해 1대1대1 실시간 전쟁에서 살아남으세요!",tags:["RTS","1대1대1","전략","실시간 전투"],image:"https://raw.githubusercontent.com/ETdoFresh/kenney.nl/master/kenney_rtssci-fi/Sample.png",link:"/rts.html"}
+      {title:"무인도 마을",subtitle:"작은 섬, 커지는 마을",description:"자원을 모으고 주민에게 일을 맡겨 무인도를 활기찬 마을로 키워보세요!",tags:["경영","건설","채집","탐험"],image:"https://raw.githubusercontent.com/GeorgeQLe/assets-2d-city/main/assets/kenney/tiny-town/Sample.png",link:"/island.html"}
     ];
     const hero=document.querySelector(".hero"),prevGame=document.querySelector("#prevGame"),nextGame=document.querySelector("#nextGame"),title=document.querySelector("#gameTitle"),subtitle=document.querySelector("#gameSubtitle"),description=document.querySelector("#gameDescription"),tags=document.querySelector("#gameTags"),link=document.querySelector("#gameLink"),number=document.querySelector("#gameNumber"),dots=document.querySelector("#gameDots");
     let current=0,startX=0,timer;
@@ -169,7 +169,7 @@
     games.forEach(game=>{const image=new Image();image.src=game.image});showGame(0);startAuto();
 
     // index.html · 새소식 자동 순환
-    const news=["신작 코어 워즈가 추가됐어요!","신작 무인도 마을이 추가됐어요!","곤충 생존기 대표 이미지가 새로 바뀌었어요!","게임 7종을 좌우로 밀어서 선택할 수 있어요!","재운게임즈의 새로운 업데이트를 준비하고 있어요!"];
+    const news=["신작 무인도 마을이 추가됐어요!","곤충 생존기 대표 이미지가 새로 바뀌었어요!","게임 6종을 좌우로 밀어서 선택할 수 있어요!","재운게임즈의 새로운 업데이트를 준비하고 있어요!"];
     const newsText=document.querySelector("#newsText"),newsCount=document.querySelector("#newsCount");let newsIndex=0;
     setInterval(()=>{newsText.style.opacity="0";setTimeout(()=>{newsIndex=(newsIndex+1)%news.length;newsText.textContent=news[newsIndex];newsCount.textContent=`${newsIndex+1} / ${news.length}`;newsText.style.opacity="1"},200)},5000);
 
