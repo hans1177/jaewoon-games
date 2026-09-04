@@ -15,7 +15,7 @@
     button{font:inherit}
 
     /* 배경 */
-    .page{min-height:100vh;background:linear-gradient(180deg,rgba(140,218,255,.18),rgba(232,248,255,.72)),url("assets/page-bg.webp") center top/cover fixed no-repeat}
+    .page{min-height:100vh;background:linear-gradient(180deg,rgba(178,232,255,.1),rgba(245,252,255,.5)),url("assets/page-bg.webp") center top/cover fixed no-repeat}
     .shell{width:min(100%,980px);margin:auto;padding:16px 14px 30px}
 
     /* 로고 */
@@ -26,7 +26,7 @@
     .heroFrame{position:relative;padding:7px;border-radius:30px;background:linear-gradient(145deg,#fff,#e9f8ff);box-shadow:0 18px 38px rgba(31,101,151,.24)}
     .hero{position:relative;min-height:455px;overflow:hidden;border-radius:24px;background:#294e3a url("assets/insect-main.webp?v=2") center/cover no-repeat}
     .hero{transition:background-image .35s ease}
-    .hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(4,48,38,.82) 0%,rgba(4,48,38,.48) 42%,transparent 72%)}
+    .hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(4,48,38,.58) 0%,rgba(4,48,38,.24) 43%,transparent 72%)}
     .heroCopy{position:absolute;z-index:2;left:38px;top:34px;width:min(48%,430px);color:#fff}
     .badge{display:inline-block;padding:9px 14px;border-radius:999px;background:#13a777;font-size:14px;font-weight:1000;box-shadow:0 4px 0 #087354}
     .hero h1{margin:22px 0 6px;font-size:clamp(42px,7vw,62px);letter-spacing:-3px;line-height:1.05}
@@ -34,9 +34,7 @@
     .chips{display:flex;flex-wrap:wrap;gap:8px}.chips span{padding:7px 11px;border:1px solid rgba(255,255,255,.75);border-radius:10px;background:rgba(8,47,39,.35);font-size:13px;font-weight:900}
     .play{display:inline-flex;align-items:center;justify-content:center;min-width:255px;min-height:68px;margin-top:24px;border-radius:23px;background:linear-gradient(#58c0ff,#247ff0);box-shadow:0 7px 0 #0d59b6;color:#fff;font-size:24px;font-weight:1000}
     .heroNum{position:absolute;z-index:3;right:18px;bottom:16px;padding:8px 13px;border-radius:999px;background:rgba(13,38,64,.82);color:#fff;font-size:14px;font-weight:900}
-    .arrow{position:absolute;z-index:5;top:50%;display:grid;place-items:center;width:54px;height:54px;border:0;border-radius:50%;background:rgba(255,255,255,.94);box-shadow:0 7px 18px rgba(26,80,125,.24);color:#2582e3;font-size:38px;font-weight:700;line-height:1;cursor:pointer;transform:translateY(-50%)}
-    .arrow.prev{left:12px}.arrow.next{right:12px}.arrow:active{transform:translateY(-50%) scale(.94)}
-    .dots{display:flex;justify-content:center;gap:9px;padding:15px 0 3px}.dot{width:11px;height:11px;padding:0;border:2px solid rgba(255,255,255,.92);border-radius:50%;background:rgba(39,134,218,.22);box-shadow:0 2px 5px rgba(26,92,140,.18)}.dot.active{background:#278ff5}
+    .dots{display:flex;justify-content:center;gap:9px;padding:18px 0 8px}.dot{width:11px;height:11px;padding:0;border:2px solid rgba(255,255,255,.92);border-radius:50%;background:rgba(39,134,218,.22);box-shadow:0 2px 5px rgba(26,92,140,.18)}.dot.active{background:#278ff5}
 
     /* 하단 */
     .footer{margin-top:18px;text-align:center;color:#487492;font-size:13px;font-weight:800}
@@ -44,8 +42,8 @@
     /* 모바일 */
     @media(max-width:640px){
       .shell{padding:0 9px 24px}.brand{margin:0 -9px;padding:0 0 10px}.brand img{width:100%}
-      .heroFrame{padding:5px;border-radius:22px}.hero{min-height:305px;border-radius:18px;background-position:51% center}.hero:after{background:linear-gradient(90deg,rgba(4,48,38,.8) 0%,rgba(4,48,38,.38) 51%,transparent 84%)}
-      .arrow{top:54%;width:38px;height:38px;font-size:29px;background:rgba(255,255,255,.96)}.arrow.prev{left:7px}.arrow.next{right:7px}.dots{padding:8px 0 2px}
+      .heroFrame{padding:5px;border-radius:22px}.hero{min-height:305px;border-radius:18px;background-position:51% center}.hero:after{background:linear-gradient(90deg,rgba(4,48,38,.56) 0%,rgba(4,48,38,.2) 52%,transparent 84%)}
+      .dots{padding:15px 0 7px}
       .heroCopy{left:15px;right:15px;top:13px;width:auto;padding-right:28px}.badge{padding:6px 10px;font-size:11px}.hero h1{margin-top:11px;font-size:29px}.hero h2{margin-bottom:8px;font-size:15px}.hero p{display:none}.chips{gap:4px}.chips span{padding:4px 7px;font-size:10px}.play{width:min(100%,235px);min-height:48px;margin-top:11px;border-radius:16px;font-size:17px;box-shadow:0 5px 0 #0d59b6}.heroNum{right:10px;bottom:9px;padding:5px 9px;font-size:11px}
       .footer{font-size:12px}
     }
@@ -59,7 +57,6 @@
       </header>
 
       <section class="heroFrame" aria-label="추천 게임">
-        <button class="arrow prev" type="button" aria-label="이전 게임">‹</button>
         <div class="hero">
           <div class="heroCopy">
             <span class="badge">★ 추천 게임</span>
@@ -71,7 +68,6 @@
           </div>
           <div class="heroNum" id="gameNumber">1 / 5</div>
         </div>
-        <button class="arrow next" type="button" aria-label="다음 게임">›</button>
       </section>
       <div class="dots" id="gameDots" aria-label="게임 슬라이드"></div>
 
@@ -92,7 +88,6 @@
     games.forEach((game,index)=>{const dot=document.createElement("button");dot.type="button";dot.className="dot";dot.setAttribute("aria-label",`${index+1}번째 게임`);dot.addEventListener("click",()=>showGame(index,true));dots.appendChild(dot)});
     function showGame(index,restart=false){current=(index+games.length)%games.length;const game=games[current];hero.style.backgroundImage=`url("${game.image}")`;title.textContent=game.title;subtitle.textContent=game.subtitle;description.textContent=game.description;tags.innerHTML=game.tags.map(tag=>`<span>${tag}</span>`).join("");link.href=game.link;number.textContent=`${current+1} / ${games.length}`;[...dots.children].forEach((dot,i)=>dot.classList.toggle("active",i===current));if(restart)startAuto()}
     function startAuto(){clearInterval(timer);timer=setInterval(()=>showGame(current+1),6500)}
-    document.querySelector(".prev").addEventListener("click",()=>showGame(current-1,true));document.querySelector(".next").addEventListener("click",()=>showGame(current+1,true));
     hero.addEventListener("touchstart",event=>{startX=event.touches[0].clientX},{passive:true});hero.addEventListener("touchend",event=>{const distance=event.changedTouches[0].clientX-startX;if(Math.abs(distance)>45)showGame(current+(distance<0?1:-1),true)},{passive:true});
     showGame(0);startAuto();
   </script>
