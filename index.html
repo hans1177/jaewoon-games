@@ -17,7 +17,7 @@
 
     /* 배경 */
     .page{position:relative;min-height:100vh;background:#effbff url("assets/page-bg-v3.webp") center top/cover fixed no-repeat}
-    .page:before{content:"";position:fixed;z-index:0;inset:0;pointer-events:none;background:rgba(248,253,255,.64)}
+    .page:before{content:"";position:fixed;z-index:0;inset:0;pointer-events:none;background:transparent}
     .shell{position:relative;z-index:1;width:min(100%,980px);margin:auto;padding:16px 14px 30px}
 
     /* 로고 */
@@ -28,6 +28,7 @@
     .heroFrame{position:relative;padding:7px;border-radius:30px;background:#fff;box-shadow:0 12px 26px rgba(27,89,135,.18),0 0 0 2px rgba(255,255,255,.96)}
     .hero{position:relative;min-height:455px;overflow:hidden;border-radius:24px;background:#294e3a url("assets/insect-main.webp?v=2") center/cover no-repeat}
     .hero{transition:background-image .35s ease}
+    .hero:after{content:"";position:absolute;z-index:1;inset:0;pointer-events:none;background:rgba(244,250,252,.28)}
     .heroCopy{position:absolute;z-index:2;left:38px;top:34px;width:min(48%,430px);color:#fff;text-shadow:0 2px 5px rgba(0,32,28,.55)}
     .badge{display:inline-block;padding:9px 14px;border-radius:999px;background:#13a777;font-size:14px;font-weight:1000;box-shadow:0 4px 0 #087354}
     .hero h1{margin:22px 0 6px;font-size:clamp(42px,7vw,62px);letter-spacing:-3px;line-height:1.05}
