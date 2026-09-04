@@ -8,188 +8,44 @@
   <title>재운게임즈</title>
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&display=swap");
-
-    /* index.html · 기본 */
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
     :root{--blue:#288cf4;--deep:#1559a4;--ink:#17375e;--glass:rgba(255,255,255,.94)}
     html{scroll-behavior:smooth;color-scheme:only light;background:#bdeaff}
     body{margin:0;min-width:320px;min-height:100dvh;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:var(--ink);background:#bdeaff;overflow-x:hidden;overscroll-behavior-y:none}
-    a{text-decoration:none;color:inherit}
-    button{font:inherit}
-
-    /* 배경 */
-    .page{position:relative;min-height:100dvh;background:#8fdcff}
-    .page:before{content:"";position:fixed;z-index:0;inset:-4px;pointer-events:none;background:url("assets/page-bg-v4.webp") center center/cover no-repeat;filter:brightness(.9) saturate(.78) contrast(.86) blur(1.15px);transform:scale(1.01)}
-    .shell{position:relative;z-index:1;width:min(100%,980px);margin:auto;padding:16px 14px 30px}
-
-    /* 로고 */
-    .brand{display:flex;justify-content:center;padding:0}
-    .brand img{display:block;width:min(85%,650px);height:auto;filter:drop-shadow(0 10px 18px rgba(35,96,141,.16))}
-
-    /* 대표 게임 */
+    a{text-decoration:none;color:inherit}button{font:inherit}
+    .page{position:relative;min-height:100dvh;background:#8fdcff}.page:before{content:"";position:fixed;z-index:0;inset:-4px;pointer-events:none;background:url("assets/page-bg-v4.webp") center center/cover no-repeat;filter:brightness(.9) saturate(.78) contrast(.86) blur(1.15px);transform:scale(1.01)}.shell{position:relative;z-index:1;width:min(100%,980px);margin:auto;padding:16px 14px 30px}
+    .brand{display:flex;justify-content:center;padding:0}.brand img{display:block;width:min(85%,650px);height:auto;filter:drop-shadow(0 10px 18px rgba(35,96,141,.16))}
     .heroStage{position:relative;width:92%;margin:0 auto}.heroFrame{position:relative;width:84%;margin:0 auto;padding:2px;border-radius:26px;background:#fff;box-shadow:0 10px 22px rgba(27,89,135,.16),0 0 0 1px rgba(255,255,255,.96)}
-    .hero{position:relative;min-height:455px;overflow:hidden;border-radius:24px;background:#294e3a url("assets/insect-main-v3.webp") center/cover no-repeat}
-    .hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(7,25,39,.64) 0%,rgba(7,25,39,.36) 43%,rgba(7,25,39,.05) 72%)}
-    .hero{transition:background-image .35s ease}.hero.changing{animation:slideChange .42s ease}@keyframes slideChange{0%{opacity:.62;transform:scale(.992)}100%{opacity:1;transform:scale(1)}}
-    .heroCopy{position:absolute;z-index:2;left:38px;top:34px;width:min(48%,430px);color:#fff;text-shadow:0 3px 8px rgba(0,0,0,.88),0 1px 1px rgba(0,0,0,.9)}
-    .badge{position:relative;display:inline-block;padding:7px 12px 8px;border:2px solid rgba(255,255,255,.95);border-radius:14px;background:rgba(24,120,202,.92);font-family:"Black Han Sans","Noto Sans KR",sans-serif;font-size:21px;font-weight:1000;letter-spacing:-1px;color:#fff8a6;text-shadow:0 2px 0 rgba(13,77,129,.95),0 0 7px rgba(255,245,111,.45);box-shadow:0 5px 12px rgba(0,0,0,.25);transform:rotate(-1deg);animation:badgePop 1.8s ease-in-out infinite}.badge:before{content:"★";margin-right:6px;color:#fff36b;font-size:18px}.badge:after{content:"";position:absolute;left:10px;right:10px;bottom:3px;height:2px;border-radius:2px;background:rgba(255,244,103,.88)}@keyframes badgePop{50%{transform:rotate(-1deg) scale(1.04)}}@media(prefers-reduced-motion:reduce){.badge{animation:none}}
-    .hero h1{margin:20px 0 7px;font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(42px,6.5vw,60px);font-weight:400;letter-spacing:-1px;line-height:1.05;color:#fff4c7;text-shadow:0 2px 0 rgba(31,74,121,.95),0 4px 10px rgba(0,0,0,.72)}
+    .hero{position:relative;min-height:455px;overflow:hidden;border-radius:24px;background:#294e3a url("assets/insect-main-v3.webp") center/cover no-repeat;transition:background-image .35s ease}.hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(7,25,39,.68) 0%,rgba(7,25,39,.4) 43%,rgba(7,25,39,.06) 72%)}.hero.changing{animation:slideChange .42s ease}@keyframes slideChange{0%{opacity:.62;transform:scale(.992)}100%{opacity:1;transform:scale(1)}}
+    .heroCopy{position:absolute;z-index:2;left:38px;top:30px;width:min(52%,450px);color:#fff;text-shadow:0 3px 8px rgba(0,0,0,.88),0 1px 1px rgba(0,0,0,.9)}
+    .completion{display:inline-flex;align-items:center;gap:8px;margin-bottom:7px;padding:5px 10px;border:1px solid rgba(255,255,255,.72);border-radius:999px;background:rgba(12,48,77,.72);box-shadow:0 3px 9px rgba(0,0,0,.2);font-size:13px;font-weight:900;color:#fff}.stars{letter-spacing:1px;color:#ffd83d;text-shadow:0 1px 2px rgba(0,0,0,.65)}.completionLabel{opacity:.95}
+    .hero h1{display:inline-block;margin:10px 0 7px;padding:4px 10px 7px;border-radius:11px;background:linear-gradient(90deg,rgba(8,50,91,.82),rgba(8,50,91,.18));font-family:"Jua","Noto Sans KR",sans-serif;font-size:clamp(46px,7vw,64px);font-weight:400;letter-spacing:-1px;line-height:1.05;color:#fff7cf;text-shadow:0 2px 0 #15559a,0 4px 10px rgba(0,0,0,.72);box-shadow:inset 4px 0 0 #ffd83d}
     .hero h2{margin:0 0 15px;font-size:23px;font-weight:900;text-shadow:0 3px 8px rgba(0,0,0,.9)}.hero p{font-size:15px;line-height:1.7;margin:0 0 16px;font-weight:800;text-shadow:0 2px 5px rgba(0,0,0,.9)}
     .chips{display:flex;flex-wrap:wrap;gap:8px}.chips span{padding:7px 11px;border:1px solid rgba(255,255,255,.85);border-radius:10px;background:rgba(8,47,39,.55);font-size:13px;font-weight:900}
-    .play{display:inline-flex;align-items:center;justify-content:center;min-width:255px;min-height:68px;margin-top:24px;border:2px solid rgba(255,255,255,.9);border-radius:18px;background:#43baf2;box-shadow:none;color:#fff;font-size:24px;font-weight:1000;text-shadow:0 2px 4px rgba(0,0,0,.35)}
+    .play{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:255px;min-height:68px;margin-top:24px;border:3px solid #ff3b30;border-radius:18px;background:#43baf2;box-shadow:0 0 0 2px rgba(255,255,255,.82),0 7px 16px rgba(255,59,48,.25);color:#fff;font-size:24px;font-weight:1000;text-shadow:0 2px 4px rgba(0,0,0,.35)}.playIcon{color:#ff2d20;font-size:29px;line-height:1;text-shadow:0 1px 0 #fff,0 0 5px rgba(255,255,255,.85)}
     .slideArrow{position:absolute;z-index:8;top:50%;display:grid;place-items:center;width:36px;height:36px;padding:0;border:2px solid #fff;border-radius:50%;background:#fff;color:#278ff5;box-shadow:0 5px 12px rgba(28,86,131,.22);font-size:25px;font-weight:900;line-height:1;transform:translateY(-50%);cursor:pointer}.slideArrow.prev{left:2px}.slideArrow.next{right:2px}.slideArrow:active{transform:translateY(-50%) scale(.93);background:#eaf8ff}.heroNum{position:absolute;z-index:3;right:18px;bottom:16px;padding:8px 13px;border-radius:999px;background:rgba(13,38,64,.82);color:#fff;font-size:14px;font-weight:900}
     .dots{display:flex;justify-content:center;gap:9px;padding:18px 0 8px}.dot{width:11px;height:11px;padding:0;border:2px solid rgba(255,255,255,.92);border-radius:50%;background:rgba(39,134,218,.22);box-shadow:0 2px 5px rgba(26,92,140,.18)}.dot.active{background:#278ff5}
-
-    /* 메인 아래 구조 */
     .below{width:92%;margin:0 auto;padding:0 14px 4px;background:transparent;box-shadow:none;color-scheme:light;forced-color-adjust:none}
-
-    /* 새소식 */
-    .news{display:grid;grid-template-columns:auto auto 1fr auto;align-items:center;gap:10px;min-height:56px;margin:5px 0 12px;padding:9px 15px;border:2px solid #d8ebf5;border-radius:20px;background:#fff!important;background-image:linear-gradient(#fff,#fff)!important;box-shadow:0 8px 18px rgba(31,101,151,.12);color:#245f9d;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;forced-color-adjust:none}
-    .newsTitle{white-space:nowrap;font-size:20px;font-weight:1000}.newsNew{padding:4px 7px;border-radius:7px;background:#338ff1;color:#fff;font-size:11px;font-weight:1000}.newsText{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#29445e;font-size:18px;font-weight:800;transition:opacity .2s}.newsCount{white-space:nowrap;color:#3587dc;font-size:12px;font-weight:1000}
-
-    /* 게임 한줄평 */
-    .reviews{margin:0 0 12px;padding:13px 15px;border:2px solid #d8ebf5;border-radius:20px;background:#fff!important;background-image:linear-gradient(#fff,#fff)!important;box-shadow:0 8px 18px rgba(31,101,151,.12);font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:#29445e;forced-color-adjust:none}
-    .reviewHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;color:#2465a2}.reviewHead strong{font-size:23px}.reviewCount{font-size:11px;font-weight:1000;color:#3b8fd8}
-    .reviewView{display:flex;align-items:center;gap:8px;min-width:0;height:34px;color:#29445e}.reviewAvatar{display:grid;place-items:center;flex:0 0 29px;height:29px;border-radius:50%;background:#79d5ff;color:#fff;font-size:12px;font-weight:1000}.reviewName{flex:0 0 auto;font-size:18px;color:#2367a3}.reviewText{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:18px;font-weight:750;transition:opacity .18s}
-    .reviewForm{display:grid;grid-template-columns:75px 1fr auto;gap:6px;margin-top:9px}.reviewForm input{min-width:0;height:36px;padding:0 10px;border:1px solid #a9d9ef;border-radius:10px;outline:none;background:#fff;color:#29445e;font:700 12px inherit}.reviewForm input:focus{border-color:#43baf2}.reviewForm button{height:36px;padding:0 13px;border:0;border-radius:10px;background:#43baf2;color:#fff;font-size:12px;font-weight:1000}.reviewNotice{display:block;margin-top:6px;color:#69859b;font-size:10px}
-
-    /* 개발자 프로필 */
-    .profile{margin:0 0 6px;padding:10px 12px 8px;border:2px solid #d8ebf5;border-radius:20px;background:#fff!important;background-image:linear-gradient(#fff,#fff)!important;box-shadow:0 8px 18px rgba(31,101,151,.12);color:#29445e;font-family:"Jua","Noto Sans KR",sans-serif;forced-color-adjust:none}
-    .profileTop{display:grid;grid-template-columns:165px 1fr;gap:20px;align-items:center}
-    .profilePhoto{overflow:hidden;aspect-ratio:4/5;height:auto;padding:5px;border:1px solid #dfeaf0;border-radius:18px;background:#fff;box-shadow:0 6px 14px rgba(47,93,128,.16)}
-    .profilePhoto img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 44%;border-radius:13px}
-    .profileDetails{min-width:0}.profileTitle{display:flex;align-items:center;gap:7px;margin:0 0 8px;color:#135da7;font-family:"Jua","Noto Sans KR",sans-serif;font-size:23px;font-weight:400;line-height:1}.profileName{font-family:"Jua","Noto Sans KR",sans-serif;font-size:31px;font-weight:400}.profileStar{color:#3c9ff0}
-    .profileGrid{display:grid;gap:2px}.profileItem{display:grid;grid-template-columns:138px minmax(0,1fr);align-items:center;min-height:27px;padding:1px 2px;border:0;background:transparent}.profileItem strong{margin:0;color:#1768ad;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;font-size:14px;font-weight:800;white-space:nowrap}.profileItem span{min-width:0;color:#384c5e;font-family:"Jua","Noto Sans KR",sans-serif;font-size:15px;font-weight:400;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .profileActions{display:grid;grid-template-columns:1fr 1.08fr;gap:9px;margin-top:8px;padding-top:8px;border-top:1px dashed rgba(103,150,181,.45)}.staffLabel,.profileContact{display:flex;align-items:center;justify-content:center;gap:7px;min-height:39px;border-radius:12px;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;font-size:14px;font-weight:800}.staffLabel{color:#155ea5;background:#f4fbff}.profileContact{background:linear-gradient(135deg,#59b8f8,#2f8dea);color:#fff;box-shadow:0 4px 9px rgba(37,135,237,.17)}
-    .profileQuote{margin:7px 0 0;padding-top:7px;border-top:1px solid #e1ebf1;text-align:center;color:#394e60;font-family:"Jua","Noto Sans KR",sans-serif;font-size:19px;line-height:1.2}.profileQuote b{margin-right:6px;color:#f0b62e;font-size:22px}
-
-    /* 하단 */
-    .footer{margin-top:12px;text-align:center;color:#487492;font-size:13px;font-weight:800}
-
-    /* 모바일 */
-    @media(max-width:640px){
-      .shell{padding:0 9px 24px}.brand{margin:0;padding:5px 0 2px}.brand img{width:85%}
-      .heroFrame{width:94%;margin:0 auto;padding:2px;border-radius:20px}.slideArrow{width:26px;height:26px;border-width:1px;font-size:19px;box-shadow:0 3px 8px rgba(28,86,131,.2)}.slideArrow.prev{left:1px}.slideArrow.next{right:1px}.hero{min-height:224px;border-radius:18px;background-position:51% center}.hero:after{background:linear-gradient(90deg,rgba(7,25,39,.72) 0%,rgba(7,25,39,.46) 54%,rgba(7,25,39,.08) 82%)}
-      .below{width:94%;padding:0 8px 2px}.dots{padding:15px 0 7px}
-      .heroCopy{left:14px;right:14px;top:8px;bottom:0;width:auto;padding-right:25px}.badge{padding:5px 8px 6px;border-radius:10px;font-size:15px}.badge:before{font-size:13px;margin-right:4px}.hero h1{margin-top:8px;font-family:"Jua","Noto Sans KR",sans-serif;font-size:28px;font-weight:400;letter-spacing:-.5px;color:#fff4c7;text-shadow:0 2px 0 rgba(31,74,121,.95),0 3px 8px rgba(0,0,0,.72)}.hero h2{margin-bottom:5px;font-size:13px}.hero p{display:none}.chips{gap:3px}.chips span{padding:3px 6px;font-size:9px}.play{position:absolute;left:0;bottom:15px;width:205px;min-height:42px;margin:0;border-width:2px;border-radius:12px;font-size:16px;box-shadow:none}.heroNum{right:9px;bottom:8px;padding:4px 8px;font-size:10px}
-      .news{grid-template-columns:auto auto minmax(0,1fr) auto;gap:6px;min-height:46px;margin-top:3px;padding:7px 9px;border-radius:16px}.newsTitle{font-size:16px}.newsNew{padding:3px 5px;font-size:9px}.newsText{font-size:15px}.newsCount{font-size:10px}
-      .reviews{padding:10px;border-radius:16px}.reviewHead{margin-bottom:5px}.reviewHead strong{font-size:20px}.reviewView{gap:6px}.reviewText{font-size:16px}.reviewForm{grid-template-columns:62px 1fr auto}.reviewForm input{padding:0 7px}.reviewForm button{padding:0 9px}
-      .profile{margin-top:0;padding:8px 8px 6px;border-radius:16px}.profileTop{grid-template-columns:92px 1fr;gap:9px;align-items:center}.profilePhoto{padding:3px;border-radius:13px}.profilePhoto img{border-radius:10px}.profileTitle{margin-bottom:5px;font-size:15px;gap:4px}.profileName{font-size:22px}.profileGrid{gap:1px}.profileItem{display:grid;grid-template-columns:96px minmax(0,1fr);min-height:21px;padding:0}.profileItem strong{font-size:11px;line-height:1.05;white-space:nowrap}.profileItem span{font-size:10.5px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.profileActions{grid-template-columns:1fr 1.05fr;gap:6px;margin-top:7px;padding-top:7px}.staffLabel,.profileContact{min-height:34px;border-radius:10px;font-size:11px}.profileQuote{margin-top:6px;padding-top:6px;font-size:15px}.profileQuote b{margin-right:4px;font-size:18px}
-      .footer{font-size:12px}
-    }
+    .news{display:grid;grid-template-columns:auto auto 1fr auto;align-items:center;gap:10px;min-height:56px;margin:5px 0 12px;padding:9px 15px;border:2px solid #d8ebf5;border-radius:20px;background:#fff!important;background-image:linear-gradient(#fff,#fff)!important;box-shadow:0 8px 18px rgba(31,101,151,.12);color:#245f9d;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;forced-color-adjust:none}.newsTitle{white-space:nowrap;font-size:20px;font-weight:1000}.newsNew{padding:4px 7px;border-radius:7px;background:#338ff1;color:#fff;font-size:11px;font-weight:1000}.newsText{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#29445e;font-size:18px;font-weight:800;transition:opacity .2s}.newsCount{white-space:nowrap;color:#3587dc;font-size:12px;font-weight:1000}
+    .reviews{margin:0 0 12px;padding:13px 15px;border:2px solid #d8ebf5;border-radius:20px;background:#fff!important;background-image:linear-gradient(#fff,#fff)!important;box-shadow:0 8px 18px rgba(31,101,151,.12);font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:#29445e;forced-color-adjust:none}.reviewHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;color:#2465a2}.reviewHead strong{font-size:23px}.reviewCount{font-size:11px;font-weight:1000;color:#3b8fd8}.reviewView{display:flex;align-items:center;gap:8px;min-width:0;height:34px;color:#29445e}.reviewAvatar{display:grid;place-items:center;flex:0 0 29px;height:29px;border-radius:50%;background:#79d5ff;color:#fff;font-size:12px;font-weight:1000}.reviewName{flex:0 0 auto;font-size:18px;color:#2367a3}.reviewText{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:18px;font-weight:750;transition:opacity .18s}.reviewForm{display:grid;grid-template-columns:75px 1fr auto;gap:6px;margin-top:9px}.reviewForm input{min-width:0;height:36px;padding:0 10px;border:1px solid #a9d9ef;border-radius:10px;outline:none;background:#fff;color:#29445e;font:700 12px inherit}.reviewForm input:focus{border-color:#43baf2}.reviewForm button{height:36px;padding:0 13px;border:0;border-radius:10px;background:#43baf2;color:#fff;font-size:12px;font-weight:1000}.reviewNotice{display:block;margin-top:6px;color:#69859b;font-size:10px}
+    .profile{margin:0 0 6px;padding:10px 12px 8px;border:2px solid #d8ebf5;border-radius:20px;background:#fff!important;background-image:linear-gradient(#fff,#fff)!important;box-shadow:0 8px 18px rgba(31,101,151,.12);color:#29445e;font-family:"Jua","Noto Sans KR",sans-serif;forced-color-adjust:none}.profileTop{display:grid;grid-template-columns:165px 1fr;gap:20px;align-items:center}.profilePhoto{overflow:hidden;aspect-ratio:4/5;height:auto;padding:5px;border:1px solid #dfeaf0;border-radius:18px;background:#fff;box-shadow:0 6px 14px rgba(47,93,128,.16)}.profilePhoto img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 44%;border-radius:13px}.profileDetails{min-width:0}.profileTitle{display:flex;align-items:center;gap:7px;margin:0 0 8px;color:#135da7;font-family:"Jua","Noto Sans KR",sans-serif;font-size:23px;font-weight:400;line-height:1}.profileName{font-family:"Jua","Noto Sans KR",sans-serif;font-size:31px;font-weight:400}.profileStar{color:#3c9ff0}.profileGrid{display:grid;gap:2px}.profileItem{display:grid;grid-template-columns:138px minmax(0,1fr);align-items:center;min-height:27px;padding:1px 2px;border:0;background:transparent}.profileItem strong{margin:0;color:#1768ad;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;font-size:14px;font-weight:800;white-space:nowrap}.profileItem span{min-width:0;color:#384c5e;font-family:"Jua","Noto Sans KR",sans-serif;font-size:15px;font-weight:400;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.profileActions{display:grid;grid-template-columns:1fr 1.08fr;gap:9px;margin-top:8px;padding-top:8px;border-top:1px dashed rgba(103,150,181,.45)}.staffLabel,.profileContact{display:flex;align-items:center;justify-content:center;gap:7px;min-height:39px;border-radius:12px;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;font-size:14px;font-weight:800}.staffLabel{color:#155ea5;background:#f4fbff}.profileContact{background:linear-gradient(135deg,#59b8f8,#2f8dea);color:#fff;box-shadow:0 4px 9px rgba(37,135,237,.17)}.profileQuote{margin:7px 0 0;padding-top:7px;border-top:1px solid #e1ebf1;text-align:center;color:#394e60;font-family:"Jua","Noto Sans KR",sans-serif;font-size:19px;line-height:1.2}.profileQuote b{margin-right:6px;color:#f0b62e;font-size:22px}.footer{margin-top:12px;text-align:center;color:#487492;font-size:13px;font-weight:800}
+    @media(max-width:640px){.shell{padding:0 9px 24px}.brand{margin:0;padding:5px 0 2px}.brand img{width:85%}.heroFrame{width:94%;margin:0 auto;padding:2px;border-radius:20px}.slideArrow{width:26px;height:26px;border-width:1px;font-size:19px;box-shadow:0 3px 8px rgba(28,86,131,.2)}.slideArrow.prev{left:1px}.slideArrow.next{right:1px}.hero{min-height:224px;border-radius:18px;background-position:51% center}.hero:after{background:linear-gradient(90deg,rgba(7,25,39,.76) 0%,rgba(7,25,39,.48) 54%,rgba(7,25,39,.08) 82%)}.below{width:94%;padding:0 8px 2px}.dots{padding:15px 0 7px}.heroCopy{left:14px;right:14px;top:8px;bottom:0;width:auto;padding-right:25px}.completion{gap:5px;margin-bottom:3px;padding:3px 7px;font-size:10px}.stars{letter-spacing:0}.hero h1{margin-top:5px;padding:2px 7px 4px;border-radius:8px;font-size:31px;letter-spacing:-.5px;color:#fff7cf;text-shadow:0 2px 0 #15559a,0 3px 8px rgba(0,0,0,.72);box-shadow:inset 3px 0 0 #ffd83d}.hero h2{margin-bottom:5px;font-size:13px}.hero p{display:none}.chips{gap:3px}.chips span{padding:3px 6px;font-size:9px}.play{position:absolute;left:0;bottom:15px;width:205px;min-height:42px;margin:0;border-width:2px;border-radius:12px;font-size:16px;box-shadow:0 0 0 1px rgba(255,255,255,.82),0 5px 10px rgba(255,59,48,.24)}.playIcon{font-size:20px}.heroNum{right:9px;bottom:8px;padding:4px 8px;font-size:10px}.news{grid-template-columns:auto auto minmax(0,1fr) auto;gap:6px;min-height:46px;margin-top:3px;padding:7px 9px;border-radius:16px}.newsTitle{font-size:16px}.newsNew{padding:3px 5px;font-size:9px}.newsText{font-size:15px}.newsCount{font-size:10px}.reviews{padding:10px;border-radius:16px}.reviewHead{margin-bottom:5px}.reviewHead strong{font-size:20px}.reviewView{gap:6px}.reviewText{font-size:16px}.reviewForm{grid-template-columns:62px 1fr auto}.reviewForm input{padding:0 7px}.reviewForm button{padding:0 9px}.profile{margin-top:0;padding:8px 8px 6px;border-radius:16px}.profileTop{grid-template-columns:92px 1fr;gap:9px;align-items:center}.profilePhoto{padding:3px;border-radius:13px}.profilePhoto img{border-radius:10px}.profileTitle{margin-bottom:5px;font-size:15px;gap:4px}.profileName{font-size:22px}.profileGrid{gap:1px}.profileItem{display:grid;grid-template-columns:96px minmax(0,1fr);min-height:21px;padding:0}.profileItem strong{font-size:11px;line-height:1.05;white-space:nowrap}.profileItem span{font-size:10.5px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.profileActions{grid-template-columns:1fr 1.05fr;gap:6px;margin-top:7px;padding-top:7px}.staffLabel,.profileContact{min-height:34px;border-radius:10px;font-size:11px}.profileQuote{margin-top:6px;padding-top:6px;font-size:15px}.profileQuote b{margin-right:4px;font-size:18px}.footer{font-size:12px}}
   </style>
 </head>
-<body>
-  <div class="page">
-    <main class="shell">
-      <header class="brand" aria-label="재운게임즈">
-        <img src="assets/brand-transparent.png?v=1" alt="재운게임즈 · 작은 상상이 큰 재미가 되는 곳">
-      </header>
-
-      <div class="heroStage">
-        <button class="slideArrow prev" id="prevGame" type="button" aria-label="이전 게임">‹</button>
-        <section class="heroFrame" aria-label="추천 게임">
-        <div class="hero">
-          <div class="heroCopy">
-            <span class="badge">추천 게임</span>
-            <h1 id="gameTitle">곤충 생존기</h1>
-            <h2 id="gameSubtitle">작은 세계, 큰 모험</h2>
-            <p id="gameDescription">거대한 자연 속에서 채집하고, 만들고, 탐험하며 살아남아보세요!</p>
-            <div class="chips" id="gameTags"><span>생존</span><span>제작</span><span>탐험</span><span>협동 플레이</span></div>
-            <a class="play" id="gameLink" href="/play_survival_v4.html">▶&nbsp; 게임 시작</a>
-          </div>
-          <div class="heroNum" id="gameNumber">1 / 6</div>
-        </div>
-        </section>
-        <button class="slideArrow next" id="nextGame" type="button" aria-label="다음 게임">›</button>
-      </div>
-      <div class="below">
-        <div class="dots" id="gameDots" aria-label="게임 슬라이드"></div>
-
-      <section class="news" aria-label="재운게임즈 새소식">
-        <strong class="newsTitle">🧸 재운게임즈 새소식</strong>
-        <span class="newsNew">NEW</span>
-        <span class="newsText" id="newsText">재운게임즈의 새로운 업데이트를 준비하고 있어요!</span>
-        <span class="newsCount" id="newsCount">1 / 4</span>
-      </section>
-
-      <section class="reviews" aria-label="게임 한줄평">
-        <div class="reviewHead"><strong>🍬 게임 한줄평</strong><span class="reviewCount" id="reviewCount">1 / 5</span></div>
-        <div class="reviewView"><span class="reviewAvatar" id="reviewAvatar">민</span><b class="reviewName" id="reviewName">민준</b><span class="reviewText" id="reviewText">곤충 생존기 진짜 재밌어요!</span></div>
-        <form class="reviewForm" id="reviewForm">
-          <input id="reviewNameInput" maxlength="8" placeholder="이름" aria-label="이름" required>
-          <input id="reviewTextInput" maxlength="40" placeholder="게임평 한마디" aria-label="게임평 한마디" required>
-          <button type="submit">보내기</button>
-        </form>
-        <small class="reviewNotice" id="reviewNotice">비속어·비방·광고 글은 자동 삭제됩니다.</small>
-      </section>
-
-      <section class="profile" aria-label="개발자 프로필">
-        <div class="profileTop">
-          <div class="profilePhoto"><img src="assets/developer-original.jpg" alt="재운게임즈 개발자 한재운"></div>
-          <div class="profileDetails">
-            <h2 class="profileTitle">🕹️ 개발자 <span class="profileName">한재운</span> <span class="profileStar">★</span></h2>
-            <div class="profileGrid">
-              <div class="profileItem"><strong>🎂 생년월</strong><span>2016년 9월 · 원숭이띠</span></div>
-              <div class="profileItem"><strong>✨ 특기</strong><span>따봉 날리기, 물건 잃어버리기, 맵찔이</span></div>
-              <div class="profileItem"><strong>🏆 수상 내역</strong><span>태권도 초록띠, 에버랜드 방탈출 멤버</span></div>
-              <div class="profileItem"><strong>🎮 좋아하는 게임</strong><span>마인크래프트, 그라운디드 시리즈</span></div>
-              <div class="profileItem"><strong>💙 존경하는 인물</strong><span>아빠, 엄마</span></div>
-            </div>
-          </div>
-        </div>
-        <div class="profileActions">
-          <div class="staffLabel">🧑‍🤝‍🧑 게임 스텝 모집 및 문의</div>
-          <a class="profileContact" href="mailto:anyanguy2@naver.com">💌 이메일 문의</a>
-        </div>
-        <p class="profileQuote"><b>🌟</b> “재밌는 걸 만드는 게 꿈이에요!”</p>
-      </section>
-
-      </div>
-
-      <footer class="footer">© 2026 재운게임즈. All rights reserved.</footer>
-    </main>
-  </div>
-  <script>
-    // index.html · 메인 게임 슬라이드
-    const games=[
-      {title:"곤충 생존기",subtitle:"작은 세계, 큰 모험",description:"거대한 자연 속에서 채집하고, 만들고, 탐험하며 살아남아보세요!",tags:["생존","제작","탐험","협동 플레이"],image:"assets/insect-main-v3.webp",link:"/play_survival_v4.html"},
-      {title:"수정 디펜스",subtitle:"함께 지키는 마지막 빛",description:"영웅과 포탑을 성장시켜 몰려오는 적에게서 수정을 지켜내세요!",tags:["디펜스","협동","웨이브","보스"],image:"assets/crystal-v2.webp",link:"https://crystal-defense-online.vercel.app/"},
-      {title:"곤충 디펜스",subtitle:"작지만 강한 전쟁",description:"곤충 부대를 모아 요새를 지키고 거대한 전투에서 승리하세요!",tags:["전략","디펜스","곤충","전투"],image:"assets/insect-war-v2.webp",link:"https://bug-defense-game.anyanguy12.chatgpt.site/"},
-      {title:"휴먼 GO",subtitle:"뽑고, 성장하고, 도전!",description:"다양한 영웅 카드를 모으고 강력한 덱으로 새로운 모험에 도전하세요!",tags:["카드","수집","성장","모험"],image:"assets/card-rpg-v2.webp",link:"https://human-rpg-web-test.vercel.app/"},
-      {title:"대충 RPG",subtitle:"나만의 영웅 이야기",description:"신비한 포탈을 지나 새로운 세계를 탐험하고 전설의 영웅이 되어보세요!",tags:["RPG","전투","탐험","스토리"],image:"assets/fantasy-rpg-v2.webp",link:"/rpg-play.html"},
-      {title:"무인도 마을",subtitle:"작은 섬, 커지는 마을",description:"자원을 모으고 주민에게 일을 맡겨 무인도를 활기찬 마을로 키워보세요!",tags:["경영","건설","채집","탐험"],image:"https://raw.githubusercontent.com/GeorgeQLe/assets-2d-city/main/assets/kenney/tiny-town/Sample.png",link:"/island.html"}
-    ];
-    const hero=document.querySelector(".hero"),prevGame=document.querySelector("#prevGame"),nextGame=document.querySelector("#nextGame"),title=document.querySelector("#gameTitle"),subtitle=document.querySelector("#gameSubtitle"),description=document.querySelector("#gameDescription"),tags=document.querySelector("#gameTags"),link=document.querySelector("#gameLink"),number=document.querySelector("#gameNumber"),dots=document.querySelector("#gameDots");
-    let current=0,startX=0,timer;
-    games.forEach((game,index)=>{const dot=document.createElement("button");dot.type="button";dot.className="dot";dot.setAttribute("aria-label",`${index+1}번째 게임`);dot.addEventListener("click",()=>showGame(index,true));dots.appendChild(dot)});
-    function showGame(index,restart=false){current=(index+games.length)%games.length;const game=games[current];hero.style.backgroundImage=`url("${game.image}")`;hero.classList.remove("changing");void hero.offsetWidth;hero.classList.add("changing");title.textContent=game.title;subtitle.textContent=game.subtitle;description.textContent=game.description;tags.innerHTML=game.tags.map(tag=>`<span>${tag}</span>`).join("");link.href=game.link;number.textContent=`${current+1} / ${games.length}`;[...dots.children].forEach((dot,i)=>dot.classList.toggle("active",i===current));if(restart)startAuto()}
-    function startAuto(){clearInterval(timer);timer=setInterval(()=>showGame(current+1),6500)}
-    prevGame.addEventListener("click",()=>showGame(current-1,true));nextGame.addEventListener("click",()=>showGame(current+1,true));hero.addEventListener("touchstart",event=>{startX=event.touches[0].clientX},{passive:true});hero.addEventListener("touchend",event=>{const distance=event.changedTouches[0].clientX-startX;if(Math.abs(distance)>45)showGame(current+(distance<0?1:-1),true)},{passive:true});
-    games.forEach(game=>{const image=new Image();image.src=game.image});showGame(0);startAuto();
-
-    // index.html · 새소식 자동 순환
-    const news=["곤충 생존기 대표 이미지가 새로 바뀌었어요!","게임 6종을 좌우로 밀어서 선택할 수 있어요!","무인도 마을을 만나보세요!","재운게임즈의 새로운 업데이트를 준비하고 있어요!"];
-    const newsText=document.querySelector("#newsText"),newsCount=document.querySelector("#newsCount");let newsIndex=0;
-    setInterval(()=>{newsText.style.opacity="0";setTimeout(()=>{newsIndex=(newsIndex+1)%news.length;newsText.textContent=news[newsIndex];newsCount.textContent=`${newsIndex+1} / ${news.length}`;newsText.style.opacity="1"},200)},5000);
-
-    // index.html · 게임 한줄평 (기기 저장 및 자동 순환)
-    const seedReviews=[
-      {name:"민준",text:"곤충 생존기 진짜 재밌어요!"},
-      {name:"서윤",text:"수정 지키기가 짜릿해요!"},
-      {name:"도윤",text:"다음 게임도 기대할게요!"},
-      {name:"지우",text:"친구랑 같이 하니 더 재밌어요!"},
-      {name:"하준",text:"모바일로 바로 돼서 좋아요!"}
-    ];
-    const blockedWords=["시발","씨발","ㅅㅂ","병신","ㅂㅅ","개새끼","새끼","꺼져","죽어","멍청이","바보같","혐오","좆","지랄"];
-    const isBlocked=value=>{const compact=value.toLowerCase().replace(/\s/g,"");return blockedWords.some(word=>compact.includes(word))||/(https?:\/\/|www\.|\.com|\.kr|카톡|텔레그램|광고|홍보|010[- ]?\d{3,4}[- ]?\d{4})/i.test(value)||/(.)\1{5,}/.test(compact)};
-    const reviewKey="jaewoon-game-reviews-v1";let reviews=seedReviews.slice();
-    try{const saved=JSON.parse(localStorage.getItem(reviewKey)||"[]");if(Array.isArray(saved)&&saved.length){reviews=saved.filter(item=>item&&item.name&&item.text&&!isBlocked(item.name+item.text));localStorage.setItem(reviewKey,JSON.stringify(reviews))}}catch(error){localStorage.removeItem(reviewKey)}
-    if(!reviews.length)reviews=seedReviews.slice();
-    const reviewAvatar=document.querySelector("#reviewAvatar"),reviewName=document.querySelector("#reviewName"),reviewText=document.querySelector("#reviewText"),reviewCount=document.querySelector("#reviewCount"),reviewForm=document.querySelector("#reviewForm"),reviewNameInput=document.querySelector("#reviewNameInput"),reviewTextInput=document.querySelector("#reviewTextInput"),reviewNotice=document.querySelector("#reviewNotice");let reviewIndex=0;
-    function showReview(index){reviewIndex=(index+reviews.length)%reviews.length;const review=reviews[reviewIndex];reviewText.style.opacity="0";setTimeout(()=>{reviewAvatar.textContent=review.name.charAt(0);reviewName.textContent=review.name;reviewText.textContent=review.text;reviewCount.textContent=`${reviewIndex+1} / ${reviews.length}`;reviewText.style.opacity="1"},180)}
-    setInterval(()=>showReview(reviewIndex+1),4200);
-    reviewForm.addEventListener("submit",event=>{event.preventDefault();const name=reviewNameInput.value.trim(),text=reviewTextInput.value.trim();if(!name||!text)return;if(isBlocked(name+text)){reviewNotice.textContent="등록할 수 없는 문구라 자동 삭제했어요.";reviewTextInput.value="";return}reviews.push({name,text});reviews=reviews.slice(-30);localStorage.setItem(reviewKey,JSON.stringify(reviews));showReview(reviews.length-1);reviewForm.reset();reviewNotice.textContent="한줄평이 등록됐어요!"});
-  </script>
-</body>
-</html>
+<body><div class="page"><main class="shell"><header class="brand" aria-label="재운게임즈"><img src="assets/brand-transparent.png?v=1" alt="재운게임즈 · 작은 상상이 큰 재미가 되는 곳"></header><div class="heroStage"><button class="slideArrow prev" id="prevGame" type="button" aria-label="이전 게임">‹</button><section class="heroFrame" aria-label="게임 슬라이드"><div class="hero"><div class="heroCopy"><div class="completion" aria-label="게임 완성도"><span class="completionLabel">완성도</span><span class="stars" id="gameStars">★★★★★</span></div><h1 id="gameTitle">곤충 생존기</h1><h2 id="gameSubtitle">작은 세계, 큰 모험</h2><p id="gameDescription">거대한 자연 속에서 채집하고, 만들고, 탐험하며 살아남아보세요!</p><div class="chips" id="gameTags"><span>생존</span><span>제작</span><span>탐험</span><span>협동 플레이</span></div><a class="play" id="gameLink" href="/play_survival_v4.html"><span class="playIcon">▶</span><span>게임 시작</span></a></div><div class="heroNum" id="gameNumber">1 / 6</div></div></section><button class="slideArrow next" id="nextGame" type="button" aria-label="다음 게임">›</button></div><div class="below"><div class="dots" id="gameDots" aria-label="게임 슬라이드"></div><section class="news" aria-label="재운게임즈 새소식"><strong class="newsTitle">🧸 재운게임즈 새소식</strong><span class="newsNew">NEW</span><span class="newsText" id="newsText">재운게임즈의 새로운 업데이트를 준비하고 있어요!</span><span class="newsCount" id="newsCount">1 / 4</span></section><section class="reviews" aria-label="게임 한줄평"><div class="reviewHead"><strong>🍬 게임 한줄평</strong><span class="reviewCount" id="reviewCount">1 / 5</span></div><div class="reviewView"><span class="reviewAvatar" id="reviewAvatar">민</span><b class="reviewName" id="reviewName">민준</b><span class="reviewText" id="reviewText">곤충 생존기 진짜 재밌어요!</span></div><form class="reviewForm" id="reviewForm"><input id="reviewNameInput" maxlength="8" placeholder="이름" aria-label="이름" required><input id="reviewTextInput" maxlength="40" placeholder="게임평 한마디" aria-label="게임평 한마디" required><button type="submit">보내기</button></form><small class="reviewNotice" id="reviewNotice">비속어·비방·광고 글은 자동 삭제됩니다.</small></section><section class="profile" aria-label="개발자 프로필"><div class="profileTop"><div class="profilePhoto"><img src="assets/developer-original.jpg" alt="재운게임즈 개발자 한재운"></div><div class="profileDetails"><h2 class="profileTitle">🕹️ 개발자 <span class="profileName">한재운</span> <span class="profileStar">★</span></h2><div class="profileGrid"><div class="profileItem"><strong>🎂 생년월</strong><span>2016년 9월 · 원숭이띠</span></div><div class="profileItem"><strong>✨ 특기</strong><span>따봉 날리기, 물건 잃어버리기, 맵찔이</span></div><div class="profileItem"><strong>🏆 수상 내역</strong><span>태권도 초록띠, 에버랜드 방탈출 멤버</span></div><div class="profileItem"><strong>🎮 좋아하는 게임</strong><span>마인크래프트, 그라운디드 시리즈</span></div><div class="profileItem"><strong>💙 존경하는 인물</strong><span>아빠, 엄마</span></div></div></div></div><div class="profileActions"><div class="staffLabel">🧑‍🤝‍🧑 게임 스텝 모집 및 문의</div><a class="profileContact" href="mailto:anyanguy2@naver.com">💌 이메일 문의</a></div><p class="profileQuote"><b>🌟</b> “재밌는 걸 만드는 게 꿈이에요!”</p></section></div><footer class="footer">© 2026 재운게임즈. All rights reserved.</footer></main></div>
+<script>
+const games=[
+{title:"곤충 생존기",stars:5,subtitle:"작은 세계, 큰 모험",description:"거대한 자연 속에서 채집하고, 만들고, 탐험하며 살아남아보세요!",tags:["생존","제작","탐험","협동 플레이"],image:"assets/insect-main-v3.webp",link:"/play_survival_v4.html"},
+{title:"수정 디펜스",stars:5,subtitle:"함께 지키는 마지막 빛",description:"영웅과 포탑을 성장시켜 몰려오는 적에게서 수정을 지켜내세요!",tags:["디펜스","협동","웨이브","보스"],image:"assets/crystal-v2.webp",link:"https://crystal-defense-online.vercel.app/"},
+{title:"곤충 디펜스",stars:4,subtitle:"작지만 강한 전쟁",description:"곤충 부대를 모아 요새를 지키고 거대한 전투에서 승리하세요!",tags:["전략","디펜스","곤충","전투"],image:"assets/insect-war-v2.webp",link:"https://bug-defense-game.anyanguy12.chatgpt.site/"},
+{title:"휴먼 GO",stars:4,subtitle:"뽑고, 성장하고, 도전!",description:"다양한 영웅 카드를 모으고 강력한 덱으로 새로운 모험에 도전하세요!",tags:["카드","수집","성장","모험"],image:"assets/card-rpg-v2.webp",link:"https://human-rpg-web-test.vercel.app/"},
+{title:"대충 RPG",stars:4,subtitle:"나만의 영웅 이야기",description:"신비한 포탈을 지나 새로운 세계를 탐험하고 전설의 영웅이 되어보세요!",tags:["RPG","전투","탐험","스토리"],image:"assets/fantasy-rpg-v2.webp",link:"/rpg-play.html"},
+{title:"무인도 마을",stars:3,subtitle:"작은 섬, 커지는 마을",description:"자원을 모으고 주민에게 일을 맡겨 무인도를 활기찬 마을로 키워보세요!",tags:["경영","건설","채집","탐험"],image:"https://raw.githubusercontent.com/GeorgeQLe/assets-2d-city/main/assets/kenney/tiny-town/Sample.png",link:"/island.html"}
+];
+const hero=document.querySelector(".hero"),prevGame=document.querySelector("#prevGame"),nextGame=document.querySelector("#nextGame"),title=document.querySelector("#gameTitle"),subtitle=document.querySelector("#gameSubtitle"),description=document.querySelector("#gameDescription"),tags=document.querySelector("#gameTags"),link=document.querySelector("#gameLink"),number=document.querySelector("#gameNumber"),stars=document.querySelector("#gameStars"),dots=document.querySelector("#gameDots");let current=0,startX=0,timer;
+games.forEach((game,index)=>{const dot=document.createElement("button");dot.type="button";dot.className="dot";dot.setAttribute("aria-label",`${index+1}번째 게임`);dot.addEventListener("click",()=>showGame(index,true));dots.appendChild(dot)});
+function showGame(index,restart=false){current=(index+games.length)%games.length;const game=games[current];hero.style.backgroundImage=`url("${game.image}")`;hero.classList.remove("changing");void hero.offsetWidth;hero.classList.add("changing");title.textContent=game.title;subtitle.textContent=game.subtitle;description.textContent=game.description;tags.innerHTML=game.tags.map(tag=>`<span>${tag}</span>`).join("");stars.textContent="★".repeat(game.stars)+"☆".repeat(5-game.stars);link.href=game.link;number.textContent=`${current+1} / ${games.length}`;[...dots.children].forEach((dot,i)=>dot.classList.toggle("active",i===current));if(restart)startAuto()}
+function startAuto(){clearInterval(timer);timer=setInterval(()=>showGame(current+1),6500)}prevGame.addEventListener("click",()=>showGame(current-1,true));nextGame.addEventListener("click",()=>showGame(current+1,true));hero.addEventListener("touchstart",event=>{startX=event.touches[0].clientX},{passive:true});hero.addEventListener("touchend",event=>{const distance=event.changedTouches[0].clientX-startX;if(Math.abs(distance)>45)showGame(current+(distance<0?1:-1),true)},{passive:true});games.forEach(game=>{const image=new Image();image.src=game.image});showGame(0);startAuto();
+const news=["곤충 생존기 대표 이미지가 새로 바뀌었어요!","게임 6종을 좌우로 밀어서 선택할 수 있어요!","무인도 마을을 만나보세요!","재운게임즈의 새로운 업데이트를 준비하고 있어요!"];const newsText=document.querySelector("#newsText"),newsCount=document.querySelector("#newsCount");let newsIndex=0;setInterval(()=>{newsText.style.opacity="0";setTimeout(()=>{newsIndex=(newsIndex+1)%news.length;newsText.textContent=news[newsIndex];newsCount.textContent=`${newsIndex+1} / ${news.length}`;newsText.style.opacity="1"},200)},5000);
+const seedReviews=[{name:"민준",text:"곤충 생존기 진짜 재밌어요!"},{name:"서윤",text:"수정 지키기가 짜릿해요!"},{name:"도윤",text:"다음 게임도 기대할게요!"},{name:"지우",text:"친구랑 같이 하니 더 재밌어요!"},{name:"하준",text:"모바일로 바로 돼서 좋아요!"}];const blockedWords=["시발","씨발","ㅅㅂ","병신","ㅂㅅ","개새끼","새끼","꺼져","죽어","멍청이","바보같","혐오","좆","지랄"];const isBlocked=value=>{const compact=value.toLowerCase().replace(/\s/g,"");return blockedWords.some(word=>compact.includes(word))||/(https?:\/\/|www\.|\.com|\.kr|카톡|텔레그램|광고|홍보|010[- ]?\d{3,4}[- ]?\d{4})/i.test(value)||/(.)\1{5,}/.test(compact)};const reviewKey="jaewoon-game-reviews-v1";let reviews=seedReviews.slice();try{const saved=JSON.parse(localStorage.getItem(reviewKey)||"[]");if(Array.isArray(saved)&&saved.length){reviews=saved.filter(item=>item&&item.name&&item.text&&!isBlocked(item.name+item.text));localStorage.setItem(reviewKey,JSON.stringify(reviews))}}catch(error){localStorage.removeItem(reviewKey)}if(!reviews.length)reviews=seedReviews.slice();const reviewAvatar=document.querySelector("#reviewAvatar"),reviewName=document.querySelector("#reviewName"),reviewText=document.querySelector("#reviewText"),reviewCount=document.querySelector("#reviewCount"),reviewForm=document.querySelector("#reviewForm"),reviewNameInput=document.querySelector("#reviewNameInput"),reviewTextInput=document.querySelector("#reviewTextInput"),reviewNotice=document.querySelector("#reviewNotice");let reviewIndex=0;function showReview(index){reviewIndex=(index+reviews.length)%reviews.length;const review=reviews[reviewIndex];reviewText.style.opacity="0";setTimeout(()=>{reviewAvatar.textContent=review.name.charAt(0);reviewName.textContent=review.name;reviewText.textContent=review.text;reviewCount.textContent=`${reviewIndex+1} / ${reviews.length}`;reviewText.style.opacity="1"},180)}setInterval(()=>showReview(reviewIndex+1),4200);reviewForm.addEventListener("submit",event=>{event.preventDefault();const name=reviewNameInput.value.trim(),text=reviewTextInput.value.trim();if(!name||!text)return;if(isBlocked(name+text)){reviewNotice.textContent="등록할 수 없는 문구라 자동 삭제했어요.";reviewTextInput.value="";return}reviews.push({name,text});reviews=reviews.slice(-30);localStorage.setItem(reviewKey,JSON.stringify(reviews));showReview(reviews.length-1);reviewForm.reset();reviewNotice.textContent="한줄평이 등록됐어요!"});
+</script></body></html>
