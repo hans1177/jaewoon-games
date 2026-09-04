@@ -1,0 +1,60 @@
+name: Gemini Code Review & Summary
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  analyze-changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Gemini SDK
+        run: npm install @google/generative-ai
+
+      - name: Run Gemini Analysis
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          node -e '
+          const { GoogleGenerativeAI } = require("@google/generative-ai");
+          const { execSync } = require("child_process");
+
+          async function main() {
+            try {
+              const diff = execSync("git diff HEAD~1 HEAD").toString();
+              
+              if (!diff.trim()) {
+                console.log("변경사항이 없습니다.");
+                return;
+              }
+
+              const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+              const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+              const prompt = `다음 Git 변경사항(Diff)을 분석하고, 변경된 내용과 주요 포인트를 한글로 명확하게 요약해줘:\n\n${diff.substring(0, 4000)}`;
+
+              const result = await model.generateContent(prompt);
+              const response = await result.response;
+              
+              console.log("=== 🤖 Gemini의 변경사항 분석 결과 ===");
+              console.log(response.text());
+            } catch (error) {
+              console.error("Gemini 분석 중 오류 발생:", error);
+            }
+          }
+
+          main();
+          '
