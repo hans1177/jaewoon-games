@@ -3,139 +3,55 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#f4f3ef">
+  <meta name="theme-color" content="#f4f1eb">
   <meta name="description" content="재운게임즈 공식 게임 포털">
   <title>재운게임즈</title>
   <style>
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    :root{--bg:#f4f3ef;--paper:#fbfaf7;--ink:#202527;--muted:#7d8587;--line:#deddd7;--dark:#273238;--soft:#ecebe6;--ok:#789080}
+    :root{--bg:#f4f1eb;--paper:#fffdf9;--panel:#f8f5ef;--ink:#21262b;--muted:#778089;--line:#ddd8cf;--accent:#32414c;--accentSoft:#e6edf1;--chip:#ece8df}
     html{scroll-behavior:smooth}
-    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
-    body{background:linear-gradient(180deg,#f7f6f2 0,#f1f0eb 100%)}
-    a{color:inherit;text-decoration:none}
-    button{font:inherit}
-    .wrap{width:min(100%,920px);margin:auto;padding:max(18px,env(safe-area-inset-top)) 16px max(38px,env(safe-area-inset-bottom))}
-    .top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 2px 22px}
-    .brand{display:flex;align-items:center;gap:11px;font-weight:950;letter-spacing:-.5px}
-    .logo{width:42px;height:42px;border-radius:15px;display:grid;place-items:center;background:#2c353a;color:#fff;font-weight:950}
-    .brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.7px;margin-top:2px}
-    .status{display:flex;align-items:center;gap:7px;padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:#ecebe6;color:#6e7678;font-size:11px;white-space:nowrap}
-    .status i{width:7px;height:7px;border-radius:50%;background:#b19d65;display:block}
-    .intro{padding:8px 2px 24px}
-    .intro small{font-size:11px;color:#8b9294;font-weight:800;letter-spacing:.8px}
-    .intro h1{margin:8px 0 10px;font-size:clamp(34px,8vw,56px);line-height:1.04;letter-spacing:-2px}
-    .intro p{margin:0;color:#70787b;font-size:14px;line-height:1.65;max-width:590px}
-    .section{margin-top:30px}
-    .sectionHead{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:0 2px 12px}
-    .sectionHead h2{margin:0;font-size:21px;letter-spacing:-.7px}
-    .sectionHead span{font-size:11px;color:var(--muted)}
-
-    .featured{position:relative;overflow:hidden;min-height:330px;border-radius:30px;border:1px solid #d6d8d5;background:linear-gradient(135deg,#dbe6ea 0%,#e9ece8 55%,#e7ded1 100%);padding:28px;display:flex;align-items:flex-end}
-    .featured:before{content:"";position:absolute;width:300px;height:300px;border-radius:50%;right:-65px;top:-95px;background:rgba(155,183,195,.38)}
-    .featured:after{content:"";position:absolute;width:210px;height:210px;border-radius:50%;right:90px;bottom:-130px;background:rgba(210,186,157,.34)}
-    .scene{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-    .scene .sun{position:absolute;width:96px;height:96px;border-radius:50%;right:9%;top:16%;background:rgba(255,255,255,.5);filter:blur(2px)}
-    .scene .hill{position:absolute;border-radius:50% 50% 0 0/100% 100% 0 0;background:rgba(91,118,108,.25);bottom:-32px}
-    .scene .h1{width:58%;height:130px;right:-7%;transform:rotate(-4deg)}
-    .scene .h2{width:48%;height:100px;left:-10%;background:rgba(107,130,117,.18);transform:rotate(5deg)}
-    .scene .bug{position:absolute;right:12%;bottom:53px;font-size:88px;filter:saturate(.65);transform:rotate(-8deg)}
-    .scene .herochar{position:absolute;right:37%;bottom:44px;font-size:55px;filter:saturate(.6)}
-    .featureText{position:relative;z-index:2;max-width:500px;background:rgba(250,249,246,.84);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.55);border-radius:22px;padding:20px}
-    .eyebrow{font-size:11px;color:#697b81;font-weight:850;letter-spacing:.7px}
-    .featureText h3{font-size:28px;margin:7px 0 7px;letter-spacing:-1px}
-    .featureText p{margin:0;color:#6f787a;font-size:13px;line-height:1.55}
-    .chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
-    .chip{font-size:10px;font-weight:800;padding:6px 9px;border-radius:999px;background:#e9ece9;color:#657176}
-
-    .rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 10px;scrollbar-width:none}
-    .rail::-webkit-scrollbar{display:none}
-    .gameCard{border:0;text-align:left;flex:0 0 min(78vw,260px);height:240px;border-radius:24px;scroll-snap-align:start;position:relative;overflow:hidden;padding:0;background:#ddd;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
-    .gameCard:active{transform:scale(.985)}
-    .gameCard.selected{outline:2px solid #313b40;outline-offset:2px}
-    .cover{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:78px}
-    .cover:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(22,28,31,.78) 100%)}
-    .c1{background:linear-gradient(145deg,#70849a,#c1b59f)}
-    .c2{background:linear-gradient(145deg,#879ba6,#a7c5c3)}
-    .c3{background:linear-gradient(145deg,#7c9271,#c5b88e)}
-    .c4{background:linear-gradient(145deg,#857d91,#c5b29e)}
-    .c5{background:linear-gradient(145deg,#6d836b,#a4a77d)}
-    .cardInfo{position:absolute;left:16px;right:16px;bottom:15px;z-index:2;color:white}
-    .cardInfo strong{display:block;font-size:18px;letter-spacing:-.4px}
-    .cardInfo span{display:block;margin-top:4px;font-size:11px;color:rgba(255,255,255,.76)}
-
-    .selectedPanel{margin-top:10px;border:1px solid var(--line);border-radius:22px;background:var(--paper);padding:18px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-    .selectedPanel h3{margin:0;font-size:18px;letter-spacing:-.4px}
-    .selectedPanel p{margin:5px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
-    .play{min-width:100px;min-height:44px;border-radius:14px;background:var(--dark);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;transition:.16s ease}
-    .play:active{transform:scale(.97)}
-
-    .notice{padding:17px 18px;border:1px solid var(--line);border-radius:19px;background:var(--paper);display:flex;justify-content:space-between;gap:15px}
-    .notice strong{font-size:14px}
-    .notice p{margin:5px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
-    .notice time{font-size:10px;color:#999f9f;white-space:nowrap}
-    footer{padding:34px 2px 4px;color:#a0a3a1;font-size:10px;display:flex;justify-content:space-between;gap:10px}
-    @media(hover:hover){.gameCard:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(39,48,52,.12)}.play:hover{opacity:.9}}
-    @media(max-width:600px){.featured{min-height:300px;padding:18px}.featureText{padding:17px}.featureText h3{font-size:24px}.scene .bug{font-size:72px;right:4%;bottom:80px}.scene .herochar{font-size:46px;right:36%;bottom:66px}.selectedPanel{align-items:flex-start;flex-direction:column}.play{width:100%}.brand small{display:none}}
+    body{margin:0;min-height:100%;background:linear-gradient(180deg,#f7f4ef 0%,#f1eee8 100%);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+    a{text-decoration:none;color:inherit}button{font:inherit}
+    .wrap{width:min(100%,860px);margin:auto;padding:max(18px,env(safe-area-inset-top)) 16px max(38px,env(safe-area-inset-bottom))}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 2px 18px}
+    .brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;border-radius:16px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:900;font-size:20px;box-shadow:0 8px 18px rgba(50,65,76,.15)}
+    .brandText strong{display:block;font-size:18px;letter-spacing:-.6px}.brandText span{display:block;margin-top:2px;font-size:11px;color:var(--muted)}
+    .status{display:flex;align-items:center;gap:7px;padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:#f1ede5;color:#68727b;font-size:12px;font-weight:700;white-space:nowrap}.status i{width:8px;height:8px;border-radius:50%;background:#c5aa66;display:block}
+    .hero{position:relative;overflow:hidden;padding:32px 24px;border-radius:28px;border:1px solid var(--line);background:linear-gradient(145deg,#e2eaf0 0%,#f8f6f1 56%,#e9e2d8 100%)}
+    .hero:before,.hero:after{content:"";position:absolute;border-radius:50%;opacity:.72;filter:blur(3px)}.hero:before{width:210px;height:210px;right:-80px;top:-90px;background:#c8d7df}.hero:after{width:170px;height:170px;left:-65px;bottom:-95px;background:#eddcca}
+    .heroInner{position:relative;z-index:1;max-width:560px}.eyebrow{font-size:12px;font-weight:900;letter-spacing:.6px;color:#64717b;margin-bottom:10px}.hero h1{margin:0;font-size:clamp(34px,8vw,58px);line-height:1.02;letter-spacing:-2px}.hero p{margin:14px 0 0;color:#667178;font-size:15px;line-height:1.6}
+    .heroBtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.btn{min-height:46px;padding:0 16px;border-radius:14px;border:1px solid #cad1d6;background:#fcfbf7;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:14px}.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .section{margin-top:34px}.sectionHead{display:flex;align-items:end;justify-content:space-between;gap:10px;padding:0 2px;margin-bottom:12px}.sectionHead h2{margin:0;font-size:21px;letter-spacing:-.7px}.sectionHead span{font-size:12px;color:var(--muted)}
+    .carouselViewport{overflow:hidden;border-radius:24px}.carouselTrack{display:flex;transition:transform .35s ease}.gameCard{flex:0 0 100%;padding:22px;border:1px solid var(--line);border-radius:24px;background:var(--paper);box-shadow:0 10px 24px rgba(32,38,43,.04)}
+    .cardTop{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.gameBadge{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border-radius:999px;background:var(--chip);font-size:11px;font-weight:900;color:#65707a}.gameBadge i{width:8px;height:8px;border-radius:50%;background:#90a4b2;display:block}
+    .gameVisual{margin-top:16px;height:174px;border-radius:22px;padding:18px;background:linear-gradient(145deg,#dbe6ed 0%,#edf1f2 55%,#e8dfd2 100%);display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;position:relative}.gameVisual:before{content:"";position:absolute;right:-24px;top:-28px;width:110px;height:110px;border-radius:50%;background:#ffffff66}.emoji{position:relative;z-index:1;font-size:44px}.miniTag{position:relative;z-index:1;display:inline-flex;width:max-content;padding:7px 10px;border-radius:999px;background:#ffffffe2;font-size:11px;font-weight:800;color:#53616d}
+    .gameTitle{margin:18px 0 8px;font-size:28px;letter-spacing:-1.2px;font-weight:950}.gameDesc{margin:0;color:var(--muted);font-size:14px;line-height:1.62}.chipRow{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.chip{padding:7px 10px;border-radius:999px;background:var(--accentSoft);font-size:11px;font-weight:800;color:#5f6b75}.cardActions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;flex-wrap:wrap}.count{font-size:12px;color:var(--muted);font-weight:800}
+    .navRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}.navBtns{display:flex;gap:8px}.navBtn{width:42px;height:42px;border:none;border-radius:14px;background:#ebe7df;color:#4e5964;font-size:18px;font-weight:900}.dots{display:flex;gap:6px;align-items:center}.dot{width:8px;height:8px;border-radius:50%;background:#d2cdc4}.dot.active{width:22px;border-radius:999px;background:#6e808d}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.panel{padding:20px;border:1px solid var(--line);border-radius:22px;background:var(--paper)}.profileTop{display:flex;align-items:center;gap:14px;margin-bottom:16px}.avatar{width:62px;height:62px;border-radius:22px;background:linear-gradient(145deg,#dce6ed,#f4eee5);display:grid;place-items:center;font-size:26px;font-weight:900;color:#4b5b67}.panel h3{margin:0;font-size:18px;letter-spacing:-.6px}.sub{margin-top:4px;font-size:12px;color:var(--muted)}.list{display:grid;gap:10px;margin-top:14px}.item strong{display:block;font-size:13px;margin-bottom:3px}.item p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}.story{padding:18px;border-radius:18px;background:var(--panel);font-size:13px;line-height:1.65;color:#5f6870;margin-top:14px}
+    .notice{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 19px;border:1px solid var(--line);border-radius:20px;background:var(--paper)}.notice strong{display:block;font-size:14px}.notice p{margin:5px 0 0;color:var(--muted);font-size:12px;line-height:1.5}.notice time{font-size:11px;color:#949ca2;white-space:nowrap}footer{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:34px 2px 6px;color:#9aa1a7;font-size:11px}
+    @media(max-width:680px){.grid{grid-template-columns:1fr}.hero{padding:28px 20px}.hero h1{font-size:40px}.gameCard{padding:18px}.gameVisual{height:156px}.gameTitle{font-size:24px}.brandText span{display:none}.status{font-size:11px}.notice{flex-direction:column}}
   </style>
 </head>
 <body>
   <main class="wrap">
-    <header class="top">
-      <div class="brand"><div class="logo">J</div><div>재운게임즈<small>JAEWOON GAMES</small></div></div>
-      <div class="status"><i></i>게임 서버 준비중</div>
-    </header>
-
-    <section class="intro">
-      <small>JAEWOON GAMES</small>
-      <h1>고르고,<br>바로 시작.</h1>
-      <p>게임을 찾는 과정은 짧게. 원하는 게임을 카드에서 고르면 바로 플레이할 수 있습니다.</p>
-    </section>
-
-    <section class="featured" id="project">
-      <div class="scene"><div class="sun"></div><div class="hill h1"></div><div class="hill h2"></div><div class="herochar">🧍</div><div class="bug">🦗</div></div>
-      <div class="featureText">
-        <div class="eyebrow">개발중 · 모바일</div>
-        <h3>신규 생존게임</h3>
-        <p>작아진 인간의 시점으로 거대한 곤충과 맞서는 3D 저폴리 생존 협동게임.</p>
-        <div class="chips"><span class="chip">Godot</span><span class="chip">3D 저폴리</span><span class="chip">최대 4인</span><span class="chip">AI 동료</span></div>
-      </div>
-    </section>
-
-    <section class="section" id="games">
-      <div class="sectionHead"><h2>게임 선택</h2><span>좌우로 밀어서 선택</span></div>
-      <div class="rail" id="gameRail">
-        <button class="gameCard selected" type="button" data-title="대충 용사 RPG" data-desc="포탈 · 동굴 · 퀘스트 · 전투" data-link="/rpg-play.html"><div class="cover c1">🌀</div><div class="cardInfo"><strong>대충 용사 RPG</strong><span>모험 RPG</span></div></button>
-        <button class="gameCard" type="button" data-title="수정 디펜스" data-desc="온라인 협동으로 수정을 지켜라" data-link="https://crystal-defense-online.vercel.app/"><div class="cover c2">💎</div><div class="cardInfo"><strong>수정 디펜스</strong><span>온라인 협동</span></div></button>
-        <button class="gameCard" type="button" data-title="곤충 디펜스" data-desc="곤충 군단으로 인간 기지를 공격" data-link="https://bug-defense-game.anyanguy12.chatgpt.site/"><div class="cover c3">🐜</div><div class="cardInfo"><strong>곤충 디펜스</strong><span>전략 · 디펜스</span></div></button>
-        <button class="gameCard" type="button" data-title="인간 RPG" data-desc="성장하고 장비를 강화하는 턴제 RPG" data-link="https://human-rpg-web-test.vercel.app/"><div class="cover c4">⚔️</div><div class="cardInfo"><strong>인간 RPG</strong><span>턴제 RPG</span></div></button>
-        <button class="gameCard" type="button" data-title="곤충 생존 디펜스" data-desc="낮과 밤을 버티는 생존 전투" data-link="/play_survival_v4.html"><div class="cover c5">🦗</div><div class="cardInfo"><strong>곤충 생존 디펜스</strong><span>생존 · 전투</span></div></button>
-      </div>
-      <div class="selectedPanel">
-        <div><h3 id="selectedTitle">대충 용사 RPG</h3><p id="selectedDesc">포탈 · 동굴 · 퀘스트 · 전투</p></div>
-        <a class="play" id="playButton" href="/rpg-play.html">게임 시작</a>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="sectionHead"><h2>공지</h2><span>업데이트</span></div>
-      <div class="notice"><div><strong>개발환경 개편중</strong><p>Cloudflare Pages 자동배포와 신규 모바일게임 개발환경을 순차적으로 준비하고 있습니다.</p></div><time>2026.09</time></div>
-    </section>
-
-    <footer><span>© 2026 JAEWOON GAMES</span><span>Cloudflare Pages</span></footer>
+    <header class="top"><div class="brand"><div class="logo">재</div><div class="brandText"><strong>재운게임즈</strong><span>고르고 시작.</span></div></div><div class="status"><i></i>서버 준비중</div></header>
+    <section class="hero"><div class="heroInner"><div class="eyebrow">JAEWOON GAMES</div><h1>고르고 시작.</h1><p>한눈에 게임을 보고, 원하는 게임을 고르고, 바로 시작하는 재운게임즈 게임 대문입니다.</p><div class="heroBtns"><a class="btn primary" href="#games">게임 고르기</a><a class="btn" href="#developer">개발자 소개</a></div></div></section>
+    <section class="section" id="games"><div class="sectionHead"><h2>게임 선택</h2><span>한 번에 한 게임씩</span></div><div class="carouselViewport"><div class="carouselTrack" id="track">
+      <article class="gameCard"><div class="cardTop"><span class="gameBadge"><i></i>현재 플레이 가능</span><span class="count">1 / 5</span></div><div class="gameVisual"><span class="miniTag">포탈 · 동굴 · 전투</span><div class="emoji">🌀</div></div><div class="gameTitle">대충 용사 RPG</div><p class="gameDesc">포탈을 타고 사냥터로 들어가 몬스터를 잡고, 장비와 보상을 모으며 성장하는 모험 RPG입니다.</p><div class="chipRow"><span class="chip">RPG</span><span class="chip">사냥</span><span class="chip">성장</span></div><div class="cardActions"><a class="btn primary" href="/rpg-play.html">게임 시작</a><div class="count">웹게임</div></div></article>
+      <article class="gameCard"><div class="cardTop"><span class="gameBadge"><i></i>현재 플레이 가능</span><span class="count">2 / 5</span></div><div class="gameVisual"><span class="miniTag">온라인 협동</span><div class="emoji">💎</div></div><div class="gameTitle">수정 디펜스</div><p class="gameDesc">중앙의 수정을 지키며 몰려오는 적을 막는 협동 디펜스 게임입니다. 함께 버티는 재미가 중심입니다.</p><div class="chipRow"><span class="chip">협동</span><span class="chip">디펜스</span><span class="chip">웨이브</span></div><div class="cardActions"><a class="btn primary" href="https://crystal-defense-online.vercel.app/">게임 시작</a><div class="count">웹게임</div></div></article>
+      <article class="gameCard"><div class="cardTop"><span class="gameBadge"><i></i>현재 플레이 가능</span><span class="count">3 / 5</span></div><div class="gameVisual"><span class="miniTag">곤충 군단 출동</span><div class="emoji">🐜</div></div><div class="gameTitle">곤충 디펜스</div><p class="gameDesc">곤충 군단을 이끌고 인간 기지를 공략하는 스타일의 디펜스 게임입니다. 다양한 곤충 유닛이 핵심입니다.</p><div class="chipRow"><span class="chip">곤충</span><span class="chip">공격</span><span class="chip">전략</span></div><div class="cardActions"><a class="btn primary" href="https://bug-defense-game.anyanguy12.chatgpt.site/">게임 시작</a><div class="count">웹게임</div></div></article>
+      <article class="gameCard"><div class="cardTop"><span class="gameBadge"><i></i>현재 플레이 가능</span><span class="count">4 / 5</span></div><div class="gameVisual"><span class="miniTag">턴제 성장 RPG</span><div class="emoji">⚔️</div></div><div class="gameTitle">인간 RPG</div><p class="gameDesc">전투와 장비 강화, 직업 선택, 성장 요소를 담은 턴제 RPG입니다. 차근차근 강해지는 재미가 있습니다.</p><div class="chipRow"><span class="chip">턴제</span><span class="chip">강화</span><span class="chip">직업</span></div><div class="cardActions"><a class="btn primary" href="https://human-rpg-web-test.vercel.app/">게임 시작</a><div class="count">웹게임</div></div></article>
+      <article class="gameCard"><div class="cardTop"><span class="gameBadge"><i></i>현재 플레이 가능</span><span class="count">5 / 5</span></div><div class="gameVisual"><span class="miniTag">낮과 밤 생존</span><div class="emoji">🦗</div></div><div class="gameTitle">곤충 생존 디펜스</div><p class="gameDesc">낮과 밤을 버티며 살아남는 생존 전투 게임입니다. 곤충과 싸우고 자원을 모아 버티는 맛이 있습니다.</p><div class="chipRow"><span class="chip">생존</span><span class="chip">전투</span><span class="chip">방어</span></div><div class="cardActions"><a class="btn primary" href="/play_survival_v4.html">게임 시작</a><div class="count">웹게임</div></div></article>
+    </div></div><div class="navRow"><div class="navBtns"><button class="navBtn" id="prevBtn" aria-label="이전">‹</button><button class="navBtn" id="nextBtn" aria-label="다음">›</button></div><div class="dots" id="dots"></div></div></section>
+    <section class="section" id="developer"><div class="sectionHead"><h2>개발자 소개</h2><span>재운게임즈 팀</span></div><div class="grid">
+      <article class="panel"><div class="profileTop"><div class="avatar">한</div><div><h3>한재운</h3><div class="sub">재운게임즈 개발자 · 2016년 9월생</div></div></div><div class="list"><div class="item"><strong>특기</strong><p>따봉 날리기 · 맵찔이 · 물건 잃어버리기</p></div><div class="item"><strong>수상 / 경력</strong><p>피아노 초급 · 태권도 초록띠 · 부천 피아노 콩쿠르 2등 수상</p></div><div class="item"><strong>좋아하는 게임</strong><p>마인크래프트 · 그라운디드 시리즈</p></div><div class="item"><strong>좋아하는 인물</strong><p>아빠</p></div></div><div class="story">게임을 좋아하고, 상상한 아이디어를 직접 게임으로 만들어 보고 싶은 개발자입니다. 재운게임즈에서는 재미있고 쉽게 즐길 수 있는 게임을 하나씩 만들어 가고 있습니다.</div></article>
+      <article class="panel"><div class="profileTop"><div class="avatar">준</div><div><h3>스텝 한준희</h3><div class="sub">함께 돕는 팀 스텝</div></div></div><div class="list"><div class="item"><strong>역할</strong><p>게임 제작 보조 · 아이디어 정리 · 진행 도움</p></div><div class="item"><strong>팀 분위기</strong><p>가볍고 재미있게, 하지만 끝까지 만드는 방향으로 함께 움직입니다.</p></div><div class="item"><strong>한마디</strong><p>재운게임즈는 좋아하는 게임을 직접 만들고, 바로 시작할 수 있게 만드는 작은 게임팀입니다.</p></div></div><div class="story">앞으로는 웹게임뿐 아니라 모바일 게임도 차근차근 늘려 가면서, 재운게임즈만의 재미있는 세계를 계속 넓혀 갈 예정입니다.</div></article>
+    </div></section>
+    <section class="section"><div class="sectionHead"><h2>공지</h2><span>업데이트</span></div><div class="notice"><div><strong>대문 개편 완료</strong><p>고르고 시작할 수 있는 게임 카드형 대문으로 바뀌었고, 개발자 소개 영역이 새로 추가되었습니다.</p></div><time>2026.09</time></div></section>
+    <footer><span>© 2026 재운게임즈</span><span>고르고 시작.</span></footer>
   </main>
   <script>
-    const cards=[...document.querySelectorAll('.gameCard')];
-    const title=document.getElementById('selectedTitle');
-    const desc=document.getElementById('selectedDesc');
-    const play=document.getElementById('playButton');
-    cards.forEach(card=>card.addEventListener('click',()=>{
-      cards.forEach(c=>c.classList.remove('selected'));
-      card.classList.add('selected');
-      title.textContent=card.dataset.title;
-      desc.textContent=card.dataset.desc;
-      play.href=card.dataset.link;
-      card.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
-    }));
+    const track=document.getElementById('track');const cards=[...track.children];const dotsWrap=document.getElementById('dots');const prevBtn=document.getElementById('prevBtn');const nextBtn=document.getElementById('nextBtn');let index=0,startX=0,moveX=0;cards.forEach((_,i)=>{const dot=document.createElement('button');dot.className='dot'+(i===0?' active':'');dot.style.border='none';dot.style.padding='0';dot.addEventListener('click',()=>go(i));dotsWrap.appendChild(dot)});function render(){track.style.transform=`translateX(-${index*100}%)`;[...dotsWrap.children].forEach((d,i)=>d.classList.toggle('active',i===index))}function go(i){index=Math.max(0,Math.min(cards.length-1,i));render()}prevBtn.addEventListener('click',()=>go(index-1));nextBtn.addEventListener('click',()=>go(index+1));const viewport=document.querySelector('.carouselViewport');viewport.addEventListener('touchstart',e=>{startX=e.touches[0].clientX},{passive:true});viewport.addEventListener('touchmove',e=>{moveX=e.touches[0].clientX},{passive:true});viewport.addEventListener('touchend',()=>{const diff=moveX-startX;if(Math.abs(diff)>40){diff<0?go(index+1):go(index-1)}startX=0;moveX=0});
   </script>
 </body>
 </html>
