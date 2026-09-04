@@ -16,12 +16,12 @@
     button{font:inherit}
 
     /* 배경 */
-    .page{min-height:100vh;background:url("assets/page-bg.webp?v=3") center top/cover fixed no-repeat}
+    .page{min-height:100vh;background:url("assets/page-bg-v2.webp") center top/cover fixed no-repeat}
     .shell{width:min(100%,980px);margin:auto;padding:16px 14px 30px}
 
     /* 로고 */
     .brand{display:flex;justify-content:center;padding:0}
-    .brand img{display:block;width:min(100%,760px);height:auto;filter:drop-shadow(0 10px 18px rgba(35,96,141,.16))}
+    .brand img{display:block;width:min(85%,650px);height:auto;filter:drop-shadow(0 10px 18px rgba(35,96,141,.16))}
 
     /* 대표 게임 */
     .heroFrame{position:relative;padding:7px;border-radius:30px;background:linear-gradient(145deg,#fff,#e9f8ff);box-shadow:0 18px 38px rgba(31,101,151,.24)}
@@ -42,7 +42,7 @@
 
     /* 모바일 */
     @media(max-width:640px){
-      .shell{padding:0 9px 24px}.brand{margin:0 -9px;padding:0}.brand img{width:100%}
+      .shell{padding:0 9px 24px}.brand{margin:0;padding:5px 0 2px}.brand img{width:85%}
       .heroFrame{margin-top:0;padding:5px;border-radius:22px}.hero{min-height:278px;border-radius:18px;background-position:51% center}.hero:after{background:linear-gradient(90deg,rgba(4,48,38,.42) 0%,rgba(4,48,38,.12) 53%,transparent 84%)}
       .dots{padding:15px 0 7px}
       .heroCopy{left:15px;right:15px;top:13px;width:auto;padding-right:28px}.badge{padding:6px 10px;font-size:11px}.hero h1{margin-top:11px;font-size:29px}.hero h2{margin-bottom:8px;font-size:15px}.hero p{display:none}.chips{gap:4px}.chips span{padding:4px 7px;font-size:10px}.play{width:min(100%,235px);min-height:48px;margin-top:11px;border-radius:16px;font-size:17px;box-shadow:0 5px 0 #0d59b6}.heroNum{right:10px;bottom:9px;padding:5px 9px;font-size:11px}
