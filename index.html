@@ -3,122 +3,139 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#f3f1ec">
+  <meta name="theme-color" content="#f4f3ef">
   <meta name="description" content="재운게임즈 공식 게임 포털">
   <title>재운게임즈</title>
   <style>
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    :root{color-scheme:light;--bg:#f3f1ec;--paper:#fbfaf7;--ink:#1f2529;--muted:#7d858a;--line:#dedbd4;--soft:#e9edf0;--accent:#6c8292;--accent2:#dce5ea;--ok:#6f8f7a}
+    :root{--bg:#f4f3ef;--paper:#fbfaf7;--ink:#202527;--muted:#7d8587;--line:#deddd7;--dark:#273238;--soft:#ecebe6;--ok:#789080}
     html{scroll-behavior:smooth}
     html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
-    body{background:linear-gradient(180deg,#f6f4ef 0%,#f1efe9 100%)}
+    body{background:linear-gradient(180deg,#f7f6f2 0,#f1f0eb 100%)}
     a{color:inherit;text-decoration:none}
-    .wrap{width:min(100%,860px);margin:auto;padding:max(18px,env(safe-area-inset-top)) 16px max(36px,env(safe-area-inset-bottom))}
-    .top{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:4px 2px 20px}
-    .brand{display:flex;align-items:center;gap:11px;font-weight:900;letter-spacing:-.5px}
-    .logo{width:40px;height:40px;border-radius:14px;background:#2d363c;color:#fff;display:grid;place-items:center;font-size:20px}
-    .brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.6px;margin-top:2px}
-    .status{display:flex;align-items:center;gap:7px;font-size:12px;color:#667076;background:#ebe8e1;border:1px solid var(--line);padding:8px 11px;border-radius:999px;white-space:nowrap}
-    .status i{width:7px;height:7px;border-radius:50%;background:#b6a66d;display:block}
-    .hero{position:relative;overflow:hidden;border-radius:28px;background:linear-gradient(140deg,#dfe8ed 0%,#eef1ef 52%,#e8e1d7 100%);padding:38px 30px;border:1px solid #d7d8d5}
-    .hero:before,.hero:after{content:"";position:absolute;border-radius:50%;filter:blur(2px);opacity:.7}
-    .hero:before{width:220px;height:220px;background:#c8d8e1;right:-80px;top:-90px}
-    .hero:after{width:170px;height:170px;background:#e7d7c4;left:-60px;bottom:-95px}
-    .heroInner{position:relative;z-index:1;max-width:590px}
-    .eyebrow{font-size:12px;font-weight:800;color:#667985;letter-spacing:.7px;margin-bottom:10px}
-    .hero h1{margin:0;font-size:clamp(34px,8vw,58px);line-height:1.02;letter-spacing:-2.1px;font-weight:950}
-    .hero p{margin:16px 0 0;color:#667176;font-size:15px;line-height:1.65;max-width:520px}
-    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
-    .btn{min-height:46px;padding:0 17px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;font-weight:850;font-size:14px;border:1px solid #c8cdcf;background:#f8f8f5;transition:.18s ease}
-    .btn.primary{background:#28333a;border-color:#28333a;color:#fff}
-    .btn:active{transform:scale(.98)}
-    .section{margin-top:34px}
-    .sectionHead{display:flex;align-items:end;justify-content:space-between;gap:12px;padding:0 3px;margin-bottom:12px}
+    button{font:inherit}
+    .wrap{width:min(100%,920px);margin:auto;padding:max(18px,env(safe-area-inset-top)) 16px max(38px,env(safe-area-inset-bottom))}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 2px 22px}
+    .brand{display:flex;align-items:center;gap:11px;font-weight:950;letter-spacing:-.5px}
+    .logo{width:42px;height:42px;border-radius:15px;display:grid;place-items:center;background:#2c353a;color:#fff;font-weight:950}
+    .brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.7px;margin-top:2px}
+    .status{display:flex;align-items:center;gap:7px;padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:#ecebe6;color:#6e7678;font-size:11px;white-space:nowrap}
+    .status i{width:7px;height:7px;border-radius:50%;background:#b19d65;display:block}
+    .intro{padding:8px 2px 24px}
+    .intro small{font-size:11px;color:#8b9294;font-weight:800;letter-spacing:.8px}
+    .intro h1{margin:8px 0 10px;font-size:clamp(34px,8vw,56px);line-height:1.04;letter-spacing:-2px}
+    .intro p{margin:0;color:#70787b;font-size:14px;line-height:1.65;max-width:590px}
+    .section{margin-top:30px}
+    .sectionHead{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:0 2px 12px}
     .sectionHead h2{margin:0;font-size:21px;letter-spacing:-.7px}
-    .sectionHead span{font-size:12px;color:var(--muted)}
-    .featured{display:grid;grid-template-columns:1.25fr .75fr;gap:12px}
-    .featureCard,.sideCard{border-radius:22px;border:1px solid var(--line);background:var(--paper);padding:22px}
-    .featureCard{min-height:190px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(155deg,#fbfaf7 0%,#edf1f2 100%)}
-    .featureTag{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:#657179;font-weight:800}
-    .featureTag i{width:7px;height:7px;border-radius:50%;background:#9f8f55;display:block}
-    .featureTitle{margin:18px 0 8px;font-size:27px;letter-spacing:-1px;font-weight:950}
-    .featureDesc{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
-    .featureMeta{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
-    .chip{padding:7px 9px;border-radius:999px;background:#e8ecee;color:#657178;font-size:11px;font-weight:750}
-    .sideCard{display:flex;flex-direction:column;justify-content:space-between;min-height:190px}
-    .sideCard strong{font-size:15px}
-    .sideCard p{margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.55}
-    .sideLink{margin-top:18px;font-size:13px;font-weight:850;color:#516776}
-    .games{display:grid;gap:9px}
-    .game{display:grid;grid-template-columns:48px minmax(0,1fr) auto;align-items:center;gap:12px;padding:13px 14px;border-radius:17px;border:1px solid var(--line);background:rgba(251,250,247,.9);transition:.16s ease}
-    .game:active{transform:scale(.992);background:#f7f5f0}
-    .icon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:#e8ecee;font-size:24px}
-    .name{display:block;font-size:16px;font-weight:900;letter-spacing:-.3px}
-    .desc{display:block;font-size:12px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .go{font-size:20px;color:#a0a6a9;padding:6px}
-    .notice{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:18px 19px;border-radius:18px;border:1px solid var(--line);background:var(--paper)}
-    .notice strong{display:block;font-size:14px}
+    .sectionHead span{font-size:11px;color:var(--muted)}
+
+    .featured{position:relative;overflow:hidden;min-height:330px;border-radius:30px;border:1px solid #d6d8d5;background:linear-gradient(135deg,#dbe6ea 0%,#e9ece8 55%,#e7ded1 100%);padding:28px;display:flex;align-items:flex-end}
+    .featured:before{content:"";position:absolute;width:300px;height:300px;border-radius:50%;right:-65px;top:-95px;background:rgba(155,183,195,.38)}
+    .featured:after{content:"";position:absolute;width:210px;height:210px;border-radius:50%;right:90px;bottom:-130px;background:rgba(210,186,157,.34)}
+    .scene{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+    .scene .sun{position:absolute;width:96px;height:96px;border-radius:50%;right:9%;top:16%;background:rgba(255,255,255,.5);filter:blur(2px)}
+    .scene .hill{position:absolute;border-radius:50% 50% 0 0/100% 100% 0 0;background:rgba(91,118,108,.25);bottom:-32px}
+    .scene .h1{width:58%;height:130px;right:-7%;transform:rotate(-4deg)}
+    .scene .h2{width:48%;height:100px;left:-10%;background:rgba(107,130,117,.18);transform:rotate(5deg)}
+    .scene .bug{position:absolute;right:12%;bottom:53px;font-size:88px;filter:saturate(.65);transform:rotate(-8deg)}
+    .scene .herochar{position:absolute;right:37%;bottom:44px;font-size:55px;filter:saturate(.6)}
+    .featureText{position:relative;z-index:2;max-width:500px;background:rgba(250,249,246,.84);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.55);border-radius:22px;padding:20px}
+    .eyebrow{font-size:11px;color:#697b81;font-weight:850;letter-spacing:.7px}
+    .featureText h3{font-size:28px;margin:7px 0 7px;letter-spacing:-1px}
+    .featureText p{margin:0;color:#6f787a;font-size:13px;line-height:1.55}
+    .chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+    .chip{font-size:10px;font-weight:800;padding:6px 9px;border-radius:999px;background:#e9ece9;color:#657176}
+
+    .rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 10px;scrollbar-width:none}
+    .rail::-webkit-scrollbar{display:none}
+    .gameCard{border:0;text-align:left;flex:0 0 min(78vw,260px);height:240px;border-radius:24px;scroll-snap-align:start;position:relative;overflow:hidden;padding:0;background:#ddd;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
+    .gameCard:active{transform:scale(.985)}
+    .gameCard.selected{outline:2px solid #313b40;outline-offset:2px}
+    .cover{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:78px}
+    .cover:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(22,28,31,.78) 100%)}
+    .c1{background:linear-gradient(145deg,#70849a,#c1b59f)}
+    .c2{background:linear-gradient(145deg,#879ba6,#a7c5c3)}
+    .c3{background:linear-gradient(145deg,#7c9271,#c5b88e)}
+    .c4{background:linear-gradient(145deg,#857d91,#c5b29e)}
+    .c5{background:linear-gradient(145deg,#6d836b,#a4a77d)}
+    .cardInfo{position:absolute;left:16px;right:16px;bottom:15px;z-index:2;color:white}
+    .cardInfo strong{display:block;font-size:18px;letter-spacing:-.4px}
+    .cardInfo span{display:block;margin-top:4px;font-size:11px;color:rgba(255,255,255,.76)}
+
+    .selectedPanel{margin-top:10px;border:1px solid var(--line);border-radius:22px;background:var(--paper);padding:18px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .selectedPanel h3{margin:0;font-size:18px;letter-spacing:-.4px}
+    .selectedPanel p{margin:5px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
+    .play{min-width:100px;min-height:44px;border-radius:14px;background:var(--dark);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;transition:.16s ease}
+    .play:active{transform:scale(.97)}
+
+    .notice{padding:17px 18px;border:1px solid var(--line);border-radius:19px;background:var(--paper);display:flex;justify-content:space-between;gap:15px}
+    .notice strong{font-size:14px}
     .notice p{margin:5px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
-    .notice time{font-size:11px;color:#9aa0a3;white-space:nowrap}
-    footer{padding:34px 3px 6px;color:#9b9f9f;font-size:11px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-    @media (hover:hover){.game:hover{transform:translateY(-1px);border-color:#cfd4d5}.btn:hover{transform:translateY(-1px)}}
-    @media (max-width:640px){.hero{padding:30px 21px}.featured{grid-template-columns:1fr}.featureCard,.sideCard{min-height:auto}.hero h1{font-size:39px}.brand small{display:none}.status{font-size:11px}.notice{flex-direction:column;gap:10px}}
+    .notice time{font-size:10px;color:#999f9f;white-space:nowrap}
+    footer{padding:34px 2px 4px;color:#a0a3a1;font-size:10px;display:flex;justify-content:space-between;gap:10px}
+    @media(hover:hover){.gameCard:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(39,48,52,.12)}.play:hover{opacity:.9}}
+    @media(max-width:600px){.featured{min-height:300px;padding:18px}.featureText{padding:17px}.featureText h3{font-size:24px}.scene .bug{font-size:72px;right:4%;bottom:80px}.scene .herochar{font-size:46px;right:36%;bottom:66px}.selectedPanel{align-items:flex-start;flex-direction:column}.play{width:100%}.brand small{display:none}}
   </style>
 </head>
 <body>
   <main class="wrap">
     <header class="top">
       <div class="brand"><div class="logo">J</div><div>재운게임즈<small>JAEWOON GAMES</small></div></div>
-      <div class="status"><i></i>서버 준비중</div>
+      <div class="status"><i></i>게임 서버 준비중</div>
     </header>
 
-    <section class="hero">
-      <div class="heroInner">
-        <div class="eyebrow">JAEWOON GAMES</div>
-        <h1>게임을 만들고,<br>바로 즐긴다.</h1>
-        <p>재운게임즈의 웹게임과 앞으로 출시할 모바일게임을 한곳에서 간단하게 확인하고 시작할 수 있습니다.</p>
-        <div class="actions">
-          <a class="btn primary" href="#games">게임 보기</a>
-          <a class="btn" href="#project">개발중 프로젝트</a>
-        </div>
-      </div>
+    <section class="intro">
+      <small>JAEWOON GAMES</small>
+      <h1>고르고,<br>바로 시작.</h1>
+      <p>게임을 찾는 과정은 짧게. 원하는 게임을 카드에서 고르면 바로 플레이할 수 있습니다.</p>
     </section>
 
-    <section class="section" id="project">
-      <div class="sectionHead"><h2>개발중</h2><span>모바일 프로젝트</span></div>
-      <div class="featured">
-        <article class="featureCard">
-          <div>
-            <span class="featureTag"><i></i>현재 준비중</span>
-            <div class="featureTitle">신규 생존게임</div>
-            <p class="featureDesc">Godot 기반 3D 저폴리 생존게임. 최대 4인 협동과 AI 동료 시스템을 목표로 개발환경을 준비하고 있습니다.</p>
-          </div>
-          <div class="featureMeta"><span class="chip">Godot</span><span class="chip">모바일</span><span class="chip">4인 협동</span><span class="chip">3D 저폴리</span></div>
-        </article>
-        <aside class="sideCard">
-          <div><strong>다운로드</strong><p>첫 APK 빌드가 준비되면 이곳에서 최신 버전을 바로 받을 수 있습니다.</p></div>
-          <div class="sideLink">출시 전</div>
-        </aside>
+    <section class="featured" id="project">
+      <div class="scene"><div class="sun"></div><div class="hill h1"></div><div class="hill h2"></div><div class="herochar">🧍</div><div class="bug">🦗</div></div>
+      <div class="featureText">
+        <div class="eyebrow">개발중 · 모바일</div>
+        <h3>신규 생존게임</h3>
+        <p>작아진 인간의 시점으로 거대한 곤충과 맞서는 3D 저폴리 생존 협동게임.</p>
+        <div class="chips"><span class="chip">Godot</span><span class="chip">3D 저폴리</span><span class="chip">최대 4인</span><span class="chip">AI 동료</span></div>
       </div>
     </section>
 
     <section class="section" id="games">
-      <div class="sectionHead"><h2>게임</h2><span>현재 플레이 가능</span></div>
-      <div class="games">
-        <a class="game" href="/rpg-play.html"><span class="icon">🌀</span><span><span class="name">대충 용사 RPG</span><span class="desc">포탈 · 동굴 · 퀘스트 · 전투</span></span><span class="go">›</span></a>
-        <a class="game" href="https://crystal-defense-online.vercel.app/"><span class="icon">💎</span><span><span class="name">수정 디펜스</span><span class="desc">온라인 협동으로 수정을 지켜라</span></span><span class="go">›</span></a>
-        <a class="game" href="https://bug-defense-game.anyanguy12.chatgpt.site/"><span class="icon">🐜</span><span><span class="name">곤충 디펜스</span><span class="desc">곤충 군단으로 인간 기지를 공격</span></span><span class="go">›</span></a>
-        <a class="game" href="https://human-rpg-web-test.vercel.app/"><span class="icon">⚔️</span><span><span class="name">인간 RPG</span><span class="desc">성장하고 장비를 강화하는 턴제 RPG</span></span><span class="go">›</span></a>
-        <a class="game" href="/play_survival_v4.html"><span class="icon">🦗</span><span><span class="name">곤충 생존 디펜스</span><span class="desc">낮과 밤을 버티는 생존 전투</span></span><span class="go">›</span></a>
+      <div class="sectionHead"><h2>게임 선택</h2><span>좌우로 밀어서 선택</span></div>
+      <div class="rail" id="gameRail">
+        <button class="gameCard selected" type="button" data-title="대충 용사 RPG" data-desc="포탈 · 동굴 · 퀘스트 · 전투" data-link="/rpg-play.html"><div class="cover c1">🌀</div><div class="cardInfo"><strong>대충 용사 RPG</strong><span>모험 RPG</span></div></button>
+        <button class="gameCard" type="button" data-title="수정 디펜스" data-desc="온라인 협동으로 수정을 지켜라" data-link="https://crystal-defense-online.vercel.app/"><div class="cover c2">💎</div><div class="cardInfo"><strong>수정 디펜스</strong><span>온라인 협동</span></div></button>
+        <button class="gameCard" type="button" data-title="곤충 디펜스" data-desc="곤충 군단으로 인간 기지를 공격" data-link="https://bug-defense-game.anyanguy12.chatgpt.site/"><div class="cover c3">🐜</div><div class="cardInfo"><strong>곤충 디펜스</strong><span>전략 · 디펜스</span></div></button>
+        <button class="gameCard" type="button" data-title="인간 RPG" data-desc="성장하고 장비를 강화하는 턴제 RPG" data-link="https://human-rpg-web-test.vercel.app/"><div class="cover c4">⚔️</div><div class="cardInfo"><strong>인간 RPG</strong><span>턴제 RPG</span></div></button>
+        <button class="gameCard" type="button" data-title="곤충 생존 디펜스" data-desc="낮과 밤을 버티는 생존 전투" data-link="/play_survival_v4.html"><div class="cover c5">🦗</div><div class="cardInfo"><strong>곤충 생존 디펜스</strong><span>생존 · 전투</span></div></button>
+      </div>
+      <div class="selectedPanel">
+        <div><h3 id="selectedTitle">대충 용사 RPG</h3><p id="selectedDesc">포탈 · 동굴 · 퀘스트 · 전투</p></div>
+        <a class="play" id="playButton" href="/rpg-play.html">게임 시작</a>
       </div>
     </section>
 
     <section class="section">
       <div class="sectionHead"><h2>공지</h2><span>업데이트</span></div>
-      <div class="notice"><div><strong>개발환경 개편</strong><p>Cloudflare Pages 자동배포와 모바일게임 개발환경을 순차적으로 구성하고 있습니다.</p></div><time>2026.09</time></div>
+      <div class="notice"><div><strong>개발환경 개편중</strong><p>Cloudflare Pages 자동배포와 신규 모바일게임 개발환경을 순차적으로 준비하고 있습니다.</p></div><time>2026.09</time></div>
     </section>
 
     <footer><span>© 2026 JAEWOON GAMES</span><span>Cloudflare Pages</span></footer>
   </main>
+  <script>
+    const cards=[...document.querySelectorAll('.gameCard')];
+    const title=document.getElementById('selectedTitle');
+    const desc=document.getElementById('selectedDesc');
+    const play=document.getElementById('playButton');
+    cards.forEach(card=>card.addEventListener('click',()=>{
+      cards.forEach(c=>c.classList.remove('selected'));
+      card.classList.add('selected');
+      title.textContent=card.dataset.title;
+      desc.textContent=card.dataset.desc;
+      play.href=card.dataset.link;
+      card.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+    }));
+  </script>
 </body>
 </html>
