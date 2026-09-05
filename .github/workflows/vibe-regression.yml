@@ -37,6 +37,7 @@ jobs:
             qa/vibe-regression.mjs
             qa/vibe-agent-causality.mjs
             qa/vibe-presentation-causality.mjs
+            qa/vibe-world-macro-causality.mjs
           )
           for file in "${files[@]}"; do
             node --input-type=module --check < "$file"
@@ -51,3 +52,6 @@ jobs:
 
       - name: Test presentation causality contract
         run: node qa/vibe-presentation-causality.mjs
+
+      - name: Test world macro causality contract
+        run: node qa/vibe-world-macro-causality.mjs
