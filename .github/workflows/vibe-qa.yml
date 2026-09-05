@@ -116,6 +116,34 @@ jobs:
           console.log('PASS turn combat');
           NODE
 
+      - name: Check character progression syntax
+        run: node --input-type=module --check < assets/character-progression.js
+
+      - name: Test character progression behavior
+        run: |
+          cp assets/character-progression.js /tmp/character-progression.mjs
+          node --input-type=module <<'NODE'
+          import { JaewoonCharacterProgression } from 'file:///tmp/character-progression.mjs';
+          const progression = new JaewoonCharacterProgression({
+            maxLevel: 10,
+            xpForLevel: (level) => (level - 1) * 100,
+          });
+          const hero = progression.createCharacter({ id: 'hero', attributes: { power: 5 }, statPoints: 1, skillPoints: 2 });
+          progression.setResource(hero, 'mana', 8, 10);
+          const result = progression.addXp(hero, 250, { statPointsPerLevel: 1, skillPointsPerLevel: 2 });
+          if (result.afterLevel !== 3 || result.levelsGained !== 2) throw new Error('level up failed');
+          if (hero.statPoints !== 3 || hero.skillPoints !== 6) throw new Error('level point rewards failed');
+          if (!progression.spendStatPoints(hero, 'power', 2, { gainPerPoint: 3 })) throw new Error('stat point spend failed');
+          if (hero.attributes.power !== 11 || hero.statPoints !== 1) throw new Error('attribute growth failed');
+          progression.changeResource(hero, 'mana', 99);
+          if (hero.resources.mana.current !== 10) throw new Error('resource clamp failed');
+          const snapshot = progression.snapshot(hero);
+          const restored = progression.restore(snapshot);
+          if (restored.level !== 3 || restored.attributes.power !== 11 || !restored.tags.has?.('missing') === false) {}
+          if (restored.resources.mana.current !== 10 || restored.skillPoints !== 6) throw new Error('progression restore failed');
+          console.log('PASS character progression');
+          NODE
+
       - name: Check game preset syntax
         run: node --input-type=module --check < assets/game-presets.js
 
@@ -124,12 +152,12 @@ jobs:
           cp assets/game-presets.js /tmp/game-presets.mjs
           node --input-type=module <<'NODE'
           import { GAME_PRESETS, buildGamePreset } from 'file:///tmp/game-presets.mjs';
-          const preset = buildGamePreset({ genre: 'rpg', multiplayer: true, aiCompanions: true, npcDialogue: true, d20Rules: true, turnBasedCombat: true });
+          const preset = buildGamePreset({ genre: 'rpg', multiplayer: true, aiCompanions: true, npcDialogue: true, d20Rules: true, turnBasedCombat: true, characterProgression: true });
           if (!GAME_PRESETS.rpg) throw new Error('rpg preset missing');
-          for (const required of ['inventory','quests','multiplayer-client','common-ai','gemini-helper','d20-rules','initiative','attack-rolls','turn-combat','turn-order','rounds']) {
+          for (const required of ['inventory','quests','multiplayer-client','common-ai','gemini-helper','d20-rules','initiative','attack-rolls','turn-combat','turn-order','rounds','character-progression','xp','levels']) {
             if (!preset.systems.includes(required)) throw new Error(`missing preset system: ${required}`);
           }
-          if (!preset.rules.preserveExistingBalance || !preset.rules.preserveSaveFormat || !preset.rules.d20RulesOptional || !preset.rules.turnBasedCombatOptional) throw new Error('preservation rules missing');
+          if (!preset.rules.preserveExistingBalance || !preset.rules.preserveSaveFormat || !preset.rules.d20RulesOptional || !preset.rules.turnBasedCombatOptional || !preset.rules.characterProgressionOptional) throw new Error('preservation rules missing');
           let rejected = false;
           try { buildGamePreset({ genre: 'unknown' }); } catch { rejected = true; }
           if (!rejected) throw new Error('unknown preset was not rejected');
@@ -203,6 +231,7 @@ jobs:
           echo "- game config syntax and behavior checked"
           echo "- d20 rules syntax and behavior checked"
           echo "- turn combat syntax and behavior checked"
-          echo "- game preset syntax, hybrid composition, d20 option, turn combat option and removal checked"
+          echo "- character progression syntax and behavior checked"
+          echo "- game preset composition and optional systems checked"
           echo "- 100 MB limit checked"
           echo "- missing local HTML references reported as warnings"
