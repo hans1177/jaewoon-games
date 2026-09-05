@@ -1,7 +1,7 @@
 // 파일명: qa/vibe-presentation-causality.mjs
-// 역할: Presentation Event의 결정성, 인과관계, 권한 격리, motion/VFX 실행 계약을 회귀 검사
+// 역할: Presentation Event의 결정성, 인과관계, 권한 격리, motion/VFX/audio/UI 실행 계약을 회귀 검사
 import assert from 'node:assert/strict';
-import {createVibePresentationEvent,compileVibePresentationEvents,routeVibePresentationEvent} from '../assets/vibe-presentation-director.js';
+import {createVibePresentationEvent,compileVibePresentationEvents,routeVibePresentationEvent,createVibeAudioUIExecution,executeVibeAudioUIEvent} from '../assets/vibe-presentation-director.js';
 import {createVibeMotionEffectExecution} from '../assets/vibe-motion-effects-director.js';
 
 const base={sourceId:'player',targetId:'enemy-1',causeId:'cause_attack_1',timestamp:120,sequence:2,importance:'normal',payload:{animation:'attack',vfx:'slash',audio:'swing',camera:'shake',ui:'hit',damage:999,hp:0,reward:999}};
@@ -39,7 +39,25 @@ assert.ok(execution.commands.some(x=>x.channel==='animation'));
 assert.ok(execution.commands.some(x=>x.channel==='vfx'));
 assert.ok(execution.commands.some(x=>x.channel==='camera'));
 
+const audioUI=createVibeAudioUIExecution(first,{muted:false,reducedMotion:true});
+assert.equal(audioUI.accepted,true);
+assert.equal(audioUI.causeId,'cause_attack_1');
+assert.equal(audioUI.authority,'presentation-only');
+assert.equal(audioUI.gameplayMutationAllowed,false);
+assert.deepEqual(audioUI.commands.map(x=>x.channel),['audio','ui']);
+assert.equal(audioUI.commands.find(x=>x.channel==='audio').cue,'swing');
+assert.equal(audioUI.commands.find(x=>x.channel==='ui').cue,'hit');
+assert.equal(audioUI.commands.find(x=>x.channel==='ui').reducedMotion,true);
+const muted=createVibeAudioUIExecution(first,{muted:true});
+assert.deepEqual(muted.commands.map(x=>x.channel),['ui'],'muted mode must suppress audio without suppressing UI');
+const handled=[];
+const audioUIResult=executeVibeAudioUIEvent(first,{audio:(command,event)=>handled.push([command.channel,event.causeId]),ui:(command,event)=>handled.push([command.channel,event.causeId])});
+assert.equal(audioUIResult.handled,true);
+assert.deepEqual(handled,[['audio','cause_attack_1'],['ui','cause_attack_1']]);
+
 const rejected=createVibeMotionEffectExecution({...first,authority:'engine-resolved'});
 assert.equal(rejected.accepted,false,'authoritative gameplay events must not bypass presentation compiler');
+const audioUIRejected=createVibeAudioUIExecution({...first,gameplayMutationAllowed:true});
+assert.equal(audioUIRejected.accepted,false,'audio/ui execution must reject gameplay mutation authority');
 
 console.log('vibe-presentation-causality: ok');
