@@ -467,10 +467,10 @@ func _update_ai(delta: float) -> void:
 					unit.cooldown = 0.8 if role == "ranged" else 1.1
 					if float(target.hp) <= 0.0:
 						_kill_enemy(target)
-		for unit in ai_units:
-			var angle := current_time * (0.55 + float(unit.index) * 0.08) + float(unit.index)
-			unit.node.position = Vector2(640, 390) + Vector2(cos(angle), sin(angle) * 0.55) * (90.0 + unit.index * 35.0)
-			unit.node.scale = Vector2.ONE * (0.45 + sin(current_time * 3.0 + unit.index) * 0.04)
+	for ai_unit in ai_units:
+			var angle := current_time * (0.55 + float(ai_unit.index) * 0.08) + float(ai_unit.index)
+			ai_unit.node.position = Vector2(640, 390) + Vector2(cos(angle), sin(angle) * 0.55) * (90.0 + ai_unit.index * 35.0)
+			ai_unit.node.scale = Vector2.ONE * (0.45 + sin(current_time * 3.0 + ai_unit.index) * 0.04)
 
 func _toggle_ai() -> void:
 	ai_enabled = not ai_enabled
