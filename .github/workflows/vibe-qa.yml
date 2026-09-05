@@ -34,9 +34,10 @@ jobs:
             assets/character-progression.js assets/inventory-equipment.js assets/quest-dialogue.js \
             assets/skill-effects.js assets/economy-loot-shop.js assets/save-versioning.js \
             assets/stat-modifiers.js assets/crafting-recipes.js assets/achievements-unlocks.js \
-            assets/wave-spawner.js assets/day-night-cycle.js assets/game-kit.js assets/game-presets.js assets/game-blueprint.js \
-            assets/game-loop.js assets/input-actions.js assets/scene-flow.js assets/state-machine.js \
-            assets/game-timers.js assets/game-session.js; do
+            assets/wave-spawner.js assets/day-night-cycle.js assets/resource-gathering.js \
+            assets/game-kit.js assets/game-presets.js assets/game-blueprint.js assets/game-loop.js \
+            assets/input-actions.js assets/scene-flow.js assets/state-machine.js assets/game-timers.js \
+            assets/game-session.js; do
             node --input-type=module --check < "$file"
           done
           echo 'PASS JavaScript syntax'
@@ -48,7 +49,7 @@ jobs:
              assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js \
              assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
              assets/crafting-recipes.js assets/achievements-unlocks.js assets/wave-spawner.js \
-             assets/day-night-cycle.js /tmp/jaewoon-qa/
+             assets/day-night-cycle.js assets/resource-gathering.js /tmp/jaewoon-qa/
           printf '{"type":"module"}\n' > /tmp/jaewoon-qa/package.json
           node --input-type=module <<'NODE'
           import { JaewoonD20Rules } from 'file:///tmp/jaewoon-qa/d20-rules.js';
@@ -59,6 +60,7 @@ jobs:
           import { JaewoonStatModifiers } from 'file:///tmp/jaewoon-qa/stat-modifiers.js';
           import { JaewoonWaveSpawner } from 'file:///tmp/jaewoon-qa/wave-spawner.js';
           import { JaewoonDayNightCycle } from 'file:///tmp/jaewoon-qa/day-night-cycle.js';
+          import { JaewoonResourceGathering } from 'file:///tmp/jaewoon-qa/resource-gathering.js';
 
           const rules = new JaewoonD20Rules({ rng: () => 0.5 });
           if (rules.abilityModifier(18) !== 4) throw new Error('d20 failed');
@@ -112,6 +114,24 @@ jobs:
           const restoredCycle = new JaewoonDayNightCycle();
           restoredCycle.restore(cycleSnapshot);
           if (restoredCycle.status().day !== 3 || !restoredCycle.isDay()) throw new Error('day night restore failed');
+
+          const gathering = new JaewoonResourceGathering({ rng: () => 0.5, nodes: [
+            { id: 'branch', resourceId: 'wood', minAmount: 1, maxAmount: 3, maxCharges: 2, respawnDelay: 5, phases: ['day'] },
+          ] });
+          const firstGather = gathering.gather('branch', { day: 1, phase: 'day' });
+          if (!firstGather.ok || firstGather.quantity !== 2 || firstGather.chargesRemaining !== 1) throw new Error('resource gathering failed');
+          const blockedNight = gathering.gather('branch', { day: 1, phase: 'night' });
+          if (blockedNight.ok || blockedNight.reason !== 'phase-restricted') throw new Error('resource phase rule failed');
+          gathering.gather('branch', { day: 1, phase: 'day' });
+          if (gathering.canGather('branch', { day: 1, phase: 'day' }).reason !== 'depleted') throw new Error('resource depletion failed');
+          const gatherSnapshot = gathering.snapshot();
+          const restoredGathering = new JaewoonResourceGathering({ nodes: [
+            { id: 'branch', resourceId: 'wood', maxCharges: 2, respawnDelay: 5, phases: ['day'] },
+          ] });
+          restoredGathering.restore(gatherSnapshot);
+          if (restoredGathering.update(4).length !== 0) throw new Error('resource respawn timing failed');
+          const respawnEvents = restoredGathering.update(1);
+          if (respawnEvents.length !== 1 || restoredGathering.get('branch').state.charges !== 2) throw new Error('resource respawn failed');
           console.log('PASS core/common systems');
           NODE
 
@@ -148,16 +168,16 @@ jobs:
           const rpg = buildGameBlueprint({ gameId: 'rpg-qa', genre: 'rpg' });
           if (!rpg.createKit().has('achievements')) throw new Error('rpg achievement default missing');
           const survival = buildGameBlueprint({ gameId: 'survival-qa', genre: 'survival' });
-          if (!survival.systems.includes('day-night-cycle')) throw new Error('survival day/night preset missing');
+          if (!survival.systems.includes('day-night-cycle') || !survival.systems.includes('resource-gathering')) throw new Error('survival common systems missing');
           const puzzle = buildGameBlueprint({ gameId: 'puzzle-qa', genre: 'puzzle' });
-          if (puzzle.createKit().has('achievements') || puzzle.systems.includes('day-night-cycle')) throw new Error('puzzle should not force optional systems');
+          if (puzzle.createKit().has('achievements') || puzzle.systems.includes('day-night-cycle') || puzzle.systems.includes('resource-gathering')) throw new Error('puzzle should not force optional systems');
           console.log('PASS game kit blueprint');
           NODE
 
-      - name: Test day night session restore
+      - name: Test survival session restore
         run: |
           rm -rf /tmp/jaewoon-session && mkdir -p /tmp/jaewoon-session
-          cp assets/game-session.js assets/day-night-cycle.js assets/wave-spawner.js assets/game-timers.js \
+          cp assets/game-session.js assets/day-night-cycle.js assets/resource-gathering.js assets/wave-spawner.js assets/game-timers.js \
              assets/state-machine.js assets/scene-flow.js assets/input-actions.js assets/game-loop.js \
              assets/vibe-runtime.js assets/game-blueprint.js assets/game-presets.js assets/game-kit.js \
              assets/d20-rules.js assets/turn-combat.js assets/character-progression.js \
@@ -177,22 +197,28 @@ jobs:
           const options = {
             gameId: 'survival-session', genre: 'survival', autoRestore: false,
             dayNightOptions: { dayDuration: 10, nightDuration: 5 },
+            resourceOptions: { rng: () => 0, nodes: [{ id: 'stone', resourceId: 'stone', amount: 1, maxCharges: 1, respawnDelay: 4, phases: ['day'] }] },
           };
           const session = createGameSession(options);
-          session.updateDayNight(10);
-          if (!session.dayNight.isNight()) throw new Error('session day/night transition failed');
+          const gathered = session.gatherResource('stone');
+          if (!gathered.ok || gathered.resourceId !== 'stone') throw new Error('session resource gather failed');
+          session.updateResources(2);
           session.save();
           const restored = createGameSession({ ...options, autoRestore: true });
-          if (!restored.dayNight.isNight() || restored.dayNightStatus().day !== 1) throw new Error('session day/night restore failed');
-          restored.updateDayNight(5);
-          if (!restored.dayNight.isDay() || restored.dayNightStatus().day !== 2) throw new Error('session next day failed');
+          if (restored.resources.get('stone').state.respawnRemaining !== 2) throw new Error('session resource restore failed');
+          restored.updateResources(2);
+          if (restored.resources.get('stone').state.charges !== 1) throw new Error('session resource respawn failed');
+          restored.updateDayNight(10);
+          if (!restored.dayNight.isNight()) throw new Error('session day/night transition failed');
+          const blocked = restored.gatherResource('stone');
+          if (blocked.ok || blocked.reason !== 'phase-restricted') throw new Error('session resource day/night rule failed');
           restored.pause();
-          const pausedElapsed = restored.dayNightStatus().elapsed;
-          restored.updateDayNight(3);
-          if (restored.dayNightStatus().elapsed !== pausedElapsed) throw new Error('session pause should pause day/night');
+          const before = restored.resources.get('stone').state.respawnRemaining;
+          restored.updateResources(3);
+          if (restored.resources.get('stone').state.respawnRemaining !== before) throw new Error('session pause should pause resources');
           restored.resume();
           restored.destroy();
-          console.log('PASS day/night session');
+          console.log('PASS survival session');
           NODE
 
       - name: Check Godot common toolkit structure
