@@ -37,9 +37,57 @@ jobs:
           export_debug: true
           cache: true
 
-      - name: Upload APK artifact
+      - name: Align APK
+        id: align
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="${{ steps.export.outputs.build_directory }}/Android/bug-defense.apk"
+          ALIGNED="${RUNNER_TEMP}/bug-defense-aligned.apk"
+          ZIPALIGN="$(find "$ANDROID_SDK_ROOT/build-tools" -type f -name zipalign | sort -V | tail -n 1)"
+          test -n "$ZIPALIGN"
+          "$ZIPALIGN" -p -f 4 "$APK" "$ALIGNED"
+          echo "aligned_apk=$ALIGNED" >> "$GITHUB_OUTPUT"
+
+      - name: Create temporary debug keystore
+        shell: bash
+        run: |
+          set -euo pipefail
+          keytool -genkeypair -v \
+            -keystore "${RUNNER_TEMP}/bug-defense-debug.keystore" \
+            -storepass android \
+            -alias androiddebugkey \
+            -keypass android \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
+
+      - name: Sign APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APKSIGNER="$(find "$ANDROID_SDK_ROOT/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          test -n "$APKSIGNER"
+          "$APKSIGNER" sign \
+            --ks "${RUNNER_TEMP}/bug-defense-debug.keystore" \
+            --ks-pass pass:android \
+            --key-pass pass:android \
+            --ks-key-alias androiddebugkey \
+            --out "${RUNNER_TEMP}/bug-defense.apk" \
+            "${{ steps.align.outputs.aligned_apk }}"
+
+      - name: Verify APK signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          APKSIGNER="$(find "$ANDROID_SDK_ROOT/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          test -n "$APKSIGNER"
+          "$APKSIGNER" verify --verbose "${RUNNER_TEMP}/bug-defense.apk"
+
+      - name: Upload signed APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: bug-defense-android-debug
-          path: '${{ steps.export.outputs.build_directory }}/**/*.apk'
+          path: '${{ runner.temp }}/bug-defense.apk'
           if-no-files-found: error
