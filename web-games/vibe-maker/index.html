@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#6fc7ff">
+<title>재운게임즈 바이브 게임 만들기</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif;background:#bfe9ff;color:#17375e}
+body{padding:14px}
+main{width:min(100%,720px);margin:auto}
+.card{background:#fff;border:2px solid #d8ebf5;border-radius:20px;box-shadow:0 12px 30px rgba(31,101,151,.12);padding:16px}
+h1{margin:0;font-size:28px;color:#1463a8}
+.sub{margin:6px 0 16px;color:#67869b;font-size:14px;font-weight:700}
+textarea{width:100%;min-height:130px;resize:vertical;border:2px solid #b7dcf0;border-radius:16px;padding:14px;font:700 16px/1.5 inherit;outline:0}
+textarea:focus{border-color:#43a1e8}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+button{min-height:48px;border:0;border-radius:13px;background:#2e8fe5;color:#fff;font:900 15px inherit;cursor:pointer}
+button.secondary{background:#eef8ff;color:#1e75b4}
+.status{margin-top:12px;padding:11px 12px;border-radius:12px;background:#f4fbff;color:#4f7187;font-size:13px;font-weight:800}
+section{margin-top:12px}
+.sectionTitle{font-size:15px;color:#1b669f;margin-bottom:7px;font-weight:1000}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{padding:7px 10px;border-radius:999px;background:#eef8ff;color:#1768aa;font-size:12px;font-weight:900}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.item{padding:10px;border-radius:12px;background:#f7fbfd;min-height:60px}
+.item b{display:block;color:#307cab;font-size:11px;margin-bottom:3px}
+.item span{font-size:13px;font-weight:800}
+pre{margin:0;max-height:300px;overflow:auto;padding:12px;border-radius:12px;background:#15263a;color:#eaf7ff;font:600 11px/1.45 ui-monospace,SFMono-Regular,monospace}
+.hint{margin-top:10px;color:#728d9f;font-size:12px;line-height:1.45}
+@media(max-width:520px){body{padding:9px}.card{padding:12px;border-radius:17px}h1{font-size:23px}.grid,.row{grid-template-columns:1fr}textarea{min-height:120px}}
+</style>
+</head>
+<body>
+<main>
+<div class="card">
+<h1>🎮 바이브로 게임 만들기</h1>
+<p class="sub">부품 이름을 몰라도 하고 싶은 게임을 그냥 말하면 돼.</p>
+<textarea id="prompt" placeholder="예: 밤마다 괴물이 나오고 나무 주워서 칼 만들고 친구랑 둘이 살아남는 게임 만들어줘"></textarea>
+<div class="row">
+<button id="build">게임 만들기</button>
+<button class="secondary" id="example">예시 넣기</button>
+</div>
+<div class="status" id="status">아직 게임을 만들지 않았어.</div>
+<section>
+<div class="sectionTitle">게임으로 알아들은 것</div>
+<div class="grid" id="summary"></div>
+</section>
+<section>
+<div class="sectionTitle">자동으로 준비한 기능</div>
+<div class="chips" id="systems"></div>
+</section>
+<section>
+<div class="sectionTitle">규칙으로 읽은 것</div>
+<pre id="rules">-</pre>
+</section>
+<section>
+<div class="sectionTitle">생성된 게임 세션</div>
+<div class="status" id="session">아직 세션을 만들지 않았어.</div>
+</section>
+<p class="hint">이 화면은 먼저 자연어를 읽고 설계한 다음 공통 게임 시스템을 조합해. 기존 게임 파일과 저장 데이터는 자동으로 바꾸지 않아.</p>
+</div>
+</main>
+<script type="module">
+const promptBox=document.getElementById('prompt');
+const status=document.getElementById('status');
+const summary=document.getElementById('summary');
+const systems=document.getElementById('systems');
+const rules=document.getElementById('rules');
+const sessionBox=document.getElementById('session');
+
+const examples=[
+  '밤마다 괴물이 나오고 나무 주워서 칼 만들고 친구랑 둘이 살아남는 게임',
+  '모바일 디펜스 게임 만들어줘. 적이 몰려오고 포탑으로 성을 지키자',
+  'Godot으로 턴제 RPG 만들어줘. 주사위 굴리고 레벨업하고 퀘스트도 넣어줘'
+];
+
+document.getElementById('example').addEventListener('click',()=>{
+  promptBox.value=examples[Math.floor(Math.random()*examples.length)];
+  promptBox.focus();
+});
+
+function text(value){return value==null||value===''?'자동':String(value)}
+function setSummary(blueprint){
+  const intent=blueprint.intent||{};
+  const items=[
+    ['장르',blueprint.genre],['플랫폼',blueprint.platform],['인원',intent.playerCount?`${intent.playerCount}명`:'자동'],
+    ['방향',intent.presentation?.orientation||'자동'],['모바일',intent.presentation?.mobileFirst?'우선':'기본']
+  ];
+  summary.innerHTML=items.map(([a,b])=>`<div class="item"><b>${a}</b><span>${text(b)}</span></div>`).join('');
+  const enabled=blueprint.kitConfig?Object.entries(blueprint.kitConfig).filter(([k,v])=>k!=='gameId'&&v).map(([k])=>k):[];
+  systems.innerHTML=enabled.length?enabled.map(v=>`<span class="chip">${v}</span>`).join(''):'<span class="chip">기본 시스템</span>';
+  const pretty={
+    rules:blueprint.intent?.rules||{},entityRules:blueprint.intent?.entityRules||{}
+  };
+  rules.textContent=JSON.stringify(pretty,null,2);
+}
+
+document.getElementById('build').addEventListener('click',async()=>{
+  const prompt=promptBox.value.trim();
+  if(!prompt){status.textContent='하고 싶은 게임을 한마디로 적어줘.';promptBox.focus();return}
+  status.textContent='게임 아이디어를 읽는 중...';
+  sessionBox.textContent='게임 세션 준비 중...';
+  try{
+    const kitModule=await import('../../assets/game-kit.js');
+    const result=await kitModule.createGameSessionFromPrompt({gameId:`vibe-${Date.now()}`,prompt,autoRestore:false});
+    setSummary(result.blueprint);
+    status.textContent=`완료: ${result.blueprint.genre} 게임으로 이해했어.`;
+    sessionBox.textContent=`세션 생성 성공 · 시스템 ${result.session.kit.enabledSystems().length}개 준비`;
+    window.__vibeSession=result.session;
+  }catch(error){
+    status.textContent=`만들기에 실패했어: ${error?.message||error}`;
+    sessionBox.textContent='세션 생성 실패';
+    console.error(error);
+  }
+});
+</script>
+</body>
+</html>
