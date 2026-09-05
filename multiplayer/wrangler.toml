@@ -1,0 +1,18 @@
+name = "jaewoon-multiplayer"
+main = "worker.js"
+compatibility_date = "2026-09-05"
+
+[vars]
+ALLOWED_ORIGIN = "https://jaewoon-games.pages.dev"
+
+[[durable_objects.bindings]]
+name = "MATCHMAKER"
+class_name = "Matchmaker"
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "GameRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Matchmaker", "GameRoom"]
