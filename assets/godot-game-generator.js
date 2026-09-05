@@ -10,7 +10,7 @@ function clone(value) { return value == null ? value : JSON.parse(JSON.stringify
 function esc(value) { return clean(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"'); }
 
 function buildProjectGd({ gameName }) {
-  return `[application]\nconfig/name="${esc(gameName)}"\nrun/main_scene="res://main.tscn"\nconfig/features=PackedStringArray("4.7")\n\n[display]\nwindow/size/viewport_width=960\nwindow/size/viewport_height=540\nwindow/size/window_width_override=960\nwindow/size/window_height_override=540\nwindow/stretch/mode="canvas_items"\n\n[display]\nwindow/handheld/orientation=0\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\ntextures/default_filters/use_nearest_mipmap_filter=false\n\n`;
+  return `[application]\nconfig/name="${esc(gameName)}"\nrun/main_scene="res://main.tscn"\nconfig/features=PackedStringArray("4.7")\n\n[display]\nwindow/size/viewport_width=960\nwindow/size/viewport_height=540\nwindow/size/window_width_override=960\nwindow/size/window_height_override=540\nwindow/stretch/mode="canvas_items"\nwindow/handheld/orientation=0\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\ntextures/default_filters/use_nearest_mipmap_filter=false\n\n`;
 }
 
 function buildMainScene() {
@@ -69,7 +69,6 @@ func _process(delta: float) -> void:
   queue_redraw()
 
 func _draw() -> void:
-  var size := viewport_size if viewport_size != Vector2.ZERO else get_viewport_rect().size
   var left := joystick_center
   var right := attack_center
   draw_circle(left, joystick_radius, Color(1,1,1,0.12))
