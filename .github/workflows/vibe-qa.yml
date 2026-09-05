@@ -75,6 +75,21 @@ jobs:
           console.log('PASS gameplay quantitative analysis');
           NODE
 
+      - name: Test recursive development AI protection
+        run: |
+          node --input-type=module <<'NODE'
+          import { validateVibeDevelopmentAICandidate } from './assets/vibe-development-ai.js';
+          const safe = validateVibeDevelopmentAICandidate({ presentation:{ animation:'walk', vfx:{ hit:'spark' } }, notes:['visual-only'] });
+          if (!safe.valid || safe.touched.length !== 0 || !safe.recursive) throw new Error('safe development AI candidate rejected');
+          const nested = validateVibeDevelopmentAICandidate({ patch:{ player:{ stats:{ hp:999, damage:88 } }, loot:{ dropRates:{ rare:.9 } } } });
+          if (nested.valid || nested.touched.join(',') !== 'damage,dropRates,hp' || nested.decision !== 'reject-authoritative-ai-output') throw new Error('nested protected fields not rejected');
+          const aliases = validateVibeDevelopmentAICandidate({ proposal:{ drops:{ rare:.8 }, encounter:{ 'spawn-count':99 }, save:{ 'save-meaning':'replace' }, flow:{ 'gameplay-flow':['skip'] } } });
+          if (aliases.valid || aliases.touched.join(',') !== 'countPerSpawn,dropRates,gameplayFlow,saveMeaning') throw new Error('protected aliases not normalized');
+          const deepArray = validateVibeDevelopmentAICandidate({ candidates:[{ visual:'ok' },{ nested:[{ progression:{ level:99 } }] }] });
+          if (deepArray.valid || !deepArray.touched.includes('progression')) throw new Error('array recursion protection failed');
+          console.log('PASS recursive development AI protection');
+          NODE
+
       - name: Test core and common systems
         run: |
           node --input-type=module <<'NODE'
