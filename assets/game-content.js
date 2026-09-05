@@ -1,5 +1,5 @@
 // 파일명: assets/game-content.js
-// 역할: 블루프린트의 자연어 결과를 실제 게임 콘텐츠 데이터로 정규화
+// 역할: 블루프린트의 자연어 결과를 실제 게임 콘텐츠 데이터로 정규화하며 AI 파티 구성도 포함
 // 규칙: 명시된 값 우선, 미지정 값은 안전한 기본값, 기존 게임 자동 변경 금지
 
 const DEFAULT_CONTENT = Object.freeze({
@@ -9,10 +9,12 @@ const DEFAULT_CONTENT = Object.freeze({
   crafting: Object.freeze([]),
   items: Object.freeze([]),
   bosses: Object.freeze([]),
+  party: Object.freeze({ maxPlayers: 1, aiCount: 0, aiRoles: Object.freeze([]), mixedHumanAi: false }),
 });
 
 const KNOWN_RESOURCES = Object.freeze(['나무', '돌', '조약돌', '철', '광석', '가죽', '섬유', '밧줄', '벌침', '전갈 꼬리', '개미 턱', '개미 몸통']);
 const ITEM_WORDS = Object.freeze(['검', '칼', '활', '총', '창', '도끼', '지팡이', '방패', '갑옷', '목걸이', '물약', '무기', '장비', '아이템']);
+const AI_ROLES = Object.freeze(['탱커', '전사', '근접', '궁수', '원거리', '힐러', '지원', '마법사']);
 
 function number(value, fallback, min = 0) {
   const parsed = Number(value);
@@ -87,6 +89,25 @@ function buildCrafting(prompt, objectSpecs = []) {
   return Object.freeze([recipe]);
 }
 
+function buildParty(prompt, blueprint) {
+  const text = String(prompt || '');
+  const requestedPlayers = Math.max(1, Math.min(4, Math.floor(number(blueprint?.intent?.playerCount, 1, 1))));
+  const aiMatch = text.match(/(?:AI|에이아이)\s*(?:동료|캐릭터|명|명까지)?\s*(\d+)/i);
+  const aiCount = aiMatch ? Math.max(0, Math.min(4 - 1, Number(aiMatch[1]) || 0)) : (/(AI|에이아이).*(동료|협동|파티)/i.test(text) ? Math.max(0, 4 - requestedPlayers) : 0);
+  const aiRoles = AI_ROLES.filter((role) => text.includes(role)).slice(0, 4);
+  const defaultRoles = ['탱커', '궁수', '힐러', '지원'];
+  const roles = aiCount > 0 ? (aiRoles.length ? aiRoles : defaultRoles.slice(0, aiCount)) : [];
+  const maxPlayers = Math.max(requestedPlayers, requestedPlayers + aiCount);
+  return Object.freeze({
+    maxPlayers: Math.min(4, maxPlayers),
+    humanPlayers: requestedPlayers,
+    aiCount,
+    aiRoles: Object.freeze(roles),
+    mixedHumanAi: requestedPlayers > 0 && aiCount > 0,
+    fillEmptySlotsWithAi: aiCount > 0,
+  });
+}
+
 function buildMap(prompt, blueprint) {
   const text = String(prompt || '');
   let theme = 'default';
@@ -126,6 +147,7 @@ export function buildGameContent({ blueprint = null, prompt = '', intent = null 
     items: Object.freeze(buildItems(objectSpecs)),
     crafting: buildCrafting(prompt, objectSpecs),
     rewards: buildRewards(rules, bosses, prompt),
+    party: buildParty(prompt, blueprint),
     source: Object.freeze({ prompt: String(prompt || ''), gameId: blueprint?.gameId || null }),
     safety: Object.freeze({ reviewBeforeApply: true, autoApplyToExistingGame: false }),
   });
