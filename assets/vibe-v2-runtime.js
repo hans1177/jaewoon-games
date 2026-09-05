@@ -26,14 +26,14 @@ export function createVibeWorkbenchCandidate({request='',target='auto',revision=
  const normalized=(changes||[]).filter(x=>x&&x.changed!==false&&text(x.path)).map(x=>({path:text(x.path),before:String(x.current??''),after:String(x.next??'')}));
  const sourceRevision=createVibeSourceRevision(normalized);
  const exactRevision=sourceRevision||text(revision);
- const exactCheckpoint=sourceRevision?`checkpoint:${sourceRevision.slice('local:'.length)}`:text(checkpointId);
+ // 실제 Workspace가 만든 물리 checkpoint ID가 있으면 해시 기반 라벨보다 우선한다.
+ const exactCheckpoint=text(checkpointId)||(sourceRevision?`checkpoint:${sourceRevision.slice('local:'.length)}`:'');
  const execution=createVibeV2Execution({request,target,revision:exactRevision,checkpointId:exactCheckpoint,responsibleFiles:normalized.map(x=>x.path)});
  const candidate={kind:'workbench-source-change',files:normalized.map(x=>({path:x.path,changed:x.before!==x.after})),protectedMutations:[]};
  const preflight=advanceVibeV2Candidate(execution,{candidate});
  return freeze({version:2,execution:preflight,candidate,files:normalized,sourceRevision:exactRevision,checkpointId:exactCheckpoint,mayApply:preflight.mayRun===true,authority:'workbench-v2-bridge',requiresAtomicWrite:true,requiresPostApplyEvidence:true});
 }
 
-// 원자 쓰기 직후 책임 파일을 다시 읽은 결과를 V2가 신뢰할 수 있는 소스 증거로 정규화한다.
 export function verifyVibeWorkbenchAppliedSources(bridge,{observedFiles=[]}={}){
  if(bridge?.authority!=='workbench-v2-bridge')throw new Error('workbench v2 bridge required');
  const expected=new Map((bridge.files||[]).map(x=>[text(x.path),String(x.after??'')]));
