@@ -101,16 +101,20 @@ export async function createGameProjectFromPrompt({ gameId = 'game', prompt = ''
   const result = await createGamePackageFromPromptWithGame({ gameId, prompt, genre, mixGenres, platform, presetOptions, kitOptions, useGenreDefaults, title });
   const project = createVibeProject({ gameId: result.package.gameId, title: title || result.package.gameId, target: result.package.platform === 'godot' ? 'godot' : 'web', packageData: result.package, source: result.generated.html });
   let godotProject = null;
+  let godotQa = null;
   if (result.package.platform === 'godot') {
     const { buildGodotProject } = await import('./godot-game-generator.js');
+    const { auditGodotProjectFiles } = await import('./godot-project-qa.js');
     godotProject = buildGodotProject({ packageData: result.package, title: title || result.package.gameId, slug: result.package.gameId });
+    godotQa = auditGodotProjectFiles(godotProject.files);
   }
   return Object.freeze({
-    version: 2,
+    version: 3,
     project: Object.freeze({ gameId: result.package.gameId, platform: result.package.platform, title: result.generated.slug, filename: result.generated.filename, godotSlug: godotProject?.slug || null }),
     package: result.package,
     generated: result.generated,
     godotProject,
+    godotQa,
     editableProject: project,
   });
 }
