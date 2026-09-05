@@ -16,19 +16,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build Android APK with Godot
-        uses: firebelley/godot4-export@v6
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          godot_v4_version: '4.7.2'
-          relative_project_path: 'godot-games/bug-defense'
-          export_preset_name: 'Android'
-          archive_output: true
-          archive_output_directory: 'artifacts'
-          archive_output_name: 'bug-defense-android'
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Export Android APK
+        id: export
+        uses: firebelley/godot-export@v7.0.0
+        with:
+          godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/4.7.2/Godot_v4.7.2-stable_linux.x86_64.zip
+          godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/4.7.2/Godot_v4.7.2-stable_export_templates.tpz
+          relative_project_path: godot-games/bug-defense
+          relative_export_path: artifacts
+          use_preset_export_path: true
+          presets_to_export: Android
+          cache: true
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: bug-defense-android
-          path: 'godot-games/bug-defense/artifacts/**'
+          path: '${{ steps.export.outputs.build_directory }}/**/*.apk'
           if-no-files-found: error
