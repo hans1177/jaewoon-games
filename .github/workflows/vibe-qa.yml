@@ -36,7 +36,7 @@ jobs:
             assets/stat-modifiers.js assets/crafting-recipes.js assets/achievements-unlocks.js \
             assets/wave-spawner.js assets/day-night-cycle.js assets/resource-gathering.js \
             assets/status-effects.js assets/combat-vitals.js assets/targeting-system.js assets/combat-actions.js \
-            assets/projectiles.js \
+            assets/projectiles.js assets/ai-party.js \
             assets/game-kit.js assets/game-presets.js assets/game-blueprint.js assets/game-loop.js \
             assets/input-actions.js assets/scene-flow.js assets/state-machine.js assets/game-timers.js \
             assets/game-session.js; do
@@ -178,7 +178,6 @@ jobs:
           projectiles.spawn({ id: 'straight', position: { x: 0, y: 0 }, velocity: { x: 10, y: 0 }, lifetime: 2 });
           projectiles.update(0.5);
           if (projectiles.get('straight')?.position.x !== 5) throw new Error('projectile movement failed');
-
           projectiles.spawn({ id: 'homing', position: { x: 0, y: 0 }, velocity: { x: 10, y: 0 }, speed: 10, lifetime: 2, targetId: 'target', homing: true, homingStrength: 100 });
           projectiles.update(0.1, { getTarget: (id) => id === 'target' ? { x: 0, y: 10 } : null, getTargetIds: () => [] });
           const homing = projectiles.get('homing');
@@ -223,7 +222,7 @@ jobs:
       - name: Test game kit blueprint and save restore
         run: |
           rm -rf /tmp/jaewoon-kit && mkdir -p /tmp/jaewoon-kit
-          cp assets/game-kit.js assets/game-blueprint.js assets/game-presets.js \
+          cp assets/game-kit.js assets/game-blueprint.js assets/game-presets.js assets/ai-party.js \
              assets/d20-rules.js assets/turn-combat.js assets/character-progression.js \
              assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js \
              assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
@@ -232,10 +231,11 @@ jobs:
           node --input-type=module <<'NODE'
           import { createGameKit } from 'file:///tmp/jaewoon-kit/game-kit.js';
           import { buildGameBlueprint } from 'file:///tmp/jaewoon-kit/game-blueprint.js';
-          const kit = createGameKit({ gameId: 'qa-game', inventoryEquipment: true, achievementsUnlocks: { definitions: [{ id: 'collector', requirements: [{ key: 'items', target: 2 }] }] }, versionedSave: { currentVersion: 2 } });
+          const config = { gameId: 'qa-game', inventoryEquipment: true, achievementsUnlocks: { definitions: [{ id: 'collector', requirements: [{ key: 'items', target: 2 }] }] }, versionedSave: { currentVersion: 2 } };
+          const kit = createGameKit(config);
           kit.get('achievements').increment(kit.state.achievements, 'items', 2);
           const wrapped = kit.wrapSave();
-          const restored = createGameKit({ gameId: 'qa-game', inventoryEquipment: true, achievementsUnlocks: { definitions: [{ id: 'collector', requirements: [{ key: 'items', target: 2 }] }] }, versionedSave: { currentVersion: 2 } });
+          const restored = createGameKit(config);
           restored.restoreState(wrapped);
           if (!restored.get('achievements').isUnlocked(restored.state.achievements, 'collector')) throw new Error('achievement restore failed');
           const survival = buildGameBlueprint({ gameId: 'survival-qa', genre: 'survival' });
@@ -257,7 +257,7 @@ jobs:
              assets/d20-rules.js assets/turn-combat.js assets/character-progression.js \
              assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js \
              assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
-             assets/crafting-recipes.js assets/achievements-unlocks.js /tmp/jaewoon-session/
+             assets/crafting-recipes.js assets/achievements-unlocks.js assets/ai-party.js /tmp/jaewoon-session/
           printf '{"type":"module"}\n' > /tmp/jaewoon-session/package.json
           cd /tmp/jaewoon-session
           node --input-type=module <<'NODE'
@@ -328,7 +328,7 @@ jobs:
           from pathlib import Path
           limit = 100 * 1024 * 1024
           bad = [(str(p), p.stat().st_size) for p in Path('.').rglob('*') if p.is_file() and '.git' not in p.parts and p.stat().st_size >= limit]
-          if bad: raise SystemExit('\n'.join(f'{p}: {s}' for p, s in bad))
+          if bad: raise SystemExit('\\n'.join(f'{p}: {s}' for p, s in bad))
           missing = set()
           attrs = re.compile(r'''(?:src|href)=["']([^"']+)["']''', re.I)
           for html in list(Path('web-games').rglob('*.html')) + [Path('index.html')]:
