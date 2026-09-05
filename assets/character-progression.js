@@ -18,6 +18,22 @@ function normalizeAttributes(attributes = {}) {
   return result;
 }
 
+function normalizeResources(resources = {}) {
+  const result = {};
+  for (const [key, value] of Object.entries(resources || {})) {
+    const name = String(key);
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      const max = Math.max(0, number(value.max, value.current ?? 0));
+      const current = Math.max(0, Math.min(max, number(value.current, max)));
+      result[name] = { current, max };
+    } else {
+      const current = Math.max(0, number(value, 0));
+      result[name] = { current, max: current };
+    }
+  }
+  return result;
+}
+
 export class JaewoonCharacterProgression {
   constructor({
     maxLevel = 100,
@@ -47,7 +63,7 @@ export class JaewoonCharacterProgression {
       level: safeLevel,
       xp: Math.max(0, int(xp, 0)),
       attributes: normalizeAttributes(attributes),
-      resources: normalizeAttributes(resources),
+      resources: normalizeResources(resources),
       tags: new Set(Array.isArray(tags) ? tags.map(String) : []),
       skillPoints: Math.max(0, int(skillPoints, 0)),
       statPoints: Math.max(0, int(statPoints, 0)),
