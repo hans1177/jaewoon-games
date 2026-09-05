@@ -56,6 +56,25 @@ jobs:
           console.log('PASS art asset rights gate');
           NODE
 
+      - name: Test gameplay quantitative analysis
+        run: |
+          node --input-type=module <<'NODE'
+          import { analyzeGameplayCostPowerRisk, createGameplayStatBudget, createGameplayEncounterBudget, createGameplayEconomyGraph, createGameplayProgressionCurve } from './assets/game-content.js';
+          const cpr = analyzeGameplayCostPowerRisk({ cost:5, power:40, risk:.5, cooldown:2, exposure:.5 });
+          if (cpr.authority !== 'analysis-only' || cpr.burden !== 17 || Math.abs(cpr.efficiency - 40/17) > 1e-12 || cpr.classification !== 'high-efficiency') throw new Error('cost-power-risk analysis failed');
+          const stats = createGameplayStatBudget({ stats:{damage:10,hp:100}, weights:{damage:2,hp:.1}, budget:35 });
+          if (stats.authority !== 'analysis-only' || stats.spent !== 30 || stats.remaining !== 5 || !stats.withinBudget || stats.entries.map(e=>e.key).join(',') !== 'damage,hp') throw new Error('stat budget failed');
+          const encounter = createGameplayEncounterBudget({ enemies:[{id:'goblin',count:2,hp:25,damage:10}], duration:10, playerPower:5 });
+          if (encounter.authority !== 'analysis-only' || encounter.totalPressure !== 150 || encounter.pressurePerSecond !== 15 || encounter.pressureRatio !== 3 || encounter.band !== 'overwhelming') throw new Error('encounter budget failed');
+          const economy = createGameplayEconomyGraph({ sources:{kills:30,quests:10}, sinks:{shop:25}, starting:5 });
+          if (economy.authority !== 'analysis-only' || economy.totalIncome !== 40 || economy.totalExpense !== 25 || economy.net !== 15 || economy.direction !== 'inflationary') throw new Error('economy graph failed');
+          const curve = createGameplayProgressionCurve({ levels:3, base:100, growth:1.5, mode:'compound' });
+          if (curve.authority !== 'analysis-only' || curve.points.map(p=>p.value).join(',') !== '100,150,225') throw new Error('compound progression failed');
+          const linear = createGameplayProgressionCurve({ levels:3, base:100, growth:.5, mode:'linear' });
+          if (linear.points.map(p=>p.value).join(',') !== '100,150,200') throw new Error('linear progression failed');
+          console.log('PASS gameplay quantitative analysis');
+          NODE
+
       - name: Test core and common systems
         run: |
           node --input-type=module <<'NODE'
@@ -83,10 +102,10 @@ jobs:
           const inv = inventory.createState({ items: [{ id: 'wood', quantity: 3 }] });
           const crafting = new JaewoonCraftingRecipes({ inventory, recipes: [{ id: 'club', inputs: [{ id: 'wood', quantity: 3 }], outputs: [{ id: 'club', stackable: false }] }] });
           if (!crafting.craft(crafting.createState(), inv, 'club').ok || inventory.countItem(inv, 'club') !== 1) throw new Error('crafting failed');
-          const stats = new JaewoonStatModifiers();
-          const statState = stats.createState({ base: { hp: 100 } });
-          stats.addModifier(statState, 'hp', { id: 'armor', flat: 50 });
-          if (stats.calculate(statState, 'hp') !== 150) throw new Error('stat modifiers failed');
+          const statsMod = new JaewoonStatModifiers();
+          const statState = statsMod.createState({ base: { hp: 100 } });
+          statsMod.addModifier(statState, 'hp', { id: 'armor', flat: 50 });
+          if (statsMod.calculate(statState, 'hp') !== 150) throw new Error('stat modifiers failed');
           const achievements = new JaewoonAchievementsUnlocks({ definitions: [{ id: 'first-kill', requirements: [{ key: 'kills', target: 1 }], rewards: { gold: 10 } }] });
           const achievementState = achievements.createState();
           if (!achievements.increment(achievementState, 'kills', 1).includes('first-kill')) throw new Error('achievement unlock failed');
