@@ -1,7 +1,7 @@
 const COMMON = Object.freeze({
-  systems: ['save','pause','settings','audio','touch','keyboard','errors'],
+  systems: ['game-kit','save','pause','settings','audio','touch','keyboard','errors'],
   assets: ['ui','icons','font','sfx'],
-  qa: ['boot','restart','save-load','touch','audio','console-errors'],
+  qa: ['game-kit-compose','boot','restart','save-load','touch','audio','console-errors'],
 });
 
 export const GAME_PRESETS = Object.freeze({
