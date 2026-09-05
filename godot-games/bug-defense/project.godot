@@ -1,6 +1,7 @@
 ; 파일명: godot-games/bug-defense/project.godot
 ; 역할: 곤충 디펜스 Godot 실전 검증 프로젝트 설정
 ; 규칙: 모바일 터치+조이스틱 우선, 기존 게임 규칙은 main.gd가 소유
+; 검증: Android APK는 zipalign 후 임시 debug keystore로 서명하고 apksigner로 검증
 
 [application]
 config/name="곤충 디펜스 Godot"
