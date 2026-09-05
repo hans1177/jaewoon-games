@@ -21,6 +21,33 @@
 - `POST /friend/join` Bearer 토큰 + `{inviteCode}`
 - `GET /room/<roomId>?token=<access_token>` WebSocket
 
+## Godot 공통 클라이언트
+`multiplayer/multiplayer_client.gd`는 Godot 4용 공통 멀티 클라이언트입니다.
+
+주요 기능:
+- 가입 / 로그인 / 세션 갱신
+- 협동 자동매칭 `match_coop()`
+- 대전 자동매칭 `match_pvp()`
+- 친구방 생성 / 참가
+- 매칭 완료 후 WebSocket 방 자동 입장
+- `state`, `event`, `ready`, `rematch` 메시지 전송
+- 플레이어 입장 / 퇴장 신호
+- 연결 끊김 감지 및 자동 재접속
+
+게임 프로젝트에서는 이 스크립트를 Autoload로 등록하거나 Node에 붙여 공통으로 사용합니다.
+
+예시:
+```gdscript
+var result = await MultiplayerClient.login(email, password)
+if result.ok:
+    await MultiplayerClient.match_coop()
+
+MultiplayerClient.player_joined.connect(_on_player_joined)
+MultiplayerClient.message_received.connect(_on_multiplayer_message)
+```
+
+`match_coop()`와 `match_pvp()`는 기본값으로 매칭된 `roomId`에 자동 WebSocket 접속합니다. 필요하면 `false`를 넘겨 자동 접속을 끌 수 있습니다.
+
 ## Cloudflare 설정
 `multiplayer/`에서 Wrangler로 Worker를 배포합니다.
 
