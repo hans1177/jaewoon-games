@@ -11,9 +11,9 @@ export const GAME_PRESETS = Object.freeze({
     qa: ['inventory-persistence','quest-progression','dialogue-flow','combat-progression','combat-vitals','combat-save-restore','stat-modifiers','achievement-unlocks'],
   },
   defense: {
-    systems: ['waves','spawning','wave-spawner','targeting','towers','shop','upgrades','bosses','combat-vitals','stat-modifiers'],
+    systems: ['waves','spawning','wave-spawner','targeting','targeting-system','towers','shop','upgrades','bosses','combat-vitals','stat-modifiers'],
     assets: ['enemies','towers','projectiles','map','wave-ui','bgm','vfx'],
-    qa: ['wave-progression','wave-spawn-limits','wave-save-restore','spawn-limits','targeting','boss-clear','shop-flow','combat-vitals','combat-save-restore','stat-modifiers'],
+    qa: ['wave-progression','wave-spawn-limits','wave-save-restore','spawn-limits','targeting','target-strategies','target-range-filter','target-save-restore','boss-clear','shop-flow','combat-vitals','combat-save-restore','stat-modifiers'],
   },
   survival: {
     systems: ['day-night','day-night-cycle','gathering','resource-gathering','resource-respawn','crafting','crafting-recipes','inventory','equipment','spawning','wave-spawner','status-effects','status-effect-ticks','status-effect-stacking','combat-vitals','stat-modifiers'],
@@ -21,14 +21,14 @@ export const GAME_PRESETS = Object.freeze({
     qa: ['day-night-loop','day-night-transitions','day-night-save-restore','resource-gathering','resource-phase-rules','resource-respawn','resource-save-restore','crafting-costs','crafting-rollback','inventory-persistence','spawn-rules','wave-spawn-limits','wave-save-restore','status-effect-ticks','status-effect-stacking','status-effect-save-restore','combat-vitals','status-to-combat','combat-save-restore','stat-modifiers'],
   },
   strategy: {
-    systems: ['territories','units','resources','ai-opponents','battle-resolution','camera','selection','stat-modifiers'],
+    systems: ['territories','units','resources','ai-opponents','battle-resolution','camera','selection','targeting-system','stat-modifiers'],
     assets: ['map','units','buildings','resource-icons','battle-vfx','bgm'],
-    qa: ['selection','territory-state','battle-resolution','resource-flow','stat-modifiers'],
+    qa: ['selection','territory-state','battle-resolution','resource-flow','target-strategies','target-range-filter','target-save-restore','stat-modifiers'],
   },
   action: {
-    systems: ['movement','combat','combat-vitals','skills','cooldowns','enemies','wave-spawner','bosses','checkpoints','stat-modifiers','achievements-unlocks'],
+    systems: ['movement','combat','combat-vitals','targeting-system','skills','cooldowns','enemies','wave-spawner','bosses','checkpoints','stat-modifiers','achievements-unlocks'],
     assets: ['player','enemies','bosses','weapons','animations','vfx','bgm','sfx'],
-    qa: ['controls','hit-detection','cooldowns','wave-progression','wave-save-restore','death-restart','boss-clear','combat-vitals','combat-save-restore','stat-modifiers','achievement-unlocks'],
+    qa: ['controls','hit-detection','cooldowns','target-strategies','target-range-filter','target-save-restore','wave-progression','wave-save-restore','death-restart','boss-clear','combat-vitals','combat-save-restore','stat-modifiers','achievement-unlocks'],
   },
   adventure: {
     systems: ['movement','interaction','dialogue','quests','checkpoints','collectibles','stat-modifiers','achievements-unlocks'],
