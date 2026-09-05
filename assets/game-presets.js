@@ -43,15 +43,34 @@ export const GAME_PRESETS = Object.freeze({
 });
 
 function unique(items) { return [...new Set(items)]; }
-
-export function buildGamePreset({ genre, multiplayer = false, aiCompanions = false, npcDialogue = false, extras = {} } = {}) {
+function list(value) { return Array.isArray(value) ? value.filter(Boolean) : []; }
+function without(items, blocked) {
+  const denied = new Set(list(blocked));
+  return items.filter((item) => !denied.has(item));
+}
+function getPreset(genre) {
   const key = String(genre || '').toLowerCase();
-  const base = GAME_PRESETS[key];
-  if (!base) throw new Error(`Unknown game preset: ${genre}`);
+  const preset = GAME_PRESETS[key];
+  if (!preset) throw new Error(`Unknown game preset: ${genre}`);
+  return { key, preset };
+}
 
-  const systems = [...COMMON.systems, ...base.systems];
-  const assets = [...COMMON.assets, ...base.assets];
-  const qa = [...COMMON.qa, ...base.qa];
+export function buildGamePreset({
+  genre,
+  mixGenres = [],
+  multiplayer = false,
+  aiCompanions = false,
+  npcDialogue = false,
+  extras = {},
+  remove = {},
+} = {}) {
+  const { key, preset: base } = getPreset(genre);
+  const mixedKeys = unique(list(mixGenres).map((item) => String(item).toLowerCase()).filter((item) => item !== key));
+  const mixed = mixedKeys.map((item) => getPreset(item).preset);
+
+  let systems = [...COMMON.systems, ...base.systems, ...mixed.flatMap((item) => item.systems)];
+  let assets = [...COMMON.assets, ...base.assets, ...mixed.flatMap((item) => item.assets)];
+  let qa = [...COMMON.qa, ...base.qa, ...mixed.flatMap((item) => item.qa)];
 
   if (multiplayer) {
     systems.push('multiplayer-client','matchmaking','reconnect','session-cleanup');
@@ -66,17 +85,23 @@ export function buildGamePreset({ genre, multiplayer = false, aiCompanions = fal
     qa.push('dialogue-fallback');
   }
 
+  systems = without(unique([...systems, ...list(extras.systems)]), remove.systems);
+  assets = without(unique([...assets, ...list(extras.assets)]), remove.assets);
+  qa = without(unique([...qa, ...list(extras.qa)]), remove.qa);
+
   return Object.freeze({
     genre: key,
-    systems: unique([...systems, ...(extras.systems || [])]),
-    assets: unique([...assets, ...(extras.assets || [])]),
-    qa: unique([...qa, ...(extras.qa || [])]),
+    mixedGenres: Object.freeze(mixedKeys),
+    systems: Object.freeze(systems),
+    assets: Object.freeze(assets),
+    qa: Object.freeze(qa),
     rules: Object.freeze({
       preserveExistingBalance: true,
       preserveSaveFormat: true,
       assetsOnDemandOnly: true,
       licenseCheckRequired: true,
       mobileFirst: true,
+      presetIsSuggestion: true,
     }),
   });
 }
