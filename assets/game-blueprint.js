@@ -1,5 +1,5 @@
 // 파일명: assets/game-blueprint.js
-// 역할: 쉬운 자연어 요구사항을 장르/플랫폼/공통 시스템/규칙/설계 계획으로 변환
+// 역할: 쉬운 자연어 요구사항을 장르/플랫폼/공통 시스템/게임 객체/규칙/설계 계획으로 변환
 // 규칙: 명시 설정 우선, 기존 게임 규칙/저장구조 보존, 추출 결과는 검토용 계획으로 반환
 
 import { buildGamePreset } from './game-presets.js';
@@ -74,6 +74,8 @@ const RULE_PATTERNS = Object.freeze([
   Object.freeze({ key: 'count', pattern: /(\d+)\s*(마리|명|개)/ }),
   Object.freeze({ key: 'waves', pattern: /(?:웨이브|wave)\s*(?:를|은|는|총)?\s*(\d+)/i }),
   Object.freeze({ key: 'gold', pattern: /(?:골드|돈|코인)\s*(?:을|를|은|는|이|가)?\s*(\d+)/ }),
+  Object.freeze({ key: 'speed', pattern: /(?:이동속도|속도|공격속도)\s*(?:을|를|은|는|이|가)?\s*(\d+(?:\.\d+)?)/ }),
+  Object.freeze({ key: 'range', pattern: /(?:사거리|범위)\s*(?:을|를|은|는|이|가)?\s*(\d+(?:\.\d+)?)/ }),
 ]);
 
 const ENTITY_WORDS = Object.freeze([
@@ -81,6 +83,15 @@ const ENTITY_WORDS = Object.freeze([
   '플레이어', '주인공', '캐릭터', '적', '몬스터', '동료', 'npc', '나', '사마귀', '전갈', '거미', '벌',
   '좀비', '개', '고양이', '기사', '궁수병', '궁수', '마법사', '상인',
 ]);
+
+const OBJECT_WORDS = Object.freeze({
+  character: Object.freeze(['주인공', '플레이어', '캐릭터', '영웅', '기사', '마법사', '궁수', '동료']),
+  enemy: Object.freeze(['적', '몬스터', '고블린', '오크', '좀비', '전갈', '거미', '벌', '보스']),
+  structure: Object.freeze(['포탑', '탑', '기지', '성', '집']),
+  weapon: Object.freeze(['검', '칼', '활', '총', '창', '도끼', '무기', '지팡이']),
+  skill: Object.freeze(['스킬', '특수기', '필살기', '기술', '마법']),
+  item: Object.freeze(['아이템', '장비', '갑옷', '방패', '목걸이', '물약']),
+});
 
 const DEFAULT_ASSET_POLICY = Object.freeze({
   preferExistingAssets: true,
@@ -165,7 +176,7 @@ function inferEntityRules(text) {
   for (const entity of uniqueEntities) {
     const start = text.indexOf(entity);
     if (start < 0) continue;
-    const chunk = text.slice(start, Math.min(text.length, start + 120));
+    const chunk = text.slice(start, Math.min(text.length, start + 140));
     const properties = {};
     for (const rule of RULE_PATTERNS) {
       const match = chunk.match(rule.pattern);
@@ -177,6 +188,28 @@ function inferEntityRules(text) {
     if (Object.keys(properties).length) entities[entity] = Object.freeze(properties);
   }
   return Object.freeze(entities);
+}
+
+function inferObjectSpecs(text) {
+  const objects = [];
+  for (const [type, words] of Object.entries(OBJECT_WORDS)) {
+    for (const word of words) {
+      if (!text.includes(word)) continue;
+      const index = text.indexOf(word);
+      const chunk = text.slice(index, Math.min(text.length, index + 160));
+      const properties = inferRules(chunk);
+      const effects = [];
+      if (properties.conditions?.includes('auto-attack')) effects.push('auto-attack');
+      if (properties.conditions?.includes('homing-projectile')) effects.push('homing-projectile');
+      if (properties.conditions?.includes('area-effect')) effects.push('area-effect');
+      if (properties.conditions?.includes('knockback')) effects.push('knockback');
+      if (properties.conditions?.includes('stun')) effects.push('stun');
+      if (properties.conditions?.includes('slow')) effects.push('slow');
+      objects.push(Object.freeze({ type, name: word, properties, effects: Object.freeze(effects) }));
+      break;
+    }
+  }
+  return Object.freeze(objects);
 }
 
 function inferDesign(text, intent) {
@@ -196,6 +229,7 @@ function inferDesign(text, intent) {
   return Object.freeze({
     coreLoop: Object.freeze([...new Set(loop)]),
     entities: Object.freeze(Object.keys(intent.entityRules)),
+    objects: intent.objectSpecs,
     requestedRules: intent.rules,
     playerCount: intent.playerCount,
     platform: intent.platform,
@@ -208,14 +242,14 @@ function inferDesign(text, intent) {
 
 export function inferVibeIntent(prompt = '') {
   const text = normalizePrompt(prompt);
-  const empty = { genre: null, mixedGenres: [], options: {}, platform: 'auto', presentation: {}, playerCount: null, rules: {}, entityRules: {} };
+  const empty = { genre: null, mixedGenres: [], options: {}, platform: 'auto', presentation: {}, playerCount: null, rules: {}, entityRules: {}, objectSpecs: [] };
   if (!text) return Object.freeze({ ...empty, design: inferDesign(text, empty) });
   const genres = inferGenres(text);
   const options = {};
   for (const rule of OPTION_RULES) if (containsAny(text, rule.words)) options[rule.key] = true;
   const playerCount = inferPlayerCount(text);
   if (playerCount !== null && playerCount > 1) options.multiplayer = true;
-  const baseIntent = { genre: genres.genre, mixedGenres: Object.freeze(genres.mixedGenres), options: Object.freeze(options), platform: inferPlatform(text), presentation: Object.freeze(inferPresentation(text)), playerCount, rules: inferRules(text), entityRules: inferEntityRules(text) };
+  const baseIntent = { genre: genres.genre, mixedGenres: Object.freeze(genres.mixedGenres), options: Object.freeze(options), platform: inferPlatform(text), presentation: Object.freeze(inferPresentation(text)), playerCount, rules: inferRules(text), entityRules: inferEntityRules(text), objectSpecs: inferObjectSpecs(text) };
   return Object.freeze({ ...baseIntent, design: inferDesign(text, baseIntent) });
 }
 
