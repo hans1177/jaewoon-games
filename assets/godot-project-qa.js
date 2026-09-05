@@ -47,8 +47,10 @@ export function auditGodotProjectFiles(files = {}) {
   if (!has(script, 'AnimatedSprite2D') && !has(script, 'Sprite2D')) warnings.push('real character sprite/animation resource binding is not yet included');
   if (!has(script, 'AnimationPlayer')) warnings.push('AnimationPlayer resource binding is not yet included');
   if (!has(scene, '.tscn')) warnings.push('scene resource list is minimal');
+  const passed = errors.length === 0;
   return Object.freeze({
-    passed: errors.length === 0,
+    passed,
+    valid: passed,
     errors: Object.freeze(errors),
     warnings: Object.freeze(unique(warnings)),
     requiresEditorRun: true,
