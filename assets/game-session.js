@@ -1,4 +1,5 @@
 import { JaewoonVibeRuntime } from './vibe-runtime.js';
+import { JaewoonGameLoop } from './game-loop.js';
 import { buildGameBlueprint } from './game-blueprint.js';
 
 function clone(value) {
@@ -14,6 +15,7 @@ export class JaewoonGameSession {
     kitOptions = {},
     useGenreDefaults = true,
     runtimeOptions = {},
+    loopOptions = {},
     autoRestore = true,
   } = {}) {
     this.blueprint = buildGameBlueprint({
@@ -26,21 +28,40 @@ export class JaewoonGameSession {
     });
     this.kit = this.blueprint.createKit();
     this.runtime = new JaewoonVibeRuntime({ gameId: this.blueprint.gameId, ...runtimeOptions });
+    this.loop = new JaewoonGameLoop(loopOptions);
     this.started = false;
     this.meta = {};
 
     if (autoRestore) this.restore();
   }
 
-  start({ bootRuntime = true, visibilityPause = true, errorReporter = console.error } = {}) {
+  start({ bootRuntime = true, startLoop = false, visibilityPause = true, errorReporter = console.error } = {}) {
     if (this.started) return this;
     if (bootRuntime && typeof window !== 'undefined') {
       this.runtime.boot({ visibilityPause, errorReporter });
     }
+    if (startLoop) this.loop.start();
     this.started = true;
     this.emit('session-start', { gameId: this.blueprint.gameId, systems: this.kit.enabledSystems() });
     return this;
   }
+
+  setLoopCallbacks(callbacks = {}) {
+    this.loop.setCallbacks(callbacks);
+    return this;
+  }
+
+  setPaused(value, reason = 'manual') {
+    const paused = Boolean(value);
+    this.runtime.setPaused(paused, reason);
+    this.loop.setPaused(paused);
+    this.emit('session-pause', { gameId: this.blueprint.gameId, paused, reason });
+    return paused;
+  }
+
+  pause(reason = 'manual') { return this.setPaused(true, reason); }
+  resume(reason = 'manual') { return this.setPaused(false, reason); }
+  togglePause(reason = 'manual') { return this.setPaused(!this.loop.paused, reason); }
 
   snapshot(extra = {}) {
     return {
@@ -94,6 +115,7 @@ export class JaewoonGameSession {
 
   destroy({ save = false } = {}) {
     if (save) this.save();
+    this.loop.stop();
     this.runtime.destroy();
     this.started = false;
   }
