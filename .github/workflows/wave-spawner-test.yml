@@ -77,7 +77,7 @@ jobs:
           const restored = createGameSession({ ...sessionOptions, autoRestore: true });
           if (restored.waves.progress().alive !== 1 || restored.waves.progress().spawned !== 1) throw new Error('session wave restore failed');
           restored.markWaveDefeated(1);
-          restored.updateWaves(0);
+          restored.updateWaves(1);
           if (restored.waves.progress().spawned !== 2) throw new Error('session spawn after restore failed');
           restored.destroy();
 
