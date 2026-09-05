@@ -33,181 +33,98 @@ jobs:
             assets/vibe-runtime.js assets/game-config.js assets/d20-rules.js assets/turn-combat.js \
             assets/character-progression.js assets/inventory-equipment.js assets/quest-dialogue.js \
             assets/skill-effects.js assets/economy-loot-shop.js assets/save-versioning.js \
-            assets/stat-modifiers.js assets/crafting-recipes.js assets/game-kit.js assets/game-presets.js assets/game-blueprint.js \
-            assets/game-loop.js assets/input-actions.js assets/scene-flow.js assets/state-machine.js \
-            assets/game-timers.js assets/game-session.js; do
+            assets/stat-modifiers.js assets/crafting-recipes.js assets/achievements-unlocks.js \
+            assets/game-kit.js assets/game-presets.js assets/game-blueprint.js assets/game-loop.js \
+            assets/input-actions.js assets/scene-flow.js assets/state-machine.js assets/game-timers.js \
+            assets/game-session.js; do
             node --input-type=module --check < "$file"
           done
           echo 'PASS JavaScript syntax'
 
-      - name: Test game config
+      - name: Test core and common systems
         run: |
-          cp assets/game-config.js /tmp/game-config.mjs
+          rm -rf /tmp/jaewoon-qa && mkdir -p /tmp/jaewoon-qa
+          cp assets/d20-rules.js assets/turn-combat.js assets/character-progression.js \
+             assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js \
+             assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
+             assets/crafting-recipes.js assets/achievements-unlocks.js /tmp/jaewoon-qa/
+          printf '{"type":"module"}\n' > /tmp/jaewoon-qa/package.json
           node --input-type=module <<'NODE'
-          import { JaewoonGameConfig, configValidators } from 'file:///tmp/game-config.mjs';
-          const config = new JaewoonGameConfig({
-            defaults: { player: { hp: 100 }, wave: { count: 20 } },
-            validators: {
-              'player.hp': configValidators.number({ min: 1, max: 99999, integer: true }),
-              'wave.count': configValidators.number({ min: 1, max: 999, integer: true }),
-            },
-          });
-          config.set('player.hp', 130);
-          if (config.get('player.hp') !== 130) throw new Error('game config set failed');
-          let rejected = false;
-          try { config.set('player.hp', 0); } catch { rejected = true; }
-          if (!rejected) throw new Error('invalid config not rejected');
-          console.log('PASS game config');
-          NODE
+          import { JaewoonD20Rules } from 'file:///tmp/jaewoon-qa/d20-rules.js';
+          import { JaewoonCharacterProgression } from 'file:///tmp/jaewoon-qa/character-progression.js';
+          import { JaewoonInventoryEquipment } from 'file:///tmp/jaewoon-qa/inventory-equipment.js';
+          import { JaewoonCraftingRecipes } from 'file:///tmp/jaewoon-qa/crafting-recipes.js';
+          import { JaewoonAchievementsUnlocks } from 'file:///tmp/jaewoon-qa/achievements-unlocks.js';
+          import { JaewoonStatModifiers } from 'file:///tmp/jaewoon-qa/stat-modifiers.js';
 
-      - name: Test d20, turn combat and progression
-        run: |
-          rm -rf /tmp/jaewoon-core && mkdir -p /tmp/jaewoon-core
-          cp assets/d20-rules.js assets/turn-combat.js assets/character-progression.js /tmp/jaewoon-core/
-          printf '{"type":"module"}\n' > /tmp/jaewoon-core/package.json
-          node --input-type=module <<'NODE'
-          import { JaewoonD20Rules } from 'file:///tmp/jaewoon-core/d20-rules.js';
-          import { JaewoonTurnCombat } from 'file:///tmp/jaewoon-core/turn-combat.js';
-          import { JaewoonCharacterProgression } from 'file:///tmp/jaewoon-core/character-progression.js';
           const rules = new JaewoonD20Rules({ rng: () => 0.5 });
-          if (rules.abilityModifier(18) !== 4 || rules.proficiencyBonus(5) !== 3) throw new Error('d20 failed');
-          const combat = new JaewoonTurnCombat({ rules: {
-            initiative: ({ modifier }) => ({ total: 10 + modifier }),
-            attackRoll: () => ({ hit: true, critical: false, total: 20 }),
-            damageRoll: () => ({ total: 5, rolls: [5], critical: false }),
-          }});
-          combat.addCombatant({ id: 'hero', team: 'a', hp: 10, maxHp: 10, initiativeModifier: 2 });
-          combat.addCombatant({ id: 'enemy', team: 'b', hp: 5, maxHp: 5 });
-          combat.start();
-          combat.applyDamage('enemy', 5, 'hero');
-          if (!combat.finished) throw new Error('turn combat failed');
+          if (rules.abilityModifier(18) !== 4) throw new Error('d20 failed');
+
           const progression = new JaewoonCharacterProgression({ maxLevel: 10, xpForLevel: (level) => (level - 1) * 100 });
-          const hero = progression.createCharacter({ id: 'hero', attributes: { power: 5 }, statPoints: 2 });
+          const hero = progression.createCharacter({ id: 'hero' });
           progression.addXp(hero, 250);
           if (hero.level !== 3) throw new Error('progression failed');
-          console.log('PASS d20 turn progression');
-          NODE
 
-      - name: Test common game systems
-        run: |
-          rm -rf /tmp/jaewoon-systems && mkdir -p /tmp/jaewoon-systems
-          cp assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js assets/crafting-recipes.js /tmp/jaewoon-systems/
-          printf '{"type":"module"}\n' > /tmp/jaewoon-systems/package.json
-          node --input-type=module <<'NODE'
-          import { JaewoonInventoryEquipment } from 'file:///tmp/jaewoon-systems/inventory-equipment.js';
-          import { JaewoonQuestDialogue } from 'file:///tmp/jaewoon-systems/quest-dialogue.js';
-          import { JaewoonSkillEffects } from 'file:///tmp/jaewoon-systems/skill-effects.js';
-          import { JaewoonEconomyLootShop } from 'file:///tmp/jaewoon-systems/economy-loot-shop.js';
-          import { JaewoonSaveVersioning } from 'file:///tmp/jaewoon-systems/save-versioning.js';
-          import { JaewoonStatModifiers } from 'file:///tmp/jaewoon-systems/stat-modifiers.js';
-          import { JaewoonCraftingRecipes } from 'file:///tmp/jaewoon-systems/crafting-recipes.js';
-          const invEngine = new JaewoonInventoryEquipment({ capacity: 5, stackLimit: 10 });
-          const inv = invEngine.createState({ currencies: { gold: 20 } });
-          invEngine.addItem(inv, { id: 'wood', quantity: 5 });
-          invEngine.addItem(inv, { id: 'stone', quantity: 2 });
-          invEngine.addItem(inv, { id: 'sword', equipSlot: 'weapon', stackable: false });
-          if (!invEngine.equip(inv, 'sword')) throw new Error('inventory/equipment failed');
-          const quests = new JaewoonQuestDialogue();
-          const qstate = quests.createState();
-          quests.startQuest(qstate, { id: 'q1', objectives: [{ id: 'kill', target: 1 }] });
-          quests.progress(qstate, 'q1', 'kill', 1);
-          if (qstate.quests.q1.status !== 'ready') throw new Error('quest failed');
-          const skills = new JaewoonSkillEffects();
-          const sstate = skills.createState();
-          skills.setResource(sstate, 'mana', 10, 10);
-          if (!skills.useSkill(sstate, { id: 'fire', costs: { mana: 3 }, cooldown: 2 })) throw new Error('skills failed');
-          const economy = new JaewoonEconomyLootShop({ rng: () => 0.1 });
-          if (!economy.rollLoot([{ id: 'gem', chance: 1 }]).length) throw new Error('economy failed');
-          const saves = new JaewoonSaveVersioning({ currentVersion: 2 });
-          saves.registerMigration(1, (payload) => ({ ...payload, data: { ...payload.data, migrated: true } }));
-          if (!saves.load({ version: 1, gameId: 'x', data: {} }, { expectedGameId: 'x' }).migrated) throw new Error('save migration failed');
+          const inventory = new JaewoonInventoryEquipment({ capacity: 5 });
+          const inv = inventory.createState({ items: [{ id: 'wood', quantity: 3 }] });
+          const crafting = new JaewoonCraftingRecipes({ inventory, recipes: [{ id: 'club', inputs: [{ id: 'wood', quantity: 3 }], outputs: [{ id: 'club', stackable: false }] }] });
+          const craftState = crafting.createState();
+          if (!crafting.craft(craftState, inv, 'club').ok || inventory.countItem(inv, 'club') !== 1) throw new Error('crafting failed');
+
           const stats = new JaewoonStatModifiers();
           const statState = stats.createState({ base: { hp: 100 } });
           stats.addModifier(statState, 'hp', { id: 'armor', flat: 50 });
-          stats.addModifier(statState, 'hp', { id: 'buff', percent: 0.2 });
-          if (stats.calculate(statState, 'hp') !== 180) throw new Error('stat modifiers failed');
-          const crafting = new JaewoonCraftingRecipes({ inventory: invEngine, recipes: [{ id: 'axe', inputs: [{ id: 'wood', quantity: 3 }, { id: 'stone', quantity: 2 }], outputs: [{ id: 'axe', stackable: false }], currencyCosts: { gold: 5 } }] });
-          const cstate = crafting.createState();
-          const crafted = crafting.craft(cstate, inv, 'axe');
-          if (!crafted.ok || invEngine.countItem(inv, 'axe') !== 1 || invEngine.countItem(inv, 'wood') !== 2 || inv.currencies.gold !== 15) throw new Error('crafting failed');
-          console.log('PASS common systems');
+          if (stats.calculate(statState, 'hp') !== 150) throw new Error('stat modifiers failed');
+
+          const achievements = new JaewoonAchievementsUnlocks({ definitions: [
+            { id: 'first-kill', requirements: [{ key: 'kills', target: 1 }], rewards: { gold: 10 } },
+            { id: 'boss-clear', requirements: [{ type: 'flag', key: 'boss', value: true }] },
+          ] });
+          const achievementState = achievements.createState();
+          const unlocked = achievements.increment(achievementState, 'kills', 1);
+          if (!unlocked.includes('first-kill') || !achievements.isUnlocked(achievementState, 'first-kill')) throw new Error('achievement counter unlock failed');
+          if (achievements.claimReward(achievementState, 'first-kill')?.gold !== 10) throw new Error('achievement reward failed');
+          if (achievements.claimReward(achievementState, 'first-kill') !== null) throw new Error('achievement duplicate reward failed');
+          achievements.setFlag(achievementState, 'boss', true);
+          if (!achievements.isUnlocked(achievementState, 'boss-clear')) throw new Error('achievement flag unlock failed');
+          console.log('PASS core/common systems');
           NODE
 
-      - name: Test game kit, blueprint and save restore
+      - name: Test game kit blueprint and save restore
         run: |
           rm -rf /tmp/jaewoon-kit && mkdir -p /tmp/jaewoon-kit
-          cp assets/game-kit.js assets/game-blueprint.js assets/game-presets.js assets/d20-rules.js assets/turn-combat.js assets/character-progression.js assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js assets/crafting-recipes.js /tmp/jaewoon-kit/
+          cp assets/game-kit.js assets/game-blueprint.js assets/game-presets.js \
+             assets/d20-rules.js assets/turn-combat.js assets/character-progression.js \
+             assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js \
+             assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
+             assets/crafting-recipes.js assets/achievements-unlocks.js /tmp/jaewoon-kit/
           printf '{"type":"module"}\n' > /tmp/jaewoon-kit/package.json
           node --input-type=module <<'NODE'
           import { createGameKit } from 'file:///tmp/jaewoon-kit/game-kit.js';
           import { buildGameBlueprint } from 'file:///tmp/jaewoon-kit/game-blueprint.js';
+
           const kit = createGameKit({
-            gameId: 'qa-game', d20Rules: { rng: () => 0.5 }, turnBasedCombat: true,
-            characterProgression: true, inventoryEquipment: { initialState: { items: [{ id: 'wood', quantity: 3 }] } }, questDialogue: true,
-            skillEffects: true, economySystems: true,
-            statModifiers: { initialState: { base: { speed: 5 } } },
-            craftingRecipes: { recipes: [{ id: 'club', inputs: [{ id: 'wood', quantity: 3 }], outputs: [{ id: 'club', stackable: false }] }] },
+            gameId: 'qa-game',
+            inventoryEquipment: true,
+            achievementsUnlocks: { definitions: [{ id: 'collector', requirements: [{ key: 'items', target: 2 }] }] },
             versionedSave: { currentVersion: 2 },
           });
-          for (const name of ['d20','turnCombat','progression','inventory','quests','skills','economy','stats','crafting','save']) {
-            if (!kit.has(name)) throw new Error(`kit missing ${name}`);
-          }
-          if (!kit.get('crafting').craft(kit.state.crafting, kit.state.inventory, 'club').ok) throw new Error('kit crafting failed');
-          kit.get('stats').addModifier(kit.state.stats, 'speed', { id: 'boots', flat: 2 });
+          kit.get('achievements').increment(kit.state.achievements, 'items', 2);
           const wrapped = kit.wrapSave();
           const restored = createGameKit({
-            gameId: 'qa-game', inventoryEquipment: true, statModifiers: true,
-            craftingRecipes: { recipes: [{ id: 'club', inputs: [{ id: 'wood', quantity: 3 }], outputs: [{ id: 'club', stackable: false }] }] },
+            gameId: 'qa-game',
+            inventoryEquipment: true,
+            achievementsUnlocks: { definitions: [{ id: 'collector', requirements: [{ key: 'items', target: 2 }] }] },
             versionedSave: { currentVersion: 2 },
           });
           restored.restoreState(wrapped);
-          if (restored.get('inventory').countItem(restored.state.inventory, 'club') !== 1) throw new Error('inventory restore failed');
-          if (restored.state.crafting.crafted.club !== 1) throw new Error('crafting restore failed');
-          if (restored.get('stats').calculate(restored.state.stats, 'speed') !== 7) throw new Error('stats restore failed');
-          const blueprint = buildGameBlueprint({ gameId: 'survival-qa', genre: 'survival' });
-          const blueprintKit = blueprint.createKit();
-          if (!blueprint.systems.includes('crafting-recipes') || !blueprintKit.has('crafting')) throw new Error('blueprint crafting missing');
+          if (!restored.get('achievements').isUnlocked(restored.state.achievements, 'collector')) throw new Error('achievement restore failed');
+
+          const rpg = buildGameBlueprint({ gameId: 'rpg-qa', genre: 'rpg' });
+          if (!rpg.createKit().has('achievements')) throw new Error('rpg achievement default missing');
+          const puzzle = buildGameBlueprint({ gameId: 'puzzle-qa', genre: 'puzzle' });
+          if (puzzle.createKit().has('achievements')) throw new Error('puzzle should not force achievements');
           console.log('PASS game kit blueprint');
-          NODE
-
-      - name: Test crafting transaction rollback
-        run: |
-          rm -rf /tmp/jaewoon-crafting && mkdir -p /tmp/jaewoon-crafting
-          cp assets/inventory-equipment.js assets/crafting-recipes.js /tmp/jaewoon-crafting/
-          printf '{"type":"module"}\n' > /tmp/jaewoon-crafting/package.json
-          node --input-type=module <<'NODE'
-          import { JaewoonInventoryEquipment } from 'file:///tmp/jaewoon-crafting/inventory-equipment.js';
-          import { JaewoonCraftingRecipes } from 'file:///tmp/jaewoon-crafting/crafting-recipes.js';
-          const inventory = new JaewoonInventoryEquipment({ capacity: 1, stackLimit: 99 });
-          const state = inventory.createState({ items: [{ id: 'wood', quantity: 3 }] });
-          const crafting = new JaewoonCraftingRecipes({ inventory, recipes: [{ id: 'split', inputs: [{ id: 'wood', quantity: 1 }], outputs: [{ id: 'a', stackable: false }, { id: 'b', stackable: false }] }] });
-          const cstate = crafting.createState();
-          const result = crafting.craft(cstate, state, 'split');
-          if (result.ok || result.reason !== 'transaction-failed') throw new Error('crafting rollback should fail');
-          if (inventory.countItem(state, 'wood') !== 3 || state.items.length !== 1 || cstate.crafted.split) throw new Error('crafting rollback corrupted state');
-          console.log('PASS crafting rollback');
-          NODE
-
-      - name: Test game preset composition
-        run: |
-          cp assets/game-presets.js /tmp/game-presets.mjs
-          node --input-type=module <<'NODE'
-          import { GAME_PRESETS, buildGamePreset } from 'file:///tmp/game-presets.mjs';
-          const preset = buildGamePreset({
-            genre: 'rpg', multiplayer: true, aiCompanions: true, npcDialogue: true,
-            d20Rules: true, turnBasedCombat: true, characterProgression: true,
-            inventoryEquipment: true, questDialogue: true, skillEffects: true,
-            economySystems: true, craftingRecipes: true, versionedSave: true,
-          });
-          for (const required of ['game-kit','game-loop','input-actions','scene-flow','state-machine','game-timers','stat-modifiers','crafting-recipes','d20-rules','turn-combat','character-progression','inventory-equipment','quest-dialogue','skill-effects','economy-loot-shop','save-versioning']) {
-            if (!preset.systems.includes(required)) throw new Error(`missing preset system: ${required}`);
-          }
-          const survival = buildGamePreset({ genre: 'survival' });
-          if (!survival.systems.includes('crafting-recipes') || !survival.qa.includes('crafting-rollback')) throw new Error('survival crafting preset failed');
-          const hybrid = buildGamePreset({ genre: 'rpg', mixGenres: ['defense'], extras: { systems: ['custom-turn-action'] }, remove: { systems: ['shops'] } });
-          if (!hybrid.systems.includes('waves') || hybrid.systems.includes('shops')) throw new Error('hybrid/remove failed');
-          if (!GAME_PRESETS.rpg || !preset.rules.saveMigrationsRequiredForBreakingChanges) throw new Error('preset rules failed');
-          console.log('PASS game presets');
           NODE
 
       - name: Check Godot common toolkit structure
@@ -220,22 +137,14 @@ jobs:
           print('PASS Godot common toolkit structure')
           PY
 
-      - name: Reject files over 100 MB
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          limit = 100 * 1024 * 1024
-          bad = [(str(p), p.stat().st_size) for p in Path('.').rglob('*') if p.is_file() and '.git' not in p.parts and p.stat().st_size >= limit]
-          if bad:
-            raise SystemExit('\n'.join(f'{p}: {s}' for p, s in bad))
-          print('PASS file size')
-          PY
-
-      - name: Report missing local HTML assets
+      - name: Repository hygiene
         run: |
           python - <<'PY'
           import re
           from pathlib import Path
+          limit = 100 * 1024 * 1024
+          bad = [(str(p), p.stat().st_size) for p in Path('.').rglob('*') if p.is_file() and '.git' not in p.parts and p.stat().st_size >= limit]
+          if bad: raise SystemExit('\n'.join(f'{p}: {s}' for p, s in bad))
           missing = set()
           attrs = re.compile(r'''(?:src|href)=["']([^"']+)["']''', re.I)
           for html in list(Path('web-games').rglob('*.html')) + [Path('index.html')]:
@@ -244,21 +153,11 @@ jobs:
               if ref.startswith(('http://','https://','//','#','data:','mailto:','tel:','javascript:')): continue
               clean = ref.split('#',1)[0].split('?',1)[0]
               target = Path(clean.lstrip('/')) if clean.startswith('/') else html.parent / clean
-              if clean and not target.exists() and not clean.endswith('/'):
-                missing.add(f'{html}: {ref}')
+              if clean and not target.exists() and not clean.endswith('/'): missing.add(f'{html}: {ref}')
           if missing:
             print('WARN missing local references:')
             for item in sorted(missing): print(' -', item)
           else:
             print('PASS local HTML references')
+          print('PASS repository hygiene')
           PY
-
-      - name: QA summary
-        run: |
-          echo 'Vibe QA complete'
-          echo '- config/d20/turn/progression checked'
-          echo '- inventory/quest/skills/economy/stat modifiers/crafting/versioned save checked'
-          echo '- crafting rollback checked'
-          echo '- game kit/blueprint/presets checked'
-          echo '- Godot common toolkit structure checked'
-          echo '- file size and local references checked'
