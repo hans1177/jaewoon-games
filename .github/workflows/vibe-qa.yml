@@ -35,7 +35,7 @@ jobs:
             assets/skill-effects.js assets/economy-loot-shop.js assets/save-versioning.js \
             assets/stat-modifiers.js assets/crafting-recipes.js assets/achievements-unlocks.js \
             assets/wave-spawner.js assets/day-night-cycle.js assets/resource-gathering.js \
-            assets/status-effects.js assets/combat-vitals.js assets/targeting-system.js \
+            assets/status-effects.js assets/combat-vitals.js assets/targeting-system.js assets/combat-actions.js \
             assets/game-kit.js assets/game-presets.js assets/game-blueprint.js assets/game-loop.js \
             assets/input-actions.js assets/scene-flow.js assets/state-machine.js assets/game-timers.js \
             assets/game-session.js; do
@@ -51,7 +51,7 @@ jobs:
              assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
              assets/crafting-recipes.js assets/achievements-unlocks.js assets/wave-spawner.js \
              assets/day-night-cycle.js assets/resource-gathering.js assets/status-effects.js \
-             assets/combat-vitals.js assets/targeting-system.js /tmp/jaewoon-qa/
+             assets/combat-vitals.js assets/targeting-system.js assets/combat-actions.js /tmp/jaewoon-qa/
           printf '{"type":"module"}\n' > /tmp/jaewoon-qa/package.json
           node --input-type=module <<'NODE'
           import { JaewoonD20Rules } from 'file:///tmp/jaewoon-qa/d20-rules.js';
@@ -66,6 +66,7 @@ jobs:
           import { JaewoonStatusEffects } from 'file:///tmp/jaewoon-qa/status-effects.js';
           import { JaewoonCombatVitals } from 'file:///tmp/jaewoon-qa/combat-vitals.js';
           import { JaewoonTargetingSystem } from 'file:///tmp/jaewoon-qa/targeting-system.js';
+          import { JaewoonCombatActions } from 'file:///tmp/jaewoon-qa/combat-actions.js';
 
           const rules = new JaewoonD20Rules({ rng: () => 0.5 });
           if (rules.abilityModifier(18) !== 4) throw new Error('d20 failed');
@@ -159,6 +160,16 @@ jobs:
           const restoredTargeting = new JaewoonTargetingSystem();
           restoredTargeting.restore(targeting.snapshot());
           if (restoredTargeting.get('near')?.hp !== 50) throw new Error('target restore failed');
+
+          const actionVitals = new JaewoonCombatVitals({ entities: [{ id: 'attacker', hp: 100, maxHp: 100 }, { id: 'victim', hp: 50, maxHp: 50 }] });
+          const actionTargets = new JaewoonTargetingSystem({ entities: [{ id: 'attacker', team: 'ally', x: 0, y: 0 }, { id: 'victim', team: 'enemy', x: 3, y: 0, hp: 50, maxHp: 50 }] });
+          const actionStatuses = new JaewoonStatusEffects();
+          const combatActions = new JaewoonCombatActions({ targeting: actionTargets, combatVitals: actionVitals, statusEffects: actionStatuses, rng: () => 0 });
+          combatActions.register({ id: 'strike', damage: 10, range: 4, cooldown: 2, criticalChance: 1, criticalMultiplier: 2, statusEffects: [{ id: 'bleed', duration: 2, tickInterval: 1, magnitude: 2 }] });
+          if (!combatActions.use('attacker', 'strike', 'victim').critical || actionVitals.get('victim').hp !== 30 || !actionStatuses.has('victim', 'bleed')) throw new Error('combat action failed');
+          if (combatActions.use('attacker', 'strike', 'victim').reason !== 'cooldown') throw new Error('combat action cooldown failed');
+          combatActions.update(2);
+          if (combatActions.cooldownRemaining('attacker', 'strike') !== 0) throw new Error('combat action cooldown tick failed');
           console.log('PASS core/common systems');
           NODE
 
@@ -181,11 +192,11 @@ jobs:
           restored.restoreState(wrapped);
           if (!restored.get('achievements').isUnlocked(restored.state.achievements, 'collector')) throw new Error('achievement restore failed');
           const survival = buildGameBlueprint({ gameId: 'survival-qa', genre: 'survival' });
-          if (!survival.systems.includes('day-night-cycle') || !survival.systems.includes('resource-gathering') || !survival.systems.includes('combat-vitals')) throw new Error('survival common systems missing');
+          if (!survival.systems.includes('day-night-cycle') || !survival.systems.includes('resource-gathering') || !survival.systems.includes('combat-vitals') || !survival.systems.includes('combat-actions')) throw new Error('survival common systems missing');
           const defense = buildGameBlueprint({ gameId: 'defense-qa', genre: 'defense' });
-          if (!defense.systems.includes('targeting-system')) throw new Error('defense targeting missing');
+          if (!defense.systems.includes('targeting-system') || !defense.systems.includes('combat-actions')) throw new Error('defense combat systems missing');
           const puzzle = buildGameBlueprint({ gameId: 'puzzle-qa', genre: 'puzzle' });
-          if (puzzle.systems.includes('combat-vitals') || puzzle.systems.includes('resource-gathering') || puzzle.systems.includes('targeting-system')) throw new Error('puzzle should not force combat systems');
+          if (puzzle.systems.includes('combat-vitals') || puzzle.systems.includes('resource-gathering') || puzzle.systems.includes('targeting-system') || puzzle.systems.includes('combat-actions')) throw new Error('puzzle should not force combat systems');
           console.log('PASS game kit blueprint');
           NODE
 
@@ -193,7 +204,7 @@ jobs:
         run: |
           rm -rf /tmp/jaewoon-session && mkdir -p /tmp/jaewoon-session
           cp assets/game-session.js assets/day-night-cycle.js assets/resource-gathering.js assets/status-effects.js \
-             assets/combat-vitals.js assets/targeting-system.js assets/wave-spawner.js assets/game-timers.js \
+             assets/combat-vitals.js assets/targeting-system.js assets/combat-actions.js assets/wave-spawner.js assets/game-timers.js \
              assets/state-machine.js assets/scene-flow.js assets/input-actions.js assets/game-loop.js \
              assets/vibe-runtime.js assets/game-blueprint.js assets/game-presets.js assets/game-kit.js \
              assets/d20-rules.js assets/turn-combat.js assets/character-progression.js \
@@ -214,17 +225,20 @@ jobs:
             gameId: 'survival-session', genre: 'survival', autoRestore: false,
             dayNightOptions: { dayDuration: 10, nightDuration: 5 },
             resourceOptions: { rng: () => 0, nodes: [{ id: 'stone', resourceId: 'stone', amount: 1, maxCharges: 1, respawnDelay: 4, phases: ['day'] }] },
+            combatActionOptions: { rng: () => 0, actions: [{ id: 'bite', damage: 5, range: 3, cooldown: 2 }] },
           };
           const session = createGameSession(options);
           if (!session.gatherResource('stone').ok) throw new Error('session resource gather failed');
           session.registerCombatEntity({ id: 'player', hp: 50, maxHp: 50 });
+          session.registerCombatEntity({ id: 'enemy', hp: 20, maxHp: 20 });
           session.registerTargetEntity({ id: 'player', team: 'ally', x: 0, y: 0, hp: 50, maxHp: 50 });
           session.registerTargetEntity({ id: 'enemy', team: 'enemy', x: 2, y: 0, hp: 20, maxHp: 20 });
           if (session.selectTarget('player', { teams: ['enemy'], range: 3 })?.id !== 'enemy') throw new Error('session target failed');
+          if (!session.useCombatAction('player', 'bite', 'enemy').ok || session.combatVitals.get('enemy').hp !== 15) throw new Error('session combat action failed');
+          session.updateCombatActions(1);
           session.applyStatusEffect('player', { id: 'poison', kind: 'poison', duration: 2, tickInterval: 1, magnitude: 5, stacks: 2 });
           const tick = session.updateStatusEffects(1).find((e) => e.type === 'effect-tick');
           if (!session.applyStatusTickToCombat(tick).ok || session.combatVitals.get('player').hp !== 40) throw new Error('status to combat failed');
-          session.syncTargetVitals('player');
           if (session.targeting.get('player').hp !== 40) throw new Error('combat target sync failed');
           session.updateResources(2);
           session.save();
@@ -232,6 +246,7 @@ jobs:
           if (restored.resources.get('stone').state.respawnRemaining !== 2) throw new Error('resource restore failed');
           if (restored.combatVitals.get('player').hp !== 40) throw new Error('combat restore failed');
           if (restored.targeting.get('player').hp !== 40) throw new Error('target restore failed');
+          if (restored.combatActions.cooldownRemaining('player', 'bite') !== 1) throw new Error('combat action restore failed');
           restored.updateResources(2);
           if (restored.resources.get('stone').state.charges !== 1) throw new Error('resource respawn failed');
           restored.updateDayNight(10);
@@ -239,8 +254,11 @@ jobs:
           if (restored.gatherResource('stone').reason !== 'phase-restricted') throw new Error('resource day night rule failed');
           restored.pause();
           const before = restored.statusEffects.get('player', 'poison')?.remaining;
+          const cooldownBefore = restored.combatActions.cooldownRemaining('player', 'bite');
           restored.updateStatusEffects(1);
+          restored.updateCombatActions(1);
           if (restored.statusEffects.get('player', 'poison')?.remaining !== before) throw new Error('status pause failed');
+          if (restored.combatActions.cooldownRemaining('player', 'bite') !== cooldownBefore) throw new Error('combat action pause failed');
           restored.resume();
           restored.destroy();
           console.log('PASS survival session');
