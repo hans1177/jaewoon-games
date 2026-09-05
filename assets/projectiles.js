@@ -1,5 +1,5 @@
 // 파일명: assets/projectiles.js
-// 역할: 공통 투사체 이동/수명/유도/충돌 시스템
+// 역할: 공통 투사체 이동/수명/유도/충돌/충돌 지점 AoE 시스템
 // 규칙: 피해 계산과 게임 밸런스는 각 게임/전투 시스템이 소유한다.
 
 function clone(value) {
@@ -55,6 +55,8 @@ function normalizeProjectile(projectile = {}) {
     destroyOnHit: projectile.destroyOnHit !== false,
     maxHits: Math.max(1, Math.floor(finiteNonNegative(projectile.maxHits, 1))),
     hitCount: Math.max(0, Math.floor(finiteNonNegative(projectile.hitCount, 0))),
+    aoeRadius: finiteNonNegative(projectile.aoeRadius, 0),
+    aoeMaxTargets: Math.max(0, Math.floor(finiteNonNegative(projectile.aoeMaxTargets, 0))),
     hits: Array.isArray(projectile.hits) ? projectile.hits.map(String) : [],
     tags: Array.isArray(projectile.tags) ? projectile.tags.map(String) : [],
     meta: clone(projectile.meta || {}) || {},
@@ -197,12 +199,50 @@ export class JaewoonProjectiles {
           projectileId: projectile.id,
           sourceId: projectile.sourceId,
           targetId,
+          hitType: 'direct',
           position: clone(projectile.position),
           tags: Object.freeze([...projectile.tags]),
           meta: clone(projectile.meta),
         });
         events.push(event);
         if (typeof onHit === 'function') onHit(event, clone(projectile), clone(target));
+
+        if (projectile.aoeRadius > 0 && projectile.aoeMaxTargets > 0) {
+          let aoeTargets = 0;
+          for (const rawAoeTargetId of targetIds) {
+            if (aoeTargets >= projectile.aoeMaxTargets) break;
+            const aoeTargetId = String(rawAoeTargetId);
+            if (projectile.hits.includes(aoeTargetId)) continue;
+
+            const aoeTarget = typeof getTarget === 'function'
+              ? getTarget(aoeTargetId, projectile)
+              : null;
+            if (!aoeTarget || aoeTarget.dead || aoeTarget.targetable === false) continue;
+            if (projectile.team != null && aoeTarget.team != null && projectile.team === String(aoeTarget.team)) continue;
+            if (typeof canHit === 'function' && !canHit(projectile, aoeTarget)) continue;
+            if (!Number.isFinite(aoeTarget.x) || !Number.isFinite(aoeTarget.y)) continue;
+
+            const aoeTargetRadius = finiteNonNegative(aoeTarget.radius, 0);
+            const aoeCollisionRadius = projectile.aoeRadius + aoeTargetRadius;
+            if (distanceSquared(projectile.position, aoeTarget) > aoeCollisionRadius * aoeCollisionRadius) continue;
+
+            projectile.hits.push(aoeTargetId);
+            aoeTargets += 1;
+
+            const aoeEvent = Object.freeze({
+              type: 'projectile-hit',
+              projectileId: projectile.id,
+              sourceId: projectile.sourceId,
+              targetId: aoeTargetId,
+              hitType: 'aoe',
+              position: clone(projectile.position),
+              tags: Object.freeze([...projectile.tags]),
+              meta: clone(projectile.meta),
+            });
+            events.push(aoeEvent);
+            if (typeof onHit === 'function') onHit(aoeEvent, clone(projectile), clone(aoeTarget));
+          }
+        }
 
         if (projectile.destroyOnHit || projectile.hitCount >= projectile.maxHits) {
           this.projectiles.delete(projectile.id);
