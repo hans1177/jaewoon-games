@@ -75,6 +75,19 @@ export class JaewoonResourceGathering {
     return Object.freeze({ definition, state: clone(state) });
   }
 
+  reset() {
+    for (const [id, definition] of this.definitions) {
+      this.states.set(id, {
+        charges: definition.maxCharges,
+        respawnRemaining: 0,
+        totalGathered: 0,
+        timesGathered: 0,
+      });
+    }
+    this.paused = false;
+    return this.snapshot();
+  }
+
   setPaused(value) {
     this.paused = Boolean(value);
     return this.paused;
