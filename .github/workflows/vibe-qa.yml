@@ -52,7 +52,6 @@ jobs:
           import { JaewoonTargetingSystem } from './assets/targeting-system.js';
           import { JaewoonCombatActions } from './assets/combat-actions.js';
           import { JaewoonProjectiles } from './assets/projectiles.js';
-
           const rules = new JaewoonD20Rules({ rng: () => 0.5 });
           if (rules.abilityModifier(18) !== 4) throw new Error('d20 failed');
           const progression = new JaewoonCharacterProgression({ maxLevel: 10, xpForLevel: (level) => (level - 1) * 100 });
@@ -62,8 +61,7 @@ jobs:
           const inventory = new JaewoonInventoryEquipment({ capacity: 5 });
           const inv = inventory.createState({ items: [{ id: 'wood', quantity: 3 }] });
           const crafting = new JaewoonCraftingRecipes({ inventory, recipes: [{ id: 'club', inputs: [{ id: 'wood', quantity: 3 }], outputs: [{ id: 'club', stackable: false }] }] });
-          const craftState = crafting.createState();
-          if (!crafting.craft(craftState, inv, 'club').ok || inventory.countItem(inv, 'club') !== 1) throw new Error('crafting failed');
+          if (!crafting.craft(crafting.createState(), inv, 'club').ok || inventory.countItem(inv, 'club') !== 1) throw new Error('crafting failed');
           const stats = new JaewoonStatModifiers();
           const statState = stats.createState({ base: { hp: 100 } });
           stats.addModifier(statState, 'hp', { id: 'armor', flat: 50 });
@@ -83,7 +81,7 @@ jobs:
           const effects = new JaewoonStatusEffects();
           effects.apply('hero', { id: 'poison', duration: 3, tickInterval: 1, magnitude: 5, stackMode: 'stack', maxStacks: 3 });
           if (!effects.update(1).some((e) => e.type === 'effect-tick')) throw new Error('status effects failed');
-          const combat = new JaewoonCombatVitals({ entities: [{ id: 'hero', hp: 100, maxHp: 100, shield: 20, maxShield: 20 }] });
+          const combat = new JaewoonCombatVitals({ entities: [{ id: 'hero', hp: 100, maxHp: 100, shield: 20, maxShield: 20 }, { id: 'near', hp: 50, maxHp: 50 }] });
           if (combat.damage('hero', 30).hpDamage !== 10) throw new Error('combat failed');
           const targeting = new JaewoonTargetingSystem({ entities: [{ id: 'tower', team: 'ally', x: 0, y: 0 }, { id: 'near', team: 'enemy', x: 3, y: 4, hp: 50, maxHp: 100, threat: 2 }] });
           if (targeting.select('tower', { teams: ['enemy'], range: 6, strategy: 'nearest' })?.id !== 'near') throw new Error('targeting failed');
@@ -103,7 +101,6 @@ jobs:
           import { createGameKit } from './assets/game-kit.js';
           import { buildGameBlueprint } from './assets/game-blueprint.js';
           import { createGameSession } from './assets/game-session.js';
-
           const config = { gameId: 'qa-game', inventoryEquipment: true, achievementsUnlocks: { definitions: [{ id: 'collector', requirements: [{ key: 'items', target: 2 }] }] }, versionedSave: { currentVersion: 2 } };
           const kit = createGameKit(config);
           kit.get('achievements').increment(kit.state.achievements, 'items', 2);
