@@ -1,5 +1,5 @@
 // 파일명: assets/game-content.js
-// 역할: 블루프린트의 자연어 결과를 게임 콘텐츠 데이터로 정규화
+// 역할: 블루프린트의 자연어 결과를 실제 게임 콘텐츠 데이터로 정규화
 // 규칙: 명시된 값 우선, 미지정 값은 안전한 기본값, 기존 게임 자동 변경 금지
 
 const DEFAULT_CONTENT = Object.freeze({
@@ -11,6 +11,9 @@ const DEFAULT_CONTENT = Object.freeze({
   bosses: Object.freeze([]),
 });
 
+const KNOWN_RESOURCES = Object.freeze(['나무', '돌', '조약돌', '철', '광석', '가죽', '섬유', '밧줄', '벌침', '전갈 꼬리', '개미 턱', '개미 몸통']);
+const ITEM_WORDS = Object.freeze(['검', '칼', '활', '총', '창', '도끼', '지팡이', '방패', '갑옷', '목걸이', '물약', '무기', '장비', '아이템']);
+
 function number(value, fallback, min = 0) {
   const parsed = Number(value);
   return Number.isFinite(parsed) && parsed >= min ? parsed : fallback;
@@ -18,6 +21,10 @@ function number(value, fallback, min = 0) {
 
 function hasName(value, words) {
   return words.some((word) => String(value || '').includes(word));
+}
+
+function unique(values) {
+  return [...new Set(values.filter(Boolean).map((value) => String(value).trim()).filter(Boolean))];
 }
 
 function buildEnemyTypes(entityRules = {}) {
@@ -29,7 +36,8 @@ function buildEnemyTypes(entityRules = {}) {
       damage: number(props?.damage, 5, 0),
       range: number(props?.range, 28, 0),
       speed: number(props?.speed, 32, 0),
-      actions: Object.freeze([...(props?.actions || [])]),
+      cooldown: number(props?.cooldown, 1, 0.05),
+      actions: Object.freeze(unique([...(props?.actions || [])])),
     }));
 }
 
@@ -40,26 +48,61 @@ function buildBosses(entityRules = {}) {
       name,
       hp: number(props?.hp, 500, 1),
       damage: number(props?.damage, 20, 0),
-      actions: Object.freeze([...(props?.actions || [])]),
+      range: number(props?.range, 40, 0),
+      cooldown: number(props?.cooldown, 2, 0.05),
+      actions: Object.freeze(unique([...(props?.actions || [])])),
     }));
 }
 
 function buildItems(objectSpecs = []) {
   return objectSpecs
-    .filter((spec) => ['weapon', 'item'].includes(spec.type))
+    .filter((spec) => ['weapon', 'item'].includes(spec.type) || hasName(spec.name, ITEM_WORDS))
     .map((spec) => Object.freeze({
       name: spec.name,
       type: spec.type,
       damage: spec.properties?.damage == null ? null : number(spec.properties.damage, 0),
       hp: spec.properties?.hp == null ? null : number(spec.properties.hp, 0),
-      effects: Object.freeze([...(spec.effects || [])]),
+      speed: spec.properties?.speed == null ? null : number(spec.properties.speed, 0),
+      range: spec.properties?.range == null ? null : number(spec.properties.range, 0),
+      effects: Object.freeze(unique([...(spec.effects || []), ...(spec.properties?.actions || [])])),
     }));
 }
 
-function buildCrafting(intent = {}) {
-  const text = String(intent.prompt || '');
-  if (!/(제작|조합|만들어|레시피|재료)/.test(text)) return Object.freeze([]);
-  return Object.freeze([{ id: 'starter-craft', name: '기본 제작', ingredients: Object.freeze([]), result: 'starter-item' }]);
+function buildCrafting(prompt, objectSpecs = []) {
+  const text = String(prompt || '');
+  if (!/(제작|조합|만들어|레시피|재료|공방)/.test(text)) return Object.freeze([]);
+
+  const itemNames = unique(objectSpecs.filter((spec) => spec.type === 'weapon' || spec.type === 'item').map((spec) => spec.name));
+  const resources = KNOWN_RESOURCES.filter((resource) => text.includes(resource));
+  const fallbackResult = itemNames[0] || 'starter-item';
+  const ingredients = resources.map((resource) => Object.freeze({ item: resource, count: 1 }));
+  const recipe = Object.freeze({
+    id: 'starter-craft',
+    name: `${fallbackResult} 제작`,
+    ingredients: Object.freeze(ingredients),
+    result: fallbackResult,
+    resultCount: 1,
+    repeatable: true,
+  });
+  return Object.freeze([recipe]);
+}
+
+function buildMap(prompt, blueprint) {
+  const text = String(prompt || '');
+  let theme = 'default';
+  if (/(숲|나무|초원)/.test(text)) theme = 'forest';
+  else if (/(사막|황무지)/.test(text)) theme = 'desert';
+  else if (/(동굴|광산)/.test(text)) theme = 'cave';
+  else if (/(성|기지|마을)/.test(text)) theme = 'fort';
+  return Object.freeze({ ...DEFAULT_CONTENT.map, theme, mobileFirst: blueprint?.intent?.presentation?.mobileFirst === true });
+}
+
+function buildRewards(rules, bosses, prompt) {
+  const text = String(prompt || '');
+  const hasCurrency = /(골드|돈|코인|재화|보상)/.test(text);
+  const perEnemy = hasCurrency ? number(rules.gold, 1) : DEFAULT_CONTENT.rewards.perEnemy;
+  const bossReward = bosses.length && hasCurrency ? number(rules.gold, Math.max(perEnemy * 5, 5)) : DEFAULT_CONTENT.rewards.boss;
+  return Object.freeze({ perEnemy, boss: bossReward, currency: 'gold' });
 }
 
 export function buildGameContent({ blueprint = null, prompt = '', intent = null } = {}) {
@@ -75,19 +118,14 @@ export function buildGameContent({ blueprint = null, prompt = '', intent = null 
     countPerSpawn: Math.max(1, Math.floor(number(rules.count, DEFAULT_CONTENT.waves.countPerSpawn, 1))),
     enemyTypes: Object.freeze(enemies.map((enemy) => enemy.name)),
   });
-  const rewards = Object.freeze({
-    perEnemy: number(rules.gold, DEFAULT_CONTENT.rewards.perEnemy),
-    boss: bosses.length ? number(rules.gold, DEFAULT_CONTENT.rewards.boss) : DEFAULT_CONTENT.rewards.boss,
-    currency: 'gold',
-  });
   return Object.freeze({
-    map: DEFAULT_CONTENT.map,
+    map: buildMap(prompt, blueprint),
     waves,
     enemies: Object.freeze(enemies),
     bosses: Object.freeze(bosses),
     items: Object.freeze(buildItems(objectSpecs)),
-    crafting: buildCrafting({ ...resolvedIntent, prompt }),
-    rewards,
+    crafting: buildCrafting(prompt, objectSpecs),
+    rewards: buildRewards(rules, bosses, prompt),
     source: Object.freeze({ prompt: String(prompt || ''), gameId: blueprint?.gameId || null }),
     safety: Object.freeze({ reviewBeforeApply: true, autoApplyToExistingGame: false }),
   });
