@@ -1,0 +1,65 @@
+name: Status Effects Test
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test status effects and session restore
+        run: |
+          rm -rf /tmp/jaewoon-status
+          mkdir -p /tmp/jaewoon-status
+          cp assets/status-effects.js assets/game-session.js assets/resource-gathering.js assets/day-night-cycle.js assets/wave-spawner.js assets/game-timers.js assets/state-machine.js assets/scene-flow.js assets/input-actions.js assets/game-loop.js assets/vibe-runtime.js assets/game-blueprint.js assets/game-presets.js assets/game-kit.js assets/d20-rules.js assets/turn-combat.js assets/character-progression.js assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js assets/crafting-recipes.js assets/achievements-unlocks.js /tmp/jaewoon-status/
+          printf '{"type":"module"}\n' > /tmp/jaewoon-status/package.json
+          cd /tmp/jaewoon-status
+          node --check status-effects.js
+          node --check game-session.js
+          node --input-type=module <<'NODE'
+          import { JaewoonStatusEffects } from './status-effects.js';
+          import { createGameSession } from './game-session.js';
+          import { buildGamePreset } from './game-presets.js';
+
+          const effects = new JaewoonStatusEffects();
+          effects.apply('hero', { id: 'poison', kind: 'poison', duration: 3, tickInterval: 1, magnitude: 10, stackMode: 'stack', maxStacks: 3 });
+          effects.apply('hero', { id: 'poison', kind: 'poison', duration: 3, tickInterval: 1, magnitude: 10, stackMode: 'stack', maxStacks: 3 });
+          if (effects.get('hero', 'poison').stacks !== 2) throw new Error('status stacking failed');
+          let events = effects.update(1);
+          if (!events.some((e) => e.type === 'effect-tick' && e.stacks === 2 && e.magnitude === 10)) throw new Error('status tick failed');
+          const snap = effects.snapshot();
+          const restoredEffects = new JaewoonStatusEffects();
+          restoredEffects.restore(snap);
+          if (restoredEffects.get('hero', 'poison').remaining !== 2) throw new Error('status restore failed');
+          events = restoredEffects.update(2);
+          if (!events.some((e) => e.type === 'effect-expired') || restoredEffects.has('hero', 'poison')) throw new Error('status expiry failed');
+
+          const storage = new Map();
+          globalThis.localStorage = {
+            getItem: (key) => storage.has(key) ? storage.get(key) : null,
+            setItem: (key, value) => storage.set(key, String(value)),
+            removeItem: (key) => storage.delete(key),
+          };
+          const options = { gameId: 'status-session', genre: 'survival', autoRestore: false };
+          const session = createGameSession(options);
+          session.applyStatusEffect('player', { id: 'bleed', duration: 4, tickInterval: 1, magnitude: 5 });
+          session.updateStatusEffects(1);
+          session.save();
+          const restored = createGameSession({ ...options, autoRestore: true });
+          if (restored.statusEffects.get('player', 'bleed').remaining !== 3) throw new Error('session status restore failed');
+          restored.pause();
+          const before = restored.statusEffects.get('player', 'bleed').remaining;
+          restored.updateStatusEffects(2);
+          if (restored.statusEffects.get('player', 'bleed').remaining !== before) throw new Error('status pause failed');
+          restored.resume();
+          restored.destroy();
+
+          const survival = buildGamePreset({ genre: 'survival' });
+          if (!survival.systems.includes('status-effect-ticks') || !survival.qa.includes('status-effect-save-restore')) throw new Error('status preset integration failed');
+          console.log('PASS status effects');
+          NODE
