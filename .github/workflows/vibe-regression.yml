@@ -33,6 +33,7 @@ jobs:
             assets/vibe-rebuild-planner.js
             assets/vibe-rebuild-engine.js
             assets/vibe-development-ai.js
+            assets/vibe-quality-intelligence.js
             assets/vibe-presentation-director.js
             assets/vibe-motion-effects-director.js
             qa/vibe-regression.mjs
@@ -40,6 +41,7 @@ jobs:
             qa/vibe-presentation-causality.mjs
             qa/vibe-world-macro-causality.mjs
             qa/vibe-development-ai-evidence.mjs
+            qa/vibe-auto-repair-causality.mjs
           )
           for file in "${files[@]}"; do
             node --input-type=module --check < "$file"
@@ -60,3 +62,6 @@ jobs:
 
       - name: Test development AI evidence gate
         run: node qa/vibe-development-ai-evidence.mjs
+
+      - name: Test replay regression auto repair contract
+        run: node qa/vibe-auto-repair-causality.mjs
