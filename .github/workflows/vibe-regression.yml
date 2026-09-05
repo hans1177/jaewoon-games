@@ -32,8 +32,11 @@ jobs:
             assets/vibe-workbench.js
             assets/vibe-rebuild-planner.js
             assets/vibe-rebuild-engine.js
+            assets/vibe-presentation-director.js
+            assets/vibe-motion-effects-director.js
             qa/vibe-regression.mjs
             qa/vibe-agent-causality.mjs
+            qa/vibe-presentation-causality.mjs
           )
           for file in "${files[@]}"; do
             node --input-type=module --check < "$file"
@@ -45,3 +48,6 @@ jobs:
 
       - name: Test agent causality determinism
         run: node qa/vibe-agent-causality.mjs
+
+      - name: Test presentation causality contract
+        run: node qa/vibe-presentation-causality.mjs
