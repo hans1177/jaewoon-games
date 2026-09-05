@@ -6,9 +6,9 @@ const COMMON = Object.freeze({
 
 export const GAME_PRESETS = Object.freeze({
   rpg: {
-    systems: ['inventory','equipment','quests','dialogue','npc','combat','progression','shops','stat-modifiers'],
+    systems: ['inventory','equipment','quests','dialogue','npc','combat','progression','shops','stat-modifiers','achievements-unlocks'],
     assets: ['player','npc','enemies','items','equipment','portraits','tiles','bgm','vfx'],
-    qa: ['inventory-persistence','quest-progression','dialogue-flow','combat-progression','stat-modifiers'],
+    qa: ['inventory-persistence','quest-progression','dialogue-flow','combat-progression','stat-modifiers','achievement-unlocks'],
   },
   defense: {
     systems: ['waves','spawning','targeting','towers','shop','upgrades','bosses','stat-modifiers'],
@@ -26,14 +26,14 @@ export const GAME_PRESETS = Object.freeze({
     qa: ['selection','territory-state','battle-resolution','resource-flow','stat-modifiers'],
   },
   action: {
-    systems: ['movement','combat','skills','cooldowns','enemies','bosses','checkpoints','stat-modifiers'],
+    systems: ['movement','combat','skills','cooldowns','enemies','bosses','checkpoints','stat-modifiers','achievements-unlocks'],
     assets: ['player','enemies','bosses','weapons','animations','vfx','bgm','sfx'],
-    qa: ['controls','hit-detection','cooldowns','death-restart','boss-clear','stat-modifiers'],
+    qa: ['controls','hit-detection','cooldowns','death-restart','boss-clear','stat-modifiers','achievement-unlocks'],
   },
   adventure: {
-    systems: ['movement','interaction','dialogue','quests','checkpoints','collectibles','stat-modifiers'],
+    systems: ['movement','interaction','dialogue','quests','checkpoints','collectibles','stat-modifiers','achievements-unlocks'],
     assets: ['player','npc','environment','props','portraits','bgm','ambience'],
-    qa: ['interaction','dialogue-flow','checkpoint-restore','progression','stat-modifiers'],
+    qa: ['interaction','dialogue-flow','checkpoint-restore','progression','stat-modifiers','achievement-unlocks'],
   },
   puzzle: {
     systems: ['input','levels','undo','restart','win-condition','progress'],
@@ -69,6 +69,7 @@ export function buildGamePreset({
   skillEffects = false,
   economySystems = false,
   craftingRecipes = false,
+  achievementsUnlocks = false,
   versionedSave = false,
   extras = {},
   remove = {},
@@ -132,6 +133,11 @@ export function buildGamePreset({
     systems.push('crafting','crafting-recipes','recipe-unlocks','crafting-transactions');
     assets.push('crafting-ui','item-icons');
     qa.push('crafting-costs','crafting-unlocks','crafting-rollback','crafting-save-restore');
+  }
+  if (achievementsUnlocks) {
+    systems.push('achievements-unlocks','achievement-counters','achievement-flags','unlock-rewards');
+    assets.push('achievement-icons','achievement-ui');
+    qa.push('achievement-unlocks','achievement-rewards','achievement-save-restore');
   }
   if (versionedSave) {
     systems.push('save-versioning','save-migrations','save-compatibility');
