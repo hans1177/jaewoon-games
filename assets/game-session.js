@@ -8,6 +8,7 @@ import { JaewoonWaveSpawner } from './wave-spawner.js';
 import { JaewoonDayNightCycle } from './day-night-cycle.js';
 import { JaewoonResourceGathering } from './resource-gathering.js';
 import { JaewoonStatusEffects } from './status-effects.js';
+import { JaewoonCombatVitals } from './combat-vitals.js';
 import { buildGameBlueprint } from './game-blueprint.js';
 
 function clone(value) {
@@ -32,6 +33,7 @@ export class JaewoonGameSession {
     dayNightOptions = {},
     resourceOptions = {},
     statusOptions = {},
+    combatOptions = {},
     autoRestore = true,
   } = {}) {
     this.blueprint = buildGameBlueprint({
@@ -54,6 +56,7 @@ export class JaewoonGameSession {
     this.dayNight = new JaewoonDayNightCycle(dayNightOptions);
     this.resources = new JaewoonResourceGathering(resourceOptions);
     this.statusEffects = new JaewoonStatusEffects(statusOptions);
+    this.combatVitals = new JaewoonCombatVitals(combatOptions);
     this.started = false;
     this.meta = {};
 
@@ -227,6 +230,33 @@ export class JaewoonGameSession {
     return events;
   }
 
+  registerCombatEntity(entity = {}) {
+    return this.combatVitals.register(entity);
+  }
+
+  damageCombatEntity(entityId, amount, context = {}) {
+    const event = this.combatVitals.damage(entityId, amount, context);
+    if (event.ok) this.emit('session-combat', { gameId: this.blueprint.gameId, ...event });
+    return event;
+  }
+
+  healCombatEntity(entityId, amount, context = {}) {
+    const event = this.combatVitals.heal(entityId, amount, context);
+    if (event.ok) this.emit('session-combat', { gameId: this.blueprint.gameId, ...event });
+    return event;
+  }
+
+  applyStatusTickToCombat(event, context = {}) {
+    if (!event || event.type !== 'effect-tick') return Object.freeze({ ok: false, reason: 'not-effect-tick' });
+    const amount = Math.max(0, Number(event.magnitude) || 0) * Math.max(1, Number(event.stacks) || 1);
+    if (amount <= 0) return Object.freeze({ ok: false, reason: 'no-magnitude' });
+    return this.damageCombatEntity(event.entityId, amount, {
+      source: event.source ?? context.source ?? null,
+      damageType: event.kind ?? context.damageType ?? 'status',
+      ...context,
+    });
+  }
+
   updateCommonSystems(delta, data = null) {
     return {
       timers: this.updateTimers(delta),
@@ -266,6 +296,7 @@ export class JaewoonGameSession {
       dayNight: this.dayNight.snapshot(),
       resources: this.resources.snapshot(),
       statusEffects: this.statusEffects.snapshot(),
+      combatVitals: this.combatVitals.snapshot(),
       meta: clone({ ...this.meta, ...extra }) || {},
     };
   }
@@ -309,6 +340,7 @@ export class JaewoonGameSession {
     if (session?.dayNight) this.dayNight.restore(session.dayNight);
     if (session?.resources) this.resources.restore(session.resources);
     if (session?.statusEffects) this.statusEffects.restore(session.statusEffects);
+    if (session?.combatVitals) this.combatVitals.restore(session.combatVitals);
     this.meta = clone(session?.meta || {}) || {};
     this.emit('session-restore', { gameId: this.blueprint.gameId });
     return true;
@@ -335,6 +367,7 @@ export class JaewoonGameSession {
     this.dayNight.reset();
     this.resources.reset();
     this.statusEffects.reset();
+    this.combatVitals.reset();
     this.runtime.destroy();
     this.started = false;
   }
