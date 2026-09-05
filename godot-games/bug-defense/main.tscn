@@ -9,7 +9,7 @@ script = ExtResource("1_main")
 
 [node name="SaveRuntime" type="Node" parent="."]
 script = ExtResource("2_save")
-save_key = "bug-defense"
+save_key = "bug-defense-preview"
 save_version = 1
 autosave_interval = 8.0
 
@@ -21,6 +21,7 @@ script = ExtResource("3_anim")
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="TopBar" type="PanelContainer" parent="UI"]
+anchor_right = 1.0
 offset_left = 16.0
 offset_top = 12.0
 offset_right = -16.0
