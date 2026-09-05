@@ -1,3 +1,7 @@
+// 파일명: assets/game-kit.js
+// 역할: 공통 게임 시스템 조합 및 자연어 기반 킷 생성 진입점
+// 규칙: 기존 시스템 생성 흐름 보존, 명시 설정 우선, 게임별 최소 연결
+
 import { JaewoonD20Rules } from './d20-rules.js';
 import { JaewoonTurnCombat } from './turn-combat.js';
 import { JaewoonCharacterProgression } from './character-progression.js';
@@ -140,7 +144,15 @@ export class JaewoonGameKit {
 
 export function createGameKit(options = {}) { return new JaewoonGameKit(options); }
 
+export async function createGameKitFromPrompt({ gameId = 'game', prompt = '', genre = null, mixGenres = [], platform = 'auto', presetOptions = {}, kitOptions = {}, useGenreDefaults = true } = {}) {
+  const { buildGameBlueprint } = await import('./game-blueprint.js');
+  const blueprint = buildGameBlueprint({ gameId, prompt, genre, mixGenres, platform, presetOptions, kitOptions, useGenreDefaults });
+  const kit = createGameKit(blueprint.kitConfig);
+  return Object.freeze({ blueprint, kit });
+}
+
 if (typeof window !== 'undefined') {
   window.JaewoonGameKit = JaewoonGameKit;
   window.createJaewoonGameKit = createGameKit;
+  window.createJaewoonGameKitFromPrompt = createGameKitFromPrompt;
 }
