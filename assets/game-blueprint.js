@@ -1,6 +1,6 @@
 // 파일명: assets/game-blueprint.js
-// 역할: 쉬운 자연어 게임 요구사항을 장르/플랫폼/공통 시스템/규칙 계획으로 변환
-// 규칙: 명시 설정 우선, 기존 게임 규칙/저장구조 보존, 추출 규칙은 계획으로만 반환
+// 역할: 쉬운 자연어 요구사항을 장르/플랫폼/공통 시스템/규칙/설계 계획으로 변환
+// 규칙: 명시 설정 우선, 기존 게임 규칙/저장구조 보존, 추출 결과는 검토용 계획으로 반환
 
 import { buildGamePreset } from './game-presets.js';
 import { createGameKit } from './game-kit.js';
@@ -67,19 +67,19 @@ const DIRECTION_WORDS = Object.freeze({
 });
 
 const RULE_PATTERNS = Object.freeze([
-  Object.freeze({ key: 'hp', labels: ['체력', '피'], pattern: /(?:체력|피)\s*(?:을|를|은|는|이|가)?\s*(\d+)/ }),
-  Object.freeze({ key: 'damage', labels: ['공격력', '데미지', '피해'], pattern: /(?:공격력|데미지|피해)\s*(?:을|를|은|는|이|가)?\s*(\d+)/ }),
-  Object.freeze({ key: 'cooldown', labels: ['쿨타임', '쿨다운'], pattern: /(?:쿨타임|쿨다운)\s*(?:은|는|이|가)?\s*(\d+(?:\.\d+)?)\s*(초|s|초간)?/ }),
-  Object.freeze({ key: 'interval', labels: ['간격', '마다'], pattern: /(\d+(?:\.\d+)?)\s*(초|s)\s*(?:마다|간격|후)/ }),
-  Object.freeze({ key: 'count', labels: ['마리', '명', '개'], pattern: /(\d+)\s*(마리|명|개)/ }),
-  Object.freeze({ key: 'waves', labels: ['웨이브'], pattern: /(?:웨이브|wave)\s*(?:를|은|는|총)?\s*(\d+)/i }),
-  Object.freeze({ key: 'gold', labels: ['골드', '돈', '코인'], pattern: /(?:골드|돈|코인)\s*(?:을|를|은|는|이|가)?\s*(\d+)/ }),
+  Object.freeze({ key: 'hp', pattern: /(?:체력|피)\s*(?:을|를|은|는|이|가)?\s*(\d+)/ }),
+  Object.freeze({ key: 'damage', pattern: /(?:공격력|데미지|피해)\s*(?:을|를|은|는|이|가)?\s*(\d+)/ }),
+  Object.freeze({ key: 'cooldown', pattern: /(?:쿨타임|쿨다운)\s*(?:은|는|이|가)?\s*(\d+(?:\.\d+)?)\s*(초|s|초간)?/ }),
+  Object.freeze({ key: 'interval', pattern: /(\d+(?:\.\d+)?)\s*(초|s)\s*(?:마다|간격|후)/ }),
+  Object.freeze({ key: 'count', pattern: /(\d+)\s*(마리|명|개)/ }),
+  Object.freeze({ key: 'waves', pattern: /(?:웨이브|wave)\s*(?:를|은|는|총)?\s*(\d+)/i }),
+  Object.freeze({ key: 'gold', pattern: /(?:골드|돈|코인)\s*(?:을|를|은|는|이|가)?\s*(\d+)/ }),
 ]);
 
 const ENTITY_WORDS = Object.freeze([
-  '고블린', '강화 고블린', '궁수', '궁수 고블린', '오크', '보스', '포탑', '탑', '병사', '병력', '영웅',
+  '강화 고블린', '궁수 고블린', '고블린', '오크', '보스', '포탑', '탑', '병사', '병력', '영웅',
   '플레이어', '주인공', '캐릭터', '적', '몬스터', '동료', 'npc', '나', '사마귀', '전갈', '거미', '벌',
-  '좀비', '개', '고양이', '기사', '궁수병', '마법사', '상인',
+  '좀비', '개', '고양이', '기사', '궁수병', '궁수', '마법사', '상인',
 ]);
 
 const DEFAULT_ASSET_POLICY = Object.freeze({
@@ -110,17 +110,11 @@ function containsAny(text, words) {
 }
 
 function inferGenres(text) {
-  const scores = GENRE_RULES.map((rule) => ({
-    genre: rule.genre,
-    score: rule.words.reduce((score, word) => score + (text.includes(word) ? Math.max(1, word.length / 4) : 0), 0),
-  }))
+  const scores = GENRE_RULES.map((rule) => ({ genre: rule.genre, score: rule.words.reduce((score, word) => score + (text.includes(word) ? Math.max(1, word.length / 4) : 0), 0) }))
     .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score || a.genre.localeCompare(b.genre));
-
   if (!scores.length) return { genre: null, mixedGenres: [] };
-  const primary = scores[0].genre;
-  const mixedGenres = scores.slice(1).filter((item) => item.score >= 2.5).map((item) => item.genre);
-  return { genre: primary, mixedGenres: [...new Set(mixedGenres)] };
+  return { genre: scores[0].genre, mixedGenres: [...new Set(scores.slice(1).filter((item) => item.score >= 2.5).map((item) => item.genre))] };
 }
 
 function inferPlatform(text) {
@@ -138,15 +132,8 @@ function inferPresentation(text) {
 }
 
 function inferPlayerCount(text) {
-  const patterns = [
-    [/혼자|나 혼자|솔플/, 1],
-    [/둘이|둘이서|2명|2인/, 2],
-    [/셋이|셋이서|3명|3인/, 3],
-    [/넷이|넷이서|4명|4인/, 4],
-  ];
-  for (const [pattern, count] of patterns) {
-    if (pattern.test(text)) return count;
-  }
+  const patterns = [[/혼자|나 혼자|솔플/, 1], [/둘이|둘이서|2명|2인/, 2], [/셋이|셋이서|3명|3인/, 3], [/넷이|넷이서|4명|4인/, 4]];
+  for (const [pattern, count] of patterns) if (pattern.test(text)) return count;
   return null;
 }
 
@@ -155,12 +142,9 @@ function inferRules(text) {
   for (const rule of RULE_PATTERNS) {
     const match = text.match(rule.pattern);
     if (!match) continue;
-    const raw = match[1];
-    const value = Number(raw);
-    rules[rule.key] = Number.isFinite(value) ? value : raw;
-    if (match[2] && typeof rules[rule.key] === 'number') rules[`${rule.key}Unit`] = match[2];
+    rules[rule.key] = Number(match[1]);
+    if (match[2] && Number.isFinite(rules[rule.key])) rules[`${rule.key}Unit`] = match[2];
   }
-
   const conditions = [];
   if (/(밤에만|밤만|밤에는)/.test(text)) conditions.push('night-only');
   if (/(낮에만|낮만|아침에만|아침만)/.test(text)) conditions.push('day-only');
@@ -171,7 +155,6 @@ function inferRules(text) {
   if (/(밀쳐|넉백)/.test(text)) conditions.push('knockback');
   if (/(기절|스턴)/.test(text)) conditions.push('stun');
   if (/(느려|슬로우)/.test(text)) conditions.push('slow');
-
   if (conditions.length) rules.conditions = Object.freeze(conditions);
   return Object.freeze(rules);
 }
@@ -180,54 +163,60 @@ function inferEntityRules(text) {
   const entities = {};
   const uniqueEntities = [...new Set(ENTITY_WORDS.filter((word) => text.includes(word)))];
   for (const entity of uniqueEntities) {
-    const positions = [];
-    let cursor = 0;
-    while (cursor < text.length) {
-      const index = text.indexOf(entity, cursor);
-      if (index < 0) break;
-      positions.push(index);
-      cursor = index + entity.length;
-    }
-    const chunks = positions.map((start, index) => text.slice(start, positions[index + 1] ?? Math.min(text.length, start + 80)));
+    const start = text.indexOf(entity);
+    if (start < 0) continue;
+    const chunk = text.slice(start, Math.min(text.length, start + 120));
     const properties = {};
-    for (const chunk of chunks) {
-      for (const rule of RULE_PATTERNS) {
-        const match = chunk.match(rule.pattern);
-        if (!match) continue;
-        const value = Number(match[1]);
-        if (Number.isFinite(value)) properties[rule.key] = value;
-        if (match[2] && typeof properties[rule.key] === 'number') properties[`${rule.key}Unit`] = match[2];
-      }
+    for (const rule of RULE_PATTERNS) {
+      const match = chunk.match(rule.pattern);
+      if (!match) continue;
+      const value = Number(match[1]);
+      if (Number.isFinite(value)) properties[rule.key] = value;
+      if (match[2] && Number.isFinite(value)) properties[`${rule.key}Unit`] = match[2];
     }
     if (Object.keys(properties).length) entities[entity] = Object.freeze(properties);
   }
   return Object.freeze(entities);
 }
 
+function inferDesign(text, intent) {
+  const loop = [];
+  if (intent.genre) loop.push('게임 시작');
+  if (intent.options.multiplayer) loop.push('플레이어 입장');
+  if (intent.options.inventoryEquipment || intent.options.craftingRecipes) loop.push('획득 → 보관/제작');
+  if (intent.options.characterProgression) loop.push('플레이 → 성장');
+  if (intent.rules?.conditions?.includes('night-only') || /낮과 밤|낮밤/.test(text)) loop.push('시간 진행 → 조건별 이벤트');
+  if (intent.options.skillEffects || intent.rules?.conditions?.some((item) => ['auto-attack', 'homing-projectile', 'area-effect', 'knockback', 'stun', 'slow'].includes(item))) loop.push('전투/스킬 처리');
+  if (intent.options.questDialogue) loop.push('목표 → 퀘스트 진행');
+  if (intent.options.economySystems) loop.push('보상 → 구매/성장');
+  if (intent.genre === 'defense') loop.push('적 등장 → 방어 → 웨이브 클리어');
+  if (intent.genre === 'survival') loop.push('자원 확보 → 생존 → 다음 날');
+  if (intent.genre === 'strategy') loop.push('영토 확보 → 병력 운용 → 정복');
+  if (intent.genre === 'puzzle') loop.push('퍼즐 해결 → 다음 단계');
+  return Object.freeze({
+    coreLoop: Object.freeze([...new Set(loop)]),
+    entities: Object.freeze(Object.keys(intent.entityRules)),
+    requestedRules: intent.rules,
+    playerCount: intent.playerCount,
+    platform: intent.platform,
+    presentation: intent.presentation,
+    systemSelection: Object.freeze(Object.keys(intent.options)),
+    reviewBeforeApply: true,
+    autoApplyToExistingGame: false,
+  });
+}
+
 export function inferVibeIntent(prompt = '') {
   const text = normalizePrompt(prompt);
-  if (!text) {
-    return Object.freeze({ genre: null, mixedGenres: Object.freeze([]), options: Object.freeze({}), platform: 'auto', presentation: Object.freeze({}), playerCount: null, rules: Object.freeze({}), entityRules: Object.freeze({}) });
-  }
-
+  const empty = { genre: null, mixedGenres: [], options: {}, platform: 'auto', presentation: {}, playerCount: null, rules: {}, entityRules: {} };
+  if (!text) return Object.freeze({ ...empty, design: inferDesign(text, empty) });
   const genres = inferGenres(text);
   const options = {};
-  for (const rule of OPTION_RULES) {
-    if (containsAny(text, rule.words)) options[rule.key] = true;
-  }
+  for (const rule of OPTION_RULES) if (containsAny(text, rule.words)) options[rule.key] = true;
   const playerCount = inferPlayerCount(text);
   if (playerCount !== null && playerCount > 1) options.multiplayer = true;
-
-  return Object.freeze({
-    genre: genres.genre,
-    mixedGenres: Object.freeze(genres.mixedGenres),
-    options: Object.freeze(options),
-    platform: inferPlatform(text),
-    presentation: Object.freeze(inferPresentation(text)),
-    playerCount,
-    rules: inferRules(text),
-    entityRules: inferEntityRules(text),
-  });
+  const baseIntent = { genre: genres.genre, mixedGenres: Object.freeze(genres.mixedGenres), options: Object.freeze(options), platform: inferPlatform(text), presentation: Object.freeze(inferPresentation(text)), playerCount, rules: inferRules(text), entityRules: inferEntityRules(text) };
+  return Object.freeze({ ...baseIntent, design: inferDesign(text, baseIntent) });
 }
 
 function resolvePlatform(value, inferred) {
@@ -248,28 +237,18 @@ function inferKitOptions(preset) {
 function buildMaterialPlan(assetCategories = [], overrides = {}) {
   const requested = [...new Set((assetCategories || []).map((item) => String(item)).filter(Boolean))];
   const policy = Object.freeze({ ...DEFAULT_ASSET_POLICY, ...(overrides.policy || {}) });
-  return Object.freeze({
-    categories: Object.freeze(requested),
-    workflow: Object.freeze(['reuse-existing-assets','search-approved-free-sources-if-missing','verify-license-per-asset','download-only-needed-assets','record-license-and-source','remove-unused-assets']),
-    policy,
-  });
+  return Object.freeze({ categories: Object.freeze(requested), workflow: Object.freeze(['reuse-existing-assets','search-approved-free-sources-if-missing','verify-license-per-asset','download-only-needed-assets','record-license-and-source','remove-unused-assets']), policy });
 }
 
 function buildQaPlan(qaItems = []) {
   const checks = [...new Set((qaItems || []).map((item) => String(item)).filter(Boolean))];
-  return Object.freeze({
-    checks: Object.freeze(checks),
-    requiredBaseline: Object.freeze(['boot','restart','save-load','touch','console-errors']),
-    mobileFirst: true,
-    preserveExistingBehavior: true,
-  });
+  return Object.freeze({ checks: Object.freeze(checks), requiredBaseline: Object.freeze(['boot','restart','save-load','touch','console-errors']), mobileFirst: true, preserveExistingBehavior: true });
 }
 
 export function buildGameBlueprint({ gameId = 'game', prompt = '', genre = null, mixGenres = [], platform = 'auto', presetOptions = {}, kitOptions = {}, assetPlanOptions = {}, useGenreDefaults = true } = {}) {
   const intent = inferVibeIntent(prompt);
   const normalizedGenre = String(genre || intent.genre || '').toLowerCase();
   if (!normalizedGenre) throw new Error('game genre or understandable game prompt required');
-
   const resolvedMixGenres = Array.isArray(mixGenres) && mixGenres.length ? mixGenres : intent.mixedGenres;
   const inferredPresetOptions = mergeObjects(intent.options, presetOptions);
   const genreDefaults = useGenreDefaults ? (GENRE_DEFAULT_OPTIONS[normalizedGenre] || {}) : {};
@@ -280,26 +259,7 @@ export function buildGameBlueprint({ gameId = 'game', prompt = '', genre = null,
   const materialPlan = buildMaterialPlan(preset.assets, assetPlanOptions);
   const qaPlan = buildQaPlan(preset.qa);
   const resolvedPlatform = resolvePlatform(platform, intent.platform);
-
-  return Object.freeze({
-    gameId: String(gameId || 'game'), genre: preset.genre, mixedGenres: preset.mixedGenres,
-    platform: resolvedPlatform, intent,
-    systems: preset.systems, assets: preset.assets, qa: preset.qa, rules: preset.rules,
-    kitConfig, materialPlan, qaPlan,
-    createKit() { return createGameKit(kitConfig); },
-    plan() {
-      return Object.freeze({
-        gameId: String(gameId || 'game'), genre: preset.genre, mixedGenres: preset.mixedGenres,
-        platform: resolvedPlatform, intent, systems: preset.systems, materialPlan, qaPlan,
-        preservation: Object.freeze({
-          preserveExistingBalance: preset.rules.preserveExistingBalance,
-          preserveSaveFormat: preset.rules.preserveSaveFormat,
-          mobileFirst: preset.rules.mobileFirst,
-          saveMigrationsRequiredForBreakingChanges: preset.rules.saveMigrationsRequiredForBreakingChanges,
-        }),
-      });
-    },
-  });
+  return Object.freeze({ gameId: String(gameId || 'game'), genre: preset.genre, mixedGenres: preset.mixedGenres, platform: resolvedPlatform, intent, design: intent.design, systems: preset.systems, assets: preset.assets, qa: preset.qa, rules: preset.rules, kitConfig, materialPlan, qaPlan, createKit() { return createGameKit(kitConfig); }, plan() { return Object.freeze({ gameId: String(gameId || 'game'), genre: preset.genre, mixedGenres: preset.mixedGenres, platform: resolvedPlatform, intent, design: intent.design, systems: preset.systems, materialPlan, qaPlan, preservation: Object.freeze({ preserveExistingBalance: preset.rules.preserveExistingBalance, preserveSaveFormat: preset.rules.preserveSaveFormat, mobileFirst: preset.rules.mobileFirst, saveMigrationsRequiredForBreakingChanges: preset.rules.saveMigrationsRequiredForBreakingChanges }) }); } });
 }
 
 export function createGameFromBlueprint(options = {}) {
