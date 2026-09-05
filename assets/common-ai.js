@@ -1,3 +1,7 @@
+// 파일명: assets/common-ai.js
+// 역할: 게임 내 로컬 AI, Gemini 보조 AI, 다중 AI 편대 협동 판단
+// 규칙: AI는 행동을 결정하지만 게임 규칙/피해/보상/세이브의 최종 권한을 갖지 않음
+
 export class JaewoonCommonAI {
   static State = Object.freeze({
     IDLE: 'IDLE', FOLLOW: 'FOLLOW', SEARCH: 'SEARCH', ATTACK: 'ATTACK',
@@ -152,6 +156,69 @@ export class JaewoonCommonAI {
   clamp(value) { return Math.max(0, Math.min(1, Number(value))); }
 }
 
+export class JaewoonAISquad {
+  constructor({ members = [], commanderId = '', decisionIntervalMs = 350 } = {}) {
+    this.members = new Map();
+    this.commanderId = String(commanderId || '');
+    this.decisionIntervalMs = Math.max(100, Number(decisionIntervalMs) || 350);
+    this.lastDecisionAt = 0;
+    this.shared = { focusTargetId: '', protectedTargetId: '', danger: 0, objective: 'follow' };
+    for (const member of Array.isArray(members) ? members : []) this.add(member);
+  }
+
+  add({ id, ai = null, role = JaewoonCommonAI.Role.MELEE, metadata = {} } = {}) {
+    const memberId = String(id || '');
+    if (!memberId) throw new Error('AI squad member id required');
+    const controller = ai instanceof JaewoonCommonAI ? ai : new JaewoonCommonAI({ role });
+    this.members.set(memberId, { id: memberId, ai: controller, role, metadata: { ...metadata } });
+    return this.member(memberId);
+  }
+
+  remove(id) { return this.members.delete(String(id || '')); }
+  member(id) { return this.members.get(String(id || '')) || null; }
+  list() { return Object.freeze([...this.members.values()].map(({ id, role, metadata }) => ({ id, role, metadata: { ...metadata } }))); }
+
+  command(order, targetId = '') {
+    const value = String(order || JaewoonCommonAI.Order.AUTO);
+    this.shared.focusTargetId = value === JaewoonCommonAI.Order.FOCUS ? String(targetId || '') : this.shared.focusTargetId;
+    this.shared.protectedTargetId = value === JaewoonCommonAI.Order.PROTECT ? String(targetId || '') : this.shared.protectedTargetId;
+    for (const member of this.members.values()) member.ai.setOrder(value, targetId);
+    return this.snapshot();
+  }
+
+  setObjective(objective, targetId = '') {
+    this.shared.objective = String(objective || 'follow');
+    if (targetId) this.shared.focusTargetId = String(targetId);
+    return this.shared.objective;
+  }
+
+  decide(context = {}, now = Date.now()) {
+    const current = Number(now) || Date.now();
+    if (current - this.lastDecisionAt < this.decisionIntervalMs) return [];
+    this.lastDecisionAt = current;
+    const members = Array.isArray(context.members) ? context.members : [];
+    const results = [];
+    for (const member of this.members.values()) {
+      const own = members.find(item => String(item?.id || '') === member.id) || {};
+      const allies = members.filter(item => String(item?.id || '') !== member.id);
+      const decisionContext = {
+        ...context,
+        ...own,
+        allies: context.allies || allies,
+        shared: this.shared,
+        enemyTarget: this.shared.focusTargetId,
+        protectedTarget: this.shared.protectedTargetId,
+      };
+      results.push(Object.freeze({ id: member.id, role: member.role, decision: member.ai.decide(decisionContext) }));
+    }
+    return results;
+  }
+
+  snapshot() {
+    return Object.freeze({ commanderId: this.commanderId, decisionIntervalMs: this.decisionIntervalMs, shared: { ...this.shared }, members: this.list() });
+  }
+}
+
 export class JaewoonGeminiAI {
   constructor(options = {}) {
     this.endpoint = options.endpoint || '/api/ai/gemini';
@@ -223,5 +290,6 @@ export class JaewoonGeminiAI {
 
 if (typeof window !== 'undefined') {
   window.JaewoonCommonAI = JaewoonCommonAI;
+  window.JaewoonAISquad = JaewoonAISquad;
   window.JaewoonGeminiAI = JaewoonGeminiAI;
 }
