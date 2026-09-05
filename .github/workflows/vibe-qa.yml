@@ -35,6 +35,27 @@ jobs:
           node --input-type=module --check < qa/vibe-regression.mjs
           echo 'PASS JavaScript syntax'
 
+      - name: Test art asset rights gate
+        run: |
+          node --input-type=module <<'NODE'
+          import { createVibeAssetReconstructionContract } from './assets/vibe-art-pipeline.js';
+          const cc0 = createVibeAssetReconstructionContract({ asset: { id:'cc0', source:'source', license:'CC0' } });
+          if (!cc0.derivativesAllowed || cc0.attributionRequired) throw new Error('CC0 rights failed');
+          const by = createVibeAssetReconstructionContract({ asset: { id:'by', source:'source', license:'CC-BY-4.0' } });
+          if (!by.derivativesAllowed || !by.attributionRequired) throw new Error('CC BY rights failed');
+          const sa = createVibeAssetReconstructionContract({ asset: { id:'sa', source:'source', license:'CC-BY-SA-4.0' } });
+          if (!sa.derivativesAllowed || !sa.shareAlikeRequired) throw new Error('CC BY-SA rights failed');
+          const nd = createVibeAssetReconstructionContract({ asset: { id:'nd', source:'source', license:'CC-BY-ND-4.0' } });
+          if (nd.derivativesAllowed || nd.blockedReason !== 'derivatives-explicitly-forbidden') throw new Error('CC BY-ND block failed');
+          const nc = createVibeAssetReconstructionContract({ asset: { id:'nc', source:'source', license:'CC-BY-NC-4.0' } });
+          if (!nc.derivativesAllowed || nc.commercialUseAllowed) throw new Error('CC BY-NC commercial gate failed');
+          const mit = createVibeAssetReconstructionContract({ asset: { id:'mit', source:'source', license:'MIT' } });
+          if (mit.derivativesAllowed || mit.blockedReason !== 'derivative-permission-unverified') throw new Error('software license must not imply art derivative rights');
+          const explicit = createVibeAssetReconstructionContract({ asset: { id:'explicit', source:'source', license:'custom', derivativesAllowed:true } });
+          if (!explicit.derivativesAllowed) throw new Error('explicit derivative permission failed');
+          console.log('PASS art asset rights gate');
+          NODE
+
       - name: Test core and common systems
         run: |
           node --input-type=module <<'NODE'
