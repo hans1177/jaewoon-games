@@ -36,12 +36,14 @@ jobs:
             assets/vibe-quality-intelligence.js
             assets/vibe-presentation-director.js
             assets/vibe-motion-effects-director.js
+            assets/vibe-v2-runtime.js
             qa/vibe-regression.mjs
             qa/vibe-agent-causality.mjs
             qa/vibe-presentation-causality.mjs
             qa/vibe-world-macro-causality.mjs
             qa/vibe-development-ai-evidence.mjs
             qa/vibe-auto-repair-causality.mjs
+            qa/vibe-v2-e2e.mjs
           )
           for file in "${files[@]}"; do
             node --input-type=module --check < "$file"
@@ -65,3 +67,6 @@ jobs:
 
       - name: Test replay regression auto repair contract
         run: node qa/vibe-auto-repair-causality.mjs
+
+      - name: Test Vibe V2 end to end execution loop
+        run: node qa/vibe-v2-e2e.mjs
