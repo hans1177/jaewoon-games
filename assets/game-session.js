@@ -3,6 +3,7 @@ import { JaewoonGameLoop } from './game-loop.js';
 import { JaewoonInputActions } from './input-actions.js';
 import { JaewoonSceneFlow } from './scene-flow.js';
 import { JaewoonStateMachine } from './state-machine.js';
+import { JaewoonGameTimers } from './game-timers.js';
 import { buildGameBlueprint } from './game-blueprint.js';
 
 function clone(value) {
@@ -22,6 +23,7 @@ export class JaewoonGameSession {
     inputOptions = {},
     sceneOptions = {},
     stateMachines = {},
+    timerOptions = {},
     autoRestore = true,
   } = {}) {
     this.blueprint = buildGameBlueprint({
@@ -39,6 +41,7 @@ export class JaewoonGameSession {
     this.scenes = new JaewoonSceneFlow(sceneOptions);
     this.stateMachines = new Map();
     for (const [id, options] of Object.entries(stateMachines || {})) this.createStateMachine(id, options);
+    this.timers = new JaewoonGameTimers(timerOptions);
     this.started = false;
     this.meta = {};
 
@@ -126,6 +129,31 @@ export class JaewoonGameSession {
     return results;
   }
 
+  createTimer(id, options = {}) {
+    return this.timers.create(id, options);
+  }
+
+  getTimer(id) {
+    return this.timers.get(id);
+  }
+
+  cancelTimer(id) {
+    return this.timers.cancel(id);
+  }
+
+  updateTimers(delta) {
+    const fired = this.timers.update(delta);
+    for (const event of fired) this.emit('session-timer', { gameId: this.blueprint.gameId, ...event });
+    return fired;
+  }
+
+  updateCommonSystems(delta, data = null) {
+    return {
+      timers: this.updateTimers(delta),
+      states: this.updateStateMachines(delta, data),
+    };
+  }
+
   setPaused(value, reason = 'manual') {
     const paused = Boolean(value);
     this.runtime.setPaused(paused, reason);
@@ -146,6 +174,7 @@ export class JaewoonGameSession {
       kit: this.kit.snapshot(),
       scenes: this.scenes.snapshot(),
       stateMachines: Object.fromEntries([...this.stateMachines].map(([id, machine]) => [id, machine.snapshot()])),
+      timers: this.timers.snapshot(),
       meta: clone({ ...this.meta, ...extra }) || {},
     };
   }
@@ -184,6 +213,7 @@ export class JaewoonGameSession {
         if (machine) machine.restore(snapshot);
       }
     }
+    if (session?.timers) this.timers.restore(session.timers);
     this.meta = clone(session?.meta || {}) || {};
     this.emit('session-restore', { gameId: this.blueprint.gameId });
     return true;
@@ -205,6 +235,7 @@ export class JaewoonGameSession {
     this.scenes.reset();
     for (const machine of this.stateMachines.values()) machine.reset();
     this.stateMachines.clear();
+    this.timers.clear();
     this.runtime.destroy();
     this.started = false;
   }
