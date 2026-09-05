@@ -36,6 +36,7 @@ jobs:
             assets/stat-modifiers.js assets/crafting-recipes.js assets/achievements-unlocks.js \
             assets/wave-spawner.js assets/day-night-cycle.js assets/resource-gathering.js \
             assets/status-effects.js assets/combat-vitals.js assets/targeting-system.js assets/combat-actions.js \
+            assets/projectiles.js \
             assets/game-kit.js assets/game-presets.js assets/game-blueprint.js assets/game-loop.js \
             assets/input-actions.js assets/scene-flow.js assets/state-machine.js assets/game-timers.js \
             assets/game-session.js; do
@@ -51,7 +52,8 @@ jobs:
              assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
              assets/crafting-recipes.js assets/achievements-unlocks.js assets/wave-spawner.js \
              assets/day-night-cycle.js assets/resource-gathering.js assets/status-effects.js \
-             assets/combat-vitals.js assets/targeting-system.js assets/combat-actions.js /tmp/jaewoon-qa/
+             assets/combat-vitals.js assets/targeting-system.js assets/combat-actions.js \
+             assets/projectiles.js /tmp/jaewoon-qa/
           printf '{"type":"module"}\n' > /tmp/jaewoon-qa/package.json
           node --input-type=module <<'NODE'
           import { JaewoonD20Rules } from 'file:///tmp/jaewoon-qa/d20-rules.js';
@@ -67,6 +69,7 @@ jobs:
           import { JaewoonCombatVitals } from 'file:///tmp/jaewoon-qa/combat-vitals.js';
           import { JaewoonTargetingSystem } from 'file:///tmp/jaewoon-qa/targeting-system.js';
           import { JaewoonCombatActions } from 'file:///tmp/jaewoon-qa/combat-actions.js';
+          import { JaewoonProjectiles } from 'file:///tmp/jaewoon-qa/projectiles.js';
 
           const rules = new JaewoonD20Rules({ rng: () => 0.5 });
           if (rules.abilityModifier(18) !== 4) throw new Error('d20 failed');
@@ -170,6 +173,50 @@ jobs:
           if (combatActions.use('attacker', 'strike', 'victim').reason !== 'cooldown') throw new Error('combat action cooldown failed');
           combatActions.update(2);
           if (combatActions.cooldownRemaining('attacker', 'strike') !== 0) throw new Error('combat action cooldown tick failed');
+
+          const projectiles = new JaewoonProjectiles();
+          projectiles.spawn({ id: 'straight', position: { x: 0, y: 0 }, velocity: { x: 10, y: 0 }, lifetime: 2 });
+          projectiles.update(0.5);
+          if (projectiles.get('straight')?.position.x !== 5) throw new Error('projectile movement failed');
+
+          projectiles.spawn({ id: 'homing', position: { x: 0, y: 0 }, velocity: { x: 10, y: 0 }, speed: 10, lifetime: 2, targetId: 'target', homing: true, homingStrength: 100 });
+          projectiles.update(0.1, { getTarget: (id) => id === 'target' ? { x: 0, y: 10 } : null, getTargetIds: () => [] });
+          const homing = projectiles.get('homing');
+          if (!homing || homing.position.y <= 0) throw new Error('projectile homing failed');
+
+          const hitEvents = new JaewoonProjectiles();
+          hitEvents.spawn({ id: 'hit', position: { x: 0, y: 0 }, velocity: { x: 10, y: 0 }, lifetime: 2, hitRadius: 1, destroyOnHit: true });
+          const directEvents = hitEvents.update(0.1, {
+            getTarget: (id) => id === 'enemy' ? { x: 1, y: 0, radius: 0.5, team: 'enemy' } : null,
+            getTargetIds: () => ['enemy'],
+          });
+          if (!directEvents.some((e) => e.type === 'projectile-hit' && e.hitType === 'direct')) throw new Error('projectile direct collision failed');
+          if (hitEvents.get('hit') !== null) throw new Error('projectile destroy on hit failed');
+
+          const aoeEvents = new JaewoonProjectiles();
+          aoeEvents.spawn({ id: 'blast', position: { x: 0, y: 0 }, velocity: { x: 10, y: 0 }, lifetime: 2, hitRadius: 1, aoeRadius: 3, aoeMaxTargets: 3, destroyOnHit: true });
+          const targets = {
+            direct: { x: 1, y: 0, radius: 0.5, team: 'enemy' },
+            splashA: { x: 1, y: 2, radius: 0.5, team: 'enemy' },
+            splashB: { x: 1, y: -2, radius: 0.5, team: 'enemy' },
+            outside: { x: 1, y: 5, radius: 0.5, team: 'enemy' },
+          };
+          const aoeResult = aoeEvents.update(0.1, {
+            getTarget: (id) => targets[id] || null,
+            getTargetIds: () => Object.keys(targets),
+          });
+          const aoeHits = aoeResult.filter((e) => e.type === 'projectile-hit');
+          if (aoeHits.filter((e) => e.hitType === 'direct').length !== 1) throw new Error('projectile aoe direct hit failed');
+          if (aoeHits.filter((e) => e.hitType === 'aoe').length !== 2) throw new Error('projectile aoe splash failed');
+          if (aoeHits.some((e) => e.targetId === 'outside')) throw new Error('projectile aoe radius failed');
+
+          const savedProjectiles = new JaewoonProjectiles();
+          savedProjectiles.spawn({ id: 'saved', position: { x: 2, y: 3 }, velocity: { x: 4, y: 0 }, lifetime: 4, remaining: 3, aoeRadius: 2, aoeMaxTargets: 2 });
+          const savedSnapshot = savedProjectiles.snapshot();
+          const restoredProjectiles = new JaewoonProjectiles();
+          restoredProjectiles.restore(savedSnapshot);
+          if (restoredProjectiles.get('saved')?.position.x !== 2 || restoredProjectiles.get('saved')?.aoeRadius !== 2) throw new Error('projectile save restore failed');
+          console.log('PASS projectile systems');
           console.log('PASS core/common systems');
           NODE
 
@@ -204,7 +251,7 @@ jobs:
         run: |
           rm -rf /tmp/jaewoon-session && mkdir -p /tmp/jaewoon-session
           cp assets/game-session.js assets/day-night-cycle.js assets/resource-gathering.js assets/status-effects.js \
-             assets/combat-vitals.js assets/targeting-system.js assets/combat-actions.js assets/wave-spawner.js assets/game-timers.js \
+             assets/combat-vitals.js assets/targeting-system.js assets/combat-actions.js assets/projectiles.js assets/wave-spawner.js assets/game-timers.js \
              assets/state-machine.js assets/scene-flow.js assets/input-actions.js assets/game-loop.js \
              assets/vibe-runtime.js assets/game-blueprint.js assets/game-presets.js assets/game-kit.js \
              assets/d20-rules.js assets/turn-combat.js assets/character-progression.js \
