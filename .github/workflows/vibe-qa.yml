@@ -35,9 +35,10 @@ jobs:
             assets/skill-effects.js assets/economy-loot-shop.js assets/save-versioning.js \
             assets/stat-modifiers.js assets/crafting-recipes.js assets/achievements-unlocks.js \
             assets/wave-spawner.js assets/day-night-cycle.js assets/resource-gathering.js \
-            assets/status-effects.js assets/combat-vitals.js assets/game-kit.js assets/game-presets.js \
-            assets/game-blueprint.js assets/game-loop.js assets/input-actions.js assets/scene-flow.js \
-            assets/state-machine.js assets/game-timers.js assets/game-session.js; do
+            assets/status-effects.js assets/combat-vitals.js assets/targeting-system.js \
+            assets/game-kit.js assets/game-presets.js assets/game-blueprint.js assets/game-loop.js \
+            assets/input-actions.js assets/scene-flow.js assets/state-machine.js assets/game-timers.js \
+            assets/game-session.js; do
             node --input-type=module --check < "$file"
           done
           echo 'PASS JavaScript syntax'
@@ -50,7 +51,7 @@ jobs:
              assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
              assets/crafting-recipes.js assets/achievements-unlocks.js assets/wave-spawner.js \
              assets/day-night-cycle.js assets/resource-gathering.js assets/status-effects.js \
-             assets/combat-vitals.js /tmp/jaewoon-qa/
+             assets/combat-vitals.js assets/targeting-system.js /tmp/jaewoon-qa/
           printf '{"type":"module"}\n' > /tmp/jaewoon-qa/package.json
           node --input-type=module <<'NODE'
           import { JaewoonD20Rules } from 'file:///tmp/jaewoon-qa/d20-rules.js';
@@ -64,6 +65,7 @@ jobs:
           import { JaewoonResourceGathering } from 'file:///tmp/jaewoon-qa/resource-gathering.js';
           import { JaewoonStatusEffects } from 'file:///tmp/jaewoon-qa/status-effects.js';
           import { JaewoonCombatVitals } from 'file:///tmp/jaewoon-qa/combat-vitals.js';
+          import { JaewoonTargetingSystem } from 'file:///tmp/jaewoon-qa/targeting-system.js';
 
           const rules = new JaewoonD20Rules({ rng: () => 0.5 });
           if (rules.abilityModifier(18) !== 4) throw new Error('d20 failed');
@@ -146,6 +148,17 @@ jobs:
           const restoredCombat = new JaewoonCombatVitals();
           restoredCombat.restore(combat.snapshot());
           if (restoredCombat.get('hero').hp !== 25) throw new Error('combat restore failed');
+
+          const targeting = new JaewoonTargetingSystem({ entities: [
+            { id: 'tower', team: 'ally', x: 0, y: 0 },
+            { id: 'near', team: 'enemy', x: 3, y: 4, hp: 50, maxHp: 100, threat: 2 },
+            { id: 'far', team: 'enemy', x: 9, y: 0, hp: 90, maxHp: 100, threat: 10 },
+          ] });
+          if (targeting.select('tower', { teams: ['enemy'], range: 6, strategy: 'nearest' })?.id !== 'near') throw new Error('target nearest failed');
+          if (targeting.select('tower', { teams: ['enemy'], strategy: 'highest-threat' })?.id !== 'far') throw new Error('target threat failed');
+          const restoredTargeting = new JaewoonTargetingSystem();
+          restoredTargeting.restore(targeting.snapshot());
+          if (restoredTargeting.get('near')?.hp !== 50) throw new Error('target restore failed');
           console.log('PASS core/common systems');
           NODE
 
@@ -169,8 +182,10 @@ jobs:
           if (!restored.get('achievements').isUnlocked(restored.state.achievements, 'collector')) throw new Error('achievement restore failed');
           const survival = buildGameBlueprint({ gameId: 'survival-qa', genre: 'survival' });
           if (!survival.systems.includes('day-night-cycle') || !survival.systems.includes('resource-gathering') || !survival.systems.includes('combat-vitals')) throw new Error('survival common systems missing');
+          const defense = buildGameBlueprint({ gameId: 'defense-qa', genre: 'defense' });
+          if (!defense.systems.includes('targeting-system')) throw new Error('defense targeting missing');
           const puzzle = buildGameBlueprint({ gameId: 'puzzle-qa', genre: 'puzzle' });
-          if (puzzle.systems.includes('combat-vitals') || puzzle.systems.includes('resource-gathering')) throw new Error('puzzle should not force combat systems');
+          if (puzzle.systems.includes('combat-vitals') || puzzle.systems.includes('resource-gathering') || puzzle.systems.includes('targeting-system')) throw new Error('puzzle should not force combat systems');
           console.log('PASS game kit blueprint');
           NODE
 
@@ -178,12 +193,13 @@ jobs:
         run: |
           rm -rf /tmp/jaewoon-session && mkdir -p /tmp/jaewoon-session
           cp assets/game-session.js assets/day-night-cycle.js assets/resource-gathering.js assets/status-effects.js \
-             assets/combat-vitals.js assets/wave-spawner.js assets/game-timers.js assets/state-machine.js \
-             assets/scene-flow.js assets/input-actions.js assets/game-loop.js assets/vibe-runtime.js \
-             assets/game-blueprint.js assets/game-presets.js assets/game-kit.js assets/d20-rules.js \
-             assets/turn-combat.js assets/character-progression.js assets/inventory-equipment.js \
-             assets/quest-dialogue.js assets/skill-effects.js assets/economy-loot-shop.js assets/save-versioning.js \
-             assets/stat-modifiers.js assets/crafting-recipes.js assets/achievements-unlocks.js /tmp/jaewoon-session/
+             assets/combat-vitals.js assets/targeting-system.js assets/wave-spawner.js assets/game-timers.js \
+             assets/state-machine.js assets/scene-flow.js assets/input-actions.js assets/game-loop.js \
+             assets/vibe-runtime.js assets/game-blueprint.js assets/game-presets.js assets/game-kit.js \
+             assets/d20-rules.js assets/turn-combat.js assets/character-progression.js \
+             assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js \
+             assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
+             assets/crafting-recipes.js assets/achievements-unlocks.js /tmp/jaewoon-session/
           printf '{"type":"module"}\n' > /tmp/jaewoon-session/package.json
           cd /tmp/jaewoon-session
           node --input-type=module <<'NODE'
@@ -202,14 +218,20 @@ jobs:
           const session = createGameSession(options);
           if (!session.gatherResource('stone').ok) throw new Error('session resource gather failed');
           session.registerCombatEntity({ id: 'player', hp: 50, maxHp: 50 });
+          session.registerTargetEntity({ id: 'player', team: 'ally', x: 0, y: 0, hp: 50, maxHp: 50 });
+          session.registerTargetEntity({ id: 'enemy', team: 'enemy', x: 2, y: 0, hp: 20, maxHp: 20 });
+          if (session.selectTarget('player', { teams: ['enemy'], range: 3 })?.id !== 'enemy') throw new Error('session target failed');
           session.applyStatusEffect('player', { id: 'poison', kind: 'poison', duration: 2, tickInterval: 1, magnitude: 5, stacks: 2 });
           const tick = session.updateStatusEffects(1).find((e) => e.type === 'effect-tick');
           if (!session.applyStatusTickToCombat(tick).ok || session.combatVitals.get('player').hp !== 40) throw new Error('status to combat failed');
+          session.syncTargetVitals('player');
+          if (session.targeting.get('player').hp !== 40) throw new Error('combat target sync failed');
           session.updateResources(2);
           session.save();
           const restored = createGameSession({ ...options, autoRestore: true });
           if (restored.resources.get('stone').state.respawnRemaining !== 2) throw new Error('resource restore failed');
           if (restored.combatVitals.get('player').hp !== 40) throw new Error('combat restore failed');
+          if (restored.targeting.get('player').hp !== 40) throw new Error('target restore failed');
           restored.updateResources(2);
           if (restored.resources.get('stone').state.charges !== 1) throw new Error('resource respawn failed');
           restored.updateDayNight(10);
