@@ -1,5 +1,5 @@
 // 파일명: assets/game-kit.js
-// 역할: 공통 게임 시스템 조합 및 자연어 기반 킷 생성 진입점
+// 역할: 공통 게임 시스템 조합 및 자연어 기반 킷/세션 생성 진입점
 // 규칙: 기존 시스템 생성 흐름 보존, 명시 설정 우선, 게임별 최소 연결
 
 import { JaewoonD20Rules } from './d20-rules.js';
@@ -151,8 +151,25 @@ export async function createGameKitFromPrompt({ gameId = 'game', prompt = '', ge
   return Object.freeze({ blueprint, kit });
 }
 
+export async function createGameSessionFromPrompt({ gameId = 'game', prompt = '', genre = null, mixGenres = [], platform = 'auto', presetOptions = {}, kitOptions = {}, sessionOptions = {}, autoRestore = true } = {}) {
+  const { createGameSession } = await import('./game-session.js');
+  const { buildGameBlueprint } = await import('./game-blueprint.js');
+  const blueprint = buildGameBlueprint({ gameId, prompt, genre, mixGenres, platform, presetOptions, kitOptions });
+  const session = createGameSession({
+    gameId: blueprint.gameId,
+    genre: blueprint.genre,
+    mixGenres: blueprint.mixedGenres,
+    kitOptions: blueprint.kitConfig,
+    useGenreDefaults: false,
+    autoRestore,
+    ...sessionOptions,
+  });
+  return Object.freeze({ blueprint, session });
+}
+
 if (typeof window !== 'undefined') {
   window.JaewoonGameKit = JaewoonGameKit;
   window.createJaewoonGameKit = createGameKit;
   window.createJaewoonGameKitFromPrompt = createGameKitFromPrompt;
+  window.createJaewoonGameSessionFromPrompt = createGameSessionFromPrompt;
 }
