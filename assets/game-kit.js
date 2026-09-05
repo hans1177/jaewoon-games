@@ -75,7 +75,8 @@ export async function createGamePackageFromPrompt({ gameId = 'game', prompt = ''
   const kit = createGameKit(blueprint.kitConfig);
   const content = buildGameContent({ blueprint, prompt });
   const initialSave = kit.wrapSave({ content, blueprint: blueprint.plan() });
-  return Object.freeze({ version: 1, gameId: blueprint.gameId, platform: blueprint.platform, blueprint, content, kit, initialSave: clone(initialSave), safety: Object.freeze({ reviewBeforeApply: true, autoApplyToExistingGame: false }) });
+  const packageData = { version: 1, gameId: blueprint.gameId, platform: blueprint.platform, blueprint, content, kit, initialSave: clone(initialSave), safety: Object.freeze({ reviewBeforeApply: true, autoApplyToExistingGame: false }) };
+  return Object.freeze({ ...packageData, packageData });
 }
 
 export async function createGamePackageFromPromptWithGame({ gameId = 'game', prompt = '', genre = null, mixGenres = [], platform = 'auto', presetOptions = {}, kitOptions = {}, useGenreDefaults = true, title = null } = {}) {
