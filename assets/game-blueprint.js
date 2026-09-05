@@ -10,6 +10,7 @@ const KIT_SYSTEM_MAP = Object.freeze({
   'skill-effects': 'skillEffects',
   'economy-loot-shop': 'economySystems',
   'stat-modifiers': 'statModifiers',
+  'crafting-recipes': 'craftingRecipes',
   'save-versioning': 'versionedSave',
 });
 
@@ -28,6 +29,7 @@ const GENRE_DEFAULT_OPTIONS = Object.freeze({
     skillEffects: true,
     economySystems: true,
     statModifiers: true,
+    craftingRecipes: true,
     versionedSave: true,
   }),
   defense: Object.freeze({
