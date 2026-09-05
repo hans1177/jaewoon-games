@@ -9,6 +9,7 @@ const KIT_SYSTEM_MAP = Object.freeze({
   'quest-dialogue': 'questDialogue',
   'skill-effects': 'skillEffects',
   'economy-loot-shop': 'economySystems',
+  'stat-modifiers': 'statModifiers',
   'save-versioning': 'versionedSave',
 });
 
@@ -19,31 +20,37 @@ const GENRE_DEFAULT_OPTIONS = Object.freeze({
     questDialogue: true,
     skillEffects: true,
     economySystems: true,
+    statModifiers: true,
     versionedSave: true,
   }),
   survival: Object.freeze({
     inventoryEquipment: true,
     skillEffects: true,
     economySystems: true,
+    statModifiers: true,
     versionedSave: true,
   }),
   defense: Object.freeze({
     skillEffects: true,
     economySystems: true,
+    statModifiers: true,
     versionedSave: true,
   }),
   strategy: Object.freeze({
     economySystems: true,
+    statModifiers: true,
     versionedSave: true,
   }),
   action: Object.freeze({
     characterProgression: true,
     skillEffects: true,
+    statModifiers: true,
     versionedSave: true,
   }),
   adventure: Object.freeze({
     inventoryEquipment: true,
     questDialogue: true,
+    statModifiers: true,
     versionedSave: true,
   }),
   puzzle: Object.freeze({
