@@ -1,6 +1,6 @@
 // 파일명: assets/game-blueprint.js
-// 역할: 장르/자연어 요구사항 기반 게임 구성 계획 및 공통 시스템 추천
-// 규칙: 기존 게임 규칙/저장구조 보존, 명시 설정 우선, 게임별 최소 연결
+// 역할: 쉬운 자연어 게임 요구사항을 장르/플랫폼/공통 시스템 계획으로 변환
+// 규칙: 명시 설정 우선, 기존 게임 규칙/저장구조 보존, 게임별 최소 연결
 
 import { buildGamePreset } from './game-presets.js';
 import { createGameKit } from './game-kit.js';
@@ -29,35 +29,41 @@ const GENRE_DEFAULT_OPTIONS = Object.freeze({
   puzzle: Object.freeze({ versionedSave: true }),
 });
 
-const PROMPT_GENRE_RULES = Object.freeze([
-  Object.freeze({ genre: 'defense', words: ['디펜스', '타워 디펜스', '방어', '웨이브', '포탑'] }),
-  Object.freeze({ genre: 'survival', words: ['생존', '낮과 밤', '허기', '갈증', '채집', '제작'] }),
-  Object.freeze({ genre: 'strategy', words: ['전략', '영지', '부대', '병력', '정복', '영토'] }),
-  Object.freeze({ genre: 'rpg', words: ['rpg', '알피지', '레벨업', '퀘스트', '장비', '경험치'] }),
-  Object.freeze({ genre: 'action', words: ['액션', '자동공격', '보스', '콤보', '횡스크롤'] }),
-  Object.freeze({ genre: 'adventure', words: ['어드벤처', '모험', '탐험', '퍼즐 탐험'] }),
-  Object.freeze({ genre: 'puzzle', words: ['퍼즐', '블록', '매칭', '논리'] }),
+const GENRE_RULES = Object.freeze([
+  Object.freeze({ genre: 'defense', words: ['디펜스', '타워', '타워디펜스', '타워 디펜스', '막아', '막기', '지켜', '지키기', '방어', '웨이브', '포탑', '적이 몰려'] }),
+  Object.freeze({ genre: 'survival', words: ['생존', '살아남', '살아남기', '낮과 밤', '낮밤', '허기', '배고픔', '갈증', '목마름', '채집', '주워', '캐기', '제작', '만들어'] }),
+  Object.freeze({ genre: 'strategy', words: ['전략', '영지', '영토', '부대', '병력', '군대', '정복', '성', '마을을 차지', '땅을 차지', '전쟁', '국가'] }),
+  Object.freeze({ genre: 'rpg', words: ['rpg', '알피지', '레벨업', '레벨 올', '경험치', '퀘스트', '장비', '아이템 파밍', '모험가'] }),
+  Object.freeze({ genre: 'action', words: ['액션', '싸우', '때려', '공격', '자동공격', '총', '검', '활', '콤보', '보스', '횡스크롤', '달리면서'] }),
+  Object.freeze({ genre: 'adventure', words: ['어드벤처', '모험', '탐험', '돌아다니', '비밀 찾', '탐색'] }),
+  Object.freeze({ genre: 'puzzle', words: ['퍼즐', '블록', '매칭', '맞추', '퍼즐게임', '논리'] }),
 ]);
 
-const PROMPT_OPTION_RULES = Object.freeze([
-  Object.freeze({ key: 'multiplayer', words: ['멀티', '협동', '친구와', '2인', '3인', '4인', 'pvp'] }),
-  Object.freeze({ key: 'aiCompanions', words: ['동료 ai', 'ai 동료', 'ai 아군', '동료가 자동'] }),
-  Object.freeze({ key: 'npcDialogue', words: ['npc 대화', 'npc와 대화', '대화형 npc', 'ai npc'] }),
-  Object.freeze({ key: 'd20Rules', words: ['d20', '주사위', '내성 굴림', '선제권'] }),
-  Object.freeze({ key: 'turnBasedCombat', words: ['턴제', '턴 방식', '교대로 공격'] }),
-  Object.freeze({ key: 'characterProgression', words: ['레벨업', '경험치', '스탯 포인트', '스킬 포인트'] }),
-  Object.freeze({ key: 'inventoryEquipment', words: ['인벤토리', '장비', '아이템 장착', '가방'] }),
-  Object.freeze({ key: 'questDialogue', words: ['퀘스트', '임무', 'npc 대화', '선택지'] }),
-  Object.freeze({ key: 'skillEffects', words: ['스킬', '버프', '디버프', '쿨타임'] }),
-  Object.freeze({ key: 'economySystems', words: ['상점', '골드', '재화', '드랍', '보상'] }),
-  Object.freeze({ key: 'craftingRecipes', words: ['제작', '조합', '레시피', '재료'] }),
-  Object.freeze({ key: 'achievementsUnlocks', words: ['업적', '칭호', '해금'] }),
-  Object.freeze({ key: 'versionedSave', words: ['세이브', '저장', '이어하기', '불러오기'] }),
+const OPTION_RULES = Object.freeze([
+  Object.freeze({ key: 'multiplayer', words: ['멀티', '같이', '친구와', '친구랑', '친구하고', '협동', '2명', '둘이', '2인', '3명', '3인', '4명', '4인', 'pvp', '대결'] }),
+  Object.freeze({ key: 'aiCompanions', words: ['동료 ai', 'ai 동료', 'ai 아군', '동료가 알아서', '친구 대신 ai', '컴퓨터 동료'] }),
+  Object.freeze({ key: 'npcDialogue', words: ['npc 대화', 'npc랑 말', 'npc와 말', '사람이랑 대화', '대화하는 npc', '말 걸면'] }),
+  Object.freeze({ key: 'd20Rules', words: ['d20', '20면체', '20면 주사위', '주사위', '내성 굴림', '선제권'] }),
+  Object.freeze({ key: 'turnBasedCombat', words: ['턴제', '턴 방식', '교대로 공격', '한 명씩 공격', '내 턴', '상대 턴'] }),
+  Object.freeze({ key: 'characterProgression', words: ['레벨업', '레벨 올', '경험치', '스탯 포인트', '스킬 포인트', '강해지', '성장'] }),
+  Object.freeze({ key: 'inventoryEquipment', words: ['인벤토리', '가방', '아이템', '장비', '장착', '줍고 보관', '무기 바꾸', '갑옷'] }),
+  Object.freeze({ key: 'questDialogue', words: ['퀘스트', '임무', '미션', '할 일', 'npc 대화', '선택지', '부탁'] }),
+  Object.freeze({ key: 'skillEffects', words: ['스킬', '특수기', '필살기', '버프', '디버프', '쿨타임', '기술'] }),
+  Object.freeze({ key: 'economySystems', words: ['상점', '가게', '골드', '돈', '재화', '드랍', '떨어져', '보상', '코인', '판매', '구매'] }),
+  Object.freeze({ key: 'craftingRecipes', words: ['제작', '조합', '레시피', '재료', '합쳐서', '만들기', '공방'] }),
+  Object.freeze({ key: 'achievementsUnlocks', words: ['업적', '칭호', '해금', '업적 보상', '기록'] }),
+  Object.freeze({ key: 'versionedSave', words: ['세이브', '저장', '이어하기', '불러오기', '저장해', '자동저장'] }),
 ]);
 
 const PLATFORM_WORDS = Object.freeze({
-  godot: Object.freeze(['godot', '고도', '고도엔진']),
-  web: Object.freeze(['웹게임', '웹 게임', '브라우저', 'html', '페이지']),
+  godot: Object.freeze(['godot', '고도', '고도엔진', '고도에서']),
+  web: Object.freeze(['웹게임', '웹 게임', '브라우저', '인터넷에서', 'html', '페이지에서']),
+});
+
+const DIRECTION_WORDS = Object.freeze({
+  mobile: Object.freeze(['모바일', '핸드폰', '휴대폰', '폰으로', '스마트폰']),
+  landscape: Object.freeze(['가로', '가로화면']),
+  portrait: Object.freeze(['세로', '세로화면']),
 });
 
 export const DEFAULT_ASSET_POLICY = Object.freeze({
@@ -69,36 +75,61 @@ export const DEFAULT_ASSET_POLICY = Object.freeze({
   maxSingleAssetBytes: 104857600,
 });
 
-function mergeKitOptions(base = {}, override = {}) {
-  const result = { ...base };
-  for (const [key, value] of Object.entries(override || {})) {
-    if (value === undefined) continue;
-    result[key] = value;
-  }
-  return result;
+function mergeObjects(base = {}, override = {}) {
+  return { ...base, ...Object.fromEntries(Object.entries(override || {}).filter(([, value]) => value !== undefined)) };
 }
 
 function containsAny(text, words) {
   return words.some((word) => text.includes(word));
 }
 
+function inferGenres(text) {
+  const scores = GENRE_RULES.map((rule) => ({
+    genre: rule.genre,
+    score: rule.words.reduce((score, word) => score + (text.includes(word) ? Math.max(1, word.length / 4) : 0), 0),
+  }))
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score || a.genre.localeCompare(b.genre));
+
+  if (!scores.length) return { genre: null, mixedGenres: [] };
+  const primary = scores[0].genre;
+  const mixedGenres = scores.slice(1).filter((item) => item.score >= 2.5).map((item) => item.genre);
+  return { genre: primary, mixedGenres: [...new Set(mixedGenres)] };
+}
+
+function inferPlatform(text) {
+  if (containsAny(text, PLATFORM_WORDS.godot)) return 'godot';
+  if (containsAny(text, PLATFORM_WORDS.web)) return 'web';
+  return 'auto';
+}
+
+function inferPresentation(text) {
+  const presentation = {};
+  if (containsAny(text, DIRECTION_WORDS.mobile)) presentation.mobileFirst = true;
+  if (containsAny(text, DIRECTION_WORDS.landscape)) presentation.orientation = 'landscape';
+  if (containsAny(text, DIRECTION_WORDS.portrait)) presentation.orientation = 'portrait';
+  return presentation;
+}
+
 export function inferVibeIntent(prompt = '') {
   const text = String(prompt || '').trim().toLowerCase();
-  if (!text) return Object.freeze({ genre: null, mixedGenres: Object.freeze([]), options: Object.freeze({}), platform: 'auto' });
+  if (!text) {
+    return Object.freeze({ genre: null, mixedGenres: Object.freeze([]), options: Object.freeze({}), platform: 'auto', presentation: Object.freeze({}) });
+  }
 
-  const matchedGenres = PROMPT_GENRE_RULES.filter((rule) => containsAny(text, rule.words)).map((rule) => rule.genre);
-  const genre = matchedGenres[0] || null;
-  const mixedGenres = [...new Set(matchedGenres.slice(1))];
+  const genres = inferGenres(text);
   const options = {};
-  for (const rule of PROMPT_OPTION_RULES) {
+  for (const rule of OPTION_RULES) {
     if (containsAny(text, rule.words)) options[rule.key] = true;
   }
 
-  let platform = 'auto';
-  if (containsAny(text, PLATFORM_WORDS.godot)) platform = 'godot';
-  else if (containsAny(text, PLATFORM_WORDS.web)) platform = 'web';
-
-  return Object.freeze({ genre, mixedGenres: Object.freeze(mixedGenres), options: Object.freeze(options), platform });
+  return Object.freeze({
+    genre: genres.genre,
+    mixedGenres: Object.freeze(genres.mixedGenres),
+    options: Object.freeze(options),
+    platform: inferPlatform(text),
+    presentation: Object.freeze(inferPresentation(text)),
+  });
 }
 
 function resolvePlatform(value, inferred) {
@@ -128,7 +159,12 @@ function buildMaterialPlan(assetCategories = [], overrides = {}) {
 
 function buildQaPlan(qaItems = []) {
   const checks = [...new Set((qaItems || []).map((item) => String(item)).filter(Boolean))];
-  return Object.freeze({ checks: Object.freeze(checks), requiredBaseline: Object.freeze(['boot','restart','save-load','touch','console-errors']), mobileFirst: true, preserveExistingBehavior: true });
+  return Object.freeze({
+    checks: Object.freeze(checks),
+    requiredBaseline: Object.freeze(['boot','restart','save-load','touch','console-errors']),
+    mobileFirst: true,
+    preserveExistingBehavior: true,
+  });
 }
 
 export function buildGameBlueprint({ gameId = 'game', prompt = '', genre = null, mixGenres = [], platform = 'auto', presetOptions = {}, kitOptions = {}, assetPlanOptions = {}, useGenreDefaults = true } = {}) {
@@ -136,12 +172,12 @@ export function buildGameBlueprint({ gameId = 'game', prompt = '', genre = null,
   const normalizedGenre = String(genre || intent.genre || '').toLowerCase();
   if (!normalizedGenre) throw new Error('game genre or understandable game prompt required');
 
-  const resolvedMixGenres = mixGenres.length ? mixGenres : intent.mixedGenres;
-  const inferredPresetOptions = mergeKitOptions(intent.options, presetOptions);
+  const resolvedMixGenres = Array.isArray(mixGenres) && mixGenres.length ? mixGenres : intent.mixedGenres;
+  const inferredPresetOptions = mergeObjects(intent.options, presetOptions);
   const genreDefaults = useGenreDefaults ? (GENRE_DEFAULT_OPTIONS[normalizedGenre] || {}) : {};
   const preset = buildGamePreset({ genre: normalizedGenre, mixGenres: resolvedMixGenres, ...inferredPresetOptions });
   const inferred = inferKitOptions(preset);
-  const resolvedKitOptions = mergeKitOptions(mergeKitOptions(genreDefaults, inferred), kitOptions);
+  const resolvedKitOptions = mergeObjects(mergeObjects(genreDefaults, inferred), kitOptions);
   const kitConfig = Object.freeze({ gameId: String(gameId || 'game'), ...resolvedKitOptions });
   const materialPlan = buildMaterialPlan(preset.assets, assetPlanOptions);
   const qaPlan = buildQaPlan(preset.qa);
