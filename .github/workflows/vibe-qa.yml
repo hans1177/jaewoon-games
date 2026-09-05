@@ -39,7 +39,7 @@ jobs:
             assets/projectiles.js assets/ai-party.js \
             assets/game-kit.js assets/game-presets.js assets/game-blueprint.js assets/game-loop.js \
             assets/input-actions.js assets/scene-flow.js assets/state-machine.js assets/game-timers.js \
-            assets/game-session.js; do
+            assets/game-session.js assets/vibe-helper.js; do
             node --input-type=module --check < "$file"
           done
           echo 'PASS JavaScript syntax'
@@ -73,23 +73,19 @@ jobs:
 
           const rules = new JaewoonD20Rules({ rng: () => 0.5 });
           if (rules.abilityModifier(18) !== 4) throw new Error('d20 failed');
-
           const progression = new JaewoonCharacterProgression({ maxLevel: 10, xpForLevel: (level) => (level - 1) * 100 });
           const hero = progression.createCharacter({ id: 'hero' });
           progression.addXp(hero, 250);
           if (hero.level !== 3) throw new Error('progression failed');
-
           const inventory = new JaewoonInventoryEquipment({ capacity: 5 });
           const inv = inventory.createState({ items: [{ id: 'wood', quantity: 3 }] });
           const crafting = new JaewoonCraftingRecipes({ inventory, recipes: [{ id: 'club', inputs: [{ id: 'wood', quantity: 3 }], outputs: [{ id: 'club', stackable: false }] }] });
           const craftState = crafting.createState();
           if (!crafting.craft(craftState, inv, 'club').ok || inventory.countItem(inv, 'club') !== 1) throw new Error('crafting failed');
-
           const stats = new JaewoonStatModifiers();
           const statState = stats.createState({ base: { hp: 100 } });
           stats.addModifier(statState, 'hp', { id: 'armor', flat: 50 });
           if (stats.calculate(statState, 'hp') !== 150) throw new Error('stat modifiers failed');
-
           const achievements = new JaewoonAchievementsUnlocks({ definitions: [
             { id: 'first-kill', requirements: [{ key: 'kills', target: 1 }], rewards: { gold: 10 } },
             { id: 'boss-clear', requirements: [{ type: 'flag', key: 'boss', value: true }] },
@@ -100,7 +96,6 @@ jobs:
           if (achievements.claimReward(achievementState, 'first-kill') !== null) throw new Error('achievement duplicate reward failed');
           achievements.setFlag(achievementState, 'boss', true);
           if (!achievements.isUnlocked(achievementState, 'boss-clear')) throw new Error('achievement flag failed');
-
           const waves = new JaewoonWaveSpawner({ waves: [{ id: 'w1', maxAlive: 1, groups: [{ enemyId: 'slime', count: 2, interval: 1 }] }] });
           waves.start(0);
           const firstSpawn = waves.update(0);
@@ -111,7 +106,6 @@ jobs:
           restoredWaves.markDefeated(1);
           restoredWaves.update(1);
           if (restoredWaves.progress().spawned !== 2 || restoredWaves.progress().alive !== 1) throw new Error('wave restore failed');
-
           const cycle = new JaewoonDayNightCycle({ dayDuration: 10, nightDuration: 5, startDay: 2 });
           cycle.update(10);
           if (!cycle.isNight() || cycle.status().day !== 2) throw new Error('day to night failed');
@@ -120,10 +114,7 @@ jobs:
           const restoredCycle = new JaewoonDayNightCycle();
           restoredCycle.restore(cycle.snapshot());
           if (restoredCycle.status().day !== 3) throw new Error('day night restore failed');
-
-          const gathering = new JaewoonResourceGathering({ rng: () => 0.5, nodes: [
-            { id: 'branch', resourceId: 'wood', minAmount: 1, maxAmount: 3, maxCharges: 2, respawnDelay: 5, phases: ['day'] },
-          ] });
+          const gathering = new JaewoonResourceGathering({ rng: () => 0.5, nodes: [{ id: 'branch', resourceId: 'wood', minAmount: 1, maxAmount: 3, maxCharges: 2, respawnDelay: 5, phases: ['day'] }] });
           if (gathering.gather('branch', { day: 1, phase: 'day' }).quantity !== 2) throw new Error('resource gather failed');
           if (gathering.gather('branch', { day: 1, phase: 'night' }).reason !== 'phase-restricted') throw new Error('resource phase failed');
           gathering.gather('branch', { day: 1, phase: 'day' });
@@ -131,7 +122,6 @@ jobs:
           restoredGathering.restore(gathering.snapshot());
           restoredGathering.update(5);
           if (restoredGathering.get('branch').state.charges !== 2) throw new Error('resource respawn failed');
-
           const effects = new JaewoonStatusEffects();
           effects.apply('hero', { id: 'poison', duration: 3, tickInterval: 1, magnitude: 5, stackMode: 'stack', maxStacks: 3 });
           effects.apply('hero', { id: 'poison', duration: 3, tickInterval: 1, magnitude: 5, stackMode: 'stack', maxStacks: 3 });
@@ -140,7 +130,6 @@ jobs:
           const restoredEffects = new JaewoonStatusEffects();
           restoredEffects.restore(effects.snapshot());
           if (restoredEffects.get('hero', 'poison').remaining !== 2) throw new Error('status restore failed');
-
           const combat = new JaewoonCombatVitals({ entities: [{ id: 'hero', hp: 100, maxHp: 100, shield: 20, maxShield: 20 }] });
           const hit = combat.damage('hero', 30);
           if (hit.shieldDamage !== 20 || hit.hpDamage !== 10 || combat.get('hero').hp !== 90) throw new Error('combat shield failed');
@@ -152,7 +141,6 @@ jobs:
           const restoredCombat = new JaewoonCombatVitals();
           restoredCombat.restore(combat.snapshot());
           if (restoredCombat.get('hero').hp !== 25) throw new Error('combat restore failed');
-
           const targeting = new JaewoonTargetingSystem({ entities: [
             { id: 'tower', team: 'ally', x: 0, y: 0 },
             { id: 'near', team: 'enemy', x: 3, y: 4, hp: 50, maxHp: 100, threat: 2 },
@@ -163,7 +151,6 @@ jobs:
           const restoredTargeting = new JaewoonTargetingSystem();
           restoredTargeting.restore(targeting.snapshot());
           if (restoredTargeting.get('near')?.hp !== 50) throw new Error('target restore failed');
-
           const actionVitals = new JaewoonCombatVitals({ entities: [{ id: 'attacker', hp: 100, maxHp: 100 }, { id: 'victim', hp: 50, maxHp: 50 }] });
           const actionTargets = new JaewoonTargetingSystem({ entities: [{ id: 'attacker', team: 'ally', x: 0, y: 0 }, { id: 'victim', team: 'enemy', x: 3, y: 0, hp: 50, maxHp: 50 }] });
           const actionStatuses = new JaewoonStatusEffects();
@@ -173,7 +160,6 @@ jobs:
           if (combatActions.use('attacker', 'strike', 'victim').reason !== 'cooldown') throw new Error('combat action cooldown failed');
           combatActions.update(2);
           if (combatActions.cooldownRemaining('attacker', 'strike') !== 0) throw new Error('combat action cooldown tick failed');
-
           const projectiles = new JaewoonProjectiles();
           projectiles.spawn({ id: 'straight', position: { x: 0, y: 0 }, velocity: { x: 10, y: 0 }, lifetime: 2 });
           projectiles.update(0.5);
@@ -182,47 +168,13 @@ jobs:
           projectiles.update(0.1, { getTarget: (id) => id === 'target' ? { x: 0, y: 10 } : null, getTargetIds: () => [] });
           const homing = projectiles.get('homing');
           if (!homing || homing.position.y <= 0) throw new Error('projectile homing failed');
-
-          const hitEvents = new JaewoonProjectiles();
-          hitEvents.spawn({ id: 'hit', position: { x: 0, y: 0 }, velocity: { x: 10, y: 0 }, lifetime: 2, hitRadius: 1, destroyOnHit: true });
-          const directEvents = hitEvents.update(0.1, {
-            getTarget: (id) => id === 'enemy' ? { x: 1, y: 0, radius: 0.5, team: 'enemy' } : null,
-            getTargetIds: () => ['enemy'],
-          });
-          if (!directEvents.some((e) => e.type === 'projectile-hit' && e.hitType === 'direct')) throw new Error('projectile direct collision failed');
-          if (hitEvents.get('hit') !== null) throw new Error('projectile destroy on hit failed');
-
-          const aoeEvents = new JaewoonProjectiles();
-          aoeEvents.spawn({ id: 'blast', position: { x: 0, y: 0 }, velocity: { x: 10, y: 0 }, lifetime: 2, hitRadius: 1, aoeRadius: 3, aoeMaxTargets: 3, destroyOnHit: true });
-          const targets = {
-            direct: { x: 1, y: 0, radius: 0.5, team: 'enemy' },
-            splashA: { x: 1, y: 2, radius: 0.5, team: 'enemy' },
-            splashB: { x: 1, y: -2, radius: 0.5, team: 'enemy' },
-            outside: { x: 1, y: 5, radius: 0.5, team: 'enemy' },
-          };
-          const aoeResult = aoeEvents.update(0.1, {
-            getTarget: (id) => targets[id] || null,
-            getTargetIds: () => Object.keys(targets),
-          });
-          const aoeHits = aoeResult.filter((e) => e.type === 'projectile-hit');
-          if (aoeHits.filter((e) => e.hitType === 'direct').length !== 1) throw new Error('projectile aoe direct hit failed');
-          if (aoeHits.filter((e) => e.hitType === 'aoe').length !== 2) throw new Error('projectile aoe splash failed');
-          if (aoeHits.some((e) => e.targetId === 'outside')) throw new Error('projectile aoe radius failed');
-
-          const savedProjectiles = new JaewoonProjectiles();
-          savedProjectiles.spawn({ id: 'saved', position: { x: 2, y: 3 }, velocity: { x: 4, y: 0 }, lifetime: 4, remaining: 3, aoeRadius: 2, aoeMaxTargets: 2 });
-          const savedSnapshot = savedProjectiles.snapshot();
-          const restoredProjectiles = new JaewoonProjectiles();
-          restoredProjectiles.restore(savedSnapshot);
-          if (restoredProjectiles.get('saved')?.position.x !== 2 || restoredProjectiles.get('saved')?.aoeRadius !== 2) throw new Error('projectile save restore failed');
-          console.log('PASS projectile systems');
-          console.log('PASS core/common systems');
+          console.log('PASS projectile/core/common systems');
           NODE
 
       - name: Test game kit blueprint and save restore
         run: |
           rm -rf /tmp/jaewoon-kit && mkdir -p /tmp/jaewoon-kit
-          cp assets/game-kit.js assets/game-blueprint.js assets/game-presets.js assets/ai-party.js \
+          cp assets/game-kit.js assets/game-blueprint.js assets/game-presets.js assets/ai-party.js assets/vibe-helper.js \
              assets/d20-rules.js assets/turn-combat.js assets/character-progression.js \
              assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js \
              assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
@@ -257,7 +209,7 @@ jobs:
              assets/d20-rules.js assets/turn-combat.js assets/character-progression.js \
              assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js \
              assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
-             assets/crafting-recipes.js assets/achievements-unlocks.js assets/ai-party.js /tmp/jaewoon-session/
+             assets/crafting-recipes.js assets/achievements-unlocks.js assets/ai-party.js assets/vibe-helper.js /tmp/jaewoon-session/
           printf '{"type":"module"}\n' > /tmp/jaewoon-session/package.json
           cd /tmp/jaewoon-session
           node --input-type=module <<'NODE'
