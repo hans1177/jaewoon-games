@@ -1,6 +1,6 @@
 // 파일명: assets/game-blueprint.js
-// 역할: 쉬운 자연어 게임 요구사항을 장르/플랫폼/공통 시스템 계획으로 변환
-// 규칙: 명시 설정 우선, 기존 게임 규칙/저장구조 보존, 게임별 최소 연결
+// 역할: 쉬운 자연어 게임 요구사항을 장르/플랫폼/공통 시스템/규칙 계획으로 변환
+// 규칙: 명시 설정 우선, 기존 게임 규칙/저장구조 보존, 추출 규칙은 계획으로만 반환
 
 import { buildGamePreset } from './game-presets.js';
 import { createGameKit } from './game-kit.js';
@@ -65,6 +65,16 @@ const DIRECTION_WORDS = Object.freeze({
   landscape: Object.freeze(['가로', '가로화면', '옆으로']),
   portrait: Object.freeze(['세로', '세로화면', '길게']),
 });
+
+const RULE_PATTERNS = Object.freeze([
+  Object.freeze({ key: 'hp', labels: ['체력', '피'], pattern: /(?:체력|피)\s*(?:을|를|은|는|이|가)?\s*(\d+)/ }),
+  Object.freeze({ key: 'damage', labels: ['공격력', '데미지', '피해'], pattern: /(?:공격력|데미지|피해)\s*(?:을|를|은|는|이|가)?\s*(\d+)/ }),
+  Object.freeze({ key: 'cooldown', labels: ['쿨타임', '쿨다운'], pattern: /(?:쿨타임|쿨다운)\s*(?:은|는|이|가)?\s*(\d+(?:\.\d+)?)\s*(초|s|초간)?/ }),
+  Object.freeze({ key: 'interval', labels: ['간격', '마다'], pattern: /(\d+(?:\.\d+)?)\s*(초|s)\s*(?:마다|간격|후)/ }),
+  Object.freeze({ key: 'count', labels: ['마리', '명', '개'], pattern: /(\d+)\s*(마리|명|개)/ }),
+  Object.freeze({ key: 'waves', labels: ['웨이브'], pattern: /(?:웨이브|wave)\s*(?:를|은|는|총)?\s*(\d+)/i }),
+  Object.freeze({ key: 'gold', labels: ['골드', '돈', '코인'], pattern: /(?:골드|돈|코인)\s*(?:을|를|은|는|이|가)?\s*(\d+)/ }),
+]);
 
 export const DEFAULT_ASSET_POLICY = Object.freeze({
   preferExistingAssets: true,
@@ -134,10 +144,36 @@ function inferPlayerCount(text) {
   return null;
 }
 
+function inferRules(text) {
+  const rules = {};
+  for (const rule of RULE_PATTERNS) {
+    const match = text.match(rule.pattern);
+    if (!match) continue;
+    const raw = match[1];
+    const value = Number(raw);
+    rules[rule.key] = Number.isFinite(value) ? value : raw;
+    if (match[2] && typeof rules[rule.key] === 'number') rules[`${rule.key}Unit`] = match[2];
+  }
+
+  const conditions = [];
+  if (/(밤에만|밤만|밤에는)/.test(text)) conditions.push('night-only');
+  if (/(낮에만|낮만|아침에만|아침만)/.test(text)) conditions.push('day-only');
+  if (/(죽으면 다시|부활|살아나)/.test(text)) conditions.push('revive');
+  if (/(자동공격|자동으로 공격)/.test(text)) conditions.push('auto-attack');
+  if (/(유도탄|따라가는 탄|적을 따라가)/.test(text)) conditions.push('homing-projectile');
+  if (/(주변|범위|광역)/.test(text)) conditions.push('area-effect');
+  if (/(밀쳐|넉백)/.test(text)) conditions.push('knockback');
+  if (/(기절|스턴)/.test(text)) conditions.push('stun');
+  if (/(느려|슬로우)/.test(text)) conditions.push('slow');
+
+  if (conditions.length) rules.conditions = Object.freeze(conditions);
+  return Object.freeze(rules);
+}
+
 export function inferVibeIntent(prompt = '') {
   const text = normalizePrompt(prompt);
   if (!text) {
-    return Object.freeze({ genre: null, mixedGenres: Object.freeze([]), options: Object.freeze({}), platform: 'auto', presentation: Object.freeze({}), playerCount: null });
+    return Object.freeze({ genre: null, mixedGenres: Object.freeze([]), options: Object.freeze({}), platform: 'auto', presentation: Object.freeze({}), playerCount: null, rules: Object.freeze({}) });
   }
 
   const genres = inferGenres(text);
@@ -155,6 +191,7 @@ export function inferVibeIntent(prompt = '') {
     platform: inferPlatform(text),
     presentation: Object.freeze(inferPresentation(text)),
     playerCount,
+    rules: inferRules(text),
   });
 }
 
@@ -219,6 +256,7 @@ export function buildGameBlueprint({ gameId = 'game', prompt = '', genre = null,
       return Object.freeze({
         gameId: String(gameId || 'game'), genre: preset.genre, mixedGenres: preset.mixedGenres,
         platform: resolvedPlatform, intent, systems: preset.systems, materialPlan, qaPlan,
+        requestedRules: intent.rules,
         preservation: Object.freeze({
           preserveExistingBalance: preset.rules.preserveExistingBalance,
           preserveSaveFormat: preset.rules.preserveSaveFormat,
