@@ -7,16 +7,25 @@ import {diagnoseVibeReplayRegression,createVibeAutoRepairPlan,validateVibeAutoRe
 
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.freeze(v);for(const x of Object.values(v))freeze(x)}return v};
 const text=v=>String(v??'').trim();
+const unique=v=>[...new Set((v||[]).map(text).filter(Boolean))].sort();
 
 export function createVibeV2Execution({request='',target='auto',environment='chatgpt',revision='',checkpointId='',responsibleFiles=[]}={}){
  const goal=createVibeGoalContract({request,target});
  const developmentAI=createVibeDevelopmentAIContract({environment,purpose:'diagnosis'});
- const files=[...new Set((responsibleFiles||[]).map(text).filter(Boolean))].sort();
+ const files=unique(responsibleFiles);
  const blocked=[];
  if(!text(revision))blocked.push('exact-revision-required');
  if(!text(checkpointId))blocked.push('checkpoint-required');
  if(!files.length)blocked.push('responsible-source-unproven');
  return freeze({version:2,goal,developmentAI,revision:text(revision),checkpointId:text(checkpointId),responsibleFiles:files,readyForCandidate:blocked.length===0,blockedReasons:blocked,phase:'analyze',authority:'v2-orchestration-only',sourceMutationAllowed:false,gameplayMutationAllowed:false});
+}
+
+export function createVibeWorkbenchCandidate({request='',target='auto',revision='',checkpointId='',changes=[]}={}){
+ const normalized=(changes||[]).filter(x=>x&&x.changed!==false&&text(x.path)).map(x=>({path:text(x.path),before:String(x.current??''),after:String(x.next??'')}));
+ const execution=createVibeV2Execution({request,target,revision,checkpointId,responsibleFiles:normalized.map(x=>x.path)});
+ const candidate={kind:'workbench-source-change',files:normalized.map(x=>({path:x.path,changed:x.before!==x.after})),protectedMutations:[]};
+ const preflight=advanceVibeV2Candidate(execution,{candidate});
+ return freeze({version:1,execution:preflight,candidate,files:normalized,mayApply:preflight.mayRun===true,authority:'workbench-v2-bridge',requiresAtomicWrite:true,requiresPostApplyEvidence:true});
 }
 
 export function advanceVibeV2Candidate(execution,{candidate={}}={}){
@@ -42,4 +51,4 @@ export function verifyVibeV2Repair(execution,{before=null,after=null,invariants=
  return freeze({...execution,phase:repairValidation.accepted?'verified':'rollback',repairValidation,mayCommit:repairValidation.mayCommit,rollbackRequired:repairValidation.rollbackRequired,completionAuthority:'verified-runtime-and-regression-only'});
 }
 
-if(typeof window!=='undefined')Object.assign(window,{createJaewoonVibeV2Execution:createVibeV2Execution,advanceJaewoonVibeV2Candidate:advanceVibeV2Candidate,verifyJaewoonVibeV2Runtime:verifyVibeV2Runtime,verifyJaewoonVibeV2Repair:verifyVibeV2Repair});
+if(typeof window!=='undefined')Object.assign(window,{createJaewoonVibeV2Execution:createVibeV2Execution,createJaewoonVibeWorkbenchCandidate:createVibeWorkbenchCandidate,advanceJaewoonVibeV2Candidate:advanceVibeV2Candidate,verifyJaewoonVibeV2Runtime:verifyVibeV2Runtime,verifyJaewoonVibeV2Repair:verifyVibeV2Repair});
