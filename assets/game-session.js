@@ -1,6 +1,7 @@
 import { JaewoonVibeRuntime } from './vibe-runtime.js';
 import { JaewoonGameLoop } from './game-loop.js';
 import { JaewoonInputActions } from './input-actions.js';
+import { JaewoonSceneFlow } from './scene-flow.js';
 import { buildGameBlueprint } from './game-blueprint.js';
 
 function clone(value) {
@@ -18,6 +19,7 @@ export class JaewoonGameSession {
     runtimeOptions = {},
     loopOptions = {},
     inputOptions = {},
+    sceneOptions = {},
     autoRestore = true,
   } = {}) {
     this.blueprint = buildGameBlueprint({
@@ -32,6 +34,7 @@ export class JaewoonGameSession {
     this.runtime = new JaewoonVibeRuntime({ gameId: this.blueprint.gameId, ...runtimeOptions });
     this.loop = new JaewoonGameLoop(loopOptions);
     this.input = new JaewoonInputActions(inputOptions);
+    this.scenes = new JaewoonSceneFlow(sceneOptions);
     this.started = false;
     this.meta = {};
 
@@ -65,6 +68,37 @@ export class JaewoonGameSession {
     return this.input.defineAction(name, config);
   }
 
+  registerScene(name, scene = {}) {
+    return this.scenes.register(name, scene);
+  }
+
+  goToScene(name, data = null, options = {}) {
+    const result = this.scenes.go(name, data, options);
+    this.input.releaseAll();
+    this.emit('session-scene', { gameId: this.blueprint.gameId, scene: result });
+    return result;
+  }
+
+  backScene(fallback = null) {
+    const result = this.scenes.back(fallback);
+    this.input.releaseAll();
+    this.emit('session-scene', { gameId: this.blueprint.gameId, scene: result });
+    return result;
+  }
+
+  checkpointScene(label = 'default', extra = null) {
+    return this.scenes.checkpoint(label, extra);
+  }
+
+  restoreSceneCheckpoint(label = 'default') {
+    const result = this.scenes.restoreCheckpoint(label);
+    if (result) {
+      this.input.releaseAll();
+      this.emit('session-scene', { gameId: this.blueprint.gameId, scene: this.scenes.current });
+    }
+    return result;
+  }
+
   setPaused(value, reason = 'manual') {
     const paused = Boolean(value);
     this.runtime.setPaused(paused, reason);
@@ -83,6 +117,7 @@ export class JaewoonGameSession {
       sessionVersion: 1,
       gameId: this.blueprint.gameId,
       kit: this.kit.snapshot(),
+      scenes: this.scenes.snapshot(),
       meta: clone({ ...this.meta, ...extra }) || {},
     };
   }
@@ -114,6 +149,7 @@ export class JaewoonGameSession {
     } else if (session?.kit) {
       this.kit.restoreState(session.kit);
     }
+    if (session?.scenes) this.scenes.restore(session.scenes);
     this.meta = clone(session?.meta || {}) || {};
     this.emit('session-restore', { gameId: this.blueprint.gameId });
     return true;
@@ -132,6 +168,7 @@ export class JaewoonGameSession {
     if (save) this.save();
     this.loop.stop();
     this.input.destroy();
+    this.scenes.reset();
     this.runtime.destroy();
     this.started = false;
   }
