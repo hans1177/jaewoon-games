@@ -15,6 +15,7 @@ import { JaewoonCraftingRecipes } from './crafting-recipes.js';
 import { JaewoonAchievementsUnlocks } from './achievements-unlocks.js';
 import { planVibeCodingTask } from './vibe-helper.js';
 import { planVibeWorkbenchTask } from './vibe-workbench.js';
+import { createVibeProject, recordVibeProjectChange, recordVibeRepair, exportVibeProject, importVibeProject, cloneVibeProject } from './vibe-project.js';
 
 function options(value) {
   if (value === true || value == null) return {};
@@ -56,14 +57,14 @@ export class JaewoonGameKit {
 }
 
 export function createGameKit(options = {}) { return new JaewoonGameKit(options); }
-
-export function createVibeCodingTaskPlan(options = {}) {
-  return planVibeCodingTask(options);
-}
-
-export function createVibeWorkbenchTaskPlan(options = {}) {
-  return planVibeWorkbenchTask(options);
-}
+export function createVibeCodingTaskPlan(options = {}) { return planVibeCodingTask(options); }
+export function createVibeWorkbenchTaskPlan(options = {}) { return planVibeWorkbenchTask(options); }
+export function createVibeGameProject(options = {}) { return createVibeProject(options); }
+export function changeVibeGameProject(project, options = {}) { return recordVibeProjectChange(project, options); }
+export function repairVibeGameProject(project, options = {}) { return recordVibeRepair(project, options); }
+export function exportVibeGameProject(project) { return exportVibeProject(project); }
+export function importVibeGameProject(value) { return importVibeProject(value); }
+export function cloneVibeGameProject(project) { return cloneVibeProject(project); }
 
 export async function createGameKitFromPrompt({ gameId = 'game', prompt = '', genre = null, mixGenres = [], platform = 'auto', presetOptions = {}, kitOptions = {}, useGenreDefaults = true } = {}) {
   const { buildGameBlueprint } = await import('./game-blueprint.js');
@@ -98,11 +99,13 @@ export async function createGamePackageFromPromptWithGame({ gameId = 'game', pro
 
 export async function createGameProjectFromPrompt({ gameId = 'game', prompt = '', genre = null, mixGenres = [], platform = 'auto', presetOptions = {}, kitOptions = {}, useGenreDefaults = true, title = null } = {}) {
   const result = await createGamePackageFromPromptWithGame({ gameId, prompt, genre, mixGenres, platform, presetOptions, kitOptions, useGenreDefaults, title });
+  const project = createVibeProject({ gameId: result.package.gameId, title: title || result.package.gameId, target: result.package.platform === 'godot' ? 'godot' : 'web', packageData: result.package, source: result.generated.html });
   return Object.freeze({
     version: 1,
     project: Object.freeze({ gameId: result.package.gameId, platform: result.package.platform, title: result.generated.slug, filename: result.generated.filename }),
     package: result.package,
     generated: result.generated,
+    editableProject: project,
   });
 }
 
@@ -119,6 +122,12 @@ if (typeof window !== 'undefined') {
   window.createJaewoonGameKit = createGameKit;
   window.createJaewoonVibeCodingTaskPlan = createVibeCodingTaskPlan;
   window.createJaewoonVibeWorkbenchTaskPlan = createVibeWorkbenchTaskPlan;
+  window.createJaewoonVibeGameProject = createVibeGameProject;
+  window.changeJaewoonVibeGameProject = changeVibeGameProject;
+  window.repairJaewoonVibeGameProject = repairVibeGameProject;
+  window.exportJaewoonVibeGameProject = exportVibeGameProject;
+  window.importJaewoonVibeGameProject = importVibeGameProject;
+  window.cloneJaewoonVibeGameProject = cloneVibeGameProject;
   window.createJaewoonGameKitFromPrompt = createGameKitFromPrompt;
   window.createJaewoonGameContentFromPrompt = createGameContentFromPrompt;
   window.createJaewoonGamePackageFromPrompt = createGamePackageFromPrompt;
