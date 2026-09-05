@@ -37,7 +37,7 @@ jobs:
           }});
           flow.go('menu');
           flow.go('field', { area: 2 });
-          if (flow.current !== 'field' || flow.history.length !== 1) throw new Error('scene transition failed');
+          if (flow.current !== 'field' || flow.history.length !== 1 || entered !== 1) throw new Error('scene transition failed');
           const cp = flow.checkpoint('camp');
           if (cp.sceneState.hp !== 77) throw new Error('checkpoint snapshot failed');
           flow.back();
