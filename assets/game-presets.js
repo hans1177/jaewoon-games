@@ -63,6 +63,7 @@ export function buildGamePreset({
   npcDialogue = false,
   d20Rules = false,
   turnBasedCombat = false,
+  characterProgression = false,
   extras = {},
   remove = {},
 } = {}) {
@@ -96,6 +97,11 @@ export function buildGamePreset({
     assets.push('turn-ui','target-indicators','status-icons');
     qa.push('turn-order','round-advance','defeated-skip','combat-end','timed-conditions');
   }
+  if (characterProgression) {
+    systems.push('character-progression','xp','levels','attributes','resources','stat-points','skill-points','character-snapshots');
+    assets.push('level-ui','xp-bar','stat-icons');
+    qa.push('xp-gain','level-up','point-spending','resource-clamp','progression-snapshot');
+  }
 
   systems = without(unique([...systems, ...list(extras.systems)]), remove.systems);
   assets = without(unique([...assets, ...list(extras.assets)]), remove.assets);
@@ -116,6 +122,7 @@ export function buildGamePreset({
       presetIsSuggestion: true,
       d20RulesOptional: true,
       turnBasedCombatOptional: true,
+      characterProgressionOptional: true,
     }),
   });
 }
