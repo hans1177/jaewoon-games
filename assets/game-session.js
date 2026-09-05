@@ -1,5 +1,6 @@
 import { JaewoonVibeRuntime } from './vibe-runtime.js';
 import { JaewoonGameLoop } from './game-loop.js';
+import { JaewoonInputActions } from './input-actions.js';
 import { buildGameBlueprint } from './game-blueprint.js';
 
 function clone(value) {
@@ -16,6 +17,7 @@ export class JaewoonGameSession {
     useGenreDefaults = true,
     runtimeOptions = {},
     loopOptions = {},
+    inputOptions = {},
     autoRestore = true,
   } = {}) {
     this.blueprint = buildGameBlueprint({
@@ -29,17 +31,25 @@ export class JaewoonGameSession {
     this.kit = this.blueprint.createKit();
     this.runtime = new JaewoonVibeRuntime({ gameId: this.blueprint.gameId, ...runtimeOptions });
     this.loop = new JaewoonGameLoop(loopOptions);
+    this.input = new JaewoonInputActions(inputOptions);
     this.started = false;
     this.meta = {};
 
     if (autoRestore) this.restore();
   }
 
-  start({ bootRuntime = true, startLoop = false, visibilityPause = true, errorReporter = console.error } = {}) {
+  start({
+    bootRuntime = true,
+    startLoop = false,
+    attachInput = true,
+    visibilityPause = true,
+    errorReporter = console.error,
+  } = {}) {
     if (this.started) return this;
     if (bootRuntime && typeof window !== 'undefined') {
       this.runtime.boot({ visibilityPause, errorReporter });
     }
+    if (attachInput && typeof window !== 'undefined') this.input.attachKeyboard(window);
     if (startLoop) this.loop.start();
     this.started = true;
     this.emit('session-start', { gameId: this.blueprint.gameId, systems: this.kit.enabledSystems() });
@@ -51,10 +61,15 @@ export class JaewoonGameSession {
     return this;
   }
 
+  defineInputAction(name, config = {}) {
+    return this.input.defineAction(name, config);
+  }
+
   setPaused(value, reason = 'manual') {
     const paused = Boolean(value);
     this.runtime.setPaused(paused, reason);
     this.loop.setPaused(paused);
+    if (paused) this.input.releaseAll();
     this.emit('session-pause', { gameId: this.blueprint.gameId, paused, reason });
     return paused;
   }
@@ -116,6 +131,7 @@ export class JaewoonGameSession {
   destroy({ save = false } = {}) {
     if (save) this.save();
     this.loop.stop();
+    this.input.destroy();
     this.runtime.destroy();
     this.started = false;
   }
