@@ -32,6 +32,30 @@ jobs:
       - name: Check common web runtime syntax
         run: node --input-type=module --check < assets/vibe-runtime.js
 
+      - name: Check game config syntax
+        run: node --input-type=module --check < assets/game-config.js
+
+      - name: Test game config behavior
+        run: |
+          cp assets/game-config.js /tmp/game-config.mjs
+          node --input-type=module <<'NODE'
+          import { JaewoonGameConfig, configValidators } from 'file:///tmp/game-config.mjs';
+          const config = new JaewoonGameConfig({
+            defaults: { player: { hp: 100 }, wave: { count: 20 } },
+            validators: {
+              'player.hp': configValidators.number({ min: 1, max: 99999, integer: true }),
+              'wave.count': configValidators.number({ min: 1, max: 999, integer: true }),
+            },
+          });
+          if (config.get('player.hp') !== 100) throw new Error('default config failed');
+          config.set('player.hp', 130);
+          if (config.get('player.hp') !== 130) throw new Error('set config failed');
+          let rejected = false;
+          try { config.set('player.hp', 0); } catch { rejected = true; }
+          if (!rejected) throw new Error('invalid config was not rejected');
+          console.log('PASS game config');
+          NODE
+
       - name: Reject files over 100 MB
         run: |
           python - <<'PY'
@@ -82,5 +106,6 @@ jobs:
           echo "Vibe QA complete"
           echo "- manifest validated"
           echo "- common runtime syntax checked"
+          echo "- game config syntax and behavior checked"
           echo "- 100 MB limit checked"
           echo "- missing local HTML references reported as warnings"
