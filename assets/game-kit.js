@@ -6,6 +6,7 @@ import { JaewoonQuestDialogue } from './quest-dialogue.js';
 import { JaewoonSkillEffects } from './skill-effects.js';
 import { JaewoonEconomyLootShop } from './economy-loot-shop.js';
 import { JaewoonSaveVersioning } from './save-versioning.js';
+import { JaewoonStatModifiers } from './stat-modifiers.js';
 
 function options(value) {
   if (value === true || value == null) return {};
@@ -28,6 +29,7 @@ export class JaewoonGameKit {
     questDialogue = false,
     skillEffects = false,
     economySystems = false,
+    statModifiers = false,
     versionedSave = false,
   } = {}) {
     this.gameId = String(gameId || 'game');
@@ -73,6 +75,13 @@ export class JaewoonGameKit {
       this.systems.set('economy', new JaewoonEconomyLootShop(options(economySystems)));
     }
 
+    if (statModifiers) {
+      const config = options(statModifiers);
+      const system = new JaewoonStatModifiers();
+      this.systems.set('stats', system);
+      this.state.stats = system.createState(config.initialState || {});
+    }
+
     if (versionedSave) {
       this.systems.set('save', new JaewoonSaveVersioning(options(versionedSave)));
     }
@@ -115,6 +124,7 @@ export class JaewoonGameKit {
     if (this.has('inventory')) this.state.inventory = this.get('inventory').createState(state.inventory || {});
     if (this.has('quests')) this.state.quests = this.get('quests').createState(state.quests || {});
     if (this.has('skills')) this.state.skills = this.get('skills').createState(state.skills || {});
+    if (this.has('stats')) this.state.stats = this.get('stats').createState(state.stats || {});
 
     return this.state;
   }
