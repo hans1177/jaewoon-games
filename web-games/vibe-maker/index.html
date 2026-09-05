@@ -9,59 +9,35 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif;background:#bfe9ff;color:#17375e}
 body{padding:14px}
-main{width:min(100%,720px);margin:auto}
+main{width:min(100%,760px);margin:auto}
 .card{background:#fff;border:2px solid #d8ebf5;border-radius:20px;box-shadow:0 12px 30px rgba(31,101,151,.12);padding:16px}
-h1{margin:0;font-size:28px;color:#1463a8}
-.sub{margin:6px 0 16px;color:#67869b;font-size:14px;font-weight:700}
-textarea{width:100%;min-height:130px;resize:vertical;border:2px solid #b7dcf0;border-radius:16px;padding:14px;font:700 16px/1.5 inherit;outline:0}
-textarea:focus{border-color:#43a1e8}
+h1{margin:0;font-size:28px;color:#1463a8}.sub{margin:6px 0 16px;color:#67869b;font-size:14px;font-weight:700}
+textarea{width:100%;min-height:130px;resize:vertical;border:2px solid #b7dcf0;border-radius:16px;padding:14px;font:700 16px/1.5 inherit;outline:0}textarea:focus{border-color:#43a1e8}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-button{min-height:48px;border:0;border-radius:13px;background:#2e8fe5;color:#fff;font:900 15px inherit;cursor:pointer}
-button.secondary{background:#eef8ff;color:#1e75b4}
+button{min-height:48px;border:0;border-radius:13px;background:#2e8fe5;color:#fff;font:900 15px inherit;cursor:pointer}button.secondary{background:#eef8ff;color:#1e75b4}
 .status{margin-top:12px;padding:11px 12px;border-radius:12px;background:#f4fbff;color:#4f7187;font-size:13px;font-weight:800}
-section{margin-top:12px}
-.sectionTitle{font-size:15px;color:#1b669f;margin-bottom:7px;font-weight:1000}
-.chips{display:flex;gap:7px;flex-wrap:wrap}
-.chip{padding:7px 10px;border-radius:999px;background:#eef8ff;color:#1768aa;font-size:12px;font-weight:900}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.item{padding:10px;border-radius:12px;background:#f7fbfd;min-height:60px}
-.item b{display:block;color:#307cab;font-size:11px;margin-bottom:3px}
-.item span{font-size:13px;font-weight:800}
+section{margin-top:12px}.sectionTitle{font-size:15px;color:#1b669f;margin-bottom:7px;font-weight:1000}
+.chips{display:flex;gap:7px;flex-wrap:wrap}.chip{padding:7px 10px;border-radius:999px;background:#eef8ff;color:#1768aa;font-size:12px;font-weight:900}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.item{padding:10px;border-radius:12px;background:#f7fbfd;min-height:60px}.item b{display:block;color:#307cab;font-size:11px;margin-bottom:3px}.item span{font-size:13px;font-weight:800}
 pre{margin:0;max-height:300px;overflow:auto;padding:12px;border-radius:12px;background:#15263a;color:#eaf7ff;font:600 11px/1.45 ui-monospace,SFMono-Regular,monospace}
-.hint{margin-top:10px;color:#728d9f;font-size:12px;line-height:1.45}
-@media(max-width:520px){body{padding:9px}.card{padding:12px;border-radius:17px}h1{font-size:23px}.grid,.row{grid-template-columns:1fr}textarea{min-height:120px}}
+.preview{position:relative;overflow:hidden;border-radius:16px;background:#102536}.preview canvas{display:block;width:100%;height:auto;aspect-ratio:16/10;touch-action:none}.previewBar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}.previewInfo{font-size:12px;color:#5e7e92;font-weight:800}.previewHint{font-size:11px;color:#7892a4}.controlRow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:8px}.controlRow button{min-height:42px}.hidden{display:none}.hint{margin-top:10px;color:#728d9f;font-size:12px;line-height:1.45}
+@media(max-width:520px){body{padding:9px}.card{padding:12px;border-radius:17px}h1{font-size:23px}.grid,.row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<main>
-<div class="card">
+<main><div class="card">
 <h1>🎮 바이브로 게임 만들기</h1>
 <p class="sub">부품 이름을 몰라도 하고 싶은 게임을 그냥 말하면 돼.</p>
 <textarea id="prompt" placeholder="예: 밤마다 괴물이 나오고 나무 주워서 칼 만들고 친구랑 둘이 살아남는 게임 만들어줘"></textarea>
-<div class="row">
-<button id="build">게임 만들기</button>
-<button class="secondary" id="example">예시 넣기</button>
-</div>
+<div class="row"><button id="build">게임 만들기</button><button class="secondary" id="example">예시 넣기</button></div>
 <div class="status" id="status">아직 게임을 만들지 않았어.</div>
-<section>
-<div class="sectionTitle">게임으로 알아들은 것</div>
-<div class="grid" id="summary"></div>
-</section>
-<section>
-<div class="sectionTitle">자동으로 준비한 기능</div>
-<div class="chips" id="systems"></div>
-</section>
-<section>
-<div class="sectionTitle">규칙으로 읽은 것</div>
-<pre id="rules">-</pre>
-</section>
-<section>
-<div class="sectionTitle">생성된 게임 세션</div>
-<div class="status" id="session">아직 세션을 만들지 않았어.</div>
-</section>
-<p class="hint">이 화면은 먼저 자연어를 읽고 설계한 다음 공통 게임 시스템을 조합해. 기존 게임 파일과 저장 데이터는 자동으로 바꾸지 않아.</p>
-</div>
-</main>
+<section><div class="sectionTitle">게임으로 알아들은 것</div><div class="grid" id="summary"></div></section>
+<section><div class="sectionTitle">자동으로 준비한 기능</div><div class="chips" id="systems"></div></section>
+<section><div class="sectionTitle">규칙으로 읽은 것</div><pre id="rules">-</pre></section>
+<section id="previewSection" class="hidden"><div class="sectionTitle">초기 게임 프로토타입</div><div class="previewBar"><span class="previewInfo" id="previewInfo">준비 중</span><span class="previewHint">방향키 / WASD / 터치</span></div><div class="preview"><canvas id="previewCanvas" width="960" height="600"></canvas></div><div class="controlRow"><button id="left">← 왼쪽</button><button id="attack">⚔ 공격</button><button id="right">오른쪽 →</button></div></section>
+<section><div class="sectionTitle">생성된 게임 세션</div><div class="status" id="session">아직 세션을 만들지 않았어.</div></section>
+<p class="hint">여기서 만드는 것은 새 게임의 초기 프로토타입이야. 기존 게임 파일과 저장 데이터는 자동으로 바꾸지 않아.</p>
+</div></main>
 <script type="module">
 const promptBox=document.getElementById('prompt');
 const status=document.getElementById('status');
@@ -69,6 +45,9 @@ const summary=document.getElementById('summary');
 const systems=document.getElementById('systems');
 const rules=document.getElementById('rules');
 const sessionBox=document.getElementById('session');
+const previewSection=document.getElementById('previewSection');
+const previewCanvas=document.getElementById('previewCanvas');
+const ctx=previewCanvas.getContext('2d');
 
 const examples=[
   '밤마다 괴물이 나오고 나무 주워서 칼 만들고 친구랑 둘이 살아남는 게임',
@@ -76,44 +55,81 @@ const examples=[
   'Godot으로 턴제 RPG 만들어줘. 주사위 굴리고 레벨업하고 퀘스트도 넣어줘'
 ];
 
-document.getElementById('example').addEventListener('click',()=>{
-  promptBox.value=examples[Math.floor(Math.random()*examples.length)];
-  promptBox.focus();
-});
-
+document.getElementById('example').addEventListener('click',()=>{promptBox.value=examples[Math.floor(Math.random()*examples.length)];promptBox.focus()});
 function text(value){return value==null||value===''?'자동':String(value)}
 function setSummary(blueprint){
   const intent=blueprint.intent||{};
-  const items=[
-    ['장르',blueprint.genre],['플랫폼',blueprint.platform],['인원',intent.playerCount?`${intent.playerCount}명`:'자동'],
-    ['방향',intent.presentation?.orientation||'자동'],['모바일',intent.presentation?.mobileFirst?'우선':'기본']
-  ];
+  const items=[['장르',blueprint.genre],['플랫폼',blueprint.platform],['인원',intent.playerCount?`${intent.playerCount}명`:'자동'],['방향',intent.presentation?.orientation||'자동'],['모바일',intent.presentation?.mobileFirst?'우선':'기본']];
   summary.innerHTML=items.map(([a,b])=>`<div class="item"><b>${a}</b><span>${text(b)}</span></div>`).join('');
   const enabled=blueprint.kitConfig?Object.entries(blueprint.kitConfig).filter(([k,v])=>k!=='gameId'&&v).map(([k])=>k):[];
   systems.innerHTML=enabled.length?enabled.map(v=>`<span class="chip">${v}</span>`).join(''):'<span class="chip">기본 시스템</span>';
-  const pretty={
-    rules:blueprint.intent?.rules||{},entityRules:blueprint.intent?.entityRules||{}
-  };
-  rules.textContent=JSON.stringify(pretty,null,2);
+  rules.textContent=JSON.stringify({rules:blueprint.intent?.rules||{},entityRules:blueprint.intent?.entityRules||{}},null,2);
 }
+
+let activeBlueprint=null;
+let activeSession=null;
+let raf=0;
+let lastTime=0;
+const game={genre:'action',x:480,y:300,hp:100,score:0,day:1,phase:'day',enemies:[],resources:[],keys:new Set()};
+function resetPreview(blueprint){
+  activeBlueprint=blueprint; game.genre=blueprint.genre||'action'; game.x=480;game.y=300;game.hp=100;game.score=0;game.day=1;game.phase='day';
+  game.enemies=[];game.resources=[];
+  const isDefense=game.genre==='defense';
+  for(let i=0;i<(isDefense?4:3);i++) game.enemies.push({x:isDefense?80+i*55:100+i*120,y:isDefense?120:100+i*70,r:16,hp:20+10*i,alive:true,dx:0,dy:0});
+  for(let i=0;i<5;i++) game.resources.push({x:120+i*160,y:470-(i%2)*70,taken:false});
+  previewSection.classList.remove('hidden');
+  document.getElementById('previewInfo').textContent=`${blueprint.genre||'게임'} 초기 프로토타입`;
+  cancelAnimationFrame(raf); lastTime=performance.now(); raf=requestAnimationFrame(loop);
+}
+function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+function spawnEnemy(){game.enemies.push({x:Math.random()*850+55,y:Math.random()*480+60,r:15,hp:20,alive:true})}
+function attack(){
+  let target=null,best=1e9;
+  for(const e of game.enemies){if(!e.alive)continue;const d=Math.hypot(e.x-game.x,e.y-game.y);if(d<best){best=d;target=e}}
+  if(target&&best<125){target.hp-=10;if(target.hp<=0){target.alive=false;game.score++;if(game.score%3===0)spawnEnemy()}}
+}
+function update(dt){
+  let speed=220;if(game.keys.has('shift'))speed=320;
+  let dx=(game.keys.has('ArrowRight')||game.keys.has('d')?1:0)-(game.keys.has('ArrowLeft')||game.keys.has('a')?1:0);
+  let dy=(game.keys.has('ArrowDown')||game.keys.has('s')?1:0)-(game.keys.has('ArrowUp')||game.keys.has('w')?1:0);
+  const m=Math.hypot(dx,dy)||1; if(dx||dy){game.x+=dx/m*speed*dt;game.y+=dy/m*speed*dt}
+  game.x=clamp(game.x,25,935);game.y=clamp(game.y,25,575);
+  if(game.genre==='survival'){game.phase=(Math.floor((performance.now()/1000)%20)<12)?'day':'night'}
+  const hostile=game.phase==='night'||game.genre==='defense'||game.genre==='action';
+  if(hostile) for(const e of game.enemies){if(!e.alive)continue;const dx=game.x-e.x,dy=game.y-e.y,d=Math.hypot(dx,dy)||1;e.x+=dx/d*30*dt;e.y+=dy/d*30*dt;if(d<28)game.hp=Math.max(0,game.hp-8*dt)}
+  if(game.genre==='survival'&&game.phase==='day') for(const r of game.resources){if(!r.taken&&Math.hypot(r.x-game.x,r.y-game.y)<28){r.taken=true;game.score++}}
+  if(game.genre==='defense'){const baseX=game.x;const baseY=game.y;for(const e of game.enemies){if(e.alive&&Math.hypot(e.x-baseX,e.y-baseY)<35)game.hp=Math.max(0,game.hp-5*dt)}}
+  if(Math.random()<dt*0.18)spawnEnemy();
+}
+function render(){
+  ctx.clearRect(0,0,960,600);
+  ctx.fillStyle=game.phase==='night'?'#142438':'#9fd7a6';ctx.fillRect(0,0,960,600);
+  ctx.fillStyle='#2a6b3a';for(let i=0;i<20;i++){const x=(i*97)%940+10,y=(i*53)%560+20;ctx.fillRect(x,y,5,5)}
+  if(game.genre==='defense'){ctx.fillStyle='#d6d6d6';ctx.beginPath();ctx.arc(game.x,game.y,34,0,Math.PI*2);ctx.fill();ctx.fillStyle='#343b45';ctx.fillRect(game.x-8,game.y-42,16,84)}
+  for(const r of game.resources){if(r.taken)continue;ctx.fillStyle='#8d6a3e';ctx.fillRect(r.x-10,r.y-10,20,20);ctx.fillStyle='#4c9b51';ctx.fillRect(r.x-14,r.y-18,28,10)}
+  for(const e of game.enemies){if(!e.alive)continue;ctx.fillStyle='#cf5d5d';ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(e.x-7,e.y-4,4,4);ctx.fillRect(e.x+3,e.y-4,4,4)}
+  ctx.fillStyle='#3b7ee8';ctx.beginPath();ctx.arc(game.x,game.y,17,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';ctx.fillRect(game.x-6,game.y-4,4,4);ctx.fillRect(game.x+2,game.y-4,4,4);
+  ctx.fillStyle='#102536';ctx.fillRect(14,14,250,60);ctx.fillStyle='#fff';ctx.font='700 18px system-ui';ctx.fillText(`HP ${Math.ceil(game.hp)} / 100`,28,39);ctx.fillText(`점수 ${game.score} · ${game.phase}`,28,62);
+  if(game.hp<=0){ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(0,0,960,600);ctx.fillStyle='#fff';ctx.font='900 42px system-ui';ctx.fillText('게임오버',395,285);ctx.font='700 18px system-ui';ctx.fillText('게임 만들기를 다시 누르면 재시작',342,322)}
+}
+function loop(now){const dt=Math.min(.05,(now-lastTime)/1000);lastTime=now;if(game.hp>0)update(dt);render();raf=requestAnimationFrame(loop)}
+window.addEventListener('keydown',(e)=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();game.keys.add(e.key);if(e.key===' ')attack()});
+window.addEventListener('keyup',(e)=>game.keys.delete(e.key));
+document.getElementById('left').addEventListener('pointerdown',()=>game.keys.add('ArrowLeft'));document.getElementById('left').addEventListener('pointerup',()=>game.keys.delete('ArrowLeft'));document.getElementById('right').addEventListener('pointerdown',()=>game.keys.add('ArrowRight'));document.getElementById('right').addEventListener('pointerup',()=>game.keys.delete('ArrowRight'));document.getElementById('attack').addEventListener('click',attack);
+previewCanvas.addEventListener('pointerdown',(e)=>{const r=previewCanvas.getBoundingClientRect();game.x=(e.clientX-r.left)/r.width*960;game.y=(e.clientY-r.top)/r.height*600});
 
 document.getElementById('build').addEventListener('click',async()=>{
   const prompt=promptBox.value.trim();
   if(!prompt){status.textContent='하고 싶은 게임을 한마디로 적어줘.';promptBox.focus();return}
-  status.textContent='게임 아이디어를 읽는 중...';
-  sessionBox.textContent='게임 세션 준비 중...';
+  status.textContent='게임 아이디어를 읽는 중...';sessionBox.textContent='게임 세션 준비 중...';
   try{
     const kitModule=await import('../../assets/game-kit.js');
     const result=await kitModule.createGameSessionFromPrompt({gameId:`vibe-${Date.now()}`,prompt,autoRestore:false});
-    setSummary(result.blueprint);
+    activeSession=result.session;window.__vibeSession=activeSession;setSummary(result.blueprint);resetPreview(result.blueprint);
     status.textContent=`완료: ${result.blueprint.genre} 게임으로 이해했어.`;
     sessionBox.textContent=`세션 생성 성공 · 시스템 ${result.session.kit.enabledSystems().length}개 준비`;
-    window.__vibeSession=result.session;
-  }catch(error){
-    status.textContent=`만들기에 실패했어: ${error?.message||error}`;
-    sessionBox.textContent='세션 생성 실패';
-    console.error(error);
-  }
+  }catch(error){status.textContent=`만들기에 실패했어: ${error?.message||error}`;sessionBox.textContent='세션 생성 실패';console.error(error)}
 });
 </script>
 </body>
