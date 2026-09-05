@@ -16,9 +16,9 @@ export const GAME_PRESETS = Object.freeze({
     qa: ['wave-progression','spawn-limits','targeting','boss-clear','shop-flow','stat-modifiers'],
   },
   survival: {
-    systems: ['day-night','gathering','crafting','inventory','equipment','spawning','status-effects','stat-modifiers'],
+    systems: ['day-night','gathering','crafting','crafting-recipes','inventory','equipment','spawning','status-effects','stat-modifiers'],
     assets: ['player','resources','enemies','items','crafting-ui','environment','bgm','ambience'],
-    qa: ['day-night-loop','crafting-costs','inventory-persistence','spawn-rules','stat-modifiers'],
+    qa: ['day-night-loop','crafting-costs','crafting-rollback','inventory-persistence','spawn-rules','stat-modifiers'],
   },
   strategy: {
     systems: ['territories','units','resources','ai-opponents','battle-resolution','camera','selection','stat-modifiers'],
@@ -68,6 +68,7 @@ export function buildGamePreset({
   questDialogue = false,
   skillEffects = false,
   economySystems = false,
+  craftingRecipes = false,
   versionedSave = false,
   extras = {},
   remove = {},
@@ -126,6 +127,11 @@ export function buildGamePreset({
     systems.push('economy-loot-shop','loot-tables','rewards','shop-buy','shop-sell','wallet');
     assets.push('currency-icons','loot-icons','shop-ui');
     qa.push('loot-rolls','shop-affordability','buy-sell','reward-application');
+  }
+  if (craftingRecipes) {
+    systems.push('crafting','crafting-recipes','recipe-unlocks','crafting-transactions');
+    assets.push('crafting-ui','item-icons');
+    qa.push('crafting-costs','crafting-unlocks','crafting-rollback','crafting-save-restore');
   }
   if (versionedSave) {
     systems.push('save-versioning','save-migrations','save-compatibility');
