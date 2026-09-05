@@ -33,6 +33,16 @@ export function createVibeWorkbenchCandidate({request='',target='auto',revision=
  return freeze({version:2,execution:preflight,candidate,files:normalized,sourceRevision:exactRevision,checkpointId:exactCheckpoint,mayApply:preflight.mayRun===true,authority:'workbench-v2-bridge',requiresAtomicWrite:true,requiresPostApplyEvidence:true});
 }
 
+// 원자 쓰기 직후 책임 파일을 다시 읽은 결과를 V2가 신뢰할 수 있는 소스 증거로 정규화한다.
+export function verifyVibeWorkbenchAppliedSources(bridge,{observedFiles=[]}={}){
+ if(bridge?.authority!=='workbench-v2-bridge')throw new Error('workbench v2 bridge required');
+ const expected=new Map((bridge.files||[]).map(x=>[text(x.path),String(x.after??'')]));
+ const observed=new Map((observedFiles||[]).filter(x=>x&&text(x.path)).map(x=>[text(x.path),String(x.actual??x.source??'')]));
+ const files=[...expected.entries()].map(([path,source])=>({path,observed:observed.has(path),exact:observed.has(path)&&observed.get(path)===source}));
+ const missing=files.filter(x=>!x.observed).map(x=>x.path),mismatched=files.filter(x=>x.observed&&!x.exact).map(x=>x.path);
+ return freeze({version:1,sourceRevision:bridge.sourceRevision||bridge.execution?.revision||'',checkpointId:bridge.checkpointId||bridge.execution?.checkpointId||'',files,sourceExact:files.length>0&&missing.length===0&&mismatched.length===0,candidateApplied:files.length>0&&missing.length===0&&mismatched.length===0,missing,mismatched,authority:'post-apply-source-observation'});
+}
+
 export function advanceVibeV2Candidate(execution,{candidate={}}={}){
  if(execution?.authority!=='v2-orchestration-only')throw new Error('v2 execution contract required');
  if(!execution.readyForCandidate)return freeze({...execution,phase:'blocked',candidate:null,candidateValidation:null,mayRun:false});
@@ -56,4 +66,4 @@ export function verifyVibeV2Repair(execution,{before=null,after=null,invariants=
  return freeze({...execution,phase:repairValidation.accepted?'verified':'rollback',repairValidation,mayCommit:repairValidation.mayCommit,rollbackRequired:repairValidation.rollbackRequired,completionAuthority:'verified-runtime-and-regression-only'});
 }
 
-if(typeof window!=='undefined')Object.assign(window,{createJaewoonVibeV2Execution:createVibeV2Execution,createJaewoonVibeSourceRevision:createVibeSourceRevision,createJaewoonVibeWorkbenchCandidate:createVibeWorkbenchCandidate,advanceJaewoonVibeV2Candidate:advanceVibeV2Candidate,verifyJaewoonVibeV2Runtime:verifyVibeV2Runtime,verifyJaewoonVibeV2Repair:verifyVibeV2Repair});
+if(typeof window!=='undefined')Object.assign(window,{createJaewoonVibeV2Execution:createVibeV2Execution,createJaewoonVibeSourceRevision:createVibeSourceRevision,createJaewoonVibeWorkbenchCandidate:createVibeWorkbenchCandidate,verifyJaewoonVibeWorkbenchAppliedSources:verifyVibeWorkbenchAppliedSources,advanceJaewoonVibeV2Candidate:advanceVibeV2Candidate,verifyJaewoonVibeV2Runtime:verifyVibeV2Runtime,verifyJaewoonVibeV2Repair:verifyVibeV2Repair});
