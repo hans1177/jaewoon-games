@@ -208,6 +208,14 @@ function inferEntityRules(text) {
     if (/(밀쳐|넉백)/.test(chunk)) actions.push('knockback');
     if (/(기절|스턴)/.test(chunk)) actions.push('stun');
     if (/(느려|슬로우)/.test(chunk)) actions.push('slow');
+    if (/(멀리서|멀리서 공격|원거리|장거리|떨어져서)/.test(chunk)) actions.push('ranged');
+    if (/(가까이서|근접|붙어서|바짝 붙어)/.test(chunk)) actions.push('melee');
+    if (/(도망가|도망|후퇴|피해서)/.test(chunk)) actions.push('flee');
+    if (/(쫓아가|추적|따라가)/.test(chunk) && !/(적을 따라가)/.test(chunk)) actions.push('chase');
+    if (/(가장 가까운|가까운 적|근처 적)/.test(chunk)) properties.targetPriority = 'nearest';
+    if (/(가장 먼|먼 적|멀리 있는 적)/.test(chunk)) properties.targetPriority = 'farthest';
+    if (/(체력이 낮은|피 적은|약한 적)/.test(chunk)) properties.targetPriority = 'lowest-hp';
+    if (/(체력이 높은|피 많은|제일 튼튼한)/.test(chunk)) properties.targetPriority = 'highest-hp';
     if (actions.length) properties.actions = Object.freeze([...new Set(actions)]);
     if (Object.keys(properties).length) {
       const key = Object.keys(entities).includes(current.entity) ? `${current.entity}-${index + 1}` : current.entity;
