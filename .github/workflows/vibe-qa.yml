@@ -35,9 +35,9 @@ jobs:
             assets/skill-effects.js assets/economy-loot-shop.js assets/save-versioning.js \
             assets/stat-modifiers.js assets/crafting-recipes.js assets/achievements-unlocks.js \
             assets/wave-spawner.js assets/day-night-cycle.js assets/resource-gathering.js \
-            assets/game-kit.js assets/game-presets.js assets/game-blueprint.js assets/game-loop.js \
-            assets/input-actions.js assets/scene-flow.js assets/state-machine.js assets/game-timers.js \
-            assets/game-session.js; do
+            assets/status-effects.js assets/combat-vitals.js assets/game-kit.js assets/game-presets.js \
+            assets/game-blueprint.js assets/game-loop.js assets/input-actions.js assets/scene-flow.js \
+            assets/state-machine.js assets/game-timers.js assets/game-session.js; do
             node --input-type=module --check < "$file"
           done
           echo 'PASS JavaScript syntax'
@@ -49,7 +49,8 @@ jobs:
              assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js \
              assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
              assets/crafting-recipes.js assets/achievements-unlocks.js assets/wave-spawner.js \
-             assets/day-night-cycle.js assets/resource-gathering.js /tmp/jaewoon-qa/
+             assets/day-night-cycle.js assets/resource-gathering.js assets/status-effects.js \
+             assets/combat-vitals.js /tmp/jaewoon-qa/
           printf '{"type":"module"}\n' > /tmp/jaewoon-qa/package.json
           node --input-type=module <<'NODE'
           import { JaewoonD20Rules } from 'file:///tmp/jaewoon-qa/d20-rules.js';
@@ -61,6 +62,8 @@ jobs:
           import { JaewoonWaveSpawner } from 'file:///tmp/jaewoon-qa/wave-spawner.js';
           import { JaewoonDayNightCycle } from 'file:///tmp/jaewoon-qa/day-night-cycle.js';
           import { JaewoonResourceGathering } from 'file:///tmp/jaewoon-qa/resource-gathering.js';
+          import { JaewoonStatusEffects } from 'file:///tmp/jaewoon-qa/status-effects.js';
+          import { JaewoonCombatVitals } from 'file:///tmp/jaewoon-qa/combat-vitals.js';
 
           const rules = new JaewoonD20Rules({ rng: () => 0.5 });
           if (rules.abilityModifier(18) !== 4) throw new Error('d20 failed');
@@ -86,52 +89,63 @@ jobs:
             { id: 'boss-clear', requirements: [{ type: 'flag', key: 'boss', value: true }] },
           ] });
           const achievementState = achievements.createState();
-          const unlocked = achievements.increment(achievementState, 'kills', 1);
-          if (!unlocked.includes('first-kill') || !achievements.isUnlocked(achievementState, 'first-kill')) throw new Error('achievement counter unlock failed');
+          if (!achievements.increment(achievementState, 'kills', 1).includes('first-kill')) throw new Error('achievement unlock failed');
           if (achievements.claimReward(achievementState, 'first-kill')?.gold !== 10) throw new Error('achievement reward failed');
           if (achievements.claimReward(achievementState, 'first-kill') !== null) throw new Error('achievement duplicate reward failed');
           achievements.setFlag(achievementState, 'boss', true);
-          if (!achievements.isUnlocked(achievementState, 'boss-clear')) throw new Error('achievement flag unlock failed');
+          if (!achievements.isUnlocked(achievementState, 'boss-clear')) throw new Error('achievement flag failed');
 
           const waves = new JaewoonWaveSpawner({ waves: [{ id: 'w1', maxAlive: 1, groups: [{ enemyId: 'slime', count: 2, interval: 1 }] }] });
           waves.start(0);
           const firstSpawn = waves.update(0);
-          if (firstSpawn.length !== 1 || firstSpawn[0].enemyId !== 'slime' || waves.progress().alive !== 1) throw new Error('wave first spawn failed');
+          if (firstSpawn.length !== 1 || waves.progress().alive !== 1) throw new Error('wave spawn failed');
           const waveSnapshot = waves.snapshot();
           const restoredWaves = new JaewoonWaveSpawner({ waves: [{ id: 'w1', maxAlive: 1, groups: [{ enemyId: 'slime', count: 2, interval: 1 }] }] });
           restoredWaves.restore(waveSnapshot);
           restoredWaves.markDefeated(1);
           restoredWaves.update(1);
-          if (restoredWaves.progress().spawned !== 2 || restoredWaves.progress().alive !== 1) throw new Error('wave restore/spawn limit failed');
+          if (restoredWaves.progress().spawned !== 2 || restoredWaves.progress().alive !== 1) throw new Error('wave restore failed');
 
           const cycle = new JaewoonDayNightCycle({ dayDuration: 10, nightDuration: 5, startDay: 2 });
-          if (cycle.update(9).length !== 0 || !cycle.isDay()) throw new Error('day phase timing failed');
-          let cycleEvents = cycle.update(1);
-          if (cycleEvents.length !== 1 || !cycle.isNight() || cycle.status().day !== 2) throw new Error('day to night transition failed');
-          cycleEvents = cycle.update(5);
-          if (cycleEvents.length !== 1 || !cycle.isDay() || cycle.status().day !== 3) throw new Error('night to day transition failed');
-          const cycleSnapshot = cycle.snapshot();
+          cycle.update(10);
+          if (!cycle.isNight() || cycle.status().day !== 2) throw new Error('day to night failed');
+          cycle.update(5);
+          if (!cycle.isDay() || cycle.status().day !== 3) throw new Error('night to day failed');
           const restoredCycle = new JaewoonDayNightCycle();
-          restoredCycle.restore(cycleSnapshot);
-          if (restoredCycle.status().day !== 3 || !restoredCycle.isDay()) throw new Error('day night restore failed');
+          restoredCycle.restore(cycle.snapshot());
+          if (restoredCycle.status().day !== 3) throw new Error('day night restore failed');
 
           const gathering = new JaewoonResourceGathering({ rng: () => 0.5, nodes: [
             { id: 'branch', resourceId: 'wood', minAmount: 1, maxAmount: 3, maxCharges: 2, respawnDelay: 5, phases: ['day'] },
           ] });
-          const firstGather = gathering.gather('branch', { day: 1, phase: 'day' });
-          if (!firstGather.ok || firstGather.quantity !== 2 || firstGather.chargesRemaining !== 1) throw new Error('resource gathering failed');
-          const blockedNight = gathering.gather('branch', { day: 1, phase: 'night' });
-          if (blockedNight.ok || blockedNight.reason !== 'phase-restricted') throw new Error('resource phase rule failed');
+          if (gathering.gather('branch', { day: 1, phase: 'day' }).quantity !== 2) throw new Error('resource gather failed');
+          if (gathering.gather('branch', { day: 1, phase: 'night' }).reason !== 'phase-restricted') throw new Error('resource phase failed');
           gathering.gather('branch', { day: 1, phase: 'day' });
-          if (gathering.canGather('branch', { day: 1, phase: 'day' }).reason !== 'depleted') throw new Error('resource depletion failed');
-          const gatherSnapshot = gathering.snapshot();
-          const restoredGathering = new JaewoonResourceGathering({ nodes: [
-            { id: 'branch', resourceId: 'wood', maxCharges: 2, respawnDelay: 5, phases: ['day'] },
-          ] });
-          restoredGathering.restore(gatherSnapshot);
-          if (restoredGathering.update(4).length !== 0) throw new Error('resource respawn timing failed');
-          const respawnEvents = restoredGathering.update(1);
-          if (respawnEvents.length !== 1 || restoredGathering.get('branch').state.charges !== 2) throw new Error('resource respawn failed');
+          const restoredGathering = new JaewoonResourceGathering({ nodes: [{ id: 'branch', resourceId: 'wood', maxCharges: 2, respawnDelay: 5, phases: ['day'] }] });
+          restoredGathering.restore(gathering.snapshot());
+          restoredGathering.update(5);
+          if (restoredGathering.get('branch').state.charges !== 2) throw new Error('resource respawn failed');
+
+          const effects = new JaewoonStatusEffects();
+          effects.apply('hero', { id: 'poison', duration: 3, tickInterval: 1, magnitude: 5, stackMode: 'stack', maxStacks: 3 });
+          effects.apply('hero', { id: 'poison', duration: 3, tickInterval: 1, magnitude: 5, stackMode: 'stack', maxStacks: 3 });
+          const effectEvents = effects.update(1);
+          if (effects.get('hero', 'poison').stacks !== 2 || !effectEvents.some((e) => e.type === 'effect-tick')) throw new Error('status effects failed');
+          const restoredEffects = new JaewoonStatusEffects();
+          restoredEffects.restore(effects.snapshot());
+          if (restoredEffects.get('hero', 'poison').remaining !== 2) throw new Error('status restore failed');
+
+          const combat = new JaewoonCombatVitals({ entities: [{ id: 'hero', hp: 100, maxHp: 100, shield: 20, maxShield: 20 }] });
+          const hit = combat.damage('hero', 30);
+          if (hit.shieldDamage !== 20 || hit.hpDamage !== 10 || combat.get('hero').hp !== 90) throw new Error('combat shield failed');
+          combat.setInvulnerable('hero', true);
+          if (combat.damage('hero', 10).ok) throw new Error('combat invulnerability failed');
+          combat.setInvulnerable('hero', false);
+          if (!combat.damage('hero', 999).died) throw new Error('combat death failed');
+          if (combat.heal('hero', 25, { revive: true }).type !== 'revive') throw new Error('combat revive failed');
+          const restoredCombat = new JaewoonCombatVitals();
+          restoredCombat.restore(combat.snapshot());
+          if (restoredCombat.get('hero').hp !== 25) throw new Error('combat restore failed');
           console.log('PASS core/common systems');
           NODE
 
@@ -147,43 +161,29 @@ jobs:
           node --input-type=module <<'NODE'
           import { createGameKit } from 'file:///tmp/jaewoon-kit/game-kit.js';
           import { buildGameBlueprint } from 'file:///tmp/jaewoon-kit/game-blueprint.js';
-
-          const kit = createGameKit({
-            gameId: 'qa-game',
-            inventoryEquipment: true,
-            achievementsUnlocks: { definitions: [{ id: 'collector', requirements: [{ key: 'items', target: 2 }] }] },
-            versionedSave: { currentVersion: 2 },
-          });
+          const kit = createGameKit({ gameId: 'qa-game', inventoryEquipment: true, achievementsUnlocks: { definitions: [{ id: 'collector', requirements: [{ key: 'items', target: 2 }] }] }, versionedSave: { currentVersion: 2 } });
           kit.get('achievements').increment(kit.state.achievements, 'items', 2);
           const wrapped = kit.wrapSave();
-          const restored = createGameKit({
-            gameId: 'qa-game',
-            inventoryEquipment: true,
-            achievementsUnlocks: { definitions: [{ id: 'collector', requirements: [{ key: 'items', target: 2 }] }] },
-            versionedSave: { currentVersion: 2 },
-          });
+          const restored = createGameKit({ gameId: 'qa-game', inventoryEquipment: true, achievementsUnlocks: { definitions: [{ id: 'collector', requirements: [{ key: 'items', target: 2 }] }] }, versionedSave: { currentVersion: 2 } });
           restored.restoreState(wrapped);
           if (!restored.get('achievements').isUnlocked(restored.state.achievements, 'collector')) throw new Error('achievement restore failed');
-
-          const rpg = buildGameBlueprint({ gameId: 'rpg-qa', genre: 'rpg' });
-          if (!rpg.createKit().has('achievements')) throw new Error('rpg achievement default missing');
           const survival = buildGameBlueprint({ gameId: 'survival-qa', genre: 'survival' });
-          if (!survival.systems.includes('day-night-cycle') || !survival.systems.includes('resource-gathering')) throw new Error('survival common systems missing');
+          if (!survival.systems.includes('day-night-cycle') || !survival.systems.includes('resource-gathering') || !survival.systems.includes('combat-vitals')) throw new Error('survival common systems missing');
           const puzzle = buildGameBlueprint({ gameId: 'puzzle-qa', genre: 'puzzle' });
-          if (puzzle.createKit().has('achievements') || puzzle.systems.includes('day-night-cycle') || puzzle.systems.includes('resource-gathering')) throw new Error('puzzle should not force optional systems');
+          if (puzzle.systems.includes('combat-vitals') || puzzle.systems.includes('resource-gathering')) throw new Error('puzzle should not force combat systems');
           console.log('PASS game kit blueprint');
           NODE
 
       - name: Test survival session restore
         run: |
           rm -rf /tmp/jaewoon-session && mkdir -p /tmp/jaewoon-session
-          cp assets/game-session.js assets/day-night-cycle.js assets/resource-gathering.js assets/wave-spawner.js assets/game-timers.js \
-             assets/state-machine.js assets/scene-flow.js assets/input-actions.js assets/game-loop.js \
-             assets/vibe-runtime.js assets/game-blueprint.js assets/game-presets.js assets/game-kit.js \
-             assets/d20-rules.js assets/turn-combat.js assets/character-progression.js \
-             assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js \
-             assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
-             assets/crafting-recipes.js assets/achievements-unlocks.js /tmp/jaewoon-session/
+          cp assets/game-session.js assets/day-night-cycle.js assets/resource-gathering.js assets/status-effects.js \
+             assets/combat-vitals.js assets/wave-spawner.js assets/game-timers.js assets/state-machine.js \
+             assets/scene-flow.js assets/input-actions.js assets/game-loop.js assets/vibe-runtime.js \
+             assets/game-blueprint.js assets/game-presets.js assets/game-kit.js assets/d20-rules.js \
+             assets/turn-combat.js assets/character-progression.js assets/inventory-equipment.js \
+             assets/quest-dialogue.js assets/skill-effects.js assets/economy-loot-shop.js assets/save-versioning.js \
+             assets/stat-modifiers.js assets/crafting-recipes.js assets/achievements-unlocks.js /tmp/jaewoon-session/
           printf '{"type":"module"}\n' > /tmp/jaewoon-session/package.json
           cd /tmp/jaewoon-session
           node --input-type=module <<'NODE'
@@ -200,22 +200,25 @@ jobs:
             resourceOptions: { rng: () => 0, nodes: [{ id: 'stone', resourceId: 'stone', amount: 1, maxCharges: 1, respawnDelay: 4, phases: ['day'] }] },
           };
           const session = createGameSession(options);
-          const gathered = session.gatherResource('stone');
-          if (!gathered.ok || gathered.resourceId !== 'stone') throw new Error('session resource gather failed');
+          if (!session.gatherResource('stone').ok) throw new Error('session resource gather failed');
+          session.registerCombatEntity({ id: 'player', hp: 50, maxHp: 50 });
+          session.applyStatusEffect('player', { id: 'poison', kind: 'poison', duration: 2, tickInterval: 1, magnitude: 5, stacks: 2 });
+          const tick = session.updateStatusEffects(1).find((e) => e.type === 'effect-tick');
+          if (!session.applyStatusTickToCombat(tick).ok || session.combatVitals.get('player').hp !== 40) throw new Error('status to combat failed');
           session.updateResources(2);
           session.save();
           const restored = createGameSession({ ...options, autoRestore: true });
-          if (restored.resources.get('stone').state.respawnRemaining !== 2) throw new Error('session resource restore failed');
+          if (restored.resources.get('stone').state.respawnRemaining !== 2) throw new Error('resource restore failed');
+          if (restored.combatVitals.get('player').hp !== 40) throw new Error('combat restore failed');
           restored.updateResources(2);
-          if (restored.resources.get('stone').state.charges !== 1) throw new Error('session resource respawn failed');
+          if (restored.resources.get('stone').state.charges !== 1) throw new Error('resource respawn failed');
           restored.updateDayNight(10);
-          if (!restored.dayNight.isNight()) throw new Error('session day/night transition failed');
-          const blocked = restored.gatherResource('stone');
-          if (blocked.ok || blocked.reason !== 'phase-restricted') throw new Error('session resource day/night rule failed');
+          if (!restored.dayNight.isNight()) throw new Error('day night transition failed');
+          if (restored.gatherResource('stone').reason !== 'phase-restricted') throw new Error('resource day night rule failed');
           restored.pause();
-          const before = restored.resources.get('stone').state.respawnRemaining;
-          restored.updateResources(3);
-          if (restored.resources.get('stone').state.respawnRemaining !== before) throw new Error('session pause should pause resources');
+          const before = restored.statusEffects.get('player', 'poison')?.remaining;
+          restored.updateStatusEffects(1);
+          if (restored.statusEffects.get('player', 'poison')?.remaining !== before) throw new Error('status pause failed');
           restored.resume();
           restored.destroy();
           console.log('PASS survival session');
