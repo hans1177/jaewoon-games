@@ -1,0 +1,83 @@
+name: Vibe QA
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate asset manifest
+        run: python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('assets/asset-manifest.json')
+          data = json.loads(p.read_text(encoding='utf-8'))
+          assert data.get('version') == 1
+          assert isinstance(data.get('approvedSources'), list)
+          assert isinstance(data.get('assets'), list)
+          blocked = set(data.get('policy', {}).get('blocked', []))
+          assert {'NC', 'unknown'}.issubset(blocked)
+          print('PASS asset manifest')
+          PY
+
+      - name: Check common web runtime syntax
+        run: node --input-type=module --check < assets/vibe-runtime.js
+
+      - name: Reject files over 100 MB
+        run: python - <<'PY'
+          from pathlib import Path
+          limit = 100 * 1024 * 1024
+          bad = []
+          for p in Path('.').rglob('*'):
+            if p.is_file() and '.git' not in p.parts and p.stat().st_size >= limit:
+              bad.append((str(p), p.stat().st_size))
+          if bad:
+            for path, size in bad:
+              print(f'ERROR oversized: {path} ({size} bytes)')
+            raise SystemExit(1)
+          print('PASS file size')
+          PY
+
+      - name: Report missing local HTML assets
+        run: python - <<'PY'
+          import re
+          from pathlib import Path
+          missing = set()
+          attrs = re.compile(r'''(?:src|href)=["']([^"']+)["']''', re.I)
+          for html in list(Path('web-games').rglob('*.html')) + [Path('index.html')]:
+            if not html.exists():
+              continue
+            text = html.read_text(encoding='utf-8', errors='ignore')
+            for ref in attrs.findall(text):
+              if ref.startswith(('http://','https://','//','#','data:','mailto:','tel:','javascript:')):
+                continue
+              clean = ref.split('#',1)[0].split('?',1)[0]
+              if not clean or clean.startswith('/'):
+                target = Path(clean.lstrip('/'))
+              else:
+                target = html.parent / clean
+              if clean and not target.exists() and not clean.endswith('/'):
+                missing.add(f'{html}: {ref}')
+          if missing:
+            print('WARN missing local references:')
+            for item in sorted(missing):
+              print(' -', item)
+          else:
+            print('PASS local HTML references')
+          PY
+
+      - name: QA summary
+        run: |
+          echo "Vibe QA complete"
+          echo "- manifest validated"
+          echo "- common runtime syntax checked"
+          echo "- 100 MB limit checked"
+          echo "- missing local HTML references reported as warnings"
