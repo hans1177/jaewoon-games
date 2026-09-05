@@ -1,0 +1,34 @@
+name: Bug Defense Android Build
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'godot-games/bug-defense/**'
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Android APK with Godot
+        uses: firebelley/godot4-export@v6
+        with:
+          godot_v4_version: '4.7.2'
+          relative_project_path: 'godot-games/bug-defense'
+          export_preset_name: 'Android'
+          archive_output: true
+          archive_output_directory: 'artifacts'
+          archive_output_name: 'bug-defense-android'
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bug-defense-android
+          path: 'godot-games/bug-defense/artifacts/**'
+          if-no-files-found: error
