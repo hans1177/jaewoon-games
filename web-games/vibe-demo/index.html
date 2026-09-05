@@ -1,0 +1,40 @@
+<!doctype html>
+<!-- 파일명: web-games/vibe-demo/index.html -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>재운게임즈 바이브 시연작 - 밤의 생존</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;background:#102016;color:#fff;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif}body{padding:10px}main{width:min(100%,900px);margin:auto}.top{display:flex;flex-wrap:wrap;gap:7px;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:14px;background:#193225;font-weight:900}.stats{display:flex;flex-wrap:wrap;gap:10px;font-size:12px}.game{margin-top:8px;overflow:hidden;border-radius:16px;background:#09130d;box-shadow:0 8px 24px rgba(0,0,0,.25)}canvas{display:block;width:100%;height:auto;aspect-ratio:16/10;touch-action:none}.controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}.controls button,.tools button{min-height:50px;border:0;border-radius:12px;background:#2b8a4b;color:#fff;font-weight:900;font-size:16px}.tools{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}.tools button{background:#31506c;font-size:13px}.hint{text-align:center;margin:8px 0 0;color:#b7c9be;font-size:11px;line-height:1.45}.toast{text-align:center;min-height:20px;margin-top:5px;font-size:11px;color:#d9efe0}@media(max-width:520px){.controls button{min-height:56px}.tools button{min-height:46px}}
+</style>
+</head>
+<body><main>
+<div class="top"><strong>🌙 밤의 생존</strong><div class="stats"><span id="day">1일</span><span id="phase">낮</span><span id="hp">HP 100/100</span><span id="wood">나무 0</span><span id="gold">점수 0</span></div></div>
+<div class="game"><canvas id="game" width="960" height="600"></canvas></div>
+<div class="controls"><button id="left">←</button><button id="attack">⚔ 공격</button><button id="right">→</button></div>
+<div class="tools"><button id="craft">🪵 나무칼 만들기</button><button id="pause">일시정지</button><button id="save">저장</button></div>
+<div class="toast" id="toast"></div>
+<p class="hint">A/D 또는 ←/→ 이동 · 스페이스 공격 · 낮에는 나무 채집 · 밤에는 괴물이 등장 · 나무 3개로 공격력 +8</p>
+</main>
+<script type="module">
+import { JaewoonVibeRuntime } from '../../assets/vibe-runtime.js';
+const $=id=>document.getElementById(id),canvas=$('game'),ctx=canvas.getContext('2d');
+const runtime=new JaewoonVibeRuntime({gameId:'vibe-demo'});
+const state={day:1,phase:'day',phaseStarted:performance.now(),hp:100,maxHp:100,damage:10,wood:0,score:0,x:480,y:300,enemies:[],running:true,lastSpawn:0,lastAttack:0,attackCooldown:.5,woodPulse:0};
+const keys=new Set();let raf=0,last=performance.now();
+function toast(text){$('toast').textContent=text;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').textContent='',1400)}
+function save(){runtime.flushSaveProgress({version:1,state:{day:state.day,phase:state.phase,phaseStarted:state.phaseStarted,hp:state.hp,maxHp:state.maxHp,damage:state.damage,wood:state.wood,score:state.score,x:state.x,y:state.y,enemies:state.enemies}});toast('저장했어')}
+function restore(){const saved=runtime.loadProgress(null);const data=saved?.data?.state; if(!data)return false;Object.assign(state,data);state.enemies=Array.isArray(data.enemies)?data.enemies:[];state.running=true;toast('저장된 게임을 불러왔어');return true}
+function reset(){state.day=1;state.phase='day';state.phaseStarted=performance.now();state.hp=100;state.maxHp=100;state.damage=10;state.wood=0;state.score=0;state.x=480;state.y=300;state.enemies=[];state.running=true;state.lastSpawn=0;state.lastAttack=0;toast('처음부터 시작했어')}
+function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+function spawn(){const side=Math.random()<.5?-1:1;state.enemies.push({x:side<0?-30:990,y:90+Math.random()*420,hp:28,maxHp:28,speed:36,damage:8,r:15})}
+function attack(now){if(!state.running||runtime.paused||now-state.lastAttack<state.attackCooldown*1000)return;let target=null,distance=Infinity;for(const e of state.enemies){const d=Math.hypot(e.x-state.x,e.y-state.y);if(e.hp>0&&d<distance){distance=d;target=e}}if(!target||distance>150)return;state.lastAttack=now;target.hp-=state.damage;if(target.hp<=0){state.score++;if(state.score%3===0)state.wood++;}}
+function craft(){if(state.wood<3){toast('나무가 3개 필요해');return}state.wood-=3;state.damage+=8;toast('나무칼 완성! 공격력 +8')}
+function update(dt,now){if(!state.running||runtime.paused)return;const moving=(keys.has('ArrowRight')||keys.has('d')?1:0)-(keys.has('ArrowLeft')||keys.has('a')?1:0);if(moving)state.x=clamp(state.x+moving*210*dt,24,936);const elapsed=(now-state.phaseStarted)/1000;if(elapsed>=12){state.phase=state.phase==='day'?'night':'day';state.phaseStarted=now;if(state.phase==='day')state.day++;toast(state.phase==='night'?'밤이야. 괴물이 나와!':'아침이야. 나무를 모아!')}if(state.phase==='night'&&now-state.lastSpawn>=1800){state.lastSpawn=now;spawn()}if(state.phase==='day'&&now-state.woodPulse>=900){state.woodPulse=now;state.wood=Math.min(30,state.wood+1)}for(let i=state.enemies.length-1;i>=0;i--){const e=state.enemies[i];if(e.hp<=0){state.enemies.splice(i,1);continue}const dx=state.x-e.x,dy=state.y-e.y,d=Math.hypot(dx,dy)||1;e.x+=dx/d*e.speed*dt;e.y+=dy/d*e.speed*dt;if(d<e.r+16)state.hp=Math.max(0,state.hp-e.damage*dt)}if(state.hp<=0){state.hp=0;state.running=false;toast('게임오버 · 재시작으로 다시 해봐')}}
+function render(){const night=state.phase==='night';ctx.fillStyle=night?'#15253b':'#91c77f';ctx.fillRect(0,0,960,600);for(let i=0;i<30;i++){ctx.fillStyle=night?'#243850':'#5e9a58';ctx.fillRect((i*83)%940+10,(i*47)%560+20,5,5)}if(!night){ctx.fillStyle='#4c8e48';for(let i=0;i<10;i++){const x=(i*97)%900+30;ctx.beginPath();ctx.arc(x,470+(i%3)*30,12,0,Math.PI*2);ctx.fill()}}for(const e of state.enemies){ctx.fillStyle='#cf5d5d';ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,Math.PI*2);ctx.fill();ctx.fillStyle='#1b1b1b';ctx.fillRect(e.x-14,e.y-23,28,4);ctx.fillStyle='#73d273';ctx.fillRect(e.x-14,e.y-23,28*Math.max(0,e.hp/e.maxHp),4)}ctx.fillStyle='#3c7de8';ctx.beginPath();ctx.arc(state.x,state.y,17,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(24,18,300,72);ctx.fillStyle='#142018';ctx.font='900 18px system-ui';ctx.fillText(`HP ${Math.ceil(state.hp)} / ${state.maxHp}`,38,44);ctx.fillText(`공격 ${state.damage} · 나무 ${state.wood}`,38,68);ctx.font='800 13px system-ui';ctx.fillText(night?'밤':'낮',260,44);if(!state.running){ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(0,0,960,600);ctx.fillStyle='#fff';ctx.font='900 42px system-ui';ctx.fillText('게임오버',385,285)}}
+function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;update(dt,now);render();$('day').textContent=`${state.day}일`;$('phase').textContent=state.phase==='night'?'밤':'낮';$('hp').textContent=`HP ${Math.ceil(state.hp)}/${state.maxHp}`;$('wood').textContent=`나무 ${state.wood}`;$('gold').textContent=`점수 ${state.score}`;raf=requestAnimationFrame(loop)}
+window.addEventListener('keydown',e=>{keys.add(e.key);if(e.key===' ')attack(performance.now())});window.addEventListener('keyup',e=>keys.delete(e.key));$('left').onpointerdown=()=>keys.add('ArrowLeft');$('left').onpointerup=()=>keys.delete('ArrowLeft');$('left').onpointercancel=()=>keys.delete('ArrowLeft');$('right').onpointerdown=()=>keys.add('ArrowRight');$('right').onpointerup=()=>keys.delete('ArrowRight');$('right').onpointercancel=()=>keys.delete('ArrowRight');$('attack').onclick=()=>attack(performance.now());$('craft').onclick=craft;$('pause').onclick=()=>{state.running=!state.running;if(state.running){runtime.setPaused(false,'manual');toast('계속 진행')}else{runtime.setPaused(true,'manual');toast('일시정지')}};$('save').onclick=save;
+runtime.boot({visibilityPause:true,errorReporter:(error)=>console.error(error)});restore();raf=requestAnimationFrame(loop);
+</script>
+</body></html>
