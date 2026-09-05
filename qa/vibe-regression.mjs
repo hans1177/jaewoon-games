@@ -11,6 +11,7 @@ import { createAIPartyConfig, createDefaultAIEntries, validateAIPartyConfig } fr
 import { buildGameContent } from '../assets/game-content.js';
 import { createVibeProject, exportVibeProject, importVibeProject, cloneVibeProject } from '../assets/vibe-project.js';
 import { createVibeBuildPlan } from '../assets/vibe-build-plan.js';
+import { createVibeEditBrief, planVibeWorkbenchTask } from '../assets/vibe-workbench.js';
 import { buildGodotProject } from '../assets/godot-game-generator.js';
 import { auditGodotProjectFiles } from '../assets/godot-project-qa.js';
 
@@ -52,6 +53,23 @@ pass('editable project export/import/clone');
 const buildPlan = createVibeBuildPlan({ request: '이 디펜스 게임을 카툰 스타일로 고퀄리티 리빌드하고 Godot 버전도 만들어줘', target: 'godot', gameId: 'qa-defense', rebuild: true });
 assert.equal(buildPlan.animation.required, true); assert.equal(buildPlan.visual.required, true); assert.equal(buildPlan.mobile.touchFirst, true); assert(buildPlan.phases.some(step => step.includes('애니메이션'))); assert(buildPlan.phases.some(step => step.includes('Godot') || step.includes('코드/씬/에셋 연결')));
 pass('integrated build plan');
+
+const editBrief = createVibeEditBrief({ request: 'Godot 게임 그래픽, 애니메이션, 모바일 UI를 고퀄로 개선해줘', target: 'godot', gameId: 'qa-defense', files: ['godot-games/qa-defense/main.gd', 'godot-games/qa-defense/main.tscn'] });
+assert.deepEqual(editBrief.responsibleFiles, ['godot-games/qa-defense/main.gd', 'godot-games/qa-defense/main.tscn']);
+assert(editBrief.directives.some(step => step.includes('idle/move/attack/hit/skill/death')));
+assert(editBrief.directives.some(step => step.includes('safe area')));
+assert(editBrief.protectedTargets.includes('체력'));
+assert(editBrief.protectedTargets.includes('저장 구조'));
+assert.equal(editBrief.outputContract.returnCompleteFiles, true);
+assert.equal(editBrief.outputContract.noWrapperPatch, true);
+assert.equal(editBrief.outputContract.atomicApply, true);
+assert.equal(editBrief.outputContract.rollbackOnFailure, true);
+const workbenchTask = planVibeWorkbenchTask({ request: 'Godot 게임 그래픽을 개선해줘', target: 'godot', gameId: 'qa-defense', file: 'godot-games/qa-defense/main.gd' });
+assert.equal(workbenchTask.version, 3);
+assert.equal(workbenchTask.applyPolicy.directSourceEditPreferred, true);
+assert.equal(workbenchTask.applyPolicy.atomicApply, true);
+assert.equal(workbenchTask.editBrief.responsibleFiles[0], 'godot-games/qa-defense/main.gd');
+pass('executable edit brief and protected output contract');
 
 const godotProject = buildGodotProject({ packageData: { gameId: 'qa-godot', blueprint: { sourcePrompt: '모바일 디펜스', intent: { rules: { hp: 100, damage: 10, waves: 10 } } }, content: { players: [{ hp: 100, damage: 10 }], waves: { total: 10 } } }, title: 'QA Godot', slug: 'qa-godot' });
 const godotQa = auditGodotProjectFiles(godotProject.files); assert.equal(godotQa.passed, true, JSON.stringify(godotQa)); assert(godotProject.files['project.godot'].includes('[display]')); assert(godotProject.files['main.tscn'].includes('SafeArea')); assert(godotProject.files['main.gd'].includes('InputEventScreenTouch'));
