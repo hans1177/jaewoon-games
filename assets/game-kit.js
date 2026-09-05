@@ -7,6 +7,7 @@ import { JaewoonSkillEffects } from './skill-effects.js';
 import { JaewoonEconomyLootShop } from './economy-loot-shop.js';
 import { JaewoonSaveVersioning } from './save-versioning.js';
 import { JaewoonStatModifiers } from './stat-modifiers.js';
+import { JaewoonCraftingRecipes } from './crafting-recipes.js';
 
 function options(value) {
   if (value === true || value == null) return {};
@@ -30,6 +31,7 @@ export class JaewoonGameKit {
     skillEffects = false,
     economySystems = false,
     statModifiers = false,
+    craftingRecipes = false,
     versionedSave = false,
   } = {}) {
     this.gameId = String(gameId || 'game');
@@ -82,6 +84,14 @@ export class JaewoonGameKit {
       this.state.stats = system.createState(config.initialState || {});
     }
 
+    if (craftingRecipes) {
+      if (!this.systems.has('inventory')) throw new Error('crafting recipes require inventory equipment');
+      const config = options(craftingRecipes);
+      const system = new JaewoonCraftingRecipes({ ...config, inventory: this.systems.get('inventory') });
+      this.systems.set('crafting', system);
+      this.state.crafting = system.createState(config.initialState || {});
+    }
+
     if (versionedSave) {
       this.systems.set('save', new JaewoonSaveVersioning(options(versionedSave)));
     }
@@ -125,6 +135,7 @@ export class JaewoonGameKit {
     if (this.has('quests')) this.state.quests = this.get('quests').createState(state.quests || {});
     if (this.has('skills')) this.state.skills = this.get('skills').createState(state.skills || {});
     if (this.has('stats')) this.state.stats = this.get('stats').createState(state.stats || {});
+    if (this.has('crafting')) this.state.crafting = this.get('crafting').createState(state.crafting || {});
 
     return this.state;
   }
