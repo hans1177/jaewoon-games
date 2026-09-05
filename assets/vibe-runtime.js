@@ -60,9 +60,11 @@ export class JaewoonVibeRuntime {
 
   setPaused(value, reason = 'manual') {
     this.paused = Boolean(value);
-    window.dispatchEvent(new CustomEvent('jaewoon:pause', {
-      detail: { paused: this.paused, reason }
-    }));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('jaewoon:pause', {
+        detail: { paused: this.paused, reason }
+      }));
+    }
     return this.paused;
   }
 
