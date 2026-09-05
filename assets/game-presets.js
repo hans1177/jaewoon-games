@@ -61,6 +61,7 @@ export function buildGamePreset({
   multiplayer = false,
   aiCompanions = false,
   npcDialogue = false,
+  d20Rules = false,
   extras = {},
   remove = {},
 } = {}) {
@@ -84,6 +85,11 @@ export function buildGamePreset({
     systems.push('npc-dialogue','gemini-helper','local-dialogue-fallback');
     qa.push('dialogue-fallback');
   }
+  if (d20Rules) {
+    systems.push('d20-rules','dice','ability-modifiers','skill-checks','saving-throws','initiative','attack-rolls','critical-hits','conditions');
+    assets.push('dice-ui','status-icons');
+    qa.push('d20-rolls','advantage-disadvantage','critical-rules','combatant-hp','conditions');
+  }
 
   systems = without(unique([...systems, ...list(extras.systems)]), remove.systems);
   assets = without(unique([...assets, ...list(extras.assets)]), remove.assets);
@@ -102,6 +108,7 @@ export function buildGamePreset({
       licenseCheckRequired: true,
       mobileFirst: true,
       presetIsSuggestion: true,
+      d20RulesOptional: true,
     }),
   });
 }
