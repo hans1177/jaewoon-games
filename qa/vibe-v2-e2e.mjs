@@ -1,7 +1,7 @@
 // 파일명: qa/vibe-v2-e2e.mjs
 // 역할: Vibe Maker V2 전체 실행 루프의 후보검증·런타임·복구·롤백 경계를 검사
 import assert from 'node:assert/strict';
-import {createVibeV2Execution,advanceVibeV2Candidate,verifyVibeV2Runtime,verifyVibeV2Repair} from '../assets/vibe-v2-runtime.js';
+import {createVibeV2Execution,createVibeWorkbenchCandidate,advanceVibeV2Candidate,verifyVibeV2Runtime,verifyVibeV2Repair} from '../assets/vibe-v2-runtime.js';
 import {replayVibeWorld} from '../assets/vibe-quality-intelligence.js';
 
 const initial={worldId:'e2e',seed:'fixed',state:{hero:{hp:100},world:{progress:1}}};
@@ -25,6 +25,23 @@ const candidate=advanceVibeV2Candidate(execution,{candidate:{patch:{ui:{layout:'
 assert.equal(candidate.phase,'candidate-verified');
 assert.equal(candidate.mayRun,true);
 assert.equal(candidate.candidateValidation.valid,true);
+
+const workbench=createVibeWorkbenchCandidate({request:'UI 수정',target:'godot',revision:'workbench-1',checkpointId:'checkpoint-workbench-1',changes:[{path:'main.gd',current:'extends Node',next:'extends Node\n# mobile ui',changed:true}]});
+assert.equal(workbench.mayApply,true);
+assert.equal(workbench.execution.phase,'candidate-verified');
+assert.equal(workbench.requiresAtomicWrite,true);
+assert.equal(workbench.requiresPostApplyEvidence,true);
+assert.deepEqual(workbench.execution.responsibleFiles,['main.gd']);
+assert.equal('before' in workbench.candidate.files[0],false);
+assert.equal('after' in workbench.candidate.files[0],false);
+const workbenchUnverified=verifyVibeV2Runtime(workbench.execution,{baseline,candidateWorld:baseline,invariants:{requiredPaths:['hero.hp']},candidateApplied:true});
+assert.equal(workbenchUnverified.phase,'repair-required');
+assert.equal(workbenchUnverified.mayCommit,false);
+assert.equal(workbenchUnverified.rollbackRequired,true);
+assert.ok(workbenchUnverified.evidenceGate.blockedReasons.includes('runtime-not-observed'));
+assert.ok(workbenchUnverified.evidenceGate.blockedReasons.includes('qa-not-passed'));
+assert.ok(workbenchUnverified.evidenceGate.blockedReasons.includes('regression-not-passed'));
+assert.ok(workbenchUnverified.evidenceGate.blockedReasons.includes('exact-revision-unproven'));
 
 const missingEvidence=verifyVibeV2Runtime(candidate,{baseline,candidateWorld:baseline,invariants:{requiredPaths:['hero.hp'],nonNegativePaths:['hero.hp']},qaPassed:true});
 assert.equal(missingEvidence.phase,'repair-required');
