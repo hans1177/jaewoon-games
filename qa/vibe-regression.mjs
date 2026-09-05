@@ -14,6 +14,7 @@ import { createVibeBuildPlan } from '../assets/vibe-build-plan.js';
 import { createVibeEditBrief, planVibeWorkbenchTask } from '../assets/vibe-workbench.js';
 import { buildGodotProject } from '../assets/godot-game-generator.js';
 import { auditGodotProjectFiles } from '../assets/godot-project-qa.js';
+import { diffVibeText, findProtectedVibeChanges, isProtectedVibeChangeAuthorized } from '../web-games/vibe-maker/workbench.js';
 
 function pass(name) { console.log(`PASS ${name}`); }
 
@@ -75,6 +76,20 @@ const godotProject = buildGodotProject({ packageData: { gameId: 'qa-godot', blue
 const godotQa = auditGodotProjectFiles(godotProject.files); assert.equal(godotQa.passed, true, JSON.stringify(godotQa)); assert(godotProject.files['project.godot'].includes('[display]')); assert(godotProject.files['main.tscn'].includes('SafeArea')); assert(godotProject.files['main.gd'].includes('InputEventScreenTouch'));
 pass('Godot project structure QA');
 
+assert.equal(diffVibeText('var hp = 100','var hp = 100').length,0);
+assert.deepEqual(findProtectedVibeChanges('var hp = 100','var hp = 120'),['체력']);
+assert.equal(isProtectedVibeChangeAuthorized('체력','그래픽과 게임성을 개선해줘'),false);
+assert.equal(isProtectedVibeChangeAuthorized('체력','플레이어 체력을 120으로 변경해줘'),true);
+assert.equal(isProtectedVibeChangeAuthorized('공격력','밸런스를 개선해줘'),false);
+assert.equal(isProtectedVibeChangeAuthorized('공격력','공격력 데미지를 15로 변경해줘'),true);
+assert.equal(isProtectedVibeChangeAuthorized('웨이브','게임 재미를 개선해줘'),false);
+assert.equal(isProtectedVibeChangeAuthorized('웨이브','웨이브를 20으로 변경해줘'),true);
+assert.equal(isProtectedVibeChangeAuthorized('보상','게임성을 고도화해줘'),false);
+assert.equal(isProtectedVibeChangeAuthorized('보상','보상 골드를 5로 변경해줘'),true);
+assert.equal(isProtectedVibeChangeAuthorized('저장','저장 기능을 개선해줘'),false);
+assert.equal(isProtectedVibeChangeAuthorized('저장','저장키 마이그레이션을 해줘'),true);
+pass('explicit protected rule authorization');
+
 const workspaceSource = fs.readFileSync(new URL('../assets/vibe-workspace.js', import.meta.url), 'utf8');
 const workbenchSource = fs.readFileSync(new URL('../web-games/vibe-maker/workbench.js', import.meta.url), 'utf8');
 assert(workspaceSource.includes('async writeManyAtomic(changes)'));
@@ -83,7 +98,7 @@ assert(workbenchSource.includes('const PROTECTED='));
 assert(workbenchSource.includes('protectionViolations(item)'));
 assert(workbenchSource.includes('writeManyAtomic(changed)'));
 assert(workbenchSource.includes('변경 세트에 연결돼 있어'));
-assert(workbenchSource.includes("name==='저장'"));
+assert(workbenchSource.includes('PROTECTED_INTENT'));
 pass('workbench protected diff and atomic rollback contract');
 
 console.log('PASS integrated vibe regression suite');
