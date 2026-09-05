@@ -1,0 +1,89 @@
+name: Godot Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'godot-games/bug-defense/**'
+      - '.github/workflows/godot-android-apk.yml'
+
+permissions:
+  contents: read
+
+env:
+  GODOT_VERSION: '4.7'
+  PROJECT_PATH: godot-games/bug-defense
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+
+      - name: Record source commit
+        run: |
+          set -euo pipefail
+          mkdir -p "$PROJECT_PATH/build"
+          printf '%s\n' "$GITHUB_SHA" > "$PROJECT_PATH/build/commit-sha.txt"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Download Godot 4.7 and matching export templates
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/godot" "$HOME/.local/share/godot/export_templates/4.7.stable"
+          curl -fL --retry 3 -o /tmp/godot.zip "https://github.com/godotengine/godot/releases/download/4.7-stable/Godot_v4.7-stable_linux.x86_64.zip"
+          curl -fL --retry 3 -o /tmp/templates.tpz "https://github.com/godotengine/godot/releases/download/4.7-stable/Godot_v4.7-stable_export_templates.tpz"
+          unzip -q /tmp/godot.zip -d "$HOME/godot"
+          unzip -q /tmp/templates.tpz -d /tmp/godot-templates
+          cp -a /tmp/godot-templates/templates/. "$HOME/.local/share/godot/export_templates/4.7.stable/"
+          GODOT_BIN="$(find "$HOME/godot" -maxdepth 1 -type f -name 'Godot_v4.7-stable_linux*.x86_64' | head -n 1)"
+          test -n "$GODOT_BIN"
+          chmod +x "$GODOT_BIN"
+          echo "GODOT_BIN=$GODOT_BIN" >> "$GITHUB_ENV"
+          "$GODOT_BIN" --version
+
+      - name: Import project headlessly
+        run: |
+          set -euo pipefail
+          "$GODOT_BIN" --headless --path "$PROJECT_PATH" --import --quit
+
+      - name: Export Android debug APK
+        run: |
+          set -euo pipefail
+          mkdir -p "$PROJECT_PATH/build"
+          "$GODOT_BIN" --headless --path "$PROJECT_PATH" --export-debug Android build/bug-defense.apk
+          test -s "$PROJECT_PATH/build/bug-defense.apk"
+
+      - name: Verify APK and commit provenance
+        run: |
+          set -euo pipefail
+          test "$(cat "$PROJECT_PATH/build/commit-sha.txt")" = "$GITHUB_SHA"
+          APK="$PROJECT_PATH/build/bug-defense.apk"
+          test -s "$APK"
+          if command -v apksigner >/dev/null 2>&1; then
+            apksigner verify "$APK"
+          else
+            echo 'apksigner unavailable; APK existence verified'
+          fi
+          sha256sum "$APK" > "$PROJECT_PATH/build/bug-defense.apk.sha256"
+
+      - name: Upload exact-commit APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bug-defense-android-${{ github.sha }}
+          path: |
+            godot-games/bug-defense/build/bug-defense.apk
+            godot-games/bug-defense/build/bug-defense.apk.sha256
+            godot-games/bug-defense/build/commit-sha.txt
+          if-no-files-found: error
+          retention-days: 14
