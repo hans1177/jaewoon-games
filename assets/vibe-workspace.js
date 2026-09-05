@@ -94,6 +94,36 @@ export class JaewoonVibeWorkspace {
     return Object.freeze({ path, changed: previous !== next, previousBytes: previous == null ? 0 : new Blob([previous]).size, nextBytes: new Blob([next]).size });
   }
 
+  async writeManyAtomic(changes) {
+    if (!Array.isArray(changes) || !changes.length) throw new Error('atomic changes required');
+    const prepared = [];
+    for (const change of changes) {
+      const path = clean(change?.path);
+      const current = await this.read(path);
+      const expected = String(change?.current ?? '');
+      if (current !== expected) throw new Error(`workspace file changed before transaction: ${path}`);
+      prepared.push({ path, current, next: String(change?.next ?? '') });
+    }
+    const applied = [];
+    try {
+      for (const item of prepared) {
+        if (item.current === item.next) continue;
+        await this.write(item.path, item.next, { backup: true, expectedPrevious: item.current });
+        applied.push(item);
+      }
+    } catch (error) {
+      const rollbackErrors = [];
+      for (const item of [...applied].reverse()) {
+        try { await this.write(item.path, item.current, { backup: false, expectedPrevious: item.next }); }
+        catch (rollbackError) { rollbackErrors.push(`${item.path}: ${rollbackError.message}`); }
+      }
+      if (rollbackErrors.length) throw new Error(`${error.message} · rollback 실패: ${rollbackErrors.join(' | ')}`);
+      throw new Error(`${error.message} · 적용 파일 자동 rollback 완료`);
+    }
+    await this.scan();
+    return Object.freeze({ changed: applied.length, paths: Object.freeze(applied.map(item => item.path)) });
+  }
+
   async writeBackup(path, content) {
     const stamp = new Date().toISOString().replace(/[:.]/g, '-');
     const backupPath = `.vibe-backups/${stamp}/${path}`;
