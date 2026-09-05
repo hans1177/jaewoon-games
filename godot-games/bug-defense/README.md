@@ -66,6 +66,7 @@
 - Android Debug APK 자동 빌드 대상
 - 공개 배포하지 않음
 - APK 아티팩트 생성 후 휴대폰 설치 검증을 우선함
+- Godot 4.7.2 stable 공식 빌드 사용
 
 ## 주의
 
