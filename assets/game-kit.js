@@ -8,6 +8,7 @@ import { JaewoonEconomyLootShop } from './economy-loot-shop.js';
 import { JaewoonSaveVersioning } from './save-versioning.js';
 import { JaewoonStatModifiers } from './stat-modifiers.js';
 import { JaewoonCraftingRecipes } from './crafting-recipes.js';
+import { JaewoonAchievementsUnlocks } from './achievements-unlocks.js';
 
 function options(value) {
   if (value === true || value == null) return {};
@@ -32,15 +33,14 @@ export class JaewoonGameKit {
     economySystems = false,
     statModifiers = false,
     craftingRecipes = false,
+    achievementsUnlocks = false,
     versionedSave = false,
   } = {}) {
     this.gameId = String(gameId || 'game');
     this.systems = new Map();
     this.state = {};
 
-    if (d20Rules) {
-      this.systems.set('d20', new JaewoonD20Rules(options(d20Rules)));
-    }
+    if (d20Rules) this.systems.set('d20', new JaewoonD20Rules(options(d20Rules)));
 
     if (turnBasedCombat) {
       const config = options(turnBasedCombat);
@@ -48,9 +48,7 @@ export class JaewoonGameKit {
       this.systems.set('turnCombat', new JaewoonTurnCombat({ ...config, rules }));
     }
 
-    if (characterProgression) {
-      this.systems.set('progression', new JaewoonCharacterProgression(options(characterProgression)));
-    }
+    if (characterProgression) this.systems.set('progression', new JaewoonCharacterProgression(options(characterProgression)));
 
     if (inventoryEquipment) {
       const config = options(inventoryEquipment);
@@ -73,9 +71,7 @@ export class JaewoonGameKit {
       this.state.skills = system.createState(config.initialState || {});
     }
 
-    if (economySystems) {
-      this.systems.set('economy', new JaewoonEconomyLootShop(options(economySystems)));
-    }
+    if (economySystems) this.systems.set('economy', new JaewoonEconomyLootShop(options(economySystems)));
 
     if (statModifiers) {
       const config = options(statModifiers);
@@ -92,14 +88,17 @@ export class JaewoonGameKit {
       this.state.crafting = system.createState(config.initialState || {});
     }
 
-    if (versionedSave) {
-      this.systems.set('save', new JaewoonSaveVersioning(options(versionedSave)));
+    if (achievementsUnlocks) {
+      const config = options(achievementsUnlocks);
+      const system = new JaewoonAchievementsUnlocks(config);
+      this.systems.set('achievements', system);
+      this.state.achievements = system.createState(config.initialState || {});
     }
+
+    if (versionedSave) this.systems.set('save', new JaewoonSaveVersioning(options(versionedSave)));
   }
 
-  has(name) {
-    return this.systems.has(String(name));
-  }
+  has(name) { return this.systems.has(String(name)); }
 
   get(name) {
     const key = String(name);
@@ -107,17 +106,10 @@ export class JaewoonGameKit {
     return this.systems.get(key);
   }
 
-  enabledSystems() {
-    return Object.freeze([...this.systems.keys()]);
-  }
+  enabledSystems() { return Object.freeze([...this.systems.keys()]); }
 
   snapshot(extra = {}) {
-    return clone({
-      gameId: this.gameId,
-      systems: this.enabledSystems(),
-      state: this.state,
-      extra,
-    });
+    return clone({ gameId: this.gameId, systems: this.enabledSystems(), state: this.state, extra });
   }
 
   wrapSave(extra = {}) {
@@ -130,13 +122,12 @@ export class JaewoonGameKit {
     const payload = snapshot?.data && snapshot?.version ? snapshot.data : snapshot;
     if (payload?.gameId && String(payload.gameId) !== this.gameId) throw new Error('game id mismatch');
     const state = payload?.state || {};
-
     if (this.has('inventory')) this.state.inventory = this.get('inventory').createState(state.inventory || {});
     if (this.has('quests')) this.state.quests = this.get('quests').createState(state.quests || {});
     if (this.has('skills')) this.state.skills = this.get('skills').createState(state.skills || {});
     if (this.has('stats')) this.state.stats = this.get('stats').createState(state.stats || {});
     if (this.has('crafting')) this.state.crafting = this.get('crafting').createState(state.crafting || {});
-
+    if (this.has('achievements')) this.state.achievements = this.get('achievements').createState(state.achievements || {});
     return this.state;
   }
 
@@ -147,9 +138,7 @@ export class JaewoonGameKit {
   }
 }
 
-export function createGameKit(options = {}) {
-  return new JaewoonGameKit(options);
-}
+export function createGameKit(options = {}) { return new JaewoonGameKit(options); }
 
 if (typeof window !== 'undefined') {
   window.JaewoonGameKit = JaewoonGameKit;
