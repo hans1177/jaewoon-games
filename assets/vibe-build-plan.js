@@ -19,8 +19,8 @@ export function createVibeBuildPlan({ request = '', target = 'auto', gameId = nu
 
   const work = createVibeWorkPlan({ request: prompt, target, gameId, file, knownBroken });
   const workbench = planVibeWorkbenchTask({ request: prompt, target, gameId, file, knownBroken });
-  const assets = planAssetApplication({ prompt, manifest: assetManifest });
   const wantsRebuild = Boolean(rebuild) || /고퀄|퀄리티|업그레이드|고급화|리메이크|리빌드|제대로|그래픽|애니|모션/i.test(prompt);
+  const assets = planAssetApplication({ prompt, manifest: assetManifest, rebuild: wantsRebuild });
   const rebuildPlan = wantsRebuild ? createVibeRebuildPlan({ request: prompt, target, gameType: 'existing', keepRules: true, preserveSave: true }) : null;
   const rebuildExecution = wantsRebuild ? createVibeRebuildExecution({ request: prompt, target, gameId, currentSnapshot, style: visualStyle }) : null;
   const visual = createVisualStyleProfile({ request: prompt, ...(visualStyle ? { style: visualStyle } : {}) });
