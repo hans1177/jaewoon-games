@@ -1,0 +1,54 @@
+name: Game Session Test
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test game session
+        run: |
+          rm -rf /tmp/jaewoon-session
+          mkdir -p /tmp/jaewoon-session
+          cp assets/game-session.js assets/vibe-runtime.js assets/game-blueprint.js assets/game-presets.js assets/game-kit.js assets/d20-rules.js assets/turn-combat.js assets/character-progression.js assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js assets/economy-loot-shop.js assets/save-versioning.js /tmp/jaewoon-session/
+          printf '{"type":"module"}\n' > /tmp/jaewoon-session/package.json
+          cd /tmp/jaewoon-session
+          node --check game-session.js
+          node --input-type=module <<'NODE'
+          import { createGameSession } from './game-session.js';
+          const storage = new Map();
+          globalThis.localStorage = {
+            getItem: (key) => storage.has(key) ? storage.get(key) : null,
+            setItem: (key, value) => storage.set(key, String(value)),
+            removeItem: (key) => storage.delete(key),
+          };
+
+          const session = createGameSession({
+            gameId: 'qa-session',
+            genre: 'rpg',
+            presetOptions: { d20Rules: true, turnBasedCombat: true },
+            autoRestore: false,
+          });
+          session.start({ bootRuntime: false });
+          if (!session.kit.has('inventory') || !session.kit.has('quests') || !session.kit.has('d20')) throw new Error('session kit missing systems');
+          session.kit.get('inventory').addItem(session.kit.state.inventory, { id: 'potion', quantity: 4 });
+          session.setMeta('stage', 7);
+          const saved = session.save();
+          if (!saved || !storage.size) throw new Error('session save failed');
+
+          const restored = createGameSession({
+            gameId: 'qa-session',
+            genre: 'rpg',
+            presetOptions: { d20Rules: true, turnBasedCombat: true },
+          });
+          if (restored.kit.get('inventory').countItem(restored.kit.state.inventory, 'potion') !== 4) throw new Error('session inventory restore failed');
+          if (restored.meta.stage !== 7) throw new Error('session meta restore failed');
+          restored.destroy();
+          console.log('PASS game session');
+          NODE
