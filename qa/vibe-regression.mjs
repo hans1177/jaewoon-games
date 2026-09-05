@@ -95,7 +95,7 @@ const godotProject = buildGodotProject({
   slug: 'qa-godot',
 });
 const godotQa = auditGodotProjectFiles(godotProject.files);
-assert(godotQa.valid, JSON.stringify(godotQa));
+assert.equal(godotQa.passed, true, JSON.stringify(godotQa));
 assert(godotProject.files['project.godot'].includes('[display]'));
 assert(godotProject.files['main.tscn'].includes('SafeArea'));
 assert(godotProject.files['main.gd'].includes('InputEventScreenTouch'));
