@@ -14,6 +14,7 @@ import { JaewoonStatModifiers } from './stat-modifiers.js';
 import { JaewoonCraftingRecipes } from './crafting-recipes.js';
 import { JaewoonAchievementsUnlocks } from './achievements-unlocks.js';
 import { planVibeCodingTask } from './vibe-helper.js';
+import { planVibeWorkbenchTask } from './vibe-workbench.js';
 
 function options(value) {
   if (value === true || value == null) return {};
@@ -58,6 +59,10 @@ export function createGameKit(options = {}) { return new JaewoonGameKit(options)
 
 export function createVibeCodingTaskPlan(options = {}) {
   return planVibeCodingTask(options);
+}
+
+export function createVibeWorkbenchTaskPlan(options = {}) {
+  return planVibeWorkbenchTask(options);
 }
 
 export async function createGameKitFromPrompt({ gameId = 'game', prompt = '', genre = null, mixGenres = [], platform = 'auto', presetOptions = {}, kitOptions = {}, useGenreDefaults = true } = {}) {
@@ -113,6 +118,7 @@ if (typeof window !== 'undefined') {
   window.JaewoonGameKit = JaewoonGameKit;
   window.createJaewoonGameKit = createGameKit;
   window.createJaewoonVibeCodingTaskPlan = createVibeCodingTaskPlan;
+  window.createJaewoonVibeWorkbenchTaskPlan = createVibeWorkbenchTaskPlan;
   window.createJaewoonGameKitFromPrompt = createGameKitFromPrompt;
   window.createJaewoonGameContentFromPrompt = createGameContentFromPrompt;
   window.createJaewoonGamePackageFromPrompt = createGamePackageFromPrompt;
