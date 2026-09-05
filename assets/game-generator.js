@@ -69,24 +69,24 @@ title.textContent=${JSON.stringify(gameTitle)};
 function cloneState(){return JSON.parse(JSON.stringify({hp:S.hp,maxHp:S.maxHp,px:S.px,py:S.py,enemies:S.enemies,score:S.score,wave:S.wave,lastSpawn:S.lastSpawn}))}
 function restoreState(saved){if(!saved||typeof saved!=='object')return false;S.hp=Number.isFinite(Number(saved.hp))?Number(saved.hp):initial.hp;S.maxHp=Number.isFinite(Number(saved.maxHp))?Number(saved.maxHp):initial.maxHp;S.px=Number.isFinite(Number(saved.px))?Number(saved.px):initial.px;S.py=Number.isFinite(Number(saved.py))?Number(saved.py):initial.py;S.enemies=Array.isArray(saved.enemies)?saved.enemies.map((e)=>({...e})).filter((e)=>Number.isFinite(Number(e.x))&&Number.isFinite(Number(e.y))&&Number.isFinite(Number(e.hp))):[];S.score=Math.max(0,Number(saved.score)||0);S.wave=Math.max(1,Math.min(maxWaves,Number(saved.wave)||1));S.lastSpawn=Number.isFinite(Number(saved.lastSpawn))?Number(saved.lastSpawn):performance.now()/1000;return true}
 function saveGame(){runtime.saveProgress({version:1,gameId:${JSON.stringify(saveGameId)},state:cloneState()});status.textContent='저장 완료'}
-function loadGame(){const saved=runtime.loadProgress(null);const payload=saved?.data?.gameId===${JSON.stringify(saveGameId)}?saved.data.state:saved?.gameId===${JSON.stringify(saveGameId)}?saved.state:null;if(payload&&restoreState(payload)){status.textContent='저장된 게임 불러옴';return true}return false}
-function reset(){S.hp=initial.hp;S.maxHp=initial.maxHp;S.px=initial.px;S.py=initial.py;S.enemies=[];S.score=0;S.wave=1;S.lastSpawn=performance.now()/1000;running=true;status.textContent='재시작했어'}
+function loadGame(){const saved=runtime.loadProgress(null);const payload=saved?.data?.gameId===${JSON.stringify(saveGameId)}?saved.data.state:saved?.gameId===${JSON.stringify(saveGameId)}?saved.state:null;return payload&&restoreState(payload)}
+function reset(){S.hp=initial.hp;S.maxHp=initial.maxHp;S.px=initial.px;S.py=initial.py;S.enemies=[];S.score=0;S.wave=1;S.lastSpawn=performance.now()/1000;running=true;runtime.setPaused(false,'restart');status.textContent='재시작했어'}
 function spawn(i=0){const a=(i*1.7)%6.283;S.enemies.push({x:maxW/2+Math.cos(a)*(maxW*.38),y:maxH/2+Math.sin(a)*(maxH*.35),hp:S.enemyHp})}
 function target(){let t=null,d=1e9;for(const e of S.enemies){const q=Math.hypot(e.x-S.px,e.y-S.py);if(q<d){d=q;t=e}}return t}
-function attack(){if(!running)return;const t=target();if(t&&Math.hypot(t.x-S.px,t.y-S.py)<120){t.hp-=S.damage;if(t.hp<=0){S.enemies.splice(S.enemies.indexOf(t),1);S.score++;if(S.score%Math.max(1,S.enemyCount)===0&&S.wave<maxWaves)S.wave++}}}
+function attack(){if(!running||runtime.paused)return;const t=target();if(t&&Math.hypot(t.x-S.px,t.y-S.py)<120){t.hp-=S.damage;if(t.hp<=0){S.enemies.splice(S.enemies.indexOf(t),1);S.score++;if(S.score%Math.max(1,S.enemyCount)===0&&S.wave<maxWaves)S.wave++}}}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 function update(dt,now){const dx=(keys.has('ArrowRight')||keys.has('d')?1:0)-(keys.has('ArrowLeft')||keys.has('a')?1:0);const dy=(keys.has('ArrowDown')||keys.has('s')?1:0)-(keys.has('ArrowUp')||keys.has('w')?1:0);const len=Math.hypot(dx,dy)||1;if(dx||dy){S.px+=dx/len*S.speed*dt;S.py+=dy/len*S.speed*dt}S.px=clamp(S.px,20,maxW-20);S.py=clamp(S.py,20,maxH-20);for(const e of S.enemies){const ex=S.px-e.x,ey=S.py-e.y,d=Math.hypot(ex,ey)||1;e.x+=ex/d*32*dt;e.y+=ey/d*32*dt;if(d<26)S.hp=Math.max(0,S.hp-S.enemyDamage*dt)}if(now/1000-S.lastSpawn>=S.spawnInterval&&S.wave<=maxWaves){S.lastSpawn=now/1000;for(let i=0;i<S.enemyCount;i++)spawn(i)}if(S.hp<=0){running=false;status.textContent='게임오버'}}
 function draw(){x.clearRect(0,0,c.width,c.height);x.fillStyle='#172554';x.fillRect(0,0,c.width,c.height);for(const e of S.enemies){x.fillStyle='#ef4444';x.beginPath();x.arc(e.x,e.y,16,0,6.283);x.fill()}x.fillStyle='#22c55e';x.beginPath();x.arc(S.px,S.py,18,0,6.283);x.fill();x.fillStyle='rgba(0,0,0,.45)';x.fillRect(12,12,360,68);x.fillStyle='#fff';x.font='700 18px system-ui';x.fillText('HP '+Math.ceil(S.hp)+' / '+S.maxHp,24,38);x.fillText('공격 '+S.damage+' · 점수 '+S.score+' · 웨이브 '+S.wave+' / '+maxWaves,24,64)}
 function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(running&&!runtime.paused)update(dt,now);draw();raf=requestAnimationFrame(loop)}
 
 window.addEventListener('keydown',e=>{keys.add(e.key);if(e.key===' ')attack();if(e.key==='Escape')runtime.setPaused(!runtime.paused,'keyboard')});window.addEventListener('keyup',e=>keys.delete(e.key));
-function holdButton(id,key){const b=document.getElementById(id);const down=()=>keys.add(key),up=()=>keys.delete(key);b.addEventListener('pointerdown',down);b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('pointerleave',up)}
+function holdButton(id,key){const b=document.getElementById(id);const down=(e)=>{e.preventDefault();keys.add(key)},up=()=>keys.delete(key);b.addEventListener('pointerdown',down,{passive:false});b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('pointerleave',up)}
 holdButton('left','ArrowLeft');holdButton('right','ArrowRight');document.getElementById('attack').onclick=attack;
 document.getElementById('pause').onclick=()=>{runtime.setPaused(!runtime.paused,'button');status.textContent=runtime.paused?'일시정지':'플레이 중'};document.getElementById('restart').onclick=reset;document.getElementById('save').onclick=saveGame;
 
 runtime.boot({visibilityPause:true,errorReporter:(error)=>{status.textContent='오류를 감지했어. 게임은 계속할게.';console.error(error)}});
-loadGame();
-for(let i=0;i<S.enemyCount;i++)spawn(i);
+const restored=loadGame();
+if(restored)status.textContent='저장된 게임 불러옴';else for(let i=0;i<S.enemyCount;i++)spawn(i);
 last=performance.now();raf=requestAnimationFrame(loop);
 window.addEventListener('beforeunload',saveGame);
 </script></body></html>`;
