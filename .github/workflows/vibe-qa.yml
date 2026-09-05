@@ -101,6 +101,7 @@ jobs:
           combat.addCombatant({ id: 'hero', team: 'a', hp: 20, maxHp: 20, defense: 12, initiativeModifier: 5 });
           combat.addCombatant({ id: 'ally', team: 'a', hp: 10, maxHp: 10, defense: 10, initiativeModifier: 1 });
           combat.addCombatant({ id: 'enemy', team: 'b', hp: 6, maxHp: 6, defense: 10, initiativeModifier: 3 });
+          combat.addCombatant({ id: 'enemy2', team: 'b', hp: 5, maxHp: 5, defense: 10, initiativeModifier: -1 });
           const first = combat.start();
           if (first.id !== 'hero' || combat.round !== 1) throw new Error('turn order failed');
           combat.addCondition('hero', 'focus', { rounds: 1 });
@@ -108,10 +109,10 @@ jobs:
           if (!hit.attack.hit || combat.getCombatant('enemy').hp !== 0) throw new Error('attack resolution failed');
           const next = combat.nextTurn();
           if (!next || next.id !== 'ally') throw new Error('defeated combatant skip failed');
-          combat.applyDamage('ally', 10, 'test');
+          combat.applyDamage('enemy2', 5, 'hero');
           if (!combat.finished || combat.livingTeams()[0] !== 'a') throw new Error('combat end failed');
           const snapshot = combat.snapshot();
-          if (!Array.isArray(snapshot.combatants) || snapshot.combatants.length !== 3) throw new Error('snapshot failed');
+          if (!Array.isArray(snapshot.combatants) || snapshot.combatants.length !== 4) throw new Error('snapshot failed');
           console.log('PASS turn combat');
           NODE
 
