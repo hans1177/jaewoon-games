@@ -1,6 +1,6 @@
 // 파일명: qa/vibe-regression.mjs
 // 역할: 웹/Godot 바이브 개발 공통 기능 통합 회귀검사
-// 규칙: 기존 게임 규칙/세이브를 변경하지 않고 공통 API와 신규 기능 연결만 검증
+// 규칙: 서버 AI는 게임 내 NPC 전용, Vibe Maker 개발 실행에는 사용하지 않음
 
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -49,8 +49,8 @@ const workbenchSource = fs.readFileSync(new URL('../web-games/vibe-maker/workben
 const workerSource = fs.readFileSync(new URL('../_worker.js', import.meta.url), 'utf8');
 assert(workspaceSource.includes('async writeManyAtomic(changes)')); assert(workspaceSource.includes('적용 파일 자동 rollback 완료'));
 assert(workbenchSource.includes('const PROTECTED=')); assert(workbenchSource.includes('protectionViolations(item)')); assert(workbenchSource.includes('writeManyAtomic(changed)')); assert(workbenchSource.includes('변경 세트에 연결돼 있어')); assert(workbenchSource.includes('PROTECTED_INTENT'));
-assert(workbenchSource.includes("fetch('/api/ai/vibe-code'")); assert(workbenchSource.includes('async generateChangeSet(request)'));
-assert(workerSource.includes("url.pathname === '/api/ai/vibe-code'")); assert(workerSource.includes('async function handleVibeCode')); assert(workerSource.includes('COMPLETE replacement file')); assert(workerSource.includes('Do not create new files.')); assert(workerSource.includes('GEMINI_API_KEY'));
-pass('server-side AI edit generation and protected atomic apply wiring');
+assert(!workbenchSource.includes('/api/ai/vibe-code')); assert(!workbenchSource.includes('generateChangeSet(request)')); assert(workbenchSource.includes('서버 AI 미사용'));
+assert(!workerSource.includes('/api/ai/vibe-code')); assert(!workerSource.includes('handleVibeCode')); assert(workerSource.includes("scope: 'in-game-npc-only'")); assert(workerSource.includes('Never edit source code or act as a development agent.')); assert(workerSource.includes("url.pathname === '/api/ai/gemini'"));
+pass('NPC-only server AI boundary and Vibe Maker isolation');
 
 console.log('PASS integrated vibe regression suite');
