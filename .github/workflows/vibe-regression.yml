@@ -33,6 +33,7 @@ jobs:
             assets/vibe-rebuild-planner.js
             assets/vibe-rebuild-engine.js
             qa/vibe-regression.mjs
+            qa/vibe-agent-causality.mjs
           )
           for file in "${files[@]}"; do
             node --input-type=module --check < "$file"
@@ -41,3 +42,6 @@ jobs:
 
       - name: Run integrated regression suite
         run: node qa/vibe-regression.mjs
+
+      - name: Test agent causality determinism
+        run: node qa/vibe-agent-causality.mjs
