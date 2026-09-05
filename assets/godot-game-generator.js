@@ -1,16 +1,23 @@
 // 파일명: assets/godot-game-generator.js
 // 역할: 바이브 게임 패키지를 Godot 프로젝트 파일 집합으로 변환하는 생성 엔진
-// 규칙: 게임 규칙/저장 데이터 보존, 기존 Godot 공통 시스템 재사용, 모바일 터치+가상 조이스틱 기본
+// 규칙: 게임 규칙/저장 데이터 보존, 모바일 터치+가상 조이스틱 기본, 생성물은 직접 수정 가능한 구조
 
 function clean(value) { return String(value ?? '').trim(); }
+
 function safeSlug(value) {
   return clean(value).toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 48) || 'vibe-game';
 }
-function clone(value) { return value == null ? value : JSON.parse(JSON.stringify(value)); }
-function esc(value) { return clean(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"'); }
+
+function clone(value) {
+  return value == null ? value : JSON.parse(JSON.stringify(value));
+}
+
+function esc(value) {
+  return clean(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
 
 function buildProjectGd({ gameName }) {
-  return `[application]\nconfig/name="${esc(gameName)}"\nrun/main_scene="res://main.tscn"\nconfig/features=PackedStringArray("4.7")\n\n[display]\nwindow/size/viewport_width=960\nwindow/size/viewport_height=540\nwindow/size/window_width_override=960\nwindow/size/window_height_override=540\nwindow/stretch/mode="canvas_items"\nwindow/handheld/orientation=0\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\ntextures/default_filters/use_nearest_mipmap_filter=false\n\n`;
+  return `[application]\nconfig/name="${esc(gameName)}"\nrun/main_scene="res://main.tscn"\nconfig/features=PackedStringArray("4.7")\n\n[display]\nwindow/size/viewport_width=960\nwindow/size/viewport_height=540\nwindow/size/window_width_override=960\nwindow/size/window_height_override=540\nwindow/stretch/mode="canvas_items"\nwindow/handheld/orientation=0\n\n[rendering]\nrenderer/rendering_method="gl_compatibility"\nrenderer/rendering_method.mobile="gl_compatibility"\ntextures/default_filters/use_nearest_mipmap_filter=false\n`;
 }
 
 function buildMainScene() {
@@ -24,10 +31,11 @@ function buildMainScript({ packageData }) {
   const damage = Number(player.damage ?? packageData?.blueprint?.intent?.rules?.damage ?? 10);
   const waves = Number(content.waves?.total ?? packageData?.blueprint?.intent?.rules?.waves ?? 1);
   const request = JSON.stringify(clean(packageData?.blueprint?.sourcePrompt || packageData?.blueprint?.prompt || ''));
+
   return `extends Node2D
 
 # 파일명: main.gd
-# 역할: 생성된 게임의 모바일 입력/기본 상태 진입점
+# 역할: 생성 게임의 모바일 입력 및 기본 런타임 진입점
 # 규칙: 터치+가상 조이스틱 우선, 화면 여백 보호, 게임 규칙은 GAME_DATA에 보존
 
 const GAME_DATA := {
@@ -69,15 +77,13 @@ func _process(delta: float) -> void:
   queue_redraw()
 
 func _draw() -> void:
-  var left := joystick_center
-  var right := attack_center
-  draw_circle(left, joystick_radius, Color(1,1,1,0.12))
-  draw_arc(left, joystick_radius, 0.0, TAU, 48, Color(1,1,1,0.28), 2.0)
-  draw_circle(joystick_knob, 28.0, Color(0.25,0.55,1.0,0.85))
-  draw_circle(right, attack_radius, Color(0.88,0.2,0.24,0.9))
-  draw_arc(right, attack_radius, 0.0, TAU, 48, Color(1,1,1,0.38), 2.0)
-  draw_string(ThemeDB.fallback_font, right + Vector2(-26, 6), "공격", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color.WHITE)
-  draw_string(ThemeDB.fallback_font, left + Vector2(-44, 98), "조이스틱", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(1,1,1,0.7))
+  draw_circle(joystick_center, joystick_radius, Color(1, 1, 1, 0.12))
+  draw_arc(joystick_center, joystick_radius, 0.0, TAU, 48, Color(1, 1, 1, 0.28), 2.0)
+  draw_circle(joystick_knob, 28.0, Color(0.25, 0.55, 1.0, 0.85))
+  draw_circle(attack_center, attack_radius, Color(0.88, 0.2, 0.24, 0.9))
+  draw_arc(attack_center, attack_radius, 0.0, TAU, 48, Color(1, 1, 1, 0.38), 2.0)
+  draw_string(ThemeDB.fallback_font, attack_center + Vector2(-26, 6), "공격", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color.WHITE)
+  draw_string(ThemeDB.fallback_font, joystick_center + Vector2(-44, 98), "조이스틱", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(1, 1, 1, 0.7))
 
 func _layout_mobile_controls() -> void:
   var size := viewport_size if viewport_size != Vector2.ZERO else get_viewport_rect().size
@@ -96,13 +102,12 @@ func _input(event: InputEvent) -> void:
     _touch_drag(event)
 
 func _touch_down(event: InputEventScreenTouch) -> void:
-  var position := event.position
-  if position.distance_to(joystick_center) <= joystick_radius * 1.35 and not joystick_active:
+  if event.position.distance_to(joystick_center) <= joystick_radius * 1.35 and not joystick_active:
     joystick_active = true
     joystick_touch_id = event.index
-    _set_joystick(position)
+    _set_joystick(event.position)
     return
-  if position.distance_to(attack_center) <= attack_radius * 1.25:
+  if event.position.distance_to(attack_center) <= attack_radius * 1.25:
     attack_pressed = true
     _on_attack_pressed()
 
@@ -156,7 +161,7 @@ func _on_attack_pressed() -> void:
 }
 
 function buildReadme({ gameName }) {
-  return `# ${gameName}\n\n재운게임즈 바이브 도우미에서 생성된 Godot 프로젝트입니다.\n\n기본 기준:\n- Godot 4.7 계열\n- 모바일 터치 우선\n- 가상 조이스틱 기본\n- 안전 여백\n- 세로/가로 자동 대응\n- 그래픽과 게임 로직 분리\n- 애니메이션: idle/move/attack/hit/skill/death\n- 실제 게임 에셋 연결 가능 구조\n- 기존 게임 규칙/세이브 보호\n\n주의: 실제 게임 출시 전에는 생성된 씬/스크립트 참조, 실제 에셋 연결, 애니메이션 리소스, 저장/복원, 입력, 성능을 Godot 에디터와 타깃 기기에서 검증해야 합니다.\n`;
+  return `# ${gameName}\n\n재운게임즈 바이브 도우미에서 생성된 Godot 프로젝트입니다.\n\n기본 기준:\n- Godot 4.7 계열\n- 모바일 터치 우선\n- 가상 조이스틱 기본\n- 안전 여백\n- 세로/가로 자동 대응\n- 그래픽과 게임 로직 분리\n- 애니메이션 상태: idle/move/attack/hit/skill/death\n- 기존 게임 규칙/세이브 보호\n\n실제 출시 전에는 Godot 에디터에서 씬/스크립트 참조, 실제 에셋 연결, 애니메이션 리소스, 저장/복원, 입력, 성능을 반드시 검증해야 합니다.\n`;
 }
 
 export function buildGodotProject({ packageData = {}, title = null, slug = null } = {}) {
@@ -168,6 +173,7 @@ export function buildGodotProject({ packageData = {}, title = null, slug = null 
     'main.gd': buildMainScript({ packageData: clone(packageData) }),
     'README.md': buildReadme({ gameName }),
   };
+
   return Object.freeze({
     formatVersion: 2,
     slug: projectSlug,
