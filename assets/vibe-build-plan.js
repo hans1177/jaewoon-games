@@ -3,7 +3,7 @@
 // 규칙: 기존 코드 확인 우선, 기존 게임 자동 변경 금지, 그래픽·애니메이션·모션 우선
 
 import { createVibeWorkPlan } from './vibe-orchestrator.js';
-import { planVibeWorkbenchTask } from './vibe-workbench.js';
+import { planVibeWorkbenchTask, createVibeEditBrief } from './vibe-workbench.js';
 import { planAssetApplication } from './asset-selector.js';
 import { createVibeRebuildPlan } from './vibe-rebuild-planner.js';
 import { createVibeRebuildExecution } from './vibe-rebuild-engine.js';
@@ -14,7 +14,7 @@ import { createVibeArtPipeline } from './vibe-art-pipeline.js';
 function clean(value) { return String(value ?? '').trim(); }
 function unique(values) { return [...new Set(values.filter(Boolean))]; }
 
-export function createVibeBuildPlan({ request = '', target = 'auto', gameId = null, file = null, knownBroken = false, assetManifest = null, rebuild = false, visualStyle = null, packageData = null, currentSnapshot = null } = {}) {
+export function createVibeBuildPlan({ request = '', target = 'auto', gameId = null, file = null, knownBroken = false, assetManifest = null, rebuild = false, visualStyle = null, packageData = null, currentSnapshot = null, responsibleFiles = [] } = {}) {
   const prompt = clean(request);
   if (!prompt) throw new Error('build plan request required');
 
@@ -27,6 +27,7 @@ export function createVibeBuildPlan({ request = '', target = 'auto', gameId = nu
   const visual = createVisualStyleProfile({ request: prompt, ...(visualStyle ? { style: visualStyle } : {}) });
   const art = createVibeArtPipeline({ request: prompt, target, style: visual.style });
   const quality = packageData ? auditGameQuality({ packageData, prompt }) : null;
+  const editBrief = createVibeEditBrief({ request: prompt, target: workbench.target, gameId, files: responsibleFiles.length ? responsibleFiles : (file ? [file] : []) });
 
   const phases = unique([
     ...work.steps,
@@ -48,7 +49,7 @@ export function createVibeBuildPlan({ request = '', target = 'auto', gameId = nu
   ]);
 
   return Object.freeze({
-    version: 6,
+    version: 7,
     request: prompt,
     target: workbench.target,
     gameId: gameId ? clean(gameId) : null,
@@ -59,6 +60,7 @@ export function createVibeBuildPlan({ request = '', target = 'auto', gameId = nu
     quality,
     visualStyle: visual,
     artPipeline: art,
+    editBrief,
     affectedSystems: Object.freeze(unique([...work.affectedSystems, ...workbench.affectedSystems, 'visual', 'animation', 'vfx', 'audio', 'quality-audit', wantsRebuild ? 'rebuild-execution' : ''])),
     candidateFiles: Object.freeze(unique([...work.candidateFiles, ...workbench.candidateFiles])),
     protectedTargets: Object.freeze([...new Set([...work.protectedTargets, ...workbench.protectedTargets])]),
@@ -69,9 +71,9 @@ export function createVibeBuildPlan({ request = '', target = 'auto', gameId = nu
     audio: art.audio,
     mobile: Object.freeze({ touchFirst: true, virtualJoystick: true, safeArea: true, responsiveOrientation: true, keyboardDefault: false }),
     phases: Object.freeze(phases),
-    qa: Object.freeze(unique([...work.qa, ...art.qa, '에셋 경로/라이선스', '그래픽 스타일 일관성', '애니메이션 프레임/상태 전환', '모션-판정 동기화', '세이브 호환성', '웹/Godot 참조 무결성', '최종 품질 회귀', '리빌드 전후 비교'])),
+    qa: Object.freeze(unique([...work.qa, ...art.qa, ...editBrief.requiredChecks, '에셋 경로/라이선스', '그래픽 스타일 일관성', '애니메이션 프레임/상태 전환', '모션-판정 동기화', '세이브 호환성', '웹/Godot 참조 무결성', '최종 품질 회귀', '리빌드 전후 비교'])),
     warnings: Object.freeze(unique([...work.warnings, ...workbench.warnings, ...(assets.missingTypes.length ? [`에셋 부족: ${assets.missingTypes.join(', ')}`] : []), ...(quality?.priority?.map((item) => `${item.category} 개선 우선: ${item.action}`) || [])])),
-    policy: Object.freeze({ existingGameAutoApply: false, directSourceEditPreferred: true, saveMigrationRequiredForBreakingChange: true, reviewBeforeCommit: true, visualAndAnimationRequired: true, checkpointBeforeRebuild: true, finalOutputMustBePlayable: true }),
+    policy: Object.freeze({ existingGameAutoApply: false, directSourceEditPreferred: true, saveMigrationRequiredForBreakingChange: true, reviewBeforeCommit: true, visualAndAnimationRequired: true, checkpointBeforeRebuild: true, finalOutputMustBePlayable: true, atomicApply: true, rollbackOnFailure: true }),
   });
 }
 
