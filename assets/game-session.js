@@ -10,6 +10,7 @@ import { JaewoonResourceGathering } from './resource-gathering.js';
 import { JaewoonStatusEffects } from './status-effects.js';
 import { JaewoonCombatVitals } from './combat-vitals.js';
 import { JaewoonTargetingSystem } from './targeting-system.js';
+import { JaewoonCombatActions } from './combat-actions.js';
 import { buildGameBlueprint } from './game-blueprint.js';
 
 function clone(value) {
@@ -36,6 +37,7 @@ export class JaewoonGameSession {
     statusOptions = {},
     combatOptions = {},
     targetingOptions = {},
+    combatActionOptions = {},
     autoRestore = true,
   } = {}) {
     this.blueprint = buildGameBlueprint({
@@ -60,6 +62,12 @@ export class JaewoonGameSession {
     this.statusEffects = new JaewoonStatusEffects(statusOptions);
     this.combatVitals = new JaewoonCombatVitals(combatOptions);
     this.targeting = new JaewoonTargetingSystem(targetingOptions);
+    this.combatActions = new JaewoonCombatActions({
+      ...combatActionOptions,
+      targeting: this.targeting,
+      combatVitals: this.combatVitals,
+      statusEffects: this.statusEffects,
+    });
     this.started = false;
     this.meta = {};
 
@@ -239,13 +247,19 @@ export class JaewoonGameSession {
 
   damageCombatEntity(entityId, amount, context = {}) {
     const event = this.combatVitals.damage(entityId, amount, context);
-    if (event.ok) this.emit('session-combat', { gameId: this.blueprint.gameId, ...event });
+    if (event.ok) {
+      this.syncTargetVitals(entityId);
+      this.emit('session-combat', { gameId: this.blueprint.gameId, ...event });
+    }
     return event;
   }
 
   healCombatEntity(entityId, amount, context = {}) {
     const event = this.combatVitals.heal(entityId, amount, context);
-    if (event.ok) this.emit('session-combat', { gameId: this.blueprint.gameId, ...event });
+    if (event.ok) {
+      this.syncTargetVitals(entityId);
+      this.emit('session-combat', { gameId: this.blueprint.gameId, ...event });
+    }
     return event;
   }
 
@@ -282,8 +296,25 @@ export class JaewoonGameSession {
     return this.targeting.setVitals(entityId, {
       hp: vitals.hp,
       maxHp: vitals.maxHp,
-      alive: vitals.alive,
+      alive: !vitals.dead,
     });
+  }
+
+  registerCombatAction(action = {}) {
+    return this.combatActions.register(action);
+  }
+
+  useCombatAction(sourceId, actionId, targetId, context = {}) {
+    const result = this.combatActions.use(sourceId, actionId, targetId, context);
+    if (result.damage?.ok) this.syncTargetVitals(targetId);
+    if (result.ok) this.emit('session-combat-action', { gameId: this.blueprint.gameId, ...result });
+    return result;
+  }
+
+  updateCombatActions(delta) {
+    const events = this.combatActions.update(delta);
+    for (const event of events) this.emit('session-combat-action', { gameId: this.blueprint.gameId, ...event });
+    return events;
   }
 
   updateCommonSystems(delta, data = null) {
@@ -293,6 +324,7 @@ export class JaewoonGameSession {
       dayNight: this.updateDayNight(delta),
       resources: this.updateResources(delta),
       statusEffects: this.updateStatusEffects(delta),
+      combatActions: this.updateCombatActions(delta),
       states: this.updateStateMachines(delta, data),
     };
   }
@@ -304,6 +336,7 @@ export class JaewoonGameSession {
     this.dayNight.setPaused(paused);
     this.resources.setPaused(paused);
     this.statusEffects.setPaused(paused);
+    this.combatActions.setPaused(paused);
     if (paused) this.input.releaseAll();
     this.emit('session-pause', { gameId: this.blueprint.gameId, paused, reason });
     return paused;
@@ -327,6 +360,7 @@ export class JaewoonGameSession {
       statusEffects: this.statusEffects.snapshot(),
       combatVitals: this.combatVitals.snapshot(),
       targeting: this.targeting.snapshot(),
+      combatActions: this.combatActions.snapshot(),
       meta: clone({ ...this.meta, ...extra }) || {},
     };
   }
@@ -372,6 +406,8 @@ export class JaewoonGameSession {
     if (session?.statusEffects) this.statusEffects.restore(session.statusEffects);
     if (session?.combatVitals) this.combatVitals.restore(session.combatVitals);
     if (session?.targeting) this.targeting.restore(session.targeting);
+    if (session?.combatActions) this.combatActions.restore(session.combatActions);
+    this.combatActions.bind({ targeting: this.targeting, combatVitals: this.combatVitals, statusEffects: this.statusEffects });
     this.meta = clone(session?.meta || {}) || {};
     this.emit('session-restore', { gameId: this.blueprint.gameId });
     return true;
@@ -400,6 +436,7 @@ export class JaewoonGameSession {
     this.statusEffects.reset();
     this.combatVitals.reset();
     this.targeting.reset();
+    this.combatActions.reset();
     this.runtime.destroy();
     this.started = false;
   }
