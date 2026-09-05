@@ -51,6 +51,15 @@ const GENRE_DEFAULT_OPTIONS = Object.freeze({
   }),
 });
 
+export const DEFAULT_ASSET_POLICY = Object.freeze({
+  preferExistingAssets: true,
+  downloadOnDemand: true,
+  licenseCheckRequired: true,
+  preferredLicenses: Object.freeze(['CC0', 'commercial-no-attribution', 'CC-BY']),
+  blockedLicenses: Object.freeze(['NC', 'unknown', 'unclear-redistribution']),
+  maxSingleAssetBytes: 104857600,
+});
+
 function mergeKitOptions(base = {}, override = {}) {
   const result = { ...base };
   for (const [key, value] of Object.entries(override || {})) {
@@ -69,12 +78,40 @@ function inferKitOptions(preset) {
   return inferred;
 }
 
+function buildMaterialPlan(assetCategories = [], overrides = {}) {
+  const requested = [...new Set((assetCategories || []).map((item) => String(item)).filter(Boolean))];
+  const policy = Object.freeze({ ...DEFAULT_ASSET_POLICY, ...(overrides.policy || {}) });
+  return Object.freeze({
+    categories: Object.freeze(requested),
+    workflow: Object.freeze([
+      'reuse-existing-assets',
+      'search-approved-free-sources-if-missing',
+      'verify-license-per-asset',
+      'download-only-needed-assets',
+      'record-license-and-source',
+      'remove-unused-assets',
+    ]),
+    policy,
+  });
+}
+
+function buildQaPlan(qaItems = []) {
+  const checks = [...new Set((qaItems || []).map((item) => String(item)).filter(Boolean))];
+  return Object.freeze({
+    checks: Object.freeze(checks),
+    requiredBaseline: Object.freeze(['boot', 'restart', 'save-load', 'touch', 'console-errors']),
+    mobileFirst: true,
+    preserveExistingBehavior: true,
+  });
+}
+
 export function buildGameBlueprint({
   gameId = 'game',
   genre,
   mixGenres = [],
   presetOptions = {},
   kitOptions = {},
+  assetPlanOptions = {},
   useGenreDefaults = true,
 } = {}) {
   const normalizedGenre = String(genre || '').toLowerCase();
@@ -96,6 +133,8 @@ export function buildGameBlueprint({
     gameId: String(gameId || 'game'),
     ...resolvedKitOptions,
   });
+  const materialPlan = buildMaterialPlan(preset.assets, assetPlanOptions);
+  const qaPlan = buildQaPlan(preset.qa);
 
   return Object.freeze({
     gameId: String(gameId || 'game'),
@@ -106,8 +145,26 @@ export function buildGameBlueprint({
     qa: preset.qa,
     rules: preset.rules,
     kitConfig,
+    materialPlan,
+    qaPlan,
     createKit() {
       return createGameKit(kitConfig);
+    },
+    plan() {
+      return Object.freeze({
+        gameId: String(gameId || 'game'),
+        genre: preset.genre,
+        mixedGenres: preset.mixedGenres,
+        systems: preset.systems,
+        materialPlan,
+        qaPlan,
+        preservation: Object.freeze({
+          preserveExistingBalance: preset.rules.preserveExistingBalance,
+          preserveSaveFormat: preset.rules.preserveSaveFormat,
+          mobileFirst: preset.rules.mobileFirst,
+          saveMigrationsRequiredForBreakingChanges: preset.rules.saveMigrationsRequiredForBreakingChanges,
+        }),
+      });
     },
   });
 }
