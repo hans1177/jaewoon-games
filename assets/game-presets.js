@@ -6,34 +6,34 @@ const COMMON = Object.freeze({
 
 export const GAME_PRESETS = Object.freeze({
   rpg: {
-    systems: ['inventory','equipment','quests','dialogue','npc','combat','progression','shops'],
+    systems: ['inventory','equipment','quests','dialogue','npc','combat','progression','shops','stat-modifiers'],
     assets: ['player','npc','enemies','items','equipment','portraits','tiles','bgm','vfx'],
-    qa: ['inventory-persistence','quest-progression','dialogue-flow','combat-progression'],
+    qa: ['inventory-persistence','quest-progression','dialogue-flow','combat-progression','stat-modifiers'],
   },
   defense: {
-    systems: ['waves','spawning','targeting','towers','shop','upgrades','bosses'],
+    systems: ['waves','spawning','targeting','towers','shop','upgrades','bosses','stat-modifiers'],
     assets: ['enemies','towers','projectiles','map','wave-ui','bgm','vfx'],
-    qa: ['wave-progression','spawn-limits','targeting','boss-clear','shop-flow'],
+    qa: ['wave-progression','spawn-limits','targeting','boss-clear','shop-flow','stat-modifiers'],
   },
   survival: {
-    systems: ['day-night','gathering','crafting','inventory','equipment','spawning','status-effects'],
+    systems: ['day-night','gathering','crafting','inventory','equipment','spawning','status-effects','stat-modifiers'],
     assets: ['player','resources','enemies','items','crafting-ui','environment','bgm','ambience'],
-    qa: ['day-night-loop','crafting-costs','inventory-persistence','spawn-rules'],
+    qa: ['day-night-loop','crafting-costs','inventory-persistence','spawn-rules','stat-modifiers'],
   },
   strategy: {
-    systems: ['territories','units','resources','ai-opponents','battle-resolution','camera','selection'],
+    systems: ['territories','units','resources','ai-opponents','battle-resolution','camera','selection','stat-modifiers'],
     assets: ['map','units','buildings','resource-icons','battle-vfx','bgm'],
-    qa: ['selection','territory-state','battle-resolution','resource-flow'],
+    qa: ['selection','territory-state','battle-resolution','resource-flow','stat-modifiers'],
   },
   action: {
-    systems: ['movement','combat','skills','cooldowns','enemies','bosses','checkpoints'],
+    systems: ['movement','combat','skills','cooldowns','enemies','bosses','checkpoints','stat-modifiers'],
     assets: ['player','enemies','bosses','weapons','animations','vfx','bgm','sfx'],
-    qa: ['controls','hit-detection','cooldowns','death-restart','boss-clear'],
+    qa: ['controls','hit-detection','cooldowns','death-restart','boss-clear','stat-modifiers'],
   },
   adventure: {
-    systems: ['movement','interaction','dialogue','quests','checkpoints','collectibles'],
+    systems: ['movement','interaction','dialogue','quests','checkpoints','collectibles','stat-modifiers'],
     assets: ['player','npc','environment','props','portraits','bgm','ambience'],
-    qa: ['interaction','dialogue-flow','checkpoint-restore','progression'],
+    qa: ['interaction','dialogue-flow','checkpoint-restore','progression','stat-modifiers'],
   },
   puzzle: {
     systems: ['input','levels','undo','restart','win-condition','progress'],
