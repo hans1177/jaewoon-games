@@ -159,6 +159,25 @@ export async function createGameContentFromPrompt({ gameId = 'game', prompt = ''
   return Object.freeze({ blueprint, content, kit: createGameKit(blueprint.kitConfig) });
 }
 
+export async function createGamePackageFromPrompt({ gameId = 'game', prompt = '', genre = null, mixGenres = [], platform = 'auto', presetOptions = {}, kitOptions = {}, useGenreDefaults = true } = {}) {
+  const { buildGameBlueprint } = await import('./game-blueprint.js');
+  const { buildGameContent } = await import('./game-content.js');
+  const blueprint = buildGameBlueprint({ gameId, prompt, genre, mixGenres, platform, presetOptions, kitOptions, useGenreDefaults });
+  const kit = createGameKit(blueprint.kitConfig);
+  const content = buildGameContent({ blueprint, prompt });
+  const initialSave = kit.wrapSave({ content, blueprint: blueprint.plan() });
+  return Object.freeze({
+    version: 1,
+    gameId: blueprint.gameId,
+    platform: blueprint.platform,
+    blueprint,
+    content,
+    kit,
+    initialSave: clone(initialSave),
+    safety: Object.freeze({ reviewBeforeApply: true, autoApplyToExistingGame: false }),
+  });
+}
+
 export async function createGameSessionFromPrompt({ gameId = 'game', prompt = '', genre = null, mixGenres = [], platform = 'auto', presetOptions = {}, kitOptions = {}, sessionOptions = {}, autoRestore = true } = {}) {
   const { createGameSession } = await import('./game-session.js');
   const { buildGameBlueprint } = await import('./game-blueprint.js');
@@ -180,5 +199,6 @@ if (typeof window !== 'undefined') {
   window.createJaewoonGameKit = createGameKit;
   window.createJaewoonGameKitFromPrompt = createGameKitFromPrompt;
   window.createJaewoonGameContentFromPrompt = createGameContentFromPrompt;
+  window.createJaewoonGamePackageFromPrompt = createGamePackageFromPrompt;
   window.createJaewoonGameSessionFromPrompt = createGameSessionFromPrompt;
 }
