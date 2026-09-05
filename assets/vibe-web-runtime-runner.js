@@ -4,13 +4,21 @@
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.freeze(v);for(const x of Object.values(v))freeze(x)}return v},text=v=>String(v??'').trim(),token=()=>`vibe-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 const cleanPath=v=>text(v).replace(/^\.\//,'').replace(/\\/g,'/').split('/').reduce((a,x)=>{if(!x||x==='.')return a;if(x==='..')a.pop();else a.push(x);return a},[]).join('/'),dir=p=>{const x=cleanPath(p),i=x.lastIndexOf('/');return i<0?'':x.slice(0,i+1)},resolve=(base,ref)=>cleanPath(`${dir(base)}${ref}`),external=v=>/^(?:[a-z]+:|\/\/|#|data:|blob:)/i.test(text(v));
 const mime=p=>p.endsWith('.css')?'text/css':p.endsWith('.js')||p.endsWith('.mjs')?'text/javascript':p.endsWith('.json')?'application/json':p.endsWith('.svg')?'image/svg+xml':p.endsWith('.png')?'image/png':p.endsWith('.jpg')||p.endsWith('.jpeg')?'image/jpeg':p.endsWith('.webp')?'image/webp':p.endsWith('.gif')?'image/gif':p.endsWith('.wav')?'audio/wav':p.endsWith('.mp3')?'audio/mpeg':p.endsWith('.ogg')?'audio/ogg':'application/octet-stream';
+const localRefs=(source,re)=>[...String(source??'').matchAll(re)].map(m=>text(m[1])).filter(x=>x&&!external(x));
 
 export async function createVibeWebRuntimeBundle(workspace,{entry='index.html'}={}){
  if(!workspace?.read||!workspace?.summary)throw new Error('workspace required');const summary=workspace.summary(),files=new Set((summary.files||[]).map(x=>cleanPath(x.path))),entryPath=cleanPath(entry);if(!files.has(entryPath))throw new Error(`web runtime entry missing: ${entryPath}`);let html=await workspace.read(entryPath);const urls=[];
+ const unsupported=[];
+ for(const m of html.matchAll(/<script\b([^>]*?)\bsrc=["']([^"']+)["']([^>]*)><\/script>/gi))if(!external(m[2])&&/\btype\s*=\s*["']module["']/i.test(m[0]))unsupported.push(`module-script:${m[2]}`);
+ for(const ref of localRefs(html,/<(?:img|audio|video|source)\b[^>]*?\bsrc=["']([^"']+)["']/gi))unsupported.push(`media:${ref}`);
+ for(const ref of localRefs(html,/<link\b[^>]*?\bhref=["']([^"']+)["'][^>]*>/gi))if(!new RegExp(`href=["']${ref.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}["'][^>]*rel\s*=\s*["']?stylesheet`,'i').test(html)&&!new RegExp(`rel\s*=\s*["']?stylesheet[^>]*href=["']${ref.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}["']`,'i').test(html))unsupported.push(`link:${ref}`);
+ const cssLinks=[...html.matchAll(/<link\b([^>]*?)\bhref=["']([^"']+)["']([^>]*)>/gi)].filter(m=>!external(m[2])&&/rel\s*=\s*["']?stylesheet/i.test(m[0]));
+ for(const m of cssLinks){const p=resolve(entryPath,m[2]);if(!files.has(p))continue;const css=await workspace.read(p);for(const ref of localRefs(css,/url\(\s*["']?([^"')]+)["']?\s*\)/gi))unsupported.push(`css-url:${p}:${ref}`)}
+ if(unsupported.length)throw new Error(`web runtime unsupported local resources: ${[...new Set(unsupported)].join(', ')}`);
  const makeUrl=async(path)=>{const p=cleanPath(path);if(!files.has(p))throw new Error(`web runtime resource missing: ${p}`);const source=await workspace.read(p),url=URL.createObjectURL(new Blob([source],{type:mime(p)}));urls.push(url);return url};
- // 외부 URL은 건드리지 않고, 프로젝트 내부 script/link만 blob URL로 치환한다. 이미지/오디오는 브라우저 오류 이벤트가 조용할 수 있어 이후 관측 확장 대상으로 남긴다.
+ // 현재 안전 지원 범위는 classic local script + local stylesheet다. 그 밖의 로컬 의존성은 false pass 대신 명시적으로 차단한다.
  const scripts=[...html.matchAll(/<script\b([^>]*?)\bsrc=["']([^"']+)["']([^>]*)><\/script>/gi)];for(const m of scripts){if(external(m[2]))continue;const p=resolve(entryPath,m[2]),url=await makeUrl(p);html=html.replace(m[0],`<script${m[1]} src="${url}"${m[3]}></script>`)}
- const links=[...html.matchAll(/<link\b([^>]*?)\bhref=["']([^"']+)["']([^>]*)>/gi)];for(const m of links){if(external(m[2])||!/rel\s*=\s*["']?stylesheet/i.test(m[0]))continue;const p=resolve(entryPath,m[2]),url=await makeUrl(p);html=html.replace(m[0],`<link${m[1]} href="${url}"${m[3]}>`)}
+ for(const m of cssLinks){const p=resolve(entryPath,m[2]),url=await makeUrl(p);html=html.replace(m[0],`<link${m[1]} href="${url}"${m[3]}>`)}
  return freeze({version:1,entry:entryPath,html,resourceCount:urls.length,authority:'workspace-web-runtime-bundle',revoke(){for(const u of urls)URL.revokeObjectURL(u)}});
 }
 
