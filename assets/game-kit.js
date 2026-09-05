@@ -16,7 +16,7 @@ import { JaewoonAchievementsUnlocks } from './achievements-unlocks.js';
 import { createAIPartyConfig } from './ai-party.js';
 import { planVibeCodingTask } from './vibe-helper.js';
 import { planVibeWorkbenchTask } from './vibe-workbench.js';
-import { createVibeProject, recordVibeProjectChange, recordVibeRepair, exportVibeProject, importVibeProject, cloneVibeProject } from './vibe-project.js';
+import { createVibeProject, recordVibeProjectChange, recordVibeRepair, exportVibeProject, importVibeProject as loadVibeProject, cloneVibeProject } from './vibe-project.js';
 
 function options(value) {
   if (value === true || value == null) return {};
@@ -67,7 +67,7 @@ export function createVibeGameProject(options = {}) { return createVibeProject(o
 export function changeVibeGameProject(project, options = {}) { return recordVibeProjectChange(project, options); }
 export function repairVibeGameProject(project, options = {}) { return recordVibeRepair(project, options); }
 export function exportVibeGameProject(project) { return exportVibeProject(project); }
-export function importVibeGameProject(value) { return importVibeGameProject(value); }
+export function importVibeGameProject(value) { return loadVibeProject(value); }
 export function cloneVibeGameProject(project) { return cloneVibeProject(project); }
 
 export async function createGameKitFromPrompt({ gameId = 'game', prompt = '', genre = null, mixGenres = [], platform = 'auto', presetOptions = {}, kitOptions = {}, useGenreDefaults = true } = {}) {
