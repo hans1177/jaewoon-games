@@ -11,53 +11,18 @@ const KIT_SYSTEM_MAP = Object.freeze({
   'economy-loot-shop': 'economySystems',
   'stat-modifiers': 'statModifiers',
   'crafting-recipes': 'craftingRecipes',
+  'achievements-unlocks': 'achievementsUnlocks',
   'save-versioning': 'versionedSave',
 });
 
 const GENRE_DEFAULT_OPTIONS = Object.freeze({
-  rpg: Object.freeze({
-    characterProgression: true,
-    inventoryEquipment: true,
-    questDialogue: true,
-    skillEffects: true,
-    economySystems: true,
-    statModifiers: true,
-    versionedSave: true,
-  }),
-  survival: Object.freeze({
-    inventoryEquipment: true,
-    skillEffects: true,
-    economySystems: true,
-    statModifiers: true,
-    craftingRecipes: true,
-    versionedSave: true,
-  }),
-  defense: Object.freeze({
-    skillEffects: true,
-    economySystems: true,
-    statModifiers: true,
-    versionedSave: true,
-  }),
-  strategy: Object.freeze({
-    economySystems: true,
-    statModifiers: true,
-    versionedSave: true,
-  }),
-  action: Object.freeze({
-    characterProgression: true,
-    skillEffects: true,
-    statModifiers: true,
-    versionedSave: true,
-  }),
-  adventure: Object.freeze({
-    inventoryEquipment: true,
-    questDialogue: true,
-    statModifiers: true,
-    versionedSave: true,
-  }),
-  puzzle: Object.freeze({
-    versionedSave: true,
-  }),
+  rpg: Object.freeze({ characterProgression: true, inventoryEquipment: true, questDialogue: true, skillEffects: true, economySystems: true, statModifiers: true, achievementsUnlocks: true, versionedSave: true }),
+  survival: Object.freeze({ inventoryEquipment: true, skillEffects: true, economySystems: true, statModifiers: true, craftingRecipes: true, versionedSave: true }),
+  defense: Object.freeze({ skillEffects: true, economySystems: true, statModifiers: true, versionedSave: true }),
+  strategy: Object.freeze({ economySystems: true, statModifiers: true, versionedSave: true }),
+  action: Object.freeze({ characterProgression: true, skillEffects: true, statModifiers: true, achievementsUnlocks: true, versionedSave: true }),
+  adventure: Object.freeze({ inventoryEquipment: true, questDialogue: true, statModifiers: true, achievementsUnlocks: true, versionedSave: true }),
+  puzzle: Object.freeze({ versionedSave: true }),
 });
 
 export const DEFAULT_ASSET_POLICY = Object.freeze({
@@ -92,81 +57,35 @@ function buildMaterialPlan(assetCategories = [], overrides = {}) {
   const policy = Object.freeze({ ...DEFAULT_ASSET_POLICY, ...(overrides.policy || {}) });
   return Object.freeze({
     categories: Object.freeze(requested),
-    workflow: Object.freeze([
-      'reuse-existing-assets',
-      'search-approved-free-sources-if-missing',
-      'verify-license-per-asset',
-      'download-only-needed-assets',
-      'record-license-and-source',
-      'remove-unused-assets',
-    ]),
+    workflow: Object.freeze(['reuse-existing-assets','search-approved-free-sources-if-missing','verify-license-per-asset','download-only-needed-assets','record-license-and-source','remove-unused-assets']),
     policy,
   });
 }
 
 function buildQaPlan(qaItems = []) {
   const checks = [...new Set((qaItems || []).map((item) => String(item)).filter(Boolean))];
-  return Object.freeze({
-    checks: Object.freeze(checks),
-    requiredBaseline: Object.freeze(['boot', 'restart', 'save-load', 'touch', 'console-errors']),
-    mobileFirst: true,
-    preserveExistingBehavior: true,
-  });
+  return Object.freeze({ checks: Object.freeze(checks), requiredBaseline: Object.freeze(['boot','restart','save-load','touch','console-errors']), mobileFirst: true, preserveExistingBehavior: true });
 }
 
-export function buildGameBlueprint({
-  gameId = 'game',
-  genre,
-  mixGenres = [],
-  presetOptions = {},
-  kitOptions = {},
-  assetPlanOptions = {},
-  useGenreDefaults = true,
-} = {}) {
+export function buildGameBlueprint({ gameId = 'game', genre, mixGenres = [], presetOptions = {}, kitOptions = {}, assetPlanOptions = {}, useGenreDefaults = true } = {}) {
   const normalizedGenre = String(genre || '').toLowerCase();
   const genreDefaults = useGenreDefaults ? (GENRE_DEFAULT_OPTIONS[normalizedGenre] || {}) : {};
-
-  const presetInput = {
-    genre: normalizedGenre,
-    mixGenres,
-    ...presetOptions,
-  };
-  const preset = buildGamePreset(presetInput);
+  const preset = buildGamePreset({ genre: normalizedGenre, mixGenres, ...presetOptions });
   const inferred = inferKitOptions(preset);
-  const resolvedKitOptions = mergeKitOptions(
-    mergeKitOptions(genreDefaults, inferred),
-    kitOptions,
-  );
-
-  const kitConfig = Object.freeze({
-    gameId: String(gameId || 'game'),
-    ...resolvedKitOptions,
-  });
+  const resolvedKitOptions = mergeKitOptions(mergeKitOptions(genreDefaults, inferred), kitOptions);
+  const kitConfig = Object.freeze({ gameId: String(gameId || 'game'), ...resolvedKitOptions });
   const materialPlan = buildMaterialPlan(preset.assets, assetPlanOptions);
   const qaPlan = buildQaPlan(preset.qa);
 
   return Object.freeze({
-    gameId: String(gameId || 'game'),
-    genre: preset.genre,
-    mixedGenres: preset.mixedGenres,
-    systems: preset.systems,
-    assets: preset.assets,
-    qa: preset.qa,
-    rules: preset.rules,
-    kitConfig,
-    materialPlan,
-    qaPlan,
-    createKit() {
-      return createGameKit(kitConfig);
-    },
+    gameId: String(gameId || 'game'), genre: preset.genre, mixedGenres: preset.mixedGenres,
+    systems: preset.systems, assets: preset.assets, qa: preset.qa, rules: preset.rules,
+    kitConfig, materialPlan, qaPlan,
+    createKit() { return createGameKit(kitConfig); },
     plan() {
       return Object.freeze({
-        gameId: String(gameId || 'game'),
-        genre: preset.genre,
-        mixedGenres: preset.mixedGenres,
-        systems: preset.systems,
-        materialPlan,
-        qaPlan,
+        gameId: String(gameId || 'game'), genre: preset.genre, mixedGenres: preset.mixedGenres,
+        systems: preset.systems, materialPlan, qaPlan,
         preservation: Object.freeze({
           preserveExistingBalance: preset.rules.preserveExistingBalance,
           preserveSaveFormat: preset.rules.preserveSaveFormat,
