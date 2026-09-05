@@ -56,6 +56,26 @@ jobs:
           console.log('PASS game config');
           NODE
 
+      - name: Check game preset syntax
+        run: node --input-type=module --check < assets/game-presets.js
+
+      - name: Test game preset behavior
+        run: |
+          cp assets/game-presets.js /tmp/game-presets.mjs
+          node --input-type=module <<'NODE'
+          import { GAME_PRESETS, buildGamePreset } from 'file:///tmp/game-presets.mjs';
+          const preset = buildGamePreset({ genre: 'rpg', multiplayer: true, aiCompanions: true, npcDialogue: true });
+          if (!GAME_PRESETS.rpg) throw new Error('rpg preset missing');
+          for (const required of ['inventory','quests','multiplayer-client','common-ai','gemini-helper']) {
+            if (!preset.systems.includes(required)) throw new Error(`missing preset system: ${required}`);
+          }
+          if (!preset.rules.preserveExistingBalance || !preset.rules.preserveSaveFormat) throw new Error('preservation rules missing');
+          let rejected = false;
+          try { buildGamePreset({ genre: 'unknown' }); } catch { rejected = true; }
+          if (!rejected) throw new Error('unknown preset was not rejected');
+          console.log('PASS game presets');
+          NODE
+
       - name: Reject files over 100 MB
         run: |
           python - <<'PY'
@@ -107,5 +127,6 @@ jobs:
           echo "- manifest validated"
           echo "- common runtime syntax checked"
           echo "- game config syntax and behavior checked"
+          echo "- game preset syntax and behavior checked"
           echo "- 100 MB limit checked"
           echo "- missing local HTML references reported as warnings"
