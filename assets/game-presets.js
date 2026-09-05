@@ -11,14 +11,14 @@ export const GAME_PRESETS = Object.freeze({
     qa: ['inventory-persistence','quest-progression','dialogue-flow','combat-progression','stat-modifiers','achievement-unlocks'],
   },
   defense: {
-    systems: ['waves','spawning','targeting','towers','shop','upgrades','bosses','stat-modifiers'],
+    systems: ['waves','spawning','wave-spawner','targeting','towers','shop','upgrades','bosses','stat-modifiers'],
     assets: ['enemies','towers','projectiles','map','wave-ui','bgm','vfx'],
-    qa: ['wave-progression','spawn-limits','targeting','boss-clear','shop-flow','stat-modifiers'],
+    qa: ['wave-progression','wave-spawn-limits','wave-save-restore','spawn-limits','targeting','boss-clear','shop-flow','stat-modifiers'],
   },
   survival: {
-    systems: ['day-night','gathering','crafting','crafting-recipes','inventory','equipment','spawning','status-effects','stat-modifiers'],
+    systems: ['day-night','gathering','crafting','crafting-recipes','inventory','equipment','spawning','wave-spawner','status-effects','stat-modifiers'],
     assets: ['player','resources','enemies','items','crafting-ui','environment','bgm','ambience'],
-    qa: ['day-night-loop','crafting-costs','crafting-rollback','inventory-persistence','spawn-rules','stat-modifiers'],
+    qa: ['day-night-loop','crafting-costs','crafting-rollback','inventory-persistence','spawn-rules','wave-spawn-limits','wave-save-restore','stat-modifiers'],
   },
   strategy: {
     systems: ['territories','units','resources','ai-opponents','battle-resolution','camera','selection','stat-modifiers'],
@@ -26,9 +26,9 @@ export const GAME_PRESETS = Object.freeze({
     qa: ['selection','territory-state','battle-resolution','resource-flow','stat-modifiers'],
   },
   action: {
-    systems: ['movement','combat','skills','cooldowns','enemies','bosses','checkpoints','stat-modifiers','achievements-unlocks'],
+    systems: ['movement','combat','skills','cooldowns','enemies','wave-spawner','bosses','checkpoints','stat-modifiers','achievements-unlocks'],
     assets: ['player','enemies','bosses','weapons','animations','vfx','bgm','sfx'],
-    qa: ['controls','hit-detection','cooldowns','death-restart','boss-clear','stat-modifiers','achievement-unlocks'],
+    qa: ['controls','hit-detection','cooldowns','wave-progression','wave-save-restore','death-restart','boss-clear','stat-modifiers','achievement-unlocks'],
   },
   adventure: {
     systems: ['movement','interaction','dialogue','quests','checkpoints','collectibles','stat-modifiers','achievements-unlocks'],
