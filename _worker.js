@@ -1,7 +1,18 @@
 export default {
   async fetch(request, env) {
-    const response = await env.ASSETS.fetch(request);
     const url = new URL(request.url);
+
+    if (url.pathname === '/web-games/egg-heist/' || url.pathname === '/web-games/egg-heist/index.html') {
+      return new Response('Not Found', {
+        status: 404,
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Cache-Control': 'no-store, no-cache, must-revalidate'
+        }
+      });
+    }
+
+    const response = await env.ASSETS.fetch(request);
     if (!['/', '/index.html'].includes(url.pathname)) return response;
     const type = response.headers.get('content-type') || '';
     if (!type.includes('text/html')) return response;
