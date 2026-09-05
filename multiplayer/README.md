@@ -16,8 +16,8 @@
 - `POST /auth/refresh` `{refresh_token}`
 - `POST /auth/recover` `{email}`
 - `GET /auth/me` Bearer 토큰
-- `POST /matchmake` Bearer 토큰 + `{mode:"coop"|"pvp"}`
-- `POST /friend/create` Bearer 토큰 + `{mode:"coop"|"pvp"}`
+- `POST /matchmake` Bearer 토큰 + `{mode:"coop"|"pvp", gameId}`
+- `POST /friend/create` Bearer 토큰 + `{mode:"coop"|"pvp", gameId}`
 - `POST /friend/join` Bearer 토큰 + `{inviteCode}`
 - `GET /room/<roomId>?token=<access_token>` WebSocket
 
@@ -26,8 +26,8 @@
 
 주요 기능:
 - 가입 / 로그인 / 세션 갱신
-- 협동 자동매칭 `match_coop()`
-- 대전 자동매칭 `match_pvp()`
+- 협동 자동매칭 `match_coop()` / 게임별 `match_coop_for_game(game_id)`
+- 대전 자동매칭 `match_pvp()` / 게임별 `match_pvp_for_game(game_id)`
 - 친구방 생성 / 참가
 - 매칭 완료 후 WebSocket 방 자동 입장
 - `state`, `event`, `ready`, `rematch` 메시지 전송
@@ -84,6 +84,13 @@ MultiplayerClient.message_received.connect(_on_multiplayer_message)
 ```
 
 `matchCoop()`와 `matchPvp()`는 기본값으로 매칭된 `roomId`에 자동 WebSocket 접속합니다. 필요하면 두 번째 인수로 `false`를 넘겨 자동 접속을 끌 수 있습니다.
+
+## 게임별 매칭 분리
+여러 게임이 같은 멀티 서버를 쓰기 때문에 실제 게임에서는 반드시 고유한 `gameId`를 사용합니다. 예: `crystal-defense`, `monster-adventure`. 같은 `mode`라도 `gameId`가 다르면 서로 매칭되지 않습니다. 기존 호출은 호환성을 위해 `default` 게임으로 처리됩니다.
+
+Godot: `await MultiplayerClient.match_coop_for_game("crystal-defense")`
+
+Web: `await multiplayer.matchCoopForGame('crystal-defense')`
 
 ## Cloudflare 설정
 `multiplayer/`에서 Wrangler로 Worker를 배포합니다.

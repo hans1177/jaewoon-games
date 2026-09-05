@@ -72,6 +72,11 @@ function modeConfig(mode) {
   return null;
 }
 
+function normalizeGameId(value) {
+  const gameId = String(value || 'default').trim().toLowerCase();
+  return /^[a-z0-9][a-z0-9-]{0,49}$/.test(gameId) ? gameId : 'default';
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors(request, env) });
@@ -130,11 +135,12 @@ export default {
       const body = await readJson(request);
       const config = modeConfig(body.mode);
       if (!config) return json({ error: 'invalid_mode' }, 400, headers);
+      const gameId = normalizeGameId(body.gameId);
       const id = env.MATCHMAKER.idFromName('global');
       return env.MATCHMAKER.get(id).fetch('https://matchmaker/matchmake', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ user, ...config }),
+        body: JSON.stringify({ user, ...config, gameId }),
       });
     }
 
@@ -144,11 +150,12 @@ export default {
       const body = await readJson(request);
       const config = modeConfig(body.mode);
       if (!config) return json({ error: 'invalid_mode' }, 400, headers);
+      const gameId = normalizeGameId(body.gameId);
       const id = env.MATCHMAKER.idFromName('global');
       return env.MATCHMAKER.get(id).fetch('https://matchmaker/friend/create', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ user, ...config }),
+        body: JSON.stringify({ user, ...config, gameId }),
       });
     }
 
@@ -198,13 +205,13 @@ export class Matchmaker {
     return json({ error: 'not_found' }, 404);
   }
 
-  async matchmake({ user, mode, maxPlayers }) {
+  async matchmake({ user, mode, maxPlayers, gameId = 'default' }) {
     const now = Date.now();
     let rooms = (await this.ctx.storage.get('publicRooms')) || [];
     rooms = rooms.filter(r => now - r.createdAt < 5 * 60 * 1000 && r.players.length < r.maxPlayers);
-    let room = rooms.find(r => r.mode === mode && !r.players.includes(user.id));
+    let room = rooms.find(r => r.mode === mode && r.gameId === gameId && !r.players.includes(user.id));
     if (!room) {
-      room = { roomId: crypto.randomUUID(), mode, maxPlayers, players: [user.id], createdAt: now };
+      room = { roomId: crypto.randomUUID(), mode, gameId, maxPlayers, players: [user.id], createdAt: now };
       rooms.push(room);
     } else {
       room.players.push(user.id);
@@ -212,10 +219,10 @@ export class Matchmaker {
     const full = room.players.length >= room.maxPlayers;
     if (full) rooms = rooms.filter(r => r.roomId !== room.roomId);
     await this.ctx.storage.put('publicRooms', rooms);
-    return json({ roomId: room.roomId, mode, players: room.players.length, maxPlayers, status: full ? 'ready' : 'waiting' });
+    return json({ roomId: room.roomId, mode, gameId, players: room.players.length, maxPlayers, status: full ? 'ready' : 'waiting' });
   }
 
-  async friendCreate({ user, mode, maxPlayers }) {
+  async friendCreate({ user, mode, maxPlayers, gameId = 'default' }) {
     let invites = (await this.ctx.storage.get('invites')) || {};
     const now = Date.now();
     for (const [code, item] of Object.entries(invites)) {
@@ -228,9 +235,9 @@ export class Matchmaker {
     }
     if (!inviteCode) return json({ error: 'invite_unavailable' }, 503);
     const roomId = crypto.randomUUID();
-    invites[inviteCode] = { roomId, mode, maxPlayers, players: [user.id], createdAt: now };
+    invites[inviteCode] = { roomId, mode, gameId, maxPlayers, players: [user.id], createdAt: now };
     await this.ctx.storage.put('invites', invites);
-    return json({ roomId, inviteCode, mode, players: 1, maxPlayers, status: 'waiting' });
+    return json({ roomId, inviteCode, mode, gameId, players: 1, maxPlayers, status: 'waiting' });
   }
 
   async friendJoin({ user, inviteCode }) {
@@ -242,7 +249,7 @@ export class Matchmaker {
     const full = item.players.length >= item.maxPlayers;
     if (full) delete invites[inviteCode]; else invites[inviteCode] = item;
     await this.ctx.storage.put('invites', invites);
-    return json({ roomId: item.roomId, mode: item.mode, players: item.players.length, maxPlayers: item.maxPlayers, status: full ? 'ready' : 'waiting' });
+    return json({ roomId: item.roomId, mode: item.mode, gameId: item.gameId || 'default', players: item.players.length, maxPlayers: item.maxPlayers, status: full ? 'ready' : 'waiting' });
   }
 }
 

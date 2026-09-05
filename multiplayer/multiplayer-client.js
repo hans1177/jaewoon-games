@@ -12,6 +12,7 @@ export class JaewoonMultiplayerClient extends EventTarget {
     this.currentUser = null;
     this.currentRoomId = '';
     this.currentMode = '';
+    this.currentGameId = 'default';
 
     this.socket = null;
     this.manualDisconnect = false;
@@ -81,24 +82,35 @@ export class JaewoonMultiplayerClient extends EventTarget {
     this.refreshToken = '';
     this.currentUser = null;
     this.currentMode = '';
+    this.currentGameId = 'default';
   }
 
   matchCoop(autoConnectRoom = true) {
-    return this.quickMatch('coop', autoConnectRoom);
+    return this.quickMatch('coop', autoConnectRoom, 'default');
+  }
+
+  matchCoopForGame(gameId, autoConnectRoom = true) {
+    return this.quickMatch('coop', autoConnectRoom, gameId);
   }
 
   matchPvp(autoConnectRoom = true) {
-    return this.quickMatch('pvp', autoConnectRoom);
+    return this.quickMatch('pvp', autoConnectRoom, 'default');
   }
 
-  async quickMatch(mode, autoConnectRoom = true) {
+  matchPvpForGame(gameId, autoConnectRoom = true) {
+    return this.quickMatch('pvp', autoConnectRoom, gameId);
+  }
+
+  async quickMatch(mode, autoConnectRoom = true, gameId = 'default') {
+    const normalizedGameId = this.normalizeGameId(gameId);
     const result = await this.request('/matchmake', {
       method: 'POST',
-      body: { mode },
+      body: { mode, gameId: normalizedGameId },
       auth: true,
     });
     if (result.ok) {
       this.currentMode = mode;
+      this.currentGameId = normalizedGameId;
       this.emit('match_found', result.data);
       if (autoConnectRoom && result.data?.roomId) this.connectRoom(result.data.roomId);
     }
@@ -106,13 +118,19 @@ export class JaewoonMultiplayerClient extends EventTarget {
   }
 
   async createFriendRoom(mode = 'coop', autoConnectRoom = true) {
+    return this.createFriendRoomForGame(mode, 'default', autoConnectRoom);
+  }
+
+  async createFriendRoomForGame(mode, gameId, autoConnectRoom = true) {
+    const normalizedGameId = this.normalizeGameId(gameId);
     const result = await this.request('/friend/create', {
       method: 'POST',
-      body: { mode },
+      body: { mode, gameId: normalizedGameId },
       auth: true,
     });
     if (result.ok) {
       this.currentMode = mode;
+      this.currentGameId = normalizedGameId;
       this.emit('friend_room_created', result.data);
       if (autoConnectRoom && result.data?.roomId) this.connectRoom(result.data.roomId);
     }
@@ -127,6 +145,7 @@ export class JaewoonMultiplayerClient extends EventTarget {
     });
     if (result.ok) {
       if (result.data?.mode) this.currentMode = result.data.mode;
+      if (result.data?.gameId) this.currentGameId = result.data.gameId;
       this.emit('friend_room_joined', result.data);
       if (autoConnectRoom && result.data?.roomId) this.connectRoom(result.data.roomId);
     }
@@ -275,6 +294,11 @@ export class JaewoonMultiplayerClient extends EventTarget {
       this.emit('rematch_ready', message);
     }
     this.emit('message_received', message);
+  }
+
+  normalizeGameId(gameId) {
+    const normalized = String(gameId || 'default').trim().toLowerCase();
+    return /^[a-z0-9][a-z0-9-]{0,49}$/.test(normalized) ? normalized : 'default';
   }
 
   scheduleReconnect() {

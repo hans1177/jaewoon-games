@@ -25,6 +25,7 @@ var refresh_token := ""
 var current_user: Dictionary = {}
 var current_room_id := ""
 var current_mode := ""
+var current_game_id := "default"
 
 var _socket := WebSocketPeer.new()
 var _last_socket_state := WebSocketPeer.STATE_CLOSED
@@ -90,26 +91,40 @@ func logout() -> void:
 	refresh_token = ""
 	current_user = {}
 	current_mode = ""
+	current_game_id = "default"
 
 func match_coop(auto_connect_room := true) -> Dictionary:
-	return await quick_match("coop", auto_connect_room)
+	return await quick_match("coop", auto_connect_room, "default")
+
+func match_coop_for_game(game_id: String, auto_connect_room := true) -> Dictionary:
+	return await quick_match("coop", auto_connect_room, game_id)
 
 func match_pvp(auto_connect_room := true) -> Dictionary:
-	return await quick_match("pvp", auto_connect_room)
+	return await quick_match("pvp", auto_connect_room, "default")
 
-func quick_match(mode: String, auto_connect_room := true) -> Dictionary:
-	var result := await _request("/matchmake", HTTPClient.METHOD_POST, {"mode": mode}, true)
+func match_pvp_for_game(game_id: String, auto_connect_room := true) -> Dictionary:
+	return await quick_match("pvp", auto_connect_room, game_id)
+
+func quick_match(mode: String, auto_connect_room := true, game_id: String = "default") -> Dictionary:
+	var normalized_game_id := _normalize_game_id(game_id)
+	var result := await _request("/matchmake", HTTPClient.METHOD_POST, {"mode": mode, "gameId": normalized_game_id}, true)
 	if result.ok:
 		current_mode = mode
+		current_game_id = normalized_game_id
 		match_found.emit(result.data)
 		if auto_connect_room and result.data.has("roomId"):
 			connect_room(String(result.data.roomId))
 	return result
 
 func create_friend_room(mode: String = "coop", auto_connect_room := true) -> Dictionary:
-	var result := await _request("/friend/create", HTTPClient.METHOD_POST, {"mode": mode}, true)
+	return await create_friend_room_for_game(mode, "default", auto_connect_room)
+
+func create_friend_room_for_game(mode: String, game_id: String, auto_connect_room := true) -> Dictionary:
+	var normalized_game_id := _normalize_game_id(game_id)
+	var result := await _request("/friend/create", HTTPClient.METHOD_POST, {"mode": mode, "gameId": normalized_game_id}, true)
 	if result.ok:
 		current_mode = mode
+		current_game_id = normalized_game_id
 		friend_room_created.emit(result.data)
 		if auto_connect_room and result.data.has("roomId"):
 			connect_room(String(result.data.roomId))
@@ -122,6 +137,8 @@ func join_friend_room(invite_code: String, auto_connect_room := true) -> Diction
 	if result.ok:
 		if result.data.has("mode"):
 			current_mode = String(result.data.mode)
+		if result.data.has("gameId"):
+			current_game_id = String(result.data.gameId)
 		friend_room_joined.emit(result.data)
 		if auto_connect_room and result.data.has("roomId"):
 			connect_room(String(result.data.roomId))
@@ -220,6 +237,14 @@ func _handle_socket_message(text: String) -> void:
 	elif type == "rematch_ready":
 		rematch_ready.emit(message)
 	message_received.emit(message)
+
+func _normalize_game_id(game_id: String) -> String:
+	var normalized := game_id.strip_edges().to_lower()
+	if normalized == "":
+		return "default"
+	var regex := RegEx.new()
+	regex.compile("^[a-z0-9][a-z0-9-]{0,49}$")
+	return normalized if regex.search(normalized) else "default"
 
 func _schedule_reconnect() -> void:
 	if auto_reconnect and not _manual_disconnect and current_room_id != "" and access_token != "":
