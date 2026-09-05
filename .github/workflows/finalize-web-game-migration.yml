@@ -1,0 +1,180 @@
+name: 웹게임 내부 의존성 정리
+
+on:
+  push:
+    paths:
+      - '.github/workflows/finalize-web-game-migration.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 받기
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 게임 내부 의존성 이전
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # 곤충 생존기: 현재 실행 체인의 실제 원본까지 게임 폴더 안으로 이전
+          cp play_survival.html web-games/insect-survival/play_survival.html
+          cp insect_survival-28.html web-games/insect-survival/insect_survival-28.html
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p=Path('web-games/insect-survival/index.html')
+          s=p.read_text()
+          s=s.replace('src="/play_survival.html"','src="play_survival.html"')
+          p.write_text(s)
+
+          p=Path('web-games/insect-survival/play_survival.html')
+          s=p.read_text()
+          s=s.replace('src="/insect_survival-28.html"','src="insect_survival-28.html"')
+          p.write_text(s)
+          PY
+
+          # 대충 RPG: 실제 기반 게임 파일을 같은 폴더로 이전
+          cp rpg.html web-games/daechung-rpg/rpg.html
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('web-games/daechung-rpg/index.html')
+          s=p.read_text().replace("fetch('/rpg.html?v=ruins8'","fetch('rpg.html?v=ruins8'")
+          p.write_text(s)
+          PY
+
+          # 곤충 디펜스: 이전 호스트 절대경로와 Cloudflare challenge 잔재 제거
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          root=Path('web-games/bug-defense')
+          for p in root.rglob('*'):
+              if not p.is_file() or p.suffix.lower() not in {'.html','.js','.css'}:
+                  continue
+              try: s=p.read_text()
+              except UnicodeDecodeError: continue
+              s=s.replace('/bug-defense/','/web-games/bug-defense/')
+              s=s.replace('src="/game.html"','src="game.html"')
+              # 원래 chatgpt.site/Cloudflare가 삽입한 challenge 스크립트 제거
+              s=re.sub(r'<script>\(function\(\)\{function c\(\)[\s\S]*?</script>','',s,count=1)
+              s=s.replace("a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';","")
+              p.write_text(s)
+          PY
+          rm -rf web-games/bug-defense/cdn-cgi
+
+          # 다른 이전 게임의 과거 루트 절대경로도 새 표준 경로로 보정
+          python3 - <<'PY'
+          from pathlib import Path
+          for folder,old in [('crystal-defense','/crystal-defense/'),('human-go','/human-go/')]:
+              root=Path('web-games')/folder
+              for p in root.rglob('*'):
+                  if not p.is_file() or p.suffix.lower() not in {'.html','.js','.css'}: continue
+                  try: s=p.read_text()
+                  except UnicodeDecodeError: continue
+                  s=s.replace(old,f'/web-games/{folder}/')
+                  p.write_text(s)
+          PY
+
+          # 홈페이지 이미지 캐시 보정 worker도 새 몬스터 경로 기준으로 수정
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('_worker.js')
+          s=p.read_text()
+          s=s.replace("link:'/monster-adventure.html'","link:'/web-games/monster-adventure/'")
+          p.write_text(s)
+          PY
+
+          # 새 구조가 완성된 뒤 활성 구경로 중복 제거
+          rm -rf bug-defense crystal-defense human-go
+          rm -f egg-heist.html island.html monster-adventure.html
+          rm -f play_survival_v4.html play_survival.html insect_survival-28.html
+          rm -f rpg-play.html rpg.html
+
+      - name: 구조 및 의존성 검사
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f web-games/insect-survival/index.html
+          test -f web-games/insect-survival/play_survival.html
+          test -f web-games/insect-survival/insect_survival-28.html
+          test -f web-games/daechung-rpg/index.html
+          test -f web-games/daechung-rpg/rpg.html
+          test -f web-games/bug-defense/index.html
+          test -f web-games/bug-defense/game.html
+          test -f web-games/crystal-defense/index.html
+          test -f web-games/human-go/index.html
+          test -f web-games/island-village/index.html
+          test -f web-games/egg-heist/index.html
+          test -f web-games/monster-adventure/index.html
+
+          grep -q 'src="play_survival.html"' web-games/insect-survival/index.html
+          grep -q 'src="insect_survival-28.html"' web-games/insect-survival/play_survival.html
+          grep -q "fetch('rpg.html?v=ruins8'" web-games/daechung-rpg/index.html
+          grep -q 'src="game.html"' web-games/bug-defense/index.html
+
+          ! grep -R --include='*.html' --include='*.js' --include='*.css' '/bug-defense/' web-games/bug-defense | grep -v '/web-games/bug-defense/'
+          ! grep -R --include='*.html' --include='*.js' --include='*.css' '/crystal-defense/' web-games/crystal-defense | grep -v '/web-games/crystal-defense/'
+          ! grep -R --include='*.html' --include='*.js' --include='*.css' '/human-go/' web-games/human-go | grep -v '/web-games/human-go/'
+          ! grep -R '/play_survival.html\|/insect_survival-28.html\|/rpg.html?v=ruins8\|src="/game.html"' web-games
+
+          test ! -e bug-defense
+          test ! -e crystal-defense
+          test ! -e human-go
+          test ! -e egg-heist.html
+          test ! -e island.html
+          test ! -e monster-adventure.html
+          test ! -e play_survival_v4.html
+          test ! -e play_survival.html
+          test ! -e insect_survival-28.html
+          test ! -e rpg-play.html
+          test ! -e rpg.html
+
+          # 대문 8종이 모두 표준 경로를 사용하는지 확인
+          for p in \
+            /web-games/insect-survival/ \
+            /web-games/crystal-defense/ \
+            /web-games/bug-defense/ \
+            /web-games/human-go/ \
+            /web-games/daechung-rpg/ \
+            /web-games/island-village/ \
+            /web-games/egg-heist/ \
+            /web-games/monster-adventure/; do
+            grep -q "link:'$p'" index.html
+          done
+
+          # 정적 서버에서 핵심 진입점 200 확인
+          python3 -m http.server 8765 >/tmp/jw-http.log 2>&1 &
+          server=$!
+          trap 'kill $server 2>/dev/null || true' EXIT
+          sleep 1
+          for p in \
+            web-games/insect-survival/ \
+            web-games/crystal-defense/ \
+            web-games/bug-defense/ \
+            web-games/human-go/ \
+            web-games/daechung-rpg/ \
+            web-games/island-village/ \
+            web-games/egg-heist/ \
+            web-games/monster-adventure/; do
+            curl -fsS "http://127.0.0.1:8765/$p" >/dev/null
+          done
+
+      - name: 일회성 workflow 제거 및 main 반영
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/finalize-web-game-migration.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo '변경 없음'
+            exit 0
+          fi
+          git commit -m '웹게임 내부 의존성 이전 및 구경로 정리'
+          git push origin HEAD:main
