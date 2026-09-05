@@ -56,6 +56,34 @@ jobs:
           console.log('PASS game config');
           NODE
 
+      - name: Check d20 rules syntax
+        run: node --input-type=module --check < assets/d20-rules.js
+
+      - name: Test d20 rules behavior
+        run: |
+          cp assets/d20-rules.js /tmp/d20-rules.mjs
+          node --input-type=module <<'NODE'
+          import { JaewoonD20Rules } from 'file:///tmp/d20-rules.mjs';
+          const values = [0.95, 0.10, 0.75, 0.25, 0.5, 0.5, 0.5, 0.5];
+          const rules = new JaewoonD20Rules({ rng: () => values.shift() ?? 0.5 });
+          if (rules.abilityModifier(10) !== 0 || rules.abilityModifier(18) !== 4) throw new Error('ability modifier failed');
+          if (rules.proficiencyBonus(1) !== 2 || rules.proficiencyBonus(5) !== 3 || rules.proficiencyBonus(17) !== 6) throw new Error('proficiency bonus failed');
+          const advantage = rules.rollD20('advantage');
+          if (advantage.natural !== 20 || advantage.rolls.length !== 2) throw new Error('advantage failed');
+          const attack = rules.attackRoll({ attackBonus: 5, defense: 15 });
+          if (!attack.hit) throw new Error('attack roll failed');
+          const combatant = rules.createCombatant({ id: 'hero', hp: 20, maxHp: 20, defense: 14 });
+          rules.applyDamage(combatant, 7);
+          if (combatant.hp !== 13) throw new Error('damage apply failed');
+          rules.heal(combatant, 99);
+          if (combatant.hp !== 20) throw new Error('heal clamp failed');
+          rules.setCondition(combatant, 'poisoned', true);
+          if (!combatant.conditions.has('poisoned')) throw new Error('condition add failed');
+          rules.setCondition(combatant, 'poisoned', false);
+          if (combatant.conditions.has('poisoned')) throw new Error('condition remove failed');
+          console.log('PASS d20 rules');
+          NODE
+
       - name: Check game preset syntax
         run: node --input-type=module --check < assets/game-presets.js
 
@@ -64,12 +92,12 @@ jobs:
           cp assets/game-presets.js /tmp/game-presets.mjs
           node --input-type=module <<'NODE'
           import { GAME_PRESETS, buildGamePreset } from 'file:///tmp/game-presets.mjs';
-          const preset = buildGamePreset({ genre: 'rpg', multiplayer: true, aiCompanions: true, npcDialogue: true });
+          const preset = buildGamePreset({ genre: 'rpg', multiplayer: true, aiCompanions: true, npcDialogue: true, d20Rules: true });
           if (!GAME_PRESETS.rpg) throw new Error('rpg preset missing');
-          for (const required of ['inventory','quests','multiplayer-client','common-ai','gemini-helper']) {
+          for (const required of ['inventory','quests','multiplayer-client','common-ai','gemini-helper','d20-rules','initiative','attack-rolls']) {
             if (!preset.systems.includes(required)) throw new Error(`missing preset system: ${required}`);
           }
-          if (!preset.rules.preserveExistingBalance || !preset.rules.preserveSaveFormat) throw new Error('preservation rules missing');
+          if (!preset.rules.preserveExistingBalance || !preset.rules.preserveSaveFormat || !preset.rules.d20RulesOptional) throw new Error('preservation rules missing');
           let rejected = false;
           try { buildGamePreset({ genre: 'unknown' }); } catch { rejected = true; }
           if (!rejected) throw new Error('unknown preset was not rejected');
@@ -141,6 +169,7 @@ jobs:
           echo "- manifest validated"
           echo "- common runtime syntax checked"
           echo "- game config syntax and behavior checked"
-          echo "- game preset syntax, hybrid composition and removal checked"
+          echo "- d20 rules syntax and behavior checked"
+          echo "- game preset syntax, hybrid composition, d20 option and removal checked"
           echo "- 100 MB limit checked"
           echo "- missing local HTML references reported as warnings"
