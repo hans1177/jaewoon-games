@@ -64,15 +64,38 @@ jobs:
           "$GODOT_BIN" --headless --path "$PROJECT_PATH" --export-debug Android build/bug-defense.apk
           test -s "$PROJECT_PATH/build/bug-defense.apk"
 
-      - name: Verify APK signature and commit provenance
+      - name: Sign and verify APK with temporary CI debug key
         run: |
           set -euo pipefail
           test "$(cat "$PROJECT_PATH/build/commit-sha.txt")" = "$GITHUB_SHA"
           APK="$PROJECT_PATH/build/bug-defense.apk"
+          SDK_ROOT="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          APKSIGNER="$(find "$SDK_ROOT/build-tools" -type f -name apksigner 2>/dev/null | sort -V | tail -n 1)"
+          ZIPALIGN="$(find "$SDK_ROOT/build-tools" -type f -name zipalign 2>/dev/null | sort -V | tail -n 1)"
           test -s "$APK"
-          APKSIGNER="$(find "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools" -type f -name apksigner 2>/dev/null | sort -V | tail -n 1)"
-          test -n "$APKSIGNER"
           test -x "$APKSIGNER"
+          test -x "$ZIPALIGN"
+          KEYSTORE="$RUNNER_TEMP/bug-defense-ci-debug.keystore"
+          keytool -genkeypair -noprompt \
+            -keystore "$KEYSTORE" \
+            -storepass android \
+            -keypass android \
+            -alias androiddebugkey \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname 'CN=Android Debug,O=Jaewoon Games,C=KR'
+          ALIGNED="$PROJECT_PATH/build/bug-defense-aligned.apk"
+          "$ZIPALIGN" -f -p 4 "$APK" "$ALIGNED"
+          "$APKSIGNER" sign \
+            --ks "$KEYSTORE" \
+            --ks-key-alias androiddebugkey \
+            --ks-pass pass:android \
+            --key-pass pass:android \
+            --out "$APK.signed" \
+            "$ALIGNED"
+          mv "$APK.signed" "$APK"
+          rm -f "$ALIGNED"
           "$APKSIGNER" verify --verbose --print-certs "$APK"
           sha256sum "$APK" > "$PROJECT_PATH/build/bug-defense.apk.sha256"
 
