@@ -198,6 +198,50 @@ jobs:
           console.log('PASS common game systems');
           NODE
 
+      - name: Check game kit syntax
+        run: node --input-type=module --check < assets/game-kit.js
+
+      - name: Test game kit composition and save restore
+        run: |
+          rm -rf /tmp/jaewoon-kit
+          mkdir -p /tmp/jaewoon-kit
+          cp assets/game-kit.js assets/d20-rules.js assets/turn-combat.js assets/character-progression.js assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js assets/economy-loot-shop.js assets/save-versioning.js /tmp/jaewoon-kit/
+          printf '{"type":"module"}\n' > /tmp/jaewoon-kit/package.json
+          node --input-type=module <<'NODE'
+          import { createGameKit } from 'file:///tmp/jaewoon-kit/game-kit.js';
+          const kit = createGameKit({
+            gameId: 'qa-game',
+            d20Rules: { rng: () => 0.5 },
+            turnBasedCombat: true,
+            characterProgression: true,
+            inventoryEquipment: { initialState: { currencies: { gold: 10 } } },
+            questDialogue: true,
+            skillEffects: true,
+            economySystems: { rng: () => 0.5 },
+            versionedSave: { currentVersion: 2 },
+          });
+          for (const name of ['d20','turnCombat','progression','inventory','quests','skills','economy','save']) {
+            if (!kit.has(name)) throw new Error(`kit system missing: ${name}`);
+          }
+          if (kit.get('turnCombat').rules !== kit.get('d20')) throw new Error('d20 was not wired into turn combat');
+          kit.get('inventory').addItem(kit.state.inventory, { id: 'potion', quantity: 2 });
+          kit.get('quests').startQuest(kit.state.quests, { id: 'q1', objectives: [{ id: 'go', target: 1 }] });
+          kit.get('skills').setResource(kit.state.skills, 'mana', 5, 10);
+          const wrapped = kit.wrapSave({ stage: 3 });
+          if (wrapped.version !== 2 || wrapped.gameId !== 'qa-game') throw new Error('kit save wrap failed');
+          const restoredKit = createGameKit({
+            gameId: 'qa-game',
+            inventoryEquipment: true,
+            questDialogue: true,
+            skillEffects: true,
+            versionedSave: { currentVersion: 2 },
+          });
+          restoredKit.restoreState(wrapped);
+          if (restoredKit.get('inventory').countItem(restoredKit.state.inventory, 'potion') !== 2) throw new Error('kit inventory restore failed');
+          if (!restoredKit.state.quests.quests.q1 || restoredKit.state.skills.resources.mana.current !== 5) throw new Error('kit state restore failed');
+          console.log('PASS game kit');
+          NODE
+
       - name: Check Godot common toolkit structure
         run: |
           python - <<'PY'
@@ -224,9 +268,10 @@ jobs:
             economySystems: true, versionedSave: true,
           });
           if (!GAME_PRESETS.rpg) throw new Error('rpg preset missing');
-          for (const required of ['multiplayer-client','common-ai','gemini-helper','d20-rules','turn-combat','character-progression','inventory-equipment','quest-dialogue','skill-effects','economy-loot-shop','save-versioning']) {
+          for (const required of ['game-kit','multiplayer-client','common-ai','gemini-helper','d20-rules','turn-combat','character-progression','inventory-equipment','quest-dialogue','skill-effects','economy-loot-shop','save-versioning']) {
             if (!preset.systems.includes(required)) throw new Error(`missing preset system: ${required}`);
           }
+          if (!preset.qa.includes('game-kit-compose')) throw new Error('game kit QA missing from preset');
           if (!preset.rules.saveMigrationsRequiredForBreakingChanges || !preset.rules.commonSystemsOptional) throw new Error('new preservation rules missing');
           const hybrid = buildGamePreset({ genre: 'rpg', mixGenres: ['defense'], extras: { systems: ['custom-turn-action'] }, remove: { systems: ['shops'] } });
           if (!hybrid.systems.includes('waves') || hybrid.systems.includes('shops')) throw new Error('hybrid/remove failed');
@@ -284,6 +329,7 @@ jobs:
           echo "- manifest/runtime/config checked"
           echo "- d20/turn combat/progression checked"
           echo "- inventory/quest/skills/economy/versioned save checked"
+          echo "- game kit composition and save restore checked"
           echo "- Godot common toolkit structure checked"
           echo "- preset composition checked"
           echo "- file size and local references checked"
