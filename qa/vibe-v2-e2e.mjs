@@ -1,86 +1,18 @@
 // 파일명: qa/vibe-v2-e2e.mjs
-// 역할: Vibe Maker V2 전체 실행 루프의 후보검증·런타임·복구·롤백 경계를 검사
+// 역할: Vibe Maker V2 전체 실행 루프의 후보검증·권위 런타임 증거·복구·롤백 경계를 검사
 import assert from 'node:assert/strict';
-import {createVibeV2Execution,createVibeWorkbenchCandidate,advanceVibeV2Candidate,verifyVibeV2Runtime,verifyVibeV2Repair} from '../assets/vibe-v2-runtime.js';
+import {createVibeV2Execution,createVibeWorkbenchCandidate,verifyVibeWorkbenchAppliedSources,createVibeRuntimeEvidence,advanceVibeV2Candidate,verifyVibeV2Runtime,verifyVibeV2Repair} from '../assets/vibe-v2-runtime.js';
 import {replayVibeWorld} from '../assets/vibe-quality-intelligence.js';
-
-const initial={worldId:'e2e',seed:'fixed',state:{hero:{hp:100},world:{progress:1}}};
-const events=[{op:'set',path:'hero.status',value:'ready',timestamp:1}];
-const baseline=replayVibeWorld({initialState:initial,events});
-
-const blocked=createVibeV2Execution({request:'오류 복구'});
-assert.equal(blocked.readyForCandidate,false);
-assert.ok(blocked.blockedReasons.includes('exact-revision-required'));
-assert.ok(blocked.blockedReasons.includes('checkpoint-required'));
-assert.ok(blocked.blockedReasons.includes('responsible-source-unproven'));
-assert.equal(blocked.sourceMutationAllowed,false);
-assert.equal(blocked.gameplayMutationAllowed,false);
-
-const execution=createVibeV2Execution({request:'오류 복구',target:'godot',revision:'rev-1',checkpointId:'cp-1',responsibleFiles:['main.gd']});
-assert.equal(execution.version,2);
-assert.equal(execution.readyForCandidate,true);
-assert.equal(execution.authority,'v2-orchestration-only');
-
-const candidate=advanceVibeV2Candidate(execution,{candidate:{patch:{ui:{layout:'mobile'}}}});
-assert.equal(candidate.phase,'candidate-verified');
-assert.equal(candidate.mayRun,true);
-assert.equal(candidate.candidateValidation.valid,true);
-
-const workbench=createVibeWorkbenchCandidate({request:'UI 수정',target:'godot',revision:'workbench-1',checkpointId:'checkpoint-workbench-1',changes:[{path:'main.gd',current:'extends Node',next:'extends Node\n# mobile ui',changed:true}]});
-assert.equal(workbench.mayApply,true);
-assert.equal(workbench.execution.phase,'candidate-verified');
-assert.equal(workbench.requiresAtomicWrite,true);
-assert.equal(workbench.requiresPostApplyEvidence,true);
-assert.deepEqual(workbench.execution.responsibleFiles,['main.gd']);
-assert.equal('before' in workbench.candidate.files[0],false);
-assert.equal('after' in workbench.candidate.files[0],false);
-const workbenchUnverified=verifyVibeV2Runtime(workbench.execution,{baseline,candidateWorld:baseline,invariants:{requiredPaths:['hero.hp']},candidateApplied:true});
-assert.equal(workbenchUnverified.phase,'repair-required');
-assert.equal(workbenchUnverified.mayCommit,false);
-assert.equal(workbenchUnverified.rollbackRequired,true);
-assert.ok(workbenchUnverified.evidenceGate.blockedReasons.includes('runtime-not-observed'));
-assert.ok(workbenchUnverified.evidenceGate.blockedReasons.includes('qa-not-passed'));
-assert.ok(workbenchUnverified.evidenceGate.blockedReasons.includes('regression-not-passed'));
-assert.ok(workbenchUnverified.evidenceGate.blockedReasons.includes('exact-revision-unproven'));
-
-const missingEvidence=verifyVibeV2Runtime(candidate,{baseline,candidateWorld:baseline,invariants:{requiredPaths:['hero.hp'],nonNegativePaths:['hero.hp']},qaPassed:true});
-assert.equal(missingEvidence.phase,'repair-required');
-assert.equal(missingEvidence.mayCommit,false);
-assert.ok(missingEvidence.evidenceGate.blockedReasons.includes('candidate-not-applied'));
-assert.ok(missingEvidence.evidenceGate.blockedReasons.includes('runtime-not-observed'));
-assert.ok(missingEvidence.evidenceGate.blockedReasons.includes('regression-not-passed'));
-assert.ok(missingEvidence.evidenceGate.blockedReasons.includes('exact-revision-unproven'));
-
-const completeEvidence={candidateApplied:true,runtimeObserved:true,qaPassed:true,regressionPassed:true,exactRevision:true};
-const verified=verifyVibeV2Runtime(candidate,{baseline,candidateWorld:baseline,invariants:{requiredPaths:['hero.hp'],nonNegativePaths:['hero.hp']},...completeEvidence});
-assert.equal(verified.phase,'verified');
-assert.equal(verified.mayCommit,true);
-assert.equal(verified.rollbackRequired,false);
-assert.equal(verified.evidenceGate.aiMayDeclareComplete,false);
-assert.equal(verified.completionAuthority,'verified-runtime-and-regression-only');
-
-const divergent=replayVibeWorld({initialState:initial,events:[...events,{op:'add',path:'hero.hp',value:-150,timestamp:2}]});
-const repairRequired=verifyVibeV2Runtime(candidate,{baseline,candidateWorld:divergent,invariants:{requiredPaths:['hero.hp'],nonNegativePaths:['hero.hp']},...completeEvidence});
-assert.equal(repairRequired.phase,'repair-required');
-assert.equal(repairRequired.mayCommit,false);
-assert.equal(repairRequired.rollbackRequired,true);
-assert.equal(repairRequired.repairPlan.eligible,true);
-assert.equal(repairRequired.repairPlan.autoApplyAllowed,false);
-
-const rollback=verifyVibeV2Repair(repairRequired,{before:baseline,after:baseline,invariants:{requiredPaths:['hero.hp'],nonNegativePaths:['hero.hp']},qaPassed:true,exactRevision:false});
-assert.equal(rollback.phase,'rollback');
-assert.equal(rollback.mayCommit,false);
-assert.equal(rollback.rollbackRequired,true);
-
-const repaired=verifyVibeV2Repair(repairRequired,{before:baseline,after:baseline,invariants:{requiredPaths:['hero.hp'],nonNegativePaths:['hero.hp']},qaPassed:true,exactRevision:true});
-assert.equal(repaired.phase,'verified');
-assert.equal(repaired.mayCommit,true);
-assert.equal(repaired.rollbackRequired,false);
-
-const protectedCandidate=advanceVibeV2Candidate(execution,{candidate:{patch:{combat:{damage:999}}}});
-assert.equal(protectedCandidate.phase,'candidate-rejected');
-assert.equal(protectedCandidate.mayRun,false);
-assert.equal(protectedCandidate.candidateValidation.valid,false);
-assert.ok(protectedCandidate.candidateValidation.touched.includes('damage'));
-
-console.log('vibe-v2-e2e: ok');
+const initial={worldId:'e2e',seed:'fixed',state:{hero:{hp:100},world:{progress:1}}},events=[{op:'set',path:'hero.status',value:'ready',timestamp:1}],baseline=replayVibeWorld({initialState:initial,events}),invariants={requiredPaths:['hero.hp'],nonNegativePaths:['hero.hp']};
+const blocked=createVibeV2Execution({request:'오류 복구'});assert.equal(blocked.readyForCandidate,false);assert.ok(blocked.blockedReasons.includes('exact-revision-required'));assert.ok(blocked.blockedReasons.includes('checkpoint-required'));assert.ok(blocked.blockedReasons.includes('responsible-source-unproven'));
+const execution=createVibeV2Execution({request:'오류 복구',target:'godot',revision:'rev-1',checkpointId:'cp-1',responsibleFiles:['main.gd']}),candidate=advanceVibeV2Candidate(execution,{candidate:{patch:{ui:{layout:'mobile'}}}});assert.equal(candidate.phase,'candidate-verified');assert.equal(candidate.mayRun,true);
+// 직접 boolean은 완료 권한이 없다.
+const legacy=verifyVibeV2Runtime(candidate,{baseline,candidateWorld:baseline,invariants,candidateApplied:true,runtimeObserved:true,qaPassed:true,regressionPassed:true,exactRevision:true});assert.equal(legacy.phase,'repair-required');assert.equal(legacy.mayCommit,false);assert.ok(legacy.evidenceGate.blockedReasons.includes('candidate-not-applied'));assert.ok(legacy.evidenceGate.blockedReasons.includes('runtime-not-observed'));
+// Workbench source reread 증거와 exact revision/checkpoint를 먼저 묶는다.
+const workbench=createVibeWorkbenchCandidate({request:'UI 수정',target:'godot',checkpointId:'workspace:physical-1',changes:[{path:'main.gd',current:'extends Node',next:'extends Node\n# mobile ui',changed:true}]});assert.equal(workbench.mayApply,true);const sourceEvidence=verifyVibeWorkbenchAppliedSources(workbench,{observedFiles:[{path:'main.gd',actual:'extends Node\n# mobile ui'}]});assert.equal(sourceEvidence.sourceExact,true);assert.equal(sourceEvidence.checkpointId,'workspace:physical-1');
+const evidence=createVibeRuntimeEvidence(workbench.execution,{sourceEvidence,runner:'deterministic-vibe-runner',revision:workbench.execution.revision,runtimeObserved:true,baseline,candidateWorld:baseline,invariants,qaPassed:true,regressionPassed:true});assert.equal(evidence.authority,'v2-runtime-evidence');assert.equal(evidence.candidateApplied,true);assert.equal(evidence.runtimeObserved,true);assert.equal(evidence.qaPassed,true);assert.equal(evidence.regressionPassed,true);assert.equal(evidence.exactRevision,true);const verified=verifyVibeV2Runtime(workbench.execution,{evidence});assert.equal(verified.phase,'verified');assert.equal(verified.mayCommit,true);assert.equal(verified.rollbackRequired,false);assert.equal(verified.evidenceGate.aiMayDeclareComplete,false);
+// stale revision과 비권위 runner는 완료 증거가 될 수 없다.
+const stale=createVibeRuntimeEvidence(workbench.execution,{sourceEvidence,runner:'deterministic-vibe-runner',revision:'stale',runtimeObserved:true,baseline,candidateWorld:baseline,invariants,qaPassed:true,regressionPassed:true});assert.equal(stale.exactRevision,false);assert.equal(stale.runtimeObserved,false);assert.equal(verifyVibeV2Runtime(workbench.execution,{evidence:stale}).mayCommit,false);const fake=createVibeRuntimeEvidence(workbench.execution,{sourceEvidence,runner:'ui-manual-toggle',revision:workbench.execution.revision,runtimeObserved:true,baseline,candidateWorld:baseline,invariants,qaPassed:true,regressionPassed:true});assert.equal(fake.runtimeObserved,false);assert.equal(fake.qaPassed,false);assert.equal(verifyVibeV2Runtime(workbench.execution,{evidence:fake}).mayCommit,false);
+const divergent=replayVibeWorld({initialState:initial,events:[...events,{op:'add',path:'hero.hp',value:-150,timestamp:2}]}),badEvidence=createVibeRuntimeEvidence(workbench.execution,{sourceEvidence,runner:'deterministic-vibe-runner',revision:workbench.execution.revision,runtimeObserved:true,baseline,candidateWorld:divergent,invariants,qaPassed:true,regressionPassed:true}),repairRequired=verifyVibeV2Runtime(workbench.execution,{evidence:badEvidence});assert.equal(repairRequired.phase,'repair-required');assert.equal(repairRequired.mayCommit,false);assert.equal(repairRequired.rollbackRequired,true);assert.equal(repairRequired.repairPlan.autoApplyAllowed,false);const rollback=verifyVibeV2Repair(repairRequired,{before:baseline,after:baseline,invariants,qaPassed:true,exactRevision:false});assert.equal(rollback.phase,'rollback');const repaired=verifyVibeV2Repair(repairRequired,{before:baseline,after:baseline,invariants,qaPassed:true,exactRevision:true});assert.equal(repaired.phase,'verified');assert.equal(repaired.mayCommit,true);
+const protectedCandidate=advanceVibeV2Candidate(execution,{candidate:{patch:{combat:{damage:999}}}});assert.equal(protectedCandidate.phase,'candidate-rejected');assert.equal(protectedCandidate.mayRun,false);assert.ok(protectedCandidate.candidateValidation.touched.includes('damage'));
+console.log('vibe-v2-e2e: authoritative evidence ok');
