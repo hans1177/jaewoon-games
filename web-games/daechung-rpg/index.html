@@ -1,0 +1,80 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#0c1016"><title>대충 용사 RPG</title><style>html,body{margin:0;width:100%;height:100%;display:grid;place-items:center;background:#0c1016;color:white;font-family:system-ui}b{color:#ffd26c}</style></head><body><div id="loading"><b>RPG 로딩중...</b></div><script>(async()=>{let s=await (await fetch('/rpg.html?v=ruins8',{cache:'no-store'})).text();
+// 타격음 강화
+s=s.replace("playerHit:()=>{noise(.11,.1,900);tone(120,.13,'sawtooth',.09,0,.5)},","playerHit:()=>{noise(.07,.19,1900);tone(92,.10,'sine',.20,0,.48);tone(240,.045,'square',.07,.02,.70)},");
+s=s.replace("swordHit:()=>{noise(.065,.1,3400);tone(180,.09,'square',.06,0,.7)},","swordHit:()=>{noise(.045,.14,4300);tone(205,.06,'triangle',.10,0,.66);tone(1120,.03,'square',.045,.02,.82)},");
+s=s.replace("axeHit:()=>{noise(.1,.12,1100);tone(100,.12,'square',.09,0,.55)},","axeHit:()=>{noise(.085,.18,1350);tone(78,.14,'sine',.17,0,.45);tone(185,.05,'square',.06,.02,.68)},");
+s=s.replace("dualHit:()=>{noise(.06,.08,3000);tone(240,.06,'square',.06);tone(310,.06,'square',.06,.045)},","dualHit:()=>{noise(.035,.11,4700);tone(360,.045,'triangle',.075);noise(.035,.10,3900,.05);tone(510,.05,'triangle',.07,.05,.72)},");
+// 8번 사냥터
+s=s.replace("};\nconst P=[",",\n f8:{n:'8번 폐허 마을',l:'Lv.13~15',bg:'#302b2a',m:[['폐허 기사',13,1250,28,60,22,180,45,2,'ruinedKnight'],['잿빛 주술사',14,1500,34,52,23,220,60,2,'ashShaman'],['거대오크',15,2000,40,46,34,400,100,1,'giantOrc']]}\n};\nconst P=[");
+s=s.replace("['f7',1260,610,'7번 포탈','Lv.11~12']];","['f7',1260,610,'7번 포탈','Lv.11~12'],['f8',1010,820,'8번 포탈','Lv.13~15']];");
+// 신규 무기
+s=s.replace("'철 망치':{price:500,damage:40,cd:1},'낡은 쌍절곤'","'철 망치':{price:500,damage:40,cd:1},'강철 대검':{price:700,damage:50,cd:2},'강철 쌍검':{price:1000,damage:35,cd:.35},'낡은 쌍절곤'");
+s=s.replace("const ownedWeapons={'낡은 돌검':false,'철 도끼':false,'철 쌍검':false,'철 망치':false,'낡은 쌍절곤':false};","const ownedWeapons={'낡은 돌검':false,'철 도끼':false,'철 쌍검':false,'철 망치':false,'강철 대검':false,'강철 쌍검':false,'낡은 쌍절곤':false};");
+s=s.replace("function equipWeapon(name){p.weapon=name;sfx('weaponEquip');","function equipWeapon(name){p.weapon=name;p.dualFirst=(name==='강철 쌍검');sfx('weaponEquip');");
+// 강철 쌍검 첫 공격 3배
+s=s.replace(/function attackNow\(\)\{[\s\S]*?\n\}/,`function attackNow(){
+ if(!run||ac>0)return;const w=WEAPONS[p.weapon];ac=w?w.cd:.35;combatTimer=4;p.animState='attack';p.animTick=0;p.animFrame=0;sfx('weaponSwing');
+ const ax=p.x+p.dir*30;fx.push({x:ax,y:p.y,t:.18,d:p.dir});
+ const firstBoost=(p.weapon==='강철 쌍검'&&p.dualFirst);const dmg=firstBoost?currentAtk()*3:currentAtk();
+ for(const m of mons){if(m.dead)continue;if(Math.hypot(m.x-ax,m.y-p.y)<62+m.r){m.hp-=dmg;m.hit=.12;m.x+=p.dir*13;sfx(p.weapon==='철 도끼'||p.weapon==='철 망치'?'axeHit':p.weapon==='철 쌍검'||p.weapon==='강철 쌍검'||p.weapon==='낡은 쌍절곤'?'dualHit':'swordHit');if(m.hp<=0)kill(m)}}
+ if(firstBoost){p.dualFirst=false;toastMsg('강철 쌍검 첫 공격 3배!')}
+}`);
+// 8번 몬스터 색상
+s=s.replace("panther:['#22252a','#565c66','#090a0b']};","panther:['#22252a','#565c66','#090a0b'],ruinedKnight:['#4d4c50','#8d8a89','#252529'],ashShaman:['#68504b','#a67968','#2c2220'],giantOrc:['#52703b','#91a85a','#26351f']};");
+// 보스 판정에 거대오크 포함
+s=s.replace("['slimeKing','giantCaveSlime','ogre','hiddenEnemy'].includes(m.type)","['slimeKing','giantCaveSlime','ogre','hiddenEnemy','giantOrc'].includes(m.type)");
+s=s.replace("if(['slimeKing','giantCaveSlime','ogre'].includes(m.type))return 'bossDeath';","if(['slimeKing','giantCaveSlime','ogre','giantOrc'].includes(m.type))return 'bossDeath';");
+// 거대오크 10초 강타
+s=s.replace("if(m.type==='archer'){m.shootCd-=dt;",`if(m.type==='giantOrc'){
+   m.bossSkillCd=(m.bossSkillCd==null?10:m.bossSkillCd-dt);
+   if(d<330&&m.bossSkillCd<=0){m.animState='attack';m.animTick=0;fx.push({x:m.x,y:m.y,t:.45,d:m.dir||1});sfx('bossHit');toastMsg('거대오크 강타!');damage(m.a*2);m.bossSkillCd=10}
+  }
+  if(m.type==='archer'){m.shootCd-=dt;`);
+// 폐허 배경
+s=s.replace("function drawDecor(z){if(z==='cave')return;if(z==='f7'){",`function drawRuinedVillage(){
+ ctx.fillStyle='#1f1b1a';for(let i=0;i<9;i++){const px=260+((i*181)%1260),py=170+((i*257)%850);ctx.fillRect(px-34,py-22,68,44);ctx.fillStyle='#493b34';ctx.fillRect(px-44,py-30,88,12);ctx.fillStyle='#1f1b1a'}
+ for(let i=0;i<15;i++){const px=180+((i*223)%1450),py=130+((i*179)%930);pixelRect(px-5,py-10,10,48,'#3c2d26');ctx.strokeStyle='#46362e';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px-20,py-28);ctx.moveTo(px,py+3);ctx.lineTo(px+22,py-25);ctx.stroke()}
+ for(let i=0;i<7;i++){const px=330+((i*271)%1120),py=260+((i*191)%720);ctx.fillStyle='#311b12';ctx.beginPath();ctx.arc(px,py,27,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ff6a1c';ctx.beginPath();ctx.arc(px,py-5,12+Math.sin(performance.now()/130+i)*3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffc33b';ctx.beginPath();ctx.arc(px,py-9,6,0,Math.PI*2);ctx.fill()}
+ for(let i=0;i<24;i++)rock(160+((i*149)%1510),120+((i*211)%960),.55)
+}
+function drawDecor(z){if(z==='cave')return;if(z==='f8'){drawRuinedVillage();return}if(z==='f7'){`);
+// 더 크고 신나는 오리지널 BGM: 마을 / 일반전투 / 보스전
+const bgm=`function startBgm(){
+ if(AUDIO.timer)return;
+ const town=[659,784,880,988,880,784,659,587,659,784,1047,988,880,784,659,523,587,659,784,880,784,659,587,523,659,784,880,784,659,587,523,494];
+ const townBass=[131,165,196,165,147,185,220,185];
+ const battle=[523,659,784,988,880,784,1047,988,587,698,880,1047,988,880,1175,1047,659,784,988,1175,1047,988,1319,1175,698,880,1047,1175,1047,880,784,698];
+ const battleBass=[98,147,110,165,123,185,110,165,98,147,123,185,131,196,123,185];
+ const boss=[196,233,262,294,262,233,196,175,196,262,311,349,311,262,233,196,175,196,233,262,294,349,392,349,311,262,233,196,175,165,147,131];
+ const bossHigh=[392,466,523,587,523,466,392,349,392,523,622,698,622,523,466,392];
+ AUDIO.timer=setInterval(()=>{
+  if(!AUDIO.ctx||AUDIO.muted||!run)return;const i=AUDIO.musicStep++%32;
+  if(AUDIO.aggro&&AUDIO.boss){
+   tone(boss[i],.15,i%4===0?'sawtooth':'square',.085,0,.96,AUDIO.aggroBus);tone(bossHigh[i%16],.085,'triangle',.05,.015,.98,AUDIO.aggroBus);
+   if(i%2===0)tone(55+(i%4)*7,.13,'sine',.10,0,.55,AUDIO.aggroBus);
+   if(i%4===0){noise(.075,.075,850,0,AUDIO.aggroBus);tone(48,.16,'sine',.13,0,.45,AUDIO.aggroBus)}
+   if(i%4===2)noise(.045,.05,5200,0,AUDIO.aggroBus);
+  }else if(AUDIO.aggro){
+   tone(battle[i],.09,i%3===0?'square':'triangle',.072,0,.99,AUDIO.aggroBus);
+   if(i%2===0)tone(battleBass[i%16],.16,'square',.058,0,.80,AUDIO.aggroBus);
+   if(i%4===0){noise(.04,.06,5800,0,AUDIO.aggroBus);tone(62,.07,'sine',.075,0,.55,AUDIO.aggroBus)}
+   if(i%4===2)noise(.03,.035,7800,0,AUDIO.aggroBus);
+  }else if(zone==='town'){
+   if(i%2===0)tone(town[i],.20,'triangle',.082,0,1,AUDIO.musicBus);else tone(town[i]*.5,.14,'sine',.035,0,1,AUDIO.musicBus);
+   if(i%4===0)tone(townBass[(i/4)%8|0],.38,'sine',.060,0,1,AUDIO.musicBus);
+   if(i%8===6)tone(1319,.07,'sine',.035,0,1.02,AUDIO.musicBus);
+  }else{
+   if(i%2===0)tone(392+[0,52,98,131][(i/2)%4|0],.16,'triangle',.045,0,1,AUDIO.musicBus);
+   if(i%8===0)tone(110,.34,'sine',.038,0,1,AUDIO.musicBus)
+  }
+ },105);
+}`;
+s=s.replace(/function startBgm\(\)\{[\s\S]*?\n\}\nfunction setAggro/,bgm+'\nfunction setAggro');
+s=s.replace(/function setAggro\(v,boss=false\)\{[\s\S]*?\n\}/,`function setAggro(v,boss=false){
+ if(!AUDIO.ctx)return;const now=AUDIO.ctx.currentTime;AUDIO.boss=!!boss;
+ AUDIO.musicBus.gain.setTargetAtTime(v?.02:.40,now,.10);AUDIO.aggroBus.gain.setTargetAtTime(v?(boss?.52:.46):0,now,.07);
+ if(v&&!AUDIO.lastAggro)sfx(boss?'bossAggro':'humanoidAggro');AUDIO.lastAggro=v;AUDIO.aggro=v;
+}`);
+s=s.replace("AUDIO.master=ac.createGain();AUDIO.master.gain.value=.62;","AUDIO.master=ac.createGain();AUDIO.master.gain.value=.78;");
+s=s.replace("AUDIO.musicBus=ac.createGain();AUDIO.musicBus.gain.value=.18;","AUDIO.musicBus=ac.createGain();AUDIO.musicBus.gain.value=.40;");
+document.open();document.write(s);document.close()})().catch(e=>{document.body.innerHTML='<div>게임 로딩 실패<br>'+String(e)+'</div>'})</script></body></html>

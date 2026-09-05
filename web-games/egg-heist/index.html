@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#101827"><title>알 도둑 대작전 | 재운게임즈</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:none}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b1220;color:#fff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;user-select:none}canvas{position:fixed;inset:0;width:100%;height:100%}.hud{position:fixed;z-index:10;left:0;right:0;top:0;display:flex;gap:7px;align-items:center;padding:calc(7px + env(safe-area-inset-top)) 8px 6px;background:linear-gradient(#09101df2,#09101db8,transparent);pointer-events:none}.back{pointer-events:auto;color:#fff;text-decoration:none;background:#18243a;border:1px solid #47566d;border-radius:10px;padding:7px 9px;font-weight:900;font-size:11px}.title{font-size:12px;font-weight:1000}.money{margin-left:auto;padding:6px 9px;border-radius:10px;background:#162238dd;border:1px solid #52637d;font-size:11px;font-weight:1000}.panel{position:fixed;z-index:10;left:8px;top:calc(48px + env(safe-area-inset-top));min-width:170px;padding:8px 9px;border:1px solid #46556a;border-radius:12px;background:#0a1220df;font-size:10px;font-weight:850;line-height:1.5;pointer-events:none}.notice{position:fixed;z-index:30;left:50%;top:22%;transform:translate(-50%,-50%);padding:9px 14px;border:1px solid #7688a5;border-radius:13px;background:#0c1423e8;font-size:12px;font-weight:1000;opacity:0;transition:.18s;pointer-events:none}.joy{position:fixed;z-index:15;left:18px;bottom:calc(20px + env(safe-area-inset-bottom));width:112px;height:112px;border:2px solid #ffffff4a;border-radius:50%;background:#ffffff12}.stick{position:absolute;left:32px;top:32px;width:48px;height:48px;border:2px solid #ffffff80;border-radius:50%;background:#ffffff55}.actions{position:fixed;z-index:15;right:14px;bottom:calc(18px + env(safe-area-inset-bottom));display:grid;grid-template-columns:62px 78px;grid-template-rows:60px 74px;gap:8px;align-items:end}.btn{border:2px solid #ffffff88;border-radius:50%;color:#fff;font-weight:1000;text-shadow:0 2px 4px #000;box-shadow:0 6px 14px #0006}.btn:active{transform:scale(.94)}#grab{grid-row:1/3;grid-column:2;width:78px;height:78px;background:linear-gradient(#f4a62f,#b85e20);font-size:12px}#dash{width:62px;height:62px;background:linear-gradient(#4e8ec9,#2b4f77);font-size:10px}#drop{width:62px;height:62px;background:linear-gradient(#8a5fc2,#51376f);font-size:10px}.shop{position:fixed;z-index:20;right:10px;top:calc(52px + env(safe-area-inset-top));display:grid;gap:6px}.shop button,.rarityInfo{min-width:118px;padding:8px 9px;border:1px solid #5b6d8b;border-radius:10px;background:#111d31ed;color:#fff;font-size:9px;font-weight:900}.shop button:active{transform:scale(.97)}.rarityInfo{line-height:1.5;pointer-events:none}.result{position:fixed;z-index:40;inset:0;display:none;align-items:center;justify-content:center;background:#060b14e8}.box{width:min(430px,90vw);padding:24px;border:1px solid #61718b;border-radius:20px;background:#10192a;text-align:center}.box h1{margin:0 0 8px;font-size:34px}.box p{margin:0;color:#cbd6e5;font-size:12px;line-height:1.6}.box button{margin-top:14px;padding:11px 18px;border:0;border-radius:10px;background:#2e78c6;color:#fff;font-weight:1000}@media(max-width:560px){.title{font-size:10px}.panel{top:calc(44px + env(safe-area-inset-top));font-size:9px;min-width:150px}.shop{right:7px;top:calc(47px + env(safe-area-inset-top))}.shop button,.rarityInfo{min-width:100px;padding:7px;font-size:8px}.joy{left:12px;width:104px;height:104px}.stick{left:29px;top:29px;width:46px;height:46px}.actions{right:10px}}
+</style></head>
+<body><canvas id="c"></canvas>
+<div class="hud"><a class="back" href="/">← 대문</a><div class="title">알 도둑 대작전</div><div class="money">💰 <span id="money">0</span></div></div>
+<div class="panel" id="panel"></div><div class="notice" id="notice"></div>
+<div class="shop"><button id="treadmillUp">런닝머신 Lv.1 강화<br>💰 200</button><button id="bagUp">가방 강화<br>💰 180</button><div class="rarityInfo">등급 수익<br>일반 +1/초<br>드문 +5/초<br>레어 +20/초<br>에픽 +50/초<br>전설 +200/초</div></div>
+<div class="joy" id="joy"><div class="stick" id="stick"></div></div><div class="actions"><button class="btn" id="dash">대시</button><button class="btn" id="drop">버리기</button><button class="btn" id="grab">훔치기</button></div>
+<div class="result" id="result"><div class="box"><h1>전설 펫 획득!</h1><p>최고 등급인 전설 펫을 부화시켰습니다. 계속 플레이하면서 더 많은 펫을 모을 수 있습니다.</p><button onclick="document.querySelector('#result').style.display='none'">계속 하기</button></div></div>
+<script>
+const c=document.querySelector('#c'),ctx=c.getContext('2d'),panel=document.querySelector('#panel'),moneyEl=document.querySelector('#money'),notice=document.querySelector('#notice'),result=document.querySelector('#result');let W=innerWidth,H=innerHeight,DPR=Math.min(devicePixelRatio||1,2);function resize(){W=innerWidth;H=innerHeight;c.width=W*DPR;c.height=H*DPR;c.style.width=W+'px';c.style.height=H+'px';ctx.setTransform(DPR,0,0,DPR,0,0)}addEventListener('resize',resize);resize();
+const world={w:1800,h:1100};
+const base={x:170,y:850,r:120};
+const treadmill={x:305,y:825,w:110,h:50};
+const zones=[
+{name:'초원 둥지',x:560,y:760,color:'#78c35a',unlock:0},
+{name:'사막 둥지',x:970,y:520,color:'#d9ae55',unlock:1},
+{name:'얼음 둥지',x:1350,y:800,color:'#6ec6dd',unlock:2},
+{name:'용암 둥지',x:1500,y:260,color:'#d65c42',unlock:3}
+];
+const zoneEggs=[
+{name:'초원 알',color:'#f7e5a3'},
+{name:'사막 알',color:'#ffd66b'},
+{name:'얼음 알',color:'#9cecff'},
+{name:'용암 알',color:'#ff7b68'}
+];
+const rarities=[
+{name:'일반',income:1,color:'#d8e0e8'},
+{name:'드문',income:5,color:'#68e074'},
+{name:'레어',income:20,color:'#58a8ff'},
+{name:'에픽',income:50,color:'#bd6cff'},
+{name:'전설',income:200,color:'#ffd34e'}
+];
+const chances=[
+[70,22,6,1.8,.2],
+[55,28,12,4,.8],
+[40,30,20,8,2],
+[25,30,25,15,5]
+];
+const zoneReq=['','드문 펫 필요','레어 펫 필요','에픽 펫 필요'];
+let player={x:170,y:850,r:17,speed:190,maxCarry:1,carry:[],dash:0};
+let money=0,zoneLevel=0,pets=[],eggs=[],guards=[],time=0,training=0,treadmillLevel=1,cam={x:0,y:0};
+for(let i=0;i<zones.length;i++){for(let j=0;j<4;j++)spawnEgg(i,j)}
+function spawnEgg(z,j){const q=zones[z],a=(j/4)*Math.PI*2+Math.random()*.4;eggs.push({zone:z,x:q.x+Math.cos(a)*(55+Math.random()*35),y:q.y+Math.sin(a)*(55+Math.random()*35),r:14+z*2,taken:false,respawn:0})}
+for(let i=0;i<zones.length;i++){const q=zones[i],guardSpeed=72*Math.pow(5,i);for(let j=0;j<2+i;j++){guards.push({zone:i,x:q.x+(Math.random()-.5)*160,y:q.y+(Math.random()-.5)*160,r:16+i*2,speed:guardSpeed,alert:0})}}
+function msg(t){notice.textContent=t;notice.style.opacity=1;clearTimeout(msg.t);msg.t=setTimeout(()=>notice.style.opacity=0,1350)}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function insideBase(){return dist(player,base)<base.r-8}
+function onTreadmill(){return player.x>treadmill.x&&player.x<treadmill.x+treadmill.w&&player.y>treadmill.y&&player.y<treadmill.y+treadmill.h}
+function rollRarity(zone){let r=Math.random()*100,sum=0;for(let i=0;i<rarities.length;i++){sum+=chances[zone][i];if(r<sum)return i}return 0}
+function unlockByRarity(r){let changed=false;if(r>=1&&zoneLevel<1){zoneLevel=1;changed=true;msg('드문 펫 획득! 사막 둥지 해금!')}if(r>=2&&zoneLevel<2){zoneLevel=2;changed=true;msg('레어 펫 획득! 얼음 둥지 해금!')}if(r>=3&&zoneLevel<3){zoneLevel=3;changed=true;msg('에픽 펫 획득! 용암 둥지 해금!')}return changed}
+function grab(){if(player.carry.length>=player.maxCarry){msg('가방이 가득 찼어!');return}let best=null,bd=65;for(const e of eggs){if(e.taken||e.zone>zoneLevel)continue;const d=dist(player,e);if(d<bd){best=e;bd=d}}if(!best){if(insideBase()&&player.carry.length){hatch();return}msg('가까운 알이 없어');return}best.taken=true;player.carry.push(best.zone);guards.filter(g=>g.zone===best.zone).forEach(g=>g.alert=10);msg(zoneEggs[best.zone].name+' 훔쳤다! 경비를 피해 부화장으로!')}
+function hatch(){if(!player.carry.length)return;const hatched=[];let highest=0;for(const z of player.carry){const r=rollRarity(z);highest=Math.max(highest,r);hatched.push(rarities[r].name);pets.push({zone:z,rarity:r,x:base.x+(Math.random()-.5)*110,y:base.y+(Math.random()-.5)*80,a:Math.random()*6.28});unlockByRarity(r);if(r===4)result.style.display='flex'}player.carry=[];guards.forEach(g=>g.alert=0);msg('부화 성공! '+hatched.join(', ')+' 펫 획득')}
+function dropEgg(){if(!player.carry.length){msg('들고 있는 알이 없어');return}player.carry.pop();msg('알을 버렸어. 잠시 후 둥지에 다시 생겨')}
+function caught(){const lost=player.carry.length;player.carry=[];player.x=base.x;player.y=base.y;player.dash=0;guards.forEach(g=>g.alert=0);msg(lost?'경비에게 잡혔다! 알을 잃고 부화장으로 돌아왔다':'경비에게 잡혀 부화장으로 돌아왔다')}
+let joy={id:null,x:0,y:0};const joyEl=document.querySelector('#joy'),stick=document.querySelector('#stick');function joyMove(e){const r=joyEl.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,m=Math.hypot(dx,dy)||1,k=Math.min(1,45/m);joy.x=dx/m*k;joy.y=dy/m*k;stick.style.transform=`translate(${joy.x*30}px,${joy.y*30}px)`}joyEl.addEventListener('pointerdown',e=>{joy.id=e.pointerId;joyEl.setPointerCapture(e.pointerId);joyMove(e)});joyEl.addEventListener('pointermove',e=>{if(e.pointerId===joy.id)joyMove(e)});function joyEnd(e){if(e.pointerId!==joy.id)return;joy.id=null;joy.x=joy.y=0;stick.style.transform=''}joyEl.addEventListener('pointerup',joyEnd);joyEl.addEventListener('pointercancel',joyEnd);document.querySelector('#grab').onclick=grab;document.querySelector('#drop').onclick=dropEgg;document.querySelector('#dash').onclick=()=>{if(player.dash<=0){player.dash=.35;msg('대시!')}};
+function buyBag(){const cost=180+(player.maxCarry-1)*160;if(money<cost)return msg('돈이 부족해');money-=cost;player.maxCarry++;msg('가방 +1칸!')}
+function buyTreadmill(){const cost=200*Math.pow(2,treadmillLevel-1);if(money<cost)return msg('돈이 부족해');money-=cost;treadmillLevel++;player.speed+=10;msg('런닝머신 Lv.'+treadmillLevel+'! 스피드 +10')}
+document.querySelector('#bagUp').onclick=buyBag;document.querySelector('#treadmillUp').onclick=buyTreadmill;
+let keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=1;if(e.key===' ')grab()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=0);
+function update(dt){
+time+=dt;
+let x=joy.x+(keys['d']?1:0)-(keys['a']?1:0),y=joy.y+(keys['s']?1:0)-(keys['w']?1:0),m=Math.hypot(x,y);if(m>1){x/=m;y/=m}
+let sp=player.speed*(player.dash>0?2.1:1);player.x=Math.max(25,Math.min(world.w-25,player.x+x*sp*dt));player.y=Math.max(25,Math.min(world.h-25,player.y+y*sp*dt));player.dash=Math.max(0,player.dash-dt);
+const safe=insideBase();
+if(safe){guards.forEach(g=>g.alert=0);if(player.carry.length)hatch()}
+if(onTreadmill()){training+=dt;while(training>=.5){training-=.5;player.speed+=1;msg('런닝머신 훈련! 스피드 +1')}}else training=0;
+for(const g of guards){if(g.zone>zoneLevel)continue;let q=zones[g.zone],target=q;if(g.alert>0&&!safe){g.alert-=dt;target=player}else{if(safe)g.alert=0;const a=time*.3+g.zone+g.x*.001;target={x:q.x+Math.cos(a)*100,y:q.y+Math.sin(a)*80}}let dx=target.x-g.x,dy=target.y-g.y,d=Math.hypot(dx,dy)||1;g.x+=dx/d*g.speed*dt;g.y+=dy/d*g.speed*dt;if(g.alert>0&&!safe&&dist(g,player)<g.r+player.r+8){caught();break}}
+for(const e of eggs){if(e.taken){e.respawn+=dt;if(e.respawn>18){e.taken=false;e.respawn=0;const q=zones[e.zone];e.x=q.x+(Math.random()-.5)*150;e.y=q.y+(Math.random()-.5)*150}}}
+let income=pets.reduce((s,p)=>s+rarities[p.rarity].income,0);money+=income*dt;
+for(const p of pets){p.a+=dt*(1+p.rarity*.08);p.x=base.x+Math.cos(p.a)*75;p.y=base.y+Math.sin(p.a*1.3)*48}
+cam.x+=(Math.max(0,Math.min(world.w-W,player.x-W*.5))-cam.x)*Math.min(1,dt*6);cam.y+=(Math.max(0,Math.min(world.h-H,player.y-H*.5))-cam.y)*Math.min(1,dt*6);
+panel.innerHTML=`🥚 보유 ${player.carry.length}/${player.maxCarry}<br>🐾 펫 ${pets.length}마리 · +${income.toFixed(0)}/초<br>🏃 스피드 ${player.speed}${onTreadmill()?' · 훈련 중':''}<br>🏋️ 런닝머신 Lv.${treadmillLevel}<br>🗺️ 구역 ${zoneLevel+1}/4<br>⭐ 최고 등급 ${pets.length?rarities[Math.max(...pets.map(p=>p.rarity))].name:'없음'}`;
+moneyEl.textContent=Math.floor(money);document.querySelector('#bagUp').innerHTML=`가방 강화<br>💰 ${180+(player.maxCarry-1)*160}`;document.querySelector('#treadmillUp').innerHTML=`런닝머신 Lv.${treadmillLevel} 강화<br>💰 ${200*Math.pow(2,treadmillLevel-1)}`
+}
+function circle(x,y,r,fill,stroke){ctx.beginPath();ctx.arc(x-cam.x,y-cam.y,r,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke()}}
+function draw(){ctx.clearRect(0,0,W,H);ctx.fillStyle='#182638';ctx.fillRect(0,0,W,H);ctx.save();ctx.translate(-cam.x,-cam.y);ctx.fillStyle='#24384a';ctx.fillRect(0,0,world.w,world.h);for(let x=0;x<world.w;x+=90){for(let y=0;y<world.h;y+=90){ctx.fillStyle=((x+y)/90)%2?'#263d4e':'#294152';ctx.fillRect(x,y,90,90)}}ctx.restore();
+for(let i=0;i<zones.length;i++){const z=zones[i];circle(z.x,z.y,118,i<=zoneLevel?z.color:'#38414b','#ffffff55');ctx.fillStyle='#fff';ctx.font='900 13px system-ui';ctx.textAlign='center';ctx.fillText(i<=zoneLevel?z.name:'잠김 · '+zoneReq[i],z.x-cam.x,z.y-cam.y-126)}
+circle(base.x,base.y,base.r,'#294f82','#8dc5ff');ctx.fillStyle='#fff';ctx.font='900 15px system-ui';ctx.textAlign='center';ctx.fillText('내 부화장 · 안전지대',base.x-cam.x,base.y-cam.y-base.r-10);
+ctx.fillStyle='#233246';ctx.fillRect(treadmill.x-cam.x,treadmill.y-cam.y,treadmill.w,treadmill.h);ctx.strokeStyle='#8fd7ff';ctx.lineWidth=3;ctx.strokeRect(treadmill.x-cam.x,treadmill.y-cam.y,treadmill.w,treadmill.h);for(let i=0;i<5;i++){const xx=treadmill.x+10+((i*24+time*50)%100);ctx.fillStyle='#5c7188';ctx.fillRect(xx-cam.x,treadmill.y-cam.y+9,5,treadmill.h-18)}ctx.fillStyle='#fff';ctx.font='900 11px system-ui';ctx.textAlign='center';ctx.fillText('런닝머신 Lv.'+treadmillLevel+' · +1 / 0.5초',treadmill.x+treadmill.w/2-cam.x,treadmill.y-cam.y-7);
+for(const e of eggs){if(e.taken||e.zone>zoneLevel)continue;const d=zoneEggs[e.zone];circle(e.x,e.y,e.r,d.color,'#fff');ctx.fillStyle='#ffffff88';ctx.beginPath();ctx.ellipse(e.x-cam.x-4,e.y-cam.y-5,e.r*.28,e.r*.45,-.6,0,Math.PI*2);ctx.fill()}
+for(const g of guards){if(g.zone>zoneLevel)continue;circle(g.x,g.y,g.r,g.alert>0?'#e44d4d':'#314056','#dce8ff');ctx.fillStyle='#fff';ctx.font='900 10px system-ui';ctx.textAlign='center';ctx.fillText(g.alert>0?'추격!':'경비',g.x-cam.x,g.y-cam.y+4)}
+for(const p of pets){const r=rarities[p.rarity];circle(p.x,p.y,11+p.rarity,r.color,'#fff');ctx.fillStyle='#111';ctx.fillRect(p.x-cam.x-4,p.y-cam.y-2,2,2);ctx.fillRect(p.x-cam.x+2,p.y-cam.y-2,2,2);ctx.fillStyle='#fff';ctx.font='800 8px system-ui';ctx.textAlign='center';ctx.fillText(r.name,p.x-cam.x,p.y-cam.y-15-p.rarity)}
+circle(player.x,player.y,player.r,'#49a7ff','#fff');ctx.fillStyle='#fff';ctx.font='900 10px system-ui';ctx.textAlign='center';ctx.fillText('나',player.x-cam.x,player.y-cam.y+4);if(player.carry.length){for(let i=0;i<player.carry.length;i++){const z=player.carry[i],d=zoneEggs[z];circle(player.x+10+i*7,player.y-28-i*3,9,d.color,'#fff')}}
+}
+let last=performance.now();function loop(n){const dt=Math.min(.033,(n-last)/1000);last=n;update(dt);draw();requestAnimationFrame(loop)}requestAnimationFrame(loop);msg('알을 훔치고 부화장으로 돌아와! 런닝머신에서 스피드를 올릴 수 있어');
+</script></body></html>
