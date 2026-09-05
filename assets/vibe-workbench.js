@@ -1,154 +1,22 @@
 // 파일명: assets/vibe-workbench.js
-// 역할: 웹/Godot 게임의 자연어 개발·수정·복구 작업을 하나의 안전한 작업계획으로 정규화
-// 규칙: 기존 코드 확인 우선, 기존 세이브/밸런스 보호, 작은 범위 직접 수정, QA 후 적용
+// 역할: 자연어 게임 개발·수정·복구 요청을 안전한 실행계획으로 정규화
+// 규칙: 기존 코드/세이브/밸런스 보호, 직접 수정 우선, QA 후 적용
 
-const TARGET_WORDS = Object.freeze({
-  godot: ['godot', '고도', '씬', 'project.godot', 'gdscript', '.gd'],
-  web: ['웹', '웹게임', 'html', 'css', 'javascript', '자바스크립트', '브라우저', '모바일 웹'],
-});
-
-const TASK_WORDS = Object.freeze({
-  repair: ['오류', '버그', '고장', '멈춰', '안 돼', '에러', '크래시', '깨져', '복구'],
-  change: ['수정', '바꿔', '변경', '고쳐', '개선'],
-  feature: ['추가', '넣어', '만들어', '구현'],
-  balance: ['체력', '공격력', '데미지', '웨이브', '보상', '드랍률', '속도', '쿨타임'],
-  mobile: ['모바일', '핸드폰', '휴대폰', '터치', '조이스틱', '스마트폰'],
-  save: ['저장', '세이브', '불러오기', '진행도'],
-});
-
-const PROTECTED = Object.freeze(['체력', '공격력', '웨이브', '보상', '드랍률', '저장 키', '진행도', '플레이 규칙']);
-
-function clean(value) {
-  return String(value ?? '').trim();
-}
-
-function hasAny(value, words) {
-  const source = clean(value).toLowerCase();
-  return words.some((word) => source.includes(String(word).toLowerCase()));
-}
-
-function unique(values) {
-  return [...new Set(values.filter(Boolean))];
-}
-
-function targetOf(request, explicitTarget = 'auto') {
-  if (explicitTarget === 'godot' || explicitTarget === 'web') return explicitTarget;
-  if (hasAny(request, TARGET_WORDS.godot)) return 'godot';
-  return 'web';
-}
-
-function modeOf(request) {
-  if (hasAny(request, TASK_WORDS.repair)) return 'repair';
-  if (hasAny(request, TASK_WORDS.change)) return 'change';
-  if (hasAny(request, TASK_WORDS.feature)) return 'feature';
-  return 'inspect';
-}
-
-function priorityOf(request) {
-  if (hasAny(request, ['크래시', '게임이 안 돼', '멈춰', '진행이 막힘'])) return 'critical';
-  if (hasAny(request, TASK_WORDS.repair)) return 'high';
-  if (hasAny(request, ['느려', '불편', '깨짐'])) return 'medium';
-  return 'normal';
-}
-
-function detectSystems(request) {
-  const systems = [];
-  if (hasAny(request, ['공격', '피해', '데미지', '투사체', '원거리', '근접', '넉백', '기절', '슬로우'])) systems.push('전투');
-  if (hasAny(request, TASK_WORDS.balance)) systems.push('밸런스/규칙');
-  if (hasAny(request, TASK_WORDS.mobile)) systems.push('모바일 입력/레이아웃');
-  if (hasAny(request, TASK_WORDS.save)) systems.push('저장/복원');
-  if (hasAny(request, ['인벤토리', '아이템', '장비', '무기', '방어구'])) systems.push('인벤토리/장비');
-  if (hasAny(request, ['제작', '레시피', '재료'])) systems.push('제작');
-  if (hasAny(request, ['퀘스트', '미션', '대화', 'NPC'])) systems.push('퀘스트/대화');
-  if (hasAny(request, ['스킬', '필살기', '버프', '디버프'])) systems.push('스킬/효과');
-  if (hasAny(request, ['골드', '돈', '상점', '보상', '드랍', '드롭'])) systems.push('경제/보상');
-  if (hasAny(request, ['웨이브', '스폰', '보스', '적이 나와'])) systems.push('웨이브/스폰');
-  return unique(systems);
-}
-
-function candidateFiles(target, systems) {
-  const files = [];
-  if (target === 'godot') {
-    files.push('godot-games/<slug>/project.godot');
-    if (systems.includes('전투')) files.push('godot-games/<slug>/*.gd');
-    if (systems.includes('모바일 입력/레이아웃')) files.push('godot-games/<slug>/*.tscn');
-  } else {
-    files.push('web-games/<slug>/index.html');
-    if (systems.includes('모바일 입력/레이아웃') || systems.includes('전투') || systems.includes('저장/복원')) files.push('assets/*.js 또는 게임 전용 JS');
-  }
-  return unique(files);
-}
-
-export function planVibeWorkbenchTask({
-  request = '',
-  target = 'auto',
-  gameId = null,
-  file = null,
-  knownBroken = false,
-} = {}) {
-  const prompt = clean(request);
-  if (!prompt) throw new Error('workbench request required');
-
-  const resolvedTarget = targetOf(prompt, target);
-  const mode = modeOf(prompt);
-  const priority = priorityOf(prompt);
-  const systems = detectSystems(prompt);
-  const protectedTargets = PROTECTED.filter((rule) => prompt.includes(rule));
-  const candidates = candidateFiles(resolvedTarget, systems);
-
-  const steps = [
-    '현재 main 기준 대상 게임/파일 확인',
-    resolvedTarget === 'godot' ? 'Godot project.godot와 관련 씬/스크립트 구조 확인' : '웹게임 index.html 및 연결된 공통/게임 전용 JS 확인',
-    '현재 게임 규칙·밸런스·저장 구조 확인',
-  ];
-
-  if (mode === 'repair' || knownBroken) steps.push('오류 재현 조건과 실제 실패 지점 확인');
-  if (systems.length) steps.push(`영향 시스템 확인: ${systems.join(', ')}`);
-  steps.push('변경 범위를 최소화해 원본 책임 파일 직접 수정');
-  if (mode === 'repair') steps.push('원인 수정 후 같은 오류 재발 조건 재검사');
-  steps.push('전용 기능 테스트', '로딩/시작', '진행 막힘', '터치/버튼', '저장/불러오기', '일시정지/재시작', '콘솔/런타임 오류', '모바일 화면', '최종 회귀 QA');
-  if (resolvedTarget === 'godot') steps.push('Godot 씬/스크립트 참조 및 저장 구조 회귀 확인');
-  if (mode === 'feature') steps.push('새 기능이 기존 규칙/세이브를 변경하지 않았는지 확인');
-  steps.push('임시 테스트 파일/워크플로 제거');
-
-  const warnings = [];
-  if (!gameId) warnings.push('대상 게임 ID가 아직 지정되지 않음');
-  if (!file && candidates.length) warnings.push('실제 수정 전 후보 파일을 읽어 정확한 책임 파일을 확정해야 함');
-  if (protectedTargets.length) warnings.push(`보존 대상이 요청에 포함됨: ${protectedTargets.join(', ')}. 현재 값을 먼저 기록하고 임의 변경 금지`);
-  if (mode === 'repair') warnings.push('증상만 덮는 우회 패치 금지. 원인 위치를 직접 수정해야 함');
-  if (resolvedTarget === 'godot') warnings.push('Godot 바이너리 실행 검증이 가능한 환경인지 별도 확인 필요');
-
-  return Object.freeze({
-    version: 1,
-    request: prompt,
-    target: resolvedTarget,
-    mode,
-    priority,
-    gameId: gameId ? clean(gameId) : null,
-    file: file ? clean(file) : null,
-    knownBroken: Boolean(knownBroken),
-    affectedSystems: Object.freeze(systems),
-    candidateFiles: Object.freeze(candidates),
-    protectedTargets: Object.freeze(protectedTargets),
-    mobileDefaults: Object.freeze({
-      touchFirst: true,
-      virtualJoystick: true,
-      safeArea: true,
-      responsiveOrientation: true,
-      keyboardDefault: false,
-    }),
-    steps: Object.freeze(unique(steps)),
-    warnings: Object.freeze(unique(warnings)),
-    applyPolicy: Object.freeze({
-      existingGameAutoApply: false,
-      saveMigrationRequiredForBreakingChange: true,
-      reviewBeforeCommit: true,
-    }),
-  });
-}
-
-export const inspectVibeWorkbenchRequest = planVibeWorkbenchTask;
-
-if (typeof window !== 'undefined') {
-  window.planJaewoonVibeWorkbenchTask = planVibeWorkbenchTask;
-}
+const TARGET_WORDS={godot:['godot','고도','씬','project.godot','gdscript','.gd'],web:['웹','웹게임','html','css','javascript','자바스크립트','브라우저','모바일 웹']};
+const TASK_WORDS={repair:['오류','버그','고장','멈춰','안 돼','에러','크래시','깨져','복구'],change:['수정','바꿔','변경','고쳐','개선'],feature:['추가','넣어','만들어','구현'],balance:['체력','공격력','데미지','웨이브','보상','드랍률','속도','쿨타임','밸런스'],mobile:['모바일','핸드폰','휴대폰','터치','조이스틱','스마트폰'],save:['저장','세이브','불러오기','진행도']};
+const QUALITY={visual:['그래픽','비주얼','그림','에셋','배경','캐릭터','적 디자인','보스 디자인','UI','화면','퀄리티','못생','구려'],animation:['애니','애니메이션','모션','움직임','동작','전환','프레임','피격 모션','공격 모션'],vfx:['이펙트','효과','파티클','폭발','타격감','히트스톱','화면 흔들림','쉐이크'],audio:['음악','소리','사운드','BGM','효과음','타격음','공격음','피격음'],gameplay:['재미','재미없','게임성','루프','콘텐츠','보스 패턴','긴장감','보상 구조','선택지'],ux:['불편','버튼','조작','화면 잘림','여백','레이아웃','가독성'],performance:['렉','느려','버벅','프레임','성능','로딩'],multiplayer:['멀티','협동','온라인','사람+AI','AI 동료','파티'],export:['APK','안드로이드','빌드','배포','내보내기','실기기']};
+const PROTECTED=['체력','공격력','웨이브','보상','드랍률','저장 키','진행도','플레이 규칙'];
+const QUALITY_LABEL={visual:'그래픽/에셋',animation:'애니메이션/모션',vfx:'VFX/연출',audio:'음악/사운드',gameplay:'게임성/콘텐츠',ux:'UI/UX',performance:'성능/최적화',multiplayer:'멀티플레이/AI 협동',export:'플랫폼/빌드'};
+const clean=v=>String(v??'').trim();
+const has=(v,words)=>{const s=clean(v).toLowerCase();return words.some(w=>s.includes(String(w).toLowerCase()));};
+const unique=v=>[...new Set(v.filter(Boolean))];
+function targetOf(request,target='auto'){if(target==='godot'||target==='web')return target;return has(request,TARGET_WORDS.godot)?'godot':'web';}
+function modeOf(request){if(has(request,TASK_WORDS.repair))return'repair';if(has(request,TASK_WORDS.feature))return'feature';if(has(request,TASK_WORDS.change))return'change';return'inspect';}
+function priorityOf(request){if(has(request,['크래시','게임이 안 돼','멈춰','진행이 막힘','앱이 꺼져']))return'critical';if(has(request,TASK_WORDS.repair))return'high';if(has(request,['느려','불편','깨짐','구려','못생']))return'medium';return'normal';}
+function detectSystems(request){const a=[];if(has(request,['공격','피해','데미지','투사체','원거리','근접','넉백','기절','슬로우']))a.push('전투');if(has(request,TASK_WORDS.balance))a.push('밸런스/규칙');if(has(request,TASK_WORDS.mobile))a.push('모바일 입력/레이아웃');if(has(request,TASK_WORDS.save))a.push('저장/복원');if(has(request,['인벤토리','아이템','장비','무기','방어구']))a.push('인벤토리/장비');if(has(request,['제작','레시피','재료']))a.push('제작');if(has(request,['퀘스트','미션','대화','NPC']))a.push('퀘스트/대화');if(has(request,['스킬','필살기','버프','디버프']))a.push('스킬/효과');if(has(request,['골드','돈','상점','보상','드랍','드롭']))a.push('경제/보상');if(has(request,['웨이브','스폰','보스','적이 나와']))a.push('웨이브/스폰');return unique(a);}
+function detectQuality(request){return Object.entries(QUALITY).filter(([,words])=>has(request,words)).map(([k])=>k);}
+function candidateFiles(target,systems,quality){const a=[];if(target==='godot'){a.push('godot-games/<slug>/project.godot','godot-games/<slug>/main.tscn','godot-games/<slug>/*.gd');if(systems.includes('모바일 입력/레이아웃'))a.push('godot-games/<slug>/*.tscn');if(quality.some(k=>['visual','animation','vfx'].includes(k)))a.push('godot-games/<slug>/assets/*','godot-games/<slug>/*.tres');if(quality.includes('audio'))a.push('godot-games/<slug>/audio/*');}else{a.push('web-games/<slug>/index.html','web-games/<slug>/*.js','assets/*.js');if(quality.some(k=>['visual','animation','vfx'].includes(k)))a.push('web-games/<slug>/assets/*');if(quality.includes('audio'))a.push('web-games/<slug>/audio/*','assets/audio/*');}return unique(a);}
+function qualitySteps(keys){const a=[];if(keys.includes('visual'))a.push('그래픽 품질 진단 → 스타일 프로필 → 캐릭터/적/배경/UI 에셋 개선');if(keys.includes('animation'))a.push('idle/move/attack/hit/skill/death 애니메이션 및 판정 동기화');if(keys.includes('vfx'))a.push('타격/피격/폭발/스킬 VFX와 카메라 연출');if(keys.includes('audio'))a.push('BGM/SFX 연결과 모바일 용량/라이선스 확인');if(keys.includes('gameplay'))a.push('전투 루프/웨이브/보스/보상/선택 구조의 재미 진단');if(keys.includes('ux'))a.push('터치 영역/안전영역/UI 겹침/가독성 점검');if(keys.includes('performance'))a.push('프레임/스폰 폭증/로딩/메모리/에셋 용량 점검');if(keys.includes('multiplayer'))a.push('사람+AI 협동 슬롯/역할/동기화/이탈 복구 점검');if(keys.includes('export'))a.push('Android APK/서명/ABI/설치 호환성 점검');return a;}
+export function planVibeWorkbenchTask({request='',target='auto',gameId=null,file=null,knownBroken=false}={}){const prompt=clean(request);if(!prompt)throw new Error('workbench request required');const resolvedTarget=targetOf(prompt,target),mode=modeOf(prompt),priority=priorityOf(prompt),systems=detectSystems(prompt),quality=detectQuality(prompt),protectedTargets=PROTECTED.filter(x=>prompt.includes(x)),candidates=candidateFiles(resolvedTarget,systems,quality);const steps=['현재 main 기준 대상 게임/파일 확인',resolvedTarget==='godot'?'Godot project.godot와 씬/스크립트 구조 확인':'웹 index.html 및 공통/게임 전용 JS 확인','현재 게임 규칙·밸런스·저장 구조 확인'];if(mode==='repair'||knownBroken)steps.push('오류 재현 조건과 실제 실패 지점 확인');if(systems.length)steps.push(`영향 시스템 확인: ${systems.join(', ')}`);steps.push(...qualitySteps(quality),'현재 실행 결과/캡처/로그와 계획 대조','변경 범위를 최소화해 원본 책임 파일 직접 수정');if(mode==='repair')steps.push('원인 수정 후 동일 오류 재검사');steps.push('전용 기능 테스트','로딩/시작','진행 막힘','터치/버튼','저장/불러오기','일시정지/재시작','런타임 오류','모바일 화면','최종 회귀 QA','변경 전후 비교','사용자 피드백 반영 확인');if(resolvedTarget==='godot')steps.push('Godot 씬/스크립트 참조 및 세이브 회귀 확인');if(mode==='feature')steps.push('새 기능이 기존 규칙/세이브를 변경하지 않았는지 확인');const warnings=[];if(!gameId)warnings.push('대상 게임 ID가 아직 지정되지 않음');if(!file)warnings.push('실제 수정 전 후보 파일을 읽어 책임 파일 확정');if(protectedTargets.length)warnings.push(`보존 대상: ${protectedTargets.join(', ')}. 현재 값을 먼저 기록`);if(mode==='repair')warnings.push('증상만 가리는 우회 패치 금지');if(resolvedTarget==='godot')warnings.push('Godot 바이너리 실행 검증 가능 여부 별도 확인');if(quality.includes('visual'))warnings.push('기존 에셋 재사용/라이선스를 먼저 확인');if(quality.includes('audio'))warnings.push('오디오 라이선스와 모바일 용량을 확인');return Object.freeze({version:2,request:prompt,target:resolvedTarget,mode,priority,gameId:gameId?clean(gameId):null,file:file?clean(file):null,knownBroken:Boolean(knownBroken),affectedSystems:Object.freeze(systems),qualityKeys:Object.freeze(quality),qualitySystems:Object.freeze(quality.map(k=>QUALITY_LABEL[k])),candidateFiles:Object.freeze(candidates),protectedTargets:Object.freeze(protectedTargets),mobileDefaults:Object.freeze({touchFirst:true,virtualJoystick:true,safeArea:true,responsiveOrientation:true,keyboardDefault:false}),steps:Object.freeze(unique(steps)),warnings:Object.freeze(unique(warnings)),applyPolicy:Object.freeze({existingGameAutoApply:false,saveMigrationRequiredForBreakingChange:true,reviewBeforeCommit:true,checkpointBeforeQualityRebuild:quality.length>0})});}
+export const inspectVibeWorkbenchRequest=planVibeWorkbenchTask;
+if(typeof window!=='undefined')window.planJaewoonVibeWorkbenchTask=planVibeWorkbenchTask;
