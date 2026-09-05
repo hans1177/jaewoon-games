@@ -7,6 +7,7 @@ import { JaewoonGameTimers } from './game-timers.js';
 import { JaewoonWaveSpawner } from './wave-spawner.js';
 import { JaewoonDayNightCycle } from './day-night-cycle.js';
 import { JaewoonResourceGathering } from './resource-gathering.js';
+import { JaewoonStatusEffects } from './status-effects.js';
 import { buildGameBlueprint } from './game-blueprint.js';
 
 function clone(value) {
@@ -30,6 +31,7 @@ export class JaewoonGameSession {
     waveOptions = {},
     dayNightOptions = {},
     resourceOptions = {},
+    statusOptions = {},
     autoRestore = true,
   } = {}) {
     this.blueprint = buildGameBlueprint({
@@ -51,6 +53,7 @@ export class JaewoonGameSession {
     this.waves = new JaewoonWaveSpawner(waveOptions);
     this.dayNight = new JaewoonDayNightCycle(dayNightOptions);
     this.resources = new JaewoonResourceGathering(resourceOptions);
+    this.statusEffects = new JaewoonStatusEffects(statusOptions);
     this.started = false;
     this.meta = {};
 
@@ -206,12 +209,31 @@ export class JaewoonGameSession {
     return events;
   }
 
+  applyStatusEffect(entityId, effect = {}) {
+    const event = this.statusEffects.apply(entityId, effect);
+    this.emit('session-status-effect', { gameId: this.blueprint.gameId, ...event });
+    return event;
+  }
+
+  removeStatusEffect(entityId, effectId, reason = 'removed') {
+    const event = this.statusEffects.remove(entityId, effectId, reason);
+    if (event) this.emit('session-status-effect', { gameId: this.blueprint.gameId, ...event });
+    return event;
+  }
+
+  updateStatusEffects(delta) {
+    const events = this.statusEffects.update(delta);
+    for (const event of events) this.emit('session-status-effect', { gameId: this.blueprint.gameId, ...event });
+    return events;
+  }
+
   updateCommonSystems(delta, data = null) {
     return {
       timers: this.updateTimers(delta),
       waves: this.updateWaves(delta),
       dayNight: this.updateDayNight(delta),
       resources: this.updateResources(delta),
+      statusEffects: this.updateStatusEffects(delta),
       states: this.updateStateMachines(delta, data),
     };
   }
@@ -222,6 +244,7 @@ export class JaewoonGameSession {
     this.loop.setPaused(paused);
     this.dayNight.setPaused(paused);
     this.resources.setPaused(paused);
+    this.statusEffects.setPaused(paused);
     if (paused) this.input.releaseAll();
     this.emit('session-pause', { gameId: this.blueprint.gameId, paused, reason });
     return paused;
@@ -242,6 +265,7 @@ export class JaewoonGameSession {
       waves: this.waves.snapshot(),
       dayNight: this.dayNight.snapshot(),
       resources: this.resources.snapshot(),
+      statusEffects: this.statusEffects.snapshot(),
       meta: clone({ ...this.meta, ...extra }) || {},
     };
   }
@@ -284,6 +308,7 @@ export class JaewoonGameSession {
     if (session?.waves) this.waves.restore(session.waves);
     if (session?.dayNight) this.dayNight.restore(session.dayNight);
     if (session?.resources) this.resources.restore(session.resources);
+    if (session?.statusEffects) this.statusEffects.restore(session.statusEffects);
     this.meta = clone(session?.meta || {}) || {};
     this.emit('session-restore', { gameId: this.blueprint.gameId });
     return true;
@@ -309,6 +334,7 @@ export class JaewoonGameSession {
     this.waves.reset();
     this.dayNight.reset();
     this.resources.reset();
+    this.statusEffects.reset();
     this.runtime.destroy();
     this.started = false;
   }
