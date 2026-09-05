@@ -1,10 +1,16 @@
+// 파일명: assets/vibe-runtime.js
+// 역할: 웹게임 공통 저장·자동저장·오디오·일시정지·터치·오류 처리 런타임
+// 규칙: 게임별 저장 키 보존, 자동저장은 지연 저장 + 백그라운드 이탈 즉시 저장, 저장 실패가 게임 진행을 막지 않음
+
 export class JaewoonVibeRuntime {
-  constructor({ gameId = 'game', storagePrefix = 'jaewoon-games', autosaveDelay = 400 } = {}) {
+  constructor({ gameId = 'game', storagePrefix = 'jaewoon-games', autosaveDelay = 400, autosaveOnHide = true } = {}) {
     this.gameId = gameId;
     this.storageKey = `${storagePrefix}:${gameId}`;
     this.paused = false;
     this.autosaveDelay = Math.max(0, Number(autosaveDelay) || 0);
+    this.autosaveOnHide = Boolean(autosaveOnHide);
     this.autosaveTimer = null;
+    this.pendingProgress = null;
     this.defaultSettings = { music: 1, sfx: 1, vibration: true };
     this.settings = { ...this.defaultSettings, ...(this.load().settings || {}) };
     this.audio = new Map();
@@ -28,27 +34,33 @@ export class JaewoonVibeRuntime {
   }
 
   saveProgress(progress) {
-    return this.save({ progress });
+    this.pendingProgress = progress ?? null;
+    return this.save({ progress: this.pendingProgress });
   }
 
   queueSaveProgress(progress, delay = this.autosaveDelay) {
+    this.pendingProgress = progress ?? null;
     clearTimeout(this.autosaveTimer);
-    if (delay <= 0) return this.saveProgress(progress);
+    if (delay <= 0) return this.flushSaveProgress();
     this.autosaveTimer = setTimeout(() => {
       this.autosaveTimer = null;
-      this.saveProgress(progress);
-    }, delay);
-    return progress;
+      this.saveProgress(this.pendingProgress);
+    }, Math.max(0, Number(delay) || 0));
+    return this.pendingProgress;
   }
 
-  flushSaveProgress(progress) {
+  flushSaveProgress(progress = this.pendingProgress) {
     clearTimeout(this.autosaveTimer);
     this.autosaveTimer = null;
-    return this.saveProgress(progress);
+    if (progress == null && this.pendingProgress == null) return this.load();
+    this.pendingProgress = progress ?? null;
+    return this.save({ progress: this.pendingProgress });
   }
 
   loadProgress(fallback = {}) {
-    return this.load().progress ?? fallback;
+    const progress = this.load().progress;
+    this.pendingProgress = progress ?? null;
+    return progress ?? fallback;
   }
 
   setSetting(name, value) {
@@ -72,8 +84,9 @@ export class JaewoonVibeRuntime {
     return this.setPaused(!this.paused);
   }
 
-  installVisibilityPause({ pauseWhenHidden = true } = {}) {
+  installVisibilityPause({ pauseWhenHidden = true, saveWhenHidden = this.autosaveOnHide } = {}) {
     const handler = () => {
+      if (document.hidden && saveWhenHidden) this.flushSaveProgress();
       if (pauseWhenHidden && document.hidden && !this.paused) this.setPaused(true, 'hidden');
       window.dispatchEvent(new CustomEvent('jaewoon:visibility', {
         detail: { hidden: document.hidden }
@@ -81,6 +94,19 @@ export class JaewoonVibeRuntime {
     };
     document.addEventListener('visibilitychange', handler);
     const off = () => document.removeEventListener('visibilitychange', handler);
+    this.cleanup.push(off);
+    return off;
+  }
+
+  installPageExitSave() {
+    if (typeof window === 'undefined') return () => {};
+    const handler = () => this.flushSaveProgress();
+    window.addEventListener('pagehide', handler);
+    window.addEventListener('beforeunload', handler);
+    const off = () => {
+      window.removeEventListener('pagehide', handler);
+      window.removeEventListener('beforeunload', handler);
+    };
     this.cleanup.push(off);
     return off;
   }
@@ -198,15 +224,17 @@ export class JaewoonVibeRuntime {
     return off;
   }
 
-  boot({ visibilityPause = true, errorReporter = console.error } = {}) {
+  boot({ visibilityPause = true, errorReporter = console.error, pageExitSave = true } = {}) {
     this.applyAudioSettings();
     if (visibilityPause) this.installVisibilityPause();
+    if (pageExitSave) this.installPageExitSave();
     if (errorReporter) this.installGlobalErrorReporter(errorReporter);
     this.emit('boot', { gameId: this.gameId, settings: this.settings });
     return this;
   }
 
   destroy() {
+    this.flushSaveProgress();
     clearTimeout(this.autosaveTimer);
     this.autosaveTimer = null;
     for (const off of this.cleanup.splice(0)) {
@@ -214,6 +242,7 @@ export class JaewoonVibeRuntime {
     }
     for (const audio of this.audio.values()) audio.pause?.();
     this.audio.clear();
+    this.pendingProgress = null;
   }
 }
 
