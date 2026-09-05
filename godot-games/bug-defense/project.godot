@@ -1,0 +1,25 @@
+; 파일명: godot-games/bug-defense/project.godot
+; 역할: 곤충 디펜스 Godot 실전 검증 프로젝트 설정
+; 규칙: 모바일 터치+조이스틱 우선, 기존 게임 규칙은 main.gd가 소유
+
+[application]
+config/name="곤충 디펜스 Godot"
+run/main_scene="res://main.tscn"
+config/features=PackedStringArray("4.7")
+
+[display]
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="canvas_items"
+window/handheld/orientation=0
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/default_filters/use_nearest_mipmap_filter=false
+
+[application]
+config/name="곤충 디펜스 Godot"
+run/main_scene="res://main.tscn"
