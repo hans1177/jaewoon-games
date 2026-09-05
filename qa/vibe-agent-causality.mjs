@@ -34,10 +34,10 @@ const repeat = resolve({ id: 'attack-a', type: 'attack', targetId: 'enemy-1', op
 const differentId = resolve({ id: 'attack-b', type: 'attack', targetId: 'enemy-1', opportunity: 1 });
 const differentType = resolve({ id: 'attack-a', type: 'retreat', targetId: 'enemy-1', opportunity: 1 });
 
-assert(first.causality?.causeId, 'resolved action must have causality id');
-assert(first.causality.causeId === repeat.causality.causeId, 'same action must produce deterministic causality id');
-assert(first.causality.causeId !== differentId.causality.causeId, 'different action id must produce a different causality id');
-assert(first.causality.causeId !== differentType.causality.causeId, 'different action type must produce a different causality id');
+assert(first.cause?.causeId, 'resolved action must have causality id');
+assert(first.cause.causeId === repeat.cause.causeId, 'same action must produce deterministic causality id');
+assert(first.cause.causeId !== differentId.cause.causeId, 'different action id must produce a different causality id');
+assert(first.cause.causeId !== differentType.cause.causeId, 'different action type must produce a different causality id');
 assert(first.authority === 'engine-resolved', 'resolved action must remain engine authoritative');
 
 console.log('PASS agent causality determinism');
