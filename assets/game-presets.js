@@ -62,6 +62,7 @@ export function buildGamePreset({
   aiCompanions = false,
   npcDialogue = false,
   d20Rules = false,
+  turnBasedCombat = false,
   extras = {},
   remove = {},
 } = {}) {
@@ -90,6 +91,11 @@ export function buildGamePreset({
     assets.push('dice-ui','status-icons');
     qa.push('d20-rolls','advantage-disadvantage','critical-rules','combatant-hp','conditions');
   }
+  if (turnBasedCombat) {
+    systems.push('turn-combat','turn-order','rounds','combat-actions','combat-log','timed-conditions');
+    assets.push('turn-ui','target-indicators','status-icons');
+    qa.push('turn-order','round-advance','defeated-skip','combat-end','timed-conditions');
+  }
 
   systems = without(unique([...systems, ...list(extras.systems)]), remove.systems);
   assets = without(unique([...assets, ...list(extras.assets)]), remove.assets);
@@ -109,6 +115,7 @@ export function buildGamePreset({
       mobileFirst: true,
       presetIsSuggestion: true,
       d20RulesOptional: true,
+      turnBasedCombatOptional: true,
     }),
   });
 }
