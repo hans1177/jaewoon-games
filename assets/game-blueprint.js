@@ -170,41 +170,62 @@ function inferRules(text) {
   return Object.freeze(rules);
 }
 
+function collectEntitySpans(text) {
+  const matches = [];
+  for (const entity of ENTITY_WORDS) {
+    let start = text.indexOf(entity);
+    while (start >= 0) {
+      matches.push({ entity, start, end: start + entity.length });
+      start = text.indexOf(entity, start + 1);
+    }
+  }
+  return matches
+    .sort((a, b) => a.start - b.start || b.entity.length - a.entity.length)
+    .filter((item, index, list) => list.findIndex((other) => item.start >= other.start && item.end <= other.end && item.entity !== other.entity) < 0);
+}
+
 function inferEntityRules(text) {
   const entities = {};
-  const uniqueEntities = [...new Set(ENTITY_WORDS.filter((word) => text.includes(word)))];
-  for (const entity of uniqueEntities) {
-    const start = text.indexOf(entity);
-    if (start < 0) continue;
-    const chunk = text.slice(start, Math.min(text.length, start + 140));
+  const spans = collectEntitySpans(text);
+  for (let index = 0; index < spans.length; index += 1) {
+    const current = spans[index];
+    const next = spans[index + 1];
+    const chunkEnd = next ? next.start : text.length;
+    const chunk = text.slice(current.end, Math.min(chunkEnd, current.end + 160));
     const properties = {};
+    const actions = [];
     for (const rule of RULE_PATTERNS) {
       const match = chunk.match(rule.pattern);
       if (!match) continue;
       const value = Number(match[1]);
-      if (Number.isFinite(value)) properties[rule.key] = value;
-      if (match[2] && Number.isFinite(value)) properties[`${rule.key}Unit`] = match[2];
+      if (!Number.isFinite(value)) continue;
+      properties[rule.key] = value;
+      if (match[2]) properties[`${rule.key}Unit`] = match[2];
     }
-    if (Object.keys(properties).length) entities[entity] = Object.freeze(properties);
+    if (/(자동공격|자동으로 공격)/.test(chunk)) actions.push('auto-attack');
+    if (/(유도탄|유도 화살|따라가는 탄|적을 따라가)/.test(chunk)) actions.push('homing-projectile');
+    if (/(주변|범위|광역)/.test(chunk)) actions.push('area-effect');
+    if (/(밀쳐|넉백)/.test(chunk)) actions.push('knockback');
+    if (/(기절|스턴)/.test(chunk)) actions.push('stun');
+    if (/(느려|슬로우)/.test(chunk)) actions.push('slow');
+    if (actions.length) properties.actions = Object.freeze([...new Set(actions)]);
+    if (Object.keys(properties).length) {
+      const key = Object.keys(entities).includes(current.entity) ? `${current.entity}-${index + 1}` : current.entity;
+      entities[key] = Object.freeze(properties);
+    }
   }
   return Object.freeze(entities);
 }
 
 function inferObjectSpecs(text) {
   const objects = [];
+  const entityRules = inferEntityRules(text);
+  const propertyByName = new Map(Object.entries(entityRules).map(([name, properties]) => [name.replace(/-\d+$/, ''), properties]));
   for (const [type, words] of Object.entries(OBJECT_WORDS)) {
     for (const word of words) {
       if (!text.includes(word)) continue;
-      const index = text.indexOf(word);
-      const chunk = text.slice(index, Math.min(text.length, index + 160));
-      const properties = inferRules(chunk);
-      const effects = [];
-      if (properties.conditions?.includes('auto-attack')) effects.push('auto-attack');
-      if (properties.conditions?.includes('homing-projectile')) effects.push('homing-projectile');
-      if (properties.conditions?.includes('area-effect')) effects.push('area-effect');
-      if (properties.conditions?.includes('knockback')) effects.push('knockback');
-      if (properties.conditions?.includes('stun')) effects.push('stun');
-      if (properties.conditions?.includes('slow')) effects.push('slow');
+      const properties = propertyByName.get(word) || inferRules(text.slice(text.indexOf(word), text.length));
+      const effects = properties.actions ? [...properties.actions] : [];
       objects.push(Object.freeze({ type, name: word, properties, effects: Object.freeze(effects) }));
       break;
     }
