@@ -82,6 +82,15 @@ const ENTITY_WORDS = Object.freeze([
   '좀비', '개', '고양이', '기사', '궁수병', '마법사', '상인',
 ]);
 
+const DEFAULT_ASSET_POLICY = Object.freeze({
+  preferExistingAssets: true,
+  downloadOnDemand: true,
+  licenseCheckRequired: true,
+  preferredLicenses: Object.freeze(['CC0', 'commercial-no-attribution', 'CC-BY']),
+  blockedLicenses: Object.freeze(['NC', 'unknown', 'unclear-redistribution']),
+  maxSingleAssetBytes: 104857600,
+});
+
 function mergeObjects(base = {}, override = {}) {
   return { ...base, ...Object.fromEntries(Object.entries(override || {}).filter(([, value]) => value !== undefined)) };
 }
@@ -298,7 +307,7 @@ export function createGameFromBlueprint(options = {}) {
   return Object.freeze({ blueprint, kit: blueprint.createKit() });
 }
 
-export { GENRE_DEFAULT_OPTIONS };
+export { GENRE_DEFAULT_OPTIONS, DEFAULT_ASSET_POLICY };
 
 if (typeof window !== 'undefined') {
   window.buildJaewoonGameBlueprint = buildGameBlueprint;
