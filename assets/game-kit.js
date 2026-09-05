@@ -1,6 +1,3 @@
-// 파일명: assets/game-kit.js
-// 역할: 장르 공통 시스템 조합 관리자
-
 import { JaewoonD20Rules } from './d20-rules.js';
 import { JaewoonTurnCombat } from './turn-combat.js';
 import { JaewoonCharacterProgression } from './character-progression.js';
@@ -12,7 +9,6 @@ import { JaewoonSaveVersioning } from './save-versioning.js';
 import { JaewoonStatModifiers } from './stat-modifiers.js';
 import { JaewoonCraftingRecipes } from './crafting-recipes.js';
 import { JaewoonAchievementsUnlocks } from './achievements-unlocks.js';
-import { JaewoonProjectiles } from './projectiles.js';
 
 function options(value) {
   if (value === true || value == null) return {};
@@ -38,7 +34,6 @@ export class JaewoonGameKit {
     statModifiers = false,
     craftingRecipes = false,
     achievementsUnlocks = false,
-    projectiles = false,
     versionedSave = false,
   } = {}) {
     this.gameId = String(gameId || 'game');
@@ -99,8 +94,6 @@ export class JaewoonGameKit {
       this.systems.set('achievements', system);
       this.state.achievements = system.createState(config.initialState || {});
     }
-
-    if (projectiles) this.systems.set('projectiles', new JaewoonProjectiles(options(projectiles)));
 
     if (versionedSave) this.systems.set('save', new JaewoonSaveVersioning(options(versionedSave)));
   }
