@@ -1,5 +1,9 @@
+// 파일명: _worker.js
+// 역할: 재운게임즈 정적 자산 라우팅, 게임 런타임 AI, Vibe Maker 서버 관측 경계
 const AI_JSON_HEADERS = { 'Content-Type': 'application/json; charset=utf-8' };
 const GAME_AI_PURPOSES = new Set(['dialogue','strategy','companion','npc','enemy','boss','party','merchant','quest','coop','director']);
+const VIBE_REPOSITORY = 'hans1177/jaewoon-games';
+const VIBE_WORKFLOWS = new Set(['Vibe QA','Vibe Integrated Regression']);
 
 function aiJson(data, status = 200) { return new Response(JSON.stringify(data), { status, headers: AI_JSON_HEADERS }); }
 function clipText(value, max = 4000) { return String(value ?? '').trim().slice(0, max); }
@@ -43,11 +47,30 @@ async function handleGemini(request, env) {
   finally { clearTimeout(timeout); }
 }
 
+async function handleVibeWorkflowObservation(request, env, url) {
+  if (request.method !== 'GET') return aiJson({ error: 'method_not_allowed' }, 405);
+  const headSha = clipText(url.searchParams.get('head_sha'), 40).toLowerCase();
+  if (!/^[0-9a-f]{40}$/.test(headSha)) return aiJson({ error: 'invalid_head_sha' }, 400);
+  const headers = { Accept: 'application/vnd.github+json', 'User-Agent': 'jaewoon-vibe-maker', 'X-GitHub-Api-Version': '2022-11-28' };
+  if (env.GITHUB_TOKEN) headers.Authorization = `Bearer ${env.GITHUB_TOKEN}`;
+  const controller = new AbortController(), timeout = setTimeout(() => controller.abort(), 8000);
+  try {
+    const endpoint = `https://api.github.com/repos/${VIBE_REPOSITORY}/actions/runs?head_sha=${encodeURIComponent(headSha)}&per_page=50`;
+    const upstream = await fetch(endpoint, { headers, signal: controller.signal });
+    const raw = await upstream.json().catch(() => ({}));
+    if (!upstream.ok) return aiJson({ error: 'github_actions_upstream_error', status: upstream.status }, upstream.status >= 500 ? 502 : upstream.status);
+    const runs = (Array.isArray(raw.workflow_runs) ? raw.workflow_runs : []).filter(run => VIBE_WORKFLOWS.has(run?.name) && String(run?.head_sha || '').toLowerCase() === headSha).map(run => ({ id: run.id, name: run.name, head_sha: run.head_sha, status: run.status, conclusion: run.conclusion, event: run.event, run_attempt: run.run_attempt, created_at: run.created_at, updated_at: run.updated_at }));
+    return aiJson({ ok: true, repository: VIBE_REPOSITORY, head_sha: headSha, runs, authority: 'github-actions-workflow-source' });
+  } catch (error) { return aiJson({ error: error?.name === 'AbortError' ? 'github_actions_timeout' : 'github_actions_request_failed' }, 502); }
+  finally { clearTimeout(timeout); }
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === '/api/ai/status') return handleAiStatus(env);
     if (url.pathname === '/api/ai/gemini') return handleGemini(request, env);
+    if (url.pathname === '/api/vibe/workflow-observation') return handleVibeWorkflowObservation(request, env, url);
     if (url.pathname === '/web-games/egg-heist/' || url.pathname === '/web-games/egg-heist/index.html') return new Response('Not Found', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store, no-cache, must-revalidate' } });
     const response = await env.ASSETS.fetch(request);
     if (!['/', '/index.html'].includes(url.pathname)) return response;
