@@ -6,19 +6,19 @@ const COMMON = Object.freeze({
 
 export const GAME_PRESETS = Object.freeze({
   rpg: {
-    systems: ['inventory','equipment','quests','dialogue','npc','combat','progression','shops','stat-modifiers','achievements-unlocks'],
+    systems: ['inventory','equipment','quests','dialogue','npc','combat','combat-vitals','progression','shops','stat-modifiers','achievements-unlocks'],
     assets: ['player','npc','enemies','items','equipment','portraits','tiles','bgm','vfx'],
-    qa: ['inventory-persistence','quest-progression','dialogue-flow','combat-progression','stat-modifiers','achievement-unlocks'],
+    qa: ['inventory-persistence','quest-progression','dialogue-flow','combat-progression','combat-vitals','combat-save-restore','stat-modifiers','achievement-unlocks'],
   },
   defense: {
-    systems: ['waves','spawning','wave-spawner','targeting','towers','shop','upgrades','bosses','stat-modifiers'],
+    systems: ['waves','spawning','wave-spawner','targeting','towers','shop','upgrades','bosses','combat-vitals','stat-modifiers'],
     assets: ['enemies','towers','projectiles','map','wave-ui','bgm','vfx'],
-    qa: ['wave-progression','wave-spawn-limits','wave-save-restore','spawn-limits','targeting','boss-clear','shop-flow','stat-modifiers'],
+    qa: ['wave-progression','wave-spawn-limits','wave-save-restore','spawn-limits','targeting','boss-clear','shop-flow','combat-vitals','combat-save-restore','stat-modifiers'],
   },
   survival: {
-    systems: ['day-night','day-night-cycle','gathering','resource-gathering','resource-respawn','crafting','crafting-recipes','inventory','equipment','spawning','wave-spawner','status-effects','status-effect-ticks','status-effect-stacking','stat-modifiers'],
+    systems: ['day-night','day-night-cycle','gathering','resource-gathering','resource-respawn','crafting','crafting-recipes','inventory','equipment','spawning','wave-spawner','status-effects','status-effect-ticks','status-effect-stacking','combat-vitals','stat-modifiers'],
     assets: ['player','resources','enemies','items','crafting-ui','environment','bgm','ambience','status-icons'],
-    qa: ['day-night-loop','day-night-transitions','day-night-save-restore','resource-gathering','resource-phase-rules','resource-respawn','resource-save-restore','crafting-costs','crafting-rollback','inventory-persistence','spawn-rules','wave-spawn-limits','wave-save-restore','status-effect-ticks','status-effect-stacking','status-effect-save-restore','stat-modifiers'],
+    qa: ['day-night-loop','day-night-transitions','day-night-save-restore','resource-gathering','resource-phase-rules','resource-respawn','resource-save-restore','crafting-costs','crafting-rollback','inventory-persistence','spawn-rules','wave-spawn-limits','wave-save-restore','status-effect-ticks','status-effect-stacking','status-effect-save-restore','combat-vitals','status-to-combat','combat-save-restore','stat-modifiers'],
   },
   strategy: {
     systems: ['territories','units','resources','ai-opponents','battle-resolution','camera','selection','stat-modifiers'],
@@ -26,9 +26,9 @@ export const GAME_PRESETS = Object.freeze({
     qa: ['selection','territory-state','battle-resolution','resource-flow','stat-modifiers'],
   },
   action: {
-    systems: ['movement','combat','skills','cooldowns','enemies','wave-spawner','bosses','checkpoints','stat-modifiers','achievements-unlocks'],
+    systems: ['movement','combat','combat-vitals','skills','cooldowns','enemies','wave-spawner','bosses','checkpoints','stat-modifiers','achievements-unlocks'],
     assets: ['player','enemies','bosses','weapons','animations','vfx','bgm','sfx'],
-    qa: ['controls','hit-detection','cooldowns','wave-progression','wave-save-restore','death-restart','boss-clear','stat-modifiers','achievement-unlocks'],
+    qa: ['controls','hit-detection','cooldowns','wave-progression','wave-save-restore','death-restart','boss-clear','combat-vitals','combat-save-restore','stat-modifiers','achievement-unlocks'],
   },
   adventure: {
     systems: ['movement','interaction','dialogue','quests','checkpoints','collectibles','stat-modifiers','achievements-unlocks'],
