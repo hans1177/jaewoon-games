@@ -1,0 +1,27 @@
+# Godot
+.godot/
+.import/
+export_presets.cfg.tmp
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Logs / temp
+*.log
+*.tmp
+*.temp
+
+# Blender backup/autosave
+*.blend1
+*.blend2
+*.blend3
+*.blend@
+
+# Node tooling if used later
+node_modules/
+
+# Do not ignore /builds: Godot Web Export files there are deployment artifacts.
