@@ -2,6 +2,7 @@ import { JaewoonVibeRuntime } from './vibe-runtime.js';
 import { JaewoonGameLoop } from './game-loop.js';
 import { JaewoonInputActions } from './input-actions.js';
 import { JaewoonSceneFlow } from './scene-flow.js';
+import { JaewoonStateMachine } from './state-machine.js';
 import { buildGameBlueprint } from './game-blueprint.js';
 
 function clone(value) {
@@ -20,6 +21,7 @@ export class JaewoonGameSession {
     loopOptions = {},
     inputOptions = {},
     sceneOptions = {},
+    stateMachines = {},
     autoRestore = true,
   } = {}) {
     this.blueprint = buildGameBlueprint({
@@ -35,6 +37,8 @@ export class JaewoonGameSession {
     this.loop = new JaewoonGameLoop(loopOptions);
     this.input = new JaewoonInputActions(inputOptions);
     this.scenes = new JaewoonSceneFlow(sceneOptions);
+    this.stateMachines = new Map();
+    for (const [id, options] of Object.entries(stateMachines || {})) this.createStateMachine(id, options);
     this.started = false;
     this.meta = {};
 
@@ -99,6 +103,29 @@ export class JaewoonGameSession {
     return result;
   }
 
+  createStateMachine(id, options = {}) {
+    const key = String(id || '').trim();
+    if (!key) throw new Error('state machine id required');
+    if (this.stateMachines.has(key)) throw new Error(`state machine already exists: ${key}`);
+    const machine = new JaewoonStateMachine({ ...options, id: key });
+    this.stateMachines.set(key, machine);
+    return machine;
+  }
+
+  getStateMachine(id) {
+    return this.stateMachines.get(String(id)) || null;
+  }
+
+  removeStateMachine(id) {
+    return this.stateMachines.delete(String(id));
+  }
+
+  updateStateMachines(delta, data = null) {
+    const results = {};
+    for (const [id, machine] of this.stateMachines) results[id] = machine.update(delta, data);
+    return results;
+  }
+
   setPaused(value, reason = 'manual') {
     const paused = Boolean(value);
     this.runtime.setPaused(paused, reason);
@@ -118,6 +145,7 @@ export class JaewoonGameSession {
       gameId: this.blueprint.gameId,
       kit: this.kit.snapshot(),
       scenes: this.scenes.snapshot(),
+      stateMachines: Object.fromEntries([...this.stateMachines].map(([id, machine]) => [id, machine.snapshot()])),
       meta: clone({ ...this.meta, ...extra }) || {},
     };
   }
@@ -150,6 +178,12 @@ export class JaewoonGameSession {
       this.kit.restoreState(session.kit);
     }
     if (session?.scenes) this.scenes.restore(session.scenes);
+    if (session?.stateMachines && typeof session.stateMachines === 'object') {
+      for (const [id, snapshot] of Object.entries(session.stateMachines)) {
+        const machine = this.stateMachines.get(id);
+        if (machine) machine.restore(snapshot);
+      }
+    }
     this.meta = clone(session?.meta || {}) || {};
     this.emit('session-restore', { gameId: this.blueprint.gameId });
     return true;
@@ -169,6 +203,8 @@ export class JaewoonGameSession {
     this.loop.stop();
     this.input.destroy();
     this.scenes.reset();
+    for (const machine of this.stateMachines.values()) machine.reset();
+    this.stateMachines.clear();
     this.runtime.destroy();
     this.started = false;
   }
