@@ -34,7 +34,7 @@ jobs:
             assets/character-progression.js assets/inventory-equipment.js assets/quest-dialogue.js \
             assets/skill-effects.js assets/economy-loot-shop.js assets/save-versioning.js \
             assets/stat-modifiers.js assets/crafting-recipes.js assets/achievements-unlocks.js \
-            assets/wave-spawner.js assets/game-kit.js assets/game-presets.js assets/game-blueprint.js \
+            assets/wave-spawner.js assets/day-night-cycle.js assets/game-kit.js assets/game-presets.js assets/game-blueprint.js \
             assets/game-loop.js assets/input-actions.js assets/scene-flow.js assets/state-machine.js \
             assets/game-timers.js assets/game-session.js; do
             node --input-type=module --check < "$file"
@@ -47,7 +47,8 @@ jobs:
           cp assets/d20-rules.js assets/turn-combat.js assets/character-progression.js \
              assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js \
              assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
-             assets/crafting-recipes.js assets/achievements-unlocks.js assets/wave-spawner.js /tmp/jaewoon-qa/
+             assets/crafting-recipes.js assets/achievements-unlocks.js assets/wave-spawner.js \
+             assets/day-night-cycle.js /tmp/jaewoon-qa/
           printf '{"type":"module"}\n' > /tmp/jaewoon-qa/package.json
           node --input-type=module <<'NODE'
           import { JaewoonD20Rules } from 'file:///tmp/jaewoon-qa/d20-rules.js';
@@ -57,6 +58,7 @@ jobs:
           import { JaewoonAchievementsUnlocks } from 'file:///tmp/jaewoon-qa/achievements-unlocks.js';
           import { JaewoonStatModifiers } from 'file:///tmp/jaewoon-qa/stat-modifiers.js';
           import { JaewoonWaveSpawner } from 'file:///tmp/jaewoon-qa/wave-spawner.js';
+          import { JaewoonDayNightCycle } from 'file:///tmp/jaewoon-qa/day-night-cycle.js';
 
           const rules = new JaewoonD20Rules({ rng: () => 0.5 });
           if (rules.abilityModifier(18) !== 4) throw new Error('d20 failed');
@@ -99,6 +101,17 @@ jobs:
           restoredWaves.markDefeated(1);
           restoredWaves.update(1);
           if (restoredWaves.progress().spawned !== 2 || restoredWaves.progress().alive !== 1) throw new Error('wave restore/spawn limit failed');
+
+          const cycle = new JaewoonDayNightCycle({ dayDuration: 10, nightDuration: 5, startDay: 2 });
+          if (cycle.update(9).length !== 0 || !cycle.isDay()) throw new Error('day phase timing failed');
+          let cycleEvents = cycle.update(1);
+          if (cycleEvents.length !== 1 || !cycle.isNight() || cycle.status().day !== 2) throw new Error('day to night transition failed');
+          cycleEvents = cycle.update(5);
+          if (cycleEvents.length !== 1 || !cycle.isDay() || cycle.status().day !== 3) throw new Error('night to day transition failed');
+          const cycleSnapshot = cycle.snapshot();
+          const restoredCycle = new JaewoonDayNightCycle();
+          restoredCycle.restore(cycleSnapshot);
+          if (restoredCycle.status().day !== 3 || !restoredCycle.isDay()) throw new Error('day night restore failed');
           console.log('PASS core/common systems');
           NODE
 
@@ -134,9 +147,52 @@ jobs:
 
           const rpg = buildGameBlueprint({ gameId: 'rpg-qa', genre: 'rpg' });
           if (!rpg.createKit().has('achievements')) throw new Error('rpg achievement default missing');
+          const survival = buildGameBlueprint({ gameId: 'survival-qa', genre: 'survival' });
+          if (!survival.systems.includes('day-night-cycle')) throw new Error('survival day/night preset missing');
           const puzzle = buildGameBlueprint({ gameId: 'puzzle-qa', genre: 'puzzle' });
-          if (puzzle.createKit().has('achievements')) throw new Error('puzzle should not force achievements');
+          if (puzzle.createKit().has('achievements') || puzzle.systems.includes('day-night-cycle')) throw new Error('puzzle should not force optional systems');
           console.log('PASS game kit blueprint');
+          NODE
+
+      - name: Test day night session restore
+        run: |
+          rm -rf /tmp/jaewoon-session && mkdir -p /tmp/jaewoon-session
+          cp assets/game-session.js assets/day-night-cycle.js assets/wave-spawner.js assets/game-timers.js \
+             assets/state-machine.js assets/scene-flow.js assets/input-actions.js assets/game-loop.js \
+             assets/vibe-runtime.js assets/game-blueprint.js assets/game-presets.js assets/game-kit.js \
+             assets/d20-rules.js assets/turn-combat.js assets/character-progression.js \
+             assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js \
+             assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
+             assets/crafting-recipes.js assets/achievements-unlocks.js /tmp/jaewoon-session/
+          printf '{"type":"module"}\n' > /tmp/jaewoon-session/package.json
+          cd /tmp/jaewoon-session
+          node --input-type=module <<'NODE'
+          import { createGameSession } from './game-session.js';
+          const storage = new Map();
+          globalThis.localStorage = {
+            getItem: (key) => storage.has(key) ? storage.get(key) : null,
+            setItem: (key, value) => storage.set(key, String(value)),
+            removeItem: (key) => storage.delete(key),
+          };
+          const options = {
+            gameId: 'survival-session', genre: 'survival', autoRestore: false,
+            dayNightOptions: { dayDuration: 10, nightDuration: 5 },
+          };
+          const session = createGameSession(options);
+          session.updateDayNight(10);
+          if (!session.dayNight.isNight()) throw new Error('session day/night transition failed');
+          session.save();
+          const restored = createGameSession({ ...options, autoRestore: true });
+          if (!restored.dayNight.isNight() || restored.dayNightStatus().day !== 1) throw new Error('session day/night restore failed');
+          restored.updateDayNight(5);
+          if (!restored.dayNight.isDay() || restored.dayNightStatus().day !== 2) throw new Error('session next day failed');
+          restored.pause();
+          const pausedElapsed = restored.dayNightStatus().elapsed;
+          restored.updateDayNight(3);
+          if (restored.dayNightStatus().elapsed !== pausedElapsed) throw new Error('session pause should pause day/night');
+          restored.resume();
+          restored.destroy();
+          console.log('PASS day/night session');
           NODE
 
       - name: Check Godot common toolkit structure
