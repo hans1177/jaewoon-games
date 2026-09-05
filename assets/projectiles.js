@@ -54,6 +54,7 @@ function normalizeProjectile(projectile = {}) {
     homingStrength: finiteNonNegative(projectile.homingStrength, 0),
     destroyOnHit: projectile.destroyOnHit !== false,
     maxHits: Math.max(1, Math.floor(finiteNonNegative(projectile.maxHits, 1))),
+    hitCount: Math.max(0, Math.floor(finiteNonNegative(projectile.hitCount, 0))),
     hits: Array.isArray(projectile.hits) ? projectile.hits.map(String) : [],
     tags: Array.isArray(projectile.tags) ? projectile.tags.map(String) : [],
     meta: clone(projectile.meta || {}) || {},
@@ -86,6 +87,7 @@ export class JaewoonProjectiles {
   spawn(projectile = {}) {
     const normalized = normalizeProjectile(projectile);
     if (normalized.remaining <= 0) throw new Error('projectile lifetime must be > 0');
+    if (normalized.hitCount >= normalized.maxHits) throw new Error('projectile hit count must be below max hits');
     this.projectiles.set(normalized.id, normalized);
     return clone(normalized);
   }
@@ -150,21 +152,18 @@ export class JaewoonProjectiles {
               x: desired.x / length * projectile.speed,
               y: desired.y / length * projectile.speed,
             };
-            projectile.velocity.x = moveTowards(
+            const nextVelocity = moveTowards(
               projectile.velocity,
               desiredVelocity,
               projectile.homingStrength * amount,
-            ).x;
-            projectile.velocity.y = moveTowards(
-              projectile.velocity,
-              desiredVelocity,
-              projectile.homingStrength * amount,
-            ).y;
+            );
+            projectile.velocity.x = nextVelocity.x;
+            projectile.velocity.y = nextVelocity.y;
 
-            const velocityLength = Math.hypot(projectile.velocity.x, projectile.velocity.y);
-            if (velocityLength > 0 && projectile.speed > 0) {
-              projectile.velocity.x = projectile.velocity.x / velocityLength * projectile.speed;
-              projectile.velocity.y = projectile.velocity.y / velocityLength * projectile.speed;
+            const currentSpeed = Math.hypot(projectile.velocity.x, projectile.velocity.y);
+            if (currentSpeed > 0 && projectile.speed > 0) {
+              projectile.velocity.x = projectile.velocity.x / currentSpeed * projectile.speed;
+              projectile.velocity.y = projectile.velocity.y / currentSpeed * projectile.speed;
             }
           }
         }
@@ -191,7 +190,7 @@ export class JaewoonProjectiles {
         if (distanceSquared(projectile.position, target) > collisionRadius * collisionRadius) continue;
 
         projectile.hits.push(targetId);
-        projectile.hits = projectile.hits.slice(-projectile.maxHits);
+        projectile.hitCount += 1;
 
         const event = Object.freeze({
           type: 'projectile-hit',
@@ -205,7 +204,7 @@ export class JaewoonProjectiles {
         events.push(event);
         if (typeof onHit === 'function') onHit(event, clone(projectile), clone(target));
 
-        if (projectile.destroyOnHit || projectile.hits.length >= projectile.maxHits) {
+        if (projectile.destroyOnHit || projectile.hitCount >= projectile.maxHits) {
           this.projectiles.delete(projectile.id);
           events.push(Object.freeze({
             type: 'projectile-removed',
@@ -232,7 +231,7 @@ export class JaewoonProjectiles {
     this.paused = Boolean(snapshot.paused);
     for (const projectile of Array.isArray(snapshot.projectiles) ? snapshot.projectiles : []) {
       const normalized = normalizeProjectile(projectile);
-      if (normalized.remaining > 0) this.projectiles.set(normalized.id, normalized);
+      if (normalized.remaining > 0 && normalized.hitCount < normalized.maxHits) this.projectiles.set(normalized.id, normalized);
     }
     return this.snapshot();
   }
