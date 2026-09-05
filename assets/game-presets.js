@@ -1,7 +1,7 @@
 const COMMON = Object.freeze({
-  systems: ['game-kit','game-loop','input-actions','scene-flow','state-machine','save','pause','settings','audio','touch','keyboard','errors'],
+  systems: ['game-kit','game-loop','input-actions','scene-flow','state-machine','game-timers','save','pause','settings','audio','touch','keyboard','errors'],
   assets: ['ui','icons','font','sfx'],
-  qa: ['game-kit-compose','game-loop-timing','input-actions','scene-flow','scene-checkpoint','state-transitions','state-restore','pause-resume','boot','restart','save-load','touch','audio','console-errors'],
+  qa: ['game-kit-compose','game-loop-timing','input-actions','scene-flow','scene-checkpoint','state-transitions','state-restore','game-timers','timer-restore','pause-resume','boot','restart','save-load','touch','audio','console-errors'],
 });
 
 export const GAME_PRESETS = Object.freeze({
