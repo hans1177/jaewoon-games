@@ -1,6 +1,6 @@
 // 파일명: assets/game-kit.js
-// 역할: 공통 게임 시스템 조합 및 자연어 기반 킷/세션/콘텐츠/독립 게임 생성 진입점
-// 규칙: 기존 시스템 생성 흐름 보존, 명시 설정 우선, 게임별 최소 연결
+// 역할: 공통 게임 시스템 조합 및 자연어 기반 킷/콘텐츠/프로젝트 생성 진입점
+// 규칙: 기존 웹 생성 흐름 보존, Godot 요청만 Godot 프로젝트 생성 경로 추가, 게임별 최소 연결
 
 import { JaewoonD20Rules } from './d20-rules.js';
 import { JaewoonTurnCombat } from './turn-combat.js';
@@ -100,13 +100,23 @@ export async function createGamePackageFromPromptWithGame({ gameId = 'game', pro
 export async function createGameProjectFromPrompt({ gameId = 'game', prompt = '', genre = null, mixGenres = [], platform = 'auto', presetOptions = {}, kitOptions = {}, useGenreDefaults = true, title = null } = {}) {
   const result = await createGamePackageFromPromptWithGame({ gameId, prompt, genre, mixGenres, platform, presetOptions, kitOptions, useGenreDefaults, title });
   const project = createVibeProject({ gameId: result.package.gameId, title: title || result.package.gameId, target: result.package.platform === 'godot' ? 'godot' : 'web', packageData: result.package, source: result.generated.html });
+  let godotProject = null;
+  if (result.package.platform === 'godot') {
+    const { buildGodotProject } = await import('./godot-game-generator.js');
+    godotProject = buildGodotProject({ packageData: result.package, title: title || result.package.gameId, slug: result.package.gameId });
+  }
   return Object.freeze({
-    version: 1,
-    project: Object.freeze({ gameId: result.package.gameId, platform: result.package.platform, title: result.generated.slug, filename: result.generated.filename }),
+    version: 2,
+    project: Object.freeze({ gameId: result.package.gameId, platform: result.package.platform, title: result.generated.slug, filename: result.generated.filename, godotSlug: godotProject?.slug || null }),
     package: result.package,
     generated: result.generated,
+    godotProject,
     editableProject: project,
   });
+}
+
+export async function createGodotGameProjectFromPrompt(options = {}) {
+  return createGameProjectFromPrompt({ ...options, platform: 'godot' });
 }
 
 export async function createGameSessionFromPrompt({ gameId = 'game', prompt = '', genre = null, mixGenres = [], platform = 'auto', presetOptions = {}, kitOptions = {}, sessionOptions = {}, autoRestore = true } = {}) {
@@ -133,5 +143,6 @@ if (typeof window !== 'undefined') {
   window.createJaewoonGamePackageFromPrompt = createGamePackageFromPrompt;
   window.createJaewoonGamePackageFromPromptWithGame = createGamePackageFromPromptWithGame;
   window.createJaewoonGameProjectFromPrompt = createGameProjectFromPrompt;
+  window.createJaewoonGodotGameProjectFromPrompt = createGodotGameProjectFromPrompt;
   window.createJaewoonGameSessionFromPrompt = createGameSessionFromPrompt;
 }
