@@ -27,49 +27,31 @@ jobs:
           print('PASS asset manifest')
           PY
 
-      - name: Check common JavaScript syntax
+      - name: Check all JavaScript syntax
         run: |
-          for file in \
-            assets/vibe-runtime.js assets/game-config.js assets/d20-rules.js assets/turn-combat.js \
-            assets/character-progression.js assets/inventory-equipment.js assets/quest-dialogue.js \
-            assets/skill-effects.js assets/economy-loot-shop.js assets/save-versioning.js \
-            assets/stat-modifiers.js assets/crafting-recipes.js assets/achievements-unlocks.js \
-            assets/wave-spawner.js assets/day-night-cycle.js assets/resource-gathering.js \
-            assets/status-effects.js assets/combat-vitals.js assets/targeting-system.js assets/combat-actions.js \
-            assets/projectiles.js assets/ai-party.js \
-            assets/game-kit.js assets/game-presets.js assets/game-blueprint.js assets/game-loop.js \
-            assets/input-actions.js assets/scene-flow.js assets/state-machine.js assets/game-timers.js \
-            assets/game-session.js assets/vibe-helper.js; do
+          for file in assets/*.js; do
             node --input-type=module --check < "$file"
           done
+          node --input-type=module --check < qa/vibe-regression.mjs
           echo 'PASS JavaScript syntax'
 
       - name: Test core and common systems
         run: |
-          rm -rf /tmp/jaewoon-qa && mkdir -p /tmp/jaewoon-qa
-          cp assets/d20-rules.js assets/turn-combat.js assets/character-progression.js \
-             assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js \
-             assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
-             assets/crafting-recipes.js assets/achievements-unlocks.js assets/wave-spawner.js \
-             assets/day-night-cycle.js assets/resource-gathering.js assets/status-effects.js \
-             assets/combat-vitals.js assets/targeting-system.js assets/combat-actions.js \
-             assets/projectiles.js /tmp/jaewoon-qa/
-          printf '{"type":"module"}\n' > /tmp/jaewoon-qa/package.json
           node --input-type=module <<'NODE'
-          import { JaewoonD20Rules } from 'file:///tmp/jaewoon-qa/d20-rules.js';
-          import { JaewoonCharacterProgression } from 'file:///tmp/jaewoon-qa/character-progression.js';
-          import { JaewoonInventoryEquipment } from 'file:///tmp/jaewoon-qa/inventory-equipment.js';
-          import { JaewoonCraftingRecipes } from 'file:///tmp/jaewoon-qa/crafting-recipes.js';
-          import { JaewoonAchievementsUnlocks } from 'file:///tmp/jaewoon-qa/achievements-unlocks.js';
-          import { JaewoonStatModifiers } from 'file:///tmp/jaewoon-qa/stat-modifiers.js';
-          import { JaewoonWaveSpawner } from 'file:///tmp/jaewoon-qa/wave-spawner.js';
-          import { JaewoonDayNightCycle } from 'file:///tmp/jaewoon-qa/day-night-cycle.js';
-          import { JaewoonResourceGathering } from 'file:///tmp/jaewoon-qa/resource-gathering.js';
-          import { JaewoonStatusEffects } from 'file:///tmp/jaewoon-qa/status-effects.js';
-          import { JaewoonCombatVitals } from 'file:///tmp/jaewoon-qa/combat-vitals.js';
-          import { JaewoonTargetingSystem } from 'file:///tmp/jaewoon-qa/targeting-system.js';
-          import { JaewoonCombatActions } from 'file:///tmp/jaewoon-qa/combat-actions.js';
-          import { JaewoonProjectiles } from 'file:///tmp/jaewoon-qa/projectiles.js';
+          import { JaewoonD20Rules } from './assets/d20-rules.js';
+          import { JaewoonCharacterProgression } from './assets/character-progression.js';
+          import { JaewoonInventoryEquipment } from './assets/inventory-equipment.js';
+          import { JaewoonCraftingRecipes } from './assets/crafting-recipes.js';
+          import { JaewoonAchievementsUnlocks } from './assets/achievements-unlocks.js';
+          import { JaewoonStatModifiers } from './assets/stat-modifiers.js';
+          import { JaewoonWaveSpawner } from './assets/wave-spawner.js';
+          import { JaewoonDayNightCycle } from './assets/day-night-cycle.js';
+          import { JaewoonResourceGathering } from './assets/resource-gathering.js';
+          import { JaewoonStatusEffects } from './assets/status-effects.js';
+          import { JaewoonCombatVitals } from './assets/combat-vitals.js';
+          import { JaewoonTargetingSystem } from './assets/targeting-system.js';
+          import { JaewoonCombatActions } from './assets/combat-actions.js';
+          import { JaewoonProjectiles } from './assets/projectiles.js';
 
           const rules = new JaewoonD20Rules({ rng: () => 0.5 });
           if (rules.abilityModifier(18) !== 4) throw new Error('d20 failed');
@@ -86,103 +68,42 @@ jobs:
           const statState = stats.createState({ base: { hp: 100 } });
           stats.addModifier(statState, 'hp', { id: 'armor', flat: 50 });
           if (stats.calculate(statState, 'hp') !== 150) throw new Error('stat modifiers failed');
-          const achievements = new JaewoonAchievementsUnlocks({ definitions: [
-            { id: 'first-kill', requirements: [{ key: 'kills', target: 1 }], rewards: { gold: 10 } },
-            { id: 'boss-clear', requirements: [{ type: 'flag', key: 'boss', value: true }] },
-          ] });
+          const achievements = new JaewoonAchievementsUnlocks({ definitions: [{ id: 'first-kill', requirements: [{ key: 'kills', target: 1 }], rewards: { gold: 10 } }] });
           const achievementState = achievements.createState();
           if (!achievements.increment(achievementState, 'kills', 1).includes('first-kill')) throw new Error('achievement unlock failed');
           if (achievements.claimReward(achievementState, 'first-kill')?.gold !== 10) throw new Error('achievement reward failed');
-          if (achievements.claimReward(achievementState, 'first-kill') !== null) throw new Error('achievement duplicate reward failed');
-          achievements.setFlag(achievementState, 'boss', true);
-          if (!achievements.isUnlocked(achievementState, 'boss-clear')) throw new Error('achievement flag failed');
           const waves = new JaewoonWaveSpawner({ waves: [{ id: 'w1', maxAlive: 1, groups: [{ enemyId: 'slime', count: 2, interval: 1 }] }] });
           waves.start(0);
-          const firstSpawn = waves.update(0);
-          if (firstSpawn.length !== 1 || waves.progress().alive !== 1) throw new Error('wave spawn failed');
-          const waveSnapshot = waves.snapshot();
-          const restoredWaves = new JaewoonWaveSpawner({ waves: [{ id: 'w1', maxAlive: 1, groups: [{ enemyId: 'slime', count: 2, interval: 1 }] }] });
-          restoredWaves.restore(waveSnapshot);
-          restoredWaves.markDefeated(1);
-          restoredWaves.update(1);
-          if (restoredWaves.progress().spawned !== 2 || restoredWaves.progress().alive !== 1) throw new Error('wave restore failed');
+          if (waves.update(0).length !== 1 || waves.progress().alive !== 1) throw new Error('wave spawn failed');
           const cycle = new JaewoonDayNightCycle({ dayDuration: 10, nightDuration: 5, startDay: 2 });
           cycle.update(10);
-          if (!cycle.isNight() || cycle.status().day !== 2) throw new Error('day to night failed');
-          cycle.update(5);
-          if (!cycle.isDay() || cycle.status().day !== 3) throw new Error('night to day failed');
-          const restoredCycle = new JaewoonDayNightCycle();
-          restoredCycle.restore(cycle.snapshot());
-          if (restoredCycle.status().day !== 3) throw new Error('day night restore failed');
+          if (!cycle.isNight() || cycle.status().day !== 2) throw new Error('day night failed');
           const gathering = new JaewoonResourceGathering({ rng: () => 0.5, nodes: [{ id: 'branch', resourceId: 'wood', minAmount: 1, maxAmount: 3, maxCharges: 2, respawnDelay: 5, phases: ['day'] }] });
           if (gathering.gather('branch', { day: 1, phase: 'day' }).quantity !== 2) throw new Error('resource gather failed');
-          if (gathering.gather('branch', { day: 1, phase: 'night' }).reason !== 'phase-restricted') throw new Error('resource phase failed');
-          gathering.gather('branch', { day: 1, phase: 'day' });
-          const restoredGathering = new JaewoonResourceGathering({ nodes: [{ id: 'branch', resourceId: 'wood', maxCharges: 2, respawnDelay: 5, phases: ['day'] }] });
-          restoredGathering.restore(gathering.snapshot());
-          restoredGathering.update(5);
-          if (restoredGathering.get('branch').state.charges !== 2) throw new Error('resource respawn failed');
           const effects = new JaewoonStatusEffects();
           effects.apply('hero', { id: 'poison', duration: 3, tickInterval: 1, magnitude: 5, stackMode: 'stack', maxStacks: 3 });
-          effects.apply('hero', { id: 'poison', duration: 3, tickInterval: 1, magnitude: 5, stackMode: 'stack', maxStacks: 3 });
-          const effectEvents = effects.update(1);
-          if (effects.get('hero', 'poison').stacks !== 2 || !effectEvents.some((e) => e.type === 'effect-tick')) throw new Error('status effects failed');
-          const restoredEffects = new JaewoonStatusEffects();
-          restoredEffects.restore(effects.snapshot());
-          if (restoredEffects.get('hero', 'poison').remaining !== 2) throw new Error('status restore failed');
+          if (!effects.update(1).some((e) => e.type === 'effect-tick')) throw new Error('status effects failed');
           const combat = new JaewoonCombatVitals({ entities: [{ id: 'hero', hp: 100, maxHp: 100, shield: 20, maxShield: 20 }] });
-          const hit = combat.damage('hero', 30);
-          if (hit.shieldDamage !== 20 || hit.hpDamage !== 10 || combat.get('hero').hp !== 90) throw new Error('combat shield failed');
-          combat.setInvulnerable('hero', true);
-          if (combat.damage('hero', 10).ok) throw new Error('combat invulnerability failed');
-          combat.setInvulnerable('hero', false);
-          if (!combat.damage('hero', 999).died) throw new Error('combat death failed');
-          if (combat.heal('hero', 25, { revive: true }).type !== 'revive') throw new Error('combat revive failed');
-          const restoredCombat = new JaewoonCombatVitals();
-          restoredCombat.restore(combat.snapshot());
-          if (restoredCombat.get('hero').hp !== 25) throw new Error('combat restore failed');
-          const targeting = new JaewoonTargetingSystem({ entities: [
-            { id: 'tower', team: 'ally', x: 0, y: 0 },
-            { id: 'near', team: 'enemy', x: 3, y: 4, hp: 50, maxHp: 100, threat: 2 },
-            { id: 'far', team: 'enemy', x: 9, y: 0, hp: 90, maxHp: 100, threat: 10 },
-          ] });
-          if (targeting.select('tower', { teams: ['enemy'], range: 6, strategy: 'nearest' })?.id !== 'near') throw new Error('target nearest failed');
-          if (targeting.select('tower', { teams: ['enemy'], strategy: 'highest-threat' })?.id !== 'far') throw new Error('target threat failed');
-          const restoredTargeting = new JaewoonTargetingSystem();
-          restoredTargeting.restore(targeting.snapshot());
-          if (restoredTargeting.get('near')?.hp !== 50) throw new Error('target restore failed');
-          const actionVitals = new JaewoonCombatVitals({ entities: [{ id: 'attacker', hp: 100, maxHp: 100 }, { id: 'victim', hp: 50, maxHp: 50 }] });
-          const actionTargets = new JaewoonTargetingSystem({ entities: [{ id: 'attacker', team: 'ally', x: 0, y: 0 }, { id: 'victim', team: 'enemy', x: 3, y: 0, hp: 50, maxHp: 50 }] });
-          const actionStatuses = new JaewoonStatusEffects();
-          const combatActions = new JaewoonCombatActions({ targeting: actionTargets, combatVitals: actionVitals, statusEffects: actionStatuses, rng: () => 0 });
-          combatActions.register({ id: 'strike', damage: 10, range: 4, cooldown: 2, criticalChance: 1, criticalMultiplier: 2, statusEffects: [{ id: 'bleed', duration: 2, tickInterval: 1, magnitude: 2 }] });
-          if (!combatActions.use('attacker', 'strike', 'victim').critical || actionVitals.get('victim').hp !== 30 || !actionStatuses.has('victim', 'bleed')) throw new Error('combat action failed');
-          if (combatActions.use('attacker', 'strike', 'victim').reason !== 'cooldown') throw new Error('combat action cooldown failed');
-          combatActions.update(2);
-          if (combatActions.cooldownRemaining('attacker', 'strike') !== 0) throw new Error('combat action cooldown tick failed');
+          if (combat.damage('hero', 30).hpDamage !== 10) throw new Error('combat failed');
+          const targeting = new JaewoonTargetingSystem({ entities: [{ id: 'tower', team: 'ally', x: 0, y: 0 }, { id: 'near', team: 'enemy', x: 3, y: 4, hp: 50, maxHp: 100, threat: 2 }] });
+          if (targeting.select('tower', { teams: ['enemy'], range: 6, strategy: 'nearest' })?.id !== 'near') throw new Error('targeting failed');
+          const actions = new JaewoonCombatActions({ targeting, combatVitals: combat, statusEffects: effects, rng: () => 0 });
+          actions.register({ id: 'strike', damage: 10, range: 6, cooldown: 2, criticalChance: 1, criticalMultiplier: 2 });
+          if (!actions.use('hero', 'strike', 'near').critical) throw new Error('combat action failed');
           const projectiles = new JaewoonProjectiles();
-          projectiles.spawn({ id: 'straight', position: { x: 0, y: 0 }, velocity: { x: 10, y: 0 }, lifetime: 2 });
+          projectiles.spawn({ id: 'p', position: { x: 0, y: 0 }, velocity: { x: 10, y: 0 }, lifetime: 2 });
           projectiles.update(0.5);
-          if (projectiles.get('straight')?.position.x !== 5) throw new Error('projectile movement failed');
-          projectiles.spawn({ id: 'homing', position: { x: 0, y: 0 }, velocity: { x: 10, y: 0 }, speed: 10, lifetime: 2, targetId: 'target', homing: true, homingStrength: 100 });
-          projectiles.update(0.1, { getTarget: (id) => id === 'target' ? { x: 0, y: 10 } : null, getTargetIds: () => [] });
-          const homing = projectiles.get('homing');
-          if (!homing || homing.position.y <= 0) throw new Error('projectile homing failed');
-          console.log('PASS projectile/core/common systems');
+          if (projectiles.get('p')?.position.x !== 5) throw new Error('projectile failed');
+          console.log('PASS core/common systems');
           NODE
 
-      - name: Test game kit blueprint and save restore
+      - name: Test game kit and session restore
         run: |
-          rm -rf /tmp/jaewoon-kit && mkdir -p /tmp/jaewoon-kit
-          cp assets/game-kit.js assets/game-blueprint.js assets/game-presets.js assets/ai-party.js assets/vibe-helper.js \
-             assets/d20-rules.js assets/turn-combat.js assets/character-progression.js \
-             assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js \
-             assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
-             assets/crafting-recipes.js assets/achievements-unlocks.js /tmp/jaewoon-kit/
-          printf '{"type":"module"}\n' > /tmp/jaewoon-kit/package.json
           node --input-type=module <<'NODE'
-          import { createGameKit } from 'file:///tmp/jaewoon-kit/game-kit.js';
-          import { buildGameBlueprint } from 'file:///tmp/jaewoon-kit/game-blueprint.js';
+          import { createGameKit } from './assets/game-kit.js';
+          import { buildGameBlueprint } from './assets/game-blueprint.js';
+          import { createGameSession } from './assets/game-session.js';
+
           const config = { gameId: 'qa-game', inventoryEquipment: true, achievementsUnlocks: { definitions: [{ id: 'collector', requirements: [{ key: 'items', target: 2 }] }] }, versionedSave: { currentVersion: 2 } };
           const kit = createGameKit(config);
           kit.get('achievements').increment(kit.state.achievements, 'items', 2);
@@ -190,78 +111,25 @@ jobs:
           const restored = createGameKit(config);
           restored.restoreState(wrapped);
           if (!restored.get('achievements').isUnlocked(restored.state.achievements, 'collector')) throw new Error('achievement restore failed');
-          const survival = buildGameBlueprint({ gameId: 'survival-qa', genre: 'survival' });
-          if (!survival.systems.includes('day-night-cycle') || !survival.systems.includes('resource-gathering') || !survival.systems.includes('combat-vitals') || !survival.systems.includes('combat-actions')) throw new Error('survival common systems missing');
-          const defense = buildGameBlueprint({ gameId: 'defense-qa', genre: 'defense' });
-          if (!defense.systems.includes('targeting-system') || !defense.systems.includes('combat-actions')) throw new Error('defense combat systems missing');
-          const puzzle = buildGameBlueprint({ gameId: 'puzzle-qa', genre: 'puzzle' });
-          if (puzzle.systems.includes('combat-vitals') || puzzle.systems.includes('resource-gathering') || puzzle.systems.includes('targeting-system') || puzzle.systems.includes('combat-actions')) throw new Error('puzzle should not force combat systems');
-          console.log('PASS game kit blueprint');
+          for (const [genre, required] of [['survival', ['day-night-cycle','resource-gathering','combat-vitals','combat-actions']], ['defense', ['targeting-system','combat-actions']]]) {
+            const blueprint = buildGameBlueprint({ gameId: `qa-${genre}`, genre });
+            for (const system of required) if (!blueprint.systems.includes(system)) throw new Error(`${genre} system missing: ${system}`);
+          }
+          const storage = new Map();
+          globalThis.localStorage = { getItem: (k) => storage.has(k) ? storage.get(k) : null, setItem: (k,v) => storage.set(k, String(v)), removeItem: (k) => storage.delete(k) };
+          const options = { gameId: 'qa-session', genre: 'survival', autoRestore: false, dayNightOptions: { dayDuration: 10, nightDuration: 5 }, resourceOptions: { nodes: [{ id: 'stone', resourceId: 'stone', amount: 1, maxCharges: 1, respawnDelay: 4, phases: ['day'] }] }, combatActionOptions: { actions: [{ id: 'bite', damage: 5, range: 3, cooldown: 2 }] } };
+          const session = createGameSession(options);
+          session.registerCombatEntity({ id: 'player', hp: 50, maxHp: 50 });
+          session.save();
+          const restoredSession = createGameSession({ ...options, autoRestore: true });
+          if (restoredSession.combatVitals.get('player').hp !== 50) throw new Error('session restore failed');
+          session.destroy();
+          restoredSession.destroy();
+          console.log('PASS game kit/session restore');
           NODE
 
-      - name: Test survival session restore
-        run: |
-          rm -rf /tmp/jaewoon-session && mkdir -p /tmp/jaewoon-session
-          cp assets/game-session.js assets/day-night-cycle.js assets/resource-gathering.js assets/status-effects.js \
-             assets/combat-vitals.js assets/targeting-system.js assets/combat-actions.js assets/projectiles.js assets/wave-spawner.js assets/game-timers.js \
-             assets/state-machine.js assets/scene-flow.js assets/input-actions.js assets/game-loop.js \
-             assets/vibe-runtime.js assets/game-blueprint.js assets/game-presets.js assets/game-kit.js \
-             assets/d20-rules.js assets/turn-combat.js assets/character-progression.js \
-             assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js \
-             assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js \
-             assets/crafting-recipes.js assets/achievements-unlocks.js assets/ai-party.js assets/vibe-helper.js /tmp/jaewoon-session/
-          printf '{"type":"module"}\n' > /tmp/jaewoon-session/package.json
-          cd /tmp/jaewoon-session
-          node --input-type=module <<'NODE'
-          import { createGameSession } from './game-session.js';
-          const storage = new Map();
-          globalThis.localStorage = {
-            getItem: (key) => storage.has(key) ? storage.get(key) : null,
-            setItem: (key, value) => storage.set(key, String(value)),
-            removeItem: (key) => storage.delete(key),
-          };
-          const options = {
-            gameId: 'survival-session', genre: 'survival', autoRestore: false,
-            dayNightOptions: { dayDuration: 10, nightDuration: 5 },
-            resourceOptions: { rng: () => 0, nodes: [{ id: 'stone', resourceId: 'stone', amount: 1, maxCharges: 1, respawnDelay: 4, phases: ['day'] }] },
-            combatActionOptions: { rng: () => 0, actions: [{ id: 'bite', damage: 5, range: 3, cooldown: 2 }] },
-          };
-          const session = createGameSession(options);
-          if (!session.gatherResource('stone').ok) throw new Error('session resource gather failed');
-          session.registerCombatEntity({ id: 'player', hp: 50, maxHp: 50 });
-          session.registerCombatEntity({ id: 'enemy', hp: 20, maxHp: 20 });
-          session.registerTargetEntity({ id: 'player', team: 'ally', x: 0, y: 0, hp: 50, maxHp: 50 });
-          session.registerTargetEntity({ id: 'enemy', team: 'enemy', x: 2, y: 0, hp: 20, maxHp: 20 });
-          if (session.selectTarget('player', { teams: ['enemy'], range: 3 })?.id !== 'enemy') throw new Error('session target failed');
-          if (!session.useCombatAction('player', 'bite', 'enemy').ok || session.combatVitals.get('enemy').hp !== 15) throw new Error('session combat action failed');
-          session.updateCombatActions(1);
-          session.applyStatusEffect('player', { id: 'poison', kind: 'poison', duration: 2, tickInterval: 1, magnitude: 5, stacks: 2 });
-          const tick = session.updateStatusEffects(1).find((e) => e.type === 'effect-tick');
-          if (!session.applyStatusTickToCombat(tick).ok || session.combatVitals.get('player').hp !== 40) throw new Error('status to combat failed');
-          if (session.targeting.get('player').hp !== 40) throw new Error('combat target sync failed');
-          session.updateResources(2);
-          session.save();
-          const restored = createGameSession({ ...options, autoRestore: true });
-          if (restored.resources.get('stone').state.respawnRemaining !== 2) throw new Error('resource restore failed');
-          if (restored.combatVitals.get('player').hp !== 40) throw new Error('combat restore failed');
-          if (restored.targeting.get('player').hp !== 40) throw new Error('target restore failed');
-          if (restored.combatActions.cooldownRemaining('player', 'bite') !== 1) throw new Error('combat action restore failed');
-          restored.updateResources(2);
-          if (restored.resources.get('stone').state.charges !== 1) throw new Error('resource respawn failed');
-          restored.updateDayNight(10);
-          if (!restored.dayNight.isNight()) throw new Error('day night transition failed');
-          if (restored.gatherResource('stone').reason !== 'phase-restricted') throw new Error('resource day night rule failed');
-          restored.pause();
-          const before = restored.statusEffects.get('player', 'poison')?.remaining;
-          const cooldownBefore = restored.combatActions.cooldownRemaining('player', 'bite');
-          restored.updateStatusEffects(1);
-          restored.updateCombatActions(1);
-          if (restored.statusEffects.get('player', 'poison')?.remaining !== before) throw new Error('status pause failed');
-          if (restored.combatActions.cooldownRemaining('player', 'bite') !== cooldownBefore) throw new Error('combat action pause failed');
-          restored.resume();
-          restored.destroy();
-          console.log('PASS survival session');
-          NODE
+      - name: Run integrated regression
+        run: node qa/vibe-regression.mjs
 
       - name: Check Godot common toolkit structure
         run: |
@@ -276,24 +144,9 @@ jobs:
       - name: Repository hygiene
         run: |
           python - <<'PY'
-          import re
           from pathlib import Path
           limit = 100 * 1024 * 1024
           bad = [(str(p), p.stat().st_size) for p in Path('.').rglob('*') if p.is_file() and '.git' not in p.parts and p.stat().st_size >= limit]
-          if bad: raise SystemExit('\\n'.join(f'{p}: {s}' for p, s in bad))
-          missing = set()
-          attrs = re.compile(r'''(?:src|href)=["']([^"']+)["']''', re.I)
-          for html in list(Path('web-games').rglob('*.html')) + [Path('index.html')]:
-            if not html.exists(): continue
-            for ref in attrs.findall(html.read_text(encoding='utf-8', errors='ignore')):
-              if ref.startswith(('http://','https://','//','#','data:','mailto:','tel:','javascript:')): continue
-              clean = ref.split('#',1)[0].split('?',1)[0]
-              target = Path(clean.lstrip('/')) if clean.startswith('/') else html.parent / clean
-              if clean and not target.exists() and not clean.endswith('/'): missing.add(f'{html}: {ref}')
-          if missing:
-            print('WARN missing local references:')
-            for item in sorted(missing): print(' -', item)
-          else:
-            print('PASS local HTML references')
+          if bad: raise SystemExit('\n'.join(f'{p}: {s}' for p, s in bad))
           print('PASS repository hygiene')
           PY
