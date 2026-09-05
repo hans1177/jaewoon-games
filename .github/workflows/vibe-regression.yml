@@ -32,12 +32,14 @@ jobs:
             assets/vibe-workbench.js
             assets/vibe-rebuild-planner.js
             assets/vibe-rebuild-engine.js
+            assets/vibe-development-ai.js
             assets/vibe-presentation-director.js
             assets/vibe-motion-effects-director.js
             qa/vibe-regression.mjs
             qa/vibe-agent-causality.mjs
             qa/vibe-presentation-causality.mjs
             qa/vibe-world-macro-causality.mjs
+            qa/vibe-development-ai-evidence.mjs
           )
           for file in "${files[@]}"; do
             node --input-type=module --check < "$file"
@@ -55,3 +57,6 @@ jobs:
 
       - name: Test world macro causality contract
         run: node qa/vibe-world-macro-causality.mjs
+
+      - name: Test development AI evidence gate
+        run: node qa/vibe-development-ai-evidence.mjs
