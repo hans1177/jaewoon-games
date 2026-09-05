@@ -1,0 +1,69 @@
+name: Combat Vitals Test
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test combat vitals and session restore
+        run: |
+          rm -rf /tmp/jaewoon-combat
+          mkdir -p /tmp/jaewoon-combat
+          cp assets/combat-vitals.js assets/status-effects.js assets/game-session.js assets/resource-gathering.js assets/day-night-cycle.js assets/wave-spawner.js assets/game-timers.js assets/state-machine.js assets/scene-flow.js assets/input-actions.js assets/game-loop.js assets/vibe-runtime.js assets/game-blueprint.js assets/game-presets.js assets/game-kit.js assets/d20-rules.js assets/turn-combat.js assets/character-progression.js assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js assets/crafting-recipes.js assets/achievements-unlocks.js /tmp/jaewoon-combat/
+          printf '{"type":"module"}\n' > /tmp/jaewoon-combat/package.json
+          cd /tmp/jaewoon-combat
+          node --check combat-vitals.js
+          node --check game-session.js
+          node --input-type=module <<'NODE'
+          import { JaewoonCombatVitals } from './combat-vitals.js';
+          import { createGameSession } from './game-session.js';
+          import { buildGamePreset } from './game-presets.js';
+
+          const combat = new JaewoonCombatVitals({ entities: [{ id: 'hero', hp: 100, maxHp: 100, shield: 20, maxShield: 20 }] });
+          let event = combat.damage('hero', 30, { source: 'enemy' });
+          if (!event.ok || event.shieldDamage !== 20 || event.hpDamage !== 10 || combat.get('hero').hp !== 90) throw new Error('shield damage failed');
+          combat.setInvulnerable('hero', true);
+          event = combat.damage('hero', 50);
+          if (event.ok || combat.get('hero').hp !== 90) throw new Error('invulnerability failed');
+          combat.setInvulnerable('hero', false);
+          event = combat.damage('hero', 200);
+          if (!event.died || combat.get('hero').hp !== 0) throw new Error('death failed');
+          event = combat.heal('hero', 25, { revive: true });
+          if (event.type !== 'revive' || combat.get('hero').hp !== 25) throw new Error('revive failed');
+          const snap = combat.snapshot();
+          const restoredCombat = new JaewoonCombatVitals();
+          restoredCombat.restore(snap);
+          if (restoredCombat.get('hero').hp !== 25) throw new Error('combat restore failed');
+
+          const storage = new Map();
+          globalThis.localStorage = {
+            getItem: (key) => storage.has(key) ? storage.get(key) : null,
+            setItem: (key, value) => storage.set(key, String(value)),
+            removeItem: (key) => storage.delete(key),
+          };
+          const options = { gameId: 'combat-session', genre: 'survival', autoRestore: false };
+          const session = createGameSession(options);
+          session.registerCombatEntity({ id: 'player', hp: 50, maxHp: 50 });
+          session.applyStatusEffect('player', { id: 'poison', kind: 'poison', duration: 2, tickInterval: 1, magnitude: 5, stacks: 2 });
+          const ticks = session.updateStatusEffects(1);
+          const tick = ticks.find((item) => item.type === 'effect-tick');
+          const damage = session.applyStatusTickToCombat(tick);
+          if (!damage.ok || session.combatVitals.get('player').hp !== 40) throw new Error('status to combat failed');
+          session.save();
+          const restored = createGameSession({ ...options, autoRestore: true });
+          if (restored.combatVitals.get('player').hp !== 40) throw new Error('session combat restore failed');
+          restored.destroy();
+
+          const survival = buildGamePreset({ genre: 'survival' });
+          const action = buildGamePreset({ genre: 'action' });
+          if (!survival.systems.includes('combat-vitals') || !survival.qa.includes('status-to-combat')) throw new Error('survival combat preset failed');
+          if (!action.systems.includes('combat-vitals')) throw new Error('action combat preset failed');
+          console.log('PASS combat vitals');
+          NODE
