@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "policy": {
+    "licensePriority": ["CC0", "commercial-no-attribution", "CC-BY"],
+    "blocked": ["NC", "unknown", "unclear-redistribution"],
+    "maxSingleAssetBytes": 104857600,
+    "preferExistingAssets": true,
+    "downloadOnDemand": true
+  },
+  "approvedSources": [
+    {"name":"Kenney","categories":["2d","3d","ui","icons","sfx"],"priority":1},
+    {"name":"Poly Haven","categories":["3d","textures","hdri"],"priority":1},
+    {"name":"ambientCG","categories":["textures","materials"],"priority":1},
+    {"name":"Pixabay","categories":["images","music","sfx"],"priority":2},
+    {"name":"Mixkit","categories":["music","sfx","video"],"priority":2},
+    {"name":"OpenGameArt","categories":["2d","3d","music","sfx"],"priority":3},
+    {"name":"Freesound","categories":["sfx","ambience"],"priority":3},
+    {"name":"itch.io Game Assets","categories":["2d","3d","ui","audio"],"priority":3},
+    {"name":"Free Music Archive","categories":["music"],"priority":3},
+    {"name":"Quaternius","categories":["3d"],"priority":3},
+    {"name":"KayKit","categories":["3d"],"priority":3},
+    {"name":"CraftPix Freebies","categories":["2d","ui"],"priority":3},
+    {"name":"Game-icons.net","categories":["icons"],"priority":3},
+    {"name":"OpenMoji","categories":["icons","ui"],"priority":3},
+    {"name":"Google Fonts","categories":["fonts"],"priority":3},
+    {"name":"Font Awesome Free","categories":["icons","ui"],"priority":3}
+  ],
+  "assets": []
+}
