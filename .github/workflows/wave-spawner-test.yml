@@ -1,0 +1,92 @@
+name: Wave Spawner Test
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test wave spawner and session integration
+        run: |
+          rm -rf /tmp/jaewoon-wave
+          mkdir -p /tmp/jaewoon-wave
+          cp assets/wave-spawner.js assets/game-session.js assets/game-timers.js assets/state-machine.js assets/scene-flow.js assets/input-actions.js assets/game-loop.js assets/vibe-runtime.js assets/game-blueprint.js assets/game-presets.js assets/game-kit.js assets/d20-rules.js assets/turn-combat.js assets/character-progression.js assets/inventory-equipment.js assets/quest-dialogue.js assets/skill-effects.js assets/economy-loot-shop.js assets/save-versioning.js assets/stat-modifiers.js assets/crafting-recipes.js assets/achievements-unlocks.js /tmp/jaewoon-wave/
+          printf '{"type":"module"}\n' > /tmp/jaewoon-wave/package.json
+          cd /tmp/jaewoon-wave
+          node --check wave-spawner.js
+          node --check game-session.js
+          node --input-type=module <<'NODE'
+          import { JaewoonWaveSpawner } from './wave-spawner.js';
+          import { createGameSession } from './game-session.js';
+          import { buildGamePreset } from './game-presets.js';
+
+          const waves = new JaewoonWaveSpawner({
+            waves: [
+              { id: 'w1', startDelay: 1, maxAlive: 2, groups: [
+                { enemyId: 'goblin', count: 3, interval: 0.5 },
+                { enemyId: 'orc', count: 1, delay: 1 },
+              ] },
+              { id: 'boss', groups: [{ enemyId: 'boss', count: 1 }] },
+            ],
+          });
+          waves.start(0);
+          if (waves.update(0.9).length !== 0) throw new Error('start delay failed');
+          let events = waves.update(0.1);
+          if (events.length !== 1 || events[0].enemyId !== 'goblin') throw new Error('first spawn failed');
+          events = waves.update(1);
+          if (events.filter((e) => e.type === 'spawn').length !== 1 || waves.progress().alive !== 2) throw new Error('maxAlive failed');
+          waves.markDefeated(1);
+          events = waves.update(0);
+          if (events.filter((e) => e.type === 'spawn').length !== 1 || waves.progress().alive !== 2) throw new Error('spawn resume failed');
+          waves.markDefeated(2);
+          events = waves.update(1);
+          if (!events.some((e) => e.enemyId === 'orc')) throw new Error('group delay/spawn failed');
+          waves.markDefeated(1);
+          events = waves.update(0);
+          if (!events.some((e) => e.type === 'wave-complete')) throw new Error('wave completion failed');
+
+          const snapshot = waves.snapshot();
+          const restoredWaves = new JaewoonWaveSpawner({ waves: [
+            { id: 'w1', groups: [{ enemyId: 'goblin', count: 1 }] },
+            { id: 'boss', groups: [{ enemyId: 'boss', count: 1 }] },
+          ] });
+          restoredWaves.restore(snapshot);
+          if (restoredWaves.progress().waveIndex !== 0 || restoredWaves.progress().totalSpawned !== 4) throw new Error('wave restore failed');
+
+          const storage = new Map();
+          globalThis.localStorage = {
+            getItem: (key) => storage.has(key) ? storage.get(key) : null,
+            setItem: (key, value) => storage.set(key, String(value)),
+            removeItem: (key) => storage.delete(key),
+          };
+          const sessionOptions = {
+            gameId: 'wave-session', genre: 'defense', autoRestore: false,
+            waveOptions: { waves: [{ id: 'one', maxAlive: 1, groups: [{ enemyId: 'slime', count: 2, interval: 1 }] }] },
+          };
+          const session = createGameSession(sessionOptions);
+          session.startWave(0);
+          session.updateWaves(0);
+          if (session.waves.progress().alive !== 1) throw new Error('session wave spawn failed');
+          session.save();
+          const restored = createGameSession({ ...sessionOptions, autoRestore: true });
+          if (restored.waves.progress().alive !== 1 || restored.waves.progress().spawned !== 1) throw new Error('session wave restore failed');
+          restored.markWaveDefeated(1);
+          restored.updateWaves(0);
+          if (restored.waves.progress().spawned !== 2) throw new Error('session spawn after restore failed');
+          restored.destroy();
+
+          for (const genre of ['defense', 'survival', 'action']) {
+            const preset = buildGamePreset({ genre });
+            if (!preset.systems.includes('wave-spawner')) throw new Error(`wave-spawner missing from ${genre}`);
+            if (!preset.qa.includes('wave-save-restore')) throw new Error(`wave QA missing from ${genre}`);
+          }
+          const puzzle = buildGamePreset({ genre: 'puzzle' });
+          if (puzzle.systems.includes('wave-spawner')) throw new Error('puzzle should not force wave spawner');
+          console.log('PASS wave spawner');
+          NODE
