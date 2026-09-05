@@ -1,0 +1,44 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource path="res://main.gd" type="Script" id="1_main"]
+[ext_resource path="res://save-runtime.gd" type="Script" id="2_save"]
+[ext_resource path="res://animation-controller.gd" type="Script" id="3_anim"]
+
+[node name="BugDefense" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="SaveRuntime" type="Node" parent="."]
+script = ExtResource("2_save")
+save_key = "bug-defense"
+save_version = 1
+autosave_interval = 8.0
+
+[node name="AnimationController" type="Node" parent="."]
+script = ExtResource("3_anim")
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="TopBar" type="PanelContainer" parent="UI"]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = -16.0
+offset_bottom = 70.0
+
+[node name="Status" type="Label" parent="UI/TopBar"]
+text = "곤충 디펜스"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Bottom" type="PanelContainer" parent="UI"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -126.0
+mouse_filter = 2
+
+[node name="Hint" type="Label" parent="UI/Bottom"]
+text = "왼쪽 이동 조이스틱 · 오른쪽 공격 · 빈 땅을 탭해 포탑 설치"
+horizontal_alignment = 1
+vertical_alignment = 1
