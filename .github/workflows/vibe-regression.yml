@@ -1,0 +1,43 @@
+name: Vibe Integrated Regression
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            assets/common-ai.js
+            assets/ai-party.js
+            assets/animation-state.js
+            assets/asset-selector.js
+            assets/game-content.js
+            assets/game-kit.js
+            assets/godot-game-generator.js
+            assets/godot-project-qa.js
+            assets/vibe-build-plan.js
+            assets/vibe-project.js
+            assets/vibe-workbench.js
+            assets/vibe-rebuild-planner.js
+            assets/vibe-rebuild-engine.js
+            qa/vibe-regression.mjs
+          )
+          for file in "${files[@]}"; do
+            node --input-type=module --check < "$file"
+          done
+          echo 'PASS JavaScript syntax'
+
+      - name: Run integrated regression suite
+        run: node qa/vibe-regression.mjs
