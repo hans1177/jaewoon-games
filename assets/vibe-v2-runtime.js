@@ -8,6 +8,8 @@ import {diagnoseVibeReplayRegression,createVibeAutoRepairPlan,validateVibeAutoRe
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.freeze(v);for(const x of Object.values(v))freeze(x)}return v};
 const text=v=>String(v??'').trim();
 const unique=v=>[...new Set((v||[]).map(text).filter(Boolean))].sort();
+const fnv1a=value=>{let hash=0x811c9dc5;for(let i=0;i<value.length;i++){hash^=value.charCodeAt(i);hash=Math.imul(hash,0x01000193)}return(hash>>>0).toString(16).padStart(8,'0')};
+export const createVibeSourceRevision=changes=>{const canonical=(changes||[]).filter(x=>x&&text(x.path)).map(x=>({path:text(x.path),source:String(x.current??x.before??'')})).sort((a,b)=>a.path.localeCompare(b.path)).map(x=>`${x.path.length}:${x.path}:${x.source.length}:${x.source}`).join('|');return canonical?`local:${fnv1a(canonical)}`:''};
 
 export function createVibeV2Execution({request='',target='auto',environment='chatgpt',revision='',checkpointId='',responsibleFiles=[]}={}){
  const goal=createVibeGoalContract({request,target});
@@ -22,10 +24,13 @@ export function createVibeV2Execution({request='',target='auto',environment='cha
 
 export function createVibeWorkbenchCandidate({request='',target='auto',revision='',checkpointId='',changes=[]}={}){
  const normalized=(changes||[]).filter(x=>x&&x.changed!==false&&text(x.path)).map(x=>({path:text(x.path),before:String(x.current??''),after:String(x.next??'')}));
- const execution=createVibeV2Execution({request,target,revision,checkpointId,responsibleFiles:normalized.map(x=>x.path)});
+ const sourceRevision=createVibeSourceRevision(normalized);
+ const exactRevision=sourceRevision||text(revision);
+ const exactCheckpoint=sourceRevision?`checkpoint:${sourceRevision.slice('local:'.length)}`:text(checkpointId);
+ const execution=createVibeV2Execution({request,target,revision:exactRevision,checkpointId:exactCheckpoint,responsibleFiles:normalized.map(x=>x.path)});
  const candidate={kind:'workbench-source-change',files:normalized.map(x=>({path:x.path,changed:x.before!==x.after})),protectedMutations:[]};
  const preflight=advanceVibeV2Candidate(execution,{candidate});
- return freeze({version:1,execution:preflight,candidate,files:normalized,mayApply:preflight.mayRun===true,authority:'workbench-v2-bridge',requiresAtomicWrite:true,requiresPostApplyEvidence:true});
+ return freeze({version:2,execution:preflight,candidate,files:normalized,sourceRevision:exactRevision,checkpointId:exactCheckpoint,mayApply:preflight.mayRun===true,authority:'workbench-v2-bridge',requiresAtomicWrite:true,requiresPostApplyEvidence:true});
 }
 
 export function advanceVibeV2Candidate(execution,{candidate={}}={}){
@@ -51,4 +56,4 @@ export function verifyVibeV2Repair(execution,{before=null,after=null,invariants=
  return freeze({...execution,phase:repairValidation.accepted?'verified':'rollback',repairValidation,mayCommit:repairValidation.mayCommit,rollbackRequired:repairValidation.rollbackRequired,completionAuthority:'verified-runtime-and-regression-only'});
 }
 
-if(typeof window!=='undefined')Object.assign(window,{createJaewoonVibeV2Execution:createVibeV2Execution,createJaewoonVibeWorkbenchCandidate:createVibeWorkbenchCandidate,advanceJaewoonVibeV2Candidate:advanceVibeV2Candidate,verifyJaewoonVibeV2Runtime:verifyVibeV2Runtime,verifyJaewoonVibeV2Repair:verifyVibeV2Repair});
+if(typeof window!=='undefined')Object.assign(window,{createJaewoonVibeV2Execution:createVibeV2Execution,createJaewoonVibeSourceRevision:createVibeSourceRevision,createJaewoonVibeWorkbenchCandidate:createVibeWorkbenchCandidate,advanceJaewoonVibeV2Candidate:advanceVibeV2Candidate,verifyJaewoonVibeV2Runtime:verifyVibeV2Runtime,verifyJaewoonVibeV2Repair:verifyVibeV2Repair});
