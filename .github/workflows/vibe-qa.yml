@@ -73,6 +73,20 @@ jobs:
           let rejected = false;
           try { buildGamePreset({ genre: 'unknown' }); } catch { rejected = true; }
           if (!rejected) throw new Error('unknown preset was not rejected');
+
+          const hybrid = buildGamePreset({
+            genre: 'rpg',
+            mixGenres: ['defense'],
+            extras: { systems: ['turn-based-combat'], assets: ['custom-boss'] },
+            remove: { systems: ['shops'], qa: ['shop-flow'] },
+          });
+          for (const required of ['inventory','waves','towers','turn-based-combat']) {
+            if (!hybrid.systems.includes(required)) throw new Error(`missing hybrid system: ${required}`);
+          }
+          if (hybrid.systems.includes('shops')) throw new Error('removed system still present');
+          if (!hybrid.assets.includes('custom-boss')) throw new Error('custom asset missing');
+          if (!hybrid.mixedGenres.includes('defense')) throw new Error('mixed genre missing');
+          if (!hybrid.rules.presetIsSuggestion) throw new Error('preset flexibility rule missing');
           console.log('PASS game presets');
           NODE
 
@@ -127,6 +141,6 @@ jobs:
           echo "- manifest validated"
           echo "- common runtime syntax checked"
           echo "- game config syntax and behavior checked"
-          echo "- game preset syntax and behavior checked"
+          echo "- game preset syntax, hybrid composition and removal checked"
           echo "- 100 MB limit checked"
           echo "- missing local HTML references reported as warnings"
