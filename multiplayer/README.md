@@ -48,6 +48,43 @@ MultiplayerClient.message_received.connect(_on_multiplayer_message)
 
 `match_coop()`와 `match_pvp()`는 기본값으로 매칭된 `roomId`에 자동 WebSocket 접속합니다. 필요하면 `false`를 넘겨 자동 접속을 끌 수 있습니다.
 
+## 웹게임 공통 클라이언트
+`multiplayer/multiplayer-client.js`는 웹게임에서 공통으로 사용하는 ES module 클라이언트입니다.
+
+주요 기능:
+- 가입 / 로그인 / 세션 갱신
+- 협동 자동매칭 `matchCoop()`
+- 대전 자동매칭 `matchPvp()`
+- 친구방 생성 / 참가
+- 매칭 완료 후 WebSocket 방 자동 입장
+- `state`, `event`, `ready`, `rematch` 메시지 전송
+- 플레이어 입장 / 퇴장 이벤트
+- 연결 끊김 감지 및 자동 재접속
+
+예시:
+```html
+<script type="module">
+  import { JaewoonMultiplayerClient } from '/multiplayer/multiplayer-client.js';
+
+  const multiplayer = new JaewoonMultiplayerClient();
+
+  multiplayer.on('player_joined', (event) => {
+    console.log('player joined', event.detail);
+  });
+
+  multiplayer.on('message_received', (event) => {
+    console.log('multiplayer message', event.detail);
+  });
+
+  const login = await multiplayer.login(email, password);
+  if (login.ok) {
+    await multiplayer.matchCoop();
+  }
+</script>
+```
+
+`matchCoop()`와 `matchPvp()`는 기본값으로 매칭된 `roomId`에 자동 WebSocket 접속합니다. 필요하면 두 번째 인수로 `false`를 넘겨 자동 접속을 끌 수 있습니다.
+
 ## Cloudflare 설정
 `multiplayer/`에서 Wrangler로 Worker를 배포합니다.
 
