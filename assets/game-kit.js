@@ -85,6 +85,16 @@ export async function createGamePackageFromPromptWithGame({ gameId = 'game', pro
   return Object.freeze({ package: packageResult, generated });
 }
 
+export async function createGameProjectFromPrompt({ gameId = 'game', prompt = '', genre = null, mixGenres = [], platform = 'auto', presetOptions = {}, kitOptions = {}, useGenreDefaults = true, title = null } = {}) {
+  const result = await createGamePackageFromPromptWithGame({ gameId, prompt, genre, mixGenres, platform, presetOptions, kitOptions, useGenreDefaults, title });
+  return Object.freeze({
+    version: 1,
+    project: Object.freeze({ gameId: result.package.gameId, platform: result.package.platform, title: result.generated.slug, filename: result.generated.filename }),
+    package: result.package,
+    generated: result.generated,
+  });
+}
+
 export async function createGameSessionFromPrompt({ gameId = 'game', prompt = '', genre = null, mixGenres = [], platform = 'auto', presetOptions = {}, kitOptions = {}, sessionOptions = {}, autoRestore = true } = {}) {
   const { createGameSession } = await import('./game-session.js');
   const { buildGameBlueprint } = await import('./game-blueprint.js');
@@ -100,5 +110,6 @@ if (typeof window !== 'undefined') {
   window.createJaewoonGameContentFromPrompt = createGameContentFromPrompt;
   window.createJaewoonGamePackageFromPrompt = createGamePackageFromPrompt;
   window.createJaewoonGamePackageFromPromptWithGame = createGamePackageFromPromptWithGame;
+  window.createJaewoonGameProjectFromPrompt = createGameProjectFromPrompt;
   window.createJaewoonGameSessionFromPrompt = createGameSessionFromPrompt;
 }
