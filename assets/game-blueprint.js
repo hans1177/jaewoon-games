@@ -76,14 +76,11 @@ const RULE_PATTERNS = Object.freeze([
   Object.freeze({ key: 'gold', labels: ['골드', '돈', '코인'], pattern: /(?:골드|돈|코인)\s*(?:을|를|은|는|이|가)?\s*(\d+)/ }),
 ]);
 
-export const DEFAULT_ASSET_POLICY = Object.freeze({
-  preferExistingAssets: true,
-  downloadOnDemand: true,
-  licenseCheckRequired: true,
-  preferredLicenses: Object.freeze(['CC0', 'commercial-no-attribution', 'CC-BY']),
-  blockedLicenses: Object.freeze(['NC', 'unknown', 'unclear-redistribution']),
-  maxSingleAssetBytes: 104857600,
-});
+const ENTITY_WORDS = Object.freeze([
+  '고블린', '강화 고블린', '궁수', '궁수 고블린', '오크', '보스', '포탑', '탑', '병사', '병력', '영웅',
+  '플레이어', '주인공', '캐릭터', '적', '몬스터', '동료', 'npc', '나', '사마귀', '전갈', '거미', '벌',
+  '좀비', '개', '고양이', '기사', '궁수병', '마법사', '상인',
+]);
 
 function mergeObjects(base = {}, override = {}) {
   return { ...base, ...Object.fromEntries(Object.entries(override || {}).filter(([, value]) => value !== undefined)) };
@@ -170,10 +167,38 @@ function inferRules(text) {
   return Object.freeze(rules);
 }
 
+function inferEntityRules(text) {
+  const entities = {};
+  const uniqueEntities = [...new Set(ENTITY_WORDS.filter((word) => text.includes(word)))];
+  for (const entity of uniqueEntities) {
+    const positions = [];
+    let cursor = 0;
+    while (cursor < text.length) {
+      const index = text.indexOf(entity, cursor);
+      if (index < 0) break;
+      positions.push(index);
+      cursor = index + entity.length;
+    }
+    const chunks = positions.map((start, index) => text.slice(start, positions[index + 1] ?? Math.min(text.length, start + 80)));
+    const properties = {};
+    for (const chunk of chunks) {
+      for (const rule of RULE_PATTERNS) {
+        const match = chunk.match(rule.pattern);
+        if (!match) continue;
+        const value = Number(match[1]);
+        if (Number.isFinite(value)) properties[rule.key] = value;
+        if (match[2] && typeof properties[rule.key] === 'number') properties[`${rule.key}Unit`] = match[2];
+      }
+    }
+    if (Object.keys(properties).length) entities[entity] = Object.freeze(properties);
+  }
+  return Object.freeze(entities);
+}
+
 export function inferVibeIntent(prompt = '') {
   const text = normalizePrompt(prompt);
   if (!text) {
-    return Object.freeze({ genre: null, mixedGenres: Object.freeze([]), options: Object.freeze({}), platform: 'auto', presentation: Object.freeze({}), playerCount: null, rules: Object.freeze({}) });
+    return Object.freeze({ genre: null, mixedGenres: Object.freeze([]), options: Object.freeze({}), platform: 'auto', presentation: Object.freeze({}), playerCount: null, rules: Object.freeze({}), entityRules: Object.freeze({}) });
   }
 
   const genres = inferGenres(text);
@@ -192,6 +217,7 @@ export function inferVibeIntent(prompt = '') {
     presentation: Object.freeze(inferPresentation(text)),
     playerCount,
     rules: inferRules(text),
+    entityRules: inferEntityRules(text),
   });
 }
 
@@ -256,7 +282,6 @@ export function buildGameBlueprint({ gameId = 'game', prompt = '', genre = null,
       return Object.freeze({
         gameId: String(gameId || 'game'), genre: preset.genre, mixedGenres: preset.mixedGenres,
         platform: resolvedPlatform, intent, systems: preset.systems, materialPlan, qaPlan,
-        requestedRules: intent.rules,
         preservation: Object.freeze({
           preserveExistingBalance: preset.rules.preserveExistingBalance,
           preserveSaveFormat: preset.rules.preserveSaveFormat,
