@@ -16,9 +16,9 @@ export const GAME_PRESETS = Object.freeze({
     qa: ['wave-progression','wave-spawn-limits','wave-save-restore','spawn-limits','targeting','boss-clear','shop-flow','stat-modifiers'],
   },
   survival: {
-    systems: ['day-night','day-night-cycle','gathering','crafting','crafting-recipes','inventory','equipment','spawning','wave-spawner','status-effects','stat-modifiers'],
+    systems: ['day-night','day-night-cycle','gathering','resource-gathering','resource-respawn','crafting','crafting-recipes','inventory','equipment','spawning','wave-spawner','status-effects','stat-modifiers'],
     assets: ['player','resources','enemies','items','crafting-ui','environment','bgm','ambience'],
-    qa: ['day-night-loop','day-night-transitions','day-night-save-restore','crafting-costs','crafting-rollback','inventory-persistence','spawn-rules','wave-spawn-limits','wave-save-restore','stat-modifiers'],
+    qa: ['day-night-loop','day-night-transitions','day-night-save-restore','resource-gathering','resource-phase-rules','resource-respawn','resource-save-restore','crafting-costs','crafting-rollback','inventory-persistence','spawn-rules','wave-spawn-limits','wave-save-restore','stat-modifiers'],
   },
   strategy: {
     systems: ['territories','units','resources','ai-opponents','battle-resolution','camera','selection','stat-modifiers'],
