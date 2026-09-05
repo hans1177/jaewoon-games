@@ -8,12 +8,12 @@ export default {
 
     let html = await response.text();
     html = html.replace(
-      "image:'assets/insect-main-v3.webp',link:'/monster-adventure.html'",
-      "image:'assets/monster-adventure-card.webp?v=20260905-1',link:'/monster-adventure.html'"
+      "image:'assets/insect-main-v3.webp',link:'/web-games/monster-adventure/'",
+      "image:'assets/monster-adventure-card.webp?v=20260905-1',link:'/web-games/monster-adventure/'"
     );
     html = html.replace(
-      "image:'assets/monster-adventure-card.webp',link:'/monster-adventure.html'",
-      "image:'assets/monster-adventure-card.webp?v=20260905-1',link:'/monster-adventure.html'"
+      "image:'assets/monster-adventure-card.webp',link:'/web-games/monster-adventure/'",
+      "image:'assets/monster-adventure-card.webp?v=20260905-1',link:'/web-games/monster-adventure/'"
     );
 
     const headers = new Headers(response.headers);
