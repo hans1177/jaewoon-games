@@ -64,17 +64,16 @@ jobs:
           "$GODOT_BIN" --headless --path "$PROJECT_PATH" --export-debug Android build/bug-defense.apk
           test -s "$PROJECT_PATH/build/bug-defense.apk"
 
-      - name: Verify APK and commit provenance
+      - name: Verify APK signature and commit provenance
         run: |
           set -euo pipefail
           test "$(cat "$PROJECT_PATH/build/commit-sha.txt")" = "$GITHUB_SHA"
           APK="$PROJECT_PATH/build/bug-defense.apk"
           test -s "$APK"
-          if command -v apksigner >/dev/null 2>&1; then
-            apksigner verify "$APK"
-          else
-            echo 'apksigner unavailable; APK existence verified'
-          fi
+          APKSIGNER="$(find "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools" -type f -name apksigner 2>/dev/null | sort -V | tail -n 1)"
+          test -n "$APKSIGNER"
+          test -x "$APKSIGNER"
+          "$APKSIGNER" verify --verbose --print-certs "$APK"
           sha256sum "$APK" > "$PROJECT_PATH/build/bug-defense.apk.sha256"
 
       - name: Upload exact-commit APK artifact
