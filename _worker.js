@@ -8,6 +8,14 @@ function clipText(value, max = 4000) {
   return String(value ?? '').trim().slice(0, max);
 }
 
+function handleAiStatus(env) {
+  return aiJson({
+    ok: true,
+    geminiConfigured: Boolean(env.GEMINI_API_KEY),
+    model: clipText(env.GEMINI_MODEL || 'gemini-2.5-flash-lite', 80)
+  });
+}
+
 async function handleGemini(request, env) {
   if (request.method !== 'POST') return aiJson({ error: 'method_not_allowed' }, 405);
   if (!env.GEMINI_API_KEY) return aiJson({ error: 'gemini_not_configured' }, 503);
@@ -27,8 +35,8 @@ async function handleGemini(request, env) {
     'Never invent or change hidden game rules, stats, rewards, inventory, save data, or authoritative combat results.',
     'Return JSON only.',
     purpose === 'strategy'
-      ? 'Return {"action":"short_action_id","reason":"short reason","speech":"optional short line"}.'
-      : 'Return {"speech":"short natural NPC line","mood":"neutral|happy|angry|afraid|sad|excited","intent":"talk|warn|help|refuse|trade|quest"}.',
+      ? '{"action":"short_action_id","reason":"short reason","speech":"optional short line"} 형식의 JSON만 반환하세요.'
+      : '{"speech":"short natural NPC line","mood":"neutral|happy|angry|afraid|sad|excited","intent":"talk|warn|help|refuse|trade|quest"} 형식의 JSON만 반환하세요.',
     system
   ].filter(Boolean).join('\n');
 
@@ -75,6 +83,10 @@ async function handleGemini(request, env) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    if (url.pathname === '/api/ai/status') {
+      return handleAiStatus(env);
+    }
 
     if (url.pathname === '/api/ai/gemini') {
       return handleGemini(request, env);
