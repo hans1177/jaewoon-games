@@ -1,0 +1,123 @@
+name: Game Scoped Multiplayer Upgrade
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  upgrade:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply game-scoped matchmaking upgrade
+        run: |
+          python <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              p = Path(path)
+              text = p.read_text()
+              if old not in text:
+                  raise SystemExit(f'missing target in {path}: {old[:80]!r}')
+              p.write_text(text.replace(old, new, 1))
+
+          worker = 'multiplayer/worker.js'
+          replace_once(worker,
+          "function modeConfig(mode) {\n  if (mode === 'coop') return { mode: 'coop', maxPlayers: 4 };\n  if (mode === 'pvp') return { mode: 'pvp', maxPlayers: 2 };\n  return null;\n}\n",
+          "function modeConfig(mode) {\n  if (mode === 'coop') return { mode: 'coop', maxPlayers: 4 };\n  if (mode === 'pvp') return { mode: 'pvp', maxPlayers: 2 };\n  return null;\n}\n\nfunction normalizeGameId(value) {\n  const gameId = String(value || 'default').trim().toLowerCase();\n  return /^[a-z0-9][a-z0-9-]{0,49}$/.test(gameId) ? gameId : 'default';\n}\n")
+          replace_once(worker,
+          "      const config = modeConfig(body.mode);\n      if (!config) return json({ error: 'invalid_mode' }, 400, headers);\n      const id = env.MATCHMAKER.idFromName('global');\n      return env.MATCHMAKER.get(id).fetch('https://matchmaker/matchmake', {\n        method: 'POST',\n        headers: { 'content-type': 'application/json' },\n        body: JSON.stringify({ user, ...config }),\n      });",
+          "      const config = modeConfig(body.mode);\n      if (!config) return json({ error: 'invalid_mode' }, 400, headers);\n      const gameId = normalizeGameId(body.gameId);\n      const id = env.MATCHMAKER.idFromName('global');\n      return env.MATCHMAKER.get(id).fetch('https://matchmaker/matchmake', {\n        method: 'POST',\n        headers: { 'content-type': 'application/json' },\n        body: JSON.stringify({ user, ...config, gameId }),\n      });")
+          replace_once(worker,
+          "      const config = modeConfig(body.mode);\n      if (!config) return json({ error: 'invalid_mode' }, 400, headers);\n      const id = env.MATCHMAKER.idFromName('global');\n      return env.MATCHMAKER.get(id).fetch('https://matchmaker/friend/create', {\n        method: 'POST',\n        headers: { 'content-type': 'application/json' },\n        body: JSON.stringify({ user, ...config }),\n      });",
+          "      const config = modeConfig(body.mode);\n      if (!config) return json({ error: 'invalid_mode' }, 400, headers);\n      const gameId = normalizeGameId(body.gameId);\n      const id = env.MATCHMAKER.idFromName('global');\n      return env.MATCHMAKER.get(id).fetch('https://matchmaker/friend/create', {\n        method: 'POST',\n        headers: { 'content-type': 'application/json' },\n        body: JSON.stringify({ user, ...config, gameId }),\n      });")
+          replace_once(worker,
+          "  async matchmake({ user, mode, maxPlayers }) {",
+          "  async matchmake({ user, mode, maxPlayers, gameId = 'default' }) {")
+          replace_once(worker,
+          "    let room = rooms.find(r => r.mode === mode && !r.players.includes(user.id));\n    if (!room) {\n      room = { roomId: crypto.randomUUID(), mode, maxPlayers, players: [user.id], createdAt: now };",
+          "    let room = rooms.find(r => r.mode === mode && r.gameId === gameId && !r.players.includes(user.id));\n    if (!room) {\n      room = { roomId: crypto.randomUUID(), mode, gameId, maxPlayers, players: [user.id], createdAt: now };")
+          replace_once(worker,
+          "    return json({ roomId: room.roomId, mode, players: room.players.length, maxPlayers, status: full ? 'ready' : 'waiting' });",
+          "    return json({ roomId: room.roomId, mode, gameId, players: room.players.length, maxPlayers, status: full ? 'ready' : 'waiting' });")
+          replace_once(worker,
+          "  async friendCreate({ user, mode, maxPlayers }) {",
+          "  async friendCreate({ user, mode, maxPlayers, gameId = 'default' }) {")
+          replace_once(worker,
+          "    invites[inviteCode] = { roomId, mode, maxPlayers, players: [user.id], createdAt: now };\n    await this.ctx.storage.put('invites', invites);\n    return json({ roomId, inviteCode, mode, players: 1, maxPlayers, status: 'waiting' });",
+          "    invites[inviteCode] = { roomId, mode, gameId, maxPlayers, players: [user.id], createdAt: now };\n    await this.ctx.storage.put('invites', invites);\n    return json({ roomId, inviteCode, mode, gameId, players: 1, maxPlayers, status: 'waiting' });")
+          replace_once(worker,
+          "    return json({ roomId: item.roomId, mode: item.mode, players: item.players.length, maxPlayers: item.maxPlayers, status: full ? 'ready' : 'waiting' });",
+          "    return json({ roomId: item.roomId, mode: item.mode, gameId: item.gameId || 'default', players: item.players.length, maxPlayers: item.maxPlayers, status: full ? 'ready' : 'waiting' });")
+
+          gd = 'multiplayer/multiplayer_client.gd'
+          replace_once(gd,
+          "var current_room_id := \"\"\nvar current_mode := \"\"\n",
+          "var current_room_id := \"\"\nvar current_mode := \"\"\nvar current_game_id := \"default\"\n")
+          replace_once(gd,
+          "\tcurrent_user = {}\n\tcurrent_mode = \"\"\n",
+          "\tcurrent_user = {}\n\tcurrent_mode = \"\"\n\tcurrent_game_id = \"default\"\n")
+          replace_once(gd,
+          "func match_coop(auto_connect_room := true) -> Dictionary:\n\treturn await quick_match(\"coop\", auto_connect_room)\n\nfunc match_pvp(auto_connect_room := true) -> Dictionary:\n\treturn await quick_match(\"pvp\", auto_connect_room)\n\nfunc quick_match(mode: String, auto_connect_room := true) -> Dictionary:\n\tvar result := await _request(\"/matchmake\", HTTPClient.METHOD_POST, {\"mode\": mode}, true)\n\tif result.ok:\n\t\tcurrent_mode = mode",
+          "func match_coop(auto_connect_room := true) -> Dictionary:\n\treturn await quick_match(\"coop\", auto_connect_room, \"default\")\n\nfunc match_coop_for_game(game_id: String, auto_connect_room := true) -> Dictionary:\n\treturn await quick_match(\"coop\", auto_connect_room, game_id)\n\nfunc match_pvp(auto_connect_room := true) -> Dictionary:\n\treturn await quick_match(\"pvp\", auto_connect_room, \"default\")\n\nfunc match_pvp_for_game(game_id: String, auto_connect_room := true) -> Dictionary:\n\treturn await quick_match(\"pvp\", auto_connect_room, game_id)\n\nfunc quick_match(mode: String, auto_connect_room := true, game_id: String = \"default\") -> Dictionary:\n\tvar normalized_game_id := _normalize_game_id(game_id)\n\tvar result := await _request(\"/matchmake\", HTTPClient.METHOD_POST, {\"mode\": mode, \"gameId\": normalized_game_id}, true)\n\tif result.ok:\n\t\tcurrent_mode = mode\n\t\tcurrent_game_id = normalized_game_id")
+          replace_once(gd,
+          "func create_friend_room(mode: String = \"coop\", auto_connect_room := true) -> Dictionary:\n\tvar result := await _request(\"/friend/create\", HTTPClient.METHOD_POST, {\"mode\": mode}, true)\n\tif result.ok:\n\t\tcurrent_mode = mode",
+          "func create_friend_room(mode: String = \"coop\", auto_connect_room := true) -> Dictionary:\n\treturn await create_friend_room_for_game(mode, \"default\", auto_connect_room)\n\nfunc create_friend_room_for_game(mode: String, game_id: String, auto_connect_room := true) -> Dictionary:\n\tvar normalized_game_id := _normalize_game_id(game_id)\n\tvar result := await _request(\"/friend/create\", HTTPClient.METHOD_POST, {\"mode\": mode, \"gameId\": normalized_game_id}, true)\n\tif result.ok:\n\t\tcurrent_mode = mode\n\t\tcurrent_game_id = normalized_game_id")
+          replace_once(gd,
+          "\t\tif result.data.has(\"mode\"):\n\t\t\tcurrent_mode = String(result.data.mode)\n\t\tfriend_room_joined.emit(result.data)",
+          "\t\tif result.data.has(\"mode\"):\n\t\t\tcurrent_mode = String(result.data.mode)\n\t\tif result.data.has(\"gameId\"):\n\t\t\tcurrent_game_id = String(result.data.gameId)\n\t\tfriend_room_joined.emit(result.data)")
+          replace_once(gd,
+          "func _schedule_reconnect() -> void:\n",
+          "func _normalize_game_id(game_id: String) -> String:\n\tvar normalized := game_id.strip_edges().to_lower()\n\tif normalized == \"\":\n\t\treturn \"default\"\n\tvar regex := RegEx.new()\n\tregex.compile(\"^[a-z0-9][a-z0-9-]{0,49}$\")\n\treturn normalized if regex.search(normalized) else \"default\"\n\nfunc _schedule_reconnect() -> void:\n")
+
+          js = 'multiplayer/multiplayer-client.js'
+          replace_once(js,
+          "    this.currentRoomId = '';\n    this.currentMode = '';\n",
+          "    this.currentRoomId = '';\n    this.currentMode = '';\n    this.currentGameId = 'default';\n")
+          replace_once(js,
+          "    this.currentUser = null;\n    this.currentMode = '';\n",
+          "    this.currentUser = null;\n    this.currentMode = '';\n    this.currentGameId = 'default';\n")
+          replace_once(js,
+          "  matchCoop(autoConnectRoom = true) {\n    return this.quickMatch('coop', autoConnectRoom);\n  }\n\n  matchPvp(autoConnectRoom = true) {\n    return this.quickMatch('pvp', autoConnectRoom);\n  }\n\n  async quickMatch(mode, autoConnectRoom = true) {\n    const result = await this.request('/matchmake', {\n      method: 'POST',\n      body: { mode },\n      auth: true,\n    });\n    if (result.ok) {\n      this.currentMode = mode;",
+          "  matchCoop(autoConnectRoom = true) {\n    return this.quickMatch('coop', autoConnectRoom, 'default');\n  }\n\n  matchCoopForGame(gameId, autoConnectRoom = true) {\n    return this.quickMatch('coop', autoConnectRoom, gameId);\n  }\n\n  matchPvp(autoConnectRoom = true) {\n    return this.quickMatch('pvp', autoConnectRoom, 'default');\n  }\n\n  matchPvpForGame(gameId, autoConnectRoom = true) {\n    return this.quickMatch('pvp', autoConnectRoom, gameId);\n  }\n\n  async quickMatch(mode, autoConnectRoom = true, gameId = 'default') {\n    const normalizedGameId = this.normalizeGameId(gameId);\n    const result = await this.request('/matchmake', {\n      method: 'POST',\n      body: { mode, gameId: normalizedGameId },\n      auth: true,\n    });\n    if (result.ok) {\n      this.currentMode = mode;\n      this.currentGameId = normalizedGameId;")
+          replace_once(js,
+          "  async createFriendRoom(mode = 'coop', autoConnectRoom = true) {\n    const result = await this.request('/friend/create', {\n      method: 'POST',\n      body: { mode },\n      auth: true,\n    });\n    if (result.ok) {\n      this.currentMode = mode;",
+          "  async createFriendRoom(mode = 'coop', autoConnectRoom = true) {\n    return this.createFriendRoomForGame(mode, 'default', autoConnectRoom);\n  }\n\n  async createFriendRoomForGame(mode, gameId, autoConnectRoom = true) {\n    const normalizedGameId = this.normalizeGameId(gameId);\n    const result = await this.request('/friend/create', {\n      method: 'POST',\n      body: { mode, gameId: normalizedGameId },\n      auth: true,\n    });\n    if (result.ok) {\n      this.currentMode = mode;\n      this.currentGameId = normalizedGameId;")
+          replace_once(js,
+          "      if (result.data?.mode) this.currentMode = result.data.mode;\n      this.emit('friend_room_joined', result.data);",
+          "      if (result.data?.mode) this.currentMode = result.data.mode;\n      if (result.data?.gameId) this.currentGameId = result.data.gameId;\n      this.emit('friend_room_joined', result.data);")
+          replace_once(js,
+          "  scheduleReconnect() {\n",
+          "  normalizeGameId(gameId) {\n    const normalized = String(gameId || 'default').trim().toLowerCase();\n    return /^[a-z0-9][a-z0-9-]{0,49}$/.test(normalized) ? normalized : 'default';\n  }\n\n  scheduleReconnect() {\n")
+
+          readme = 'multiplayer/README.md'
+          replace_once(readme,
+          "- `POST /matchmake` Bearer 토큰 + `{mode:\"coop\"|\"pvp\"}`\n- `POST /friend/create` Bearer 토큰 + `{mode:\"coop\"|\"pvp\"}`",
+          "- `POST /matchmake` Bearer 토큰 + `{mode:\"coop\"|\"pvp\", gameId}`\n- `POST /friend/create` Bearer 토큰 + `{mode:\"coop\"|\"pvp\", gameId}`")
+          replace_once(readme,
+          "- 협동 자동매칭 `match_coop()`\n- 대전 자동매칭 `match_pvp()`",
+          "- 협동 자동매칭 `match_coop()` / 게임별 `match_coop_for_game(game_id)`\n- 대전 자동매칭 `match_pvp()` / 게임별 `match_pvp_for_game(game_id)`")
+          replace_once(readme,
+          "## Cloudflare 설정\n",
+          "## 게임별 매칭 분리\n여러 게임이 같은 멀티 서버를 쓰기 때문에 실제 게임에서는 반드시 고유한 `gameId`를 사용합니다. 예: `crystal-defense`, `monster-adventure`. 같은 `mode`라도 `gameId`가 다르면 서로 매칭되지 않습니다. 기존 호출은 호환성을 위해 `default` 게임으로 처리됩니다.\n\nGodot: `await MultiplayerClient.match_coop_for_game(\"crystal-defense\")`\n\nWeb: `await multiplayer.matchCoopForGame('crystal-defense')`\n\n## Cloudflare 설정\n")
+
+          Path('.github/workflows/game-scoped-multiplayer-upgrade.yml').unlink()
+          PY
+      - name: Validate JavaScript syntax
+        run: |
+          node --check multiplayer/worker.js
+          node --check multiplayer/multiplayer-client.js
+      - name: Commit upgrade and remove temporary workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "게임별 멀티 매칭 분리 및 공통 클라이언트 확장"
+          git push
