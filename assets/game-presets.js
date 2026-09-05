@@ -64,6 +64,11 @@ export function buildGamePreset({
   d20Rules = false,
   turnBasedCombat = false,
   characterProgression = false,
+  inventoryEquipment = false,
+  questDialogue = false,
+  skillEffects = false,
+  economySystems = false,
+  versionedSave = false,
   extras = {},
   remove = {},
 } = {}) {
@@ -102,6 +107,30 @@ export function buildGamePreset({
     assets.push('level-ui','xp-bar','stat-icons');
     qa.push('xp-gain','level-up','point-spending','resource-clamp','progression-snapshot');
   }
+  if (inventoryEquipment) {
+    systems.push('inventory-equipment','item-stacks','equipment-slots','currencies');
+    assets.push('inventory-ui','equipment-icons','item-icons');
+    qa.push('inventory-capacity','stacking','equip-unequip','inventory-save-restore');
+  }
+  if (questDialogue) {
+    systems.push('quest-dialogue','quest-objectives','quest-flags','npc-state','dialogue-choices');
+    assets.push('quest-ui','dialogue-ui','npc-portraits');
+    qa.push('quest-progression','quest-completion','dialogue-requirements','npc-state-save');
+  }
+  if (skillEffects) {
+    systems.push('skill-effects','skill-costs','cooldowns','buffs','debuffs','timed-effects');
+    assets.push('skill-icons','status-icons','cooldown-ui');
+    qa.push('skill-costs','cooldown-tick','effect-stack','effect-expiry');
+  }
+  if (economySystems) {
+    systems.push('economy-loot-shop','loot-tables','rewards','shop-buy','shop-sell','wallet');
+    assets.push('currency-icons','loot-icons','shop-ui');
+    qa.push('loot-rolls','shop-affordability','buy-sell','reward-application');
+  }
+  if (versionedSave) {
+    systems.push('save-versioning','save-migrations','save-compatibility');
+    qa.push('save-migration','future-save-reject','game-id-check');
+  }
 
   systems = without(unique([...systems, ...list(extras.systems)]), remove.systems);
   assets = without(unique([...assets, ...list(extras.assets)]), remove.assets);
@@ -123,6 +152,8 @@ export function buildGamePreset({
       d20RulesOptional: true,
       turnBasedCombatOptional: true,
       characterProgressionOptional: true,
+      commonSystemsOptional: true,
+      saveMigrationsRequiredForBreakingChanges: true,
     }),
   });
 }
