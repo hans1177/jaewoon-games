@@ -1,0 +1,173 @@
+name: 외부 게임 3종 내부 이전
+
+on:
+  push:
+    paths:
+      - '.github/workflows/import-external-games.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  import-games:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 받기
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 외부 게임 파일 내부화
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from urllib.parse import urljoin, urlparse
+          from urllib.request import Request, urlopen
+          import re, shutil, time
+
+          ROOT = Path('.')
+          TARGETS = [
+              ('crystal-defense', 'https://crystal-defense-online.vercel.app/'),
+              ('bug-defense', 'https://bug-defense-game.anyanguy12.chatgpt.site/'),
+              ('human-go', 'https://human-rpg-web-test.vercel.app/'),
+          ]
+
+          TEXT_EXT = {'.html','.htm','.js','.mjs','.css','.json','.svg','.txt','.webmanifest'}
+          REF_RE = re.compile(r'''(?:src|href)=["']([^"'#]+)|url\((?:["']?)([^)'"#]+)|["'](/(?:assets|static|images|img|fonts|media)/[^"'?#]+)''', re.I)
+
+          def get(url):
+              req = Request(url, headers={'User-Agent':'Mozilla/5.0 JaewoonGamesMigrator/1.0'})
+              with urlopen(req, timeout=30) as r:
+                  return r.read(), (r.headers.get_content_type() or '')
+
+          def safe_rel(url, origin):
+              u = urlparse(url)
+              o = urlparse(origin)
+              if u.netloc and u.netloc != o.netloc:
+                  return None
+              p = u.path or '/'
+              if p.endswith('/'):
+                  p += 'index.html'
+              rel = p.lstrip('/') or 'index.html'
+              if '..' in Path(rel).parts:
+                  return None
+              return rel
+
+          def discover(text, base_url, origin):
+              out = []
+              for m in REF_RE.finditer(text):
+                  ref = next((g for g in m.groups() if g), None)
+                  if not ref or ref.startswith(('data:','blob:','javascript:','mailto:','tel:','#')):
+                      continue
+                  absolute = urljoin(base_url, ref)
+                  if urlparse(absolute).netloc == urlparse(origin).netloc:
+                      out.append(absolute)
+              return out
+
+          def rewrite_text(text, folder, origin):
+              host = origin.rstrip('/')
+              text = text.replace(host + '/', f'/{folder}/')
+              for prefix in ('assets','static','images','img','fonts','media'):
+                  text = text.replace(f'"/{prefix}/', f'"/{folder}/{prefix}/')
+                  text = text.replace(f"'/{prefix}/", f"'/{folder}/{prefix}/")
+                  text = text.replace(f'url(/{prefix}/', f'url(/{folder}/{prefix}/')
+              return text
+
+          for folder, origin in TARGETS:
+              dst = ROOT / folder
+              if dst.exists():
+                  shutil.rmtree(dst)
+              dst.mkdir(parents=True)
+
+              queue = [origin]
+              seen = set()
+              saved = 0
+              while queue and len(seen) < 300:
+                  url = queue.pop(0)
+                  if url in seen:
+                      continue
+                  seen.add(url)
+                  rel = safe_rel(url, origin)
+                  if not rel:
+                      continue
+                  try:
+                      data, ctype = get(url)
+                  except Exception as e:
+                      print('SKIP', url, repr(e))
+                      continue
+
+                  if url.rstrip('/') == origin.rstrip('/'):
+                      rel = 'index.html'
+
+                  path = dst / rel
+                  path.parent.mkdir(parents=True, exist_ok=True)
+                  suffix = path.suffix.lower()
+                  is_text = ctype.startswith('text/') or suffix in TEXT_EXT or 'javascript' in ctype or 'json' in ctype
+                  if is_text:
+                      try:
+                          text = data.decode('utf-8')
+                      except UnicodeDecodeError:
+                          path.write_bytes(data)
+                      else:
+                          for ref in discover(text, url, origin):
+                              if ref not in seen and ref not in queue:
+                                  queue.append(ref)
+                          text = rewrite_text(text, folder, origin)
+                          path.write_text(text, encoding='utf-8')
+                  else:
+                      path.write_bytes(data)
+                  saved += 1
+                  print(folder, saved, rel, len(data))
+                  time.sleep(0.03)
+
+              index = dst / 'index.html'
+              if not index.exists() or index.stat().st_size < 300:
+                  raise SystemExit(f'{folder}: index.html 가져오기 실패')
+              print(f'{folder}: {saved}개 파일 저장 완료')
+
+          index_path = ROOT / 'index.html'
+          text = index_path.read_text(encoding='utf-8')
+          replacements = {
+              'https://crystal-defense-online.vercel.app/': '/crystal-defense/',
+              'https://bug-defense-game.anyanguy12.chatgpt.site/': '/bug-defense/',
+              'https://human-rpg-web-test.vercel.app/': '/human-go/',
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f'대문 링크를 찾지 못함: {old}')
+              text = text.replace(old, new)
+          index_path.write_text(text, encoding='utf-8')
+
+          for p in ('crystal-defense/index.html','bug-defense/index.html','human-go/index.html'):
+              f = ROOT / p
+              if not f.exists() or f.stat().st_size < 300:
+                  raise SystemExit(f'검증 실패: {p}')
+
+          # 일회성 이전 워크플로는 완료 커밋에서 제거한다.
+          Path('.github/workflows/import-external-games.yml').unlink(missing_ok=True)
+          PY
+
+      - name: 변경 검사
+        run: |
+          test -f crystal-defense/index.html
+          test -f bug-defense/index.html
+          test -f human-go/index.html
+          grep -q "link:'/crystal-defense/'" index.html
+          grep -q "link:'/bug-defense/'" index.html
+          grep -q "link:'/human-go/'" index.html
+          ! grep -q 'crystal-defense-online.vercel.app' index.html
+          ! grep -q 'bug-defense-game.anyanguy12.chatgpt.site' index.html
+          ! grep -q 'human-rpg-web-test.vercel.app' index.html
+
+      - name: main 반영
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo '변경 없음'
+            exit 0
+          fi
+          git commit -m '외부 게임 3종 Cloudflare 내부 이전 완료'
+          git push origin main
