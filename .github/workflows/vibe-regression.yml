@@ -36,6 +36,7 @@ jobs:
             assets/vibe-quality-intelligence.js
             assets/vibe-presentation-director.js
             assets/vibe-motion-effects-director.js
+            assets/vibe-v2-playability.js
             assets/vibe-v2-runtime.js
             qa/vibe-regression.mjs
             qa/vibe-agent-causality.mjs
@@ -43,6 +44,7 @@ jobs:
             qa/vibe-world-macro-causality.mjs
             qa/vibe-development-ai-evidence.mjs
             qa/vibe-auto-repair-causality.mjs
+            qa/vibe-v2-playability.mjs
             qa/vibe-v2-e2e.mjs
           )
           for file in "${files[@]}"; do
@@ -67,6 +69,9 @@ jobs:
 
       - name: Test replay regression auto repair contract
         run: node qa/vibe-auto-repair-causality.mjs
+
+      - name: Test Vibe V2 gameplay playability gate
+        run: node qa/vibe-v2-playability.mjs
 
       - name: Test Vibe V2 end to end execution loop
         run: node qa/vibe-v2-e2e.mjs
