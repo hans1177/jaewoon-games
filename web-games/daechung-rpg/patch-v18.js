@@ -9,10 +9,11 @@ kill=function(m){
     m.a=0;
     m.spd=0;
     m.specialCd=999;
+    m.shootCd=999;
     if(typeof reaperDefeated!=='undefined')reaperDefeated=true;
     if(typeof reaperRef!=='undefined')reaperRef=null;
     if(typeof unlockAfterReaper==='function')unlockAfterReaper();
-    if(typeof sfx==='function')sfx('bossDeath');
+    if(typeof sfx==='function')sfx('bossDown');
     setTimeout(()=>{if(typeof zone!=='undefined'&&zone==='f9'&&typeof say==='function')say('사신','꽤 실력이 좋군. 다음에는 봐주는 건 없다.')},380);
     setTimeout(()=>{
       if(Array.isArray(mons)){
