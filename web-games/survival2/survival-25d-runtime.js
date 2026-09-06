@@ -11,11 +11,17 @@ function shadow(ctx,p,w,a=.22){ctx.save();ctx.globalAlpha=a;ctx.fillStyle='#000'
 function diamond(ctx,p,w=192,h=96,fill='#244f38'){ctx.beginPath();ctx.moveTo(p.x,p.y-h/2);ctx.lineTo(p.x+w/2,p.y);ctx.lineTo(p.x,p.y+h/2);ctx.lineTo(p.x-w/2,p.y);ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle='#2f6146';ctx.globalAlpha=.28;ctx.stroke();ctx.globalAlpha=1;}
 const realAssets={};
 for(const [kind,file] of Object.entries({tree:'tree.png',rock:'rock.png',plant:'plant.png',mushroom:'mushroom.png'})){const img=new Image();img.src='./assets/'+file;realAssets[kind]=img;}
-// Verified Kenney Animal Pack Remastered CC0 files. Remote images are presentation-only;
-// gameplay remains usable through the local atlas fallback when offline.
-const cc0AnimalBase='https://raw.githubusercontent.com/eturner58/game-assets/main/kenney/2D%20assets/Animal%20Pack%20Remastered/PNG/Round/';
+// Verified Kenney CC0 presentation assets. Local atlas remains the offline fallback.
+const cc0Base='https://raw.githubusercontent.com/eturner58/game-assets/main/kenney/2D%20assets/';
+const cc0AnimalBase=cc0Base+'Animal%20Pack%20Remastered/PNG/Round/';
 const cc0AnimalFiles={wolf:'dog.png',boar:'pig.png',guardian:'bear.png'};
 for(const [kind,file] of Object.entries(cc0AnimalFiles)){const img=new Image();img.crossOrigin='anonymous';img.src=cc0AnimalBase+file;realAssets[kind]=img;}
+// Character Pack is modular. These layers keep the game's player/NPC identity while replacing
+// the crude atlas body with real CC0 character art. If any remote layer is unavailable we fall back.
+const charBase=cc0Base+'Character%20Pack/PNG/';
+const characterParts={skin:'Skin/Tint%201/tint1_head.png'};
+const characterImages={};
+for(const [part,file] of Object.entries(characterParts)){const img=new Image();img.crossOrigin='anonymous';img.src=charBase+file;characterImages[part]=img;}
 function install(){
  if(typeof world!=='function'||typeof s==='undefined'||typeof X==='undefined'||typeof A==='undefined'||typeof atlas==='undefined')return false;
  const camera={x:s.player?.x||2300,y:s.player?.y||2300};
@@ -24,7 +30,9 @@ function install(){
  if(originalSpawn)spawnEnemy=function(type='wolf',boss=false){const before=s.enemies.length;originalSpawn(type,boss);const e=s.enemies[before];if(!e)return;for(let i=0;i<24&&blockedSpawn(e);i++){const a=Math.random()*Math.PI*2,r=420+Math.random()*420;e.x=clamp(s.player.x+Math.cos(a)*r,80,W-80);e.y=clamp(s.player.y+Math.sin(a)*r,80,H-80);}if(blockedSpawn(e)){e.x=clamp(s.player.x+520,80,W-80);e.y=clamp(s.player.y+320,80,H-80);}};
  function separateEnemies(){const es=(s.enemies||[]).filter(e=>e.hp>0);for(let i=0;i<es.length;i++)for(let j=i+1;j<es.length;j++){const a=es[i],b=es[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||.001,min=(a.boss||b.boss)?82:58;if(d>=min)continue;const push=(min-d)*.5,nx=dx/d,ny=dy/d;a.x=clamp(a.x-nx*push,35,W-35);a.y=clamp(a.y-ny*push,35,H-35);b.x=clamp(b.x+nx*push,35,W-35);b.y=clamp(b.y+ny*push,35,H-35);}for(const e of es){for(const b of s.housing||[]){const dx=e.x-b.x,dy=e.y-b.y,d=Math.hypot(dx,dy)||.001,min=86;if(d<min){e.x=clamp(e.x+dx/d*(min-d),35,W-35);e.y=clamp(e.y+dy/d*(min-d),35,H-35);}}}}
  if(originalUpdate)update=function(dt){originalUpdate(dt);separateEnemies();};
- function drawSprite(kind,p,size){const real=realAssets[kind];shadow(X,p,size,kind==='tree'?.17:.22);const dx=Math.round(p.x-size/2),dy=Math.round(p.y-size);if(real&&real.complete&&real.naturalWidth){X.drawImage(real,dx,dy,size,size);return;}const a=A[kind]||A.spark;X.drawImage(atlas,a[0],a[1],128,128,dx,dy,size,size);}
+ function fallbackSprite(kind,p,size){const a=A[kind]||A.spark;X.drawImage(atlas,a[0],a[1],128,128,Math.round(p.x-size/2),Math.round(p.y-size),size,size);}
+ function drawCharacter(kind,p,size){const head=characterImages.skin;if(!(head&&head.complete&&head.naturalWidth))return false;const bodyKind=kind==='player'?'player':'companion';const a=A[bodyKind]||A.player;const bodySize=size*.88,bodyX=Math.round(p.x-bodySize/2),bodyY=Math.round(p.y-bodySize*.84);X.drawImage(atlas,a[0],a[1],128,128,bodyX,bodyY,bodySize,bodySize);const headSize=size*.54;X.drawImage(head,Math.round(p.x-headSize/2),Math.round(p.y-size*.98),headSize,headSize);return true;}
+ function drawSprite(kind,p,size){shadow(X,p,size,kind==='tree'?.17:.22);if((kind==='player'||kind==='companion')&&drawCharacter(kind,p,size))return;const real=realAssets[kind],dx=Math.round(p.x-size/2),dy=Math.round(p.y-size);if(real&&real.complete&&real.naturalWidth){X.drawImage(real,dx,dy,size,size);return;}fallbackSprite(kind,p,size);}
  const labelSlots=[];
  function resetLabels(){labelSlots.length=0;}
  function label(text,p,yOff,priority=0){let x=Math.round(p.x),y=Math.round(p.y-yOff);for(let pass=0;pass<5;pass++){let hit=false;for(const r of labelSlots){if(Math.abs(x-r.x)<64&&Math.abs(y-r.y)<17){y-=18;hit=true;break;}}if(!hit)break;}labelSlots.push({x,y,priority});X.save();X.textAlign='center';X.textBaseline='bottom';X.font='800 12px system-ui,sans-serif';X.lineWidth=3;X.strokeStyle='#07140f';X.strokeText(text,x,y);X.fillStyle='#fff';X.fillText(text,x,y);X.restore();}
@@ -45,7 +53,7 @@ function install(){
   for(const o of q){const p=project(o.x,o.y,0,camera,v);if(narrow)p.y-=18;if(!visible(p,v,o.size+80))continue;drawSprite(o.kind,p,o.size);if(o.enemy)hpBar(o.enemy,p,o.size);if(o.label)label(o.label,p,o.size+10,1);if(o.player)label(s.name,p,o.size+9,2);}
   if(night()){X.fillStyle='rgba(3,9,18,.30)';X.fillRect(0,0,sw,sh);}X.restore();
  };
- window.Survival25D={project,depth,visible,camera,realAssets,cc0AnimalFiles};return true;
+ window.Survival25D={project,depth,visible,camera,realAssets,cc0AnimalFiles,characterParts};return true;
 }
 let tries=0;function boot(){if(install())return;if(++tries<80)setTimeout(boot,50);}boot();
 })();
