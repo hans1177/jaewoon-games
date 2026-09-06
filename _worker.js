@@ -70,7 +70,7 @@ async function serveSurvival2(request, env) {
   const type = response.headers.get('content-type') || '';
   if (!type.includes('text/html')) return response;
   let html = await response.text();
-  if (!html.includes('survival-25d-runtime.js')) html = html.replace('</body>', '<script src="/web-games/survival2/survival-25d-runtime.js?v=20260906-4"></script></body>');
+  if (!html.includes('survival-25d-runtime.js')) html = html.replace('</body>', '<script src="/web-games/survival2/survival-25d-runtime.js?v=20260906-5"></script></body>');
   const headers = new Headers(response.headers);
   headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
   headers.delete('Content-Length');
