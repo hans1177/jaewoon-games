@@ -65,6 +65,18 @@ async function handleVibeWorkflowObservation(request, env, url) {
   finally { clearTimeout(timeout); }
 }
 
+async function serveSurvival2(request, env) {
+  const response = await env.ASSETS.fetch(request);
+  const type = response.headers.get('content-type') || '';
+  if (!type.includes('text/html')) return response;
+  let html = await response.text();
+  if (!html.includes('survival-25d-runtime.js')) html = html.replace('</body>', '<script src="/web-games/survival2/survival-25d-runtime.js?v=20260906-1"></script></body>');
+  const headers = new Headers(response.headers);
+  headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+  headers.delete('Content-Length');
+  return new Response(html, { status: response.status, statusText: response.statusText, headers });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -72,6 +84,7 @@ export default {
     if (url.pathname === '/api/ai/gemini') return handleGemini(request, env);
     if (url.pathname === '/api/vibe/workflow-observation') return handleVibeWorkflowObservation(request, env, url);
     if (url.pathname === '/web-games/egg-heist/' || url.pathname === '/web-games/egg-heist/index.html') return new Response('Not Found', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store, no-cache, must-revalidate' } });
+    if (url.pathname === '/web-games/survival2/' || url.pathname === '/web-games/survival2/index.html') return serveSurvival2(request, env);
     const response = await env.ASSETS.fetch(request);
     if (!['/', '/index.html'].includes(url.pathname)) return response;
     const type = response.headers.get('content-type') || ''; if (!type.includes('text/html')) return response;
