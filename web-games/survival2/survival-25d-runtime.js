@@ -11,6 +11,11 @@ function shadow(ctx,p,w,a=.22){ctx.save();ctx.globalAlpha=a;ctx.fillStyle='#000'
 function diamond(ctx,p,w=192,h=96,fill='#244f38'){ctx.beginPath();ctx.moveTo(p.x,p.y-h/2);ctx.lineTo(p.x+w/2,p.y);ctx.lineTo(p.x,p.y+h/2);ctx.lineTo(p.x-w/2,p.y);ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle='#2f6146';ctx.globalAlpha=.28;ctx.stroke();ctx.globalAlpha=1;}
 const realAssets={};
 for(const [kind,file] of Object.entries({tree:'tree.png',rock:'rock.png',plant:'plant.png',mushroom:'mushroom.png'})){const img=new Image();img.src='./assets/'+file;realAssets[kind]=img;}
+// Verified Kenney Animal Pack Remastered CC0 files. Remote images are presentation-only;
+// gameplay remains usable through the local atlas fallback when offline.
+const cc0AnimalBase='https://raw.githubusercontent.com/eturner58/game-assets/main/kenney/2D%20assets/Animal%20Pack%20Remastered/PNG/Round/';
+const cc0AnimalFiles={wolf:'dog.png',boar:'pig.png',guardian:'bear.png'};
+for(const [kind,file] of Object.entries(cc0AnimalFiles)){const img=new Image();img.crossOrigin='anonymous';img.src=cc0AnimalBase+file;realAssets[kind]=img;}
 function install(){
  if(typeof world!=='function'||typeof s==='undefined'||typeof X==='undefined'||typeof A==='undefined'||typeof atlas==='undefined')return false;
  const camera={x:s.player?.x||2300,y:s.player?.y||2300};
@@ -40,7 +45,7 @@ function install(){
   for(const o of q){const p=project(o.x,o.y,0,camera,v);if(narrow)p.y-=18;if(!visible(p,v,o.size+80))continue;drawSprite(o.kind,p,o.size);if(o.enemy)hpBar(o.enemy,p,o.size);if(o.label)label(o.label,p,o.size+10,1);if(o.player)label(s.name,p,o.size+9,2);}
   if(night()){X.fillStyle='rgba(3,9,18,.30)';X.fillRect(0,0,sw,sh);}X.restore();
  };
- window.Survival25D={project,depth,visible,camera,realAssets};return true;
+ window.Survival25D={project,depth,visible,camera,realAssets,cc0AnimalFiles};return true;
 }
 let tries=0;function boot(){if(install())return;if(++tries<80)setTimeout(boot,50);}boot();
 })();
