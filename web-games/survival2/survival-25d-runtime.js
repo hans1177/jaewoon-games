@@ -13,6 +13,23 @@ const realAssets={};
 for(const [kind,file] of Object.entries({tree:'tree.png',rock:'rock.png',plant:'plant.png',mushroom:'mushroom.png'})){const img=new Image();img.src='./assets/'+file;realAssets[kind]=img;}
 const animalBase='https://raw.githubusercontent.com/eturner58/game-assets/main/kenney/2D%20assets/Animal%20Pack%20Remastered/PNG/Round/';
 for(const [kind,file] of Object.entries({wolf:'dog.png',boar:'pig.png',guardian:'bear.png'})){const img=new Image();img.crossOrigin='anonymous';img.src=animalBase+file;realAssets[kind]=img;}
+const characterSheet=new Image();
+characterSheet.referrerPolicy='no-referrer';
+characterSheet.src='https://imagedelivery.net/9sCnq8t6WEGNay0RAQNdvQ/UUID-cl90fl9hl371019vmqygbnf0wv5/public';
+// 사용자가 선택한 원본 시트의 캐릭터를 그대로 잘라서 사용. 재그림/스타일 변환 없음.
+const characterCrops={
+ player:{x:.165,y:.015,w:.075,h:.145},
+ companion:{x:.385,y:.18,w:.075,h:.145}
+};
+function sheetSprite(kind,p,size){
+ const c=characterCrops[kind],iw=characterSheet.naturalWidth,ih=characterSheet.naturalHeight;
+ if(!c||!ready(characterSheet)||!iw||!ih)return false;
+ const sx=Math.round(c.x*iw),sy=Math.round(c.y*ih),sw=Math.round(c.w*iw),sh=Math.round(c.h*ih);
+ const dh=Math.round(size*1.15),dw=Math.round(dh*(sw/sh));
+ X.drawImage(characterSheet,sx,sy,sw,sh,Math.round(p.x-dw/2),Math.round(p.y-dh),dw,dh);
+ return true;
+}
+
 const defaultBuildingProfiles={hut:{scale:1.18,yOffset:2,shadow:1.08},wall:{scale:.88,yOffset:5,shadow:.86},tower:{scale:1.34,yOffset:1,shadow:1.05},signal:{scale:1.22,yOffset:2,shadow:.96},campfire:{scale:.72,yOffset:1,shadow:.62}};
 function ready(img){return !!(img&&img.complete&&img.naturalWidth);}
 function install(){
@@ -26,7 +43,10 @@ function install(){
  function atlasSprite(kind,p,size){const a=A[kind]||A.spark;X.drawImage(atlas,a[0],a[1],128,128,Math.round(p.x-size/2),Math.round(p.y-size),size,size);}
  function buildingProfile(kind){return (window.Survival25D?.buildingProfiles&&window.Survival25D.buildingProfiles[kind])||defaultBuildingProfiles[kind]||null;}
  function drawSprite(kind,p,size){const profile=buildingProfile(kind),drawSize=profile?Math.round(size*(profile.scale||1)):size,drawP=profile?{x:p.x,y:p.y+(profile.yOffset||0)}:p;shadow(X,drawP,drawSize*(profile?.shadow||1),kind==='tree'?.17:.22);
-  if(kind==='player'||kind==='companion'){atlasSprite(kind,drawP,drawSize);return;}
+  if(kind==='player'||kind==='companion'){
+   if(!sheetSprite(kind,drawP,drawSize))atlasSprite(kind,drawP,drawSize);
+   return;
+  }
   const real=realAssets[kind],dx=Math.round(drawP.x-drawSize/2),dy=Math.round(drawP.y-drawSize);
   if(ready(real)){X.drawImage(real,dx,dy,drawSize,drawSize);return;}
   atlasSprite(kind,drawP,drawSize);
@@ -38,7 +58,7 @@ function install(){
  tuneMobileUi();addEventListener('resize',tuneMobileUi,{passive:true});
  world=function(){const v={w:sw,h:sh},narrow=sw<760;camera.x+=(s.player.x-camera.x)*.16;camera.y+=(s.player.y-camera.y)*.16;X.save();X.setTransform(dpr,0,0,dpr,0,0);X.imageSmoothingEnabled=true;X.fillStyle=night()?'#091b19':'#163b2b';X.fillRect(0,0,sw,sh);const spacing=192,rx=Math.ceil(sw/96)+5,ry=Math.ceil(sh/48)+5,cx=Math.round(camera.x/spacing),cy=Math.round(camera.y/spacing);for(let gy=-ry;gy<=ry;gy++)for(let gx=-rx;gx<=rx;gx++){const wx=(cx+gx)*spacing,wy=(cy+gy)*spacing;if(wx<0||wy<0||wx>W||wy>H)continue;const p=project(wx,wy,0,camera,v);if(visible(p,v,120))diamond(X,p,192,96,((cx+gx+cy+gy)&1)?'#214b35':'#28563c');}
   const q=[];for(const r of s.resources||[])if(r.alive)q.push({kind:r.type,x:r.x,y:r.y,size:r.type==='tree'?112:r.type==='rock'?68:64});for(const b of s.housing||[]){const k=b.type==='오두막'?'hut':b.type==='모닥불'?'campfire':b.type==='벽'?'wall':b.type==='감시탑'?'tower':'signal';q.push({kind:k,x:b.x,y:b.y,size:112,depthBias:8});}for(const n of s.npcs||[])q.push({kind:'companion',x:n.x,y:n.y,size:82,label:n.name});for(const e of s.enemies||[])if(e.hp>0)q.push({kind:e.type,x:e.x,y:e.y,size:e.boss?124:82,enemy:e,depthBias:4});q.push({kind:'player',x:s.player.x,y:s.player.y,size:88,player:true,depthBias:5});q.sort((a,b)=>depth(a)-depth(b));resetLabels();for(const o of q){const p=project(o.x,o.y,0,camera,v);if(narrow)p.y-=18;if(!visible(p,v,o.size+80))continue;drawSprite(o.kind,p,o.size);if(o.enemy)hpBar(o.enemy,p,o.size);if(o.label)label(o.label,p,o.size+10);if(o.player)label(s.name||'생존자',p,o.size+12);}X.restore();};
- window.Survival25D=Object.assign(window.Survival25D||{},{installed:true,characterSource:'assets/survival-atlas.svg',project,depth});
+ window.Survival25D=Object.assign(window.Survival25D||{},{installed:true,characterSource:'https://imagedelivery.net/9sCnq8t6WEGNay0RAQNdvQ/UUID-cl90fl9hl371019vmqygbnf0wv5/public',project,depth});
  return true;
 }
 let tries=0;function boot(){if(install())return;if(++tries<120)setTimeout(boot,50);}boot();
