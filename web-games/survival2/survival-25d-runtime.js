@@ -19,9 +19,10 @@ const characterSheet=new Image();
 characterSheet.crossOrigin='anonymous';
 characterSheet.referrerPolicy='no-referrer';
 characterSheet.src='https://raw.githubusercontent.com/rlong12135/notima/28c5e2f38425e698fe70708da8bd8bd47ad09519/assets/public-domain/isometric_hero_dezrasdragons.png';
+// 32x32 원본 프레임. 3번 시트의 1행은 Classic Hero, 4행은 Viking Shieldmaiden 계열.
 const characterFrames={
  player:{sx:0,sy:0,sw:32,sh:32},
- companion:{sx:0,sy:0,sw:32,sh:32}
+ companion:{sx:0,sy:96,sw:32,sh:32}
 };
 function sheetSprite(kind,p,size){
  const c=characterFrames[kind],iw=characterSheet.naturalWidth,ih=characterSheet.naturalHeight;
@@ -40,7 +41,7 @@ function install(){
  const originalSpawn=typeof spawnEnemy==='function'?spawnEnemy:null,originalUpdate=typeof update==='function'?update:null;
  function blockedSpawn(p){if(dist(p,s.player)<360)return true;for(const b of s.housing||[])if(dist(p,b)<150)return true;for(const e of s.enemies||[])if(e.hp>0&&dist(p,e)<110)return true;return false;}
  if(originalSpawn)spawnEnemy=function(type='wolf',boss=false){const before=s.enemies.length;originalSpawn(type,boss);const e=s.enemies[before];if(!e)return;for(let i=0;i<24&&blockedSpawn(e);i++){const a=Math.random()*Math.PI*2,r=420+Math.random()*420;e.x=clamp(s.player.x+Math.cos(a)*r,80,W-80);e.y=clamp(s.player.y+Math.sin(a)*r,80,H-80);}if(blockedSpawn(e)){e.x=clamp(s.player.x+520,80,W-80);e.y=clamp(s.player.y+320,80,H-80);}};
- function separateEnemies(){const es=(s.enemies||[]).filter(e=>e.hp>0);for(let i=0;i<es.length;i++)for(let j=i+1;j<es.length;j++){const a=es[i],b=es[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||.001,min=(a.boss||b.boss)?82:58;if(d>=min)continue;const push=(min-d)*.5,nx=dx/d,ny=dy/d;a.x=clamp(a.x-nx*push,35,W-35);a.y=clamp(a.y-ny*push,35,W-35);b.x=clamp(b.x+nx*push,35,W-35);b.y=clamp(b.y+ny*push,35,W-35);}for(const e of es)for(const b of s.housing||[]){const dx=e.x-b.x,dy=e.y-b.y,d=Math.hypot(dx,dy)||.001,min=86;if(d<min){e.x=clamp(e.x+dx/d*(min-d),35,W-35);e.y=clamp(e.y+dy/d*(min-d),35,H-35);}}}
+ function separateEnemies(){const es=(s.enemies||[]).filter(e=>e.hp>0);for(let i=0;i<es.length;i++)for(let j=i+1;j<es.length;j++){const a=es[i],b=es[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||.001,min=(a.boss||b.boss)?82:58;if(d>=min)continue;const push=(min-d)*.5,nx=dx/d,ny=dy/d;a.x=clamp(a.x-nx*push,35,W-35);a.y=clamp(a.y-ny*push,35,H-35);b.x=clamp(b.x+nx*push,35,W-35);b.y=clamp(b.y+ny*push,35,H-35);}for(const e of es)for(const b of s.housing||[]){const dx=e.x-b.x,dy=e.y-b.y,d=Math.hypot(dx,dy)||.001,min=86;if(d<min){e.x=clamp(e.x+dx/d*(min-d),35,W-35);e.y=clamp(e.y+dy/d*(min-d),35,H-35);}}}
  if(originalUpdate)update=function(dt){originalUpdate(dt);separateEnemies();};
  function atlasSprite(kind,p,size){const a=A[kind]||A.spark;X.drawImage(atlas,a[0],a[1],128,128,Math.round(p.x-size/2),Math.round(p.y-size),size,size);}
  function buildingProfile(kind){return (window.Survival25D?.buildingProfiles&&window.Survival25D.buildingProfiles[kind])||defaultBuildingProfiles[kind]||null;}
