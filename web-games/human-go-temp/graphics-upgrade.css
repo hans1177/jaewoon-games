@@ -1,0 +1,46 @@
+/* Human GO temporary graphics upgrade — visual-only, no gameplay/stat/save changes */
+:root{--hg-gold:#ffd66b;--hg-ink:#111827;--hg-panel:rgba(12,18,32,.88);--hg-line:rgba(255,255,255,.14)}
+body{background:radial-gradient(circle at 50% -20%,#273956 0,#101827 44%,#080d16 100%);}
+#app{isolation:isolate;}
+.screen{position:relative;overflow:hidden;}
+.screen::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:-2;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(0,0,0,.2));}
+.top{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:linear-gradient(180deg,rgba(13,22,38,.92),rgba(8,14,25,.82));border-bottom:1px solid var(--hg-line);box-shadow:0 8px 24px rgba(0,0,0,.28)}
+.tag{border:1px solid rgba(255,214,107,.28);box-shadow:inset 0 1px rgba(255,255,255,.08)}
+button,.btn{transition:transform .12s ease,filter .12s ease,box-shadow .12s ease;box-shadow:0 5px 14px rgba(0,0,0,.22)}
+button:active,.btn:active{transform:translateY(2px) scale(.98);filter:brightness(.92)}
+#home{background:radial-gradient(circle at 50% 35%,rgba(94,137,199,.22),transparent 34%),linear-gradient(180deg,#15233a,#0b1220 64%,#070b12)}
+#home::after{content:"";position:absolute;left:-15%;right:-15%;bottom:-12%;height:42%;z-index:-1;background:radial-gradient(ellipse at center,rgba(255,214,107,.16),transparent 62%);filter:blur(12px)}
+#homeHero{filter:drop-shadow(0 18px 18px rgba(0,0,0,.42));animation:hgHeroIdle 2.2s ease-in-out infinite}
+@keyframes hgHeroIdle{50%{transform:translateY(-5px)}}
+#map{background:linear-gradient(180deg,#233a4c 0,#172a35 35%,#1b3027 100%)}
+#map::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 18% 25%,rgba(255,225,150,.15) 0 2%,transparent 18%),radial-gradient(circle at 82% 68%,rgba(72,120,79,.22),transparent 28%),repeating-linear-gradient(118deg,transparent 0 44px,rgba(255,255,255,.018) 45px 46px)}
+#road{filter:drop-shadow(0 5px 5px rgba(0,0,0,.25))}
+.node{box-shadow:0 5px 12px rgba(0,0,0,.3),inset 0 1px rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.22)}
+#mapHero{filter:drop-shadow(0 6px 7px rgba(0,0,0,.45))}
+#battle{background:linear-gradient(180deg,#263a51 0,#18283a 45%,#101923 100%)}
+#battle::before{background:radial-gradient(circle at 50% 15%,rgba(255,220,150,.18),transparent 28%),linear-gradient(180deg,transparent 48%,rgba(0,0,0,.28) 49%,rgba(0,0,0,.45));}
+#battle::after{content:"";position:absolute;left:-10%;right:-10%;bottom:0;height:31%;z-index:-1;pointer-events:none;background:repeating-linear-gradient(168deg,#263126 0 20px,#20291f 21px 39px);box-shadow:inset 0 12px 25px rgba(0,0,0,.3)}
+#battleTitle{text-shadow:0 2px 7px rgba(0,0,0,.7);letter-spacing:.04em}
+#playerF,#enemyF{filter:drop-shadow(0 10px 10px rgba(0,0,0,.42))}
+#heroFight,#enemySprite,#skeletonSprite,#bossSprite{transform-origin:50% 90%}
+#bossSprite{filter:drop-shadow(0 0 13px rgba(255,74,74,.24)) drop-shadow(0 12px 10px rgba(0,0,0,.5))}
+#battleLog{background:linear-gradient(180deg,rgba(8,13,23,.86),rgba(5,9,16,.94));border:1px solid var(--hg-line);box-shadow:0 8px 24px rgba(0,0,0,.3);backdrop-filter:blur(8px)}
+.ov{backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.ov .panel,.panel{border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 50px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.06)}
+#inventoryPanel{background:linear-gradient(180deg,rgba(18,27,45,.98),rgba(8,13,24,.98));scrollbar-width:thin}
+#inventoryList>*{transition:transform .12s ease,box-shadow .12s ease}
+#inventoryList>*:active{transform:scale(.985)}
+.classCard{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.14);box-shadow:0 10px 25px rgba(0,0,0,.3)}
+.classCard::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(125deg,rgba(255,255,255,.09),transparent 28% 72%,rgba(255,214,107,.06))}
+.classPortrait{filter:drop-shadow(0 8px 8px rgba(0,0,0,.4))}
+.shuriken,.swordwave,.healFx,.stunFx,#lightningFx{filter:drop-shadow(0 0 7px currentColor)}
+/* Stage visual themes. Add one of these classes to #battle during stage rendering; no combat values are touched. */
+#battle.hg-stage-1{background:linear-gradient(180deg,#52789b,#334f66 47%,#1f3327)}
+#battle.hg-stage-2{background:linear-gradient(180deg,#425d72,#263a49 45%,#17251e)}
+#battle.hg-stage-3{background:linear-gradient(180deg,#493d61,#2c2943 48%,#191725)}
+#battle.hg-stage-4{background:linear-gradient(180deg,#3d4653,#242c36 48%,#171b21)}
+#battle.hg-stage-5{background:linear-gradient(180deg,#a56f43 0,#765039 43%,#3b3028 100%)}
+#battle.hg-stage-5::before{background:radial-gradient(circle at 76% 16%,rgba(255,213,130,.36),transparent 17%),linear-gradient(166deg,transparent 0 42%,rgba(221,169,106,.12) 43% 48%,transparent 49% 100%)}
+#battle.hg-stage-5::after{background:radial-gradient(ellipse at 20% 100%,#5b4936 0 13%,transparent 14%),radial-gradient(ellipse at 76% 100%,#4b3d31 0 16%,transparent 17%),repeating-linear-gradient(174deg,#71563b 0 18px,#624a35 19px 37px)}
+@media(max-width:720px){button,.btn{min-height:44px}#battleLog{font-size:13px}.top{padding-top:max(6px,env(safe-area-inset-top))}.ov .panel{max-width:calc(100vw - 20px)}}
+@media(prefers-reduced-motion:reduce){#homeHero{animation:none}button,.btn,#inventoryList>*{transition:none}}
