@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>생존2 · 바이브2호</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102019;color:#fff;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif;touch-action:none}
+#app{position:relative;width:100%;height:100%;overflow:hidden}
+canvas{display:block;width:100%;height:100%;background:#477a46}
+.hud{position:absolute;z-index:5;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}
+.box{padding:7px 9px;border:1px solid #ffffff35;border-radius:12px;background:#07120ddd;font-size:12px;font-weight:900;line-height:1.35;backdrop-filter:blur(3px)}
+.small{font-size:10px;opacity:.9}
+.actions{position:absolute;z-index:8;right:9px;top:61px;display:grid;gap:6px}
+.btn{min-width:86px;border:1px solid #ffffff38;border-radius:11px;background:#08140fe6;color:#fff;padding:9px 10px;font-size:11px;font-weight:900}.btn:active{transform:scale(.97)}
+.attack{position:absolute;z-index:9;right:12px;bottom:18px;min-width:104px;min-height:58px;background:#872b27}
+.panel{position:absolute;z-index:20;left:9px;right:9px;top:58px;bottom:9px;padding:11px;border:1px solid #ffffff35;border-radius:16px;background:#071018f5;overflow:auto;display:none;touch-action:pan-y}
+.panel h2{margin:0 0 9px;font-size:18px}.close{float:right;border:0;border-radius:9px;background:#ffffff16;color:#fff;padding:7px 9px;font-weight:900}
+.item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;margin:6px 0;border-radius:11px;background:#11232a;border:1px solid #ffffff10}.item small{display:block;margin-top:3px;opacity:.72;font-size:10px;line-height:1.35}.item button{border:0;border-radius:9px;background:#2e9563;color:#fff;padding:8px 10px;font-weight:900}
+.joystick{position:absolute;z-index:9;left:17px;bottom:18px;width:128px;height:128px;border-radius:50%;border:2px solid #ffffff2b;background:#ffffff12}.stick{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px;border-radius:50%;border:2px solid #ffffff33;background:#ffffff4d}
+.toast{position:absolute;z-index:40;left:50%;top:50%;transform:translate(-50%,-50%);padding:10px 14px;border-radius:12px;background:#000d;font-size:12px;font-weight:900;display:none}.help{position:absolute;z-index:4;left:50%;bottom:10px;transform:translateX(-50%);padding:6px 9px;border-radius:10px;background:#061017aa;font-size:10px;font-weight:800;white-space:nowrap}
+.dead{position:absolute;z-index:50;inset:0;display:none;place-items:center;background:#000b}.deadCard{width:min(90%,360px);padding:20px;border:1px solid #ffffff2a;border-radius:18px;background:#071018f6;text-align:center}.deadCard h2{margin:0 0 8px}.deadCard button{border:0;border-radius:11px;background:#3a9460;color:#fff;padding:10px 14px;font-weight:900}
+</style></head>
+<body><div id="app">
+<canvas id="game"></canvas>
+<div class="hud"><div class="box">❤️ <span id="hp">100/100</span> · ⚔️ <span id="atk">5</span><br><span class="small">🗡 <span id="weapon">맨손</span></span></div><div class="box"><span id="phase">☀️ 낮</span> <span id="clock">08:00</span><br><span class="small">📅 <span id="day">1</span>일 · 🪵 <span id="wood">0</span> · 🪨 <span id="stone">0</span> · 🌿 <span id="fiber">0</span> · 🍖 <span id="meat">0</span></span></div></div>
+<div class="actions"><button class="btn" id="craftBtn">🛠 제작</button><button class="btn" id="invBtn">🎒 인벤</button><button class="btn" id="gatherBtn">✋ 채집</button></div>
+<button class="btn attack" id="attackBtn">⚔️ 공격</button>
+<div class="joystick" id="joystick"><div class="stick" id="stick"></div></div><div class="help">낮에는 자원 탐험 · 밤에는 몬스터가 나온다</div>
+<div class="panel" id="craft"><button class="close" data-close="craft">닫기</button><h2>🛠 제작</h2><div id="craftList"></div></div>
+<div class="panel" id="inv"><button class="close" data-close="inv">닫기</button><h2>🎒 인벤토리</h2><div id="invList"></div></div>
+<div class="toast" id="toast"></div>
+<div class="dead" id="dead"><div class="deadCard"><h2>생존 실패</h2><p id="deadText">밤을 버티지 못했어.</p><button id="restart">다시 시작</button></div></div>
+<script>
+// 파일명: web-games/survival2/index.html
+// 임포트: 기존 재운게임즈 생존 에셋을 우선 재사용
+// 메인: 바이브2호 웹 생존게임 / 모바일 조이스틱 / 낮밤 / 채집 / 제작 / 전투 / 저장
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const el={hp:document.getElementById('hp'),atk:document.getElementById('atk'),weapon:document.getElementById('weapon'),phase:document.getElementById('phase'),clock:document.getElementById('clock'),day:document.getElementById('day'),wood:document.getElementById('wood'),stone:document.getElementById('stone'),fiber:document.getElementById('fiber'),meat:document.getElementById('meat'),toast:document.getElementById('toast'),craft:document.getElementById('craft'),inv:document.getElementById('inv'),craftList:document.getElementById('craftList'),invList:document.getElementById('invList'),dead:document.getElementById('dead'),deadText:document.getElementById('deadText')};
+const SAVE='jaewoon-survival2-v1';
+const W=2600,H=2600,CX=W/2,CY=H/2;
+const player={x:CX,y:CY,r:18,speed:150,hp:100,maxHp:100,atk:5,weapon:'맨손'};
+const state={day:1,minutes:480,wood:0,stone:0,fiber:0,meat:0,weapon:'맨손',hasAxe:false,hasSpear:false,hasArmor:false,resources:[],enemies:[],kills:0};
+let vw=innerWidth,vh=innerHeight,dpr=1,joy={x:0,y:0},joyActive=false,attackCd=0,gatherCd=0,saveCd=0,spawnCd=0,last=performance.now();
+const treeImg=new Image(),rockImg=new Image(),plantImg=new Image(),mushImg=new Image();
+treeImg.src='../survival/assets/tree.png';rockImg.src='../survival/assets/rock.png';plantImg.src='../survival/assets/plant.png';mushImg.src='../survival/assets/mushroom.png';
+function resize(){dpr=Math.min(2,devicePixelRatio||1);vw=innerWidth;vh=innerHeight;canvas.width=vw*dpr;canvas.height=vh*dpr;canvas.style.width=vw+'px';canvas.style.height=vh+'px';ctx.setTransform(dpr,0,0,dpr,0,0)}
+addEventListener('resize',resize);resize();
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))} function rnd(a,b){return a+Math.random()*(b-a)} function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function night(){return state.minutes>=1140||state.minutes<360}
+function toast(t){el.toast.textContent=t;el.toast.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.toast.style.display='none',900)}
+function addRes(type){const a=Math.random()*Math.PI*2,d=rnd(120,900);state.resources.push({type,x:clamp(CX+Math.cos(a)*d,60,W-60),y:clamp(CY+Math.sin(a)*d,60,H-60),amount:type==='tree'?3:type==='plant'?2:1})}
+function seed(){state.resources=[];for(let i=0;i<18;i++)addRes('tree');for(let i=0;i<14;i++)addRes('stone');for(let i=0;i<16;i++)addRes('plant');for(let i=0;i<8;i++)addRes('mushroom')}
+function newEnemy(){const a=Math.random()*Math.PI*2,d=rnd(600,1000);const kinds=[['거미',38,7,58,14],['늑대',55,9,52,16],['좀비',78,12,30,18]];const k=kinds[Math.floor(Math.random()*kinds.length)];state.enemies.push({kind:k[0],hp:k[1],maxHp:k[1],atk:k[2],speed:k[3],r:k[4],x:clamp(player.x+Math.cos(a)*d,30,W-30),y:clamp(player.y+Math.sin(a)*d,30,H-30),hit:0})}
+function save(){try{localStorage.setItem(SAVE,JSON.stringify({state,player:{hp:player.hp,maxHp:player.maxHp,atk:player.atk,weapon:player.weapon}}))}catch(e){}}
+function load(){try{const raw=localStorage.getItem(SAVE);if(!raw){seed();return}const s=JSON.parse(raw);Object.assign(state,s.state||{});Object.assign(player,s.player||{});if(!state.resources?.length)seed();state.enemies=Array.isArray(state.enemies)?state.enemies:[]}catch(e){seed()}}
+function sync(){player.weapon=state.weapon;player.atk=5+(state.hasSpear?5:0)+(state.hasAxe?3:0)+(state.hasArmor?0:0);player.maxHp=100+(state.hasArmor?50:0);player.hp=Math.min(player.hp,player.maxHp);el.hp.textContent=Math.max(0,Math.ceil(player.hp))+'/'+player.maxHp;el.atk.textContent=player.atk;el.weapon.textContent=player.weapon;el.phase.textContent=night()?'🌙 밤':'☀️ 낮';const m=((state.minutes%1440)+1440)%1440;el.clock.textContent=String(Math.floor(m/60)).padStart(2,'0')+':'+String(Math.floor(m%60)).padStart(2,'0');el.day.textContent=state.day;el.wood.textContent=state.wood;el.stone.textContent=state.stone;el.fiber.textContent=state.fiber;el.meat.textContent=state.meat}
+function worldToScreen(x,y){return{x:x-player.x+vw/2,y:y-player.y+vh/2}}
+function nearestResource(){let b=null,bd=75;for(const r of state.resources){const d=dist(player,r);if(d<bd){bd=d;b=r}}return b}
+function nearestEnemy(){let b=null,bd=82;for(const e of state.enemies){const d=dist(player,e);if(d<bd){bd=d;b=e}}return b}
+function gather(){if(gatherCd>0)return;const r=nearestResource();if(!r){toast('가까운 자원이 없어');return}gatherCd=.25;r.amount--;if(r.type==='tree')state.wood++;else if(r.type==='stone')state.stone++;else if(r.type==='plant')state.fiber++;else state.meat++;toast(r.type==='tree'?'나무 +1':r.type==='stone'?'돌 +1':r.type==='plant'?'섬유 +1':'버섯 +1');if(r.amount<=0){state.resources.splice(state.resources.indexOf(r),1);setTimeout(()=>addRes(r.type),3000)}save()}
+function attack(){if(attackCd>0||player.hp<=0)return;const e=nearestEnemy();if(!e){toast('적이 가까이 없어');return}attackCd=.45;e.hp-=player.atk;e.hit=.12;if(e.hp<=0){state.enemies.splice(state.enemies.indexOf(e),1);state.kills++;if(Math.random()<.25)state.meat++;toast('적 처치!');save()}else toast('-'+player.atk)}
+function craft(name){if(name==='axe'&&state.wood>=5&&state.stone>=3){state.wood-=5;state.stone-=3;state.hasAxe=true;state.weapon='돌도끼';toast('돌도끼 제작');save()}else if(name==='spear'&&state.wood>=5&&state.stone>=5){state.wood-=5;state.stone-=5;state.hasSpear=true;state.weapon='돌창';toast('돌창 제작');save()}else if(name==='armor'&&state.wood>=4&&state.stone>=6&&state.fiber>=5){state.wood-=4;state.stone-=6;state.fiber-=5;state.hasArmor=true;toast('거친 갑옷 제작');save()}else toast('재료가 부족해')}
+function renderCraft(){el.craftList.innerHTML=[['axe','🪓 돌도끼','나무 5 · 돌 3'],['spear','🗡 돌창','나무 5 · 돌 5'],['armor','🛡 거친 갑옷','나무 4 · 돌 6 · 섬유 5']].map(x=>`<div class="item"><div><b>${x[1]}</b><small>${x[2]}</small></div><button data-craft="${x[0]}">제작</button></div>`).join('')}
+function renderInv(){el.invList.innerHTML=`<div class="item"><div><b>🪵 나무</b></div><b>${state.wood}</b></div><div class="item"><div><b>🪨 돌</b></div><b>${state.stone}</b></div><div class="item"><div><b>🌿 섬유</b></div><b>${state.fiber}</b></div><div class="item"><div><b>🍖 버섯</b></div><b>${state.meat}</b></div><div class="item"><div><b>장비</b><small>${state.weapon}${state.hasArmor?' / 거친 갑옷':''}</small></div></div>`}
+function openPanel(id){document.getElementById(id).style.display='block'} function closePanels(){el.craft.style.display='none';el.inv.style.display='none'}
+function update(dt){if(player.hp<=0)return;attackCd=Math.max(0,attackCd-dt);gatherCd=Math.max(0,gatherCd-dt);saveCd-=dt;spawnCd-=dt;state.minutes+=dt*2.5;if(state.minutes>=1440){state.minutes-=1440;state.day++;player.hp=Math.min(player.maxHp,player.hp+20);toast('새로운 날이 시작됐어')}if(night()&&spawnCd<=0&&state.enemies.length<8){newEnemy();spawnCd=3}
+const dx=joy.x,dy=joy.y;const len=Math.hypot(dx,dy);if(len>.05){player.x=clamp(player.x+(dx/Math.max(1,len))*player.speed*dt,25,W-25);player.y=clamp(player.y+(dy/Math.max(1,len))*player.speed*dt,25,H-25)}
+for(const e of state.enemies){const d=dist(player,e);if(d<520){const vx=(player.x-e.x)/(d||1),vy=(player.y-e.y)/(d||1);e.x+=vx*e.speed*dt;e.y+=vy*e.speed*dt}if(d<e.r+player.r+5&&e.hit<=0){player.hp-=e.atk;e.hit=.9}}for(const e of state.enemies)e.hit=Math.max(0,e.hit-dt);
+if(saveCd<=0){save();saveCd=4}sync()}
+function draw(){ctx.clearRect(0,0,vw,vh);const n=night();ctx.fillStyle=n?'#183026':'#589050';ctx.fillRect(0,0,vw,vh);
+for(let x=-((player.x-vw/2)%80);x<vw;x+=80){ctx.strokeStyle=n?'#ffffff07':'#173b190c';ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,vh);ctx.stroke()}for(let y=-((player.y-vh/2)%80);y<vh;y+=80){ctx.strokeStyle=n?'#ffffff07':'#173b190c';ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(vw,y);ctx.stroke()}
+for(const r of state.resources){const p=worldToScreen(r.x,r.y);if(p.x<-60||p.x>vw+60||p.y<-60||p.y>vh+60)continue;const img=r.type==='tree'?treeImg:r.type==='stone'?rockImg:r.type==='plant'?plantImg:mushImg;if(img.complete&&img.naturalWidth){const s=r.type==='stone'?34:42;ctx.globalAlpha=.95;ctx.drawImage(img,p.x-s/2,p.y-s/2,s,s);ctx.globalAlpha=1}else{ctx.fillStyle=r.type==='tree'?'#286b32':r.type==='stone'?'#777':'#6aa34f';ctx.beginPath();ctx.arc(p.x,p.y,13,0,Math.PI*2);ctx.fill()}}
+for(const e of state.enemies){const p=worldToScreen(e.x,e.y);ctx.fillStyle=e.kind==='좀비'?'#6e7c55':e.kind==='늑대'?'#8b8b96':'#553b61';ctx.beginPath();ctx.arc(p.x,p.y,e.r,0,Math.PI*2);ctx.fill();ctx.fillStyle='#0008';ctx.fillRect(p.x-e.r,p.y-e.r-8,e.r*2,4);ctx.fillStyle='#75d65e';ctx.fillRect(p.x-e.r,p.y-e.r-8,e.r*2*(e.hp/e.maxHp),4)}
+ctx.fillStyle='#ceb65e';ctx.beginPath();ctx.arc(vw/2,vh/2,player.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#111';ctx.fillRect(vw/2-20,vh/2-32,40,5);ctx.fillStyle='#5ee06a';ctx.fillRect(vw/2-20,vh/2-32,40*(player.hp/player.maxHp),5);
+if(n){ctx.fillStyle='#0005';ctx.fillRect(0,0,vw,vh)}
+}
+function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;update(dt);draw();requestAnimationFrame(loop)}
+function setJoy(e){const r=document.getElementById('joystick').getBoundingClientRect();let x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2;const d=Math.hypot(x,y),max=r.width*.38;if(d>max){x=x/d*max;y=y/d*max}joy.x=x/max;joy.y=y/max;document.getElementById('stick').style.transform=`translate(${x}px,${y}px)`}
+const joyEl=document.getElementById('joystick');joyEl.addEventListener('pointerdown',e=>{joyActive=true;joyEl.setPointerCapture(e.pointerId);setJoy(e)});joyEl.addEventListener('pointermove',e=>{if(joyActive)setJoy(e)});joyEl.addEventListener('pointerup',()=>{joyActive=false;joy.x=0;joy.y=0;document.getElementById('stick').style.transform='translate(0,0)'});joyEl.addEventListener('pointercancel',()=>{joyActive=false;joy.x=0;joy.y=0;document.getElementById('stick').style.transform='translate(0,0)'});
+document.getElementById('attackBtn').addEventListener('click',attack);document.getElementById('gatherBtn').addEventListener('click',gather);document.getElementById('craftBtn').addEventListener('click',()=>{closePanels();renderCraft();openPanel('craft')});document.getElementById('invBtn').addEventListener('click',()=>{closePanels();renderInv();openPanel('inv')});document.querySelectorAll('.close').forEach(b=>b.addEventListener('click',closePanels));document.addEventListener('click',e=>{const n=e.target.closest('[data-craft]');if(n)craft(n.dataset.craft)});document.getElementById('restart').addEventListener('click',()=>{localStorage.removeItem(SAVE);location.reload()});
+load();sync();requestAnimationFrame(loop);
+</script></div></body></html>
