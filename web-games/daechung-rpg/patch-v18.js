@@ -1,14 +1,27 @@
 (()=>{
 if(window.__RPG_V18_REAPER_PATCHED)return;window.__RPG_V18_REAPER_PATCHED=true;
-const kill18=kill;
+if(typeof kill!=='function')return;
+const baseKill=kill;
 kill=function(m){
-  const wasAlive=!!m&&!m.dead;
-  const isReaper=wasAlive&&m.type==='reaper';
-  kill18(m);
-  if(!isReaper||!m.dead)return;
-  // Historical grave12 behavior: Reaper gives no normal drop and is removed after his exit line.
-  setTimeout(()=>{
-    if(Array.isArray(mons))mons=mons.filter(x=>x!==m);
-  },1650);
+  if(m&&m.type==='reaper'&&!m.dead){
+    m.dead=true;
+    m.hp=0;
+    m.a=0;
+    m.spd=0;
+    m.specialCd=999;
+    if(typeof reaperDefeated!=='undefined')reaperDefeated=true;
+    if(typeof reaperRef!=='undefined')reaperRef=null;
+    if(typeof unlockAfterReaper==='function')unlockAfterReaper();
+    if(typeof sfx==='function')sfx('bossDeath');
+    setTimeout(()=>{if(typeof zone!=='undefined'&&zone==='f9'&&typeof say==='function')say('사신','꽤 실력이 좋군. 다음에는 봐주는 건 없다.')},380);
+    setTimeout(()=>{
+      if(Array.isArray(mons)){
+        const i=mons.indexOf(m);if(i>=0)mons.splice(i,1);
+      }
+      if(typeof toastMsg==='function')toastMsg('사신이 어둠 속으로 사라졌다');
+    },1650);
+    return;
+  }
+  return baseKill(m);
 };
 })();
