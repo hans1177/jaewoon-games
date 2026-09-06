@@ -6,7 +6,7 @@ const VIBE_REPOSITORY = 'hans1177/jaewoon-games';
 const VIBE_WORKFLOWS = new Set(['Vibe QA','Vibe Integrated Regression']);
 
 function aiJson(data, status = 200) { return new Response(JSON.stringify(data), { status, headers: AI_JSON_HEADERS }); }
-function clipText(value, max = 4000) { return String(value ?? '').trim().slice(0, max); }
+function clipText(value, max = 4000) { return String(value ?? '').trim().slice(0,max); }
 function handleAiStatus(env) { return aiJson({ ok: true, geminiConfigured: Boolean(env.GEMINI_API_KEY), model: clipText(env.GEMINI_MODEL || 'gemini-2.5-flash-lite', 80), scope: 'in-game-runtime-only', purposes: [...GAME_AI_PURPOSES] }); }
 
 function outputContract(purpose) {
@@ -70,7 +70,7 @@ async function serveSurvival2(request, env) {
   const type = response.headers.get('content-type') || '';
   if (!type.includes('text/html')) return response;
   let html = await response.text();
-  if (!html.includes('survival-25d-runtime.js')) html = html.replace('</body>', '<script src="/web-games/survival2/survival-25d-runtime.js?v=20260906-6"></script><script src="/web-games/survival2/survival-25d-buildings.js?v=20260906-1"></script></body>');
+  if (!html.includes('survival-25d-runtime.js')) html = html.replace('</body>', '<script src="/web-games/survival2/survival-25d-runtime.js?v=20260906-7"></script><script src="/web-games/survival2/survival-25d-buildings.js?v=20260906-2"></script></body>');
   const headers = new Headers(response.headers);
   headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
   headers.delete('Content-Length');
