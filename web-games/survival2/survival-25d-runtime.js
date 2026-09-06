@@ -16,12 +16,12 @@ const cc0Base='https://raw.githubusercontent.com/eturner58/game-assets/main/kenn
 const cc0AnimalBase=cc0Base+'Animal%20Pack%20Remastered/PNG/Round/';
 const cc0AnimalFiles={wolf:'dog.png',boar:'pig.png',guardian:'bear.png'};
 for(const [kind,file] of Object.entries(cc0AnimalFiles)){const img=new Image();img.crossOrigin='anonymous';img.src=cc0AnimalBase+file;realAssets[kind]=img;}
-// Character Pack is modular. These layers keep the game's player/NPC identity while replacing
-// the crude atlas body with real CC0 character art. If any remote layer is unavailable we fall back.
+// Character Pack modular layers. These are presentation-only and preserve gameplay/save state.
 const charBase=cc0Base+'Character%20Pack/PNG/';
-const characterParts={skin:'Skin/Tint%201/tint1_head.png'};
+const characterParts={head:'Skin/Tint%201/tint1_head.png',arm:'Skin/Tint%201/tint1_arm.png',leg:'Skin/Tint%201/tint1_leg.png',shirt:'Shirts/Blue/blueShirt1.png',sleeve:'Shirts/Blue/blueArm_short.png'};
 const characterImages={};
 for(const [part,file] of Object.entries(characterParts)){const img=new Image();img.crossOrigin='anonymous';img.src=charBase+file;characterImages[part]=img;}
+function readyImage(img){return !!(img&&img.complete&&img.naturalWidth);}
 function install(){
  if(typeof world!=='function'||typeof s==='undefined'||typeof X==='undefined'||typeof A==='undefined'||typeof atlas==='undefined')return false;
  const camera={x:s.player?.x||2300,y:s.player?.y||2300};
@@ -31,7 +31,8 @@ function install(){
  function separateEnemies(){const es=(s.enemies||[]).filter(e=>e.hp>0);for(let i=0;i<es.length;i++)for(let j=i+1;j<es.length;j++){const a=es[i],b=es[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||.001,min=(a.boss||b.boss)?82:58;if(d>=min)continue;const push=(min-d)*.5,nx=dx/d,ny=dy/d;a.x=clamp(a.x-nx*push,35,W-35);a.y=clamp(a.y-ny*push,35,H-35);b.x=clamp(b.x+nx*push,35,W-35);b.y=clamp(b.y+ny*push,35,H-35);}for(const e of es){for(const b of s.housing||[]){const dx=e.x-b.x,dy=e.y-b.y,d=Math.hypot(dx,dy)||.001,min=86;if(d<min){e.x=clamp(e.x+dx/d*(min-d),35,W-35);e.y=clamp(e.y+dy/d*(min-d),35,H-35);}}}}
  if(originalUpdate)update=function(dt){originalUpdate(dt);separateEnemies();};
  function fallbackSprite(kind,p,size){const a=A[kind]||A.spark;X.drawImage(atlas,a[0],a[1],128,128,Math.round(p.x-size/2),Math.round(p.y-size),size,size);}
- function drawCharacter(kind,p,size){const head=characterImages.skin;if(!(head&&head.complete&&head.naturalWidth))return false;const bodyKind=kind==='player'?'player':'companion';const a=A[bodyKind]||A.player;const bodySize=size*.88,bodyX=Math.round(p.x-bodySize/2),bodyY=Math.round(p.y-bodySize*.84);X.drawImage(atlas,a[0],a[1],128,128,bodyX,bodyY,bodySize,bodySize);const headSize=size*.54;X.drawImage(head,Math.round(p.x-headSize/2),Math.round(p.y-size*.98),headSize,headSize);return true;}
+ function part(img,cx,cy,w,h,flip=false){if(!readyImage(img))return false;X.save();if(flip){X.translate(cx*2,0);X.scale(-1,1);}X.drawImage(img,Math.round(cx-w/2),Math.round(cy-h/2),w,h);X.restore();return true;}
+ function drawCharacter(kind,p,size){const I=characterImages;if(!readyImage(I.head)||!readyImage(I.shirt)||!readyImage(I.leg)||!readyImage(I.arm))return false;const npc=kind==='companion',cx=p.x,ground=p.y;const scale=size/82;const legW=21*scale,legH=39*scale,armW=19*scale,armH=39*scale,shirtW=47*scale,shirtH=43*scale,headW=44*scale,headH=44*scale;const bodyY=ground-48*scale;part(I.leg,cx-12*scale,ground-20*scale,legW,legH);part(I.leg,cx+12*scale,ground-20*scale,legW,legH,true);part(I.arm,cx-29*scale,bodyY+3*scale,armW,armH);part(I.arm,cx+29*scale,bodyY+3*scale,armW,armH,true);if(readyImage(I.sleeve)){part(I.sleeve,cx-29*scale,bodyY-4*scale,armW,armH);part(I.sleeve,cx+29*scale,bodyY-4*scale,armW,armH,true);}part(I.shirt,cx,bodyY,shirtW,shirtH);part(I.head,cx,ground-86*scale,headW,headH);if(npc){X.save();X.globalAlpha=.18;X.fillStyle='#9de4ff';X.beginPath();X.arc(cx,ground-55*scale,31*scale,0,Math.PI*2);X.fill();X.restore();}return true;}
  function drawSprite(kind,p,size){shadow(X,p,size,kind==='tree'?.17:.22);if((kind==='player'||kind==='companion')&&drawCharacter(kind,p,size))return;const real=realAssets[kind],dx=Math.round(p.x-size/2),dy=Math.round(p.y-size);if(real&&real.complete&&real.naturalWidth){X.drawImage(real,dx,dy,size,size);return;}fallbackSprite(kind,p,size);}
  const labelSlots=[];
  function resetLabels(){labelSlots.length=0;}
