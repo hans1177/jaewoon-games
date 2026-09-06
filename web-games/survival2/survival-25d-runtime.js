@@ -1,5 +1,5 @@
 // 파일명: web-games/survival2/survival-25d-runtime.js
-// 그래픽: 2.5D 아이소메트릭 월드 + CC0 캐릭터 애니메이션 / 회색 배경 제거
+// 그래픽: 2.5D 아이소메트릭 월드 + 1번 2DPIXX 원본 PNG 애니메이션
 (function(){
 'use strict';
 const ELEVATION=1,CULL=180;
@@ -15,42 +15,50 @@ for(const [kind,file] of Object.entries({tree:'tree.png',rock:'rock.png',plant:'
 const animalBase='https://raw.githubusercontent.com/eturner58/game-assets/main/kenney/2D%20assets/Animal%20Pack%20Remastered/PNG/Round/';
 for(const [kind,file] of Object.entries({wolf:'dog.png',boar:'pig.png',guardian:'bear.png'})){const img=new Image();img.crossOrigin='anonymous';img.referrerPolicy='no-referrer';img.src=animalBase+file;realAssets[kind]=img;}
 
-// CC0 출처: OpenGameArt - Isometric Classic Hero + Tiles (32x32)
-// 8종 캐릭터 / idle·walk·attack·hit / 상하 방향 포함
-const characterSheet=new Image();
-characterSheet.crossOrigin='anonymous';
-characterSheet.referrerPolicy='no-referrer';
-characterSheet.src='https://raw.githubusercontent.com/rlong12135/notima/28c5e2f38425e698fe70708da8bd8bd47ad09519/assets/public-domain/isometric_hero_dezrasdragons.png';
-const characterFrames={
- player:{sx:0,sy:0,sw:32,sh:32},
- companion:{sx:0,sy:96,sw:32,sh:32}
+// 1번 원본: 2DPIXX Warrior (CC-BY 3.0)
+// OpenGameArt: https://opengameart.org/content/warrior-animated-character-isometric
+// 3개 PNG 시트, 프레임 128x160, 4방향, Idle/Walk/Attack.
+const warriorSheets={
+ idle:new Image(),walk:new Image(),attack:new Image()
 };
-const characterBuffers={player:[],companion:[]};
-let characterPrepared=false;
-function prepareCharacterFrames(){
- if(characterPrepared||!ready(characterSheet))return;
- const names=['player','companion'];
- for(const kind of names){
-  const base=characterFrames[kind],frames=[];
-  for(let i=0;i<4;i++){
-   const c=document.createElement('canvas');c.width=base.sw;c.height=base.sh;
-   const ctx=c.getContext('2d',{willReadFrequently:true});
-   ctx.clearRect(0,0,c.width,c.height);
-   ctx.drawImage(characterSheet,base.sx+i*32,base.sy,base.sw,base.sh,0,0,base.sw,base.sh);
-   const img=ctx.getImageData(0,0,c.width,c.height),d=img.data;
-   for(let p=0;p<d.length;p+=4){
-    const r=d[p],g=d[p+1],b=d[p+2];
-    const max=Math.max(r,g,b),min=Math.min(r,g,b),sat=max-min;
-    // 시트의 회색/중성 배경 제거. 캐릭터의 채색 픽셀은 유지.
-    if(sat<13 && max>92 && max<242)d[p+3]=0;
-   }
-   ctx.putImageData(img,0,0);frames.push(c);
-  }
-  characterBuffers[kind]=frames;
- }
- characterPrepared=true;
+const warriorUrls={
+ idle:'https://opengameart.org/sites/default/files/2dpixx_-_free_assets_-_warrior_character_size_128x160_isometric_-_idle.png',
+ walk:'https://opengameart.org/sites/default/files/2dpixx_-_free_assets_-_warrior_character_size_128x160_isometric_-_walk.png',
+ attack:'https://opengameart.org/sites/default/files/2dpixx_-_free_assets_-_warrior_character_size_128x160_isometric_-_attack.png'
+};
+for(const key of Object.keys(warriorSheets)){warriorSheets[key].crossOrigin='anonymous';warriorSheets[key].referrerPolicy='no-referrer';warriorSheets[key].src=warriorUrls[key];}
+
+const warriorFrame={
+  player:{row:0},
+  companion:{row:0}
+};
+let animClock=0;
+function warriorDirection(entity,kind){
+  const dx=Number(entity?.vx)||0,dy=Number(entity?.vy)||0;
+  if(Math.abs(dx)+Math.abs(dy)<0.02)return entity?.faceRow??warriorFrame[kind].row;
+  let row=0;
+  // 원본 시트 행: 아래 / 오른쪽 / 위 / 왼쪽에 대응
+  if(Math.abs(dx)>=Math.abs(dy)) row=dx>=0?1:3;
+  else row=dy>=0?0:2;
+  warriorFrame[kind].row=row;return row;
 }
-characterSheet.onload=prepareCharacterFrames;
+function warriorAnim(entity,kind){
+  const attacking=typeof attackCd==='number'&&attackCd>0.35;
+  const moving=Math.abs(Number(entity?.vx)||0)+Math.abs(Number(entity?.vy)||0)>0.02;
+  if(attacking)return {sheet:warriorSheets.attack,frames:4,rate:0.10};
+  if(moving)return {sheet:warriorSheets.walk,frames:4,rate:0.14};
+  return {sheet:warriorSheets.idle,frames:4,rate:0.22};
+}
+function warriorSprite(kind,entity,p,size){
+  const an=warriorAnim(entity,kind),img=an.sheet;
+  if(!ready(img))return false;
+  const row=warriorDirection(entity,kind);
+  const frame=Math.floor(animClock/an.rate)%an.frames;
+  const sx=frame*128,sy=row*160;
+  const dw=Math.round(size),dh=Math.round(size*1.25);
+  X.drawImage(img,sx,sy,128,160,Math.round(p.x-dw/2),Math.round(p.y-dh),dw,dh);
+  return true;
+}
 
 const defaultBuildingProfiles={hut:{scale:1.18,yOffset:2,shadow:1.08},wall:{scale:.88,yOffset:5,shadow:.86},tower:{scale:1.34,yOffset:1,shadow:1.05},signal:{scale:1.22,yOffset:2,shadow:.96},campfire:{scale:.72,yOffset:1,shadow:.62}};
 function install(){
@@ -61,13 +69,13 @@ function install(){
  function blockedSpawn(p){if(dist(p,s.player)<360)return true;for(const b of s.housing||[])if(dist(p,b)<150)return true;for(const e of s.enemies||[])if(e.hp>0&&dist(p,e)<110)return true;return false;}
  if(originalSpawn)spawnEnemy=function(type='wolf',boss=false){const before=s.enemies.length;originalSpawn(type,boss);const e=s.enemies[before];if(!e)return;for(let i=0;i<24&&blockedSpawn(e);i++){const a=Math.random()*Math.PI*2,r=420+Math.random()*420;e.x=clamp(s.player.x+Math.cos(a)*r,80,W-80);e.y=clamp(s.player.y+Math.sin(a)*r,80,H-80);}if(blockedSpawn(e)){e.x=clamp(s.player.x+520,80,W-80);e.y=clamp(s.player.y+320,80,H-80);}};
  function separateEnemies(){const es=(s.enemies||[]).filter(e=>e.hp>0);for(let i=0;i<es.length;i++)for(let j=i+1;j<es.length;j++){const a=es[i],b=es[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||.001,min=(a.boss||b.boss)?82:58;if(d>=min)continue;const push=(min-d)*.5,nx=dx/d,ny=dy/d;a.x=clamp(a.x-nx*push,35,W-35);a.y=clamp(a.y-ny*push,35,H-35);b.x=clamp(b.x+nx*push,35,W-35);b.y=clamp(b.y+ny*push,35,H-35);}for(const e of es)for(const b of s.housing||[]){const dx=e.x-b.x,dy=e.y-b.y,d=Math.hypot(dx,dy)||.001,min=86;if(d<min){e.x=clamp(e.x+dx/d*(min-d),35,W-35);e.y=clamp(e.y+dy/d*(min-d),35,H-35);}}}
- if(originalUpdate)update=function(dt){originalUpdate(dt);separateEnemies();};
+ if(originalUpdate)update=function(dt){if(typeof animClock==='number')animClock+=dt;originalUpdate(dt);separateEnemies();};
  function atlasSprite(kind,p,size){const a=A[kind]||A.spark;X.drawImage(atlas,a[0],a[1],128,128,Math.round(p.x-size/2),Math.round(p.y-size),size,size);}
  function buildingProfile(kind){return (window.Survival25D?.buildingProfiles&&window.Survival25D.buildingProfiles[kind])||defaultBuildingProfiles[kind]||null;}
- function characterFrame(kind){const moving=Math.abs(s.player?.x-(s.player?.prevX??s.player?.x))>0.1||Math.abs(s.player?.y-(s.player?.prevY??s.player?.y))>0.1;const attack=typeof attackCd==='number'&&attackCd>0.35;let i=0;if(attack)i=Math.min(3,Math.floor((0.65-attackCd)/0.16));else if(moving)i=Math.floor(performance.now()/140)%4;const frames=characterBuffers[kind];return frames?.[i]||frames?.[0]||null;}
- function characterSprite(kind,p,size){prepareCharacterFrames();const c=characterFrame(kind);if(!c)return false;const dw=Math.round(size),dh=Math.round(size);X.drawImage(c,Math.round(p.x-dw/2),Math.round(p.y-dh),dw,dh);return true;}
- function drawSprite(kind,p,size){const profile=buildingProfile(kind),drawSize=profile?Math.round(size*(profile.scale||1)):size,drawP=profile?{x:p.x,y:p.y+(profile.yOffset||0)}:p;shadow(X,drawP,drawSize*(profile?.shadow||1),kind==='tree'?.17:.22);
-  if(kind==='player'||kind==='companion'){if(characterSprite(kind,drawP,drawSize))return;}
+ function drawSprite(kind,p,size,entity){const profile=buildingProfile(kind),drawSize=profile?Math.round(size*(profile.scale||1)):size,drawP=profile?{x:p.x,y:p.y+(profile.yOffset||0)}:p;shadow(X,drawP,drawSize*(profile?.shadow||1),kind==='tree'?.17:.22);
+  if(kind==='player'||kind==='companion'){
+   if(warriorSprite(kind,entity,drawP,drawSize))return;
+  }
   const real=realAssets[kind],dx=Math.round(drawP.x-drawSize/2),dy=Math.round(drawP.y-drawSize);if(ready(real)){X.drawImage(real,dx,dy,drawSize,drawSize);return;}atlasSprite(kind,drawP,drawSize);
  }
  const labelSlots=[];function resetLabels(){labelSlots.length=0;}
@@ -76,8 +84,8 @@ function install(){
  function tuneMobileUi(){const narrow=innerWidth<760,root=document.documentElement;root.style.setProperty('--survival-safe-bottom','max(18px, env(safe-area-inset-bottom))');const menu=document.querySelector('.menu'),joyEl=document.querySelector('.joy'),attackEl=document.querySelector('.attack');if(menu){menu.style.top=narrow?'116px':'70px';menu.style.right='max(8px, env(safe-area-inset-right))';menu.style.maxHeight=narrow?'46vh':'';menu.style.overflowY=narrow?'auto':'';}if(joyEl){joyEl.style.left='max(16px, env(safe-area-inset-left))';joyEl.style.bottom='var(--survival-safe-bottom)';if(narrow){joyEl.style.width='116px';joyEl.style.height='116px';}}if(attackEl){attackEl.style.right='max(14px, env(safe-area-inset-right))';attackEl.style.bottom='var(--survival-safe-bottom)';if(narrow){attackEl.style.width='104px';attackEl.style.height='60px';}}}
  tuneMobileUi();addEventListener('resize',tuneMobileUi,{passive:true});
  world=function(){const v={w:sw,h:sh},narrow=sw<760;camera.x+=(s.player.x-camera.x)*.16;camera.y+=(s.player.y-camera.y)*.16;X.save();X.setTransform(dpr,0,0,dpr,0,0);X.imageSmoothingEnabled=false;X.fillStyle=night()?'#091b19':'#163b2b';X.fillRect(0,0,sw,sh);const spacing=192,rx=Math.ceil(sw/96)+5,ry=Math.ceil(sh/48)+5,cx=Math.round(camera.x/spacing),cy=Math.round(camera.y/spacing);for(let gy=-ry;gy<=ry;gy++)for(let gx=-rx;gx<=rx;gx++){const wx=(cx+gx)*spacing,wy=(cy+gy)*spacing;if(wx<0||wy<0||wx>W||wy>H)continue;const p=project(wx,wy,0,camera,v);if(visible(p,v,120))diamond(X,p,192,96,((cx+gx+cy+gy)&1)?'#214b35':'#28563c');}
-  const q=[];for(const r of s.resources||[])if(r.alive)q.push({kind:r.type,x:r.x,y:r.y,size:r.type==='tree'?112:r.type==='rock'?68:64});for(const b of s.housing||[]){const k=b.type==='오두막'?'hut':b.type==='모닥불'?'campfire':b.type==='벽'?'wall':b.type==='감시탑'?'tower':'signal';q.push({kind:k,x:b.x,y:b.y,size:112,depthBias:8});}for(const n of s.npcs||[])q.push({kind:'companion',x:n.x,y:n.y,size:82,label:n.name});for(const e of s.enemies||[])if(e.hp>0)q.push({kind:e.type,x:e.x,y:e.y,size:e.boss?124:82,enemy:e,depthBias:4});q.push({kind:'player',x:s.player.x,y:s.player.y,size:88,player:true,depthBias:5});q.sort((a,b)=>depth(a)-depth(b));resetLabels();for(const o of q){const p=project(o.x,o.y,0,camera,v);if(narrow)p.y-=18;if(!visible(p,v,o.size+80))continue;drawSprite(o.kind,p,o.size);if(o.enemy)hpBar(o.enemy,p,o.size);if(o.label)label(o.label,p,o.size+10);if(o.player)label(s.name||'생존자',p,o.size+12);}if(s.player){s.player.prevX=s.player.x;s.player.prevY=s.player.y;}X.restore();};
- window.Survival25D=Object.assign(window.Survival25D||{},{installed:true,characterSource:characterSheet.src,project,depth});
+  const q=[];for(const r of s.resources||[])if(r.alive)q.push({kind:r.type,x:r.x,y:r.y,size:r.type==='tree'?112:r.type==='rock'?68:64,entity:r});for(const b of s.housing||[]){const k=b.type==='오두막'?'hut':b.type==='모닥불'?'campfire':b.type==='벽'?'wall':b.type==='감시탑'?'tower':'signal';q.push({kind:k,x:b.x,y:b.y,size:112,depthBias:8,entity:b});}for(const n of s.npcs||[])q.push({kind:'companion',x:n.x,y:n.y,size:82,label:n.name,entity:n});for(const e of s.enemies||[])if(e.hp>0)q.push({kind:e.type,x:e.x,y:e.y,size:e.boss?124:82,enemy:e,entity:e});q.push({kind:'player',x:s.player.x,y:s.player.y,size:88,player:true,depthBias:5,entity:s.player});q.sort((a,b)=>depth(a)-depth(b));resetLabels();for(const o of q){const p=project(o.x,o.y,0,camera,v);if(narrow)p.y-=18;if(!visible(p,v,o.size+80))continue;drawSprite(o.kind,p,o.size,o.entity);if(o.enemy)hpBar(o.enemy,p,o.size);if(o.label)label(o.label,p,o.size+10);if(o.player)label(s.name||'생존자',p,o.size+12);}X.restore();};
+ window.Survival25D=Object.assign(window.Survival25D||{},{installed:true,characterSource:warriorUrls,project,depth});
  return true;
 }
 let tries=0;function boot(){if(install())return;if(++tries<120)setTimeout(boot,50);}boot();
