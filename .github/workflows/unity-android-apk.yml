@@ -1,0 +1,73 @@
+name: Vibe Unity Android APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_apk:
+        description: "Android APK 빌드"
+        required: false
+        default: true
+        type: boolean
+  push:
+    branches: [main]
+    paths:
+      - "web-games/survival2/unity/**"
+      - ".github/workflows/unity-android-apk.yml"
+
+permissions:
+  contents: read
+
+env:
+  UNITY_PROJECT: web-games/survival2/unity
+
+jobs:
+  build-android:
+    name: Unity Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 받기
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: 디스크 정리
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: false
+          dotnet: false
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: false
+
+      - name: Unity Library 캐시
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.UNITY_PROJECT }}/Library
+          key: unity-library-android-${{ hashFiles('web-games/survival2/unity/Assets/**', 'web-games/survival2/unity/Packages/**', 'web-games/survival2/unity/ProjectSettings/**') }}
+          restore-keys: |
+            unity-library-android-
+            unity-library-
+
+      - name: Unity Android 빌드
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: ${{ env.UNITY_PROJECT }}
+          unityVersion: auto
+          targetPlatform: Android
+          androidExportType: androidPackage
+          buildName: Survival2
+          versioning: Semantic
+
+      - name: APK 업로드
+        uses: actions/upload-artifact@v4
+        with:
+          name: survival2-android-apk
+          path: build/Android/*.apk
+          if-no-files-found: error
+          retention-days: 7
