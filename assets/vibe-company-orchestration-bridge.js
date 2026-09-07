@@ -1,6 +1,6 @@
 // 파일명: assets/vibe-company-orchestration-bridge.js
 // 역할: 재운컴퍼니 개발 플로우를 기존 workbench/orchestrator 실행계약에 연결한다.
-// 원칙: 새 게임은 사전기획/시험/내부평가/사용자 승인 전 본개발 금지. 기존 게임 수리·소규모 반복개선은 기존 보호 규칙을 유지한다.
+// 원칙: 새 게임은 사전기획/시험/내부평가/사용자 승인 전 본개발 금지. 승인 외 단계는 회사가 자동 배정하고 기존 보호 규칙을 유지한다.
 
 import { planVibeWorkbenchTask } from './vibe-workbench.js';
 import { createVibeWorkPlan, createVibeExecutionContract } from './vibe-orchestrator.js';
@@ -18,6 +18,7 @@ import {
 const clean=value=>String(value??'').trim();
 const freezeList=value=>Object.freeze(Array.isArray(value)?[...value]:[]);
 const has=(value,words)=>{const text=clean(value).toLowerCase();return words.some(word=>text.includes(String(word).toLowerCase()));};
+const OWNER_GATE_STAGE='owner-approval';
 
 const STAGE_ASSIGNMENTS=Object.freeze({
   brief:['planning'],
@@ -60,6 +61,7 @@ function normalizeReviews(reviews=[]){
 export function createCompanyStageAssignment({stageId='brief',request='',gameId=''}={}){
   const stage=stageById(stageId);
   const roles=STAGE_ASSIGNMENTS[stage.id]||['director'];
+  const requiresOwnerAction=stage.id===OWNER_GATE_STAGE;
   return Object.freeze({
     version:1,
     gameId:clean(gameId),
@@ -72,8 +74,10 @@ export function createCompanyStageAssignment({stageId='brief',request='',gameId=
       request:clean(request),
       outputs:stage.outputs
     }))),
-    authority:'assignment-only',
-    autoExecute:false
+    authority:requiresOwnerAction?'owner-decision-only':'company-managed-stage',
+    autoExecute:!requiresOwnerAction,
+    requiresOwnerAction,
+    executionMode:requiresOwnerAction?'wait-for-owner':'company-managed'
   });
 }
 
@@ -130,10 +134,10 @@ export function planCompanyDevelopmentTask({
   let reviewSummary=null;
   let ownerGate=null;
   const reviews=normalizeReviews(departmentReviews);
-  if(currentStage.id==='internal-review'||currentStage.id==='owner-approval'||reviews.length){
+  if(currentStage.id==='internal-review'||currentStage.id===OWNER_GATE_STAGE||reviews.length){
     reviewSummary=summarizeInternalReview({reviews,revisionRoundsUsed,maxRevisionRounds});
   }
-  if(currentStage.id==='owner-approval'||ownerDecision!=='PENDING'){
+  if(currentStage.id===OWNER_GATE_STAGE||ownerDecision!=='PENDING'){
     ownerGate=createOwnerDevelopmentGate({internalReview:reviewSummary,ownerDecision,notes:ownerNotes});
   }
 
@@ -162,7 +166,7 @@ export function planCompanyDevelopmentTask({
   else if(ownerGate?.approvedForFullDevelopment)next='full-development';
   else if(ownerGate?.ownerDecision==='REVISE')next='playable-draft';
   else if(ownerGate?.ownerDecision==='DROP')next='DROP';
-  else if(currentStage.id!=='owner-approval')next=nextStageId(currentStage.id);
+  else if(currentStage.id!==OWNER_GATE_STAGE)next=nextStageId(currentStage.id);
 
   return Object.freeze({
     version:2,
@@ -182,7 +186,10 @@ export function planCompanyDevelopmentTask({
       predevelopmentGateRequired:newGame,
       majorOwnerApprovalRequired,
       maintenanceBypass,
+      mayDispatch:assignment.autoExecute,
       mayExecute:Boolean(execution),
+      requiresOwnerAction:assignment.requiresOwnerAction,
+      executionMode:assignment.executionMode,
       next,
       companyReviewRoles:COMPANY_REVIEW_ROLES,
       rule:newGame?'new-game-must-pass-internal-and-owner-gates':majorOwnerApprovalRequired?'major-change-must-pass-owner-gate':'existing-game-protection-flow'
