@@ -128,6 +128,7 @@ jobs:
           androidExportType: androidPackage
           buildName: ${{ steps.request.outputs.game_id }}
           buildsPath: build
+          buildMethod: JaewoonGames.DaechungRpg.Editor.AndroidTestBuild.Build
 
       - name: Verify APK and create metadata
         id: artifact
