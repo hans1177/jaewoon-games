@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-08",
+  "priority": "owner-immediate",
+  "rule": "initial-five-department-artbooks-before-formal-production",
+  "requiredRoles": ["planning", "development", "qa", "graphics", "balance"],
+  "directorMayAuthor": false,
+  "chatgptMayAuthor": false,
+  "formalProductionAllowedBeforeComplete": false,
+  "games": [
+    {"gameId":"insect-survival","name":"곤충 생존기","source":"web-games/insect-survival","status":"REQUESTED_NOW","submitted":[],"required":5},
+    {"gameId":"crystal-defense","name":"수정 디펜스","source":"web-games/crystal-defense","status":"REQUESTED_NOW","submitted":[],"required":5},
+    {"gameId":"bug-defense","name":"곤충 디펜스","source":"web-games/bug-defense","status":"REQUESTED_NOW","submitted":[],"required":5},
+    {"gameId":"daechung-rpg","name":"대충 RPG","source":"web-games/daechung-rpg + unity-games/daechung-rpg","status":"REQUESTED_NOW","submitted":[],"required":5,"existingUnityWork":"preserve-as-prototype-evidence","formalProductionPaused":true},
+    {"gameId":"human-go","name":"휴먼 GO","source":"web-games/human-go","status":"REQUESTED_NOW","submitted":[],"required":5},
+    {"gameId":"egg-heist","name":"알 도둑 대작전","source":"web-games/egg-heist","status":"REQUESTED_NOW","submitted":[],"required":5},
+    {"gameId":"chess-battle","name":"체스 배틀","source":"web-games/chess-battle","status":"REQUESTED_NOW","submitted":[],"required":5},
+    {"gameId":"monster-adventure","name":"몬스터 어드벤처","source":"web-games/monster-adventure","status":"REQUESTED_NOW","submitted":[],"required":5},
+    {"gameId":"survival","name":"나의 생존기","source":"web-games/survival","status":"REQUESTED_NOW","submitted":[],"required":5},
+    {"gameId":"survival2","name":"숲의 생존자들","source":"web-games/survival2","status":"REQUESTED_NOW","submitted":[],"required":5},
+    {"gameId":"territory-war","name":"영토전쟁","source":"web-games/territory-war","status":"REQUESTED_NOW","submitted":[],"required":5}
+  ]
+}
