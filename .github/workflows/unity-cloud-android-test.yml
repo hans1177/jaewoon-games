@@ -72,11 +72,26 @@ jobs:
           if not (pathlib.Path(project) / 'ProjectSettings' / 'ProjectVersion.txt').is_file():
               raise SystemExit(f'not a Unity project: {project}')
           request_id = str(data.get('requestId') or f'run-{game_id}')
+
+          publish_homepage = False
+          catalog_path = pathlib.Path('game-catalog.json')
+          if catalog_path.is_file():
+              catalog = json.loads(catalog_path.read_text(encoding='utf-8'))
+              for game in catalog.get('games', []):
+                  if game.get('id') == game_id:
+                      publish_homepage = bool(
+                          game.get('homepagePublicationApproved') is True
+                          and game.get('publishTestBuildWhenReady') is True
+                      )
+                      break
+
           with open(output, 'a', encoding='utf-8') as f:
               f.write(f'request_file={request_file}\n')
               f.write(f'game_id={game_id}\n')
               f.write(f'project_path={project}\n')
               f.write(f'request_id={request_id}\n')
+              f.write(f'publish_homepage={str(publish_homepage).lower()}\n')
+          print(f'[INFO] homepage publication approved={publish_homepage}')
           PY
 
       - name: Verify Unity cloud license secrets
@@ -129,9 +144,9 @@ jobs:
           bytes="$(stat -c%s "$out")"
           tag="test-${game}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           printf '%s  %s\n' "$sha" "${game}-test.apk" > "${out}.sha256"
-          python - "$game" '${{ steps.request.outputs.request_id }}' "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$tag" "$sha" "$bytes" > dist/build-info.json <<'PY'
+          python - "$game" '${{ steps.request.outputs.request_id }}' "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$tag" "$sha" "$bytes" '${{ steps.request.outputs.publish_homepage }}' > dist/build-info.json <<'PY'
           import json, sys, datetime
-          game, req, sha_source, run_id, attempt, tag, apk_sha, size = sys.argv[1:]
+          game, req, sha_source, run_id, attempt, tag, apk_sha, size, approved = sys.argv[1:]
           print(json.dumps({
               'version': 1,
               'gameId': game,
@@ -144,6 +159,7 @@ jobs:
               'sha256': apk_sha,
               'bytes': int(size),
               'channel': 'test',
+              'homepagePublicationApproved': approved.lower() == 'true',
               'homepagePublished': False,
               'builtAt': datetime.datetime.now(datetime.timezone.utc).isoformat()
           }, ensure_ascii=False, indent=2))
@@ -151,6 +167,7 @@ jobs:
           echo "apk_path=$out" >> "$GITHUB_OUTPUT"
           echo "release_tag=$tag" >> "$GITHUB_OUTPUT"
           echo "sha256=$sha" >> "$GITHUB_OUTPUT"
+          echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
           echo "[PASS] APK=$out bytes=$bytes sha256=$sha"
 
       - name: Upload workflow artifact
@@ -176,16 +193,77 @@ jobs:
             Game: ${{ steps.request.outputs.game_id }}
             Source: ${{ github.sha }}
             Request: ${{ steps.request.outputs.request_id }}
-            Homepage publication: disabled by default; owner instruction required.
+            Homepage publication approved: ${{ steps.request.outputs.publish_homepage }}
           files: |
             ${{ steps.artifact.outputs.apk_path }}
             ${{ steps.artifact.outputs.apk_path }}.sha256
             dist/build-info.json
           fail_on_unmatched_files: true
 
-      - name: Confirm homepage remains unchanged
+      - name: Publish verified build to approved homepage state
+        if: steps.request.outputs.publish_homepage == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          game='${{ steps.request.outputs.game_id }}'
+          tag='${{ steps.artifact.outputs.release_tag }}'
+          apk_name="${game}-test.apk"
+          release_url="https://github.com/${GITHUB_REPOSITORY}/releases/tag/${tag}"
+          download_url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/${apk_name}"
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git checkout -B homepage-build-state origin/main
+
+            python - "$game" '${{ steps.request.outputs.request_id }}' "$GITHUB_SHA" "$tag" "$release_url" "$download_url" '${{ steps.artifact.outputs.sha256 }}' '${{ steps.artifact.outputs.bytes }}' <<'PY'
+          import json, pathlib, sys, datetime
+          game, request_id, source_commit, tag, release_url, download_url, sha256, size = sys.argv[1:]
+          path = pathlib.Path('company-status.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          builds = [b for b in data.get('testBuilds', []) if b.get('gameId') != game]
+          builds.append({
+              'gameId': game,
+              'requestId': request_id,
+              'status': 'ready',
+              'channel': 'test',
+              'homepagePublished': True,
+              'sourceCommit': source_commit,
+              'releaseTag': tag,
+              'release': release_url,
+              'download': download_url,
+              'sha256': sha256,
+              'bytes': int(size),
+              'builtAt': datetime.datetime.now(datetime.timezone.utc).isoformat()
+          })
+          data['testBuilds'] = builds
+          data.setdefault('summary', {})['testBuilds'] = len(builds)
+          data['updatedAt'] = datetime.datetime.now(datetime.timezone.utc).date().isoformat()
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+
+            git add company-status.json
+            if git diff --cached --quiet; then
+              echo '[PASS] Approved homepage test build state already current.'
+              exit 0
+            fi
+            git commit -m "company-ai: publish ${game} verified test build"
+            if git push origin HEAD:main; then
+              echo "[PASS] Approved homepage test build published: $download_url"
+              exit 0
+            fi
+            echo "[WARN] main changed during publication attempt $attempt; retrying..."
+            sleep $((attempt * 2))
+          done
+
+          echo 'Could not publish approved homepage build state after 3 attempts.' >&2
+          exit 1
+
+      - name: Confirm unapproved homepage remains unchanged
+        if: steps.request.outputs.publish_homepage != 'true'
         shell: bash
         run: |
           echo '[PASS] Test APK prerelease published for direct testing.'
-          echo '[PASS] No company-status, game-catalog, index.html, or homepage download pointer was changed.'
-          echo '[INFO] Homepage publication requires an explicit owner instruction.'
+          echo '[PASS] No homepage download pointer was changed because this game has no explicit publication approval.'
