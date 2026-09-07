@@ -33,6 +33,20 @@ APK/AAB는 테스트나 배포 산출물로 취급하고 소스 저장소에는 
 
 FBX, Blender, PSD, 고용량 오디오/영상 등은 루트 `.gitattributes`의 Git LFS 규칙을 따른다.
 
-## 기존 프로젝트 보호
+## 로컬 Unity 제어 브리지
 
-`web-games/survival2/unity/`의 기존 Unity 2022 프로젝트는 기존 게임 보존용이므로 새 Unity 6 모바일 3D 프로젝트와 분리해서 유지한다.
+새 프로젝트 생성 후 저장소 루트에서 한 번 실행한다.
+
+```powershell
+.\tools\unity-mcp\setup-unity-mcp.ps1 -ProjectPath .\unity-games\게임이름 -InstallUv -OpenUnity
+```
+
+이 스크립트는 무료 MIT 라이선스의 `CoplayDev/unity-mcp` v10.0.0을 프로젝트에 고정 등록하고, 로컬 MCP 실행 준비를 확인한다.
+
+Unity에서 패키지 로딩이 끝나면 한 번만:
+
+`Window > MCP for Unity > Configure All Detected Clients`
+
+그 뒤부터 MCP 호환 로컬 AI 직원이 Unity Editor의 씬, GameObject, 컴포넌트, 스크립트, 테스트, 빌드 작업을 제어할 수 있다.
+
+자세한 내용은 `tools/unity-mcp/README.md`를 따른다.
