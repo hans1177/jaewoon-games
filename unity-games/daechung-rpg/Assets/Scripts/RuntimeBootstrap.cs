@@ -1,6 +1,7 @@
 // 파일명: RuntimeBootstrap.cs
-// 역할: 대충 RPG Unity 재개발의 첫 Android 플레이 가능 시스템 슬라이스
-// 주의: 최종 그래픽이 아니라 전투/성장/저장/지역 루프와 클라우드 빌드를 검증하는 기술 테스트 UI다.
+// 역할: 대충 RPG Unity 재개발의 Android 플레이 가능 초안
+// 초안 그래픽: 검증된 무료 애니메이션 Pirate/Skeleton 에셋을 실제 전투 상태와 연결한다.
+
 using UnityEngine;
 
 namespace JaewoonGames.DaechungRpg
@@ -12,6 +13,7 @@ namespace JaewoonGames.DaechungRpg
         private int _enemyHp;
         private string _message = "Select a hunting field to begin.";
         private Vector2 _scroll;
+        private PrototypeAnimatedVisuals _visuals;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void AutoStart()
@@ -45,9 +47,17 @@ namespace JaewoonGames.DaechungRpg
                 _core = Object.FindFirstObjectByType<GameCore>();
             }
 
-            if (_core != null && _core.Player.currentRegionId != "town")
+            _visuals = PrototypeAnimatedVisuals.EnsureCreated();
+
+            if (_core == null) return;
+
+            if (_core.Player.currentRegionId != "town")
             {
                 SpawnFirstEnemyInCurrentRegion();
+            }
+            else
+            {
+                _visuals.ShowTown();
             }
         }
 
@@ -59,34 +69,37 @@ namespace JaewoonGames.DaechungRpg
                 return;
             }
 
-            var scale = Mathf.Clamp(Screen.dpi > 0 ? Screen.dpi / 180f : 1.5f, 1.15f, 2.1f);
+            var scale = Mathf.Clamp(Screen.dpi > 0 ? Screen.dpi / 180f : 1.5f, 1.1f, 2f);
             var width = Mathf.Min(Screen.width - 24f, 760f * scale);
-            var height = Screen.height - 24f;
             var left = (Screen.width - width) * 0.5f;
+            var topHeight = Mathf.Min(220f * scale, Screen.height * 0.29f);
+            var controlsY = Screen.height * 0.60f;
+            var controlsHeight = Mathf.Max(120f, Screen.height - controlsY - 12f);
 
-            GUI.skin.label.fontSize = Mathf.RoundToInt(18f * scale);
-            GUI.skin.button.fontSize = Mathf.RoundToInt(18f * scale);
-            GUI.skin.box.fontSize = Mathf.RoundToInt(18f * scale);
-            GUI.skin.button.fixedHeight = 52f * scale;
+            GUI.skin.label.fontSize = Mathf.RoundToInt(17f * scale);
+            GUI.skin.button.fontSize = Mathf.RoundToInt(17f * scale);
+            GUI.skin.box.fontSize = Mathf.RoundToInt(17f * scale);
+            GUI.skin.button.fixedHeight = 46f * scale;
 
-            GUILayout.BeginArea(new Rect(left, 12f, width, height), GUI.skin.box);
+            GUILayout.BeginArea(new Rect(left, 12f, width, topHeight), GUI.skin.box);
+            GUILayout.Label("DAECHUNG RPG · ANIMATED PROTOTYPE");
+            GUILayout.Label("Combat / growth / save / regions + verified animated actors");
+            DrawPlayerStatus();
+            GUILayout.Label("ASSET  " + (_visuals != null ? _visuals.StatusText : "STARTING"));
+            GUILayout.EndArea();
+
+            GUILayout.BeginArea(new Rect(left, controlsY, width, controlsHeight), GUI.skin.box);
             _scroll = GUILayout.BeginScrollView(_scroll);
 
-            GUILayout.Label("DAECHUNG RPG · UNITY ANDROID TEST");
-            GUILayout.Label("Technical playable slice: combat / growth / save / region flow");
-            GUILayout.Space(8f * scale);
-
-            DrawPlayerStatus();
-            GUILayout.Space(8f * scale);
             DrawRegionControls();
-            GUILayout.Space(8f * scale);
+            GUILayout.Space(6f * scale);
             DrawCombatControls();
-            GUILayout.Space(8f * scale);
+            GUILayout.Space(6f * scale);
             DrawTownControls();
-            GUILayout.Space(8f * scale);
+            GUILayout.Space(6f * scale);
 
             GUILayout.Label("LOG");
-            GUILayout.TextArea(_message, GUILayout.MinHeight(84f * scale));
+            GUILayout.TextArea(_message, GUILayout.MinHeight(58f * scale));
 
             GUILayout.EndScrollView();
             GUILayout.EndArea();
@@ -108,27 +121,15 @@ namespace JaewoonGames.DaechungRpg
         {
             GUILayout.Label("REGION");
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("TOWN"))
-            {
-                MoveTo("town");
-            }
-            if (GUILayout.Button("FIELD 1"))
-            {
-                MoveTo("field-1");
-            }
+            if (GUILayout.Button("TOWN")) MoveTo("town");
+            if (GUILayout.Button("FIELD 1")) MoveTo("field-1");
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUI.enabled = _core.Player.level >= 2;
-            if (GUILayout.Button("FIELD 2"))
-            {
-                MoveTo("field-2");
-            }
+            if (GUILayout.Button("FIELD 2")) MoveTo("field-2");
             GUI.enabled = _core.Player.level >= 4;
-            if (GUILayout.Button("FIELD 3"))
-            {
-                MoveTo("field-3");
-            }
+            if (GUILayout.Button("FIELD 3")) MoveTo("field-3");
             GUI.enabled = true;
             GUILayout.EndHorizontal();
         }
@@ -144,23 +145,14 @@ namespace JaewoonGames.DaechungRpg
 
             GUILayout.Label($"ENEMY {_enemy.displayName} · LV {_enemy.level} · HP {_enemyHp}/{_enemy.maxHp} · ATK {_enemy.attack}");
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("ATTACK"))
-            {
-                AttackEnemy();
-            }
-            if (GUILayout.Button("RETREAT"))
-            {
-                MoveTo("town");
-            }
+            if (GUILayout.Button("ATTACK")) AttackEnemy();
+            if (GUILayout.Button("RETREAT")) MoveTo("town");
             GUILayout.EndHorizontal();
         }
 
         private void DrawTownControls()
         {
-            if (_core.Player.currentRegionId != "town")
-            {
-                return;
-            }
+            if (_core.Player.currentRegionId != "town") return;
 
             GUILayout.Label("TOWN");
             GUILayout.BeginHorizontal();
@@ -210,47 +202,54 @@ namespace JaewoonGames.DaechungRpg
 
             if (regionId == "town")
             {
+                _visuals?.ShowTown();
                 _message = "Returned to town.";
                 return;
             }
 
-            SpawnFirstEnemyInCurrentRegion();
+            SpawnFirstEnemyInCurrentRegion(false);
+            _visuals?.ShowBattle();
+            _visuals?.PlayTravelToBattle();
         }
 
-        private void SpawnFirstEnemyInCurrentRegion()
+        private void SpawnFirstEnemyInCurrentRegion(bool resetVisual = true)
         {
             if (!GameCatalog.Regions.TryGetValue(_core.Player.currentRegionId, out var region) || region.enemies.Count == 0)
             {
                 _enemy = null;
                 _enemyHp = 0;
                 _message = "This region has no combat encounter in the current slice.";
+                if (resetVisual) _visuals?.ShowTown();
                 return;
             }
 
             _enemy = region.enemies[0];
             _enemyHp = _enemy.maxHp;
             _message = $"Encountered {_enemy.displayName}.";
+            if (resetVisual) _visuals?.ShowBattle();
         }
 
         private void AttackEnemy()
         {
-            if (_enemy == null)
-            {
-                return;
-            }
+            if (_enemy == null) return;
 
             var damage = _core.GetAttackPower();
             _enemyHp = Mathf.Max(0, _enemyHp - damage);
 
             if (_enemyHp <= 0)
             {
-                RewardEnemyDefeat(_enemy);
-                SpawnFirstEnemyInCurrentRegion();
+                _visuals?.PlayCombatExchange(true, false);
+                var defeated = _enemy;
+                RewardEnemyDefeat(defeated);
+                SpawnFirstEnemyInCurrentRegion(false);
                 return;
             }
 
             _core.Player.currentHp -= _enemy.attack;
-            if (_core.Player.currentHp <= 0)
+            var playerDefeated = _core.Player.currentHp <= 0;
+            _visuals?.PlayCombatExchange(false, playerDefeated);
+
+            if (playerDefeated)
             {
                 _core.Player.currentHp = _core.GetMaxHp();
                 _core.SetRegion("town");
