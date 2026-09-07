@@ -39,7 +39,7 @@ const STAGE_ASSIGNMENTS=Object.freeze({
 });
 
 function isNewGameRequest(request){
-  return has(request,['새 게임','신작','게임 만들어','게임 제작','새 프로젝트','처음부터 만들어','프로토타입 만들어']);
+  return has(request,['새 게임','신작','게임 만들어','게임 만들','게임 제작','새 프로젝트','처음부터 만들어','프로토타입 만들어']);
 }
 function inferTarget(request,target='auto'){
   if(['unity','godot','web'].includes(target))return target;
@@ -104,6 +104,7 @@ export function planCompanyDevelopmentTask({
   const resolvedTarget=inferTarget(prompt,target);
   const newGame=isNewGameRequest(prompt);
   const workbench=planVibeWorkbenchTask({request:prompt,target:resolvedTarget,gameId,file,knownBroken});
+  const majorOwnerApprovalRequired=Boolean(workbench.companyDevelopment?.proposalApproval?.requiresOwnerApproval);
   const orchestratorBase=createVibeWorkPlan({
     request:prompt,
     target:resolvedTarget==='unity'?'auto':resolvedTarget,
@@ -136,7 +137,7 @@ export function planCompanyDevelopmentTask({
     ownerGate=createOwnerDevelopmentGate({internalReview:reviewSummary,ownerDecision,notes:ownerNotes});
   }
 
-  const maintenanceBypass=!newGame&&['repair','change','feature'].includes(workbench.mode);
+  const maintenanceBypass=!newGame&&!majorOwnerApprovalRequired&&['repair','change','feature'].includes(workbench.mode);
   const fullDevelopmentApproved=Boolean(ownerGate?.approvedForFullDevelopment);
   const postGateStage=['full-development','system-complete','graphics-upgrade','integrated-qa','optimization','android-build'].includes(currentStage.id);
   const mayCreateExecutionContract=maintenanceBypass||fullDevelopmentApproved||postGateStage;
@@ -164,7 +165,7 @@ export function planCompanyDevelopmentTask({
   else if(currentStage.id!=='owner-approval')next=nextStageId(currentStage.id);
 
   return Object.freeze({
-    version:1,
+    version:2,
     request:prompt,
     gameId:gameId?clean(gameId):null,
     target:resolvedTarget,
@@ -179,11 +180,12 @@ export function planCompanyDevelopmentTask({
     execution,
     routing:Object.freeze({
       predevelopmentGateRequired:newGame,
+      majorOwnerApprovalRequired,
       maintenanceBypass,
       mayExecute:Boolean(execution),
       next,
       companyReviewRoles:COMPANY_REVIEW_ROLES,
-      rule:newGame?'new-game-must-pass-internal-and-owner-gates':'existing-game-protection-flow'
+      rule:newGame?'new-game-must-pass-internal-and-owner-gates':majorOwnerApprovalRequired?'major-change-must-pass-owner-gate':'existing-game-protection-flow'
     })
   });
 }
