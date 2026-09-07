@@ -25,39 +25,27 @@ Unity 6에서 이 폴더를 프로젝트로 연다.
 Editor 스크립트가 `Assets/Scenes/Main.unity`를 만들고 Build Settings에 등록한다.
 Play를 누르면 테스트가 시작된다.
 
-## Android APK 자동 빌드
+## PC 로컬 Unity / MCP 사용
 
-워크플로우: `.github/workflows/unity-animation-test-android.yml`
+재운게임즈 기본 방식대로 PC에 설치된 Unity Editor와 `tools/unity-mcp` 로컬 브리지를 사용한다.
+GitHub-hosted Unity/GameCI 라이선스 빌드는 사용하지 않는다.
 
-다음 경우 자동 빌드한다.
+저장소 루트 PowerShell에서 테스트 프로젝트를 열 때:
 
-- `main`에서 `unity-games/animation-test/**` 변경
-- 워크플로우 파일 변경
-- GitHub Actions에서 수동 `Run workflow`
+```powershell
+.\tools\unity-mcp\start-unity-ai.ps1 -ProjectPath .\unity-games\animation-test
+```
 
-빌드 결과는 GitHub Actions artifact에 아래 이름으로 올라간다.
+로컬 Unity 라이선스와 설치된 Android Build Support를 그대로 사용한다.
+별도 `UNITY_LICENSE`, `UNITY_EMAIL`, `UNITY_PASSWORD` GitHub Actions secret은 필요하지 않다.
 
-`animation-test-android-<commit sha>`
+## Android APK
 
-artifact ZIP 안에는 다음 파일이 있다.
-
-- `animation-test.apk`
-- `animation-test.apk.sha256`
-- `commit-sha.txt`
-
-핸드폰에서는 GitHub의 Actions → `Unity Animation Test Android APK` → 최신 성공 run → Artifacts에서 ZIP을 받은 뒤 압축을 풀고 `animation-test.apk`를 설치하면 된다.
-
-### Unity CI 라이선스
-
-GitHub-hosted runner에서 Unity를 실행하려면 저장소 Actions secrets에 아래 값이 필요하다.
-
-- `UNITY_LICENSE`
-- `UNITY_EMAIL`
-- `UNITY_PASSWORD`
-
-GameCI `unity-builder@v4`를 사용하며 Unity 버전은 `ProjectSettings/ProjectVersion.txt`에서 자동으로 읽는다.
+프로젝트에는 `Assets/Editor/AndroidCiBuild.cs`가 있으며 Android APK 빌드 진입점은 `AndroidCiBuild.Build`이다.
+로컬 Unity/MCP 또는 로컬 Unity batchmode에서 이 빌드 함수를 호출한다.
+출력 경로는 `Build/animation-test.apk`다.
 
 ## 검증 상태
 
-소스, 애니메이션 검증 규칙, Android CI 빌드 함수와 자동 APK workflow는 main에 반영됨.
-실제 GitHub-hosted Unity 빌드는 위 Unity CI 라이선스 secrets가 설정되어 있어야 성공한다.
+소스와 애니메이션 검증 규칙은 main에 반영됨.
+APK 실제 생성/실기기 검증은 PC의 로컬 Unity Editor/MCP 세션에서 수행한다.
