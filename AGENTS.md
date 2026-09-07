@@ -15,6 +15,15 @@
 - 정지 이미지, 단일 포즈, 원형/구체/도형/이모지/임시 모델을 캐릭터·몬스터·보스로 사용하는 것은 금지한다.
 - 캐릭터·몬스터·보스 후보는 `assets/asset-selector.js` 검증을 통과해야 하며 `verifiedAnimation=true`, 실제 애니메이션 자료, 이동 모션이 없으면 사용하지 않는다.
 
+## 총괄 / 빌드 권한
+- 빌드 책임은 로컬 총괄 AI 한 명에게 독점시키지 않는다.
+- 연결된 ChatGPT 총괄, 로컬 총괄, 승인된 다른 총괄 AI 모두 검증된 빌드 요청을 만들 수 있다.
+- 외부 총괄은 GitHub의 `.build-requests/` 파일을 갱신해 빌드를 요청할 수 있다.
+- Unity 실제 컴파일/APK 생성은 사용자의 Windows PC에 설치된 Unity를 사용하는 `jaewoon-unity` self-hosted runner가 수행한다.
+- GitHub-hosted Unity/GameCI 라이선스 빌드를 기본 경로로 사용하지 않는다.
+- 외부 총괄은 빌드 run 상태와 로그를 확인하고 성공 산출물의 다운로드 링크를 사용자에게 직접 제공할 수 있다.
+- 홈페이지 수정은 빌드 파이프라인과 별개이며, 사용자가 요청하지 않은 홈페이지 변경을 하지 않는다.
+
 ## 작업 순서
 1. 현재 구조와 담당 파일을 먼저 읽는다.
 2. 에셋이 필요한 작업이면 `ASSET_RULES.md`, `assets/animated-assets.json`, `assets/asset-manifest.json`을 확인한다.
