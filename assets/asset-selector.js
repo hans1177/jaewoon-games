@@ -1,6 +1,6 @@
 // 파일명: assets/asset-selector.js
 // 역할: 자연어 요구에서 필요한 에셋 종류를 판별하고 실제 게임 객체에 적용할 매핑 계획을 생성
-// 규칙: 기존 저장소 에셋 우선, 라이선스 불명/NC 차단, 모든 화면 사물은 실제 에셋 필수
+// 규칙: 기존 저장소 우선, 라이선스 불명/NC 차단, 캐릭터/적/보스는 실제 애니메이션 에셋 필수
 
 const TYPES = Object.freeze({
   character: ['주인공', '캐릭터', '영웅', '플레이어', '기사', '궁수', '사마귀'],
@@ -16,18 +16,46 @@ const TYPES = Object.freeze({
 });
 
 const REQUIRED_VISUAL_TYPES = Object.freeze(['character', 'enemy', 'boss', 'background', 'item', 'prop', 'effect', 'ui', 'animation']);
+const ACTOR_TYPES = Object.freeze(['character', 'enemy', 'boss']);
 const DEFAULT_MOTION_STATES = Object.freeze(['idle', 'move', 'attack', 'hit', 'skill', 'death']);
+const MINIMUM_ACTOR_MOTION_STATES = Object.freeze(['idle', 'move']);
 const BLOCKED_LICENSE_WORDS = Object.freeze(['NC', 'unknown', '출처 불명', '재배포 제한']);
+const BLOCKED_ACTOR_VISUAL_WORDS = Object.freeze(['circle', 'sphere', 'orb', 'ball', '원형', '구체', 'placeholder', 'dummy', 'primitive']);
 
 function text(value) { return String(value ?? '').trim(); }
 function unique(values) { return [...new Set(values.filter(Boolean))]; }
 function hasAny(source, words) { const value = text(source).toLowerCase(); return words.some((word) => value.includes(String(word).toLowerCase())); }
 
+function actorHasAnimation(asset) {
+  const types = Array.isArray(asset?.types) ? asset.types.map((value) => text(value).toLowerCase()) : [];
+  const animations = Array.isArray(asset?.animations) ? asset.animations.map((value) => text(value).toLowerCase()) : [];
+  const states = Array.isArray(asset?.states) ? asset.states.map((value) => text(value).toLowerCase()) : [];
+  const motion = unique([...animations, ...states]);
+  const explicitAnimated = asset?.animated === true || asset?.verifiedAnimation === true || types.includes('animation');
+  const hasMovement = MINIMUM_ACTOR_MOTION_STATES.every((required) => motion.includes(required)) || types.includes('animation');
+  return explicitAnimated && hasMovement;
+}
+
 function findCandidates(type, candidates) {
   return candidates.filter((asset) => {
     const tags = Array.isArray(asset?.tags) ? asset.tags.join(' ') : text(asset?.tags);
-    return hasAny(`${asset?.id || ''} ${asset?.name || ''} ${tags}`, TYPES[type]);
-  }).map((asset) => ({ type, id:text(asset.id), path:text(asset.path), license:text(asset.license), source:text(asset.source) }));
+    const descriptor = `${asset?.id || ''} ${asset?.name || ''} ${tags}`;
+    if (!hasAny(descriptor, TYPES[type])) return false;
+
+    if (ACTOR_TYPES.includes(type)) {
+      if (hasAny(descriptor, BLOCKED_ACTOR_VISUAL_WORDS)) return false;
+      if (!actorHasAnimation(asset)) return false;
+    }
+
+    return true;
+  }).map((asset) => ({
+    type,
+    id:text(asset.id),
+    path:text(asset.path),
+    license:text(asset.license),
+    source:text(asset.source),
+    animated:ACTOR_TYPES.includes(type) ? true : Boolean(asset?.animated || asset?.verifiedAnimation || (Array.isArray(asset?.types) && asset.types.includes('animation'))),
+  }));
 }
 
 export function planAssetApplication({ prompt = '', manifest = null, rebuild = false } = {}) {
@@ -44,16 +72,58 @@ export function planAssetApplication({ prompt = '', manifest = null, rebuild = f
   const matched = types.flatMap((type) => findCandidates(type, candidates));
   const missingTypes = types.filter((type) => !matched.some((item) => item.type === type));
   const binding = types.map((type) => Object.freeze({
-    type, required:true, targetStates:type === 'animation' ? [...DEFAULT_MOTION_STATES] : [],
+    type,
+    required:true,
+    targetStates:ACTOR_TYPES.includes(type) || type === 'animation' ? [...DEFAULT_MOTION_STATES] : [],
     matchedAssetIds:matched.filter((item) => item.type === type).map((item) => item.id),
-    fallback:'none', replaceable:true,
+    fallback:'none',
+    replaceable:true,
   }));
   return Object.freeze({
-    version:3, request, requestedTypes:Object.freeze(types), matched:Object.freeze(matched), missingTypes:Object.freeze(missingTypes), binding:Object.freeze(binding),
+    version:4,
+    request,
+    requestedTypes:Object.freeze(types),
+    matched:Object.freeze(matched),
+    missingTypes:Object.freeze(missingTypes),
+    binding:Object.freeze(binding),
     ready:missingTypes.length===0,
-    animation:Object.freeze({required:true,states:[...DEFAULT_MOTION_STATES],stateDriven:true,replaceableWithoutGameplayRewrite:true}),
-    policy:Object.freeze({existingAssetsFirst:true,blockedLicenses:[...BLOCKED_LICENSE_WORDS],requireLicenseRecord:true,requireRealAssets:true,allowProceduralPlaceholder:false,allowEmojiPlaceholder:false,allowGeometricPlaceholder:false,styleConsistencyRequired:true}),
-    steps:Object.freeze(['기존 저장소 에셋 확인','캐릭터/적/NPC/배경/지형/사물/자원/건물/UI/VFX 목록 작성','누락 에셋은 승인 소스에서 라이선스 확인 후 확보','LICENSES.md 기록','모든 월드 객체를 실제 이미지/스프라이트/타일 에셋에 연결','애니메이션 상태를 실제 모션 리소스에 연결','도형/이모지/단색 임시 그래픽 잔존 여부 검사','에셋과 게임 로직 분리 확인','모바일 화면/성능 확인']),
+    animation:Object.freeze({
+      required:true,
+      actorAnimationRequired:true,
+      minimumActorStates:[...MINIMUM_ACTOR_MOTION_STATES],
+      states:[...DEFAULT_MOTION_STATES],
+      stateDriven:true,
+      staticActorAllowed:false,
+      replaceableWithoutGameplayRewrite:true,
+    }),
+    policy:Object.freeze({
+      existingAssetsFirst:true,
+      blockedLicenses:[...BLOCKED_LICENSE_WORDS],
+      blockedActorVisualWords:[...BLOCKED_ACTOR_VISUAL_WORDS],
+      requireLicenseRecord:true,
+      requireRealAssets:true,
+      requireAnimatedCharacter:true,
+      requireAnimatedEnemy:true,
+      requireAnimatedBoss:true,
+      allowStaticActor:false,
+      allowProceduralPlaceholder:false,
+      allowEmojiPlaceholder:false,
+      allowGeometricPlaceholder:false,
+      styleConsistencyRequired:true,
+    }),
+    steps:Object.freeze([
+      '기존 저장소 에셋 확인',
+      '캐릭터/적/보스는 실제 애니메이션 프레임 또는 스프라이트시트 보유 여부 확인',
+      '정지 캐릭터/정지 몬스터/원형·구체·도형 대체 모델 후보 제거',
+      '캐릭터/적/NPC/배경/지형/사물/자원/건물/UI/VFX 목록 작성',
+      '누락 에셋은 승인 소스에서 라이선스 확인 후 확보',
+      'LICENSES.md 기록',
+      '모든 월드 객체를 실제 이미지/스프라이트/타일 에셋에 연결',
+      '캐릭터/적/보스 애니메이션 상태를 실제 모션 리소스에 연결',
+      '도형/이모지/단색 임시 그래픽 잔존 여부 검사',
+      '에셋과 게임 로직 분리 확인',
+      '모바일 화면/성능 확인',
+    ]),
   });
 }
 
