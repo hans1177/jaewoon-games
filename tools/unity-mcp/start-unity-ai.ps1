@@ -1,8 +1,10 @@
 # 파일명: start-unity-ai.ps1
-# 역할: 대충 RPG Unity 프로젝트의 MCP 브리지와 VS Code AI 작업 환경을 한 번에 시작한다.
+# 역할: Unity MCP와 재운컴퍼니 자동 총괄 AI를 한 번에 시작한다.
 
 param(
-    [string]$ProjectPath = '.\unity-games\daechung-rpg'
+    [string]$ProjectPath = '.\unity-games\daechung-rpg',
+    [switch]$InstallAutoStart,
+    [switch]$NoCompanyRunner
 )
 
 $ErrorActionPreference = 'Stop'
@@ -29,9 +31,69 @@ function Test-Port([int]$Port) {
     }
 }
 
+function Write-Utf8NoBom([string]$Path, [string]$Text) {
+    [System.IO.File]::WriteAllText($Path, $Text, [System.Text.UTF8Encoding]::new($false))
+}
+
+function Get-CurrentPowerShellExe {
+    try {
+        $process = Get-Process -Id $PID -ErrorAction Stop
+        if ($process.Path) { return $process.Path }
+    } catch {}
+
+    $pwsh = Get-Command pwsh.exe -ErrorAction SilentlyContinue
+    if ($pwsh) { return $pwsh.Source }
+    $powershell = Get-Command powershell.exe -ErrorAction SilentlyContinue
+    if ($powershell) { return $powershell.Source }
+    throw 'PowerShell executable could not be resolved.'
+}
+
+function Install-LoginAutoStart([string]$PowerShellExe, [string]$StartScript, [string]$Project) {
+    $startupDir = [Environment]::GetFolderPath('Startup')
+    if (-not $startupDir) { throw 'Windows Startup folder could not be resolved.' }
+
+    $launcherPath = Join-Path $startupDir 'JaewoonCompanyAI.cmd'
+    $content = @"
+@echo off
+"$PowerShellExe" -NoProfile -ExecutionPolicy Bypass -File "$StartScript" -ProjectPath "$Project"
+"@
+    Write-Utf8NoBom -Path $launcherPath -Text $content
+    Write-Host "[PASS] Windows login auto-start installed: $launcherPath"
+}
+
+function Start-CompanyRunner([string]$PowerShellExe, [string]$RunnerScript, [string]$Project) {
+    if (-not (Test-Path $RunnerScript)) {
+        throw "Company AI runner not found: $RunnerScript"
+    }
+
+    $outLog = Join-Path $env:TEMP 'jaewoon-company-ai-launch.out.log'
+    $errLog = Join-Path $env:TEMP 'jaewoon-company-ai-launch.err.log'
+    $arguments = @(
+        '-NoProfile',
+        '-ExecutionPolicy', 'Bypass',
+        '-File', "`"$RunnerScript`"",
+        '-ProjectPath', "`"$Project`""
+    )
+
+    $process = Start-Process -FilePath $PowerShellExe -ArgumentList $arguments -WindowStyle Hidden -PassThru `
+        -RedirectStandardOutput $outLog -RedirectStandardError $errLog
+
+    Start-Sleep -Milliseconds 700
+    if ($process.HasExited -and $process.ExitCode -ne 0) {
+        Write-Host "[FAIL] Company AI runner exited immediately. code=$($process.ExitCode)"
+        if (Test-Path $errLog) { Get-Content $errLog -Tail 30 }
+        throw 'Company AI runner failed to start.'
+    }
+
+    Write-Host "[PASS] Jaewoon Company AI runner started. PID=$($process.Id)"
+    Write-Host "[INFO] Company log: $env:TEMP\jaewoon-company-ai.log"
+}
+
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $resolvedProject = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $ProjectPath))
 $setupScript = Join-Path $PSScriptRoot 'setup-unity-mcp.ps1'
+$runnerScript = Join-Path $PSScriptRoot 'run-company-ai.ps1'
+$powerShellExe = Get-CurrentPowerShellExe
 
 if (-not (Test-Path $resolvedProject)) {
     throw "Unity project not found: $resolvedProject"
@@ -48,14 +110,14 @@ if (-not $uvx) {
 }
 Write-Host "[PASS] uvx: $uvx"
 
-# VS Code 워크스페이스 MCP 설정이 로컬에도 존재하는지 보장한다.
+# VS Code를 열지 않아도 다른 로컬 MCP 클라이언트가 같은 설정을 참조할 수 있게 워크스페이스 설정은 유지한다.
 $vscodeDir = Join-Path $repoRoot '.vscode'
 $mcpConfig = Join-Path $vscodeDir 'mcp.json'
 if (-not (Test-Path $vscodeDir)) {
     New-Item -ItemType Directory -Path $vscodeDir -Force | Out-Null
 }
 if (-not (Test-Path $mcpConfig)) {
-    @'
+    $mcpJson = @'
 {
   "servers": {
     "unityMCP": {
@@ -64,7 +126,8 @@ if (-not (Test-Path $mcpConfig)) {
     }
   }
 }
-'@ | Set-Content -Path $mcpConfig -Encoding utf8
+'@
+    Write-Utf8NoBom -Path $mcpConfig -Text $mcpJson
     Write-Host '[PASS] VS Code MCP workspace config created.'
 } else {
     Write-Host '[PASS] VS Code MCP workspace config exists.'
@@ -101,7 +164,7 @@ if (Test-Port 8080) {
     }
 
     if (-not $ready) {
-        Write-Host "[FAIL] Unity MCP server did not open port 8080."
+        Write-Host '[FAIL] Unity MCP server did not open port 8080.'
         Write-Host "stdout: $outLog"
         Write-Host "stderr: $errLog"
         if (Test-Path $errLog) { Get-Content $errLog -Tail 30 }
@@ -112,11 +175,22 @@ if (Test-Port 8080) {
     Write-Host "[INFO] Logs: $outLog / $errLog"
 }
 
+if ($InstallAutoStart) {
+    Install-LoginAutoStart -PowerShellExe $powerShellExe -StartScript $PSCommandPath -Project $ProjectPath
+}
+
+if (-not $NoCompanyRunner) {
+    Start-CompanyRunner -PowerShellExe $powerShellExe -RunnerScript $runnerScript -Project $ProjectPath
+}
+
 Write-Host ''
-Write-Host 'UNITY ONE-TIME CHECK:'
-Write-Host 'Window > MCP for Unity > Start Bridge (Stopped일 때만)'
+Write-Host 'UNITY:'
+Write-Host 'MCP 창은 닫아도 된다. Unity Editor와 MCP 세션만 살아 있으면 된다.'
 Write-Host ''
-Write-Host 'VS CODE:'
-Write-Host 'Chat의 Agent 목록에서 "재운 총괄 AI"를 선택하고 작업을 시작하면 기획/개발/QA/그래픽/밸런스 하위 AI에 분배한다.'
+Write-Host 'COMPANY:'
+Write-Host '재운컴퍼니 총괄 AI는 Codex -> Gemini CLI -> Copilot CLI -> CodeBuddy 순서로 사용 가능 상태를 확인한다.'
+Write-Host '무료/현재 구독 포함 사용량이 막히거나 인증이 실패하면 다음 총괄로 순환한다.'
+Write-Host '유료 API 키는 자동 총괄 실행에서 제거하며, 추가 크레딧 구매/플랜 업그레이드는 금지한다.'
+Write-Host '핵심 결정이 필요한 경우에만 한재운 결정을 기다리고 자동 작업을 멈춘다.'
 Write-Host ''
-Write-Host '[READY] Local Unity AI workspace is configured.'
+Write-Host '[READY] Local Unity + Jaewoon Company AI is configured.'
