@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-08",
+  "policy": {
+    "scope": "homepage-published-games",
+    "scoreRange": [0, 100],
+    "criticalBelow": 55,
+    "warningBelow": 75,
+    "healthyAtLeast": 75,
+    "webArchiveMutation": "forbidden",
+    "autoRollbackDisplay": true,
+    "rollbackRequiresVerifiedHealthyBaseline": true
+  },
+  "games": [
+    {"gameId":"insect-survival","status":"pending-first-run","score":null,"dimensions":{}},
+    {"gameId":"crystal-defense","status":"pending-first-run","score":null,"dimensions":{}},
+    {"gameId":"bug-defense","status":"pending-first-run","score":null,"dimensions":{}},
+    {"gameId":"daechung-rpg","status":"pending-first-run","score":null,"dimensions":{},"buildHealth":{"status":"blocked","reason":"unity-license-20110-serial-invalid","runId":34163120304}},
+    {"gameId":"human-go","status":"pending-first-run","score":null,"dimensions":{}},
+    {"gameId":"egg-heist","status":"pending-first-run","score":null,"dimensions":{}},
+    {"gameId":"chess-battle","status":"pending-first-run","score":null,"dimensions":{}},
+    {"gameId":"monster-adventure","status":"pending-first-run","score":null,"dimensions":{}},
+    {"gameId":"survival","status":"pending-first-run","score":null,"dimensions":{}},
+    {"gameId":"survival2","status":"pending-first-run","score":null,"dimensions":{}},
+    {"gameId":"territory-war","status":"pending-first-run","score":null,"dimensions":{}}
+  ]
+}
