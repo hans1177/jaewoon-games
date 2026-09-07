@@ -3,6 +3,36 @@
 .import/
 export_presets.cfg.tmp
 
+# Unity generated folders (keep source projects only)
+**/[Ll]ibrary/
+**/[Tt]emp/
+**/[Oo]bj/
+**/[Ll]ogs/
+**/[Uu]ser[Ss]ettings/
+**/[Mm]emoryCaptures/
+**/[Rr]ecordings/
+**/[Bb]uild/
+**/[Bb]uilds/
+
+# Unity generated IDE files
+*.csproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Android local build outputs
+*.apk
+*.aab
+
 # OS / editor
 .DS_Store
 Thumbs.db
@@ -12,7 +42,6 @@ Thumbs.db
 
 # Logs / temp
 *.log
-*.tmp
 *.temp
 
 # Blender backup/autosave
@@ -24,4 +53,6 @@ Thumbs.db
 # Node tooling if used later
 node_modules/
 
-# Do not ignore /builds: Godot Web Export files there are deployment artifacts.
+# Root /builds is intentionally tracked for existing Godot/web deployment artifacts.
+!/builds/
+!/builds/**
