@@ -16,6 +16,7 @@ $resolvedProject = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $ProjectPa
 $statePath = Join-Path $repoRoot '.jaewoon-company-ai-state.json'
 $lockPath = Join-Path $repoRoot '.jaewoon-company-ai.lock'
 $ownerDecisionPath = Join-Path $repoRoot '.jaewoon-owner-decision.txt'
+$directivePath = Join-Path $repoRoot 'company-directive.json'
 $logPath = Join-Path $env:TEMP 'jaewoon-company-ai.log'
 
 # Gemini CLI stopped serving individual/free accounts in June 2026.
@@ -60,6 +61,7 @@ function New-RunnerState {
         lastRunAt = $null
         lastExitCode = $null
         stopReason = $null
+        lastCompletedDirectiveRevision = 0
         blockedUntil = [pscustomobject]@{}
         consecutiveFailures = [pscustomobject]@{}
     }
@@ -144,17 +146,40 @@ function Get-ProviderArguments([string]$Provider, [string]$Prompt) {
     }
 }
 
-function Build-DirectorPrompt {
+function Read-OwnerDirective {
+    if (-not (Test-Path $directivePath)) {
+        return [pscustomobject]@{ revision = 0; instruction = ''; raw = '{}' }
+    }
+    try {
+        $raw = Get-Content -Raw -Path $directivePath -Encoding UTF8
+        $data = $raw | ConvertFrom-Json
+        return [pscustomobject]@{
+            revision = [int](Get-PropertyValue -Object $data -Name 'revision' -Default 0)
+            instruction = [string](Get-PropertyValue -Object $data -Name 'instruction' -Default '')
+            raw = $raw
+        }
+    } catch {
+        Write-CompanyLog "[WARN] Could not read company-directive.json: $($_.Exception.Message)"
+        return [pscustomobject]@{ revision = 0; instruction = ''; raw = '{}' }
+    }
+}
+
+function Build-DirectorPrompt($State) {
     $status = ''
     $statusPath = Join-Path $repoRoot 'company-status.json'
     if (Test-Path $statusPath) {
         $status = Get-Content -Raw -Path $statusPath -Encoding UTF8
     }
 
+    $directive = Read-OwnerDirective
+    $completedRevision = [int](Get-PropertyValue -Object $State -Name 'lastCompletedDirectiveRevision' -Default 0)
+    $directivePending = ($directive.revision -gt $completedRevision)
+
     return @"
 You are the active director AI for Jaewoon Company. Perform one real autonomous company work unit. Do not wait for a person to open VS Code or repeat instructions.
 
 Read and follow these files first:
+- company-directive.json
 - .github/agents/director.agent.md
 - .github/agents/homepage.agent.md
 - COMPANY_FLOW.md
@@ -163,23 +188,36 @@ Read and follow these files first:
 - game-catalog.json
 - AGENTS.md
 
+OWNER DIRECTIVE STATUS:
+- current revision: $($directive.revision)
+- last completed revision: $completedRevision
+- pending: $directivePending
+- instruction: $($directive.instruction)
+
+Current company-directive.json:
+$($directive.raw)
+
 Priority game project: unity-games/daechung-rpg
 The web-games directory is read-only reference material.
 Homepage operations are a standing company responsibility, not a one-time redesign. Keep index.html, company.html, game classification, mobile layout, links, status labels, and useful site features healthy as the catalog grows.
 If Unity MCP is available, use the real Unity Editor/MCP for scenes, GameObjects, components, scripts, compilation, tests, and verification.
 
 Operating rules:
-1. Assign planning, development, QA, graphics, balance, and homepage operations roles as needed for the highest-priority work unit.
-2. Before choosing the work unit, do a lightweight check for stale or broken homepage/catalog state. If the public site needs maintenance, route that work to the homepage role; otherwise continue the highest-priority game work.
-3. QA is mandatory after implementation. Fix failures in the same work unit when possible.
-4. Ask Han Jaewoon only for core decisions: genre, core loop, major story direction, core combat model, core progression model, platform, save-breaking changes, monetization, or paid AI use.
-5. If a core decision is required, stop further implementation and make the first line of your final output exactly: OWNER_DECISION_REQUIRED:
-6. All other implementation, Unity configuration, camera details, graphics, UI, animation, VFX, QA fixes, balance values, optimization, build details, homepage information architecture, filters, layout, accessibility, links, and low-risk site features are delegated to the director.
-7. For homepage work, keep game-catalog.json as stable game metadata and company-status.json as live development/build state. Never claim testing, release, or download availability without evidence.
-8. Never buy credits, enable paid API usage, upgrade a plan, or work around an included/free usage limit. If included/free usage is blocked, terminate normally so the local runner can rotate providers.
-9. Only commit a verified local work unit. Do not push remotely.
-10. Do not raise company-status progress without evidence.
-11. Complete one highest-priority work unit and exit. Do not create an infinite loop inside the provider session.
+1. If the owner directive revision is pending, it is the highest-priority company work. Start it now and do not choose the normal autonomous plan first.
+2. Keep executing bounded verified work units for the pending owner directive until it is actually complete. Do not wait for the normal autonomous interval between unfinished owner-directive work units.
+3. Assign planning, development, QA, graphics, balance, and homepage operations roles as needed for the highest-priority work unit.
+4. Before normal autonomous work only, do a lightweight check for stale or broken homepage/catalog state. A pending owner directive outranks this routine check unless the site problem blocks the directive itself.
+5. QA is mandatory after implementation. Fix failures in the same work unit when possible.
+6. Ask Han Jaewoon only for core decisions: genre, core loop, major story direction, core combat model, core progression model, platform, save-breaking changes, monetization, or paid AI use.
+7. If a core decision is required, stop further implementation and make the first line of your final output exactly: OWNER_DECISION_REQUIRED:
+8. All other implementation, Unity configuration, camera details, graphics, UI, animation, VFX, QA fixes, balance values, optimization, build details, homepage information architecture, filters, layout, accessibility, links, and low-risk site features are delegated to the director.
+9. For homepage work, keep game-catalog.json as stable game metadata and company-status.json as live development/build state. Never claim testing, release, or download availability without evidence.
+10. Never buy credits, enable paid API usage, upgrade a plan, or work around an included/free usage limit. If included/free usage is blocked, terminate normally so the local runner can rotate providers.
+11. Only commit a verified local work unit. Do not push remotely.
+12. Do not raise company-status progress without evidence.
+13. Complete one highest-priority work unit and exit. Do not create an infinite loop inside the provider session.
+14. If and only if pending owner directive revision $($directive.revision) is fully implemented and verified, include this exact token in the final output: OWNER_DIRECTIVE_COMPLETE:$($directive.revision)
+15. If the directive still needs more work after this bounded unit, do not print the completion token. Commit verified progress and exit so the supervisor can immediately invoke the next unit.
 
 Current company-status.json snapshot:
 $status
@@ -308,7 +346,7 @@ try {
             continue
         }
 
-        $prompt = Build-DirectorPrompt
+        $prompt = Build-DirectorPrompt -State $state
         Write-CompanyLog "[RUN] Director provider=$($provider.name) command=$($provider.command)"
         $result = Invoke-Provider -Provider $provider.name -CommandPath $provider.command -Prompt $prompt
 
@@ -361,6 +399,13 @@ try {
             Set-MapValue -Object $state.consecutiveFailures -Name $provider.name -Value 0
             Set-MapValue -Object $state.blockedUntil -Name $provider.name -Value $null
             $state.stopReason = $null
+
+            $directive = Read-OwnerDirective
+            if ($directive.revision -gt 0 -and $output.IndexOf(("OWNER_DIRECTIVE_COMPLETE:" + [string]$directive.revision), [System.StringComparison]::Ordinal) -ge 0) {
+                Set-MapValue -Object $state -Name 'lastCompletedDirectiveRevision' -Value ([int]$directive.revision)
+                Write-CompanyLog "[DIRECTIVE-PASS] Owner directive revision $($directive.revision) completed and verified."
+            }
+
             Write-CompanyLog "[PASS] $($provider.name) completed one company work unit."
         }
 
