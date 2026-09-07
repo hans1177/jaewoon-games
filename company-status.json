@@ -10,11 +10,22 @@
   "summary": {
     "webArchiveCount": 11,
     "activeUnityProjects": 0,
-    "pendingApprovals": 0,
+    "pendingApprovals": 1,
     "testBuilds": 0
   },
   "projects": [],
-  "approvals": [],
+  "approvals": [
+    {
+      "id": "daechung-rpg-unity-redevelopment",
+      "gameId": "daechung-rpg",
+      "title": "대충 RPG Unity 재개발 승인",
+      "reason": "5개 부서 내부평가 PASS. 기존 웹판의 전투·지역·퀘스트·전직·히든 콘텐츠는 보존하되 패치 누적 구조는 폐기하고 Unity 본체 구조로 재설계하는 안을 추천한다.",
+      "decision": "PENDING",
+      "internalScore": 76,
+      "recommended": true,
+      "target": "unity-android"
+    }
+  ],
   "testBuilds": [],
   "redevelopmentReview": {
     "status": "running",
@@ -25,13 +36,13 @@
     "writeBackToWebGames": false,
     "output": "unity-redevelopment-candidate-report",
     "totalGames": 11,
-    "completedGames": 0,
-    "remainingGames": 11,
-    "currentGameId": "daechung-rpg",
-    "currentGameName": "대충 RPG",
+    "completedGames": 1,
+    "remainingGames": 10,
+    "currentGameId": "insect-survival",
+    "currentGameName": "곤충 생존기",
     "queue": [
-      {"gameId":"daechung-rpg","name":"대충 RPG","status":"in-review"},
-      {"gameId":"insect-survival","name":"곤충 생존기","status":"queued"},
+      {"gameId":"daechung-rpg","name":"대충 RPG","status":"awaiting-owner-approval"},
+      {"gameId":"insect-survival","name":"곤충 생존기","status":"in-review"},
       {"gameId":"crystal-defense","name":"수정 디펜스","status":"queued"},
       {"gameId":"bug-defense","name":"곤충 디펜스","status":"queued"},
       {"gameId":"human-go","name":"휴먼 GO","status":"queued"},
@@ -42,13 +53,78 @@
       {"gameId":"survival2","name":"숲의 생존자들","status":"queued"},
       {"gameId":"territory-war","name":"영토전쟁","status":"queued"}
     ],
+    "reviewResults": {
+      "daechung-rpg": {
+        "gameId": "daechung-rpg",
+        "name": "대충 RPG",
+        "decision": "PASS",
+        "overallScore": 76,
+        "recommendation": "unity-redevelop",
+        "preserve": [
+          "탐험-전투-성장 핵심 루프",
+          "지역/포탈 진행 구조",
+          "촌장 메인 퀘스트와 히든 퀘스트",
+          "전사·궁수·마법사 전직",
+          "무기·갑옷·물약·보스 보상 구조"
+        ],
+        "rebuild": [
+          "v15~v18 런타임 패치 누적 구조를 제거하고 Unity 시스템으로 통합",
+          "지역/포탈/퀘스트 상태를 단일 데이터 모델로 재설계",
+          "전투·몬스터·상점·세이브를 독립 시스템으로 분리",
+          "모바일 조작/UI를 Unity 입력 시스템 기준으로 재구성"
+        ],
+        "risks": [
+          "여러 패치가 전역 함수를 반복 래핑해 회귀 위험이 큼",
+          "공동묘지 f9 포탈을 v17에서 제거하지만 core18이 다시 일반 포탈 배열에 추가해 충돌 가능성 존재",
+          "히든 패시브의 체력 +30%, 공격 +50%, 이동속도 +50%는 후반 밸런스 검증 필요"
+        ],
+        "departments": {
+          "planning": {
+            "status": "done",
+            "score": 92,
+            "decision": "PASS",
+            "summary": "지역 탐험, 퀘스트, 전직, 장비, 히든 콘텐츠가 연결돼 RPG 재개발 가치가 높다."
+          },
+          "development": {
+            "status": "done",
+            "score": 62,
+            "decision": "PASS_WITH_REBUILD",
+            "summary": "기능량은 충분하지만 런타임 패치 체인이 길어 웹 코드를 직접 이식하지 말고 Unity에서 시스템별로 재구축해야 한다."
+          },
+          "qa": {
+            "status": "done",
+            "score": 58,
+            "decision": "PASS_WITH_FIXES",
+            "summary": "패치 간 함수/포탈 상태 충돌 위험이 있어 Unity 이전 전 기능 목록과 진행 상태 회귀 테스트가 필요하다."
+          },
+          "graphics": {
+            "status": "done",
+            "score": 78,
+            "decision": "PASS",
+            "summary": "Canvas 기반 지역과 몬스터 표현을 Unity 2D/3D로 확장했을 때 체감 개선 폭이 크다."
+          },
+          "balance": {
+            "status": "done",
+            "score": 70,
+            "decision": "PASS_WITH_TUNING",
+            "summary": "지역별 레벨/장비/보상 기반은 유지 가치가 있으나 히든 패시브와 후반 수치 상승은 재조정이 필요하다."
+          },
+          "director": {
+            "status": "done",
+            "score": 76,
+            "decision": "PASS",
+            "summary": "Unity Android 재개발 후보로 승인 추천. 기존 웹판 수정 없이 별도 Unity 프로젝트로 진행한다."
+          }
+        }
+      }
+    },
     "departmentTasks": {
-      "planning": {"status":"running","task":"대충 RPG 핵심 재미·게임 루프·Unity 재개발 가치 평가"},
-      "development": {"status":"running","task":"대충 RPG Unity 구현 난이도·구조·성능 위험 평가"},
-      "qa": {"status":"running","task":"대충 RPG 플레이 막힘·버그·재현 위험 평가"},
-      "graphics": {"status":"running","task":"대충 RPG 3D 전환 효과·에셋·연출 비용 평가"},
-      "balance": {"status":"running","task":"대충 RPG 난이도·전투·성장·보상 구조 평가"},
-      "director": {"status":"waiting","task":"대충 RPG 5개 부서 결과 종합 후 사용자 결재 상신"}
+      "planning": {"status":"running","task":"곤충 생존기 핵심 재미·게임 루프·Unity 재개발 가치 평가"},
+      "development": {"status":"running","task":"곤충 생존기 Unity 구현 난이도·구조·성능 위험 평가"},
+      "qa": {"status":"running","task":"곤충 생존기 플레이 막힘·버그·재현 위험 평가"},
+      "graphics": {"status":"running","task":"곤충 생존기 3D 전환 효과·에셋·연출 비용 평가"},
+      "balance": {"status":"running","task":"곤충 생존기 난이도·전투·성장·보상 구조 평가"},
+      "director": {"status":"waiting","task":"곤충 생존기 5개 부서 결과 종합 후 사용자 결재 상신"}
     }
   }
 }
