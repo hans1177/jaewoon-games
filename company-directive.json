@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "revision": 3,
+  "revision": 4,
   "updatedAt": "2026-09-08",
   "priority": "owner-immediate",
-  "instruction": "Keep remote owner requests as the primary operating path and execute them ahead of the autonomous plan. Game creation or modification requests must never automatically publish a new game, Unity project, APK, or download link to the public homepage. Build and provide verified direct test downloads independently. Only publish a game or test download to the homepage when Han Jaewoon explicitly says to put it on the homepage. Keep Jaewoon Games and Jaewoon Company operating state synchronized through the shared GitHub source of truth while keeping public homepage publication as a separate explicit action. Local Unity/MCP and self-hosted PC workflows remain optional recovery paths only. Never use paid overage or paid runners automatically.",
+  "instruction": "Keep remote owner requests as the primary operating path and execute them ahead of the autonomous plan. Game creation or modification requests must never automatically publish a new game, Unity project, APK, or download link to the public homepage. Exception: Han Jaewoon has now explicitly approved homepage publication for daechung-rpg. Show its current Unity Android redevelopment state on the homepage, and when a real non-empty Android APK build succeeds with SHA-256 verification, publish that verified test download link on the homepage for daechung-rpg. Do not grant this publication approval to any other game. Continue daechung-rpg through planning/development/graphics/QA/balance/release roles until it is externally testable. Keep Jaewoon Games and Jaewoon Company operating state synchronized through the shared GitHub source of truth. Local Unity/MCP and self-hosted PC workflows remain optional recovery paths only. Never use paid overage or paid runners automatically.",
   "rules": [
     "new-owner-instruction-overrides-autonomous-plan",
     "remote-request-flow-does-not-require-local-pc-by-default",
@@ -13,6 +13,9 @@
     "publish-only-real-non-empty-apk-with-sha256",
     "direct-test-download-does-not-imply-homepage-publication",
     "homepage-publication-requires-explicit-owner-instruction",
+    "daechung-rpg-homepage-publication-approved",
+    "daechung-rpg-test-download-publish-after-verified-build",
+    "no-other-game-homepage-publication-approved",
     "games-and-company-share-github-source-of-truth",
     "local-unity-mcp-is-optional-recovery-path",
     "self-hosted-pc-build-is-legacy-manual-only",
