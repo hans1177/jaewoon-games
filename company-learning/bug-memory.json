@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-08",
+  "policy": {
+    "dedupeBySignature": true,
+    "retainResolvedPatterns": true,
+    "verifiedRootCauseRequiredForLearningXp": true,
+    "repeatFailureWithoutNewLearningGetsNoXp": true,
+    "reuseBeforeNewInvestigation": true
+  },
+  "bugs": [
+    {
+      "id": "unity-cloud-license-20110",
+      "signature": "unity-license-20110-serial-invalid",
+      "scope": "build-infrastructure",
+      "gameId": "daechung-rpg",
+      "severity": "HIGH",
+      "status": "open",
+      "symptom": "Unity Cloud Android Test reaches Unity login/entitlement activation, then fails repeatedly with Code 20110: serial invalid before compilation and APK packaging.",
+      "firstSeen": "2026-09-08",
+      "lastSeen": "2026-09-08",
+      "occurrences": [
+        {
+          "workflow": "Unity Cloud Android Test",
+          "runId": 34163120304,
+          "jobId": 101868809566,
+          "headSha": "23f7ff4dcac28eee75d6b690faff4c0cf5fd6258"
+        }
+      ],
+      "rootCause": null,
+      "fix": null,
+      "prevention": null,
+      "learningVerified": false,
+      "xpAwarded": false,
+      "notes": [
+        "UNITY_EMAIL/UNITY_PASSWORD login succeeds.",
+        "Entitlement activation reports success before the serial-invalid failure.",
+        "Do not misclassify this as a C# compile failure because compilation was never reached."
+      ]
+    }
+  ]
+}
