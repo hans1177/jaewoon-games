@@ -27,15 +27,44 @@ function Resolve-UnityExe {
     return $candidates | Select-Object -First 1
 }
 
-$resolvedProject = (Resolve-Path $ProjectPath).Path
+function Resolve-UncreatedPath([string]$Path) {
+    return $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+}
+
+$unity = Resolve-UnityExe
+if (-not $unity) {
+    throw 'Unity Hub editor install was not detected under Program Files.'
+}
+Write-Host "[PASS] Unity detected: $($unity.Version)"
+
+$resolvedProject = Resolve-UncreatedPath $ProjectPath
 $manifestPath = Join-Path $resolvedProject 'Packages\manifest.json'
 $projectVersionPath = Join-Path $resolvedProject 'ProjectSettings\ProjectVersion.txt'
 
+if (-not (Test-Path $resolvedProject)) {
+    $parent = Split-Path $resolvedProject -Parent
+    if (-not (Test-Path $parent)) {
+        New-Item -ItemType Directory -Path $parent -Force | Out-Null
+    }
+
+    Write-Host "[INFO] Unity project does not exist. Creating: $resolvedProject"
+    $process = Start-Process -FilePath $unity.Exe -ArgumentList @(
+        '-quit',
+        '-batchmode',
+        '-createProject',
+        $resolvedProject
+    ) -Wait -PassThru
+
+    if ($process.ExitCode -ne 0) {
+        throw "Unity project creation failed with exit code $($process.ExitCode)."
+    }
+}
+
 if (-not (Test-Path $manifestPath)) {
-    throw "Unity project not found: $manifestPath"
+    throw "Unity project manifest not found after project creation/open: $manifestPath"
 }
 if (-not (Test-Path $projectVersionPath)) {
-    throw "Unity ProjectSettings not found: $projectVersionPath"
+    throw "Unity ProjectSettings not found after project creation/open: $projectVersionPath"
 }
 
 $manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
@@ -69,22 +98,16 @@ if ($uv) {
     Write-Host '[NEEDS-LOCAL] uv is not installed. Run this script again with -InstallUv or install uv manually.'
 }
 
-$unity = Resolve-UnityExe
-if ($unity) {
-    Write-Host "[PASS] Unity detected: $($unity.Version)"
-    $androidRoot = Join-Path (Split-Path $unity.Exe -Parent) 'Data\PlaybackEngines\AndroidPlayer'
-    if (Test-Path $androidRoot) {
-        Write-Host '[PASS] Android Build Support detected.'
-    } else {
-        Write-Host '[NEEDS-LOCAL] Android Build Support was not detected for this Unity install.'
-    }
-
-    if ($OpenUnity) {
-        Start-Process -FilePath $unity.Exe -ArgumentList @('-projectPath', $resolvedProject)
-        Write-Host '[PASS] Unity launch requested.'
-    }
+$androidRoot = Join-Path (Split-Path $unity.Exe -Parent) 'Data\PlaybackEngines\AndroidPlayer'
+if (Test-Path $androidRoot) {
+    Write-Host '[PASS] Android Build Support detected.'
 } else {
-    Write-Host '[NEEDS-LOCAL] Unity Hub editor install was not detected under Program Files.'
+    Write-Host '[NEEDS-LOCAL] Android Build Support was not detected for this Unity install.'
+}
+
+if ($OpenUnity) {
+    Start-Process -FilePath $unity.Exe -ArgumentList @('-projectPath', $resolvedProject)
+    Write-Host '[PASS] Unity launch requested.'
 }
 
 Write-Host ''
