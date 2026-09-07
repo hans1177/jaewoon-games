@@ -1,11 +1,13 @@
 # File: run-company-supervisor.ps1
-# Purpose: Keep the local Jaewoon Company synchronized with origin/main and run one bounded AI work unit per cycle.
+# Purpose: Keep Jaewoon Company synchronized, prioritize owner directives, and publish verified local work automatically.
 # Compatibility: Keep this file ASCII-only so Windows PowerShell 5.1 can parse it reliably.
 
 param(
     [string]$ProjectPath = '.\unity-games\daechung-rpg',
     [int]$IntervalMinutes = 10,
-    [int]$QuotaRetryHours = 24
+    [int]$QuotaRetryHours = 24,
+    [int]$SyncIntervalSeconds = 30,
+    [int]$UrgentRetrySeconds = 5
 )
 
 $ErrorActionPreference = 'Stop'
@@ -14,8 +16,11 @@ $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $runnerScript = Join-Path $PSScriptRoot 'run-company-ai.ps1'
 $supervisorLockPath = Join-Path $repoRoot '.jaewoon-company-supervisor.lock'
 $workerStatePath = Join-Path $repoRoot '.jaewoon-company-ai-state.json'
+$directivePath = Join-Path $repoRoot 'company-directive.json'
+$statusPath = Join-Path $repoRoot 'company-status.json'
 $logPath = Join-Path $env:TEMP 'jaewoon-company-ai.log'
 $restartRequested = $false
+$waitingForCoreDecision = $false
 
 function Write-CompanyLog([string]$Message) {
     $line = "{0} {1}" -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $Message
@@ -78,6 +83,56 @@ function Get-FileSha256([string]$Path) {
     try { return (Get-FileHash -Algorithm SHA256 -Path $Path).Hash } catch { return '' }
 }
 
+function Get-JsonProperty($Object, [string]$Name, $Default = $null) {
+    if ($null -eq $Object) { return $Default }
+    $property = $Object.PSObject.Properties[$Name]
+    if ($null -eq $property) { return $Default }
+    return $property.Value
+}
+
+function Get-DirectiveRevision {
+    if (-not (Test-Path $directivePath)) { return 0 }
+    try {
+        $directive = Get-Content -Raw -Path $directivePath -Encoding UTF8 | ConvertFrom-Json
+        return [int](Get-JsonProperty -Object $directive -Name 'revision' -Default 0)
+    } catch {
+        Write-CompanyLog "[DIRECTIVE-WARN] Could not read company-directive.json: $($_.Exception.Message)"
+        return 0
+    }
+}
+
+function Get-CompletedDirectiveRevision {
+    if (-not (Test-Path $workerStatePath)) { return 0 }
+    try {
+        $state = Get-Content -Raw -Path $workerStatePath -Encoding UTF8 | ConvertFrom-Json
+        return [int](Get-JsonProperty -Object $state -Name 'lastCompletedDirectiveRevision' -Default 0)
+    } catch {
+        return 0
+    }
+}
+
+function Get-WorkerStopReason {
+    if (-not (Test-Path $workerStatePath)) { return '' }
+    try {
+        $state = Get-Content -Raw -Path $workerStatePath -Encoding UTF8 | ConvertFrom-Json
+        return [string](Get-JsonProperty -Object $state -Name 'stopReason' -Default '')
+    } catch {
+        return ''
+    }
+}
+
+function Test-CoreDecisionPending {
+    if (-not (Test-Path $statusPath)) { return $false }
+    try {
+        $status = Get-Content -Raw -Path $statusPath -Encoding UTF8 | ConvertFrom-Json
+        $summary = Get-JsonProperty -Object $status -Name 'summary' -Default $null
+        $pending = [int](Get-JsonProperty -Object $summary -Name 'pendingApprovals' -Default 0)
+        return ($pending -gt 0)
+    } catch {
+        return $false
+    }
+}
+
 function Sync-Repository {
     $beforeSupervisorHash = Get-FileSha256 -Path $PSCommandPath
     $status = Invoke-Git @('status','--porcelain')
@@ -120,7 +175,6 @@ function Sync-Repository {
         return [pscustomobject]@{ changed = $false; restart = $false }
     }
     $baseSha = $base.output.Trim()
-    $syncResult = $null
 
     if ($baseSha -eq $localSha) {
         $syncResult = Invoke-Git @('merge','--ff-only','origin/main')
@@ -130,7 +184,6 @@ function Sync-Repository {
         }
         Write-CompanyLog "[SYNC] Fast-forwarded local main to origin/main $remoteSha"
     } elseif ($baseSha -eq $remoteSha) {
-        Write-CompanyLog '[SYNC] Local main is ahead of origin/main. No remote update to apply.'
         return [pscustomobject]@{ changed = $false; restart = $false }
     } else {
         $syncResult = Invoke-Git @('rebase','origin/main')
@@ -145,6 +198,53 @@ function Sync-Repository {
     $afterSupervisorHash = Get-FileSha256 -Path $PSCommandPath
     $needsRestart = ($beforeSupervisorHash -and $afterSupervisorHash -and $beforeSupervisorHash -ne $afterSupervisorHash)
     return [pscustomobject]@{ changed = $true; restart = $needsRestart }
+}
+
+function Publish-VerifiedLocalCommits {
+    $status = Invoke-Git @('status','--porcelain')
+    if ($status.exitCode -ne 0 -or $status.output) {
+        if ($status.output) { Write-CompanyLog '[PUBLISH-SKIP] Working tree is not clean; nothing is auto-pushed.' }
+        return $false
+    }
+
+    $fetch = Invoke-Git @('fetch','--quiet','origin','main')
+    if ($fetch.exitCode -ne 0) {
+        Write-CompanyLog "[PUBLISH-WARN] git fetch failed before push: $($fetch.output)"
+        return $false
+    }
+
+    $head = Invoke-Git @('rev-parse','HEAD')
+    $remote = Invoke-Git @('rev-parse','origin/main')
+    if ($head.exitCode -ne 0 -or $remote.exitCode -ne 0) { return $false }
+    if ($head.output.Trim() -eq $remote.output.Trim()) { return $true }
+
+    $base = Invoke-Git @('merge-base','HEAD','origin/main')
+    if ($base.exitCode -ne 0) { return $false }
+    $baseSha = $base.output.Trim()
+    $localSha = $head.output.Trim()
+    $remoteSha = $remote.output.Trim()
+
+    if ($baseSha -eq $localSha) {
+        Write-CompanyLog '[PUBLISH-SKIP] Remote main advanced; the next sync cycle will apply it before publishing.'
+        return $false
+    }
+
+    if ($baseSha -ne $remoteSha) {
+        $rebase = Invoke-Git @('rebase','origin/main')
+        if ($rebase.exitCode -ne 0) {
+            Invoke-Git @('rebase','--abort') | Out-Null
+            Write-CompanyLog '[PUBLISH-WARN] Rebase before push conflicted. Local verified commits were preserved and not pushed.'
+            return $false
+        }
+    }
+
+    $push = Invoke-Git @('push','origin','HEAD:main')
+    if ($push.exitCode -ne 0) {
+        Write-CompanyLog "[PUBLISH-WARN] Verified local commits could not be pushed: $($push.output)"
+        return $false
+    }
+    Write-CompanyLog '[PUBLISH] Verified local company commits pushed to origin/main.'
+    return $true
 }
 
 function Invoke-OneCompanyWorkUnit {
@@ -181,17 +281,6 @@ function Invoke-OneCompanyWorkUnit {
     }
 }
 
-function Test-CoreDecisionStop {
-    if (-not (Test-Path $workerStatePath)) { return $false }
-    try {
-        $state = Get-Content -Raw -Path $workerStatePath -Encoding UTF8 | ConvertFrom-Json
-        $reason = [string]$state.stopReason
-        return ($reason -eq 'core-decision-pending' -or $reason -eq 'core-decision-required')
-    } catch {
-        return $false
-    }
-}
-
 if (Test-Path $supervisorLockPath) {
     try {
         $existingPid = [int](Get-Content -Raw -Path $supervisorLockPath -Encoding UTF8).Trim()
@@ -204,9 +293,12 @@ if (Test-Path $supervisorLockPath) {
 }
 Write-Utf8NoBom -Path $supervisorLockPath -Text ([string]$PID)
 
+$nextAutonomousAt = [DateTimeOffset]::Now
+
 try {
     Write-CompanyLog "[START] Jaewoon Company supervisor. PID=$PID Repo=$repoRoot"
-    Write-CompanyLog '[AUTO] origin/main sync is enabled before every bounded company work unit.'
+    Write-CompanyLog "[AUTO] Remote sync every $SyncIntervalSeconds seconds; pending owner directives bypass the normal work interval."
+    Write-CompanyLog '[AUTO] Verified clean local commits are published to origin/main automatically.'
 
     while ($true) {
         $sync = Sync-Repository
@@ -216,13 +308,58 @@ try {
             break
         }
 
-        Invoke-OneCompanyWorkUnit | Out-Null
-        if (Test-CoreDecisionStop) {
-            Write-CompanyLog '[STOP] Core owner decision is required. Supervisor will wait for Han Jaewoon.'
-            break
+        if (Test-CoreDecisionPending) {
+            if (-not $waitingForCoreDecision) {
+                Write-CompanyLog '[WAIT] Core owner decision is pending. Supervisor remains alive and keeps syncing for the response.'
+                $waitingForCoreDecision = $true
+            }
+            Start-Sleep -Seconds ([Math]::Max(10, $SyncIntervalSeconds))
+            continue
+        }
+        if ($waitingForCoreDecision) {
+            Write-CompanyLog '[RESUME] Core decision cleared. Automatic work resumed.'
+            $waitingForCoreDecision = $false
+            $nextAutonomousAt = [DateTimeOffset]::Now
         }
 
-        Start-Sleep -Seconds ([Math]::Max(60, $IntervalMinutes * 60))
+        $directiveRevision = Get-DirectiveRevision
+        $completedDirectiveRevision = Get-CompletedDirectiveRevision
+        $directivePending = ($directiveRevision -gt $completedDirectiveRevision)
+        $now = [DateTimeOffset]::Now
+        $autonomousDue = ($now -ge $nextAutonomousAt)
+
+        if ($directivePending -or $autonomousDue) {
+            if ($directivePending) {
+                Write-CompanyLog "[DIRECTIVE] Revision $directiveRevision is pending. Running immediately ahead of autonomous plan."
+            }
+
+            Invoke-OneCompanyWorkUnit | Out-Null
+            $stopReason = Get-WorkerStopReason
+
+            if ($stopReason -eq 'core-decision-pending' -or $stopReason -eq 'core-decision-required') {
+                Write-CompanyLog '[WAIT] Worker reached a protected core decision. Supervisor stays alive for a synced owner response.'
+                $waitingForCoreDecision = $true
+                Start-Sleep -Seconds ([Math]::Max(10, $SyncIntervalSeconds))
+                continue
+            }
+
+            if (-not $stopReason) {
+                Publish-VerifiedLocalCommits | Out-Null
+            }
+
+            $nextAutonomousAt = [DateTimeOffset]::Now.AddMinutes([Math]::Max(1, $IntervalMinutes))
+            $directiveStillPending = ((Get-DirectiveRevision) -gt (Get-CompletedDirectiveRevision))
+            if ($directiveStillPending) {
+                if ($stopReason -eq 'no-runnable-free-provider') {
+                    Start-Sleep -Seconds ([Math]::Max(60, $SyncIntervalSeconds))
+                } else {
+                    Start-Sleep -Seconds ([Math]::Max(2, $UrgentRetrySeconds))
+                }
+                continue
+            }
+        }
+
+        Start-Sleep -Seconds ([Math]::Max(10, $SyncIntervalSeconds))
     }
 } finally {
     if (Test-Path $supervisorLockPath) {
@@ -242,7 +379,9 @@ if ($restartRequested) {
         '-File',"`"$PSCommandPath`"",
         '-ProjectPath',"`"$ProjectPath`"",
         '-IntervalMinutes',[string]$IntervalMinutes,
-        '-QuotaRetryHours',[string]$QuotaRetryHours
+        '-QuotaRetryHours',[string]$QuotaRetryHours,
+        '-SyncIntervalSeconds',[string]$SyncIntervalSeconds,
+        '-UrgentRetrySeconds',[string]$UrgentRetrySeconds
     )
     Start-Process -FilePath $powerShellExe -ArgumentList $arguments -WindowStyle Hidden | Out-Null
 }
