@@ -1,10 +1,6 @@
-name: Unity Local PC Android APK
+name: Unity Local PC Android APK (Legacy Manual)
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.build-requests/unity/animation-test.json'
   workflow_dispatch:
 
 permissions:
@@ -18,6 +14,11 @@ jobs:
         shell: powershell
 
     steps:
+      - name: Legacy runner notice
+        run: |
+          Write-Host '[LEGACY] This workflow requires the local Jaewoon PC self-hosted runner.'
+          Write-Host '[INFO] Normal remote test delivery now uses unity-cloud-android-test.yml on GitHub-hosted runners.'
+
       - name: Checkout requested commit
         uses: actions/checkout@v4
         with:
@@ -34,19 +35,13 @@ jobs:
           if (-not $line) { throw 'Unity editor version could not be read.' }
           $version = ($line -split ':', 2)[1].Trim()
           $unity = Join-Path $env:ProgramFiles "Unity\Hub\Editor\$version\Editor\Unity.exe"
-          if (-not (Test-Path $unity)) {
-            throw "Matching local Unity is not installed: $unity"
-          }
+          if (-not (Test-Path $unity)) { throw "Matching local Unity is not installed: $unity" }
 
           $android = Join-Path (Split-Path $unity -Parent) 'Data\PlaybackEngines\AndroidPlayer'
-          if (-not (Test-Path $android)) {
-            throw "Android Build Support missing for Unity $version"
-          }
+          if (-not (Test-Path $android)) { throw "Android Build Support missing for Unity $version" }
 
           "UNITY_EXE=$unity" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "PROJECT_PATH=$project" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Write-Host "[PASS] Unity=$unity"
-          Write-Host "[PASS] Project=$project"
 
       - name: Build APK with installed PC Unity
         run: |
@@ -63,41 +58,20 @@ jobs:
             if (Test-Path $log) { Get-Content $log -Tail 250 }
             throw "Unity Android build failed with exit code $code"
           }
-          if (Test-Path $log) { Get-Content $log -Tail 120 }
 
       - name: Verify and stage APK
         run: |
           $apk = Join-Path $env:PROJECT_PATH 'Build\animation-test.apk'
           if (-not (Test-Path $apk)) { throw "APK missing: $apk" }
           if ((Get-Item $apk).Length -le 0) { throw 'APK is empty.' }
-
           $dist = Join-Path $env:GITHUB_WORKSPACE 'dist'
           New-Item -ItemType Directory -Path $dist -Force | Out-Null
           Copy-Item $apk (Join-Path $dist 'animation-test.apk') -Force
-          $hash = (Get-FileHash $apk -Algorithm SHA256).Hash.ToLowerInvariant()
-          Set-Content -Path (Join-Path $dist 'animation-test.apk.sha256') -Value "$hash  animation-test.apk" -Encoding ascii
-          Set-Content -Path (Join-Path $dist 'commit-sha.txt') -Value $env:GITHUB_SHA -Encoding ascii
-          Write-Host "[PASS] APK size=$((Get-Item $apk).Length) sha256=$hash"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: animation-test-android-${{ github.sha }}
-          path: |
-            dist/animation-test.apk
-            dist/animation-test.apk.sha256
-            dist/commit-sha.txt
+          path: dist/animation-test.apk
           if-no-files-found: error
           retention-days: 14
-
-      - name: Publish fixed mobile test download
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: animation-test-latest
-          name: Animation Test Latest APK
-          prerelease: true
-          make_latest: false
-          files: |
-            dist/animation-test.apk
-            dist/animation-test.apk.sha256
-          fail_on_unmatched_files: true
