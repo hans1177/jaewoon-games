@@ -25,30 +25,40 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate company store secret and status
+      - name: Check company store secret exists
         shell: bash
         run: |
           set -euo pipefail
-          if [ -z "${COMPANY_STORE_HMAC_SECRET:-}" ]; then
-            echo "COMPANY_STORE_HMAC_SECRET is not configured"
-            exit 1
-          fi
-          if [ "${#COMPANY_STORE_HMAC_SECRET}" -lt 64 ]; then
-            echo "COMPANY_STORE_HMAC_SECRET must be at least 64 characters"
-            exit 1
-          fi
+          test -n "${COMPANY_STORE_HMAC_SECRET:-}"
+
+      - name: Check company store secret length
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${#COMPANY_STORE_HMAC_SECRET}" -ge 64
+
+      - name: Validate company status structure
+        shell: bash
+        run: |
+          set -euo pipefail
           node <<'NODE'
           const fs = require('fs');
-          const crypto = require('crypto');
-
-          const raw = fs.readFileSync('company-status.json');
-          const status = JSON.parse(raw.toString('utf8'));
-
+          const status = JSON.parse(fs.readFileSync('company-status.json', 'utf8'));
           if (status.version !== 1) throw new Error('unsupported company status version');
           if (!status.policy || !status.summary || !status.redevelopmentReview) {
             throw new Error('company status required sections are missing');
           }
+          console.log('company status structure: PASS');
+          NODE
 
+      - name: Sign company status
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const crypto = require('crypto');
+          const raw = fs.readFileSync('company-status.json');
           const secret = process.env.COMPANY_STORE_HMAC_SECRET;
           const digest = crypto.createHmac('sha256', secret).update(raw).digest('hex');
           const signature = {
@@ -59,7 +69,7 @@ jobs:
             hmac: digest
           };
           fs.writeFileSync('company-status.sig.json', JSON.stringify(signature, null, 2) + '\n');
-          console.log('company store integrity check: PASS');
+          console.log('company store signature: PASS');
           NODE
 
       - name: Upload signed company status
