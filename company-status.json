@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-08",
+  "policy": {
+    "webGames": "archive-read-only",
+    "webGameDevelopment": false,
+    "webGamesRemainPlayable": true,
+    "futurePrimaryTarget": "unity-android"
+  },
+  "summary": {
+    "webArchiveCount": 9,
+    "activeUnityProjects": 0,
+    "pendingApprovals": 0,
+    "testBuilds": 0
+  },
+  "projects": [],
+  "approvals": [],
+  "testBuilds": [],
+  "redevelopmentReview": {
+    "status": "waiting",
+    "scope": "existing-web-games",
+    "employees": ["planning", "development", "qa", "graphics", "balance"],
+    "directorAggregates": true,
+    "ownerFinalApproval": true,
+    "writeBackToWebGames": false,
+    "output": "unity-redevelopment-candidate-report"
+  }
+}
