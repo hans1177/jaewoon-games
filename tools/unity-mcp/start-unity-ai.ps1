@@ -1,5 +1,6 @@
-# 파일명: start-unity-ai.ps1
-# 역할: Unity MCP와 재운컴퍼니 자동 총괄 AI를 한 번에 시작한다.
+# File: start-unity-ai.ps1
+# Purpose: Start Unity MCP and the Jaewoon Company local AI runner.
+# Compatibility: Keep this file ASCII-only so Windows PowerShell 5.1 can parse it reliably.
 
 param(
     [string]$ProjectPath = '.\unity-games\daechung-rpg',
@@ -61,13 +62,34 @@ function Install-LoginAutoStart([string]$PowerShellExe, [string]$StartScript, [s
     Write-Host "[PASS] Windows login auto-start installed: $launcherPath"
 }
 
-function Start-CompanyRunner([string]$PowerShellExe, [string]$RunnerScript, [string]$Project) {
+function Get-ExistingCompanyRunner([string]$RepoRoot) {
+    $lockPath = Join-Path $RepoRoot '.jaewoon-company-ai.lock'
+    if (-not (Test-Path $lockPath)) { return $null }
+    try {
+        $runnerPid = [int](Get-Content -Raw -Path $lockPath -Encoding UTF8).Trim()
+        if ($runnerPid -gt 0) {
+            return Get-Process -Id $runnerPid -ErrorAction SilentlyContinue
+        }
+    } catch {}
+    return $null
+}
+
+function Start-CompanyRunner([string]$PowerShellExe, [string]$RunnerScript, [string]$Project, [string]$RepoRoot) {
     if (-not (Test-Path $RunnerScript)) {
         throw "Company AI runner not found: $RunnerScript"
     }
 
+    $existing = Get-ExistingCompanyRunner -RepoRoot $RepoRoot
+    if ($existing) {
+        Write-Host "[PASS] Jaewoon Company AI runner already active. PID=$($existing.Id)"
+        Write-Host "[INFO] Company log: $env:TEMP\jaewoon-company-ai.log"
+        return
+    }
+
     $outLog = Join-Path $env:TEMP 'jaewoon-company-ai-launch.out.log'
     $errLog = Join-Path $env:TEMP 'jaewoon-company-ai-launch.err.log'
+    Remove-Item $outLog,$errLog -Force -ErrorAction SilentlyContinue
+
     $arguments = @(
         '-NoProfile',
         '-ExecutionPolicy', 'Bypass',
@@ -78,15 +100,38 @@ function Start-CompanyRunner([string]$PowerShellExe, [string]$RunnerScript, [str
     $process = Start-Process -FilePath $PowerShellExe -ArgumentList $arguments -WindowStyle Hidden -PassThru `
         -RedirectStandardOutput $outLog -RedirectStandardError $errLog
 
-    Start-Sleep -Milliseconds 700
-    if ($process.HasExited -and $process.ExitCode -ne 0) {
-        Write-Host "[FAIL] Company AI runner exited immediately. code=$($process.ExitCode)"
-        if (Test-Path $errLog) { Get-Content $errLog -Tail 30 }
+    $companyLog = Join-Path $env:TEMP 'jaewoon-company-ai.log'
+    $started = $false
+    for ($i = 0; $i -lt 20; $i++) {
+        Start-Sleep -Milliseconds 250
+        if ($process.HasExited) { break }
+        if (Test-Path $companyLog) {
+            $tail = Get-Content $companyLog -Tail 20 -ErrorAction SilentlyContinue | Out-String
+            if ($tail -match ("\[START\].*PID=" + [regex]::Escape([string]$process.Id))) {
+                $started = $true
+                break
+            }
+        }
+    }
+
+    if (-not $started) {
+        if (-not $process.HasExited) {
+            Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+        }
+        Write-Host '[FAIL] Company AI runner did not confirm startup.'
+        if (Test-Path $errLog) {
+            Write-Host '--- launch stderr ---'
+            Get-Content $errLog -Tail 80
+        }
+        if (Test-Path $outLog) {
+            Write-Host '--- launch stdout ---'
+            Get-Content $outLog -Tail 80
+        }
         throw 'Company AI runner failed to start.'
     }
 
-    Write-Host "[PASS] Jaewoon Company AI runner started. PID=$($process.Id)"
-    Write-Host "[INFO] Company log: $env:TEMP\jaewoon-company-ai.log"
+    Write-Host "[PASS] Jaewoon Company AI runner started and confirmed. PID=$($process.Id)"
+    Write-Host "[INFO] Company log: $companyLog"
 }
 
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
@@ -101,7 +146,7 @@ if (-not (Test-Path $resolvedProject)) {
 
 Write-Host "[INFO] Project: $resolvedProject"
 
-# MCP Unity 패키지, uv, Unity 프로젝트 열기까지 기존 설치 스크립트에 맡긴다.
+# Reuse the existing Unity/MCP setup path.
 & $setupScript -ProjectPath $resolvedProject -InstallUv -OpenUnity
 
 $uvx = Resolve-Uvx
@@ -110,7 +155,7 @@ if (-not $uvx) {
 }
 Write-Host "[PASS] uvx: $uvx"
 
-# VS Code를 열지 않아도 다른 로컬 MCP 클라이언트가 같은 설정을 참조할 수 있게 워크스페이스 설정은 유지한다.
+# Keep the local MCP workspace config available to MCP-capable clients.
 $vscodeDir = Join-Path $repoRoot '.vscode'
 $mcpConfig = Join-Path $vscodeDir 'mcp.json'
 if (-not (Test-Path $vscodeDir)) {
@@ -133,7 +178,7 @@ if (-not (Test-Path $mcpConfig)) {
     Write-Host '[PASS] VS Code MCP workspace config exists.'
 }
 
-# Unity MCP 서버는 localhost에만 열어 외부 노출을 막는다.
+# Keep MCP loopback-only.
 if (Test-Port 8080) {
     Write-Host '[PASS] Unity MCP HTTP port 8080 is already listening.'
 } else {
@@ -180,17 +225,12 @@ if ($InstallAutoStart) {
 }
 
 if (-not $NoCompanyRunner) {
-    Start-CompanyRunner -PowerShellExe $powerShellExe -RunnerScript $runnerScript -Project $ProjectPath
+    Start-CompanyRunner -PowerShellExe $powerShellExe -RunnerScript $runnerScript -Project $ProjectPath -RepoRoot $repoRoot
 }
 
 Write-Host ''
-Write-Host 'UNITY:'
-Write-Host 'MCP 창은 닫아도 된다. Unity Editor와 MCP 세션만 살아 있으면 된다.'
-Write-Host ''
-Write-Host 'COMPANY:'
-Write-Host '재운컴퍼니 총괄 AI는 Codex -> Gemini CLI -> Copilot CLI -> CodeBuddy 순서로 사용 가능 상태를 확인한다.'
-Write-Host '무료/현재 구독 포함 사용량이 막히거나 인증이 실패하면 다음 총괄로 순환한다.'
-Write-Host '유료 API 키는 자동 총괄 실행에서 제거하며, 추가 크레딧 구매/플랜 업그레이드는 금지한다.'
-Write-Host '핵심 결정이 필요한 경우에만 한재운 결정을 기다리고 자동 작업을 멈춘다.'
-Write-Host ''
+Write-Host 'UNITY: The MCP window may be closed. Keep the Unity Editor and MCP session active.'
+Write-Host 'COMPANY: The local director rotates Codex -> Gemini CLI -> Copilot CLI -> CodeBuddy when needed.'
+Write-Host 'COST: Paid API environment variables are removed from child runs; automatic credit purchase or plan upgrade is forbidden.'
+Write-Host 'OWNER: Automation stops only when a core owner decision is required.'
 Write-Host '[READY] Local Unity + Jaewoon Company AI is configured.'
