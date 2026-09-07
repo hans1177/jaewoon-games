@@ -1,16 +1,22 @@
 {
   "version": 1,
-  "revision": 1,
+  "revision": 2,
   "updatedAt": "2026-09-08",
   "priority": "owner-immediate",
-  "instruction": "When Han Jaewoon gives a new company instruction, execute that instruction before the autonomous plan. Move immediately and keep working in bounded verified work units until the instruction is complete. Only protected core decisions, safety/cost policy, read-only archive rules, or an actual technical blocker may pause it.",
+  "instruction": "Make remote owner requests the primary operating path. When Han Jaewoon requests a game or change from outside the PC, execute it ahead of the autonomous plan, avoid requiring local PC commands for the normal flow, and when a Unity work unit becomes externally testable, create a cloud Android build request, build on GitHub-hosted infrastructure, publish a verified APK prerelease, update company-status testBuilds, and expose the real download link on the homepage. Keep working in bounded verified units until the request is complete. Local Unity/MCP and self-hosted PC workflows are optional recovery paths only, not the default. Never claim cloud build readiness without the required Unity license secrets and never use paid overage or paid runners automatically.",
   "rules": [
     "new-owner-instruction-overrides-autonomous-plan",
-    "start-as-soon-as-local-supervisor-syncs-the-new-revision",
+    "remote-request-flow-does-not-require-local-pc-by-default",
+    "github-direct-changes-and-cloud-validation-first",
+    "externally-testable-unity-work-creates-build-request",
+    "github-hosted-android-test-build-first",
+    "publish-only-real-non-empty-apk-with-sha256",
+    "homepage-download-link-requires-build-evidence",
+    "local-unity-mcp-is-optional-recovery-path",
+    "self-hosted-pc-build-is-legacy-manual-only",
     "continue-immediate-work-units-until-verified-complete",
-    "do-not-wait-for-the-normal-autonomous-work-interval",
     "core-decisions-still-require-owner-decision",
-    "paid-ai-and-paid-overage-remain-forbidden",
+    "paid-ai-paid-overage-and-paid-runners-remain-forbidden",
     "web-games-remain-read-only"
   ]
 }
