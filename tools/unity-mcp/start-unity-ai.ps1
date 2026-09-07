@@ -230,7 +230,7 @@ if (-not $NoCompanyRunner) {
 
 Write-Host ''
 Write-Host 'UNITY: The MCP window may be closed. Keep the Unity Editor and MCP session active.'
-Write-Host 'COMPANY: The local director rotates Codex -> Gemini CLI -> Copilot CLI -> CodeBuddy when needed.'
+Write-Host 'COMPANY: The local director rotates Codex -> Antigravity -> CodeBuddy -> Copilot (hard-stop confirmed only) when needed.'
 Write-Host 'COST: Paid API environment variables are removed from child runs; automatic credit purchase or plan upgrade is forbidden.'
 Write-Host 'OWNER: Automation stops only when a core owner decision is required.'
 Write-Host '[READY] Local Unity + Jaewoon Company AI is configured.'
