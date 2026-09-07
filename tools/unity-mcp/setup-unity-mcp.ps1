@@ -55,6 +55,11 @@ function Resolve-Uv {
     return $null
 }
 
+function Write-Utf8NoBom([string]$Path, [string]$Content) {
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+    [System.IO.File]::WriteAllText($Path, $Content, $utf8NoBom)
+}
+
 function Test-UnityProjectAlreadyOpen([string]$Project) {
     $normalized = [System.IO.Path]::GetFullPath($Project).TrimEnd('\').ToLowerInvariant()
     try {
@@ -112,9 +117,9 @@ if (-not (Test-Path $projectVersionPath)) {
 }
 
 # MCP 패키지 연결
-# 프로젝트 안에 임베디드 패키지가 있으면 그 복사본을 우선 사용한다.
-# 이 경우 manifest의 Git URL 의존성은 제거해서 같은 패키지를 두 경로에서 동시에 읽지 않게 한다.
-$manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
+# Unity Package Manager는 manifest.json 앞의 UTF-8 BOM을 거부할 수 있으므로 항상 BOM 없이 다시 쓴다.
+$manifestText = [System.IO.File]::ReadAllText($manifestPath).TrimStart([char]0xFEFF)
+$manifest = $manifestText | ConvertFrom-Json
 if (-not $manifest.dependencies) {
     $manifest | Add-Member -MemberType NoteProperty -Name dependencies -Value ([pscustomobject]@{})
 }
@@ -123,8 +128,9 @@ if (Test-Path $embeddedPackageJson) {
     $existing = $manifest.dependencies.PSObject.Properties[$PackageName]
     if ($existing) {
         $manifest.dependencies.PSObject.Properties.Remove($PackageName)
-        $manifest | ConvertTo-Json -Depth 32 | Set-Content -Path $manifestPath -Encoding utf8
     }
+    $manifestJson = $manifest | ConvertTo-Json -Depth 32
+    Write-Utf8NoBom $manifestPath $manifestJson
     Write-Host "[PASS] MCP for Unity embedded package detected: $embeddedPackagePath"
 } else {
     $existing = $manifest.dependencies.PSObject.Properties[$PackageName]
@@ -134,7 +140,8 @@ if (Test-Path $embeddedPackageJson) {
         $manifest.dependencies | Add-Member -MemberType NoteProperty -Name $PackageName -Value $PackageUrl
     }
 
-    $manifest | ConvertTo-Json -Depth 32 | Set-Content -Path $manifestPath -Encoding utf8
+    $manifestJson = $manifest | ConvertTo-Json -Depth 32
+    Write-Utf8NoBom $manifestPath $manifestJson
     Write-Host "[PASS] MCP for Unity pinned: $PackageUrl"
 }
 
