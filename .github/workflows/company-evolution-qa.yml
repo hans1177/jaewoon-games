@@ -7,6 +7,8 @@ on:
       - index.html
       - artbook.html
       - game-artbooks.json
+      - artbook-submission-queue.json
+      - artbook-gate-status.json
       - public-game-health.json
       - public-release-baselines.json
       - company-learning/**
@@ -14,6 +16,7 @@ on:
       - assets/homepage-enhancements.js
       - assets/company-quality-bar.js
       - assets/vibe-company-orchestration-bridge.js
+      - tools/artbook-gate.mjs
       - tools/public-game-health.mjs
       - tools/asset-health-check.mjs
       - tools/update-release-baselines.mjs
@@ -37,6 +40,7 @@ jobs:
           node --input-type=module --check < assets/homepage-enhancements.js
           node --input-type=module --check < assets/company-quality-bar.js
           node --input-type=module --check < assets/vibe-company-orchestration-bridge.js
+          node --check tools/artbook-gate.mjs
           node --check tools/public-game-health.mjs
           node --check tools/asset-health-check.mjs
           node --check tools/update-release-baselines.mjs
@@ -48,6 +52,7 @@ jobs:
           const fs=require('fs');
           const data=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
           if(data?.policy?.maxCutsPerEdition!==10)throw new Error('artbook max cuts must be 10');
+          if(data?.policy?.homepageVisibilityIsProductionApproval!==false)throw new Error('homepage visibility must not equal production approval');
           for(const book of data.artbooks||[]){
             if((book.cuts||[]).length>10)throw new Error(`${book.id}: more than 10 cuts`);
             if(book.published===true){
@@ -69,8 +74,28 @@ jobs:
           fi
           grep -Fq '/assets/homepage-enhancements.js' index.html
           grep -Fq 'game-artbooks.json' assets/homepage-enhancements.js
-          grep -Fq '부서 AI 실제 검토' assets/homepage-enhancements.js
+          grep -Fq '다른 게임 아트북' assets/homepage-enhancements.js
+          grep -Fq 'preArtbookDetails' assets/homepage-enhancements.js
+          grep -Fq '하루 1권 · 5개 부서 협업' assets/homepage-enhancements.js
+          grep -Fq '웹 실행 양호' assets/homepage-enhancements.js
+          if grep -Fq '건강 ${h.score}' assets/homepage-enhancements.js; then
+            echo 'numeric health score leaked into homepage badge' >&2
+            exit 1
+          fi
           echo 'HOMEPAGE_ARTBOOK_WIRING=PASS'
+
+      - name: Validate artbook section gate contract
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('artbook-submission-queue.json','utf8'));
+          const gate=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8'));
+          const roles=['planning','graphics','development','qa','balance'];
+          if(JSON.stringify(q.requiredRoles)!==JSON.stringify(roles))throw new Error('required artbook roles changed');
+          if(gate.directorMayAuthorMissingSections!==false)throw new Error('director ghostwriting guard missing');
+          if(gate.readyCount<gate.requiredCount&&gate.readyForDirectorAssembly!==false)throw new Error('director assembly opened before 5/5');
+          console.log('ARTBOOK_SECTION_GATE=PASS');
+          NODE
 
       - name: Validate learning and rollback contracts
         run: |
