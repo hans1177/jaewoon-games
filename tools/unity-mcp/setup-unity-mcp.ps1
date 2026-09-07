@@ -1,3 +1,6 @@
+# 파일명: setup-unity-mcp.ps1
+# 역할: Unity 프로젝트에 MCP for Unity를 안전하게 연결하고 로컬 AI 제어 환경을 준비한다.
+
 param(
     [Parameter(Mandatory = $true)]
     [string]$ProjectPath,
@@ -65,7 +68,7 @@ function Test-UnityProjectAlreadyOpen([string]$Project) {
             }
         }
     } catch {
-        # If process inspection is unavailable, let Unity itself handle launch validation.
+        # 프로세스 조회가 막힌 환경에서는 Unity 자체 중복 실행 검사를 사용한다.
     }
     return $false
 }
@@ -79,6 +82,8 @@ Write-Host "[PASS] Unity detected: $($unity.Version)"
 $resolvedProject = Resolve-UncreatedPath $ProjectPath
 $manifestPath = Join-Path $resolvedProject 'Packages\manifest.json'
 $projectVersionPath = Join-Path $resolvedProject 'ProjectSettings\ProjectVersion.txt'
+$embeddedPackagePath = Join-Path $resolvedProject "Packages\$PackageName"
+$embeddedPackageJson = Join-Path $embeddedPackagePath 'package.json'
 
 if (-not (Test-Path $resolvedProject)) {
     $parent = Split-Path $resolvedProject -Parent
@@ -106,21 +111,34 @@ if (-not (Test-Path $projectVersionPath)) {
     throw "Unity ProjectSettings not found after project creation/open: $projectVersionPath"
 }
 
+# MCP 패키지 연결
+# 프로젝트 안에 임베디드 패키지가 있으면 그 복사본을 우선 사용한다.
+# 이 경우 manifest의 Git URL 의존성은 제거해서 같은 패키지를 두 경로에서 동시에 읽지 않게 한다.
 $manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
 if (-not $manifest.dependencies) {
     $manifest | Add-Member -MemberType NoteProperty -Name dependencies -Value ([pscustomobject]@{})
 }
 
-$existing = $manifest.dependencies.PSObject.Properties[$PackageName]
-if ($existing) {
-    $existing.Value = $PackageUrl
+if (Test-Path $embeddedPackageJson) {
+    $existing = $manifest.dependencies.PSObject.Properties[$PackageName]
+    if ($existing) {
+        $manifest.dependencies.PSObject.Properties.Remove($PackageName)
+        $manifest | ConvertTo-Json -Depth 32 | Set-Content -Path $manifestPath -Encoding utf8
+    }
+    Write-Host "[PASS] MCP for Unity embedded package detected: $embeddedPackagePath"
 } else {
-    $manifest.dependencies | Add-Member -MemberType NoteProperty -Name $PackageName -Value $PackageUrl
+    $existing = $manifest.dependencies.PSObject.Properties[$PackageName]
+    if ($existing) {
+        $existing.Value = $PackageUrl
+    } else {
+        $manifest.dependencies | Add-Member -MemberType NoteProperty -Name $PackageName -Value $PackageUrl
+    }
+
+    $manifest | ConvertTo-Json -Depth 32 | Set-Content -Path $manifestPath -Encoding utf8
+    Write-Host "[PASS] MCP for Unity pinned: $PackageUrl"
 }
 
-$manifest | ConvertTo-Json -Depth 32 | Set-Content -Path $manifestPath -Encoding utf8
-Write-Host "[PASS] MCP for Unity pinned: $PackageUrl"
-
+# uv 준비
 $uvPath = Resolve-Uv
 if (-not $uvPath -and $InstallUv) {
     $winget = Get-Command winget -ErrorAction SilentlyContinue
@@ -144,13 +162,22 @@ if ($uvPath) {
     Write-Host '[NEEDS-LOCAL] uv was not detected. Open a new PowerShell and run: uv --version'
 }
 
+# Android 모듈 확인
 $androidRoot = Join-Path (Split-Path $unity.Exe -Parent) 'Data\PlaybackEngines\AndroidPlayer'
 if (Test-Path $androidRoot) {
-    Write-Host '[PASS] Android Build Support detected.'
+    $sdk = Test-Path (Join-Path $androidRoot 'SDK')
+    $ndk = Test-Path (Join-Path $androidRoot 'NDK')
+    $jdk = Test-Path (Join-Path $androidRoot 'OpenJDK')
+    if ($sdk -and $ndk -and $jdk) {
+        Write-Host '[PASS] Android SDK / NDK / OpenJDK detected.'
+    } else {
+        Write-Host "[NEEDS-LOCAL] Android components incomplete. SDK=$sdk NDK=$ndk OpenJDK=$jdk"
+    }
 } else {
-    Write-Host '[NEEDS-LOCAL] Android Build Support missing: Unity Hub > Installs > Unity 6.6 > Add modules > Android Build Support + Android SDK & NDK Tools + OpenJDK.'
+    Write-Host '[NEEDS-LOCAL] Android Build Support missing: Unity Hub > Installs > Unity 6.6 > Add modules.'
 }
 
+# Unity 실행
 if ($OpenUnity) {
     if (Test-UnityProjectAlreadyOpen $resolvedProject) {
         Write-Host '[PASS] Unity project is already open. Duplicate launch skipped.'
