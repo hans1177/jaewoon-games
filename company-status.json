@@ -1,11 +1,21 @@
 {
-  "version": 1,
+  "version": 2,
   "updatedAt": "2026-09-08",
   "policy": {
     "webGames": "archive-read-only",
     "webGameDevelopment": false,
     "webGamesRemainPlayable": true,
-    "futurePrimaryTarget": "unity-android"
+    "futurePrimaryTarget": "unity-android",
+    "aiDirector": {
+      "mode": "rotating-local",
+      "providers": ["codex", "gemini", "copilot", "codebuddy"],
+      "rotationPolicy": "stay-until-quota-auth-or-repeated-failure",
+      "paidOverageAllowed": false,
+      "paidApiKeysAllowed": false,
+      "manualVsCodeDailyRequired": false,
+      "stopOnCoreDecision": true,
+      "autoPush": false
+    }
   },
   "summary": {
     "webArchiveCount": 11,
@@ -46,6 +56,8 @@
     "employees": ["planning", "development", "qa", "graphics", "balance"],
     "directorAggregates": true,
     "ownerFinalApproval": true,
+    "ownerApprovalScope": "core-decisions-only",
+    "directorOperationalAuthority": true,
     "writeBackToWebGames": false,
     "output": "unity-redevelopment-candidate-report",
     "totalGames": 11,
