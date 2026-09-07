@@ -1,6 +1,6 @@
-// Validates repo/local asset presence, license policy, actor animation evidence, and external source reachability.
+// 파일명: tools/asset-health-check.mjs
+// 에셋 로컬 존재, 라이선스 정책, 배우 애니메이션 근거, 외부 출처 도달 여부를 검증한다.
 import fs from 'node:fs';
-import path from 'node:path';
 
 const manifest=JSON.parse(fs.readFileSync('assets/asset-manifest.json','utf8'));
 const now=new Date().toISOString();
@@ -12,14 +12,33 @@ async function sourceReachable(url){
   if(!url)return null;
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),10000);
+
   try{
-    let response=await fetch(url,{method:'HEAD',redirect:'follow',signal:controller.signal,headers:{'User-Agent':'jaewoon-games-asset-health'}});
+    let response=await fetch(url,{
+      method:'HEAD',
+      redirect:'follow',
+      signal:controller.signal,
+      headers:{'User-Agent':'jaewoon-games-asset-health'}
+    });
+
     if(response.status===405||response.status===403){
-      response=await fetch(url,{method:'GET',redirect:'follow',signal:controller.signal,headers:{'User-Agent':'jaewoon-games-asset-health','Range':'bytes=0-0'}});
+      response=await fetch(url,{
+        method:'GET',
+        redirect:'follow',
+        signal:controller.signal,
+        headers:{
+          'User-Agent':'jaewoon-games-asset-health',
+          'Range':'bytes=0-0'
+        }
+      });
     }
+
     return {ok:response.ok||response.status===206,status:response.status,finalUrl:response.url};
-  }catch(error){return {ok:false,status:0,error:String(error?.message||error)}};
-  finally{clearTimeout(timer);}
+  }catch(error){
+    return {ok:false,status:0,error:String(error?.message||error)};
+  }finally{
+    clearTimeout(timer);
+  }
 }
 
 for(const asset of manifest.assets||[]){
@@ -36,16 +55,39 @@ for(const asset of manifest.assets||[]){
   );
   const source=await sourceReachable(asset.sourceUrl);
   const healthy=licenseOk&&animationOk&&(localExists!==false)&&(source?.ok!==false);
-  results.push({id:asset.id,name:asset.name||asset.id,actor,license,licenseOk,verifiedAnimation:asset.verifiedAnimation===true,animationOk,localPath:localPath||null,localExists,sourceUrl:asset.sourceUrl||null,source,healthy});
+
+  results.push({
+    id:asset.id,
+    name:asset.name||asset.id,
+    actor,
+    license,
+    licenseOk,
+    verifiedAnimation:asset.verifiedAnimation===true,
+    animationOk,
+    localPath:localPath||null,
+    localExists,
+    sourceUrl:asset.sourceUrl||null,
+    source,
+    healthy
+  });
 }
 
 const output={
   version:1,
   updatedAt:now,
-  policy:{blockedLicenses:[...blocked],actorsRequireVerifiedMovementAnimation:true,externalSourceCheck:true},
-  summary:{total:results.length,healthy:results.filter(x=>x.healthy).length,unhealthy:results.filter(x=>!x.healthy).length},
+  policy:{
+    blockedLicenses:[...blocked],
+    actorsRequireVerifiedMovementAnimation:true,
+    externalSourceCheck:true
+  },
+  summary:{
+    total:results.length,
+    healthy:results.filter(x=>x.healthy).length,
+    unhealthy:results.filter(x=>!x.healthy).length
+  },
   assets:results
 };
+
 fs.writeFileSync('asset-health.json',JSON.stringify(output,null,2)+'\n');
 console.log(`ASSET_HEALTH_TOTAL=${results.length}`);
 console.log(`ASSET_HEALTH_UNHEALTHY=${output.summary.unhealthy}`);
