@@ -1,0 +1,75 @@
+name: Public Game Health
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */12 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: public-game-health-main
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Install browser test runtime
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Start local public site
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/jaewoon-public-server.log 2>&1 &
+          echo $! > /tmp/jaewoon-public-server.pid
+          sleep 2
+          curl --fail --silent http://127.0.0.1:4173/ >/dev/null
+
+      - name: Smoke-play every homepage web game
+        env:
+          PUBLIC_BASE_URL: http://127.0.0.1:4173
+        run: node tools/public-game-health.mjs
+
+      - name: Check asset sources licenses and animation evidence
+        continue-on-error: true
+        run: node tools/asset-health-check.mjs
+
+      - name: Select verified rollback baselines
+        run: node tools/update-release-baselines.mjs
+
+      - name: Check public homepage reachability
+        continue-on-error: true
+        run: curl --fail --location --retry 2 --max-time 20 https://jaewoon-games.pages.dev/ >/dev/null
+
+      - name: Upload health evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-game-health-${{ github.run_id }}
+          path: |
+            qa-artifacts/public-game-health/
+            public-game-health.json
+            asset-health.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Persist health and bug memory when changed
+        run: |
+          git config user.name "jaewoon-company-ai"
+          git config user.email "actions@users.noreply.github.com"
+          git add public-game-health.json public-release-baselines.json asset-health.json company-learning/bug-memory.json
+          if git diff --cached --quiet; then
+            echo "No health-state changes."
+            exit 0
+          fi
+          git commit -m "qa-health: record public game monitoring [skip ci]"
+          git pull --rebase origin main
+          git push origin main
