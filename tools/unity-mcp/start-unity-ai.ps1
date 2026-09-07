@@ -1,5 +1,5 @@
 # File: start-unity-ai.ps1
-# Purpose: Start Unity MCP and the Jaewoon Company local AI runner.
+# Purpose: Start Unity MCP and the self-updating Jaewoon Company supervisor.
 # Compatibility: Keep this file ASCII-only so Windows PowerShell 5.1 can parse it reliably.
 
 param(
@@ -62,29 +62,48 @@ function Install-LoginAutoStart([string]$PowerShellExe, [string]$StartScript, [s
     Write-Host "[PASS] Windows login auto-start installed: $launcherPath"
 }
 
-function Get-ExistingCompanyRunner([string]$RepoRoot) {
-    $lockPath = Join-Path $RepoRoot '.jaewoon-company-ai.lock'
+function Get-ExistingCompanySupervisor([string]$RepoRoot) {
+    $lockPath = Join-Path $RepoRoot '.jaewoon-company-supervisor.lock'
     if (-not (Test-Path $lockPath)) { return $null }
     try {
-        $runnerPid = [int](Get-Content -Raw -Path $lockPath -Encoding UTF8).Trim()
-        if ($runnerPid -gt 0) {
-            return Get-Process -Id $runnerPid -ErrorAction SilentlyContinue
+        $supervisorPid = [int](Get-Content -Raw -Path $lockPath -Encoding UTF8).Trim()
+        if ($supervisorPid -gt 0) {
+            return Get-Process -Id $supervisorPid -ErrorAction SilentlyContinue
         }
     } catch {}
     return $null
 }
 
-function Start-CompanyRunner([string]$PowerShellExe, [string]$RunnerScript, [string]$Project, [string]$RepoRoot) {
-    if (-not (Test-Path $RunnerScript)) {
-        throw "Company AI runner not found: $RunnerScript"
+function Stop-LegacyCompanyRunner([string]$RepoRoot) {
+    $lockPath = Join-Path $RepoRoot '.jaewoon-company-ai.lock'
+    if (-not (Test-Path $lockPath)) { return }
+    try {
+        $runnerPid = [int](Get-Content -Raw -Path $lockPath -Encoding UTF8).Trim()
+        if ($runnerPid -gt 0) {
+            $process = Get-Process -Id $runnerPid -ErrorAction SilentlyContinue
+            if ($process) {
+                Stop-Process -Id $runnerPid -Force -ErrorAction SilentlyContinue
+                Start-Sleep -Milliseconds 250
+                Write-Host "[INFO] Legacy company runner stopped for supervisor migration. PID=$runnerPid"
+            }
+        }
+    } catch {}
+    Remove-Item $lockPath -Force -ErrorAction SilentlyContinue
+}
+
+function Start-CompanySupervisor([string]$PowerShellExe, [string]$SupervisorScript, [string]$Project, [string]$RepoRoot) {
+    if (-not (Test-Path $SupervisorScript)) {
+        throw "Company supervisor not found: $SupervisorScript"
     }
 
-    $existing = Get-ExistingCompanyRunner -RepoRoot $RepoRoot
+    $existing = Get-ExistingCompanySupervisor -RepoRoot $RepoRoot
     if ($existing) {
-        Write-Host "[PASS] Jaewoon Company AI runner already active. PID=$($existing.Id)"
+        Write-Host "[PASS] Jaewoon Company supervisor already active. PID=$($existing.Id)"
         Write-Host "[INFO] Company log: $env:TEMP\jaewoon-company-ai.log"
         return
     }
+
+    Stop-LegacyCompanyRunner -RepoRoot $RepoRoot
 
     $outLog = Join-Path $env:TEMP 'jaewoon-company-ai-launch.out.log'
     $errLog = Join-Path $env:TEMP 'jaewoon-company-ai-launch.err.log'
@@ -93,7 +112,7 @@ function Start-CompanyRunner([string]$PowerShellExe, [string]$RunnerScript, [str
     $arguments = @(
         '-NoProfile',
         '-ExecutionPolicy', 'Bypass',
-        '-File', "`"$RunnerScript`"",
+        '-File', "`"$SupervisorScript`"",
         '-ProjectPath', "`"$Project`""
     )
 
@@ -102,12 +121,12 @@ function Start-CompanyRunner([string]$PowerShellExe, [string]$RunnerScript, [str
 
     $companyLog = Join-Path $env:TEMP 'jaewoon-company-ai.log'
     $started = $false
-    for ($i = 0; $i -lt 20; $i++) {
+    for ($i = 0; $i -lt 24; $i++) {
         Start-Sleep -Milliseconds 250
         if ($process.HasExited) { break }
         if (Test-Path $companyLog) {
-            $tail = Get-Content $companyLog -Tail 20 -ErrorAction SilentlyContinue | Out-String
-            if ($tail -match ("\[START\].*PID=" + [regex]::Escape([string]$process.Id))) {
+            $tail = Get-Content $companyLog -Tail 30 -ErrorAction SilentlyContinue | Out-String
+            if ($tail -match ("\[START\] Jaewoon Company supervisor\. PID=" + [regex]::Escape([string]$process.Id))) {
                 $started = $true
                 break
             }
@@ -118,7 +137,7 @@ function Start-CompanyRunner([string]$PowerShellExe, [string]$RunnerScript, [str
         if (-not $process.HasExited) {
             Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
         }
-        Write-Host '[FAIL] Company AI runner did not confirm startup.'
+        Write-Host '[FAIL] Company supervisor did not confirm startup.'
         if (Test-Path $errLog) {
             Write-Host '--- launch stderr ---'
             Get-Content $errLog -Tail 80
@@ -127,17 +146,18 @@ function Start-CompanyRunner([string]$PowerShellExe, [string]$RunnerScript, [str
             Write-Host '--- launch stdout ---'
             Get-Content $outLog -Tail 80
         }
-        throw 'Company AI runner failed to start.'
+        throw 'Company supervisor failed to start.'
     }
 
-    Write-Host "[PASS] Jaewoon Company AI runner started and confirmed. PID=$($process.Id)"
+    Write-Host "[PASS] Jaewoon Company supervisor started and confirmed. PID=$($process.Id)"
+    Write-Host '[PASS] Automatic origin/main sync enabled before each company work unit.'
     Write-Host "[INFO] Company log: $companyLog"
 }
 
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $resolvedProject = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $ProjectPath))
 $setupScript = Join-Path $PSScriptRoot 'setup-unity-mcp.ps1'
-$runnerScript = Join-Path $PSScriptRoot 'run-company-ai.ps1'
+$supervisorScript = Join-Path $PSScriptRoot 'run-company-supervisor.ps1'
 $powerShellExe = Get-CurrentPowerShellExe
 
 if (-not (Test-Path $resolvedProject)) {
@@ -225,11 +245,12 @@ if ($InstallAutoStart) {
 }
 
 if (-not $NoCompanyRunner) {
-    Start-CompanyRunner -PowerShellExe $powerShellExe -RunnerScript $runnerScript -Project $ProjectPath -RepoRoot $repoRoot
+    Start-CompanySupervisor -PowerShellExe $powerShellExe -SupervisorScript $supervisorScript -Project $ProjectPath -RepoRoot $repoRoot
 }
 
 Write-Host ''
 Write-Host 'UNITY: The MCP window may be closed. Keep the Unity Editor and MCP session active.'
+Write-Host 'SYNC: The company supervisor fetches origin/main before every work unit and safely applies remote updates when the tree is clean.'
 Write-Host 'COMPANY: The local director rotates Codex -> Antigravity -> CodeBuddy -> Copilot (hard-stop confirmed only) when needed.'
 Write-Host 'COST: Paid API environment variables are removed from child runs; automatic credit purchase or plan upgrade is forbidden.'
 Write-Host 'OWNER: Automation stops only when a core owner decision is required.'
