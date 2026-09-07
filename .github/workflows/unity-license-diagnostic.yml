@@ -1,0 +1,69 @@
+name: Unity License Diagnostic
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.build-requests/unity-license-diagnostic.request'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Diagnose UNITY_LICENSE shape without exposing secret
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os, re
+
+          license_text = os.environ.get('UNITY_LICENSE', '').strip()
+          email = os.environ.get('UNITY_EMAIL', '').strip()
+          password = os.environ.get('UNITY_PASSWORD', '')
+
+          print(f'UNITY_EMAIL_PRESENT={bool(email)}')
+          print(f'UNITY_PASSWORD_PRESENT={bool(password)}')
+          print(f'UNITY_LICENSE_PRESENT={bool(license_text)}')
+          print(f'UNITY_LICENSE_LENGTH={len(license_text)}')
+
+          xml_like = license_text.startswith('<?xml') or license_text.startswith('<root') or license_text.startswith('<')
+          has_developer_data = 'DeveloperData' in license_text
+          has_unity_marker = 'Unity' in license_text or 'unity' in license_text
+          serial_like = bool(re.fullmatch(r'[A-Za-z0-9]{2,8}(?:-[A-Za-z0-9]{3,10}){2,8}', license_text))
+
+          print(f'XML_LIKE={xml_like}')
+          print(f'HAS_DEVELOPER_DATA={has_developer_data}')
+          print(f'HAS_UNITY_MARKER={has_unity_marker}')
+          print(f'SERIAL_LIKE={serial_like}')
+
+          if not license_text:
+              classification = 'MISSING'
+          elif serial_like and not xml_like:
+              classification = 'SERIAL_OR_TOKEN_NOT_ULF'
+          elif xml_like and has_developer_data and len(license_text) >= 500:
+              classification = 'ULF_LIKELY'
+          else:
+              classification = 'INVALID_OR_INCOMPLETE_ULF'
+
+          print(f'CLASSIFICATION={classification}')
+          print('SECRET_CONTENT_NOT_PRINTED=true')
+
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as f:
+              f.write('## Unity Personal license diagnostic\n')
+              f.write(f'- Classification: **{classification}**\n')
+              f.write(f'- License length: **{len(license_text)}** characters\n')
+              f.write(f'- XML-like: **{xml_like}**\n')
+              f.write(f'- DeveloperData present: **{has_developer_data}**\n')
+              f.write('- Secret contents were not printed.\n')
+
+          if classification != 'ULF_LIKELY':
+              raise SystemExit('UNITY_LICENSE is not shaped like a complete Unity Personal .ulf file. Replace it with the full contents of Unity_lic.ulf before rebuilding.')
+          PY
