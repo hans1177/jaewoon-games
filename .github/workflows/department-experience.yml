@@ -1,0 +1,47 @@
+name: Department Experience
+
+on:
+  workflow_run:
+    workflows: ["Vibe QA"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: department-experience-main
+  cancel-in-progress: false
+
+jobs:
+  award:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Sync main
+        run: git pull --ff-only origin main
+
+      - name: Award verified department XP
+        env:
+          SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: node tools/award-department-experience.mjs "$SOURCE_SHA" "$SOURCE_RUN_ID"
+
+      - name: Commit XP ledger when changed
+        run: |
+          if git diff --quiet -- department-experience.json; then
+            echo "No new verified XP to record."
+            exit 0
+          fi
+          git config user.name "jaewoon-company-ai"
+          git config user.email "actions@users.noreply.github.com"
+          git add department-experience.json
+          git commit -m "company-xp: record verified department experience [skip ci]"
+          git push origin main
