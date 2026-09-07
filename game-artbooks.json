@@ -1,44 +1,27 @@
 {
-  "version": 2,
+  "version": 3,
   "updatedAt": "2026-09-08",
   "policy": {
-    "purpose": "게임 개발 과정의 컨셉·스토리·캐릭터·몬스터·배경·시스템·테스트 근거를 부서별 주간 제출물로 축적한다.",
-    "cadence": "weekly",
+    "purpose": "게임 개발 과정의 컨셉·스토리·캐릭터·몬스터·배경·시스템·테스트 근거를 부서별 제출물로 축적한다.",
+    "initialGate": "five-independent-department-artbooks-before-formal-production",
+    "cadenceAfterInitialGate": "weekly",
     "requiredDepartments": ["planning", "development", "qa", "graphics", "balance"],
     "maxSubmissionsPerDepartmentPerWeek": 1,
-    "maxCutsPerCompiledEdition": 10,
+    "maxCutsPerDepartmentArtbook": 10,
     "assistantAuthorshipForbidden": true,
     "directorRole": "compile-and-summarize-only-no-new-claims",
+    "styleProfiles": "artbook-style-profiles.json",
+    "uniformCreativeTemplateForbidden": true,
+    "departmentCopyingForbidden": true,
     "keepHistory": true,
     "replaceOldEdition": false,
     "comments": "github-issue-comments",
     "music": "optional-license-aware",
-    "homepageMode": "approved-development-popup-only",
-    "unapprovedGameMode": "internal-only-until-flow-demo-and-review",
+    "homepageMode": "daechung-rpg-visible-other-games-collapsed-until-approved",
     "discussionPolicy": "independent-evidence-review-then-debate-no-roleplay-filler",
-    "storyPriority": "critical",
-    "coherenceRequired": [
-      "world-premise-to-player-motivation",
-      "story-to-region-purpose",
-      "story-to-character-role",
-      "story-to-monster-origin-and-behavior",
-      "story-to-boss-conflict",
-      "story-to-combat-and-progression",
-      "visual-design-to-world-rules"
-    ],
-    "requiredArtbookCoverage": [
-      "story",
-      "world",
-      "character-design",
-      "monster-design",
-      "boss-design-when-applicable",
-      "environment-background",
-      "combat-or-system-concept",
-      "ui-or-player-experience",
-      "verified-test-or-demo-result",
-      "next-decision-or-risk"
-    ]
+    "storyPriority": "critical"
   },
+  "initialSubmissions": [],
   "weeklySubmissions": [],
   "artbooks": [],
   "legacyArchive": [
@@ -48,10 +31,10 @@
       "gameName": "대충 RPG",
       "edition": 1,
       "title": "대충 RPG · Unity 재개발 초안 아트북",
-      "status": "legacy-pre-weekly-policy",
+      "status": "legacy-pre-department-artbook-policy",
       "homepageVisible": false,
       "createdAt": "2026-09-08",
-      "note": "주간 부서별 제출 정책 도입 전에 작성된 초기 시스템 초안. 회사 자산으로 보존하되 새 주간 아트북 제출로 계산하지 않고 홈페이지에 노출하지 않는다."
+      "note": "부서별 최초 아트북 게이트 도입 전에 작성된 시스템 초안. 연구자산으로만 보존하며 새 아트북 제출로 계산하지 않는다."
     }
   ]
 }
