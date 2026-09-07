@@ -1,28 +1,26 @@
 {
-  "version": 3,
+  "version": 4,
   "updatedAt": "2026-09-08",
   "policy": {
-    "purpose": "게임 개발 과정의 컨셉·스토리·캐릭터·몬스터·배경·시스템·테스트 근거를 부서별 제출물로 축적한다.",
-    "initialGate": "five-independent-department-artbooks-before-formal-production",
-    "cadenceAfterInitialGate": "weekly",
-    "requiredDepartments": ["planning", "development", "qa", "graphics", "balance"],
-    "maxSubmissionsPerDepartmentPerWeek": 1,
-    "maxCutsPerDepartmentArtbook": 10,
+    "purpose": "각 게임의 컨셉·스토리·캐릭터·몬스터·배경·구현·테스트·밸런스를 부서 협업으로 한 권의 아트북에 축적한다.",
+    "initialGate": "one-combined-artbook-with-five-owned-department-sections-before-formal-production",
+    "dailyFinalSubmissionLimit": 1,
+    "requiredDepartments": ["planning", "graphics", "development", "qa", "balance"],
+    "departmentSectionOwnership": true,
+    "crossDepartmentCollaboration": true,
+    "crossDepartmentGhostwritingForbidden": true,
     "assistantAuthorshipForbidden": true,
-    "directorRole": "compile-and-summarize-only-no-new-claims",
+    "directorRole": "assemble-and-summarize-only-no-new-claims",
     "styleProfiles": "artbook-style-profiles.json",
     "uniformCreativeTemplateForbidden": true,
-    "departmentCopyingForbidden": true,
     "keepHistory": true,
     "replaceOldEdition": false,
     "comments": "github-issue-comments",
     "music": "optional-license-aware",
-    "homepageMode": "daechung-rpg-visible-other-games-collapsed-until-approved",
-    "discussionPolicy": "independent-evidence-review-then-debate-no-roleplay-filler",
+    "homepageMode": "daechung-rpg-direct-popup-other-games-collapsed-preproduction",
     "storyPriority": "critical"
   },
-  "initialSubmissions": [],
-  "weeklySubmissions": [],
+  "dailySubmissions": [],
   "artbooks": [],
   "legacyArchive": [
     {
@@ -31,10 +29,10 @@
       "gameName": "대충 RPG",
       "edition": 1,
       "title": "대충 RPG · Unity 재개발 초안 아트북",
-      "status": "legacy-pre-department-artbook-policy",
+      "status": "legacy-pre-collaborative-policy",
       "homepageVisible": false,
       "createdAt": "2026-09-08",
-      "note": "부서별 최초 아트북 게이트 도입 전에 작성된 시스템 초안. 연구자산으로만 보존하며 새 아트북 제출로 계산하지 않는다."
+      "note": "현재의 부서 역할분담형 통합 아트북 정책 전에 작성된 시스템 초안. 연구자산으로만 보존한다."
     }
   ]
 }
