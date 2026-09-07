@@ -4,6 +4,10 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '17 */12 * * *'
+  push:
+    branches: [main]
+    paths:
+      - public-health.request
 
 permissions:
   contents: write
