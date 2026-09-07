@@ -137,7 +137,6 @@ function Get-ProviderArguments([string]$Provider, [string]$Prompt) {
             return @('-p', $Prompt, '--output-format', 'json', '--permission-mode', 'auto', '--max-turns', '12')
         }
         'copilot' {
-            # This is only reachable after the user confirms an account-level hard stop for paid overage.
             return @('-sp', $Prompt, '--agent=director', '--no-ask-user', '--no-remote', '--no-remote-export', '--max-ai-credits=60', '--allow-all-tools')
         }
         default {
@@ -198,26 +197,29 @@ Current company-directive.json:
 $($directive.raw)
 
 Priority game project: unity-games/daechung-rpg
-The web-games directory is read-only reference material.
+The web-games directory is read-only reference material. Never edit, delete, rename, or regenerate files under web-games/.
 Homepage operations are a standing company responsibility, not a one-time redesign. Keep index.html, company.html, game classification, mobile layout, links, status labels, and useful site features healthy as the catalog grows.
 If Unity MCP is available, use the real Unity Editor/MCP for scenes, GameObjects, components, scripts, compilation, tests, and verification.
 
 Operating rules:
 1. If the owner directive revision is pending, it is the highest-priority company work. Start it now and do not choose the normal autonomous plan first.
 2. Keep executing bounded verified work units for the pending owner directive until it is actually complete. Do not wait for the normal autonomous interval between unfinished owner-directive work units.
-3. Assign planning, development, QA, graphics, balance, and homepage operations roles as needed for the highest-priority work unit.
-4. Before normal autonomous work only, do a lightweight check for stale or broken homepage/catalog state. A pending owner directive outranks this routine check unless the site problem blocks the directive itself.
-5. QA is mandatory after implementation. Fix failures in the same work unit when possible.
-6. Ask Han Jaewoon only for core decisions: genre, core loop, major story direction, core combat model, core progression model, platform, save-breaking changes, monetization, or paid AI use.
-7. If a core decision is required, stop further implementation and make the first line of your final output exactly: OWNER_DECISION_REQUIRED:
-8. All other implementation, Unity configuration, camera details, graphics, UI, animation, VFX, QA fixes, balance values, optimization, build details, homepage information architecture, filters, layout, accessibility, links, and low-risk site features are delegated to the director.
-9. For homepage work, keep game-catalog.json as stable game metadata and company-status.json as live development/build state. Never claim testing, release, or download availability without evidence.
-10. Never buy credits, enable paid API usage, upgrade a plan, or work around an included/free usage limit. If included/free usage is blocked, terminate normally so the local runner can rotate providers.
-11. Only commit a verified local work unit. Do not push remotely.
-12. Do not raise company-status progress without evidence.
-13. Complete one highest-priority work unit and exit. Do not create an infinite loop inside the provider session.
-14. If and only if pending owner directive revision $($directive.revision) is fully implemented and verified, include this exact token in the final output: OWNER_DIRECTIVE_COMPLETE:$($directive.revision)
-15. If the directive still needs more work after this bounded unit, do not print the completion token. Commit verified progress and exit so the supervisor can immediately invoke the next unit.
+3. Keep each work unit focused and bounded. Prefer a small verified slice that can finish promptly over a large speculative batch.
+4. Assign planning, development, QA, graphics, balance, and homepage operations roles as needed for the highest-priority work unit.
+5. Before normal autonomous work only, do a lightweight check for stale or broken homepage/catalog state. A pending owner directive outranks this routine check unless the site problem blocks the directive itself.
+6. QA is mandatory after implementation. Fix failures in the same work unit when possible.
+7. Ask Han Jaewoon only for core decisions: genre, core loop, major story direction, core combat model, core progression model, platform, save-breaking changes, monetization, or paid AI use.
+8. If a core decision is required, stop further implementation and make the first line of your final output exactly: OWNER_DECISION_REQUIRED:
+9. All other implementation, Unity configuration, camera details, graphics, UI, animation, VFX, QA fixes, balance values, optimization, build details, homepage information architecture, filters, layout, accessibility, links, and low-risk site features are delegated to the director.
+10. For homepage work, keep game-catalog.json as stable game metadata and company-status.json as live development/build state. Never claim testing, release, or download availability without evidence.
+11. Never buy credits, enable paid API usage, upgrade a plan, or work around an included/free usage limit. If included/free usage is blocked, terminate normally so the local runner can rotate providers.
+12. Only commit a verified local work unit. Do not push remotely; the supervisor owns publishing.
+13. Every automated commit subject must start exactly with `company-ai:` so the supervisor can distinguish company work from manual user commits.
+14. Do not raise company-status progress without evidence.
+15. Complete one highest-priority work unit and exit. Do not create an infinite loop inside the provider session.
+16. If and only if pending owner directive revision $($directive.revision) is fully implemented and verified, include this exact token in the final output: OWNER_DIRECTIVE_COMPLETE:$($directive.revision)
+17. If the directive still needs more work after this bounded unit, do not print the completion token. Commit verified progress and exit so the supervisor can immediately invoke the next unit.
+18. If a task would require modifying web-games/, treat the archive as reference only and implement the equivalent change in Unity, homepage metadata, or another writable company file instead.
 
 Current company-status.json snapshot:
 $status
@@ -309,7 +311,6 @@ if (-not (Test-Path $resolvedProject)) {
     throw "Unity project not found: $resolvedProject"
 }
 
-# Prevent duplicate directors.
 if (Test-Path $lockPath) {
     try {
         $existingPid = [int](Get-Content -Raw -Path $lockPath -Encoding UTF8).Trim()
