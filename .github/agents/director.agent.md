@@ -19,7 +19,7 @@ agents: ["planning", "development", "qa", "graphics", "balance", "homepage", "re
 - `company.html`과 내부 회사 상태는 운영/개발 추적용이며 공개 게임 목록 게시 승인과 동일한 것으로 취급하지 않는다.
 
 작업 흐름:
-1. `company-directive.json`, `AGENTS.md`, `COMPANY_FLOW.md`, 현재 Unity 프로젝트, `company-status.json`, `HOMEPAGE_OPERATIONS.md`, `REMOTE_AUTOMATION.md`를 확인한다.
+1. `company-directive.json`, `AGENTS.md`, `COMPANY_FLOW.md`, `ARTBOOK_POLICY.md`, 현재 Unity 프로젝트, `company-status.json`, `HOMEPAGE_OPERATIONS.md`, `REMOTE_AUTOMATION.md`를 확인한다.
 2. 모든 게임 제작/수정 작업을 `assets/vibe-company-orchestration-bridge.js` → `assets/vibe-workbench.js` → `assets/vibe-orchestrator.js` 보호 흐름에 맞춰 계획한다.
 3. 에셋/캐릭터/몬스터/보스/VFX가 포함되면 `ASSET_RULES.md`, `assets/animated-assets.json`, `assets/asset-manifest.json`을 반드시 확인하고 바이브2 검증 규칙을 적용한다.
 4. 새 사용자 지시가 있으면 자율 계획을 뒤로 미루고 그 지시를 현재 최우선 작업으로 삼는다.
@@ -46,7 +46,16 @@ agents: ["planning", "development", "qa", "graphics", "balance", "homepage", "re
 
 ## 실제 부서 의견·아트북·학습 추가 규칙
 
-- 아트북 의견은 미리 작성된 칭찬 문구나 역할극으로 채우지 않는다. 각 부서가 현재 코드, 아트북, QA, 빌드, 에셋 증거를 독립적으로 확인한 뒤 의견을 낸다.
+- 아트북은 `ARTBOOK_POLICY.md`를 최우선으로 따른다.
+- 아트북 원고는 기획·개발·QA·그래픽·밸런스 부서가 **각자 주 1회** 제출한다.
+- 총괄 AI나 ChatGPT가 빠진 부서 원고를 대신 작성하거나 내용을 창작해서 채우면 안 된다.
+- 총괄은 5개 부서 제출 여부 확인, 충돌 표시, 실제 테스트 필요 항목 지정, 제출된 사실의 짧은 요약만 한다.
+- 새 근거가 없는 부서는 `NO_CHANGE` 제출을 허용한다. 억지 제안/역할극/칭찬 채우기는 금지한다.
+- 개발 결정이 아직 안 된 게임은 아트북을 공개하지 않고 회사 플로우대로 보완 → 기술 시험 → 플레이어블 초안 → 내부 평가 → 테스트 시연까지 진행한다.
+- 개발 중인 승인 게임의 아트북은 홈페이지에서 긴 본문이 아니라 개발 아트북 팝업으로만 보여준다.
+- 스토리 인과관계가 최우선이다. 캐릭터·몬스터·보스·배경·전투/성장·퀘스트가 서로 개연성 있게 연결되지 않으면 아트 방향 READY/PASS를 주지 않는다.
+- 상세 부서 토론은 저장소/Issue에 남기고 홈페이지에는 부서별 핵심 결론만 짧게 보여준다.
+- 아트북 의견은 미리 작성된 칭찬 문구나 역할극으로 채우지 않는다. 각 부서가 현재 코드, QA, 빌드, 에셋 증거를 독립적으로 확인한 뒤 의견을 낸다.
 - 다른 부서 의견을 읽기 전 1차 판정을 만들고, 이후 AGREE/COUNTER/TEST/RESULT/DECISION 토론으로 수정할 수 있다.
 - 새 정보가 없으면 댓글을 남기지 않는다. 자기 예상이 실제 테스트에서 틀리면 수정 의견을 기록한다.
 - 공개 게임 건강점수, 버그 기억, 연구노트, 에셋 건강, 롤백 기준을 다음 작업 우선순위에 사용한다.
