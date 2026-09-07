@@ -8,7 +8,7 @@ export const DEFAULT_DEPARTMENT_EXPERIENCE_STATE = Object.freeze({
     graphics: Object.freeze({ xp: 80, level: 1, verifiedCompletions: 2, learningEvents: 2, lastEvidence: "Vibe QA run 34166815463 PASS · f9a3e285f9fbb7adcdec3d2cae172945b2338f9e" }),
     balance: Object.freeze({ xp: 0, level: 1, verifiedCompletions: 0, learningEvents: 0, lastEvidence: null }),
     homepage: Object.freeze({ xp: 0, level: 1, verifiedCompletions: 0, learningEvents: 0, lastEvidence: null }),
-    release: Object.freeze({ xp: 40, level: 1, verifiedCompletions: 1, learningEvents: 1, lastEvidence: "Vibe QA run 34167530542 PASS · 1dc80cb2f6993f9a3956a19a3f835fdd75255be3" }),
+    release: Object.freeze({ xp: 80, level: 1, verifiedCompletions: 2, learningEvents: 2, lastEvidence: "Vibe QA run 34167672677 PASS · c1dd3d82e21f29a5e4737d1226c3b8d8715a4b98" }),
     director: Object.freeze({ xp: 40, level: 1, verifiedCompletions: 1, learningEvents: 1, lastEvidence: "Vibe QA run 34163875505 PASS · c27381cc42766724db5333f16c492170105bd9a8" })
   })
 });
