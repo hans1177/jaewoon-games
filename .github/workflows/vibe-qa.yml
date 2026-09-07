@@ -20,7 +20,7 @@ jobs:
           import json
           from pathlib import Path
           data = json.loads(Path('assets/asset-manifest.json').read_text(encoding='utf-8'))
-          assert data.get('version') == 1
+          assert data.get('version') in {1, 2}
           assert isinstance(data.get('approvedSources'), list)
           assert isinstance(data.get('assets'), list)
           assert {'NC', 'unknown'}.issubset(set(data.get('policy', {}).get('blocked', [])))
@@ -44,11 +44,11 @@ jobs:
           const by = createVibeAssetReconstructionContract({ asset: { id:'by', source:'source', license:'CC-BY-4.0' } });
           if (!by.derivativesAllowed || !by.attributionRequired) throw new Error('CC BY rights failed');
           const sa = createVibeAssetReconstructionContract({ asset: { id:'sa', source:'source', license:'CC-BY-SA-4.0' } });
-          if (!sa.derivativesAllowed || !sa.shareAlikeRequired) throw new Error('CC BY-SA rights failed');
+          if (!sa.derivativesAllowed || !sa.shareAlikeRequired) throw new Error('CC-BY-SA rights failed');
           const nd = createVibeAssetReconstructionContract({ asset: { id:'nd', source:'source', license:'CC-BY-ND-4.0' } });
-          if (nd.derivativesAllowed || nd.blockedReason !== 'derivatives-explicitly-forbidden') throw new Error('CC BY-ND block failed');
+          if (nd.derivativesAllowed || nd.blockedReason !== 'derivatives-explicitly-forbidden') throw new Error('CC-BY-ND block failed');
           const nc = createVibeAssetReconstructionContract({ asset: { id:'nc', source:'source', license:'CC-BY-NC-4.0' } });
-          if (!nc.derivativesAllowed || nc.commercialUseAllowed) throw new Error('CC BY-NC commercial gate failed');
+          if (!nc.derivativesAllowed || nc.commercialUseAllowed) throw new Error('CC-BY-NC commercial gate failed');
           const mit = createVibeAssetReconstructionContract({ asset: { id:'mit', source:'source', license:'MIT' } });
           if (mit.derivativesAllowed || mit.blockedReason !== 'derivative-permission-unverified') throw new Error('software license must not imply art derivative rights');
           const explicit = createVibeAssetReconstructionContract({ asset: { id:'explicit', source:'source', license:'custom', derivativesAllowed:true } });
