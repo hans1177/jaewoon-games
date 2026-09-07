@@ -1,6 +1,9 @@
 // 파일명: assets/vibe-development-ai.js
-// 역할: Vibe Maker 개발 AI 참여 순서·무료 한도·권한 경계를 결정
+// 역할: Vibe Maker 개발 AI 참여 순서·무료 한도·권한 경계와 재운컴퍼니 작업 라우팅을 결정
 // 규칙: 현재 ChatGPT 개발 환경에서는 GPT-5.6 Sol이 상위 개발 에이전트이며 외부 AI는 선택적 보조자다. 독립 실행 시 Groq → Mistral 무료 fallback만 허용한다.
+
+import { planCompanyDevelopmentTask, submitCompanyBidirectionalProposal } from './vibe-company-orchestration-bridge.js';
+
 const POLICY='AI_ASSISTED_DEVELOPMENT_ALLOWED_BUT_NON_AUTHORITATIVE';
 const ENGINE_ONLY=Object.freeze(['hp','damage','waves','spawnInterval','countPerSpawn','rewards','dropRates','drops','gameplayFlow','saveMeaning','inventory-write','save-write','progression','collision','cooldown','quest-completion','quest-reward','stat-growth','spawn-count','combat-result']);
 const ENGINE_KEY_ALIASES=Object.freeze({drops:'dropRates','drop-rates':'dropRates','spawn-count':'countPerSpawn','save-meaning':'saveMeaning','gameplay-flow':'gameplayFlow'});
@@ -21,9 +24,79 @@ function findProtectedCandidateKeys(value,path='',seen=new Set(),found=new Set()
  }
  return found;
 }
-export function createVibeDevelopmentAIContract({environment='standalone',purpose='diagnosis'}={}){const env=clean(environment)||'standalone',p=clean(purpose),chatgpt=env==='chatgpt'||env==='chatgpt-connected';return Object.freeze({version:2,policy:POLICY,environment:env,purpose:p,allowed:DEVELOPMENT_PURPOSES.has(p),authoritative:false,orchestrator:chatgpt?'gpt-5.6-sol':'vibe-maker',externalAIRequired:false,externalAIUsage:chatgpt?'optional-assistant':'free-fallback-assistant',providers:PROVIDERS,paidFallback:false,geminiExcluded:true,engineAuthoritative:true,mustNotDecide:ENGINE_ONLY,protectedAliases:ENGINE_KEY_ALIASES,recursiveProtection:true,stopWhen:Object.freeze(['both-free-providers-unavailable','paid-provider-required','protected-change-needs-user-authorization','verification-impossible'])})}
-export function selectVibeDevelopmentAI({environment='standalone',purpose='diagnosis',groq={available:true},mistral={available:true},preferExternal=false}={}){const contract=createVibeDevelopmentAIContract({environment,purpose});if(!contract.allowed)return Object.freeze({useAI:false,provider:null,reason:'purpose-not-allowed',contract});if(contract.orchestrator==='gpt-5.6-sol'&&!preferExternal)return Object.freeze({useAI:false,provider:null,reason:'chatgpt-is-primary-development-agent',contract});if(groq.available&&!groq.quotaExceeded&&!groq.rateLimited)return Object.freeze({useAI:true,provider:PROVIDERS[0],reason:'groq-primary-free',contract});const groqFallback=groq.quotaExceeded||groq.rateLimited||groq.status===429||groq.available===false;if(groqFallback&&mistral.available&&!mistral.quotaExceeded&&!mistral.rateLimited)return Object.freeze({useAI:true,provider:PROVIDERS[1],reason:'mistral-free-fallback',contract});return Object.freeze({useAI:false,provider:null,reason:'free-ai-unavailable-stop',contract});}
-export function validateVibeDevelopmentAICandidate(candidate={}){const touched=[...findProtectedCandidateKeys(candidate)].sort();return Object.freeze({valid:touched.length===0,touched:Object.freeze(touched),authority:'candidate-only',recursive:true,decision:touched.length?'reject-authoritative-ai-output':'validate-before-apply'});}
-export function createVibeDevelopmentAIEvidenceGate(candidate={},evidence={}){const validation=validateVibeDevelopmentAICandidate(candidate),responsibleSource=Boolean(evidence.responsibleSource),checkpoint=Boolean(evidence.checkpoint),candidateApplied=Boolean(evidence.candidateApplied),runtimeObserved=Boolean(evidence.runtimeObserved),qaPassed=Boolean(evidence.qaPassed),regressionPassed=Boolean(evidence.regressionPassed),exactRevision=Boolean(evidence.exactRevision),blocked=[];if(!validation.valid)blocked.push('protected-mutation');if(!responsibleSource)blocked.push('responsible-source-unproven');if(!checkpoint)blocked.push('checkpoint-required');if(!candidateApplied)blocked.push('candidate-not-applied');if(!runtimeObserved)blocked.push('runtime-not-observed');if(!qaPassed)blocked.push('qa-not-passed');if(!regressionPassed)blocked.push('regression-not-passed');if(!exactRevision)blocked.push('exact-revision-unproven');return Object.freeze({version:1,eligible:blocked.length===0,validation,evidence:Object.freeze({responsibleSource,checkpoint,candidateApplied,runtimeObserved,qaPassed,regressionPassed,exactRevision}),blockedReasons:Object.freeze(blocked),authority:'deterministic-evidence-gate',aiMayDeclareComplete:false,completionAuthority:'verified-runtime-and-regression-only'});}
-export function createVibeDevelopmentPipeline({environment='standalone'}={}){const chatgpt=clean(environment).startsWith('chatgpt');return Object.freeze({version:2,environment,steps:Object.freeze(chatgpt?['user-direction','gpt-5.6-sol-analysis','vibe-maker-protection','optional-external-ai-candidates','deterministic-validation','checkpoint','source-apply','runtime-observation','run-qa','regression-check','exact-revision-evidence']:['user-direction','vibe-maker-analysis','groq-free-if-useful','mistral-free-on-groq-limit','deterministic-validation','checkpoint','source-apply','runtime-observation','run-qa','regression-check','exact-revision-evidence']),externalAIRequired:false,finalAuthority:'deterministic-vibe-engine',completionGate:'deterministic-evidence-gate',policy:POLICY});}
-if(typeof window!=='undefined')Object.assign(window,{createJaewoonVibeDevelopmentAIContract:createVibeDevelopmentAIContract,selectJaewoonVibeDevelopmentAI:selectVibeDevelopmentAI,validateJaewoonVibeDevelopmentAICandidate:validateVibeDevelopmentAICandidate,createJaewoonVibeDevelopmentAIEvidenceGate:createVibeDevelopmentAIEvidenceGate,createJaewoonVibeDevelopmentPipeline:createVibeDevelopmentPipeline});
+export function createVibeDevelopmentAIContract({environment='standalone',purpose='diagnosis'}={}){
+ const env=clean(environment)||'standalone',p=clean(purpose),chatgpt=env==='chatgpt'||env==='chatgpt-connected';
+ return Object.freeze({version:2,policy:POLICY,environment:env,purpose:p,allowed:DEVELOPMENT_PURPOSES.has(p),authoritative:false,orchestrator:chatgpt?'gpt-5.6-sol':'vibe-maker',externalAIRequired:false,externalAIUsage:chatgpt?'optional-assistant':'free-fallback-assistant',providers:PROVIDERS,paidFallback:false,geminiExcluded:true,engineAuthoritative:true,mustNotDecide:ENGINE_ONLY,protectedAliases:ENGINE_KEY_ALIASES,recursiveProtection:true,stopWhen:Object.freeze(['both-free-providers-unavailable','paid-provider-required','protected-change-needs-user-authorization','verification-impossible'])});
+}
+export function selectVibeDevelopmentAI({environment='standalone',purpose='diagnosis',groq={available:true},mistral={available:true},preferExternal=false}={}){
+ const contract=createVibeDevelopmentAIContract({environment,purpose});
+ if(!contract.allowed)return Object.freeze({useAI:false,provider:null,reason:'purpose-not-allowed',contract});
+ if(contract.orchestrator==='gpt-5.6-sol'&&!preferExternal)return Object.freeze({useAI:false,provider:null,reason:'chatgpt-is-primary-development-agent',contract});
+ if(groq.available&&!groq.quotaExceeded&&!groq.rateLimited)return Object.freeze({useAI:true,provider:PROVIDERS[0],reason:'groq-primary-free',contract});
+ const groqFallback=groq.quotaExceeded||groq.rateLimited||groq.status===429||groq.available===false;
+ if(groqFallback&&mistral.available&&!mistral.quotaExceeded&&!mistral.rateLimited)return Object.freeze({useAI:true,provider:PROVIDERS[1],reason:'mistral-free-fallback',contract});
+ return Object.freeze({useAI:false,provider:null,reason:'free-ai-unavailable-stop',contract});
+}
+export function validateVibeDevelopmentAICandidate(candidate={}){
+ const touched=[...findProtectedCandidateKeys(candidate)].sort();
+ return Object.freeze({valid:touched.length===0,touched:Object.freeze(touched),authority:'candidate-only',recursive:true,decision:touched.length?'reject-authoritative-ai-output':'validate-before-apply'});
+}
+export function createVibeDevelopmentAIEvidenceGate(candidate={},evidence={}){
+ const validation=validateVibeDevelopmentAICandidate(candidate),responsibleSource=Boolean(evidence.responsibleSource),checkpoint=Boolean(evidence.checkpoint),candidateApplied=Boolean(evidence.candidateApplied),runtimeObserved=Boolean(evidence.runtimeObserved),qaPassed=Boolean(evidence.qaPassed),regressionPassed=Boolean(evidence.regressionPassed),exactRevision=Boolean(evidence.exactRevision),blocked=[];
+ if(!validation.valid)blocked.push('protected-mutation');
+ if(!responsibleSource)blocked.push('responsible-source-unproven');
+ if(!checkpoint)blocked.push('checkpoint-required');
+ if(!candidateApplied)blocked.push('candidate-not-applied');
+ if(!runtimeObserved)blocked.push('runtime-not-observed');
+ if(!qaPassed)blocked.push('qa-not-passed');
+ if(!regressionPassed)blocked.push('regression-not-passed');
+ if(!exactRevision)blocked.push('exact-revision-unproven');
+ return Object.freeze({version:1,eligible:blocked.length===0,validation,evidence:Object.freeze({responsibleSource,checkpoint,candidateApplied,runtimeObserved,qaPassed,regressionPassed,exactRevision}),blockedReasons:Object.freeze(blocked),authority:'deterministic-evidence-gate',aiMayDeclareComplete:false,completionAuthority:'verified-runtime-and-regression-only'});
+}
+export function planVibeDevelopmentRequest(options={}){
+ return planCompanyDevelopmentTask(options);
+}
+export function createVibeDevelopmentPipeline({
+ environment='standalone',
+ request='',
+ target='auto',
+ gameId=null,
+ file=null,
+ responsibleFiles=[],
+ knownBroken=false,
+ stageId='',
+ revisionRoundsUsed=0,
+ maxRevisionRounds=2,
+ departmentReviews=[],
+ ownerDecision='PENDING',
+ ownerNotes=''
+}={}){
+ const chatgpt=clean(environment).startsWith('chatgpt');
+ const companyPlan=String(request||'').trim()?planCompanyDevelopmentTask({request,target,gameId,file,responsibleFiles,knownBroken,stageId,revisionRoundsUsed,maxRevisionRounds,departmentReviews,ownerDecision,ownerNotes}):null;
+ const companySteps=companyPlan
+  ? ['company-request-routing',...(companyPlan.routing.predevelopmentGateRequired?['company-predevelopment-gate']:[]),...(companyPlan.routing.majorOwnerApprovalRequired&&!companyPlan.routing.predevelopmentGateRequired?['company-major-change-owner-gate']:[]),'department-assignment']
+  : [];
+ const executionSteps=chatgpt
+  ? ['gpt-5.6-sol-analysis','vibe-maker-protection','optional-external-ai-candidates','deterministic-validation','checkpoint','source-apply','runtime-observation','run-qa','regression-check','exact-revision-evidence']
+  : ['vibe-maker-analysis','groq-free-if-useful','mistral-free-on-groq-limit','deterministic-validation','checkpoint','source-apply','runtime-observation','run-qa','regression-check','exact-revision-evidence'];
+ return Object.freeze({
+  version:3,
+  environment,
+  steps:Object.freeze(['user-direction',...companySteps,...executionSteps]),
+  companyPlan,
+  executionAllowed:companyPlan?companyPlan.routing.mayExecute:null,
+  externalAIRequired:false,
+  finalAuthority:'deterministic-vibe-engine',
+  completionGate:'deterministic-evidence-gate',
+  policy:POLICY
+ });
+}
+if(typeof window!=='undefined')Object.assign(window,{
+ createJaewoonVibeDevelopmentAIContract:createVibeDevelopmentAIContract,
+ selectJaewoonVibeDevelopmentAI:selectVibeDevelopmentAI,
+ validateJaewoonVibeDevelopmentAICandidate:validateVibeDevelopmentAICandidate,
+ createJaewoonVibeDevelopmentAIEvidenceGate:createVibeDevelopmentAIEvidenceGate,
+ createJaewoonVibeDevelopmentPipeline:createVibeDevelopmentPipeline,
+ planJaewoonVibeDevelopmentRequest:planVibeDevelopmentRequest,
+ submitJaewoonCompanyProposal:submitCompanyBidirectionalProposal
+});
