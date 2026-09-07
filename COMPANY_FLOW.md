@@ -178,3 +178,23 @@ DROP   → 폐기 또는 기획 변경 제안
 - `assets/vibe-company-development-flow.js`
 
 여기에는 단계 목록, 상/하향 제안, 내부 평가 역할, PASS/REVISE/DROP, 재검토 상한, 사용자 승인 게이트가 정의된다.
+
+## 기존 작업 시스템 연결
+
+실제 작업 배정 진입점은 다음 파일이다.
+
+- `assets/vibe-company-orchestration-bridge.js`
+
+연결 구조:
+
+```text
+재운컴퍼니 개발 플로우
+→ 단계별 AI 부서 배정
+→ vibe-workbench 안전 작업계획
+→ vibe-orchestrator 실행계약
+→ 사용자 승인 게이트 또는 기존 게임 유지보수 경로
+```
+
+`vibe-workbench.js`는 이제 `web / godot / unity` 대상을 구분하고, 새 게임 요청이면 본개발 전에 재운컴퍼니 사전 플로우를 강제한다. Unity 대상은 `unity-games/<slug>/Assets`, `Packages`, `ProjectSettings`를 책임 소스로 취급하며 `Library`, `Temp`, `Logs`, APK/AAB는 소스 커밋 대상에서 제외한다.
+
+새 게임은 내부 평가 PASS + 사용자 PASS 전까지 본개발 실행계약을 만들지 않는다. 기존 게임의 버그 수정·소규모 반복 개선은 기존 보존/회귀 규칙을 유지한 채 유지보수 경로로 처리한다.
