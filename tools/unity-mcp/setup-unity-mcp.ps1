@@ -31,6 +31,27 @@ function Resolve-UncreatedPath([string]$Path) {
     return $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
 }
 
+function Refresh-ProcessPath {
+    $machinePath = [Environment]::GetEnvironmentVariable('Path', 'Machine')
+    $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+    $parts = @($machinePath, $userPath) | Where-Object { $_ }
+    $env:Path = ($parts -join ';')
+}
+
+function Resolve-Uv {
+    $cmd = Get-Command uv -ErrorAction SilentlyContinue
+    if ($cmd) { return $cmd.Source }
+
+    $knownPaths = @(
+        (Join-Path $env:LOCALAPPDATA 'Microsoft\WinGet\Links\uv.exe'),
+        (Join-Path $env:USERPROFILE '.local\bin\uv.exe')
+    )
+    foreach ($candidate in $knownPaths) {
+        if (Test-Path $candidate) { return $candidate }
+    }
+    return $null
+}
+
 $unity = Resolve-UnityExe
 if (-not $unity) {
     throw 'Unity Hub editor install was not detected under Program Files.'
@@ -82,27 +103,34 @@ if ($existing) {
 $manifest | ConvertTo-Json -Depth 32 | Set-Content -Path $manifestPath -Encoding utf8
 Write-Host "[PASS] MCP for Unity pinned: $PackageUrl"
 
-$uv = Get-Command uv -ErrorAction SilentlyContinue
-if (-not $uv -and $InstallUv) {
+$uvPath = Resolve-Uv
+if (-not $uvPath -and $InstallUv) {
     $winget = Get-Command winget -ErrorAction SilentlyContinue
     if (-not $winget) {
         throw 'uv is missing and winget is not available. Install uv manually from https://docs.astral.sh/uv/getting-started/installation/'
     }
+
     & winget install --id=astral-sh.uv -e --accept-package-agreements --accept-source-agreements
-    $uv = Get-Command uv -ErrorAction SilentlyContinue
+    if ($LASTEXITCODE -ne 0) {
+        throw "uv installation failed with winget exit code $LASTEXITCODE."
+    }
+
+    Refresh-ProcessPath
+    $uvPath = Resolve-Uv
 }
 
-if ($uv) {
-    Write-Host "[PASS] uv: $($uv.Source)"
+if ($uvPath) {
+    $uvVersion = & $uvPath --version 2>$null
+    Write-Host "[PASS] uv: $uvPath ($uvVersion)"
 } else {
-    Write-Host '[NEEDS-LOCAL] uv is not installed. Run this script again with -InstallUv or install uv manually.'
+    Write-Host '[NEEDS-LOCAL] uv was not detected. Open a new PowerShell and run: uv --version'
 }
 
 $androidRoot = Join-Path (Split-Path $unity.Exe -Parent) 'Data\PlaybackEngines\AndroidPlayer'
 if (Test-Path $androidRoot) {
     Write-Host '[PASS] Android Build Support detected.'
 } else {
-    Write-Host '[NEEDS-LOCAL] Android Build Support was not detected for this Unity install.'
+    Write-Host '[NEEDS-LOCAL] Android Build Support missing: Unity Hub > Installs > Unity 6.6 > Add modules > Android Build Support + Android SDK & NDK Tools + OpenJDK.'
 }
 
 if ($OpenUnity) {
