@@ -1,36 +1,114 @@
 {
-  "version": 2,
+  "version": 3,
   "policy": {
-    "licensePriority": ["CC0", "commercial-no-attribution", "CC-BY"],
+    "licensePriority": ["CC0", "MIT", "commercial-no-attribution", "CC-BY"],
     "blocked": ["NC", "unknown", "unclear-redistribution"],
     "maxSingleAssetBytes": 104857600,
     "preferExistingAssets": true,
     "downloadOnDemand": true,
+    "cacheAfterFirstUse": true,
     "requireVerifiedAnimationForActors": true,
     "allowStaticCharacter": false,
     "allowStaticEnemy": false,
     "allowStaticBoss": false,
-    "allowGeometricActor": false
+    "allowGeometricActor": false,
+    "prototypePresetCatalog": "assets/prototype-asset-presets.json"
   },
   "approvedSources": [
     {"name":"Kenney","categories":["2d","3d","ui","icons","sfx"],"priority":1},
     {"name":"Poly Haven","categories":["3d","textures","hdri"],"priority":1},
-    {"name":"ambientCG","categories":["textures","materials"],"priority":1}
+    {"name":"ambientCG","categories":["textures","materials"],"priority":1},
+    {"name":"OpenGameArt","categories":["2d","animation","vfx"],"priority":1},
+    {"name":"GitHub","categories":["2d","animation","tools"],"priority":2,"licenseReviewRequired":true}
   ],
   "assets": [
     {
       "id":"survival2-atlas",
       "path":"web-games/survival2/assets/survival-atlas.svg",
       "types":["background","item","prop","effect","ui"],
+      "tags":["배경","아이템","사물","이펙트","UI"],
       "game":"survival2",
       "license":"project-original",
       "blockedForActorUse":true,
       "verifiedAnimation":false,
       "reason":"정지 SVG 도형 기반 캐릭터/몬스터 포함. 공용 캐릭터/적/보스 후보에서 제외"
     },
-    {"id":"survival2-tree","path":"web-games/survival2/assets/tree.png","types":["prop"],"game":"survival2","license":"CC0"},
-    {"id":"survival2-rock","path":"web-games/survival2/assets/rock.png","types":["prop"],"game":"survival2","license":"CC0"},
-    {"id":"survival2-plant","path":"web-games/survival2/assets/plant.png","types":["prop"],"game":"survival2","license":"CC0"},
-    {"id":"survival2-mushroom","path":"web-games/survival2/assets/mushroom.png","types":["prop","item"],"game":"survival2","license":"CC0"}
+    {"id":"survival2-tree","path":"web-games/survival2/assets/tree.png","types":["prop"],"tags":["사물","나무"],"game":"survival2","license":"CC0"},
+    {"id":"survival2-rock","path":"web-games/survival2/assets/rock.png","types":["prop"],"tags":["사물","바위"],"game":"survival2","license":"CC0"},
+    {"id":"survival2-plant","path":"web-games/survival2/assets/plant.png","types":["prop"],"tags":["사물","풀","식물"],"game":"survival2","license":"CC0"},
+    {"id":"survival2-mushroom","path":"web-games/survival2/assets/mushroom.png","types":["prop","item"],"tags":["사물","아이템","버섯"],"game":"survival2","license":"CC0"},
+    {
+      "id":"oga-animated-monsters",
+      "name":"Animated Monsters",
+      "path":"",
+      "types":["enemy","boss","animation"],
+      "tags":["적","몬스터","보스","좀비","해골","마녀","애니메이션"],
+      "source":"OpenGameArt",
+      "sourceUrl":"https://opengameart.org/content/animated-monsters",
+      "license":"CC0",
+      "downloaded":false,
+      "verifiedAnimation":true,
+      "animationEvidence":["documented-animation-list","transparent-spritesheet"],
+      "animations":["idle","walk","attack","hit","death"],
+      "characters":["zombie","skeleton","witch"]
+    },
+    {
+      "id":"oga-adventurer-slime",
+      "name":"Adventurer and Slime game Sprites",
+      "path":"",
+      "types":["character","enemy","animation"],
+      "tags":["주인공","캐릭터","영웅","적","몬스터","슬라임","애니메이션"],
+      "source":"OpenGameArt",
+      "sourceUrl":"https://opengameart.org/content/adventurer-and-slime-game-sprites",
+      "license":"CC0",
+      "downloaded":false,
+      "verifiedAnimation":true,
+      "animationEvidence":["documented-animation-list","frame-files"],
+      "animations":["idle","run","move","attack","jump","fall","air-attack","hurt","death"],
+      "characters":["hero","slime"]
+    },
+    {
+      "id":"oga-basic-pixel-spells",
+      "name":"Basic Pixel Animated Spells",
+      "path":"",
+      "types":["effect","animation"],
+      "tags":["이펙트","마법","스킬 효과","애니메이션"],
+      "source":"OpenGameArt",
+      "sourceUrl":"https://opengameart.org/content/basic-pixel-animated-spells",
+      "license":"CC0",
+      "downloaded":false,
+      "verifiedAnimation":true,
+      "animationEvidence":["6-to-10-frame-effects"],
+      "animations":["spell-1","spell-2","spell-3","spell-4"]
+    },
+    {
+      "id":"oga-unity-slime-12",
+      "name":"2D Slime Animated 12 Different Colors Unity Ready Prefab",
+      "path":"",
+      "types":["enemy","boss","animation"],
+      "tags":["적","몬스터","보스","슬라임","애니메이션","Unity"],
+      "source":"OpenGameArt",
+      "sourceUrl":"https://opengameart.org/content/2d-slime-animated-12-different-colors-unity-ready-prefab",
+      "license":"CC0",
+      "downloaded":false,
+      "verifiedAnimation":true,
+      "animationEvidence":["unity-prefab","animation-clips"],
+      "animations":["idle","jump","move","attack","hurt","death"]
+    },
+    {
+      "id":"github-pixel-snapped-pirate-skeleton",
+      "name":"AI Pixel Snapped Game Sprites",
+      "path":"",
+      "types":["character","enemy","boss","animation"],
+      "tags":["주인공","캐릭터","적","몬스터","보스","해적","해골","애니메이션"],
+      "source":"GitHub",
+      "sourceUrl":"https://github.com/chongdashu/ai-pixel-snapped-game-sprites",
+      "license":"MIT",
+      "downloaded":false,
+      "verifiedAnimation":true,
+      "animationEvidence":["preview.gif","manifest.json","spritesheet.png","runtime-preview"],
+      "animations":["idle","walk","move","attack","hurt","jump","death"],
+      "characters":["pirate","skeleton"]
+    }
   ]
 }
