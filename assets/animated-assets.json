@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "purpose": "바이브2 웹게임 내부 개인사용용 검증 애니메이션 에셋 카탈로그",
+  "rules": {
+    "animationRequired": true,
+    "staticOnlyBlocked": true,
+    "mustHaveEvidence": ["spritesheet-or-frame-files", "animation-preview-or-documented-animation-list"],
+    "preferExistingRepositoryAssets": true,
+    "externalAssetTarget": "assets/animated/",
+    "distributionReviewRequired": true
+  },
+  "assets": [
+    {
+      "id": "oga-animated-monsters",
+      "name": "Animated Monsters",
+      "source": "OpenGameArt",
+      "sourceUrl": "https://opengameart.org/content/animated-monsters",
+      "license": "CC0",
+      "characters": ["zombie", "skeleton", "witch"],
+      "animations": ["idle", "walk", "punch", "hurt", "fall"],
+      "format": ["transparent-spritesheet"],
+      "verified": true,
+      "downloaded": false,
+      "priority": 1
+    },
+    {
+      "id": "oga-adventurer-slime",
+      "name": "Adventurer and Slime game Sprites",
+      "source": "OpenGameArt",
+      "sourceUrl": "https://opengameart.org/content/adventurer-and-slime-game-sprites",
+      "license": "CC0",
+      "characters": ["hero", "slime"],
+      "animations": ["idle", "run", "move", "attack", "jump", "fall", "air-attack", "hurt", "dead"],
+      "format": ["png"],
+      "verified": true,
+      "downloaded": false,
+      "priority": 1
+    },
+    {
+      "id": "oga-basic-pixel-spells",
+      "name": "Basic Pixel Animated Spells",
+      "source": "OpenGameArt",
+      "sourceUrl": "https://opengameart.org/content/basic-pixel-animated-spells",
+      "license": "CC0",
+      "characters": [],
+      "animations": ["spell-1", "spell-2", "spell-3", "spell-4"],
+      "frameInfo": "각 효과 6~10프레임",
+      "format": ["gif", "png", "psd"],
+      "verified": true,
+      "downloaded": false,
+      "priority": 1
+    },
+    {
+      "id": "oga-unity-slime-12",
+      "name": "2D Slime Animated 12 Different Colors Unity Ready Prefab",
+      "source": "OpenGameArt",
+      "sourceUrl": "https://opengameart.org/content/2d-slime-animated-12-different-colors-unity-ready-prefab",
+      "license": "CC0",
+      "characters": ["slime-12-colors"],
+      "animations": ["hurt", "idle", "jump", "attack", "die"],
+      "format": ["unity-prefab", "psd", "clip"],
+      "verified": true,
+      "downloaded": false,
+      "priority": 1
+    },
+    {
+      "id": "github-pixel-snapped-pirate-skeleton",
+      "name": "AI Pixel Snapped Game Sprites",
+      "source": "GitHub",
+      "sourceUrl": "https://github.com/chongdashu/ai-pixel-snapped-game-sprites",
+      "license": "MIT",
+      "characters": ["pirate", "skeleton"],
+      "animations": ["idle", "walk", "attack", "hurt", "jump", "death"],
+      "evidence": ["preview.gif", "manifest.json", "spritesheet.png", "runtime-preview"],
+      "format": ["png", "gif", "json"],
+      "verified": true,
+      "downloaded": false,
+      "priority": 1
+    }
+  ]
+}
