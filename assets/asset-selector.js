@@ -1,6 +1,6 @@
 // 파일명: assets/asset-selector.js
 // 역할: 자연어 요구에서 필요한 에셋 종류를 판별하고 실제 게임 객체에 적용할 매핑 계획을 생성
-// 규칙: 기존 저장소 우선, 라이선스 불명/NC 차단, 캐릭터/적/보스는 실제 애니메이션 에셋 필수
+// 규칙: 기존 저장소 우선, 라이선스 불명/NC 차단, 캐릭터/적/보스는 검증된 실제 애니메이션 에셋 필수
 
 const TYPES = Object.freeze({
   character: ['주인공', '캐릭터', '영웅', '플레이어', '기사', '궁수', '사마귀'],
@@ -18,7 +18,7 @@ const TYPES = Object.freeze({
 const REQUIRED_VISUAL_TYPES = Object.freeze(['character', 'enemy', 'boss', 'background', 'item', 'prop', 'effect', 'ui', 'animation']);
 const ACTOR_TYPES = Object.freeze(['character', 'enemy', 'boss']);
 const DEFAULT_MOTION_STATES = Object.freeze(['idle', 'move', 'attack', 'hit', 'skill', 'death']);
-const MINIMUM_ACTOR_MOTION_STATES = Object.freeze(['idle', 'move']);
+const LOCOMOTION_STATES = Object.freeze(['move', 'walk', 'run', 'jump', 'fly', 'swim', 'crawl']);
 const BLOCKED_LICENSE_WORDS = Object.freeze(['NC', 'unknown', '출처 불명', '재배포 제한']);
 const BLOCKED_ACTOR_VISUAL_WORDS = Object.freeze(['circle', 'sphere', 'orb', 'ball', '원형', '구체', 'placeholder', 'dummy', 'primitive']);
 
@@ -27,13 +27,14 @@ function unique(values) { return [...new Set(values.filter(Boolean))]; }
 function hasAny(source, words) { const value = text(source).toLowerCase(); return words.some((word) => value.includes(String(word).toLowerCase())); }
 
 function actorHasAnimation(asset) {
-  const types = Array.isArray(asset?.types) ? asset.types.map((value) => text(value).toLowerCase()) : [];
   const animations = Array.isArray(asset?.animations) ? asset.animations.map((value) => text(value).toLowerCase()) : [];
   const states = Array.isArray(asset?.states) ? asset.states.map((value) => text(value).toLowerCase()) : [];
+  const evidence = Array.isArray(asset?.animationEvidence) ? asset.animationEvidence.filter(Boolean) : [];
   const motion = unique([...animations, ...states]);
-  const explicitAnimated = asset?.animated === true || asset?.verifiedAnimation === true || types.includes('animation');
-  const hasMovement = MINIMUM_ACTOR_MOTION_STATES.every((required) => motion.includes(required)) || types.includes('animation');
-  return explicitAnimated && hasMovement;
+  const verified = asset?.verifiedAnimation === true;
+  const hasAnimationResource = motion.length > 0 || evidence.length > 0;
+  const hasLocomotion = LOCOMOTION_STATES.some((state) => motion.includes(state));
+  return verified && hasAnimationResource && hasLocomotion;
 }
 
 function findCandidates(type, candidates) {
@@ -43,6 +44,7 @@ function findCandidates(type, candidates) {
     if (!hasAny(descriptor, TYPES[type])) return false;
 
     if (ACTOR_TYPES.includes(type)) {
+      if (asset?.blockedForActorUse === true) return false;
       if (hasAny(descriptor, BLOCKED_ACTOR_VISUAL_WORDS)) return false;
       if (!actorHasAnimation(asset)) return false;
     }
@@ -54,7 +56,7 @@ function findCandidates(type, candidates) {
     path:text(asset.path),
     license:text(asset.license),
     source:text(asset.source),
-    animated:ACTOR_TYPES.includes(type) ? true : Boolean(asset?.animated || asset?.verifiedAnimation || (Array.isArray(asset?.types) && asset.types.includes('animation'))),
+    animated:ACTOR_TYPES.includes(type) ? true : Boolean(asset?.verifiedAnimation),
   }));
 }
 
@@ -80,7 +82,7 @@ export function planAssetApplication({ prompt = '', manifest = null, rebuild = f
     replaceable:true,
   }));
   return Object.freeze({
-    version:4,
+    version:5,
     request,
     requestedTypes:Object.freeze(types),
     matched:Object.freeze(matched),
@@ -90,7 +92,7 @@ export function planAssetApplication({ prompt = '', manifest = null, rebuild = f
     animation:Object.freeze({
       required:true,
       actorAnimationRequired:true,
-      minimumActorStates:[...MINIMUM_ACTOR_MOTION_STATES],
+      locomotionStates:[...LOCOMOTION_STATES],
       states:[...DEFAULT_MOTION_STATES],
       stateDriven:true,
       staticActorAllowed:false,
@@ -102,6 +104,7 @@ export function planAssetApplication({ prompt = '', manifest = null, rebuild = f
       blockedActorVisualWords:[...BLOCKED_ACTOR_VISUAL_WORDS],
       requireLicenseRecord:true,
       requireRealAssets:true,
+      requireVerifiedAnimation:true,
       requireAnimatedCharacter:true,
       requireAnimatedEnemy:true,
       requireAnimatedBoss:true,
@@ -113,7 +116,7 @@ export function planAssetApplication({ prompt = '', manifest = null, rebuild = f
     }),
     steps:Object.freeze([
       '기존 저장소 에셋 확인',
-      '캐릭터/적/보스는 실제 애니메이션 프레임 또는 스프라이트시트 보유 여부 확인',
+      '캐릭터/적/보스는 실제 애니메이션 프레임 또는 스프라이트시트와 이동 모션 보유 여부 확인',
       '정지 캐릭터/정지 몬스터/원형·구체·도형 대체 모델 후보 제거',
       '캐릭터/적/NPC/배경/지형/사물/자원/건물/UI/VFX 목록 작성',
       '누락 에셋은 승인 소스에서 라이선스 확인 후 확보',
