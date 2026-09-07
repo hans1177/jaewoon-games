@@ -46,19 +46,38 @@ function Require-Winget {
     if (-not $winget) {
         throw 'winget is required to install Node.js LTS automatically. Install App Installer from Microsoft Store, then rerun this script.'
     }
-    return $winget
+    return [string]$winget
+}
+
+function Quote-ProcessArgument([string]$Value) {
+    if ($null -eq $Value) { return '""' }
+    if ($Value -notmatch '[\s"]') { return $Value }
+    return '"' + ($Value -replace '(\\*)"', '$1$1\"' -replace '(\\+)$', '$1$1') + '"'
 }
 
 function Invoke-NativeToHost([string]$FilePath, [string[]]$Arguments) {
-    # Native stdout must not leak into a PowerShell function return value.
-    # Otherwise callers such as `$npm = Ensure-NodeAndNpm` receive an array of
-    # installer text plus the executable path instead of one clean path string.
-    $lines = & $FilePath @Arguments 2>&1
-    $exitCode = $LASTEXITCODE
-    foreach ($line in @($lines)) {
-        if ($null -ne $line) { Write-Host ([string]$line) }
+    # Windows PowerShell 5.1 can promote native stderr text (for example npm notices)
+    # into NativeCommandError when stderr is merged with 2>&1 under ErrorActionPreference=Stop.
+    # Start-Process with separate temp files avoids that parser/error-stream behavior.
+    $stdoutPath = Join-Path $env:TEMP ("jaewoon-native-{0}.out.log" -f ([Guid]::NewGuid().ToString('N')))
+    $stderrPath = Join-Path $env:TEMP ("jaewoon-native-{0}.err.log" -f ([Guid]::NewGuid().ToString('N')))
+
+    try {
+        $argumentString = (($Arguments | ForEach-Object { Quote-ProcessArgument ([string]$_) }) -join ' ')
+        $process = Start-Process -FilePath $FilePath -ArgumentList $argumentString -Wait -PassThru -NoNewWindow `
+            -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath
+
+        if (Test-Path $stdoutPath) {
+            Get-Content -Path $stdoutPath -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_ }
+        }
+        if (Test-Path $stderrPath) {
+            Get-Content -Path $stderrPath -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_ }
+        }
+
+        return [int]$process.ExitCode
+    } finally {
+        Remove-Item $stdoutPath,$stderrPath -Force -ErrorAction SilentlyContinue
     }
-    return [int]$exitCode
 }
 
 function Ensure-NodeAndNpm {
@@ -149,6 +168,6 @@ if (-not $SkipAntigravity) { Ensure-Antigravity }
 
 Write-Host ''
 Write-Host '[READY] Director CLIs are installed.'
-Write-Host 'ONE-TIME LOGIN 1: codex --login   -> choose Sign in with ChatGPT'
-Write-Host 'ONE-TIME LOGIN 2: agy             -> complete Google account sign-in, trust this repo, then exit the TUI'
+Write-Host 'ONE-TIME LOGIN 1: codex login    -> choose Sign in with ChatGPT'
+Write-Host 'ONE-TIME LOGIN 2: agy            -> complete Google account sign-in, trust this repo, then exit the TUI'
 Write-Host 'AFTER LOGIN: .\tools\unity-mcp\start-unity-ai.ps1'
