@@ -27,7 +27,7 @@ assert.ok(rejected.validation.touched.includes('progression'));
 assert.ok(rejected.blockedReasons.includes('protected-mutation'));
 
 const pipeline=createVibeDevelopmentPipeline({environment:'chatgpt'});
-assert.equal(pipeline.version,2);
+assert.equal(pipeline.version,3);
 assert.equal(pipeline.finalAuthority,'deterministic-vibe-engine');
 assert.equal(pipeline.completionGate,'deterministic-evidence-gate');
 assert.ok(pipeline.steps.includes('runtime-observation'));
