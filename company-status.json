@@ -14,7 +14,12 @@
       "paidApiKeysAllowed": false,
       "manualVsCodeDailyRequired": false,
       "stopOnCoreDecision": true,
-      "autoPush": false
+      "autoPush": true,
+      "verifiedCommitsOnly": true,
+      "remoteSyncSeconds": 30,
+      "ownerDirectiveFile": "company-directive.json",
+      "ownerDirectivePriority": "immediate-before-autonomous-plan",
+      "continueOwnerDirectiveUntilVerifiedComplete": true
     },
     "homepageOperations": {
       "manager": "homepage",
@@ -44,6 +49,14 @@
       "task": "게임 플랫폼·개발상태 분류, 검색·필터, 모바일 배치, 링크·상태 표시, 부가기능, 디자인 및 개선 아이디어 상시 운영",
       "scope": ["index.html", "company.html", "game-catalog.json"],
       "lastReviewedAt": "2026-09-08"
+    },
+    "ownerDirectives": {
+      "source": "company-directive.json",
+      "priority": "immediate",
+      "normalPlanPreemptedByNewDirective": true,
+      "syncTargetSeconds": 30,
+      "repeatUntilVerifiedComplete": true,
+      "coreDecisionProtection": true
     }
   },
   "projects": [
