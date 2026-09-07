@@ -5,6 +5,7 @@
 
 import { planVibeWorkbenchTask } from './vibe-workbench.js';
 import { createVibeWorkPlan, createVibeExecutionContract } from './vibe-orchestrator.js';
+import { createDepartmentExperienceState, createExperienceAwareInstruction } from './department-experience.js';
 import {
   COMPANY_FLOW_STAGES,
   COMPANY_REVIEW_ROLES,
@@ -22,13 +23,14 @@ const has=(value,words)=>{const text=clean(value).toLowerCase();return words.som
 const OWNER_GATE_STAGE='owner-approval';
 
 export const VIBE2_COMPANY_SYNC=Object.freeze({
-  version:1,
+  version:2,
   mode:'single-source-of-truth',
   sourceOfTruth:'github-main',
-  companyAuthority:Object.freeze(['company-directive.json','company-status.json','COMPANY_FLOW.md']),
-  vibe2Authority:Object.freeze(['AGENTS.md','ASSET_RULES.md','assets/animated-assets.json','assets/asset-manifest.json','assets/vibe-workbench.js','assets/vibe-orchestrator.js']),
+  companyAuthority:Object.freeze(['company-directive.json','company-status.json','department-experience.json','COMPANY_FLOW.md']),
+  vibe2Authority:Object.freeze(['AGENTS.md','ASSET_RULES.md','assets/animated-assets.json','assets/asset-manifest.json','assets/department-experience.js','assets/vibe-workbench.js','assets/vibe-orchestrator.js']),
   bridge:'assets/vibe-company-orchestration-bridge.js',
   ownerDirectivePriority:'before-autonomous-plan',
+  departmentLearning:'verified-experience-strengthens-quality-not-authority',
   homepagePublication:'explicit-owner-instruction-only',
   webArchive:'read-only',
   paidAutomation:'forbidden'
@@ -72,23 +74,33 @@ function normalizeReviews(reviews=[]){
   return reviews.map(review=>createDepartmentReview(review));
 }
 
-export function createCompanyStageAssignment({stageId='brief',request='',gameId=''}={}){
+export function createCompanyStageAssignment({stageId='brief',request='',gameId='',departmentExperienceState=null}={}){
   const stage=stageById(stageId);
   const roles=STAGE_ASSIGNMENTS[stage.id]||['director'];
   const requiresOwnerAction=stage.id===OWNER_GATE_STAGE;
+  const experienceState=createDepartmentExperienceState(departmentExperienceState||{});
+  const tasks=roles.map(role=>{
+    const baseInstruction=`${stage.name}: ${stage.purpose}`;
+    const experienced=createExperienceAwareInstruction({department:role,baseInstruction,state:experienceState});
+    return Object.freeze({
+      role,
+      stageId:stage.id,
+      instruction:experienced.instruction,
+      request:clean(request),
+      outputs:stage.outputs,
+      experience:experienced.profile
+    });
+  });
+  const experienceProfiles=Object.freeze(Object.fromEntries(tasks.map(task=>[task.role,task.experience])));
+
   return Object.freeze({
-    version:1,
+    version:2,
     sync:VIBE2_COMPANY_SYNC,
     gameId:clean(gameId),
     stage,
     roles:freezeList(roles),
-    tasks:freezeList(roles.map(role=>Object.freeze({
-      role,
-      stageId:stage.id,
-      instruction:`${stage.name}: ${stage.purpose}`,
-      request:clean(request),
-      outputs:stage.outputs
-    }))),
+    tasks:freezeList(tasks),
+    experienceProfiles,
     authority:requiresOwnerAction?'owner-decision-only':'company-managed-stage',
     autoExecute:!requiresOwnerAction,
     requiresOwnerAction,
@@ -114,12 +126,14 @@ export function planCompanyDevelopmentTask({
   revisionRoundsUsed=0,
   maxRevisionRounds=2,
   departmentReviews=[],
+  departmentExperienceState=null,
   ownerDecision='PENDING',
   ownerNotes=''
 }={}){
   const prompt=clean(request);
   if(!prompt)throw new Error('company development request required');
 
+  const experienceState=createDepartmentExperienceState(departmentExperienceState||{});
   const resolvedTarget=inferTarget(prompt,target);
   const newGame=isNewGameRequest(prompt);
   const workbench=planVibeWorkbenchTask({request:prompt,target:resolvedTarget,gameId,file,knownBroken});
@@ -144,7 +158,12 @@ export function planCompanyDevelopmentTask({
   const flow=createCompanyFlow({gameId:gameId||'',maxRevisionRounds});
   const requestedStage=clean(stageId)||flow.currentStage;
   const currentStage=stageById(requestedStage);
-  const assignment=createCompanyStageAssignment({stageId:currentStage.id,request:prompt,gameId:gameId||''});
+  const assignment=createCompanyStageAssignment({
+    stageId:currentStage.id,
+    request:prompt,
+    gameId:gameId||'',
+    departmentExperienceState:experienceState
+  });
 
   let reviewSummary=null;
   let ownerGate=null;
@@ -164,15 +183,25 @@ export function planCompanyDevelopmentTask({
   let execution=null;
   if(mayCreateExecutionContract){
     const executionBase=createVibeExecutionContract({request:prompt,target:resolvedTarget==='unity'?'auto':resolvedTarget,responsibleFiles});
+    const experienceQa=assignment.tasks.flatMap(task=>{
+      const profile=task.experience;
+      const checks=[`${task.role} LV${profile.level}: 근거 ${profile.evidenceMinimum}개 이상`];
+      if(profile.peerReviewRequired)checks.push(`${task.role}: 교차검토 완료`);
+      if(profile.adversarialSelfReview)checks.push(`${task.role}: 반례/실패 시나리오 검증`);
+      return checks;
+    });
     execution=resolvedTarget==='unity'
       ? Object.freeze({
           ...executionBase,
           target:'unity',
           responsibleFiles:Object.freeze(responsibleFiles.map(clean).filter(Boolean)),
-          qa:Object.freeze([...(executionBase.qa||[]),'Unity 컴파일','씬/프리팹 참조','Android 빌드','실기기 실행']),
+          qa:Object.freeze([...(executionBase.qa||[]),...experienceQa,'Unity 컴파일','씬/프리팹 참조','Android 빌드','실기기 실행']),
           compatibilityAdapter:'company-unity-target'
         })
-      : executionBase;
+      : Object.freeze({
+          ...executionBase,
+          qa:Object.freeze([...(executionBase.qa||[]),...experienceQa])
+        });
   }
 
   let next=currentStage.id;
@@ -184,12 +213,13 @@ export function planCompanyDevelopmentTask({
   else if(currentStage.id!==OWNER_GATE_STAGE)next=nextStageId(currentStage.id);
 
   return Object.freeze({
-    version:2,
+    version:3,
     sync:VIBE2_COMPANY_SYNC,
     request:prompt,
     gameId:gameId?clean(gameId):null,
     target:resolvedTarget,
     newGame,
+    departmentExperience:experienceState,
     flow:Object.freeze({...flow,currentStage:currentStage.id,revisionRoundsUsed:Math.max(0,Number(revisionRoundsUsed)||0)}),
     stage:currentStage,
     assignment,
@@ -208,6 +238,7 @@ export function planCompanyDevelopmentTask({
       executionMode:assignment.executionMode,
       next,
       companyReviewRoles:COMPANY_REVIEW_ROLES,
+      departmentExperienceRule:'verified-xp-strengthens-quality-process-without-expanding-authority',
       rule:newGame?'new-game-must-pass-internal-and-owner-gates':majorOwnerApprovalRequired?'major-change-must-pass-owner-gate':'existing-game-protection-flow'
     })
   });
