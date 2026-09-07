@@ -61,5 +61,5 @@
 저작자 표시: 라이선스 고지 유지 필요
 수정 여부: 런타임 프레임 분할만 수행
 다운로드/라이선스 확인 날짜: 2026-09-08
-사용 위치 또는 게임: unity-games/animation-test
-비고: Pirate/Skeleton의 idle, walk, attack, hurt, death 애니메이션을 원본 raw 스프라이트시트와 manifest.json에서 런타임 로드
+사용 위치 또는 게임: unity-games/animation-test, unity-games/daechung-rpg
+비고: Pirate/Skeleton의 idle, walk, attack, hurt, death 애니메이션을 원본 raw 스프라이트시트와 manifest.json에서 런타임 로드. 대충 RPG 초안은 최초 다운로드 후 기기 persistentDataPath 캐시에 저장하여 재사용.
