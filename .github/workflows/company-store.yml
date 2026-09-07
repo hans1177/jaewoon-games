@@ -1,0 +1,73 @@
+# 파일명: .github/workflows/company-store.yml
+# 역할: 회사 상태 저장 파일을 검증하고 GitHub Secret 기반 HMAC 무결성 서명을 생성한다.
+
+name: Company Store Integrity
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - company-status.json
+      - .github/workflows/company-store.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify-company-store:
+    runs-on: ubuntu-latest
+    env:
+      COMPANY_STORE_HMAC_SECRET: ${{ secrets.COMPANY_STORE_HMAC_SECRET }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate company store secret and status
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${COMPANY_STORE_HMAC_SECRET:-}" ]; then
+            echo "COMPANY_STORE_HMAC_SECRET is not configured"
+            exit 1
+          fi
+          if [ "${#COMPANY_STORE_HMAC_SECRET}" -lt 64 ]; then
+            echo "COMPANY_STORE_HMAC_SECRET must be at least 64 characters"
+            exit 1
+          fi
+          node <<'NODE'
+          const fs = require('fs');
+          const crypto = require('crypto');
+
+          const raw = fs.readFileSync('company-status.json');
+          const status = JSON.parse(raw.toString('utf8'));
+
+          if (status.version !== 1) throw new Error('unsupported company status version');
+          if (!status.policy || !status.summary || !status.redevelopmentReview) {
+            throw new Error('company status required sections are missing');
+          }
+
+          const secret = process.env.COMPANY_STORE_HMAC_SECRET;
+          const digest = crypto.createHmac('sha256', secret).update(raw).digest('hex');
+          const signature = {
+            version: 1,
+            algorithm: 'HMAC-SHA256',
+            source: 'company-status.json',
+            commit: process.env.GITHUB_SHA,
+            hmac: digest
+          };
+          fs.writeFileSync('company-status.sig.json', JSON.stringify(signature, null, 2) + '\n');
+          console.log('company store integrity check: PASS');
+          NODE
+
+      - name: Upload signed company status
+        uses: actions/upload-artifact@v4
+        with:
+          name: company-store-integrity
+          path: |
+            company-status.json
+            company-status.sig.json
+          if-no-files-found: error
+          retention-days: 14
