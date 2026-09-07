@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "revision": 1,
+  "updatedAt": "2026-09-08",
+  "priority": "owner-immediate",
+  "instruction": "When Han Jaewoon gives a new company instruction, execute that instruction before the autonomous plan. Move immediately and keep working in bounded verified work units until the instruction is complete. Only protected core decisions, safety/cost policy, read-only archive rules, or an actual technical blocker may pause it.",
+  "rules": [
+    "new-owner-instruction-overrides-autonomous-plan",
+    "start-as-soon-as-local-supervisor-syncs-the-new-revision",
+    "continue-immediate-work-units-until-verified-complete",
+    "do-not-wait-for-the-normal-autonomous-work-interval",
+    "core-decisions-still-require-owner-decision",
+    "paid-ai-and-paid-overage-remain-forbidden",
+    "web-games-remain-read-only"
+  ]
+}
