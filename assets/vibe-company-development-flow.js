@@ -1,6 +1,6 @@
 // 파일명: assets/vibe-company-development-flow.js
-// 역할: 재운컴퍼니 게임 제작의 사전기획 → 시험 → 내부평가 → 사용자승인 → 본개발 흐름과 상/하향 제안 계약을 정의한다.
-// 원칙: 제안과 실행을 분리하고, 큰 방향 변경은 사용자 승인 없이 실행하지 않으며, 정해진 시험 횟수 안에서만 재검토한다.
+// 역할: 재운컴퍼니 게임 제작의 사전기획 → 시험 → 내부평가 → 핵심 사용자승인 → 본개발 흐름과 상/하향 제안 계약을 정의한다.
+// 원칙: 핵심 방향·유료비용·세이브 파괴만 한재운 승인으로 올리고, 나머지 운영/기술/구현 판단은 총괄 AI가 결정한다.
 
 const freezeList=value=>Object.freeze(Array.isArray(value)?[...value]:[]);
 const clean=value=>String(value??'').trim();
@@ -15,7 +15,7 @@ export const COMPANY_FLOW_STAGES=Object.freeze([
   Object.freeze({id:'technical-spike',name:'기술 스파이크',purpose:'위험한 기술 요소만 짧게 시험해 실제 구현 가능성과 모바일 성능을 확인',outputs:freezeList(['spike-results','android-build-check','risk-verdict'])}),
   Object.freeze({id:'playable-draft',name:'플레이어블 초안',purpose:'임시 그래픽으로 핵심 루프와 조작감이 실제로 재미있는지 확인',outputs:freezeList(['playable-prototype','play-notes','known-limitations'])}),
   Object.freeze({id:'internal-review',name:'내부 평가',purpose:'기획·개발·QA·그래픽·밸런스 관점에서 독립 평가 후 총괄이 종합',outputs:freezeList(['department-reviews','director-verdict'])}),
-  Object.freeze({id:'owner-approval',name:'개발 결정 게이트',purpose:'본개발 전 사용자에게 PASS/REVISE/DROP 판단 근거를 올리고 큰 방향을 승인받음',outputs:freezeList(['owner-decision'])}),
+  Object.freeze({id:'owner-approval',name:'핵심 결정 게이트',purpose:'본개발 전 장르·핵심 루프·스토리 큰 방향·전투 핵심·성장 핵심·플랫폼 등 핵심 방향만 한재운에게 PASS/REVISE/DROP으로 승인받음',outputs:freezeList(['owner-decision'])}),
   Object.freeze({id:'full-development',name:'본개발',purpose:'승인된 핵심 설계를 기준으로 실제 콘텐츠와 시스템을 구현',outputs:freezeList(['gameplay-systems','content'])}),
   Object.freeze({id:'system-complete',name:'시스템 완성',purpose:'핵심 플레이·성장·콘텐츠 흐름과 저장 구조를 먼저 안정화',outputs:freezeList(['feature-complete-build'])}),
   Object.freeze({id:'graphics-upgrade',name:'그래픽 고도화',purpose:'확정된 플레이 구조 위에 모델·애니메이션·텍스처·조명·VFX·UI·사운드를 고도화',outputs:freezeList(['production-art','animation','vfx','audio'])}),
@@ -26,23 +26,45 @@ export const COMPANY_FLOW_STAGES=Object.freeze([
 
 export const COMPANY_REVIEW_ROLES=freezeList(['planning','development','qa','graphics','balance']);
 export const COMPANY_DECISIONS=freezeList(['PASS','REVISE','DROP']);
-export const MAJOR_PROPOSAL_CATEGORIES=freezeList([
-  'genre','core-loop','story-direction','camera-model','combat-model','progression-model',
-  'platform','engine','save-breaking-change','large-scope-change','monetization','paid-ai-use'
+
+// 한재운에게 반드시 올리는 결정만 이 목록에 둔다.
+// 카메라 세부, 엔진 내부 구성, 일반 대규모 구현, 그래픽/QA/밸런스/기술 선택은 총괄 AI 위임 사항이다.
+export const OWNER_DECISION_CATEGORIES=freezeList([
+  'genre',
+  'core-loop',
+  'story-direction',
+  'combat-model',
+  'progression-model',
+  'platform',
+  'save-breaking-change',
+  'monetization',
+  'paid-ai-use'
 ]);
+
+// 이전 이름을 유지해 기존 호출부 호환성을 깨지 않는다.
+export const MAJOR_PROPOSAL_CATEGORIES=OWNER_DECISION_CATEGORIES;
 
 export function createCompanyFlow({gameId='',maxRevisionRounds=2}={}){
   const rounds=Math.max(0,Math.min(5,Math.floor(Number(maxRevisionRounds)||0)));
   return Object.freeze({
-    version:1,
+    version:2,
     gameId:clean(gameId),
     stages:COMPANY_FLOW_STAGES,
     currentStage:'brief',
     maxRevisionRounds:rounds,
     revisionRoundsUsed:0,
-    proposalPolicy:Object.freeze({bidirectional:true,proposalIsNotExecution:true,majorChangeRequiresOwnerApproval:true}),
+    proposalPolicy:Object.freeze({
+      bidirectional:true,
+      proposalIsNotExecution:true,
+      coreDecisionRequiresOwnerApproval:true,
+      operationalDecisionDelegatedToDirector:true
+    }),
     graphicsPolicy:Object.freeze({prototype:'rough-feel-only',production:'after-system-stability',mobileOptimized:true}),
-    authority:Object.freeze({owner:'final-direction-and-major-approval',director:'coordination-and-minor-approval',departments:'specialist-proposals-and-review'})
+    authority:Object.freeze({
+      owner:'core-direction-cost-and-save-breaking-only',
+      director:'coordination-operational-technical-and-implementation-approval',
+      departments:'specialist-proposals-review-and-execution'
+    })
   });
 }
 
@@ -51,9 +73,9 @@ export function createCompanyProposal({
 }={}){
   const normalizedCategory=clean(category).toLowerCase()||'implementation';
   const normalizedDirection=direction==='top-down'?'top-down':'bottom-up';
-  const major=MAJOR_PROPOSAL_CATEGORIES.includes(normalizedCategory);
+  const ownerDecisionRequired=OWNER_DECISION_CATEGORIES.includes(normalizedCategory);
   return Object.freeze({
-    version:1,
+    version:2,
     sourceRole:clean(sourceRole)||'department',
     targetRole:clean(targetRole)||'director',
     direction:normalizedDirection,
@@ -63,7 +85,8 @@ export function createCompanyProposal({
     evidence:freezeList(evidence.map(clean).filter(Boolean)),
     impact:clean(impact)||'medium',
     estimatedCost:clean(estimatedCost)||'unknown',
-    requiresOwnerApproval:major,
+    requiresOwnerApproval:ownerDecisionRequired,
+    delegatedToDirector:!ownerDecisionRequired,
     executable:false,
     rule:'proposal-must-be-reviewed-before-execution'
   });
@@ -110,13 +133,13 @@ export function createOwnerDevelopmentGate({internalReview,ownerDecision='PENDIN
   const canRequestOwner=review.ready===true&&['PASS','REVISE','DROP'].includes(review.decision);
   const approved=canRequestOwner&&review.decision==='PASS'&&validOwnerDecision==='PASS';
   return Object.freeze({
-    version:1,
+    version:2,
     internalDecision:review.decision||'REVISE',
     ownerDecision:validOwnerDecision,
     notes:clean(notes),
     approvedForFullDevelopment:approved,
     next:approved?'full-development':validOwnerDecision==='DROP'||review.decision==='DROP'?'drop':'revise-or-await-owner',
-    rule:'full-development-requires-internal-pass-and-owner-pass'
+    rule:'initial-full-development-requires-internal-pass-and-owner-core-direction-pass'
   });
 }
 
@@ -125,7 +148,7 @@ export function classifyCompanyProposalApproval(proposal={}){
   return Object.freeze({
     requiresOwnerApproval:p.requiresOwnerApproval,
     approver:p.requiresOwnerApproval?'owner':'director',
-    mayAutoExecute:false,
-    reason:p.requiresOwnerApproval?'major-direction-change':'minor-or-operational-change'
+    mayAutoExecute:!p.requiresOwnerApproval,
+    reason:p.requiresOwnerApproval?'owner-core-decision-required':'delegated-operational-or-technical-decision'
   });
 }
