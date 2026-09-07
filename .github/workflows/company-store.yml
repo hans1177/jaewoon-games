@@ -1,5 +1,5 @@
 # 파일명: .github/workflows/company-store.yml
-# 역할: 회사 상태 저장 파일을 검증하고 GitHub Secret 기반 HMAC 무결성 서명을 생성한다.
+# 역할: 회사 상태 저장 파일을 검증하고 GitHub Secret 기반 HMAC 무결성 서명을 생성·재검증한다.
 
 name: Company Store Integrity
 
@@ -70,6 +70,30 @@ jobs:
           };
           fs.writeFileSync('company-status.sig.json', JSON.stringify(signature, null, 2) + '\n');
           console.log('company store signature: PASS');
+          NODE
+
+      - name: Verify generated signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const crypto = require('crypto');
+          const raw = fs.readFileSync('company-status.json');
+          const signature = JSON.parse(fs.readFileSync('company-status.sig.json', 'utf8'));
+          const secret = process.env.COMPANY_STORE_HMAC_SECRET;
+
+          if (signature.version !== 1) throw new Error('unsupported signature version');
+          if (signature.algorithm !== 'HMAC-SHA256') throw new Error('unexpected signature algorithm');
+          if (signature.source !== 'company-status.json') throw new Error('unexpected signature source');
+          if (signature.commit !== process.env.GITHUB_SHA) throw new Error('signature commit mismatch');
+
+          const expected = crypto.createHmac('sha256', secret).update(raw).digest();
+          const actual = Buffer.from(String(signature.hmac || ''), 'hex');
+          if (actual.length !== expected.length || !crypto.timingSafeEqual(actual, expected)) {
+            throw new Error('company status HMAC verification failed');
+          }
+          console.log('company store signature verification: PASS');
           NODE
 
       - name: Upload signed company status
