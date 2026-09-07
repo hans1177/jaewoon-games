@@ -49,19 +49,38 @@ function Require-Winget {
     return $winget
 }
 
+function Invoke-NativeToHost([string]$FilePath, [string[]]$Arguments) {
+    # Native stdout must not leak into a PowerShell function return value.
+    # Otherwise callers such as `$npm = Ensure-NodeAndNpm` receive an array of
+    # installer text plus the executable path instead of one clean path string.
+    $lines = & $FilePath @Arguments 2>&1
+    $exitCode = $LASTEXITCODE
+    foreach ($line in @($lines)) {
+        if ($null -ne $line) { Write-Host ([string]$line) }
+    }
+    return [int]$exitCode
+}
+
 function Ensure-NodeAndNpm {
     Refresh-ProcessPath
     $npm = Resolve-CommandPath -Names @('npm.cmd', 'npm') -KnownPaths @('C:\Program Files\nodejs\npm.cmd')
     if ($npm) {
         Write-Host "[PASS] npm detected: $npm"
-        return $npm
+        return [string]$npm
     }
 
     $winget = Require-Winget
     Write-Host '[INFO] npm is missing. Installing Node.js LTS with winget...'
-    & $winget install --id OpenJS.NodeJS.LTS -e --source winget --accept-source-agreements --accept-package-agreements
-    if ($LASTEXITCODE -ne 0) {
-        throw "Node.js LTS installation failed. winget exit code=$LASTEXITCODE"
+    $wingetExit = Invoke-NativeToHost -FilePath $winget -Arguments @(
+        'install',
+        '--id', 'OpenJS.NodeJS.LTS',
+        '-e',
+        '--source', 'winget',
+        '--accept-source-agreements',
+        '--accept-package-agreements'
+    )
+    if ($wingetExit -ne 0) {
+        throw "Node.js LTS installation failed. winget exit code=$wingetExit"
     }
 
     Refresh-ProcessPath
@@ -71,7 +90,7 @@ function Ensure-NodeAndNpm {
     }
 
     Write-Host "[PASS] npm installed: $npm"
-    return $npm
+    return [string]$npm
 }
 
 function Ensure-Codex {
@@ -82,11 +101,15 @@ function Ensure-Codex {
         return
     }
 
-    $npm = Ensure-NodeAndNpm
+    $npm = [string](Ensure-NodeAndNpm)
+    if (-not (Test-Path $npm)) {
+        throw "npm path is invalid: $npm"
+    }
+
     Write-Host '[INFO] Installing OpenAI Codex CLI...'
-    & $npm install -g '@openai/codex'
-    if ($LASTEXITCODE -ne 0) {
-        throw "Codex CLI installation failed. npm exit code=$LASTEXITCODE"
+    $npmExit = Invoke-NativeToHost -FilePath $npm -Arguments @('install', '-g', '@openai/codex')
+    if ($npmExit -ne 0) {
+        throw "Codex CLI installation failed. npm exit code=$npmExit"
     }
 
     Refresh-ProcessPath
