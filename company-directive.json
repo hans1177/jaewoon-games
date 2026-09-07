@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "revision": 2,
+  "revision": 3,
   "updatedAt": "2026-09-08",
   "priority": "owner-immediate",
-  "instruction": "Make remote owner requests the primary operating path. When Han Jaewoon requests a game or change from outside the PC, execute it ahead of the autonomous plan, avoid requiring local PC commands for the normal flow, and when a Unity work unit becomes externally testable, create a cloud Android build request, build on GitHub-hosted infrastructure, publish a verified APK prerelease, update company-status testBuilds, and expose the real download link on the homepage. Keep working in bounded verified units until the request is complete. Local Unity/MCP and self-hosted PC workflows are optional recovery paths only, not the default. Never claim cloud build readiness without the required Unity license secrets and never use paid overage or paid runners automatically.",
+  "instruction": "Keep remote owner requests as the primary operating path and execute them ahead of the autonomous plan. Game creation or modification requests must never automatically publish a new game, Unity project, APK, or download link to the public homepage. Build and provide verified direct test downloads independently. Only publish a game or test download to the homepage when Han Jaewoon explicitly says to put it on the homepage. Keep Jaewoon Games and Jaewoon Company operating state synchronized through the shared GitHub source of truth while keeping public homepage publication as a separate explicit action. Local Unity/MCP and self-hosted PC workflows remain optional recovery paths only. Never use paid overage or paid runners automatically.",
   "rules": [
     "new-owner-instruction-overrides-autonomous-plan",
     "remote-request-flow-does-not-require-local-pc-by-default",
@@ -11,7 +11,9 @@
     "externally-testable-unity-work-creates-build-request",
     "github-hosted-android-test-build-first",
     "publish-only-real-non-empty-apk-with-sha256",
-    "homepage-download-link-requires-build-evidence",
+    "direct-test-download-does-not-imply-homepage-publication",
+    "homepage-publication-requires-explicit-owner-instruction",
+    "games-and-company-share-github-source-of-truth",
     "local-unity-mcp-is-optional-recovery-path",
     "self-hosted-pc-build-is-legacy-manual-only",
     "continue-immediate-work-units-until-verified-complete",
