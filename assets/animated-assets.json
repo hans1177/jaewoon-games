@@ -1,10 +1,15 @@
 {
-  "version": 1,
+  "version": 2,
   "purpose": "바이브2 웹게임 내부 개인사용용 검증 애니메이션 에셋 카탈로그",
   "rules": {
     "animationRequired": true,
     "staticOnlyBlocked": true,
-    "mustHaveEvidence": ["spritesheet-or-frame-files", "animation-preview-or-documented-animation-list"],
+    "staticCharacterBlocked": true,
+    "staticEnemyBlocked": true,
+    "staticBossBlocked": true,
+    "geometricActorBlocked": true,
+    "actorSelectionRequires": ["verified", "spritesheet-or-frame-files", "animation-preview-or-documented-animation-list", "locomotion-animation"],
+    "locomotionAnimations": ["move", "walk", "run", "jump", "fly", "swim", "crawl"],
     "preferExistingRepositoryAssets": true,
     "externalAssetTarget": "assets/animated/",
     "distributionReviewRequired": true
@@ -18,8 +23,10 @@
       "license": "CC0",
       "characters": ["zombie", "skeleton", "witch"],
       "animations": ["idle", "walk", "punch", "hurt", "fall"],
+      "normalizedStates": ["idle", "move", "attack", "hit", "death"],
       "format": ["transparent-spritesheet"],
       "verified": true,
+      "actorUsable": true,
       "downloaded": false,
       "priority": 1
     },
@@ -31,8 +38,10 @@
       "license": "CC0",
       "characters": ["hero", "slime"],
       "animations": ["idle", "run", "move", "attack", "jump", "fall", "air-attack", "hurt", "dead"],
+      "normalizedStates": ["idle", "move", "attack", "hit", "death"],
       "format": ["png"],
       "verified": true,
+      "actorUsable": true,
       "downloaded": false,
       "priority": 1
     },
@@ -47,6 +56,7 @@
       "frameInfo": "각 효과 6~10프레임",
       "format": ["gif", "png", "psd"],
       "verified": true,
+      "actorUsable": false,
       "downloaded": false,
       "priority": 1
     },
@@ -58,8 +68,10 @@
       "license": "CC0",
       "characters": ["slime-12-colors"],
       "animations": ["hurt", "idle", "jump", "attack", "die"],
+      "normalizedStates": ["idle", "move", "attack", "hit", "death"],
       "format": ["unity-prefab", "psd", "clip"],
       "verified": true,
+      "actorUsable": true,
       "downloaded": false,
       "priority": 1
     },
@@ -71,9 +83,11 @@
       "license": "MIT",
       "characters": ["pirate", "skeleton"],
       "animations": ["idle", "walk", "attack", "hurt", "jump", "death"],
+      "normalizedStates": ["idle", "move", "attack", "hit", "death"],
       "evidence": ["preview.gif", "manifest.json", "spritesheet.png", "runtime-preview"],
       "format": ["png", "gif", "json"],
       "verified": true,
+      "actorUsable": true,
       "downloaded": false,
       "priority": 1
     }
