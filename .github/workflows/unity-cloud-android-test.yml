@@ -144,6 +144,7 @@ jobs:
               'sha256': apk_sha,
               'bytes': int(size),
               'channel': 'test',
+              'homepagePublished': False,
               'builtAt': datetime.datetime.now(datetime.timezone.utc).isoformat()
           }, ensure_ascii=False, indent=2))
           PY
@@ -163,7 +164,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Publish public prerelease test download
+      - name: Publish test prerelease download
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.artifact.outputs.release_tag }}
@@ -175,69 +176,16 @@ jobs:
             Game: ${{ steps.request.outputs.game_id }}
             Source: ${{ github.sha }}
             Request: ${{ steps.request.outputs.request_id }}
+            Homepage publication: disabled by default; owner instruction required.
           files: |
             ${{ steps.artifact.outputs.apk_path }}
             ${{ steps.artifact.outputs.apk_path }}.sha256
             dist/build-info.json
           fail_on_unmatched_files: true
 
-      - name: Update company test-build pointer
+      - name: Confirm homepage remains unchanged
         shell: bash
         run: |
-          set -euo pipefail
-          game='${{ steps.request.outputs.game_id }}'
-          tag='${{ steps.artifact.outputs.release_tag }}'
-          apk="${game}-test.apk"
-          download="https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/${apk}"
-          release="https://github.com/${GITHUB_REPOSITORY}/releases/tag/${tag}"
-
-          for attempt in 1 2 3; do
-            git fetch origin main
-            git checkout -B main origin/main
-            python - "$game" '${{ steps.request.outputs.request_id }}' "$GITHUB_SHA" "$tag" "$download" "$release" '${{ steps.artifact.outputs.sha256 }}' <<'PY'
-          import json, pathlib, sys, datetime
-          game, request_id, source, tag, download, release, sha = sys.argv[1:]
-          path = pathlib.Path('company-status.json')
-          data = json.loads(path.read_text(encoding='utf-8'))
-          builds = [b for b in data.get('testBuilds', []) if (b.get('gameId') or b.get('id')) != game]
-          name = game
-          for p in data.get('projects', []):
-              if (p.get('gameId') == game:
-                  name = p.get('name') or game
-                  break
-          builds.insert(0, {
-              'gameId': game,
-              'name': name,
-              'channel': 'test',
-              'status': 'ready',
-              'requestId': request_id,
-              'sourceCommit': source,
-              'releaseTag': tag,
-              'release': release,
-              'download': download,
-              'sha256': sha,
-              'builtAt': datetime.datetime.now(datetime.timezone.utc).isoformat()
-          })
-          data['testBuilds'] = builds[:20]
-          data.setdefault('summary', {})['testBuilds'] = len(builds[:20])
-          data['updatedAt'] = datetime.date.today().isoformat()
-          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-          PY
-            git config user.name 'jaewoon-build-bot'
-            git config user.email 'actions@users.noreply.github.com'
-            git add company-status.json
-            if git diff --cached --quiet; then
-              echo '[PASS] company-status already current.'
-              exit 0
-            fi
-            git commit -m "build-status: publish ${game} Android test"
-            if git push origin HEAD:main; then
-              echo "[PASS] Homepage test download pointer published: $download"
-              exit 0
-            fi
-            echo "[WARN] Status push raced with another update; retry $attempt/3"
-            git reset --hard origin/main
-            sleep $((attempt * 2))
-          done
-          echo '[FAIL] APK release exists, but company-status pointer could not be published after retries.' >&2
-          exit 1
+          echo '[PASS] Test APK prerelease published for direct testing.'
+          echo '[PASS] No company-status, game-catalog, index.html, or homepage download pointer was changed.'
+          echo '[INFO] Homepage publication requires an explicit owner instruction.'
