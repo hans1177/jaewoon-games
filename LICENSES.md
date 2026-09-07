@@ -49,4 +49,17 @@
 
 ## 현재 기록
 
-아직 새 표준 구조 기준으로 등록된 외부 공용 에셋 없음.
+### AI Pixel Snapped Game Sprites
+
+이름: AI Pixel Snapped Game Sprites
+종류: 이미지 / 애니메이션 스프라이트시트
+제작자: Chong-U Lim
+출처 사이트: GitHub
+원본 페이지: https://github.com/chongdashu/ai-pixel-snapped-game-sprites
+라이선스: MIT
+상업적 사용: 가능
+저작자 표시: 라이선스 고지 유지 필요
+수정 여부: 런타임 프레임 분할만 수행
+다운로드/라이선스 확인 날짜: 2026-09-08
+사용 위치 또는 게임: unity-games/animation-test
+비고: Pirate/Skeleton의 idle, walk, attack, hurt, death 애니메이션을 원본 raw 스프라이트시트와 manifest.json에서 런타임 로드
