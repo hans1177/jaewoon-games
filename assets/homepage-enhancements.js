@@ -1,5 +1,5 @@
 // Homepage enhancement layer: duplicate tagline cleanup, concise development-artbook popup,
-// public-game health badges, and verified rollback display.
+// public-game runtime check badges, and verified rollback display.
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const getJson=async url=>{try{const r=await fetch(`${url}${url.includes('?')?'&':'?'}ts=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));return await r.json();}catch{return null;}};
 
@@ -51,7 +51,7 @@ function decorateCards(catalog,status,artbooks,health,baselines){
   document.querySelectorAll('.gameCard').forEach(card=>{
     const name=card.querySelector('.artName b')?.textContent?.trim();const meta=catalogByName.get(name);if(!meta)return;
     const h=healthById.get(meta.id);const badges=card.querySelector('.badges');
-    if(badges&&!badges.querySelector('.healthBadge')){const span=document.createElement('span');span.className='badge healthBadge '+(!h||h.score==null?'healthPending':h.status==='healthy'?'healthHealthy':h.status==='warning'?'healthWarning':'healthCritical');span.textContent=!h||h.score==null?'건강 점검 대기':`건강 ${h.score}`;badges.appendChild(span);}
+    if(badges&&!badges.querySelector('.healthBadge')){const span=document.createElement('span');const runtimeLabel=!h||h.score==null?'웹 실행 점검대기':h.status==='healthy'?'웹 실행 양호':h.status==='warning'?'웹 실행 주의':'웹 실행 오류';span.className='badge healthBadge '+(!h||h.score==null?'healthPending':h.status==='healthy'?'healthHealthy':h.status==='warning'?'healthWarning':'healthCritical');span.textContent=runtimeLabel;span.title='게임 완성도 평가가 아닌 페이지 실행·오류·모바일·리소스 점검 상태';badges.appendChild(span);}
     const baseline=baselineById.get(meta.id);if(baseline?.rollbackActive&&baseline?.fallbackDownload){const btn=card.querySelector('.cardBtn.primary');if(btn){btn.href=baseline.fallbackDownload;btn.textContent='안정판 APK';btn.removeAttribute('download');}const info=card.querySelector('.gameInfo');if(info&&!info.querySelector('.rollbackNotice')){const n=document.createElement('span');n.className='rollbackNotice';n.textContent='최신판 이상 감지 → 마지막 검증 안정판 표시 중';info.appendChild(n);}}
     const project=projectById.get(meta.id);const stage=String(project?.stage||'').toLowerCase();const approvedDev=meta.homepagePublicationApproved===true&&project&&project.ownerDecision==='PASS'&&!['release','done'].includes(stage);
     const actions=card.querySelector('.cardActions');if(approvedDev&&actions&&!actions.querySelector('.artbookBtn')){const b=document.createElement('button');b.type='button';b.className='artbookBtn';b.textContent='개발 아트북';b.onclick=()=>openArtbook(meta,latestBookFor(artbooks,meta.id),submissionsFor(artbooks,meta.id));actions.appendChild(b);}
