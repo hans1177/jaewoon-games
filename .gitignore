@@ -36,6 +36,11 @@ export_presets.cfg.tmp
 *.apk
 *.aab
 
+# Jaewoon Company local AI runtime state
+.jaewoon-company-ai-state.json
+.jaewoon-company-ai.lock
+.jaewoon-owner-decision.txt
+
 # OS / editor
 .DS_Store
 Thumbs.db
