@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-08",
+  "policy": {
+    "keepRejectedLearning": true,
+    "crossProjectReuseAllowed": true,
+    "evidenceLinksPreferred": true,
+    "artbookIsResearchAsset": true
+  },
+  "notes": [
+    {
+      "id": "mobile-rpg-loop-001",
+      "gameId": "daechung-rpg",
+      "topic": "core-loop",
+      "status": "working-hypothesis",
+      "finding": "마을 준비 → 짧은 필드 이동 → 즉시 전투 → 보상 → 다음 지역 해금 구조는 모바일 초안의 설명 비용을 낮추는 방향으로 사용한다.",
+      "evidence": ["game-artbooks.json#daechung-rpg-draft-001"],
+      "reusableTags": ["rpg", "mobile", "short-session", "progression"]
+    },
+    {
+      "id": "animated-prototype-actors-001",
+      "gameId": "daechung-rpg",
+      "topic": "prototype-assets",
+      "status": "needs-runtime-verification",
+      "finding": "초안에서도 정지 도형 대신 검증된 애니메이션 배우를 사용한다. 현재 Pirate/Skeleton 세트는 manifest 기준 MIT와 이동/공격/피격/사망 모션 증거가 있으나 Android 실기기 검증은 아직 필요하다.",
+      "evidence": ["assets/asset-manifest.json", "game-artbooks.json#daechung-rpg-draft-001"],
+      "reusableTags": ["animation", "prototype", "asset-validation", "mobile"]
+    },
+    {
+      "id": "unity-cloud-license-001",
+      "gameId": "daechung-rpg",
+      "topic": "build-infrastructure",
+      "status": "open-problem",
+      "finding": "Unity Cloud Android Test #2는 코드 컴파일 전에 라이선스 Code 20110 serial invalid로 중단됐다. 이후 같은 증상은 코드 버그보다 라이선스 경로를 먼저 확인한다.",
+      "evidence": ["actions-run:34163120304", "company-learning/bug-memory.json#unity-cloud-license-20110"],
+      "reusableTags": ["unity", "android", "build", "license", "failure-pattern"]
+    }
+  ]
+}
