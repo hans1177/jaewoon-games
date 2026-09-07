@@ -1,6 +1,7 @@
 // 파일명: assets/vibe-company-orchestration-bridge.js
 // 역할: 재운컴퍼니 개발 플로우를 기존 workbench/orchestrator 실행계약에 연결한다.
 // 원칙: 새 게임은 사전기획/시험/내부평가/사용자 승인 전 본개발 금지. 승인 외 단계는 회사가 자동 배정하고 기존 보호 규칙을 유지한다.
+// 동기화: 바이브2 제작 규칙과 재운컴퍼니 운영 상태는 같은 GitHub main을 단일 진실 소스로 사용한다.
 
 import { planVibeWorkbenchTask } from './vibe-workbench.js';
 import { createVibeWorkPlan, createVibeExecutionContract } from './vibe-orchestrator.js';
@@ -20,6 +21,19 @@ const freezeList=value=>Object.freeze(Array.isArray(value)?[...value]:[]);
 const has=(value,words)=>{const text=clean(value).toLowerCase();return words.some(word=>text.includes(String(word).toLowerCase()));};
 const OWNER_GATE_STAGE='owner-approval';
 
+export const VIBE2_COMPANY_SYNC=Object.freeze({
+  version:1,
+  mode:'single-source-of-truth',
+  sourceOfTruth:'github-main',
+  companyAuthority:Object.freeze(['company-directive.json','company-status.json','COMPANY_FLOW.md']),
+  vibe2Authority:Object.freeze(['AGENTS.md','ASSET_RULES.md','assets/animated-assets.json','assets/asset-manifest.json','assets/vibe-workbench.js','assets/vibe-orchestrator.js']),
+  bridge:'assets/vibe-company-orchestration-bridge.js',
+  ownerDirectivePriority:'before-autonomous-plan',
+  homepagePublication:'explicit-owner-instruction-only',
+  webArchive:'read-only',
+  paidAutomation:'forbidden'
+});
+
 const STAGE_ASSIGNMENTS=Object.freeze({
   brief:['planning'],
   'core-fun':['planning','balance'],
@@ -36,7 +50,7 @@ const STAGE_ASSIGNMENTS=Object.freeze({
   'graphics-upgrade':['graphics','development','qa'],
   'integrated-qa':['qa','planning','development','graphics','balance'],
   optimization:['development','qa','graphics'],
-  'android-build':['development','qa']
+  'android-build':['development','qa','release']
 });
 
 function isNewGameRequest(request){
@@ -64,6 +78,7 @@ export function createCompanyStageAssignment({stageId='brief',request='',gameId=
   const requiresOwnerAction=stage.id===OWNER_GATE_STAGE;
   return Object.freeze({
     version:1,
+    sync:VIBE2_COMPANY_SYNC,
     gameId:clean(gameId),
     stage,
     roles:freezeList(roles),
@@ -85,7 +100,7 @@ export function submitCompanyBidirectionalProposal({
   sourceRole='',targetRole='director',direction='bottom-up',category='implementation',summary='',reason='',evidence=[],impact='medium',estimatedCost='unknown'
 }={}){
   const proposal=createCompanyProposal({sourceRole,targetRole,direction,category,summary,reason,evidence,impact,estimatedCost});
-  return Object.freeze({proposal,approval:classifyCompanyProposalApproval(proposal)});
+  return Object.freeze({sync:VIBE2_COMPANY_SYNC,proposal,approval:classifyCompanyProposalApproval(proposal)});
 }
 
 export function planCompanyDevelopmentTask({
@@ -170,6 +185,7 @@ export function planCompanyDevelopmentTask({
 
   return Object.freeze({
     version:2,
+    sync:VIBE2_COMPANY_SYNC,
     request:prompt,
     gameId:gameId?clean(gameId):null,
     target:resolvedTarget,
@@ -198,6 +214,7 @@ export function planCompanyDevelopmentTask({
 }
 
 if(typeof window!=='undefined'){
+  window.VIBE2_COMPANY_SYNC=VIBE2_COMPANY_SYNC;
   window.planJaewoonCompanyDevelopmentTask=planCompanyDevelopmentTask;
   window.createJaewoonCompanyStageAssignment=createCompanyStageAssignment;
   window.submitJaewoonCompanyProposal=submitCompanyBidirectionalProposal;
