@@ -34,14 +34,14 @@ jobs:
           SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
         run: node tools/award-department-experience.mjs "$SOURCE_SHA" "$SOURCE_RUN_ID"
 
-      - name: Commit XP ledger when changed
+      - name: Commit XP state when changed
         run: |
-          if git diff --quiet -- department-experience.json; then
+          if git diff --quiet -- department-experience.json assets/department-experience-state.js; then
             echo "No new verified XP to record."
             exit 0
           fi
           git config user.name "jaewoon-company-ai"
           git config user.email "actions@users.noreply.github.com"
-          git add department-experience.json
+          git add department-experience.json assets/department-experience-state.js
           git commit -m "company-xp: record verified department experience [skip ci]"
           git push origin main
