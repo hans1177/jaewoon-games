@@ -7,6 +7,7 @@ import { planVibeWorkbenchTask } from './vibe-workbench.js';
 import { createVibeWorkPlan, createVibeExecutionContract } from './vibe-orchestrator.js';
 import { createDepartmentExperienceState, createExperienceAwareInstruction } from './department-experience.js';
 import { DEFAULT_DEPARTMENT_EXPERIENCE_STATE } from './department-experience-state.js';
+import { createCompanyQualityBar } from './company-quality-bar.js';
 import {
   COMPANY_FLOW_STAGES,
   COMPANY_REVIEW_ROLES,
@@ -24,14 +25,15 @@ const has=(value,words)=>{const text=clean(value).toLowerCase();return words.som
 const OWNER_GATE_STAGE='owner-approval';
 
 export const VIBE2_COMPANY_SYNC=Object.freeze({
-  version:3,
+  version:4,
   mode:'single-source-of-truth',
   sourceOfTruth:'github-main',
   companyAuthority:Object.freeze(['company-directive.json','company-status.json','department-experience.json','COMPANY_FLOW.md']),
-  vibe2Authority:Object.freeze(['AGENTS.md','ASSET_RULES.md','assets/animated-assets.json','assets/asset-manifest.json','assets/department-experience.js','assets/department-experience-state.js','assets/vibe-workbench.js','assets/vibe-orchestrator.js']),
+  vibe2Authority:Object.freeze(['AGENTS.md','ASSET_RULES.md','assets/animated-assets.json','assets/asset-manifest.json','assets/department-experience.js','assets/department-experience-state.js','assets/company-quality-bar.js','assets/vibe-workbench.js','assets/vibe-orchestrator.js']),
   bridge:'assets/vibe-company-orchestration-bridge.js',
   ownerDirectivePriority:'before-autonomous-plan',
   departmentLearning:'verified-experience-strengthens-quality-not-authority',
+  qualityLearning:'company-quality-bar-rises-with-verified-experience',
   homepagePublication:'explicit-owner-instruction-only',
   webArchive:'read-only',
   paidAutomation:'forbidden'
@@ -138,6 +140,7 @@ export function planCompanyDevelopmentTask({
   if(!prompt)throw new Error('company development request required');
 
   const experienceState=resolveExperienceState(departmentExperienceState);
+  const companyQualityBar=createCompanyQualityBar(experienceState);
   const resolvedTarget=inferTarget(prompt,target);
   const newGame=isNewGameRequest(prompt);
   const workbench=planVibeWorkbenchTask({request:prompt,target:resolvedTarget,gameId,file,knownBroken});
@@ -187,6 +190,7 @@ export function planCompanyDevelopmentTask({
   let execution=null;
   if(mayCreateExecutionContract){
     const executionBase=createVibeExecutionContract({request:prompt,target:resolvedTarget==='unity'?'auto':resolvedTarget,responsibleFiles});
+    const qualityBarChecks=[`회사 품질바 T${companyQualityBar.tier} ${companyQualityBar.name}: ${JSON.stringify(companyQualityBar.requirements)}`];
     const experienceQa=assignment.tasks.flatMap(task=>{
       const profile=task.experience;
       const checks=[`${task.role} LV${profile.level}: 근거 ${profile.evidenceMinimum}개 이상`];
@@ -199,12 +203,12 @@ export function planCompanyDevelopmentTask({
           ...executionBase,
           target:'unity',
           responsibleFiles:Object.freeze(responsibleFiles.map(clean).filter(Boolean)),
-          qa:Object.freeze([...(executionBase.qa||[]),...experienceQa,'Unity 컴파일','씬/프리팹 참조','Android 빌드','실기기 실행']),
+          qa:Object.freeze([...(executionBase.qa||[]),...qualityBarChecks,...experienceQa,'Unity 컴파일','씬/프리팹 참조','Android 빌드','실기기 실행']),
           compatibilityAdapter:'company-unity-target'
         })
       : Object.freeze({
           ...executionBase,
-          qa:Object.freeze([...(executionBase.qa||[]),...experienceQa])
+          qa:Object.freeze([...(executionBase.qa||[]),...qualityBarChecks,...experienceQa])
         });
   }
 
@@ -224,6 +228,7 @@ export function planCompanyDevelopmentTask({
     target:resolvedTarget,
     newGame,
     departmentExperience:experienceState,
+    qualityBar:companyQualityBar,
     flow:Object.freeze({...flow,currentStage:currentStage.id,revisionRoundsUsed:Math.max(0,Number(revisionRoundsUsed)||0)}),
     stage:currentStage,
     assignment,

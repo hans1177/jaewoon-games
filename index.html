@@ -24,7 +24,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 <body>
 <div class="page"><main class="shell">
 <div class="brandRow"><header class="brand"><img src="assets/brand-transparent.png?v=1" alt="재운게임즈"></header><a class="companyLink" href="/company.html">재운컴퍼니 운영실</a></div>
-<div class="tagline">작은 상상이 큰 재미가 되는 곳</div>
 
 <section class="opsBar" aria-label="게임 운영 요약">
 <div class="opsLead"><b id="opsStatus">게임 목록 정리 중</b><span id="opsUpdated">플랫폼·개발상태·테스트 여부를 불러오는 중</span></div>
@@ -113,5 +112,6 @@ const aiSeed=[{name:'민준',text:'곤충 생존기 탐험하는 맛이 있어�
 let reviews=aiSeed.slice();try{const saved=JSON.parse(localStorage.getItem('jaewoon-game-reviews-v2')||'[]');if(Array.isArray(saved)&&saved.length)reviews=saved.slice(-10)}catch(e){}while(reviews.length<10)reviews.unshift(aiSeed[reviews.length%aiSeed.length]);reviews=reviews.slice(-10);let ri=0;function showReview(){const r=reviews[ri%reviews.length];reviewBubble.innerHTML=`<b>${esc(r.name)}</b>${esc(r.text)}`;reviewIndex.textContent=`${ri%reviews.length+1} / ${reviews.length}`;ri=(ri+1)%reviews.length}showReview();setInterval(showReview,4000);reviewForm.onsubmit=e=>{e.preventDefault();const n=reviewNameInput.value.trim(),t=reviewTextInput.value.trim();if(!n||!t)return;reviews.push({name:n,text:t});reviews=reviews.slice(-10);localStorage.setItem('jaewoon-game-reviews-v2',JSON.stringify(reviews));ri=reviews.length-1;showReview();reviewForm.reset();reviewNotice.textContent='등록됐어. 가장 오래된 한마디 1개가 빠졌어.'};
 const tracks=[['Grounded 2 · Growing Pains','kNxMMWO3Hss'],['Core Keeper · Original Soundtrack','dDCZZR-i5z4'],["Joe Hisaishi · One Summer's Day",'TK1Ij_-mank'],['Joe Hisaishi · Merry-Go-Round of Life','2pQKqQ9sG50']];let mi=0,started=false;function playMusic(){const t=tracks[mi];musicNow.textContent=`${mi+1} / ${tracks.length} · ${t[0]}`;musicFrame.src='https://www.youtube-nocookie.com/embed/'+t[1]+'?playsinline=1&rel=0&autoplay=1';started=true}musicNext.onclick=()=>{if(started)mi=(mi+1)%tracks.length;playMusic()};
 </script>
+<script type="module" src="/assets/homepage-enhancements.js"></script>
 </body>
 </html>
