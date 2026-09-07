@@ -1,5 +1,5 @@
 // 파일명: AndroidTestBuild.cs
-// 역할: GitHub-hosted GameCI가 대충 RPG의 첫 Android 테스트 APK를 재현 가능하게 빌드한다.
+// 역할: GitHub-hosted GameCI가 대충 RPG Android 테스트 APK를 재현 가능하게 빌드한다.
 using System;
 using System.IO;
 using UnityEditor;
@@ -24,8 +24,10 @@ namespace JaewoonGames.DaechungRpg.Editor
             }
 
             EditorUserBuildSettings.buildAppBundle = false;
+            PlayerSettings.companyName = "Jaewoon Games";
             PlayerSettings.productName = "Daechung RPG Test";
-            PlayerSettings.bundleVersion = "0.1.0-test";
+            PlayerSettings.bundleVersion = "0.2.0-animated-prototype";
+            PlayerSettings.Android.forceInternetPermission = true;
 
             var repoRoot = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", ".."));
             var outputDirectory = Path.Combine(repoRoot, "build", "Android");
@@ -37,7 +39,7 @@ namespace JaewoonGames.DaechungRpg.Editor
                 scenes = new[] { ScenePath },
                 locationPathName = outputPath,
                 target = BuildTarget.Android,
-                options = BuildOptions.None
+                options = BuildOptions.Development
             };
 
             Debug.Log($"[JAEWOON BUILD] Building Android APK: {outputPath}");
