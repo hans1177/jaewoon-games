@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "updatedAt": "2026-09-08",
   "priority": "owner-immediate",
   "rule": "one-collaborative-initial-artbook-per-game-before-formal-production",
@@ -21,6 +21,21 @@
   "formalProductionAllowedBeforeComplete": false,
   "uniformTemplateForbidden": true,
   "currentDailyTarget": "daechung-rpg",
+  "currentTargetExecution": {
+    "date": "2026-09-08",
+    "readySections": 0,
+    "requiredSections": 5,
+    "directorAssemblyReady": false,
+    "departmentIssues": {
+      "planning": 7,
+      "graphics": 8,
+      "development": 9,
+      "qa": 10,
+      "balance": 11
+    },
+    "runnerDispatch": "BLOCKED_403_FORBIDDEN",
+    "directorGhostwritingFallback": false
+  },
   "queueOrder": [
     "daechung-rpg",
     "insect-survival",
@@ -35,7 +50,7 @@
     "territory-war"
   ],
   "games": [
-    {"gameId":"daechung-rpg","name":"대충 RPG","source":"web-games/daechung-rpg + unity-games/daechung-rpg","status":"DAILY_TARGET_NOW","sectionsReady":[],"requiredSections":5,"styleProfile":"판타지 세계 설정집 + 모험 연대기","existingUnityWork":"preserve-as-prototype-evidence","currentStage":"game-demo-test-evidence"},
+    {"gameId":"daechung-rpg","name":"대충 RPG","source":"web-games/daechung-rpg + unity-games/daechung-rpg","status":"DAILY_TARGET_WAITING_FOR_DEPARTMENT_RUNNERS","sectionsReady":[],"requiredSections":5,"styleProfile":"판타지 세계 설정집 + 모험 연대기","existingUnityWork":"preserve-as-prototype-evidence","currentStage":"game-demo-test-evidence","directorAssemblyReady":false},
     {"gameId":"insect-survival","name":"곤충 생존기","source":"web-games/insect-survival","status":"QUEUED","sectionsReady":[],"requiredSections":5,"styleProfile":"생태 탐사일지 + 생존 현장 기록"},
     {"gameId":"crystal-defense","name":"수정 디펜스","source":"web-games/crystal-defense","status":"QUEUED","sectionsReady":[],"requiredSections":5,"styleProfile":"마력 방어선 설계서 + 침공 기록"},
     {"gameId":"bug-defense","name":"곤충 디펜스","source":"web-games/bug-defense","status":"QUEUED","sectionsReady":[],"requiredSections":5,"styleProfile":"곤충 전쟁사 + 병종 작전기록"},
