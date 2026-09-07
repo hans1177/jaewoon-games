@@ -14,6 +14,8 @@ const runId=clean(process.env.GITHUB_RUN_ID)||'local';
 const base=(clean(process.env.PUBLIC_BASE_URL)||'http://127.0.0.1:4173').replace(/\/$/,'');
 const catalog=readJson('game-catalog.json',{games:[]});
 const scenarios=readJson('qa/public-game-scenarios.json',{});
+const previous=readJson('public-game-health.json',{});
+const previousById=new Map((previous.games||[]).map(x=>[x.gameId,x]));
 const bugMemory=readJson('company-learning/bug-memory.json',{version:1,policy:{},bugs:[]});
 bugMemory.bugs=Array.isArray(bugMemory.bugs)?bugMemory.bugs:[];
 const artifactDir='qa-artifacts/public-game-health';
@@ -52,6 +54,26 @@ function addBug({gameId,type,message,severity='MEDIUM',url=''}){
   });
 }
 
+function classifyHealth({loadOk,contentSignal,overflowOk,storageStatus,uniqueErrors,sameOriginFailed,calculatedScore}){
+  const highErrors=uniqueErrors.filter(x=>['pageerror','navigation'].includes(x.type));
+  const consoleErrors=uniqueErrors.filter(x=>x.type==='console');
+  let status='healthy';
+  let reason='no-blocking-smoke-errors';
+  if(!loadOk||!contentSignal||highErrors.length){
+    status='critical';
+    reason=!loadOk?'page-load-failed':!contentSignal?'no-rendered-content-signal':'runtime-page-error';
+  }else if(sameOriginFailed.length||consoleErrors.length||!overflowOk||storageStatus==='lost'){
+    status='warning';
+    reason=sameOriginFailed.length?'same-origin-resource-failure':consoleErrors.length?'console-error':!overflowOk?'mobile-horizontal-overflow':'storage-regression';
+  }else if(calculatedScore<55){
+    status='critical';reason='score-below-critical-threshold';
+  }else if(calculatedScore<75){
+    status='warning';reason='score-below-healthy-threshold';
+  }
+  const score=status==='critical'?Math.min(54,calculatedScore):status==='warning'?Math.min(74,calculatedScore):calculatedScore;
+  return {status,score,reason,highErrorCount:highErrors.length,consoleErrorCount:consoleErrors.length};
+}
+
 const browser=await chromium.launch({headless:true});
 const results=[];
 try{
@@ -66,11 +88,21 @@ try{
     page.on('console',msg=>{if(msg.type()==='error')errors.push({type:'console',message:clean(msg.text())});});
     page.on('requestfailed',request=>failed.push({url:request.url(),message:clean(request.failure()?.errorText)}));
     const url=`${base}${game.webPath.startsWith('/')?'':'/'}${game.webPath}`;
-    let loadOk=false,reloadOk=false,overflowOk=false,bodyOk=false,storageStatus='not-detected';
+    let loadOk=false,reloadOk=false,overflowOk=false,contentSignal=false,storageStatus='not-detected';
+    let renderedTextLength=0,canvasCount=0,interactiveCount=0;
     try{
       const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:25000});
       loadOk=Boolean(response&&response.ok());
-      bodyOk=(await page.locator('body').innerText({timeout:3000}).catch(()=>'' )).trim().length>0;
+      const renderSignals=await page.evaluate(()=>({
+        text:(document.body?.innerText||'').trim().length,
+        canvas:document.querySelectorAll('canvas').length,
+        interactive:document.querySelectorAll('button,a,input,select,textarea,[role="button"]').length,
+        visual:document.querySelectorAll('main,svg,img,video,iframe').length
+      })).catch(()=>({text:0,canvas:0,interactive:0,visual:0}));
+      renderedTextLength=renderSignals.text;
+      canvasCount=renderSignals.canvas;
+      interactiveCount=renderSignals.interactive;
+      contentSignal=renderSignals.text>0||renderSignals.canvas>0||renderSignals.interactive>0||renderSignals.visual>0;
       overflowOk=await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2).catch(()=>false);
 
       const startTexts=scenarios?.generic?.startButtonTexts||[];
@@ -97,29 +129,50 @@ try{
 
     const sameOriginFailed=failed.filter(item=>{try{return new URL(item.url).origin===new URL(base).origin;}catch{return false;}});
     const uniqueErrors=[...new Map(errors.filter(x=>x.message).map(x=>[`${x.type}:${x.message}`,x])).values()].slice(0,20);
-    const runtimeScore=loadOk&&bodyOk?25:loadOk?15:0;
-    const errorScore=Math.max(0,25-(uniqueErrors.length*6));
+    const highErrorCount=uniqueErrors.filter(x=>['pageerror','navigation'].includes(x.type)).length;
+    const consoleErrorCount=uniqueErrors.filter(x=>x.type==='console').length;
+    const runtimeScore=loadOk&&contentSignal?25:loadOk?10:0;
+    const errorScore=Math.max(0,25-(highErrorCount*15)-(consoleErrorCount*5));
     const mobileScore=overflowOk?15:0;
     const interactionScore=clicked?15:5;
-    const assetScore=Math.max(0,10-(sameOriginFailed.length*3));
+    const assetScore=Math.max(0,10-(sameOriginFailed.length*4));
     const reloadScore=reloadOk?10:0;
-    const score=Math.max(0,Math.min(100,runtimeScore+errorScore+mobileScore+interactionScore+assetScore+reloadScore));
-    const status=score>=75?'healthy':score>=55?'warning':'critical';
+    const calculatedScore=Math.max(0,Math.min(100,runtimeScore+errorScore+mobileScore+interactionScore+assetScore+reloadScore));
+    const classification=classifyHealth({loadOk,contentSignal,overflowOk,storageStatus,uniqueErrors,sameOriginFailed,calculatedScore});
     const dimensions={runtime:runtimeScore,errors:errorScore,mobile:mobileScore,interaction:interactionScore,assets:assetScore,reload:reloadScore,storage:storageStatus};
     const issues=[...uniqueErrors,...sameOriginFailed.map(x=>({type:'requestfailed',message:`${x.url} ${x.message}`}))].slice(0,20);
-    for(const issue of issues)addBug({gameId:game.id,type:issue.type,message:issue.message,severity:issue.type==='pageerror'||issue.type==='navigation'?'HIGH':'MEDIUM',url});
-    results.push({gameId:game.id,name:game.name,status,score,checkedAt:now,url,dimensions,issues,failedRequestCount:sameOriginFailed.length,screenshot:`${artifactDir}/${game.id}.png`});
+    for(const issue of issues)addBug({gameId:game.id,type:issue.type,message:issue.message,severity:['pageerror','navigation'].includes(issue.type)?'HIGH':'MEDIUM',url});
+    const prior=previousById.get(game.id);
+    const previousScore=Number.isFinite(Number(prior?.score))?Number(prior.score):null;
+    const scoreDelta=previousScore==null?null:classification.score-previousScore;
+    results.push({
+      gameId:game.id,
+      name:game.name,
+      status:classification.status,
+      score:classification.score,
+      calculatedScore,
+      healthReason:classification.reason,
+      checkedAt:now,
+      url,
+      dimensions,
+      signals:{loadOk,contentSignal,renderedTextLength,canvasCount,interactiveCount,inputDelivered:clicked,reloadOk,overflowOk},
+      trend:{previousScore,scoreDelta},
+      issues,
+      failedRequestCount:sameOriginFailed.length,
+      screenshot:`${artifactDir}/${game.id}.png`
+    });
     await context.close();
   }
 }finally{await browser.close();}
 
-const previous=readJson('public-game-health.json',{});
 const buildById=new Map((previous.games||[]).map(x=>[x.gameId,x.buildHealth]));
 const health={
-  version:1,
+  version:2,
   updatedAt:now,
   policy:{
     scope:'homepage-published-games',scoreRange:[0,100],criticalBelow:55,warningBelow:75,healthyAtLeast:75,
+    forcedWarningOnConsoleOrSameOriginFailure:true,
+    forcedCriticalOnNavigationPageErrorOrNoContentSignal:true,
     webArchiveMutation:'forbidden',autoRollbackDisplay:true,rollbackRequiresVerifiedHealthyBaseline:true
   },
   games:results.map(item=>({...item,buildHealth:buildById.get(item.gameId)||null}))
@@ -129,4 +182,5 @@ writeJson('public-game-health.json',health);
 writeJson('company-learning/bug-memory.json',bugMemory);
 writeJson(`${artifactDir}/summary.json`,health);
 console.log(`PUBLIC_GAME_HEALTH_COUNT=${results.length}`);
+console.log(`PUBLIC_GAME_WARNING=${results.filter(x=>x.status==='warning').length}`);
 console.log(`PUBLIC_GAME_CRITICAL=${results.filter(x=>x.status==='critical').length}`);
