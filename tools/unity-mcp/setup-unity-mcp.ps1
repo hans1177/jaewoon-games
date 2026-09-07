@@ -52,6 +52,24 @@ function Resolve-Uv {
     return $null
 }
 
+function Test-UnityProjectAlreadyOpen([string]$Project) {
+    $normalized = [System.IO.Path]::GetFullPath($Project).TrimEnd('\').ToLowerInvariant()
+    try {
+        $processes = Get-CimInstance Win32_Process -Filter "Name='Unity.exe'" -ErrorAction Stop
+        foreach ($process in $processes) {
+            $commandLine = [string]$process.CommandLine
+            if (-not $commandLine) { continue }
+            $candidate = $commandLine.ToLowerInvariant().Replace('/', '\')
+            if ($candidate.Contains($normalized.Replace('/', '\'))) {
+                return $true
+            }
+        }
+    } catch {
+        # If process inspection is unavailable, let Unity itself handle launch validation.
+    }
+    return $false
+}
+
 $unity = Resolve-UnityExe
 if (-not $unity) {
     throw 'Unity Hub editor install was not detected under Program Files.'
@@ -134,8 +152,12 @@ if (Test-Path $androidRoot) {
 }
 
 if ($OpenUnity) {
-    Start-Process -FilePath $unity.Exe -ArgumentList @('-projectPath', $resolvedProject)
-    Write-Host '[PASS] Unity launch requested.'
+    if (Test-UnityProjectAlreadyOpen $resolvedProject) {
+        Write-Host '[PASS] Unity project is already open. Duplicate launch skipped.'
+    } else {
+        Start-Process -FilePath $unity.Exe -ArgumentList @('-projectPath', $resolvedProject)
+        Write-Host '[PASS] Unity launch requested.'
+    }
 }
 
 Write-Host ''
