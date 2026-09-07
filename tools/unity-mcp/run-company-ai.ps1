@@ -18,7 +18,12 @@ $lockPath = Join-Path $repoRoot '.jaewoon-company-ai.lock'
 $ownerDecisionPath = Join-Path $repoRoot '.jaewoon-owner-decision.txt'
 $logPath = Join-Path $env:TEMP 'jaewoon-company-ai.log'
 
-$providerOrder = @('codex', 'gemini', 'copilot', 'codebuddy')
+# Gemini CLI stopped serving individual/free accounts in June 2026.
+# Antigravity CLI is the current Google individual/free terminal path.
+# Copilot is last and disabled by default because its CLI credit cap is not an included-only billing guard.
+$providerOrder = @('codex', 'antigravity', 'codebuddy', 'copilot')
+$copilotHardStopEnvironmentName = 'JAEWOON_COPILOT_HARD_STOP_CONFIRMED'
+
 $paidApiEnvironmentNames = @(
     'OPENAI_API_KEY',
     'AZURE_OPENAI_API_KEY',
@@ -31,7 +36,7 @@ $paidApiEnvironmentNames = @(
 $quotaPatterns = @(
     'quota', 'usage limit', 'rate limit', 'resource exhausted', 'credits exhausted',
     'credit limit', 'billing limit', 'payment required', 'buy credits', 'purchase credits',
-    'upgrade your plan', 'monthly limit', 'daily limit', '429'
+    'upgrade your plan', 'monthly limit', 'daily limit', 'weekly limit', '429'
 )
 $authPatterns = @(
     'not logged in', 'login required', 'authentication required', 'unauthorized',
@@ -98,12 +103,17 @@ function Test-TextContainsAny([string]$Text, [string[]]$Patterns) {
     return $false
 }
 
+function Test-CopilotHardStopConfirmed {
+    return ([Environment]::GetEnvironmentVariable($copilotHardStopEnvironmentName, 'User') -eq '1' -or
+            [Environment]::GetEnvironmentVariable($copilotHardStopEnvironmentName, 'Process') -eq '1')
+}
+
 function Resolve-ProviderCommand([string]$Provider) {
     $names = switch ($Provider) {
         'codex' { @('codex') }
-        'gemini' { @('gemini') }
-        'copilot' { @('copilot') }
+        'antigravity' { @('agy', 'antigravity') }
         'codebuddy' { @('codebuddy', 'cbc') }
+        'copilot' { @('copilot') }
         default { @() }
     }
     foreach ($name in $names) {
@@ -118,14 +128,15 @@ function Get-ProviderArguments([string]$Provider, [string]$Prompt) {
         'codex' {
             return @('exec', '--full-auto', $Prompt)
         }
-        'gemini' {
-            return @('-p', $Prompt, '--output-format', 'json', '--approval-mode', 'auto_edit')
-        }
-        'copilot' {
-            return @('-sp', $Prompt, '--agent=director', '--no-ask-user', '--no-remote', '--no-remote-export', '--max-ai-credits=60', '--allow-all-tools')
+        'antigravity' {
+            return @('-p', $Prompt, '--output-format', 'json', '--print-timeout', '10m', '--dangerously-skip-permissions')
         }
         'codebuddy' {
             return @('-p', $Prompt, '--output-format', 'json', '--permission-mode', 'auto', '--max-turns', '12')
+        }
+        'copilot' {
+            # This is only reachable after the user confirms an account-level hard stop for paid overage.
+            return @('-sp', $Prompt, '--agent=director', '--no-ask-user', '--no-remote', '--no-remote-export', '--max-ai-credits=60', '--allow-all-tools')
         }
         default {
             throw "Unsupported provider: $Provider"
@@ -219,6 +230,12 @@ function Get-NextRunnableProvider($State) {
     for ($offset = 0; $offset -lt $count; $offset++) {
         $index = ([int]$State.currentProviderIndex + $offset) % $count
         $provider = $providerOrder[$index]
+
+        if ($provider -eq 'copilot' -and -not (Test-CopilotHardStopConfirmed)) {
+            Write-CompanyLog '[SKIP] copilot disabled: account-level paid-overage hard stop is not confirmed.'
+            continue
+        }
+
         $command = Resolve-ProviderCommand -Provider $provider
         if (-not $command) {
             Write-CompanyLog "[SKIP] $provider CLI is not installed."
