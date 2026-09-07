@@ -1,12 +1,15 @@
 {
-  "version": 1,
+  "version": 2,
   "updatedAt": "2026-09-08",
   "rule": "shared-quality-gates-but-no-uniform-artbook-template",
+  "submissionModel": "one-company-wide-artbook-per-day-with-five-department-owned-sections",
   "global": {
     "sameLayoutForAllGamesForbidden": true,
     "sameNarrativeStructureForAllGamesForbidden": true,
     "sameDepartmentVoiceForbidden": true,
-    "maxCutsPerDepartmentArtbook": 10,
+    "maxCutsPerCombinedArtbook": 10,
+    "crossDepartmentCollaboration": true,
+    "crossDepartmentGhostwritingForbidden": true,
     "required": [
       "story-causality",
       "game-specific-identity",
@@ -16,89 +19,23 @@
     ]
   },
   "games": {
-    "insect-survival": {
-      "name": "곤충 생존기",
-      "identity": "생태 탐사일지 + 생존 현장 기록",
-      "visualLanguage": ["거대하게 보이는 일상 사물", "곤충 생태 스케치", "채집·은신·거점 흔적", "위험지역 지도"],
-      "storyFocus": "왜 작아졌는지보다, 작은 세계에서 무엇을 지키며 살아남는지가 플레이 동기와 이어져야 한다.",
-      "signatureSections": ["생태 지도", "위협 곤충 도감", "생존 장비 스케치", "거점 변화", "하루 생존 기록"]
-    },
-    "crystal-defense": {
-      "name": "수정 디펜스",
-      "identity": "마력 방어선 설계서 + 침공 기록",
-      "visualLanguage": ["수정 코어 단면", "방어선 청사진", "웨이브 진입 경로", "적 세력 문장"],
-      "storyFocus": "왜 수정이 공격받는지, 누가 지키는지, 방어시설이 세계관에서 왜 가능한지가 전투 규칙과 연결돼야 한다.",
-      "signatureSections": ["수정의 기원", "방어선 설계도", "침공 세력", "웨이브 전황", "최후 방어 시나리오"]
-    },
-    "bug-defense": {
-      "name": "곤충 디펜스",
-      "identity": "곤충 전쟁사 + 병종 작전기록",
-      "visualLanguage": ["병종 실루엣", "전장 지도", "보스 해부도", "웨이브 전황표"],
-      "storyFocus": "각 곤충 병종이 왜 전투에 참여하는지와 보스가 왜 출현하는지가 웨이브 구조에 이유를 줘야 한다.",
-      "signatureSections": ["병종 카드", "전장 지도", "보스 설계", "전투 전환점", "패배 원인 기록"]
-    },
-    "daechung-rpg": {
-      "name": "대충 RPG",
-      "identity": "판타지 세계 설정집 + 모험 연대기",
-      "visualLanguage": ["지역 컨셉아트", "주인공 성장 시트", "몬스터·보스 설정화", "퀘스트 사건 연결도", "장비 진화"],
-      "storyFocus": "주인공이 왜 다음 지역으로 가는지, 지역·몬스터·보스·장비·전직이 사건의 결과로 자연스럽게 이어져야 한다.",
-      "signatureSections": ["세계관 한 장", "주인공 동기", "지역별 사건", "몬스터/보스 존재 이유", "전투·성장과 이야기", "플레이 시연 증거"]
-    },
-    "human-go": {
-      "name": "휴먼 GO",
-      "identity": "인물 수집도감 + 성장 계보집",
-      "visualLanguage": ["캐릭터 카드", "등급 변화", "관계도", "성장 전후 비교", "팀 조합"],
-      "storyFocus": "왜 인물을 수집하는지, 각 인물이 어떤 관계와 목적을 갖는지, 성장 시스템이 캐릭터 서사와 연결돼야 한다.",
-      "signatureSections": ["인물 도감", "관계도", "성장 계보", "조합 시너지", "수집 동기"]
-    },
-    "egg-heist": {
-      "name": "알 도둑 대작전",
-      "identity": "침투 작전 파일 + 부화 생물 관찰일지",
-      "visualLanguage": ["침투 루트", "경비 패턴", "알 종류", "부화 단계", "탈출 경로"],
-      "storyFocus": "왜 알을 훔쳐야 하는지, 알의 주인과 부화 결과가 무엇인지가 잠입·위험·보상 구조에 직접 연결돼야 한다.",
-      "signatureSections": ["작전 목표", "침투 지도", "알 도감", "부화체 디자인", "탈출 실패 사례"]
-    },
-    "chess-battle": {
-      "name": "체스 배틀",
-      "identity": "전술 교본 + 전장 연대기",
-      "visualLanguage": ["말별 전투형태", "격자 전장", "진형 변화", "필살 전술", "세력 문장"],
-      "storyFocus": "체스 규칙이 단순 장식이 아니라 세계의 전쟁 규칙이어야 하며, 각 말의 이동·전투 특성이 역할과 서사에 이유를 가져야 한다.",
-      "signatureSections": ["말의 계급", "전장 규칙", "진형 도해", "전투 사례", "왕/여왕 갈등"]
-    },
-    "monster-adventure": {
-      "name": "몬스터 어드벤처",
-      "identity": "몬스터 생태도감 + 여행 탐험기",
-      "visualLanguage": ["몬스터 도감", "서식지", "진화 단계", "포획 장면", "지역 생태 연결"],
-      "storyFocus": "몬스터가 지역 생태와 사건 속에서 존재해야 하며 포획·성장이 단순 수집이 아니라 여행 목적과 관계 형성으로 이어져야 한다.",
-      "signatureSections": ["지역 생태", "몬스터 도감", "포획 이유", "진화/성장", "보스 생태"]
-    },
-    "survival": {
-      "name": "나의 생존기",
-      "identity": "개인 생존수첩 + 제작 설계 노트",
-      "visualLanguage": ["손그림 지도", "자원 표시", "제작 레시피", "거점 전후", "위험 메모"],
-      "storyFocus": "무엇 때문에 고립됐고 왜 계속 살아남아야 하는지, 채집·제작·거점 확장이 생존 서사의 단계가 돼야 한다.",
-      "signatureSections": ["첫날 기록", "자원 지도", "제작도", "거점 발전", "위기 기록"]
-    },
-    "survival2": {
-      "name": "숲의 생존자들",
-      "identity": "생존 공동체 기록 + 동료 관계 일지",
-      "visualLanguage": ["동료 초상", "역할 배치", "공동 거점", "숲 구역", "협동 사건"],
-      "storyFocus": "혼자가 아니라 왜 함께 살아남는지가 핵심이며, 동료의 역할·갈등·협동이 자원과 전투 시스템에 영향을 줘야 한다.",
-      "signatureSections": ["생존자 소개", "관계도", "공동 거점", "역할 분담", "집단 위기"]
-    },
-    "territory-war": {
-      "name": "영토전쟁",
-      "identity": "세력사 + 전쟁 지도첩",
-      "visualLanguage": ["세력 지도", "국경 변화", "지휘관 초상", "병과", "전투 전후 영토"],
-      "storyFocus": "왜 영토를 다투는지와 각 세력의 목표가 분명해야 하며, 점령·자원·병력 성장 규칙이 정치적 갈등과 연결돼야 한다.",
-      "signatureSections": ["세력 소개", "전쟁 원인", "영토 지도", "지휘관/병과", "전황 변화"]
-    }
+    "insect-survival": {"name":"곤충 생존기","identity":"생태 탐사일지 + 생존 현장 기록","visualLanguage":["거대하게 보이는 일상 사물","곤충 생태 스케치","채집·은신·거점 흔적","위험지역 지도"],"storyFocus":"작은 세계에서 무엇을 지키며 살아남는지가 플레이 동기와 이어져야 한다.","signatureSections":["생태 지도","위협 곤충 도감","생존 장비 스케치","거점 변화","하루 생존 기록"]},
+    "crystal-defense": {"name":"수정 디펜스","identity":"마력 방어선 설계서 + 침공 기록","visualLanguage":["수정 코어 단면","방어선 청사진","웨이브 진입 경로","적 세력 문장"],"storyFocus":"왜 수정이 공격받는지와 방어시설이 세계관에서 왜 가능한지가 전투 규칙과 연결돼야 한다.","signatureSections":["수정의 기원","방어선 설계도","침공 세력","웨이브 전황","최후 방어 시나리오"]},
+    "bug-defense": {"name":"곤충 디펜스","identity":"곤충 전쟁사 + 병종 작전기록","visualLanguage":["병종 실루엣","전장 지도","보스 해부도","웨이브 전황표"],"storyFocus":"각 곤충 병종과 보스의 출현 이유가 웨이브 구조에 이유를 줘야 한다.","signatureSections":["병종 카드","전장 지도","보스 설계","전투 전환점","패배 원인 기록"]},
+    "daechung-rpg": {"name":"대충 RPG","identity":"판타지 세계 설정집 + 모험 연대기","visualLanguage":["지역 컨셉아트","주인공 성장 시트","몬스터·보스 설정화","퀘스트 사건 연결도","장비 진화"],"storyFocus":"주인공이 왜 다음 지역으로 가는지, 지역·몬스터·보스·장비·전직이 사건의 결과로 자연스럽게 이어져야 한다.","signatureSections":["세계관 한 장","주인공 동기","지역별 사건","몬스터/보스 존재 이유","전투·성장과 이야기","플레이 시연 증거"]},
+    "human-go": {"name":"휴먼 GO","identity":"인물 수집도감 + 성장 계보집","visualLanguage":["캐릭터 카드","등급 변화","관계도","성장 전후 비교","팀 조합"],"storyFocus":"수집 이유와 각 인물의 관계·목적이 성장 시스템과 연결돼야 한다.","signatureSections":["인물 도감","관계도","성장 계보","조합 시너지","수집 동기"]},
+    "egg-heist": {"name":"알 도둑 대작전","identity":"침투 작전 파일 + 부화 생물 관찰일지","visualLanguage":["침투 루트","경비 패턴","알 종류","부화 단계","탈출 경로"],"storyFocus":"왜 알을 훔쳐야 하는지와 부화 결과가 잠입·위험·보상 구조에 직접 연결돼야 한다.","signatureSections":["작전 목표","침투 지도","알 도감","부화체 디자인","탈출 실패 사례"]},
+    "chess-battle": {"name":"체스 배틀","identity":"전술 교본 + 전장 연대기","visualLanguage":["말별 전투형태","격자 전장","진형 변화","필살 전술","세력 문장"],"storyFocus":"체스 규칙이 세계의 전쟁 규칙이어야 하며 각 말의 이동·전투 특성이 역할과 서사에 이유를 가져야 한다.","signatureSections":["말의 계급","전장 규칙","진형 도해","전투 사례","왕/여왕 갈등"]},
+    "monster-adventure": {"name":"몬스터 어드벤처","identity":"몬스터 생태도감 + 여행 탐험기","visualLanguage":["몬스터 도감","서식지","진화 단계","포획 장면","지역 생태 연결"],"storyFocus":"몬스터가 지역 생태와 사건 속에서 존재하고 포획·성장이 여행 목적과 관계 형성으로 이어져야 한다.","signatureSections":["지역 생태","몬스터 도감","포획 이유","진화/성장","보스 생태"]},
+    "survival": {"name":"나의 생존기","identity":"개인 생존수첩 + 제작 설계 노트","visualLanguage":["손그림 지도","자원 표시","제작 레시피","거점 전후","위험 메모"],"storyFocus":"고립 이유와 생존 목적이 채집·제작·거점 확장의 단계와 이어져야 한다.","signatureSections":["첫날 기록","자원 지도","제작도","거점 발전","위기 기록"]},
+    "survival2": {"name":"숲의 생존자들","identity":"생존 공동체 기록 + 동료 관계 일지","visualLanguage":["동료 초상","역할 배치","공동 거점","숲 구역","협동 사건"],"storyFocus":"함께 살아남는 이유와 동료의 역할·갈등·협동이 자원과 전투 시스템에 영향을 줘야 한다.","signatureSections":["생존자 소개","관계도","공동 거점","역할 분담","집단 위기"]},
+    "territory-war": {"name":"영토전쟁","identity":"세력사 + 전쟁 지도첩","visualLanguage":["세력 지도","국경 변화","지휘관 초상","병과","전투 전후 영토"],"storyFocus":"영토를 다투는 이유와 각 세력의 목표가 점령·자원·병력 성장 규칙과 연결돼야 한다.","signatureSections":["세력 소개","전쟁 원인","영토 지도","지휘관/병과","전황 변화"]}
   },
   "departmentVariation": {
-    "planning": "이야기·세계 규칙·사건 인과를 중심으로 구성하며 게임별 문서 형식을 적극 활용한다.",
-    "development": "컨셉을 실제 시스템·씬·데이터·프로토타입으로 바꾸는 구조와 시연 근거 중심으로 구성한다.",
-    "qa": "플레이 여정, 실패 장면, 재현 시나리오, 사용성 증거를 중심으로 테스트 리포트형 아트북을 만든다.",
-    "graphics": "캐릭터·몬스터·보스·배경·UI의 컨셉 시트와 시각적 이유를 중심으로 가장 시각적인 아트북을 만든다.",
-    "balance": "성장곡선·전투 리듬·보상 흐름·난이도 전환을 게임 고유의 그래프/비교/전투 사례 형식으로 만든다."
+    "planning": "스토리/세계관/인과관계 파트만 책임진다.",
+    "graphics": "캐릭터/몬스터/보스/배경/UI/인트로 컨셉 파트만 책임진다.",
+    "development": "실제 구현 구조/기술 가능성/플레이어블 시연 파트만 책임진다.",
+    "qa": "플레이 흐름/문제 장면/테스트 시나리오/검증 파트만 책임진다.",
+    "balance": "성장곡선/전투 체감/보상/난이도 파트만 책임진다."
   }
 }
