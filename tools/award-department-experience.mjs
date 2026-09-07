@@ -9,6 +9,7 @@ const runId = String(process.argv[3] || '').trim();
 if (!sourceCommit) throw new Error('source commit required');
 
 const ledgerPath = 'department-experience.json';
+const runtimeStatePath = 'assets/department-experience-state.js';
 const ledger = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
 ledger.history = Array.isArray(ledger.history) ? ledger.history : [];
 ledger.departments = ledger.departments || {};
@@ -22,7 +23,7 @@ const changed = execFileSync('git', ['diff-tree', '--no-commit-id', '--name-only
   .split(/\r?\n/)
   .map((value) => value.trim())
   .filter(Boolean)
-  .filter((path) => path !== ledgerPath);
+  .filter((path) => path !== ledgerPath && path !== runtimeStatePath);
 
 const matchers = {
   planning: [
@@ -67,7 +68,6 @@ const matchers = {
   director: [
     /^company-directive\.json$/,
     /^company-status\.json$/,
-    /^department-experience\.json$/,
     /^assets\/vibe-company-orchestration-bridge\.js$/,
     /^\.github\/agents\/director\.agent\.md$/
   ]
@@ -118,5 +118,19 @@ ledger.history.push({
 });
 if (ledger.history.length > 300) ledger.history = ledger.history.slice(-300);
 
+function jsValue(value) {
+  if (value === null || value === undefined) return 'null';
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  return JSON.stringify(String(value));
+}
+
+const orderedDepartments = ['planning','development','qa','graphics','balance','homepage','release','director'];
+const runtimeLines = orderedDepartments.map((id) => {
+  const item = ledger.departments[id] || { xp:0, level:1, verifiedCompletions:0, learningEvents:0, lastEvidence:null };
+  return `    ${id}: Object.freeze({ xp: ${Number(item.xp)||0}, level: ${Number(item.level)||1}, verifiedCompletions: ${Number(item.verifiedCompletions)||0}, learningEvents: ${Number(item.learningEvents)||0}, lastEvidence: ${jsValue(item.lastEvidence)} })`;
+});
+const runtimeState = `// AUTO-GENERATED FROM department-experience.json. Do not hand-edit.\nexport const DEFAULT_DEPARTMENT_EXPERIENCE_STATE = Object.freeze({\n  version: 1,\n  departments: Object.freeze({\n${runtimeLines.join(',\n')}\n  })\n});\n`;
+
 fs.writeFileSync(ledgerPath, `${JSON.stringify(ledger, null, 2)}\n`);
+fs.writeFileSync(runtimeStatePath, runtimeState);
 console.log(`XP_AWARDED=${departments.join(',')} XP=${XP_PER_VERIFIED_QA_PASS} SOURCE=${sourceCommit}`);
