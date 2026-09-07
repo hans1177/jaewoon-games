@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-08",
+  "policy": {
+    "purpose": "게임 초안·컨셉·스토리·제작 의도를 버리지 않고 회사 자산으로 누적한다.",
+    "maxCutsPerEdition": 10,
+    "keepHistory": true,
+    "replaceOldEdition": false,
+    "proposalCadence": "periodic",
+    "comments": "github-issue-comments",
+    "music": "optional",
+    "homepageVisibility": "explicitly-published-artbooks-only"
+  },
+  "artbooks": [
+    {
+      "id": "daechung-rpg-draft-001",
+      "gameId": "daechung-rpg",
+      "gameName": "대충 RPG",
+      "edition": 1,
+      "title": "대충 RPG · Unity 재개발 초안 아트북",
+      "subtitle": "기획부터 애니메이션 프로토타입까지 남기는 첫 제작 기록",
+      "status": "draft",
+      "published": true,
+      "createdAt": "2026-09-08",
+      "intent": "기존 Web판의 탐험·전투·성장 재미는 보존하고, Unity Android에서 시스템 구조와 모바일 플레이 경험을 다시 설계한다.",
+      "music": null,
+      "feedback": {
+        "provider": "github-issues",
+        "issueNumber": null,
+        "issueUrl": null
+      },
+      "cuts": [
+        {
+          "no": 1,
+          "kind": "vision",
+          "title": "게임의 한 줄 방향",
+          "image": "assets/fantasy-rpg-v2.webp",
+          "body": "짧게 탐험하고, 바로 싸우고, 보상을 받아 다음 지역으로 나아가는 모바일 RPG. 복잡한 설명보다 전투와 성장의 즉각적인 손맛을 우선한다."
+        },
+        {
+          "no": 2,
+          "kind": "core-loop",
+          "title": "핵심 플레이 루프",
+          "image": "assets/page-bg-v4.webp",
+          "body": "마을에서 준비 → 필드 이동 → 몬스터 전투 → 경험치·골드 획득 → 장비·전직·지역 해금 → 더 강한 적과 보스로 이어지는 구조다."
+        },
+        {
+          "no": 3,
+          "kind": "world",
+          "title": "세계와 지역 전환",
+          "image": "assets/page-bg-v3.webp",
+          "body": "초기 필드에서 시작해 레벨과 퀘스트 진행으로 다음 지역이 열린다. 지역마다 적의 실루엣, 배경 분위기, 보상 목적을 구분해 이동 자체가 성장의 증거가 되게 한다."
+        },
+        {
+          "no": 4,
+          "kind": "character",
+          "title": "움직이는 주인공과 적",
+          "image": "assets/fantasy-rpg-v2.webp",
+          "body": "초안 단계부터 정지 도형을 쓰지 않고 검증된 무료 애니메이션 에셋을 사용한다. 현재 프로토타입은 Pirate와 Skeleton의 idle·walk·attack·hurt·death 모션을 실제 전투 흐름에 연결한다."
+        },
+        {
+          "no": 5,
+          "kind": "combat",
+          "title": "전투 연출의 의도",
+          "image": "assets/insect-war-v2.webp",
+          "body": "공격 버튼을 눌렀다는 사실보다 누가 공격했고 누가 맞았는지가 즉시 읽혀야 한다. 공격·피격·사망 애니메이션과 HP 변화가 같은 박자로 보이게 만든다."
+        },
+        {
+          "no": 6,
+          "kind": "progression",
+          "title": "성장과 선택",
+          "image": "assets/card-rpg-v2.webp",
+          "body": "레벨, 장비, 직업, 퀘스트가 따로 노는 메뉴가 아니라 다음 전투를 바꾸는 선택이 되도록 묶는다. 전사·궁수·마법사 방향은 기존 핵심 자산으로 보존한다."
+        },
+        {
+          "no": 7,
+          "kind": "mobile-ui",
+          "title": "모바일 화면 원칙",
+          "image": "assets/mock.webp",
+          "body": "작은 화면에서 전투 정보와 행동 버튼이 겹치지 않게 하고, 한 손으로도 주요 행동에 닿을 수 있게 한다. 초안부터 글자 잘림과 터치 영역을 QA 항목으로 둔다."
+        },
+        {
+          "no": 8,
+          "kind": "intro-brand",
+          "title": "로고·인트로·첫 인상",
+          "image": "assets/brand-transparent.png",
+          "body": "재운게임즈 로고 → 게임 로고 → 짧은 세계 분위기 연출 → 시작 화면으로 이어지는 가벼운 인트로를 기본 틀로 삼는다. 첫 실행은 짧고 스킵 가능하게 설계한다."
+        },
+        {
+          "no": 9,
+          "kind": "production",
+          "title": "초안도 회사의 자산",
+          "image": "assets/portal.webp",
+          "body": "컨셉, 실패한 방향, 선택 이유, 사용한 에셋과 테스트 결과를 다음 게임에서도 재사용할 수 있도록 에디션 단위로 남긴다. 새 초안이 생겨도 이전 초안은 지우지 않는다."
+        },
+        {
+          "no": 10,
+          "kind": "next",
+          "title": "다음 확인 포인트",
+          "image": "assets/fantasy-rpg-v2.webp",
+          "body": "실제 APK에서 애니메이션 로딩, 전투 가독성, 모바일 조작, 저장, 지역 진행을 확인한 뒤 다음 아트북 에디션에서 바뀐 이유와 결과를 비교한다."
+        }
+      ]
+    }
+  ]
+}
