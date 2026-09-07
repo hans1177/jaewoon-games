@@ -9,7 +9,7 @@ on:
       - '.github/workflows/unity-animation-test-android.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   PROJECT_PATH: unity-games/animation-test
@@ -85,3 +85,15 @@ jobs:
             unity-games/animation-test/Build/commit-sha.txt
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish latest test APK release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: animation-test-latest
+          name: Animation Test Latest APK
+          prerelease: true
+          make_latest: false
+          files: |
+            unity-games/animation-test/Build/animation-test.apk
+            unity-games/animation-test/Build/animation-test.apk.sha256
+          fail_on_unmatched_files: true
