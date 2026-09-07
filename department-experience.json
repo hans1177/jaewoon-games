@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-08",
+  "updatedAt": "2026-09-07",
   "policy": {
     "verifiedEvidenceRequired": true,
     "noXpForUnverifiedAttempts": true,
@@ -10,14 +10,75 @@
     "maxLevel": 10
   },
   "departments": {
-    "planning": {"xp":0,"level":1,"verifiedCompletions":0,"learningEvents":0,"lastEvidence":null},
-    "development": {"xp":0,"level":1,"verifiedCompletions":0,"learningEvents":0,"lastEvidence":null},
-    "qa": {"xp":0,"level":1,"verifiedCompletions":0,"learningEvents":0,"lastEvidence":null},
-    "graphics": {"xp":0,"level":1,"verifiedCompletions":0,"learningEvents":0,"lastEvidence":null},
-    "balance": {"xp":0,"level":1,"verifiedCompletions":0,"learningEvents":0,"lastEvidence":null},
-    "homepage": {"xp":0,"level":1,"verifiedCompletions":0,"learningEvents":0,"lastEvidence":null},
-    "release": {"xp":0,"level":1,"verifiedCompletions":0,"learningEvents":0,"lastEvidence":null},
-    "director": {"xp":0,"level":1,"verifiedCompletions":0,"learningEvents":0,"lastEvidence":null}
+    "planning": {
+      "xp": 0,
+      "level": 1,
+      "verifiedCompletions": 0,
+      "learningEvents": 0,
+      "lastEvidence": null
+    },
+    "development": {
+      "xp": 40,
+      "level": 1,
+      "verifiedCompletions": 1,
+      "learningEvents": 1,
+      "lastEvidence": "Vibe QA run 34163834245 PASS · 7dfa0e9f5208b28ba4833aa6b4c8b8b60b910107"
+    },
+    "qa": {
+      "xp": 0,
+      "level": 1,
+      "verifiedCompletions": 0,
+      "learningEvents": 0,
+      "lastEvidence": null
+    },
+    "graphics": {
+      "xp": 0,
+      "level": 1,
+      "verifiedCompletions": 0,
+      "learningEvents": 0,
+      "lastEvidence": null
+    },
+    "balance": {
+      "xp": 0,
+      "level": 1,
+      "verifiedCompletions": 0,
+      "learningEvents": 0,
+      "lastEvidence": null
+    },
+    "homepage": {
+      "xp": 0,
+      "level": 1,
+      "verifiedCompletions": 0,
+      "learningEvents": 0,
+      "lastEvidence": null
+    },
+    "release": {
+      "xp": 0,
+      "level": 1,
+      "verifiedCompletions": 0,
+      "learningEvents": 0,
+      "lastEvidence": null
+    },
+    "director": {
+      "xp": 0,
+      "level": 1,
+      "verifiedCompletions": 0,
+      "learningEvents": 0,
+      "lastEvidence": null
+    }
   },
-  "history": []
+  "history": [
+    {
+      "type": "verified-qa-pass",
+      "sourceCommit": "7dfa0e9f5208b28ba4833aa6b4c8b8b60b910107",
+      "runId": "34163834245",
+      "xpPerDepartment": 40,
+      "departments": [
+        "development"
+      ],
+      "changedFilesCount": 1,
+      "evidence": "Vibe QA PASS for 7dfa0e9f5208b28ba4833aa6b4c8b8b60b910107",
+      "recordedAt": "2026-09-07T21:38:15.141Z"
+    }
+  ]
 }
