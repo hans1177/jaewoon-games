@@ -25,6 +25,7 @@ const BLOCKED_ACTOR_VISUAL_WORDS = Object.freeze(['circle', 'sphere', 'orb', 'ba
 function text(value) { return String(value ?? '').trim(); }
 function unique(values) { return [...new Set(values.filter(Boolean))]; }
 function hasAny(source, words) { const value = text(source).toLowerCase(); return words.some((word) => value.includes(String(word).toLowerCase())); }
+function declaredTypes(asset) { return Array.isArray(asset?.types) ? asset.types.map((value) => text(value).toLowerCase()) : []; }
 
 function actorHasAnimation(asset) {
   const animations = Array.isArray(asset?.animations) ? asset.animations.map((value) => text(value).toLowerCase()) : [];
@@ -41,7 +42,8 @@ function findCandidates(type, candidates) {
   return candidates.filter((asset) => {
     const tags = Array.isArray(asset?.tags) ? asset.tags.join(' ') : text(asset?.tags);
     const descriptor = `${asset?.id || ''} ${asset?.name || ''} ${tags}`;
-    if (!hasAny(descriptor, TYPES[type])) return false;
+    const declared = declaredTypes(asset);
+    if (!declared.includes(type) && !hasAny(descriptor, TYPES[type])) return false;
 
     if (ACTOR_TYPES.includes(type)) {
       if (asset?.blockedForActorUse === true) return false;
@@ -56,11 +58,41 @@ function findCandidates(type, candidates) {
     path:text(asset.path),
     license:text(asset.license),
     source:text(asset.source),
+    downloaded:asset?.downloaded !== false,
     animated:ACTOR_TYPES.includes(type) ? true : Boolean(asset?.verifiedAnimation),
   }));
 }
 
-export function planAssetApplication({ prompt = '', manifest = null, rebuild = false } = {}) {
+function choosePrototypePreset(request, presetCatalog) {
+  const presets = Array.isArray(presetCatalog?.presets) ? presetCatalog.presets : [];
+  if (!presets.length) return null;
+  const source = text(request).toLowerCase();
+  let best = null;
+  let bestScore = -1;
+  for (const preset of presets) {
+    const keywords = Array.isArray(preset?.keywords) ? preset.keywords : [];
+    const score = keywords.reduce((sum, keyword) => sum + (source.includes(text(keyword).toLowerCase()) ? 1 : 0), 0);
+    const adjusted = score + (preset?.default === true ? 0.01 : 0);
+    if (adjusted > bestScore) {
+      best = preset;
+      bestScore = adjusted;
+    }
+  }
+  return best ? Object.freeze({
+    id:text(best.id),
+    name:text(best.name),
+    actorAssets:Object.freeze([...(best.actorAssets || [])]),
+    effectAssets:Object.freeze([...(best.effectAssets || [])]),
+    supportingSourcePriority:Object.freeze([...(best.supportingSourcePriority || [])]),
+  }) : null;
+}
+
+function presetPreferredIds(preset) {
+  if (!preset) return new Set();
+  return new Set([...(preset.actorAssets || []), ...(preset.effectAssets || [])].map(text));
+}
+
+export function planAssetApplication({ prompt = '', manifest = null, presetCatalog = null, rebuild = false } = {}) {
   const request = text(prompt);
   if (!request) throw new Error('asset request required');
   const requestedTypes = Object.entries(TYPES).filter(([, words]) => hasAny(request, words)).map(([type]) => type);
@@ -71,7 +103,10 @@ export function planAssetApplication({ prompt = '', manifest = null, rebuild = f
     const license = text(asset?.license || asset?.policy || '');
     return !BLOCKED_LICENSE_WORDS.some((blocked) => license.toLowerCase().includes(blocked.toLowerCase()));
   });
-  const matched = types.flatMap((type) => findCandidates(type, candidates));
+  const prototypePreset = choosePrototypePreset(request, presetCatalog);
+  const preferredIds = presetPreferredIds(prototypePreset);
+  const matched = types.flatMap((type) => findCandidates(type, candidates))
+    .sort((a, b) => Number(preferredIds.has(b.id)) - Number(preferredIds.has(a.id)));
   const missingTypes = types.filter((type) => !matched.some((item) => item.type === type));
   const binding = types.map((type) => Object.freeze({
     type,
@@ -82,8 +117,10 @@ export function planAssetApplication({ prompt = '', manifest = null, rebuild = f
     replaceable:true,
   }));
   return Object.freeze({
-    version:5,
+    version:6,
     request,
+    rebuild:Boolean(rebuild),
+    prototypePreset,
     requestedTypes:Object.freeze(types),
     matched:Object.freeze(matched),
     missingTypes:Object.freeze(missingTypes),
@@ -100,6 +137,7 @@ export function planAssetApplication({ prompt = '', manifest = null, rebuild = f
     }),
     policy:Object.freeze({
       existingAssetsFirst:true,
+      prototypePresetFirst:true,
       blockedLicenses:[...BLOCKED_LICENSE_WORDS],
       blockedActorVisualWords:[...BLOCKED_ACTOR_VISUAL_WORDS],
       requireLicenseRecord:true,
@@ -113,11 +151,15 @@ export function planAssetApplication({ prompt = '', manifest = null, rebuild = f
       allowEmojiPlaceholder:false,
       allowGeometricPlaceholder:false,
       styleConsistencyRequired:true,
+      downloadOnDemand:true,
+      cacheAfterFirstUse:true,
     }),
     steps:Object.freeze([
+      '초안 장르에 맞는 prototype-asset-presets 프리셋 자동 선택',
       '기존 저장소 에셋 확인',
       '캐릭터/적/보스는 실제 애니메이션 프레임 또는 스프라이트시트와 이동 모션 보유 여부 확인',
       '정지 캐릭터/정지 몬스터/원형·구체·도형 대체 모델 후보 제거',
+      '프리셋의 검증 배우 에셋을 우선 적용하고 미다운로드 에셋은 최초 사용 시 확보·캐시',
       '캐릭터/적/NPC/배경/지형/사물/자원/건물/UI/VFX 목록 작성',
       '누락 에셋은 승인 소스에서 라이선스 확인 후 확보',
       'LICENSES.md 기록',
