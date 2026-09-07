@@ -1,0 +1,96 @@
+name: Company Evolution QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - artbook.html
+      - game-artbooks.json
+      - public-game-health.json
+      - public-release-baselines.json
+      - company-learning/**
+      - assets/artbook-runtime.js
+      - assets/homepage-enhancements.js
+      - assets/company-quality-bar.js
+      - assets/vibe-company-orchestration-bridge.js
+      - tools/public-game-health.mjs
+      - tools/asset-health-check.mjs
+      - tools/update-release-baselines.mjs
+      - tools/award-postmortem-learning.mjs
+      - .github/workflows/company-evolution-qa.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check new JavaScript syntax
+        run: |
+          set -euo pipefail
+          node --input-type=module --check < assets/artbook-runtime.js
+          node --input-type=module --check < assets/homepage-enhancements.js
+          node --input-type=module --check < assets/company-quality-bar.js
+          node --input-type=module --check < assets/vibe-company-orchestration-bridge.js
+          node --check tools/public-game-health.mjs
+          node --check tools/asset-health-check.mjs
+          node --check tools/update-release-baselines.mjs
+          node --check tools/award-postmortem-learning.mjs
+
+      - name: Validate artbook contract
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const data=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
+          if(data?.policy?.maxCutsPerEdition!==10)throw new Error('artbook max cuts must be 10');
+          for(const book of data.artbooks||[]){
+            if((book.cuts||[]).length>10)throw new Error(`${book.id}: more than 10 cuts`);
+            if(book.published===true){
+              if(!book.feedback?.issueNumber||!book.feedback?.issueUrl)throw new Error(`${book.id}: published artbook needs issue feedback thread`);
+              for(const cut of book.cuts||[]){
+                if(!cut.title||!cut.body||!cut.image)throw new Error(`${book.id}: incomplete cut ${cut.no}`);
+              }
+            }
+          }
+          console.log('ARTBOOK_CONTRACT=PASS');
+          NODE
+
+      - name: Validate homepage wiring
+        run: |
+          set -euo pipefail
+          if grep -Fq '<div class="tagline">작은 상상이 큰 재미가 되는 곳</div>' index.html; then
+            echo 'duplicate tagline still present' >&2
+            exit 1
+          fi
+          grep -Fq '/assets/homepage-enhancements.js' index.html
+          grep -Fq 'game-artbooks.json' assets/homepage-enhancements.js
+          grep -Fq '부서 AI 실제 검토' assets/homepage-enhancements.js
+          echo 'HOMEPAGE_ARTBOOK_WIRING=PASS'
+
+      - name: Validate learning and rollback contracts
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const bugs=JSON.parse(fs.readFileSync('company-learning/bug-memory.json','utf8'));
+          const research=JSON.parse(fs.readFileSync('company-learning/research-notes.json','utf8'));
+          const health=JSON.parse(fs.readFileSync('public-game-health.json','utf8'));
+          const rollback=JSON.parse(fs.readFileSync('public-release-baselines.json','utf8'));
+          if(!Array.isArray(bugs.bugs)||!bugs.policy?.repeatFailureWithoutNewLearningGetsNoXp)throw new Error('bug memory policy invalid');
+          if(!Array.isArray(research.notes)||!research.policy?.crossProjectReuseAllowed)throw new Error('research notes policy invalid');
+          if(health.policy?.webArchiveMutation!=='forbidden')throw new Error('web archive mutation protection missing');
+          if(rollback.policy?.neverPublishesUnapprovedGame!==true)throw new Error('rollback publication protection missing');
+          console.log('LEARNING_ROLLBACK_CONTRACT=PASS');
+          NODE
+
+      - name: Validate experience quality-bar integration
+        run: |
+          set -euo pipefail
+          grep -Fq "createCompanyQualityBar" assets/vibe-company-orchestration-bridge.js
+          grep -Fq "qualityBar:companyQualityBar" assets/vibe-company-orchestration-bridge.js
+          grep -Fq "authorityNeverExpandsWithLevel" assets/department-experience.js
+          echo 'EXPERIENCE_QUALITY_BAR=PASS'
