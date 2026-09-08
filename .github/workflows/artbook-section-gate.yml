@@ -11,6 +11,8 @@ on:
       - 'artbook-work-orders/**'
       - 'tools/artbook-gate.mjs'
       - 'tools/artbook-assemble.mjs'
+      - 'tools/artbook-postprocess.mjs'
+      - '.github/workflows/artbook-section-gate.yml'
 
 permissions:
   contents: write
@@ -45,7 +47,25 @@ jobs:
         if: steps.gate.outputs.ready == 'true'
         run: node tools/artbook-assemble.mjs
 
-      - name: Persist gate assembled artbook and second-work queue
+      - name: Postprocess assembled artbook to exact 10 cuts
+        if: steps.gate.outputs.ready == 'true'
+        run: node tools/artbook-postprocess.mjs
+
+      - name: Validate completed 10-cut result
+        if: steps.gate.outputs.ready == 'true'
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const gate=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8'));
+          const artbook=JSON.parse(fs.readFileSync(gate.assembledFile,'utf8'));
+          if(artbook.status!=='COMPLETED')throw new Error('artbook must finish as COMPLETED');
+          if(!Array.isArray(artbook.cuts)||artbook.cuts.length!==10)throw new Error(`artbook must have exactly 10 cuts: ${artbook.cuts?.length||0}`);
+          if(artbook.postprocess?.complete!==true)throw new Error('artbook postprocess must be complete');
+          if(gate.completedArtbook!==true||gate.cutCount!==10||gate.postprocessComplete!==true)throw new Error('gate completion state mismatch');
+          console.log('ARTBOOK_SECTION_GATE_FINAL=COMPLETED_10/10');
+          NODE
+
+      - name: Persist completed gate artbook and second-work queue
         run: |
           set -euo pipefail
           git config user.name "jaewoon-company-ai"
@@ -58,6 +78,6 @@ jobs:
             echo "No artbook gate/assembly changes."
             exit 0
           fi
-          git commit -m "artbook-gate: record readiness and verified assembly [skip ci]"
+          git commit -m "artbook-gate: persist completed 10-cut artbook [skip ci]"
           git pull --rebase origin main
           git push origin main
