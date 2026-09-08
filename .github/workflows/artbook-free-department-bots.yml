@@ -264,7 +264,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: round2-*
-          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
+          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews
           merge-multiple: true
       - name: Install local Ollama
         shell: bash
@@ -330,7 +330,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: round2-*
-          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
+          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews
           merge-multiple: true
       - name: Restore director outputs
         uses: actions/download-artifact@v4
