@@ -49,7 +49,7 @@ function normalizeGameCard(card){
   const state=badges.querySelector('.stateDev,.stateTest,.stateRelease,.stateArchive,.stateReview');
   const unity=badges.querySelector('.platformUnity');
   const web=badges.querySelector('.platformWeb');
-  if(state){state.classList.add('statePrimary');badges.prepend(state);}
+  if(state){state.classList.add('statePrimary');if(badges.firstElementChild!==state)badges.prepend(state);}
   if(unity)unity.classList.add('platformSecondary');
   if(web){
     web.classList.add('platformSecondary');
@@ -126,7 +126,7 @@ function installGameCenterFocus(){
   const grid=document.getElementById('gameGrid');
   if(grid){
     const observer=new MutationObserver(()=>applyGameCenterFocus());
-    observer.observe(grid,{childList:true,subtree:true});
+    observer.observe(grid,{childList:true});
   }
   applyGameCenterFocus();
 }
