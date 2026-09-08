@@ -89,35 +89,6 @@
       "expiresAt": "2026-09-08T22:05:31.000Z",
       "status": "active",
       "evidence": ["owner-request-fix-human-go-errors"]
-    },
-    {
-      "id": "wl-chatgpt-vibe2-story-draft",
-      "worker": "chatgpt",
-      "taskId": "vibe2-artbook-story-first-draft",
-      "gameId": null,
-      "files": [
-        ".github/workflows/artbook-free-department-bots.yml",
-        "tools/vibe2-artbook-story-draft.mjs",
-        "tools/artbook-department-runner.mjs",
-        "tools/artbook-gate.mjs",
-        "tools/artbook-prepare-daily.mjs",
-        "tools/artbook-visual-plan-runner.mjs",
-        "tools/artbook-assemble.mjs",
-        "tools/artbook-postprocess.mjs",
-        "assets/artbook-viewer.js",
-        "assets/vibe-company-development-flow.js",
-        "ARTBOOK_POLICY.md",
-        "ARTBOOK_SUBMISSION_CONTRACT.md"
-      ],
-      "baseSha": "571fb42a863603ff4546d0d345139d61262ad963",
-      "acquiredAt": "2026-09-08T21:48:18.000Z",
-      "expiresAt": "2026-09-08T22:40:00.000Z",
-      "status": "active",
-      "evidence": [
-        "owner-authorized-vibe2-first-story-draft-before-planning-artbook",
-        "owner-authorized-variable-artbook-pages-12-to-30-homepage-compact",
-        "variable-page-completed-artbooks-must-lock-for-development"
-      ]
     }
   ]
 }
