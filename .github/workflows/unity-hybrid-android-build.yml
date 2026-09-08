@@ -18,7 +18,7 @@ permissions:
 
 concurrency:
   group: unity-hybrid-android-build
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   route:
