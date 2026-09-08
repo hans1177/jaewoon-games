@@ -8,6 +8,9 @@ on:
       - 'qa/company-dna-learning.test.mjs'
       - 'company-learning/**'
       - '.github/workflows/company-dna-learning.yml'
+  workflow_run:
+    workflows: ['Autonomous Candidate Promotion']
+    types: [completed]
   workflow_dispatch:
   schedule:
     - cron: '10 14 * * 0' # 23:10 KST Sunday, after weekly review
@@ -21,6 +24,7 @@ concurrency:
 
 jobs:
   learn:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -42,8 +46,7 @@ jobs:
           grep -Fq "jayApproved===true" tools/company-dna-learning.mjs
           grep -Fq "selfPromote:false" tools/company-dna-learning.mjs
           echo 'DNA_SELF_PROMOTION=NO'
-      - name: Persist memory only when changed
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+      - name: Persist refreshed memory when changed
         shell: bash
         run: |
           set -euo pipefail
