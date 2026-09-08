@@ -1,8 +1,8 @@
 {
-  "version": 2,
+  "version": 3,
   "policy": {
-    "licensePriority": ["CC0", "MIT", "commercial-no-attribution", "CC-BY"],
-    "blocked": ["NC", "unknown", "unclear-redistribution"],
+    "licensePriority": ["CC0", "public-domain", "MIT", "commercial-no-attribution", "CC-BY"],
+    "blocked": ["NC", "unknown", "unclear-redistribution", "unknown-modification-rights", "lost-provenance"],
     "maxSingleAssetBytes": 104857600,
     "preferExistingAssets": true,
     "downloadOnDemand": true,
@@ -12,6 +12,13 @@
     "allowStaticEnemy": false,
     "allowStaticBoss": false,
     "allowGeometricActor": false,
+    "allowStaticActorWithMotionEngine": true,
+    "staticActorMotionRequirements": ["motion-engine-profile", "runtime-motion-evidence", "PIXEL-CORE-CHECK-review", "mobile-performance-pass"],
+    "motionEnginePath": "assets/jaewoon-motion-engine.js",
+    "assetStrategies": ["KEEP", "ENHANCE", "COMBINE", "REPLACE"],
+    "licenseLedgerRequired": true,
+    "licenseLedgerFields": ["source", "creator", "license", "commercialUse", "modificationUse", "attribution", "verifiedAt", "targetGame", "purpose", "modified"],
+    "styleGuideRequired": ["resolution", "palette", "outline", "shadow", "proportion", "uiShape", "vfxTone", "contrast"],
     "prototypePresetCatalog": "assets/prototype-asset-presets.json"
   },
   "approvedSources": [
