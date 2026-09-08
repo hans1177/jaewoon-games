@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "updatedAt": "2026-09-08",
+  "version": 3,
+  "updatedAt": "2026-09-09",
   "games": [
     {
       "id": "insect-survival",
@@ -10,7 +10,11 @@
       "image": "assets/insect-main-v3.webp",
       "webPath": "/web-games/insect-survival/",
       "hasWebArchive": true,
-      "featured": true
+      "featured": true,
+      "homepageCategory": "development-confirmed",
+      "homepageStage": "아트북 1차 · 구조개선 병행",
+      "homepageRecentWork": "곤충 먹이사슬·세력 생태를 중심으로 정체성을 좁히고 iframe/eval 누적 구조를 정리 중.",
+      "homepageWebPlayable": true
     },
     {
       "id": "crystal-defense",
@@ -20,7 +24,11 @@
       "image": "assets/crystal-v2.webp",
       "webPath": "/web-games/crystal-defense/",
       "hasWebArchive": true,
-      "featured": true
+      "featured": true,
+      "homepageCategory": "development-confirmed",
+      "homepageStage": "아트북 1차 · 기술부채 게이트",
+      "homepageRecentWork": "압축 payload 구조를 먼저 정리하고 수정 공명 시스템으로 곤충 디펜스와 차별화 검증 중.",
+      "homepageWebPlayable": true
     },
     {
       "id": "bug-defense",
@@ -30,7 +38,11 @@
       "image": "assets/insect-war-v2.webp",
       "webPath": "/web-games/bug-defense/",
       "hasWebArchive": true,
-      "featured": true
+      "featured": true,
+      "homepageCategory": "development-confirmed",
+      "homepageStage": "아트북 1차 · 설계 확정 진행",
+      "homepageRecentWork": "본진을 비우고 현상금 사냥에 나가는 위험 선택을 대표 시스템으로 검토 중.",
+      "homepageWebPlayable": true
     },
     {
       "id": "daechung-rpg",
@@ -44,7 +56,12 @@
       "unityProjectPath": "unity-games/daechung-rpg",
       "preferredPlatform": "unity-android",
       "homepagePublicationApproved": true,
-      "publishTestBuildWhenReady": true
+      "publishTestBuildWhenReady": true,
+      "homepageCategory": "development-confirmed",
+      "homepageStage": "Unity 본개발",
+      "homepageRecentWork": "전투·지역·퀘스트·세이브를 패치 누적 구조에서 분리해 Unity 시스템으로 재구축 중.",
+      "homepageWebPlayable": true,
+      "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg"
     },
     {
       "id": "human-go",
@@ -54,7 +71,11 @@
       "image": "assets/card-rpg-v2.webp",
       "webPath": "/web-games/human-go/",
       "hasWebArchive": true,
-      "featured": false
+      "featured": false,
+      "homepageCategory": "reviewing",
+      "homepageStage": "신규 기능 보류 · 구조 분석",
+      "homepageRecentWork": "1MB 단일 파일의 실제 5분 핵심루프와 구조를 먼저 분석한 뒤 다음 개발 여부를 결정.",
+      "homepageWebPlayable": true
     },
     {
       "id": "egg-heist",
@@ -64,7 +85,11 @@
       "image": "assets/title-egg-heist.svg",
       "webPath": "/web-games/egg-heist/",
       "hasWebArchive": true,
-      "featured": false
+      "featured": false,
+      "homepageCategory": "reviewing",
+      "homepageStage": "HOLD · 원본/경로 확인",
+      "homepageRecentWork": "현재 Web 경로가 게임을 실행하지 않고 홈으로 이동해 원본 위치와 공개 의도를 확인 중.",
+      "homepageWebPlayable": false
     },
     {
       "id": "chess-battle",
@@ -74,7 +99,11 @@
       "image": "assets/title-chess-battle.svg",
       "webPath": "/web-games/chess-battle/",
       "hasWebArchive": true,
-      "featured": false
+      "featured": false,
+      "homepageCategory": "release-confirmed",
+      "homepageStage": "공개 Web 안정판",
+      "homepageRecentWork": "현재 공개판 유지.",
+      "homepageWebPlayable": true
     },
     {
       "id": "monster-adventure",
@@ -84,7 +113,11 @@
       "image": "assets/title-monster-adventure.svg",
       "webPath": "/web-games/monster-adventure/",
       "hasWebArchive": true,
-      "featured": false
+      "featured": false,
+      "homepageCategory": "reviewing",
+      "homepageStage": "정체성 재설계",
+      "homepageRecentWork": "일반 몬스터 수집 장르와의 유사성을 줄이고 4마리 릴레이 전투를 핵심 정체성으로 재설계 중.",
+      "homepageWebPlayable": true
     },
     {
       "id": "survival",
@@ -94,7 +127,11 @@
       "image": "assets/title-survival.svg",
       "webPath": "/web-games/survival/",
       "hasWebArchive": true,
-      "featured": false
+      "featured": false,
+      "homepageCategory": "development-confirmed",
+      "homepageStage": "아트북 1차 · 실제 개발",
+      "homepageRecentWork": "플레이어 행동에 따라 다음 날 생태가 달라지는 반응형 생존 정체성을 Web 개발판에서 검증 준비 중.",
+      "homepageWebPlayable": true
     },
     {
       "id": "survival2",
@@ -104,7 +141,11 @@
       "image": "assets/title-survival2.svg",
       "webPath": "/web-games/survival2/",
       "hasWebArchive": true,
-      "featured": false
+      "featured": false,
+      "homepageCategory": "release-confirmed",
+      "homepageStage": "공개 Web 안정판",
+      "homepageRecentWork": "현재 공개판 유지.",
+      "homepageWebPlayable": true
     },
     {
       "id": "territory-war",
@@ -114,7 +155,11 @@
       "image": "assets/title-territory-war.svg",
       "webPath": "/web-games/territory-war/",
       "hasWebArchive": true,
-      "featured": false
+      "featured": false,
+      "homepageCategory": "release-confirmed",
+      "homepageStage": "공개 Web 안정판",
+      "homepageRecentWork": "현재 공개판 유지.",
+      "homepageWebPlayable": true
     }
   ]
 }
