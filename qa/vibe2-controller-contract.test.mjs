@@ -64,7 +64,7 @@ test('engine adapter forbids binary direct text editing', () => {
 });
 
 test('runtime declares only actually connected worker capabilities', () => {
-  assert.equal(runtime.version, 2);
+  assert.equal(runtime.version, 3);
   assert.equal(runtime.continuous.maxWorkMinutes, 20);
   assert.equal(runtime.continuous.maxModelCallsPerRun, 1);
   assert.equal(runtime.workers.textSource.configured, true);
@@ -76,6 +76,20 @@ test('runtime declares only actually connected worker capabilities', () => {
   assert.equal(runtime.verification.automaticMainPromotion, false);
   assert.equal(runtime.verification.automaticExperiencePromotion, false);
   assert.equal(runtime.safety.binaryAssetsDirectTextEditForbidden, true);
+});
+
+test('runtime requires the shared ChatGPT/Vibe2/company-ai work lock', () => {
+  assert.equal(runtime.workLocks.enabled, true);
+  assert.equal(runtime.workLocks.requiredBeforeSourceWrite, true);
+  assert.equal(runtime.workLocks.stateBranch, 'vibe2-work-locks');
+  assert.equal(runtime.workLocks.statePath, '.vibe2/work-locks.json');
+  assert.deepEqual(runtime.workLocks.workers, ['chatgpt', 'vibe2', 'company-ai']);
+  assert.equal(runtime.workLocks.vibe2WorkerId, 'vibe2');
+  assert.equal(runtime.workLocks.defaultLeaseMinutes, 45);
+  assert.equal(runtime.workLocks.maxLeaseMinutes, 120);
+  assert.equal(runtime.workLocks.remoteClient, 'tools/vibe2-remote-work-lock.mjs');
+  assert.equal(runtime.workLocks.automaticLockSteal, false);
+  assert.equal(runtime.safety.sharedWorkLockRequired, true);
 });
 
 test('continuous controller is bounded, candidate-only and never auto-passes unverified source work', () => {
@@ -91,6 +105,20 @@ test('continuous controller is bounded, candidate-only and never auto-passes unv
   assert(!workflow.includes('vibe2-queue-control.mjs pass'));
   assert(!workflow.includes('git push origin HEAD:main'));
   assert(!workflow.includes('web-games/.autonomous-candidates'));
+});
+
+test('source worker must acquire and release the shared remote work lock', () => {
+  assert(workflow.includes('tools/vibe2-remote-work-lock.mjs acquire'));
+  assert(workflow.includes('--worker=vibe2'));
+  assert(workflow.includes('--lease-minutes=45'));
+  assert(workflow.includes('shared-work-lock-conflict'));
+  assert(workflow.includes('steps.work_lock.outputs.acquired == \'1\''));
+  assert(workflow.includes('BASE_SHA_DECISION'));
+  assert(workflow.includes('REPLAN_REQUIRED'));
+  assert(workflow.includes('base-sha-overlap-replan-required'));
+  assert(workflow.includes('tools/vibe2-remote-work-lock.mjs release'));
+  assert(workflow.includes('VIBE_REMOTE_WORK_LOCK_RELEASED'));
+  assert(!workflow.includes('work-lock --force'));
 });
 
 test('all Vibe2 queue writers share the control-state lock and retry moving branches', () => {
