@@ -92,7 +92,7 @@ jobs:
               f.write(f'publish_homepage={str(publish_homepage).lower()}\n')
           PY
 
-      - name: Verify Unity named-user cloud credentials
+      - name: Verify Unity Personal cloud credentials
         env:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
@@ -101,7 +101,7 @@ jobs:
           set -euo pipefail
           [[ -n "$UNITY_EMAIL" ]] || { echo 'UNITY_EMAIL secret is required.' >&2; exit 2; }
           [[ -n "$UNITY_PASSWORD" ]] || { echo 'UNITY_PASSWORD secret is required.' >&2; exit 2; }
-          echo '[PASS] Named-user credentials are present. UNITY_LICENSE is intentionally not used by the cloud build.'
+          echo '[PASS] Unity account credentials are present. Cloud activation will run directly on the GitHub host.'
 
       - name: Cache Unity Library
         uses: actions/cache@v4
@@ -111,40 +111,40 @@ jobs:
           restore-keys: |
             unity-library-${{ runner.os }}-${{ steps.request.outputs.game_id }}-
 
-      - name: Build Android APK in GitHub cloud
+      - name: Install matching Unity Editor and Android support
+        id: unity_setup
+        uses: RageAgainstThePixel/unity-setup@v2
+        with:
+          version-file: ${{ steps.request.outputs.project_path }}/ProjectSettings/ProjectVersion.txt
+          unity-version: ${{ steps.request.outputs.unity_version }}
+          build-targets: Android
+          cache-installation: true
+
+      - name: Activate Unity Personal on GitHub host
+        uses: RageAgainstThePixel/activate-unity-license@v2
+        with:
+          license: personal
+          username: ${{ secrets.UNITY_EMAIL }}
+          password: ${{ secrets.UNITY_PASSWORD }}
+          license-version: 6.x
+
+      - name: Build Android APK on GitHub host
         env:
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-          UNITY_IMAGE: unityci/editor:ubuntu-${{ steps.request.outputs.unity_version }}-android-3
+          UNITY_EDITOR_PATH: ${{ steps.unity_setup.outputs.unity-editor-path }}
           PROJECT_PATH: ${{ steps.request.outputs.project_path }}
           BUILD_METHOD: ${{ steps.request.outputs.build_method }}
         shell: bash
         run: |
           set -euo pipefail
-          echo "[INFO] Pulling $UNITY_IMAGE"
-          docker pull "$UNITY_IMAGE"
-          docker run --rm \
-            -e UNITY_EMAIL \
-            -e UNITY_PASSWORD \
-            -e PROJECT_PATH \
-            -e BUILD_METHOD \
-            -v "$GITHUB_WORKSPACE:/github/workspace" \
-            -w /github/workspace \
-            "$UNITY_IMAGE" \
-            /bin/bash -lc '
-              set -euo pipefail
-              mkdir -p /root/.cache/unity3d /root/.config/unity3d /root/.local/share/unity3d/Unity
-              unity_bin="/opt/unity/Editor/Unity"
-              if [[ ! -x "$unity_bin" ]]; then
-                unity_bin="$(find /opt /usr -type f -path "*/Editor/Unity" -perm -111 2>/dev/null | head -n 1 || true)"
-              fi
-              [[ -n "$unity_bin" && -x "$unity_bin" ]] || { echo "Unity executable not found in container." >&2; exit 3; }
-              echo "[INFO] Unity executable resolved."
-              echo "[INFO] Activating named-user license with an intentionally empty serial value."
-              "$unity_bin" -batchmode -nographics -quit -serial -username "$UNITY_EMAIL" -password "$UNITY_PASSWORD" -logFile /dev/stdout
-              echo "[PASS] Unity named-user activation command completed."
-              "$unity_bin" -batchmode -nographics -quit -projectPath "/github/workspace/$PROJECT_PATH" -executeMethod "$BUILD_METHOD" -logFile /dev/stdout
-            '
+          [[ -n "$UNITY_EDITOR_PATH" && -x "$UNITY_EDITOR_PATH" ]] || { echo "Unity executable not found: $UNITY_EDITOR_PATH" >&2; exit 3; }
+          echo '[INFO] Unity Personal is active on this same GitHub host. Starting Android build.'
+          "$UNITY_EDITOR_PATH" \
+            -batchmode \
+            -nographics \
+            -quit \
+            -projectPath "$GITHUB_WORKSPACE/$PROJECT_PATH" \
+            -executeMethod "$BUILD_METHOD" \
+            -logFile /dev/stdout
 
       - name: Verify APK and create metadata
         id: artifact
@@ -176,7 +176,7 @@ jobs:
               'sha256': apk_sha,
               'bytes': int(size),
               'channel': 'test',
-              'buildRoute': 'github-cloud-named-user',
+              'buildRoute': 'github-cloud-host-personal',
               'homepagePublicationApproved': approved.lower() == 'true',
               'homepagePublished': False,
               'builtAt': datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -208,7 +208,7 @@ jobs:
           make_latest: false
           body: |
             Automated Jaewoon Company Android test build.
-            Route: GitHub-hosted Unity named-user cloud
+            Route: GitHub-hosted Unity Personal direct activation
             Game: ${{ steps.request.outputs.game_id }}
             Source: ${{ github.sha }}
             Request: ${{ steps.request.outputs.request_id }}
@@ -245,7 +245,7 @@ jobs:
               'requestId': request_id,
               'status': 'ready',
               'channel': 'test',
-              'buildRoute': 'github-cloud-named-user',
+              'buildRoute': 'github-cloud-host-personal',
               'homepagePublished': True,
               'sourceCommit': source_commit,
               'releaseTag': tag,
