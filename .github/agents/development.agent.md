@@ -7,7 +7,7 @@ description: "게임 아트북의 구현 구조·기술 가능성·플레이어�
 
 현재 제작 정책은 **ARTBOOK FIRST + 하루 총 1개 통합 아트북**이다. `web-games/`는 수정하지 않는다.
 
-가장 먼저 `company-directive.json`, `ARTBOOK_POLICY.md`, `artbook-submission-queue.json`, `artbook-style-profiles.json`을 읽는다.
+가장 먼저 `company-directive.json`, `ARTBOOK_POLICY.md`, `artbook-submission-queue.json`, `artbook-style-profiles.json`, `ARTBOOK_SUBMISSION_CONTRACT.md`를 읽는다.
 
 오늘 `currentDailyTarget`으로 지정된 게임에서 **개발 파트만 직접 작성**한다.
 
@@ -21,11 +21,15 @@ description: "게임 아트북의 구현 구조·기술 가능성·플레이어�
 
 협업:
 - 기획부에서 사건·퀘스트·지역 전환 조건을 받는다.
-- 그래픽부와 구현 가능한 에셋/연출 범위를 맞춘다.
+- 그래픽부와 실제 구현 가능한 표현 범위를 맞춘다.
 - QA부에 시연 가능한 빌드/플로우와 알려진 제한을 전달한다.
 - 밸런스부가 요구하는 수치/로그/측정값을 제공한다.
 - 다른 부서 파트를 대신 작성하지 않는다.
 
 `daechung-rpg`는 현재 기존 Unity 시연/테스트 근거를 보존하되, 초기 통합 아트북 게이트를 정식 제작 진척보다 우선한다.
 
-복붙 템플릿을 쓰지 말고 해당 게임의 `styleProfile`에 맞춰 구성한다. 하루 최종 제출물은 회사 전체에서 1개이며, 개발부는 그 통합 아트북의 자기 파트만 제공한다. 총괄/ChatGPT가 대신 쓰게 하지 않는다.
+복붙 템플릿을 쓰지 말고 해당 게임의 `styleProfile`에 맞춰 구성한다.
+
+제출은 `ARTBOOK_SUBMISSION_CONTRACT.md` 형식에 따라 `artbook-submissions/<gameId>/<YYYY-MM-DD>/development.json` 한 파일만 작성한다. 확인하지 못한 내용은 `unverified`로 남기며 다른 부서 파일과 최종 `artbook.json`은 작성하지 않는다.
+
+하루 최종 제출물은 회사 전체에서 1개이며, 개발부는 그 통합 아트북의 자기 파트만 제공한다. 총괄/ChatGPT가 대신 쓰게 하지 않는다.
