@@ -111,6 +111,14 @@ jobs:
           restore-keys: |
             unity-library-${{ runner.os }}-${{ steps.request.outputs.game_id }}-
 
+      - name: Prepare Unity Hub compatibility path
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /opt/unityhub
+          sudo ln -sfn /usr/bin/unityhub /opt/unityhub/unityhub
+          echo '[INFO] Prepared /opt/unityhub/unityhub -> /usr/bin/unityhub for unity-setup.'
+
       - name: Install matching Unity Editor and Android support
         id: unity_setup
         uses: RageAgainstThePixel/unity-setup@v2
