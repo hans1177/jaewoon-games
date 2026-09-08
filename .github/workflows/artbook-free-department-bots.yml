@@ -13,6 +13,8 @@ on:
       - 'tools/artbook-department-runner.mjs'
       - 'tools/artbook-second-work-runner.mjs'
       - 'tools/artbook-collaboration-runner.mjs'
+      - 'tools/artbook-director-review.mjs'
+      - 'tools/artbook-gate.mjs'
       - 'tools/artbook-assemble.mjs'
       - '.github/workflows/artbook-free-department-bots.yml'
 
@@ -204,8 +206,50 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
+  director-review:
+    needs: [context, collect-round1]
+    if: needs.context.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Restore all five department results
+        uses: actions/download-artifact@v4
+        with:
+          name: round1-bundle
+          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
+      - name: Install local Ollama
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0
+            sleep 2
+          done
+          cat /tmp/ollama.log || true
+          exit 1
+      - name: Pull free open model
+        run: ollama pull "$ARTBOOK_LOCAL_MODEL"
+      - name: Director rates each department result as fifth vote
+        env:
+          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
+          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
+        run: node tools/artbook-director-review.mjs
+      - name: Upload director rating review
+        uses: actions/upload-artifact@v4
+        with:
+          name: director-review
+          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews/director.json
+          retention-days: 1
+          if-no-files-found: error
+
   finalize:
-    needs: [context, collect-round1, round2]
+    needs: [context, collect-round1, round2, director-review]
     if: needs.context.outputs.run == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -230,7 +274,12 @@ jobs:
           pattern: round2-*
           path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews
           merge-multiple: true
-      - name: Validate 5 sections and 5 peer reviews
+      - name: Restore director fifth rating review
+        uses: actions/download-artifact@v4
+        with:
+          name: director-review
+          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews
+      - name: Validate 5 sections, 5 peer reviews and director fifth votes
         env:
           ARTBOOK_DATE: ${{ needs.context.outputs.date }}
           ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
@@ -238,9 +287,10 @@ jobs:
           node tools/artbook-gate.mjs
           node - <<'NODE'
           const fs=require('fs');const g=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8'));
-          if(g.readyCount!==5||g.reviewReadyCount!==5||g.readyForDirectorAssembly!==true)throw new Error(`artbook not ready: ${g.readyCount}/5 + ${g.reviewReadyCount}/5`);
-          if(g.collaborationProtocol!=='PEER_IMPROVEMENT_STAR_5')throw new Error('peer rating protocol mismatch');
-          console.log('FREE_DEPARTMENT_SUBMISSIONS=5/5');console.log('FREE_PEER_RATINGS=5/5');
+          if(g.readyCount!==5||g.reviewReadyCount!==5||g.directorReviewReady!==true||g.readyForDirectorAssembly!==true)throw new Error(`artbook not ready: ${g.readyCount}/5 + ${g.reviewReadyCount}/5 + director=${g.directorReviewReady}`);
+          if(g.collaborationProtocol!=='PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5')throw new Error('rating protocol mismatch');
+          if(g.ratingsPerDepartment!==5)throw new Error('each department result must receive five ratings');
+          console.log('FREE_DEPARTMENT_SUBMISSIONS=5/5');console.log('FREE_PEER_REVIEWS=5/5');console.log('DIRECTOR_RATING_REVIEW=1/1');console.log('RATINGS_PER_DEPARTMENT=5');
           NODE
       - name: Assemble ratings and schedule next-day second work when needed
         env:
@@ -256,8 +306,8 @@ jobs:
           node - <<'NODE'
           const fs=require('fs');const q=JSON.parse(fs.readFileSync('artbook-submission-queue.json','utf8'));const roles=['planning','graphics','development','qa','balance'];const mode=process.env.ARTBOOK_MODE||'INITIAL';
           q.updatedAt=process.env.ARTBOOK_DATE;q.currentDailyTarget=process.env.ARTBOOK_GAME_ID;
-          q.currentTargetExecution={...(q.currentTargetExecution||{}),date:process.env.ARTBOOK_DATE,mode,readySections:5,requiredSections:5,readyReviews:5,requiredReviews:5,directorAssemblyReady:true,runnerDispatch:mode==='SECOND_WORK'?'FREE_LOCAL_OPEN_MODEL_SECOND_WORK_COMPLETE':'FREE_LOCAL_OPEN_MODEL_COMPLETE',runnerModel:'qwen3:0.6b',runnerPaidApi:false,runnerApiKeyRequired:false,firstRoundIndependent:mode==='INITIAL',secondRoundProtocol:'PEER_IMPROVEMENT_STAR_5',departmentOpinionsPublished:true,assemblyGrantsProductionApproval:false};
-          const g=(q.games||[]).find(x=>x.gameId===process.env.ARTBOOK_GAME_ID);if(g){g.status=mode==='SECOND_WORK'?'SECOND_WORK_ASSEMBLED_AWAITING_OWNER_DECISION':'INITIAL_ARTBOOK_ASSEMBLED_AWAITING_OWNER_DECISION';g.sectionsReady=[...roles];g.reviewsReady=[...roles];g.directorAssemblyReady=true;g.currentStage=mode==='SECOND_WORK'?'second-work-assembled-awaiting-owner-decision':'initial-artbook-assembled-awaiting-owner-decision';}
+          q.currentTargetExecution={...(q.currentTargetExecution||{}),date:process.env.ARTBOOK_DATE,mode,readySections:5,requiredSections:5,readyReviews:5,requiredReviews:5,directorReviewReady:true,ratingsPerDepartment:5,directorAssemblyReady:true,runnerDispatch:mode==='SECOND_WORK'?'FREE_LOCAL_OPEN_MODEL_SECOND_WORK_COMPLETE':'FREE_LOCAL_OPEN_MODEL_COMPLETE',runnerModel:'qwen3:0.6b',runnerPaidApi:false,runnerApiKeyRequired:false,firstRoundIndependent:mode==='INITIAL',secondRoundProtocol:'PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5',departmentOpinionsPublished:true,assemblyGrantsProductionApproval:false};
+          const g=(q.games||[]).find(x=>x.gameId===process.env.ARTBOOK_GAME_ID);if(g){g.status=mode==='SECOND_WORK'?'SECOND_WORK_ASSEMBLED_AWAITING_OWNER_DECISION':'INITIAL_ARTBOOK_ASSEMBLED_AWAITING_OWNER_DECISION';g.sectionsReady=[...roles];g.reviewsReady=[...roles];g.directorReviewReady=true;g.ratingsPerDepartment=5;g.directorAssemblyReady=true;g.currentStage=mode==='SECOND_WORK'?'second-work-assembled-awaiting-owner-decision':'initial-artbook-assembled-awaiting-owner-decision';}
           fs.writeFileSync('artbook-submission-queue.json',JSON.stringify(q,null,2)+'\n');
           NODE
       - name: Commit verified department work and integrated draft
