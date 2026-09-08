@@ -27,6 +27,17 @@ for(const role of requiredRoles){
     if(String(data.status||'').toUpperCase()!=='SUBMITTED')problems.push('status-not-SUBMITTED');
     if(!Array.isArray(data.evidence)||data.evidence.length===0)problems.push('evidence-required');
     if(!data.section||typeof data.section!=='object'||Array.isArray(data.section)||Object.keys(data.section).length===0)problems.push('non-empty-section-required');
+    const submissionVersion=Number(data.version||0);
+    if(submissionVersion>=5){
+      const conceptPlan=data.conceptPlan;
+      if(!conceptPlan||typeof conceptPlan!=='object'||Array.isArray(conceptPlan))problems.push('conceptPlan-required-for-v5');
+      else{
+        for(const key of ['creativeIdeas','implementationPlan','demoValidation']){
+          const values=conceptPlan[key];
+          if(!Array.isArray(values)||values.length===0||values.some(value=>!String(value||'').trim()))problems.push(`conceptPlan-${key}-non-empty-array-required`);
+        }
+      }
+    }
     if(/NO_CHANGE/i.test(raw))problems.push('NO_CHANGE-token-forbidden');
   }
   if(problems.length)invalid.push({role,file,problems});else ready.push({role,file});
@@ -106,6 +117,6 @@ if(initialComplete&&!peerReviewsComplete)formalProductionGate='BLOCKED_WAITING_F
 else if(initialComplete&&peerReviewsComplete&&!directorReviewReady)formalProductionGate='BLOCKED_WAITING_FOR_DIRECTOR_FIFTH_RATING';
 else if(readyForDirectorAssembly)formalProductionGate='SECTION_AND_FIVE_RATING_GATE_COMPLETE_DIRECTOR_ASSEMBLY_ALLOWED';
 
-const status={version:5,checkedAt:new Date().toISOString(),date,gameId,gameName:targetGame?.name||gameId,requiredRoles,readyRoles:ready.map(x=>x.role),readyCount:ready.length,requiredCount:requiredRoles.length,missing,invalid,independentRoundComplete:initialComplete,reviewReadyRoles:reviewReady.map(x=>x.role),reviewReadyCount:reviewReady.length,reviewRequiredCount:requiredRoles.length,reviewMissing,reviewInvalid,peerReviewsComplete,directorReviewFile:directorFile,directorReviewReady,directorReviewProblems:directorProblems,directorRatingsRequired:requiredRoles.length,ratingsPerDepartment,collaborationProtocol:'PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5',homepageOpinionMode:'IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS',collaborationComplete,readyForDirectorAssembly,directorMayAuthorMissingSections:false,directorMayAuthorMissingReviews:false,formalProductionGate};
+const status={version:6,checkedAt:new Date().toISOString(),date,gameId,gameName:targetGame?.name||gameId,requiredRoles,readyRoles:ready.map(x=>x.role),readyCount:ready.length,requiredCount:requiredRoles.length,missing,invalid,independentRoundComplete:initialComplete,submissionContract:'V5_CREATIVE_IMPLEMENTATION_DEMO_PLAN',historicalPreV5Compatibility:true,reviewReadyRoles:reviewReady.map(x=>x.role),reviewReadyCount:reviewReady.length,reviewRequiredCount:requiredRoles.length,reviewMissing,reviewInvalid,peerReviewsComplete,directorReviewFile:directorFile,directorReviewReady,directorReviewProblems:directorProblems,directorRatingsRequired:requiredRoles.length,ratingsPerDepartment,collaborationProtocol:'PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5',homepageOpinionMode:'IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS',collaborationComplete,readyForDirectorAssembly,directorMayAuthorMissingSections:false,directorMayAuthorMissingReviews:false,formalProductionGate};
 writeJson('artbook-gate-status.json',status);
-console.log(`ARTBOOK_GAME_ID=${gameId}`);console.log(`ARTBOOK_DATE=${date}`);console.log(`ARTBOOK_SECTION_READY=${ready.length}/${requiredRoles.length}`);console.log(`ARTBOOK_REVIEW_READY=${reviewReady.length}/${requiredRoles.length}`);console.log(`ARTBOOK_DIRECTOR_REVIEW=${directorReviewReady?'1/1':'0/1'}`);console.log(`ARTBOOK_RATINGS_PER_DEPARTMENT=${ratingsPerDepartment}`);console.log(`ARTBOOK_DIRECTOR_ASSEMBLY=${readyForDirectorAssembly?'YES':'NO'}`);if(missing.length)console.log(`ARTBOOK_MISSING=${missing.map(x=>x.role).join(',')}`);if(invalid.length)console.log(`ARTBOOK_INVALID=${invalid.map(x=>x.role).join(',')}`);if(reviewMissing.length)console.log(`ARTBOOK_REVIEW_MISSING=${reviewMissing.map(x=>x.role).join(',')}`);if(reviewInvalid.length)console.log(`ARTBOOK_REVIEW_INVALID=${reviewInvalid.map(x=>x.role).join(',')}`);if(directorProblems.length)console.log(`ARTBOOK_DIRECTOR_INVALID=${directorProblems.join(',')}`);
+console.log(`ARTBOOK_GAME_ID=${gameId}`);console.log(`ARTBOOK_DATE=${date}`);console.log(`ARTBOOK_SECTION_READY=${ready.length}/${requiredRoles.length}`);console.log(`ARTBOOK_REVIEW_READY=${reviewReady.length}/${requiredRoles.length}`);console.log(`ARTBOOK_DIRECTOR_REVIEW=${directorReviewReady?'1/1':'0/1'}`);console.log(`ARTBOOK_RATINGS_PER_DEPARTMENT=${ratingsPerDepartment}`);console.log(`ARTBOOK_SUBMISSION_CONTRACT=${status.submissionContract}`);console.log(`ARTBOOK_DIRECTOR_ASSEMBLY=${readyForDirectorAssembly?'YES':'NO'}`);if(missing.length)console.log(`ARTBOOK_MISSING=${missing.map(x=>x.role).join(',')}`);if(invalid.length)console.log(`ARTBOOK_INVALID=${invalid.map(x=>x.role).join(',')}`);if(reviewMissing.length)console.log(`ARTBOOK_REVIEW_MISSING=${reviewMissing.map(x=>x.role).join(',')}`);if(reviewInvalid.length)console.log(`ARTBOOK_REVIEW_INVALID=${reviewInvalid.map(x=>x.role).join(',')}`);if(directorProblems.length)console.log(`ARTBOOK_DIRECTOR_INVALID=${directorProblems.join(',')}`);
