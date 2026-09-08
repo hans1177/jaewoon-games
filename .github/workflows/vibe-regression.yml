@@ -37,6 +37,8 @@ jobs:
             assets/vibe-quality-intelligence.js
             assets/vibe-presentation-director.js
             assets/vibe-motion-effects-director.js
+            assets/vibe-company-development-flow.js
+            assets/vibe-company-experiment.js
             assets/vibe-v2-playability.js
             assets/vibe-v2-runtime.js
             qa/vibe-regression.mjs
@@ -47,6 +49,8 @@ jobs:
             qa/vibe-auto-repair-causality.mjs
             qa/vibe-v2-playability.mjs
             qa/vibe-v2-e2e.mjs
+            qa/vibe-company-experiment.test.mjs
+            qa/vibe-company-flow-v2.test.mjs
           )
           for file in "${files[@]}"; do
             node --input-type=module --check < "$file"
@@ -56,6 +60,12 @@ jobs:
 
       - name: Test Jaewoon Motion Engine
         run: node qa/jaewoon-motion-engine.test.cjs
+
+      - name: Test Vibe2 company experiment engine
+        run: node qa/vibe-company-experiment.test.mjs
+
+      - name: Test Vibe2 company authority flow
+        run: node qa/vibe-company-flow-v2.test.mjs
 
       - name: Run integrated regression suite
         run: node qa/vibe-regression.mjs
