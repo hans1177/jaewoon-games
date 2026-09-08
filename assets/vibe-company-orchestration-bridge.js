@@ -168,7 +168,18 @@ export function planCompanyDevelopmentTask({
   const resolvedTarget=inferTarget(prompt,target);
   const newGame=isNewGameRequest(prompt);
   const artbookLock=resolveArtbookLock({artbook,artbookStatus,artbookCutCount,artbookPostprocessComplete,artbookRef});
-  const workbench=planVibeWorkbenchTask({request:prompt,target:resolvedTarget,gameId,file,knownBroken});
+  const workbench=planVibeWorkbenchTask({
+    request:prompt,
+    target:resolvedTarget,
+    gameId,
+    file,
+    knownBroken,
+    artbook,
+    artbookStatus:artbookLock.status,
+    artbookCutCount:artbookLock.cutCount,
+    artbookPostprocessComplete:artbookLock.postprocessComplete,
+    artbookRef:artbookLock.ref
+  });
   const majorOwnerApprovalRequired=Boolean(workbench.companyDevelopment?.proposalApproval?.requiresOwnerApproval);
   const orchestratorBase=createVibeWorkPlan({
     request:prompt,
