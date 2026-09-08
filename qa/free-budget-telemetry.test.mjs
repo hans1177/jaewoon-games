@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {buildOperationalFreeBudgetTelemetry} from '../tools/free-budget-telemetry.mjs';
+import {buildOperationalFreeBudgetTelemetry,fetchRepositoryVisibility} from '../tools/free-budget-telemetry.mjs';
 
-const base={repository:'hans1177/jaewoon-games',visibility:'public',runner:'ubuntu-latest',cashKRW:0,paidApi:false,modelCalls:1,maxModelCalls:1,runnerMinutes:20,maxRunnerMinutes:20,timestamp:'2026-09-09T00:00:00Z'};
+const base={repository:'hans1177/jaewoon-games',visibility:'public',visibilitySource:'GITHUB_REPO_API',runner:'ubuntu-latest',cashKRW:0,paidApi:false,modelCalls:1,maxModelCalls:1,runnerMinutes:20,maxRunnerMinutes:20,timestamp:'2026-09-09T00:00:00Z'};
 
 test('public standard runner is verified unmetered free',()=>{
   const t=buildOperationalFreeBudgetTelemetry(base);
@@ -10,6 +10,12 @@ test('public standard runner is verified unmetered free',()=>{
   assert.equal(t.providers[0].quotaMode,'UNMETERED_FREE');
   assert.equal(t.providers[0].status,'AVAILABLE');
   assert.equal(t.providers[1].providerId,'OLLAMA_LOCAL');
+});
+
+test('claimed public without GitHub API proof fails closed',()=>{
+  const t=buildOperationalFreeBudgetTelemetry({...base,visibilitySource:'UNVERIFIED'});
+  assert.equal(t.allowed,false);
+  assert.ok(t.failures.includes('PUBLIC_VISIBILITY_NOT_VERIFIED'));
 });
 
 test('private or unknown visibility fails closed',()=>{
@@ -36,4 +42,13 @@ test('model-call and runner-minute caps are enforced before work',()=>{
   assert.ok(model.failures.includes('MODEL_CALL_CAP_EXCEEDED'));
   const runner=buildOperationalFreeBudgetTelemetry({...base,runnerMinutes:21});
   assert.ok(runner.failures.includes('RUNNER_MINUTE_CAP_EXCEEDED'));
+});
+
+test('repository visibility fetch maps public/private and fails closed on errors',async()=>{
+  const publicFetch=async()=>({ok:true,json:async()=>({visibility:'public',private:false})});
+  const privateFetch=async()=>({ok:true,json:async()=>({visibility:'private',private:true})});
+  const failedFetch=async()=>({ok:false,json:async()=>({})});
+  assert.equal(await fetchRepositoryVisibility('hans1177/jaewoon-games',{fetchImpl:publicFetch}),'public');
+  assert.equal(await fetchRepositoryVisibility('hans1177/jaewoon-games',{fetchImpl:privateFetch}),'private');
+  assert.equal(await fetchRepositoryVisibility('hans1177/jaewoon-games',{fetchImpl:failedFetch}),'unknown');
 });
