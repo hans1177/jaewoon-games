@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-08",
+  "policy": {
+    "stage": "ARTBOOK_TO_PLAYABLE_DEMO_CONCEPT",
+    "artbookIsBaseline": true,
+    "baselineResolution": "LATEST_COMPLETED_ARTBOOK",
+    "requiredVariants": [
+      "A_ARTBOOK_BASELINE",
+      "B_PLAYABLE_CHALLENGER"
+    ],
+    "comparisonAxes": [
+      "characterReadability",
+      "monsterReadability",
+      "environmentFit",
+      "cameraCombatReadability",
+      "artCohesion",
+      "mobilePerformance"
+    ],
+    "departmentReviewRoles": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "balance"
+    ],
+    "directorReviewRequired": true,
+    "iterationUntilPass": true,
+    "mustMeetOrExceedBaselineEveryAxis": true,
+    "challengerMustBeBetterOverall": true,
+    "productionBlockedUntilPass": true,
+    "artbookFailureMayNotBePromoted": true
+  },
+  "games": {
+    "daechung-rpg": {
+      "baselineArtbookIdAtLastSync": "daechung-rpg-2026-09-08-initial",
+      "status": "READY_FOR_DEMO_CONCEPT",
+      "iteration": 0,
+      "selectedCharacter": null,
+      "selectedMonsters": [],
+      "selectedEnvironment": null,
+      "selectedCamera": null,
+      "departmentReviews": {},
+      "directorReview": null,
+      "comparison": null,
+      "productionApproval": false
+    }
+  }
+}
