@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "checkedAtKst": "2026. 09. 08. 11:46:38",
+  "version": 2,
+  "checkedAtKst": "2026. 09. 08. 12:28:45",
   "dateKst": "2026-09-08",
   "manager": "homepage",
   "status": "running",
@@ -9,27 +9,38 @@
     "homepageMustStayCompact": true,
     "preferredPattern": "short-cards -> dedicated-artbook-detail-page",
     "artbookVisibilityIsProductionApproval": false,
-    "webArchiveWriteBack": false
+    "webArchiveWriteBack": false,
+    "runtimeGameHealthBadgeVisible": false
   },
   "counts": {
     "catalogGames": 11,
     "artbookQueueGames": 11,
-    "publishedArtbooks": 0
+    "visibleArtbooks": 0,
+    "tinyFontRulesBelow9px": 18
   },
   "checks": {
     "indexExists": true,
     "artbookDetailExists": true,
     "homepageEnhancementLoaded": true,
-    "compactArtbookUiPresent": true,
+    "compactLayoutCssLoaded": true,
+    "compactLayoutJsLoaded": true,
+    "everyGameGetsArtbookLink": true,
+    "progressArtbooksMayBeViewed": true,
+    "runtimeHealthBadgeHidden": true,
+    "mobileCardsStackVertically": true,
+    "lowPriorityHomeSectionsCollapsed": true,
+    "noSevereTinyFontExplosion": true,
     "allQueuedGamesInCatalog": true,
     "publishedBooksReferenceCatalogGames": true,
     "requiredArtbookRolesIntact": true,
     "webGamesRemainReadOnly": true,
-    "autoMaintenanceEnabled": true
+    "autoMaintenanceEnabled": true,
+    "artbookPageSupportsGameSelection": true
   },
   "findings": {
     "missingCatalog": [],
     "unknownCatalog": [],
-    "brokenBookRefs": []
+    "brokenBookRefs": [],
+    "failures": []
   }
 }

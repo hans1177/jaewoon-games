@@ -43,7 +43,8 @@
       "homepageLengthControl": "compact-cards-and-dedicated-artbook-detail-pages",
       "publicationVisibilityIsProductionApproval": false,
       "statusFile": "homepage-manager-status.json",
-      "workflow": ".github/workflows/homepage-manager.yml"
+      "workflow": ".github/workflows/homepage-manager.yml",
+      "runtimeGameHealthBadgeVisible": false
     }
   },
   "summary": {
@@ -56,7 +57,7 @@
     "homepage": {
       "manager": "homepage",
       "status": "running",
-      "task": "게임 카드·아트북·상태·링크·모바일 UX를 짧고 정확하게 상시 관리",
+      "task": "홈 길이·게임 카드·진행 중 아트북·링크·모바일 가독성을 실제 화면 기준으로 관리",
       "scope": [
         "index.html",
         "company.html",
