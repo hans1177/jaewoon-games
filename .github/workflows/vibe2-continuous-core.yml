@@ -1,0 +1,280 @@
+name: Vibe2 Continuous Core
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: vibe2-continuous-core-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  VIBE2_LOCAL_MODEL: qwen3:0.6b
+  VIBE2_MODEL_MAX_PREDICT: '1536'
+  VIBE2_MODEL_TIMEOUT_MS: '240000'
+  OLLAMA_HOST: 127.0.0.1:11434
+
+jobs:
+  controller:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Vibe2 control line
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Configure control identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-core'
+          git config user.email 'vibe2-core@users.noreply.github.com'
+          echo "VIBE2_CONTROL_BRANCH=${GITHUB_REF_NAME}" >> "$GITHUB_ENV"
+          echo "VIBE2_PUBLIC_MAIN_SOURCE_WRITE=NO"
+
+      - name: Core contract preflight
+        run: |
+          set -euo pipefail
+          node --check tools/vibe2-continuous-runner.mjs
+          node --check tools/vibe2-source-worker.mjs
+          node --check tools/vibe2-queue-control.mjs
+          node --test qa/vibe2-core-engine-motion.test.mjs
+          node --test qa/vibe2-source-worker.test.mjs
+          node --test qa/vibe2-queue-control.test.mjs
+
+      - name: Plan next Vibe2 work order
+        id: order
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/vibe2-continuous-runner.mjs
+          node <<'NODE'
+          const fs=require('fs');
+          const order=JSON.parse(fs.readFileSync('.vibe2/work-order.json','utf8'));
+          const out=process.env.GITHUB_OUTPUT;
+          fs.appendFileSync(out,`run=${order.run?'true':'false'}\n`);
+          fs.appendFileSync(out,`reason=${String(order.reason||'').replaceAll('\n',' ')}\n`);
+          if(!order.run)process.exit(0);
+          fs.appendFileSync(out,`task_id=${order.taskId}\n`);
+          fs.appendFileSync(out,`game_id=${order.gameId||''}\n`);
+          fs.appendFileSync(out,`target=${order.target}\n`);
+          fs.appendFileSync(out,`route=${order.executionRoute}\n`);
+          fs.appendFileSync(out,`source_root=${order.source.root}\n`);
+          NODE
+
+      - name: Stop cleanly when queue has no eligible work
+        if: steps.order.outputs.run != 'true'
+        run: |
+          echo 'VIBE2_WORK=NO_ELIGIBLE_ITEM'
+          echo 'VIBE2_STOP_REASON=${{ steps.order.outputs.reason }}'
+
+      - name: Reserve selected task in control queue
+        if: steps.order.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/vibe2-queue-control.mjs reserve
+          node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          const running=q.tasks.filter(t=>t.status==='running');
+          if(running.length!==1)throw new Error(`expected exactly one running task, got ${running.length}`);
+          if(running[0].id!==process.env.EXPECTED_TASK)throw new Error(`reserved wrong task: ${running[0].id}`);
+          NODE
+        env:
+          EXPECTED_TASK: ${{ steps.order.outputs.task_id }}
+
+      - name: Persist queue reservation only
+        if: steps.order.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add .vibe2/queue.json
+          if git diff --cached --quiet; then
+            echo 'QUEUE_RESERVATION_COMMIT=NO_CHANGE'
+          else
+            git commit -m "vibe2: reserve ${{ steps.order.outputs.task_id }} [skip ci]"
+            git push origin "HEAD:${VIBE2_CONTROL_BRANCH}"
+          fi
+          echo "VIBE2_RESERVED_CONTROL_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Verified free budget preflight
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/free-budget-telemetry.mjs \
+            --verify-public-repo=true \
+            --runner=ubuntu-latest \
+            --model-calls=1 \
+            --runner-minutes=30 \
+            --output=.vibe2/free-budget-telemetry.json
+          echo 'VIBE2_PAID_API=NO'
+          echo 'VIBE2_PAID_RUNNER=NO'
+          echo 'VIBE2_MODEL_CALL_BUDGET=1'
+
+      - name: Generate isolated text-source candidate
+        id: text_candidate
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
+        continue-on-error: true
+        env:
+          TASK_ID: ${{ steps.order.outputs.task_id }}
+          SOURCE_ROOT: ${{ steps.order.outputs.source_root }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          safe_task="$(printf '%s' "$TASK_ID" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-60)"
+          candidate_branch="vibe2/candidate/${safe_task}-${GITHUB_RUN_ID}"
+          git checkout -b "$candidate_branch"
+          echo "candidate_branch=$candidate_branch" >> "$GITHUB_OUTPUT"
+
+          installed=0
+          for attempt in 1 2 3; do
+            echo "OLLAMA_INSTALL_ATTEMPT=$attempt/3"
+            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
+            sleep $((attempt * 4))
+          done
+          test "$installed" = 1
+          nohup ollama serve > /tmp/ollama-vibe2.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then break; fi
+            if [ "$i" = 30 ]; then cat /tmp/ollama-vibe2.log || true; exit 1; fi
+            sleep 2
+          done
+          ollama pull "$VIBE2_LOCAL_MODEL"
+
+          node tools/vibe2-source-worker.mjs --apply-source=true
+          git diff --check
+
+          mapfile -t changed < <(git status --porcelain | sed -E 's/^.. //' | sort -u)
+          test "${#changed[@]}" -gt 0
+          for file in "${changed[@]}"; do
+            case "$file" in
+              "$SOURCE_ROOT"/*|.vibe2/candidates/*|.vibe2/free-budget-telemetry.json) ;;
+              *) echo "candidate escaped source boundary: $file" >&2; exit 1 ;;
+            esac
+            case "$file" in web-games/*) echo "web-games write forbidden: $file" >&2; exit 1 ;; esac
+          done
+
+          git add "$SOURCE_ROOT" .vibe2/candidates .vibe2/free-budget-telemetry.json
+          git diff --cached --quiet && { echo 'candidate has no source diff' >&2; exit 1; }
+          git commit -m "vibe2: candidate ${TASK_ID} [skip ci]"
+          git push origin "HEAD:${candidate_branch}"
+          echo "VIBE2_CANDIDATE_BRANCH=$candidate_branch"
+          echo "VIBE2_CANDIDATE_SHA=$(git rev-parse HEAD)"
+
+      - name: Settle successful text candidate as awaiting engine QA
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.text_candidate.outcome == 'success'
+        env:
+          TASK_ID: ${{ steps.order.outputs.task_id }}
+          CANDIDATE_BRANCH: ${{ steps.text_candidate.outputs.candidate_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout "$VIBE2_CONTROL_BRANCH"
+          git pull --ff-only origin "$VIBE2_CONTROL_BRANCH"
+          node tools/vibe2-queue-control.mjs block \
+            --id="$TASK_ID" \
+            --blocker=candidate-awaiting-engine-qa \
+            --evidence="$CANDIDATE_BRANCH"
+          git add .vibe2/queue.json
+          git commit -m "vibe2: await engine QA for ${TASK_ID} [skip ci]"
+          git push origin "HEAD:${VIBE2_CONTROL_BRANCH}"
+          echo 'VIBE2_TASK_PASS=NO'
+          echo 'VIBE2_ENGINE_QA_REQUIRED=YES'
+
+      - name: Request Unity candidate build verification when request exists
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.target == 'unity' && steps.text_candidate.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ steps.order.outputs.game_id }}
+          CANDIDATE_BRANCH: ${{ steps.text_candidate.outputs.candidate_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          request=".build-requests/unity/${GAME_ID}.json"
+          if git cat-file -e "${CANDIDATE_BRANCH}:${request}" 2>/dev/null; then
+            gh workflow run unity-hybrid-android-build.yml --ref "$CANDIDATE_BRANCH" -f request_file="$request"
+            echo 'VIBE2_UNITY_BUILD_DISPATCH=YES'
+          else
+            echo 'VIBE2_UNITY_BUILD_DISPATCH=NO_REQUEST_FILE'
+          fi
+
+      - name: Record text candidate generation failure
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.text_candidate.outcome != 'success'
+        env:
+          TASK_ID: ${{ steps.order.outputs.task_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout "$VIBE2_CONTROL_BRANCH"
+          git pull --ff-only origin "$VIBE2_CONTROL_BRANCH"
+          node tools/vibe2-queue-control.mjs fail \
+            --id="$TASK_ID" \
+            --blocker=source-candidate-generation-failed \
+            --evidence="actions-run-${GITHUB_RUN_ID}"
+          git add .vibe2/queue.json
+          git commit -m "vibe2: record candidate failure ${TASK_ID} [skip ci]"
+          git push origin "HEAD:${VIBE2_CONTROL_BRANCH}"
+
+      - name: Block engine-editor task until a verified editor worker is configured
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'engine-editor'
+        env:
+          TASK_ID: ${{ steps.order.outputs.task_id }}
+          TARGET: ${{ steps.order.outputs.target }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/vibe2-queue-control.mjs block \
+            --id="$TASK_ID" \
+            --blocker="${TARGET}-editor-worker-required" \
+            --evidence="actions-run-${GITHUB_RUN_ID}"
+          git add .vibe2/queue.json
+          git commit -m "vibe2: block ${TASK_ID} for engine editor [skip ci]"
+          git push origin "HEAD:${VIBE2_CONTROL_BRANCH}"
+          echo 'VIBE2_BINARY_TEXT_EDIT=NO'
+          echo 'VIBE2_TASK_PASS=NO'
+
+      - name: Block analysis task until analysis worker is connected
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'analysis-only'
+        env:
+          TASK_ID: ${{ steps.order.outputs.task_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/vibe2-queue-control.mjs block \
+            --id="$TASK_ID" \
+            --blocker=analysis-worker-required \
+            --evidence="actions-run-${GITHUB_RUN_ID}"
+          git add .vibe2/queue.json
+          git commit -m "vibe2: block ${TASK_ID} for analysis worker [skip ci]"
+          git push origin "HEAD:${VIBE2_CONTROL_BRANCH}"
+
+      - name: Chain next independent eligible work immediately
+        if: always() && steps.order.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout "$VIBE2_CONTROL_BRANCH" >/dev/null 2>&1 || true
+          git pull --ff-only origin "$VIBE2_CONTROL_BRANCH" || true
+          summary="$(node tools/vibe2-queue-control.mjs summary)"
+          printf '%s\n' "$summary"
+          if printf '%s\n' "$summary" | grep -q 'VIBE2_QUEUE_CONTINUE=YES'; then
+            gh workflow run vibe2-continuous-core.yml --ref "$VIBE2_CONTROL_BRANCH"
+            echo 'VIBE2_NEXT_WORK_DISPATCH=YES'
+          else
+            echo 'VIBE2_NEXT_WORK_DISPATCH=NO'
+          fi
