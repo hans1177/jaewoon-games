@@ -1,5 +1,5 @@
 // 파일명: tools/artbook-postprocess.mjs
-// 역할: 5개 부서 통합 아트북을 새 설정 추가 없이 정확히 10컷으로 후처리하고 완료 상태를 확정한다.
+// 역할: 검증·조립이 끝난 5개 부서 통합 아트북을 새 설정 추가 없이 정확히 10컷으로 후처리하고 완료 상태를 확정한다.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -25,6 +25,9 @@ function distinct(values){const seen=new Set(),out=[];for(const value of values)
 const gate=readJson('artbook-gate-status.json',{}),queue=readJson('artbook-submission-queue.json',{}),registry=readJson('game-artbooks.json',{artbooks:[],dailySubmissions:[]});
 const gameId=clean(process.env.ARTBOOK_GAME_ID||gate.gameId||queue.currentDailyTarget),date=clean(process.env.ARTBOOK_DATE||gate.date||todayKst());
 if(!gameId)throw new Error('ARTBOOK_GAME_ID missing');
+if(gate.gameId!==gameId||gate.date!==date)throw new Error('postprocess gate target/date mismatch');
+if(gate.readyForDirectorAssembly!==true||gate.collaborationComplete!==true||gate.directorReviewReady!==true||Number(gate.readyCount)!==5||Number(gate.reviewReadyCount)!==5||Number(gate.ratingsPerDepartment)!==5||gate.assembled!==true)throw new Error('postprocess requires verified 5/5 sections, 5/5 peer reviews, director review and completed assembly');
+
 const base=path.join('artbook-submissions',gameId,date),artbookFile=path.join(base,'artbook.json'),artbook=readJson(artbookFile,null);
 if(!artbook)throw new Error(`artbook missing: ${artbookFile}`);
 if(String(artbook.gameId||'')!==gameId||String(artbook.date||'')!==date)throw new Error('artbook identity/date mismatch');
@@ -42,8 +45,8 @@ for(const role of ROLES){
   const evidenceTexts=distinct((Array.isArray(department.evidence)?department.evidence:[]).map(x=>typeof x==='string'?x:(x?.usage||x?.source||'')));
   const candidates=distinct([existing?.body,department.headline,...sectionTexts,...evidenceTexts]);
   if(candidates.length<2)throw new Error(`${role}: not enough owned material for two postprocessed cuts`);
-  const overviewBody=clip(candidates[0],360),detailBody=clip(candidates.find(x=>clean(x)!==clean(overviewBody))||candidates[1],360);
-  if(!overviewBody||!detailBody)throw new Error(`${role}: empty postprocessed body`);
+  const overviewBody=clip(candidates[0],360),detailBody=clip(candidates[1],360);
+  if(!overviewBody||!detailBody||clean(overviewBody)===clean(detailBody))throw new Error(`${role}: postprocessed bodies must be non-empty and distinct`);
   cuts.push({no:cuts.length+1,kind:role,title:clip(existing?.title||department.headline||`${NAMES[role]} 부서`,100),body:overviewBody,image:clean(existing?.image)||visual,sourceDepartment:role,pageType:'department-overview',postprocessed:true});
   cuts.push({no:cuts.length+1,kind:role,title:`${NAMES[role]} · 세부 정리`,body:detailBody,image:visual,sourceDepartment:role,pageType:'department-detail',postprocessed:true});
 }
