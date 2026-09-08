@@ -9,8 +9,10 @@ on:
       - '.github/workflows/autonomous-continuous-queue-qa.yml'
       - 'tools/autonomous-work-planner.mjs'
       - 'tools/autonomous-queue-state.mjs'
+      - 'tools/autonomous-development-worker.mjs'
       - 'qa/autonomous-work-planner.test.mjs'
       - 'qa/autonomous-queue-state.test.mjs'
+      - 'qa/autonomous-development-worker.test.mjs'
       - 'autonomous-portfolio.json'
   workflow_dispatch:
 
@@ -26,12 +28,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Queue and planner tests
+      - name: Queue, planner and worker tests
         run: |
           node --check tools/autonomous-queue-state.mjs
           node --check tools/autonomous-work-planner.mjs
+          node --check tools/autonomous-development-worker.mjs
           node --test qa/autonomous-queue-state.test.mjs
           node --test qa/autonomous-work-planner.test.mjs
+          node --test qa/autonomous-development-worker.test.mjs
       - name: Enforce bounded event-driven queue contract
         shell: bash
         run: |
@@ -40,15 +44,23 @@ jobs:
           const fs=require('fs');
           const continuous=fs.readFileSync('.github/workflows/autonomous-continuous-development.yml','utf8');
           const promotion=fs.readFileSync('.github/workflows/autonomous-candidate-promotion.yml','utf8');
+          const worker=fs.readFileSync('tools/autonomous-development-worker.mjs','utf8');
           const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
           const must=(ok,msg)=>{if(!ok)throw new Error(msg)};
           must(portfolio.paidApi===false,'paidApi must remain false');
           must(Number(portfolio.maxAutonomousWorkItemsPerDay)>=1&&Number(portfolio.maxAutonomousWorkItemsPerDay)<=24,'daily autonomous cap missing/unsafe');
+          must(continuous.includes("cron: '5 15 * * *'"),'00:05 KST daily reset wake missing');
+          must(continuous.includes("cron: '10 7 * * *'"),'16:10 KST recovery wake missing');
+          must(continuous.includes('actions: write'),'continuous workflow dispatch permission missing');
           must(continuous.includes('Reserve this game once for today'), 'queue reservation missing');
           must(continuous.indexOf('Verified free budget preflight') < continuous.indexOf('Reserve this game once for today'), 'budget preflight must precede reservation');
           must(continuous.indexOf('Reserve this game once for today') < continuous.indexOf('Install local Ollama'), 'reservation must precede model work');
           must(continuous.includes('same game per KST day: max 1 reservation'), 'same-game daily bound missing');
-          must(promotion.includes('actions: write'), 'workflow dispatch permission missing');
+          must(continuous.includes("if: failure() && steps.reserve.outputs.reserved == 'true'"),'reserved failure continuation missing');
+          must(continuous.includes('FAILED_WORK_NEXT=DISPATCHED'),'failed work must dispatch next bounded item');
+          must(worker.includes('stream:true'),'Ollama response must be streamed');
+          must(worker.includes("modelTransport:'NDJSON_STREAM'"),'stream transport evidence missing');
+          must(promotion.includes('actions: write'), 'promotion workflow dispatch permission missing');
           must(promotion.includes('gh workflow run autonomous-continuous-development.yml --ref main'), 'immediate next-work dispatch missing');
           must(promotion.includes('if: always()'), 'queue continuation must survive candidate rejection');
           must(promotion.includes('public game main promotion: NO'), 'public main promotion guard missing');
