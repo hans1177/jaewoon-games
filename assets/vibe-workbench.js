@@ -1,8 +1,9 @@
 // 파일명: assets/vibe-workbench.js
 // 역할: 자연어 게임 개발·수정·복구 요청을 안전한 실행계획과 실제 편집 지시로 정규화
-// 규칙: 기존 코드/세이브/밸런스 보호, 책임 파일 직접 수정, QA 후 적용
+// 규칙: 기존 코드/세이브/밸런스 보호, 완료 아트북 컨셉 잠금, 책임 파일 직접 수정, QA 후 적용
 
 import {
+  createArtbookDevelopmentLock,
   createCompanyFlow,
   createCompanyProposal,
   classifyCompanyProposalApproval
@@ -127,6 +128,9 @@ function majorCategoryOf(request){
   if(has(request,['장르']))return'genre';
   if(has(request,['핵심 루프','게임 방식','플레이 방식']))return'core-loop';
   if(has(request,['스토리','세계관','메인 스토리']))return'story-direction';
+  if(has(request,['아트 방향','아트스타일','비주얼 방향','그래픽 컨셉']))return'art-direction';
+  if(has(request,['캐릭터 정체성','주인공 컨셉','보스 컨셉','몬스터 컨셉']))return'character-identity';
+  if(has(request,['지역 구조','월드 구조','세계 구조']))return'world-structure';
   if(has(request,['카메라','아이소메트릭','2.5d','시점']))return'camera-model';
   if(has(request,['전투 방식','자동전투','턴제','실시간 전투']))return'combat-model';
   if(has(request,['성장 구조','레벨업 구조','성장 방식']))return'progression-model';
@@ -138,30 +142,51 @@ function majorCategoryOf(request){
   if(has(request,['유료 ai','유료AI','과금 ai']))return'paid-ai-use';
   return'implementation';
 }
-function companyDevelopmentContext({request,gameId,mode}){
-  const required=isNewGameDevelopmentRequest(request);
+function resolveArtbookLock({artbook=null,artbookStatus='',artbookCutCount=0,artbookPostprocessComplete=null,artbookRef=''}={}){
+  const status=clean(artbookStatus||artbook?.status||'');
+  const cutCount=Number(artbookCutCount)||Number(artbook?.cuts?.length)||Number(artbook?.postprocess?.cutCount)||0;
+  const postprocessComplete=artbookPostprocessComplete===null||artbookPostprocessComplete===undefined
+    ? Boolean(artbook?.postprocess?.complete)
+    : Boolean(artbookPostprocessComplete);
+  const ref=clean(artbookRef||artbook?.sourcePath||artbook?.path||artbook?.file||'');
+  return createArtbookDevelopmentLock({status,cutCount,postprocessComplete,ref});
+}
+function companyDevelopmentContext({request,gameId,mode,artbook=null,artbookStatus='',artbookCutCount=0,artbookPostprocessComplete=null,artbookRef=''}={}){
+  const newGame=isNewGameDevelopmentRequest(request);
+  const artbookLock=resolveArtbookLock({artbook,artbookStatus,artbookCutCount,artbookPostprocessComplete,artbookRef});
+  const conceptPlanningRequired=newGame&&!artbookLock.locked;
   const category=majorCategoryOf(request);
   const proposal=createCompanyProposal({
     sourceRole:'director',
-    targetRole:required?'planning':'development',
+    targetRole:conceptPlanningRequired?'planning':'development',
     direction:'top-down',
     category,
     summary:request,
-    reason:required?'새 게임은 본개발 전에 기획·기술시험·플레이어블 초안·내부평가를 통과해야 함':'기존 게임 작업은 보호 규칙을 유지하며 기존 작업 흐름으로 처리',
-    evidence:[],
-    impact:required?'high':'medium',
-    estimatedCost:'unknown'
+    reason:artbookLock.locked?'완료 아트북을 잠금 기준으로 사용하고 Vibe2는 재기획 없이 기술검증/구현만 수행':newGame?'새 게임은 본개발 전에 기획·기술시험·플레이어블 초안·내부평가를 통과해야 함':'기존 게임 작업은 보호 규칙을 유지하며 기존 작업 흐름으로 처리',
+    evidence:artbookLock.locked&&artbookLock.ref?[artbookLock.ref]:[],
+    impact:newGame?'high':'medium',
+    estimatedCost:'unknown',
+    artbookLocked:artbookLock.locked
   });
   const approval=classifyCompanyProposalApproval(proposal);
   return Object.freeze({
-    required,
-    mode:required?'predevelopment-gated':'maintenance-or-iteration',
-    flow:createCompanyFlow({gameId:gameId||'',maxRevisionRounds:2}),
+    required:newGame,
+    conceptPlanningRequired,
+    artbookLock,
+    mode:artbookLock.locked?'locked-artbook-implementation':newGame?'predevelopment-gated':'maintenance-or-iteration',
+    flow:createCompanyFlow({
+      gameId:gameId||'',
+      maxRevisionRounds:2,
+      artbookStatus:artbookLock.status,
+      artbookCutCount:artbookLock.cutCount,
+      artbookPostprocessComplete:artbookLock.postprocessComplete,
+      artbookRef:artbookLock.ref
+    }),
     proposal,
     proposalApproval:approval,
-    ownerGateRequired:required||approval.requiresOwnerApproval,
-    executionBeforeGateAllowed:!required&&mode!=='inspect',
-    rule:required?'brief-to-owner-gate-before-full-development':'existing-workbench-policy'
+    ownerGateRequired:newGame||approval.requiresOwnerApproval,
+    executionBeforeGateAllowed:!newGame&&mode!=='inspect'&&!approval.changeRequestRequired,
+    rule:artbookLock.locked?'locked-artbook-skips-redesign-and-enters-technical-validation':newGame?'brief-to-owner-gate-before-full-development':'existing-workbench-policy'
   });
 }
 
@@ -182,18 +207,26 @@ export function createVibeEditBrief({request='',target='auto',gameId=null,files=
   });
 }
 
-export function planVibeWorkbenchTask({request='',target='auto',gameId=null,file=null,knownBroken=false}={}){
+export function planVibeWorkbenchTask({
+  request='',target='auto',gameId=null,file=null,knownBroken=false,
+  artbook=null,artbookStatus='',artbookCutCount=0,artbookPostprocessComplete=null,artbookRef=''
+}={}){
   const prompt=clean(request);
   if(!prompt)throw new Error('workbench request required');
   const resolvedTarget=targetOf(prompt,target),mode=modeOf(prompt),priority=priorityOf(prompt),systems=detectSystems(prompt),quality=detectQuality(prompt),protectedTargets=PROTECTED.filter(x=>prompt.includes(x)),candidates=candidateFiles(resolvedTarget,systems,quality);
   const steps=['현재 main 기준 대상 게임/파일 확인',resolvedTarget==='unity'?'Unity Assets/Packages/ProjectSettings 구조 확인':resolvedTarget==='godot'?'Godot project.godot와 씬/스크립트 구조 확인':'웹 index.html 및 공통/게임 전용 JS 확인','현재 게임 규칙·밸런스·저장 구조 확인'];
-  const company=companyDevelopmentContext({request:prompt,gameId,mode});
-  if(company.required)steps.push('재운컴퍼니 사전 플로우 시작: 한줄 정의 → 핵심 재미 → 세계관/스토리 → 콘티 → 시스템 설계 → 기술 구조 → 기술 스파이크 → 플레이어블 초안 → 내부 평가 → 사용자 승인');
+  const company=companyDevelopmentContext({request:prompt,gameId,mode,artbook,artbookStatus,artbookCutCount,artbookPostprocessComplete,artbookRef});
+  if(company.artbookLock.locked){
+    steps.push('완료 아트북 잠금 확인 → 한줄 정의/핵심 재미/세계관/콘티/시스템 재기획 건너뜀','잠긴 아트북 → 기술 구조 → 기술 스파이크 → 플레이어블 초안 → 내부 평가 → 사용자 승인 → 본개발','아트북과 충돌하는 변경 필요 시 구현 중단 → ARTBOOK_CHANGE_REQUEST');
+  }else if(company.conceptPlanningRequired){
+    steps.push('재운컴퍼니 사전 플로우 시작: 한줄 정의 → 핵심 재미 → 세계관/스토리 → 콘티 → 시스템 설계 → 기술 구조 → 기술 스파이크 → 플레이어블 초안 → 내부 평가 → 사용자 승인');
+  }
   if(mode==='repair'||knownBroken)steps.push('오류 재현 조건과 실제 실패 지점 확인');
   if(systems.length)steps.push(`영향 시스템 확인: ${systems.join(', ')}`);
   steps.push(...qualitySteps(quality),'현재 실행 결과/캡처/로그와 계획 대조','변경 범위를 최소화해 원본 책임 파일 직접 수정');
   if(mode==='repair')steps.push('원인 수정 후 동일 오류 재검사');
   steps.push('전용 기능 테스트','로딩/시작','진행 막힘','터치/버튼','저장/불러오기','일시정지/재시작','런타임 오류','모바일 화면','최종 회귀 QA','변경 전후 비교','사용자 피드백 반영 확인');
+  if(company.artbookLock.locked)steps.push('완료 아트북 10장 대비 컨셉 드리프트 검사');
   if(resolvedTarget==='unity')steps.push('Unity 컴파일/씬 참조/MCP 연결/Android APK 또는 AAB 빌드 회귀 확인');
   if(resolvedTarget==='godot')steps.push('Godot 씬/스크립트 참조 및 세이브 회귀 확인');
   if(mode==='feature')steps.push('새 기능이 기존 규칙/세이브를 변경하지 않았는지 확인');
@@ -201,13 +234,14 @@ export function planVibeWorkbenchTask({request='',target='auto',gameId=null,file
   if(!gameId)warnings.push('대상 게임 ID가 아직 지정되지 않음');
   if(!file)warnings.push('실제 수정 전 후보 파일을 읽어 책임 파일 확정');
   if(protectedTargets.length)warnings.push(`보존 대상: ${protectedTargets.join(', ')}. 현재 값을 먼저 기록`);
+  if(company.artbookLock.locked)warnings.push(`완료 아트북 컨셉 잠금: ${company.artbookLock.ref||'completed-artbook'} — Vibe2 재기획 금지`,'컨셉 변경이 필요하면 ARTBOOK_CHANGE_REQUEST 없이 자동 실행 금지');
   if(mode==='repair')warnings.push('증상만 가리는 우회 패치 금지');
   if(resolvedTarget==='godot')warnings.push('Godot 바이너리 실행 검증 가능 여부 별도 확인');
   if(resolvedTarget==='unity')warnings.push('Unity 프로젝트는 Library/Temp/Logs/APK/AAB를 소스에 커밋하지 않음');
   if(quality.includes('visual'))warnings.push('기존 에셋 재사용/라이선스를 먼저 확인');
   if(quality.includes('audio'))warnings.push('오디오 라이선스와 모바일 용량을 확인');
   return Object.freeze({
-    version:4,
+    version:5,
     request:prompt,
     target:resolvedTarget,
     mode,
@@ -233,6 +267,8 @@ export function planVibeWorkbenchTask({request='',target='auto',gameId=null,file
       checkpointBeforeQualityRebuild:quality.length>0,
       atomicApply:true,
       rollbackOnFailure:true,
+      completedArtbookConceptLocked:company.artbookLock.locked,
+      artbookChangeRequestRequired:company.artbookLock.locked,
       fullDevelopmentBlockedUntilCompanyGate:company.required
     })
   });
