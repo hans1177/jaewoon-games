@@ -1,0 +1,62 @@
+name: Vibe Shared Work Lock QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/vibe-work-lock.js'
+      - 'tools/vibe-work-lock-control.mjs'
+      - 'qa/vibe-work-lock.test.mjs'
+      - '.github/workflows/vibe-work-lock-qa.yml'
+      - 'AGENTS.md'
+      - 'COMPANY_FLOW.md'
+      - 'assets/vibe-company-orchestration-bridge.js'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vibe-shared-work-lock-qa
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate lock contract and tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check assets/vibe-work-lock.js
+          node --check tools/vibe-work-lock-control.mjs
+          node --check qa/vibe-work-lock.test.mjs
+          node --test qa/vibe-work-lock.test.mjs
+
+      - name: Verify authoritative runtime lock branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin vibe2-work-locks --quiet
+          git cat-file -e 'origin/vibe2-work-locks:.vibe2/work-locks.json'
+          git show 'origin/vibe2-work-locks:.vibe2/work-locks.json' > /tmp/work-locks.json
+          node -e "const s=require('/tmp/work-locks.json'); if(s.version!==1||!Array.isArray(s.locks)) process.exit(1); console.log('VIBE_WORK_LOCK_STATE=PASS')"
+
+      - name: Safety assertions
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q "vibe2-work-locks" assets/vibe-work-lock.js
+          grep -q "REPLAN_REQUIRED" assets/vibe-work-lock.js
+          grep -q "chatgpt" assets/vibe-work-lock.js
+          grep -q "vibe2" assets/vibe-work-lock.js
+          echo 'VIBE_WORK_LOCK_QA=PASS'
