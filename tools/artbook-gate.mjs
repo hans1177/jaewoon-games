@@ -1,6 +1,5 @@
 // 파일명: tools/artbook-gate.mjs
-// 역할: 실제 부서 1차 제출 5개 + 2차 협업 리뷰 5개를 검증한다.
-// 총괄은 누락된 부서 내용이나 리뷰를 생성하지 않는다.
+// 역할: 실제 부서 1차 제출 5개 + 타부서 보완점/별점 리뷰 5개를 검증한다.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -28,7 +27,7 @@ for(const role of requiredRoles){
     if(String(data.status||'').toUpperCase()!=='SUBMITTED')problems.push('status-not-SUBMITTED');
     if(!Array.isArray(data.evidence)||data.evidence.length===0)problems.push('evidence-required');
     if(!data.section||typeof data.section!=='object'||Array.isArray(data.section)||Object.keys(data.section).length===0)problems.push('non-empty-section-required');
-    if(/NO_CHANGE/i.test(raw))problems.push('initial-artbook-NO_CHANGE-forbidden');
+    if(/NO_CHANGE/i.test(raw))problems.push('NO_CHANGE-token-forbidden');
   }
   if(problems.length)invalid.push({role,file,problems});else ready.push({role,file});
 }
@@ -46,42 +45,33 @@ for(const role of requiredRoles){
     if(String(data.department||'')!==role)problems.push('review-department-mismatch');
     if(String(data.status||'').toUpperCase()!=='REVIEWED')problems.push('review-status-not-REVIEWED');
     if(Number(data.round)!==2)problems.push('review-round-not-2');
-    if(String(data.protocol||'')!=='AGREE_COUNTER_TEST_RESULT_DECISION')problems.push('review-protocol-mismatch');
-    for(const key of ['agree','counter','test','result'])if(!Array.isArray(data[key]))problems.push(`review-${key}-array-required`);
-    if(!String(data.decision||'').trim())problems.push('review-decision-required');
+    if(String(data.protocol||'')!=='PEER_IMPROVEMENT_STAR_5')problems.push('review-protocol-mismatch');
     if(String(data.reviewScope||'')!=='OTHER_DEPARTMENTS_ONLY')problems.push('review-scope-must-be-other-departments-only');
     const peers=Array.isArray(data.reviewedDepartments)?data.reviewedDepartments:[];
     const expectedPeers=requiredRoles.filter(x=>x!==role);
     if(peers.length!==expectedPeers.length||expectedPeers.some(x=>!peers.includes(x))||peers.includes(role))problems.push('reviewed-departments-must-be-other-four');
-    if(!String(data.peerOpinion?.strength||'').trim())problems.push('peer-strength-required');
-    if(!String(data.peerOpinion?.improvement||'').trim())problems.push('peer-improvement-required');
+    const ratings=Array.isArray(data.peerReviews)?data.peerReviews:[];
+    if(ratings.length!==4)problems.push('exactly-four-peer-ratings-required');
+    const seen=new Set();
+    for(const rating of ratings){
+      const target=String(rating?.targetDepartment||'');const stars=Number(rating?.stars);
+      if(!expectedPeers.includes(target)||target===role)problems.push('peer-rating-target-invalid');
+      if(seen.has(target))problems.push('duplicate-peer-rating-target');seen.add(target);
+      if(!String(rating?.improvement||'').trim())problems.push('peer-improvement-required');
+      if(!Number.isInteger(stars)||stars<1||stars>5)problems.push('peer-stars-must-be-1-to-5');
+    }
+    if(expectedPeers.some(x=>!seen.has(x)))problems.push('all-other-departments-must-be-rated');
     if(data.guard?.mayRewriteOtherDepartments!==false)problems.push('cross-department-rewrite-guard-missing');
-    if(data.guard?.mayEvaluateOwnDepartmentForHomepage!==false)problems.push('own-department-homepage-opinion-forbidden');
+    if(data.guard?.mayEvaluateOwnDepartment!==false)problems.push('own-department-rating-forbidden');
   }
   if(problems.length)reviewInvalid.push({role,file,problems});else reviewReady.push({role,file});
 }
 const collaborationComplete=reviewReady.length===requiredRoles.length&&reviewMissing.length===0&&reviewInvalid.length===0;
 const readyForDirectorAssembly=initialComplete&&collaborationComplete;
 let formalProductionGate='BLOCKED_WAITING_FOR_REAL_DEPARTMENT_SUBMISSIONS';
-if(initialComplete&&!collaborationComplete)formalProductionGate='BLOCKED_WAITING_FOR_CROSS_DEPARTMENT_REVIEW';
-if(readyForDirectorAssembly)formalProductionGate='SECTION_AND_COLLABORATION_GATE_COMPLETE_DIRECTOR_ASSEMBLY_ALLOWED';
+if(initialComplete&&!collaborationComplete)formalProductionGate='BLOCKED_WAITING_FOR_PEER_IMPROVEMENT_STAR_REVIEWS';
+if(readyForDirectorAssembly)formalProductionGate='SECTION_AND_PEER_REVIEW_GATE_COMPLETE_DIRECTOR_ASSEMBLY_ALLOWED';
 
-const status={
-  version:3,checkedAt:new Date().toISOString(),date,gameId,gameName:targetGame?.name||gameId,requiredRoles,
-  readyRoles:ready.map(x=>x.role),readyCount:ready.length,requiredCount:requiredRoles.length,missing,invalid,
-  independentRoundComplete:initialComplete,
-  reviewReadyRoles:reviewReady.map(x=>x.role),reviewReadyCount:reviewReady.length,reviewRequiredCount:requiredRoles.length,
-  reviewMissing,reviewInvalid,collaborationProtocol:'AGREE_COUNTER_TEST_RESULT_DECISION',homepageOpinionMode:'PEER_STRENGTH_AND_IMPROVEMENT',collaborationComplete,
-  readyForDirectorAssembly,directorMayAuthorMissingSections:false,directorMayAuthorMissingReviews:false,
-  formalProductionGate
-};
+const status={version:4,checkedAt:new Date().toISOString(),date,gameId,gameName:targetGame?.name||gameId,requiredRoles,readyRoles:ready.map(x=>x.role),readyCount:ready.length,requiredCount:requiredRoles.length,missing,invalid,independentRoundComplete:initialComplete,reviewReadyRoles:reviewReady.map(x=>x.role),reviewReadyCount:reviewReady.length,reviewRequiredCount:requiredRoles.length,reviewMissing,reviewInvalid,collaborationProtocol:'PEER_IMPROVEMENT_STAR_5',homepageOpinionMode:'PEER_IMPROVEMENT_AND_AVERAGE_STARS',collaborationComplete,readyForDirectorAssembly,directorMayAuthorMissingSections:false,directorMayAuthorMissingReviews:false,formalProductionGate};
 writeJson('artbook-gate-status.json',status);
-console.log(`ARTBOOK_GAME_ID=${gameId}`);
-console.log(`ARTBOOK_DATE=${date}`);
-console.log(`ARTBOOK_SECTION_READY=${ready.length}/${requiredRoles.length}`);
-console.log(`ARTBOOK_REVIEW_READY=${reviewReady.length}/${requiredRoles.length}`);
-console.log(`ARTBOOK_DIRECTOR_ASSEMBLY=${readyForDirectorAssembly?'YES':'NO'}`);
-if(missing.length)console.log(`ARTBOOK_MISSING=${missing.map(x=>x.role).join(',')}`);
-if(invalid.length)console.log(`ARTBOOK_INVALID=${invalid.map(x=>x.role).join(',')}`);
-if(reviewMissing.length)console.log(`ARTBOOK_REVIEW_MISSING=${reviewMissing.map(x=>x.role).join(',')}`);
-if(reviewInvalid.length)console.log(`ARTBOOK_REVIEW_INVALID=${reviewInvalid.map(x=>x.role).join(',')}`);
+console.log(`ARTBOOK_GAME_ID=${gameId}`);console.log(`ARTBOOK_DATE=${date}`);console.log(`ARTBOOK_SECTION_READY=${ready.length}/${requiredRoles.length}`);console.log(`ARTBOOK_REVIEW_READY=${reviewReady.length}/${requiredRoles.length}`);console.log(`ARTBOOK_DIRECTOR_ASSEMBLY=${readyForDirectorAssembly?'YES':'NO'}`);if(missing.length)console.log(`ARTBOOK_MISSING=${missing.map(x=>x.role).join(',')}`);if(invalid.length)console.log(`ARTBOOK_INVALID=${invalid.map(x=>x.role).join(',')}`);if(reviewMissing.length)console.log(`ARTBOOK_REVIEW_MISSING=${reviewMissing.map(x=>x.role).join(',')}`);if(reviewInvalid.length)console.log(`ARTBOOK_REVIEW_INVALID=${reviewInvalid.map(x=>x.role).join(',')}`);
