@@ -3,77 +3,301 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b1725">
-<title>재운컴퍼니 운영 대시보드</title>
+<title>재운컴퍼니 개발연구소</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%;background:#07111c;color:#eef7ff;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif}
-body{padding:max(10px,env(safe-area-inset-top)) 10px max(18px,env(safe-area-inset-bottom));background:radial-gradient(circle at 10% -10%,#153c5e 0,transparent 36%),radial-gradient(circle at 100% 0,#183449 0,transparent 30%),#07111c}
-button,a,input,select{font:inherit}.app{width:min(100%,920px);margin:auto}
-.topBrand{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;margin:2px 0 12px}.companyLogo{font-size:25px;font-weight:1000;letter-spacing:-.04em;color:#f2f9ff;text-shadow:0 2px 18px #5ebeff35}.companyLogoSub{margin-top:3px;color:#85cbed;font-size:9px;font-weight:1000;letter-spacing:.15em}.companyLogoDesc{margin-top:4px;color:#8fb3ce;font-size:10px;font-weight:800}
-.developerLead{display:grid;grid-template-columns:72px minmax(0,1fr);gap:11px;align-items:center;padding:10px;margin-bottom:10px;border:1px solid #2a5270;border-radius:16px;background:linear-gradient(135deg,#12324a,#0c2234);box-shadow:0 9px 22px #0003}.developerPhoto{width:72px;height:72px;object-fit:cover;border-radius:14px;border:2px solid #62b7eb}.developerMeta small{display:block;color:#83d8ff;font-size:9px;font-weight:1000}.developerMeta h2{margin:2px 0 3px;font-size:18px}.developerMeta p{margin:0;color:#a9c9dc;font-size:9px;line-height:1.45;font-weight:800}.developerTeam{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.developerTeam span{padding:4px 6px;border-radius:999px;background:#0a1c2b;border:1px solid #294b64;color:#bfe7ff;font-size:8px;font-weight:900}
-.live{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}.status{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:999px;background:#113424;color:#8ef0b6;font-size:10px;font-weight:1000}.status.blue{background:#102b40;color:#96d8ff}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:10px}.metric,.card{border:1px solid #203c54;background:linear-gradient(180deg,#0e2132,#0a1a29);border-radius:16px;box-shadow:0 9px 22px #0003}.metric{padding:11px 7px;text-align:center}.metric b{display:block;font-size:22px}.metric span{font-size:9px;color:#8fb3ce;font-weight:900}.card{padding:12px;margin-bottom:10px}.card h2{font-size:15px;margin:0 0 8px}.sub{font-size:10px;color:#8fb3ce;margin:-3px 0 10px;line-height:1.45}
-.notice{padding:11px;border-radius:12px;background:#2c2312;border:1px solid #6b5221;color:#ffe09a;font-size:11px;line-height:1.55;font-weight:850}.notice.info{background:#0d2d43;border-color:#1f5474;color:#ccecff}.notice.good{background:#103427;border-color:#276048;color:#b9f2d2}
-.list{display:grid;gap:7px}.row{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:9px 10px;border-radius:12px;background:#12283b;border:1px solid #1b3850}.row .main{min-width:0;flex:1}.row b{display:block;font-size:12px}.row small{display:block;color:#8fb3ce;font-size:9px;margin-top:2px;line-height:1.4}.pill{flex:0 0 auto;padding:5px 7px;border-radius:999px;font-size:9px;font-weight:1000;white-space:nowrap}.wait{background:#3a2c13;color:#ffd980}.ok{background:#133c2b;color:#8ff0ba}.work{background:#143653;color:#9edbff}.off{background:#293442;color:#a9b9c7}.danger{background:#4a2020;color:#ffaaa3}.bar{height:7px;border-radius:999px;background:#1b3449;overflow:hidden;margin-top:7px}.bar i{display:block;height:100%;background:linear-gradient(90deg,#4ca3e8,#72d0ff)}
-.split{display:grid;grid-template-columns:1.2fr .8fr;gap:10px}.catalogStats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.catalogStat{padding:10px 6px;border-radius:11px;background:#12283b;text-align:center}.catalogStat b{display:block;font-size:19px}.catalogStat span{display:block;color:#8fb3ce;font-size:8px;font-weight:900;margin-top:2px}
-.staff{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.staffCard{display:grid;grid-template-columns:50px minmax(0,1fr);gap:9px;align-items:start;padding:9px;border-radius:12px;background:#12283b;border:1px solid #1b3850;min-height:88px}.staffCard.homepage{border-color:#295f7f;background:linear-gradient(180deg,#123149,#102536)}.aiPhoto{width:50px;height:50px;border-radius:13px;display:block;border:1px solid #4b7896;background:#0b1c29}.staffText{min-width:0;font-size:10px}.staffHead{display:flex;align-items:center;justify-content:space-between;gap:5px;margin-bottom:2px}.staffHead b{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.staffRole{color:#a9c8db;font-size:9px;font-weight:850}.staffText small{display:block;margin-top:5px;color:#8fb3ce;font-size:9px;line-height:1.4}.staffState{flex:0 0 auto;padding:3px 5px;border-radius:999px;background:#143653;color:#9edbff;font-size:7px;font-weight:1000}
-.ideas{display:grid;gap:6px}.idea{display:grid;grid-template-columns:30px 1fr;gap:8px;padding:9px;border-radius:11px;background:#102537}.idea i{display:flex;width:30px;height:30px;align-items:center;justify-content:center;border-radius:9px;background:#1a4564;font-style:normal}.idea b{font-size:10px}.idea small{display:block;color:#8fb3ce;font-size:9px;margin-top:2px;line-height:1.35}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.btn{display:flex;min-height:42px;align-items:center;justify-content:center;text-decoration:none;border:1px solid #31587a;border-radius:11px;background:#16334c;color:#eaf6ff;font-size:11px;font-weight:1000}.btn.primary{background:#216da8}.empty{padding:14px;border:1px dashed #36536a;border-radius:12px;text-align:center;color:#8fb3ce;font-size:10px;line-height:1.5}.foot{text-align:center;color:#64849c;font-size:9px;padding:7px}.error{color:#ffb4ad}
-@media(max-width:680px){.split{grid-template-columns:1fr}.catalogStats{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.grid{grid-template-columns:repeat(2,1fr)}.actions{grid-template-columns:1fr}.staff{grid-template-columns:1fr}.companyLogo{font-size:23px}.developerLead{grid-template-columns:62px minmax(0,1fr);padding:9px}.developerPhoto{width:62px;height:62px}.aiPhoto{width:46px;height:46px}.staffCard{grid-template-columns:46px minmax(0,1fr)}}
+html,body{margin:0;min-height:100%;background:#07111c;color:#eef7ff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+body{
+  padding:max(10px,env(safe-area-inset-top)) 10px max(18px,env(safe-area-inset-bottom));
+  background:
+    radial-gradient(circle at 10% -10%,#153c5e 0,transparent 36%),
+    radial-gradient(circle at 100% 0,#183449 0,transparent 30%),
+    #07111c
+}
+.app{width:min(100%,920px);margin:auto}
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:5px 2px 13px}
+.brand small{display:block;color:#72c8f5;font-size:9px;font-weight:1000;letter-spacing:.16em}
+.brand h1{margin:2px 0 3px;font-size:27px;line-height:1;font-weight:1000;letter-spacing:-.04em}
+.brand p{margin:0;color:#8fb3ce;font-size:10px;font-weight:800}
+.homeBtn{display:flex;align-items:center;justify-content:center;min-height:38px;padding:0 12px;border:1px solid #31587a;border-radius:11px;background:#16334c;color:#eaf6ff;text-decoration:none;font-size:10px;font-weight:1000}
+
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:10px}
+.metric,.card{border:1px solid #203c54;background:linear-gradient(180deg,#0e2132,#0a1a29);border-radius:16px;box-shadow:0 9px 22px #0003}
+.metric{padding:11px 7px;text-align:center}
+.metric b{display:block;font-size:22px}
+.metric span{display:block;margin-top:2px;font-size:9px;color:#8fb3ce;font-weight:900}
+.metric.warn b{color:#ffd77c}.metric.good b{color:#8df0b5}.metric.blue b{color:#86d7ff}
+
+.card{padding:12px;margin-bottom:10px}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:9px}
+.head h2{margin:0;font-size:15px}
+.head span{font-size:9px;color:#789cb7;font-weight:800}
+.sub{font-size:10px;color:#8fb3ce;line-height:1.5;margin:-3px 0 10px}
+
+.pipeline{display:grid;gap:8px}
+.gameRow{padding:10px;border:1px solid #1d4059;border-radius:13px;background:#102537}
+.gameTop{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start}
+.gameTop b{font-size:13px}
+.gameTop small{display:block;margin-top:2px;color:#8fb3ce;font-size:9px}
+.pill{display:inline-flex;align-items:center;justify-content:center;padding:5px 7px;border-radius:999px;font-size:8px;font-weight:1000;white-space:nowrap}
+.dev{background:#143653;color:#9edbff}.review{background:#4a3519;color:#ffd87a}.release{background:#133c2b;color:#8ff0ba}.danger{background:#4a2020;color:#ffaaa3}
+.progress{height:7px;margin-top:9px;border-radius:999px;background:#19364b;overflow:hidden}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,#4ca3e8,#72d0ff)}
+.next{margin-top:7px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.next div{padding:7px 8px;border-radius:10px;background:#0a1d2b}
+.next b{display:block;color:#8ecfff;font-size:8px;margin-bottom:2px}
+.next span{font-size:9px;color:#c5d9e7;line-height:1.35}
+
+.qaGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.qa{padding:10px;border-radius:12px;background:#10283a;border:1px solid #1d4059}
+.qa b{display:block;font-size:10px}
+.qa strong{display:block;margin:4px 0 2px;font-size:18px}
+.qa span{font-size:8px;color:#8fb3ce}
+.qa.good strong{color:#8ff0ba}.qa.warn strong{color:#ffd980}.qa.blue strong{color:#9edbff}
+
+.list{display:grid;gap:7px}
+.row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:10px;border-radius:12px;background:#12283b;border:1px solid #1b3850}
+.row b{display:block;font-size:11px}
+.row small{display:block;color:#8fb3ce;font-size:9px;margin-top:3px;line-height:1.4}
+.row .actions{display:flex;gap:5px}
+.mini{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:0 8px;border-radius:9px;border:1px solid #31587a;background:#16334c;color:#eaf6ff;text-decoration:none;font-size:8px;font-weight:1000}
+.mini.primary{background:#216da8}
+.mini.off{opacity:.45}
+
+.decision{padding:11px;border-radius:12px;background:#2c2312;border:1px solid #6b5221;color:#ffe09a;font-size:10px;line-height:1.5}
+.decision b{display:block;margin-bottom:3px;color:#fff1bd}
+
+.aiWork{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.ai{padding:10px;border-radius:12px;background:#102537;border:1px solid #1b3850}
+.aiTop{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.aiTop b{font-size:10px}
+.aiTop span{padding:3px 5px;border-radius:999px;font-size:7px;font-weight:1000}
+.aiTop .working{background:#143653;color:#9edbff}
+.aiTop .done{background:#133c2b;color:#8ff0ba}
+.aiTop .waiting{background:#3a2c13;color:#ffd980}
+.ai p{margin:5px 0 0;color:#9cb9cd;font-size:9px;line-height:1.45}
+.aiQuota{margin-top:8px;padding-top:7px;border-top:1px solid #1d4059}
+.aiQuotaHead{display:flex;align-items:center;justify-content:space-between;gap:7px}
+.aiQuotaHead span{font-size:8px;color:#7fa7c0;font-weight:900}
+.aiQuotaHead b{font-size:8px;color:#bfeaff}
+.aiQuotaBar{height:5px;margin-top:5px;border-radius:999px;background:#173247;overflow:hidden}
+.aiQuotaBar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4ca3e8,#72d0ff)}
+.aiQuota small{display:block;margin-top:4px;color:#668ca6;font-size:7px;line-height:1.35}
+
+.empty{padding:14px;border:1px dashed #36536a;border-radius:12px;text-align:center;color:#8fb3ce;font-size:10px;line-height:1.5}
+.bottomActions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.btn{display:flex;align-items:center;justify-content:center;min-height:42px;border-radius:11px;text-decoration:none;border:1px solid #31587a;background:#16334c;color:#eaf6ff;font-size:10px;font-weight:1000}
+.btn.primary{background:#216da8}
+
+@media(max-width:620px){
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .qaGrid{grid-template-columns:1fr 1fr}
+  .aiWork{grid-template-columns:1fr}
+}
+@media(max-width:430px){
+  .top{align-items:flex-start;flex-direction:column}
+  .homeBtn{width:100%}
+  .qaGrid{grid-template-columns:1fr}
+  .next{grid-template-columns:1fr}
+  .row{grid-template-columns:1fr}
+  .row .actions{justify-content:flex-start}
+  .bottomActions{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 <main class="app">
-<header class="topBrand" aria-label="재운컴퍼니">
-  <div class="companyLogo">재운컴퍼니</div>
-  <div class="companyLogoSub">JAEWOON COMPANY</div>
-  <div class="companyLogoDesc">Unity 개발 + 홈페이지 운영실</div>
-</header>
+  <header class="top">
+    <div class="brand">
+      <small>JAEWOON COMPANY</small>
+      <h1>개발연구소</h1>
+      <p>게임 개발 진행 · 검증 · Unity · 테스트 빌드 관리</p>
+    </div>
+    <a class="homeBtn" href="/">게임 홈페이지로</a>
+  </header>
 
-<section class="developerLead">
-<img class="developerPhoto" src="/assets/developer-original.jpg" alt="개발자 한재운" loading="eager">
-<div class="developerMeta"><small>DEVELOPER · JAEWOON COMPANY</small><h2>개발자 한재운</h2><p>재운컴퍼니 개발자 · 게임 방향과 핵심 결정 담당</p><div class="developerTeam"><span>AI 직원 7명</span><span>Unity Android</span><span>게임 · 아트북 · 홈페이지 운영</span></div></div>
-</section>
-<div class="live"><div class="status">● 자동 총괄 운영</div><div class="status blue">● 홈페이지 운영 AI 상시 관리</div></div>
+  <section class="metrics">
+    <div class="metric blue"><b id="devCount">-</b><span>개발 진행</span></div>
+    <div class="metric good"><b id="testCount">-</b><span>테스트 가능</span></div>
+    <div class="metric warn"><b id="approvalCount">-</b><span>핵심결정 대기</span></div>
+    <div class="metric"><b id="reviewCount">-</b><span>검토·재설계</span></div>
+  </section>
 
-<section class="grid">
-<div class="metric"><b id="webCount">-</b><span>Web 보관작</span></div>
-<div class="metric"><b id="unityCount">-</b><span>Unity 진행</span></div>
-<div class="metric"><b id="approvalCount">-</b><span>핵심결정 대기</span></div>
-<div class="metric"><b id="buildCount">-</b><span>테스트 빌드</span></div>
-</section>
+  <section class="card">
+    <div class="head"><h2>게임별 개발 파이프라인</h2><span>현재 단계 → 다음 단계 → 막힌 이유</span></div>
+    <div class="pipeline" id="pipelineList"><div class="empty">개발 파이프라인 불러오는 중</div></div>
+  </section>
 
-<section class="card"><h2>운영 정책</h2><div class="notice"><b>기존 Web 게임은 보관·플레이·재평가 자료.</b><br>신규 개발은 Unity Android 중심이며, 홈페이지는 게임 수가 늘어나도 플랫폼·개발상태·테스트·출시 여부를 구분해서 보여준다.</div></section>
-<section class="card"><h2>홈페이지 운영 AI</h2><p class="sub">게임 분류, 검색·필터, 효율적 배치, 모바일 화면, 링크, 상태표시, 부가기능, 디자인, 개선 아이디어를 전담한다.</p><div class="notice good" id="homepageOps">홈페이지 운영 상태 불러오는 중</div></section>
+  <section class="card">
+    <div class="head"><h2>검증 · QA 현황</h2><span>통과 여부를 한눈에</span></div>
+    <div class="qaGrid" id="qaGrid"><div class="empty">검증 상태 불러오는 중</div></div>
+  </section>
 
-<section class="split">
-<div class="card"><h2>게임 목록 분류</h2><p class="sub">`game-catalog.json` + `company-status.json` 기준</p><div class="catalogStats"><div class="catalogStat"><b id="catalogAll">-</b><span>전체 게임</span></div><div class="catalogStat"><b id="catalogWeb">-</b><span>Web 있음</span></div><div class="catalogStat"><b id="catalogDev">-</b><span>개발중</span></div><div class="catalogStat"><b id="catalogTest">-</b><span>테스트 가능</span></div></div></div>
-<div class="card"><h2>홈페이지 개선 큐</h2><div class="ideas"><div class="idea"><i>⌕</i><div><b>검색·필터 확장</b><small>게임 수가 늘어나도 플랫폼·상태·장르로 빠르게 찾기</small></div></div><div class="idea"><i>★</i><div><b>즐겨찾기·최근 본 게임</b><small>브라우저 로컬 저장소 기반, 개인정보 전송 없이 제공 가능</small></div></div><div class="idea"><i>↻</i><div><b>업데이트·버전 표시</b><small>테스트 빌드와 정식 출시를 분리하고 변경사항 연결</small></div></div></div></div>
-</section>
+  <section class="card">
+    <div class="head"><h2>Unity 개발 현황</h2><span>Vertical Slice → 본개발 → QA → 모바일</span></div>
+    <div class="list" id="unityList"><div class="empty">Unity 개발 상태 불러오는 중</div></div>
+  </section>
 
-<section class="card"><h2>재평가 · Unity 재개발</h2><p class="sub">기존 Web 게임 본체는 수정하지 않고 원본 설계 자료로 읽는다.</p><div class="list"><div class="row"><div class="main"><b>기존 Web 게임 전체 재평가</b><small id="reviewDetail">기획 · 개발 · QA · 그래픽 · 밸런스 참여 → 총괄 종합</small><div class="bar"><i id="reviewBar" style="width:0%"></i></div></div><span class="pill wait" id="reviewState">대기</span></div></div></section>
-<section class="card"><h2>Unity 개발 진행</h2><div id="projectList" class="list"><div class="empty">현재 등록된 Unity 프로젝트가 없습니다.</div></div></section>
-<section class="card"><h2>핵심결정 대기</h2><p class="sub">장르·핵심루프·큰 스토리 방향·전투/성장 핵심모델·플랫폼·세이브 파괴·과금·유료 AI 같은 항목만 표시</p><div id="approvalList" class="list"><div class="empty">현재 기다리는 핵심결정이 없습니다.</div></div></section>
-<section class="card"><h2>휴대폰 테스트 · 다운로드</h2><p class="sub">실제 APK/AAB가 등록된 경우에만 다운로드 버튼이 표시된다.</p><div id="buildList" class="list"><div class="empty">현재 다운로드 가능한 테스트 빌드가 없습니다.</div></div></section>
+  <section class="card">
+    <div class="head"><h2>핵심결정 대기</h2><span>사용자 결정이 필요한 것만</span></div>
+    <div id="decisionList"><div class="empty">핵심결정 상태 불러오는 중</div></div>
+  </section>
 
-<section class="card"><h2>AI 직원</h2><p class="sub">각 AI 직원은 사내 이름과 자기 전용 작은 프로필 사진으로 표시</p><div class="staff" id="staffGrid"></div></section>
-<section class="card"><h2>빠른 이동</h2><div class="actions"><a class="btn primary" href="/">게임 홈페이지</a><a class="btn" href="https://github.com/hans1177/jaewoon-games" target="_blank" rel="noopener">GitHub 저장소</a></div></section>
-<div class="foot" id="updated">상태 불러오는 중</div>
+  <section class="card">
+    <div class="head"><h2>테스트 빌드</h2><span>APK/AAB · 버전 · 날짜 · QA</span></div>
+    <div class="list" id="buildList"><div class="empty">테스트 빌드 불러오는 중</div></div>
+  </section>
+
+  <section class="card">
+    <div class="head"><h2>AI 작업현황</h2><span>현재 상태 · 실제 업무</span></div>
+    <div class="aiWork" id="aiWork"><div class="empty">AI 작업현황 불러오는 중</div></div>
+  </section>
+
+  <div class="foot" id="updated" style="text-align:center;color:#64849c;font-size:9px;padding:7px">상태 불러오는 중</div>
+
+  <section class="bottomActions">
+    <a class="btn primary" href="/">게임 홈페이지</a>
+    <a class="btn" href="https://github.com/hans1177/jaewoon-games" target="_blank" rel="noopener">GitHub 저장소</a>
+  </section>
 </main>
 <script>
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const stageProgress={brief:4,'core-fun':8,'world-story':13,storyboard:18,systems:24,'technical-architecture':30,'technical-spike':36,'playable-draft':44,'internal-review':50,'owner-approval':54,'full-development':64,'system-complete':74,'graphics-upgrade':84,'integrated-qa':91,optimization:96,'android-build':100,release:100,done:100};
-const progressFor=p=>Math.max(0,Math.min(100,Number.isFinite(Number(p?.progress))?Number(p.progress):(stageProgress[String(p?.stage||'').toLowerCase()]||0)));
-function pendingApprovals(s){return (s.approvals||[]).filter(a=>!a.decision||String(a.decision).toLowerCase()==='pending')}
-function renderProjects(items=[]){projectList.innerHTML=items.length?items.map(p=>`<div class="row"><div class="main"><b>${esc(p.name||p.gameId||'Unity 프로젝트')}</b><small>${esc(p.stageLabel||p.stage||'진행중')}</small><div class="bar"><i style="width:${progressFor(p)}%"></i></div></div><span class="pill work">${progressFor(p)}%</span></div>`).join(''):'<div class="empty">현재 등록된 Unity 프로젝트가 없습니다.</div>'}
-function renderApprovals(items=[]){approvalList.innerHTML=items.length?items.map(a=>`<div class="row"><div class="main"><b>${esc(a.title||'핵심결정 요청')}</b><small>${esc(a.reason||'사용자 결정 필요')}</small></div><span class="pill wait">결정대기</span></div>`).join(''):'<div class="empty">현재 기다리는 핵심결정이 없습니다.</div>'}
-function renderBuilds(items=[]){buildList.innerHTML=items.length?items.map(b=>`<div class="row"><div class="main"><b>${esc(b.name||b.gameId||'테스트 빌드')}</b><small>${esc(b.version||'')} ${esc(b.updatedAt||'')}</small></div>${b.download?`<a class="btn primary" style="min-height:32px;padding:0 10px" href="${esc(b.download)}" download>APK 받기</a>`:'<span class="pill off">링크없음</span>'}</div>`).join(''):'<div class="empty">현재 다운로드 가능한 테스트 빌드가 없습니다.</div>'}
-function aiPortrait(role,mark){const palettes={planning:['#315a86','#8dd6ff'],development:['#34485f','#73f3c4'],qa:['#5a466b','#f1a8ff'],graphics:['#5c3c62','#ffb08c'],balance:['#594b31','#ffe27b'],homepage:['#244d68','#80dbff'],director:['#3f3e68','#b8b4ff']};const p=palettes[role]||['#34485f','#9edbff'];const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${p[0]}"/><stop offset="1" stop-color="#0b1925"/></linearGradient></defs><rect width="96" height="96" rx="22" fill="url(#g)"/><circle cx="48" cy="43" r="27" fill="#d8ebf4" opacity=".96"/><rect x="27" y="29" width="42" height="31" rx="12" fill="#173247"/><circle cx="39" cy="43" r="4" fill="${p[1]}"/><circle cx="57" cy="43" r="4" fill="${p[1]}"/><path d="M38 53h20" stroke="${p[1]}" stroke-width="4" stroke-linecap="round"/><path d="M48 16v10" stroke="${p[1]}" stroke-width="4" stroke-linecap="round"/><circle cx="48" cy="14" r="4" fill="${p[1]}"/><text x="48" y="82" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="700" fill="#fff">${mark}</text></svg>`;return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg)}
-function renderStaff(s){const tasks=s.redevelopmentReview?.departmentTasks||{},home=s.operations?.homepage||{};const rows=[['planning','루프','기획 AI','게임성 · 핵심루프 · 스토리','LP'],['development','코어','개발 AI','Unity 구조 · 구현 · 성능','CR'],['qa','체크','QA AI','재현 · 회귀 · 모바일 테스트','CK'],['graphics','픽셀','그래픽 AI','3D · UI · VFX · 에셋','PX'],['balance','스케일','밸런스 AI','전투 · 성장 · 보상','SC'],['homepage','홈즈','홈페이지 운영 AI','분류 · 검색 · 배치 · 모바일 · 링크 · 디자인','HM'],['director','제이','총괄 AI','부서 배정 · 결과 종합 · 운영 승인','J']];staffGrid.innerHTML=rows.map(([role,name,label,desc,mark])=>{const t=role==='homepage'?home:(tasks[role]||{});const st=t.status==='running'?'진행중':t.status==='done'?'완료':'대기';return `<article class="staffCard ${role==='homepage'?'homepage':''}"><img class="aiPhoto" src="${aiPortrait(role,mark)}" alt="${esc(name)} AI 프로필 사진"><div class="staffText"><div class="staffHead"><b>${esc(name)}</b><span class="staffState">${st}</span></div><div class="staffRole">${esc(label)} · ${esc(desc)}</div><small>${esc(t.task||'현재 배정된 별도 작업 없음')}</small></div></article>`}).join('')}
-Promise.all([fetch('/company-status.json?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('status');return r.json()}),fetch('/game-catalog.json?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('catalog');return r.json()})]).then(([s,c])=>{const catalog=c.games||[],projects=s.projects||[],builds=s.testBuilds||[],pending=pendingApprovals(s);webCount.textContent=s.summary?.webArchiveCount??catalog.filter(g=>g.hasWebArchive).length;unityCount.textContent=projects.length;approvalCount.textContent=pending.length;buildCount.textContent=builds.length;catalogAll.textContent=catalog.length;catalogWeb.textContent=catalog.filter(g=>g.hasWebArchive).length;catalogDev.textContent=projects.length;catalogTest.textContent=builds.filter(b=>b.download).length;const home=s.operations?.homepage||{};homepageOps.innerHTML=`<b>${home.status==='running'?'● 운영 중':'● 상태 확인 필요'}</b><br>${esc(home.task||'홈페이지 운영 작업 대기')}<br><small>범위: ${esc((home.scope||['index.html','company.html','game-catalog.json']).join(' · '))}</small>`;const rr=s.redevelopmentReview||{},total=Number(rr.totalGames??catalog.length),done=Number(rr.completedGames??0),progress=total?Math.round(done/total*100):0;reviewState.textContent=rr.status==='running'?'진행중':rr.status==='done'?'완료':'대기';reviewState.className='pill '+(rr.status==='done'?'ok':rr.status==='running'?'work':'off');reviewBar.style.width=progress+'%';reviewDetail.textContent=rr.status==='running'?`현재 ${rr.currentGameName||'게임'} 평가 중 · ${done}/${total} 완료 · ${rr.remainingGames??Math.max(0,total-done)}개 남음`:'기획 · 개발 · QA · 그래픽 · 밸런스 참여 → 총괄 종합';renderProjects(projects);renderApprovals(pending);renderBuilds(builds);renderStaff(s);updated.textContent='상태 기준 · '+(s.updatedAt||'업데이트 정보 없음')+' · 카탈로그 '+(c.updatedAt||'업데이트 정보 없음')}).catch(err=>{updated.innerHTML='<span class="error">상태 또는 게임 카탈로그를 불러오지 못했습니다.</span>';homepageOps.className='notice danger';homepageOps.textContent='홈페이지 운영 데이터 연결 확인 필요';console.error(err)});
+const pendingApprovals=s=>(s.approvals||[]).filter(a=>!a.decision||String(a.decision).toLowerCase()==='pending');
+const pillClass=status=>{
+  const v=String(status||'').toLowerCase();
+  if(v.includes('release')||v==='ready'||v==='pass'||v==='done'||v==='completed')return 'release';
+  if(v.includes('review')||v.includes('hold')||v.includes('redesign')||v.includes('revise')||v.includes('pending'))return 'review';
+  return 'dev';
+};
+const statusText=status=>{
+  const v=String(status||'').toLowerCase();
+  if(v==='running')return '현재 작업중';
+  if(v==='done'||v==='completed')return '완료';
+  return '대기';
+};
+function renderPipeline(s,c){
+  const catalog=c.games||[], map=new Map(catalog.map(g=>[g.id,g]));
+  const rr=s.redevelopmentReview||{}, queue=rr.queue||[], items=[];
+  for(const p of (s.projects||[])){
+    const g=map.get(p.gameId)||{};
+    items.push({
+      id:p.gameId,name:p.name||g.name||p.gameId,
+      stage:p.stageLabel||g.homepageStage||p.stage||'개발중',
+      badge:'본개발', cls:'dev', progress:Number.isFinite(Number(p.progress))?Number(p.progress):null,
+      current:g.homepageRecentWork||p.stageLabel||'현재 개발 진행 중',
+      next:'통합 QA → 모바일 검증'
+    });
+  }
+  const current=queue.find(x=>x.gameId===rr.currentGameId)||queue.find(x=>x.status==='in-review');
+  if(current && !items.some(x=>x.id===current.gameId)){
+    const g=map.get(current.gameId)||{};
+    items.push({
+      id:current.gameId,name:current.name||g.name||current.gameId,
+      stage:g.homepageStage||'재평가 진행',
+      badge:'검토중',cls:'review',progress:null,
+      current:g.homepageRecentWork||'핵심루프·구조 재평가 진행',
+      next:'평가 결과에 따라 다음 단계 결정'
+    });
+  }
+  const nextQueued=queue.find(x=>x.status==='queued' && !items.some(y=>y.id===x.gameId));
+  if(nextQueued){
+    const g=map.get(nextQueued.gameId)||{};
+    items.push({
+      id:nextQueued.gameId,name:nextQueued.name||g.name||nextQueued.gameId,
+      stage:g.homepageStage||'평가 대기',
+      badge:g.homepageCategory==='reviewing'?'검토중':'개발확정',
+      cls:g.homepageCategory==='reviewing'?'review':'dev',progress:null,
+      current:g.homepageRecentWork||'다음 개발 평가 대기',
+      next:'현재 우선 작업 완료 후 재평가'
+    });
+  }
+  pipelineList.innerHTML=items.length?items.map(x=>`
+    <article class="gameRow">
+      <div class="gameTop"><div><b>${esc(x.name)}</b><small>${esc(x.stage)}</small></div><span class="pill ${x.cls}">${esc(x.badge)}</span></div>
+      ${x.progress===null?'':`<div class="progress"><i style="width:${Math.max(0,Math.min(100,x.progress))}%"></i></div>`}
+      <div class="next">
+        <div><b>현재</b><span>${esc(x.current)}</span></div>
+        <div><b>다음</b><span>${esc(x.next)}</span></div>
+      </div>
+    </article>`).join(''):'<div class="empty">표시할 개발 파이프라인이 없습니다.</div>';
+}
+function renderQa(s){
+  const reviews=s.postModificationReviews||[];
+  const latestReview=reviews[reviews.length-1]||null;
+  const builds=s.testBuilds||[];
+  const latestBuild=builds[builds.length-1]||null;
+  const cards=[
+    ['최근 수정 검토',latestReview?.decision||'대기',latestReview?`${latestReview.gameId||''} · ${latestReview.completedAt||''}`:'검토 기록 없음',pillClass(latestReview?.decision)],
+    ['최근 검토 점수',latestReview?.score??'-',latestReview?'최신 수정후 검토 점수':'측정 기록 없음','blue'],
+    ['테스트 빌드',latestBuild?.status||'없음',latestBuild?.builtAt||'등록된 빌드 없음',pillClass(latestBuild?.status)],
+    ['모바일 검증','측정 대기','별도 모바일 검증 데이터 연결 대기','warn'],
+    ['치명적 버그','측정 대기','실제 QA 데이터 연결 시 표시','warn'],
+    ['핵심결정 대기',pendingApprovals(s).length,'사용자 결정이 필요한 항목','blue']
+  ];
+  qaGrid.innerHTML=cards.map(([label,value,note,cls])=>`<div class="qa ${cls==='release'?'good':cls==='review'?'warn':cls}"><b>${esc(label)}</b><strong>${esc(value)}</strong><span>${esc(note)}</span></div>`).join('');
+}
+function renderUnity(s){
+  const items=s.projects||[];
+  unityList.innerHTML=items.length?items.map(p=>`
+    <div class="row"><div><b>${esc(p.name||p.gameId||'Unity 프로젝트')}</b><small>${esc(p.stageLabel||p.stage||'진행중')} · ${esc(p.target||'')} · 진행 ${esc(p.progress??'-')}%</small></div>
+    <span class="pill dev">${esc(String(p.stage||'진행중').replaceAll('-',' ').toUpperCase())}</span></div>`).join(''):'<div class="empty">현재 등록된 Unity 프로젝트가 없습니다.</div>';
+}
+function renderDecisions(s){
+  const items=pendingApprovals(s);
+  decisionList.innerHTML=items.length?items.map(a=>`<div class="decision"><b>${esc(a.title||'핵심결정 요청')}</b>${esc(a.reason||'사용자 결정 필요')}</div>`).join(''):'<div class="empty">현재 기다리는 핵심결정이 없습니다.</div>';
+}
+function renderBuilds(s){
+  const items=s.testBuilds||[];
+  buildList.innerHTML=items.length?items.map(b=>`
+    <div class="row">
+      <div><b>${esc(b.name||b.gameId||'테스트 빌드')} · ${esc(String(b.channel||'test').toUpperCase())}</b><small>${esc(b.releaseTag||'')} · ${esc(b.builtAt||'')} · ${esc(b.status||'')}</small></div>
+      <div class="actions">${b.download?`<a class="mini primary" href="${esc(b.download)}">다운로드</a>`:''}${b.release?`<a class="mini" href="${esc(b.release)}" target="_blank" rel="noopener">변경사항</a>`:''}</div>
+    </div>`).join(''):'<div class="empty">현재 다운로드 가능한 테스트 빌드가 없습니다.</div>';
+}
+function quotaMarkup(){
+  return `<div class="aiQuota"><div class="aiQuotaHead"><span>무료사용량 · 남은 한도</span><b>측정 대기</b></div><div class="aiQuotaBar"><i></i></div><small>실시간 provider 한도 연결 후 남은 요청/토큰·리셋 시점 표시</small></div>`;
+}
+function renderAi(s){
+  const tasks=s.redevelopmentReview?.departmentTasks||{}, home=s.operations?.homepage||{};
+  const rows=[
+    ['LOOP',tasks.planning],
+    ['CORE',tasks.development],
+    ['CHECK',tasks.qa],
+    ['PIXEL',tasks.graphics],
+    ['SCALE',tasks.balance],
+    ['HOLMES',home]
+  ];
+  aiWork.innerHTML=rows.map(([name,t])=>{
+    t=t||{};
+    const st=statusText(t.status);
+    const cls=st==='현재 작업중'?'working':st==='완료'?'done':'waiting';
+    const task=t.task||'현재 배정된 별도 작업 없음';
+    return `<div class="ai"><div class="aiTop"><b>${name}</b><span class="${cls}">${st}</span></div><p>${esc(task)}</p>${quotaMarkup()}</div>`;
+  }).join('');
+}
+Promise.all([
+  fetch('/company-status.json?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('status');return r.json()}),
+  fetch('/game-catalog.json?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('catalog');return r.json()})
+]).then(([s,c])=>{
+  const games=c.games||[];
+  devCount.textContent=games.filter(g=>g.homepageCategory==='development-confirmed').length;
+  testCount.textContent=(s.testBuilds||[]).filter(b=>b.download&&String(b.status||'').toLowerCase()==='ready').length;
+  approvalCount.textContent=pendingApprovals(s).length;
+  reviewCount.textContent=games.filter(g=>g.homepageCategory==='reviewing').length;
+  renderPipeline(s,c);
+  renderQa(s);
+  renderUnity(s);
+  renderDecisions(s);
+  renderBuilds(s);
+  renderAi(s);
+  updated.textContent='상태 기준 · '+(s.updatedAt||'업데이트 정보 없음')+' · 카탈로그 '+(c.updatedAt||'업데이트 정보 없음');
+}).catch(err=>{
+  pipelineList.innerHTML=qaGrid.innerHTML=unityList.innerHTML=decisionList.innerHTML=buildList.innerHTML=aiWork.innerHTML='<div class="empty">상태 데이터를 불러오지 못했습니다.</div>';
+  updated.textContent='상태 데이터 연결 확인 필요';
+  console.error(err);
+});
 </script>
+
 </body>
 </html>
