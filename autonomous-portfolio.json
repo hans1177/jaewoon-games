@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "fixedProjectCount": false,
+  "publicStableBranch": "main",
+  "continuousDevelopmentBranch": "autonomous-dev",
+  "candidateBranchPrefix": "autonomous/candidate-",
+  "paidApi": false,
+  "maxModelCallsPerRun": 1,
+  "maxRunnerMinutesPerRun": 20,
+  "projects": [
+    {"id":"P0001","slug":"survival","name":"나의 생존기","sourcePath":"web-games/survival","profileStatus":"AUDITED_PARTIAL","mode":"IMPROVE","protectedValues":["jaewoon-survival-v1","worldVersion","save-meaning"]},
+    {"id":"P0002","slug":"insect-survival","name":"곤충 생존기","sourcePath":"web-games/insect-survival","profileStatus":"NEEDS_AUDIT","mode":"EXPERIMENT_ONLY","protectedValues":["save-meaning","core-loop"]},
+    {"id":"P0003","slug":"crystal-defense","name":"수정 디펜스","sourcePath":"web-games/crystal-defense","profileStatus":"NEEDS_AUDIT","mode":"EXPERIMENT_ONLY","protectedValues":["save-meaning","core-loop"]},
+    {"id":"P0004","slug":"bug-defense","name":"곤충 디펜스","sourcePath":"web-games/bug-defense","profileStatus":"NEEDS_AUDIT","mode":"EXPERIMENT_ONLY","protectedValues":["save-meaning","core-loop"]},
+    {"id":"P0005","slug":"human-go","name":"휴먼 GO","sourcePath":"web-games/human-go","profileStatus":"NEEDS_AUDIT","mode":"EXPERIMENT_ONLY","protectedValues":["save-meaning","core-loop"]},
+    {"id":"P0006","slug":"daechung-rpg","name":"대충 RPG","sourcePath":"web-games/daechung-rpg","profileStatus":"NEEDS_AUDIT","mode":"EXPERIMENT_ONLY","protectedValues":["save-meaning","core-loop"]},
+    {"id":"P0007","slug":"island-village","name":"무인도 마을","sourcePath":"web-games/island-village","profileStatus":"HOLD_MISSING_SOURCE","mode":"HOLD","protectedValues":[]},
+    {"id":"P0008","slug":"egg-heist","name":"알 도둑 대작전","sourcePath":"web-games/egg-heist","profileStatus":"HOLD_REDIRECT_ONLY","mode":"HOLD","protectedValues":[]},
+    {"id":"P0009","slug":"monster-adventure","name":"몬스터 어드벤처","sourcePath":"web-games/monster-adventure","profileStatus":"REDESIGN_IDENTITY","mode":"REDESIGN","protectedValues":["save-meaning","monster-party","capture","battle","dex"]}
+  ]
+}
