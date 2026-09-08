@@ -46,7 +46,14 @@ jobs:
           const evidence=files.find(x=>/^\.autonomous\/evidence\/.*\.json$/.test(x));
           const e=JSON.parse(fs.readFileSync(evidence,'utf8'));
           const line=(k,v)=>process.stdout.write(`${k}=${String(v??'').replaceAll('\n',' ')}\n`);
-          line('PROMOTE_EVIDENCE',evidence);line('PROMOTE_GAME_ID',e.gameId);line('PROMOTE_SOURCE_PATH',e.sourcePath);line('PROMOTE_CANDIDATE_PATH',e.candidatePath);line('PROMOTE_CANDIDATE_ID',e.candidateId);line('PROMOTE_SOURCE_COMMIT',e.sourceCommit);line('PROMOTE_INCUBATOR_ID',e.incubatorCandidateId||'');line('PROMOTE_NEW_PROJECT',e.newProject===true?'true':'false');
+          line('PROMOTE_EVIDENCE',evidence);
+          line('PROMOTE_GAME_ID',e.gameId);
+          line('PROMOTE_SOURCE_PATH',e.sourcePath);
+          line('PROMOTE_CANDIDATE_PATH',e.candidatePath);
+          line('PROMOTE_CANDIDATE_ID',e.candidateId);
+          line('PROMOTE_SOURCE_COMMIT',e.sourceCommit);
+          line('PROMOTE_INCUBATOR_ID',e.incubatorCandidateId||'');
+          line('PROMOTE_NEW_PROJECT',e.newProject===true?'true':'false');
           NODE
           echo "dev_sha=$dev_sha" >> "$GITHUB_OUTPUT"
 
@@ -107,6 +114,7 @@ jobs:
           node --test qa/autonomous-development-worker.test.mjs
           node --test qa/autonomous-candidate-review.test.mjs
           node --test qa/evolution-evidence-recorder.test.mjs
+          node --test qa/incubator-promotion-state.test.mjs
           echo "DEV_REGRESSION=PASS"
 
       - name: Build verified learning evidence
@@ -147,8 +155,11 @@ jobs:
             exit 1
           fi
           git commit -m "dev: promote verified ${PROMOTE_GAME_ID} candidate ${PROMOTE_CANDIDATE_ID}"
+          promoted_dev_revision="$(git rev-parse HEAD)"
+          echo "PROMOTED_DEV_REVISION=$promoted_dev_revision" >> "$GITHUB_ENV"
           git push origin HEAD:autonomous-dev
           echo "JAY_DEV_VERDICT=ADVANCE_TO_AUTONOMOUS_DEV"
+          echo "PROMOTED_DEV_REVISION=$promoted_dev_revision"
           echo "PUBLIC_RELEASE=NO"
           echo "MAIN_GAME_CODE_WRITE=NO"
 
@@ -160,29 +171,13 @@ jobs:
           git checkout -B main-memory origin/main
           mkdir -p company-learning/evidence
           cp /tmp/jaewoon-learning-evidence.json "company-learning/evidence/${PROMOTE_CANDIDATE_ID}.json"
-          node <<'NODE'
-          const fs=require('fs');
-          const evidence=JSON.parse(fs.readFileSync('/tmp/jaewoon-reviewed-candidate/evidence.json','utf8'));
-          if(evidence.newProject===true&&evidence.incubatorCandidateId&&fs.existsSync('autonomous-incubator.json')){
-            const state=JSON.parse(fs.readFileSync('autonomous-incubator.json','utf8'));
-            const candidate=(state.candidates||[]).find(c=>c.id===evidence.incubatorCandidateId&&c.reservedProjectId===evidence.gameId);
-            if(!candidate)throw new Error(`incubator candidate not found: ${evidence.incubatorCandidateId}`);
-            candidate.prototypeDevComplete=true;
-            candidate.status='PROTOTYPE_DEV_VERIFIED';
-            candidate.verifiedCandidateId=evidence.candidateId;
-            candidate.verifiedSourceRevision=evidence.sourceCommit;
-            candidate.verifiedAt=new Date().toISOString();
-            fs.writeFileSync('autonomous-incubator.json',JSON.stringify(state,null,2)+'\n');
-            const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
-            const project=(portfolio.projects||[]).find(p=>p.id===evidence.gameId&&p.incubatorCandidateId===evidence.incubatorCandidateId);
-            if(!project)throw new Error(`portfolio project not found: ${evidence.gameId}`);
-            project.profileStatus='PROTOTYPE_DEV_VERIFIED';
-            project.mode='EXPERIMENT_ONLY';
-            project.prototypeVerifiedAt=candidate.verifiedAt;
-            project.publicReleaseApproved=false;
-            fs.writeFileSync('autonomous-portfolio.json',JSON.stringify(portfolio,null,2)+'\n');
-          }
-          NODE
+          if [ "$PROMOTE_NEW_PROJECT" = "true" ]; then
+            node tools/incubator-promotion-state.mjs \
+              --state-file=autonomous-incubator.json \
+              --portfolio-file=autonomous-portfolio.json \
+              --evidence-file=/tmp/jaewoon-reviewed-candidate/evidence.json \
+              --dev-revision="$PROMOTED_DEV_REVISION"
+          fi
           git config user.name "jaewoon-company-learning"
           git config user.email "actions@users.noreply.github.com"
           git add "company-learning/evidence/${PROMOTE_CANDIDATE_ID}.json"
@@ -203,5 +198,5 @@ jobs:
           echo "- promotion target: autonomous-dev only" >> "$GITHUB_STEP_SUMMARY"
           echo "- public game main promotion: NO" >> "$GITHUB_STEP_SUMMARY"
           echo "- verified learning evidence: company-learning only" >> "$GITHUB_STEP_SUMMARY"
-          echo "- new prototype completion: main metadata only" >> "$GITHUB_STEP_SUMMARY"
+          echo "- new prototype completion: tested metadata gate only" >> "$GITHUB_STEP_SUMMARY"
           echo "- paid API: NO" >> "$GITHUB_STEP_SUMMARY"
