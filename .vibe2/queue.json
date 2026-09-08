@@ -25,17 +25,18 @@
       "dependencies": [],
       "priority": "high",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 2,
+      "status": "failed",
+      "retries": 3,
       "maxRetries": 2,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "source-candidate-generation-failed",
       "evidence": [
         "actions-run-34277017158",
-        "actions-run-34281727541"
+        "actions-run-34281727541",
+        "actions-run-34282005274"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null
