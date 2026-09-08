@@ -54,19 +54,41 @@ const unityFiles=listFiles(path.join(unityRoot,'Assets','Scripts'),['.cs'],24),w
 const combined=evidenceFiles.map(f=>`\n### ${f}\n${readText(f,90000)}`).join('\n').slice(0,520000);
 const sourceMode=unityFiles.length&&webFiles.length?'UNITY_PLUS_WEB_ARCHIVE':unityFiles.length?'UNITY':webFiles.length?'WEB_ARCHIVE_READ_ONLY':'METADATA_ONLY';
 const patterns={planning:[/story|quest|region|dialog|npc|world|boss|ending|스토리|퀘스트|지역|대사|보스|엔딩/i],graphics:[/image|sprite|background|color|ui|canvas|character|monster|boss|asset|이미지|배경|캐릭터|몬스터|보스/i],development:[/class |function |const |let |save|load|localStorage|spawn|attack|update|onclick|touch|unity|script/i],qa:[/error|catch|save|load|touch|mobile|viewport|restart|start|game over|오류|저장|모바일|터치/i],balance:[/hp|health|damage|attack|gold|xp|level|speed|cooldown|reward|price|chance|체력|공격|골드|레벨|보상|확률/i]};
-const roleEvidence={sourceMode,files:evidenceFiles.slice(0,24),excerpt:excerpt(combined,patterns[role],150),health:role==='qa'||role==='development'?gameHealth:null,assets:role==='graphics'?(assetHealth.assets||[]).filter(x=>String(x.gameId||'')===gameId||String(x.path||'').includes(gameId)).slice(0,12):undefined};
+const evidenceLineLimit=role==='qa'?60:120;
+const roleEvidence={sourceMode,files:evidenceFiles.slice(0,16),excerpt:excerpt(combined,patterns[role],evidenceLineLimit),health:role==='qa'||role==='development'?gameHealth:null,assets:role==='graphics'?(assetHealth.assets||[]).filter(x=>String(x.gameId||'')===gameId||String(x.path||'').includes(gameId)).slice(0,10):undefined};
 const sharedEvidence={gameId,gameName:workOrder.gameName||game.name||style.name||gameId,date,styleIdentity:style.identity||game.styleProfile||workOrder.styleProfile||'',storyFocus:style.storyFocus||'',signatureSections:style.signatureSections||[],currentStage:game.currentStage||'',role:ROLE_NAMES[role],scope:workOrder.departmentTasks?.[role]?.scope||'',sourceMode,explicitRules:{webGamesReadOnly:true,productionApproval:false,noScores:true,noOtherDepartmentSubmissionReading:true,storyCausalityIsCritical:true}};
 const roleGuides={planning:'스토리·세계관·주인공 동기·지역/퀘스트 사건 인과만 평가한다. 근거가 없으면 새 설정을 만들지 말고 근거 부족으로 남긴다.',graphics:'캐릭터·몬스터·보스·배경·UI·인트로의 시각 논리와 실제 에셋/코드 근거만 평가한다. 새 캐릭터 설정을 임의로 만들지 않는다.',development:'실제 구현 범위·구조·기술 위험·플레이어블 시연 구조만 평가한다. 데이터 존재와 실제 접근 가능 상태를 구분한다.',qa:'플레이 시작→입력→전투/핵심행동→성장→저장/재실행 흐름과 문제 장면·테스트 시나리오를 평가한다. Web 실행상태를 게임 품질 점수로 해석하지 않는다.',balance:'실제 코드에 있는 전투·성장·보상 수치와 체감 위험만 평가한다. 체감은 플레이테스트 전까지 미검증으로 둔다.'};
-const systemPrompt=`/no_think\n너는 재운컴퍼니 ${ROLE_NAMES[role]} 부서의 독립 아트북 검토 AI다. ${roleGuides[role]} 다른 부서 제출물은 볼 수 없고 대신 작성하면 안 된다. 제공 근거만 사실로 사용한다. 게임 품질 숫자점수, PASS, 출시/본개발 승인을 만들지 않는다. JSON 객체만 출력한다. 최상위 키는 반드시 headline, readiness, section, unverified, visualNotes다. section은 반드시 JSON 객체이며 배열이나 문자열이면 안 된다. readiness는 READY|NEEDS_VALIDATION|BLOCKED 중 하나. section은 ${ROLE_SECTION_KEYS[role].join(', ')} 중심으로 자기 부서 내용만 작성한다.`;
-const userPrompt=`${sharedEvidence.gameName} ${ROLE_NAMES[role]} 부서 1차 독립 검토. sourceMode=${sourceMode}. 아래 근거만 사용해 자기 파트를 작성해. section은 반드시 중괄호 객체로 출력해.\n${JSON.stringify({shared:sharedEvidence,roleEvidence},null,2)}`;
-async function callLocalModel(model,numPredict=900,strict=false){const strictNote=strict?'\n형식 재검사: section을 반드시 비어 있지 않은 JSON 객체로 반환해. 이전 형식 오류를 반복하지 마.':'';const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,format:'json',messages:[{role:'system',content:systemPrompt+strictNote},{role:'user',content:userPrompt}],options:{temperature:0.15,seed:101+ROLES.indexOf(role)*97,num_ctx:12288,num_predict:numPredict}})});if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);const packet=await response.json();const raw=clean(packet?.message?.content).replace(/^```json\s*/i,'').replace(/```$/,'').trim();return JSON.parse(raw);}
-const model=clean(process.env.ARTBOOK_LOCAL_MODEL||'qwen3:0.6b');let candidate;
-try{candidate=normalizeCandidate(await callLocalModel(model,900,false));}catch(first){console.error(`ARTBOOK_LOCAL_MODEL_RETRY=${role}:${first.message}`);candidate=normalizeCandidate(await callLocalModel(model,620,true));}
-if(!validCandidate(candidate)){console.error(`ARTBOOK_SECTION_FORMAT_RETRY=${role}`);candidate=normalizeCandidate(await callLocalModel(model,620,true));}
-if(!validCandidate(candidate))throw new Error(`${role}: invalid section output after normalization/retry`);
+const systemPrompt=`/no_think\n너는 재운컴퍼니 ${ROLE_NAMES[role]} 부서의 독립 아트북 검토 AI다. ${roleGuides[role]} 다른 부서 제출물은 볼 수 없고 대신 작성하면 안 된다. 제공 근거만 사실로 사용한다. 게임 품질 숫자점수, PASS, 출시/본개발 승인을 만들지 않는다. JSON 객체만 출력한다. 최상위 키는 반드시 headline, readiness, section, unverified, visualNotes다. section은 반드시 JSON 객체이며 배열이나 문자열이면 안 된다. readiness는 READY|NEEDS_VALIDATION|BLOCKED 중 하나. section은 ${ROLE_SECTION_KEYS[role].join(', ')} 중심으로 자기 부서 내용만 작성한다. 근거 원문이나 소스코드를 그대로 복사하지 말고 짧게 요약한다.`;
+const userPrompt=`${sharedEvidence.gameName} ${ROLE_NAMES[role]} 부서 1차 독립 검토. sourceMode=${sourceMode}. 아래 근거만 사용해 자기 파트를 작성해. section은 반드시 중괄호 객체로 출력해. 근거 원문을 답변에 재출력하지 마.\n${JSON.stringify({shared:sharedEvidence,roleEvidence},null,2)}`;
+async function callLocalModel(model,numPredict=700,strict=false){
+  const strictNote=strict?'\n출력 길이 제한: headline 80자 이하, section 각 값 160자 이하, unverified 최대 4개, visualNotes 최대 3개. 소스코드/근거 excerpt를 절대 복사하지 마. 완결된 JSON만 반환해.':'';
+  const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,format:'json',messages:[{role:'system',content:systemPrompt+strictNote},{role:'user',content:userPrompt}],options:{temperature:0.12,seed:101+ROLES.indexOf(role)*97,num_ctx:8192,num_predict:numPredict}})});
+  if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
+  const packet=await response.json();
+  const raw=clean(packet?.message?.content).replace(/^```json\s*/i,'').replace(/```$/,'').trim();
+  return JSON.parse(raw);
+}
+async function generateCandidate(model){
+  const attempts=role==='qa'?[620,420,300]:[820,540,340];
+  let lastError=null;
+  for(let i=0;i<attempts.length;i++){
+    try{
+      const candidate=normalizeCandidate(await callLocalModel(model,attempts[i],i>0));
+      if(validCandidate(candidate))return candidate;
+      lastError=new Error('invalid section output');
+      console.error(`ARTBOOK_SECTION_FORMAT_RETRY=${role}:attempt=${i+1}`);
+    }catch(error){
+      lastError=error;
+      console.error(`ARTBOOK_LOCAL_MODEL_RETRY=${role}:attempt=${i+1}:${error.message}`);
+    }
+  }
+  throw lastError||new Error(`${role}: local model output failed`);
+}
+const model=clean(process.env.ARTBOOK_LOCAL_MODEL||'qwen3:0.6b');
+const candidate=await generateCandidate(model);
 const headline=compactText(candidate.headline||`${ROLE_NAMES[role]} 부서 근거 검토`,140);let readiness=normalizeReadiness(candidate.readiness);const policyBlocks=[];if(role==='planning'&&!patterns.planning.some(p=>p.test(combined))){policyBlocks.push('현재 근거에서 정식 스토리/사건 인과가 충분히 확인되지 않음');readiness='BLOCKED';}
 const unverified=[...safeArray(candidate.unverified,12),...policyBlocks].filter((v,i,a)=>a.indexOf(v)===i),visualNotes=safeArray(candidate.visualNotes,3).length?safeArray(candidate.visualNotes,3):[headline];
 const outBase=path.join('artbook-submissions',gameId,date),output=path.join(outBase,`${role}.json`),visualPath=path.join(outBase,'visuals',`${role}.svg`).replaceAll('\\','/');const existing=readJson(output,null);if(existing&&existing.runner?.type!=='vibe2-local-open-model-department-bot'){console.log(`ARTBOOK_DEPARTMENT_SKIP=${role}:existing-external-submission`);process.exit(0);}
 writeText(visualPath,createVisualSvg({gameName:sharedEvidence.gameName,role,headline,readiness,notes:visualNotes}));
-const submission={version:3,gameId,date,department:role,status:'SUBMITTED',departmentReadiness:readiness,runner:{type:'vibe2-local-open-model-department-bot',model,localInference:true,paidApi:false,apiKeyRequired:false,independentInvocation:true,readsOtherDepartmentSubmissions:false},headline,evidence:[...evidenceFiles.slice(0,24).map(source=>({source,usage:'role-scoped-read-only-evidence'})),{source:workOrderPath,usage:'department-work-order'}],section:candidate.section,unverified,cuts:[{kind:role,title:headline,body:compactText(candidate.section.summary||visualNotes.join(' · '),420),image:visualPath}],verification:{evidenceOnly:true,sourceMode,webArchiveReadOnly:true,otherDepartmentSubmissionsRead:false,productionApproval:false,numericQualityScoreUsed:false,sectionOutputNormalized:true,policyBlocks}};
+const submission={version:4,gameId,date,department:role,status:'SUBMITTED',departmentReadiness:readiness,runner:{type:'vibe2-local-open-model-department-bot',model,localInference:true,paidApi:false,apiKeyRequired:false,independentInvocation:true,readsOtherDepartmentSubmissions:false},headline,evidence:[...evidenceFiles.slice(0,24).map(source=>({source,usage:'role-scoped-read-only-evidence'})),{source:workOrderPath,usage:'department-work-order'}],section:candidate.section,unverified,cuts:[{kind:role,title:headline,body:compactText(candidate.section.summary||visualNotes.join(' · '),420),image:visualPath}],verification:{evidenceOnly:true,sourceMode,webArchiveReadOnly:true,otherDepartmentSubmissionsRead:false,productionApproval:false,numericQualityScoreUsed:false,sectionOutputNormalized:true,shortJsonRetryEnabled:true,policyBlocks}};
 writeJson(output,submission);console.log(`ARTBOOK_DEPARTMENT_SUBMITTED=${role}`);console.log(`ARTBOOK_DEPARTMENT_READINESS=${readiness}`);console.log(`ARTBOOK_SOURCE_MODE=${sourceMode}`);console.log(`ARTBOOK_DEPARTMENT_FILE=${output}`);console.log(`ARTBOOK_LOCAL_MODEL=${model}`);console.log('PAID_API=NO');
