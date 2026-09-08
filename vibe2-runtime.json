@@ -1,9 +1,9 @@
 {
-  "version": 3,
+  "version": 4,
   "mode": "continuous-core",
   "continuous": {
     "enabled": true,
-    "strategy": "short-verified-work-chains",
+    "strategy": "single-worker-priority-serial-queue",
     "singleLongRunningJob": false,
     "wakeMode": "hourly-plus-immediate-chain",
     "wakeCron": "17 * * * *",
@@ -12,7 +12,10 @@
     "maxWorkMinutes": 20,
     "maxModelCallsPerRun": 1,
     "dispatchNextWhenVerified": true,
-    "ownerDirectivePreemptsAutonomy": true
+    "ownerDirectivePreemptsAutonomy": true,
+    "maxConcurrentGameTasks": 1,
+    "priorityOrder": ["owner-directive", "release-confirmed", "development-confirmed", "reviewing", "other"],
+    "sameTierEngineOrder": ["existing-unity", "existing-web", "new-unity", "other-engine"]
   },
   "sources": {
     "queue": ".vibe2/queue.json",
@@ -32,20 +35,20 @@
       "reason": "analysis-worker-not-connected-yet"
     }
   },
-  "workLocks": {
-    "enabled": true,
-    "requiredBeforeSourceWrite": true,
-    "stateBranch": "vibe2-work-locks",
-    "statePath": ".vibe2/work-locks.json",
-    "workers": ["chatgpt", "vibe2", "company-ai"],
-    "vibe2WorkerId": "vibe2",
-    "defaultLeaseMinutes": 45,
-    "maxLeaseMinutes": 120,
-    "remoteClient": "tools/vibe2-remote-work-lock.mjs",
-    "activeOverlapAction": "BLOCK_AND_SELECT_INDEPENDENT_WORK",
+  "coordination": {
+    "mode": "single-vibe2-worker-plus-base-sha-freshness",
+    "separateFileLocks": false,
+    "activeTaskSource": ".vibe2/queue.json",
+    "chatgptAvoidsActiveResponsibleFiles": true,
     "baseShaOverlapAction": "REPLAN_REQUIRED",
-    "baseShaNonOverlapAction": "REBASE_THEN_QA",
-    "automaticLockSteal": false
+    "baseShaNonOverlapAction": "REBASE_THEN_QA"
+  },
+  "assetDecision": {
+    "mode": "fixed-safety-plus-verified-preference-learning",
+    "fixedRules": ["license", "commercial-use", "animation-evidence", "no-static-actor", "source-record", "mobile-performance", "size-budget"],
+    "learnedSignals": ["style-fit", "motion-quality", "mobile-performance", "qa-pass-rate", "cross-game-reuse-success"],
+    "verifiedEvidenceRequired": true,
+    "learningMayOverrideFixedRules": false
   },
   "engineEditors": {
     "unity": {
@@ -71,8 +74,9 @@
     "reviewedExperienceRequired": true
   },
   "safety": {
-    "webGamesReadOnly": true,
-    "allowedWritableTargets": ["unity", "unreal", "godot"],
+    "existingWebMaintenanceAllowed": true,
+    "newWebGameAutomatic": false,
+    "allowedWritableTargets": ["web", "unity", "unreal", "godot"],
     "paidAIAllowed": false,
     "paidRunnerAllowed": false,
     "coreDecisionRequiresOwner": true,
@@ -80,7 +84,7 @@
     "verifiedEvidenceRequiredForLearning": true,
     "directMainWriteByWorker": false,
     "binaryAssetsDirectTextEditForbidden": true,
-    "sharedWorkLockRequired": true,
+    "sharedWorkLockRequired": false,
     "homepagePublicationAutomatic": false
   }
 }
