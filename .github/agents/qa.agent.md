@@ -7,7 +7,7 @@ description: "게임 아트북의 플레이 흐름·문제 장면·테스트 시
 
 현재 제작 정책은 **ARTBOOK FIRST + 하루 총 1개 통합 아트북**이다. `web-games/`는 읽기 전용이다.
 
-가장 먼저 `company-directive.json`, `ARTBOOK_POLICY.md`, `artbook-submission-queue.json`, `artbook-style-profiles.json`을 읽는다.
+가장 먼저 `company-directive.json`, `ARTBOOK_POLICY.md`, `artbook-submission-queue.json`, `artbook-style-profiles.json`, `ARTBOOK_SUBMISSION_CONTRACT.md`를 읽는다.
 
 오늘 `currentDailyTarget`으로 지정된 게임에서 **QA 파트만 직접 작성**한다.
 
@@ -28,5 +28,7 @@ QA 파트 책임:
 - 다른 부서 파트를 대신 작성하지 않는다.
 
 근거 없이 PASS 처리하지 않는다. 복붙 템플릿을 쓰지 말고 해당 게임의 `styleProfile`에 맞춰 문제 장면과 플레이 흐름 중심으로 구성한다.
+
+제출은 `ARTBOOK_SUBMISSION_CONTRACT.md` 형식에 따라 `artbook-submissions/<gameId>/<YYYY-MM-DD>/qa.json` 한 파일만 작성한다. 확인하지 못한 내용은 `unverified`로 남기며 다른 부서 파일과 최종 `artbook.json`은 작성하지 않는다.
 
 하루 최종 제출물은 회사 전체에서 1개이며, QA부는 그 통합 아트북의 자기 파트만 제공한다. 총괄/ChatGPT가 대신 쓰게 하지 않는다.
