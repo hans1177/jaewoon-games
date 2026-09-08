@@ -1,6 +1,6 @@
 // 파일명: tools/vibe2-remote-work-lock.mjs
 // 역할: GitHub의 vibe2-work-locks 브랜치에 공용 Work Lock을 원자적으로 획득/해제한다.
-// 원칙: Contents API의 blob SHA 조건부 갱신을 사용하고 409 충돌 시 최신 상태를 다시 읽어 재판정한다.
+// 원칙: Contents API의 blob SHA 조건부 갱신을 사용하고 409/422 경쟁 시 최신 상태를 다시 읽어 재판정한다.
 
 import { pathToFileURL } from 'node:url';
 import {
@@ -27,9 +27,9 @@ function parseArgs(argv = process.argv.slice(2)) {
   return args;
 }
 
-function apiContext() {
-  const repository = clean(process.env.GITHUB_REPOSITORY);
-  const token = clean(process.env.GH_TOKEN || process.env.GITHUB_TOKEN);
+export function createRemoteWorkLockContext(overrides = {}) {
+  const repository = clean(overrides.repository || process.env.GITHUB_REPOSITORY);
+  const token = clean(overrides.token || process.env.GH_TOKEN || process.env.GITHUB_TOKEN);
   if (!repository || !repository.includes('/')) throw new Error('GITHUB_REPOSITORY required');
   if (!token) throw new Error('GH_TOKEN or GITHUB_TOKEN required');
   const [owner, repo] = repository.split('/');
@@ -45,19 +45,19 @@ function headers(token) {
   };
 }
 
-async function readRemoteState(ctx) {
+async function readRemoteState(ctx, fetchImpl) {
   const url = `https://api.github.com/repos/${ctx.owner}/${ctx.repo}/contents/${VIBE_WORK_LOCK_STATE_PATH}?ref=${encodeURIComponent(VIBE_WORK_LOCK_STATE_BRANCH)}`;
-  const response = await fetch(url, { headers: headers(ctx.token) });
+  const response = await fetchImpl(url, { headers: headers(ctx.token) });
   if (!response.ok) throw new Error(`work-lock state fetch failed: ${response.status}`);
   const body = await response.json();
   const raw = Buffer.from(String(body.content || '').replaceAll('\n', ''), 'base64').toString('utf8');
   return { sha: clean(body.sha), state: createVibeWorkLockState(JSON.parse(raw)) };
 }
 
-async function writeRemoteState(ctx, sha, state, message) {
+async function writeRemoteState(ctx, sha, state, message, fetchImpl) {
   const url = `https://api.github.com/repos/${ctx.owner}/${ctx.repo}/contents/${VIBE_WORK_LOCK_STATE_PATH}`;
   const content = Buffer.from(`${JSON.stringify(state, null, 2)}\n`, 'utf8').toString('base64');
-  const response = await fetch(url, {
+  const response = await fetchImpl(url, {
     method: 'PUT',
     headers: { ...headers(ctx.token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ message, content, sha, branch: VIBE_WORK_LOCK_STATE_BRANCH })
@@ -68,8 +68,21 @@ async function writeRemoteState(ctx, sha, state, message) {
   return { updated: true, retryable: false, status: response.status, commitSha: body?.commit?.sha || null };
 }
 
-export async function acquireRemoteVibeWorkLock(args = {}, { maxAttempts = 3 } = {}) {
-  const ctx = apiContext();
+function defaultDelay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function operationOptions(options = {}) {
+  const fetchImpl = options.fetchImpl || globalThis.fetch;
+  if (typeof fetchImpl !== 'function') throw new Error('fetch implementation required');
+  const context = options.context || createRemoteWorkLockContext(options.contextOverrides || {});
+  const delay = typeof options.delay === 'function' ? options.delay : defaultDelay;
+  const maxAttempts = Math.max(1, Math.min(5, Number(options.maxAttempts) || 3));
+  return { fetchImpl, context, delay, maxAttempts };
+}
+
+export async function acquireRemoteVibeWorkLock(args = {}, options = {}) {
+  const { fetchImpl, context: ctx, delay, maxAttempts } = operationOptions(options);
   const request = {
     worker: clean(args.worker) || 'vibe2',
     taskId: clean(args.task),
@@ -81,32 +94,32 @@ export async function acquireRemoteVibeWorkLock(args = {}, { maxAttempts = 3 } =
   };
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-    const remote = await readRemoteState(ctx);
+    const remote = await readRemoteState(ctx, fetchImpl);
     const result = acquireVibeWorkLock(remote.state, request, new Date());
     if (!result.acquired) return { ...result, attempt, remoteUpdated: false };
     if (result.reused) return { ...result, attempt, remoteUpdated: false };
-    const write = await writeRemoteState(ctx, remote.sha, result.state, `vibe2-lock: acquire ${request.worker} ${request.taskId}`);
+    const write = await writeRemoteState(ctx, remote.sha, result.state, `vibe2-lock: acquire ${request.worker} ${request.taskId}`, fetchImpl);
     if (write.updated) return { ...result, attempt, remoteUpdated: true, commitSha: write.commitSha };
     if (!write.retryable || attempt === maxAttempts) throw new Error(`work-lock acquire update race exhausted after ${attempt} attempts`);
-    await new Promise((resolve) => setTimeout(resolve, attempt * 500));
+    await delay(attempt * 500);
   }
   throw new Error('work-lock acquire unreachable');
 }
 
-export async function releaseRemoteVibeWorkLock(args = {}, { maxAttempts = 3 } = {}) {
-  const ctx = apiContext();
+export async function releaseRemoteVibeWorkLock(args = {}, options = {}) {
+  const { fetchImpl, context: ctx, delay, maxAttempts } = operationOptions(options);
   const lockId = clean(args.id);
   const worker = clean(args.worker) || 'vibe2';
   if (!lockId) throw new Error('work-lock id required');
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-    const remote = await readRemoteState(ctx);
+    const remote = await readRemoteState(ctx, fetchImpl);
     const result = releaseVibeWorkLock(remote.state, { lockId, worker }, new Date());
     if (!result.released) return { ...result, attempt, remoteUpdated: false };
-    const write = await writeRemoteState(ctx, remote.sha, result.state, `vibe2-lock: release ${worker} ${lockId}`);
+    const write = await writeRemoteState(ctx, remote.sha, result.state, `vibe2-lock: release ${worker} ${lockId}`, fetchImpl);
     if (write.updated) return { ...result, attempt, remoteUpdated: true, commitSha: write.commitSha };
     if (!write.retryable || attempt === maxAttempts) throw new Error(`work-lock release update race exhausted after ${attempt} attempts`);
-    await new Promise((resolve) => setTimeout(resolve, attempt * 500));
+    await delay(attempt * 500);
   }
   throw new Error('work-lock release unreachable');
 }
