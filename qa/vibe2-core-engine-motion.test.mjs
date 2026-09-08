@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-core-engine-motion.test.mjs
-// 역할: Vibe2 엔진 어댑터, workbench, Motion Core, 경험 메모리, 연속 작업 큐 계약을 회귀검사한다.
+// 역할: Vibe2 엔진 어댑터, workbench, Core Runtime, Motion Core, 경험 메모리, 연속 작업 큐 계약을 회귀검사한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -9,6 +9,7 @@ import {
   validateVibeEngineAdapter
 } from '../assets/vibe-engine-adapter.js';
 import { planVibeWorkbenchTask, createVibeEditBrief } from '../assets/vibe-workbench.js';
+import { planVibeCoreTask, beginVibeCoreTask, recordVibeCoreOutcome } from '../assets/vibe-core-runtime.js';
 import {
   createVibeMotionContract,
   validateVibeMotionContract,
@@ -63,6 +64,94 @@ test('workbench keeps web archive read only', () => {
   assert.equal(plan.applyPolicy.webArchiveReadOnly, true);
   assert.equal(brief.outputContract.sourceWriteAllowed, false);
   assert(plan.warnings.some((warning) => warning.includes('archive/read-only')));
+});
+
+test('core runtime composes Unreal workbench, verified learning, motion and queue', () => {
+  const seeded = addVibeExperience(createVibeExperienceMemory(), {
+    gameId: 'old-game',
+    engine: 'unreal',
+    departments: ['development', 'qa', 'graphics'],
+    taskType: 'motion',
+    problem: '공격 모션 전환이 끊김',
+    goal: '공격 모션 개선',
+    change: 'Montage 전환과 Blend 조정',
+    outcome: 'PASS',
+    evidence: ['old-qa-1'],
+    reusablePatterns: ['Montage blend 검증'],
+    verified: true
+  });
+  assert.equal(seeded.added, true);
+  const plan = planVibeCoreTask({
+    request: '캐릭터 공격 모션 개선',
+    target: 'unreal',
+    gameId: 'motion-test',
+    experienceMemory: seeded.memory,
+    ownerDirective: true,
+    motion: {
+      actorId: 'hero',
+      states: [
+        { id: 'idle', clips: ['Idle'] },
+        { id: 'move', clips: ['Run'] },
+        { id: 'attack', clips: ['Attack01'] },
+        { id: 'hit', clips: ['Hit01'] },
+        { id: 'death', clips: ['Death01'] }
+      ],
+      transitions: {
+        idle: ['move', 'attack', 'hit', 'death'],
+        move: ['idle', 'attack', 'hit', 'death'],
+        attack: ['idle', 'move', 'hit', 'death'],
+        hit: ['idle', 'move', 'death'],
+        death: []
+      }
+    }
+  });
+  assert.equal(plan.target, 'unreal');
+  assert.equal(plan.engineAdapter.target, 'unreal');
+  assert.equal(plan.learning.records.length, 1);
+  assert.equal(plan.motion.status, 'MOTION_CONTRACT_VALID');
+  assert.equal(plan.executionGate.mayExecute, true);
+  assert.equal(plan.next.selected.id, plan.queueTask.id);
+  assert.equal(plan.queueTask.priority, 'owner-immediate');
+  const started = beginVibeCoreTask(plan);
+  assert.equal(started.started, true);
+  const recorded = recordVibeCoreOutcome({
+    plan,
+    queue: started.queue,
+    experienceMemory: seeded.memory,
+    outcome: 'PASS',
+    evidence: ['new-qa-1'],
+    verified: true,
+    problem: '공격 모션 전환 끊김',
+    change: 'Blend와 타격 타이밍 동기화',
+    reusablePatterns: ['공격 전환 blend + hit timing']
+  });
+  assert.equal(recorded.learning.added, true);
+  assert.equal(recorded.mayReuseLearning, true);
+  assert.equal(recorded.dispatchNext, false);
+});
+
+test('core runtime blocks invalid motion contract and read-only source', () => {
+  const invalidMotion = planVibeCoreTask({
+    request: '캐릭터 공격 모션 개선',
+    target: 'unreal',
+    gameId: 'motion-test',
+    motion: {
+      states: [
+        { id: 'idle', clips: ['Idle'] },
+        { id: 'move', clips: ['Move'] },
+        { id: 'attack', clips: [] },
+        { id: 'hit', clips: ['Hit'] },
+        { id: 'death', clips: ['Death'] }
+      ],
+      transitions: { idle: ['move'], move: ['idle'], attack: ['idle'], hit: ['idle'], death: [] }
+    }
+  });
+  assert.equal(invalidMotion.executionGate.mayExecute, false);
+  assert(invalidMotion.executionGate.reasons.includes('motion-contract-invalid'));
+
+  const web = planVibeCoreTask({ request: '웹게임 분석', target: 'web', gameId: 'legacy' });
+  assert.equal(web.executionGate.mayExecute, false);
+  assert(web.executionGate.reasons.includes('source-read-only'));
 });
 
 test('web archive remains read only', () => {
