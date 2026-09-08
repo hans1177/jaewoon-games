@@ -35,27 +35,36 @@ jobs:
           node --check tools/autonomous-prototype-worker.mjs
           node --test qa/autonomous-prototype-worker.test.mjs
           node --test qa/autonomous-development-worker.test.mjs
-      - name: Preserve exact request and worker implementation
+          node --test qa/incubator-promotion-state.test.mjs
+      - name: Preserve exact request
         shell: bash
         run: |
           set -euo pipefail
           test -f .autonomous/prototype-request.json
-          rm -rf /tmp/jaewoon-prototype-worker
-          mkdir -p /tmp/jaewoon-prototype-worker
           cp .autonomous/prototype-request.json /tmp/jaewoon-prototype-request.json
-          cp tools/autonomous-prototype-worker.mjs /tmp/jaewoon-prototype-worker/
-          cp tools/autonomous-development-worker.mjs /tmp/jaewoon-prototype-worker/
           node - <<'NODE' >> "$GITHUB_ENV"
           const fs=require('fs');const r=JSON.parse(fs.readFileSync('/tmp/jaewoon-prototype-request.json','utf8'));
           for(const [k,v] of Object.entries({PROTOTYPE_PROJECT_ID:r.projectId,PROTOTYPE_INCUBATOR_ID:r.candidateId,PROTOTYPE_SOURCE_PATH:r.sourcePath}))console.log(`${k}=${v}`);
           NODE
-      - name: Create candidate branch from continuous development line
+      - name: Sync latest main into continuous development line
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main autonomous-dev
+          git checkout -B autonomous-dev-base origin/autonomous-dev
+          git merge --no-edit origin/main
+          node --check tools/autonomous-prototype-worker.mjs
+          node --test qa/autonomous-prototype-worker.test.mjs
+          git config user.name "jaewoon-autonomous-sync"
+          git config user.email "actions@users.noreply.github.com"
+          git push origin HEAD:autonomous-dev
+          echo "AUTONOMOUS_DEV_SYNCED=$(git rev-parse HEAD)"
+          echo 'PUBLIC_MAIN_WRITE=NO'
+      - name: Create candidate branch from synced continuous development line
         id: branch
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin autonomous-dev
-          git checkout -B autonomous-dev-base origin/autonomous-dev
           branch="autonomous/candidate-prototype-${PROTOTYPE_PROJECT_ID,,}-${GITHUB_RUN_ID}"
           git checkout -b "$branch"
           echo "name=$branch" >> "$GITHUB_OUTPUT"
@@ -82,7 +91,7 @@ jobs:
         env:
           AUTONOMOUS_PROTOTYPE_REQUEST: /tmp/jaewoon-prototype-request.json
           AUTONOMOUS_CANDIDATE_ID: prototype-${{ env.PROTOTYPE_INCUBATOR_ID }}-${{ github.run_id }}
-        run: node /tmp/jaewoon-prototype-worker/autonomous-prototype-worker.mjs
+        run: node tools/autonomous-prototype-worker.mjs
       - name: Candidate syntax and scope QA
         shell: bash
         run: |
