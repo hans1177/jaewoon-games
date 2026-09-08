@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: autonomous-dev-writer
@@ -190,6 +191,18 @@ jobs:
           echo "MAIN_MEMORY_WRITE=YES"
           if [ "$PROMOTE_NEW_PROJECT" = "true" ]; then echo "INCUBATOR_PROTOTYPE_VERIFIED=YES"; fi
 
+      - name: Dispatch next bounded queue item immediately
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run autonomous-continuous-development.yml --ref main
+          echo "CONTINUOUS_QUEUE_NEXT=DISPATCHED"
+          echo "QUEUE_DISPATCH_SOURCE=workflow_dispatch"
+          echo "PUBLIC_MAIN_RELEASE=NO"
+
       - name: Summary
         if: always()
         run: |
@@ -198,5 +211,6 @@ jobs:
           echo "- promotion target: autonomous-dev only" >> "$GITHUB_STEP_SUMMARY"
           echo "- public game main promotion: NO" >> "$GITHUB_STEP_SUMMARY"
           echo "- verified learning evidence: company-learning only" >> "$GITHUB_STEP_SUMMARY"
+          echo "- continuous queue next: workflow_dispatch" >> "$GITHUB_STEP_SUMMARY"
           echo "- new prototype completion: tested metadata gate only" >> "$GITHUB_STEP_SUMMARY"
           echo "- paid API: NO" >> "$GITHUB_STEP_SUMMARY"
