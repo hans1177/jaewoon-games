@@ -1,9 +1,6 @@
 name: Autonomous Portfolio Continuation
 
 on:
-  workflow_run:
-    workflows: ['Autonomous Continuous Development']
-    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -12,7 +9,7 @@ permissions:
 
 concurrency:
   group: autonomous-portfolio-continuation
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   continue-portfolio:
@@ -59,5 +56,6 @@ jobs:
           echo "### Autonomous Portfolio Continuation" >> "$GITHUB_STEP_SUMMARY"
           echo "- route: ${{ steps.route.outputs.action }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- reason: ${{ steps.route.outputs.reason }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- trigger route: explicit workflow_dispatch only" >> "$GITHUB_STEP_SUMMARY"
           echo "- duplicate concept/day: blocked" >> "$GITHUB_STEP_SUMMARY"
           echo "- public release: NO" >> "$GITHUB_STEP_SUMMARY"
