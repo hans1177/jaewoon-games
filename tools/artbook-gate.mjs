@@ -1,5 +1,5 @@
 // 파일명: tools/artbook-gate.mjs
-// 역할: 실제 부서 1차 제출 5개 + 타부서 보완점/별점 리뷰 5개를 검증한다.
+// 역할: 실제 부서 1차 제출 5개 + 타부서 보완점/별점 리뷰 5개 + 총괄 5번째 표를 검증한다.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -66,12 +66,46 @@ for(const role of requiredRoles){
   }
   if(problems.length)reviewInvalid.push({role,file,problems});else reviewReady.push({role,file});
 }
-const collaborationComplete=reviewReady.length===requiredRoles.length&&reviewMissing.length===0&&reviewInvalid.length===0;
+const peerReviewsComplete=reviewReady.length===requiredRoles.length&&reviewMissing.length===0&&reviewInvalid.length===0;
+
+const directorFile=path.join(base,'reviews','director.json');
+const directorProblems=[];
+let directorReviewReady=false;
+if(!fs.existsSync(directorFile))directorProblems.push('director-review-missing');
+else{
+  const data=readJson(directorFile,null);
+  if(!data||typeof data!=='object'||Array.isArray(data))directorProblems.push('director-review-invalid-json-object');
+  else{
+    if(String(data.gameId||'')!==gameId)directorProblems.push('director-review-gameId-mismatch');
+    if(String(data.date||'')!==date)directorProblems.push('director-review-date-mismatch');
+    if(String(data.reviewer||'')!=='director')directorProblems.push('director-reviewer-mismatch');
+    if(String(data.status||'').toUpperCase()!=='REVIEWED')directorProblems.push('director-review-status-not-REVIEWED');
+    if(String(data.protocol||'')!=='DIRECTOR_IMPROVEMENT_STAR_5')directorProblems.push('director-review-protocol-mismatch');
+    if(String(data.reviewScope||'')!=='ALL_FIVE_DEPARTMENT_RESULTS')directorProblems.push('director-review-scope-mismatch');
+    const ratings=Array.isArray(data.ratings)?data.ratings:[];
+    if(ratings.length!==requiredRoles.length)directorProblems.push('director-must-rate-all-five-departments');
+    const seen=new Set();
+    for(const rating of ratings){
+      const target=String(rating?.targetDepartment||'');const stars=Number(rating?.stars);
+      if(!requiredRoles.includes(target))directorProblems.push('director-rating-target-invalid');
+      if(seen.has(target))directorProblems.push('director-rating-target-duplicate');seen.add(target);
+      if(!String(rating?.improvement||'').trim())directorProblems.push('director-improvement-required');
+      if(!Number.isInteger(stars)||stars<1||stars>5)directorProblems.push('director-stars-must-be-1-to-5');
+    }
+    if(requiredRoles.some(x=>!seen.has(x)))directorProblems.push('director-must-cover-all-five-departments');
+    if(data.guard?.mayRewriteDepartmentResults!==false)directorProblems.push('director-rewrite-guard-missing');
+  }
+  directorReviewReady=directorProblems.length===0;
+}
+
+const ratingsPerDepartment=peerReviewsComplete&&directorReviewReady?requiredRoles.length:0;
+const collaborationComplete=peerReviewsComplete&&directorReviewReady;
 const readyForDirectorAssembly=initialComplete&&collaborationComplete;
 let formalProductionGate='BLOCKED_WAITING_FOR_REAL_DEPARTMENT_SUBMISSIONS';
-if(initialComplete&&!collaborationComplete)formalProductionGate='BLOCKED_WAITING_FOR_PEER_IMPROVEMENT_STAR_REVIEWS';
-if(readyForDirectorAssembly)formalProductionGate='SECTION_AND_PEER_REVIEW_GATE_COMPLETE_DIRECTOR_ASSEMBLY_ALLOWED';
+if(initialComplete&&!peerReviewsComplete)formalProductionGate='BLOCKED_WAITING_FOR_PEER_IMPROVEMENT_STAR_REVIEWS';
+else if(initialComplete&&peerReviewsComplete&&!directorReviewReady)formalProductionGate='BLOCKED_WAITING_FOR_DIRECTOR_FIFTH_RATING';
+else if(readyForDirectorAssembly)formalProductionGate='SECTION_AND_FIVE_RATING_GATE_COMPLETE_DIRECTOR_ASSEMBLY_ALLOWED';
 
-const status={version:4,checkedAt:new Date().toISOString(),date,gameId,gameName:targetGame?.name||gameId,requiredRoles,readyRoles:ready.map(x=>x.role),readyCount:ready.length,requiredCount:requiredRoles.length,missing,invalid,independentRoundComplete:initialComplete,reviewReadyRoles:reviewReady.map(x=>x.role),reviewReadyCount:reviewReady.length,reviewRequiredCount:requiredRoles.length,reviewMissing,reviewInvalid,collaborationProtocol:'PEER_IMPROVEMENT_STAR_5',homepageOpinionMode:'PEER_IMPROVEMENT_AND_AVERAGE_STARS',collaborationComplete,readyForDirectorAssembly,directorMayAuthorMissingSections:false,directorMayAuthorMissingReviews:false,formalProductionGate};
+const status={version:5,checkedAt:new Date().toISOString(),date,gameId,gameName:targetGame?.name||gameId,requiredRoles,readyRoles:ready.map(x=>x.role),readyCount:ready.length,requiredCount:requiredRoles.length,missing,invalid,independentRoundComplete:initialComplete,reviewReadyRoles:reviewReady.map(x=>x.role),reviewReadyCount:reviewReady.length,reviewRequiredCount:requiredRoles.length,reviewMissing,reviewInvalid,peerReviewsComplete,directorReviewFile:directorFile,directorReviewReady,directorReviewProblems:directorProblems,directorRatingsRequired:requiredRoles.length,ratingsPerDepartment,collaborationProtocol:'PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5',homepageOpinionMode:'IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS',collaborationComplete,readyForDirectorAssembly,directorMayAuthorMissingSections:false,directorMayAuthorMissingReviews:false,formalProductionGate};
 writeJson('artbook-gate-status.json',status);
-console.log(`ARTBOOK_GAME_ID=${gameId}`);console.log(`ARTBOOK_DATE=${date}`);console.log(`ARTBOOK_SECTION_READY=${ready.length}/${requiredRoles.length}`);console.log(`ARTBOOK_REVIEW_READY=${reviewReady.length}/${requiredRoles.length}`);console.log(`ARTBOOK_DIRECTOR_ASSEMBLY=${readyForDirectorAssembly?'YES':'NO'}`);if(missing.length)console.log(`ARTBOOK_MISSING=${missing.map(x=>x.role).join(',')}`);if(invalid.length)console.log(`ARTBOOK_INVALID=${invalid.map(x=>x.role).join(',')}`);if(reviewMissing.length)console.log(`ARTBOOK_REVIEW_MISSING=${reviewMissing.map(x=>x.role).join(',')}`);if(reviewInvalid.length)console.log(`ARTBOOK_REVIEW_INVALID=${reviewInvalid.map(x=>x.role).join(',')}`);
+console.log(`ARTBOOK_GAME_ID=${gameId}`);console.log(`ARTBOOK_DATE=${date}`);console.log(`ARTBOOK_SECTION_READY=${ready.length}/${requiredRoles.length}`);console.log(`ARTBOOK_REVIEW_READY=${reviewReady.length}/${requiredRoles.length}`);console.log(`ARTBOOK_DIRECTOR_REVIEW=${directorReviewReady?'1/1':'0/1'}`);console.log(`ARTBOOK_RATINGS_PER_DEPARTMENT=${ratingsPerDepartment}`);console.log(`ARTBOOK_DIRECTOR_ASSEMBLY=${readyForDirectorAssembly?'YES':'NO'}`);if(missing.length)console.log(`ARTBOOK_MISSING=${missing.map(x=>x.role).join(',')}`);if(invalid.length)console.log(`ARTBOOK_INVALID=${invalid.map(x=>x.role).join(',')}`);if(reviewMissing.length)console.log(`ARTBOOK_REVIEW_MISSING=${reviewMissing.map(x=>x.role).join(',')}`);if(reviewInvalid.length)console.log(`ARTBOOK_REVIEW_INVALID=${reviewInvalid.map(x=>x.role).join(',')}`);if(directorProblems.length)console.log(`ARTBOOK_DIRECTOR_INVALID=${directorProblems.join(',')}`);
