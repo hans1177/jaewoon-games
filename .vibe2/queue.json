@@ -1,6 +1,9 @@
 {
-  "version": 1,
+  "version": 2,
   "mode": "short-verified-work-chains",
+  "longRunningSingleJobRequired": false,
+  "ownerDirectivePreemptsAutonomy": true,
+  "defaultMaxRetries": 2,
   "tasks": [
     {
       "id": "daechung-rpg-region-controls-4-7",
@@ -14,14 +17,17 @@
       ],
       "dependencies": [],
       "priority": "high",
-      "status": "queued",
+      "status": "running",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "evidence": []
+      "blocker": null,
+      "evidence": [],
+      "lastOutcome": null,
+      "companyContext": null
     },
     {
       "id": "daechung-rpg-save-null-guards",
@@ -42,7 +48,10 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "evidence": []
+      "blocker": null,
+      "evidence": [],
+      "lastOutcome": null,
+      "companyContext": null
     },
     {
       "id": "daechung-rpg-motion-routine-safety",
@@ -63,7 +72,10 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "evidence": []
+      "blocker": null,
+      "evidence": [],
+      "lastOutcome": null,
+      "companyContext": null
     }
   ]
 }
