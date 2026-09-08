@@ -3,14 +3,15 @@ name: Free Artbook Department Bots
 on:
   workflow_dispatch:
   schedule:
-    # 08:05 KST. Runs only when today's work order exists.
-    - cron: '5 23 * * *'
+    - cron: '5 23 * * *' # 08:05 KST
   push:
     branches: [main]
     paths:
       - 'artbook-work-orders/**'
+      - 'tools/artbook-prepare-daily.mjs'
       - 'tools/artbook-department-runner.mjs'
       - 'tools/artbook-collaboration-runner.mjs'
+      - 'tools/artbook-assemble.mjs'
       - '.github/workflows/artbook-free-department-bots.yml'
 
 permissions:
@@ -31,28 +32,37 @@ jobs:
       run: ${{ steps.target.outputs.run }}
       date: ${{ steps.target.outputs.date }}
       game_id: ${{ steps.target.outputs.game_id }}
+      work_order: ${{ steps.target.outputs.work_order }}
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
         with:
           ref: main
-      - name: Resolve today's artbook target
+      - name: Prepare next unfinished game
+        run: node tools/artbook-prepare-daily.mjs
+      - name: Resolve prepared target
         id: target
         shell: bash
         run: |
           set -euo pipefail
-          DATE_KST=$(TZ=Asia/Seoul date +%F)
-          GAME_ID=$(node -e "const q=require('./artbook-submission-queue.json');process.stdout.write(q.currentDailyTarget||'')")
-          FILE="artbook-work-orders/${DATE_KST}-${GAME_ID}.json"
-          echo "date=$DATE_KST" >> "$GITHUB_OUTPUT"
-          echo "game_id=$GAME_ID" >> "$GITHUB_OUTPUT"
-          if [ -n "$GAME_ID" ] && [ -f "$FILE" ]; then
-            echo 'run=true' >> "$GITHUB_OUTPUT"
-            echo "ARTBOOK_WORK_ORDER=$FILE"
-          else
-            echo 'run=false' >> "$GITHUB_OUTPUT"
-            echo 'ARTBOOK_FREE_BOTS=SKIP_NO_TODAY_WORK_ORDER'
-          fi
+          node - <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs=require('fs');
+          const c=JSON.parse(fs.readFileSync('artbook-daily-context.json','utf8'));
+          console.log(`run=${c.run?'true':'false'}`);
+          console.log(`date=${c.date||''}`);
+          console.log(`game_id=${c.gameId||''}`);
+          console.log(`work_order=${c.workOrderPath||''}`);
+          NODE
+      - name: Upload prepared work order
+        if: steps.target.outputs.run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-work-order
+          path: |
+            artbook-daily-context.json
+            artbook-work-orders/${{ steps.target.outputs.date }}-${{ steps.target.outputs.game_id }}.json
+          retention-days: 1
+          if-no-files-found: error
 
   round1:
     needs: context
@@ -62,12 +72,17 @@ jobs:
       matrix:
         role: [planning, graphics, development, qa, balance]
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
         with:
           ref: main
+      - name: Restore today's work order
+        uses: actions/download-artifact@v4
+        with:
+          name: daily-work-order
+          path: .
       - name: Install local Ollama
         shell: bash
         run: |
@@ -138,7 +153,7 @@ jobs:
       matrix:
         role: [planning, graphics, development, qa, balance]
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
@@ -162,10 +177,7 @@ jobs:
           cat /tmp/ollama.log || true
           exit 1
       - name: Pull free open model
-        run: |
-          ollama pull "$ARTBOOK_LOCAL_MODEL"
-          echo "LOCAL_MODEL=$ARTBOOK_LOCAL_MODEL"
-          echo 'PAID_API=NO'
+        run: ollama pull "$ARTBOOK_LOCAL_MODEL"
       - name: Cross-department review
         env:
           ARTBOOK_ROLE: ${{ matrix.role }}
@@ -190,6 +202,11 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
+      - name: Restore today's work order
+        uses: actions/download-artifact@v4
+        with:
+          name: daily-work-order
+          path: .
       - name: Restore five independent sections
         uses: actions/download-artifact@v4
         with:
@@ -206,18 +223,13 @@ jobs:
           ARTBOOK_DATE: ${{ needs.context.outputs.date }}
           ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
         run: |
-          set -euo pipefail
           node tools/artbook-gate.mjs
           node - <<'NODE'
-          const fs=require('fs');
-          const gate=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8'));
-          if(gate.readyCount!==5||gate.reviewReadyCount!==5||gate.readyForDirectorAssembly!==true){
-            throw new Error(`artbook not ready: sections ${gate.readyCount}/5, reviews ${gate.reviewReadyCount}/5`);
-          }
-          console.log('FREE_DEPARTMENT_SUBMISSIONS=5/5');
-          console.log('FREE_DEPARTMENT_REVIEWS=5/5');
+          const fs=require('fs');const g=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8'));
+          if(g.readyCount!==5||g.reviewReadyCount!==5||g.readyForDirectorAssembly!==true)throw new Error(`artbook not ready: ${g.readyCount}/5 + ${g.reviewReadyCount}/5`);
+          console.log('FREE_DEPARTMENT_SUBMISSIONS=5/5');console.log('FREE_DEPARTMENT_REVIEWS=5/5');
           NODE
-      - name: Assemble verified initial artbook
+      - name: Assemble verified initial artbook with department opinions
         env:
           ARTBOOK_DATE: ${{ needs.context.outputs.date }}
           ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
@@ -228,30 +240,21 @@ jobs:
           ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
         run: |
           node - <<'NODE'
-          const fs=require('fs');
-          const q=JSON.parse(fs.readFileSync('artbook-submission-queue.json','utf8'));
-          const roles=['planning','graphics','development','qa','balance'];
-          q.updatedAt=process.env.ARTBOOK_DATE;
-          q.currentTargetExecution={...(q.currentTargetExecution||{}),date:process.env.ARTBOOK_DATE,readySections:5,requiredSections:5,readyReviews:5,requiredReviews:5,directorAssemblyReady:true,runnerDispatch:'FREE_LOCAL_OPEN_MODEL_COMPLETE',runnerModel:'qwen3:0.6b',runnerPaidApi:false,runnerApiKeyRequired:false,firstRoundIndependent:true,secondRoundProtocol:'AGREE_COUNTER_TEST_RESULT_DECISION',assemblyGrantsProductionApproval:false};
-          const g=(q.games||[]).find(x=>x.gameId===process.env.ARTBOOK_GAME_ID);
-          if(g){g.status='INITIAL_ARTBOOK_ASSEMBLED_AWAITING_OWNER_DECISION';g.sectionsReady=[...roles];g.reviewsReady=[...roles];g.directorAssemblyReady=true;g.currentStage='initial-artbook-assembled-awaiting-owner-decision';}
+          const fs=require('fs');const q=JSON.parse(fs.readFileSync('artbook-submission-queue.json','utf8'));const roles=['planning','graphics','development','qa','balance'];
+          q.updatedAt=process.env.ARTBOOK_DATE;q.currentDailyTarget=process.env.ARTBOOK_GAME_ID;
+          q.currentTargetExecution={...(q.currentTargetExecution||{}),date:process.env.ARTBOOK_DATE,readySections:5,requiredSections:5,readyReviews:5,requiredReviews:5,directorAssemblyReady:true,runnerDispatch:'FREE_LOCAL_OPEN_MODEL_COMPLETE',runnerModel:'qwen3:0.6b',runnerPaidApi:false,runnerApiKeyRequired:false,firstRoundIndependent:true,secondRoundProtocol:'AGREE_COUNTER_TEST_RESULT_DECISION',departmentOpinionsPublished:true,assemblyGrantsProductionApproval:false};
+          const g=(q.games||[]).find(x=>x.gameId===process.env.ARTBOOK_GAME_ID);if(g){g.status='INITIAL_ARTBOOK_ASSEMBLED_AWAITING_OWNER_DECISION';g.sectionsReady=[...roles];g.reviewsReady=[...roles];g.directorAssemblyReady=true;g.currentStage='initial-artbook-assembled-awaiting-owner-decision';}
           fs.writeFileSync('artbook-submission-queue.json',JSON.stringify(q,null,2)+'\n');
           NODE
       - name: Commit verified department work and integrated draft
         shell: bash
         run: |
           set -euo pipefail
-          GAME_ID='${{ needs.context.outputs.game_id }}'
-          DATE_KST='${{ needs.context.outputs.date }}'
-          git config user.name 'jaewoon-company-department-bots'
-          git config user.email 'actions@users.noreply.github.com'
-          git add "artbook-submissions/${GAME_ID}/${DATE_KST}/" artbook-gate-status.json game-artbooks.json artbook-submission-queue.json
-          if git diff --cached --quiet; then
-            echo 'ARTBOOK_FINAL_COMMIT=NO_CHANGES'
-            exit 0
-          fi
+          GAME_ID='${{ needs.context.outputs.game_id }}';DATE_KST='${{ needs.context.outputs.date }}'
+          git config user.name 'jaewoon-company-department-bots';git config user.email 'actions@users.noreply.github.com'
+          git add "artbook-work-orders/${DATE_KST}-${GAME_ID}.json" "artbook-submissions/${GAME_ID}/${DATE_KST}/" artbook-gate-status.json game-artbooks.json artbook-submission-queue.json
+          if git diff --cached --quiet; then echo 'ARTBOOK_FINAL_COMMIT=NO_CHANGES';exit 0;fi
           git commit -m "artbook: assemble ${GAME_ID} verified five-department draft"
           git pull --rebase origin main
-          git push origin main
-          echo 'ARTBOOK_FINAL_COMMIT=SUCCESS'
-          echo 'PRODUCTION_APPROVAL=NO'
+git push origin main
+          echo 'ARTBOOK_FINAL_COMMIT=SUCCESS';echo 'PRODUCTION_APPROVAL=NO'
