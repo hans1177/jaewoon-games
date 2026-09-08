@@ -10,6 +10,26 @@ const issueText=issue=>{
   return [issue.type,issue.message,issue.code].filter(Boolean).map(String).join(': ').trim();
 };
 
+export function buildBridgeFreeBudget(portfolio={}){
+  return{
+    providerId:'GITHUB_PUBLIC_STANDARD',
+    resourceType:'ACTIONS_RUNNER',
+    quotaMode:'UNMETERED_FREE',
+    metered:false,
+    planningStatus:'POLICY_ELIGIBLE',
+    executionRepository:'hans1177/jaewoon-games',
+    requiredVisibility:'public',
+    standardRunnerOnly:true,
+    runner:'ubuntu-latest',
+    paidApi:portfolio.paidApi===false?false:null,
+    localModelProvider:'OLLAMA_LOCAL',
+    maxModelCallsPerRun:Number(portfolio.maxModelCallsPerRun??0),
+    maxRunnerMinutesPerRun:Number(portfolio.maxRunnerMinutesPerRun??0),
+    runtimeVerificationRequired:true,
+    source:'GITHUB_PUBLIC_STANDARD_POLICY',
+  };
+}
+
 export function buildGamesBridgeSnapshot({portfolio={},health={},dna={},artbooks={},sourceRevision=null,timestamp=new Date().toISOString()}={}){
   const healthBySlug=new Map((health.games||[]).map(g=>[g.gameId,g]));
   const projects=(portfolio.projects||[]).map(p=>{
@@ -30,6 +50,7 @@ export function buildGamesBridgeSnapshot({portfolio={},health={},dna={},artbooks
     publicStableBranch:portfolio.publicStableBranch||'main',
     continuousDevelopmentBranch:portfolio.continuousDevelopmentBranch||'autonomous-dev',
     paidApi:portfolio.paidApi===false?false:null,
+    freeBudget:buildBridgeFreeBudget(portfolio),
     projects,
     companyDna:dnaItems,
     latestArtbooks,
@@ -42,6 +63,10 @@ export function validateGamesBridgeSnapshot(snapshot={}){
   if(snapshot.version!==1)errors.push('version');
   if(snapshot.sourceRepository!=='hans1177/jaewoon-games')errors.push('sourceRepository');
   if(!Array.isArray(snapshot.projects))errors.push('projects');
+  if(snapshot.freeBudget?.providerId!=='GITHUB_PUBLIC_STANDARD')errors.push('freeBudgetProvider');
+  if(snapshot.freeBudget?.quotaMode!=='UNMETERED_FREE')errors.push('freeBudgetQuotaMode');
+  if(snapshot.freeBudget?.runtimeVerificationRequired!==true)errors.push('freeBudgetRuntimeVerification');
+  if(snapshot.freeBudget?.paidApi!==false)errors.push('freeBudgetPaidApi');
   if(snapshot.safety?.containsSecrets!==false)errors.push('containsSecrets');
   if(snapshot.safety?.containsCredentials!==false)errors.push('containsCredentials');
   if(snapshot.safety?.publicGameCodeAutoPromotion!==false)errors.push('publicGameCodeAutoPromotion');
@@ -61,6 +86,6 @@ function main(){
     artbooks:readJson('game-artbooks.json',{}),
   });
   const valid=validateGamesBridgeSnapshot(snapshot);if(!valid.pass)throw new Error(`bridge snapshot invalid: ${valid.errors.join(',')}`);
-  const out='company-bridge/games-status.json';fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(snapshot,null,2)+'\n');console.log(JSON.stringify({output:out,projects:snapshot.projects.length,dna:snapshot.companyDna.length,safety:snapshot.safety},null,2));
+  const out='company-bridge/games-status.json';fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(snapshot,null,2)+'\n');console.log(JSON.stringify({output:out,projects:snapshot.projects.length,dna:snapshot.companyDna.length,freeBudget:snapshot.freeBudget,safety:snapshot.safety},null,2));
 }
 if(import.meta.url===pathToFileURL(process.argv[1]).href)main();
