@@ -4,15 +4,29 @@ on:
   push:
     branches: [main]
     paths:
+      - "autonomous-portfolio.json"
       - "tools/autonomous-development-worker.mjs"
+      - "tools/autonomous-work-planner.mjs"
+      - "tools/autonomous-candidate-review.mjs"
       - "qa/autonomous-development-worker.test.mjs"
+      - "qa/autonomous-work-planner.test.mjs"
+      - "qa/autonomous-candidate-review.test.mjs"
       - ".github/workflows/autonomous-development-worker.yml"
+      - ".github/workflows/autonomous-continuous-development.yml"
+      - ".github/workflows/autonomous-candidate-promotion.yml"
       - ".github/workflows/autonomous-development-qa.yml"
   pull_request:
     paths:
+      - "autonomous-portfolio.json"
       - "tools/autonomous-development-worker.mjs"
+      - "tools/autonomous-work-planner.mjs"
+      - "tools/autonomous-candidate-review.mjs"
       - "qa/autonomous-development-worker.test.mjs"
+      - "qa/autonomous-work-planner.test.mjs"
+      - "qa/autonomous-candidate-review.test.mjs"
       - ".github/workflows/autonomous-development-worker.yml"
+      - ".github/workflows/autonomous-continuous-development.yml"
+      - ".github/workflows/autonomous-candidate-promotion.yml"
       - ".github/workflows/autonomous-development-qa.yml"
   workflow_dispatch:
 
@@ -29,15 +43,32 @@ jobs:
         with:
           node-version: "22"
       - run: node --check tools/autonomous-development-worker.mjs
+      - run: node --check tools/autonomous-work-planner.mjs
+      - run: node --check tools/autonomous-candidate-review.mjs
       - run: node --test qa/autonomous-development-worker.test.mjs
-      - run: |
+      - run: node --test qa/autonomous-work-planner.test.mjs
+      - run: node --test qa/autonomous-candidate-review.test.mjs
+      - name: Validate autonomous contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          node -e "const p=require('./autonomous-portfolio.json'); if(p.fixedProjectCount!==false||p.paidApi!==false||p.publicStableBranch!=='main'||p.continuousDevelopmentBranch!=='autonomous-dev') process.exit(1)"
           grep -Fq 'workflow_dispatch:' .github/workflows/autonomous-development-worker.yml
           grep -Fq 'git checkout -b' .github/workflows/autonomous-development-worker.yml
           grep -Fq 'MAIN_DIRECT_WRITE=NO' .github/workflows/autonomous-development-worker.yml
           grep -Fq 'SELF_PROMOTE=NO' .github/workflows/autonomous-development-worker.yml
           grep -Fq 'PAID_API=NO' .github/workflows/autonomous-development-worker.yml
-          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/autonomous-development-worker.yml tools/autonomous-development-worker.mjs; then
+          grep -Fq "cron: '10 7 * * *'" .github/workflows/autonomous-continuous-development.yml
+          grep -Fq 'ref: autonomous-dev' .github/workflows/autonomous-continuous-development.yml
+          grep -Fq 'git merge --no-edit origin/main' .github/workflows/autonomous-continuous-development.yml
+          grep -Fq 'MODEL_CALL_BUDGET=1' .github/workflows/autonomous-continuous-development.yml
+          grep -Fq 'SELF_PROMOTE_MAIN=NO' .github/workflows/autonomous-continuous-development.yml
+          grep -Fq "'autonomous/candidate-*'" .github/workflows/autonomous-candidate-promotion.yml
+          grep -Fq 'SOURCE_REVISION_MISMATCH' .github/workflows/autonomous-candidate-promotion.yml
+          grep -Fq 'git push origin HEAD:autonomous-dev' .github/workflows/autonomous-candidate-promotion.yml
+          grep -Fq 'PUBLIC_RELEASE=NO' .github/workflows/autonomous-candidate-promotion.yml
+          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/autonomous-development-worker.yml .github/workflows/autonomous-continuous-development.yml .github/workflows/autonomous-candidate-promotion.yml tools/autonomous-development-worker.mjs tools/autonomous-work-planner.mjs; then
             echo 'paid/external key path found' >&2
             exit 1
           fi
-          echo 'AUTONOMOUS_WORKER_CONTRACT=PASS'
+          echo 'AUTONOMOUS_SYSTEM_CONTRACT=PASS'
