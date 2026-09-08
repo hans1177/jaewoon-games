@@ -8,7 +8,12 @@
     "futurePrimaryTarget": "unity-android",
     "aiDirector": {
       "mode": "rotating-local",
-      "providers": ["codex", "antigravity", "codebuddy", "copilot"],
+      "providers": [
+        "codex",
+        "antigravity",
+        "codebuddy",
+        "copilot"
+      ],
       "rotationPolicy": "stay-until-quota-auth-or-repeated-failure",
       "paidOverageAllowed": false,
       "paidApiKeysAllowed": false,
@@ -33,7 +38,12 @@
       "manageMobileLayout": true,
       "manageLinksAndStatus": true,
       "manageLowRiskFeatures": true,
-      "proposeImprovements": true
+      "proposeImprovements": true,
+      "otherGamesMayAppearOnHomepage": true,
+      "homepageLengthControl": "compact-cards-and-dedicated-artbook-detail-pages",
+      "publicationVisibilityIsProductionApproval": false,
+      "statusFile": "homepage-manager-status.json",
+      "workflow": ".github/workflows/homepage-manager.yml"
     }
   },
   "summary": {
@@ -46,9 +56,17 @@
     "homepage": {
       "manager": "homepage",
       "status": "running",
-      "task": "게임 플랫폼·개발상태 분류, 검색·필터, 모바일 배치, 링크·상태 표시, 부가기능, 디자인 및 개선 아이디어 상시 운영",
-      "scope": ["index.html", "company.html", "game-catalog.json"],
-      "lastReviewedAt": "2026-09-08"
+      "task": "게임 카드·아트북·상태·링크·모바일 UX를 짧고 정확하게 상시 관리",
+      "scope": [
+        "index.html",
+        "company.html",
+        "game-catalog.json"
+      ],
+      "lastReviewedAt": "2026-09-08",
+      "lastCheckResult": "PASS",
+      "execution": "github-actions",
+      "workflow": ".github/workflows/homepage-manager.yml",
+      "statusFile": "homepage-manager-status.json"
     },
     "ownerDirectives": {
       "source": "company-directive.json",
@@ -89,7 +107,13 @@
   "redevelopmentReview": {
     "status": "running",
     "scope": "all-existing-web-games",
-    "employees": ["planning", "development", "qa", "graphics", "balance"],
+    "employees": [
+      "planning",
+      "development",
+      "qa",
+      "graphics",
+      "balance"
+    ],
     "directorAggregates": true,
     "ownerFinalApproval": true,
     "ownerApprovalScope": "core-decisions-only",
@@ -102,17 +126,61 @@
     "currentGameId": "insect-survival",
     "currentGameName": "곤충 생존기",
     "queue": [
-      {"gameId":"daechung-rpg","name":"대충 RPG","status":"development"},
-      {"gameId":"insect-survival","name":"곤충 생존기","status":"in-review"},
-      {"gameId":"crystal-defense","name":"수정 디펜스","status":"queued"},
-      {"gameId":"bug-defense","name":"곤충 디펜스","status":"queued"},
-      {"gameId":"human-go","name":"휴먼 GO","status":"queued"},
-      {"gameId":"egg-heist","name":"알 도둑 대작전","status":"queued"},
-      {"gameId":"chess-battle","name":"체스 배틀","status":"queued"},
-      {"gameId":"monster-adventure","name":"몬스터 어드벤처","status":"queued"},
-      {"gameId":"survival","name":"나의 생존기","status":"queued"},
-      {"gameId":"survival2","name":"숲의 생존자들","status":"queued"},
-      {"gameId":"territory-war","name":"영토전쟁","status":"queued"}
+      {
+        "gameId": "daechung-rpg",
+        "name": "대충 RPG",
+        "status": "development"
+      },
+      {
+        "gameId": "insect-survival",
+        "name": "곤충 생존기",
+        "status": "in-review"
+      },
+      {
+        "gameId": "crystal-defense",
+        "name": "수정 디펜스",
+        "status": "queued"
+      },
+      {
+        "gameId": "bug-defense",
+        "name": "곤충 디펜스",
+        "status": "queued"
+      },
+      {
+        "gameId": "human-go",
+        "name": "휴먼 GO",
+        "status": "queued"
+      },
+      {
+        "gameId": "egg-heist",
+        "name": "알 도둑 대작전",
+        "status": "queued"
+      },
+      {
+        "gameId": "chess-battle",
+        "name": "체스 배틀",
+        "status": "queued"
+      },
+      {
+        "gameId": "monster-adventure",
+        "name": "몬스터 어드벤처",
+        "status": "queued"
+      },
+      {
+        "gameId": "survival",
+        "name": "나의 생존기",
+        "status": "queued"
+      },
+      {
+        "gameId": "survival2",
+        "name": "숲의 생존자들",
+        "status": "queued"
+      },
+      {
+        "gameId": "territory-war",
+        "name": "영토전쟁",
+        "status": "queued"
+      }
     ],
     "reviewResults": {
       "daechung-rpg": {
@@ -140,22 +208,70 @@
           "히든 패시브의 체력 +30%, 공격 +50%, 이동속도 +50%는 후반 밸런스 검증 필요"
         ],
         "departments": {
-          "planning": {"status":"done","score":92,"decision":"PASS","summary":"지역 탐험, 퀘스트, 전직, 장비, 히든 콘텐츠가 연결돼 RPG 재개발 가치가 높다."},
-          "development": {"status":"done","score":62,"decision":"PASS_WITH_REBUILD","summary":"기능량은 충분하지만 런타임 패치 체인이 길어 웹 코드를 직접 이식하지 말고 Unity에서 시스템별로 재구축해야 한다."},
-          "qa": {"status":"done","score":58,"decision":"PASS_WITH_FIXES","summary":"패치 간 함수/포탈 상태 충돌 위험이 있어 Unity 이전 전 기능 목록과 진행 상태 회귀 테스트가 필요하다."},
-          "graphics": {"status":"done","score":78,"decision":"PASS","summary":"Canvas 기반 지역과 몬스터 표현을 Unity 2D/3D로 확장했을 때 체감 개선 폭이 크다."},
-          "balance": {"status":"done","score":70,"decision":"PASS_WITH_TUNING","summary":"지역별 레벨/장비/보상 기반은 유지 가치가 있으나 히든 패시브와 후반 수치 상승은 재조정이 필요하다."},
-          "director": {"status":"done","score":76,"decision":"PASS","summary":"Unity Android 재개발 후보로 승인 추천. 기존 웹판 수정 없이 별도 Unity 프로젝트로 진행한다."}
+          "planning": {
+            "status": "done",
+            "score": 92,
+            "decision": "PASS",
+            "summary": "지역 탐험, 퀘스트, 전직, 장비, 히든 콘텐츠가 연결돼 RPG 재개발 가치가 높다."
+          },
+          "development": {
+            "status": "done",
+            "score": 62,
+            "decision": "PASS_WITH_REBUILD",
+            "summary": "기능량은 충분하지만 런타임 패치 체인이 길어 웹 코드를 직접 이식하지 말고 Unity에서 시스템별로 재구축해야 한다."
+          },
+          "qa": {
+            "status": "done",
+            "score": 58,
+            "decision": "PASS_WITH_FIXES",
+            "summary": "패치 간 함수/포탈 상태 충돌 위험이 있어 Unity 이전 전 기능 목록과 진행 상태 회귀 테스트가 필요하다."
+          },
+          "graphics": {
+            "status": "done",
+            "score": 78,
+            "decision": "PASS",
+            "summary": "Canvas 기반 지역과 몬스터 표현을 Unity 2D/3D로 확장했을 때 체감 개선 폭이 크다."
+          },
+          "balance": {
+            "status": "done",
+            "score": 70,
+            "decision": "PASS_WITH_TUNING",
+            "summary": "지역별 레벨/장비/보상 기반은 유지 가치가 있으나 히든 패시브와 후반 수치 상승은 재조정이 필요하다."
+          },
+          "director": {
+            "status": "done",
+            "score": 76,
+            "decision": "PASS",
+            "summary": "Unity Android 재개발 후보로 승인 추천. 기존 웹판 수정 없이 별도 Unity 프로젝트로 진행한다."
+          }
         }
       }
     },
     "departmentTasks": {
-      "planning": {"status":"running","task":"곤충 생존기 핵심 재미·게임 루프·Unity 재개발 가치 평가"},
-      "development": {"status":"running","task":"대충 RPG Unity 핵심 시스템 구현과 곤충 생존기 구조 평가 병행"},
-      "qa": {"status":"running","task":"대충 RPG Unity 데이터 이식 기준 검증과 곤충 생존기 플레이 위험 평가"},
-      "graphics": {"status":"running","task":"대충 RPG Unity 3D 전환 기준과 곤충 생존기 에셋 전환 효과 평가"},
-      "balance": {"status":"running","task":"대충 RPG 후반 수치 재조정안과 곤충 생존기 성장·보상 구조 평가"},
-      "director": {"status":"running","task":"대충 RPG 본개발 진행 관리와 다음 재평가 결과 종합"}
+      "planning": {
+        "status": "running",
+        "task": "곤충 생존기 핵심 재미·게임 루프·Unity 재개발 가치 평가"
+      },
+      "development": {
+        "status": "running",
+        "task": "대충 RPG Unity 핵심 시스템 구현과 곤충 생존기 구조 평가 병행"
+      },
+      "qa": {
+        "status": "running",
+        "task": "대충 RPG Unity 데이터 이식 기준 검증과 곤충 생존기 플레이 위험 평가"
+      },
+      "graphics": {
+        "status": "running",
+        "task": "대충 RPG Unity 3D 전환 기준과 곤충 생존기 에셋 전환 효과 평가"
+      },
+      "balance": {
+        "status": "running",
+        "task": "대충 RPG 후반 수치 재조정안과 곤충 생존기 성장·보상 구조 평가"
+      },
+      "director": {
+        "status": "running",
+        "task": "대충 RPG 본개발 진행 관리와 다음 재평가 결과 종합"
+      }
     }
   }
 }

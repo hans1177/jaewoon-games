@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "checkedAtKst": "2026. 09. 08. 11:45:50",
+  "dateKst": "2026-09-08",
+  "manager": "homepage",
+  "status": "running",
+  "policy": {
+    "otherGamesMayAppearOnHomepage": true,
+    "homepageMustStayCompact": true,
+    "preferredPattern": "short-cards -> dedicated-artbook-detail-page",
+    "artbookVisibilityIsProductionApproval": false,
+    "webArchiveWriteBack": false
+  },
+  "counts": {
+    "catalogGames": 11,
+    "artbookQueueGames": 11,
+    "publishedArtbooks": 0
+  },
+  "checks": {
+    "indexExists": true,
+    "artbookDetailExists": true,
+    "homepageEnhancementLoaded": true,
+    "compactArtbookUiPresent": true,
+    "allQueuedGamesInCatalog": true,
+    "publishedBooksReferenceCatalogGames": true,
+    "requiredArtbookRolesIntact": true,
+    "webGamesRemainReadOnly": true,
+    "autoMaintenanceEnabled": true
+  },
+  "findings": {
+    "missingCatalog": [],
+    "unknownCatalog": [],
+    "brokenBookRefs": []
+  }
+}
