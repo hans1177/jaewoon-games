@@ -8,8 +8,11 @@ on:
       - 'autonomous-portfolio.json'
       - 'tools/autonomous-new-game-incubator.mjs'
       - 'tools/autonomous-prototype-worker.mjs'
+      - 'tools/incubator-promotion-state.mjs'
       - 'qa/autonomous-new-game-incubator.test.mjs'
       - 'qa/autonomous-prototype-worker.test.mjs'
+      - 'qa/incubator-promotion-state.test.mjs'
+      - 'qa/autonomous-new-game-closed-loop.test.mjs'
       - '.github/workflows/autonomous-new-game-incubator.yml'
       - '.github/workflows/autonomous-prototype-worker.yml'
       - '.github/workflows/autonomous-candidate-promotion.yml'
@@ -19,8 +22,11 @@ on:
     paths:
       - 'tools/autonomous-new-game-incubator.mjs'
       - 'tools/autonomous-prototype-worker.mjs'
+      - 'tools/incubator-promotion-state.mjs'
       - 'qa/autonomous-new-game-incubator.test.mjs'
       - 'qa/autonomous-prototype-worker.test.mjs'
+      - 'qa/incubator-promotion-state.test.mjs'
+      - 'qa/autonomous-new-game-closed-loop.test.mjs'
       - '.github/workflows/autonomous-new-game-incubator.yml'
       - '.github/workflows/autonomous-prototype-worker.yml'
       - '.github/workflows/autonomous-candidate-promotion.yml'
@@ -44,9 +50,12 @@ jobs:
         run: |
           node --check tools/autonomous-new-game-incubator.mjs
           node --check tools/autonomous-prototype-worker.mjs
+          node --check tools/incubator-promotion-state.mjs
           node --test qa/autonomous-new-game-incubator.test.mjs
           node --test qa/autonomous-prototype-worker.test.mjs
           node --test qa/autonomous-candidate-review.test.mjs
+          node --test qa/incubator-promotion-state.test.mjs
+          node --test qa/autonomous-new-game-closed-loop.test.mjs
       - name: Validate closed-loop contracts
         shell: bash
         run: |
@@ -60,10 +69,14 @@ jobs:
             exit 1
           fi
           grep -Fq "'.autonomous/prototype-request.json'" .github/workflows/autonomous-prototype-worker.yml
-          grep -Fq 'git fetch origin autonomous-dev' .github/workflows/autonomous-prototype-worker.yml
+          grep -Fq 'git fetch origin main autonomous-dev' .github/workflows/autonomous-prototype-worker.yml
+          grep -Fq 'git merge --no-edit origin/main' .github/workflows/autonomous-prototype-worker.yml
+          grep -Fq 'git push origin HEAD:autonomous-dev' .github/workflows/autonomous-prototype-worker.yml
+          grep -Fq 'PUBLIC_MAIN_WRITE=NO' .github/workflows/autonomous-prototype-worker.yml
           grep -Fq 'PUBLIC_MAIN_BASE=NO' .github/workflows/autonomous-prototype-worker.yml
           grep -Fq 'SELF_PROMOTE=NO' .github/workflows/autonomous-prototype-worker.yml
-          grep -Fq 'PROTOTYPE_DEV_VERIFIED' .github/workflows/autonomous-candidate-promotion.yml
+          grep -Fq 'tools/incubator-promotion-state.mjs' .github/workflows/autonomous-candidate-promotion.yml
+          grep -Fq 'PROMOTED_DEV_REVISION' .github/workflows/autonomous-candidate-promotion.yml
           grep -Fq 'MAIN_GAME_CODE_WRITE=NO' .github/workflows/autonomous-candidate-promotion.yml
           grep -Fq "workflows: ['Autonomous Candidate Promotion']" .github/workflows/company-dna-learning.yml
           grep -Fq 'jayApproved===true' tools/company-dna-learning.mjs
@@ -74,6 +87,7 @@ jobs:
             echo 'real paid/external credential usage found' >&2
             exit 1
           fi
+          echo 'NEW_GAME_CLOSED_LOOP_DRY_RUN=PASS'
           echo 'NEW_GAME_CLOSED_LOOP_CONTRACT=PASS'
           echo 'PUBLIC_MAIN_GAME_CODE_AUTO_PROMOTION=NO'
           echo 'PAID_API=NO'
