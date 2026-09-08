@@ -1,0 +1,63 @@
+name: Autonomous Portfolio Continuation
+
+on:
+  workflow_run:
+    workflows: ['Autonomous Continuous Development']
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: autonomous-portfolio-continuation
+  cancel-in-progress: true
+
+jobs:
+  continue-portfolio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: autonomous-dev
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate continuation routing
+        run: |
+          node --check tools/autonomous-portfolio-continuation.mjs
+          node --test qa/autonomous-portfolio-continuation.test.mjs
+      - name: Decide next company-level work
+        id: route
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/autonomous-portfolio-continuation.mjs > /tmp/portfolio-continuation.json
+          cat /tmp/portfolio-continuation.json
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs=require('fs');const d=JSON.parse(fs.readFileSync('/tmp/portfolio-continuation.json','utf8'));
+          console.log(`action=${d.action}`);
+          console.log(`reason=${d.reason}`);
+          NODE
+      - name: Dispatch one bounded new-game concept when game queue is exhausted
+        if: steps.route.outputs.action == 'DISPATCH_INCUBATOR'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run autonomous-new-game-incubator.yml --ref main -f create_concept=true
+          echo 'PORTFOLIO_NEXT=NEW_GAME_INCUBATOR'
+          echo 'PAID_API=NO'
+          echo 'PUBLIC_RELEASE=NO'
+      - name: Summary
+        if: always()
+        run: |
+          echo "### Autonomous Portfolio Continuation" >> "$GITHUB_STEP_SUMMARY"
+          echo "- route: ${{ steps.route.outputs.action }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- reason: ${{ steps.route.outputs.reason }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- duplicate concept/day: blocked" >> "$GITHUB_STEP_SUMMARY"
+          echo "- public release: NO" >> "$GITHUB_STEP_SUMMARY"
