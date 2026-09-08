@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "requestId": "daechung-rpg-cloud-license-20260908-001",
+  "gameId": "daechung-rpg",
+  "modificationCommit": "776f8099b6c44dec1ea1c75b2672eb8158ea45e6",
+  "buildRunId": 34191899205,
+  "buildConclusion": "failure",
+  "buildStage": "Unity named-user cloud activation before project compilation",
+  "buildError": "Unity account login succeeded, entitlement license processing started, then Unity reported Code 404: 0 entitlement groups and 0 free entitlements matching requested entitlement ids; No valid Unity Editor license found; process exit code 198.",
+  "scope": "Post-modification reevaluation after replacing GameCI Personal ULF-to-serial activation with Unity 6000.6.0f1 named-user empty-serial activation in the GitHub-hosted cloud container. Prior cloud ULF-to-serial attempts failed with Code 20110 serial invalid. This request must use current repository and build evidence and must not carry forward earlier department votes."
+}
