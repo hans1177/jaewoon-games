@@ -1,6 +1,6 @@
 // 파일명: tools/vibe2-auto-planner.mjs
 // 역할: Vibe2 큐가 비었을 때 최신 회사 상태와 실제 프로젝트 소스에서 근거가 있는 저위험 다음 작업 1개를 선택한다.
-// 원칙: 핵심 결정/밸런스/세이브 의미/유료 자원/web-games 수정은 자율 생성하지 않는다.
+// 원칙: 기존 게임의 Unity 프로젝트를 최우선으로 하며 핵심 결정/밸런스/세이브 의미/유료 자원/web-games 수정은 자율 생성하지 않는다.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -37,14 +37,45 @@ function engineFromProject(project = {}) {
   if (projectPath.startsWith('godot-games/') || target.startsWith('godot')) return 'godot';
   return null;
 }
-function activeProject(status = {}) {
+function existingGameIds(status = {}) {
+  const ids = new Set();
+  const redevelopmentQueue = Array.isArray(status?.redevelopmentReview?.queue) ? status.redevelopmentReview.queue : [];
+  for (const item of redevelopmentQueue) {
+    const id = clean(item?.gameId);
+    if (id) ids.add(id);
+  }
+  for (const project of Array.isArray(status.projects) ? status.projects : []) {
+    const source = posix(project?.source);
+    const id = clean(project?.gameId);
+    if (id && source.startsWith('web-games/')) ids.add(id);
+  }
+  return ids;
+}
+function projectPriority(project, status = {}) {
+  const engine = engineFromProject(project);
+  const existing = existingGameIds(status).has(clean(project?.gameId));
+  if (existing && engine === 'unity') return 0;
+  if (existing) return 1;
+  if (engine === 'unity') return 2;
+  return 3;
+}
+function approvedProjects(status = {}) {
   const projects = Array.isArray(status.projects) ? status.projects : [];
-  return projects.find((project) => {
-    const projectPath = posix(project.projectPath);
-    return clean(project.ownerDecision).toUpperCase() === 'PASS'
-      && Boolean(engineFromProject(project))
-      && !projectPath.startsWith('web-games/');
-  }) || null;
+  return projects
+    .filter((project) => {
+      const projectPath = posix(project.projectPath);
+      return clean(project.ownerDecision).toUpperCase() === 'PASS'
+        && Boolean(engineFromProject(project))
+        && !projectPath.startsWith('web-games/');
+    })
+    .sort((a, b) => {
+      const priority = projectPriority(a, status) - projectPriority(b, status);
+      if (priority !== 0) return priority;
+      return Number(b.progress || 0) - Number(a.progress || 0);
+    });
+}
+function activeProject(status = {}) {
+  return approvedProjects(status)[0] || null;
 }
 function sourceFile(root, relative) {
   return path.join(root, ...posix(relative).split('/'));
@@ -157,7 +188,15 @@ export function planVibe2AutonomousTask({ status = {}, queue: queueInput = {}, r
   const next = findExplicitMaintenanceTask(project, repoRoot, queue);
   if (!next) return { planned: false, reason: 'NO_SAFE_AUTONOMOUS_TASK', queue, task: null, projectId: project.gameId };
   const nextQueue = createVibeContinuousQueue([...queue.tasks, next]);
-  return { planned: true, reason: 'SAFE_TASK_PLANNED', queue: nextQueue, task: next, projectId: project.gameId };
+  return {
+    planned: true,
+    reason: 'SAFE_TASK_PLANNED',
+    queue: nextQueue,
+    task: next,
+    projectId: project.gameId,
+    projectPriority: projectPriority(project, status),
+    projectPriorityPolicy: 'EXISTING_UNITY_FIRST'
+  };
 }
 
 export function runVibe2AutoPlanner({
@@ -182,5 +221,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_AUTO_PLAN=${result.planned ? 'YES' : 'NO'}`);
   console.log(`VIBE2_AUTO_PLAN_REASON=${result.reason}`);
   console.log(`VIBE2_AUTO_PLAN_PROJECT=${result.projectId || 'NONE'}`);
+  console.log(`VIBE2_AUTO_PLAN_PRIORITY=${result.projectPriorityPolicy || 'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN_TASK=${result.task?.id || 'NONE'}`);
 }
