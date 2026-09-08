@@ -12,7 +12,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: vibe2-unity-candidate-result
+  group: vibe2-control-state-${{ github.event.repository.default_branch }}
   cancel-in-progress: false
 
 jobs:
@@ -31,9 +31,10 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Reconcile candidate verification result
+      - name: Reconcile and persist candidate verification safely
         id: reconcile
         env:
+          CONTROL_BRANCH: ${{ github.event.repository.default_branch }}
           CANDIDATE_BRANCH: ${{ github.event.workflow_run.head_branch }}
           BUILD_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           BUILD_RUN_ID: ${{ github.event.workflow_run.id }}
@@ -41,36 +42,56 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node tools/vibe2-candidate-reconcile.mjs \
-            --branch="$CANDIDATE_BRANCH" \
-            --target=unity \
-            --conclusion="$BUILD_CONCLUSION" \
-            --run-id="$BUILD_RUN_ID" \
-            --head-sha="$BUILD_HEAD_SHA" | tee /tmp/vibe2-reconcile.log
-          updated=0
-          continue_work=0
-          grep -q 'VIBE2_RECONCILE_UPDATED=YES' /tmp/vibe2-reconcile.log && updated=1 || true
-          grep -q 'VIBE2_RECONCILE_CONTINUE=YES' /tmp/vibe2-reconcile.log && continue_work=1 || true
-          echo "updated=$updated" >> "$GITHUB_OUTPUT"
-          echo "continue_work=$continue_work" >> "$GITHUB_OUTPUT"
+          git config user.name 'jaewoon-vibe2-verifier'
+          git config user.email 'vibe2-verifier@users.noreply.github.com'
+
+          persisted=0
+          final_continue=0
+          for attempt in 1 2 3; do
+            echo "VIBE2_RECONCILE_ATTEMPT=$attempt/3"
+            git fetch origin "$CONTROL_BRANCH"
+            git checkout -B "$CONTROL_BRANCH" "origin/$CONTROL_BRANCH"
+
+            node tools/vibe2-candidate-reconcile.mjs \
+              --branch="$CANDIDATE_BRANCH" \
+              --target=unity \
+              --conclusion="$BUILD_CONCLUSION" \
+              --run-id="$BUILD_RUN_ID" \
+              --head-sha="$BUILD_HEAD_SHA" | tee /tmp/vibe2-reconcile.log
+
+            updated=0
+            continue_work=0
+            grep -q 'VIBE2_RECONCILE_UPDATED=YES' /tmp/vibe2-reconcile.log && updated=1 || true
+            grep -q 'VIBE2_RECONCILE_CONTINUE=YES' /tmp/vibe2-reconcile.log && continue_work=1 || true
+            if [ "$updated" != 1 ]; then
+              echo 'VIBE2_QUEUE_RESULT_COMMIT=NO_CHANGE'
+              echo 'updated=0' >> "$GITHUB_OUTPUT"
+              echo 'continue_work=0' >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            git add .vibe2/queue.json
+            if git diff --cached --quiet; then
+              echo 'VIBE2_QUEUE_RESULT_COMMIT=NO_CHANGE'
+              echo 'updated=0' >> "$GITHUB_OUTPUT"
+              echo 'continue_work=0' >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            git commit -m "vibe2: record Unity candidate verification ${BUILD_RUN_ID} [skip ci]"
+            if git push origin "HEAD:$CONTROL_BRANCH"; then
+              persisted=1
+              final_continue="$continue_work"
+              break
+            fi
+            sleep $((attempt * 2))
+          done
+
+          test "$persisted" = 1
+          echo 'updated=1' >> "$GITHUB_OUTPUT"
+          echo "continue_work=$final_continue" >> "$GITHUB_OUTPUT"
           echo 'VIBE2_AUTO_MAIN_PROMOTION=NO'
           echo 'VIBE2_AUTO_FINAL_PASS=NO'
           echo 'VIBE2_AUTO_LEARNING=NO'
-
-      - name: Persist only Vibe2 queue verification state
-        if: steps.reconcile.outputs.updated == '1'
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name 'jaewoon-vibe2-verifier'
-          git config user.email 'vibe2-verifier@users.noreply.github.com'
-          git add .vibe2/queue.json
-          if git diff --cached --quiet; then
-            echo 'VIBE2_QUEUE_RESULT_COMMIT=NO_CHANGE'
-            exit 0
-          fi
-          git commit -m "vibe2: record Unity candidate verification ${{ github.event.workflow_run.id }} [skip ci]"
-          git push origin "HEAD:${{ github.event.repository.default_branch }}"
 
       - name: Continue next independent Vibe2 work
         if: steps.reconcile.outputs.updated == '1' && steps.reconcile.outputs.continue_work == '1'
