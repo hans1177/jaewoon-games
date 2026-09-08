@@ -34,10 +34,10 @@ export function executeVibeMotionEngineEvent(event,bridge,{speed=0,facing=1,hitD
   const type=String(event.eventType||'');
   const major=event.importance==='major'||type==='boss';
   bridge.rig.setMotionState({moving:type==='move',speed,facing});
-  if(type==='attack'||type==='skill')bridge.rig.triggerAttack({strength:major?1.5:1,duration:major?.34:.24});
+  if(type==='attack'||type==='skill')bridge.rig.triggerAttack({strength:major?1.5:1,duration:major ? .34 : .24});
   if(type==='hit')bridge.rig.triggerHit({direction:hitDirection,strength:major?1.5:1});
   if(type==='spawn'||type==='death')bridge.rig.triggerLand({strength:major?1.4:.8});
-  if(type==='hit'||type==='attack'||type==='skill'||type==='boss')bridge.camera.impulse({x:(type==='hit'?hitDirection:facing)*(major?90:45),y:major?-45:-18,rotation:(major?.7:.25)*facing});
+  if(type==='hit'||type==='attack'||type==='skill'||type==='boss')bridge.camera.impulse({x:(type==='hit'?hitDirection:facing)*(major?90:45),y:major?-45:-18,rotation:(major ? .7 : .25)*facing});
   return Object.freeze({accepted:true,eventType:type,authority:'presentation-only',gameplayMutationAllowed:false,forbid:FORBID,bridgeApplied:true});
 }
 
