@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "revision": 8,
+  "revision": 9,
   "updatedAt": "2026-09-08",
   "priority": "owner-immediate",
-  "instruction": "ARTBOOK FIRST remains the production gate. Company-wide final artbook submission is capped at one combined artbook per day. For the selected game of the day, planning owns story/world/causality, graphics owns character/monster/boss/environment/UI/intro concepts, development owns implementation structure and playable-demo architecture, QA owns player-flow/problem-scene/test evidence, and balance owns progression/combat feel/reward/difficulty. Departments collaborate and exchange evidence but do not author each other's sections. The director/ChatGPT may only assemble and summarize the five submitted sections into the single daily artbook and may not invent missing content. Each game must receive one initial combined artbook containing all five department sections before formal production progression. Existing Web games and daechung-rpg code/builds are prototype evidence. Homepage exposure is not itself a production-approval gate: daechung-rpg may keep direct development-artbook exposure while other games/artbooks may appear automatically in compact collapsed/expandable pre-production UI so the homepage does not become excessively long. Homepage visibility must never be treated as formal production PASS. Artbooks remain game-specific and follow artbook-style-profiles.json; uniform templates are forbidden. Story causality is the highest quality gate. Never modify web-games source files and never use paid automation or paid runners.",
+  "instruction": "ARTBOOK FIRST remains the production gate. Company-wide final artbook submission is capped at one combined artbook per day. For the selected game of the day, planning owns story/world/causality, graphics owns character/monster/boss/environment/UI/intro concepts, development owns implementation structure and playable-demo architecture, QA owns player-flow/problem-scene/test evidence, and balance owns progression/combat feel/reward/difficulty. Departments collaborate and exchange evidence but do not author each other's sections. The director/ChatGPT may only assemble and summarize the five submitted sections into the single daily artbook and may not invent missing content. Each game must receive one initial combined artbook containing all five department sections before formal production progression. Existing Web games and daechung-rpg code/builds are prototype evidence. Homepage exposure is not itself a production-approval gate: daechung-rpg may keep direct development-artbook exposure while other games/artbooks may appear automatically in compact collapsed/expandable pre-production UI so the homepage does not become excessively long. Homepage visibility must never be treated as formal production PASS. Artbooks remain game-specific and follow artbook-style-profiles.json; uniform templates are forbidden. Story causality is the highest quality gate. Unity Android test builds use local-first hybrid routing: when the jaewoon-unity self-hosted PC runner has a recent verified heartbeat, build locally with the installed activated Unity; when it is offline or has no fresh heartbeat, use the standard GitHub-hosted GameCI cloud fallback. Cloud Unity Personal builds must use a valid Unity Hub-generated Unity_lic.ulf in UNITY_LICENSE. Never modify web-games source files and never use paid automation or paid runners.",
   "rules": [
     "new-owner-instruction-overrides-autonomous-plan",
     "artbook-first-before-formal-production",
@@ -26,6 +26,11 @@
     "other-games-may-use-compact-collapsed-preproduction-exposure",
     "homepage-visibility-does-not-equal-production-approval",
     "homepage-length-must-be-controlled-with-compact-ui",
+    "unity-build-route-local-first-cloud-fallback",
+    "local-build-requires-fresh-jaewoon-unity-heartbeat",
+    "cloud-build-used-when-local-runner-offline-or-stale",
+    "cloud-personal-license-uses-hub-generated-unity-lic-ulf",
+    "build-success-requires-non-empty-apk-and-sha256",
     "games-and-company-share-github-source-of-truth",
     "core-production-decisions-still-require-owner-decision",
     "paid-ai-paid-overage-and-paid-runners-remain-forbidden",
