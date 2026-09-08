@@ -2,6 +2,9 @@ name: Homepage Manager
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ['Free Artbook Department Bots']
+    types: [completed]
   schedule:
     - cron: '20 23 * * *' # 08:20 KST
   push:
@@ -12,6 +15,8 @@ on:
       - 'game-catalog.json'
       - 'game-artbooks.json'
       - 'artbook-submission-queue.json'
+      - 'artbook-gate-status.json'
+      - 'artbook-second-work-queue.json'
       - 'company-status.json'
       - 'public-game-health.json'
       - 'assets/homepage-enhancements.js'
@@ -19,6 +24,7 @@ on:
       - 'assets/homepage-layout-v2.css'
       - 'assets/title-*.svg'
       - 'assets/*.webp'
+      - 'artbook-submissions/**/artbook.json'
       - 'HOMEPAGE_OPERATIONS.md'
       - '.github/agents/homepage.agent.md'
       - 'tools/homepage-manager.mjs'
@@ -33,6 +39,7 @@ concurrency:
 
 jobs:
   maintain:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
