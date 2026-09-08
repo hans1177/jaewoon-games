@@ -1,5 +1,5 @@
 // 파일명: assets/homepage-enhancements.js
-// 역할: 홈페이지는 예전의 짧고 깔끔한 게임 카드 비율을 유지하고 최신 게임 데이터/링크만 사용한다.
+// 역할: 홈페이지는 예전의 거의 정사각형 게임 카드 비율을 유지하고 최신 게임 데이터/링크만 사용한다.
 // 평가·재평가 정보는 홈에서 숨기고 운영 대시보드에서 확인한다.
 const getJson=async url=>{try{const r=await fetch(`${url}${url.includes('?')?'&':'?'}ts=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));return await r.json();}catch{return null;}};
 
@@ -10,8 +10,8 @@ function installStyles(){
   style.textContent=`
 .reviews{display:none!important}
 #gameGrid.gameGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;padding:0 10px 11px!important}
-.gameCard.compactLegacyCard{min-height:142px!important;height:142px!important;border:0!important;border-radius:15px!important;overflow:hidden!important;background:#1c4255!important;box-shadow:0 5px 12px rgba(34,76,105,.18)!important;position:relative!important}
-.gameCard.compactLegacyCard .gameArt{height:142px!important;aspect-ratio:auto!important;position:relative!important;background:#1c4255!important}
+.gameCard.compactLegacyCard{aspect-ratio:1.06/1!important;min-height:0!important;height:auto!important;border:0!important;border-radius:15px!important;overflow:hidden!important;background:#1c4255!important;box-shadow:0 5px 12px rgba(34,76,105,.18)!important;position:relative!important}
+.gameCard.compactLegacyCard .gameArt{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;aspect-ratio:auto!important;background:#1c4255!important}
 .gameCard.compactLegacyCard .gameArt img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;transform:none!important}
 .gameCard.compactLegacyCard .gameArt:after{content:''!important;position:absolute!important;inset:0!important;background:linear-gradient(180deg,rgba(5,22,32,.04) 20%,rgba(6,21,34,.38) 52%,rgba(4,15,24,.94) 100%)!important;z-index:1!important}
 .gameCard.compactLegacyCard .artName{left:9px!important;right:9px!important;bottom:42px!important;z-index:3!important;color:#fff!important}
@@ -21,7 +21,7 @@ function installStyles(){
 .gameCard.compactLegacyCard .gameInfo{display:none!important}
 .compactPlay{position:absolute!important;left:9px!important;right:9px!important;bottom:8px!important;z-index:4!important;display:flex!important;align-items:center!important;justify-content:center!important;min-height:29px!important;border:0!important;border-radius:8px!important;background:linear-gradient(100deg,#5b39c9,#2876d6)!important;color:#fff!important;text-decoration:none!important;font-size:8px!important;font-weight:1000!important;text-align:center!important}
 .rollbackNotice{display:none!important}
-@media(min-width:700px){#gameGrid.gameGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}.gameCard.compactLegacyCard,.gameCard.compactLegacyCard .gameArt{height:180px!important;min-height:180px!important}.gameCard.compactLegacyCard .artName{bottom:45px!important}.gameCard.compactLegacyCard .artName b{font-size:15px!important}.compactPlay{min-height:32px!important;font-size:9px!important}}
+@media(min-width:700px){#gameGrid.gameGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}.gameCard.compactLegacyCard{aspect-ratio:1.28/1!important}.gameCard.compactLegacyCard .artName{bottom:45px!important}.gameCard.compactLegacyCard .artName b{font-size:15px!important}.compactPlay{min-height:32px!important;font-size:9px!important}}
 `;
   document.head.appendChild(style);
 }
