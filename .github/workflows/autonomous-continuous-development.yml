@@ -19,8 +19,6 @@ on:
 permissions:
   contents: write
 
-actions:
-
 concurrency:
   group: autonomous-dev-writer
   cancel-in-progress: false
