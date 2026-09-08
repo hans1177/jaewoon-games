@@ -13,9 +13,13 @@ on:
       - 'tools/autonomous-queue-state.mjs'
       - 'tools/autonomous-development-worker.mjs'
       - 'tools/autonomous-safe-edit.mjs'
+      - 'tools/autonomous-portfolio-continuation.mjs'
+      - 'tools/autonomous-new-game-incubator.mjs'
       - 'qa/autonomous-work-planner.test.mjs'
       - 'qa/autonomous-queue-state.test.mjs'
       - 'qa/autonomous-development-worker.test.mjs'
+      - 'qa/autonomous-portfolio-continuation.test.mjs'
+      - 'qa/autonomous-new-game-incubator.test.mjs'
       - 'autonomous-portfolio.json'
   workflow_dispatch:
 
@@ -31,15 +35,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Queue, planner and worker tests
+      - name: Queue, planner, worker and continuation tests
         run: |
           node --check tools/autonomous-queue-state.mjs
           node --check tools/autonomous-work-planner.mjs
           node --check tools/autonomous-development-worker.mjs
           node --check tools/autonomous-safe-edit.mjs
+          node --check tools/autonomous-portfolio-continuation.mjs
+          node --check tools/autonomous-new-game-incubator.mjs
           node --test qa/autonomous-queue-state.test.mjs
           node --test qa/autonomous-work-planner.test.mjs
           node --test qa/autonomous-development-worker.test.mjs
+          node --test qa/autonomous-portfolio-continuation.test.mjs
+          node --test qa/autonomous-new-game-incubator.test.mjs
       - name: Enforce bounded event-driven queue contract
         shell: bash
         run: |
@@ -51,6 +59,7 @@ jobs:
           const continuation=fs.readFileSync('.github/workflows/autonomous-portfolio-continuation.yml','utf8');
           const incubator=fs.readFileSync('.github/workflows/autonomous-new-game-incubator.yml','utf8');
           const worker=fs.readFileSync('tools/autonomous-development-worker.mjs','utf8');
+          const incubatorTool=fs.readFileSync('tools/autonomous-new-game-incubator.mjs','utf8');
           const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
           const must=(ok,msg)=>{if(!ok)throw new Error(msg)};
           must(portfolio.paidApi===false,'paidApi must remain false');
@@ -60,10 +69,10 @@ jobs:
           must(continuous.includes('actions: write'),'continuous workflow dispatch permission missing');
           must(continuous.includes("AUTONOMOUS_MODEL_MAX_PREDICT: '1536'"),'CPU model output bound missing');
           must(continuous.includes("AUTONOMOUS_MODEL_TIMEOUT_MS: '240000'"),'CPU model timeout bound missing');
-          must(continuous.includes('Reserve this game once for today'), 'queue reservation missing');
-          must(continuous.indexOf('Verified free budget preflight') < continuous.indexOf('Reserve this game once for today'), 'budget preflight must precede reservation');
-          must(continuous.indexOf('Reserve this game once for today') < continuous.indexOf('Install local Ollama'), 'reservation must precede model work');
-          must(continuous.includes('same game per KST day: max 1 reservation'), 'same-game daily bound missing');
+          must(continuous.includes('Reserve this game once for today'),'queue reservation missing');
+          must(continuous.indexOf('Verified free budget preflight') < continuous.indexOf('Reserve this game once for today'),'budget preflight must precede reservation');
+          must(continuous.indexOf('Reserve this game once for today') < continuous.indexOf('Install local Ollama'),'reservation must precede model work');
+          must(continuous.includes('same game per KST day: max 1 reservation'),'same-game daily bound missing');
           must(continuous.includes("steps.order.outputs.reason == 'NO_UNPROCESSED_WORK_TODAY'"),'exhausted queue condition missing');
           must(continuous.includes('gh workflow run autonomous-portfolio-continuation.yml --ref main'),'direct portfolio handoff missing');
           must(continuous.includes('PORTFOLIO_CONTINUATION=DISPATCHED'),'portfolio handoff evidence missing');
@@ -72,12 +81,18 @@ jobs:
           must(worker.includes('stream:true'),'Ollama response must be streamed');
           must(worker.includes("modelTransport:'NDJSON_STREAM'"),'stream transport evidence missing');
           must(worker.includes('modelNormalization:candidate.normalization'),'deterministic model-normalization evidence missing');
+          must(continuation.includes('workflow_dispatch:'),'portfolio continuation must be explicitly dispatched');
+          must(!continuation.includes('workflow_run:'),'portfolio continuation must not have duplicate workflow_run trigger');
           must(continuation.includes("gh workflow run autonomous-new-game-incubator.yml --ref main -f create_concept=true"),'portfolio to incubator dispatch missing');
           must(incubator.includes('created_today'),'duplicate new concept daily guard missing');
-          must(promotion.includes('actions: write'), 'promotion workflow dispatch permission missing');
-          must(promotion.includes('gh workflow run autonomous-continuous-development.yml --ref main'), 'immediate next-work dispatch missing');
-          must(promotion.includes('if: always()'), 'queue continuation must survive candidate rejection');
-          must(promotion.includes('public game main promotion: NO'), 'public main promotion guard missing');
-          must(!promotion.includes('PUBLIC_RELEASE=YES'), 'public release must never be automatic');
+          must(incubator.includes("INCUBATOR_MODEL_MAX_PREDICT: '1536'"),'incubator CPU output bound missing');
+          must(incubator.includes("INCUBATOR_MODEL_TIMEOUT_MS: '240000'"),'incubator CPU timeout bound missing');
+          must(incubatorTool.includes("if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)"),'incubator import-safe guard missing');
+          must(incubatorTool.includes('stream:true'),'incubator model response must be streamed');
+          must(promotion.includes('actions: write'),'promotion workflow dispatch permission missing');
+          must(promotion.includes('gh workflow run autonomous-continuous-development.yml --ref main'),'immediate next-work dispatch missing');
+          must(promotion.includes('if: always()'),'queue continuation must survive candidate rejection');
+          must(promotion.includes('public game main promotion: NO'),'public main promotion guard missing');
+          must(!promotion.includes('PUBLIC_RELEASE=YES'),'public release must never be automatic');
           console.log('CONTINUOUS_QUEUE_CONTRACT=PASS');
           NODE
