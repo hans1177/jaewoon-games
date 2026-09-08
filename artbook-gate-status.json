@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "checkedAt": "2026-09-08T02:24:34.774Z",
+  "version": 2,
+  "checkedAt": "2026-09-08T02:26:46.170Z",
   "date": "2026-09-08",
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
@@ -42,7 +42,42 @@
     }
   ],
   "invalid": [],
+  "independentRoundComplete": false,
+  "reviewReadyRoles": [],
+  "reviewReadyCount": 0,
+  "reviewRequiredCount": 5,
+  "reviewMissing": [
+    {
+      "role": "planning",
+      "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/planning.json",
+      "reason": "missing-review"
+    },
+    {
+      "role": "graphics",
+      "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/graphics.json",
+      "reason": "missing-review"
+    },
+    {
+      "role": "development",
+      "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/development.json",
+      "reason": "missing-review"
+    },
+    {
+      "role": "qa",
+      "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/qa.json",
+      "reason": "missing-review"
+    },
+    {
+      "role": "balance",
+      "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/balance.json",
+      "reason": "missing-review"
+    }
+  ],
+  "reviewInvalid": [],
+  "collaborationProtocol": "AGREE_COUNTER_TEST_RESULT_DECISION",
+  "collaborationComplete": false,
   "readyForDirectorAssembly": false,
   "directorMayAuthorMissingSections": false,
+  "directorMayAuthorMissingReviews": false,
   "formalProductionGate": "BLOCKED_WAITING_FOR_REAL_DEPARTMENT_SUBMISSIONS"
 }
