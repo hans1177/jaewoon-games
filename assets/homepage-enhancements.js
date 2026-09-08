@@ -218,7 +218,7 @@ function buildTeam(){
   if(!company)return;
   company.className='panel teamPanel';
   company.innerHTML=`
-    <div class="sectionHead"><h2>개발팀</h2><span>Developer 한재운 + AI 개발진</span></div>
+    <div class="sectionHead"><h2 aria-hidden="true"></h2><span>Developer 한재운 + AI 개발진</span></div>
     <div class="teamWrap">
       <div class="teamOwner">
         <img src="assets/developer-original.jpg" alt="개발자 한재운" loading="lazy">
