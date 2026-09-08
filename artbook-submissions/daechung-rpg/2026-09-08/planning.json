@@ -1,0 +1,128 @@
+{
+  "version": 4,
+  "gameId": "daechung-rpg",
+  "date": "2026-09-08",
+  "department": "planning",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false
+  },
+  "headline": "DAECHUNG RPG Independent Artbook Review",
+  "evidence": [
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-core18.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v15.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v16.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v17.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v18-reaper.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v18.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/rpg.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-08-daechung-rpg.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "items": [
+      {
+        "title": "World Evidence",
+        "content": [
+          "The game includes predefined regions with IDs and names, indicating a structured world. Regions are defined with enemy types, which suggests a logical world-building framework."
+        ]
+      },
+      {
+        "title": "Protagonist Motivation Evidence",
+        "content": [
+          "The game's code defines variables like currentRegionId, which could indicate the protagonist's journey. The story focuses on quests and quest steps, suggesting a clear motivation for the protagonist's actions."
+        ]
+      },
+      {
+        "title": "Region Causality",
+        "content": [
+          "Regions are connected through their IDs and enemy definitions, showing a coherent world structure. The story should logically follow the protagonist's path through these regions."
+        ]
+      },
+      {
+        "title": "Story Gameplay Connection",
+        "content": [
+          "The game's code includes quest definitions and region IDs, which should support the story's progression. The story should naturally lead to the protagonist's journey through these elements."
+        ]
+      },
+      {
+        "title": "Gaps",
+        "content": [
+          "The game's code may lack specific details about the protagonist's motivations or the story's depth. Further development is needed to fully explore the narrative."
+        ]
+      },
+      {
+        "title": "Handoffs",
+        "content": [
+          "Each section transitions smoothly, ensuring a cohesive flow between the world, protagonist, and story elements."
+        ]
+      }
+    ]
+  },
+  "unverified": [],
+  "cuts": [
+    {
+      "kind": "planning",
+      "title": "DAECHUNG RPG Independent Artbook Review",
+      "body": "DAECHUNG RPG Independent Artbook Review",
+      "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/planning.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "UNITY_PLUS_WEB_ARCHIVE",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "shortJsonRetryEnabled": true,
+    "policyBlocks": []
+  }
+}

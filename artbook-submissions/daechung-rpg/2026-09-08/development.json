@@ -1,0 +1,108 @@
+{
+  "version": 4,
+  "gameId": "daechung-rpg",
+  "date": "2026-09-08",
+  "department": "development",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false
+  },
+  "headline": "RPG Development Artbook Review - Unity + Web Archive",
+  "evidence": [
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-core18.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v15.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v16.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v17.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v18-reaper.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v18.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/rpg.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-08-daechung-rpg.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "implementedNow": true,
+    "architecture": "Unity-based game core with Web Archive integration, modular structure for prototype development",
+    "prototypeLimits": [
+      "Testing phases for core mechanics",
+      "Scalable architecture for future expansion"
+    ],
+    "technicalRisks": [
+      "Potential Unity license conflicts during production",
+      "Performance optimization requirements for large-scale deployment"
+    ],
+    "demoPlan": [
+      "Beta testing in Unity environment",
+      "Web-based demo with interactive visualizations"
+    ],
+    "handoffs": [
+      "Close coordination with Unity development team",
+      "Communication of technical risks to stakeholders"
+    ]
+  },
+  "unverified": [],
+  "cuts": [
+    {
+      "kind": "development",
+      "title": "RPG Development Artbook Review - Unity + Web Archive",
+      "body": "RPG Development Artbook Review - Unity + Web Archive",
+      "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/development.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "UNITY_PLUS_WEB_ARCHIVE",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "shortJsonRetryEnabled": true,
+    "policyBlocks": []
+  }
+}

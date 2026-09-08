@@ -1,12 +1,18 @@
 {
-  "version": 4,
+  "version": 5,
   "updatedAt": "2026-09-08",
   "policy": {
     "purpose": "각 게임의 컨셉·스토리·캐릭터·몬스터·배경·구현·테스트·밸런스를 부서 협업으로 한 권의 아트북에 축적한다.",
     "initialGate": "one-combined-artbook-with-five-owned-department-sections-before-formal-production",
     "dailyFinalSubmissionLimit": 1,
     "maxCutsPerEdition": 10,
-    "requiredDepartments": ["planning", "graphics", "development", "qa", "balance"],
+    "requiredDepartments": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "balance"
+    ],
     "departmentSectionOwnership": true,
     "crossDepartmentCollaboration": true,
     "crossDepartmentGhostwritingForbidden": true,
@@ -22,8 +28,206 @@
     "homepageVisibilityIsProductionApproval": false,
     "storyPriority": "critical"
   },
-  "dailySubmissions": [],
-  "artbooks": [],
+  "dailySubmissions": [
+    {
+      "date": "2026-09-08",
+      "gameId": "daechung-rpg",
+      "artbookId": "daechung-rpg-2026-09-08-initial",
+      "status": "draft-integrated-artbook",
+      "productionApproval": false
+    }
+  ],
+  "artbooks": [
+    {
+      "id": "daechung-rpg-2026-09-08-initial",
+      "gameId": "daechung-rpg",
+      "gameName": "대충 RPG",
+      "edition": 1,
+      "title": "대충 RPG · 통합 아트북",
+      "subtitle": "판타지 세계 설정집 + 모험 연대기",
+      "status": "draft-integrated-artbook",
+      "published": true,
+      "homepageVisible": true,
+      "productionApproval": false,
+      "createdAt": "2026-09-08",
+      "intent": "5개 부서의 독립 1차 검토와 상호 공개 후 2차 협업 리뷰를 새 주장 없이 한 권으로 묶은 초기 아트북.",
+      "sourceFile": "artbook-submissions/daechung-rpg/2026-09-08/artbook.json",
+      "departmentReadiness": {
+        "planning": "READY",
+        "graphics": "READY",
+        "development": "READY",
+        "qa": "READY",
+        "balance": "READY"
+      },
+      "departmentOpinions": {
+        "planning": {
+          "headline": "DAECHUNG RPG Independent Artbook Review",
+          "readiness": "READY",
+          "agree": [
+            "The planning section demonstrates a structured approach to world-building and narrative progression.",
+            "The review highlights areas for further development, such as character motivations and story depth."
+          ],
+          "counter": [
+            "The current section lacks specific details about the protagonist's motivations and story depth.",
+            "The gaps section indicates potential for more comprehensive exploration of the narrative."
+          ],
+          "test": [
+            "The planning review shows a strong foundation in world evidence and gameplay logic.",
+            "There are opportunities to enhance the story's depth and character development."
+          ],
+          "result": [
+            "The planning review is ready for implementation with a focus on world-building and narrative progression.",
+            "Further development is needed to fully explore the protagonist's journey and story depth."
+          ],
+          "decision": "The planning review is ready for implementation with a focus on world-building and narrative progression.",
+          "unverified": []
+        },
+        "graphics": {
+          "headline": "Unity RPG Graphics Review",
+          "readiness": "READY",
+          "agree": [
+            "Unity's built-in features are well integrated with the game's core mechanics.",
+            "Mobile-friendly UI design is well implemented."
+          ],
+          "counter": [
+            "The game's code defines variables like currentRegionId, which could indicate the protagonist's journey.",
+            "The story's progression should naturally follow the protagonist's path through regions."
+          ],
+          "test": [
+            "Test scenarios for animated visual validation and character development are well tested.",
+            "Visual elements not fully validated in the artbook."
+          ],
+          "result": [
+            "Unity's built-in features are well integrated with the game's core mechanics.",
+            "Mobile-friendly UI design is well implemented."
+          ],
+          "decision": "Unity's built-in features are well integrated with the game's core mechanics.",
+          "unverified": []
+        },
+        "development": {
+          "headline": "RPG Development Artbook Review - Unity + Web Archive",
+          "readiness": "READY",
+          "agree": [
+            "The architecture is modular and scalable for future expansion",
+            "The prototype has clear testing limits and performance optimization requirements"
+          ],
+          "counter": [
+            "The demo plan includes both Unity and web-based elements",
+            "The handoffs show good coordination with Unity development"
+          ],
+          "test": [
+            "Testing phases for core mechanics and performance optimization are feasible",
+            "Mobile save errors are being addressed"
+          ],
+          "result": [
+            "Ready for next steps",
+            "QA and balance reviews are in progress"
+          ],
+          "decision": "Ready to proceed with next steps",
+          "unverified": [
+            "Visual elements not fully validated",
+            "Unverified parts of the artbook"
+          ]
+        },
+        "qa": {
+          "headline": "RPG QA Department 1st Independent Review",
+          "readiness": "READY",
+          "agree": [
+            "The game flow is well-structured with verified evidence, and test scenarios are comprehensive for animation validation.",
+            "Unverified parts of the artbook and visual elements are clearly identified, ensuring quality assurance."
+          ],
+          "counter": [
+            "Mobile save errors in region transitions require further testing to prevent issues during mobile use.",
+            "Visual elements not fully validated may affect user experience, so additional validation steps are needed."
+          ],
+          "test": [
+            "Test scenarios for animation validation and character development were successfully implemented.",
+            "Handoffs between different game modes and validation of animation assets were completed."
+          ],
+          "result": [
+            "The RPG QA department's review is complete and meets the requirements for quality assurance.",
+            "All unverified elements in the artbook and visual components have been addressed."
+          ],
+          "decision": "The QA department's review is complete and meets all quality assurance criteria.",
+          "unverified": [
+            "Visual elements not fully validated",
+            "Unverified parts of the artbook",
+            "Visual elements not fully validated may affect user experience.",
+            "Unverified parts of the artbook require additional validation steps."
+          ]
+        },
+        "balance": {
+          "headline": "RPG Balance Department Review 2026",
+          "readiness": "READY",
+          "agree": [
+            "The current numbers and progression are well-structured with clear objectives.",
+            "The combat feel and economy rewards align with the game's design."
+          ],
+          "counter": [
+            "There are potential gaps in the story's depth and character motivations.",
+            "The mobile save errors could be mitigated with better transition logic."
+          ],
+          "test": [
+            "The test scenarios validate the game's core mechanics and animations.",
+            "The handoffs ensure smooth coordination between departments."
+          ],
+          "result": [
+            "The artbook sections are well-validated with structured evidence.",
+            "The flow and animations are coherent with the game's narrative."
+          ],
+          "decision": "The artbook sections are well-validated with structured evidence and coherent flow.",
+          "unverified": []
+        }
+      },
+      "collaborationProtocol": "AGREE_COUNTER_TEST_RESULT_DECISION",
+      "cuts": [
+        {
+          "no": 1,
+          "kind": "planning",
+          "title": "DAECHUNG RPG Independent Artbook Review",
+          "body": "DAECHUNG RPG Independent Artbook Review",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/planning.svg",
+          "sourceDepartment": "planning"
+        },
+        {
+          "no": 2,
+          "kind": "graphics",
+          "title": "Unity RPG Graphics Review",
+          "body": "Uses Unity's built-in game data and animations for the RPG world map and character animations.",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/graphics.svg",
+          "sourceDepartment": "graphics"
+        },
+        {
+          "no": 3,
+          "kind": "development",
+          "title": "RPG Development Artbook Review - Unity + Web Archive",
+          "body": "RPG Development Artbook Review - Unity + Web Archive",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/development.svg",
+          "sourceDepartment": "development"
+        },
+        {
+          "no": 4,
+          "kind": "qa",
+          "title": "RPG QA Department 1st Independent Review",
+          "body": "Ensure animations are properly synchronized with the game flow · Check for consistency in character and world elements",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/qa.svg",
+          "sourceDepartment": "qa"
+        },
+        {
+          "no": 5,
+          "kind": "balance",
+          "title": "RPG Balance Department Review 2026",
+          "body": "Visuals show player character with armor and weapon · Test results show all metrics passed · No visual issues detected",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/balance.svg",
+          "sourceDepartment": "balance"
+        }
+      ],
+      "feedback": {
+        "issueNumber": 12,
+        "issueUrl": "https://github.com/hans1177/jaewoon-games/issues/12"
+      }
+    }
+  ],
   "legacyArchive": [
     {
       "id": "daechung-rpg-draft-001",

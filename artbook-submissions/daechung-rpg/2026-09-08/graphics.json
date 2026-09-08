@@ -1,0 +1,113 @@
+{
+  "version": 4,
+  "gameId": "daechung-rpg",
+  "date": "2026-09-08",
+  "department": "graphics",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false
+  },
+  "headline": "Unity RPG Graphics Review",
+  "evidence": [
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-core18.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v15.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v16.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v17.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v18-reaper.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v18.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/rpg.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-08-daechung-rpg.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "items": [
+      {
+        "currentVisualEvidence": "Unity's built-in game core and prototype assets are used for the RPG world map, character animations, and visual elements."
+      },
+      {
+        "identityDirection": "Focuses on the story's progression through regions, characters, and world-building."
+      },
+      {
+        "characterMonsterEnvironmentLogic": "Integrates world maps, character development, and environment logic to create a coherent narrative."
+      },
+      {
+        "mobileReadability": "Designed with mobile-friendly UI and visual elements in mind."
+      },
+      {
+        "assetConstraints": "Uses Unity's built-in features for game data and animations."
+      },
+      {
+        "gaps": "Identifies areas for further development, such as character design and story depth."
+      },
+      {
+        "handoffs": "Ensures seamless handoff between different game development stages."
+      }
+    ]
+  },
+  "unverified": [],
+  "cuts": [
+    {
+      "kind": "graphics",
+      "title": "Unity RPG Graphics Review",
+      "body": "Uses Unity's built-in game data and animations for the RPG world map and character animations.",
+      "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/graphics.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "UNITY_PLUS_WEB_ARCHIVE",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "shortJsonRetryEnabled": true,
+    "policyBlocks": []
+  }
+}

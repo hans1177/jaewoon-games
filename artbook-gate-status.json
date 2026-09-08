@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "checkedAt": "2026-09-08T02:32:10.038Z",
+  "checkedAt": "2026-09-08T04:38:00.695Z",
   "date": "2026-09-08",
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
@@ -11,73 +11,39 @@
     "qa",
     "balance"
   ],
-  "readyRoles": [],
-  "readyCount": 0,
+  "readyRoles": [
+    "planning",
+    "graphics",
+    "development",
+    "qa",
+    "balance"
+  ],
+  "readyCount": 5,
   "requiredCount": 5,
-  "missing": [
-    {
-      "role": "planning",
-      "file": "artbook-submissions/daechung-rpg/2026-09-08/planning.json",
-      "reason": "missing-file"
-    },
-    {
-      "role": "graphics",
-      "file": "artbook-submissions/daechung-rpg/2026-09-08/graphics.json",
-      "reason": "missing-file"
-    },
-    {
-      "role": "development",
-      "file": "artbook-submissions/daechung-rpg/2026-09-08/development.json",
-      "reason": "missing-file"
-    },
-    {
-      "role": "qa",
-      "file": "artbook-submissions/daechung-rpg/2026-09-08/qa.json",
-      "reason": "missing-file"
-    },
-    {
-      "role": "balance",
-      "file": "artbook-submissions/daechung-rpg/2026-09-08/balance.json",
-      "reason": "missing-file"
-    }
-  ],
+  "missing": [],
   "invalid": [],
-  "independentRoundComplete": false,
-  "reviewReadyRoles": [],
-  "reviewReadyCount": 0,
-  "reviewRequiredCount": 5,
-  "reviewMissing": [
-    {
-      "role": "planning",
-      "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/planning.json",
-      "reason": "missing-review"
-    },
-    {
-      "role": "graphics",
-      "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/graphics.json",
-      "reason": "missing-review"
-    },
-    {
-      "role": "development",
-      "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/development.json",
-      "reason": "missing-review"
-    },
-    {
-      "role": "qa",
-      "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/qa.json",
-      "reason": "missing-review"
-    },
-    {
-      "role": "balance",
-      "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/balance.json",
-      "reason": "missing-review"
-    }
+  "independentRoundComplete": true,
+  "reviewReadyRoles": [
+    "planning",
+    "graphics",
+    "development",
+    "qa",
+    "balance"
   ],
+  "reviewReadyCount": 5,
+  "reviewRequiredCount": 5,
+  "reviewMissing": [],
   "reviewInvalid": [],
   "collaborationProtocol": "AGREE_COUNTER_TEST_RESULT_DECISION",
-  "collaborationComplete": false,
-  "readyForDirectorAssembly": false,
+  "collaborationComplete": true,
+  "readyForDirectorAssembly": true,
   "directorMayAuthorMissingSections": false,
   "directorMayAuthorMissingReviews": false,
-  "formalProductionGate": "BLOCKED_WAITING_FOR_REAL_DEPARTMENT_SUBMISSIONS"
+  "formalProductionGate": "INITIAL_ARTBOOK_ASSEMBLED_AWAITING_OWNER_PRODUCTION_DECISION",
+  "assembled": true,
+  "assembledFile": "artbook-submissions/daechung-rpg/2026-09-08/artbook.json",
+  "registeredArtbookId": "daechung-rpg-2026-09-08-initial",
+  "homepagePublished": true,
+  "departmentOpinionsPublished": true,
+  "assemblyAddsNewClaims": false
 }

@@ -6,7 +6,13 @@
   "dailyFinalSubmissionLimit": 1,
   "styleSource": "artbook-style-profiles.json",
   "submissionContract": "ARTBOOK_SUBMISSION_CONTRACT.md",
-  "requiredRoles": ["planning", "graphics", "development", "qa", "balance"],
+  "requiredRoles": [
+    "planning",
+    "graphics",
+    "development",
+    "qa",
+    "balance"
+  ],
   "sectionOwnership": {
     "planning": "story-world-causality",
     "graphics": "character-monster-boss-environment-ui-intro-concept",
@@ -24,11 +30,11 @@
   "currentDailyTarget": "daechung-rpg",
   "currentTargetExecution": {
     "date": "2026-09-08",
-    "readySections": 0,
+    "readySections": 5,
     "requiredSections": 5,
-    "readyReviews": 0,
+    "readyReviews": 5,
     "requiredReviews": 5,
-    "directorAssemblyReady": false,
+    "directorAssemblyReady": true,
     "departmentIssues": {
       "planning": 7,
       "graphics": 8,
@@ -37,7 +43,7 @@
       "balance": 11
     },
     "feedbackIssue": 12,
-    "runnerDispatch": "FREE_LOCAL_OPEN_MODEL_RUNNING",
+    "runnerDispatch": "FREE_LOCAL_OPEN_MODEL_COMPLETE",
     "runnerWorkflow": ".github/workflows/artbook-free-department-bots.yml",
     "runnerModel": "qwen3:0.6b",
     "runnerPaidApi": false,
@@ -50,7 +56,8 @@
     "automaticFlow": "5_INDEPENDENT_SECTIONS -> REVEAL -> 5_COLLAB_REVIEWS -> VALIDATE -> ASSEMBLE_VERBATIM -> OWNER_PRODUCTION_DECISION",
     "assemblyAddsNewClaims": false,
     "assemblyGrantsProductionApproval": false,
-    "infrastructureReady": true
+    "infrastructureReady": true,
+    "departmentOpinionsPublished": true
   },
   "queueOrder": [
     "daechung-rpg",
@@ -66,16 +73,121 @@
     "territory-war"
   ],
   "games": [
-    {"gameId":"daechung-rpg","name":"대충 RPG","source":"web-games/daechung-rpg + unity-games/daechung-rpg","status":"DAILY_TARGET_FREE_DEPARTMENT_BOTS_RUNNING","sectionsReady":[],"requiredSections":5,"reviewsReady":[],"requiredReviews":5,"styleProfile":"판타지 세계 설정집 + 모험 연대기","existingUnityWork":"preserve-as-prototype-evidence","currentStage":"artbook-department-review","directorAssemblyReady":false},
-    {"gameId":"insect-survival","name":"곤충 생존기","source":"web-games/insect-survival","status":"QUEUED","sectionsReady":[],"requiredSections":5,"styleProfile":"생태 탐사일지 + 생존 현장 기록"},
-    {"gameId":"crystal-defense","name":"수정 디펜스","source":"web-games/crystal-defense","status":"QUEUED","sectionsReady":[],"requiredSections":5,"styleProfile":"마력 방어선 설계서 + 침공 기록"},
-    {"gameId":"bug-defense","name":"곤충 디펜스","source":"web-games/bug-defense","status":"QUEUED","sectionsReady":[],"requiredSections":5,"styleProfile":"곤충 전쟁사 + 병종 작전기록"},
-    {"gameId":"human-go","name":"휴먼 GO","source":"web-games/human-go","status":"QUEUED","sectionsReady":[],"requiredSections":5,"styleProfile":"인물 수집도감 + 성장 계보집"},
-    {"gameId":"egg-heist","name":"알 도둑 대작전","source":"web-games/egg-heist","status":"QUEUED","sectionsReady":[],"requiredSections":5,"styleProfile":"침투 작전 파일 + 부화 생물 관찰일지"},
-    {"gameId":"chess-battle","name":"체스 배틀","source":"web-games/chess-battle","status":"QUEUED","sectionsReady":[],"requiredSections":5,"styleProfile":"전술 교본 + 전장 연대기"},
-    {"gameId":"monster-adventure","name":"몬스터 어드벤처","source":"web-games/monster-adventure","status":"QUEUED","sectionsReady":[],"requiredSections":5,"styleProfile":"몬스터 생태도감 + 여행 탐험기"},
-    {"gameId":"survival","name":"나의 생존기","source":"web-games/survival","status":"QUEUED","sectionsReady":[],"requiredSections":5,"styleProfile":"개인 생존수첩 + 제작 설계 노트"},
-    {"gameId":"survival2","name":"숲의 생존자들","source":"web-games/survival2","status":"QUEUED","sectionsReady":[],"requiredSections":5,"styleProfile":"생존 공동체 기록 + 동료 관계 일지"},
-    {"gameId":"territory-war","name":"영토전쟁","source":"web-games/territory-war","status":"QUEUED","sectionsReady":[],"requiredSections":5,"styleProfile":"세력사 + 전쟁 지도첩"}
+    {
+      "gameId": "daechung-rpg",
+      "name": "대충 RPG",
+      "source": "web-games/daechung-rpg + unity-games/daechung-rpg",
+      "status": "INITIAL_ARTBOOK_ASSEMBLED_AWAITING_OWNER_DECISION",
+      "sectionsReady": [
+        "planning",
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ],
+      "requiredSections": 5,
+      "reviewsReady": [
+        "planning",
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ],
+      "requiredReviews": 5,
+      "styleProfile": "판타지 세계 설정집 + 모험 연대기",
+      "existingUnityWork": "preserve-as-prototype-evidence",
+      "currentStage": "initial-artbook-assembled-awaiting-owner-decision",
+      "directorAssemblyReady": true
+    },
+    {
+      "gameId": "insect-survival",
+      "name": "곤충 생존기",
+      "source": "web-games/insect-survival",
+      "status": "QUEUED",
+      "sectionsReady": [],
+      "requiredSections": 5,
+      "styleProfile": "생태 탐사일지 + 생존 현장 기록"
+    },
+    {
+      "gameId": "crystal-defense",
+      "name": "수정 디펜스",
+      "source": "web-games/crystal-defense",
+      "status": "QUEUED",
+      "sectionsReady": [],
+      "requiredSections": 5,
+      "styleProfile": "마력 방어선 설계서 + 침공 기록"
+    },
+    {
+      "gameId": "bug-defense",
+      "name": "곤충 디펜스",
+      "source": "web-games/bug-defense",
+      "status": "QUEUED",
+      "sectionsReady": [],
+      "requiredSections": 5,
+      "styleProfile": "곤충 전쟁사 + 병종 작전기록"
+    },
+    {
+      "gameId": "human-go",
+      "name": "휴먼 GO",
+      "source": "web-games/human-go",
+      "status": "QUEUED",
+      "sectionsReady": [],
+      "requiredSections": 5,
+      "styleProfile": "인물 수집도감 + 성장 계보집"
+    },
+    {
+      "gameId": "egg-heist",
+      "name": "알 도둑 대작전",
+      "source": "web-games/egg-heist",
+      "status": "QUEUED",
+      "sectionsReady": [],
+      "requiredSections": 5,
+      "styleProfile": "침투 작전 파일 + 부화 생물 관찰일지"
+    },
+    {
+      "gameId": "chess-battle",
+      "name": "체스 배틀",
+      "source": "web-games/chess-battle",
+      "status": "QUEUED",
+      "sectionsReady": [],
+      "requiredSections": 5,
+      "styleProfile": "전술 교본 + 전장 연대기"
+    },
+    {
+      "gameId": "monster-adventure",
+      "name": "몬스터 어드벤처",
+      "source": "web-games/monster-adventure",
+      "status": "QUEUED",
+      "sectionsReady": [],
+      "requiredSections": 5,
+      "styleProfile": "몬스터 생태도감 + 여행 탐험기"
+    },
+    {
+      "gameId": "survival",
+      "name": "나의 생존기",
+      "source": "web-games/survival",
+      "status": "QUEUED",
+      "sectionsReady": [],
+      "requiredSections": 5,
+      "styleProfile": "개인 생존수첩 + 제작 설계 노트"
+    },
+    {
+      "gameId": "survival2",
+      "name": "숲의 생존자들",
+      "source": "web-games/survival2",
+      "status": "QUEUED",
+      "sectionsReady": [],
+      "requiredSections": 5,
+      "styleProfile": "생존 공동체 기록 + 동료 관계 일지"
+    },
+    {
+      "gameId": "territory-war",
+      "name": "영토전쟁",
+      "source": "web-games/territory-war",
+      "status": "QUEUED",
+      "sectionsReady": [],
+      "requiredSections": 5,
+      "styleProfile": "세력사 + 전쟁 지도첩"
+    }
   ]
 }
