@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "updatedAt": "2026-09-07T22:30:07.614Z",
+  "version": 2,
+  "updatedAt": "2026-09-08T04:36:26.781Z",
   "policy": {
     "scope": "homepage-published-games",
     "scoreRange": [
@@ -10,6 +10,8 @@
     "criticalBelow": 55,
     "warningBelow": 75,
     "healthyAtLeast": 75,
+    "forcedWarningOnConsoleOrSameOriginFailure": true,
+    "forcedCriticalOnNavigationPageErrorOrNoContentSignal": true,
     "webArchiveMutation": "forbidden",
     "autoRollbackDisplay": true,
     "rollbackRequiresVerifiedHealthyBaseline": true
@@ -19,17 +21,33 @@
       "gameId": "insect-survival",
       "name": "곤충 생존기",
       "status": "healthy",
-      "score": 90,
-      "checkedAt": "2026-09-07T22:30:07.614Z",
+      "score": 100,
+      "calculatedScore": 100,
+      "healthReason": "no-blocking-smoke-errors",
+      "checkedAt": "2026-09-08T04:36:26.781Z",
       "url": "http://127.0.0.1:4173/web-games/insect-survival/",
       "dimensions": {
-        "runtime": 15,
+        "runtime": 25,
         "errors": 25,
         "mobile": 15,
         "interaction": 15,
         "assets": 10,
         "reload": 10,
         "storage": "not-detected"
+      },
+      "signals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "renderedTextLength": 0,
+        "canvasCount": 0,
+        "interactiveCount": 0,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "trend": {
+        "previousScore": 90,
+        "scoreDelta": 10
       },
       "issues": [],
       "failedRequestCount": 0,
@@ -41,7 +59,9 @@
       "name": "수정 디펜스",
       "status": "healthy",
       "score": 100,
-      "checkedAt": "2026-09-07T22:30:07.614Z",
+      "calculatedScore": 100,
+      "healthReason": "no-blocking-smoke-errors",
+      "checkedAt": "2026-09-08T04:36:26.781Z",
       "url": "http://127.0.0.1:4173/web-games/crystal-defense/",
       "dimensions": {
         "runtime": 25,
@@ -52,6 +72,20 @@
         "reload": 10,
         "storage": "not-detected"
       },
+      "signals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "renderedTextLength": 62,
+        "canvasCount": 1,
+        "interactiveCount": 12,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "trend": {
+        "previousScore": 100,
+        "scoreDelta": 0
+      },
       "issues": [],
       "failedRequestCount": 0,
       "screenshot": "qa-artifacts/public-game-health/crystal-defense.png",
@@ -60,18 +94,34 @@
     {
       "gameId": "bug-defense",
       "name": "곤충 디펜스",
-      "status": "healthy",
-      "score": 84,
-      "checkedAt": "2026-09-07T22:30:07.614Z",
+      "status": "warning",
+      "score": 74,
+      "calculatedScore": 85,
+      "healthReason": "same-origin-resource-failure",
+      "checkedAt": "2026-09-08T04:36:26.781Z",
       "url": "http://127.0.0.1:4173/web-games/bug-defense/",
       "dimensions": {
         "runtime": 25,
-        "errors": 19,
+        "errors": 20,
         "mobile": 15,
         "interaction": 15,
         "assets": 0,
         "reload": 10,
         "storage": "not-detected"
+      },
+      "signals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "renderedTextLength": 31,
+        "canvasCount": 0,
+        "interactiveCount": 0,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "trend": {
+        "previousScore": 84,
+        "scoreDelta": -10
       },
       "issues": [
         {
@@ -80,15 +130,19 @@
         },
         {
           "type": "requestfailed",
-          "message": "http://127.0.0.1:4173/assets/framework-DjPHiq1u.js net::ERR_ABORTED"
-        },
-        {
-          "type": "requestfailed",
           "message": "http://127.0.0.1:4173/assets/layout-segment-context-B4l5MHMQ.js net::ERR_ABORTED"
         },
         {
           "type": "requestfailed",
+          "message": "http://127.0.0.1:4173/assets/rolldown-runtime-S-ySWqyJ.js net::ERR_ABORTED"
+        },
+        {
+          "type": "requestfailed",
           "message": "http://127.0.0.1:4173/assets/page-CgY6ZelV.js net::ERR_ABORTED"
+        },
+        {
+          "type": "requestfailed",
+          "message": "http://127.0.0.1:4173/assets/framework-DjPHiq1u.js net::ERR_ABORTED"
         },
         {
           "type": "requestfailed",
@@ -100,15 +154,11 @@
         },
         {
           "type": "requestfailed",
-          "message": "http://127.0.0.1:4173/assets/rolldown-runtime-S-ySWqyJ.js net::ERR_ABORTED"
+          "message": "http://127.0.0.1:4173/assets/page-CgY6ZelV.js net::ERR_ABORTED"
         },
         {
           "type": "requestfailed",
           "message": "http://127.0.0.1:4173/assets/framework-DjPHiq1u.js net::ERR_ABORTED"
-        },
-        {
-          "type": "requestfailed",
-          "message": "http://127.0.0.1:4173/assets/page-CgY6ZelV.js net::ERR_ABORTED"
         }
       ],
       "failedRequestCount": 8,
@@ -120,7 +170,9 @@
       "name": "대충 RPG",
       "status": "healthy",
       "score": 100,
-      "checkedAt": "2026-09-07T22:30:07.614Z",
+      "calculatedScore": 100,
+      "healthReason": "no-blocking-smoke-errors",
+      "checkedAt": "2026-09-08T04:36:26.781Z",
       "url": "http://127.0.0.1:4173/web-games/daechung-rpg/",
       "dimensions": {
         "runtime": 25,
@@ -130,6 +182,20 @@
         "assets": 10,
         "reload": 10,
         "storage": "not-detected"
+      },
+      "signals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "renderedTextLength": 14,
+        "canvasCount": 0,
+        "interactiveCount": 0,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "trend": {
+        "previousScore": 100,
+        "scoreDelta": 0
       },
       "issues": [],
       "failedRequestCount": 0,
@@ -143,18 +209,34 @@
     {
       "gameId": "human-go",
       "name": "휴먼 GO",
-      "status": "healthy",
-      "score": 94,
-      "checkedAt": "2026-09-07T22:30:07.614Z",
+      "status": "warning",
+      "score": 74,
+      "calculatedScore": 95,
+      "healthReason": "console-error",
+      "checkedAt": "2026-09-08T04:36:26.781Z",
       "url": "http://127.0.0.1:4173/web-games/human-go/",
       "dimensions": {
         "runtime": 25,
-        "errors": 19,
+        "errors": 20,
         "mobile": 15,
         "interaction": 15,
         "assets": 10,
         "reload": 10,
         "storage": "not-detected"
+      },
+      "signals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "renderedTextLength": 93,
+        "canvasCount": 0,
+        "interactiveCount": 22,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "trend": {
+        "previousScore": 94,
+        "scoreDelta": -20
       },
       "issues": [
         {
@@ -171,7 +253,9 @@
       "name": "알 도둑 대작전",
       "status": "healthy",
       "score": 100,
-      "checkedAt": "2026-09-07T22:30:07.614Z",
+      "calculatedScore": 100,
+      "healthReason": "no-blocking-smoke-errors",
+      "checkedAt": "2026-09-08T04:36:26.781Z",
       "url": "http://127.0.0.1:4173/web-games/egg-heist/",
       "dimensions": {
         "runtime": 25,
@@ -181,6 +265,20 @@
         "assets": 10,
         "reload": 10,
         "storage": "not-detected"
+      },
+      "signals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "renderedTextLength": 1875,
+        "canvasCount": 0,
+        "interactiveCount": 63,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "trend": {
+        "previousScore": 100,
+        "scoreDelta": 0
       },
       "issues": [],
       "failedRequestCount": 0,
@@ -192,7 +290,9 @@
       "name": "체스 배틀",
       "status": "healthy",
       "score": 100,
-      "checkedAt": "2026-09-07T22:30:07.614Z",
+      "calculatedScore": 100,
+      "healthReason": "no-blocking-smoke-errors",
+      "checkedAt": "2026-09-08T04:36:26.781Z",
       "url": "http://127.0.0.1:4173/web-games/chess-battle/",
       "dimensions": {
         "runtime": 25,
@@ -202,6 +302,20 @@
         "assets": 10,
         "reload": 10,
         "storage": "not-detected"
+      },
+      "signals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "renderedTextLength": 179,
+        "canvasCount": 0,
+        "interactiveCount": 65,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "trend": {
+        "previousScore": 100,
+        "scoreDelta": 0
       },
       "issues": [],
       "failedRequestCount": 0,
@@ -213,7 +327,9 @@
       "name": "몬스터 어드벤처",
       "status": "healthy",
       "score": 100,
-      "checkedAt": "2026-09-07T22:30:07.614Z",
+      "calculatedScore": 100,
+      "healthReason": "no-blocking-smoke-errors",
+      "checkedAt": "2026-09-08T04:36:26.781Z",
       "url": "http://127.0.0.1:4173/web-games/monster-adventure/",
       "dimensions": {
         "runtime": 25,
@@ -223,6 +339,20 @@
         "assets": 10,
         "reload": 10,
         "storage": "persisted"
+      },
+      "signals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "renderedTextLength": 83,
+        "canvasCount": 0,
+        "interactiveCount": 17,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "trend": {
+        "previousScore": 100,
+        "scoreDelta": 0
       },
       "issues": [],
       "failedRequestCount": 0,
@@ -234,7 +364,9 @@
       "name": "나의 생존기",
       "status": "healthy",
       "score": 100,
-      "checkedAt": "2026-09-07T22:30:07.614Z",
+      "calculatedScore": 100,
+      "healthReason": "no-blocking-smoke-errors",
+      "checkedAt": "2026-09-08T04:36:26.781Z",
       "url": "http://127.0.0.1:4173/web-games/survival/",
       "dimensions": {
         "runtime": 25,
@@ -244,6 +376,20 @@
         "assets": 10,
         "reload": 10,
         "storage": "not-detected"
+      },
+      "signals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "renderedTextLength": 125,
+        "canvasCount": 1,
+        "interactiveCount": 10,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "trend": {
+        "previousScore": 100,
+        "scoreDelta": 0
       },
       "issues": [],
       "failedRequestCount": 0,
@@ -255,7 +401,9 @@
       "name": "숲의 생존자들",
       "status": "healthy",
       "score": 100,
-      "checkedAt": "2026-09-07T22:30:07.614Z",
+      "calculatedScore": 100,
+      "healthReason": "no-blocking-smoke-errors",
+      "checkedAt": "2026-09-08T04:36:26.781Z",
       "url": "http://127.0.0.1:4173/web-games/survival2/",
       "dimensions": {
         "runtime": 25,
@@ -265,6 +413,20 @@
         "assets": 10,
         "reload": 10,
         "storage": "persisted"
+      },
+      "signals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "renderedTextLength": 78,
+        "canvasCount": 1,
+        "interactiveCount": 13,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "trend": {
+        "previousScore": 100,
+        "scoreDelta": 0
       },
       "issues": [],
       "failedRequestCount": 0,
@@ -276,7 +438,9 @@
       "name": "영토전쟁",
       "status": "healthy",
       "score": 100,
-      "checkedAt": "2026-09-07T22:30:07.614Z",
+      "calculatedScore": 100,
+      "healthReason": "no-blocking-smoke-errors",
+      "checkedAt": "2026-09-08T04:36:26.781Z",
       "url": "http://127.0.0.1:4173/web-games/territory-war/",
       "dimensions": {
         "runtime": 25,
@@ -286,6 +450,20 @@
         "assets": 10,
         "reload": 10,
         "storage": "not-detected"
+      },
+      "signals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "renderedTextLength": 115,
+        "canvasCount": 0,
+        "interactiveCount": 5,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "trend": {
+        "previousScore": 100,
+        "scoreDelta": 0
       },
       "issues": [],
       "failedRequestCount": 0,
