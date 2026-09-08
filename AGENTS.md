@@ -25,6 +25,16 @@
 - 정지 이미지, 단일 포즈, 원형/구체/도형/이모지/임시 모델을 캐릭터·몬스터·보스로 사용하는 것은 금지한다.
 - 캐릭터·몬스터·보스 후보는 `assets/asset-selector.js` 검증을 통과해야 하며 `verifiedAnimation=true`, 실제 애니메이션 자료, 이동 모션이 없으면 사용하지 않는다.
 
+## ChatGPT ↔ Vibe2 ↔ company-ai 공용 Work Lock
+- `chatgpt`, `vibe2`, `company-ai`는 게임/회사 소스를 수정하기 전에 공용 Work Lock을 반드시 획득한다.
+- 잠금의 단일 상태 저장소는 `vibe2-work-locks` 브랜치의 `.vibe2/work-locks.json`이다. `main`에는 acquire/release 상태 커밋을 쌓지 않는다.
+- 잠금에는 최소 `worker`, `taskId`, `gameId`, `files`, `baseSha`, `acquiredAt`, `expiresAt`을 기록한다.
+- 동일 파일 또는 상위/하위 경로가 겹치는 활성 잠금이 있으면 다른 작업자는 해당 소스를 수정하지 않는다. 잠금을 빼앗거나 강제 덮어쓰지 말고 다른 독립 작업을 선택한다.
+- 기본 lease는 45분이며 최대 120분이다. 만료된 잠금만 정리할 수 있고, 진행 중이면 갱신한다.
+- 작업 종료 전 `baseSha` 이후의 변경을 다시 비교한다. 잠금 범위와 변경 파일이 겹치면 자동 병합하지 않고 `REPLAN_REQUIRED`, 변경은 있지만 잠금 범위와 안 겹치면 rebase 후 QA, 변경이 없으면 QA 진행으로 판정한다.
+- Work Lock은 편집 충돌 방지 장치일 뿐 권한을 늘리지 않는다. 사용자 승인, 완료 아트북 잠금, 저장 호환성, 유료 사용 금지, `web-games/` 읽기 전용 등 기존 보호 게이트를 우회할 수 없다.
+- 공통 계약은 `assets/vibe-work-lock.js`, 운영 CLI는 `tools/vibe-work-lock-control.mjs`를 사용한다.
+
 ## 총괄 / 빌드 권한
 - 빌드 책임은 로컬 총괄 AI 한 명에게 독점시키지 않는다.
 - 연결된 ChatGPT 총괄, 로컬 총괄, 승인된 다른 총괄 AI 모두 검증된 빌드 요청을 만들 수 있다.
@@ -38,14 +48,16 @@
 ## 작업 순서
 1. `company-directive.json`과 현재 구조, 담당 파일을 먼저 읽는다.
 2. `COMPANY_FLOW.md`와 `assets/vibe-company-orchestration-bridge.js` 기준으로 재운컴퍼니 단계와 바이브2 실행계약을 연결한다.
-3. 에셋이 필요한 작업이면 `ASSET_RULES.md`, `assets/animated-assets.json`, `assets/asset-manifest.json`을 확인한다.
-4. 캐릭터/몬스터/보스는 정지 에셋이나 도형 대체 모델이 아닌지 먼저 검사한다.
-5. 한 번에 한 책임 단위만 수정한다.
-6. Unity MCP가 연결돼 있으면 실제 Editor 상태를 확인한다. 연결되지 않아도 일반 원격 작업은 GitHub 기준으로 계속할 수 있다.
-7. 컴파일 오류/Console 오류를 확인한다.
-8. 가능한 경우 EditMode/PlayMode/회귀 테스트를 실행한다.
-9. 외부 테스트 가능한 단계면 검증된 빌드 요청을 만들고 클라우드 APK 빌드 결과를 확인한다.
-10. 결과와 다음 작업을 `company-status.json`/작업 큐에 반영한다. 홈페이지에는 게임/아트북 단계 정보를 짧게 노출할 수 있지만 본개발·출시·APK 다운로드 승인과 혼동하지 않는다.
+3. 실제 소스 수정 전 `vibe2-work-locks:.vibe2/work-locks.json`을 확인하고 담당 파일 범위의 공용 Work Lock을 획득한다.
+4. 에셋이 필요한 작업이면 `ASSET_RULES.md`, `assets/animated-assets.json`, `assets/asset-manifest.json`을 확인한다.
+5. 캐릭터/몬스터/보스는 정지 에셋이나 도형 대체 모델이 아닌지 먼저 검사한다.
+6. 한 번에 한 책임 단위만 수정한다.
+7. Unity MCP가 연결돼 있으면 실제 Editor 상태를 확인한다. 연결되지 않아도 일반 원격 작업은 GitHub 기준으로 계속할 수 있다.
+8. 컴파일 오류/Console 오류를 확인한다.
+9. 가능한 경우 EditMode/PlayMode/회귀 테스트를 실행한다.
+10. `baseSha` 이후 변경을 다시 검사해 겹침이 있으면 자동 병합하지 않고 재계획한다.
+11. 외부 테스트 가능한 단계면 검증된 빌드 요청을 만들고 클라우드 APK 빌드 결과를 확인한다.
+12. 결과와 다음 작업을 `company-status.json`/작업 큐에 반영하고 공용 Work Lock을 해제한다. 홈페이지에는 게임/아트북 단계 정보를 짧게 노출할 수 있지만 본개발·출시·APK 다운로드 승인과 혼동하지 않는다.
 
 ## 부서 역할
 - 기획 AI: 핵심 루프, 지역, 퀘스트, 콘텐츠 구조.
