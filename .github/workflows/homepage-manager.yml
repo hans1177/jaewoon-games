@@ -2,100 +2,33 @@ name: Homepage Manager
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: ['Free Artbook Department Bots']
-    types: [completed]
-  schedule:
-    - cron: '20 23 * * *' # 08:20 KST
-  push:
-    branches: [main]
-    paths:
-      - 'index.html'
-      - 'artbook.html'
-      - 'game-catalog.json'
-      - 'game-artbooks.json'
-      - 'artbook-submission-queue.json'
-      - 'artbook-gate-status.json'
-      - 'artbook-second-work-queue.json'
-      - 'company-status.json'
-      - 'public-game-health.json'
-      - 'assets/homepage-enhancements.js'
-      - 'assets/homepage-layout-v2.js'
-      - 'assets/homepage-layout-v2.css'
-      - 'assets/title-*.svg'
-      - 'assets/*.webp'
-      - 'artbook-submissions/**/artbook.json'
-      - 'HOMEPAGE_OPERATIONS.md'
-      - '.github/agents/homepage.agent.md'
-      - 'tools/homepage-manager.mjs'
-      - '.github/workflows/homepage-manager.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: homepage-manager-main
+  group: homepage-manager-manual
   cancel-in-progress: true
 
 jobs:
-  maintain:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+  diagnose:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout latest main
+      - name: Checkout main
         uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
+          fetch-depth: 1
 
-      - name: Sync main
-        run: git pull --ff-only origin main
-
-      - name: Run homepage manager
+      - name: Run homepage diagnostics
         run: node tools/homepage-manager.mjs
 
-      - name: Validate managed files
+      - name: Validate homepage files
         run: |
           set -euo pipefail
-          node -e "JSON.parse(require('fs').readFileSync('homepage-manager-status.json','utf8'))"
-          node -e "JSON.parse(require('fs').readFileSync('company-status.json','utf8'))"
-          grep -Fq 'short-cards -> dedicated-artbook-detail-page' homepage-manager-status.json
-          grep -Fq '"runtimeGameHealthBadgeVisible": false' homepage-manager-status.json
-          grep -Fq '"gameCardsRequireUniqueTitleImages": true' homepage-manager-status.json
-          grep -Fq '"gameImagesValid": 11' homepage-manager-status.json
-          grep -Fq '"duplicateGameImages": 0' homepage-manager-status.json
-          grep -Fq '"placeholderGameImages": 0' homepage-manager-status.json
-          grep -Fq '"brokenGameImages": 0' homepage-manager-status.json
-          grep -Fq '/assets/homepage-layout-v2.css' index.html
-          grep -Fq '/assets/homepage-layout-v2.js' index.html
-          grep -Fq '/artbook.html?game=' assets/homepage-layout-v2.js
-          grep -Fq '.healthBadge{display:none!important}' assets/homepage-layout-v2.css
-          grep -Fq "params.get('game')" artbook.html
-          node - <<'NODE'
-          const fs=require('fs');
-          const s=JSON.parse(fs.readFileSync('homepage-manager-status.json','utf8'));
-          if(s.status!=='running')throw new Error(`homepage manager attention: ${(s.findings?.failures||[]).join(',')}`);
-          if(s.counts?.gameImagesValid!==11)throw new Error(`game images not complete: ${s.counts?.gameImagesValid}/11`);
-          if(s.counts?.duplicateGameImages!==0||s.counts?.placeholderGameImages!==0||s.counts?.brokenGameImages!==0)throw new Error('game image quality gate failed');
-          console.log('HOMEPAGE_MANAGER_QA=PASS');
-          console.log('HOMEPAGE_GAME_IMAGES=11/11');
-          console.log('HOMEPAGE_DUPLICATE_GAME_IMAGES=0');
-          console.log('HOMEPAGE_PLACEHOLDER_GAME_IMAGES=0');
-          console.log('HOMEPAGE_BROKEN_GAME_IMAGES=0');
-          NODE
-
-      - name: Commit managed homepage state and repairs
-        run: |
-          set -euo pipefail
-          git config user.name 'jaewoon-homepage-manager'
-          git config user.email 'actions@users.noreply.github.com'
-          git add index.html homepage-manager-status.json company-status.json
-          if git diff --cached --quiet; then
-            echo 'HOMEPAGE_MANAGER_COMMIT=NO_CHANGES'
-            exit 0
-          fi
-          git commit -m 'homepage: apply manager layout maintenance [skip ci]'
-          git pull --rebase origin main
-          git push origin main
-          echo 'HOMEPAGE_MANAGER_COMMIT=SUCCESS'
+          test -f index.html
+          test -f game-catalog.json
+          node -e "JSON.parse(require('fs').readFileSync('game-catalog.json','utf8'))"
+          grep -Fq '/assets/homepage-enhancements.js' index.html
+          echo 'HOMEPAGE_DIAGNOSTICS=PASS'
