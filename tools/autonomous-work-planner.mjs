@@ -1,9 +1,10 @@
 // 파일명: tools/autonomous-work-planner.mjs
-// 역할: 공개 건강도/아트북 근거와 포트폴리오 상태를 읽어 하루 1개의 무료 개발 후보 작업을 고른다.
+// 역할: 공개 건강도/아트북 근거와 포트폴리오 상태를 읽어 무료 개발 후보 작업을 고른다.
 // 주의: public-game-health 점수는 게임 품질 점수가 아니라 실행/표시 건강도 근거로만 사용한다.
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { attemptedGameIds, attemptsForDate } from './autonomous-queue-state.mjs';
 
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const clean=v=>String(v??'').trim();
@@ -53,12 +54,23 @@ function baseGoal(project,book){
       : '현재 게임의 체감 품질을 의미 있게 개선하는 후보를 만든다.';
   return `${prefix}${focus?` 최신 아트북 보완점 우선: ${focus}.`:''} 조작 가독성·그래픽·모션·콘텐츠 중 근거가 가장 강한 1~2개를 개선한다. 저장키는 유지하고 전면 재작성은 피한다.`;
 }
-export function buildAutonomousWorkOrder({portfolio,artbooks,health,date=kstDate(),filesystem=fs}={}){
+
+export function buildAutonomousWorkOrder({portfolio,artbooks,health,queueState={version:1,attempts:[]},date=kstDate(),filesystem=fs}={}){
   if(portfolio?.status!=='ACTIVE'||!Array.isArray(portfolio.projects))throw new Error('autonomous portfolio 비활성/오류');
   if(portfolio.paidApi!==false)throw new Error('무료정책 위반: paidApi');
+  const maxDaily=Math.max(1,Math.min(24,Number(portfolio.maxAutonomousWorkItemsPerDay??8)||8));
+  const attemptsToday=attemptsForDate(queueState,date);
+  if(attemptsToday.length>=maxDaily){
+    return {version:1,run:false,reason:'DAILY_AUTONOMOUS_CAP_REACHED',date,paidApi:false,attemptsToday:attemptsToday.length,maxDaily};
+  }
+  const attempted=attemptedGameIds(queueState,date);
   const eligible=portfolio.projects.filter(project=>project.mode!=='HOLD'&&clean(project.sourcePath)&&filesystem.existsSync(project.sourcePath));
-  if(!eligible.length)return {run:false,reason:'NO_ELIGIBLE_PROJECT',date,paidApi:false};
-  const incidentProjects=eligible.map(project=>({project,incident:runtimeIncident(health,project.slug)})).filter(x=>x.incident);
+  if(!eligible.length)return {version:1,run:false,reason:'NO_ELIGIBLE_PROJECT',date,paidApi:false,attemptsToday:attemptsToday.length,maxDaily};
+  const remaining=eligible.filter(project=>!attempted.has(project.id));
+  if(!remaining.length){
+    return {version:1,run:false,reason:'NO_UNPROCESSED_WORK_TODAY',date,paidApi:false,attemptsToday:attemptsToday.length,maxDaily};
+  }
+  const incidentProjects=remaining.map(project=>({project,incident:runtimeIncident(health,project.slug)})).filter(x=>x.incident);
   let selected;
   let reason;
   let incident=null;
@@ -67,12 +79,12 @@ export function buildAutonomousWorkOrder({portfolio,artbooks,health,date=kstDate
     incident=runtimeIncident(health,selected.slug);
     reason='RUNTIME_INCIDENT_FIRST';
   }else{
-    const ordered=[...eligible].sort((a,b)=>a.id.localeCompare(b.id));
+    const ordered=[...remaining].sort((a,b)=>a.id.localeCompare(b.id));
     selected=ordered[dayOrdinal(date)%ordered.length];
-    reason='DAILY_PORTFOLIO_ROTATION';
+    reason=attemptsToday.length?'CONTINUOUS_PORTFOLIO_NEXT':'DAILY_PORTFOLIO_ROTATION';
   }
   const book=latestArtbookFor(artbooks,selected.slug);
-  const candidateId=`${selected.id}-${date.replaceAll('-','')}`;
+  const candidateId=`${selected.id}-${date.replaceAll('-','')}-${attemptsToday.length+1}`;
   return {
     version:1,
     run:true,
@@ -92,6 +104,7 @@ export function buildAutonomousWorkOrder({portfolio,artbooks,health,date=kstDate
     baselineBranch:portfolio.continuousDevelopmentBranch||'autonomous-dev',
     publicStableBranch:portfolio.publicStableBranch||'main',
     candidateBranchPrefix:portfolio.candidateBranchPrefix||'autonomous/candidate-',
+    queue:{attemptsToday:attemptsToday.length,maxDaily,remainingBeforeSelection:remaining.length},
     budget:{
       cashKRW:0,
       paidApi:false,
@@ -117,7 +130,8 @@ async function main(){
   const portfolio=readJson('autonomous-portfolio.json');
   const artbooks=readJson('game-artbooks.json',{artbooks:[]});
   const health=readJson('public-game-health.json',{games:[]});
-  const order=buildAutonomousWorkOrder({portfolio,artbooks,health,date});
+  const queueState=readJson('.autonomous/queue-state.json',{version:1,attempts:[]});
+  const order=buildAutonomousWorkOrder({portfolio,artbooks,health,queueState,date});
   writeJson(output,order);
   console.log(JSON.stringify(order,null,2));
 }
