@@ -3,7 +3,7 @@ export const DEFAULT_DEPARTMENT_EXPERIENCE_STATE = Object.freeze({
   version: 1,
   departments: Object.freeze({
     planning: Object.freeze({ xp: 200, level: 2, verifiedCompletions: 5, learningEvents: 5, lastEvidence: "Vibe QA run 34199711254 PASS · 5cab569ab4f1445d574fbd5d52726d96903412ad" }),
-    development: Object.freeze({ xp: 3680, level: 8, verifiedCompletions: 92, learningEvents: 92, lastEvidence: "Vibe QA run 34213166059 PASS · 8ecaec85c55dea9a21165aeb36a2edb8b7e9dbbd" }),
+    development: Object.freeze({ xp: 3720, level: 8, verifiedCompletions: 93, learningEvents: 93, lastEvidence: "Vibe QA run 34212870592 PASS · 063b714fc9542861356bd28e58582e97ce6d9fcb" }),
     qa: Object.freeze({ xp: 240, level: 2, verifiedCompletions: 6, learningEvents: 6, lastEvidence: "Vibe QA run 34178973514 PASS · b04e401650e97320f1d8d39f3b43b2e7f2b3d4dd" }),
     graphics: Object.freeze({ xp: 280, level: 3, verifiedCompletions: 7, learningEvents: 7, lastEvidence: "Vibe QA run 34195584227 PASS · 2107155144065d407dd00a72f439cfb0e69d162a" }),
     balance: Object.freeze({ xp: 160, level: 2, verifiedCompletions: 4, learningEvents: 4, lastEvidence: "Vibe QA run 34195641497 PASS · f89473108b14bc7d3a7fbeea02991db2ced8a29c" }),
