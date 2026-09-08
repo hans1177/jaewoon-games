@@ -17,12 +17,15 @@ on:
       - assets/homepage-enhancements.js
       - assets/company-quality-bar.js
       - assets/vibe-company-orchestration-bridge.js
+      - tools/artbook-department-runner.mjs
+      - tools/artbook-collaboration-runner.mjs
       - tools/artbook-gate.mjs
       - tools/artbook-assemble.mjs
       - tools/public-game-health.mjs
       - tools/asset-health-check.mjs
       - tools/update-release-baselines.mjs
       - tools/award-postmortem-learning.mjs
+      - .github/workflows/artbook-free-department-bots.yml
       - .github/workflows/artbook-section-gate.yml
       - .github/workflows/company-evolution-qa.yml
   workflow_dispatch:
@@ -43,12 +46,29 @@ jobs:
           node --input-type=module --check < assets/homepage-enhancements.js
           node --input-type=module --check < assets/company-quality-bar.js
           node --input-type=module --check < assets/vibe-company-orchestration-bridge.js
+          node --check tools/artbook-department-runner.mjs
+          node --check tools/artbook-collaboration-runner.mjs
           node --check tools/artbook-gate.mjs
           node --check tools/artbook-assemble.mjs
           node --check tools/public-game-health.mjs
           node --check tools/asset-health-check.mjs
           node --check tools/update-release-baselines.mjs
           node --check tools/award-postmortem-learning.mjs
+
+      - name: Validate free department bot contract
+        run: |
+          set -euo pipefail
+          grep -Fq "paidApi:false" tools/artbook-department-runner.mjs
+          grep -Fq "readsOtherDepartmentSubmissions:false" tools/artbook-department-runner.mjs
+          grep -Fq "paidApi:false" tools/artbook-collaboration-runner.mjs
+          grep -Fq "AGREE_COUNTER_TEST_RESULT_DECISION" tools/artbook-collaboration-runner.mjs
+          grep -Fq "cancel-in-progress: true" .github/workflows/artbook-free-department-bots.yml
+          grep -Fq "qwen3:0.6b" .github/workflows/artbook-free-department-bots.yml
+          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/artbook-department-runner.mjs tools/artbook-collaboration-runner.mjs; then
+            echo 'paid/external AI key leaked into free department bot path' >&2
+            exit 1
+          fi
+          echo 'FREE_DEPARTMENT_BOT_CONTRACT=PASS'
 
       - name: Validate artbook contract
         run: |
@@ -88,21 +108,24 @@ jobs:
           fi
           echo 'HOMEPAGE_ARTBOOK_WIRING=PASS'
 
-      - name: Validate artbook section gate contract
+      - name: Validate artbook section and collaboration gate contract
         run: |
           node <<'NODE'
           const fs=require('fs');
-          const path=require('path');
           const q=JSON.parse(fs.readFileSync('artbook-submission-queue.json','utf8'));
           const gate=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8'));
           const roles=['planning','graphics','development','qa','balance'];
           if(JSON.stringify(q.requiredRoles)!==JSON.stringify(roles))throw new Error('required artbook roles changed');
-          if(gate.directorMayAuthorMissingSections!==false)throw new Error('director ghostwriting guard missing');
-          if(gate.readyCount<gate.requiredCount&&gate.readyForDirectorAssembly!==false)throw new Error('director assembly opened before 5/5');
+          if(gate.directorMayAuthorMissingSections!==false)throw new Error('director section ghostwriting guard missing');
+          if(gate.directorMayAuthorMissingReviews!==false)throw new Error('director review ghostwriting guard missing');
+          if(gate.readyCount<gate.requiredCount&&gate.readyForDirectorAssembly!==false)throw new Error('director assembly opened before 5/5 sections');
+          if(gate.reviewReadyCount<gate.reviewRequiredCount&&gate.readyForDirectorAssembly!==false)throw new Error('director assembly opened before 5/5 reviews');
+          if(gate.collaborationProtocol!=='AGREE_COUNTER_TEST_RESULT_DECISION')throw new Error('collaboration protocol changed');
           const assembler=fs.readFileSync('tools/artbook-assemble.mjs','utf8');
           if(!assembler.includes('newClaimsAdded:false'))throw new Error('assembler new-claims guard missing');
           if(!assembler.includes('daily final artbook limit reached'))throw new Error('daily one-artbook guard missing');
           if(!assembler.includes("productionApproval:false"))throw new Error('assembly must not grant production approval');
+          if(!assembler.includes("AGREE_COUNTER_TEST_RESULT_DECISION"))throw new Error('assembler collaboration protocol missing');
           if(gate.assembled===true){
             const finalFile=gate.assembledFile;
             if(!finalFile||!fs.existsSync(finalFile))throw new Error('assembled gate has no artbook file');
@@ -110,9 +133,10 @@ jobs:
             if(book.productionApproval!==false)throw new Error('assembled artbook granted production approval');
             if(book.directorSummary?.newClaimsAdded!==false)throw new Error('director summary introduced claims');
             if(Object.keys(book.departments||{}).length!==roles.length)throw new Error('assembled artbook is not 5/5');
+            if(book.collaboration?.allFiveDepartmentsReviewed!==true)throw new Error('assembled artbook has no 5/5 collaboration review');
             if((book.cuts||[]).length>10)throw new Error('assembled artbook exceeds 10 cuts');
           }
-          console.log('ARTBOOK_SECTION_GATE=PASS');
+          console.log('ARTBOOK_SECTION_COLLAB_GATE=PASS');
           NODE
 
       - name: Validate learning and rollback contracts
