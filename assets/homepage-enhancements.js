@@ -11,7 +11,10 @@ function installStyles(){
 .reviews{display:none!important}
 .rollbackNotice{display:block;margin-top:6px;padding:7px 8px;border-radius:8px;background:#fff3cd;color:#735800;font-size:10px;font-weight:900;line-height:1.4}
 .cardActions.hasArtbook .artbookCardBtn{grid-column:1/-1;background:#102d42!important;border-color:#102d42!important;color:#fff!important}
-@media(max-width:520px){.gameCard{grid-template-columns:50% 50%!important}}
+.opsBar{grid-template-columns:minmax(0,1.5fr) auto repeat(4,minmax(58px,.55fr))!important}
+.opsBar>.companyLink{min-height:56px;padding:0 14px;align-self:stretch;border-color:rgba(255,255,255,.8)}
+@media(max-width:760px){.opsBar{grid-template-columns:minmax(0,1fr) auto repeat(4,58px)!important}}
+@media(max-width:520px){.gameCard{grid-template-columns:50% 50%!important}.opsBar{grid-template-columns:repeat(4,minmax(0,1fr))!important}.opsBar>.opsLead{grid-column:1/4!important;min-height:50px}.opsBar>.companyLink{grid-column:4!important;min-height:50px;padding:0 6px;font-size:9px}}
 @media(max-width:370px){.gameCard{grid-template-columns:50% 50%!important}}
 `;
   document.head.appendChild(style);
@@ -56,6 +59,14 @@ function addDaechungArtbookButton(catalog){
 
 async function main(){
   installStyles();removeLegacyRuntimeBadges();
+  const companyLink=document.querySelector('.companyLink');
+  const opsBar=document.querySelector('.opsBar');
+  const opsLead=opsBar?.querySelector('.opsLead');
+  if(companyLink&&opsBar&&opsLead){
+    companyLink.textContent='개발연구소';
+    companyLink.setAttribute('aria-label','개발연구소');
+    opsLead.insertAdjacentElement('afterend',companyLink);
+  }
   const [catalog,baselines]=await Promise.all([getJson('/game-catalog.json'),getJson('/public-release-baselines.json')]);
   const refresh=()=>{removeLegacyRuntimeBadges();applyVerifiedRollback(catalog,baselines);addDaechungArtbookButton(catalog);};
   refresh();
