@@ -9,6 +9,6 @@ export const DEFAULT_DEPARTMENT_EXPERIENCE_STATE = Object.freeze({
     balance: Object.freeze({ xp: 120, level: 2, verifiedCompletions: 3, learningEvents: 3, lastEvidence: "Vibe QA run 34178994529 PASS · 5aef8ef56cf8030c5d9da80af349ee365c7ec474" }),
     homepage: Object.freeze({ xp: 160, level: 2, verifiedCompletions: 4, learningEvents: 4, lastEvidence: "Vibe QA run 34186207905 PASS · 26aed33ff6b25804b49ce801d74563f623b9eb5a" }),
     release: Object.freeze({ xp: 560, level: 4, verifiedCompletions: 14, learningEvents: 14, lastEvidence: "Vibe QA run 34191899053 PASS · 018d2a5a165f7699fdb196aac03d6e5130d45d2b" }),
-    director: Object.freeze({ xp: 440, level: 3, verifiedCompletions: 11, learningEvents: 11, lastEvidence: "Vibe QA run 34181818560 PASS · 14592febff1ea308eaa4b84fe410755528c9411c" })
+    director: Object.freeze({ xp: 480, level: 3, verifiedCompletions: 12, learningEvents: 12, lastEvidence: "Vibe QA run 34192177143 PASS · 053785646ac88fadbc334c24bf69928cdd8382dc" })
   })
 });
