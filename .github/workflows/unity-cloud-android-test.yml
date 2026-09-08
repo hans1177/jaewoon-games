@@ -146,6 +146,14 @@ jobs:
           [[ -n "$hub_bin" && -x "$hub_bin" ]] || { echo 'Unity Hub executable not found after installation.' >&2; exit 3; }
           echo "[PASS] Unity Hub executable: $hub_bin"
 
+          # activate-unity-license v2 still resolves the legacy /opt/unityhub tree.
+          # Bridge the current Hub 3.20+ /usr/lib layout to that legacy path so
+          # both the Hub executable and bundled Unity.Licensing.Client are visible.
+          sudo rm -rf /opt/unityhub
+          sudo ln -s /usr/lib/unityhub /opt/unityhub
+          [[ -x /opt/unityhub/unityhub ]] || { echo 'Legacy Unity Hub compatibility path is invalid.' >&2; exit 3; }
+          echo '[PASS] Legacy Unity Hub compatibility path is ready.'
+
           sudo tee /usr/local/bin/unity-hub >/dev/null <<'EOF'
           #!/bin/bash
           set -e
@@ -172,6 +180,9 @@ jobs:
 
       - name: Activate Unity Personal on GitHub host
         uses: RageAgainstThePixel/activate-unity-license@v2
+        env:
+          UNITY_HUB_PATH: /opt/unityhub/unityhub
+          UNITY_EDITOR_PATH: ${{ steps.unity_install.outputs.unity_editor_path }}
         with:
           license: personal
           username: ${{ secrets.UNITY_EMAIL }}
