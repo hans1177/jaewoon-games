@@ -28,6 +28,7 @@ jobs:
       request_file: ${{ steps.request.outputs.request_file }}
       target: ${{ steps.probe.outputs.target }}
       heartbeat_age_seconds: ${{ steps.probe.outputs.heartbeat_age_seconds }}
+      route_reason: ${{ steps.probe.outputs.route_reason }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -86,7 +87,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 - "$GITHUB_OUTPUT" <<'PY'
-          import datetime as dt, json, os, sys, time, urllib.error, urllib.request
+          import datetime as dt, json, os, sys, time, urllib.request
 
           output = sys.argv[1]
           repo = os.environ['GH_REPOSITORY']
@@ -106,42 +107,70 @@ jobs:
                   raw = res.read()
                   return json.loads(raw) if raw else None
 
-          try:
-              request(f'{api}/actions/workflows/unity-local-runner-heartbeat.yml/dispatches', 'POST', {'ref':'main'})
-              print('[INFO] Requested an immediate local-runner heartbeat.')
-          except Exception as exc:
-              print(f'[WARN] Could not dispatch heartbeat: {exc}')
-
+          workflow_api = f'{api}/actions/workflows/unity-local-runner-heartbeat.yml'
           target = 'cloud'
           age = -1
+          reason = 'fresh-heartbeat-not-received'
+
+          try:
+              before_payload = request(f'{workflow_api}/runs?branch=main&event=workflow_dispatch&per_page=10') or {}
+              before_ids = [int(run.get('id', 0)) for run in before_payload.get('workflow_runs', [])]
+              baseline_id = max(before_ids, default=0)
+              dispatch_time = dt.datetime.now(dt.timezone.utc)
+              request(f'{workflow_api}/dispatches', 'POST', {'ref':'main'})
+              print(f'[INFO] Requested fresh local-runner heartbeat after run id {baseline_id}.')
+          except Exception as exc:
+              baseline_id = 0
+              dispatch_time = dt.datetime.now(dt.timezone.utc)
+              reason = 'heartbeat-dispatch-failed'
+              print(f'[WARN] Could not dispatch heartbeat: {exc}')
+
           deadline = time.time() + 90
-          while True:
+          fresh_run_id = 0
+          while reason != 'heartbeat-dispatch-failed' and time.time() < deadline:
               try:
-                  payload = request(f'{api}/actions/workflows/unity-local-runner-heartbeat.yml/runs?branch=main&per_page=10') or {}
-                  now = dt.datetime.now(dt.timezone.utc)
+                  payload = request(f'{workflow_api}/runs?branch=main&event=workflow_dispatch&per_page=10') or {}
+                  fresh_runs = []
                   for run in payload.get('workflow_runs', []):
-                      if run.get('conclusion') != 'success':
+                      run_id = int(run.get('id', 0))
+                      if run_id <= baseline_id:
                           continue
-                      stamp = run.get('updated_at') or run.get('created_at')
-                      if not stamp:
-                          continue
-                      when = dt.datetime.fromisoformat(stamp.replace('Z', '+00:00'))
-                      candidate_age = max(0, int((now - when).total_seconds()))
-                      age = candidate_age
-                      if candidate_age <= 480:
-                          target = 'local'
-                      break
+                      created = run.get('created_at')
+                      if created:
+                          created_at = dt.datetime.fromisoformat(created.replace('Z', '+00:00'))
+                          if created_at < dispatch_time - dt.timedelta(seconds=5):
+                              continue
+                      fresh_runs.append(run)
+
+                  if fresh_runs:
+                      run = max(fresh_runs, key=lambda item: int(item.get('id', 0)))
+                      fresh_run_id = int(run.get('id', 0))
+                      status = run.get('status')
+                      conclusion = run.get('conclusion')
+                      print(f'[INFO] Fresh heartbeat run={fresh_run_id} status={status} conclusion={conclusion}')
+                      if status == 'completed':
+                          if conclusion == 'success':
+                              target = 'local'
+                              reason = 'fresh-heartbeat-success'
+                              stamp = run.get('updated_at') or run.get('created_at')
+                              if stamp:
+                                  when = dt.datetime.fromisoformat(stamp.replace('Z', '+00:00'))
+                                  age = max(0, int((dt.datetime.now(dt.timezone.utc) - when).total_seconds()))
+                          else:
+                              reason = f'fresh-heartbeat-{conclusion or "failed"}'
+                          break
               except Exception as exc:
                   print(f'[WARN] Heartbeat lookup failed: {exc}')
+              time.sleep(5)
 
-              if target == 'local' or time.time() >= deadline:
-                  break
-              time.sleep(10)
+          if target != 'local' and reason == 'fresh-heartbeat-not-received':
+              reason = 'fresh-heartbeat-timeout'
 
-          print(f'[ROUTE] target={target} heartbeat_age_seconds={age}')
+          print(f'[ROUTE] target={target} reason={reason} heartbeat_run_id={fresh_run_id} heartbeat_age_seconds={age}')
           with open(output, 'a', encoding='utf-8') as f:
               f.write(f'target={target}\n')
               f.write(f'heartbeat_age_seconds={age}\n')
+              f.write(f'route_reason={reason}\n')
           PY
 
       - name: Route summary
@@ -149,7 +178,8 @@ jobs:
         run: |
           echo "Build request: ${{ steps.request.outputs.request_file }}"
           echo "Selected route: ${{ steps.probe.outputs.target }}"
-          echo "Local heartbeat age: ${{ steps.probe.outputs.heartbeat_age_seconds }} seconds"
+          echo "Route reason: ${{ steps.probe.outputs.route_reason }}"
+          echo "Fresh local heartbeat age: ${{ steps.probe.outputs.heartbeat_age_seconds }} seconds"
 
   local:
     needs: route
