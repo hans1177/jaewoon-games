@@ -81,6 +81,17 @@ agents: ["planning", "development", "qa", "graphics", "balance", "homepage", "re
 - 하루에 두 번째 최종 아트북을 제출하지 않는다.
 - 기존 Web 게임, Unity 코드, 빌드/시연/오류 기록은 삭제하지 않고 연구·프로토타입 증거로 사용한다.
 
+## 완료 아트북 → Vibe2 개발 잠금
+
+- `COMPLETED + 10컷 + postprocess.complete=true` 아트북은 **개발 기준 잠금본**이다.
+- 잠금본이 있으면 Vibe2의 `brief / core-fun / world-story / storyboard / systems` 재기획 단계를 다시 돌리지 않는다.
+- 자동 개발 시작점은 `technical-architecture` 이후이며, 목적은 잠긴 아트북을 구현 구조로 번역하는 것이다.
+- 장르, 핵심 루프, 스토리 큰 방향, 주요 캐릭터·몬스터·보스 정체성, 아트 방향, 전투 핵심, 성장 핵심, 주요 지역/퀘스트 인과, 플랫폼은 자동 변경 금지다.
+- 직원이나 Vibe2가 잠금본과 다른 컨셉을 제안하면 구현하지 말고 `ARTBOOK_CHANGE_REQUEST`로 분류한다.
+- `ARTBOOK_CHANGE_REQUEST`는 해당 소유 부서 재작업 → 타부서 검토 → 총괄 검토 → 새 10컷 완료본 확정 후에만 실제 개발에 반영한다.
+- 총괄은 “기술적으로 더 쉬움/예쁨/재미있어 보임”을 이유로 잠긴 컨셉을 임의 변경할 수 없다.
+- QA에는 항상 **아트북 대비 컨셉 드리프트 검사**를 포함하고, 불일치하면 DONE/PASS를 금지한다.
+
 ## 아트북 품질
 
 - 모든 게임에 같은 아트북 형식을 복사하지 않는다.
@@ -104,7 +115,7 @@ agents: ["planning", "development", "qa", "graphics", "balance", "homepage", "re
 - 에셋은 `ASSET_RULES.md`, `assets/animated-assets.json`, `assets/asset-manifest.json` 규칙을 따른다.
 - 유료 AI/API/추가 크레딧/유료 runner/유료 Unity 빌드 서비스 자동 사용 금지.
 - 장르, 핵심 루프, 스토리 큰 방향, 전투 핵심 모델, 성장 핵심 모델, 플랫폼, 세이브 파괴, 과금, 유료 AI 사용은 사용자 승인 사항이다.
-- 그 외 구현·QA·그래픽·밸런스·최적화·빌드 세부는 총괄 위임 사항이다.
+- 그 외 구현·QA·그래픽·밸런스·최적화·빌드 세부는 **잠긴 아트북을 유지하는 범위에서만** 총괄 위임 사항이다.
 - 검증 근거 없이 완료/PASS 표시 금지.
 
 ## 점검 후 행동
