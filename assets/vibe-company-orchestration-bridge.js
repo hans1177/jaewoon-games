@@ -1,6 +1,6 @@
 // 파일명: assets/vibe-company-orchestration-bridge.js
 // 역할: 재운컴퍼니 개발 플로우를 기존 workbench/orchestrator 실행계약에 연결한다.
-// 원칙: 새 게임은 사전기획/시험/내부평가/사용자 승인 전 본개발 금지. 승인 외 단계는 회사가 자동 배정하고 기존 보호 규칙을 유지한다.
+// 원칙: 완료 아트북은 컨셉 기준으로 잠그며 Vibe2는 재기획하지 않고 기술검증/구현/QA만 수행한다.
 // 동기화: 바이브2 제작 규칙과 재운컴퍼니 운영 상태는 같은 GitHub main을 단일 진실 소스로 사용한다.
 
 import { planVibeWorkbenchTask } from './vibe-workbench.js';
@@ -11,6 +11,8 @@ import { createCompanyQualityBar } from './company-quality-bar.js';
 import {
   COMPANY_FLOW_STAGES,
   COMPANY_REVIEW_ROLES,
+  ARTBOOK_LOCKED_PREDESIGN_STAGES,
+  createArtbookDevelopmentLock,
   createCompanyFlow,
   createCompanyProposal,
   createDepartmentReview,
@@ -25,13 +27,14 @@ const has=(value,words)=>{const text=clean(value).toLowerCase();return words.som
 const OWNER_GATE_STAGE='owner-approval';
 
 export const VIBE2_COMPANY_SYNC=Object.freeze({
-  version:4,
+  version:5,
   mode:'single-source-of-truth',
   sourceOfTruth:'github-main',
-  companyAuthority:Object.freeze(['company-directive.json','company-status.json','department-experience.json','COMPANY_FLOW.md']),
+  companyAuthority:Object.freeze(['company-directive.json','company-status.json','department-experience.json','COMPANY_FLOW.md','ARTBOOK_POLICY.md']),
   vibe2Authority:Object.freeze(['AGENTS.md','ASSET_RULES.md','assets/animated-assets.json','assets/asset-manifest.json','assets/department-experience.js','assets/department-experience-state.js','assets/company-quality-bar.js','assets/vibe-workbench.js','assets/vibe-orchestrator.js']),
   bridge:'assets/vibe-company-orchestration-bridge.js',
   ownerDirectivePriority:'before-autonomous-plan',
+  completedArtbookPriority:'locked-source-of-truth-before-vibe2-plan',
   departmentLearning:'verified-experience-strengthens-quality-not-authority',
   qualityLearning:'company-quality-bar-rises-with-verified-experience',
   homepagePublication:'explicit-owner-instruction-only',
@@ -79,14 +82,27 @@ function normalizeReviews(reviews=[]){
 function resolveExperienceState(state){
   return createDepartmentExperienceState(state||DEFAULT_DEPARTMENT_EXPERIENCE_STATE);
 }
+function resolveArtbookLock({artbook=null,artbookStatus='',artbookCutCount=0,artbookPostprocessComplete=null,artbookRef=''}={}){
+  const status=clean(artbookStatus||artbook?.status||'');
+  const cutCount=Number(artbookCutCount)||Number(artbook?.cuts?.length)||Number(artbook?.postprocess?.cutCount)||0;
+  const postprocessComplete=artbookPostprocessComplete===null||artbookPostprocessComplete===undefined
+    ? Boolean(artbook?.postprocess?.complete)
+    : Boolean(artbookPostprocessComplete);
+  const ref=clean(artbookRef||artbook?.sourcePath||artbook?.path||artbook?.file||'');
+  return createArtbookDevelopmentLock({status,cutCount,postprocessComplete,ref});
+}
 
-export function createCompanyStageAssignment({stageId='brief',request='',gameId='',departmentExperienceState=null}={}){
+export function createCompanyStageAssignment({stageId='brief',request='',gameId='',departmentExperienceState=null,artbookLock=null}={}){
   const stage=stageById(stageId);
   const roles=STAGE_ASSIGNMENTS[stage.id]||['director'];
   const requiresOwnerAction=stage.id===OWNER_GATE_STAGE;
   const experienceState=resolveExperienceState(departmentExperienceState);
+  const locked=artbookLock?.locked===true;
+  const lockInstruction=locked
+    ? `완료 아트북 잠금 적용. 기준=${artbookLock.ref||'completed-artbook'}. 장르·핵심루프·스토리·캐릭터/몬스터/보스 정체성·아트방향·전투/성장 핵심을 재설계하지 말 것. 변경 필요 시 구현하지 말고 ARTBOOK_CHANGE_REQUEST로 반환.`
+    : '';
   const tasks=roles.map(role=>{
-    const baseInstruction=`${stage.name}: ${stage.purpose}`;
+    const baseInstruction=[lockInstruction,`${stage.name}: ${stage.purpose}`].filter(Boolean).join(' ');
     const experienced=createExperienceAwareInstruction({department:role,baseInstruction,state:experienceState});
     return Object.freeze({
       role,
@@ -94,30 +110,33 @@ export function createCompanyStageAssignment({stageId='brief',request='',gameId=
       instruction:experienced.instruction,
       request:clean(request),
       outputs:stage.outputs,
+      artbookLocked:locked,
+      artbookRef:locked?artbookLock.ref||null:null,
       experience:experienced.profile
     });
   });
   const experienceProfiles=Object.freeze(Object.fromEntries(tasks.map(task=>[task.role,task.experience])));
 
   return Object.freeze({
-    version:3,
+    version:4,
     sync:VIBE2_COMPANY_SYNC,
     gameId:clean(gameId),
     stage,
     roles:freezeList(roles),
     tasks:freezeList(tasks),
     experienceProfiles,
-    authority:requiresOwnerAction?'owner-decision-only':'company-managed-stage',
+    artbookLock:artbookLock||null,
+    authority:requiresOwnerAction?'owner-decision-only':locked?'company-managed-with-locked-artbook':'company-managed-stage',
     autoExecute:!requiresOwnerAction,
     requiresOwnerAction,
-    executionMode:requiresOwnerAction?'wait-for-owner':'company-managed'
+    executionMode:requiresOwnerAction?'wait-for-owner':locked?'implementation-with-locked-artbook':'company-managed'
   });
 }
 
 export function submitCompanyBidirectionalProposal({
-  sourceRole='',targetRole='director',direction='bottom-up',category='implementation',summary='',reason='',evidence=[],impact='medium',estimatedCost='unknown'
+  sourceRole='',targetRole='director',direction='bottom-up',category='implementation',summary='',reason='',evidence=[],impact='medium',estimatedCost='unknown',artbookLocked=false
 }={}){
-  const proposal=createCompanyProposal({sourceRole,targetRole,direction,category,summary,reason,evidence,impact,estimatedCost});
+  const proposal=createCompanyProposal({sourceRole,targetRole,direction,category,summary,reason,evidence,impact,estimatedCost,artbookLocked});
   return Object.freeze({sync:VIBE2_COMPANY_SYNC,proposal,approval:classifyCompanyProposalApproval(proposal)});
 }
 
@@ -134,7 +153,12 @@ export function planCompanyDevelopmentTask({
   departmentReviews=[],
   departmentExperienceState=null,
   ownerDecision='PENDING',
-  ownerNotes=''
+  ownerNotes='',
+  artbook=null,
+  artbookStatus='',
+  artbookCutCount=0,
+  artbookPostprocessComplete=null,
+  artbookRef=''
 }={}){
   const prompt=clean(request);
   if(!prompt)throw new Error('company development request required');
@@ -143,6 +167,7 @@ export function planCompanyDevelopmentTask({
   const companyQualityBar=createCompanyQualityBar(experienceState);
   const resolvedTarget=inferTarget(prompt,target);
   const newGame=isNewGameRequest(prompt);
+  const artbookLock=resolveArtbookLock({artbook,artbookStatus,artbookCutCount,artbookPostprocessComplete,artbookRef});
   const workbench=planVibeWorkbenchTask({request:prompt,target:resolvedTarget,gameId,file,knownBroken});
   const majorOwnerApprovalRequired=Boolean(workbench.companyDevelopment?.proposalApproval?.requiresOwnerApproval);
   const orchestratorBase=createVibeWorkPlan({
@@ -152,24 +177,38 @@ export function planCompanyDevelopmentTask({
     file,
     knownBroken
   });
+  const artbookWarnings=artbookLock.locked
+    ? [`완료 아트북 잠금: ${artbookLock.ref||'completed-artbook'}를 단일 컨셉 기준으로 유지`,`Vibe2 재기획 금지. 변경 필요 시 ARTBOOK_CHANGE_REQUEST`]
+    : [];
   const orchestrator=resolvedTarget==='unity'
     ? Object.freeze({
         ...orchestratorBase,
         target:'unity',
         candidateFiles:workbench.candidateFiles,
-        warnings:Object.freeze([...(orchestratorBase.warnings||[]),'Unity 대상 경로는 company bridge/workbench가 직접 관리']),
+        warnings:Object.freeze([...(orchestratorBase.warnings||[]),...artbookWarnings,'Unity 대상 경로는 company bridge/workbench가 직접 관리']),
         compatibilityAdapter:'company-unity-target'
       })
-    : orchestratorBase;
+    : Object.freeze({...orchestratorBase,warnings:Object.freeze([...(orchestratorBase.warnings||[]),...artbookWarnings])});
 
-  const flow=createCompanyFlow({gameId:gameId||'',maxRevisionRounds});
+  const flow=createCompanyFlow({
+    gameId:gameId||'',
+    maxRevisionRounds,
+    artbookStatus:artbookLock.status,
+    artbookCutCount:artbookLock.cutCount,
+    artbookPostprocessComplete:artbookLock.postprocessComplete,
+    artbookRef:artbookLock.ref
+  });
   const requestedStage=clean(stageId)||flow.currentStage;
-  const currentStage=stageById(requestedStage);
+  const effectiveStage=artbookLock.locked&&ARTBOOK_LOCKED_PREDESIGN_STAGES.includes(requestedStage)
+    ? 'technical-architecture'
+    : requestedStage;
+  const currentStage=stageById(effectiveStage);
   const assignment=createCompanyStageAssignment({
     stageId:currentStage.id,
     request:prompt,
     gameId:gameId||'',
-    departmentExperienceState:experienceState
+    departmentExperienceState:experienceState,
+    artbookLock
   });
 
   let reviewSummary=null;
@@ -191,6 +230,9 @@ export function planCompanyDevelopmentTask({
   if(mayCreateExecutionContract){
     const executionBase=createVibeExecutionContract({request:prompt,target:resolvedTarget==='unity'?'auto':resolvedTarget,responsibleFiles});
     const qualityBarChecks=[`회사 품질바 T${companyQualityBar.tier} ${companyQualityBar.name}: ${JSON.stringify(companyQualityBar.requirements)}`];
+    const artbookQa=artbookLock.locked
+      ? ['완료 아트북 10장과 실제 구현의 컨셉 일치 검사','장르·핵심루프·스토리·아트방향·전투·성장 컨셉 드리프트 없음','잠긴 아트북 변경 필요 시 ARTBOOK_CHANGE_REQUEST로 중단했는지 확인']
+      : [];
     const experienceQa=assignment.tasks.flatMap(task=>{
       const profile=task.experience;
       const checks=[`${task.role} LV${profile.level}: 근거 ${profile.evidenceMinimum}개 이상`];
@@ -203,12 +245,14 @@ export function planCompanyDevelopmentTask({
           ...executionBase,
           target:'unity',
           responsibleFiles:Object.freeze(responsibleFiles.map(clean).filter(Boolean)),
-          qa:Object.freeze([...(executionBase.qa||[]),...qualityBarChecks,...experienceQa,'Unity 컴파일','씬/프리팹 참조','Android 빌드','실기기 실행']),
+          qa:Object.freeze([...(executionBase.qa||[]),...qualityBarChecks,...artbookQa,...experienceQa,'Unity 컴파일','씬/프리팹 참조','Android 빌드','실기기 실행']),
+          artbookLock,
           compatibilityAdapter:'company-unity-target'
         })
       : Object.freeze({
           ...executionBase,
-          qa:Object.freeze([...(executionBase.qa||[]),...qualityBarChecks,...experienceQa])
+          qa:Object.freeze([...(executionBase.qa||[]),...qualityBarChecks,...artbookQa,...experienceQa]),
+          artbookLock
         });
   }
 
@@ -220,13 +264,15 @@ export function planCompanyDevelopmentTask({
   else if(ownerGate?.ownerDecision==='DROP')next='DROP';
   else if(currentStage.id!==OWNER_GATE_STAGE)next=nextStageId(currentStage.id);
 
+  const conceptPhaseRequired=newGame&&!artbookLock.locked;
   return Object.freeze({
-    version:4,
+    version:5,
     sync:VIBE2_COMPANY_SYNC,
     request:prompt,
     gameId:gameId?clean(gameId):null,
     target:resolvedTarget,
     newGame,
+    artbookLock,
     departmentExperience:experienceState,
     qualityBar:companyQualityBar,
     flow:Object.freeze({...flow,currentStage:currentStage.id,revisionRoundsUsed:Math.max(0,Number(revisionRoundsUsed)||0)}),
@@ -238,7 +284,11 @@ export function planCompanyDevelopmentTask({
     ownerGate,
     execution,
     routing:Object.freeze({
-      predevelopmentGateRequired:newGame,
+      predevelopmentGateRequired:conceptPhaseRequired,
+      completedArtbookLocked:artbookLock.locked,
+      skippedRedesignStages:artbookLock.locked?ARTBOOK_LOCKED_PREDESIGN_STAGES:freezeList([]),
+      conceptSource:artbookLock.locked?'completed-artbook':'company-predevelopment',
+      conceptChangeRule:artbookLock.locked?'ARTBOOK_CHANGE_REQUEST_REQUIRED':'normal-proposal-flow',
       majorOwnerApprovalRequired,
       maintenanceBypass,
       mayDispatch:assignment.autoExecute,
@@ -248,7 +298,7 @@ export function planCompanyDevelopmentTask({
       next,
       companyReviewRoles:COMPANY_REVIEW_ROLES,
       departmentExperienceRule:'verified-xp-strengthens-quality-process-without-expanding-authority',
-      rule:newGame?'new-game-must-pass-internal-and-owner-gates':majorOwnerApprovalRequired?'major-change-must-pass-owner-gate':'existing-game-protection-flow'
+      rule:artbookLock.locked?'locked-artbook-is-source-of-truth-vibe2-implementation-only':newGame?'new-game-must-pass-internal-and-owner-gates':majorOwnerApprovalRequired?'major-change-must-pass-owner-gate':'existing-game-protection-flow'
     })
   });
 }
