@@ -8,6 +8,7 @@ on:
       - 'artbook-submissions/**'
       - 'artbook-submission-queue.json'
       - 'tools/artbook-gate.mjs'
+      - 'tools/artbook-assemble.mjs'
 
 permissions:
   contents: write
@@ -29,15 +30,29 @@ jobs:
       - name: Validate real department submissions
         run: node tools/artbook-gate.mjs
 
-      - name: Persist gate status
+      - name: Read assembly readiness
+        id: gate
+        run: |
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs=require('fs');
+          const gate=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8'));
+          console.log(`ready=${gate.readyForDirectorAssembly===true?'true':'false'}`);
+          NODE
+
+      - name: Assemble verified five-section artbook
+        if: steps.gate.outputs.ready == 'true'
+        run: node tools/artbook-assemble.mjs
+
+      - name: Persist gate and assembled artbook
         run: |
           git config user.name "jaewoon-company-ai"
           git config user.email "actions@users.noreply.github.com"
           git add artbook-gate-status.json
+          git add artbook-submissions 2>/dev/null || true
           if git diff --cached --quiet; then
-            echo "No artbook gate-state changes."
+            echo "No artbook gate/assembly changes."
             exit 0
           fi
-          git commit -m "artbook-gate: record section readiness [skip ci]"
+          git commit -m "artbook-gate: record readiness and verified assembly [skip ci]"
           git pull --rebase origin main
           git push origin main
