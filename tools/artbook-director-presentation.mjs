@@ -5,6 +5,7 @@ import path from 'node:path';
 const ROLES=['planning','graphics','development','qa','balance'];
 const NAMES={planning:'기획',graphics:'그래픽',development:'개발',qa:'QA',balance:'밸런스'};
 const readJson=(f,v=null)=>{try{return JSON.parse(fs.readFileSync(f,'utf8'));}catch{return v;}};
+const writeJson=(f,v)=>{fs.mkdirSync(path.dirname(f),{recursive:true});fs.writeFileSync(f,JSON.stringify(v,null,2)+'\n');};
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const clip=(v,n)=>{const s=clean(v);return s.length>n?s.slice(0,n-1)+'…':s;};
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
