@@ -8,7 +8,7 @@
     "activeWorkOrder": null,
     "activeWorkOrderExists": false,
     "evidenceAdapterMismatch": false,
-    "jobLevelEvidenceUsed": false,
+    "jobLevelEvidenceUsed": true,
     "failureLogsUsed": true,
     "runningLabelAloneCountsAsWork": false,
     "directorMayGhostwriteMissingDepartmentWork": false
@@ -28,7 +28,15 @@
     "release:DEPENDENCY_BLOCKED"
   ],
   "workflowEvidence": {
-    "artbook": null,
+    "artbook": {
+      "id": 34283862258,
+      "status": "in_progress",
+      "conclusion": null,
+      "event": "push",
+      "createdAt": "2026-09-08T22:02:59Z",
+      "updatedAt": "2026-09-08T22:03:03Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34283862258"
+    },
     "homepage": null
   },
   "staff": {
@@ -38,7 +46,8 @@
       "status": "DONE",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
-        "queue-submission:planning"
+        "queue-submission:planning",
+        "workflow:34283862258:in_progress:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -55,7 +64,8 @@
       "status": "DONE",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
-        "queue-submission:development"
+        "queue-submission:development",
+        "workflow:34283862258:in_progress:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -72,7 +82,8 @@
       "status": "DONE",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
-        "queue-submission:qa"
+        "queue-submission:qa",
+        "workflow:34283862258:in_progress:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -89,7 +100,8 @@
       "status": "DONE",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
-        "queue-submission:graphics"
+        "queue-submission:graphics",
+        "workflow:34283862258:in_progress:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -106,7 +118,8 @@
       "status": "DONE",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
-        "queue-submission:balance"
+        "queue-submission:balance",
+        "workflow:34283862258:in_progress:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
