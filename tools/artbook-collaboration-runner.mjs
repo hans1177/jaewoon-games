@@ -14,37 +14,16 @@ function kstDate(){const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul
 const queue=readJson('artbook-submission-queue.json',{});
 const gameId=clean(process.env.ARTBOOK_GAME_ID||queue.currentDailyTarget),date=clean(process.env.ARTBOOK_DATE||kstDate());
 const base=path.join('artbook-submissions',gameId,date);
-const model=clean(process.env.ARTBOOK_LOCAL_MODEL||'qwen3:1.7b');
+const model=clean(process.env.ARTBOOK_LOCAL_MODEL||'qwen3:0.6b');
 const submissions={};
-for(const r of ROLES){
-  const file=path.join(base,`${r}.json`),data=readJson(file,null);
-  if(!data||String(data.status||'').toUpperCase()!=='SUBMITTED')throw new Error(`first-round submission missing: ${r}`);
-  submissions[r]={department:r,headline:data.headline||'',readiness:data.departmentReadiness||'NEEDS_VALIDATION',section:data.section,unverified:Array.isArray(data.unverified)?data.unverified:[]};
-}
+for(const r of ROLES){const file=path.join(base,`${r}.json`),data=readJson(file,null);if(!data||String(data.status||'').toUpperCase()!=='SUBMITTED')throw new Error(`first-round submission missing: ${r}`);submissions[r]={department:r,headline:data.headline||'',readiness:data.departmentReadiness||'NEEDS_VALIDATION',section:data.section,unverified:Array.isArray(data.unverified)?data.unverified:[]};}
 const own=submissions[role];
 const system=`/no_think\n너는 재운컴퍼니 ${NAMES[role]} 부서다. 지금은 1차 독립 검토가 끝난 뒤 처음으로 다른 네 부서 의견을 보는 2차 협업 단계다. 다른 부서 섹션을 대신 작성하거나 수정하지 않는다. 자기 담당 관점에서만 충돌과 연결점을 검토한다. 근거 없는 테스트 결과를 만들지 말고 실제 실행 근거가 없으면 RESULT에 미검증/미실행이라고 적는다. 숫자 품질 점수와 PASS/본개발/출시 승인을 만들지 않는다. 답은 한국어 JSON 객체만 출력한다. 필수 키는 agree(array), counter(array), test(array), result(array), decision(string), ownSectionAddendum(object), unverified(array)다. decision은 자기 부서가 다음에 무엇을 보완할지에 대한 결정이지 게임 제작 승인 판정이 아니다.`;
 const payload={gameId,date,reviewingDepartment:role,ownFirstRound:own,revealedAfterIndependentRound:Object.values(submissions)};
-async function call(){
-  const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,format:'json',messages:[{role:'system',content:system},{role:'user',content:JSON.stringify(payload,null,2)}],options:{temperature:0.2,seed:701+ROLES.indexOf(role)*131,num_ctx:16384,num_predict:1100}})});
-  if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
-  const packet=await response.json();
-  const raw=clean(packet?.message?.content).replace(/^```json\s*/i,'').replace(/```$/,'').trim();
-  return JSON.parse(raw);
-}
-const candidate=await call();
+async function call(numPredict){const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,format:'json',messages:[{role:'system',content:system},{role:'user',content:JSON.stringify(payload,null,2)}],options:{temperature:0.2,seed:701+ROLES.indexOf(role)*131,num_ctx:12288,num_predict:numPredict}})});if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);const packet=await response.json();const raw=clean(packet?.message?.content).replace(/^```json\s*/i,'').replace(/```$/,'').trim();return JSON.parse(raw);}
+let candidate;try{candidate=await call(850);}catch(first){console.error(`ARTBOOK_COLLAB_RETRY=${role}:${first.message}`);candidate=await call(520);}
 if(!candidate||typeof candidate!=='object'||Array.isArray(candidate))throw new Error('collaboration output is not object');
 const arr=(v,max=8)=>Array.isArray(v)?v.map(clean).filter(Boolean).slice(0,max):[];
-const review={
-  version:1,gameId,date,department:role,status:'REVIEWED',round:2,
-  runner:{type:'vibe2-local-open-model-department-bot',model,localInference:true,paidApi:false,independentFirstRoundCompleted:true},
-  protocol:'AGREE_COUNTER_TEST_RESULT_DECISION',
-  agree:arr(candidate.agree),counter:arr(candidate.counter),test:arr(candidate.test),result:arr(candidate.result),
-  decision:clean(candidate.decision||'추가 검증 후 자기 부서 파트 보완'),
-  ownSectionAddendum:candidate.ownSectionAddendum&&typeof candidate.ownSectionAddendum==='object'&&!Array.isArray(candidate.ownSectionAddendum)?candidate.ownSectionAddendum:{},
-  unverified:arr(candidate.unverified),
-  guard:{mayRewriteOtherDepartments:false,productionApproval:false,numericQualityScore:false}
-};
+const review={version:2,gameId,date,department:role,status:'REVIEWED',round:2,runner:{type:'vibe2-local-open-model-department-bot',model,localInference:true,paidApi:false,independentFirstRoundCompleted:true},protocol:'AGREE_COUNTER_TEST_RESULT_DECISION',agree:arr(candidate.agree),counter:arr(candidate.counter),test:arr(candidate.test),result:arr(candidate.result),decision:clean(candidate.decision||'추가 검증 후 자기 부서 파트 보완'),ownSectionAddendum:candidate.ownSectionAddendum&&typeof candidate.ownSectionAddendum==='object'&&!Array.isArray(candidate.ownSectionAddendum)?candidate.ownSectionAddendum:{},unverified:arr(candidate.unverified),guard:{mayRewriteOtherDepartments:false,productionApproval:false,numericQualityScore:false}};
 const output=path.join(base,'reviews',`${role}.json`);fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,JSON.stringify(review,null,2)+'\n');
-console.log(`ARTBOOK_COLLAB_REVIEWED=${role}`);
-console.log(`ARTBOOK_COLLAB_FILE=${output}`);
-console.log('CROSS_DEPARTMENT_GHOSTWRITING=NO');
+console.log(`ARTBOOK_COLLAB_REVIEWED=${role}`);console.log(`ARTBOOK_COLLAB_FILE=${output}`);console.log('CROSS_DEPARTMENT_GHOSTWRITING=NO');
