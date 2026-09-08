@@ -17,6 +17,7 @@ on:
       - assets/homepage-enhancements.js
       - assets/company-quality-bar.js
       - assets/vibe-company-orchestration-bridge.js
+      - tools/homepage-manager.mjs
       - tools/artbook-department-runner.mjs
       - tools/artbook-collaboration-runner.mjs
       - tools/artbook-gate.mjs
@@ -25,6 +26,9 @@ on:
       - tools/asset-health-check.mjs
       - tools/update-release-baselines.mjs
       - tools/award-postmortem-learning.mjs
+      - HOMEPAGE_OPERATIONS.md
+      - .github/agents/homepage.agent.md
+      - .github/workflows/homepage-manager.yml
       - .github/workflows/artbook-free-department-bots.yml
       - .github/workflows/artbook-section-gate.yml
       - .github/workflows/company-evolution-qa.yml
@@ -46,6 +50,7 @@ jobs:
           node --input-type=module --check < assets/homepage-enhancements.js
           node --input-type=module --check < assets/company-quality-bar.js
           node --input-type=module --check < assets/vibe-company-orchestration-bridge.js
+          node --check tools/homepage-manager.mjs
           node --check tools/artbook-department-runner.mjs
           node --check tools/artbook-collaboration-runner.mjs
           node --check tools/artbook-gate.mjs
@@ -54,6 +59,23 @@ jobs:
           node --check tools/asset-health-check.mjs
           node --check tools/update-release-baselines.mjs
           node --check tools/award-postmortem-learning.mjs
+
+      - name: Validate homepage manager contract
+        run: |
+          set -euo pipefail
+          grep -Fq 'otherGamesMayAppearOnHomepage: true' tools/homepage-manager.mjs
+          grep -Fq 'short-cards -> dedicated-artbook-detail-page' tools/homepage-manager.mjs
+          grep -Fq 'artbookVisibilityIsProductionApproval: false' tools/homepage-manager.mjs
+          grep -Fq "cron: '20 23 * * *'" .github/workflows/homepage-manager.yml
+          grep -Fq '홈 = 짧은 게임 카드' .github/agents/homepage.agent.md
+          grep -Fq '홈 = 짧은 카드 / 아트북 = 별도 상세 페이지' HOMEPAGE_OPERATIONS.md
+          if grep -Fq '새 게임 자동 공개 금지' .github/agents/homepage.agent.md; then
+            echo 'stale homepage publication ban returned' >&2
+            exit 1
+          fi
+          node tools/homepage-manager.mjs
+          grep -Fq '"manager": "homepage"' homepage-manager-status.json
+          echo 'HOMEPAGE_MANAGER_CONTRACT=PASS'
 
       - name: Validate free department bot contract
         run: |
@@ -100,6 +122,7 @@ jobs:
           grep -Fq 'game-artbooks.json' assets/homepage-enhancements.js
           grep -Fq '다른 게임 아트북' assets/homepage-enhancements.js
           grep -Fq 'preArtbookDetails' assets/homepage-enhancements.js
+          grep -Fq 'artbook.html?id=' assets/homepage-enhancements.js
           grep -Fq '하루 1권 · 5개 부서 협업' assets/homepage-enhancements.js
           grep -Fq '웹 실행 양호' assets/homepage-enhancements.js
           if grep -Fq '건강 ${h.score}' assets/homepage-enhancements.js; then
