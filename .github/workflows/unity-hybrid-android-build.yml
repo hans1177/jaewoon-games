@@ -16,6 +16,9 @@ permissions:
   actions: write
   contents: write
 
+env:
+  JAEWOON_LOCAL_RUNNER_ENABLED: 'false'
+
 concurrency:
   group: unity-hybrid-android-build
   cancel-in-progress: false
@@ -90,6 +93,18 @@ jobs:
           import datetime as dt, json, os, sys, time, urllib.request
 
           output = sys.argv[1]
+
+          if os.environ.get('JAEWOON_LOCAL_RUNNER_ENABLED', '').lower() != 'true':
+              target = 'cloud'
+              age = -1
+              reason = 'local-route-locked'
+              print(f'[ROUTE] target={target} reason={reason} heartbeat_age_seconds={age}')
+              with open(output, 'a', encoding='utf-8') as f:
+                  f.write(f'target={target}\n')
+                  f.write(f'heartbeat_age_seconds={age}\n')
+                  f.write(f'route_reason={reason}\n')
+              raise SystemExit(0)
+
           repo = os.environ['GH_REPOSITORY']
           token = os.environ['GH_TOKEN']
           api = f'https://api.github.com/repos/{repo}'
