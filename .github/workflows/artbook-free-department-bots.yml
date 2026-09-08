@@ -3,13 +3,14 @@ name: Free Artbook Department Bots
 on:
   workflow_dispatch:
   schedule:
-    # 08:05 KST every day. Runs only when today's work order exists.
+    # 08:05 KST. Runs only when today's work order exists.
     - cron: '5 23 * * *'
   push:
     branches: [main]
     paths:
       - 'artbook-work-orders/**'
       - 'tools/artbook-department-runner.mjs'
+      - 'tools/artbook-collaboration-runner.mjs'
       - '.github/workflows/artbook-free-department-bots.yml'
 
 permissions:
@@ -20,7 +21,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  submit-five-independent-sections:
+  submit-five-independent-sections-and-reviews:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -83,20 +84,56 @@ jobs:
           echo 'PAID_API=NO'
           echo 'API_KEY_REQUIRED=NO'
 
-      - name: Run five isolated department reviews
+      - name: Round 1 - five isolated department reviews
         if: steps.target.outputs.run == 'true'
         shell: bash
         run: |
           set -euo pipefail
           DATE_KST='${{ steps.target.outputs.date }}'
           GAME_ID='${{ steps.target.outputs.game_id }}'
+          BASE="artbook-submissions/${GAME_ID}/${DATE_KST}"
           for ROLE in planning graphics development qa balance; do
-            echo "=== INDEPENDENT_DEPARTMENT=$ROLE ==="
+            if [ -f "$BASE/$ROLE.json" ]; then
+              echo "ROUND1_PRESERVE_EXISTING=$ROLE"
+              continue
+            fi
+            echo "=== ROUND1_INDEPENDENT_DEPARTMENT=$ROLE ==="
             ARTBOOK_ROLE="$ROLE" ARTBOOK_DATE="$DATE_KST" ARTBOOK_GAME_ID="$GAME_ID" \
               node tools/artbook-department-runner.mjs
           done
 
-      - name: Validate five real submissions
+      - name: Verify round 1 is complete before opinions are revealed
+        if: steps.target.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          DATE_KST='${{ steps.target.outputs.date }}'
+          GAME_ID='${{ steps.target.outputs.game_id }}'
+          BASE="artbook-submissions/${GAME_ID}/${DATE_KST}"
+          for ROLE in planning graphics development qa balance; do
+            test -s "$BASE/$ROLE.json"
+          done
+          echo 'INDEPENDENT_ROUND=5/5'
+
+      - name: Round 2 - AGREE COUNTER TEST RESULT DECISION
+        if: steps.target.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          DATE_KST='${{ steps.target.outputs.date }}'
+          GAME_ID='${{ steps.target.outputs.game_id }}'
+          BASE="artbook-submissions/${GAME_ID}/${DATE_KST}/reviews"
+          for ROLE in planning graphics development qa balance; do
+            if [ -f "$BASE/$ROLE.json" ]; then
+              echo "ROUND2_PRESERVE_EXISTING=$ROLE"
+              continue
+            fi
+            echo "=== ROUND2_COLLAB_DEPARTMENT=$ROLE ==="
+            ARTBOOK_ROLE="$ROLE" ARTBOOK_DATE="$DATE_KST" ARTBOOK_GAME_ID="$GAME_ID" \
+              node tools/artbook-collaboration-runner.mjs
+          done
+
+      - name: Validate five sections and five collaboration reviews
         if: steps.target.outputs.run == 'true'
         shell: bash
         run: |
@@ -107,14 +144,16 @@ jobs:
           node - <<'NODE'
           const fs=require('fs');
           const gate=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8'));
-          if(gate.readyCount!==5||gate.requiredCount!==5||gate.readyForDirectorAssembly!==true){
-            throw new Error(`five department submissions not ready: ${gate.readyCount}/${gate.requiredCount}`);
+          if(gate.readyCount!==5||gate.reviewReadyCount!==5||gate.readyForDirectorAssembly!==true){
+            throw new Error(`artbook collaboration not ready: sections ${gate.readyCount}/5, reviews ${gate.reviewReadyCount}/5`);
           }
           console.log('FREE_DEPARTMENT_SUBMISSIONS=5/5');
+          console.log('FREE_DEPARTMENT_REVIEWS=5/5');
+          console.log('COLLABORATION_PROTOCOL=AGREE_COUNTER_TEST_RESULT_DECISION');
           NODE
           git checkout -- artbook-gate-status.json
 
-      - name: Commit department-owned submissions
+      - name: Commit department-owned sections and reviews
         if: steps.target.outputs.run == 'true'
         shell: bash
         run: |
@@ -128,7 +167,7 @@ jobs:
             echo 'ARTBOOK_DEPARTMENT_COMMIT=NO_CHANGES'
             exit 0
           fi
-          git commit -m "artbook-departments: submit ${GAME_ID} five independent sections"
+          git commit -m "artbook-departments: submit ${GAME_ID} sections and collaboration reviews"
           git pull --rebase origin main
           git push origin main
           echo 'ARTBOOK_DEPARTMENT_COMMIT=SUCCESS'
