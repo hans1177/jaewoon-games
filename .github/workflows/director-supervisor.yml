@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '17 * * * *' # hourly supervision
+  workflow_run:
+    workflows:
+      - Free Artbook Department Bots
+      - Homepage Manager
+    types: [completed]
   push:
     branches: [main]
     paths:
@@ -42,20 +47,23 @@ jobs:
       - name: Sync main
         run: git pull --ff-only origin main
 
-      - name: Read actual workflow and department job evidence
+      - name: Read actual workflow, department jobs and failed logs
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" > /tmp/actions-runs.json
           test -s /tmp/actions-runs.json
+
           ARTBOOK_RUN_ID=$(node - <<'NODE'
           const fs=require('fs');
           const p=JSON.parse(fs.readFileSync('/tmp/actions-runs.json','utf8'));
-          const run=(p.workflow_runs||[]).find(r=>r.name==='Free Artbook Department Bots');
-          process.stdout.write(run?.id?String(run.id):'');
+          const runs=(p.workflow_runs||[]).filter(r=>r.name==='Free Artbook Department Bots');
+          runs.sort((a,b)=>new Date(b.updated_at||b.created_at||0)-new Date(a.updated_at||a.created_at||0));
+          process.stdout.write(runs[0]?.id?String(runs[0].id):'');
           NODE
           )
+
           if [ -n "$ARTBOOK_RUN_ID" ]; then
             gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${ARTBOOK_RUN_ID}/jobs?per_page=100" > /tmp/artbook-jobs.json
           else
@@ -63,8 +71,23 @@ jobs:
           fi
           test -s /tmp/artbook-jobs.json
 
+          mkdir -p /tmp/director-failed-logs
+          node - <<'NODE' > /tmp/failed-round1-jobs.tsv
+          const fs=require('fs');
+          const p=JSON.parse(fs.readFileSync('/tmp/artbook-jobs.json','utf8'));
+          for(const job of p.jobs||[]){
+            const m=String(job.name||'').match(/^round1 \((planning|development|qa|graphics|balance)\)$/i);
+            if(m&&job.conclusion==='failure')console.log(`${m[1].toLowerCase()}\t${job.id}`);
+          }
+          NODE
+
+          while IFS=$'\t' read -r ROLE JOB_ID; do
+            [ -n "$ROLE" ] || continue
+            gh run view "$ARTBOOK_RUN_ID" --repo "$GITHUB_REPOSITORY" --job "$JOB_ID" --log > "/tmp/director-failed-logs/${ROLE}.log" 2>&1 || true
+          done < /tmp/failed-round1-jobs.tsv
+
       - name: Run director staff supervision
-        run: node tools/director-supervisor.mjs /tmp/actions-runs.json /tmp/artbook-jobs.json
+        run: node tools/director-supervisor.mjs /tmp/actions-runs.json /tmp/artbook-jobs.json /tmp/director-failed-logs
 
       - name: Validate supervisor contract
         run: |
@@ -78,6 +101,10 @@ jobs:
           if(s.checks?.runningLabelAloneCountsAsWork!==false)throw new Error('running label can falsely count as work');
           if(s.checks?.directorMayGhostwriteMissingDepartmentWork!==false)throw new Error('director ghostwriting protection missing');
           if(s.workflowEvidence?.artbook&&!s.checks?.jobLevelEvidenceUsed)throw new Error('artbook run exists but department job evidence was not used');
+          for(const d of ['planning','development','qa','graphics','balance']){
+            const item=s.staff?.[d];
+            if(item?.jobEvidence?.conclusion==='failure'&&!item.directCause)throw new Error(`${d}: failed job has no direct cause evidence`);
+          }
           console.log('DIRECTOR_SUPERVISION_QA=PASS');
           NODE
 
