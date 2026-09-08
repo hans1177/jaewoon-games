@@ -8,8 +8,10 @@ on:
     branches: [main]
     paths:
       - 'artbook-work-orders/**'
+      - 'artbook-second-work-queue.json'
       - 'tools/artbook-prepare-daily.mjs'
       - 'tools/artbook-department-runner.mjs'
+      - 'tools/artbook-second-work-runner.mjs'
       - 'tools/artbook-collaboration-runner.mjs'
       - 'tools/artbook-assemble.mjs'
       - '.github/workflows/artbook-free-department-bots.yml'
@@ -31,6 +33,7 @@ jobs:
     outputs:
       run: ${{ steps.target.outputs.run }}
       date: ${{ steps.target.outputs.date }}
+      mode: ${{ steps.target.outputs.mode }}
       game_id: ${{ steps.target.outputs.game_id }}
       work_order: ${{ steps.target.outputs.work_order }}
     steps:
@@ -38,7 +41,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-      - name: Prepare next unfinished game
+      - name: Prepare daily initial or second work
         run: node tools/artbook-prepare-daily.mjs
       - name: Resolve prepared target
         id: target
@@ -50,6 +53,7 @@ jobs:
           const c=JSON.parse(fs.readFileSync('artbook-daily-context.json','utf8'));
           console.log(`run=${c.run?'true':'false'}`);
           console.log(`date=${c.date||''}`);
+          console.log(`mode=${c.mode||''}`);
           console.log(`game_id=${c.gameId||''}`);
           console.log(`work_order=${c.workOrderPath||''}`);
           NODE
@@ -101,12 +105,19 @@ jobs:
           echo "LOCAL_MODEL=$ARTBOOK_LOCAL_MODEL"
           echo 'PAID_API=NO'
           echo 'API_KEY_REQUIRED=NO'
-      - name: Independent department review
+      - name: Department initial or second work
         env:
           ARTBOOK_ROLE: ${{ matrix.role }}
           ARTBOOK_DATE: ${{ needs.context.outputs.date }}
           ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
-        run: node tools/artbook-department-runner.mjs
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ '${{ needs.context.outputs.mode }}' = 'SECOND_WORK' ]; then
+            node tools/artbook-second-work-runner.mjs
+          else
+            node tools/artbook-department-runner.mjs
+          fi
       - name: Upload department-owned section
         uses: actions/upload-artifact@v4
         with:
@@ -122,13 +133,13 @@ jobs:
     if: needs.context.outputs.run == 'true'
     runs-on: ubuntu-latest
     steps:
-      - name: Download all independent sections
+      - name: Download all department sections
         uses: actions/download-artifact@v4
         with:
           pattern: round1-*
           path: .artbook-round1
           merge-multiple: true
-      - name: Verify all five independent sections exist
+      - name: Verify all five sections exist
         shell: bash
         run: |
           set -euo pipefail
@@ -136,8 +147,8 @@ jobs:
             test -s ".artbook-round1/$ROLE.json"
             test -s ".artbook-round1/visuals/$ROLE.svg"
           done
-          echo 'INDEPENDENT_ROUND=5/5'
-      - name: Bundle independent round for collaboration
+          echo 'DEPARTMENT_ROUND=5/5'
+      - name: Bundle department round for peer review
         uses: actions/upload-artifact@v4
         with:
           name: round1-bundle
@@ -160,7 +171,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-      - name: Restore first-round submissions only after 5-of-5 exists
+      - name: Restore all five department results
         uses: actions/download-artifact@v4
         with:
           name: round1-bundle
@@ -179,13 +190,13 @@ jobs:
           exit 1
       - name: Pull free open model
         run: ollama pull "$ARTBOOK_LOCAL_MODEL"
-      - name: Cross-department review
+      - name: Rate other departments with one improvement and five-star scale
         env:
           ARTBOOK_ROLE: ${{ matrix.role }}
           ARTBOOK_DATE: ${{ needs.context.outputs.date }}
           ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
         run: node tools/artbook-collaboration-runner.mjs
-      - name: Upload department collaboration review
+      - name: Upload peer rating review
         uses: actions/upload-artifact@v4
         with:
           name: round2-${{ matrix.role }}
@@ -208,18 +219,18 @@ jobs:
         with:
           name: daily-work-order
           path: .
-      - name: Restore five independent sections
+      - name: Restore five department sections
         uses: actions/download-artifact@v4
         with:
           name: round1-bundle
           path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
-      - name: Restore five collaboration reviews
+      - name: Restore five peer rating reviews
         uses: actions/download-artifact@v4
         with:
           pattern: round2-*
           path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews
           merge-multiple: true
-      - name: Validate 5 sections and 5 reviews
+      - name: Validate 5 sections and 5 peer reviews
         env:
           ARTBOOK_DATE: ${{ needs.context.outputs.date }}
           ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
@@ -228,9 +239,10 @@ jobs:
           node - <<'NODE'
           const fs=require('fs');const g=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8'));
           if(g.readyCount!==5||g.reviewReadyCount!==5||g.readyForDirectorAssembly!==true)throw new Error(`artbook not ready: ${g.readyCount}/5 + ${g.reviewReadyCount}/5`);
-          console.log('FREE_DEPARTMENT_SUBMISSIONS=5/5');console.log('FREE_DEPARTMENT_REVIEWS=5/5');
+          if(g.collaborationProtocol!=='PEER_IMPROVEMENT_STAR_5')throw new Error('peer rating protocol mismatch');
+          console.log('FREE_DEPARTMENT_SUBMISSIONS=5/5');console.log('FREE_PEER_RATINGS=5/5');
           NODE
-      - name: Assemble verified initial artbook with department opinions
+      - name: Assemble ratings and schedule next-day second work when needed
         env:
           ARTBOOK_DATE: ${{ needs.context.outputs.date }}
           ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
@@ -239,12 +251,13 @@ jobs:
         env:
           ARTBOOK_DATE: ${{ needs.context.outputs.date }}
           ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
+          ARTBOOK_MODE: ${{ needs.context.outputs.mode }}
         run: |
           node - <<'NODE'
-          const fs=require('fs');const q=JSON.parse(fs.readFileSync('artbook-submission-queue.json','utf8'));const roles=['planning','graphics','development','qa','balance'];
+          const fs=require('fs');const q=JSON.parse(fs.readFileSync('artbook-submission-queue.json','utf8'));const roles=['planning','graphics','development','qa','balance'];const mode=process.env.ARTBOOK_MODE||'INITIAL';
           q.updatedAt=process.env.ARTBOOK_DATE;q.currentDailyTarget=process.env.ARTBOOK_GAME_ID;
-          q.currentTargetExecution={...(q.currentTargetExecution||{}),date:process.env.ARTBOOK_DATE,readySections:5,requiredSections:5,readyReviews:5,requiredReviews:5,directorAssemblyReady:true,runnerDispatch:'FREE_LOCAL_OPEN_MODEL_COMPLETE',runnerModel:'qwen3:0.6b',runnerPaidApi:false,runnerApiKeyRequired:false,firstRoundIndependent:true,secondRoundProtocol:'AGREE_COUNTER_TEST_RESULT_DECISION',departmentOpinionsPublished:true,assemblyGrantsProductionApproval:false};
-          const g=(q.games||[]).find(x=>x.gameId===process.env.ARTBOOK_GAME_ID);if(g){g.status='INITIAL_ARTBOOK_ASSEMBLED_AWAITING_OWNER_DECISION';g.sectionsReady=[...roles];g.reviewsReady=[...roles];g.directorAssemblyReady=true;g.currentStage='initial-artbook-assembled-awaiting-owner-decision';}
+          q.currentTargetExecution={...(q.currentTargetExecution||{}),date:process.env.ARTBOOK_DATE,mode,readySections:5,requiredSections:5,readyReviews:5,requiredReviews:5,directorAssemblyReady:true,runnerDispatch:mode==='SECOND_WORK'?'FREE_LOCAL_OPEN_MODEL_SECOND_WORK_COMPLETE':'FREE_LOCAL_OPEN_MODEL_COMPLETE',runnerModel:'qwen3:0.6b',runnerPaidApi:false,runnerApiKeyRequired:false,firstRoundIndependent:mode==='INITIAL',secondRoundProtocol:'PEER_IMPROVEMENT_STAR_5',departmentOpinionsPublished:true,assemblyGrantsProductionApproval:false};
+          const g=(q.games||[]).find(x=>x.gameId===process.env.ARTBOOK_GAME_ID);if(g){g.status=mode==='SECOND_WORK'?'SECOND_WORK_ASSEMBLED_AWAITING_OWNER_DECISION':'INITIAL_ARTBOOK_ASSEMBLED_AWAITING_OWNER_DECISION';g.sectionsReady=[...roles];g.reviewsReady=[...roles];g.directorAssemblyReady=true;g.currentStage=mode==='SECOND_WORK'?'second-work-assembled-awaiting-owner-decision':'initial-artbook-assembled-awaiting-owner-decision';}
           fs.writeFileSync('artbook-submission-queue.json',JSON.stringify(q,null,2)+'\n');
           NODE
       - name: Commit verified department work and integrated draft
@@ -254,8 +267,9 @@ jobs:
           GAME_ID='${{ needs.context.outputs.game_id }}';DATE_KST='${{ needs.context.outputs.date }}'
           git config user.name 'jaewoon-company-department-bots';git config user.email 'actions@users.noreply.github.com'
           git add "artbook-work-orders/${DATE_KST}-${GAME_ID}.json" "artbook-submissions/${GAME_ID}/${DATE_KST}/" artbook-gate-status.json game-artbooks.json artbook-submission-queue.json
+          git add artbook-second-work-queue.json 2>/dev/null || true
           if git diff --cached --quiet; then echo 'ARTBOOK_FINAL_COMMIT=NO_CHANGES';exit 0;fi
-          git commit -m "artbook: assemble ${GAME_ID} verified five-department draft"
+          git commit -m "artbook: assemble ${GAME_ID} ${DATE_KST} department draft"
           git pull --rebase origin main
           git push origin main
           echo 'ARTBOOK_FINAL_COMMIT=SUCCESS';echo 'PRODUCTION_APPROVAL=NO'
