@@ -50,6 +50,24 @@
       "evidence": [
         "owner-authorized-automatic-game-work"
       ]
+    },
+    {
+      "id": "wl-chatgpt-vibe2-auto-planner",
+      "worker": "chatgpt",
+      "taskId": "vibe2-autonomous-self-planner",
+      "gameId": null,
+      "files": [
+        "tools/vibe2-auto-planner.mjs",
+        "qa/vibe2-auto-planner.test.mjs",
+        "vibe2-runtime.json"
+      ],
+      "baseSha": "a67b0925613eeb6ee57593587f8b5c9554fb06eb",
+      "acquiredAt": "2026-09-08T20:44:00.000Z",
+      "expiresAt": "2026-09-08T21:29:00.000Z",
+      "status": "active",
+      "evidence": [
+        "owner-authorized-vibe2-self-judgement"
+      ]
     }
   ]
 }
