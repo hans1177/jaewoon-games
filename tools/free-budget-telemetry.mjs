@@ -16,9 +16,24 @@ const arg=(name,fallback=null)=>{
 };
 const finite=(value,fallback=0)=>Number.isFinite(Number(value))?Number(value):fallback;
 
+export async function fetchRepositoryVisibility(repository,{fetchImpl=globalThis.fetch}={}){
+  if(typeof fetchImpl!=='function')return 'unknown';
+  try{
+    const response=await fetchImpl(`https://api.github.com/repos/${repository}`,{
+      headers:{'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2026-03-10'},
+    });
+    if(!response?.ok)return 'unknown';
+    const data=await response.json();
+    if(data?.visibility==='public'||data?.private===false)return 'public';
+    if(data?.visibility==='private'||data?.private===true)return 'private';
+    return 'unknown';
+  }catch{return 'unknown';}
+}
+
 export function buildOperationalFreeBudgetTelemetry({
   repository='hans1177/jaewoon-games',
   visibility='unknown',
+  visibilitySource='UNVERIFIED',
   runner='unknown',
   cashKRW=0,
   paidApi=false,
@@ -40,7 +55,7 @@ export function buildOperationalFreeBudgetTelemetry({
   const modelCapOk=modelCallsN>=0&&modelCallsN<=maxModelCallsN;
   const runnerCapOk=runnerMinutesN>=0&&runnerMinutesN<=maxRunnerMinutesN;
 
-  const actionsVerified=exactRepo&&publicRepo&&standardRunner;
+  const actionsVerified=exactRepo&&publicRepo&&standardRunner&&visibilitySource==='GITHUB_REPO_API';
   const actions=actionsVerified?{
     providerId:'GITHUB_PUBLIC_STANDARD',
     resourceType:'ACTIONS_RUNNER',
@@ -49,9 +64,10 @@ export function buildOperationalFreeBudgetTelemetry({
     metered:false,
     remaining:null,
     remainingRatio:1,
-    source:'GITHUB_PUBLIC_STANDARD_POLICY',
+    source:'GITHUB_PUBLIC_STANDARD_POLICY+GITHUB_REPO_API',
     repository,
     visibility,
+    visibilitySource,
     runner,
   }:{
     providerId:'GITHUB_PUBLIC_STANDARD',
@@ -64,6 +80,7 @@ export function buildOperationalFreeBudgetTelemetry({
     source:'FAIL_CLOSED_RUNTIME_IDENTITY',
     repository,
     visibility,
+    visibilitySource,
     runner,
   };
 
@@ -80,7 +97,7 @@ export function buildOperationalFreeBudgetTelemetry({
 
   const failures=[];
   if(!exactRepo)failures.push('UNEXPECTED_REPOSITORY');
-  if(!publicRepo)failures.push('PUBLIC_VISIBILITY_NOT_VERIFIED');
+  if(!publicRepo||visibilitySource!=='GITHUB_REPO_API')failures.push('PUBLIC_VISIBILITY_NOT_VERIFIED');
   if(!standardRunner)failures.push('STANDARD_RUNNER_NOT_VERIFIED');
   if(!cashOk)failures.push('CASH_BUDGET_FORBIDDEN');
   if(!paidOk)failures.push('PAID_API_FORBIDDEN');
@@ -101,6 +118,7 @@ export function buildOperationalFreeBudgetTelemetry({
     execution:Object.freeze({
       repository,
       visibility,
+      visibilitySource,
       runner,
       runnerMinutes:runnerMinutesN,
       maxRunnerMinutes:maxRunnerMinutesN,
@@ -109,11 +127,16 @@ export function buildOperationalFreeBudgetTelemetry({
   });
 }
 
-function main(){
+async function main(){
   const portfolio=readJson('autonomous-portfolio.json',{});
+  const repository=arg('repository',process.env.GITHUB_REPOSITORY||'hans1177/jaewoon-games');
+  const verifyRepo=String(arg('verify-public-repo','false'))==='true';
+  const visibility=verifyRepo?await fetchRepositoryVisibility(repository):arg('visibility',process.env.JAEWOON_REPO_VISIBILITY||'unknown');
+  const visibilitySource=verifyRepo?'GITHUB_REPO_API':arg('visibility-source','UNVERIFIED');
   const telemetry=buildOperationalFreeBudgetTelemetry({
-    repository:arg('repository',process.env.GITHUB_REPOSITORY||'hans1177/jaewoon-games'),
-    visibility:arg('visibility',process.env.JAEWOON_REPO_VISIBILITY||'unknown'),
+    repository,
+    visibility,
+    visibilitySource,
     runner:arg('runner',process.env.JAEWOON_RUNNER_LABEL||'unknown'),
     cashKRW:finite(arg('cash-krw','0'),0),
     paidApi:String(arg('paid-api',String(portfolio.paidApi!==false)))==='true',
@@ -129,6 +152,8 @@ function main(){
   if(!telemetry.allowed)process.exitCode=2;
 }
 
-if(import.meta.url===pathToFileURL(process.argv[1]).href)main();
+if(import.meta.url===pathToFileURL(process.argv[1]).href){
+  main().catch(error=>{console.error(error.stack||error.message);process.exitCode=2;});
+}
 
 export { STANDARD_PUBLIC_RUNNERS };
