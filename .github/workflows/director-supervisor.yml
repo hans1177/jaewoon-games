@@ -1,0 +1,83 @@
+name: Director Staff Supervisor
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *' # hourly supervision
+  push:
+    branches: [main]
+    paths:
+      - 'company-directive.json'
+      - 'company-status.json'
+      - 'artbook-submission-queue.json'
+      - 'artbook-work-orders/**'
+      - 'artbook-submissions/**'
+      - 'homepage-manager-status.json'
+      - 'tools/director-supervisor.mjs'
+      - 'tools/artbook-department-runner.mjs'
+      - '.github/agents/director.agent.md'
+      - '.github/workflows/director-supervisor.yml'
+      - '.github/workflows/artbook-free-department-bots.yml'
+      - '.github/workflows/homepage-manager.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: director-staff-supervisor-main
+  cancel-in-progress: true
+
+jobs:
+  supervise:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Sync main
+        run: git pull --ff-only origin main
+
+      - name: Read actual workflow evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" > /tmp/actions-runs.json
+          test -s /tmp/actions-runs.json
+
+      - name: Run director staff supervision
+        run: node tools/director-supervisor.mjs /tmp/actions-runs.json
+
+      - name: Validate supervisor contract
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs=require('fs');
+          const s=JSON.parse(fs.readFileSync('director-supervision-status.json','utf8'));
+          const required=['planning','development','qa','graphics','balance','homepage','release','director'];
+          for(const d of required){if(!s.staff?.[d])throw new Error(`missing staff check: ${d}`);}
+          if(s.checks?.staffChecked!=='8/8')throw new Error('staff check is not 8/8');
+          if(s.checks?.runningLabelAloneCountsAsWork!==false)throw new Error('running label can falsely count as work');
+          if(s.checks?.directorMayGhostwriteMissingDepartmentWork!==false)throw new Error('director ghostwriting protection missing');
+          console.log('DIRECTOR_SUPERVISION_QA=PASS');
+          NODE
+
+      - name: Commit supervision state when changed
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-director-supervisor'
+          git config user.email 'actions@users.noreply.github.com'
+          git add director-supervision-status.json
+          if git diff --cached --quiet; then
+            echo 'DIRECTOR_SUPERVISION_COMMIT=NO_CHANGES'
+            exit 0
+          fi
+          git commit -m 'director: record staff supervision state [skip ci]'
+          git pull --rebase origin main
+          git push origin main
+          echo 'DIRECTOR_SUPERVISION_COMMIT=SUCCESS'
