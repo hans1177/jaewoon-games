@@ -1,24 +1,5 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": [
-    {
-      "id": "wl-chatgpt-company-lock-integration",
-      "worker": "chatgpt",
-      "taskId": "company-main-work-lock-integration",
-      "gameId": null,
-      "files": [
-        "AGENTS.md",
-        "COMPANY_FLOW.md",
-        "assets/vibe-company-orchestration-bridge.js"
-      ],
-      "baseSha": "c7423de5be0486789a89f666dd6160e37cf22360",
-      "acquiredAt": "2026-09-08T20:16:30.000Z",
-      "expiresAt": "2026-09-08T21:01:30.000Z",
-      "status": "active",
-      "evidence": [
-        "user-authorized-company-main-work"
-      ]
-    }
-  ]
+  "locks": []
 }
