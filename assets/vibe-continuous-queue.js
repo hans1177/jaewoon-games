@@ -176,7 +176,14 @@ export function finishVibeQueueTask(queueInput, {
     if (normalizedOutcome === 'CANCELLED') return freeze({ ...task, status: 'cancelled', evidence: mergedEvidence, lastOutcome: 'CANCELLED', blocker: clean(blocker) || null });
     const nextRetries = task.retries + 1;
     const canRetry = Boolean(retryable && nextRetries <= task.maxRetries);
-    return freeze({ ...task, status: canRetry ? 'queued' : 'failed', retries: nextRetries, evidence: mergedEvidence, lastOutcome: 'FAIL', blocker: clean(blocker) || null });
+    return freeze({
+      ...task,
+      status: canRetry ? 'queued' : 'failed',
+      retries: nextRetries,
+      evidence: mergedEvidence,
+      lastOutcome: 'FAIL',
+      blocker: canRetry ? null : (clean(blocker) || 'retry-limit-exceeded')
+    });
   });
   const nextQueue = createVibeContinuousQueue(tasks);
   const next = selectNextVibeQueueTask(nextQueue);
