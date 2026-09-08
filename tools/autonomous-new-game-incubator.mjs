@@ -9,6 +9,14 @@ const unique=v=>[...new Set((v||[]).map(clean).filter(Boolean))];
 const slugify=v=>clean(v).toLowerCase().replace(/[^a-z0-9가-힣]+/g,'-').replace(/^-+|-+$/g,'').slice(0,48);
 const readJson=(file,fallback={})=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return structuredClone(fallback);}};
 const writeJson=(file,value)=>{fs.mkdirSync(file.includes('/')?file.slice(0,file.lastIndexOf('/')):'.',{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
+const firstText=(...values)=>{for(const value of values){const text=clean(value);if(text)return text;}return'';};
+const listFrom=value=>{
+  if(Array.isArray(value))return unique(value);
+  if(typeof value!=='string')return[];
+  return unique(value.split(/\r?\n|[|;•]+/).map(x=>x.replace(/^\s*(?:[-*]|\d+[.)])\s*/,'')));
+};
+const firstList=(...values)=>{for(const value of values){const items=listFrom(value);if(items.length)return items;}return[];};
+const fillTo=(items,count,factories)=>{const out=unique(items);for(const factory of factories){if(out.length>=count)break;const value=clean(typeof factory==='function'?factory():factory);if(value&&!out.includes(value))out.push(value);}return out.slice(0,Math.max(count,out.length));};
 
 function kstDate(value=new Date()){
   const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(value));
@@ -17,6 +25,61 @@ function kstDate(value=new Date()){
 }
 export function conceptCreatedOnKstDate(state,date=kstDate()){
   return (state.candidates||[]).some(candidate=>candidate.createdAt&&kstDate(candidate.createdAt)===date);
+}
+
+export function normalizeIncubatorState(raw={}){
+  const state=raw&&typeof raw==='object'&&!Array.isArray(raw)?structuredClone(raw):{};
+  state.version=Math.max(2,Number(state.version)||0);
+  state.status=clean(state.status)||'ACTIVE';
+  if(!Array.isArray(state.candidates))state.candidates=[];
+  if(!Number.isInteger(state.nextCandidateNumber)||state.nextCandidateNumber<1)state.nextCandidateNumber=1;
+  return state;
+}
+
+export function normalizeOperationalConceptProposal(input={}){
+  const proposal=input&&typeof input==='object'&&!Array.isArray(input)?input:{};
+  const name=firstText(proposal.name,proposal.gameName,proposal.title);
+  const slug=slugify(firstText(proposal.slug,name));
+  const identitySentence=firstText(proposal.identitySentence,proposal.identity,proposal.differentiation);
+  const coreLoop=firstText(proposal.coreLoop,proposal.gameplayLoop,proposal.loop);
+  const storyHook=firstText(proposal.storyHook,proposal.story,proposal.worldHook);
+  const prototypeHypothesis=firstText(proposal.prototypeHypothesis,proposal.hypothesis,proposal.testHypothesis);
+  const styleProfile=firstText(proposal.styleProfile,proposal.visualStyle,proposal.style);
+
+  let signatureSystems=firstList(proposal.signatureSystems,proposal.signatureSystem,proposal.signatureMechanics,proposal.signatureMechanic);
+  let signatureScenes=firstList(proposal.signatureScenes,proposal.signatureScene,proposal.keyScenes,proposal.memorableScenes);
+  let worldRules=firstList(proposal.worldRules,proposal.worldRule,proposal.rules);
+  let forbiddenPatterns=firstList(proposal.forbiddenPatterns,proposal.forbiddenPattern,proposal.forbidden,proposal.antiPatterns);
+  let risks=firstList(proposal.risks,proposal.risk,proposal.keyRisks);
+
+  // The local 0.6B model must provide the creative spine. Deterministic completion only
+  // expands missing list-shaped contract fields; it never invents the name/identity/loop/story/hypothesis/style.
+  if(name&&coreLoop&&storyHook&&prototypeHypothesis){
+    signatureSystems=fillTo(signatureSystems,1,[`${name}: ${coreLoop}의 선택 결과가 다음 플레이 상태를 바꾸는 핵심 연계 시스템`]);
+    signatureScenes=fillTo(signatureScenes,3,[
+      `${name} 시작 장면: ${storyHook}가 플레이 공간에서 처음 드러난다`,
+      `${name} 중반 장면: ${coreLoop}의 선택 결과가 즉시 눈에 보이게 뒤집힌다`,
+      `${name} 검증 장면: ${prototypeHypothesis}를 한 번의 플레이로 확인한다`,
+    ]);
+    worldRules=fillTo(worldRules,5,[
+      `${storyHook}는 배경 설명이 아니라 이동·전투·선택 중 최소 하나를 실제로 바꾼다`,
+      `${coreLoop}의 각 단계 결과는 다음 단계에 원인과 결과로 이어진다`,
+      `핵심 위험과 보상은 선택 전에 화면에서 읽을 수 있어야 한다`,
+      `실패 후에는 다음 시도에서 활용할 수 있는 학습 정보가 남는다`,
+      `같은 상황을 변화 없이 반복하는 진행은 허용하지 않는다`,
+    ]);
+    forbiddenPatterns=fillTo(forbiddenPatterns,3,[
+      `기존 게임의 이름과 그래픽만 바꾼 복제형 핵심루프`,
+      `설명에는 있지만 실제 입력과 결과를 바꾸지 않는 대표 시스템`,
+      `체력·공격력 숫자만 커져서 정체성을 대신하는 성장과 보스`,
+    ]);
+    risks=fillTo(risks,2,[
+      `${coreLoop}가 첫 플레이에서 복잡하게 느껴질 위험`,
+      `모바일 화면에서 대표 시스템의 원인과 결과가 충분히 읽히지 않을 위험`,
+    ]);
+  }
+
+  return{name,slug,identitySentence,coreLoop,storyHook,signatureSystems,signatureScenes,worldRules,forbiddenPatterns,prototypeHypothesis,risks,styleProfile};
 }
 
 export function validateOperationalConcept(concept={}){
@@ -118,7 +181,7 @@ async function callOllama(prompt,model){
 }
 
 export async function runOperationalIncubator({modelResponse=null,timestamp=new Date().toISOString(),allowNewConcept=true}={}){
-  const state=readJson('autonomous-incubator.json',{version:1,status:'ACTIVE',nextCandidateNumber:1,candidates:[]});
+  const state=normalizeIncubatorState(readJson('autonomous-incubator.json',{}));
   const portfolio=readJson('autonomous-portfolio.json',{projects:[]});
   const queue=readJson('artbook-submission-queue.json',{games:[],queueOrder:[]});
   const registry=readJson('game-artbooks.json',{artbooks:[]});
@@ -126,13 +189,15 @@ export async function runOperationalIncubator({modelResponse=null,timestamp=new 
   if(!candidate){
     if(!allowNewConcept||conceptCreatedOnKstDate(state,kstDate(timestamp)))return{action:'DAILY_CONCEPT_LIMIT_OR_DISABLED',candidateId:null,status:null,modelCalls:0,prototypeRequest:null,paidApi:false};
     const existing=(portfolio.projects||[]).map(p=>({id:p.id,name:p.name,slug:p.slug,mode:p.mode}));
-    const prompt=`재운컴퍼니 신규게임 후보 1개를 제안한다. 기존과 정체성/핵심루프가 겹치지 않고 Web으로 작게 검증 가능해야 한다. 기존=${JSON.stringify(existing)}. 필수키 name,slug,identitySentence,coreLoop,storyHook,signatureSystems(1+),signatureScenes(3+),worldRules(5+),forbiddenPatterns(3+),prototypeHypothesis,risks(2+),styleProfile.`;
-    const proposal=modelResponse??await callOllama(prompt,process.env.INCUBATOR_LOCAL_MODEL||'qwen3:0.6b');modelCalls=1;
+    const prompt=`재운컴퍼니 신규게임 후보 1개를 제안한다. 기존과 정체성/핵심루프가 겹치지 않고 Web으로 작게 검증 가능해야 한다. 기존=${JSON.stringify(existing)}. 필수키 name,slug,identitySentence,coreLoop,storyHook,signatureSystems(1+),signatureScenes(3+),worldRules(5+),forbiddenPatterns(3+),prototypeHypothesis,risks(2+),styleProfile. 배열 키는 반드시 JSON 배열로 작성한다.`;
+    const rawProposal=modelResponse??await callOllama(prompt,process.env.INCUBATOR_LOCAL_MODEL||'qwen3:0.6b');modelCalls=1;
+    const proposal=normalizeOperationalConceptProposal(rawProposal);
     candidate=createOperationalCandidate(state,portfolio,proposal,timestamp);enqueueOperationalArtbook(candidate,queue,timestamp);action='CONCEPT_AND_ARTBOOK_QUEUED';
   }else if(candidate.status==='CONCEPT_CREATED'){enqueueOperationalArtbook(candidate,queue,timestamp);action='ARTBOOK_QUEUED';}
   else if(['ARTBOOK_QUEUED','ARTBOOK_COMPLETE'].includes(candidate.status)){const result=registerPrototypeAfterArtbook(candidate,portfolio,registry,timestamp);action=result.registered?'PROTOTYPE_REGISTERED':`WAIT_${result.evidence?.reason||'ARTBOOK'}`;}
   else if(candidate.status==='PROTOTYPE_REGISTERED'){prototypeRequest=buildPrototypeRequest(candidate,portfolio,registry);action='PROTOTYPE_REQUEST_READY';}
   if(candidate?.status==='PROTOTYPE_REGISTERED')prototypeRequest=buildPrototypeRequest(candidate,portfolio,registry);
+  state.lastRunAt=timestamp;
   writeJson('autonomous-incubator.json',state);writeJson('autonomous-portfolio.json',portfolio);writeJson('artbook-submission-queue.json',queue);if(prototypeRequest)writeJson('.autonomous/prototype-request.json',prototypeRequest);
   return{action,candidateId:candidate?.id||null,status:candidate?.status||null,modelCalls,prototypeRequest:prototypeRequest?.projectId||null,paidApi:false,modelTransport:modelCalls?'NDJSON_STREAM':null};
 }
