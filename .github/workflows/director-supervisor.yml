@@ -42,16 +42,29 @@ jobs:
       - name: Sync main
         run: git pull --ff-only origin main
 
-      - name: Read actual workflow evidence
+      - name: Read actual workflow and department job evidence
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" > /tmp/actions-runs.json
           test -s /tmp/actions-runs.json
+          ARTBOOK_RUN_ID=$(node - <<'NODE'
+          const fs=require('fs');
+          const p=JSON.parse(fs.readFileSync('/tmp/actions-runs.json','utf8'));
+          const run=(p.workflow_runs||[]).find(r=>r.name==='Free Artbook Department Bots');
+          process.stdout.write(run?.id?String(run.id):'');
+          NODE
+          )
+          if [ -n "$ARTBOOK_RUN_ID" ]; then
+            gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${ARTBOOK_RUN_ID}/jobs?per_page=100" > /tmp/artbook-jobs.json
+          else
+            printf '{"jobs":[]}' > /tmp/artbook-jobs.json
+          fi
+          test -s /tmp/artbook-jobs.json
 
       - name: Run director staff supervision
-        run: node tools/director-supervisor.mjs /tmp/actions-runs.json
+        run: node tools/director-supervisor.mjs /tmp/actions-runs.json /tmp/artbook-jobs.json
 
       - name: Validate supervisor contract
         run: |
@@ -64,6 +77,7 @@ jobs:
           if(s.checks?.staffChecked!=='8/8')throw new Error('staff check is not 8/8');
           if(s.checks?.runningLabelAloneCountsAsWork!==false)throw new Error('running label can falsely count as work');
           if(s.checks?.directorMayGhostwriteMissingDepartmentWork!==false)throw new Error('director ghostwriting protection missing');
+          if(s.workflowEvidence?.artbook&&!s.checks?.jobLevelEvidenceUsed)throw new Error('artbook run exists but department job evidence was not used');
           console.log('DIRECTOR_SUPERVISION_QA=PASS');
           NODE
 
