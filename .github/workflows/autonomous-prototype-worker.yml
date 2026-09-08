@@ -33,7 +33,9 @@ jobs:
       - name: Validate prototype worker on main
         run: |
           node --check tools/autonomous-prototype-worker.mjs
+          node --check tools/free-budget-telemetry.mjs
           node --test qa/autonomous-prototype-worker.test.mjs
+          node --test qa/free-budget-telemetry.test.mjs
           node --test qa/autonomous-development-worker.test.mjs
           node --test qa/incubator-promotion-state.test.mjs
       - name: Preserve exact request
@@ -46,6 +48,18 @@ jobs:
           const fs=require('fs');const r=JSON.parse(fs.readFileSync('/tmp/jaewoon-prototype-request.json','utf8'));
           for(const [k,v] of Object.entries({PROTOTYPE_PROJECT_ID:r.projectId,PROTOTYPE_INCUBATOR_ID:r.candidateId,PROTOTYPE_SOURCE_PATH:r.sourcePath}))console.log(`${k}=${v}`);
           NODE
+      - name: Verified free budget preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/free-budget-telemetry.mjs \
+            --verify-public-repo=true \
+            --runner=ubuntu-latest \
+            --model-calls=1 \
+            --runner-minutes=20 \
+            --output=.autonomous/free-budget-telemetry.json
+          echo 'FREE_BUDGET_PREFLIGHT=PASS'
+          echo 'ACTIONS_QUOTA_MODE=UNMETERED_FREE'
       - name: Sync latest main into continuous development line
         shell: bash
         run: |
