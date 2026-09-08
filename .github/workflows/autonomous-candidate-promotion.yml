@@ -106,7 +106,27 @@ jobs:
           if [ -f qa/vibe-regression.mjs ]; then node qa/vibe-regression.mjs; fi
           node --test qa/autonomous-development-worker.test.mjs
           node --test qa/autonomous-candidate-review.test.mjs
+          node --test qa/evolution-evidence-recorder.test.mjs
           echo "DEV_REGRESSION=PASS"
+
+      - name: Build verified learning evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/evolution-evidence-recorder.mjs \
+            --output=/tmp/jaewoon-learning-evidence.json \
+            --id="vibe2-${PROMOTE_CANDIDATE_ID}" \
+            --type=VIBE2 \
+            --pattern-id=autonomous-candidate-safe-promotion \
+            --title="Autonomous candidate scope + regression safe promotion" \
+            --game-id="$PROMOTE_GAME_ID" \
+            --condition=AUTONOMOUS_DEV \
+            --outcome=SUCCESS \
+            --delta=0 \
+            --source-revision="$GITHUB_SHA" \
+            --independent-qa=PASS \
+            --evidence="$PROMOTE_EVIDENCE,independent-candidate-qa,vibe-regression"
+          echo "LEARNING_EVIDENCE_VERIFIED=YES"
 
       - name: Record JAY dev verdict and push autonomous-dev only
         shell: bash
@@ -130,7 +150,25 @@ jobs:
           git push origin HEAD:autonomous-dev
           echo "JAY_DEV_VERDICT=ADVANCE_TO_AUTONOMOUS_DEV"
           echo "PUBLIC_RELEASE=NO"
-          echo "MAIN_WRITE=NO"
+          echo "MAIN_GAME_CODE_WRITE=NO"
+
+      - name: Persist verified evidence to main memory only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git checkout -B main-memory origin/main
+          mkdir -p company-learning/evidence
+          cp /tmp/jaewoon-learning-evidence.json "company-learning/evidence/${PROMOTE_CANDIDATE_ID}.json"
+          git config user.name "jaewoon-company-learning"
+          git config user.email "actions@users.noreply.github.com"
+          git add "company-learning/evidence/${PROMOTE_CANDIDATE_ID}.json"
+          if git diff --cached --quiet; then echo 'LEARNING_MEMORY_CHANGE=NO'; exit 0; fi
+          git commit -m "learning: record verified ${PROMOTE_GAME_ID} candidate [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo "MAIN_GAME_CODE_WRITE=NO"
+          echo "MAIN_MEMORY_WRITE=YES"
 
       - name: Summary
         if: always()
@@ -138,5 +176,6 @@ jobs:
           echo "### Autonomous Candidate Promotion" >> "$GITHUB_STEP_SUMMARY"
           echo "- independent QA: required" >> "$GITHUB_STEP_SUMMARY"
           echo "- promotion target: autonomous-dev only" >> "$GITHUB_STEP_SUMMARY"
-          echo "- public main promotion: NO" >> "$GITHUB_STEP_SUMMARY"
+          echo "- public game main promotion: NO" >> "$GITHUB_STEP_SUMMARY"
+          echo "- verified learning evidence: company-learning only" >> "$GITHUB_STEP_SUMMARY"
           echo "- paid API: NO" >> "$GITHUB_STEP_SUMMARY"
