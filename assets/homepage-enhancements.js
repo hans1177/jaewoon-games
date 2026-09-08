@@ -1,5 +1,5 @@
 // 파일명: assets/homepage-enhancements.js
-// 역할: 홈페이지의 검증된 안정판 롤백 표시와 게임별 아트북 부서 핵심 의견 표시를 보조한다.
+// 역할: 홈페이지의 검증된 안정판 롤백 표시와 게임별 아트북 타부서 핵심 의견 표시를 보조한다.
 // 게임 카드에는 실행 양호/주의/오류 같은 런타임 상태 배지나 숫자 점수를 표시하지 않는다.
 const getJson=async url=>{try{const r=await fetch(`${url}${url.includes('?')?'&':'?'}ts=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));return await r.json();}catch{return null;}};
 
@@ -54,10 +54,12 @@ function latestVisibleArtbooks(artbooks){
   return map;
 }
 
-function coreOpinion(opinion){
-  if(!opinion||typeof opinion!=='object')return'';
-  const candidates=[opinion.decision,Array.isArray(opinion.counter)?opinion.counter[0]:'',Array.isArray(opinion.agree)?opinion.agree[0]:'',opinion.headline];
-  return String(candidates.find(v=>String(v||'').trim())||'').replace(/\s+/g,' ').trim();
+function corePeerOpinion(opinion){
+  if(!opinion||typeof opinion!=='object'||opinion.reviewScope!=='OTHER_DEPARTMENTS_ONLY')return'';
+  const strength=String(opinion.peerOpinion?.strength||'').replace(/\s+/g,' ').trim();
+  const improvement=String(opinion.peerOpinion?.improvement||'').replace(/\s+/g,' ').trim();
+  if(!strength||!improvement)return'';
+  return `장점: ${strength} · 보완: ${improvement}`;
 }
 
 function applyArtbookOpinions(catalog,artbooks){
@@ -70,20 +72,19 @@ function applyArtbookOpinions(catalog,artbooks){
     const previous=info.querySelector('.artbookOpinionSummary');
     const book=byGame.get(meta.id);
     if(!book){previous?.remove();return;}
-    if(previous?.dataset.artbookId===String(book.id||''))return;
+    const rows=ARTBOOK_ROLE_ORDER.map(role=>({role,text:corePeerOpinion(book.departmentOpinions?.[role])})).filter(x=>x.text);
+    if(!rows.length){previous?.remove();return;}
+    const signature=`${String(book.id||'')}|peer:${rows.map(x=>x.text).join('|')}`;
+    if(previous?.dataset.signature===signature)return;
     previous?.remove();
 
-    const rows=ARTBOOK_ROLE_ORDER.map(role=>({role,text:coreOpinion(book.departmentOpinions?.[role])})).filter(x=>x.text);
-    if(!rows.length)return;
-
     const box=document.createElement('section');
-    box.className='artbookOpinionSummary';
-    box.dataset.artbookId=String(book.id||'');
-    box.setAttribute('aria-label',`${name} 아트북 부서별 핵심 의견`);
+    box.className='artbookOpinionSummary';box.dataset.signature=signature;
+    box.setAttribute('aria-label',`${name} 아트북 타부서 검토 의견`);
 
     const title=document.createElement('div');title.className='artbookOpinionTitle';
-    const titleText=document.createElement('span');titleText.textContent='아트북 의견';
-    const edition=document.createElement('small');edition.textContent=`부서별 핵심 · ${rows.length}/5`;
+    const titleText=document.createElement('span');titleText.textContent='아트북 부서 의견';
+    const edition=document.createElement('small');edition.textContent=`타부서 장점·보완 · ${rows.length}/5`;
     title.append(titleText,edition);
 
     const list=document.createElement('div');list.className='artbookOpinionRows';
@@ -93,8 +94,7 @@ function applyArtbookOpinions(catalog,artbooks){
       const text=document.createElement('span');text.className='artbookOpinionText';text.textContent=row.text;text.title=row.text;
       item.append(roleEl,text);list.appendChild(item);
     }
-    box.append(title,list);
-    info.appendChild(box);
+    box.append(title,list);info.appendChild(box);
   });
 }
 
@@ -103,9 +103,7 @@ async function main(){
   const [catalog,baselines,artbooks]=await Promise.all([getJson('/game-catalog.json'),getJson('/public-release-baselines.json'),getJson('/game-artbooks.json')]);
   let rounds=0;
   const refresh=()=>{
-    removeLegacyRuntimeBadges();
-    applyVerifiedRollback(catalog,baselines);
-    applyArtbookOpinions(catalog,artbooks);
+    removeLegacyRuntimeBadges();applyVerifiedRollback(catalog,baselines);applyArtbookOpinions(catalog,artbooks);
     if(++rounds>20)clearInterval(timer);
   };
   const timer=setInterval(refresh,300);refresh();
