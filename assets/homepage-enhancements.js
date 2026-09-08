@@ -47,7 +47,7 @@ function addDaechungArtbookButton(catalog){
     if(!actions||actions.querySelector('.artbookCardBtn'))return;
     const link=document.createElement('a');
     link.className='cardBtn artbookCardBtn';
-    link.href='/artbook.html?game=daechung-rpg';
+    link.href='/artbook-viewer.html?game=daechung-rpg';
     link.textContent='아트북 보기';
     actions.classList.add('hasArtbook');
     actions.appendChild(link);
