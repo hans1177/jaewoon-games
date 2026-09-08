@@ -23,10 +23,15 @@ test('active incubator blocks duplicate new concept',()=>{
   assert.equal(d.action,'WAIT_INCUBATOR');
 });
 
-test('concept already created today blocks a second concept',()=>{
+test('valid concept already created today blocks a second concept',()=>{
   const d=decidePortfolioContinuation({portfolio,queueState:attempts(['P0001','P0002']),incubator:{candidates:[{id:'NG00001',status:'PROTOTYPE_DEV_VERIFIED',prototypeDevComplete:true,createdAt:'2026-09-08T16:00:00Z'}]},date:'2026-09-09',filesystem:fsAll});
   assert.equal(d.action,'STOP');
   assert.equal(d.reason,'DAILY_NEW_CONCEPT_ALREADY_CREATED');
+});
+
+test('quality-rejected concept does not block a replacement concept on the same KST day',()=>{
+  const d=decidePortfolioContinuation({portfolio,queueState:attempts(['P0001','P0002']),incubator:{candidates:[{id:'NG00001',status:'REDESIGN_REQUIRED',qualityGate:{pass:false},createdAt:'2026-09-08T16:00:00Z'}]},date:'2026-09-09',filesystem:fsAll});
+  assert.equal(d.action,'DISPATCH_INCUBATOR');
 });
 
 test('daily autonomous cap blocks any new handoff',()=>{
