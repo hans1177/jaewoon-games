@@ -18,18 +18,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # Portfolio routing is governance/state observation. main owns the current
-          # incubator/queue state; autonomous-dev owns candidate code and may diverge.
+          # main owns current governance/incubator state. autonomous-dev owns the
+          # non-public continuous-work attempt ledger and is read selectively below.
           ref: main
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Hydrate read-only continuous queue state from autonomous-dev
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin autonomous-dev --quiet
+          mkdir -p .autonomous
+          if git cat-file -e 'origin/autonomous-dev:.autonomous/queue-state.json' 2>/dev/null; then
+            git show 'origin/autonomous-dev:.autonomous/queue-state.json' > .autonomous/queue-state.json
+            echo 'QUEUE_STATE_SOURCE=autonomous-dev'
+          else
+            printf '{"attempts":[]}\n' > .autonomous/queue-state.json
+            echo 'QUEUE_STATE_SOURCE=empty-fallback'
+          fi
       - name: Validate continuation routing
         run: |
           node --check tools/autonomous-portfolio-continuation.mjs
           node --test qa/autonomous-portfolio-continuation.test.mjs
           grep -q 'ref: main' .github/workflows/autonomous-portfolio-continuation.yml
+          grep -q 'origin/autonomous-dev:.autonomous/queue-state.json' .github/workflows/autonomous-portfolio-continuation.yml
       - name: Decide next company-level work
         id: route
         shell: bash
@@ -59,7 +73,8 @@ jobs:
           echo "### Autonomous Portfolio Continuation" >> "$GITHUB_STEP_SUMMARY"
           echo "- route: ${{ steps.route.outputs.action }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- reason: ${{ steps.route.outputs.reason }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- state authority: main" >> "$GITHUB_STEP_SUMMARY"
+          echo "- governance/incubator state: main" >> "$GITHUB_STEP_SUMMARY"
+          echo "- continuous attempt ledger: autonomous-dev (read-only)" >> "$GITHUB_STEP_SUMMARY"
           echo "- trigger route: explicit workflow_dispatch only" >> "$GITHUB_STEP_SUMMARY"
-          echo "- duplicate concept/day: blocked" >> "$GITHUB_STEP_SUMMARY"
+          echo "- duplicate valid concept/day: blocked" >> "$GITHUB_STEP_SUMMARY"
           echo "- public release: NO" >> "$GITHUB_STEP_SUMMARY"
