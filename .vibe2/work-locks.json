@@ -15,31 +15,41 @@
       "acquiredAt": "2026-09-08T20:36:00.000Z",
       "expiresAt": "2026-09-08T21:21:00.000Z",
       "status": "active",
-      "evidence": ["make-vibe2-controller-reusable-from-main"]
+      "evidence": [
+        "make-vibe2-controller-reusable-from-main"
+      ]
     },
     {
       "id": "wl-chatgpt-vibe2-main-runner",
       "worker": "chatgpt",
       "taskId": "vibe2-main-24h-runner",
       "gameId": null,
-      "files": [".github/workflows/vibe2-24h-runner.yml"],
+      "files": [
+        ".github/workflows/vibe2-24h-runner.yml"
+      ],
       "baseSha": "f692f47d1858d142833cb0ab4a92601415929e17",
       "acquiredAt": "2026-09-08T20:36:00.000Z",
       "expiresAt": "2026-09-08T21:21:00.000Z",
       "status": "active",
-      "evidence": ["activate-real-hourly-vibe2-runner"]
+      "evidence": [
+        "activate-real-hourly-vibe2-runner"
+      ]
     },
     {
       "id": "wl-chatgpt-vibe2-game-queue-seed",
       "worker": "chatgpt",
       "taskId": "vibe2-auto-game-work-seed",
       "gameId": "daechung-rpg",
-      "files": [".vibe2/queue.json"],
+      "files": [
+        ".vibe2/queue.json"
+      ],
       "baseSha": "159a4b0390029bf346f1cca58107173271d19681",
       "acquiredAt": "2026-09-08T20:42:30.000Z",
       "expiresAt": "2026-09-08T21:27:30.000Z",
       "status": "active",
-      "evidence": ["owner-authorized-automatic-game-work"]
+      "evidence": [
+        "owner-authorized-automatic-game-work"
+      ]
     },
     {
       "id": "wl-chatgpt-vibe2-auto-planner",
@@ -71,24 +81,16 @@
       "worker": "chatgpt",
       "taskId": "vibe2-autonomous-planner-qa-wiring",
       "gameId": null,
-      "files": [".github/workflows/vibe2-core-qa.yml"],
+      "files": [
+        ".github/workflows/vibe2-core-qa.yml"
+      ],
       "baseSha": "2b7c11d5186132f15259767a8a21952567e8a264",
       "acquiredAt": "2026-09-08T20:50:00.000Z",
       "expiresAt": "2026-09-08T21:35:00.000Z",
       "status": "active",
-      "evidence": ["validate-autonomous-planner-before-24h-run"]
-    },
-    {
-      "id": "wl-1jdiit0",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-motion-routine-safety",
-      "gameId": "daechung-rpg",
-      "files": ["unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs"],
-      "baseSha": "10649b10b0001ed903bcc786f37436ec7fa4a13a",
-      "acquiredAt": "2026-09-08T20:57:37.839Z",
-      "expiresAt": "2026-09-08T21:42:37.839Z",
-      "status": "active",
-      "evidence": ["actions-run-34277768345"]
+      "evidence": [
+        "validate-autonomous-planner-before-24h-run"
+      ]
     }
   ]
 }
