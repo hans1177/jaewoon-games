@@ -91,6 +91,22 @@
       "evidence": [
         "validate-autonomous-planner-before-24h-run"
       ]
+    },
+    {
+      "id": "wl-chatgpt-human-go-bugfix",
+      "worker": "chatgpt",
+      "taskId": "human-go-bugfix-mobile-regression",
+      "gameId": "human-go",
+      "files": [
+        "web-games/human-go/index.html"
+      ],
+      "baseSha": "1892dacb19c06a5a77d84c31007eb213db68b895",
+      "acquiredAt": "2026-09-08T21:20:31.000Z",
+      "expiresAt": "2026-09-08T22:05:31.000Z",
+      "status": "active",
+      "evidence": [
+        "owner-request-fix-human-go-errors"
+      ]
     }
   ]
 }
