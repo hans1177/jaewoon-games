@@ -1,8 +1,15 @@
 {
-  "version": 2,
-  "mode": "short-verified-work-chains",
+  "version": 3,
+  "mode": "single-worker-priority-serial-queue",
+  "maxConcurrentTasks": 1,
   "longRunningSingleJobRequired": false,
   "ownerDirectivePreemptsAutonomy": true,
+  "releaseStatePriority": [
+    "release-confirmed",
+    "development-confirmed",
+    "reviewing",
+    "other"
+  ],
   "defaultMaxRetries": 2,
   "tasks": [
     {
@@ -17,6 +24,7 @@
       ],
       "dependencies": [],
       "priority": "high",
+      "releaseState": "development-confirmed",
       "status": "queued",
       "retries": 1,
       "maxRetries": 2,
@@ -24,7 +32,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "actions-run-34277017158"
       ],
@@ -43,6 +51,7 @@
       ],
       "dependencies": [],
       "priority": "normal",
+      "releaseState": "development-confirmed",
       "status": "queued",
       "retries": 1,
       "maxRetries": 2,
@@ -50,7 +59,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "actions-run-34277408665"
       ],
@@ -69,6 +78,7 @@
       ],
       "dependencies": [],
       "priority": "normal",
+      "releaseState": "development-confirmed",
       "status": "queued",
       "retries": 1,
       "maxRetries": 2,
@@ -76,7 +86,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "actions-run-34277768345"
       ],
