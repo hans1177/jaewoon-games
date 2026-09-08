@@ -10,6 +10,7 @@ function installStyles(){
   style.textContent=`
 .reviews{display:none!important}
 .rollbackNotice{display:block;margin-top:6px;padding:7px 8px;border-radius:8px;background:#fff3cd;color:#735800;font-size:10px;font-weight:900;line-height:1.4}
+.cardActions.hasArtbook .artbookCardBtn{grid-column:1/-1;background:#102d42!important;border-color:#102d42!important;color:#fff!important}
 @media(max-width:520px){.gameCard{grid-template-columns:50% 50%!important}}
 @media(max-width:370px){.gameCard{grid-template-columns:50% 50%!important}}
 `;
@@ -36,11 +37,30 @@ function applyVerifiedRollback(catalog,baselines){
   });
 }
 
+function addCompletedArtbookButton(catalog,artbooks){
+  const completed=(artbooks?.artbooks||[])
+    .filter(book=>book?.gameId==='daechung-rpg'&&book?.status==='completed-artbook'&&book?.published===true&&book?.homepageVisible===true&&(Number(book?.cutCount)===10||book?.cuts?.length===10))
+    .sort((a,b)=>(Number(b.edition)||0)-(Number(a.edition)||0))[0];
+  if(!completed)return;
+  const byName=new Map((catalog?.games||[]).map(g=>[g.name,g]));
+  document.querySelectorAll('#gameGrid .gameCard').forEach(card=>{
+    const name=card.querySelector('.artName b')?.textContent?.trim();
+    const meta=byName.get(name);if(meta?.id!==completed.gameId)return;
+    const actions=card.querySelector('.cardActions');if(!actions||actions.querySelector('.artbookCardBtn'))return;
+    const link=document.createElement('a');
+    link.className='cardBtn artbookCardBtn';
+    link.href=`/artbook.html?id=${encodeURIComponent(completed.id)}`;
+    link.textContent='아트북 보기';
+    actions.classList.add('hasArtbook');
+    actions.appendChild(link);
+  });
+}
+
 async function main(){
   installStyles();removeLegacyRuntimeBadges();
-  const [catalog,baselines]=await Promise.all([getJson('/game-catalog.json'),getJson('/public-release-baselines.json')]);
+  const [catalog,baselines,artbooks]=await Promise.all([getJson('/game-catalog.json'),getJson('/public-release-baselines.json'),getJson('/game-artbooks.json')]);
   let rounds=0;
-  const refresh=()=>{removeLegacyRuntimeBadges();applyVerifiedRollback(catalog,baselines);if(++rounds>20)clearInterval(timer);};
+  const refresh=()=>{removeLegacyRuntimeBadges();applyVerifiedRollback(catalog,baselines);addCompletedArtbookButton(catalog,artbooks);if(++rounds>20)clearInterval(timer);};
   const timer=setInterval(refresh,300);refresh();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',main,{once:true});else main();
