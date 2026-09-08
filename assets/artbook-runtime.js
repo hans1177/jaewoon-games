@@ -7,9 +7,9 @@ export async function loadPublishedArtbooks(){
   if(!response.ok)throw new Error(`artbook source ${response.status}`);
   const data=await response.json();
   const artbooks=Array.isArray(data.artbooks)?data.artbooks:[];
-  return artbooks.filter(item=>item&&item.published===true).map(item=>({
+  return artbooks.filter(item=>item&&item.published===true&&item.status==='completed-artbook'&&Array.isArray(item.cuts)&&item.cuts.length===10&&item.postprocess?.complete===true).map(item=>({
     ...item,
-    cuts:(Array.isArray(item.cuts)?item.cuts:[]).slice(0,10)
+    cuts:item.cuts.slice(0,10)
   }));
 }
 
@@ -32,5 +32,5 @@ export async function loadIssueComments(issueNumber,{limit=12}={}){
 
 export function createArtbookCardHtml(artbook){
   const cover=artbook.cuts?.[0]?.image||'assets/mock.webp';
-  return `<article class="artbookCard" data-artbook="${esc(artbook.id)}"><img src="${esc(cover)}" alt="" loading="lazy"><div><small>EDITION ${esc(artbook.edition)}</small><h3>${esc(artbook.title)}</h3><p>${esc(artbook.subtitle||artbook.intent||'')}</p><a href="/artbook.html?id=${encodeURIComponent(artbook.id)}">10컷 이내 아트북 보기</a></div></article>`;
+  return `<article class="artbookCard" data-artbook="${esc(artbook.id)}"><img src="${esc(cover)}" alt="" loading="lazy"><div><small>완료 · 10/10장 · EDITION ${esc(artbook.edition)}</small><h3>${esc(artbook.title)}</h3><p>${esc(artbook.subtitle||artbook.intent||'')}</p><a href="/artbook.html?id=${encodeURIComponent(artbook.id)}">10장 아트북 보기</a></div></article>`;
 }
