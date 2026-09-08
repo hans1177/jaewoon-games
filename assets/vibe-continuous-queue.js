@@ -113,11 +113,12 @@ export function selectNextVibeQueueTask(queueInput) {
   const running = queue.tasks.filter((task) => task.status === 'running');
   if (running.length) {
     return freeze({
-      selected: running[0],
-      hasEligibleWork: true,
+      selected: null,
+      runningTask: running[0],
+      hasEligibleWork: false,
       blocked: freeze([]),
       continueRequired: false,
-      stopReason: 'ONE_TASK_ALREADY_RUNNING',
+      stopReason: 'RUNNING_TASK_EXISTS',
       runningCount: running.length
     });
   }
@@ -134,6 +135,7 @@ export function selectNextVibeQueueTask(queueInput) {
   const selected = candidates[0]?.task || null;
   return freeze({
     selected,
+    runningTask: null,
     hasEligibleWork: Boolean(selected),
     blocked: freeze(blocked),
     continueRequired: Boolean(selected),
@@ -189,6 +191,7 @@ export function summarizeVibeContinuousQueue(queueInput) {
     version: 3,
     counts: freeze(counts),
     nextTaskId: next.selected?.id || null,
+    runningTaskId: next.runningTask?.id || null,
     nextReleaseState: next.selected?.releaseState || null,
     continueRequired: next.continueRequired,
     stopReason: next.stopReason,
