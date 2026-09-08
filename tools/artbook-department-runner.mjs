@@ -164,18 +164,42 @@ const roleGuides={
 const sectionKeys=ROLE_SECTION_KEYS[role];
 const systemPrompt=`/no_think\n너는 재운컴퍼니 ${ROLE_NAMES[role]} 부서의 독립 아트북 검토 AI다. 로컬 오픈모델로 실행 중이며 유료 API를 쓰지 않는다.\n${roleGuides[role]}\n다른 부서의 제출물은 볼 수 없고 대신 작성하면 안 된다. 제공된 evidence만 사실로 사용할 수 있다. 근거가 없으면 반드시 '근거 부족' 또는 미검증으로 남긴다. 게임 품질 점수, 숫자 평가점수, PASS 판정, 출시/본개발 승인을 만들지 않는다. 홈페이지 공개와 제작 승인은 별개다. 답은 한국어로 간결하고 구체적으로 작성한다.\nJSON 객체만 출력한다. 필수 최상위 키: headline(string), readiness(READY|NEEDS_VALIDATION|BLOCKED), section(object), unverified(array), visualNotes(array 1~3). section은 이 부서 전용 키 ${sectionKeys.join(', ')}를 중심으로 구성하고 다른 부서의 섹션을 작성하지 않는다.`;
 const userPrompt=`아래는 ${sharedEvidence.gameName}의 ${ROLE_NAMES[role]} 부서 전용 근거다. 서로 다른 부서 의견을 보지 않은 첫 검토다. 근거를 비교해 아트북에 들어갈 자기 부서 파트만 작성해.\n\n${JSON.stringify(evidencePayload,null,2)}`;
+const retrySystemPrompt=`${systemPrompt}\n중요: 이전 시도는 JSON이 끝까지 닫히지 않아 파싱에 실패했다. 이번에는 설명·마크다운·코드펜스 없이 완결된 JSON 객체 하나만 출력한다. 전체 응답은 약 900토큰 이하로 유지하고, section의 각 항목은 핵심 근거 1~3개만 짧게 쓴다. 긴 코드·근거 원문을 복사하지 않는다.`;
+
+function parseLocalModelJson(raw){
+  const cleaned=clean(raw).replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```$/,'').trim();
+  const parsed=JSON.parse(cleaned);
+  if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('local model did not return an object');
+  if(!parsed.section||typeof parsed.section!=='object'||Array.isArray(parsed.section))throw new Error('local model section object missing');
+  return parsed;
+}
 
 async function callLocalModel(model){
-  const response=await fetch('http://127.0.0.1:11434/api/chat',{
-    method:'POST',headers:{'content-type':'application/json'},
-    body:JSON.stringify({model,stream:false,format:'json',messages:[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}],options:{temperature:0.25,seed:101+ROLES.indexOf(role)*97,num_ctx:16384,num_predict:1800}})
-  });
-  if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
-  const packet=await response.json();
-  const raw=clean(packet?.message?.content).replace(/^```json\s*/i,'').replace(/```$/,'').trim();
-  const parsed=JSON.parse(raw);
-  if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('local model did not return an object');
-  return parsed;
+  const baseSeed=101+ROLES.indexOf(role)*97;
+  let lastError=null;
+  for(let attempt=0;attempt<2;attempt++){
+    const compactRetry=attempt===1;
+    try{
+      const response=await fetch('http://127.0.0.1:11434/api/chat',{
+        method:'POST',headers:{'content-type':'application/json'},
+        body:JSON.stringify({
+          model,stream:false,format:'json',
+          messages:[{role:'system',content:compactRetry?retrySystemPrompt:systemPrompt},{role:'user',content:userPrompt}],
+          options:{temperature:compactRetry?0.1:0.25,seed:baseSeed+(compactRetry?1000:0),num_ctx:16384,num_predict:compactRetry?2200:1800}
+        })
+      });
+      if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
+      const packet=await response.json();
+      return parseLocalModelJson(packet?.message?.content);
+    }catch(error){
+      lastError=error;
+      if(attempt===0){
+        console.warn(`ARTBOOK_LOCAL_MODEL_RETRY=${role}:reason=${compactText(error.message,160)}`);
+        continue;
+      }
+    }
+  }
+  throw lastError||new Error('local model failed without an error');
 }
 
 const model=clean(process.env.ARTBOOK_LOCAL_MODEL||'qwen3:1.7b');
