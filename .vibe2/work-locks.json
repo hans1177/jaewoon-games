@@ -1,24 +1,5 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": [
-    {
-      "id": "wl-chatgpt-remote-lock-race-test",
-      "worker": "chatgpt",
-      "taskId": "vibe2-remote-lock-race-regression",
-      "gameId": null,
-      "files": [
-        "tools/vibe2-remote-work-lock.mjs",
-        "qa/vibe2-remote-work-lock.test.mjs",
-        ".github/workflows/vibe2-core-qa.yml"
-      ],
-      "baseSha": "35e21dac84b868ed7e6e4546e48d1cce6bcea4d3",
-      "acquiredAt": "2026-09-08T20:34:00.000Z",
-      "expiresAt": "2026-09-08T21:19:00.000Z",
-      "status": "active",
-      "evidence": [
-        "remote-lock-409-race-regression"
-      ]
-    }
-  ]
+  "locks": []
 }
