@@ -1,0 +1,63 @@
+name: Vibe2 24H Canary
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/vibe2-24h-canary.yml'
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vibe2-24h-canary
+  cancel-in-progress: false
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout Vibe2 control branch
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify Vibe2 runtime contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f vibe2-runtime.json
+          test -f tools/vibe2-continuous-runner.mjs
+          test -f tools/vibe2-queue-control.mjs
+          node --check tools/vibe2-continuous-runner.mjs
+          node --check tools/vibe2-queue-control.mjs
+          node --test qa/vibe2-core-engine-motion.test.mjs
+          node --test qa/vibe2-queue-control.test.mjs
+          node --test qa/vibe2-controller-contract.test.mjs
+
+      - name: Exercise continuous planner safely
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .vibe2/work-order.json
+          node tools/vibe2-continuous-runner.mjs
+          test -s .vibe2/work-order.json
+          node <<'NODE'
+          const fs = require('fs');
+          const order = JSON.parse(fs.readFileSync('.vibe2/work-order.json', 'utf8'));
+          if (order.run) {
+            throw new Error(`Canary must not execute game work automatically: ${order.taskId || 'unknown-task'}`);
+          }
+          console.log(`VIBE2_24H_CANARY=PASS reason=${order.reason}`);
+          console.log('VIBE2_GAME_SOURCE_WRITE=NO');
+          console.log('VIBE2_COMPANY_WRITE=NO');
+          NODE
