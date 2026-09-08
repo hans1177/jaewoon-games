@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 3
     steps:
       - name: Confirm local Unity runner is online
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $now = (Get-Date).ToUniversalTime().ToString('o')
           Write-Host "LOCAL_UNITY_RUNNER_ONLINE=true"
