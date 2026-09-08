@@ -1,0 +1,134 @@
+name: Free Artbook Department Bots
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 08:05 KST every day. Runs only when today's work order exists.
+    - cron: '5 23 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'artbook-work-orders/**'
+      - 'tools/artbook-department-runner.mjs'
+      - '.github/workflows/artbook-free-department-bots.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: free-artbook-departments-main
+  cancel-in-progress: false
+
+jobs:
+  submit-five-independent-sections:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      OLLAMA_HOST: 127.0.0.1:11434
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Check today's artbook work order
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          DATE_KST=$(TZ=Asia/Seoul date +%F)
+          GAME_ID=$(node -e "const q=require('./artbook-submission-queue.json');process.stdout.write(q.currentDailyTarget||'')")
+          FILE="artbook-work-orders/${DATE_KST}-${GAME_ID}.json"
+          echo "date=$DATE_KST" >> "$GITHUB_OUTPUT"
+          echo "game_id=$GAME_ID" >> "$GITHUB_OUTPUT"
+          if [ -n "$GAME_ID" ] && [ -f "$FILE" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "ARTBOOK_WORK_ORDER=$FILE"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "ARTBOOK_FREE_BOTS=SKIP_NO_TODAY_WORK_ORDER"
+          fi
+
+      - name: Install local Ollama runtime
+        if: steps.target.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
+              echo 'OLLAMA_LOCAL=READY'
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/ollama.log || true
+          echo 'OLLAMA_LOCAL=FAILED' >&2
+          exit 1
+
+      - name: Pull free open model
+        if: steps.target.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODEL='qwen3:1.7b'
+          if ! ollama pull "$MODEL"; then
+            MODEL='qwen3:0.6b'
+            ollama pull "$MODEL"
+          fi
+          echo "ARTBOOK_LOCAL_MODEL=$MODEL" >> "$GITHUB_ENV"
+          echo "ARTBOOK_LOCAL_MODEL=$MODEL"
+          echo 'PAID_API=NO'
+          echo 'API_KEY_REQUIRED=NO'
+
+      - name: Run five isolated department reviews
+        if: steps.target.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          DATE_KST='${{ steps.target.outputs.date }}'
+          GAME_ID='${{ steps.target.outputs.game_id }}'
+          for ROLE in planning graphics development qa balance; do
+            echo "=== INDEPENDENT_DEPARTMENT=$ROLE ==="
+            ARTBOOK_ROLE="$ROLE" ARTBOOK_DATE="$DATE_KST" ARTBOOK_GAME_ID="$GAME_ID" \
+              node tools/artbook-department-runner.mjs
+          done
+
+      - name: Validate five real submissions
+        if: steps.target.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          DATE_KST='${{ steps.target.outputs.date }}'
+          GAME_ID='${{ steps.target.outputs.game_id }}'
+          ARTBOOK_DATE="$DATE_KST" ARTBOOK_GAME_ID="$GAME_ID" node tools/artbook-gate.mjs
+          node - <<'NODE'
+          const fs=require('fs');
+          const gate=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8'));
+          if(gate.readyCount!==5||gate.requiredCount!==5||gate.readyForDirectorAssembly!==true){
+            throw new Error(`five department submissions not ready: ${gate.readyCount}/${gate.requiredCount}`);
+          }
+          console.log('FREE_DEPARTMENT_SUBMISSIONS=5/5');
+          NODE
+          git checkout -- artbook-gate-status.json
+
+      - name: Commit department-owned submissions
+        if: steps.target.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          DATE_KST='${{ steps.target.outputs.date }}'
+          GAME_ID='${{ steps.target.outputs.game_id }}'
+          git config user.name 'jaewoon-company-department-bots'
+          git config user.email 'actions@users.noreply.github.com'
+          git add "artbook-submissions/${GAME_ID}/${DATE_KST}/"
+          if git diff --cached --quiet; then
+            echo 'ARTBOOK_DEPARTMENT_COMMIT=NO_CHANGES'
+            exit 0
+          fi
+          git commit -m "artbook-departments: submit ${GAME_ID} five independent sections"
+          git pull --rebase origin main
+          git push origin main
+          echo 'ARTBOOK_DEPARTMENT_COMMIT=SUCCESS'
