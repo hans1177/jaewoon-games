@@ -15,11 +15,15 @@ on:
       - 'assets/vibe-motion-core.js'
       - 'assets/vibe-experience-memory.js'
       - 'assets/vibe-continuous-queue.js'
+      - 'assets/vibe-work-lock.js'
+      - 'tools/vibe-work-lock-control.mjs'
+      - 'tools/vibe2-remote-work-lock.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-queue-control.mjs'
       - 'tools/vibe2-candidate-reconcile.mjs'
       - 'tools/vibe2-experience-control.mjs'
+      - 'qa/vibe-work-lock.test.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
       - 'qa/vibe2-source-worker.test.mjs'
       - 'qa/vibe2-queue-control.test.mjs'
@@ -57,11 +61,15 @@ jobs:
           node --check assets/vibe-motion-core.js
           node --check assets/vibe-experience-memory.js
           node --check assets/vibe-continuous-queue.js
+          node --check assets/vibe-work-lock.js
+          node --check tools/vibe-work-lock-control.mjs
+          node --check tools/vibe2-remote-work-lock.mjs
           node --check tools/vibe2-continuous-runner.mjs
           node --check tools/vibe2-source-worker.mjs
           node --check tools/vibe2-queue-control.mjs
           node --check tools/vibe2-candidate-reconcile.mjs
           node --check tools/vibe2-experience-control.mjs
+          node --check qa/vibe-work-lock.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-source-worker.test.mjs
           node --check qa/vibe2-queue-control.test.mjs
@@ -71,6 +79,7 @@ jobs:
 
       - name: Vibe2 core tests
         run: |
+          node --test qa/vibe-work-lock.test.mjs
           node --test qa/vibe2-core-engine-motion.test.mjs
           node --test qa/vibe2-source-worker.test.mjs
           node --test qa/vibe2-queue-control.test.mjs
