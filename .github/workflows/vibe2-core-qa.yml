@@ -18,6 +18,7 @@ on:
       - 'assets/vibe-work-lock.js'
       - 'tools/vibe-work-lock-control.mjs'
       - 'tools/vibe2-remote-work-lock.mjs'
+      - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-queue-control.mjs'
@@ -25,6 +26,7 @@ on:
       - 'tools/vibe2-experience-control.mjs'
       - 'qa/vibe-work-lock.test.mjs'
       - 'qa/vibe2-remote-work-lock.test.mjs'
+      - 'qa/vibe2-auto-planner.test.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
       - 'qa/vibe2-source-worker.test.mjs'
       - 'qa/vibe2-queue-control.test.mjs'
@@ -65,6 +67,7 @@ jobs:
           node --check assets/vibe-work-lock.js
           node --check tools/vibe-work-lock-control.mjs
           node --check tools/vibe2-remote-work-lock.mjs
+          node --check tools/vibe2-auto-planner.mjs
           node --check tools/vibe2-continuous-runner.mjs
           node --check tools/vibe2-source-worker.mjs
           node --check tools/vibe2-queue-control.mjs
@@ -72,6 +75,7 @@ jobs:
           node --check tools/vibe2-experience-control.mjs
           node --check qa/vibe-work-lock.test.mjs
           node --check qa/vibe2-remote-work-lock.test.mjs
+          node --check qa/vibe2-auto-planner.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-source-worker.test.mjs
           node --check qa/vibe2-queue-control.test.mjs
@@ -83,6 +87,7 @@ jobs:
         run: |
           node --test qa/vibe-work-lock.test.mjs
           node --test qa/vibe2-remote-work-lock.test.mjs
+          node --test qa/vibe2-auto-planner.test.mjs
           node --test qa/vibe2-core-engine-motion.test.mjs
           node --test qa/vibe2-source-worker.test.mjs
           node --test qa/vibe2-queue-control.test.mjs
