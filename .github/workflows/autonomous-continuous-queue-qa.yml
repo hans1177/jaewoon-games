@@ -1,0 +1,57 @@
+name: Autonomous Continuous Queue QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/autonomous-continuous-development.yml'
+      - '.github/workflows/autonomous-candidate-promotion.yml'
+      - '.github/workflows/autonomous-continuous-queue-qa.yml'
+      - 'tools/autonomous-work-planner.mjs'
+      - 'tools/autonomous-queue-state.mjs'
+      - 'qa/autonomous-work-planner.test.mjs'
+      - 'qa/autonomous-queue-state.test.mjs'
+      - 'autonomous-portfolio.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  queue-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Queue and planner tests
+        run: |
+          node --check tools/autonomous-queue-state.mjs
+          node --check tools/autonomous-work-planner.mjs
+          node --test qa/autonomous-queue-state.test.mjs
+          node --test qa/autonomous-work-planner.test.mjs
+      - name: Enforce bounded event-driven queue contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const continuous=fs.readFileSync('.github/workflows/autonomous-continuous-development.yml','utf8');
+          const promotion=fs.readFileSync('.github/workflows/autonomous-candidate-promotion.yml','utf8');
+          const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
+          const must=(ok,msg)=>{if(!ok)throw new Error(msg)};
+          must(portfolio.paidApi===false,'paidApi must remain false');
+          must(Number(portfolio.maxAutonomousWorkItemsPerDay)>=1&&Number(portfolio.maxAutonomousWorkItemsPerDay)<=24,'daily autonomous cap missing/unsafe');
+          must(continuous.includes('Reserve this game once for today'), 'queue reservation missing');
+          must(continuous.indexOf('Verified free budget preflight') < continuous.indexOf('Reserve this game once for today'), 'budget preflight must precede reservation');
+          must(continuous.indexOf('Reserve this game once for today') < continuous.indexOf('Install local Ollama'), 'reservation must precede model work');
+          must(continuous.includes('same game per KST day: max 1 reservation'), 'same-game daily bound missing');
+          must(promotion.includes('actions: write'), 'workflow dispatch permission missing');
+          must(promotion.includes('gh workflow run autonomous-continuous-development.yml --ref main'), 'immediate next-work dispatch missing');
+          must(promotion.includes('if: always()'), 'queue continuation must survive candidate rejection');
+          must(promotion.includes('public game main promotion: NO'), 'public main promotion guard missing');
+          must(!promotion.includes('PUBLIC_RELEASE=YES'), 'public release must never be automatic');
+          console.log('CONTINUOUS_QUEUE_CONTRACT=PASS');
+          NODE
