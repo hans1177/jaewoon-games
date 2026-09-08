@@ -32,16 +32,17 @@ function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles =
 
 test('Unity text source produces isolated candidate without touching source', async () => {
   const cwd = tempRoot();
+  const responseFile = path.join(cwd, 'model.json');
   write(path.join(cwd, 'unity-games/demo/Assets/Player.cs'), 'class Player { int Speed() { return 1 + 1; } }\n');
   write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(order({ responsibleFiles: ['unity-games/demo/Assets/Player.cs'] }), null, 2));
-  write(path.join(cwd, 'model.json'), JSON.stringify({
+  write(responseFile, JSON.stringify({
     summary: '중복 계산 제거',
     expectedEffect: '동일 결과 유지',
     edits: [{ path: 'Assets/Player.cs', find: 'return 1 + 1;', replace: 'return 2;' }],
     newFiles: [],
     tests: ['C# syntax']
   }));
-  const result = await runVibe2SourceWorker({ cwd, responseFile: 'model.json' });
+  const result = await runVibe2SourceWorker({ cwd, responseFile });
   assert.equal(result.mode, 'candidate-snapshot-only');
   assert.deepEqual(result.changedFiles, ['Assets/Player.cs']);
   assert.equal(fs.readFileSync(path.join(cwd, 'unity-games/demo/Assets/Player.cs'), 'utf8').includes('return 1 + 1;'), true);
@@ -50,6 +51,7 @@ test('Unity text source produces isolated candidate without touching source', as
 
 test('Unreal C++ text source is allowed', async () => {
   const cwd = tempRoot();
+  const responseFile = path.join(cwd, 'model.json');
   write(path.join(cwd, 'unreal-games/demo/Source/Demo/Hero.cpp'), 'void Hero::Tick() { Value = Value + 0; }\n');
   write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(order({
     target: 'unreal',
@@ -57,17 +59,18 @@ test('Unreal C++ text source is allowed', async () => {
     responsibleFiles: ['unreal-games/demo/Source/Demo/Hero.cpp'],
     taskId: 'ue-cpp'
   }), null, 2));
-  write(path.join(cwd, 'model.json'), JSON.stringify({
+  write(responseFile, JSON.stringify({
     edits: [{ path: 'Source/Demo/Hero.cpp', find: 'Value = Value + 0;', replace: 'Value = Value;' }],
     newFiles: []
   }));
-  const result = await runVibe2SourceWorker({ cwd, responseFile: 'model.json' });
+  const result = await runVibe2SourceWorker({ cwd, responseFile });
   assert.equal(result.target, 'unreal');
   assert.deepEqual(result.changedFiles, ['Source/Demo/Hero.cpp']);
 });
 
 test('Unreal uasset is rejected before model execution', async () => {
   const cwd = tempRoot();
+  const responseFile = path.join(cwd, 'model.json');
   write(path.join(cwd, 'unreal-games/demo/Content/Hero.uasset'), 'not-real-binary');
   write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(order({
     target: 'unreal',
@@ -75,38 +78,40 @@ test('Unreal uasset is rejected before model execution', async () => {
     responsibleFiles: ['unreal-games/demo/Content/Hero.uasset'],
     taskId: 'ue-binary'
   }), null, 2));
-  write(path.join(cwd, 'model.json'), '{}');
+  write(responseFile, '{}');
   await assert.rejects(
-    runVibe2SourceWorker({ cwd, responseFile: 'model.json' }),
+    runVibe2SourceWorker({ cwd, responseFile }),
     /엔진 에디터 필요 바이너리 파일/
   );
 });
 
 test('web-games source root is forbidden', async () => {
   const cwd = tempRoot();
+  const responseFile = path.join(cwd, 'model.json');
   write(path.join(cwd, 'web-games/demo/index.html'), '<div>old</div>');
   write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(order({
     target: 'unity',
     root: 'web-games/demo',
     responsibleFiles: ['web-games/demo/index.html']
   }), null, 2));
-  write(path.join(cwd, 'model.json'), '{}');
+  write(responseFile, '{}');
   await assert.rejects(
-    runVibe2SourceWorker({ cwd, responseFile: 'model.json' }),
+    runVibe2SourceWorker({ cwd, responseFile }),
     /허용되지 않은 source root/
   );
 });
 
 test('source apply refuses non-candidate branch', async () => {
   const cwd = tempRoot();
+  const responseFile = path.join(cwd, 'model.json');
   write(path.join(cwd, 'unity-games/demo/Assets/Player.cs'), 'class Player { int Speed() { return 1; } }\n');
   write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(order({ responsibleFiles: ['unity-games/demo/Assets/Player.cs'] }), null, 2));
-  write(path.join(cwd, 'model.json'), JSON.stringify({
+  write(responseFile, JSON.stringify({
     edits: [{ path: 'Assets/Player.cs', find: 'return 1;', replace: 'return 2;' }],
     newFiles: []
   }));
   await assert.rejects(
-    runVibe2SourceWorker({ cwd, responseFile: 'model.json', applySource: true }),
+    runVibe2SourceWorker({ cwd, responseFile, applySource: true }),
     /vibe2\/candidate\/\* 브랜치에서만 허용/
   );
 });
