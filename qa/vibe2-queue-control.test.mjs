@@ -42,14 +42,17 @@ test('PASS releases serial queue to next item', () => {
   assert.equal(done.next.selected.id, 'second');
 });
 
-test('failed task retries only within configured limit', () => {
+test('retryable failure clears blocker and remains selectable until retry limit', () => {
   let queue = enqueueVibeTask(createVibeContinuousQueue(), { id:'retry', target:'unity', goal:'재시도 작업', maxRetries:1 });
   let reserved = reserveNextVibeTask(queue);
-  let failed = settleVibeTask(reserved.queue, { taskId:'retry', outcome:'FAIL', evidence:['fail-1'] });
+  let failed = settleVibeTask(reserved.queue, { taskId:'retry', outcome:'FAIL', evidence:['fail-1'], blocker:'source-candidate-generation-failed' });
   assert.equal(failed.queue.tasks[0].status, 'queued');
+  assert.equal(failed.queue.tasks[0].blocker, null);
+  assert.equal(selectNextVibeQueueTask(failed.queue).selected.id, 'retry');
   reserved = reserveNextVibeTask(failed.queue);
-  failed = settleVibeTask(reserved.queue, { taskId:'retry', outcome:'FAIL', evidence:['fail-2'] });
+  failed = settleVibeTask(reserved.queue, { taskId:'retry', outcome:'FAIL', evidence:['fail-2'], blocker:'source-candidate-generation-failed' });
   assert.equal(failed.queue.tasks[0].status, 'failed');
+  assert.equal(failed.queue.tasks[0].blocker, 'source-candidate-generation-failed');
 });
 
 test('protected or paid autonomous work remains ineligible', () => {
