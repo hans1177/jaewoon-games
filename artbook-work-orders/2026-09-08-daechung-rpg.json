@@ -1,9 +1,9 @@
 {
-  "version": 2,
+  "version": 3,
   "date": "2026-09-08",
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
-  "status": "WAITING_FOR_DEPARTMENT_RUNNERS",
+  "status": "FREE_LOCAL_DEPARTMENT_RUNNERS_DISPATCHED",
   "finalSubmissionLimitToday": 1,
   "styleProfile": "판타지 세계 설정집 + 모험 연대기",
   "sourceEvidence": [
@@ -19,7 +19,7 @@
       "submissionPath": "artbook-submissions/daechung-rpg/2026-09-08/planning.json",
       "issue": 7,
       "mayWriteOtherSections": false,
-      "status": "ISSUE_CREATED_RUNNER_NOT_ASSIGNED"
+      "status": "FREE_LOCAL_AI_DISPATCHED"
     },
     "graphics": {
       "owner": "graphics",
@@ -28,7 +28,7 @@
       "submissionPath": "artbook-submissions/daechung-rpg/2026-09-08/graphics.json",
       "issue": 8,
       "mayWriteOtherSections": false,
-      "status": "ISSUE_CREATED_RUNNER_NOT_ASSIGNED"
+      "status": "FREE_LOCAL_AI_DISPATCHED"
     },
     "development": {
       "owner": "development",
@@ -37,7 +37,7 @@
       "submissionPath": "artbook-submissions/daechung-rpg/2026-09-08/development.json",
       "issue": 9,
       "mayWriteOtherSections": false,
-      "status": "ISSUE_CREATED_RUNNER_NOT_ASSIGNED"
+      "status": "FREE_LOCAL_AI_DISPATCHED"
     },
     "qa": {
       "owner": "qa",
@@ -46,7 +46,7 @@
       "submissionPath": "artbook-submissions/daechung-rpg/2026-09-08/qa.json",
       "issue": 10,
       "mayWriteOtherSections": false,
-      "status": "ISSUE_CREATED_RUNNER_NOT_ASSIGNED"
+      "status": "FREE_LOCAL_AI_DISPATCHED"
     },
     "balance": {
       "owner": "balance",
@@ -55,15 +55,22 @@
       "submissionPath": "artbook-submissions/daechung-rpg/2026-09-08/balance.json",
       "issue": 11,
       "mayWriteOtherSections": false,
-      "status": "ISSUE_CREATED_RUNNER_NOT_ASSIGNED"
+      "status": "FREE_LOCAL_AI_DISPATCHED"
     }
   },
   "runnerDispatch": {
-    "requestedRunner": "github-copilot-cloud-agent",
-    "attemptedIssue": 7,
-    "result": "BLOCKED_403_FORBIDDEN",
+    "requestedRunner": "vibe2-local-open-model-department-bots",
+    "workflow": ".github/workflows/artbook-free-department-bots.yml",
+    "modelPrimary": "qwen3:1.7b",
+    "modelFallback": "qwen3:0.6b",
+    "modelLicense": "Apache-2.0",
+    "execution": "github-hosted-ubuntu-local-inference",
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "readsOtherDepartmentSubmissions": false,
+    "result": "DISPATCHED",
     "fallbackGhostwritingAllowed": false,
-    "note": "Connected GitHub app could create department issues but could not assign the Copilot cloud agent. Director/ChatGPT must not replace department submissions."
+    "note": "각 부서는 동일한 로컬 오픈모델을 별도 프로세스로 호출하며 역할별 증거만 읽는다. 다른 부서 제출물은 입력에 포함하지 않는다."
   },
   "collaboration": {
     "enabled": true,
