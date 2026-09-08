@@ -8,6 +8,7 @@ import { createVibeWorkPlan, createVibeExecutionContract } from './vibe-orchestr
 import { createDepartmentExperienceState, createExperienceAwareInstruction } from './department-experience.js';
 import { DEFAULT_DEPARTMENT_EXPERIENCE_STATE } from './department-experience-state.js';
 import { createCompanyQualityBar } from './company-quality-bar.js';
+import { VIBE_WORK_LOCK_STATE_BRANCH, VIBE_WORK_LOCK_STATE_PATH } from './vibe-work-lock.js';
 import {
   COMPANY_FLOW_STAGES,
   COMPANY_REVIEW_ROLES,
@@ -26,17 +27,32 @@ const freezeList=value=>Object.freeze(Array.isArray(value)?[...value]:[]);
 const has=(value,words)=>{const text=clean(value).toLowerCase();return words.some(word=>text.includes(String(word).toLowerCase()));};
 const OWNER_GATE_STAGE='owner-approval';
 
+const SHARED_WORK_LOCK_POLICY=Object.freeze({
+  requiredBeforeSourceWrite:true,
+  stateBranch:VIBE_WORK_LOCK_STATE_BRANCH,
+  statePath:VIBE_WORK_LOCK_STATE_PATH,
+  worker:'company-ai',
+  baseShaRequired:true,
+  leaseMinutes:45,
+  maxLeaseMinutes:120,
+  activeOverlapRule:'block-source-write-and-select-independent-work',
+  staleBaseOverlapRule:'REPLAN_REQUIRED',
+  staleBaseNonOverlapRule:'REBASE_THEN_QA',
+  authority:'edit-exclusivity-only-no-owner-gate-expansion'
+});
+
 export const VIBE2_COMPANY_SYNC=Object.freeze({
   version:5,
   mode:'single-source-of-truth',
   sourceOfTruth:'github-main',
   companyAuthority:Object.freeze(['company-directive.json','company-status.json','department-experience.json','COMPANY_FLOW.md','ARTBOOK_POLICY.md']),
-  vibe2Authority:Object.freeze(['AGENTS.md','ASSET_RULES.md','assets/animated-assets.json','assets/asset-manifest.json','assets/department-experience.js','assets/department-experience-state.js','assets/company-quality-bar.js','assets/vibe-workbench.js','assets/vibe-orchestrator.js']),
+  vibe2Authority:Object.freeze(['AGENTS.md','ASSET_RULES.md','assets/animated-assets.json','assets/asset-manifest.json','assets/department-experience.js','assets/department-experience-state.js','assets/company-quality-bar.js','assets/vibe-workbench.js','assets/vibe-orchestrator.js','assets/vibe-work-lock.js']),
   bridge:'assets/vibe-company-orchestration-bridge.js',
   ownerDirectivePriority:'before-autonomous-plan',
   completedArtbookPriority:'locked-source-of-truth-before-vibe2-plan',
   departmentLearning:'verified-experience-strengthens-quality-not-authority',
   qualityLearning:'company-quality-bar-rises-with-verified-experience',
+  sharedWorkLock:'required-before-source-write',
   homepagePublication:'explicit-owner-instruction-only',
   webArchive:'read-only',
   paidAutomation:'forbidden'
@@ -112,7 +128,8 @@ export function createCompanyStageAssignment({stageId='brief',request='',gameId=
       outputs:stage.outputs,
       artbookLocked:locked,
       artbookRef:locked?artbookLock.ref||null:null,
-      experience:experienced.profile
+      experience:experienced.profile,
+      workLock:SHARED_WORK_LOCK_POLICY
     });
   });
   const experienceProfiles=Object.freeze(Object.fromEntries(tasks.map(task=>[task.role,task.experience])));
@@ -126,6 +143,7 @@ export function createCompanyStageAssignment({stageId='brief',request='',gameId=
     tasks:freezeList(tasks),
     experienceProfiles,
     artbookLock:artbookLock||null,
+    workLock:SHARED_WORK_LOCK_POLICY,
     authority:requiresOwnerAction?'owner-decision-only':locked?'company-managed-with-locked-artbook':'company-managed-stage',
     autoExecute:!requiresOwnerAction,
     requiresOwnerAction,
@@ -251,19 +269,22 @@ export function planCompanyDevelopmentTask({
       if(profile.adversarialSelfReview)checks.push(`${task.role}: 반례/실패 시나리오 검증`);
       return checks;
     });
+    const workLockQa=['공용 Work Lock 획득 확인','BASE_SHA 이후 잠금 범위 변경 겹침 없음 또는 재계획 완료'];
     execution=resolvedTarget==='unity'
       ? Object.freeze({
           ...executionBase,
           target:'unity',
           responsibleFiles:Object.freeze(responsibleFiles.map(clean).filter(Boolean)),
-          qa:Object.freeze([...(executionBase.qa||[]),...qualityBarChecks,...artbookQa,...experienceQa,'Unity 컴파일','씬/프리팹 참조','Android 빌드','실기기 실행']),
+          qa:Object.freeze([...(executionBase.qa||[]),...qualityBarChecks,...artbookQa,...experienceQa,...workLockQa,'Unity 컴파일','씬/프리팹 참조','Android 빌드','실기기 실행']),
           artbookLock,
+          workLockRequired:true,
           compatibilityAdapter:'company-unity-target'
         })
       : Object.freeze({
           ...executionBase,
-          qa:Object.freeze([...(executionBase.qa||[]),...qualityBarChecks,...artbookQa,...experienceQa]),
-          artbookLock
+          qa:Object.freeze([...(executionBase.qa||[]),...qualityBarChecks,...artbookQa,...experienceQa,...workLockQa]),
+          artbookLock,
+          workLockRequired:true
         });
   }
 
@@ -276,6 +297,18 @@ export function planCompanyDevelopmentTask({
   else if(currentStage.id!==OWNER_GATE_STAGE)next=nextStageId(currentStage.id);
 
   const conceptPhaseRequired=newGame&&!artbookLock.locked;
+  const explicitLockScope=responsibleFiles.map(clean).filter(Boolean);
+  const fallbackLockScope=(workbench.candidateFiles||[]).map(clean).filter(Boolean);
+  const workLock=Object.freeze({
+    ...SHARED_WORK_LOCK_POLICY,
+    requiredBeforeSourceWrite:Boolean(execution),
+    acquired:false,
+    gameId:gameId?clean(gameId):null,
+    files:freezeList(explicitLockScope.length?explicitLockScope:fallbackLockScope),
+    acquisitionState:'worker-must-acquire-before-source-write',
+    releaseRule:'release-after-qa-or-abort'
+  });
+
   return Object.freeze({
     version:5,
     sync:VIBE2_COMPANY_SYNC,
@@ -284,6 +317,7 @@ export function planCompanyDevelopmentTask({
     target:resolvedTarget,
     newGame,
     artbookLock,
+    workLock,
     departmentExperience:experienceState,
     qualityBar:companyQualityBar,
     flow:Object.freeze({...flow,currentStage:currentStage.id,revisionRoundsUsed:Math.max(0,Number(revisionRoundsUsed)||0)}),
@@ -304,6 +338,7 @@ export function planCompanyDevelopmentTask({
       maintenanceBypass,
       mayDispatch:assignment.autoExecute,
       mayExecute:Boolean(execution),
+      sharedWorkLockRequiredBeforeSourceWrite:Boolean(execution),
       requiresOwnerAction:assignment.requiresOwnerAction,
       executionMode:assignment.executionMode,
       next,
