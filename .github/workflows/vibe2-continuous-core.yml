@@ -46,11 +46,15 @@ jobs:
       - name: Core contract preflight
         run: |
           set -euo pipefail
+          node --check assets/vibe-work-lock.js
+          node --check tools/vibe-work-lock-control.mjs
+          node --check tools/vibe2-remote-work-lock.mjs
           node --check tools/vibe2-continuous-runner.mjs
           node --check tools/vibe2-source-worker.mjs
           node --check tools/vibe2-queue-control.mjs
           node --check tools/vibe2-candidate-reconcile.mjs
           node --check tools/vibe2-experience-control.mjs
+          node --test qa/vibe-work-lock.test.mjs
           node --test qa/vibe2-core-engine-motion.test.mjs
           node --test qa/vibe2-source-worker.test.mjs
           node --test qa/vibe2-queue-control.test.mjs
@@ -71,11 +75,14 @@ jobs:
           fs.appendFileSync(out,`run=${order.run?'true':'false'}\n`);
           fs.appendFileSync(out,`reason=${String(order.reason||'').replaceAll('\n',' ')}\n`);
           if(!order.run)process.exit(0);
+          const responsible=Array.isArray(order.source?.responsibleFiles)?order.source.responsibleFiles.filter(Boolean):[];
+          const lockFiles=responsible.length?responsible:[`${order.source.root}/**`];
           fs.appendFileSync(out,`task_id=${order.taskId}\n`);
           fs.appendFileSync(out,`game_id=${order.gameId||''}\n`);
           fs.appendFileSync(out,`target=${order.target}\n`);
           fs.appendFileSync(out,`route=${order.executionRoute}\n`);
           fs.appendFileSync(out,`source_root=${order.source.root}\n`);
+          fs.appendFileSync(out,`lock_files=${lockFiles.join(',')}\n`);
           NODE
 
       - name: Stop cleanly when queue has no eligible work
@@ -120,8 +127,94 @@ jobs:
           fi
           echo "VIBE2_RESERVED_CONTROL_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
-      - name: Verified free budget preflight
+      - name: Acquire shared source Work Lock
+        id: work_lock
         if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TASK_ID: ${{ steps.order.outputs.task_id }}
+          GAME_ID: ${{ steps.order.outputs.game_id }}
+          LOCK_FILES: ${{ steps.order.outputs.lock_files }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --quiet
+          base_sha="$(git rev-parse origin/main)"
+          node tools/vibe2-remote-work-lock.mjs acquire \
+            --worker=vibe2 \
+            --task="$TASK_ID" \
+            --game="$GAME_ID" \
+            --files="$LOCK_FILES" \
+            --base-sha="$base_sha" \
+            --lease-minutes=45 \
+            --evidence="actions-run-${GITHUB_RUN_ID}" | tee /tmp/vibe2-work-lock.log
+          acquired=0
+          blocked=0
+          lock_id=''
+          reason='unknown'
+          grep -q '^VIBE_REMOTE_WORK_LOCK_ACQUIRED=YES$' /tmp/vibe2-work-lock.log && acquired=1 || true
+          grep -q '^VIBE_REMOTE_WORK_LOCK_ACQUIRED=NO$' /tmp/vibe2-work-lock.log && blocked=1 || true
+          lock_id="$(sed -n 's/^VIBE_REMOTE_WORK_LOCK_ID=//p' /tmp/vibe2-work-lock.log | tail -n1)"
+          reason="$(sed -n 's/^VIBE_REMOTE_WORK_LOCK_REASON=//p' /tmp/vibe2-work-lock.log | tail -n1)"
+          test "$acquired" = 1 || test "$blocked" = 1
+          if [ "$acquired" = 1 ]; then test -n "$lock_id"; fi
+          echo "acquired=$acquired" >> "$GITHUB_OUTPUT"
+          echo "blocked=$blocked" >> "$GITHUB_OUTPUT"
+          echo "lock_id=$lock_id" >> "$GITHUB_OUTPUT"
+          echo "reason=$reason" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_SHARED_WORK_LOCK_ACQUIRED=$acquired"
+
+      - name: Block task when shared Work Lock conflicts
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.work_lock.outcome == 'success' && steps.work_lock.outputs.blocked == '1'
+        env:
+          TASK_ID: ${{ steps.order.outputs.task_id }}
+          LOCK_REASON: ${{ steps.work_lock.outputs.reason }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/vibe2-queue-control.mjs block \
+            --id="$TASK_ID" \
+            --blocker=shared-work-lock-conflict \
+            --evidence="${LOCK_REASON},actions-run-${GITHUB_RUN_ID}"
+          git add .vibe2/queue.json
+          git commit -m "vibe2: block ${TASK_ID} on shared work lock [skip ci]"
+          pushed=0
+          for attempt in 1 2 3; do
+            git pull --rebase origin "$VIBE2_CONTROL_BRANCH"
+            if git push origin "HEAD:$VIBE2_CONTROL_BRANCH"; then pushed=1; break; fi
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+          echo 'VIBE2_SHARED_WORK_LOCK_CONFLICT=YES'
+          echo 'VIBE2_TASK_PASS=NO'
+
+      - name: Block task when Work Lock client fails
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.work_lock.outcome != 'success'
+        env:
+          TASK_ID: ${{ steps.order.outputs.task_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/vibe2-queue-control.mjs block \
+            --id="$TASK_ID" \
+            --blocker=shared-work-lock-client-failed \
+            --evidence="actions-run-${GITHUB_RUN_ID}"
+          git add .vibe2/queue.json
+          git commit -m "vibe2: block ${TASK_ID} on work lock client failure [skip ci]"
+          pushed=0
+          for attempt in 1 2 3; do
+            git pull --rebase origin "$VIBE2_CONTROL_BRANCH"
+            if git push origin "HEAD:$VIBE2_CONTROL_BRANCH"; then pushed=1; break; fi
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+          echo 'VIBE2_SHARED_WORK_LOCK_CLIENT=FAILED'
+          echo 'VIBE2_TASK_PASS=NO'
+
+      - name: Verified free budget preflight
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.work_lock.outputs.acquired == '1'
         shell: bash
         run: |
           set -euo pipefail
@@ -137,7 +230,7 @@ jobs:
 
       - name: Generate isolated text-source candidate
         id: text_candidate
-        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.work_lock.outputs.acquired == '1'
         continue-on-error: true
         env:
           TASK_ID: ${{ steps.order.outputs.task_id }}
@@ -185,11 +278,65 @@ jobs:
           echo "VIBE2_CANDIDATE_BRANCH=$candidate_branch"
           echo "VIBE2_CANDIDATE_SHA=$(git rev-parse HEAD)"
 
-      - name: Settle successful text candidate as awaiting engine QA
-        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.text_candidate.outcome == 'success'
+      - name: Check BASE_SHA freshness after candidate
+        id: base_freshness
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.work_lock.outputs.acquired == '1' && steps.text_candidate.outcome == 'success'
+        env:
+          BASE_SHA: ${{ steps.work_lock.outputs.base_sha }}
+          LOCK_FILES: ${{ steps.order.outputs.lock_files }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --quiet
+          changed_csv="$(git diff --name-only "$BASE_SHA" origin/main | paste -sd, -)"
+          export CHANGED_FILES="$changed_csv"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { detectVibeBaseShaOverlap } from './assets/vibe-work-lock.js';
+          const files=String(process.env.LOCK_FILES||'').split(',').filter(Boolean);
+          const changed=String(process.env.CHANGED_FILES||'').split(',').filter(Boolean);
+          const result=detectVibeBaseShaOverlap({id:'runtime',worker:'vibe2',taskId:'runtime',files,baseSha:process.env.BASE_SHA},changed);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`decision=${result.decision}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`changed_count=${changed.length}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`overlaps=${result.overlaps.join(',')}\n`);
+          console.log(`BASE_SHA_DECISION=${result.decision}`);
+          console.log(`BASE_SHA_CHANGED_COUNT=${changed.length}`);
+          console.log(`BASE_SHA_OVERLAPS=${result.overlaps.join(',')||'NONE'}`);
+          NODE
+
+      - name: Block candidate when BASE_SHA overlap requires replan
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.work_lock.outputs.acquired == '1' && steps.text_candidate.outcome == 'success' && steps.base_freshness.outputs.decision == 'REPLAN_REQUIRED'
         env:
           TASK_ID: ${{ steps.order.outputs.task_id }}
           CANDIDATE_BRANCH: ${{ steps.text_candidate.outputs.candidate_branch }}
+          OVERLAPS: ${{ steps.base_freshness.outputs.overlaps }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout "$VIBE2_CONTROL_BRANCH"
+          git pull --ff-only origin "$VIBE2_CONTROL_BRANCH"
+          node tools/vibe2-queue-control.mjs block \
+            --id="$TASK_ID" \
+            --blocker=base-sha-overlap-replan-required \
+            --evidence="$CANDIDATE_BRANCH,${OVERLAPS},actions-run-${GITHUB_RUN_ID}"
+          git add .vibe2/queue.json
+          git commit -m "vibe2: require replan for ${TASK_ID} after BASE_SHA overlap [skip ci]"
+          pushed=0
+          for attempt in 1 2 3; do
+            git pull --rebase origin "$VIBE2_CONTROL_BRANCH"
+            if git push origin "HEAD:$VIBE2_CONTROL_BRANCH"; then pushed=1; break; fi
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+          echo 'VIBE2_BASE_SHA_REPLAN=YES'
+          echo 'VIBE2_TASK_PASS=NO'
+
+      - name: Settle successful text candidate as awaiting engine QA
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.work_lock.outputs.acquired == '1' && steps.text_candidate.outcome == 'success' && steps.base_freshness.outputs.decision != 'REPLAN_REQUIRED'
+        env:
+          TASK_ID: ${{ steps.order.outputs.task_id }}
+          CANDIDATE_BRANCH: ${{ steps.text_candidate.outputs.candidate_branch }}
+          BASE_DECISION: ${{ steps.base_freshness.outputs.decision }}
         shell: bash
         run: |
           set -euo pipefail
@@ -198,7 +345,7 @@ jobs:
           node tools/vibe2-queue-control.mjs block \
             --id="$TASK_ID" \
             --blocker=candidate-awaiting-engine-qa \
-            --evidence="$CANDIDATE_BRANCH"
+            --evidence="$CANDIDATE_BRANCH,base-sha-${BASE_DECISION}"
           git add .vibe2/queue.json
           git commit -m "vibe2: await engine QA for ${TASK_ID} [skip ci]"
           pushed=0
@@ -210,9 +357,10 @@ jobs:
           test "$pushed" = 1
           echo 'VIBE2_TASK_PASS=NO'
           echo 'VIBE2_ENGINE_QA_REQUIRED=YES'
+          if [ "$BASE_DECISION" = 'REBASE_THEN_QA' ]; then echo 'VIBE2_REBASE_REQUIRED_BEFORE_PROMOTION=YES'; fi
 
       - name: Request Unity candidate build verification when request exists
-        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.target == 'unity' && steps.text_candidate.outcome == 'success'
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.target == 'unity' && steps.work_lock.outputs.acquired == '1' && steps.text_candidate.outcome == 'success' && steps.base_freshness.outputs.decision != 'REPLAN_REQUIRED'
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.order.outputs.game_id }}
@@ -229,7 +377,7 @@ jobs:
           fi
 
       - name: Record text candidate generation failure
-        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.text_candidate.outcome != 'success'
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.work_lock.outputs.acquired == '1' && steps.text_candidate.outcome != 'success'
         env:
           TASK_ID: ${{ steps.order.outputs.task_id }}
         shell: bash
@@ -295,6 +443,19 @@ jobs:
             sleep $((attempt * 2))
           done
           test "$pushed" = 1
+
+      - name: Release shared source Work Lock
+        if: always() && steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.work_lock.outputs.acquired == '1'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LOCK_ID: ${{ steps.work_lock.outputs.lock_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/vibe2-remote-work-lock.mjs release --worker=vibe2 --id="$LOCK_ID" | tee /tmp/vibe2-work-lock-release.log
+          grep -q '^VIBE_REMOTE_WORK_LOCK_RELEASED=YES$' /tmp/vibe2-work-lock-release.log
+          echo 'VIBE2_SHARED_WORK_LOCK_RELEASED=YES'
 
       - name: Chain next independent eligible work immediately
         if: always() && steps.order.outputs.run == 'true'
