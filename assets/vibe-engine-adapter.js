@@ -122,12 +122,30 @@ function sourceContract(target, slug) {
   }
   return freeze({
     root: `web-games/${gameSlug}`,
-    writable: false,
-    candidateFiles: freezeList([`web-games/${gameSlug}/**`]),
-    textWritablePatterns: freezeList([]),
+    writable: true,
+    candidateFiles: freezeList([
+      `web-games/${gameSlug}/**/*.html`,
+      `web-games/${gameSlug}/**/*.css`,
+      `web-games/${gameSlug}/**/*.js`,
+      `web-games/${gameSlug}/**/*.mjs`,
+      `web-games/${gameSlug}/**/*.json`,
+      `web-games/${gameSlug}/**/*.svg`
+    ]),
+    textWritablePatterns: freezeList([
+      `web-games/${gameSlug}/**/*.html`,
+      `web-games/${gameSlug}/**/*.css`,
+      `web-games/${gameSlug}/**/*.js`,
+      `web-games/${gameSlug}/**/*.mjs`,
+      `web-games/${gameSlug}/**/*.json`,
+      `web-games/${gameSlug}/**/*.svg`
+    ]),
     editorRequiredPatterns: freezeList([]),
-    ignoredPaths: freezeList([]),
-    readOnlyReason: 'web-games-archive-read-only'
+    ignoredPaths: freezeList([
+      `web-games/${gameSlug}/node_modules/**`,
+      `web-games/${gameSlug}/dist/**`
+    ]),
+    maintenanceOnly: true,
+    newGameAutomatic: false
   });
 }
 
@@ -159,7 +177,7 @@ function qaContract(target) {
     'scene-script-reference-check',
     'runtime-check'
   ]);
-  return freezeList([...common, 'browser-runtime-check', 'mobile-layout-check']);
+  return freezeList([...common, 'browser-runtime-check', 'mobile-layout-check', 'touch-input-check', 'save-regression-check']);
 }
 
 function motionBindings(target) {
@@ -201,14 +219,16 @@ function executionContract(target, source) {
     editorRequiredPatterns: source.editorRequiredPatterns
   });
   return freeze({
-    textWorkerAllowed: false,
+    textWorkerAllowed: true,
     editorWorkerRequiredForBinaryAssets: false,
-    editorRuntime: null,
-    editorRequiredCapabilities: freezeList([]),
+    editorRuntime: 'browser-runtime',
+    editorRequiredCapabilities: freezeList(['browser runtime', 'mobile layout', 'touch input']),
     binaryAssetsDirectTextEditForbidden: true,
     localEditorPreferred: false,
     textWritablePatterns: source.textWritablePatterns,
-    editorRequiredPatterns: source.editorRequiredPatterns
+    editorRequiredPatterns: source.editorRequiredPatterns,
+    maintenanceOnly: true,
+    newGameAutomatic: false
   });
 }
 
@@ -216,7 +236,7 @@ export function createVibeEngineAdapter({ request = '', target = 'auto', gameSlu
   const resolvedTarget = detectVibeEngineTarget(request, target);
   const source = sourceContract(resolvedTarget, gameSlug);
   return freeze({
-    version: 2,
+    version: 3,
     target: resolvedTarget,
     source,
     execution: executionContract(resolvedTarget, source),
@@ -224,7 +244,8 @@ export function createVibeEngineAdapter({ request = '', target = 'auto', gameSlu
     motionBindings: motionBindings(resolvedTarget),
     gameplayAuthority: 'engine-resolves-authoritative-gameplay-results',
     commonModel: 'engine-neutral-game-model',
-    webArchiveReadOnly: resolvedTarget === 'web',
+    webArchiveReadOnly: false,
+    webMaintenanceOnly: resolvedTarget === 'web',
     mayWriteSource: source.writable === true,
     requiresBuildEvidence: ['unity', 'unreal'].includes(resolvedTarget),
     requiresMotionRuntimeEvidence: ['unity', 'unreal', 'godot'].includes(resolvedTarget)
@@ -238,7 +259,8 @@ export function validateVibeEngineAdapter(adapter) {
   if (!Array.isArray(adapter?.source?.candidateFiles) || adapter.source.candidateFiles.length === 0) issues.push('candidate-files-required');
   if (!Array.isArray(adapter?.source?.textWritablePatterns)) issues.push('text-writable-patterns-required');
   if (!Array.isArray(adapter?.source?.editorRequiredPatterns)) issues.push('editor-required-patterns-required');
-  if (adapter?.target === 'web' && adapter?.mayWriteSource !== false) issues.push('web-archive-must-be-read-only');
+  if (adapter?.target === 'web' && adapter?.mayWriteSource !== true) issues.push('existing-web-maintenance-must-be-writable');
+  if (adapter?.target === 'web' && adapter?.source?.maintenanceOnly !== true) issues.push('web-maintenance-only-required');
   if (adapter?.target === 'unreal' && !adapter.source.candidateFiles.some((path) => path.endsWith('*.uproject'))) issues.push('unreal-uproject-required');
   if (adapter?.target === 'unreal' && adapter?.execution?.binaryAssetsDirectTextEditForbidden !== true) issues.push('unreal-binary-assets-must-not-be-text-edited');
   return freeze({ valid: issues.length === 0, issues: freezeList(issues) });
