@@ -990,22 +990,24 @@
     {
       "no": 1,
       "kind": "planning",
-      "title": "Independent Artbook Review for 'DAECHUNG RPG' - Story & Region Causality",
-      "body": "Independent Artbook Review for 'DAECHUNG RPG' - Story & Region Causality",
+      "title": "대충 RPG 기획 검토 · 스토리와 지역 인과관계",
+      "body": "대충 RPG 기획 검토 · 스토리와 지역 인과관계",
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/planning.svg",
       "sourceDepartment": "planning",
       "pageType": "department-overview",
-      "postprocessed": true
+      "postprocessed": true,
+      "displayLanguage": "ko"
     },
     {
       "no": 2,
       "kind": "planning",
       "title": "기획 · 세부 정리",
-      "body": "Story & Region Causality",
+      "body": "스토리와 지역 인과관계",
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/planning.svg",
       "sourceDepartment": "planning",
       "pageType": "department-detail",
-      "postprocessed": true
+      "postprocessed": true,
+      "displayLanguage": "ko"
     },
     {
       "no": 3,
@@ -1015,17 +1017,19 @@
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/graphics.svg",
       "sourceDepartment": "graphics",
       "pageType": "department-overview",
-      "postprocessed": true
+      "postprocessed": true,
+      "displayLanguage": "ko"
     },
     {
       "no": 4,
       "kind": "graphics",
       "title": "그래픽 · 세부 정리",
-      "body": "world-section-structure",
+      "body": "월드 구역 구성",
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/graphics.svg",
       "sourceDepartment": "graphics",
       "pageType": "department-detail",
-      "postprocessed": true
+      "postprocessed": true,
+      "displayLanguage": "ko"
     },
     {
       "no": 5,
@@ -1035,7 +1039,8 @@
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/development.svg",
       "sourceDepartment": "development",
       "pageType": "department-overview",
-      "postprocessed": true
+      "postprocessed": true,
+      "displayLanguage": "ko"
     },
     {
       "no": 6,
@@ -1045,27 +1050,30 @@
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/development.svg",
       "sourceDepartment": "development",
       "pageType": "department-detail",
-      "postprocessed": true
+      "postprocessed": true,
+      "displayLanguage": "ko"
     },
     {
       "no": 7,
       "kind": "qa",
-      "title": "RPG QA Department 1st Independent Review",
-      "body": "RPG QA Department 1st Independent Review",
+      "title": "RPG QA 부서 1차 독립 검토",
+      "body": "RPG QA 부서 1차 독립 검토",
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/qa.svg",
       "sourceDepartment": "qa",
       "pageType": "department-overview",
-      "postprocessed": true
+      "postprocessed": true,
+      "displayLanguage": "ko"
     },
     {
       "no": 8,
       "kind": "qa",
       "title": "QA · 세부 정리",
-      "body": "story-telling & world-building",
+      "body": "스토리텔링과 월드 구성",
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/qa.svg",
       "sourceDepartment": "qa",
       "pageType": "department-detail",
-      "postprocessed": true
+      "postprocessed": true,
+      "displayLanguage": "ko"
     },
     {
       "no": 9,
@@ -1075,17 +1083,19 @@
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/balance.svg",
       "sourceDepartment": "balance",
       "pageType": "department-overview",
-      "postprocessed": true
+      "postprocessed": true,
+      "displayLanguage": "ko"
     },
     {
       "no": 10,
       "kind": "balance",
       "title": "밸런스 · 세부 정리",
-      "body": "level 1: 100 gold, 100 experience, base max hp 100",
+      "body": "레벨 1 · 골드 100 · 경험치 100 · 기본 최대 체력 100",
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/balance.svg",
       "sourceDepartment": "balance",
       "pageType": "department-detail",
-      "postprocessed": true
+      "postprocessed": true,
+      "displayLanguage": "ko"
     }
   ],
   "publication": {
@@ -1100,9 +1110,9 @@
     "postprocessComplete": true
   },
   "postprocess": {
-    "version": 1,
+    "version": 2,
     "complete": true,
-    "checkedAt": "2026-09-08T06:43:54.441Z",
+    "checkedAt": "2026-09-08T06:45:38.516Z",
     "requiredCuts": 10,
     "cutCount": 10,
     "cutsPerDepartment": {
@@ -1117,6 +1127,8 @@
     "duplicateChecked": true,
     "imagePathsChecked": true,
     "newClaimsAdded": false,
-    "sourceMode": "DEPARTMENT_OWNED_MATERIAL_ONLY"
+    "sourceMode": "DEPARTMENT_OWNED_MATERIAL_ONLY",
+    "displayLanguage": "ko",
+    "displayNormalization": "KNOWN_SOURCE_TERMS_TRANSLATED_TO_KOREAN"
   }
 }
