@@ -8,6 +8,7 @@ on:
       - 'VIBE2_CORE.md'
       - 'VIBE2_MOTION_CORE.md'
       - 'assets/vibe-engine-adapter.js'
+      - 'assets/vibe-workbench.js'
       - 'assets/vibe-motion-core.js'
       - 'assets/vibe-experience-memory.js'
       - 'assets/vibe-continuous-queue.js'
@@ -36,6 +37,7 @@ jobs:
       - name: Syntax check
         run: |
           node --check assets/vibe-engine-adapter.js
+          node --check assets/vibe-workbench.js
           node --check assets/vibe-motion-core.js
           node --check assets/vibe-experience-memory.js
           node --check assets/vibe-continuous-queue.js
