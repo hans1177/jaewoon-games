@@ -1,12 +1,16 @@
 {
-  "version": 1,
+  "version": 2,
   "mode": "continuous-core",
   "continuous": {
     "enabled": true,
     "strategy": "short-verified-work-chains",
     "singleLongRunningJob": false,
+    "wakeMode": "hourly-plus-immediate-chain",
+    "wakeCron": "17 * * * *",
+    "scheduleBecomesActiveOnDefaultBranchIntegration": true,
     "maxTaskRetries": 2,
     "maxWorkMinutes": 20,
+    "maxModelCallsPerRun": 1,
     "dispatchNextWhenVerified": true,
     "ownerDirectivePreemptsAutonomy": true
   },
@@ -14,6 +18,42 @@
     "queue": ".vibe2/queue.json",
     "experience": ".vibe2/experience.json",
     "workOrder": ".vibe2/work-order.json"
+  },
+  "workers": {
+    "textSource": {
+      "configured": true,
+      "tool": "tools/vibe2-source-worker.mjs",
+      "model": "qwen3:0.6b",
+      "candidateBranchPrefix": "vibe2/candidate/",
+      "directMainWrite": false
+    },
+    "analysis": {
+      "configured": false,
+      "reason": "analysis-worker-not-connected-yet"
+    }
+  },
+  "engineEditors": {
+    "unity": {
+      "authoringWorkerConfigured": false,
+      "editorRuntime": "unity-editor",
+      "buildVerificationWorkflow": ".github/workflows/unity-hybrid-android-build.yml",
+      "workflow": null,
+      "runnerLabel": null
+    },
+    "unreal": {
+      "authoringWorkerConfigured": false,
+      "editorRuntime": "unreal-editor-or-commandlet",
+      "workflow": null,
+      "runnerLabel": null
+    }
+  },
+  "verification": {
+    "candidateCreationIsFinalPass": false,
+    "engineBuildSuccessIsFinalPass": false,
+    "engineBuildSuccessState": "verification-passed-awaiting-review",
+    "automaticMainPromotion": false,
+    "automaticExperiencePromotion": false,
+    "reviewedExperienceRequired": true
   },
   "safety": {
     "webGamesReadOnly": true,
@@ -24,6 +64,7 @@
     "saveBreakingChangeRequiresMigration": true,
     "verifiedEvidenceRequiredForLearning": true,
     "directMainWriteByWorker": false,
+    "binaryAssetsDirectTextEditForbidden": true,
     "homepagePublicationAutomatic": false
   }
 }
