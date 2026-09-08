@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Diagnose UNITY_LICENSE shape without exposing secret
+      - name: Diagnose UNITY_LICENSE without exposing secret
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -25,57 +25,62 @@ jobs:
         shell: bash
         run: |
           python3 - <<'PY'
-          import os, re, pathlib
+          import os, pathlib, re, xml.etree.ElementTree as ET
 
-          license_text = os.environ.get('UNITY_LICENSE', '').strip()
+          text = os.environ.get('UNITY_LICENSE', '').strip()
           email = os.environ.get('UNITY_EMAIL', '').strip()
           password = os.environ.get('UNITY_PASSWORD', '')
-          project_version_file = pathlib.Path('unity-games/daechung-rpg/ProjectSettings/ProjectVersion.txt')
-          project_text = project_version_file.read_text(encoding='utf-8') if project_version_file.is_file() else ''
-          m = re.search(r'm_EditorVersion:\s*([^\s]+)', project_text)
+          pv = pathlib.Path('unity-games/daechung-rpg/ProjectSettings/ProjectVersion.txt').read_text(encoding='utf-8')
+          m = re.search(r'm_EditorVersion:\s*([^\s]+)', pv)
           project_version = m.group(1) if m else 'unknown'
 
           print(f'UNITY_EMAIL_PRESENT={bool(email)}')
           print(f'UNITY_PASSWORD_PRESENT={bool(password)}')
-          print(f'UNITY_LICENSE_PRESENT={bool(license_text)}')
-          print(f'UNITY_LICENSE_LENGTH={len(license_text)}')
+          print(f'UNITY_LICENSE_PRESENT={bool(text)}')
+          print(f'UNITY_LICENSE_LENGTH={len(text)}')
           print(f'PROJECT_UNITY_VERSION={project_version}')
 
-          xml_like = license_text.startswith('<?xml') or license_text.startswith('<root') or license_text.startswith('<')
-          has_developer_data = 'DeveloperData' in license_text
-          has_unity_marker = 'Unity' in license_text or 'unity' in license_text
-          serial_like = bool(re.fullmatch(r'[A-Za-z0-9]{2,8}(?:-[A-Za-z0-9]{3,10}){2,8}', license_text))
-          version_tokens = sorted(set(re.findall(r'(?<![A-Za-z0-9])(?:6000|20\d{2})\.\d+\.\d+[abfp]\d+(?![A-Za-z0-9])', license_text)))[:8]
+          classification = 'MISSING'
+          client_version = 'none'
+          personal = False
+          developer_data = False
+          gameci_binding = False
+          machine_binding_count = 0
+          expected_binding = '576562626572264761624c65526f7578'
 
-          print(f'XML_LIKE={xml_like}')
-          print(f'HAS_DEVELOPER_DATA={has_developer_data}')
-          print(f'HAS_UNITY_MARKER={has_unity_marker}')
-          print(f'SERIAL_LIKE={serial_like}')
-          print('LICENSE_VERSION_TOKENS=' + (','.join(version_tokens) if version_tokens else 'none'))
-          print(f'PROJECT_VERSION_VISIBLE_IN_LICENSE={project_version in version_tokens if version_tokens else False}')
-
-          if not license_text:
-              classification = 'MISSING'
-          elif serial_like and not xml_like:
-              classification = 'SERIAL_OR_TOKEN_NOT_ULF'
-          elif xml_like and has_developer_data and len(license_text) >= 500:
-              classification = 'ULF_LIKELY'
-          else:
-              classification = 'INVALID_OR_INCOMPLETE_ULF'
+          if text:
+            try:
+              root = ET.fromstring(text)
+              developer = root.find('.//DeveloperData')
+              developer_data = developer is not None and bool(developer.attrib.get('Value'))
+              personal = any(e.attrib.get('Tag') == 'UnityPersonal' for e in root.findall('.//Entitlement'))
+              cpv = root.find('.//ClientProvidedVersion')
+              if cpv is not None and cpv.attrib.get('Value'):
+                client_version = cpv.attrib['Value']
+              bindings = [b.attrib.get('Value','') for b in root.findall('.//MachineBindings/Binding')]
+              machine_binding_count = len(bindings)
+              gameci_binding = bool(bindings) and all(v == expected_binding for v in bindings)
+              classification = 'ULF_LIKELY' if developer_data and personal and len(text) >= 500 else 'INVALID_OR_INCOMPLETE_ULF'
+            except ET.ParseError:
+              classification = 'INVALID_XML'
 
           print(f'CLASSIFICATION={classification}')
+          print(f'UNITY_PERSONAL={personal}')
+          print(f'HAS_DEVELOPER_DATA={developer_data}')
+          print(f'CLIENT_PROVIDED_VERSION={client_version}')
+          print(f'MACHINE_BINDING_COUNT={machine_binding_count}')
+          print(f'GAMECI_MACHINE_BINDING_MATCH={gameci_binding}')
           print('SECRET_CONTENT_NOT_PRINTED=true')
 
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as f:
-              f.write('## Unity Personal license diagnostic\n')
-              f.write(f'- Classification: **{classification}**\n')
-              f.write(f'- Project Unity: **{project_version}**\n')
-              f.write(f'- License version tokens: **{", ".join(version_tokens) if version_tokens else "none detected"}**\n')
-              f.write(f'- License length: **{len(license_text)}** characters\n')
-              f.write(f'- XML-like: **{xml_like}**\n')
-              f.write(f'- DeveloperData present: **{has_developer_data}**\n')
-              f.write('- Secret contents were not printed.\n')
+            f.write('## Unity Personal cloud license diagnostic\n')
+            f.write(f'- Classification: **{classification}**\n')
+            f.write(f'- Project Unity: **{project_version}**\n')
+            f.write(f'- License ClientProvidedVersion: **{client_version}**\n')
+            f.write(f'- GameCI legacy machine binding match: **{gameci_binding}**\n')
+            f.write(f'- Unity Personal entitlement: **{personal}**\n')
+            f.write('- Secret contents were not printed.\n')
 
           if classification != 'ULF_LIKELY':
-              raise SystemExit('UNITY_LICENSE is not shaped like a complete Unity Personal .ulf file. Replace it with the full contents of Unity_lic.ulf before rebuilding.')
+            raise SystemExit('UNITY_LICENSE is not a complete Unity Personal ULF.')
           PY
