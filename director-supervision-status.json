@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "dateKst": "2026-09-08",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
@@ -9,6 +9,7 @@
     "activeWorkOrderExists": true,
     "evidenceAdapterMismatch": false,
     "jobLevelEvidenceUsed": true,
+    "failureLogsUsed": false,
     "runningLabelAloneCountsAsWork": false,
     "directorMayGhostwriteMissingDepartmentWork": false
   },
@@ -29,7 +30,7 @@
       "conclusion": null,
       "event": "push",
       "createdAt": "2026-09-08T03:03:34Z",
-      "updatedAt": "2026-09-08T03:03:38Z",
+      "updatedAt": "2026-09-08T03:03:48Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34182184848"
     },
     "homepage": {
@@ -50,13 +51,24 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
-        "workflow:34182184848:in_progress:pending"
+        "workflow:34182184848:in_progress:pending",
+        "job:101923360669:in_progress:pending"
       ],
       "resultVerified": false,
-      "jobEvidence": null,
+      "jobEvidence": {
+        "id": 101923360669,
+        "name": "round1 (planning)",
+        "status": "in_progress",
+        "conclusion": null,
+        "failedStep": null,
+        "startedAt": "2026-09-08T03:03:47Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34182184848/job/101923360669"
+      },
+      "directCause": null,
       "blockers": [],
-      "reason": "artbook workflow is active and this role job has not completed yet",
-      "action": "wait for role job evidence within the same workflow run"
+      "reason": "this department job is currently executing",
+      "action": "check department output after job completes"
     },
     "development": {
       "department": "development",
@@ -65,13 +77,24 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
-        "workflow:34182184848:in_progress:pending"
+        "workflow:34182184848:in_progress:pending",
+        "job:101923360701:in_progress:pending"
       ],
       "resultVerified": false,
-      "jobEvidence": null,
+      "jobEvidence": {
+        "id": 101923360701,
+        "name": "round1 (development)",
+        "status": "in_progress",
+        "conclusion": null,
+        "failedStep": null,
+        "startedAt": "2026-09-08T03:03:47Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34182184848/job/101923360701"
+      },
+      "directCause": null,
       "blockers": [],
-      "reason": "artbook workflow is active and this role job has not completed yet",
-      "action": "wait for role job evidence within the same workflow run"
+      "reason": "this department job is currently executing",
+      "action": "check department output after job completes"
     },
     "qa": {
       "department": "qa",
@@ -80,13 +103,24 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
-        "workflow:34182184848:in_progress:pending"
+        "workflow:34182184848:in_progress:pending",
+        "job:101923360683:completed:success"
       ],
       "resultVerified": false,
-      "jobEvidence": null,
+      "jobEvidence": {
+        "id": 101923360683,
+        "name": "round1 (qa)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-08T03:03:47Z",
+        "completedAt": "2026-09-08T03:05:44Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34182184848/job/101923360683"
+      },
+      "directCause": null,
       "blockers": [],
       "reason": "artbook workflow is active and this role job has not completed yet",
-      "action": "wait for role job evidence within the same workflow run"
+      "action": "check role job evidence when the same workflow completes"
     },
     "graphics": {
       "department": "graphics",
@@ -95,13 +129,24 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
-        "workflow:34182184848:in_progress:pending"
+        "workflow:34182184848:in_progress:pending",
+        "job:101923360698:completed:success"
       ],
       "resultVerified": false,
-      "jobEvidence": null,
+      "jobEvidence": {
+        "id": 101923360698,
+        "name": "round1 (graphics)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-08T03:03:47Z",
+        "completedAt": "2026-09-08T03:05:39Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34182184848/job/101923360698"
+      },
+      "directCause": null,
       "blockers": [],
       "reason": "artbook workflow is active and this role job has not completed yet",
-      "action": "wait for role job evidence within the same workflow run"
+      "action": "check role job evidence when the same workflow completes"
     },
     "balance": {
       "department": "balance",
@@ -110,13 +155,24 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
-        "workflow:34182184848:in_progress:pending"
+        "workflow:34182184848:in_progress:pending",
+        "job:101923360794:in_progress:pending"
       ],
       "resultVerified": false,
-      "jobEvidence": null,
+      "jobEvidence": {
+        "id": 101923360794,
+        "name": "round1 (balance)",
+        "status": "in_progress",
+        "conclusion": null,
+        "failedStep": null,
+        "startedAt": "2026-09-08T03:03:48Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34182184848/job/101923360794"
+      },
+      "directCause": null,
       "blockers": [],
-      "reason": "artbook workflow is active and this role job has not completed yet",
-      "action": "wait for role job evidence within the same workflow run"
+      "reason": "this department job is currently executing",
+      "action": "check department output after job completes"
     },
     "homepage": {
       "department": "homepage",
@@ -147,7 +203,7 @@
       "department": "director",
       "taskAssigned": true,
       "status": "WORKING",
-      "task": "supervise staff execution, blockers and verification",
+      "task": "supervise staff execution, blockers, direct causes and verification",
       "executionEvidence": [
         "tools/director-supervisor.mjs"
       ],
@@ -159,6 +215,7 @@
   },
   "policy": {
     "findWhyWorkStopped": true,
+    "inspectFailedJobLogs": true,
     "distinguishIndividualFailureFromBlockedPeers": true,
     "falseRunningForbidden": true,
     "idleWithoutTaskIsNotFailure": true,
