@@ -1,0 +1,26 @@
+name: Unity Local Runner Heartbeat
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: unity-local-runner-heartbeat
+  cancel-in-progress: false
+
+jobs:
+  heartbeat:
+    runs-on: [self-hosted, Windows, X64, jaewoon-unity]
+    timeout-minutes: 3
+    steps:
+      - name: Confirm local Unity runner is online
+        shell: powershell
+        run: |
+          $now = (Get-Date).ToUniversalTime().ToString('o')
+          Write-Host "LOCAL_UNITY_RUNNER_ONLINE=true"
+          Write-Host "HEARTBEAT_UTC=$now"
+          Write-Host "RUNNER_NAME=$env:RUNNER_NAME"
