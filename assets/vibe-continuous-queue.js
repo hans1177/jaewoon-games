@@ -1,6 +1,6 @@
 // 파일명: assets/vibe-continuous-queue.js
-// 역할: Vibe2의 24시간 연속 작업을 짧은 검증 단위의 작업 큐로 관리한다.
-// 원칙: 사용자 지시 우선, 무한 재시도 금지, 핵심 결정/보호 변경은 자동 진행하지 않는다.
+// 역할: Vibe2의 24시간 연속 작업을 짧은 검증 단위의 단일 직렬 큐로 관리한다.
+// 원칙: 사용자 지시 우선, 출시확정 > 개발확정 > 나머지, 무한 재시도 금지, 핵심 결정/보호 변경은 자동 진행하지 않는다.
 
 const clean = (value) => String(value ?? '').trim();
 const freeze = (value) => Object.freeze(value);
@@ -10,6 +10,7 @@ const clampInt = (value, min = 0) => Math.max(min, Math.floor(Number(value) || 0
 
 export const VIBE_QUEUE_STATUSES = freezeList(['queued', 'running', 'blocked', 'done', 'failed', 'cancelled']);
 export const VIBE_QUEUE_PRIORITIES = freezeList(['owner-immediate', 'critical', 'high', 'normal', 'low']);
+export const VIBE_RELEASE_STATES = freezeList(['release-confirmed', 'development-confirmed', 'reviewing', 'other']);
 
 const PRIORITY_SCORE = freeze({
   'owner-immediate': 100,
@@ -18,6 +19,18 @@ const PRIORITY_SCORE = freeze({
   normal: 40,
   low: 20
 });
+
+const RELEASE_STATE_SCORE = freeze({
+  'release-confirmed': 400,
+  'development-confirmed': 300,
+  reviewing: 200,
+  other: 100
+});
+
+function normalizeReleaseState(value) {
+  const state = clean(value).toLowerCase();
+  return VIBE_RELEASE_STATES.includes(state) ? state : 'other';
+}
 
 function normalizeCompanyContext(input = {}) {
   const source = input && typeof input === 'object' ? input : {};
@@ -54,6 +67,7 @@ function normalizeTask(input = {}, index = 0) {
     responsibleFiles: freezeList(input.responsibleFiles || []),
     dependencies: freezeList(input.dependencies || []),
     priority,
+    releaseState: normalizeReleaseState(input.releaseState || input.homepageCategory),
     status,
     retries: clampInt(input.retries),
     maxRetries: Math.max(0, clampInt(input.maxRetries ?? 2)),
@@ -72,10 +86,11 @@ export function createVibeContinuousQueue(seed = {}) {
   const source = Array.isArray(seed) ? seed : Array.isArray(seed?.tasks) ? seed.tasks : [];
   const tasks = source.map(normalizeTask);
   return freeze({
-    version: 2,
-    mode: 'short-verified-work-chains',
+    version: 3,
+    mode: 'single-worker-priority-serial-queue',
     longRunningSingleJobRequired: false,
     ownerDirectivePreemptsAutonomy: true,
+    releaseStatePriority: freezeList(['release-confirmed', 'development-confirmed', 'reviewing', 'other']),
     defaultMaxRetries: 2,
     tasks: freeze(tasks)
   });
@@ -94,12 +109,14 @@ function taskBlockedReasons(task, completed) {
   if (task.blocker) reasons.push(`explicit-blocker:${task.blocker}`);
   if (task.retries > task.maxRetries) reasons.push('retry-limit-exceeded');
   for (const dependency of task.dependencies) if (!completed.has(dependency)) reasons.push(`dependency-not-complete:${dependency}`);
-  if (task.target === 'web' && task.type !== 'inspect' && task.type !== 'research' && task.type !== 'qa') reasons.push('web-games-read-only');
   return freezeList(reasons);
 }
 
 function scoreTask(task, index) {
-  return (PRIORITY_SCORE[task.priority] || 0) + (task.ownerDirective ? 1000 : 0) - index / 1000;
+  return (task.ownerDirective ? 10000 : 0)
+    + (RELEASE_STATE_SCORE[task.releaseState] || 0)
+    + (PRIORITY_SCORE[task.priority] || 0)
+    - index / 1000;
 }
 
 export function selectNextVibeQueueTask(queueInput) {
@@ -181,9 +198,10 @@ export function summarizeVibeContinuousQueue(queueInput) {
   const counts = Object.fromEntries(VIBE_QUEUE_STATUSES.map((status) => [status, queue.tasks.filter((task) => task.status === status).length]));
   const next = selectNextVibeQueueTask(queue);
   return freeze({
-    version: 2,
+    version: 3,
     counts: freeze(counts),
     nextTaskId: next.selected?.id || null,
+    nextReleaseState: next.selected?.releaseState || null,
     continueRequired: next.continueRequired,
     stopReason: next.stopReason,
     ownerDirectiveWaiting: queue.tasks.some((task) => task.ownerDirective && ['queued', 'running', 'blocked'].includes(task.status))
