@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       create_concept:
-        description: 'Allow one new concept if none is active and none was created today (KST)'
+        description: 'Allow one valid new concept if none is active; quality-rejected attempts do not consume the valid slot'
         required: false
         default: false
         type: boolean
@@ -16,6 +16,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: autonomous-new-game-incubator
@@ -61,12 +62,15 @@ jobs:
             const get=t=>parts.find(x=>x.type===t)?.value||'';return `${get('year')}-${get('month')}-${get('day')}`;
           };
           const today=kstDate();
-          const createdToday=(state.candidates||[]).some(c=>c.createdAt&&kstDate(c.createdAt)===today);
+          const rejected=c=>c.status==='REDESIGN_REQUIRED'&&c.qualityGate?.pass===false;
+          const createdToday=(state.candidates||[]).some(c=>!rejected(c)&&c.createdAt&&kstDate(c.createdAt)===today);
+          const attemptsToday=(state.candidates||[]).filter(c=>c.createdAt&&kstDate(c.createdAt)===today).length;
           const scheduled=process.env.GITHUB_EVENT_NAME==='schedule';
           const requested=String(process.env.REQUEST_CREATE_CONCEPT).toLowerCase()==='true';
           console.log(`has_active=${active?'true':'false'}`);
           console.log(`created_today=${createdToday?'true':'false'}`);
-          console.log(`need_model=${!active&&!createdToday&&(scheduled||requested)?'true':'false'}`);
+          console.log(`attempts_today=${attemptsToday}`);
+          console.log(`need_model=${!active&&!createdToday&&attemptsToday<3&&(scheduled||requested)?'true':'false'}`);
           NODE
       - name: Verified free budget preflight
         if: steps.mode.outputs.has_active == 'true' || steps.mode.outputs.need_model == 'true'
@@ -106,14 +110,17 @@ jobs:
           echo "MODEL_MAX_PREDICT=$INCUBATOR_MODEL_MAX_PREDICT"
           echo "MODEL_TIMEOUT_MS=$INCUBATOR_MODEL_TIMEOUT_MS"
       - name: Advance operational incubator
+        id: advance
         if: steps.mode.outputs.has_active == 'true' || steps.mode.outputs.need_model == 'true'
         env:
           INCUBATOR_ALLOW_NEW_CONCEPT: ${{ steps.mode.outputs.need_model }}
         run: |
           node --input-type=module <<'NODE'
+          import fs from 'node:fs';
           import { runOperationalIncubator } from './tools/autonomous-new-game-incubator.mjs';
           const result=await runOperationalIncubator({allowNewConcept:String(process.env.INCUBATOR_ALLOW_NEW_CONCEPT).toLowerCase()==='true'});
           console.log(JSON.stringify(result,null,2));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`action=${result.action}\nretry_allowed=${result.retryAllowed===true?'true':'false'}\nstatus=${result.status||''}\n`);
           NODE
       - name: Persist state/artbook queue/prototype request only
         if: steps.mode.outputs.has_active == 'true' || steps.mode.outputs.need_model == 'true'
@@ -130,3 +137,17 @@ jobs:
           git push origin main
           echo 'PUBLIC_GAME_CODE_WRITE=NO'
           echo 'NEW_GAME_RELEASE_APPROVAL=NO'
+      - name: Retry only a quality-rejected concept within bounded daily attempts
+        if: steps.advance.outputs.retry_allowed == 'true' && (steps.advance.outputs.action == 'REDESIGN_REQUIRED' || steps.advance.outputs.action == 'CONCEPT_REJECTED')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run autonomous-new-game-incubator.yml --ref main -f create_concept=true
+          echo 'QUALITY_RETRY_DISPATCHED=YES'
+      - name: Continue accepted concept directly into five-department Artbook
+        if: steps.advance.outputs.action == 'CONCEPT_AND_ARTBOOK_QUEUED' || steps.advance.outputs.action == 'ARTBOOK_QUEUED'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run artbook-free-department-bots.yml --ref main
+          echo 'ARTBOOK_CONTINUATION_DISPATCHED=YES'
