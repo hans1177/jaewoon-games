@@ -1,6 +1,5 @@
 // 파일명: tools/artbook-collaboration-runner.mjs
-// 역할: 1차 독립 제출 5개가 끝난 뒤에만 서로 의견을 공개해 2차 부서 협업 리뷰를 만든다.
-// 원칙: 각 부서는 자기 결과를 평가하지 않고 다른 4개 부서 결과의 장점/보완점을 자기 관점에서만 평가한다.
+// 역할: 1차 제출 5/5 뒤 각 부서가 자기 결과를 제외한 타부서 4개 결과에 보완점 1개 + 별점(5점 만점)을 남긴다.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -14,37 +13,22 @@ function kstDate(){const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul
 function compact(value,depth=0){
   if(depth>3)return clean(typeof value==='object'?JSON.stringify(value):value).slice(0,180);
   if(Array.isArray(value))return value.slice(0,5).map(v=>compact(v,depth+1));
-  if(value&&typeof value==='object'){
-    const out={};for(const [key,val] of Object.entries(value).slice(0,10))out[key]=compact(val,depth+1);return out;
-  }
+  if(value&&typeof value==='object'){const out={};for(const [key,val] of Object.entries(value).slice(0,10))out[key]=compact(val,depth+1);return out;}
   return clean(value).slice(0,220);
 }
-const toArray=(value,max=3)=>{
-  if(Array.isArray(value))return value.map(v=>clean(typeof v==='object'?JSON.stringify(v):v)).filter(Boolean).slice(0,max);
-  const text=clean(value);return text?[text]:[];
-};
-const normalizeAddendum=value=>{
-  if(!value)return{};
-  if(typeof value==='string')return clean(value)?{note:clean(value).slice(0,220)}:{};
-  if(Array.isArray(value))return value.length?{items:value.slice(0,3).map(v=>clean(typeof v==='object'?JSON.stringify(v):v)).filter(Boolean)}:{};
-  if(typeof value==='object'){
-    const out={};for(const [key,val] of Object.entries(value).slice(0,4)){const text=clean(typeof val==='object'?JSON.stringify(val):val);if(text)out[key]=text.slice(0,220);}return out;
-  }
-  return{};
-};
-const normalizePeerOpinion=value=>{
-  if(!value||typeof value!=='object'||Array.isArray(value))return{strength:'',improvement:''};
-  return{strength:clean(value.strength).slice(0,180),improvement:clean(value.improvement).slice(0,180)};
-};
-const normalizeCandidate=value=>{
+const normalizeStars=v=>{const n=Math.round(Number(v));return Number.isFinite(n)?Math.max(1,Math.min(5,n)):0;};
+const normalizeCandidate=(value,expectedPeers)=>{
   if(!value||typeof value!=='object'||Array.isArray(value))return null;
-  return{
-    peerOpinion:normalizePeerOpinion(value.peerOpinion),
-    agree:toArray(value.agree),counter:toArray(value.counter),test:toArray(value.test),result:toArray(value.result),
-    decision:clean(value.decision).slice(0,260),ownSectionAddendum:normalizeAddendum(value.ownSectionAddendum),unverified:toArray(value.unverified,4)
-  };
+  const raw=Array.isArray(value.peerReviews)?value.peerReviews:[];
+  const peerReviews=raw.map(item=>({targetDepartment:clean(item?.targetDepartment),improvement:clean(item?.improvement).slice(0,180),stars:normalizeStars(item?.stars)})).filter(item=>expectedPeers.includes(item.targetDepartment));
+  return{peerReviews};
 };
-const validCandidate=value=>Boolean(value&&value.peerOpinion?.strength&&value.peerOpinion?.improvement&&value.decision&&value.agree.length&&value.counter.length&&value.test.length&&value.result.length);
+const validCandidate=(value,expectedPeers)=>{
+  if(!value||value.peerReviews.length!==expectedPeers.length)return false;
+  const seen=new Set();
+  for(const item of value.peerReviews){if(seen.has(item.targetDepartment)||!expectedPeers.includes(item.targetDepartment)||!item.improvement||item.stars<1||item.stars>5)return false;seen.add(item.targetDepartment);}
+  return expectedPeers.every(x=>seen.has(x));
+};
 
 const queue=readJson('artbook-submission-queue.json',{});
 const gameId=clean(process.env.ARTBOOK_GAME_ID||queue.currentDailyTarget),date=clean(process.env.ARTBOOK_DATE||kstDate());
@@ -55,42 +39,25 @@ for(const r of ROLES){
   if(!data||String(data.status||'').toUpperCase()!=='SUBMITTED')throw new Error(`first-round submission missing: ${r}`);
   submissions[r]={department:r,headline:clean(data.headline).slice(0,160),readiness:data.departmentReadiness||'NEEDS_VALIDATION',section:compact(data.section),unverified:compact(Array.isArray(data.unverified)?data.unverified:[])};
 }
-const own=submissions[role];
-const peers=Object.values(submissions).filter(x=>x.department!==role);
-const peerRoles=peers.map(x=>x.department);
-const system=`/no_think\n너는 재운컴퍼니 ${NAMES[role]} 부서다. 1차 독립 검토 5개가 끝난 뒤 다른 4개 부서 결과를 보는 2차 협업 단계다. 절대 자기 부서 1차 결과를 평가하지 않는다. peerFirstRounds에 들어있는 타 부서 4개의 결과만 보고 자기 전문 관점에서 평가한다. peerOpinion.strength에는 타 부서 결과 전체에서 가장 좋은 점 1개, peerOpinion.improvement에는 타 부서 결과 전체에서 가장 중요한 보완점 1개를 한국어 한 문장씩 쓴다. agree/counter/test/result도 타 부서 결과와 부서 간 연결에 대해서만 작성한다. 다른 부서 내용을 대신 쓰거나 수정하지 않는다. 근거 없는 결과를 만들지 말고 실제 실행 근거가 없으면 RESULT에 미검증이라고 명시한다. 숫자 품질 점수, PASS, 본개발/출시 승인을 만들지 않는다. 반드시 짧은 한국어 JSON 객체 하나만 출력한다. 원문 소스나 긴 근거를 복사하지 않는다.`;
-const payload={gameId,date,reviewingDepartment:role,reviewingDepartmentOwnContext:own,peerFirstRounds:peers,peerDepartments:peerRoles};
-const schema={
-  type:'object',required:['peerOpinion','agree','counter','test','result','decision','ownSectionAddendum','unverified'],
-  properties:{
-    peerOpinion:{type:'object',required:['strength','improvement'],properties:{strength:{type:'string'},improvement:{type:'string'}},additionalProperties:false},
-    agree:{type:'array',items:{type:'string'},minItems:1,maxItems:2},counter:{type:'array',items:{type:'string'},minItems:1,maxItems:2},
-    test:{type:'array',items:{type:'string'},minItems:1,maxItems:2},result:{type:'array',items:{type:'string'},minItems:1,maxItems:2},
-    decision:{type:'string'},ownSectionAddendum:{type:'object',additionalProperties:{type:'string'}},unverified:{type:'array',items:{type:'string'},maxItems:3}
-  },additionalProperties:false
-};
+const peers=Object.values(submissions).filter(x=>x.department!==role),peerRoles=peers.map(x=>x.department);
+const system=`/no_think\n너는 재운컴퍼니 ${NAMES[role]} 부서다. 타부서 4개 결과물만 평가한다. 자기 부서 결과는 절대 평가하지 않는다. 각 타부서 결과마다 보완점은 정확히 1개만 한국어 한 문장으로 쓴다. 장점은 쓰지 않는다. 별점은 1~5 정수이며 5점 만점이다. 별점은 본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다. 근거가 약하면 보완점에 검증 필요를 명시한다. 다른 부서 내용을 대신 작성하거나 수정하지 않는다. 반드시 peerReviews 배열만 가진 짧은 JSON 객체 하나를 출력한다.`;
+const payload={gameId,date,reviewingDepartment:role,peerFirstRounds:peers,peerDepartments:peerRoles};
+const schema={type:'object',required:['peerReviews'],properties:{peerReviews:{type:'array',minItems:4,maxItems:4,items:{type:'object',required:['targetDepartment','improvement','stars'],properties:{targetDepartment:{type:'string',enum:peerRoles},improvement:{type:'string'},stars:{type:'integer',minimum:1,maximum:5}},additionalProperties:false}}},additionalProperties:false};
 async function call(numPredict,strict=false){
-  const strictMessage=strict?'peerOpinion 장점/보완점은 각각 70자 이하, 각 배열은 1개 항목, 각 문장 80자 이하. 자기 부서 결과 평가는 금지. 완결된 JSON만 반환해.':'';
-  const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,format:schema,messages:[{role:'system',content:system},{role:'user',content:`${strictMessage}\n${JSON.stringify(payload)}`}],options:{temperature:0.12,seed:701+ROLES.indexOf(role)*131,num_ctx:8192,num_predict:numPredict}})});
+  const strictMessage=strict?'각 타부서를 정확히 한 번씩 평가해. 보완점은 70자 이하 한 문장, 별점은 1~5 정수. 장점/자기부서 평가 금지. 완결된 JSON만 반환해.':'';
+  const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,format:schema,messages:[{role:'system',content:system},{role:'user',content:`${strictMessage}\n${JSON.stringify(payload)}`}],options:{temperature:0.1,seed:701+ROLES.indexOf(role)*131,num_ctx:8192,num_predict:numPredict}})});
   if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
   const packet=await response.json();const raw=clean(packet?.message?.content).replace(/^```json\s*/i,'').replace(/```$/,'').trim();return JSON.parse(raw);
 }
 async function generate(){
-  const attempts=[420,300,220];let lastError=null;
+  const attempts=[360,260,200];let lastError=null;
   for(let i=0;i<attempts.length;i++){
-    try{const candidate=normalizeCandidate(await call(attempts[i],i>0));if(validCandidate(candidate))return candidate;lastError=new Error('required peer collaboration fields missing');console.error(`ARTBOOK_COLLAB_FORMAT_RETRY=${role}:attempt=${i+1}`);}
+    try{const candidate=normalizeCandidate(await call(attempts[i],i>0),peerRoles);if(validCandidate(candidate,peerRoles))return candidate;lastError=new Error('required peer ratings missing');console.error(`ARTBOOK_COLLAB_FORMAT_RETRY=${role}:attempt=${i+1}`);}
     catch(error){lastError=error;console.error(`ARTBOOK_COLLAB_RETRY=${role}:attempt=${i+1}:${error.message}`);}
   }
   throw lastError||new Error(`${role}: collaboration output failed`);
 }
 const candidate=await generate();
-const review={
-  version:4,gameId,date,department:role,status:'REVIEWED',round:2,
-  runner:{type:'vibe2-local-open-model-department-bot',model,localInference:true,paidApi:false,independentFirstRoundCompleted:true},
-  protocol:'AGREE_COUNTER_TEST_RESULT_DECISION',reviewScope:'OTHER_DEPARTMENTS_ONLY',reviewedDepartments:peerRoles,peerOpinion:candidate.peerOpinion,
-  agree:candidate.agree,counter:candidate.counter,test:candidate.test,result:candidate.result,decision:candidate.decision,
-  ownSectionAddendum:candidate.ownSectionAddendum,unverified:candidate.unverified,
-  guard:{mayRewriteOtherDepartments:false,mayEvaluateOwnDepartmentForHomepage:false,productionApproval:false,numericQualityScore:false}
-};
+const review={version:5,gameId,date,department:role,status:'REVIEWED',round:2,runner:{type:'vibe2-local-open-model-department-bot',model,localInference:true,paidApi:false,independentFirstRoundCompleted:true},protocol:'PEER_IMPROVEMENT_STAR_5',reviewScope:'OTHER_DEPARTMENTS_ONLY',reviewedDepartments:peerRoles,ratingScale:{type:'STARS',min:1,max:5},peerReviews:candidate.peerReviews,guard:{mayRewriteOtherDepartments:false,mayEvaluateOwnDepartment:false,productionApproval:false,starRatingIsProductionApproval:false}};
 const output=path.join(base,'reviews',`${role}.json`);fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,JSON.stringify(review,null,2)+'\n');
-console.log(`ARTBOOK_COLLAB_REVIEWED=${role}`);console.log(`ARTBOOK_PEER_OPINION=${role}`);console.log(`ARTBOOK_COLLAB_FILE=${output}`);console.log('CROSS_DEPARTMENT_GHOSTWRITING=NO');
+console.log(`ARTBOOK_COLLAB_REVIEWED=${role}`);console.log(`ARTBOOK_PEER_RATINGS=${role}:4/4`);console.log(`ARTBOOK_COLLAB_FILE=${output}`);console.log('SELF_RESULT_RATING=NO');console.log('CROSS_DEPARTMENT_GHOSTWRITING=NO');
