@@ -17,6 +17,8 @@ on:
       - 'assets/homepage-enhancements.js'
       - 'assets/homepage-layout-v2.js'
       - 'assets/homepage-layout-v2.css'
+      - 'assets/title-*.svg'
+      - 'assets/*.webp'
       - 'HOMEPAGE_OPERATIONS.md'
       - '.github/agents/homepage.agent.md'
       - 'tools/homepage-manager.mjs'
@@ -53,6 +55,11 @@ jobs:
           node -e "JSON.parse(require('fs').readFileSync('company-status.json','utf8'))"
           grep -Fq 'short-cards -> dedicated-artbook-detail-page' homepage-manager-status.json
           grep -Fq '"runtimeGameHealthBadgeVisible": false' homepage-manager-status.json
+          grep -Fq '"gameCardsRequireUniqueTitleImages": true' homepage-manager-status.json
+          grep -Fq '"gameImagesValid": 11' homepage-manager-status.json
+          grep -Fq '"duplicateGameImages": 0' homepage-manager-status.json
+          grep -Fq '"placeholderGameImages": 0' homepage-manager-status.json
+          grep -Fq '"brokenGameImages": 0' homepage-manager-status.json
           grep -Fq '/assets/homepage-layout-v2.css' index.html
           grep -Fq '/assets/homepage-layout-v2.js' index.html
           grep -Fq '/artbook.html?game=' assets/homepage-layout-v2.js
@@ -62,7 +69,13 @@ jobs:
           const fs=require('fs');
           const s=JSON.parse(fs.readFileSync('homepage-manager-status.json','utf8'));
           if(s.status!=='running')throw new Error(`homepage manager attention: ${(s.findings?.failures||[]).join(',')}`);
+          if(s.counts?.gameImagesValid!==11)throw new Error(`game images not complete: ${s.counts?.gameImagesValid}/11`);
+          if(s.counts?.duplicateGameImages!==0||s.counts?.placeholderGameImages!==0||s.counts?.brokenGameImages!==0)throw new Error('game image quality gate failed');
           console.log('HOMEPAGE_MANAGER_QA=PASS');
+          console.log('HOMEPAGE_GAME_IMAGES=11/11');
+          console.log('HOMEPAGE_DUPLICATE_GAME_IMAGES=0');
+          console.log('HOMEPAGE_PLACEHOLDER_GAME_IMAGES=0');
+          console.log('HOMEPAGE_BROKEN_GAME_IMAGES=0');
           NODE
 
       - name: Commit managed homepage state and repairs
