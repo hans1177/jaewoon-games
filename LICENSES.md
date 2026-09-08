@@ -213,3 +213,63 @@
 다운로드/라이선스 확인 날짜: 2026-09-09
 사용 위치 또는 게임: 공용 Web + Unity 판타지 스킬/아이템 아이콘 후보
 비고: 32개, 128x128. 스킬, 주문, 장비, 물약, 가방, 골드 등 고해상도 아이콘 세트.
+
+### Kenney Mobile Controls
+
+이름: Mobile Controls
+종류: UI / UX / 모바일 조작 / 조이스틱 / 버튼 / HUD / 터치 아이콘
+제작자: Kenney
+출처 사이트: Kenney / OpenGameArt 미러 확인
+원본 페이지: https://kenney.nl/assets/mobile-controls
+라이선스: Creative Commons CC0
+상업적 사용: 가능
+저작자 표시: 불필요
+수정 여부: 미사용 원본 후보
+다운로드/라이선스 확인 날짜: 2026-09-09
+사용 위치 또는 게임: 공용 모바일 Web + Unity UI 후보
+비고: 45개 조작 스프라이트를 8가지 스타일로 제공하고 두 크기 PNG, SVG, 스프라이트시트, 하이라이트, 40개 아이콘을 포함해 총 900개 파일로 제공되는 모바일 전용 세트.
+
+### Kenney Particle Pack
+
+이름: Particle Pack
+종류: VFX / 파티클 / 스킬 효과
+제작자: Kenney
+출처 사이트: Kenney
+원본 페이지: https://kenney.nl/assets/particle-pack
+라이선스: Creative Commons CC0
+상업적 사용: 가능
+저작자 표시: 불필요
+수정 여부: 미사용 원본 후보
+다운로드/라이선스 확인 날짜: 2026-09-09
+사용 위치 또는 게임: 공용 모바일 Web + Unity VFX 후보
+비고: 512x512 기반 80개 파일. 스킬 발동, 타격, 폭발, 마법, 버프/디버프, 레벨업 효과용.
+
+### Kenney Interface Sounds
+
+이름: Interface Sounds
+종류: 효과음 / UI / UX
+제작자: Kenney
+출처 사이트: Kenney
+원본 페이지: https://kenney.nl/assets/interface-sounds
+라이선스: Creative Commons CC0
+상업적 사용: 가능
+저작자 표시: 불필요
+수정 여부: 미사용 원본 후보
+다운로드/라이선스 확인 날짜: 2026-09-09
+사용 위치 또는 게임: 공용 모바일 Web + Unity UI 효과음 후보
+비고: 100개 파일. 터치 버튼, 확인/취소, 창 전환, 인벤토리/스킬 선택 등 모바일 인터페이스 효과음 보강용.
+
+### Powers Icons
+
+이름: Powers Icons
+종류: UI / 스킬 / 특수 능력 아이콘
+제작자: Clint Bellanger
+출처 사이트: OpenGameArt
+원본 페이지: https://opengameart.org/node/3229
+라이선스: CC0
+상업적 사용: 가능
+저작자 표시: 불필요
+수정 여부: 미사용 원본 후보
+다운로드/라이선스 확인 날짜: 2026-09-09
+사용 위치 또는 게임: 공용 모바일 Web + Unity 스킬 UI 후보
+비고: 특수 능력과 액티브 스킬용 아이콘 세트. 모바일 큰 스킬 버튼과 스킬 선택창 후보로 사용.
