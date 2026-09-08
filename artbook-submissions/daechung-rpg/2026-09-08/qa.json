@@ -66,39 +66,27 @@
     }
   ],
   "section": {
-    "currentPlayableFlow": "Game flow with world setting, character motivation, region events, monster/monster reasons, battle/development story, and animated visual proof",
-    "verifiedEvidence": "Evidence includes GameCore.cs, PrototypeAnimatedVisuals.cs, RuntimeBootstrap.cs, and web-games/daechung-rpg/index.html",
-    "problemScenes": [
-      "Potential issues with character motivation and world setting",
-      "Mobile save errors in region transitions",
-      "Test scenarios for animation validation"
-    ],
-    "mobileSaveErrorRisks": [
-      "Potential for incorrect region transitions in mobile mode",
-      "Save data inconsistencies between Unity and web platforms"
-    ],
-    "testScenarios": [
-      "Test scenarios for animated visual validation",
-      "Test scenarios for character development"
-    ],
-    "unverified": [
-      "Unverified parts of the artbook",
-      "Visual elements not fully validated"
-    ],
-    "handoffs": [
-      "Handoffs between different game modes",
-      "Validation of animation assets"
+    "items": [
+      {
+        "currentPlayableFlow": "story-telling & world-building",
+        "verifiedEvidence": "storyCausalityIsCritical",
+        "problemScenes": [
+          {
+            "testScenario": "Protagonist's motivation",
+            "problem": "Need to validate the cause-effect relationship between events"
+          }
+        ],
+        "unverified": "animations & visual assets",
+        "visualNotes": "Ensure animations align with the story flow"
+      }
     ]
   },
-  "unverified": [
-    "Visual elements not fully validated",
-    "Unverified parts of the artbook"
-  ],
+  "unverified": [],
   "cuts": [
     {
       "kind": "qa",
       "title": "RPG QA Department 1st Independent Review",
-      "body": "Ensure animations are properly synchronized with the game flow · Check for consistency in character and world elements",
+      "body": "RPG QA Department 1st Independent Review",
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/qa.svg"
     }
   ],

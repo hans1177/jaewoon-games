@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "checkedAt": "2026-09-08T05:29:57.542Z",
+  "checkedAt": "2026-09-08T06:27:10.660Z",
   "date": "2026-09-08",
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
@@ -23,85 +23,41 @@
   "missing": [],
   "invalid": [],
   "independentRoundComplete": true,
-  "reviewReadyRoles": [],
-  "reviewReadyCount": 0,
+  "reviewReadyRoles": [
+    "planning",
+    "graphics",
+    "development",
+    "qa",
+    "balance"
+  ],
+  "reviewReadyCount": 5,
   "reviewRequiredCount": 5,
   "reviewMissing": [],
-  "reviewInvalid": [
-    {
-      "role": "planning",
-      "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/planning.json",
-      "problems": [
-        "review-protocol-mismatch",
-        "review-scope-must-be-other-departments-only",
-        "reviewed-departments-must-be-other-four",
-        "exactly-four-peer-ratings-required",
-        "all-other-departments-must-be-rated",
-        "own-department-rating-forbidden"
-      ]
-    },
-    {
-      "role": "graphics",
-      "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/graphics.json",
-      "problems": [
-        "review-protocol-mismatch",
-        "review-scope-must-be-other-departments-only",
-        "reviewed-departments-must-be-other-four",
-        "exactly-four-peer-ratings-required",
-        "all-other-departments-must-be-rated",
-        "own-department-rating-forbidden"
-      ]
-    },
-    {
-      "role": "development",
-      "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/development.json",
-      "problems": [
-        "review-protocol-mismatch",
-        "review-scope-must-be-other-departments-only",
-        "reviewed-departments-must-be-other-four",
-        "exactly-four-peer-ratings-required",
-        "all-other-departments-must-be-rated",
-        "own-department-rating-forbidden"
-      ]
-    },
-    {
-      "role": "qa",
-      "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/qa.json",
-      "problems": [
-        "review-protocol-mismatch",
-        "review-scope-must-be-other-departments-only",
-        "reviewed-departments-must-be-other-four",
-        "exactly-four-peer-ratings-required",
-        "all-other-departments-must-be-rated",
-        "own-department-rating-forbidden"
-      ]
-    },
-    {
-      "role": "balance",
-      "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/balance.json",
-      "problems": [
-        "review-protocol-mismatch",
-        "review-scope-must-be-other-departments-only",
-        "reviewed-departments-must-be-other-four",
-        "exactly-four-peer-ratings-required",
-        "all-other-departments-must-be-rated",
-        "own-department-rating-forbidden"
-      ]
-    }
-  ],
-  "peerReviewsComplete": false,
+  "reviewInvalid": [],
+  "peerReviewsComplete": true,
   "directorReviewFile": "artbook-submissions/daechung-rpg/2026-09-08/reviews/director.json",
-  "directorReviewReady": false,
-  "directorReviewProblems": [
-    "director-review-missing"
-  ],
+  "directorReviewReady": true,
+  "directorReviewProblems": [],
   "directorRatingsRequired": 5,
-  "ratingsPerDepartment": 0,
+  "ratingsPerDepartment": 5,
   "collaborationProtocol": "PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5",
   "homepageOpinionMode": "IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS",
-  "collaborationComplete": false,
-  "readyForDirectorAssembly": false,
+  "collaborationComplete": true,
+  "readyForDirectorAssembly": true,
   "directorMayAuthorMissingSections": false,
   "directorMayAuthorMissingReviews": false,
-  "formalProductionGate": "BLOCKED_WAITING_FOR_PEER_IMPROVEMENT_STAR_REVIEWS"
+  "formalProductionGate": "ARTBOOK_ASSEMBLED_AWAITING_OWNER_PRODUCTION_DECISION",
+  "assembled": true,
+  "assembledFile": "artbook-submissions/daechung-rpg/2026-09-08/artbook.json",
+  "registeredArtbookId": "daechung-rpg-2026-09-08-initial",
+  "homepagePublished": true,
+  "departmentOpinionsPublished": true,
+  "departmentVotesPerResult": 4,
+  "directorVotesPerResult": 1,
+  "overallAverageStars": 4.84,
+  "secondWorkDepartments": [
+    "planning"
+  ],
+  "secondWorkDueDate": "2026-09-09",
+  "assemblyAddsNewDepartmentClaims": false
 }

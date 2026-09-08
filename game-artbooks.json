@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 8,
   "updatedAt": "2026-09-08",
   "policy": {
     "purpose": "각 게임의 컨셉·스토리·캐릭터·몬스터·배경·구현·테스트·밸런스를 부서 협업으로 한 권의 아트북에 축적한다.",
@@ -50,7 +50,8 @@
       "homepageVisible": true,
       "productionApproval": false,
       "createdAt": "2026-09-08",
-      "intent": "5개 부서의 독립 1차 검토와 상호 공개 후 2차 협업 리뷰를 새 주장 없이 한 권으로 묶은 초기 아트북.",
+      "workMode": "INITIAL",
+      "intent": "5개 부서 독립 결과마다 타부서 4표와 총괄 1표로 보완점 1개·별점 5점 만점 평가를 남긴 초기 아트북.",
       "sourceFile": "artbook-submissions/daechung-rpg/2026-09-08/artbook.json",
       "departmentReadiness": {
         "planning": "READY",
@@ -61,147 +62,289 @@
       },
       "departmentOpinions": {
         "planning": {
-          "headline": "DAECHUNG RPG Independent Artbook Review",
+          "headline": "Independent Artbook Review for 'DAECHUNG RPG' - Story & Region Causality",
           "readiness": "READY",
-          "agree": [
-            "The planning section demonstrates a structured approach to world-building and narrative progression.",
-            "The review highlights areas for further development, such as character motivations and story depth."
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 4.2,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "The review highlights gaps in region causality and protagonist motivation, suggesting potential for further development.",
+          "priorityImprovementFrom": "graphics",
+          "ratings": [
+            {
+              "reviewerDepartment": "graphics",
+              "reviewerType": "department",
+              "stars": 4,
+              "improvement": "The review highlights gaps in region causality and protagonist motivation, suggesting potential for further development."
+            },
+            {
+              "reviewerDepartment": "qa",
+              "reviewerType": "department",
+              "stars": 4,
+              "improvement": "The review highlights potential gaps in region causality and protagonist motivation, suggesting further development for the story's structure."
+            },
+            {
+              "reviewerDepartment": "balance",
+              "reviewerType": "department",
+              "stars": 4,
+              "improvement": "The review highlights potential gaps in region causality and protagonist motivation, suggesting areas for further development."
+            },
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 4,
+              "improvement": "The review highlights potential improvements in region causality and visual consistency, while noting some unverified aspects."
+            },
+            {
+              "reviewerDepartment": "development",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "The review highlights potential gaps in region causality and protagonist motivation, suggesting areas for further development."
+            }
           ],
-          "counter": [
-            "The current section lacks specific details about the protagonist's motivations and story depth.",
-            "The gaps section indicates potential for more comprehensive exploration of the narrative."
-          ],
-          "test": [
-            "The planning review shows a strong foundation in world evidence and gameplay logic.",
-            "There are opportunities to enhance the story's depth and character development."
-          ],
-          "result": [
-            "The planning review is ready for implementation with a focus on world-building and narrative progression.",
-            "Further development is needed to fully explore the protagonist's journey and story depth."
-          ],
-          "decision": "The planning review is ready for implementation with a focus on world-building and narrative progression.",
+          "overallDepartmentAverage": 4.84,
+          "secondWorkNextDay": true,
+          "secondWorkDueDate": "2026-09-09",
           "unverified": []
         },
         "graphics": {
-          "headline": "Unity RPG Graphics Review",
+          "headline": "대충 RPG 1차 독립 아트북 검토",
           "readiness": "READY",
-          "agree": [
-            "Unity's built-in features are well integrated with the game's core mechanics.",
-            "Mobile-friendly UI design is well implemented."
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 5,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+          "priorityImprovementFrom": "planning",
+          "ratings": [
+            {
+              "reviewerDepartment": "planning",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "development",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 부서 결과물의 개선점은 '일반적인 기능을 강화하고, 빠르게 진행되는 측면에서 풍부한 내용을 보여주기 위해 추가적인 개선점을 제시함으로써 부서의 품질을 명확히 할 수 있습니다."
+            },
+            {
+              "reviewerDepartment": "qa",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "balance",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+            },
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 5,
+              "improvement": "부서 결과물의 개선점은 '모든 영상 콘텐츠가 풍부하고, 콘텐츠의 구조적 분석이 잘 이루어져 있다.'"
+            }
           ],
-          "counter": [
-            "The game's code defines variables like currentRegionId, which could indicate the protagonist's journey.",
-            "The story's progression should naturally follow the protagonist's path through regions."
-          ],
-          "test": [
-            "Test scenarios for animated visual validation and character development are well tested.",
-            "Visual elements not fully validated in the artbook."
-          ],
-          "result": [
-            "Unity's built-in features are well integrated with the game's core mechanics.",
-            "Mobile-friendly UI design is well implemented."
-          ],
-          "decision": "Unity's built-in features are well integrated with the game's core mechanics.",
+          "overallDepartmentAverage": 4.84,
+          "secondWorkNextDay": false,
+          "secondWorkDueDate": null,
           "unverified": []
         },
         "development": {
-          "headline": "RPG Development Artbook Review - Unity + Web Archive",
+          "headline": "RPG 개발 부서 1차 독립 검토",
           "readiness": "READY",
-          "agree": [
-            "The architecture is modular and scalable for future expansion",
-            "The prototype has clear testing limits and performance optimization requirements"
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 5,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+          "priorityImprovementFrom": "planning",
+          "ratings": [
+            {
+              "reviewerDepartment": "planning",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "graphics",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "qa",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "balance",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 5,
+              "improvement": "부서 결과물의 개선점은 'Unity License 20110-serial invalid'을 수정하여 정확히 설명할 수 있습니다."
+            }
           ],
-          "counter": [
-            "The demo plan includes both Unity and web-based elements",
-            "The handoffs show good coordination with Unity development"
-          ],
-          "test": [
-            "Testing phases for core mechanics and performance optimization are feasible",
-            "Mobile save errors are being addressed"
-          ],
-          "result": [
-            "Ready for next steps",
-            "QA and balance reviews are in progress"
-          ],
-          "decision": "Ready to proceed with next steps",
-          "unverified": [
-            "Visual elements not fully validated",
-            "Unverified parts of the artbook"
-          ]
+          "overallDepartmentAverage": 4.84,
+          "secondWorkNextDay": false,
+          "secondWorkDueDate": null,
+          "unverified": []
         },
         "qa": {
           "headline": "RPG QA Department 1st Independent Review",
           "readiness": "READY",
-          "agree": [
-            "The game flow is well-structured with verified evidence, and test scenarios are comprehensive for animation validation.",
-            "Unverified parts of the artbook and visual elements are clearly identified, ensuring quality assurance."
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 5,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "The section provides a clear breakdown of the current state, but it could be improved by adding a visual representation of the flowchart to better illustrate the cause-effect relat",
+          "priorityImprovementFrom": "planning",
+          "ratings": [
+            {
+              "reviewerDepartment": "planning",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "The section provides a clear breakdown of the current state, but it could be improved by adding a visual representation of the flowchart to better illustrate the cause-effect relat"
+            },
+            {
+              "reviewerDepartment": "graphics",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "The review highlights the importance of validating cause-effect relationships in story-telling, which is a key aspect of RPG development. This improvement shows that the QA departm"
+            },
+            {
+              "reviewerDepartment": "development",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "The review highlights the importance of validating cause-effect relationships in story-telling, which is a key aspect of RPG development. This improvement shows the QA department's"
+            },
+            {
+              "reviewerDepartment": "balance",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "The section highlights the importance of validating cause-effect relationships in storytelling, which is a key component of RPG development. This improvement shows the department's"
+            },
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 5,
+              "improvement": "The QA section shows a strong focus on cause-effect validation, but there is room to enhance the visual alignment between story elements and animations."
+            }
           ],
-          "counter": [
-            "Mobile save errors in region transitions require further testing to prevent issues during mobile use.",
-            "Visual elements not fully validated may affect user experience, so additional validation steps are needed."
-          ],
-          "test": [
-            "Test scenarios for animation validation and character development were successfully implemented.",
-            "Handoffs between different game modes and validation of animation assets were completed."
-          ],
-          "result": [
-            "The RPG QA department's review is complete and meets the requirements for quality assurance.",
-            "All unverified elements in the artbook and visual components have been addressed."
-          ],
-          "decision": "The QA department's review is complete and meets all quality assurance criteria.",
-          "unverified": [
-            "Visual elements not fully validated",
-            "Unverified parts of the artbook",
-            "Visual elements not fully validated may affect user experience.",
-            "Unverified parts of the artbook require additional validation steps."
-          ]
+          "overallDepartmentAverage": 4.84,
+          "secondWorkNextDay": false,
+          "secondWorkDueDate": null,
+          "unverified": []
         },
         "balance": {
-          "headline": "RPG Balance Department Review 2026",
+          "headline": "대충 RPG 밸런스 부서 1차 독립 검토",
           "readiness": "READY",
-          "agree": [
-            "The current numbers and progression are well-structured with clear objectives.",
-            "The combat feel and economy rewards align with the game's design."
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 5,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+          "priorityImprovementFrom": "planning",
+          "ratings": [
+            {
+              "reviewerDepartment": "planning",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "graphics",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "development",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 부서 결과물의 개선점은 'level 1: 100 gold, 100 experience'을 추가하여 게임의 초기 단계를 명확히 하며, 복잡한 progression curve를 단순화하여 이해하기 쉬울 수 있습니다."
+            },
+            {
+              "reviewerDepartment": "qa",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 5,
+              "improvement": "부서 결과물의 개선점은 'level 1: 100 gold, 100 experience'을 추가하여 부담을 줄일 수 있습니다."
+            }
           ],
-          "counter": [
-            "There are potential gaps in the story's depth and character motivations.",
-            "The mobile save errors could be mitigated with better transition logic."
-          ],
-          "test": [
-            "The test scenarios validate the game's core mechanics and animations.",
-            "The handoffs ensure smooth coordination between departments."
-          ],
-          "result": [
-            "The artbook sections are well-validated with structured evidence.",
-            "The flow and animations are coherent with the game's narrative."
-          ],
-          "decision": "The artbook sections are well-validated with structured evidence and coherent flow.",
+          "overallDepartmentAverage": 4.84,
+          "secondWorkNextDay": false,
+          "secondWorkDueDate": null,
           "unverified": []
         }
       },
-      "collaborationProtocol": "AGREE_COUNTER_TEST_RESULT_DECISION",
+      "ratingSummary": {
+        "scale": "STARS_1_TO_5",
+        "ratingsPerDepartment": 5,
+        "departmentVotesPerResult": 4,
+        "directorVotesPerResult": 1,
+        "departmentAverageStars": {
+          "planning": 4.2,
+          "graphics": 5,
+          "development": 5,
+          "qa": 5,
+          "balance": 5
+        },
+        "overallAverageStars": 4.84,
+        "secondWorkCriterion": "DEPARTMENT_AVERAGE_OR_BELOW_OVERALL_AVERAGE",
+        "secondWorkDepartments": [
+          "planning"
+        ],
+        "secondWorkDueDate": "2026-09-09"
+      },
+      "homepageOpinionMode": "IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS",
+      "collaborationProtocol": "PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5",
       "cuts": [
         {
           "no": 1,
           "kind": "planning",
-          "title": "DAECHUNG RPG Independent Artbook Review",
-          "body": "DAECHUNG RPG Independent Artbook Review",
+          "title": "Independent Artbook Review for 'DAECHUNG RPG' - Story & Region Causality",
+          "body": "Independent Artbook Review for 'DAECHUNG RPG' - Story & Region Causality",
           "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/planning.svg",
           "sourceDepartment": "planning"
         },
         {
           "no": 2,
           "kind": "graphics",
-          "title": "Unity RPG Graphics Review",
-          "body": "Uses Unity's built-in game data and animations for the RPG world map and character animations.",
+          "title": "대충 RPG 1차 독립 아트북 검토",
+          "body": "대충 RPG 1차 독립 아트북 검토",
           "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/graphics.svg",
           "sourceDepartment": "graphics"
         },
         {
           "no": 3,
           "kind": "development",
-          "title": "RPG Development Artbook Review - Unity + Web Archive",
-          "body": "RPG Development Artbook Review - Unity + Web Archive",
+          "title": "RPG 개발 부서 1차 독립 검토",
+          "body": "RPG 개발 부서 1차 독립 검토",
           "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/development.svg",
           "sourceDepartment": "development"
         },
@@ -209,15 +352,15 @@
           "no": 4,
           "kind": "qa",
           "title": "RPG QA Department 1st Independent Review",
-          "body": "Ensure animations are properly synchronized with the game flow · Check for consistency in character and world elements",
+          "body": "RPG QA Department 1st Independent Review",
           "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/qa.svg",
           "sourceDepartment": "qa"
         },
         {
           "no": 5,
           "kind": "balance",
-          "title": "RPG Balance Department Review 2026",
-          "body": "Visuals show player character with armor and weapon · Test results show all metrics passed · No visual issues detected",
+          "title": "대충 RPG 밸런스 부서 1차 독립 검토",
+          "body": "대충 RPG 밸런스 부서 1차 독립 검토",
           "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/balance.svg",
           "sourceDepartment": "balance"
         }

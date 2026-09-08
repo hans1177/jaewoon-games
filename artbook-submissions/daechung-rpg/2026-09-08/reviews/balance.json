@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 6,
   "gameId": "daechung-rpg",
   "date": "2026-09-08",
   "department": "balance",
@@ -10,33 +10,48 @@
     "model": "qwen3:0.6b",
     "localInference": true,
     "paidApi": false,
-    "independentFirstRoundCompleted": true
+    "independentFirstRoundCompleted": true,
+    "onePeerPerGeneration": true
   },
-  "protocol": "AGREE_COUNTER_TEST_RESULT_DECISION",
-  "agree": [
-    "The current numbers and progression are well-structured with clear objectives.",
-    "The combat feel and economy rewards align with the game's design."
+  "protocol": "PEER_IMPROVEMENT_STAR_5",
+  "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+  "reviewedDepartments": [
+    "planning",
+    "graphics",
+    "development",
+    "qa"
   ],
-  "counter": [
-    "There are potential gaps in the story's depth and character motivations.",
-    "The mobile save errors could be mitigated with better transition logic."
-  ],
-  "test": [
-    "The test scenarios validate the game's core mechanics and animations.",
-    "The handoffs ensure smooth coordination between departments."
-  ],
-  "result": [
-    "The artbook sections are well-validated with structured evidence.",
-    "The flow and animations are coherent with the game's narrative."
-  ],
-  "decision": "The artbook sections are well-validated with structured evidence and coherent flow.",
-  "ownSectionAddendum": {
-    "items": "The world evidence is logically structured, and the story progression is clear."
+  "ratingScale": {
+    "type": "STARS",
+    "min": 1,
+    "max": 5
   },
-  "unverified": [],
+  "peerReviews": [
+    {
+      "targetDepartment": "planning",
+      "improvement": "The review highlights potential gaps in region causality and protagonist motivation, suggesting areas for further development.",
+      "stars": 4
+    },
+    {
+      "targetDepartment": "graphics",
+      "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "development",
+      "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "qa",
+      "improvement": "The section highlights the importance of validating cause-effect relationships in storytelling, which is a key component of RPG development. This improvement shows the department's",
+      "stars": 5
+    }
+  ],
   "guard": {
     "mayRewriteOtherDepartments": false,
+    "mayEvaluateOwnDepartment": false,
     "productionApproval": false,
-    "numericQualityScore": false
+    "starRatingIsProductionApproval": false
   }
 }

@@ -49,7 +49,7 @@
     "runnerPaidApi": false,
     "runnerApiKeyRequired": false,
     "firstRoundIndependent": true,
-    "secondRoundProtocol": "AGREE_COUNTER_TEST_RESULT_DECISION",
+    "secondRoundProtocol": "PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5",
     "directorGhostwritingFallback": false,
     "gate": "tools/artbook-gate.mjs",
     "assembler": "tools/artbook-assemble.mjs",
@@ -57,7 +57,10 @@
     "assemblyAddsNewClaims": false,
     "assemblyGrantsProductionApproval": false,
     "infrastructureReady": true,
-    "departmentOpinionsPublished": true
+    "departmentOpinionsPublished": true,
+    "mode": "INITIAL",
+    "directorReviewReady": true,
+    "ratingsPerDepartment": 5
   },
   "queueOrder": [
     "daechung-rpg",
@@ -97,7 +100,9 @@
       "styleProfile": "판타지 세계 설정집 + 모험 연대기",
       "existingUnityWork": "preserve-as-prototype-evidence",
       "currentStage": "initial-artbook-assembled-awaiting-owner-decision",
-      "directorAssemblyReady": true
+      "directorAssemblyReady": true,
+      "directorReviewReady": true,
+      "ratingsPerDepartment": 5
     },
     {
       "gameId": "insect-survival",

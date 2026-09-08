@@ -14,7 +14,7 @@
     "independentInvocation": true,
     "readsOtherDepartmentSubmissions": false
   },
-  "headline": "RPG Balance Department Review 2026",
+  "headline": "대충 RPG 밸런스 부서 1차 독립 검토",
   "evidence": [
     {
       "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
@@ -68,13 +68,42 @@
   "section": {
     "items": [
       {
-        "currentNumbers": "100% level, 100% gold, 100% attack, 100% move speed, 100% experience reward, 100% bonus hp",
-        "progressionCurve": "Level 1 → Level 50 → Level 100 → Level 150 → Level 200 → Level 250",
-        "combatFeel": "Fast-paced combat with high attack and healing",
-        "economyRewards": "100% gold, 100% experience, 100% bonus hp",
-        "difficultyTransitions": "Easy to level up, moderate to hard",
-        "testMeasurements": "100% test passed",
-        "handoffs": "Handoff to next department"
+        "currentNumbers": {
+          "level": 1,
+          "gold": 100,
+          "experience": 100,
+          "baseMaxHp": 100,
+          "attack": 3,
+          "moveSpeed": 1,
+          "bonusHp": 50
+        },
+        "progressionCurve": [
+          "level 1: 100 gold, 100 experience, base max hp 100",
+          "level 2: 200 gold, 200 experience, base max hp 150",
+          "level 3: 300 gold, 300 experience, base max hp 200"
+        ],
+        "combatFeel": {
+          "attack": 3,
+          "moveSpeed": 1,
+          "hidden": true
+        },
+        "economyRewards": {
+          "gold": 100,
+          "experience": 100
+        },
+        "difficultyTransitions": [
+          "initial: level 1",
+          "middle: level 2",
+          "high: level 3"
+        ],
+        "testMeasurements": [
+          "level 1: 100 gold, 100 experience",
+          "level 2: 200 gold, 200 experience"
+        ],
+        "handoffs": [
+          "level 1: 100 gold, 100 experience",
+          "level 2: 200 gold, 200 experience"
+        ]
       }
     ]
   },
@@ -82,8 +111,8 @@
   "cuts": [
     {
       "kind": "balance",
-      "title": "RPG Balance Department Review 2026",
-      "body": "Visuals show player character with armor and weapon · Test results show all metrics passed · No visual issues detected",
+      "title": "대충 RPG 밸런스 부서 1차 독립 검토",
+      "body": "대충 RPG 밸런스 부서 1차 독립 검토",
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/balance.svg"
     }
   ],

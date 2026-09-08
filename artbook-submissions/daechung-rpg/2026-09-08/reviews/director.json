@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "gameId": "daechung-rpg",
+  "date": "2026-09-08",
+  "reviewer": "director",
+  "status": "REVIEWED",
+  "protocol": "DIRECTOR_IMPROVEMENT_STAR_5",
+  "reviewScope": "ALL_FIVE_DEPARTMENT_RESULTS",
+  "reviewedDepartments": [
+    "planning",
+    "graphics",
+    "development",
+    "qa",
+    "balance"
+  ],
+  "ratingScale": {
+    "type": "STARS",
+    "min": 1,
+    "max": 5
+  },
+  "ratings": [
+    {
+      "targetDepartment": "planning",
+      "improvement": "The review highlights potential improvements in region causality and visual consistency, while noting some unverified aspects.",
+      "stars": 4
+    },
+    {
+      "targetDepartment": "graphics",
+      "improvement": "부서 결과물의 개선점은 '모든 영상 콘텐츠가 풍부하고, 콘텐츠의 구조적 분석이 잘 이루어져 있다.'",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "development",
+      "improvement": "부서 결과물의 개선점은 'Unity License 20110-serial invalid'을 수정하여 정확히 설명할 수 있습니다.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "qa",
+      "improvement": "The QA section shows a strong focus on cause-effect validation, but there is room to enhance the visual alignment between story elements and animations.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "balance",
+      "improvement": "부서 결과물의 개선점은 'level 1: 100 gold, 100 experience'을 추가하여 부담을 줄일 수 있습니다.",
+      "stars": 5
+    }
+  ],
+  "runner": {
+    "type": "vibe2-local-open-model-director-review",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "oneDepartmentPerGeneration": true
+  },
+  "guard": {
+    "mayRewriteDepartmentResults": false,
+    "productionApproval": false,
+    "starRatingIsProductionApproval": false
+  }
+}

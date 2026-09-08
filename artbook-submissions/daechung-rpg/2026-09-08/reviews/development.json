@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 6,
   "gameId": "daechung-rpg",
   "date": "2026-09-08",
   "department": "development",
@@ -10,39 +10,48 @@
     "model": "qwen3:0.6b",
     "localInference": true,
     "paidApi": false,
-    "independentFirstRoundCompleted": true
+    "independentFirstRoundCompleted": true,
+    "onePeerPerGeneration": true
   },
-  "protocol": "AGREE_COUNTER_TEST_RESULT_DECISION",
-  "agree": [
-    "The architecture is modular and scalable for future expansion",
-    "The prototype has clear testing limits and performance optimization requirements"
+  "protocol": "PEER_IMPROVEMENT_STAR_5",
+  "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+  "reviewedDepartments": [
+    "planning",
+    "graphics",
+    "qa",
+    "balance"
   ],
-  "counter": [
-    "The demo plan includes both Unity and web-based elements",
-    "The handoffs show good coordination with Unity development"
-  ],
-  "test": [
-    "Testing phases for core mechanics and performance optimization are feasible",
-    "Mobile save errors are being addressed"
-  ],
-  "result": [
-    "Ready for next steps",
-    "QA and balance reviews are in progress"
-  ],
-  "decision": "Ready to proceed with next steps",
-  "ownSectionAddendum": {
-    "implementedNow": "true",
-    "architecture": "Unity-based game core with Web Archive integration",
-    "prototypeLimits": "Testing phases for core mechanics, scalable architecture for expansion",
-    "technicalRisks": "Potential Unity license conflicts, performance optimization requirements"
+  "ratingScale": {
+    "type": "STARS",
+    "min": 1,
+    "max": 5
   },
-  "unverified": [
-    "Visual elements not fully validated",
-    "Unverified parts of the artbook"
+  "peerReviews": [
+    {
+      "targetDepartment": "planning",
+      "improvement": "The review highlights potential gaps in region causality and protagonist motivation, suggesting areas for further development.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "graphics",
+      "improvement": "본 부서 결과물의 개선점은 '일반적인 기능을 강화하고, 빠르게 진행되는 측면에서 풍부한 내용을 보여주기 위해 추가적인 개선점을 제시함으로써 부서의 품질을 명확히 할 수 있습니다.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "qa",
+      "improvement": "The review highlights the importance of validating cause-effect relationships in story-telling, which is a key aspect of RPG development. This improvement shows the QA department's",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "balance",
+      "improvement": "본 부서 결과물의 개선점은 'level 1: 100 gold, 100 experience'을 추가하여 게임의 초기 단계를 명확히 하며, 복잡한 progression curve를 단순화하여 이해하기 쉬울 수 있습니다.",
+      "stars": 5
+    }
   ],
   "guard": {
     "mayRewriteOtherDepartments": false,
+    "mayEvaluateOwnDepartment": false,
     "productionApproval": false,
-    "numericQualityScore": false
+    "starRatingIsProductionApproval": false
   }
 }
