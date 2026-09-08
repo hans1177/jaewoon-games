@@ -38,7 +38,7 @@ jobs:
           if ($requestFile -notmatch '^\.build-requests/unity/[A-Za-z0-9._-]+\.json$') { throw "Invalid request path: $requestFile" }
           $fullRequest = Join-Path $env:GITHUB_WORKSPACE ($requestFile -replace '/', '\')
           if (-not (Test-Path $fullRequest)) { throw "Build request missing: $requestFile" }
-          $data = Get-Content $fullRequest -Raw | ConvertFrom-Json
+          $data = [System.IO.File]::ReadAllText($fullRequest, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
           if ($data.version -ne 1) { throw 'Unsupported build request version.' }
           $gameId = [string]$data.gameId
           $projectPath = ([string]$data.projectPath).Replace('\','/').Trim('/')
@@ -52,7 +52,7 @@ jobs:
           $publishHomepage = $false
           $catalogPath = Join-Path $env:GITHUB_WORKSPACE 'game-catalog.json'
           if (Test-Path $catalogPath) {
-            $catalog = Get-Content $catalogPath -Raw | ConvertFrom-Json
+            $catalog = [System.IO.File]::ReadAllText($catalogPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
             $game = $catalog.games | Where-Object { $_.id -eq $gameId } | Select-Object -First 1
             if ($game -and $game.homepagePublicationApproved -eq $true -and $game.publishTestBuildWhenReady -eq $true) { $publishHomepage = $true }
           }
@@ -192,7 +192,7 @@ jobs:
           $releaseUrl = "https://github.com/$env:GITHUB_REPOSITORY/releases/tag/$tag"
           $downloadUrl = "https://github.com/$env:GITHUB_REPOSITORY/releases/download/$tag/$game-test.apk"
           $path = Join-Path $env:GITHUB_WORKSPACE 'company-status.json'
-          $data = Get-Content $path -Raw | ConvertFrom-Json
+          $data = [System.IO.File]::ReadAllText($path, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
           $kept = @($data.testBuilds | Where-Object { $_.gameId -ne $game })
           $entry = [pscustomobject]@{
             gameId = $game
