@@ -49,7 +49,14 @@ for(const role of requiredRoles){
     if(String(data.protocol||'')!=='AGREE_COUNTER_TEST_RESULT_DECISION')problems.push('review-protocol-mismatch');
     for(const key of ['agree','counter','test','result'])if(!Array.isArray(data[key]))problems.push(`review-${key}-array-required`);
     if(!String(data.decision||'').trim())problems.push('review-decision-required');
+    if(String(data.reviewScope||'')!=='OTHER_DEPARTMENTS_ONLY')problems.push('review-scope-must-be-other-departments-only');
+    const peers=Array.isArray(data.reviewedDepartments)?data.reviewedDepartments:[];
+    const expectedPeers=requiredRoles.filter(x=>x!==role);
+    if(peers.length!==expectedPeers.length||expectedPeers.some(x=>!peers.includes(x))||peers.includes(role))problems.push('reviewed-departments-must-be-other-four');
+    if(!String(data.peerOpinion?.strength||'').trim())problems.push('peer-strength-required');
+    if(!String(data.peerOpinion?.improvement||'').trim())problems.push('peer-improvement-required');
     if(data.guard?.mayRewriteOtherDepartments!==false)problems.push('cross-department-rewrite-guard-missing');
+    if(data.guard?.mayEvaluateOwnDepartmentForHomepage!==false)problems.push('own-department-homepage-opinion-forbidden');
   }
   if(problems.length)reviewInvalid.push({role,file,problems});else reviewReady.push({role,file});
 }
@@ -60,11 +67,11 @@ if(initialComplete&&!collaborationComplete)formalProductionGate='BLOCKED_WAITING
 if(readyForDirectorAssembly)formalProductionGate='SECTION_AND_COLLABORATION_GATE_COMPLETE_DIRECTOR_ASSEMBLY_ALLOWED';
 
 const status={
-  version:2,checkedAt:new Date().toISOString(),date,gameId,gameName:targetGame?.name||gameId,requiredRoles,
+  version:3,checkedAt:new Date().toISOString(),date,gameId,gameName:targetGame?.name||gameId,requiredRoles,
   readyRoles:ready.map(x=>x.role),readyCount:ready.length,requiredCount:requiredRoles.length,missing,invalid,
   independentRoundComplete:initialComplete,
   reviewReadyRoles:reviewReady.map(x=>x.role),reviewReadyCount:reviewReady.length,reviewRequiredCount:requiredRoles.length,
-  reviewMissing,reviewInvalid,collaborationProtocol:'AGREE_COUNTER_TEST_RESULT_DECISION',collaborationComplete,
+  reviewMissing,reviewInvalid,collaborationProtocol:'AGREE_COUNTER_TEST_RESULT_DECISION',homepageOpinionMode:'PEER_STRENGTH_AND_IMPROVEMENT',collaborationComplete,
   readyForDirectorAssembly,directorMayAuthorMissingSections:false,directorMayAuthorMissingReviews:false,
   formalProductionGate
 };
