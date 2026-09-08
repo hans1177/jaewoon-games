@@ -15,34 +15,35 @@
   },
   "counts": {
     "WORKING": 1,
-    "DONE": 6,
+    "DONE": 5,
     "IDLE_NO_TASK": 0,
     "BLOCKED": 1,
-    "FAILED": 0,
+    "FAILED": 1,
     "STALE": 0
   },
   "attentionRequired": true,
   "primaryFindings": [
+    "homepage:WORKFLOW_FAILED",
     "release:DEPENDENCY_BLOCKED"
   ],
   "workflowEvidence": {
     "artbook": {
-      "id": 34201575751,
+      "id": 34201939761,
       "status": "in_progress",
       "conclusion": null,
       "event": "push",
-      "createdAt": "2026-09-08T07:53:00Z",
-      "updatedAt": "2026-09-08T07:53:34Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34201575751"
+      "createdAt": "2026-09-08T07:57:21Z",
+      "updatedAt": "2026-09-08T08:00:30Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34201939761"
     },
     "homepage": {
-      "id": 34201650534,
+      "id": 34201982794,
       "status": "completed",
-      "conclusion": "success",
-      "event": "push",
-      "createdAt": "2026-09-08T07:53:53Z",
-      "updatedAt": "2026-09-08T07:54:04Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34201650534"
+      "conclusion": "skipped",
+      "event": "workflow_run",
+      "createdAt": "2026-09-08T07:57:54Z",
+      "updatedAt": "2026-09-08T07:58:03Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34201982794"
     }
   },
   "staff": {
@@ -54,19 +55,19 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
         "queue-submission:planning",
-        "workflow:34201575751:in_progress:pending",
-        "job:101981472264:in_progress:pending"
+        "workflow:34201939761:in_progress:pending",
+        "job:101982705555:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": {
-        "id": 101981472264,
+        "id": 101982705555,
         "name": "round1 (planning)",
-        "status": "in_progress",
-        "conclusion": null,
+        "status": "completed",
+        "conclusion": "success",
         "failedStep": null,
-        "startedAt": "2026-09-08T07:53:33Z",
-        "completedAt": null,
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34201575751/job/101981472264"
+        "startedAt": "2026-09-08T07:58:09Z",
+        "completedAt": "2026-09-08T08:00:17Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34201939761/job/101982705555"
       },
       "directCause": null,
       "blockers": [],
@@ -81,19 +82,19 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
         "queue-submission:development",
-        "workflow:34201575751:in_progress:pending",
-        "job:101981472193:in_progress:pending"
+        "workflow:34201939761:in_progress:pending",
+        "job:101982705589:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": {
-        "id": 101981472193,
+        "id": 101982705589,
         "name": "round1 (development)",
-        "status": "in_progress",
-        "conclusion": null,
+        "status": "completed",
+        "conclusion": "success",
         "failedStep": null,
-        "startedAt": "2026-09-08T07:53:33Z",
-        "completedAt": null,
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34201575751/job/101981472193"
+        "startedAt": "2026-09-08T07:58:09Z",
+        "completedAt": "2026-09-08T08:00:14Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34201939761/job/101982705589"
       },
       "directCause": null,
       "blockers": [],
@@ -108,19 +109,19 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
         "queue-submission:qa",
-        "workflow:34201575751:in_progress:pending",
-        "job:101981472232:in_progress:pending"
+        "workflow:34201939761:in_progress:pending",
+        "job:101982705584:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": {
-        "id": 101981472232,
+        "id": 101982705584,
         "name": "round1 (qa)",
-        "status": "in_progress",
-        "conclusion": null,
+        "status": "completed",
+        "conclusion": "success",
         "failedStep": null,
-        "startedAt": "2026-09-08T07:53:33Z",
-        "completedAt": null,
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34201575751/job/101981472232"
+        "startedAt": "2026-09-08T07:58:09Z",
+        "completedAt": "2026-09-08T07:59:00Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34201939761/job/101982705584"
       },
       "directCause": null,
       "blockers": [],
@@ -135,19 +136,19 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
         "queue-submission:graphics",
-        "workflow:34201575751:in_progress:pending",
-        "job:101981472297:in_progress:pending"
+        "workflow:34201939761:in_progress:pending",
+        "job:101982705568:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": {
-        "id": 101981472297,
+        "id": 101982705568,
         "name": "round1 (graphics)",
-        "status": "in_progress",
-        "conclusion": null,
+        "status": "completed",
+        "conclusion": "success",
         "failedStep": null,
-        "startedAt": "2026-09-08T07:53:33Z",
-        "completedAt": null,
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34201575751/job/101981472297"
+        "startedAt": "2026-09-08T07:58:09Z",
+        "completedAt": "2026-09-08T07:59:18Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34201939761/job/101982705568"
       },
       "directCause": null,
       "blockers": [],
@@ -162,19 +163,19 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
         "queue-submission:balance",
-        "workflow:34201575751:in_progress:pending",
-        "job:101981472329:in_progress:pending"
+        "workflow:34201939761:in_progress:pending",
+        "job:101982705679:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": {
-        "id": 101981472329,
+        "id": 101982705679,
         "name": "round1 (balance)",
-        "status": "in_progress",
-        "conclusion": null,
+        "status": "completed",
+        "conclusion": "success",
         "failedStep": null,
-        "startedAt": "2026-09-08T07:53:33Z",
-        "completedAt": null,
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34201575751/job/101981472329"
+        "startedAt": "2026-09-08T07:58:09Z",
+        "completedAt": "2026-09-08T07:59:22Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34201939761/job/101982705679"
       },
       "directCause": null,
       "blockers": [],
@@ -184,16 +185,18 @@
     "homepage": {
       "department": "homepage",
       "taskAssigned": true,
-      "status": "DONE",
+      "status": "FAILED",
       "task": "homepage compact layout, links, status and mobile maintenance",
       "executionEvidence": [
         "homepage-manager-status.json",
-        "workflow:34201650534:completed:success"
+        "workflow:34201982794:completed:skipped"
       ],
-      "resultVerified": true,
-      "blockers": [],
-      "reason": "homepage manager has a successful workflow run and a running status artifact",
-      "action": "continue scheduled monitoring"
+      "resultVerified": false,
+      "blockers": [
+        "WORKFLOW_FAILED"
+      ],
+      "reason": "Homepage Manager concluded skipped",
+      "action": "inspect and fix Homepage Manager workflow"
     },
     "release": {
       "department": "release",
