@@ -15,10 +15,10 @@
   },
   "counts": {
     "WORKING": 1,
-    "DONE": 1,
+    "DONE": 0,
     "IDLE_NO_TASK": 1,
     "BLOCKED": 5,
-    "FAILED": 0,
+    "FAILED": 1,
     "STALE": 0
   },
   "attentionRequired": true,
@@ -27,7 +27,8 @@
     "development:DEPENDENCY_BLOCKED",
     "qa:DEPENDENCY_BLOCKED",
     "graphics:DEPENDENCY_BLOCKED",
-    "balance:DEPENDENCY_BLOCKED"
+    "balance:DEPENDENCY_BLOCKED",
+    "homepage:WORKFLOW_FAILED"
   ],
   "workflowEvidence": {
     "artbook": {
@@ -40,13 +41,13 @@
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34182184848"
     },
     "homepage": {
-      "id": 34181216179,
+      "id": 34183579224,
       "status": "completed",
-      "conclusion": "success",
+      "conclusion": "failure",
       "event": "push",
-      "createdAt": "2026-09-08T02:46:31Z",
-      "updatedAt": "2026-09-08T02:46:44Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34181216179"
+      "createdAt": "2026-09-08T03:27:35Z",
+      "updatedAt": "2026-09-08T03:27:46Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34183579224"
     }
   },
   "staff": {
@@ -193,16 +194,18 @@
     "homepage": {
       "department": "homepage",
       "taskAssigned": true,
-      "status": "DONE",
+      "status": "FAILED",
       "task": "homepage compact layout, links, status and mobile maintenance",
       "executionEvidence": [
         "homepage-manager-status.json",
-        "workflow:34181216179:completed:success"
+        "workflow:34183579224:completed:failure"
       ],
-      "resultVerified": true,
-      "blockers": [],
-      "reason": "homepage manager has a successful workflow run and a running status artifact",
-      "action": "continue scheduled monitoring"
+      "resultVerified": false,
+      "blockers": [
+        "WORKFLOW_FAILED"
+      ],
+      "reason": "Homepage Manager concluded failure",
+      "action": "inspect and fix Homepage Manager workflow"
     },
     "release": {
       "department": "release",
