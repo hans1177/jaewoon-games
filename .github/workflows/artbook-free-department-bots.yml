@@ -142,6 +142,7 @@ jobs:
         with:
           name: round1-bundle
           path: .artbook-round1/
+          include-hidden-files: true
           retention-days: 1
           if-no-files-found: error
 
