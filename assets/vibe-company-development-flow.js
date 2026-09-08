@@ -65,11 +65,13 @@ export function createArtbookDevelopmentLock({status='',cutCount=0,postprocessCo
   const normalizedStatus=clean(status).toUpperCase();
   const normalizedCutCount=Math.max(0,Math.floor(Number(cutCount)||0));
   const postprocess=asBool(postprocessComplete);
-  const locked=normalizedStatus==='COMPLETED'&&normalizedCutCount===10&&postprocess;
+  const validCutCount=normalizedCutCount===10||(normalizedCutCount>=12&&normalizedCutCount<=30);
+  const locked=normalizedStatus==='COMPLETED'&&validCutCount&&postprocess;
   return Object.freeze({
     locked,
     status:normalizedStatus||'UNKNOWN',
     cutCount:normalizedCutCount,
+    pagePolicy:Object.freeze({min:12,default:16,max:30,legacyCompletedPages:10,validCutCount}),
     postprocessComplete:postprocess,
     sourceOfTruth:locked?'completed-artbook':'pre-artbook-design',
     ref:clean(ref),
