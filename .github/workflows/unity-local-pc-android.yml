@@ -63,7 +63,7 @@ jobs:
           "request_id=$requestId" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           "publish_homepage=$($publishHomepage.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
-      - name: Detect matching installed Unity and Android support
+      - name: Preflight local Unity, Android support and Personal license
         run: |
           $project = Join-Path $env:GITHUB_WORKSPACE ('${{ steps.request.outputs.project_path }}' -replace '/', '\')
           $versionFile = Join-Path $project 'ProjectSettings\ProjectVersion.txt'
@@ -75,9 +75,18 @@ jobs:
           if (-not (Test-Path $unity)) { throw "Matching local Unity is not installed: $unity" }
           $android = Join-Path (Split-Path $unity -Parent) 'Data\PlaybackEngines\AndroidPlayer'
           if (-not (Test-Path $android)) { throw "Android Build Support missing for Unity $version" }
+
+          $license = Join-Path $env:ProgramData 'Unity\Unity_lic.ulf'
+          if (-not (Test-Path $license)) { throw "Local Unity license file missing: $license" }
+          $licenseText = Get-Content $license -Raw -ErrorAction Stop
+          if ([string]::IsNullOrWhiteSpace($licenseText) -or $licenseText.Length -lt 500) { throw 'Local Unity license file is empty or incomplete.' }
+          if ($licenseText -notmatch 'DeveloperData') { throw 'Local Unity license is missing DeveloperData.' }
+          if ($licenseText -notmatch 'UnityPersonal') { throw 'Local Unity license is not marked as Unity Personal.' }
+
           "UNITY_EXE=$unity" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "PROJECT_PATH=$project" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Write-Host "[PASS] Local route selected. Unity=$version"
+          Write-Host "[PASS] Local Unity $version + Android Build Support detected."
+          Write-Host '[PASS] Local Unity Personal license file is present and structurally valid.'
 
       - name: Build APK with local activated Unity
         run: |
