@@ -14,8 +14,8 @@
     "directorMayGhostwriteMissingDepartmentWork": false
   },
   "counts": {
-    "WORKING": 2,
-    "DONE": 0,
+    "WORKING": 1,
+    "DONE": 1,
     "IDLE_NO_TASK": 1,
     "BLOCKED": 5,
     "FAILED": 0,
@@ -41,11 +41,11 @@
     },
     "homepage": {
       "id": 34186229408,
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "success",
       "event": "push",
       "createdAt": "2026-09-08T04:13:26Z",
-      "updatedAt": "2026-09-08T04:13:30Z",
+      "updatedAt": "2026-09-08T04:13:39Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34186229408"
     }
   },
@@ -193,16 +193,16 @@
     "homepage": {
       "department": "homepage",
       "taskAssigned": true,
-      "status": "WORKING",
+      "status": "DONE",
       "task": "homepage compact layout, links, status and mobile maintenance",
       "executionEvidence": [
         "homepage-manager-status.json",
-        "workflow:34186229408:in_progress:pending"
+        "workflow:34186229408:completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "blockers": [],
-      "reason": "Homepage Manager workflow is executing",
-      "action": "verify manager status output after completion"
+      "reason": "homepage manager has a successful workflow run and a running status artifact",
+      "action": "continue scheduled monitoring"
     },
     "release": {
       "department": "release",
