@@ -77,8 +77,10 @@ function installStyles(){
 .teamOwner img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:12px;background:#dceefa}
 .teamOwner h3{margin:0 0 4px;font-family:inherit!important;font-weight:900;font-size:20px}
 .teamOwner p{margin:0;font-size:11px;line-height:1.5;color:#d5e7f1;font-weight:700}
-.teamAwards{margin-top:8px;padding-top:8px;border-top:1px solid #ffffff30;display:flex;gap:6px;flex-wrap:wrap}
-.teamAwards span{padding:4px 7px;border-radius:999px;background:#ffffff14;font-size:9px;font-weight:800}
+.teamSocials{margin-top:8px;padding-top:8px;border-top:1px solid #ffffff30;display:flex;gap:6px;flex-wrap:wrap}
+.teamSocial{display:inline-flex;align-items:center;min-height:28px;padding:0 9px;border-radius:999px;font-size:9px;font-weight:900;white-space:nowrap}
+.teamSocial.instagram{background:linear-gradient(120deg,#7b3ff2,#df3d8d,#f59a3d);color:#fff}
+.teamSocial.kakao{background:#fee500;color:#261f00}
 .aiTeamGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
 .aiTeamCard{background:#eef8fd;border-radius:12px;padding:9px;text-align:center}
 .aiTeamPhoto{width:66px;height:66px;display:block;margin:0 auto 7px;border:3px solid #fff;border-radius:50%;background:#d8edf8;box-shadow:0 3px 8px #174d6b22}
@@ -225,7 +227,7 @@ function buildTeam(){
         <div>
           <h3>Developer 한재운</h3>
           <p>재운게임즈의 게임 방향과 핵심 결정을 담당하고 AI 개발진과 함께 제작.</p>
-          <div class="teamAwards"><span>수상경력 · 등록 예정</span><span>재운컴퍼니 대표</span></div>
+          <div class="teamSocials" aria-label="소셜 채널"><span class="teamSocial instagram" data-social="instagram">인스타그램</span><span class="teamSocial kakao" data-social="kakao">카카오톡</span></div>
         </div>
       </div>
       <div class="aiTeamGrid">
