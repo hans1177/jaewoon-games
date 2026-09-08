@@ -9,7 +9,7 @@
     "activeWorkOrderExists": true,
     "evidenceAdapterMismatch": false,
     "jobLevelEvidenceUsed": true,
-    "failureLogsUsed": false,
+    "failureLogsUsed": true,
     "runningLabelAloneCountsAsWork": false,
     "directorMayGhostwriteMissingDepartmentWork": false
   },
@@ -52,23 +52,23 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
         "workflow:34182184848:in_progress:pending",
-        "job:101923360669:in_progress:pending"
+        "job:101923360669:completed:success"
       ],
       "resultVerified": false,
       "jobEvidence": {
         "id": 101923360669,
         "name": "round1 (planning)",
-        "status": "in_progress",
-        "conclusion": null,
+        "status": "completed",
+        "conclusion": "success",
         "failedStep": null,
         "startedAt": "2026-09-08T03:03:47Z",
-        "completedAt": null,
+        "completedAt": "2026-09-08T03:06:27Z",
         "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34182184848/job/101923360669"
       },
       "directCause": null,
       "blockers": [],
-      "reason": "this department job is currently executing",
-      "action": "check department output after job completes"
+      "reason": "artbook workflow is active and this role job has not completed yet",
+      "action": "check role job evidence when the same workflow completes"
     },
     "development": {
       "department": "development",
