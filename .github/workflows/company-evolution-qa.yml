@@ -10,6 +10,7 @@ on:
       - artbook-submission-queue.json
       - artbook-second-work-queue.json
       - artbook-gate-status.json
+      - artbook-demo-concept-gate.json
       - artbook-submissions/**
       - public-game-health.json
       - public-release-baselines.json
@@ -28,6 +29,7 @@ on:
       - tools/artbook-director-review.mjs
       - tools/artbook-gate.mjs
       - tools/artbook-assemble.mjs
+      - tools/artbook-demo-concept-gate.mjs
       - tools/public-game-health.mjs
       - tools/asset-health-check.mjs
       - tools/update-release-baselines.mjs
@@ -65,6 +67,7 @@ jobs:
           node --check tools/artbook-director-review.mjs
           node --check tools/artbook-gate.mjs
           node --check tools/artbook-assemble.mjs
+          node --check tools/artbook-demo-concept-gate.mjs
           node --check tools/public-game-health.mjs
           node --check tools/asset-health-check.mjs
           node --check tools/update-release-baselines.mjs
@@ -94,6 +97,8 @@ jobs:
           grep -Fq 'id="gameGrid"' index.html
           grep -Fq 'id="installHelp"' index.html
           grep -Fq '/assets/homepage-enhancements.js' index.html
+          grep -Fq 'gameFocusBar' assets/homepage-enhancements.js
+          grep -Fq "focusMode='active'" assets/homepage-enhancements.js
           if grep -Eq '/assets/homepage-layout-v2\.css|/assets/homepage-layout-v2\.js' index.html; then
             echo 'deprecated automatic homepage layout injection returned' >&2
             exit 1
@@ -207,7 +212,7 @@ jobs:
           if(!assembler.includes('ratingsPerDepartment:5'))throw new Error('five ratings per department missing');
           if(!assembler.includes('departmentVotesPerResult:4'))throw new Error('four department votes per result missing');
           if(!assembler.includes('directorVotesPerResult:1'))throw new Error('one director vote per result missing');
-          if(!assembler.includes("addDays(date,1)"))throw new Error('next-day scheduling missing');
+          if(!assembler.includes("secondWorkDueDate=workMode==='INITIAL'?date:null"))throw new Error('same-day second-work scheduling missing');
           if(gate.assembled===true&&gate.collaborationProtocol==='PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5'){
             const finalFile=gate.assembledFile;
             if(!finalFile||!fs.existsSync(finalFile))throw new Error('assembled gate has no artbook file');
@@ -223,17 +228,28 @@ jobs:
           console.log('ARTBOOK_FIVE_VOTE_GATE=PASS');
           NODE
 
-      - name: Validate next-day second-work contract
+      - name: Validate same-day second-work contract
         run: |
           set -euo pipefail
           grep -Fq "mode='SECOND_WORK'" tools/artbook-prepare-daily.mjs
+          grep -Fq "status:'SAME_DAY_SECOND_WORK_SCHEDULED'" tools/artbook-prepare-daily.mjs
+          grep -Fq 'sameDaySecondWork' tools/artbook-prepare-daily.mjs
           grep -Fq "criterion:'FIVE_VOTE_AVERAGE_OR_BELOW_OVERALL_AVERAGE'" tools/artbook-second-work-runner.mjs
           grep -Fq 'receivedFiveVoteFeedback' tools/artbook-second-work-runner.mjs
           grep -Fq 'CARRIED_FORWARD' tools/artbook-second-work-runner.mjs
-          grep -Fq "ARTBOOK_DAILY_MODE" tools/artbook-prepare-daily.mjs
+          grep -Fq 'ARTBOOK_SECOND_WORK_SAME_DAY' tools/artbook-second-work-runner.mjs
           grep -Fq 'SECOND_WORK' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'node tools/artbook-second-work-runner.mjs' .github/workflows/artbook-free-department-bots.yml
-          echo 'NEXT_DAY_SECOND_WORK_CONTRACT=PASS'
+          echo 'SAME_DAY_SECOND_WORK_CONTRACT=PASS'
+
+      - name: Validate artbook to playable demo concept gate
+        run: |
+          set -euo pipefail
+          node tools/artbook-demo-concept-gate.mjs
+          grep -Fq 'ARTBOOK_TO_PLAYABLE_DEMO_CONCEPT' artbook-demo-concept-gate.json
+          grep -Fq 'A_ARTBOOK_BASELINE' artbook-demo-concept-gate.json
+          grep -Fq 'B_PLAYABLE_CHALLENGER' artbook-demo-concept-gate.json
+          echo 'ARTBOOK_DEMO_GATE_CONTRACT=PASS'
 
       - name: Validate learning and rollback contracts
         run: |
