@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "mode": "continuous-core",
+  "continuous": {
+    "enabled": true,
+    "strategy": "short-verified-work-chains",
+    "singleLongRunningJob": false,
+    "maxTaskRetries": 2,
+    "maxWorkMinutes": 20,
+    "dispatchNextWhenVerified": true,
+    "ownerDirectivePreemptsAutonomy": true
+  },
+  "sources": {
+    "queue": ".vibe2/queue.json",
+    "experience": ".vibe2/experience.json",
+    "workOrder": ".vibe2/work-order.json"
+  },
+  "safety": {
+    "webGamesReadOnly": true,
+    "allowedWritableTargets": ["unity", "unreal", "godot"],
+    "paidAIAllowed": false,
+    "paidRunnerAllowed": false,
+    "coreDecisionRequiresOwner": true,
+    "saveBreakingChangeRequiresMigration": true,
+    "verifiedEvidenceRequiredForLearning": true,
+    "directMainWriteByWorker": false,
+    "homepagePublicationAutomatic": false
+  }
+}
