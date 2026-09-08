@@ -18,12 +18,12 @@ permissions:
 
 concurrency:
   group: free-artbook-departments-main
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   submit-five-independent-sections-and-reviews:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 30
     env:
       OLLAMA_HOST: 127.0.0.1:11434
     steps:
@@ -74,11 +74,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          MODEL='qwen3:1.7b'
-          if ! ollama pull "$MODEL"; then
-            MODEL='qwen3:0.6b'
-            ollama pull "$MODEL"
-          fi
+          MODEL='qwen3:0.6b'
+          ollama pull "$MODEL"
           echo "ARTBOOK_LOCAL_MODEL=$MODEL" >> "$GITHUB_ENV"
           echo "ARTBOOK_LOCAL_MODEL=$MODEL"
           echo 'PAID_API=NO'
