@@ -70,6 +70,16 @@ async function main(){
     companyLink.setAttribute('aria-label','개발연구소');
     opsLead.insertAdjacentElement('afterend',companyLink);
   }
+  const opsStatus=document.getElementById('opsStatus');
+  if(opsStatus){
+    const syncOpsLabel=()=>{
+      if(opsStatus.textContent==='● 게임 운영 상태 연결됨')opsStatus.textContent='● 운영 데이터 정상';
+      if(opsStatus.textContent==='● 회사 상태 연결 확인 필요')opsStatus.textContent='● 운영 데이터 확인 필요';
+    };
+    const opsObserver=new MutationObserver(syncOpsLabel);
+    opsObserver.observe(opsStatus,{childList:true,characterData:true,subtree:true});
+    syncOpsLabel();
+  }
   const [catalog,baselines]=await Promise.all([getJson('/game-catalog.json'),getJson('/public-release-baselines.json')]);
   const refresh=()=>{removeLegacyRuntimeBadges();applyVerifiedRollback(catalog,baselines);addDaechungArtbookButton(catalog);};
   refresh();
