@@ -1,0 +1,161 @@
+name: Vibe2 Unity Release Result
+
+on:
+  workflow_run:
+    workflows: ['Unity Hybrid Android Build']
+    types: [completed]
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: vibe2-release-serial
+  cancel-in-progress: false
+
+jobs:
+  candidate-result:
+    if: startsWith(github.event.workflow_run.head_branch, 'vibe2/candidate/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout exact candidate result
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Resolve candidate manifest
+        id: manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --quiet
+          mapfile -t manifests < <(find .vibe2/candidates -type f -name manifest.json 2>/dev/null | sort)
+          test "${#manifests[@]}" -eq 1
+          manifest="${manifests[0]}"
+          git show origin/main:game-catalog.json > /tmp/main-game-catalog.json
+          MANIFEST="$manifest" node <<'NODE'
+          const fs=require('fs');
+          const m=JSON.parse(fs.readFileSync(process.env.MANIFEST,'utf8'));
+          const catalog=JSON.parse(fs.readFileSync('/tmp/main-game-catalog.json','utf8'));
+          const out=process.env.GITHUB_OUTPUT;
+          const put=(k,v)=>fs.appendFileSync(out,`${k}=${String(v??'').replaceAll('\n',' ')}\n`);
+          const task=String(m.taskId||'').trim();
+          const game=String(m.gameId||'').trim();
+          const target=String(m.target||'').trim();
+          const root=String(m.sourceRoot||'').replaceAll('\\','/').replace(/^\.\//,'').replace(/\/$/,'');
+          const base=String(m.baseMainSha||'').trim();
+          const row=(catalog.games||[]).find(g=>String(g.id||'')===game);
+          const state=String(row?.homepageCategory||'other').toLowerCase();
+          if(!task||!game||target!=='unity'||root!==`unity-games/${game}`||!base) throw new Error('invalid Unity Vibe2 candidate manifest');
+          put('task_id',task); put('game_id',game); put('source_root',root); put('base_sha',base); put('release_state',state);
+          NODE
+
+      - name: Handle failed candidate APK build
+        if: github.event.workflow_run.conclusion != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TASK_ID: ${{ steps.manifest.outputs.task_id }}
+          BUILD_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
+          cd /tmp/vibe2-control
+          git config user.name 'jaewoon-vibe2-release'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          node tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker="unity-candidate-build-${BUILD_CONCLUSION}" --evidence="unity-build-run-${{ github.event.workflow_run.id }},actions-run-${GITHUB_RUN_ID}"
+          git add .vibe2/queue.json
+          git commit -m "vibe2: record Unity build failure ${TASK_ID} [skip ci]"
+          for attempt in 1 2 3; do
+            git pull --rebase origin vibe2-unreal-core
+            git push origin HEAD:vibe2-unreal-core && break
+            test "$attempt" -lt 3
+            sleep $((attempt * 2))
+          done
+          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'VIBE2_UNITY_AUTO_DEPLOY=BUILD_FAILED'
+
+      - name: Revalidate current release authority and BASE_SHA
+        if: github.event.workflow_run.conclusion == 'success'
+        shell: bash
+        env:
+          SOURCE_ROOT: ${{ steps.manifest.outputs.source_root }}
+          BASE_SHA: ${{ steps.manifest.outputs.base_sha }}
+          RELEASE_STATE: ${{ steps.manifest.outputs.release_state }}
+        run: |
+          set -euo pipefail
+          case "$RELEASE_STATE" in release-confirmed|development-confirmed) ;; *) echo "current release state not deployable: $RELEASE_STATE" >&2; exit 1 ;; esac
+          git fetch origin main --quiet
+          git cat-file -e "${BASE_SHA}^{commit}"
+          if [ -n "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" ]; then
+            echo 'source root changed on main after candidate creation' >&2
+            exit 1
+          fi
+          echo 'VIBE2_UNITY_CANDIDATE_APK_QA=PASS'
+
+      - name: Promote verified Unity source root to latest main
+        if: github.event.workflow_run.conclusion == 'success'
+        shell: bash
+        env:
+          SOURCE_ROOT: ${{ steps.manifest.outputs.source_root }}
+          BASE_SHA: ${{ steps.manifest.outputs.base_sha }}
+          TASK_ID: ${{ steps.manifest.outputs.task_id }}
+          CANDIDATE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            git fetch origin main --quiet
+            if [ -n "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" ]; then
+              echo 'source root changed; replan required' >&2
+              exit 1
+            fi
+            rm -rf /tmp/vibe2-promote
+            git worktree prune
+            git worktree add --detach /tmp/vibe2-promote origin/main >/dev/null
+            cd /tmp/vibe2-promote
+            git config user.name 'jaewoon-vibe2-release'
+            git config user.email 'vibe2-release@users.noreply.github.com'
+            git checkout "$CANDIDATE_SHA" -- "$SOURCE_ROOT"
+            git diff --check
+            git add "$SOURCE_ROOT"
+            git diff --cached --quiet && { echo 'nothing to promote' >&2; exit 1; }
+            git commit -m "vibe2: deploy ${TASK_ID}"
+            if git push origin HEAD:main; then
+              echo "VIBE2_MAIN_PROMOTION_SHA=$(git rev-parse HEAD)"
+              exit 0
+            fi
+            cd "$GITHUB_WORKSPACE"
+            rm -rf /tmp/vibe2-promote
+            sleep $((attempt * 2))
+          done
+          exit 1
+
+      - name: Mark Unity task PASS and continue serial queue
+        if: github.event.workflow_run.conclusion == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TASK_ID: ${{ steps.manifest.outputs.task_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
+          cd /tmp/vibe2-control
+          git config user.name 'jaewoon-vibe2-release'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          node tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="unity-candidate-apk-pass,unity-build-run-${{ github.event.workflow_run.id }},main-auto-promoted,actions-run-${GITHUB_RUN_ID}"
+          git add .vibe2/queue.json
+          git commit -m "vibe2: complete Unity task ${TASK_ID} [skip ci]"
+          for attempt in 1 2 3; do
+            git pull --rebase origin vibe2-unreal-core
+            git push origin HEAD:vibe2-unreal-core && break
+            test "$attempt" -lt 3
+            sleep $((attempt * 2))
+          done
+          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'VIBE2_UNITY_AUTO_DEPLOY=PASS'
