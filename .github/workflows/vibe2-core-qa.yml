@@ -1,0 +1,45 @@
+name: Vibe2 Core QA
+
+on:
+  push:
+    branches:
+      - vibe2-unreal-core
+    paths:
+      - 'VIBE2_CORE.md'
+      - 'VIBE2_MOTION_CORE.md'
+      - 'assets/vibe-engine-adapter.js'
+      - 'assets/vibe-motion-core.js'
+      - 'assets/vibe-experience-memory.js'
+      - 'assets/vibe-continuous-queue.js'
+      - 'qa/vibe2-core-engine-motion.test.mjs'
+      - '.github/workflows/vibe2-core-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vibe2-core-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Syntax check
+        run: |
+          node --check assets/vibe-engine-adapter.js
+          node --check assets/vibe-motion-core.js
+          node --check assets/vibe-experience-memory.js
+          node --check assets/vibe-continuous-queue.js
+          node --check qa/vibe2-core-engine-motion.test.mjs
+
+      - name: Vibe2 engine motion learning queue tests
+        run: node --test qa/vibe2-core-engine-motion.test.mjs
