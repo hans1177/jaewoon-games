@@ -1,6 +1,6 @@
 {
   "version": 5,
-  "checkedAt": "2026-09-08T06:27:10.660Z",
+  "checkedAt": "2026-09-08T06:27:23.548Z",
   "date": "2026-09-08",
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
@@ -46,7 +46,7 @@
   "readyForDirectorAssembly": true,
   "directorMayAuthorMissingSections": false,
   "directorMayAuthorMissingReviews": false,
-  "formalProductionGate": "ARTBOOK_ASSEMBLED_AWAITING_OWNER_PRODUCTION_DECISION",
+  "formalProductionGate": "ARTBOOK_COMPLETED_AWAITING_OWNER_PRODUCTION_DECISION",
   "assembled": true,
   "assembledFile": "artbook-submissions/daechung-rpg/2026-09-08/artbook.json",
   "registeredArtbookId": "daechung-rpg-2026-09-08-initial",
@@ -59,5 +59,29 @@
     "planning"
   ],
   "secondWorkDueDate": "2026-09-09",
-  "assemblyAddsNewDepartmentClaims": false
+  "assemblyAddsNewDepartmentClaims": false,
+  "postprocessComplete": true,
+  "postprocessChecks": {
+    "version": 1,
+    "complete": true,
+    "checkedAt": "2026-09-08T06:27:23.543Z",
+    "requiredCuts": 10,
+    "cutCount": 10,
+    "cutsPerDepartment": {
+      "planning": 2,
+      "graphics": 2,
+      "development": 2,
+      "qa": 2,
+      "balance": 2
+    },
+    "formatChecked": true,
+    "emptyContentChecked": true,
+    "duplicateChecked": true,
+    "imagePathsChecked": true,
+    "newClaimsAdded": false,
+    "sourceMode": "DEPARTMENT_OWNED_MATERIAL_ONLY"
+  },
+  "cutCount": 10,
+  "requiredCuts": 10,
+  "completedArtbook": true
 }

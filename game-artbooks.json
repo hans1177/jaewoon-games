@@ -1,5 +1,5 @@
 {
-  "version": 8,
+  "version": 9,
   "updatedAt": "2026-09-08",
   "policy": {
     "purpose": "각 게임의 컨셉·스토리·캐릭터·몬스터·배경·구현·테스트·밸런스를 부서 협업으로 한 권의 아트북에 축적한다.",
@@ -33,8 +33,10 @@
       "date": "2026-09-08",
       "gameId": "daechung-rpg",
       "artbookId": "daechung-rpg-2026-09-08-initial",
-      "status": "draft-integrated-artbook",
-      "productionApproval": false
+      "status": "completed-artbook",
+      "productionApproval": false,
+      "cutCount": 10,
+      "postprocessComplete": true
     }
   ],
   "artbooks": [
@@ -45,7 +47,7 @@
       "edition": 1,
       "title": "대충 RPG · 통합 아트북",
       "subtitle": "판타지 세계 설정집 + 모험 연대기",
-      "status": "draft-integrated-artbook",
+      "status": "completed-artbook",
       "published": true,
       "homepageVisible": true,
       "productionApproval": false,
@@ -330,44 +332,127 @@
           "title": "Independent Artbook Review for 'DAECHUNG RPG' - Story & Region Causality",
           "body": "Independent Artbook Review for 'DAECHUNG RPG' - Story & Region Causality",
           "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/planning.svg",
-          "sourceDepartment": "planning"
+          "sourceDepartment": "planning",
+          "pageType": "department-overview",
+          "postprocessed": true
         },
         {
           "no": 2,
+          "kind": "planning",
+          "title": "기획 · 세부 정리",
+          "body": "Story & Region Causality",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/planning.svg",
+          "sourceDepartment": "planning",
+          "pageType": "department-detail",
+          "postprocessed": true
+        },
+        {
+          "no": 3,
           "kind": "graphics",
           "title": "대충 RPG 1차 독립 아트북 검토",
           "body": "대충 RPG 1차 독립 아트북 검토",
           "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/graphics.svg",
-          "sourceDepartment": "graphics"
+          "sourceDepartment": "graphics",
+          "pageType": "department-overview",
+          "postprocessed": true
         },
         {
-          "no": 3,
+          "no": 4,
+          "kind": "graphics",
+          "title": "그래픽 · 세부 정리",
+          "body": "world-section-structure",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/graphics.svg",
+          "sourceDepartment": "graphics",
+          "pageType": "department-detail",
+          "postprocessed": true
+        },
+        {
+          "no": 5,
           "kind": "development",
           "title": "RPG 개발 부서 1차 독립 검토",
           "body": "RPG 개발 부서 1차 독립 검토",
           "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/development.svg",
-          "sourceDepartment": "development"
+          "sourceDepartment": "development",
+          "pageType": "department-overview",
+          "postprocessed": true
         },
         {
-          "no": 4,
+          "no": 6,
+          "kind": "development",
+          "title": "개발 · 세부 정리",
+          "body": "실제 구현 구조",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/development.svg",
+          "sourceDepartment": "development",
+          "pageType": "department-detail",
+          "postprocessed": true
+        },
+        {
+          "no": 7,
           "kind": "qa",
           "title": "RPG QA Department 1st Independent Review",
           "body": "RPG QA Department 1st Independent Review",
           "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/qa.svg",
-          "sourceDepartment": "qa"
+          "sourceDepartment": "qa",
+          "pageType": "department-overview",
+          "postprocessed": true
         },
         {
-          "no": 5,
+          "no": 8,
+          "kind": "qa",
+          "title": "QA · 세부 정리",
+          "body": "story-telling & world-building",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/qa.svg",
+          "sourceDepartment": "qa",
+          "pageType": "department-detail",
+          "postprocessed": true
+        },
+        {
+          "no": 9,
           "kind": "balance",
           "title": "대충 RPG 밸런스 부서 1차 독립 검토",
           "body": "대충 RPG 밸런스 부서 1차 독립 검토",
           "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/balance.svg",
-          "sourceDepartment": "balance"
+          "sourceDepartment": "balance",
+          "pageType": "department-overview",
+          "postprocessed": true
+        },
+        {
+          "no": 10,
+          "kind": "balance",
+          "title": "밸런스 · 세부 정리",
+          "body": "level 1: 100 gold, 100 experience, base max hp 100",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/balance.svg",
+          "sourceDepartment": "balance",
+          "pageType": "department-detail",
+          "postprocessed": true
         }
       ],
       "feedback": {
         "issueNumber": 12,
         "issueUrl": "https://github.com/hans1177/jaewoon-games/issues/12"
+      },
+      "cutCount": 10,
+      "requiredCuts": 10,
+      "completionLabel": "완료",
+      "postprocess": {
+        "version": 1,
+        "complete": true,
+        "checkedAt": "2026-09-08T06:27:23.543Z",
+        "requiredCuts": 10,
+        "cutCount": 10,
+        "cutsPerDepartment": {
+          "planning": 2,
+          "graphics": 2,
+          "development": 2,
+          "qa": 2,
+          "balance": 2
+        },
+        "formatChecked": true,
+        "emptyContentChecked": true,
+        "duplicateChecked": true,
+        "imagePathsChecked": true,
+        "newClaimsAdded": false,
+        "sourceMode": "DEPARTMENT_OWNED_MATERIAL_ONLY"
       }
     }
   ],
