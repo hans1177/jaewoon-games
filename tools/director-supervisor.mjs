@@ -19,8 +19,11 @@ const queue=readJson('artbook-submission-queue.json',{});
 const company=readJson('company-status.json',{});
 const homepage=readJson('homepage-manager-status.json',null);
 const actionsPath=process.argv[2]||'';
+const jobsPath=process.argv[3]||'';
 const actions=actionsPath?readJson(actionsPath,{workflow_runs:[]}):{workflow_runs:[]};
+const jobsPacket=jobsPath?readJson(jobsPath,{jobs:[]}):{jobs:[]};
 const runs=Array.isArray(actions?.workflow_runs)?actions.workflow_runs:[];
+const jobs=Array.isArray(jobsPacket?.jobs)?jobsPacket.jobs:[];
 const date=kstDate();
 const activeGameId=queue.currentDailyTarget||'';
 const activeGame=(queue.games||[]).find(g=>g.gameId===activeGameId)||{};
@@ -39,16 +42,29 @@ function latestRun(nameFragment){
     .filter(r=>String(r.name||r.workflow_name||'').toLowerCase().includes(key))
     .sort((a,b)=>new Date(b.updated_at||b.created_at||0)-new Date(a.updated_at||a.created_at||0))[0]||null;
 }
+function latestRoleJob(role,run){
+  if(!run)return null;
+  return jobs
+    .filter(j=>Number(j.run_id)===Number(run.id)&&String(j.name||'').toLowerCase()===`round1 (${role})`)
+    .sort((a,b)=>new Date(b.completed_at||b.started_at||b.created_at||0)-new Date(a.completed_at||a.started_at||a.created_at||0))[0]||null;
+}
 function runEvidence(run){
   if(!run)return null;
   return {id:run.id||null,status:run.status||null,conclusion:run.conclusion||null,event:run.event||null,createdAt:run.created_at||null,updatedAt:run.updated_at||null,htmlUrl:run.html_url||null};
 }
+function jobEvidence(job){
+  if(!job)return null;
+  const failedStep=(job.steps||[]).find(s=>s.conclusion==='failure');
+  return {id:job.id||null,name:job.name||null,status:job.status||null,conclusion:job.conclusion||null,failedStep:failedStep?.name||null,startedAt:job.started_at||null,completedAt:job.completed_at||null,htmlUrl:job.html_url||null};
+}
 function classifyArtbookRole(role,run){
+  const roleJob=latestRoleJob(role,run);
   const evidence=[];
   const blockers=[];
   if(workOrderExists)evidence.push(`work-order:${workOrder}`);
   if(submitted.has(role))evidence.push(`queue-submission:${role}`);
   if(run)evidence.push(`workflow:${run.id}:${run.status}:${run.conclusion||'pending'}`);
+  if(roleJob)evidence.push(`job:${roleJob.id}:${roleJob.status}:${roleJob.conclusion||'pending'}`);
   if(!workOrderExists)blockers.push('NO_WORK_ORDER');
   if(evidenceAdapterMismatch)blockers.push('EVIDENCE_ADAPTER_MISMATCH');
 
@@ -57,16 +73,27 @@ function classifyArtbookRole(role,run){
   let action='fix operational blocker, then re-run department workflow';
   if(submitted.has(role)){
     status='DONE'; reason='department submission is recorded for the active daily target'; action='hold for collaboration/gate verification';
+  }else if(roleJob?.status==='in_progress'||roleJob?.status==='queued'){
+    status='WORKING'; reason='this department job is currently executing'; action='check department output after job completes';
+  }else if(roleJob?.conclusion==='failure'){
+    status='FAILED'; blockers.push('WORKFLOW_FAILED');
+    const failedStep=(roleJob.steps||[]).find(s=>s.conclusion==='failure')?.name;
+    reason=`this department job failed${failedStep?` at ${failedStep}`:''}`;
+    action='inspect this department job log, fix the direct cause, then retry';
+  }else if(roleJob?.conclusion==='success'&&run?.conclusion&&run.conclusion!=='success'){
+    status='BLOCKED'; blockers.push('DEPENDENCY_BLOCKED');
+    reason='this department completed its independent round, but the overall artbook workflow stopped because another department/downstream dependency failed';
+    action='preserve this successful department result and unblock the failed dependency';
+  }else if(roleJob?.conclusion==='success'&&run?.conclusion==='success'){
+    status='BLOCKED'; blockers.push('OUTPUT_MISSING'); reason='this department job succeeded but active queue has no recorded final submission'; action='inspect artifact/finalize/commit path';
   }else if(run?.status==='in_progress'||run?.status==='queued'){
-    status='WORKING'; reason='department workflow is currently executing'; action='check output after workflow completes';
-  }else if(run?.conclusion&&run.conclusion!=='success'&&workOrderExists){
-    status='FAILED'; blockers.push('WORKFLOW_FAILED'); reason=`workflow concluded ${run.conclusion}`; action='inspect workflow failure and retry after fix';
-  }else if(run?.conclusion==='success'&&workOrderExists){
-    status='BLOCKED'; blockers.push('OUTPUT_MISSING'); reason='workflow succeeded but active queue has no department submission'; action='inspect artifact/finalize/commit path';
+    status='WORKING'; reason='artbook workflow is active and this role job has not completed yet'; action='wait for role job evidence within the same workflow run';
   }else if(!workOrderExists){
     reason='active daily target has no matching work order, so department automation skips';
+  }else if(run?.conclusion&&run.conclusion!=='success'){
+    status='BLOCKED'; blockers.push('DEPENDENCY_BLOCKED'); reason='overall workflow failed before this department produced a conclusive job result'; action='inspect failed dependency and rerun';
   }
-  return {department:role,taskAssigned:true,status,task:`${activeGameId||'NO_TARGET'} daily artbook section`,executionEvidence:evidence,resultVerified:submitted.has(role),blockers:[...new Set(blockers)],reason,action};
+  return {department:role,taskAssigned:true,status,task:`${activeGameId||'NO_TARGET'} daily artbook section`,executionEvidence:evidence,resultVerified:submitted.has(role),jobEvidence:jobEvidence(roleJob),blockers:[...new Set(blockers)],reason,action};
 }
 
 const artbookRun=latestRun('Free Artbook Department Bots');
@@ -106,7 +133,7 @@ for(const item of Object.values(staff))counts[item.status]=(counts[item.status]|
 const blocked=Object.values(staff).filter(x=>['BLOCKED','FAILED','STALE'].includes(x.status));
 
 const report={
-  version:1,
+  version:2,
   dateKst:date,
   directorRole:'staff-supervisor-not-substitute-worker',
   activeDailyTarget:activeGameId||null,
@@ -115,6 +142,7 @@ const report={
     activeWorkOrder:workOrderExists?workOrder:null,
     activeWorkOrderExists:workOrderExists,
     evidenceAdapterMismatch,
+    jobLevelEvidenceUsed:jobs.length>0,
     runningLabelAloneCountsAsWork:false,
     directorMayGhostwriteMissingDepartmentWork:false
   },
@@ -129,6 +157,7 @@ const report={
   staff,
   policy:{
     findWhyWorkStopped:true,
+    distinguishIndividualFailureFromBlockedPeers:true,
     falseRunningForbidden:true,
     idleWithoutTaskIsNotFailure:true,
     fixLowRiskOperationalBlockers:true,
@@ -141,6 +170,7 @@ fs.writeFileSync('director-supervision-status.json',JSON.stringify(report,null,2
 console.log(`STAFF_CHECK=${allDepartments.length}/${allDepartments.length}`);
 console.log(`DIRECTOR_ATTENTION=${report.attentionRequired?'YES':'NO'}`);
 console.log(`ACTIVE_WORK_ORDER=${workOrderExists?'FOUND':'MISSING'}`);
+console.log(`JOB_LEVEL_EVIDENCE=${jobs.length?'YES':'NO'}`);
 console.log(`EVIDENCE_ADAPTER_MISMATCH=${evidenceAdapterMismatch?'YES':'NO'}`);
 for(const [k,v] of Object.entries(counts))console.log(`STAFF_${k}=${v}`);
 for(const finding of report.primaryFindings)console.log(`DIRECTOR_FINDING=${finding}`);
