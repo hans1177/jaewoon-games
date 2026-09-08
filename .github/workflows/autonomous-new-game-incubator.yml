@@ -23,6 +23,8 @@ concurrency:
 
 env:
   INCUBATOR_LOCAL_MODEL: qwen3:0.6b
+  INCUBATOR_MODEL_MAX_PREDICT: '1536'
+  INCUBATOR_MODEL_TIMEOUT_MS: '240000'
   OLLAMA_HOST: 127.0.0.1:11434
 
 jobs:
@@ -101,6 +103,8 @@ jobs:
           ollama pull "$INCUBATOR_LOCAL_MODEL"
           echo 'PAID_API=NO'
           echo 'MODEL_CALLS_MAX_THIS_RUN=1'
+          echo "MODEL_MAX_PREDICT=$INCUBATOR_MODEL_MAX_PREDICT"
+          echo "MODEL_TIMEOUT_MS=$INCUBATOR_MODEL_TIMEOUT_MS"
       - name: Advance operational incubator
         if: steps.mode.outputs.has_active == 'true' || steps.mode.outputs.need_model == 'true'
         env:
