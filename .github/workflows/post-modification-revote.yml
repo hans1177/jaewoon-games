@@ -1,0 +1,209 @@
+name: Post Modification Department Revote
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.company-revote-requests/*.json'
+  workflow_dispatch:
+    inputs:
+      request_file:
+        description: 'Tracked .company-revote-requests/*.json request file'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: post-modification-department-revote
+  cancel-in-progress: false
+
+env:
+  ARTBOOK_LOCAL_MODEL: qwen3:0.6b
+  OLLAMA_HOST: 127.0.0.1:11434
+
+jobs:
+  context:
+    runs-on: ubuntu-latest
+    outputs:
+      request_file: ${{ steps.request.outputs.request_file }}
+      game_id: ${{ steps.request.outputs.game_id }}
+      request_id: ${{ steps.request.outputs.request_id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Resolve review request
+        id: request
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ '${{ github.event_name }}' == 'workflow_dispatch' ]]; then
+            file='${{ inputs.request_file }}'
+          else
+            before='${{ github.event.before }}'
+            if [[ -n "$before" && ! "$before" =~ ^0+$ ]]; then
+              mapfile -t files < <(git diff --name-only "$before" "$GITHUB_SHA" -- '.company-revote-requests/*.json')
+            else
+              mapfile -t files < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" -- '.company-revote-requests/*.json')
+            fi
+            [[ ${#files[@]} -eq 1 ]] || { echo "Exactly one revote request must change. Found ${#files[@]}" >&2; exit 1; }
+            file="${files[0]}"
+          fi
+          python3 - "$file" "$GITHUB_OUTPUT" <<'PY'
+          import json,re,sys,pathlib
+          file,out=sys.argv[1:]
+          if not re.fullmatch(r'\.company-revote-requests/[A-Za-z0-9._-]+\.json',file): raise SystemExit('invalid request path')
+          p=pathlib.Path(file)
+          if not p.is_file(): raise SystemExit('request missing')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          if d.get('version')!=1: raise SystemExit('unsupported request version')
+          game=str(d.get('gameId','')).strip(); rid=str(d.get('requestId','')).strip()
+          if not re.fullmatch(r'[a-z0-9][a-z0-9-]{1,48}',game): raise SystemExit('invalid gameId')
+          if not re.fullmatch(r'[A-Za-z0-9._-]{3,96}',rid): raise SystemExit('invalid requestId')
+          if not pathlib.Path(f'unity-games/{game}').is_dir(): raise SystemExit('Unity project missing')
+          with open(out,'a',encoding='utf-8') as f:
+            f.write(f'request_file={file}\n'); f.write(f'game_id={game}\n'); f.write(f'request_id={rid}\n')
+          PY
+
+  departments:
+    needs: context
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [planning, development, qa, graphics, balance]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install local Ollama
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0
+            sleep 2
+          done
+          cat /tmp/ollama.log || true
+          exit 1
+      - name: Pull free local model
+        run: ollama pull "$ARTBOOK_LOCAL_MODEL"
+      - name: Independent department reevaluation
+        env:
+          REVIEW_ROLE: ${{ matrix.role }}
+          REVIEW_REQUEST_FILE: ${{ needs.context.outputs.request_file }}
+          REVIEW_OUTPUT_ROOT: .company-revote-output
+        run: node tools/company-post-modification-review.mjs
+      - name: Upload department vote
+        uses: actions/upload-artifact@v4
+        with:
+          name: post-modification-${{ matrix.role }}
+          path: .company-revote-output/${{ matrix.role }}.json
+          retention-days: 3
+          if-no-files-found: error
+
+  director:
+    needs: [context, departments]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore five independent department votes
+        uses: actions/download-artifact@v4
+        with:
+          pattern: post-modification-*
+          path: .company-revote-output
+          merge-multiple: true
+      - name: Verify 5 department votes
+        shell: bash
+        run: |
+          set -euo pipefail
+          for role in planning development qa graphics balance; do test -s ".company-revote-output/$role.json"; done
+          echo 'DEPARTMENT_REVOTES=5/5'
+      - name: Install local Ollama
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0
+            sleep 2
+          done
+          cat /tmp/ollama.log || true
+          exit 1
+      - name: Pull free local model
+        run: ollama pull "$ARTBOOK_LOCAL_MODEL"
+      - name: Director final revote
+        env:
+          REVIEW_ROLE: director
+          REVIEW_REQUEST_FILE: ${{ needs.context.outputs.request_file }}
+          REVIEW_OUTPUT_ROOT: .company-revote-output
+        run: node tools/company-post-modification-review.mjs
+      - name: Upload director vote
+        uses: actions/upload-artifact@v4
+        with:
+          name: post-modification-director
+          path: .company-revote-output/director.json
+          retention-days: 3
+          if-no-files-found: error
+
+  finalize:
+    needs: [context, departments, director]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Restore all votes
+        uses: actions/download-artifact@v4
+        with:
+          pattern: post-modification-*
+          path: .company-revote-output
+          merge-multiple: true
+      - name: Persist revote and status pointer
+        env:
+          REQUEST_FILE: ${{ needs.context.outputs.request_file }}
+          GAME_ID: ${{ needs.context.outputs.game_id }}
+          REQUEST_ID: ${{ needs.context.outputs.request_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for role in planning development qa graphics balance director; do test -s ".company-revote-output/$role.json"; done
+          dest="company-revotes/$GAME_ID/$REQUEST_ID"
+          mkdir -p "$dest"
+          cp .company-revote-output/*.json "$dest/"
+          python3 - <<'PY'
+          import json,os,pathlib,datetime
+          game=os.environ['GAME_ID']; rid=os.environ['REQUEST_ID']; req_path=os.environ['REQUEST_FILE']
+          director=json.loads(pathlib.Path(f'company-revotes/{game}/{rid}/director.json').read_text(encoding='utf-8'))
+          req=json.loads(pathlib.Path(req_path).read_text(encoding='utf-8'))
+          p=pathlib.Path('company-status.json'); data=json.loads(p.read_text(encoding='utf-8'))
+          item={
+            'requestId':rid,'gameId':game,'status':'completed','decision':director.get('decision','REVISE'),'score':director.get('score',0),
+            'modificationCommit':req.get('modificationCommit',''),'buildRunId':req.get('buildRunId'),'buildConclusion':req.get('buildConclusion','unknown'),
+            'resultPath':f'company-revotes/{game}/{rid}/director.json','completedAt':datetime.datetime.now(datetime.timezone.utc).isoformat()
+          }
+          history=[x for x in data.get('postModificationReviews',[]) if x.get('requestId')!=rid]
+          history.append(item); data['postModificationReviews']=history[-20:]
+          for project in data.get('projects',[]):
+            if project.get('gameId')==game: project['latestPostModificationReview']=item
+          data['updatedAt']=datetime.datetime.now(datetime.timezone.utc).date().isoformat()
+          p.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          PY
+          echo 'POST_MODIFICATION_REVOTE=5_DEPARTMENTS_PLUS_DIRECTOR'
+      - name: Commit verified revote
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-company-revote'
+          git config user.email 'actions@users.noreply.github.com'
+          git add company-revotes company-status.json
+          git commit -m "company: record ${{ needs.context.outputs.game_id }} post-modification revote"
+          git pull --rebase origin main
+          git push origin main
