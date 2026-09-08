@@ -1,6 +1,6 @@
 // 파일명: assets/asset-selector.js
 // 역할: 자연어 요구에서 필요한 에셋 종류를 판별하고 실제 게임 객체에 적용할 매핑 계획을 생성
-// 규칙: 기존 저장소 우선, 라이선스 불명/NC 차단, 캐릭터/적/보스는 검증된 실제 애니메이션 에셋 필수
+// 규칙: 기존 저장소 우선, 라이선스 불명/NC 차단, 캐릭터/적/보스는 검증 애니메이션 또는 Motion Engine 증거 필수
 
 const TYPES = Object.freeze({
   character: ['주인공', '캐릭터', '영웅', '플레이어', '기사', '궁수', '사마귀'],
@@ -27,7 +27,7 @@ function unique(values) { return [...new Set(values.filter(Boolean))]; }
 function hasAny(source, words) { const value = text(source).toLowerCase(); return words.some((word) => value.includes(String(word).toLowerCase())); }
 function declaredTypes(asset) { return Array.isArray(asset?.types) ? asset.types.map((value) => text(value).toLowerCase()) : []; }
 
-function actorHasAnimation(asset) {
+function actorHasFrameAnimation(asset) {
   const animations = Array.isArray(asset?.animations) ? asset.animations.map((value) => text(value).toLowerCase()) : [];
   const states = Array.isArray(asset?.states) ? asset.states.map((value) => text(value).toLowerCase()) : [];
   const evidence = Array.isArray(asset?.animationEvidence) ? asset.animationEvidence.filter(Boolean) : [];
@@ -36,6 +36,20 @@ function actorHasAnimation(asset) {
   const hasAnimationResource = motion.length > 0 || evidence.length > 0;
   const hasLocomotion = LOCOMOTION_STATES.some((state) => motion.includes(state));
   return verified && hasAnimationResource && hasLocomotion;
+}
+
+function actorHasMotionEngineEvidence(asset) {
+  const evidence = Array.isArray(asset?.motionEvidence) ? asset.motionEvidence.map(text).filter(Boolean) : [];
+  const required = ['motion-engine-profile', 'runtime-motion-evidence', 'mobile-performance-pass'];
+  return asset?.motionEngineEligible === true
+    && text(asset?.motionEnginePath || 'assets/jaewoon-motion-engine.js').includes('jaewoon-motion-engine')
+    && required.every((item) => evidence.includes(item));
+}
+
+function actorMotionMode(asset) {
+  if (actorHasFrameAnimation(asset)) return 'frame-animation';
+  if (actorHasMotionEngineEvidence(asset)) return 'motion-engine';
+  return null;
 }
 
 function findCandidates(type, candidates) {
@@ -48,7 +62,7 @@ function findCandidates(type, candidates) {
     if (ACTOR_TYPES.includes(type)) {
       if (asset?.blockedForActorUse === true) return false;
       if (hasAny(descriptor, BLOCKED_ACTOR_VISUAL_WORDS)) return false;
-      if (!actorHasAnimation(asset)) return false;
+      if (!actorMotionMode(asset)) return false;
     }
 
     return true;
@@ -59,7 +73,8 @@ function findCandidates(type, candidates) {
     license:text(asset.license),
     source:text(asset.source),
     downloaded:asset?.downloaded !== false,
-    animated:ACTOR_TYPES.includes(type) ? true : Boolean(asset?.verifiedAnimation),
+    animated:ACTOR_TYPES.includes(type) ? Boolean(actorMotionMode(asset)) : Boolean(asset?.verifiedAnimation),
+    motionMode:ACTOR_TYPES.includes(type) ? actorMotionMode(asset) : null,
   }));
 }
 
@@ -73,17 +88,11 @@ function choosePrototypePreset(request, presetCatalog) {
     const keywords = Array.isArray(preset?.keywords) ? preset.keywords : [];
     const score = keywords.reduce((sum, keyword) => sum + (source.includes(text(keyword).toLowerCase()) ? 1 : 0), 0);
     const adjusted = score + (preset?.default === true ? 0.01 : 0);
-    if (adjusted > bestScore) {
-      best = preset;
-      bestScore = adjusted;
-    }
+    if (adjusted > bestScore) { best = preset; bestScore = adjusted; }
   }
   return best ? Object.freeze({
-    id:text(best.id),
-    name:text(best.name),
-    actorAssets:Object.freeze([...(best.actorAssets || [])]),
-    effectAssets:Object.freeze([...(best.effectAssets || [])]),
-    supportingSourcePriority:Object.freeze([...(best.supportingSourcePriority || [])]),
+    id:text(best.id), name:text(best.name), actorAssets:Object.freeze([...(best.actorAssets || [])]),
+    effectAssets:Object.freeze([...(best.effectAssets || [])]), supportingSourcePriority:Object.freeze([...(best.supportingSourcePriority || [])]),
   }) : null;
 }
 
@@ -96,7 +105,6 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
   const request = text(prompt);
   if (!request) throw new Error('asset request required');
   const requestedTypes = Object.entries(TYPES).filter(([, words]) => hasAny(request, words)).map(([type]) => type);
-  // 바이브2 기본값: 새 게임/수정 모두 전체 시각 에셋을 요구한다.
   const types = unique([...REQUIRED_VISUAL_TYPES, ...requestedTypes]);
   const assets = Array.isArray(manifest?.assets) ? manifest.assets : [];
   const candidates = assets.filter((asset) => {
@@ -117,7 +125,7 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     replaceable:true,
   }));
   return Object.freeze({
-    version:6,
+    version:7,
     request,
     rebuild:Boolean(rebuild),
     prototypePreset,
@@ -132,7 +140,9 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
       locomotionStates:[...LOCOMOTION_STATES],
       states:[...DEFAULT_MOTION_STATES],
       stateDriven:true,
-      staticActorAllowed:false,
+      rawStaticActorAllowed:false,
+      staticActorAllowedWithMotionEngine:true,
+      motionEnginePath:'assets/jaewoon-motion-engine.js',
       replaceableWithoutGameplayRewrite:true,
     }),
     policy:Object.freeze({
@@ -142,11 +152,13 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
       blockedActorVisualWords:[...BLOCKED_ACTOR_VISUAL_WORDS],
       requireLicenseRecord:true,
       requireRealAssets:true,
-      requireVerifiedAnimation:true,
+      requireVerifiedAnimationOrMotionEngine:true,
       requireAnimatedCharacter:true,
       requireAnimatedEnemy:true,
       requireAnimatedBoss:true,
-      allowStaticActor:false,
+      allowRawStaticActor:false,
+      allowStaticActorWithMotionEngine:true,
+      motionEngineEvidenceRequired:['motion-engine-profile','runtime-motion-evidence','mobile-performance-pass'],
       allowProceduralPlaceholder:false,
       allowEmojiPlaceholder:false,
       allowGeometricPlaceholder:false,
@@ -156,18 +168,18 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     }),
     steps:Object.freeze([
       '초안 장르에 맞는 prototype-asset-presets 프리셋 자동 선택',
-      '기존 저장소 에셋 확인',
-      '캐릭터/적/보스는 실제 애니메이션 프레임 또는 스프라이트시트와 이동 모션 보유 여부 확인',
-      '정지 캐릭터/정지 몬스터/원형·구체·도형 대체 모델 후보 제거',
+      '기존 저장소 에셋 확인 후 KEEP/ENHANCE/COMBINE/REPLACE 분류',
+      '캐릭터/적/보스는 실제 프레임 애니메이션 또는 Motion Engine 실행 증거 확인',
+      '정지 원본은 Motion Engine 프로필·런타임 증거·모바일 성능 통과 없이는 배우 후보에서 제외',
       '프리셋의 검증 배우 에셋을 우선 적용하고 미다운로드 에셋은 최초 사용 시 확보·캐시',
       '캐릭터/적/NPC/배경/지형/사물/자원/건물/UI/VFX 목록 작성',
-      '누락 에셋은 승인 소스에서 라이선스 확인 후 확보',
-      'LICENSES.md 기록',
+      '누락 에셋은 승인 소스에서 상업/수정 라이선스 확인 후 확보',
+      'LICENSES/에셋 장부에 출처·제작자·라이선스·수정 여부 기록',
       '모든 월드 객체를 실제 이미지/스프라이트/타일 에셋에 연결',
-      '캐릭터/적/보스 애니메이션 상태를 실제 모션 리소스에 연결',
+      '프레임 에셋은 animation-state, 정지/보조 모션은 Jaewoon Motion Engine에 연결',
       '도형/이모지/단색 임시 그래픽 잔존 여부 검사',
-      '에셋과 게임 로직 분리 확인',
-      '모바일 화면/성능 확인',
+      '에셋/모션과 authoritative 게임 로직 분리 확인',
+      '모바일 화면/성능/reduced-motion 확인',
     ]),
   });
 }
