@@ -11,9 +11,12 @@ on:
       - 'tools/company-bridge-export.mjs'
       - 'qa/company-bridge-export.test.mjs'
       - '.github/workflows/company-bridge-export.yml'
+  workflow_run:
+    workflows: ['Autonomous Candidate Promotion']
+    types: [completed]
   workflow_dispatch:
   schedule:
-    - cron: '30 12 * * *' # 21:30 KST
+    - cron: '30 12 * * *' # 21:30 KST safety refresh
 
 permissions:
   contents: write
@@ -24,6 +27,7 @@ concurrency:
 
 jobs:
   export:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
