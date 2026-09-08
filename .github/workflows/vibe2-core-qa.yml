@@ -18,11 +18,13 @@ on:
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-queue-control.mjs'
       - 'tools/vibe2-candidate-reconcile.mjs'
+      - 'tools/vibe2-experience-control.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
       - 'qa/vibe2-source-worker.test.mjs'
       - 'qa/vibe2-queue-control.test.mjs'
       - 'qa/vibe2-controller-contract.test.mjs'
       - 'qa/vibe2-candidate-reconcile.test.mjs'
+      - 'qa/vibe2-experience-control.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-unity-candidate-result.yml'
       - '.github/workflows/vibe2-core-qa.yml'
@@ -58,11 +60,13 @@ jobs:
           node --check tools/vibe2-source-worker.mjs
           node --check tools/vibe2-queue-control.mjs
           node --check tools/vibe2-candidate-reconcile.mjs
+          node --check tools/vibe2-experience-control.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-source-worker.test.mjs
           node --check qa/vibe2-queue-control.test.mjs
           node --check qa/vibe2-controller-contract.test.mjs
           node --check qa/vibe2-candidate-reconcile.test.mjs
+          node --check qa/vibe2-experience-control.test.mjs
 
       - name: Vibe2 core tests
         run: |
@@ -71,3 +75,4 @@ jobs:
           node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-controller-contract.test.mjs
           node --test qa/vibe2-candidate-reconcile.test.mjs
+          node --test qa/vibe2-experience-control.test.mjs
