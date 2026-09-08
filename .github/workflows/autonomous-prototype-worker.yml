@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: autonomous-prototype-worker
+  group: autonomous-dev-writer
   cancel-in-progress: false
 
 env:
