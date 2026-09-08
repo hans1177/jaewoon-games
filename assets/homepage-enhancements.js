@@ -37,19 +37,17 @@ function applyVerifiedRollback(catalog,baselines){
   });
 }
 
-function addCompletedArtbookButton(catalog,artbooks){
-  const completed=(artbooks?.artbooks||[])
-    .filter(book=>book?.gameId==='daechung-rpg'&&book?.status==='completed-artbook'&&book?.published===true&&book?.homepageVisible===true&&(Number(book?.cutCount)===10||book?.cuts?.length===10))
-    .sort((a,b)=>(Number(b.edition)||0)-(Number(a.edition)||0))[0];
-  if(!completed)return;
+function addDaechungArtbookButton(catalog){
   const byName=new Map((catalog?.games||[]).map(g=>[g.name,g]));
   document.querySelectorAll('#gameGrid .gameCard').forEach(card=>{
     const name=card.querySelector('.artName b')?.textContent?.trim();
-    const meta=byName.get(name);if(meta?.id!==completed.gameId)return;
-    const actions=card.querySelector('.cardActions');if(!actions||actions.querySelector('.artbookCardBtn'))return;
+    const meta=byName.get(name);
+    if(meta?.id!=='daechung-rpg'&&name!=='대충 RPG')return;
+    const actions=card.querySelector('.cardActions');
+    if(!actions||actions.querySelector('.artbookCardBtn'))return;
     const link=document.createElement('a');
     link.className='cardBtn artbookCardBtn';
-    link.href=`/artbook.html?id=${encodeURIComponent(completed.id)}`;
+    link.href='/artbook.html?game=daechung-rpg';
     link.textContent='아트북 보기';
     actions.classList.add('hasArtbook');
     actions.appendChild(link);
@@ -58,9 +56,13 @@ function addCompletedArtbookButton(catalog,artbooks){
 
 async function main(){
   installStyles();removeLegacyRuntimeBadges();
-  const [catalog,baselines,artbooks]=await Promise.all([getJson('/game-catalog.json'),getJson('/public-release-baselines.json'),getJson('/game-artbooks.json')]);
-  let rounds=0;
-  const refresh=()=>{removeLegacyRuntimeBadges();applyVerifiedRollback(catalog,baselines);addCompletedArtbookButton(catalog,artbooks);if(++rounds>20)clearInterval(timer);};
-  const timer=setInterval(refresh,300);refresh();
+  const [catalog,baselines]=await Promise.all([getJson('/game-catalog.json'),getJson('/public-release-baselines.json')]);
+  const refresh=()=>{removeLegacyRuntimeBadges();applyVerifiedRollback(catalog,baselines);addDaechungArtbookButton(catalog);};
+  refresh();
+  const grid=document.getElementById('gameGrid');
+  if(grid){
+    const observer=new MutationObserver(()=>refresh());
+    observer.observe(grid,{childList:true});
+  }
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',main,{once:true});else main();
