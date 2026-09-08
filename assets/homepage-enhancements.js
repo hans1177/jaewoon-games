@@ -77,8 +77,9 @@ function installStyles(){
 .teamOwner img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:12px;background:#dceefa}
 .teamOwner h3{margin:0 0 4px;font-family:inherit!important;font-weight:900;font-size:20px}
 .teamOwner p{margin:0;font-size:11px;line-height:1.5;color:#d5e7f1;font-weight:700}
-.teamSocials{margin-top:8px;padding-top:8px;border-top:1px solid #ffffff30;display:flex;gap:6px;flex-wrap:wrap}
-.teamSocial{display:inline-flex;align-items:center;min-height:28px;padding:0 9px;border-radius:999px;font-size:9px;font-weight:900;white-space:nowrap}
+.teamSocials{margin-top:8px;padding-top:8px;border-top:1px solid #ffffff30;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:100%}
+.teamSocial{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:30px;padding:0 10px;border-radius:999px;font-size:9px;font-weight:900;white-space:nowrap}
+.teamSocialIcon{width:14px;height:14px;display:block;flex:0 0 auto}
 .teamSocial.instagram{background:linear-gradient(120deg,#7b3ff2,#df3d8d,#f59a3d);color:#fff}
 .teamSocial.kakao{background:#fee500;color:#261f00}
 .aiTeamGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
@@ -227,7 +228,10 @@ function buildTeam(){
         <div>
           <h3>Developer 한재운</h3>
           <p>재운게임즈의 게임 방향과 핵심 결정을 담당하고 AI 개발진과 함께 제작.</p>
-          <div class="teamSocials" aria-label="소셜 채널"><span class="teamSocial instagram" data-social="instagram">인스타그램</span><span class="teamSocial kakao" data-social="kakao">카카오톡</span></div>
+          <div class="teamSocials" aria-label="소셜 채널">
+            <span class="teamSocial instagram" data-social="instagram"><svg class="teamSocialIcon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.3" fill="currentColor"/></svg><span>인스타그램</span></span>
+            <span class="teamSocial kakao" data-social="kakao"><svg class="teamSocialIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4C6.48 4 2 7.36 2 11.5c0 2.67 1.86 5.02 4.66 6.35L5.5 21l4.09-2.19c.78.13 1.58.19 2.41.19 5.52 0 10-3.36 10-7.5S17.52 4 12 4Z" fill="currentColor"/></svg><span>카카오톡</span></span>
+          </div>
         </div>
       </div>
       <div class="aiTeamGrid">
