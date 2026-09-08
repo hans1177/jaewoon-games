@@ -1,0 +1,55 @@
+<!-- 파일명: assets/ai-team-avatars.svg -->
+<!-- 역할: 홈페이지 개발팀 AI 프로필용 자체 제작 로봇 아바타 스프라이트. 외부 이미지 의존성 없음. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+  <defs>
+    <style>
+      .face{stroke:#163e59;stroke-width:3;stroke-linejoin:round}.eye{fill:#163e59}.shine{fill:#fff;opacity:.88}.line{fill:none;stroke:#163e59;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+    </style>
+  </defs>
+  <symbol id="loop" viewBox="0 0 96 96">
+    <rect width="96" height="96" rx="22" fill="#fff0d6"/><circle cx="74" cy="20" r="11" fill="#ffd06a"/>
+    <path class="face" fill="#ffe2a7" d="M24 36c0-14 10-23 24-23s24 9 24 23v28c0 13-10 22-24 22S24 77 24 64V36Z"/>
+    <path class="line" d="M35 30c8-7 18-7 26 0"/><circle class="eye" cx="39" cy="49" r="4"/><circle class="eye" cx="57" cy="49" r="4"/>
+    <circle class="shine" cx="40" cy="48" r="1.5"/><circle class="shine" cx="58" cy="48" r="1.5"/><path class="line" d="M39 67c6 4 12 4 18 0"/>
+    <circle class="line" cx="39" cy="49" r="9"/><circle class="line" cx="57" cy="49" r="9"/><path class="line" d="M48 49h0"/>
+  </symbol>
+  <symbol id="core" viewBox="0 0 96 96">
+    <rect width="96" height="96" rx="22" fill="#e5f4ff"/><circle cx="76" cy="21" r="10" fill="#80cbff"/>
+    <rect class="face" x="23" y="23" width="50" height="58" rx="17" fill="#b9ddff"/><path class="line" d="M32 40c3-12 9-17 16-17s13 5 16 17"/>
+    <circle class="eye" cx="39" cy="51" r="4"/><circle class="eye" cx="57" cy="51" r="4"/><circle class="shine" cx="40" cy="50" r="1.4"/><circle class="shine" cx="58" cy="50" r="1.4"/>
+    <path class="line" d="M38 67h20"/><path class="line" d="M19 48c0-13 4-23 12-29M77 48c0-13-4-23-12-29"/><rect class="face" x="15" y="46" width="10" height="19" rx="5" fill="#5b92c5"/><rect class="face" x="71" y="46" width="10" height="19" rx="5" fill="#5b92c5"/>
+  </symbol>
+  <symbol id="check" viewBox="0 0 96 96">
+    <rect width="96" height="96" rx="22" fill="#edf7ff"/><circle cx="75" cy="20" r="10" fill="#bddfff"/>
+    <path class="face" fill="#d9ebf8" d="M22 36c0-13 10-22 26-22s26 9 26 22v28c0 13-11 22-26 22S22 77 22 64V36Z"/>
+    <rect class="line" x="29" y="43" width="16" height="13" rx="4"/><rect class="line" x="51" y="43" width="16" height="13" rx="4"/><path class="line" d="M45 49h6"/>
+    <circle class="eye" cx="37" cy="50" r="2.8"/><circle class="eye" cx="59" cy="50" r="2.8"/><path class="line" d="M40 68l5 5 12-14"/>
+  </symbol>
+  <symbol id="pixel" viewBox="0 0 96 96">
+    <rect width="96" height="96" rx="22" fill="#fff0f6"/><circle cx="75" cy="20" r="10" fill="#ff9cc2"/>
+    <rect class="face" x="22" y="28" width="52" height="55" rx="18" fill="#ffd3e3"/><path d="M27 30c6-15 18-20 34-15 8 2 13 7 15 15-17-6-33-6-49 0Z" fill="#8754b5"/><circle cx="32" cy="23" r="6" fill="#8754b5"/>
+    <circle class="eye" cx="39" cy="51" r="4"/><circle class="eye" cx="57" cy="51" r="4"/><circle class="shine" cx="40" cy="50" r="1.4"/><circle class="shine" cx="58" cy="50" r="1.4"/><path class="line" d="M38 67c7 6 13 6 20 0"/>
+    <path d="M68 65l8 5-8 5Z" fill="#ff6da6"/>
+  </symbol>
+  <symbol id="scale" viewBox="0 0 96 96">
+    <rect width="96" height="96" rx="22" fill="#eff9e9"/><circle cx="76" cy="20" r="10" fill="#b8e67f"/>
+    <rect class="face" x="23" y="29" width="50" height="53" rx="17" fill="#d7efbd"/><path d="M24 35c4-15 14-22 28-22 13 0 22 6 26 17-16-2-32 0-54 5Z" fill="#34754d"/><path d="M60 27c11 0 18 4 22 10-13 1-22-1-31-5Z" fill="#2b6642"/>
+    <circle class="eye" cx="39" cy="52" r="4"/><circle class="eye" cx="57" cy="52" r="4"/><path class="line" d="M36 68h24"/><path class="line" d="M48 36v-7"/>
+  </symbol>
+  <symbol id="holmes" viewBox="0 0 96 96">
+    <rect width="96" height="96" rx="22" fill="#eef7fd"/><circle cx="76" cy="20" r="10" fill="#9fcef5"/>
+    <rect class="face" x="22" y="27" width="52" height="56" rx="16" fill="#cee3f1"/><rect class="line" x="28" y="42" width="18" height="14" rx="2"/><rect class="line" x="50" y="42" width="18" height="14" rx="2"/><path class="line" d="M46 49h4"/>
+    <circle class="eye" cx="37" cy="49" r="3"/><circle class="eye" cx="59" cy="49" r="3"/><path class="line" d="M37 69h22"/><path class="line" d="M32 25c7-10 25-11 33 0"/>
+  </symbol>
+  <symbol id="jay" viewBox="0 0 96 96">
+    <rect width="96" height="96" rx="22" fill="#eef2ff"/><circle cx="75" cy="20" r="10" fill="#9fb6ff"/>
+    <path class="face" fill="#ccd6ff" d="M23 36c0-14 10-23 25-23s25 9 25 23v28c0 13-10 22-25 22S23 77 23 64V36Z"/><path d="M26 35c6-17 15-22 26-22 11 0 19 5 24 18-18-3-34-2-50 4Z" fill="#46517a"/>
+    <circle class="eye" cx="39" cy="51" r="4"/><circle class="eye" cx="57" cy="51" r="4"/><path class="line" d="M38 67h20"/><path d="M43 82h10l5 12H38Z" fill="#355080"/>
+  </symbol>
+  <symbol id="team" viewBox="0 0 96 96">
+    <rect width="96" height="96" rx="22" fill="#eff8ff"/><circle cx="76" cy="20" r="10" fill="#f1c96c"/>
+    <circle class="face" cx="36" cy="48" r="20" fill="#c9e2f3"/><circle class="face" cx="61" cy="48" r="20" fill="#dcecff"/>
+    <circle class="eye" cx="31" cy="48" r="3"/><circle class="eye" cx="41" cy="48" r="3"/><circle class="eye" cx="56" cy="48" r="3"/><circle class="eye" cx="66" cy="48" r="3"/>
+    <path class="line" d="M31 60h10M56 60h10"/><path class="line" d="M20 84c3-13 11-19 24-19M76 84c-3-13-11-19-24-19"/>
+  </symbol>
+</svg>
