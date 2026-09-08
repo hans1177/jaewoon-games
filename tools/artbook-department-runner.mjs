@@ -47,6 +47,27 @@ const queue=readJson('artbook-submission-queue.json',{}),gameId=clean(process.en
 if(!gameId)throw new Error('currentDailyTarget is empty');
 const workOrderPath=`artbook-work-orders/${date}-${gameId}.json`;
 if(!fs.existsSync(workOrderPath)){console.log(`ARTBOOK_DEPARTMENT_SKIP=${role}:no-work-order:${workOrderPath}`);process.exit(0);}
+
+// 시각 재디자인은 이미 검증된 자기 부서 근거를 다시 창작하지 않는다.
+// 같은 게임/날짜/부서의 정상 SUBMITTED 결과가 있으면 그대로 보존하고 다음 단계의 시각 페이지 직원에게 넘긴다.
+const reusableOutput=path.join('artbook-submissions',gameId,date,`${role}.json`);
+const reusable=readJson(reusableOutput,null);
+const reusableDepartment=clean(reusable?.department||reusable?.role);
+const reusableValid=Boolean(
+  reusable&&typeof reusable==='object'&&!Array.isArray(reusable)&&
+  clean(reusable.gameId)===gameId&&clean(reusable.date)===date&&reusableDepartment===role&&
+  clean(reusable.status).toUpperCase()==='SUBMITTED'&&
+  Array.isArray(reusable.evidence)&&reusable.evidence.length>0&&
+  reusable.section&&typeof reusable.section==='object'&&!Array.isArray(reusable.section)&&Object.keys(reusable.section).length>0
+);
+if(reusableValid){
+  console.log(`ARTBOOK_BASE_REUSE=${role}:YES`);
+  console.log(`ARTBOOK_DEPARTMENT_FILE=${reusableOutput}`);
+  console.log('ARTBOOK_BASE_REWRITE=NO');
+  process.exit(0);
+}
+console.log(`ARTBOOK_BASE_REUSE=${role}:NO`);
+
 const workOrder=readJson(workOrderPath,{}),game=(queue.games||[]).find(x=>x.gameId===gameId)||{},styles=readJson('artbook-style-profiles.json',{games:{}}),style=styles.games?.[gameId]||{};
 const health=readJson('public-game-health.json',{games:[]}),assetHealth=readJson('asset-health.json',{assets:[]}),gameHealth=(health.games||[]).find(x=>x.gameId===gameId)||null;
 const unityRoot=`unity-games/${gameId}`,webRoot=`web-games/${gameId}`;
