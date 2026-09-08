@@ -69,10 +69,13 @@ jobs:
           version_path = pathlib.Path(project) / 'ProjectSettings' / 'ProjectVersion.txt'
           if not version_path.is_file():
               raise SystemExit(f'not a Unity project: {project}')
-          m = re.search(r'm_EditorVersion:\s*([^\s]+)', version_path.read_text(encoding='utf-8'))
-          if not m:
-              raise SystemExit('could not resolve Unity editor version')
+          version_text = version_path.read_text(encoding='utf-8')
+          m = re.search(r'm_EditorVersion:\s*([^\s]+)', version_text)
+          r = re.search(r'm_EditorVersionWithRevision:\s*[^\s]+\s*\(([A-Za-z0-9]+)\)', version_text)
+          if not m or not r:
+              raise SystemExit('could not resolve Unity editor version/revision')
           unity_version = m.group(1)
+          unity_revision = r.group(1)
 
           publish_homepage = False
           catalog_path = pathlib.Path('game-catalog.json')
@@ -89,6 +92,7 @@ jobs:
               f.write(f'build_method={method}\n')
               f.write(f'request_id={request_id}\n')
               f.write(f'unity_version={unity_version}\n')
+              f.write(f'unity_revision={unity_revision}\n')
               f.write(f'publish_homepage={str(publish_homepage).lower()}\n')
           PY
 
@@ -111,22 +115,60 @@ jobs:
           restore-keys: |
             unity-library-${{ runner.os }}-${{ steps.request.outputs.game_id }}-
 
-      - name: Prepare Unity Hub compatibility path
+      - name: Install Unity Hub and matching Android Editor
+        id: unity_install
+        env:
+          UNITY_VERSION: ${{ steps.request.outputs.unity_version }}
+          UNITY_REVISION: ${{ steps.request.outputs.unity_revision }}
         shell: bash
         run: |
           set -euo pipefail
-          sudo mkdir -p /opt/unityhub
-          sudo ln -sfn /usr/bin/unityhub /opt/unityhub/unityhub
-          echo '[INFO] Prepared /opt/unityhub/unityhub -> /usr/bin/unityhub for unity-setup.'
 
-      - name: Install matching Unity Editor and Android support
-        id: unity_setup
-        uses: RageAgainstThePixel/unity-setup@v2
-        with:
-          version-file: ${{ steps.request.outputs.project_path }}/ProjectSettings/ProjectVersion.txt
-          unity-version: ${{ steps.request.outputs.unity_version }}
-          build-targets: Android
-          cache-installation: true
+          sudo sh -c 'dbus-uuidgen > /etc/machine-id'
+          sudo mkdir -p /var/lib/dbus
+          sudo ln -sfn /etc/machine-id /var/lib/dbus/machine-id
+
+          wget -qO- https://hub.unity3d.com/linux/keys/public | gpg --dearmor | sudo tee /usr/share/keyrings/Unity_Technologies_ApS.gpg >/dev/null
+          sudo rm -f /etc/apt/sources.list.d/unityhub.list
+          sudo tee /etc/apt/sources.list.d/unityhub.sources >/dev/null <<'EOF'
+          Types: deb
+          URIs: https://hub.unity3d.com/linux/repos/deb
+          Suites: stable
+          Components: main
+          Signed-By: /usr/share/keyrings/Unity_Technologies_ApS.gpg
+          EOF
+          echo 'deb https://archive.ubuntu.com/ubuntu jammy main universe' | sudo tee /etc/apt/sources.list.d/unity-jammy-compat.list >/dev/null
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            unityhub xvfb ffmpeg libgtk2.0-0 libglu1-mesa libgconf-2-4 libncurses5 pulseaudio desktop-file-utils
+
+          hub_bin="$(readlink -f "$(command -v unityhub)")"
+          [[ -n "$hub_bin" && -x "$hub_bin" ]] || { echo 'Unity Hub executable not found after installation.' >&2; exit 3; }
+          echo "[PASS] Unity Hub executable: $hub_bin"
+
+          sudo tee /usr/local/bin/unity-hub >/dev/null <<'EOF'
+          #!/bin/bash
+          set -e
+          hub_bin="$(readlink -f "$(command -v unityhub)")"
+          exec xvfb-run --auto-servernum "$hub_bin" --headless "$@"
+          EOF
+          sudo chmod 755 /usr/local/bin/unity-hub
+
+          install_root=/opt/unity/editors
+          sudo mkdir -p "$install_root"
+          sudo chown -R "$(id -u):$(id -g)" /opt/unity
+
+          echo "[INFO] Installing Unity $UNITY_VERSION ($UNITY_REVISION) with Android modules through Hub headless CLI."
+          unity-hub install-path --set "$install_root"
+          unity-hub install --version "$UNITY_VERSION" --changeset "$UNITY_REVISION" -m android --cm
+
+          editor="$(find "$install_root" -type f -path '*/Editor/Unity' -perm -111 2>/dev/null | head -n 1 || true)"
+          if [[ -z "$editor" ]]; then
+            editor="$(find "$HOME" /opt -type f -path "*/$UNITY_VERSION/Editor/Unity" -perm -111 2>/dev/null | head -n 1 || true)"
+          fi
+          [[ -n "$editor" && -x "$editor" ]] || { echo "Unity $UNITY_VERSION executable was not found after Hub installation." >&2; exit 4; }
+          echo "unity_editor_path=$editor" >> "$GITHUB_OUTPUT"
+          echo "[PASS] Unity Editor installed: $editor"
 
       - name: Activate Unity Personal on GitHub host
         uses: RageAgainstThePixel/activate-unity-license@v2
@@ -138,7 +180,7 @@ jobs:
 
       - name: Build Android APK on GitHub host
         env:
-          UNITY_EDITOR_PATH: ${{ steps.unity_setup.outputs.unity-editor-path }}
+          UNITY_EDITOR_PATH: ${{ steps.unity_install.outputs.unity_editor_path }}
           PROJECT_PATH: ${{ steps.request.outputs.project_path }}
           BUILD_METHOD: ${{ steps.request.outputs.build_method }}
         shell: bash
