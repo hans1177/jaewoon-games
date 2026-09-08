@@ -30,7 +30,7 @@
       "conclusion": null,
       "event": "push",
       "createdAt": "2026-09-08T03:32:36Z",
-      "updatedAt": "2026-09-08T03:32:41Z",
+      "updatedAt": "2026-09-08T03:32:51Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34183875812"
     },
     "homepage": {
@@ -51,14 +51,24 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
-        "workflow:34183875812:in_progress:pending"
+        "workflow:34183875812:in_progress:pending",
+        "job:101928250543:in_progress:pending"
       ],
       "resultVerified": false,
-      "jobEvidence": null,
+      "jobEvidence": {
+        "id": 101928250543,
+        "name": "round1 (planning)",
+        "status": "in_progress",
+        "conclusion": null,
+        "failedStep": null,
+        "startedAt": "2026-09-08T03:32:49Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34183875812/job/101928250543"
+      },
       "directCause": null,
       "blockers": [],
-      "reason": "artbook workflow is active and this role job has not completed yet",
-      "action": "check role job evidence when the same workflow completes"
+      "reason": "this department job is currently executing",
+      "action": "check department output after job completes"
     },
     "development": {
       "department": "development",
@@ -67,14 +77,24 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
-        "workflow:34183875812:in_progress:pending"
+        "workflow:34183875812:in_progress:pending",
+        "job:101928250652:in_progress:pending"
       ],
       "resultVerified": false,
-      "jobEvidence": null,
+      "jobEvidence": {
+        "id": 101928250652,
+        "name": "round1 (development)",
+        "status": "in_progress",
+        "conclusion": null,
+        "failedStep": null,
+        "startedAt": "2026-09-08T03:32:50Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34183875812/job/101928250652"
+      },
       "directCause": null,
       "blockers": [],
-      "reason": "artbook workflow is active and this role job has not completed yet",
-      "action": "check role job evidence when the same workflow completes"
+      "reason": "this department job is currently executing",
+      "action": "check department output after job completes"
     },
     "qa": {
       "department": "qa",
@@ -83,14 +103,24 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
-        "workflow:34183875812:in_progress:pending"
+        "workflow:34183875812:in_progress:pending",
+        "job:101928250559:in_progress:pending"
       ],
       "resultVerified": false,
-      "jobEvidence": null,
+      "jobEvidence": {
+        "id": 101928250559,
+        "name": "round1 (qa)",
+        "status": "in_progress",
+        "conclusion": null,
+        "failedStep": null,
+        "startedAt": "2026-09-08T03:32:50Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34183875812/job/101928250559"
+      },
       "directCause": null,
       "blockers": [],
-      "reason": "artbook workflow is active and this role job has not completed yet",
-      "action": "check role job evidence when the same workflow completes"
+      "reason": "this department job is currently executing",
+      "action": "check department output after job completes"
     },
     "graphics": {
       "department": "graphics",
@@ -99,14 +129,24 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
-        "workflow:34183875812:in_progress:pending"
+        "workflow:34183875812:in_progress:pending",
+        "job:101928250518:in_progress:pending"
       ],
       "resultVerified": false,
-      "jobEvidence": null,
+      "jobEvidence": {
+        "id": 101928250518,
+        "name": "round1 (graphics)",
+        "status": "in_progress",
+        "conclusion": null,
+        "failedStep": null,
+        "startedAt": "2026-09-08T03:32:50Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34183875812/job/101928250518"
+      },
       "directCause": null,
       "blockers": [],
-      "reason": "artbook workflow is active and this role job has not completed yet",
-      "action": "check role job evidence when the same workflow completes"
+      "reason": "this department job is currently executing",
+      "action": "check department output after job completes"
     },
     "balance": {
       "department": "balance",
@@ -115,14 +155,24 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
-        "workflow:34183875812:in_progress:pending"
+        "workflow:34183875812:in_progress:pending",
+        "job:101928250561:in_progress:pending"
       ],
       "resultVerified": false,
-      "jobEvidence": null,
+      "jobEvidence": {
+        "id": 101928250561,
+        "name": "round1 (balance)",
+        "status": "in_progress",
+        "conclusion": null,
+        "failedStep": null,
+        "startedAt": "2026-09-08T03:32:49Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34183875812/job/101928250561"
+      },
       "directCause": null,
       "blockers": [],
-      "reason": "artbook workflow is active and this role job has not completed yet",
-      "action": "check role job evidence when the same workflow completes"
+      "reason": "this department job is currently executing",
+      "action": "check department output after job completes"
     },
     "homepage": {
       "department": "homepage",
