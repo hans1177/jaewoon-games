@@ -17,16 +17,18 @@
       ],
       "dependencies": [],
       "priority": "high",
-      "status": "running",
-      "retries": 0,
+      "status": "queued",
+      "retries": 1,
       "maxRetries": 2,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
-      "evidence": [],
-      "lastOutcome": null,
+      "blocker": "source-candidate-generation-failed",
+      "evidence": [
+        "actions-run-34277017158"
+      ],
+      "lastOutcome": "FAIL",
       "companyContext": null
     },
     {
