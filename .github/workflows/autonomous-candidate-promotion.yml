@@ -1,0 +1,142 @@
+name: Autonomous Candidate Promotion
+
+on:
+  push:
+    branches:
+      - 'autonomous/candidate-*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: autonomous-dev-promotion
+  cancel-in-progress: false
+
+jobs:
+  independent-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout submitted candidate branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Resolve exact candidate evidence and source revision
+        id: evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin autonomous-dev main
+          dev_sha="$(git rev-parse origin/autonomous-dev)"
+          mapfile -t evidence_files < <(git diff --name-only "origin/autonomous-dev...HEAD" | grep '^\.autonomous/evidence/.*\.json$' || true)
+          if [ "${#evidence_files[@]}" -ne 1 ]; then
+            echo "expected exactly one candidate evidence file" >&2
+            exit 1
+          fi
+          evidence="${evidence_files[0]}"
+          node tools/autonomous-candidate-review.mjs --evidence="$evidence" --expected-source-commit="$dev_sha"
+          node <<'NODE' >> "$GITHUB_ENV"
+          const fs=require('fs');
+          const files=require('child_process').execFileSync('git',['diff','--name-only','origin/autonomous-dev...HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const evidence=files.find(x=>/^\.autonomous\/evidence\/.*\.json$/.test(x));
+          const e=JSON.parse(fs.readFileSync(evidence,'utf8'));
+          const line=(k,v)=>process.stdout.write(`${k}=${String(v).replaceAll('\n',' ')}\n`);
+          line('PROMOTE_EVIDENCE',evidence);line('PROMOTE_GAME_ID',e.gameId);line('PROMOTE_SOURCE_PATH',e.sourcePath);line('PROMOTE_CANDIDATE_PATH',e.candidatePath);line('PROMOTE_CANDIDATE_ID',e.candidateId);line('PROMOTE_SOURCE_COMMIT',e.sourceCommit);
+          NODE
+          echo "dev_sha=$dev_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Enforce candidate-branch change scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            if [[ "$file" == "$PROMOTE_EVIDENCE" || "$file" == "$PROMOTE_CANDIDATE_PATH"/* ]]; then
+              continue
+            fi
+            echo "candidate branch changed unauthorized path: $file" >&2
+            exit 1
+          done < <(git diff --name-only "origin/autonomous-dev...HEAD")
+          echo "CANDIDATE_SCOPE=PASS"
+
+      - name: Independent candidate syntax QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d "$PROMOTE_CANDIDATE_PATH"
+          while IFS= read -r -d '' file; do node --check "$file"; done < <(find "$PROMOTE_CANDIDATE_PATH" -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) -print0)
+          git diff --check "origin/autonomous-dev...HEAD"
+          echo "INDEPENDENT_CANDIDATE_QA=PASS"
+
+      - name: Preserve reviewed candidate outside worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/jaewoon-reviewed-candidate
+          mkdir -p /tmp/jaewoon-reviewed-candidate
+          cp -R "$PROMOTE_CANDIDATE_PATH" /tmp/jaewoon-reviewed-candidate/game
+          cp "$PROMOTE_EVIDENCE" /tmp/jaewoon-reviewed-candidate/evidence.json
+
+      - name: Apply only to continuous development branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout -B autonomous-dev origin/autonomous-dev
+          current="$(git rev-parse HEAD)"
+          if [ "$current" != "$PROMOTE_SOURCE_COMMIT" ]; then
+            echo "SOURCE_REVISION_MISMATCH current=$current expected=$PROMOTE_SOURCE_COMMIT" >&2
+            exit 1
+          fi
+          rm -rf "$PROMOTE_SOURCE_PATH"
+          mkdir -p "$(dirname "$PROMOTE_SOURCE_PATH")"
+          cp -R /tmp/jaewoon-reviewed-candidate/game "$PROMOTE_SOURCE_PATH"
+          echo "PUBLIC_MAIN_WRITE=NO"
+
+      - name: Full dev regression after applying candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          while IFS= read -r -d '' file; do node --check "$file"; done < <(find "$PROMOTE_SOURCE_PATH" -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) -print0)
+          if [ -f qa/vibe-regression.mjs ]; then node qa/vibe-regression.mjs; fi
+          node --test qa/autonomous-development-worker.test.mjs
+          node --test qa/autonomous-candidate-review.test.mjs
+          echo "DEV_REGRESSION=PASS"
+
+      - name: Record JAY dev verdict and push autonomous-dev only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .autonomous/dev-history
+          node <<'NODE'
+          const fs=require('fs');
+          const evidence=JSON.parse(fs.readFileSync('/tmp/jaewoon-reviewed-candidate/evidence.json','utf8'));
+          const record={version:1,candidateId:evidence.candidateId,gameId:evidence.gameId,sourceCommit:evidence.sourceCommit,candidateCommit:process.env.GITHUB_SHA,verdict:'ADVANCE_TO_AUTONOMOUS_DEV',publicRelease:false,selfPromoteMain:false,independentQa:'PASS',jayAuthority:'L4_DEV_ONLY',recordedAt:new Date().toISOString()};
+          fs.writeFileSync(`.autonomous/dev-history/${evidence.candidateId}.json`,JSON.stringify(record,null,2)+'\n');
+          NODE
+          git config user.name "jaewoon-jay-dev-gate"
+          git config user.email "jay-dev-gate@users.noreply.github.com"
+          git add "$PROMOTE_SOURCE_PATH" ".autonomous/dev-history/${PROMOTE_CANDIDATE_ID}.json"
+          if git diff --cached --quiet; then
+            echo "candidate produced no dev difference" >&2
+            exit 1
+          fi
+          git commit -m "dev: promote verified ${PROMOTE_GAME_ID} candidate ${PROMOTE_CANDIDATE_ID}"
+          git push origin HEAD:autonomous-dev
+          echo "JAY_DEV_VERDICT=ADVANCE_TO_AUTONOMOUS_DEV"
+          echo "PUBLIC_RELEASE=NO"
+          echo "MAIN_WRITE=NO"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "### Autonomous Candidate Promotion" >> "$GITHUB_STEP_SUMMARY"
+          echo "- independent QA: required" >> "$GITHUB_STEP_SUMMARY"
+          echo "- promotion target: autonomous-dev only" >> "$GITHUB_STEP_SUMMARY"
+          echo "- public main promotion: NO" >> "$GITHUB_STEP_SUMMARY"
+          echo "- paid API: NO" >> "$GITHUB_STEP_SUMMARY"
