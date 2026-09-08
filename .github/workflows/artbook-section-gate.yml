@@ -7,6 +7,8 @@ on:
     paths:
       - 'artbook-submissions/**'
       - 'artbook-submission-queue.json'
+      - 'artbook-second-work-queue.json'
+      - 'artbook-work-orders/**'
       - 'tools/artbook-gate.mjs'
       - 'tools/artbook-assemble.mjs'
 
@@ -27,7 +29,7 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Validate real department submissions
+      - name: Validate real department submissions and peer ratings
         run: node tools/artbook-gate.mjs
 
       - name: Read assembly readiness
@@ -43,7 +45,7 @@ jobs:
         if: steps.gate.outputs.ready == 'true'
         run: node tools/artbook-assemble.mjs
 
-      - name: Persist gate assembled artbook and homepage registry
+      - name: Persist gate assembled artbook and second-work queue
         run: |
           set -euo pipefail
           git config user.name "jaewoon-company-ai"
@@ -51,6 +53,7 @@ jobs:
           git add artbook-gate-status.json
           git add artbook-submissions 2>/dev/null || true
           git add game-artbooks.json 2>/dev/null || true
+          git add artbook-second-work-queue.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No artbook gate/assembly changes."
             exit 0
