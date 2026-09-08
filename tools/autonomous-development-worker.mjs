@@ -12,6 +12,8 @@ const MAX_CONTEXT_BYTES=420000;
 const MAX_OUTPUT_FILES=4;
 const MAX_FILE_BYTES=240000;
 const MAX_TOTAL_OUTPUT_BYTES=600000;
+const MODEL_TIMEOUT_MS=Number(process.env.AUTONOMOUS_MODEL_TIMEOUT_MS||360000);
+const MODEL_MAX_PREDICT=Math.max(1024,Math.min(8192,Number(process.env.AUTONOMOUS_MODEL_MAX_PREDICT||6144)));
 const ALLOWED_EXTENSIONS=new Set(['.html','.js','.mjs','.cjs','.css','.json','.md','.txt','.svg']);
 const FORBIDDEN_OUTPUT_NAMES=new Set(['.git','.github','package-lock.json']);
 const SAVE_PATTERNS=[
@@ -126,15 +128,48 @@ function copySource(sourcePath,candidatePath){
 }
 function buildPrompt({gameId,sourcePath,goal,context,protectedValues=[]}){
   const evidence=context.files.map(file=>`\n### FILE ${file.path}\n${file.content}`).join('\n');
-  return `/no_think\n너는 재운컴퍼니 Autonomous Development Worker다. 안정판 원본은 읽기 전용이며 별도 후보 복사본에 적용할 파일 내용만 제안한다.\n게임: ${gameId}\n원본경로: ${sourcePath}\n목표: ${goal}\n보호값: ${protectedValues.join(', ')||'save key / 진행 의미 / 공개 안정판'}\n규칙:\n1. JSON 객체만 출력한다.\n2. 형식은 {"summary":"...","expectedEffect":"...","tests":["..."],"files":[{"path":"원본 폴더 기준 상대경로","content":"전체 파일 내용"}]} 이다.\n3. files는 최대 ${MAX_OUTPUT_FILES}개다.\n4. 원본의 저장키를 변경하지 않는다.\n5. .github, 권한, 배포, 결제, 비밀정보 파일은 만들지 않는다.\n6. 실제 게임 품질을 의미 있게 개선하되 사용자가 요청하지 않은 전면 재작성은 피한다.\n7. 생성된 파일 내용 안에 설명용 마크다운 펜스를 넣지 않는다.\n8. 완료/PASS/출시 승인이라고 주장하지 않는다. 후보일 뿐이다.\n\n읽기 전용 근거:${evidence}`;
+  return `/no_think\n너는 재운컴퍼니 Autonomous Development Worker다. 안정판 원본은 읽기 전용이며 별도 후보 복사본에 적용할 파일 내용만 제안한다.\n게임: ${gameId}\n원본경로: ${sourcePath}\n목표: ${goal}\n보호값: ${protectedValues.join(', ')||'save key / 진행 의미 / 공개 안정판'}\n규칙:\n1. JSON 객체만 출력한다.\n2. 형식은 {"summary":"...","expectedEffect":"...","tests":["..."],"files":[{"path":"원본 폴더 기준 상대경로","content":"전체 파일 내용"}]} 이다.\n3. files는 최대 ${MAX_OUTPUT_FILES}개다.\n4. 원본의 저장키를 변경하지 않는다.\n5. .github, 권한, 배포, 결제, 비밀정보 파일은 만들지 않는다.\n6. 실제 게임 품질을 의미 있게 개선하되 사용자가 요청하지 않은 전면 재작성은 피한다.\n7. 생성된 파일 내용 안에 설명용 마크다운 펜스를 넣지 않는다.\n8. 완료/PASS/출시 승인이라고 주장하지 않는다. 후보일 뿐이다.\n9. 작은 변경을 우선하며 출력 한도 안에 들어오도록 필요한 파일만 제안한다.\n\n읽기 전용 근거:${evidence}`;
+}
+function appendOllamaLine(line,state){
+  const text=String(line||'').trim();
+  if(!text)return;
+  const event=JSON.parse(text);
+  if(event.error)throw new Error(`Ollama 실패: ${event.error}`);
+  if(typeof event.response==='string')state.response+=event.response;
+  if(event.done===true)state.done=true;
 }
 async function callOllama(prompt,model=DEFAULT_MODEL){
   const host=process.env.OLLAMA_HOST?`http://${process.env.OLLAMA_HOST}`:'http://127.0.0.1:11434';
-  const response=await fetch(`${host}/api/generate`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,prompt,stream:false,format:'json',options:{temperature:0.25,num_ctx:8192}})});
-  if(!response.ok)throw new Error(`Ollama 실패: ${response.status}`);
-  const body=await response.json();
-  if(!clean(body.response))throw new Error('Ollama 응답 비어 있음');
-  return body.response;
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(new Error('LOCAL_MODEL_TIMEOUT')),MODEL_TIMEOUT_MS);
+  try{
+    const response=await fetch(`${host}/api/generate`,{
+      method:'POST',
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify({model,prompt,stream:true,format:'json',options:{temperature:0.25,num_ctx:8192,num_predict:MODEL_MAX_PREDICT}}),
+      signal:controller.signal,
+    });
+    if(!response.ok)throw new Error(`Ollama 실패: ${response.status}`);
+    if(!response.body)throw new Error('Ollama stream 없음');
+    const decoder=new TextDecoder();
+    const state={response:'',done:false};
+    let pending='';
+    for await(const chunk of response.body){
+      pending+=decoder.decode(chunk,{stream:true});
+      const lines=pending.split(/\r?\n/);
+      pending=lines.pop()??'';
+      for(const line of lines)appendOllamaLine(line,state);
+    }
+    pending+=decoder.decode();
+    if(pending.trim())appendOllamaLine(pending,state);
+    if(!clean(state.response))throw new Error('Ollama 응답 비어 있음');
+    return state.response;
+  }catch(error){
+    if(error?.name==='AbortError'||controller.signal.aborted)throw new Error(`Ollama 생성 제한시간 초과: ${MODEL_TIMEOUT_MS}ms`);
+    throw error;
+  }finally{
+    clearTimeout(timeout);
+  }
 }
 function syntaxCheck(candidatePath,files){
   const checks=[];
@@ -178,6 +213,9 @@ export async function generateAutonomousCandidate(options={}){
     publicStableModified:false,
     paidApi:false,
     model:options.model??DEFAULT_MODEL,
+    modelTransport:'NDJSON_STREAM',
+    modelTimeoutMs:MODEL_TIMEOUT_MS,
+    modelMaxPredict:MODEL_MAX_PREDICT,
     gameId,
     sourcePath,
     candidateId,
@@ -215,4 +253,4 @@ if(import.meta.url===pathToFileURL(process.argv[1]).href){
   main().catch(error=>{console.error(error.message);process.exitCode=1;});
 }
 
-export { ALLOWED_EXTENSIONS, MAX_OUTPUT_FILES, extractStorageKeys, assertRelativeOutputPath, buildPrompt };
+export { ALLOWED_EXTENSIONS, MAX_OUTPUT_FILES, MODEL_TIMEOUT_MS, MODEL_MAX_PREDICT, extractStorageKeys, assertRelativeOutputPath, buildPrompt };
