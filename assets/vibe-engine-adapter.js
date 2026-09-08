@@ -1,6 +1,6 @@
 // 파일명: assets/vibe-engine-adapter.js
-// 역할: Vibe2의 엔진별 책임 경로·검증·빌드 규칙을 하나의 계약으로 정규화한다.
-// 원칙: 공통 의미 모델은 유지하고 실제 파일/빌드 차이만 어댑터가 담당한다.
+// 역할: Vibe2의 엔진별 책임 경로·검증·빌드·실행 능력을 하나의 계약으로 정규화한다.
+// 원칙: 공통 의미 모델은 유지하고 실제 파일/에디터/빌드 차이만 어댑터가 담당한다.
 
 const clean = (value) => String(value ?? '').trim();
 const freeze = (value) => Object.freeze(value);
@@ -46,6 +46,18 @@ function sourceContract(target, slug) {
         `unreal-games/${gameSlug}/Config/**`,
         `unreal-games/${gameSlug}/Source/**`
       ]),
+      textWritablePatterns: freezeList([
+        `unreal-games/${gameSlug}/*.uproject`,
+        `unreal-games/${gameSlug}/Config/**/*.ini`,
+        `unreal-games/${gameSlug}/Source/**/*.h`,
+        `unreal-games/${gameSlug}/Source/**/*.hpp`,
+        `unreal-games/${gameSlug}/Source/**/*.cpp`,
+        `unreal-games/${gameSlug}/Source/**/*.cs`
+      ]),
+      editorRequiredPatterns: freezeList([
+        `unreal-games/${gameSlug}/Content/**/*.uasset`,
+        `unreal-games/${gameSlug}/Content/**/*.umap`
+      ]),
       ignoredPaths: freezeList([
         `unreal-games/${gameSlug}/Binaries/**`,
         `unreal-games/${gameSlug}/DerivedDataCache/**`,
@@ -62,6 +74,22 @@ function sourceContract(target, slug) {
         `unity-games/${gameSlug}/Assets/**`,
         `unity-games/${gameSlug}/Packages/manifest.json`,
         `unity-games/${gameSlug}/ProjectSettings/**`
+      ]),
+      textWritablePatterns: freezeList([
+        `unity-games/${gameSlug}/Assets/**/*.cs`,
+        `unity-games/${gameSlug}/Assets/**/*.asmdef`,
+        `unity-games/${gameSlug}/Assets/**/*.json`,
+        `unity-games/${gameSlug}/Assets/**/*.uxml`,
+        `unity-games/${gameSlug}/Assets/**/*.uss`,
+        `unity-games/${gameSlug}/Assets/**/*.unity`,
+        `unity-games/${gameSlug}/Assets/**/*.prefab`,
+        `unity-games/${gameSlug}/Packages/manifest.json`,
+        `unity-games/${gameSlug}/ProjectSettings/**/*.asset`
+      ]),
+      editorRequiredPatterns: freezeList([
+        `unity-games/${gameSlug}/Assets/**/*.controller`,
+        `unity-games/${gameSlug}/Assets/**/*.anim`,
+        `unity-games/${gameSlug}/Assets/**/*.avatar`
       ]),
       ignoredPaths: freezeList([
         `unity-games/${gameSlug}/Library/**`,
@@ -82,6 +110,13 @@ function sourceContract(target, slug) {
         `godot-games/${gameSlug}/**/*.tscn`,
         `godot-games/${gameSlug}/**/*.tres`
       ]),
+      textWritablePatterns: freezeList([
+        `godot-games/${gameSlug}/project.godot`,
+        `godot-games/${gameSlug}/**/*.gd`,
+        `godot-games/${gameSlug}/**/*.tscn`,
+        `godot-games/${gameSlug}/**/*.tres`
+      ]),
+      editorRequiredPatterns: freezeList([]),
       ignoredPaths: freezeList([`godot-games/${gameSlug}/.godot/**`])
     });
   }
@@ -89,6 +124,8 @@ function sourceContract(target, slug) {
     root: `web-games/${gameSlug}`,
     writable: false,
     candidateFiles: freezeList([`web-games/${gameSlug}/**`]),
+    textWritablePatterns: freezeList([]),
+    editorRequiredPatterns: freezeList([]),
     ignoredPaths: freezeList([]),
     readOnlyReason: 'web-games-archive-read-only'
   });
@@ -132,13 +169,57 @@ function motionBindings(target) {
   return freezeList(['animation-state', 'sprite-or-render-state']);
 }
 
+function executionContract(target, source) {
+  if (target === 'unreal') return freeze({
+    textWorkerAllowed: true,
+    editorWorkerRequiredForBinaryAssets: true,
+    editorRuntime: 'unreal-editor-or-commandlet',
+    editorRequiredCapabilities: freezeList(['Blueprint', 'Animation Blueprint', 'Montage', 'Blend Space', 'IK Rig', 'IK Retargeter', 'Control Rig', 'Level/Map binary asset']),
+    binaryAssetsDirectTextEditForbidden: true,
+    localEditorPreferred: true,
+    textWritablePatterns: source.textWritablePatterns,
+    editorRequiredPatterns: source.editorRequiredPatterns
+  });
+  if (target === 'unity') return freeze({
+    textWorkerAllowed: true,
+    editorWorkerRequiredForBinaryAssets: false,
+    editorRuntime: 'unity-editor-for-runtime-and-build-verification',
+    editorRequiredCapabilities: freezeList(['Animator graph authoring when serialization is unsafe', 'runtime scene verification', 'Android build']),
+    binaryAssetsDirectTextEditForbidden: true,
+    localEditorPreferred: true,
+    textWritablePatterns: source.textWritablePatterns,
+    editorRequiredPatterns: source.editorRequiredPatterns
+  });
+  if (target === 'godot') return freeze({
+    textWorkerAllowed: true,
+    editorWorkerRequiredForBinaryAssets: false,
+    editorRuntime: 'godot-editor-or-headless-runtime',
+    editorRequiredCapabilities: freezeList(['runtime verification']),
+    binaryAssetsDirectTextEditForbidden: true,
+    localEditorPreferred: false,
+    textWritablePatterns: source.textWritablePatterns,
+    editorRequiredPatterns: source.editorRequiredPatterns
+  });
+  return freeze({
+    textWorkerAllowed: false,
+    editorWorkerRequiredForBinaryAssets: false,
+    editorRuntime: null,
+    editorRequiredCapabilities: freezeList([]),
+    binaryAssetsDirectTextEditForbidden: true,
+    localEditorPreferred: false,
+    textWritablePatterns: source.textWritablePatterns,
+    editorRequiredPatterns: source.editorRequiredPatterns
+  });
+}
+
 export function createVibeEngineAdapter({ request = '', target = 'auto', gameSlug = '' } = {}) {
   const resolvedTarget = detectVibeEngineTarget(request, target);
   const source = sourceContract(resolvedTarget, gameSlug);
   return freeze({
-    version: 1,
+    version: 2,
     target: resolvedTarget,
     source,
+    execution: executionContract(resolvedTarget, source),
     qa: qaContract(resolvedTarget),
     motionBindings: motionBindings(resolvedTarget),
     gameplayAuthority: 'engine-resolves-authoritative-gameplay-results',
@@ -155,8 +236,11 @@ export function validateVibeEngineAdapter(adapter) {
   if (!adapter || !VIBE_ENGINE_TARGETS.includes(adapter.target)) issues.push('unsupported-target');
   if (!adapter?.source?.root) issues.push('source-root-required');
   if (!Array.isArray(adapter?.source?.candidateFiles) || adapter.source.candidateFiles.length === 0) issues.push('candidate-files-required');
+  if (!Array.isArray(adapter?.source?.textWritablePatterns)) issues.push('text-writable-patterns-required');
+  if (!Array.isArray(adapter?.source?.editorRequiredPatterns)) issues.push('editor-required-patterns-required');
   if (adapter?.target === 'web' && adapter?.mayWriteSource !== false) issues.push('web-archive-must-be-read-only');
   if (adapter?.target === 'unreal' && !adapter.source.candidateFiles.some((path) => path.endsWith('*.uproject'))) issues.push('unreal-uproject-required');
+  if (adapter?.target === 'unreal' && adapter?.execution?.binaryAssetsDirectTextEditForbidden !== true) issues.push('unreal-binary-assets-must-not-be-text-edited');
   return freeze({ valid: issues.length === 0, issues: freezeList(issues) });
 }
 
