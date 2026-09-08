@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "mode": "continuous-core",
   "continuous": {
     "enabled": true,
@@ -31,6 +31,21 @@
       "configured": false,
       "reason": "analysis-worker-not-connected-yet"
     }
+  },
+  "workLocks": {
+    "enabled": true,
+    "requiredBeforeSourceWrite": true,
+    "stateBranch": "vibe2-work-locks",
+    "statePath": ".vibe2/work-locks.json",
+    "workers": ["chatgpt", "vibe2", "company-ai"],
+    "vibe2WorkerId": "vibe2",
+    "defaultLeaseMinutes": 45,
+    "maxLeaseMinutes": 120,
+    "remoteClient": "tools/vibe2-remote-work-lock.mjs",
+    "activeOverlapAction": "BLOCK_AND_SELECT_INDEPENDENT_WORK",
+    "baseShaOverlapAction": "REPLAN_REQUIRED",
+    "baseShaNonOverlapAction": "REBASE_THEN_QA",
+    "automaticLockSteal": false
   },
   "engineEditors": {
     "unity": {
@@ -65,6 +80,7 @@
     "verifiedEvidenceRequiredForLearning": true,
     "directMainWriteByWorker": false,
     "binaryAssetsDirectTextEditForbidden": true,
+    "sharedWorkLockRequired": true,
     "homepagePublicationAutomatic": false
   }
 }
