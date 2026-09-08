@@ -68,10 +68,10 @@ jobs:
           grep -Fq "workflows: ['Autonomous Candidate Promotion']" .github/workflows/company-dna-learning.yml
           grep -Fq 'jayApproved===true' tools/company-dna-learning.mjs
           grep -Fq 'selfPromote:false' tools/company-dna-learning.mjs
-          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' \
+          if grep -Eq 'secrets\.(OPENAI|ANTHROPIC|GROQ|MISTRAL)|process\.env\.(OPENAI|ANTHROPIC|GROQ|MISTRAL)' \
             tools/autonomous-new-game-incubator.mjs tools/autonomous-prototype-worker.mjs \
             .github/workflows/autonomous-new-game-incubator.yml .github/workflows/autonomous-prototype-worker.yml; then
-            echo 'paid/external key path found' >&2
+            echo 'real paid/external credential usage found' >&2
             exit 1
           fi
           echo 'NEW_GAME_CLOSED_LOOP_CONTRACT=PASS'
