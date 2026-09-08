@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "dateKst": "2026-09-08",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
@@ -8,6 +8,7 @@
     "activeWorkOrder": "artbook-work-orders/2026-09-08-daechung-rpg.json",
     "activeWorkOrderExists": true,
     "evidenceAdapterMismatch": false,
+    "jobLevelEvidenceUsed": false,
     "runningLabelAloneCountsAsWork": false,
     "directorMayGhostwriteMissingDepartmentWork": false
   },
@@ -15,17 +16,17 @@
     "WORKING": 1,
     "DONE": 1,
     "IDLE_NO_TASK": 1,
-    "BLOCKED": 0,
-    "FAILED": 5,
+    "BLOCKED": 5,
+    "FAILED": 0,
     "STALE": 0
   },
   "attentionRequired": true,
   "primaryFindings": [
-    "planning:WORKFLOW_FAILED",
-    "development:WORKFLOW_FAILED",
-    "qa:WORKFLOW_FAILED",
-    "graphics:WORKFLOW_FAILED",
-    "balance:WORKFLOW_FAILED"
+    "planning:DEPENDENCY_BLOCKED",
+    "development:DEPENDENCY_BLOCKED",
+    "qa:DEPENDENCY_BLOCKED",
+    "graphics:DEPENDENCY_BLOCKED",
+    "balance:DEPENDENCY_BLOCKED"
   ],
   "workflowEvidence": {
     "artbook": {
@@ -51,82 +52,87 @@
     "planning": {
       "department": "planning",
       "taskAssigned": true,
-      "status": "FAILED",
+      "status": "BLOCKED",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
         "workflow:34180781129:completed:failure"
       ],
       "resultVerified": false,
+      "jobEvidence": null,
       "blockers": [
-        "WORKFLOW_FAILED"
+        "DEPENDENCY_BLOCKED"
       ],
-      "reason": "workflow concluded failure",
-      "action": "inspect workflow failure and retry after fix"
+      "reason": "overall workflow failed before this department produced a conclusive job result",
+      "action": "inspect failed dependency and rerun"
     },
     "development": {
       "department": "development",
       "taskAssigned": true,
-      "status": "FAILED",
+      "status": "BLOCKED",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
         "workflow:34180781129:completed:failure"
       ],
       "resultVerified": false,
+      "jobEvidence": null,
       "blockers": [
-        "WORKFLOW_FAILED"
+        "DEPENDENCY_BLOCKED"
       ],
-      "reason": "workflow concluded failure",
-      "action": "inspect workflow failure and retry after fix"
+      "reason": "overall workflow failed before this department produced a conclusive job result",
+      "action": "inspect failed dependency and rerun"
     },
     "qa": {
       "department": "qa",
       "taskAssigned": true,
-      "status": "FAILED",
+      "status": "BLOCKED",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
         "workflow:34180781129:completed:failure"
       ],
       "resultVerified": false,
+      "jobEvidence": null,
       "blockers": [
-        "WORKFLOW_FAILED"
+        "DEPENDENCY_BLOCKED"
       ],
-      "reason": "workflow concluded failure",
-      "action": "inspect workflow failure and retry after fix"
+      "reason": "overall workflow failed before this department produced a conclusive job result",
+      "action": "inspect failed dependency and rerun"
     },
     "graphics": {
       "department": "graphics",
       "taskAssigned": true,
-      "status": "FAILED",
+      "status": "BLOCKED",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
         "workflow:34180781129:completed:failure"
       ],
       "resultVerified": false,
+      "jobEvidence": null,
       "blockers": [
-        "WORKFLOW_FAILED"
+        "DEPENDENCY_BLOCKED"
       ],
-      "reason": "workflow concluded failure",
-      "action": "inspect workflow failure and retry after fix"
+      "reason": "overall workflow failed before this department produced a conclusive job result",
+      "action": "inspect failed dependency and rerun"
     },
     "balance": {
       "department": "balance",
       "taskAssigned": true,
-      "status": "FAILED",
+      "status": "BLOCKED",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
         "workflow:34180781129:completed:failure"
       ],
       "resultVerified": false,
+      "jobEvidence": null,
       "blockers": [
-        "WORKFLOW_FAILED"
+        "DEPENDENCY_BLOCKED"
       ],
-      "reason": "workflow concluded failure",
-      "action": "inspect workflow failure and retry after fix"
+      "reason": "overall workflow failed before this department produced a conclusive job result",
+      "action": "inspect failed dependency and rerun"
     },
     "homepage": {
       "department": "homepage",
@@ -169,6 +175,7 @@
   },
   "policy": {
     "findWhyWorkStopped": true,
+    "distinguishIndividualFailureFromBlockedPeers": true,
     "falseRunningForbidden": true,
     "idleWithoutTaskIsNotFailure": true,
     "fixLowRiskOperationalBlockers": true,
