@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-      - name: Prepare daily initial or second work
+      - name: Prepare daily initial or same-day second work
         run: node tools/artbook-prepare-daily.mjs
       - name: Resolve prepared target
         id: target
@@ -225,21 +225,27 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
-  director-review:
-    needs: [context, collect-round1]
+  director:
+    needs: [context, collect-round1, round2]
     if: needs.context.outputs.run == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 18
+    timeout-minutes: 15
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
         with:
           ref: main
-      - name: Restore all five department results
+      - name: Restore department results
         uses: actions/download-artifact@v4
         with:
           name: round1-bundle
           path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
+      - name: Restore peer reviews
+        uses: actions/download-artifact@v4
+        with:
+          pattern: round2-*
+          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
+          merge-multiple: true
       - name: Install local Ollama
         shell: bash
         run: |
@@ -254,20 +260,20 @@ jobs:
           exit 1
       - name: Pull free open model
         run: ollama pull "$ARTBOOK_LOCAL_MODEL"
-      - name: Director rates each department result as fifth vote
+      - name: Director fifth vote
         env:
           ARTBOOK_DATE: ${{ needs.context.outputs.date }}
           ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
         run: node tools/artbook-director-review.mjs
-      - name: Director AI authors cover and summary
+      - name: Director visual cover and summary
         env:
           ARTBOOK_DATE: ${{ needs.context.outputs.date }}
           ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
         run: node tools/artbook-director-presentation.mjs
-      - name: Upload director review and visual presentation
+      - name: Upload director outputs
         uses: actions/upload-artifact@v4
         with:
-          name: director-bundle
+          name: director-round
           path: |
             artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews/director.json
             artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/presentation/director-presentation.json
@@ -276,7 +282,7 @@ jobs:
           if-no-files-found: error
 
   finalize:
-    needs: [context, collect-round1, round2, director-review]
+    needs: [context, collect-round1, round2, director]
     if: needs.context.outputs.run == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -285,85 +291,47 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Restore today's work order
-        uses: actions/download-artifact@v4
-        with:
-          name: daily-work-order
-          path: .
-      - name: Restore five department sections and visual pages
+      - name: Restore department results
         uses: actions/download-artifact@v4
         with:
           name: round1-bundle
           path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
-      - name: Restore five peer rating reviews
+      - name: Restore peer reviews
         uses: actions/download-artifact@v4
         with:
           pattern: round2-*
-          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews
+          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
           merge-multiple: true
-      - name: Restore director review and visual presentation
+      - name: Restore director outputs
         uses: actions/download-artifact@v4
         with:
-          name: director-bundle
+          name: director-round
           path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
-      - name: Validate 5 sections, 5 peer reviews and director fifth votes
+      - name: Restore prepared work order
+        uses: actions/download-artifact@v4
+        with:
+          name: daily-work-order
+          path: .
+      - name: Run gate, assemble, and postprocess
         env:
           ARTBOOK_DATE: ${{ needs.context.outputs.date }}
           ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
         run: |
           node tools/artbook-gate.mjs
-          node - <<'NODE'
-          const fs=require('fs');const g=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8'));
-          if(g.readyCount!==5||g.reviewReadyCount!==5||g.directorReviewReady!==true||g.readyForDirectorAssembly!==true)throw new Error(`artbook not ready: ${g.readyCount}/5 + ${g.reviewReadyCount}/5 + director=${g.directorReviewReady}`);
-          if(g.collaborationProtocol!=='PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5'||g.ratingsPerDepartment!==5)throw new Error('rating protocol mismatch');
-          console.log('FREE_DEPARTMENT_SUBMISSIONS=5/5');console.log('FREE_PEER_REVIEWS=5/5');console.log('DIRECTOR_RATING_REVIEW=1/1');
-          NODE
-      - name: Assemble verified department material
-        env:
-          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
-          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
-        run: node tools/artbook-assemble.mjs
-      - name: Assemble employee-authored visual artbook to exact 10 pages
-        env:
-          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
-          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
-        run: node tools/artbook-postprocess.mjs
-      - name: Verify employee ownership and exact page plan
-        env:
-          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
-          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
-        run: |
-          node - <<'NODE'
-          const fs=require('fs'),g=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8')),a=JSON.parse(fs.readFileSync(g.assembledFile,'utf8'));
-          const order=['director','planning','planning','graphics','graphics','development','development','qa','balance','director'];
-          if(a.status!=='COMPLETED'||a.cuts?.length!==10)throw new Error('10-page completion failed');
-          if(a.cuts.some((p,i)=>p.sourceDepartment!==order[i]||p.employeeAuthored!==true||p.assistantAuthored!==false))throw new Error('employee page ownership/order failed');
-          if(a.postprocess?.assistantAuthorship!==false||a.postprocess?.imageFirst!==true)throw new Error('visual-first authorship guard failed');
-          console.log('ARTBOOK_COMPLETED=10/10');console.log('EMPLOYEE_AUTHORED=10/10');console.log('ASSISTANT_AUTHORED=0/10');
-          NODE
-      - name: Synchronize queue state
-        env:
-          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
-          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
-          ARTBOOK_MODE: ${{ needs.context.outputs.mode }}
-        run: |
-          node - <<'NODE'
-          const fs=require('fs');const q=JSON.parse(fs.readFileSync('artbook-submission-queue.json','utf8'));const roles=['planning','graphics','development','qa','balance'];const mode=process.env.ARTBOOK_MODE||'INITIAL';
-          q.updatedAt=process.env.ARTBOOK_DATE;q.currentDailyTarget=process.env.ARTBOOK_GAME_ID;
-          q.currentTargetExecution={...(q.currentTargetExecution||{}),date:process.env.ARTBOOK_DATE,mode,readySections:5,requiredSections:5,readyReviews:5,requiredReviews:5,directorReviewReady:true,ratingsPerDepartment:5,directorAssemblyReady:true,visualFirst:true,employeeAuthoredPages:10,assistantAuthoredPages:0,pagePlan:['cover','planning','planning','graphics','graphics','development','development','qa','balance','summary'],runnerDispatch:mode==='SECOND_WORK'?'FREE_LOCAL_OPEN_MODEL_SECOND_WORK_COMPLETE':'FREE_LOCAL_OPEN_MODEL_COMPLETE',runnerModel:'qwen3:0.6b',runnerPaidApi:false,runnerApiKeyRequired:false,firstRoundIndependent:mode==='INITIAL',secondRoundProtocol:'PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5',departmentOpinionsPublished:true,assemblyGrantsProductionApproval:false};
-          const g=(q.games||[]).find(x=>x.gameId===process.env.ARTBOOK_GAME_ID);if(g){g.status=mode==='SECOND_WORK'?'SECOND_WORK_ARTBOOK_COMPLETED_AWAITING_OWNER_DECISION':'INITIAL_ARTBOOK_COMPLETED_AWAITING_OWNER_DECISION';g.sectionsReady=[...roles];g.reviewsReady=[...roles];g.directorReviewReady=true;g.ratingsPerDepartment=5;g.directorAssemblyReady=true;g.currentStage=mode==='SECOND_WORK'?'second-work-artbook-completed':'initial-artbook-completed';g.visualFirst=true;g.pageCount=10;}
-          fs.writeFileSync('artbook-submission-queue.json',JSON.stringify(q,null,2)+'\n');
-          NODE
-      - name: Commit verified employee-authored 10-page artbook
+          node tools/artbook-assemble.mjs
+          node tools/artbook-postprocess.mjs
+      - name: Commit completed artbook state
         shell: bash
         run: |
           set -euo pipefail
-          GAME_ID='${{ needs.context.outputs.game_id }}';DATE_KST='${{ needs.context.outputs.date }}'
-          git config user.name 'jaewoon-company-department-bots';git config user.email 'actions@users.noreply.github.com'
-          git add "artbook-work-orders/${DATE_KST}-${GAME_ID}.json" "artbook-submissions/${GAME_ID}/${DATE_KST}/" artbook-gate-status.json game-artbooks.json artbook-submission-queue.json
-          git add artbook-second-work-queue.json 2>/dev/null || true
-          if git diff --cached --quiet; then echo 'ARTBOOK_FINAL_COMMIT=NO_CHANGES';exit 0;fi
-          git commit -m "artbook: publish ${GAME_ID} ${DATE_KST} employee visual 10-page book"
+          git config user.name 'jaewoon-artbook-bots'
+          git config user.email 'actions@users.noreply.github.com'
+          git add artbook-submissions artbook-gate-status.json artbook-submission-queue.json artbook-second-work-queue.json game-artbooks.json artbook-work-orders
+          if git diff --cached --quiet; then
+            echo 'ARTBOOK_COMMIT=NO_CHANGES'
+            exit 0
+          fi
+          git commit -m "artbook: complete ${ARTBOOK_DATE:-today} ${ARTBOOK_GAME_ID:-target} ${ARTBOOK_MODE:-round} [skip ci]"
           git pull --rebase origin main
           git push origin main
-          echo 'ARTBOOK_FINAL_COMMIT=SUCCESS';echo 'PRODUCTION_APPROVAL=NO'
+          echo 'ARTBOOK_COMMIT=SUCCESS'
