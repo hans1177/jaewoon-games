@@ -7,8 +7,11 @@ on:
       - '.github/workflows/autonomous-continuous-development.yml'
       - 'tools/autonomous-work-planner.mjs'
       - 'tools/autonomous-queue-state.mjs'
+      - 'tools/autonomous-development-worker.mjs'
+      - 'tools/autonomous-safe-edit.mjs'
       - 'qa/autonomous-work-planner.test.mjs'
       - 'qa/autonomous-queue-state.test.mjs'
+      - 'qa/autonomous-development-worker.test.mjs'
       - 'autonomous-portfolio.json'
       - 'public-game-health.json'
       - 'game-artbooks.json'
@@ -27,6 +30,8 @@ concurrency:
 
 env:
   AUTONOMOUS_LOCAL_MODEL: qwen3:0.6b
+  AUTONOMOUS_MODEL_MAX_PREDICT: '1536'
+  AUTONOMOUS_MODEL_TIMEOUT_MS: '240000'
   OLLAMA_HOST: 127.0.0.1:11434
 
 jobs:
@@ -88,6 +93,17 @@ jobs:
         run: |
           echo "AUTONOMOUS_WORK=NO_ELIGIBLE_ITEM"
           echo "QUEUE_STOP_REASON=${{ steps.order.outputs.reason }}"
+
+      - name: Hand off exhausted game queue to portfolio continuation
+        if: steps.order.outputs.run != 'true' && steps.order.outputs.reason == 'NO_UNPROCESSED_WORK_TODAY'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run autonomous-portfolio-continuation.yml --ref main
+          echo 'PORTFOLIO_CONTINUATION=DISPATCHED'
+          echo 'PUBLIC_MAIN_RELEASE=NO'
 
       - name: Deterministic planner, queue, budget and worker tests
         if: steps.order.outputs.run == 'true'
@@ -172,6 +188,7 @@ jobs:
         run: |
           ollama pull "$AUTONOMOUS_LOCAL_MODEL"
           echo "MODEL_CALL_BUDGET=1"
+          echo "MODEL_MAX_PREDICT=$AUTONOMOUS_MODEL_MAX_PREDICT"
           echo "PAID_API=NO"
 
       - name: Generate isolated candidate
@@ -225,7 +242,10 @@ jobs:
           echo "- paid API: NO" >> "$GITHUB_STEP_SUMMARY"
           echo "- actions quota mode: verified public standard / unmetered free" >> "$GITHUB_STEP_SUMMARY"
           echo "- local model calls/run: max 1" >> "$GITHUB_STEP_SUMMARY"
+          echo "- local model max predict: 1536" >> "$GITHUB_STEP_SUMMARY"
+          echo "- local model timeout: 240000ms" >> "$GITHUB_STEP_SUMMARY"
           echo "- daily work cap: 8" >> "$GITHUB_STEP_SUMMARY"
           echo "- same game per KST day: max 1 reservation" >> "$GITHUB_STEP_SUMMARY"
+          echo "- exhausted game queue: portfolio continuation dispatch" >> "$GITHUB_STEP_SUMMARY"
           echo "- failed reserved work: dispatch next item" >> "$GITHUB_STEP_SUMMARY"
           echo "- candidate promotion: separate independent QA" >> "$GITHUB_STEP_SUMMARY"
