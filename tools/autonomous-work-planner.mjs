@@ -10,6 +10,11 @@ const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file
 const clean=v=>String(v??'').trim();
 const ensureDir=file=>fs.mkdirSync(path.dirname(file),{recursive:true});
 const writeJson=(file,value)=>{ensureDir(file);fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
+const issueText=issue=>{
+  if(typeof issue==='string')return issue.trim();
+  if(!issue||typeof issue!=='object')return clean(issue);
+  return [issue.type,issue.message,issue.code].filter(Boolean).map(clean).filter(Boolean).join(': ');
+};
 
 function kstDate(now=new Date()){
   const p=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
@@ -39,7 +44,7 @@ function improvementHints(book){
 function runtimeIncident(health,slug){
   const item=(health?.games??[]).find(game=>game.gameId===slug);
   if(!item)return null;
-  const issues=Array.isArray(item.issues)?item.issues.filter(Boolean):[];
+  const issues=Array.isArray(item.issues)?item.issues.map(issueText).filter(Boolean):[];
   const blocked=String(item.status??'').toLowerCase()==='critical'||issues.length>0||item.signals?.loadOk===false||item.signals?.reloadOk===false;
   return blocked?{status:item.status??'unknown',issues,healthReason:item.healthReason??null}:null;
 }
@@ -139,4 +144,4 @@ if(import.meta.url===pathToFileURL(process.argv[1]).href){
   main().catch(error=>{console.error(error.message);process.exitCode=1;});
 }
 
-export { baseGoal, improvementHints, kstDate, latestArtbookFor, runtimeIncident };
+export { baseGoal, improvementHints, issueText, kstDate, latestArtbookFor, runtimeIncident };
