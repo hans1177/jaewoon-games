@@ -21,29 +21,30 @@ function installStyles(){
 .brand{width:100%;justify-content:center}
 .brand img{object-position:center center!important}
 .companyLink{display:none!important}
+.homeFocus,#gameHub,.teamPanel{font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif!important}
 
 #hero.homeFocus{width:96%;margin:0 auto 14px;min-height:210px;border-radius:20px;overflow:hidden;color:#fff;background:#102d42;box-shadow:0 10px 26px rgba(28,93,138,.16);position:relative;isolation:isolate}
 #hero.homeFocus:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,20,31,.94),rgba(3,20,31,.62) 55%,rgba(3,20,31,.2)),var(--focus-bg) center/cover no-repeat;z-index:-1}
 #hero.homeFocus:after{display:none}
 .homeFocusInner{min-height:210px;padding:24px;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start}
-.homeFocusInner small{font-size:11px;font-weight:1000;color:#9fe7ff}
-.homeFocusInner h1{margin:4px 0 7px;font-family:'Jua';font-size:32px;line-height:1.08;text-shadow:0 3px 11px #0008}
+.homeFocusInner small{font-size:11px;font-weight:900;color:#9fe7ff}
+.homeFocusInner h1{margin:4px 0 7px;font-family:inherit!important;font-weight:900;font-size:32px;line-height:1.08;text-shadow:0 3px 11px #0008}
 .homeFocusInner p{max-width:620px;margin:0 0 12px;font-size:13px;font-weight:800;line-height:1.5;color:#e7f4fb;text-shadow:0 2px 8px #0009}
 .homeFocusMeta{display:flex;gap:6px;flex-wrap:wrap}
 .homeFocusMeta span{padding:5px 8px;border:1px solid #ffffff55;border-radius:999px;background:#ffffff20;font-size:10px;font-weight:900}
-.homeFocusBtn{margin-top:12px;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;background:#2b91e6;color:#fff;text-decoration:none;font-size:12px;font-weight:1000}
+.homeFocusBtn{margin-top:12px;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;background:#2b91e6;color:#fff;text-decoration:none;font-size:12px;font-weight:900}
 
 #gameHub{padding:14px 0 3px}
 #gameHub>.sectionHead{display:none!important}
 #gameGrid{display:none!important}
 .homeCategoryChips{display:flex;gap:7px;flex-wrap:wrap;padding:0 16px 12px}
-.homeCategoryChip{display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border:1px solid #b9d8ed;border-radius:999px;background:#eef8ff;color:#1767a9;font-size:10px;font-weight:1000}
+.homeCategoryChip{display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border:1px solid #b9d8ed;border-radius:999px;background:#eef8ff;color:#1767a9;font-size:10px;font-weight:900}
 .homeCategoryChip b{margin-left:5px;font-size:11px}
 .gameFold{margin:0 16px 12px;border:1px solid #d5e8f1;border-radius:16px;background:#f9fdff;overflow:hidden}
 .gameFold summary{list-style:none;cursor:pointer;padding:14px 16px;display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:9px;background:#eef8ff;user-select:none}
 .gameFold summary::-webkit-details-marker{display:none}
-.gameFold summary strong{font-family:'Jua';font-size:18px;color:#155e9f}
-.gameFold summary span{font-size:10px;color:#5f7a8d;font-weight:900}
+.gameFold summary strong{font-family:inherit!important;font-weight:900;font-size:18px;color:#155e9f}
+.gameFold summary span{font-size:10px;color:#5f7a8d;font-weight:800}
 .gameFold summary i{font-style:normal;font-size:15px;color:#1767a9;transition:transform .2s ease}
 .gameFold[open] summary i{transform:rotate(180deg)}
 .foldGameGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px}
@@ -52,39 +53,39 @@ function installStyles(){
 .foldGameArt img{width:100%;height:100%;display:block;object-fit:cover}
 .foldGameArt:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 48%,rgba(2,18,29,.85))}
 .foldGameTitle{position:absolute;z-index:2;left:12px;right:44px;bottom:10px;color:#fff}
-.foldGameTitle b{display:block;font-size:20px;text-shadow:0 2px 5px #000}
+.foldGameTitle b{display:block;font-size:20px;font-weight:900;text-shadow:0 2px 5px #000}
 .foldGameTitle small{display:block;margin-top:2px;font-size:9px;color:#d9edf7;font-weight:800}
 .foldGameBody{padding:12px}
 .foldBadges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
-.foldBadge{display:inline-flex;align-items:center;min-height:22px;padding:0 7px;border-radius:999px;background:#e6f2fb;color:#4d7087;font-size:9px;font-weight:1000}
+.foldBadge{display:inline-flex;align-items:center;min-height:22px;padding:0 7px;border-radius:999px;background:#e6f2fb;color:#4d7087;font-size:9px;font-weight:900}
 .foldBadge.release{background:#d9f4e4;color:#197340}
 .foldBadge.development{background:#dcecff;color:#185f93}
 .foldBadge.review{background:#ffe8d8;color:#99502d}
-.foldGameBody p{margin:7px 0;font-size:11px;line-height:1.5;color:#536f82;font-weight:760}
-.foldGameMeta{font-size:9px;line-height:1.6;color:#6d8799;font-weight:850}
+.foldGameBody p{margin:7px 0;font-size:11px;line-height:1.5;color:#536f82;font-weight:700}
+.foldGameMeta{font-size:9px;line-height:1.6;color:#6d8799;font-weight:800}
 .foldGameActions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
-.foldGameBtn{display:flex;align-items:center;justify-content:center;min-height:38px;padding:0 6px;border-radius:10px;text-decoration:none;text-align:center;font-size:9px;font-weight:1000;background:#2488df;color:#fff;border:1px solid #2488df}
+.foldGameBtn{display:flex;align-items:center;justify-content:center;min-height:38px;padding:0 6px;border-radius:10px;text-decoration:none;text-align:center;font-size:9px;font-weight:900;background:#2488df;color:#fff;border:1px solid #2488df}
 .foldGameBtn.secondary{background:#eef8ff;color:#1767a9;border-color:#afd7ef}
 .foldGameBtn.off{background:#e8eef2;color:#7c8c96;border-color:#dce5eb;pointer-events:none}
 .foldGameBtn.alert{background:#fff3cd;color:#735800;border-color:#f2d98a}
 
 .teamPanel{padding-bottom:14px}
 .teamPanel .sectionHead{align-items:flex-end;padding:16px 16px 10px}
-.teamPanel .sectionHead h2{font-size:26px}
+.teamPanel .sectionHead h2{font-family:inherit!important;font-weight:900;font-size:26px}
 .teamWrap{padding:0 16px}
 .teamOwner{display:grid;grid-template-columns:110px 1fr;gap:14px;background:#102d42;color:#fff;border-radius:15px;padding:12px;margin-bottom:12px}
 .teamOwner img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:12px;background:#dceefa}
-.teamOwner h3{margin:0 0 4px;font-family:'Jua';font-size:20px}
-.teamOwner p{margin:0;font-size:11px;line-height:1.5;color:#d5e7f1;font-weight:760}
+.teamOwner h3{margin:0 0 4px;font-family:inherit!important;font-weight:900;font-size:20px}
+.teamOwner p{margin:0;font-size:11px;line-height:1.5;color:#d5e7f1;font-weight:700}
 .teamAwards{margin-top:8px;padding-top:8px;border-top:1px solid #ffffff30;display:flex;gap:6px;flex-wrap:wrap}
-.teamAwards span{padding:4px 7px;border-radius:999px;background:#ffffff14;font-size:9px;font-weight:900}
+.teamAwards span{padding:4px 7px;border-radius:999px;background:#ffffff14;font-size:9px;font-weight:800}
 .aiTeamGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
 .aiTeamCard{background:#eef8fd;border-radius:12px;padding:9px;text-align:center}
 .aiTeamPhoto{width:66px;height:66px;display:block;margin:0 auto 7px;border:3px solid #fff;border-radius:50%;background:#d8edf8;box-shadow:0 3px 8px #174d6b22}
-.aiTeamCard b{display:block;color:#1767a9;font-size:12px}
-.aiTeamCard span{display:block;margin-top:3px;font-size:9px;line-height:1.4;color:#5f7a8d;font-weight:780}
+.aiTeamCard b{display:block;color:#1767a9;font-size:12px;font-weight:900}
+.aiTeamCard span{display:block;margin-top:3px;font-size:9px;line-height:1.4;color:#5f7a8d;font-weight:700}
 .teamActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.teamActions a{display:flex;align-items:center;justify-content:center;min-height:40px;border-radius:10px;background:#195b8c;color:#fff;text-decoration:none;font-size:11px;font-weight:1000}
+.teamActions a{display:flex;align-items:center;justify-content:center;min-height:40px;border-radius:10px;background:#195b8c;color:#fff;text-decoration:none;font-size:11px;font-weight:900}
 .teamActions a:last-child{background:#eef9ff;color:#1769a9;border:1px solid #afd7ef}
 
 @media(max-width:700px){
