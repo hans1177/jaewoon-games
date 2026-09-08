@@ -13,6 +13,11 @@ permissions:
   contents: write
   actions: write
 
+env:
+  VIBE2_PRIORITY_POLICY: owner-release-development
+  VIBE2_AUTO_DEPLOY_VERIFIED_ONLY: 'true'
+  VIBE2_MAX_CONCURRENT_GAME_TASKS: '1'
+
 concurrency:
   group: vibe2-24h-runner
   cancel-in-progress: false
@@ -38,6 +43,9 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-vibe2-core'
           git config user.email 'vibe2-core@users.noreply.github.com'
+          echo "VIBE2_PRIORITY_POLICY=$VIBE2_PRIORITY_POLICY"
+          echo "VIBE2_AUTO_DEPLOY_VERIFIED_ONLY=$VIBE2_AUTO_DEPLOY_VERIFIED_ONLY"
+          echo "VIBE2_MAX_CONCURRENT_GAME_TASKS=$VIBE2_MAX_CONCURRENT_GAME_TASKS"
 
           for attempt in 1 2 3; do
             echo "VIBE2_AUTOPLAN_ATTEMPT=$attempt/3"
