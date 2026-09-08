@@ -12,10 +12,13 @@ on:
       - 'tools/artbook-prepare-daily.mjs'
       - 'tools/artbook-department-runner.mjs'
       - 'tools/artbook-second-work-runner.mjs'
+      - 'tools/artbook-visual-plan-runner.mjs'
       - 'tools/artbook-collaboration-runner.mjs'
       - 'tools/artbook-director-review.mjs'
+      - 'tools/artbook-director-presentation.mjs'
       - 'tools/artbook-gate.mjs'
       - 'tools/artbook-assemble.mjs'
+      - 'tools/artbook-postprocess.mjs'
       - '.github/workflows/artbook-free-department-bots.yml'
 
 permissions:
@@ -78,7 +81,7 @@ jobs:
       matrix:
         role: [planning, graphics, development, qa, balance]
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 18
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
@@ -120,13 +123,20 @@ jobs:
           else
             node tools/artbook-department-runner.mjs
           fi
-      - name: Upload department-owned section
+      - name: Department AI authors visual-first pages
+        env:
+          ARTBOOK_ROLE: ${{ matrix.role }}
+          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
+          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
+        run: node tools/artbook-visual-plan-runner.mjs
+      - name: Upload department-owned section and visuals
         uses: actions/upload-artifact@v4
         with:
           name: round1-${{ matrix.role }}
           path: |
             artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/${{ matrix.role }}.json
             artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/visuals/${{ matrix.role }}.svg
+            artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/visuals/${{ matrix.role }}-*.svg
           retention-days: 1
           if-no-files-found: error
 
@@ -141,15 +151,24 @@ jobs:
           pattern: round1-*
           path: .artbook-round1
           merge-multiple: true
-      - name: Verify all five sections exist
+      - name: Verify five employee visual assignments
         shell: bash
         run: |
           set -euo pipefail
-          for ROLE in planning graphics development qa balance; do
-            test -s ".artbook-round1/$ROLE.json"
-            test -s ".artbook-round1/visuals/$ROLE.svg"
-          done
-          echo 'DEPARTMENT_ROUND=5/5'
+          node <<'NODE'
+          const fs=require('fs');
+          const expected={planning:2,graphics:2,development:2,qa:1,balance:1};
+          for(const [role,count] of Object.entries(expected)){
+            const file=`.artbook-round1/${role}.json`;
+            if(!fs.existsSync(file))throw new Error(`${role} json missing`);
+            const d=JSON.parse(fs.readFileSync(file,'utf8')),p=d.presentation;
+            if(p?.mode!=='VISUAL_FIRST_EMPLOYEE_AUTHORED'||p?.generatedBy?.assistantAuthored!==false||p?.pages?.length!==count)throw new Error(`${role} visual assignment incomplete`);
+            for(let i=1;i<=count;i++)if(!fs.existsSync(`.artbook-round1/visuals/${role}-${i}.svg`))throw new Error(`${role}-${i}.svg missing`);
+          }
+          console.log('DEPARTMENT_ROUND=5/5');
+          console.log('DEPARTMENT_VISUAL_PAGES=8/8');
+          console.log('ASSISTANT_AUTHORED_PAGES=0');
+          NODE
       - name: Bundle department round for peer review
         uses: actions/upload-artifact@v4
         with:
@@ -210,7 +229,7 @@ jobs:
     needs: [context, collect-round1]
     if: needs.context.outputs.run == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 18
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
@@ -240,11 +259,19 @@ jobs:
           ARTBOOK_DATE: ${{ needs.context.outputs.date }}
           ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
         run: node tools/artbook-director-review.mjs
-      - name: Upload director rating review
+      - name: Director AI authors cover and summary
+        env:
+          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
+          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
+        run: node tools/artbook-director-presentation.mjs
+      - name: Upload director review and visual presentation
         uses: actions/upload-artifact@v4
         with:
-          name: director-review
-          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews/director.json
+          name: director-bundle
+          path: |
+            artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews/director.json
+            artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/presentation/director-presentation.json
+            artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/visuals/director-*.svg
           retention-days: 1
           if-no-files-found: error
 
@@ -263,7 +290,7 @@ jobs:
         with:
           name: daily-work-order
           path: .
-      - name: Restore five department sections
+      - name: Restore five department sections and visual pages
         uses: actions/download-artifact@v4
         with:
           name: round1-bundle
@@ -274,11 +301,11 @@ jobs:
           pattern: round2-*
           path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews
           merge-multiple: true
-      - name: Restore director fifth rating review
+      - name: Restore director review and visual presentation
         uses: actions/download-artifact@v4
         with:
-          name: director-review
-          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews
+          name: director-bundle
+          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
       - name: Validate 5 sections, 5 peer reviews and director fifth votes
         env:
           ARTBOOK_DATE: ${{ needs.context.outputs.date }}
@@ -288,15 +315,32 @@ jobs:
           node - <<'NODE'
           const fs=require('fs');const g=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8'));
           if(g.readyCount!==5||g.reviewReadyCount!==5||g.directorReviewReady!==true||g.readyForDirectorAssembly!==true)throw new Error(`artbook not ready: ${g.readyCount}/5 + ${g.reviewReadyCount}/5 + director=${g.directorReviewReady}`);
-          if(g.collaborationProtocol!=='PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5')throw new Error('rating protocol mismatch');
-          if(g.ratingsPerDepartment!==5)throw new Error('each department result must receive five ratings');
-          console.log('FREE_DEPARTMENT_SUBMISSIONS=5/5');console.log('FREE_PEER_REVIEWS=5/5');console.log('DIRECTOR_RATING_REVIEW=1/1');console.log('RATINGS_PER_DEPARTMENT=5');
+          if(g.collaborationProtocol!=='PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5'||g.ratingsPerDepartment!==5)throw new Error('rating protocol mismatch');
+          console.log('FREE_DEPARTMENT_SUBMISSIONS=5/5');console.log('FREE_PEER_REVIEWS=5/5');console.log('DIRECTOR_RATING_REVIEW=1/1');
           NODE
-      - name: Assemble ratings and schedule next-day second work when needed
+      - name: Assemble verified department material
         env:
           ARTBOOK_DATE: ${{ needs.context.outputs.date }}
           ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
         run: node tools/artbook-assemble.mjs
+      - name: Assemble employee-authored visual artbook to exact 10 pages
+        env:
+          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
+          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
+        run: node tools/artbook-postprocess.mjs
+      - name: Verify employee ownership and exact page plan
+        env:
+          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
+          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),g=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8')),a=JSON.parse(fs.readFileSync(g.assembledFile,'utf8'));
+          const order=['director','planning','planning','graphics','graphics','development','development','qa','balance','director'];
+          if(a.status!=='COMPLETED'||a.cuts?.length!==10)throw new Error('10-page completion failed');
+          if(a.cuts.some((p,i)=>p.sourceDepartment!==order[i]||p.employeeAuthored!==true||p.assistantAuthored!==false))throw new Error('employee page ownership/order failed');
+          if(a.postprocess?.assistantAuthorship!==false||a.postprocess?.imageFirst!==true)throw new Error('visual-first authorship guard failed');
+          console.log('ARTBOOK_COMPLETED=10/10');console.log('EMPLOYEE_AUTHORED=10/10');console.log('ASSISTANT_AUTHORED=0/10');
+          NODE
       - name: Synchronize queue state
         env:
           ARTBOOK_DATE: ${{ needs.context.outputs.date }}
@@ -306,11 +350,11 @@ jobs:
           node - <<'NODE'
           const fs=require('fs');const q=JSON.parse(fs.readFileSync('artbook-submission-queue.json','utf8'));const roles=['planning','graphics','development','qa','balance'];const mode=process.env.ARTBOOK_MODE||'INITIAL';
           q.updatedAt=process.env.ARTBOOK_DATE;q.currentDailyTarget=process.env.ARTBOOK_GAME_ID;
-          q.currentTargetExecution={...(q.currentTargetExecution||{}),date:process.env.ARTBOOK_DATE,mode,readySections:5,requiredSections:5,readyReviews:5,requiredReviews:5,directorReviewReady:true,ratingsPerDepartment:5,directorAssemblyReady:true,runnerDispatch:mode==='SECOND_WORK'?'FREE_LOCAL_OPEN_MODEL_SECOND_WORK_COMPLETE':'FREE_LOCAL_OPEN_MODEL_COMPLETE',runnerModel:'qwen3:0.6b',runnerPaidApi:false,runnerApiKeyRequired:false,firstRoundIndependent:mode==='INITIAL',secondRoundProtocol:'PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5',departmentOpinionsPublished:true,assemblyGrantsProductionApproval:false};
-          const g=(q.games||[]).find(x=>x.gameId===process.env.ARTBOOK_GAME_ID);if(g){g.status=mode==='SECOND_WORK'?'SECOND_WORK_ASSEMBLED_AWAITING_OWNER_DECISION':'INITIAL_ARTBOOK_ASSEMBLED_AWAITING_OWNER_DECISION';g.sectionsReady=[...roles];g.reviewsReady=[...roles];g.directorReviewReady=true;g.ratingsPerDepartment=5;g.directorAssemblyReady=true;g.currentStage=mode==='SECOND_WORK'?'second-work-assembled-awaiting-owner-decision':'initial-artbook-assembled-awaiting-owner-decision';}
+          q.currentTargetExecution={...(q.currentTargetExecution||{}),date:process.env.ARTBOOK_DATE,mode,readySections:5,requiredSections:5,readyReviews:5,requiredReviews:5,directorReviewReady:true,ratingsPerDepartment:5,directorAssemblyReady:true,visualFirst:true,employeeAuthoredPages:10,assistantAuthoredPages:0,pagePlan:['cover','planning','planning','graphics','graphics','development','development','qa','balance','summary'],runnerDispatch:mode==='SECOND_WORK'?'FREE_LOCAL_OPEN_MODEL_SECOND_WORK_COMPLETE':'FREE_LOCAL_OPEN_MODEL_COMPLETE',runnerModel:'qwen3:0.6b',runnerPaidApi:false,runnerApiKeyRequired:false,firstRoundIndependent:mode==='INITIAL',secondRoundProtocol:'PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5',departmentOpinionsPublished:true,assemblyGrantsProductionApproval:false};
+          const g=(q.games||[]).find(x=>x.gameId===process.env.ARTBOOK_GAME_ID);if(g){g.status=mode==='SECOND_WORK'?'SECOND_WORK_ARTBOOK_COMPLETED_AWAITING_OWNER_DECISION':'INITIAL_ARTBOOK_COMPLETED_AWAITING_OWNER_DECISION';g.sectionsReady=[...roles];g.reviewsReady=[...roles];g.directorReviewReady=true;g.ratingsPerDepartment=5;g.directorAssemblyReady=true;g.currentStage=mode==='SECOND_WORK'?'second-work-artbook-completed':'initial-artbook-completed';g.visualFirst=true;g.pageCount=10;}
           fs.writeFileSync('artbook-submission-queue.json',JSON.stringify(q,null,2)+'\n');
           NODE
-      - name: Commit verified department work and integrated draft
+      - name: Commit verified employee-authored 10-page artbook
         shell: bash
         run: |
           set -euo pipefail
@@ -319,7 +363,7 @@ jobs:
           git add "artbook-work-orders/${DATE_KST}-${GAME_ID}.json" "artbook-submissions/${GAME_ID}/${DATE_KST}/" artbook-gate-status.json game-artbooks.json artbook-submission-queue.json
           git add artbook-second-work-queue.json 2>/dev/null || true
           if git diff --cached --quiet; then echo 'ARTBOOK_FINAL_COMMIT=NO_CHANGES';exit 0;fi
-          git commit -m "artbook: assemble ${GAME_ID} ${DATE_KST} department draft"
+          git commit -m "artbook: publish ${GAME_ID} ${DATE_KST} employee visual 10-page book"
           git pull --rebase origin main
           git push origin main
           echo 'ARTBOOK_FINAL_COMMIT=SUCCESS';echo 'PRODUCTION_APPROVAL=NO'
