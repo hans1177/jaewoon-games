@@ -1,5 +1,69 @@
 {
   "version": 1,
   "mode": "short-verified-work-chains",
-  "tasks": []
+  "tasks": [
+    {
+      "id": "daechung-rpg-region-controls-4-7",
+      "gameId": "daechung-rpg",
+      "target": "unity",
+      "department": "development",
+      "type": "implementation",
+      "goal": "대충 RPG의 GameCatalog에 이미 존재하는 field-4, field-5, field-6, jungle 지역을 RuntimeBootstrap 지역 이동 UI에 연결한다. 각 버튼의 레벨 잠금은 기존 RegionDefinition.recommendedLevelMin 값을 사용하고, 기존 전투 수치·보상·세이브 구조·지역 데이터는 변경하지 않는다. 모바일 화면에서 버튼이 기존 ScrollView 안에서 자연스럽게 보이도록 기존 IMGUI 구조를 유지한다.",
+      "responsibleFiles": [
+        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "dependencies": [],
+      "priority": "high",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": false,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "evidence": []
+    },
+    {
+      "id": "daechung-rpg-save-null-guards",
+      "gameId": "daechung-rpg",
+      "target": "unity",
+      "department": "development",
+      "type": "implementation",
+      "goal": "대충 RPG 기존 세이브를 깨지 않도록 GameCore.Load 직후 PlayerState의 ownedWeapons, ownedArmors, completedHiddenQuests가 null인 오래되거나 불완전한 JSON 세이브를 안전하게 빈 목록으로 복구한다. SaveKey, GameSaveData.version, 밸런스 수치, 장비 소유 의미는 변경하지 않는다.",
+      "responsibleFiles": [
+        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": false,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "evidence": []
+    },
+    {
+      "id": "daechung-rpg-motion-routine-safety",
+      "gameId": "daechung-rpg",
+      "target": "unity",
+      "department": "development",
+      "type": "implementation",
+      "goal": "대충 RPG PrototypeAnimatedVisuals에서 전투 코루틴이 진행 중일 때 새 지역 이동/전투 이동 모션을 시작하면 이전 combat routine이 남아 애니메이션 상태를 덮어쓰지 않도록 안전하게 정리한다. 기존 애니메이션 파일, 전투 판정 타이밍, 데미지/보상 수치, 에셋 라이선스는 변경하지 않는다.",
+      "responsibleFiles": [
+        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs"
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": false,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "evidence": []
+    }
+  ]
 }
