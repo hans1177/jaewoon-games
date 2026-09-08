@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-controller-contract.test.mjs
-// 역할: Vibe2 24시간 컨트롤러의 엔진 실행 분기와 안전 계약을 검증한다.
+// 역할: Vibe2 24시간 컨트롤러의 엔진 분기, 직렬 실행, 최신 main 후보 생성 안전 계약을 검증한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -8,126 +8,62 @@ import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
 import { classifyVibeExecutionRoute } from '../tools/vibe2-continuous-runner.mjs';
 
 const workflow = fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml', import.meta.url), 'utf8');
-const resultWorkflow = fs.readFileSync(new URL('../.github/workflows/vibe2-unity-candidate-result.yml', import.meta.url), 'utf8');
 const runtime = JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json', import.meta.url), 'utf8'));
 
-test('Unreal C++ routes to text source worker', () => {
-  const adapter = createVibeEngineAdapter({ target: 'unreal', gameSlug: 'demo' });
-  const route = classifyVibeExecutionRoute({
-    target: 'unreal',
-    task: {
-      type: 'implementation',
-      goal: 'Unreal C++ Hero.cpp 이동 로직 수정',
-      responsibleFiles: ['unreal-games/demo/Source/Demo/Hero.cpp']
-    },
-    adapter
-  });
-  assert.equal(route.route, 'text-source-worker');
-  assert.equal(route.requiresEditor, false);
+test('Unreal C++ routes to text worker but Blueprint/uasset route to editor', () => {
+  const adapter = createVibeEngineAdapter({ target:'unreal', gameSlug:'demo' });
+  assert.equal(classifyVibeExecutionRoute({ target:'unreal', task:{ type:'implementation', goal:'Hero.cpp 수정', responsibleFiles:['unreal-games/demo/Source/Demo/Hero.cpp'] }, adapter }).route, 'text-source-worker');
+  assert.equal(classifyVibeExecutionRoute({ target:'unreal', task:{ type:'implementation', goal:'Animation Blueprint Montage 수정', responsibleFiles:[] }, adapter }).route, 'engine-editor');
+  assert.equal(classifyVibeExecutionRoute({ target:'unreal', task:{ type:'implementation', goal:'캐릭터 수정', responsibleFiles:['unreal-games/demo/Content/Hero.uasset'] }, adapter }).reason, 'responsible-binary-asset');
 });
 
-test('Unreal Blueprint and uasset route to engine editor', () => {
-  const adapter = createVibeEngineAdapter({ target: 'unreal', gameSlug: 'demo' });
-  const blueprint = classifyVibeExecutionRoute({
-    target: 'unreal',
-    task: { type: 'implementation', goal: 'Animation Blueprint와 Montage 전환 수정', responsibleFiles: [] },
-    adapter
-  });
-  assert.equal(blueprint.route, 'engine-editor');
-  assert.equal(blueprint.requiresEditor, true);
-
-  const binary = classifyVibeExecutionRoute({
-    target: 'unreal',
-    task: { type: 'implementation', goal: '캐릭터 모션 수정', responsibleFiles: ['unreal-games/demo/Content/Hero.uasset'] },
-    adapter
-  });
-  assert.equal(binary.route, 'engine-editor');
-  assert.equal(binary.reason, 'responsible-binary-asset');
+test('non-write QA routes to analysis only', () => {
+  const adapter = createVibeEngineAdapter({ target:'unity', gameSlug:'demo' });
+  assert.equal(classifyVibeExecutionRoute({ target:'unity', task:{ type:'qa', goal:'빌드 오류 조사', responsibleFiles:[] }, adapter }).route, 'analysis-only');
 });
 
-test('non-write QA task routes to analysis only', () => {
-  const adapter = createVibeEngineAdapter({ target: 'unity', gameSlug: 'demo' });
-  const route = classifyVibeExecutionRoute({
-    target: 'unity',
-    task: { type: 'qa', goal: '현재 빌드 오류 원인 조사', responsibleFiles: [] },
-    adapter
-  });
-  assert.equal(route.route, 'analysis-only');
+test('runtime uses one serial worker without separate file locks', () => {
+  assert.equal(runtime.version, 4);
+  assert.equal(runtime.continuous.strategy, 'single-worker-priority-serial-queue');
+  assert.equal(runtime.continuous.maxConcurrentGameTasks, 1);
+  assert.deepEqual(runtime.continuous.priorityOrder, ['owner-directive','release-confirmed','development-confirmed','reviewing','other']);
+  assert.equal(runtime.coordination.separateFileLocks, false);
+  assert.equal(runtime.safety.sharedWorkLockRequired, false);
+  assert.equal(runtime.safety.existingWebMaintenanceAllowed, true);
+  assert.equal(runtime.safety.newWebGameAutomatic, false);
+  assert.equal(runtime.assetDecision.learningMayOverrideFixedRules, false);
 });
 
-test('engine adapter forbids binary direct text editing', () => {
-  const unreal = createVibeEngineAdapter({ target: 'unreal', gameSlug: 'demo' });
-  assert.equal(unreal.execution.binaryAssetsDirectTextEditForbidden, true);
-  assert.equal(unreal.execution.editorWorkerRequiredForBinaryAssets, true);
-  assert(unreal.source.editorRequiredPatterns.some((value) => value.endsWith('Content/**/*.uasset')));
-  assert(unreal.source.textWritablePatterns.some((value) => value.endsWith('Source/**/*.cpp')));
-});
-
-test('runtime declares only actually connected worker capabilities', () => {
-  assert.equal(runtime.version, 3);
-  assert.equal(runtime.continuous.maxWorkMinutes, 20);
-  assert.equal(runtime.continuous.maxModelCallsPerRun, 1);
-  assert.equal(runtime.workers.textSource.configured, true);
-  assert.equal(runtime.workers.analysis.configured, false);
-  assert.equal(runtime.engineEditors.unity.authoringWorkerConfigured, false);
-  assert.equal(runtime.engineEditors.unreal.authoringWorkerConfigured, false);
-  assert.equal(runtime.verification.candidateCreationIsFinalPass, false);
-  assert.equal(runtime.verification.engineBuildSuccessIsFinalPass, false);
-  assert.equal(runtime.verification.automaticMainPromotion, false);
-  assert.equal(runtime.verification.automaticExperiencePromotion, false);
-  assert.equal(runtime.safety.binaryAssetsDirectTextEditForbidden, true);
-});
-
-test('runtime requires the shared ChatGPT/Vibe2/company-ai work lock', () => {
-  assert.equal(runtime.workLocks.enabled, true);
-  assert.equal(runtime.workLocks.requiredBeforeSourceWrite, true);
-  assert.equal(runtime.workLocks.stateBranch, 'vibe2-work-locks');
-  assert.equal(runtime.workLocks.statePath, '.vibe2/work-locks.json');
-  assert.deepEqual(runtime.workLocks.workers, ['chatgpt', 'vibe2', 'company-ai']);
-  assert.equal(runtime.workLocks.vibe2WorkerId, 'vibe2');
-  assert.equal(runtime.workLocks.defaultLeaseMinutes, 45);
-  assert.equal(runtime.workLocks.maxLeaseMinutes, 120);
-  assert.equal(runtime.workLocks.remoteClient, 'tools/vibe2-remote-work-lock.mjs');
-  assert.equal(runtime.workLocks.automaticLockSteal, false);
-  assert.equal(runtime.safety.sharedWorkLockRequired, true);
-});
-
-test('continuous controller is bounded, reusable, candidate-only and never auto-passes unverified source work', () => {
-  assert(workflow.includes("cron: '17 * * * *'"));
-  assert(workflow.includes('workflow_call:'));
+test('controller starts candidates from fresh main and never writes main directly', () => {
+  assert(workflow.includes('group: vibe2-single-game-worker'));
   assert(workflow.includes('timeout-minutes: 20'));
+  assert(workflow.includes('--model-calls=1'));
   assert(workflow.includes('--runner-minutes=20'));
-  assert(workflow.includes('VIBE2_MODEL_CALL_BUDGET=1'));
+  assert(workflow.includes('git fetch origin main'));
+  assert(workflow.includes('git worktree add -b "$candidate_branch" "$candidate_dir" origin/main'));
+  assert(workflow.includes('export VIBE2_BASE_MAIN_SHA="$base_sha"'));
   assert(workflow.includes('vibe2/candidate/'));
-  assert(workflow.includes('candidate-awaiting-engine-qa'));
-  assert(workflow.includes('VIBE2_TASK_PASS=NO'));
-  assert(workflow.includes('VIBE2_BINARY_TEXT_EDIT=NO'));
-  assert(workflow.includes('gh workflow run vibe2-24h-runner.yml --ref main'));
-  assert(!workflow.includes('vibe2-queue-control.mjs pass'));
+  assert(workflow.includes('candidate-awaiting-qa-and-deployment'));
+  assert(workflow.includes('vibe2-queue-control.mjs await'));
   assert(!workflow.includes('git push origin HEAD:main'));
-  assert(!workflow.includes('web-games/.autonomous-candidates'));
+  assert(!workflow.includes('vibe2-queue-control.mjs pass'));
 });
 
-test('source worker must acquire and release the shared remote work lock', () => {
-  assert(workflow.includes('tools/vibe2-remote-work-lock.mjs acquire'));
-  assert(workflow.includes('--worker=vibe2'));
-  assert(workflow.includes('--lease-minutes=45'));
-  assert(workflow.includes('shared-work-lock-conflict'));
-  assert(workflow.includes('steps.work_lock.outputs.acquired == \'1\''));
-  assert(workflow.includes('BASE_SHA_DECISION'));
-  assert(workflow.includes('REPLAN_REQUIRED'));
-  assert(workflow.includes('base-sha-overlap-replan-required'));
-  assert(workflow.includes('tools/vibe2-remote-work-lock.mjs release'));
-  assert(workflow.includes('VIBE_REMOTE_WORK_LOCK_RELEASED'));
-  assert(!workflow.includes('work-lock --force'));
+test('controller operational path contains no shared Work Lock', () => {
+  assert(!workflow.includes('vibe2-remote-work-lock.mjs'));
+  assert(!workflow.includes('shared-work-lock'));
+  assert(!workflow.includes('vibe2-work-locks'));
+  assert(workflow.includes('VIBE2_SEPARATE_FILE_LOCK=NO'));
 });
 
-test('all Vibe2 queue writers use the fixed control branch lock and retry moving branches', () => {
-  assert(workflow.includes('group: vibe2-control-state-vibe2-unreal-core'));
-  assert(resultWorkflow.includes('group: vibe2-control-state-${{ github.event.repository.default_branch }}'));
-  assert(workflow.includes('git pull --rebase origin "$VIBE2_CONTROL_BRANCH"'));
-  assert(workflow.includes('for attempt in 1 2 3'));
-  assert(resultWorkflow.includes('VIBE2_RECONCILE_ATTEMPT=$attempt/3'));
-  assert(resultWorkflow.includes('git fetch origin "$CONTROL_BRANCH"'));
-  assert(resultWorkflow.includes('if git push origin "HEAD:$CONTROL_BRANCH"'));
+test('controller allows approved web source root but keeps candidate boundary', () => {
+  assert(workflow.includes('git add "$SOURCE_ROOT" .vibe2/candidates'));
+  assert(workflow.includes('candidate escaped approved boundary'));
+  assert(!workflow.includes('web-games write forbidden'));
+});
+
+test('controller chains only after failure or non-QA block, not while candidate awaits QA', () => {
+  assert(workflow.includes('gh workflow run vibe2-24h-runner.yml'));
+  assert(workflow.includes("steps.candidate.outcome == 'success'"));
+  assert(workflow.includes("steps.candidate.outcome != 'success'"));
 });
