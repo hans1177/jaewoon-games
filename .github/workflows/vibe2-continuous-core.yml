@@ -3,6 +3,7 @@ name: Vibe2 Continuous Core
 on:
   schedule:
     - cron: '17 * * * *'
+  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -10,7 +11,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: vibe2-control-state-${{ github.ref_name }}
+  group: vibe2-control-state-vibe2-unreal-core
   cancel-in-progress: false
 
 env:
@@ -27,7 +28,7 @@ jobs:
       - name: Checkout Vibe2 control line
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref_name }}
+          ref: vibe2-unreal-core
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
@@ -40,7 +41,7 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-vibe2-core'
           git config user.email 'vibe2-core@users.noreply.github.com'
-          echo "VIBE2_CONTROL_BRANCH=${GITHUB_REF_NAME}" >> "$GITHUB_ENV"
+          echo 'VIBE2_CONTROL_BRANCH=vibe2-unreal-core' >> "$GITHUB_ENV"
           echo 'VIBE2_PUBLIC_MAIN_SOURCE_WRITE=NO'
 
       - name: Core contract preflight
@@ -469,7 +470,7 @@ jobs:
           summary="$(node tools/vibe2-queue-control.mjs summary)"
           printf '%s\n' "$summary"
           if printf '%s\n' "$summary" | grep -q 'VIBE2_QUEUE_CONTINUE=YES'; then
-            gh workflow run vibe2-continuous-core.yml --ref "$VIBE2_CONTROL_BRANCH"
+            gh workflow run vibe2-24h-runner.yml --ref main
             echo 'VIBE2_NEXT_WORK_DISPATCH=YES'
           else
             echo 'VIBE2_NEXT_WORK_DISPATCH=NO'
