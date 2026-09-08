@@ -25,6 +25,7 @@ on:
       - tools/artbook-department-runner.mjs
       - tools/artbook-second-work-runner.mjs
       - tools/artbook-collaboration-runner.mjs
+      - tools/artbook-director-review.mjs
       - tools/artbook-gate.mjs
       - tools/artbook-assemble.mjs
       - tools/public-game-health.mjs
@@ -61,6 +62,7 @@ jobs:
           node --check tools/artbook-department-runner.mjs
           node --check tools/artbook-second-work-runner.mjs
           node --check tools/artbook-collaboration-runner.mjs
+          node --check tools/artbook-director-review.mjs
           node --check tools/artbook-gate.mjs
           node --check tools/artbook-assemble.mjs
           node --check tools/public-game-health.mjs
@@ -116,10 +118,15 @@ jobs:
           grep -Fq 'paidApi:false' tools/artbook-collaboration-runner.mjs
           grep -Fq 'PEER_IMPROVEMENT_STAR_5' tools/artbook-collaboration-runner.mjs
           grep -Fq 'mayEvaluateOwnDepartment:false' tools/artbook-collaboration-runner.mjs
+          grep -Fq 'paidApi:false' tools/artbook-director-review.mjs
+          grep -Fq 'DIRECTOR_IMPROVEMENT_STAR_5' tools/artbook-director-review.mjs
+          grep -Fq 'mayRewriteDepartmentResults:false' tools/artbook-director-review.mjs
           grep -Fq 'tools/artbook-second-work-runner.mjs' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'tools/artbook-director-review.mjs' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'director-review:' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'cancel-in-progress: true' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'qwen3:0.6b' .github/workflows/artbook-free-department-bots.yml
-          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/artbook-department-runner.mjs tools/artbook-second-work-runner.mjs tools/artbook-collaboration-runner.mjs; then
+          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/artbook-department-runner.mjs tools/artbook-second-work-runner.mjs tools/artbook-collaboration-runner.mjs tools/artbook-director-review.mjs; then
             echo 'paid/external AI key leaked into free department bot path' >&2
             exit 1
           fi
@@ -137,13 +144,16 @@ jobs:
             if((book.cuts||[]).length>10)throw new Error(`${book.id}: more than 10 cuts`);
             if(book.published===true||book.homepageVisible===true){
               if(book.productionApproval!==false)throw new Error(`${book.id}: visibility cannot grant production approval`);
-              if(book.collaborationProtocol==='PEER_IMPROVEMENT_STAR_5'){
+              if(book.collaborationProtocol==='PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5'){
                 const opinions=book.departmentOpinions||{};
                 for(const role of roles){
                   const o=opinions[role];
-                  if(!o||!String(o.priorityImprovement||'').trim()||!Number.isFinite(Number(o.averageStars))||Number(o.averageStars)<1||Number(o.averageStars)>5)throw new Error(`${book.id}: invalid ${role} peer improvement/star opinion`);
-                  if(Number(o.reviewsReceived)!==4)throw new Error(`${book.id}: ${role} must receive 4 ratings`);
+                  if(!o||!String(o.priorityImprovement||'').trim()||!Number.isFinite(Number(o.averageStars))||Number(o.averageStars)<1||Number(o.averageStars)>5)throw new Error(`${book.id}: invalid ${role} five-vote improvement/star opinion`);
+                  if(Number(o.reviewsReceived)!==5)throw new Error(`${book.id}: ${role} must receive 5 ratings`);
+                  if(Number(o.departmentVotes)!==4||Number(o.directorVotes)!==1)throw new Error(`${book.id}: ${role} must receive 4 department votes + 1 director vote`);
                 }
+                if(Number(book.ratingSummary?.ratingsPerDepartment)!==5)throw new Error(`${book.id}: ratingsPerDepartment must be 5`);
+                if(Number(book.ratingSummary?.departmentVotesPerResult)!==4||Number(book.ratingSummary?.directorVotesPerResult)!==1)throw new Error(`${book.id}: vote composition must be 4+1`);
               }
               for(const cut of book.cuts||[]){if(!cut.title||!cut.body||!cut.image)throw new Error(`${book.id}: incomplete cut ${cut.no}`);}
             }
@@ -151,13 +161,15 @@ jobs:
           console.log('ARTBOOK_CONTRACT=PASS');
           NODE
 
-      - name: Validate peer-rating display
+      - name: Validate five-vote display
         run: |
           set -euo pipefail
-          grep -Fq '5개 부서 상호평가' artbook.html
+          grep -Fq '부서 결과물 5표 평가' artbook.html
+          grep -Fq '타부서 4표 + 총괄 1표' artbook.html
+          grep -Fq '결과물당 5표' artbook.html
           grep -Fq '보완점 1개' artbook.html
           grep -Fq '별점 5점 만점' artbook.html
-          grep -Fq '평균 이하' artbook.html
+          grep -Fq '전체 부서 평균 이하' artbook.html
           grep -Fq 'priorityImprovement' assets/homepage-enhancements.js
           grep -Fq 'averageStars' assets/homepage-enhancements.js
           if grep -Eq '>AGREE<|>COUNTER<|>TEST<|>RESULT<|>DECISION<' artbook.html; then
@@ -166,9 +178,9 @@ jobs:
           fi
           grep -Fq 'departmentOpinions' tools/artbook-assemble.mjs
           grep -Fq 'departmentOpinionsPublished:true' tools/artbook-assemble.mjs
-          echo 'PEER_RATING_DISPLAY=PASS'
+          echo 'FIVE_VOTE_DISPLAY=PASS'
 
-      - name: Validate artbook section and peer-rating gate contract
+      - name: Validate artbook five-vote gate contract
         run: |
           node <<'NODE'
           const fs=require('fs');
@@ -179,33 +191,42 @@ jobs:
           if(gate.directorMayAuthorMissingSections!==false)throw new Error('director section ghostwriting guard missing');
           if(gate.directorMayAuthorMissingReviews!==false)throw new Error('director review ghostwriting guard missing');
           if(gate.readyCount<gate.requiredCount&&gate.readyForDirectorAssembly!==false)throw new Error('director assembly opened before 5/5 sections');
-          if(gate.reviewReadyCount<gate.reviewRequiredCount&&gate.readyForDirectorAssembly!==false)throw new Error('director assembly opened before 5/5 reviews');
+          if(gate.reviewReadyCount<gate.reviewRequiredCount&&gate.readyForDirectorAssembly!==false)throw new Error('director assembly opened before 5/5 department reviews');
+          if(gate.collaborationProtocol==='PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5'&&gate.directorReviewReady!==true&&gate.readyForDirectorAssembly!==false)throw new Error('director assembly opened before director fifth ratings');
           const gateSource=fs.readFileSync('tools/artbook-gate.mjs','utf8');
-          if(!gateSource.includes("PEER_IMPROVEMENT_STAR_5"))throw new Error('new peer rating protocol missing from gate source');
+          if(!gateSource.includes('PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5'))throw new Error('five-vote protocol missing from gate source');
+          if(!gateSource.includes('DIRECTOR_IMPROVEMENT_STAR_5'))throw new Error('director rating protocol missing from gate source');
+          if(!gateSource.includes('ratingsPerDepartment'))throw new Error('ratings-per-department gate missing');
           const assembler=fs.readFileSync('tools/artbook-assemble.mjs','utf8');
-          if(!assembler.includes('newClaimsAdded:false'))throw new Error('assembler new-claims guard missing');
+          if(!assembler.includes('newDepartmentClaimsAdded:false'))throw new Error('assembler new-department-claims guard missing');
           if(!assembler.includes('daily final artbook limit reached'))throw new Error('daily one-artbook guard missing');
           if(!assembler.includes('productionApproval:false'))throw new Error('assembly must not grant production approval');
-          if(!assembler.includes("criterion:'DEPARTMENT_AVERAGE_STARS_LE_OVERALL_AVERAGE'"))throw new Error('average-or-below second-work criterion missing');
+          if(!assembler.includes("criterion:'FIVE_VOTE_DEPARTMENT_AVERAGE_STARS_LE_OVERALL_AVERAGE'"))throw new Error('five-vote average-or-below second-work criterion missing');
+          if(!assembler.includes('ratingsPerDepartment:5'))throw new Error('five ratings per department missing');
+          if(!assembler.includes('departmentVotesPerResult:4'))throw new Error('four department votes per result missing');
+          if(!assembler.includes('directorVotesPerResult:1'))throw new Error('one director vote per result missing');
           if(!assembler.includes("addDays(date,1)"))throw new Error('next-day scheduling missing');
-          if(gate.assembled===true&&gate.collaborationProtocol==='PEER_IMPROVEMENT_STAR_5'){
+          if(gate.assembled===true&&gate.collaborationProtocol==='PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5'){
             const finalFile=gate.assembledFile;
             if(!finalFile||!fs.existsSync(finalFile))throw new Error('assembled gate has no artbook file');
             const book=JSON.parse(fs.readFileSync(finalFile,'utf8'));
             if(book.productionApproval!==false)throw new Error('assembled artbook granted production approval');
-            if(book.directorSummary?.newClaimsAdded!==false)throw new Error('director summary introduced claims');
+            if(book.directorSummary?.newDepartmentClaimsAdded!==false)throw new Error('director summary introduced department claims');
             if(Object.keys(book.departments||{}).length!==roles.length)throw new Error('assembled artbook is not 5/5');
-            if(Object.keys(book.departmentOpinions||{}).length!==roles.length)throw new Error('assembled artbook has no 5/5 peer ratings');
-            if(book.collaboration?.allFiveDepartmentsReviewed!==true)throw new Error('assembled artbook has no 5/5 peer review');
+            if(Object.keys(book.departmentOpinions||{}).length!==roles.length)throw new Error('assembled artbook has no 5/5 result ratings');
+            if(book.collaboration?.allFiveDepartmentsReviewed!==true)throw new Error('assembled artbook has no 5/5 department peer review');
+            if(Number(book.ratingSummary?.ratingsPerDepartment)!==5)throw new Error('assembled artbook result does not have five ratings');
+            if((book.collaboration?.directorReview?.ratings||[]).length!==5)throw new Error('assembled artbook has no director fifth ratings');
           }
-          console.log('ARTBOOK_SECTION_PEER_GATE=PASS');
+          console.log('ARTBOOK_FIVE_VOTE_GATE=PASS');
           NODE
 
       - name: Validate next-day second-work contract
         run: |
           set -euo pipefail
           grep -Fq "mode='SECOND_WORK'" tools/artbook-prepare-daily.mjs
-          grep -Fq "criterion:'AVERAGE_OR_BELOW'" tools/artbook-second-work-runner.mjs
+          grep -Fq "criterion:'FIVE_VOTE_AVERAGE_OR_BELOW_OVERALL_AVERAGE'" tools/artbook-second-work-runner.mjs
+          grep -Fq 'receivedFiveVoteFeedback' tools/artbook-second-work-runner.mjs
           grep -Fq 'CARRIED_FORWARD' tools/artbook-second-work-runner.mjs
           grep -Fq "ARTBOOK_DAILY_MODE" tools/artbook-prepare-daily.mjs
           grep -Fq 'SECOND_WORK' .github/workflows/artbook-free-department-bots.yml
