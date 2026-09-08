@@ -33,7 +33,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve and validate candidate authority
+      - name: Resolve candidate, current authority and boundary
         id: gate
         shell: bash
         run: |
@@ -49,7 +49,6 @@ jobs:
           git show origin/main:game-catalog.json > /tmp/main-game-catalog.json
           MANIFEST="$manifest" node <<'NODE'
           const fs=require('fs');
-          const path=require('path');
           const m=JSON.parse(fs.readFileSync(process.env.MANIFEST,'utf8'));
           const catalog=JSON.parse(fs.readFileSync('/tmp/main-game-catalog.json','utf8'));
           const out=process.env.GITHUB_OUTPUT;
@@ -74,40 +73,18 @@ jobs:
           NODE
 
           decision="$(sed -n 's/^decision=//p' "$GITHUB_OUTPUT" | tail -n1)"
-          if [ "$decision" != 'reject' ]; then
-            source_root="$(sed -n 's/^source_root=//p' "$GITHUB_OUTPUT" | tail -n1)"
-            base_sha="$(sed -n 's/^base_sha=//p' "$GITHUB_OUTPUT" | tail -n1)"
-            git cat-file -e "${base_sha}^{commit}" 2>/dev/null || {
-              echo 'decision=reject' >> "$GITHUB_OUTPUT"; echo 'reason=base-main-sha-missing' >> "$GITHUB_OUTPUT"; exit 0;
-            }
-            if [ -n "$(git diff --name-only "$base_sha" origin/main -- "$source_root")" ]; then
-              echo 'decision=reject' >> "$GITHUB_OUTPUT"
-              echo 'reason=source-root-changed-on-main' >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-            mapfile -t source_changed < <(git diff --name-only "$base_sha" "$GITHUB_SHA" -- "$source_root")
-            if [ "${#source_changed[@]}" -eq 0 ]; then
-              echo 'decision=reject' >> "$GITHUB_OUTPUT"
-              echo 'reason=no-source-change' >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-          fi
-
-      - name: Candidate boundary and whitespace QA
-        if: steps.gate.outputs.decision != 'reject'
-        shell: bash
-        env:
-          SOURCE_ROOT: ${{ steps.gate.outputs.source_root }}
-          BASE_SHA: ${{ steps.gate.outputs.base_sha }}
-        run: |
-          set -euo pipefail
-          git diff --check "$BASE_SHA" "$GITHUB_SHA"
-          mapfile -t changed < <(git diff --name-only "$BASE_SHA" "$GITHUB_SHA")
+          [ "$decision" = 'reject' ] && exit 0
+          source_root="$(sed -n 's/^source_root=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          base_sha="$(sed -n 's/^base_sha=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          reject() { echo 'decision=reject' >> "$GITHUB_OUTPUT"; echo "reason=$1" >> "$GITHUB_OUTPUT"; exit 0; }
+          git cat-file -e "${base_sha}^{commit}" 2>/dev/null || reject base-main-sha-missing
+          [ -z "$(git diff --name-only "$base_sha" origin/main -- "$source_root")" ] || reject source-root-changed-on-main
+          mapfile -t source_changed < <(git diff --name-only "$base_sha" "$GITHUB_SHA" -- "$source_root")
+          [ "${#source_changed[@]}" -gt 0 ] || reject no-source-change
+          git diff --check "$base_sha" "$GITHUB_SHA" || reject candidate-diff-check-failed
+          mapfile -t changed < <(git diff --name-only "$base_sha" "$GITHUB_SHA")
           for file in "${changed[@]}"; do
-            case "$file" in
-              "$SOURCE_ROOT"/*|.vibe2/candidates/*) ;;
-              *) echo "candidate contains unauthorized path: $file" >&2; exit 1 ;;
-            esac
+            case "$file" in "$source_root"/*|.vibe2/candidates/*) ;; *) reject candidate-path-outside-boundary ;; esac
           done
 
   web-release:
@@ -125,9 +102,11 @@ jobs:
           node-version: '22'
 
       - name: Web syntax QA
-        shell: bash
+        id: webqa
+        continue-on-error: true
         env:
           SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
+        shell: bash
         run: |
           set -euo pipefail
           while IFS= read -r -d '' file; do
@@ -135,23 +114,21 @@ jobs:
           done < <(find "$SOURCE_ROOT" -type f -print0)
           echo 'VIBE2_WEB_STATIC_QA=PASS'
 
-      - name: Promote only approved source root to latest main
-        shell: bash
+      - name: Promote approved web source root to latest main
+        id: promote
+        if: steps.webqa.outcome == 'success'
+        continue-on-error: true
         env:
           SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
           BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
           CANDIDATE_SHA: ${{ github.sha }}
+        shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-vibe2-release'
-          git config user.email 'vibe2-release@users.noreply.github.com'
           for attempt in 1 2 3; do
             git fetch origin main --quiet
-            if [ -n "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" ]; then
-              echo 'main source root changed; replan required' >&2
-              exit 1
-            fi
+            [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" ] || { echo 'main source changed; replan required' >&2; exit 1; }
             rm -rf /tmp/vibe2-promote
             git worktree prune
             git worktree add --detach /tmp/vibe2-promote origin/main >/dev/null
@@ -163,39 +140,47 @@ jobs:
             git add "$SOURCE_ROOT"
             git diff --cached --quiet && { echo 'nothing to promote' >&2; exit 1; }
             git commit -m "vibe2: deploy ${TASK_ID}"
-            if git push origin HEAD:main; then
-              echo "VIBE2_MAIN_PROMOTION_SHA=$(git rev-parse HEAD)"
-              exit 0
-            fi
+            if git push origin HEAD:main; then echo "VIBE2_MAIN_PROMOTION_SHA=$(git rev-parse HEAD)"; exit 0; fi
             cd "$GITHUB_WORKSPACE"
             rm -rf /tmp/vibe2-promote
             sleep $((attempt * 2))
           done
           exit 1
 
-      - name: Mark queue PASS and continue
+      - name: Settle web queue and continue
+        if: always()
         env:
           GH_TOKEN: ${{ github.token }}
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          QA_OUTCOME: ${{ steps.webqa.outcome }}
+          PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
         shell: bash
         run: |
           set -euo pipefail
+          rm -rf /tmp/vibe2-control
           git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
           cd /tmp/vibe2-control
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
-          node tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-static-qa-pass,main-auto-promoted,actions-run-${GITHUB_RUN_ID}"
+          if [ "$QA_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then
+            node tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-static-qa-pass,main-auto-promoted,actions-run-${GITHUB_RUN_ID}"
+            result=PASS
+          else
+            node tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=web-qa-or-promotion-failed --evidence="web-qa-${QA_OUTCOME},promotion-${PROMOTE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
+            result=FAIL
+          fi
           git add .vibe2/queue.json
-          git commit -m "vibe2: complete ${TASK_ID} [skip ci]"
+          git commit -m "vibe2: settle web task ${TASK_ID} ${result} [skip ci]"
           for attempt in 1 2 3; do
             git pull --rebase origin vibe2-unreal-core
             git push origin HEAD:vibe2-unreal-core && break
             test "$attempt" -lt 3
             sleep $((attempt * 2))
           done
-          gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main
+          if [ "$result" = PASS ]; then gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main; fi
           gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo 'VIBE2_WEB_AUTO_DEPLOY=PASS'
+          echo "VIBE2_WEB_AUTO_DEPLOY=$result"
+          [ "$result" = PASS ]
 
   unity-build:
     needs: inspect
@@ -205,7 +190,9 @@ jobs:
     steps:
       - name: Checkout candidate
         uses: actions/checkout@v4
-      - name: Validate build request and dispatch candidate APK QA
+      - name: Dispatch candidate APK QA
+        id: dispatch
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
           REQUEST_FILE: ${{ needs.inspect.outputs.request_file }}
@@ -213,11 +200,29 @@ jobs:
         run: |
           set -euo pipefail
           test -f "$REQUEST_FILE"
-          gh workflow run unity-hybrid-android-build.yml \
-            --repo "$GITHUB_REPOSITORY" \
-            --ref "$GITHUB_REF_NAME" \
-            -f request_file="$REQUEST_FILE"
+          gh workflow run unity-hybrid-android-build.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME" -f request_file="$REQUEST_FILE"
           echo 'VIBE2_UNITY_CANDIDATE_BUILD_DISPATCHED=YES'
+
+      - name: Recover queue if build dispatch failed
+        if: steps.dispatch.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TASK_ID: ${{ needs.inspect.outputs.task_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/vibe2-control
+          git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
+          cd /tmp/vibe2-control
+          git config user.name 'jaewoon-vibe2-release'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          node tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-dispatch-failed --evidence="actions-run-${GITHUB_RUN_ID}"
+          git add .vibe2/queue.json
+          git commit -m "vibe2: recover Unity dispatch failure ${TASK_ID} [skip ci]"
+          git pull --rebase origin vibe2-unreal-core
+          git push origin HEAD:vibe2-unreal-core
+          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+          exit 1
 
   reject:
     needs: inspect
@@ -233,6 +238,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          rm -rf /tmp/vibe2-control
           git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
           cd /tmp/vibe2-control
           git config user.name 'jaewoon-vibe2-release'
