@@ -1,0 +1,79 @@
+name: Autonomous New Game QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'autonomous-incubator.json'
+      - 'autonomous-portfolio.json'
+      - 'tools/autonomous-new-game-incubator.mjs'
+      - 'tools/autonomous-prototype-worker.mjs'
+      - 'qa/autonomous-new-game-incubator.test.mjs'
+      - 'qa/autonomous-prototype-worker.test.mjs'
+      - '.github/workflows/autonomous-new-game-incubator.yml'
+      - '.github/workflows/autonomous-prototype-worker.yml'
+      - '.github/workflows/autonomous-candidate-promotion.yml'
+      - '.github/workflows/company-dna-learning.yml'
+      - '.github/workflows/autonomous-new-game-qa.yml'
+  pull_request:
+    paths:
+      - 'tools/autonomous-new-game-incubator.mjs'
+      - 'tools/autonomous-prototype-worker.mjs'
+      - 'qa/autonomous-new-game-incubator.test.mjs'
+      - 'qa/autonomous-prototype-worker.test.mjs'
+      - '.github/workflows/autonomous-new-game-incubator.yml'
+      - '.github/workflows/autonomous-prototype-worker.yml'
+      - '.github/workflows/autonomous-candidate-promotion.yml'
+      - '.github/workflows/company-dna-learning.yml'
+      - '.github/workflows/autonomous-new-game-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  closed-loop-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Deterministic new-game tests
+        run: |
+          node --check tools/autonomous-new-game-incubator.mjs
+          node --check tools/autonomous-prototype-worker.mjs
+          node --test qa/autonomous-new-game-incubator.test.mjs
+          node --test qa/autonomous-prototype-worker.test.mjs
+          node --test qa/autonomous-candidate-review.test.mjs
+      - name: Validate closed-loop contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq "cron: '30 22 * * *'" .github/workflows/autonomous-new-game-incubator.yml
+          grep -Fq "workflows: ['Free Artbook Department Bots']" .github/workflows/autonomous-new-game-incubator.yml
+          grep -Fq "need_model=" .github/workflows/autonomous-new-game-incubator.yml
+          grep -Fq "git commit -m \"incubator: advance operational new-game pipeline\"" .github/workflows/autonomous-new-game-incubator.yml
+          if grep -F 'incubator: advance operational new-game pipeline [skip ci]' .github/workflows/autonomous-new-game-incubator.yml; then
+            echo 'incubator commit would suppress prototype worker' >&2
+            exit 1
+          fi
+          grep -Fq "'.autonomous/prototype-request.json'" .github/workflows/autonomous-prototype-worker.yml
+          grep -Fq 'git fetch origin autonomous-dev' .github/workflows/autonomous-prototype-worker.yml
+          grep -Fq 'PUBLIC_MAIN_BASE=NO' .github/workflows/autonomous-prototype-worker.yml
+          grep -Fq 'SELF_PROMOTE=NO' .github/workflows/autonomous-prototype-worker.yml
+          grep -Fq 'PROTOTYPE_DEV_VERIFIED' .github/workflows/autonomous-candidate-promotion.yml
+          grep -Fq 'MAIN_GAME_CODE_WRITE=NO' .github/workflows/autonomous-candidate-promotion.yml
+          grep -Fq "workflows: ['Autonomous Candidate Promotion']" .github/workflows/company-dna-learning.yml
+          grep -Fq 'jayApproved===true' tools/company-dna-learning.mjs
+          grep -Fq 'selfPromote:false' tools/company-dna-learning.mjs
+          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' \
+            tools/autonomous-new-game-incubator.mjs tools/autonomous-prototype-worker.mjs \
+            .github/workflows/autonomous-new-game-incubator.yml .github/workflows/autonomous-prototype-worker.yml; then
+            echo 'paid/external key path found' >&2
+            exit 1
+          fi
+          echo 'NEW_GAME_CLOSED_LOOP_CONTRACT=PASS'
+          echo 'PUBLIC_MAIN_GAME_CODE_AUTO_PROMOTION=NO'
+          echo 'PAID_API=NO'
