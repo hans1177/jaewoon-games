@@ -10,7 +10,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: vibe2-continuous-core-${{ github.ref_name }}
+  group: vibe2-control-state-${{ github.ref_name }}
   cancel-in-progress: false
 
 env:
@@ -41,7 +41,7 @@ jobs:
           git config user.name 'jaewoon-vibe2-core'
           git config user.email 'vibe2-core@users.noreply.github.com'
           echo "VIBE2_CONTROL_BRANCH=${GITHUB_REF_NAME}" >> "$GITHUB_ENV"
-          echo "VIBE2_PUBLIC_MAIN_SOURCE_WRITE=NO"
+          echo 'VIBE2_PUBLIC_MAIN_SOURCE_WRITE=NO'
 
       - name: Core contract preflight
         run: |
@@ -49,9 +49,14 @@ jobs:
           node --check tools/vibe2-continuous-runner.mjs
           node --check tools/vibe2-source-worker.mjs
           node --check tools/vibe2-queue-control.mjs
+          node --check tools/vibe2-candidate-reconcile.mjs
+          node --check tools/vibe2-experience-control.mjs
           node --test qa/vibe2-core-engine-motion.test.mjs
           node --test qa/vibe2-source-worker.test.mjs
           node --test qa/vibe2-queue-control.test.mjs
+          node --test qa/vibe2-controller-contract.test.mjs
+          node --test qa/vibe2-candidate-reconcile.test.mjs
+          node --test qa/vibe2-experience-control.test.mjs
 
       - name: Plan next Vibe2 work order
         id: order
@@ -105,7 +110,13 @@ jobs:
             echo 'QUEUE_RESERVATION_COMMIT=NO_CHANGE'
           else
             git commit -m "vibe2: reserve ${{ steps.order.outputs.task_id }} [skip ci]"
-            git push origin "HEAD:${VIBE2_CONTROL_BRANCH}"
+            pushed=0
+            for attempt in 1 2 3; do
+              git pull --rebase origin "$VIBE2_CONTROL_BRANCH"
+              if git push origin "HEAD:$VIBE2_CONTROL_BRANCH"; then pushed=1; break; fi
+              sleep $((attempt * 2))
+            done
+            test "$pushed" = 1
           fi
           echo "VIBE2_RESERVED_CONTROL_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
@@ -170,7 +181,7 @@ jobs:
           git add "$SOURCE_ROOT" .vibe2/candidates .vibe2/free-budget-telemetry.json
           git diff --cached --quiet && { echo 'candidate has no source diff' >&2; exit 1; }
           git commit -m "vibe2: candidate ${TASK_ID} [skip ci]"
-          git push origin "HEAD:${candidate_branch}"
+          git push origin "HEAD:$candidate_branch"
           echo "VIBE2_CANDIDATE_BRANCH=$candidate_branch"
           echo "VIBE2_CANDIDATE_SHA=$(git rev-parse HEAD)"
 
@@ -190,7 +201,13 @@ jobs:
             --evidence="$CANDIDATE_BRANCH"
           git add .vibe2/queue.json
           git commit -m "vibe2: await engine QA for ${TASK_ID} [skip ci]"
-          git push origin "HEAD:${VIBE2_CONTROL_BRANCH}"
+          pushed=0
+          for attempt in 1 2 3; do
+            git pull --rebase origin "$VIBE2_CONTROL_BRANCH"
+            if git push origin "HEAD:$VIBE2_CONTROL_BRANCH"; then pushed=1; break; fi
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
           echo 'VIBE2_TASK_PASS=NO'
           echo 'VIBE2_ENGINE_QA_REQUIRED=YES'
 
@@ -226,7 +243,13 @@ jobs:
             --evidence="actions-run-${GITHUB_RUN_ID}"
           git add .vibe2/queue.json
           git commit -m "vibe2: record candidate failure ${TASK_ID} [skip ci]"
-          git push origin "HEAD:${VIBE2_CONTROL_BRANCH}"
+          pushed=0
+          for attempt in 1 2 3; do
+            git pull --rebase origin "$VIBE2_CONTROL_BRANCH"
+            if git push origin "HEAD:$VIBE2_CONTROL_BRANCH"; then pushed=1; break; fi
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
 
       - name: Block engine-editor task until a verified editor worker is configured
         if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'engine-editor'
@@ -242,7 +265,13 @@ jobs:
             --evidence="actions-run-${GITHUB_RUN_ID}"
           git add .vibe2/queue.json
           git commit -m "vibe2: block ${TASK_ID} for engine editor [skip ci]"
-          git push origin "HEAD:${VIBE2_CONTROL_BRANCH}"
+          pushed=0
+          for attempt in 1 2 3; do
+            git pull --rebase origin "$VIBE2_CONTROL_BRANCH"
+            if git push origin "HEAD:$VIBE2_CONTROL_BRANCH"; then pushed=1; break; fi
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
           echo 'VIBE2_BINARY_TEXT_EDIT=NO'
           echo 'VIBE2_TASK_PASS=NO'
 
@@ -259,7 +288,13 @@ jobs:
             --evidence="actions-run-${GITHUB_RUN_ID}"
           git add .vibe2/queue.json
           git commit -m "vibe2: block ${TASK_ID} for analysis worker [skip ci]"
-          git push origin "HEAD:${VIBE2_CONTROL_BRANCH}"
+          pushed=0
+          for attempt in 1 2 3; do
+            git pull --rebase origin "$VIBE2_CONTROL_BRANCH"
+            if git push origin "HEAD:$VIBE2_CONTROL_BRANCH"; then pushed=1; break; fi
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
 
       - name: Chain next independent eligible work immediately
         if: always() && steps.order.outputs.run == 'true'
