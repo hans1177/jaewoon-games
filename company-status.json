@@ -52,7 +52,7 @@
     "webArchiveCount": 11,
     "activeUnityProjects": 1,
     "pendingApprovals": 0,
-    "testBuilds": 0
+    "testBuilds": 1
   },
   "operations": {
     "homepage": {
@@ -117,7 +117,23 @@
       "target": "unity-android"
     }
   ],
-  "testBuilds": [],
+  "testBuilds": [
+    {
+      "gameId": "daechung-rpg",
+      "requestId": "daechung-rpg-hybrid-010",
+      "status": "ready",
+      "channel": "test",
+      "buildRoute": "github-cloud-host-personal",
+      "homepagePublished": true,
+      "sourceCommit": "4b72c183ea551cee753bade3de720cb70c86f0c2",
+      "releaseTag": "test-daechung-rpg-34195183726-1",
+      "release": "https://github.com/hans1177/jaewoon-games/releases/tag/test-daechung-rpg-34195183726-1",
+      "download": "https://github.com/hans1177/jaewoon-games/releases/download/test-daechung-rpg-34195183726-1/daechung-rpg-test.apk",
+      "sha256": "d5e8bb9ab3ff2dbf0c6649b54079015498f2b649f3392c837ad82cdfb2d2eb07",
+      "bytes": 24392688,
+      "builtAt": "2026-09-08T06:51:13.491605+00:00"
+    }
+  ],
   "redevelopmentReview": {
     "status": "running",
     "scope": "all-existing-web-games",
