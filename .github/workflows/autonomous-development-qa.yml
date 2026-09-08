@@ -1,0 +1,43 @@
+name: Autonomous Development QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/autonomous-development-worker.mjs"
+      - "qa/autonomous-development-worker.test.mjs"
+      - ".github/workflows/autonomous-development-worker.yml"
+      - ".github/workflows/autonomous-development-qa.yml"
+  pull_request:
+    paths:
+      - "tools/autonomous-development-worker.mjs"
+      - "qa/autonomous-development-worker.test.mjs"
+      - ".github/workflows/autonomous-development-worker.yml"
+      - ".github/workflows/autonomous-development-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  worker-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --check tools/autonomous-development-worker.mjs
+      - run: node --test qa/autonomous-development-worker.test.mjs
+      - run: |
+          grep -Fq 'workflow_dispatch:' .github/workflows/autonomous-development-worker.yml
+          grep -Fq 'git checkout -b' .github/workflows/autonomous-development-worker.yml
+          grep -Fq 'MAIN_DIRECT_WRITE=NO' .github/workflows/autonomous-development-worker.yml
+          grep -Fq 'SELF_PROMOTE=NO' .github/workflows/autonomous-development-worker.yml
+          grep -Fq 'PAID_API=NO' .github/workflows/autonomous-development-worker.yml
+          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/autonomous-development-worker.yml tools/autonomous-development-worker.mjs; then
+            echo 'paid/external key path found' >&2
+            exit 1
+          fi
+          echo 'AUTONOMOUS_WORKER_CONTRACT=PASS'
