@@ -63,3 +63,153 @@
 다운로드/라이선스 확인 날짜: 2026-09-08
 사용 위치 또는 게임: unity-games/animation-test, unity-games/daechung-rpg
 비고: Pirate/Skeleton의 idle, walk, attack, hurt, death 애니메이션을 원본 raw 스프라이트시트와 manifest.json에서 런타임 로드. 대충 RPG 초안은 최초 다운로드 후 기기 persistentDataPath 캐시에 저장하여 재사용.
+
+### Kenney UI Pack
+
+이름: UI Pack
+종류: UI / UX / 버튼 / 패널 / 슬라이더 / 슬롯
+제작자: Kenney
+출처 사이트: Kenney
+원본 페이지: https://kenney.nl/assets/ui-pack
+라이선스: Creative Commons CC0
+상업적 사용: 가능
+저작자 표시: 불필요
+수정 여부: 미사용 원본 후보
+다운로드/라이선스 확인 날짜: 2026-09-09
+사용 위치 또는 게임: 공용 Web + Unity UI 후보
+비고: 430개 파일. 메뉴, 설정창, 팝업, 버튼, 슬롯 프레임, 게이지 배경용 세트.
+
+### Kenney UI Pack RPG Expansion
+
+이름: UI Pack (RPG Expansion)
+종류: UI / UX / RPG 패널 / 버튼 / 슬라이더
+제작자: Kenney
+출처 사이트: Kenney
+원본 페이지: https://kenney.nl/assets/ui-pack-rpg-expansion
+라이선스: Creative Commons CC0
+상업적 사용: 가능
+저작자 표시: 불필요
+수정 여부: 미사용 원본 후보
+다운로드/라이선스 확인 날짜: 2026-09-09
+사용 위치 또는 게임: 공용 Web + Unity RPG UI 후보
+비고: 85개 파일. 캐릭터창, 스킬창, 장비창, 인벤토리, 상태 패널용.
+
+### Kenney UI Pack Adventure
+
+이름: UI Pack - Adventure
+종류: UI / UX / 버튼 / 패널 / HUD
+제작자: Kenney
+출처 사이트: Kenney
+원본 페이지: https://kenney.nl/assets/ui-pack-adventure
+라이선스: Creative Commons CC0
+상업적 사용: 가능
+저작자 표시: 불필요
+수정 여부: 미사용 원본 후보
+다운로드/라이선스 확인 날짜: 2026-09-09
+사용 위치 또는 게임: 공용 Web + Unity 판타지/어드벤처 UI 후보
+비고: 130개 파일. 판타지 HUD, 퀘스트창, 상점창, 선택창, 모바일 메뉴용.
+
+### Kenney UI Pack Pixel Adventure
+
+이름: UI Pack - Pixel Adventure
+종류: UI / UX / 픽셀 UI / 버튼 / 패널 / 슬롯
+제작자: Kenney
+출처 사이트: Kenney
+원본 페이지: https://kenney.nl/assets/ui-pack-pixel-adventure
+라이선스: Creative Commons CC0
+상업적 사용: 가능
+저작자 표시: 불필요
+수정 여부: 미사용 원본 후보
+다운로드/라이선스 확인 날짜: 2026-09-09
+사용 위치 또는 게임: 공용 Web + Unity 픽셀 UI 후보
+비고: 500개 파일. 픽셀 RPG, 스킬바, 퀵슬롯, 인벤토리, 게이지용.
+
+### Kenney Game Icons
+
+이름: Game Icons
+종류: UI / 아이콘 / 입력 프롬프트
+제작자: Kenney
+출처 사이트: Kenney
+원본 페이지: https://kenney.nl/assets/game-icons
+라이선스: Creative Commons CC0
+상업적 사용: 가능
+저작자 표시: 불필요
+수정 여부: 미사용 원본 후보
+다운로드/라이선스 확인 날짜: 2026-09-09
+사용 위치 또는 게임: 공용 Web + Unity UX 후보
+비고: 105개 파일. 조작 안내, 버튼 아이콘, 튜토리얼, 상호작용 표시용.
+
+### Kenney UI Audio
+
+이름: UI Audio
+종류: 효과음 / UI / UX
+제작자: Kenney
+출처 사이트: Kenney
+원본 페이지: https://kenney.nl/assets/ui-audio
+라이선스: Creative Commons CC0
+상업적 사용: 가능
+저작자 표시: 불필요
+수정 여부: 미사용 원본 후보
+다운로드/라이선스 확인 날짜: 2026-09-09
+사용 위치 또는 게임: 공용 Web + Unity UI 효과음 후보
+비고: 50개 파일. 클릭, 선택, 스위치, 탭 전환용.
+
+### RPG Inventory / Character Sheet
+
+이름: RPG Inventory
+종류: UI / 캐릭터창 / 인벤토리 / 장비창 / 슬롯
+제작자: itsmars
+출처 사이트: OpenGameArt
+원본 페이지: https://opengameart.org/content/rpg-inventory
+라이선스: CC0 / Public Domain
+상업적 사용: 가능
+저작자 표시: 불필요
+수정 여부: 미사용 원본 후보
+다운로드/라이선스 확인 날짜: 2026-09-09
+사용 위치 또는 게임: 공용 Web + Unity RPG UI 후보
+비고: 캐릭터 시트와 인벤토리 세트. BlankSlot 및 희귀도 테두리 세트도 제공.
+
+### RPG UI Icons
+
+이름: RPG UI Icons
+종류: UI / 스킬 / 상태이상 / 속성 / 아이템 / 장비 아이콘
+제작자: OwlishMedia
+출처 사이트: OpenGameArt
+원본 페이지: https://opengameart.org/content/rpg-ui-icons
+라이선스: CC0
+상업적 사용: 가능
+저작자 표시: 불필요
+수정 여부: 미사용 원본 후보
+다운로드/라이선스 확인 날짜: 2026-09-09
+사용 위치 또는 게임: 공용 Web + Unity RPG 아이콘 후보
+비고: 16x16, 32x32. 스킬 슬롯, 버프/디버프, 속성, 무기, 방어구, 아이템 분류용.
+
+### Tiny RPG Dragon Regalia GUI
+
+이름: Tiny RPG - Dragon Regalia GUI
+종류: UI / UX / RPG / 버튼 / 장비 프레임 / 게이지 / 미니맵 / 초상화 / 슬롯
+제작자: tiopalada
+출처 사이트: OpenGameArt
+원본 페이지: https://opengameart.org/content/tiny-rpg-dragon-regalia-gui
+라이선스: CC0
+상업적 사용: 가능
+저작자 표시: 불필요
+수정 여부: 미사용 원본 후보
+다운로드/라이선스 확인 날짜: 2026-09-09
+사용 위치 또는 게임: 공용 Web + Unity RPG UI 후보
+비고: 버튼 상태, 장비 프레임, 9-slice 프레임, HP/MP/EXP 바, 미니맵, 초상화, 아이템 슬롯, 커서가 한 세트에 포함.
+
+### Fantasy RPG Icons
+
+이름: Fantasy RPG Icons
+종류: 스킬 / 마법 / 무기 / 방어구 / 아이템 / 재화 아이콘
+제작자: Drummyfish
+출처 사이트: OpenGameArt
+원본 페이지: https://opengameart.org/content/fantasy-rpg-icons-0
+라이선스: CC0
+상업적 사용: 가능
+저작자 표시: 불필요
+수정 여부: 미사용 원본 후보
+다운로드/라이선스 확인 날짜: 2026-09-09
+사용 위치 또는 게임: 공용 Web + Unity 판타지 스킬/아이템 아이콘 후보
+비고: 32개, 128x128. 스킬, 주문, 장비, 물약, 가방, 골드 등 고해상도 아이콘 세트.
