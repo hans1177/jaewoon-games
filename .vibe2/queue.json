@@ -25,8 +25,8 @@
       "dependencies": [],
       "priority": "high",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 1,
+      "status": "queued",
+      "retries": 2,
       "maxRetries": 2,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
@@ -34,7 +34,8 @@
       "paidResourceRequired": false,
       "blocker": null,
       "evidence": [
-        "actions-run-34277017158"
+        "actions-run-34277017158",
+        "actions-run-34281727541"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null
