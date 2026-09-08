@@ -20,20 +20,23 @@ concurrency:
   group: free-artbook-departments-main
   cancel-in-progress: true
 
+env:
+  ARTBOOK_LOCAL_MODEL: qwen3:0.6b
+  OLLAMA_HOST: 127.0.0.1:11434
+
 jobs:
-  submit-five-independent-sections-and-reviews:
+  context:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    env:
-      OLLAMA_HOST: 127.0.0.1:11434
+    outputs:
+      run: ${{ steps.target.outputs.run }}
+      date: ${{ steps.target.outputs.date }}
+      game_id: ${{ steps.target.outputs.game_id }}
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
-
-      - name: Check today's artbook work order
+      - name: Resolve today's artbook target
         id: target
         shell: bash
         run: |
@@ -44,127 +47,211 @@ jobs:
           echo "date=$DATE_KST" >> "$GITHUB_OUTPUT"
           echo "game_id=$GAME_ID" >> "$GITHUB_OUTPUT"
           if [ -n "$GAME_ID" ] && [ -f "$FILE" ]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo 'run=true' >> "$GITHUB_OUTPUT"
             echo "ARTBOOK_WORK_ORDER=$FILE"
           else
-            echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "ARTBOOK_FREE_BOTS=SKIP_NO_TODAY_WORK_ORDER"
+            echo 'run=false' >> "$GITHUB_OUTPUT"
+            echo 'ARTBOOK_FREE_BOTS=SKIP_NO_TODAY_WORK_ORDER'
           fi
 
-      - name: Install local Ollama runtime
-        if: steps.target.outputs.run == 'true'
+  round1:
+    needs: context
+    if: needs.context.outputs.run == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [planning, graphics, development, qa, balance]
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Install local Ollama
         shell: bash
         run: |
           set -euo pipefail
           curl -fsSL https://ollama.com/install.sh | sh
           nohup ollama serve > /tmp/ollama.log 2>&1 &
           for i in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
-              echo 'OLLAMA_LOCAL=READY'
-              exit 0
-            fi
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0
             sleep 2
           done
           cat /tmp/ollama.log || true
-          echo 'OLLAMA_LOCAL=FAILED' >&2
           exit 1
-
       - name: Pull free open model
-        if: steps.target.outputs.run == 'true'
-        shell: bash
         run: |
-          set -euo pipefail
-          MODEL='qwen3:0.6b'
-          ollama pull "$MODEL"
-          echo "ARTBOOK_LOCAL_MODEL=$MODEL" >> "$GITHUB_ENV"
-          echo "ARTBOOK_LOCAL_MODEL=$MODEL"
+          ollama pull "$ARTBOOK_LOCAL_MODEL"
+          echo "LOCAL_MODEL=$ARTBOOK_LOCAL_MODEL"
           echo 'PAID_API=NO'
           echo 'API_KEY_REQUIRED=NO'
+      - name: Independent department review
+        env:
+          ARTBOOK_ROLE: ${{ matrix.role }}
+          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
+          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
+        run: node tools/artbook-department-runner.mjs
+      - name: Upload department-owned section
+        uses: actions/upload-artifact@v4
+        with:
+          name: round1-${{ matrix.role }}
+          path: |
+            artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/${{ matrix.role }}.json
+            artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/visuals/${{ matrix.role }}.svg
+          retention-days: 1
+          if-no-files-found: error
 
-      - name: Round 1 - five isolated department reviews
-        if: steps.target.outputs.run == 'true'
+  collect-round1:
+    needs: [context, round1]
+    if: needs.context.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all independent sections
+        uses: actions/download-artifact@v4
+        with:
+          pattern: round1-*
+          path: .artbook-round1
+          merge-multiple: true
+      - name: Verify all five independent sections exist
         shell: bash
         run: |
           set -euo pipefail
-          DATE_KST='${{ steps.target.outputs.date }}'
-          GAME_ID='${{ steps.target.outputs.game_id }}'
-          BASE="artbook-submissions/${GAME_ID}/${DATE_KST}"
           for ROLE in planning graphics development qa balance; do
-            if [ -f "$BASE/$ROLE.json" ]; then
-              echo "ROUND1_PRESERVE_EXISTING=$ROLE"
-              continue
-            fi
-            echo "=== ROUND1_INDEPENDENT_DEPARTMENT=$ROLE ==="
-            ARTBOOK_ROLE="$ROLE" ARTBOOK_DATE="$DATE_KST" ARTBOOK_GAME_ID="$GAME_ID" \
-              node tools/artbook-department-runner.mjs
-          done
-
-      - name: Verify round 1 is complete before opinions are revealed
-        if: steps.target.outputs.run == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          DATE_KST='${{ steps.target.outputs.date }}'
-          GAME_ID='${{ steps.target.outputs.game_id }}'
-          BASE="artbook-submissions/${GAME_ID}/${DATE_KST}"
-          for ROLE in planning graphics development qa balance; do
-            test -s "$BASE/$ROLE.json"
+            test -s ".artbook-round1/$ROLE.json"
+            test -s ".artbook-round1/visuals/$ROLE.svg"
           done
           echo 'INDEPENDENT_ROUND=5/5'
+      - name: Bundle independent round for collaboration
+        uses: actions/upload-artifact@v4
+        with:
+          name: round1-bundle
+          path: .artbook-round1/
+          retention-days: 1
+          if-no-files-found: error
 
-      - name: Round 2 - AGREE COUNTER TEST RESULT DECISION
-        if: steps.target.outputs.run == 'true'
+  round2:
+    needs: [context, collect-round1]
+    if: needs.context.outputs.run == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [planning, graphics, development, qa, balance]
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Restore first-round submissions only after 5-of-5 exists
+        uses: actions/download-artifact@v4
+        with:
+          name: round1-bundle
+          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
+      - name: Install local Ollama
         shell: bash
         run: |
           set -euo pipefail
-          DATE_KST='${{ steps.target.outputs.date }}'
-          GAME_ID='${{ steps.target.outputs.game_id }}'
-          BASE="artbook-submissions/${GAME_ID}/${DATE_KST}/reviews"
-          for ROLE in planning graphics development qa balance; do
-            if [ -f "$BASE/$ROLE.json" ]; then
-              echo "ROUND2_PRESERVE_EXISTING=$ROLE"
-              continue
-            fi
-            echo "=== ROUND2_COLLAB_DEPARTMENT=$ROLE ==="
-            ARTBOOK_ROLE="$ROLE" ARTBOOK_DATE="$DATE_KST" ARTBOOK_GAME_ID="$GAME_ID" \
-              node tools/artbook-collaboration-runner.mjs
+          curl -fsSL https://ollama.com/install.sh | sh
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0
+            sleep 2
           done
+          cat /tmp/ollama.log || true
+          exit 1
+      - name: Pull free open model
+        run: |
+          ollama pull "$ARTBOOK_LOCAL_MODEL"
+          echo "LOCAL_MODEL=$ARTBOOK_LOCAL_MODEL"
+          echo 'PAID_API=NO'
+      - name: Cross-department review
+        env:
+          ARTBOOK_ROLE: ${{ matrix.role }}
+          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
+          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
+        run: node tools/artbook-collaboration-runner.mjs
+      - name: Upload department collaboration review
+        uses: actions/upload-artifact@v4
+        with:
+          name: round2-${{ matrix.role }}
+          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews/${{ matrix.role }}.json
+          retention-days: 1
+          if-no-files-found: error
 
-      - name: Validate five sections and five collaboration reviews
-        if: steps.target.outputs.run == 'true'
-        shell: bash
+  finalize:
+    needs: [context, collect-round1, round2]
+    if: needs.context.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Restore five independent sections
+        uses: actions/download-artifact@v4
+        with:
+          name: round1-bundle
+          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
+      - name: Restore five collaboration reviews
+        uses: actions/download-artifact@v4
+        with:
+          pattern: round2-*
+          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews
+          merge-multiple: true
+      - name: Validate 5 sections and 5 reviews
+        env:
+          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
+          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
         run: |
           set -euo pipefail
-          DATE_KST='${{ steps.target.outputs.date }}'
-          GAME_ID='${{ steps.target.outputs.game_id }}'
-          ARTBOOK_DATE="$DATE_KST" ARTBOOK_GAME_ID="$GAME_ID" node tools/artbook-gate.mjs
+          node tools/artbook-gate.mjs
           node - <<'NODE'
           const fs=require('fs');
           const gate=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8'));
           if(gate.readyCount!==5||gate.reviewReadyCount!==5||gate.readyForDirectorAssembly!==true){
-            throw new Error(`artbook collaboration not ready: sections ${gate.readyCount}/5, reviews ${gate.reviewReadyCount}/5`);
+            throw new Error(`artbook not ready: sections ${gate.readyCount}/5, reviews ${gate.reviewReadyCount}/5`);
           }
           console.log('FREE_DEPARTMENT_SUBMISSIONS=5/5');
           console.log('FREE_DEPARTMENT_REVIEWS=5/5');
-          console.log('COLLABORATION_PROTOCOL=AGREE_COUNTER_TEST_RESULT_DECISION');
           NODE
-          git checkout -- artbook-gate-status.json
-
-      - name: Commit department-owned sections and reviews
-        if: steps.target.outputs.run == 'true'
+      - name: Assemble verified initial artbook
+        env:
+          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
+          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
+        run: node tools/artbook-assemble.mjs
+      - name: Synchronize queue state
+        env:
+          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
+          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('artbook-submission-queue.json','utf8'));
+          const roles=['planning','graphics','development','qa','balance'];
+          q.updatedAt=process.env.ARTBOOK_DATE;
+          q.currentTargetExecution={...(q.currentTargetExecution||{}),date:process.env.ARTBOOK_DATE,readySections:5,requiredSections:5,readyReviews:5,requiredReviews:5,directorAssemblyReady:true,runnerDispatch:'FREE_LOCAL_OPEN_MODEL_COMPLETE',runnerModel:'qwen3:0.6b',runnerPaidApi:false,runnerApiKeyRequired:false,firstRoundIndependent:true,secondRoundProtocol:'AGREE_COUNTER_TEST_RESULT_DECISION',assemblyGrantsProductionApproval:false};
+          const g=(q.games||[]).find(x=>x.gameId===process.env.ARTBOOK_GAME_ID);
+          if(g){g.status='INITIAL_ARTBOOK_ASSEMBLED_AWAITING_OWNER_DECISION';g.sectionsReady=[...roles];g.reviewsReady=[...roles];g.directorAssemblyReady=true;g.currentStage='initial-artbook-assembled-awaiting-owner-decision';}
+          fs.writeFileSync('artbook-submission-queue.json',JSON.stringify(q,null,2)+'\n');
+          NODE
+      - name: Commit verified department work and integrated draft
         shell: bash
         run: |
           set -euo pipefail
-          DATE_KST='${{ steps.target.outputs.date }}'
-          GAME_ID='${{ steps.target.outputs.game_id }}'
+          GAME_ID='${{ needs.context.outputs.game_id }}'
+          DATE_KST='${{ needs.context.outputs.date }}'
           git config user.name 'jaewoon-company-department-bots'
           git config user.email 'actions@users.noreply.github.com'
-          git add "artbook-submissions/${GAME_ID}/${DATE_KST}/"
+          git add "artbook-submissions/${GAME_ID}/${DATE_KST}/" artbook-gate-status.json game-artbooks.json artbook-submission-queue.json
           if git diff --cached --quiet; then
-            echo 'ARTBOOK_DEPARTMENT_COMMIT=NO_CHANGES'
+            echo 'ARTBOOK_FINAL_COMMIT=NO_CHANGES'
             exit 0
           fi
-          git commit -m "artbook-departments: submit ${GAME_ID} sections and collaboration reviews"
+          git commit -m "artbook: assemble ${GAME_ID} verified five-department draft"
           git pull --rebase origin main
           git push origin main
-          echo 'ARTBOOK_DEPARTMENT_COMMIT=SUCCESS'
+          echo 'ARTBOOK_FINAL_COMMIT=SUCCESS'
+          echo 'PRODUCTION_APPROVAL=NO'
