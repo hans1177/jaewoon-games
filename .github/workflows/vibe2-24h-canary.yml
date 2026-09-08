@@ -31,15 +31,22 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Verify Vibe2 runtime contracts
+      - name: Verify Vibe2 runtime and shared Work Lock contracts
         shell: bash
         run: |
           set -euo pipefail
           test -f vibe2-runtime.json
+          test -f assets/vibe-work-lock.js
+          test -f tools/vibe-work-lock-control.mjs
+          test -f tools/vibe2-remote-work-lock.mjs
           test -f tools/vibe2-continuous-runner.mjs
           test -f tools/vibe2-queue-control.mjs
+          node --check assets/vibe-work-lock.js
+          node --check tools/vibe-work-lock-control.mjs
+          node --check tools/vibe2-remote-work-lock.mjs
           node --check tools/vibe2-continuous-runner.mjs
           node --check tools/vibe2-queue-control.mjs
+          node --test qa/vibe-work-lock.test.mjs
           node --test qa/vibe2-core-engine-motion.test.mjs
           node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-controller-contract.test.mjs
@@ -55,9 +62,17 @@ jobs:
           const fs = require('fs');
           const order = JSON.parse(fs.readFileSync('.vibe2/work-order.json', 'utf8'));
           if (order.run) {
-            throw new Error(`Canary must not execute game work automatically: ${order.taskId || 'unknown-task'}`);
+            if (!order.taskId) throw new Error('Runnable canary plan requires taskId.');
+            if (order.safety?.directMainWrite !== false) throw new Error('Runnable canary plan must forbid direct main write.');
+            const responsible = Array.isArray(order.source?.responsibleFiles) ? order.source.responsibleFiles.filter(Boolean) : [];
+            const lockFiles = responsible.length ? responsible : order.source?.root ? [`${order.source.root}/**`] : [];
+            if (!lockFiles.length) throw new Error('Runnable canary plan must expose a Work Lock scope.');
+            console.log(`VIBE2_24H_CANARY=PASS runnable=${order.taskId} lockScope=${lockFiles.join(',')}`);
+          } else {
+            console.log(`VIBE2_24H_CANARY=PASS reason=${order.reason}`);
           }
-          console.log(`VIBE2_24H_CANARY=PASS reason=${order.reason}`);
+          console.log('VIBE2_CANARY_EXECUTES_GAME_WORK=NO');
           console.log('VIBE2_GAME_SOURCE_WRITE=NO');
           console.log('VIBE2_COMPANY_WRITE=NO');
+          console.log('VIBE2_SHARED_WORK_LOCK_CONTRACT=PASS');
           NODE
