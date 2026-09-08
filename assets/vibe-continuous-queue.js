@@ -1,6 +1,6 @@
 // 파일명: assets/vibe-continuous-queue.js
 // 역할: Vibe2의 24시간 연속 작업을 짧은 검증 단위의 단일 직렬 큐로 관리한다.
-// 원칙: 사용자 지시 우선, 출시확정 > 개발확정 > 나머지, 무한 재시도 금지, 핵심 결정/보호 변경은 자동 진행하지 않는다.
+// 원칙: 사용자 지시 우선, 출시확정 > 개발확정 > 나머지, 한 번에 작업 하나, 무한 재시도 금지.
 
 const clean = (value) => String(value ?? '').trim();
 const freeze = (value) => Object.freeze(value);
@@ -12,20 +12,8 @@ export const VIBE_QUEUE_STATUSES = freezeList(['queued', 'running', 'blocked', '
 export const VIBE_QUEUE_PRIORITIES = freezeList(['owner-immediate', 'critical', 'high', 'normal', 'low']);
 export const VIBE_RELEASE_STATES = freezeList(['release-confirmed', 'development-confirmed', 'reviewing', 'other']);
 
-const PRIORITY_SCORE = freeze({
-  'owner-immediate': 100,
-  critical: 80,
-  high: 60,
-  normal: 40,
-  low: 20
-});
-
-const RELEASE_STATE_SCORE = freeze({
-  'release-confirmed': 400,
-  'development-confirmed': 300,
-  reviewing: 200,
-  other: 100
-});
+const PRIORITY_SCORE = freeze({ 'owner-immediate': 100, critical: 80, high: 60, normal: 40, low: 20 });
+const RELEASE_STATE_SCORE = freeze({ 'release-confirmed': 400, 'development-confirmed': 300, reviewing: 200, other: 100 });
 
 function normalizeReleaseState(value) {
   const state = clean(value).toLowerCase();
@@ -88,6 +76,7 @@ export function createVibeContinuousQueue(seed = {}) {
   return freeze({
     version: 3,
     mode: 'single-worker-priority-serial-queue',
+    maxConcurrentTasks: 1,
     longRunningSingleJobRequired: false,
     ownerDirectivePreemptsAutonomy: true,
     releaseStatePriority: freezeList(['release-confirmed', 'development-confirmed', 'reviewing', 'other']),
@@ -121,6 +110,17 @@ function scoreTask(task, index) {
 
 export function selectNextVibeQueueTask(queueInput) {
   const queue = createVibeContinuousQueue(queueInput);
+  const running = queue.tasks.filter((task) => task.status === 'running');
+  if (running.length) {
+    return freeze({
+      selected: running[0],
+      hasEligibleWork: true,
+      blocked: freeze([]),
+      continueRequired: false,
+      stopReason: 'ONE_TASK_ALREADY_RUNNING',
+      runningCount: running.length
+    });
+  }
   const completed = completedIds(queue);
   const candidates = [];
   const blocked = [];
@@ -137,27 +137,29 @@ export function selectNextVibeQueueTask(queueInput) {
     hasEligibleWork: Boolean(selected),
     blocked: freeze(blocked),
     continueRequired: Boolean(selected),
-    stopReason: selected ? null : blocked.length ? 'NO_ELIGIBLE_UNBLOCKED_TASK' : 'QUEUE_EMPTY_OR_COMPLETE'
+    stopReason: selected ? null : blocked.length ? 'NO_ELIGIBLE_UNBLOCKED_TASK' : 'QUEUE_EMPTY_OR_COMPLETE',
+    runningCount: 0
   });
 }
 
 export function beginVibeQueueTask(queueInput, taskId) {
   const queue = createVibeContinuousQueue(queueInput);
   const id = clean(taskId);
+  const running = queue.tasks.find((task) => task.status === 'running');
+  if (running && running.id !== id) {
+    return freeze({ started: false, reason: 'another-task-already-running', queue, selection: selectNextVibeQueueTask(queue) });
+  }
+  if (running?.id === id) return freeze({ started: true, task: running, queue, resumed: true });
   const selection = selectNextVibeQueueTask(queue);
   if (!selection.selected || selection.selected.id !== id) {
     return freeze({ started: false, reason: 'task-not-currently-eligible', queue, selection });
   }
   const tasks = queue.tasks.map((task) => task.id === id ? freeze({ ...task, status: 'running' }) : task);
-  return freeze({ started: true, task: tasks.find((task) => task.id === id), queue: createVibeContinuousQueue(tasks) });
+  return freeze({ started: true, task: tasks.find((task) => task.id === id), queue: createVibeContinuousQueue(tasks), resumed: false });
 }
 
 export function finishVibeQueueTask(queueInput, {
-  taskId = '',
-  outcome = 'PASS',
-  evidence = [],
-  blocker = '',
-  retryable = true
+  taskId = '', outcome = 'PASS', evidence = [], blocker = '', retryable = true
 } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const id = clean(taskId);
@@ -172,25 +174,11 @@ export function finishVibeQueueTask(queueInput, {
     if (normalizedOutcome === 'CANCELLED') return freeze({ ...task, status: 'cancelled', evidence: mergedEvidence, lastOutcome: 'CANCELLED', blocker: clean(blocker) || null });
     const nextRetries = task.retries + 1;
     const canRetry = Boolean(retryable && nextRetries <= task.maxRetries);
-    return freeze({
-      ...task,
-      status: canRetry ? 'queued' : 'failed',
-      retries: nextRetries,
-      evidence: mergedEvidence,
-      lastOutcome: 'FAIL',
-      blocker: clean(blocker) || null
-    });
+    return freeze({ ...task, status: canRetry ? 'queued' : 'failed', retries: nextRetries, evidence: mergedEvidence, lastOutcome: 'FAIL', blocker: clean(blocker) || null });
   });
   const nextQueue = createVibeContinuousQueue(tasks);
   const next = selectNextVibeQueueTask(nextQueue);
-  return freeze({
-    updated: found,
-    outcome: normalizedOutcome,
-    queue: nextQueue,
-    next,
-    dispatchNext: next.continueRequired,
-    longRunningProcessRequired: false
-  });
+  return freeze({ updated: found, outcome: normalizedOutcome, queue: nextQueue, next, dispatchNext: next.continueRequired, longRunningProcessRequired: false });
 }
 
 export function summarizeVibeContinuousQueue(queueInput) {
@@ -209,11 +197,5 @@ export function summarizeVibeContinuousQueue(queueInput) {
 }
 
 if (typeof window !== 'undefined') {
-  window.JaewoonVibeContinuousQueue = freeze({
-    createVibeContinuousQueue,
-    selectNextVibeQueueTask,
-    beginVibeQueueTask,
-    finishVibeQueueTask,
-    summarizeVibeContinuousQueue
-  });
+  window.JaewoonVibeContinuousQueue = freeze({ createVibeContinuousQueue, selectNextVibeQueueTask, beginVibeQueueTask, finishVibeQueueTask, summarizeVibeContinuousQueue });
 }
