@@ -256,5 +256,5 @@ jobs:
           if git diff --cached --quiet; then echo 'ARTBOOK_FINAL_COMMIT=NO_CHANGES';exit 0;fi
           git commit -m "artbook: assemble ${GAME_ID} verified five-department draft"
           git pull --rebase origin main
-git push origin main
+          git push origin main
           echo 'ARTBOOK_FINAL_COMMIT=SUCCESS';echo 'PRODUCTION_APPROVAL=NO'
