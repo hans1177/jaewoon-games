@@ -18,7 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: autonomous-dev
+          # Portfolio routing is governance/state observation. main owns the current
+          # incubator/queue state; autonomous-dev owns candidate code and may diverge.
+          ref: main
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -27,6 +29,7 @@ jobs:
         run: |
           node --check tools/autonomous-portfolio-continuation.mjs
           node --test qa/autonomous-portfolio-continuation.test.mjs
+          grep -q 'ref: main' .github/workflows/autonomous-portfolio-continuation.yml
       - name: Decide next company-level work
         id: route
         shell: bash
@@ -56,6 +59,7 @@ jobs:
           echo "### Autonomous Portfolio Continuation" >> "$GITHUB_STEP_SUMMARY"
           echo "- route: ${{ steps.route.outputs.action }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- reason: ${{ steps.route.outputs.reason }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- state authority: main" >> "$GITHUB_STEP_SUMMARY"
           echo "- trigger route: explicit workflow_dispatch only" >> "$GITHUB_STEP_SUMMARY"
           echo "- duplicate concept/day: blocked" >> "$GITHUB_STEP_SUMMARY"
           echo "- public release: NO" >> "$GITHUB_STEP_SUMMARY"
