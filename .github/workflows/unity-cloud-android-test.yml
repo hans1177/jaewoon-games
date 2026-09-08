@@ -8,7 +8,7 @@ on:
         type: string
     secrets:
       UNITY_LICENSE:
-        required: true
+        required: false
       UNITY_EMAIL:
         required: true
       UNITY_PASSWORD:
@@ -66,8 +66,13 @@ jobs:
               raise SystemExit(f'invalid projectPath: {project}')
           if not method or not re.fullmatch(r'[A-Za-z0-9_.]+', method):
               raise SystemExit('buildMethod is required and must be a fully qualified Unity static method')
-          if not (pathlib.Path(project) / 'ProjectSettings' / 'ProjectVersion.txt').is_file():
+          version_path = pathlib.Path(project) / 'ProjectSettings' / 'ProjectVersion.txt'
+          if not version_path.is_file():
               raise SystemExit(f'not a Unity project: {project}')
+          m = re.search(r'm_EditorVersion:\s*([^\s]+)', version_path.read_text(encoding='utf-8'))
+          if not m:
+              raise SystemExit('could not resolve Unity editor version')
+          unity_version = m.group(1)
 
           publish_homepage = False
           catalog_path = pathlib.Path('game-catalog.json')
@@ -83,41 +88,20 @@ jobs:
               f.write(f'project_path={project}\n')
               f.write(f'build_method={method}\n')
               f.write(f'request_id={request_id}\n')
+              f.write(f'unity_version={unity_version}\n')
               f.write(f'publish_homepage={str(publish_homepage).lower()}\n')
           PY
 
-      - name: Verify Unity Personal cloud license secrets
+      - name: Verify Unity named-user cloud credentials
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         shell: bash
         run: |
           set -euo pipefail
-          [[ -n "$UNITY_LICENSE" ]] || { echo 'UNITY_LICENSE secret is required.' >&2; exit 2; }
           [[ -n "$UNITY_EMAIL" ]] || { echo 'UNITY_EMAIL secret is required.' >&2; exit 2; }
           [[ -n "$UNITY_PASSWORD" ]] || { echo 'UNITY_PASSWORD secret is required.' >&2; exit 2; }
-          python3 - <<'PY'
-          import os
-          import xml.etree.ElementTree as ET
-
-          text = os.environ.get('UNITY_LICENSE', '').strip()
-          if not (text.startswith('<') and len(text) >= 500):
-              raise SystemExit('UNITY_LICENSE must contain the full Unity_lic.ulf XML contents.')
-          try:
-              root = ET.fromstring(text)
-          except ET.ParseError as exc:
-              raise SystemExit(f'UNITY_LICENSE is not valid XML: {exc}')
-
-          developer = root.find('.//DeveloperData')
-          personal = any(e.attrib.get('Tag') == 'UnityPersonal' for e in root.findall('.//Entitlement'))
-          if developer is None or not developer.attrib.get('Value'):
-              raise SystemExit('UNITY_LICENSE is missing DeveloperData.')
-          if not personal:
-              raise SystemExit('UNITY_LICENSE is not a Unity Personal license. Use the matching license flow for this account.')
-          print('UNITY_LICENSE_TYPE=UnityPersonal')
-          print('[PASS] Unity Personal ULF structure is valid.')
-          PY
+          echo '[PASS] Named-user credentials are present. UNITY_LICENSE is intentionally not used by the cloud build.'
 
       - name: Cache Unity Library
         uses: actions/cache@v4
@@ -128,19 +112,39 @@ jobs:
             unity-library-${{ runner.os }}-${{ steps.request.outputs.game_id }}-
 
       - name: Build Android APK in GitHub cloud
-        uses: game-ci/unity-builder@v5.0.0
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          projectPath: ${{ steps.request.outputs.project_path }}
-          unityVersion: auto
-          targetPlatform: Android
-          androidExportType: androidPackage
-          buildName: ${{ steps.request.outputs.game_id }}
-          buildsPath: build
-          buildMethod: ${{ steps.request.outputs.build_method }}
+          UNITY_IMAGE: unityci/editor:ubuntu-${{ steps.request.outputs.unity_version }}-android-3
+          PROJECT_PATH: ${{ steps.request.outputs.project_path }}
+          BUILD_METHOD: ${{ steps.request.outputs.build_method }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "[INFO] Pulling $UNITY_IMAGE"
+          docker pull "$UNITY_IMAGE"
+          docker run --rm \
+            -e UNITY_EMAIL \
+            -e UNITY_PASSWORD \
+            -e PROJECT_PATH \
+            -e BUILD_METHOD \
+            -v "$GITHUB_WORKSPACE:/github/workspace" \
+            -w /github/workspace \
+            "$UNITY_IMAGE" \
+            /bin/bash -lc '
+              set -euo pipefail
+              mkdir -p /root/.cache/unity3d /root/.config/unity3d /root/.local/share/unity3d/Unity
+              unity_bin="/opt/unity/Editor/Unity"
+              if [[ ! -x "$unity_bin" ]]; then
+                unity_bin="$(find /opt /usr -type f -path "*/Editor/Unity" -perm -111 2>/dev/null | head -n 1 || true)"
+              fi
+              [[ -n "$unity_bin" && -x "$unity_bin" ]] || { echo "Unity executable not found in container." >&2; exit 3; }
+              echo "[INFO] Unity executable resolved."
+              echo "[INFO] Activating named-user license with an intentionally empty serial value."
+              "$unity_bin" -batchmode -nographics -quit -serial -username "$UNITY_EMAIL" -password "$UNITY_PASSWORD" -logFile /dev/stdout
+              echo "[PASS] Unity named-user activation command completed."
+              "$unity_bin" -batchmode -nographics -quit -projectPath "/github/workspace/$PROJECT_PATH" -executeMethod "$BUILD_METHOD" -logFile /dev/stdout
+            '
 
       - name: Verify APK and create metadata
         id: artifact
@@ -172,7 +176,7 @@ jobs:
               'sha256': apk_sha,
               'bytes': int(size),
               'channel': 'test',
-              'buildRoute': 'github-cloud',
+              'buildRoute': 'github-cloud-named-user',
               'homepagePublicationApproved': approved.lower() == 'true',
               'homepagePublished': False,
               'builtAt': datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -204,7 +208,7 @@ jobs:
           make_latest: false
           body: |
             Automated Jaewoon Company Android test build.
-            Route: GitHub-hosted GameCI cloud
+            Route: GitHub-hosted Unity named-user cloud
             Game: ${{ steps.request.outputs.game_id }}
             Source: ${{ github.sha }}
             Request: ${{ steps.request.outputs.request_id }}
@@ -241,7 +245,7 @@ jobs:
               'requestId': request_id,
               'status': 'ready',
               'channel': 'test',
-              'buildRoute': 'github-cloud',
+              'buildRoute': 'github-cloud-named-user',
               'homepagePublished': True,
               'sourceCommit': source_commit,
               'releaseTag': tag,
