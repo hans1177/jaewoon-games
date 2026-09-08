@@ -13,11 +13,13 @@ on:
       - 'public-game-health.json'
       - 'game-artbooks.json'
   schedule:
-    - cron: '10 7 * * *' # 16:10 Asia/Seoul safety wake-up
+    - cron: '5 15 * * *' # 00:05 Asia/Seoul daily reset wake-up
+    - cron: '10 7 * * *' # 16:10 Asia/Seoul safety/recovery wake-up
   workflow_dispatch:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: autonomous-dev-writer
@@ -110,6 +112,7 @@ jobs:
           echo 'ACTIONS_QUOTA_MODE=UNMETERED_FREE'
 
       - name: Reserve this game once for today's continuous queue
+        id: reserve
         if: steps.order.outputs.run == 'true'
         shell: bash
         run: |
@@ -130,6 +133,7 @@ jobs:
           git commit -m "autonomy: reserve ${AUTONOMOUS_GAME_ID} work ${AUTONOMOUS_WORK_DATE} [skip ci]"
           git push origin HEAD:autonomous-dev
           echo "QUEUE_RESERVATION=PASS"
+          echo "reserved=true" >> "$GITHUB_OUTPUT"
           echo "AUTONOMOUS_RESERVED_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
       - name: Create isolated candidate branch
@@ -200,6 +204,18 @@ jobs:
           echo "CANDIDATE_COMMIT=$(git rev-parse HEAD)"
           echo "SELF_PROMOTE_MAIN=NO"
 
+      - name: Continue queue after a reserved work failure
+        if: failure() && steps.reserve.outputs.reserved == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run autonomous-continuous-development.yml --ref main
+          echo "FAILED_WORK_NEXT=DISPATCHED"
+          echo "FAILED_GAME_SKIPPED_FOR_TODAY=$AUTONOMOUS_GAME_ID"
+          echo "PUBLIC_MAIN_RELEASE=NO"
+
       - name: Summary
         if: always()
         run: |
@@ -211,4 +227,5 @@ jobs:
           echo "- local model calls/run: max 1" >> "$GITHUB_STEP_SUMMARY"
           echo "- daily work cap: 8" >> "$GITHUB_STEP_SUMMARY"
           echo "- same game per KST day: max 1 reservation" >> "$GITHUB_STEP_SUMMARY"
+          echo "- failed reserved work: dispatch next item" >> "$GITHUB_STEP_SUMMARY"
           echo "- candidate promotion: separate independent QA" >> "$GITHUB_STEP_SUMMARY"
