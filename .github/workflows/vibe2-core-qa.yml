@@ -13,7 +13,10 @@ on:
       - 'assets/vibe-motion-core.js'
       - 'assets/vibe-experience-memory.js'
       - 'assets/vibe-continuous-queue.js'
+      - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-source-worker.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
+      - 'qa/vibe2-source-worker.test.mjs'
       - '.github/workflows/vibe2-core-qa.yml'
   workflow_dispatch:
 
@@ -43,7 +46,12 @@ jobs:
           node --check assets/vibe-motion-core.js
           node --check assets/vibe-experience-memory.js
           node --check assets/vibe-continuous-queue.js
+          node --check tools/vibe2-continuous-runner.mjs
+          node --check tools/vibe2-source-worker.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
+          node --check qa/vibe2-source-worker.test.mjs
 
-      - name: Vibe2 engine motion learning queue tests
-        run: node --test qa/vibe2-core-engine-motion.test.mjs
+      - name: Vibe2 core tests
+        run: |
+          node --test qa/vibe2-core-engine-motion.test.mjs
+          node --test qa/vibe2-source-worker.test.mjs
