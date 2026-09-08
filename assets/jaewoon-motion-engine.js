@@ -18,6 +18,33 @@
   const lerp = (a, b, t) => a + (b - a) * t;
   const smoothstep = t => { const x = clamp(t, 0, 1); return x * x * (3 - 2 * x); };
 
+  const DEFAULT_PROFILE = Object.freeze({
+    idleBreathAmplitude: 1,
+    idleBreathFrequency: 1,
+    moveBobAmplitude: 1,
+    moveTiltAmplitude: 1,
+    moveFrequency: 1,
+    attackAnticipation: 1,
+    attackStrike: 1,
+    attackRotation: 1,
+    attackStretch: 1,
+    hitRecoil: 1,
+    hitRotation: 1,
+    landingSquash: 1,
+    landingYOffset: 1,
+    flashIntensity: 1,
+    afterimageIntensity: 1,
+    secondaryMotion: 1,
+  });
+
+  function normalizeMotionProfile(profile = {}) {
+    const out = {};
+    for (const [key, fallback] of Object.entries(DEFAULT_PROFILE)) {
+      out[key] = clamp(finite(profile[key], fallback), 0, 2);
+    }
+    return Object.freeze(out);
+  }
+
   class MotionSpring {
     constructor(value = 0, { stiffness = 210, damping = 25, maxVelocity = 4000 } = {}) {
       this.value = finite(value);
@@ -68,6 +95,7 @@
       this.motionScale = clamp(finite(options.motionScale, 1), 0, 2);
       this.reducedMotion = Boolean(options.reducedMotion);
       this.lowPower = Boolean(options.lowPower);
+      this.profile = normalizeMotionProfile(options.profile || options.motionProfile || {});
       this.moving = false;
       this.speed = 0;
       this.facing = 1;
@@ -83,6 +111,8 @@
     setReducedMotion(enabled) { this.reducedMotion = Boolean(enabled); return this; }
     setLowPower(enabled) { this.lowPower = Boolean(enabled); return this; }
     setMotionScale(value) { this.motionScale = clamp(finite(value, 1), 0, 2); return this; }
+    setProfile(profile = {}) { this.profile = normalizeMotionProfile(profile); return this; }
+    getProfile() { return { ...this.profile }; }
 
     setBasePose(pose = {}, { snap = false } = {}) {
       for (const key of ['x', 'y', 'rotation', 'scaleX', 'scaleY', 'alpha']) {
@@ -107,7 +137,7 @@
 
     triggerHit({ direction = -1, strength = 1, duration = 0.16 } = {}) {
       this.hit = { time: Math.max(0.06, finite(duration, 0.16)), duration: Math.max(0.06, finite(duration, 0.16)), direction: finite(direction, -1) < 0 ? -1 : 1, strength: clamp(finite(strength, 1), 0, 3) };
-      this.flash = 1;
+      this.flash = this.profile.flashIntensity;
       return this;
     }
 
@@ -117,11 +147,12 @@
     }
 
     impulse({ x = 0, y = 0, rotation = 0, scaleX = 0, scaleY = 0 } = {}) {
-      this.channels.x.impulse(x);
-      this.channels.y.impulse(y);
-      this.channels.rotation.impulse(rotation);
-      this.channels.scaleX.impulse(scaleX);
-      this.channels.scaleY.impulse(scaleY);
+      const secondary = this.profile.secondaryMotion;
+      this.channels.x.impulse(x * secondary);
+      this.channels.y.impulse(y * secondary);
+      this.channels.rotation.impulse(rotation * secondary);
+      this.channels.scaleX.impulse(scaleX * secondary);
+      this.channels.scaleY.impulse(scaleY * secondary);
       return this;
     }
 
@@ -147,10 +178,11 @@
 
     sample() {
       const k = this.effectScale();
+      const pfx = this.profile;
       const moveIntensity = this.moving ? clamp(this.speed / 220, 0.25, 1.2) : 0;
-      const idleBreath = Math.sin(this.time * TAU * 0.72) * 0.018 * k;
-      const moveBob = Math.sin(this.time * TAU * (2.8 + moveIntensity)) * 3.2 * moveIntensity * k;
-      const moveTilt = Math.sin(this.time * TAU * (1.4 + moveIntensity * 0.6)) * 0.035 * moveIntensity * k;
+      const idleBreath = Math.sin(this.time * TAU * 0.72 * pfx.idleBreathFrequency) * 0.018 * k * pfx.idleBreathAmplitude;
+      const moveBob = Math.sin(this.time * TAU * (2.8 + moveIntensity) * pfx.moveFrequency) * 3.2 * moveIntensity * k * pfx.moveBobAmplitude;
+      const moveTilt = Math.sin(this.time * TAU * (1.4 + moveIntensity * 0.6) * pfx.moveFrequency) * 0.035 * moveIntensity * k * pfx.moveTiltAmplitude;
 
       let attackX = 0, attackRot = 0, attackScaleX = 0, attackScaleY = 0;
       if (this.attack.time > 0) {
@@ -158,22 +190,22 @@
         const s = this.attack.strength * k;
         if (p < 0.34) {
           const q = smoothstep(p / 0.34);
-          attackX = -this.facing * 8 * q * s;
-          attackRot = -this.facing * 0.08 * q * s;
-          attackScaleX = -0.045 * q * s;
-          attackScaleY = 0.04 * q * s;
+          attackX = -this.facing * 8 * q * s * pfx.attackAnticipation;
+          attackRot = -this.facing * 0.08 * q * s * pfx.attackRotation;
+          attackScaleX = -0.045 * q * s * pfx.attackStretch;
+          attackScaleY = 0.04 * q * s * pfx.attackStretch;
         } else if (p < 0.62) {
           const q = smoothstep((p - 0.34) / 0.28);
-          attackX = this.facing * lerp(-8, 16, q) * s;
-          attackRot = this.facing * lerp(-0.08, 0.12, q) * s;
-          attackScaleX = lerp(-0.045, 0.08, q) * s;
-          attackScaleY = lerp(0.04, -0.06, q) * s;
+          attackX = this.facing * lerp(-8 * pfx.attackAnticipation, 16 * pfx.attackStrike, q) * s;
+          attackRot = this.facing * lerp(-0.08, 0.12, q) * s * pfx.attackRotation;
+          attackScaleX = lerp(-0.045, 0.08, q) * s * pfx.attackStretch;
+          attackScaleY = lerp(0.04, -0.06, q) * s * pfx.attackStretch;
         } else {
           const q = 1 - smoothstep((p - 0.62) / 0.38);
-          attackX = this.facing * 16 * q * s;
-          attackRot = this.facing * 0.12 * q * s;
-          attackScaleX = 0.08 * q * s;
-          attackScaleY = -0.06 * q * s;
+          attackX = this.facing * 16 * q * s * pfx.attackStrike;
+          attackRot = this.facing * 0.12 * q * s * pfx.attackRotation;
+          attackScaleX = 0.08 * q * s * pfx.attackStretch;
+          attackScaleY = -0.06 * q * s * pfx.attackStretch;
         }
       }
 
@@ -181,17 +213,17 @@
       if (this.hit.time > 0) {
         const p = this.hit.time / this.hit.duration;
         const wave = Math.sin((1 - p) * Math.PI * 3.4) * p;
-        hitX = this.hit.direction * 10 * wave * this.hit.strength * k;
-        hitRot = this.hit.direction * 0.09 * wave * this.hit.strength * k;
+        hitX = this.hit.direction * 10 * wave * this.hit.strength * k * pfx.hitRecoil;
+        hitRot = this.hit.direction * 0.09 * wave * this.hit.strength * k * pfx.hitRotation;
       }
 
       let landScaleX = 0, landScaleY = 0, landY = 0;
       if (this.land.time > 0) {
         const p = 1 - this.land.time / this.land.duration;
         const pulse = Math.sin(p * Math.PI) * this.land.strength * k;
-        landScaleX = 0.08 * pulse;
-        landScaleY = -0.11 * pulse;
-        landY = 4 * pulse;
+        landScaleX = 0.08 * pulse * pfx.landingSquash;
+        landScaleY = -0.11 * pulse * pfx.landingSquash;
+        landY = 4 * pulse * pfx.landingYOffset;
       }
 
       return {
@@ -204,14 +236,16 @@
         flash: clamp(this.flash, 0, 1),
         moving: this.moving,
         reducedMotion: this.reducedMotion,
+        profileVersion: 1,
       };
     }
 
     afterimages({ count = 4, alpha = 0.22 } = {}) {
       const n = Math.min(this.history.length, Math.max(0, Math.floor(count)));
+      const intensity = this.profile.afterimageIntensity;
       return this.history.slice(1, n + 1).map((sample, index) => ({
         ...sample,
-        alpha: clamp(alpha * (1 - index / Math.max(1, n)), 0, 1),
+        alpha: clamp(alpha * intensity * (1 - index / Math.max(1, n)), 0, 1),
       }));
     }
   }
@@ -223,11 +257,13 @@
       this.rotation = new MotionSpring(0, { stiffness: 240, damping: 28, ...(options.spring || {}) });
       this.reducedMotion = Boolean(options.reducedMotion);
       this.lowPower = Boolean(options.lowPower);
+      this.motionScale = clamp(finite(options.motionScale, 1), 0, 2);
     }
     setReducedMotion(v) { this.reducedMotion = Boolean(v); return this; }
     setLowPower(v) { this.lowPower = Boolean(v); return this; }
+    setMotionScale(v) { this.motionScale = clamp(finite(v, 1), 0, 2); return this; }
     impulse({ x = 0, y = 0, rotation = 0 } = {}) {
-      const k = this.reducedMotion ? 0.22 : this.lowPower ? 0.65 : 1;
+      const k = (this.reducedMotion ? 0.22 : this.lowPower ? 0.65 : 1) * this.motionScale;
       this.x.impulse(finite(x) * k);
       this.y.impulse(finite(y) * k);
       this.rotation.impulse(finite(rotation) * k);
@@ -243,7 +279,10 @@
   function createCameraMotion(options = {}) { return new JaewoonCameraMotion(options); }
 
   return {
-    version: 1,
+    version: 2,
+    profileVersion: 1,
+    DEFAULT_PROFILE,
+    normalizeMotionProfile,
     MotionSpring,
     JaewoonMotionRig,
     JaewoonCameraMotion,
