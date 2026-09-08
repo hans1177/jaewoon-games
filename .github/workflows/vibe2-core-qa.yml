@@ -9,6 +9,7 @@ on:
       - 'VIBE2_MOTION_CORE.md'
       - 'assets/vibe-engine-adapter.js'
       - 'assets/vibe-workbench.js'
+      - 'assets/vibe-core-runtime.js'
       - 'assets/vibe-motion-core.js'
       - 'assets/vibe-experience-memory.js'
       - 'assets/vibe-continuous-queue.js'
@@ -38,6 +39,7 @@ jobs:
         run: |
           node --check assets/vibe-engine-adapter.js
           node --check assets/vibe-workbench.js
+          node --check assets/vibe-core-runtime.js
           node --check assets/vibe-motion-core.js
           node --check assets/vibe-experience-memory.js
           node --check assets/vibe-continuous-queue.js
