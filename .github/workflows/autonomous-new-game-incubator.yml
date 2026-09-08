@@ -35,7 +35,9 @@ jobs:
       - name: Deterministic incubator tests
         run: |
           node --check tools/autonomous-new-game-incubator.mjs
+          node --check tools/free-budget-telemetry.mjs
           node --test qa/autonomous-new-game-incubator.test.mjs
+          node --test qa/free-budget-telemetry.test.mjs
       - name: Decide whether one free model call is needed
         id: mode
         shell: bash
@@ -48,6 +50,21 @@ jobs:
           console.log(`has_active=${active?'true':'false'}`);
           console.log(`need_model=${!active&&scheduled?'true':'false'}`);
           NODE
+      - name: Verified free budget preflight
+        if: steps.mode.outputs.has_active == 'true' || steps.mode.outputs.need_model == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          model_calls=0
+          if [ "${{ steps.mode.outputs.need_model }}" = "true" ]; then model_calls=1; fi
+          node tools/free-budget-telemetry.mjs \
+            --verify-public-repo=true \
+            --runner=ubuntu-latest \
+            --model-calls="$model_calls" \
+            --runner-minutes=20 \
+            --output=.autonomous/free-budget-telemetry.json
+          echo 'FREE_BUDGET_PREFLIGHT=PASS'
+          echo 'ACTIONS_QUOTA_MODE=UNMETERED_FREE'
       - name: Install local Ollama only for a scheduled new concept
         if: steps.mode.outputs.need_model == 'true'
         shell: bash
