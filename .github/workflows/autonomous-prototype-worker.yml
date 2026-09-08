@@ -50,13 +50,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git config user.name "jaewoon-autonomous-sync"
+          git config user.email "actions@users.noreply.github.com"
           git fetch origin main autonomous-dev
           git checkout -B autonomous-dev-base origin/autonomous-dev
           git merge --no-edit origin/main
           node --check tools/autonomous-prototype-worker.mjs
           node --test qa/autonomous-prototype-worker.test.mjs
-          git config user.name "jaewoon-autonomous-sync"
-          git config user.email "actions@users.noreply.github.com"
           git push origin HEAD:autonomous-dev
           echo "AUTONOMOUS_DEV_SYNCED=$(git rev-parse HEAD)"
           echo 'PUBLIC_MAIN_WRITE=NO'
