@@ -1,6 +1,6 @@
 // 파일명: tools/artbook-assemble.mjs
-// 역할: 검증된 5개 부서 결과와 타부서 보완점/별점을 통합하고 평균 이하 부서를 다음날 2차 작업으로 예약한다.
-// 총괄은 새 의견을 만들지 않는다. 보완점은 실제 타부서 리뷰 문장을 그대로 사용한다.
+// 역할: 검증된 5개 부서 결과에 타부서 4표 + 총괄 1표를 합쳐 결과물당 5표 평균을 계산하고 평균 이하 부서를 다음날 2차 작업으로 예약한다.
+// 총괄은 평가만 하며 부서 결과물을 대신 작성하지 않는다.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -17,7 +17,7 @@ const gameId=String(process.env.ARTBOOK_GAME_ID||gate.gameId||queue.currentDaily
 const game=(queue.games||[]).find(x=>x.gameId===gameId)||null,base=path.join('artbook-submissions',gameId,date),output=path.join(base,'artbook.json'),workOrderPath=`artbook-work-orders/${date}-${gameId}.json`,workOrder=readJson(workOrderPath,{}),workMode=String(workOrder.mode||'INITIAL').toUpperCase();
 if(!gameId)throw new Error('gameId missing');
 if(gate.gameId!==gameId||gate.date!==date)throw new Error('gate target/date mismatch');
-if(gate.readyForDirectorAssembly!==true||Number(gate.readyCount)!==roles.length||Number(gate.reviewReadyCount)!==roles.length||gate.collaborationComplete!==true)throw new Error(`section/collaboration gate incomplete: sections ${gate.readyCount||0}/${roles.length}, reviews ${gate.reviewReadyCount||0}/${roles.length}`);
+if(gate.readyForDirectorAssembly!==true||Number(gate.readyCount)!==roles.length||Number(gate.reviewReadyCount)!==roles.length||gate.directorReviewReady!==true||Number(gate.ratingsPerDepartment)!==5||gate.collaborationComplete!==true)throw new Error(`section/rating gate incomplete: sections ${gate.readyCount||0}/${roles.length}, peer reviews ${gate.reviewReadyCount||0}/${roles.length}, director ${gate.directorReviewReady?'1/1':'0/1'}, ratingsPerDepartment=${gate.ratingsPerDepartment||0}`);
 if(gate.directorMayAuthorMissingSections!==false||gate.directorMayAuthorMissingReviews!==false)throw new Error('director ghostwriting guard missing');
 
 const submissionsRoot='artbook-submissions';
@@ -45,36 +45,48 @@ for(const role of roles){
   for(const rating of review.peerReviews){
     const target=String(rating.targetDepartment||''),stars=Number(rating.stars),improvement=String(rating.improvement||'').trim();
     if(!received[target]||target===role||!Number.isInteger(stars)||stars<1||stars>5||!improvement)throw new Error(`${role} invalid peer rating`);
-    received[target].push({reviewerDepartment:role,stars,improvement});
+    received[target].push({reviewerDepartment:role,reviewerType:'department',stars,improvement});
   }
 }
 
-for(const role of roles)if(received[role].length!==roles.length-1)throw new Error(`${role} must receive four peer ratings`);
-const departmentAverages=Object.fromEntries(roles.map(role=>[role,round2(received[role].reduce((sum,x)=>sum+x.stars,0)/received[role].length)]));
+for(const role of roles)if(received[role].length!==4)throw new Error(`${role} must receive exactly four department ratings before director vote`);
+const directorFile=path.join(base,'reviews','director.json'),directorReview=readJson(directorFile,null);
+if(!directorReview||String(directorReview.status||'').toUpperCase()!=='REVIEWED'||String(directorReview.reviewer||'')!=='director'||String(directorReview.protocol||'')!=='DIRECTOR_IMPROVEMENT_STAR_5'||!Array.isArray(directorReview.ratings)||directorReview.ratings.length!==5)throw new Error('director fifth rating review missing after gate');
+reviewFiles.push(directorFile);
+for(const rating of directorReview.ratings){
+  const target=String(rating.targetDepartment||''),stars=Number(rating.stars),improvement=String(rating.improvement||'').trim();
+  if(!received[target]||!Number.isInteger(stars)||stars<1||stars>5||!improvement)throw new Error('invalid director rating');
+  if(received[target].some(x=>x.reviewerDepartment==='director'))throw new Error(`duplicate director rating for ${target}`);
+  received[target].push({reviewerDepartment:'director',reviewerType:'director',stars,improvement});
+}
+for(const role of roles)if(received[role].length!==5)throw new Error(`${role} must receive exactly five ratings: four departments plus director`);
+
+const departmentAverages=Object.fromEntries(roles.map(role=>[role,round2(received[role].reduce((sum,x)=>sum+x.stars,0)/5)]));
 const overallAverage=round2(roles.reduce((sum,role)=>sum+departmentAverages[role],0)/roles.length);
 const secondWorkRoles=workMode==='INITIAL'?roles.filter(role=>departmentAverages[role]<=overallAverage):[];
 const secondWorkDueDate=workMode==='INITIAL'?addDays(date,1):null;
+const order=[...roles,'director'];
 const departmentOpinions=Object.fromEntries(roles.map(role=>{
-  const ratings=received[role].slice().sort((a,b)=>a.stars-b.stars||roles.indexOf(a.reviewerDepartment)-roles.indexOf(b.reviewerDepartment));
-  return[role,{headline:departments[role].headline,readiness:departments[role].readiness,reviewScope:'RECEIVED_FROM_OTHER_DEPARTMENTS',averageStars:departmentAverages[role],maxStars:5,reviewsReceived:ratings.length,priorityImprovement:ratings[0]?.improvement||'',priorityImprovementFrom:ratings[0]?.reviewerDepartment||null,peerRatings:ratings,overallDepartmentAverage:overallAverage,secondWorkNextDay:secondWorkRoles.includes(role),secondWorkDueDate:secondWorkRoles.includes(role)?secondWorkDueDate:null,unverified:departments[role].unverified||[]}];
+  const ratings=received[role].slice().sort((a,b)=>a.stars-b.stars||order.indexOf(a.reviewerDepartment)-order.indexOf(b.reviewerDepartment));
+  return[role,{headline:departments[role].headline,readiness:departments[role].readiness,reviewScope:'RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR',averageStars:departmentAverages[role],maxStars:5,reviewsReceived:5,departmentVotes:4,directorVotes:1,priorityImprovement:ratings[0]?.improvement||'',priorityImprovementFrom:ratings[0]?.reviewerDepartment||null,ratings,overallDepartmentAverage:overallAverage,secondWorkNextDay:secondWorkRoles.includes(role),secondWorkDueDate:secondWorkRoles.includes(role)?secondWorkDueDate:null,unverified:departments[role].unverified||[]}];
 }));
 
 if(workMode==='INITIAL'){
   const taskId=`${gameId}-${date}-second-work`;
-  const task={id:taskId,gameId,gameName:game?.name||gameId,sourceDate:date,dueDate:secondWorkDueDate,status:'SCHEDULED',criterion:'DEPARTMENT_AVERAGE_STARS_LE_OVERALL_AVERAGE',overallAverageStars:overallAverage,maxStars:5,selectedDepartments:secondWorkRoles,departmentAverageStars:departmentAverages,feedbackByDepartment:Object.fromEntries(secondWorkRoles.map(role=>[role,received[role]])),productionApproval:false};
-  secondQueue.version=1;secondQueue.updatedAt=date;secondQueue.tasks=[...(secondQueue.tasks||[]).filter(x=>x.id!==taskId),task];writeJson('artbook-second-work-queue.json',secondQueue);
+  const task={id:taskId,gameId,gameName:game?.name||gameId,sourceDate:date,dueDate:secondWorkDueDate,status:'SCHEDULED',criterion:'FIVE_VOTE_DEPARTMENT_AVERAGE_STARS_LE_OVERALL_AVERAGE',overallAverageStars:overallAverage,maxStars:5,ratingsPerDepartment:5,departmentVotesPerResult:4,directorVotesPerResult:1,selectedDepartments:secondWorkRoles,departmentAverageStars:departmentAverages,feedbackByDepartment:Object.fromEntries(secondWorkRoles.map(role=>[role,received[role]])),productionApproval:false};
+  secondQueue.version=Math.max(2,Number(secondQueue.version)||0);secondQueue.updatedAt=date;secondQueue.tasks=[...(secondQueue.tasks||[]).filter(x=>x.id!==taskId),task];writeJson('artbook-second-work-queue.json',secondQueue);
 }else if(workMode==='SECOND_WORK'){
   const taskId=String(workOrder.secondWork?.taskId||'');
   if(taskId){const task=(secondQueue.tasks||[]).find(x=>x.id===taskId);if(task){task.status='COMPLETED';task.completedAt=date;task.completedArtbookFile=output;}secondQueue.updatedAt=date;writeJson('artbook-second-work-queue.json',secondQueue);}
 }
 
 const style=styles?.games?.[gameId]||{},gameName=game?.name||style.name||gameId,readinessSummary=Object.fromEntries(roles.map(role=>[role,departments[role].readiness]));
-const final={version:4,gameId,gameName,date,status:'SUBMITTED',workMode,initialArtbook:workMode==='INITIAL',secondWorkArtbook:workMode==='SECOND_WORK',productionApproval:false,styleProfile:game?.styleProfile||style.identity||null,departments,departmentOpinions,peerRatingSummary:{scale:'STARS_1_TO_5',ratingsPerDepartment:4,departmentAverageStars:departmentAverages,overallAverageStars:overallAverage,secondWorkCriterion:'AVERAGE_OR_BELOW',secondWorkDepartments:secondWorkRoles,secondWorkDueDate},collaboration:{protocol:'PEER_IMPROVEMENT_STAR_5',reviews:collaborationReviews,sourceFiles:reviewFiles,allFiveDepartmentsReviewed:true,homepageOpinionMode:'PEER_IMPROVEMENT_AND_AVERAGE_STARS'},directorSummary:{assemblyMode:'verbatim-department-material-plus-deterministic-rating-aggregation-only',sourceDepartments:roles,sourceFiles,reviewFiles,readinessSummary,newClaimsAdded:false,productionDecisionMade:false},cuts,publication:{automaticProductionApproval:false,homepageVisibilityMayBeEnabledSeparately:true,displayReady:cuts.length>0,departmentOpinionsRequired:true,peerOpinionsRequired:true}};
+const final={version:5,gameId,gameName,date,status:'SUBMITTED',workMode,initialArtbook:workMode==='INITIAL',secondWorkArtbook:workMode==='SECOND_WORK',productionApproval:false,styleProfile:game?.styleProfile||style.identity||null,departments,departmentOpinions,ratingSummary:{scale:'STARS_1_TO_5',ratingsPerDepartment:5,departmentVotesPerResult:4,directorVotesPerResult:1,departmentAverageStars:departmentAverages,overallAverageStars:overallAverage,secondWorkCriterion:'DEPARTMENT_AVERAGE_OR_BELOW_OVERALL_AVERAGE',secondWorkDepartments:secondWorkRoles,secondWorkDueDate},collaboration:{protocol:'PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5',departmentReviews:collaborationReviews,directorReview:{sourceFile:directorFile,protocol:directorReview.protocol,reviewScope:directorReview.reviewScope,ratings:directorReview.ratings},sourceFiles:reviewFiles,allFiveDepartmentsReviewed:true,homepageOpinionMode:'IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS'},directorSummary:{assemblyMode:'department-material-plus-director-rating-plus-deterministic-five-vote-aggregation',sourceDepartments:roles,sourceFiles,reviewFiles,readinessSummary,newDepartmentClaimsAdded:false,productionDecisionMade:false},cuts,publication:{automaticProductionApproval:false,homepageVisibilityMayBeEnabledSeparately:true,displayReady:cuts.length>0,departmentOpinionsRequired:true,fiveVoteRatingsRequired:true}};
 writeJson(output,final);
 
 const feedback=feedbackThreads.games?.[gameId]||null,kind=workMode==='SECOND_WORK'?'second':'initial',artbookId=`${gameId}-${date}-${kind}`,previous=(registry.artbooks||[]).find(x=>x.id===artbookId)||null,priorEditions=(registry.artbooks||[]).filter(x=>x.gameId===gameId).map(x=>Number(x.edition)||0),edition=previous?.edition||Math.max(0,...priorEditions)+1;
-const registered={id:artbookId,gameId,gameName,edition,title:`${gameName} · ${workMode==='SECOND_WORK'?'2차':'통합'} 아트북`,subtitle:game?.styleProfile||style.identity||'5개 부서 근거 통합 기록',status:workMode==='SECOND_WORK'?'second-work-integrated-artbook':'draft-integrated-artbook',published:cuts.length>0,homepageVisible:cuts.length>0,productionApproval:false,createdAt:date,workMode,intent:workMode==='SECOND_WORK'?'전날 평균 이하 부서가 타부서 보완점을 반영해 2차 작업한 결과와 새 타부서 별점을 통합한 기록.':'5개 부서 독립 결과에 대해 서로 보완점 1개와 별점 5점 만점 평가를 남긴 초기 아트북.',sourceFile:output,departmentReadiness:readinessSummary,departmentOpinions,peerRatingSummary:final.peerRatingSummary,homepageOpinionMode:'PEER_IMPROVEMENT_AND_AVERAGE_STARS',collaborationProtocol:'PEER_IMPROVEMENT_STAR_5',cuts,feedback:feedback?{issueNumber:feedback.issueNumber,issueUrl:feedback.issueUrl}:null};
-registry.version=Math.max(7,Number(registry.version)||0);registry.updatedAt=date;registry.artbooks=[...(registry.artbooks||[]).filter(x=>x.id!==artbookId),registered];registry.dailySubmissions=[...(registry.dailySubmissions||[]).filter(x=>!(x.date===date&&x.gameId===gameId)),{date,gameId,artbookId,status:registered.status,productionApproval:false}];writeJson('game-artbooks.json',registry);
+const registered={id:artbookId,gameId,gameName,edition,title:`${gameName} · ${workMode==='SECOND_WORK'?'2차':'통합'} 아트북`,subtitle:game?.styleProfile||style.identity||'5개 부서 근거 통합 기록',status:workMode==='SECOND_WORK'?'second-work-integrated-artbook':'draft-integrated-artbook',published:cuts.length>0,homepageVisible:cuts.length>0,productionApproval:false,createdAt:date,workMode,intent:workMode==='SECOND_WORK'?'전날 5표 평균이 전체 평균 이하인 부서가 보완점을 반영해 2차 작업한 결과와 새 5표 평가를 통합한 기록.':'5개 부서 독립 결과마다 타부서 4표와 총괄 1표로 보완점 1개·별점 5점 만점 평가를 남긴 초기 아트북.',sourceFile:output,departmentReadiness:readinessSummary,departmentOpinions,ratingSummary:final.ratingSummary,homepageOpinionMode:'IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS',collaborationProtocol:'PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5',cuts,feedback:feedback?{issueNumber:feedback.issueNumber,issueUrl:feedback.issueUrl}:null};
+registry.version=Math.max(8,Number(registry.version)||0);registry.updatedAt=date;registry.artbooks=[...(registry.artbooks||[]).filter(x=>x.id!==artbookId),registered];registry.dailySubmissions=[...(registry.dailySubmissions||[]).filter(x=>!(x.date===date&&x.gameId===gameId)),{date,gameId,artbookId,status:registered.status,productionApproval:false}];writeJson('game-artbooks.json',registry);
 
-writeJson('artbook-gate-status.json',{...gate,checkedAt:new Date().toISOString(),assembled:true,assembledFile:output,registeredArtbookId:artbookId,homepagePublished:registered.published,departmentOpinionsPublished:true,homepageOpinionMode:'PEER_IMPROVEMENT_AND_AVERAGE_STARS',overallAverageStars:overallAverage,secondWorkDepartments:secondWorkRoles,secondWorkDueDate,assemblyAddsNewClaims:false,formalProductionGate:'ARTBOOK_ASSEMBLED_AWAITING_OWNER_PRODUCTION_DECISION'});
-console.log('ARTBOOK_ASSEMBLED=YES');console.log(`ARTBOOK_FILE=${output}`);console.log(`ARTBOOK_DEPARTMENTS=${roles.length}/${roles.length}`);console.log(`ARTBOOK_REVIEWS=${roles.length}/${roles.length}`);console.log(`ARTBOOK_RATING_SCALE=5`);console.log(`ARTBOOK_OVERALL_AVERAGE_STARS=${overallAverage}`);console.log(`ARTBOOK_SECOND_WORK_NEXT_DAY=${secondWorkRoles.join(',')||'NONE'}`);console.log(`ARTBOOK_SECOND_WORK_DUE=${secondWorkDueDate||'NONE'}`);console.log(`ARTBOOK_CUTS=${cuts.length}/10`);console.log(`ARTBOOK_REGISTERED=${artbookId}`);console.log(`HOMEPAGE_PUBLISHED=${registered.published?'YES':'NO'}`);console.log('PRODUCTION_APPROVAL=NO');
+writeJson('artbook-gate-status.json',{...gate,checkedAt:new Date().toISOString(),assembled:true,assembledFile:output,registeredArtbookId:artbookId,homepagePublished:registered.published,departmentOpinionsPublished:true,homepageOpinionMode:'IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS',ratingsPerDepartment:5,departmentVotesPerResult:4,directorVotesPerResult:1,overallAverageStars:overallAverage,secondWorkDepartments:secondWorkRoles,secondWorkDueDate,assemblyAddsNewDepartmentClaims:false,formalProductionGate:'ARTBOOK_ASSEMBLED_AWAITING_OWNER_PRODUCTION_DECISION'});
+console.log('ARTBOOK_ASSEMBLED=YES');console.log(`ARTBOOK_FILE=${output}`);console.log(`ARTBOOK_DEPARTMENTS=${roles.length}/${roles.length}`);console.log(`ARTBOOK_PEER_REVIEWS=${roles.length}/${roles.length}`);console.log('ARTBOOK_DIRECTOR_REVIEW=1/1');console.log('ARTBOOK_RATINGS_PER_DEPARTMENT=5');console.log('ARTBOOK_RATING_SCALE=5');console.log(`ARTBOOK_OVERALL_AVERAGE_STARS=${overallAverage}`);console.log(`ARTBOOK_SECOND_WORK_NEXT_DAY=${secondWorkRoles.join(',')||'NONE'}`);console.log(`ARTBOOK_SECOND_WORK_DUE=${secondWorkDueDate||'NONE'}`);console.log(`ARTBOOK_CUTS=${cuts.length}/10`);console.log(`ARTBOOK_REGISTERED=${artbookId}`);console.log(`HOMEPAGE_PUBLISHED=${registered.published?'YES':'NO'}`);console.log('PRODUCTION_APPROVAL=NO');
