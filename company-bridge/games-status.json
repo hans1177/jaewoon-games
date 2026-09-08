@@ -1,12 +1,29 @@
 {
   "version": 1,
   "sourceRepository": "hans1177/jaewoon-games",
-  "sourceRevision": "ff1ad8bc4cfaac5539139f1e62f99e8f6db111a9",
-  "generatedAt": "2026-09-08T17:34:26.097Z",
+  "sourceRevision": "3a413fac9bc8bf7b62a2e789c912a53b2c531db6",
+  "generatedAt": "2026-09-08T17:53:01.612Z",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
   "continuousDevelopmentBranch": "autonomous-dev",
   "paidApi": false,
+  "freeBudget": {
+    "providerId": "GITHUB_PUBLIC_STANDARD",
+    "resourceType": "ACTIONS_RUNNER",
+    "quotaMode": "UNMETERED_FREE",
+    "metered": false,
+    "planningStatus": "POLICY_ELIGIBLE",
+    "executionRepository": "hans1177/jaewoon-games",
+    "requiredVisibility": "public",
+    "standardRunnerOnly": true,
+    "runner": "ubuntu-latest",
+    "paidApi": false,
+    "localModelProvider": "OLLAMA_LOCAL",
+    "maxModelCallsPerRun": 1,
+    "maxRunnerMinutesPerRun": 20,
+    "runtimeVerificationRequired": true,
+    "source": "GITHUB_PUBLIC_STANDARD_POLICY"
+  },
   "projects": [
     {
       "id": "P0001",
