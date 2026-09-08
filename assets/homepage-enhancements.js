@@ -10,8 +10,8 @@ function installStyles(){
   style.textContent=`
 .reviews{display:none!important}
 .rollbackNotice{display:block;margin-top:6px;padding:7px 8px;border-radius:8px;background:#fff3cd;color:#735800;font-size:10px;font-weight:900;line-height:1.4}
-@media(max-width:520px){.gameCard{grid-template-columns:58% 42%!important}.gameCard .artName{right:40px!important}}
-@media(max-width:370px){.gameCard{grid-template-columns:60% 40%!important}.gameCard .artName{right:36px!important}}
+@media(max-width:520px){.gameCard{grid-template-columns:50% 50%!important}}
+@media(max-width:370px){.gameCard{grid-template-columns:50% 50%!important}}
 `;
   document.head.appendChild(style);
 }
