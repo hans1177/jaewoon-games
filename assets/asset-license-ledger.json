@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "purpose": "재운컴퍼니 외부/무료에셋 공개사용 증거 장부",
+  "policy": {
+    "candidateCatalogIsNotLicenseProof": true,
+    "publicUseRequiresLedgerEntry": true,
+    "requiredFields": [
+      "id",
+      "source",
+      "sourceUrl",
+      "creator",
+      "license",
+      "commercialUse",
+      "modificationUse",
+      "attribution",
+      "verifiedAt",
+      "targetGame",
+      "purpose",
+      "modified",
+      "evidence"
+    ],
+    "blockedLicenses": ["NC", "NON_COMMERCIAL", "UNKNOWN", "UNCLEAR", "UNKNOWN_MODIFICATION_RIGHTS", "LOST_PROVENANCE"],
+    "rule": "asset-manifest/animated-assets는 후보 카탈로그이며 이 장부에 실제 검증 증거가 없는 외부에셋은 공개판 승격에 사용할 수 없다"
+  },
+  "entries": []
+}
