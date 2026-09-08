@@ -16,22 +16,24 @@
   "counts": {
     "WORKING": 1,
     "DONE": 6,
-    "IDLE_NO_TASK": 1,
-    "BLOCKED": 0,
+    "IDLE_NO_TASK": 0,
+    "BLOCKED": 1,
     "FAILED": 0,
     "STALE": 0
   },
-  "attentionRequired": false,
-  "primaryFindings": [],
+  "attentionRequired": true,
+  "primaryFindings": [
+    "release:DEPENDENCY_BLOCKED"
+  ],
   "workflowEvidence": {
     "artbook": {
-      "id": 34194276147,
-      "status": "completed",
-      "conclusion": "success",
+      "id": 34197217862,
+      "status": "in_progress",
+      "conclusion": null,
       "event": "push",
-      "createdAt": "2026-09-08T06:21:03Z",
-      "updatedAt": "2026-09-08T06:27:16Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34194276147"
+      "createdAt": "2026-09-08T07:00:18Z",
+      "updatedAt": "2026-09-08T07:00:22Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34197217862"
     },
     "homepage": {
       "id": 34195270512,
@@ -52,20 +54,10 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
         "queue-submission:planning",
-        "workflow:34194276147:completed:success",
-        "job:101958538758:completed:success"
+        "workflow:34197217862:in_progress:pending"
       ],
       "resultVerified": true,
-      "jobEvidence": {
-        "id": 101958538758,
-        "name": "round1 (planning)",
-        "status": "completed",
-        "conclusion": "success",
-        "failedStep": null,
-        "startedAt": "2026-09-08T06:21:14Z",
-        "completedAt": "2026-09-08T06:25:12Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34194276147/job/101958538758"
-      },
+      "jobEvidence": null,
       "directCause": null,
       "blockers": [],
       "reason": "department submission is recorded for the active daily target",
@@ -79,20 +71,10 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
         "queue-submission:development",
-        "workflow:34194276147:completed:success",
-        "job:101958538741:completed:success"
+        "workflow:34197217862:in_progress:pending"
       ],
       "resultVerified": true,
-      "jobEvidence": {
-        "id": 101958538741,
-        "name": "round1 (development)",
-        "status": "completed",
-        "conclusion": "success",
-        "failedStep": null,
-        "startedAt": "2026-09-08T06:21:14Z",
-        "completedAt": "2026-09-08T06:22:54Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34194276147/job/101958538741"
-      },
+      "jobEvidence": null,
       "directCause": null,
       "blockers": [],
       "reason": "department submission is recorded for the active daily target",
@@ -106,20 +88,10 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
         "queue-submission:qa",
-        "workflow:34194276147:completed:success",
-        "job:101958538788:completed:success"
+        "workflow:34197217862:in_progress:pending"
       ],
       "resultVerified": true,
-      "jobEvidence": {
-        "id": 101958538788,
-        "name": "round1 (qa)",
-        "status": "completed",
-        "conclusion": "success",
-        "failedStep": null,
-        "startedAt": "2026-09-08T06:21:15Z",
-        "completedAt": "2026-09-08T06:22:58Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34194276147/job/101958538788"
-      },
+      "jobEvidence": null,
       "directCause": null,
       "blockers": [],
       "reason": "department submission is recorded for the active daily target",
@@ -133,20 +105,10 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
         "queue-submission:graphics",
-        "workflow:34194276147:completed:success",
-        "job:101958538769:completed:success"
+        "workflow:34197217862:in_progress:pending"
       ],
       "resultVerified": true,
-      "jobEvidence": {
-        "id": 101958538769,
-        "name": "round1 (graphics)",
-        "status": "completed",
-        "conclusion": "success",
-        "failedStep": null,
-        "startedAt": "2026-09-08T06:21:15Z",
-        "completedAt": "2026-09-08T06:24:14Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34194276147/job/101958538769"
-      },
+      "jobEvidence": null,
       "directCause": null,
       "blockers": [],
       "reason": "department submission is recorded for the active daily target",
@@ -160,20 +122,10 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
         "queue-submission:balance",
-        "workflow:34194276147:completed:success",
-        "job:101958538742:completed:success"
+        "workflow:34197217862:in_progress:pending"
       ],
       "resultVerified": true,
-      "jobEvidence": {
-        "id": 101958538742,
-        "name": "round1 (balance)",
-        "status": "completed",
-        "conclusion": "success",
-        "failedStep": null,
-        "startedAt": "2026-09-08T06:21:14Z",
-        "completedAt": "2026-09-08T06:24:05Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34194276147/job/101958538742"
-      },
+      "jobEvidence": null,
       "directCause": null,
       "blockers": [],
       "reason": "department submission is recorded for the active daily target",
@@ -195,14 +147,16 @@
     },
     "release": {
       "department": "release",
-      "taskAssigned": false,
-      "status": "IDLE_NO_TASK",
-      "task": "no active verified release task",
+      "taskAssigned": true,
+      "status": "BLOCKED",
+      "task": "verify active build/release",
       "executionEvidence": [],
       "resultVerified": false,
-      "blockers": [],
-      "reason": "no active build awaiting release verification",
-      "action": "none"
+      "blockers": [
+        "DEPENDENCY_BLOCKED"
+      ],
+      "reason": "release/build task exists but no release execution adapter is registered in this supervisor",
+      "action": "inspect build and release workflow"
     },
     "director": {
       "department": "director",
