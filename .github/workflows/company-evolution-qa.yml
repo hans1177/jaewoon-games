@@ -15,9 +15,12 @@ on:
       - company-learning/**
       - assets/artbook-runtime.js
       - assets/homepage-enhancements.js
+      - assets/homepage-layout-v2.js
+      - assets/homepage-layout-v2.css
       - assets/company-quality-bar.js
       - assets/vibe-company-orchestration-bridge.js
       - tools/homepage-manager.mjs
+      - tools/artbook-prepare-daily.mjs
       - tools/artbook-department-runner.mjs
       - tools/artbook-collaboration-runner.mjs
       - tools/artbook-gate.mjs
@@ -43,14 +46,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check new JavaScript syntax
+      - name: Check JavaScript syntax
         run: |
           set -euo pipefail
           node --input-type=module --check < assets/artbook-runtime.js
           node --input-type=module --check < assets/homepage-enhancements.js
+          node --input-type=module --check < assets/homepage-layout-v2.js
           node --input-type=module --check < assets/company-quality-bar.js
           node --input-type=module --check < assets/vibe-company-orchestration-bridge.js
           node --check tools/homepage-manager.mjs
+          node --check tools/artbook-prepare-daily.mjs
           node --check tools/artbook-department-runner.mjs
           node --check tools/artbook-collaboration-runner.mjs
           node --check tools/artbook-gate.mjs
@@ -63,9 +68,10 @@ jobs:
       - name: Validate homepage manager contract
         run: |
           set -euo pipefail
-          grep -Fq 'otherGamesMayAppearOnHomepage: true' tools/homepage-manager.mjs
+          grep -Fq 'otherGamesMayAppearOnHomepage:true' tools/homepage-manager.mjs
           grep -Fq 'short-cards -> dedicated-artbook-detail-page' tools/homepage-manager.mjs
-          grep -Fq 'artbookVisibilityIsProductionApproval: false' tools/homepage-manager.mjs
+          grep -Fq 'artbookVisibilityIsProductionApproval:false' tools/homepage-manager.mjs
+          grep -Fq 'runtimeGameHealthBadgeVisible:false' tools/homepage-manager.mjs
           grep -Fq "cron: '20 23 * * *'" .github/workflows/homepage-manager.yml
           grep -Fq '홈 = 짧은 게임 카드' .github/agents/homepage.agent.md
           grep -Fq '홈 = 짧은 카드 / 아트북 = 별도 상세 페이지' HOMEPAGE_OPERATIONS.md
@@ -74,18 +80,41 @@ jobs:
             exit 1
           fi
           node tools/homepage-manager.mjs
-          grep -Fq '"manager": "homepage"' homepage-manager-status.json
-          echo 'HOMEPAGE_MANAGER_CONTRACT=PASS'
+          node - <<'NODE'
+          const fs=require('fs');
+          const s=JSON.parse(fs.readFileSync('homepage-manager-status.json','utf8'));
+          if(s.manager!=='homepage'||s.status!=='running')throw new Error(`homepage manager not healthy: ${s.status}`);
+          if(s.policy?.runtimeGameHealthBadgeVisible!==false)throw new Error('runtime game health badge must stay hidden');
+          console.log('HOMEPAGE_MANAGER_CONTRACT=PASS');
+          NODE
+
+      - name: Validate homepage presentation contract
+        run: |
+          set -euo pipefail
+          grep -Fq '/assets/homepage-layout-v2.css' index.html
+          grep -Fq '/assets/homepage-layout-v2.js' index.html
+          grep -Fq '/artbook.html?game=' assets/homepage-layout-v2.js
+          grep -Fq 'installExtrasDetails' assets/homepage-layout-v2.js
+          grep -Fq '.gameCard{display:block!important}' assets/homepage-layout-v2.css
+          if grep -Eq '웹 실행 양호|웹 실행 주의|웹 실행 오류|웹 실행 점검대기|건강 \$\{h\.score\}' assets/homepage-enhancements.js assets/homepage-layout-v2.js; then
+            echo 'runtime health/game-quality-like badge leaked into homepage' >&2
+            exit 1
+          fi
+          grep -Fq "params.get('game')" artbook.html
+          echo 'HOMEPAGE_PRESENTATION=PASS'
 
       - name: Validate free department bot contract
         run: |
           set -euo pipefail
-          grep -Fq "paidApi:false" tools/artbook-department-runner.mjs
-          grep -Fq "readsOtherDepartmentSubmissions:false" tools/artbook-department-runner.mjs
-          grep -Fq "paidApi:false" tools/artbook-collaboration-runner.mjs
-          grep -Fq "AGREE_COUNTER_TEST_RESULT_DECISION" tools/artbook-collaboration-runner.mjs
-          grep -Fq "cancel-in-progress: true" .github/workflows/artbook-free-department-bots.yml
-          grep -Fq "qwen3:0.6b" .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'paidApi:false' tools/artbook-department-runner.mjs
+          grep -Fq 'readsOtherDepartmentSubmissions:false' tools/artbook-department-runner.mjs
+          grep -Fq 'webArchiveReadOnly:true' tools/artbook-department-runner.mjs
+          grep -Fq 'WEB_ARCHIVE_READ_ONLY' tools/artbook-department-runner.mjs
+          grep -Fq 'paidApi:false' tools/artbook-collaboration-runner.mjs
+          grep -Fq 'AGREE_COUNTER_TEST_RESULT_DECISION' tools/artbook-collaboration-runner.mjs
+          grep -Fq 'tools/artbook-prepare-daily.mjs' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'cancel-in-progress: true' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'qwen3:0.6b' .github/workflows/artbook-free-department-bots.yml
           if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/artbook-department-runner.mjs tools/artbook-collaboration-runner.mjs; then
             echo 'paid/external AI key leaked into free department bot path' >&2
             exit 1
@@ -97,39 +126,36 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const data=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
+          const roles=['planning','graphics','development','qa','balance'];
           if(data?.policy?.maxCutsPerEdition!==10)throw new Error('artbook max cuts must be 10');
           if(data?.policy?.homepageVisibilityIsProductionApproval!==false)throw new Error('homepage visibility must not equal production approval');
           for(const book of data.artbooks||[]){
             if((book.cuts||[]).length>10)throw new Error(`${book.id}: more than 10 cuts`);
-            if(book.published===true){
-              if(!book.feedback?.issueNumber||!book.feedback?.issueUrl)throw new Error(`${book.id}: published artbook needs issue feedback thread`);
-              for(const cut of book.cuts||[]){
-                if(!cut.title||!cut.body||!cut.image)throw new Error(`${book.id}: incomplete cut ${cut.no}`);
+            if(book.published===true||book.homepageVisible===true){
+              if(book.productionApproval!==false)throw new Error(`${book.id}: visibility cannot grant production approval`);
+              const opinions=book.departmentOpinions||{};
+              for(const role of roles){
+                const o=opinions[role];
+                if(!o||!Array.isArray(o.agree)||!Array.isArray(o.counter)||!Array.isArray(o.test)||!Array.isArray(o.result)||!String(o.decision||'').trim())throw new Error(`${book.id}: missing ${role} department opinion`);
               }
+              for(const cut of book.cuts||[]){if(!cut.title||!cut.body||!cut.image)throw new Error(`${book.id}: incomplete cut ${cut.no}`);}
             }
           }
           console.log('ARTBOOK_CONTRACT=PASS');
           NODE
 
-      - name: Validate homepage wiring
+      - name: Validate department-opinion display
         run: |
           set -euo pipefail
-          if grep -Fq '<div class="tagline">작은 상상이 큰 재미가 되는 곳</div>' index.html; then
-            echo 'duplicate tagline still present' >&2
-            exit 1
-          fi
-          grep -Fq '/assets/homepage-enhancements.js' index.html
-          grep -Fq 'game-artbooks.json' assets/homepage-enhancements.js
-          grep -Fq '다른 게임 아트북' assets/homepage-enhancements.js
-          grep -Fq 'preArtbookDetails' assets/homepage-enhancements.js
-          grep -Fq 'artbook.html?id=' assets/homepage-enhancements.js
-          grep -Fq '하루 1권 · 5개 부서 협업' assets/homepage-enhancements.js
-          grep -Fq '웹 실행 양호' assets/homepage-enhancements.js
-          if grep -Fq '건강 ${h.score}' assets/homepage-enhancements.js; then
-            echo 'numeric health score leaked into homepage badge' >&2
-            exit 1
-          fi
-          echo 'HOMEPAGE_ARTBOOK_WIRING=PASS'
+          grep -Fq '5개 부서 검토 의견' artbook.html
+          grep -Fq 'AGREE' artbook.html
+          grep -Fq 'COUNTER' artbook.html
+          grep -Fq 'TEST' artbook.html
+          grep -Fq 'RESULT' artbook.html
+          grep -Fq 'DECISION' artbook.html
+          grep -Fq 'departmentOpinions' tools/artbook-assemble.mjs
+          grep -Fq 'departmentOpinionsPublished:true' tools/artbook-assemble.mjs
+          echo 'DEPARTMENT_OPINION_DISPLAY=PASS'
 
       - name: Validate artbook section and collaboration gate contract
         run: |
@@ -147,8 +173,7 @@ jobs:
           const assembler=fs.readFileSync('tools/artbook-assemble.mjs','utf8');
           if(!assembler.includes('newClaimsAdded:false'))throw new Error('assembler new-claims guard missing');
           if(!assembler.includes('daily final artbook limit reached'))throw new Error('daily one-artbook guard missing');
-          if(!assembler.includes("productionApproval:false"))throw new Error('assembly must not grant production approval');
-          if(!assembler.includes("AGREE_COUNTER_TEST_RESULT_DECISION"))throw new Error('assembler collaboration protocol missing');
+          if(!assembler.includes('productionApproval:false'))throw new Error('assembly must not grant production approval');
           if(gate.assembled===true){
             const finalFile=gate.assembledFile;
             if(!finalFile||!fs.existsSync(finalFile))throw new Error('assembled gate has no artbook file');
@@ -156,8 +181,8 @@ jobs:
             if(book.productionApproval!==false)throw new Error('assembled artbook granted production approval');
             if(book.directorSummary?.newClaimsAdded!==false)throw new Error('director summary introduced claims');
             if(Object.keys(book.departments||{}).length!==roles.length)throw new Error('assembled artbook is not 5/5');
+            if(Object.keys(book.departmentOpinions||{}).length!==roles.length)throw new Error('assembled artbook has no 5/5 department opinions');
             if(book.collaboration?.allFiveDepartmentsReviewed!==true)throw new Error('assembled artbook has no 5/5 collaboration review');
-            if((book.cuts||[]).length>10)throw new Error('assembled artbook exceeds 10 cuts');
           }
           console.log('ARTBOOK_SECTION_COLLAB_GATE=PASS');
           NODE
@@ -180,7 +205,7 @@ jobs:
       - name: Validate experience quality-bar integration
         run: |
           set -euo pipefail
-          grep -Fq "createCompanyQualityBar" assets/vibe-company-orchestration-bridge.js
-          grep -Fq "qualityBar:companyQualityBar" assets/vibe-company-orchestration-bridge.js
-          grep -Fq "authorityNeverExpandsWithLevel" assets/department-experience.js
+          grep -Fq 'createCompanyQualityBar' assets/vibe-company-orchestration-bridge.js
+          grep -Fq 'qualityBar:companyQualityBar' assets/vibe-company-orchestration-bridge.js
+          grep -Fq 'authorityNeverExpandsWithLevel' assets/department-experience.js
           echo 'EXPERIENCE_QUALITY_BAR=PASS'
