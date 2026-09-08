@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-chatgpt-vibe2-worker-lock-integration",
+      "worker": "chatgpt",
+      "taskId": "vibe2-worker-shared-lock-integration",
+      "gameId": null,
+      "files": [
+        "assets/vibe-work-lock.js",
+        "tools/vibe-work-lock-control.mjs",
+        "qa/vibe-work-lock.test.mjs",
+        ".github/workflows/vibe2-continuous-core.yml",
+        ".github/workflows/vibe2-core-qa.yml",
+        "vibe2-runtime.json"
+      ],
+      "baseSha": "ef7397d4cd0c223e7cca6088792a0a9cdf0c937d",
+      "acquiredAt": "2026-09-08T20:22:00.000Z",
+      "expiresAt": "2026-09-08T21:07:00.000Z",
+      "status": "active",
+      "evidence": [
+        "vibe2-worker-shared-lock-integration"
+      ]
+    }
+  ]
 }
