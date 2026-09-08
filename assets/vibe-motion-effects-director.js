@@ -15,6 +15,42 @@ export function createVibeImpactRecipe({kind='normal',importance='normal',mobile
 export function createVibeEffectBudget({mobile=true,enemyCount=0,boss=false}={}){const pressure=Math.min(1,enemyCount/(mobile?18:30)),base=mobile?70:100,score=clamp(base-pressure*45-(boss?10:0));return Object.freeze({score,particlesPerImpact:score<45?4:score<70?8:16,maxPersistentEmitters:score<45?3:score<70?6:12,allowBlur:!mobile&&score>65,allowFullScreenDistortion:!mobile&&score>80,policy:'readability-before-spectacle'})}
 export function createVibeMotionEffectExecution(event,{mobile=true,enemyCount=0}={}){if(!event||event.authority!=='presentation-only'||event.gameplayMutationAllowed!==false)return Object.freeze({accepted:false,reason:'presentation-authority-required'});const type=String(event.eventType||''),profile=createVibeMotionProfile(type,{importance:event.importance||'normal',mobile}),impact=createVibeImpactRecipe({kind:type==='hit'?'hard':'normal',importance:event.importance||'normal',mobile}),budget=createVibeEffectBudget({mobile,enemyCount,boss:type==='boss'}),channels=new Set(event.channels||[]),commands=[];if(channels.has('animation'))commands.push(Object.freeze({channel:'animation',action:'play-motion-profile',layers:profile.layers,timing:profile.timing}));if(channels.has('vfx'))commands.push(Object.freeze({channel:'vfx',action:'play-effects',effects:profile.effects,impact,budget}));if(channels.has('camera'))commands.push(Object.freeze({channel:'camera',action:'apply-camera-accent',camera:profile.camera}));return Object.freeze({accepted:true,eventId:event.presentationEventId,causeId:event.causeId,eventType:type,commands:Object.freeze(commands),authority:'presentation-only',gameplayMutationAllowed:false,forbid:FORBID})}
 export function executeVibeMotionEffectEvent(event,handlers={},options={}){const execution=createVibeMotionEffectExecution(event,options);if(!execution.accepted)return execution;const results=[];for(const command of execution.commands){const handler=handlers[command.channel];if(typeof handler==='function')results.push(Object.freeze({channel:command.channel,result:handler(command,event)}))}return Object.freeze({...execution,handled:results.length>0,results:Object.freeze(results)})}
-export function planVibeMotionEffectsAutopilot({graph=null,parts=[],mobile=true,request=''}={}){const audit=auditVibeMotionEffects(graph),tasks=[];for(const event of audit.priority){tasks.push(Object.freeze({domain:'motion',event,profile:createVibeMotionProfile(event,{importance:event==='boss'?'major':'normal',mobile}),impact:createVibeImpactRecipe({kind:event==='hit'?'hard':'normal',importance:event==='boss'?'major':'normal',mobile}),risk:['attack','hit','skill'].includes(event)?'medium':'low'}))}return Object.freeze({version:1,request:String(request),audit,secondaryMotion:createVibeSecondaryMotionRig({parts}),tasks:Object.freeze(tasks),policy:Object.freeze({serverAI:false,eventDriven:true,checkpoint:true,mobileFirst:mobile,gameplayAuthoritative:true,noRuleMutation:true})})}
+export function planVibeMotionEffectsAutopilot({graph=null,parts=[],mobile=true,request=''}={}){const audit=auditVibeMotionEffects(graph),tasks=[];for(const event of audit.priority){tasks.push(Object.freeze({domain:'motion',event,profile:createVibeMotionProfile(event,{importance:event==='boss'?'major':'normal',mobile}),impact:createVibeImpactRecipe({kind:event==='hit'?'hard':'normal',importance:event==='boss'?'major':'normal',mobile}),risk:['attack','hit','skill'].includes(event)?'medium':'low'}))}return Object.freeze({version:2,request:String(request),audit,secondaryMotion:createVibeSecondaryMotionRig({parts}),tasks:Object.freeze(tasks),engine:Object.freeze({name:'Jaewoon Motion Engine',path:'assets/jaewoon-motion-engine.js',presentationOnly:true}),policy:Object.freeze({serverAI:false,eventDriven:true,checkpoint:true,mobileFirst:mobile,gameplayAuthoritative:true,noRuleMutation:true})})}
 export function validateVibeMotionPatch({beforeFingerprint={},afterFingerprint={}}={}){const changed=[];for(const key of uniq([...Object.keys(beforeFingerprint),...Object.keys(afterFingerprint)]))if(JSON.stringify(beforeFingerprint[key]||[])!==JSON.stringify(afterFingerprint[key]||[]))changed.push(key);return Object.freeze({safe:changed.length===0,changed:Object.freeze(changed),reason:changed.length?'protected-game-rule-changed':'presentation-only'})}
-if(typeof window!=='undefined'){window.createJaewoonVibeMotionProfile=createVibeMotionProfile;window.auditJaewoonVibeMotionEffects=auditVibeMotionEffects;window.createJaewoonVibeSecondaryMotionRig=createVibeSecondaryMotionRig;window.createJaewoonVibeImpactRecipe=createVibeImpactRecipe;window.createJaewoonVibeEffectBudget=createVibeEffectBudget;window.createJaewoonVibeMotionEffectExecution=createVibeMotionEffectExecution;window.executeJaewoonVibeMotionEffectEvent=executeVibeMotionEffectEvent;window.planJaewoonVibeMotionEffectsAutopilot=planVibeMotionEffectsAutopilot;window.validateJaewoonVibeMotionPatch=validateVibeMotionPatch}
+
+function engineApi(engine){return engine||globalThis?.JaewoonMotionEngine||null}
+export function createVibeMotionEngineBridge({engine=null,reducedMotion=false,lowPower=false,motionScale=1}={}){
+  const api=engineApi(engine);
+  if(!api?.createMotionRig||!api?.createCameraMotion)return Object.freeze({ready:false,reason:'jaewoon-motion-engine-missing',enginePath:'assets/jaewoon-motion-engine.js'});
+  const rig=api.createMotionRig({reducedMotion,lowPower,motionScale});
+  const camera=api.createCameraMotion({reducedMotion,lowPower});
+  return {ready:true,enginePath:'assets/jaewoon-motion-engine.js',rig,camera,authority:'presentation-only',gameplayMutationAllowed:false,forbid:FORBID};
+}
+
+export function executeVibeMotionEngineEvent(event,bridge,{speed=0,facing=1,hitDirection=-1}={}){
+  if(!bridge?.ready||!bridge.rig||!bridge.camera)return Object.freeze({accepted:false,reason:'motion-engine-bridge-not-ready'});
+  const execution=createVibeMotionEffectExecution(event,{mobile:true,enemyCount:0});
+  if(!execution.accepted)return execution;
+  const type=String(event.eventType||'');
+  const major=event.importance==='major'||type==='boss';
+  bridge.rig.setMotionState({moving:type==='move',speed,facing});
+  if(type==='attack'||type==='skill')bridge.rig.triggerAttack({strength:major?1.5:1,duration:major?.34:.24});
+  if(type==='hit')bridge.rig.triggerHit({direction:hitDirection,strength:major?1.5:1});
+  if(type==='spawn'||type==='death')bridge.rig.triggerLand({strength:major?1.4:.8});
+  if(type==='hit'||type==='attack'||type==='skill'||type==='boss')bridge.camera.impulse({x:(type==='hit'?hitDirection:facing)*(major?90:45),y:major?-45:-18,rotation:(major?.7:.25)*facing});
+  return Object.freeze({accepted:true,eventType:type,authority:'presentation-only',gameplayMutationAllowed:false,forbid:FORBID,bridgeApplied:true});
+}
+
+if(typeof window!=='undefined'){
+  window.createJaewoonVibeMotionProfile=createVibeMotionProfile;
+  window.auditJaewoonVibeMotionEffects=auditVibeMotionEffects;
+  window.createJaewoonVibeSecondaryMotionRig=createVibeSecondaryMotionRig;
+  window.createJaewoonVibeImpactRecipe=createVibeImpactRecipe;
+  window.createJaewoonVibeEffectBudget=createVibeEffectBudget;
+  window.createJaewoonVibeMotionEffectExecution=createVibeMotionEffectExecution;
+  window.executeJaewoonVibeMotionEffectEvent=executeVibeMotionEffectEvent;
+  window.planJaewoonVibeMotionEffectsAutopilot=planVibeMotionEffectsAutopilot;
+  window.validateJaewoonVibeMotionPatch=validateVibeMotionPatch;
+  window.createJaewoonVibeMotionEngineBridge=createVibeMotionEngineBridge;
+  window.executeJaewoonVibeMotionEngineEvent=executeVibeMotionEngineEvent;
+}
