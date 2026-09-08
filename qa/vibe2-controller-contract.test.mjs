@@ -8,6 +8,7 @@ import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
 import { classifyVibeExecutionRoute } from '../tools/vibe2-continuous-runner.mjs';
 
 const workflow = fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml', import.meta.url), 'utf8');
+const resultWorkflow = fs.readFileSync(new URL('../.github/workflows/vibe2-unity-candidate-result.yml', import.meta.url), 'utf8');
 const runtime = JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json', import.meta.url), 'utf8'));
 
 test('Unreal C++ routes to text source worker', () => {
@@ -90,4 +91,14 @@ test('continuous controller is bounded, candidate-only and never auto-passes unv
   assert(!workflow.includes('vibe2-queue-control.mjs pass'));
   assert(!workflow.includes('git push origin HEAD:main'));
   assert(!workflow.includes('web-games/.autonomous-candidates'));
+});
+
+test('all Vibe2 queue writers share the control-state lock and retry moving branches', () => {
+  assert(workflow.includes('group: vibe2-control-state-${{ github.ref_name }}'));
+  assert(resultWorkflow.includes('group: vibe2-control-state-${{ github.event.repository.default_branch }}'));
+  assert(workflow.includes('git pull --rebase origin "$VIBE2_CONTROL_BRANCH"'));
+  assert(workflow.includes('for attempt in 1 2 3'));
+  assert(resultWorkflow.includes('VIBE2_RECONCILE_ATTEMPT=$attempt/3'));
+  assert(resultWorkflow.includes('git fetch origin "$CONTROL_BRANCH"'));
+  assert(resultWorkflow.includes('if git push origin "HEAD:$CONTROL_BRANCH"'));
 });
