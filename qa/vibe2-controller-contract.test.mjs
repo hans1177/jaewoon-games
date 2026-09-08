@@ -92,8 +92,9 @@ test('runtime requires the shared ChatGPT/Vibe2/company-ai work lock', () => {
   assert.equal(runtime.safety.sharedWorkLockRequired, true);
 });
 
-test('continuous controller is bounded, candidate-only and never auto-passes unverified source work', () => {
+test('continuous controller is bounded, reusable, candidate-only and never auto-passes unverified source work', () => {
   assert(workflow.includes("cron: '17 * * * *'"));
+  assert(workflow.includes('workflow_call:'));
   assert(workflow.includes('timeout-minutes: 20'));
   assert(workflow.includes('--runner-minutes=20'));
   assert(workflow.includes('VIBE2_MODEL_CALL_BUDGET=1'));
@@ -101,7 +102,7 @@ test('continuous controller is bounded, candidate-only and never auto-passes unv
   assert(workflow.includes('candidate-awaiting-engine-qa'));
   assert(workflow.includes('VIBE2_TASK_PASS=NO'));
   assert(workflow.includes('VIBE2_BINARY_TEXT_EDIT=NO'));
-  assert(workflow.includes('gh workflow run vibe2-continuous-core.yml'));
+  assert(workflow.includes('gh workflow run vibe2-24h-runner.yml --ref main'));
   assert(!workflow.includes('vibe2-queue-control.mjs pass'));
   assert(!workflow.includes('git push origin HEAD:main'));
   assert(!workflow.includes('web-games/.autonomous-candidates'));
@@ -121,8 +122,8 @@ test('source worker must acquire and release the shared remote work lock', () =>
   assert(!workflow.includes('work-lock --force'));
 });
 
-test('all Vibe2 queue writers share the control-state lock and retry moving branches', () => {
-  assert(workflow.includes('group: vibe2-control-state-${{ github.ref_name }}'));
+test('all Vibe2 queue writers use the fixed control branch lock and retry moving branches', () => {
+  assert(workflow.includes('group: vibe2-control-state-vibe2-unreal-core'));
   assert(resultWorkflow.includes('group: vibe2-control-state-${{ github.event.repository.default_branch }}'));
   assert(workflow.includes('git pull --rebase origin "$VIBE2_CONTROL_BRANCH"'));
   assert(workflow.includes('for attempt in 1 2 3'));
