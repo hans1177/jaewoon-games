@@ -1,0 +1,86 @@
+name: Artbook Postprocess
+
+on:
+  workflow_run:
+    workflows: ["Free Artbook Department Bots"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: artbook-postprocess-main
+  cancel-in-progress: true
+
+jobs:
+  postprocess:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Resolve assembled artbook target
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs=require('fs');
+          const gate=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8'));
+          const ready=gate.assembled===true && gate.readyForDirectorAssembly===true && gate.collaborationComplete===true && gate.directorReviewReady===true && gate.readyCount===5 && gate.reviewReadyCount===5 && gate.ratingsPerDepartment===5;
+          console.log(`run=${ready?'true':'false'}`);
+          console.log(`game_id=${gate.gameId||''}`);
+          console.log(`date=${gate.date||''}`);
+          NODE
+
+      - name: Postprocess to exact 10 cuts
+        if: steps.target.outputs.run == 'true'
+        env:
+          ARTBOOK_GAME_ID: ${{ steps.target.outputs.game_id }}
+          ARTBOOK_DATE: ${{ steps.target.outputs.date }}
+        run: node tools/artbook-postprocess.mjs
+
+      - name: Validate completed artbook
+        if: steps.target.outputs.run == 'true'
+        env:
+          ARTBOOK_GAME_ID: ${{ steps.target.outputs.game_id }}
+          ARTBOOK_DATE: ${{ steps.target.outputs.date }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs=require('fs');
+          const gameId=process.env.ARTBOOK_GAME_ID,date=process.env.ARTBOOK_DATE;
+          const file=`artbook-submissions/${gameId}/${date}/artbook.json`;
+          const artbook=JSON.parse(fs.readFileSync(file,'utf8'));
+          const registry=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
+          const registered=(registry.artbooks||[]).find(x=>x.sourceFile===file);
+          if(artbook.status!=='COMPLETED'||!Array.isArray(artbook.cuts)||artbook.cuts.length!==10||artbook.postprocess?.complete!==true)throw new Error('artbook postprocess incomplete');
+          if(!registered||registered.status!=='completed-artbook'||registered.published!==true||registered.homepageVisible!==true||registered.cuts?.length!==10)throw new Error('homepage registry completion mismatch');
+          console.log('ARTBOOK_COMPLETED=YES');
+          console.log('ARTBOOK_CUTS=10/10');
+          console.log('HOMEPAGE_COMPLETION=YES');
+          NODE
+
+      - name: Commit completed 10-cut artbook
+        if: steps.target.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          GAME_ID='${{ steps.target.outputs.game_id }}';DATE_KST='${{ steps.target.outputs.date }}'
+          git config user.name 'jaewoon-company-postprocess'
+          git config user.email 'actions@users.noreply.github.com'
+          git add "artbook-submissions/${GAME_ID}/${DATE_KST}/artbook.json" artbook-gate-status.json game-artbooks.json
+          if git diff --cached --quiet; then
+            echo 'ARTBOOK_POSTPROCESS_COMMIT=NO_CHANGES'
+            exit 0
+          fi
+          git commit -m "artbook: complete ${GAME_ID} ${DATE_KST} as 10 cuts"
+          git pull --rebase origin main
+          git push origin main
+          echo 'ARTBOOK_POSTPROCESS_COMMIT=SUCCESS'
