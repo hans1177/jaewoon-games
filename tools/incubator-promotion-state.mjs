@@ -1,5 +1,7 @@
 // 신규게임 candidate가 독립 QA를 통과해 autonomous-dev에 반영된 뒤 메타데이터만 완료 처리한다.
 // 공개 main 게임코드/출시승인 권한은 절대 다루지 않는다.
+import fs from 'node:fs';
+import {pathToFileURL} from 'node:url';
 
 const clean=value=>String(value??'').trim();
 
@@ -42,4 +44,34 @@ export function applyVerifiedPrototypePromotion({state,portfolio,evidence,devRev
   project.publicReleaseApproved=false;
 
   return{changed:true,reason:'PROTOTYPE_DEV_VERIFIED',candidate,project};
+}
+
+function arg(name,fallback=null){
+  const prefix=`--${name}=`;const raw=process.argv.find(v=>v.startsWith(prefix));return raw?raw.slice(prefix.length):fallback;
+}
+
+export function applyVerifiedPrototypePromotionFiles({stateFile='autonomous-incubator.json',portfolioFile='autonomous-portfolio.json',evidenceFile,devRevision=null,timestamp=new Date().toISOString()}={}){
+  if(!evidenceFile)throw new Error('evidence-file 필요');
+  const state=JSON.parse(fs.readFileSync(stateFile,'utf8'));
+  const portfolio=JSON.parse(fs.readFileSync(portfolioFile,'utf8'));
+  const evidence=JSON.parse(fs.readFileSync(evidenceFile,'utf8'));
+  const result=applyVerifiedPrototypePromotion({state,portfolio,evidence,devRevision,timestamp});
+  if(result.changed){
+    fs.writeFileSync(stateFile,JSON.stringify(state,null,2)+'\n');
+    fs.writeFileSync(portfolioFile,JSON.stringify(portfolio,null,2)+'\n');
+  }
+  return{changed:result.changed,reason:result.reason,gameId:evidence.gameId??null,incubatorCandidateId:evidence.incubatorCandidateId??null,publicReleaseApproved:false};
+}
+
+if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
+  try{
+    const result=applyVerifiedPrototypePromotionFiles({
+      stateFile:arg('state-file','autonomous-incubator.json'),
+      portfolioFile:arg('portfolio-file','autonomous-portfolio.json'),
+      evidenceFile:arg('evidence-file'),
+      devRevision:arg('dev-revision'),
+      timestamp:arg('timestamp',new Date().toISOString()),
+    });
+    console.log(JSON.stringify(result,null,2));
+  }catch(error){console.error(error.stack||error.message);process.exitCode=1;}
 }
