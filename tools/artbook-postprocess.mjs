@@ -37,7 +37,7 @@ if(!director||director.status!=='READY'||director.mode!=='VISUAL_FIRST_EMPLOYEE_
 for(const key of ['cover','summary']){const p=director[key];if(!p||p.employeeAuthored!==true||!clean(p.image)||!fs.existsSync(p.image))throw new Error(`director ${key} page invalid`);}
 
 const cuts=[];
-const push=(p,role,pageType,visualType='')=>cuts.push({no:cuts.length+1,kind:role,title:clip(p.title,28),body:clip(p.caption||p.tagline||p.closing||'',70),image:clean(p.image),sourceDepartment:role,pageType,visualType,employeeAuthored:true,assistantAuthored:false,displayLanguage:'ko'});
+const push=(p,role,pageType,visualType='')=>cuts.push({no:cuts.length+1,kind:role,title:clip(p.title,28),body:clip(p.body||p.caption||p.tagline||p.closing||'',70),image:clean(p.image),sourceDepartment:role,pageType,visualType,employeeAuthored:true,assistantAuthored:false,displayLanguage:'ko'});
 push(director.cover,'director','cover','game-concept-cover');
 for(const p of departmentPages.planning)push(p,'planning','department-visual',p.visualType);
 for(const p of departmentPages.graphics)push(p,'graphics','department-visual',p.visualType);
