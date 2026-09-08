@@ -1,9 +1,9 @@
 {
-  "version": 6,
+  "version": 5,
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
   "date": "2026-09-08",
-  "status": "COMPLETED",
+  "status": "SUBMITTED",
   "workMode": "INITIAL",
   "initialArtbook": true,
   "secondWorkArtbook": false,
@@ -993,99 +993,39 @@
       "title": "Independent Artbook Review for 'DAECHUNG RPG' - Story & Region Causality",
       "body": "Independent Artbook Review for 'DAECHUNG RPG' - Story & Region Causality",
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/planning.svg",
-      "sourceDepartment": "planning",
-      "pageType": "department-overview",
-      "postprocessed": true
+      "sourceDepartment": "planning"
     },
     {
       "no": 2,
-      "kind": "planning",
-      "title": "기획 · 세부 정리",
-      "body": "Story & Region Causality",
-      "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/planning.svg",
-      "sourceDepartment": "planning",
-      "pageType": "department-detail",
-      "postprocessed": true
-    },
-    {
-      "no": 3,
       "kind": "graphics",
       "title": "대충 RPG 1차 독립 아트북 검토",
       "body": "대충 RPG 1차 독립 아트북 검토",
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/graphics.svg",
-      "sourceDepartment": "graphics",
-      "pageType": "department-overview",
-      "postprocessed": true
+      "sourceDepartment": "graphics"
     },
     {
-      "no": 4,
-      "kind": "graphics",
-      "title": "그래픽 · 세부 정리",
-      "body": "world-section-structure",
-      "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/graphics.svg",
-      "sourceDepartment": "graphics",
-      "pageType": "department-detail",
-      "postprocessed": true
-    },
-    {
-      "no": 5,
+      "no": 3,
       "kind": "development",
       "title": "RPG 개발 부서 1차 독립 검토",
       "body": "RPG 개발 부서 1차 독립 검토",
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/development.svg",
-      "sourceDepartment": "development",
-      "pageType": "department-overview",
-      "postprocessed": true
+      "sourceDepartment": "development"
     },
     {
-      "no": 6,
-      "kind": "development",
-      "title": "개발 · 세부 정리",
-      "body": "실제 구현 구조",
-      "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/development.svg",
-      "sourceDepartment": "development",
-      "pageType": "department-detail",
-      "postprocessed": true
-    },
-    {
-      "no": 7,
+      "no": 4,
       "kind": "qa",
       "title": "RPG QA Department 1st Independent Review",
       "body": "RPG QA Department 1st Independent Review",
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/qa.svg",
-      "sourceDepartment": "qa",
-      "pageType": "department-overview",
-      "postprocessed": true
+      "sourceDepartment": "qa"
     },
     {
-      "no": 8,
-      "kind": "qa",
-      "title": "QA · 세부 정리",
-      "body": "story-telling & world-building",
-      "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/qa.svg",
-      "sourceDepartment": "qa",
-      "pageType": "department-detail",
-      "postprocessed": true
-    },
-    {
-      "no": 9,
+      "no": 5,
       "kind": "balance",
       "title": "대충 RPG 밸런스 부서 1차 독립 검토",
       "body": "대충 RPG 밸런스 부서 1차 독립 검토",
       "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/balance.svg",
-      "sourceDepartment": "balance",
-      "pageType": "department-overview",
-      "postprocessed": true
-    },
-    {
-      "no": 10,
-      "kind": "balance",
-      "title": "밸런스 · 세부 정리",
-      "body": "level 1: 100 gold, 100 experience, base max hp 100",
-      "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/balance.svg",
-      "sourceDepartment": "balance",
-      "pageType": "department-detail",
-      "postprocessed": true
+      "sourceDepartment": "balance"
     }
   ],
   "publication": {
@@ -1093,30 +1033,6 @@
     "homepageVisibilityMayBeEnabledSeparately": true,
     "displayReady": true,
     "departmentOpinionsRequired": true,
-    "fiveVoteRatingsRequired": true,
-    "requiredCuts": 10,
-    "exactCutCountRequired": true,
-    "postprocessRequired": true,
-    "postprocessComplete": true
-  },
-  "postprocess": {
-    "version": 1,
-    "complete": true,
-    "checkedAt": "2026-09-08T06:27:23.543Z",
-    "requiredCuts": 10,
-    "cutCount": 10,
-    "cutsPerDepartment": {
-      "planning": 2,
-      "graphics": 2,
-      "development": 2,
-      "qa": 2,
-      "balance": 2
-    },
-    "formatChecked": true,
-    "emptyContentChecked": true,
-    "duplicateChecked": true,
-    "imagePathsChecked": true,
-    "newClaimsAdded": false,
-    "sourceMode": "DEPARTMENT_OWNED_MATERIAL_ONLY"
+    "fiveVoteRatingsRequired": true
   }
 }
