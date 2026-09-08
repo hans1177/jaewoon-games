@@ -19,6 +19,28 @@ const PRIORITY_SCORE = freeze({
   low: 20
 });
 
+function normalizeCompanyContext(input = {}) {
+  const source = input && typeof input === 'object' ? input : {};
+  const hasContext = Boolean(
+    clean(source.stageId) || clean(source.role) || clean(source.artbookRef) || clean(source.assignmentAuthority) ||
+    source.artbookLocked === true || source.reviewRequired === true || source.artbookPostprocessComplete === true ||
+    Number(source.artbookCutCount) > 0
+  );
+  if (!hasContext) return null;
+  return freeze({
+    stageId: clean(source.stageId) || null,
+    role: clean(source.role) || null,
+    assignmentAuthority: clean(source.assignmentAuthority) || null,
+    sourceRef: clean(source.sourceRef) || null,
+    artbookLocked: Boolean(source.artbookLocked),
+    artbookRef: clean(source.artbookRef) || null,
+    artbookStatus: clean(source.artbookStatus) || null,
+    artbookCutCount: clampInt(source.artbookCutCount),
+    artbookPostprocessComplete: Boolean(source.artbookPostprocessComplete),
+    reviewRequired: source.reviewRequired !== false
+  });
+}
+
 function normalizeTask(input = {}, index = 0) {
   const status = VIBE_QUEUE_STATUSES.includes(clean(input.status)) ? clean(input.status) : 'queued';
   const priority = VIBE_QUEUE_PRIORITIES.includes(clean(input.priority)) ? clean(input.priority) : 'normal';
@@ -41,7 +63,8 @@ function normalizeTask(input = {}, index = 0) {
     paidResourceRequired: Boolean(input.paidResourceRequired),
     blocker: clean(input.blocker) || null,
     evidence: freezeList(input.evidence || []),
-    lastOutcome: clean(input.lastOutcome) || null
+    lastOutcome: clean(input.lastOutcome) || null,
+    companyContext: normalizeCompanyContext(input.companyContext)
   });
 }
 
@@ -49,7 +72,7 @@ export function createVibeContinuousQueue(seed = {}) {
   const source = Array.isArray(seed) ? seed : Array.isArray(seed?.tasks) ? seed.tasks : [];
   const tasks = source.map(normalizeTask);
   return freeze({
-    version: 1,
+    version: 2,
     mode: 'short-verified-work-chains',
     longRunningSingleJobRequired: false,
     ownerDirectivePreemptsAutonomy: true,
@@ -158,7 +181,7 @@ export function summarizeVibeContinuousQueue(queueInput) {
   const counts = Object.fromEntries(VIBE_QUEUE_STATUSES.map((status) => [status, queue.tasks.filter((task) => task.status === status).length]));
   const next = selectNextVibeQueueTask(queue);
   return freeze({
-    version: 1,
+    version: 2,
     counts: freeze(counts),
     nextTaskId: next.selected?.id || null,
     continueRequired: next.continueRequired,
