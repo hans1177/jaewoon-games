@@ -7,6 +7,7 @@ on:
     paths:
       - 'VIBE2_CORE.md'
       - 'VIBE2_MOTION_CORE.md'
+      - 'VIBE2_CONTINUOUS_OPERATIONS.md'
       - 'assets/vibe-engine-adapter.js'
       - 'assets/vibe-workbench.js'
       - 'assets/vibe-core-runtime.js'
@@ -16,11 +17,14 @@ on:
       - 'tools/vibe2-continuous-runner.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-queue-control.mjs'
+      - 'tools/vibe2-candidate-reconcile.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
       - 'qa/vibe2-source-worker.test.mjs'
       - 'qa/vibe2-queue-control.test.mjs'
       - 'qa/vibe2-controller-contract.test.mjs'
+      - 'qa/vibe2-candidate-reconcile.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
+      - '.github/workflows/vibe2-unity-candidate-result.yml'
       - '.github/workflows/vibe2-core-qa.yml'
   workflow_dispatch:
 
@@ -53,10 +57,12 @@ jobs:
           node --check tools/vibe2-continuous-runner.mjs
           node --check tools/vibe2-source-worker.mjs
           node --check tools/vibe2-queue-control.mjs
+          node --check tools/vibe2-candidate-reconcile.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-source-worker.test.mjs
           node --check qa/vibe2-queue-control.test.mjs
           node --check qa/vibe2-controller-contract.test.mjs
+          node --check qa/vibe2-candidate-reconcile.test.mjs
 
       - name: Vibe2 core tests
         run: |
@@ -64,3 +70,4 @@ jobs:
           node --test qa/vibe2-source-worker.test.mjs
           node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-controller-contract.test.mjs
+          node --test qa/vibe2-candidate-reconcile.test.mjs
