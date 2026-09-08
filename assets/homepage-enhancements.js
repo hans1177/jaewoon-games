@@ -12,22 +12,35 @@ function installStyles(){
 .brandRow{justify-content:center!important}
 .brand{width:100%;justify-content:center}
 .brand img{object-position:center center!important}
+.opsBar{grid-template-columns:1fr!important}
+.opsBar>.opsLead{min-height:56px}
 .rollbackNotice{display:block;margin-top:6px;padding:7px 8px;border-radius:8px;background:#fff3cd;color:#735800;font-size:10px;font-weight:900;line-height:1.4}
 .cardActions.hasArtbook .artbookCardBtn{grid-column:1/-1;background:#102d42!important;border-color:#102d42!important;color:#fff!important}
-.developmentFlow .staff{grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;padding:0 13px 10px}
-.developmentFlow .staff div{min-height:88px;padding:10px 8px;display:flex;flex-direction:column;justify-content:center;line-height:1.45}
-.developmentFlow .staff b{font-size:10px;margin-bottom:4px}
-.developmentFlow .sectionHead span{max-width:60%;line-height:1.4}
-@media(max-width:760px){.developmentFlow .staff{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:520px){.gameCard{grid-template-columns:50% 50%!important}.developmentFlow .staff{grid-template-columns:1fr}.developmentFlow .staff div{min-height:64px}}
+.developmentFlow .sectionHead{align-items:center;padding-top:18px;padding-bottom:12px}
+.developmentFlow .sectionHead h2{font-size:29px!important;line-height:1}
+.developmentFlow .sectionHead span{max-width:68%;font-size:11px!important;line-height:1.45;color:#4f7188}
+.developmentFlow .staff{grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;padding:0 13px 13px}
+.developmentFlow .staff div{min-height:128px;padding:14px 12px;display:flex;flex-direction:column;justify-content:flex-start;line-height:1.55;font-size:12px!important;text-align:left}
+.developmentFlow .staff b{font-size:16px!important;line-height:1.25;margin-bottom:9px}
+@media(max-width:760px){.developmentFlow .sectionHead{align-items:flex-start;flex-direction:column}.developmentFlow .sectionHead span{max-width:none;font-size:11px!important}.developmentFlow .staff{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.gameCard{grid-template-columns:50% 50%!important}.developmentFlow .sectionHead h2{font-size:27px!important}.developmentFlow .staff{grid-template-columns:1fr}.developmentFlow .staff div{min-height:0;padding:14px 13px;font-size:13px!important}.developmentFlow .staff b{font-size:17px!important}}
 @media(max-width:370px){.gameCard{grid-template-columns:50% 50%!important}}
 `;
   document.head.appendChild(style);
 }
 
 function simplifyTop(){
-  document.querySelector('.opsBar')?.remove();
+  document.querySelectorAll('.opsBar .opsMetric').forEach(el=>el.remove());
   document.querySelector('.catalogIntro')?.remove();
+  const opsStatus=document.getElementById('opsStatus');
+  if(opsStatus){
+    const syncOpsLabel=()=>{
+      if(opsStatus.textContent==='● 게임 운영 상태 연결됨')opsStatus.textContent='● 운영 데이터 정상';
+      if(opsStatus.textContent==='● 회사 상태 연결 확인 필요')opsStatus.textContent='● 운영 데이터 확인 필요';
+    };
+    new MutationObserver(syncOpsLabel).observe(opsStatus,{childList:true,characterData:true,subtree:true});
+    syncOpsLabel();
+  }
 }
 
 function configureDevelopmentFlow(){
@@ -39,18 +52,18 @@ function configureDevelopmentFlow(){
     const title=head.querySelector('h2');
     const note=head.querySelector('span');
     if(title)title.textContent='개발순서';
-    if(note)note.textContent='안정판 보호 → 아트북 검토 → Vibe2 개발 → 회귀검증 → Unity 승격';
+    if(note)note.textContent='무엇을 만들지 정하고 → 미리 검토하고 → 개발하고 → 직접 테스트한 뒤 → 통과한 것만 반영';
   }
   section.querySelector('.companySummary')?.remove();
   section.querySelector('.companyStats')?.remove();
   const staff=section.querySelector('.staff');
   if(staff){
     staff.innerHTML=`
-      <div><b>1. 안정판 보호</b>기존 플레이·저장·밸런스를 먼저 보존</div>
-      <div><b>2. 아트북 검토</b>1·2·3차 기획·그래픽·반대 검토로 방향 확정</div>
-      <div><b>3. Vibe2 개발판</b>원본과 분리해 실험하고 A/B 비교</div>
-      <div><b>4. 실제 회귀검증</b>플레이·모바일·저장·진행막힘·오류를 확인</div>
-      <div><b>5. Unity 승격</b>검증을 통과한 개발판만 다음 단계로 승격</div>`;
+      <div><b>1. 작업 정하기</b>어떤 기능과 화면을 만들지 정해. 기존 게임의 규칙·저장·밸런스는 먼저 보호해.</div>
+      <div><b>2. 아트북으로 미리 확인</b>캐릭터·화면·기능 방향을 1·2·3차로 검토해서 만들기 전에 문제를 잡아.</div>
+      <div><b>3. Vibe2로 개발</b>검토가 끝난 내용만 별도 개발판에 실제로 구현하고 여러 방법을 비교해.</div>
+      <div><b>4. 직접 플레이 테스트</b>게임 진행, 모바일 조작, 저장·불러오기, 오류와 진행 막힘을 실제로 확인해.</div>
+      <div><b>5. 통과한 버전만 반영</b>테스트에 합격한 개발판만 Unity 정식 개발 단계로 올리고 기존 안정판은 계속 보존해.</div>`;
   }
   const actions=section.querySelector('.companyActions');
   const companyLink=document.querySelector('.companyLink');
