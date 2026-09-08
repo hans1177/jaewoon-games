@@ -1,0 +1,178 @@
+{
+  "version": 1,
+  "dateKst": "2026-09-08",
+  "directorRole": "staff-supervisor-not-substitute-worker",
+  "activeDailyTarget": "daechung-rpg",
+  "checks": {
+    "staffChecked": "8/8",
+    "activeWorkOrder": "artbook-work-orders/2026-09-08-daechung-rpg.json",
+    "activeWorkOrderExists": true,
+    "evidenceAdapterMismatch": false,
+    "runningLabelAloneCountsAsWork": false,
+    "directorMayGhostwriteMissingDepartmentWork": false
+  },
+  "counts": {
+    "WORKING": 1,
+    "DONE": 1,
+    "IDLE_NO_TASK": 1,
+    "BLOCKED": 0,
+    "FAILED": 5,
+    "STALE": 0
+  },
+  "attentionRequired": true,
+  "primaryFindings": [
+    "planning:WORKFLOW_FAILED",
+    "development:WORKFLOW_FAILED",
+    "qa:WORKFLOW_FAILED",
+    "graphics:WORKFLOW_FAILED",
+    "balance:WORKFLOW_FAILED"
+  ],
+  "workflowEvidence": {
+    "artbook": {
+      "id": 34180781129,
+      "status": "completed",
+      "conclusion": "failure",
+      "event": "push",
+      "createdAt": "2026-09-08T02:38:59Z",
+      "updatedAt": "2026-09-08T02:44:09Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34180781129"
+    },
+    "homepage": {
+      "id": 34181216179,
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push",
+      "createdAt": "2026-09-08T02:46:31Z",
+      "updatedAt": "2026-09-08T02:46:44Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34181216179"
+    }
+  },
+  "staff": {
+    "planning": {
+      "department": "planning",
+      "taskAssigned": true,
+      "status": "FAILED",
+      "task": "daechung-rpg daily artbook section",
+      "executionEvidence": [
+        "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
+        "workflow:34180781129:completed:failure"
+      ],
+      "resultVerified": false,
+      "blockers": [
+        "WORKFLOW_FAILED"
+      ],
+      "reason": "workflow concluded failure",
+      "action": "inspect workflow failure and retry after fix"
+    },
+    "development": {
+      "department": "development",
+      "taskAssigned": true,
+      "status": "FAILED",
+      "task": "daechung-rpg daily artbook section",
+      "executionEvidence": [
+        "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
+        "workflow:34180781129:completed:failure"
+      ],
+      "resultVerified": false,
+      "blockers": [
+        "WORKFLOW_FAILED"
+      ],
+      "reason": "workflow concluded failure",
+      "action": "inspect workflow failure and retry after fix"
+    },
+    "qa": {
+      "department": "qa",
+      "taskAssigned": true,
+      "status": "FAILED",
+      "task": "daechung-rpg daily artbook section",
+      "executionEvidence": [
+        "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
+        "workflow:34180781129:completed:failure"
+      ],
+      "resultVerified": false,
+      "blockers": [
+        "WORKFLOW_FAILED"
+      ],
+      "reason": "workflow concluded failure",
+      "action": "inspect workflow failure and retry after fix"
+    },
+    "graphics": {
+      "department": "graphics",
+      "taskAssigned": true,
+      "status": "FAILED",
+      "task": "daechung-rpg daily artbook section",
+      "executionEvidence": [
+        "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
+        "workflow:34180781129:completed:failure"
+      ],
+      "resultVerified": false,
+      "blockers": [
+        "WORKFLOW_FAILED"
+      ],
+      "reason": "workflow concluded failure",
+      "action": "inspect workflow failure and retry after fix"
+    },
+    "balance": {
+      "department": "balance",
+      "taskAssigned": true,
+      "status": "FAILED",
+      "task": "daechung-rpg daily artbook section",
+      "executionEvidence": [
+        "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
+        "workflow:34180781129:completed:failure"
+      ],
+      "resultVerified": false,
+      "blockers": [
+        "WORKFLOW_FAILED"
+      ],
+      "reason": "workflow concluded failure",
+      "action": "inspect workflow failure and retry after fix"
+    },
+    "homepage": {
+      "department": "homepage",
+      "taskAssigned": true,
+      "status": "DONE",
+      "task": "homepage compact layout, links, status and mobile maintenance",
+      "executionEvidence": [
+        "homepage-manager-status.json",
+        "workflow:34181216179:completed:success"
+      ],
+      "resultVerified": true,
+      "blockers": [],
+      "reason": "homepage manager has a successful workflow run and a running status artifact",
+      "action": "continue scheduled monitoring"
+    },
+    "release": {
+      "department": "release",
+      "taskAssigned": false,
+      "status": "IDLE_NO_TASK",
+      "task": "no active verified release task",
+      "executionEvidence": [],
+      "resultVerified": false,
+      "blockers": [],
+      "reason": "no active build awaiting release verification",
+      "action": "none"
+    },
+    "director": {
+      "department": "director",
+      "taskAssigned": true,
+      "status": "WORKING",
+      "task": "supervise staff execution, blockers and verification",
+      "executionEvidence": [
+        "tools/director-supervisor.mjs"
+      ],
+      "resultVerified": true,
+      "blockers": [],
+      "reason": "current supervisor check is executing from repository evidence",
+      "action": "record findings and resolve operational blockers without ghostwriting department work"
+    }
+  },
+  "policy": {
+    "findWhyWorkStopped": true,
+    "falseRunningForbidden": true,
+    "idleWithoutTaskIsNotFailure": true,
+    "fixLowRiskOperationalBlockers": true,
+    "escalateCoreDecisions": true,
+    "directorIntegrationOnlyForDepartmentContent": true
+  }
+}
