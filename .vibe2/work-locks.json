@@ -1,5 +1,39 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-chatgpt-vibe2-reusable-controller",
+      "worker": "chatgpt",
+      "taskId": "vibe2-reusable-controller-integration",
+      "gameId": null,
+      "files": [
+        ".github/workflows/vibe2-continuous-core.yml",
+        "qa/vibe2-controller-contract.test.mjs"
+      ],
+      "baseSha": "fe0f4d4105451e8aadec5d4fd7f2147775a1ec66",
+      "acquiredAt": "2026-09-08T20:36:00.000Z",
+      "expiresAt": "2026-09-08T21:21:00.000Z",
+      "status": "active",
+      "evidence": [
+        "make-vibe2-controller-reusable-from-main"
+      ]
+    },
+    {
+      "id": "wl-chatgpt-vibe2-main-runner",
+      "worker": "chatgpt",
+      "taskId": "vibe2-main-24h-runner",
+      "gameId": null,
+      "files": [
+        ".github/workflows/vibe2-24h-runner.yml"
+      ],
+      "baseSha": "f692f47d1858d142833cb0ab4a92601415929e17",
+      "acquiredAt": "2026-09-08T20:36:00.000Z",
+      "expiresAt": "2026-09-08T21:21:00.000Z",
+      "status": "active",
+      "evidence": [
+        "activate-real-hourly-vibe2-runner"
+      ]
+    }
+  ]
 }
