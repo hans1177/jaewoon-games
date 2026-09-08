@@ -14,23 +14,34 @@
     "directorMayGhostwriteMissingDepartmentWork": false
   },
   "counts": {
-    "WORKING": 6,
+    "WORKING": 1,
     "DONE": 1,
     "IDLE_NO_TASK": 1,
     "BLOCKED": 0,
-    "FAILED": 0,
+    "FAILED": 5,
     "STALE": 0
   },
-  "attentionRequired": false,
-  "primaryFindings": [],
+  "attentionRequired": true,
+  "primaryFindings": [
+    "planning:WORKFLOW_FAILED",
+    "planning:UNCLASSIFIED_JOB_ERROR",
+    "development:WORKFLOW_FAILED",
+    "development:UNCLASSIFIED_JOB_ERROR",
+    "qa:WORKFLOW_FAILED",
+    "qa:UNCLASSIFIED_JOB_ERROR",
+    "graphics:WORKFLOW_FAILED",
+    "graphics:UNCLASSIFIED_JOB_ERROR",
+    "balance:WORKFLOW_FAILED",
+    "balance:UNCLASSIFIED_JOB_ERROR"
+  ],
   "workflowEvidence": {
     "artbook": {
       "id": 34184026056,
-      "status": "queued",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "failure",
       "event": "push",
       "createdAt": "2026-09-08T03:35:11Z",
-      "updatedAt": "2026-09-08T03:35:26Z",
+      "updatedAt": "2026-09-08T03:38:10Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34184026056"
     },
     "homepage": {
@@ -47,132 +58,172 @@
     "planning": {
       "department": "planning",
       "taskAssigned": true,
-      "status": "WORKING",
+      "status": "FAILED",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
-        "workflow:34184026056:queued:pending",
-        "job:101928688158:queued:pending"
+        "workflow:34184026056:completed:failure",
+        "job:101928688158:completed:failure",
+        "failed-job-log:planning"
       ],
       "resultVerified": false,
       "jobEvidence": {
         "id": 101928688158,
         "name": "round1 (planning)",
-        "status": "queued",
-        "conclusion": null,
-        "failedStep": null,
-        "startedAt": "2026-09-08T03:35:26Z",
-        "completedAt": null,
+        "status": "completed",
+        "conclusion": "failure",
+        "failedStep": "Independent department review",
+        "startedAt": "2026-09-08T03:35:29Z",
+        "completedAt": "2026-09-08T03:38:09Z",
         "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34184026056/job/101928688158"
       },
-      "directCause": null,
-      "blockers": [],
-      "reason": "this department job is currently executing",
-      "action": "check department output after job completes"
+      "directCause": {
+        "code": "UNCLASSIFIED_JOB_ERROR",
+        "detail": "실패 로그에 코드/런타임 오류가 있으나 자동 분류 규칙에 아직 없음",
+        "action": "실패 로그의 마지막 오류를 검토하고 원인 분류 규칙을 보강"
+      },
+      "blockers": [
+        "WORKFLOW_FAILED",
+        "UNCLASSIFIED_JOB_ERROR"
+      ],
+      "reason": "실패 로그에 코드/런타임 오류가 있으나 자동 분류 규칙에 아직 없음",
+      "action": "실패 로그의 마지막 오류를 검토하고 원인 분류 규칙을 보강"
     },
     "development": {
       "department": "development",
       "taskAssigned": true,
-      "status": "WORKING",
+      "status": "FAILED",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
-        "workflow:34184026056:queued:pending",
-        "job:101928688178:queued:pending"
+        "workflow:34184026056:completed:failure",
+        "job:101928688178:completed:failure",
+        "failed-job-log:development"
       ],
       "resultVerified": false,
       "jobEvidence": {
         "id": 101928688178,
         "name": "round1 (development)",
-        "status": "queued",
-        "conclusion": null,
-        "failedStep": null,
-        "startedAt": "2026-09-08T03:35:26Z",
-        "completedAt": null,
+        "status": "completed",
+        "conclusion": "failure",
+        "failedStep": "Independent department review",
+        "startedAt": "2026-09-08T03:35:28Z",
+        "completedAt": "2026-09-08T03:37:33Z",
         "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34184026056/job/101928688178"
       },
-      "directCause": null,
-      "blockers": [],
-      "reason": "this department job is currently executing",
-      "action": "check department output after job completes"
+      "directCause": {
+        "code": "UNCLASSIFIED_JOB_ERROR",
+        "detail": "실패 로그에 코드/런타임 오류가 있으나 자동 분류 규칙에 아직 없음",
+        "action": "실패 로그의 마지막 오류를 검토하고 원인 분류 규칙을 보강"
+      },
+      "blockers": [
+        "WORKFLOW_FAILED",
+        "UNCLASSIFIED_JOB_ERROR"
+      ],
+      "reason": "실패 로그에 코드/런타임 오류가 있으나 자동 분류 규칙에 아직 없음",
+      "action": "실패 로그의 마지막 오류를 검토하고 원인 분류 규칙을 보강"
     },
     "qa": {
       "department": "qa",
       "taskAssigned": true,
-      "status": "WORKING",
+      "status": "FAILED",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
-        "workflow:34184026056:queued:pending",
-        "job:101928688217:queued:pending"
+        "workflow:34184026056:completed:failure",
+        "job:101928688217:completed:failure",
+        "failed-job-log:qa"
       ],
       "resultVerified": false,
       "jobEvidence": {
         "id": 101928688217,
         "name": "round1 (qa)",
-        "status": "queued",
-        "conclusion": null,
-        "failedStep": null,
-        "startedAt": "2026-09-08T03:35:26Z",
-        "completedAt": null,
+        "status": "completed",
+        "conclusion": "failure",
+        "failedStep": "Independent department review",
+        "startedAt": "2026-09-08T03:35:29Z",
+        "completedAt": "2026-09-08T03:37:37Z",
         "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34184026056/job/101928688217"
       },
-      "directCause": null,
-      "blockers": [],
-      "reason": "this department job is currently executing",
-      "action": "check department output after job completes"
+      "directCause": {
+        "code": "UNCLASSIFIED_JOB_ERROR",
+        "detail": "실패 로그에 코드/런타임 오류가 있으나 자동 분류 규칙에 아직 없음",
+        "action": "실패 로그의 마지막 오류를 검토하고 원인 분류 규칙을 보강"
+      },
+      "blockers": [
+        "WORKFLOW_FAILED",
+        "UNCLASSIFIED_JOB_ERROR"
+      ],
+      "reason": "실패 로그에 코드/런타임 오류가 있으나 자동 분류 규칙에 아직 없음",
+      "action": "실패 로그의 마지막 오류를 검토하고 원인 분류 규칙을 보강"
     },
     "graphics": {
       "department": "graphics",
       "taskAssigned": true,
-      "status": "WORKING",
+      "status": "FAILED",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
-        "workflow:34184026056:queued:pending",
-        "job:101928688146:queued:pending"
+        "workflow:34184026056:completed:failure",
+        "job:101928688146:completed:failure",
+        "failed-job-log:graphics"
       ],
       "resultVerified": false,
       "jobEvidence": {
         "id": 101928688146,
         "name": "round1 (graphics)",
-        "status": "queued",
-        "conclusion": null,
-        "failedStep": null,
-        "startedAt": "2026-09-08T03:35:26Z",
-        "completedAt": null,
+        "status": "completed",
+        "conclusion": "failure",
+        "failedStep": "Independent department review",
+        "startedAt": "2026-09-08T03:35:29Z",
+        "completedAt": "2026-09-08T03:37:02Z",
         "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34184026056/job/101928688146"
       },
-      "directCause": null,
-      "blockers": [],
-      "reason": "this department job is currently executing",
-      "action": "check department output after job completes"
+      "directCause": {
+        "code": "UNCLASSIFIED_JOB_ERROR",
+        "detail": "실패 로그에 코드/런타임 오류가 있으나 자동 분류 규칙에 아직 없음",
+        "action": "실패 로그의 마지막 오류를 검토하고 원인 분류 규칙을 보강"
+      },
+      "blockers": [
+        "WORKFLOW_FAILED",
+        "UNCLASSIFIED_JOB_ERROR"
+      ],
+      "reason": "실패 로그에 코드/런타임 오류가 있으나 자동 분류 규칙에 아직 없음",
+      "action": "실패 로그의 마지막 오류를 검토하고 원인 분류 규칙을 보강"
     },
     "balance": {
       "department": "balance",
       "taskAssigned": true,
-      "status": "WORKING",
+      "status": "FAILED",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-08-daechung-rpg.json",
-        "workflow:34184026056:queued:pending",
-        "job:101928688152:queued:pending"
+        "workflow:34184026056:completed:failure",
+        "job:101928688152:completed:failure",
+        "failed-job-log:balance"
       ],
       "resultVerified": false,
       "jobEvidence": {
         "id": 101928688152,
         "name": "round1 (balance)",
-        "status": "queued",
-        "conclusion": null,
-        "failedStep": null,
-        "startedAt": "2026-09-08T03:35:26Z",
-        "completedAt": null,
+        "status": "completed",
+        "conclusion": "failure",
+        "failedStep": "Independent department review",
+        "startedAt": "2026-09-08T03:35:28Z",
+        "completedAt": "2026-09-08T03:37:30Z",
         "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34184026056/job/101928688152"
       },
-      "directCause": null,
-      "blockers": [],
-      "reason": "this department job is currently executing",
-      "action": "check department output after job completes"
+      "directCause": {
+        "code": "UNCLASSIFIED_JOB_ERROR",
+        "detail": "실패 로그에 코드/런타임 오류가 있으나 자동 분류 규칙에 아직 없음",
+        "action": "실패 로그의 마지막 오류를 검토하고 원인 분류 규칙을 보강"
+      },
+      "blockers": [
+        "WORKFLOW_FAILED",
+        "UNCLASSIFIED_JOB_ERROR"
+      ],
+      "reason": "실패 로그에 코드/런타임 오류가 있으나 자동 분류 규칙에 아직 없음",
+      "action": "실패 로그의 마지막 오류를 검토하고 원인 분류 규칙을 보강"
     },
     "homepage": {
       "department": "homepage",
