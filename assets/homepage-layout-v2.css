@@ -1,0 +1,25 @@
+/* 파일명: assets/homepage-layout-v2.css
+ * 역할: 재운게임즈 홈을 모바일 우선의 짧은 카드형 구조로 정리한다.
+ */
+:root{--home-readable:12px}
+.homeExtras{width:96%;margin:0 auto 12px;border:1px solid rgba(211,233,245,.98);border-radius:16px;background:rgba(255,255,255,.95);box-shadow:0 8px 20px rgba(28,93,138,.12);overflow:hidden}
+.homeExtras>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:11px 14px;cursor:pointer;color:#155e9f;font-weight:1000}
+.homeExtras>summary::-webkit-details-marker{display:none}.homeExtras>summary small{color:#6d8799;font-size:10px}.homeExtrasBody{padding:0 8px 8px}.homeExtrasBody>.reviews,.homeExtrasBody>.profile,.homeExtrasBody>.music{width:100%;margin:8px 0 0;box-shadow:none}
+.gameCard .healthBadge{display:none!important}
+.gameCard .artbookDirect{display:flex;min-height:38px;align-items:center;justify-content:center;padding:0 8px;border:1px solid #153f5a;border-radius:9px;background:#102d42;color:#fff;text-decoration:none;font-size:11px;font-weight:1000;text-align:center}
+.preArtbookLink{font-size:10px!important;min-height:34px!important}.preArtbookRow b{font-size:11px!important}.preArtbookRow small,.preArtbookState{font-size:9px!important}
+@media(max-width:760px){
+  .shell{padding-left:7px!important;padding-right:7px!important}.panel,.preArtbookDetails,.homeExtras,.brandRow,.opsBar{width:100%!important}
+  .opsMetric span,.opsLead span{font-size:10px!important}.opsLead b{font-size:12px!important}
+  .sectionHead span{font-size:10px!important}.catalogIntro{font-size:11px!important}.chip,.sortRow span,.sortRow select,.smallBtn{font-size:10px!important}
+  .badge{font-size:9px!important}.gameInfo p{font-size:11px!important}.stageLine,.progressText{font-size:10px!important}.cardBtn{font-size:10px!important}
+}
+@media(max-width:520px){
+  .brandRow{align-items:center}.companyLink{min-height:42px;font-size:10px!important}
+  .hero,.heroBody{min-height:250px!important}.heroBody{padding:20px 18px!important}.hero h1{font-size:30px!important}.hero p{font-size:12px!important}.heroBadge,.heroMeta span{font-size:10px!important}
+  .gameGrid{grid-template-columns:1fr!important;padding:0 10px 12px!important}.gameCard{display:block!important}.gameArt{height:auto!important;min-height:0!important;aspect-ratio:16/9!important}.gameInfo{padding:11px!important}.artName small{font-size:10px!important}
+  .cardActions{grid-template-columns:1fr 1fr!important}.gameCard .artbookDirect{grid-column:1/-1}
+  .companyStats{grid-template-columns:repeat(2,1fr)!important}.staff{display:none!important}.companySummary{grid-template-columns:1fr!important}
+  .companyNow span,.homepageManager span{font-size:10px!important}.companyNow b,.homepageManager b{font-size:12px!important}
+}
+@media(max-width:370px){.cardActions{grid-template-columns:1fr!important}.gameCard .artbookDirect{grid-column:auto}.heroArrow{display:none}}
