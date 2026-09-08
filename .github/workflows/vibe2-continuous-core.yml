@@ -22,7 +22,7 @@ env:
 jobs:
   controller:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - name: Checkout Vibe2 control line
         uses: actions/checkout@v4
@@ -118,7 +118,7 @@ jobs:
             --verify-public-repo=true \
             --runner=ubuntu-latest \
             --model-calls=1 \
-            --runner-minutes=30 \
+            --runner-minutes=20 \
             --output=.vibe2/free-budget-telemetry.json
           echo 'VIBE2_PAID_API=NO'
           echo 'VIBE2_PAID_RUNNER=NO'
