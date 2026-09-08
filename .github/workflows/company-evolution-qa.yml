@@ -208,7 +208,8 @@ jobs:
           grep -Fq "criterion:'AVERAGE_OR_BELOW'" tools/artbook-second-work-runner.mjs
           grep -Fq 'CARRIED_FORWARD' tools/artbook-second-work-runner.mjs
           grep -Fq "ARTBOOK_DAILY_MODE" tools/artbook-prepare-daily.mjs
-          grep -Fq "if [ '${{ needs.context.outputs.mode }}' = 'SECOND_WORK' ]" .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'SECOND_WORK' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'node tools/artbook-second-work-runner.mjs' .github/workflows/artbook-free-department-bots.yml
           echo 'NEXT_DAY_SECOND_WORK_CONTRACT=PASS'
 
       - name: Validate learning and rollback contracts
