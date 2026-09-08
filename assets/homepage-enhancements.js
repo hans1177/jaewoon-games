@@ -9,6 +9,9 @@ function installStyles(){
   style.id='jaewoonEnhancementStyles';
   style.textContent=`
 .reviews{display:none!important}
+.brandRow{justify-content:center!important}
+.brand{width:100%;justify-content:center}
+.brand img{object-position:center center!important}
 .rollbackNotice{display:block;margin-top:6px;padding:7px 8px;border-radius:8px;background:#fff3cd;color:#735800;font-size:10px;font-weight:900;line-height:1.4}
 .cardActions.hasArtbook .artbookCardBtn{grid-column:1/-1;background:#102d42!important;border-color:#102d42!important;color:#fff!important}
 .opsBar{grid-template-columns:minmax(0,1.5fr) auto repeat(4,minmax(58px,.55fr))!important}
