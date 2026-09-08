@@ -1,77 +1,217 @@
-name: Unity Local PC Android APK (Legacy Manual)
+name: Unity Local PC Android APK
 
 on:
+  workflow_call:
+    inputs:
+      request_file:
+        required: true
+        type: string
   workflow_dispatch:
+    inputs:
+      request_file:
+        description: 'Tracked .build-requests/unity/*.json request file'
+        required: true
+        type: string
 
 permissions:
   contents: write
 
 jobs:
-  build-animation-test:
+  build:
     runs-on: [self-hosted, Windows, X64, jaewoon-unity]
+    timeout-minutes: 60
     defaults:
       run:
         shell: powershell
 
     steps:
-      - name: Legacy runner notice
-        run: |
-          Write-Host '[LEGACY] This workflow requires the local Jaewoon PC self-hosted runner.'
-          Write-Host '[INFO] Normal remote test delivery now uses unity-cloud-android-test.yml on GitHub-hosted runners.'
-
       - name: Checkout requested commit
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           lfs: true
 
-      - name: Detect matching local Unity
+      - name: Resolve build request
+        id: request
         run: |
-          $project = Join-Path $env:GITHUB_WORKSPACE 'unity-games\animation-test'
+          $requestFile = '${{ inputs.request_file }}'
+          if ($requestFile -notmatch '^\.build-requests/unity/[A-Za-z0-9._-]+\.json$') { throw "Invalid request path: $requestFile" }
+          $fullRequest = Join-Path $env:GITHUB_WORKSPACE ($requestFile -replace '/', '\')
+          if (-not (Test-Path $fullRequest)) { throw "Build request missing: $requestFile" }
+          $data = Get-Content $fullRequest -Raw | ConvertFrom-Json
+          if ($data.version -ne 1) { throw 'Unsupported build request version.' }
+          $gameId = [string]$data.gameId
+          $projectPath = ([string]$data.projectPath).Replace('\','/').Trim('/')
+          $buildMethod = [string]$data.buildMethod
+          $requestId = [string]$data.requestId
+          if ($gameId -notmatch '^[a-z0-9][a-z0-9-]{1,48}$') { throw "Invalid gameId: $gameId" }
+          if ($projectPath -notmatch '^unity-games/[A-Za-z0-9._-]+$' -or $projectPath.Contains('..')) { throw "Invalid projectPath: $projectPath" }
+          if ([string]::IsNullOrWhiteSpace($buildMethod) -or $buildMethod -notmatch '^[A-Za-z0-9_.]+$') { throw 'buildMethod is required.' }
+          if ([string]::IsNullOrWhiteSpace($requestId)) { $requestId = "run-$gameId" }
+
+          $publishHomepage = $false
+          $catalogPath = Join-Path $env:GITHUB_WORKSPACE 'game-catalog.json'
+          if (Test-Path $catalogPath) {
+            $catalog = Get-Content $catalogPath -Raw | ConvertFrom-Json
+            $game = $catalog.games | Where-Object { $_.id -eq $gameId } | Select-Object -First 1
+            if ($game -and $game.homepagePublicationApproved -eq $true -and $game.publishTestBuildWhenReady -eq $true) { $publishHomepage = $true }
+          }
+
+          "game_id=$gameId" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "project_path=$projectPath" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "build_method=$buildMethod" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "request_id=$requestId" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "publish_homepage=$($publishHomepage.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Detect matching installed Unity and Android support
+        run: |
+          $project = Join-Path $env:GITHUB_WORKSPACE ('${{ steps.request.outputs.project_path }}' -replace '/', '\')
           $versionFile = Join-Path $project 'ProjectSettings\ProjectVersion.txt'
           if (-not (Test-Path $versionFile)) { throw "ProjectVersion.txt missing: $versionFile" }
-
           $line = Get-Content $versionFile | Where-Object { $_ -match '^m_EditorVersion:' } | Select-Object -First 1
           if (-not $line) { throw 'Unity editor version could not be read.' }
           $version = ($line -split ':', 2)[1].Trim()
           $unity = Join-Path $env:ProgramFiles "Unity\Hub\Editor\$version\Editor\Unity.exe"
           if (-not (Test-Path $unity)) { throw "Matching local Unity is not installed: $unity" }
-
           $android = Join-Path (Split-Path $unity -Parent) 'Data\PlaybackEngines\AndroidPlayer'
           if (-not (Test-Path $android)) { throw "Android Build Support missing for Unity $version" }
-
           "UNITY_EXE=$unity" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "PROJECT_PATH=$project" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "[PASS] Local route selected. Unity=$version"
 
-      - name: Build APK with installed PC Unity
+      - name: Build APK with local activated Unity
         run: |
-          $log = Join-Path $env:RUNNER_TEMP 'animation-test-unity-build.log'
+          $log = Join-Path $env:RUNNER_TEMP '${{ steps.request.outputs.game_id }}-unity-build.log'
           & $env:UNITY_EXE `
             -batchmode `
             -nographics `
             -quit `
             -projectPath $env:PROJECT_PATH `
-            -executeMethod AndroidCiBuild.Build `
+            -executeMethod '${{ steps.request.outputs.build_method }}' `
             -logFile $log
           $code = $LASTEXITCODE
           if ($code -ne 0) {
-            if (Test-Path $log) { Get-Content $log -Tail 250 }
+            if (Test-Path $log) { Get-Content $log -Tail 300 }
             throw "Unity Android build failed with exit code $code"
           }
 
-      - name: Verify and stage APK
+      - name: Verify APK and create metadata
+        id: artifact
         run: |
-          $apk = Join-Path $env:PROJECT_PATH 'Build\animation-test.apk'
-          if (-not (Test-Path $apk)) { throw "APK missing: $apk" }
-          if ((Get-Item $apk).Length -le 0) { throw 'APK is empty.' }
+          $roots = @(
+            (Join-Path $env:GITHUB_WORKSPACE 'build'),
+            (Join-Path $env:PROJECT_PATH 'Build'),
+            (Join-Path $env:PROJECT_PATH 'build')
+          ) | Select-Object -Unique
+          $apk = $null
+          foreach ($root in $roots) {
+            if (Test-Path $root) {
+              $apk = Get-ChildItem $root -Filter '*.apk' -File -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.Length -gt 0 } | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
+              if ($apk) { break }
+            }
+          }
+          if (-not $apk) { throw 'No non-empty APK was produced.' }
+
           $dist = Join-Path $env:GITHUB_WORKSPACE 'dist'
           New-Item -ItemType Directory -Path $dist -Force | Out-Null
-          Copy-Item $apk (Join-Path $dist 'animation-test.apk') -Force
+          $game = '${{ steps.request.outputs.game_id }}'
+          $out = Join-Path $dist "$game-test.apk"
+          Copy-Item $apk.FullName $out -Force
+          $sha = (Get-FileHash $out -Algorithm SHA256).Hash.ToLowerInvariant()
+          $bytes = (Get-Item $out).Length
+          $tag = "test-$game-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+          "$sha  $game-test.apk" | Set-Content "$out.sha256" -Encoding ascii
+          $info = [ordered]@{
+            version = 1
+            gameId = $game
+            requestId = '${{ steps.request.outputs.request_id }}'
+            sourceCommit = $env:GITHUB_SHA
+            runId = [int64]$env:GITHUB_RUN_ID
+            runAttempt = [int]$env:GITHUB_RUN_ATTEMPT
+            releaseTag = $tag
+            artifactName = "$game-test.apk"
+            sha256 = $sha
+            bytes = [int64]$bytes
+            channel = 'test'
+            buildRoute = 'local-pc'
+            homepagePublicationApproved = ('${{ steps.request.outputs.publish_homepage }}' -eq 'true')
+            homepagePublished = $false
+            builtAt = (Get-Date).ToUniversalTime().ToString('o')
+          }
+          $info | ConvertTo-Json -Depth 6 | Set-Content (Join-Path $dist 'build-info.json') -Encoding utf8
+          "apk_path=dist/$game-test.apk" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "release_tag=$tag" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "sha256=$sha" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "bytes=$bytes" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          Write-Host "[PASS] LOCAL APK bytes=$bytes sha256=$sha"
 
-      - name: Upload APK artifact
+      - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: animation-test-android-${{ github.sha }}
-          path: dist/animation-test.apk
+          name: ${{ steps.request.outputs.game_id }}-android-local-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ steps.artifact.outputs.apk_path }}
+            ${{ steps.artifact.outputs.apk_path }}.sha256
+            dist/build-info.json
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish test prerelease download
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.artifact.outputs.release_tag }}
+          name: ${{ steps.request.outputs.game_id }} Android Test #${{ github.run_number }}
+          prerelease: true
+          make_latest: false
+          body: |
+            Automated Jaewoon Company Android test build.
+            Route: local PC self-hosted Unity
+            Game: ${{ steps.request.outputs.game_id }}
+            Source: ${{ github.sha }}
+            Request: ${{ steps.request.outputs.request_id }}
+          files: |
+            ${{ steps.artifact.outputs.apk_path }}
+            ${{ steps.artifact.outputs.apk_path }}.sha256
+            dist/build-info.json
+          fail_on_unmatched_files: true
+
+      - name: Publish verified build to approved homepage state
+        if: steps.request.outputs.publish_homepage == 'true'
+        run: |
+          $game = '${{ steps.request.outputs.game_id }}'
+          $tag = '${{ steps.artifact.outputs.release_tag }}'
+          $releaseUrl = "https://github.com/$env:GITHUB_REPOSITORY/releases/tag/$tag"
+          $downloadUrl = "https://github.com/$env:GITHUB_REPOSITORY/releases/download/$tag/$game-test.apk"
+          $path = Join-Path $env:GITHUB_WORKSPACE 'company-status.json'
+          $data = Get-Content $path -Raw | ConvertFrom-Json
+          $kept = @($data.testBuilds | Where-Object { $_.gameId -ne $game })
+          $entry = [pscustomobject]@{
+            gameId = $game
+            requestId = '${{ steps.request.outputs.request_id }}'
+            status = 'ready'
+            channel = 'test'
+            buildRoute = 'local-pc'
+            homepagePublished = $true
+            sourceCommit = $env:GITHUB_SHA
+            releaseTag = $tag
+            release = $releaseUrl
+            download = $downloadUrl
+            sha256 = '${{ steps.artifact.outputs.sha256 }}'
+            bytes = [int64]'${{ steps.artifact.outputs.bytes }}'
+            builtAt = (Get-Date).ToUniversalTime().ToString('o')
+          }
+          $data.testBuilds = @($kept) + @($entry)
+          if (-not $data.summary) { $data | Add-Member -NotePropertyName summary -NotePropertyValue ([pscustomobject]@{}) }
+          $data.summary | Add-Member -NotePropertyName testBuilds -NotePropertyValue $data.testBuilds.Count -Force
+          $data.updatedAt = (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd')
+          $data | ConvertTo-Json -Depth 20 | Set-Content $path -Encoding utf8
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add company-status.json
+          if (-not (git diff --cached --quiet)) {
+            git commit -m "company-ai: publish $game verified local test build"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          }
+          Write-Host "[PASS] Approved homepage build state updated: $downloadUrl"
