@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "checkedAtKst": "2026. 09. 08. 13:11:07",
+  "version": 3,
+  "checkedAtKst": "2026. 09. 08. 13:11:56",
   "dateKst": "2026-09-08",
   "manager": "homepage",
   "status": "running",
@@ -10,13 +10,18 @@
     "preferredPattern": "short-cards -> dedicated-artbook-detail-page",
     "artbookVisibilityIsProductionApproval": false,
     "webArchiveWriteBack": false,
-    "runtimeGameHealthBadgeVisible": false
+    "runtimeGameHealthBadgeVisible": false,
+    "gameCardsRequireUniqueTitleImages": true
   },
   "counts": {
     "catalogGames": 11,
     "artbookQueueGames": 11,
     "visibleArtbooks": 0,
-    "tinyFontRulesBelow9px": 18
+    "tinyFontRulesBelow9px": 18,
+    "gameImagesValid": 11,
+    "duplicateGameImages": 0,
+    "placeholderGameImages": 0,
+    "brokenGameImages": 0
   },
   "checks": {
     "indexExists": true,
@@ -35,12 +40,19 @@
     "requiredArtbookRolesIntact": true,
     "webGamesRemainReadOnly": true,
     "autoMaintenanceEnabled": true,
-    "artbookPageSupportsGameSelection": true
+    "artbookPageSupportsGameSelection": true,
+    "allGameImagesPresent": true,
+    "allGameImagesUnique": true,
+    "noPlaceholderGameImages": true,
+    "allCurrentGameImagesValid": true
   },
   "findings": {
     "missingCatalog": [],
     "unknownCatalog": [],
     "brokenBookRefs": [],
+    "brokenGameImages": [],
+    "duplicateGameImages": [],
+    "placeholderGameImages": [],
     "failures": []
   }
 }
