@@ -6,7 +6,7 @@ const clean=v=>String(v??'').trim();
 const unique=v=>[...new Set((v||[]).map(clean).filter(Boolean))];
 const slugify=v=>clean(v).toLowerCase().replace(/[^a-z0-9가-힣]+/g,'-').replace(/^-+|-+$/g,'').slice(0,48);
 const readJson=(file,fallback={})=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return structuredClone(fallback);}};
-const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');
+const writeJson=(file,value)=>{fs.mkdirSync(file.includes('/')?file.slice(0,file.lastIndexOf('/')):'.',{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 
 export function validateOperationalConcept(concept={}){
   const missing=[];
@@ -31,6 +31,20 @@ export function nextPortfolioProjectId(portfolio={}){
 
 function activeCandidate(state){return(state.candidates||[]).find(c=>['CONCEPT_CREATED','ARTBOOK_QUEUED','ARTBOOK_COMPLETE','PROTOTYPE_REGISTERED'].includes(c.status)&&c.prototypeDevComplete!==true)||null;}
 
+function conceptDigest(concept){
+  return [
+    concept.styleProfile,
+    `정체성:${concept.identitySentence}`,
+    `핵심루프:${concept.coreLoop}`,
+    `스토리:${concept.storyHook}`,
+    `대표시스템:${concept.signatureSystems.join(' / ')}`,
+    `대표장면:${concept.signatureScenes.join(' / ')}`,
+    `세계규칙:${concept.worldRules.join(' / ')}`,
+    `금지:${concept.forbiddenPatterns.join(' / ')}`,
+    `가설:${concept.prototypeHypothesis}`,
+  ].join(' | ').slice(0,1800);
+}
+
 export function createOperationalCandidate(state,portfolio,concept,timestamp=new Date().toISOString()){
   const v=validateOperationalConcept(concept);if(!v.pass)throw new Error(`신규 컨셉 불완전: ${v.missing.join(', ')}`);
   const active=activeCandidate(state);if(active)throw new Error(`동시 신규게임 후보 금지: ${active.id}`);
@@ -48,7 +62,7 @@ export function createOperationalCandidate(state,portfolio,concept,timestamp=new
       signatureSystems:unique(concept.signatureSystems),signatureScenes:unique(concept.signatureScenes),worldRules:unique(concept.worldRules),
       forbiddenPatterns:unique(concept.forbiddenPatterns),prototypeHypothesis:clean(concept.prototypeHypothesis),risks:unique(concept.risks),styleProfile:clean(concept.styleProfile),
     },
-    artbookId:null,prototypeRegisteredAt:null,prototypeDevComplete:false,publicReleaseApproved:false,createdAt:timestamp,updatedAt:timestamp,
+    artbookId:null,artbookSourceFile:null,prototypeRegisteredAt:null,prototypeDevComplete:false,publicReleaseApproved:false,createdAt:timestamp,updatedAt:timestamp,
   };
   state.candidates.push(candidate);return candidate;
 }
@@ -63,7 +77,7 @@ export function enqueueOperationalArtbook(candidate,queue,timestamp=new Date().t
       source:'INCUBATOR_METADATA_ONLY',
       status:'QUEUED',
       sectionsReady:[],requiredSections:5,
-      styleProfile:candidate.concept.styleProfile,
+      styleProfile:conceptDigest(candidate.concept),
       currentStage:'incubator-artbook-review',
       incubatorCandidateId:candidate.id,
       reservedProjectId:candidate.reservedProjectId,
@@ -87,13 +101,13 @@ export function detectCompletedIncubatorArtbook(candidate,registry={}){
   const collaboration=book.collaboration?.allFiveDepartmentsReviewed===true||fiveOpinions;
   const cutsOk=Array.isArray(book.cuts)&&book.cuts.length===10;
   if(!fiveOpinions||!collaboration||!cutsOk)return{complete:false,reason:'ARTBOOK_EVIDENCE_INCOMPLETE',bookId:book.id};
-  return{complete:true,bookId:book.id,sourceFile:book.sourceFile||null};
+  return{complete:true,bookId:book.id,sourceFile:book.sourceFile||null,book};
 }
 
 export function registerPrototypeAfterArtbook(candidate,portfolio,registry,timestamp=new Date().toISOString()){
   if(!['ARTBOOK_QUEUED','ARTBOOK_COMPLETE'].includes(candidate.status))throw new Error(`프로토타입 등록 상태 오류: ${candidate.status}`);
   const evidence=detectCompletedIncubatorArtbook(candidate,registry);if(!evidence.complete)return{registered:false,evidence};
-  candidate.status='ARTBOOK_COMPLETE';candidate.artbookId=evidence.bookId;candidate.updatedAt=timestamp;
+  candidate.status='ARTBOOK_COMPLETE';candidate.artbookId=evidence.bookId;candidate.artbookSourceFile=evidence.sourceFile;candidate.updatedAt=timestamp;
   portfolio.projects??=[];
   const existing=portfolio.projects.find(p=>p.id===candidate.reservedProjectId||p.incubatorCandidateId===candidate.id);
   if(existing){candidate.status='PROTOTYPE_REGISTERED';candidate.prototypeRegisteredAt??=timestamp;return{registered:false,existing:true,project:existing,evidence};}
@@ -107,14 +121,29 @@ export function registerPrototypeAfterArtbook(candidate,portfolio,registry,times
   return{registered:true,project,evidence};
 }
 
-export function buildPrototypeRequest(candidate,portfolio){
+function summarizeArtbook(book){
+  if(!book)return null;
+  const opinions=Object.fromEntries(REVIEW_ROLES.map(role=>[role,book.departmentOpinions?.[role]?{
+    averageStars:book.departmentOpinions[role].averageStars,
+    priorityImprovement:clean(book.departmentOpinions[role].priorityImprovement),
+    readiness:clean(book.departmentOpinions[role].readiness),
+  }:null]));
+  return{
+    id:book.id,title:clean(book.title),subtitle:clean(book.subtitle),status:book.status,productionApproval:book.productionApproval===true,
+    cuts:(book.cuts||[]).slice(0,10).map(cut=>({no:cut.no,title:clean(cut.title),body:clean(cut.body).slice(0,700)})),
+    departmentOpinions:opinions,
+  };
+}
+
+export function buildPrototypeRequest(candidate,portfolio,registry={}){
   const project=(portfolio.projects||[]).find(p=>p.incubatorCandidateId===candidate.id);if(!project||candidate.status!=='PROTOTYPE_REGISTERED')return null;
+  const evidence=detectCompletedIncubatorArtbook(candidate,registry);
   return{
     version:1,candidateId:candidate.id,projectId:project.id,gameId:project.id,slug:project.slug,name:project.name,sourcePath:project.sourcePath,
-    artbookGameId:candidate.artbookGameId,artbookId:candidate.artbookId,concept:candidate.concept,
+    artbookGameId:candidate.artbookGameId,artbookId:candidate.artbookId,concept:candidate.concept,artbookEvidence:summarizeArtbook(evidence.book),
     goal:`${candidate.concept.prototypeHypothesis} 가설을 검증하는 10분 이내 Web 핵심 루프 프로토타입`,
     acceptanceCriteria:['브라우저에서 시작 가능','핵심 루프 1회 완주 가능','대표 시스템이 실제 입력으로 체감됨','모바일 기본 입력 대응','치명 오류 없이 재시작 가능'],
-    candidateBranchOnly:true,publicStableWrite:false,publicRelease:false,
+    candidateBranchOnly:true,publicStableWrite:false,publicRelease:false,noPersistentSaveInFirstPrototype:true,
   };
 }
 
@@ -140,9 +169,9 @@ export async function runOperationalIncubator({modelResponse=null,timestamp=new 
   }else if(['ARTBOOK_QUEUED','ARTBOOK_COMPLETE'].includes(candidate.status)){
     const result=registerPrototypeAfterArtbook(candidate,portfolio,registry,timestamp);action=result.registered?'PROTOTYPE_REGISTERED':`WAIT_${result.evidence?.reason||'ARTBOOK'}`;
   }else if(candidate.status==='PROTOTYPE_REGISTERED'){
-    prototypeRequest=buildPrototypeRequest(candidate,portfolio);action='PROTOTYPE_REQUEST_READY';
+    prototypeRequest=buildPrototypeRequest(candidate,portfolio,registry);action='PROTOTYPE_REQUEST_READY';
   }
-  if(candidate?.status==='PROTOTYPE_REGISTERED')prototypeRequest=buildPrototypeRequest(candidate,portfolio);
+  if(candidate?.status==='PROTOTYPE_REGISTERED')prototypeRequest=buildPrototypeRequest(candidate,portfolio,registry);
   writeJson('autonomous-incubator.json',state);writeJson('autonomous-portfolio.json',portfolio);writeJson('artbook-submission-queue.json',queue);
   if(prototypeRequest)writeJson('.autonomous/prototype-request.json',prototypeRequest);
   return{action,candidateId:candidate?.id||null,status:candidate?.status||null,modelCalls,prototypeRequest:prototypeRequest?.projectId||null,paidApi:false};
