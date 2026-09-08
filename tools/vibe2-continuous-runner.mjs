@@ -1,6 +1,6 @@
 // 파일명: tools/vibe2-continuous-runner.mjs
-// 역할: Vibe2 연속 작업 큐에서 다음 안전 작업을 선택하고 엔진별 검증 작업주문을 생성한다.
-// 원칙: 이 도구는 작업주문만 만들며 main이나 게임 소스를 직접 수정하지 않는다.
+// 역할: Vibe2 직렬 큐에서 다음 안전 작업을 선택하고 엔진별 작업주문을 생성한다.
+// 원칙: 사용자 지시 > 출시확정 > 개발확정, 한 번에 1작업, 후보 브랜치만 수정, 검증 전 main 반영 금지.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,6 +14,7 @@ const posix = (value) => clean(value).replaceAll('\\', '/');
 const freeze = (value) => Object.freeze(value);
 const freezeList = (values = []) => freeze([...new Set((values || []).map(clean).filter(Boolean))]);
 const EDITOR_BINARY_EXTENSIONS = new Set(['.uasset', '.umap', '.controller', '.anim', '.avatar']);
+const AUTO_DEPLOY_STATES = new Set(['release-confirmed', 'development-confirmed']);
 
 function readJson(file, fallback = {}) {
   if (!file || !fs.existsSync(file)) return fallback;
@@ -35,8 +36,12 @@ function parseArgs(argv = process.argv.slice(2)) {
   return args;
 }
 function writableTargetAllowed(runtime, target) {
-  const allowed = Array.isArray(runtime?.safety?.allowedWritableTargets) ? runtime.safety.allowedWritableTargets.map(clean) : ['unity', 'unreal', 'godot'];
-  return allowed.includes(clean(target));
+  const allowed = Array.isArray(runtime?.safety?.allowedWritableTargets)
+    ? runtime.safety.allowedWritableTargets.map((value) => clean(value).toLowerCase())
+    : ['web', 'unity', 'unreal', 'godot'];
+  const resolved = clean(target).toLowerCase();
+  if (resolved === 'web' && runtime?.safety?.existingWebMaintenanceAllowed !== true) return false;
+  return allowed.includes(resolved);
 }
 function taskRequiresWrite(task) {
   return !['inspect', 'research', 'qa'].includes(clean(task?.type).toLowerCase());
@@ -49,12 +54,10 @@ function requestMentionsEditorOnlyCapability(target, request) {
   const text = clean(request).toLowerCase();
   if (target === 'unreal') return [
     'blueprint', '블루프린트', 'animation blueprint', 'anim blueprint', '애님 블루프린트',
-    'montage', '몽타주', 'blend space', '블렌드 스페이스', 'control rig', '컨트롤 릭',
-    'ik retargeter', '리타게터', 'ik rig'
+    'montage', '몽타주', 'blend space', '블렌드 스페이스', 'control rig', '컨트롤 릭', 'ik retargeter', '리타게터', 'ik rig'
   ].some((word) => text.includes(word));
   if (target === 'unity') return [
-    'animator controller', '애니메이터 컨트롤러', 'animationclip asset', 'animation clip asset',
-    '애니메이션 클립 에셋', 'avatar asset'
+    'animator controller', '애니메이터 컨트롤러', 'animationclip asset', 'animation clip asset', '애니메이션 클립 에셋', 'avatar asset'
   ].some((word) => text.includes(word));
   return false;
 }
@@ -68,8 +71,7 @@ export function classifyVibeExecutionRoute({ target = '', task = {}, adapter = {
   const requested = requestMentionsEditorOnlyCapability(normalizedTarget, task.goal);
   if (binary || requested) {
     return freeze({
-      route: 'engine-editor',
-      requiresEditor: true,
+      route: 'engine-editor', requiresEditor: true,
       reason: binary ? 'responsible-binary-asset' : 'editor-only-capability-requested',
       editorRuntime: adapter?.execution?.editorRuntime || null,
       directBinaryTextEditForbidden: true
@@ -79,26 +81,24 @@ export function classifyVibeExecutionRoute({ target = '', task = {}, adapter = {
 }
 
 export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experience = {} } = {}) {
-  const continuousEnabled = runtime?.continuous?.enabled !== false;
   const normalizedQueue = createVibeContinuousQueue(queue);
   const selection = selectNextVibeQueueTask(normalizedQueue);
   const base = {
-    version: 2,
+    version: 3,
     generatedAt: new Date().toISOString(),
     run: false,
     reason: null,
     mode: 'vibe2-continuous-work-order',
     safety: freeze({
       directMainWrite: false,
-      webGamesReadOnly: runtime?.safety?.webGamesReadOnly !== false,
+      existingWebMaintenanceAllowed: runtime?.safety?.existingWebMaintenanceAllowed === true,
+      newWebGameAutomatic: runtime?.safety?.newWebGameAutomatic === true,
       paidAIAllowed: runtime?.safety?.paidAIAllowed === true,
       paidRunnerAllowed: runtime?.safety?.paidRunnerAllowed === true,
-      homepagePublicationAutomatic: runtime?.safety?.homepagePublicationAutomatic === true,
       binaryAssetsDirectTextEditForbidden: true
     })
   };
-
-  if (!continuousEnabled) return freeze({ ...base, reason: 'CONTINUOUS_DISABLED', selection });
+  if (runtime?.continuous?.enabled === false) return freeze({ ...base, reason: 'CONTINUOUS_DISABLED', selection });
   if (!selection.selected) return freeze({ ...base, reason: selection.stopReason || 'NO_ELIGIBLE_WORK', selection });
 
   const task = selection.selected;
@@ -107,35 +107,30 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     return freeze({ ...base, reason: `WRITABLE_TARGET_FORBIDDEN:${task.target}`, selectedTask: task, selection });
   }
 
-  const memory = createVibeExperienceMemory(experience);
   const plan = planVibeCoreTask({
     request: task.goal,
     target: task.target,
     gameId: task.gameId,
     file: normalizeResponsibleFile(task),
-    experienceMemory: memory,
+    experienceMemory: createVibeExperienceMemory(experience),
     departments: task.department ? [task.department] : [],
     ownerDirective: task.ownerDirective
   });
-
   const gateReasons = [...(plan.executionGate?.reasons || [])];
   const analysisOnlyRead = !requiresWrite && gateReasons.length === 1 && gateReasons[0] === 'source-read-only';
   const mayRun = plan.executionGate?.mayExecute === true || analysisOnlyRead;
-  if (!mayRun) {
-    return freeze({
-      ...base,
-      reason: `EXECUTION_GATE_BLOCKED:${gateReasons.join(',') || 'unknown'}`,
-      selectedTask: task,
-      selection,
-      gate: plan.executionGate
-    });
-  }
+  if (!mayRun) return freeze({ ...base, reason: `EXECUTION_GATE_BLOCKED:${gateReasons.join(',') || 'unknown'}`, selectedTask: task, selection, gate: plan.executionGate });
 
   const adapter = plan.engineAdapter;
   const route = classifyVibeExecutionRoute({ target: plan.target, task, adapter });
   const maxWorkMinutes = Math.max(1, Math.min(60, Math.floor(Number(runtime?.continuous?.maxWorkMinutes) || 20)));
   const editorConfig = runtime?.engineEditors?.[plan.target] || {};
-  const editorDispatchConfigured = route.route !== 'engine-editor' || Boolean(clean(editorConfig.workflow) || clean(editorConfig.runnerLabel));
+  const releaseState = clean(task.releaseState) || 'other';
+  const automaticDeploymentEligible = AUTO_DEPLOY_STATES.has(releaseState)
+    && ['web', 'unity'].includes(plan.target)
+    && task.requiresOwnerDecision !== true
+    && task.protectedChange !== true;
+
   return freeze({
     ...base,
     run: true,
@@ -151,10 +146,12 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     goal: task.goal,
     department: task.department,
     priority: task.priority,
+    releaseState,
     maxWorkMinutes,
     source: freeze({
       root: adapter.source.root,
       writable: adapter.mayWriteSource,
+      maintenanceOnly: adapter.source.maintenanceOnly === true,
       candidateFiles: freezeList(adapter.source.candidateFiles),
       textWritablePatterns: freezeList(adapter.source.textWritablePatterns || []),
       editorRequiredPatterns: freezeList(adapter.source.editorRequiredPatterns || []),
@@ -165,10 +162,18 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     learning: plan.learning,
     motion: plan.motion,
     executionGate: plan.executionGate,
+    deployment: freeze({
+      automaticEligible: automaticDeploymentEligible,
+      requiresVerifiedQA: true,
+      requiresBuild: plan.target === 'unity',
+      promoteSourceRootOnly: true,
+      mainDirectWriteByWorker: false,
+      publicStoreReleaseAutomatic: false
+    }),
     editor: freeze({
       required: route.requiresEditor,
       runtime: route.editorRuntime || adapter?.execution?.editorRuntime || null,
-      dispatchConfigured: editorDispatchConfigured,
+      dispatchConfigured: route.route !== 'engine-editor' || Boolean(clean(editorConfig.workflow) || clean(editorConfig.runnerLabel)),
       workflow: clean(editorConfig.workflow) || null,
       runnerLabel: clean(editorConfig.runnerLabel) || null
     }),
@@ -187,19 +192,16 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   });
 }
 
-export function runVibeContinuousRunner({
-  runtimeFile = 'vibe2-runtime.json',
-  queueFile = '.vibe2/queue.json',
-  experienceFile = '.vibe2/experience.json',
-  outputFile = '.vibe2/work-order.json'
-} = {}) {
+export function runVibeContinuousRunner({ runtimeFile = 'vibe2-runtime.json', queueFile = '.vibe2/queue.json', experienceFile = '.vibe2/experience.json', outputFile = '.vibe2/work-order.json' } = {}) {
   const runtime = readJson(runtimeFile, {});
   const resolvedQueueFile = clean(runtime?.sources?.queue) || queueFile;
   const resolvedExperienceFile = clean(runtime?.sources?.experience) || experienceFile;
   const resolvedOutputFile = clean(runtime?.sources?.workOrder) || outputFile;
-  const queue = readJson(resolvedQueueFile, { tasks: [] });
-  const experience = readJson(resolvedExperienceFile, { records: [] });
-  const order = buildVibeContinuousWorkOrder({ runtime, queue, experience });
+  const order = buildVibeContinuousWorkOrder({
+    runtime,
+    queue: readJson(resolvedQueueFile, { tasks: [] }),
+    experience: readJson(resolvedExperienceFile, { records: [] })
+  });
   writeJson(resolvedOutputFile, order);
   return order;
 }
@@ -217,6 +219,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   if (order.run) {
     console.log(`VIBE2_TASK_ID=${order.taskId}`);
     console.log(`VIBE2_TARGET=${order.target}`);
+    console.log(`VIBE2_RELEASE_STATE=${order.releaseState}`);
+    console.log(`VIBE2_AUTO_DEPLOY_ELIGIBLE=${order.deployment.automaticEligible ? 'YES' : 'NO'}`);
     console.log(`VIBE2_EXECUTION_ROUTE=${order.executionRoute}`);
     console.log(`VIBE2_SOURCE_ROOT=${order.source.root}`);
   }
