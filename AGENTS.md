@@ -7,59 +7,76 @@
 - `COMPANY_FLOW.md`와 `assets/vibe-company-orchestration-bridge.js`가 재운컴퍼니 단계와 바이브2 workbench/orchestrator를 연결하는 공식 브리지다.
 - 바이브2 제작 규칙 변경은 같은 저장소의 `AGENTS.md`, `ASSET_RULES.md`, `assets/animated-assets.json`, 관련 vibe 모듈을 통해 재운컴퍼니 작업에 즉시 적용한다. 같은 규칙을 다른 파일에 복제해 따로 유지하지 않는다.
 - 재운컴퍼니의 사용자 지시, 진행 상태, 빌드 상태는 `company-directive.json`, `company-status.json`에 기록하고 바이브2 실행계약은 이 운영 상태와 충돌하지 않게 따른다.
-- 새 사용자 지시는 자율 계획보다 우선한다. 유료 사용 금지, 에셋 권리/애니메이션 검증, 핵심 제작 결정 게이트는 우회할 수 없다. 기존 `web-games/`는 사용자 지시에 따라 유지·개선할 수 있지만 Unity 앱 작업보다 후순위이며 새 웹게임을 기본 제작 대상으로 삼지 않는다.
-- 게임/아트북의 홈페이지 노출은 정식 제작 승인과 별개다. 다른 게임과 아트북도 `company-directive.json` 기준으로 접기/펼치기·압축 카드·별도 아트북 페이지 등 짧은 UI로 노출할 수 있다. 노출됐다는 이유만으로 본개발 PASS, 출시 승인, APK 다운로드 승인으로 처리하지 않는다.
+- 새 사용자 지시는 모든 자율 계획보다 우선한다. 유료 사용 금지, 에셋 권리/애니메이션 검증, 핵심 제작 결정 게이트는 우회할 수 없다.
+- 기존 `web-games/`는 사용자 지시에 따라 유지·개선할 수 있다. 새 웹게임은 기본 자동 제작 대상으로 삼지 않고 새 게임은 Unity Android를 기본 대상으로 한다.
+- 게임/아트북의 홈페이지 노출은 정식 제작 승인과 별개다. 노출됐다는 이유만으로 본개발 PASS, 출시 승인, APK 다운로드 승인으로 처리하지 않는다.
+
+## 작업 우선순위
+1. 사용자 직접 지시 / owner-immediate.
+2. **출시확정(`release-confirmed`) 게임**.
+3. **개발확정(`development-confirmed`) 게임**.
+4. reviewing / 기타.
+- 같은 단계 안에서는 **기존 Unity > 기존 Web > 신규 Unity > 기타 엔진** 순서로 처리한다.
+- `unity-games/daechung-rpg`는 현재 활성 Unity 본개발 프로젝트이며, 동일 단계 안에서 우선한다. 다만 더 높은 출시단계 게임이 있으면 출시단계 우선순위가 먼저다.
 
 ## 기본 원칙
-- 작업 우선순위는 **기존 Unity 게임 > 기존 웹게임 유지·개선 > 신규 Unity 게임 > 기타 엔진** 순서다.
-- 현재 1순위 프로젝트는 `unity-games/daechung-rpg`다.
-- 기존 `web-games/`는 플레이 가능한 기존 게임 원본이며, 버그 수정·모바일 UI/UX·접근성·성능·안전한 구조 개선·회귀 수정 같은 유지보수 작업을 허용한다.
-- 기존 웹게임의 핵심 규칙, 밸런스, 세이브 의미, 대규모 콘텐츠 방향을 바꾸는 작업은 사용자 결정 없이 자율 실행하지 않는다.
+- 기존 웹게임은 버그 수정·모바일 UI/UX·접근성·성능·안전한 구조 개선·회귀 수정 같은 유지보수를 허용한다.
+- 기존 웹게임의 핵심 규칙, 밸런스, 세이브 의미, 대규모 콘텐츠 방향은 사용자 결정 없이 자율 변경하지 않는다.
 - 새 게임의 기본 제작 대상은 Unity Android이며 `unity-games/` 아래에서 진행한다. 새 웹게임 제작은 사용자가 명시적으로 지시한 경우에만 진행한다.
 - 임시 래퍼, 패치 누적, 함수 덮어쓰기 체인 대신 담당 시스템을 직접 수정한다.
 - 기존 기능과 저장 의미를 불필요하게 삭제하거나 바꾸지 않는다.
 - 모바일 Android 우선으로 설계한다. 기존 웹게임은 모바일 브라우저 사용성을 함께 검증한다.
 - 유료 AI/유료 에셋/유료 runner/추가 크레딧 자동결제 금지.
 - 외부 공개 포트 금지. Unity MCP는 `127.0.0.1` 로컬만 사용한다.
+
+## Vibe2 직렬 작업 / 충돌 방지
+- Vibe2 게임 소스 작업은 **전역 한 번에 1개 작업만** 실행한다. 별도 파일 Work Lock을 운영 경로에 사용하지 않는다.
+- 활성 작업과 책임 파일은 `.vibe2/queue.json`의 `running` task가 단일 진실 소스다.
+- ChatGPT/다른 AI는 Vibe2가 `running` 중인 책임 파일을 동시에 수정하지 않는다.
+- Vibe2 source worker는 `main`을 직접 수정하지 않고 항상 최신 `origin/main`에서 `vibe2/candidate/*` 후보 브랜치를 만든다.
+- 후보 생성 시 `baseMainSha`를 기록한다. QA/승격 직전 최신 `main`과 다시 비교한다.
+- `baseMainSha` 이후 동일 게임 source root가 바뀌었으면 자동 병합/승격하지 않고 재계획한다.
+- 변경이 검증되지 않은 후보는 `main`에 자동 반영하지 않는다.
+- 후보가 QA/빌드/배포 게이트를 기다리는 동안 해당 task는 `running`을 유지하며 다음 게임 작업을 시작하지 않는다.
+
+## 에셋 규칙 / 학습
 - 에셋 작업 전에는 반드시 `ASSET_RULES.md`를 읽는다.
 - 캐릭터/몬스터/보스/VFX가 필요하면 `assets/animated-assets.json`과 `assets/asset-manifest.json`의 검증 후보를 먼저 확인한다.
-- 캐릭터, 몬스터, 보스는 **움직임이 있는 검증 애니메이션 에셋만 사용**한다.
+- 캐릭터, 몬스터, 보스는 움직임이 있는 검증 애니메이션 에셋만 사용한다.
 - 정지 이미지, 단일 포즈, 원형/구체/도형/이모지/임시 모델을 캐릭터·몬스터·보스로 사용하는 것은 금지한다.
-- 캐릭터·몬스터·보스 후보는 `assets/asset-selector.js` 검증을 통과해야 하며 `verifiedAnimation=true`, 실제 애니메이션 자료, 이동 모션이 없으면 사용하지 않는다.
+- 라이선스가 수정/상업 사용을 허용하면 원본 에셋을 게임 컨셉/완료 아트북에 맞게 색상·재질·텍스처·형태·장비·모션·VFX 등을 수정/조합/재제작할 수 있다.
+- **완료 아트북/게임 컨셉 > 에셋 원본 스타일** 순서다. 에셋 때문에 게임 컨셉을 바꾸지 않는다.
+- 고정 안전 규칙(라이선스, 상업사용, 출처, 애니메이션 증거, 모바일 성능/용량)은 학습으로 완화하거나 덮어쓸 수 없다.
+- 스타일 적합도, 모션 품질, 모바일 성능, QA 통과율, 다른 게임 재사용 성공 같은 선호 신호는 검증된 결과만 경험으로 학습한다.
 
-## ChatGPT ↔ Vibe2 ↔ company-ai 공용 Work Lock
-- `chatgpt`, `vibe2`, `company-ai`는 게임/회사 소스를 수정하기 전에 공용 Work Lock을 반드시 획득한다.
-- 잠금의 단일 상태 저장소는 `vibe2-work-locks` 브랜치의 `.vibe2/work-locks.json`이다. `main`에는 acquire/release 상태 커밋을 쌓지 않는다.
-- 잠금에는 최소 `worker`, `taskId`, `gameId`, `files`, `baseSha`, `acquiredAt`, `expiresAt`을 기록한다.
-- 동일 파일 또는 상위/하위 경로가 겹치는 활성 잠금이 있으면 다른 작업자는 해당 소스를 수정하지 않는다. 잠금을 빼앗거나 강제 덮어쓰지 말고 다른 독립 작업을 선택한다.
-- 기본 lease는 45분이며 최대 120분이다. 만료된 잠금만 정리할 수 있고, 진행 중이면 갱신한다.
-- 작업 종료 전 `baseSha` 이후의 변경을 다시 비교한다. 잠금 범위와 변경 파일이 겹치면 자동 병합하지 않고 `REPLAN_REQUIRED`, 변경은 있지만 잠금 범위와 안 겹치면 rebase 후 QA, 변경이 없으면 QA 진행으로 판정한다.
-- Work Lock은 편집 충돌 방지 장치일 뿐 권한을 늘리지 않는다. 사용자 승인, 완료 아트북 잠금, 저장 호환성, 유료 사용 금지, 기존 웹게임의 핵심 결정 보호 등 기존 보호 게이트를 우회할 수 없다.
-- 공통 계약은 `assets/vibe-work-lock.js`, 운영 CLI는 `tools/vibe-work-lock-control.mjs`를 사용한다.
+## 수정 → QA → 자동배포
+- Vibe2 worker의 직접 `main` 쓰기는 금지한다.
+- **Web:** 후보 생성 → 정적/브라우저 QA → 최신 main 충돌검사 → 승인된 게임 source root만 main 승격 → 공개 health 확인.
+- **Unity:** 후보 생성 → 후보 브랜치 Android APK 빌드/검증 → 최신 main 충돌검사 → 승인된 Unity source root만 main 승격 → 테스트 릴리스 결과 유지.
+- QA 실패, 빌드 실패, source root freshness 실패, 현재 출시/개발 승인 취소 시 자동배포 금지 및 재시도/재계획한다.
+- Play Store 정식 공개는 자동 테스트 APK/프리릴리스와 별개이며 출시확정 또는 명시적 사용자 승인 정책을 따른다.
+- Unreal 자동배포는 승인된 Unreal toolchain/runner가 실제로 연결되고 빌드 성공이 검증되기 전까지 활성화하지 않는다.
 
 ## 총괄 / 빌드 권한
 - 빌드 책임은 로컬 총괄 AI 한 명에게 독점시키지 않는다.
 - 연결된 ChatGPT 총괄, 로컬 총괄, 승인된 다른 총괄 AI 모두 검증된 빌드 요청을 만들 수 있다.
 - 외부 총괄은 GitHub의 `.build-requests/` 파일을 갱신해 빌드를 요청할 수 있다.
-- 일반 원격 Unity Android 테스트는 `.github/workflows/unity-cloud-android-test.yml`의 GitHub-hosted 클라우드 경로를 우선 사용한다.
-- `unity-local-pc-android.yml`과 self-hosted Windows PC 빌드는 자동 기본 경로가 아니라 명시적인 복구/수동 진단용이다.
-- 클라우드 Unity 라이선스 secrets가 준비되지 않았거나 빌드가 실제 성공하지 않았다면 테스트 가능이라고 표시하지 않는다.
-- 외부 총괄은 빌드 run 상태와 로그를 확인하고 성공 산출물의 직접 다운로드 링크를 사용자에게 제공할 수 있다.
-- 테스트 APK prerelease 생성은 홈페이지 노출과 별개다. 아트북/단계 정보는 압축 UI로 노출할 수 있지만, 실제 APK 다운로드 링크는 빌드 성공·비어 있지 않은 APK·SHA-256·다운로드 가능 여부까지 검증된 뒤에만 표시한다.
+- 일반 원격 Unity Android 테스트는 `.github/workflows/unity-hybrid-android-build.yml`을 통해 검증된 경로로 실행한다.
+- Unity 라이선스/runner가 준비되지 않았거나 빌드가 실제 성공하지 않았다면 테스트 가능이라고 표시하지 않는다.
+- 테스트 APK prerelease 생성은 홈페이지 노출과 별개다. 실제 APK 다운로드 링크는 빌드 성공·비어 있지 않은 APK·SHA-256·다운로드 가능 여부까지 검증된 뒤에만 표시한다.
 
 ## 작업 순서
-1. `company-directive.json`과 현재 구조, 담당 파일을 먼저 읽는다.
-2. `COMPANY_FLOW.md`와 `assets/vibe-company-orchestration-bridge.js` 기준으로 재운컴퍼니 단계와 바이브2 실행계약을 연결한다.
-3. 실제 소스 수정 전 `vibe2-work-locks:.vibe2/work-locks.json`을 확인하고 담당 파일 범위의 공용 Work Lock을 획득한다.
+1. `company-directive.json`, `company-status.json`, `game-catalog.json`과 현재 구조를 읽는다.
+2. 사용자 직접 지시와 `출시확정 > 개발확정` 우선순위를 적용한다.
+3. `.vibe2/queue.json`에 `running` 작업이 있으면 다른 Vibe2 게임 작업을 시작하지 않는다.
 4. 에셋이 필요한 작업이면 `ASSET_RULES.md`, `assets/animated-assets.json`, `assets/asset-manifest.json`을 확인한다.
-5. 캐릭터/몬스터/보스는 정지 에셋이나 도형 대체 모델이 아닌지 먼저 검사한다.
-6. 한 번에 한 책임 단위만 수정한다.
-7. Unity MCP가 연결돼 있으면 실제 Editor 상태를 확인한다. 연결되지 않아도 일반 원격 작업은 GitHub 기준으로 계속할 수 있다.
-8. 컴파일 오류/Console 오류를 확인한다. 웹게임은 브라우저 로딩·모바일 레이아웃·입력·저장 회귀를 확인한다.
-9. 가능한 경우 EditMode/PlayMode/회귀 테스트를 실행한다.
-10. `baseSha` 이후 변경을 다시 검사해 겹침이 있으면 자동 병합하지 않고 재계획한다.
-11. 외부 테스트 가능한 단계면 검증된 빌드 요청을 만들고 클라우드 APK 빌드 결과를 확인한다.
-12. 결과와 다음 작업을 `company-status.json`/작업 큐에 반영하고 공용 Work Lock을 해제한다. 홈페이지에는 게임/아트북 단계 정보를 짧게 노출할 수 있지만 본개발·출시·APK 다운로드 승인과 혼동하지 않는다.
+5. 한 번에 한 책임 단위만 수정하고 최신 `main`에서 candidate branch를 만든다.
+6. 컴파일/문법/브라우저/모바일/입력/저장 회귀를 대상 엔진에 맞게 검증한다.
+7. 가능한 경우 EditMode/PlayMode/회귀 테스트를 실행한다.
+8. `baseMainSha` 이후 동일 source root 변경을 다시 검사한다. 겹치면 자동 병합하지 않고 재계획한다.
+9. Unity는 실제 APK 빌드까지, Web은 공개 health까지 필요한 검증을 실행한다.
+10. 검증 PASS만 source root를 `main`에 승격하고 큐를 완료한다. 실패는 제한된 재시도 또는 재계획한다.
+11. 검증된 결과만 경험/에셋 선호 학습에 반영한다.
 
 ## 부서 역할
 - 기획 AI: 핵심 루프, 지역, 퀘스트, 콘텐츠 구조.
