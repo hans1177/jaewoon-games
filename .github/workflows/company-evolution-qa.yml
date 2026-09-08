@@ -115,6 +115,10 @@ jobs:
           grep -Fq 'readsOtherDepartmentSubmissions:false' tools/artbook-department-runner.mjs
           grep -Fq 'webArchiveReadOnly:true' tools/artbook-department-runner.mjs
           grep -Fq 'WEB_ARCHIVE_READ_ONLY' tools/artbook-department-runner.mjs
+          grep -Fq 'conceptPlanRequired:true' tools/artbook-department-runner.mjs
+          grep -Fq 'creativeIdeasAreProposals:true' tools/artbook-department-runner.mjs
+          grep -Fq 'implementationPlanRequired:true' tools/artbook-department-runner.mjs
+          grep -Fq 'demoValidationRequired:true' tools/artbook-department-runner.mjs
           grep -Fq 'paidApi:false' tools/artbook-collaboration-runner.mjs
           grep -Fq 'PEER_IMPROVEMENT_STAR_5' tools/artbook-collaboration-runner.mjs
           grep -Fq 'mayEvaluateOwnDepartment:false' tools/artbook-collaboration-runner.mjs
@@ -123,7 +127,7 @@ jobs:
           grep -Fq 'mayRewriteDepartmentResults:false' tools/artbook-director-review.mjs
           grep -Fq 'tools/artbook-second-work-runner.mjs' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'tools/artbook-director-review.mjs' .github/workflows/artbook-free-department-bots.yml
-          grep -Fq 'director-review:' .github/workflows/artbook-free-department-bots.yml
+          grep -Eq '^  director:$' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'cancel-in-progress: true' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'qwen3:0.6b' .github/workflows/artbook-free-department-bots.yml
           if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/artbook-department-runner.mjs tools/artbook-second-work-runner.mjs tools/artbook-collaboration-runner.mjs tools/artbook-director-review.mjs; then
@@ -197,6 +201,8 @@ jobs:
           if(!gateSource.includes('PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5'))throw new Error('five-vote protocol missing from gate source');
           if(!gateSource.includes('DIRECTOR_IMPROVEMENT_STAR_5'))throw new Error('director rating protocol missing from gate source');
           if(!gateSource.includes('ratingsPerDepartment'))throw new Error('ratings-per-department gate missing');
+          if(!gateSource.includes("submissionContract:'V5_CREATIVE_IMPLEMENTATION_DEMO_PLAN'"))throw new Error('v5 creative/implementation/demo contract missing');
+          if(!gateSource.includes('historicalPreV5Compatibility:true'))throw new Error('historical pre-v5 compatibility guard missing');
           const assembler=fs.readFileSync('tools/artbook-assemble.mjs','utf8');
           if(!assembler.includes('newDepartmentClaimsAdded:false'))throw new Error('assembler new-department-claims guard missing');
           if(!assembler.includes('daily final artbook limit reached'))throw new Error('daily one-artbook guard missing');
