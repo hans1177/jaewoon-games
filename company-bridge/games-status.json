@@ -1,0 +1,205 @@
+{
+  "version": 1,
+  "sourceRepository": "hans1177/jaewoon-games",
+  "sourceRevision": "19210c343358f6f9f4bbaf5391e886d8259f8f68",
+  "generatedAt": "2026-09-08T16:54:45.632Z",
+  "fixedProjectCount": false,
+  "publicStableBranch": "main",
+  "continuousDevelopmentBranch": "autonomous-dev",
+  "paidApi": false,
+  "projects": [
+    {
+      "id": "P0001",
+      "slug": "survival",
+      "name": "나의 생존기",
+      "sourcePath": "web-games/survival",
+      "mode": "IMPROVE",
+      "profileStatus": "AUDITED_PARTIAL",
+      "health": {
+        "status": "healthy",
+        "score": 100,
+        "healthReason": "no-blocking-smoke-errors",
+        "issues": [],
+        "checkedAt": "2026-09-08T04:36:26.781Z"
+      }
+    },
+    {
+      "id": "P0002",
+      "slug": "insect-survival",
+      "name": "곤충 생존기",
+      "sourcePath": "web-games/insect-survival",
+      "mode": "EXPERIMENT_ONLY",
+      "profileStatus": "NEEDS_AUDIT",
+      "health": {
+        "status": "healthy",
+        "score": 100,
+        "healthReason": "no-blocking-smoke-errors",
+        "issues": [],
+        "checkedAt": "2026-09-08T04:36:26.781Z"
+      }
+    },
+    {
+      "id": "P0003",
+      "slug": "crystal-defense",
+      "name": "수정 디펜스",
+      "sourcePath": "web-games/crystal-defense",
+      "mode": "EXPERIMENT_ONLY",
+      "profileStatus": "NEEDS_AUDIT",
+      "health": {
+        "status": "healthy",
+        "score": 100,
+        "healthReason": "no-blocking-smoke-errors",
+        "issues": [],
+        "checkedAt": "2026-09-08T04:36:26.781Z"
+      }
+    },
+    {
+      "id": "P0004",
+      "slug": "bug-defense",
+      "name": "곤충 디펜스",
+      "sourcePath": "web-games/bug-defense",
+      "mode": "EXPERIMENT_ONLY",
+      "profileStatus": "NEEDS_AUDIT",
+      "health": {
+        "status": "warning",
+        "score": 74,
+        "healthReason": "same-origin-resource-failure",
+        "issues": [
+          {
+            "type": "console",
+            "message": "Failed to load resource: the server responded with a status of 404 (File not found)"
+          },
+          {
+            "type": "requestfailed",
+            "message": "http://127.0.0.1:4173/assets/layout-segment-context-B4l5MHMQ.js net::ERR_ABORTED"
+          },
+          {
+            "type": "requestfailed",
+            "message": "http://127.0.0.1:4173/assets/rolldown-runtime-S-ySWqyJ.js net::ERR_ABORTED"
+          },
+          {
+            "type": "requestfailed",
+            "message": "http://127.0.0.1:4173/assets/page-CgY6ZelV.js net::ERR_ABORTED"
+          },
+          {
+            "type": "requestfailed",
+            "message": "http://127.0.0.1:4173/assets/framework-DjPHiq1u.js net::ERR_ABORTED"
+          },
+          {
+            "type": "requestfailed",
+            "message": "http://127.0.0.1:4173/assets/rolldown-runtime-S-ySWqyJ.js net::ERR_ABORTED"
+          },
+          {
+            "type": "requestfailed",
+            "message": "http://127.0.0.1:4173/assets/layout-segment-context-B4l5MHMQ.js net::ERR_ABORTED"
+          },
+          {
+            "type": "requestfailed",
+            "message": "http://127.0.0.1:4173/assets/page-CgY6ZelV.js net::ERR_ABORTED"
+          },
+          {
+            "type": "requestfailed",
+            "message": "http://127.0.0.1:4173/assets/framework-DjPHiq1u.js net::ERR_ABORTED"
+          }
+        ],
+        "checkedAt": "2026-09-08T04:36:26.781Z"
+      }
+    },
+    {
+      "id": "P0005",
+      "slug": "human-go",
+      "name": "휴먼 GO",
+      "sourcePath": "web-games/human-go",
+      "mode": "EXPERIMENT_ONLY",
+      "profileStatus": "NEEDS_AUDIT",
+      "health": {
+        "status": "warning",
+        "score": 74,
+        "healthReason": "console-error",
+        "issues": [
+          {
+            "type": "console",
+            "message": "Failed to load resource: net::ERR_INVALID_URL"
+          }
+        ],
+        "checkedAt": "2026-09-08T04:36:26.781Z"
+      }
+    },
+    {
+      "id": "P0006",
+      "slug": "daechung-rpg",
+      "name": "대충 RPG",
+      "sourcePath": "web-games/daechung-rpg",
+      "mode": "EXPERIMENT_ONLY",
+      "profileStatus": "NEEDS_AUDIT",
+      "health": {
+        "status": "healthy",
+        "score": 100,
+        "healthReason": "no-blocking-smoke-errors",
+        "issues": [],
+        "checkedAt": "2026-09-08T04:36:26.781Z"
+      }
+    },
+    {
+      "id": "P0007",
+      "slug": "island-village",
+      "name": "무인도 마을",
+      "sourcePath": "web-games/island-village",
+      "mode": "HOLD",
+      "profileStatus": "HOLD_MISSING_SOURCE",
+      "health": null
+    },
+    {
+      "id": "P0008",
+      "slug": "egg-heist",
+      "name": "알 도둑 대작전",
+      "sourcePath": "web-games/egg-heist",
+      "mode": "HOLD",
+      "profileStatus": "HOLD_REDIRECT_ONLY",
+      "health": {
+        "status": "healthy",
+        "score": 100,
+        "healthReason": "no-blocking-smoke-errors",
+        "issues": [],
+        "checkedAt": "2026-09-08T04:36:26.781Z"
+      }
+    },
+    {
+      "id": "P0009",
+      "slug": "monster-adventure",
+      "name": "몬스터 어드벤처",
+      "sourcePath": "web-games/monster-adventure",
+      "mode": "REDESIGN",
+      "profileStatus": "REDESIGN_IDENTITY",
+      "health": {
+        "status": "healthy",
+        "score": 100,
+        "healthReason": "no-blocking-smoke-errors",
+        "issues": [],
+        "checkedAt": "2026-09-08T04:36:26.781Z"
+      }
+    }
+  ],
+  "companyDna": [],
+  "latestArtbooks": [
+    {
+      "id": "daechung-rpg-2026-09-08-initial",
+      "gameId": "daechung-rpg",
+      "status": "completed-artbook",
+      "productionApproval": false,
+      "createdAt": "2026-09-08"
+    },
+    {
+      "id": "daechung-rpg-2026-09-08-second",
+      "gameId": "daechung-rpg",
+      "status": "completed-artbook",
+      "productionApproval": false,
+      "createdAt": "2026-09-08"
+    }
+  ],
+  "safety": {
+    "containsSecrets": false,
+    "containsCredentials": false,
+    "publicGameCodeAutoPromotion": false
+  }
+}
