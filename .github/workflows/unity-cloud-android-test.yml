@@ -86,7 +86,7 @@ jobs:
               f.write(f'publish_homepage={str(publish_homepage).lower()}\n')
           PY
 
-      - name: Verify Unity cloud license secrets
+      - name: Verify Unity Personal cloud license secrets
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -99,13 +99,25 @@ jobs:
           [[ -n "$UNITY_PASSWORD" ]] || { echo 'UNITY_PASSWORD secret is required.' >&2; exit 2; }
           python3 - <<'PY'
           import os
-          text = os.environ.get('UNITY_LICENSE','').strip()
-          xml_like = text.startswith('<') and 'DeveloperData' in text and len(text) >= 500
-          print(f'UNITY_LICENSE_ULF_SHAPE={xml_like}')
-          if not xml_like:
-              raise SystemExit('UNITY_LICENSE must contain the full Hub-generated Unity_lic.ulf contents.')
+          import xml.etree.ElementTree as ET
+
+          text = os.environ.get('UNITY_LICENSE', '').strip()
+          if not (text.startswith('<') and len(text) >= 500):
+              raise SystemExit('UNITY_LICENSE must contain the full Unity_lic.ulf XML contents.')
+          try:
+              root = ET.fromstring(text)
+          except ET.ParseError as exc:
+              raise SystemExit(f'UNITY_LICENSE is not valid XML: {exc}')
+
+          developer = root.find('.//DeveloperData')
+          personal = any(e.attrib.get('Tag') == 'UnityPersonal' for e in root.findall('.//Entitlement'))
+          if developer is None or not developer.attrib.get('Value'):
+              raise SystemExit('UNITY_LICENSE is missing DeveloperData.')
+          if not personal:
+              raise SystemExit('UNITY_LICENSE is not a Unity Personal license. Use the matching license flow for this account.')
+          print('UNITY_LICENSE_TYPE=UnityPersonal')
+          print('[PASS] Unity Personal ULF structure is valid.')
           PY
-          echo '[PASS] Cloud credentials are present and UNITY_LICENSE looks like a full .ulf file.'
 
       - name: Cache Unity Library
         uses: actions/cache@v4
@@ -116,7 +128,7 @@ jobs:
             unity-library-${{ runner.os }}-${{ steps.request.outputs.game_id }}-
 
       - name: Build Android APK in GitHub cloud
-        uses: game-ci/unity-builder@v4
+        uses: game-ci/unity-builder@v5.0.0
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
