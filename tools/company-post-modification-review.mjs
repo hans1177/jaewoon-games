@@ -27,6 +27,7 @@ async function callModel(system,user,seed=1501){
 function normalizeDecision(v){const s=clean(v).toUpperCase();return ['PASS','REVISE','DROP'].includes(s)?s:'REVISE';}
 function normalizeScore(v){const n=Math.round(Number(v));return Number.isFinite(n)?Math.max(0,Math.min(100,n)):50;}
 function arr(v,max=8){return Array.isArray(v)?v.map(clean).filter(Boolean).slice(0,max):[];}
+function unique(items,max=8){return [...new Set(items.map(clean).filter(Boolean))].slice(0,max);}
 
 if(role!=='director'){
   const files=[
@@ -44,8 +45,8 @@ if(role!=='director'){
   const evidence=files.map(f=>({file:f,text:readText(f,50000)})).filter(x=>x.text).map(x=>({file:x.file,excerpt:x.text.slice(0,12000)}));
   const guides={
     planning:'핵심 재미·게임 루프·스토리/콘티 연결이 이번 수정으로 훼손되는지 평가한다. 기술 수정만으로 기획 내용을 새로 만들지 않는다.',
-    development:'Unity 빌드 구조·라이선스 활성화 방식·재현성·확장성·구현 위험을 평가한다.',
-    qa:'실제 빌드 결과, 실패 단계, 회귀 가능성, 검증 누락, APK 생성 가능성을 평가한다.',
+    development:'Unity 빌드 구조·라이선스 활성화 방식·재현성·확장성·구현 위험을 평가한다. 검증 대상 빌드가 실패했다면 그 빌드 경로를 PASS로 판정할 수 없다.',
+    qa:'실제 빌드 결과, 실패 단계, 회귀 가능성, 검증 누락, APK 생성 가능성을 평가한다. 검증 대상 빌드가 실패했다면 APK/컴파일 검증이 완료되지 않은 상태이므로 PASS로 판정할 수 없다.',
     graphics:'시각 자산·화면 구성·그래픽 파이프라인에 이번 수정이 미치는 영향만 평가한다. 근거 없는 시각 설정을 만들지 않는다.',
     balance:'전투 난이도·성장·보상 수치에 이번 수정이 영향을 주는지 평가한다. 영향이 없으면 그 사실을 명시한다.'
   };
@@ -56,9 +57,33 @@ if(role!=='director'){
     try{candidate=await callModel(system,JSON.stringify(payload),1701+ROLES.indexOf(role)*101+i);if(candidate&&candidate.summary)break;}catch(e){last=e;}
   }
   if(!candidate)throw last||new Error(`${role} review failed`);
-  const out={version:1,requestId,gameId,role,department:NAMES[role],decision:normalizeDecision(candidate.decision),score:normalizeScore(candidate.score),summary:clean(candidate.summary).slice(0,800),evidence:arr(candidate.evidence,8),blockers:arr(candidate.blockers,8),recommendations:arr(candidate.recommendations,8),modificationCommit:req.modificationCommit||'',buildRunId:req.buildRunId||null,buildConclusion:req.buildConclusion||'unknown',generatedBy:`local-${model}`,independent:true};
+
+  let decision=normalizeDecision(candidate.decision);
+  let score=normalizeScore(candidate.score);
+  let blockers=arr(candidate.blockers,8);
+  let recommendations=arr(candidate.recommendations,8);
+  const buildFailed=clean(req.buildConclusion).toLowerCase()==='failure';
+  const buildCriticalRole=role==='development'||role==='qa';
+
+  // 검증 대상 빌드가 실패한 상태에서는 개발/QA가 모델 출력만으로 PASS를 만들 수 없다.
+  // 다른 부서는 자기 영역에 실제 영향이 없으면 독립적으로 PASS할 수 있다.
+  if(buildFailed&&buildCriticalRole){
+    if(decision==='PASS')decision='REVISE';
+    if(decision==='REVISE')score=Math.min(score,59);
+    blockers=unique([
+      ...blockers,
+      `검증 대상 빌드 run ${req.buildRunId||'unknown'}가 ${req.buildStage||'빌드 단계'}에서 실패해 APK/프로젝트 컴파일 검증이 완료되지 않음`
+    ]);
+    recommendations=unique([
+      ...recommendations,
+      '실패 원인을 수정한 뒤 동일 검증 범위로 새 빌드를 성공시키고 다시 재평가할 것'
+    ]);
+  }
+
+  const out={version:1,requestId,gameId,role,department:NAMES[role],decision,score,summary:clean(candidate.summary).slice(0,800),evidence:arr(candidate.evidence,8),blockers,recommendations,modificationCommit:req.modificationCommit||'',buildRunId:req.buildRunId||null,buildConclusion:req.buildConclusion||'unknown',deterministicGuards:{failedBuildCriticalRoleGuard:buildFailed&&buildCriticalRole},generatedBy:`local-${model}`,independent:true};
   writeJson(`${outputRoot}/${role}.json`,out);
   console.log(`POST_MODIFICATION_REVIEW=${role}:${out.decision}:${out.score}`);
+  console.log(`FAILED_BUILD_CRITICAL_ROLE_GUARD=${out.deterministicGuards.failedBuildCriticalRoleGuard}`);
   process.exit(0);
 }
 
