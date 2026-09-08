@@ -13,17 +13,16 @@ const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/');
 const freeze = (value) => Object.freeze(value);
 const freezeList = (values = []) => freeze([...new Set((values || []).map(clean).filter(Boolean))]);
+const EDITOR_BINARY_EXTENSIONS = new Set(['.uasset', '.umap', '.controller', '.anim', '.avatar']);
 
 function readJson(file, fallback = {}) {
   if (!file || !fs.existsSync(file)) return fallback;
   return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
-
 function writeJson(file, value) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`);
 }
-
 function parseArgs(argv = process.argv.slice(2)) {
   const args = {};
   for (const raw of argv) {
@@ -35,19 +34,48 @@ function parseArgs(argv = process.argv.slice(2)) {
   }
   return args;
 }
-
 function writableTargetAllowed(runtime, target) {
   const allowed = Array.isArray(runtime?.safety?.allowedWritableTargets) ? runtime.safety.allowedWritableTargets.map(clean) : ['unity', 'unreal', 'godot'];
   return allowed.includes(clean(target));
 }
-
 function taskRequiresWrite(task) {
   return !['inspect', 'research', 'qa'].includes(clean(task?.type).toLowerCase());
 }
-
 function normalizeResponsibleFile(task) {
   const files = Array.isArray(task?.responsibleFiles) ? task.responsibleFiles.map(posix).filter(Boolean) : [];
   return files[0] || null;
+}
+function requestMentionsEditorOnlyCapability(target, request) {
+  const text = clean(request).toLowerCase();
+  if (target === 'unreal') return [
+    'blueprint', '블루프린트', 'animation blueprint', 'anim blueprint', '애님 블루프린트',
+    'montage', '몽타주', 'blend space', '블렌드 스페이스', 'control rig', '컨트롤 릭',
+    'ik retargeter', '리타게터', 'ik rig'
+  ].some((word) => text.includes(word));
+  if (target === 'unity') return [
+    'animator controller', '애니메이터 컨트롤러', 'animationclip asset', 'animation clip asset',
+    '애니메이션 클립 에셋', 'avatar asset'
+  ].some((word) => text.includes(word));
+  return false;
+}
+function responsibleFilesRequireEditor(task) {
+  return (task?.responsibleFiles || []).some((file) => EDITOR_BINARY_EXTENSIONS.has(path.extname(posix(file)).toLowerCase()));
+}
+export function classifyVibeExecutionRoute({ target = '', task = {}, adapter = {} } = {}) {
+  const normalizedTarget = clean(target).toLowerCase();
+  if (!taskRequiresWrite(task)) return freeze({ route: 'analysis-only', requiresEditor: false, reason: 'non-write-task' });
+  const binary = responsibleFilesRequireEditor(task);
+  const requested = requestMentionsEditorOnlyCapability(normalizedTarget, task.goal);
+  if (binary || requested) {
+    return freeze({
+      route: 'engine-editor',
+      requiresEditor: true,
+      reason: binary ? 'responsible-binary-asset' : 'editor-only-capability-requested',
+      editorRuntime: adapter?.execution?.editorRuntime || null,
+      directBinaryTextEditForbidden: true
+    });
+  }
+  return freeze({ route: 'text-source-worker', requiresEditor: false, reason: 'text-source-capability' });
 }
 
 export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experience = {} } = {}) {
@@ -55,7 +83,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const normalizedQueue = createVibeContinuousQueue(queue);
   const selection = selectNextVibeQueueTask(normalizedQueue);
   const base = {
-    version: 1,
+    version: 2,
     generatedAt: new Date().toISOString(),
     run: false,
     reason: null,
@@ -65,7 +93,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       webGamesReadOnly: runtime?.safety?.webGamesReadOnly !== false,
       paidAIAllowed: runtime?.safety?.paidAIAllowed === true,
       paidRunnerAllowed: runtime?.safety?.paidRunnerAllowed === true,
-      homepagePublicationAutomatic: runtime?.safety?.homepagePublicationAutomatic === true
+      homepagePublicationAutomatic: runtime?.safety?.homepagePublicationAutomatic === true,
+      binaryAssetsDirectTextEditForbidden: true
     })
   };
 
@@ -103,7 +132,10 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   }
 
   const adapter = plan.engineAdapter;
+  const route = classifyVibeExecutionRoute({ target: plan.target, task, adapter });
   const maxWorkMinutes = Math.max(1, Math.min(60, Math.floor(Number(runtime?.continuous?.maxWorkMinutes) || 20)));
+  const editorConfig = runtime?.engineEditors?.[plan.target] || {};
+  const editorDispatchConfigured = route.route !== 'engine-editor' || Boolean(clean(editorConfig.workflow) || clean(editorConfig.runnerLabel));
   return freeze({
     ...base,
     run: true,
@@ -113,7 +145,9 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     taskId: task.id,
     gameId: task.gameId,
     target: plan.target,
-    workMode: requiresWrite ? 'source-change-candidate' : 'analysis-only',
+    workMode: route.route === 'analysis-only' ? 'analysis-only' : route.route === 'engine-editor' ? 'engine-editor-task' : 'source-change-candidate',
+    executionRoute: route.route,
+    route,
     goal: task.goal,
     department: task.department,
     priority: task.priority,
@@ -122,6 +156,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       root: adapter.source.root,
       writable: adapter.mayWriteSource,
       candidateFiles: freezeList(adapter.source.candidateFiles),
+      textWritablePatterns: freezeList(adapter.source.textWritablePatterns || []),
+      editorRequiredPatterns: freezeList(adapter.source.editorRequiredPatterns || []),
       ignoredPaths: freezeList(adapter.source.ignoredPaths),
       responsibleFiles: freezeList(task.responsibleFiles || [])
     }),
@@ -129,6 +165,13 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     learning: plan.learning,
     motion: plan.motion,
     executionGate: plan.executionGate,
+    editor: freeze({
+      required: route.requiresEditor,
+      runtime: route.editorRuntime || adapter?.execution?.editorRuntime || null,
+      dispatchConfigured: editorDispatchConfigured,
+      workflow: clean(editorConfig.workflow) || null,
+      runnerLabel: clean(editorConfig.runnerLabel) || null
+    }),
     workerPolicy: freeze({
       isolatedCandidateBranch: true,
       directMainWrite: false,
@@ -137,7 +180,9 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       paidAIAllowed: false,
       paidRunnerAllowed: false,
       engineMustResolveGameplayResults: true,
-      protectedGameplayMutationAutomatic: false
+      protectedGameplayMutationAutomatic: false,
+      binaryAssetsDirectTextEditForbidden: true,
+      textWorkerAllowed: route.route === 'text-source-worker'
     })
   });
 }
@@ -172,6 +217,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   if (order.run) {
     console.log(`VIBE2_TASK_ID=${order.taskId}`);
     console.log(`VIBE2_TARGET=${order.target}`);
+    console.log(`VIBE2_EXECUTION_ROUTE=${order.executionRoute}`);
     console.log(`VIBE2_SOURCE_ROOT=${order.source.root}`);
   }
 }
