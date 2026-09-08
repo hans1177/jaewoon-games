@@ -2,8 +2,8 @@ import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
 const REVIEW_ROLES=['planning','graphics','development','qa','balance'];
-const MODEL_TIMEOUT_MS=Number(process.env.INCUBATOR_MODEL_TIMEOUT_MS||300000);
-const MODEL_MAX_PREDICT=Math.max(1024,Math.min(6144,Number(process.env.INCUBATOR_MODEL_MAX_PREDICT||4096)));
+const MODEL_TIMEOUT_MS=Number(process.env.INCUBATOR_MODEL_TIMEOUT_MS||240000);
+const MODEL_MAX_PREDICT=Math.max(1024,Math.min(6144,Number(process.env.INCUBATOR_MODEL_MAX_PREDICT||1536)));
 const clean=v=>String(v??'').trim();
 const unique=v=>[...new Set((v||[]).map(clean).filter(Boolean))];
 const slugify=v=>clean(v).toLowerCase().replace(/[^a-z0-9가-힣]+/g,'-').replace(/^-+|-+$/g,'').slice(0,48);
@@ -137,4 +137,4 @@ export async function runOperationalIncubator({modelResponse=null,timestamp=new 
   return{action,candidateId:candidate?.id||null,status:candidate?.status||null,modelCalls,prototypeRequest:prototypeRequest?.projectId||null,paidApi:false,modelTransport:modelCalls?'NDJSON_STREAM':null};
 }
 
-if(import.meta.url===pathToFileURL(process.argv[1]).href){runOperationalIncubator().then(r=>console.log(JSON.stringify(r,null,2))).catch(e=>{console.error(e.stack||e.message);process.exitCode=1;});}
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){runOperationalIncubator().then(r=>console.log(JSON.stringify(r,null,2))).catch(e=>{console.error(e.stack||e.message);process.exitCode=1;});}
