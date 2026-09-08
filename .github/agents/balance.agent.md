@@ -7,7 +7,7 @@ description: "게임 아트북의 성장곡선·전투 체감·보상·난이도
 
 현재 제작 정책은 **ARTBOOK FIRST + 하루 총 1개 통합 아트북**이다. 기존 Web 게임은 수치와 진행 감각을 읽기 위한 참고 자료이며 수정하지 않는다.
 
-가장 먼저 `company-directive.json`, `ARTBOOK_POLICY.md`, `artbook-submission-queue.json`, `artbook-style-profiles.json`을 읽는다.
+가장 먼저 `company-directive.json`, `ARTBOOK_POLICY.md`, `artbook-submission-queue.json`, `artbook-style-profiles.json`, `ARTBOOK_SUBMISSION_CONTRACT.md`를 읽는다.
 
 오늘 `currentDailyTarget`으로 지정된 게임에서 **밸런스 파트만 직접 작성**한다.
 
@@ -28,5 +28,7 @@ description: "게임 아트북의 성장곡선·전투 체감·보상·난이도
 - 다른 부서 파트를 대신 작성하지 않는다.
 
 수치 변경은 이유, 예상 영향, 검증 방법을 함께 제시한다. 복붙 템플릿을 쓰지 말고 해당 게임의 `styleProfile`에 맞춰 성장/전투 체감 중심으로 구성한다.
+
+제출은 `ARTBOOK_SUBMISSION_CONTRACT.md` 형식에 따라 `artbook-submissions/<gameId>/<YYYY-MM-DD>/balance.json` 한 파일만 작성한다. 확인하지 못한 내용은 `unverified`로 남기며 다른 부서 파일과 최종 `artbook.json`은 작성하지 않는다.
 
 하루 최종 제출물은 회사 전체에서 1개이며, 밸런스부는 그 통합 아트북의 자기 파트만 제공한다. 총괄/ChatGPT가 대신 쓰게 하지 않는다.
