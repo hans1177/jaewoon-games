@@ -1,6 +1,6 @@
 {
-  "version": 3,
-  "checkedAt": "2026-09-08T05:05:04.054Z",
+  "version": 4,
+  "checkedAt": "2026-09-08T05:12:20.432Z",
   "date": "2026-09-08",
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
@@ -32,63 +32,68 @@
       "role": "planning",
       "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/planning.json",
       "problems": [
+        "review-protocol-mismatch",
         "review-scope-must-be-other-departments-only",
         "reviewed-departments-must-be-other-four",
-        "peer-strength-required",
-        "peer-improvement-required",
-        "own-department-homepage-opinion-forbidden"
+        "exactly-four-peer-ratings-required",
+        "all-other-departments-must-be-rated",
+        "own-department-rating-forbidden"
       ]
     },
     {
       "role": "graphics",
       "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/graphics.json",
       "problems": [
+        "review-protocol-mismatch",
         "review-scope-must-be-other-departments-only",
         "reviewed-departments-must-be-other-four",
-        "peer-strength-required",
-        "peer-improvement-required",
-        "own-department-homepage-opinion-forbidden"
+        "exactly-four-peer-ratings-required",
+        "all-other-departments-must-be-rated",
+        "own-department-rating-forbidden"
       ]
     },
     {
       "role": "development",
       "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/development.json",
       "problems": [
+        "review-protocol-mismatch",
         "review-scope-must-be-other-departments-only",
         "reviewed-departments-must-be-other-four",
-        "peer-strength-required",
-        "peer-improvement-required",
-        "own-department-homepage-opinion-forbidden"
+        "exactly-four-peer-ratings-required",
+        "all-other-departments-must-be-rated",
+        "own-department-rating-forbidden"
       ]
     },
     {
       "role": "qa",
       "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/qa.json",
       "problems": [
+        "review-protocol-mismatch",
         "review-scope-must-be-other-departments-only",
         "reviewed-departments-must-be-other-four",
-        "peer-strength-required",
-        "peer-improvement-required",
-        "own-department-homepage-opinion-forbidden"
+        "exactly-four-peer-ratings-required",
+        "all-other-departments-must-be-rated",
+        "own-department-rating-forbidden"
       ]
     },
     {
       "role": "balance",
       "file": "artbook-submissions/daechung-rpg/2026-09-08/reviews/balance.json",
       "problems": [
+        "review-protocol-mismatch",
         "review-scope-must-be-other-departments-only",
         "reviewed-departments-must-be-other-four",
-        "peer-strength-required",
-        "peer-improvement-required",
-        "own-department-homepage-opinion-forbidden"
+        "exactly-four-peer-ratings-required",
+        "all-other-departments-must-be-rated",
+        "own-department-rating-forbidden"
       ]
     }
   ],
-  "collaborationProtocol": "AGREE_COUNTER_TEST_RESULT_DECISION",
-  "homepageOpinionMode": "PEER_STRENGTH_AND_IMPROVEMENT",
+  "collaborationProtocol": "PEER_IMPROVEMENT_STAR_5",
+  "homepageOpinionMode": "PEER_IMPROVEMENT_AND_AVERAGE_STARS",
   "collaborationComplete": false,
   "readyForDirectorAssembly": false,
   "directorMayAuthorMissingSections": false,
   "directorMayAuthorMissingReviews": false,
-  "formalProductionGate": "BLOCKED_WAITING_FOR_CROSS_DEPARTMENT_REVIEW"
+  "formalProductionGate": "BLOCKED_WAITING_FOR_PEER_IMPROVEMENT_STAR_REVIEWS"
 }
