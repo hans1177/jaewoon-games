@@ -1,90 +1,159 @@
 {
-  "version": 3,
+  "version": 8,
   "date": "2026-09-08",
+  "mode": "SECOND_WORK",
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
-  "status": "FREE_LOCAL_DEPARTMENT_RUNNERS_DISPATCHED",
+  "status": "SAME_DAY_SECOND_WORK_SCHEDULED",
   "finalSubmissionLimitToday": 1,
   "styleProfile": "판타지 세계 설정집 + 모험 연대기",
   "sourceEvidence": [
     "web-games/daechung-rpg (read-only)",
-    "unity-games/daechung-rpg",
+    "unity-games/daechung-rpg (if present)",
     "existing build/test/error records"
   ],
   "departmentTasks": {
     "planning": {
       "owner": "planning",
-      "scope": "스토리·세계관·캐릭터 동기·사건 인과",
-      "deliverable": "story-world-causality-section",
+      "scope": "스토리·세계관·캐릭터 동기·사건 인과를 이미지 중심 2장으로 설계",
+      "deliverable": "visual-story-world-pages",
       "submissionPath": "artbook-submissions/daechung-rpg/2026-09-08/planning.json",
-      "issue": 7,
       "mayWriteOtherSections": false,
-      "status": "FREE_LOCAL_AI_DISPATCHED"
+      "status": "SECOND_WORK_SCHEDULED"
     },
     "graphics": {
       "owner": "graphics",
-      "scope": "캐릭터·몬스터·보스·배경·UI·로고·인트로 컨셉",
-      "deliverable": "visual-concept-section",
+      "scope": "캐릭터·몬스터·보스·배경·UI·로고·인트로 컨셉을 이미지 중심 2장으로 설계",
+      "deliverable": "visual-concept-style-pages",
       "submissionPath": "artbook-submissions/daechung-rpg/2026-09-08/graphics.json",
-      "issue": 8,
       "mayWriteOtherSections": false,
-      "status": "FREE_LOCAL_AI_DISPATCHED"
+      "status": "CARRY_FORWARD_SCHEDULED"
     },
     "development": {
       "owner": "development",
-      "scope": "실제 구현 구조·기술 가능성·플레이어블 시연 구조",
-      "deliverable": "implementation-demo-section",
+      "scope": "실제 구현 구조·플레이 루프·시스템 연결을 이미지 중심 2장으로 설계",
+      "deliverable": "visual-gameplay-system-pages",
       "submissionPath": "artbook-submissions/daechung-rpg/2026-09-08/development.json",
-      "issue": 9,
       "mayWriteOtherSections": false,
-      "status": "FREE_LOCAL_AI_DISPATCHED"
+      "status": "CARRY_FORWARD_SCHEDULED"
     },
     "qa": {
       "owner": "qa",
-      "scope": "플레이 흐름·문제 장면·테스트 시나리오·검증 결과",
-      "deliverable": "player-flow-test-section",
+      "scope": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+      "deliverable": "visual-test-journey-page",
       "submissionPath": "artbook-submissions/daechung-rpg/2026-09-08/qa.json",
-      "issue": 10,
       "mayWriteOtherSections": false,
-      "status": "FREE_LOCAL_AI_DISPATCHED"
+      "status": "CARRY_FORWARD_SCHEDULED"
     },
     "balance": {
       "owner": "balance",
-      "scope": "성장곡선·전투 체감·보상·난이도",
-      "deliverable": "progression-combat-feel-section",
+      "scope": "성장곡선·전투 체감·보상·난이도를 이미지 중심 1장으로 설계",
+      "deliverable": "visual-balance-page",
       "submissionPath": "artbook-submissions/daechung-rpg/2026-09-08/balance.json",
-      "issue": 11,
       "mayWriteOtherSections": false,
-      "status": "FREE_LOCAL_AI_DISPATCHED"
+      "status": "CARRY_FORWARD_SCHEDULED"
     }
   },
   "runnerDispatch": {
     "requestedRunner": "vibe2-local-open-model-department-bots",
     "workflow": ".github/workflows/artbook-free-department-bots.yml",
-    "modelPrimary": "qwen3:1.7b",
-    "modelFallback": "qwen3:0.6b",
+    "modelPrimary": "qwen3:0.6b",
     "modelLicense": "Apache-2.0",
     "execution": "github-hosted-ubuntu-local-inference",
     "paidApi": false,
     "apiKeyRequired": false,
     "readsOtherDepartmentSubmissions": false,
-    "result": "DISPATCHED",
-    "fallbackGhostwritingAllowed": false,
-    "note": "각 부서는 동일한 로컬 오픈모델을 별도 프로세스로 호출하며 역할별 증거만 읽는다. 다른 부서 제출물은 입력에 포함하지 않는다."
+    "fallbackGhostwritingAllowed": false
   },
   "collaboration": {
     "enabled": true,
-    "shareEvidence": true,
-    "challengeOtherDepartments": true,
+    "reviewProtocol": "PEER_IMPROVEMENT_STAR_5",
+    "eachReviewerRatesOtherFour": true,
+    "selfRatingForbidden": true,
+    "oneImprovementPerTarget": true,
+    "starMax": 5,
     "crossDepartmentGhostwriting": false,
     "directorMayOnlyAssemble": true
   },
+  "presentation": {
+    "visualFirst": true,
+    "exactPages": 10,
+    "pagePlan": [
+      "director-cover",
+      "planning-1",
+      "planning-2",
+      "graphics-1",
+      "graphics-2",
+      "development-1",
+      "development-2",
+      "qa-1",
+      "balance-1",
+      "director-summary"
+    ],
+    "departmentAuthoredPages": 8,
+    "directorAuthoredPages": 2,
+    "assistantAuthoredPages": 0,
+    "longTextForbidden": true
+  },
+  "secondWork": {
+    "taskId": "daechung-rpg-2026-09-08-second-work",
+    "sourceDate": "2026-09-08",
+    "selectedDepartments": [
+      "planning"
+    ],
+    "criterion": "FIVE_VOTE_DEPARTMENT_AVERAGE_STARS_LE_OVERALL_AVERAGE",
+    "overallAverageStars": 4.84,
+    "departmentAverageStars": {
+      "planning": 4.2,
+      "graphics": 5,
+      "development": 5,
+      "qa": 5,
+      "balance": 5
+    },
+    "feedbackByDepartment": {
+      "planning": [
+        {
+          "reviewerDepartment": "graphics",
+          "reviewerType": "department",
+          "stars": 4,
+          "improvement": "The review highlights gaps in region causality and protagonist motivation, suggesting potential for further development."
+        },
+        {
+          "reviewerDepartment": "development",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "The review highlights potential gaps in region causality and protagonist motivation, suggesting areas for further development."
+        },
+        {
+          "reviewerDepartment": "qa",
+          "reviewerType": "department",
+          "stars": 4,
+          "improvement": "The review highlights potential gaps in region causality and protagonist motivation, suggesting further development for the story's structure."
+        },
+        {
+          "reviewerDepartment": "balance",
+          "reviewerType": "department",
+          "stars": 4,
+          "improvement": "The review highlights potential gaps in region causality and protagonist motivation, suggesting areas for further development."
+        },
+        {
+          "reviewerDepartment": "director",
+          "reviewerType": "director",
+          "stars": 4,
+          "improvement": "The review highlights potential improvements in region causality and visual consistency, while noting some unverified aspects."
+        }
+      ]
+    }
+  },
   "completionGate": {
     "allFiveSectionsRequired": true,
-    "storyCausalityRequired": true,
+    "allFiveReviewsRequired": true,
     "verifiedOrExplicitlyUnverifiedEvidenceRequired": true,
     "uniformTemplateForbidden": true,
-    "currentReadyCount": 0,
+    "exactCutsRequired": 10,
+    "postprocessRequired": true,
+    "employeeVisualPresentationRequired": true,
+    "assistantAuthorshipForbidden": true,
     "readyForDirectorAssembly": false
   }
 }

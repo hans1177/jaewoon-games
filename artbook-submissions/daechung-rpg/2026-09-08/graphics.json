@@ -130,5 +130,122 @@
     "sectionOutputNormalized": true,
     "shortJsonRetryEnabled": true,
     "policyBlocks": []
+  },
+  "workRound": 2,
+  "revision": {
+    "type": "CARRIED_FORWARD",
+    "sourceDate": "2026-09-08",
+    "selectedForSecondWork": false,
+    "sectionChanged": false
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "graphics",
+        "ownerName": "그래픽",
+        "pageSlot": 1,
+        "visualType": "concept-board",
+        "title": "대충 RPG 1차 독립 아트북 …",
+        "focus": "대충 RPG 1차 독립 아트북 검토",
+        "caption": "대충 RPG 1차 독립 아트북 검토",
+        "elements": [
+          {
+            "label": "world-secti…",
+            "note": "현실 세계 구조",
+            "kind": ""
+          },
+          {
+            "label": "protagonist…",
+            "note": "인물의 동기",
+            "kind": ""
+          },
+          {
+            "label": "events-sequ…",
+            "note": "이벤트 순서",
+            "kind": ""
+          },
+          {
+            "label": "monsters-id…",
+            "note": "몬스터의 인식",
+            "kind": ""
+          },
+          {
+            "label": "battles-seq…",
+            "note": "전투 순서",
+            "kind": ""
+          },
+          {
+            "label": "animations-…",
+            "note": "애니메이션 검증",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/graphics-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "graphics"
+      },
+      {
+        "owner": "graphics",
+        "ownerName": "그래픽",
+        "pageSlot": 2,
+        "visualType": "style-board",
+        "title": "대충 RPG 2차 독립 아트북 …",
+        "focus": "대충 RPG 2차 독립 아트북 검토",
+        "caption": "대충 RPG 2차 독립 아트북 검토",
+        "elements": [
+          {
+            "label": "world-secti…",
+            "note": "현실 세계 구조",
+            "kind": ""
+          },
+          {
+            "label": "protagonist…",
+            "note": "인물의 동기",
+            "kind": ""
+          },
+          {
+            "label": "events-sequ…",
+            "note": "이벤트 순서",
+            "kind": ""
+          },
+          {
+            "label": "monsters-id…",
+            "note": "몬스터의 인식",
+            "kind": ""
+          },
+          {
+            "label": "battles-seq…",
+            "note": "전투 순서",
+            "kind": ""
+          },
+          {
+            "label": "animations-…",
+            "note": "애니메이션 검증",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/graphics-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "graphics"
+      }
+    ],
+    "generatedBy": {
+      "department": "graphics",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
   }
 }

@@ -105,5 +105,110 @@
     "sectionOutputNormalized": true,
     "shortJsonRetryEnabled": true,
     "policyBlocks": []
+  },
+  "workRound": 2,
+  "revision": {
+    "type": "CARRIED_FORWARD",
+    "sourceDate": "2026-09-08",
+    "selectedForSecondWork": false,
+    "sectionChanged": false
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "development",
+        "ownerName": "개발",
+        "pageSlot": 1,
+        "visualType": "gameplay-loop",
+        "title": "RPG 개발 부서 1차 독립 검토",
+        "focus": "RPG 개발",
+        "caption": "RPG 개발 부서 1차 독립 검토",
+        "elements": [
+          {
+            "label": "implemented…",
+            "note": "실제 구현 구조",
+            "kind": "element"
+          },
+          {
+            "label": "technicalRi…",
+            "note": "기술 가능성",
+            "kind": "element"
+          },
+          {
+            "label": "playableStr…",
+            "note": "플레이어블 시연 구조",
+            "kind": "element"
+          }
+        ],
+        "callouts": [
+          "실제 구현 구조",
+          "기술 가능성",
+          "플레이어블 시연 구조"
+        ],
+        "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/development-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "development"
+      },
+      {
+        "owner": "development",
+        "ownerName": "개발",
+        "pageSlot": 2,
+        "visualType": "system-flow",
+        "title": "system-flow",
+        "focus": "system",
+        "caption": "시스템 구조",
+        "elements": [
+          {
+            "label": "architecture",
+            "note": "Unity + Web Archive",
+            "kind": "element"
+          },
+          {
+            "label": "prototypeLi…",
+            "note": "100%",
+            "kind": "element"
+          },
+          {
+            "label": "technicalRi…",
+            "note": "Unity License 20110…",
+            "kind": "element"
+          },
+          {
+            "label": "demoPlan",
+            "note": "Prototype 1.0",
+            "kind": "element"
+          },
+          {
+            "label": "handoffs",
+            "note": "Owner Decision",
+            "kind": "element"
+          }
+        ],
+        "callouts": [
+          "Unity + Web Archive",
+          "100%",
+          "Unity License 20110…"
+        ],
+        "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/development-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "development"
+      }
+    ],
+    "generatedBy": {
+      "department": "development",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
   }
 }

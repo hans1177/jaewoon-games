@@ -126,5 +126,76 @@
     "sectionOutputNormalized": true,
     "shortJsonRetryEnabled": true,
     "policyBlocks": []
+  },
+  "workRound": 2,
+  "revision": {
+    "type": "CARRIED_FORWARD",
+    "sourceDate": "2026-09-08",
+    "selectedForSecondWork": false,
+    "sectionChanged": false
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 1,
+    "pages": [
+      {
+        "owner": "balance",
+        "ownerName": "밸런스",
+        "pageSlot": 1,
+        "visualType": "balance-curve",
+        "title": "대충 RPG 밸런스 부서 1차 …",
+        "focus": "대충 RPG 밸런스 부서 1차 독립 검토",
+        "caption": "대충 RPG 밸런스 부서 1차 독립 검토",
+        "elements": [
+          {
+            "label": "체력",
+            "note": "100 HP",
+            "kind": ""
+          },
+          {
+            "label": "공격",
+            "note": "3 공격",
+            "kind": ""
+          },
+          {
+            "label": "보상",
+            "note": "50 HP 보상",
+            "kind": ""
+          },
+          {
+            "label": "성장",
+            "note": "100 HP 성장",
+            "kind": ""
+          },
+          {
+            "label": "난이도",
+            "note": "100% 난이도",
+            "kind": ""
+          }
+        ],
+        "callouts": [
+          "체력: 100 HP",
+          "공격: 3 공격",
+          "보상: 50 HP 보상"
+        ],
+        "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/balance-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "balance"
+      }
+    ],
+    "generatedBy": {
+      "department": "balance",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
   }
 }

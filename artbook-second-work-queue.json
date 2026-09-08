@@ -7,23 +7,60 @@
       "gameName": "대충 RPG",
       "sourceDate": "2026-09-08",
       "dueDate": "2026-09-08",
-      "status": "SCHEDULED",
+      "status": "COMPLETED",
       "criterion": "FIVE_VOTE_DEPARTMENT_AVERAGE_STARS_LE_OVERALL_AVERAGE",
       "overallAverageStars": 4.84,
       "maxStars": 5,
       "ratingsPerDepartment": 5,
       "departmentVotesPerResult": 4,
       "directorVotesPerResult": 1,
-      "selectedDepartments": ["planning"],
-      "departmentAverageStars": {"planning":4.2,"graphics":5,"development":5,"qa":5,"balance":5},
-      "feedbackByDepartment": {"planning":[
-        {"reviewerDepartment":"graphics","reviewerType":"department","stars":4,"improvement":"The review highlights gaps in region causality and protagonist motivation, suggesting potential for further development."},
-        {"reviewerDepartment":"development","reviewerType":"department","stars":5,"improvement":"The review highlights potential gaps in region causality and protagonist motivation, suggesting areas for further development."},
-        {"reviewerDepartment":"qa","reviewerType":"department","stars":4,"improvement":"The review highlights potential gaps in region causality and protagonist motivation, suggesting further development for the story's structure."},
-        {"reviewerDepartment":"balance","reviewerType":"department","stars":4,"improvement":"The review highlights potential gaps in region causality and protagonist motivation, suggesting areas for further development."},
-        {"reviewerDepartment":"director","reviewerType":"director","stars":4,"improvement":"The review highlights potential improvements in region causality and visual consistency, while noting some unverified aspects."}
-      ]},
-      "productionApproval": false
+      "selectedDepartments": [
+        "planning"
+      ],
+      "departmentAverageStars": {
+        "planning": 4.2,
+        "graphics": 5,
+        "development": 5,
+        "qa": 5,
+        "balance": 5
+      },
+      "feedbackByDepartment": {
+        "planning": [
+          {
+            "reviewerDepartment": "graphics",
+            "reviewerType": "department",
+            "stars": 4,
+            "improvement": "The review highlights gaps in region causality and protagonist motivation, suggesting potential for further development."
+          },
+          {
+            "reviewerDepartment": "development",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "The review highlights potential gaps in region causality and protagonist motivation, suggesting areas for further development."
+          },
+          {
+            "reviewerDepartment": "qa",
+            "reviewerType": "department",
+            "stars": 4,
+            "improvement": "The review highlights potential gaps in region causality and protagonist motivation, suggesting further development for the story's structure."
+          },
+          {
+            "reviewerDepartment": "balance",
+            "reviewerType": "department",
+            "stars": 4,
+            "improvement": "The review highlights potential gaps in region causality and protagonist motivation, suggesting areas for further development."
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 4,
+            "improvement": "The review highlights potential improvements in region causality and visual consistency, while noting some unverified aspects."
+          }
+        ]
+      },
+      "productionApproval": false,
+      "completedAt": "2026-09-08",
+      "completedArtbookFile": "artbook-submissions/daechung-rpg/2026-09-08/artbook.json"
     }
   ],
   "updatedAt": "2026-09-08"

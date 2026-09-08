@@ -100,5 +100,62 @@
     "sectionOutputNormalized": true,
     "shortJsonRetryEnabled": true,
     "policyBlocks": []
+  },
+  "workRound": 2,
+  "revision": {
+    "type": "CARRIED_FORWARD",
+    "sourceDate": "2026-09-08",
+    "selectedForSecondWork": false,
+    "sectionChanged": false
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 1,
+    "pages": [
+      {
+        "owner": "qa",
+        "ownerName": "QA",
+        "pageSlot": 1,
+        "visualType": "test-journey",
+        "title": "RPG QA Department…",
+        "focus": "QA",
+        "caption": "Reviewing RPG content for cause-effect relat…",
+        "elements": [
+          {
+            "label": "test-journey",
+            "note": "Test scenarios and …",
+            "kind": ""
+          },
+          {
+            "label": "story-telli…",
+            "note": "Ensure story elemen…",
+            "kind": ""
+          },
+          {
+            "label": "animations …",
+            "note": "Validate animations…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/qa-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "qa"
+      }
+    ],
+    "generatedBy": {
+      "department": "qa",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
   }
 }

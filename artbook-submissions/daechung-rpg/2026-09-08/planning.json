@@ -70,21 +70,7 @@
       {
         "title": "Story & Region Causality",
         "content": [
-          "The story's focus is on the protagonist's motivations and how they connect to the regions, but the region causality is not explicitly tied to the story's plot. The provided region definitions are descriptive, not directly linked to the story's progression.",
-          "Gaps: No clear causality between regions and the story's plot, indicating potential for further development."
-        ]
-      },
-      {
-        "title": "Protagonist Motivation",
-        "content": [
-          "The protagonist's motivation is well-defined, but the story's progression is unclear. The region events are described, but the protagonist's choices and their impact on the story are not clearly tied to the regions.",
-          "Unverified: The story's causality is not verified, which affects the reliability of the region connections."
-        ]
-      },
-      {
-        "title": "World Evidence",
-        "content": [
-          "The world is set up with regions and enemies, but the story's focus is on the protagonist's journey rather than the world's structure. The regions are descriptive, not part of the story's narrative.",
+          "The story's focus is on the protagonist's motivations and how they connect to the regions, but the region causality is not explicitly tied to the story's plot. The regions are descriptive, not part of the story's narrative.",
           "Visual Notes: The art is consistent with the world, but the story's causality is unclear."
         ]
       },
@@ -99,20 +85,6 @@
         "title": "Region Causality",
         "content": [
           "The regions are defined but not linked to the story's plot. The story's causality is not verified, which affects the reliability of the region connections.",
-          "Visual Notes: The art is consistent with the world, but the story's causality is unclear."
-        ]
-      },
-      {
-        "title": "Gaps",
-        "content": [
-          "No clear gaps in the story's causality or region connections. The story's progression is unclear, and the region events are descriptive.",
-          "Unverified: The story's causality is not verified, which affects the reliability of the region connections."
-        ]
-      },
-      {
-        "title": "Handoffs",
-        "content": [
-          "The handoffs between sections are unclear. The story's causality is not verified, which affects the reliability of the region connections.",
           "Visual Notes: The art is consistent with the world, but the story's causality is unclear."
         ]
       }
@@ -137,5 +109,125 @@
     "sectionOutputNormalized": true,
     "shortJsonRetryEnabled": true,
     "policyBlocks": []
+  },
+  "workRound": 2,
+  "revision": {
+    "type": "SECOND_WORK",
+    "sourceDate": "2026-09-08",
+    "selectedForSecondWork": true,
+    "sectionChanged": true,
+    "criterion": "FIVE_VOTE_AVERAGE_OR_BELOW_OVERALL_AVERAGE",
+    "receivedFiveVoteFeedback": [
+      {
+        "reviewerDepartment": "graphics",
+        "reviewerType": "department",
+        "stars": 4,
+        "improvement": "The review highlights gaps in region causality and protagonist motivation, suggesting potential for further development."
+      },
+      {
+        "reviewerDepartment": "development",
+        "reviewerType": "department",
+        "stars": 5,
+        "improvement": "The review highlights potential gaps in region causality and protagonist motivation, suggesting areas for further development."
+      },
+      {
+        "reviewerDepartment": "qa",
+        "reviewerType": "department",
+        "stars": 4,
+        "improvement": "The review highlights potential gaps in region causality and protagonist motivation, suggesting further development for the story's structure."
+      },
+      {
+        "reviewerDepartment": "balance",
+        "reviewerType": "department",
+        "stars": 4,
+        "improvement": "The review highlights potential gaps in region causality and protagonist motivation, suggesting areas for further development."
+      },
+      {
+        "reviewerDepartment": "director",
+        "reviewerType": "director",
+        "stars": 4,
+        "improvement": "The review highlights potential improvements in region causality and visual consistency, while noting some unverified aspects."
+      }
+    ]
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "planning",
+        "ownerName": "기획",
+        "pageSlot": 1,
+        "visualType": "world-map",
+        "title": "Story & Region Ca…",
+        "focus": "Story & Region Causality",
+        "caption": "The story's focus is on the protagonist's mo…",
+        "elements": [
+          {
+            "label": "Visual Notes",
+            "note": "The art is consiste…",
+            "kind": ""
+          },
+          {
+            "label": "Unverified",
+            "note": "The story's causali…",
+            "kind": ""
+          },
+          {
+            "label": "Existing Vi…",
+            "note": "",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/planning-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "planning"
+      },
+      {
+        "owner": "planning",
+        "ownerName": "기획",
+        "pageSlot": 2,
+        "visualType": "story-flow",
+        "title": "Protagonist Motiv…",
+        "focus": "Protagonist Motivation",
+        "caption": "The protagonist's motivation is well-defined…",
+        "elements": [
+          {
+            "label": "Visual Notes",
+            "note": "The art is consiste…",
+            "kind": ""
+          },
+          {
+            "label": "Unverified",
+            "note": "The story's causali…",
+            "kind": ""
+          },
+          {
+            "label": "Existing Vi…",
+            "note": "",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/planning-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "planning"
+      }
+    ],
+    "generatedBy": {
+      "department": "planning",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
   }
 }

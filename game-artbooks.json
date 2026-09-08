@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 11,
   "updatedAt": "2026-09-08",
   "policy": {
     "purpose": "각 게임의 컨셉·스토리·캐릭터·몬스터·배경·구현·테스트·밸런스를 부서 협업으로 한 권의 아트북에 축적한다.",
@@ -32,11 +32,12 @@
     {
       "date": "2026-09-08",
       "gameId": "daechung-rpg",
-      "artbookId": "daechung-rpg-2026-09-08-initial",
+      "artbookId": "daechung-rpg-2026-09-08-second",
       "status": "completed-artbook",
       "productionApproval": false,
       "cutCount": 10,
-      "postprocessComplete": true
+      "postprocessComplete": true,
+      "visualFirst": true
     }
   ],
   "artbooks": [
@@ -465,6 +466,478 @@
         "sourceMode": "DEPARTMENT_OWNED_MATERIAL_ONLY",
         "displayLanguage": "ko",
         "displayNormalization": "KNOWN_SOURCE_TERMS_TRANSLATED_TO_KOREAN"
+      }
+    },
+    {
+      "id": "daechung-rpg-2026-09-08-second",
+      "gameId": "daechung-rpg",
+      "gameName": "대충 RPG",
+      "edition": 2,
+      "title": "대충 RPG · 2차 아트북",
+      "subtitle": "판타지 세계 설정집 + 모험 연대기",
+      "status": "completed-artbook",
+      "published": true,
+      "homepageVisible": true,
+      "productionApproval": false,
+      "createdAt": "2026-09-08",
+      "workMode": "SECOND_WORK",
+      "intent": "같은 날 5표 평균이 전체 평균 이하인 부서가 보완점을 즉시 반영해 2차 작업한 결과와 새 5표 평가를 통합한 기록.",
+      "sourceFile": "artbook-submissions/daechung-rpg/2026-09-08/artbook.json",
+      "departmentReadiness": {
+        "planning": "READY",
+        "graphics": "READY",
+        "development": "READY",
+        "qa": "READY",
+        "balance": "READY"
+      },
+      "departmentOpinions": {
+        "planning": {
+          "headline": "Independent Artbook Review for 'DAECHUNG RPG' - Story & Region Causality",
+          "readiness": "READY",
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 3.2,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "The story's causality is not verified, which affects the reliability of the region connections.",
+          "priorityImprovementFrom": "graphics",
+          "ratings": [
+            {
+              "reviewerDepartment": "graphics",
+              "reviewerType": "department",
+              "stars": 1,
+              "improvement": "The story's causality is not verified, which affects the reliability of the region connections."
+            },
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 3,
+              "improvement": "The story's causality is not verified, which affects the reliability of the region connections."
+            },
+            {
+              "reviewerDepartment": "development",
+              "reviewerType": "department",
+              "stars": 4,
+              "improvement": "The review highlights the need for more clarity on region causality and verification of story elements to enhance the overall quality."
+            },
+            {
+              "reviewerDepartment": "qa",
+              "reviewerType": "department",
+              "stars": 4,
+              "improvement": "The review highlights the need for more detailed region causality explanations to enhance the story's reliability."
+            },
+            {
+              "reviewerDepartment": "balance",
+              "reviewerType": "department",
+              "stars": 4,
+              "improvement": "The review highlights the need for more clarity on region causality and verification of story elements to enhance the reliability of the content."
+            }
+          ],
+          "overallDepartmentAverage": 4.56,
+          "secondWorkSameDay": false,
+          "secondWorkDueDate": null,
+          "unverified": []
+        },
+        "graphics": {
+          "headline": "대충 RPG 1차 독립 아트북 검토",
+          "readiness": "READY",
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 4.8,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "부서 결과물의 개선점은 '모든 영상 콘텐츠가 풍부하고, 기능적 품질이 높다'입니다.",
+          "priorityImprovementFrom": "director",
+          "ratings": [
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 4,
+              "improvement": "부서 결과물의 개선점은 '모든 영상 콘텐츠가 풍부하고, 기능적 품질이 높다'입니다."
+            },
+            {
+              "reviewerDepartment": "planning",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "development",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 부서 결과물의 개선점은 '일반적인 기능과 풍부한 내용을 보여주며, 개선된 부분이 부서의 개요 내용을 잘 반영하는 것으로 보인다'"
+            },
+            {
+              "reviewerDepartment": "qa",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "balance",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+            }
+          ],
+          "overallDepartmentAverage": 4.56,
+          "secondWorkSameDay": false,
+          "secondWorkDueDate": null,
+          "unverified": []
+        },
+        "development": {
+          "headline": "RPG 개발 부서 1차 독립 검토",
+          "readiness": "READY",
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 5,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "본 개발 부서 결과물의 1차 독립 검토 점수를 5점으로 평가합니다.",
+          "priorityImprovementFrom": "planning",
+          "ratings": [
+            {
+              "reviewerDepartment": "planning",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발 부서 결과물의 1차 독립 검토 점수를 5점으로 평가합니다."
+            },
+            {
+              "reviewerDepartment": "graphics",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "qa",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "balance",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 5,
+              "improvement": "부서 결과물의 개선점은 'Unity License 20110-serial invalid'을 정확히 1개로 명시합니다."
+            }
+          ],
+          "overallDepartmentAverage": 4.56,
+          "secondWorkSameDay": false,
+          "secondWorkDueDate": null,
+          "unverified": []
+        },
+        "qa": {
+          "headline": "RPG QA Department 1st Independent Review",
+          "readiness": "READY",
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 5,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "The section provides a clear structure for validating cause-effect relationships, which can enhance the RPG QA process.",
+          "priorityImprovementFrom": "planning",
+          "ratings": [
+            {
+              "reviewerDepartment": "planning",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "The section provides a clear structure for validating cause-effect relationships, which can enhance the RPG QA process."
+            },
+            {
+              "reviewerDepartment": "graphics",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "The review highlights the importance of validating cause-effect relationships in story-telling, which is a key aspect of RPG development. This improvement shows that the QA departm"
+            },
+            {
+              "reviewerDepartment": "development",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "The section highlights the importance of validating cause-effect relationships, which is a key aspect of RPG development. This improvement shows the QA department's focus on qualit"
+            },
+            {
+              "reviewerDepartment": "balance",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "The section highlights the importance of validating cause-effect relationships in storytelling, which is a key component of RPG development. This improvement shows the department's"
+            },
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 5,
+              "improvement": "The QA section shows a clear focus on validating cause-effect relationships, but animations and visual assets need further verification."
+            }
+          ],
+          "overallDepartmentAverage": 4.56,
+          "secondWorkSameDay": false,
+          "secondWorkDueDate": null,
+          "unverified": []
+        },
+        "balance": {
+          "headline": "대충 RPG 밸런스 부서 1차 독립 검토",
+          "readiness": "READY",
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 4.8,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "부서 결과물의 개선점은 'level 1: 100 gold, 100 experience'을 추가하여 부담을 줄일 수 있습니다.",
+          "priorityImprovementFrom": "director",
+          "ratings": [
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 4,
+              "improvement": "부서 결과물의 개선점은 'level 1: 100 gold, 100 experience'을 추가하여 부담을 줄일 수 있습니다."
+            },
+            {
+              "reviewerDepartment": "planning",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "graphics",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "development",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 부서 결과물의 개선점은 'level 1: 100 gold, 100 experience'을 추가하여 게임 개발의 기준 조건을 명확히 하였습니다."
+            },
+            {
+              "reviewerDepartment": "qa",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            }
+          ],
+          "overallDepartmentAverage": 4.56,
+          "secondWorkSameDay": false,
+          "secondWorkDueDate": null,
+          "unverified": []
+        }
+      },
+      "ratingSummary": {
+        "scale": "STARS_1_TO_5",
+        "ratingsPerDepartment": 5,
+        "departmentVotesPerResult": 4,
+        "directorVotesPerResult": 1,
+        "departmentAverageStars": {
+          "planning": 3.2,
+          "graphics": 4.8,
+          "development": 5,
+          "qa": 5,
+          "balance": 4.8
+        },
+        "overallAverageStars": 4.56,
+        "secondWorkCriterion": "DEPARTMENT_AVERAGE_OR_BELOW_OVERALL_AVERAGE",
+        "secondWorkDepartments": [],
+        "secondWorkDueDate": null
+      },
+      "homepageOpinionMode": "IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS",
+      "collaborationProtocol": "PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5",
+      "cuts": [
+        {
+          "no": 1,
+          "kind": "director",
+          "title": "대충 RPG",
+          "body": "Story & Region Causality",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/director-cover.svg",
+          "sourceDepartment": "director",
+          "pageType": "cover",
+          "visualType": "game-concept-cover",
+          "employeeAuthored": true,
+          "assistantAuthored": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 2,
+          "kind": "planning",
+          "title": "Story & Region Ca…",
+          "body": "The story's focus is on the protagonist's mo…",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/planning-1.svg",
+          "sourceDepartment": "planning",
+          "pageType": "department-visual",
+          "visualType": "world-map",
+          "employeeAuthored": true,
+          "assistantAuthored": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 3,
+          "kind": "planning",
+          "title": "Protagonist Motiv…",
+          "body": "The protagonist's motivation is well-defined…",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/planning-2.svg",
+          "sourceDepartment": "planning",
+          "pageType": "department-visual",
+          "visualType": "story-flow",
+          "employeeAuthored": true,
+          "assistantAuthored": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 4,
+          "kind": "graphics",
+          "title": "대충 RPG 1차 독립 아트북 …",
+          "body": "대충 RPG 1차 독립 아트북 검토",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/graphics-1.svg",
+          "sourceDepartment": "graphics",
+          "pageType": "department-visual",
+          "visualType": "concept-board",
+          "employeeAuthored": true,
+          "assistantAuthored": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 5,
+          "kind": "graphics",
+          "title": "대충 RPG 2차 독립 아트북 …",
+          "body": "대충 RPG 2차 독립 아트북 검토",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/graphics-2.svg",
+          "sourceDepartment": "graphics",
+          "pageType": "department-visual",
+          "visualType": "style-board",
+          "employeeAuthored": true,
+          "assistantAuthored": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 6,
+          "kind": "development",
+          "title": "RPG 개발 부서 1차 독립 검토",
+          "body": "RPG 개발 부서 1차 독립 검토",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/development-1.svg",
+          "sourceDepartment": "development",
+          "pageType": "department-visual",
+          "visualType": "gameplay-loop",
+          "employeeAuthored": true,
+          "assistantAuthored": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 7,
+          "kind": "development",
+          "title": "system-flow",
+          "body": "시스템 구조",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/development-2.svg",
+          "sourceDepartment": "development",
+          "pageType": "department-visual",
+          "visualType": "system-flow",
+          "employeeAuthored": true,
+          "assistantAuthored": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 8,
+          "kind": "qa",
+          "title": "RPG QA Department…",
+          "body": "Reviewing RPG content for cause-effect relat…",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/qa-1.svg",
+          "sourceDepartment": "qa",
+          "pageType": "department-visual",
+          "visualType": "test-journey",
+          "employeeAuthored": true,
+          "assistantAuthored": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 9,
+          "kind": "balance",
+          "title": "대충 RPG 밸런스 부서 1차 …",
+          "body": "대충 RPG 밸런스 부서 1차 독립 검토",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/balance-1.svg",
+          "sourceDepartment": "balance",
+          "pageType": "department-visual",
+          "visualType": "balance-curve",
+          "employeeAuthored": true,
+          "assistantAuthored": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 10,
+          "kind": "director",
+          "title": "Independent Artbo…",
+          "body": "The artbook covers the story'…",
+          "image": "artbook-submissions/daechung-rpg/2026-09-08/visuals/director-summary.svg",
+          "sourceDepartment": "director",
+          "pageType": "summary",
+          "visualType": "department-summary",
+          "employeeAuthored": true,
+          "assistantAuthored": false,
+          "displayLanguage": "ko"
+        }
+      ],
+      "feedback": {
+        "issueNumber": 12,
+        "issueUrl": "https://github.com/hans1177/jaewoon-games/issues/12"
+      },
+      "cutCount": 10,
+      "requiredCuts": 10,
+      "completionLabel": "완료",
+      "presentation": {
+        "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+        "directorSource": "artbook-submissions/daechung-rpg/2026-09-08/presentation/director-presentation.json",
+        "departmentPageCounts": {
+          "planning": 2,
+          "graphics": 2,
+          "development": 2,
+          "qa": 1,
+          "balance": 1
+        },
+        "assistantAuthored": false
+      },
+      "postprocess": {
+        "version": 4,
+        "complete": true,
+        "checkedAt": "2026-09-08T10:16:14.533Z",
+        "requiredCuts": 10,
+        "cutCount": 10,
+        "pagePlan": [
+          "표지",
+          "기획",
+          "기획",
+          "그래픽",
+          "그래픽",
+          "개발",
+          "개발",
+          "QA",
+          "밸런스",
+          "총괄"
+        ],
+        "cutsPerDepartment": {
+          "planning": 2,
+          "graphics": 2,
+          "development": 2,
+          "qa": 1,
+          "balance": 1,
+          "director": 2
+        },
+        "formatChecked": true,
+        "emptyContentChecked": true,
+        "uniqueVisualsChecked": true,
+        "imagePathsChecked": true,
+        "newClaimsAdded": false,
+        "sourceMode": "EMPLOYEE_OWNED_VISUAL_PAGES_PLUS_DIRECTOR_PRESENTATION",
+        "assistantAuthorship": false,
+        "imageFirst": true,
+        "shortText": true,
+        "displayLanguage": "ko"
       }
     }
   ],
