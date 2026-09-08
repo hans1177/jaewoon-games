@@ -22,6 +22,7 @@ jobs:
             assets/common-ai.js
             assets/ai-party.js
             assets/animation-state.js
+            assets/jaewoon-motion-engine.js
             assets/asset-selector.js
             assets/game-content.js
             assets/game-kit.js
@@ -50,7 +51,11 @@ jobs:
           for file in "${files[@]}"; do
             node --input-type=module --check < "$file"
           done
+          node --check qa/jaewoon-motion-engine.test.cjs
           echo 'PASS JavaScript syntax'
+
+      - name: Test Jaewoon Motion Engine
+        run: node qa/jaewoon-motion-engine.test.cjs
 
       - name: Run integrated regression suite
         run: node qa/vibe-regression.mjs
