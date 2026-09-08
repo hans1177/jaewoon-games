@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '30 22 * * *' # 07:30 KST
+  workflow_run:
+    workflows: ['Free Artbook Department Bots']
+    types: [completed]
 
 permissions:
   contents: write
@@ -18,6 +21,7 @@ env:
 
 jobs:
   incubate:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -40,9 +44,10 @@ jobs:
           const fs=require('fs');
           const state=JSON.parse(fs.readFileSync('autonomous-incubator.json','utf8'));
           const active=(state.candidates||[]).find(c=>['CONCEPT_CREATED','ARTBOOK_QUEUED','ARTBOOK_COMPLETE','PROTOTYPE_REGISTERED'].includes(c.status)&&c.prototypeDevComplete!==true);
-          console.log(`need_model=${active?'false':'true'}`);
+          const scheduled=process.env.GITHUB_EVENT_NAME==='schedule';
+          console.log(`need_model=${!active&&scheduled?'true':'false'}`);
           NODE
-      - name: Install local Ollama only for a new concept
+      - name: Install local Ollama only for a scheduled new concept
         if: steps.mode.outputs.need_model == 'true'
         shell: bash
         run: |
@@ -63,6 +68,8 @@ jobs:
           echo 'PAID_API=NO'
           echo 'MODEL_CALLS_MAX_THIS_RUN=1'
       - name: Advance operational incubator
+        env:
+          INCUBATOR_ALLOW_NEW_CONCEPT: ${{ steps.mode.outputs.need_model }}
         run: node tools/autonomous-new-game-incubator.mjs
       - name: Persist state/artbook queue/prototype request only
         shell: bash
@@ -73,7 +80,7 @@ jobs:
           git add autonomous-incubator.json autonomous-portfolio.json artbook-submission-queue.json
           if [ -f .autonomous/prototype-request.json ]; then git add -f .autonomous/prototype-request.json; fi
           if git diff --cached --quiet; then echo 'INCUBATOR_CHANGE=NO'; exit 0; fi
-          git commit -m "incubator: advance operational new-game pipeline [skip ci]"
+          git commit -m "incubator: advance operational new-game pipeline"
           git pull --rebase origin main
           git push origin main
           echo 'PUBLIC_GAME_CODE_WRITE=NO'
