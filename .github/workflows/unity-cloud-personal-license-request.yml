@@ -1,0 +1,66 @@
+name: Unity Cloud Personal License Request
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.build-requests/unity-personal-activation.request'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  request:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve project Unity version
+        id: unity
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(sed -n 's/^m_EditorVersion:[[:space:]]*//p' unity-games/daechung-rpg/ProjectSettings/ProjectVersion.txt | head -n1)"
+          [[ -n "$version" ]] || { echo 'Could not resolve Unity version.' >&2; exit 1; }
+          image="unityci/editor:ubuntu-${version}-android-3"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "image=$image" >> "$GITHUB_OUTPUT"
+          echo "[INFO] Unity=$version"
+          echo "[INFO] Image=$image"
+
+      - name: Pull matching GameCI Unity image
+        shell: bash
+        run: docker pull '${{ steps.unity.outputs.image }}'
+
+      - name: Generate cloud-machine manual activation file
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf activation
+          mkdir -p activation
+          docker run --rm \
+            -v "$PWD/activation:/activation" \
+            -w /activation \
+            '${{ steps.unity.outputs.image }}' \
+            /opt/unity/Editor/Unity \
+              -batchmode \
+              -nographics \
+              -quit \
+              -createManualActivationFile \
+              -logFile /dev/stdout
+
+          alf="$(find activation -maxdepth 1 -type f -name '*.alf' -size +0c | head -n1 || true)"
+          [[ -n "$alf" ]] || { echo 'Unity did not produce a non-empty .alf activation request.' >&2; exit 1; }
+          cp "$alf" activation/Unity_Cloud_6000.6.0f1.alf
+          echo "[PASS] Cloud-bound Unity activation request generated."
+
+      - name: Upload cloud activation request
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-cloud-personal-activation-6000.6.0f1
+          path: activation/Unity_Cloud_6000.6.0f1.alf
+          if-no-files-found: error
+          retention-days: 2
