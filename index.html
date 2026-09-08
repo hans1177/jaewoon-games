@@ -20,7 +20,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:520px){.brand img{width:min(66vw,330px)}.companyLink{padding:0 9px;font-size:9px}.opsBar{grid-template-columns:repeat(4,1fr)}.opsLead{grid-column:1/-1;min-height:50px}.hero,.heroBody{min-height:290px}.hero h1{font-size:31px}.heroBody{padding:23px 20px}.heroArrow{width:36px;height:36px}.tools{grid-template-columns:1fr auto}.gameGrid{grid-template-columns:1fr}.gameCard{display:grid;grid-template-columns:42% 58%}.gameArt{height:100%;min-height:190px;aspect-ratio:auto}.gameInfo{padding:9px}.gameInfo p{min-height:auto}.companySummary{grid-template-columns:1fr}.companyStats{grid-template-columns:repeat(2,1fr)}.reviewForm{grid-template-columns:58px 1fr}.reviewForm button{grid-column:1/-1}.profileTop{grid-template-columns:80px 1fr}.profileItem{grid-template-columns:76px 1fr}.profileActions{grid-template-columns:1fr}}
 @media(max-width:370px){.gameCard{grid-template-columns:38% 62%}.gameArt{min-height:205px}.hero h1{font-size:28px}.opsMetric b{font-size:16px}}
 </style>
-<link rel="stylesheet" href="/assets/homepage-layout-v2.css">
 </head>
 <body>
 <div class="page"><main class="shell">
@@ -41,7 +40,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 
 <section class="panel" id="gameHub">
 <div class="sectionHead"><h2>게임 센터</h2><span>Web · Unity · 개발 · 테스트 · 출시 한눈에</span></div>
-<div class="catalogIntro">게임이 많아져도 검색과 필터로 바로 찾을 수 있어. <b>Web 보관</b>은 기존 플레이판, <b>Unity</b>는 공개 승인된 개발판이야. 다른 게임도 홈에서 확인할 수 있고, 각 게임 아트북은 별도 상세 페이지에서 진행 상태부터 볼 수 있어.</div>
+<div class="catalogIntro">게임이 많아져도 검색과 필터로 바로 찾을 수 있어. <b>Web 보관</b>은 기존 플레이판, <b>Unity</b>는 공개 승인된 개발판이야. 새 게임과 새 테스트 APK는 게시 요청이 있을 때만 여기에 나타나.</div>
 <div class="tools"><input class="search" id="gameSearch" type="search" maxlength="40" placeholder="게임 이름이나 장르 검색" aria-label="게임 검색"><button class="smallBtn" id="installHelp" type="button">APK 설치 방법</button></div>
 <div class="filters">
 <div class="filterRow" id="platformFilters" aria-label="플랫폼 필터"><button class="chip on" data-platform="all">전체 플랫폼</button><button class="chip" data-platform="unity">Unity</button><button class="chip" data-platform="web">Web</button></div>
@@ -114,6 +113,5 @@ let reviews=aiSeed.slice();try{const saved=JSON.parse(localStorage.getItem('jaew
 const tracks=[['Grounded 2 · Growing Pains','kNxMMWO3Hss'],['Core Keeper · Original Soundtrack','dDCZZR-i5z4'],["Joe Hisaishi · One Summer's Day",'TK1Ij_-mank'],['Joe Hisaishi · Merry-Go-Round of Life','2pQKqQ9sG50']];let mi=0,started=false;function playMusic(){const t=tracks[mi];musicNow.textContent=`${mi+1} / ${tracks.length} · ${t[0]}`;musicFrame.src='https://www.youtube-nocookie.com/embed/'+t[1]+'?playsinline=1&rel=0&autoplay=1';started=true}musicNext.onclick=()=>{if(started)mi=(mi+1)%tracks.length;playMusic()};
 </script>
 <script type="module" src="/assets/homepage-enhancements.js"></script>
-<script type="module" src="/assets/homepage-layout-v2.js"></script>
 </body>
 </html>
