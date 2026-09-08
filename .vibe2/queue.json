@@ -112,8 +112,8 @@
       "dependencies": [],
       "priority": "low",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 0,
+      "status": "queued",
+      "retries": 1,
       "maxRetries": 2,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
@@ -122,9 +122,10 @@
       "blocker": null,
       "evidence": [
         "vibe2-auto-planner:game-catalog",
-        "release-state:development-confirmed"
+        "release-state:development-confirmed",
+        "actions-run-34290387304"
       ],
-      "lastOutcome": null,
+      "lastOutcome": "FAIL",
       "companyContext": null
     }
   ]
