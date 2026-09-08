@@ -70,11 +70,26 @@ jobs:
         if: steps.order.outputs.run != 'true'
         run: echo "AUTONOMOUS_WORK=NO_ELIGIBLE_ITEM"
 
-      - name: Deterministic planner and worker tests
+      - name: Deterministic planner, budget and worker tests
         if: steps.order.outputs.run == 'true'
         run: |
           node --test qa/autonomous-work-planner.test.mjs
+          node --test qa/free-budget-telemetry.test.mjs
           node --test qa/autonomous-development-worker.test.mjs
+
+      - name: Verified free budget preflight
+        if: steps.order.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/free-budget-telemetry.mjs \
+            --verify-public-repo=true \
+            --runner=ubuntu-latest \
+            --model-calls=1 \
+            --runner-minutes=20 \
+            --output=.autonomous/free-budget-telemetry.json
+          echo 'FREE_BUDGET_PREFLIGHT=PASS'
+          echo 'ACTIONS_QUOTA_MODE=UNMETERED_FREE'
 
       - name: Create isolated candidate branch
         if: steps.order.outputs.run == 'true'
@@ -151,5 +166,6 @@ jobs:
           echo "- public main write: NO" >> "$GITHUB_STEP_SUMMARY"
           echo "- cash budget: 0" >> "$GITHUB_STEP_SUMMARY"
           echo "- paid API: NO" >> "$GITHUB_STEP_SUMMARY"
+          echo "- actions quota mode: verified public standard / unmetered free" >> "$GITHUB_STEP_SUMMARY"
           echo "- local model calls/run: max 1" >> "$GITHUB_STEP_SUMMARY"
           echo "- candidate promotion: separate independent QA" >> "$GITHUB_STEP_SUMMARY"
