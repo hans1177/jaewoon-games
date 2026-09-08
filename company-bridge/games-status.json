@@ -1,8 +1,8 @@
 {
   "version": 1,
   "sourceRepository": "hans1177/jaewoon-games",
-  "sourceRevision": "19210c343358f6f9f4bbaf5391e886d8259f8f68",
-  "generatedAt": "2026-09-08T16:54:45.632Z",
+  "sourceRevision": "5cd9c9b497cdd704d1c6ab37fe91ec6ea520ba67",
+  "generatedAt": "2026-09-08T17:00:20.623Z",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
   "continuousDevelopmentBranch": "autonomous-dev",
@@ -65,42 +65,11 @@
         "score": 74,
         "healthReason": "same-origin-resource-failure",
         "issues": [
-          {
-            "type": "console",
-            "message": "Failed to load resource: the server responded with a status of 404 (File not found)"
-          },
-          {
-            "type": "requestfailed",
-            "message": "http://127.0.0.1:4173/assets/layout-segment-context-B4l5MHMQ.js net::ERR_ABORTED"
-          },
-          {
-            "type": "requestfailed",
-            "message": "http://127.0.0.1:4173/assets/rolldown-runtime-S-ySWqyJ.js net::ERR_ABORTED"
-          },
-          {
-            "type": "requestfailed",
-            "message": "http://127.0.0.1:4173/assets/page-CgY6ZelV.js net::ERR_ABORTED"
-          },
-          {
-            "type": "requestfailed",
-            "message": "http://127.0.0.1:4173/assets/framework-DjPHiq1u.js net::ERR_ABORTED"
-          },
-          {
-            "type": "requestfailed",
-            "message": "http://127.0.0.1:4173/assets/rolldown-runtime-S-ySWqyJ.js net::ERR_ABORTED"
-          },
-          {
-            "type": "requestfailed",
-            "message": "http://127.0.0.1:4173/assets/layout-segment-context-B4l5MHMQ.js net::ERR_ABORTED"
-          },
-          {
-            "type": "requestfailed",
-            "message": "http://127.0.0.1:4173/assets/page-CgY6ZelV.js net::ERR_ABORTED"
-          },
-          {
-            "type": "requestfailed",
-            "message": "http://127.0.0.1:4173/assets/framework-DjPHiq1u.js net::ERR_ABORTED"
-          }
+          "console: Failed to load resource: the server responded with a status of 404 (File not found)",
+          "requestfailed: http://127.0.0.1:4173/assets/layout-segment-context-B4l5MHMQ.js net::ERR_ABORTED",
+          "requestfailed: http://127.0.0.1:4173/assets/rolldown-runtime-S-ySWqyJ.js net::ERR_ABORTED",
+          "requestfailed: http://127.0.0.1:4173/assets/page-CgY6ZelV.js net::ERR_ABORTED",
+          "requestfailed: http://127.0.0.1:4173/assets/framework-DjPHiq1u.js net::ERR_ABORTED"
         ],
         "checkedAt": "2026-09-08T04:36:26.781Z"
       }
@@ -117,10 +86,7 @@
         "score": 74,
         "healthReason": "console-error",
         "issues": [
-          {
-            "type": "console",
-            "message": "Failed to load resource: net::ERR_INVALID_URL"
-          }
+          "console: Failed to load resource: net::ERR_INVALID_URL"
         ],
         "checkedAt": "2026-09-08T04:36:26.781Z"
       }
