@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "updatedAt": "2026-09-08",
   "priority": "owner-immediate",
   "rule": "one-collaborative-initial-artbook-per-game-before-formal-production",
@@ -26,6 +26,8 @@
     "date": "2026-09-08",
     "readySections": 0,
     "requiredSections": 5,
+    "readyReviews": 0,
+    "requiredReviews": 5,
     "directorAssemblyReady": false,
     "departmentIssues": {
       "planning": 7,
@@ -34,11 +36,18 @@
       "qa": 10,
       "balance": 11
     },
-    "runnerDispatch": "BLOCKED_403_FORBIDDEN_AND_PAID_AI_ROUTE_FORBIDDEN",
+    "feedbackIssue": 12,
+    "runnerDispatch": "FREE_LOCAL_OPEN_MODEL_RUNNING",
+    "runnerWorkflow": ".github/workflows/artbook-free-department-bots.yml",
+    "runnerModel": "qwen3:0.6b",
+    "runnerPaidApi": false,
+    "runnerApiKeyRequired": false,
+    "firstRoundIndependent": true,
+    "secondRoundProtocol": "AGREE_COUNTER_TEST_RESULT_DECISION",
     "directorGhostwritingFallback": false,
     "gate": "tools/artbook-gate.mjs",
     "assembler": "tools/artbook-assemble.mjs",
-    "automaticFlow": "REAL_5_OF_5_SUBMISSIONS -> VALIDATE -> ASSEMBLE_VERBATIM -> OWNER_PRODUCTION_DECISION",
+    "automaticFlow": "5_INDEPENDENT_SECTIONS -> REVEAL -> 5_COLLAB_REVIEWS -> VALIDATE -> ASSEMBLE_VERBATIM -> OWNER_PRODUCTION_DECISION",
     "assemblyAddsNewClaims": false,
     "assemblyGrantsProductionApproval": false,
     "infrastructureReady": true
@@ -57,7 +66,7 @@
     "territory-war"
   ],
   "games": [
-    {"gameId":"daechung-rpg","name":"대충 RPG","source":"web-games/daechung-rpg + unity-games/daechung-rpg","status":"DAILY_TARGET_WAITING_FOR_REAL_DEPARTMENT_SUBMISSIONS","sectionsReady":[],"requiredSections":5,"styleProfile":"판타지 세계 설정집 + 모험 연대기","existingUnityWork":"preserve-as-prototype-evidence","currentStage":"game-demo-test-evidence","directorAssemblyReady":false},
+    {"gameId":"daechung-rpg","name":"대충 RPG","source":"web-games/daechung-rpg + unity-games/daechung-rpg","status":"DAILY_TARGET_FREE_DEPARTMENT_BOTS_RUNNING","sectionsReady":[],"requiredSections":5,"reviewsReady":[],"requiredReviews":5,"styleProfile":"판타지 세계 설정집 + 모험 연대기","existingUnityWork":"preserve-as-prototype-evidence","currentStage":"artbook-department-review","directorAssemblyReady":false},
     {"gameId":"insect-survival","name":"곤충 생존기","source":"web-games/insect-survival","status":"QUEUED","sectionsReady":[],"requiredSections":5,"styleProfile":"생태 탐사일지 + 생존 현장 기록"},
     {"gameId":"crystal-defense","name":"수정 디펜스","source":"web-games/crystal-defense","status":"QUEUED","sectionsReady":[],"requiredSections":5,"styleProfile":"마력 방어선 설계서 + 침공 기록"},
     {"gameId":"bug-defense","name":"곤충 디펜스","source":"web-games/bug-defense","status":"QUEUED","sectionsReady":[],"requiredSections":5,"styleProfile":"곤충 전쟁사 + 병종 작전기록"},
