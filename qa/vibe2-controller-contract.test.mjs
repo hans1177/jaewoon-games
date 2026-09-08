@@ -8,6 +8,7 @@ import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
 import { classifyVibeExecutionRoute } from '../tools/vibe2-continuous-runner.mjs';
 
 const workflow = fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml', import.meta.url), 'utf8');
+const runtime = JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json', import.meta.url), 'utf8'));
 
 test('Unreal C++ routes to text source worker', () => {
   const adapter = createVibeEngineAdapter({ target: 'unreal', gameSlug: 'demo' });
@@ -59,6 +60,21 @@ test('engine adapter forbids binary direct text editing', () => {
   assert.equal(unreal.execution.editorWorkerRequiredForBinaryAssets, true);
   assert(unreal.source.editorRequiredPatterns.some((value) => value.endsWith('Content/**/*.uasset')));
   assert(unreal.source.textWritablePatterns.some((value) => value.endsWith('Source/**/*.cpp')));
+});
+
+test('runtime declares only actually connected worker capabilities', () => {
+  assert.equal(runtime.version, 2);
+  assert.equal(runtime.continuous.maxWorkMinutes, 20);
+  assert.equal(runtime.continuous.maxModelCallsPerRun, 1);
+  assert.equal(runtime.workers.textSource.configured, true);
+  assert.equal(runtime.workers.analysis.configured, false);
+  assert.equal(runtime.engineEditors.unity.authoringWorkerConfigured, false);
+  assert.equal(runtime.engineEditors.unreal.authoringWorkerConfigured, false);
+  assert.equal(runtime.verification.candidateCreationIsFinalPass, false);
+  assert.equal(runtime.verification.engineBuildSuccessIsFinalPass, false);
+  assert.equal(runtime.verification.automaticMainPromotion, false);
+  assert.equal(runtime.verification.automaticExperiencePromotion, false);
+  assert.equal(runtime.safety.binaryAssetsDirectTextEditForbidden, true);
 });
 
 test('continuous controller is bounded, candidate-only and never auto-passes unverified source work', () => {
