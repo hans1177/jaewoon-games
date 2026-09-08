@@ -1,0 +1,80 @@
+name: Autonomous New Game Incubator
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 22 * * *' # 07:30 KST
+
+permissions:
+  contents: write
+
+concurrency:
+  group: autonomous-new-game-incubator
+  cancel-in-progress: false
+
+env:
+  INCUBATOR_LOCAL_MODEL: qwen3:0.6b
+  OLLAMA_HOST: 127.0.0.1:11434
+
+jobs:
+  incubate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Deterministic incubator tests
+        run: |
+          node --check tools/autonomous-new-game-incubator.mjs
+          node --test qa/autonomous-new-game-incubator.test.mjs
+      - name: Decide whether one free model call is needed
+        id: mode
+        shell: bash
+        run: |
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs=require('fs');
+          const state=JSON.parse(fs.readFileSync('autonomous-incubator.json','utf8'));
+          const active=(state.candidates||[]).find(c=>['CONCEPT_CREATED','ARTBOOK_QUEUED','ARTBOOK_COMPLETE','PROTOTYPE_REGISTERED'].includes(c.status)&&c.prototypeDevComplete!==true);
+          console.log(`need_model=${active?'false':'true'}`);
+          NODE
+      - name: Install local Ollama only for a new concept
+        if: steps.mode.outputs.need_model == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          installed=0
+          for attempt in 1 2 3; do
+            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
+            sleep $((attempt * 4))
+          done
+          test "$installed" = 1
+          nohup ollama serve > /tmp/ollama-incubator.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break; sleep 2; done
+          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
+      - name: Pull free local model only when needed
+        if: steps.mode.outputs.need_model == 'true'
+        run: |
+          ollama pull "$INCUBATOR_LOCAL_MODEL"
+          echo 'PAID_API=NO'
+          echo 'MODEL_CALLS_MAX_THIS_RUN=1'
+      - name: Advance operational incubator
+        run: node tools/autonomous-new-game-incubator.mjs
+      - name: Persist state/artbook queue/prototype request only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "jaewoon-new-game-incubator"
+          git config user.email "actions@users.noreply.github.com"
+          git add autonomous-incubator.json autonomous-portfolio.json artbook-submission-queue.json
+          if [ -f .autonomous/prototype-request.json ]; then git add -f .autonomous/prototype-request.json; fi
+          if git diff --cached --quiet; then echo 'INCUBATOR_CHANGE=NO'; exit 0; fi
+          git commit -m "incubator: advance operational new-game pipeline [skip ci]"
+          git pull --rebase origin main
+          git push origin main
+          echo 'PUBLIC_GAME_CODE_WRITE=NO'
+          echo 'NEW_GAME_RELEASE_APPROVAL=NO'
