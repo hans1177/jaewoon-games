@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       source_path:
-        description: "Read-only stable source path under web-games/"
+        description: "Development source path under web-games/"
         required: true
         type: string
       goal:
@@ -32,18 +32,31 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Checkout stable main read-only baseline
+      - name: Checkout continuous development baseline
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: autonomous-dev
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
 
+      - name: Sync public baseline into development line without touching main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "jaewoon-autonomous-sync"
+          git config user.email "autonomous-sync@users.noreply.github.com"
+          git fetch origin main autonomous-dev
+          git merge --no-edit origin/main
+          git push origin HEAD:autonomous-dev
+          echo "PUBLIC_MAIN_WRITE=NO"
+
       - name: Deterministic worker safety tests
-        run: node --test qa/autonomous-development-worker.test.mjs
+        run: |
+          node --test qa/autonomous-development-worker.test.mjs
+          node --test qa/autonomous-candidate-review.test.mjs
 
       - name: Create isolated candidate branch
         id: branch
@@ -82,6 +95,7 @@ jobs:
         run: |
           ollama pull "$AUTONOMOUS_LOCAL_MODEL"
           echo "LOCAL_MODEL=$AUTONOMOUS_LOCAL_MODEL"
+          echo "MODEL_CALL_BUDGET=1"
           echo "PAID_API=NO"
           echo "API_KEY_REQUIRED=NO"
 
@@ -124,6 +138,7 @@ jobs:
           echo "### Autonomous Development Candidate" >> "$GITHUB_STEP_SUMMARY"
           echo "- game: ${{ inputs.game_id }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- branch: ${{ steps.branch.outputs.name }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- baseline: autonomous-dev" >> "$GITHUB_STEP_SUMMARY"
           echo "- paid API: NO" >> "$GITHUB_STEP_SUMMARY"
           echo "- main direct write: NO" >> "$GITHUB_STEP_SUMMARY"
-          echo "- promotion authority: independent QA + JAY" >> "$GITHUB_STEP_SUMMARY"
+          echo "- promotion authority: independent QA + JAY dev gate" >> "$GITHUB_STEP_SUMMARY"
