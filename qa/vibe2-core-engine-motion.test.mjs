@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-core-engine-motion.test.mjs
-// 역할: Vibe2 엔진 어댑터, Motion Core, 경험 메모리, 연속 작업 큐 계약을 회귀검사한다.
+// 역할: Vibe2 엔진 어댑터, workbench, Motion Core, 경험 메모리, 연속 작업 큐 계약을 회귀검사한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -8,6 +8,7 @@ import {
   createVibeEngineAdapter,
   validateVibeEngineAdapter
 } from '../assets/vibe-engine-adapter.js';
+import { planVibeWorkbenchTask, createVibeEditBrief } from '../assets/vibe-workbench.js';
 import {
   createVibeMotionContract,
   validateVibeMotionContract,
@@ -37,6 +38,31 @@ test('Unreal target detection and source contract', () => {
   assert(adapter.source.ignoredPaths.includes('unreal-games/motion-test/Intermediate/**'));
   assert(adapter.motionBindings.includes('Animation Blueprint'));
   assert.equal(validateVibeEngineAdapter(adapter).valid, true);
+});
+
+test('workbench routes Unreal directly and binds engine adapter', () => {
+  const plan = planVibeWorkbenchTask({
+    request: '언리얼 UE5에서 캐릭터 공격 모션과 블루프린트 전환을 개선',
+    target: 'unreal',
+    gameId: 'motion-test'
+  });
+  assert.equal(plan.target, 'unreal');
+  assert.equal(plan.engineAdapter.target, 'unreal');
+  assert.equal(plan.applyPolicy.sourceWriteAllowed, true);
+  assert.equal(plan.applyPolicy.motionRuntimeEvidenceRequired, true);
+  assert(plan.candidateFiles.some((path) => path.includes('unreal-games/motion-test')));
+  assert(plan.steps.some((step) => step.includes('Animation Blueprint')));
+  assert(plan.steps.some((step) => step.includes('Motion Quality Score')));
+});
+
+test('workbench keeps web archive read only', () => {
+  const plan = planVibeWorkbenchTask({ request: '웹게임 구조 분석', target: 'web', gameId: 'legacy' });
+  const brief = createVibeEditBrief({ request: '웹게임 구조 분석', target: 'web', gameId: 'legacy' });
+  assert.equal(plan.target, 'web');
+  assert.equal(plan.applyPolicy.sourceWriteAllowed, false);
+  assert.equal(plan.applyPolicy.webArchiveReadOnly, true);
+  assert.equal(brief.outputContract.sourceWriteAllowed, false);
+  assert(plan.warnings.some((warning) => warning.includes('archive/read-only')));
 });
 
 test('web archive remains read only', () => {
