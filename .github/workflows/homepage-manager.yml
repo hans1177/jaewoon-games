@@ -15,6 +15,8 @@ on:
       - 'company-status.json'
       - 'public-game-health.json'
       - 'assets/homepage-enhancements.js'
+      - 'assets/homepage-layout-v2.js'
+      - 'assets/homepage-layout-v2.css'
       - 'HOMEPAGE_OPERATIONS.md'
       - '.github/agents/homepage.agent.md'
       - 'tools/homepage-manager.mjs'
@@ -50,20 +52,30 @@ jobs:
           node -e "JSON.parse(require('fs').readFileSync('homepage-manager-status.json','utf8'))"
           node -e "JSON.parse(require('fs').readFileSync('company-status.json','utf8'))"
           grep -Fq 'short-cards -> dedicated-artbook-detail-page' homepage-manager-status.json
-          grep -Fq 'artbookVisibilityIsProductionApproval' homepage-manager-status.json
-          echo 'HOMEPAGE_MANAGER_QA=PASS'
+          grep -Fq '"runtimeGameHealthBadgeVisible": false' homepage-manager-status.json
+          grep -Fq '/assets/homepage-layout-v2.css' index.html
+          grep -Fq '/assets/homepage-layout-v2.js' index.html
+          grep -Fq '/artbook.html?game=' assets/homepage-layout-v2.js
+          grep -Fq '.healthBadge{display:none!important}' assets/homepage-layout-v2.css
+          grep -Fq "params.get('game')" artbook.html
+          node - <<'NODE'
+          const fs=require('fs');
+          const s=JSON.parse(fs.readFileSync('homepage-manager-status.json','utf8'));
+          if(s.status!=='running')throw new Error(`homepage manager attention: ${(s.findings?.failures||[]).join(',')}`);
+          console.log('HOMEPAGE_MANAGER_QA=PASS');
+          NODE
 
-      - name: Commit manager state
+      - name: Commit managed homepage state and repairs
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-homepage-manager'
           git config user.email 'actions@users.noreply.github.com'
-          git add homepage-manager-status.json company-status.json
+          git add index.html homepage-manager-status.json company-status.json
           if git diff --cached --quiet; then
             echo 'HOMEPAGE_MANAGER_COMMIT=NO_CHANGES'
             exit 0
           fi
-          git commit -m 'homepage: record manager maintenance state [skip ci]'
+          git commit -m 'homepage: apply manager layout maintenance [skip ci]'
           git pull --rebase origin main
           git push origin main
           echo 'HOMEPAGE_MANAGER_COMMIT=SUCCESS'
