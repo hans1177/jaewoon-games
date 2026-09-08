@@ -4,6 +4,11 @@ import { pathToFileURL } from 'node:url';
 
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const unique=(v=[])=>[...new Set((v||[]).filter(Boolean))];
+const issueText=issue=>{
+  if(typeof issue==='string')return issue.trim();
+  if(!issue||typeof issue!=='object')return String(issue??'').trim();
+  return [issue.type,issue.message,issue.code].filter(Boolean).map(String).join(': ').trim();
+};
 
 export function buildGamesBridgeSnapshot({portfolio={},health={},dna={},artbooks={},sourceRevision=null,timestamp=new Date().toISOString()}={}){
   const healthBySlug=new Map((health.games||[]).map(g=>[g.gameId,g]));
@@ -11,7 +16,7 @@ export function buildGamesBridgeSnapshot({portfolio={},health={},dna={},artbooks
     const h=healthBySlug.get(p.slug)||null;
     return{
       id:p.id,slug:p.slug,name:p.name,sourcePath:p.sourcePath,mode:p.mode,profileStatus:p.profileStatus,
-      health:h?{status:h.status,score:h.score,healthReason:h.healthReason,issues:unique(h.issues),checkedAt:h.checkedAt}:null,
+      health:h?{status:h.status,score:h.score,healthReason:h.healthReason,issues:unique((h.issues||[]).map(issueText).filter(Boolean)),checkedAt:h.checkedAt}:null,
     };
   });
   const dnaItems=(dna.items||[]).map(item=>({key:item.key,type:item.type,patternId:item.patternId,stage:item.stage,summary:item.summary||null,jayApproved:item.jayApproved===true}));
@@ -40,7 +45,11 @@ export function validateGamesBridgeSnapshot(snapshot={}){
   if(snapshot.safety?.containsSecrets!==false)errors.push('containsSecrets');
   if(snapshot.safety?.containsCredentials!==false)errors.push('containsCredentials');
   if(snapshot.safety?.publicGameCodeAutoPromotion!==false)errors.push('publicGameCodeAutoPromotion');
-  for(const p of snapshot.projects||[]){if(!/^P\d{4,}$/.test(p.id||''))errors.push(`project:${p.id}`);}
+  for(const p of snapshot.projects||[]){
+    if(!/^P\d{4,}$/.test(p.id||''))errors.push(`project:${p.id}`);
+    if(p.health&&!Array.isArray(p.health.issues))errors.push(`healthIssues:${p.id}`);
+    if((p.health?.issues||[]).some(issue=>typeof issue!=='string'))errors.push(`healthIssueType:${p.id}`);
+  }
   return{pass:errors.length===0,errors};
 }
 
