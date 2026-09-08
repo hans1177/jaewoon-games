@@ -2,6 +2,12 @@ name: Autonomous New Game Incubator
 
 on:
   workflow_dispatch:
+    inputs:
+      create_concept:
+        description: 'Allow one new concept if none is active and none was created today (KST)'
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: '30 22 * * *' # 07:30 KST
   workflow_run:
@@ -41,14 +47,24 @@ jobs:
       - name: Decide whether one free model call is needed
         id: mode
         shell: bash
+        env:
+          REQUEST_CREATE_CONCEPT: ${{ inputs.create_concept || 'false' }}
         run: |
           node <<'NODE' >> "$GITHUB_OUTPUT"
           const fs=require('fs');
           const state=JSON.parse(fs.readFileSync('autonomous-incubator.json','utf8'));
           const active=(state.candidates||[]).find(c=>['CONCEPT_CREATED','ARTBOOK_QUEUED','ARTBOOK_COMPLETE','PROTOTYPE_REGISTERED'].includes(c.status)&&c.prototypeDevComplete!==true);
+          const kstDate=(value=new Date())=>{
+            const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(value));
+            const get=t=>parts.find(x=>x.type===t)?.value||'';return `${get('year')}-${get('month')}-${get('day')}`;
+          };
+          const today=kstDate();
+          const createdToday=(state.candidates||[]).some(c=>c.createdAt&&kstDate(c.createdAt)===today);
           const scheduled=process.env.GITHUB_EVENT_NAME==='schedule';
+          const requested=String(process.env.REQUEST_CREATE_CONCEPT).toLowerCase()==='true';
           console.log(`has_active=${active?'true':'false'}`);
-          console.log(`need_model=${!active&&scheduled?'true':'false'}`);
+          console.log(`created_today=${createdToday?'true':'false'}`);
+          console.log(`need_model=${!active&&!createdToday&&(scheduled||requested)?'true':'false'}`);
           NODE
       - name: Verified free budget preflight
         if: steps.mode.outputs.has_active == 'true' || steps.mode.outputs.need_model == 'true'
@@ -65,7 +81,7 @@ jobs:
             --output=.autonomous/free-budget-telemetry.json
           echo 'FREE_BUDGET_PREFLIGHT=PASS'
           echo 'ACTIONS_QUOTA_MODE=UNMETERED_FREE'
-      - name: Install local Ollama only for a scheduled new concept
+      - name: Install local Ollama only for one allowed new concept
         if: steps.mode.outputs.need_model == 'true'
         shell: bash
         run: |
@@ -87,7 +103,14 @@ jobs:
           echo 'MODEL_CALLS_MAX_THIS_RUN=1'
       - name: Advance operational incubator
         if: steps.mode.outputs.has_active == 'true' || steps.mode.outputs.need_model == 'true'
-        run: node tools/autonomous-new-game-incubator.mjs
+        env:
+          INCUBATOR_ALLOW_NEW_CONCEPT: ${{ steps.mode.outputs.need_model }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { runOperationalIncubator } from './tools/autonomous-new-game-incubator.mjs';
+          const result=await runOperationalIncubator({allowNewConcept:String(process.env.INCUBATOR_ALLOW_NEW_CONCEPT).toLowerCase()==='true'});
+          console.log(JSON.stringify(result,null,2));
+          NODE
       - name: Persist state/artbook queue/prototype request only
         if: steps.mode.outputs.has_active == 'true' || steps.mode.outputs.need_model == 'true'
         shell: bash
