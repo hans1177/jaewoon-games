@@ -13,6 +13,10 @@ permissions:
   contents: write
   actions: write
 
+concurrency:
+  group: vibe2-24h-runner
+  cancel-in-progress: false
+
 jobs:
   autoplan:
     runs-on: ubuntu-latest
@@ -45,6 +49,7 @@ jobs:
 
             node tools/vibe2-auto-planner.mjs \
               --status=/tmp/vibe2-main/company-status.json \
+              --catalog=/tmp/vibe2-main/game-catalog.json \
               --queue=.vibe2/queue.json \
               --root=/tmp/vibe2-main | tee /tmp/vibe2-autoplan.log
 
