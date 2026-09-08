@@ -15,77 +15,67 @@
       "acquiredAt": "2026-09-08T20:36:00.000Z",
       "expiresAt": "2026-09-08T21:21:00.000Z",
       "status": "active",
-      "evidence": [
-        "make-vibe2-controller-reusable-from-main"
-      ]
+      "evidence": ["make-vibe2-controller-reusable-from-main"]
     },
     {
       "id": "wl-chatgpt-vibe2-main-runner",
       "worker": "chatgpt",
       "taskId": "vibe2-main-24h-runner",
       "gameId": null,
-      "files": [
-        ".github/workflows/vibe2-24h-runner.yml"
-      ],
+      "files": [".github/workflows/vibe2-24h-runner.yml"],
       "baseSha": "f692f47d1858d142833cb0ab4a92601415929e17",
       "acquiredAt": "2026-09-08T20:36:00.000Z",
       "expiresAt": "2026-09-08T21:21:00.000Z",
       "status": "active",
-      "evidence": [
-        "activate-real-hourly-vibe2-runner"
-      ]
+      "evidence": ["activate-real-hourly-vibe2-runner"]
     },
     {
       "id": "wl-chatgpt-vibe2-game-queue-seed",
       "worker": "chatgpt",
       "taskId": "vibe2-auto-game-work-seed",
       "gameId": "daechung-rpg",
-      "files": [
-        ".vibe2/queue.json"
-      ],
+      "files": [".vibe2/queue.json"],
       "baseSha": "159a4b0390029bf346f1cca58107173271d19681",
       "acquiredAt": "2026-09-08T20:42:30.000Z",
       "expiresAt": "2026-09-08T21:27:30.000Z",
       "status": "active",
-      "evidence": [
-        "owner-authorized-automatic-game-work"
-      ]
+      "evidence": ["owner-authorized-automatic-game-work"]
     },
     {
       "id": "wl-chatgpt-vibe2-auto-planner",
       "worker": "chatgpt",
       "taskId": "vibe2-autonomous-self-planner",
       "gameId": null,
-      "files": [
-        "tools/vibe2-auto-planner.mjs",
-        "qa/vibe2-auto-planner.test.mjs",
-        "vibe2-runtime.json"
-      ],
+      "files": ["tools/vibe2-auto-planner.mjs","qa/vibe2-auto-planner.test.mjs","vibe2-runtime.json"],
       "baseSha": "a67b0925613eeb6ee57593587f8b5c9554fb06eb",
       "acquiredAt": "2026-09-08T20:44:00.000Z",
       "expiresAt": "2026-09-08T21:29:00.000Z",
       "status": "active",
-      "evidence": [
-        "owner-authorized-vibe2-self-judgement"
-      ]
+      "evidence": ["owner-authorized-vibe2-self-judgement"]
     },
     {
       "id": "wl-chatgpt-mobile-ui-asset-packs",
       "worker": "chatgpt",
       "taskId": "collect-mobile-only-free-ui-asset-packs",
       "gameId": null,
-      "files": [
-        "assets/asset-manifest.json",
-        "assets/prototype-asset-presets.json",
-        "LICENSES.md"
-      ],
+      "files": ["assets/asset-manifest.json","assets/prototype-asset-presets.json","LICENSES.md"],
       "baseSha": "e3f3600dadd9e4d311c2d1810d7c0894e268849e",
       "acquiredAt": "2026-09-08T20:49:00.000Z",
       "expiresAt": "2026-09-08T21:34:00.000Z",
       "status": "active",
-      "evidence": [
-        "owner-request-mobile-only-ui-ux-skill-hud-asset-sets"
-      ]
+      "evidence": ["owner-request-mobile-only-ui-ux-skill-hud-asset-sets"]
+    },
+    {
+      "id": "wl-chatgpt-vibe2-auto-planner-qa",
+      "worker": "chatgpt",
+      "taskId": "vibe2-autonomous-planner-qa-wiring",
+      "gameId": null,
+      "files": [".github/workflows/vibe2-core-qa.yml"],
+      "baseSha": "2b7c11d5186132f15259767a8a21952567e8a264",
+      "acquiredAt": "2026-09-08T20:50:00.000Z",
+      "expiresAt": "2026-09-08T21:35:00.000Z",
+      "status": "active",
+      "evidence": ["validate-autonomous-planner-before-24h-run"]
     }
   ]
 }
