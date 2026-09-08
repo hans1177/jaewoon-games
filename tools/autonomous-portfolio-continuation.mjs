@@ -9,7 +9,7 @@ function activeIncubator(state={}){
   return (state.candidates||[]).find(c=>['CONCEPT_CREATED','ARTBOOK_QUEUED','ARTBOOK_COMPLETE','PROTOTYPE_REGISTERED'].includes(c.status)&&c.prototypeDevComplete!==true)||null;
 }
 function createdToday(state,date){
-  return (state.candidates||[]).some(c=>c.createdAt&&kstDate(c.createdAt)===date);
+  return (state.candidates||[]).some(c=>c.status!=='REDESIGN_REQUIRED'&&c.createdAt&&kstDate(c.createdAt)===date);
 }
 export function decidePortfolioContinuation({portfolio={},queueState={},incubator={},date=kstDate(),filesystem=fs}={}){
   if(portfolio.status!=='ACTIVE'||portfolio.paidApi!==false)return{action:'HOLD',reason:'PORTFOLIO_POLICY_BLOCK'};
