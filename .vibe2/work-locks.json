@@ -1,22 +1,5 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": [
-    {
-      "id": "wl-chatgpt-vibe2-canary-work-lock",
-      "worker": "chatgpt",
-      "taskId": "vibe2-24h-canary-work-lock-update",
-      "gameId": null,
-      "files": [
-        ".github/workflows/vibe2-24h-canary.yml"
-      ],
-      "baseSha": "6f2c8fcc7e4a7a6f723a28219dfa3827874eef91",
-      "acquiredAt": "2026-09-08T20:31:00.000Z",
-      "expiresAt": "2026-09-08T21:16:00.000Z",
-      "status": "active",
-      "evidence": [
-        "extend-24h-canary-with-work-lock-tests"
-      ]
-    }
-  ]
+  "locks": []
 }
