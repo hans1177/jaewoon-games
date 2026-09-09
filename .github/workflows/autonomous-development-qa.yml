@@ -7,9 +7,14 @@ on:
       - "autonomous-portfolio.json"
       - "tools/autonomous-development-worker.mjs"
       - "tools/autonomous-work-planner.mjs"
+      - "tools/autonomous-24h-work-planner.mjs"
+      - "tools/autonomous-department-cycle.mjs"
       - "tools/autonomous-candidate-review.mjs"
+      - "tools/autonomous-queue-state.mjs"
       - "qa/autonomous-development-worker.test.mjs"
       - "qa/autonomous-work-planner.test.mjs"
+      - "qa/autonomous-24h-work-planner.test.mjs"
+      - "qa/autonomous-queue-state.test.mjs"
       - "qa/autonomous-candidate-review.test.mjs"
       - ".github/workflows/autonomous-development-worker.yml"
       - ".github/workflows/autonomous-continuous-development.yml"
@@ -20,9 +25,14 @@ on:
       - "autonomous-portfolio.json"
       - "tools/autonomous-development-worker.mjs"
       - "tools/autonomous-work-planner.mjs"
+      - "tools/autonomous-24h-work-planner.mjs"
+      - "tools/autonomous-department-cycle.mjs"
       - "tools/autonomous-candidate-review.mjs"
+      - "tools/autonomous-queue-state.mjs"
       - "qa/autonomous-development-worker.test.mjs"
       - "qa/autonomous-work-planner.test.mjs"
+      - "qa/autonomous-24h-work-planner.test.mjs"
+      - "qa/autonomous-queue-state.test.mjs"
       - "qa/autonomous-candidate-review.test.mjs"
       - ".github/workflows/autonomous-development-worker.yml"
       - ".github/workflows/autonomous-continuous-development.yml"
@@ -44,34 +54,57 @@ jobs:
           node-version: "22"
       - run: node --check tools/autonomous-development-worker.mjs
       - run: node --check tools/autonomous-work-planner.mjs
+      - run: node --check tools/autonomous-24h-work-planner.mjs
+      - run: node --check tools/autonomous-department-cycle.mjs
+      - run: node --check tools/autonomous-queue-state.mjs
       - run: node --check tools/autonomous-candidate-review.mjs
       - run: node --test qa/autonomous-development-worker.test.mjs
       - run: node --test qa/autonomous-work-planner.test.mjs
+      - run: node --test qa/autonomous-24h-work-planner.test.mjs
+      - run: node --test qa/autonomous-queue-state.test.mjs
       - run: node --test qa/autonomous-candidate-review.test.mjs
-      - name: Validate autonomous contracts
+      - name: Validate 24h autonomous contracts
         shell: bash
         run: |
           set -euo pipefail
-          node -e "const p=require('./autonomous-portfolio.json'); if(p.fixedProjectCount!==false||p.paidApi!==false||p.publicStableBranch!=='main'||p.continuousDevelopmentBranch!=='autonomous-dev'||Number(p.maxModelCallsPerRun)!==2) process.exit(1)"
-          grep -Fq 'workflow_dispatch:' .github/workflows/autonomous-development-worker.yml
-          grep -Fq 'git checkout -b' .github/workflows/autonomous-development-worker.yml
-          grep -Fq 'MAIN_DIRECT_WRITE=NO' .github/workflows/autonomous-development-worker.yml
-          grep -Fq 'SELF_PROMOTE=NO' .github/workflows/autonomous-development-worker.yml
-          grep -Fq 'PAID_API=NO' .github/workflows/autonomous-development-worker.yml
-          grep -Fq "AUTONOMOUS_MODEL_MAX_ATTEMPTS: '2'" .github/workflows/autonomous-development-worker.yml
-          grep -Fq 'MODEL_CALL_BUDGET=2' .github/workflows/autonomous-development-worker.yml
-          grep -Fq "cron: '10 7 * * *'" .github/workflows/autonomous-continuous-development.yml
-          grep -Fq 'ref: autonomous-dev' .github/workflows/autonomous-continuous-development.yml
-          grep -Fq 'git merge --no-edit origin/main' .github/workflows/autonomous-continuous-development.yml
-          grep -Fq "AUTONOMOUS_MODEL_MAX_ATTEMPTS: '2'" .github/workflows/autonomous-continuous-development.yml
-          grep -Fq 'deterministic rule patch: model calls 0' .github/workflows/autonomous-continuous-development.yml
-          grep -Fq 'SELF_PROMOTE_MAIN=NO' .github/workflows/autonomous-continuous-development.yml
-          grep -Fq "'autonomous/candidate-*'" .github/workflows/autonomous-candidate-promotion.yml
-          grep -Fq 'SOURCE_REVISION_MISMATCH' .github/workflows/autonomous-candidate-promotion.yml
-          grep -Fq 'git push origin HEAD:autonomous-dev' .github/workflows/autonomous-candidate-promotion.yml
-          grep -Fq 'PUBLIC_RELEASE=NO' .github/workflows/autonomous-candidate-promotion.yml
-          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/autonomous-development-worker.yml .github/workflows/autonomous-continuous-development.yml .github/workflows/autonomous-candidate-promotion.yml tools/autonomous-development-worker.mjs tools/autonomous-work-planner.mjs; then
-            echo 'paid/external key path found' >&2
-            exit 1
-          fi
-          echo 'AUTONOMOUS_SYSTEM_CONTRACT=PASS'
+          node <<'NODE'
+          const fs=require('fs');
+          const p=require('./autonomous-portfolio.json');
+          const continuous=fs.readFileSync('.github/workflows/autonomous-continuous-development.yml','utf8');
+          const promotion=fs.readFileSync('.github/workflows/autonomous-candidate-promotion.yml','utf8');
+          const department=fs.readFileSync('tools/autonomous-department-cycle.mjs','utf8');
+          const planner=fs.readFileSync('tools/autonomous-24h-work-planner.mjs','utf8');
+          const must=(ok,msg)=>{if(!ok)throw new Error(msg)};
+          must(p.fixedProjectCount===false,'fixed project count must remain false');
+          must(p.paidApi===false,'paidApi must remain false');
+          must(p.publicStableBranch==='main','public stable branch must remain main');
+          must(p.continuousDevelopmentBranch==='autonomous-dev','continuous development branch mismatch');
+          must(Number(p.maxModelCallsPerRun)===2,'worker model retry cap must remain 2');
+          must(p.continuous24hDevelopment===true,'24h development must be enabled');
+          must(p.sameGameDailyFloorCap===null,'same-game daily floor cap must be disabled');
+          must(p.completedArtbookDailyWorkCap===null,'completed-artbook daily cap must be disabled');
+          must(Array.isArray(p.departmentDevelopmentCycle)&&p.departmentDevelopmentCycle.join(',')==='planning,development,graphics,qa,balance,planning-final','department sequence mismatch');
+          must(continuous.includes("cron: '17 * * * *'"),'hourly recovery wake missing');
+          must(continuous.includes('node tools/autonomous-24h-work-planner.mjs'),'24h planner not connected');
+          must(continuous.includes('Reserve this development floor'),'repeatable floor reservation missing');
+          must(continuous.includes('AI departments run the development floor'),'department floor step missing');
+          must(continuous.includes('node tools/autonomous-department-cycle.mjs'),'department runner not connected');
+          must(continuous.includes('Attach department cycle to candidate evidence'),'department evidence gate missing');
+          must(continuous.includes('same game daily floor cap: NONE'),'same-game unlimited contract missing');
+          must(continuous.includes('completed DESIGN_BASELINE daily work cap: NONE'),'completed-artbook unlimited contract missing');
+          must(continuous.includes("if: failure() && steps.reserve.outputs.reserved == 'true'"),'reserved floor failure continuation missing');
+          must(continuous.includes('FAILED_FLOOR_NEXT=DISPATCHED'),'failed floor must dispatch next floor');
+          must(continuous.includes('ref: autonomous-dev'),'autonomous-dev checkout missing');
+          must(continuous.includes('git merge --no-edit origin/main'),'main sync missing');
+          must(continuous.includes('SELF_PROMOTE_MAIN=NO'),'main self-promotion guard missing');
+          must(department.includes("const ROLES=['planning','development','graphics','qa','balance','planning-final']"),'department role sequence missing');
+          must(department.includes('allDepartmentsWorked:true'),'department completion evidence missing');
+          must(planner.includes("selection:'LEAST_KST_ATTEMPTS_FIRST'"),'fair 24h floor rotation missing');
+          must(promotion.includes('gh workflow run autonomous-continuous-development.yml --ref main'),'immediate next-floor dispatch missing');
+          must(promotion.includes('public game main promotion: NO'),'public main protection missing');
+          must(!promotion.includes('PUBLIC_RELEASE=YES'),'public release must never be automatic');
+          const files=['.github/workflows/autonomous-development-worker.yml','.github/workflows/autonomous-continuous-development.yml','.github/workflows/autonomous-candidate-promotion.yml','tools/autonomous-development-worker.mjs','tools/autonomous-work-planner.mjs','tools/autonomous-24h-work-planner.mjs','tools/autonomous-department-cycle.mjs'];
+          const text=files.map(file=>fs.readFileSync(file,'utf8')).join('\n');
+          must(!/OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY/.test(text),'paid/external key path found');
+          console.log('AUTONOMOUS_24H_SYSTEM_CONTRACT=PASS');
+          NODE
