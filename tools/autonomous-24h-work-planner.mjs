@@ -1,5 +1,5 @@
 // 파일명: tools/autonomous-24h-work-planner.mjs
-// 역할: owner 3분류 정책에 따라 출시확정 1개 Unity 집중개발과 개발확정 Web 1차 구현을 공급한다.
+// 역할: owner 3분류 정책에 따라 자동 재분류된 출시확정 중 1개 Unity 집중개발과 개발확정 Web 1차 구현을 공급한다.
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -52,15 +52,12 @@ function focusTotal(project){
   return ['playability','distinctiveness','developmentEfficiency','scalability','lowBlockage'].reduce((sum,key)=>sum+(Number(scores[key])||0),0);
 }
 function unityPriority(project){return clean(project?.dedicatedDevelopmentLane).toUpperCase()==='UNITY_PRIMARY'||clean(project?.targetEngine).toLowerCase()==='unity-android'||(project?.protectedValues||[]).includes('unity-primary');}
+function unityProjectReady(project){return project?.unityProjectReady===true;}
 function focusPolicy(portfolio){return portfolio?.developmentFocusPolicy&&Number(portfolio.developmentFocusPolicy.maxFocusedGames)>0?portfolio.developmentFocusPolicy:null;}
 function focusStage(policy){return clean(policy?.focusStage||'DEVELOPMENT_CONFIRMED').toUpperCase();}
-function preferredRank(policy,project){
-  const preferred=Array.isArray(policy?.preferredFocusedGameIds)?policy.preferredFocusedGameIds:[];
-  const index=preferred.indexOf(project?.id);
-  return index<0?Number.MAX_SAFE_INTEGER:index;
-}
 function sortFocusCandidates(policy){
-  return (a,b)=>preferredRank(policy,a)-preferredRank(policy,b)||focusTotal(b)-focusTotal(a)||Number(unityPriority(b))-Number(unityPriority(a))||a.id.localeCompare(b.id);
+  const releaseFocus=focusStage(policy)==='RELEASE_CONFIRMED';
+  return (a,b)=>(releaseFocus?(Number(unityProjectReady(b))-Number(unityProjectReady(a))||Number(unityPriority(b))-Number(unityPriority(a))):0)||focusTotal(b)-focusTotal(a)||a.id.localeCompare(b.id);
 }
 function isFocusCandidate(project,catalog,policy){
   return focusStage(policy)==='RELEASE_CONFIRMED'?isRelease(project,catalog):(!isRelease(project,catalog)&&isDevelopmentConfirmed(project,catalog));
@@ -240,7 +237,7 @@ export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={
     focusedGameIds:selected.focusedGameIds||[],
     nextFocusGameIds:selected.nextFocusGameIds||[],
     nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],
-    selection:tier2Prototype?'TIER1_UNITY_FOCUS_PLUS_TIER2_WEB_PROTOTYPE':'PREFERRED_READY_THEN_SCORE_THEN_LEAST_KST_ATTEMPTS',
+    selection:tier2Prototype?'TIER1_UNITY_FOCUS_PLUS_TIER2_WEB_PROTOTYPE':'AUTO_READY_THEN_SCORE_THEN_LEAST_KST_ATTEMPTS',
     selectedGameAttemptsToday:selected.attemptsToday,
     activeGameIds:selected.activeGameIds||[],
     sourceRootLock:'ACTIVE_RESERVATION_LEASE',
@@ -248,7 +245,7 @@ export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={
     recoveryWakeup:'HOURLY',
   };
   order.queue={...(order.queue||{}),attemptsToday:attemptsForDate(queueState,date).length,maxDaily:null,remainingBeforeSelection:null};
-  order.evidence={...(order.evidence||{}),continuous24hOriginalProfile:originalProfile,developmentFocus:{score:focusTotal(target),focusedGameIds:selected.focusedGameIds||[],nextFocusGameIds:selected.nextFocusGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],tier2Prototype}};
+  order.evidence={...(order.evidence||{}),continuous24hOriginalProfile:originalProfile,developmentFocus:{score:focusTotal(target),focusedGameIds:selected.focusedGameIds||[],nextFocusGameIds:selected.nextFocusGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],tier2Prototype,autoRotate:true}};
   return order;
 }
 
