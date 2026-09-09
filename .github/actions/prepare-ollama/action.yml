@@ -1,5 +1,5 @@
 name: Prepare cached local Ollama runtime
-description: Restore a pinned Ollama runtime archive from GitHub cache, install it without system service setup, start the local server, and optionally pull the model.
+description: Probe or restore a pinned Ollama runtime archive from GitHub cache, install it without system service setup only when a worker needs it, start the local server, and optionally pull the model.
 inputs:
   model:
     description: Ollama model name to make available locally.
@@ -9,18 +9,19 @@ inputs:
     required: false
     default: '0.33.3'
   pull-model:
-    description: Whether to pull the requested model after starting the server.
+    description: Whether this caller needs a runnable Ollama server and the requested model. false is cache-warm/probe mode only.
     required: false
     default: 'true'
 runs:
   using: composite
   steps:
-    - name: Restore pinned Ollama runtime archive
+    - name: Probe or restore pinned Ollama runtime archive
       id: runtime-cache
       uses: actions/cache@v4
       with:
         path: ~/.cache/jaewoon-ollama/ollama-linux-amd64-${{ inputs.version }}.tar.zst
         key: jaewoon-ollama-runtime-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
+        lookup-only: ${{ inputs.pull-model == 'false' }}
 
     - name: Download pinned runtime on cache miss
       if: steps.runtime-cache.outputs.cache-hit != 'true'
@@ -44,7 +45,18 @@ runs:
         test "$downloaded" = 1
         test -s "$archive"
 
+    - name: Cache warmup fast-path summary
+      if: inputs.pull-model == 'false'
+      shell: bash
+      run: |
+        set -euo pipefail
+        echo "OLLAMA_RUNTIME_CACHE_LOOKUP_ONLY=true"
+        echo "OLLAMA_RUNTIME_CACHE_HIT=${{ steps.runtime-cache.outputs.cache-hit }}"
+        echo 'OLLAMA_RUNTIME_EXTRACTION=SKIPPED_FOR_WARMUP'
+        echo 'OLLAMA_SERVER_START=SKIPPED_FOR_WARMUP'
+
     - name: Install cached runtime and start local server
+      if: inputs.pull-model == 'true'
       shell: bash
       run: |
         set -euo pipefail
