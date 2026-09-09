@@ -211,13 +211,14 @@ jobs:
           if(!gateSource.includes('historicalPreV5Compatibility:true'))throw new Error('historical pre-v5 compatibility guard missing');
           const assembler=fs.readFileSync('tools/artbook-assemble.mjs','utf8');
           if(!assembler.includes('newDepartmentClaimsAdded:false'))throw new Error('assembler new-department-claims guard missing');
-          if(!assembler.includes('daily final artbook limit reached'))throw new Error('daily one-artbook guard missing');
+          if(assembler.includes('daily final artbook limit reached'))throw new Error('obsolete daily one-artbook guard returned');
           if(!assembler.includes('productionApproval:false'))throw new Error('assembly must not grant production approval');
           if(!assembler.includes("criterion:'FIVE_VOTE_DEPARTMENT_AVERAGE_STARS_LE_OVERALL_AVERAGE'"))throw new Error('five-vote average-or-below second-work criterion missing');
           if(!assembler.includes('ratingsPerDepartment:5'))throw new Error('five ratings per department missing');
           if(!assembler.includes('departmentVotesPerResult:4'))throw new Error('four department votes per result missing');
           if(!assembler.includes('directorVotesPerResult:1'))throw new Error('one director vote per result missing');
-          if(!assembler.includes("secondWorkDueDate=workMode==='INITIAL'?date:null"))throw new Error('same-day second-work scheduling missing');
+          if(!assembler.includes("const followupEligible=!['SECOND_WORK'].includes(workMode);"))throw new Error('current follow-up eligibility contract missing');
+          if(!assembler.includes('const secondWorkDueDate=followupEligible?date:null;'))throw new Error('same-day follow-up scheduling missing');
           if(gate.assembled===true&&gate.collaborationProtocol==='PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5'){
             const finalFile=gate.assembledFile;
             if(!finalFile||!fs.existsSync(finalFile))throw new Error('assembled gate has no artbook file');
@@ -237,7 +238,7 @@ jobs:
         run: |
           set -euo pipefail
           grep -Fq "mode='SECOND_WORK'" tools/artbook-prepare-daily.mjs
-          grep -Fq "status:'SAME_DAY_SECOND_WORK_SCHEDULED'" tools/artbook-prepare-daily.mjs
+          grep -Fq "queueGameMutable.status=mode==='SECOND_WORK'?'SAME_DAY_SECOND_WORK_SCHEDULED'" tools/artbook-prepare-daily.mjs
           grep -Fq 'sameDaySecondWork' tools/artbook-prepare-daily.mjs
           grep -Fq "criterion:'FIVE_VOTE_AVERAGE_OR_BELOW_OVERALL_AVERAGE'" tools/artbook-second-work-runner.mjs
           grep -Fq 'receivedFiveVoteFeedback' tools/artbook-second-work-runner.mjs
