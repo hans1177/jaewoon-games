@@ -63,7 +63,7 @@
         "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
         "probe": "tools/unity-apk-runtime-smoke.sh",
         "method": "APK install -> launch -> Android tap/swipe input -> process survival -> fatal log scan -> screenshot",
-        "contractVerificationRunId": 34305065242,
+        "contractVerificationRunId": 34311347198,
         "contractVerificationConclusion": "success",
         "successfulRuntimeEvidenceRunId": null,
         "buildAloneCountsAsQaPass": false,
@@ -115,18 +115,18 @@
   "verification": {
     "departmentStandardsWorkflow": {
       "latestRun": {
-        "runId": 34305065242,
+        "runId": 34311347198,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "df8cbf7e00beea006db2dfce352889c90879a7e9",
-        "updatedAt": "2026-09-09T02:54:51Z"
+        "headSha": "93aff300193987e2810563208b52359a94abdd06",
+        "updatedAt": "2026-09-09T04:32:21Z"
       },
       "latestSuccessfulRun": {
-        "runId": 34305065242,
+        "runId": 34311347198,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "df8cbf7e00beea006db2dfce352889c90879a7e9",
-        "updatedAt": "2026-09-09T02:54:51Z"
+        "headSha": "93aff300193987e2810563208b52359a94abdd06",
+        "updatedAt": "2026-09-09T04:32:21Z"
       },
       "unitySmokeContractVerified": true
     },
@@ -162,18 +162,18 @@
     },
     "webRuntimeHealth": {
       "latestRun": {
-        "runId": 34252274478,
-        "status": "completed",
-        "conclusion": "failure",
-        "headSha": "d66d0b2ac0e69d888d4ee569f64d2589ed452a63",
-        "updatedAt": "2026-09-08T16:39:26Z"
-      },
-      "latestSuccessfulRun": {
-        "runId": 34187557226,
+        "runId": 34311359728,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "28d3432778e57027f88521a75a03f4f1b3bf1ac7",
-        "updatedAt": "2026-09-08T04:36:48Z"
+        "headSha": "3c0bd1e420537eb585261ec472f73c9e35e7bfe7",
+        "updatedAt": "2026-09-09T04:33:25Z"
+      },
+      "latestSuccessfulRun": {
+        "runId": 34311359728,
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "3c0bd1e420537eb585261ec472f73c9e35e7bfe7",
+        "updatedAt": "2026-09-09T04:33:25Z"
       },
       "formalBridge": "tools/company-qa-public-web-evidence.mjs"
     },
