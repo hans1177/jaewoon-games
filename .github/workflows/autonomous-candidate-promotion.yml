@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - 'autonomous/candidate-*'
+  workflow_dispatch:
+    inputs:
+      candidate_branch:
+        description: 'Exact autonomous/candidate-* branch produced by Autonomous Continuous Development'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -21,6 +27,7 @@ jobs:
       - name: Checkout submitted candidate branch
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.inputs.candidate_branch || github.ref_name }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
@@ -33,6 +40,8 @@ jobs:
         run: |
           set -euo pipefail
           git fetch origin autonomous-dev main
+          candidate_commit="$(git rev-parse HEAD)"
+          echo "PROMOTE_CANDIDATE_COMMIT=$candidate_commit" >> "$GITHUB_ENV"
           dev_sha="$(git rev-parse origin/autonomous-dev)"
           mapfile -t evidence_files < <(git diff --name-only "origin/autonomous-dev...HEAD" | grep '^\.autonomous/evidence/.*\.json$' || true)
           if [ "${#evidence_files[@]}" -ne 1 ]; then
@@ -116,6 +125,7 @@ jobs:
           node --test qa/autonomous-candidate-review.test.mjs
           node --test qa/evolution-evidence-recorder.test.mjs
           node --test qa/incubator-promotion-state.test.mjs
+          node --test qa/autonomous-vibe-release-handoff.test.mjs
           echo "DEV_REGRESSION=PASS"
 
       - name: Build verified learning evidence
@@ -132,7 +142,7 @@ jobs:
             --condition=AUTONOMOUS_DEV \
             --outcome=SUCCESS \
             --delta=0 \
-            --source-revision="$GITHUB_SHA" \
+            --source-revision="$PROMOTE_CANDIDATE_COMMIT" \
             --independent-qa=PASS \
             --evidence="$PROMOTE_EVIDENCE,independent-candidate-qa,vibe-regression"
           echo "LEARNING_EVIDENCE_VERIFIED=YES"
@@ -145,7 +155,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const evidence=JSON.parse(fs.readFileSync('/tmp/jaewoon-reviewed-candidate/evidence.json','utf8'));
-          const record={version:1,candidateId:evidence.candidateId,incubatorCandidateId:evidence.incubatorCandidateId||null,newProject:evidence.newProject===true,gameId:evidence.gameId,sourceCommit:evidence.sourceCommit,candidateCommit:process.env.GITHUB_SHA,verdict:'ADVANCE_TO_AUTONOMOUS_DEV',publicRelease:false,selfPromoteMain:false,independentQa:'PASS',jayAuthority:'L4_DEV_ONLY',recordedAt:new Date().toISOString()};
+          const record={version:1,candidateId:evidence.candidateId,incubatorCandidateId:evidence.incubatorCandidateId||null,newProject:evidence.newProject===true,gameId:evidence.gameId,sourceCommit:evidence.sourceCommit,candidateCommit:process.env.PROMOTE_CANDIDATE_COMMIT,verdict:'ADVANCE_TO_AUTONOMOUS_DEV',publicRelease:false,selfPromoteMain:false,independentQa:'PASS',jayAuthority:'L4_DEV_ONLY',recordedAt:new Date().toISOString()};
           fs.writeFileSync(`.autonomous/dev-history/${evidence.candidateId}.json`,JSON.stringify(record,null,2)+'\n');
           NODE
           git config user.name "jaewoon-jay-dev-gate"
@@ -191,8 +201,67 @@ jobs:
           echo "MAIN_MEMORY_WRITE=YES"
           if [ "$PROMOTE_NEW_PROJECT" = "true" ]; then echo "INCUBATOR_PROTOTYPE_VERIFIED=YES"; fi
 
-      - name: Dispatch next bounded queue item immediately
-        if: always()
+      - name: Prepare verified Vibe2 release handoff
+        id: release_handoff
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main autonomous-dev
+          if [ -n "$(git diff --name-only "$PROMOTE_SOURCE_COMMIT" origin/main -- "$PROMOTE_SOURCE_PATH")" ]; then
+            echo "RELEASE_HANDOFF=BLOCKED_MAIN_SOURCE_FRESHNESS"
+            exit 1
+          fi
+          base_main_sha="$(git rev-parse origin/main)"
+          safe_id="$(printf '%s' "$PROMOTE_CANDIDATE_ID" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-60)"
+          release_branch="vibe2/candidate/autonomous-${safe_id}-${GITHUB_RUN_ID}"
+          release_dir="/tmp/jaewoon-vibe2-release-${GITHUB_RUN_ID}"
+          rm -rf "$release_dir"
+          git worktree prune
+          git worktree add -b "$release_branch" "$release_dir" origin/main >/dev/null
+          cd "$release_dir"
+          rm -rf "$PROMOTE_SOURCE_PATH"
+          mkdir -p "$(dirname "$PROMOTE_SOURCE_PATH")"
+          cp -R /tmp/jaewoon-reviewed-candidate/game "$PROMOTE_SOURCE_PATH"
+          manifest=".vibe2/candidates/${PROMOTE_CANDIDATE_ID}/manifest.json"
+          node "$GITHUB_WORKSPACE/tools/autonomous-vibe-release-handoff.mjs" \
+            --evidence=/tmp/jaewoon-reviewed-candidate/evidence.json \
+            --catalog=game-catalog.json \
+            --base-main-sha="$base_main_sha" \
+            --promoted-dev-revision="$PROMOTED_DEV_REVISION" \
+            --independent-qa=PASS \
+            --output="$manifest"
+          git diff --check
+          git config user.name "jaewoon-autonomous-release-handoff"
+          git config user.email "actions@users.noreply.github.com"
+          git add "$PROMOTE_SOURCE_PATH" "$manifest"
+          test -n "$(git diff --cached --name-only)"
+          git commit -m "vibe2: release handoff ${PROMOTE_CANDIDATE_ID}"
+          git push origin "HEAD:$release_branch"
+          echo "release_branch=$release_branch" >> "$GITHUB_OUTPUT"
+          echo "RELEASE_HANDOFF=READY"
+          echo "VIBE2_RELEASE_BRANCH=$release_branch"
+
+      - name: Dispatch existing Vibe2 release gate explicitly
+        id: release_dispatch
+        if: steps.release_handoff.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if gh workflow run vibe2-candidate-release.yml --ref main -f candidate_branch="${{ steps.release_handoff.outputs.release_branch }}"; then
+              echo "VIBE2_RELEASE_GATE_DISPATCHED=YES"
+              echo "RELEASE_GATE_DISPATCH_MODE=workflow_dispatch"
+              exit 0
+            fi
+            sleep $((attempt * 2))
+          done
+          exit 1
+
+      - name: Dispatch next development floor when no release is pending
+        if: always() && (steps.release_handoff.outcome != 'success' || steps.release_dispatch.outcome != 'success')
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -208,9 +277,10 @@ jobs:
         run: |
           echo "### Autonomous Candidate Promotion" >> "$GITHUB_STEP_SUMMARY"
           echo "- independent QA: required" >> "$GITHUB_STEP_SUMMARY"
-          echo "- promotion target: autonomous-dev only" >> "$GITHUB_STEP_SUMMARY"
-          echo "- public game main promotion: NO" >> "$GITHUB_STEP_SUMMARY"
-          echo "- verified learning evidence: company-learning only" >> "$GITHUB_STEP_SUMMARY"
-          echo "- continuous queue next: workflow_dispatch" >> "$GITHUB_STEP_SUMMARY"
+          echo "- promotion target: autonomous-dev first" >> "$GITHUB_STEP_SUMMARY"
+          echo "- public game main direct promotion: NO" >> "$GITHUB_STEP_SUMMARY"
+          echo "- verified release handoff: existing Vibe2 Candidate Release Gate" >> "$GITHUB_STEP_SUMMARY"
+          echo "- verified learning evidence: existing company-learning + Company DNA workflow" >> "$GITHUB_STEP_SUMMARY"
+          echo "- next development floor waits while a release gate is pending" >> "$GITHUB_STEP_SUMMARY"
           echo "- new prototype completion: tested metadata gate only" >> "$GITHUB_STEP_SUMMARY"
           echo "- paid API: NO" >> "$GITHUB_STEP_SUMMARY"
