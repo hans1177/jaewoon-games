@@ -121,7 +121,11 @@ function isCompletedDesignBaseline(book){
 export function classifyProjectStage(project,catalog){
   const entry=catalogEntry(catalog,project.slug);
   const category=clean(entry?.homepageCategory).toLowerCase();
+  const productionTier=Number(project?.productionTier);
   if(project.mode==='HOLD'||/^HOLD/.test(clean(project.profileStatus)))return {id:'HOLD',rank:99,codeWork:false};
+  if(productionTier===1)return {id:'RELEASE_CONFIRMED',rank:1,codeWork:true};
+  if(productionTier===2)return {id:'DEVELOPMENT_CONFIRMED',rank:2,codeWork:true};
+  if(productionTier===3)return {id:'DESIGN_ONLY',rank:4,codeWork:false};
   if(category==='release-confirmed'||clean(project.profileStatus)==='RELEASE_CONFIRMED'||project.mode==='MAINTENANCE')return {id:'RELEASE_CONFIRMED',rank:1,codeWork:true};
   if(category==='development-confirmed'||clean(project.profileStatus)==='DEVELOPMENT_CONFIRMED'||project.mode==='IMPROVE')return {id:'DEVELOPMENT_CONFIRMED',rank:2,codeWork:true};
   if(project.mode==='EXPERIMENT_ONLY'||clean(project.profileStatus)==='NEEDS_AUDIT')return {id:'STRUCTURE_IMPROVEMENT',rank:3,codeWork:true};
@@ -138,7 +142,7 @@ function diagnosticSeverity(row){return SEVERITY_SCORE[row?.severity]||0;}
 function diagnosticsFor(map,slug){return map?.[slug]||{issues:[],topIssue:null,counts:{}};}
 function actionableForStage(stage,{incident,diagnostic,book,artbookHandoffReady=false}){
   if(stage.id==='RELEASE_CONFIRMED')return Boolean(incident||diagnostic?.topIssue);
-  if(stage.id==='PLANNING_IDENTITY_REQUIRED'||stage.id==='HOLD')return false;
+  if(stage.id==='PLANNING_IDENTITY_REQUIRED'||stage.id==='DESIGN_ONLY'||stage.id==='HOLD')return false;
   return Boolean(artbookHandoffReady||incident||diagnostic?.topIssue||actionableImprovementHints(book).length);
 }
 
@@ -164,7 +168,11 @@ export function buildAutonomousWorkOrder({portfolio,artbooks,health,catalog={gam
   const actionable=rows.filter(row=>row.actionable&&row.stage.codeWork);
   if(!actionable.length){
     const planning=rows.find(row=>row.stage.id==='PLANNING_IDENTITY_REQUIRED');
-    return {version:2,run:false,reason:planning?'PLANNING_IDENTITY_REQUIRED':'NO_ACTIONABLE_DIAGNOSTIC',date,paidApi:false,attemptsToday:attemptsToday.length,maxDaily,planningGameId:planning?.project.id||null,priorityGameId:requestedPriority||null};
+    const designOnly=rows.find(row=>row.stage.id==='DESIGN_ONLY');
+    const hasCodeStage=rows.some(row=>row.stage.codeWork);
+    const reason=planning?'PLANNING_IDENTITY_REQUIRED':(!hasCodeStage&&designOnly?'DESIGN_ONLY':'NO_ACTIONABLE_DIAGNOSTIC');
+    const planningTarget=planning||(!hasCodeStage?designOnly:null);
+    return {version:2,run:false,reason,date,paidApi:false,attemptsToday:attemptsToday.length,maxDaily,planningGameId:planningTarget?.project.id||null,priorityGameId:requestedPriority||null};
   }
 
   const releaseIncident=actionable.find(row=>row.stage.id==='RELEASE_CONFIRMED'&&row.incident);
@@ -200,10 +208,11 @@ export function buildAutonomousWorkOrder({portfolio,artbooks,health,catalog={gam
   };
 }
 
-function buildDiagnosticsMap(portfolio){
+function buildDiagnosticsMap(portfolio,catalog={games:[]}){
   const map={};
   for(const project of portfolio?.projects??[]){
-    if(project.mode==='HOLD'||!clean(project.sourcePath)||!fs.existsSync(project.sourcePath))continue;
+    const stage=classifyProjectStage(project,catalog);
+    if(!stage.codeWork||!clean(project.sourcePath)||!fs.existsSync(project.sourcePath))continue;
     try{map[project.slug]=diagnoseGame(project.sourcePath);}catch(error){map[project.slug]={issues:[],topIssue:null,counts:{},diagnosticError:error.message};}
   }
   return map;
@@ -213,7 +222,7 @@ async function main(){
   const date=process.argv.find(x=>x.startsWith('--date='))?.slice('--date='.length)||kstDate();
   const priorityGameId=process.argv.find(x=>x.startsWith('--priority-game-id='))?.slice('--priority-game-id='.length)||clean(process.env.AUTONOMOUS_PRIORITY_GAME_ID);
   const portfolio=readJson('autonomous-portfolio.json'),artbooks=readJson('game-artbooks.json',{artbooks:[]}),health=readJson('public-game-health.json',{games:[]}),catalog=readJson('game-catalog.json',{games:[]}),queueState=readJson('.autonomous/queue-state.json',{version:1,attempts:[]});
-  const diagnostics=buildDiagnosticsMap(portfolio);
+  const diagnostics=buildDiagnosticsMap(portfolio,catalog);
   const order=buildAutonomousWorkOrder({portfolio,artbooks,health,catalog,diagnostics,queueState,date,priorityGameId});
   writeJson(output,order);console.log(JSON.stringify(order,null,2));
 }
