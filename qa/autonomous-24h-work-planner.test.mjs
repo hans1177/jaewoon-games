@@ -170,6 +170,34 @@ const tierFixture=()=>({
 });
 const tierFilesystem={existsSync:path=>String(path).startsWith('web-games/')||path==='unity-games/gb'};
 
+test('active Tier2 runtime incident does not mask a free Tier2 runtime incident from FAST lane',()=>{
+  const fixture=tierFixture();
+  rebalanceProductionTiers({...fixture,filesystem:tierFilesystem});
+  const health={games:[
+    {gameId:'gc',status:'warning',issues:['404 active'],healthReason:'same-origin-resource-failure'},
+    {gameId:'gd',status:'warning',issues:['404 free'],healthReason:'same-origin-resource-failure'},
+  ]};
+  const queueState={version:2,attempts:[
+    {date:'2026-09-10',gameId:'C',gameSlug:'gc',sourcePath:'web-games/gc',status:'RESERVED',leaseExpiresAt:'2026-09-10T02:30:00Z'},
+  ]};
+  const order=build24hAutonomousWorkOrder({
+    portfolio:fixture.portfolio,
+    artbooks:fixture.artbooks,
+    health,
+    catalog:fixture.catalog,
+    diagnostics:{},
+    queueState,
+    date:'2026-09-10',
+    filesystem:tierFilesystem,
+    now:new Date('2026-09-10T02:00:00Z'),
+  });
+  assert.equal(order.gameId,'D');
+  assert.equal(order.selectedReason,'RUNTIME_INCIDENT_FIRST');
+  assert.equal(order.workLane,'FAST');
+  assert.deepEqual(order.departmentReviewRoles,['development','qa']);
+  assert.deepEqual(order.implementationRoles,['development']);
+});
+
 test('fixed tier counts auto-promote and demote games without pinned IDs',()=>{
   const first=tierFixture();
   const result=rebalanceProductionTiers({...first,filesystem:tierFilesystem});
