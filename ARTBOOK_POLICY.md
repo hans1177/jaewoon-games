@@ -45,14 +45,87 @@
 
 5개 부서가 아트북 파트를 작성하기 전에 Vibe2가 기존 게임 근거를 읽고 **1차 기획 초안**을 만든다.
 
+### 2단계 작성 방식
+
+Vibe2는 분석과 창작을 한 번에 섞지 않는다.
+
+```text
+1단계 EVIDENCE_EXTRACTION
+→ 기존 코드/설정에서 확인되는 지역·퀘스트·보스·NPC·사실 추출
+→ 확인되지 않는 부분은 detectedGaps로 분리
+
+2단계 CAUSALITY_SYNTHESIS
+→ 기존 사실을 잠그고 빈 구간만 PROPOSAL로 확장
+→ 전체 게임 인과·퀘스트·지역·보스·엔딩 초안 작성
+```
+
+- `existingFacts / existingRegions / existingQuests / existingBosses / existingCharacters`는 근거 추출 결과다.
+- 코드에 없는 새 내용은 기존 사실과 섞지 않고 `proposalAdditions`로 분리한다.
 - Vibe2 초안은 기획부 확정안이 아니라 `PROPOSAL`이다.
 - 기존 코드/설정/사용자 지시와 충돌하면 기존 근거와 사용자 지시가 우선한다.
-- 최소 `OPENING → EARLY → MID → LATE → FINAL_BOSS → ENDING` 여섯 구간이 모두 있어야 한다.
-- 지역 흐름, 메인 퀘스트 체인, 주요 NPC/세력, 보스 등장 이유, 사건 원인→결과, 현재 비어 있는 구간을 함께 제안한다.
-- 현재 초반부만 구현된 게임은 중반·후반·최종보스·엔딩의 빈 구간을 명시적으로 채우는 초안을 만든다.
-- Vibe2는 게임 규모를 보고 12~30컷 안에서 필요한 아트북 장수를 제안한다. 단순 게임은 짧게, RPG·생존·어드벤처·스토리 비중이 큰 게임은 더 많은 컷을 사용할 수 있다.
+
+### 전체 게임 품질 계약
+
+초안은 단순히 6개 제목을 채우는 수준으로 통과할 수 없다.
+
+반드시 `OPENING → EARLY → MID → LATE → FINAL_BOSS → ENDING` 여섯 구간을 **정확히 한 번씩** 가져야 한다.
+
+각 `phasePlan`에는 최소 다음이 모두 필요하다.
+
+- `stage`
+- `region`
+- `quest`
+- `cause`
+- `playerAction`
+- `result`
+- `nextHook`
+
+즉 각 구간은:
+
+```text
+원인
+→ 플레이어가 해야 할 행동
+→ 행동 결과
+→ 다음 지역/퀘스트로 이어지는 이유
+```
+
+가 명시돼야 한다.
+
+추가 필수 조건:
+
+- `phasePlans` 정확히 6개
+- `mainQuestChain` 최소 6개
+- 메인 퀘스트마다 `stage / region / quest / cause / playerAction / result / nextHook`
+- `regionTransitions`로 주요 지역 이동 이유와 해금 조건 제안
+- `npcMotivations`로 주요 NPC의 목표·갈등·플레이어와의 관계 제안
+- `bossCausality` 최소 1개 이상: 보스가 왜 지금 등장하는지, 무엇이 전투를 촉발하는지, 승리 후 세계/진행이 어떻게 바뀌는지 설명
+- `centralConflict`
+- `causalitySummary`
+- `conflictEscalation`
+- `progressionBridge`
+- `finalRegion`
+- `endgame`
+- `postgame`
+- 현재 비어 있는 콘텐츠를 `gaps`로 명시
+
+단순 이름 나열, 지역/보스 목록만 있는 초안, `cause → action → result → nextHook` 연결이 없는 초안은 실패다.
+
+현재 초반부만 구현된 게임은 중반·후반·최종보스·엔딩을 **구현 완료라고 가장하지 않고 PROPOSAL로 보완**해야 한다.
+
+### 장수
+
+- Vibe2는 게임 규모를 보고 12~30컷 안에서 필요한 아트북 장수를 제안한다.
+- 단순 게임은 12~14컷을 사용할 수 있다.
+- 일반 게임은 15~18컷을 권장한다.
+- RPG·생존·어드벤처·스토리 중심 게임은 최소 18컷을 기본 후보로 보고 필요하면 24컷 이상까지 확장한다.
+- 최대 30컷을 넘지 않는다.
+- 장수를 채우기 위한 반복 페이지는 금지한다.
+
+### 기획부 인수
+
 - 기획부는 Vibe2 초안을 그대로 확정하지 않고 실제 근거와 개연성을 검토·수정·보완한다.
-- Vibe2 초안이 여섯 스토리 구간을 채우지 못하면 해당 아트북 작업은 부서 단계로 넘어가지 않는다.
+- 기획부는 특히 6단계 인과, 메인 퀘스트 체인, 지역 전환, NPC 동기, 보스 등장 이유를 확인한다.
+- Vibe2 초안이 전체 품질 계약을 만족하지 못하면 해당 아트북 작업은 부서 단계로 넘어가지 않는다.
 
 ## 창작 아이디어 + 구현 기본 계획 + 시연 검증 계획 게이트
 
@@ -107,6 +180,7 @@
 - 기존 핵심 10컷에는 planning 2 / graphics 2 / development 2 / qa 1 / balance 1 / director 2가 포함돼야 한다.
 - 목표 장수에서 10컷을 뺀 추가 컷은 Vibe2 1차 초안 페이지이며 `PROPOSAL`임을 표시해야 한다.
 - Vibe2 초안은 OPENING / EARLY / MID / LATE / FINAL_BOSS / ENDING을 모두 포함해야 한다.
+- 신규 v2 초안은 `phasePlans=6`, `mainQuestChain>=6`, `bossCausality>=1`, `causalitySummary`, `endgame` 품질 계약을 만족해야 한다.
 - 빈 제목·빈 본문이 없는지 검사한다.
 - 동일한 컷이 중복되지 않았는지 검사한다.
 - 각 컷의 이미지 경로가 실제로 존재하는지 검사한다.
@@ -166,7 +240,7 @@
 
 ```json
 {
-  "version": 9,
+  "version": 10,
   "gameId": "game-id",
   "date": "2026-09-09",
   "status": "COMPLETED",
@@ -174,13 +248,19 @@
     "min": 12,
     "default": 16,
     "max": 30,
-    "target": 16,
+    "target": 18,
     "legacyCompletedPages": 10
   },
   "vibe2FirstDraft": {
     "status": "FIRST_DRAFT_READY",
     "proposalOnly": true,
-    "requiredStoryStages": ["OPENING", "EARLY", "MID", "LATE", "FINAL_BOSS", "ENDING"]
+    "requiredStoryStages": ["OPENING", "EARLY", "MID", "LATE", "FINAL_BOSS", "ENDING"],
+    "qualityContract": {
+      "phasePlans": 6,
+      "minMainQuests": 6,
+      "causalityRequired": true,
+      "evidenceProposalSeparation": true
+    }
   },
   "departments": {
     "planning": {},
@@ -193,8 +273,8 @@
   "cuts": ["목표 장수 12~30컷"],
   "postprocess": {
     "complete": true,
-    "requiredCuts": 16,
-    "cutCount": 16,
+    "requiredCuts": 18,
+    "cutCount": 18,
     "newClaimsAdded": false
   }
 }
