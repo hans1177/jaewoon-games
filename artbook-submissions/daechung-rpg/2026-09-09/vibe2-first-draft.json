@@ -1,0 +1,88 @@
+{
+  "recommendedPages": 12,
+  "storySpine": {
+    "opening": "대충 용사 RPG",
+    "early": "산 등반길",
+    "mid": "산 중턱 · Lv.14~16 · 중립 몬스터 지역",
+    "late": "산 꼭대기 · 비밀 지역",
+    "finalBoss": "슬라임 왕",
+    "ending": "완료: 촌장에게 돌아가 보상 50G 받기"
+  },
+  "gaps": [
+    "f10",
+    "f11"
+  ],
+  "sideQuestHooks": [
+    "빙결 대검",
+    "저주 쌍검",
+    "사신의 낫"
+  ],
+  "majorBosses": [
+    "slimeKing",
+    "giantCaveSlime",
+    "ogre",
+    "hiddenEnemy"
+  ],
+  "runner": {
+    "type": "vibe2-local-open-model-first-draft",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false
+  },
+  "sourceMode": "UNITY_PLUS_WEB_ARCHIVE",
+  "evidenceFiles": [
+    "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+    "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+    "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+    "web-games/daechung-rpg/index.html",
+    "web-games/daechung-rpg/patch-core18.js",
+    "web-games/daechung-rpg/patch-v15.js",
+    "web-games/daechung-rpg/patch-v16.js",
+    "web-games/daechung-rpg/patch-v17.js",
+    "web-games/daechung-rpg/patch-v18-reaper.js",
+    "web-games/daechung-rpg/patch-v18.js",
+    "web-games/daechung-rpg/rpg.html"
+  ],
+  "version": 1,
+  "gameId": "daechung-rpg",
+  "date": "2026-09-09",
+  "status": "FIRST_DRAFT_READY",
+  "author": "vibe2",
+  "proposalOnly": true,
+  "requiredStoryStages": [
+    "OPENING",
+    "EARLY",
+    "MID",
+    "LATE",
+    "FINAL_BOSS",
+    "ENDING"
+  ],
+  "visualPages": [
+    {
+      "no": 1,
+      "title": "오프닝",
+      "body": "대충 용사 RPG · 산 등반길",
+      "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/vibe2-draft-1.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 2,
+      "title": "초반",
+      "body": "산 등반길",
+      "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/vibe2-draft-2.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    }
+  ],
+  "visualPageCount": 2,
+  "targetArtbookPages": 12,
+  "sourceOfTruth": "proposal-before-planning-review"
+}

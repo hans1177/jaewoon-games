@@ -1,0 +1,57 @@
+{
+  "version": 6,
+  "gameId": "daechung-rpg",
+  "date": "2026-09-09",
+  "department": "development",
+  "status": "REVIEWED",
+  "round": 2,
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "independentFirstRoundCompleted": true,
+    "onePeerPerGeneration": true
+  },
+  "protocol": "PEER_IMPROVEMENT_STAR_5",
+  "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+  "reviewedDepartments": [
+    "planning",
+    "graphics",
+    "qa",
+    "balance"
+  ],
+  "ratingScale": {
+    "type": "STARS",
+    "min": 1,
+    "max": 5
+  },
+  "peerReviews": [
+    {
+      "targetDepartment": "planning",
+      "improvement": "본 개발 부서 결과물의 이번 검토 점수를 5점으로 1~5 정수이며 5점 만점.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "graphics",
+      "improvement": "본 개발 부서 결과물의 코어 파일 및 스프라이트 구조를 강화하여 품질을 높일 수 있습니다.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "qa",
+      "improvement": "본 부서 결과물의 개선점은 'Unity + Web Archive'의 검증 증명이 부서 결과물의 품질에 미치는 영향을 더 명확하게 설명할 수 있습니다.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "balance",
+      "improvement": "본 개발 부서 결과물의 1차 독립 아트북 평가를 통해 전투 레벨, 보상 시스템, 지역 사건 등 구조적 요소를 강화할 수 있습니다.",
+      "stars": 5
+    }
+  ],
+  "guard": {
+    "mayRewriteOtherDepartments": false,
+    "mayEvaluateOwnDepartment": false,
+    "productionApproval": false,
+    "starRatingIsProductionApproval": false
+  }
+}

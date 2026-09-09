@@ -1,6 +1,6 @@
 {
   "version": 6,
-  "checkedAt": "2026-09-08T22:04:23.092Z",
+  "checkedAt": "2026-09-09T02:07:29.436Z",
   "date": "2026-09-09",
   "gameId": "daechung-rpg",
   "gameName": "대충 RPG",
@@ -11,84 +11,112 @@
     "qa",
     "balance"
   ],
-  "readyRoles": [],
-  "readyCount": 0,
-  "requiredCount": 5,
-  "missing": [
-    {
-      "role": "planning",
-      "file": "artbook-submissions/daechung-rpg/2026-09-09/planning.json",
-      "reason": "missing-file"
-    },
-    {
-      "role": "graphics",
-      "file": "artbook-submissions/daechung-rpg/2026-09-09/graphics.json",
-      "reason": "missing-file"
-    },
-    {
-      "role": "development",
-      "file": "artbook-submissions/daechung-rpg/2026-09-09/development.json",
-      "reason": "missing-file"
-    },
-    {
-      "role": "qa",
-      "file": "artbook-submissions/daechung-rpg/2026-09-09/qa.json",
-      "reason": "missing-file"
-    },
-    {
-      "role": "balance",
-      "file": "artbook-submissions/daechung-rpg/2026-09-09/balance.json",
-      "reason": "missing-file"
-    }
+  "readyRoles": [
+    "planning",
+    "graphics",
+    "development",
+    "qa",
+    "balance"
   ],
+  "readyCount": 5,
+  "requiredCount": 5,
+  "missing": [],
   "invalid": [],
-  "independentRoundComplete": false,
+  "independentRoundComplete": true,
   "submissionContract": "V5_CREATIVE_IMPLEMENTATION_DEMO_PLAN",
   "historicalPreV5Compatibility": true,
-  "reviewReadyRoles": [],
-  "reviewReadyCount": 0,
+  "reviewReadyRoles": [
+    "planning",
+    "graphics",
+    "development",
+    "qa",
+    "balance"
+  ],
+  "reviewReadyCount": 5,
   "reviewRequiredCount": 5,
-  "reviewMissing": [
-    {
-      "role": "planning",
-      "file": "artbook-submissions/daechung-rpg/2026-09-09/reviews/planning.json",
-      "reason": "missing-review"
-    },
-    {
-      "role": "graphics",
-      "file": "artbook-submissions/daechung-rpg/2026-09-09/reviews/graphics.json",
-      "reason": "missing-review"
-    },
-    {
-      "role": "development",
-      "file": "artbook-submissions/daechung-rpg/2026-09-09/reviews/development.json",
-      "reason": "missing-review"
-    },
-    {
-      "role": "qa",
-      "file": "artbook-submissions/daechung-rpg/2026-09-09/reviews/qa.json",
-      "reason": "missing-review"
-    },
-    {
-      "role": "balance",
-      "file": "artbook-submissions/daechung-rpg/2026-09-09/reviews/balance.json",
-      "reason": "missing-review"
-    }
-  ],
+  "reviewMissing": [],
   "reviewInvalid": [],
-  "peerReviewsComplete": false,
+  "peerReviewsComplete": true,
   "directorReviewFile": "artbook-submissions/daechung-rpg/2026-09-09/reviews/director.json",
-  "directorReviewReady": false,
-  "directorReviewProblems": [
-    "director-review-missing"
-  ],
+  "directorReviewReady": true,
+  "directorReviewProblems": [],
   "directorRatingsRequired": 5,
-  "ratingsPerDepartment": 0,
+  "ratingsPerDepartment": 5,
   "collaborationProtocol": "PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5",
   "homepageOpinionMode": "IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS",
-  "collaborationComplete": false,
-  "readyForDirectorAssembly": false,
+  "collaborationComplete": true,
+  "readyForDirectorAssembly": true,
   "directorMayAuthorMissingSections": false,
   "directorMayAuthorMissingReviews": false,
-  "formalProductionGate": "BLOCKED_WAITING_FOR_REAL_DEPARTMENT_SUBMISSIONS"
+  "formalProductionGate": "ARTBOOK_COMPLETED_AWAITING_OWNER_PRODUCTION_DECISION",
+  "assembled": true,
+  "assembledFile": "artbook-submissions/daechung-rpg/2026-09-09/artbook.json",
+  "registeredArtbookId": "daechung-rpg-2026-09-09-initial",
+  "homepagePublished": true,
+  "departmentOpinionsPublished": true,
+  "departmentVotesPerResult": 4,
+  "directorVotesPerResult": 1,
+  "overallAverageStars": 4.92,
+  "secondWorkDepartments": [
+    "planning",
+    "graphics"
+  ],
+  "secondWorkDueDate": "2026-09-09",
+  "assemblyAddsNewDepartmentClaims": false,
+  "postprocessComplete": true,
+  "postprocessChecks": {
+    "version": 5,
+    "complete": true,
+    "checkedAt": "2026-09-09T02:07:29.435Z",
+    "requiredCuts": 12,
+    "cutCount": 12,
+    "pagePolicy": {
+      "min": 12,
+      "default": 16,
+      "max": 30,
+      "target": 12,
+      "legacyTenPageCompatible": true
+    },
+    "pagePlan": [
+      "director",
+      "Vibe2:오프닝",
+      "Vibe2:초반",
+      "planning",
+      "planning",
+      "graphics",
+      "graphics",
+      "development",
+      "development",
+      "qa",
+      "balance",
+      "director"
+    ],
+    "cutsPerDepartment": {
+      "planning": 2,
+      "graphics": 2,
+      "development": 2,
+      "qa": 1,
+      "balance": 1,
+      "director": 2,
+      "vibe2": 2
+    },
+    "formatChecked": true,
+    "emptyContentChecked": true,
+    "uniqueVisualsChecked": true,
+    "imagePathsChecked": true,
+    "newClaimsAdded": false,
+    "sourceMode": "VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_OWNED_VISUAL_PAGES_PLUS_DIRECTOR_PRESENTATION",
+    "assistantAuthorship": false,
+    "vibe2DraftAuthorship": true,
+    "imageFirst": true,
+    "shortText": true,
+    "displayLanguage": "ko"
+  },
+  "cutCount": 12,
+  "requiredCuts": 12,
+  "completedArtbook": true,
+  "visualFirst": true,
+  "employeeAuthoredPages": 10,
+  "vibe2DraftPages": 2,
+  "assistantAuthoredPages": 0
 }

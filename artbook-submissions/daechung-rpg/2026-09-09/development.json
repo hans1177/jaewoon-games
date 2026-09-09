@@ -1,0 +1,213 @@
+{
+  "version": 5,
+  "gameId": "daechung-rpg",
+  "date": "2026-09-09",
+  "department": "development",
+  "status": "SUBMITTED",
+  "departmentReadiness": "NEEDS_VALIDATION",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false
+  },
+  "headline": "Unity + Web Archive",
+  "evidence": [
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-core18.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v15.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v16.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v17.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v18-reaper.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v18.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/rpg.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-daechung-rpg.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "implementedNow": "2026-09-09",
+    "architecture": "Unity + Web Archive",
+    "prototypeLimits": "140",
+    "technicalRisks": "140",
+    "demoPlan": "140",
+    "handoffs": "140"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "1. World Map: Create a dynamic world map with interactive elements that respond to player actions.",
+      "2. Character Arc: Develop a character-driven narrative where the protagonist's choices shape the story.",
+      "3. Region Events: Design region-specific events that naturally follow the story progression."
+    ],
+    "implementationPlan": [
+      "1. Implement a Unity-based game core with a player state system.",
+      "2. Create a prototype animated visual with interactive elements.",
+      "3. Integrate a runtime bootstrap system for game data persistence."
+    ],
+    "demoValidation": [
+      "1. Test the prototype in Unity with real-time data updates.",
+      "2. Validate the prototype with web-based testing."
+    ]
+  },
+  "unverified": [
+    "1. Ensure all prototype animations are properly validated in Unity.",
+    "2. Confirm that all data persistence is working as expected.",
+    "3. Finalize the prototype for deployment."
+  ],
+  "cuts": [
+    {
+      "kind": "development",
+      "title": "Unity + Web Archive",
+      "body": "1. Ensure all animations are optimized for performance. · 2. Test the prototype in Unity to ensure real-time updates. · 3. Finalize the prototype for deployment.",
+      "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/development.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "UNITY_PLUS_WEB_ARCHIVE",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "development",
+        "ownerName": "개발",
+        "pageSlot": 1,
+        "visualType": "gameplay-loop",
+        "title": "Unity + Web Archi…",
+        "focus": "Unity + Web Archive",
+        "caption": "Unity + Web Archive",
+        "elements": [
+          {
+            "label": "implemented…",
+            "note": "2026-09-09",
+            "kind": ""
+          },
+          {
+            "label": "prototypeLi…",
+            "note": "140",
+            "kind": ""
+          },
+          {
+            "label": "technicalRi…",
+            "note": "140",
+            "kind": ""
+          },
+          {
+            "label": "demoPlan",
+            "note": "140",
+            "kind": ""
+          },
+          {
+            "label": "handoffs",
+            "note": "140",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/development-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "development"
+      },
+      {
+        "owner": "development",
+        "ownerName": "개발",
+        "pageSlot": 2,
+        "visualType": "system-flow",
+        "title": "Unverified",
+        "focus": "Unverified",
+        "caption": "1. Ensure all prototype animations are prope…",
+        "elements": [
+          {
+            "label": "unverified",
+            "note": "1. Ensure all proto…",
+            "kind": ""
+          },
+          {
+            "label": "unverified",
+            "note": "2. Confirm that all…",
+            "kind": ""
+          },
+          {
+            "label": "unverified",
+            "note": "3. Finalize the pro…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/development-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "development"
+      }
+    ],
+    "generatedBy": {
+      "department": "development",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}
