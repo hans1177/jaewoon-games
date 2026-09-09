@@ -1,11 +1,11 @@
 {
-  "version": 11,
+  "version": 12,
   "id": "crystal-defense-2026-09-10-revision-02",
   "gameId": "crystal-defense",
   "gameName": "수정 디펜스",
   "date": "2026-09-10",
   "edition": 2,
-  "status": "REVIEW_REQUIRED",
+  "status": "FIX_REQUIRED",
   "workMode": "REVISION",
   "initialArtbook": false,
   "revisionArtbook": true,
@@ -45,9 +45,21 @@
   "feedbackLoop": {
     "category2EvidenceFound": false,
     "KEEP": ["현재 웹 게임의 핵심 플레이 규칙과 사용자에게 보이는 상태 전이는 Unity 이전 기준선으로 유지"],
-    "CHANGE": ["초판의 true/1/0/none/serverless/live 및 로딩 실패 같은 형식 채우기 서술은 5부서 검증 명세로 교체"],
-    "DROP": ["소스 근거가 없는 한국 지역·NPC·퀘스트·주인공 설정을 확정 설정으로 취급하는 방식"],
-    "note": "2분류 플레이테스트 결과가 별도 근거로 확인되면 기존 결정을 덮지 말고 새 revision evidence로 추가해 KEEP/CHANGE/DROP과 Unity 계획을 다시 갱신한다."
+    "CHANGE": [
+      "초판의 true/1/0/none/serverless/live 및 로딩 실패 같은 형식 채우기 서술은 5부서 검증 명세로 교체",
+      "소스 근거가 없는 지역·NPC·퀘스트·주인공 설정을 확정 설정으로 취급한 생성/검증 경로를 수정하고 재검증"
+    ],
+    "FIX_REQUIRED": [
+      {
+        "DECISION": "FIX_REQUIRED",
+        "ROOT_CAUSE_CLASS": "VALIDATION_GATE",
+        "ROOT_CAUSE": "기존 revision 후보는 구조화되지 않은 legacy DROP을 허용해, 근거 없는 설정 생성이라는 시스템 결함을 설계 폐기처럼 기록할 수 있었다.",
+        "EVIDENCE": "artbook-submissions/crystal-defense/2026-09-10/artbook.json의 기존 feedbackLoop.DROP은 DESIGN_REDUNDANT/GOAL_CONFLICT가 아닌 근거 없는 설정 생성 문제였다.",
+        "UNITY_IMPLEMENTATION_NOTE": "완료 전 아트북 후보 검증에서 legacy DROP을 차단하고 시스템/생성/검증 결함은 CHANGE 또는 FIX_REQUIRED와 근본원인 분류를 요구한다.",
+        "UNITY_ART_NOTE": "근거 없는 캐릭터·지역·NPC 비주얼 설정도 확정 아트 방향으로 승격하지 않고 검증 전 제안 상태로 유지한다."
+      }
+    ],
+    "note": "2분류 플레이테스트 결과가 별도 근거로 확인되면 기존 결정을 덮지 말고 새 revision evidence로 추가해 KEEP/CHANGE/FIX_REQUIRED와 Unity 계획을 다시 갱신한다."
   },
   "reviewGate": {
     "fiveDepartmentsSubmitted": true,
@@ -56,6 +68,7 @@
     "category2FeedbackRequiredWhenAvailable": true,
     "sourceGameModified": false,
     "readyForCompletedStatus": false,
-    "remaining": ["아트북 품질 게이트 실행","5부서 교차검토/감독 리뷰","원본 수치 및 저장 여부 증거 추출"]
+    "rootCauseFixRequired": true,
+    "remaining": ["아트북 품질 게이트 실행","5부서 교차검토/감독 리뷰","원본 수치 및 저장 여부 증거 추출","legacy DROP 재발 방지 게이트 통과"]
   }
 }
