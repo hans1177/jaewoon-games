@@ -34,3 +34,17 @@ test('rule patch stays development-only',()=>{
     assert.equal(resolveDepartmentScope({...common,role:'balance'}).run,false);
   }finally{fs.rmSync(source,{recursive:true,force:true});}
 });
+
+test('FAST lane runs implementation only in development workspace',()=>{
+  const source='web-games/__scope-fast-test__';
+  fs.rmSync(source,{recursive:true,force:true});fs.mkdirSync(source,{recursive:true});fs.writeFileSync(path.join(source,'index.html'),'<html><script>function load(){console.error("404")}</script></html>');
+  try{
+    const common={sourcePath:source,responsibilityFiles:['index.html'],repairMode:'MODEL',workLane:'FAST',goal:'404 경로 복구'};
+    assert.equal(resolveDepartmentScope({...common,role:'development'}).run,true);
+    for(const role of ['graphics','qa','balance']){
+      const result=resolveDepartmentScope({...common,role});
+      assert.equal(result.run,false);
+      assert.equal(result.reason,'FAST_LANE_DEVELOPMENT_ONLY');
+    }
+  }finally{fs.rmSync(source,{recursive:true,force:true});}
+});
