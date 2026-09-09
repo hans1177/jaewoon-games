@@ -207,7 +207,7 @@ jobs:
           if(!gateSource.includes('PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5'))throw new Error('five-vote protocol missing from gate source');
           if(!gateSource.includes('DIRECTOR_IMPROVEMENT_STAR_5'))throw new Error('director rating protocol missing from gate source');
           if(!gateSource.includes('ratingsPerDepartment'))throw new Error('ratings-per-department gate missing');
-          if(!gateSource.includes("submissionContract:'V5_CREATIVE_IMPLEMENTATION_DEMO_PLAN'"))throw new Error('v5 creative/implementation/demo contract missing');
+          if(!gateSource.includes("submissionContract:'V6_FIVE_DEPARTMENT_SEMANTIC_QUALITY_AND_REVIEW_SPECIFICITY'"))throw new Error('v6 five-department semantic/review contract missing');
           if(!gateSource.includes('historicalPreV5Compatibility:true'))throw new Error('historical pre-v5 compatibility guard missing');
           const assembler=fs.readFileSync('tools/artbook-assemble.mjs','utf8');
           if(!assembler.includes('newDepartmentClaimsAdded:false'))throw new Error('assembler new-department-claims guard missing');
