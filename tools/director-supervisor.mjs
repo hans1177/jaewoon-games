@@ -2,6 +2,7 @@
 // 역할: 총괄이 직원별 업무 배정, 실제 실행 증거, 결과, 중단 직접 원인을 점검한다.
 // 원칙: 상태표의 running 문자열만으로 근무를 인정하지 않으며 부서 전문 결과물을 대신 작성하지 않는다.
 import fs from 'node:fs';
+import { latestImpactFor, lowImpactStreak, priorityPenaltyForGame } from './autonomous-play-impact.mjs';
 
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const readText=file=>{try{return fs.readFileSync(file,'utf8');}catch{return'';}};
@@ -19,6 +20,9 @@ const timeOf=value=>new Date(value||0).getTime()||0;
 const queue=readJson('artbook-submission-queue.json',{});
 const company=readJson('company-status.json',{});
 const homepage=readJson('homepage-manager-status.json',null);
+const impactHistory=readJson('company-learning/autonomous-impact-history.json',{version:1,entries:[]});
+const impactEntries=Array.isArray(impactHistory?.entries)?impactHistory.entries:[];
+const latestAutonomousImpact=[...impactEntries].sort((a,b)=>String(b.evaluatedAt||'').localeCompare(String(a.evaluatedAt||'')))[0]||null;
 const actionsPath=process.argv[2]||'';
 const artbookJobsPath=process.argv[3]||'';
 const failedLogsDir=process.argv[4]||'';
@@ -124,6 +128,12 @@ function classifyAutonomousRole(role,run){
   return {department:role,taskAssigned,status,workState,task:run?`autonomous development floor ${run.id}`:'no autonomous development floor',executionEvidence:evidence,resultVerified,jobEvidence:jobEvidence(roleJob),directCause,blockers,reason,action,source:'autonomous-development'};
 }
 
+function attachLatestPerformance(item,role){
+  if(!latestAutonomousImpact||!Array.isArray(latestAutonomousImpact.reviewDepartments)||!latestAutonomousImpact.reviewDepartments.includes(role))return item;
+  const implementing=Array.isArray(latestAutonomousImpact.implementationDepartments)&&latestAutonomousImpact.implementationDepartments.includes(role);
+  return {...item,performance:{source:'company-learning/autonomous-impact-history.json',gameId:latestAutonomousImpact.gameId,candidateId:latestAutonomousImpact.candidateId,totalScore:latestAutonomousImpact.totalScore,executionQualityScore:latestAutonomousImpact.executionQualityScore,playerImpactScore:latestAutonomousImpact.playerImpactScore,impactStatus:latestAutonomousImpact.impactStatus,confidence:latestAutonomousImpact.confidence,reviewContributor:true,implementationContributor:implementing,evaluatedAt:latestAutonomousImpact.evaluatedAt}};
+}
+
 const artbookRun=latestRun('Free Artbook Department Bots');
 const autonomousRun=latestRun('Autonomous Continuous Development');
 const homepageRun=latestRun('Homepage Manager');
@@ -132,7 +142,7 @@ const unityRuntimeRun=latestRun('Unity Android Runtime Smoke');
 const publicHealthRun=latestRun('Public Game Health');
 const autonomousNewer=Boolean(autonomousRun&&(!artbookRun||timeOf(autonomousRun.updated_at||autonomousRun.created_at)>=timeOf(artbookRun.updated_at||artbookRun.created_at)));
 const staff={};
-for(const role of roles)staff[role]=autonomousNewer?classifyAutonomousRole(role,autonomousRun):classifyArtbookRole(role,artbookRun);
+for(const role of roles)staff[role]=attachLatestPerformance(autonomousNewer?classifyAutonomousRole(role,autonomousRun):classifyArtbookRole(role,artbookRun),role);
 
 {
   const evidence=[];const blockers=[];const homepagePolicy=company?.policy?.homepageOperations||{};const runtimeSyncActive=homepagePolicy.runtimeDataSync===true&&homepagePolicy.diagnosticOnly===true&&homepagePolicy.autoMaintenance===false;
@@ -173,15 +183,17 @@ const counts={WORKING:0,DONE:0,IDLE_NO_TASK:0,BLOCKED:0,FAILED:0,STALE:0};
 const liveStates={ACTIVE:0,WAITING:0,BLOCKED:0,DONE:0};
 for(const item of Object.values(staff)){counts[item.status]=(counts[item.status]||0)+1;liveStates[item.workState]=(liveStates[item.workState]||0)+1;}
 const attention=Object.values(staff).filter(x=>['BLOCKED','FAILED','STALE'].includes(x.status));
+const latestPerformance=latestAutonomousImpact?{gameId:latestAutonomousImpact.gameId,candidateId:latestAutonomousImpact.candidateId,totalScore:latestAutonomousImpact.totalScore,executionQualityScore:latestAutonomousImpact.executionQualityScore,playerImpactScore:latestAutonomousImpact.playerImpactScore,impactStatus:latestAutonomousImpact.impactStatus,confidence:latestAutonomousImpact.confidence,lowImpactStreak:lowImpactStreak(impactHistory,latestAutonomousImpact.gameId),priorityPenalty:priorityPenaltyForGame(impactHistory,latestAutonomousImpact.gameId),evaluatedAt:latestAutonomousImpact.evaluatedAt}:null;
 
 const report={
-  version:6,dateKst:date,directorRole:'staff-supervisor-not-substitute-worker',activeDailyTarget:activeGameId||null,activeDevelopmentRunId:autonomousRun?.id||null,
-  checks:{staffChecked:`${allDepartments.length}/${allDepartments.length}`,activeWorkOrder:workOrderExists?workOrder:null,activeWorkOrderExists:workOrderExists,evidenceAdapterMismatch,jobLevelEvidenceUsed:artbookJobs.length>0,autonomousDepartmentJobEvidenceUsed:autonomousJobs.length>0,liveDepartmentStates:true,failureLogsUsed:Boolean(failedLogsDir),runningLabelAloneCountsAsWork:false,directorMayGhostwriteMissingDepartmentWork:false,homepageDiagnosticOnlyRecognized:true,releaseArtifactEvidenceAdapterRegistered:true,artbookLiveTargetResolved:Boolean(liveArtbookTarget),artbookTargetSource:activeTargetSource,liveJobPrecedesPersistedSubmission:true},
+  version:7,dateKst:date,directorRole:'staff-supervisor-not-substitute-worker',activeDailyTarget:activeGameId||null,activeDevelopmentRunId:autonomousRun?.id||null,
+  checks:{staffChecked:`${allDepartments.length}/${allDepartments.length}`,activeWorkOrder:workOrderExists?workOrder:null,activeWorkOrderExists:workOrderExists,evidenceAdapterMismatch,jobLevelEvidenceUsed:artbookJobs.length>0,autonomousDepartmentJobEvidenceUsed:autonomousJobs.length>0,liveDepartmentStates:true,failureLogsUsed:Boolean(failedLogsDir),runningLabelAloneCountsAsWork:false,directorMayGhostwriteMissingDepartmentWork:false,homepageDiagnosticOnlyRecognized:true,releaseArtifactEvidenceAdapterRegistered:true,artbookLiveTargetResolved:Boolean(liveArtbookTarget),artbookTargetSource:activeTargetSource,liveJobPrecedesPersistedSubmission:true,playImpactEvidenceUsed:Boolean(latestAutonomousImpact),completionAndPerformanceSeparated:true},
   counts,liveStates,attentionRequired:attention.length>0,
   primaryFindings:[...(!workOrderExists&&activeGameId?[`NO_WORK_ORDER:${workOrder}`]:[]),...(evidenceAdapterMismatch?['EVIDENCE_ADAPTER_MISMATCH:artbook runner is Unity-script-centric while active target has Web archive evidence and no Unity project']:[]),...attention.flatMap(x=>x.blockers.map(b=>`${x.department}:${b}`))],
   workflowEvidence:{artbook:runEvidence(artbookRun),autonomousDevelopment:runEvidence(autonomousRun),homepage:runEvidence(homepageRun),publicGameHealth:runEvidence(publicHealthRun),unityBuild:runEvidence(unityBuildRun),unityRuntime:runEvidence(unityRuntimeRun)},
+  performance:{latestAutonomousPlayImpact:latestPerformance,historyEntries:impactEntries.length,priorityRule:'NO_PENALTY_ON_FIRST_UNOBSERVED_IMPACT; PENALTY_AFTER_2_CONSECUTIVE'},
   staff,
-  policy:{findWhyWorkStopped:true,inspectFailedJobLogs:true,distinguishIndividualFailureFromBlockedPeers:true,falseRunningForbidden:true,idleWithoutTaskIsNotFailure:true,homepageDiagnosticToolIsNotStandingWorker:true,verifiedReleaseArtifactCanSatisfyReleaseEvidence:true,parallelAutonomousDepartmentJobsRecognized:true,sourceWritesRemainSerial:true,fixLowRiskOperationalBlockers:true,escalateCoreDecisions:true,directorIntegrationOnlyForDepartmentContent:true,liveExecutionEvidencePrecedesPersistedQueue:true}
+  policy:{findWhyWorkStopped:true,inspectFailedJobLogs:true,distinguishIndividualFailureFromBlockedPeers:true,falseRunningForbidden:true,idleWithoutTaskIsNotFailure:true,homepageDiagnosticToolIsNotStandingWorker:true,verifiedReleaseArtifactCanSatisfyReleaseEvidence:true,parallelAutonomousDepartmentJobsRecognized:true,sourceWritesRemainSerial:true,fixLowRiskOperationalBlockers:true,escalateCoreDecisions:true,directorIntegrationOnlyForDepartmentContent:true,liveExecutionEvidencePrecedesPersistedQueue:true,staffCompletionDoesNotEqualPlayerImpact:true,lowImpactPriorityPenaltyRequiresTwoConsecutive:true}
 };
 fs.writeFileSync('director-supervision-status.json',JSON.stringify(report,null,2)+'\n');
 console.log(`STAFF_CHECK=${allDepartments.length}/${allDepartments.length}`);
@@ -192,6 +204,7 @@ console.log(`ARTBOOK_LIVE_TARGET=${liveArtbookTarget||'UNRESOLVED'}`);
 console.log(`ARTBOOK_TARGET_SOURCE=${activeTargetSource}`);
 console.log(`AUTONOMOUS_DEPARTMENT_JOB_EVIDENCE=${autonomousJobs.length?'YES':'NO'}`);
 console.log(`FAILURE_LOG_EVIDENCE=${failedLogsDir?'YES':'NO'}`);
+console.log(`LATEST_PLAY_IMPACT=${latestAutonomousImpact?`${latestAutonomousImpact.gameId}:${latestAutonomousImpact.totalScore}/10:${latestAutonomousImpact.impactStatus}`:'NONE'}`);
 for(const [k,v] of Object.entries(counts))console.log(`STAFF_${k}=${v}`);
 for(const [k,v] of Object.entries(liveStates))console.log(`LIVE_${k}=${v}`);
 for(const finding of report.primaryFindings)console.log(`DIRECTOR_FINDING=${finding}`);

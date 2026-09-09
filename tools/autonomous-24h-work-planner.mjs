@@ -11,6 +11,7 @@ import {
   latestArtbookFor,
 } from './autonomous-work-planner.mjs';
 import { activeReservations, attemptsForDate } from './autonomous-queue-state.mjs';
+import { lowImpactStreak, priorityPenaltyForGame } from './autonomous-play-impact.mjs';
 
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const clean=v=>String(v??'').trim();
@@ -81,7 +82,7 @@ function defaultSourceReleased(row){
   }
 }
 
-export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},queueState={version:2,attempts:[]},date=kstDate(),priorityGameId='',filesystem=fs,now=new Date(),isSourceReleased=()=>false}={}){
+export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},queueState={version:2,attempts:[]},impactHistory={version:1,entries:[]},date=kstDate(),priorityGameId='',filesystem=fs,now=new Date(),isSourceReleased=()=>false}={}){
   const attempts=attemptsForDate(queueState,date);
   const counts=new Map();
   for(const row of attempts)counts.set(row.gameId,(counts.get(row.gameId)||0)+1);
@@ -110,21 +111,26 @@ export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},qu
   const activeSourcePaths=new Set(active.map(row=>clean(row.sourcePath)).filter(Boolean));
   const available=runnable.filter(project=>!activeGameIds.has(project.id)&&!activeSourcePaths.has(clean(project.sourcePath)));
   const requested=clean(priorityGameId);
-  const meta={focusedGameIds:[...focusedIds],nextDevelopmentGameIds:nextIds,activeGameIds:[...activeGameIds],activeSourcePaths:[...activeSourcePaths],focusPolicyEnabled:Boolean(policy)};
+  const impactPriorityPenalties=Object.fromEntries(focused.map(project=>[project.id,{penalty:priorityPenaltyForGame(impactHistory,project.id),lowImpactStreak:lowImpactStreak(impactHistory,project.id)}]));
+  const meta={focusedGameIds:[...focusedIds],nextDevelopmentGameIds:nextIds,activeGameIds:[...activeGameIds],activeSourcePaths:[...activeSourcePaths],focusPolicyEnabled:Boolean(policy),impactPriorityPenalties};
   if(requested){
     const exactFocus=runnable.find(project=>project.id===requested||project.slug===requested);
     if(exactFocus&&(activeGameIds.has(exactFocus.id)||activeSourcePaths.has(clean(exactFocus.sourcePath))))return {project:null,blockedByActive:true,explicitPriority:true,requestedGameId:exactFocus.id,...meta};
     const exact=available.find(project=>project.id===requested||project.slug===requested);
     if(exact)return {project:exact,attemptsToday:counts.get(exact.id)||0,explicitPriority:true,...meta};
   }
-  available.sort((a,b)=>(counts.get(a.id)||0)-(counts.get(b.id)||0)||focusTotal(b)-focusTotal(a)||a.id.localeCompare(b.id));
+  available.sort((a,b)=>{
+    const effectiveA=(counts.get(a.id)||0)+priorityPenaltyForGame(impactHistory,a.id);
+    const effectiveB=(counts.get(b.id)||0)+priorityPenaltyForGame(impactHistory,b.id);
+    return effectiveA-effectiveB||focusTotal(b)-focusTotal(a)||a.id.localeCompare(b.id);
+  });
   const project=available[0]||null;
-  if(project)return {project,attemptsToday:counts.get(project.id)||0,explicitPriority:false,...meta};
+  if(project)return {project,attemptsToday:counts.get(project.id)||0,impactPriorityPenalty:priorityPenaltyForGame(impactHistory,project.id),lowImpactStreak:lowImpactStreak(impactHistory,project.id),explicitPriority:false,...meta};
   if(runnable.length&&active.length)return {project:null,blockedByActive:true,explicitPriority:false,...meta};
   return policy?{project:null,focusIdle:true,explicitPriority:false,...meta}:null;
 }
 
-export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={games:[]},diagnostics={},queueState={version:2,attempts:[]},date=kstDate(),filesystem=fs,priorityGameId='',now=new Date(),isSourceReleased=()=>false}={}){
+export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={games:[]},diagnostics={},queueState={version:2,attempts:[]},impactHistory={version:1,entries:[]},date=kstDate(),filesystem=fs,priorityGameId='',now=new Date(),isSourceReleased=()=>false}={}){
   const active=activeReservations(queueState,{now,isSourceReleased});
   const activeGameIds=new Set(active.map(row=>row.gameId));
   const activeSourcePaths=new Set(active.map(row=>clean(row.sourcePath)).filter(Boolean));
@@ -141,7 +147,7 @@ export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={
     };
   }
 
-  const selected=selectContinuousTarget({portfolio,artbooks,catalog,queueState,date,priorityGameId,filesystem,now,isSourceReleased});
+  const selected=selectContinuousTarget({portfolio,artbooks,catalog,queueState,impactHistory,date,priorityGameId,filesystem,now,isSourceReleased});
   if(selected?.blockedByActive){
     const focusedMode=selected.focusPolicyEnabled===true;
     return {
@@ -154,6 +160,7 @@ export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={
         maxFocusedGames:focusedMode?Number(portfolio?.developmentFocusPolicy?.maxFocusedGames||2):null,
         focusedGameIds:selected.focusedGameIds||[],
         nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],
+        impactPriorityPenalties:selected.impactPriorityPenalties||{},
         sourceRootLock:'ACTIVE_RESERVATION_LEASE',
         activeGameIds:selected.activeGameIds||[],
         activeSourcePaths:selected.activeSourcePaths||[],
@@ -162,7 +169,7 @@ export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={
     };
   }
   if(selected?.focusIdle){
-    return {run:false,reason:'NO_FOCUSED_DEVELOPMENT_FLOOR_NOW',date,continuous24h:{enabled:true,mode:'FOCUSED_GAME_FLOORS',focusedGameIds:selected.focusedGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],recoveryWakeup:'HOURLY'}};
+    return {run:false,reason:'NO_FOCUSED_DEVELOPMENT_FLOOR_NOW',date,continuous24h:{enabled:true,mode:'FOCUSED_GAME_FLOORS',focusedGameIds:selected.focusedGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],impactPriorityPenalties:selected.impactPriorityPenalties||{},recoveryWakeup:'HOURLY'}};
   }
   if(!selected){
     const fallback=buildAutonomousWorkOrder({portfolio,artbooks,health,catalog,diagnostics,queueState:{version:1,attempts:[]},date,filesystem,priorityGameId});
@@ -189,15 +196,18 @@ export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={
     maxFocusedGames:Number(portfolio?.developmentFocusPolicy?.maxFocusedGames||2),
     focusedGameIds:selected.focusedGameIds||[],
     nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],
-    selection:'PREFERRED_READY_THEN_SCORE_THEN_LEAST_KST_ATTEMPTS',
+    selection:'PREFERRED_READY_THEN_LOW_IMPACT_PENALTY_THEN_SCORE_THEN_LEAST_KST_ATTEMPTS',
     selectedGameAttemptsToday:selected.attemptsToday,
+    impactPriorityPenalty:selected.impactPriorityPenalty||0,
+    lowImpactStreak:selected.lowImpactStreak||0,
+    impactPriorityPenalties:selected.impactPriorityPenalties||{},
     activeGameIds:selected.activeGameIds||[],
     sourceRootLock:'ACTIVE_RESERVATION_LEASE',
     departmentSequence:['planning','development','graphics','qa','balance','planning-final'],
     recoveryWakeup:'HOURLY',
   };
   order.queue={...(order.queue||{}),attemptsToday:attemptsForDate(queueState,date).length,maxDaily:null,remainingBeforeSelection:null};
-  order.evidence={...(order.evidence||{}),continuous24hOriginalProfile:originalProfile,developmentFocus:{score:focusTotal(target),focusedGameIds:selected.focusedGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[]}};
+  order.evidence={...(order.evidence||{}),continuous24hOriginalProfile:originalProfile,developmentFocus:{score:focusTotal(target),focusedGameIds:selected.focusedGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],impactPriorityPenalty:selected.impactPriorityPenalty||0,lowImpactStreak:selected.lowImpactStreak||0}};
   return order;
 }
 
@@ -210,9 +220,10 @@ async function main(){
   const health=readJson('public-game-health.json',{games:[]});
   const catalog=readJson('game-catalog.json',{games:[]});
   const queueState=readJson('.autonomous/queue-state.json',{version:2,attempts:[]});
+  const impactHistory=readJson('company-learning/autonomous-impact-history.json',{version:1,entries:[]});
   if(portfolio?.status!=='ACTIVE')throw new Error('autonomous portfolio 비활성/오류');
   const diagnostics=buildDiagnosticsMap(portfolio);
-  const order=build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog,diagnostics,queueState,date,priorityGameId,isSourceReleased:defaultSourceReleased});
+  const order=build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog,diagnostics,queueState,impactHistory,date,priorityGameId,isSourceReleased:defaultSourceReleased});
   writeJson(output,order);
   console.log(JSON.stringify(order,null,2));
 }
