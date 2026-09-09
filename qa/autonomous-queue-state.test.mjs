@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {
   activeGameIds,
   activeReservations,
@@ -52,4 +53,14 @@ test('old queue attempts are pruned while recent evidence is retained',()=>{
   const next=reserveQueueWork(state,{date:'2026-09-09',gameId:'P0001',now:new Date('2026-09-09T00:00:00Z')});
   assert.equal(next.attempts.some(x=>x.gameId==='P0009'),false);
   assert.equal(next.attempts.some(x=>x.gameId==='P0002'),true);
+});
+
+test('failed-floor recovery cannot be evicted by the prepare writer queue and retries branch races',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/autonomous-continuous-development.yml',import.meta.url),'utf8');
+  const recover=workflow.split('\n  recover:\n')[1]||'';
+  assert.match(recover,/group: autonomous-dev-recovery-\$\{\{ github\.run_id \}\}/);
+  assert.doesNotMatch(recover,/group: autonomous-dev-writer/);
+  assert.match(recover,/for attempt in 1 2 3 4 5; do/);
+  assert.match(recover,/git reset --hard origin\/autonomous-dev/);
+  assert.match(recover,/if git push origin HEAD:autonomous-dev; then/);
 });
