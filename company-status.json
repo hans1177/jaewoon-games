@@ -120,7 +120,7 @@
         "P0009"
       ],
       "selection": "AUTO_TIER1_READY_THEN_SCORE_WITH_IMPACT_AWARE_TIER2",
-      "activeDevelopmentRunId": 34391602764,
+      "activeDevelopmentRunId": 34390478798,
       "syncIntervalMs": 30000,
       "updatedAtKst": "2026-09-10",
       "source": [
@@ -305,107 +305,107 @@
     "dateKst": "2026-09-10",
     "runningLabelAloneCountsAsWork": false,
     "counts": {
-      "WORKING": 2,
-      "DONE": 5,
+      "WORKING": 1,
+      "DONE": 6,
       "IDLE_NO_TASK": 1,
       "BLOCKED": 0,
       "FAILED": 0,
       "STALE": 0
     },
     "liveStates": {
-      "ACTIVE": 2,
+      "ACTIVE": 1,
       "WAITING": 1,
       "BLOCKED": 0,
-      "DONE": 5
+      "DONE": 6
     },
-    "activeDevelopmentRunId": 34391602764,
+    "activeDevelopmentRunId": 34390478798,
     "primaryFindings": [
       "NO_WORK_ORDER:artbook-work-orders/2026-09-10-daechung-rpg.json"
     ],
     "staff": {
       "planning": {
-        "status": "WORKING",
-        "workState": "ACTIVE",
-        "task": "autonomous development floor 34391602764",
+        "status": "DONE",
+        "workState": "DONE",
+        "task": "autonomous development floor 34390478798",
         "source": "autonomous-development",
-        "reason": "autonomous development department job is executing now",
+        "reason": "latest autonomous department handoff completed successfully",
         "jobEvidence": {
-          "id": 102601902739,
+          "id": 102598180668,
           "name": "department (planning-final)",
-          "status": "in_progress",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "success",
           "failedStep": null,
-          "startedAt": "2026-09-09T18:54:41Z",
-          "completedAt": null,
-          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34391602764/job/102601902739"
+          "startedAt": "2026-09-09T18:43:30Z",
+          "completedAt": "2026-09-09T18:45:04Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34390478798/job/102598180668"
         }
       },
       "development": {
         "status": "DONE",
         "workState": "DONE",
-        "task": "autonomous development floor 34391602764",
+        "task": "autonomous development floor 34390478798",
         "source": "autonomous-development",
         "reason": "latest autonomous department handoff completed successfully",
         "jobEvidence": {
-          "id": 102601191339,
+          "id": 102597471657,
           "name": "department (development)",
           "status": "completed",
           "conclusion": "success",
           "failedStep": null,
-          "startedAt": "2026-09-09T18:52:32Z",
-          "completedAt": "2026-09-09T18:54:17Z",
-          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34391602764/job/102601191339"
+          "startedAt": "2026-09-09T18:41:23Z",
+          "completedAt": "2026-09-09T18:43:06Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34390478798/job/102597471657"
         }
       },
       "qa": {
         "status": "DONE",
         "workState": "DONE",
-        "task": "autonomous development floor 34391602764",
+        "task": "autonomous development floor 34390478798",
         "source": "autonomous-development",
         "reason": "latest autonomous department handoff completed successfully",
         "jobEvidence": {
-          "id": 102601191235,
+          "id": 102597471906,
           "name": "department (qa)",
           "status": "completed",
           "conclusion": "success",
           "failedStep": null,
-          "startedAt": "2026-09-09T18:52:34Z",
-          "completedAt": "2026-09-09T18:54:27Z",
-          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34391602764/job/102601191235"
+          "startedAt": "2026-09-09T18:41:24Z",
+          "completedAt": "2026-09-09T18:42:57Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34390478798/job/102597471906"
         }
       },
       "graphics": {
         "status": "DONE",
         "workState": "DONE",
-        "task": "autonomous development floor 34391602764",
+        "task": "autonomous development floor 34390478798",
         "source": "autonomous-development",
         "reason": "latest autonomous department handoff completed successfully",
         "jobEvidence": {
-          "id": 102601191308,
+          "id": 102597471596,
           "name": "department (graphics)",
           "status": "completed",
           "conclusion": "success",
           "failedStep": null,
-          "startedAt": "2026-09-09T18:52:33Z",
-          "completedAt": "2026-09-09T18:54:38Z",
-          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34391602764/job/102601191308"
+          "startedAt": "2026-09-09T18:41:23Z",
+          "completedAt": "2026-09-09T18:43:25Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34390478798/job/102597471596"
         }
       },
       "balance": {
         "status": "DONE",
         "workState": "DONE",
-        "task": "autonomous development floor 34391602764",
+        "task": "autonomous development floor 34390478798",
         "source": "autonomous-development",
         "reason": "latest autonomous department handoff completed successfully",
         "jobEvidence": {
-          "id": 102601191259,
+          "id": 102597471891,
           "name": "department (balance)",
           "status": "completed",
           "conclusion": "success",
           "failedStep": null,
-          "startedAt": "2026-09-09T18:52:31Z",
-          "completedAt": "2026-09-09T18:54:16Z",
-          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34391602764/job/102601191259"
+          "startedAt": "2026-09-09T18:41:24Z",
+          "completedAt": "2026-09-09T18:43:08Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34390478798/job/102597471891"
         }
       },
       "director": {
@@ -619,36 +619,36 @@
     },
     "departmentTasks": {
       "planning": {
-        "status": "working",
-        "task": "autonomous development floor 34391602764",
+        "status": "done",
+        "task": "autonomous development floor 34390478798",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "ACTIVE",
-        "reason": "autonomous development department job is executing now"
+        "workState": "DONE",
+        "reason": "latest autonomous department handoff completed successfully"
       },
       "development": {
         "status": "done",
-        "task": "autonomous development floor 34391602764",
+        "task": "autonomous development floor 34390478798",
         "evidenceSource": "director-supervision-status.json",
         "workState": "DONE",
         "reason": "latest autonomous department handoff completed successfully"
       },
       "qa": {
         "status": "done",
-        "task": "autonomous development floor 34391602764",
+        "task": "autonomous development floor 34390478798",
         "evidenceSource": "director-supervision-status.json",
         "workState": "DONE",
         "reason": "latest autonomous department handoff completed successfully"
       },
       "graphics": {
         "status": "done",
-        "task": "autonomous development floor 34391602764",
+        "task": "autonomous development floor 34390478798",
         "evidenceSource": "director-supervision-status.json",
         "workState": "DONE",
         "reason": "latest autonomous department handoff completed successfully"
       },
       "balance": {
         "status": "done",
-        "task": "autonomous development floor 34391602764",
+        "task": "autonomous development floor 34390478798",
         "evidenceSource": "director-supervision-status.json",
         "workState": "DONE",
         "reason": "latest autonomous department handoff completed successfully"
