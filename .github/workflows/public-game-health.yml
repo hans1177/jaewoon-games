@@ -165,7 +165,10 @@ jobs:
           set -euo pipefail
           git config user.name "jaewoon-company-ai"
           git config user.email "actions@users.noreply.github.com"
-          git add public-game-health.json public-release-baselines.json asset-health.json company-qa-runtime-evidence.json company-learning/bug-memory.json artbook-revision-queue.json company-learning/evidence
+          git add public-game-health.json public-release-baselines.json asset-health.json company-qa-runtime-evidence.json company-learning/bug-memory.json artbook-revision-queue.json
+          if [ -d company-learning/evidence ]; then
+            git add company-learning/evidence
+          fi
           if git diff --cached --quiet; then
             echo "No health-state changes."
             exit 0
