@@ -26,6 +26,7 @@ function text(value) { return String(value ?? '').trim(); }
 function unique(values) { return [...new Set(values.filter(Boolean))]; }
 function hasAny(source, words) { const value = text(source).toLowerCase(); return words.some((word) => value.includes(String(word).toLowerCase())); }
 function declaredTypes(asset) { return Array.isArray(asset?.types) ? asset.types.map((value) => text(value).toLowerCase()) : []; }
+function frozenList(values) { return Object.freeze([...(Array.isArray(values) ? values : [])]); }
 
 function actorHasFrameAnimation(asset) {
   const animations = Array.isArray(asset?.animations) ? asset.animations.map((value) => text(value).toLowerCase()) : [];
@@ -78,6 +79,16 @@ function findCandidates(type, candidates) {
   }));
 }
 
+function normalizePlatformProfile(profile) {
+  if (!profile || typeof profile !== 'object') return null;
+  return Object.freeze({
+    qualityTarget:text(profile.qualityTarget),
+    input:frozenList(profile.input),
+    modules:frozenList(profile.modules),
+    performance:frozenList(profile.performance),
+  });
+}
+
 function choosePrototypePreset(request, presetCatalog) {
   const presets = Array.isArray(presetCatalog?.presets) ? presetCatalog.presets : [];
   if (!presets.length) return null;
@@ -91,14 +102,49 @@ function choosePrototypePreset(request, presetCatalog) {
     if (adjusted > bestScore) { best = preset; bestScore = adjusted; }
   }
   return best ? Object.freeze({
-    id:text(best.id), name:text(best.name), actorAssets:Object.freeze([...(best.actorAssets || [])]),
-    effectAssets:Object.freeze([...(best.effectAssets || [])]), supportingSourcePriority:Object.freeze([...(best.supportingSourcePriority || [])]),
+    id:text(best.id),
+    name:text(best.name),
+    genre:text(best.genre),
+    defaultTarget:text(best.defaultTarget || 'mobile-web'),
+    actorAssets:frozenList(best.actorAssets),
+    effectAssets:frozenList(best.effectAssets),
+    supportingSourcePriority:frozenList(best.supportingSourcePriority),
+    toolCandidates:frozenList(best.toolCandidates),
+    platformProfiles:Object.freeze({
+      mobileWeb:normalizePlatformProfile(best?.platformProfiles?.mobileWeb),
+      unityAndroid:normalizePlatformProfile(best?.platformProfiles?.unityAndroid),
+    }),
   }) : null;
 }
 
 function presetPreferredIds(preset) {
   if (!preset) return new Set();
   return new Set([...(preset.actorAssets || []), ...(preset.effectAssets || [])].map(text));
+}
+
+function chooseProductionTarget(request, preset) {
+  const source = text(request).toLowerCase();
+  if (/\bweb\b|웹|브라우저/.test(source)) return 'mobile-web';
+  if (/\bunity\b|유니티|android|안드로이드|apk/.test(source)) return 'unity-android';
+  return text(preset?.defaultTarget || 'mobile-web');
+}
+
+function buildProductionPlan(request, preset) {
+  if (!preset) return null;
+  const recommendedTarget = chooseProductionTarget(request, preset);
+  return Object.freeze({
+    mobileFirst:true,
+    genre:preset.genre,
+    recommendedTarget,
+    webQualityAllowed:true,
+    mobileWeb:preset.platformProfiles.mobileWeb,
+    unityAndroid:preset.platformProfiles.unityAndroid,
+    toolCandidates:preset.toolCandidates,
+    externalToolAutoInstall:false,
+    externalToolApprovalRequired:true,
+    publicUseRequiresLicenseLedger:true,
+    heavy3dUnityAndroidPreferred:['survival','rpg','action-rpg','fps-shooter','zombie-horror'].includes(preset.genre),
+  });
 }
 
 export function planAssetApplication({ prompt = '', manifest = null, presetCatalog = null, rebuild = false } = {}) {
@@ -112,6 +158,7 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     return !BLOCKED_LICENSE_WORDS.some((blocked) => license.toLowerCase().includes(blocked.toLowerCase()));
   });
   const prototypePreset = choosePrototypePreset(request, presetCatalog);
+  const production = buildProductionPlan(request, prototypePreset);
   const preferredIds = presetPreferredIds(prototypePreset);
   const matched = types.flatMap((type) => findCandidates(type, candidates))
     .sort((a, b) => Number(preferredIds.has(b.id)) - Number(preferredIds.has(a.id)));
@@ -125,10 +172,11 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     replaceable:true,
   }));
   return Object.freeze({
-    version:7,
+    version:8,
     request,
     rebuild:Boolean(rebuild),
     prototypePreset,
+    production,
     requestedTypes:Object.freeze(types),
     matched:Object.freeze(matched),
     missingTypes:Object.freeze(missingTypes),
@@ -148,6 +196,9 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     policy:Object.freeze({
       existingAssetsFirst:true,
       prototypePresetFirst:true,
+      mobileFirst:true,
+      webHighQualityAllowed:true,
+      unityAndroidPreferredForHeavy3D:true,
       blockedLicenses:[...BLOCKED_LICENSE_WORDS],
       blockedActorVisualWords:[...BLOCKED_ACTOR_VISUAL_WORDS],
       requireLicenseRecord:true,
@@ -165,9 +216,15 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
       styleConsistencyRequired:true,
       downloadOnDemand:true,
       cacheAfterFirstUse:true,
+      externalToolAutoInstall:false,
+      externalToolApprovalRequired:true,
     }),
     steps:Object.freeze([
-      '초안 장르에 맞는 prototype-asset-presets 프리셋 자동 선택',
+      '장르에 맞는 모바일 prototype-asset-presets 프리셋 자동 선택',
+      '모바일 Web과 Unity Android 프로필을 함께 계산하고 장르/요청에 맞는 기본 타깃 선택',
+      'Web은 저품질 임시판이 아니라 모바일 브라우저에서 가능한 최대 품질을 목표로 설정',
+      '무거운 3D 생존/RPG/액션RPG/FPS/호러는 Unity Android 본개발을 기본 추천',
+      '외부 무료 제작툴은 후보만 제시하고 라이선스/버전 승인 전 자동 설치 금지',
       '기존 저장소 에셋 확인 후 KEEP/ENHANCE/COMBINE/REPLACE 분류',
       '캐릭터/적/보스는 실제 프레임 애니메이션 또는 Motion Engine 실행 증거 확인',
       '정지 원본은 Motion Engine 프로필·런타임 증거·모바일 성능 통과 없이는 배우 후보에서 제외',
