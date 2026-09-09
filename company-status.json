@@ -103,8 +103,8 @@
       "STALE": 0
     },
     "liveStates": {
-      "ACTIVE": 1,
-      "WAITING": 6,
+      "ACTIVE": 6,
+      "WAITING": 1,
       "BLOCKED": 0,
       "DONE": 1
     },
@@ -113,85 +113,85 @@
     "staff": {
       "planning": {
         "status": "WORKING",
-        "workState": "WAITING",
+        "workState": "ACTIVE",
         "task": "autonomous development floor 34354297753",
         "source": "autonomous-development",
-        "reason": "autonomous development department job is queued for a runner",
+        "reason": "autonomous development department job is executing now",
         "jobEvidence": {
           "id": 102475034577,
           "name": "department (planning)",
-          "status": "queued",
+          "status": "in_progress",
           "conclusion": null,
           "failedStep": null,
-          "startedAt": "2026-09-09T12:59:56Z",
+          "startedAt": "2026-09-09T12:59:59Z",
           "completedAt": null,
           "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34354297753/job/102475034577"
         }
       },
       "development": {
         "status": "WORKING",
-        "workState": "WAITING",
+        "workState": "ACTIVE",
         "task": "autonomous development floor 34354297753",
         "source": "autonomous-development",
-        "reason": "autonomous development department job is queued for a runner",
+        "reason": "autonomous development department job is executing now",
         "jobEvidence": {
           "id": 102475035285,
           "name": "department (development)",
-          "status": "queued",
+          "status": "in_progress",
           "conclusion": null,
           "failedStep": null,
-          "startedAt": "2026-09-09T12:59:56Z",
+          "startedAt": "2026-09-09T12:59:59Z",
           "completedAt": null,
           "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34354297753/job/102475035285"
         }
       },
       "qa": {
         "status": "WORKING",
-        "workState": "WAITING",
+        "workState": "ACTIVE",
         "task": "autonomous development floor 34354297753",
         "source": "autonomous-development",
-        "reason": "autonomous development department job is queued for a runner",
+        "reason": "autonomous development department job is executing now",
         "jobEvidence": {
           "id": 102475034438,
           "name": "department (qa)",
-          "status": "queued",
+          "status": "in_progress",
           "conclusion": null,
           "failedStep": null,
-          "startedAt": "2026-09-09T12:59:56Z",
+          "startedAt": "2026-09-09T12:59:59Z",
           "completedAt": null,
           "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34354297753/job/102475034438"
         }
       },
       "graphics": {
         "status": "WORKING",
-        "workState": "WAITING",
+        "workState": "ACTIVE",
         "task": "autonomous development floor 34354297753",
         "source": "autonomous-development",
-        "reason": "autonomous development department job is queued for a runner",
+        "reason": "autonomous development department job is executing now",
         "jobEvidence": {
           "id": 102475034686,
           "name": "department (graphics)",
-          "status": "queued",
+          "status": "in_progress",
           "conclusion": null,
           "failedStep": null,
-          "startedAt": "2026-09-09T12:59:56Z",
+          "startedAt": "2026-09-09T13:00:00Z",
           "completedAt": null,
           "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34354297753/job/102475034686"
         }
       },
       "balance": {
         "status": "WORKING",
-        "workState": "WAITING",
+        "workState": "ACTIVE",
         "task": "autonomous development floor 34354297753",
         "source": "autonomous-development",
-        "reason": "autonomous development department job is queued for a runner",
+        "reason": "autonomous development department job is executing now",
         "jobEvidence": {
           "id": 102475034482,
           "name": "department (balance)",
-          "status": "queued",
+          "status": "in_progress",
           "conclusion": null,
           "failedStep": null,
-          "startedAt": "2026-09-09T12:59:56Z",
+          "startedAt": "2026-09-09T12:59:59Z",
           "completedAt": null,
           "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34354297753/job/102475034482"
         }
@@ -410,36 +410,36 @@
         "status": "working",
         "task": "autonomous development floor 34354297753",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous development department job is queued for a runner"
+        "workState": "ACTIVE",
+        "reason": "autonomous development department job is executing now"
       },
       "development": {
         "status": "working",
         "task": "autonomous development floor 34354297753",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous development department job is queued for a runner"
+        "workState": "ACTIVE",
+        "reason": "autonomous development department job is executing now"
       },
       "qa": {
         "status": "working",
         "task": "autonomous development floor 34354297753",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous development department job is queued for a runner"
+        "workState": "ACTIVE",
+        "reason": "autonomous development department job is executing now"
       },
       "graphics": {
         "status": "working",
         "task": "autonomous development floor 34354297753",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous development department job is queued for a runner"
+        "workState": "ACTIVE",
+        "reason": "autonomous development department job is executing now"
       },
       "balance": {
         "status": "working",
         "task": "autonomous development floor 34354297753",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous development department job is queued for a runner"
+        "workState": "ACTIVE",
+        "reason": "autonomous development department job is executing now"
       },
       "director": {
         "status": "working",
