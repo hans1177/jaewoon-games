@@ -78,7 +78,8 @@
       "workflow": ".github/workflows/homepage-manager.yml",
       "statusFile": "homepage-manager-status.json",
       "runtimeDataSync": "active",
-      "evidenceSource": "director-supervision-status.json"
+      "evidenceSource": "director-supervision-status.json",
+      "workState": null
     },
     "ownerDirectives": {
       "source": "company-directive.json",
@@ -101,7 +102,104 @@
       "FAILED": 0,
       "STALE": 0
     },
-    "primaryFindings": []
+    "liveStates": {},
+    "activeDevelopmentRunId": null,
+    "primaryFindings": [],
+    "staff": {
+      "planning": {
+        "status": "DONE",
+        "workState": null,
+        "task": "daechung-rpg daily artbook section",
+        "source": null,
+        "reason": "department submission is recorded for the active daily target",
+        "jobEvidence": {
+          "id": 102385273500,
+          "name": "round1 (planning)",
+          "status": "completed",
+          "conclusion": "success",
+          "failedStep": null,
+          "startedAt": "2026-09-09T07:58:49Z",
+          "completedAt": "2026-09-09T08:01:12Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34326324560/job/102385273500"
+        }
+      },
+      "development": {
+        "status": "DONE",
+        "workState": null,
+        "task": "daechung-rpg daily artbook section",
+        "source": null,
+        "reason": "department submission is recorded for the active daily target",
+        "jobEvidence": {
+          "id": 102385273637,
+          "name": "round1 (development)",
+          "status": "completed",
+          "conclusion": "success",
+          "failedStep": null,
+          "startedAt": "2026-09-09T07:58:50Z",
+          "completedAt": "2026-09-09T08:00:14Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34326324560/job/102385273637"
+        }
+      },
+      "qa": {
+        "status": "DONE",
+        "workState": null,
+        "task": "daechung-rpg daily artbook section",
+        "source": null,
+        "reason": "department submission is recorded for the active daily target",
+        "jobEvidence": {
+          "id": 102385273427,
+          "name": "round1 (qa)",
+          "status": "completed",
+          "conclusion": "success",
+          "failedStep": null,
+          "startedAt": "2026-09-09T07:58:49Z",
+          "completedAt": "2026-09-09T08:00:56Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34326324560/job/102385273427"
+        }
+      },
+      "graphics": {
+        "status": "DONE",
+        "workState": null,
+        "task": "daechung-rpg daily artbook section",
+        "source": null,
+        "reason": "department submission is recorded for the active daily target",
+        "jobEvidence": {
+          "id": 102385273491,
+          "name": "round1 (graphics)",
+          "status": "completed",
+          "conclusion": "success",
+          "failedStep": null,
+          "startedAt": "2026-09-09T07:58:49Z",
+          "completedAt": "2026-09-09T08:00:54Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34326324560/job/102385273491"
+        }
+      },
+      "balance": {
+        "status": "DONE",
+        "workState": null,
+        "task": "daechung-rpg daily artbook section",
+        "source": null,
+        "reason": "department submission is recorded for the active daily target",
+        "jobEvidence": {
+          "id": 102385273547,
+          "name": "round1 (balance)",
+          "status": "completed",
+          "conclusion": "success",
+          "failedStep": null,
+          "startedAt": "2026-09-09T07:58:49Z",
+          "completedAt": "2026-09-09T07:59:50Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34326324560/job/102385273547"
+        }
+      },
+      "director": {
+        "status": "WORKING",
+        "workState": null,
+        "task": "supervise staff execution, blockers, direct causes and verification",
+        "source": null,
+        "reason": "current supervisor check is executing from repository evidence",
+        "jobEvidence": null
+      }
+    }
   },
   "projects": [
     {
@@ -306,32 +404,44 @@
       "planning": {
         "status": "done",
         "task": "daechung-rpg daily artbook section",
-        "evidenceSource": "director-supervision-status.json"
+        "evidenceSource": "director-supervision-status.json",
+        "workState": null,
+        "reason": "department submission is recorded for the active daily target"
       },
       "development": {
         "status": "done",
         "task": "daechung-rpg daily artbook section",
-        "evidenceSource": "director-supervision-status.json"
+        "evidenceSource": "director-supervision-status.json",
+        "workState": null,
+        "reason": "department submission is recorded for the active daily target"
       },
       "qa": {
         "status": "done",
         "task": "daechung-rpg daily artbook section",
-        "evidenceSource": "director-supervision-status.json"
+        "evidenceSource": "director-supervision-status.json",
+        "workState": null,
+        "reason": "department submission is recorded for the active daily target"
       },
       "graphics": {
         "status": "done",
         "task": "daechung-rpg daily artbook section",
-        "evidenceSource": "director-supervision-status.json"
+        "evidenceSource": "director-supervision-status.json",
+        "workState": null,
+        "reason": "department submission is recorded for the active daily target"
       },
       "balance": {
         "status": "done",
         "task": "daechung-rpg daily artbook section",
-        "evidenceSource": "director-supervision-status.json"
+        "evidenceSource": "director-supervision-status.json",
+        "workState": null,
+        "reason": "department submission is recorded for the active daily target"
       },
       "director": {
         "status": "working",
         "task": "supervise staff execution, blockers, direct causes and verification",
-        "evidenceSource": "director-supervision-status.json"
+        "evidenceSource": "director-supervision-status.json",
+        "workState": null,
+        "reason": "current supervisor check is executing from repository evidence"
       }
     }
   },
