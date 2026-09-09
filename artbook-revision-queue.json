@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "updatedAt": null,
+  "tasks": [],
+  "contract": {
+    "type": "ARTBOOK_REVISION_REQUEST",
+    "approvedBaselineOverwriteForbidden": true,
+    "createsNewVersion": true,
+    "allowedTriggers": [
+      "OWNER_DIRECTIVE",
+      "PLAYTEST_EVIDENCE",
+      "QA_DESIGN_FINDING",
+      "BALANCE_FINDING",
+      "STORY_OR_QUEST_CAUSALITY_GAP",
+      "ART_OR_UX_DIRECTION_CHANGE",
+      "TECHNICAL_CONSTRAINT",
+      "IMPLEMENTATION_DRIFT",
+      "CONTENT_CHANGE",
+      "POST_RELEASE_UPDATE"
+    ]
+  }
+}
