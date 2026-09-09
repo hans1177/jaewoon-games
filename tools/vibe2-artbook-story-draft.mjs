@@ -8,7 +8,7 @@ const readJson=(f,v=null)=>{try{return JSON.parse(fs.readFileSync(f,'utf8'));}ca
 const writeJson=(f,v)=>{fs.mkdirSync(path.dirname(f),{recursive:true});fs.writeFileSync(f,JSON.stringify(v,null,2)+'\n');};
 const readText=(f,max=90000)=>{try{const b=fs.readFileSync(f);return b.subarray(0,Math.min(b.length,max)).toString('utf8');}catch{return'';}};
 const listFiles=(root,exts,max=28)=>{const out=[];if(!fs.existsSync(root))return out;const walk=d=>{for(const e of fs.readdirSync(d,{withFileTypes:true})){if(out.length>=max)return;const p=path.join(d,e.name);if(e.isDirectory())walk(p);else if(exts.some(x=>e.name.toLowerCase().endsWith(x)))out.push(p.replaceAll('\\','/'));}};walk(root);return out;};
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&apos;'}[c]));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
 const stageKey=stage=>clean(stage).toUpperCase().replaceAll('-','_').replaceAll(' ','_');
 const date=clean(process.env.ARTBOOK_DATE),gameId=clean(process.env.ARTBOOK_GAME_ID);
 if(!date||!gameId)throw new Error('ARTBOOK_DATE/GAME_ID missing');
