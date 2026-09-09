@@ -31,7 +31,7 @@ function runFixture({games,artbooks,dailySubmissions=[],revisions=[],secondTasks
   write(root,'artbook-second-work-queue.json',{tasks:secondTasks});
   write(root,'artbook-revision-queue.json',{tasks:revisions});
   for(const artifact of revisionArtifacts)write(root,artifact.path,artifact.value);
-  const result=spawnSync(process.execPath,[prepareScript],{cwd:root,encoding:'utf8'});
+  const result=spawnSync(process.execPath,[prepareScript],{cwd:root,encoding:'utf8',env:{...process.env,GITHUB_ACTIONS:'false'}});
   if(result.status!==0)throw new Error(`prepare failed\nSTDOUT:${result.stdout}\nSTDERR:${result.stderr}`);
   const context=JSON.parse(fs.readFileSync(path.join(root,'artbook-daily-context.json'),'utf8'));
   const queue=JSON.parse(fs.readFileSync(path.join(root,'artbook-submission-queue.json'),'utf8'));
