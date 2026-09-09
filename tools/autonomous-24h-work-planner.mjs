@@ -15,6 +15,7 @@ import { activeReservations, attemptsForDate } from './autonomous-queue-state.mj
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const clean=v=>String(v??'').trim();
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
+const LEGACY_ALL_ACTIVE_REASON='ALL_ELIGIBLE_SOURCE_ROOTS_ACTIVE';
 
 function catalogEntry(catalog,slug){return (catalog?.games??[]).find(game=>game.id===slug)||null;}
 function isHold(project){return project?.mode==='HOLD'||/^HOLD/.test(clean(project?.profileStatus));}
@@ -88,8 +89,8 @@ export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},qu
   const activeGameIds=new Set(active.map(row=>row.gameId));
   const activeSourcePaths=new Set(active.map(row=>clean(row.sourcePath)).filter(Boolean));
   const available=runnable.filter(project=>!activeGameIds.has(project.id)&&!activeSourcePaths.has(clean(project.sourcePath)));
-  const meta={focusedGameIds:[...focusedIds],nextDevelopmentGameIds:nextIds,activeGameIds:[...activeGameIds],activeSourcePaths:[...activeSourcePaths]};
   const requested=clean(priorityGameId);
+  const meta={focusedGameIds:[...focusedIds],nextDevelopmentGameIds:nextIds,activeGameIds:[...activeGameIds],activeSourcePaths:[...activeSourcePaths],focusPolicyEnabled:Boolean(policy)};
   if(requested){
     const exactFocus=runnable.find(project=>project.id===requested||project.slug===requested);
     if(exactFocus&&(activeGameIds.has(exactFocus.id)||activeSourcePaths.has(clean(exactFocus.sourcePath))))return {project:null,blockedByActive:true,explicitPriority:true,requestedGameId:exactFocus.id,...meta};
@@ -122,14 +123,15 @@ export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={
 
   const selected=selectContinuousTarget({portfolio,artbooks,catalog,queueState,date,priorityGameId,filesystem,now,isSourceReleased});
   if(selected?.blockedByActive){
+    const focusedMode=selected.focusPolicyEnabled===true;
     return {
       run:false,
-      reason:'ALL_FOCUSED_SOURCE_ROOTS_ACTIVE',
+      reason:focusedMode?'ALL_FOCUSED_SOURCE_ROOTS_ACTIVE':LEGACY_ALL_ACTIVE_REASON,
       date,
       continuous24h:{
         enabled:true,
-        mode:'FOCUSED_GAME_FLOORS',
-        maxFocusedGames:Number(portfolio?.developmentFocusPolicy?.maxFocusedGames||2),
+        mode:focusedMode?'FOCUSED_GAME_FLOORS':'PARALLEL_GAME_FLOORS',
+        maxFocusedGames:focusedMode?Number(portfolio?.developmentFocusPolicy?.maxFocusedGames||2):null,
         focusedGameIds:selected.focusedGameIds||[],
         nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],
         sourceRootLock:'ACTIVE_RESERVATION_LEASE',
