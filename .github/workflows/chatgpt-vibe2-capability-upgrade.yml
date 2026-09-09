@@ -2,7 +2,7 @@ name: ChatGPT Vibe2 Capability Upgrade
 
 on:
   push:
-    branches: [chatgpt/vibe2-capability-upgrade-20260909]
+    branches: [chatgpt/vibe2-browser-qa-feedback-7f9c-20260909]
     paths:
       - '.github/workflows/chatgpt-vibe2-capability-upgrade.yml'
 
@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: chatgpt/vibe2-capability-upgrade-20260909
+          ref: chatgpt/vibe2-browser-qa-feedback-7f9c-20260909
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -32,15 +32,20 @@ jobs:
           node --test qa/autonomous-department-scope.test.mjs
           node --test qa/autonomous-candidate-browser-qa.test.mjs
           git diff --check
-      - name: Commit verified isolated upgrade
+      - name: Preserve tested workflow outputs as ordinary files
         shell: bash
         run: |
           set -euo pipefail
-          git rm .github/workflows/chatgpt-vibe2-capability-upgrade.yml tools/_tmp-vibe2-capability-upgrade.mjs
+          mkdir -p tmp-vibe2-tested
+          cp .github/workflows/autonomous-continuous-development.yml tmp-vibe2-tested/autonomous-continuous-development.yml
+          cp .github/workflows/autonomous-candidate-promotion.yml tmp-vibe2-tested/autonomous-candidate-promotion.yml
+          git checkout -- .github/workflows/autonomous-continuous-development.yml .github/workflows/autonomous-candidate-promotion.yml
+      - name: Commit tested non-workflow outputs
+        shell: bash
+        run: |
+          set -euo pipefail
           git config user.name 'chatgpt-vibe2-upgrade'
           git config user.email 'chatgpt-vibe2-upgrade@users.noreply.github.com'
-          git add tools/autonomous-development-worker.mjs tools/autonomous-department-scope.mjs tools/autonomous-candidate-browser-qa.mjs qa/autonomous-department-scope.test.mjs qa/autonomous-candidate-browser-qa.test.mjs .github/workflows/autonomous-continuous-development.yml .github/workflows/autonomous-candidate-promotion.yml
-          git commit -m 'vibe2: strengthen parallel implementation and pre-release QA'
-          git push origin HEAD:chatgpt/vibe2-capability-upgrade-20260909
-
-# retry: browser-feedback-only
+          git add tools/autonomous-development-worker.mjs tmp-vibe2-tested/autonomous-continuous-development.yml tmp-vibe2-tested/autonomous-candidate-promotion.yml
+          git commit -m 'vibe2: prepare tested browser QA feedback integration'
+          git push origin HEAD:chatgpt/vibe2-browser-qa-feedback-7f9c-20260909
