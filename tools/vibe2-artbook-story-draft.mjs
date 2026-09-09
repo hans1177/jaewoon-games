@@ -129,7 +129,7 @@ async function callCompact(){
   for(let attempt=1;attempt<=2;attempt++){
     try{
       const payload={gameId,gameName,genre:genreText,sourceMode,minimumRecommendedPages:minimumPages,gameFactPack:compactFactPack,evidenceSnippets:evidenceSnippets.slice(0,attempt===1?18:10)};
-      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,format:compactSchema,messages:[{role:'system',content:system},{role:'user',content:JSON.stringify(payload)}],options:{temperature:attempt===1?0.24:0.12,seed:8100+attempt,num_ctx:6144,num_predict:1950}})});
+      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,format:compactSchema,messages:[{role:'system',content:system},{role:'user',content:JSON.stringify(payload)}],options:{temperature:attempt===1?0.24:0.12,seed:8100+attempt,num_ctx:6144,num_predict:1800}})});
       if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
       const packet=await response.json(),text=clean(packet?.message?.content).replace(/^```json\s*/i,'').replace(/```$/,'');
       const parsed=JSON.parse(text),normalized=normalizeCompactSeedStages(parsed);
