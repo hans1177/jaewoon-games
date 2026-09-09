@@ -1,0 +1,32 @@
+{
+  "version": 7,
+  "gameId": "crystal-defense",
+  "date": "2026-09-10",
+  "department": "development",
+  "status": "SUBMITTED",
+  "departmentReadiness": "NEEDS_VALIDATION",
+  "revision": {"trigger":"QA_DESIGN_FINDING","sourceEdition":1,"sourceFile":"artbook-submissions/crystal-defense/2026-09-09/development.json","historyPreserved":true},
+  "evidence": [
+    {"source":"web-games/crystal-defense/index.html","usage":"read-only current implementation evidence"},
+    {"source":"artbook-submissions/crystal-defense/2026-09-09/development.json","usage":"rejected shallow baseline"},
+    {"source":"artbook-revision-queue.json","usage":"revision scope"}
+  ],
+  "section": {
+    "implementedNow": "현재 웹 게임을 Unity 전환의 행위 기준선으로 취급한다. 카테고리 3 단계에서는 소스를 수정하지 않고 입력→전투 상태 변화→웨이브 진행→결과/재시작의 실제 경계를 추출한다.",
+    "architecture": "UNITY_IMPLEMENTATION_NOTE: Unity 본제작은 GameFlow, Combat/Targeting, Wave, Input, Presentation, Persistence 책임을 분리한다. MonoBehaviour 간 임의 참조보다 상태 소유 컴포넌트와 명시적 이벤트 경계를 우선하고 그래픽 계층이 전투 수치를 변경하지 못하게 한다.",
+    "prototypeLimits": "현재 HTML이 단일 압축 진입점이므로 먼저 동작 계약을 문서화해야 한다. 웹의 내부 구현 형태 자체를 Unity 구조로 복제하지 않고, 사용자에게 보이는 규칙과 상태 전이만 보존 대상으로 삼는다.",
+    "stateContract": "최소 상태는 시작/진행/웨이브전환/실패 또는 완료/재시작으로 분리하고, 각 상태에서 허용 입력과 타이머 진행 여부를 정의한다. 중복 타이머와 화면 전환 후 잔존 입력을 Unity QA의 우선 결함으로 둔다.",
+    "inputPlan": "모바일 우선 Pointer/Touch 입력을 기준으로 하고 마우스는 동일 액션 맵에 연결한다. UI 터치와 게임 필드 입력이 동시에 소비되지 않게 EventSystem 차단 규칙을 명시한다.",
+    "persistencePlan": "현재 저장 사용 여부와 저장 키/구조가 확인되기 전 새 저장 규칙을 만들지 않는다. 저장이 확인되면 기존 의미를 보존한 버전 필드와 마이그레이션 경로를 정의한다.",
+    "technicalRisks": "압축된 단일 웹 소스에서 규칙을 추측해 Unity에 잘못 고정하는 것이 가장 큰 위험이다. 실제 플레이/소스 증거가 없는 수치, 적 종류, 경제, 저장 구조는 미확인으로 유지한다.",
+    "demoPlan": "Unity vertical slice는 현재 핵심 루프 한 사이클을 규칙 변경 없이 재현하고, 실제 모바일에서 입력·전투·웨이브·종료/재시작·프레임 안정성을 통과해야 다음 제작 단계로 간다.",
+    "handoffs": "QA에는 상태 전이·입력 중복·재시작 체크를, 밸런스에는 실제 상수 추출 인터페이스를, 그래픽에는 상태 이벤트만 제공한다."
+  },
+  "conceptPlan": {
+    "creativeIdeas": ["전투 규칙과 표현을 분리해 아트 교체가 밸런스에 영향 주지 않게 한다.","웨이브 데이터는 소스 근거 확인 후 ScriptableObject 후보로 옮겨 테스트 가능하게 한다.","모바일 입력은 액션 단위로 추상화해 터치/마우스가 같은 게임 명령을 사용하게 한다."],
+    "implementationPlan": ["기존 플레이에서 상태/입력/수치 계약을 먼저 추출한다.","Unity 컴포넌트 책임표와 데이터 소유권을 확정한 뒤 vertical slice를 구현한다.","저장 구조가 존재하면 마이그레이션 테스트 없이는 변경하지 않는다."],
+    "demoValidation": ["시작부터 한 전투 루프와 재시작까지 상태가 중복 실행되지 않는지 확인한다.","터치 UI와 필드 입력의 이중 소비가 없는지 확인한다.","그래픽/VFX 비활성화가 전투 결과를 바꾸지 않는지 확인한다."]
+  },
+  "unverified": ["정확한 내부 클래스/함수 구조는 압축 소스 해제 후 확정","저장 키와 저장 데이터 존재 여부는 추가 증거 확보 후 확정","정확한 웨이브/적/피해 수치는 밸런스부 추출 전 변경 금지"],
+  "verification": {"evidenceOnly":true,"productionApproval":false,"meaningfulDepartmentDepth":true,"sourceGameModified":false,"paidServiceRequired":false}
+}
