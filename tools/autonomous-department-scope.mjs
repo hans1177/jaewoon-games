@@ -11,6 +11,7 @@ const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const posix=v=>String(v??'').replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
 const exists=file=>{try{return fs.statSync(file),true;}catch{return false;}};
 const readJson=(file,fallback={})=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
+const isGeneratedBundle=rel=>/^assets\/(?:.*\/)?[^/]+-[A-Za-z0-9_-]{6,}\.(?:js|mjs|cjs|css)$/i.test(posix(rel));
 
 const SIGNALS={
   development:{path:/(?:^|\/)(?:main|game|app|index|player|world|core)|\.(?:js|mjs|cjs|html?)$/i,code:/\b(?:function|class|requestAnimationFrame|addEventListener|player|state|update|spawn|collision|canvas|getContext)\b/i},
@@ -27,7 +28,11 @@ function listFiles(sourcePath){
       if(entry.name.startsWith('.')||entry.name==='node_modules')continue;
       const full=path.join(current,entry.name);
       if(entry.isDirectory())walk(full);
-      else if(EXTENSIONS.has(path.extname(entry.name).toLowerCase()))rows.push({path:posix(path.relative(sourcePath,full)),full});
+      else if(EXTENSIONS.has(path.extname(entry.name).toLowerCase())){
+        const rel=posix(path.relative(sourcePath,full));
+        if(isGeneratedBundle(rel))continue;
+        rows.push({path:rel,full});
+      }
     }
   };
   if(exists(sourcePath))walk(sourcePath);
@@ -35,7 +40,7 @@ function listFiles(sourcePath){
 }
 function normalizeRefs(sourcePath,refs=[]){
   const source=posix(sourcePath);
-  return [...new Set(refs.map(posix).map(rel=>rel.startsWith(`${source}/`)?rel.slice(source.length+1):rel).filter(rel=>rel&&exists(path.join(sourcePath,rel))))];
+  return [...new Set(refs.map(posix).map(rel=>rel.startsWith(`${source}/`)?rel.slice(source.length+1):rel).filter(rel=>rel&&!isGeneratedBundle(rel)&&exists(path.join(sourcePath,rel))))];
 }
 function scoreFile(role,row,{refs=[],focus=''}){
   const signal=SIGNALS[role],text=fs.readFileSync(row.full,'utf8').slice(0,120000),lowerFocus=focus.toLowerCase();
