@@ -1,0 +1,36 @@
+name: Artbook Planning Quality QA
+
+on:
+  pull_request:
+    paths:
+      - 'tools/artbook-department-runner.mjs'
+      - 'tools/artbook-gate.mjs'
+      - 'tools/vibe2-artbook-story-core.mjs'
+      - 'qa/artbook-planning-quality.test.mjs'
+      - '.github/workflows/artbook-planning-quality-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/artbook-department-runner.mjs'
+      - 'tools/artbook-gate.mjs'
+      - 'tools/vibe2-artbook-story-core.mjs'
+      - 'qa/artbook-planning-quality.test.mjs'
+      - '.github/workflows/artbook-planning-quality-qa.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  planning-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Syntax
+        run: |
+          node --check tools/artbook-department-runner.mjs
+          node --check tools/artbook-gate.mjs
+      - name: Planning semantic regression
+        run: node --test qa/artbook-planning-quality.test.mjs
