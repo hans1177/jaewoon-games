@@ -13,6 +13,8 @@ on:
       - 'tools/artbook-prepare-daily.mjs'
       - 'tools/artbook-assemble.mjs'
       - 'tools/artbook-postprocess.mjs'
+      - 'tools/artbook-fact-pack.mjs'
+      - 'qa/artbook-fact-pack.test.mjs'
       - 'tools/artbook-lifecycle-test.mjs'
       - 'tools/artbook-lifecycle-scheduling-test.mjs'
       - '.github/workflows/artbook-lifecycle-qa.yml'
@@ -35,7 +37,10 @@ jobs:
           node --check tools/artbook-prepare-daily.mjs
           node --check tools/artbook-assemble.mjs
           node --check tools/artbook-postprocess.mjs
+          node --check tools/artbook-fact-pack.mjs
       - name: Lifecycle contract
         run: node tools/artbook-lifecycle-test.mjs
       - name: Scheduling contract
         run: node tools/artbook-lifecycle-scheduling-test.mjs
+      - name: FACT PACK evidence regression
+        run: node --test qa/artbook-fact-pack.test.mjs
