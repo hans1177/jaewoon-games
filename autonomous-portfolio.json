@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "status": "ACTIVE",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
@@ -11,10 +11,18 @@
   "departmentReviewMode": "PARALLEL_INDEPENDENT",
   "departmentFinalIntegrator": "planning-final",
   "departmentLiveStateAuthority": "github-actions-jobs",
-  "sourceWriteConcurrency": "SERIAL",
+  "departmentCodeWorkspaces": "PARALLEL_ISOLATED",
+  "departmentCodeRoles": ["development", "graphics", "qa", "balance"],
+  "planningCodeAuthority": "INTEGRATE_AND_ASSIGN_NOT_DIRECT_WRITE",
+  "sameFileConflictPolicy": "SINGLE_OWNER_FIRST_THREE_WAY_MERGE_THEN_AI_RESOLVE_TRUE_CONFLICT",
+  "sourceWriteConcurrency": "PARALLEL_ISOLATED_WORKSPACES",
+  "finalIntegrationConcurrency": "SERIAL",
+  "finalVerificationGate": "AUTONOMOUS_CANDIDATE_PROMOTION_INDEPENDENT_QA",
+  "postReleaseFlow": ["PUBLIC_HEALTH", "COMPANY_DNA_LEARNING", "ARTBOOK_MILESTONE_OR_REVISION", "NEXT_DEVELOPMENT_FLOOR"],
   "sameGameDailyFloorCap": null,
   "completedArtbookDailyWorkCap": null,
   "maxModelCallsPerRun": 2,
+  "maxModelCallsPerDepartmentImplementation": 2,
   "maxRunnerMinutesPerRun": 20,
   "projects": [
     {
