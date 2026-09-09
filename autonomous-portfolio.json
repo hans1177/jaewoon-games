@@ -1,14 +1,17 @@
 {
-  "version": 2,
+  "version": 3,
   "status": "ACTIVE",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
   "continuousDevelopmentBranch": "autonomous-dev",
   "candidateBranchPrefix": "autonomous/candidate-",
   "paidApi": false,
+  "continuous24hDevelopment": true,
+  "departmentDevelopmentCycle": ["planning", "development", "graphics", "qa", "balance", "planning-final"],
+  "sameGameDailyFloorCap": null,
+  "completedArtbookDailyWorkCap": null,
   "maxModelCallsPerRun": 2,
   "maxRunnerMinutesPerRun": 20,
-  "maxAutonomousWorkItemsPerDay": 8,
   "projects": [
     {
       "id": "P0001",
