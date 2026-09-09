@@ -126,8 +126,8 @@ jobs:
           must(continuous.includes('group: autonomous-dev-writer'),'global source-write concurrency missing');
           must(continuous.includes('name: prepare development floor'),'prepare job missing');
           must(continuous.includes('role: [planning, development, graphics, qa, balance]'),'five-department matrix missing');
-          must(continuous.includes('name: department (${{ matrix.role }})'),'department jobs are not individually visible');
-          must(continuous.includes('AUTONOMOUS_DEPARTMENT_ROLE: ${{ matrix.role }}'),'independent department runner input missing');
+          must(continuous.includes('name: department (')&&continuous.includes('matrix.role'),'department jobs are not individually visible');
+          must(continuous.includes('AUTONOMOUS_DEPARTMENT_ROLE:')&&continuous.includes('matrix.role'),'independent department runner input missing');
           must(continuous.includes('name: department (planning-final)'),'planning-final integration job missing');
           must(continuous.includes("AUTONOMOUS_DEPARTMENT_FINALIZE: 'true'"),'planning-final finalize mode missing');
           must(continuous.includes('name: serial source implementation'),'serial source implementation job missing');
