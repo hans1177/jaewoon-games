@@ -63,7 +63,7 @@
         "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
         "probe": "tools/unity-apk-runtime-smoke.sh",
         "method": "APK install -> launch -> Android tap/swipe input -> process survival -> fatal log scan -> screenshot",
-        "contractVerificationRunId": 34401711152,
+        "contractVerificationRunId": 34401753739,
         "contractVerificationConclusion": "success",
         "successfulRuntimeEvidenceRunId": null,
         "buildAloneCountsAsQaPass": false,
@@ -115,18 +115,18 @@
   "verification": {
     "departmentStandardsWorkflow": {
       "latestRun": {
-        "runId": 34401711152,
+        "runId": 34401753739,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "7e881862ba077dfb9e98c67a79d97357da993b6c",
-        "updatedAt": "2026-09-09T20:33:20Z"
+        "headSha": "747edca62cab9c1e8ad757d6700348c21f598bca",
+        "updatedAt": "2026-09-09T20:33:41Z"
       },
       "latestSuccessfulRun": {
-        "runId": 34401711152,
+        "runId": 34401753739,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "7e881862ba077dfb9e98c67a79d97357da993b6c",
-        "updatedAt": "2026-09-09T20:33:20Z"
+        "headSha": "747edca62cab9c1e8ad757d6700348c21f598bca",
+        "updatedAt": "2026-09-09T20:33:41Z"
       },
       "unitySmokeContractVerified": true
     },
@@ -179,21 +179,17 @@
     },
     "directorSupervision": {
       "dateKst": "2026-09-10",
-      "attentionRequired": true,
+      "attentionRequired": false,
       "counts": {
         "WORKING": 1,
-        "DONE": 1,
+        "DONE": 6,
         "IDLE_NO_TASK": 1,
-        "BLOCKED": 5,
+        "BLOCKED": 0,
         "FAILED": 0,
         "STALE": 0
       },
       "primaryFindings": [
-        "planning:DEPENDENCY_BLOCKED",
-        "development:DEPENDENCY_BLOCKED",
-        "qa:DEPENDENCY_BLOCKED",
-        "graphics:DEPENDENCY_BLOCKED",
-        "balance:DEPENDENCY_BLOCKED"
+        "NO_WORK_ORDER:artbook-work-orders/2026-09-10-daechung-rpg.json"
       ]
     }
   },
