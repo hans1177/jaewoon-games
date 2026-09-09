@@ -6,7 +6,7 @@
       "id": "crystal-defense-2026-09-10-revision-01",
       "type": "ARTBOOK_REVISION_REQUEST",
       "gameId": "crystal-defense",
-      "status": "SCHEDULED",
+      "status": "SUBMITTED_FOR_REVIEW",
       "requestedAt": "2026-09-09T20:20:00.000Z",
       "requestedBy": "chatgpt-artbook-automation",
       "trigger": "QA_DESIGN_FINDING",
@@ -15,38 +15,25 @@
         "artbook-submissions/crystal-defense/2026-09-09/artbook.json",
         "artbook-submissions/crystal-defense/2026-09-09/development.json",
         "tools/artbook-gate.mjs",
-        "qa/artbook-planning-quality.test.mjs"
+        "qa/artbook-planning-quality.test.mjs",
+        "artbook-submissions/crystal-defense/2026-09-10/artbook.json"
       ],
-      "selectedDepartments": [
-        "planning",
-        "graphics",
-        "development",
-        "qa",
-        "balance"
-      ],
+      "selectedDepartments": ["planning","graphics","development","qa","balance"],
       "dueDate": "2026-09-10",
       "sourceArtbookId": "crystal-defense-2026-09-09-initial",
       "sourceEdition": 1,
       "sourceLifecycleState": "DESIGN_BASELINE",
       "createsNewVersion": true,
-      "overwriteApprovedVersion": false
+      "overwriteApprovedVersion": false,
+      "revisionEdition": 2,
+      "revisionPath": "artbook-submissions/crystal-defense/2026-09-10/artbook.json",
+      "remainingGate": ["ARTBOOK_QUALITY_GATE","FIVE_DEPARTMENT_CROSS_REVIEW","DIRECTOR_REVIEW","SOURCE_NUMERIC_EVIDENCE"]
     }
   ],
   "contract": {
     "type": "ARTBOOK_REVISION_REQUEST",
     "approvedBaselineOverwriteForbidden": true,
     "createsNewVersion": true,
-    "allowedTriggers": [
-      "OWNER_DIRECTIVE",
-      "PLAYTEST_EVIDENCE",
-      "QA_DESIGN_FINDING",
-      "BALANCE_FINDING",
-      "STORY_OR_QUEST_CAUSALITY_GAP",
-      "ART_OR_UX_DIRECTION_CHANGE",
-      "TECHNICAL_CONSTRAINT",
-      "IMPLEMENTATION_DRIFT",
-      "CONTENT_CHANGE",
-      "POST_RELEASE_UPDATE"
-    ]
+    "allowedTriggers": ["OWNER_DIRECTIVE","PLAYTEST_EVIDENCE","QA_DESIGN_FINDING","BALANCE_FINDING","STORY_OR_QUEST_CAUSALITY_GAP","ART_OR_UX_DIRECTION_CHANGE","TECHNICAL_CONSTRAINT","IMPLEMENTATION_DRIFT","CONTENT_CHANGE","POST_RELEASE_UPDATE"]
   }
 }
