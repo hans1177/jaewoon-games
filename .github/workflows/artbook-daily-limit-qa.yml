@@ -1,23 +1,27 @@
-name: Artbook Daily Limit QA
+name: Artbook Unlimited Queue QA
 
 on:
   pull_request:
     paths:
       - 'tools/artbook-prepare-daily.mjs'
+      - 'tools/artbook-assemble.mjs'
       - 'qa/artbook-daily-limit-preflight.test.mjs'
       - '.github/workflows/artbook-daily-limit-qa.yml'
+      - '.github/workflows/artbook-initial-backfill-chain.yml'
   push:
     branches: [main]
     paths:
       - 'tools/artbook-prepare-daily.mjs'
+      - 'tools/artbook-assemble.mjs'
       - 'qa/artbook-daily-limit-preflight.test.mjs'
       - '.github/workflows/artbook-daily-limit-qa.yml'
+      - '.github/workflows/artbook-initial-backfill-chain.yml'
 
 permissions:
   contents: read
 
 jobs:
-  daily-limit:
+  unlimited-queue:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,6 +29,14 @@ jobs:
         with:
           node-version: 22
       - name: Syntax
-        run: node --check tools/artbook-prepare-daily.mjs
-      - name: Daily final limit regression
+        run: |
+          node --check tools/artbook-prepare-daily.mjs
+          node --check tools/artbook-assemble.mjs
+      - name: Unlimited same-day scheduling regression
         run: node --test qa/artbook-daily-limit-preflight.test.mjs
+      - name: No daily cap remains in scheduler or assembler
+        run: |
+          ! grep -q 'DAILY_INITIAL_ARTBOOK_LIMIT_REACHED' tools/artbook-prepare-daily.mjs
+          ! grep -q 'daily initial artbook limit reached' tools/artbook-assemble.mjs
+          grep -q 'ARTBOOK_SUBMISSION_COUNT_POLICY=UNLIMITED' tools/artbook-prepare-daily.mjs
+          grep -q "submissionCountPolicy:'UNLIMITED'" tools/artbook-assemble.mjs
