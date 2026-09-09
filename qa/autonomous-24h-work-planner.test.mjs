@@ -4,7 +4,7 @@ import { build24hAutonomousWorkOrder, rankDevelopmentFocus, selectContinuousTarg
 import { runDepartmentRole } from '../tools/autonomous-department-cycle.mjs';
 
 const filesystem={existsSync:()=>true};
-const portfolio={paidApi:false,projects:[
+const portfolio={status:'ACTIVE',paidApi:false,projects:[
   {id:'P1',slug:'a',sourcePath:'web-games/a',profileStatus:'DEVELOPMENT_CONFIRMED',mode:'IMPROVE'},
   {id:'P2',slug:'b',sourcePath:'web-games/b',profileStatus:'NEEDS_AUDIT',mode:'EXPERIMENT_ONLY'},
   {id:'P3',slug:'release',sourcePath:'web-games/release',profileStatus:'RELEASE_CONFIRMED',mode:'MAINTENANCE'},
@@ -77,12 +77,13 @@ test('released main source invalidates the old lease and makes the game eligible
 });
 
 test('release-confirmed stable game is not fed into arbitrary 24h feature development',()=>{
-  const target=selectContinuousTarget({portfolio:{paidApi:false,projects:[portfolio.projects[2]]},artbooks,catalog,queueState:{version:1,attempts:[]},date:'2026-09-09',filesystem});
+  const target=selectContinuousTarget({portfolio:{status:'ACTIVE',paidApi:false,projects:[portfolio.projects[2]]},artbooks,catalog,queueState:{version:1,attempts:[]},date:'2026-09-09',filesystem});
   assert.equal(target,null);
 });
 
 test('focus policy keeps only two deep-development games and counts dedicated Unity as one slot',()=>{
   const focusedPortfolio={
+    status:'ACTIVE',
     paidApi:false,
     developmentFocusPolicy:{maxFocusedGames:2,focusThreshold:8,nextDevelopmentThreshold:5},
     projects:[
@@ -111,6 +112,7 @@ test('focus policy keeps only two deep-development games and counts dedicated Un
 
 test('non-focused artbook priority cannot steal a deep-development slot',()=>{
   const focusedPortfolio={
+    status:'ACTIVE',
     paidApi:false,
     developmentFocusPolicy:{maxFocusedGames:1,focusThreshold:8,nextDevelopmentThreshold:5},
     projects:[
@@ -126,6 +128,7 @@ test('non-focused artbook priority cannot steal a deep-development slot',()=>{
 
 test('runtime incident preempts deep development through FAST lane',()=>{
   const focusPortfolio={
+    status:'ACTIVE',
     paidApi:false,
     maxModelCallsPerRun:2,
     maxRunnerMinutesPerRun:20,
