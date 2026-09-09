@@ -3,6 +3,7 @@
 // 제출 수량 정책: INITIAL/업그레이드/수정 모두 일일 개수 제한 없음.
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 
 const readJson=(file,fallback={})=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -10,6 +11,26 @@ const clean=value=>String(value??'').trim();
 const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
 const pick=type=>parts.find(x=>x.type===type)?.value||'';
 const date=`${pick('year')}-${pick('month')}-${pick('day')}`;
+
+function git(args){
+  const result=spawnSync('git',args,{encoding:'utf8'});
+  if(result.status!==0)throw new Error(`git ${args.join(' ')} failed: ${clean(result.stderr||result.stdout)}`);
+  return clean(result.stdout);
+}
+function persistIdleQueueIfActions(){
+  if(process.env.GITHUB_ACTIONS!=='true')return false;
+  git(['config','user.name','jaewoon-artbook-bots']);
+  git(['config','user.email','actions@users.noreply.github.com']);
+  git(['add','--','artbook-submission-queue.json']);
+  const diff=spawnSync('git',['diff','--cached','--quiet']);
+  if(diff.status===0){console.log('ARTBOOK_IDLE_QUEUE_PERSIST=NO_CHANGES');return false;}
+  if(diff.status!==1)throw new Error('git diff --cached --quiet failed');
+  git(['commit','-m','artbook: persist idle queue state [skip ci]']);
+  git(['pull','--rebase','origin','main']);
+  git(['push','origin','HEAD:main']);
+  console.log('ARTBOOK_IDLE_QUEUE_PERSIST=SUCCESS');
+  return true;
+}
 
 const queue=readJson('artbook-submission-queue.json',{games:[],queueOrder:[]});
 const registry=readJson('game-artbooks.json',{artbooks:[],dailySubmissions:[],policy:{}});
@@ -128,8 +149,7 @@ if(nextExistingInitial){
   const baseline=latestBaseline(gameId);
   secondWork={
     taskId:dueSecond.id,sourceDate:dueSecond.sourceDate,selectedDepartments:dueSecond.selectedDepartments,
-    criterion:dueSecond.criterion,overallAverageStars:dueSecond.overallAverageStars,
-    departmentAverageStars:dueSecond.departmentAverageStars,feedbackByDepartment:dueSecond.feedbackByDepartment,
+    criterion:dueSecond.criterion,overallAverageStars:dueSecond.overallAverageStars,departmentAverageStars:dueSecond.departmentAverageStars,feedbackByDepartment:dueSecond.feedbackByDepartment,
     sourceArtbookId:baseline?.id||null,targetState:baseline?.__state||'DESIGN_BASELINE'
   };
 }else{
@@ -139,15 +159,10 @@ if(nextExistingInitial){
 if(!gameId){
   queue.currentDailyTarget='';
   queue.updatedAt=date;
-  queue.currentTargetExecution={
-    date,mode:'IDLE',status:'NO_ARTBOOK_WORK_DUE',existingInitialPriority:true,existingInitialRemaining:0,
-    submissionCountPolicy,runnerDispatch:null,runnerPaidApi:false,runnerApiKeyRequired:false,directorGhostwritingFallback:false
-  };
+  queue.currentTargetExecution={date,mode:'IDLE',status:'NO_ARTBOOK_WORK_DUE',existingInitialPriority:true,existingInitialRemaining:0,submissionCountPolicy,runnerDispatch:null,runnerPaidApi:false,runnerApiKeyRequired:false,directorGhostwritingFallback:false};
   writeJson('artbook-submission-queue.json',queue);
-  writeJson('artbook-daily-context.json',{
-    date,run:false,reason:'NO_ARTBOOK_WORK_DUE',existingInitialPriority:true,existingInitialRemaining:[],
-    submissionCountPolicy
-  });
+  writeJson('artbook-daily-context.json',{date,run:false,reason:'NO_ARTBOOK_WORK_DUE',existingInitialPriority:true,existingInitialRemaining:[],submissionCountPolicy});
+  persistIdleQueueIfActions();
   console.log('ARTBOOK_DAILY=ALL_DONE');
   console.log('ARTBOOK_QUEUE_STATE=IDLE');
   console.log('ARTBOOK_SUBMISSION_COUNT_POLICY=UNLIMITED');
@@ -158,31 +173,14 @@ const queueGame=(queue.games||[]).find(x=>x.gameId===gameId)||{};
 const catalogGame=(catalog.games||[]).find(x=>x.id===gameId)||{};
 const game={gameId,name:queueGame.name||catalogGame.name||gameId,styleProfile:queueGame.styleProfile||''};
 const baseline=latestBaseline(gameId);
-const lifecycle={
-  documentType:'LIVING_GAME_DESIGN_ARTBOOK',
-  createsNewVersion:true,
-  overwriteApprovedVersion:false,
-  revisionAllowedAnytime:true,
-  sourceArtbookId:lifecycleUpgrade?.sourceArtbookId||revision?.sourceArtbookId||secondWork?.sourceArtbookId||baseline?.id||null,
-  fromState:lifecycleUpgrade?.fromState||revision?.sourceLifecycleState||secondWork?.targetState||baseline?.__state||null,
-  targetState:mode==='INITIAL'?'DESIGN_BASELINE':lifecycleUpgrade?.targetState||revision?.targetState||secondWork?.targetState||baseline?.__state||'DESIGN_BASELINE',
-  trigger:mode==='INITIAL'?'INITIAL_DESIGN':lifecycleUpgrade?.trigger||revision?.trigger||(mode==='SECOND_WORK'?'QUALITY_REVISION':'GENERAL_REVISION'),
-  requiredMilestoneUpgrade:['DEVELOPMENT_UPGRADE','RELEASE_UPGRADE'].includes(mode)
-};
+const lifecycle={documentType:'LIVING_GAME_DESIGN_ARTBOOK',createsNewVersion:true,overwriteApprovedVersion:false,revisionAllowedAnytime:true,sourceArtbookId:lifecycleUpgrade?.sourceArtbookId||revision?.sourceArtbookId||secondWork?.sourceArtbookId||baseline?.id||null,fromState:lifecycleUpgrade?.fromState||revision?.sourceLifecycleState||secondWork?.targetState||baseline?.__state||null,targetState:mode==='INITIAL'?'DESIGN_BASELINE':lifecycleUpgrade?.targetState||revision?.targetState||secondWork?.targetState||baseline?.__state||'DESIGN_BASELINE',trigger:mode==='INITIAL'?'INITIAL_DESIGN':lifecycleUpgrade?.trigger||revision?.trigger||(mode==='SECOND_WORK'?'QUALITY_REVISION':'GENERAL_REVISION'),requiredMilestoneUpgrade:['DEVELOPMENT_UPGRADE','RELEASE_UPGRADE'].includes(mode)};
 
 const selectedDepartments=mode==='REVISION'?revision.selectedDepartments:mode==='SECOND_WORK'?secondWork.selectedDepartments:roles;
 const sameDaySecondWork=mode==='SECOND_WORK'&&secondWork?.sourceDate===date;
 const runnerDispatch=mode==='SECOND_WORK'?'FREE_LOCAL_OPEN_MODEL_SECOND_WORK_SCHEDULED':'FREE_LOCAL_OPEN_MODEL_SCHEDULED';
-
 queue.currentDailyTarget=gameId;
 queue.updatedAt=date;
-queue.currentTargetExecution={
-  ...(queue.currentTargetExecution||{}),date,mode,readySections:0,requiredSections:5,readyReviews:0,requiredReviews:5,
-  directorAssemblyReady:false,pagePolicy:{min:12,default:16,max:30,legacyCompletedPages:10},requiredCuts:16,
-  postprocessComplete:false,visualFirstRequired:true,employeeAuthorshipRequired:true,vibe2FirstDraftRequired:true,
-  existingInitialPriority:true,existingInitialRemaining:existingInitialRemaining.length,lifecycle,submissionCountPolicy,
-  runnerDispatch,runnerPaidApi:false,runnerApiKeyRequired:false,directorGhostwritingFallback:false
-};
+queue.currentTargetExecution={...(queue.currentTargetExecution||{}),date,mode,readySections:0,requiredSections:5,readyReviews:0,requiredReviews:5,directorAssemblyReady:false,pagePolicy:{min:12,default:16,max:30,legacyCompletedPages:10},requiredCuts:16,postprocessComplete:false,visualFirstRequired:true,employeeAuthorshipRequired:true,vibe2FirstDraftRequired:true,existingInitialPriority:true,existingInitialRemaining:existingInitialRemaining.length,lifecycle,submissionCountPolicy,runnerDispatch,runnerPaidApi:false,runnerApiKeyRequired:false,directorGhostwritingFallback:false};
 const queueGameMutable=(queue.games||[]).find(x=>x.gameId===gameId);
 if(queueGameMutable){
   queueGameMutable.status=mode==='SECOND_WORK'?'SAME_DAY_SECOND_WORK_SCHEDULED':mode==='REVISION'?'ARTBOOK_REVISION_SCHEDULED':`${mode}_ARTBOOK_SCHEDULED`;
@@ -191,45 +189,12 @@ if(queueGameMutable){
 writeJson('artbook-submission-queue.json',queue);
 
 const workOrderPath=`artbook-work-orders/${date}-${gameId}.json`;
-const taskStatus=owner=>{
-  if(mode==='SECOND_WORK')return selectedDepartments.includes(owner)?'SECOND_WORK_SCHEDULED':'CARRY_FORWARD_SCHEDULED';
-  if(mode==='REVISION')return selectedDepartments.includes(owner)?'REVISION_SCHEDULED':'CARRY_FORWARD_SCHEDULED';
-  if(mode==='DEVELOPMENT_UPGRADE')return 'DEVELOPMENT_UPGRADE_SCHEDULED';
-  if(mode==='RELEASE_UPGRADE')return 'RELEASE_UPGRADE_SCHEDULED';
-  return 'FREE_LOCAL_AI_SCHEDULED';
-};
-const mk=(owner,scope,deliverable)=>({
-  owner,scope,deliverable,submissionPath:`artbook-submissions/${gameId}/${date}/${owner}.json`,
-  mayWriteOtherSections:false,status:taskStatus(owner),lifecycleTargetState:lifecycle.targetState
-});
-const workOrder={
-  version:11,date,mode,gameId,gameName:game.name,status:`${mode}_ARTBOOK_WORK_SCHEDULED`,
-  submissionCountPolicy,existingInitialPriority:true,existingInitialRemaining:existingInitialRemaining.length,
-  styleProfile:game.styleProfile||'',lifecycle,
-  sourceEvidence:[`web-games/${gameId} (read-only)`,`unity-games/${gameId} (if present)`,'existing build/test/error records',...(lifecycle.sourceArtbookId?[`artbook:${lifecycle.sourceArtbookId}`]:[])],
-  departmentTasks:{
-    planning:mk('planning','스토리·세계관·캐릭터 동기·사건 인과를 이미지 중심 2장으로 설계','visual-story-world-pages'),
-    graphics:mk('graphics','캐릭터·몬스터·보스·배경·UI·로고·인트로 컨셉을 이미지 중심 2장으로 설계','visual-concept-style-pages'),
-    development:mk('development','실제 구현 구조·플레이 루프·시스템 연결을 이미지 중심 2장으로 설계','visual-gameplay-system-pages'),
-    qa:mk('qa','플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계','visual-test-journey-page'),
-    balance:mk('balance','성장곡선·전투 체감·보상·난이도를 이미지 중심 1장으로 설계','visual-balance-page')
-  },
-  runnerDispatch:{requestedRunner:'vibe2-local-open-model-department-bots',workflow:'.github/workflows/artbook-free-department-bots.yml',modelPrimary:'qwen3:0.6b',modelLicense:'Apache-2.0',execution:'github-hosted-ubuntu-local-inference',paidApi:false,apiKeyRequired:false,readsOtherDepartmentSubmissions:false,fallbackGhostwritingAllowed:false},
-  collaboration:{enabled:true,reviewProtocol:'PEER_IMPROVEMENT_STAR_5',eachReviewerRatesOtherFour:true,selfRatingForbidden:true,oneImprovementPerTarget:true,starMax:5,crossDepartmentGhostwriting:false,directorMayOnlyAssemble:true},
-  pagePolicy:{min:12,default:16,max:30,target:16,legacyCompletedPages:10,homepageMode:'compact-card-detail-viewer'},
-  presentation:{visualFirst:true,exactPages:16,minPages:12,maxPages:30,vibe2DraftPages:6,departmentAuthoredPages:8,directorAuthoredPages:2,assistantAuthoredPages:0,pagePlan:['director-cover','vibe2-draft-1','vibe2-draft-2','vibe2-draft-3','vibe2-draft-4','vibe2-draft-5','vibe2-draft-6','planning-1','planning-2','graphics-1','graphics-2','development-1','development-2','qa-1','balance-1','director-summary']},
-  secondWork,revision,
-  completionGate:{allFiveSectionsRequired:true,allFiveReviewsRequired:true,verifiedOrExplicitlyUnverifiedEvidenceRequired:true,uniformTemplateForbidden:true,minCutsRequired:12,maxCutsAllowed:30,targetCutsRequired:true,legacyTenPageCompatible:true,vibe2FirstDraftRequired:true,postprocessRequired:true,employeeVisualPresentationRequired:true,assistantAuthorshipForbidden:true,readyForDirectorAssembly:false,livingArtbookVersionRequired:true,previousBaselineOverwriteForbidden:true}
-};
+const taskStatus=owner=>{if(mode==='SECOND_WORK')return selectedDepartments.includes(owner)?'SECOND_WORK_SCHEDULED':'CARRY_FORWARD_SCHEDULED';if(mode==='REVISION')return selectedDepartments.includes(owner)?'REVISION_SCHEDULED':'CARRY_FORWARD_SCHEDULED';if(mode==='DEVELOPMENT_UPGRADE')return 'DEVELOPMENT_UPGRADE_SCHEDULED';if(mode==='RELEASE_UPGRADE')return 'RELEASE_UPGRADE_SCHEDULED';return 'FREE_LOCAL_AI_SCHEDULED';};
+const mk=(owner,scope,deliverable)=>({owner,scope,deliverable,submissionPath:`artbook-submissions/${gameId}/${date}/${owner}.json`,mayWriteOtherSections:false,status:taskStatus(owner),lifecycleTargetState:lifecycle.targetState});
+const workOrder={version:11,date,mode,gameId,gameName:game.name,status:`${mode}_ARTBOOK_WORK_SCHEDULED`,submissionCountPolicy,existingInitialPriority:true,existingInitialRemaining:existingInitialRemaining.length,styleProfile:game.styleProfile||'',lifecycle,sourceEvidence:[`web-games/${gameId} (read-only)`,`unity-games/${gameId} (if present)`,'existing build/test/error records',...(lifecycle.sourceArtbookId?[`artbook:${lifecycle.sourceArtbookId}`]:[])],departmentTasks:{planning:mk('planning','스토리·세계관·캐릭터 동기·사건 인과를 이미지 중심 2장으로 설계','visual-story-world-pages'),graphics:mk('graphics','캐릭터·몬스터·보스·배경·UI·로고·인트로 컨셉을 이미지 중심 2장으로 설계','visual-concept-style-pages'),development:mk('development','실제 구현 구조·플레이 루프·시스템 연결을 이미지 중심 2장으로 설계','visual-gameplay-system-pages'),qa:mk('qa','플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계','visual-test-journey-page'),balance:mk('balance','성장곡선·전투 체감·보상·난이도를 이미지 중심 1장으로 설계','visual-balance-page')},runnerDispatch:{requestedRunner:'vibe2-local-open-model-department-bots',workflow:'.github/workflows/artbook-free-department-bots.yml',modelPrimary:'qwen3:0.6b',modelLicense:'Apache-2.0',execution:'github-hosted-ubuntu-local-inference',paidApi:false,apiKeyRequired:false,readsOtherDepartmentSubmissions:false,fallbackGhostwritingAllowed:false},collaboration:{enabled:true,reviewProtocol:'PEER_IMPROVEMENT_STAR_5',eachReviewerRatesOtherFour:true,selfRatingForbidden:true,oneImprovementPerTarget:true,starMax:5,crossDepartmentGhostwriting:false,directorMayOnlyAssemble:true},pagePolicy:{min:12,default:16,max:30,target:16,legacyCompletedPages:10,homepageMode:'compact-card-detail-viewer'},presentation:{visualFirst:true,exactPages:16,minPages:12,maxPages:30,vibe2DraftPages:6,departmentAuthoredPages:8,directorAuthoredPages:2,assistantAuthoredPages:0,pagePlan:['director-cover','vibe2-draft-1','vibe2-draft-2','vibe2-draft-3','vibe2-draft-4','vibe2-draft-5','vibe2-draft-6','planning-1','planning-2','graphics-1','graphics-2','development-1','development-2','qa-1','balance-1','director-summary']},secondWork,revision,completionGate:{allFiveSectionsRequired:true,allFiveReviewsRequired:true,verifiedOrExplicitlyUnverifiedEvidenceRequired:true,uniformTemplateForbidden:true,minCutsRequired:12,maxCutsAllowed:30,targetCutsRequired:true,legacyTenPageCompatible:true,vibe2FirstDraftRequired:true,postprocessRequired:true,employeeVisualPresentationRequired:true,assistantAuthorshipForbidden:true,readyForDirectorAssembly:false,livingArtbookVersionRequired:true,previousBaselineOverwriteForbidden:true}};
 const existing=readJson(workOrderPath,null);
 if(!existing||clean(existing.mode).toUpperCase()!==mode||['SECOND_WORK','REVISION','DEVELOPMENT_UPGRADE','RELEASE_UPGRADE'].includes(mode))writeJson(workOrderPath,workOrder);
-
-writeJson('artbook-daily-context.json',{
-  date,run:true,mode,gameId,gameName:game.name,workOrderPath,sourceDate:secondWork?.sourceDate||null,
-  secondWorkDepartments:secondWork?.selectedDepartments||[],revisionDepartments:revision?.selectedDepartments||[],
-  existingInitialPriority:true,existingInitialRemaining,visualFirstRequired:true,employeeAuthorshipRequired:true,
-  vibe2FirstDraftRequired:true,pagePolicy:workOrder.pagePolicy,sameDaySecondWork,submissionCountPolicy,lifecycle
-});
+writeJson('artbook-daily-context.json',{date,run:true,mode,gameId,gameName:game.name,workOrderPath,sourceDate:secondWork?.sourceDate||null,secondWorkDepartments:secondWork?.selectedDepartments||[],revisionDepartments:revision?.selectedDepartments||[],existingInitialPriority:true,existingInitialRemaining,visualFirstRequired:true,employeeAuthorshipRequired:true,vibe2FirstDraftRequired:true,pagePolicy:workOrder.pagePolicy,sameDaySecondWork,submissionCountPolicy,lifecycle});
 console.log(`ARTBOOK_DAILY_TARGET=${gameId}`);
 console.log(`ARTBOOK_DAILY_MODE=${mode}`);
 console.log('ARTBOOK_PRIORITY=EXISTING_INITIAL_FIRST');
