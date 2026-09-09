@@ -299,6 +299,18 @@ namespace JaewoonGames.DaechungRpg
                 {
                     Player.level = 1;
                 }
+                if (Player.gold < 0)
+                {
+                    Player.gold = 0;
+                }
+                if (Player.experience < 0)
+                {
+                    Player.experience = 0;
+                }
+                if (Player.mainQuestStep < 0)
+                {
+                    Player.mainQuestStep = 0;
+                }
                 if (Player.baseMaxHp <= 0)
                 {
                     Player.baseMaxHp = 100;
