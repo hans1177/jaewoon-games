@@ -28,11 +28,11 @@
   "workflowEvidence": {
     "artbook": {
       "id": 34318479201,
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "success",
       "event": "push",
       "createdAt": "2026-09-09T06:18:30Z",
-      "updatedAt": "2026-09-09T06:36:07Z",
+      "updatedAt": "2026-09-09T06:42:21Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34318479201"
     },
     "homepage": null,
@@ -57,7 +57,7 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-09-daechung-rpg.json",
         "queue-submission:planning",
-        "workflow:34318479201:in_progress:pending",
+        "workflow:34318479201:completed:success",
         "job:102363706632:completed:success"
       ],
       "resultVerified": true,
@@ -84,7 +84,7 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-09-daechung-rpg.json",
         "queue-submission:development",
-        "workflow:34318479201:in_progress:pending",
+        "workflow:34318479201:completed:success",
         "job:102363729947:completed:success"
       ],
       "resultVerified": true,
@@ -111,18 +111,18 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-09-daechung-rpg.json",
         "queue-submission:qa",
-        "workflow:34318479201:in_progress:pending",
-        "job:102363706106:in_progress:pending"
+        "workflow:34318479201:completed:success",
+        "job:102363706106:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": {
         "id": 102363706106,
         "name": "round1 (qa)",
-        "status": "in_progress",
-        "conclusion": null,
+        "status": "completed",
+        "conclusion": "success",
         "failedStep": null,
         "startedAt": "2026-09-09T06:36:07Z",
-        "completedAt": null,
+        "completedAt": "2026-09-09T06:38:07Z",
         "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34318479201/job/102363706106"
       },
       "directCause": null,
@@ -138,7 +138,7 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-09-daechung-rpg.json",
         "queue-submission:graphics",
-        "workflow:34318479201:in_progress:pending",
+        "workflow:34318479201:completed:success",
         "job:102363707068:completed:success"
       ],
       "resultVerified": true,
@@ -165,7 +165,7 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-09-daechung-rpg.json",
         "queue-submission:balance",
-        "workflow:34318479201:in_progress:pending",
+        "workflow:34318479201:completed:success",
         "job:102363707096:completed:success"
       ],
       "resultVerified": true,
