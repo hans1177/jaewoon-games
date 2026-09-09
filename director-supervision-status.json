@@ -3,7 +3,7 @@
   "dateKst": "2026-09-10",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "survival2",
-  "activeDevelopmentRunId": 34371233534,
+  "activeDevelopmentRunId": 34374533858,
   "checks": {
     "staffChecked": "8/8",
     "activeWorkOrder": "artbook-work-orders/2026-09-10-survival2.json",
@@ -40,21 +40,21 @@
   "workflowEvidence": {
     "artbook": {
       "id": 34370467074,
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "failure",
       "event": "workflow_dispatch",
       "createdAt": "2026-09-09T15:28:27Z",
-      "updatedAt": "2026-09-09T15:33:31Z",
+      "updatedAt": "2026-09-09T15:38:52Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34370467074"
     },
     "autonomousDevelopment": {
-      "id": 34371233534,
+      "id": 34374533858,
       "status": "completed",
       "conclusion": "success",
       "event": "push",
-      "createdAt": "2026-09-09T15:35:25Z",
-      "updatedAt": "2026-09-09T15:35:45Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34371233534"
+      "createdAt": "2026-09-09T16:05:41Z",
+      "updatedAt": "2026-09-09T16:05:58Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34374533858"
     },
     "homepage": null,
     "publicGameHealth": null,
@@ -67,21 +67,21 @@
       "taskAssigned": false,
       "status": "DONE",
       "workState": "DONE",
-      "task": "autonomous development floor 34371233534",
+      "task": "autonomous development floor 34374533858",
       "executionEvidence": [
-        "autonomous-workflow:34371233534:completed:success",
-        "autonomous-job:102532789749:department (planning-final):completed:skipped"
+        "autonomous-workflow:34374533858:completed:success",
+        "autonomous-job:102543952381:department (planning-final):completed:skipped"
       ],
       "resultVerified": true,
       "jobEvidence": {
-        "id": 102532789749,
+        "id": 102543952381,
         "name": "department (planning-final)",
         "status": "completed",
         "conclusion": "skipped",
         "failedStep": null,
-        "startedAt": "2026-09-09T15:35:45Z",
-        "completedAt": "2026-09-09T15:35:44Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34371233534/job/102532789749"
+        "startedAt": "2026-09-09T16:05:58Z",
+        "completedAt": "2026-09-09T16:05:57Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34374533858/job/102543952381"
       },
       "directCause": null,
       "blockers": [],
@@ -94,9 +94,9 @@
       "taskAssigned": false,
       "status": "DONE",
       "workState": "DONE",
-      "task": "autonomous development floor 34371233534",
+      "task": "autonomous development floor 34374533858",
       "executionEvidence": [
-        "autonomous-workflow:34371233534:completed:success"
+        "autonomous-workflow:34374533858:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -111,9 +111,9 @@
       "taskAssigned": false,
       "status": "DONE",
       "workState": "DONE",
-      "task": "autonomous development floor 34371233534",
+      "task": "autonomous development floor 34374533858",
       "executionEvidence": [
-        "autonomous-workflow:34371233534:completed:success"
+        "autonomous-workflow:34374533858:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -128,9 +128,9 @@
       "taskAssigned": false,
       "status": "DONE",
       "workState": "DONE",
-      "task": "autonomous development floor 34371233534",
+      "task": "autonomous development floor 34374533858",
       "executionEvidence": [
-        "autonomous-workflow:34371233534:completed:success"
+        "autonomous-workflow:34374533858:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -145,9 +145,9 @@
       "taskAssigned": false,
       "status": "DONE",
       "workState": "DONE",
-      "task": "autonomous development floor 34371233534",
+      "task": "autonomous development floor 34374533858",
       "executionEvidence": [
-        "autonomous-workflow:34371233534:completed:success"
+        "autonomous-workflow:34374533858:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": null,
