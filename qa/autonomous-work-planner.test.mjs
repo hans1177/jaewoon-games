@@ -1,81 +1,106 @@
 // qa/autonomous-work-planner.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildAutonomousWorkOrder } from '../tools/autonomous-work-planner.mjs';
+import { buildAutonomousWorkOrder, classifyProjectStage } from '../tools/autonomous-work-planner.mjs';
 
 const filesystem={existsSync:()=>true};
 const basePortfolio={
-  status:'ACTIVE',paidApi:false,continuousDevelopmentBranch:'autonomous-dev',publicStableBranch:'main',candidateBranchPrefix:'autonomous/candidate-',maxModelCallsPerRun:1,maxRunnerMinutesPerRun:20,maxAutonomousWorkItemsPerDay:8,
+  status:'ACTIVE',paidApi:false,continuousDevelopmentBranch:'autonomous-dev',publicStableBranch:'main',candidateBranchPrefix:'autonomous/candidate-',maxModelCallsPerRun:2,maxRunnerMinutesPerRun:20,maxAutonomousWorkItemsPerDay:8,
   projects:[
-    {id:'P0001',slug:'a',name:'A',sourcePath:'web-games/a',profileStatus:'AUDITED_PARTIAL',mode:'IMPROVE',protectedValues:['save-a']},
+    {id:'P0001',slug:'a',name:'A',sourcePath:'web-games/a',profileStatus:'DEVELOPMENT_CONFIRMED',mode:'IMPROVE',protectedValues:['save-a']},
     {id:'P0002',slug:'b',name:'B',sourcePath:'web-games/b',profileStatus:'NEEDS_AUDIT',mode:'EXPERIMENT_ONLY',protectedValues:[]},
     {id:'P0003',slug:'c',name:'C',sourcePath:'web-games/c',profileStatus:'HOLD_X',mode:'HOLD',protectedValues:[]},
+    {id:'P0101',slug:'release',name:'Release',sourcePath:'web-games/release',profileStatus:'RELEASE_CONFIRMED',mode:'MAINTENANCE',protectedValues:['public-stable']},
   ]
 };
-
+const catalog={games:[{id:'a',homepageCategory:'development-confirmed'},{id:'b',homepageCategory:'development-confirmed'},{id:'release',homepageCategory:'release-confirmed'}]};
 const queue=(attempts=[])=>({version:1,attempts});
+const diag=(type='DOM_NULL_EVENT_BIND',repairMode='MODEL')=>({filesScanned:2,counts:{high:1},topIssue:{type,severity:'high',file:'app.js',message:'x',microTask:'app.js 문제 1개만 수정',repairMode,autoPatch:repairMode==='RULE_PATCH'?{type:'INSERT_VIEWPORT',path:'index.html'}:null},issues:[]});
 
-test('HOLD 프로젝트는 자동 개발 대상에서 제외하고 무료 작업 하나를 고른다',()=>{
-  const order=buildAutonomousWorkOrder({portfolio:basePortfolio,artbooks:{artbooks:[]},health:{games:[]},date:'2026-09-09',filesystem,queueState:queue()});
-  assert.equal(order.run,true);
-  assert.notEqual(order.gameId,'P0003');
-  assert.equal(order.budget.modelCalls,1);
-  assert.equal(order.budget.cashKRW,0);
-  assert.equal(order.budget.paidApi,false);
+test('회사 단계 분류는 출시확정 > 개발확정 > 구조개선 > 기획필요 > HOLD를 표현한다',()=>{
+  assert.equal(classifyProjectStage(basePortfolio.projects[3],catalog).rank,1);
+  assert.equal(classifyProjectStage(basePortfolio.projects[0],catalog).rank,2);
+  assert.equal(classifyProjectStage({...basePortfolio.projects[1],slug:'x'},{games:[]}).rank,3);
+  assert.equal(classifyProjectStage({id:'r',slug:'r',mode:'REDESIGN',profileStatus:'REDESIGN_IDENTITY'},{games:[]}).rank,4);
+  assert.equal(classifyProjectStage(basePortfolio.projects[2],catalog).id,'HOLD');
 });
 
-test('실행 사고가 있으면 일일 순환보다 우선한다',()=>{
+test('출시확정 게임은 문제가 발견된 경우에만 가장 먼저 보호한다',()=>{
+  const diagnostics={release:diag(),a:diag(),b:diag()};
+  const order=buildAutonomousWorkOrder({portfolio:basePortfolio,artbooks:{artbooks:[]},health:{games:[]},catalog,diagnostics,date:'2026-09-09',filesystem,queueState:queue()});
+  assert.equal(order.gameId,'P0101');
+  assert.equal(order.projectStage,'RELEASE_CONFIRMED');
+});
+
+test('출시확정 게임이 깨끗하면 개발확정의 실제 문제를 처리한다',()=>{
+  const diagnostics={release:{issues:[],topIssue:null},a:diag(),b:diag()};
+  const order=buildAutonomousWorkOrder({portfolio:basePortfolio,artbooks:{artbooks:[]},health:{games:[]},catalog,diagnostics,date:'2026-09-09',filesystem,queueState:queue()});
+  assert.equal(order.gameId,'P0001');
+  assert.equal(order.projectStage,'DEVELOPMENT_CONFIRMED');
+});
+
+test('진단 microtask는 책임 파일을 지정하고 모델 작업은 최대 2회 예산을 쓴다',()=>{
+  const portfolio={...basePortfolio,projects:[basePortfolio.projects[0]]};
+  const order=buildAutonomousWorkOrder({portfolio,artbooks:{artbooks:[]},health:{games:[]},catalog,diagnostics:{a:diag()},date:'2026-09-09',filesystem,queueState:queue()});
+  assert.equal(order.selectedReason,'DIAGNOSTIC_MICROTASK');
+  assert.deepEqual(order.responsibilityFiles,['app.js']);
+  assert.equal(order.repairMode,'MODEL');
+  assert.equal(order.budget.modelCalls,2);
+});
+
+test('안전 규칙 패치는 모델 호출 0회로 계획한다',()=>{
+  const portfolio={...basePortfolio,projects:[basePortfolio.projects[0]]};
+  const d={filesScanned:1,counts:{high:1},topIssue:{type:'MISSING_VIEWPORT',severity:'high',file:'index.html',message:'viewport',microTask:'viewport 1개 추가',repairMode:'RULE_PATCH',autoPatch:{type:'INSERT_VIEWPORT',path:'index.html'}}};
+  const order=buildAutonomousWorkOrder({portfolio,artbooks:{artbooks:[]},health:{games:[]},catalog,diagnostics:{a:d},date:'2026-09-09',filesystem,queueState:queue()});
+  assert.equal(order.repairMode,'RULE_PATCH');
+  assert.equal(order.budget.modelCalls,0);
+});
+
+test('같은 단계의 실행 사고는 일반 진단보다 우선한다',()=>{
+  const portfolio={...basePortfolio,projects:[basePortfolio.projects[0],basePortfolio.projects[1]]};
   const health={games:[{gameId:'b',status:'critical',healthReason:'load failed',issues:['blank-screen'],signals:{loadOk:false}}]};
-  const order=buildAutonomousWorkOrder({portfolio:basePortfolio,artbooks:{artbooks:[]},health,date:'2026-09-09',filesystem,queueState:queue()});
+  const localCatalog={games:[{id:'a',homepageCategory:'development-confirmed'},{id:'b',homepageCategory:'development-confirmed'}]};
+  const order=buildAutonomousWorkOrder({portfolio,artbooks:{artbooks:[]},health,catalog:localCatalog,diagnostics:{a:diag(),b:diag()},date:'2026-09-09',filesystem,queueState:queue()});
   assert.equal(order.gameId,'P0002');
   assert.equal(order.selectedReason,'RUNTIME_INCIDENT_FIRST');
   assert.equal(order.budget.emergencyReserveUse,true);
 });
 
-test('오늘 이미 예약된 게임은 연속큐에서 다시 고르지 않는다',()=>{
+test('오늘 이미 예약된 게임은 다시 고르지 않는다',()=>{
+  const portfolio={...basePortfolio,projects:[basePortfolio.projects[0],basePortfolio.projects[1]]};
   const q=queue([{date:'2026-09-09',gameId:'P0001',status:'RESERVED'}]);
-  const order=buildAutonomousWorkOrder({portfolio:basePortfolio,artbooks:{artbooks:[]},health:{games:[]},date:'2026-09-09',filesystem,queueState:q});
-  assert.equal(order.run,true);
+  const localCatalog={games:[{id:'a',homepageCategory:'development-confirmed'},{id:'b',homepageCategory:'development-confirmed'}]};
+  const order=buildAutonomousWorkOrder({portfolio,artbooks:{artbooks:[]},health:{games:[]},catalog:localCatalog,diagnostics:{a:diag(),b:diag()},date:'2026-09-09',filesystem,queueState:q});
   assert.equal(order.gameId,'P0002');
-  assert.equal(order.selectedReason,'CONTINUOUS_PORTFOLIO_NEXT');
-});
-
-test('오늘 처리 가능한 프로젝트를 모두 시도하면 큐가 깨끗하게 종료된다',()=>{
-  const q=queue([{date:'2026-09-09',gameId:'P0001'},{date:'2026-09-09',gameId:'P0002'}]);
-  const order=buildAutonomousWorkOrder({portfolio:basePortfolio,artbooks:{artbooks:[]},health:{games:[]},date:'2026-09-09',filesystem,queueState:q});
-  assert.equal(order.run,false);
-  assert.equal(order.reason,'NO_UNPROCESSED_WORK_TODAY');
 });
 
 test('일일 상한에 도달하면 프로젝트가 더 있어도 종료한다',()=>{
   const portfolio={...basePortfolio,maxAutonomousWorkItemsPerDay:1};
   const q=queue([{date:'2026-09-09',gameId:'P0001'}]);
-  const order=buildAutonomousWorkOrder({portfolio,artbooks:{artbooks:[]},health:{games:[]},date:'2026-09-09',filesystem,queueState:q});
-  assert.equal(order.run,false);
-  assert.equal(order.reason,'DAILY_AUTONOMOUS_CAP_REACHED');
+  const order=buildAutonomousWorkOrder({portfolio,artbooks:{artbooks:[]},health:{games:[]},catalog,diagnostics:{release:diag()},date:'2026-09-09',filesystem,queueState:q});
+  assert.equal(order.run,false);assert.equal(order.reason,'DAILY_AUTONOMOUS_CAP_REACHED');
 });
 
 test('건강도 숫자 자체를 게임 품질 점수로 사용하지 않는다',()=>{
+  const portfolio={...basePortfolio,projects:[basePortfolio.projects[0]]};
   const health={games:[{gameId:'a',status:'healthy',score:10,issues:[],signals:{loadOk:true,reloadOk:true}}]};
-  const order=buildAutonomousWorkOrder({portfolio:{...basePortfolio,projects:[basePortfolio.projects[0]]},artbooks:{artbooks:[]},health,date:'2026-09-09',filesystem,queueState:queue()});
-  assert.equal(order.selectedReason,'DAILY_PORTFOLIO_ROTATION');
-  assert.equal(order.evidence.healthScoreUsedAsGameQuality,false);
-  assert.equal(order.evidence.runtimeIncident,null);
+  const order=buildAutonomousWorkOrder({portfolio,artbooks:{artbooks:[]},health,catalog,diagnostics:{a:diag()},date:'2026-09-09',filesystem,queueState:queue()});
+  assert.equal(order.evidence.healthScoreUsedAsGameQuality,false);assert.equal(order.evidence.runtimeIncident,null);
 });
 
-test('최신 아트북의 낮은 부서 보완점을 목표 근거로 넣는다',()=>{
-  const artbooks={artbooks:[{id:'a-1',gameId:'a',createdAt:'2026-09-08',productionApproval:false,departmentOpinions:{graphics:{averageStars:3,priorityImprovement:'보스 실루엣을 강화한다'},qa:{averageStars:4,priorityImprovement:'모바일 버튼 겹침을 고친다'}}}]};
-  const order=buildAutonomousWorkOrder({portfolio:{...basePortfolio,projects:[basePortfolio.projects[0]]},artbooks,health:{games:[]},date:'2026-09-09',filesystem,queueState:queue()});
-  assert.match(order.goal,/보스 실루엣/);
-  assert.equal(order.evidence.latestArtbookProductionApproval,false);
+test('최신 아트북의 낮은 부서 보완점을 진단이 없을 때 작은 목표 근거로 사용한다',()=>{
+  const portfolio={...basePortfolio,projects:[basePortfolio.projects[0]]};
+  const artbooks={artbooks:[{id:'a-1',gameId:'a',createdAt:'2026-09-08',productionApproval:false,departmentOpinions:{graphics:{averageStars:3,priorityImprovement:'보스 실루엣을 강화한다'}}}]};
+  const order=buildAutonomousWorkOrder({portfolio,artbooks,health:{games:[]},catalog,diagnostics:{a:{issues:[],topIssue:null}},date:'2026-09-09',filesystem,queueState:queue()});
+  assert.match(order.goal,/보스 실루엣/);assert.equal(order.evidence.latestArtbookProductionApproval,false);
 });
 
-test('프로젝트 수는 9로 고정되지 않고 P0010 이후도 동일하게 선택 가능',()=>{
-  const portfolio={...basePortfolio,projects:[{id:'P0010',slug:'new',name:'New',sourcePath:'web-games/new',profileStatus:'NEW',mode:'EXPERIMENT_ONLY',protectedValues:[]}]};
-  const order=buildAutonomousWorkOrder({portfolio,artbooks:{artbooks:[]},health:{games:[]},date:'2026-09-09',filesystem,queueState:queue()});
-  assert.equal(order.gameId,'P0010');
+test('기획 정체성만 필요한 프로젝트는 코드 생성으로 밀어 넣지 않는다',()=>{
+  const portfolio={...basePortfolio,projects:[{id:'P9',slug:'r',name:'R',sourcePath:'web-games/r',profileStatus:'REDESIGN_IDENTITY',mode:'REDESIGN',protectedValues:[]}]};
+  const order=buildAutonomousWorkOrder({portfolio,artbooks:{artbooks:[]},health:{games:[]},catalog:{games:[]},diagnostics:{r:diag()},date:'2026-09-09',filesystem,queueState:queue()});
+  assert.equal(order.run,false);assert.equal(order.reason,'PLANNING_IDENTITY_REQUIRED');
 });
 
 test('paidApi가 켜진 포트폴리오는 즉시 거부한다',()=>{
-  assert.throws(()=>buildAutonomousWorkOrder({portfolio:{...basePortfolio,paidApi:true},artbooks:{},health:{},filesystem,queueState:queue()}),/무료정책 위반/);
+  assert.throws(()=>buildAutonomousWorkOrder({portfolio:{...basePortfolio,paidApi:true},artbooks:{},health:{},catalog,diagnostics:{},filesystem,queueState:queue()}),/무료정책 위반/);
 });

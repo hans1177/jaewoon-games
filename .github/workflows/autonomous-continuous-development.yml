@@ -8,17 +8,22 @@ on:
       - '.github/workflows/autonomous-portfolio-continuation.yml'
       - '.github/workflows/autonomous-new-game-incubator.yml'
       - 'tools/autonomous-work-planner.mjs'
+      - 'tools/autonomous-diagnostics.mjs'
+      - 'tools/autonomous-rule-patcher.mjs'
       - 'tools/autonomous-queue-state.mjs'
       - 'tools/autonomous-development-worker.mjs'
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/autonomous-portfolio-continuation.mjs'
       - 'tools/autonomous-new-game-incubator.mjs'
       - 'qa/autonomous-work-planner.test.mjs'
+      - 'qa/autonomous-diagnostics.test.mjs'
+      - 'qa/autonomous-rule-patcher.test.mjs'
       - 'qa/autonomous-queue-state.test.mjs'
       - 'qa/autonomous-development-worker.test.mjs'
       - 'qa/autonomous-portfolio-continuation.test.mjs'
       - 'qa/autonomous-new-game-incubator.test.mjs'
       - 'autonomous-portfolio.json'
+      - 'game-catalog.json'
       - 'public-game-health.json'
       - 'game-artbooks.json'
   schedule:
@@ -38,6 +43,7 @@ env:
   AUTONOMOUS_LOCAL_MODEL: qwen3:0.6b
   AUTONOMOUS_MODEL_MAX_PREDICT: '1536'
   AUTONOMOUS_MODEL_TIMEOUT_MS: '240000'
+  AUTONOMOUS_MODEL_MAX_ATTEMPTS: '2'
   OLLAMA_HOST: 127.0.0.1:11434
 
 jobs:
@@ -79,8 +85,11 @@ jobs:
           const fs=require('fs');
           const o=JSON.parse(fs.readFileSync('.autonomous/work-order.json','utf8'));
           const out=process.env.GITHUB_OUTPUT;
-          fs.appendFileSync(out,`run=${o.run?'true':'false'}\n`);
-          fs.appendFileSync(out,`reason=${String(o.reason||o.selectedReason||'').replaceAll('\n',' ')}\n`);
+          const line=(k,v)=>fs.appendFileSync(out,`${k}=${String(v??'').replaceAll('\n',' ')}\n`);
+          line('run',o.run?'true':'false');
+          line('reason',o.reason||o.selectedReason||'');
+          line('repair_mode',o.repairMode||'MODEL');
+          line('model_calls',Number(o.budget?.modelCalls||0));
           if(!o.run)process.exit(0);
           const env=process.env.GITHUB_ENV;
           fs.appendFileSync(env,`AUTONOMOUS_GAME_ID=${o.gameId}\n`);
@@ -88,10 +97,14 @@ jobs:
           fs.appendFileSync(env,`AUTONOMOUS_SOURCE_PATH=${o.sourcePath}\n`);
           fs.appendFileSync(env,`AUTONOMOUS_WORK_DATE=${o.date}\n`);
           fs.appendFileSync(env,`AUTONOMOUS_SELECTED_REASON=${o.selectedReason}\n`);
+          fs.appendFileSync(env,`AUTONOMOUS_REPAIR_MODE=${o.repairMode||'MODEL'}\n`);
+          fs.appendFileSync(env,`AUTONOMOUS_MODEL_CALL_BUDGET=${Number(o.budget?.modelCalls||0)}\n`);
           fs.appendFileSync(env,`AUTONOMOUS_CANDIDATE_ID=${o.gameId}-${o.date.replaceAll('-','')}-${process.env.GITHUB_RUN_ID}\n`);
           fs.appendFileSync(env,`AUTONOMOUS_PROTECTED_VALUES=${(o.protectedValues||[]).join(',')}\n`);
           fs.appendFileSync(env,`AUTONOMOUS_GOAL<<JAEWOON_GOAL\n${String(o.goal||'').replaceAll('\r',' ')}\nJAEWOON_GOAL\n`);
-          if(o.budget?.paidApi!==false||Number(o.budget?.modelCalls)!==1||Number(o.budget?.maxModelCalls)<1)throw new Error('free budget work-order gate failed');
+          const calls=Number(o.budget?.modelCalls),max=Number(o.budget?.maxModelCalls);
+          if(o.budget?.paidApi!==false||!Number.isInteger(calls)||calls<0||calls>max||max<0||max>2)throw new Error('free budget work-order gate failed');
+          if((o.repairMode==='RULE_PATCH'&&calls!==0)||(o.repairMode!=='RULE_PATCH'&&calls<1))throw new Error('repair/model budget mismatch');
           NODE
 
       - name: Stop cleanly when no eligible work remains today
@@ -111,10 +124,12 @@ jobs:
           echo 'PORTFOLIO_CONTINUATION=DISPATCHED'
           echo 'PUBLIC_MAIN_RELEASE=NO'
 
-      - name: Deterministic planner, queue, budget and worker tests
+      - name: Deterministic planner, diagnostics, patcher, queue, budget and worker tests
         if: steps.order.outputs.run == 'true'
         run: |
           node --test qa/autonomous-work-planner.test.mjs
+          node --test qa/autonomous-diagnostics.test.mjs
+          node --test qa/autonomous-rule-patcher.test.mjs
           node --test qa/autonomous-queue-state.test.mjs
           node --test qa/free-budget-telemetry.test.mjs
           node --test qa/autonomous-development-worker.test.mjs
@@ -127,7 +142,7 @@ jobs:
           node tools/free-budget-telemetry.mjs \
             --verify-public-repo=true \
             --runner=ubuntu-latest \
-            --model-calls=1 \
+            --model-calls="$AUTONOMOUS_MODEL_CALL_BUDGET" \
             --runner-minutes=20 \
             --output=.autonomous/free-budget-telemetry.json
           echo 'FREE_BUDGET_PREFLIGHT=PASS'
@@ -169,8 +184,8 @@ jobs:
           echo "name=$branch" >> "$GITHUB_OUTPUT"
           echo "MAIN_DIRECT_WRITE=NO"
 
-      - name: Install local Ollama
-        if: steps.order.outputs.run == 'true'
+      - name: Install local Ollama when model generation is required
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.repair_mode != 'RULE_PATCH'
         shell: bash
         run: |
           set -euo pipefail
@@ -189,11 +204,12 @@ jobs:
           cat /tmp/ollama-autonomous.log || true
           exit 1
 
-      - name: Pull one free local model
-        if: steps.order.outputs.run == 'true'
+      - name: Pull free local model when required
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.repair_mode != 'RULE_PATCH'
         run: |
           ollama pull "$AUTONOMOUS_LOCAL_MODEL"
-          echo "MODEL_CALL_BUDGET=1"
+          echo "MODEL_CALL_BUDGET=$AUTONOMOUS_MODEL_CALL_BUDGET"
+          echo "MODEL_MAX_ATTEMPTS=$AUTONOMOUS_MODEL_MAX_ATTEMPTS"
           echo "MODEL_MAX_PREDICT=$AUTONOMOUS_MODEL_MAX_PREDICT"
           echo "PAID_API=NO"
 
@@ -247,7 +263,8 @@ jobs:
           echo "- cash budget: 0" >> "$GITHUB_STEP_SUMMARY"
           echo "- paid API: NO" >> "$GITHUB_STEP_SUMMARY"
           echo "- actions quota mode: verified public standard / unmetered free" >> "$GITHUB_STEP_SUMMARY"
-          echo "- local model calls/run: max 1" >> "$GITHUB_STEP_SUMMARY"
+          echo "- local model calls/run: max 2, validation retry only" >> "$GITHUB_STEP_SUMMARY"
+          echo "- deterministic rule patch: model calls 0" >> "$GITHUB_STEP_SUMMARY"
           echo "- local model max predict: 1536" >> "$GITHUB_STEP_SUMMARY"
           echo "- local model timeout: 240000ms" >> "$GITHUB_STEP_SUMMARY"
           echo "- daily work cap: 8" >> "$GITHUB_STEP_SUMMARY"
