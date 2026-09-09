@@ -63,7 +63,7 @@
         "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
         "probe": "tools/unity-apk-runtime-smoke.sh",
         "method": "APK install -> launch -> Android tap/swipe input -> process survival -> fatal log scan -> screenshot",
-        "contractVerificationRunId": 34345112179,
+        "contractVerificationRunId": 34345329772,
         "contractVerificationConclusion": "success",
         "successfulRuntimeEvidenceRunId": null,
         "buildAloneCountsAsQaPass": false,
@@ -115,18 +115,18 @@
   "verification": {
     "departmentStandardsWorkflow": {
       "latestRun": {
-        "runId": 34345112179,
+        "runId": 34345329772,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "19a8e0455c52876a2e9619ee20ad9fc8ddd10adb",
-        "updatedAt": "2026-09-09T11:21:37Z"
+        "headSha": "b07cfc34c9117d3df244584e38dc6b6e0b6001ca",
+        "updatedAt": "2026-09-09T11:24:02Z"
       },
       "latestSuccessfulRun": {
-        "runId": 34345112179,
+        "runId": 34345329772,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "19a8e0455c52876a2e9619ee20ad9fc8ddd10adb",
-        "updatedAt": "2026-09-09T11:21:37Z"
+        "headSha": "b07cfc34c9117d3df244584e38dc6b6e0b6001ca",
+        "updatedAt": "2026-09-09T11:24:02Z"
       },
       "unitySmokeContractVerified": true
     },
