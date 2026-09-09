@@ -1,0 +1,39 @@
+name: Vibe2 Bottleneck Branch QA
+
+on:
+  push:
+    branches:
+      - chatgpt/vibe2-bottleneck-1-5-20260909
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax checks
+        run: |
+          set -euo pipefail
+          node --check tools/autonomous-diagnostics.mjs
+          node --check tools/autonomous-rule-patcher.mjs
+          node --check tools/autonomous-work-planner.mjs
+          node --check tools/autonomous-development-worker.mjs
+          node --check tools/vibe2-artbook-story-draft.mjs
+      - name: JSON checks
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('autonomous-portfolio.json','utf8')); console.log('portfolio json ok')"
+      - name: Unit tests
+        run: |
+          set -euo pipefail
+          node --test qa/autonomous-diagnostics.test.mjs
+          node --test qa/autonomous-rule-patcher.test.mjs
+          node --test qa/autonomous-work-planner.test.mjs
+          node --test qa/autonomous-queue-state.test.mjs
+          node --test qa/free-budget-telemetry.test.mjs
+          node --test qa/autonomous-development-worker.test.mjs
