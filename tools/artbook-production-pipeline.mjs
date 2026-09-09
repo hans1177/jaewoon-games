@@ -1,4 +1,4 @@
-// 역할: FACT PACK → 5부서 독립 작성 → 의미 품질 재작성 → 품질 게이트를 한 번에 실행한다.
+// 역할: FACT PACK → 학습 컨텍스트 → 5부서 독립 작성 → 의미 품질 재작성 → 품질 게이트를 한 번에 실행한다.
 import { spawn } from 'node:child_process';
 
 const ROLES=['planning','graphics','development','qa','balance'];
@@ -29,6 +29,7 @@ async function pool(items,limit,worker){
 console.log(`ARTBOOK_PIPELINE_GAME=${gameId}`);
 console.log(`ARTBOOK_PIPELINE_PARALLEL=${maxParallel}`);
 await run('tools/artbook-fact-pack.mjs');
+await run('tools/artbook-learning-context.mjs');
 await pool(ROLES,maxParallel,role=>run('tools/artbook-department-runner.mjs',{ARTBOOK_ROLE:role}));
 await pool(ROLES,maxParallel,role=>run('tools/artbook-department-rewrite.mjs',{ARTBOOK_ROLE:role}));
 await run('tools/artbook-gate.mjs');
