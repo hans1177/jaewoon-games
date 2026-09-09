@@ -42,3 +42,5 @@ jobs:
           git add tools/autonomous-development-worker.mjs tools/autonomous-department-scope.mjs tools/autonomous-candidate-browser-qa.mjs qa/autonomous-department-scope.test.mjs qa/autonomous-candidate-browser-qa.test.mjs .github/workflows/autonomous-continuous-development.yml .github/workflows/autonomous-candidate-promotion.yml
           git commit -m 'vibe2: strengthen parallel implementation and pre-release QA'
           git push origin HEAD:chatgpt/vibe2-capability-upgrade-20260909
+
+# retry: browser-feedback-only
