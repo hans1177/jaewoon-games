@@ -135,8 +135,8 @@ jobs:
           must(continuous.includes('Reserve this development floor'),'repeatable floor reservation missing');
           must(continuous.indexOf('Verified free budget preflight') < continuous.indexOf('Reserve this development floor'),'budget preflight must precede reservation');
           must(continuous.includes('role: [planning, development, graphics, qa, balance]'),'five independent department jobs missing');
-          must(continuous.includes('AUTONOMOUS_DEPARTMENT_ROLE: ${{ matrix.role }}'),'matrix role handoff missing');
-          must(continuous.includes('pattern: autonomous-department-*-${{ github.run_id }}'),'five department artifact handoff missing');
+          must(continuous.includes('AUTONOMOUS_DEPARTMENT_ROLE:')&&continuous.includes('matrix.role'),'matrix role handoff missing');
+          must(continuous.includes('pattern: autonomous-department-*-')&&continuous.includes('github.run_id'),'five department artifact handoff missing');
           must(continuous.includes('DEPARTMENT_HANDOFFS=5/5'),'planning integration handoff gate missing');
           must(continuous.includes("AUTONOMOUS_DEPARTMENT_FINALIZE: 'true'"),'planning-final integration mode missing');
           must(continuous.includes('name: serial source implementation'),'serial source worker missing');
