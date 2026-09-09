@@ -3,13 +3,13 @@
   "dateKst": "2026-09-09",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
-  "activeDevelopmentRunId": 34335069493,
+  "activeDevelopmentRunId": 34345425577,
   "checks": {
     "staffChecked": "8/8",
     "activeWorkOrder": "artbook-work-orders/2026-09-09-daechung-rpg.json",
     "activeWorkOrderExists": true,
     "evidenceAdapterMismatch": false,
-    "jobLevelEvidenceUsed": true,
+    "jobLevelEvidenceUsed": false,
     "autonomousDepartmentJobEvidenceUsed": true,
     "liveDepartmentStates": true,
     "failureLogsUsed": true,
@@ -35,23 +35,15 @@
   "attentionRequired": false,
   "primaryFindings": [],
   "workflowEvidence": {
-    "artbook": {
-      "id": 34327314291,
-      "status": "completed",
-      "conclusion": "failure",
-      "event": "workflow_dispatch",
-      "createdAt": "2026-09-09T08:06:27Z",
-      "updatedAt": "2026-09-09T08:16:19Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34327314291"
-    },
+    "artbook": null,
     "autonomousDevelopment": {
-      "id": 34335069493,
+      "id": 34345425577,
       "status": "in_progress",
       "conclusion": null,
-      "event": "workflow_dispatch",
-      "createdAt": "2026-09-09T09:30:18Z",
-      "updatedAt": "2026-09-09T09:30:26Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34335069493"
+      "event": "push",
+      "createdAt": "2026-09-09T11:24:58Z",
+      "updatedAt": "2026-09-09T11:25:02Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34345425577"
     },
     "homepage": null,
     "publicGameHealth": null,
@@ -64,9 +56,9 @@
       "taskAssigned": true,
       "status": "WORKING",
       "workState": "WAITING",
-      "task": "autonomous development floor 34335069493",
+      "task": "autonomous development floor 34345425577",
       "executionEvidence": [
-        "autonomous-workflow:34335069493:in_progress:pending"
+        "autonomous-workflow:34345425577:in_progress:pending"
       ],
       "resultVerified": false,
       "jobEvidence": null,
@@ -81,9 +73,9 @@
       "taskAssigned": true,
       "status": "WORKING",
       "workState": "WAITING",
-      "task": "autonomous development floor 34335069493",
+      "task": "autonomous development floor 34345425577",
       "executionEvidence": [
-        "autonomous-workflow:34335069493:in_progress:pending"
+        "autonomous-workflow:34345425577:in_progress:pending"
       ],
       "resultVerified": false,
       "jobEvidence": null,
@@ -98,9 +90,9 @@
       "taskAssigned": true,
       "status": "WORKING",
       "workState": "WAITING",
-      "task": "autonomous development floor 34335069493",
+      "task": "autonomous development floor 34345425577",
       "executionEvidence": [
-        "autonomous-workflow:34335069493:in_progress:pending"
+        "autonomous-workflow:34345425577:in_progress:pending"
       ],
       "resultVerified": false,
       "jobEvidence": null,
@@ -115,9 +107,9 @@
       "taskAssigned": true,
       "status": "WORKING",
       "workState": "WAITING",
-      "task": "autonomous development floor 34335069493",
+      "task": "autonomous development floor 34345425577",
       "executionEvidence": [
-        "autonomous-workflow:34335069493:in_progress:pending"
+        "autonomous-workflow:34345425577:in_progress:pending"
       ],
       "resultVerified": false,
       "jobEvidence": null,
@@ -132,9 +124,9 @@
       "taskAssigned": true,
       "status": "WORKING",
       "workState": "WAITING",
-      "task": "autonomous development floor 34335069493",
+      "task": "autonomous development floor 34345425577",
       "executionEvidence": [
-        "autonomous-workflow:34335069493:in_progress:pending"
+        "autonomous-workflow:34345425577:in_progress:pending"
       ],
       "resultVerified": false,
       "jobEvidence": null,
