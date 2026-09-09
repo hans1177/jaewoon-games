@@ -349,6 +349,14 @@ namespace JaewoonGames.DaechungRpg
                 {
                     Player.equippedArmorId = "none";
                 }
+                if (Player.equippedWeaponId != "bare-hands" && !Player.ownedWeapons.Contains(Player.equippedWeaponId))
+                {
+                    Player.ownedWeapons.Add(Player.equippedWeaponId);
+                }
+                if (Player.equippedArmorId != "none" && !Player.ownedArmors.Contains(Player.equippedArmorId))
+                {
+                    Player.ownedArmors.Add(Player.equippedArmorId);
+                }
 
                 Player.currentHp = Mathf.Clamp(Player.currentHp, 1, GetMaxHp());
             }
