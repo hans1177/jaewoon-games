@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "gameId": "monster-adventure",
+  "date": "2026-09-09",
+  "author": "director",
+  "status": "READY",
+  "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+  "cover": {
+    "title": "몬스터 어드벤처",
+    "tagline": "모든 캐릭터, 전투, 성장, 보상의 흐름을 한눈으…",
+    "motifs": [
+      "몬스터의 생태적 성격…",
+      "몬스터의 지역 생태를…",
+      "전투의 진화를 기반으…",
+      "모든 캐릭터, 전투,…"
+    ],
+    "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/director-cover.svg",
+    "employeeAuthored": true
+  },
+  "summary": {
+    "title": "몬스터 어드벤처",
+    "departmentHighlights": [
+      {
+        "department": "planning",
+        "departmentName": "기획",
+        "label": "몬스터 어드벤처"
+      },
+      {
+        "department": "graphics",
+        "departmentName": "그래픽",
+        "label": "MONSTER ADVENTURE"
+      },
+      {
+        "department": "development",
+        "departmentName": "개발",
+        "label": "몬스터 어드벤처"
+      },
+      {
+        "department": "qa",
+        "departmentName": "QA",
+        "label": "몬스터 어드벤처"
+      },
+      {
+        "department": "balance",
+        "departmentName": "밸런스",
+        "label": "몬스터 어드벤처"
+      }
+    ],
+    "closing": "모든 캐릭터, 전투, 성장, 보상의 흐름을 한눈으로 …",
+    "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/director-summary.svg",
+    "employeeAuthored": true
+  },
+  "sourceDepartments": [
+    "planning",
+    "graphics",
+    "development",
+    "qa",
+    "balance"
+  ],
+  "newClaimsAdded": false,
+  "runner": {
+    "type": "vibe2-local-open-model-director-presentation",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "assistantAuthored": false
+  }
+}

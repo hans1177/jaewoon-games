@@ -1,0 +1,163 @@
+{
+  "version": 6,
+  "gameId": "monster-adventure",
+  "date": "2026-09-09",
+  "department": "development",
+  "status": "SUBMITTED",
+  "departmentReadiness": "BLOCKED",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "몬스터 어드벤처",
+  "evidence": [
+    {
+      "source": "web-games/monster-adventure/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-monster-adventure.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "implementedNow": "monster-adventure",
+    "architecture": "game",
+    "prototypeLimits": "100",
+    "technicalRisks": "no-blocking-smoke-errors",
+    "demoPlan": "100",
+    "handoffs": "no-blocking-smoke-errors"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "monster-adventure",
+      "game",
+      "game-architecture"
+    ],
+    "implementationPlan": [
+      "monster-adventure",
+      "game",
+      "game-architecture"
+    ],
+    "demoValidation": [
+      "monster-adventure",
+      "game",
+      "game-architecture"
+    ]
+  },
+  "unverified": [],
+  "cuts": [
+    {
+      "kind": "development",
+      "title": "몬스터 어드벤처",
+      "body": "monster-adventure · game · game-architecture",
+      "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/development.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "development",
+        "ownerName": "개발",
+        "pageSlot": 1,
+        "visualType": "gameplay-loop",
+        "title": "몬스터 어드벤처",
+        "focus": "몬스터 어드벤처",
+        "caption": "몬스터 어드벤처 개발",
+        "elements": [
+          {
+            "label": "플레이 루프",
+            "note": "플레이 루프 구현",
+            "kind": ""
+          },
+          {
+            "label": "시스템 연결",
+            "note": "시스템 연결 구현",
+            "kind": ""
+          },
+          {
+            "label": "전투/성장",
+            "note": "전투/성장 구현",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/development-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "development"
+      },
+      {
+        "owner": "development",
+        "ownerName": "개발",
+        "pageSlot": 2,
+        "visualType": "system-flow",
+        "title": "아트북",
+        "focus": "아트북",
+        "caption": "아트북 기록",
+        "elements": [
+          {
+            "label": "검토",
+            "note": "검토 진행 중",
+            "kind": ""
+          },
+          {
+            "label": "설정",
+            "note": "설정 중",
+            "kind": ""
+          },
+          {
+            "label": "저장",
+            "note": "저장 완료",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/development-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "development"
+      }
+    ],
+    "generatedBy": {
+      "department": "development",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

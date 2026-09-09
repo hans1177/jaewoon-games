@@ -1,0 +1,57 @@
+{
+  "version": 6,
+  "gameId": "monster-adventure",
+  "date": "2026-09-09",
+  "department": "development",
+  "status": "REVIEWED",
+  "round": 2,
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "independentFirstRoundCompleted": true,
+    "onePeerPerGeneration": true
+  },
+  "protocol": "PEER_IMPROVEMENT_STAR_5",
+  "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+  "reviewedDepartments": [
+    "planning",
+    "graphics",
+    "qa",
+    "balance"
+  ],
+  "ratingScale": {
+    "type": "STARS",
+    "min": 1,
+    "max": 5
+  },
+  "peerReviews": [
+    {
+      "targetDepartment": "planning",
+      "improvement": "몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 구체적으로 지적해.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "graphics",
+      "improvement": "본 부서 결과물은 개발 부서의 개발 목표와 부서 결과물의 품질을 명확히 하였으나, 지역 생태를 바탕으로 캐릭터, 몬스터, 보스, 배경, UI, 인트로 컨셉을 이미지 중심 2장으로 제안하는 내용은 부서 결과물의 품질에 영향을 미쳤으므로, 보완점은 없습니다.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "qa",
+      "improvement": "본부에서의 개발 부서 결과물은 팀의 역량을 잘 반영하고 있으며, 다만 'no-blocking-smoke-errors' 문제를 해결하지 못한 경우에 따라 개선을 위한 추가적인 검증이 필요합니다.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "balance",
+      "improvement": "본 부서 결과물의 개선점은 '몬스터의 도감을 통해 전투의 흐름을 유도하는 방식'을 추가로 설명하며, 별점 5점을 받을 수 있습니다.",
+      "stars": 5
+    }
+  ],
+  "guard": {
+    "mayRewriteOtherDepartments": false,
+    "mayEvaluateOwnDepartment": false,
+    "productionApproval": false,
+    "starRatingIsProductionApproval": false
+  }
+}
