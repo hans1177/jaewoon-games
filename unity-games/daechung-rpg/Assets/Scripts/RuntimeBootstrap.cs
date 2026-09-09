@@ -212,7 +212,7 @@ namespace JaewoonGames.DaechungRpg
             _visuals?.PlayTravelToBattle();
         }
 
-        private void SpawnFirstEnemyInCurrentRegion(bool resetVisual = true)
+        private void SpawnFirstEnemyInCurrentRegion(bool resetVisual = true, bool announceEncounter = true)
         {
             if (!GameCatalog.Regions.TryGetValue(_core.Player.currentRegionId, out var region) || region.enemies.Count == 0)
             {
@@ -225,7 +225,10 @@ namespace JaewoonGames.DaechungRpg
 
             _enemy = region.enemies[0];
             _enemyHp = _enemy.maxHp;
-            _message = $"Encountered {_enemy.displayName}.";
+            if (announceEncounter)
+            {
+                _message = $"Encountered {_enemy.displayName}.";
+            }
             if (resetVisual) _visuals?.ShowBattle();
         }
 
@@ -241,7 +244,7 @@ namespace JaewoonGames.DaechungRpg
                 _visuals?.PlayCombatExchange(true, false);
                 var defeated = _enemy;
                 RewardEnemyDefeat(defeated);
-                SpawnFirstEnemyInCurrentRegion(false);
+                SpawnFirstEnemyInCurrentRegion(false, false);
                 return;
             }
 
