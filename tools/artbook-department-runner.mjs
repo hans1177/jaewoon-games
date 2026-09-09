@@ -237,7 +237,7 @@ async function callLocalModel(model,numPredict){
   return JSON.parse(raw);
 }
 async function generateCandidate(model){
-  const attempts=role==='planning'?[1050,820,650]:role==='qa'?[700,520,400]:[900,650,480];
+  const attempts=role==='planning'?[1050,820,650]:role==='qa'?[1200,1400,1600]:[900,650,480];
   let lastError=null,lastPlanningProblems=[];
   for(let i=0;i<attempts.length;i++){
     try{
