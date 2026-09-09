@@ -48,9 +48,16 @@ function collectFeedback(value,{source,out,rejected}){
     collectFeedback(v,{source,out,rejected});
   }
 }
-const previousFiles=jsonFiles(path.join('artbook-submissions',gameId)).filter(f=>!f.includes(`/${date}/`));
-const feedback=[],rejectedFeedback=[];
+
+const previousFiles=jsonFiles(path.join('artbook-submissions',gameId)).filter(f=>!f.includes(`/${date}/`)&&!f.endsWith('/learning-context.json'));
+const feedback=[],rejectedFeedback=[],sourceFiles=[...previousFiles];
 for(const file of previousFiles)collectFeedback(readJson(file,{}),{source:file,out:feedback,rejected:rejectedFeedback});
+const demoGate=readJson('artbook-demo-concept-gate.json',{}),demoFeedback=demoGate.games?.[gameId]?.feedback;
+if(demoFeedback){
+  const source=`artbook-demo-concept-gate.json#games.${gameId}.feedback`;
+  collectFeedback(demoFeedback,{source,out:feedback,rejected:rejectedFeedback});
+  sourceFiles.push(source);
+}
 const TYPES=['KEEP','CHANGE','DROP','FIX_REQUIRED','UNITY_IMPLEMENTATION_NOTE','UNITY_ART_NOTE'];
 const learned=Object.fromEntries(TYPES.map(type=>[type,feedback.filter(x=>x.type===type).slice(-3)]));
 
@@ -98,7 +105,7 @@ for(const role of ROLES){
 }
 const outDir=path.join('artbook-submissions',gameId,date);fs.mkdirSync(outDir,{recursive:true});
 const contextPath=path.join(outDir,'learning-context.json');
-writeJson(contextPath,{version:2,gameId,date,generatedBy:'deterministic-artbook-learning-context',paidApi:false,genreHypothesis,genreQuestions:questions,learnedFeedback:learned,rejectedFeedback,sourceFiles:previousFiles,contracts:{feedbackIsPriorEvidenceOnly:true,structuredFeedbackValidated:true,legacyDropRequiresRootCause:true,genreIsHypothesisOnly:true,noAutomaticRuleChange:true,noProductionApproval:true}});
+writeJson(contextPath,{version:3,gameId,date,generatedBy:'deterministic-artbook-learning-context',paidApi:false,genreHypothesis,genreQuestions:questions,learnedFeedback:learned,rejectedFeedback,sourceFiles,contracts:{feedbackIsPriorEvidenceOnly:true,structuredFeedbackValidated:true,demoGateFeedbackBound:true,legacyDropRequiresRootCause:true,selfGeneratedLearningExcluded:true,genreIsHypothesisOnly:true,noAutomaticRuleChange:true,noProductionApproval:true}});
 writeJson(workOrderPath,workOrder);
 console.log(`ARTBOOK_LEARNING_CONTEXT=${contextPath}`);
 console.log(`ARTBOOK_GENRE_HYPOTHESIS=${genreHypothesis.name}:${genreHypothesis.confidence}`);
