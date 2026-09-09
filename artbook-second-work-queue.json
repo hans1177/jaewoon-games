@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "tasks": [
     {
       "id": "daechung-rpg-2026-09-08-second-work",
@@ -149,6 +149,67 @@
             "reviewerType": "director",
             "stars": 4,
             "improvement": "Unity 코어 및 애니메이션 스프라이트의 구조적 복잡성을 줄이고, 코어 파일의 유연성을 강화했습니다."
+          }
+        ]
+      },
+      "productionApproval": false
+    },
+    {
+      "id": "insect-survival-2026-09-09-initial-followup",
+      "gameId": "insect-survival",
+      "gameName": "곤충 생존기",
+      "sourceDate": "2026-09-09",
+      "dueDate": "2026-09-09",
+      "status": "SCHEDULED",
+      "sourceWorkMode": "INITIAL",
+      "sourceLifecycleState": "DESIGN_BASELINE",
+      "criterion": "FIVE_VOTE_DEPARTMENT_AVERAGE_STARS_LE_OVERALL_AVERAGE",
+      "overallAverageStars": 4.76,
+      "maxStars": 5,
+      "ratingsPerDepartment": 5,
+      "departmentVotesPerResult": 4,
+      "directorVotesPerResult": 1,
+      "selectedDepartments": [
+        "development"
+      ],
+      "departmentAverageStars": {
+        "planning": 4.8,
+        "graphics": 5,
+        "development": 4.2,
+        "qa": 5,
+        "balance": 4.8
+      },
+      "feedbackByDepartment": {
+        "development": [
+          {
+            "reviewerDepartment": "planning",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본부 결과물의 개선점은 'health' 분야의 재정립을 통해 개발 과정의 정확성과 효율성을 향상시킬 수 있습니다."
+          },
+          {
+            "reviewerDepartment": "graphics",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "qa",
+            "reviewerType": "department",
+            "stars": 1,
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "balance",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 5,
+            "improvement": "부서 결과물의 내용을 개선하여 품질을 높일 수 있습니다."
           }
         ]
       },
