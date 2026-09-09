@@ -16,17 +16,27 @@ const arg=(name,fallback='')=>process.argv.find(x=>x.startsWith(`--${name}=`))?.
 const sha=text=>{const r=spawnSync('git',['hash-object','--stdin'],{input:String(text??''),encoding:'utf8'});return clean(r.stdout);};
 function copyTree(from,to){fs.rmSync(to,{recursive:true,force:true});fs.mkdirSync(path.dirname(to),{recursive:true});fs.cpSync(from,to,{recursive:true});}
 function safeRelative(value){const v=posix(value);if(!v||v.startsWith('/')||v.split('/').includes('..'))throw new Error(`invalid relative path: ${value}`);return v;}
+function deterministicDisjointLineMerge(base,current,theirs){
+  const b=base.split('\n'),c=current.split('\n'),t=theirs.split('\n');
+  if(b.length!==c.length||b.length!==t.length)return null;
+  const changedCurrent=new Set(),changedTheirs=new Set();
+  for(let i=0;i<b.length;i++){if(c[i]!==b[i])changedCurrent.add(i);if(t[i]!==b[i])changedTheirs.add(i);}
+  for(const i of changedCurrent)if(changedTheirs.has(i)&&c[i]!==t[i])return null;
+  const merged=b.map((line,i)=>changedTheirs.has(i)?t[i]:changedCurrent.has(i)?c[i]:line).join('\n');
+  return {content:merged,conflict:false,mode:'DISJOINT_LINE_MERGE'};
+}
 function mergeText(base,current,theirs,label){
-  if(current===theirs)return {content:current,conflict:false};
-  if(current===base)return {content:theirs,conflict:false};
-  if(theirs===base)return {content:current,conflict:false};
+  if(current===theirs)return {content:current,conflict:false,mode:'IDENTICAL'};
+  if(current===base)return {content:theirs,conflict:false,mode:'THEIRS_ONLY'};
+  if(theirs===base)return {content:current,conflict:false,mode:'CURRENT_ONLY'};
+  const deterministic=deterministicDisjointLineMerge(base,current,theirs);if(deterministic)return deterministic;
   const dir=fs.mkdtempSync('/tmp/jaewoon-dept-merge-');
   const a=path.join(dir,'current'),b=path.join(dir,'base'),c=path.join(dir,'theirs');
   fs.writeFileSync(a,current);fs.writeFileSync(b,base);fs.writeFileSync(c,theirs);
   const r=spawnSync('git',['merge-file','-p','-L','integrated','-L','baseline','-L',label,a,b,c],{encoding:'utf8'});
   fs.rmSync(dir,{recursive:true,force:true});
   if(![0,1].includes(r.status))throw new Error(`git merge-file failed: ${clean(r.stderr)}`);
-  return {content:r.stdout,conflict:r.status===1};
+  return {content:r.stdout,conflict:r.status===1,mode:'GIT_THREE_WAY'};
 }
 function syntaxChecks(root,files){
   const checks=[];
@@ -71,11 +81,11 @@ export function integrateDepartmentCandidates({order,cycle,implementationsDir,ca
   if(proposals.size<1)throw new Error('no department implementation produced a source change');
   if(proposals.size>4)throw new Error(`integrated changed file count exceeds 4: ${proposals.size}`);
 
-  const conflicts=[];
+  const conflicts=[],mergeModes=[];
   for(const [rel,variants] of proposals){
     const sourceFile=path.join(sourcePath,rel),base=exists(sourceFile)?fs.readFileSync(sourceFile,'utf8'):'';
     let current=base,conflict=false;
-    for(const variant of variants){const merged=mergeText(base,current,variant.content,variant.role);current=merged.content;conflict=conflict||merged.conflict;}
+    for(const variant of variants){const merged=mergeText(base,current,variant.content,variant.role);current=merged.content;conflict=conflict||merged.conflict;mergeModes.push({path:rel,role:variant.role,mode:merged.mode});}
     const target=path.join(finalPath,rel);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,current,'utf8');
     if(conflict)conflicts.push({path:rel,roles:variants.map(x=>x.role)});
   }
@@ -92,7 +102,7 @@ export function integrateDepartmentCandidates({order,cycle,implementationsDir,ca
 
   const unresolved=conflicts.filter(x=>x.resolved!==true);
   const changedFiles=[...proposals.keys()].sort();
-  const report={version:1,status:unresolved.length?'CONFLICT':'PASS',gameId:order.gameId,gameSlug:order.gameSlug,sourcePath,candidateId:finalId,candidatePath:finalPath,sourceCommit,components,changedFiles,conflicts,conflictCount:unresolved.length,mergeMode:'COMMON_BASE_THREE_WAY',sameFilePolicy:'AUTO_MERGE_NON_OVERLAPPING_THEN_AI_RESOLVE_TRUE_CONFLICT'};
+  const report={version:1,status:unresolved.length?'CONFLICT':'PASS',gameId:order.gameId,gameSlug:order.gameSlug,sourcePath,candidateId:finalId,candidatePath:finalPath,sourceCommit,components,changedFiles,conflicts,conflictCount:unresolved.length,mergeMode:'COMMON_BASE_THREE_WAY',mergeModes,sameFilePolicy:'AUTO_MERGE_NON_OVERLAPPING_THEN_AI_RESOLVE_TRUE_CONFLICT'};
   writeJson(reportPath,report);
   putOutput('status',report.status);putOutput('conflict_count',unresolved.length);putOutput('candidate_path',finalPath);putOutput('report_path',reportPath);
   if(unresolved.length)return report;
@@ -107,7 +117,7 @@ export function integrateDepartmentCandidates({order,cycle,implementationsDir,ca
   }
   if(saveViolations.length)throw new Error(`integrated save key change: ${saveViolations.map(x=>x.path).join(',')}`);
   const syntax=syntaxChecks(finalPath,changedFiles);if(syntax.some(x=>x.status!=='PASS'))throw new Error(`integrated syntax failure: ${syntax.filter(x=>x.status!=='PASS').map(x=>x.name).join(',')}`);
-  const evidence={version:4,candidateOnly:true,selfPromote:false,publicStableModified:false,paidApi:false,model:'PARALLEL_DEPARTMENT_LOCAL_AI',modelTransport:'ISOLATED_DEPARTMENT_WORKSPACES_THREE_WAY_INTEGRATION',modelAttempts:components.filter(x=>x.status==='PASS').length,repairMode:order.repairMode||'MODEL',gameId:order.gameId,gameSlug:order.gameSlug,sourcePath,candidateId:finalId,candidatePath:finalPath,sourceCommit,goal:cycle?.finalGoal||order.goal,responsibilityFiles:[...new Set(components.flatMap(x=>x.changedFiles||[]))],changedFiles,summary:'Integrated parallel department implementation',expectedEffect:'Department-owned code changes combined after planning integration',proposedTests:[...new Set((cycle?.results||[]).flatMap(x=>x.checks||[]))].slice(0,8),changeMode:'PARALLEL_DEPARTMENT_INTEGRATION',fileCount:changedFiles.length,editCount:0,saveKeyValidation:'PASS',syntaxChecks:syntax,departmentCycle:cycle,departmentCycleGate:'PASS',departmentImplementations:components,integration:{mode:'COMMON_BASE_THREE_WAY',conflictsResolved:conflicts.length,conflicts,finalIntegrationQa:'PENDING_INDEPENDENT_PROMOTION_GATE'},generatedAt:new Date().toISOString(),completionAuthority:'INDEPENDENT_QA_AND_JAY'};
+  const evidence={version:4,candidateOnly:true,selfPromote:false,publicStableModified:false,paidApi:false,model:'PARALLEL_DEPARTMENT_LOCAL_AI',modelTransport:'ISOLATED_DEPARTMENT_WORKSPACES_THREE_WAY_INTEGRATION',modelAttempts:components.filter(x=>x.status==='PASS').length,repairMode:order.repairMode||'MODEL',gameId:order.gameId,gameSlug:order.gameSlug,sourcePath,candidateId:finalId,candidatePath:finalPath,sourceCommit,goal:cycle?.finalGoal||order.goal,responsibilityFiles:[...new Set(components.flatMap(x=>x.changedFiles||[]))],changedFiles,summary:'Integrated parallel department implementation',expectedEffect:'Department-owned code changes combined after planning integration',proposedTests:[...new Set((cycle?.results||[]).flatMap(x=>x.checks||[]))].slice(0,8),changeMode:'PARALLEL_DEPARTMENT_INTEGRATION',fileCount:changedFiles.length,editCount:0,saveKeyValidation:'PASS',syntaxChecks:syntax,departmentCycle:cycle,departmentCycleGate:'PASS',departmentImplementations:components,integration:{mode:'COMMON_BASE_THREE_WAY',mergeModes,conflictsResolved:conflicts.length,conflicts,finalIntegrationQa:'PENDING_INDEPENDENT_PROMOTION_GATE'},generatedAt:new Date().toISOString(),completionAuthority:'INDEPENDENT_QA_AND_JAY'};
   writeJson(evidencePath,evidence);report.evidencePath=evidencePath;writeJson(reportPath,report);return report;
 }
 
