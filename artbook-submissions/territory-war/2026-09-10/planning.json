@@ -1,0 +1,205 @@
+{
+  "version": 6,
+  "gameId": "territory-war",
+  "date": "2026-09-10",
+  "department": "planning",
+  "status": "SUBMITTED",
+  "departmentReadiness": "BLOCKED",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "영토전쟁 기획 부서 1차 독립 아트북",
+  "evidence": [
+    {
+      "source": "web-games/territory-war/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-10-territory-war.json",
+      "usage": "department-work-order"
+    },
+    {
+      "source": "artbook-submissions/territory-war/2026-09-10/vibe2-first-draft.json",
+      "usage": "vibe2-first-draft-proposal-reviewed-by-planning"
+    }
+  ],
+  "section": {
+    "worldEvidence": "영토전쟁의 원인과 세력의 목표는 실제 게임에서 관찰·판단의 재미를 전면적으로 강조합니다.",
+    "protagonistMotivationEvidence": "플레이어가 영토전쟁과 utf-8의 관계를 한 장면에서 직접 이해하는 순간을 강조합니다.",
+    "regionCausality": "초기 지역에서 핵심 플레이 루프를 확립하는 문제는 기존 방식으로 해결되지 않으며, 새로운 시스템과 선택을 활용해야 합니다.",
+    "storyGameplayConnection": "영토전쟁과 utf-8의 관계는 게임의 재미를 전면적으로 강조합니다.",
+    "gaps": "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요.",
+    "handoffs": "플레이어의 경험과 재미를 전면적으로 강조합니다."
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "A: 영토전쟁을 중심으로 관찰·판단의 재미를 전면에 둔다. 플레이어가 ko의 상태와 주변 단서를 읽고 다음 행동을 스스로 고르게 한다.",
+      "B: money를 중심으로 위험·압박과 돌파의 재미를 강조한다. 플레이어가 wrap 때문에 익숙한 방식이 막히고 다른 수단으로 위기를 넘기게 한다.",
+      "C: utf-8를 중심으로 성장·구축·변화의 재미를 강조한다. 플레이어의 반복 행동이 영토전쟁을 눈에 보이게 바꾸고 다음 목표를 열도록 한다."
+    ],
+    "implementationPlan": [
+      "영토전쟁의 관찰·판단과 utf-8의 관계를 중심으로, 플레이어의 경험과 재미를 전면적으로 강조합니다.",
+      "money의 위험과 돌파를 강조하며, C 방향은 utf-8의 성장과 변화를 강조합니다.",
+      "A+B 방향은 일반적인 게임 방향으로, 플레이어의 경험과 재미를 전면적으로 강조합니다."
+    ],
+    "demoValidation": [
+      "영토전쟁과 utf-8의 관계를 한 장면에서 직접 이해하는 순간을 강조합니다.",
+      "money의 위협이 map과 동시에 작동해 선택을 강요하는 장면을 만듭니다.",
+      "플레이어의 경험과 재미를 전면적으로 강조합니다."
+    ]
+  },
+  "unverified": [
+    "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요.",
+    "현재 근거에서 정식 스토리/사건 인과가 충분히 확인되지 않음"
+  ],
+  "cuts": [
+    {
+      "kind": "planning",
+      "title": "영토전쟁 기획 부서 1차 독립 아트북",
+      "body": "영토전쟁과 utf-8의 관계는 게임의 재미를 전면적으로 강조합니다. · money의 위협이 map과 동시에 작동해 선택을 강요하는 장면을 만듭니다. · 플레이어의 경험과 재미를 전면적으로 강조합니다.",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/planning.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "vibe2FirstDraftReviewed": true,
+    "planningSemanticQuality": true,
+    "planningFallbackUsed": false,
+    "policyBlocks": [
+      "현재 근거에서 정식 스토리/사건 인과가 충분히 확인되지 않음"
+    ]
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "planning",
+        "ownerName": "기획",
+        "pageSlot": 1,
+        "visualType": "world-map",
+        "title": "영토전쟁 기획 부서 1차 독립 …",
+        "focus": "영토전쟁의 원인과 세력의 목표는 실제 게임에서 관…",
+        "caption": "영토전쟁의 원인과 세력의 목표는 실제 게임에서 관찰·판단의 재미를 전면적으로 강…",
+        "elements": [
+          {
+            "label": "worldEviden…",
+            "note": "영토전쟁의 원인과 세력의 목표는 실…",
+            "kind": ""
+          },
+          {
+            "label": "protagonist…",
+            "note": "플레이어가 영토전쟁과 utf-8의 …",
+            "kind": ""
+          },
+          {
+            "label": "regionCausa…",
+            "note": "초기 지역에서 핵심 플레이 루프를 …",
+            "kind": ""
+          },
+          {
+            "label": "storyGamepl…",
+            "note": "영토전쟁과 utf-8의 관계는 게임…",
+            "kind": ""
+          },
+          {
+            "label": "gaps",
+            "note": "주요 NPC/세력은 기존 근거가 부…",
+            "kind": ""
+          },
+          {
+            "label": "handoffs",
+            "note": "플레이어의 경험과 재미를 전면적으로…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/territory-war/2026-09-10/visuals/planning-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "planning"
+      },
+      {
+        "owner": "planning",
+        "ownerName": "기획",
+        "pageSlot": 2,
+        "visualType": "story-flow",
+        "title": "영토전쟁 기획 부서 2차 독립 …",
+        "focus": "영토전쟁의 원인과 세력의 목표는 실제 게임에서 관…",
+        "caption": "영토전쟁의 원인과 세력의 목표는 실제 게임에서 관찰·판단의 재미를 전면적으로 강…",
+        "elements": [
+          {
+            "label": "worldEviden…",
+            "note": "영토전쟁의 원인과 세력의 목표는 실…",
+            "kind": ""
+          },
+          {
+            "label": "protagonist…",
+            "note": "플레이어가 영토전쟁과 utf-8의 …",
+            "kind": ""
+          },
+          {
+            "label": "regionCausa…",
+            "note": "초기 지역에서 핵심 플레이 루프를 …",
+            "kind": ""
+          },
+          {
+            "label": "storyGamepl…",
+            "note": "영토전쟁과 utf-8의 관계는 게임…",
+            "kind": ""
+          },
+          {
+            "label": "gaps",
+            "note": "주요 NPC/세력은 기존 근거가 부…",
+            "kind": ""
+          },
+          {
+            "label": "handoffs",
+            "note": "플레이어의 경험과 재미를 전면적으로…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/territory-war/2026-09-10/visuals/planning-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "planning"
+      }
+    ],
+    "generatedBy": {
+      "department": "planning",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

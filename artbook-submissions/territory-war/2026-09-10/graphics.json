@@ -1,0 +1,195 @@
+{
+  "version": 6,
+  "gameId": "territory-war",
+  "date": "2026-09-10",
+  "department": "graphics",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "세력사 + 전쟁 지도첩",
+  "evidence": [
+    {
+      "source": "web-games/territory-war/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-10-territory-war.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentVisualEvidence": "영토전쟁을 중심으로 관찰·판단의 재미를 전면에 둔다. money를 중심으로 위험·압박과 돌파의 재미를 강조한다.",
+    "identityDirection": "A+B",
+    "characterMonsterEnvironmentLogic": "영토를 다투는 이유와 각 세력의 목표가 점령·자원·병력 성장 규칙과 연결돼야 한다.",
+    "mobileReadability": "WEB_ARCHIVE_READ_ONLY",
+    "assetConstraints": "noOtherDepartmentSubmissionReading",
+    "gaps": "none",
+    "handoffs": "none"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "세력사의 전쟁을 중심으로 영토를 다투는 세력의 모습을 시각적으로 표현합니다. 각 세력의 목표가 점령·자원·병력 성장 규칙과 연결되어야 합니다.",
+      "전쟁 원인을 중심으로 영토를 흔들며 전쟁의 흐름을 시각적으로 드러냅니다. money를 중심으로 위험·압박과 돌파의 재미를 강조합니다.",
+      "영토 지도를 중심으로 전쟁의 흐름을 시각적으로 드러냅니다. 지휘관의 모습과 병의 모습을 시각적으로 표현합니다."
+    ],
+    "implementationPlan": [
+      "캐릭터·몬스터·보스·배경·UI·로고·인트로 컨셉을 이미지 중심 2장으로 설계합니다.",
+      "각 세력의 모습을 시각적으로 표현합니다. 점령·자원·병력 성장 규칙을 기반으로 전쟁의 흐름을 시각적으로 드러냅니다.",
+      "전쟁 원인을 중심으로 영토를 흔들며 전쟁의 흐름을 시각적으로 드러냅니다. money를 중심으로 위험·압박과 돌파의 재미를 강조합니다."
+    ],
+    "demoValidation": [
+      "시연 검증 계획: 영토전쟁의 흐름을 시각적으로 드러내며 전쟁의 흐름을 시각적으로 드러내며 전쟁의 흐름을 시각적으로 드러냅니다.",
+      "시연 검증 계획: 영토전쟁의 흐름을 시각적으로 드러내며 전쟁의 흐름을 시각적으로 드러냅니다."
+    ]
+  },
+  "unverified": [
+    "none"
+  ],
+  "cuts": [
+    {
+      "kind": "graphics",
+      "title": "세력사 + 전쟁 지도첩",
+      "body": "세력사의 전쟁을 중심으로 영토를 다투는 세력의 모습을 시각적으로 표현합니다. 각 세력의 목표가 점령·자원·병력 성장 규칙과 연결되어야 한다.",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/graphics.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "graphics",
+        "ownerName": "그래픽",
+        "pageSlot": 1,
+        "visualType": "concept-board",
+        "title": "세력사 + 전쟁 지도첩",
+        "focus": "영토전쟁을 중심으로 관찰·판단의 재미를 전면에 둔…",
+        "caption": "영토를 다투는 이유와 각 세력의 목표가 점령·자원·병력 성장 규칙과 연결돼야 한…",
+        "elements": [
+          {
+            "label": "identityDir…",
+            "note": "A+B",
+            "kind": ""
+          },
+          {
+            "label": "characterMo…",
+            "note": "영토를 다투는 이유와 각 세력의 목…",
+            "kind": ""
+          },
+          {
+            "label": "mobileReada…",
+            "note": "WEB_ARCHIVE_READ_ON…",
+            "kind": ""
+          },
+          {
+            "label": "assetConstr…",
+            "note": "noOtherDepartmentSu…",
+            "kind": ""
+          },
+          {
+            "label": "gaps",
+            "note": "none",
+            "kind": ""
+          },
+          {
+            "label": "handoffs",
+            "note": "none",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/territory-war/2026-09-10/visuals/graphics-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "graphics"
+      },
+      {
+        "owner": "graphics",
+        "ownerName": "그래픽",
+        "pageSlot": 2,
+        "visualType": "style-board",
+        "title": "영토전쟁",
+        "focus": "money를 중심으로 위험·압박과 돌파의 재미를 …",
+        "caption": "영토를 다투는 이유와 각 세력의 목표가 점령·자원·병력 성장 규칙과 연결돼야 한…",
+        "elements": [
+          {
+            "label": "identityDir…",
+            "note": "A+B",
+            "kind": ""
+          },
+          {
+            "label": "characterMo…",
+            "note": "영토를 다투는 이유와 각 세력의 목…",
+            "kind": ""
+          },
+          {
+            "label": "mobileReada…",
+            "note": "WEB_ARCHIVE_READ_ON…",
+            "kind": ""
+          },
+          {
+            "label": "assetConstr…",
+            "note": "noOtherDepartmentSu…",
+            "kind": ""
+          },
+          {
+            "label": "gaps",
+            "note": "none",
+            "kind": ""
+          },
+          {
+            "label": "handoffs",
+            "note": "none",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/territory-war/2026-09-10/visuals/graphics-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "graphics"
+      }
+    ],
+    "generatedBy": {
+      "department": "graphics",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

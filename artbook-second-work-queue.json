@@ -1032,6 +1032,133 @@
         ]
       },
       "productionApproval": false
+    },
+    {
+      "id": "territory-war-2026-09-10-initial-followup",
+      "gameId": "territory-war",
+      "gameName": "영토전쟁",
+      "sourceDate": "2026-09-10",
+      "dueDate": "2026-09-10",
+      "status": "SCHEDULED",
+      "sourceWorkMode": "INITIAL",
+      "sourceLifecycleState": "DESIGN_BASELINE",
+      "criterion": "FIVE_VOTE_DEPARTMENT_AVERAGE_STARS_LE_OVERALL_AVERAGE",
+      "overallAverageStars": 4.88,
+      "maxStars": 5,
+      "ratingsPerDepartment": 5,
+      "departmentVotesPerResult": 4,
+      "directorVotesPerResult": 1,
+      "selectedDepartments": [
+        "planning",
+        "development",
+        "balance"
+      ],
+      "departmentAverageStars": {
+        "planning": 4.8,
+        "graphics": 5,
+        "development": 4.8,
+        "qa": 5,
+        "balance": 4.8
+      },
+      "feedbackByDepartment": {
+        "planning": [
+          {
+            "reviewerDepartment": "graphics",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "development",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "qa",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "balance",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 4,
+            "improvement": "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요."
+          }
+        ],
+        "development": [
+          {
+            "reviewerDepartment": "planning",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "graphics",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "qa",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "balance",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 4,
+            "improvement": "본 개발 과정에서 플레이어블 시연 구조의 구조적 복잡성을 보완하고, 시연 검증 계획의 구조적 효율성을 개선했습니다."
+          }
+        ],
+        "balance": [
+          {
+            "reviewerDepartment": "planning",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본부 결과물의 영상화 및 텍스트 구조를 개선하여 사용자 인터페이스를 더 명확하게 보여주도록 노력했습니다."
+          },
+          {
+            "reviewerDepartment": "graphics",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "development",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본 개발 부서 결과물의 영토전쟁 팀의 Readiness Level이 'BLOCKED' 상태로, 더 나은 Readiness를 위해 'A-B-C' 과정을 더 명확하게 설명해 줘야 합니다."
+          },
+          {
+            "reviewerDepartment": "qa",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 4,
+            "improvement": "부서 결과물의 영상 효과를 강화하고, 코칭 효과를 더 명확히 하도록 노력하세요."
+          }
+        ]
+      },
+      "productionApproval": false
     }
   ],
   "updatedAt": "2026-09-10"

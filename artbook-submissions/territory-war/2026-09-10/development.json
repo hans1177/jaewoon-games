@@ -1,0 +1,174 @@
+{
+  "version": 6,
+  "gameId": "territory-war",
+  "date": "2026-09-10",
+  "department": "development",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "영토전쟁",
+  "evidence": [
+    {
+      "source": "web-games/territory-war/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-10-territory-war.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "implementedNow": "플레이어블 시연 구조",
+    "architecture": "Unity 씬·프리팹·데이터·시스템 연결을 이미지 중심 2장으로 설계 [PLANNING_DIRECTION:A+B]",
+    "prototypeLimits": "40~140자",
+    "technicalRisks": "40~140자",
+    "demoPlan": "시연 검증 계획",
+    "handoffs": "40~140자"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "세력사의 전쟁 지도를 중심으로 영토를 관찰·판단하는 게임 방향을 확정",
+      "money의 위협을 중심으로 전쟁의 재미를 강조",
+      "영토 전쟁과 utf-8의 관계를 한 장면에서 이해하는 순간을 만든다"
+    ],
+    "implementationPlan": [
+      "Unity 씬·프리팹·데이터·시스템 연결을 이미지 중심 2장으로 설계",
+      "플레이 루프 구조를 구축",
+      "시스템 연결을 구현"
+    ],
+    "demoValidation": [
+      "플레이어블 시연 구조를 검증",
+      "시연 검증 계획을 작성"
+    ]
+  },
+  "unverified": [
+    "currentStage"
+  ],
+  "cuts": [
+    {
+      "kind": "development",
+      "title": "영토전쟁",
+      "body": "시연 검증 계획을 작성",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/development.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "development",
+        "ownerName": "개발",
+        "pageSlot": 1,
+        "visualType": "gameplay-loop",
+        "title": "영토전쟁",
+        "focus": "플레이어블 시연 구조",
+        "caption": "Unity 씬·프리팹·데이터·시스템 연결을 이미지 중심 2장으로 설계",
+        "elements": [
+          {
+            "label": "architecture",
+            "note": "Unity 씬·프리팹·데이터·시스템…",
+            "kind": ""
+          },
+          {
+            "label": "prototypeLi…",
+            "note": "40~140자",
+            "kind": ""
+          },
+          {
+            "label": "technicalRi…",
+            "note": "40~140자",
+            "kind": ""
+          },
+          {
+            "label": "demoPlan",
+            "note": "시연 검증 계획",
+            "kind": ""
+          },
+          {
+            "label": "handoffs",
+            "note": "40~140자",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/territory-war/2026-09-10/visuals/development-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "development"
+      },
+      {
+        "owner": "development",
+        "ownerName": "개발",
+        "pageSlot": 2,
+        "visualType": "system-flow",
+        "title": "영토전쟁",
+        "focus": "현재 진행 중",
+        "caption": "새 설정 없음",
+        "elements": [
+          {
+            "label": "unverified",
+            "note": "currentStage",
+            "kind": ""
+          },
+          {
+            "label": "existingVis…",
+            "note": "",
+            "kind": ""
+          },
+          {
+            "label": "pageTypes",
+            "note": "gameplay-loop, syst…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/territory-war/2026-09-10/visuals/development-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "development"
+      }
+    ],
+    "generatedBy": {
+      "department": "development",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}
