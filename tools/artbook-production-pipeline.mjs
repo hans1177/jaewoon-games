@@ -1,5 +1,5 @@
 // 파일명: tools/artbook-production-pipeline.mjs
-// 역할: FACT PACK → 검증 학습 컨텍스트 → 5부서 독립 작성 → 의미 품질 재작성 → 품질 게이트를 한 번에 실행한다.
+// 역할: FACT PACK → 검증 학습 컨텍스트 → 5부서 독립 작성 → 의미 품질 재작성 → 5부서 교차검토 → 품질 게이트를 한 번에 실행한다.
 import { spawn } from 'node:child_process';
 
 const ROLES=['planning','graphics','development','qa','balance'];
@@ -33,6 +33,8 @@ await run('tools/artbook-fact-pack.mjs');
 await run('tools/artbook-learning-context.mjs');
 await pool(ROLES,maxParallel,role=>run('tools/artbook-department-runner.mjs',{ARTBOOK_ROLE:role}));
 await pool(ROLES,maxParallel,role=>run('tools/artbook-department-rewrite.mjs',{ARTBOOK_ROLE:role}));
+await run('tools/artbook-cross-review-feedback.mjs');
 await run('tools/artbook-gate.mjs');
 console.log('ARTBOOK_PIPELINE_COMPLETE=YES');
+console.log('ARTBOOK_CROSS_REVIEW=FIVE_DEPARTMENTS');
 console.log('PAID_API=NO');
