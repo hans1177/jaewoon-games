@@ -1,0 +1,82 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+
+const here=path.dirname(fileURLToPath(import.meta.url));
+const prepareScript=path.join(here,'artbook-prepare-daily.mjs');
+const roles=['planning','graphics','development','qa','balance'];
+const kstDate=()=>{
+  const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+  const pick=type=>parts.find(x=>x.type===type)?.value||'';
+  return `${pick('year')}-${pick('month')}-${pick('day')}`;
+};
+const date=kstDate();
+const write=(root,file,value)=>{const target=path.join(root,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value,null,2)+'\n');};
+const completed=(gameId,edition=1,lifecycleState='DESIGN_BASELINE',workMode='INITIAL')=>({
+  id:`${gameId}-v${edition}`,gameId,gameName:gameId,edition,createdAt:date,workMode,status:'completed-artbook',
+  cuts:Array.from({length:12},(_,i)=>({no:i+1,title:`p${i+1}`})),
+  postprocess:{complete:true,sourceMode:'VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_OWNED_VISUAL_PAGES_PLUS_DIRECTOR_PRESENTATION',assistantAuthorship:false,imageFirst:true},
+  presentation:{mode:'VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_AUTHORED',assistantAuthored:false},
+  lifecycle:{state:lifecycleState,currentBaseline:true}
+});
+function runFixture({games,artbooks,dailySubmissions=[],revisions=[],secondTasks=[]}){
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'artbook-life-'));
+  write(root,'artbook-submission-queue.json',{requiredRoles:roles,queueOrder:games.map(x=>x.id),games:games.map(x=>({gameId:x.id,name:x.name||x.id,styleProfile:''}))});
+  write(root,'game-catalog.json',{games:games.map(x=>({id:x.id,name:x.name||x.id,hasWebArchive:true,homepageCategory:x.stage||'reviewing'}))});
+  write(root,'game-artbooks.json',{policy:{dailyFinalSubmissionLimit:1},artbooks,dailySubmissions});
+  write(root,'artbook-second-work-queue.json',{tasks:secondTasks});
+  write(root,'artbook-revision-queue.json',{tasks:revisions});
+  const result=spawnSync(process.execPath,[prepareScript],{cwd:root,encoding:'utf8'});
+  if(result.status!==0)throw new Error(`prepare failed\nSTDOUT:${result.stdout}\nSTDERR:${result.stderr}`);
+  const context=JSON.parse(fs.readFileSync(path.join(root,'artbook-daily-context.json'),'utf8'));
+  return {context,stdout:result.stdout,root};
+}
+
+// 기존 게임 최초 아트북이 남아 있으면 하루 최초 슬롯을 이미 쓴 날에는 업그레이드가 앞질러 가지 않는다.
+{
+  const games=[{id:'a',stage:'development-confirmed'},{id:'b',stage:'release-confirmed'}];
+  const a=completed('a');
+  const result=runFixture({games,artbooks:[a],dailySubmissions:[{date,gameId:'a',artbookId:a.id,status:'completed-artbook'}]});
+  assert.equal(result.context.run,false);
+  assert.equal(result.context.reason,'DAILY_INITIAL_ARTBOOK_LIMIT_REACHED');
+  assert.deepEqual(result.context.existingInitialRemaining,['b']);
+}
+
+// 모든 기존 게임이 최초 설계본을 가진 뒤 release-confirmed는 출시 기준 업그레이드가 최우선이다.
+{
+  const games=[{id:'a',stage:'development-confirmed'},{id:'b',stage:'release-confirmed'}];
+  const a=completed('a'),b=completed('b');
+  const result=runFixture({games,artbooks:[a,b],dailySubmissions:[{date,gameId:'a',artbookId:a.id,status:'completed-artbook'}]});
+  assert.equal(result.context.run,true);
+  assert.equal(result.context.gameId,'b');
+  assert.equal(result.context.mode,'RELEASE_UPGRADE');
+  assert.equal(result.context.lifecycle.targetState,'RELEASE_BASELINE');
+  assert.equal(result.context.lifecycle.trigger,'RELEASE_CONFIRMED');
+}
+
+// release 업그레이드가 없으면 development-confirmed가 개발 기준 업그레이드된다.
+{
+  const games=[{id:'a',stage:'development-confirmed'}];
+  const a=completed('a');
+  const result=runFixture({games,artbooks:[a]});
+  assert.equal(result.context.mode,'DEVELOPMENT_UPGRADE');
+  assert.equal(result.context.lifecycle.targetState,'DEVELOPMENT_BASELINE');
+}
+
+// 이미 개발 기준까지 올라간 게임은 필요 수정 요청을 새 REVISION 버전으로 처리한다.
+{
+  const games=[{id:'a',stage:'development-confirmed'}];
+  const a=completed('a',2,'DEVELOPMENT_BASELINE','DEVELOPMENT_UPGRADE');
+  const revisions=[{id:'r1',gameId:'a',status:'SCHEDULED',dueDate:date,requestedAt:`${date}T00:00:00Z`,trigger:'QA_DESIGN_FINDING',reason:'후반 설계 수정',selectedDepartments:['planning','qa'],sourceArtbookId:a.id,sourceLifecycleState:'DEVELOPMENT_BASELINE'}];
+  const result=runFixture({games,artbooks:[a],dailySubmissions:[{date,gameId:'a',artbookId:a.id,status:'completed-artbook'}],revisions});
+  assert.equal(result.context.run,true);
+  assert.equal(result.context.mode,'REVISION');
+  assert.equal(result.context.lifecycle.targetState,'DEVELOPMENT_BASELINE');
+  assert.equal(result.context.lifecycle.sourceArtbookId,a.id);
+  assert.equal(result.context.lifecycle.overwriteApprovedVersion,false);
+}
+
+console.log('ARTBOOK_LIFECYCLE_SCHEDULING_TEST=PASS');
