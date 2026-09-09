@@ -2,11 +2,11 @@
   "version": 6,
   "dateKst": "2026-09-09",
   "directorRole": "staff-supervisor-not-substitute-worker",
-  "activeDailyTarget": "monster-adventure",
-  "activeDevelopmentRunId": 34350950124,
+  "activeDailyTarget": "daechung-rpg",
+  "activeDevelopmentRunId": 34352011959,
   "checks": {
     "staffChecked": "8/8",
-    "activeWorkOrder": "artbook-work-orders/2026-09-09-monster-adventure.json",
+    "activeWorkOrder": "artbook-work-orders/2026-09-09-daechung-rpg.json",
     "activeWorkOrderExists": true,
     "evidenceAdapterMismatch": false,
     "jobLevelEvidenceUsed": true,
@@ -17,44 +17,44 @@
     "directorMayGhostwriteMissingDepartmentWork": false,
     "homepageDiagnosticOnlyRecognized": true,
     "releaseArtifactEvidenceAdapterRegistered": true,
-    "artbookLiveTargetResolved": true,
-    "artbookTargetSource": "artbook-context-log",
+    "artbookLiveTargetResolved": false,
+    "artbookTargetSource": "persisted-queue-fallback",
     "liveJobPrecedesPersistedSubmission": true
   },
   "counts": {
-    "WORKING": 1,
-    "DONE": 6,
+    "WORKING": 6,
+    "DONE": 1,
     "IDLE_NO_TASK": 1,
     "BLOCKED": 0,
     "FAILED": 0,
     "STALE": 0
   },
   "liveStates": {
-    "ACTIVE": 1,
+    "ACTIVE": 6,
     "WAITING": 1,
     "BLOCKED": 0,
-    "DONE": 6
+    "DONE": 1
   },
   "attentionRequired": false,
   "primaryFindings": [],
   "workflowEvidence": {
     "artbook": {
-      "id": 34350578474,
-      "status": "completed",
-      "conclusion": "success",
+      "id": 34352025188,
+      "status": "in_progress",
+      "conclusion": null,
       "event": "workflow_dispatch",
-      "createdAt": "2026-09-09T12:21:51Z",
-      "updatedAt": "2026-09-09T12:35:57Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34350578474"
+      "createdAt": "2026-09-09T12:36:42Z",
+      "updatedAt": "2026-09-09T12:36:47Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34352025188"
     },
     "autonomousDevelopment": {
-      "id": 34350950124,
-      "status": "completed",
-      "conclusion": "failure",
+      "id": 34352011959,
+      "status": "in_progress",
+      "conclusion": null,
       "event": "workflow_dispatch",
-      "createdAt": "2026-09-09T12:25:40Z",
-      "updatedAt": "2026-09-09T12:34:24Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34350950124"
+      "createdAt": "2026-09-09T12:36:34Z",
+      "updatedAt": "2026-09-09T12:36:57Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34352011959"
     },
     "homepage": null,
     "publicGameHealth": null,
@@ -65,147 +65,137 @@
     "planning": {
       "department": "planning",
       "taskAssigned": true,
-      "status": "DONE",
-      "workState": "DONE",
-      "task": "monster-adventure daily artbook section",
+      "status": "WORKING",
+      "workState": "ACTIVE",
+      "task": "autonomous development floor 34352011959",
       "executionEvidence": [
-        "work-order:artbook-work-orders/2026-09-09-monster-adventure.json",
-        "live-artbook-target:monster-adventure",
-        "workflow:34350578474:completed:success",
-        "job:102463821889:completed:success"
+        "autonomous-workflow:34352011959:in_progress:pending",
+        "autonomous-job:102467438437:department (planning):in_progress:pending"
       ],
-      "resultVerified": true,
+      "resultVerified": false,
       "jobEvidence": {
-        "id": 102463821889,
-        "name": "round1 (planning)",
-        "status": "completed",
-        "conclusion": "success",
+        "id": 102467438437,
+        "name": "department (planning)",
+        "status": "in_progress",
+        "conclusion": null,
         "failedStep": null,
-        "startedAt": "2026-09-09T12:25:47Z",
-        "completedAt": "2026-09-09T12:28:58Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34350578474/job/102463821889"
+        "startedAt": "2026-09-09T12:36:57Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34352011959/job/102467438437"
       },
       "directCause": null,
       "blockers": [],
-      "reason": "department job completed successfully",
-      "action": "none",
-      "source": "artbook"
+      "reason": "autonomous development department job is executing now",
+      "action": "complete independent department review and hand off result",
+      "source": "autonomous-development"
     },
     "development": {
       "department": "development",
       "taskAssigned": true,
-      "status": "DONE",
-      "workState": "DONE",
-      "task": "monster-adventure daily artbook section",
+      "status": "WORKING",
+      "workState": "ACTIVE",
+      "task": "autonomous development floor 34352011959",
       "executionEvidence": [
-        "work-order:artbook-work-orders/2026-09-09-monster-adventure.json",
-        "live-artbook-target:monster-adventure",
-        "workflow:34350578474:completed:success",
-        "job:102463821803:completed:success"
+        "autonomous-workflow:34352011959:in_progress:pending",
+        "autonomous-job:102467438481:department (development):in_progress:pending"
       ],
-      "resultVerified": true,
+      "resultVerified": false,
       "jobEvidence": {
-        "id": 102463821803,
-        "name": "round1 (development)",
-        "status": "completed",
-        "conclusion": "success",
+        "id": 102467438481,
+        "name": "department (development)",
+        "status": "in_progress",
+        "conclusion": null,
         "failedStep": null,
-        "startedAt": "2026-09-09T12:25:49Z",
-        "completedAt": "2026-09-09T12:28:01Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34350578474/job/102463821803"
+        "startedAt": "2026-09-09T12:36:56Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34352011959/job/102467438481"
       },
       "directCause": null,
       "blockers": [],
-      "reason": "department job completed successfully",
-      "action": "none",
-      "source": "artbook"
+      "reason": "autonomous development department job is executing now",
+      "action": "complete independent department review and hand off result",
+      "source": "autonomous-development"
     },
     "qa": {
       "department": "qa",
       "taskAssigned": true,
-      "status": "DONE",
-      "workState": "DONE",
-      "task": "monster-adventure daily artbook section",
+      "status": "WORKING",
+      "workState": "ACTIVE",
+      "task": "autonomous development floor 34352011959",
       "executionEvidence": [
-        "work-order:artbook-work-orders/2026-09-09-monster-adventure.json",
-        "live-artbook-target:monster-adventure",
-        "workflow:34350578474:completed:success",
-        "job:102463821834:completed:success"
+        "autonomous-workflow:34352011959:in_progress:pending",
+        "autonomous-job:102467438428:department (qa):in_progress:pending"
       ],
-      "resultVerified": true,
+      "resultVerified": false,
       "jobEvidence": {
-        "id": 102463821834,
-        "name": "round1 (qa)",
-        "status": "completed",
-        "conclusion": "success",
+        "id": 102467438428,
+        "name": "department (qa)",
+        "status": "in_progress",
+        "conclusion": null,
         "failedStep": null,
-        "startedAt": "2026-09-09T12:25:48Z",
-        "completedAt": "2026-09-09T12:30:10Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34350578474/job/102463821834"
+        "startedAt": "2026-09-09T12:36:57Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34352011959/job/102467438428"
       },
       "directCause": null,
       "blockers": [],
-      "reason": "department job completed successfully",
-      "action": "none",
-      "source": "artbook"
+      "reason": "autonomous development department job is executing now",
+      "action": "complete independent department review and hand off result",
+      "source": "autonomous-development"
     },
     "graphics": {
       "department": "graphics",
       "taskAssigned": true,
-      "status": "DONE",
-      "workState": "DONE",
-      "task": "monster-adventure daily artbook section",
+      "status": "WORKING",
+      "workState": "ACTIVE",
+      "task": "autonomous development floor 34352011959",
       "executionEvidence": [
-        "work-order:artbook-work-orders/2026-09-09-monster-adventure.json",
-        "live-artbook-target:monster-adventure",
-        "workflow:34350578474:completed:success",
-        "job:102463821856:completed:success"
+        "autonomous-workflow:34352011959:in_progress:pending",
+        "autonomous-job:102467438687:department (graphics):in_progress:pending"
       ],
-      "resultVerified": true,
+      "resultVerified": false,
       "jobEvidence": {
-        "id": 102463821856,
-        "name": "round1 (graphics)",
-        "status": "completed",
-        "conclusion": "success",
+        "id": 102467438687,
+        "name": "department (graphics)",
+        "status": "in_progress",
+        "conclusion": null,
         "failedStep": null,
-        "startedAt": "2026-09-09T12:25:47Z",
-        "completedAt": "2026-09-09T12:31:35Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34350578474/job/102463821856"
+        "startedAt": "2026-09-09T12:36:57Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34352011959/job/102467438687"
       },
       "directCause": null,
       "blockers": [],
-      "reason": "department job completed successfully",
-      "action": "none",
-      "source": "artbook"
+      "reason": "autonomous development department job is executing now",
+      "action": "complete independent department review and hand off result",
+      "source": "autonomous-development"
     },
     "balance": {
       "department": "balance",
       "taskAssigned": true,
-      "status": "DONE",
-      "workState": "DONE",
-      "task": "monster-adventure daily artbook section",
+      "status": "WORKING",
+      "workState": "ACTIVE",
+      "task": "autonomous development floor 34352011959",
       "executionEvidence": [
-        "work-order:artbook-work-orders/2026-09-09-monster-adventure.json",
-        "live-artbook-target:monster-adventure",
-        "workflow:34350578474:completed:success",
-        "job:102463821809:completed:success"
+        "autonomous-workflow:34352011959:in_progress:pending",
+        "autonomous-job:102467438413:department (balance):in_progress:pending"
       ],
-      "resultVerified": true,
+      "resultVerified": false,
       "jobEvidence": {
-        "id": 102463821809,
-        "name": "round1 (balance)",
-        "status": "completed",
-        "conclusion": "success",
+        "id": 102467438413,
+        "name": "department (balance)",
+        "status": "in_progress",
+        "conclusion": null,
         "failedStep": null,
-        "startedAt": "2026-09-09T12:25:47Z",
-        "completedAt": "2026-09-09T12:30:09Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34350578474/job/102463821809"
+        "startedAt": "2026-09-09T12:36:56Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34352011959/job/102467438413"
       },
       "directCause": null,
       "blockers": [],
-      "reason": "department job completed successfully",
-      "action": "none",
-      "source": "artbook"
+      "reason": "autonomous development department job is executing now",
+      "action": "complete independent department review and hand off result",
+      "source": "autonomous-development"
     },
     "homepage": {
       "department": "homepage",
@@ -280,8 +270,8 @@
     "enabled": true,
     "artbookBacklogCount": 3,
     "nextMissingInitialArtbook": "survival",
-    "artbookRecoveryDispatched": true,
-    "autonomousRecoveryDispatched": true,
+    "artbookRecoveryDispatched": false,
+    "autonomousRecoveryDispatched": false,
     "duplicateActiveWorkflowDispatchForbidden": true
   }
 }
