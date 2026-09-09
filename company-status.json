@@ -120,7 +120,7 @@
         "P0009"
       ],
       "selection": "AUTO_TIER1_READY_THEN_SCORE_WITH_IMPACT_AWARE_TIER2",
-      "activeDevelopmentRunId": 34401288596,
+      "activeDevelopmentRunId": 34401014939,
       "syncIntervalMs": 30000,
       "updatedAtKst": "2026-09-10",
       "source": [
@@ -306,27 +306,33 @@
     "runningLabelAloneCountsAsWork": false,
     "counts": {
       "WORKING": 1,
-      "DONE": 6,
+      "DONE": 1,
       "IDLE_NO_TASK": 1,
-      "BLOCKED": 0,
+      "BLOCKED": 5,
       "FAILED": 0,
       "STALE": 0
     },
     "liveStates": {
       "ACTIVE": 1,
       "WAITING": 1,
-      "BLOCKED": 0,
-      "DONE": 6
+      "BLOCKED": 5,
+      "DONE": 1
     },
-    "activeDevelopmentRunId": 34401288596,
-    "primaryFindings": [],
+    "activeDevelopmentRunId": 34401014939,
+    "primaryFindings": [
+      "planning:DEPENDENCY_BLOCKED",
+      "development:DEPENDENCY_BLOCKED",
+      "qa:DEPENDENCY_BLOCKED",
+      "graphics:DEPENDENCY_BLOCKED",
+      "balance:DEPENDENCY_BLOCKED"
+    ],
     "staff": {
       "planning": {
-        "status": "DONE",
-        "workState": "DONE",
+        "status": "BLOCKED",
+        "workState": "BLOCKED",
         "task": "daechung-rpg daily artbook section",
         "source": "artbook",
-        "reason": "department submission is recorded for the resolved active artbook target",
+        "reason": "this department completed its independent round, but a downstream dependency failed",
         "jobEvidence": {
           "id": 102632005229,
           "name": "round1 (planning)",
@@ -339,11 +345,11 @@
         }
       },
       "development": {
-        "status": "DONE",
-        "workState": "DONE",
+        "status": "BLOCKED",
+        "workState": "BLOCKED",
         "task": "daechung-rpg daily artbook section",
         "source": "artbook",
-        "reason": "department submission is recorded for the resolved active artbook target",
+        "reason": "this department completed its independent round, but a downstream dependency failed",
         "jobEvidence": {
           "id": 102632005102,
           "name": "round1 (development)",
@@ -356,11 +362,11 @@
         }
       },
       "qa": {
-        "status": "DONE",
-        "workState": "DONE",
+        "status": "BLOCKED",
+        "workState": "BLOCKED",
         "task": "daechung-rpg daily artbook section",
         "source": "artbook",
-        "reason": "department submission is recorded for the resolved active artbook target",
+        "reason": "this department completed its independent round, but a downstream dependency failed",
         "jobEvidence": {
           "id": 102632005042,
           "name": "round1 (qa)",
@@ -373,11 +379,11 @@
         }
       },
       "graphics": {
-        "status": "DONE",
-        "workState": "DONE",
+        "status": "BLOCKED",
+        "workState": "BLOCKED",
         "task": "daechung-rpg daily artbook section",
         "source": "artbook",
-        "reason": "department submission is recorded for the resolved active artbook target",
+        "reason": "this department completed its independent round, but a downstream dependency failed",
         "jobEvidence": {
           "id": 102632004986,
           "name": "round1 (graphics)",
@@ -390,11 +396,11 @@
         }
       },
       "balance": {
-        "status": "DONE",
-        "workState": "DONE",
+        "status": "BLOCKED",
+        "workState": "BLOCKED",
         "task": "daechung-rpg daily artbook section",
         "source": "artbook",
-        "reason": "department submission is recorded for the resolved active artbook target",
+        "reason": "this department completed its independent round, but a downstream dependency failed",
         "jobEvidence": {
           "id": 102632005047,
           "name": "round1 (balance)",
@@ -617,39 +623,39 @@
     },
     "departmentTasks": {
       "planning": {
-        "status": "done",
+        "status": "blocked",
         "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "DONE",
-        "reason": "department submission is recorded for the resolved active artbook target"
+        "workState": "BLOCKED",
+        "reason": "this department completed its independent round, but a downstream dependency failed"
       },
       "development": {
-        "status": "done",
+        "status": "blocked",
         "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "DONE",
-        "reason": "department submission is recorded for the resolved active artbook target"
+        "workState": "BLOCKED",
+        "reason": "this department completed its independent round, but a downstream dependency failed"
       },
       "qa": {
-        "status": "done",
+        "status": "blocked",
         "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "DONE",
-        "reason": "department submission is recorded for the resolved active artbook target"
+        "workState": "BLOCKED",
+        "reason": "this department completed its independent round, but a downstream dependency failed"
       },
       "graphics": {
-        "status": "done",
+        "status": "blocked",
         "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "DONE",
-        "reason": "department submission is recorded for the resolved active artbook target"
+        "workState": "BLOCKED",
+        "reason": "this department completed its independent round, but a downstream dependency failed"
       },
       "balance": {
-        "status": "done",
+        "status": "blocked",
         "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "DONE",
-        "reason": "department submission is recorded for the resolved active artbook target"
+        "workState": "BLOCKED",
+        "reason": "this department completed its independent round, but a downstream dependency failed"
       },
       "director": {
         "status": "working",
