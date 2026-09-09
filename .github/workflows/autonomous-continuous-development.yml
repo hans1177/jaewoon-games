@@ -30,6 +30,11 @@ on:
     - cron: '5 15 * * *' # 00:05 Asia/Seoul daily reset wake-up
     - cron: '10 7 * * *' # 16:10 Asia/Seoul safety/recovery wake-up
   workflow_dispatch:
+    inputs:
+      priority_game_id:
+        description: 'Optional game slug/id handed off from a newly completed DESIGN_BASELINE artbook'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -74,7 +79,9 @@ jobs:
           echo "DEV_BASELINE=$(git rev-parse HEAD)"
 
       - name: Plan next evidence-based free work item
-        run: node tools/autonomous-work-planner.mjs --output=.autonomous/work-order.json
+        env:
+          AUTONOMOUS_PRIORITY_GAME_ID: ${{ github.event.inputs.priority_game_id || '' }}
+        run: node tools/autonomous-work-planner.mjs --output=.autonomous/work-order.json --priority-game-id="$AUTONOMOUS_PRIORITY_GAME_ID"
 
       - name: Bind work order
         id: order
@@ -269,6 +276,7 @@ jobs:
           echo "- local model timeout: 240000ms" >> "$GITHUB_STEP_SUMMARY"
           echo "- daily work cap: 8" >> "$GITHUB_STEP_SUMMARY"
           echo "- same game per KST day: max 1 reservation" >> "$GITHUB_STEP_SUMMARY"
+          echo "- completed DESIGN_BASELINE may hand off priority_game_id into this queue" >> "$GITHUB_STEP_SUMMARY"
           echo "- exhausted game queue: portfolio continuation dispatch" >> "$GITHUB_STEP_SUMMARY"
           echo "- failed reserved work: dispatch next item" >> "$GITHUB_STEP_SUMMARY"
           echo "- candidate promotion: separate independent QA" >> "$GITHUB_STEP_SUMMARY"
