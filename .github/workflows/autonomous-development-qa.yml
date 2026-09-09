@@ -52,16 +52,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node -e "const p=require('./autonomous-portfolio.json'); if(p.fixedProjectCount!==false||p.paidApi!==false||p.publicStableBranch!=='main'||p.continuousDevelopmentBranch!=='autonomous-dev') process.exit(1)"
+          node -e "const p=require('./autonomous-portfolio.json'); if(p.fixedProjectCount!==false||p.paidApi!==false||p.publicStableBranch!=='main'||p.continuousDevelopmentBranch!=='autonomous-dev'||Number(p.maxModelCallsPerRun)!==2) process.exit(1)"
           grep -Fq 'workflow_dispatch:' .github/workflows/autonomous-development-worker.yml
           grep -Fq 'git checkout -b' .github/workflows/autonomous-development-worker.yml
           grep -Fq 'MAIN_DIRECT_WRITE=NO' .github/workflows/autonomous-development-worker.yml
           grep -Fq 'SELF_PROMOTE=NO' .github/workflows/autonomous-development-worker.yml
           grep -Fq 'PAID_API=NO' .github/workflows/autonomous-development-worker.yml
+          grep -Fq "AUTONOMOUS_MODEL_MAX_ATTEMPTS: '2'" .github/workflows/autonomous-development-worker.yml
+          grep -Fq 'MODEL_CALL_BUDGET=2' .github/workflows/autonomous-development-worker.yml
           grep -Fq "cron: '10 7 * * *'" .github/workflows/autonomous-continuous-development.yml
           grep -Fq 'ref: autonomous-dev' .github/workflows/autonomous-continuous-development.yml
           grep -Fq 'git merge --no-edit origin/main' .github/workflows/autonomous-continuous-development.yml
-          grep -Fq 'MODEL_CALL_BUDGET=1' .github/workflows/autonomous-continuous-development.yml
+          grep -Fq "AUTONOMOUS_MODEL_MAX_ATTEMPTS: '2'" .github/workflows/autonomous-continuous-development.yml
+          grep -Fq 'deterministic rule patch: model calls 0' .github/workflows/autonomous-continuous-development.yml
           grep -Fq 'SELF_PROMOTE_MAIN=NO' .github/workflows/autonomous-continuous-development.yml
           grep -Fq "'autonomous/candidate-*'" .github/workflows/autonomous-candidate-promotion.yml
           grep -Fq 'SOURCE_REVISION_MISMATCH' .github/workflows/autonomous-candidate-promotion.yml
