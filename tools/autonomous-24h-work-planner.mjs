@@ -6,7 +6,6 @@ import { pathToFileURL } from 'node:url';
 import {
   buildAutonomousWorkOrder,
   buildDiagnosticsMap,
-  isCompletedDesignBaseline,
   kstDate,
   latestArtbookFor,
 } from './autonomous-work-planner.mjs';
@@ -22,6 +21,14 @@ function isRelease(project,catalog){
   const category=clean(catalogEntry(catalog,project?.slug)?.homepageCategory).toLowerCase();
   return category==='release-confirmed'||clean(project?.profileStatus)==='RELEASE_CONFIRMED'||project?.mode==='MAINTENANCE';
 }
+function isCompletedDesignBaselineFor(artbooks,slug){
+  const book=latestArtbookFor(artbooks,slug);
+  const bookState=clean(book?.lifecycle?.state||book?.lifecycleState).toUpperCase();
+  if(clean(book?.status).toLowerCase()==='completed-artbook'&&bookState==='DESIGN_BASELINE')return true;
+  const rows=(artbooks?.dailySubmissions??[]).filter(row=>row.gameId===slug&&clean(row.status).toLowerCase()==='completed-artbook');
+  rows.sort((a,b)=>String(b.date??'').localeCompare(String(a.date??'')));
+  return clean(rows[0]?.lifecycleState).toUpperCase()==='DESIGN_BASELINE';
+}
 
 export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},queueState={version:1,attempts:[]},date=kstDate(),priorityGameId='',filesystem=fs}={}){
   const attempts=attemptsForDate(queueState,date);
@@ -30,8 +37,7 @@ export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},qu
   const eligible=(portfolio?.projects??[]).filter(project=>{
     if(isHold(project)||isRelease(project,catalog))return false;
     if(!clean(project.sourcePath)||!filesystem.existsSync(project.sourcePath))return false;
-    const book=latestArtbookFor(artbooks,project.slug);
-    return isCompletedDesignBaseline(book);
+    return isCompletedDesignBaselineFor(artbooks,project.slug);
   });
   const requested=clean(priorityGameId);
   if(requested){
@@ -90,7 +96,7 @@ async function main(){
   const date=process.argv.find(x=>x.startsWith('--date='))?.slice('--date='.length)||kstDate();
   const priorityGameId=process.argv.find(x=>x.startsWith('--priority-game-id='))?.slice('--priority-game-id='.length)||clean(process.env.AUTONOMOUS_PRIORITY_GAME_ID);
   const portfolio=readJson('autonomous-portfolio.json');
-  const artbooks=readJson('game-artbooks.json',{artbooks:[]});
+  const artbooks=readJson('game-artbooks.json',{artbooks:[],dailySubmissions:[]});
   const health=readJson('public-game-health.json',{games:[]});
   const catalog=readJson('game-catalog.json',{games:[]});
   const queueState=readJson('.autonomous/queue-state.json',{version:1,attempts:[]});
