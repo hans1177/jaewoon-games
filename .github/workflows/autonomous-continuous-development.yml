@@ -242,7 +242,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: autonomous-floor-context-${{ github.run_id }}
-          path: .
+          path: .autonomous
       - name: Install local Ollama for independent department
         shell: bash
         run: |
@@ -305,7 +305,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: autonomous-floor-context-${{ github.run_id }}
-          path: .
+          path: .autonomous
       - name: Restore all five independent department results
         uses: actions/download-artifact@v4
         with:
@@ -372,7 +372,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: autonomous-floor-context-${{ github.run_id }}
-          path: .
+          path: .autonomous
       - name: Restore planning-integrated constraints
         uses: actions/download-artifact@v4
         with:
@@ -514,7 +514,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: autonomous-floor-context-${{ github.run_id }}
-          path: .
+          path: .autonomous
       - name: Restore integrated department cycle
         uses: actions/download-artifact@v4
         with:

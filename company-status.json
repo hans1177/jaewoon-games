@@ -95,61 +95,112 @@
     "dateKst": "2026-09-09",
     "runningLabelAloneCountsAsWork": false,
     "counts": {
-      "WORKING": 6,
+      "WORKING": 1,
       "DONE": 1,
       "IDLE_NO_TASK": 1,
       "BLOCKED": 0,
-      "FAILED": 0,
+      "FAILED": 5,
       "STALE": 0
     },
     "liveStates": {
       "ACTIVE": 1,
-      "WAITING": 6,
-      "BLOCKED": 0,
+      "WAITING": 1,
+      "BLOCKED": 5,
       "DONE": 1
     },
-    "activeDevelopmentRunId": 34335069493,
-    "primaryFindings": [],
+    "activeDevelopmentRunId": 34345425577,
+    "primaryFindings": [
+      "planning:AUTONOMOUS_DEPARTMENT_JOB_FAILED",
+      "development:AUTONOMOUS_DEPARTMENT_JOB_FAILED",
+      "qa:AUTONOMOUS_DEPARTMENT_JOB_FAILED",
+      "graphics:AUTONOMOUS_DEPARTMENT_JOB_FAILED",
+      "balance:AUTONOMOUS_DEPARTMENT_JOB_FAILED"
+    ],
     "staff": {
       "planning": {
-        "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34335069493",
+        "status": "FAILED",
+        "workState": "BLOCKED",
+        "task": "autonomous development floor 34345425577",
         "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
-        "jobEvidence": null
+        "reason": "department (planning) failed during autonomous development",
+        "jobEvidence": {
+          "id": 102445862063,
+          "name": "department (planning)",
+          "status": "completed",
+          "conclusion": "failure",
+          "failedStep": "Independent department review",
+          "startedAt": "2026-09-09T11:25:19Z",
+          "completedAt": "2026-09-09T11:26:36Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34345425577/job/102445862063"
+        }
       },
       "development": {
-        "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34335069493",
+        "status": "FAILED",
+        "workState": "BLOCKED",
+        "task": "autonomous development floor 34345425577",
         "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
-        "jobEvidence": null
+        "reason": "department (development) failed during autonomous development",
+        "jobEvidence": {
+          "id": 102445862093,
+          "name": "department (development)",
+          "status": "completed",
+          "conclusion": "failure",
+          "failedStep": "Independent department review",
+          "startedAt": "2026-09-09T11:25:19Z",
+          "completedAt": "2026-09-09T11:26:08Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34345425577/job/102445862093"
+        }
       },
       "qa": {
-        "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34335069493",
+        "status": "FAILED",
+        "workState": "BLOCKED",
+        "task": "autonomous development floor 34345425577",
         "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
-        "jobEvidence": null
+        "reason": "department (qa) failed during autonomous development",
+        "jobEvidence": {
+          "id": 102445862134,
+          "name": "department (qa)",
+          "status": "completed",
+          "conclusion": "failure",
+          "failedStep": "Independent department review",
+          "startedAt": "2026-09-09T11:25:19Z",
+          "completedAt": "2026-09-09T11:27:27Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34345425577/job/102445862134"
+        }
       },
       "graphics": {
-        "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34335069493",
+        "status": "FAILED",
+        "workState": "BLOCKED",
+        "task": "autonomous development floor 34345425577",
         "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
-        "jobEvidence": null
+        "reason": "department (graphics) failed during autonomous development",
+        "jobEvidence": {
+          "id": 102445862072,
+          "name": "department (graphics)",
+          "status": "completed",
+          "conclusion": "failure",
+          "failedStep": "Independent department review",
+          "startedAt": "2026-09-09T11:25:19Z",
+          "completedAt": "2026-09-09T11:26:21Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34345425577/job/102445862072"
+        }
       },
       "balance": {
-        "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34335069493",
+        "status": "FAILED",
+        "workState": "BLOCKED",
+        "task": "autonomous development floor 34345425577",
         "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
-        "jobEvidence": null
+        "reason": "department (balance) failed during autonomous development",
+        "jobEvidence": {
+          "id": 102445862132,
+          "name": "department (balance)",
+          "status": "completed",
+          "conclusion": "failure",
+          "failedStep": "Independent department review",
+          "startedAt": "2026-09-09T11:25:19Z",
+          "completedAt": "2026-09-09T11:26:13Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34345425577/job/102445862132"
+        }
       },
       "director": {
         "status": "WORKING",
@@ -362,39 +413,39 @@
     },
     "departmentTasks": {
       "planning": {
-        "status": "working",
-        "task": "autonomous development floor 34335069493",
+        "status": "failed",
+        "task": "autonomous development floor 34345425577",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "workState": "BLOCKED",
+        "reason": "department (planning) failed during autonomous development"
       },
       "development": {
-        "status": "working",
-        "task": "autonomous development floor 34335069493",
+        "status": "failed",
+        "task": "autonomous development floor 34345425577",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "workState": "BLOCKED",
+        "reason": "department (development) failed during autonomous development"
       },
       "qa": {
-        "status": "working",
-        "task": "autonomous development floor 34335069493",
+        "status": "failed",
+        "task": "autonomous development floor 34345425577",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "workState": "BLOCKED",
+        "reason": "department (qa) failed during autonomous development"
       },
       "graphics": {
-        "status": "working",
-        "task": "autonomous development floor 34335069493",
+        "status": "failed",
+        "task": "autonomous development floor 34345425577",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "workState": "BLOCKED",
+        "reason": "department (graphics) failed during autonomous development"
       },
       "balance": {
-        "status": "working",
-        "task": "autonomous development floor 34335069493",
+        "status": "failed",
+        "task": "autonomous development floor 34345425577",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "workState": "BLOCKED",
+        "reason": "department (balance) failed during autonomous development"
       },
       "director": {
         "status": "working",
