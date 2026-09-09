@@ -255,7 +255,7 @@ namespace JaewoonGames.DaechungRpg
 
         public bool TryChangeJob(JobType job)
         {
-            if (Player.level < 5 || Player.job != JobType.None || job == JobType.None)
+            if (Player.level < 5 || Player.job != JobType.None || job == JobType.None || !Enum.IsDefined(typeof(JobType), job))
             {
                 return false;
             }
