@@ -33,6 +33,7 @@ on:
       - '.github/agents/director.agent.md'
       - '.github/workflows/director-supervisor.yml'
       - '.github/workflows/artbook-free-department-bots.yml'
+      - '.github/workflows/artbook-initial-backfill-chain.yml'
       - '.github/workflows/autonomous-continuous-development.yml'
       - '.github/workflows/homepage-manager.yml'
       - '.github/workflows/public-game-health.yml'
@@ -40,7 +41,7 @@ on:
 
 permissions:
   contents: write
-  actions: read
+  actions: write
 
 concurrency:
   group: director-staff-supervisor-main
@@ -141,6 +142,67 @@ jobs:
           if(verified&&['BLOCKED','FAILED'].includes(s.staff.release?.status))throw new Error('verified test release artifact must not remain dependency-blocked');
           console.log('DIRECTOR_SUPERVISION_QA=PASS');
           console.log('AUTONOMOUS_LIVE_DEPARTMENT_STATES=PASS');
+          NODE
+
+      - name: Resolve low-risk operational bottlenecks by company priority
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE' > /tmp/director-recovery.env
+          const fs=require('fs');
+          const read=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
+          const directive=read('company-directive.json',{});
+          const catalog=read('game-catalog.json',{games:[]});
+          const artbooks=read('game-artbooks.json',{dailySubmissions:[],artbooks:[]});
+          const actions=read('/tmp/actions-runs.json',{workflow_runs:[]});
+          if(String(directive.priority||'')!=='owner-immediate')throw new Error('owner-immediate priority contract missing');
+          const existing=(catalog.games||[]).filter(g=>g.hasWebArchive===true||String(g.unityProjectPath||'').trim()).map(g=>g.id);
+          const completed=new Set();
+          for(const x of artbooks.dailySubmissions||[]){
+            const initial=String(x.workMode||'').toUpperCase()==='INITIAL'||String(x.artbookId||'').includes('-initial');
+            if(initial&&x.status==='completed-artbook'&&x.postprocessComplete===true)completed.add(x.gameId);
+          }
+          for(const x of artbooks.artbooks||[]){
+            if(String(x.workMode||'').toUpperCase()==='INITIAL'&&x.status==='completed-artbook'&&x.postprocessComplete!==false)completed.add(x.gameId);
+          }
+          const backlog=existing.filter(id=>!completed.has(id));
+          const runs=actions.workflow_runs||[];
+          const active=name=>runs.some(r=>r.name===name&&['queued','in_progress'].includes(String(r.status||'')));
+          const latest=name=>runs.filter(r=>r.name===name).sort((a,b)=>new Date(b.updated_at||b.created_at||0)-new Date(a.updated_at||a.created_at||0))[0]||null;
+          const latestAuto=latest('Autonomous Continuous Development');
+          const artbookActive=active('Free Artbook Department Bots');
+          const chainActive=active('Artbook Initial Backfill Chain');
+          const autonomousActive=active('Autonomous Continuous Development');
+          const artbookRecover=backlog.length>0&&!artbookActive&&!chainActive;
+          const autonomousRecover=!autonomousActive&&Boolean(latestAuto&&['failure','cancelled'].includes(String(latestAuto.conclusion||'')));
+          console.log(`ARTBOOK_RECOVER=${artbookRecover?'true':'false'}`);
+          console.log(`AUTONOMOUS_RECOVER=${autonomousRecover?'true':'false'}`);
+          console.log(`ARTBOOK_BACKLOG_COUNT=${backlog.length}`);
+          console.log(`ARTBOOK_BACKLOG_NEXT=${backlog[0]||''}`);
+          NODE
+          source /tmp/director-recovery.env
+          ARTBOOK_DISPATCHED=false
+          AUTONOMOUS_DISPATCHED=false
+          if [ "$ARTBOOK_RECOVER" = 'true' ]; then
+            gh workflow run artbook-initial-backfill-chain.yml --ref main
+            ARTBOOK_DISPATCHED=true
+            echo "DIRECTOR_RECOVERY=ARTBOOK_BACKFILL:${ARTBOOK_BACKLOG_NEXT}"
+          fi
+          if [ "$AUTONOMOUS_RECOVER" = 'true' ]; then
+            gh workflow run autonomous-continuous-development.yml --ref main
+            AUTONOMOUS_DISPATCHED=true
+            echo 'DIRECTOR_RECOVERY=AUTONOMOUS_DEVELOPMENT'
+          fi
+          export ARTBOOK_DISPATCHED AUTONOMOUS_DISPATCHED ARTBOOK_BACKLOG_COUNT ARTBOOK_BACKLOG_NEXT
+          node - <<'NODE'
+          const fs=require('fs');
+          const file='director-supervision-status.json';
+          const s=JSON.parse(fs.readFileSync(file,'utf8'));
+          s.priorityAuthority={ownerImmediateFirst:true,source:'company-directive.json',operationalRecoveryMayPreemptIdleAutonomy:true,coreDecisionEscalationStillRequired:true};
+          s.bottleneckRecovery={enabled:true,artbookBacklogCount:Number(process.env.ARTBOOK_BACKLOG_COUNT||0),nextMissingInitialArtbook:process.env.ARTBOOK_BACKLOG_NEXT||null,artbookRecoveryDispatched:process.env.ARTBOOK_DISPATCHED==='true',autonomousRecoveryDispatched:process.env.AUTONOMOUS_DISPATCHED==='true',duplicateActiveWorkflowDispatchForbidden:true};
+          fs.writeFileSync(file,JSON.stringify(s,null,2)+'\n');
           NODE
 
       - name: Commit supervision state when changed

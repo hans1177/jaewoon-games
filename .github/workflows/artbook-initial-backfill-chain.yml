@@ -4,6 +4,8 @@ on:
   workflow_run:
     workflows: ['Free Artbook Department Bots']
     types: [completed]
+  schedule:
+    - cron: '29 * * * *' # recovery watchdog until all existing-game INITIAL artbooks are complete
   workflow_dispatch:
 
 permissions:
