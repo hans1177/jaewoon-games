@@ -1,8 +1,8 @@
 {
   "version": 1,
   "sourceRepository": "hans1177/jaewoon-games",
-  "sourceRevision": "d7d68ea316e4b6fbd923eeec46b83d07d5ee8e6c",
-  "generatedAt": "2026-09-08T18:08:52.269Z",
+  "sourceRevision": "3cc0e3c4c6d1c735625c948d52663e24f3527bf9",
+  "generatedAt": "2026-09-09T02:58:18.751Z",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
   "continuousDevelopmentBranch": "autonomous-dev",
@@ -19,7 +19,7 @@
     "runner": "ubuntu-latest",
     "paidApi": false,
     "localModelProvider": "OLLAMA_LOCAL",
-    "maxModelCallsPerRun": 1,
+    "maxModelCallsPerRun": 2,
     "maxRunnerMinutesPerRun": 20,
     "runtimeVerificationRequired": true,
     "source": "GITHUB_PUBLIC_STANDARD_POLICY"
@@ -31,7 +31,7 @@
       "name": "나의 생존기",
       "sourcePath": "web-games/survival",
       "mode": "IMPROVE",
-      "profileStatus": "AUDITED_PARTIAL",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
       "health": {
         "status": "healthy",
         "score": 100,
@@ -114,7 +114,7 @@
       "name": "대충 RPG",
       "sourcePath": "web-games/daechung-rpg",
       "mode": "EXPERIMENT_ONLY",
-      "profileStatus": "NEEDS_AUDIT",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
       "health": {
         "status": "healthy",
         "score": 100,
@@ -161,6 +161,51 @@
         "issues": [],
         "checkedAt": "2026-09-08T04:36:26.781Z"
       }
+    },
+    {
+      "id": "P0101",
+      "slug": "chess-battle",
+      "name": "체스 배틀",
+      "sourcePath": "web-games/chess-battle",
+      "mode": "MAINTENANCE",
+      "profileStatus": "RELEASE_CONFIRMED",
+      "health": {
+        "status": "healthy",
+        "score": 100,
+        "healthReason": "no-blocking-smoke-errors",
+        "issues": [],
+        "checkedAt": "2026-09-08T04:36:26.781Z"
+      }
+    },
+    {
+      "id": "P0102",
+      "slug": "survival2",
+      "name": "숲의 생존자들",
+      "sourcePath": "web-games/survival2",
+      "mode": "MAINTENANCE",
+      "profileStatus": "RELEASE_CONFIRMED",
+      "health": {
+        "status": "healthy",
+        "score": 100,
+        "healthReason": "no-blocking-smoke-errors",
+        "issues": [],
+        "checkedAt": "2026-09-08T04:36:26.781Z"
+      }
+    },
+    {
+      "id": "P0103",
+      "slug": "territory-war",
+      "name": "영토전쟁",
+      "sourcePath": "web-games/territory-war",
+      "mode": "MAINTENANCE",
+      "profileStatus": "RELEASE_CONFIRMED",
+      "health": {
+        "status": "healthy",
+        "score": 100,
+        "healthReason": "no-blocking-smoke-errors",
+        "issues": [],
+        "checkedAt": "2026-09-08T04:36:26.781Z"
+      }
     }
   ],
   "companyDna": [],
@@ -178,6 +223,13 @@
       "status": "completed-artbook",
       "productionApproval": false,
       "createdAt": "2026-09-08"
+    },
+    {
+      "id": "daechung-rpg-2026-09-09-initial",
+      "gameId": "daechung-rpg",
+      "status": "completed-artbook",
+      "productionApproval": false,
+      "createdAt": "2026-09-09"
     }
   ],
   "safety": {
