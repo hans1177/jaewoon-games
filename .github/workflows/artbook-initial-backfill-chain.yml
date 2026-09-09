@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   actions: write
 
 concurrency:
@@ -16,19 +16,99 @@ concurrency:
 
 jobs:
   continue-existing-initials:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout latest main
         uses: actions/checkout@v4
         with:
           ref: main
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Record failed initial target and rotate queue
+        id: failed
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FAILED_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          rm -rf .failed-artbook-run
+          mkdir -p .failed-artbook-run
+          if ! gh run download "$FAILED_RUN_ID" -n daily-work-order -D .failed-artbook-run; then
+            echo 'recorded=false' >> "$GITHUB_OUTPUT"
+            echo 'ARTBOOK_FAILED_TARGET=UNKNOWN_ARTIFACT_MISSING'
+            exit 0
+          fi
+          node - <<'NODE'
+          const fs=require('fs');
+          const path=require('path');
+          const root='.failed-artbook-run';
+          function find(dir,name){
+            for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+              const file=path.join(dir,entry.name);
+              if(entry.isDirectory()){
+                const found=find(file,name);if(found)return found;
+              }else if(entry.name===name)return file;
+            }
+            return '';
+          }
+          const contextFile=find(root,'artbook-daily-context.json');
+          if(!contextFile){
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,'recorded=false\n');
+            console.log('ARTBOOK_FAILED_TARGET=UNKNOWN_CONTEXT_MISSING');
+            process.exit(0);
+          }
+          const context=JSON.parse(fs.readFileSync(contextFile,'utf8'));
+          const gameId=String(context.gameId||'').trim();
+          const mode=String(context.mode||'').toUpperCase();
+          if(!gameId||mode!=='INITIAL'){
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,'recorded=false\n');
+            console.log(`ARTBOOK_FAILED_TARGET=IGNORED mode=${mode||'UNKNOWN'} game=${gameId||'UNKNOWN'}`);
+            process.exit(0);
+          }
+          const queue=JSON.parse(fs.readFileSync('artbook-submission-queue.json','utf8'));
+          const game=(queue.games||[]).find(x=>x.gameId===gameId);
+          if(!game){
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,'recorded=false\n');
+            console.log(`ARTBOOK_FAILED_TARGET=UNKNOWN_GAME:${gameId}`);
+            process.exit(0);
+          }
+          game.backfillFailureCount=Number(game.backfillFailureCount||0)+1;
+          game.lastBackfillFailure={
+            runId:Number(process.env.FAILED_RUN_ID||0)||null,
+            date:String(context.date||''),
+            reason:'FREE_ARTBOOK_WORKFLOW_FAILED'
+          };
+          const order=(queue.queueOrder||[]).filter(Boolean);
+          queue.queueOrder=[...order.filter(id=>id!==gameId),gameId];
+          queue.currentDailyTarget=gameId;
+          queue.updatedAt=String(context.date||queue.updatedAt||'');
+          fs.writeFileSync('artbook-submission-queue.json',JSON.stringify(queue,null,2)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`recorded=true\nfailed_game_id=${gameId}\nfailure_count=${game.backfillFailureCount}\n`);
+          console.log(`ARTBOOK_FAILED_TARGET=${gameId}`);
+          console.log(`ARTBOOK_FAILED_TARGET_COUNT=${game.backfillFailureCount}`);
+          console.log('ARTBOOK_FAILED_TARGET_ROTATED=YES');
+          NODE
+          if git diff --quiet -- artbook-submission-queue.json; then
+            echo 'ARTBOOK_FAILURE_STATE_COMMIT=NO_CHANGES'
+            exit 0
+          fi
+          git config user.name 'jaewoon-artbook-backfill'
+          git config user.email 'actions@users.noreply.github.com'
+          git add artbook-submission-queue.json
+          git commit -m 'artbook: rotate failed initial target [skip ci]'
+          git pull --rebase origin main
+          git push origin main
+          echo 'ARTBOOK_FAILURE_STATE_COMMIT=SUCCESS'
       - name: Resolve next existing game without an initial artbook
         id: next
         shell: bash
+        env:
+          CHAIN_EVENT: ${{ github.event_name }}
         run: |
           set -euo pipefail
           node tools/artbook-prepare-daily.mjs
@@ -36,12 +116,18 @@ jobs:
           const fs=require('fs');
           const context=JSON.parse(fs.readFileSync('artbook-daily-context.json','utf8'));
           const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const queue=JSON.parse(fs.readFileSync('artbook-submission-queue.json','utf8'));
           const game=(catalog.games||[]).find(x=>x.id===context.gameId)||{};
+          const queued=(queue.games||[]).find(x=>x.gameId===context.gameId)||{};
           const existing=game.hasWebArchive===true||String(game.unityProjectPath||'').trim().length>0;
-          const shouldContinue=context.run===true&&String(context.mode||'').toUpperCase()==='INITIAL'&&existing;
+          const repeatedFailure=Number(queued.backfillFailureCount||0)>=2;
+          const manual=String(process.env.CHAIN_EVENT||'')==='workflow_dispatch';
+          const blockedByRepeatedFailure=repeatedFailure&&!manual;
+          const shouldContinue=context.run===true&&String(context.mode||'').toUpperCase()==='INITIAL'&&existing&&!blockedByRepeatedFailure;
           console.log(`continue=${shouldContinue?'true':'false'}`);
           console.log(`game_id=${shouldContinue?context.gameId:''}`);
-          console.log(`reason=${shouldContinue?'EXISTING_INITIAL_BACKLOG_REMAINS':'NO_EXISTING_INITIAL_BACKLOG'}`);
+          console.log(`failure_count=${Number(queued.backfillFailureCount||0)}`);
+          console.log(`reason=${shouldContinue?'EXISTING_INITIAL_BACKLOG_REMAINS':blockedByRepeatedFailure?'REPEATED_INITIAL_FAILURE_BLOCKED':'NO_EXISTING_INITIAL_BACKLOG'}`);
           NODE
       - name: Dispatch next initial artbook
         if: steps.next.outputs.continue == 'true'
@@ -51,8 +137,14 @@ jobs:
           gh workflow run artbook-free-department-bots.yml --ref main
           echo "ARTBOOK_BACKFILL_DISPATCHED=${{ steps.next.outputs.game_id }}"
       - name: Backfill queue drained
-        if: steps.next.outputs.continue != 'true'
+        if: steps.next.outputs.continue != 'true' && steps.next.outputs.reason == 'NO_EXISTING_INITIAL_BACKLOG'
         run: echo 'ARTBOOK_BACKFILL=NO_EXISTING_INITIAL_BACKLOG'
+      - name: Backfill blocked after repeated target failure
+        if: steps.next.outputs.continue != 'true' && steps.next.outputs.reason == 'REPEATED_INITIAL_FAILURE_BLOCKED'
+        run: |
+          echo 'ARTBOOK_BACKFILL=BLOCKED_REPEATED_INITIAL_FAILURE'
+          echo "ARTBOOK_BACKFILL_FAILURE_COUNT=${{ steps.next.outputs.failure_count }}"
+          echo 'ARTBOOK_BACKFILL_MANUAL_RETRY=AVAILABLE'
 
   handoff-completed-design-baseline:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
