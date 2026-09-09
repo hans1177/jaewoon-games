@@ -92,16 +92,34 @@ jobs:
           test -s /tmp/autonomous-jobs.json
 
           : > /tmp/artbook-context.log
+          ARTBOOK_CONTEXT_SOURCE=''
           if [ -n "$ARTBOOK_RUN_ID" ]; then
-            CONTEXT_JOB_ID="$(node - <<'NODE'
+            rm -rf /tmp/artbook-live-artifact
+            mkdir -p /tmp/artbook-live-artifact
+            if gh run download "$ARTBOOK_RUN_ID" --repo "$GITHUB_REPOSITORY" --name daily-work-order --dir /tmp/artbook-live-artifact > /tmp/artbook-artifact-download.log 2>&1; then
+              if [ -s /tmp/artbook-live-artifact/artbook-daily-context.json ]; then
+                node - <<'NODE' > /tmp/artbook-context.log
+          const fs=require('fs');
+          const c=JSON.parse(fs.readFileSync('/tmp/artbook-live-artifact/artbook-daily-context.json','utf8'));
+          console.log(`ARTBOOK_DAILY_TARGET=${c.gameId||''}`);
+          console.log(`ARTBOOK_WORK_ORDER=${c.workOrderPath||''}`);
+          console.log('ARTBOOK_CONTEXT_SOURCE=daily-work-order-artifact');
+          NODE
+                ARTBOOK_CONTEXT_SOURCE='artifact'
+              fi
+            fi
+
+            if [ "$ARTBOOK_CONTEXT_SOURCE" != 'artifact' ]; then
+              CONTEXT_JOB_ID="$(node - <<'NODE'
           const fs=require('fs');
           const p=JSON.parse(fs.readFileSync('/tmp/artbook-jobs.json','utf8'));
           const job=(p.jobs||[]).find(j=>String(j.name||'').toLowerCase()==='context');
           process.stdout.write(String(job?.id||''));
           NODE
           )"
-            if [ -n "$CONTEXT_JOB_ID" ]; then
-              gh run view "$ARTBOOK_RUN_ID" --repo "$GITHUB_REPOSITORY" --job "$CONTEXT_JOB_ID" --log > /tmp/artbook-context.log 2>&1 || true
+              if [ -n "$CONTEXT_JOB_ID" ]; then
+                gh run view "$ARTBOOK_RUN_ID" --repo "$GITHUB_REPOSITORY" --job "$CONTEXT_JOB_ID" --log > /tmp/artbook-context.log 2>&1 || true
+              fi
             fi
           fi
 
@@ -139,7 +157,7 @@ jobs:
           if(s.checks?.liveDepartmentStates!==true)throw new Error('live department state contract missing');
           if(s.checks?.liveJobPrecedesPersistedSubmission!==true)throw new Error('live job evidence must precede persisted submission state');
           if(s.workflowEvidence?.artbook&&!s.checks?.jobLevelEvidenceUsed)throw new Error('artbook run exists but department job evidence was not used');
-          if(s.checks?.artbookLiveTargetResolved===true&&s.checks?.artbookTargetSource!=='artbook-context-log')throw new Error('resolved live artbook target must come from context job evidence');
+          if(s.checks?.artbookLiveTargetResolved===true&&s.checks?.artbookTargetSource!=='artbook-context-log')throw new Error('resolved live artbook target must come from current artbook context evidence');
           const auto=s.workflowEvidence?.autonomousDevelopment;
           if(auto&&['queued','in_progress','completed'].includes(auto.status)&&!s.checks?.autonomousDepartmentJobEvidenceUsed){
             const runActive=['queued','in_progress'].includes(auto.status);
