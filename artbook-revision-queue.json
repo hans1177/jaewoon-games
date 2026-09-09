@@ -1,7 +1,37 @@
 {
   "version": 1,
-  "updatedAt": null,
-  "tasks": [],
+  "updatedAt": "2026-09-10",
+  "tasks": [
+    {
+      "id": "crystal-defense-2026-09-10-revision-01",
+      "type": "ARTBOOK_REVISION_REQUEST",
+      "gameId": "crystal-defense",
+      "status": "SCHEDULED",
+      "requestedAt": "2026-09-09T20:20:00.000Z",
+      "requestedBy": "chatgpt-artbook-automation",
+      "trigger": "QA_DESIGN_FINDING",
+      "reason": "기존 DESIGN_BASELINE이 5개 부서 의미 품질 기준을 충족하지 못한다. planning은 BLOCKED, graphics/balance는 NEEDS_VALIDATION이며 development/qa에는 true·1·0·none 등 형식 채우기 수준 내용이 포함되어 있어 새 품질 게이트로 전 부서를 다시 검증해야 한다.",
+      "evidence": [
+        "artbook-submissions/crystal-defense/2026-09-09/artbook.json",
+        "artbook-submissions/crystal-defense/2026-09-09/development.json",
+        "tools/artbook-gate.mjs",
+        "qa/artbook-planning-quality.test.mjs"
+      ],
+      "selectedDepartments": [
+        "planning",
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ],
+      "dueDate": "2026-09-10",
+      "sourceArtbookId": "crystal-defense-2026-09-09-initial",
+      "sourceEdition": 1,
+      "sourceLifecycleState": "DESIGN_BASELINE",
+      "createsNewVersion": true,
+      "overwriteApprovedVersion": false
+    }
+  ],
   "contract": {
     "type": "ARTBOOK_REVISION_REQUEST",
     "approvedBaselineOverwriteForbidden": true,
