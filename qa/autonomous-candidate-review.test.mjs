@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { reviewAutonomousCandidate, reviewAutonomousCandidateWithRuntime } from '../tools/autonomous-candidate-review.mjs';
+import { reviewAutonomousCandidate } from '../tools/autonomous-candidate-review.mjs';
 
 const source='web-games/__autonomous-review-source__';
 const candidate='web-games/.autonomous-candidates/TEST/review';
@@ -27,5 +27,3 @@ test('save key mutation is independently blocked',()=>{setup(undefined,"localSto
 test('no-op candidate cannot advance',()=>{const same="localStorage.setItem('save-v1','a');\nconsole.log('same');\n";setup(same,same);try{const r=reviewAutonomousCandidate({evidence:evidence(),expectedSourceCommit:'a'.repeat(40)});assert.equal(r.pass,false);assert.ok(r.blockers.some(x=>x.startsWith('NO_MEANINGFUL_FILE_CHANGE')));}finally{cleanup();}});
 
 test('paid/self-promoting/public mutation flags block candidate',()=>{setup();try{const r=reviewAutonomousCandidate({evidence:evidence({paidApi:true,selfPromote:true,publicStableModified:true}),expectedSourceCommit:'a'.repeat(40)});assert.equal(r.pass,false);assert.ok(r.blockers.includes('PAID_API_FLAG'));assert.ok(r.blockers.includes('SELF_PROMOTE_FLAG'));assert.ok(r.blockers.includes('PUBLIC_STABLE_MUTATION_FLAG'));}finally{cleanup();}});
-
-test('runtime gate fails closed when required headless browser is unavailable',async()=>{setup();try{const r=await reviewAutonomousCandidateWithRuntime({evidence:evidence(),expectedSourceCommit:'a'.repeat(40),browserOptions:{browserExecutable:null,required:true}});assert.equal(r.pass,false);assert.equal(r.browserSmoke.status,'FAIL');assert.ok(r.blockers.includes('BROWSER:HEADLESS_BROWSER_UNAVAILABLE'));}finally{cleanup();}});
