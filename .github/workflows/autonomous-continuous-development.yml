@@ -42,6 +42,7 @@ permissions:
   contents: write
   actions: write
 
+# Source writes remain globally serial. Department analysis jobs inside one floor run in parallel.
 concurrency:
   group: autonomous-dev-writer
   cancel-in-progress: false
@@ -56,9 +57,22 @@ env:
   OLLAMA_HOST: 127.0.0.1:11434
 
 jobs:
-  develop:
+  prepare:
+    name: prepare development floor
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
+    outputs:
+      run: ${{ steps.order.outputs.run }}
+      reason: ${{ steps.order.outputs.reason }}
+      game_id: ${{ steps.order.outputs.game_id }}
+      game_slug: ${{ steps.order.outputs.game_slug }}
+      source_path: ${{ steps.order.outputs.source_path }}
+      work_date: ${{ steps.order.outputs.work_date }}
+      candidate_id: ${{ steps.order.outputs.candidate_id }}
+      repair_mode: ${{ steps.order.outputs.repair_mode }}
+      model_calls: ${{ steps.order.outputs.model_calls }}
+      reserved: ${{ steps.reserve.outputs.reserved }}
+      reserved_sha: ${{ steps.reserve.outputs.reserved_sha }}
     steps:
       - name: Checkout continuous development branch
         uses: actions/checkout@v4
@@ -68,18 +82,18 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: '22'
 
       - name: Sync public baseline into development line without touching main
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name "jaewoon-autonomous-sync"
-          git config user.email "autonomous-sync@users.noreply.github.com"
+          git config user.name 'jaewoon-autonomous-sync'
+          git config user.email 'autonomous-sync@users.noreply.github.com'
           git fetch origin main autonomous-dev
           git merge --no-edit origin/main
           git push origin HEAD:autonomous-dev
-          echo "PUBLIC_MAIN_WRITE=NO"
+          echo 'PUBLIC_MAIN_WRITE=NO'
           echo "DEV_BASELINE=$(git rev-parse HEAD)"
 
       - name: Plan next 24h artbook development floor
@@ -102,6 +116,12 @@ jobs:
           line('repair_mode',o.repairMode||'MODEL');
           line('model_calls',Number(o.budget?.modelCalls||0));
           if(!o.run)process.exit(0);
+          const candidateId=`${o.gameId}-${String(o.date||'').replaceAll('-','')}-${process.env.GITHUB_RUN_ID}`;
+          line('game_id',o.gameId);
+          line('game_slug',o.gameSlug);
+          line('source_path',o.sourcePath);
+          line('work_date',o.date);
+          line('candidate_id',candidateId);
           const env=process.env.GITHUB_ENV;
           fs.appendFileSync(env,`AUTONOMOUS_GAME_ID=${o.gameId}\n`);
           fs.appendFileSync(env,`AUTONOMOUS_GAME_SLUG=${o.gameSlug}\n`);
@@ -110,9 +130,7 @@ jobs:
           fs.appendFileSync(env,`AUTONOMOUS_SELECTED_REASON=${o.selectedReason}\n`);
           fs.appendFileSync(env,`AUTONOMOUS_REPAIR_MODE=${o.repairMode||'MODEL'}\n`);
           fs.appendFileSync(env,`AUTONOMOUS_MODEL_CALL_BUDGET=${Number(o.budget?.modelCalls||0)}\n`);
-          fs.appendFileSync(env,`AUTONOMOUS_CANDIDATE_ID=${o.gameId}-${o.date.replaceAll('-','')}-${process.env.GITHUB_RUN_ID}\n`);
-          fs.appendFileSync(env,`AUTONOMOUS_PROTECTED_VALUES=${(o.protectedValues||[]).join(',')}\n`);
-          fs.appendFileSync(env,`AUTONOMOUS_GOAL<<JAEWOON_GOAL\n${String(o.goal||'').replaceAll('\r',' ')}\nJAEWOON_GOAL\n`);
+          fs.appendFileSync(env,`AUTONOMOUS_CANDIDATE_ID=${candidateId}\n`);
           const calls=Number(o.budget?.modelCalls),max=Number(o.budget?.maxModelCalls);
           if(o.budget?.paidApi!==false||!Number.isInteger(calls)||calls<0||calls>max||max<0||max>2)throw new Error('free budget work-order gate failed');
           if((o.repairMode==='RULE_PATCH'&&calls!==0)||(o.repairMode!=='RULE_PATCH'&&calls<1))throw new Error('repair/model budget mismatch');
@@ -121,13 +139,14 @@ jobs:
       - name: Stop cleanly when no actionable floor exists now
         if: steps.order.outputs.run != 'true'
         run: |
-          echo "AUTONOMOUS_WORK=NO_ACTIONABLE_FLOOR_NOW"
-          echo "QUEUE_STOP_REASON=${{ steps.order.outputs.reason }}"
-          echo "HOURLY_RECOVERY_WAKEUP=ENABLED"
+          echo 'AUTONOMOUS_WORK=NO_ACTIONABLE_FLOOR_NOW'
+          echo 'QUEUE_STOP_REASON=${{ steps.order.outputs.reason }}'
+          echo 'HOURLY_RECOVERY_WAKEUP=ENABLED'
 
       - name: Deterministic planner, diagnostics, patcher, queue, budget and worker tests
         if: steps.order.outputs.run == 'true'
         run: |
+          node --check tools/autonomous-department-cycle.mjs
           node --test qa/autonomous-work-planner.test.mjs
           node --test qa/autonomous-24h-work-planner.test.mjs
           node --test qa/autonomous-diagnostics.test.mjs
@@ -144,7 +163,7 @@ jobs:
           node tools/free-budget-telemetry.mjs \
             --verify-public-repo=true \
             --runner=ubuntu-latest \
-            --model-calls="$AUTONOMOUS_MODEL_CALL_BUDGET" \
+            --model-calls="${{ steps.order.outputs.model_calls }}" \
             --runner-minutes=20 \
             --output=.autonomous/free-budget-telemetry.json
           echo 'FREE_BUDGET_PREFLIGHT=PASS'
@@ -166,28 +185,63 @@ jobs:
             --reason="$AUTONOMOUS_SELECTED_REASON" \
             --run-id="$GITHUB_RUN_ID" \
             --source-commit="$source_before"
-          git config user.name "jaewoon-autonomous-queue"
-          git config user.email "autonomous-queue@users.noreply.github.com"
+          git config user.name 'jaewoon-autonomous-queue'
+          git config user.email 'autonomous-queue@users.noreply.github.com'
           git add .autonomous/queue-state.json
           git commit -m "autonomy: reserve ${AUTONOMOUS_GAME_ID} floor ${AUTONOMOUS_WORK_DATE} [skip ci]"
           git push origin HEAD:autonomous-dev
-          echo "QUEUE_RESERVATION=PASS"
-          echo "reserved=true" >> "$GITHUB_OUTPUT"
-          echo "AUTONOMOUS_RESERVED_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          reserved_sha="$(git rev-parse HEAD)"
+          echo 'QUEUE_RESERVATION=PASS'
+          echo 'reserved=true' >> "$GITHUB_OUTPUT"
+          echo "reserved_sha=$reserved_sha" >> "$GITHUB_OUTPUT"
 
-      - name: Create isolated candidate branch
+      - name: Upload immutable floor context
         if: steps.order.outputs.run == 'true'
-        id: branch
-        shell: bash
+        uses: actions/upload-artifact@v4
+        with:
+          name: autonomous-floor-context-${{ github.run_id }}
+          path: |
+            .autonomous/work-order.json
+            .autonomous/free-budget-telemetry.json
+          include-hidden-files: true
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Prepare summary
+        if: always()
         run: |
-          set -euo pipefail
-          branch="autonomous/candidate-${GITHUB_RUN_ID}"
-          git checkout -b "$branch"
-          echo "name=$branch" >> "$GITHUB_OUTPUT"
-          echo "MAIN_DIRECT_WRITE=NO"
+          echo '### Autonomous floor preparation' >> "$GITHUB_STEP_SUMMARY"
+          echo '- source write concurrency: SERIAL' >> "$GITHUB_STEP_SUMMARY"
+          echo '- department review concurrency: PARALLEL_5' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Install local Ollama for AI departments and development worker
-        if: steps.order.outputs.run == 'true'
+  departments:
+    name: department (${{ matrix.role }})
+    needs: prepare
+    if: needs.prepare.outputs.run == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        role: [planning, development, graphics, qa, balance]
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Checkout reserved development evidence
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.reserved_sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Restore immutable floor context
+        uses: actions/download-artifact@v4
+        with:
+          name: autonomous-floor-context-${{ github.run_id }}
+          path: .
+
+      - name: Install local Ollama for independent department
         shell: bash
         run: |
           set -euo pipefail
@@ -207,30 +261,209 @@ jobs:
           exit 1
 
       - name: Pull free local model
-        if: steps.order.outputs.run == 'true'
         run: |
           ollama pull "$AUTONOMOUS_LOCAL_MODEL"
-          echo "WORKER_MODEL_CALL_BUDGET=$AUTONOMOUS_MODEL_CALL_BUDGET"
-          echo "DEPARTMENT_SEQUENCE=planning,development,graphics,qa,balance,planning-final"
-          echo "PAID_API=NO"
+          echo 'PAID_API=NO'
+          echo 'DEPARTMENT_WORK_STATE=ACTIVE'
 
-      - name: AI departments run the development floor
-        if: steps.order.outputs.run == 'true'
+      - name: Independent department work
+        env:
+          AUTONOMOUS_CANDIDATE_ID: ${{ needs.prepare.outputs.candidate_id }}
+          AUTONOMOUS_DEPARTMENT_ROLE: ${{ matrix.role }}
+          AUTONOMOUS_DEPARTMENT_OUTPUT: department-results/${{ matrix.role }}.json
         run: node tools/autonomous-department-cycle.mjs
 
-      - name: Generate isolated candidate from department-constrained goal
-        if: steps.order.outputs.run == 'true'
-        run: node tools/autonomous-development-worker.mjs
+      - name: Upload department-owned result
+        uses: actions/upload-artifact@v4
+        with:
+          name: autonomous-department-${{ matrix.role }}-${{ github.run_id }}
+          path: department-results/${{ matrix.role }}.json
+          retention-days: 1
+          if-no-files-found: error
 
-      - name: Attach department cycle to candidate evidence
-        if: steps.order.outputs.run == 'true'
+      - name: Department state summary
+        if: always()
+        run: |
+          echo '### ${{ matrix.role }} department' >> "$GITHUB_STEP_SUMMARY"
+          echo '- queue item: ${{ needs.prepare.outputs.candidate_id }}' >> "$GITHUB_STEP_SUMMARY"
+          echo '- job state is the live department state: queued=WAITING, in_progress=ACTIVE, failure=BLOCKED, success=DONE' >> "$GITHUB_STEP_SUMMARY"
+
+  planning_final:
+    name: department (planning-final)
+    needs: [prepare, departments]
+    if: needs.prepare.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Checkout reserved development evidence
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.reserved_sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Restore immutable floor context
+        uses: actions/download-artifact@v4
+        with:
+          name: autonomous-floor-context-${{ github.run_id }}
+          path: .
+
+      - name: Restore all five independent department results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: autonomous-department-*-${{ github.run_id }}
+          path: department-results
+          merge-multiple: true
+
+      - name: Verify five department handoffs
+        shell: bash
+        run: |
+          set -euo pipefail
+          for role in planning development graphics qa balance; do
+            test -s "department-results/${role}.json"
+          done
+          echo 'DEPARTMENT_HANDOFFS=5/5'
+
+      - name: Install local Ollama for planning integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          installed=0
+          for attempt in 1 2 3; do
+            echo "OLLAMA_INSTALL_ATTEMPT=$attempt/3"
+            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
+            sleep $((attempt * 4))
+          done
+          test "$installed" = 1
+          nohup ollama serve > /tmp/ollama-autonomous.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0
+            sleep 2
+          done
+          cat /tmp/ollama-autonomous.log || true
+          exit 1
+
+      - name: Pull free local model
+        run: ollama pull "$AUTONOMOUS_LOCAL_MODEL"
+
+      - name: Planning integrates independent department handoffs
+        env:
+          AUTONOMOUS_CANDIDATE_ID: ${{ needs.prepare.outputs.candidate_id }}
+          AUTONOMOUS_DEPARTMENT_FINALIZE: 'true'
+          AUTONOMOUS_DEPARTMENT_RESULTS_DIR: department-results
+          AUTONOMOUS_DEPARTMENT_CYCLE_OUTPUT: department-cycle.json
+        run: node tools/autonomous-department-cycle.mjs
+
+      - name: Upload integrated department cycle
+        uses: actions/upload-artifact@v4
+        with:
+          name: autonomous-department-cycle-${{ github.run_id }}
+          path: department-cycle.json
+          retention-days: 1
+          if-no-files-found: error
+
+  develop:
+    name: serial source implementation
+    needs: [prepare, planning_final]
+    if: needs.prepare.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout reserved development baseline
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.reserved_sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Restore immutable floor context
+        uses: actions/download-artifact@v4
+        with:
+          name: autonomous-floor-context-${{ github.run_id }}
+          path: .
+
+      - name: Restore integrated department cycle
+        uses: actions/download-artifact@v4
+        with:
+          name: autonomous-department-cycle-${{ github.run_id }}
+          path: .
+
+      - name: Bind department-approved implementation environment
         shell: bash
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs');
-          const cycle=JSON.parse(fs.readFileSync('/tmp/autonomous-department-cycle.json','utf8'));
+          const o=JSON.parse(fs.readFileSync('.autonomous/work-order.json','utf8'));
+          const cycle=JSON.parse(fs.readFileSync('department-cycle.json','utf8'));
           if(cycle.allDepartmentsWorked!==true||cycle.finalDecision==='BLOCK')throw new Error('department cycle gate failed');
+          const env=process.env.GITHUB_ENV;
+          const candidateId=`${o.gameId}-${String(o.date||'').replaceAll('-','')}-${process.env.GITHUB_RUN_ID}`;
+          fs.appendFileSync(env,`AUTONOMOUS_GAME_ID=${o.gameId}\n`);
+          fs.appendFileSync(env,`AUTONOMOUS_GAME_SLUG=${o.gameSlug}\n`);
+          fs.appendFileSync(env,`AUTONOMOUS_SOURCE_PATH=${o.sourcePath}\n`);
+          fs.appendFileSync(env,`AUTONOMOUS_WORK_DATE=${o.date}\n`);
+          fs.appendFileSync(env,`AUTONOMOUS_SELECTED_REASON=${o.selectedReason}\n`);
+          fs.appendFileSync(env,`AUTONOMOUS_REPAIR_MODE=${o.repairMode||'MODEL'}\n`);
+          fs.appendFileSync(env,`AUTONOMOUS_MODEL_CALL_BUDGET=${Number(o.budget?.modelCalls||0)}\n`);
+          fs.appendFileSync(env,`AUTONOMOUS_CANDIDATE_ID=${candidateId}\n`);
+          fs.appendFileSync(env,`AUTONOMOUS_PROTECTED_VALUES=${(o.protectedValues||[]).join(',')}\n`);
+          fs.appendFileSync(env,`AUTONOMOUS_GOAL<<JAEWOON_GOAL\n${String(cycle.finalGoal||'').replaceAll('\r',' ')}\nJAEWOON_GOAL\n`);
+          NODE
+
+      - name: Create isolated candidate branch
+        id: branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="autonomous/candidate-${GITHUB_RUN_ID}"
+          git checkout -b "$branch"
+          echo "name=$branch" >> "$GITHUB_OUTPUT"
+          echo 'MAIN_DIRECT_WRITE=NO'
+
+      - name: Install local Ollama for development worker
+        shell: bash
+        run: |
+          set -euo pipefail
+          installed=0
+          for attempt in 1 2 3; do
+            echo "OLLAMA_INSTALL_ATTEMPT=$attempt/3"
+            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
+            sleep $((attempt * 4))
+          done
+          test "$installed" = 1
+          nohup ollama serve > /tmp/ollama-autonomous.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0
+            sleep 2
+          done
+          cat /tmp/ollama-autonomous.log || true
+          exit 1
+
+      - name: Pull free local model
+        run: |
+          ollama pull "$AUTONOMOUS_LOCAL_MODEL"
+          echo "WORKER_MODEL_CALL_BUDGET=$AUTONOMOUS_MODEL_CALL_BUDGET"
+          echo 'DEPARTMENT_SEQUENCE=planning+development+graphics+qa+balance(parallel)->planning-final->source-development'
+          echo 'PAID_API=NO'
+
+      - name: Generate isolated candidate from department-constrained goal
+        run: node tools/autonomous-development-worker.mjs
+
+      - name: Attach department cycle to candidate evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const cycle=JSON.parse(fs.readFileSync('department-cycle.json','utf8'));
+          if(cycle.allDepartmentsWorked!==true||cycle.parallelDepartments?.length!==5||cycle.finalDecision==='BLOCK')throw new Error('parallel department cycle gate failed');
           const file=`.autonomous/evidence/${process.env.AUTONOMOUS_CANDIDATE_ID}.json`;
           const evidence=JSON.parse(fs.readFileSync(file,'utf8'));
           evidence.departmentCycle=cycle;
@@ -240,7 +473,6 @@ jobs:
           NODE
 
       - name: Candidate pre-promotion QA
-        if: steps.order.outputs.run == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -249,24 +481,22 @@ jobs:
           git diff --check
           while IFS= read -r -d '' file; do node --check "$file"; done < <(find "$candidate" -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) -print0)
           if [ -f qa/vibe-regression.mjs ]; then node qa/vibe-regression.mjs; fi
-          echo "PRE_PROMOTION_QA=PASS"
+          echo 'PRE_PROMOTION_QA=PASS'
 
       - name: Commit candidate branch only
-        if: steps.order.outputs.run == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name "jaewoon-autonomous-worker"
-          git config user.email "autonomous-worker@users.noreply.github.com"
+          git config user.name 'jaewoon-autonomous-worker'
+          git config user.email 'autonomous-worker@users.noreply.github.com'
           git add -f "web-games/.autonomous-candidates/${AUTONOMOUS_GAME_ID}/${AUTONOMOUS_CANDIDATE_ID}" ".autonomous/evidence/${AUTONOMOUS_CANDIDATE_ID}.json"
           test -n "$(git diff --cached --name-only)"
           git commit -m "candidate: ${AUTONOMOUS_GAME_ID} 24h department floor ${GITHUB_RUN_ID}"
           git push origin "HEAD:${{ steps.branch.outputs.name }}"
           echo "CANDIDATE_COMMIT=$(git rev-parse HEAD)"
-          echo "SELF_PROMOTE_MAIN=NO"
+          echo 'SELF_PROMOTE_MAIN=NO'
 
       - name: Dispatch independent candidate promotion explicitly
-        if: steps.order.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -274,38 +504,45 @@ jobs:
           set -euo pipefail
           for attempt in 1 2 3; do
             if gh workflow run autonomous-candidate-promotion.yml --ref main -f candidate_branch="${{ steps.branch.outputs.name }}"; then
-              echo "CANDIDATE_PROMOTION_DISPATCHED=YES"
-              echo "CANDIDATE_PROMOTION_DISPATCH_MODE=workflow_dispatch"
+              echo 'CANDIDATE_PROMOTION_DISPATCHED=YES'
+              echo 'CANDIDATE_PROMOTION_DISPATCH_MODE=workflow_dispatch'
               exit 0
             fi
             sleep $((attempt * 2))
           done
-          echo "candidate promotion dispatch failed" >&2
+          echo 'candidate promotion dispatch failed' >&2
           exit 1
 
+      - name: Development summary
+        if: always()
+        run: |
+          echo '### Autonomous Continuous Development' >> "$GITHUB_STEP_SUMMARY"
+          echo '- department queue: five independent jobs in parallel' >> "$GITHUB_STEP_SUMMARY"
+          echo '- planning-final: integrates five department handoffs' >> "$GITHUB_STEP_SUMMARY"
+          echo '- source implementation: serial after department approval' >> "$GITHUB_STEP_SUMMARY"
+          echo '- completed DESIGN_BASELINE daily work cap: NONE' >> "$GITHUB_STEP_SUMMARY"
+          echo '- same game daily floor cap: NONE' >> "$GITHUB_STEP_SUMMARY"
+          echo '- recovery wake-up: HOURLY' >> "$GITHUB_STEP_SUMMARY"
+          echo '- public main write: NO' >> "$GITHUB_STEP_SUMMARY"
+          echo '- cash budget: 0 / paid API: NO' >> "$GITHUB_STEP_SUMMARY"
+
+  recover:
+    name: recover failed reserved floor
+    needs: [prepare, departments, planning_final, develop]
+    if: >-
+      ${{ always() && needs.prepare.outputs.reserved == 'true' &&
+          (needs.prepare.result == 'failure' || needs.departments.result == 'failure' ||
+           needs.departments.result == 'cancelled' || needs.planning_final.result == 'failure' ||
+           needs.planning_final.result == 'cancelled' || needs.develop.result == 'failure' ||
+           needs.develop.result == 'cancelled') }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Continue 24h loop after a reserved floor failure
-        if: failure() && steps.reserve.outputs.reserved == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           gh workflow run autonomous-continuous-development.yml --ref main
-          echo "FAILED_FLOOR_NEXT=DISPATCHED"
-          echo "PUBLIC_MAIN_RELEASE=NO"
-
-      - name: Summary
-        if: always()
-        run: |
-          echo "### Autonomous Continuous Development" >> "$GITHUB_STEP_SUMMARY"
-          echo "- mode: 24H_CONTINUOUS_DEPARTMENT_LOOP" >> "$GITHUB_STEP_SUMMARY"
-          echo "- department cycle: planning -> development -> graphics -> QA -> balance -> planning-final" >> "$GITHUB_STEP_SUMMARY"
-          echo "- completed DESIGN_BASELINE daily work cap: NONE" >> "$GITHUB_STEP_SUMMARY"
-          echo "- same game daily floor cap: NONE" >> "$GITHUB_STEP_SUMMARY"
-          echo "- successful candidate promotion dispatches the next floor immediately" >> "$GITHUB_STEP_SUMMARY"
-          echo "- recovery wake-up: HOURLY" >> "$GITHUB_STEP_SUMMARY"
-          echo "- public main write: NO" >> "$GITHUB_STEP_SUMMARY"
-          echo "- cash budget: 0" >> "$GITHUB_STEP_SUMMARY"
-          echo "- paid API: NO" >> "$GITHUB_STEP_SUMMARY"
-          echo "- worker model calls/run: max 2; departments use the same free local model" >> "$GITHUB_STEP_SUMMARY"
-          echo "- candidate promotion: explicit workflow_dispatch + separate independent QA" >> "$GITHUB_STEP_SUMMARY"
+          echo 'FAILED_FLOOR_NEXT=DISPATCHED'
+          echo 'PUBLIC_MAIN_RELEASE=NO'
