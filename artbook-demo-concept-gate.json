@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "updatedAt": "2026-09-08",
+  "version": 2,
+  "updatedAt": "2026-09-10",
   "policy": {
     "stage": "ARTBOOK_TO_PLAYABLE_DEMO_CONCEPT",
     "artbookIsBaseline": true,
@@ -29,7 +29,39 @@
     "mustMeetOrExceedBaselineEveryAxis": true,
     "challengerMustBeBetterOverall": true,
     "productionBlockedUntilPass": true,
-    "artbookFailureMayNotBePromoted": true
+    "artbookFailureMayNotBePromoted": true,
+    "feedbackContract": {
+      "requiredKeys": [
+        "DECISION",
+        "ROOT_CAUSE_CLASS",
+        "ROOT_CAUSE",
+        "EVIDENCE",
+        "UNITY_IMPLEMENTATION_NOTE",
+        "UNITY_ART_NOTE"
+      ],
+      "decisions": [
+        "KEEP",
+        "CHANGE",
+        "DROP",
+        "FIX_REQUIRED"
+      ],
+      "defectRootCauses": [
+        "VIBE2",
+        "ARTBOOK_GENERATION",
+        "VALIDATION_GATE",
+        "PROMPT_ASSEMBLY",
+        "DATA_BINDING",
+        "TOOL_CODE",
+        "TEST_GAP",
+        "IMPLEMENTATION_DEFECT",
+        "RUNTIME_DEFECT"
+      ],
+      "dropAllowedRootCauses": [
+        "DESIGN_REDUNDANT",
+        "GOAL_CONFLICT"
+      ],
+      "systemDefectMayNotBeDropped": true
+    }
   },
   "games": {
     "daechung-rpg": {
@@ -43,6 +75,7 @@
       "departmentReviews": {},
       "directorReview": null,
       "comparison": null,
+      "feedback": null,
       "productionApproval": false
     }
   }
