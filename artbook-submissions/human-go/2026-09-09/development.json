@@ -1,0 +1,168 @@
+{
+  "version": 6,
+  "gameId": "human-go",
+  "date": "2026-09-09",
+  "department": "development",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "휴먼 GO 1차 독립 아트북",
+  "evidence": [
+    {
+      "source": "web-games/human-go/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-human-go.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "implementedNow": "2장",
+    "architecture": "Image-centric 2장",
+    "prototypeLimits": "Unity 씬·프리팹·데이터·시스템",
+    "technicalRisks": "None",
+    "demoPlan": "2026-09-10",
+    "handoffs": "None"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "인물 도감: 인물의 전형적인 디자인과 성장 시스템을 기반으로 구축",
+      "관계도: 인물 간의 관계를 시각적으로 표현",
+      "성장 계보: 인물의 성장 과정을 시각적으로 시각화"
+    ],
+    "implementationPlan": [
+      "Unity 씬: 인물 도감과 관계도를 총 2장으로 구축",
+      "프리팹: 인물의 성장 시스템과 관련된 데이터를 구축",
+      "데이터: 인물의 성장 과정을 기반으로 데이터를 저장"
+    ],
+    "demoValidation": [
+      "2026-09-10: 시연 검증을 통해 인물의 성장 시스템을 확인"
+    ]
+  },
+  "unverified": [
+    "None"
+  ],
+  "cuts": [
+    {
+      "kind": "development",
+      "title": "휴먼 GO 1차 독립 아트북",
+      "body": "인물 도감과 성장 시스템은 Unity 씬로 구축 · 관계도는 프리팹으로 관계를 시각적으로 표현",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/development.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "development",
+        "ownerName": "개발",
+        "pageSlot": 1,
+        "visualType": "gameplay-loop",
+        "title": "휴먼 GO 1차 독립 아트북",
+        "focus": "Unity 씬·프리팹·데이터·시스템",
+        "caption": "플레이 루프와 시스템 연결을 흐름도로 보여준다.",
+        "elements": [
+          {
+            "label": "플레이 루프",
+            "note": "2장의 구현",
+            "kind": ""
+          },
+          {
+            "label": "시스템 연결",
+            "note": "2장의 구조",
+            "kind": ""
+          },
+          {
+            "label": "prototype",
+            "note": "Unity 씬 및 프리팹",
+            "kind": ""
+          }
+        ],
+        "callouts": [
+          "2026-09-10 예상 DEMO",
+          "None"
+        ],
+        "image": "artbook-submissions/human-go/2026-09-09/visuals/development-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "development"
+      },
+      {
+        "owner": "development",
+        "ownerName": "개발",
+        "pageSlot": 2,
+        "visualType": "system-flow",
+        "title": "휴먼 GO 2차 독립 아트북",
+        "focus": "Web 기반",
+        "caption": "새 설정을 위한 전략",
+        "elements": [
+          {
+            "label": "Web 기반",
+            "note": "2장의 구현",
+            "kind": ""
+          },
+          {
+            "label": "데이터",
+            "note": "프리팹 및 데이터",
+            "kind": ""
+          },
+          {
+            "label": "시스템",
+            "note": "Unity 씬 및 데이터",
+            "kind": ""
+          }
+        ],
+        "callouts": [
+          "None"
+        ],
+        "image": "artbook-submissions/human-go/2026-09-09/visuals/development-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "development"
+      }
+    ],
+    "generatedBy": {
+      "department": "development",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

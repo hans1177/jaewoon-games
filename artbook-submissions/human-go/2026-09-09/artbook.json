@@ -1,0 +1,1061 @@
+{
+  "version": 10,
+  "gameId": "human-go",
+  "gameName": "휴먼 GO",
+  "date": "2026-09-09",
+  "status": "COMPLETED",
+  "workMode": "INITIAL",
+  "initialArtbook": true,
+  "secondWorkArtbook": false,
+  "revisionArtbook": false,
+  "developmentUpgradeArtbook": false,
+  "releaseUpgradeArtbook": false,
+  "productionApproval": false,
+  "styleProfile": "인물 수집도감 + 성장 계보집",
+  "lifecycle": {
+    "documentType": "LIVING_GAME_DESIGN_ARTBOOK",
+    "state": "DESIGN_BASELINE",
+    "targetState": "DESIGN_BASELINE",
+    "trigger": "INITIAL_DESIGN",
+    "sourceArtbookId": null,
+    "currentBaseline": true,
+    "approved": true,
+    "approvedAt": "2026-09-09",
+    "createsNewVersion": true,
+    "overwriteApprovedVersion": false,
+    "historyPreserved": true
+  },
+  "departments": {
+    "planning": {
+      "status": "SUBMITTED",
+      "readiness": "READY",
+      "sourceFile": "artbook-submissions/human-go/2026-09-09/planning.json",
+      "headline": "휴먼 GO 1차 독립 아트북",
+      "evidence": [
+        {
+          "source": "web-games/human-go/index.html",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "artbook-work-orders/2026-09-09-human-go.json",
+          "usage": "department-work-order"
+        },
+        {
+          "source": "artbook-submissions/human-go/2026-09-09/vibe2-first-draft.json",
+          "usage": "vibe2-first-draft-proposal-reviewed-by-planning"
+        }
+      ],
+      "section": {
+        "worldEvidence": "현재 세계의 첫 문제와 마주친다 - 기존 방식으로 해결되지 않는 문제",
+        "protagonistMotivationEvidence": "핵심 목표를 이해하는 데 기초를 제공",
+        "regionCausality": "초기 지역에서 핵심 플레이 루프 확립",
+        "storyGameplayConnection": "다음 지역의 목표가 열린다 - 플레이 루프 확립",
+        "gaps": "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요",
+        "handoffs": "초기 지역에서 핵심 플레이 루프 확립"
+      },
+      "unverified": [
+        "핵심 목표를 이해하는 데 기초를 제공",
+        "초기 지역에서 핵심 플레이 루프 확립",
+        "중간 지역에서 갈등의 원인 추적 및 최종 결전 준비를 위한 시스템 구축 필요로 하기 위해 지역별 문제 해결을 분석하고 확정하기 위해 기존 근거를 재검토 필요로 하기"
+      ],
+      "revision": null
+    },
+    "graphics": {
+      "status": "SUBMITTED",
+      "readiness": "READY",
+      "sourceFile": "artbook-submissions/human-go/2026-09-09/graphics.json",
+      "headline": "휴먼 GO 독립 아트북",
+      "evidence": [
+        {
+          "source": "web-games/human-go/index.html",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "artbook-work-orders/2026-09-09-human-go.json",
+          "usage": "department-work-order"
+        }
+      ],
+      "section": {
+        "currentVisualEvidence": "사진을 기반으로 창작된 인물 도감과 배경을 구성합니다.",
+        "identityDirection": "인물 도감, 관계도, 성장 계보, 조합 시너지, 수집 동기 등을 중심으로.",
+        "characterMonsterEnvironmentLogic": "캐릭터와 몬스터의 관계를 통해 성장 시스템을 구축합니다.",
+        "mobileReadability": "웹 라우트에서 이미지 기반으로 제출합니다.",
+        "assetConstraints": "사진 기반으로 창작된 인물 도감과 배경을 제출합니다.",
+        "gaps": "사진 기반으로 창작된 인물 도감과 배경을 제출합니다.",
+        "handoffs": "사진 기반으로 창작된 인물 도감과 배경을 제출합니다."
+      },
+      "unverified": [
+        "인물 도감: 캐릭터의 성장 과정을 기반으로 한 도감을 제작합니다.",
+        "관계도: 캐릭터 간의 관계를 기반으로 한 도감을 제작합니다."
+      ],
+      "revision": null
+    },
+    "development": {
+      "status": "SUBMITTED",
+      "readiness": "READY",
+      "sourceFile": "artbook-submissions/human-go/2026-09-09/development.json",
+      "headline": "휴먼 GO 1차 독립 아트북",
+      "evidence": [
+        {
+          "source": "web-games/human-go/index.html",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "artbook-work-orders/2026-09-09-human-go.json",
+          "usage": "department-work-order"
+        }
+      ],
+      "section": {
+        "implementedNow": "2장",
+        "architecture": "Image-centric 2장",
+        "prototypeLimits": "Unity 씬·프리팹·데이터·시스템",
+        "technicalRisks": "None",
+        "demoPlan": "2026-09-10",
+        "handoffs": "None"
+      },
+      "unverified": [
+        "None"
+      ],
+      "revision": null
+    },
+    "qa": {
+      "status": "SUBMITTED",
+      "readiness": "READY",
+      "sourceFile": "artbook-submissions/human-go/2026-09-09/qa.json",
+      "headline": "휴먼 GO 아트북 1차 독립 작업",
+      "evidence": [
+        {
+          "source": "web-games/human-go/index.html",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "artbook-work-orders/2026-09-09-human-go.json",
+          "usage": "department-work-order"
+        }
+      ],
+      "section": {
+        "currentPlayableFlow": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+        "verifiedEvidence": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+        "problemScenes": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+        "mobileSaveErrorRisks": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+        "testScenarios": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+        "unverified": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+        "handoffs": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계"
+      },
+      "unverified": [
+        "인물 도감: 플레이 흐름 중 인물의 도감을 통해 그의 성격과 역할을 표현",
+        "관계도: 플레이 흐름 중 인물 간의 관계를 통해 그의 관계를 파악",
+        "성장 계보: 플레이 흐름 중 인물의 성장 과정을 통해 그의 성장 계획을 정의하기 위해 계보를 추가함"
+      ],
+      "revision": null
+    },
+    "balance": {
+      "status": "SUBMITTED",
+      "readiness": "NEEDS_VALIDATION",
+      "sourceFile": "artbook-submissions/human-go/2026-09-09/balance.json",
+      "headline": "AI-generated",
+      "evidence": [
+        {
+          "source": "web-games/human-go/index.html",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "artbook-work-orders/2026-09-09-human-go.json",
+          "usage": "department-work-order"
+        }
+      ],
+      "section": {
+        "currentNumbers": ":[{",
+        "progressionCurve": "linear",
+        "combatFeel": "none",
+        "economyRewards": "none",
+        "difficultyTransitions": "none",
+        "testMeasurements": "none",
+        "handoffs": "none"
+      },
+      "unverified": [],
+      "revision": null
+    }
+  },
+  "departmentOpinions": {
+    "planning": {
+      "headline": "휴먼 GO 1차 독립 아트북",
+      "readiness": "READY",
+      "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+      "averageStars": 5,
+      "maxStars": 5,
+      "reviewsReceived": 5,
+      "departmentVotes": 4,
+      "directorVotes": 1,
+      "priorityImprovement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+      "priorityImprovementFrom": "graphics",
+      "ratings": [
+        {
+          "reviewerDepartment": "graphics",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "development",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본 부서 결과물의 개선점은 '핵심 목표를 이해하는 데 기초를 제공'과 '초기 지역에서 핵심 플레이 루프 확립'을 강화하여 부상률을 높일 수 있습니다."
+        },
+        {
+          "reviewerDepartment": "qa",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "balance",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "director",
+          "reviewerType": "director",
+          "stars": 5,
+          "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        }
+      ],
+      "overallDepartmentAverage": 4.92,
+      "secondWorkSameDay": false,
+      "secondWorkDueDate": null,
+      "unverified": [
+        "핵심 목표를 이해하는 데 기초를 제공",
+        "초기 지역에서 핵심 플레이 루프 확립",
+        "중간 지역에서 갈등의 원인 추적 및 최종 결전 준비를 위한 시스템 구축 필요로 하기 위해 지역별 문제 해결을 분석하고 확정하기 위해 기존 근거를 재검토 필요로 하기"
+      ]
+    },
+    "graphics": {
+      "headline": "휴먼 GO 독립 아트북",
+      "readiness": "READY",
+      "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+      "averageStars": 4.8,
+      "maxStars": 5,
+      "reviewsReceived": 5,
+      "departmentVotes": 4,
+      "directorVotes": 1,
+      "priorityImprovement": "사진 기반으로 창작된 인물 도감과 배경을 제출하지 않으면, 인물 도감의 성장 시스템 구축을 더 복잡하게 만들 수 있습니다.",
+      "priorityImprovementFrom": "director",
+      "ratings": [
+        {
+          "reviewerDepartment": "director",
+          "reviewerType": "director",
+          "stars": 4,
+          "improvement": "사진 기반으로 창작된 인물 도감과 배경을 제출하지 않으면, 인물 도감의 성장 시스템 구축을 더 복잡하게 만들 수 있습니다."
+        },
+        {
+          "reviewerDepartment": "planning",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본부 결과물의 기술적 품질과 구조를 강화하여 콘텐츠의 풍부함을 유지할 수 있습니다."
+        },
+        {
+          "reviewerDepartment": "development",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본부에서의 개선점은 '인물 도감: 캐릭터의 성장 과정을 기반으로 한 도감을 제작합니다.'"
+        },
+        {
+          "reviewerDepartment": "qa",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+        },
+        {
+          "reviewerDepartment": "balance",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본부 결과물은 캐릭터와 몬스터의 관계를 통해 성장 시스템을 구축하는 기능을 강화했으며, 풍부한 내용을 제공했습니다."
+        }
+      ],
+      "overallDepartmentAverage": 4.92,
+      "secondWorkSameDay": true,
+      "secondWorkDueDate": "2026-09-09",
+      "unverified": [
+        "인물 도감: 캐릭터의 성장 과정을 기반으로 한 도감을 제작합니다.",
+        "관계도: 캐릭터 간의 관계를 기반으로 한 도감을 제작합니다."
+      ]
+    },
+    "development": {
+      "headline": "휴먼 GO 1차 독립 아트북",
+      "readiness": "READY",
+      "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+      "averageStars": 5,
+      "maxStars": 5,
+      "reviewsReceived": 5,
+      "departmentVotes": 4,
+      "directorVotes": 1,
+      "priorityImprovement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+      "priorityImprovementFrom": "planning",
+      "ratings": [
+        {
+          "reviewerDepartment": "planning",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "graphics",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "qa",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "balance",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본부 결과물은 개발팀의 기능 구현을 잘 설명하고 있으며, 다만 품질점수가 아닌 부서 결과물의 이번 검토 점수를 기준으로 평가합니다."
+        },
+        {
+          "reviewerDepartment": "director",
+          "reviewerType": "director",
+          "stars": 5,
+          "improvement": "부서 결과물의 개선점은 '1차 독립 아트북'의 내용을 더 구체적으로 설명할 수 있습니다."
+        }
+      ],
+      "overallDepartmentAverage": 4.92,
+      "secondWorkSameDay": false,
+      "secondWorkDueDate": null,
+      "unverified": [
+        "None"
+      ]
+    },
+    "qa": {
+      "headline": "휴먼 GO 아트북 1차 독립 작업",
+      "readiness": "READY",
+      "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+      "averageStars": 5,
+      "maxStars": 5,
+      "reviewsReceived": 5,
+      "departmentVotes": 4,
+      "directorVotes": 1,
+      "priorityImprovement": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+      "priorityImprovementFrom": "planning",
+      "ratings": [
+        {
+          "reviewerDepartment": "planning",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계"
+        },
+        {
+          "reviewerDepartment": "graphics",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계"
+        },
+        {
+          "reviewerDepartment": "development",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계"
+        },
+        {
+          "reviewerDepartment": "balance",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계"
+        },
+        {
+          "reviewerDepartment": "director",
+          "reviewerType": "director",
+          "stars": 5,
+          "improvement": "부서 결과물의 품질을 높이고, 보완점은 '플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계'를 추가합니다."
+        }
+      ],
+      "overallDepartmentAverage": 4.92,
+      "secondWorkSameDay": false,
+      "secondWorkDueDate": null,
+      "unverified": [
+        "인물 도감: 플레이 흐름 중 인물의 도감을 통해 그의 성격과 역할을 표현",
+        "관계도: 플레이 흐름 중 인물 간의 관계를 통해 그의 관계를 파악",
+        "성장 계보: 플레이 흐름 중 인물의 성장 과정을 통해 그의 성장 계획을 정의하기 위해 계보를 추가함"
+      ]
+    },
+    "balance": {
+      "headline": "AI-generated",
+      "readiness": "NEEDS_VALIDATION",
+      "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+      "averageStars": 4.8,
+      "maxStars": 5,
+      "reviewsReceived": 5,
+      "departmentVotes": 4,
+      "directorVotes": 1,
+      "priorityImprovement": "부서 결과물의 내용을 보완하고, 별점 4점으로 작성",
+      "priorityImprovementFrom": "director",
+      "ratings": [
+        {
+          "reviewerDepartment": "director",
+          "reviewerType": "director",
+          "stars": 4,
+          "improvement": "부서 결과물의 내용을 보완하고, 별점 4점으로 작성"
+        },
+        {
+          "reviewerDepartment": "planning",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "The review is focused on the AI-generated section, but it could be improved by adding more details on how the AI's effectiveness is validated."
+        },
+        {
+          "reviewerDepartment": "graphics",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+        },
+        {
+          "reviewerDepartment": "development",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본 부서 결과물의 개선점은 'AI-generated' 타겟과 'NEEDS_VALIDATION' 수준을 더 명확하게 설명할 수 있습니다."
+        },
+        {
+          "reviewerDepartment": "qa",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+        }
+      ],
+      "overallDepartmentAverage": 4.92,
+      "secondWorkSameDay": true,
+      "secondWorkDueDate": "2026-09-09",
+      "unverified": []
+    }
+  },
+  "ratingSummary": {
+    "scale": "STARS_1_TO_5",
+    "ratingsPerDepartment": 5,
+    "departmentVotesPerResult": 4,
+    "directorVotesPerResult": 1,
+    "departmentAverageStars": {
+      "planning": 5,
+      "graphics": 4.8,
+      "development": 5,
+      "qa": 5,
+      "balance": 4.8
+    },
+    "overallAverageStars": 4.92,
+    "secondWorkCriterion": "DEPARTMENT_AVERAGE_OR_BELOW_OVERALL_AVERAGE",
+    "secondWorkDepartments": [
+      "graphics",
+      "balance"
+    ],
+    "secondWorkDueDate": "2026-09-09"
+  },
+  "collaboration": {
+    "protocol": "PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5",
+    "departmentReviews": {
+      "planning": {
+        "sourceFile": "artbook-submissions/human-go/2026-09-09/reviews/planning.json",
+        "protocol": "PEER_IMPROVEMENT_STAR_5",
+        "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+        "reviewedDepartments": [
+          "graphics",
+          "development",
+          "qa",
+          "balance"
+        ],
+        "peerReviews": [
+          {
+            "targetDepartment": "graphics",
+            "improvement": "본부 결과물의 기술적 품질과 구조를 강화하여 콘텐츠의 풍부함을 유지할 수 있습니다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "development",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "qa",
+            "improvement": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "balance",
+            "improvement": "The review is focused on the AI-generated section, but it could be improved by adding more details on how the AI's effectiveness is validated.",
+            "stars": 5
+          }
+        ]
+      },
+      "graphics": {
+        "sourceFile": "artbook-submissions/human-go/2026-09-09/reviews/graphics.json",
+        "protocol": "PEER_IMPROVEMENT_STAR_5",
+        "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+        "reviewedDepartments": [
+          "planning",
+          "development",
+          "qa",
+          "balance"
+        ],
+        "peerReviews": [
+          {
+            "targetDepartment": "planning",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "development",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "qa",
+            "improvement": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "balance",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다.",
+            "stars": 5
+          }
+        ]
+      },
+      "development": {
+        "sourceFile": "artbook-submissions/human-go/2026-09-09/reviews/development.json",
+        "protocol": "PEER_IMPROVEMENT_STAR_5",
+        "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+        "reviewedDepartments": [
+          "planning",
+          "graphics",
+          "qa",
+          "balance"
+        ],
+        "peerReviews": [
+          {
+            "targetDepartment": "planning",
+            "improvement": "본 부서 결과물의 개선점은 '핵심 목표를 이해하는 데 기초를 제공'과 '초기 지역에서 핵심 플레이 루프 확립'을 강화하여 부상률을 높일 수 있습니다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "graphics",
+            "improvement": "본부에서의 개선점은 '인물 도감: 캐릭터의 성장 과정을 기반으로 한 도감을 제작합니다.'",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "qa",
+            "improvement": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "balance",
+            "improvement": "본 부서 결과물의 개선점은 'AI-generated' 타겟과 'NEEDS_VALIDATION' 수준을 더 명확하게 설명할 수 있습니다.",
+            "stars": 5
+          }
+        ]
+      },
+      "qa": {
+        "sourceFile": "artbook-submissions/human-go/2026-09-09/reviews/qa.json",
+        "protocol": "PEER_IMPROVEMENT_STAR_5",
+        "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+        "reviewedDepartments": [
+          "planning",
+          "graphics",
+          "development",
+          "balance"
+        ],
+        "peerReviews": [
+          {
+            "targetDepartment": "planning",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "graphics",
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "development",
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "balance",
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다.",
+            "stars": 5
+          }
+        ]
+      },
+      "balance": {
+        "sourceFile": "artbook-submissions/human-go/2026-09-09/reviews/balance.json",
+        "protocol": "PEER_IMPROVEMENT_STAR_5",
+        "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+        "reviewedDepartments": [
+          "planning",
+          "graphics",
+          "development",
+          "qa"
+        ],
+        "peerReviews": [
+          {
+            "targetDepartment": "planning",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "graphics",
+            "improvement": "본부 결과물은 캐릭터와 몬스터의 관계를 통해 성장 시스템을 구축하는 기능을 강화했으며, 풍부한 내용을 제공했습니다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "development",
+            "improvement": "본부 결과물은 개발팀의 기능 구현을 잘 설명하고 있으며, 다만 품질점수가 아닌 부서 결과물의 이번 검토 점수를 기준으로 평가합니다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "qa",
+            "improvement": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+            "stars": 5
+          }
+        ]
+      }
+    },
+    "directorReview": {
+      "sourceFile": "artbook-submissions/human-go/2026-09-09/reviews/director.json",
+      "protocol": "DIRECTOR_IMPROVEMENT_STAR_5",
+      "reviewScope": "ALL_FIVE_DEPARTMENT_RESULTS",
+      "ratings": [
+        {
+          "targetDepartment": "planning",
+          "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+          "stars": 5
+        },
+        {
+          "targetDepartment": "graphics",
+          "improvement": "사진 기반으로 창작된 인물 도감과 배경을 제출하지 않으면, 인물 도감의 성장 시스템 구축을 더 복잡하게 만들 수 있습니다.",
+          "stars": 4
+        },
+        {
+          "targetDepartment": "development",
+          "improvement": "부서 결과물의 개선점은 '1차 독립 아트북'의 내용을 더 구체적으로 설명할 수 있습니다.",
+          "stars": 5
+        },
+        {
+          "targetDepartment": "qa",
+          "improvement": "부서 결과물의 품질을 높이고, 보완점은 '플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계'를 추가합니다.",
+          "stars": 5
+        },
+        {
+          "targetDepartment": "balance",
+          "improvement": "부서 결과물의 내용을 보완하고, 별점 4점으로 작성",
+          "stars": 4
+        }
+      ]
+    },
+    "sourceFiles": [
+      "artbook-submissions/human-go/2026-09-09/reviews/planning.json",
+      "artbook-submissions/human-go/2026-09-09/reviews/graphics.json",
+      "artbook-submissions/human-go/2026-09-09/reviews/development.json",
+      "artbook-submissions/human-go/2026-09-09/reviews/qa.json",
+      "artbook-submissions/human-go/2026-09-09/reviews/balance.json",
+      "artbook-submissions/human-go/2026-09-09/reviews/director.json"
+    ],
+    "allFiveDepartmentsReviewed": true,
+    "homepageOpinionMode": "IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS"
+  },
+  "directorSummary": {
+    "assemblyMode": "department-material-plus-director-rating-plus-deterministic-five-vote-aggregation",
+    "sourceDepartments": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "balance"
+    ],
+    "sourceFiles": [
+      "artbook-submissions/human-go/2026-09-09/planning.json",
+      "artbook-submissions/human-go/2026-09-09/graphics.json",
+      "artbook-submissions/human-go/2026-09-09/development.json",
+      "artbook-submissions/human-go/2026-09-09/qa.json",
+      "artbook-submissions/human-go/2026-09-09/balance.json"
+    ],
+    "reviewFiles": [
+      "artbook-submissions/human-go/2026-09-09/reviews/planning.json",
+      "artbook-submissions/human-go/2026-09-09/reviews/graphics.json",
+      "artbook-submissions/human-go/2026-09-09/reviews/development.json",
+      "artbook-submissions/human-go/2026-09-09/reviews/qa.json",
+      "artbook-submissions/human-go/2026-09-09/reviews/balance.json",
+      "artbook-submissions/human-go/2026-09-09/reviews/director.json"
+    ],
+    "readinessSummary": {
+      "planning": "READY",
+      "graphics": "READY",
+      "development": "READY",
+      "qa": "READY",
+      "balance": "NEEDS_VALIDATION"
+    },
+    "newDepartmentClaimsAdded": false,
+    "productionDecisionMade": false
+  },
+  "cuts": [
+    {
+      "no": 1,
+      "kind": "director",
+      "title": "휴먼 GO 1차 독립 아트북",
+      "body": "플레이 흐름과 문제 해결을 이미지 중심으로",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/director-cover.svg",
+      "sourceDepartment": "director",
+      "pageType": "cover",
+      "visualType": "game-concept-cover",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 2,
+      "kind": "vibe2",
+      "title": "오프닝",
+      "body": "핵심 목표를 이해한다 — 더 큰 갈등의 단서를 얻는다 · 시작 지역: 현재 세계의 첫 문제와 마주친다 → 기본 행동으로 첫 문제를 해결한다 → 더 큰 갈등의 단…",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/vibe2-draft-1.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 3,
+      "kind": "vibe2",
+      "title": "초반",
+      "body": "핵심 플레이 루프를 확립한다 — 다음 지역의 목표가 열린다 · 초기 지역: 첫 성공 뒤 새로운 장애물이 등장한다 → 기본 능력과 자원을 활용한다 → 다음 지역의…",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/vibe2-draft-2.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 4,
+      "kind": "vibe2",
+      "title": "중반",
+      "body": "갈등의 원인을 추적한다 — 최종 갈등의 주체가 드러난다 · 중간 지역: 기존 방식으로 해결되지 않는 문제가 커진다 → 새 시스템과 선택을 활용한다 → 최종 갈등…",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/vibe2-draft-3.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 5,
+      "kind": "vibe2",
+      "title": "후반",
+      "body": "최종 결전을 준비한다 — 최종 지역 진입 조건을 얻는다 · 후반 지역: 주요 세력의 충돌이 최고조에 이른다 → 축적한 성장 요소를 결집한다 → 최종 지역 진입 …",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/vibe2-draft-4.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 6,
+      "kind": "vibe2",
+      "title": "최종보스",
+      "body": "핵심 갈등을 끝낸다 — 세계 상태가 결정적으로 변화한다 · 최종 지역: 최종 적이 목표 달성을 직접 막는다 → 게임 전체에서 익힌 수단을 활용해 결전을 치른다 …",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/vibe2-draft-5.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 7,
+      "kind": "vibe2",
+      "title": "엔딩",
+      "body": "승리 이후의 선택을 마무리한다 — 본편 종료와 다음 목표가 연결된다 · 결말 지역: 핵심 갈등은 끝났지만 후속 문제가 남는다 → 남은 관계와 목표를 정리한다 →…",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/vibe2-draft-6.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 8,
+      "kind": "vibe2",
+      "title": "지역 흐름",
+      "body": "시작 지역 → 초기 지역 → 중간 지역 → 후반 지역 → 최종 지역 → 결말 지역 · 시작 지역 → 초기 지역: 더 큰 갈등의 단서를 얻는다 / 해금 핵심 플레…",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/vibe2-draft-7.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 9,
+      "kind": "vibe2",
+      "title": "메인 퀘스트",
+      "body": "OPENING/시작 지역: 핵심 목표를 이해한다 · 현재 세계의 첫 문제와 마주친다 → 기본 행동으로 첫 문제를 해결한다 → 더 큰 갈등의 단서를 얻는다 → 초…",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/vibe2-draft-8.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 10,
+      "kind": "planning",
+      "title": "휴먼 GO 1차 독립 아트북",
+      "body": "이전 방식의 문제를 해결하기 위한 첫 단계입니다.",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/planning-1.svg",
+      "sourceDepartment": "planning",
+      "pageType": "department-visual",
+      "visualType": "world-map",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 11,
+      "kind": "planning",
+      "title": "휴먼 GO 2차 독립 아트북",
+      "body": "플레이 루프를 확장하고, 목표를 더 깊이 이해합니다.",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/planning-2.svg",
+      "sourceDepartment": "planning",
+      "pageType": "department-visual",
+      "visualType": "story-flow",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 12,
+      "kind": "graphics",
+      "title": "휴먼 GO 독립 아트북",
+      "body": "인물 도감: 캐릭터의 성장 과정을 기반으로 한 도감을 제작합니다.",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/graphics-1.svg",
+      "sourceDepartment": "graphics",
+      "pageType": "department-visual",
+      "visualType": "concept-board",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 13,
+      "kind": "graphics",
+      "title": "인물 도감: 캐릭터의 성장 과정…",
+      "body": "인물 도감: 캐릭터의 성장 과정을 기반으로 한 도감을 제작합니다.",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/graphics-2.svg",
+      "sourceDepartment": "graphics",
+      "pageType": "department-visual",
+      "visualType": "style-board",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 14,
+      "kind": "development",
+      "title": "휴먼 GO 1차 독립 아트북",
+      "body": "플레이 루프와 시스템 연결을 흐름도로 보여준다.",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/development-1.svg",
+      "sourceDepartment": "development",
+      "pageType": "department-visual",
+      "visualType": "gameplay-loop",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 15,
+      "kind": "development",
+      "title": "휴먼 GO 2차 독립 아트북",
+      "body": "새 설정을 위한 전략",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/development-2.svg",
+      "sourceDepartment": "development",
+      "pageType": "department-visual",
+      "visualType": "system-flow",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 16,
+      "kind": "qa",
+      "title": "휴먼 GO 아트북 1차 독립 작업",
+      "body": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/qa-1.svg",
+      "sourceDepartment": "qa",
+      "pageType": "department-visual",
+      "visualType": "test-journey",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 17,
+      "kind": "balance",
+      "title": "AI-generated",
+      "body": "AI-generated",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/balance-1.svg",
+      "sourceDepartment": "balance",
+      "pageType": "department-visual",
+      "visualType": "balance-curve",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 18,
+      "kind": "director",
+      "title": "휴먼 GO 1차 독립 아트북",
+      "body": "플레이 흐름과 문제 해결을 이미지 중심으로",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/director-summary.svg",
+      "sourceDepartment": "director",
+      "pageType": "summary",
+      "visualType": "department-summary",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    }
+  ],
+  "publication": {
+    "automaticProductionApproval": false,
+    "homepageVisibilityMayBeEnabledSeparately": true,
+    "displayReady": true,
+    "departmentOpinionsRequired": true,
+    "fiveVoteRatingsRequired": true,
+    "requiredCuts": 18,
+    "exactCutCountRequired": true,
+    "minCuts": 12,
+    "maxCuts": 30,
+    "postprocessRequired": true,
+    "postprocessComplete": true,
+    "homepageMode": "compact-card-detail-viewer"
+  },
+  "vibe2FirstDraft": {
+    "sourceFile": "artbook-submissions/human-go/2026-09-09/vibe2-first-draft.json",
+    "status": "FIRST_DRAFT_READY",
+    "proposalOnly": true,
+    "pageCount": 8
+  },
+  "presentation": {
+    "mode": "VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_AUTHORED",
+    "directorSource": "artbook-submissions/human-go/2026-09-09/presentation/director-presentation.json",
+    "departmentPageCounts": {
+      "planning": 2,
+      "graphics": 2,
+      "development": 2,
+      "qa": 1,
+      "balance": 1
+    },
+    "vibe2DraftPages": 8,
+    "employeeAuthoredPages": 10,
+    "assistantAuthored": false
+  },
+  "postprocess": {
+    "version": 6,
+    "complete": true,
+    "checkedAt": "2026-09-09T06:42:17.754Z",
+    "requiredCuts": 18,
+    "cutCount": 18,
+    "pagePolicy": {
+      "min": 12,
+      "default": 16,
+      "max": 30,
+      "target": 18,
+      "legacyTenPageCompatible": true
+    },
+    "pagePlan": [
+      "director",
+      "Vibe2:오프닝",
+      "Vibe2:초반",
+      "Vibe2:중반",
+      "Vibe2:후반",
+      "Vibe2:최종보스",
+      "Vibe2:엔딩",
+      "Vibe2:지역 흐름",
+      "Vibe2:메인 퀘스트",
+      "planning",
+      "planning",
+      "graphics",
+      "graphics",
+      "development",
+      "development",
+      "qa",
+      "balance",
+      "director"
+    ],
+    "cutsPerDepartment": {
+      "planning": 2,
+      "graphics": 2,
+      "development": 2,
+      "qa": 1,
+      "balance": 1,
+      "director": 2,
+      "vibe2": 8
+    },
+    "formatChecked": true,
+    "emptyContentChecked": true,
+    "uniqueVisualsChecked": true,
+    "imagePathsChecked": true,
+    "newClaimsAdded": false,
+    "sourceMode": "VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_OWNED_VISUAL_PAGES_PLUS_DIRECTOR_PRESENTATION",
+    "assistantAuthorship": false,
+    "vibe2DraftAuthorship": true,
+    "imageFirst": true,
+    "shortText": true,
+    "displayLanguage": "ko"
+  }
+}

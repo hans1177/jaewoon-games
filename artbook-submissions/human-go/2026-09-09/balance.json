@@ -1,0 +1,148 @@
+{
+  "version": 6,
+  "gameId": "human-go",
+  "date": "2026-09-09",
+  "department": "balance",
+  "status": "SUBMITTED",
+  "departmentReadiness": "NEEDS_VALIDATION",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "AI-generated",
+  "evidence": [
+    {
+      "source": "web-games/human-go/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-human-go.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentNumbers": ":[{",
+    "progressionCurve": "linear",
+    "combatFeel": "none",
+    "economyRewards": "none",
+    "difficultyTransitions": "none",
+    "testMeasurements": "none",
+    "handoffs": "none"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "AI-generated",
+      "AI-assisted",
+      "AI-optimized"
+    ],
+    "implementationPlan": [
+      "AI-assisted",
+      "AI-optimized"
+    ],
+    "demoValidation": [
+      "AI-generated",
+      "AI-assisted",
+      "AI-optimized"
+    ]
+  },
+  "unverified": [],
+  "cuts": [
+    {
+      "kind": "balance",
+      "title": "AI-generated",
+      "body": "AI-generated · AI-assisted · AI-optimized",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/balance.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 1,
+    "pages": [
+      {
+        "owner": "balance",
+        "ownerName": "밸런스",
+        "pageSlot": 1,
+        "visualType": "balance-curve",
+        "title": "AI-generated",
+        "focus": "AI-generated",
+        "caption": "AI-generated",
+        "elements": [
+          {
+            "label": "balance-cur…",
+            "note": "AI-generated balanc…",
+            "kind": ""
+          },
+          {
+            "label": "progression…",
+            "note": "AI-generated progre…",
+            "kind": ""
+          },
+          {
+            "label": "combatFeel",
+            "note": "AI-generated combat…",
+            "kind": ""
+          },
+          {
+            "label": "economyRewa…",
+            "note": "AI-generated econom…",
+            "kind": ""
+          },
+          {
+            "label": "difficultyT…",
+            "note": "AI-generated diffic…",
+            "kind": ""
+          },
+          {
+            "label": "testMeasure…",
+            "note": "AI-generated test m…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/human-go/2026-09-09/visuals/balance-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "balance"
+      }
+    ],
+    "generatedBy": {
+      "department": "balance",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

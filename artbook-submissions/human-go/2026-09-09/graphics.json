@@ -1,0 +1,166 @@
+{
+  "version": 6,
+  "gameId": "human-go",
+  "date": "2026-09-09",
+  "department": "graphics",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "휴먼 GO 독립 아트북",
+  "evidence": [
+    {
+      "source": "web-games/human-go/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-human-go.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentVisualEvidence": "사진을 기반으로 창작된 인물 도감과 배경을 구성합니다.",
+    "identityDirection": "인물 도감, 관계도, 성장 계보, 조합 시너지, 수집 동기 등을 중심으로.",
+    "characterMonsterEnvironmentLogic": "캐릭터와 몬스터의 관계를 통해 성장 시스템을 구축합니다.",
+    "mobileReadability": "웹 라우트에서 이미지 기반으로 제출합니다.",
+    "assetConstraints": "사진 기반으로 창작된 인물 도감과 배경을 제출합니다.",
+    "gaps": "사진 기반으로 창작된 인물 도감과 배경을 제출합니다.",
+    "handoffs": "사진 기반으로 창작된 인물 도감과 배경을 제출합니다."
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "인물 도감: 캐릭터의 성장 과정을 기반으로 한 도감을 제작합니다.",
+      "관계도: 캐릭터 간의 관계를 기반으로 한 도감을 제작합니다.",
+      "성장 계보: 캐릭터의 성장 과정을 기반으로 한 도감을 제작합니다."
+    ],
+    "implementationPlan": [
+      "인물 도감: 캐릭터의 성장 과정을 기반으로 한 도감을 제작합니다.",
+      "관계도: 캐릭터 간의 관계를 기반으로 한 도감을 제작합니다.",
+      "성장 계보: 캐릭터의 성장 과정을 기반으로 한 도감을 제작합니다."
+    ],
+    "demoValidation": [
+      "인물 도감: 캐릭터의 성장 과정을 기반으로 한 도감을 제작합니다.",
+      "관계도: 캐릭터 간의 관계를 기반으로 한 도감을 제작합니다."
+    ]
+  },
+  "unverified": [
+    "인물 도감: 캐릭터의 성장 과정을 기반으로 한 도감을 제작합니다.",
+    "관계도: 캐릭터 간의 관계를 기반으로 한 도감을 제작합니다."
+  ],
+  "cuts": [
+    {
+      "kind": "graphics",
+      "title": "휴먼 GO 독립 아트북",
+      "body": "인물 도감: 캐릭터의 성장 과정을 기반으로 한 도감을 제작합니다. · 관계도: 캐릭터 간의 관계를 기반으로 한 도감을 제작합니다.",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/graphics.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "graphics",
+        "ownerName": "그래픽",
+        "pageSlot": 1,
+        "visualType": "concept-board",
+        "title": "휴먼 GO 독립 아트북",
+        "focus": "사진 기반으로 창작된 인물 도감과 배경을 제출합니…",
+        "caption": "인물 도감: 캐릭터의 성장 과정을 기반으로 한 도감을 제작합니다.",
+        "elements": [
+          {
+            "label": "인물 도감",
+            "note": "캐릭터의 성장 과정을 기반으로 한 …",
+            "kind": ""
+          },
+          {
+            "label": "관계도",
+            "note": "캐릭터 간의 관계를 기반으로 한 도…",
+            "kind": ""
+          },
+          {
+            "label": "배경",
+            "note": "사진 기반으로 창작된 배경을 제출합…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/human-go/2026-09-09/visuals/graphics-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "graphics"
+      },
+      {
+        "owner": "graphics",
+        "ownerName": "그래픽",
+        "pageSlot": 2,
+        "visualType": "style-board",
+        "title": "인물 도감: 캐릭터의 성장 과정…",
+        "focus": "인물 도감: 캐릭터의 성장 과정을 기반으로 한 도…",
+        "caption": "인물 도감: 캐릭터의 성장 과정을 기반으로 한 도감을 제작합니다.",
+        "elements": [
+          {
+            "label": "인물 도감",
+            "note": "캐릭터의 성장 과정을 기반으로 한 …",
+            "kind": ""
+          },
+          {
+            "label": "관계도",
+            "note": "캐릭터 간의 관계를 기반으로 한 도…",
+            "kind": ""
+          },
+          {
+            "label": "배경",
+            "note": "사진 기반으로 창작된 배경을 제출합…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/human-go/2026-09-09/visuals/graphics-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "graphics"
+      }
+    ],
+    "generatedBy": {
+      "department": "graphics",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}
