@@ -467,12 +467,12 @@ jobs:
             const scope=String(process.env.OWNED_SCOPE||'').split(',').filter(Boolean);
             if(scope.length&&e.changedFiles.some(x=>!scope.includes(x)))throw new Error('department changed outside owned scope');
             fs.writeFileSync(`${root}/status.json`,JSON.stringify({role:process.env.ROLE,status:'PASS',scope,candidateId:e.candidateId,changedFiles:e.changedFiles},null,2)+'\n');
-            NODE
+          NODE
           else
             ROLE="$ROLE" node <<'NODE'
             const fs=require('fs');const root=`department-implementations/${process.env.ROLE}`;
             fs.writeFileSync(`${root}/status.json`,JSON.stringify({role:process.env.ROLE,status:'NO_SCOPE',reason:'NO_DISJOINT_RESPONSIBILITY_FILE_FOR_THIS_FLOOR',scope:[]},null,2)+'\n');
-            NODE
+          NODE
           fi
       - name: Upload isolated implementation workspace
         uses: actions/upload-artifact@v4

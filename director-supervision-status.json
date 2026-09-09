@@ -3,7 +3,7 @@
   "dateKst": "2026-09-09",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
-  "activeDevelopmentRunId": 34345425577,
+  "activeDevelopmentRunId": 34346448804,
   "checks": {
     "staffChecked": "8/8",
     "activeWorkOrder": "artbook-work-orders/2026-09-09-daechung-rpg.json",
@@ -20,36 +20,30 @@
   },
   "counts": {
     "WORKING": 1,
-    "DONE": 1,
+    "DONE": 6,
     "IDLE_NO_TASK": 1,
     "BLOCKED": 0,
-    "FAILED": 5,
+    "FAILED": 0,
     "STALE": 0
   },
   "liveStates": {
     "ACTIVE": 1,
     "WAITING": 1,
-    "BLOCKED": 5,
-    "DONE": 1
+    "BLOCKED": 0,
+    "DONE": 6
   },
-  "attentionRequired": true,
-  "primaryFindings": [
-    "planning:AUTONOMOUS_DEPARTMENT_JOB_FAILED",
-    "development:AUTONOMOUS_DEPARTMENT_JOB_FAILED",
-    "qa:AUTONOMOUS_DEPARTMENT_JOB_FAILED",
-    "graphics:AUTONOMOUS_DEPARTMENT_JOB_FAILED",
-    "balance:AUTONOMOUS_DEPARTMENT_JOB_FAILED"
-  ],
+  "attentionRequired": false,
+  "primaryFindings": [],
   "workflowEvidence": {
     "artbook": null,
     "autonomousDevelopment": {
-      "id": 34345425577,
+      "id": 34346448804,
       "status": "completed",
       "conclusion": "failure",
       "event": "push",
-      "createdAt": "2026-09-09T11:24:58Z",
-      "updatedAt": "2026-09-09T11:27:34Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34345425577"
+      "createdAt": "2026-09-09T11:36:20Z",
+      "updatedAt": "2026-09-09T11:48:17Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34346448804"
     },
     "homepage": null,
     "publicGameHealth": null,
@@ -60,167 +54,137 @@
     "planning": {
       "department": "planning",
       "taskAssigned": true,
-      "status": "FAILED",
-      "workState": "BLOCKED",
-      "task": "autonomous development floor 34345425577",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34346448804",
       "executionEvidence": [
-        "autonomous-workflow:34345425577:completed:failure",
-        "autonomous-job:102446486378:department (planning-final):completed:skipped",
-        "autonomous-job:102445862063:department (planning):completed:failure"
+        "autonomous-workflow:34346448804:completed:failure",
+        "autonomous-job:102449961855:department (planning-final):completed:success",
+        "autonomous-job:102449196967:department (planning):completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": {
-        "id": 102445862063,
-        "name": "department (planning)",
+        "id": 102449961855,
+        "name": "department (planning-final)",
         "status": "completed",
-        "conclusion": "failure",
-        "failedStep": "Independent department review",
-        "startedAt": "2026-09-09T11:25:19Z",
-        "completedAt": "2026-09-09T11:26:36Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34345425577/job/102445862063"
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-09T11:39:35Z",
+        "completedAt": "2026-09-09T11:41:02Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34346448804/job/102449961855"
       },
-      "directCause": {
-        "code": "AUTONOMOUS_DEPARTMENT_JOB_FAILED",
-        "detail": "department (planning) failed during autonomous development",
-        "action": "inspect the failed department job and let the reserved-floor recovery dispatch continue"
-      },
-      "blockers": [
-        "AUTONOMOUS_DEPARTMENT_JOB_FAILED"
-      ],
-      "reason": "department (planning) failed during autonomous development",
-      "action": "inspect the failed department job and let the reserved-floor recovery dispatch continue",
+      "directCause": null,
+      "blockers": [],
+      "reason": "latest autonomous department handoff completed successfully",
+      "action": "none",
       "source": "autonomous-development"
     },
     "development": {
       "department": "development",
       "taskAssigned": true,
-      "status": "FAILED",
-      "workState": "BLOCKED",
-      "task": "autonomous development floor 34345425577",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34346448804",
       "executionEvidence": [
-        "autonomous-workflow:34345425577:completed:failure",
-        "autonomous-job:102445862093:department (development):completed:failure"
+        "autonomous-workflow:34346448804:completed:failure",
+        "autonomous-job:102449196952:department (development):completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": {
-        "id": 102445862093,
+        "id": 102449196952,
         "name": "department (development)",
         "status": "completed",
-        "conclusion": "failure",
-        "failedStep": "Independent department review",
-        "startedAt": "2026-09-09T11:25:19Z",
-        "completedAt": "2026-09-09T11:26:08Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34345425577/job/102445862093"
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-09T11:36:50Z",
+        "completedAt": "2026-09-09T11:37:58Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34346448804/job/102449196952"
       },
-      "directCause": {
-        "code": "AUTONOMOUS_DEPARTMENT_JOB_FAILED",
-        "detail": "department (development) failed during autonomous development",
-        "action": "inspect the failed department job and let the reserved-floor recovery dispatch continue"
-      },
-      "blockers": [
-        "AUTONOMOUS_DEPARTMENT_JOB_FAILED"
-      ],
-      "reason": "department (development) failed during autonomous development",
-      "action": "inspect the failed department job and let the reserved-floor recovery dispatch continue",
+      "directCause": null,
+      "blockers": [],
+      "reason": "latest autonomous department handoff completed successfully",
+      "action": "none",
       "source": "autonomous-development"
     },
     "qa": {
       "department": "qa",
       "taskAssigned": true,
-      "status": "FAILED",
-      "workState": "BLOCKED",
-      "task": "autonomous development floor 34345425577",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34346448804",
       "executionEvidence": [
-        "autonomous-workflow:34345425577:completed:failure",
-        "autonomous-job:102445862134:department (qa):completed:failure"
+        "autonomous-workflow:34346448804:completed:failure",
+        "autonomous-job:102449197041:department (qa):completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": {
-        "id": 102445862134,
+        "id": 102449197041,
         "name": "department (qa)",
         "status": "completed",
-        "conclusion": "failure",
-        "failedStep": "Independent department review",
-        "startedAt": "2026-09-09T11:25:19Z",
-        "completedAt": "2026-09-09T11:27:27Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34345425577/job/102445862134"
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-09T11:36:51Z",
+        "completedAt": "2026-09-09T11:39:32Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34346448804/job/102449197041"
       },
-      "directCause": {
-        "code": "AUTONOMOUS_DEPARTMENT_JOB_FAILED",
-        "detail": "department (qa) failed during autonomous development",
-        "action": "inspect the failed department job and let the reserved-floor recovery dispatch continue"
-      },
-      "blockers": [
-        "AUTONOMOUS_DEPARTMENT_JOB_FAILED"
-      ],
-      "reason": "department (qa) failed during autonomous development",
-      "action": "inspect the failed department job and let the reserved-floor recovery dispatch continue",
+      "directCause": null,
+      "blockers": [],
+      "reason": "latest autonomous department handoff completed successfully",
+      "action": "none",
       "source": "autonomous-development"
     },
     "graphics": {
       "department": "graphics",
       "taskAssigned": true,
-      "status": "FAILED",
-      "workState": "BLOCKED",
-      "task": "autonomous development floor 34345425577",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34346448804",
       "executionEvidence": [
-        "autonomous-workflow:34345425577:completed:failure",
-        "autonomous-job:102445862072:department (graphics):completed:failure"
+        "autonomous-workflow:34346448804:completed:failure",
+        "autonomous-job:102449196945:department (graphics):completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": {
-        "id": 102445862072,
+        "id": 102449196945,
         "name": "department (graphics)",
         "status": "completed",
-        "conclusion": "failure",
-        "failedStep": "Independent department review",
-        "startedAt": "2026-09-09T11:25:19Z",
-        "completedAt": "2026-09-09T11:26:21Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34345425577/job/102445862072"
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-09T11:36:51Z",
+        "completedAt": "2026-09-09T11:39:01Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34346448804/job/102449196945"
       },
-      "directCause": {
-        "code": "AUTONOMOUS_DEPARTMENT_JOB_FAILED",
-        "detail": "department (graphics) failed during autonomous development",
-        "action": "inspect the failed department job and let the reserved-floor recovery dispatch continue"
-      },
-      "blockers": [
-        "AUTONOMOUS_DEPARTMENT_JOB_FAILED"
-      ],
-      "reason": "department (graphics) failed during autonomous development",
-      "action": "inspect the failed department job and let the reserved-floor recovery dispatch continue",
+      "directCause": null,
+      "blockers": [],
+      "reason": "latest autonomous department handoff completed successfully",
+      "action": "none",
       "source": "autonomous-development"
     },
     "balance": {
       "department": "balance",
       "taskAssigned": true,
-      "status": "FAILED",
-      "workState": "BLOCKED",
-      "task": "autonomous development floor 34345425577",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34346448804",
       "executionEvidence": [
-        "autonomous-workflow:34345425577:completed:failure",
-        "autonomous-job:102445862132:department (balance):completed:failure"
+        "autonomous-workflow:34346448804:completed:failure",
+        "autonomous-job:102449196975:department (balance):completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": {
-        "id": 102445862132,
+        "id": 102449196975,
         "name": "department (balance)",
         "status": "completed",
-        "conclusion": "failure",
-        "failedStep": "Independent department review",
-        "startedAt": "2026-09-09T11:25:19Z",
-        "completedAt": "2026-09-09T11:26:13Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34345425577/job/102445862132"
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-09T11:36:51Z",
+        "completedAt": "2026-09-09T11:38:35Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34346448804/job/102449196975"
       },
-      "directCause": {
-        "code": "AUTONOMOUS_DEPARTMENT_JOB_FAILED",
-        "detail": "department (balance) failed during autonomous development",
-        "action": "inspect the failed department job and let the reserved-floor recovery dispatch continue"
-      },
-      "blockers": [
-        "AUTONOMOUS_DEPARTMENT_JOB_FAILED"
-      ],
-      "reason": "department (balance) failed during autonomous development",
-      "action": "inspect the failed department job and let the reserved-floor recovery dispatch continue",
+      "directCause": null,
+      "blockers": [],
+      "reason": "latest autonomous department handoff completed successfully",
+      "action": "none",
       "source": "autonomous-development"
     },
     "homepage": {

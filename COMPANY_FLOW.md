@@ -2,40 +2,30 @@
 
 ## 문서 권한 순서
 
-회사 운영 규칙이 서로 다르게 적혀 있을 때 다음 순서로 판단한다.
+운영 규칙이 충돌하면 다음 순서로 판단한다.
 
 1. 한재운의 최신 직접 지시
 2. `company-directive.json`
-3. `COMPANY_FLOW.md`, `DEPARTMENT_STANDARDS.md`, `ARTBOOK_POLICY.md`, `HOMEPAGE_OPERATIONS.md`
-4. `company-status.json`, 각종 감사·감독 상태 파일
+3. `COMPANY_FLOW.md`, `DEPARTMENT_STANDARDS.md`, `ARTBOOK_POLICY.md`, `ARTBOOK_LIFECYCLE.md`, `AUTONOMOUS_DEVELOPMENT_POLICY.md`
+4. `company-status.json`, `director-supervision-status.json`, 각종 감사·빌드·health 상태
 
-`company-status.json`은 현재 상태와 이력을 기록하는 파일이며 상위 정책을 덮어쓰지 않는다.
+상태 파일은 증거와 이력을 기록하며 상위 정책을 덮어쓰지 않는다.
 
-## 기본 원칙
+## 회사 구조
 
-재운컴퍼니는 기획·개발·QA·그래픽·밸런스 5개 실무 부서와 총괄 AI로 운영한다. 총괄은 실무 부서의 결과를 대신 작성하지 않고 작업 배정, 실행 증거 확인, blocker 추적, 검증 종합을 담당한다.
+재운컴퍼니는 planning, development, graphics, QA, balance 5개 실무 부서와 총괄 AI로 운영한다.
 
-```text
-한재운 지시
-→ 총괄이 우선순위·담당 부서·검증 조건 결정
-→ 담당 부서 작업
-→ 실행 결과/증거 기록
-→ QA 및 관련 부서 검증
-→ 총괄 종합
-→ PASS / REVISE / DROP
-→ 상태 갱신
-→ 다음 작업
-```
+- **Vibe2**: 회사 전체가 사용하는 제작·분석·구현·그래픽·QA·검증 공용 엔진
+- **AI 부서**: 각 전문영역의 판단, 구현, 검토, 반론, 증거 책임
+- **총괄**: 우선순위 집행, 배정, 실제 실행 확인, 병목 해결, 통합/검증/인계 감독
 
-`running`이라는 라벨만으로는 업무 중으로 인정하지 않는다. 실제 실행·결과·검증 근거가 없으면 `STALE`, `FALSE_RUNNING`, `BLOCKED`, `IDLE_NO_TASK` 등 실제 상태로 분류한다.
+Vibe2는 초안 전용이 아니다. 아트북 PROPOSAL은 Vibe2의 한 작업 단계일 뿐이고, 개발·그래픽·QA·릴리즈 피드백에서도 Vibe 기능을 계속 사용한다. Vibe2 결과는 부서 근거와 필요한 QA가 없으면 확정하지 않는다.
 
-## 우선순위
-
-현재 회사 공통 우선순위는 `company-directive.json`을 따른다. 기본적으로 사용자 직접 지시와 출시 안정성 사고를 먼저 보호하고, 방금 완성된 개발확정 게임의 아트북 handoff를 일반 개발 작업보다 먼저 처리한다.
+## 회사 우선순위
 
 ```text
-한재운 최신 직접 지시
-→ release-confirmed 치명적 런타임 사고
+한재운 최신 직접 지시(owner-immediate)
+→ release-confirmed 치명적 안정성 사고
 → completed DESIGN_BASELINE 개발 handoff
 → development-confirmed
 → structure-improvement
@@ -44,200 +34,173 @@
 → HOLD
 ```
 
-같은 단계 안에서는 현재 `company-directive.json`의 엔진·기존 프로젝트 우선순위를 따른다.
+새 사용자 직접 지시는 아직 시작하지 않은 자율 계획보다 항상 우선한다. 같은 단계에서는 `company-directive.json`의 엔진/기존 프로젝트 우선순위를 따른다.
 
-## 재운컴퍼니와 Vibe2 관계
+## 총괄의 감독 및 병목 해결
 
-재운컴퍼니와 Vibe2는 같은 GitHub `main`을 진실 소스로 사용한다.
-
-- 회사가 결정: 우선순위, 담당 부서, 승인 상태, QA 조건, 공개 상태
-- Vibe2가 수행: 현재 승인된 실행 계약에 따른 실제 제작·수정 작업
-- 회사가 검증: 부서별 결과, QA, 빌드, 공개 조건, 다음 단계
-
-회사 문서는 Vibe2 구현 세부를 중복 고정하지 않는다. Vibe2 코드가 변경되더라도 회사는 `company-directive.json`과 최신 검증된 실행 계약을 따른다.
-
-### 충돌 방지
-
-현재 회사 운영 경로에서는 별도 파일 Work Lock을 필수 운영 규칙으로 사용하지 않는다.
-
-소스 반영 전에는 현재 실행 계약이 요구하는 최신성·겹침 검사를 통과해야 한다.
-
-- 작업 시작 기준 SHA 기록
-- 최신 `main` 재확인
-- 같은 게임/소스 루트의 변경 겹침 확인
-- 오래된 후보를 최신 상태인 것처럼 강제 반영하지 않음
-- 검증되지 않은 직접 `main` 쓰기 금지
-
-Vibe2의 세부 동시성·재시도·패치 방식은 Vibe2 코드와 해당 QA 계약이 정의한다.
-
-## 기존 Web 게임 정책
-
-기존 Web 게임은 폐기된 읽기전용 아카이브가 아니다. 다음 저위험 유지보수가 가능하다.
-
-- 버그 수정
-- 모바일 UI/UX 수정
-- 접근성
-- 성능 개선
-- 구조 정리
-- 회귀 수정
-- 링크·경로·실행 오류 수정
-
-다만 신규 Web 게임 제작, 핵심 게임플레이·밸런스·세이브 의미·주요 콘텐츠 방향 변경은 사용자 핵심 결정 또는 명시 지시가 필요하다.
-
-## 아트북 우선 게이트
-
-정식 제작 진행 전에는 게임별 초기 통합 아트북을 만든다. 5개 부서가 자기 영역을 독립적으로 제출하고 총괄은 제출된 내용만 조립·요약한다.
-
-- 기획: 스토리·세계관·사건 인과·핵심 루프
-- 그래픽: 캐릭터·몬스터·보스·배경·UI·인트로
-- 개발: 구현 구조·기술 위험·플레이어블 시연 구조
-- QA: 플레이 흐름·문제 장면·검증 시나리오
-- 밸런스: 성장·전투감·보상·난이도
-
-Vibe2의 1차 기획 초안은 `PROPOSAL`이며 기획부의 확정 판단을 대신하지 않는다.
-
-아트북은 일회성 결과물이 아니라 살아있는 버전형 설계 문서다.
+총괄은 `running` 라벨을 그대로 믿지 않는다. 부서별로 다음을 확인한다.
 
 ```text
-V0 Vibe2 초안
-→ V1 DESIGN_BASELINE
-→ 필요 시 REVISION
-→ 개발확정 시 DEVELOPMENT_BASELINE
-→ 필요 시 REVISION
-→ 출시확정 시 RELEASE_BASELINE
-→ 출시 후에도 필요 시 REVISION
+TASK_ASSIGNED
+→ EXECUTION_EVIDENCE
+→ RESULT_EVIDENCE
+→ VERIFICATION
+→ BLOCKER
+→ ACTION
 ```
 
-기존 승인본을 덮어쓰지 않고 새 버전을 승격하며 이전 버전은 이력으로 보존한다.
+실시간 업무 상태는 `ACTIVE / WAITING / BLOCKED / DONE`으로 기록한다.
+
+할 일이 있는데 멈췄다면 `NO_WORK_ORDER`, `AUTOMATION_NOT_TRIGGERED`, `WORKFLOW_FAILED`, `OUTPUT_MISSING`, `VALIDATION_FAILED`, `DEPENDENCY_BLOCKED`, `PERMISSION_BLOCKED`, `EVIDENCE_ADAPTER_MISMATCH`, `STALE_QUEUE`, `BACKFILL_CHAIN_STOPPED`, `DEVELOPMENT_CHAIN_STOPPED` 등을 직접 분류한다.
+
+총괄은 다음 저위험 운영 병목을 직접 복구할 수 있다.
+
+- 기존 승인 workflow가 멈췄고 같은 workflow가 active가 아니면 재-dispatch
+- 기존 게임 INITIAL 아트북 backlog가 남았는데 Artbook/Backfill chain이 모두 멈췄으면 backfill 재기동
+- 자율개발이 failure/cancelled로 끝났고 recovery run이 없으면 기존 autonomous workflow 재기동
+- owner-immediate 지시가 큐보다 우선이면 우선순위 재적용
+- stale/false-running 상태 교정
+
+같은 workflow가 queued/in_progress일 때는 중복 실행하지 않는다. 장르, 핵심 루프, 스토리 큰 방향, 전투/성장 핵심 모델, 플랫폼, 저장 호환 파괴, 과금, 유료 서비스는 총괄이 임의 결정하지 않고 사용자에게 올린다.
+
+## 아트북 = 설계도
+
+아트북은 개발 그 자체가 아니라 **개발을 지휘하는 살아있는 설계 기준선**이다.
+
+```text
+V0 PROPOSAL
+→ V1 DESIGN_BASELINE
+→ 필요 시 REVISION
+→ DEVELOPMENT_BASELINE
+→ 필요 시 REVISION
+→ RELEASE_BASELINE
+→ 이후 필요 시 V4+ REVISION
+```
+
+- INITIAL/업데이트/수정/백필은 일일·주간 개수 제한이 없다.
+- 모든 기존 게임은 INITIAL 아트북을 가져야 하며 backlog가 0이 될 때까지 계속 처리한다.
+- Vibe2가 첫 PROPOSAL을 만든다.
+- planning/graphics/development/QA/balance가 자기 전문영역을 독립 제출한다.
+- 부서 간 교차검토는 가능하지만 다른 부서 파트를 대신 쓰지 않는다.
+- 총괄은 제출된 내용만 통합·요약한다.
+- 현재 정책 분량은 12~30컷이며 과거 10컷은 레거시 이력으로만 인정한다.
+- 아트북 완료가 곧 본개발/릴리즈 PASS를 뜻하지 않는다.
+
+기존 게임 INITIAL 백필은 `workflow_run` 연쇄뿐 아니라 watchdog 복구도 사용한다. 한 게임 아트북 완료 후 다음 INITIAL이 자동으로 이어져야 하고, 체인이 끊기면 총괄이 다시 기동한다.
 
 ## 아트북 완료 후 개발 handoff
 
-개발확정 게임의 `DESIGN_BASELINE`이 완료되면 그 게임은 즉시 개발 큐로 handoff한다. 동시에 아트북팀은 아트북이 없는 다음 기존 게임의 INITIAL을 계속 만든다.
+개발확정 게임의 `DESIGN_BASELINE`이 완료되면 그 게임은 우선 개발 큐로 넘긴다. 동시에 다른 게임의 INITIAL 아트북 백필은 독립적으로 계속된다.
 
 ```text
-게임 A 아트북 완료 ─→ 게임 A 개발 handoff
-                  └→ 게임 B INITIAL 아트북 계속
-
-게임 A 개발: 기술 구조 → 플레이어블 개발판 B → 내부평가 → 본개발 판단
-게임 B 아트북: Vibe2 초안 → 5개 부서 → 통합 설계본
+게임 A DESIGN_BASELINE 완료 ─→ 게임 A 개발 handoff
+                         └→ 게임 B INITIAL 백필 계속
 ```
 
-아트북 완료가 곧 본개발 PASS를 의미하지는 않는다. 첫 handoff는 최신 승인 아트북을 설계도로 사용해 기술 구조와 작은 플레이어블 증거를 만드는 단계다. 핵심 컨셉을 바꿀 필요가 생기면 구현 중 임의 변경하지 않고 `ARTBOOK_REVISION_REQUEST`로 새 버전을 만든다.
+개발 중 설계 변경이 필요하면 구현에서 몰래 바꾸지 않고 `ARTBOOK_REVISION_REQUEST`를 만든다.
 
-출시확정 게임의 치명적 런타임 사고는 안정판 보호를 위해 이 handoff보다 먼저 복구할 수 있다.
+## 한 개발 플로어의 실제 구조
 
-## 기본 제작 흐름
+현재 자동개발은 한 게임 source root를 한 플로어가 소유하고, 그 안에서 부서 작업을 병렬화한다.
 
 ```text
-게임 정의
-→ 핵심 재미/루프
-→ Vibe2 1차 기획 초안(PROPOSAL)
-→ 5개 부서 아트북
-→ DESIGN_BASELINE
-→ 기술 구조
-→ 기술 스파이크/플레이어블 개발판 B
-→ 5개 부서 내부평가
-→ 개발확정
-→ DEVELOPMENT_BASELINE 업그레이드
-→ 본개발
-→ 시스템 완성
-→ 그래픽 고도화
-→ 통합 QA
-→ 모바일 최적화
-→ 출시 후보
-→ 출시확정
-→ RELEASE_BASELINE 업그레이드
-→ 빌드/런타임 테스트
-→ 최종 공개
+플로어 준비/예약
+→ 5부서 독립 리뷰 병렬
+→ planning-final 통합 + 책임 파일 배정
+→ development / graphics / QA / balance 격리 code workspace 병렬 수정
+→ 비충돌 변경 자동 통합
+→ 진짜 same-file conflict만 명시적 해결
+→ 통합 후보 생성
+→ 강한 독립 최종 QA/Promotion
+→ 기존 Vibe 릴리즈 게이트
+→ main 공개
+→ Public Game Health / Unity runtime 검증
+→ Company DNA/Vibe 학습
+→ 필요 시 Artbook revision/baseline upgrade
+→ 다음 플로어
 ```
 
-필요한 시점에는 어느 단계에서든 아트북 수정 요청을 만들 수 있다.
+### 부서 코드 작업 원칙
 
-## 핵심 결정 게이트
+- planning은 최종 제약과 파일 소유권을 통합하고 소스를 직접 덮어쓰지 않는다.
+- development/graphics/QA/balance는 서로 겹치지 않는 책임 파일이 있으면 격리 workspace에서 동시에 수정할 수 있다.
+- `NO_SCOPE`는 해당 부서가 이번 플로어에서 분리 가능한 책임 파일을 갖지 않았다는 정상 결과다.
+- 비충돌 변경은 공통 baseline에서 자동 통합한다.
+- 같은 파일/같은 줄의 실제 충돌만 conflict 해결 단계로 보낸다.
+- 공유 branch 쓰기는 최종 통합 이후에만 허용한다.
 
-다음은 한재운에게 올린다.
+## 수정 직후 바로 릴리즈하지 않는다
 
-- 장르
-- 핵심 플레이 루프
-- 스토리 큰 방향
-- 전투 방식의 핵심 모델
-- 성장 구조의 핵심 모델
-- 플랫폼
-- 저장 호환성을 깨는 변경
-- 과금 구조
-- 유료 AI/유료 자동화 사용
-
-그 외 세부 기술·UI·QA 수정·일반 밸런스 조정·최적화·빌드 세부는 총괄이 승인 범위 안에서 배정할 수 있다.
-
-## 부서별 검증
-
-부서 PASS는 자기 전문영역의 실제 근거가 있어야 한다. 상세 최소 기준은 `DEPARTMENT_STANDARDS.md`를 따른다.
-
-### QA
-
-QA는 코드 리뷰어가 아니라 게임 테스터다.
-
-- Web: 실제 브라우저 실행, 입력, 재로드, 저장 유지, 모바일 화면, 런타임 오류 증거
-- Unity: 성공 빌드뿐 아니라 APK/런타임 실행, 입력, 프로세스 생존, 치명 오류, 화면 증거
-
-빌드 성공만으로 QA PASS하지 않는다.
-
-## 수정 후 재평가
-
-게임의 구현·빌드·플레이·그래픽·QA·밸런스에 의미 있는 수정이 생기면 이전 판정을 그대로 승계하지 않는다.
+부서별 수정본은 공개 대상이 아니다.
 
 ```text
-수정
-→ 현재 빌드/실행 증거 확보
-→ 기획 재평가
-→ 개발 재평가
-→ QA 재평가
-→ 그래픽 재평가
-→ 밸런스 재평가
-→ 총괄 종합
+부서별 병렬 수정
+→ 통합 후보
+→ 최종 통합 QA
+→ Promotion
+→ Vibe 릴리즈 게이트
+→ 공개
 ```
 
-5개 부서 중 하나라도 증거 게이트를 통과하지 못하면 최종 PASS가 아니다.
+즉 **수정 직후 자동 검증은 즉시 시작하지만, 검증을 건너뛰고 즉시 공개하지 않는다.**
 
-## 홈페이지 동기화
+## 릴리즈 후 루프
 
-홈페이지 표시용 최신 정보는 별도 AI 직원이 수동 복사하지 않는다.
+릴리즈가 끝이 아니다.
 
 ```text
-각 부서/시스템이 상태 기록
-→ game-catalog.json / company-status.json / 아트북·빌드 상태 갱신
-→ 홈페이지 런타임이 최신 JSON 읽기
-→ 공개 화면 표시
+검증된 통합본
+→ 릴리즈
+→ 실제 public health/runtime 확인
+→ 기획/개발/QA/그래픽/밸런스 재평가
+→ Company DNA/Vibe에 검증된 성공/실패 학습
+→ 설계 영향이 있으면 Artbook revision 또는 baseline upgrade
+→ 다음 개발
 ```
 
-홈페이지 노출은 제작 승인과 동일하지 않다. 아트북·검토중 게임은 컴팩트 UI나 상세 페이지에 표시할 수 있지만 `production PASS`로 해석하지 않는다.
+Web 릴리즈는 공개 health 결과를 확인하고, Unity는 APK/런타임 증거를 확인한다. 성공 학습과 다음 성공 사이클은 실제 운영 검증 뒤에 이어진다. 실패 시 공개 안정판 보호와 복구 개발을 우선한다.
+
+## 기존 Web 게임 정책
+
+기존 Web 게임은 읽기 전용이 아니다. 다음 저위험 유지보수가 가능하다.
+
+- 버그 수정
+- 모바일 UI/UX
+- 접근성
+- 성능
+- 구조 정리
+- 회귀 수정
+- 경로/실행 오류 수정
+
+핵심 게임플레이, 밸런스, 세이브 의미, 주요 콘텐츠 방향 변경은 owner gate를 따른다. 신규 Web 게임 제작은 기본 자동 타깃이 아니다.
+
+## QA와 검증
+
+QA는 코드 문구만 보는 부서가 아니라 실제 게임 검증 부서다.
+
+- Web: 실제 브라우저 실행, 입력, 재로드, 저장 유지, 모바일 화면, 런타임 오류
+- Unity: APK 빌드뿐 아니라 런타임 실행, 입력, 프로세스 생존, 치명 오류, 화면 증거
+
+빌드 성공만으로 QA PASS하지 않는다. 의미 있는 수정 뒤에는 기존 부서 판정을 그대로 승계하지 않고 현재 상태를 다시 평가한다.
 
 ## 공개/빌드 원칙
 
-- 테스트 APK와 정식 출시는 구분한다.
-- 빌드 성공은 0바이트가 아닌 실제 산출물과 SHA-256 같은 검증 근거를 요구한다.
-- 테스트 APK 성공이 Play Store 정식 공개를 의미하지 않는다.
-- 홈페이지 표시가 정식 출시 승인을 의미하지 않는다.
-- 유료 API·유료 러너·유료 초과 사용은 별도 승인 없이는 금지한다.
-
-## 회사 상태 동기화
-
-- 정책은 `company-directive.json`과 본 문서에 맞춘다.
-- 부서 상태는 `director-supervision-status.json` 같은 최신 실행 증거를 우선한다.
-- 과거 `running` 문자열을 실제 증거 없이 유지하지 않는다.
-- 빌드·승인·과거 재평가 이력은 삭제하지 않는다.
-- 홈페이지 상태와 제작 승인 상태를 혼동하지 않는다.
+- 테스트 APK와 정식 Play Store 출시는 구분한다.
+- APK 성공은 비어 있지 않은 실제 파일과 SHA-256 등 검증 근거를 요구한다.
+- 홈페이지 노출은 제작 승인/릴리즈 승인과 동일하지 않다.
+- 유료 API, 유료 runner, 유료 초과 사용은 명시 승인 없이는 금지한다.
 
 ## 주요 파일
 
-- `company-directive.json` — 최신 사용자 지시·회사 최상위 운영 정책
-- `COMPANY_FLOW.md` — 회사 전체 개발/승인/검증 흐름
-- `DEPARTMENT_STANDARDS.md` — 부서별 실제 업무·PASS 증거 기준
-- `ARTBOOK_POLICY.md` — 아트북 제작 정책
-- `AUTONOMOUS_DEVELOPMENT_POLICY.md` — 자동 개발 선택/진단/실행 계약
-- `HOMEPAGE_OPERATIONS.md` — 홈페이지 표시·진단 운영 기준
-- `company-status.json` — 현재 회사 상태와 역사 기록
-- `director-supervision-status.json` — 직원 실제 실행/정체/blocker 감독 상태
-- `game-catalog.json` — 게임별 공개 메타데이터와 단계
+- `company-directive.json` — 최신 사용자 지시와 회사 최상위 운영 정책
+- `COMPANY_FLOW.md` — 회사 전체 제작/검증/인계 흐름
+- `.github/agents/director.agent.md` — 총괄 실제 감독/복구 역할
+- `DEPARTMENT_STANDARDS.md` — 부서별 최소 업무/검증 기준
+- `ARTBOOK_POLICY.md`, `ARTBOOK_LIFECYCLE.md` — 아트북 설계도 정책과 버전 수명주기
+- `AUTONOMOUS_DEVELOPMENT_POLICY.md` — 자동개발 선택/진단/실행 계약
+- `director-supervision-status.json` — 실제 직원 상태와 병목/복구 근거
+- `game-artbooks.json` — 아트북 완료 기준 registry
+- `game-catalog.json` — 게임별 단계/공개 메타데이터
+- `public-game-health.json` — 공개판 운영 검증 근거
 
-회사 문서가 실제 최신 구현과 충돌하면 직접 지시와 `company-directive.json`을 우선하고, 회사 문서를 최신 상태에 맞춰 갱신한다.
+회사 문서가 실제 최신 구현과 충돌하면 최신 직접 지시와 `company-directive.json`을 우선하고, 문서를 즉시 현재 구현에 맞춰 갱신한다.
