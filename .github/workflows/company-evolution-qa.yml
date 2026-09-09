@@ -238,7 +238,7 @@ jobs:
         run: |
           set -euo pipefail
           grep -Fq "mode='SECOND_WORK'" tools/artbook-prepare-daily.mjs
-          grep -Fq "status:'SAME_DAY_SECOND_WORK_SCHEDULED'" tools/artbook-prepare-daily.mjs
+          grep -Fq "queueGameMutable.status=mode==='SECOND_WORK'?'SAME_DAY_SECOND_WORK_SCHEDULED'" tools/artbook-prepare-daily.mjs
           grep -Fq 'sameDaySecondWork' tools/artbook-prepare-daily.mjs
           grep -Fq "criterion:'FIVE_VOTE_AVERAGE_OR_BELOW_OVERALL_AVERAGE'" tools/artbook-second-work-runner.mjs
           grep -Fq 'receivedFiveVoteFeedback' tools/artbook-second-work-runner.mjs
