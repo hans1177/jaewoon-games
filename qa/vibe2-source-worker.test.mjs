@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-source-worker.test.mjs
-// 역할: Vibe2 텍스트 source worker의 격리, 책임 파일 경계, 웹 유지보수, 바이너리 차단을 검증한다.
+// 역할: Vibe2 텍스트 source worker의 격리, 책임 파일 경계, 웹 유지보수, 바이너리 차단과 안전 편집 일치를 검증한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { runVibe2SourceWorker } from '../tools/vibe2-source-worker.mjs';
+import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
 function write(file, content) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, content, 'utf8'); }
@@ -97,4 +98,28 @@ test('source apply refuses non-candidate branch', async () => {
   write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(order({ responsibleFiles: ['unity-games/demo/Assets/Player.cs'] }), null, 2));
   write(responseFile, JSON.stringify({ edits: [{ path: 'Assets/Player.cs', find: 'return 1;', replace: 'return 2;' }], newFiles: [] }));
   await assert.rejects(runVibe2SourceWorker({ cwd, responseFile, applySource: true }), /vibe2\/candidate\/\* 브랜치에서만 허용/);
+});
+
+test('exact edit accepts only unique indentation and line-ending drift', () => {
+  const cwd = tempRoot();
+  const source = path.join(cwd, 'Player.cs');
+  write(source, 'class Player {\r\n  int Speed() {\r\n    return 1;\r\n  }\r\n}\r\n');
+  const changed = applyExactEdits(cwd, [{
+    path: 'Player.cs',
+    find: 'int Speed() {\n  return 1;\n}',
+    replace: 'int Speed() {\n    return 2;\n}'
+  }]);
+  assert.deepEqual(changed, ['Player.cs']);
+  assert.match(fs.readFileSync(source, 'utf8'), /return 2;/);
+});
+
+test('exact edit still rejects materially different source text', () => {
+  const cwd = tempRoot();
+  const source = path.join(cwd, 'Player.cs');
+  write(source, 'class Player {\n  int Speed() {\n    return 1;\n  }\n}\n');
+  assert.throws(() => applyExactEdits(cwd, [{
+    path: 'Player.cs',
+    find: 'int Speed() {\n  return 9;\n}',
+    replace: 'int Speed() {\n    return 2;\n}'
+  }]), /edit find 불일치/);
 });
