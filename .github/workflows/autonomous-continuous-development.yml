@@ -661,7 +661,7 @@ jobs:
            needs.integrate.result == 'cancelled') }}
     runs-on: ubuntu-latest
     concurrency:
-      group: autonomous-dev-writer
+      group: autonomous-dev-recovery-${{ github.run_id }}
       cancel-in-progress: false
     steps:
       - name: Checkout latest autonomous queue state
@@ -676,15 +676,26 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node tools/autonomous-queue-state.mjs --state=.autonomous/queue-state.json --settle-run-id="$GITHUB_RUN_ID" --status=FAILED
           git config user.name 'jaewoon-autonomous-recovery'
           git config user.email 'autonomous-recovery@users.noreply.github.com'
-          git add .autonomous/queue-state.json
-          if ! git diff --cached --quiet; then
+          for attempt in 1 2 3 4 5; do
+            git fetch origin autonomous-dev
+            git reset --hard origin/autonomous-dev
+            node tools/autonomous-queue-state.mjs --state=.autonomous/queue-state.json --settle-run-id="$GITHUB_RUN_ID" --status=FAILED
+            git add .autonomous/queue-state.json
+            if git diff --cached --quiet; then
+              echo 'FAILED_SOURCE_ROOT_LEASE=ALREADY_RELEASED'
+              exit 0
+            fi
             git commit -m "autonomy: release failed floor ${GITHUB_RUN_ID} [skip ci]"
-            git push origin HEAD:autonomous-dev
-          fi
-          echo 'FAILED_SOURCE_ROOT_LEASE=RELEASED'
+            if git push origin HEAD:autonomous-dev; then
+              echo 'FAILED_SOURCE_ROOT_LEASE=RELEASED'
+              exit 0
+            fi
+            sleep $((attempt * 2))
+          done
+          echo 'FAILED_SOURCE_ROOT_LEASE=RELEASE_PUSH_FAILED'
+          exit 1
       - name: Continue 24h loop after a reserved floor failure
         env:
           GH_TOKEN: ${{ github.token }}
