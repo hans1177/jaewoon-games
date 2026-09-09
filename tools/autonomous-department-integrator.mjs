@@ -12,7 +12,7 @@ const posix=v=>String(v??'').replaceAll('\\','/').replace(/^\.\//,'').replace(/\
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const exists=file=>{try{return fs.statSync(file),true;}catch{return false;}};
-const arg=name,fallback='')=>process.argv.find(x=>x.startsWith(`--${name}=`))?.slice(name.length+3)??fallback;
+const arg=(name,fallback='')=>process.argv.find(x=>x.startsWith(`--${name}=`))?.slice(name.length+3)??fallback;
 const sha=text=>{const r=spawnSync('git',['hash-object','--stdin'],{input:String(text??''),encoding:'utf8'});return clean(r.stdout);};
 function copyTree(from,to){fs.rmSync(to,{recursive:true,force:true});fs.mkdirSync(path.dirname(to),{recursive:true});fs.cpSync(from,to,{recursive:true});}
 function safeRelative(value){const v=posix(value);if(!v||v.startsWith('/')||v.split('/').includes('..'))throw new Error(`invalid relative path: ${value}`);return v;}
