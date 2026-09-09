@@ -1,6 +1,7 @@
 // 역할: 로컬/CI에서 유료 AI 없이 게임 소스의 제작 근거를 먼저 구조화한다.
 import fs from 'node:fs';
 import path from 'node:path';
+import { gunzipSync } from 'node:zlib';
 
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const read=file=>{try{return fs.readFileSync(file,'utf8');}catch{return'';}};
@@ -16,7 +17,45 @@ const TOPICS={
   uiArt:/sprite|image|background|canvas|hud|ui|color|animation|vfx|이미지|배경|애니메이션/i,
   risk:/catch|error|null|undefined|setInterval|setTimeout|viewport|mobile|오류|모바일/i
 };
-function snippets(files,pattern,max=18){const out=[];for(const file of files){const lines=read(file).split(/\r?\n/);for(let i=0;i<lines.length&&out.length<max;i++){if(pattern.test(lines[i]))out.push({source:file,line:i+1,text:clean(lines[i]).slice(0,220)});}if(out.length>=max)break;}return out;}
+const MAX_PACKED_BASE64=4*1024*1024;
+const MAX_UNPACKED_TEXT=8*1024*1024;
+function sourceTexts(files){
+  const out=[];
+  for(const file of files){
+    const text=read(file);
+    out.push({source:file,text,kind:'file'});
+    if(!file.toLowerCase().endsWith('.html'))continue;
+    const re=/atob\(\s*['"]([A-Za-z0-9+/=]+)['"]\s*\)/g;
+    let match,index=0;
+    while((match=re.exec(text))){
+      if(match[1].length>MAX_PACKED_BASE64)continue;
+      try{
+        const bytes=Buffer.from(match[1],'base64');
+        if(bytes.length<2||bytes[0]!==0x1f||bytes[1]!==0x8b)continue;
+        const unpacked=gunzipSync(bytes,{maxOutputLength:MAX_UNPACKED_TEXT}).toString('utf8');
+        if(!unpacked.trim())continue;
+        index+=1;
+        out.push({source:`${file}#embedded-gzip-${index}`,text:unpacked,kind:'embedded-gzip',container:file});
+      }catch{}
+    }
+  }
+  return out;
+}
+function snippets(sources,pattern,max=18){
+  const out=[];
+  for(const source of sources){
+    const lines=source.text.split(/\r?\n/);
+    for(let i=0;i<lines.length&&out.length<max;i++){
+      const match=lines[i].match(pattern);
+      if(!match)continue;
+      const column=(match.index||0)+1;
+      const start=Math.max(0,column-1-80);
+      out.push({source:source.source,line:i+1,column,text:clean(lines[i].slice(start,start+300)).slice(0,220)});
+    }
+    if(out.length>=max)break;
+  }
+  return out;
+}
 const queue=JSON.parse(read('artbook-submission-queue.json')||'{}');
 const gameId=clean(process.env.ARTBOOK_GAME_ID||queue.currentDailyTarget||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
 const date=clean(process.env.ARTBOOK_DATE||kstDate());
@@ -24,11 +63,14 @@ if(!gameId)throw new Error('ARTBOOK_GAME_ID is required');
 const unity=list(`unity-games/${gameId}/Assets/Scripts`,['.cs']);
 const web=list(`web-games/${gameId}`,['.html','.js','.css','.json']);
 const files=[...unity,...web];
-const topics=Object.fromEntries(Object.entries(TOPICS).map(([key,pattern])=>[key,snippets(files,pattern)]));
+const sources=sourceTexts(files);
+const decodedSources=sources.filter(x=>x.kind==='embedded-gzip');
+const topics=Object.fromEntries(Object.entries(TOPICS).map(([key,pattern])=>[key,snippets(sources,pattern)]));
 const missing=Object.entries(topics).filter(([,rows])=>rows.length===0).map(([key])=>key);
-const pack={version:1,gameId,date,generatedBy:'deterministic-source-scan',paidApi:false,sourceMode:unity.length&&web.length?'UNITY_PLUS_WEB_ARCHIVE':unity.length?'UNITY':web.length?'WEB_ARCHIVE_READ_ONLY':'METADATA_ONLY',sourceFiles:files,topics,missingEvidence:missing,contracts:{factsAreEvidenceOnly:true,proposalsForbidden:true,numericChangesForbidden:true,approvedBaselineOverwriteForbidden:true}};
+const pack={version:2,gameId,date,generatedBy:'deterministic-source-scan',paidApi:false,sourceMode:unity.length&&web.length?'UNITY_PLUS_WEB_ARCHIVE':unity.length?'UNITY':web.length?'WEB_ARCHIVE_READ_ONLY':'METADATA_ONLY',sourceFiles:files,decodedSources:decodedSources.map(x=>({source:x.source,container:x.container,encoding:'gzip-base64'})),topics,missingEvidence:missing,contracts:{factsAreEvidenceOnly:true,proposalsForbidden:true,numericChangesForbidden:true,approvedBaselineOverwriteForbidden:true,packedSourceDecodeBounded:true,packedSourceExecuted:false}};
 const output=`artbook-submissions/${gameId}/${date}/fact-pack.json`;
 writeJson(output,pack);
 console.log(`ARTBOOK_FACT_PACK=${output}`);
 console.log(`ARTBOOK_FACT_SOURCE_MODE=${pack.sourceMode}`);
+console.log(`ARTBOOK_FACT_DECODED_SOURCES=${decodedSources.length}`);
 console.log(`ARTBOOK_FACT_TOPICS=${Object.values(topics).filter(x=>x.length).length}/${Object.keys(topics).length}`);

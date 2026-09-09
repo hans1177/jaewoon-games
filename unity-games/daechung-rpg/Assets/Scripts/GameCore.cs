@@ -222,7 +222,7 @@ namespace JaewoonGames.DaechungRpg
 
         public bool TryBuyWeapon(string weaponId)
         {
-            if (!GameCatalog.Weapons.TryGetValue(weaponId, out var weapon) || weapon.hidden || Player.ownedWeapons.Contains(weaponId) || Player.gold < weapon.price)
+            if (string.IsNullOrEmpty(weaponId) || !GameCatalog.Weapons.TryGetValue(weaponId, out var weapon) || weapon.hidden || Player.ownedWeapons.Contains(weaponId) || Player.gold < weapon.price)
             {
                 return false;
             }
@@ -238,7 +238,7 @@ namespace JaewoonGames.DaechungRpg
 
         public bool TryBuyArmor(string armorId)
         {
-            if (!GameCatalog.Armors.TryGetValue(armorId, out var armor) || Player.ownedArmors.Contains(armorId) || Player.gold < armor.price)
+            if (string.IsNullOrEmpty(armorId) || !GameCatalog.Armors.TryGetValue(armorId, out var armor) || Player.ownedArmors.Contains(armorId) || Player.gold < armor.price)
             {
                 return false;
             }
@@ -267,7 +267,7 @@ namespace JaewoonGames.DaechungRpg
 
         public void SetRegion(string regionId)
         {
-            if (!GameCatalog.Regions.ContainsKey(regionId))
+            if (string.IsNullOrEmpty(regionId) || !GameCatalog.Regions.ContainsKey(regionId))
             {
                 return;
             }
@@ -348,6 +348,14 @@ namespace JaewoonGames.DaechungRpg
                     (Player.equippedArmorId != "none" && !GameCatalog.Armors.ContainsKey(Player.equippedArmorId)))
                 {
                     Player.equippedArmorId = "none";
+                }
+                if (Player.equippedWeaponId != "bare-hands" && !Player.ownedWeapons.Contains(Player.equippedWeaponId))
+                {
+                    Player.ownedWeapons.Add(Player.equippedWeaponId);
+                }
+                if (Player.equippedArmorId != "none" && !Player.ownedArmors.Contains(Player.equippedArmorId))
+                {
+                    Player.ownedArmors.Add(Player.equippedArmorId);
                 }
 
                 Player.currentHp = Mathf.Clamp(Player.currentHp, 1, GetMaxHp());
