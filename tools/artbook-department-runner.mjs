@@ -92,6 +92,33 @@ function validCandidate(candidate){
   const plan=candidate?.conceptPlan;
   return Boolean(candidate&&typeof candidate==='object'&&!Array.isArray(candidate)&&candidate.section&&typeof candidate.section==='object'&&!Array.isArray(candidate.section)&&ROLE_SECTION_KEYS[role].every(key=>clean(candidate.section[key]))&&plan&&['creativeIdeas','implementationPlan','demoValidation'].every(key=>Array.isArray(plan[key])&&plan[key].length>0));
 }
+function parseStructuredCandidate(value){
+  const raw=clean(value).replace(/^```json\s*/i,'').replace(/```$/,'').trim();
+  if(!raw)throw new Error('empty structured output');
+  try{return JSON.parse(raw);}catch(original){
+    const start=raw.indexOf('{');
+    if(start<0)throw original;
+    let depth=0,inString=false,escaped=false;
+    for(let i=start;i<raw.length;i++){
+      const ch=raw[i];
+      if(inString){
+        if(escaped)escaped=false;
+        else if(ch==='\\')escaped=true;
+        else if(ch==='"')inString=false;
+        continue;
+      }
+      if(ch==='"'){inString=true;continue;}
+      if(ch==='{')depth++;
+      else if(ch==='}'){
+        depth--;
+        if(depth===0){
+          try{return JSON.parse(raw.slice(start,i+1));}catch{break;}
+        }
+      }
+    }
+    throw original;
+  }
+}
 export function planningInformationProblems(candidate){
   if(!candidate)return['planning-candidate-missing'];
   const section=candidate.section||{},plan=candidate.conceptPlan||{},problems=[];
@@ -214,7 +241,18 @@ const roleGuides={
   balance:'실제 코드의 전투·성장·보상 수치를 평가하고, 자기 범위의 조정 아이디어를 PROPOSAL로 제안한다. 구현 가능한 조정 지점과 플레이테스트 측정 계획을 함께 적는다.'
 };
 const systemPrompt=`/no_think\n너는 재운컴퍼니 ${ROLE_NAMES[role]} 부서의 독립 아트북 AI다. ${roleGuides[role]} 다른 부서 제출물은 볼 수 없고 대신 작성하면 안 된다. 근거 기반 사실과 창작 제안을 구분한다. 창작 제안은 conceptPlan.creativeIdeas에 넣고 구현/검증된 사실처럼 표현하지 않는다. 게임 품질 숫자점수, PASS, 출시/본개발 승인을 만들지 않는다. 반드시 제공된 JSON 스키마만 출력한다. section의 각 값은 40~140자, conceptPlan 각 항목은 30~140자로 작성한다. 서로 다른 필드는 서로 다른 정보를 담아야 한다. 근거 원문이나 소스코드를 복사하지 않는다.`;
-const userPrompt=`${sharedEvidence.gameName} ${ROLE_NAMES[role]} 부서 1차 독립 아트북 작업. sourceMode=${sourceMode}. 자기 전문 범위의 근거 요약 + 창작 제안 + 구현 기본 계획 + 시연 검증 계획을 작성해. ${role==='planning'?'Vibe2 초안은 참고 제안이며 기존 근거와 충돌하면 수정해. OPENING→EARLY→MID→LATE→FINAL_BOSS→ENDING 각각의 원인·플레이어 행동·결과·다음 훅을 검토하고 중후반 빈 구간을 구체적으로 지적해. 장르명 한 단어만 반복하면 실패다.':''}\n${JSON.stringify({shared:sharedEvidence,roleEvidence})}`;
+const baseTaskPrompt=`${sharedEvidence.gameName} ${ROLE_NAMES[role]} 부서 1차 독립 아트북 작업. sourceMode=${sourceMode}. 자기 전문 범위의 근거 요약 + 창작 제안 + 구현 기본 계획 + 시연 검증 계획을 작성해. ${role==='planning'?'Vibe2 초안은 참고 제안이며 기존 근거와 충돌하면 수정해. OPENING→EARLY→MID→LATE→FINAL_BOSS→ENDING 각각의 원인·플레이어 행동·결과·다음 훅을 검토하고 중후반 빈 구간을 구체적으로 지적해. 장르명 한 단어만 반복하면 실패다.':''}`;
+const userPrompt=`${baseTaskPrompt}\n${JSON.stringify({shared:sharedEvidence,roleEvidence})}`;
+function retryPrompt(reason){
+  if(!reason)return userPrompt;
+  const reduced={
+    ...roleEvidence,
+    files:Array.isArray(roleEvidence.files)?roleEvidence.files.slice(0,8):roleEvidence.files,
+    excerpt:compactText(roleEvidence.excerpt,3200),
+    assets:Array.isArray(roleEvidence.assets)?roleEvidence.assets.slice(0,5):roleEvidence.assets
+  };
+  return `${baseTaskPrompt}\n이전 시도 실패 사유: ${compactText(reason,160)}. 이번에는 JSON을 끝까지 닫아라. section 각 값은 40~90자로 줄이고 creativeIdeas/implementationPlan/demoValidation/visualNotes 배열은 각각 1개 항목만 작성해. 근거 핵심만 남기고 반복 설명은 제거해.\n${JSON.stringify({shared:sharedEvidence,roleEvidence:reduced})}`;
+}
 const sectionProperties=Object.fromEntries(ROLE_SECTION_KEYS[role].map(key=>[key,{type:'string',minLength:role==='planning'?20:1,maxLength:140}]));
 const candidateSchema={
   type:'object',required:['headline','readiness','section','conceptPlan','unverified','visualNotes'],additionalProperties:false,
@@ -229,19 +267,18 @@ const candidateSchema={
     unverified:{type:'array',maxItems:4,items:{type:'string',maxLength:140}},visualNotes:{type:'array',minItems:1,maxItems:3,items:{type:'string',maxLength:140}}
   }
 };
-async function callLocalModel(model,numPredict){
-  const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,format:candidateSchema,messages:[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}],options:{temperature:role==='planning'?0.12:0.08,seed:101+ROLES.indexOf(role)*97,num_ctx:8192,num_predict:numPredict}})});
+async function callLocalModel(model,numPredict,retryReason=''){
+  const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,format:candidateSchema,messages:[{role:'system',content:systemPrompt},{role:'user',content:retryPrompt(retryReason)}],options:{temperature:role==='planning'?0.12:0.08,seed:101+ROLES.indexOf(role)*97,num_ctx:8192,num_predict:numPredict}})});
   if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
-  const packet=await response.json(),raw=clean(packet?.message?.content).replace(/^```json\s*/i,'').replace(/```$/,'').trim();
-  if(!raw)throw new Error('empty structured output');
-  return JSON.parse(raw);
+  const packet=await response.json();
+  return parseStructuredCandidate(packet?.message?.content);
 }
 async function generateCandidate(model){
-  const attempts=role==='planning'?[1050,820,650]:role==='qa'?[700,520,400]:[900,650,480];
+  const attempts=role==='planning'?[1100,1500]:role==='qa'?[900,1300]:[1000,1400];
   let lastError=null,lastPlanningProblems=[];
   for(let i=0;i<attempts.length;i++){
     try{
-      const candidate=normalizeCandidate(await callLocalModel(model,attempts[i]));
+      const candidate=normalizeCandidate(await callLocalModel(model,attempts[i],i>0?lastError?.message:''));
       if(!validCandidate(candidate))throw new Error('invalid section/conceptPlan output');
       if(role==='planning'){
         const problems=planningInformationProblems(candidate);
