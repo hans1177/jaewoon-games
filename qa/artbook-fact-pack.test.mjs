@@ -33,7 +33,7 @@ test('fact pack extracts production evidence without changing game source',()=>{
 });
 
 test('fact pack safely decodes gzip/base64 web payloads as evidence without executing them',()=>{
-  const inner='const crystalHp=120; const enemyDamage=9; const waveSize=6; const rewardGold=15; function save(){localStorage.setItem("crystal-defense-save",JSON.stringify({waveSize,rewardGold}))}';
+  const inner=`const filler='${'x'.repeat(500)}'; const crystalHp=120; const enemyDamage=9; const waveSize=6; const rewardGold=15; function save(){localStorage.setItem("crystal-defense-save",JSON.stringify({waveSize,rewardGold}))}`;
   const packed=gzipSync(Buffer.from(inner)).toString('base64');
   const html=`<!doctype html><script>const payload=atob('${packed}'); throw new Error('wrapper must never execute');</script>`;
   const {root,pack,stdout}=runPack({gameId:'packed-fixture',files:{'index.html':html}});
@@ -41,9 +41,10 @@ test('fact pack safely decodes gzip/base64 web payloads as evidence without exec
     assert.equal(pack.version,2);
     assert.equal(pack.decodedSources.length,1);
     assert.equal(pack.decodedSources[0].encoding,'gzip-base64');
-    assert.ok(pack.topics.combat.some(x=>x.source.endsWith('#embedded-gzip-1')));
+    assert.ok(pack.topics.combat.some(x=>x.source.endsWith('#embedded-gzip-1')&&x.text.includes('crystalHp=120')));
     assert.ok(pack.topics.progression.some(x=>x.text.includes('rewardGold=15')));
     assert.ok(pack.topics.persistence.some(x=>x.text.includes('localStorage')));
+    assert.ok(pack.topics.persistence.some(x=>Number(x.column)>220));
     assert.equal(pack.contracts.packedSourceDecodeBounded,true);
     assert.equal(pack.contracts.packedSourceExecuted,false);
     assert.match(stdout,/ARTBOOK_FACT_DECODED_SOURCES=1/);
