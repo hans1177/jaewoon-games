@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "status": "ACTIVE",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
@@ -7,18 +7,45 @@
   "candidateBranchPrefix": "autonomous/candidate-",
   "paidApi": false,
   "continuous24hDevelopment": true,
+  "productionTierPolicy": {
+    "releaseConfirmedCount": 2,
+    "developmentConfirmedCount": 3,
+    "designOnlyRemainder": true,
+    "tier1": {
+      "name": "RELEASE_CONFIRMED",
+      "engine": "UNITY_ANDROID",
+      "deepFocusSlots": 1,
+      "featureDevelopmentOnWeb": false,
+      "webArchiveMaintenance": "FAST_RUNTIME_INCIDENT_ONLY"
+    },
+    "tier2": {
+      "name": "DEVELOPMENT_CONFIRMED",
+      "engine": "WEB",
+      "scope": "FIRST_PLAYABLE_IMPLEMENTATION",
+      "fullArtbookReproductionRequired": false
+    },
+    "tier3": {
+      "name": "DESIGN_ONLY",
+      "codeWork": false,
+      "scope": ["ARTBOOK", "CONCEPT", "IDENTITY", "SYSTEM_DESIGN", "BALANCE_DESIGN", "UI_UX_DESIGN"]
+    },
+    "livingArtbookForAllTiers": true
+  },
   "developmentFocusPolicy": {
-    "maxFocusedGames": 2,
-    "targetFocusedGames": 2,
-    "preferredFocusedGameIds": ["P0001", "P0002"],
-    "fillVacantFocusedSlots": true,
+    "maxFocusedGames": 1,
+    "targetFocusedGames": 1,
+    "focusStage": "RELEASE_CONFIRMED",
+    "preferredFocusedGameIds": ["P0006"],
+    "fillVacantFocusedSlots": false,
     "scoreAxes": ["playability", "distinctiveness", "developmentEfficiency", "scalability", "lowBlockage"],
     "axisMin": 0,
     "axisMax": 2,
     "focusThreshold": 8,
     "nextDevelopmentThreshold": 5,
-    "selection": "PREFERRED_READY_THEN_SCORE_WITH_NEXT_DEVELOPMENT_BACKFILL",
-    "releaseConfirmedExcludedFromFocus": true,
+    "selection": "OWNER_TIER_THEN_PREFERRED_UNITY_THEN_SCORE",
+    "releaseConfirmedExcludedFromFocus": false,
+    "releaseConfirmedOnlyForDeepFocus": true,
+    "tier2WebPrototypeAllowedAlongsideUnityFocus": true,
     "fastLane": {
       "enabled": true,
       "trigger": "RUNTIME_INCIDENT",
@@ -31,7 +58,7 @@
       "MATERIAL_MILESTONE_COMPLETED",
       "TWO_CONSECUTIVE_NO_MEANINGFUL_PROGRESS",
       "BLOCKED_BY_STRUCTURE_OR_DEPENDENCY",
-      "HIGHER_SCORE_CANDIDATE",
+      "OWNER_PRIORITY_CHANGE",
       "RELEASE_READY"
     ]
   },
@@ -58,26 +85,34 @@
       "slug": "survival",
       "name": "나의 생존기",
       "sourcePath": "web-games/survival",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "IMPROVE",
+      "productionSourcePath": "unity-games/survival",
+      "profileStatus": "RELEASE_CONFIRMED",
+      "mode": "UNITY_NEXT",
+      "productionTier": 1,
+      "targetEngine": "unity-android",
+      "dedicatedDevelopmentLane": "UNITY_PRIMARY",
+      "unityProjectReady": false,
+      "focusRole": "NEXT_FOCUS",
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 2, "developmentEfficiency": 2, "scalability": 2, "lowBlockage": 1},
         "total": 9,
-        "evidenceNote": "공개 플레이 가능, 반응형 생태 정체성, 작은 단위 개선과 콘텐츠 확장 여지가 큼"
+        "evidenceNote": "공개 플레이 가능성과 반응형 생태 정체성은 강하지만 Unity 전환 프로젝트가 아직 준비되지 않아 현재 집중 슬롯은 사용하지 않음"
       },
-      "protectedValues": ["jaewoon-survival-v1", "worldVersion", "save-meaning", "core-loop"]
+      "protectedValues": ["jaewoon-survival-v1", "worldVersion", "save-meaning", "core-loop", "public-web-archive"]
     },
     {
       "id": "P0002",
       "slug": "insect-survival",
       "name": "곤충 생존기",
       "sourcePath": "web-games/insect-survival",
-      "profileStatus": "NEEDS_AUDIT",
-      "mode": "EXPERIMENT_ONLY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "WEB_FIRST_IMPLEMENTATION",
+      "productionTier": 2,
+      "targetEngine": "web",
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 2, "developmentEfficiency": 1, "scalability": 2, "lowBlockage": 1},
         "total": 8,
-        "evidenceNote": "곤충 생태 차별성과 확장성은 높지만 구조 정리가 아직 필요함"
+        "evidenceNote": "곤충 생태 차별성과 확장성이 높아 Web 1차 플레이어블 구현으로 핵심 루프를 검증하기 적합"
       },
       "protectedValues": ["save-meaning", "core-loop"]
     },
@@ -86,12 +121,14 @@
       "slug": "crystal-defense",
       "name": "수정 디펜스",
       "sourcePath": "web-games/crystal-defense",
-      "profileStatus": "NEEDS_AUDIT",
-      "mode": "EXPERIMENT_ONLY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "WEB_FIRST_IMPLEMENTATION",
+      "productionTier": 2,
+      "targetEngine": "web",
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 2, "developmentEfficiency": 0, "scalability": 2, "lowBlockage": 0},
         "total": 6,
-        "evidenceNote": "수정 공명 정체성은 좋지만 기술부채 게이트가 먼저 필요함"
+        "evidenceNote": "수정 공명 정체성은 유지하되 전체 설계를 재현하지 않고 Web 1차 구현에서 핵심 방어 루프만 검증"
       },
       "protectedValues": ["save-meaning", "core-loop"]
     },
@@ -100,12 +137,14 @@
       "slug": "bug-defense",
       "name": "곤충 디펜스",
       "sourcePath": "web-games/bug-defense",
-      "profileStatus": "NEEDS_AUDIT",
-      "mode": "EXPERIMENT_ONLY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "WEB_FIRST_IMPLEMENTATION",
+      "productionTier": 2,
+      "targetEngine": "web",
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 1, "developmentEfficiency": 1, "scalability": 2, "lowBlockage": 1},
         "total": 7,
-        "evidenceNote": "확장성은 있으나 현재 차별성과 런타임 안정화가 우선"
+        "evidenceNote": "현상금 위험 선택을 중심으로 Web 1차 구현을 만들고 전체 아트북 기능 재현은 후속 판단으로 남김"
       },
       "protectedValues": ["save-meaning", "core-loop"]
     },
@@ -114,12 +153,14 @@
       "slug": "human-go",
       "name": "휴먼 GO",
       "sourcePath": "web-games/human-go",
-      "profileStatus": "NEEDS_AUDIT",
-      "mode": "EXPERIMENT_ONLY",
+      "profileStatus": "DESIGN_ONLY",
+      "mode": "REDESIGN",
+      "productionTier": 3,
+      "targetEngine": "design-only",
       "developmentFocus": {
         "scores": {"playability": 1, "distinctiveness": 1, "developmentEfficiency": 0, "scalability": 1, "lowBlockage": 1},
         "total": 4,
-        "evidenceNote": "단일 대형 파일 구조 분석이 먼저라 집중개발보다 검토 단계가 적합"
+        "evidenceNote": "현재는 코드 개발보다 아트북·정체성·구조 설계 최적화가 우선"
       },
       "protectedValues": ["save-meaning", "core-loop"]
     },
@@ -128,23 +169,31 @@
       "slug": "daechung-rpg",
       "name": "대충 RPG",
       "sourcePath": "web-games/daechung-rpg",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "EXPERIMENT_ONLY",
+      "productionSourcePath": "unity-games/daechung-rpg",
+      "profileStatus": "RELEASE_CONFIRMED",
+      "mode": "UNITY_DEVELOP",
+      "productionTier": 1,
+      "targetEngine": "unity-android",
       "dedicatedDevelopmentLane": "UNITY_PRIMARY",
+      "unityProjectReady": true,
+      "focusRole": "FOCUSED",
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 2, "developmentEfficiency": 1, "scalability": 2, "lowBlockage": 1},
         "total": 8,
-        "evidenceNote": "Unity 본개발 승인과 테스트 빌드 근거가 있으며 확장성은 높지만 재구축 비용이 큼"
+        "evidenceNote": "실제 Unity 본개발 프로젝트와 테스트 빌드 근거가 있어 1개 집중개발 슬롯의 우선 대상"
       },
-      "protectedValues": ["save-meaning", "core-loop", "unity-primary"]
+      "protectedValues": ["save-meaning", "core-loop", "unity-primary", "public-web-archive"]
     },
     {
       "id": "P0007",
       "slug": "island-village",
       "name": "무인도 마을",
       "sourcePath": "web-games/island-village",
-      "profileStatus": "HOLD_MISSING_SOURCE",
-      "mode": "HOLD",
+      "profileStatus": "DESIGN_ONLY",
+      "mode": "REDESIGN",
+      "productionTier": 3,
+      "targetEngine": "design-only",
+      "sourceEvidenceStatus": "MISSING_SOURCE",
       "protectedValues": []
     },
     {
@@ -152,8 +201,11 @@
       "slug": "egg-heist",
       "name": "알 도둑 대작전",
       "sourcePath": "web-games/egg-heist",
-      "profileStatus": "HOLD_REDIRECT_ONLY",
-      "mode": "HOLD",
+      "profileStatus": "DESIGN_ONLY",
+      "mode": "REDESIGN",
+      "productionTier": 3,
+      "targetEngine": "design-only",
+      "sourceEvidenceStatus": "REDIRECT_ONLY",
       "protectedValues": []
     },
     {
@@ -161,12 +213,14 @@
       "slug": "monster-adventure",
       "name": "몬스터 어드벤처",
       "sourcePath": "web-games/monster-adventure",
-      "profileStatus": "REDESIGN_IDENTITY",
+      "profileStatus": "DESIGN_ONLY",
       "mode": "REDESIGN",
+      "productionTier": 3,
+      "targetEngine": "design-only",
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 1, "developmentEfficiency": 1, "scalability": 1, "lowBlockage": 0},
         "total": 5,
-        "evidenceNote": "플레이 가능하지만 정체성 재설계가 끝나기 전에는 집중개발 슬롯을 쓰지 않음"
+        "evidenceNote": "4마리 릴레이 전투 정체성과 콘텐츠 구조를 아트북에서 먼저 보완"
       },
       "protectedValues": ["save-meaning", "monster-party", "capture", "battle", "dex"]
     },
@@ -175,8 +229,11 @@
       "slug": "chess-battle",
       "name": "체스 배틀",
       "sourcePath": "web-games/chess-battle",
-      "profileStatus": "RELEASE_CONFIRMED",
-      "mode": "MAINTENANCE",
+      "profileStatus": "DESIGN_ONLY",
+      "mode": "REDESIGN",
+      "productionTier": 3,
+      "targetEngine": "design-only",
+      "publicArchiveStable": true,
       "protectedValues": ["save-meaning", "core-loop", "public-stable"]
     },
     {
@@ -184,8 +241,11 @@
       "slug": "survival2",
       "name": "숲의 생존자들",
       "sourcePath": "web-games/survival2",
-      "profileStatus": "RELEASE_CONFIRMED",
-      "mode": "MAINTENANCE",
+      "profileStatus": "DESIGN_ONLY",
+      "mode": "REDESIGN",
+      "productionTier": 3,
+      "targetEngine": "design-only",
+      "publicArchiveStable": true,
       "protectedValues": ["save-meaning", "core-loop", "public-stable"]
     },
     {
@@ -193,8 +253,11 @@
       "slug": "territory-war",
       "name": "영토전쟁",
       "sourcePath": "web-games/territory-war",
-      "profileStatus": "RELEASE_CONFIRMED",
-      "mode": "MAINTENANCE",
+      "profileStatus": "DESIGN_ONLY",
+      "mode": "REDESIGN",
+      "productionTier": 3,
+      "targetEngine": "design-only",
+      "publicArchiveStable": true,
       "protectedValues": ["save-meaning", "core-loop", "public-stable"]
     }
   ]
