@@ -17,6 +17,7 @@ on:
       - "tools/autonomous-candidate-review.mjs"
       - "tools/autonomous-queue-state.mjs"
       - "tools/autonomous-vibe-release-handoff.mjs"
+      - "tools/director-supervisor.mjs"
       - "qa/autonomous-development-worker.test.mjs"
       - "qa/autonomous-work-planner.test.mjs"
       - "qa/autonomous-24h-work-planner.test.mjs"
@@ -29,6 +30,7 @@ on:
       - ".github/workflows/vibe2-candidate-release.yml"
       - ".github/workflows/vibe2-unity-release-result.yml"
       - ".github/workflows/company-dna-learning.yml"
+      - ".github/workflows/director-supervisor.yml"
       - ".github/workflows/autonomous-development-qa.yml"
   pull_request:
     paths:
@@ -45,6 +47,7 @@ on:
       - "tools/autonomous-candidate-review.mjs"
       - "tools/autonomous-queue-state.mjs"
       - "tools/autonomous-vibe-release-handoff.mjs"
+      - "tools/director-supervisor.mjs"
       - "qa/autonomous-development-worker.test.mjs"
       - "qa/autonomous-work-planner.test.mjs"
       - "qa/autonomous-24h-work-planner.test.mjs"
@@ -57,6 +60,7 @@ on:
       - ".github/workflows/vibe2-candidate-release.yml"
       - ".github/workflows/vibe2-unity-release-result.yml"
       - ".github/workflows/company-dna-learning.yml"
+      - ".github/workflows/director-supervisor.yml"
       - ".github/workflows/autonomous-development-qa.yml"
   workflow_dispatch:
 
@@ -79,13 +83,14 @@ jobs:
       - run: node --check tools/autonomous-queue-state.mjs
       - run: node --check tools/autonomous-candidate-review.mjs
       - run: node --check tools/autonomous-vibe-release-handoff.mjs
+      - run: node --check tools/director-supervisor.mjs
       - run: node --test qa/autonomous-development-worker.test.mjs
       - run: node --test qa/autonomous-work-planner.test.mjs
       - run: node --test qa/autonomous-24h-work-planner.test.mjs
       - run: node --test qa/autonomous-queue-state.test.mjs
       - run: node --test qa/autonomous-candidate-review.test.mjs
       - run: node --test qa/autonomous-vibe-release-handoff.test.mjs
-      - name: Validate 24h development to release and learning contracts
+      - name: Validate parallel departments, serial source, release and learning contracts
         shell: bash
         run: |
           set -euo pipefail
@@ -101,6 +106,8 @@ jobs:
           const handoff=fs.readFileSync('tools/autonomous-vibe-release-handoff.mjs','utf8');
           const planner=fs.readFileSync('tools/autonomous-24h-work-planner.mjs','utf8');
           const dna=fs.readFileSync('tools/company-dna-learning.mjs','utf8');
+          const director=fs.readFileSync('.github/workflows/director-supervisor.yml','utf8');
+          const supervisor=fs.readFileSync('tools/director-supervisor.mjs','utf8');
           const must=(ok,msg)=>{if(!ok)throw new Error(msg)};
           must(p.fixedProjectCount===false,'fixed project count must remain false');
           must(p.paidApi===false,'paidApi must remain false');
@@ -111,25 +118,39 @@ jobs:
           must(p.sameGameDailyFloorCap===null,'same-game daily floor cap must be disabled');
           must(p.completedArtbookDailyWorkCap===null,'completed-artbook daily cap must be disabled');
           must(Array.isArray(p.departmentDevelopmentCycle)&&p.departmentDevelopmentCycle.join(',')==='planning,development,graphics,qa,balance,planning-final','department sequence mismatch');
+          must(p.departmentReviewMode==='PARALLEL_INDEPENDENT','department review must be independent/parallel');
+          must(p.departmentFinalIntegrator==='planning-final','planning-final integrator missing');
+          must(p.departmentLiveStateAuthority==='github-actions-jobs','live department state authority mismatch');
+          must(p.sourceWriteConcurrency==='SERIAL','source writes must remain serial');
           must(continuous.includes("cron: '17 * * * *'"),'hourly recovery wake missing');
+          must(continuous.includes('group: autonomous-dev-writer'),'global source-write concurrency missing');
+          must(continuous.includes('name: prepare development floor'),'prepare job missing');
+          must(continuous.includes('role: [planning, development, graphics, qa, balance]'),'five-department matrix missing');
+          must(continuous.includes('name: department (')&&continuous.includes('matrix.role'),'department jobs are not individually visible');
+          must(continuous.includes('AUTONOMOUS_DEPARTMENT_ROLE:')&&continuous.includes('matrix.role'),'independent department runner input missing');
+          must(continuous.includes('name: department (planning-final)'),'planning-final integration job missing');
+          must(continuous.includes("AUTONOMOUS_DEPARTMENT_FINALIZE: 'true'"),'planning-final finalize mode missing');
+          must(continuous.includes('name: serial source implementation'),'serial source implementation job missing');
+          must(continuous.includes('source write concurrency: SERIAL'),'source serial evidence missing');
+          must(continuous.includes('department review concurrency: PARALLEL_5'),'parallel department evidence missing');
           must(continuous.includes('node tools/autonomous-24h-work-planner.mjs'),'24h planner not connected');
           must(continuous.includes('Reserve this development floor'),'repeatable floor reservation missing');
-          must(continuous.includes('AI departments run the development floor'),'department floor step missing');
-          must(continuous.includes('node tools/autonomous-department-cycle.mjs'),'department runner not connected');
           must(continuous.includes('Attach department cycle to candidate evidence'),'department evidence gate missing');
-          must(continuous.includes('same game daily floor cap: NONE'),'same-game unlimited contract missing');
-          must(continuous.includes('completed DESIGN_BASELINE daily work cap: NONE'),'completed-artbook unlimited contract missing');
-          must(continuous.includes("if: failure() && steps.reserve.outputs.reserved == 'true'"),'reserved floor failure continuation missing');
           must(continuous.includes('FAILED_FLOOR_NEXT=DISPATCHED'),'failed floor must dispatch next floor');
           must(continuous.includes('ref: autonomous-dev'),'autonomous-dev checkout missing');
           must(continuous.includes('git merge --no-edit origin/main'),'main sync missing');
           must(continuous.includes('SELF_PROMOTE_MAIN=NO'),'main self-promotion guard missing');
           must(continuous.includes('gh workflow run autonomous-candidate-promotion.yml --ref main -f candidate_branch='),'candidate promotion must be explicitly dispatched after GITHUB_TOKEN push');
-          must(department.includes("const ROLES=['planning','development','graphics','qa','balance','planning-final']"),'department role sequence missing');
+          must(department.includes("const CORE_ROLES=['planning','development','graphics','qa','balance']"),'parallel core roles missing');
+          must(department.includes("const FINAL_ROLE='planning-final'"),'planning-final role missing');
+          must(department.includes('Promise.all(CORE_ROLES.map'),'department runner is not concurrent');
           must(department.includes('allDepartmentsWorked:true'),'department completion evidence missing');
-          must(department.includes("planCompanyDevelopmentTask")&&department.includes("../assets/vibe-company-orchestration-bridge.js"),'Vibe company bridge not connected to autonomous department cycle');
-          must(department.includes("company-learning/company-dna.json")&&department.includes('selectVerifiedVibeLearning'),'verified Company DNA not fed into Vibe collaboration');
-          must(department.includes("VIBE_PROPOSES_AI_DEPARTMENTS_REVIEW_AND_CORRECT"),'Vibe/AI collaboration contract missing');
+          must(department.includes('parallelDepartments:CORE_ROLES'),'parallel department evidence missing from cycle');
+          must(department.includes("sourceWriteConcurrency:'SERIAL_AFTER_PARALLEL_REVIEW'"),'source-write serial policy missing from cycle');
+          must(department.includes('DEPARTMENT_STATE=${role}:ACTIVE')&&department.includes('DEPARTMENT_STATE=${role}:BLOCKED'),'live department state logs missing');
+          must(department.includes('planCompanyDevelopmentTask')&&department.includes('../assets/vibe-company-orchestration-bridge.js'),'Vibe company bridge not connected');
+          must(department.includes('company-learning/company-dna.json')&&department.includes('selectVerifiedVibeLearning'),'verified Company DNA not fed into Vibe collaboration');
+          must(department.includes('VIBE_PROPOSES_PARALLEL_AI_DEPARTMENTS_REVIEW_THEN_PLANNING_INTEGRATES'),'parallel Vibe/AI collaboration contract missing');
           must(department.includes('vibeMaySelfApprove:false')&&department.includes('vibeMayOverrideDepartments:false'),'early Vibe authority guard missing');
           must(dna.includes("'VIBE2'")&&dna.includes('GAME_VERIFIED')&&dna.includes('MULTI_GAME_VERIFIED'),'existing Vibe learning memory contract missing');
           must(promotion.includes('workflow_dispatch:')&&promotion.includes('candidate_branch:'),'promotion explicit dispatch input missing');
@@ -143,17 +164,23 @@ jobs:
           must(handoff.includes("['development-confirmed','release-confirmed']"),'handoff release-state gate missing');
           must(release.includes('workflow_dispatch:')&&release.includes('candidate_branch:'),'Vibe release gate explicit dispatch missing');
           must(release.includes('candidate_sha="$(git rev-parse HEAD)"'),'workflow_dispatch must resolve exact candidate SHA');
-          must(release.includes("AUTONOMOUS_DEV_VERIFIED_HANDOFF"),'release gate autonomous origin routing missing');
+          must(release.includes('AUTONOMOUS_DEV_VERIFIED_HANDOFF'),'release gate autonomous origin routing missing');
           must(release.includes('gh workflow run autonomous-continuous-development.yml'),'web release must return to autonomous development queue');
-          must(unityResult.includes("AUTONOMOUS_DEV_VERIFIED_HANDOFF"),'Unity release result autonomous origin routing missing');
+          must(unityResult.includes('AUTONOMOUS_DEV_VERIFIED_HANDOFF'),'Unity release result autonomous origin routing missing');
           must(unityResult.includes('gh workflow run autonomous-continuous-development.yml'),'Unity release result must return to autonomous development queue');
           must(dnaWorkflow.includes("workflows: ['Autonomous Candidate Promotion']"),'verified promotion must trigger existing Company DNA learning');
           must(planner.includes("selection:'LEAST_KST_ATTEMPTS_FIRST'"),'fair 24h floor rotation missing');
+          must(director.includes('Autonomous Continuous Development'),'director does not observe autonomous development');
+          must(director.includes('/tmp/autonomous-jobs.json'),'director does not fetch autonomous department jobs');
+          must(supervisor.includes('workState')&&supervisor.includes('ACTIVE')&&supervisor.includes('WAITING'),'live department states missing from supervisor');
+          must(supervisor.includes('autonomousDepartmentJobEvidenceUsed'),'autonomous department evidence check missing');
           const files=['.github/workflows/autonomous-development-worker.yml','.github/workflows/autonomous-continuous-development.yml','.github/workflows/autonomous-candidate-promotion.yml','.github/workflows/vibe2-candidate-release.yml','.github/workflows/vibe2-unity-release-result.yml','tools/autonomous-development-worker.mjs','tools/autonomous-work-planner.mjs','tools/autonomous-24h-work-planner.mjs','tools/autonomous-department-cycle.mjs','tools/autonomous-vibe-release-handoff.mjs'];
           const text=files.map(file=>fs.readFileSync(file,'utf8')).join('\n');
           must(!/OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY/.test(text),'paid/external key path found');
-          console.log('AUTONOMOUS_24H_SYSTEM_CONTRACT=PASS');
+          console.log('AUTONOMOUS_PARALLEL_DEPARTMENTS_CONTRACT=PASS');
+          console.log('AUTONOMOUS_SERIAL_SOURCE_WRITE_CONTRACT=PASS');
           console.log('VIBE_AI_COLLABORATION_CONTRACT=PASS');
           console.log('DEVELOPMENT_RELEASE_HANDOFF_CONTRACT=PASS');
           console.log('VERIFIED_LEARNING_LOOP_CONTRACT=PASS');
+          console.log('DIRECTOR_LIVE_DEPARTMENT_STATUS_CONTRACT=PASS');
           NODE
