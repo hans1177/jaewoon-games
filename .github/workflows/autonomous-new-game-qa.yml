@@ -80,8 +80,22 @@ jobs:
           grep -Fq 'tools/incubator-promotion-state.mjs' .github/workflows/autonomous-candidate-promotion.yml
           grep -Fq 'PROMOTED_DEV_REVISION' .github/workflows/autonomous-candidate-promotion.yml
           grep -Fq 'MAIN_GAME_CODE_WRITE=NO' .github/workflows/autonomous-candidate-promotion.yml
+
+          # The continuous workflow no longer holds the writer lock for the whole floor.
+          # Only reservation/recovery jobs serialize shared queue writes so other game roots can work in parallel.
+          if grep -Eq '^concurrency:$' .github/workflows/autonomous-continuous-development.yml; then
+            echo 'continuous workflow is globally serialized; cross-game parallelism blocked' >&2
+            exit 1
+          fi
+          continuous_locks="$(grep -c '^      group: autonomous-dev-writer$' .github/workflows/autonomous-continuous-development.yml)"
+          if [ "$continuous_locks" -lt 2 ]; then
+            echo 'continuous reservation/recovery writer locks missing' >&2
+            exit 1
+          fi
+          grep -Fq 'PARALLEL_FANOUT_NEXT=DISPATCHED' .github/workflows/autonomous-continuous-development.yml
+          grep -Fq 'SAME_SOURCE_ROOT_DUPLICATION=LEASE_BLOCKED' .github/workflows/autonomous-continuous-development.yml
+
           for writer in \
-            .github/workflows/autonomous-continuous-development.yml \
             .github/workflows/autonomous-prototype-worker.yml \
             .github/workflows/autonomous-candidate-promotion.yml; do
             count="$(grep -c '^  group: autonomous-dev-writer$' "$writer")"
@@ -100,7 +114,8 @@ jobs:
             echo 'real paid/external credential usage found' >&2
             exit 1
           fi
-          echo 'AUTONOMOUS_DEV_WRITER_SERIALIZATION=PASS'
+          echo 'AUTONOMOUS_DEV_SHARED_WRITER_SERIALIZATION=PASS'
+          echo 'AUTONOMOUS_GAME_FLOORS_PARALLEL=PASS'
           echo 'NEW_GAME_CLOSED_LOOP_DRY_RUN=PASS'
           echo 'NEW_GAME_CLOSED_LOOP_CONTRACT=PASS'
           echo 'PUBLIC_MAIN_GAME_CODE_AUTO_PROMOTION=NO'
