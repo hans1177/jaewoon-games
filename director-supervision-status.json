@@ -22,18 +22,18 @@
     "liveJobPrecedesPersistedSubmission": true
   },
   "counts": {
-    "WORKING": 2,
-    "DONE": 5,
+    "WORKING": 1,
+    "DONE": 6,
     "IDLE_NO_TASK": 1,
     "BLOCKED": 0,
     "FAILED": 0,
     "STALE": 0
   },
   "liveStates": {
-    "ACTIVE": 2,
+    "ACTIVE": 1,
     "WAITING": 1,
     "BLOCKED": 0,
-    "DONE": 5
+    "DONE": 6
   },
   "attentionRequired": false,
   "primaryFindings": [],
@@ -44,16 +44,16 @@
       "conclusion": null,
       "event": "workflow_dispatch",
       "createdAt": "2026-09-09T12:36:42Z",
-      "updatedAt": "2026-09-09T12:36:47Z",
+      "updatedAt": "2026-09-09T12:42:20Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34352025188"
     },
     "autonomousDevelopment": {
       "id": 34352011959,
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "failure",
       "event": "workflow_dispatch",
       "createdAt": "2026-09-09T12:36:34Z",
-      "updatedAt": "2026-09-09T12:40:01Z",
+      "updatedAt": "2026-09-09T12:44:03Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34352011959"
     },
     "homepage": null,
@@ -65,29 +65,29 @@
     "planning": {
       "department": "planning",
       "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "ACTIVE",
+      "status": "DONE",
+      "workState": "DONE",
       "task": "autonomous development floor 34352011959",
       "executionEvidence": [
-        "autonomous-workflow:34352011959:in_progress:pending",
-        "autonomous-job:102468429492:department (planning-final):in_progress:pending",
+        "autonomous-workflow:34352011959:completed:failure",
+        "autonomous-job:102468429492:department (planning-final):completed:success",
         "autonomous-job:102467438437:department (planning):completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": {
         "id": 102468429492,
         "name": "department (planning-final)",
-        "status": "in_progress",
-        "conclusion": null,
+        "status": "completed",
+        "conclusion": "success",
         "failedStep": null,
         "startedAt": "2026-09-09T12:40:01Z",
-        "completedAt": null,
+        "completedAt": "2026-09-09T12:41:27Z",
         "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34352011959/job/102468429492"
       },
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous development department job is executing now",
-      "action": "complete independent department review and hand off result",
+      "reason": "latest autonomous department handoff completed successfully",
+      "action": "none",
       "source": "autonomous-development"
     },
     "development": {
@@ -97,7 +97,7 @@
       "workState": "DONE",
       "task": "autonomous development floor 34352011959",
       "executionEvidence": [
-        "autonomous-workflow:34352011959:in_progress:pending",
+        "autonomous-workflow:34352011959:completed:failure",
         "autonomous-job:102467438481:department (development):completed:success"
       ],
       "resultVerified": true,
@@ -124,7 +124,7 @@
       "workState": "DONE",
       "task": "autonomous development floor 34352011959",
       "executionEvidence": [
-        "autonomous-workflow:34352011959:in_progress:pending",
+        "autonomous-workflow:34352011959:completed:failure",
         "autonomous-job:102467438428:department (qa):completed:success"
       ],
       "resultVerified": true,
@@ -151,7 +151,7 @@
       "workState": "DONE",
       "task": "autonomous development floor 34352011959",
       "executionEvidence": [
-        "autonomous-workflow:34352011959:in_progress:pending",
+        "autonomous-workflow:34352011959:completed:failure",
         "autonomous-job:102467438687:department (graphics):completed:success"
       ],
       "resultVerified": true,
@@ -178,7 +178,7 @@
       "workState": "DONE",
       "task": "autonomous development floor 34352011959",
       "executionEvidence": [
-        "autonomous-workflow:34352011959:in_progress:pending",
+        "autonomous-workflow:34352011959:completed:failure",
         "autonomous-job:102467438413:department (balance):completed:success"
       ],
       "resultVerified": true,
@@ -272,7 +272,7 @@
     "artbookBacklogCount": 3,
     "nextMissingInitialArtbook": "survival",
     "artbookRecoveryDispatched": false,
-    "autonomousRecoveryDispatched": false,
+    "autonomousRecoveryDispatched": true,
     "duplicateActiveWorkflowDispatchForbidden": true
   }
 }
