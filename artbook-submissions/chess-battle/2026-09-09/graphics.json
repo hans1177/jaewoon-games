@@ -1,0 +1,168 @@
+{
+  "version": 6,
+  "gameId": "chess-battle",
+  "date": "2026-09-09",
+  "department": "graphics",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "체스 배틀",
+  "evidence": [
+    {
+      "source": "web-games/chess-battle/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-chess-battle.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentVisualEvidence": "체스 배틀 게임 이미지",
+    "identityDirection": "전술 교본 + 전장 연대기",
+    "characterMonsterEnvironmentLogic": "전술 교본과 전장 연대기 기반 시각 구성",
+    "mobileReadability": "WEB_ARCHIVE_READ_ONLY",
+    "assetConstraints": "기본 이미지 기반",
+    "gaps": "미완성 영역",
+    "handoffs": "미완성 영역"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "체스 배틀 전술 교본 시각: 전술의 역할을 기반으로 쌓인 전술 팀의 모습",
+      "전장 연대기 기반: 전투의 규칙과 전략을 시각적으로 표현",
+      "진형 도해: 전략적 접근을 기반으로 쌓인 도해 시각"
+    ],
+    "implementationPlan": [
+      "전술 팀의 모습을 기반으로 쌓인 전술 시각",
+      "전투의 규칙과 전략을 기반으로 쌓인 전장 연대기 시각",
+      "진형 도해의 시각을 기반으로 전략적 접근을 표현"
+    ],
+    "demoValidation": [
+      "전술 팀의 모습을 기반으로 쌓인 전술 시각",
+      "전투의 규칙과 전략을 기반으로 쌓인 전장 연대기 시각",
+      "진형 도해의 시각을 기반으로 전략적 접근을 표현"
+    ]
+  },
+  "unverified": [
+    "전술 팀의 모습을 기반으로 쌓인 전술 시각",
+    "전투의 규칙과 전략을 기반으로 쌓인 전장 연대기 시각",
+    "진형 도해의 시각을 기반으로 전략적 접근을 표현"
+  ],
+  "cuts": [
+    {
+      "kind": "graphics",
+      "title": "체스 배틀",
+      "body": "전술 팀의 모습을 기반으로 쌓인 전술 시각 · 전투의 규칙과 전략을 기반으로 쌓인 전장 연대기 시각 · 진형 도해의 시각을 기반으로 전략적 접근을 표현",
+      "image": "artbook-submissions/chess-battle/2026-09-09/visuals/graphics.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "graphics",
+        "ownerName": "그래픽",
+        "pageSlot": 1,
+        "visualType": "concept-board",
+        "title": "체스 배틀",
+        "focus": "전술 팀의 모습",
+        "caption": "전술 팀의 모습을 기반으로 쌓인 전술 시각",
+        "elements": [
+          {
+            "label": "전술 팀의 모습",
+            "note": "",
+            "kind": ""
+          },
+          {
+            "label": "전술 시각",
+            "note": "전술 팀의 모습을 기반으로 쌓인 전…",
+            "kind": ""
+          },
+          {
+            "label": "전술 팀의 구성",
+            "note": "",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/chess-battle/2026-09-09/visuals/graphics-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "graphics"
+      },
+      {
+        "owner": "graphics",
+        "ownerName": "그래픽",
+        "pageSlot": 2,
+        "visualType": "style-board",
+        "title": "전투의 규칙과 전략",
+        "focus": "전투의 규칙",
+        "caption": "전투의 규칙과 전략을 기반으로 쌓인 전장 연대기 시각",
+        "elements": [
+          {
+            "label": "전투의 규칙",
+            "note": "",
+            "kind": ""
+          },
+          {
+            "label": "전략",
+            "note": "전투의 규칙과 전략을 기반으로 쌓인…",
+            "kind": ""
+          },
+          {
+            "label": "전략적 접근",
+            "note": "",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/chess-battle/2026-09-09/visuals/graphics-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "graphics"
+      }
+    ],
+    "generatedBy": {
+      "department": "graphics",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

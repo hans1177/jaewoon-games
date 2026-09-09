@@ -1,0 +1,143 @@
+{
+  "version": 6,
+  "gameId": "chess-battle",
+  "date": "2026-09-09",
+  "department": "qa",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "체스 배틀",
+  "evidence": [
+    {
+      "source": "web-games/chess-battle/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-chess-battle.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentPlayableFlow": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+    "verifiedEvidence": "WEB_ARCHIVE_READ_ONLY",
+    "problemScenes": "체스 규칙이 세계의 전쟁 규칙이어야 하며 각 말의 이동·전투 특성이 역할과 서사에 이유를 가져야 한다.",
+    "mobileSaveErrorRisks": "no-blocking-smoke-errors",
+    "testScenarios": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+    "unverified": "currentStage",
+    "handoffs": "none"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "체스 배틀의 전술 교본을 통해 전략적 전투를 시뮬레이션",
+      "전장 규칙을 통해 전략적 계획을 구축",
+      "진형 도해를 통해 전략적 접근 방식을 시각화"
+    ],
+    "implementationPlan": [
+      "전술 교본을 통해 전략적 전투를 시뮬레이션",
+      "전장 규칙을 통해 전략적 계획을 구축",
+      "진형 도해를 통해 전략적 접근 방식을 시각화"
+    ],
+    "demoValidation": [
+      "전술 교본을 통해 전략적 전투를 시뮬레이션",
+      "전장 규칙을 통해 전략적 계획을 구축",
+      "진형 도해를 통해 전략적 접근 방식을 시각화"
+    ]
+  },
+  "unverified": [
+    "currentStage"
+  ],
+  "cuts": [
+    {
+      "kind": "qa",
+      "title": "체스 배틀",
+      "body": "전술 교본을 통해 전략적 전투를 시뮬레이션 · 전장 규칙을 통해 전략적 계획을 구축 · 진형 도해를 통해 전략적 접근 방식을 시각화",
+      "image": "artbook-submissions/chess-battle/2026-09-09/visuals/qa.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 1,
+    "pages": [
+      {
+        "owner": "qa",
+        "ownerName": "QA",
+        "pageSlot": 1,
+        "visualType": "test-journey",
+        "title": "체스 배틀",
+        "focus": "체스 규칙이 세계의 전쟁 규칙이어야 하며 각 말의…",
+        "caption": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+        "elements": [
+          {
+            "label": "verifiedEvi…",
+            "note": "WEB_ARCHIVE_READ_ON…",
+            "kind": ""
+          },
+          {
+            "label": "problemScen…",
+            "note": "체스 규칙이 세계의 전쟁 규칙이어야…",
+            "kind": ""
+          },
+          {
+            "label": "mobileSaveE…",
+            "note": "no-blocking-smoke-e…",
+            "kind": ""
+          },
+          {
+            "label": "testScenari…",
+            "note": "플레이 흐름·문제 장면·테스트 동선…",
+            "kind": ""
+          }
+        ],
+        "callouts": [
+          "testScenarios"
+        ],
+        "image": "artbook-submissions/chess-battle/2026-09-09/visuals/qa-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "qa"
+      }
+    ],
+    "generatedBy": {
+      "department": "qa",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}
