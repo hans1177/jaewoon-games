@@ -5,13 +5,19 @@ on:
   workflow_run:
     workflows:
       - Director Staff Supervisor
+      - Autonomous Continuous Development
+      - Free Artbook Department Bots
     types: [completed]
   push:
     branches: [main]
     paths:
       - 'tools/company-status-sync.mjs'
+      - 'tools/autonomous-24h-work-planner.mjs'
       - '.github/workflows/company-status-sync.yml'
       - 'director-supervision-status.json'
+      - 'autonomous-portfolio.json'
+      - 'game-artbooks.json'
+      - 'game-catalog.json'
 
 permissions:
   contents: write
@@ -34,7 +40,7 @@ jobs:
       - name: Sync main
         run: git pull --ff-only origin main
 
-      - name: Sync company status from supervision
+      - name: Sync company status from supervision and autonomous focus
         run: node tools/company-status-sync.mjs
 
       - name: Validate synchronized state
@@ -44,13 +50,23 @@ jobs:
           const fs=require('fs');
           const company=JSON.parse(fs.readFileSync('company-status.json','utf8'));
           const supervision=JSON.parse(fs.readFileSync('director-supervision-status.json','utf8'));
+          const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
           if(company.supervision?.dateKst!==supervision.dateKst)throw new Error('supervision date not synchronized');
           if(JSON.stringify(company.supervision?.counts||{})!==JSON.stringify(supervision.counts||{}))throw new Error('supervision counts not synchronized');
           if(JSON.stringify(company.supervision?.primaryFindings||[])!==JSON.stringify(supervision.primaryFindings||[]))throw new Error('supervision findings not synchronized');
           const map={WORKING:'working',DONE:'done',IDLE_NO_TASK:'idle',BLOCKED:'blocked',FAILED:'failed',STALE:'stale'};
           const expected=map[supervision.staff?.homepage?.status]||String(supervision.staff?.homepage?.status||'').toLowerCase();
           if(company.operations?.homepage?.status!==expected)throw new Error('homepage operation status not synchronized');
+          const policy=portfolio.developmentFocusPolicy||{};
+          const focus=company.operations?.autonomousFocus;
+          const target=Math.max(0,Number(policy.targetFocusedGames??policy.maxFocusedGames??0)||0);
+          if(!focus||focus.enabled!==Boolean(portfolio.developmentFocusPolicy))throw new Error('autonomous focus status missing');
+          if(focus.targetSlots!==target)throw new Error('autonomous focus target mismatch');
+          if(!Array.isArray(focus.focusedGameIds)||!Array.isArray(focus.games))throw new Error('autonomous focus arrays missing');
+          if(focus.focusedGameIds.length>target||focus.games.length>target)throw new Error('autonomous focus exceeds target slots');
+          if(focus.games.some((row,index)=>row.gameId!==focus.focusedGameIds[index]))throw new Error('autonomous focus game mapping mismatch');
           console.log('COMPANY_STATUS_SYNC_QA=PASS');
+          console.log(`COMPANY_AUTONOMOUS_FOCUS_QA=${focus.focusedGameIds.join(',')||'none'}`);
           NODE
 
       - name: Commit synchronized company status
@@ -63,7 +79,7 @@ jobs:
             echo 'COMPANY_STATUS_SYNC_COMMIT=NO_CHANGES'
             exit 0
           fi
-          git commit -m 'company: sync supervision state [skip ci]'
+          git commit -m 'company: sync supervision and autonomous focus [skip ci]'
           git pull --rebase origin main
           git push origin main
           echo 'COMPANY_STATUS_SYNC_COMMIT=SUCCESS'
