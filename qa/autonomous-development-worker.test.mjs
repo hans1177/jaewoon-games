@@ -7,6 +7,8 @@ import {
   assertRelativeOutputPath,
   browserFailureFeedback,
   buildPrompt,
+  buildRetryAttempt,
+  classifyGenerationFailure,
   extractStorageKeys,
   generateAutonomousCandidate,
   MODEL_CONTEXT_TOKENS,
@@ -14,6 +16,7 @@ import {
   normalizeModelCandidateShape,
   parseModelCandidate,
   readContext,
+  selectRetryResponsibilityFile,
   validateCandidateAgainstSource,
 } from '../tools/autonomous-development-worker.mjs';
 import { buildVibeCoreContext, selectVerifiedVibeLearning } from '../tools/autonomous-department-cycle.mjs';
@@ -64,6 +67,39 @@ test('normalizer refuses ambiguous or unsupported repair instead of guessing',()
   assert.throws(()=>normalizeModelCandidateShape({changes:[{path:'app.js',content:'x',find:'a',replace:'b'}]}),/모호/);
   assert.throws(()=>parseModelCandidate(JSON.stringify({summary:'nothing useful'})),/명확한 변경/);
   assert.throws(()=>parseModelCandidate(JSON.stringify({candidate:{file:{path:'a.js',content:'x'}},result:{file:{path:'b.js',content:'y'}}})),/래퍼가 여러 개/);
+});
+
+test('no-change retry is classified separately and narrowed to one concrete responsibility file',()=>{
+  const context={files:[
+    {path:'index.html',content:'<iframe src="game.html"></iframe>',preferred:true,focused:false,truncated:false,originalBytes:35},
+    {path:'game.html',content:'<script>function update(){requestAnimationFrame(update)}</script>',preferred:true,focused:false,truncated:false,originalBytes:4200},
+  ]};
+  const error=new Error('후보는 files 또는 edits 중 명확한 변경 하나가 필요함');
+  const failureType=classifyGenerationFailure(error);
+  assert.equal(failureType,'NO_CHANGE');
+  assert.equal(selectRetryResponsibilityFile({context,responsibilityFiles:['index.html','game.html']}),'game.html');
+  const retry=buildRetryAttempt({context,responsibilityFiles:['index.html','game.html'],failureType});
+  assert.equal(retry.strict,true);
+  assert.equal(retry.target,'game.html');
+  assert.deepEqual(retry.responsibilityFiles,['game.html']);
+  assert.deepEqual(retry.context.files.map(file=>file.path),['game.html']);
+  const prompt=buildPrompt({gameId:'TEST',sourcePath:'web-games/test',goal:'최소 플레이 루프 수정',context:retry.context,responsibilityFiles:retry.responsibilityFiles,role:'development',attempt:2,failureReason:`${failureType}: ${error.message}`});
+  assert.match(prompt,/재시도 강제계약/);
+  assert.match(prompt,/game\.html 1개만 수정/);
+  assert.match(prompt,/해당 배열을 비우지 않는다/);
+  assert.match(prompt,/실제 변경을 생략하는 응답은 금지/);
+  assert.doesNotMatch(prompt,/책임 파일: index\.html/);
+});
+
+test('no-change retry prefers an exact diagnostic responsibility file over file size',()=>{
+  const context={files:[
+    {path:'index.html',content:'BROKEN_TARGET',preferred:true,focused:true,truncated:false,originalBytes:20},
+    {path:'game.html',content:'x'.repeat(1000),preferred:true,focused:false,truncated:false,originalBytes:1000},
+  ]};
+  const retry=buildRetryAttempt({context,responsibilityFiles:['index.html','game.html'],diagnostic:{file:'index.html',needle:'BROKEN_TARGET'},failureType:'OUTPUT_FORMAT'});
+  assert.equal(retry.target,'index.html');
+  assert.deepEqual(retry.responsibilityFiles,['index.html']);
+  assert.deepEqual(retry.context.files.map(file=>file.path),['index.html']);
 });
 
 test('save key changes are rejected by deterministic guard',()=>{
