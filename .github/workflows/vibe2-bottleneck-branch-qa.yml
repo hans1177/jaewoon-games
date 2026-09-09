@@ -25,9 +25,14 @@ jobs:
           node --check tools/autonomous-work-planner.mjs
           node --check tools/autonomous-development-worker.mjs
           node --check tools/vibe2-artbook-story-draft.mjs
-      - name: JSON checks
+      - name: JSON and workflow contract checks
         run: |
+          set -euo pipefail
           node -e "JSON.parse(require('fs').readFileSync('autonomous-portfolio.json','utf8')); console.log('portfolio json ok')"
+          grep -Fq "AUTONOMOUS_MODEL_MAX_ATTEMPTS: '2'" .github/workflows/autonomous-development-worker.yml
+          grep -Fq 'MODEL_CALL_BUDGET=2' .github/workflows/autonomous-development-worker.yml
+          grep -Fq "AUTONOMOUS_MODEL_MAX_ATTEMPTS: '2'" .github/workflows/autonomous-continuous-development.yml
+          grep -Fq 'deterministic rule patch: model calls 0' .github/workflows/autonomous-continuous-development.yml
       - name: Unit tests
         run: |
           set -euo pipefail
