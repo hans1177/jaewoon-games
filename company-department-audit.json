@@ -63,7 +63,7 @@
         "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
         "probe": "tools/unity-apk-runtime-smoke.sh",
         "method": "APK install -> launch -> Android tap/swipe input -> process survival -> fatal log scan -> screenshot",
-        "contractVerificationRunId": 34401386230,
+        "contractVerificationRunId": 34401550689,
         "contractVerificationConclusion": "success",
         "successfulRuntimeEvidenceRunId": null,
         "buildAloneCountsAsQaPass": false,
@@ -115,18 +115,18 @@
   "verification": {
     "departmentStandardsWorkflow": {
       "latestRun": {
-        "runId": 34401386230,
+        "runId": 34401550689,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "f8ba52bd783cbc11f80c93ca790c428ddcb96ca1",
-        "updatedAt": "2026-09-09T20:30:05Z"
+        "headSha": "ddb1987d5e860fdde0cb5615bf7719d61e798a9a",
+        "updatedAt": "2026-09-09T20:31:41Z"
       },
       "latestSuccessfulRun": {
-        "runId": 34401386230,
+        "runId": 34401550689,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "f8ba52bd783cbc11f80c93ca790c428ddcb96ca1",
-        "updatedAt": "2026-09-09T20:30:05Z"
+        "headSha": "ddb1987d5e860fdde0cb5615bf7719d61e798a9a",
+        "updatedAt": "2026-09-09T20:31:41Z"
       },
       "unitySmokeContractVerified": true
     },
@@ -179,16 +179,22 @@
     },
     "directorSupervision": {
       "dateKst": "2026-09-10",
-      "attentionRequired": false,
+      "attentionRequired": true,
       "counts": {
         "WORKING": 1,
-        "DONE": 6,
+        "DONE": 1,
         "IDLE_NO_TASK": 1,
-        "BLOCKED": 0,
+        "BLOCKED": 5,
         "FAILED": 0,
         "STALE": 0
       },
-      "primaryFindings": []
+      "primaryFindings": [
+        "planning:DEPENDENCY_BLOCKED",
+        "development:DEPENDENCY_BLOCKED",
+        "qa:DEPENDENCY_BLOCKED",
+        "graphics:DEPENDENCY_BLOCKED",
+        "balance:DEPENDENCY_BLOCKED"
+      ]
     }
   },
   "nextPriority": "Require a successful Unity Android emulator runtime-smoke run before marking Unity QA VERIFIED."
