@@ -69,18 +69,28 @@ jobs:
           set -euo pipefail
           node - <<'NODE' >> "$GITHUB_OUTPUT"
           const fs=require('fs');
-          const gate=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8'));
-          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const read=(file)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return null;}};
+          const gate=read('artbook-gate-status.json')||{};
+          const catalog=read('game-catalog.json')||{games:[]};
           const gameId=String(gate.gameId||'').trim();
+          const date=String(gate.date||'').trim();
           const game=(catalog.games||[]).find(x=>x.id===gameId)||{};
           const state=String(gate.artbookLifecycle?.state||'').toUpperCase();
           const category=String(game.homepageCategory||'').toLowerCase();
           const completed=gate.completedArtbook===true&&gate.postprocessComplete===true;
-          const should=completed&&state==='DESIGN_BASELINE'&&category==='development-confirmed';
+          const draft=read(`artbook-submissions/${gameId}/${date}/vibe2-first-draft.json`);
+          const planning=read(`artbook-submissions/${gameId}/${date}/planning.json`);
+          const draftQuality=draft?.semanticQuality?.pass===true&&String(draft?.validationStatus||'').toUpperCase()==='PASS'&&String(draft?.generationMode||'').toUpperCase()!=='DETERMINISTIC_FALLBACK'&&Number(draft?.gameFactPack?.stats?.totalEvidence||0)>=4;
+          const planningQuality=planning?.verification?.planningSemanticQuality===true&&planning?.runner?.planningFallbackUsed!==true&&!(planning?.verification?.policyBlocks||[]).length;
+          const storyDesignReady=draftQuality&&planningQuality;
+          const should=completed&&storyDesignReady&&state==='DESIGN_BASELINE'&&category==='development-confirmed';
           console.log(`dispatch=${should?'true':'false'}`);
           console.log(`game_id=${should?gameId:''}`);
           console.log(`artbook_id=${should?String(gate.artbookLifecycle?.latestBaselineId||''):''}`);
-          console.log(`reason=${should?'COMPLETED_DESIGN_BASELINE_TO_DEVELOPMENT':'NO_DEVELOPMENT_HANDOFF'}`);
+          console.log(`story_design_ready=${storyDesignReady?'true':'false'}`);
+          console.log(`draft_quality=${draftQuality?'true':'false'}`);
+          console.log(`planning_quality=${planningQuality?'true':'false'}`);
+          console.log(`reason=${should?'COMPLETED_QUALITY_VALIDATED_DESIGN_BASELINE_TO_DEVELOPMENT':completed&&!storyDesignReady?'STORY_DESIGN_NEEDS_VALIDATION':'NO_DEVELOPMENT_HANDOFF'}`);
           NODE
       - name: Dispatch prioritized development for completed artbook
         if: steps.handoff.outputs.dispatch == 'true'
@@ -93,4 +103,6 @@ jobs:
           echo "ARTBOOK_DEVELOPMENT_BASELINE=${{ steps.handoff.outputs.artbook_id }}"
       - name: No development handoff required
         if: steps.handoff.outputs.dispatch != 'true'
-        run: echo 'ARTBOOK_DEVELOPMENT_HANDOFF=NO'
+        run: |
+          echo 'ARTBOOK_DEVELOPMENT_HANDOFF=NO'
+          echo 'ARTBOOK_DEVELOPMENT_HANDOFF_REQUIRES=VIBE2_SEMANTIC_PASS+GAME_FACT_PACK+PLANNING_SEMANTIC_PASS'
