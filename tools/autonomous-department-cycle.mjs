@@ -10,6 +10,7 @@ const HOST=process.env.OLLAMA_HOST?`http://${process.env.OLLAMA_HOST}`:'http://1
 const TIMEOUT_MS=Math.max(30000,Math.min(180000,Number(process.env.AUTONOMOUS_DEPARTMENT_TIMEOUT_MS||120000)));
 const MAX_PREDICT=Math.max(180,Math.min(520,Number(process.env.AUTONOMOUS_DEPARTMENT_MAX_PREDICT||320)));
 const CORE_ROLES=['planning','development','graphics','qa','balance'];
+const FAST_REVIEW_ROLES=['development','qa'];
 const FINAL_ROLE='planning-final';
 const ROLES=[...CORE_ROLES,FINAL_ROLE];
 const ROLE_AGENT={planning:'planning',development:'development',graphics:'graphics',qa:'qa',balance:'balance','planning-final':'planning'};
@@ -29,6 +30,7 @@ const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file
 const readText=(file,max=5000)=>{try{return fs.readFileSync(file,'utf8').slice(0,max);}catch{return'';}};
 const compact=(v,max=2600)=>{const text=typeof v==='string'?v:JSON.stringify(v);return text.length>max?text.slice(0,max)+'…':text;};
 const ensureDir=file=>fs.mkdirSync(path.dirname(file),{recursive:true});
+const laneFor=order=>clean(order?.workLane||'FULL').toUpperCase();
 
 function latestBook(artbooks,slug){return (artbooks?.artbooks??[]).filter(book=>book.gameId===slug).sort((a,b)=>String(b.createdAt??b.date??'').localeCompare(String(a.createdAt??a.date??'')))[0]||null;}
 function bookEvidence(book){if(!book)return null;return{id:book.id??null,status:book.status??null,lifecycle:book.lifecycle??null,productionApproval:book.productionApproval??null,departmentOpinions:book.departmentOpinions??null,title:book.title??book.gameName??null};}
@@ -37,6 +39,7 @@ function bookPostprocessComplete(book){return book?.postprocess?.complete===true
 function bookStatus(book){const status=clean(book?.status).toUpperCase();return status==='COMPLETED'||bookPostprocessComplete(book)?'COMPLETED':status;}
 function targetFor(order){return clean(order?.sourcePath).startsWith('unity-games/')?'unity':'web';}
 function stageFor(order,book){const state=clean(book?.lifecycle?.state||book?.lifecycleState||book?.baselineState).toUpperCase();const project=clean(order?.projectStage).toLowerCase();if(/development|release|full|system|graphics|integrated|optimization/.test(project)||['DESIGN_BASELINE','DEVELOPMENT_BASELINE','RELEASE_BASELINE'].includes(state))return 'full-development';return 'technical-architecture';}
+function skippedFastResult(role,order){const now=new Date().toISOString();console.log(`DEPARTMENT_STATE=${role}:SKIPPED_FAST`);return {role,department:ROLE_NAME[role],workState:'DONE',decision:'PROCEED',summary:'FAST_LANE_NOT_REQUIRED',nextAction:clean(order?.goal)||'작은 런타임 복구 범위만 유지한다.',checks:[],risks:[],model:'none',attempt:0,startedAt:now,completedAt:now,skippedFast:true};}
 
 export function selectVerifiedVibeLearning(companyDna={},max=6){
   const eligibleStages=new Set(['GAME_VERIFIED','MULTI_GAME_VERIFIED','COMPANY_STANDARD']);
@@ -82,20 +85,39 @@ function loadInputs(){
   const book=latestBook(artbooks,order.gameSlug);const vibeCore=buildVibeCoreContext({order,book,companyDna});return {order,artbooks,companyDna,book,vibeCore};
 }
 
-export async function runDepartmentRole({role,order,book,vibeCore}={}){if(!CORE_ROLES.includes(role))throw new Error(`독립 부서 role 오류: ${role}`);return callRole(role,{order,book,vibeCore,previous:[]});}
+export async function runDepartmentRole({role,order,book,vibeCore}={}){
+  if(!CORE_ROLES.includes(role))throw new Error(`독립 부서 role 오류: ${role}`);
+  if(laneFor(order)==='FAST'&&!FAST_REVIEW_ROLES.includes(role))return skippedFastResult(role,order);
+  return callRole(role,{order,book,vibeCore,previous:[]});
+}
 
 function buildCycle({order,vibeCore,results,final}){
   if(final.decision==='BLOCK')throw new Error(`기획부 최종확인 BLOCK: ${final.summary||final.nextAction}`);
   const all=[...results,final];const originalGoal=clean(order.goal),constraint=clean(final.nextAction),qualityTier=vibeCore.qualityBar?.tier?`T${vibeCore.qualityBar.tier}`:'현재 품질바';
   const finalGoal=`${originalGoal} Vibe 공용 실행계약(${vibeCore.stageId}, ${qualityTier})을 따르되 AI 부서 교정이 우선한다. 부서 사이클 최종 제약: ${constraint}`.slice(0,2200);
   const adjustments=all.filter(row=>row.decision==='ADJUST').map(row=>({role:row.role,summary:row.summary,nextAction:row.nextAction}));
-  return {version:3,gameId:order.gameId,gameSlug:order.gameSlug,candidateId:process.env.AUTONOMOUS_CANDIDATE_ID||order.candidateId||null,sourcePath:order.sourcePath,sequence:ROLES,parallelDepartments:CORE_ROLES,finalIntegrator:FINAL_ROLE,allDepartmentsWorked:true,paidApi:false,localModel:MODEL,originalGoal,finalGoal,finalDecision:final.decision,vibeCore,collaboration:{mode:'VIBE_PROPOSES_PARALLEL_AI_DEPARTMENTS_REVIEW_THEN_PLANNING_INTEGRATES',vibeProposalReviewedBy:ROLES,departmentAdjustmentCount:adjustments.length,departmentAdjustments:adjustments,verifiedLearningUsed:vibeCore.learning.patterns.length,antiPatternsUsed:vibeCore.learning.antiPatterns.length,learningWriteAuthority:'independent-qa-verified-outcome-only',vibeMaySelfApprove:false,vibeMayOverrideDepartments:false,sourceWriteConcurrency:'SERIAL_AFTER_PARALLEL_REVIEW'},results:all,completedAt:new Date().toISOString()};
+  const fast=laneFor(order)==='FAST';
+  return {version:3,gameId:order.gameId,gameSlug:order.gameSlug,candidateId:process.env.AUTONOMOUS_CANDIDATE_ID||order.candidateId||null,sourcePath:order.sourcePath,workLane:fast?'FAST':'FULL',sequence:ROLES,parallelDepartments:CORE_ROLES,activeReviewRoles:fast?FAST_REVIEW_ROLES:CORE_ROLES,finalIntegrator:fast?'deterministic-fast-integrator':FINAL_ROLE,allDepartmentsWorked:!fast,paidApi:false,localModel:MODEL,originalGoal,finalGoal,finalDecision:final.decision,vibeCore,collaboration:{mode:fast?'FAST_DEV_QA_REVIEW_THEN_DETERMINISTIC_INTEGRATION':'VIBE_PROPOSES_PARALLEL_AI_DEPARTMENTS_REVIEW_THEN_PLANNING_INTEGRATES',vibeProposalReviewedBy:fast?FAST_REVIEW_ROLES:ROLES,departmentAdjustmentCount:adjustments.length,departmentAdjustments:adjustments,verifiedLearningUsed:vibeCore.learning.patterns.length,antiPatternsUsed:vibeCore.learning.antiPatterns.length,learningWriteAuthority:'independent-qa-verified-outcome-only',vibeMaySelfApprove:false,vibeMayOverrideDepartments:false,sourceWriteConcurrency:'SERIAL_AFTER_PARALLEL_REVIEW'},results:all,completedAt:new Date().toISOString()};
+}
+
+function deterministicFastFinal(order,results){
+  const active=results.filter(row=>FAST_REVIEW_ROLES.includes(row.role));
+  const blocked=active.find(row=>row.decision==='BLOCK');
+  if(blocked)return {role:FINAL_ROLE,department:'FAST 결정론적 통합',workState:'DONE',decision:'BLOCK',summary:`${blocked.role}: ${blocked.summary}`,nextAction:blocked.nextAction,checks:blocked.checks||[],risks:blocked.risks||[],model:'none',attempt:0,startedAt:new Date().toISOString(),completedAt:new Date().toISOString(),deterministicFast:true};
+  const adjusted=active.filter(row=>row.decision==='ADJUST');
+  const dev=active.find(row=>row.role==='development'),qa=active.find(row=>row.role==='qa');
+  const qaChecks=(qa?.checks||[]).slice(0,2).join(' / ');
+  const nextAction=[dev?.nextAction,qaChecks?`QA 확인: ${qaChecks}`:qa?.nextAction].map(clean).filter(Boolean).join(' ').slice(0,1000)||clean(order.goal);
+  const now=new Date().toISOString();
+  return {role:FINAL_ROLE,department:'FAST 결정론적 통합',workState:'DONE',decision:adjusted.length?'ADJUST':'PROCEED',summary:'FAST 복구는 개발부 수정 제약과 QA 재현 조건만 결합한다.',nextAction,checks:(qa?.checks||[]).slice(0,4),risks:[...(dev?.risks||[]),...(qa?.risks||[])].slice(0,4),model:'none',attempt:0,startedAt:now,completedAt:now,deterministicFast:true};
 }
 
 export async function finalizeDepartmentCycle({order,book,vibeCore,results}={}){
   if(!Array.isArray(results)||results.length!==CORE_ROLES.length)throw new Error('5개 독립 부서 결과가 모두 필요함');
   const byRole=new Map(results.map(row=>[row.role,row]));for(const role of CORE_ROLES)if(!byRole.has(role)||byRole.get(role)?.workState!=='DONE')throw new Error(`${role} 결과 미완료`);
-  const ordered=CORE_ROLES.map(role=>byRole.get(role));const final=await callRole(FINAL_ROLE,{order,book,vibeCore,previous:ordered});return buildCycle({order,vibeCore,results:ordered,final});
+  const ordered=CORE_ROLES.map(role=>byRole.get(role));
+  const final=laneFor(order)==='FAST'?deterministicFastFinal(order,ordered):await callRole(FINAL_ROLE,{order,book,vibeCore,previous:ordered});
+  return buildCycle({order,vibeCore,results:ordered,final});
 }
 
 export async function runDepartmentCycle({order,artbooks,companyDna={}}={}){
@@ -110,13 +132,13 @@ async function main(){
   const {order,book,vibeCore}=loadInputs();const role=clean(process.env.AUTONOMOUS_DEPARTMENT_ROLE);const finalize=clean(process.env.AUTONOMOUS_DEPARTMENT_FINALIZE).toLowerCase()==='true';
   if(role){
     const result=await runDepartmentRole({role,order,book,vibeCore});const output=process.env.AUTONOMOUS_DEPARTMENT_OUTPUT||`.autonomous/department-results/${process.env.AUTONOMOUS_CANDIDATE_ID||order.gameId}/${role}.json`;
-    writeJson(output,{version:1,gameId:order.gameId,gameSlug:order.gameSlug,candidateId:process.env.AUTONOMOUS_CANDIDATE_ID||null,role,workState:'DONE',vibeCore,result});console.log(JSON.stringify({gameId:order.gameId,role,workState:'DONE',decision:result.decision,output}));return;
+    writeJson(output,{version:1,gameId:order.gameId,gameSlug:order.gameSlug,candidateId:process.env.AUTONOMOUS_CANDIDATE_ID||null,role,workState:'DONE',vibeCore,result});console.log(JSON.stringify({gameId:order.gameId,role,workState:'DONE',decision:result.decision,skippedFast:result.skippedFast===true,output}));return;
   }
   if(finalize){
     const dir=process.env.AUTONOMOUS_DEPARTMENT_RESULTS_DIR||'.autonomous/department-results';const packages=CORE_ROLES.map(role=>readJson(path.join(dir,`${role}.json`))).filter(Boolean);if(packages.length!==CORE_ROLES.length)throw new Error(`부서 결과 ${packages.length}/5`);
-    const cycle=await finalizeDepartmentCycle({order,book,vibeCore,results:packages.map(item=>item.result)});const output=process.env.AUTONOMOUS_DEPARTMENT_CYCLE_OUTPUT||'/tmp/autonomous-department-cycle.json';writeJson(output,cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount,output}));return;
+    const cycle=await finalizeDepartmentCycle({order,book,vibeCore,results:packages.map(item=>item.result)});const output=process.env.AUTONOMOUS_DEPARTMENT_CYCLE_OUTPUT||'/tmp/autonomous-department-cycle.json';writeJson(output,cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,activeReviewRoles:cycle.activeReviewRoles,workLane:cycle.workLane,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount,output}));return;
   }
-  const artbooks=readJson('game-artbooks.json',{artbooks:[]});const companyDna=readJson('company-learning/company-dna.json',{version:1,items:[],antiPatterns:[]});const cycle=await runDepartmentCycle({order,artbooks,companyDna});writeJson('/tmp/autonomous-department-cycle.json',cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount}));
+  const artbooks=readJson('game-artbooks.json',{artbooks:[]});const companyDna=readJson('company-learning/company-dna.json',{version:1,items:[],antiPatterns:[]});const cycle=await runDepartmentCycle({order,artbooks,companyDna});writeJson('/tmp/autonomous-department-cycle.json',cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,activeReviewRoles:cycle.activeReviewRoles,workLane:cycle.workLane,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount}));
 }
 
 const isMain=process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href;
