@@ -9,28 +9,38 @@
 - 바이브2 제작 규칙 변경은 같은 저장소의 `AGENTS.md`, `ASSET_RULES.md`, `assets/animated-assets.json`, 관련 vibe 모듈을 통해 재운컴퍼니 작업에 즉시 적용한다. 같은 규칙을 다른 파일에 복제해 따로 유지하지 않는다.
 - 재운컴퍼니의 사용자 지시, 진행 상태, 빌드 상태는 `company-directive.json`, `company-status.json`에 기록하고 바이브2 실행계약은 이 운영 상태와 충돌하지 않게 따른다.
 - 새 사용자 지시는 모든 자율 계획보다 우선한다. 유료 사용 금지, 에셋 권리/애니메이션 검증, 핵심 제작 결정 게이트는 우회할 수 없다.
-- 기존 `web-games/`는 사용자 지시에 따라 유지·개선할 수 있다. 새 웹게임은 기본 자동 제작 대상으로 삼지 않고 새 게임은 Unity Android를 기본 대상으로 한다.
+- 게임 제작은 owner 3분류 정책을 따른다. 1분류 출시확정은 Unity Android, 2분류 개발확정은 Web 1차 플레이어블 구현, 3분류는 아트북·컨셉·설계 최적화만 수행한다.
+- 기존 Web 공개판은 분류 변경 때문에 삭제하지 않는다. 1분류 Web판은 안정판/참고 아카이브로 보존하고 기능 본개발은 Unity에서 한다. 3분류 Web판도 공개 아카이브로 보존하되 신규 자동 코드 개발은 하지 않는다.
 - 게임/아트북의 홈페이지 노출은 정식 제작 승인과 별개다. 노출됐다는 이유만으로 본개발 PASS, 출시 승인, APK 다운로드 승인으로 처리하지 않는다.
+
+## owner 3분류 제작 정책
+- **1분류 출시확정(`release-confirmed`)은 정확히 2개**: `daechung-rpg`, `survival`.
+- 1분류의 제작 타깃은 **Unity Android**다. Web 아카이브에 신규 기능을 확장하지 않는다.
+- 1분류 중 **집중개발은 정확히 1개만** 허용하며 현재 집중 게임은 `daechung-rpg`다. `survival`은 다음 집중 후보로 두고 Unity 전환 전까지 설계도와 아트북을 보완한다.
+- **2분류 개발확정(`development-confirmed`)은 정확히 3개**: `insect-survival`, `bug-defense`, `crystal-defense`.
+- 2분류는 **실제 Web 1차 구현**을 만든다. 아트북의 모든 기능·맵·콘텐츠를 첫 구현에서 전부 재현할 필요가 없고, 핵심 루프가 플레이되는 가장 작은 vertical slice를 먼저 검증한다.
+- **3분류(`design-only`)는 나머지 전부**다. 3분류는 아트북, 컨셉, 정체성, 스토리, 시스템 구조, UI/UX, 밸런스 설계 최적화만 하고 자동 source-code 개발은 하지 않는다.
+- 아트북은 1·2·3분류 모두의 살아 있는 설계도다. 구현·QA·밸런스·스토리·기술·콘텐츠 근거가 생기면 기존 이력을 덮어쓰지 않고 새 revision/baseline으로 계속 수정·보완한다.
+- owner 분류는 과거 자동 분류·집중 점수보다 우선한다. 분류 개수나 게임 목록을 자동으로 늘리거나 바꾸지 않는다.
 
 ## 작업 우선순위
 1. 사용자 직접 지시 / owner-immediate.
-2. **출시확정(`release-confirmed`) 게임** — 문제가 발견된 경우에만 안정판 보호 유지보수 작업을 만든다.
-3. **완료 DESIGN_BASELINE 개발 handoff** — 개발확정 게임의 새 아트북 완료본은 일반 개발 작업보다 먼저 개발 큐로 넘긴다.
-4. **개발확정(`development-confirmed`) 게임** — 승인된 정체성을 유지하며 실제 기능/품질을 지속 개선한다.
-5. **구조개선 필요(`STRUCTURE_IMPROVEMENT`)** — 기술부채, 대형 단일 파일, 저장/입력/UI 구조 문제를 기능 추가보다 먼저 줄인다.
-6. **기획/정체성 확정 필요(`PLANNING_IDENTITY_REQUIRED`)** — 코드 생성보다 아트북/Vibe2 초안/기획부 검토가 먼저다.
-7. reviewing / 기타.
-8. HOLD — 원본/경로/승인 문제가 해결되기 전 자동 개발하지 않는다.
-- 같은 단계 안에서는 **기존 Unity > 기존 Web > 신규 Unity > 기타 엔진** 순서로 처리한다.
-- `unity-games/daechung-rpg`는 현재 활성 Unity 본개발 프로젝트이며, 동일 단계 안에서 우선한다. 다만 더 높은 출시단계 게임이 있으면 출시단계 우선순위가 먼저다.
+2. **1분류 집중 Unity 개발** — 현재 `daechung-rpg` 1개만 deep focus.
+3. **1분류 공개 Web 안정판 사고 복구** — 실제 runtime incident가 있을 때만 FAST로 보호한다.
+4. **2분류 Web 1차 구현** — 세 게임의 핵심 playable vertical slice를 작은 작업으로 진행한다.
+5. **3분류 아트북/컨셉/설계 최적화** — 코드 worker로 보내지 않는다.
+6. reviewing / 기타 운영 점검.
+- 같은 source root는 여전히 한 플로어만 점유한다.
+- `unity-games/daechung-rpg`는 현재 1분류 집중 Unity 본개발 프로젝트다.
 
 ## 기본 원칙
-- 기존 웹게임은 버그 수정·모바일 UI/UX·접근성·성능·안전한 구조 개선·회귀 수정 같은 유지보수를 허용한다.
+- 1분류는 Unity Android 본개발이 기본이다. 기존 Web판은 참고/안정 아카이브로 유지하고 runtime 사고 복구 외 신규 기능 본개발 대상이 아니다.
+- 2분류는 사용자가 명시적으로 승인한 Web 제작 대상이다. 첫 구현은 완성판 전체 재현이 아니라 핵심 루프 1개가 실제로 플레이되는 최소 일관형 구현이어야 한다.
+- 3분류는 source-code 자동 수정 금지다. 설계도·아트북·컨셉·스토리·구조·밸런스를 먼저 보완한다.
 - 기존 웹게임의 핵심 규칙, 밸런스, 세이브 의미, 대규모 콘텐츠 방향은 사용자 결정 없이 자율 변경하지 않는다.
-- 새 게임의 기본 제작 대상은 Unity Android이며 `unity-games/` 아래에서 진행한다. 새 웹게임 제작은 사용자가 명시적으로 지시한 경우에만 진행한다.
 - 임시 래퍼, 패치 누적, 함수 덮어쓰기 체인 대신 담당 시스템을 직접 수정한다.
 - 기존 기능과 저장 의미를 불필요하게 삭제하거나 바꾸지 않는다.
-- 모바일 Android 우선으로 설계한다. 기존 웹게임은 모바일 브라우저 사용성을 함께 검증한다.
+- 모바일 Android 우선으로 설계한다. 2분류 Web 구현은 모바일 브라우저 사용성을 함께 검증한다.
 - 유료 AI/유료 에셋/유료 runner/추가 크레딧 자동결제 금지.
 - 외부 공개 포트 금지. Unity MCP는 `127.0.0.1` 로컬만 사용한다.
 
@@ -42,8 +52,9 @@
 - 모델이 필요한 작업은 구조화 JSON Schema를 사용하고 최대 2회까지만 생성할 수 있다. 1차 실패 시 실패 유형을 기록하고 책임 파일 중심으로 컨텍스트를 줄여 2차를 시도한다.
 - 동일한 넓은 요청을 그대로 반복하지 않는다. 2차도 실패하면 해당 작업을 실패 근거와 함께 넘기고 다음 게임 큐를 진행한다.
 - 수정 파일 0개, 저장키 변경, exact-edit 불일치, 문법 오류는 후보 실패다. 임의 복구나 공개판 직접 수정으로 우회하지 않는다.
-- 출시확정 게임은 실제 health/diagnostic 문제가 없으면 자동 개선 작업을 만들지 않는다.
-- 기획/정체성 확정 필요 게임은 코드 worker로 밀어 넣지 않고 Vibe2 1차 초안과 기획부 게이트로 되돌린다.
+- 1분류의 feature 개발은 Unity 집중 슬롯에서만 한다. Web판은 실제 health/runtime 사고가 있을 때 FAST 복구만 허용한다.
+- 2분류의 첫 구현은 전체 아트북 재현을 목표로 하지 않는다. playable vertical slice가 검증되면 아트북과 다음 설계를 갱신한다.
+- 3분류는 진단 문제가 보여도 자동 코드 worker로 밀지 않고 Vibe2·아트북·기획/설계 게이트로 돌린다.
 
 ## Vibe2 병렬 플로어 / 충돌 방지
 - 한 개발 플로어는 **한 게임 source root를 독점**한다. 같은 source root를 다른 플로어나 AI가 동시에 수정하지 않는다.
@@ -73,8 +84,8 @@
 
 ## 수정 → QA → 자동배포
 - Vibe2 worker와 부서 workspace의 직접 `main` 쓰기는 금지한다.
-- **Web:** 부서 병렬 수정 → 통합 후보 → 독립 Promotion QA → 기존 Vibe 릴리즈 게이트 → 최신 main 충돌검사 → 승인 source root 승격 → 공개 health 확인.
-- **Unity:** 후보 생성 → 후보 브랜치 Android APK 빌드/검증 → 최신 main 충돌검사 → 승인된 Unity source root만 main 승격 → runtime/test release 검증.
+- **Web:** 2분류 구현 또는 허용된 FAST 복구 → 부서 병렬 수정 → 통합 후보 → 독립 Promotion QA → 기존 Vibe 릴리즈 게이트 → 최신 main 충돌검사 → 승인 source root 승격 → 공개 health 확인.
+- **Unity:** 1분류 집중 후보 생성 → 후보 브랜치 Android APK 빌드/검증 → 최신 main 충돌검사 → 승인된 Unity source root만 main 승격 → runtime/test release 검증.
 - QA 실패, 빌드 실패, source root freshness 실패, 현재 출시/개발 승인 취소 시 자동배포 금지 및 재시도/재계획한다.
 - 릴리즈 성공/실패 검증 뒤 Company DNA/Vibe 학습과 필요 시 `ARTBOOK_REVISION_REQUEST` 또는 baseline upgrade를 수행한 다음 다음 개발 플로어로 간다.
 - Play Store 정식 공개는 자동 테스트 APK/프리릴리스와 별개이며 출시확정 또는 명시적 사용자 승인 정책을 따른다.
@@ -94,8 +105,8 @@
 - 테스트 APK prerelease 생성은 홈페이지 노출과 별개다. 실제 APK 다운로드 링크는 빌드 성공·비어 있지 않은 APK·SHA-256·다운로드 가능 여부까지 검증된 뒤에만 표시한다.
 
 ## 작업 순서
-1. `company-directive.json`, `company-status.json`, `game-catalog.json`과 현재 구조를 읽는다.
-2. 사용자 직접 지시와 `출시확정 사고 > 완료 아트북 handoff > 개발확정 > 구조개선 > 기획/정체성 필요 > reviewing > HOLD` 우선순위를 적용한다.
+1. `company-directive.json`, `company-status.json`, `game-catalog.json`, `autonomous-portfolio.json`과 현재 구조를 읽는다.
+2. 사용자 직접 지시와 `1분류 집중 Unity > 1분류 Web 사고 FAST > 2분류 Web 1차 구현 > 3분류 아트북/설계 > 기타 운영` 우선순위를 적용한다.
 3. 게임 source 수정 전 최신 `Autonomous Continuous Development` 실행과 `autonomous-dev:.autonomous/queue-state.json`을 확인한다. 아트북 작업은 `artbook-submission-queue.json`과 `game-artbooks.json`의 실제 완료 상태를 확인한다.
 4. 자동 유지보수라면 모델 전에 결정론적 진단으로 문제 1개와 책임 파일을 정한다.
 5. 안전 규칙 패치 가능 여부를 먼저 판단하고, 불가능할 때만 Vibe2 모델을 사용한다.
@@ -112,7 +123,7 @@
 
 ## 부서 역할
 - 기획 AI: 핵심 루프, 지역, 퀘스트, 콘텐츠 구조, planning-final 통합과 책임 파일 배정.
-- 개발 AI: Unity 코드와 실제 구현을 우선하고, 기존 웹게임의 승인된 유지보수도 담당한다.
+- 개발 AI: 1분류 Unity 코드와 2분류 Web 1차 구현을 담당하고, 허용된 FAST 안정화만 기존 Web 아카이브에 적용한다.
 - QA AI: 컴파일, 플레이 막힘, 회귀, Android 위험과 웹 브라우저/모바일 위험을 검증하고 필요한 테스트 코드를 책임 범위 안에서 구현한다.
 - 그래픽 AI: 씬 구성, 가독성, 모바일 UI, 에셋 기준과 관련 소스 수정.
 - 밸런스 AI: 전투, 성장, 보상 수치 검증과 분리 가능한 밸런스 데이터 수정.
