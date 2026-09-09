@@ -9,9 +9,9 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const formatDate=value=>{if(!value)return'정보 없음';const d=new Date(value);if(Number.isNaN(d.getTime()))return String(value).replaceAll('-','.');return new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}).format(d).replace(/\. /g,'.').replace(/\.$/,'');};
 
 const CATEGORY_META={
-  'release-confirmed':{order:1,title:'출시확정',note:'공개 안정판',className:'release'},
-  'development-confirmed':{order:2,title:'개발확정',note:'개발 진행 확정',className:'development'},
-  reviewing:{order:3,title:'검토중',note:'보류 · 재설계 · 검토',className:'review'}
+  'release-confirmed':{order:1,title:'출시확정',note:'Unity Android 본개발',className:'release'},
+  'development-confirmed':{order:2,title:'개발확정',note:'Web 1차 플레이어블 구현',className:'development'},
+  'design-only':{order:3,title:'3분류',note:'아트북 · 컨셉 · 설계 최적화',className:'design'}
 };
 
 function installStyles(){
@@ -24,7 +24,7 @@ function installStyles(){
 .brand{width:100%;justify-content:center}
 .brand img{object-position:center center!important}
 .companyLink{display:none!important}
-.homeFocus,#gameHub,.teamPanel,.autonomousFocusStrip{font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif!important}
+.homeFocus,#gameHub,.teamPanel{font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif!important}
 
 #hero.homeFocus{width:96%;margin:0 auto 14px;min-height:210px;border-radius:20px;overflow:hidden;color:#fff;background:#102d42;box-shadow:0 10px 26px rgba(28,93,138,.16);position:relative;isolation:isolate}
 #hero.homeFocus:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,20,31,.94),rgba(3,20,31,.62) 55%,rgba(3,20,31,.2)),var(--focus-bg) center/cover no-repeat;z-index:-1}
@@ -36,23 +36,6 @@ function installStyles(){
 .homeFocusMeta{display:flex;gap:6px;flex-wrap:wrap}
 .homeFocusMeta span{padding:5px 8px;border:1px solid #ffffff55;border-radius:999px;background:#ffffff20;font-size:10px;font-weight:900}
 .homeFocusBtn{margin-top:12px;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:10px;background:#2b91e6;color:#fff;text-decoration:none;font-size:12px;font-weight:900}
-
-.autonomousFocusStrip{width:96%;margin:-4px auto 14px;border:1px solid #cfe3ef;border-radius:16px;background:rgba(255,255,255,.96);box-shadow:0 7px 20px rgba(28,93,138,.12);padding:12px 14px}
-.autonomousFocusHead{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:9px}
-.autonomousFocusHead strong{font-size:15px;color:#155e9f;font-weight:1000}
-.autonomousFocusHead span{font-size:9px;color:#6c8799;font-weight:850;text-align:right}
-.autonomousFocusSlots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.autonomousFocusSlot{min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;padding:10px;border:1px solid #d7e8f1;border-radius:12px;background:#f5fbff;color:#315f7c;text-decoration:none}
-.autonomousFocusSlot.backfill{background:#fff9eb;border-color:#ead9a7}
-.autonomousFocusSlot.empty{background:#f3f6f8;color:#7b8d98}
-.autonomousFocusNum{display:flex;width:28px;height:28px;align-items:center;justify-content:center;border-radius:9px;background:#1d78ba;color:#fff;font-size:12px;font-weight:1000}
-.autonomousFocusSlot.backfill .autonomousFocusNum{background:#9a7519}
-.autonomousFocusSlot.empty .autonomousFocusNum{background:#8fa1ac}
-.autonomousFocusGame{min-width:0}
-.autonomousFocusGame b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;color:#174f72}
-.autonomousFocusGame small{display:block;margin-top:2px;font-size:8px;color:#718b9d;font-weight:850}
-.autonomousFocusRole{font-size:8px;font-weight:1000;padding:4px 6px;border-radius:999px;background:#dcecff;color:#185f93;white-space:nowrap}
-.autonomousFocusSlot.backfill .autonomousFocusRole{background:#f8e8b5;color:#7a5a00}
 
 #gameHub{padding:14px 0 3px}
 #gameHub>.sectionHead{display:none!important}
@@ -80,7 +63,7 @@ function installStyles(){
 .foldBadge{display:inline-flex;align-items:center;min-height:22px;padding:0 7px;border-radius:999px;background:#e6f2fb;color:#4d7087;font-size:9px;font-weight:900}
 .foldBadge.release{background:#d9f4e4;color:#197340}
 .foldBadge.development{background:#dcecff;color:#185f93}
-.foldBadge.review{background:#ffe8d8;color:#99502d}
+.foldBadge.design{background:#f0e9ff;color:#6743a8}
 .foldGameBody p{margin:7px 0;font-size:11px;line-height:1.5;color:#536f82;font-weight:700}
 .foldGameMeta{font-size:9px;line-height:1.6;color:#6d8799;font-weight:800}
 .foldGameActions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
@@ -119,11 +102,6 @@ function installStyles(){
   .homeFocusInner h1{font-size:27px}
   .teamOwner{grid-template-columns:92px 1fr}
 }
-@media(max-width:520px){
-  .autonomousFocusSlots{grid-template-columns:1fr}
-  .autonomousFocusHead{align-items:flex-start;flex-direction:column;gap:3px}
-  .autonomousFocusHead span{text-align:left}
-}
 @media(max-width:420px){
   .gameFold{margin-left:10px;margin-right:10px}
   .homeCategoryChips{padding-left:10px;padding-right:10px}
@@ -158,13 +136,22 @@ function buildFocus(catalog,status,artbooks){
   const hero=document.getElementById('hero');
   if(!hero)return;
   const games=catalog?.games||[];
-  const project=status?.projects?.find(p=>p.stage==='full-development')||status?.projects?.[0]||null;
-  const game=games.find(g=>g.id===project?.gameId)||games.find(g=>g.id==='daechung-rpg')||games[0];
+  const focus=status?.operations?.autonomousFocus;
+  const focusRow=Array.isArray(focus?.games)?focus.games[0]:null;
+  const project=status?.projects?.find(p=>p.gameId===focusRow?.slug||p.gameId===focusRow?.gameId)
+    ||status?.projects?.find(p=>p.stage==='full-development')
+    ||status?.projects?.[0]
+    ||null;
+  const game=games.find(g=>g.id===focusRow?.slug)
+    ||games.find(g=>g.id===project?.gameId)
+    ||games.find(g=>g.homepageCategory==='release-confirmed')
+    ||games[0];
   if(!game)return;
   const build=getGameBuild(status,game.id);
   const artbook=getLatestArtbook(artbooks,game.id);
   const progress=Number.isFinite(project?.progress)?`${project.progress}%`:'진행 중';
-  const focusLabel=project?.target==='unity-android'?'Unity 본개발':'현재 집중 개발';
+  const unityFocus=focusRow?.lane==='unity-primary'||project?.target==='unity-android';
+  const focusLabel=unityFocus?'집중개발 · Unity 본개발':'집중개발';
   hero.className='panel hero homeFocus';
   hero.style.setProperty('--focus-bg',`url('${String(game.image||'assets/fantasy-rpg-v2.webp').replaceAll("'",'%27')}')`);
   hero.innerHTML=`<div class="homeFocusInner">
@@ -172,7 +159,7 @@ function buildFocus(catalog,status,artbooks){
     <h1>${esc(game.name)} · ${esc(game.homepageStage||project?.stageLabel||'개발 중')}</h1>
     <p>${esc(game.homepageRecentWork||project?.stageLabel||game.description)}</p>
     <div class="homeFocusMeta">
-      <span>${esc(project?.target==='unity-android'?'Unity Android':'개발판')}</span>
+      <span>${esc(unityFocus?'Unity Android':'개발판')}</span>
       <span>진행 ${esc(progress)}</span>
       <span>${build?'테스트 APK 있음':'테스트 빌드 준비중'}</span>
       <span>${artbook?`아트북 ${esc(formatDate(artbook.createdAt||artbooks?.updatedAt))}`:'아트북 준비중'}</span>
@@ -181,40 +168,8 @@ function buildFocus(catalog,status,artbooks){
   </div>`;
 }
 
-function buildAutonomousFocus(catalog,status){
-  const hero=document.getElementById('hero');
-  if(!hero)return;
-  const focus=status?.operations?.autonomousFocus;
-  let panel=document.getElementById('autonomousFocusStrip');
-  if(!focus?.enabled){panel?.remove();return;}
-  const target=Math.max(1,Number(focus.targetSlots)||2);
-  const games=Array.isArray(focus.games)?focus.games.slice(0,target):[];
-  const catalogMap=new Map((catalog?.games||[]).map(game=>[game.id,game]));
-  const slots=Array.from({length:target},(_,index)=>{
-    const row=games[index];
-    if(!row){
-      return `<div class="autonomousFocusSlot empty"><span class="autonomousFocusNum">${index+1}</span><div class="autonomousFocusGame"><b>대기 슬롯</b><small>조건을 충족한 다음 개발 후보 대기중</small></div><span class="autonomousFocusRole">대기</span></div>`;
-    }
-    const game=catalogMap.get(row.slug)||{};
-    const href=row.webPath||game.webPath||'';
-    const role=row.slotRole==='preferred'?'우선 슬롯':'대체 슬롯';
-    const roleClass=row.slotRole==='preferred'?'':' backfill';
-    const meta=`점수 ${Number.isFinite(Number(row.score))?Number(row.score):'-'} · ${row.lane==='unity-primary'?'Unity':'Web'}`;
-    const inner=`<span class="autonomousFocusNum">${index+1}</span><div class="autonomousFocusGame"><b>${esc(row.name||game.name||row.slug)}</b><small>${esc(meta)}</small></div><span class="autonomousFocusRole">${role}</span>`;
-    return href?`<a class="autonomousFocusSlot${roleClass}" href="${esc(href)}">${inner}</a>`:`<div class="autonomousFocusSlot${roleClass}">${inner}</div>`;
-  }).join('');
-  if(!panel){
-    panel=document.createElement('section');
-    panel.id='autonomousFocusStrip';
-    panel.className='autonomousFocusStrip';
-    hero.insertAdjacentElement('afterend',panel);
-  }
-  const run=focus.activeDevelopmentRunId?` · 실행 #${esc(focus.activeDevelopmentRunId)}`:'';
-  panel.innerHTML=`<div class="autonomousFocusHead"><strong>자율 집중개발 · ${target}슬롯</strong><span>실제 개발선과 30초 자동 동기화${run}</span></div><div class="autonomousFocusSlots">${slots}</div>`;
-}
-
 function buildGameCard(game,catalog,status,baselines,artbooks){
-  const category=CATEGORY_META[game.homepageCategory]||CATEGORY_META.reviewing;
+  const category=CATEGORY_META[game.homepageCategory]||CATEGORY_META['design-only'];
   const build=getGameBuild(status,game.id);
   const baseline=getGameBaseline(baselines,game.id);
   const artbook=getLatestArtbook(artbooks,game.id);
@@ -269,7 +224,7 @@ function buildGameCenter(catalog,status,baselines,artbooks){
   const games=catalog?.games||[];
   const grouped=new Map(Object.keys(CATEGORY_META).map(key=>[key,[]]));
   for(const game of games){
-    const key=grouped.has(game.homepageCategory)?game.homepageCategory:'reviewing';
+    const key=grouped.has(game.homepageCategory)?game.homepageCategory:'design-only';
     grouped.get(key).push(game);
   }
   const wrapper=document.createElement('div');
@@ -330,6 +285,7 @@ function simplifyPage(){
   document.querySelector('.opsBar')?.remove();
   document.querySelector('.catalogIntro')?.remove();
   document.querySelector('.reviews')?.remove();
+  document.getElementById('autonomousFocusStrip')?.remove();
 }
 
 async function refreshHomepageData(){
@@ -344,7 +300,6 @@ async function refreshHomepageData(){
     ]);
     if(catalog){
       buildFocus(catalog,status||{},artbooks||{});
-      buildAutonomousFocus(catalog,status||{});
       buildGameCenter(catalog,status||{},baselines||{},artbooks||{});
     }
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
