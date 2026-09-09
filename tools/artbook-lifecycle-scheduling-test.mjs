@@ -66,16 +66,19 @@ function runFixture({games,artbooks,dailySubmissions=[],revisions=[],secondTasks
   assert.equal(result.context.lifecycle.targetState,'DEVELOPMENT_BASELINE');
 }
 
-// 이미 개발 기준까지 올라간 게임은 필요 수정 요청을 새 REVISION 버전으로 처리한다.
+// V1 최초 설계본 이력과 V2 개발 기준본을 모두 보존한 상태에서 필요 수정 요청은 V3 후보 REVISION으로 처리한다.
+// 같은 날 최초 아트북 슬롯을 이미 사용했어도 기존 아트북 수정은 막히지 않아야 한다.
 {
   const games=[{id:'a',stage:'development-confirmed'}];
-  const a=completed('a',2,'DEVELOPMENT_BASELINE','DEVELOPMENT_UPGRADE');
-  const revisions=[{id:'r1',gameId:'a',status:'SCHEDULED',dueDate:date,requestedAt:`${date}T00:00:00Z`,trigger:'QA_DESIGN_FINDING',reason:'후반 설계 수정',selectedDepartments:['planning','qa'],sourceArtbookId:a.id,sourceLifecycleState:'DEVELOPMENT_BASELINE'}];
-  const result=runFixture({games,artbooks:[a],dailySubmissions:[{date,gameId:'a',artbookId:a.id,status:'completed-artbook'}],revisions});
+  const v1=completed('a',1,'DESIGN_BASELINE','INITIAL');
+  v1.lifecycle.currentBaseline=false;
+  const v2=completed('a',2,'DEVELOPMENT_BASELINE','DEVELOPMENT_UPGRADE');
+  const revisions=[{id:'r1',gameId:'a',status:'SCHEDULED',dueDate:date,requestedAt:`${date}T00:00:00Z`,trigger:'QA_DESIGN_FINDING',reason:'후반 설계 수정',selectedDepartments:['planning','qa'],sourceArtbookId:v2.id,sourceLifecycleState:'DEVELOPMENT_BASELINE'}];
+  const result=runFixture({games,artbooks:[v1,v2],dailySubmissions:[{date,gameId:'a',artbookId:v1.id,status:'completed-artbook'}],revisions});
   assert.equal(result.context.run,true);
   assert.equal(result.context.mode,'REVISION');
   assert.equal(result.context.lifecycle.targetState,'DEVELOPMENT_BASELINE');
-  assert.equal(result.context.lifecycle.sourceArtbookId,a.id);
+  assert.equal(result.context.lifecycle.sourceArtbookId,v2.id);
   assert.equal(result.context.lifecycle.overwriteApprovedVersion,false);
 }
 
