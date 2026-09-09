@@ -38,6 +38,44 @@ const actualUnityReady=(project,game,filesystem)=>{
   const paths=[project?.productionSourcePath,game?.unityProjectPath,`unity-games/${project?.slug||''}`].map(clean).filter(Boolean);
   return project?.unityProjectReady===true||paths.some(candidate=>filesystem?.existsSync?.(candidate)===true);
 };
+const normalizeGenre=value=>clean(value).toLowerCase().replace(/\s+/g,' ');
+
+export function gameplayFamily(game){
+  const genres=Array.isArray(game?.genre)?game.genre:[];
+  for(const raw of genres){
+    const tag=normalizeGenre(raw);
+    if(['생존','survival'].includes(tag))return 'SURVIVAL';
+    if(['디펜스','웨이브','defense','wave','tower defense','tower-defense'].includes(tag))return 'DEFENSE';
+    if(['rpg','롤플레잉','role playing','role-playing'].includes(tag))return 'RPG';
+    if(['수집','collection','collecting'].includes(tag))return 'COLLECTION';
+    if(['턴제','turn based','turn-based'].includes(tag))return 'TURN_BASED';
+    if(['전략','보드','영토','strategy','board','territory'].includes(tag))return 'STRATEGY';
+    if(['모험','탐험','adventure','exploration'].includes(tag))return 'ADVENTURE';
+  }
+  return 'UNCLASSIFIED';
+}
+
+export function selectDiverseTopRows(rawRanked,capacity,{enabled=true,maxFocusScoreGap=1}={}){
+  if(!enabled||capacity<=0)return rawRanked.slice(0,Math.max(0,capacity));
+  const gap=Number(maxFocusScoreGap);
+  const allowedGap=Number.isFinite(gap)&&gap>=0?gap:1;
+  const remaining=[...rawRanked];
+  const picked=[];
+  const familyCounts=new Map();
+  const represented=family=>family==='UNCLASSIFIED'||(familyCounts.get(family)||0)>0;
+  while(picked.length<capacity&&remaining.length){
+    const head=remaining[0];
+    let pickIndex=0;
+    if(represented(head.gameplayFamily)){
+      const novelIndex=remaining.findIndex((row,index)=>index>0&&!represented(row.gameplayFamily)&&(head.score-row.score)<=allowedGap);
+      if(novelIndex>0)pickIndex=novelIndex;
+    }
+    const [chosen]=remaining.splice(pickIndex,1);
+    picked.push(chosen);
+    familyCounts.set(chosen.gameplayFamily,(familyCounts.get(chosen.gameplayFamily)||0)+1);
+  }
+  return picked;
+}
 
 export function rebalanceProductionTiers({portfolio,catalog,artbooks,filesystem=fs}={}){
   if(!portfolio||!Array.isArray(portfolio.projects))throw new Error('production tier portfolio missing');
@@ -56,14 +94,24 @@ export function rebalanceProductionTiers({portfolio,catalog,artbooks,filesystem=
     const unityReady=actualUnityReady(project,game,filesystem);
     const playable=game?.homepageWebPlayable===true;
     const score=focusScore(project);
+    const family=gameplayFamily(game);
     // 기존 분류 자체에는 가점을 주지 않는다. 그래야 새 근거가 생기면 실제 승격/하락이 가능하다.
     const evidenceScore=hold?Number.NEGATIVE_INFINITY:(score*100)+(baseline*10)+(unityReady?6:0)+(playable?3:0)+(game?.hasWebArchive===true?1:0);
-    return {project,game,score,baseline,unityReady,sourceReady,hold,evidenceScore};
+    return {project,game,score,baseline,unityReady,sourceReady,hold,evidenceScore,gameplayFamily:family};
   });
-  const ranked=rows.filter(row=>!row.hold).sort((a,b)=>b.evidenceScore-a.evidenceScore||b.score-a.score||Number(b.unityReady)-Number(a.unityReady)||a.project.id.localeCompare(b.project.id));
-  if(ranked.length<releaseCount+developmentCount)throw new Error(`fixed tier capacity unavailable: ${ranked.length}/${releaseCount+developmentCount}`);
+  const rawRanked=rows.filter(row=>!row.hold).sort((a,b)=>b.evidenceScore-a.evidenceScore||b.score-a.score||Number(b.unityReady)-Number(a.unityReady)||a.project.id.localeCompare(b.project.id));
+  const capacity=releaseCount+developmentCount;
+  if(rawRanked.length<capacity)throw new Error(`fixed tier capacity unavailable: ${rawRanked.length}/${capacity}`);
+  const diversityPolicy={enabled:policy?.portfolioDiversity?.enabled!==false,maxFocusScoreGap:Number(policy?.portfolioDiversity?.maxFocusScoreGap??1)};
+  const diverseTop=selectDiverseTopRows(rawRanked,capacity,diversityPolicy);
+  const topIds=new Set(diverseTop.map(row=>row.project.id));
+  // 다양성은 상위 5개 멤버십에만 관여한다. 1/2분류 내부 순서는 원래 근거 순위를 보존한다.
+  const ranked=[...rawRanked.filter(row=>topIds.has(row.project.id)),...rawRanked.filter(row=>!topIds.has(row.project.id))];
+  const rawRankById=new Map(rawRanked.map((row,index)=>[row.project.id,index+1]));
+  const rawTopIds=new Set(rawRanked.slice(0,capacity).map(row=>row.project.id));
+  const diversityAdjusted=diverseTop.some(row=>!rawTopIds.has(row.project.id));
   const tier1Ids=new Set(ranked.slice(0,releaseCount).map(row=>row.project.id));
-  const tier2Ids=new Set(ranked.slice(releaseCount,releaseCount+developmentCount).map(row=>row.project.id));
+  const tier2Ids=new Set(ranked.slice(releaseCount,capacity).map(row=>row.project.id));
   const tierFor=id=>tier1Ids.has(id)?1:(tier2Ids.has(id)?2:3);
 
   for(const row of rows){
@@ -103,24 +151,26 @@ export function rebalanceProductionTiers({portfolio,catalog,artbooks,filesystem=
       game.productionTarget='web-first-playable';
       game.homepageStage='2분류 개발확정 · Web 1차 구현';
     }else{
-      game.homepageCategory='reviewing';
+      game.homepageCategory='design-only';
       game.productionTarget='design-only';
       if(!isHold(project))game.homepageStage='3분류 · 아트북/컨셉/설계 최적화';
     }
   }
 
   const releaseIds=ranked.slice(0,releaseCount).map(row=>row.project.id);
-  const developmentIds=ranked.slice(releaseCount,releaseCount+developmentCount).map(row=>row.project.id);
+  const developmentIds=ranked.slice(releaseCount,capacity).map(row=>row.project.id);
   const designIds=rows.filter(row=>tierFor(row.project.id)===3).map(row=>row.project.id).sort();
+  const distinctFamilies=[...new Set(ranked.slice(0,capacity).map(row=>row.gameplayFamily).filter(family=>family!=='UNCLASSIFIED'))];
   portfolio.productionTierState={
     membershipMode:'AUTO_EVIDENCE_RANKED',
     fixedGameIds:false,
     autoPromotionDemotion:true,
+    diversity:{enabled:diversityPolicy.enabled,maxFocusScoreGap:diversityPolicy.maxFocusScoreGap,scope:'TOP_RELEASE_AND_DEVELOPMENT',source:'CATALOG_GENRE',adjusted:diversityAdjusted,distinctFamilies},
     counts:{releaseConfirmed:releaseCount,developmentConfirmed:developmentCount,designOnly:designIds.length},
     releaseConfirmedGameIds:releaseIds,
     developmentConfirmedGameIds:developmentIds,
     designOnlyGameIds:designIds,
-    ranking:ranked.map((row,index)=>({rank:index+1,gameId:row.project.id,slug:row.project.slug,evidenceScore:row.evidenceScore,developmentFocus:row.score,artbookBaselineRank:row.baseline,unityReady:row.unityReady,sourceReady:row.sourceReady})),
+    ranking:ranked.map((row,index)=>({rank:index+1,rawEvidenceRank:rawRankById.get(row.project.id),gameId:row.project.id,slug:row.project.slug,gameplayFamily:row.gameplayFamily,evidenceScore:row.evidenceScore,developmentFocus:row.score,artbookBaselineRank:row.baseline,unityReady:row.unityReady,sourceReady:row.sourceReady})),
   };
   return {portfolio,catalog,state:portfolio.productionTierState};
 }
@@ -202,6 +252,8 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   console.log(`PRODUCTION_TIER_1=${tierResult.state.releaseConfirmedGameIds.join(',')}`);
   console.log(`PRODUCTION_TIER_2=${tierResult.state.developmentConfirmedGameIds.join(',')}`);
   console.log(`PRODUCTION_TIER_3_COUNT=${tierResult.state.designOnlyGameIds.length}`);
+  console.log(`PRODUCTION_DIVERSITY_FAMILIES=${tierResult.state.diversity.distinctFamilies.join(',')||'none'}`);
+  console.log(`PRODUCTION_DIVERSITY_ADJUSTED=${tierResult.state.diversity.adjusted?'YES':'NO'}`);
   console.log(`COMPANY_SUPERVISION_DATE=${company.supervision.dateKst||'unknown'}`);
   console.log(`COMPANY_AUTONOMOUS_FOCUS=${focusedGameIds.join(',')||'none'}`);
   console.log(`COMPANY_AUTONOMOUS_FOCUS_SLOTS=${focusedGames.length}/${targetSlots}`);
