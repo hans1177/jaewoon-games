@@ -198,7 +198,7 @@ queue.currentTargetExecution={
 const queueGameMutable=(queue.games||[]).find(x=>x.gameId===gameId);
 if(queueGameMutable){
   queueGameMutable.status=mode==='SECOND_WORK'?'SAME_DAY_SECOND_WORK_SCHEDULED':mode==='REVISION'?'ARTBOOK_REVISION_SCHEDULED':`${mode}_ARTBOOK_SCHEDULED`;
-  queueGameMutable.currentStage=mode==='INITIAL'?'artbook-department-review':mode==='DEVELOPMENT_UPgrade'?'artbook-development-upgrade':mode==='RELEASE_UPGRADE'?'artbook-release-upgrade':mode==='REVISION'?'artbook-revision':'artbook-second-work';
+  queueGameMutable.currentStage=mode==='INITIAL'?'artbook-department-review':mode==='DEVELOPMENT_UPGRADE'?'artbook-development-upgrade':mode==='RELEASE_UPGRADE'?'artbook-release-upgrade':mode==='REVISION'?'artbook-revision':'artbook-second-work';
 }
 writeJson('artbook-submission-queue.json',queue);
 
