@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "status": "ACTIVE",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
@@ -7,6 +7,31 @@
   "candidateBranchPrefix": "autonomous/candidate-",
   "paidApi": false,
   "continuous24hDevelopment": true,
+  "developmentFocusPolicy": {
+    "maxFocusedGames": 2,
+    "scoreAxes": ["playability", "distinctiveness", "developmentEfficiency", "scalability", "lowBlockage"],
+    "axisMin": 0,
+    "axisMax": 2,
+    "focusThreshold": 8,
+    "nextDevelopmentThreshold": 5,
+    "selection": "TOP_SCORE_THEN_EXISTING_UNITY_PRIORITY",
+    "releaseConfirmedExcludedFromFocus": true,
+    "fastLane": {
+      "enabled": true,
+      "trigger": "RUNTIME_INCIDENT",
+      "reviewRoles": ["development", "qa"],
+      "implementationRoles": ["development"],
+      "finalQaRequired": true,
+      "releaseGateRequired": true
+    },
+    "swapTriggers": [
+      "MATERIAL_MILESTONE_COMPLETED",
+      "TWO_CONSECUTIVE_NO_MEANINGFUL_PROGRESS",
+      "BLOCKED_BY_STRUCTURE_OR_DEPENDENCY",
+      "HIGHER_SCORE_CANDIDATE",
+      "RELEASE_READY"
+    ]
+  },
   "departmentDevelopmentCycle": ["planning", "development", "graphics", "qa", "balance", "planning-final"],
   "departmentReviewMode": "PARALLEL_INDEPENDENT",
   "departmentFinalIntegrator": "planning-final",
@@ -32,6 +57,11 @@
       "sourcePath": "web-games/survival",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "IMPROVE",
+      "developmentFocus": {
+        "scores": {"playability": 2, "distinctiveness": 2, "developmentEfficiency": 2, "scalability": 2, "lowBlockage": 1},
+        "total": 9,
+        "evidenceNote": "공개 플레이 가능, 반응형 생태 정체성, 작은 단위 개선과 콘텐츠 확장 여지가 큼"
+      },
       "protectedValues": ["jaewoon-survival-v1", "worldVersion", "save-meaning", "core-loop"]
     },
     {
@@ -41,6 +71,11 @@
       "sourcePath": "web-games/insect-survival",
       "profileStatus": "NEEDS_AUDIT",
       "mode": "EXPERIMENT_ONLY",
+      "developmentFocus": {
+        "scores": {"playability": 2, "distinctiveness": 2, "developmentEfficiency": 1, "scalability": 2, "lowBlockage": 1},
+        "total": 8,
+        "evidenceNote": "곤충 생태 차별성과 확장성은 높지만 구조 정리가 아직 필요함"
+      },
       "protectedValues": ["save-meaning", "core-loop"]
     },
     {
@@ -50,6 +85,11 @@
       "sourcePath": "web-games/crystal-defense",
       "profileStatus": "NEEDS_AUDIT",
       "mode": "EXPERIMENT_ONLY",
+      "developmentFocus": {
+        "scores": {"playability": 2, "distinctiveness": 2, "developmentEfficiency": 0, "scalability": 2, "lowBlockage": 0},
+        "total": 6,
+        "evidenceNote": "수정 공명 정체성은 좋지만 기술부채 게이트가 먼저 필요함"
+      },
       "protectedValues": ["save-meaning", "core-loop"]
     },
     {
@@ -59,6 +99,11 @@
       "sourcePath": "web-games/bug-defense",
       "profileStatus": "NEEDS_AUDIT",
       "mode": "EXPERIMENT_ONLY",
+      "developmentFocus": {
+        "scores": {"playability": 2, "distinctiveness": 1, "developmentEfficiency": 1, "scalability": 2, "lowBlockage": 1},
+        "total": 7,
+        "evidenceNote": "확장성은 있으나 현재 차별성과 런타임 안정화가 우선"
+      },
       "protectedValues": ["save-meaning", "core-loop"]
     },
     {
@@ -68,6 +113,11 @@
       "sourcePath": "web-games/human-go",
       "profileStatus": "NEEDS_AUDIT",
       "mode": "EXPERIMENT_ONLY",
+      "developmentFocus": {
+        "scores": {"playability": 1, "distinctiveness": 1, "developmentEfficiency": 0, "scalability": 1, "lowBlockage": 1},
+        "total": 4,
+        "evidenceNote": "단일 대형 파일 구조 분석이 먼저라 집중개발보다 검토 단계가 적합"
+      },
       "protectedValues": ["save-meaning", "core-loop"]
     },
     {
@@ -77,6 +127,12 @@
       "sourcePath": "web-games/daechung-rpg",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "EXPERIMENT_ONLY",
+      "dedicatedDevelopmentLane": "UNITY_PRIMARY",
+      "developmentFocus": {
+        "scores": {"playability": 2, "distinctiveness": 2, "developmentEfficiency": 1, "scalability": 2, "lowBlockage": 1},
+        "total": 8,
+        "evidenceNote": "Unity 본개발 승인과 테스트 빌드 근거가 있으며 확장성은 높지만 재구축 비용이 큼"
+      },
       "protectedValues": ["save-meaning", "core-loop", "unity-primary"]
     },
     {
@@ -104,6 +160,11 @@
       "sourcePath": "web-games/monster-adventure",
       "profileStatus": "REDESIGN_IDENTITY",
       "mode": "REDESIGN",
+      "developmentFocus": {
+        "scores": {"playability": 2, "distinctiveness": 1, "developmentEfficiency": 1, "scalability": 1, "lowBlockage": 0},
+        "total": 5,
+        "evidenceNote": "플레이 가능하지만 정체성 재설계가 끝나기 전에는 집중개발 슬롯을 쓰지 않음"
+      },
       "protectedValues": ["save-meaning", "monster-party", "capture", "battle", "dex"]
     },
     {
