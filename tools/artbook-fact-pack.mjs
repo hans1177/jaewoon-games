@@ -41,7 +41,21 @@ function sourceTexts(files){
   }
   return out;
 }
-function snippets(sources,pattern,max=18){const out=[];for(const source of sources){const lines=source.text.split(/\r?\n/);for(let i=0;i<lines.length&&out.length<max;i++){if(pattern.test(lines[i]))out.push({source:source.source,line:i+1,text:clean(lines[i]).slice(0,220)});}if(out.length>=max)break;}return out;}
+function snippets(sources,pattern,max=18){
+  const out=[];
+  for(const source of sources){
+    const lines=source.text.split(/\r?\n/);
+    for(let i=0;i<lines.length&&out.length<max;i++){
+      const match=lines[i].match(pattern);
+      if(!match)continue;
+      const column=(match.index||0)+1;
+      const start=Math.max(0,column-1-80);
+      out.push({source:source.source,line:i+1,column,text:clean(lines[i].slice(start,start+300)).slice(0,220)});
+    }
+    if(out.length>=max)break;
+  }
+  return out;
+}
 const queue=JSON.parse(read('artbook-submission-queue.json')||'{}');
 const gameId=clean(process.env.ARTBOOK_GAME_ID||queue.currentDailyTarget||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
 const date=clean(process.env.ARTBOOK_DATE||kstDate());
