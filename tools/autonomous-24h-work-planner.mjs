@@ -159,7 +159,7 @@ export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={
     Boolean(runtimeIncident(health,project.slug))
   );
   const urgentPortfolio={...portfolio,projects:urgentProjects};
-  const urgent=urgentProjects.length?buildAutonomousWorkOrder({portfolio:urgentPortfolio,artbooks,health,catalog,diagnostics:{},queueState:{version:1,attempts:[]},date,filesystem,priorityGameId:''}):{run:false};
+  const urgent=urgentProjects.length?buildAutonomousWorkOrder({portfolio:urgentPortfolio,artbooks,health,catalog,diagnostics,queueState:{version:1,attempts:[]},date,filesystem,priorityGameId:''}):{run:false};
   const tierPolicyEnabled=Boolean(portfolio?.productionTierPolicy);
   const urgentProject=(portfolio?.projects??[]).find(project=>project.id===urgent?.gameId),urgentTier=Number(urgentProject?.productionTier||0);
   const urgentTierAllowed=!tierPolicyEnabled||(urgentTier>0&&urgentTier<3);
