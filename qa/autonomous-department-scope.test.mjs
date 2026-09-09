@@ -8,7 +8,7 @@ import { resolveDepartmentScope } from '../tools/autonomous-department-scope.mjs
 
 function fixture(){const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-scope-'));return root;}
 
-test('one mixed game file may be owned by multiple isolated departments',()=>{
+test('one mixed game micro-task file is owned by exactly one implementation department',()=>{
   const root=fixture();
   try{
     fs.writeFileSync(path.join(root,'index.html'),`<!doctype html><style>.hud{transform:scale(1)}</style><canvas id="game"></canvas><script>const enemy={hp:100,damage:12};let wave=1;const c=document.getElementById('game');c.addEventListener('pointerdown',()=>{});function render(){c.getContext('2d').fillRect(0,0,10,10)}try{render()}catch(error){console.error(error)}</script>`);
@@ -16,9 +16,50 @@ test('one mixed game file may be owned by multiple isolated departments',()=>{
     fs.mkdirSync(path.dirname(source),{recursive:true});
     fs.cpSync(root,source,{recursive:true});
     try{
-      const common={sourcePath:source,responsibilityFiles:['index.html'],goal:'모바일 전투 UI 오류와 전투 밸런스를 검토',repairMode:'MODEL'};
-      const scopes=['development','graphics','qa','balance'].map(role=>resolveDepartmentScope({...common,role}));
-      for(const result of scopes){assert.equal(result.run,true);assert.ok(result.scope.includes('index.html'));}
+      const common={sourcePath:source,responsibilityFiles:['index.html'],goal:'runtime 오류 1개를 index.html에서 복구',repairMode:'MODEL'};
+      const roles=['development','graphics','qa','balance'];
+      const scopes=roles.map(role=>({role,result:resolveDepartmentScope({...common,role})}));
+      const runnable=scopes.filter(row=>row.result.run);
+      assert.deepEqual(runnable.map(row=>row.role),['development']);
+      assert.deepEqual(runnable[0].result.scope,['index.html']);
+      for(const row of scopes.filter(row=>row.role!=='development')){
+        assert.equal(row.result.reason,'SINGLE_FILE_MICROTASK_OWNED_BY_DEVELOPMENT');
+      }
+    }finally{fs.rmSync(source,{recursive:true,force:true});}
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('single-file owner is invariant across department-specific review text',()=>{
+  const root=fixture();
+  try{
+    fs.writeFileSync(path.join(root,'index.html'),'<canvas id="game"></canvas><script>function load(){console.error("404")}</script>');
+    const source=`web-games/${path.basename(root)}`;
+    fs.mkdirSync(path.dirname(source),{recursive:true});
+    fs.cpSync(root,source,{recursive:true});
+    try{
+      const common={sourcePath:source,responsibilityFiles:['index.html'],goal:'runtime 404 1개만 복구',repairMode:'MODEL'};
+      const development=resolveDepartmentScope({...common,role:'development',departmentResult:{nextAction:'개발 로직을 수정'}});
+      const graphics=resolveDepartmentScope({...common,role:'graphics',departmentResult:{nextAction:'그래픽 UI와 animation render를 크게 개선'}});
+      assert.equal(development.run,true);
+      assert.equal(graphics.run,false);
+      assert.equal(graphics.reason,'SINGLE_FILE_MICROTASK_OWNED_BY_DEVELOPMENT');
+    }finally{fs.rmSync(source,{recursive:true,force:true});}
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('single CSS micro-task is assigned to graphics instead of development fallback',()=>{
+  const root=fixture();
+  try{
+    fs.writeFileSync(path.join(root,'style.css'),'.hud{transform:scale(1);animation:pulse 1s infinite}');
+    const source=`web-games/${path.basename(root)}`;
+    fs.mkdirSync(path.dirname(source),{recursive:true});
+    fs.cpSync(root,source,{recursive:true});
+    try{
+      const common={sourcePath:source,responsibilityFiles:['style.css'],goal:'UI 그래픽 표시 1개만 수정',repairMode:'MODEL'};
+      assert.equal(resolveDepartmentScope({...common,role:'graphics'}).run,true);
+      const development=resolveDepartmentScope({...common,role:'development'});
+      assert.equal(development.run,false);
+      assert.equal(development.reason,'SINGLE_FILE_MICROTASK_OWNED_BY_GRAPHICS');
     }finally{fs.rmSync(source,{recursive:true,force:true});}
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
