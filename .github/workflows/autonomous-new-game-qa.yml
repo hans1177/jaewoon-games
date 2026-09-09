@@ -92,7 +92,7 @@ jobs:
             echo 'continuous prepare writer lock missing or duplicated' >&2
             exit 1
           fi
-          grep -Fq 'group: autonomous-dev-recovery-${{ github.run_id }}' .github/workflows/autonomous-continuous-development.yml
+          grep -Eq '^      group: autonomous-dev-recovery-.*github\.run_id.*$' .github/workflows/autonomous-continuous-development.yml
           grep -Fq 'for attempt in 1 2 3 4 5; do' .github/workflows/autonomous-continuous-development.yml
           grep -Fq 'git reset --hard origin/autonomous-dev' .github/workflows/autonomous-continuous-development.yml
           grep -Fq 'if git push origin HEAD:autonomous-dev; then' .github/workflows/autonomous-continuous-development.yml
