@@ -3,7 +3,7 @@
   "dateKst": "2026-09-10",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
-  "activeDevelopmentRunId": 34392883675,
+  "activeDevelopmentRunId": 34391602764,
   "checks": {
     "staffChecked": "8/8",
     "activeWorkOrder": null,
@@ -24,8 +24,8 @@
     "completionAndPerformanceSeparated": true
   },
   "counts": {
-    "WORKING": 6,
-    "DONE": 1,
+    "WORKING": 1,
+    "DONE": 6,
     "IDLE_NO_TASK": 1,
     "BLOCKED": 0,
     "FAILED": 0,
@@ -33,9 +33,9 @@
   },
   "liveStates": {
     "ACTIVE": 1,
-    "WAITING": 6,
+    "WAITING": 1,
     "BLOCKED": 0,
-    "DONE": 1
+    "DONE": 6
   },
   "attentionRequired": false,
   "primaryFindings": [
@@ -44,13 +44,13 @@
   "workflowEvidence": {
     "artbook": null,
     "autonomousDevelopment": {
-      "id": 34392883675,
-      "status": "queued",
+      "id": 34391602764,
+      "status": "in_progress",
       "conclusion": null,
-      "event": "workflow_dispatch",
-      "createdAt": "2026-09-09T19:04:39Z",
-      "updatedAt": "2026-09-09T19:04:42Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34392883675"
+      "event": "push",
+      "createdAt": "2026-09-09T18:51:49Z",
+      "updatedAt": "2026-09-09T19:05:59Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34391602764"
     },
     "homepage": null,
     "publicGameHealth": null,
@@ -66,86 +66,137 @@
     "planning": {
       "department": "planning",
       "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
-      "task": "autonomous development floor 34392883675",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34391602764",
       "executionEvidence": [
-        "autonomous-workflow:34392883675:queued:pending"
+        "autonomous-workflow:34391602764:in_progress:pending",
+        "autonomous-job:102601902739:department (planning-final):completed:success",
+        "autonomous-job:102601191332:department (planning):completed:success"
       ],
-      "resultVerified": false,
-      "jobEvidence": null,
+      "resultVerified": true,
+      "jobEvidence": {
+        "id": 102601902739,
+        "name": "department (planning-final)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-09T18:54:41Z",
+        "completedAt": "2026-09-09T18:55:29Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34391602764/job/102601902739"
+      },
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous department handoff completed successfully",
+      "action": "none",
       "source": "autonomous-development"
     },
     "development": {
       "department": "development",
       "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
-      "task": "autonomous development floor 34392883675",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34391602764",
       "executionEvidence": [
-        "autonomous-workflow:34392883675:queued:pending"
+        "autonomous-workflow:34391602764:in_progress:pending",
+        "autonomous-job:102601191339:department (development):completed:success"
       ],
-      "resultVerified": false,
-      "jobEvidence": null,
+      "resultVerified": true,
+      "jobEvidence": {
+        "id": 102601191339,
+        "name": "department (development)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-09T18:52:32Z",
+        "completedAt": "2026-09-09T18:54:17Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34391602764/job/102601191339"
+      },
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous department handoff completed successfully",
+      "action": "none",
       "source": "autonomous-development"
     },
     "qa": {
       "department": "qa",
       "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
-      "task": "autonomous development floor 34392883675",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34391602764",
       "executionEvidence": [
-        "autonomous-workflow:34392883675:queued:pending"
+        "autonomous-workflow:34391602764:in_progress:pending",
+        "autonomous-job:102601191235:department (qa):completed:success"
       ],
-      "resultVerified": false,
-      "jobEvidence": null,
+      "resultVerified": true,
+      "jobEvidence": {
+        "id": 102601191235,
+        "name": "department (qa)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-09T18:52:34Z",
+        "completedAt": "2026-09-09T18:54:27Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34391602764/job/102601191235"
+      },
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous department handoff completed successfully",
+      "action": "none",
       "source": "autonomous-development"
     },
     "graphics": {
       "department": "graphics",
       "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
-      "task": "autonomous development floor 34392883675",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34391602764",
       "executionEvidence": [
-        "autonomous-workflow:34392883675:queued:pending"
+        "autonomous-workflow:34391602764:in_progress:pending",
+        "autonomous-job:102601191308:department (graphics):completed:success"
       ],
-      "resultVerified": false,
-      "jobEvidence": null,
+      "resultVerified": true,
+      "jobEvidence": {
+        "id": 102601191308,
+        "name": "department (graphics)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-09T18:52:33Z",
+        "completedAt": "2026-09-09T18:54:38Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34391602764/job/102601191308"
+      },
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous department handoff completed successfully",
+      "action": "none",
       "source": "autonomous-development"
     },
     "balance": {
       "department": "balance",
       "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
-      "task": "autonomous development floor 34392883675",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34391602764",
       "executionEvidence": [
-        "autonomous-workflow:34392883675:queued:pending"
+        "autonomous-workflow:34391602764:in_progress:pending",
+        "autonomous-job:102601191259:department (balance):completed:success"
       ],
-      "resultVerified": false,
-      "jobEvidence": null,
+      "resultVerified": true,
+      "jobEvidence": {
+        "id": 102601191259,
+        "name": "department (balance)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-09T18:52:31Z",
+        "completedAt": "2026-09-09T18:54:16Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34391602764/job/102601191259"
+      },
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous department handoff completed successfully",
+      "action": "none",
       "source": "autonomous-development"
     },
     "homepage": {
