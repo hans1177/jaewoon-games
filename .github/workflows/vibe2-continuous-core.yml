@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  VIBE2_LOCAL_MODEL: qwen3:0.6b
+  VIBE2_LOCAL_MODEL: qwen3:1.7b
   VIBE2_MODEL_MAX_PREDICT: '1536'
   VIBE2_MODEL_TIMEOUT_MS: '240000'
   OLLAMA_HOST: 127.0.0.1:11434
