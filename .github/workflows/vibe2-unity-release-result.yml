@@ -46,10 +46,11 @@ jobs:
           const task=String(m.taskId||'').trim(), game=String(m.gameId||'').trim();
           const target=String(m.target||'').trim(), root=String(m.sourceRoot||'').replaceAll('\\','/').replace(/^\.\//,'').replace(/\/$/,'');
           const base=String(m.baseMainSha||'').trim();
+          const origin=String(m.origin||'VIBE2_NATIVE').trim().toUpperCase();
           const row=(catalog.games||[]).find(g=>String(g.id||'')===game);
           const state=String(row?.homepageCategory||'other').toLowerCase();
           if(!task||!game||target!=='unity'||root!==`unity-games/${game}`||!base) throw new Error('invalid Unity Vibe2 candidate manifest');
-          put('task_id',task); put('game_id',game); put('source_root',root); put('base_sha',base); put('release_state',state);
+          put('task_id',task); put('game_id',game); put('source_root',root); put('base_sha',base); put('release_state',state); put('origin',origin);
           NODE
 
       - name: Revalidate release authority and BASE_SHA after successful APK build
@@ -102,7 +103,7 @@ jobs:
           done
           exit 1
 
-      - name: Settle Unity serial queue and continue
+      - name: Settle Unity result and continue correct source queue
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
@@ -110,21 +111,28 @@ jobs:
           BUILD_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           REVALIDATE_OUTCOME: ${{ steps.revalidate.outcome }}
           PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
+          CANDIDATE_ORIGIN: ${{ steps.manifest.outputs.origin }}
         shell: bash
         run: |
           set -euo pipefail
           test -n "$TASK_ID"
+          if [ "$BUILD_CONCLUSION" = success ] && [ "$REVALIDATE_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
+          if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
+            gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo "AUTONOMOUS_UNITY_RELEASE_RESULT=$result"
+            echo 'AUTONOMOUS_NEXT_FLOOR=DISPATCHED'
+            [ "$result" = PASS ]
+            exit
+          fi
           rm -rf /tmp/vibe2-control
           git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
           cd /tmp/vibe2-control
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
-          if [ "$BUILD_CONCLUSION" = success ] && [ "$REVALIDATE_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then
+          if [ "$result" = PASS ]; then
             node tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="unity-candidate-apk-pass,unity-build-run-${{ github.event.workflow_run.id }},main-auto-promoted,actions-run-${GITHUB_RUN_ID}"
-            result=PASS
           else
             node tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-or-promotion-failed --evidence="build-${BUILD_CONCLUSION},revalidate-${REVALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},unity-build-run-${{ github.event.workflow_run.id }}"
-            result=FAIL
           fi
           git add .vibe2/queue.json
           git commit -m "vibe2: settle Unity task ${TASK_ID} ${result} [skip ci]"

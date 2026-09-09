@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - 'vibe2/candidate/**'
+  workflow_dispatch:
+    inputs:
+      candidate_branch:
+        description: 'Exact vibe2/candidate/** branch to inspect when another GitHub Actions workflow created it'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -27,18 +33,27 @@ jobs:
       base_sha: ${{ steps.gate.outputs.base_sha }}
       release_state: ${{ steps.gate.outputs.release_state }}
       request_file: ${{ steps.gate.outputs.request_file }}
+      candidate_sha: ${{ steps.gate.outputs.candidate_sha }}
+      candidate_branch: ${{ steps.gate.outputs.candidate_branch }}
+      origin: ${{ steps.gate.outputs.origin }}
     steps:
       - name: Checkout candidate
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.inputs.candidate_branch || github.ref_name }}
           fetch-depth: 0
 
       - name: Resolve candidate, current authority and boundary
         id: gate
+        env:
+          SUBMITTED_CANDIDATE_BRANCH: ${{ github.event.inputs.candidate_branch || github.ref_name }}
         shell: bash
         run: |
           set -euo pipefail
           git fetch origin main --quiet
+          candidate_sha="$(git rev-parse HEAD)"
+          echo "candidate_sha=$candidate_sha" >> "$GITHUB_OUTPUT"
+          echo "candidate_branch=$SUBMITTED_CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
           mapfile -t manifests < <(find .vibe2/candidates -type f -name manifest.json 2>/dev/null | sort)
           if [ "${#manifests[@]}" -ne 1 ]; then
             echo 'decision=reject' >> "$GITHUB_OUTPUT"
@@ -58,6 +73,7 @@ jobs:
           const target=String(m.target||'').trim().toLowerCase();
           const root=String(m.sourceRoot||'').replaceAll('\\','/').replace(/^\.\//,'').replace(/\/$/,'');
           const base=String(m.baseMainSha||'').trim();
+          const origin=String(m.origin||'VIBE2_NATIVE').trim().toUpperCase();
           const row=(catalog.games||[]).find(g=>String(g.id||'')===game);
           const state=String(row?.homepageCategory||'other').toLowerCase();
           let decision='reject', reason='unknown';
@@ -68,7 +84,7 @@ jobs:
           else if(!['release-confirmed','development-confirmed'].includes(state)) reason='current-release-state-not-auto-deployable';
           else { decision=target; reason='candidate-authorized'; }
           put('decision',decision); put('reason',reason); put('task_id',task); put('game_id',game);
-          put('target',target); put('source_root',root); put('base_sha',base); put('release_state',state);
+          put('target',target); put('source_root',root); put('base_sha',base); put('release_state',state); put('origin',origin);
           put('request_file',target==='unity'?`.build-requests/unity/${game}.json`:'');
           NODE
 
@@ -79,10 +95,10 @@ jobs:
           reject() { echo 'decision=reject' >> "$GITHUB_OUTPUT"; echo "reason=$1" >> "$GITHUB_OUTPUT"; exit 0; }
           git cat-file -e "${base_sha}^{commit}" 2>/dev/null || reject base-main-sha-missing
           [ -z "$(git diff --name-only "$base_sha" origin/main -- "$source_root")" ] || reject source-root-changed-on-main
-          mapfile -t source_changed < <(git diff --name-only "$base_sha" "$GITHUB_SHA" -- "$source_root")
+          mapfile -t source_changed < <(git diff --name-only "$base_sha" "$candidate_sha" -- "$source_root")
           [ "${#source_changed[@]}" -gt 0 ] || reject no-source-change
-          git diff --check "$base_sha" "$GITHUB_SHA" || reject candidate-diff-check-failed
-          mapfile -t changed < <(git diff --name-only "$base_sha" "$GITHUB_SHA")
+          git diff --check "$base_sha" "$candidate_sha" || reject candidate-diff-check-failed
+          mapfile -t changed < <(git diff --name-only "$base_sha" "$candidate_sha")
           for file in "${changed[@]}"; do
             case "$file" in "$source_root"/*|.vibe2/candidates/*) ;; *) reject candidate-path-outside-boundary ;; esac
           done
@@ -96,6 +112,7 @@ jobs:
       - name: Checkout candidate
         uses: actions/checkout@v4
         with:
+          ref: ${{ needs.inspect.outputs.candidate_branch }}
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -122,7 +139,7 @@ jobs:
           SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
           BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
-          CANDIDATE_SHA: ${{ github.sha }}
+          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -147,27 +164,35 @@ jobs:
           done
           exit 1
 
-      - name: Settle web queue and continue
+      - name: Settle web result and continue correct source queue
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
           QA_OUTCOME: ${{ steps.webqa.outcome }}
           PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
+          CANDIDATE_ORIGIN: ${{ needs.inspect.outputs.origin }}
         shell: bash
         run: |
           set -euo pipefail
+          if [ "$QA_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
+          if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
+            if [ "$result" = PASS ]; then gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main; fi
+            gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo "AUTONOMOUS_RELEASE_RESULT=$result"
+            echo "AUTONOMOUS_NEXT_FLOOR=DISPATCHED"
+            [ "$result" = PASS ]
+            exit
+          fi
           rm -rf /tmp/vibe2-control
           git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
           cd /tmp/vibe2-control
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
-          if [ "$QA_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then
+          if [ "$result" = PASS ]; then
             node tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-static-qa-pass,main-auto-promoted,actions-run-${GITHUB_RUN_ID}"
-            result=PASS
           else
             node tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=web-qa-or-promotion-failed --evidence="web-qa-${QA_OUTCOME},promotion-${PROMOTE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
-            result=FAIL
           fi
           git add .vibe2/queue.json
           git commit -m "vibe2: settle web task ${TASK_ID} ${result} [skip ci]"
@@ -190,17 +215,20 @@ jobs:
     steps:
       - name: Checkout candidate
         uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.inspect.outputs.candidate_branch }}
       - name: Dispatch candidate APK QA
         id: dispatch
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
           REQUEST_FILE: ${{ needs.inspect.outputs.request_file }}
+          CANDIDATE_BRANCH: ${{ needs.inspect.outputs.candidate_branch }}
         shell: bash
         run: |
           set -euo pipefail
           test -f "$REQUEST_FILE"
-          gh workflow run unity-hybrid-android-build.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME" -f request_file="$REQUEST_FILE"
+          gh workflow run unity-hybrid-android-build.yml --repo "$GITHUB_REPOSITORY" --ref "$CANDIDATE_BRANCH" -f request_file="$REQUEST_FILE"
           echo 'VIBE2_UNITY_CANDIDATE_BUILD_DISPATCHED=YES'
 
       - name: Recover queue if build dispatch failed
@@ -208,9 +236,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          CANDIDATE_ORIGIN: ${{ needs.inspect.outputs.origin }}
         shell: bash
         run: |
           set -euo pipefail
+          if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
+            gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'AUTONOMOUS_UNITY_BUILD_DISPATCH=FAIL'
+            exit 1
+          fi
           rm -rf /tmp/vibe2-control
           git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
           cd /tmp/vibe2-control
@@ -230,14 +264,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Return rejected candidate to serial queue
+      - name: Return rejected candidate to correct serial queue
         env:
           GH_TOKEN: ${{ github.token }}
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
           REASON: ${{ needs.inspect.outputs.reason }}
+          CANDIDATE_ORIGIN: ${{ needs.inspect.outputs.origin }}
         shell: bash
         run: |
           set -euo pipefail
+          if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
+            gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo "AUTONOMOUS_RELEASE_REJECTED=$REASON"
+            exit 1
+          fi
           rm -rf /tmp/vibe2-control
           git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
           cd /tmp/vibe2-control

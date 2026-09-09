@@ -16,14 +16,19 @@ on:
       - "tools/autonomous-department-cycle.mjs"
       - "tools/autonomous-candidate-review.mjs"
       - "tools/autonomous-queue-state.mjs"
+      - "tools/autonomous-vibe-release-handoff.mjs"
       - "qa/autonomous-development-worker.test.mjs"
       - "qa/autonomous-work-planner.test.mjs"
       - "qa/autonomous-24h-work-planner.test.mjs"
       - "qa/autonomous-queue-state.test.mjs"
       - "qa/autonomous-candidate-review.test.mjs"
+      - "qa/autonomous-vibe-release-handoff.test.mjs"
       - ".github/workflows/autonomous-development-worker.yml"
       - ".github/workflows/autonomous-continuous-development.yml"
       - ".github/workflows/autonomous-candidate-promotion.yml"
+      - ".github/workflows/vibe2-candidate-release.yml"
+      - ".github/workflows/vibe2-unity-release-result.yml"
+      - ".github/workflows/company-dna-learning.yml"
       - ".github/workflows/autonomous-development-qa.yml"
   pull_request:
     paths:
@@ -39,14 +44,19 @@ on:
       - "tools/autonomous-department-cycle.mjs"
       - "tools/autonomous-candidate-review.mjs"
       - "tools/autonomous-queue-state.mjs"
+      - "tools/autonomous-vibe-release-handoff.mjs"
       - "qa/autonomous-development-worker.test.mjs"
       - "qa/autonomous-work-planner.test.mjs"
       - "qa/autonomous-24h-work-planner.test.mjs"
       - "qa/autonomous-queue-state.test.mjs"
       - "qa/autonomous-candidate-review.test.mjs"
+      - "qa/autonomous-vibe-release-handoff.test.mjs"
       - ".github/workflows/autonomous-development-worker.yml"
       - ".github/workflows/autonomous-continuous-development.yml"
       - ".github/workflows/autonomous-candidate-promotion.yml"
+      - ".github/workflows/vibe2-candidate-release.yml"
+      - ".github/workflows/vibe2-unity-release-result.yml"
+      - ".github/workflows/company-dna-learning.yml"
       - ".github/workflows/autonomous-development-qa.yml"
   workflow_dispatch:
 
@@ -68,12 +78,14 @@ jobs:
       - run: node --check tools/autonomous-department-cycle.mjs
       - run: node --check tools/autonomous-queue-state.mjs
       - run: node --check tools/autonomous-candidate-review.mjs
+      - run: node --check tools/autonomous-vibe-release-handoff.mjs
       - run: node --test qa/autonomous-development-worker.test.mjs
       - run: node --test qa/autonomous-work-planner.test.mjs
       - run: node --test qa/autonomous-24h-work-planner.test.mjs
       - run: node --test qa/autonomous-queue-state.test.mjs
       - run: node --test qa/autonomous-candidate-review.test.mjs
-      - name: Validate 24h autonomous contracts
+      - run: node --test qa/autonomous-vibe-release-handoff.test.mjs
+      - name: Validate 24h development to release and learning contracts
         shell: bash
         run: |
           set -euo pipefail
@@ -82,7 +94,11 @@ jobs:
           const p=require('./autonomous-portfolio.json');
           const continuous=fs.readFileSync('.github/workflows/autonomous-continuous-development.yml','utf8');
           const promotion=fs.readFileSync('.github/workflows/autonomous-candidate-promotion.yml','utf8');
+          const release=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
+          const unityResult=fs.readFileSync('.github/workflows/vibe2-unity-release-result.yml','utf8');
+          const dnaWorkflow=fs.readFileSync('.github/workflows/company-dna-learning.yml','utf8');
           const department=fs.readFileSync('tools/autonomous-department-cycle.mjs','utf8');
+          const handoff=fs.readFileSync('tools/autonomous-vibe-release-handoff.mjs','utf8');
           const planner=fs.readFileSync('tools/autonomous-24h-work-planner.mjs','utf8');
           const dna=fs.readFileSync('tools/company-dna-learning.mjs','utf8');
           const must=(ok,msg)=>{if(!ok)throw new Error(msg)};
@@ -108,6 +124,7 @@ jobs:
           must(continuous.includes('ref: autonomous-dev'),'autonomous-dev checkout missing');
           must(continuous.includes('git merge --no-edit origin/main'),'main sync missing');
           must(continuous.includes('SELF_PROMOTE_MAIN=NO'),'main self-promotion guard missing');
+          must(continuous.includes('gh workflow run autonomous-candidate-promotion.yml --ref main -f candidate_branch='),'candidate promotion must be explicitly dispatched after GITHUB_TOKEN push');
           must(department.includes("const ROLES=['planning','development','graphics','qa','balance','planning-final']"),'department role sequence missing');
           must(department.includes('allDepartmentsWorked:true'),'department completion evidence missing');
           must(department.includes("planCompanyDevelopmentTask")&&department.includes("../assets/vibe-company-orchestration-bridge.js"),'Vibe company bridge not connected to autonomous department cycle');
@@ -115,15 +132,28 @@ jobs:
           must(department.includes("VIBE_PROPOSES_AI_DEPARTMENTS_REVIEW_AND_CORRECT"),'Vibe/AI collaboration contract missing');
           must(department.includes('vibeMaySelfApprove:false')&&department.includes('vibeMayOverrideDepartments:false'),'early Vibe authority guard missing');
           must(dna.includes("'VIBE2'")&&dna.includes('GAME_VERIFIED')&&dna.includes('MULTI_GAME_VERIFIED'),'existing Vibe learning memory contract missing');
+          must(promotion.includes('workflow_dispatch:')&&promotion.includes('candidate_branch:'),'promotion explicit dispatch input missing');
           must(promotion.includes('--type=VIBE2'),'verified Vibe learning evidence not emitted by promotion');
           must(promotion.includes('--independent-qa=PASS'),'Vibe learning evidence must require independent QA');
+          must(promotion.includes('tools/autonomous-vibe-release-handoff.mjs'),'verified dev to Vibe release handoff missing');
+          must(promotion.includes('gh workflow run vibe2-candidate-release.yml --ref main -f candidate_branch='),'existing Vibe release gate dispatch missing');
+          must(promotion.includes('public game main direct promotion: NO'),'promotion must not write public game code directly');
+          must(!promotion.includes('PUBLIC_RELEASE=YES'),'promotion must never self-authorize public release');
+          must(handoff.includes('AUTONOMOUS_DEV_VERIFIED_HANDOFF'),'handoff origin marker missing');
+          must(handoff.includes("['development-confirmed','release-confirmed']"),'handoff release-state gate missing');
+          must(release.includes('workflow_dispatch:')&&release.includes('candidate_branch:'),'Vibe release gate explicit dispatch missing');
+          must(release.includes('candidate_sha="$(git rev-parse HEAD)"'),'workflow_dispatch must resolve exact candidate SHA');
+          must(release.includes("AUTONOMOUS_DEV_VERIFIED_HANDOFF"),'release gate autonomous origin routing missing');
+          must(release.includes('gh workflow run autonomous-continuous-development.yml'),'web release must return to autonomous development queue');
+          must(unityResult.includes("AUTONOMOUS_DEV_VERIFIED_HANDOFF"),'Unity release result autonomous origin routing missing');
+          must(unityResult.includes('gh workflow run autonomous-continuous-development.yml'),'Unity release result must return to autonomous development queue');
+          must(dnaWorkflow.includes("workflows: ['Autonomous Candidate Promotion']"),'verified promotion must trigger existing Company DNA learning');
           must(planner.includes("selection:'LEAST_KST_ATTEMPTS_FIRST'"),'fair 24h floor rotation missing');
-          must(promotion.includes('gh workflow run autonomous-continuous-development.yml --ref main'),'immediate next-floor dispatch missing');
-          must(promotion.includes('public game main promotion: NO'),'public main protection missing');
-          must(!promotion.includes('PUBLIC_RELEASE=YES'),'public release must never be automatic');
-          const files=['.github/workflows/autonomous-development-worker.yml','.github/workflows/autonomous-continuous-development.yml','.github/workflows/autonomous-candidate-promotion.yml','tools/autonomous-development-worker.mjs','tools/autonomous-work-planner.mjs','tools/autonomous-24h-work-planner.mjs','tools/autonomous-department-cycle.mjs'];
+          const files=['.github/workflows/autonomous-development-worker.yml','.github/workflows/autonomous-continuous-development.yml','.github/workflows/autonomous-candidate-promotion.yml','.github/workflows/vibe2-candidate-release.yml','.github/workflows/vibe2-unity-release-result.yml','tools/autonomous-development-worker.mjs','tools/autonomous-work-planner.mjs','tools/autonomous-24h-work-planner.mjs','tools/autonomous-department-cycle.mjs','tools/autonomous-vibe-release-handoff.mjs'];
           const text=files.map(file=>fs.readFileSync(file,'utf8')).join('\n');
           must(!/OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY/.test(text),'paid/external key path found');
           console.log('AUTONOMOUS_24H_SYSTEM_CONTRACT=PASS');
           console.log('VIBE_AI_COLLABORATION_CONTRACT=PASS');
+          console.log('DEVELOPMENT_RELEASE_HANDOFF_CONTRACT=PASS');
+          console.log('VERIFIED_LEARNING_LOOP_CONTRACT=PASS');
           NODE
