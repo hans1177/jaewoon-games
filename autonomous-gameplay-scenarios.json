@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "viewport": {"width": 390, "height": 844, "touch": true},
+  "policy": {
+    "scope": "SHORT_MOBILE_CORE_LOOP_SMOKE",
+    "candidateGate": "NO_NEW_RUNTIME_ERROR_DURING_SCENARIO",
+    "baselineComparison": true,
+    "gameRuleMutation": false
+  },
+  "games": [
+    {"id":"survival","aliases":["P0001"],"name":"나의 생존기","sourcePath":"web-games/survival","expectedPlayable":true,"scenario":{"id":"survival-gather-craft","intent":"이동 후 채집/제작 계열 핵심 입력을 짧게 확인","steps":[{"action":"move","label":"이동"},{"action":"primary","label":"채집/제작","keywords":["채집","줍기","제작","공격","시작"]},{"action":"reload","label":"재시작 안정성"}]}},
+    {"id":"insect-survival","aliases":["P0002"],"name":"곤충 생존기","sourcePath":"web-games/insect-survival","expectedPlayable":true,"scenario":{"id":"insect-survival-core","intent":"이동 후 곤충 생존 상호작용/공격 입력을 짧게 확인","steps":[{"action":"move","label":"이동"},{"action":"primary","label":"상호작용/공격","keywords":["공격","채집","제작","줍기","시작"]},{"action":"reload","label":"재시작 안정성"}]}},
+    {"id":"crystal-defense","aliases":["P0003"],"name":"수정 디펜스","sourcePath":"web-games/crystal-defense","expectedPlayable":true,"scenario":{"id":"crystal-defense-wave","intent":"웨이브 시작과 보드 입력이 오류 없이 유지되는지 확인","steps":[{"action":"primary","label":"웨이브 시작","keywords":["시작","웨이브","전투","배치"]},{"action":"board","label":"보드 배치 입력"},{"action":"reload","label":"재시작 안정성"}]}},
+    {"id":"bug-defense","aliases":["P0004"],"name":"곤충 디펜스","sourcePath":"web-games/bug-defense","expectedPlayable":true,"scenario":{"id":"bug-defense-wave","intent":"웨이브/배치 핵심 입력을 짧게 실행","steps":[{"action":"primary","label":"웨이브 시작","keywords":["시작","웨이브","전투","출전"]},{"action":"board","label":"전장 입력"},{"action":"reload","label":"재시작 안정성"}]}},
+    {"id":"daechung-rpg","aliases":["P0006"],"name":"대충 RPG","sourcePath":"web-games/daechung-rpg","expectedPlayable":true,"scenario":{"id":"daechung-rpg-explore","intent":"이동과 전투/상호작용 입력을 짧게 확인","steps":[{"action":"move","label":"탐험 이동"},{"action":"primary","label":"전투/상호작용","keywords":["공격","전투","확인","퀘스트","시작"]},{"action":"reload","label":"재시작 안정성"}]}},
+    {"id":"human-go","aliases":["P0005"],"name":"휴먼 GO","sourcePath":"web-games/human-go","expectedPlayable":true,"scenario":{"id":"human-go-collect","intent":"뽑기/수집 핵심 입력을 실행하고 화면 유지 확인","steps":[{"action":"primary","label":"뽑기/수집","keywords":["뽑기","소환","획득","시작","확인"]},{"action":"primary","label":"성장/확인","keywords":["강화","성장","확인","다음"]},{"action":"reload","label":"재시작 안정성"}]}},
+    {"id":"egg-heist","aliases":["P0008"],"name":"알 도둑 대작전","sourcePath":"web-games/egg-heist","expectedPlayable":false,"scenario":{"id":"egg-heist-hold-guard","intent":"현재 HOLD 리다이렉트 상태를 플레이 가능으로 오인하지 않음","steps":[{"action":"hold-check","label":"HOLD 경로 확인"}]}},
+    {"id":"chess-battle","aliases":["P0101"],"name":"체스 배틀","sourcePath":"web-games/chess-battle","expectedPlayable":true,"scenario":{"id":"chess-battle-move","intent":"보드 선택/이동 입력과 재시작 안정성을 확인","steps":[{"action":"board","label":"말/칸 선택"},{"action":"board","label":"이동 대상 선택"},{"action":"reload","label":"재시작 안정성"}]}},
+    {"id":"monster-adventure","aliases":["P0009"],"name":"몬스터 어드벤처","sourcePath":"web-games/monster-adventure","expectedPlayable":true,"scenario":{"id":"monster-adventure-battle","intent":"이동 후 포획/전투 계열 핵심 입력을 확인","steps":[{"action":"move","label":"탐험 이동"},{"action":"primary","label":"포획/전투","keywords":["공격","전투","포획","잡기","시작"]},{"action":"reload","label":"재시작 안정성"}]}},
+    {"id":"survival2","aliases":["P0102"],"name":"숲의 생존자들","sourcePath":"web-games/survival2","expectedPlayable":true,"scenario":{"id":"survival2-companion","intent":"이동과 생존/동료 상호작용 입력을 확인","steps":[{"action":"move","label":"이동"},{"action":"primary","label":"생존/동료 상호작용","keywords":["채집","공격","동료","제작","시작"]},{"action":"reload","label":"재시작 안정성"}]}},
+    {"id":"territory-war","aliases":["P0103"],"name":"영토전쟁","sourcePath":"web-games/territory-war","expectedPlayable":true,"scenario":{"id":"territory-war-expand","intent":"영토 선택/확장 보드 입력을 확인","steps":[{"action":"board","label":"영토 선택"},{"action":"primary","label":"확장/공격","keywords":["확장","공격","점령","턴","시작"]},{"action":"reload","label":"재시작 안정성"}]}}
+  ]
+}
