@@ -66,6 +66,26 @@ function diagnosticConstraints(diagnostic){
   if(diagnostic?.topIssue&&isDiagnosticConstraint(diagnostic.topIssue)&&!rows.includes(diagnostic.topIssue))rows.unshift(diagnostic.topIssue);
   return rows.filter(isDiagnosticConstraint);
 }
+function legacyCutFeatureAnchors(book){
+  const cuts=Array.isArray(book?.cuts)?book.cuts:[];
+  const score=cut=>{
+    const title=clean(cut?.title),body=clean(cut?.body),text=`${title} ${body}`;
+    let value=0;
+    if(/초반|중반/.test(title))value+=4;
+    if(/지역/.test(text))value+=3;
+    if(/활동권|생태권|생존권/.test(text))value+=2;
+    if(/확장|더 위험|새 자원|이동 루트/.test(text))value+=2;
+    if(/퀘스트|보스|위협/.test(text))value+=1;
+    return value;
+  };
+  return cuts
+    .filter(cut=>['vibe2','planning'].includes(clean(cut?.sourceDepartment).toLowerCase()))
+    .filter(cut=>['story-draft','department-visual'].includes(clean(cut?.pageType).toLowerCase()))
+    .map(cut=>({body:clean(cut?.body),score:score(cut),no:Number(cut?.no)||999}))
+    .filter(row=>row.body&&!isMetaImprovement(row.body))
+    .sort((a,b)=>b.score-a.score||a.no-b.no)
+    .map(row=>row.body);
+}
 function featureAnchor(book){
   const planning=book?.departments?.planning?.section||{};
   const graphics=book?.departments?.graphics?.section||{};
@@ -78,6 +98,7 @@ function featureAnchor(book){
     book?.planningDirectionSelection?.signatureMoment,
     book?.planningDirectionSelection?.playerExperience,
     book?.storySpine?.planningDirectionSelection?.signatureMoment,
+    ...legacyCutFeatureAnchors(book),
   ].map(clean).filter(Boolean).filter(text=>!isMetaImprovement(text));
   return candidates[0]||null;
 }

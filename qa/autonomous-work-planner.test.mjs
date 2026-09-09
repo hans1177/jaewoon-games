@@ -145,6 +145,25 @@ test('집중 DESIGN_BASELINE에서 대형 단일 파일은 개발 목표가 아�
   assert.equal(order.evidence.diagnostics.topIssue,null);
 });
 
+test('구형 아트북은 story-draft cuts에서 게임별 지역 진행 근거를 feature anchor로 사용한다',()=>{
+  const portfolio={...basePortfolio,projects:[basePortfolio.projects[0]]};
+  const artbooks={artbooks:[{
+    id:'a-legacy',gameId:'a',createdAt:'2026-09-09',status:'completed-artbook',lifecycle:{state:'DESIGN_BASELINE'},
+    cuts:[
+      {no:2,sourceDepartment:'vibe2',pageType:'story-draft',title:'오프닝',body:'시작 생존권에서 첫날 자원을 확보한다.'},
+      {no:3,sourceDepartment:'vibe2',pageType:'story-draft',title:'초반',body:'초기 활동권에서 기본 장비와 이동 루트를 확보한 뒤 더 위험한 지역으로 확장한다.'},
+      {no:10,sourceDepartment:'planning',pageType:'department-visual',title:'검토',body:'본부 결과물의 이번 검토 점수를 설명한다.'}
+    ],
+    departmentOpinions:{qa:{averageStars:1,priorityImprovement:'본부 결과물의 이번 검토 점수를 더 강조한다'}}
+  }]};
+  const order=buildAutonomousWorkOrder({portfolio,artbooks,health:{games:[]},catalog,diagnostics:{a:{issues:[],topIssue:null}},date:'2026-09-09',filesystem,queueState:queue(),priorityGameId:'a'});
+  assert.equal(order.selectedReason,'ARTBOOK_COMPLETED_DEVELOPMENT_HANDOFF');
+  assert.match(order.goal,/초기 활동권/);
+  assert.match(order.goal,/더 위험한 지역/);
+  assert.doesNotMatch(order.goal,/이번 검토 점수/);
+  assert.match(order.evidence.artbookDevelopmentHandoff.featureAnchor,/초기 활동권/);
+});
+
 test('기획 정체성만 필요한 프로젝트는 코드 생성으로 밀어 넣지 않는다',()=>{
   const portfolio={...basePortfolio,projects:[{id:'P9',slug:'r',name:'R',sourcePath:'web-games/r',profileStatus:'REDESIGN_IDENTITY',mode:'REDESIGN',protectedValues:[]}]};
   const order=buildAutonomousWorkOrder({portfolio,artbooks:{artbooks:[]},health:{games:[]},catalog:{games:[]},diagnostics:{r:diag()},date:'2026-09-09',filesystem,queueState:queue()});
