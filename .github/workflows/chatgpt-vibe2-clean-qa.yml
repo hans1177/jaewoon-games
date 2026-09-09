@@ -1,0 +1,55 @@
+name: ChatGPT Vibe2 Clean QA
+
+on:
+  push:
+    branches: [chatgpt/vibe2-capability-clean-7f9c-20260909]
+    paths:
+      - '.github/workflows/chatgpt-vibe2-clean-qa.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: chatgpt/vibe2-capability-clean-7f9c-20260909
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax and deterministic tests
+        run: |
+          node --check tools/autonomous-work-planner.mjs
+          node --check tools/autonomous-diagnostics.mjs
+          node --check tools/autonomous-department-scope.mjs
+          node --check tools/autonomous-development-worker.mjs
+          node --check tools/autonomous-candidate-browser-qa.mjs
+          node --test qa/autonomous-work-planner.test.mjs
+          node --test qa/autonomous-24h-work-planner.test.mjs
+          node --test qa/autonomous-diagnostics.test.mjs
+          node --test qa/autonomous-department-scope.test.mjs
+          node --test qa/autonomous-development-worker.test.mjs
+          node --test qa/autonomous-candidate-browser-qa.test.mjs
+          git diff --check HEAD^ HEAD
+      - name: Install Chromium runtime
+        run: |
+          npm install --no-save --no-package-lock playwright
+          npx playwright install --with-deps chromium
+      - name: Actual mobile candidate browser QA smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          fixture='web-games/__vibe2_browser_qa_fixture__'
+          mkdir -p "$fixture"
+          cat > "$fixture/index.html" <<'HTML'
+          <!doctype html>
+          <html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+          <body><button id="play">PLAY</button><canvas id="game" width="320" height="180"></canvas><script>document.getElementById('play').addEventListener('click',()=>{});</script></body></html>
+          HTML
+          node tools/autonomous-candidate-browser-qa.mjs --source="$fixture" --output=/tmp/vibe2-browser-qa.json --screenshot=/tmp/vibe2-browser-qa.png
+          node -e "const r=require('/tmp/vibe2-browser-qa.json');if(!r.pass||!r.metrics?.bodyVisible||!r.reloadMetrics?.bodyVisible)process.exit(1);console.log('ACTUAL_BROWSER_QA=PASS')"
+          rm -rf "$fixture"
