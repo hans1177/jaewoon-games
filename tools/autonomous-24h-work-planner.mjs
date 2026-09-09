@@ -152,7 +152,8 @@ export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},qu
 export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={games:[]},diagnostics={},queueState={version:2,attempts:[]},impactHistory={version:1,entries:[]},date=kstDate(),filesystem=fs,priorityGameId='',now=new Date(),isSourceReleased=()=>false}={}){
   const active=activeReservations(queueState,{now,isSourceReleased});
   const activeGameIds=new Set(active.map(row=>row.gameId)),activeSourcePaths=new Set(active.map(row=>clean(row.sourcePath)).filter(Boolean));
-  const urgent=buildAutonomousWorkOrder({portfolio,artbooks,health,catalog,diagnostics,queueState:{version:1,attempts:[]},date,filesystem,priorityGameId:''});
+  const urgentPortfolio={...portfolio,projects:(portfolio?.projects??[]).filter(project=>!activeGameIds.has(project.id)&&!activeSourcePaths.has(clean(project.sourcePath)))};
+  const urgent=buildAutonomousWorkOrder({portfolio:urgentPortfolio,artbooks,health,catalog,diagnostics,queueState:{version:1,attempts:[]},date,filesystem,priorityGameId:''});
   const tierPolicyEnabled=Boolean(portfolio?.productionTierPolicy);
   const urgentProject=(portfolio?.projects??[]).find(project=>project.id===urgent?.gameId),urgentTier=Number(urgentProject?.productionTier||0);
   const urgentTierAllowed=!tierPolicyEnabled||(urgentTier>0&&urgentTier<3);
