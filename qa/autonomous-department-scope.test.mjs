@@ -29,6 +29,24 @@ test('one mixed game micro-task file is owned by exactly one implementation depa
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('single-file owner is invariant across department-specific review text',()=>{
+  const root=fixture();
+  try{
+    fs.writeFileSync(path.join(root,'index.html'),'<canvas id="game"></canvas><script>function load(){console.error("404")}</script>');
+    const source=`web-games/${path.basename(root)}`;
+    fs.mkdirSync(path.dirname(source),{recursive:true});
+    fs.cpSync(root,source,{recursive:true});
+    try{
+      const common={sourcePath:source,responsibilityFiles:['index.html'],goal:'runtime 404 1개만 복구',repairMode:'MODEL'};
+      const development=resolveDepartmentScope({...common,role:'development',departmentResult:{nextAction:'개발 로직을 수정'}});
+      const graphics=resolveDepartmentScope({...common,role:'graphics',departmentResult:{nextAction:'그래픽 UI와 animation render를 크게 개선'}});
+      assert.equal(development.run,true);
+      assert.equal(graphics.run,false);
+      assert.equal(graphics.reason,'SINGLE_FILE_MICROTASK_OWNED_BY_DEVELOPMENT');
+    }finally{fs.rmSync(source,{recursive:true,force:true});}
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('single CSS micro-task is assigned to graphics instead of development fallback',()=>{
   const root=fixture();
   try{
