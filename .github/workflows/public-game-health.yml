@@ -61,6 +61,7 @@ jobs:
         run: curl --fail --location --retry 2 --max-time 20 https://jaewoon-games.pages.dev/ >/dev/null
 
       - name: Upload health evidence
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: public-game-health-${{ github.run_id }}

@@ -1,0 +1,148 @@
+{
+  "version": 6,
+  "gameId": "crystal-defense",
+  "date": "2026-09-09",
+  "department": "balance",
+  "status": "SUBMITTED",
+  "departmentReadiness": "NEEDS_VALIDATION",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 2,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "게임 로딩 실패",
+  "evidence": [
+    {
+      "source": "web-games/crystal-defense/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-crystal-defense.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentNumbers": ":[{",
+    "progressionCurve": "linear",
+    "combatFeel": "none",
+    "economyRewards": "none",
+    "difficultyTransitions": "none",
+    "testMeasurements": "none",
+    "handoffs": "none"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "game",
+      "gameplay",
+      "player"
+    ],
+    "implementationPlan": [
+      "game",
+      "gameplay",
+      "player"
+    ],
+    "demoValidation": [
+      "game",
+      "gameplay",
+      "player"
+    ]
+  },
+  "unverified": [
+    "game",
+    "gameplay",
+    "player"
+  ],
+  "cuts": [
+    {
+      "kind": "balance",
+      "title": "게임 로딩 실패",
+      "body": "game · gameplay · player",
+      "image": "artbook-submissions/crystal-defense/2026-09-09/visuals/balance.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 1,
+    "pages": [
+      {
+        "owner": "balance",
+        "ownerName": "밸런스",
+        "pageSlot": 1,
+        "visualType": "balance-curve",
+        "title": "게임 로딩 실패",
+        "focus": "게임 로딩 시스템",
+        "caption": "게임 로딩 시스템이 실패한 상태입니다. 현재 게임 상태가 정상적이지 않습니다.",
+        "elements": [
+          {
+            "label": "체력",
+            "note": "현재 체력은 0입니다.",
+            "kind": ""
+          },
+          {
+            "label": "공격",
+            "note": "공격 능력이 없습니다.",
+            "kind": ""
+          },
+          {
+            "label": "보상",
+            "note": "보상 시스템이 활성화되었습니다.",
+            "kind": ""
+          },
+          {
+            "label": "성장",
+            "note": "성장 시스템이 활성화되었습니다.",
+            "kind": ""
+          },
+          {
+            "label": "난이도",
+            "note": "난이도는 0입니다.",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/crystal-defense/2026-09-09/visuals/balance-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "balance"
+      }
+    ],
+    "generatedBy": {
+      "department": "balance",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

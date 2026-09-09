@@ -1,0 +1,69 @@
+name: Company Status Sync
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Director Staff Supervisor
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - 'tools/company-status-sync.mjs'
+      - '.github/workflows/company-status-sync.yml'
+      - 'director-supervision-status.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: company-status-sync-main
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Sync main
+        run: git pull --ff-only origin main
+
+      - name: Sync company status from supervision
+        run: node tools/company-status-sync.mjs
+
+      - name: Validate synchronized state
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs=require('fs');
+          const company=JSON.parse(fs.readFileSync('company-status.json','utf8'));
+          const supervision=JSON.parse(fs.readFileSync('director-supervision-status.json','utf8'));
+          if(company.supervision?.dateKst!==supervision.dateKst)throw new Error('supervision date not synchronized');
+          if(JSON.stringify(company.supervision?.counts||{})!==JSON.stringify(supervision.counts||{}))throw new Error('supervision counts not synchronized');
+          if(JSON.stringify(company.supervision?.primaryFindings||[])!==JSON.stringify(supervision.primaryFindings||[]))throw new Error('supervision findings not synchronized');
+          const map={WORKING:'working',DONE:'done',IDLE_NO_TASK:'idle',BLOCKED:'blocked',FAILED:'failed',STALE:'stale'};
+          const expected=map[supervision.staff?.homepage?.status]||String(supervision.staff?.homepage?.status||'').toLowerCase();
+          if(company.operations?.homepage?.status!==expected)throw new Error('homepage operation status not synchronized');
+          console.log('COMPANY_STATUS_SYNC_QA=PASS');
+          NODE
+
+      - name: Commit synchronized company status
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-company-status-sync'
+          git config user.email 'actions@users.noreply.github.com'
+          git add company-status.json
+          if git diff --cached --quiet; then
+            echo 'COMPANY_STATUS_SYNC_COMMIT=NO_CHANGES'
+            exit 0
+          fi
+          git commit -m 'company: sync supervision state [skip ci]'
+          git pull --rebase origin main
+          git push origin main
+          echo 'COMPANY_STATUS_SYNC_COMMIT=SUCCESS'

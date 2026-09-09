@@ -1,6 +1,6 @@
 // 파일명: assets/vibe-company-orchestration-bridge.js
 // 역할: 재운컴퍼니 개발 플로우를 기존 workbench/orchestrator 실행계약에 연결한다.
-// 원칙: 완료 아트북은 컨셉 기준으로 잠그며 Vibe2는 재기획하지 않고 기술검증/구현/QA만 수행한다.
+// 원칙: 현재 승인 아트북 기준선은 구현 중 보호하지만 필요 시 정식 ARTBOOK_REVISION_REQUEST로 새 버전을 만들 수 있다.
 // 동기화: 바이브2 제작 규칙과 재운컴퍼니 운영 상태는 같은 GitHub main을 단일 진실 소스로 사용한다.
 
 import { planVibeWorkbenchTask } from './vibe-workbench.js';
@@ -42,14 +42,15 @@ const SHARED_WORK_LOCK_POLICY=Object.freeze({
 });
 
 export const VIBE2_COMPANY_SYNC=Object.freeze({
-  version:5,
+  version:6,
   mode:'single-source-of-truth',
   sourceOfTruth:'github-main',
-  companyAuthority:Object.freeze(['company-directive.json','company-status.json','department-experience.json','COMPANY_FLOW.md','ARTBOOK_POLICY.md']),
-  vibe2Authority:Object.freeze(['AGENTS.md','ASSET_RULES.md','assets/animated-assets.json','assets/asset-manifest.json','assets/department-experience.js','assets/department-experience-state.js','assets/company-quality-bar.js','assets/vibe-workbench.js','assets/vibe-orchestrator.js','assets/vibe-work-lock.js']),
+  companyAuthority:Object.freeze(['company-directive.json','company-status.json','department-experience.json','COMPANY_FLOW.md','ARTBOOK_POLICY.md','ARTBOOK_LIFECYCLE.md']),
+  vibe2Authority:Object.freeze(['AGENTS.md','ASSET_RULES.md','assets/animated-assets.json','assets/asset-manifest.json','assets/department-experience.js','assets/department-experience-state.js','assets/company-quality-bar.js','assets/vibe-workbench.js','assets/vibe-orchestrator.js','assets/vibe-work-lock.js','assets/artbook-lifecycle.js']),
   bridge:'assets/vibe-company-orchestration-bridge.js',
   ownerDirectivePriority:'before-autonomous-plan',
-  completedArtbookPriority:'locked-source-of-truth-before-vibe2-plan',
+  completedArtbookPriority:'latest-approved-baseline-before-vibe2-implementation',
+  artbookRevisionPolicy:'current-baseline-protected-new-version-revision-allowed',
   departmentLearning:'verified-experience-strengthens-quality-not-authority',
   qualityLearning:'company-quality-bar-rises-with-verified-experience',
   sharedWorkLock:'required-before-source-write',
@@ -115,7 +116,7 @@ export function createCompanyStageAssignment({stageId='brief',request='',gameId=
   const experienceState=resolveExperienceState(departmentExperienceState);
   const locked=artbookLock?.locked===true;
   const lockInstruction=locked
-    ? `완료 아트북 잠금 적용. 기준=${artbookLock.ref||'completed-artbook'}. 장르·핵심루프·스토리·캐릭터/몬스터/보스 정체성·아트방향·전투/성장 핵심을 재설계하지 말 것. 변경 필요 시 구현하지 말고 ARTBOOK_CHANGE_REQUEST로 반환.`
+    ? `현재 승인 아트북 기준선 잠금 적용. 기준=${artbookLock.ref||'latest-approved-artbook'}. 구현 중 임의로 장르·핵심루프·스토리·캐릭터/몬스터/보스 정체성·아트방향·전투/성장 핵심을 바꾸지 말 것. 변경이 필요하면 코드를 먼저 바꾸지 말고 ARTBOOK_REVISION_REQUEST로 새 버전 수정안을 제안할 것.`
     : '';
   const tasks=roles.map(role=>{
     const baseInstruction=[lockInstruction,`${stage.name}: ${stage.purpose}`].filter(Boolean).join(' ');
@@ -128,6 +129,8 @@ export function createCompanyStageAssignment({stageId='brief',request='',gameId=
       outputs:stage.outputs,
       artbookLocked:locked,
       artbookRef:locked?artbookLock.ref||null:null,
+      artbookRevisionAllowed:true,
+      artbookRevisionRequestType:'ARTBOOK_REVISION_REQUEST',
       experience:experienced.profile,
       workLock:SHARED_WORK_LOCK_POLICY
     });
@@ -135,7 +138,7 @@ export function createCompanyStageAssignment({stageId='brief',request='',gameId=
   const experienceProfiles=Object.freeze(Object.fromEntries(tasks.map(task=>[task.role,task.experience])));
 
   return Object.freeze({
-    version:4,
+    version:5,
     sync:VIBE2_COMPANY_SYNC,
     gameId:clean(gameId),
     stage,
@@ -144,10 +147,10 @@ export function createCompanyStageAssignment({stageId='brief',request='',gameId=
     experienceProfiles,
     artbookLock:artbookLock||null,
     workLock:SHARED_WORK_LOCK_POLICY,
-    authority:requiresOwnerAction?'owner-decision-only':locked?'company-managed-with-locked-artbook':'company-managed-stage',
+    authority:requiresOwnerAction?'owner-decision-only':locked?'company-managed-with-current-artbook-baseline':'company-managed-stage',
     autoExecute:!requiresOwnerAction,
     requiresOwnerAction,
-    executionMode:requiresOwnerAction?'wait-for-owner':locked?'implementation-with-locked-artbook':'company-managed'
+    executionMode:requiresOwnerAction?'wait-for-owner':locked?'implementation-with-current-artbook-baseline':'company-managed'
   });
 }
 
@@ -207,7 +210,7 @@ export function planCompanyDevelopmentTask({
     knownBroken
   });
   const artbookWarnings=artbookLock.locked
-    ? [`완료 아트북 잠금: ${artbookLock.ref||'completed-artbook'}를 단일 컨셉 기준으로 유지`,`Vibe2 재기획 금지. 변경 필요 시 ARTBOOK_CHANGE_REQUEST`]
+    ? [`현재 승인 아트북 기준선: ${artbookLock.ref||'latest-approved-artbook'}를 구현 기준으로 유지`,`기준선 변경 필요 시 ARTBOOK_REVISION_REQUEST를 만들고 승인 전에는 기존 기준선을 계속 사용`]
     : [];
   const orchestrator=resolvedTarget==='unity'
     ? Object.freeze({
@@ -260,7 +263,7 @@ export function planCompanyDevelopmentTask({
     const executionBase=createVibeExecutionContract({request:prompt,target:resolvedTarget==='unity'?'auto':resolvedTarget,responsibleFiles});
     const qualityBarChecks=[`회사 품질바 T${companyQualityBar.tier} ${companyQualityBar.name}: ${JSON.stringify(companyQualityBar.requirements)}`];
     const artbookQa=artbookLock.locked
-      ? ['완료 아트북 10장과 실제 구현의 컨셉 일치 검사','장르·핵심루프·스토리·아트방향·전투·성장 컨셉 드리프트 없음','잠긴 아트북 변경 필요 시 ARTBOOK_CHANGE_REQUEST로 중단했는지 확인']
+      ? ['최신 승인 아트북 기준선과 실제 구현의 컨셉 일치 검사','장르·핵심루프·스토리·아트방향·전투·성장 컨셉 드리프트 없음','기준선 변경 필요 시 ARTBOOK_REVISION_REQUEST로 중단하고 승인 전 기존 기준선을 유지했는지 확인']
       : [];
     const experienceQa=assignment.tasks.flatMap(task=>{
       const profile=task.experience;
@@ -310,7 +313,7 @@ export function planCompanyDevelopmentTask({
   });
 
   return Object.freeze({
-    version:5,
+    version:6,
     sync:VIBE2_COMPANY_SYNC,
     request:prompt,
     gameId:gameId?clean(gameId):null,
@@ -331,9 +334,12 @@ export function planCompanyDevelopmentTask({
     routing:Object.freeze({
       predevelopmentGateRequired:conceptPhaseRequired,
       completedArtbookLocked:artbookLock.locked,
+      artbookRevisionAllowed:true,
+      artbookRevisionRequestType:'ARTBOOK_REVISION_REQUEST',
+      approvedBaselineOverwriteForbidden:true,
       skippedRedesignStages:artbookLock.locked?ARTBOOK_LOCKED_PREDESIGN_STAGES:freezeList([]),
-      conceptSource:artbookLock.locked?'completed-artbook':'company-predevelopment',
-      conceptChangeRule:artbookLock.locked?'ARTBOOK_CHANGE_REQUEST_REQUIRED':'normal-proposal-flow',
+      conceptSource:artbookLock.locked?'latest-approved-artbook-baseline':'company-predevelopment',
+      conceptChangeRule:artbookLock.locked?'ARTBOOK_REVISION_REQUEST_REQUIRED':'normal-proposal-flow',
       majorOwnerApprovalRequired,
       maintenanceBypass,
       mayDispatch:assignment.autoExecute,
@@ -344,7 +350,7 @@ export function planCompanyDevelopmentTask({
       next,
       companyReviewRoles:COMPANY_REVIEW_ROLES,
       departmentExperienceRule:'verified-xp-strengthens-quality-process-without-expanding-authority',
-      rule:artbookLock.locked?'locked-artbook-is-source-of-truth-vibe2-implementation-only':newGame?'new-game-must-pass-internal-and-owner-gates':majorOwnerApprovalRequired?'major-change-must-pass-owner-gate':'existing-game-protection-flow'
+      rule:artbookLock.locked?'current-artbook-baseline-protected-revision-through-new-version':newGame?'new-game-must-pass-internal-and-owner-gates':majorOwnerApprovalRequired?'major-change-must-pass-owner-gate':'existing-game-protection-flow'
     })
   });
 }

@@ -1,0 +1,178 @@
+{
+  "version": 11,
+  "date": "2026-09-09",
+  "mode": "INITIAL",
+  "gameId": "crystal-defense",
+  "gameName": "수정 디펜스",
+  "status": "INITIAL_ARTBOOK_WORK_SCHEDULED",
+  "submissionCountPolicy": "UNLIMITED",
+  "existingInitialPriority": true,
+  "existingInitialRemaining": 9,
+  "styleProfile": "마력 방어선 설계서 + 침공 기록",
+  "lifecycle": {
+    "documentType": "LIVING_GAME_DESIGN_ARTBOOK",
+    "createsNewVersion": true,
+    "overwriteApprovedVersion": false,
+    "revisionAllowedAnytime": true,
+    "sourceArtbookId": null,
+    "fromState": null,
+    "targetState": "DESIGN_BASELINE",
+    "trigger": "INITIAL_DESIGN",
+    "requiredMilestoneUpgrade": false
+  },
+  "sourceEvidence": [
+    "web-games/crystal-defense (read-only)",
+    "unity-games/crystal-defense (if present)",
+    "existing build/test/error records",
+    "artbook-submissions/crystal-defense/2026-09-09/vibe2-first-draft.json (Vibe2 proposal before planning review)"
+  ],
+  "departmentTasks": {
+    "planning": {
+      "owner": "planning",
+      "scope": "스토리·세계관·캐릭터 동기·사건 인과를 이미지 중심 2장으로 설계 Vibe2 1차 초안(PROPOSAL)의 6단계 인과, 메인 퀘스트 체인, 지역 전환, NPC 동기, 보스 등장 이유를 검토·보완한다. 기존 근거와 충돌하면 근거를 우선한다.  OPENING=전략적 계획을 배우기 위해 지역을 경험해 — 초기 단계에서 전략적 이해를 성취하고, 이는 수정 디펜스의 핵심 원인입니다. | EARLY=전략적 계획을 통해 지역의 풍경을 이해해 — 초기 단계에서 전략적 이해를 성취하고, 이는 수정 디펜스의 핵심 원인입니다. | MID=전략적 계획을 통해 지역의 풍경을 이해해 — 초기 단계에서 전략적 이해를 성취하고, 이는 수정 디펜스의 핵심 원인입니다. | LATE=전략적 계획을 통해 지역의 풍경을 이해해 — 초기 단계에서 전략적 이해를 성취하고, 이는 수정 디펜스의 핵심 원인입니다. | FINAL=전략적 계획을 통해 지역의 풍경을 이해해 — 초기 단계에서 전략적 이해를 성취하고, 이는 수정 디펜스의 핵심 원인입니다. | ENDING=전략적 계획을 통해 지역의 풍경을 이해해 — 초기 단계에서 전략적 이해를 성취하고, 이는 수정 디펜스의 핵심 원인입니다. | QUESTS=6",
+      "deliverable": "visual-story-world-pages",
+      "submissionPath": "artbook-submissions/crystal-defense/2026-09-09/planning.json",
+      "mayWriteOtherSections": false,
+      "status": "FREE_LOCAL_AI_SCHEDULED",
+      "lifecycleTargetState": "DESIGN_BASELINE",
+      "vibe2FirstDraftPath": "artbook-submissions/crystal-defense/2026-09-09/vibe2-first-draft.json"
+    },
+    "graphics": {
+      "owner": "graphics",
+      "scope": "캐릭터·몬스터·보스·배경·UI·로고·인트로 컨셉을 이미지 중심 2장으로 설계",
+      "deliverable": "visual-concept-style-pages",
+      "submissionPath": "artbook-submissions/crystal-defense/2026-09-09/graphics.json",
+      "mayWriteOtherSections": false,
+      "status": "FREE_LOCAL_AI_SCHEDULED",
+      "lifecycleTargetState": "DESIGN_BASELINE"
+    },
+    "development": {
+      "owner": "development",
+      "scope": "실제 구현 구조·플레이 루프·시스템 연결을 이미지 중심 2장으로 설계",
+      "deliverable": "visual-gameplay-system-pages",
+      "submissionPath": "artbook-submissions/crystal-defense/2026-09-09/development.json",
+      "mayWriteOtherSections": false,
+      "status": "FREE_LOCAL_AI_SCHEDULED",
+      "lifecycleTargetState": "DESIGN_BASELINE"
+    },
+    "qa": {
+      "owner": "qa",
+      "scope": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+      "deliverable": "visual-test-journey-page",
+      "submissionPath": "artbook-submissions/crystal-defense/2026-09-09/qa.json",
+      "mayWriteOtherSections": false,
+      "status": "FREE_LOCAL_AI_SCHEDULED",
+      "lifecycleTargetState": "DESIGN_BASELINE"
+    },
+    "balance": {
+      "owner": "balance",
+      "scope": "성장곡선·전투 체감·보상·난이도를 이미지 중심 1장으로 설계",
+      "deliverable": "visual-balance-page",
+      "submissionPath": "artbook-submissions/crystal-defense/2026-09-09/balance.json",
+      "mayWriteOtherSections": false,
+      "status": "FREE_LOCAL_AI_SCHEDULED",
+      "lifecycleTargetState": "DESIGN_BASELINE"
+    }
+  },
+  "runnerDispatch": {
+    "requestedRunner": "vibe2-local-open-model-department-bots",
+    "workflow": ".github/workflows/artbook-free-department-bots.yml",
+    "modelPrimary": "qwen3:0.6b",
+    "modelLicense": "Apache-2.0",
+    "execution": "github-hosted-ubuntu-local-inference",
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "readsOtherDepartmentSubmissions": false,
+    "fallbackGhostwritingAllowed": false
+  },
+  "collaboration": {
+    "enabled": true,
+    "reviewProtocol": "PEER_IMPROVEMENT_STAR_5",
+    "eachReviewerRatesOtherFour": true,
+    "selfRatingForbidden": true,
+    "oneImprovementPerTarget": true,
+    "starMax": 5,
+    "crossDepartmentGhostwriting": false,
+    "directorMayOnlyAssemble": true
+  },
+  "pagePolicy": {
+    "min": 12,
+    "default": 16,
+    "max": 30,
+    "target": 18,
+    "legacyCompletedPages": 10,
+    "homepageMode": "compact-card-detail-viewer"
+  },
+  "presentation": {
+    "visualFirst": true,
+    "exactPages": 18,
+    "minPages": 12,
+    "maxPages": 30,
+    "vibe2DraftPages": 8,
+    "departmentAuthoredPages": 8,
+    "directorAuthoredPages": 2,
+    "assistantAuthoredPages": 0,
+    "pagePlan": [
+      "director-cover",
+      "vibe2-draft-1",
+      "vibe2-draft-2",
+      "vibe2-draft-3",
+      "vibe2-draft-4",
+      "vibe2-draft-5",
+      "vibe2-draft-6",
+      "vibe2-draft-7",
+      "vibe2-draft-8",
+      "planning-1",
+      "planning-2",
+      "graphics-1",
+      "graphics-2",
+      "development-1",
+      "development-2",
+      "qa-1",
+      "balance-1",
+      "director-summary"
+    ]
+  },
+  "secondWork": null,
+  "revision": null,
+  "completionGate": {
+    "allFiveSectionsRequired": true,
+    "allFiveReviewsRequired": true,
+    "verifiedOrExplicitlyUnverifiedEvidenceRequired": true,
+    "uniformTemplateForbidden": true,
+    "minCutsRequired": 12,
+    "maxCutsAllowed": 30,
+    "targetCutsRequired": true,
+    "legacyTenPageCompatible": true,
+    "vibe2FirstDraftRequired": true,
+    "postprocessRequired": true,
+    "employeeVisualPresentationRequired": true,
+    "assistantAuthorshipForbidden": true,
+    "readyForDirectorAssembly": false,
+    "livingArtbookVersionRequired": true,
+    "previousBaselineOverwriteForbidden": true
+  },
+  "vibe2FirstDraftPath": "artbook-submissions/crystal-defense/2026-09-09/vibe2-first-draft.json",
+  "vibe2FirstDraft": {
+    "status": "FIRST_DRAFT_READY",
+    "proposalOnly": true,
+    "targetArtbookPages": 18,
+    "requiredStoryStages": [
+      "OPENING",
+      "EARLY",
+      "MID",
+      "LATE",
+      "FINAL_BOSS",
+      "ENDING"
+    ],
+    "qualityContract": {
+      "phasePlans": 6,
+      "minMainQuests": 6,
+      "causalityRequired": true,
+      "evidenceProposalSeparation": true,
+      "compactGeneration": true,
+      "technicalNarrativeFilter": true
+    },
+    "generationMode": "COMPACT_MODEL_PLUS_DETERMINISTIC_EXPANSION"
+  }
+}

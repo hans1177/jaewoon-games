@@ -1,0 +1,282 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-09T04:42:27.017Z",
+  "source": "public-game-health.json",
+  "testMethod": "Playwright mobile smoke-play",
+  "policy": {
+    "codeReviewAloneIsQa": false,
+    "healthyRequiredForQaPass": true,
+    "loadContentInputReloadOverflowRequired": true,
+    "blockingRuntimeErrorsAllowed": false
+  },
+  "games": [
+    {
+      "gameId": "insect-survival",
+      "target": "web",
+      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "source": "public-game-health.json",
+      "runtimeSmokePassed": true,
+      "qaPassEligible": true,
+      "requiredSignals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "playTestEvidence": [
+        "Playwright launch=PASS content=PASS",
+        "input smoke=PASS reload=PASS",
+        "mobile overflow=PASS viewport smoke",
+        "health=healthy score=100",
+        "screenshot=qa-artifacts/public-game-health/insect-survival.png"
+      ],
+      "blockers": [],
+      "screenshot": "qa-artifacts/public-game-health/insect-survival.png"
+    },
+    {
+      "gameId": "crystal-defense",
+      "target": "web",
+      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "source": "public-game-health.json",
+      "runtimeSmokePassed": true,
+      "qaPassEligible": true,
+      "requiredSignals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "playTestEvidence": [
+        "Playwright launch=PASS content=PASS",
+        "input smoke=PASS reload=PASS",
+        "mobile overflow=PASS viewport smoke",
+        "health=healthy score=100",
+        "screenshot=qa-artifacts/public-game-health/crystal-defense.png"
+      ],
+      "blockers": [],
+      "screenshot": "qa-artifacts/public-game-health/crystal-defense.png"
+    },
+    {
+      "gameId": "bug-defense",
+      "target": "web",
+      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "source": "public-game-health.json",
+      "runtimeSmokePassed": false,
+      "qaPassEligible": false,
+      "requiredSignals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "playTestEvidence": [
+        "Playwright launch=PASS content=PASS",
+        "input smoke=PASS reload=PASS",
+        "mobile overflow=PASS viewport smoke",
+        "health=warning score=74",
+        "screenshot=qa-artifacts/public-game-health/bug-defense.png"
+      ],
+      "blockers": [
+        "console: Failed to load resource: the server responded with a status of 404 (File not found)"
+      ],
+      "screenshot": "qa-artifacts/public-game-health/bug-defense.png"
+    },
+    {
+      "gameId": "daechung-rpg",
+      "target": "web",
+      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "source": "public-game-health.json",
+      "runtimeSmokePassed": true,
+      "qaPassEligible": true,
+      "requiredSignals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "playTestEvidence": [
+        "Playwright launch=PASS content=PASS",
+        "input smoke=PASS reload=PASS",
+        "mobile overflow=PASS viewport smoke",
+        "health=healthy score=100",
+        "screenshot=qa-artifacts/public-game-health/daechung-rpg.png"
+      ],
+      "blockers": [],
+      "screenshot": "qa-artifacts/public-game-health/daechung-rpg.png"
+    },
+    {
+      "gameId": "human-go",
+      "target": "web",
+      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "source": "public-game-health.json",
+      "runtimeSmokePassed": false,
+      "qaPassEligible": false,
+      "requiredSignals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "playTestEvidence": [
+        "Playwright launch=PASS content=PASS",
+        "input smoke=PASS reload=PASS",
+        "mobile overflow=PASS viewport smoke",
+        "health=warning score=74",
+        "screenshot=qa-artifacts/public-game-health/human-go.png"
+      ],
+      "blockers": [
+        "console: Failed to load resource: net::ERR_INVALID_URL"
+      ],
+      "screenshot": "qa-artifacts/public-game-health/human-go.png"
+    },
+    {
+      "gameId": "egg-heist",
+      "target": "web",
+      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "source": "public-game-health.json",
+      "runtimeSmokePassed": true,
+      "qaPassEligible": true,
+      "requiredSignals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "playTestEvidence": [
+        "Playwright launch=PASS content=PASS",
+        "input smoke=PASS reload=PASS",
+        "mobile overflow=PASS viewport smoke",
+        "health=healthy score=100",
+        "screenshot=qa-artifacts/public-game-health/egg-heist.png"
+      ],
+      "blockers": [],
+      "screenshot": "qa-artifacts/public-game-health/egg-heist.png"
+    },
+    {
+      "gameId": "chess-battle",
+      "target": "web",
+      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "source": "public-game-health.json",
+      "runtimeSmokePassed": true,
+      "qaPassEligible": true,
+      "requiredSignals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "playTestEvidence": [
+        "Playwright launch=PASS content=PASS",
+        "input smoke=PASS reload=PASS",
+        "mobile overflow=PASS viewport smoke",
+        "health=healthy score=100",
+        "screenshot=qa-artifacts/public-game-health/chess-battle.png"
+      ],
+      "blockers": [],
+      "screenshot": "qa-artifacts/public-game-health/chess-battle.png"
+    },
+    {
+      "gameId": "monster-adventure",
+      "target": "web",
+      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "source": "public-game-health.json",
+      "runtimeSmokePassed": true,
+      "qaPassEligible": true,
+      "requiredSignals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "playTestEvidence": [
+        "Playwright launch=PASS content=PASS",
+        "input smoke=PASS reload=PASS",
+        "mobile overflow=PASS viewport smoke",
+        "health=healthy score=100",
+        "screenshot=qa-artifacts/public-game-health/monster-adventure.png"
+      ],
+      "blockers": [],
+      "screenshot": "qa-artifacts/public-game-health/monster-adventure.png"
+    },
+    {
+      "gameId": "survival",
+      "target": "web",
+      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "source": "public-game-health.json",
+      "runtimeSmokePassed": true,
+      "qaPassEligible": true,
+      "requiredSignals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "playTestEvidence": [
+        "Playwright launch=PASS content=PASS",
+        "input smoke=PASS reload=PASS",
+        "mobile overflow=PASS viewport smoke",
+        "health=healthy score=100",
+        "screenshot=qa-artifacts/public-game-health/survival.png"
+      ],
+      "blockers": [],
+      "screenshot": "qa-artifacts/public-game-health/survival.png"
+    },
+    {
+      "gameId": "survival2",
+      "target": "web",
+      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "source": "public-game-health.json",
+      "runtimeSmokePassed": true,
+      "qaPassEligible": true,
+      "requiredSignals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "playTestEvidence": [
+        "Playwright launch=PASS content=PASS",
+        "input smoke=PASS reload=PASS",
+        "mobile overflow=PASS viewport smoke",
+        "health=healthy score=100",
+        "screenshot=qa-artifacts/public-game-health/survival2.png"
+      ],
+      "blockers": [],
+      "screenshot": "qa-artifacts/public-game-health/survival2.png"
+    },
+    {
+      "gameId": "territory-war",
+      "target": "web",
+      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "source": "public-game-health.json",
+      "runtimeSmokePassed": true,
+      "qaPassEligible": true,
+      "requiredSignals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "playTestEvidence": [
+        "Playwright launch=PASS content=PASS",
+        "input smoke=PASS reload=PASS",
+        "mobile overflow=PASS viewport smoke",
+        "health=healthy score=100",
+        "screenshot=qa-artifacts/public-game-health/territory-war.png"
+      ],
+      "blockers": [],
+      "screenshot": "qa-artifacts/public-game-health/territory-war.png"
+    }
+  ]
+}

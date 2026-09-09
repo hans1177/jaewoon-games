@@ -1,6 +1,9 @@
 // 파일명: assets/homepage-enhancements.js
-// 역할: 승인된 재운게임즈 홈페이지 레이아웃을 구성한다.
+// 역할: 승인된 재운게임즈 홈페이지 레이아웃을 구성하고 최신 공개 상태를 준실시간 동기화한다.
 // 공개 Web 안정판과 기존 게임 데이터는 보존하고 홈 표시 구조만 재배치한다.
+const SYNC_INTERVAL_MS=30000;
+const focusMode='active';
+let refreshInFlight=false;
 const getJson=async url=>{try{const r=await fetch(`${url}${url.includes('?')?'&':'?'}ts=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));return await r.json();}catch{return null;}};
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const formatDate=value=>{if(!value)return'정보 없음';const d=new Date(value);if(Number.isNaN(d.getTime()))return String(value).replaceAll('-','.');return new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}).format(d).replace(/\. /g,'.').replace(/\.$/,'');};
@@ -112,31 +115,6 @@ function installStyles(){
   document.head.appendChild(style);
 }
 
-function buildFocus(catalog,status){
-  const hero=document.getElementById('hero');
-  if(!hero)return;
-  const games=catalog?.games||[];
-  const project=status?.projects?.find(p=>p.stage==='full-development')||status?.projects?.[0]||null;
-  const game=games.find(g=>g.id===project?.gameId)||games.find(g=>g.id==='daechung-rpg')||games[0];
-  if(!game)return;
-  const build=status?.testBuilds?.find(b=>b.gameId===game.id&&b.status==='ready');
-  const progress=Number.isFinite(project?.progress)?`${project.progress}%`:'진행 중';
-  hero.className='panel hero homeFocus';
-  hero.style.setProperty('--focus-bg',`url('${String(game.image||'assets/fantasy-rpg-v2.webp').replaceAll("'",'%27')}')`);
-  hero.innerHTML=`<div class="homeFocusInner">
-    <small>현재 집중 개발</small>
-    <h1>${esc(game.name)} · ${esc(game.homepageStage||project?.stageLabel||'개발 중')}</h1>
-    <p>${esc(game.homepageRecentWork||project?.stageLabel||game.description)}</p>
-    <div class="homeFocusMeta">
-      <span>${esc(project?.target==='unity-android'?'Unity Android':'개발판')}</span>
-      <span>진행 ${esc(progress)}</span>
-      <span>${build?'테스트 APK 있음':'테스트 빌드 준비중'}</span>
-      <span>Web 안정판 유지</span>
-    </div>
-    <a class="homeFocusBtn" href="#gameHub">게임 보러가기</a>
-  </div>`;
-}
-
 function getGameBuild(status,gameId){
   return status?.testBuilds?.find(b=>b.gameId===gameId&&b.status==='ready')||null;
 }
@@ -145,18 +123,58 @@ function getGameBaseline(baselines,gameId){
   return baselines?.games?.find(g=>g.gameId===gameId)||null;
 }
 
-function buildGameCard(game,catalog,status,baselines){
+function getLatestArtbook(artbooks,gameId){
+  const rows=(artbooks?.artbooks||[]).filter(a=>a.gameId===gameId&&(a.published||a.homepageVisible));
+  return rows.sort((a,b)=>String(b.createdAt||b.updatedAt||'').localeCompare(String(a.createdAt||a.updatedAt||''))||Number(b.edition||0)-Number(a.edition||0))[0]||null;
+}
+
+function getReleaseDate(game,baseline,build){
+  return game?.releaseDate||game?.releasedAt||game?.publishedAt||baseline?.releaseDate||baseline?.releasedAt||baseline?.publishedAt||build?.releasedAt||null;
+}
+
+function buildFocus(catalog,status,artbooks){
+  const hero=document.getElementById('hero');
+  if(!hero)return;
+  const games=catalog?.games||[];
+  const project=status?.projects?.find(p=>p.stage==='full-development')||status?.projects?.[0]||null;
+  const game=games.find(g=>g.id===project?.gameId)||games.find(g=>g.id==='daechung-rpg')||games[0];
+  if(!game)return;
+  const build=getGameBuild(status,game.id);
+  const artbook=getLatestArtbook(artbooks,game.id);
+  const progress=Number.isFinite(project?.progress)?`${project.progress}%`:'진행 중';
+  hero.className='panel hero homeFocus';
+  hero.style.setProperty('--focus-bg',`url('${String(game.image||'assets/fantasy-rpg-v2.webp').replaceAll("'",'%27')}')`);
+  hero.innerHTML=`<div class="homeFocusInner">
+    <small class="gameFocusBar" data-focus-mode="${focusMode}">현재 집중 개발 · 최신자료 자동동기화</small>
+    <h1>${esc(game.name)} · ${esc(game.homepageStage||project?.stageLabel||'개발 중')}</h1>
+    <p>${esc(game.homepageRecentWork||project?.stageLabel||game.description)}</p>
+    <div class="homeFocusMeta">
+      <span>${esc(project?.target==='unity-android'?'Unity Android':'개발판')}</span>
+      <span>진행 ${esc(progress)}</span>
+      <span>${build?'테스트 APK 있음':'테스트 빌드 준비중'}</span>
+      <span>${artbook?`아트북 ${esc(formatDate(artbook.createdAt||artbooks?.updatedAt))}`:'아트북 준비중'}</span>
+    </div>
+    <a class="homeFocusBtn" href="#gameHub">게임 보러가기</a>
+  </div>`;
+}
+
+function buildGameCard(game,catalog,status,baselines,artbooks){
   const category=CATEGORY_META[game.homepageCategory]||CATEGORY_META.reviewing;
   const build=getGameBuild(status,game.id);
   const baseline=getGameBaseline(baselines,game.id);
+  const artbook=getLatestArtbook(artbooks,game.id);
   const webDate=formatDate(game.webUpdatedAt||catalog?.updatedAt);
   const buildDate=build?.builtAt?formatDate(build.builtAt):'없음';
+  const artbookDate=artbook?formatDate(artbook.createdAt||artbooks?.updatedAt):'없음';
+  const releaseDate=getReleaseDate(game,baseline,build);
+  const releaseText=releaseDate?`출시 ${formatDate(releaseDate)}`:(game.homepageCategory==='release-confirmed'?'출시일 정보 없음':'출시 전');
   const webPlayable=game.homepageWebPlayable!==false&&Boolean(game.webPath);
   const unityUrl=baseline?.rollbackActive&&baseline?.fallbackDownload?baseline.fallbackDownload:build?.download;
   const unityLabel=baseline?.rollbackActive&&baseline?.fallbackDownload?'안정판 APK':build?'Unity 테스트':'Unity 준비중';
   const unityClass=unityUrl?'foldGameBtn secondary':'foldGameBtn off';
-  const artbookUrl=game.homepageArtbookPath||'';
+  const artbookUrl=game.homepageArtbookPath||(artbook?`/artbook-viewer.html?game=${encodeURIComponent(game.id)}`:'');
   const artbookClass=artbookUrl?'foldGameBtn secondary':'foldGameBtn off';
+  const artbookLabel=artbook?`아트북 ${formatDate(artbook.createdAt||artbooks?.updatedAt)}`:'아트북 준비중';
   const webButton=webPlayable
     ?`<a class="foldGameBtn" href="${esc(game.webPath)}">웹게임 플레이</a>`
     :`<span class="foldGameBtn alert">Web 확인중</span>`;
@@ -171,17 +189,17 @@ function buildGameCard(game,catalog,status,baselines){
         <span class="foldBadge">${esc(game.homepageStage||game.description)}</span>
       </div>
       <p><b>최근 작업</b> ${esc(game.homepageRecentWork||'현재 공개판 유지.')}</p>
-      <div class="foldGameMeta">Web 수정 ${esc(webDate)} · Unity 테스트 ${esc(buildDate)}</div>
+      <div class="foldGameMeta">Web 수정 ${esc(webDate)} · Unity 테스트 ${esc(buildDate)} · 아트북 ${esc(artbookDate)}<br>${esc(releaseText)}</div>
       <div class="foldGameActions">
         ${webButton}
         ${unityUrl?`<a class="${unityClass}" href="${esc(unityUrl)}">${unityLabel}</a>`:`<span class="${unityClass}">${unityLabel}</span>`}
-        ${artbookUrl?`<a class="${artbookClass}" href="${esc(artbookUrl)}">아트북</a>`:`<span class="${artbookClass}">아트북 준비중</span>`}
+        ${artbookUrl?`<a class="${artbookClass}" href="${esc(artbookUrl)}">${esc(artbookLabel)}</a>`:`<span class="${artbookClass}">${esc(artbookLabel)}</span>`}
       </div>
     </div>
   </article>`;
 }
 
-function buildGameCenter(catalog,status,baselines){
+function buildGameCenter(catalog,status,baselines,artbooks){
   const hub=document.getElementById('gameHub');
   if(!hub)return;
   hub.querySelector('.sectionHead')?.remove();
@@ -190,6 +208,8 @@ function buildGameCenter(catalog,status,baselines){
   hub.querySelector('.filters')?.remove();
   hub.querySelector('.sortRow')?.remove();
   const old=document.getElementById('homeFoldedGameCenter');
+  const openState=new Map();
+  old?.querySelectorAll('.gameFold').forEach(node=>openState.set(node.dataset.category,node.open));
   old?.remove();
   const games=catalog?.games||[];
   const grouped=new Map(Object.keys(CATEGORY_META).map(key=>[key,[]]));
@@ -203,9 +223,10 @@ function buildGameCenter(catalog,status,baselines){
   wrapper.innerHTML=`<div class="homeCategoryChips">${ordered.map(([key,meta])=>`<span class="homeCategoryChip">${meta.order}. ${meta.title}<b>${grouped.get(key)?.length||0}</b></span>`).join('')}</div>`+
     ordered.map(([key,meta])=>{
       const items=grouped.get(key)||[];
-      return `<details class="gameFold" open data-category="${key}">
+      const isOpen=openState.has(key)?openState.get(key):true;
+      return `<details class="gameFold"${isOpen?' open':''} data-category="${key}">
         <summary><strong>${meta.order}. ${meta.title}</strong><span>${meta.note}</span><i>⌃</i></summary>
-        <div class="foldGameGrid">${items.map(game=>buildGameCard(game,catalog,status,baselines)).join('')}</div>
+        <div class="foldGameGrid">${items.map(game=>buildGameCard(game,catalog,status,baselines,artbooks)).join('')}</div>
       </details>`;
     }).join('');
   const grid=document.getElementById('gameGrid');
@@ -256,19 +277,38 @@ function simplifyPage(){
   document.querySelector('.reviews')?.remove();
 }
 
+async function refreshHomepageData(){
+  if(refreshInFlight)return;
+  refreshInFlight=true;
+  try{
+    const [catalog,status,baselines,artbooks]=await Promise.all([
+      getJson('/game-catalog.json'),
+      getJson('/company-status.json'),
+      getJson('/public-release-baselines.json'),
+      getJson('/game-artbooks.json')
+    ]);
+    if(catalog){
+      buildFocus(catalog,status||{},artbooks||{});
+      buildGameCenter(catalog,status||{},baselines||{},artbooks||{});
+    }
+    document.documentElement.dataset.homeSyncAt=new Date().toISOString();
+  }finally{
+    refreshInFlight=false;
+  }
+}
+
+function installRealtimeSync(){
+  window.setInterval(()=>{if(!document.hidden)refreshHomepageData();},SYNC_INTERVAL_MS);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshHomepageData();});
+  window.addEventListener('focus',()=>refreshHomepageData());
+}
+
 async function main(){
   installStyles();
   simplifyPage();
-  const [catalog,status,baselines]=await Promise.all([
-    getJson('/game-catalog.json'),
-    getJson('/company-status.json'),
-    getJson('/public-release-baselines.json')
-  ]);
-  if(catalog){
-    buildFocus(catalog,status||{});
-    buildGameCenter(catalog,status||{},baselines||{});
-  }
   buildTeam();
+  await refreshHomepageData();
+  installRealtimeSync();
 }
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',main,{once:true});else main();

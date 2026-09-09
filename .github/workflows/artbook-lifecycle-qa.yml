@@ -1,0 +1,41 @@
+name: Artbook Lifecycle QA
+
+on:
+  pull_request:
+    paths:
+      - 'ARTBOOK_LIFECYCLE.md'
+      - 'ARTBOOK_LIFECYCLE_SCHEMA.json'
+      - 'artbook-revision-queue.json'
+      - 'assets/artbook-lifecycle.js'
+      - 'assets/vibe-company-development-flow.js'
+      - 'assets/vibe-company-orchestration-bridge.js'
+      - 'tools/artbook-revision-request.mjs'
+      - 'tools/artbook-prepare-daily.mjs'
+      - 'tools/artbook-assemble.mjs'
+      - 'tools/artbook-postprocess.mjs'
+      - 'tools/artbook-lifecycle-test.mjs'
+      - 'tools/artbook-lifecycle-scheduling-test.mjs'
+      - '.github/workflows/artbook-lifecycle-qa.yml'
+  workflow_dispatch:
+
+jobs:
+  lifecycle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax
+        run: |
+          node --check assets/artbook-lifecycle.js
+          node --check assets/vibe-company-development-flow.js
+          node --check assets/vibe-company-orchestration-bridge.js
+          node --check tools/artbook-revision-request.mjs
+          node --check tools/artbook-prepare-daily.mjs
+          node --check tools/artbook-assemble.mjs
+          node --check tools/artbook-postprocess.mjs
+      - name: Lifecycle contract
+        run: node tools/artbook-lifecycle-test.mjs
+      - name: Scheduling contract
+        run: node tools/artbook-lifecycle-scheduling-test.mjs

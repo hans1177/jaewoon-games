@@ -1,18 +1,20 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-08T04:36:39.221Z",
+  "updatedAt": "2026-09-09T04:42:40.262Z",
   "policy": {
     "blockedLicenses": [
       "NC",
       "unknown",
-      "unclear-redistribution"
+      "unclear-redistribution",
+      "unknown-modification-rights",
+      "lost-provenance"
     ],
     "actorsRequireVerifiedMovementAnimation": true,
     "externalSourceCheck": true
   },
   "summary": {
-    "total": 10,
-    "healthy": 10,
+    "total": 24,
+    "healthy": 24,
     "unhealthy": 0
   },
   "assets": [
@@ -173,6 +175,258 @@
         "ok": true,
         "status": 200,
         "finalUrl": "https://github.com/chongdashu/ai-pixel-snapped-game-sprites"
+      },
+      "healthy": true
+    },
+    {
+      "id": "kenney-ui-pack",
+      "name": "Kenney UI Pack",
+      "actor": false,
+      "license": "CC0",
+      "licenseOk": true,
+      "verifiedAnimation": false,
+      "animationOk": true,
+      "localPath": null,
+      "localExists": null,
+      "sourceUrl": "https://kenney.nl/assets/ui-pack",
+      "source": {
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://kenney.nl/assets/ui-pack"
+      },
+      "healthy": true
+    },
+    {
+      "id": "kenney-ui-pack-rpg-expansion",
+      "name": "Kenney UI Pack RPG Expansion",
+      "actor": false,
+      "license": "CC0",
+      "licenseOk": true,
+      "verifiedAnimation": false,
+      "animationOk": true,
+      "localPath": null,
+      "localExists": null,
+      "sourceUrl": "https://kenney.nl/assets/ui-pack-rpg-expansion",
+      "source": {
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://kenney.nl/assets/ui-pack-rpg-expansion"
+      },
+      "healthy": true
+    },
+    {
+      "id": "kenney-ui-pack-adventure",
+      "name": "Kenney UI Pack Adventure",
+      "actor": false,
+      "license": "CC0",
+      "licenseOk": true,
+      "verifiedAnimation": false,
+      "animationOk": true,
+      "localPath": null,
+      "localExists": null,
+      "sourceUrl": "https://kenney.nl/assets/ui-pack-adventure",
+      "source": {
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://kenney.nl/assets/ui-pack-adventure"
+      },
+      "healthy": true
+    },
+    {
+      "id": "kenney-ui-pack-pixel-adventure",
+      "name": "Kenney UI Pack Pixel Adventure",
+      "actor": false,
+      "license": "CC0",
+      "licenseOk": true,
+      "verifiedAnimation": false,
+      "animationOk": true,
+      "localPath": null,
+      "localExists": null,
+      "sourceUrl": "https://kenney.nl/assets/ui-pack-pixel-adventure",
+      "source": {
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://kenney.nl/assets/ui-pack-pixel-adventure"
+      },
+      "healthy": true
+    },
+    {
+      "id": "kenney-game-icons",
+      "name": "Kenney Game Icons",
+      "actor": false,
+      "license": "CC0",
+      "licenseOk": true,
+      "verifiedAnimation": false,
+      "animationOk": true,
+      "localPath": null,
+      "localExists": null,
+      "sourceUrl": "https://kenney.nl/assets/game-icons",
+      "source": {
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://kenney.nl/assets/game-icons"
+      },
+      "healthy": true
+    },
+    {
+      "id": "kenney-ui-audio",
+      "name": "Kenney UI Audio",
+      "actor": false,
+      "license": "CC0",
+      "licenseOk": true,
+      "verifiedAnimation": false,
+      "animationOk": true,
+      "localPath": null,
+      "localExists": null,
+      "sourceUrl": "https://kenney.nl/assets/ui-audio",
+      "source": {
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://kenney.nl/assets/ui-audio"
+      },
+      "healthy": true
+    },
+    {
+      "id": "oga-rpg-inventory-character-sheet",
+      "name": "RPG Inventory / Character Sheet",
+      "actor": false,
+      "license": "CC0",
+      "licenseOk": true,
+      "verifiedAnimation": false,
+      "animationOk": true,
+      "localPath": null,
+      "localExists": null,
+      "sourceUrl": "https://opengameart.org/content/rpg-inventory",
+      "source": {
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://opengameart.org/content/rpg-inventory"
+      },
+      "healthy": true
+    },
+    {
+      "id": "oga-rpg-ui-icons-owlishmedia",
+      "name": "RPG UI Icons",
+      "actor": false,
+      "license": "CC0",
+      "licenseOk": true,
+      "verifiedAnimation": false,
+      "animationOk": true,
+      "localPath": null,
+      "localExists": null,
+      "sourceUrl": "https://opengameart.org/content/rpg-ui-icons",
+      "source": {
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://opengameart.org/content/rpg-ui-icons"
+      },
+      "healthy": true
+    },
+    {
+      "id": "oga-tiny-rpg-dragon-regalia-gui",
+      "name": "Tiny RPG Dragon Regalia GUI",
+      "actor": false,
+      "license": "CC0",
+      "licenseOk": true,
+      "verifiedAnimation": false,
+      "animationOk": true,
+      "localPath": null,
+      "localExists": null,
+      "sourceUrl": "https://opengameart.org/content/tiny-rpg-dragon-regalia-gui",
+      "source": {
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://opengameart.org/content/tiny-rpg-dragon-regalia-gui"
+      },
+      "healthy": true
+    },
+    {
+      "id": "oga-fantasy-rpg-icons-drummyfish",
+      "name": "Fantasy RPG Icons",
+      "actor": false,
+      "license": "CC0",
+      "licenseOk": true,
+      "verifiedAnimation": false,
+      "animationOk": true,
+      "localPath": null,
+      "localExists": null,
+      "sourceUrl": "https://opengameart.org/content/fantasy-rpg-icons-0",
+      "source": {
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://opengameart.org/content/fantasy-rpg-icons-0"
+      },
+      "healthy": true
+    },
+    {
+      "id": "kenney-mobile-controls",
+      "name": "Kenney Mobile Controls",
+      "actor": false,
+      "license": "CC0",
+      "licenseOk": true,
+      "verifiedAnimation": false,
+      "animationOk": true,
+      "localPath": null,
+      "localExists": null,
+      "sourceUrl": "https://kenney.nl/assets/mobile-controls",
+      "source": {
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://kenney.nl/assets/mobile-controls"
+      },
+      "healthy": true
+    },
+    {
+      "id": "kenney-particle-pack",
+      "name": "Kenney Particle Pack",
+      "actor": false,
+      "license": "CC0",
+      "licenseOk": true,
+      "verifiedAnimation": false,
+      "animationOk": true,
+      "localPath": null,
+      "localExists": null,
+      "sourceUrl": "https://kenney.nl/assets/particle-pack",
+      "source": {
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://kenney.nl/assets/particle-pack"
+      },
+      "healthy": true
+    },
+    {
+      "id": "kenney-interface-sounds",
+      "name": "Kenney Interface Sounds",
+      "actor": false,
+      "license": "CC0",
+      "licenseOk": true,
+      "verifiedAnimation": false,
+      "animationOk": true,
+      "localPath": null,
+      "localExists": null,
+      "sourceUrl": "https://kenney.nl/assets/interface-sounds",
+      "source": {
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://kenney.nl/assets/interface-sounds"
+      },
+      "healthy": true
+    },
+    {
+      "id": "oga-powers-icons",
+      "name": "Powers Icons",
+      "actor": false,
+      "license": "CC0",
+      "licenseOk": true,
+      "verifiedAnimation": false,
+      "animationOk": true,
+      "localPath": null,
+      "localExists": null,
+      "sourceUrl": "https://opengameart.org/node/3229",
+      "source": {
+        "ok": true,
+        "status": 200,
+        "finalUrl": "https://opengameart.org/node/3229"
       },
       "healthy": true
     }

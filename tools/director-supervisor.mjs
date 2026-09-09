@@ -119,31 +119,86 @@ function classifyArtbookRole(role,run){
 
 const artbookRun=latestRun('Free Artbook Department Bots');
 const homepageRun=latestRun('Homepage Manager');
+const unityBuildRun=latestRun('Unity Hybrid Android Build');
+const unityRuntimeRun=latestRun('Unity Android Runtime Smoke');
+const publicHealthRun=latestRun('Public Game Health');
 const staff={};
 for(const role of roles)staff[role]=classifyArtbookRole(role,artbookRun);
 
 {
   const evidence=[]; const blockers=[];
-  if(homepage)evidence.push('homepage-manager-status.json');
+  const homepagePolicy=company?.policy?.homepageOperations||{};
+  const runtimeSyncActive=homepagePolicy.runtimeDataSync===true&&homepagePolicy.diagnosticOnly===true&&homepagePolicy.autoMaintenance===false;
+  if(homepage)evidence.push('homepage-manager-status.json:snapshot-only');
+  if(runtimeSyncActive)evidence.push('company-status:homepage-runtime-sync-active');
   if(homepageRun)evidence.push(`workflow:${homepageRun.id}:${homepageRun.status}:${homepageRun.conclusion||'pending'}`);
-  let status='STALE', reason='homepage status exists but no recent execution evidence was supplied to supervisor', action='run/verify Homepage Manager workflow';
+  if(publicHealthRun)evidence.push(`public-health:${publicHealthRun.id}:${publicHealthRun.status}:${publicHealthRun.conclusion||'pending'}`);
+
+  let taskAssigned=false;
+  let status='IDLE_NO_TASK';
+  let reason=runtimeSyncActive
+    ? 'homepage latest-data sync is handled by runtime JSON refresh; Homepage Manager is diagnostic-only and has no standing worker task'
+    : 'homepage diagnostic tool has no active task';
+  let action='none';
+  let resultVerified=runtimeSyncActive;
+
   if(homepageRun?.status==='in_progress'||homepageRun?.status==='queued'){
-    status='WORKING';reason='Homepage Manager workflow is executing';action='verify manager status output after completion';
-  }else if(homepageRun?.conclusion==='success'&&homepage?.status==='running'){
-    status='DONE';reason='homepage manager has a successful workflow run and a running status artifact';action='continue scheduled monitoring';
-  }else if(homepageRun?.conclusion&&homepageRun.conclusion!=='success'){
-    status='FAILED';blockers.push('WORKFLOW_FAILED');reason=`Homepage Manager concluded ${homepageRun.conclusion}`;action='inspect and fix Homepage Manager workflow';
-  }else if(!homepage){
-    status='BLOCKED';blockers.push('OUTPUT_MISSING');reason='homepage manager status artifact is missing';action='run Homepage Manager and require status artifact';
-  }else if(company?.operations?.homepage?.status==='running'){
-    blockers.push('FALSE_RUNNING');
+    taskAssigned=true;status='WORKING';reason='Homepage Manager diagnostic workflow is executing';action='verify diagnostics after completion';resultVerified=false;
+  }else if(homepageRun?.conclusion==='failure'){
+    taskAssigned=true;status='FAILED';blockers.push('WORKFLOW_FAILED');reason='latest Homepage Manager diagnostic workflow failed';action='inspect and fix Homepage Manager diagnostics';resultVerified=false;
+  }else if(homepageRun?.conclusion==='success'){
+    taskAssigned=true;status='DONE';reason='latest Homepage Manager diagnostic workflow completed successfully; runtime JSON sync remains separate';action='none';resultVerified=true;
+  }else if(!runtimeSyncActive){
+    taskAssigned=true;status='BLOCKED';blockers.push('RUNTIME_SYNC_POLICY_MISMATCH');reason='homepage runtime sync policy is not aligned with diagnostic-only operation';action='align company homepage policy';resultVerified=false;
   }
-  staff.homepage={department:'homepage',taskAssigned:true,status,task:'homepage compact layout, links, status and mobile maintenance',executionEvidence:evidence,resultVerified:status==='DONE',blockers,reason,action};
+
+  staff.homepage={department:'homepage',taskAssigned,status,task:taskAssigned?'homepage diagnostics':'no standing homepage worker task; runtime data sync is automatic',executionEvidence:evidence,resultVerified,blockers,reason,action};
 }
 
 {
-  const releaseTask=Boolean((company.testBuilds||[]).some(x=>!['released','done'].includes(String(x.status||'').toLowerCase())));
-  staff.release={department:'release',taskAssigned:releaseTask,status:releaseTask?'BLOCKED':'IDLE_NO_TASK',task:releaseTask?'verify active build/release':'no active verified release task',executionEvidence:[],resultVerified:false,blockers:releaseTask?['DEPENDENCY_BLOCKED']:[],reason:releaseTask?'release/build task exists but no release execution adapter is registered in this supervisor':'no active build awaiting release verification',action:releaseTask?'inspect build and release workflow':'none'};
+  const builds=Array.isArray(company.testBuilds)?company.testBuilds:[];
+  const latestBuild=[...builds].sort((a,b)=>new Date(b.builtAt||0)-new Date(a.builtAt||0))[0]||null;
+  const buildStatus=String(latestBuild?.status||'').toLowerCase();
+  const artifactVerified=Boolean(
+    latestBuild&&
+    ['ready','released','done'].includes(buildStatus)&&
+    String(latestBuild.release||'').trim()&&
+    String(latestBuild.download||'').trim()&&
+    /^[a-f0-9]{64}$/i.test(String(latestBuild.sha256||''))&&
+    Number(latestBuild.bytes)>0&&
+    String(latestBuild.builtAt||'').trim()
+  );
+  const evidence=[];
+  const blockers=[];
+  if(latestBuild)evidence.push(`company-status:test-build:${latestBuild.requestId||latestBuild.gameId||'unknown'}:${buildStatus||'unknown'}`);
+  if(artifactVerified){
+    evidence.push(`release:${latestBuild.release}`);
+    evidence.push(`download:${latestBuild.download}`);
+    evidence.push(`sha256:${latestBuild.sha256}`);
+    evidence.push(`bytes:${latestBuild.bytes}`);
+  }
+  if(unityBuildRun)evidence.push(`unity-build-workflow:${unityBuildRun.id}:${unityBuildRun.status}:${unityBuildRun.conclusion||'pending'}`);
+  if(unityRuntimeRun)evidence.push(`unity-runtime-workflow:${unityRuntimeRun.id}:${unityRuntimeRun.status}:${unityRuntimeRun.conclusion||'pending'}`);
+
+  let taskAssigned=Boolean(latestBuild||unityBuildRun||unityRuntimeRun);
+  let status='IDLE_NO_TASK';
+  let reason='no active build or release evidence exists';
+  let action='none';
+  let resultVerified=false;
+
+  if(unityBuildRun?.status==='in_progress'||unityBuildRun?.status==='queued'){
+    status='WORKING';reason='Unity build workflow is executing';action='verify APK artifact after build completion';
+  }else if(unityBuildRun?.conclusion==='failure'&&!artifactVerified){
+    status='FAILED';blockers.push('BUILD_WORKFLOW_FAILED');reason='latest Unity build workflow failed and no verified test release artifact supersedes it';action='inspect Unity build failure';
+  }else if(artifactVerified){
+    status='DONE';reason='test APK release evidence is complete: release URL, download URL, SHA-256, non-empty bytes and build timestamp are present';action=unityRuntimeRun?.conclusion==='success'?'none':'runtime QA remains tracked separately from release artifact verification';resultVerified=true;
+  }else if(latestBuild){
+    status='BLOCKED';blockers.push('RELEASE_EVIDENCE_INCOMPLETE');reason='test build record exists but release/download/hash/non-empty artifact evidence is incomplete';action='complete release artifact evidence';
+  }else if(unityRuntimeRun?.conclusion==='failure'){
+    status='BLOCKED';blockers.push('RUNTIME_QA_FAILED');reason='Unity runtime smoke failed without a current verified release artifact';action='inspect runtime smoke evidence';
+  }
+
+  staff.release={department:'release',taskAssigned,status,task:taskAssigned?'verify active build/release evidence':'no active verified release task',executionEvidence:evidence,resultVerified,blockers,reason,action};
 }
 
 staff.director={department:'director',taskAssigned:true,status:'WORKING',task:'supervise staff execution, blockers, direct causes and verification',executionEvidence:['tools/director-supervisor.mjs'],resultVerified:true,blockers:[],reason:'current supervisor check is executing from repository evidence',action:'record findings and resolve operational blockers without ghostwriting department work'};
@@ -154,7 +209,7 @@ for(const item of Object.values(staff))counts[item.status]=(counts[item.status]|
 const attention=Object.values(staff).filter(x=>['BLOCKED','FAILED','STALE'].includes(x.status));
 
 const report={
-  version:3,
+  version:4,
   dateKst:date,
   directorRole:'staff-supervisor-not-substitute-worker',
   activeDailyTarget:activeGameId||null,
@@ -166,7 +221,9 @@ const report={
     jobLevelEvidenceUsed:jobs.length>0,
     failureLogsUsed:Boolean(failedLogsDir),
     runningLabelAloneCountsAsWork:false,
-    directorMayGhostwriteMissingDepartmentWork:false
+    directorMayGhostwriteMissingDepartmentWork:false,
+    homepageDiagnosticOnlyRecognized:true,
+    releaseArtifactEvidenceAdapterRegistered:true
   },
   counts,
   attentionRequired:attention.length>0,
@@ -175,7 +232,13 @@ const report={
     ...(evidenceAdapterMismatch?['EVIDENCE_ADAPTER_MISMATCH:artbook runner is Unity-script-centric while active target has Web archive evidence and no Unity project']:[]),
     ...attention.flatMap(x=>x.blockers.map(b=>`${x.department}:${b}`))
   ],
-  workflowEvidence:{artbook:runEvidence(artbookRun),homepage:runEvidence(homepageRun)},
+  workflowEvidence:{
+    artbook:runEvidence(artbookRun),
+    homepage:runEvidence(homepageRun),
+    publicGameHealth:runEvidence(publicHealthRun),
+    unityBuild:runEvidence(unityBuildRun),
+    unityRuntime:runEvidence(unityRuntimeRun)
+  },
   staff,
   policy:{
     findWhyWorkStopped:true,
@@ -183,6 +246,8 @@ const report={
     distinguishIndividualFailureFromBlockedPeers:true,
     falseRunningForbidden:true,
     idleWithoutTaskIsNotFailure:true,
+    homepageDiagnosticToolIsNotStandingWorker:true,
+    verifiedReleaseArtifactCanSatisfyReleaseEvidence:true,
     fixLowRiskOperationalBlockers:true,
     escalateCoreDecisions:true,
     directorIntegrationOnlyForDepartmentContent:true
@@ -196,5 +261,7 @@ console.log(`ACTIVE_WORK_ORDER=${workOrderExists?'FOUND':'MISSING'}`);
 console.log(`JOB_LEVEL_EVIDENCE=${jobs.length?'YES':'NO'}`);
 console.log(`FAILURE_LOG_EVIDENCE=${failedLogsDir?'YES':'NO'}`);
 console.log(`EVIDENCE_ADAPTER_MISMATCH=${evidenceAdapterMismatch?'YES':'NO'}`);
+console.log(`HOMEPAGE_DIAGNOSTIC_ONLY=${report.checks.homepageDiagnosticOnlyRecognized?'YES':'NO'}`);
+console.log(`RELEASE_EVIDENCE_ADAPTER=${report.checks.releaseArtifactEvidenceAdapterRegistered?'YES':'NO'}`);
 for(const [k,v] of Object.entries(counts))console.log(`STAFF_${k}=${v}`);
 for(const finding of report.primaryFindings)console.log(`DIRECTOR_FINDING=${finding}`);

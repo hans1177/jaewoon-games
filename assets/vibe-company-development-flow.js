@@ -1,6 +1,9 @@
 // 파일명: assets/vibe-company-development-flow.js
 // 역할: 재운컴퍼니 게임 제작의 아트북 → Web 실험 → 내부평가 → JAY 게이트 → 본개발 흐름과 상/하향 제안 계약 정의
 // 원칙: 게임개발 MAJOR 운영판정은 JAY/AI_CEO가 맡고, CEO/L5는 최종공개·파괴적·보안·비용 등 상위 게이트만 맡는다.
+// 아트북은 살아있는 설계 문서다. 현재 승인 기준선은 보호하지만 필요 시 새 버전 수정안을 만들 수 있다.
+
+import { createArtbookRevisionRequest, resolveRequiredArtbookUpgrade } from './artbook-lifecycle.js';
 
 const freezeList=value=>Object.freeze(Array.isArray(value)?[...value]:[]);
 const clean=value=>String(value??'').trim();
@@ -16,14 +19,13 @@ export const COMPANY_FLOW_STAGES=Object.freeze([
   Object.freeze({id:'technical-spike',name:'기술 스파이크',purpose:'위험한 기술 요소만 작은 Web 실험으로 검증하고 모바일 성능/구현가능성을 확인',outputs:freezeList(['spike-results','web-runtime-check','risk-verdict'])}),
   Object.freeze({id:'playable-draft',name:'Web 개발판 B',purpose:'안정판 A를 보존한 채 핵심루프와 안전2+실험1을 개발판 B에서 구현',outputs:freezeList(['web-candidate-b','play-notes','known-limitations','vibe2-evidence'])}),
   Object.freeze({id:'internal-review',name:'내부 평가',purpose:'기획·개발·QA·그래픽·밸런스 관점에서 A/B와 증거를 독립 평가 후 총괄 종합',outputs:freezeList(['department-reviews','ab-evidence','director-verdict'])}),
-  // 호환성을 위해 id는 owner-approval을 유지하지만 실질 권한은 JAY/AI_CEO 게임개발 게이트다.
   Object.freeze({id:'owner-approval',name:'JAY 게임개발 게이트',purpose:'게임개발 MAJOR를 포함해 ADVANCE/REVISE/REDESIGN/HOLD/KILL을 증거 기반으로 판정. CEO 예약사항만 상향',outputs:freezeList(['jay-decision','owner-escalation-if-required'])}),
-  Object.freeze({id:'full-development',name:'본개발',purpose:'검증된 아트북과 JAY 판정을 기준으로 실제 콘텐츠와 시스템 구현',outputs:freezeList(['gameplay-systems','content'])}),
+  Object.freeze({id:'full-development',name:'본개발',purpose:'검증된 최신 아트북 기준선과 JAY 판정을 기준으로 실제 콘텐츠와 시스템 구현',outputs:freezeList(['gameplay-systems','content'])}),
   Object.freeze({id:'system-complete',name:'시스템 완성',purpose:'핵심 플레이·성장·콘텐츠 흐름과 저장 구조 안정화',outputs:freezeList(['feature-complete-build'])}),
   Object.freeze({id:'graphics-upgrade',name:'그래픽·모션 고도화',purpose:'원본 KEEP/ENHANCE/COMBINE/REPLACE, 무료에셋 장부, Jaewoon Motion Engine, VFX/UI/사운드 고도화',outputs:freezeList(['production-art','motion-engine','animation','vfx','audio','asset-license-ledger'])}),
-  Object.freeze({id:'integrated-qa',name:'통합 QA',purpose:'기능·회귀·밸런스·화면·스토리·그래픽·모션·라이선스와 아트북 일치 검증',outputs:freezeList(['qa-report','fix-list'])}),
+  Object.freeze({id:'integrated-qa',name:'통합 QA',purpose:'기능·회귀·밸런스·화면·스토리·그래픽·모션·라이선스와 최신 아트북 기준선 일치 검증',outputs:freezeList(['qa-report','fix-list'])}),
   Object.freeze({id:'optimization',name:'모바일 최적화',purpose:'FPS·메모리·발열·로딩·용량·텍스처·VFX·Motion Engine 비용 점검',outputs:freezeList(['performance-report','optimized-build'])}),
-  Object.freeze({id:'release-candidate',name:'출시 후보',purpose:'최종 공개 전 검증판과 증거 묶음을 고정',outputs:freezeList(['release-candidate','release-evidence'])}),
+  Object.freeze({id:'release-candidate',name:'출시 후보',purpose:'최종 공개 전 검증판과 증거 묶음을 고정하고 출시 기준 아트북 업그레이드 필요 여부를 확인',outputs:freezeList(['release-candidate','release-evidence'])}),
   Object.freeze({id:'public-release',name:'최종 공개',purpose:'CEO/L5 최종 공개 게이트 통과 후 공개 안정판으로 승격',outputs:freezeList(['public-release'])})
 ]);
 
@@ -35,30 +37,18 @@ export const ARTBOOK_LOCKED_CONCEPT_CATEGORIES=freezeList([
   'art-direction','character-identity','world-structure','locked-artbook-change','artbook-concept-change'
 ]);
 
-// 기존 게임 프로젝트 안에서 큰 방향 변경도 JAY가 REDESIGN/KILL 포함 운영판정을 맡는다.
 export const DIRECTOR_MAJOR_CATEGORIES=freezeList([
   'genre','core-loop','story-direction','combat-model','progression-model','platform',
   'art-direction','character-identity','world-structure','locked-artbook-change','artbook-concept-change',
   'major-gameplay-update','major-content-restructure','unity-investment-decision'
 ]);
 
-// CEO/L5에 반드시 올리는 상위 예약사항만 둔다.
 export const OWNER_DECISION_CATEGORIES=freezeList([
-  'final-public-release',
-  'project-delete',
-  'project-closure',
-  'destructive-project-action',
-  'irreversible-change',
-  'security-change',
-  'credential-change',
-  'permission-change',
-  'material-new-spending',
-  'paid-ai-use',
-  'estop-control',
+  'final-public-release','project-delete','project-closure','destructive-project-action','irreversible-change',
+  'security-change','credential-change','permission-change','material-new-spending','paid-ai-use','estop-control',
   'save-breaking-destructive-change'
 ]);
 
-// 이전 이름 호환: MAJOR 자체가 CEO 승인이라는 뜻이 아니라 CEO 예약범위 목록으로만 유지한다.
 export const MAJOR_PROPOSAL_CATEGORIES=OWNER_DECISION_CATEGORIES;
 
 export function createArtbookDevelopmentLock({status='',cutCount=0,postprocessComplete=false,ref=''}={}){
@@ -73,14 +63,25 @@ export function createArtbookDevelopmentLock({status='',cutCount=0,postprocessCo
     cutCount:normalizedCutCount,
     pagePolicy:Object.freeze({min:12,default:16,max:30,legacyCompletedPages:10,validCutCount}),
     postprocessComplete:postprocess,
-    sourceOfTruth:locked?'completed-artbook':'pre-artbook-design',
+    sourceOfTruth:locked?'latest-approved-artbook-baseline':'pre-artbook-design',
     ref:clean(ref),
     startStage:locked?'technical-architecture':'brief',
     lockedPreDesignStages:ARTBOOK_LOCKED_PREDESIGN_STAGES,
     lockedConceptCategories:ARTBOOK_LOCKED_CONCEPT_CATEGORIES,
-    implementationRule:locked?'vibe2-implementation-with-formal-redesign-record':'pre-artbook-design-allowed',
-    changeRule:locked?'JAY_REDESIGN_RECORD_REQUIRED':'normal-proposal-flow'
+    revisionAllowed:true,
+    revisionRequestType:'ARTBOOK_REVISION_REQUEST',
+    previousBaselineOverwriteForbidden:true,
+    implementationRule:locked?'vibe2-implementation-with-current-approved-baseline':'pre-artbook-design-allowed',
+    changeRule:locked?'ARTBOOK_REVISION_REQUEST_REQUIRED':'normal-proposal-flow'
   });
+}
+
+export function createCompanyArtbookRevision({gameId='',currentBaseline=null,trigger='OWNER_DIRECTIVE',reason='',evidence=[],requestedBy=''}={}){
+  return createArtbookRevisionRequest({gameId,currentBaseline,trigger,reason,evidence,requestedBy});
+}
+
+export function resolveCompanyArtbookMilestoneUpgrade({gameStage='',currentBaselineState=''}={}){
+  return resolveRequiredArtbookUpgrade({gameStage,currentBaselineState});
 }
 
 export function createCompanyFlow({
@@ -90,7 +91,7 @@ export function createCompanyFlow({
   const rounds=Math.max(0,Math.min(5,Math.floor(Number(maxRevisionRounds)||0)));
   const artbookPolicy=createArtbookDevelopmentLock({status:artbookStatus,cutCount:artbookCutCount,postprocessComplete:artbookPostprocessComplete,ref:artbookRef});
   return Object.freeze({
-    version:4,
+    version:5,
     gameId:clean(gameId),
     stages:COMPANY_FLOW_STAGES,
     currentStage:artbookPolicy.startStage,
@@ -105,7 +106,11 @@ export function createCompanyFlow({
       finalPublicReleaseRequiresOwnerApproval:true,
       destructiveSecurityCostRequiresOwnerApproval:true,
       operationalDecisionDelegatedToDirector:true,
-      completedArtbookConceptMayBeRedesignedByDirector:true,
+      completedArtbookMayBeRevised:true,
+      approvedBaselineOverwriteForbidden:true,
+      artbookRevisionCreatesNewVersion:true,
+      developmentConfirmedRequiresArtbookUpgrade:true,
+      releaseConfirmedRequiresArtbookUpgrade:true,
       redesignEvidenceRequired:true
     }),
     vibe2Policy:Object.freeze({
@@ -114,7 +119,9 @@ export function createCompanyFlow({
       candidateBRequired:true,
       mayCommitIsNotAdvance:true,
       experimentBundle:Object.freeze({safe:2,risky:1}),
-      gameProfileRequired:true
+      gameProfileRequired:true,
+      currentArtbookBaselineProtected:true,
+      artbookRevisionRequestAllowed:true
     }),
     graphicsPolicy:Object.freeze({
       assetStrategies:freezeList(['KEEP','ENHANCE','COMBINE','REPLACE']),
@@ -127,7 +134,7 @@ export function createCompanyFlow({
     }),
     authority:Object.freeze({
       owner:'final-public-release-destructive-security-permission-material-spending-estop-only',
-      director:'game-development-major-coordination-redesign-kill-technical-implementation-and-unity-investment',
+      director:'game-development-major-coordination-redesign-kill-technical-implementation-unity-investment-and-artbook-revision-review',
       departments:'specialist-proposals-review-and-execution-within-owned-scope'
     })
   });
@@ -143,7 +150,7 @@ export function createCompanyProposal({
   const directorMajor=DIRECTOR_MAJOR_CATEGORIES.includes(normalizedCategory)||lockedConceptChange;
   const ownerDecisionRequired=OWNER_DECISION_CATEGORIES.includes(normalizedCategory);
   return Object.freeze({
-    version:4,
+    version:5,
     sourceRole:clean(sourceRole)||'department',
     targetRole:clean(targetRole)||'director',
     direction:normalizedDirection,
@@ -157,11 +164,13 @@ export function createCompanyProposal({
     lockedConceptChange,
     directorMajor,
     changeRequestRequired:lockedConceptChange,
-    changeRequestType:lockedConceptChange?'JAY_REDESIGN_RECORD':null,
+    changeRequestType:lockedConceptChange?'ARTBOOK_REVISION_REQUEST':null,
+    createsNewArtbookVersion:lockedConceptChange,
+    mayOverwriteApprovedArtbook:false,
     requiresOwnerApproval:ownerDecisionRequired,
     delegatedToDirector:!ownerDecisionRequired,
     executable:false,
-    rule:ownerDecisionRequired?'owner-reserved-gate':lockedConceptChange?'director-redesign-evidence-required':'proposal-must-be-reviewed-before-execution'
+    rule:ownerDecisionRequired?'owner-reserved-gate':lockedConceptChange?'artbook-revision-before-implementation':'proposal-must-be-reviewed-before-execution'
   });
 }
 
@@ -180,13 +189,13 @@ export function createDepartmentReview({role='',decision='REVISE',findings=[],bl
 }
 
 export function summarizeInternalReview({reviews=[],revisionRoundsUsed=0,maxRevisionRounds=2}={}){
-  const normalized=reviews.map(r=>createDepartmentReview(r));
-  const missing=COMPANY_REVIEW_ROLES.filter(role=>!normalized.some(r=>r.role===role));
+  const normalized=reviews.map(review=>createDepartmentReview(review));
+  const missing=COMPANY_REVIEW_ROLES.filter(role=>!normalized.some(review=>review.role===role));
   if(missing.length)return Object.freeze({ready:false,decision:'REVISE',missingRoles:freezeList(missing),reviews:freezeList(normalized),reason:'all-review-roles-required'});
 
-  const blockers=normalized.flatMap(r=>r.blockingIssues);
-  const hasDrop=normalized.some(r=>r.decision==='DROP');
-  const hasRevise=normalized.some(r=>r.decision==='REVISE')||blockers.length>0;
+  const blockers=normalized.flatMap(review=>review.blockingIssues);
+  const hasDrop=normalized.some(review=>review.decision==='DROP');
+  const hasRevise=normalized.some(review=>review.decision==='REVISE')||blockers.length>0;
   const used=Math.max(0,Math.floor(Number(revisionRoundsUsed)||0));
   const limit=Math.max(0,Math.floor(Number(maxRevisionRounds)||0));
   let decision='PASS';
@@ -199,7 +208,6 @@ export function summarizeInternalReview({reviews=[],revisionRoundsUsed=0,maxRevi
   return Object.freeze({ready:true,decision,reason,blockingIssues:freezeList(blockers),reviews:freezeList(normalized),revisionRoundsUsed:used,maxRevisionRounds:limit});
 }
 
-// 기존 함수명은 호환성을 위해 유지. 이제 기본 게이트는 JAY/Director이며 ownerRequired일 때만 CEO/L5가 필요하다.
 export function createOwnerDevelopmentGate({internalReview,directorDecision='PASS',ownerDecision='PENDING',ownerRequired=false,notes=''}={}){
   const review=internalReview||{};
   const director=clean(directorDecision).toUpperCase()||'PENDING';
@@ -225,14 +233,14 @@ export function createOwnerDevelopmentGate({internalReview,directorDecision='PAS
 }
 
 export function classifyCompanyProposalApproval(proposal={}){
-  const p=createCompanyProposal(proposal);
+  const normalized=createCompanyProposal(proposal);
   return Object.freeze({
-    requiresOwnerApproval:p.requiresOwnerApproval,
-    approver:p.requiresOwnerApproval?'owner':'director',
-    mayAutoExecute:!p.requiresOwnerApproval&&!p.changeRequestRequired,
-    changeRequestRequired:p.changeRequestRequired,
-    changeRequestType:p.changeRequestType,
-    directorMajor:p.directorMajor,
-    reason:p.requiresOwnerApproval?'owner-reserved-category':p.changeRequestRequired?'jay-redesign-record-required':p.directorMajor?'game-major-delegated-to-jay':'delegated-operational-or-technical-decision'
+    requiresOwnerApproval:normalized.requiresOwnerApproval,
+    approver:normalized.requiresOwnerApproval?'owner':'director',
+    mayAutoExecute:!normalized.requiresOwnerApproval&&!normalized.changeRequestRequired,
+    changeRequestRequired:normalized.changeRequestRequired,
+    changeRequestType:normalized.changeRequestType,
+    directorMajor:normalized.directorMajor,
+    reason:normalized.requiresOwnerApproval?'owner-reserved-category':normalized.changeRequestRequired?'artbook-revision-request-required':normalized.directorMajor?'game-major-delegated-to-jay':'delegated-operational-or-technical-decision'
   });
 }

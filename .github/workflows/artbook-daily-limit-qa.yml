@@ -1,0 +1,47 @@
+name: Artbook Unlimited Queue QA
+
+on:
+  pull_request:
+    paths:
+      - 'tools/artbook-prepare-daily.mjs'
+      - 'tools/artbook-assemble.mjs'
+      - 'qa/artbook-daily-limit-preflight.test.mjs'
+      - 'qa/artbook-unlimited-chain-contract.test.mjs'
+      - '.github/workflows/artbook-daily-limit-qa.yml'
+      - '.github/workflows/artbook-initial-backfill-chain.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/artbook-prepare-daily.mjs'
+      - 'tools/artbook-assemble.mjs'
+      - 'qa/artbook-daily-limit-preflight.test.mjs'
+      - 'qa/artbook-unlimited-chain-contract.test.mjs'
+      - '.github/workflows/artbook-daily-limit-qa.yml'
+      - '.github/workflows/artbook-initial-backfill-chain.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  unlimited-queue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Syntax
+        run: |
+          node --check tools/artbook-prepare-daily.mjs
+          node --check tools/artbook-assemble.mjs
+          node --check qa/artbook-unlimited-chain-contract.test.mjs
+      - name: Unlimited same-day scheduling regression
+        run: node --test qa/artbook-daily-limit-preflight.test.mjs
+      - name: Unlimited backfill chain contract
+        run: node --test qa/artbook-unlimited-chain-contract.test.mjs
+      - name: No daily cap remains in scheduler or assembler
+        run: |
+          ! grep -q 'DAILY_INITIAL_ARTBOOK_LIMIT_REACHED' tools/artbook-prepare-daily.mjs
+          ! grep -q 'daily initial artbook limit reached' tools/artbook-assemble.mjs
+          grep -q 'ARTBOOK_SUBMISSION_COUNT_POLICY=UNLIMITED' tools/artbook-prepare-daily.mjs
+          grep -q "submissionCountPolicy:'UNLIMITED'" tools/artbook-assemble.mjs

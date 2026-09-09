@@ -1,0 +1,57 @@
+{
+  "version": 6,
+  "gameId": "crystal-defense",
+  "date": "2026-09-09",
+  "department": "qa",
+  "status": "REVIEWED",
+  "round": 2,
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "independentFirstRoundCompleted": true,
+    "onePeerPerGeneration": true
+  },
+  "protocol": "PEER_IMPROVEMENT_STAR_5",
+  "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+  "reviewedDepartments": [
+    "planning",
+    "graphics",
+    "development",
+    "balance"
+  ],
+  "ratingScale": {
+    "type": "STARS",
+    "min": 1,
+    "max": 5
+  },
+  "peerReviews": [
+    {
+      "targetDepartment": "planning",
+      "improvement": "현재 코드에서 스토리 근거가 적어 기획부가 세계관·NPC·지역 설정을 추가 검증해야 함",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "graphics",
+      "improvement": "게임 로딩 실패를 해결하기 위해 시스템 로딩 시간을 줄이고, 사용자 경험을 향상시키는 기능을 추가했습니다.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "development",
+      "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "balance",
+      "improvement": "보완점: 게임 로딩 실패에 대한 검증을 추가하여 개선 가능",
+      "stars": 5
+    }
+  ],
+  "guard": {
+    "mayRewriteOtherDepartments": false,
+    "mayEvaluateOwnDepartment": false,
+    "productionApproval": false,
+    "starRatingIsProductionApproval": false
+  }
+}

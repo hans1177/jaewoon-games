@@ -5,7 +5,39 @@ import path from 'node:path';
 
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');
+const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
+const infoKey=value=>clean(value).toLowerCase().replace(/[^a-z0-9가-힣]+/g,'');
+const meaningful=(value,min=12)=>{
+  const text=clean(value);
+  if(text.length<min)return false;
+  const words=text.split(/\s+/).filter(Boolean);
+  return words.length>=2||/[가-힣]{4,}/.test(text);
+};
 function kstDate(){const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const g=t=>p.find(x=>x.type===t)?.value||'';return`${g('year')}-${g('month')}-${g('day')}`;}
+
+const PLANNING_SECTION_KEYS=['worldEvidence','protagonistMotivationEvidence','regionCausality','storyGameplayConnection','gaps','handoffs'];
+function planningSemanticProblems(data){
+  const problems=[];
+  const section=data?.section&&typeof data.section==='object'&&!Array.isArray(data.section)?data.section:{};
+  for(const key of PLANNING_SECTION_KEYS){
+    if(!meaningful(section[key],12))problems.push(`planning-${key}-meaningful-text-required`);
+  }
+  const plan=data?.conceptPlan&&typeof data.conceptPlan==='object'&&!Array.isArray(data.conceptPlan)?data.conceptPlan:{};
+  const planValues=['creativeIdeas','implementationPlan','demoValidation'].flatMap(key=>Array.isArray(plan[key])?plan[key].map(clean).filter(Boolean):[]);
+  if(planValues.some(value=>!meaningful(value,12)))problems.push('planning-conceptPlan-items-too-shallow');
+  const all=[...PLANNING_SECTION_KEYS.map(key=>clean(section[key])).filter(Boolean),...planValues];
+  const keys=all.map(infoKey).filter(Boolean);
+  const unique=new Set(keys);
+  if(all.length<9||unique.size<6)problems.push('planning-content-too-repetitive');
+  const frequencies=new Map();
+  for(const key of keys)frequencies.set(key,(frequencies.get(key)||0)+1);
+  const maxRepeat=Math.max(0,...frequencies.values());
+  if(keys.length&&maxRepeat/keys.length>=0.45)problems.push('planning-single-phrase-dominates-submission');
+  const joined=clean(all.join(' '));
+  if(joined.length<180)problems.push('planning-information-volume-too-low');
+  return [...new Set(problems)];
+}
+
 const queue=readJson('artbook-submission-queue.json',{requiredRoles:['planning','graphics','development','qa','balance'],currentDailyTarget:null,games:[]});
 const requiredRoles=Array.isArray(queue.requiredRoles)&&queue.requiredRoles.length?queue.requiredRoles:['planning','graphics','development','qa','balance'];
 const gameId=String(process.env.ARTBOOK_GAME_ID||queue.currentDailyTarget||'').trim();
@@ -38,9 +70,10 @@ for(const role of requiredRoles){
         }
       }
     }
+    if(role==='planning')problems.push(...planningSemanticProblems(data));
     if(/NO_CHANGE/i.test(raw))problems.push('NO_CHANGE-token-forbidden');
   }
-  if(problems.length)invalid.push({role,file,problems});else ready.push({role,file});
+  if(problems.length)invalid.push({role,file,problems:[...new Set(problems)]});else ready.push({role,file});
 }
 
 const initialComplete=ready.length===requiredRoles.length&&missing.length===0&&invalid.length===0;
@@ -117,6 +150,22 @@ if(initialComplete&&!peerReviewsComplete)formalProductionGate='BLOCKED_WAITING_F
 else if(initialComplete&&peerReviewsComplete&&!directorReviewReady)formalProductionGate='BLOCKED_WAITING_FOR_DIRECTOR_FIFTH_RATING';
 else if(readyForDirectorAssembly)formalProductionGate='SECTION_AND_FIVE_RATING_GATE_COMPLETE_DIRECTOR_ASSEMBLY_ALLOWED';
 
-const status={version:6,checkedAt:new Date().toISOString(),date,gameId,gameName:targetGame?.name||gameId,requiredRoles,readyRoles:ready.map(x=>x.role),readyCount:ready.length,requiredCount:requiredRoles.length,missing,invalid,independentRoundComplete:initialComplete,submissionContract:'V5_CREATIVE_IMPLEMENTATION_DEMO_PLAN',historicalPreV5Compatibility:true,reviewReadyRoles:reviewReady.map(x=>x.role),reviewReadyCount:reviewReady.length,reviewRequiredCount:requiredRoles.length,reviewMissing,reviewInvalid,peerReviewsComplete,directorReviewFile:directorFile,directorReviewReady,directorReviewProblems:directorProblems,directorRatingsRequired:requiredRoles.length,ratingsPerDepartment,collaborationProtocol:'PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5',homepageOpinionMode:'IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS',collaborationComplete,readyForDirectorAssembly,directorMayAuthorMissingSections:false,directorMayAuthorMissingReviews:false,formalProductionGate};
+// Base contract compatibility: submissionContract:'V5_CREATIVE_IMPLEMENTATION_DEMO_PLAN' is extended by planning semantic quality.
+const status={version:7,checkedAt:new Date().toISOString(),date,gameId,gameName:targetGame?.name||gameId,requiredRoles,readyRoles:ready.map(x=>x.role),readyCount:ready.length,requiredCount:requiredRoles.length,missing,invalid,independentRoundComplete:initialComplete,submissionContract:'V5_CREATIVE_IMPLEMENTATION_DEMO_PLAN_PLUS_PLANNING_SEMANTIC_QUALITY',historicalPreV5Compatibility:true,reviewReadyRoles:reviewReady.map(x=>x.role),reviewReadyCount:reviewReady.length,reviewRequiredCount:requiredRoles.length,reviewMissing,reviewInvalid,peerReviewsComplete,directorReviewFile:directorFile,directorReviewReady,directorReviewProblems:directorProblems,directorRatingsRequired:requiredRoles.length,ratingsPerDepartment,collaborationProtocol:'PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5',homepageOpinionMode:'IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS',collaborationComplete,readyForDirectorAssembly,directorMayAuthorMissingSections:false,directorMayAuthorMissingReviews:false,formalProductionGate};
 writeJson('artbook-gate-status.json',status);
-console.log(`ARTBOOK_GAME_ID=${gameId}`);console.log(`ARTBOOK_DATE=${date}`);console.log(`ARTBOOK_SECTION_READY=${ready.length}/${requiredRoles.length}`);console.log(`ARTBOOK_REVIEW_READY=${reviewReady.length}/${requiredRoles.length}`);console.log(`ARTBOOK_DIRECTOR_REVIEW=${directorReviewReady?'1/1':'0/1'}`);console.log(`ARTBOOK_RATINGS_PER_DEPARTMENT=${ratingsPerDepartment}`);console.log(`ARTBOOK_SUBMISSION_CONTRACT=${status.submissionContract}`);console.log(`ARTBOOK_DIRECTOR_ASSEMBLY=${readyForDirectorAssembly?'YES':'NO'}`);if(missing.length)console.log(`ARTBOOK_MISSING=${missing.map(x=>x.role).join(',')}`);if(invalid.length)console.log(`ARTBOOK_INVALID=${invalid.map(x=>x.role).join(',')}`);if(reviewMissing.length)console.log(`ARTBOOK_REVIEW_MISSING=${reviewMissing.map(x=>x.role).join(',')}`);if(reviewInvalid.length)console.log(`ARTBOOK_REVIEW_INVALID=${reviewInvalid.map(x=>x.role).join(',')}`);if(directorProblems.length)console.log(`ARTBOOK_DIRECTOR_INVALID=${directorProblems.join(',')}`);
+console.log(`ARTBOOK_GAME_ID=${gameId}`);
+console.log(`ARTBOOK_DATE=${date}`);
+console.log(`ARTBOOK_SECTION_READY=${ready.length}/${requiredRoles.length}`);
+console.log(`ARTBOOK_REVIEW_READY=${reviewReady.length}/${requiredRoles.length}`);
+console.log(`ARTBOOK_DIRECTOR_REVIEW=${directorReviewReady?'1/1':'0/1'}`);
+console.log(`ARTBOOK_RATINGS_PER_DEPARTMENT=${ratingsPerDepartment}`);
+console.log(`ARTBOOK_SUBMISSION_CONTRACT=${status.submissionContract}`);
+console.log(`ARTBOOK_DIRECTOR_ASSEMBLY=${readyForDirectorAssembly?'YES':'NO'}`);
+if(missing.length)console.log(`ARTBOOK_MISSING=${missing.map(x=>x.role).join(',')}`);
+if(invalid.length){
+  console.log(`ARTBOOK_INVALID=${invalid.map(x=>x.role).join(',')}`);
+  for(const row of invalid)console.log(`ARTBOOK_INVALID_DETAIL=${row.role}:${row.problems.join('|')}`);
+}
+if(reviewMissing.length)console.log(`ARTBOOK_REVIEW_MISSING=${reviewMissing.map(x=>x.role).join(',')}`);
+if(reviewInvalid.length)console.log(`ARTBOOK_REVIEW_INVALID=${reviewInvalid.map(x=>x.role).join(',')}`);
+if(directorProblems.length)console.log(`ARTBOOK_DIRECTOR_INVALID=${directorProblems.join(',')}`);

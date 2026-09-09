@@ -2,8 +2,22 @@
   "version": 3,
   "checkedAtKst": "2026. 09. 08. 16:57:28",
   "dateKst": "2026-09-08",
-  "manager": "homepage",
-  "status": "running",
+  "manager": "homepage-diagnostics",
+  "status": "historical-snapshot",
+  "snapshotOnly": true,
+  "liveAuthority": false,
+  "authoritativeState": [
+    "company-status.json",
+    "director-supervision-status.json"
+  ],
+  "currentOperation": {
+    "standingWorker": false,
+    "diagnosticOnly": true,
+    "autoMaintenance": false,
+    "runtimeDataSync": true,
+    "runtimeRenderer": "assets/homepage-enhancements.js",
+    "existingWebMaintenanceAllowed": true
+  },
   "policy": {
     "otherGamesMayAppearOnHomepage": true,
     "homepageMustStayCompact": true,
@@ -23,7 +37,7 @@
     "placeholderGameImages": 0,
     "brokenGameImages": 0
   },
-  "checks": {
+  "historicalChecks": {
     "indexExists": true,
     "artbookDetailExists": true,
     "homepageEnhancementLoaded": true,
@@ -38,8 +52,8 @@
     "allQueuedGamesInCatalog": true,
     "publishedBooksReferenceCatalogGames": true,
     "requiredArtbookRolesIntact": true,
-    "webGamesRemainReadOnly": true,
-    "autoMaintenanceEnabled": true,
+    "legacyWebGamesReadOnlyCheck": true,
+    "legacyAutoMaintenanceCheck": true,
     "artbookPageSupportsGameSelection": true,
     "allGameImagesPresent": true,
     "allGameImagesUnique": true,
@@ -54,5 +68,6 @@
     "duplicateGameImages": [],
     "placeholderGameImages": [],
     "failures": []
-  }
+  },
+  "note": "This file preserves the last Homepage Manager diagnostic snapshot only. Live homepage operation status is synchronized through company-status.json and director-supervision-status.json."
 }

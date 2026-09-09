@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "tasks": [
     {
       "id": "daechung-rpg-2026-09-08-second-work",
@@ -149,6 +149,161 @@
             "reviewerType": "director",
             "stars": 4,
             "improvement": "Unity 코어 및 애니메이션 스프라이트의 구조적 복잡성을 줄이고, 코어 파일의 유연성을 강화했습니다."
+          }
+        ]
+      },
+      "productionApproval": false
+    },
+    {
+      "id": "insect-survival-2026-09-09-initial-followup",
+      "gameId": "insect-survival",
+      "gameName": "곤충 생존기",
+      "sourceDate": "2026-09-09",
+      "dueDate": "2026-09-09",
+      "status": "SCHEDULED",
+      "sourceWorkMode": "INITIAL",
+      "sourceLifecycleState": "DESIGN_BASELINE",
+      "criterion": "FIVE_VOTE_DEPARTMENT_AVERAGE_STARS_LE_OVERALL_AVERAGE",
+      "overallAverageStars": 4.76,
+      "maxStars": 5,
+      "ratingsPerDepartment": 5,
+      "departmentVotesPerResult": 4,
+      "directorVotesPerResult": 1,
+      "selectedDepartments": [
+        "development"
+      ],
+      "departmentAverageStars": {
+        "planning": 4.8,
+        "graphics": 5,
+        "development": 4.2,
+        "qa": 5,
+        "balance": 4.8
+      },
+      "feedbackByDepartment": {
+        "development": [
+          {
+            "reviewerDepartment": "planning",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본부 결과물의 개선점은 'health' 분야의 재정립을 통해 개발 과정의 정확성과 효율성을 향상시킬 수 있습니다."
+          },
+          {
+            "reviewerDepartment": "graphics",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "qa",
+            "reviewerType": "department",
+            "stars": 1,
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "balance",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 5,
+            "improvement": "부서 결과물의 내용을 개선하여 품질을 높일 수 있습니다."
+          }
+        ]
+      },
+      "productionApproval": false
+    },
+    {
+      "id": "crystal-defense-2026-09-09-initial-followup",
+      "gameId": "crystal-defense",
+      "gameName": "수정 디펜스",
+      "sourceDate": "2026-09-09",
+      "dueDate": "2026-09-09",
+      "status": "SCHEDULED",
+      "sourceWorkMode": "INITIAL",
+      "sourceLifecycleState": "DESIGN_BASELINE",
+      "criterion": "FIVE_VOTE_DEPARTMENT_AVERAGE_STARS_LE_OVERALL_AVERAGE",
+      "overallAverageStars": 4.92,
+      "maxStars": 5,
+      "ratingsPerDepartment": 5,
+      "departmentVotesPerResult": 4,
+      "directorVotesPerResult": 1,
+      "selectedDepartments": [
+        "graphics",
+        "qa"
+      ],
+      "departmentAverageStars": {
+        "planning": 5,
+        "graphics": 4.8,
+        "development": 5,
+        "qa": 4.8,
+        "balance": 5
+      },
+      "feedbackByDepartment": {
+        "graphics": [
+          {
+            "reviewerDepartment": "planning",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "development",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본부에서 개발팀의 개발 과정에서 게임 로딩 실패 사례를 정확히 분석하고 개선할 수 있는 요소를 추가해 보세요."
+          },
+          {
+            "reviewerDepartment": "qa",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "게임 로딩 실패를 해결하기 위해 시스템 로딩 시간을 줄이고, 사용자 경험을 향상시키는 기능을 추가했습니다."
+          },
+          {
+            "reviewerDepartment": "balance",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "게임 로딩 실패를 해결하기 위해 시각적 증거를 정확히 확인하고, 화면 응용성과 자산 제한 조건을 검토해 개선점을 찾을 수 있습니다."
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 4,
+            "improvement": "게임 로딩 실패의 보완점은 보다 정확한 설명을 추가해 줍니다."
+          }
+        ],
+        "qa": [
+          {
+            "reviewerDepartment": "planning",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "The review results indicate that the game's readiness is high, but there are no specific improvements needed for the game's health section."
+          },
+          {
+            "reviewerDepartment": "graphics",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "The game has a strong focus on game health, which is a key area for improvement. It should be further refined in testing scenarios to ensure robustness."
+          },
+          {
+            "reviewerDepartment": "development",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본 부서 결과물의 개선점은 'game-health' 팀의 팀워크 개선을 위한 팀워크 교육 프로그램을 추가하는 것입니다."
+          },
+          {
+            "reviewerDepartment": "balance",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본부 결과물에서 'game-health' 팀의 Readiness 상태가 'READY'로 설정되어 있으며, 팀 내 문제 사례와 테스트 사례가 모두 준비되어 있는 상태입니다."
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 4,
+            "improvement": "부서 결과물의 개선점은 'game-health' 부서의 품질 점수를 4점으로 줄 수 있습니다."
           }
         ]
       },

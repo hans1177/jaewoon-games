@@ -144,10 +144,15 @@ jobs:
           const fs=require('fs');
           const data=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
           const roles=['planning','graphics','development','qa','balance'];
-          if(data?.policy?.maxCutsPerEdition!==10)throw new Error('artbook max cuts must be 10');
+          const minCuts=12;
+          const maxCuts=30;
+          if(data?.policy?.maxCutsPerEdition!==maxCuts)throw new Error(`artbook max cuts must be ${maxCuts}`);
           if(data?.policy?.homepageVisibilityIsProductionApproval!==false)throw new Error('homepage visibility must not equal production approval');
           for(const book of data.artbooks||[]){
-            if((book.cuts||[]).length>10)throw new Error(`${book.id}: more than 10 cuts`);
+            const cutCount=(book.cuts||[]).length;
+            const legacyTenPageCompatible=cutCount===10&&!book.postprocess?.pagePolicy;
+            if(cutCount>maxCuts)throw new Error(`${book.id}: more than ${maxCuts} cuts`);
+            if(cutCount<minCuts&&!legacyTenPageCompatible)throw new Error(`${book.id}: fewer than ${minCuts} cuts without legacy compatibility`);
             if(book.published===true||book.homepageVisible===true){
               if(book.productionApproval!==false)throw new Error(`${book.id}: visibility cannot grant production approval`);
               if(book.collaborationProtocol==='PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5'){

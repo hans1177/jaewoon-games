@@ -1,0 +1,96 @@
+name: Company Department Audit Sync
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '37 1 * * *'
+  workflow_run:
+    workflows:
+      - Company Department Standards QA
+      - Unity Hybrid Android Build
+      - Unity Android Runtime Smoke
+      - Public Game Health
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - 'tools/company-department-audit-sync.mjs'
+      - '.github/workflows/company-department-audit-sync.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: company-department-audit-sync-main
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Sync main
+        run: git pull --ff-only origin main
+
+      - name: Read complete non-Vibe workflow evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/department-standards-qa.yml/runs?per_page=30" > /tmp/standards-runs.json
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/unity-hybrid-android-build.yml/runs?per_page=30" > /tmp/unity-build-runs.json
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/unity-android-runtime-smoke.yml/runs?per_page=30" > /tmp/unity-runtime-runs.json
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/public-game-health.yml/runs?per_page=30" > /tmp/public-health-runs.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const files=['/tmp/standards-runs.json','/tmp/unity-build-runs.json','/tmp/unity-runtime-runs.json','/tmp/public-health-runs.json'];
+          const workflow_runs=[];
+          for(const file of files){
+            const p=JSON.parse(fs.readFileSync(file,'utf8'));
+            workflow_runs.push(...(Array.isArray(p.workflow_runs)?p.workflow_runs:[]));
+          }
+          fs.writeFileSync('/tmp/company-actions-runs.json',JSON.stringify({workflow_runs}));
+          NODE
+          test -s /tmp/company-actions-runs.json
+
+      - name: Synchronize department audit
+        run: node tools/company-department-audit-sync.mjs /tmp/company-actions-runs.json
+
+      - name: Validate evidence gate
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs=require('fs');
+          const a=JSON.parse(fs.readFileSync('company-department-audit.json','utf8'));
+          const u=a.verification?.unityRuntimeSmoke;
+          const standards=a.verification?.departmentStandardsWorkflow;
+          if(standards?.latestSuccessfulRun?.runId===34305065242&&standards?.unitySmokeContractVerified!==true)throw new Error('known successful Unity smoke contract run was not recognized');
+          if(a.departments?.qa?.status==='VERIFIED_UNITY_RUNTIME'){
+            if(u?.successfulRuntimeEvidenceObserved!==true||!u?.latestSuccessfulRun?.runId)throw new Error('Unity QA verified without successful runtime evidence');
+          }
+          if(u?.successfulRuntimeEvidenceObserved!==true&&a.departments?.qa?.status==='VERIFIED_UNITY_RUNTIME')throw new Error('build-only QA verification forbidden');
+          if(JSON.stringify(a.verification||{}).toLowerCase().includes('vibe'))throw new Error('Vibe evidence must not be part of non-Vibe company audit sync');
+          console.log('COMPANY_DEPARTMENT_AUDIT_SYNC_QA=PASS');
+          NODE
+
+      - name: Commit audit when changed
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-company-audit-sync'
+          git config user.email 'actions@users.noreply.github.com'
+          git add company-department-audit.json
+          if git diff --cached --quiet; then
+            echo 'COMPANY_DEPARTMENT_AUDIT_COMMIT=NO_CHANGES'
+            exit 0
+          fi
+          git commit -m 'company: sync department audit evidence [skip ci]'
+          git pull --rebase origin main
+          git push origin main
+          echo 'COMPANY_DEPARTMENT_AUDIT_COMMIT=SUCCESS'

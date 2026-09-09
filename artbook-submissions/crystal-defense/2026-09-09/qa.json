@@ -1,0 +1,149 @@
+{
+  "version": 6,
+  "gameId": "crystal-defense",
+  "date": "2026-09-09",
+  "department": "qa",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "game-health",
+  "evidence": [
+    {
+      "source": "web-games/crystal-defense/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-crystal-defense.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentPlayableFlow": "1",
+    "verifiedEvidence": "1",
+    "problemScenes": "0",
+    "mobileSaveErrorRisks": "0",
+    "testScenarios": "0",
+    "unverified": "0",
+    "handoffs": "0"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "1",
+      "2",
+      "3"
+    ],
+    "implementationPlan": [
+      "1",
+      "2",
+      "3"
+    ],
+    "demoValidation": [
+      "1",
+      "2",
+      "3"
+    ]
+  },
+  "unverified": [],
+  "cuts": [
+    {
+      "kind": "qa",
+      "title": "game-health",
+      "body": "1 · 2 · 3",
+      "image": "artbook-submissions/crystal-defense/2026-09-09/visuals/qa.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 1,
+    "pages": [
+      {
+        "owner": "qa",
+        "ownerName": "QA",
+        "pageSlot": 1,
+        "visualType": "test-journey",
+        "title": "game-health",
+        "focus": "game-health",
+        "caption": "수정 디펜스의 현재 상태",
+        "elements": [
+          {
+            "label": "test-journey",
+            "note": "현재 테스트 진행 중",
+            "kind": ""
+          },
+          {
+            "label": "verifiedEvi…",
+            "note": "이 validated",
+            "kind": ""
+          },
+          {
+            "label": "problemScen…",
+            "note": "현재 문제 사례 없음",
+            "kind": ""
+          },
+          {
+            "label": "mobileSaveE…",
+            "note": "현재 저장 오류 사항 없음",
+            "kind": ""
+          },
+          {
+            "label": "testScenari…",
+            "note": "현재 테스트 사례 없음",
+            "kind": ""
+          },
+          {
+            "label": "unverified",
+            "note": "현재 테스트 사항 없음",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/crystal-defense/2026-09-09/visuals/qa-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "qa"
+      }
+    ],
+    "generatedBy": {
+      "department": "qa",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

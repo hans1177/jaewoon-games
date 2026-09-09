@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "dateKst": "2026-09-09",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
@@ -11,32 +11,42 @@
     "jobLevelEvidenceUsed": true,
     "failureLogsUsed": true,
     "runningLabelAloneCountsAsWork": false,
-    "directorMayGhostwriteMissingDepartmentWork": false
+    "directorMayGhostwriteMissingDepartmentWork": false,
+    "homepageDiagnosticOnlyRecognized": true,
+    "releaseArtifactEvidenceAdapterRegistered": true
   },
   "counts": {
     "WORKING": 1,
-    "DONE": 5,
-    "IDLE_NO_TASK": 0,
-    "BLOCKED": 1,
+    "DONE": 6,
+    "IDLE_NO_TASK": 1,
+    "BLOCKED": 0,
     "FAILED": 0,
-    "STALE": 1
+    "STALE": 0
   },
-  "attentionRequired": true,
-  "primaryFindings": [
-    "homepage:FALSE_RUNNING",
-    "release:DEPENDENCY_BLOCKED"
-  ],
+  "attentionRequired": false,
+  "primaryFindings": [],
   "workflowEvidence": {
     "artbook": {
-      "id": 34305281903,
-      "status": "completed",
-      "conclusion": "failure",
-      "event": "push",
-      "createdAt": "2026-09-09T02:58:10Z",
-      "updatedAt": "2026-09-09T03:04:10Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34305281903"
+      "id": 34311596902,
+      "status": "in_progress",
+      "conclusion": null,
+      "event": "workflow_dispatch",
+      "createdAt": "2026-09-09T04:36:03Z",
+      "updatedAt": "2026-09-09T04:43:00Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34311596902"
     },
-    "homepage": null
+    "homepage": null,
+    "publicGameHealth": {
+      "id": 34311981250,
+      "status": "completed",
+      "conclusion": "success",
+      "event": "schedule",
+      "createdAt": "2026-09-09T04:41:58Z",
+      "updatedAt": "2026-09-09T04:42:53Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34311981250"
+    },
+    "unityBuild": null,
+    "unityRuntime": null
   },
   "staff": {
     "planning": {
@@ -47,10 +57,20 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-09-daechung-rpg.json",
         "queue-submission:planning",
-        "workflow:34305281903:completed:failure"
+        "workflow:34311596902:in_progress:pending",
+        "job:102339569131:completed:success"
       ],
       "resultVerified": true,
-      "jobEvidence": null,
+      "jobEvidence": {
+        "id": 102339569131,
+        "name": "round1 (planning)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-09T04:37:58Z",
+        "completedAt": "2026-09-09T04:40:31Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34311596902/job/102339569131"
+      },
       "directCause": null,
       "blockers": [],
       "reason": "department submission is recorded for the active daily target",
@@ -64,10 +84,20 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-09-daechung-rpg.json",
         "queue-submission:development",
-        "workflow:34305281903:completed:failure"
+        "workflow:34311596902:in_progress:pending",
+        "job:102339569111:completed:success"
       ],
       "resultVerified": true,
-      "jobEvidence": null,
+      "jobEvidence": {
+        "id": 102339569111,
+        "name": "round1 (development)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-09T04:37:58Z",
+        "completedAt": "2026-09-09T04:40:41Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34311596902/job/102339569111"
+      },
       "directCause": null,
       "blockers": [],
       "reason": "department submission is recorded for the active daily target",
@@ -81,10 +111,20 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-09-daechung-rpg.json",
         "queue-submission:qa",
-        "workflow:34305281903:completed:failure"
+        "workflow:34311596902:in_progress:pending",
+        "job:102339569090:completed:success"
       ],
       "resultVerified": true,
-      "jobEvidence": null,
+      "jobEvidence": {
+        "id": 102339569090,
+        "name": "round1 (qa)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-09T04:37:58Z",
+        "completedAt": "2026-09-09T04:40:06Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34311596902/job/102339569090"
+      },
       "directCause": null,
       "blockers": [],
       "reason": "department submission is recorded for the active daily target",
@@ -98,10 +138,20 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-09-daechung-rpg.json",
         "queue-submission:graphics",
-        "workflow:34305281903:completed:failure"
+        "workflow:34311596902:in_progress:pending",
+        "job:102339569097:completed:success"
       ],
       "resultVerified": true,
-      "jobEvidence": null,
+      "jobEvidence": {
+        "id": 102339569097,
+        "name": "round1 (graphics)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-09T04:37:58Z",
+        "completedAt": "2026-09-09T04:40:06Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34311596902/job/102339569097"
+      },
       "directCause": null,
       "blockers": [],
       "reason": "department submission is recorded for the active daily target",
@@ -115,10 +165,20 @@
       "executionEvidence": [
         "work-order:artbook-work-orders/2026-09-09-daechung-rpg.json",
         "queue-submission:balance",
-        "workflow:34305281903:completed:failure"
+        "workflow:34311596902:in_progress:pending",
+        "job:102339569096:completed:success"
       ],
       "resultVerified": true,
-      "jobEvidence": null,
+      "jobEvidence": {
+        "id": 102339569096,
+        "name": "round1 (balance)",
+        "status": "completed",
+        "conclusion": "success",
+        "failedStep": null,
+        "startedAt": "2026-09-09T04:37:58Z",
+        "completedAt": "2026-09-09T04:40:33Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34311596902/job/102339569096"
+      },
       "directCause": null,
       "blockers": [],
       "reason": "department submission is recorded for the active daily target",
@@ -126,31 +186,35 @@
     },
     "homepage": {
       "department": "homepage",
-      "taskAssigned": true,
-      "status": "STALE",
-      "task": "homepage compact layout, links, status and mobile maintenance",
+      "taskAssigned": false,
+      "status": "IDLE_NO_TASK",
+      "task": "no standing homepage worker task; runtime data sync is automatic",
       "executionEvidence": [
-        "homepage-manager-status.json"
+        "homepage-manager-status.json:snapshot-only",
+        "company-status:homepage-runtime-sync-active",
+        "public-health:34311981250:completed:success"
       ],
-      "resultVerified": false,
-      "blockers": [
-        "FALSE_RUNNING"
-      ],
-      "reason": "homepage status exists but no recent execution evidence was supplied to supervisor",
-      "action": "run/verify Homepage Manager workflow"
+      "resultVerified": true,
+      "blockers": [],
+      "reason": "homepage latest-data sync is handled by runtime JSON refresh; Homepage Manager is diagnostic-only and has no standing worker task",
+      "action": "none"
     },
     "release": {
       "department": "release",
       "taskAssigned": true,
-      "status": "BLOCKED",
-      "task": "verify active build/release",
-      "executionEvidence": [],
-      "resultVerified": false,
-      "blockers": [
-        "DEPENDENCY_BLOCKED"
+      "status": "DONE",
+      "task": "verify active build/release evidence",
+      "executionEvidence": [
+        "company-status:test-build:daechung-rpg-hybrid-017:ready",
+        "release:https://github.com/hans1177/jaewoon-games/releases/tag/test-daechung-rpg-34201876835-1",
+        "download:https://github.com/hans1177/jaewoon-games/releases/download/test-daechung-rpg-34201876835-1/daechung-rpg-test.apk",
+        "sha256:bca2596f93ea71e5ad311d9d3a322083ae768f8ac0c9c046125b33c9a4f1e817",
+        "bytes:24392700"
       ],
-      "reason": "release/build task exists but no release execution adapter is registered in this supervisor",
-      "action": "inspect build and release workflow"
+      "resultVerified": true,
+      "blockers": [],
+      "reason": "test APK release evidence is complete: release URL, download URL, SHA-256, non-empty bytes and build timestamp are present",
+      "action": "runtime QA remains tracked separately from release artifact verification"
     },
     "director": {
       "department": "director",
@@ -172,6 +236,8 @@
     "distinguishIndividualFailureFromBlockedPeers": true,
     "falseRunningForbidden": true,
     "idleWithoutTaskIsNotFailure": true,
+    "homepageDiagnosticToolIsNotStandingWorker": true,
+    "verifiedReleaseArtifactCanSatisfyReleaseEvidence": true,
     "fixLowRiskOperationalBlockers": true,
     "escalateCoreDecisions": true,
     "directorIntegrationOnlyForDepartmentContent": true
