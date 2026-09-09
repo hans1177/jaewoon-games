@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-09T04:42:27.017Z",
+  "updatedAt": "2026-09-09T20:36:04.904Z",
   "policy": {
     "scope": "homepage-published-games",
     "scoreRange": [
@@ -24,7 +24,7 @@
       "score": 100,
       "calculatedScore": 100,
       "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "checkedAt": "2026-09-09T20:36:04.904Z",
       "url": "http://127.0.0.1:4173/web-games/insect-survival/",
       "dimensions": {
         "runtime": 25,
@@ -61,7 +61,7 @@
       "score": 100,
       "calculatedScore": 100,
       "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "checkedAt": "2026-09-09T20:36:04.904Z",
       "url": "http://127.0.0.1:4173/web-games/crystal-defense/",
       "dimensions": {
         "runtime": 25,
@@ -94,18 +94,18 @@
     {
       "gameId": "bug-defense",
       "name": "곤충 디펜스",
-      "status": "warning",
-      "score": 74,
-      "calculatedScore": 85,
-      "healthReason": "same-origin-resource-failure",
-      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "status": "healthy",
+      "score": 100,
+      "calculatedScore": 100,
+      "healthReason": "no-blocking-smoke-errors",
+      "checkedAt": "2026-09-09T20:36:04.904Z",
       "url": "http://127.0.0.1:4173/web-games/bug-defense/",
       "dimensions": {
         "runtime": 25,
-        "errors": 20,
+        "errors": 25,
         "mobile": 15,
         "interaction": 15,
-        "assets": 0,
+        "assets": 10,
         "reload": 10,
         "storage": "not-detected"
       },
@@ -121,47 +121,10 @@
       },
       "trend": {
         "previousScore": 74,
-        "scoreDelta": 0
+        "scoreDelta": 26
       },
-      "issues": [
-        {
-          "type": "console",
-          "message": "Failed to load resource: the server responded with a status of 404 (File not found)"
-        },
-        {
-          "type": "requestfailed",
-          "message": "http://127.0.0.1:4173/assets/rolldown-runtime-S-ySWqyJ.js net::ERR_ABORTED"
-        },
-        {
-          "type": "requestfailed",
-          "message": "http://127.0.0.1:4173/assets/framework-DjPHiq1u.js net::ERR_ABORTED"
-        },
-        {
-          "type": "requestfailed",
-          "message": "http://127.0.0.1:4173/assets/layout-segment-context-B4l5MHMQ.js net::ERR_ABORTED"
-        },
-        {
-          "type": "requestfailed",
-          "message": "http://127.0.0.1:4173/assets/page-CgY6ZelV.js net::ERR_ABORTED"
-        },
-        {
-          "type": "requestfailed",
-          "message": "http://127.0.0.1:4173/assets/rolldown-runtime-S-ySWqyJ.js net::ERR_ABORTED"
-        },
-        {
-          "type": "requestfailed",
-          "message": "http://127.0.0.1:4173/assets/framework-DjPHiq1u.js net::ERR_ABORTED"
-        },
-        {
-          "type": "requestfailed",
-          "message": "http://127.0.0.1:4173/assets/page-CgY6ZelV.js net::ERR_ABORTED"
-        },
-        {
-          "type": "requestfailed",
-          "message": "http://127.0.0.1:4173/assets/layout-segment-context-B4l5MHMQ.js net::ERR_ABORTED"
-        }
-      ],
-      "failedRequestCount": 8,
+      "issues": [],
+      "failedRequestCount": 0,
       "screenshot": "qa-artifacts/public-game-health/bug-defense.png",
       "buildHealth": null
     },
@@ -172,7 +135,7 @@
       "score": 100,
       "calculatedScore": 100,
       "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "checkedAt": "2026-09-09T20:36:04.904Z",
       "url": "http://127.0.0.1:4173/web-games/daechung-rpg/",
       "dimensions": {
         "runtime": 25,
@@ -213,7 +176,7 @@
       "score": 74,
       "calculatedScore": 95,
       "healthReason": "console-error",
-      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "checkedAt": "2026-09-09T20:36:04.904Z",
       "url": "http://127.0.0.1:4173/web-games/human-go/",
       "dimensions": {
         "runtime": 25,
@@ -255,7 +218,7 @@
       "score": 100,
       "calculatedScore": 100,
       "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "checkedAt": "2026-09-09T20:36:04.904Z",
       "url": "http://127.0.0.1:4173/web-games/egg-heist/",
       "dimensions": {
         "runtime": 25,
@@ -292,7 +255,7 @@
       "score": 100,
       "calculatedScore": 100,
       "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "checkedAt": "2026-09-09T20:36:04.904Z",
       "url": "http://127.0.0.1:4173/web-games/chess-battle/",
       "dimensions": {
         "runtime": 25,
@@ -329,7 +292,7 @@
       "score": 100,
       "calculatedScore": 100,
       "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "checkedAt": "2026-09-09T20:36:04.904Z",
       "url": "http://127.0.0.1:4173/web-games/monster-adventure/",
       "dimensions": {
         "runtime": 25,
@@ -366,7 +329,7 @@
       "score": 100,
       "calculatedScore": 100,
       "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "checkedAt": "2026-09-09T20:36:04.904Z",
       "url": "http://127.0.0.1:4173/web-games/survival/",
       "dimensions": {
         "runtime": 25,
@@ -403,7 +366,7 @@
       "score": 100,
       "calculatedScore": 100,
       "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "checkedAt": "2026-09-09T20:36:04.904Z",
       "url": "http://127.0.0.1:4173/web-games/survival2/",
       "dimensions": {
         "runtime": 25,
@@ -440,7 +403,7 @@
       "score": 100,
       "calculatedScore": 100,
       "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-09T04:42:27.017Z",
+      "checkedAt": "2026-09-09T20:36:04.904Z",
       "url": "http://127.0.0.1:4173/web-games/territory-war/",
       "dimensions": {
         "runtime": 25,
