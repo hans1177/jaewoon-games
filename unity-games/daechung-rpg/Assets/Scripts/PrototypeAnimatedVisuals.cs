@@ -186,6 +186,7 @@ namespace JaewoonGames.DaechungRpg
             }
             catch
             {
+                try { File.Delete(manifestPath); } catch { }
                 _loadError = $"manifest parse {actorId}/{action}";
                 yield break;
             }
@@ -218,6 +219,7 @@ namespace JaewoonGames.DaechungRpg
             if (!texture.LoadImage(textureBytes, false))
             {
                 Destroy(texture);
+                try { File.Delete(spritePath); } catch { }
                 _loadError = $"texture decode {actorId}/{action}";
                 yield break;
             }
