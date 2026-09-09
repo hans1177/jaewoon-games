@@ -114,3 +114,45 @@ test('FAST lane runs implementation only in development workspace',()=>{
     }
   }finally{fs.rmSync(source,{recursive:true,force:true});}
 });
+
+test('review-only department handoffs stay NO_SCOPE even when game files contain matching signals',()=>{
+  const source='web-games/__scope-review-only-test__';
+  fs.rmSync(source,{recursive:true,force:true});
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'game.html'),`<!doctype html><style>.hud{animation:pulse 1s infinite}</style><canvas id="game"></canvas><script>const enemy={hp:100,damage:10};let wave=1;const c=document.getElementById('game');try{localStorage.getItem('save');c.getContext('2d').fillRect(0,0,10,10)}catch(error){console.error(error)}</script>`);
+  fs.writeFileSync(path.join(source,'index.html'),'<iframe src="game.html"></iframe>');
+  try{
+    const common={sourcePath:source,responsibilityFiles:['game.html','index.html'],repairMode:'MODEL',workLane:'FULL',goal:'가장 작은 playable vertical slice 1개를 구현한다'};
+    const development=resolveDepartmentScope({...common,role:'development',departmentResult:{nextAction:'핵심 플레이 로직을 game.html에 구현한다'}});
+    assert.equal(development.run,true);
+    const rows=[
+      ['graphics','개발 워커가 현재 코드와 아트북 기준선에 기반해 반영한 후 자기 파트만 작성하도록 조치'],
+      ['qa','기획부와 협의해 저장 의미와 핵심 루프를 재확정하고 테스트 시나리오를 확정한다'],
+      ['balance','현재 전투 수치를 검토하고 다음 라운드 기준을 제안한다']
+    ];
+    for(const [role,nextAction] of rows){
+      const result=resolveDepartmentScope({...common,role,departmentResult:{nextAction}});
+      assert.equal(result.run,false,role);
+      assert.deepEqual(result.scope,[],role);
+      assert.equal(result.reason,'NO_FUNCTIONAL_RESPONSIBILITY',role);
+    }
+  }finally{fs.rmSync(source,{recursive:true,force:true});}
+});
+
+test('explicit functional department handoffs still receive runnable code scope',()=>{
+  const source='web-games/__scope-explicit-functional-test__';
+  fs.rmSync(source,{recursive:true,force:true});
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'game.html'),`<!doctype html><style>.hud{animation:pulse 1s infinite}</style><canvas id="game"></canvas><script>const enemy={hp:100,damage:10};let wave=1;const c=document.getElementById('game');try{localStorage.getItem('save');c.getContext('2d').fillRect(0,0,10,10)}catch(error){console.error(error)}</script>`);
+  fs.writeFileSync(path.join(source,'style.css'),'.hud{transform:scale(1);animation:pulse 1s infinite}');
+  fs.writeFileSync(path.join(source,'balance.json'),'{"enemy":{"hp":100,"damage":10},"wave":1}');
+  try{
+    const common={sourcePath:source,repairMode:'MODEL',workLane:'FULL',goal:'가장 작은 playable vertical slice 1개를 구현한다'};
+    const graphics=resolveDepartmentScope({...common,role:'graphics',departmentResult:{nextAction:'HUD CSS 스타일을 수정한다'}});
+    const qa=resolveDepartmentScope({...common,role:'qa',departmentResult:{nextAction:'오류 처리 가드를 game.html에 추가한다'}});
+    const balance=resolveDepartmentScope({...common,role:'balance',departmentResult:{nextAction:'enemy damage 수치를 조정한다'}});
+    assert.equal(graphics.run,true);
+    assert.equal(qa.run,true);
+    assert.equal(balance.run,true);
+  }finally{fs.rmSync(source,{recursive:true,force:true});}
+});
