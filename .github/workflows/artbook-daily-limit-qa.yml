@@ -1,0 +1,30 @@
+name: Artbook Daily Limit QA
+
+on:
+  pull_request:
+    paths:
+      - 'tools/artbook-prepare-daily.mjs'
+      - 'qa/artbook-daily-limit-preflight.test.mjs'
+      - '.github/workflows/artbook-daily-limit-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/artbook-prepare-daily.mjs'
+      - 'qa/artbook-daily-limit-preflight.test.mjs'
+      - '.github/workflows/artbook-daily-limit-qa.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  daily-limit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Syntax
+        run: node --check tools/artbook-prepare-daily.mjs
+      - name: Daily final limit regression
+        run: node --test qa/artbook-daily-limit-preflight.test.mjs
