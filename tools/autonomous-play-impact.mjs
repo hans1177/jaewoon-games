@@ -1,5 +1,5 @@
 // 파일명: tools/autonomous-play-impact.mjs
-// 역할: 승격 후보와 원본의 모바일 브라우저 관측을 비교해 실제 플레이 체감/실행 품질 근거를 기록한다.
+// 역할: 승격 후보와 원본의 모바일/플레이 시나리오 관측을 비교해 실제 플레이 체감, 회귀위험, 부서별 성과 근거를 기록한다.
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -9,7 +9,9 @@ const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const finite=(value,fallback=0)=>Number.isFinite(Number(value))?Number(value):fallback;
+const round2=value=>Math.round(Number(value||0)*100)/100;
 const LOW_IMPACT_STATUS='NOT_OBSERVED_BY_SMOKE_QA';
+const REVIEW_DEPARTMENTS=['planning','development','graphics','qa','balance'];
 
 function browserErrors(report={}){
   return uniq([
@@ -25,6 +27,56 @@ function metricsAvailable(report){return Boolean(report&&typeof report.pass==='b
 function implementationDepartments(evidence={}){
   return uniq((evidence.departmentImplementations||[]).filter(x=>x?.status==='PASS').map(x=>x.role));
 }
+function riskLevel(score){return score>=5?'CRITICAL':score>=3?'HIGH':score>=1?'MODERATE':'LOW';}
+
+export function scoreRegressionRisk({baseline={},candidate={}}={}){
+  const baselineErrors=browserErrors(baseline),candidateErrors=browserErrors(candidate);
+  const baselineValid=metricsAvailable(baseline),candidateValid=metricsAvailable(candidate);
+  const newRuntimeErrors=Math.max(0,candidateErrors.length-baselineErrors.length);
+  const baselineOverflow=baselineValid?Math.max(overflow(baseline.metrics),overflow(baseline.reloadMetrics)):null;
+  const candidateOverflow=candidateValid?Math.max(overflow(candidate.metrics),overflow(candidate.reloadMetrics)):null;
+  const overflowWorse=baselineValid&&candidateValid&&candidateOverflow>baselineOverflow;
+  const visibleInteractiveLost=baselineValid&&candidateValid&&finite(candidate.metrics?.visibleInteractive)<finite(baseline.metrics?.visibleInteractive)-1;
+  const baselineScenarioPass=baseline?.gameplayScenario?.expectedPlayable===true&&baseline?.gameplayScenario?.pass===true;
+  const candidateScenarioPass=candidate?.gameplayScenario?.expectedPlayable!==true||candidate?.gameplayScenario?.pass===true;
+  const scenarioRegression=baselineScenarioPass&&!candidateScenarioPass;
+  let score=0;
+  if(candidate?.pass!==true)score+=3;
+  if(newRuntimeErrors>0)score+=Math.min(2,newRuntimeErrors);
+  if(overflowWorse)score+=1;
+  if(visibleInteractiveLost)score+=1;
+  if(scenarioRegression)score+=2;
+  score=Math.min(5,score);
+  return {score,level:riskLevel(score),newRuntimeErrors,overflowWorse,visibleInteractiveLost,baselineScenarioPass,candidateScenarioPass,scenarioRegression};
+}
+
+export function buildDepartmentAttribution(evidence={},performance={totalScore:0,playerImpactScore:0,netScore:0}){
+  const components=(evidence.departmentImplementations||[]).filter(row=>row?.status==='PASS');
+  const mergeModes=Array.isArray(evidence?.integration?.mergeModes)?evidence.integration.mergeModes:[];
+  const finalFiles=new Set((evidence.changedFiles||[]).map(clean));
+  const fileRoles=new Map();
+  for(const row of components){for(const file of uniq(row.changedFiles||[])){if(!finalFiles.has(file))continue;if(!fileRoles.has(file))fileRoles.set(file,[]);fileRoles.get(file).push(row.role);}}
+  const rows=REVIEW_DEPARTMENTS.map(role=>{
+    const component=components.find(row=>row.role===role)||null;
+    const changedFiles=uniq(component?.changedFiles||[]).filter(file=>finalFiles.has(file));
+    const directUniqueFiles=changedFiles.filter(file=>(fileRoles.get(file)||[]).length===1);
+    const sharedFiles=changedFiles.filter(file=>(fileRoles.get(file)||[]).length>1);
+    const roleModes=mergeModes.filter(row=>row?.role===role&&changedFiles.includes(clean(row.path))).map(row=>({path:row.path,mode:row.mode}));
+    const retainedModes=roleModes.filter(row=>row.mode!=='CURRENT_ONLY');
+    const rawWeight=changedFiles.reduce((sum,file)=>sum+1/Math.max(1,(fileRoles.get(file)||[]).length),0);
+    return {department:role,reviewContributor:true,implementationContributor:Boolean(component),changedFiles,directUniqueFiles,sharedFiles,mergeModes:roleModes,retainedIntegrationSignals:retainedModes.length,rawWeight};
+  });
+  const totalWeight=rows.reduce((sum,row)=>sum+row.rawWeight,0);
+  for(const row of rows){
+    const share=totalWeight>0?row.rawWeight/totalWeight:0;
+    row.attributionShare=round2(share);
+    row.totalPerformanceCredit=round2(finite(performance.netScore)*share);
+    row.playerImpactCredit=round2(finite(performance.playerImpactScore)*share);
+    row.creditBasis=row.implementationContributor?(row.directUniqueFiles.length?'DIRECT_UNIQUE_FILE_PLUS_SHARED_FINAL':'SHARED_FINAL_INTEGRATION'):'REVIEW_ONLY_NO_DIRECT_CODE_CREDIT';
+    delete row.rawWeight;
+  }
+  return {mode:'FINAL_INTEGRATED_FILE_WEIGHTED',reviewCreditSeparatedFromDirectCodeCredit:true,departments:rows};
+}
 
 export function comparePlayImpact({baseline={},candidate={},evidence={}}={}){
   const baselineValid=metricsAvailable(baseline),candidateValid=metricsAvailable(candidate);
@@ -38,6 +90,7 @@ export function comparePlayImpact({baseline={},candidate={},evidence={}}={}){
   const interactiveChanged=baselineValid&&candidateValid&&finite(baseline.metrics?.visibleInteractive)!==finite(candidate.metrics?.visibleInteractive);
   const canvasChanged=baselineValid&&candidateValid&&finite(baseline.metrics?.canvas)!==finite(candidate.metrics?.canvas);
   const titleChanged=baselineValid&&candidateValid&&clean(baseline.metrics?.title)!==clean(candidate.metrics?.title);
+  const scenarioImproved=baseline?.gameplayScenario?.expectedPlayable===true&&baseline?.gameplayScenario?.pass!==true&&candidate?.gameplayScenario?.pass===true;
   const observableSurfaceChange=interactiveChanged||canvasChanged||titleChanged;
 
   let executionQualityScore=0;
@@ -49,32 +102,42 @@ export function comparePlayImpact({baseline={},candidate={},evidence={}}={}){
   if(defectReduction>0)playerImpactScore+=3;
   if(overflowReduction>0)playerImpactScore+=1;
   if(observableSurfaceChange)playerImpactScore+=1;
+  if(scenarioImproved)playerImpactScore+=2;
   playerImpactScore=Math.min(5,playerImpactScore);
 
+  const regressionRisk=scoreRegressionRisk({baseline,candidate});
   let impactStatus='BASELINE_UNAVAILABLE';
   if(!candidatePass)impactStatus='REGRESSION';
+  else if(regressionRisk.score>=3)impactStatus='REGRESSION_RISK_HIGH';
   else if(baselineValid&&playerImpactScore>=3)impactStatus='VERIFIED_IMPROVEMENT';
   else if(baselineValid&&playerImpactScore>=1)impactStatus='OBSERVABLE_CHANGE';
   else if(baselineValid)impactStatus=LOW_IMPACT_STATUS;
-  const confidence=defectReduction>0?'HIGH':playerImpactScore>0?'MEDIUM':baselineValid?'LOW':'NONE';
+  const confidence=defectReduction>0||scenarioImproved?'HIGH':playerImpactScore>0?'MEDIUM':baselineValid?'LOW':'NONE';
   const totalScore=Math.max(0,Math.min(10,executionQualityScore+playerImpactScore));
-  const reviewDepartments=['planning','development','graphics','qa','balance'];
+  const netScore=Math.max(0,Math.min(10,totalScore-regressionRisk.score));
   const implementing=implementationDepartments(evidence);
+  const departmentAttribution=buildDepartmentAttribution(evidence,{totalScore,playerImpactScore,netScore});
 
   return {
-    version:1,
+    version:2,
     kind:'AUTONOMOUS_PLAY_IMPACT',
     gameId:clean(evidence.gameId),
     candidateId:clean(evidence.candidateId),
     executionQualityScore,
     playerImpactScore,
     totalScore,
+    regressionRiskScore:regressionRisk.score,
+    regressionRiskLevel:regressionRisk.level,
+    netScore,
     impactStatus,
     confidence,
-    priorityEligibleLowImpact:impactStatus===LOW_IMPACT_STATUS,
-    reviewDepartments,
+    priorityEligibleLowImpact:impactStatus===LOW_IMPACT_STATUS&&regressionRisk.score<3,
+    reviewDepartments:REVIEW_DEPARTMENTS,
     implementationDepartments:implementing,
+    departmentAttribution,
     changedFiles,
+    gameplayScenario:{baseline:baseline?.gameplayScenario||null,candidate:candidate?.gameplayScenario||null,improved:scenarioImproved,regression:regressionRisk.scenarioRegression},
+    regressionRisk,
     signals:{
       baselinePass:baseline?.pass===true,
       candidatePass,
@@ -90,8 +153,9 @@ export function comparePlayImpact({baseline={},candidate={},evidence={}}={}){
       canvasChanged,
       titleChanged,
       observableSurfaceChange,
+      scenarioImproved,
     },
-    scoring:{executionQualityMax:5,playerImpactMax:5,totalMax:10,lowImpactPenaltyAfterConsecutive:2},
+    scoring:{executionQualityMax:5,playerImpactMax:5,regressionRiskMax:5,totalMax:10,netMax:10,lowImpactPenaltyAfterConsecutive:2},
     evaluatedAt:new Date().toISOString(),
   };
 }
@@ -101,7 +165,7 @@ export function appendImpactHistory(history={version:1,entries:[]},impact,maxEnt
   const entries=(Array.isArray(history?.entries)?history.entries:[]).filter(row=>row?.candidateId!==impact.candidateId);
   entries.push(impact);
   entries.sort((a,b)=>String(a.evaluatedAt||'').localeCompare(String(b.evaluatedAt||'')));
-  return {version:1,updatedAt:new Date().toISOString(),entries:entries.slice(-Math.max(10,maxEntries))};
+  return {version:2,updatedAt:new Date().toISOString(),entries:entries.slice(-Math.max(10,maxEntries))};
 }
 export function latestImpactFor(history={},gameId=''){
   const rows=(history?.entries||[]).filter(row=>clean(row?.gameId)===clean(gameId));
