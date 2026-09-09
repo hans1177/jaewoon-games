@@ -88,6 +88,58 @@
       "syncTargetSeconds": 30,
       "repeatUntilVerifiedComplete": true,
       "coreDecisionProtection": true
+    },
+    "autonomousFocus": {
+      "enabled": true,
+      "targetSlots": 2,
+      "filledSlots": 2,
+      "preferredGameIds": [
+        "P0001",
+        "P0002"
+      ],
+      "focusedGameIds": [
+        "P0001",
+        "P0002"
+      ],
+      "games": [
+        {
+          "slot": 1,
+          "gameId": "P0001",
+          "slug": "survival",
+          "name": "나의 생존기",
+          "score": 9,
+          "slotRole": "preferred",
+          "lane": "web",
+          "homepageCategory": "development-confirmed",
+          "webPath": "/web-games/survival/"
+        },
+        {
+          "slot": 2,
+          "gameId": "P0002",
+          "slug": "insect-survival",
+          "name": "곤충 생존기",
+          "score": 8,
+          "slotRole": "preferred",
+          "lane": "web",
+          "homepageCategory": "development-confirmed",
+          "webPath": "/web-games/insect-survival/"
+        }
+      ],
+      "nextDevelopmentGameIds": [
+        "P0006",
+        "P0004",
+        "P0003"
+      ],
+      "selection": "PREFERRED_READY_THEN_SCORE_WITH_NEXT_DEVELOPMENT_BACKFILL",
+      "activeDevelopmentRunId": 34370429327,
+      "syncIntervalMs": 30000,
+      "updatedAtKst": "2026-09-10",
+      "source": [
+        "autonomous-portfolio.json",
+        "game-artbooks.json",
+        "game-catalog.json",
+        "tools/autonomous-24h-work-planner.mjs"
+      ]
     }
   },
   "supervision": {
