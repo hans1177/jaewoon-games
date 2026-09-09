@@ -267,7 +267,7 @@ namespace JaewoonGames.DaechungRpg
 
         public void SetRegion(string regionId)
         {
-            if (!GameCatalog.Regions.ContainsKey(regionId))
+            if (string.IsNullOrEmpty(regionId) || !GameCatalog.Regions.ContainsKey(regionId))
             {
                 return;
             }
