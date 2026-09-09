@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const readJson=(file,fallback={})=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
-const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
+const writeJson=(file,value)=>{const dir=path.dirname(file);if(dir&&dir!=='.')fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const clean=v=>String(v??'').trim();
 
 export function createPublicWebQaEvidence(health={}){
@@ -59,7 +59,7 @@ export function createPublicWebQaEvidence(health={}){
 
 if(import.meta.url===new URL(`file://${process.argv[1]}`).href){
   const health=readJson(process.env.PUBLIC_GAME_HEALTH_FILE||'public-game-health.json',{games:[]});
-  const output=process.env.COMPANY_QA_WEB_EVIDENCE_FILE||'qa-artifacts/company-qa/public-web-runtime-evidence.json';
+  const output=process.env.COMPANY_QA_WEB_EVIDENCE_FILE||'company-qa-runtime-evidence.json';
   const result=createPublicWebQaEvidence(health);
   writeJson(output,result);
   console.log(`COMPANY_QA_WEB_EVIDENCE=${result.games.length}`);
