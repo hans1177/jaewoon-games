@@ -44,14 +44,14 @@
 - 기획/정체성 확정 필요 게임은 코드 worker로 밀어 넣지 않고 Vibe2 1차 초안과 기획부 게이트로 되돌린다.
 
 ## Vibe2 직렬 작업 / 충돌 방지
-- Vibe2 게임 소스 작업은 **전역 한 번에 1개 작업만** 실행한다. 별도 파일 Work Lock을 운영 경로에 사용하지 않는다.
-- 활성 작업과 책임 파일은 `.vibe2/queue.json`의 `running` task가 단일 진실 소스다.
-- ChatGPT/다른 AI는 Vibe2가 `running` 중인 책임 파일을 동시에 수정하지 않는다.
+- Vibe2 게임 소스 작업은 **전역 한 번에 1개 작업만** 실행한다. 별도 `.vibe2` Work Lock 파일은 운영 경로에 사용하지 않는다.
+- 자율 개발의 실행 상태는 `autonomous-dev` 브랜치의 `.autonomous/queue-state.json` 예약 기록과 GitHub Actions `autonomous-dev-writer` concurrency가 실제 운영 기준이다. 아트북 대상/순서는 `artbook-submission-queue.json`과 `game-artbooks.json`을 기준으로 한다.
+- ChatGPT/다른 AI는 최신 `Autonomous Continuous Development` 실행과 `autonomous-dev` 예약의 source path를 확인하고, 실행 중인 동일 source root를 동시에 수정하지 않는다.
 - Vibe2 source worker는 `main`을 직접 수정하지 않고 항상 최신 `origin/main`에서 `vibe2/candidate/*` 후보 브랜치를 만든다.
 - 후보 생성 시 `baseMainSha`를 기록한다. QA/승격 직전 최신 `main`과 다시 비교한다.
 - `baseMainSha` 이후 동일 게임 source root가 바뀌었으면 자동 병합/승격하지 않고 재계획한다.
 - 변경이 검증되지 않은 후보는 `main`에 자동 반영하지 않는다.
-- 후보가 QA/빌드/배포 게이트를 기다리는 동안 해당 task는 `running`을 유지하며 다음 게임 작업을 시작하지 않는다.
+- 후보가 QA/빌드/배포 게이트를 기다리는 동안 해당 source root는 점유 상태로 보고 다음 AI가 같은 파일을 병행 수정하지 않는다.
 
 ## 에셋 규칙 / 학습
 - 에셋 작업 전에는 반드시 `ASSET_RULES.md`를 읽는다.
@@ -82,7 +82,7 @@
 ## 작업 순서
 1. `company-directive.json`, `company-status.json`, `game-catalog.json`과 현재 구조를 읽는다.
 2. 사용자 직접 지시와 `출시확정 > 개발확정 > 구조개선 > 기획/정체성 필요 > reviewing > HOLD` 우선순위를 적용한다.
-3. `.vibe2/queue.json`에 `running` 작업이 있으면 다른 Vibe2 게임 작업을 시작하지 않는다.
+3. 게임 source 수정 전 최신 `Autonomous Continuous Development` 실행과 `autonomous-dev:.autonomous/queue-state.json`을 확인한다. 아트북 작업은 `artbook-submission-queue.json`과 `game-artbooks.json`의 실제 완료 상태를 확인한다.
 4. 자동 유지보수라면 모델 전에 결정론적 진단으로 문제 1개와 책임 파일을 정한다.
 5. 안전 규칙 패치 가능 여부를 먼저 판단하고, 불가능할 때만 Vibe2 모델을 사용한다.
 6. 에셋이 필요한 작업이면 `ASSET_RULES.md`, `assets/animated-assets.json`, `assets/asset-manifest.json`을 확인한다.
