@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-09",
+  "overall": "REVISE",
+  "reason": "Five department evidence standards are strengthened and web runtime QA is connected, but Unity runtime/play automation is not yet proven.",
+  "policy": {
+    "genericPraiseIsEvidence": false,
+    "domainSpecificEvidenceRequired": true,
+    "qaCodeReviewOnlyAllowed": false,
+    "qaBuildOnlyAllowed": false,
+    "directorMayInventMissingEvidence": false
+  },
+  "departments": {
+    "planning": {
+      "status": "STRENGTHENED",
+      "passGate": "2+ planning-domain evidence items",
+      "checks": ["core loop", "core fun", "story/quest/progression", "game identity"],
+      "previousWeakness": "Generic code-structure praise could appear as planning evidence.",
+      "currentProtection": "DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
+    },
+    "development": {
+      "status": "STRENGTHENED",
+      "passGate": "2+ development-domain evidence items plus successful compile/build",
+      "checks": ["changed files", "compile/build", "dependencies", "save/data compatibility", "regression risk"],
+      "previousWeakness": "Model review could praise structure even when verification build failed.",
+      "currentProtection": "BUILD_EVIDENCE_REQUIRED + DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
+    },
+    "qa": {
+      "status": "PARTIAL",
+      "passGate": "2+ QA-domain evidence items plus successful build plus runtime/play evidence",
+      "checks": ["launch", "input", "core action", "progression", "save/reload", "restart", "mobile UI/touch", "reproduction"],
+      "webRuntime": {
+        "status": "CONNECTED",
+        "engine": "Playwright",
+        "source": "tools/public-game-health.mjs",
+        "officialEvidenceBridge": "tools/company-qa-public-web-evidence.mjs",
+        "persistentEvidence": "company-qa-runtime-evidence.json"
+      },
+      "unityRuntime": {
+        "status": "MISSING_AUTOMATED_PLAY_PROOF",
+        "buildPipelineExists": true,
+        "buildAloneCountsAsQaPass": false,
+        "needed": "APK/device or emulator launch plus scripted input/play smoke evidence"
+      },
+      "currentProtection": "RUNTIME_PLAY_EVIDENCE_REQUIRED + BUILD_EVIDENCE_REQUIRED + DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
+    },
+    "graphics": {
+      "status": "STRENGTHENED",
+      "passGate": "1+ graphics-domain evidence item",
+      "checks": ["UI/readability", "visual identity", "assets/licenses", "animation/motion/VFX", "mobile presentation"],
+      "previousWeakness": "Generic code/UI praise could be treated as graphics PASS evidence.",
+      "currentProtection": "DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
+    },
+    "balance": {
+      "status": "STRENGTHENED",
+      "passGate": "1+ balance-domain evidence item",
+      "checks": ["damage/HP", "difficulty", "growth", "rewards/economy", "cooldown/drop rates"],
+      "previousWeakness": "Code-structure praise could be used without numeric balance analysis.",
+      "currentProtection": "DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
+    },
+    "director": {
+      "status": "STRENGTHENED",
+      "passGate": "All five votes submitted and every department evidence gate passed",
+      "aggregation": "DROP if any DROP; REVISE if any REVISE or evidence gate failure; otherwise PASS",
+      "currentProtection": "Director cannot invent or replace missing department evidence."
+    }
+  },
+  "verification": {
+    "departmentStandardsWorkflow": {
+      "runId": 34304706736,
+      "conclusion": "success"
+    },
+    "vibeQaWorkflow": {
+      "runId": 34304811810,
+      "conclusion": "success"
+    }
+  },
+  "nextPriority": "Implement Unity runtime/play smoke evidence without weakening the QA PASS gate."
+}
