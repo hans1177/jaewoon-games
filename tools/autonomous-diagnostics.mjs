@@ -45,6 +45,7 @@ function localReferences(text){
   while((match=re.exec(text))){
     const value=clean(match[1]);
     if(!value||/^(?:https?:|data:|blob:|javascript:|mailto:|tel:|#|\/\/)/i.test(value))continue;
+    if(/\$\{[^}]+\}/.test(value))continue;
     out.push(value.split(/[?#]/)[0]);
   }
   return [...new Set(out.filter(Boolean))];

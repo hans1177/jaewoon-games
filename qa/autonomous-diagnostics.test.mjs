@@ -28,6 +28,15 @@ test('mobile viewport, broken path, save parse and duplicate listener are detect
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('dynamic template attributes are not treated as broken local paths',()=>{
+  const root=fixture();
+  try{
+    fs.writeFileSync(path.join(root,'index.html'),'<html><head><meta name="viewport" content="width=device-width"></head><body><img src="${s.img}" alt="monster"><a href="${route.path}">GO</a></body></html>');
+    const result=diagnoseGame(root);
+    assert.equal(result.issues.some(x=>x.type==='BROKEN_LOCAL_PATH'&&/\$\{/.test(String(x.reference||''))),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('diagnostics records related files so a multi-file issue can feed parallel department scopes',()=>{
   const root=fixture();
   try{
