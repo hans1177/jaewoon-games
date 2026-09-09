@@ -114,12 +114,12 @@ export function buildAutonomousWorkOrder({portfolio,artbooks,health,catalog={gam
     goal=`방금 완성된 최신 아트북 DESIGN_BASELINE을 현재 개발 설계도로 사용한다. 기술 구조 → 플레이어블 개발판 B로 이어지는 첫 작은 구현 작업 1개만 수행한다. ${firstTask} 아트북의 장르·핵심루프·스토리 큰 방향·저장 의미는 임의로 바꾸지 않는다.`;
   }else if(microTask){reason='DIAGNOSTIC_MICROTASK';goal=microTask.goal;}
   const repairMode=microTask?.repairMode==='RULE_PATCH'?'RULE_PATCH':'MODEL';
-  const responsibilityFiles=microTask?.file?[microTask.file]:[];
+  const responsibilityFiles=Array.isArray(microTask?.files)&&microTask.files.length?microTask.files:(microTask?.file?[microTask.file]:[]);
   const configuredMax=Math.max(0,Math.min(2,Number(portfolio.maxModelCallsPerRun??2)||0));
   const modelCalls=repairMode==='RULE_PATCH'?0:Math.max(1,configuredMax);
   const candidateId=`${selected.id}-${date.replaceAll('-','')}-${attemptsToday.length+1}`;
   return {
-    version:2,run:true,date,selectedReason:reason,
+    version:3,run:true,date,selectedReason:reason,
     gameId:selected.id,gameSlug:selected.slug,gameName:selected.name,sourcePath:selected.sourcePath,
     profileStatus:selected.profileStatus,mode:selected.mode,projectStage:stage.id,
     goal,microTask,repairMode,responsibilityFiles,diagnosticTopIssue:diagnostic?.topIssue||null,
