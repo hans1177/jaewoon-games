@@ -83,7 +83,7 @@ test('generated hashed bundles are never selected as model-owned responsibility 
       repairMode:'MODEL'
     });
     assert.equal(result.run,true);
-    assert.deepEqual(result.scope,['index.html','src/main.js']);
+    assert.deepEqual([...result.scope].sort(),['index.html','src/main.js']);
     assert.equal(result.scope.some(file=>file.startsWith('assets/')),false);
     assert.equal(result.scores.some(row=>row.path==='assets/framework-DjPHiq1u.js'),false);
   }finally{fs.rmSync(source,{recursive:true,force:true});}
