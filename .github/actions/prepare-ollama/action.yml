@@ -1,0 +1,74 @@
+name: Prepare cached local Ollama runtime
+description: Restore a pinned Ollama runtime archive from GitHub cache, install it without system service setup, start the local server, and optionally pull the model.
+inputs:
+  model:
+    description: Ollama model name to make available locally.
+    required: true
+  version:
+    description: Pinned Ollama version without the leading v.
+    required: false
+    default: '0.33.3'
+  pull-model:
+    description: Whether to pull the requested model after starting the server.
+    required: false
+    default: 'true'
+runs:
+  using: composite
+  steps:
+    - name: Restore pinned Ollama runtime archive
+      id: runtime-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/jaewoon-ollama/ollama-linux-amd64-${{ inputs.version }}.tar.zst
+        key: jaewoon-ollama-runtime-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
+
+    - name: Download pinned runtime on cache miss
+      if: steps.runtime-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        cache_dir="$HOME/.cache/jaewoon-ollama"
+        archive="$cache_dir/ollama-linux-amd64-${{ inputs.version }}.tar.zst"
+        mkdir -p "$cache_dir"
+        downloaded=0
+        for attempt in 1 2 3; do
+          echo "OLLAMA_RUNTIME_DOWNLOAD_ATTEMPT=$attempt/3"
+          if curl -fL --retry 3 --retry-all-errors --connect-timeout 15 \
+            "https://ollama.com/download/ollama-linux-amd64.tar.zst?version=${{ inputs.version }}" \
+            -o "$archive"; then
+            downloaded=1
+            break
+          fi
+          sleep $((attempt * 4))
+        done
+        test "$downloaded" = 1
+        test -s "$archive"
+
+    - name: Install cached runtime and start local server
+      shell: bash
+      run: |
+        set -euo pipefail
+        archive="$HOME/.cache/jaewoon-ollama/ollama-linux-amd64-${{ inputs.version }}.tar.zst"
+        test -s "$archive"
+        command -v zstd >/dev/null
+        sudo tar --zstd -xf "$archive" -C /usr
+        command -v ollama >/dev/null
+        nohup ollama serve > /tmp/ollama-autonomous.log 2>&1 &
+        for i in $(seq 1 30); do
+          if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
+            echo "OLLAMA_RUNTIME_CACHE_HIT=${{ steps.runtime-cache.outputs.cache-hit }}"
+            echo 'OLLAMA_SYSTEM_SERVICE_SETUP=SKIPPED'
+            exit 0
+          fi
+          sleep 2
+        done
+        cat /tmp/ollama-autonomous.log || true
+        exit 1
+
+    - name: Ensure requested local model
+      if: inputs.pull-model == 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        ollama pull "${{ inputs.model }}"
+        echo 'PAID_API=NO'

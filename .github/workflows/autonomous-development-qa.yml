@@ -24,6 +24,7 @@ on:
       - "qa/autonomous-queue-state.test.mjs"
       - "qa/autonomous-candidate-review.test.mjs"
       - "qa/autonomous-vibe-release-handoff.test.mjs"
+      - ".github/actions/prepare-ollama/action.yml"
       - ".github/workflows/autonomous-continuous-development.yml"
       - ".github/workflows/autonomous-candidate-promotion.yml"
       - ".github/workflows/vibe2-candidate-release.yml"
@@ -48,6 +49,7 @@ on:
       - "qa/autonomous-24h-work-planner.test.mjs"
       - "qa/autonomous-candidate-review.test.mjs"
       - "qa/autonomous-vibe-release-handoff.test.mjs"
+      - ".github/actions/prepare-ollama/action.yml"
       - ".github/workflows/autonomous-continuous-development.yml"
       - ".github/workflows/autonomous-candidate-promotion.yml"
       - ".github/workflows/vibe2-candidate-release.yml"
@@ -85,7 +87,7 @@ jobs:
           node --test qa/autonomous-24h-work-planner.test.mjs
           node --test qa/autonomous-candidate-review.test.mjs
           node --test qa/autonomous-vibe-release-handoff.test.mjs
-      - name: Validate parallel code, final QA, release and learning contracts
+      - name: Validate parallel code, runtime cache, final QA, release and learning contracts
         shell: bash
         run: |
           set -euo pipefail
@@ -93,6 +95,7 @@ jobs:
           const fs=require('fs');
           const p=require('./autonomous-portfolio.json');
           const continuous=fs.readFileSync('.github/workflows/autonomous-continuous-development.yml','utf8');
+          const runtime=fs.readFileSync('.github/actions/prepare-ollama/action.yml','utf8');
           const promotion=fs.readFileSync('.github/workflows/autonomous-candidate-promotion.yml','utf8');
           const release=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
           const unity=fs.readFileSync('.github/workflows/vibe2-unity-release-result.yml','utf8');
@@ -119,6 +122,12 @@ jobs:
           must(continuous.includes('AI adjusts true same-file conflict only'),'same-file conflict adjustment missing');
           must(continuous.includes('FINAL_QA_GATE=AUTONOMOUS_CANDIDATE_PROMOTION'),'single strong final QA gate missing');
           must(continuous.includes('gh workflow run autonomous-candidate-promotion.yml --ref main -f candidate_branch='),'promotion dispatch missing');
+          must(continuous.includes('name: warm shared Ollama runtime cache'),'shared runtime warmup job missing');
+          must(continuous.includes('uses: ./.github/actions/prepare-ollama'),'cached runtime action not connected');
+          must(!continuous.includes('https://ollama.com/install.sh'),'per-job Ollama install.sh regression found');
+          must(runtime.includes('actions/cache@v4'),'Ollama runtime archive cache missing');
+          must(runtime.includes('ollama-linux-amd64.tar.zst'),'pinned manual runtime archive missing');
+          must(runtime.includes('OLLAMA_SYSTEM_SERVICE_SETUP=SKIPPED'),'system service setup bypass evidence missing');
           must(department.includes("const CORE_ROLES=['planning','development','graphics','qa','balance']"),'department review core missing');
           must(department.includes('vibeMaySelfApprove:false')&&department.includes('vibeMayOverrideDepartments:false'),'Vibe early-stage authority guard missing');
           must(integrator.includes("mergeMode:'COMMON_BASE_THREE_WAY'")||integrator.includes("mode:'COMMON_BASE_THREE_WAY'"),'common-base merge evidence missing');
@@ -132,9 +141,10 @@ jobs:
           must(health.includes('gh workflow run autonomous-continuous-development.yml'),'next floor must start after health result');
           must(health.includes('artbook-revision-queue.json')&&health.includes('IMPLEMENTATION_DRIFT'),'critical post-release Artbook revision path missing');
           must(unity.includes('post-release-unity')&&unity.includes('company-dna-learning.yml'),'Unity post-release learning path missing');
-          const text=[continuous,promotion,release,unity,health,department,integrator,handoff].join('\n');
+          const text=[continuous,runtime,promotion,release,unity,health,department,integrator,handoff].join('\n');
           must(!/OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY/.test(text),'paid/external key path found');
           console.log('PARALLEL_DEPARTMENT_CODE_CONTRACT=PASS');
+          console.log('CACHED_OLLAMA_RUNTIME_CONTRACT=PASS');
           console.log('SERIAL_FINAL_INTEGRATION_CONTRACT=PASS');
           console.log('FINAL_INDEPENDENT_QA_CONTRACT=PASS');
           console.log('POST_RELEASE_HEALTH_LEARNING_ARTBOOK_CONTRACT=PASS');

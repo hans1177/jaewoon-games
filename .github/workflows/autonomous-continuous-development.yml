@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/autonomous-continuous-development.yml'
+      - '.github/actions/prepare-ollama/action.yml'
       - '.github/workflows/autonomous-portfolio-continuation.yml'
       - '.github/workflows/autonomous-new-game-incubator.yml'
       - 'tools/autonomous-work-planner.mjs'
@@ -56,6 +57,7 @@ env:
   AUTONOMOUS_DEPARTMENT_MAX_PREDICT: '480'
   AUTONOMOUS_DEPARTMENT_TIMEOUT_MS: '150000'
   OLLAMA_HOST: 127.0.0.1:11434
+  OLLAMA_VERSION: '0.33.3'
 
 jobs:
   prepare:
@@ -220,6 +222,7 @@ jobs:
           echo '### Autonomous floor preparation' >> "$GITHUB_STEP_SUMMARY"
           echo '- game floor scheduling: PARALLEL_BY_SOURCE_ROOT' >> "$GITHUB_STEP_SUMMARY"
           echo '- reservation writer: SERIAL_ONLY' >> "$GITHUB_STEP_SUMMARY"
+          echo '- local model runtime: PINNED_CACHE_THEN_REUSE' >> "$GITHUB_STEP_SUMMARY"
           echo '- department review: PARALLEL_5' >> "$GITHUB_STEP_SUMMARY"
           echo '- department code workspaces: PARALLEL_ISOLATED_4' >> "$GITHUB_STEP_SUMMARY"
           echo '- planning: integration/ownership authority, no direct source overwrite' >> "$GITHUB_STEP_SUMMARY"
@@ -248,9 +251,32 @@ jobs:
           done
           exit 1
 
+  ollama_runtime:
+    name: warm shared Ollama runtime cache
+    needs: prepare
+    if: needs.prepare.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout reserved development evidence
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.reserved_sha }}
+          fetch-depth: 1
+      - name: Warm pinned local runtime cache once per floor
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: ${{ env.AUTONOMOUS_LOCAL_MODEL }}
+          version: ${{ env.OLLAMA_VERSION }}
+          pull-model: 'false'
+      - name: Runtime cache summary
+        run: |
+          echo 'OLLAMA_RUNTIME_WARMUP=PASS'
+          echo 'OLLAMA_INSTALL_SH_PER_EMPLOYEE=NO'
+
   departments:
     name: department (${{ matrix.role }})
-    needs: prepare
+    needs: [prepare, ollama_runtime]
     if: needs.prepare.outputs.run == 'true'
     strategy:
       fail-fast: false
@@ -272,29 +298,13 @@ jobs:
         with:
           name: autonomous-floor-context-${{ github.run_id }}
           path: .autonomous
-      - name: Install local Ollama for independent department
-        shell: bash
-        run: |
-          set -euo pipefail
-          installed=0
-          for attempt in 1 2 3; do
-            echo "OLLAMA_INSTALL_ATTEMPT=$attempt/3"
-            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
-            sleep $((attempt * 4))
-          done
-          test "$installed" = 1
-          nohup ollama serve > /tmp/ollama-autonomous.log 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0
-            sleep 2
-          done
-          cat /tmp/ollama-autonomous.log || true
-          exit 1
-      - name: Pull free local model
-        run: |
-          ollama pull "$AUTONOMOUS_LOCAL_MODEL"
-          echo 'PAID_API=NO'
-          echo 'DEPARTMENT_WORK_STATE=ACTIVE'
+      - name: Restore cached local Ollama runtime
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: ${{ env.AUTONOMOUS_LOCAL_MODEL }}
+          version: ${{ env.OLLAMA_VERSION }}
+      - name: Mark independent department active
+        run: echo 'DEPARTMENT_WORK_STATE=ACTIVE'
       - name: Independent department review
         env:
           AUTONOMOUS_CANDIDATE_ID: ${{ needs.prepare.outputs.candidate_id }}
@@ -347,22 +357,11 @@ jobs:
           set -euo pipefail
           for role in planning development graphics qa balance; do test -s "department-results/${role}.json"; done
           echo 'DEPARTMENT_HANDOFFS=5/5'
-      - name: Install local Ollama for planning integration
-        shell: bash
-        run: |
-          set -euo pipefail
-          installed=0
-          for attempt in 1 2 3; do
-            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
-            sleep $((attempt * 4))
-          done
-          test "$installed" = 1
-          nohup ollama serve > /tmp/ollama-autonomous.log 2>&1 &
-          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0; sleep 2; done
-          cat /tmp/ollama-autonomous.log || true
-          exit 1
-      - name: Pull free local model
-        run: ollama pull "$AUTONOMOUS_LOCAL_MODEL"
+      - name: Restore cached local Ollama runtime for planning integration
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: ${{ env.AUTONOMOUS_LOCAL_MODEL }}
+          version: ${{ env.OLLAMA_VERSION }}
       - name: Planning integrates independent department handoffs
         env:
           AUTONOMOUS_CANDIDATE_ID: ${{ needs.prepare.outputs.candidate_id }}
@@ -418,23 +417,12 @@ jobs:
           node tools/autonomous-department-scope.mjs
           echo "DEPARTMENT_CODE_SCOPE=${{ matrix.role }}:${{ steps.scope.outputs.scope }}"
           echo "DEPARTMENT_SCOPE_REASON=${{ steps.scope.outputs.scope_reason }}"
-      - name: Install local Ollama for department implementation
+      - name: Restore cached local Ollama runtime for department implementation
         if: steps.scope.outputs.run == 'true' && steps.scope.outputs.repair_mode != 'RULE_PATCH'
-        shell: bash
-        run: |
-          set -euo pipefail
-          installed=0
-          for attempt in 1 2 3; do
-            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
-            sleep $((attempt * 4))
-          done
-          test "$installed" = 1
-          nohup ollama serve > /tmp/ollama-autonomous.log 2>&1 &
-          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0; sleep 2; done
-          exit 1
-      - name: Pull free local model
-        if: steps.scope.outputs.run == 'true' && steps.scope.outputs.repair_mode != 'RULE_PATCH'
-        run: ollama pull "$AUTONOMOUS_LOCAL_MODEL"
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: ${{ env.AUTONOMOUS_LOCAL_MODEL }}
+          version: ${{ env.OLLAMA_VERSION }}
       - name: Department-owned isolated code modification
         if: steps.scope.outputs.run == 'true'
         run: node tools/autonomous-development-worker.mjs
@@ -570,23 +558,12 @@ jobs:
           fs.appendFileSync(env,`AUTONOMOUS_GAME_ID=${o.gameId}\nAUTONOMOUS_SOURCE_PATH=${temp}\nAUTONOMOUS_CANDIDATE_ID=${r.candidateId}-conflict\nAUTONOMOUS_REPAIR_MODE=MODEL\nAUTONOMOUS_PROTECTED_VALUES=${(o.protectedValues||[]).join(',')}\n`);
           fs.appendFileSync(env,`AUTONOMOUS_GOAL<<JAEWOON_CONFLICT\n${cycle.finalGoal} 같은 파일에 남은 Git conflict marker만 제거하면서 관련 부서 의도를 모두 보존하고 새로운 기능을 추가하지 마라.\nJAEWOON_CONFLICT\n`);
           NODE
-      - name: Install local Ollama only for true merge conflict
+      - name: Restore cached local Ollama runtime only for true merge conflict
         if: steps.merge.outputs.status == 'CONFLICT'
-        shell: bash
-        run: |
-          set -euo pipefail
-          installed=0
-          for attempt in 1 2 3; do
-            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
-            sleep $((attempt * 4))
-          done
-          test "$installed" = 1
-          nohup ollama serve > /tmp/ollama-autonomous.log 2>&1 &
-          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0; sleep 2; done
-          exit 1
-      - name: Pull free local conflict resolver
-        if: steps.merge.outputs.status == 'CONFLICT'
-        run: ollama pull "$AUTONOMOUS_LOCAL_MODEL"
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: ${{ env.AUTONOMOUS_LOCAL_MODEL }}
+          version: ${{ env.OLLAMA_VERSION }}
       - name: AI adjusts true same-file conflict only
         if: steps.merge.outputs.status == 'CONFLICT'
         run: node tools/autonomous-development-worker.mjs
@@ -666,15 +643,17 @@ jobs:
           echo '- code: development/graphics/qa/balance isolated workspaces in parallel' >> "$GITHUB_STEP_SUMMARY"
           echo '- planning: final constraints + functional code ownership' >> "$GITHUB_STEP_SUMMARY"
           echo '- same-file handling: isolated departments may share a functional file; common-base 3-way merge resolves it' >> "$GITHUB_STEP_SUMMARY"
+          echo '- local model runtime: cached pinned archive, no per-job install.sh' >> "$GITHUB_STEP_SUMMARY"
           echo '- final independent QA: Autonomous Candidate Promotion (serialized shared write)' >> "$GITHUB_STEP_SUMMARY"
           echo '- public main write here: NO' >> "$GITHUB_STEP_SUMMARY"
 
   recover:
     name: recover failed reserved floor
-    needs: [prepare, departments, planning_final, implementations, integrate]
+    needs: [prepare, ollama_runtime, departments, planning_final, implementations, integrate]
     if: >-
       ${{ always() && needs.prepare.outputs.reserved == 'true' &&
-          (needs.prepare.result == 'failure' || needs.departments.result == 'failure' ||
+          (needs.prepare.result == 'failure' || needs.ollama_runtime.result == 'failure' ||
+           needs.ollama_runtime.result == 'cancelled' || needs.departments.result == 'failure' ||
            needs.departments.result == 'cancelled' || needs.planning_final.result == 'failure' ||
            needs.planning_final.result == 'cancelled' || needs.implementations.result == 'failure' ||
            needs.implementations.result == 'cancelled' || needs.integrate.result == 'failure' ||

@@ -74,8 +74,10 @@ jobs:
           for(const file of files){
             const text=fs.readFileSync(file,'utf8');
             const gate=text.indexOf('Verified free budget preflight');
-            const ollama=text.indexOf('Install local Ollama');
-            if(gate<0||ollama<0||gate>ollama)throw new Error(`${file}: free budget gate must precede Ollama install`);
+            const legacyInstall=text.indexOf('Install local Ollama');
+            const cachedRuntime=text.indexOf('warm shared Ollama runtime cache');
+            const runtime=legacyInstall>=0?legacyInstall:cachedRuntime;
+            if(gate<0||runtime<0||gate>runtime)throw new Error(`${file}: free budget gate must precede Ollama runtime preparation`);
             if(!text.includes('runs-on: ubuntu-latest'))throw new Error(`${file}: standard runner contract missing`);
             if(!text.includes('--runner-minutes=20'))throw new Error(`${file}: verified free-budget runner-minute contract missing`);
             if(!text.includes('--verify-public-repo=true'))throw new Error(`${file}: live repository verification missing`);
