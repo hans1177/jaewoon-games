@@ -1,8 +1,8 @@
 {
   "version": 1,
   "sourceRepository": "hans1177/jaewoon-games",
-  "sourceRevision": "af8a324c466b963e700c57a91d663a2bc42e479d",
-  "generatedAt": "2026-09-09T16:49:12.193Z",
+  "sourceRevision": "fc53ad7be3fa75ac02db652781d2a8ce2eda5e88",
+  "generatedAt": "2026-09-09T17:26:41.553Z",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
   "continuousDevelopmentBranch": "autonomous-dev",
@@ -30,8 +30,8 @@
       "slug": "survival",
       "name": "나의 생존기",
       "sourcePath": "web-games/survival",
-      "mode": "IMPROVE",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "UNITY_NEXT",
+      "profileStatus": "RELEASE_CONFIRMED",
       "health": {
         "status": "healthy",
         "score": 100,
@@ -45,8 +45,8 @@
       "slug": "insect-survival",
       "name": "곤충 생존기",
       "sourcePath": "web-games/insect-survival",
-      "mode": "EXPERIMENT_ONLY",
-      "profileStatus": "NEEDS_AUDIT",
+      "mode": "WEB_FIRST_IMPLEMENTATION",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
       "health": {
         "status": "healthy",
         "score": 100,
@@ -60,8 +60,8 @@
       "slug": "crystal-defense",
       "name": "수정 디펜스",
       "sourcePath": "web-games/crystal-defense",
-      "mode": "EXPERIMENT_ONLY",
-      "profileStatus": "NEEDS_AUDIT",
+      "mode": "WEB_FIRST_IMPLEMENTATION",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
       "health": {
         "status": "healthy",
         "score": 100,
@@ -75,8 +75,8 @@
       "slug": "bug-defense",
       "name": "곤충 디펜스",
       "sourcePath": "web-games/bug-defense",
-      "mode": "EXPERIMENT_ONLY",
-      "profileStatus": "NEEDS_AUDIT",
+      "mode": "WEB_FIRST_IMPLEMENTATION",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
       "health": {
         "status": "warning",
         "score": 74,
@@ -96,8 +96,8 @@
       "slug": "human-go",
       "name": "휴먼 GO",
       "sourcePath": "web-games/human-go",
-      "mode": "EXPERIMENT_ONLY",
-      "profileStatus": "NEEDS_AUDIT",
+      "mode": "REDESIGN",
+      "profileStatus": "DESIGN_ONLY",
       "health": {
         "status": "warning",
         "score": 74,
@@ -113,8 +113,8 @@
       "slug": "daechung-rpg",
       "name": "대충 RPG",
       "sourcePath": "web-games/daechung-rpg",
-      "mode": "EXPERIMENT_ONLY",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "UNITY_DEVELOP",
+      "profileStatus": "RELEASE_CONFIRMED",
       "health": {
         "status": "healthy",
         "score": 100,
@@ -153,7 +153,7 @@
       "name": "몬스터 어드벤처",
       "sourcePath": "web-games/monster-adventure",
       "mode": "REDESIGN",
-      "profileStatus": "REDESIGN_IDENTITY",
+      "profileStatus": "DESIGN_ONLY",
       "health": {
         "status": "healthy",
         "score": 100,
@@ -167,8 +167,8 @@
       "slug": "chess-battle",
       "name": "체스 배틀",
       "sourcePath": "web-games/chess-battle",
-      "mode": "MAINTENANCE",
-      "profileStatus": "RELEASE_CONFIRMED",
+      "mode": "REDESIGN",
+      "profileStatus": "DESIGN_ONLY",
       "health": {
         "status": "healthy",
         "score": 100,
@@ -182,8 +182,8 @@
       "slug": "survival2",
       "name": "숲의 생존자들",
       "sourcePath": "web-games/survival2",
-      "mode": "MAINTENANCE",
-      "profileStatus": "RELEASE_CONFIRMED",
+      "mode": "REDESIGN",
+      "profileStatus": "DESIGN_ONLY",
       "health": {
         "status": "healthy",
         "score": 100,
@@ -197,8 +197,8 @@
       "slug": "territory-war",
       "name": "영토전쟁",
       "sourcePath": "web-games/territory-war",
-      "mode": "MAINTENANCE",
-      "profileStatus": "RELEASE_CONFIRMED",
+      "mode": "REDESIGN",
+      "profileStatus": "DESIGN_ONLY",
       "health": {
         "status": "healthy",
         "score": 100,
@@ -283,6 +283,13 @@
     {
       "id": "survival-2026-09-10-initial",
       "gameId": "survival",
+      "status": "completed-artbook",
+      "productionApproval": false,
+      "createdAt": "2026-09-10"
+    },
+    {
+      "id": "survival2-2026-09-10-initial",
+      "gameId": "survival2",
       "status": "completed-artbook",
       "productionApproval": false,
       "createdAt": "2026-09-10"
