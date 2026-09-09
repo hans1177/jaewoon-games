@@ -49,10 +49,11 @@ function scoreFile(role,row,{refs=[],focus=''}){
   return score;
 }
 
-export function resolveDepartmentScope({role,sourcePath,responsibilityFiles=[],diagnostic=null,goal='',departmentResult=null,repairMode='MODEL'}={}){
+export function resolveDepartmentScope({role,sourcePath,responsibilityFiles=[],diagnostic=null,goal='',departmentResult=null,repairMode='MODEL',workLane='FULL'}={}){
   if(!ROLES.has(role))throw new Error(`unsupported department role: ${role}`);
   const source=posix(sourcePath);
   if(!source.startsWith('web-games/')||!exists(source))return {run:false,scope:[],reason:'UNSUPPORTED_SOURCE'};
+  if(clean(workLane).toUpperCase()==='FAST'&&role!=='development')return {run:false,scope:[],reason:'FAST_LANE_DEVELOPMENT_ONLY'};
   const diagPath=posix(diagnostic?.file||diagnostic?.path||'');
   const refs=normalizeRefs(source,[...responsibilityFiles,diagPath]);
   if(String(repairMode).toUpperCase()==='RULE_PATCH'){
@@ -70,7 +71,7 @@ export function resolveDepartmentScope({role,sourcePath,responsibilityFiles=[],d
 
 export function bindDepartmentScope({role=process.env.ROLE||process.env.AUTONOMOUS_DEPARTMENT_ROLE,baseCandidateId=process.env.BASE_CANDIDATE_ID,orderFile='.autonomous/work-order.json',cycleFile='department-cycle.json'}={}){
   const order=readJson(orderFile),cycle=readJson(cycleFile),result=(cycle.results||[]).find(x=>x.role===role)||{};
-  const resolved=resolveDepartmentScope({role,sourcePath:order.sourcePath,responsibilityFiles:order.responsibilityFiles||[],diagnostic:order.diagnosticTopIssue,goal:cycle.finalGoal||order.goal,departmentResult:result,repairMode:order.repairMode||'MODEL'});
+  const resolved=resolveDepartmentScope({role,sourcePath:order.sourcePath,responsibilityFiles:order.responsibilityFiles||[],diagnostic:order.diagnosticTopIssue,goal:cycle.finalGoal||order.goal,departmentResult:result,repairMode:order.repairMode||'MODEL',workLane:order.workLane||'FULL'});
   order.responsibilityFiles=resolved.scope;
   fs.writeFileSync(orderFile,JSON.stringify(order,null,2)+'\n');
   const candidateId=`${baseCandidateId}-${role}`;
