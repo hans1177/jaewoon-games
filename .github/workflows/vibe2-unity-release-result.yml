@@ -103,6 +103,47 @@ jobs:
           done
           exit 1
 
+      - name: Record autonomous Unity release outcome as verified Vibe evidence
+        if: steps.manifest.outputs.origin == 'AUTONOMOUS_DEV_VERIFIED_HANDOFF'
+        env:
+          GAME_ID: ${{ steps.manifest.outputs.game_id }}
+          TASK_ID: ${{ steps.manifest.outputs.task_id }}
+          BUILD_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          REVALIDATE_OUTCOME: ${{ steps.revalidate.outcome }}
+          PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$BUILD_CONCLUSION" = success ] && [ "$REVALIDATE_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then outcome=SUCCESS; else outcome=FAILURE; fi
+          git fetch origin main --quiet
+          rm -rf /tmp/jaewoon-unity-release-memory
+          git worktree prune
+          git worktree add --detach /tmp/jaewoon-unity-release-memory origin/main >/dev/null
+          cd /tmp/jaewoon-unity-release-memory
+          mkdir -p company-learning/evidence
+          safe_game="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-')"
+          node tools/evolution-evidence-recorder.mjs \
+            --output="company-learning/evidence/post-release-unity-${safe_game}-${GITHUB_RUN_ID}.json" \
+            --id="vibe2-post-release-unity-${safe_game}-${GITHUB_RUN_ID}" \
+            --type=VIBE2 \
+            --pattern-id=unity-release-apk-verified \
+            --title="Unity release APK and main promotion verified outcome" \
+            --game-id="$GAME_ID" \
+            --condition=POST_RELEASE_UNITY_APK_QA \
+            --outcome="$outcome" \
+            --delta=0 \
+            --source-revision="$(git rev-parse HEAD)" \
+            --independent-qa=PASS \
+            --evidence="unity-build-${BUILD_CONCLUSION},revalidate-${REVALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},release-task-${TASK_ID}"
+          git config user.name 'jaewoon-company-learning'
+          git config user.email 'actions@users.noreply.github.com'
+          git add company-learning/evidence
+          if ! git diff --cached --quiet; then
+            git commit -m "learning: record Unity release outcome [skip ci]"
+            git push origin HEAD:main
+          fi
+          echo "AUTONOMOUS_UNITY_POST_RELEASE_EVIDENCE=$outcome"
+
       - name: Settle Unity result and continue correct source queue
         if: always()
         env:
@@ -118,9 +159,19 @@ jobs:
           test -n "$TASK_ID"
           if [ "$BUILD_CONCLUSION" = success ] && [ "$REVALIDATE_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
           if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
+            gh workflow run company-dna-learning.yml --repo "$GITHUB_REPOSITORY" --ref main
+            if [ "$result" = PASS ]; then
+              active="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow artbook-free-department-bots.yml --limit 10 --json status --jq '[.[]|select(.status=="in_progress" or .status=="queued" or .status=="pending")]|length')"
+              if [ "$active" = 0 ]; then
+                gh workflow run artbook-free-department-bots.yml --repo "$GITHUB_REPOSITORY" --ref main
+                echo 'AUTONOMOUS_UNITY_ARTBOOK_POST_RELEASE=DISPATCHED'
+              else
+                echo 'AUTONOMOUS_UNITY_ARTBOOK_POST_RELEASE=EXISTING_CHAIN_ACTIVE'
+              fi
+            fi
             gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main
             echo "AUTONOMOUS_UNITY_RELEASE_RESULT=$result"
-            echo 'AUTONOMOUS_NEXT_FLOOR=DISPATCHED'
+            echo 'AUTONOMOUS_NEXT_FLOOR=DISPATCHED_AFTER_UNITY_RELEASE_EVIDENCE'
             [ "$result" = PASS ]
             exit
           fi

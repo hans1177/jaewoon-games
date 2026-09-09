@@ -169,6 +169,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          GAME_ID: ${{ needs.inspect.outputs.game_id }}
           QA_OUTCOME: ${{ steps.webqa.outcome }}
           PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
           CANDIDATE_ORIGIN: ${{ needs.inspect.outputs.origin }}
@@ -177,10 +178,18 @@ jobs:
           set -euo pipefail
           if [ "$QA_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
           if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
-            if [ "$result" = PASS ]; then gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main; fi
-            gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main
+            if [ "$result" = PASS ]; then
+              gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main \
+                -f released_game_id="$GAME_ID" \
+                -f release_task_id="$TASK_ID" \
+                -f release_origin="$CANDIDATE_ORIGIN"
+              echo 'AUTONOMOUS_POST_RELEASE_HEALTH=DISPATCHED'
+              echo 'AUTONOMOUS_NEXT_FLOOR=WAITING_FOR_PUBLIC_HEALTH'
+            else
+              gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main
+              echo 'AUTONOMOUS_NEXT_FLOOR=RECOVERY_DISPATCHED'
+            fi
             echo "AUTONOMOUS_RELEASE_RESULT=$result"
-            echo "AUTONOMOUS_NEXT_FLOOR=DISPATCHED"
             [ "$result" = PASS ]
             exit
           fi
