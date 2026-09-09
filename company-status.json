@@ -252,9 +252,9 @@
           "rank": 10,
           "gameId": "P0103",
           "slug": "territory-war",
-          "evidenceScore": 4,
+          "evidenceScore": 14,
           "developmentFocus": 0,
-          "artbookBaselineRank": 0,
+          "artbookBaselineRank": 1,
           "unityReady": false,
           "sourceReady": true
         }
@@ -272,36 +272,36 @@
     "dateKst": "2026-09-10",
     "runningLabelAloneCountsAsWork": false,
     "counts": {
-      "WORKING": 2,
-      "DONE": 5,
+      "WORKING": 1,
+      "DONE": 6,
       "IDLE_NO_TASK": 1,
       "BLOCKED": 0,
       "FAILED": 0,
       "STALE": 0
     },
     "liveStates": {
-      "ACTIVE": 2,
+      "ACTIVE": 1,
       "WAITING": 1,
       "BLOCKED": 0,
-      "DONE": 5
+      "DONE": 6
     },
     "activeDevelopmentRunId": 34382925885,
     "primaryFindings": [],
     "staff": {
       "planning": {
-        "status": "WORKING",
-        "workState": "ACTIVE",
+        "status": "DONE",
+        "workState": "DONE",
         "task": "autonomous development floor 34382925885",
         "source": "autonomous-development",
-        "reason": "autonomous development department job is executing now",
+        "reason": "latest autonomous department handoff completed successfully",
         "jobEvidence": {
           "id": 102572751670,
           "name": "department (planning-final)",
-          "status": "in_progress",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "success",
           "failedStep": null,
           "startedAt": "2026-09-09T17:28:59Z",
-          "completedAt": null,
+          "completedAt": "2026-09-09T17:30:30Z",
           "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34382925885/job/102572751670"
         }
       },
@@ -584,11 +584,11 @@
     },
     "departmentTasks": {
       "planning": {
-        "status": "working",
+        "status": "done",
         "task": "autonomous development floor 34382925885",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "ACTIVE",
-        "reason": "autonomous development department job is executing now"
+        "workState": "DONE",
+        "reason": "latest autonomous department handoff completed successfully"
       },
       "development": {
         "status": "done",
