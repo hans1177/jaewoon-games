@@ -4,8 +4,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { integrateDepartmentCandidates } from '../tools/autonomous-department-integrator.mjs';
+import { canUseDeterministicFinalization, buildDeterministicFinalization } from '../tools/autonomous-department-cycle.mjs';
 
 const roles=['development','graphics','qa','balance'];
+const reviewRoles=['planning','development','graphics','qa','balance'];
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');}
 function setup(){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-dept-integrate-'));
@@ -24,6 +26,9 @@ function addImplementation(role,sourceCommit,files){
   const changedFiles=Object.keys(files);
   writeJson(`${root}/evidence.json`,{sourcePath:'web-games/demo',sourceCommit,candidateId:`${role}-candidate`,changedFiles,summary:role,expectedEffect:'test'});
   writeJson(`${root}/status.json`,{role,status:'PASS',scope:changedFiles,candidateId:`${role}-candidate`,changedFiles});
+}
+function safeReviewResults(){
+  return reviewRoles.map(role=>({role,workState:'DONE',decision:'PROCEED',summary:`${role} ok`,nextAction:`${role} 제약`,checks:[`${role} 확인`],risks:[]}));
 }
 
 test('parallel department changes three-way merge when edits do not overlap',()=>{
@@ -56,4 +61,25 @@ test('true same-line conflict is blocked until a resolved candidate is supplied'
     assert.equal(second.status,'PASS');
     assert.ok(fs.existsSync('.autonomous/evidence/final.json'));
   }finally{t.cleanup();}
+});
+
+test('unanimous proceed with no risk can use deterministic planning finalization',()=>{
+  const results=safeReviewResults();
+  const vibeCore={routing:{mayDispatch:true,mayExecute:true,requiresOwnerAction:false}};
+  assert.equal(canUseDeterministicFinalization({vibeCore,results}),true);
+  const final=buildDeterministicFinalization(results);
+  assert.equal(final.decision,'PROCEED');
+  assert.equal(final.integrationMode,'DETERMINISTIC_SAFE_CONSENSUS');
+  for(const role of reviewRoles)assert.match(final.nextAction,new RegExp(`${role} 제약`));
+  assert.equal(final.risks.length,0);
+});
+
+test('adjustment, reported risk, or owner action keeps planning-final AI required',()=>{
+  const vibeCore={routing:{mayDispatch:true,mayExecute:true,requiresOwnerAction:false}};
+  const adjusted=safeReviewResults();adjusted[1].decision='ADJUST';
+  assert.equal(canUseDeterministicFinalization({vibeCore,results:adjusted}),false);
+  const risky=safeReviewResults();risky[3].risks=['재현 필요'];
+  assert.equal(canUseDeterministicFinalization({vibeCore,results:risky}),false);
+  const owner={routing:{mayDispatch:true,mayExecute:true,requiresOwnerAction:true}};
+  assert.equal(canUseDeterministicFinalization({vibeCore:owner,results:safeReviewResults()}),false);
 });

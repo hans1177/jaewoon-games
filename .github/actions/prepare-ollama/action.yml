@@ -15,8 +15,47 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Detect deterministic planning-final no-model path
+      id: model-need
+      shell: bash
+      run: |
+        set -euo pipefail
+        skip=false
+        if [ "${{ inputs.pull-model }}" = 'true' ] && [ "${GITHUB_JOB:-}" = 'planning_final' ] && [ -s .autonomous/work-order.json ] && [ -d department-results ]; then
+          if node --input-type=module <<'NODE'
+        import fs from 'node:fs';
+        import path from 'node:path';
+        import { canUseDeterministicFinalization } from './tools/autonomous-department-cycle.mjs';
+        const roles=['planning','development','graphics','qa','balance'];
+        const order=JSON.parse(fs.readFileSync('.autonomous/work-order.json','utf8'));
+        const packages=roles.map(role=>JSON.parse(fs.readFileSync(path.join('department-results',`${role}.json`),'utf8')));
+        const results=packages.map(item=>item.result);
+        const vibeCore=packages[0]?.vibeCore||{};
+        const fast=String(order.workLane||'FULL').trim().toUpperCase()==='FAST';
+        const deterministic=fast||canUseDeterministicFinalization({vibeCore,results});
+        console.log(`PLANNING_FINAL_MODEL_RUNTIME=${deterministic?'SKIPPED_DETERMINISTIC':'REQUIRED_AI'}`);
+        process.exit(deterministic?0:1);
+        NODE
+          then
+            skip=true
+          else
+            echo 'PLANNING_FINAL_MODEL_RUNTIME=REQUIRED_AI_OR_PROBE_FAILED'
+          fi
+        fi
+        echo "skip=$skip" >> "$GITHUB_OUTPUT"
+
+    - name: Deterministic planning-final runtime summary
+      if: steps.model-need.outputs.skip == 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        echo 'OLLAMA_RUNTIME=SKIPPED_DETERMINISTIC_PLANNING_FINAL'
+        echo 'OLLAMA_MODEL_PULL=SKIPPED_DETERMINISTIC_PLANNING_FINAL'
+        echo 'PAID_API=NO'
+
     - name: Probe or restore pinned CPU-only Ollama runtime archive
       id: runtime-cache
+      if: steps.model-need.outputs.skip != 'true'
       uses: actions/cache@v4
       with:
         path: ~/.cache/jaewoon-ollama/ollama-linux-amd64-cpu-${{ inputs.version }}.tar.zst
@@ -24,7 +63,7 @@ runs:
         lookup-only: ${{ inputs.pull-model == 'false' }}
 
     - name: Build slim CPU runtime on cache miss
-      if: steps.runtime-cache.outputs.cache-hit != 'true'
+      if: steps.model-need.outputs.skip != 'true' && steps.runtime-cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
         set -euo pipefail
@@ -70,7 +109,7 @@ runs:
         rm -rf "$upstream" "$stage" "$manifest"
 
     - name: Cache warmup fast-path summary
-      if: inputs.pull-model == 'false'
+      if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'false'
       shell: bash
       run: |
         set -euo pipefail
@@ -90,7 +129,7 @@ runs:
         echo 'OLLAMA_SERVER_START=SKIPPED_FOR_WARMUP'
 
     - name: Install slim CPU runtime and start local server
-      if: inputs.pull-model == 'true'
+      if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'true'
       shell: bash
       run: |
         set -euo pipefail
@@ -114,7 +153,7 @@ runs:
         exit 1
 
     - name: Ensure requested local model
-      if: inputs.pull-model == 'true'
+      if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'true'
       shell: bash
       run: |
         set -euo pipefail
