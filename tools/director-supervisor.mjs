@@ -40,7 +40,7 @@ const activeGame=(queue.games||[]).find(g=>g.gameId===activeGameId)||{};
 const persistedTargetMatches=String(queue.currentDailyTarget||'')===activeGameId;
 const submitted=new Set(persistedTargetMatches?(activeGame.submitted||activeGame.sectionsReady||[]):[]);
 const workOrder=liveArtbookWorkOrder||`artbook-work-orders/${date}-${activeGameId}.json`;
-const workOrderExists=Boolean(activeGameId&&exists(workOrder));
+const workOrderExists=Boolean(activeGameId&&(liveArtbookWorkOrder||exists(workOrder)));
 const activeUnityDir=activeGameId?`unity-games/${activeGameId}`:'';
 const activeWebDir=activeGameId?`web-games/${activeGameId}`:'';
 const runnerText=exists('tools/artbook-department-runner.mjs')?readText('tools/artbook-department-runner.mjs'):'';
