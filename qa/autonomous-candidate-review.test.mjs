@@ -1,4 +1,4 @@
-// qa/autonomous-candidate-review.test.mjs
+// 파일명: qa/autonomous-candidate-review.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -11,12 +11,14 @@ function setup(before="localStorage.setItem('save-v1','a');\nconsole.log('before
   fs.rmSync(source,{recursive:true,force:true});
   fs.rmSync('web-games/.autonomous-candidates/TEST',{recursive:true,force:true});
   fs.mkdirSync(source,{recursive:true});fs.mkdirSync(candidate,{recursive:true});
+  fs.writeFileSync(path.join(source,'index.html'),'<!doctype html><html><body><script src="app.js"></script></body></html>');
+  fs.writeFileSync(path.join(candidate,'index.html'),'<!doctype html><html><body><script src="app.js"></script></body></html>');
   fs.writeFileSync(path.join(source,'app.js'),before);fs.writeFileSync(path.join(candidate,'app.js'),after);
 }
 function cleanup(){fs.rmSync(source,{recursive:true,force:true});fs.rmSync('web-games/.autonomous-candidates/TEST',{recursive:true,force:true});}
 function evidence(overrides={}){return {candidateOnly:true,selfPromote:false,publicStableModified:false,paidApi:false,sourcePath:source,candidatePath:candidate,candidateId:'review',sourceCommit:'a'.repeat(40),changedFiles:['app.js'],...overrides};}
 
-test('independent gate accepts changed candidate with preserved save key',()=>{setup();try{const r=reviewAutonomousCandidate({evidence:evidence(),expectedSourceCommit:'a'.repeat(40)});assert.equal(r.pass,true);assert.equal(r.promotionScope,'AUTONOMOUS_DEV_ONLY');assert.equal(r.publicReleaseAllowed,false);}finally{cleanup();}});
+test('independent gate accepts changed candidate with preserved save key',()=>{setup();try{const r=reviewAutonomousCandidate({evidence:evidence(),expectedSourceCommit:'a'.repeat(40)});assert.equal(r.pass,true);assert.equal(r.promotionScope,'AUTONOMOUS_DEV_ONLY');assert.equal(r.publicReleaseAllowed,false);assert.equal(r.requiresBrowserSmoke,true);}finally{cleanup();}});
 
 test('source revision mismatch blocks promotion',()=>{setup();try{const r=reviewAutonomousCandidate({evidence:evidence(),expectedSourceCommit:'b'.repeat(40)});assert.equal(r.pass,false);assert.ok(r.blockers.includes('SOURCE_REVISION_MISMATCH'));}finally{cleanup();}});
 

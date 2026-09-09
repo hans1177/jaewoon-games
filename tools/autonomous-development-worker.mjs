@@ -7,21 +7,29 @@ import { pathToFileURL } from 'node:url';
 import { applyExactEdits, boundedLargeExcerpt, normalizeExactEdits, MAX_EDIT_OPS } from './autonomous-safe-edit.mjs';
 import { buildRuleCandidate } from './autonomous-rule-patcher.mjs';
 
-const DEFAULT_MODEL=process.env.AUTONOMOUS_LOCAL_MODEL||'qwen3:0.6b';
-const MAX_CONTEXT_FILES=10;
-const MAX_CONTEXT_BYTES=420000;
-const MAX_FULL_CONTEXT_FILE_BYTES=180000;
+const DEFAULT_MODEL=process.env.AUTONOMOUS_LOCAL_MODEL||'qwen3:1.7b';
+const MAX_CONTEXT_FILES=8;
+const MAX_CONTEXT_BYTES=48_000;
+const MAX_FULL_CONTEXT_FILE_BYTES=24_000;
+const FEEDBACK_DIR='.autonomous/browser-failures';
 const MAX_OUTPUT_FILES=4;
 const MAX_CHANGED_FILES=4;
 const MAX_FILE_BYTES=240000;
 const MAX_TOTAL_OUTPUT_BYTES=600000;
 const MODEL_TIMEOUT_MS=Number(process.env.AUTONOMOUS_MODEL_TIMEOUT_MS||360000);
-const MODEL_MAX_PREDICT=Math.max(1024,Math.min(8192,Number(process.env.AUTONOMOUS_MODEL_MAX_PREDICT||6144)));
+const MODEL_MAX_PREDICT=Math.max(2048,Math.min(8192,Number(process.env.AUTONOMOUS_MODEL_MAX_PREDICT||6144)));
+const MODEL_CONTEXT_TOKENS=Math.max(8192,Math.min(32768,Number(process.env.AUTONOMOUS_MODEL_CONTEXT_TOKENS||16384)));
 const MAX_MODEL_ATTEMPTS=Math.max(1,Math.min(2,Number(process.env.AUTONOMOUS_MODEL_MAX_ATTEMPTS||2)));
 const ALLOWED_EXTENSIONS=new Set(['.html','.js','.mjs','.cjs','.css','.json','.md','.txt','.svg']);
 const FORBIDDEN_OUTPUT_NAMES=new Set(['.git','.github','package-lock.json']);
 const SAVE_PATTERNS=[/localStorage\.(?:getItem|setItem|removeItem)\(\s*['"]([^'"]+)['"]/g,/sessionStorage\.(?:getItem|setItem|removeItem)\(\s*['"]([^'"]+)['"]/g];
 const WRAPPER_KEYS=['candidate','result','output','proposal'];
+const ROLE_GUIDANCE={
+  development:'게임 로직·상태·이벤트 흐름의 실제 원인을 고친다. UI/밸런스 값을 불필요하게 바꾸지 않는다.',
+  graphics:'화면·UI·스타일·렌더링·에셋 연결만 고친다. 전투 수치와 저장 의미는 바꾸지 않는다.',
+  qa:'재현 실패를 막는 검증 가능 코드 또는 테스트 범위만 고친다. 신규 기능을 추가하지 않는다.',
+  balance:'기존 기획 근거가 있는 밸런스/경제/웨이브 책임 코드만 고친다. 근거 없는 수치 변경은 금지한다.',
+};
 const CANDIDATE_SCHEMA={
   type:'object',required:['summary','expectedEffect','tests'],additionalProperties:false,
   properties:{
@@ -41,6 +49,14 @@ const uniq=values=>[...new Set(values)];
 const isObject=v=>Boolean(v&&typeof v==='object'&&!Array.isArray(v));
 const hasOwn=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 const readJson=(file,fallback={})=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
+
+export function browserFailureFeedback(gameId){
+  const file=path.join(FEEDBACK_DIR,`${safeId(gameId)}.json`),report=readJson(file,null);
+  if(!report||report.pass!==false)return '';
+  const rows=[...(report.errors||[]),...(report.consoleErrors||[]).map(x=>`console:${x}`),...(report.pageErrors||[]).map(x=>`page:${x}`),...(report.failedRequests||[]).map(x=>`request:${x}`)].map(clean).filter(Boolean).slice(0,10);
+  const metrics=report.metrics?`mobile=${report.metrics.viewportWidth||390}px body=${report.metrics.width||0}x${report.metrics.height||0} interactive=${report.metrics.visibleInteractive||0}`:'';
+  return clean(`직전 후보 모바일 브라우저 QA 실패. 같은 실패를 반복하지 말고 원인을 직접 고쳐라. ${rows.join(' | ')} ${metrics} screenshot=${report.screenshot||'artifact-only'}`);
+}
 
 function assertSourcePath(sourcePath){
   const normalized=posix(sourcePath);
@@ -74,21 +90,40 @@ function truncateUtf8(text,maxBytes){
   const buf=Buffer.from(String(text??''),'utf8');if(buf.length<=maxBytes)return buf.toString('utf8');
   let end=Math.max(0,maxBytes);while(end>0&&(buf[end]&0b11000000)===0b10000000)end--;return buf.subarray(0,end).toString('utf8');
 }
-export function readContext(sourcePath,{preferredFiles=[]}={}){
-  let used=0;const files=[];const preferred=new Set(preferredFiles.map(posix));
-  const rows=listTextFiles(sourcePath).sort((a,b)=>Number(preferred.has(b.relative))-Number(preferred.has(a.relative))||a.relative.localeCompare(b.relative));
+function focusedExcerpt(text,{needle='',line=null,maxBytes=MAX_FULL_CONTEXT_FILE_BYTES}={}){
+  const source=String(text??'');
+  let index=-1;
+  if(clean(needle))index=source.indexOf(String(needle));
+  if(index<0&&Number.isFinite(Number(line))&&Number(line)>0){
+    const lines=source.split(/\r?\n/),upto=Math.max(0,Math.min(lines.length-1,Number(line)-1));
+    index=lines.slice(0,upto).join('\n').length;
+  }
+  if(index<0)return null;
+  const half=Math.floor(maxBytes/2),start=Math.max(0,index-half),end=Math.min(source.length,index+half);
+  return truncateUtf8(source.slice(start,end),maxBytes);
+}
+function roleFromCandidateId(candidateId){
+  const id=String(candidateId||'').toLowerCase();
+  for(const role of Object.keys(ROLE_GUIDANCE))if(id.endsWith(`-${role}`))return role;
+  return 'development';
+}
+export function readContext(sourcePath,{preferredFiles=[],diagnostic=null}={}){
+  let used=0;const files=[];const preferred=new Set(preferredFiles.map(posix)),diagnosticFile=posix(diagnostic?.file||diagnostic?.path||'');
+  const rows=listTextFiles(sourcePath).sort((a,b)=>Number(preferred.has(b.relative))-Number(preferred.has(a.relative))||Number(b.relative===diagnosticFile)-Number(a.relative===diagnosticFile)||a.relative.localeCompare(b.relative));
   for(const row of rows){
     if(files.length>=MAX_CONTEXT_FILES||used>=MAX_CONTEXT_BYTES)break;
-    const full=fs.readFileSync(row.full,'utf8');const excerpt=row.size<=MAX_FULL_CONTEXT_FILE_BYTES?{content:full,truncated:false}:boundedLargeExcerpt(full);
-    const remaining=MAX_CONTEXT_BYTES-used,content=truncateUtf8(excerpt.content,remaining),consumed=Buffer.byteLength(content);if(consumed<1)continue;
-    files.push({path:row.relative,content,truncated:excerpt.truncated||consumed<Buffer.byteLength(excerpt.content),originalBytes:row.size,preferred:preferred.has(row.relative)});used+=consumed;
+    const full=fs.readFileSync(row.full,'utf8'),focused=row.relative===diagnosticFile?focusedExcerpt(full,{needle:diagnostic?.needle,line:diagnostic?.line}):null;
+    const base=focused??(row.size<=MAX_FULL_CONTEXT_FILE_BYTES?full:boundedLargeExcerpt(full).content);
+    const perFileLimit=preferred.has(row.relative)||row.relative===diagnosticFile?MAX_FULL_CONTEXT_FILE_BYTES:12_000;
+    const remaining=MAX_CONTEXT_BYTES-used,content=truncateUtf8(base,Math.min(remaining,perFileLimit)),consumed=Buffer.byteLength(content);if(consumed<1)continue;
+    files.push({path:row.relative,content,truncated:consumed<Buffer.byteLength(full),originalBytes:row.size,preferred:preferred.has(row.relative),focused:Boolean(focused)});used+=consumed;
   }
   return {files,bytes:used};
 }
 function narrowedContext(context,preferredFiles=[]){
   const preferred=new Set(preferredFiles.map(posix));
-  const rows=context.files.filter(x=>preferred.has(x.path));
-  const chosen=(rows.length?rows:context.files).slice(0,Math.max(1,rows.length?2:3));
+  const rows=context.files.filter(x=>preferred.has(x.path)||x.focused);
+  const chosen=(rows.length?rows:context.files).slice(0,Math.max(1,rows.length?3:2));
   return {files:chosen,bytes:chosen.reduce((n,x)=>n+Buffer.byteLength(x.content),0)};
 }
 export function extractStorageKeys(text){
@@ -135,14 +170,15 @@ export function validateCandidateAgainstSource(sourcePath,candidate,{allowSaveKe
 function validateChangedTree(sourcePath,candidatePath,changedPaths,{allowSaveKeyChange=false}={}){if(allowSaveKeyChange)return {pass:true,violations:[]};const violations=[];for(const relative of changedPaths){const sourceFile=path.join(sourcePath,relative),candidateFile=path.join(candidatePath,relative),before=exists(sourceFile)&&fs.statSync(sourceFile).isFile()?extractStorageKeys(fs.readFileSync(sourceFile,'utf8')):[],after=exists(candidateFile)&&fs.statSync(candidateFile).isFile()?extractStorageKeys(fs.readFileSync(candidateFile,'utf8')):[];if(JSON.stringify(before)!==JSON.stringify(after))violations.push({path:relative,reason:'SAVE_KEY_CHANGE',before,after});}return {pass:violations.length===0,violations};}
 function copySource(sourcePath,candidatePath){if(exists(candidatePath))fs.rmSync(candidatePath,{recursive:true,force:true});fs.mkdirSync(candidatePath,{recursive:true});fs.cpSync(sourcePath,candidatePath,{recursive:true,filter:(src)=>!src.includes(`${path.sep}.git`)&&!src.includes(`${path.sep}node_modules`)});}
 
-export function buildPrompt({gameId,sourcePath,goal,context,protectedValues=[],responsibilityFiles=[],attempt=1,failureReason=''}){
-  const evidence=context.files.map(file=>`\n### FILE ${file.path}${file.preferred?' [RESPONSIBILITY]':''}${file.truncated?` [TRUNCATED originalBytes=${file.originalBytes}]`:''}\n${file.content}`).join('\n');
-  return `/no_think\n너는 재운컴퍼니 Autonomous Development Worker다. 안정판 원본은 읽기 전용이며 별도 후보 복사본에 적용할 변경만 제안한다.\n게임: ${gameId}\n원본경로: ${sourcePath}\n작은 목표: ${goal}\n책임 파일: ${responsibilityFiles.join(', ')||'근거에서 가장 직접적인 파일 1개'}\n시도: ${attempt}/${MAX_MODEL_ATTEMPTS}${failureReason?`\n직전 실패: ${failureReason}`:''}\n보호값: ${protectedValues.join(', ')||'save key / 진행 의미 / 공개 안정판'}\n규칙:\n1. JSON Schema에 맞는 객체만 출력한다.\n2. 한 번에 문제 1개만 해결한다. 책임 파일이 1개면 그 파일만 수정한다.\n3. 작은 일반 파일은 files, 큰 파일/[TRUNCATED] 파일은 edits를 사용한다. files와 edits를 동시에 쓰지 않는다.\n4. edit find는 제공된 근거에서 그대로 복사하고 정확히 한 번만 일치하는 문맥을 포함한다.\n5. 원본 저장키·핵심 규칙·세이브 의미를 변경하지 않는다.\n6. .github, 권한, 배포, 결제, 비밀정보 파일을 만들지 않는다.\n7. 전면 재작성 금지. 목표 해결에 필요한 최소 변경만 한다.\n8. 수정 파일 0개 출력 금지. 완료/PASS/출시 승인이라고 주장하지 않는다.\n9. 직전 실패가 있으면 같은 답을 반복하지 말고 더 좁은 exact edit로 고친다.\n\n읽기 전용 근거:${evidence}`;
+export function buildPrompt({gameId,sourcePath,goal,context,protectedValues=[],responsibilityFiles=[],attempt=1,failureReason='',diagnostic=null,role='development',browserFeedback=''}){
+  const evidence=context.files.map(file=>`\n### FILE ${file.path}${file.preferred?' [RESPONSIBILITY]':''}${file.focused?' [FOCUSED]':''}${file.truncated?` [TRUNCATED originalBytes=${file.originalBytes}]`:''}\n${file.content}`).join('\n');
+  const diagnosis=diagnostic?JSON.stringify({type:diagnostic.type,severity:diagnostic.severity,file:diagnostic.file,line:diagnostic.line??null,needle:diagnostic.needle??null,message:diagnostic.message,reference:diagnostic.reference??null,relatedFiles:diagnostic.relatedFiles??[]},null,2):'없음';
+  return `/no_think\n너는 재운컴퍼니 Autonomous Development Worker다. 안정판 원본은 읽기 전용이며 별도 후보 복사본에 적용할 변경만 제안한다.\n게임: ${gameId}\n원본경로: ${sourcePath}\n부서 역할: ${role}\n부서 책임: ${ROLE_GUIDANCE[role]||ROLE_GUIDANCE.development}\n작은 목표: ${goal}${browserFeedback?`\n직전 브라우저 실패 근거: ${browserFeedback}`:''}\n책임 파일: ${responsibilityFiles.join(', ')||'근거에서 가장 직접적인 파일 1개'}\n정확한 진단 근거:\n${diagnosis}\n시도: ${attempt}/${MAX_MODEL_ATTEMPTS}${failureReason?`\n직전 실패: ${failureReason}`:''}\n보호값: ${protectedValues.join(', ')||'save key / 진행 의미 / 공개 안정판'}\n규칙:\n1. JSON Schema에 맞는 객체만 출력한다.\n2. 한 번에 문제 1개만 해결한다. 책임 파일이 지정되면 그 범위 밖은 수정하지 않는다.\n3. 작은 일반 파일은 files, 큰 파일/[TRUNCATED] 파일은 edits를 사용한다. files와 edits를 동시에 쓰지 않는다.\n4. edit find는 제공된 근거에서 그대로 복사하고 정확히 한 번만 일치하는 문맥을 포함한다.\n5. 원본 저장키·핵심 규칙·세이브 의미를 변경하지 않는다.\n6. .github, 권한, 배포, 결제, 비밀정보 파일을 만들지 않는다.\n7. 전면 재작성 금지. 목표 해결에 필요한 최소 변경만 한다.\n8. 수정 파일 0개 출력 금지. 완료/PASS/출시 승인이라고 주장하지 않는다.\n9. 직전 실패가 있으면 같은 답을 반복하지 말고 진단 line/needle 주변의 더 좁은 exact edit로 고친다.\n10. 근거가 부족하면 추측으로 기능을 만들지 말고 제공된 책임 코드 안의 재현 가능한 원인만 수정한다.\n\n읽기 전용 근거:${evidence}`;
 }
 function appendOllamaLine(line,state){const text=String(line||'').trim();if(!text)return;const event=JSON.parse(text);if(event.error)throw new Error(`Ollama 실패: ${event.error}`);if(typeof event.response==='string')state.response+=event.response;if(event.done===true)state.done=true;}
 async function callOllama(prompt,model=DEFAULT_MODEL){
   const host=process.env.OLLAMA_HOST?`http://${process.env.OLLAMA_HOST}`:'http://127.0.0.1:11434';const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(new Error('LOCAL_MODEL_TIMEOUT')),MODEL_TIMEOUT_MS);
-  try{const response=await fetch(`${host}/api/generate`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,prompt,stream:true,think:false,format:CANDIDATE_SCHEMA,options:{temperature:0.12,num_ctx:8192,num_predict:MODEL_MAX_PREDICT}}),signal:controller.signal});if(!response.ok)throw new Error(`Ollama 실패: ${response.status}`);if(!response.body)throw new Error('Ollama stream 없음');const decoder=new TextDecoder(),state={response:'',done:false};let pending='';for await(const chunk of response.body){pending+=decoder.decode(chunk,{stream:true});const lines=pending.split(/\r?\n/);pending=lines.pop()??'';for(const line of lines)appendOllamaLine(line,state);}pending+=decoder.decode();if(pending.trim())appendOllamaLine(pending,state);if(!clean(state.response))throw new Error('Ollama 응답 비어 있음');return state.response;}catch(error){if(error?.name==='AbortError'||controller.signal.aborted)throw new Error(`Ollama 생성 제한시간 초과: ${MODEL_TIMEOUT_MS}ms`);throw error;}finally{clearTimeout(timeout);}
+  try{const response=await fetch(`${host}/api/generate`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,prompt,stream:true,think:false,format:CANDIDATE_SCHEMA,options:{temperature:0.08,num_ctx:MODEL_CONTEXT_TOKENS,num_predict:MODEL_MAX_PREDICT}}),signal:controller.signal});if(!response.ok)throw new Error(`Ollama 실패: ${response.status}`);if(!response.body)throw new Error('Ollama stream 없음');const decoder=new TextDecoder(),state={response:'',done:false};let pending='';for await(const chunk of response.body){pending+=decoder.decode(chunk,{stream:true});const lines=pending.split(/\r?\n/);pending=lines.pop()??'';for(const line of lines)appendOllamaLine(line,state);}pending+=decoder.decode();if(pending.trim())appendOllamaLine(pending,state);if(!clean(state.response))throw new Error('Ollama 응답 비어 있음');return state.response;}catch(error){if(error?.name==='AbortError'||controller.signal.aborted)throw new Error(`Ollama 생성 제한시간 초과: ${MODEL_TIMEOUT_MS}ms`);throw error;}finally{clearTimeout(timeout);}
 }
 function syntaxCheck(candidatePath,changedPaths){const checks=[];for(const relative of changedPaths){if(!/\.(?:js|mjs|cjs)$/i.test(relative))continue;const target=path.join(candidatePath,relative),result=run('node',['--check',target]);checks.push({name:`syntax:${relative}`,status:result.status===0?'PASS':'FAIL',detail:(result.status===0?'node --check':result.stderr).trim().slice(0,600)});}return checks;}
 export function classifyGenerationFailure(error){const msg=clean(error?.message||error);if(/JSON|형식|명확한 변경|정확히 하나/.test(msg))return 'OUTPUT_FORMAT';if(/변경 파일 수|변경 없음|비어 있음/.test(msg))return 'NO_CHANGE';if(/저장키|보호검증/.test(msg))return 'PROTECTED_VALUE';if(/find|대상 없음/.test(msg))return 'EDIT_APPLY';if(/문법검증/.test(msg))return 'SYNTAX';if(/시간 초과|Ollama/.test(msg))return 'MODEL_RUNTIME';return 'OTHER';}
@@ -155,29 +191,29 @@ function materializeCandidate({sourcePath,candidatePath,raw,allowSaveKeyChange=f
 export async function generateAutonomousCandidate(options={}){
   const gameId=safeId(options.gameId);if(!gameId)throw new Error('gameId 필요');const sourcePath=assertSourcePath(options.sourcePath),goal=clean(options.goal);if(!goal)throw new Error('goal 필요');
   const candidateId=safeId(options.candidateId)||`${gameId}-${Date.now()}`,candidatePath=posix(options.candidatePath||`web-games/.autonomous-candidates/${gameId}/${candidateId}`);if(!candidatePath.startsWith('web-games/.autonomous-candidates/'))throw new Error('candidatePath는 autonomous 후보 영역이어야 함');
-  const responsibilityFiles=(options.responsibilityFiles||[]).map(posix).filter(Boolean),context=readContext(sourcePath,{preferredFiles:responsibilityFiles});if(!context.files.length)throw new Error('읽을 수 있는 소스 파일 없음');
+  const responsibilityFiles=(options.responsibilityFiles||[]).map(posix).filter(Boolean),diagnostic=options.diagnostic||null,role=clean(options.role)||roleFromCandidateId(candidateId),browserFeedback=clean(options.browserFeedback),context=readContext(sourcePath,{preferredFiles:responsibilityFiles,diagnostic});if(!context.files.length)throw new Error('읽을 수 있는 소스 파일 없음');
   const repairMode=clean(options.repairMode||'MODEL').toUpperCase(),failures=[];let materialized=null,attempts=0,rulePatchId=null;
   if(repairMode==='RULE_PATCH'){
-    const rule=buildRuleCandidate(sourcePath,options.diagnostic||{});rulePatchId=rule.ruleId;materialized=materializeCandidate({sourcePath,candidatePath,raw:JSON.stringify(rule),allowSaveKeyChange:options.allowSaveKeyChange===true});
+    const rule=buildRuleCandidate(sourcePath,diagnostic||{});rulePatchId=rule.ruleId;materialized=materializeCandidate({sourcePath,candidatePath,raw:JSON.stringify(rule),allowSaveKeyChange:options.allowSaveKeyChange===true});
   }else if(options.modelResponse!==undefined){
     attempts=1;materialized=materializeCandidate({sourcePath,candidatePath,raw:options.modelResponse,allowSaveKeyChange:options.allowSaveKeyChange===true});
   }else{
     let last=null;
     for(let attempt=1;attempt<=MAX_MODEL_ATTEMPTS;attempt++){
       attempts=attempt;const activeContext=attempt===1?context:narrowedContext(context,responsibilityFiles);const failureReason=last?`${classifyGenerationFailure(last)}: ${clean(last.message).slice(0,240)}`:'';
-      try{const raw=await callOllama(buildPrompt({gameId,sourcePath,goal,context:activeContext,protectedValues:options.protectedValues??[],responsibilityFiles,attempt,failureReason}),options.model??DEFAULT_MODEL);materialized=materializeCandidate({sourcePath,candidatePath,raw,allowSaveKeyChange:options.allowSaveKeyChange===true});break;}catch(error){last=error;failures.push({attempt,type:classifyGenerationFailure(error),message:clean(error.message).slice(0,500)});if(attempt>=MAX_MODEL_ATTEMPTS)throw error;}
+      try{const raw=await callOllama(buildPrompt({gameId,sourcePath,goal,context:activeContext,protectedValues:options.protectedValues??[],responsibilityFiles,attempt,failureReason,diagnostic,role,browserFeedback}),options.model??DEFAULT_MODEL);materialized=materializeCandidate({sourcePath,candidatePath,raw,allowSaveKeyChange:options.allowSaveKeyChange===true});break;}catch(error){last=error;failures.push({attempt,type:classifyGenerationFailure(error),message:clean(error.message).slice(0,500)});if(attempt>=MAX_MODEL_ATTEMPTS)throw error;}
     }
   }
   if(!materialized)throw new Error('후보 생성 결과 없음');
   const {candidate,changedPaths,syntax}=materialized,git=run('git',['rev-parse','HEAD']),sourceCommit=clean(options.sourceCommit||process.env.AUTONOMOUS_RESERVED_SOURCE_COMMIT)||(git.status===0?git.stdout.trim():null);
-  const evidence={version:3,candidateOnly:true,selfPromote:false,publicStableModified:false,paidApi:false,model:repairMode==='RULE_PATCH'?null:(options.model??DEFAULT_MODEL),modelTransport:repairMode==='RULE_PATCH'?'NONE':'NDJSON_STREAM_STRUCTURED_SCHEMA',modelTimeoutMs:MODEL_TIMEOUT_MS,modelMaxPredict:MODEL_MAX_PREDICT,modelAttempts:attempts,maxModelAttempts:repairMode==='RULE_PATCH'?0:MAX_MODEL_ATTEMPTS,generationFailures:failures,repairMode,rulePatchId,gameId,sourcePath,candidateId,candidatePath,sourceCommit,goal,responsibilityFiles,contextFiles:context.files.map(({path,truncated,originalBytes,preferred})=>({path,truncated,originalBytes,preferred})),contextBytes:context.bytes,changedFiles:changedPaths,summary:candidate.summary,expectedEffect:candidate.expectedEffect,proposedTests:candidate.tests,changeMode:candidate.mode,fileCount:candidate.files.length,editCount:candidate.edits.length,modelNormalization:candidate.normalization,saveKeyValidation:'PASS',syntaxChecks:syntax,generatedAt:new Date().toISOString(),completionAuthority:'INDEPENDENT_QA_AND_JAY'};
+  const evidence={version:4,candidateOnly:true,selfPromote:false,publicStableModified:false,paidApi:false,model:repairMode==='RULE_PATCH'?null:(options.model??DEFAULT_MODEL),modelTransport:repairMode==='RULE_PATCH'?'NONE':'NDJSON_STREAM_STRUCTURED_SCHEMA',modelTimeoutMs:MODEL_TIMEOUT_MS,modelMaxPredict:MODEL_MAX_PREDICT,modelContextTokens:MODEL_CONTEXT_TOKENS,modelAttempts:attempts,maxModelAttempts:repairMode==='RULE_PATCH'?0:MAX_MODEL_ATTEMPTS,generationFailures:failures,repairMode,rulePatchId,role,browserFailureFeedbackUsed:Boolean(browserFeedback),gameId,sourcePath,candidateId,candidatePath,sourceCommit,goal,responsibilityFiles,diagnosticFocus:diagnostic?{type:diagnostic.type??null,file:diagnostic.file??null,line:diagnostic.line??null,needle:diagnostic.needle??null,relatedFiles:diagnostic.relatedFiles??[]}:null,contextFiles:context.files.map(({path,truncated,originalBytes,preferred,focused})=>({path,truncated,originalBytes,preferred,focused})),contextBytes:context.bytes,changedFiles:changedPaths,summary:candidate.summary,expectedEffect:candidate.expectedEffect,proposedTests:candidate.tests,changeMode:candidate.mode,fileCount:candidate.files.length,editCount:candidate.edits.length,modelNormalization:candidate.normalization,saveKeyValidation:'PASS',syntaxChecks:syntax,generatedAt:new Date().toISOString(),completionAuthority:'INDEPENDENT_QA_AND_JAY'};
   const evidencePath=posix(options.evidencePath||`.autonomous/evidence/${candidateId}.json`);ensureDir(evidencePath);fs.writeFileSync(evidencePath,`${JSON.stringify(evidence,null,2)}\n`,'utf8');return evidence;
 }
 
 async function main(){
-  const protectedValues=clean(process.env.AUTONOMOUS_PROTECTED_VALUES).split(',').map(clean).filter(Boolean),order=readJson('.autonomous/work-order.json',{});
-  const evidence=await generateAutonomousCandidate({gameId:process.env.AUTONOMOUS_GAME_ID,sourcePath:process.env.AUTONOMOUS_SOURCE_PATH,goal:process.env.AUTONOMOUS_GOAL,candidateId:process.env.AUTONOMOUS_CANDIDATE_ID,protectedValues,model:process.env.AUTONOMOUS_LOCAL_MODEL||DEFAULT_MODEL,repairMode:process.env.AUTONOMOUS_REPAIR_MODE||order.repairMode||'MODEL',responsibilityFiles:order.responsibilityFiles||[],diagnostic:order.diagnosticTopIssue||null});console.log(JSON.stringify(evidence,null,2));
+  const protectedValues=clean(process.env.AUTONOMOUS_PROTECTED_VALUES).split(',').map(clean).filter(Boolean),order=readJson('.autonomous/work-order.json',{}),gameId=process.env.AUTONOMOUS_GAME_ID,feedback=browserFailureFeedback(gameId);
+  const evidence=await generateAutonomousCandidate({gameId,sourcePath:process.env.AUTONOMOUS_SOURCE_PATH,goal:process.env.AUTONOMOUS_GOAL,candidateId:process.env.AUTONOMOUS_CANDIDATE_ID,protectedValues,model:process.env.AUTONOMOUS_LOCAL_MODEL||DEFAULT_MODEL,repairMode:process.env.AUTONOMOUS_REPAIR_MODE||order.repairMode||'MODEL',responsibilityFiles:order.responsibilityFiles||[],diagnostic:order.diagnosticTopIssue||null,role:process.env.AUTONOMOUS_DEPARTMENT_ROLE||'',browserFeedback:feedback});console.log(JSON.stringify(evidence,null,2));
 }
 if(import.meta.url===pathToFileURL(process.argv[1]).href)main().catch(error=>{console.error(error.message);process.exitCode=1;});
 
-export { ALLOWED_EXTENSIONS, MAX_OUTPUT_FILES, MODEL_TIMEOUT_MS, MODEL_MAX_PREDICT, MAX_MODEL_ATTEMPTS, CANDIDATE_SCHEMA };
+export { ALLOWED_EXTENSIONS, MAX_OUTPUT_FILES, MODEL_TIMEOUT_MS, MODEL_MAX_PREDICT, MODEL_CONTEXT_TOKENS, MAX_MODEL_ATTEMPTS, CANDIDATE_SCHEMA };

@@ -13,6 +13,7 @@ const SEVERITY_SCORE={critical:4,high:3,medium:2,low:1};
 const clean=v=>String(v??'').trim();
 const posix=v=>String(v??'').replaceAll('\\','/').replace(/^\.\//,'');
 const exists=(filesystem,file)=>{try{return filesystem.statSync(file),true;}catch{return false;}};
+const uniq=values=>[...new Set(values.filter(Boolean))];
 
 function listTextFiles(root,filesystem=fs){
   const rows=[];
@@ -33,6 +34,7 @@ function readBounded(file,filesystem=fs){
   const buf=filesystem.readFileSync(file);
   return buf.subarray(0,Math.min(buf.length,MAX_FILE_BYTES)).toString('utf8');
 }
+function lineAt(text,index){return String(text).slice(0,Math.max(0,index)).split(/\r?\n/).length;}
 function issue(type,severity,file,message,extra={}){
   return {type,severity,file:posix(file),message:clean(message),...extra};
 }
@@ -92,6 +94,27 @@ export function findUnguardedStorageParses(text){
   while((match=re.exec(value)))if(!hasEnclosingTryGuard(value,match.index))rows.push({index:match.index,expression:match[0]});
   return rows;
 }
+function relatedFilesForIssue(root,row,files,textByRelative,filesystem=fs){
+  const out=[posix(row.file)];
+  const sourceRow=files.find(file=>file.relative===row.file);
+  const sourceText=textByRelative.get(row.file)||'';
+  if(sourceRow&&/\.html?$/i.test(sourceRow.relative)){
+    for(const reference of localReferences(sourceText)){
+      const resolved=resolveLocalReference(root,sourceRow.full,reference);
+      if(!resolved||!resolved.startsWith(root)||!exists(filesystem,resolved))continue;
+      const relative=posix(path.relative(root,resolved));
+      if(files.some(file=>file.relative===relative))out.push(relative);
+    }
+  }
+  const basename=path.basename(row.file||'');
+  for(const file of files){
+    if(out.length>=4)break;
+    if(file.relative===row.file)continue;
+    const text=textByRelative.get(file.relative)||'';
+    if((row.reference&&text.includes(String(row.reference)))||(basename&&text.includes(basename)))out.push(file.relative);
+  }
+  return uniq(out).slice(0,4);
+}
 function diagnoseFile(root,row,filesystem=fs){
   const results=[];
   const text=readBounded(row.full,filesystem);
@@ -101,6 +124,7 @@ function diagnoseFile(root,row,filesystem=fs){
   if(ext==='.html'||ext==='.htm'){
     if(/<head\b/i.test(text)&&!/<meta\b[^>]*name\s*=\s*["']viewport["']/i.test(text)){
       results.push(issue('MISSING_VIEWPORT','high',row.relative,'모바일 viewport meta가 없어 화면 비율/확대 동작이 불안정할 수 있음',{
+        needle:'<head',
         repairMode:'RULE_PATCH',
         autoPatch:{type:'INSERT_VIEWPORT',path:row.relative},
         microTask:`${row.relative}의 <head>에 viewport meta 1개만 추가한다.`
@@ -109,7 +133,8 @@ function diagnoseFile(root,row,filesystem=fs){
     for(const reference of localReferences(text)){
       const resolved=resolveLocalReference(root,row.full,reference);
       if(resolved&&resolved.startsWith(path.resolve(root))&&!exists(filesystem,resolved)){
-        results.push(issue('BROKEN_LOCAL_PATH','high',row.relative,`존재하지 않는 로컬 경로: ${reference}`,{reference,microTask:`${row.relative}에서 깨진 경로 ${reference} 1개를 실제 존재하는 경로로 복구한다.`}));
+        const index=text.indexOf(reference);
+        results.push(issue('BROKEN_LOCAL_PATH','high',row.relative,`존재하지 않는 로컬 경로: ${reference}`,{reference,line:index>=0?lineAt(text,index):null,needle:reference,microTask:`${row.relative}에서 깨진 경로 ${reference} 1개를 실제 존재하는 경로로 복구한다.`}));
       }
     }
     const imgTags=text.match(/<img\b[^>]*>/gi)||[];
@@ -118,17 +143,26 @@ function diagnoseFile(root,row,filesystem=fs){
 
   if(/\.(?:js|mjs|cjs|html|htm)$/i.test(row.relative)){
     const unguardedParses=findUnguardedStorageParses(text);
-    if(unguardedParses.length)results.push(issue('UNGUARDED_SAVE_PARSE','high',row.relative,`try/catch 밖의 저장 JSON.parse ${unguardedParses.length}곳이 손상 저장값에서 예외를 낼 수 있음`,{microTask:`${row.relative}의 보호되지 않은 저장 JSON.parse 1곳에 기존 저장 의미를 유지하는 실패 방어를 추가한다.`}));
-    if(/document\.getElementById\s*\([^\n;]+\)\s*\.addEventListener\s*\(/.test(text))results.push(issue('DOM_NULL_EVENT_BIND','medium',row.relative,'DOM 조회 직후 null 확인 없이 이벤트를 연결하는 경로가 있음',{microTask:`${row.relative}의 DOM 이벤트 연결 1곳에 존재 확인을 추가한다.`}));
+    if(unguardedParses.length){
+      const first=unguardedParses[0];
+      results.push(issue('UNGUARDED_SAVE_PARSE','high',row.relative,`try/catch 밖의 저장 JSON.parse ${unguardedParses.length}곳이 손상 저장값에서 예외를 낼 수 있음`,{line:lineAt(text,first.index),needle:first.expression,microTask:`${row.relative}의 보호되지 않은 저장 JSON.parse 1곳에 기존 저장 의미를 유지하는 실패 방어를 추가한다.`}));
+    }
+    const domMatch=/document\.getElementById\s*\([^\n;]+\)\s*\.addEventListener\s*\(/.exec(text);
+    if(domMatch)results.push(issue('DOM_NULL_EVENT_BIND','medium',row.relative,'DOM 조회 직후 null 확인 없이 이벤트를 연결하는 경로가 있음',{line:lineAt(text,domMatch.index),needle:domMatch[0],microTask:`${row.relative}의 DOM 이벤트 연결 1곳에 존재 확인을 추가한다.`}));
     const duplicate=adjacentDuplicateListener(text);
     if(duplicate)results.push(issue('ADJACENT_DUPLICATE_EVENT_LISTENER','high',row.relative,`동일 이벤트 리스너 문장이 ${duplicate.line-1}/${duplicate.line}행에 연속 중복됨`,{
+      line:duplicate.line,
+      needle:duplicate.current.trim(),
       repairMode:'RULE_PATCH',
       autoPatch:{type:'REMOVE_ADJACENT_DUPLICATE_EVENT_LISTENER',path:row.relative,previous:duplicate.previous,current:duplicate.current},
       microTask:`${row.relative}의 연속 중복 이벤트 리스너 1개만 제거한다.`
     }));
     const setIntervals=(text.match(/\bsetInterval\s*\(/g)||[]).length;
     const clearIntervals=(text.match(/\bclearInterval\s*\(/g)||[]).length;
-    if(setIntervals>0&&clearIntervals===0)results.push(issue('INTERVAL_CLEANUP_RISK','medium',row.relative,`setInterval ${setIntervals}개가 보이지만 clearInterval 근거가 없음`,{microTask:`${row.relative}에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.`}));
+    if(setIntervals>0&&clearIntervals===0){
+      const first=text.search(/\bsetInterval\s*\(/);
+      results.push(issue('INTERVAL_CLEANUP_RISK','medium',row.relative,`setInterval ${setIntervals}개가 보이지만 clearInterval 근거가 없음`,{line:first>=0?lineAt(text,first):null,needle:'setInterval(',microTask:`${row.relative}에서 반복 타이머 1개의 생명주기와 중복 실행 여부를 확인해 필요한 경우 해제 경로를 추가한다.`}));
+    }
   }
   return results;
 }
@@ -137,26 +171,29 @@ export function diagnoseGame(sourcePath,{filesystem=fs,maxIssues=30}={}){
   const root=path.resolve(sourcePath);
   const files=listTextFiles(sourcePath,filesystem);
   const issues=[];
+  const textByRelative=new Map();
   let hasTouchSignal=false,hasTouchAction=false;
   for(const row of files){
     const text=readBounded(row.full,filesystem);
+    textByRelative.set(row.relative,text);
     if(/touchstart|touchend|pointerdown|pointerup|<canvas\b|<button\b/i.test(text))hasTouchSignal=true;
     if(/touch-action\s*:/i.test(text))hasTouchAction=true;
     issues.push(...diagnoseFile(root,row,filesystem));
   }
   if(hasTouchSignal&&!hasTouchAction){
     const first=files.find(x=>/\.css$/i.test(x.relative))||files.find(x=>/\.html?$/i.test(x.relative))||files[0];
-    if(first)issues.push(issue('TOUCH_ACTION_UNSPECIFIED','medium',first.relative,'터치/포인터 입력 근거는 있으나 touch-action 정책이 확인되지 않음',{microTask:`${first.relative}에서 실제 조작 영역 1개의 touch-action 필요 여부를 확인하고 모바일 스크롤 충돌만 최소 수정한다.`}));
+    if(first)issues.push(issue('TOUCH_ACTION_UNSPECIFIED','medium',first.relative,'터치/포인터 입력 근거는 있으나 touch-action 정책이 확인되지 않음',{needle:'touch-action',microTask:`${first.relative}에서 실제 조작 영역 1개의 touch-action 필요 여부를 확인하고 모바일 스크롤 충돌만 최소 수정한다.`}));
   }
+  for(const row of issues)row.relatedFiles=relatedFilesForIssue(root,row,files,textByRelative,filesystem);
   issues.sort((a,b)=>(SEVERITY_SCORE[b.severity]||0)-(SEVERITY_SCORE[a.severity]||0)||String(a.file).localeCompare(String(b.file))||String(a.type).localeCompare(String(b.type)));
   const limited=issues.slice(0,Math.max(1,maxIssues));
   const counts={critical:0,high:0,medium:0,low:0};for(const row of limited)counts[row.severity]=(counts[row.severity]||0)+1;
-  return {version:1,sourcePath:posix(sourcePath),filesScanned:files.length,issues:limited,counts,topIssue:limited[0]||null,hasActionableIssue:limited.length>0};
+  return {version:2,sourcePath:posix(sourcePath),filesScanned:files.length,issues:limited,counts,topIssue:limited[0]||null,hasActionableIssue:limited.length>0};
 }
 
 export function microTaskFromIssue(row){
   if(!row)return null;
-  return {type:row.type,severity:row.severity,file:row.file,goal:clean(row.microTask)||`${row.file}의 ${row.type} 문제 1개만 수정한다.`,repairMode:row.repairMode||'MODEL',autoPatch:row.autoPatch||null};
+  return {type:row.type,severity:row.severity,file:row.file,files:uniq([row.file,...(row.relatedFiles||[])]).slice(0,4),line:row.line??null,needle:row.needle??null,goal:clean(row.microTask)||`${row.file}의 ${row.type} 문제 1개만 수정한다.`,repairMode:row.repairMode||'MODEL',autoPatch:row.autoPatch||null};
 }
 
 async function main(){
