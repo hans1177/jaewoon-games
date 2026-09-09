@@ -38,7 +38,7 @@ jobs:
           console.log(`date=${gate.date||''}`);
           NODE
 
-      - name: Postprocess to exact 10 cuts
+      - name: Postprocess completed artbook
         if: steps.target.outputs.run == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ steps.target.outputs.game_id }}
@@ -60,14 +60,18 @@ jobs:
           const artbook=JSON.parse(fs.readFileSync(file,'utf8'));
           const registry=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
           const registered=(registry.artbooks||[]).find(x=>x.sourceFile===file);
-          if(artbook.status!=='COMPLETED'||!Array.isArray(artbook.cuts)||artbook.cuts.length!==10||artbook.postprocess?.complete!==true)throw new Error('artbook postprocess incomplete');
-          if(!registered||registered.status!=='completed-artbook'||registered.published!==true||registered.homepageVisible!==true||registered.cuts?.length!==10)throw new Error('homepage registry completion mismatch');
+          const cuts=Array.isArray(artbook.cuts)?artbook.cuts.length:0;
+          const required=Math.round(Number(artbook.postprocess?.requiredCuts||artbook.publication?.requiredCuts||artbook.targetArtbookPages||cuts));
+          const supportedPageCount=required===10||(required>=12&&required<=30);
+          if(artbook.status!=='COMPLETED'||artbook.postprocess?.complete!==true||!supportedPageCount||cuts!==required)throw new Error(`artbook postprocess incomplete: cuts=${cuts}, required=${required}`);
+          if(!registered||registered.status!=='completed-artbook'||registered.published!==true||registered.homepageVisible!==true||registered.cuts?.length!==required||Number(registered.requiredCuts||required)!==required)throw new Error(`homepage registry completion mismatch: required=${required}`);
           console.log('ARTBOOK_COMPLETED=YES');
-          console.log('ARTBOOK_CUTS=10/10');
+          console.log(`ARTBOOK_CUTS=${cuts}/${required}`);
+          console.log(`ARTBOOK_PAGE_POLICY=${required===10?'LEGACY_10':'VARIABLE_12_30'}`);
           console.log('HOMEPAGE_COMPLETION=YES');
           NODE
 
-      - name: Commit completed 10-cut artbook
+      - name: Commit completed artbook
         if: steps.target.outputs.run == 'true'
         shell: bash
         run: |
@@ -80,7 +84,7 @@ jobs:
             echo 'ARTBOOK_POSTPROCESS_COMMIT=NO_CHANGES'
             exit 0
           fi
-          git commit -m "artbook: complete ${GAME_ID} ${DATE_KST} as 10 cuts"
+          git commit -m "artbook: postprocess ${GAME_ID} ${DATE_KST}"
           git pull --rebase origin main
           git push origin main
           echo 'ARTBOOK_POSTPROCESS_COMMIT=SUCCESS'
