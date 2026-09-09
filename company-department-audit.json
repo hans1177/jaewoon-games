@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-09-09",
+  "updatedAt": "2026-09-10",
   "overall": "VERIFYING_UNITY_RUNTIME",
   "reason": "Unity runtime smoke automation is installed, but a successful real APK emulator run is still required.",
   "policy": {
@@ -162,11 +162,11 @@
     },
     "webRuntimeHealth": {
       "latestRun": {
-        "runId": 34311981250,
+        "runId": 34377995563,
         "status": "completed",
-        "conclusion": "success",
-        "headSha": "7347b76310457c3bd0d472cf225a377804231e0b",
-        "updatedAt": "2026-09-09T04:42:53Z"
+        "conclusion": "failure",
+        "headSha": "a7a95a20398e579f9d8d3ff62c9b6c58eafa7884",
+        "updatedAt": "2026-09-09T16:39:36Z"
       },
       "latestSuccessfulRun": {
         "runId": 34311981250,
@@ -178,17 +178,19 @@
       "formalBridge": "tools/company-qa-public-web-evidence.mjs"
     },
     "directorSupervision": {
-      "dateKst": "2026-09-09",
+      "dateKst": "2026-09-10",
       "attentionRequired": false,
       "counts": {
-        "WORKING": 6,
-        "DONE": 1,
+        "WORKING": 1,
+        "DONE": 6,
         "IDLE_NO_TASK": 1,
         "BLOCKED": 0,
         "FAILED": 0,
         "STALE": 0
       },
-      "primaryFindings": []
+      "primaryFindings": [
+        "NO_WORK_ORDER:artbook-work-orders/2026-09-10-daechung-rpg.json"
+      ]
     }
   },
   "nextPriority": "Require a successful Unity Android emulator runtime-smoke run before marking Unity QA VERIFIED."
