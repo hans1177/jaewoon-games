@@ -48,3 +48,17 @@ test('무료 외부 제작툴은 후보만 제공하고 자동 설치하지 않�
   assert.ok(plan.production.toolCandidates.length>0);
   assert.equal(plan.policy.externalToolAutoInstall,false);
 });
+
+test('그래픽 AI는 2분류 Web 1차 구현에서 모바일 장르킷을 실제 게임 그래픽 기준으로 사용한다',()=>{
+  const agent=fs.readFileSync(new URL('../.github/agents/graphics.agent.md',import.meta.url),'utf8');
+  const cycle=fs.readFileSync(new URL('../tools/autonomous-department-cycle.mjs',import.meta.url),'utf8');
+  assert.match(agent,/2분류 `WEB_FIRST_IMPLEMENTATION`/);
+  assert.match(agent,/platformProfiles\.mobileWeb/);
+  assert.match(agent,/실제 게임처럼 보여야 한다/);
+  assert.match(agent,/placeholder만으로 플레이 화면을 끝내는 결과는 그래픽 완료로 보지 않는다/);
+  assert.match(agent,/Unity WebGL을 만들거나 제안하지 않는다/);
+  assert.match(agent,/라이선스 장부/);
+  assert.doesNotMatch(agent,/web-games\/`는 시각 참고용 읽기 전용/);
+  assert.doesNotMatch(agent,/하루 총 1개 통합 아트북/);
+  assert.match(cycle,/\.github\/agents\/\$\{ROLE_AGENT\[role\]\}\.agent\.md/);
+});
