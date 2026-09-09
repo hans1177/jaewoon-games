@@ -1,0 +1,84 @@
+name: Vibe2 24H Runner
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/vibe2-24h-runner.yml'
+  schedule:
+    - cron: '11 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+env:
+  VIBE2_PRIORITY_POLICY: owner-release-development
+  VIBE2_AUTO_DEPLOY_VERIFIED_ONLY: 'true'
+  VIBE2_MAX_CONCURRENT_GAME_TASKS: '1'
+
+concurrency:
+  group: vibe2-24h-runner
+  cancel-in-progress: false
+
+jobs:
+  autoplan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout Vibe2 control branch
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Select one safe autonomous task when queue is idle
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-core'
+          git config user.email 'vibe2-core@users.noreply.github.com'
+          echo "VIBE2_PRIORITY_POLICY=$VIBE2_PRIORITY_POLICY"
+          echo "VIBE2_AUTO_DEPLOY_VERIFIED_ONLY=$VIBE2_AUTO_DEPLOY_VERIFIED_ONLY"
+          echo "VIBE2_MAX_CONCURRENT_GAME_TASKS=$VIBE2_MAX_CONCURRENT_GAME_TASKS"
+
+          for attempt in 1 2 3; do
+            echo "VIBE2_AUTOPLAN_ATTEMPT=$attempt/3"
+            git fetch origin main vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+            rm -rf /tmp/vibe2-main
+            git worktree prune
+            git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
+
+            node tools/vibe2-auto-planner.mjs \
+              --status=/tmp/vibe2-main/company-status.json \
+              --catalog=/tmp/vibe2-main/game-catalog.json \
+              --queue=.vibe2/queue.json \
+              --root=/tmp/vibe2-main | tee /tmp/vibe2-autoplan.log
+
+            if ! grep -q '^VIBE2_AUTO_PLAN=YES$' /tmp/vibe2-autoplan.log; then
+              echo 'VIBE2_AUTOPLAN_WRITE=NO'
+              exit 0
+            fi
+
+            git add .vibe2/queue.json
+            git commit -m 'vibe2: autonomously plan next safe game task [skip ci]'
+            if git push origin HEAD:vibe2-unreal-core; then
+              echo 'VIBE2_AUTOPLAN_WRITE=YES'
+              exit 0
+            fi
+            sleep $((attempt * 2))
+          done
+
+          echo 'VIBE2_AUTOPLAN_PUSH=FAILED' >&2
+          exit 1
+
+  controller:
+    needs: autoplan
+    uses: hans1177/jaewoon-games/.github/workflows/vibe2-continuous-core.yml@vibe2-unreal-core
+    secrets: inherit

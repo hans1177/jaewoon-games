@@ -15,8 +15,11 @@
 → 재운컴퍼니가 우선순위/부서/단계를 결정
 → 바이브2 workbench가 안전 작업계획 작성
 → 바이브2 orchestrator가 실행계약/보호규칙 적용
+→ 공용 Work Lock 획득
 → 담당 부서 구현
+→ BASE_SHA 최신성/겹침 검사
 → QA/검증
+→ 공용 Work Lock 해제
 → 재운컴퍼니 상태 갱신
 → 다음 작업 자동 선택
 ```
@@ -29,10 +32,35 @@
 - 재운컴퍼니 ↔ 바이브2 연결: `assets/vibe-company-orchestration-bridge.js`
 - 바이브2 제작/에셋 보호 규칙: `AGENTS.md`, `ASSET_RULES.md`, `assets/animated-assets.json`, `assets/asset-manifest.json`
 - 실제 작업계획/실행계약: `assets/vibe-workbench.js`, `assets/vibe-orchestrator.js`
+- 공용 편집 잠금 계약: `assets/vibe-work-lock.js`, `tools/vibe-work-lock-control.mjs`
+- 공용 편집 잠금 상태: `vibe2-work-locks` 브랜치의 `.vibe2/work-locks.json`
 
 재운컴퍼니는 바이브2 규칙을 우회해서 직접 별도 기준으로 게임을 제작하지 않는다. 바이브2 쪽 제작 규칙이 바뀌면 같은 저장소의 다음 재운컴퍼니 작업부터 바로 적용된다. 반대로 회사의 지시 우선순위·단계·QA·빌드 상태도 같은 저장소에 기록되어 바이브2 실행계약이 그 상태를 기준으로 움직인다.
 
 단, **홈페이지 공개는 자동 동기화 대상에서 제외한다.** 게임 제작, 수정, 내부 상태 동기화, APK 테스트 빌드는 자동으로 이어질 수 있지만 새 게임/새 APK/다운로드 링크를 공개 홈페이지에 올리는 행위는 한재운의 명시적인 홈페이지 게시 지시가 있을 때만 수행한다.
+
+## 공용 Work Lock과 동시 작업
+
+`chatgpt`, `vibe2`, `company-ai`는 동일한 GitHub 저장소에서 동시에 작업할 수 있지만 같은 책임 파일을 동시에 수정하지 않는다.
+
+```text
+작업계획
+→ worker + taskId + gameId + responsible files + baseSha 확정
+→ vibe2-work-locks에서 잠금 획득
+→ 소스 수정
+→ 현재 main과 baseSha 비교
+   ├─ 잠금 범위와 변경이 겹침 → REPLAN_REQUIRED / 자동 병합 금지
+   ├─ 다른 파일만 변경됨 → rebase 후 QA
+   └─ 변경 없음 → QA
+→ 검증 완료 또는 작업 중단
+→ 잠금 해제
+```
+
+- 활성 잠금의 동일 파일 또는 상위/하위 경로와 겹치는 작업은 시작하지 않는다.
+- 잠금은 작업 권한을 주는 장치가 아니라 편집 충돌만 막는다. 사용자 승인, 아트북 잠금, 저장 호환성, 에셋 권리, 유료 사용 금지, `web-games/` 읽기 전용을 우회하지 않는다.
+- 기본 lease는 45분, 최대 120분이다. 진행 중이면 갱신하고 만료된 잠금만 정리한다.
+- 잠금 충돌이 나면 대기만 반복하지 말고 가능한 경우 다른 독립 작업을 선택한다.
+- Git이 자동으로 합칠 수 있어도 같은 책임 파일에 `baseSha` 이후 변경이 있으면 논리 충돌로 취급해 자동 병합하지 않는다.
 
 ## 기본 제작 흐름
 
@@ -190,8 +218,11 @@ DROP   → 폐기 또는 기획 변경 제안
 → 총괄 AI 승인
 → 담당 부서 자동 배정
 → 바이브2 작업계획/실행계약
+→ 공용 Work Lock 획득
 → 구현
+→ BASE_SHA 겹침 검사
 → QA
+→ Work Lock 해제
 → 다음 단계
 ```
 
@@ -231,6 +262,7 @@ DROP   → 폐기 또는 기획 변경 제안
 → 단계별 AI 부서 자동 배정
 → vibe-workbench 안전 작업계획
 → vibe-orchestrator 실행계약
+→ 공용 Work Lock 필요 범위/BASE_SHA 계약
 → 핵심 결정이면 한재운 게이트
 → 나머지는 총괄 AI 결정 후 계속 진행
 ```

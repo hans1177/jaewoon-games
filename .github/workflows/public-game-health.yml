@@ -43,6 +43,12 @@ jobs:
           PUBLIC_BASE_URL: http://127.0.0.1:4173
         run: node tools/public-game-health.mjs
 
+      - name: Convert smoke-play results to company QA evidence
+        run: |
+          node tools/company-qa-public-web-evidence.mjs
+          test -s company-qa-runtime-evidence.json
+          echo 'COMPANY_QA_RUNTIME_EVIDENCE=PASS'
+
       - name: Check asset sources licenses and animation evidence
         continue-on-error: true
         run: node tools/asset-health-check.mjs
@@ -61,6 +67,7 @@ jobs:
           path: |
             qa-artifacts/public-game-health/
             public-game-health.json
+            company-qa-runtime-evidence.json
             asset-health.json
           if-no-files-found: warn
           retention-days: 14
@@ -69,7 +76,7 @@ jobs:
         run: |
           git config user.name "jaewoon-company-ai"
           git config user.email "actions@users.noreply.github.com"
-          git add public-game-health.json public-release-baselines.json asset-health.json company-learning/bug-memory.json
+          git add public-game-health.json public-release-baselines.json asset-health.json company-qa-runtime-evidence.json company-learning/bug-memory.json
           if git diff --cached --quiet; then
             echo "No health-state changes."
             exit 0

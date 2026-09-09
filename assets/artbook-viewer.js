@@ -5,7 +5,7 @@
   var modal=document.getElementById('reviewModal');
   var modalContent=document.getElementById('reviewContent');
   var closeBtn=document.getElementById('reviewClose');
-  var roleNames={planning:'기획',graphics:'그래픽',development:'개발',qa:'QA',balance:'밸런스',director:'총괄'};
+  var roleNames={vibe2:'Vibe2 1차 초안',planning:'기획',graphics:'그래픽',development:'개발',qa:'QA',balance:'밸런스',director:'총괄'};
 
   function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function pathOf(v){v=String(v||'').trim();if(!v)return '/assets/mock.webp';return v.charAt(0)==='/'?v:'/'+v;}
@@ -21,6 +21,7 @@
     xhr.onerror=function(){done(new Error('network '+url));};
     xhr.send();
   }
+  function validCount(n){return n===10||(n>=12&&n<=30);}
   function showError(message){
     bookEl.innerHTML='<div class="head"><small>GAME ARTBOOK</small><h1>아트북 연결 확인 필요</h1><p>페이지는 열렸지만 데이터를 읽지 못했어.</p></div><div class="status"><b>다시 새로고침해줘.</b>'+esc(message||'데이터 연결 오류')+'</div>';
   }
@@ -28,8 +29,8 @@
     var books=(registry&&registry.artbooks)||[];
     var list=[];
     for(var i=0;i<books.length;i++){
-      var b=books[i];
-      if(b&&b.gameId===gameId&&(b.status==='completed-artbook'||b.status==='COMPLETED')&&((b.cuts&&b.cuts.length)||Number(b.cutCount))>=10)list.push(b);
+      var b=books[i],count=(b&&b.cuts&&b.cuts.length)||Number(b&&b.cutCount)||0;
+      if(b&&b.gameId===gameId&&(b.status==='completed-artbook'||b.status==='COMPLETED')&&validCount(count))list.push(b);
     }
     list.sort(function(a,b){return (Number(b.edition)||0)-(Number(a.edition)||0);});
     return list[0]||null;
@@ -51,14 +52,23 @@
     var btn=document.getElementById('reviewOpen');
     if(btn)btn.onclick=function(){modalContent.innerHTML=reviewHtml(item);modal.hidden=false;};
   }
+  function ensureMobilePaging(){
+    if(document.getElementById('artbookVariablePagingStyle'))return;
+    var style=document.createElement('style');
+    style.id='artbookVariablePagingStyle';
+    style.textContent='@media(max-width:760px){.pages{display:flex!important;overflow-x:auto!important;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;gap:12px!important;padding-bottom:12px;-webkit-overflow-scrolling:touch}.pages>.page{flex:0 0 92%;min-width:92%;scroll-snap-align:center;scroll-snap-stop:always}.pages::-webkit-scrollbar{height:5px}.page .visual img{width:100%;height:auto}}';
+    document.head.appendChild(style);
+  }
   function render(item){
-    var cuts=(item.cuts||[]).slice(0,10);
-    if(cuts.length!==10){showError('완료 아트북 10장을 찾지 못했어.');return;}
-    var html='<div class="head"><small>완료 아트북 · 10/10장</small><h1>'+esc(item.title||item.gameName||'대충 RPG 아트북')+'</h1><p>'+esc(item.subtitle||item.styleProfile||'판타지 세계 설정집 + 모험 연대기')+'</p><div class="meta"><span>'+esc(item.gameName||'대충 RPG')+'</span><span>'+esc(item.createdAt||item.date||'2026-09-08')+'</span><span>10장</span><span>완료</span></div></div>';
-    html+='<div class="notice">이미지 중심으로 컨셉 · 스토리 · 그래픽 · 시스템 · 테스트 · 밸런스를 확인하는 아트북.</div><div class="pages">';
+    var cuts=(item.cuts||[]).slice(0,30),count=cuts.length;
+    if(!validCount(count)){showError('완료 아트북은 기존 10장 또는 신규 12~30장이어야 해.');return;}
+    ensureMobilePaging();
+    var html='<div class="head"><small>완료 아트북 · '+count+'/'+count+'장</small><h1>'+esc(item.title||item.gameName||'게임 아트북')+'</h1><p>'+esc(item.subtitle||item.styleProfile||'게임 제작 아트북')+'</p><div class="meta"><span>'+esc(item.gameName||'게임')+'</span><span>'+esc(item.createdAt||item.date||'')+'</span><span>'+count+'장</span><span>완료</span></div></div>';
+    var hasVibe=false;for(var v=0;v<cuts.length;v++)if((cuts[v].sourceDepartment||cuts[v].kind)==='vibe2'){hasVibe=true;break;}
+    html+='<div class="notice">'+(hasVibe?'Vibe2 1차 스토리 초안(PROPOSAL)과 5개 부서의 그래픽·시스템·테스트·밸런스를 함께 보는 아트북. 초안은 기획부 검토 전 확정 설정이 아님.':'이미지 중심으로 컨셉 · 스토리 · 그래픽 · 시스템 · 테스트 · 밸런스를 확인하는 아트북.')+'</div><div class="pages">';
     for(var i=0;i<cuts.length;i++){
       var c=cuts[i]||{},role=c.sourceDepartment||c.kind||'director';
-      html+='<article class="page"><div class="visual"><img src="'+esc(pathOf(c.image))+'" alt="'+esc(c.title||'아트북 페이지')+'" loading="lazy"></div><div class="info"><div class="pageTop"><span class="pageNo">'+(i+1)+' / 10</span><span class="role">'+esc(roleNames[role]||role)+'</span></div><h2>'+esc(c.title||'')+'</h2><p>'+esc(c.body||'')+'</p></div></article>';
+      html+='<article class="page" data-page="'+(i+1)+'"><div class="visual"><img src="'+esc(pathOf(c.image))+'" alt="'+esc(c.title||'아트북 페이지')+'" loading="lazy"></div><div class="info"><div class="pageTop"><span class="pageNo">'+(i+1)+' / '+count+'</span><span class="role">'+esc(roleNames[role]||role)+'</span></div><h2>'+esc(c.title||'')+'</h2><p>'+esc(c.body||'')+'</p></div></article>';
     }
     html+='</div><div class="reviewArea"><button class="reviewBtn" id="reviewOpen" type="button">부서 평가 보기</button></div>';
     bookEl.innerHTML=html;

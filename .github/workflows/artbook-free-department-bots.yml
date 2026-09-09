@@ -10,6 +10,7 @@ on:
       - 'artbook-work-orders/**'
       - 'artbook-second-work-queue.json'
       - 'tools/artbook-prepare-daily.mjs'
+      - 'tools/vibe2-artbook-story-draft.mjs'
       - 'tools/artbook-department-runner.mjs'
       - 'tools/artbook-second-work-runner.mjs'
       - 'tools/artbook-visual-plan-runner.mjs'
@@ -62,6 +63,42 @@ jobs:
           console.log(`game_id=${c.gameId||''}`);
           console.log(`work_order=${c.workOrderPath||''}`);
           NODE
+      - name: Install local Ollama for Vibe2 draft
+        if: steps.target.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          installed=0
+          for attempt in 1 2 3; do
+            echo "OLLAMA_INSTALL_ATTEMPT=$attempt/3"
+            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then
+              installed=1
+              break
+            fi
+            sleep $((attempt * 4))
+          done
+          test "$installed" = 1
+          command -v ollama >/dev/null
+          nohup ollama serve > /tmp/ollama.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0
+            sleep 2
+          done
+          cat /tmp/ollama.log || true
+          exit 1
+      - name: Pull free open model for Vibe2 draft
+        if: steps.target.outputs.run == 'true'
+        run: |
+          ollama pull "$ARTBOOK_LOCAL_MODEL"
+          echo "LOCAL_MODEL=$ARTBOOK_LOCAL_MODEL"
+          echo 'PAID_API=NO'
+          echo 'API_KEY_REQUIRED=NO'
+      - name: Vibe2 authors first story draft
+        if: steps.target.outputs.run == 'true'
+        env:
+          ARTBOOK_DATE: ${{ steps.target.outputs.date }}
+          ARTBOOK_GAME_ID: ${{ steps.target.outputs.game_id }}
+        run: node tools/vibe2-artbook-story-draft.mjs
       - name: Upload prepared work order
         if: steps.target.outputs.run == 'true'
         uses: actions/upload-artifact@v4
@@ -70,6 +107,8 @@ jobs:
           path: |
             artbook-daily-context.json
             artbook-work-orders/${{ steps.target.outputs.date }}-${{ steps.target.outputs.game_id }}.json
+            artbook-submissions/${{ steps.target.outputs.game_id }}/${{ steps.target.outputs.date }}/vibe2-first-draft.json
+            artbook-submissions/${{ steps.target.outputs.game_id }}/${{ steps.target.outputs.date }}/visuals/vibe2-draft-*.svg
           retention-days: 1
           if-no-files-found: error
 
@@ -337,7 +376,7 @@ jobs:
         with:
           name: director-round
           path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
-      - name: Restore prepared work order
+      - name: Restore prepared work order and Vibe2 draft
         uses: actions/download-artifact@v4
         with:
           name: daily-work-order

@@ -1,0 +1,82 @@
+{
+  "version": 2,
+  "updatedAt": "2026-09-09",
+  "overall": "VERIFYING",
+  "reason": "Department evidence standards are strengthened, web runtime QA is connected, and Unity Android runtime smoke automation is installed. Unity remains unverified until the first successful APK runtime-smoke evidence is produced.",
+  "policy": {
+    "genericPraiseIsEvidence": false,
+    "domainSpecificEvidenceRequired": true,
+    "qaCodeReviewOnlyAllowed": false,
+    "qaBuildOnlyAllowed": false,
+    "directorMayInventMissingEvidence": false
+  },
+  "departments": {
+    "planning": {
+      "status": "STRENGTHENED",
+      "passGate": "2+ planning-domain evidence items",
+      "checks": ["core loop", "core fun", "story/quest/progression", "game identity"],
+      "previousWeakness": "Generic code-structure praise could appear as planning evidence.",
+      "currentProtection": "DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
+    },
+    "development": {
+      "status": "STRENGTHENED",
+      "passGate": "2+ development-domain evidence items plus successful compile/build",
+      "checks": ["changed files", "compile/build", "dependencies", "save/data compatibility", "regression risk"],
+      "previousWeakness": "Model review could praise structure even when verification build failed.",
+      "currentProtection": "BUILD_EVIDENCE_REQUIRED + DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
+    },
+    "qa": {
+      "status": "VERIFYING_UNITY_RUNTIME",
+      "passGate": "2+ QA-domain evidence items plus successful build plus runtime/play evidence",
+      "checks": ["launch", "input", "core action", "progression", "save/reload", "restart", "mobile UI/touch", "reproduction"],
+      "webRuntime": {
+        "status": "CONNECTED",
+        "engine": "Playwright",
+        "source": "tools/public-game-health.mjs",
+        "officialEvidenceBridge": "tools/company-qa-public-web-evidence.mjs",
+        "persistentEvidence": "company-qa-runtime-evidence.json"
+      },
+      "unityRuntime": {
+        "status": "AUTOMATION_INSTALLED_PENDING_FIRST_SUCCESSFUL_RUN",
+        "trigger": "Successful Unity Hybrid Android Build completion",
+        "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
+        "probe": "tools/unity-apk-runtime-smoke.sh",
+        "method": "APK install -> launch -> Android tap/swipe input -> process survival -> fatal log scan -> screenshot",
+        "buildAloneCountsAsQaPass": false
+      },
+      "currentProtection": "RUNTIME_PLAY_EVIDENCE_REQUIRED + BUILD_EVIDENCE_REQUIRED + DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
+    },
+    "graphics": {
+      "status": "STRENGTHENED",
+      "passGate": "1+ graphics-domain evidence item",
+      "checks": ["UI/readability", "visual identity", "assets/licenses", "animation/motion/VFX", "mobile presentation"],
+      "previousWeakness": "Generic code/UI praise could be treated as graphics PASS evidence.",
+      "currentProtection": "DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
+    },
+    "balance": {
+      "status": "STRENGTHENED",
+      "passGate": "1+ balance-domain evidence item",
+      "checks": ["damage/HP", "difficulty", "growth", "rewards/economy", "cooldown/drop rates"],
+      "previousWeakness": "Code-structure praise could be used without numeric balance analysis.",
+      "currentProtection": "DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
+    },
+    "director": {
+      "status": "STRENGTHENED",
+      "passGate": "All five votes submitted and every department evidence gate passed",
+      "aggregation": "DROP if any DROP; REVISE if any REVISE or evidence gate failure; otherwise PASS",
+      "currentProtection": "Director cannot invent or replace missing department evidence."
+    }
+  },
+  "verification": {
+    "departmentStandardsWorkflow": {
+      "latestKnownSuccessfulRunId": 34304706736,
+      "unitySmokeContractRunId": 34305065242,
+      "unitySmokeContractStatusAtAudit": "in_progress"
+    },
+    "vibeQaWorkflow": {
+      "runId": 34304811810,
+      "conclusion": "success"
+    }
+  },
+  "nextPriority": "Verify the Unity Android runtime-smoke workflow on the next successful APK build and only then upgrade Unity QA runtime capability to VERIFIED."
+}

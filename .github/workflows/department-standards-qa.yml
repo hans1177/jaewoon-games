@@ -1,0 +1,67 @@
+name: Company Department Standards QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/company-department-standards.js'
+      - 'tools/company-post-modification-review.mjs'
+      - 'tools/company-qa-public-web-evidence.mjs'
+      - 'tools/unity-apk-runtime-smoke.sh'
+      - 'qa/company-department-standards.test.mjs'
+      - 'qa/company-qa-public-web-evidence.test.mjs'
+      - '.github/workflows/public-game-health.yml'
+      - '.github/workflows/unity-android-runtime-smoke.yml'
+      - '.github/workflows/post-modification-revote.yml'
+      - '.github/workflows/department-standards-qa.yml'
+  pull_request:
+    paths:
+      - 'assets/company-department-standards.js'
+      - 'tools/company-post-modification-review.mjs'
+      - 'tools/company-qa-public-web-evidence.mjs'
+      - 'tools/unity-apk-runtime-smoke.sh'
+      - 'qa/company-department-standards.test.mjs'
+      - 'qa/company-qa-public-web-evidence.test.mjs'
+      - '.github/workflows/public-game-health.yml'
+      - '.github/workflows/unity-android-runtime-smoke.yml'
+      - '.github/workflows/post-modification-revote.yml'
+      - '.github/workflows/department-standards-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  standards:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax
+        run: |
+          set -euo pipefail
+          node --input-type=module --check < assets/company-department-standards.js
+          node --check tools/company-post-modification-review.mjs
+          node --check tools/company-qa-public-web-evidence.mjs
+          bash -n tools/unity-apk-runtime-smoke.sh
+      - name: Department evidence gate tests
+        run: |
+          node --test qa/company-department-standards.test.mjs
+          node --test qa/company-qa-public-web-evidence.test.mjs
+      - name: Contract assertions
+        run: |
+          set -euo pipefail
+          grep -Fq 'RUNTIME_PLAY_EVIDENCE_REQUIRED' assets/company-department-standards.js
+          grep -Fq 'DOMAIN_SPECIFIC_EVIDENCE_REQUIRED' assets/company-department-standards.js
+          grep -Fq 'qaRuntimePlayEvidenceRequired' tools/company-post-modification-review.mjs
+          grep -Fq 'departmentEvidenceGates' tools/company-post-modification-review.mjs
+          grep -Fq 'COMPANY_QA_WEB_PASS_ELIGIBLE' tools/company-qa-public-web-evidence.mjs
+          grep -Fq 'company-qa-runtime-evidence.json' .github/workflows/public-game-health.yml
+          grep -Fq 'UNITY_APK_RUNTIME_SMOKE=PASS' tools/unity-apk-runtime-smoke.sh
+          grep -Fq 'Unity Hybrid Android Build' .github/workflows/unity-android-runtime-smoke.yml
+          grep -Fq 'Android emulator black-box APK smoke' tools/unity-apk-runtime-smoke.sh
+          grep -Fq 'DEPARTMENT_EVIDENCE_STANDARDS=PASS' .github/workflows/post-modification-revote.yml
+          echo 'COMPANY_DEPARTMENT_STANDARDS=PASS'

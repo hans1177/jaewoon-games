@@ -1,6 +1,6 @@
 {
-  "version": 11,
-  "updatedAt": "2026-09-08",
+  "version": 12,
+  "updatedAt": "2026-09-09",
   "policy": {
     "purpose": "각 게임의 컨셉·스토리·캐릭터·몬스터·배경·구현·테스트·밸런스를 부서 협업으로 한 권의 아트북에 축적한다.",
     "initialGate": "one-combined-artbook-with-five-owned-department-sections-before-formal-production",
@@ -36,6 +36,16 @@
       "status": "completed-artbook",
       "productionApproval": false,
       "cutCount": 10,
+      "postprocessComplete": true,
+      "visualFirst": true
+    },
+    {
+      "date": "2026-09-09",
+      "gameId": "daechung-rpg",
+      "artbookId": "daechung-rpg-2026-09-09-initial",
+      "status": "completed-artbook",
+      "productionApproval": false,
+      "cutCount": 12,
       "postprocessComplete": true,
       "visualFirst": true
     }
@@ -938,6 +948,567 @@
         "imageFirst": true,
         "shortText": true,
         "displayLanguage": "ko"
+      }
+    },
+    {
+      "id": "daechung-rpg-2026-09-09-initial",
+      "gameId": "daechung-rpg",
+      "gameName": "대충 RPG",
+      "edition": 3,
+      "title": "대충 RPG · 통합 아트북",
+      "subtitle": "판타지 세계 설정집 + 모험 연대기",
+      "status": "completed-artbook",
+      "published": true,
+      "homepageVisible": true,
+      "productionApproval": false,
+      "createdAt": "2026-09-09",
+      "workMode": "INITIAL",
+      "intent": "5개 부서 독립 결과마다 타부서 4표와 총괄 1표로 보완점 1개·별점 5점 만점 평가를 남긴 초기 아트북.",
+      "sourceFile": "artbook-submissions/daechung-rpg/2026-09-09/artbook.json",
+      "departmentReadiness": {
+        "planning": "READY",
+        "graphics": "READY",
+        "development": "NEEDS_VALIDATION",
+        "qa": "READY",
+        "balance": "READY"
+      },
+      "departmentOpinions": {
+        "planning": {
+          "headline": "대충 RPG 1차 독립 아트북",
+          "readiness": "READY",
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 4.8,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "보완점: 추가로 검증할 수 있는 사건 f10, f11을 추가로 확인해 보세요.",
+          "priorityImprovementFrom": "director",
+          "ratings": [
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 4,
+              "improvement": "보완점: 추가로 검증할 수 있는 사건 f10, f11을 추가로 확인해 보세요."
+            },
+            {
+              "reviewerDepartment": "graphics",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+            },
+            {
+              "reviewerDepartment": "development",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발 부서 결과물의 이번 검토 점수를 5점으로 1~5 정수이며 5점 만점."
+            },
+            {
+              "reviewerDepartment": "qa",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "balance",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            }
+          ],
+          "overallDepartmentAverage": 4.92,
+          "secondWorkSameDay": true,
+          "secondWorkDueDate": "2026-09-09",
+          "unverified": [
+            "f10, f11은 추가로 검증할 수 있는 사건이 있습니다."
+          ]
+        },
+        "graphics": {
+          "headline": "대충 RPG Unity 재개발 아트북",
+          "readiness": "READY",
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 4.8,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "Unity 코어 및 애니메이션 스프라이트의 구조적 복잡성을 줄이고, 코어 파일의 유연성을 강화했습니다.",
+          "priorityImprovementFrom": "director",
+          "ratings": [
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 4,
+              "improvement": "Unity 코어 및 애니메이션 스프라이트의 구조적 복잡성을 줄이고, 코어 파일의 유연성을 강화했습니다."
+            },
+            {
+              "reviewerDepartment": "planning",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본부 결과물의 개선점은 'Unity 코어 및 애니메이션 스프라이트'를 추가로 설명하여 재미있는 내용을 더해 줍니다."
+            },
+            {
+              "reviewerDepartment": "development",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발 부서 결과물의 코어 파일 및 스프라이트 구조를 강화하여 품질을 높일 수 있습니다."
+            },
+            {
+              "reviewerDepartment": "qa",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인/게임 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+            },
+            {
+              "reviewerDepartment": "balance",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본부 결과물은 재미있는 콘텐츠를 제공하며, 코어 파일과 스프라이트의 강점을 보여주며, 코어와 스프라이트의 결합이 잘 표현되었습니다."
+            }
+          ],
+          "overallDepartmentAverage": 4.92,
+          "secondWorkSameDay": true,
+          "secondWorkDueDate": "2026-09-09",
+          "unverified": [
+            "### 캐릭터·몬스터·보스·배경·UI·인트로 컨셉: 2장 이미지 중심",
+            "### 캐릭터: Unity 코어 파일 및 애니메이션 스프라이트",
+            "### 지역별 사건: Unity 코어 파일 및 애니메이션 스프라이트"
+          ]
+        },
+        "development": {
+          "headline": "Unity + Web Archive",
+          "readiness": "NEEDS_VALIDATION",
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 5,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+          "priorityImprovementFrom": "planning",
+          "ratings": [
+            {
+              "reviewerDepartment": "planning",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "graphics",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "qa",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "balance",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본부 결과물에서 개선된 점은 'Unity + Web Archive'의 구조적 검증 점을 명시하여 개선 가능성을 강조했습니다."
+            },
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 5,
+              "improvement": "Ensure all prototype animations are properly validated in Unity and confirm that all data persistence is working as expected."
+            }
+          ],
+          "overallDepartmentAverage": 4.92,
+          "secondWorkSameDay": false,
+          "secondWorkDueDate": null,
+          "unverified": [
+            "1. Ensure all prototype animations are properly validated in Unity.",
+            "2. Confirm that all data persistence is working as expected.",
+            "3. Finalize the prototype for deployment."
+          ]
+        },
+        "qa": {
+          "headline": "RPG QA 부서 1차 독립 아트북 작업",
+          "readiness": "READY",
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 5,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+          "priorityImprovementFrom": "planning",
+          "ratings": [
+            {
+              "reviewerDepartment": "planning",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "graphics",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "development",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 부서 결과물의 개선점은 'Unity + Web Archive'의 검증 증명이 부서 결과물의 품질에 미치는 영향을 더 명확하게 설명할 수 있습니다."
+            },
+            {
+              "reviewerDepartment": "balance",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 5,
+              "improvement": "부서 결과물의 풍부한 내용과 복잡한 문제점에 대한 정확한 보완점을 제시합니다."
+            }
+          ],
+          "overallDepartmentAverage": 4.92,
+          "secondWorkSameDay": false,
+          "secondWorkDueDate": null,
+          "unverified": [
+            "noOtherDepartmentSubmissionReading",
+            "noScores"
+          ]
+        },
+        "balance": {
+          "headline": "RPG 밸런스 부서 1차 독립 아트북",
+          "readiness": "READY",
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 5,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "본 결과물은 RPG 밸런스 부서 1차 독립 아트북의 전략적 구성 요소를 명확히 지분하고 있으며, 다만 '전투 성취도'와 '역사 캐릭터'의 구현 방식을 개선할 수 있다.",
+          "priorityImprovementFrom": "planning",
+          "ratings": [
+            {
+              "reviewerDepartment": "planning",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 결과물은 RPG 밸런스 부서 1차 독립 아트북의 전략적 구성 요소를 명확히 지분하고 있으며, 다만 '전투 성취도'와 '역사 캐릭터'의 구현 방식을 개선할 수 있다."
+            },
+            {
+              "reviewerDepartment": "graphics",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "development",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발 부서 결과물의 1차 독립 아트북 평가를 통해 전투 레벨, 보상 시스템, 지역 사건 등 구조적 요소를 강화할 수 있습니다."
+            },
+            {
+              "reviewerDepartment": "qa",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 5,
+              "improvement": "부서 결과물의 전략적 분석을 강화하여 콘텐츠의 유연성과 풍부함을 보장할 수 있습니다."
+            }
+          ],
+          "overallDepartmentAverage": 4.92,
+          "secondWorkSameDay": false,
+          "secondWorkDueDate": null,
+          "unverified": [
+            "1. 전투 레벨을 1장으로 설계",
+            "2. 보상 시스템을 '전투 성취도'로 전환",
+            "3. 지역별 사건을 '역사 캐릭터'로 연결"
+          ]
+        }
+      },
+      "ratingSummary": {
+        "scale": "STARS_1_TO_5",
+        "ratingsPerDepartment": 5,
+        "departmentVotesPerResult": 4,
+        "directorVotesPerResult": 1,
+        "departmentAverageStars": {
+          "planning": 4.8,
+          "graphics": 4.8,
+          "development": 5,
+          "qa": 5,
+          "balance": 5
+        },
+        "overallAverageStars": 4.92,
+        "secondWorkCriterion": "DEPARTMENT_AVERAGE_OR_BELOW_OVERALL_AVERAGE",
+        "secondWorkDepartments": [
+          "planning",
+          "graphics"
+        ],
+        "secondWorkDueDate": "2026-09-09"
+      },
+      "homepageOpinionMode": "IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS",
+      "collaborationProtocol": "PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5",
+      "cuts": [
+        {
+          "no": 1,
+          "kind": "director",
+          "title": "RPG 아트북",
+          "body": "대충 RPG 1차 독립 아트북",
+          "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/director-cover.svg",
+          "sourceDepartment": "director",
+          "pageType": "cover",
+          "visualType": "game-concept-cover",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 2,
+          "kind": "vibe2",
+          "title": "오프닝",
+          "body": "대충 용사 RPG · 산 등반길",
+          "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/vibe2-draft-1.svg",
+          "sourceDepartment": "vibe2",
+          "pageType": "vibe2-first-draft",
+          "visualType": "story-draft",
+          "employeeAuthored": false,
+          "vibe2Authored": true,
+          "assistantAuthored": false,
+          "proposal": true,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 3,
+          "kind": "vibe2",
+          "title": "초반",
+          "body": "산 등반길",
+          "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/vibe2-draft-2.svg",
+          "sourceDepartment": "vibe2",
+          "pageType": "vibe2-first-draft",
+          "visualType": "story-draft",
+          "employeeAuthored": false,
+          "vibe2Authored": true,
+          "assistantAuthored": false,
+          "proposal": true,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 4,
+          "kind": "planning",
+          "title": "대충 RPG 1차 독립 아트북",
+          "body": "대충 RPG는 2026년 9월 9일 기준, 1차 아트북을 기준으로 진행 중입니다.",
+          "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/planning-1.svg",
+          "sourceDepartment": "planning",
+          "pageType": "department-visual",
+          "visualType": "world-map",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 5,
+          "kind": "planning",
+          "title": "대충 RPG 2차 독립 아트북",
+          "body": "2026년 9월 9일 기준, 2차 아트북을 기준으로 진행 중입니다.",
+          "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/planning-2.svg",
+          "sourceDepartment": "planning",
+          "pageType": "department-visual",
+          "visualType": "story-flow",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 6,
+          "kind": "graphics",
+          "title": "대충 RPG Unity 재개발 …",
+          "body": "대충 RPG Unity 코어 및 애니메이션 스프라이트",
+          "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/graphics-1.svg",
+          "sourceDepartment": "graphics",
+          "pageType": "department-visual",
+          "visualType": "concept-board",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 7,
+          "kind": "graphics",
+          "title": "Unity 코어 및 애니메이션 …",
+          "body": "Unity 코어 및 애니메이션 스프라이트",
+          "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/graphics-2.svg",
+          "sourceDepartment": "graphics",
+          "pageType": "department-visual",
+          "visualType": "style-board",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 8,
+          "kind": "development",
+          "title": "Unity + Web Archi…",
+          "body": "Unity + Web Archive",
+          "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/development-1.svg",
+          "sourceDepartment": "development",
+          "pageType": "department-visual",
+          "visualType": "gameplay-loop",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 9,
+          "kind": "development",
+          "title": "Unverified",
+          "body": "1. Ensure all prototype animations are prope…",
+          "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/development-2.svg",
+          "sourceDepartment": "development",
+          "pageType": "department-visual",
+          "visualType": "system-flow",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 10,
+          "kind": "qa",
+          "title": "RPG QA 부서 1차 독립 아…",
+          "body": "RPG QA 부서 1차 독립 아트북 작업",
+          "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/qa-1.svg",
+          "sourceDepartment": "qa",
+          "pageType": "department-visual",
+          "visualType": "test-journey",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 11,
+          "kind": "balance",
+          "title": "RPG 밸런스 부서 1차 독립 …",
+          "body": "RPG 밸런스 부서 1차 독립 아트북",
+          "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/balance-1.svg",
+          "sourceDepartment": "balance",
+          "pageType": "department-visual",
+          "visualType": "balance-curve",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 12,
+          "kind": "director",
+          "title": "RPG 아트북",
+          "body": "1. Ensure all prototype anima…",
+          "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/director-summary.svg",
+          "sourceDepartment": "director",
+          "pageType": "summary",
+          "visualType": "department-summary",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        }
+      ],
+      "feedback": {
+        "issueNumber": 12,
+        "issueUrl": "https://github.com/hans1177/jaewoon-games/issues/12"
+      },
+      "cutCount": 12,
+      "requiredCuts": 12,
+      "completionLabel": "완료",
+      "presentation": {
+        "mode": "VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_AUTHORED",
+        "directorSource": "artbook-submissions/daechung-rpg/2026-09-09/presentation/director-presentation.json",
+        "departmentPageCounts": {
+          "planning": 2,
+          "graphics": 2,
+          "development": 2,
+          "qa": 1,
+          "balance": 1
+        },
+        "vibe2DraftPages": 2,
+        "employeeAuthoredPages": 10,
+        "assistantAuthored": false
+      },
+      "postprocess": {
+        "version": 5,
+        "complete": true,
+        "checkedAt": "2026-09-09T02:07:29.435Z",
+        "requiredCuts": 12,
+        "cutCount": 12,
+        "pagePolicy": {
+          "min": 12,
+          "default": 16,
+          "max": 30,
+          "target": 12,
+          "legacyTenPageCompatible": true
+        },
+        "pagePlan": [
+          "director",
+          "Vibe2:오프닝",
+          "Vibe2:초반",
+          "planning",
+          "planning",
+          "graphics",
+          "graphics",
+          "development",
+          "development",
+          "qa",
+          "balance",
+          "director"
+        ],
+        "cutsPerDepartment": {
+          "planning": 2,
+          "graphics": 2,
+          "development": 2,
+          "qa": 1,
+          "balance": 1,
+          "director": 2,
+          "vibe2": 2
+        },
+        "formatChecked": true,
+        "emptyContentChecked": true,
+        "uniqueVisualsChecked": true,
+        "imagePathsChecked": true,
+        "newClaimsAdded": false,
+        "sourceMode": "VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_OWNED_VISUAL_PAGES_PLUS_DIRECTOR_PRESENTATION",
+        "assistantAuthorship": false,
+        "vibe2DraftAuthorship": true,
+        "imageFirst": true,
+        "shortText": true,
+        "displayLanguage": "ko"
+      },
+      "vibe2FirstDraft": {
+        "sourceFile": "artbook-submissions/daechung-rpg/2026-09-09/vibe2-first-draft.json",
+        "status": "FIRST_DRAFT_READY",
+        "proposalOnly": true,
+        "pageCount": 2
       }
     }
   ],

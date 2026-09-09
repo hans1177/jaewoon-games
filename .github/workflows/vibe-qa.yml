@@ -20,7 +20,7 @@ jobs:
           import json
           from pathlib import Path
           data = json.loads(Path('assets/asset-manifest.json').read_text(encoding='utf-8'))
-          assert data.get('version') in {1, 2}
+          assert data.get('version') in {1, 2, 3, 4}
           assert isinstance(data.get('approvedSources'), list)
           assert isinstance(data.get('assets'), list)
           assert {'NC', 'unknown'}.issubset(set(data.get('policy', {}).get('blocked', [])))
