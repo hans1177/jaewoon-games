@@ -938,6 +938,100 @@
         ]
       },
       "productionApproval": false
+    },
+    {
+      "id": "survival2-2026-09-10-initial-followup",
+      "gameId": "survival2",
+      "gameName": "숲의 생존자들",
+      "sourceDate": "2026-09-10",
+      "dueDate": "2026-09-10",
+      "status": "SCHEDULED",
+      "sourceWorkMode": "INITIAL",
+      "sourceLifecycleState": "DESIGN_BASELINE",
+      "criterion": "FIVE_VOTE_DEPARTMENT_AVERAGE_STARS_LE_OVERALL_AVERAGE",
+      "overallAverageStars": 4.68,
+      "maxStars": 5,
+      "ratingsPerDepartment": 5,
+      "departmentVotesPerResult": 4,
+      "directorVotesPerResult": 1,
+      "selectedDepartments": [
+        "development",
+        "qa"
+      ],
+      "departmentAverageStars": {
+        "planning": 4.8,
+        "graphics": 5,
+        "development": 4.6,
+        "qa": 4.2,
+        "balance": 4.8
+      },
+      "feedbackByDepartment": {
+        "development": [
+          {
+            "reviewerDepartment": "planning",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "The review is focused on the implementation phase, but the section could be improved by adding details about the architecture and technical risks in the implementation phase."
+          },
+          {
+            "reviewerDepartment": "graphics",
+            "reviewerType": "department",
+            "stars": 4,
+            "improvement": "survival2 is a 2D game with potential for improvement in isometric and mobile design, but no technical risks were identified."
+          },
+          {
+            "reviewerDepartment": "qa",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "balance",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "The section is well-structured with clear implementation details, but the unverified elements include '2D', 'isometric', and 'mobile' which could be refined for better alignment wi"
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 4,
+            "improvement": "부서 결과물의 개선점은 '2D' 부품의 복잡성을 줄이고, 'isometric' 기능의 복잡성을 줄어드는 점입니다."
+          }
+        ],
+        "qa": [
+          {
+            "reviewerDepartment": "planning",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본 결과물은 기능적 검증을 위한 요구사항을 명확히 하였으며, 특히 'survival-25d' 팀의 요구사항을 정확히 정리했습니다."
+          },
+          {
+            "reviewerDepartment": "graphics",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "survival-25d"
+          },
+          {
+            "reviewerDepartment": "development",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "추가된 테스트 케이스를 추가하여 테스트 성공률을 향상시킬 수 있습니다."
+          },
+          {
+            "reviewerDepartment": "balance",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "The review shows that the section is well-structured, but it could be improved by adding more detailed explanations for the problem scenes and handoffs."
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 1,
+            "improvement": "부서 결과물의 검증 점수는 1점으로 수정되었습니다."
+          }
+        ]
+      },
+      "productionApproval": false
     }
   ],
   "updatedAt": "2026-09-10"

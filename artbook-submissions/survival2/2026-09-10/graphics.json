@@ -1,0 +1,195 @@
+{
+  "version": 6,
+  "gameId": "survival2",
+  "date": "2026-09-10",
+  "department": "graphics",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "survival25d",
+  "evidence": [
+    {
+      "source": "web-games/survival2/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/survival2/survival-25d-buildings.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/survival2/survival-25d-flare-fix.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/survival2/survival-25d-runtime.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/survival2/survival-25d.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-10-survival2.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentVisualEvidence": "survival25d",
+    "identityDirection": "survival25d",
+    "characterMonsterEnvironmentLogic": "survival25d",
+    "mobileReadability": "survival25d",
+    "assetConstraints": "survival25d",
+    "gaps": "survival25d",
+    "handoffs": "survival25d"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "survival25d",
+      "survival25d",
+      "survival25d"
+    ],
+    "implementationPlan": [
+      "survival25d",
+      "survival25d",
+      "survival25d"
+    ],
+    "demoValidation": [
+      "survival25d",
+      "survival25d",
+      "survival25d"
+    ]
+  },
+  "unverified": [],
+  "cuts": [
+    {
+      "kind": "graphics",
+      "title": "survival25d",
+      "body": "survival25d · survival25d · survival25d",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/graphics.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "graphics",
+        "ownerName": "그래픽",
+        "pageSlot": 1,
+        "visualType": "concept-board",
+        "title": "survival25d",
+        "focus": "survival25d",
+        "caption": "survival25d",
+        "elements": [
+          {
+            "label": "character",
+            "note": "survival25d",
+            "kind": ""
+          },
+          {
+            "label": "monster",
+            "note": "survival25d",
+            "kind": ""
+          },
+          {
+            "label": "environment",
+            "note": "survival25d",
+            "kind": ""
+          },
+          {
+            "label": "logic",
+            "note": "survival25d",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/survival2/2026-09-10/visuals/graphics-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "graphics"
+      },
+      {
+        "owner": "graphics",
+        "ownerName": "그래픽",
+        "pageSlot": 2,
+        "visualType": "style-board",
+        "title": "survival25d",
+        "focus": "survival25d",
+        "caption": "survival25d",
+        "elements": [
+          {
+            "label": "mobile",
+            "note": "survival25d",
+            "kind": ""
+          },
+          {
+            "label": "readability",
+            "note": "survival25d",
+            "kind": ""
+          },
+          {
+            "label": "constraints",
+            "note": "survival25d",
+            "kind": ""
+          },
+          {
+            "label": "gaps",
+            "note": "survival25d",
+            "kind": ""
+          },
+          {
+            "label": "handoffs",
+            "note": "survival25d",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/survival2/2026-09-10/visuals/graphics-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "graphics"
+      }
+    ],
+    "generatedBy": {
+      "department": "graphics",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

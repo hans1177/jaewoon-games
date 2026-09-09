@@ -1,0 +1,1139 @@
+{
+  "version": 10,
+  "gameId": "survival2",
+  "gameName": "숲의 생존자들",
+  "date": "2026-09-10",
+  "status": "COMPLETED",
+  "workMode": "INITIAL",
+  "initialArtbook": true,
+  "secondWorkArtbook": false,
+  "revisionArtbook": false,
+  "developmentUpgradeArtbook": false,
+  "releaseUpgradeArtbook": false,
+  "productionApproval": false,
+  "styleProfile": "생존 공동체 기록 + 동료 관계 일지",
+  "lifecycle": {
+    "documentType": "LIVING_GAME_DESIGN_ARTBOOK",
+    "state": "DESIGN_BASELINE",
+    "targetState": "DESIGN_BASELINE",
+    "trigger": "INITIAL_DESIGN",
+    "sourceArtbookId": null,
+    "currentBaseline": true,
+    "approved": true,
+    "approvedAt": "2026-09-10",
+    "createsNewVersion": true,
+    "overwriteApprovedVersion": false,
+    "historyPreserved": true
+  },
+  "departments": {
+    "planning": {
+      "status": "SUBMITTED",
+      "readiness": "READY",
+      "sourceFile": "artbook-submissions/survival2/2026-09-10/planning.json",
+      "headline": "숲의 생존자들 기획 부서 1차 독립 아트북 작업",
+      "evidence": [
+        {
+          "source": "web-games/survival2/index.html",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d-buildings.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d-flare-fix.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d-runtime.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "artbook-work-orders/2026-09-10-survival2.json",
+          "usage": "department-work-order"
+        },
+        {
+          "source": "artbook-submissions/survival2/2026-09-10/vibe2-first-draft.json",
+          "usage": "vibe2-first-draft-proposal-reviewed-by-planning"
+        }
+      ],
+      "section": {
+        "worldEvidence": "숲의 생존자들이 주변 생태의 단서를 얻는다. 이는 초기 생존 기반을 확보하는 데 기여합니다.",
+        "protagonistMotivationEvidence": "숲의 생존자들이 위협을 극복하는 데 기여합니다. 이는 중간 생존 규칙에 적응하는 데 기여합니다.",
+        "regionCausality": "시작 생존권에서 자원 루프를 만든다. 이는 초기 위기를 넘기 위해 더 위험한 지역으로 갈 이유가 생긴다.",
+        "storyGameplayConnection": "숲의 생존자들이 동료와 상호작용하는 데 기여합니다. 이는 초기 생존 기반을 확보하는 데 기여합니다.",
+        "gaps": "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요",
+        "handoffs": "새로운 생태 질서를 선택하는 데 기여합니다. 이는 본편을 마치고 확장 탐험이 열린다."
+      },
+      "unverified": [
+        "A: 숲의 생존자들이 관찰·판단의 재미를 전면에 둔다. 이는 초기 생존 기반을 확보하는 데 기여합니다.",
+        "B: Noto Sans KR의 위협이 ui와 동시에 작동해 선택을 강요하는 장면을 만든다. 이는 중간 생존 규칙에 적응하는 데 기여합니다.",
+        "C: utf-8의 관계를 한 장면에서 이해하는 순간을 만든다. 이는 후반 위협과 최종 세력의 존재를 이해하는 데 기여합니다."
+      ],
+      "revision": null
+    },
+    "graphics": {
+      "status": "SUBMITTED",
+      "readiness": "READY",
+      "sourceFile": "artbook-submissions/survival2/2026-09-10/graphics.json",
+      "headline": "survival25d",
+      "evidence": [
+        {
+          "source": "web-games/survival2/index.html",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d-buildings.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d-flare-fix.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d-runtime.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "artbook-work-orders/2026-09-10-survival2.json",
+          "usage": "department-work-order"
+        }
+      ],
+      "section": {
+        "currentVisualEvidence": "survival25d",
+        "identityDirection": "survival25d",
+        "characterMonsterEnvironmentLogic": "survival25d",
+        "mobileReadability": "survival25d",
+        "assetConstraints": "survival25d",
+        "gaps": "survival25d",
+        "handoffs": "survival25d"
+      },
+      "unverified": [],
+      "revision": null
+    },
+    "development": {
+      "status": "SUBMITTED",
+      "readiness": "NEEDS_VALIDATION",
+      "sourceFile": "artbook-submissions/survival2/2026-09-10/development.json",
+      "headline": "survival2",
+      "evidence": [
+        {
+          "source": "web-games/survival2/index.html",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d-buildings.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d-flare-fix.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d-runtime.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "artbook-work-orders/2026-09-10-survival2.json",
+          "usage": "department-work-order"
+        }
+      ],
+      "section": {
+        "implementedNow": "true",
+        "architecture": "2D",
+        "prototypeLimits": "100",
+        "technicalRisks": "none",
+        "demoPlan": "live",
+        "handoffs": "none"
+      },
+      "unverified": [
+        "2D",
+        "isometric",
+        "mobile"
+      ],
+      "revision": null
+    },
+    "qa": {
+      "status": "SUBMITTED",
+      "readiness": "NEEDS_VALIDATION",
+      "sourceFile": "artbook-submissions/survival2/2026-09-10/qa.json",
+      "headline": "survival-25d",
+      "evidence": [
+        {
+          "source": "web-games/survival2/index.html",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d-buildings.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d-flare-fix.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d-runtime.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "artbook-work-orders/2026-09-10-survival2.json",
+          "usage": "department-work-order"
+        }
+      ],
+      "section": {
+        "currentPlayableFlow": "survival-25d",
+        "verifiedEvidence": "survival-25d",
+        "problemScenes": "survival-25d",
+        "mobileSaveErrorRisks": "survival-25d",
+        "testScenarios": "survival-25d",
+        "unverified": "survival-25d",
+        "handoffs": "survival-25d"
+      },
+      "unverified": [
+        "survival-25d"
+      ],
+      "revision": null
+    },
+    "balance": {
+      "status": "SUBMITTED",
+      "readiness": "READY",
+      "sourceFile": "artbook-submissions/survival2/2026-09-10/balance.json",
+      "headline": "생존자: ${s.name}, 무기: ${s.weapon}, 섬유: ${s.fiber}, 나무: ${s.wood}, 돌: ${s.stone}, 고기: ${s.meat}",
+      "evidence": [
+        {
+          "source": "web-games/survival2/index.html",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d-buildings.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d-flare-fix.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d-runtime.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "web-games/survival2/survival-25d.js",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "artbook-work-orders/2026-09-10-survival2.json",
+          "usage": "department-work-order"
+        }
+      ],
+      "section": {
+        "currentNumbers": ":[{",
+        "progressionCurve": "0.22",
+        "combatFeel": "0.35",
+        "economyRewards": "35",
+        "difficultyTransitions": "0.14",
+        "testMeasurements": "0.10",
+        "handoffs": "0.22"
+      },
+      "unverified": [
+        "heal()"
+      ],
+      "revision": null
+    }
+  },
+  "departmentOpinions": {
+    "planning": {
+      "headline": "숲의 생존자들 기획 부서 1차 독립 아트북 작업",
+      "readiness": "READY",
+      "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+      "averageStars": 4.8,
+      "maxStars": 5,
+      "reviewsReceived": 5,
+      "departmentVotes": 4,
+      "directorVotes": 1,
+      "priorityImprovement": "본부의 전략적 분석이 충분하지 않으며, 주요 NPC/세력의 부족한 점을 해결할 수 있다.",
+      "priorityImprovementFrom": "director",
+      "ratings": [
+        {
+          "reviewerDepartment": "director",
+          "reviewerType": "director",
+          "stars": 4,
+          "improvement": "본부의 전략적 분석이 충분하지 않으며, 주요 NPC/세력의 부족한 점을 해결할 수 있다."
+        },
+        {
+          "reviewerDepartment": "graphics",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본부의 아트북 기능을 강화해 생존 기반 확보와 상호작용 기능을 더 잘 표현할 수 있습니다."
+        },
+        {
+          "reviewerDepartment": "development",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본부의 1차 독립 아트북 작업은 초기 생존 기반 확보와 중간 생존 규칙 적응을 강조하며, 후반 위협과 세력 이해를 위한 장면을 효과적으로 전달했습니다."
+        },
+        {
+          "reviewerDepartment": "qa",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본부의 기획 부서 1차 독립 아트북 작업은 초기 생존 기반 확보와 중간 생존 규칙 적응을 강조했으나, 주요 NPC/세력 기반 마련을 미비했으며, 후반 위협과 세력 이해를 위한 장면 개선을 필요로 합니다."
+        },
+        {
+          "reviewerDepartment": "balance",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본부의 1차 독립 아트북 작업은 초기 생존 기반 확보와 중간 생존 규칙 적응을 강조했으나, 후반 위협과 최종 세력 이해를 위한 장면 개선이 부족합니다."
+        }
+      ],
+      "overallDepartmentAverage": 4.68,
+      "secondWorkSameDay": false,
+      "secondWorkDueDate": null,
+      "unverified": [
+        "A: 숲의 생존자들이 관찰·판단의 재미를 전면에 둔다. 이는 초기 생존 기반을 확보하는 데 기여합니다.",
+        "B: Noto Sans KR의 위협이 ui와 동시에 작동해 선택을 강요하는 장면을 만든다. 이는 중간 생존 규칙에 적응하는 데 기여합니다.",
+        "C: utf-8의 관계를 한 장면에서 이해하는 순간을 만든다. 이는 후반 위협과 최종 세력의 존재를 이해하는 데 기여합니다."
+      ]
+    },
+    "graphics": {
+      "headline": "survival25d",
+      "readiness": "READY",
+      "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+      "averageStars": 5,
+      "maxStars": 5,
+      "reviewsReceived": 5,
+      "departmentVotes": 4,
+      "directorVotes": 1,
+      "priorityImprovement": "본부 결과물의 개선점은 'survival25d'의 시각화 및 인식 방향을 명확히 설명하는 부분을 추가하여 더 효과적인 기능을 제공할 수 있습니다.",
+      "priorityImprovementFrom": "planning",
+      "ratings": [
+        {
+          "reviewerDepartment": "planning",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본부 결과물의 개선점은 'survival25d'의 시각화 및 인식 방향을 명확히 설명하는 부분을 추가하여 더 효과적인 기능을 제공할 수 있습니다."
+        },
+        {
+          "reviewerDepartment": "development",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "The review is comprehensive and highlights the strengths of the graphics section. However, it could be improved by adding a brief explanation of the specific challenges faced durin"
+        },
+        {
+          "reviewerDepartment": "qa",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+        },
+        {
+          "reviewerDepartment": "balance",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "부서 결과물의 내용을 명확히 하며, 게임의 품질점수를 명확히 표시합니다."
+        },
+        {
+          "reviewerDepartment": "director",
+          "reviewerType": "director",
+          "stars": 5,
+          "improvement": "부서 결과물의 내용을 명확히하고, 보완점으로 '보완점: 부서 결과물의 내용이 부족하여 특정 부분에 대한 개선이 필요'를 추가합니다."
+        }
+      ],
+      "overallDepartmentAverage": 4.68,
+      "secondWorkSameDay": false,
+      "secondWorkDueDate": null,
+      "unverified": []
+    },
+    "development": {
+      "headline": "survival2",
+      "readiness": "NEEDS_VALIDATION",
+      "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+      "averageStars": 4.6,
+      "maxStars": 5,
+      "reviewsReceived": 5,
+      "departmentVotes": 4,
+      "directorVotes": 1,
+      "priorityImprovement": "survival2 is a 2D game with potential for improvement in isometric and mobile design, but no technical risks were identified.",
+      "priorityImprovementFrom": "graphics",
+      "ratings": [
+        {
+          "reviewerDepartment": "graphics",
+          "reviewerType": "department",
+          "stars": 4,
+          "improvement": "survival2 is a 2D game with potential for improvement in isometric and mobile design, but no technical risks were identified."
+        },
+        {
+          "reviewerDepartment": "director",
+          "reviewerType": "director",
+          "stars": 4,
+          "improvement": "부서 결과물의 개선점은 '2D' 부품의 복잡성을 줄이고, 'isometric' 기능의 복잡성을 줄어드는 점입니다."
+        },
+        {
+          "reviewerDepartment": "planning",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "The review is focused on the implementation phase, but the section could be improved by adding details about the architecture and technical risks in the implementation phase."
+        },
+        {
+          "reviewerDepartment": "qa",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "balance",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "The section is well-structured with clear implementation details, but the unverified elements include '2D', 'isometric', and 'mobile' which could be refined for better alignment wi"
+        }
+      ],
+      "overallDepartmentAverage": 4.68,
+      "secondWorkSameDay": true,
+      "secondWorkDueDate": "2026-09-10",
+      "unverified": [
+        "2D",
+        "isometric",
+        "mobile"
+      ]
+    },
+    "qa": {
+      "headline": "survival-25d",
+      "readiness": "NEEDS_VALIDATION",
+      "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+      "averageStars": 4.2,
+      "maxStars": 5,
+      "reviewsReceived": 5,
+      "departmentVotes": 4,
+      "directorVotes": 1,
+      "priorityImprovement": "부서 결과물의 검증 점수는 1점으로 수정되었습니다.",
+      "priorityImprovementFrom": "director",
+      "ratings": [
+        {
+          "reviewerDepartment": "director",
+          "reviewerType": "director",
+          "stars": 1,
+          "improvement": "부서 결과물의 검증 점수는 1점으로 수정되었습니다."
+        },
+        {
+          "reviewerDepartment": "planning",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본 결과물은 기능적 검증을 위한 요구사항을 명확히 하였으며, 특히 'survival-25d' 팀의 요구사항을 정확히 정리했습니다."
+        },
+        {
+          "reviewerDepartment": "graphics",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "survival-25d"
+        },
+        {
+          "reviewerDepartment": "development",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "추가된 테스트 케이스를 추가하여 테스트 성공률을 향상시킬 수 있습니다."
+        },
+        {
+          "reviewerDepartment": "balance",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "The review shows that the section is well-structured, but it could be improved by adding more detailed explanations for the problem scenes and handoffs."
+        }
+      ],
+      "overallDepartmentAverage": 4.68,
+      "secondWorkSameDay": true,
+      "secondWorkDueDate": "2026-09-10",
+      "unverified": [
+        "survival-25d"
+      ]
+    },
+    "balance": {
+      "headline": "생존자: ${s.name}, 무기: ${s.weapon}, 섬유: ${s.fiber}, 나무: ${s.wood}, 돌: ${s.stone}, 고기: ${s.meat}",
+      "readiness": "READY",
+      "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+      "averageStars": 4.8,
+      "maxStars": 5,
+      "reviewsReceived": 5,
+      "departmentVotes": 4,
+      "directorVotes": 1,
+      "priorityImprovement": "부서 결과물의 내용을 명확히 하며, 보완점은 '부서 결과물의 내용이 재미있는 요소를 포함하지 않도록 하되, 부족한 부분을 정확히 설명할 수 있습니다.",
+      "priorityImprovementFrom": "director",
+      "ratings": [
+        {
+          "reviewerDepartment": "director",
+          "reviewerType": "director",
+          "stars": 4,
+          "improvement": "부서 결과물의 내용을 명확히 하며, 보완점은 '부서 결과물의 내용이 재미있는 요소를 포함하지 않도록 하되, 부족한 부분을 정확히 설명할 수 있습니다."
+        },
+        {
+          "reviewerDepartment": "planning",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "graphics",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "development",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본 개발 부서 결과물의 점수는 5점으로 평가되었습니다. 보완점은 '본 개발 부서 결과물의 개발 과정에서 'survival2' 게임의 개발 스타일과 맞추지 않도록 주의할 수 있습니다.'"
+        },
+        {
+          "reviewerDepartment": "qa",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        }
+      ],
+      "overallDepartmentAverage": 4.68,
+      "secondWorkSameDay": false,
+      "secondWorkDueDate": null,
+      "unverified": [
+        "heal()"
+      ]
+    }
+  },
+  "ratingSummary": {
+    "scale": "STARS_1_TO_5",
+    "ratingsPerDepartment": 5,
+    "departmentVotesPerResult": 4,
+    "directorVotesPerResult": 1,
+    "departmentAverageStars": {
+      "planning": 4.8,
+      "graphics": 5,
+      "development": 4.6,
+      "qa": 4.2,
+      "balance": 4.8
+    },
+    "overallAverageStars": 4.68,
+    "secondWorkCriterion": "DEPARTMENT_AVERAGE_OR_BELOW_OVERALL_AVERAGE",
+    "secondWorkDepartments": [
+      "development",
+      "qa"
+    ],
+    "secondWorkDueDate": "2026-09-10"
+  },
+  "collaboration": {
+    "protocol": "PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5",
+    "departmentReviews": {
+      "planning": {
+        "sourceFile": "artbook-submissions/survival2/2026-09-10/reviews/planning.json",
+        "protocol": "PEER_IMPROVEMENT_STAR_5",
+        "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+        "reviewedDepartments": [
+          "graphics",
+          "development",
+          "qa",
+          "balance"
+        ],
+        "peerReviews": [
+          {
+            "targetDepartment": "graphics",
+            "improvement": "본부 결과물의 개선점은 'survival25d'의 시각화 및 인식 방향을 명확히 설명하는 부분을 추가하여 더 효과적인 기능을 제공할 수 있습니다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "development",
+            "improvement": "The review is focused on the implementation phase, but the section could be improved by adding details about the architecture and technical risks in the implementation phase.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "qa",
+            "improvement": "본 결과물은 기능적 검증을 위한 요구사항을 명확히 하였으며, 특히 'survival-25d' 팀의 요구사항을 정확히 정리했습니다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "balance",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          }
+        ]
+      },
+      "graphics": {
+        "sourceFile": "artbook-submissions/survival2/2026-09-10/reviews/graphics.json",
+        "protocol": "PEER_IMPROVEMENT_STAR_5",
+        "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+        "reviewedDepartments": [
+          "planning",
+          "development",
+          "qa",
+          "balance"
+        ],
+        "peerReviews": [
+          {
+            "targetDepartment": "planning",
+            "improvement": "본부의 아트북 기능을 강화해 생존 기반 확보와 상호작용 기능을 더 잘 표현할 수 있습니다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "development",
+            "improvement": "survival2 is a 2D game with potential for improvement in isometric and mobile design, but no technical risks were identified.",
+            "stars": 4
+          },
+          {
+            "targetDepartment": "qa",
+            "improvement": "survival-25d",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "balance",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          }
+        ]
+      },
+      "development": {
+        "sourceFile": "artbook-submissions/survival2/2026-09-10/reviews/development.json",
+        "protocol": "PEER_IMPROVEMENT_STAR_5",
+        "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+        "reviewedDepartments": [
+          "planning",
+          "graphics",
+          "qa",
+          "balance"
+        ],
+        "peerReviews": [
+          {
+            "targetDepartment": "planning",
+            "improvement": "본부의 1차 독립 아트북 작업은 초기 생존 기반 확보와 중간 생존 규칙 적응을 강조하며, 후반 위협과 세력 이해를 위한 장면을 효과적으로 전달했습니다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "graphics",
+            "improvement": "The review is comprehensive and highlights the strengths of the graphics section. However, it could be improved by adding a brief explanation of the specific challenges faced durin",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "qa",
+            "improvement": "추가된 테스트 케이스를 추가하여 테스트 성공률을 향상시킬 수 있습니다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "balance",
+            "improvement": "본 개발 부서 결과물의 점수는 5점으로 평가되었습니다. 보완점은 '본 개발 부서 결과물의 개발 과정에서 'survival2' 게임의 개발 스타일과 맞추지 않도록 주의할 수 있습니다.'",
+            "stars": 5
+          }
+        ]
+      },
+      "qa": {
+        "sourceFile": "artbook-submissions/survival2/2026-09-10/reviews/qa.json",
+        "protocol": "PEER_IMPROVEMENT_STAR_5",
+        "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+        "reviewedDepartments": [
+          "planning",
+          "graphics",
+          "development",
+          "balance"
+        ],
+        "peerReviews": [
+          {
+            "targetDepartment": "planning",
+            "improvement": "본부의 기획 부서 1차 독립 아트북 작업은 초기 생존 기반 확보와 중간 생존 규칙 적응을 강조했으나, 주요 NPC/세력 기반 마련을 미비했으며, 후반 위협과 세력 이해를 위한 장면 개선을 필요로 합니다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "graphics",
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "development",
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "balance",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          }
+        ]
+      },
+      "balance": {
+        "sourceFile": "artbook-submissions/survival2/2026-09-10/reviews/balance.json",
+        "protocol": "PEER_IMPROVEMENT_STAR_5",
+        "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+        "reviewedDepartments": [
+          "planning",
+          "graphics",
+          "development",
+          "qa"
+        ],
+        "peerReviews": [
+          {
+            "targetDepartment": "planning",
+            "improvement": "본부의 1차 독립 아트북 작업은 초기 생존 기반 확보와 중간 생존 규칙 적응을 강조했으나, 후반 위협과 최종 세력 이해를 위한 장면 개선이 부족합니다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "graphics",
+            "improvement": "부서 결과물의 내용을 명확히 하며, 게임의 품질점수를 명확히 표시합니다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "development",
+            "improvement": "The section is well-structured with clear implementation details, but the unverified elements include '2D', 'isometric', and 'mobile' which could be refined for better alignment wi",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "qa",
+            "improvement": "The review shows that the section is well-structured, but it could be improved by adding more detailed explanations for the problem scenes and handoffs.",
+            "stars": 5
+          }
+        ]
+      }
+    },
+    "directorReview": {
+      "sourceFile": "artbook-submissions/survival2/2026-09-10/reviews/director.json",
+      "protocol": "DIRECTOR_IMPROVEMENT_STAR_5",
+      "reviewScope": "ALL_FIVE_DEPARTMENT_RESULTS",
+      "ratings": [
+        {
+          "targetDepartment": "planning",
+          "improvement": "본부의 전략적 분석이 충분하지 않으며, 주요 NPC/세력의 부족한 점을 해결할 수 있다.",
+          "stars": 4
+        },
+        {
+          "targetDepartment": "graphics",
+          "improvement": "부서 결과물의 내용을 명확히하고, 보완점으로 '보완점: 부서 결과물의 내용이 부족하여 특정 부분에 대한 개선이 필요'를 추가합니다.",
+          "stars": 5
+        },
+        {
+          "targetDepartment": "development",
+          "improvement": "부서 결과물의 개선점은 '2D' 부품의 복잡성을 줄이고, 'isometric' 기능의 복잡성을 줄어드는 점입니다.",
+          "stars": 4
+        },
+        {
+          "targetDepartment": "qa",
+          "improvement": "부서 결과물의 검증 점수는 1점으로 수정되었습니다.",
+          "stars": 1
+        },
+        {
+          "targetDepartment": "balance",
+          "improvement": "부서 결과물의 내용을 명확히 하며, 보완점은 '부서 결과물의 내용이 재미있는 요소를 포함하지 않도록 하되, 부족한 부분을 정확히 설명할 수 있습니다.",
+          "stars": 4
+        }
+      ]
+    },
+    "sourceFiles": [
+      "artbook-submissions/survival2/2026-09-10/reviews/planning.json",
+      "artbook-submissions/survival2/2026-09-10/reviews/graphics.json",
+      "artbook-submissions/survival2/2026-09-10/reviews/development.json",
+      "artbook-submissions/survival2/2026-09-10/reviews/qa.json",
+      "artbook-submissions/survival2/2026-09-10/reviews/balance.json",
+      "artbook-submissions/survival2/2026-09-10/reviews/director.json"
+    ],
+    "allFiveDepartmentsReviewed": true,
+    "homepageOpinionMode": "IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS"
+  },
+  "directorSummary": {
+    "assemblyMode": "department-material-plus-director-rating-plus-deterministic-five-vote-aggregation",
+    "sourceDepartments": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "balance"
+    ],
+    "sourceFiles": [
+      "artbook-submissions/survival2/2026-09-10/planning.json",
+      "artbook-submissions/survival2/2026-09-10/graphics.json",
+      "artbook-submissions/survival2/2026-09-10/development.json",
+      "artbook-submissions/survival2/2026-09-10/qa.json",
+      "artbook-submissions/survival2/2026-09-10/balance.json"
+    ],
+    "reviewFiles": [
+      "artbook-submissions/survival2/2026-09-10/reviews/planning.json",
+      "artbook-submissions/survival2/2026-09-10/reviews/graphics.json",
+      "artbook-submissions/survival2/2026-09-10/reviews/development.json",
+      "artbook-submissions/survival2/2026-09-10/reviews/qa.json",
+      "artbook-submissions/survival2/2026-09-10/reviews/balance.json",
+      "artbook-submissions/survival2/2026-09-10/reviews/director.json"
+    ],
+    "readinessSummary": {
+      "planning": "READY",
+      "graphics": "READY",
+      "development": "NEEDS_VALIDATION",
+      "qa": "NEEDS_VALIDATION",
+      "balance": "READY"
+    },
+    "newDepartmentClaimsAdded": false,
+    "productionDecisionMade": false
+  },
+  "cuts": [
+    {
+      "no": 1,
+      "kind": "director",
+      "title": "survival2",
+      "body": "생존자, 무기, 섬유, 나무, 돌, …",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/director-cover.svg",
+      "sourceDepartment": "director",
+      "pageType": "cover",
+      "visualType": "game-concept-cover",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 2,
+      "kind": "vibe2",
+      "title": "오프닝",
+      "body": "첫날 생존 기반을 확보한다 — 첫 위기를 넘기고 주변 생태의 단서를 얻는다 · 시작 생존권: 낯선 환경과 자원 부족 → 먹이와 안전지대를 확보한다 → 첫 위기를…",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/vibe2-draft-1.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 3,
+      "kind": "vibe2",
+      "title": "초반",
+      "body": "안정적인 자원 루프를 만든다 — 더 위험한 지역으로 갈 이유가 생긴다 · 초기 활동권: 반복되는 포식자와 자원 경쟁 → 기본 장비와 이동 루트를 확보한다 → 더…",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/vibe2-draft-2.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 4,
+      "kind": "vibe2",
+      "title": "중반",
+      "body": "새 생존 규칙에 적응한다 — 후반 위협과 최종 세력의 존재가 드러난다 · 중간 생태권: 기존 방식으로 버티기 어려운 환경 변화 → 새 자원과 능력을 활용해 위협…",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/vibe2-draft-3.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 5,
+      "kind": "vibe2",
+      "title": "후반",
+      "body": "최종 위협에 맞설 준비를 끝낸다 — 최종보스와 맞설 조건이 완성된다 · 위험 핵심권: 생태 균형이 무너지며 안전지대가 사라진다 → 동료·장비·자원을 결집해 핵심…",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/vibe2-draft-4.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 6,
+      "kind": "vibe2",
+      "title": "최종보스",
+      "body": "생태 위기의 원인을 제거한다 — 생존권의 주도권을 되찾는다 · 최종 둥지: 최종 세력이 생존권 전체를 위협한다 → 축적한 생존 수단을 총동원해 보스를 공략한다 …",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/vibe2-draft-5.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 7,
+      "kind": "vibe2",
+      "title": "엔딩",
+      "body": "새로운 생태 질서를 선택한다 — 본편을 마치고 확장 탐험이 열린다 · 회복된 생존권: 승리 뒤에도 자원과 세력의 균형 문제가 남는다 → 남은 지역을 정비하고 다…",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/vibe2-draft-6.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 8,
+      "kind": "vibe2",
+      "title": "지역 흐름",
+      "body": "시작 생존권 → 초기 활동권 → 중간 생태권 → 위험 핵심권 → 최종 둥지 → 회복된 생존권 · 시작 생존권 → 초기 활동권: 첫 위기를 넘기고 주변 생태의 단…",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/vibe2-draft-7.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 9,
+      "kind": "vibe2",
+      "title": "메인 퀘스트",
+      "body": "OPENING/시작 생존권: 첫날 생존 기반을 확보한다 · 낯선 환경과 자원 부족 → 먹이와 안전지대를 확보한다 → 첫 위기를 넘기고 주변 생태의 단서를 얻는다…",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/vibe2-draft-8.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 10,
+      "kind": "planning",
+      "title": "world-map",
+      "body": "숲의 생존자들이 주변 생태의 단서를 얻는다. 이는 초기 생존 기반을 확보하는 데…",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/planning-1.svg",
+      "sourceDepartment": "planning",
+      "pageType": "department-visual",
+      "visualType": "world-map",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 11,
+      "kind": "planning",
+      "title": "story-flow",
+      "body": "숲의 생존자들이 동료와 상호작용하는 데 기여합니다. 이는 초기 생존 기반을 확보…",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/planning-2.svg",
+      "sourceDepartment": "planning",
+      "pageType": "department-visual",
+      "visualType": "story-flow",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 12,
+      "kind": "graphics",
+      "title": "survival25d",
+      "body": "survival25d",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/graphics-1.svg",
+      "sourceDepartment": "graphics",
+      "pageType": "department-visual",
+      "visualType": "concept-board",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 13,
+      "kind": "graphics",
+      "title": "survival25d",
+      "body": "survival25d",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/graphics-2.svg",
+      "sourceDepartment": "graphics",
+      "pageType": "department-visual",
+      "visualType": "style-board",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 14,
+      "kind": "development",
+      "title": "플레이 루프",
+      "body": "플레이 루프 구조 설계",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/development-1.svg",
+      "sourceDepartment": "development",
+      "pageType": "department-visual",
+      "visualType": "gameplay-loop",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 15,
+      "kind": "development",
+      "title": "시스템 연결",
+      "body": "시스템 연결 구조",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/development-2.svg",
+      "sourceDepartment": "development",
+      "pageType": "department-visual",
+      "visualType": "system-flow",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 16,
+      "kind": "qa",
+      "title": "survival-25d",
+      "body": "survival-25d",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/qa-1.svg",
+      "sourceDepartment": "qa",
+      "pageType": "department-visual",
+      "visualType": "test-journey",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 17,
+      "kind": "balance",
+      "title": "생존자: ${s.name}, 무…",
+      "body": "새로운 설정 없이, ${s.name}의 생존자, ${s.weapon}의 무기, …",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/balance-1.svg",
+      "sourceDepartment": "balance",
+      "pageType": "department-visual",
+      "visualType": "balance-curve",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 18,
+      "kind": "director",
+      "title": "survival2",
+      "body": "survival25d",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/director-summary.svg",
+      "sourceDepartment": "director",
+      "pageType": "summary",
+      "visualType": "department-summary",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    }
+  ],
+  "publication": {
+    "automaticProductionApproval": false,
+    "homepageVisibilityMayBeEnabledSeparately": true,
+    "displayReady": true,
+    "departmentOpinionsRequired": true,
+    "fiveVoteRatingsRequired": true,
+    "requiredCuts": 18,
+    "exactCutCountRequired": true,
+    "minCuts": 12,
+    "maxCuts": 30,
+    "postprocessRequired": true,
+    "postprocessComplete": true,
+    "homepageMode": "compact-card-detail-viewer"
+  },
+  "vibe2FirstDraft": {
+    "sourceFile": "artbook-submissions/survival2/2026-09-10/vibe2-first-draft.json",
+    "status": "FIRST_DRAFT_READY",
+    "proposalOnly": true,
+    "pageCount": 8
+  },
+  "presentation": {
+    "mode": "VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_AUTHORED",
+    "directorSource": "artbook-submissions/survival2/2026-09-10/presentation/director-presentation.json",
+    "departmentPageCounts": {
+      "planning": 2,
+      "graphics": 2,
+      "development": 2,
+      "qa": 1,
+      "balance": 1
+    },
+    "vibe2DraftPages": 8,
+    "employeeAuthoredPages": 10,
+    "assistantAuthored": false
+  },
+  "postprocess": {
+    "version": 6,
+    "complete": true,
+    "checkedAt": "2026-09-09T17:03:24.603Z",
+    "requiredCuts": 18,
+    "cutCount": 18,
+    "pagePolicy": {
+      "min": 12,
+      "default": 16,
+      "max": 30,
+      "target": 18,
+      "legacyTenPageCompatible": true
+    },
+    "pagePlan": [
+      "director",
+      "Vibe2:오프닝",
+      "Vibe2:초반",
+      "Vibe2:중반",
+      "Vibe2:후반",
+      "Vibe2:최종보스",
+      "Vibe2:엔딩",
+      "Vibe2:지역 흐름",
+      "Vibe2:메인 퀘스트",
+      "planning",
+      "planning",
+      "graphics",
+      "graphics",
+      "development",
+      "development",
+      "qa",
+      "balance",
+      "director"
+    ],
+    "cutsPerDepartment": {
+      "planning": 2,
+      "graphics": 2,
+      "development": 2,
+      "qa": 1,
+      "balance": 1,
+      "director": 2,
+      "vibe2": 8
+    },
+    "formatChecked": true,
+    "emptyContentChecked": true,
+    "uniqueVisualsChecked": true,
+    "imagePathsChecked": true,
+    "newClaimsAdded": false,
+    "sourceMode": "VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_OWNED_VISUAL_PAGES_PLUS_DIRECTOR_PRESENTATION",
+    "assistantAuthorship": false,
+    "vibe2DraftAuthorship": true,
+    "imageFirst": true,
+    "shortText": true,
+    "displayLanguage": "ko"
+  }
+}

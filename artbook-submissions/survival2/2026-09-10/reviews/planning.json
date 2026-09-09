@@ -1,0 +1,57 @@
+{
+  "version": 6,
+  "gameId": "survival2",
+  "date": "2026-09-10",
+  "department": "planning",
+  "status": "REVIEWED",
+  "round": 2,
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "independentFirstRoundCompleted": true,
+    "onePeerPerGeneration": true
+  },
+  "protocol": "PEER_IMPROVEMENT_STAR_5",
+  "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+  "reviewedDepartments": [
+    "graphics",
+    "development",
+    "qa",
+    "balance"
+  ],
+  "ratingScale": {
+    "type": "STARS",
+    "min": 1,
+    "max": 5
+  },
+  "peerReviews": [
+    {
+      "targetDepartment": "graphics",
+      "improvement": "본부 결과물의 개선점은 'survival25d'의 시각화 및 인식 방향을 명확히 설명하는 부분을 추가하여 더 효과적인 기능을 제공할 수 있습니다.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "development",
+      "improvement": "The review is focused on the implementation phase, but the section could be improved by adding details about the architecture and technical risks in the implementation phase.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "qa",
+      "improvement": "본 결과물은 기능적 검증을 위한 요구사항을 명확히 하였으며, 특히 'survival-25d' 팀의 요구사항을 정확히 정리했습니다.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "balance",
+      "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+      "stars": 5
+    }
+  ],
+  "guard": {
+    "mayRewriteOtherDepartments": false,
+    "mayEvaluateOwnDepartment": false,
+    "productionApproval": false,
+    "starRatingIsProductionApproval": false
+  }
+}
