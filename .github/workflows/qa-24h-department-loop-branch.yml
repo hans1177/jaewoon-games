@@ -1,0 +1,29 @@
+name: QA 24H Department Loop Branch
+
+on:
+  push:
+    branches: ['vibe2/24h-department-loop-20260909']
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax
+        run: |
+          node --check tools/autonomous-24h-work-planner.mjs
+          node --check tools/autonomous-department-cycle.mjs
+          node --check tools/autonomous-queue-state.mjs
+      - name: Tests
+        run: |
+          node --test qa/autonomous-24h-work-planner.test.mjs
+          node --test qa/autonomous-queue-state.test.mjs
+          node --test qa/autonomous-work-planner.test.mjs
+          node --test qa/autonomous-development-worker.test.mjs
