@@ -120,7 +120,7 @@
         "P0009"
       ],
       "selection": "AUTO_TIER1_READY_THEN_SCORE_WITH_IMPACT_AWARE_TIER2",
-      "activeDevelopmentRunId": 34416521515,
+      "activeDevelopmentRunId": 34416782799,
       "syncIntervalMs": 30000,
       "updatedAtKst": "2026-09-10",
       "source": [
@@ -313,55 +313,98 @@
       "STALE": 0
     },
     "liveStates": {
-      "ACTIVE": 1,
-      "WAITING": 6,
+      "ACTIVE": 6,
+      "WAITING": 1,
       "BLOCKED": 0,
       "DONE": 1
     },
-    "activeDevelopmentRunId": 34416521515,
-    "primaryFindings": [
-      "NO_WORK_ORDER:artbook-work-orders/2026-09-10-daechung-rpg.json"
-    ],
+    "activeDevelopmentRunId": 34416782799,
+    "primaryFindings": [],
     "staff": {
       "planning": {
         "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34416521515",
-        "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
-        "jobEvidence": null
+        "workState": "ACTIVE",
+        "task": "daechung-rpg daily artbook section",
+        "source": "artbook",
+        "reason": "this department job is currently executing",
+        "jobEvidence": {
+          "id": 102685426805,
+          "name": "round1 (planning)",
+          "status": "in_progress",
+          "conclusion": null,
+          "failedStep": null,
+          "startedAt": "2026-09-09T23:33:43Z",
+          "completedAt": null,
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34417110293/job/102685426805"
+        }
       },
       "development": {
         "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34416521515",
-        "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
-        "jobEvidence": null
+        "workState": "ACTIVE",
+        "task": "daechung-rpg daily artbook section",
+        "source": "artbook",
+        "reason": "this department job is currently executing",
+        "jobEvidence": {
+          "id": 102685426838,
+          "name": "round1 (development)",
+          "status": "in_progress",
+          "conclusion": null,
+          "failedStep": null,
+          "startedAt": "2026-09-09T23:33:42Z",
+          "completedAt": null,
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34417110293/job/102685426838"
+        }
       },
       "qa": {
         "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34416521515",
-        "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
-        "jobEvidence": null
+        "workState": "ACTIVE",
+        "task": "daechung-rpg daily artbook section",
+        "source": "artbook",
+        "reason": "this department job is currently executing",
+        "jobEvidence": {
+          "id": 102685426919,
+          "name": "round1 (qa)",
+          "status": "in_progress",
+          "conclusion": null,
+          "failedStep": null,
+          "startedAt": "2026-09-09T23:33:42Z",
+          "completedAt": null,
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34417110293/job/102685426919"
+        }
       },
       "graphics": {
         "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34416521515",
-        "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
-        "jobEvidence": null
+        "workState": "ACTIVE",
+        "task": "daechung-rpg daily artbook section",
+        "source": "artbook",
+        "reason": "this department job is currently executing",
+        "jobEvidence": {
+          "id": 102685426854,
+          "name": "round1 (graphics)",
+          "status": "in_progress",
+          "conclusion": null,
+          "failedStep": null,
+          "startedAt": "2026-09-09T23:33:42Z",
+          "completedAt": null,
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34417110293/job/102685426854"
+        }
       },
       "balance": {
         "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34416521515",
-        "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
-        "jobEvidence": null
+        "workState": "ACTIVE",
+        "task": "daechung-rpg daily artbook section",
+        "source": "artbook",
+        "reason": "this department job is currently executing",
+        "jobEvidence": {
+          "id": 102685426832,
+          "name": "round1 (balance)",
+          "status": "in_progress",
+          "conclusion": null,
+          "failedStep": null,
+          "startedAt": "2026-09-09T23:33:42Z",
+          "completedAt": null,
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34417110293/job/102685426832"
+        }
       },
       "director": {
         "status": "WORKING",
@@ -575,38 +618,38 @@
     "departmentTasks": {
       "planning": {
         "status": "working",
-        "task": "autonomous development floor 34416521515",
+        "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "workState": "ACTIVE",
+        "reason": "this department job is currently executing"
       },
       "development": {
         "status": "working",
-        "task": "autonomous development floor 34416521515",
+        "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "workState": "ACTIVE",
+        "reason": "this department job is currently executing"
       },
       "qa": {
         "status": "working",
-        "task": "autonomous development floor 34416521515",
+        "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "workState": "ACTIVE",
+        "reason": "this department job is currently executing"
       },
       "graphics": {
         "status": "working",
-        "task": "autonomous development floor 34416521515",
+        "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "workState": "ACTIVE",
+        "reason": "this department job is currently executing"
       },
       "balance": {
         "status": "working",
-        "task": "autonomous development floor 34416521515",
+        "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "workState": "ACTIVE",
+        "reason": "this department job is currently executing"
       },
       "director": {
         "status": "working",
