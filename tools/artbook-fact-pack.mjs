@@ -13,19 +13,22 @@ const TOPICS={
   input:/touch|pointer|mouse|keyboard|keydown|keyup|joystick|button|input|터치|조이스틱|입력/i,
   combat:/hp|health|damage|attack|enemy|monster|boss|cooldown|projectile|체력|데미지|공격|적|몬스터|보스/i,
   progression:/level|xp|gold|reward|price|upgrade|unlock|stage|레벨|골드|보상|가격|강화|해금/i,
-  persistence:/localStorage|save|load|persist|serialize|저장|불러오기/i,
+  persistence:/localStorage|sessionStorage|indexedDB|saveGame|loadGame|saveData|loadData|persist|serialize|JSON\.stringify|저장|불러오기/i,
   uiArt:/sprite|image|background|canvas|hud|ui|color|animation|vfx|이미지|배경|애니메이션/i,
   risk:/catch|error|null|undefined|setInterval|setTimeout|viewport|mobile|오류|모바일/i
 };
 const MAX_PACKED_BASE64=4*1024*1024;
 const MAX_UNPACKED_TEXT=8*1024*1024;
+const packedAtobRegex=()=>/atob\(\s*['"]([A-Za-z0-9+/=]+)['"]\s*\)/g;
 function sourceTexts(files){
   const out=[];
   for(const file of files){
     const text=read(file);
-    out.push({source:file,text,kind:'file'});
-    if(!file.toLowerCase().endsWith('.html'))continue;
-    const re=/atob\(\s*['"]([A-Za-z0-9+/=]+)['"]\s*\)/g;
+    const isHtml=file.toLowerCase().endsWith('.html');
+    const scanText=isHtml?text.replace(packedAtobRegex(),(whole,payload)=>whole.replace(payload,'[PACKED_BASE64_MASKED]')):text;
+    out.push({source:file,text:scanText,kind:'file'});
+    if(!isHtml)continue;
+    const re=packedAtobRegex();
     let match,index=0;
     while((match=re.exec(text))){
       if(match[1].length>MAX_PACKED_BASE64)continue;
@@ -67,7 +70,7 @@ const sources=sourceTexts(files);
 const decodedSources=sources.filter(x=>x.kind==='embedded-gzip');
 const topics=Object.fromEntries(Object.entries(TOPICS).map(([key,pattern])=>[key,snippets(sources,pattern)]));
 const missing=Object.entries(topics).filter(([,rows])=>rows.length===0).map(([key])=>key);
-const pack={version:2,gameId,date,generatedBy:'deterministic-source-scan',paidApi:false,sourceMode:unity.length&&web.length?'UNITY_PLUS_WEB_ARCHIVE':unity.length?'UNITY':web.length?'WEB_ARCHIVE_READ_ONLY':'METADATA_ONLY',sourceFiles:files,decodedSources:decodedSources.map(x=>({source:x.source,container:x.container,encoding:'gzip-base64'})),topics,missingEvidence:missing,contracts:{factsAreEvidenceOnly:true,proposalsForbidden:true,numericChangesForbidden:true,approvedBaselineOverwriteForbidden:true,packedSourceDecodeBounded:true,packedSourceExecuted:false}};
+const pack={version:2,gameId,date,generatedBy:'deterministic-source-scan',paidApi:false,sourceMode:unity.length&&web.length?'UNITY_PLUS_WEB_ARCHIVE':unity.length?'UNITY':web.length?'WEB_ARCHIVE_READ_ONLY':'METADATA_ONLY',sourceFiles:files,decodedSources:decodedSources.map(x=>({source:x.source,container:x.container,encoding:'gzip-base64'})),topics,missingEvidence:missing,contracts:{factsAreEvidenceOnly:true,proposalsForbidden:true,numericChangesForbidden:true,approvedBaselineOverwriteForbidden:true,packedSourceDecodeBounded:true,packedSourceExecuted:false,packedLiteralMasked:true,persistenceRequiresStorageEvidence:true}};
 const output=`artbook-submissions/${gameId}/${date}/fact-pack.json`;
 writeJson(output,pack);
 console.log(`ARTBOOK_FACT_PACK=${output}`);
