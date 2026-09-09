@@ -40,8 +40,11 @@ jobs:
       - name: Sync main
         run: git pull --ff-only origin main
 
-      - name: Sync company status from supervision and autonomous focus
-        run: node tools/company-status-sync.mjs
+      - name: Sync company status and fixed-count dynamic production tiers
+        run: |
+          node --check tools/company-status-sync.mjs
+          node --check tools/autonomous-24h-work-planner.mjs
+          node tools/company-status-sync.mjs
 
       - name: Validate synchronized state
         run: |
@@ -51,35 +54,62 @@ jobs:
           const company=JSON.parse(fs.readFileSync('company-status.json','utf8'));
           const supervision=JSON.parse(fs.readFileSync('director-supervision-status.json','utf8'));
           const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
           if(company.supervision?.dateKst!==supervision.dateKst)throw new Error('supervision date not synchronized');
           if(JSON.stringify(company.supervision?.counts||{})!==JSON.stringify(supervision.counts||{}))throw new Error('supervision counts not synchronized');
           if(JSON.stringify(company.supervision?.primaryFindings||[])!==JSON.stringify(supervision.primaryFindings||[]))throw new Error('supervision findings not synchronized');
           const map={WORKING:'working',DONE:'done',IDLE_NO_TASK:'idle',BLOCKED:'blocked',FAILED:'failed',STALE:'stale'};
           const expected=map[supervision.staff?.homepage?.status]||String(supervision.staff?.homepage?.status||'').toLowerCase();
           if(company.operations?.homepage?.status!==expected)throw new Error('homepage operation status not synchronized');
-          const policy=portfolio.developmentFocusPolicy||{};
+
+          const tierPolicy=portfolio.productionTierPolicy||{};
+          if(tierPolicy.releaseConfirmedCount!==2||tierPolicy.developmentConfirmedCount!==3)throw new Error('fixed production tier counts changed');
+          if(tierPolicy.fixedGameIds!==false||tierPolicy.autoPromotionDemotion!==true)throw new Error('tier membership must remain automatic');
+          const tier1=portfolio.projects.filter(p=>Number(p.productionTier)===1);
+          const tier2=portfolio.projects.filter(p=>Number(p.productionTier)===2);
+          const tier3=portfolio.projects.filter(p=>Number(p.productionTier)===3);
+          if(tier1.length!==2)throw new Error(`tier1 count mismatch: ${tier1.length}`);
+          if(tier2.length!==3)throw new Error(`tier2 count mismatch: ${tier2.length}`);
+          if(tier1.some(p=>p.targetEngine!=='unity-android'))throw new Error('tier1 must target Unity Android');
+          if(tier2.some(p=>p.targetEngine!=='web'||p.mode!=='WEB_FIRST_IMPLEMENTATION'))throw new Error('tier2 must target Web first implementation');
+          if(tier3.some(p=>p.mode!=='HOLD'&&p.targetEngine!=='design-only'))throw new Error('tier3 must remain design-only');
+          if(Array.isArray(portfolio.developmentFocusPolicy?.preferredFocusedGameIds)&&portfolio.developmentFocusPolicy.preferredFocusedGameIds.length)throw new Error('focused game IDs must not be pinned');
+
+          const catalogTier1=catalog.games.filter(g=>Number(g.productionTier)===1);
+          const catalogTier2=catalog.games.filter(g=>Number(g.productionTier)===2);
+          if(catalogTier1.length!==2||catalogTier2.length!==3)throw new Error('catalog tier count mismatch');
+          if(catalogTier1.some(g=>g.homepageCategory!=='release-confirmed'))throw new Error('catalog tier1 category mismatch');
+          if(catalogTier2.some(g=>g.homepageCategory!=='development-confirmed'))throw new Error('catalog tier2 category mismatch');
+
+          const focusPolicy=portfolio.developmentFocusPolicy||{};
           const focus=company.operations?.autonomousFocus;
-          const target=Math.max(0,Number(policy.targetFocusedGames??policy.maxFocusedGames??0)||0);
+          const target=Math.max(0,Number(focusPolicy.targetFocusedGames??focusPolicy.maxFocusedGames??0)||0);
+          if(target!==1)throw new Error('tier1 deep focus must stay exactly one');
           if(!focus||focus.enabled!==Boolean(portfolio.developmentFocusPolicy))throw new Error('autonomous focus status missing');
-          if(focus.targetSlots!==target)throw new Error('autonomous focus target mismatch');
+          if(focus.targetSlots!==1)throw new Error('autonomous focus target mismatch');
           if(!Array.isArray(focus.focusedGameIds)||!Array.isArray(focus.games))throw new Error('autonomous focus arrays missing');
-          if(focus.focusedGameIds.length>target||focus.games.length>target)throw new Error('autonomous focus exceeds target slots');
+          if(focus.focusedGameIds.length>1||focus.games.length>1)throw new Error('autonomous focus exceeds one slot');
           if(focus.games.some((row,index)=>row.gameId!==focus.focusedGameIds[index]))throw new Error('autonomous focus game mapping mismatch');
+          if((focus.preferredGameIds||[]).length)throw new Error('company focus exposes pinned IDs');
+          const state=portfolio.productionTierState||{};
+          if(state.membershipMode!=='AUTO_EVIDENCE_RANKED'||state.fixedGameIds!==false||state.autoPromotionDemotion!==true)throw new Error('automatic tier state missing');
+          if((state.releaseConfirmedGameIds||[]).length!==2||(state.developmentConfirmedGameIds||[]).length!==3)throw new Error('automatic tier state count mismatch');
           console.log('COMPANY_STATUS_SYNC_QA=PASS');
+          console.log(`PRODUCTION_TIER_COUNTS_QA=2/3/${tier3.length}`);
           console.log(`COMPANY_AUTONOMOUS_FOCUS_QA=${focus.focusedGameIds.join(',')||'none'}`);
           NODE
 
-      - name: Commit synchronized company status
+      - name: Commit synchronized company status and production tiers
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-company-status-sync'
           git config user.email 'actions@users.noreply.github.com'
-          git add company-status.json
+          git add company-status.json autonomous-portfolio.json game-catalog.json
           if git diff --cached --quiet; then
             echo 'COMPANY_STATUS_SYNC_COMMIT=NO_CHANGES'
             exit 0
           fi
-          git commit -m 'company: sync supervision and autonomous focus [skip ci]'
+          git commit -m 'company: sync dynamic production tiers and focus [skip ci]'
           git pull --rebase origin main
           git push origin main
           echo 'COMPANY_STATUS_SYNC_COMMIT=SUCCESS'
