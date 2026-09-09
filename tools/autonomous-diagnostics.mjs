@@ -61,6 +61,37 @@ function adjacentDuplicateListener(text){
   }
   return null;
 }
+function tryBlockStillOpen(text,openBraceIndex,targetIndex){
+  let depth=0,quote=null,escape=false,lineComment=false,blockComment=false;
+  for(let i=openBraceIndex;i<targetIndex;i++){
+    const ch=text[i],next=text[i+1];
+    if(lineComment){if(ch==='\n')lineComment=false;continue;}
+    if(blockComment){if(ch==='*'&&next==='/'){blockComment=false;i++;}continue;}
+    if(quote){if(escape){escape=false;continue;}if(ch==='\\'){escape=true;continue;}if(ch===quote)quote=null;continue;}
+    if(ch==='/'&&next==='/'){lineComment=true;i++;continue;}
+    if(ch==='/'&&next==='*'){blockComment=true;i++;continue;}
+    if(ch==='"'||ch==="'"||ch==='`'){quote=ch;continue;}
+    if(ch==='{')depth++;
+    else if(ch==='}'){
+      depth--;
+      if(depth===0)return false;
+    }
+  }
+  return depth>0;
+}
+function hasEnclosingTryGuard(text,targetIndex){
+  const prefix=String(text).slice(0,targetIndex),re=/\btry\s*\{/g,opens=[];
+  let match;
+  while((match=re.exec(prefix)))opens.push(match.index+match[0].lastIndexOf('{'));
+  for(let i=opens.length-1;i>=0;i--)if(tryBlockStillOpen(text,opens[i],targetIndex))return true;
+  return false;
+}
+export function findUnguardedStorageParses(text){
+  const value=String(text??''),re=/JSON\.parse\s*\(\s*(?:localStorage|sessionStorage)\.getItem\s*\(/g,rows=[];
+  let match;
+  while((match=re.exec(value)))if(!hasEnclosingTryGuard(value,match.index))rows.push({index:match.index,expression:match[0]});
+  return rows;
+}
 function diagnoseFile(root,row,filesystem=fs){
   const results=[];
   const text=readBounded(row.full,filesystem);
@@ -86,7 +117,8 @@ function diagnoseFile(root,row,filesystem=fs){
   }
 
   if(/\.(?:js|mjs|cjs|html|htm)$/i.test(row.relative)){
-    if(/JSON\.parse\s*\(\s*(?:localStorage|sessionStorage)\.getItem\s*\(/.test(text))results.push(issue('UNGUARDED_SAVE_PARSE','high',row.relative,'저장 데이터 JSON.parse가 직접 호출되어 손상 저장값에서 예외가 날 수 있음',{microTask:`${row.relative}의 저장 JSON.parse 1곳에 기존 저장 의미를 유지하는 실패 방어를 추가한다.`}));
+    const unguardedParses=findUnguardedStorageParses(text);
+    if(unguardedParses.length)results.push(issue('UNGUARDED_SAVE_PARSE','high',row.relative,`try/catch 밖의 저장 JSON.parse ${unguardedParses.length}곳이 손상 저장값에서 예외를 낼 수 있음`,{microTask:`${row.relative}의 보호되지 않은 저장 JSON.parse 1곳에 기존 저장 의미를 유지하는 실패 방어를 추가한다.`}));
     if(/document\.getElementById\s*\([^\n;]+\)\s*\.addEventListener\s*\(/.test(text))results.push(issue('DOM_NULL_EVENT_BIND','medium',row.relative,'DOM 조회 직후 null 확인 없이 이벤트를 연결하는 경로가 있음',{microTask:`${row.relative}의 DOM 이벤트 연결 1곳에 존재 확인을 추가한다.`}));
     const duplicate=adjacentDuplicateListener(text);
     if(duplicate)results.push(issue('ADJACENT_DUPLICATE_EVENT_LISTENER','high',row.relative,`동일 이벤트 리스너 문장이 ${duplicate.line-1}/${duplicate.line}행에 연속 중복됨`,{
