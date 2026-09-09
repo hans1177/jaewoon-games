@@ -104,6 +104,19 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
+      - name: Baseline mobile browser observation
+        id: baseline_browser
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p qa-artifacts/autonomous-candidate-browser
+          node tools/autonomous-candidate-browser-qa.mjs \
+            --source="$PROMOTE_SOURCE_PATH" \
+            --port=4174 \
+            --output=qa-artifacts/autonomous-candidate-browser/baseline.json \
+            --screenshot=qa-artifacts/autonomous-candidate-browser/baseline-failure.png
+
       - name: Candidate mobile browser QA before dev/main
         id: browser_qa
         continue-on-error: true
@@ -113,8 +126,24 @@ jobs:
           mkdir -p qa-artifacts/autonomous-candidate-browser
           node tools/autonomous-candidate-browser-qa.mjs \
             --source="$PROMOTE_CANDIDATE_PATH" \
+            --port=4175 \
             --output=qa-artifacts/autonomous-candidate-browser/report.json \
             --screenshot=qa-artifacts/autonomous-candidate-browser/failure.png
+
+      - name: Compare baseline and candidate player impact
+        id: play_impact
+        if: steps.browser_qa.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/autonomous-play-impact.mjs \
+            --baseline=qa-artifacts/autonomous-candidate-browser/baseline.json \
+            --candidate=qa-artifacts/autonomous-candidate-browser/report.json \
+            --evidence="$PROMOTE_EVIDENCE" \
+            --output=/tmp/jaewoon-play-impact.json
+          cp /tmp/jaewoon-play-impact.json qa-artifacts/autonomous-candidate-browser/impact.json
+          node -e "const r=require('/tmp/jaewoon-play-impact.json');console.log('PLAY_IMPACT='+r.totalScore+'/10:'+r.impactStatus);"
 
       - name: Upload candidate browser QA evidence
         if: always()
@@ -166,6 +195,7 @@ jobs:
           mkdir -p /tmp/jaewoon-reviewed-candidate
           cp -R "$PROMOTE_CANDIDATE_PATH" /tmp/jaewoon-reviewed-candidate/game
           cp "$PROMOTE_EVIDENCE" /tmp/jaewoon-reviewed-candidate/evidence.json
+          if [ -s /tmp/jaewoon-play-impact.json ]; then cp /tmp/jaewoon-play-impact.json /tmp/jaewoon-reviewed-candidate/impact.json; fi
 
       - name: Apply only to continuous development branch
         shell: bash
@@ -192,6 +222,8 @@ jobs:
           node --test qa/autonomous-development-worker.test.mjs
           node --test qa/autonomous-candidate-browser-qa.test.mjs
           node --test qa/autonomous-candidate-review.test.mjs
+          node --test qa/autonomous-play-impact.test.mjs
+          node --test qa/autonomous-impact-priority.test.mjs
           node --test qa/evolution-evidence-recorder.test.mjs
           node --test qa/incubator-promotion-state.test.mjs
           node --test qa/autonomous-vibe-release-handoff.test.mjs
@@ -225,7 +257,8 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const evidence=JSON.parse(fs.readFileSync('/tmp/jaewoon-reviewed-candidate/evidence.json','utf8'));
-          const record={version:1,candidateId:evidence.candidateId,incubatorCandidateId:evidence.incubatorCandidateId||null,newProject:evidence.newProject===true,gameId:evidence.gameId,sourceCommit:evidence.sourceCommit,candidateCommit:process.env.PROMOTE_CANDIDATE_COMMIT,verdict:'ADVANCE_TO_AUTONOMOUS_DEV',publicRelease:false,selfPromoteMain:false,independentQa:'PASS',browserQa:'PASS',jayAuthority:'L4_DEV_ONLY',recordedAt:new Date().toISOString()};
+          const performance=fs.existsSync('/tmp/jaewoon-reviewed-candidate/impact.json')?JSON.parse(fs.readFileSync('/tmp/jaewoon-reviewed-candidate/impact.json','utf8')):null;
+          const record={version:2,candidateId:evidence.candidateId,incubatorCandidateId:evidence.incubatorCandidateId||null,newProject:evidence.newProject===true,gameId:evidence.gameId,sourceCommit:evidence.sourceCommit,candidateCommit:process.env.PROMOTE_CANDIDATE_COMMIT,verdict:'ADVANCE_TO_AUTONOMOUS_DEV',publicRelease:false,selfPromoteMain:false,independentQa:'PASS',browserQa:'PASS',performance,jayAuthority:'L4_DEV_ONLY',recordedAt:new Date().toISOString()};
           fs.writeFileSync(`.autonomous/dev-history/${evidence.candidateId}.json`,JSON.stringify(record,null,2)+'\n');
           NODE
           git config user.name "jaewoon-jay-dev-gate"
@@ -245,7 +278,7 @@ jobs:
           echo "PUBLIC_RELEASE=NO"
           echo "MAIN_GAME_CODE_WRITE=NO"
 
-      - name: Persist verified evidence and incubator completion to main memory only
+      - name: Persist verified evidence, play impact and incubator completion to main memory only
         shell: bash
         run: |
           set -euo pipefail
@@ -253,6 +286,11 @@ jobs:
           git checkout -B main-memory origin/main
           mkdir -p company-learning/evidence
           cp /tmp/jaewoon-learning-evidence.json "company-learning/evidence/${PROMOTE_CANDIDATE_ID}.json"
+          if [ -s /tmp/jaewoon-play-impact.json ]; then
+            node tools/autonomous-play-impact.mjs \
+              --append-history=company-learning/autonomous-impact-history.json \
+              --impact=/tmp/jaewoon-play-impact.json
+          fi
           if [ "$PROMOTE_NEW_PROJECT" = "true" ]; then
             node tools/incubator-promotion-state.mjs \
               --state-file=autonomous-incubator.json \
@@ -263,6 +301,7 @@ jobs:
           git config user.name "jaewoon-company-learning"
           git config user.email "actions@users.noreply.github.com"
           git add "company-learning/evidence/${PROMOTE_CANDIDATE_ID}.json"
+          if [ -f company-learning/autonomous-impact-history.json ]; then git add company-learning/autonomous-impact-history.json; fi
           if [ "$PROMOTE_NEW_PROJECT" = "true" ]; then git add autonomous-incubator.json autonomous-portfolio.json; fi
           if git diff --cached --quiet; then echo 'LEARNING_MEMORY_CHANGE=NO'; exit 0; fi
           git commit -m "learning: record verified ${PROMOTE_GAME_ID} candidate [skip ci]"
@@ -351,9 +390,12 @@ jobs:
 
       - name: Summary
         if: always()
+        shell: bash
         run: |
           echo "### Autonomous Candidate Promotion" >> "$GITHUB_STEP_SUMMARY"
           echo "- independent QA: required" >> "$GITHUB_STEP_SUMMARY"
+          echo "- baseline vs candidate mobile observation: staff performance evidence" >> "$GITHUB_STEP_SUMMARY"
+          if [ -s /tmp/jaewoon-play-impact.json ]; then node -e "const r=require('/tmp/jaewoon-play-impact.json');console.log('- play impact: '+r.totalScore+'/10 ('+r.impactStatus+', '+r.confidence+')')" >> "$GITHUB_STEP_SUMMARY"; fi
           echo "- candidate mobile browser QA: required before autonomous-dev/main" >> "$GITHUB_STEP_SUMMARY"
           echo "- source freshness: exact game source root only; unrelated queue/game commits do not block" >> "$GITHUB_STEP_SUMMARY"
           echo "- browser failure feedback: persists evidence, releases the failed lease, and requeues same game" >> "$GITHUB_STEP_SUMMARY"
@@ -362,6 +404,7 @@ jobs:
           echo "- public game main direct promotion: NO" >> "$GITHUB_STEP_SUMMARY"
           echo "- verified release handoff: existing Vibe2 Candidate Release Gate" >> "$GITHUB_STEP_SUMMARY"
           echo "- verified learning evidence: existing company-learning + Company DNA workflow" >> "$GITHUB_STEP_SUMMARY"
+          echo "- low-impact priority penalty: only after 2 consecutive unobserved outcomes" >> "$GITHUB_STEP_SUMMARY"
           echo "- next development floor waits while a release gate is pending" >> "$GITHUB_STEP_SUMMARY"
           echo "- new prototype completion: tested metadata gate only" >> "$GITHUB_STEP_SUMMARY"
           echo "- paid API: NO" >> "$GITHUB_STEP_SUMMARY"
