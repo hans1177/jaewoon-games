@@ -308,6 +308,100 @@
         ]
       },
       "productionApproval": false
+    },
+    {
+      "id": "bug-defense-2026-09-09-initial-followup",
+      "gameId": "bug-defense",
+      "gameName": "곤충 디펜스",
+      "sourceDate": "2026-09-09",
+      "dueDate": "2026-09-09",
+      "status": "SCHEDULED",
+      "sourceWorkMode": "INITIAL",
+      "sourceLifecycleState": "DESIGN_BASELINE",
+      "criterion": "FIVE_VOTE_DEPARTMENT_AVERAGE_STARS_LE_OVERALL_AVERAGE",
+      "overallAverageStars": 4,
+      "maxStars": 5,
+      "ratingsPerDepartment": 5,
+      "departmentVotesPerResult": 4,
+      "directorVotesPerResult": 1,
+      "selectedDepartments": [
+        "graphics",
+        "qa"
+      ],
+      "departmentAverageStars": {
+        "planning": 5,
+        "graphics": 1.8,
+        "development": 4.8,
+        "qa": 3.4,
+        "balance": 5
+      },
+      "feedbackByDepartment": {
+        "graphics": [
+          {
+            "reviewerDepartment": "planning",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "The review indicates that the plan needs to address gaps in the HUD design, such as improving visual evidence and character logic."
+          },
+          {
+            "reviewerDepartment": "development",
+            "reviewerType": "department",
+            "stars": 1,
+            "improvement": "The review indicates that the game has significant gaps in its visual and logical components, which could be improved to enhance user experience."
+          },
+          {
+            "reviewerDepartment": "qa",
+            "reviewerType": "department",
+            "stars": 1,
+            "improvement": "The system needs to improve the visual design and user interface for better accessibility and clarity."
+          },
+          {
+            "reviewerDepartment": "balance",
+            "reviewerType": "department",
+            "stars": 1,
+            "improvement": "The review shows that the graphics section is not ready for the first round, but there are no gaps or unverified areas to address."
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 1,
+            "improvement": "The review highlights that the HUD design lacks clarity in how different elements interact with the user interface, which could improve usability."
+          }
+        ],
+        "qa": [
+          {
+            "reviewerDepartment": "planning",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "The review is complete and the results are accurate. No improvements are needed."
+          },
+          {
+            "reviewerDepartment": "graphics",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "The review is complete and shows readiness for the first round. The section details are accurate and provide a clear structure for the game layout."
+          },
+          {
+            "reviewerDepartment": "development",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "The review is complete and shows readiness for testing. The section details are accurate, but there is no improvement in the content."
+          },
+          {
+            "reviewerDepartment": "balance",
+            "reviewerType": "department",
+            "stars": 1,
+            "improvement": "The review shows that Bug Defense is ready for the QA department with a verified evidence of 1, but there are no specific improvements needed for the current flow."
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 1,
+            "improvement": "부서 결과물의 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          }
+        ]
+      },
+      "productionApproval": false
     }
   ],
   "updatedAt": "2026-09-09"
