@@ -54,25 +54,64 @@ const evidenceSnippets=gameplayEvidenceSnippets(combined,{max:32,radius:150});
 const gameFactPack=buildGameFactPack({gameId,gameName,genreText,files:sourceFiles});
 const compactFactPack=factPackPromptView(gameFactPack);
 const model=clean(process.env.ARTBOOK_LOCAL_MODEL||'qwen3:0.6b'),minimumPages=complexityMinimumPages();
+const DIRECTION_IDS=['A','B','C'];
+function normalizeCreativeDirections(rows){
+  if(!Array.isArray(rows))return[];
+  return rows.slice(0,3).map((row,index)=>({
+    id:DIRECTION_IDS[index],
+    focus:clip(row?.focus,110),
+    playerExperience:clip(row?.playerExperience,110),
+    signatureMoment:clip(row?.signatureMoment,110)
+  }));
+}
+function creativeDirectionProblems(rows){
+  const directions=normalizeCreativeDirections(rows),problems=[];
+  if(directions.length!==3)return['creative-direction-count'];
+  const texts=directions.map(row=>`${row.focus} ${row.playerExperience} ${row.signatureMoment}`.trim());
+  if(directions.some(row=>row.focus.length<12||row.playerExperience.length<12||row.signatureMoment.length<12))problems.push('creative-direction-too-shallow');
+  const keys=texts.map(text=>text.toLowerCase().replace(/[^a-z0-9가-힣]+/g,'').slice(0,180));
+  if(new Set(keys).size!==3)problems.push('creative-directions-not-distinct');
+  const terms=(gameFactPack.gameSpecificTerms||[]).map(term=>clean(term)).filter(term=>term.length>=2).slice(0,12);
+  if(terms.length>=4){
+    const used=new Set();
+    for(const term of terms){if(texts.some(text=>text.toLowerCase().includes(term.toLowerCase())))used.add(term.toLowerCase());}
+    if(used.size<2)problems.push('creative-directions-weak-game-grounding');
+  }
+  return [...new Set(problems)];
+}
+function fallbackCreativeDirections(){
+  const terms=(gameFactPack.gameSpecificTerms||[]).map(clean).filter(Boolean).slice(0,6);
+  const pick=(index,fallback)=>terms[index%Math.max(1,terms.length)]||fallback;
+  return [
+    {id:'A',focus:`${pick(0,gameName)}를 중심으로 관찰·판단의 재미를 전면에 둔다.`,playerExperience:`플레이어가 ${pick(1,'핵심 대상')}의 상태와 주변 단서를 읽고 다음 행동을 스스로 고르게 한다.`,signatureMoment:`${pick(0,gameName)}와 ${pick(2,'핵심 환경')}의 관계를 한 장면에서 바로 이해하는 순간을 만든다.`},
+    {id:'B',focus:`${pick(3,gameName)}를 중심으로 위험·압박과 돌파의 재미를 강조한다.`,playerExperience:`플레이어가 ${pick(4,'핵심 위협')} 때문에 익숙한 방식이 막히고 다른 수단으로 위기를 넘기게 한다.`,signatureMoment:`${pick(3,gameName)}의 위협이 ${pick(5,'핵심 규칙')}과 동시에 작동해 선택을 강요하는 장면을 만든다.`},
+    {id:'C',focus:`${pick(2,gameName)}를 중심으로 성장·구축·변화의 재미를 강조한다.`,playerExperience:`플레이어의 반복 행동이 ${pick(0,'핵심 시스템')}을 눈에 보이게 바꾸고 다음 목표를 열도록 한다.`,signatureMoment:`초반의 ${pick(1,'핵심 요소')}가 후반에는 완전히 다른 역할로 돌아오는 장면을 만든다.`}
+  ];
+}
 
 function applyDraft(draft){
+  let creativeDirections=normalizeCreativeDirections(draft.creativeDirections);
+  const directionProblems=creativeDirectionProblems(creativeDirections);
+  if(directionProblems.length)creativeDirections=fallbackCreativeDirections();
+  draft.creativeDirections=creativeDirections;
+  draft.storySpine={...(draft.storySpine||{}),creativeDirections};
   const semanticProblems=draftSemanticProblems(draft,{factPack:gameFactPack,generationMode:draft.generationMode});
   draft.gameFactPack=gameFactPack;
-  draft.semanticQuality={pass:semanticProblems.length===0,problems:semanticProblems,gameSpecificTermsUsed:(gameFactPack.gameSpecificTerms||[]).filter(term=>JSON.stringify(draft).toLowerCase().includes(String(term).toLowerCase())).slice(0,16)};
+  draft.semanticQuality={pass:semanticProblems.length===0,problems:semanticProblems,gameSpecificTermsUsed:(gameFactPack.gameSpecificTerms||[]).filter(term=>JSON.stringify(draft).toLowerCase().includes(String(term).toLowerCase())).slice(0,16),creativeDirectionsPass:creativeDirectionProblems(creativeDirections).length===0,creativeDirectionFallbackUsed:directionProblems.length>0};
   draft.validationStatus=draft.semanticQuality.pass?'PASS':'NEEDS_VALIDATION';
   const target=Math.max(minimumPages,Math.min(30,Math.round(Number(draft.recommendedPages)||16)));draft.recommendedPages=target;
   const count=storyPageCount(target),plans=planChunks(draft,count),visuals=[];
   for(let i=0;i<plans.length;i++){const image=path.join(base,'visuals',`vibe2-draft-${i+1}.svg`).replaceAll('\\','/');fs.mkdirSync(path.dirname(image),{recursive:true});fs.writeFileSync(image,renderPage({title:plans[i].title,items:plans[i].items,index:i,total:plans.length}));visuals.push({no:i+1,title:plans[i].title,body:clip(plans[i].items.join(' · '),260),image,sourceDepartment:'vibe2',pageType:'vibe2-first-draft',vibe2Authored:true,assistantAuthored:false,proposal:true});}
-  draft.version=4;draft.gameId=gameId;draft.date=date;draft.status='FIRST_DRAFT_READY';draft.author='vibe2';draft.proposalOnly=true;draft.requiredStoryStages=REQUIRED_STAGES;
-  draft.qualityContract={phasePlans:6,minMainQuests:6,causalityRequired:true,evidenceProposalSeparation:true,compactGeneration:true,technicalNarrativeFilter:true,gameFactPackRequired:true,semanticDistinctnessRequired:true,gameSpecificGroundingRequired:true};
+  draft.version=5;draft.gameId=gameId;draft.date=date;draft.status='FIRST_DRAFT_READY';draft.author='vibe2';draft.proposalOnly=true;draft.requiredStoryStages=REQUIRED_STAGES;
+  draft.qualityContract={phasePlans:6,minMainQuests:6,causalityRequired:true,evidenceProposalSeparation:true,compactGeneration:true,technicalNarrativeFilter:true,gameFactPackRequired:true,semanticDistinctnessRequired:true,gameSpecificGroundingRequired:true,creativeDirections:3,planningSelectOrMix:true,nameSwapGenericityRejected:true};
   draft.visualPages=visuals;draft.visualPageCount=visuals.length;draft.targetArtbookPages=target;draft.sourceOfTruth='proposal-before-planning-review';writeJson(output,draft);
   const spine=draft.storySpine,summary=[`OPENING=${clip(spine.opening,100)}`,`EARLY=${clip(spine.early,100)}`,`MID=${clip(spine.mid,100)}`,`LATE=${clip(spine.late,100)}`,`FINAL=${clip(spine.finalBoss,100)}`,`ENDING=${clip(spine.ending,100)}`,`QUESTS=${draft.mainQuestChain.length}`].join(' | ');
-  workOrder.version=Math.max(12,Number(workOrder.version)||0);workOrder.vibe2FirstDraftPath=output;workOrder.vibe2FirstDraft={status:'FIRST_DRAFT_READY',proposalOnly:true,targetArtbookPages:target,requiredStoryStages:REQUIRED_STAGES,qualityContract:draft.qualityContract,generationMode:draft.generationMode,validationStatus:draft.validationStatus,semanticProblems:draft.semanticQuality.problems,factPackStats:gameFactPack.stats,stageLabelsNormalized:draft.runner?.stageLabelsNormalized===true};
+  workOrder.version=Math.max(13,Number(workOrder.version)||0);workOrder.vibe2FirstDraftPath=output;workOrder.vibe2FirstDraft={status:'FIRST_DRAFT_READY',proposalOnly:true,targetArtbookPages:target,requiredStoryStages:REQUIRED_STAGES,qualityContract:draft.qualityContract,generationMode:draft.generationMode,validationStatus:draft.validationStatus,semanticProblems:draft.semanticQuality.problems,factPackStats:gameFactPack.stats,stageLabelsNormalized:draft.runner?.stageLabelsNormalized===true,creativeDirections};
   workOrder.pagePolicy={min:12,default:16,max:30,target,legacyCompletedPages:10,homepageMode:'compact-card-detail-viewer'};workOrder.presentation={...(workOrder.presentation||{}),visualFirst:true,exactPages:target,minPages:12,maxPages:30,vibe2DraftPages:visuals.length,departmentAuthoredPages:8,directorAuthoredPages:2,assistantAuthoredPages:0,pagePlan:['director-cover',...visuals.map((_,i)=>`vibe2-draft-${i+1}`),'planning-1','planning-2','graphics-1','graphics-2','development-1','development-2','qa-1','balance-1','director-summary']};
-  workOrder.departmentTasks=workOrder.departmentTasks||{};workOrder.departmentTasks.planning=workOrder.departmentTasks.planning||{};workOrder.departmentTasks.planning.vibe2FirstDraftPath=output;workOrder.departmentTasks.planning.scope=`${clean(workOrder.departmentTasks.planning.scope)} 게임 사실 자료팩과 Vibe2 1차 초안(PROPOSAL)을 대조한다. FACT/EVIDENCE와 UNKNOWN/PROPOSAL을 섞지 말고, 6단계가 서로 다른 실제 게임 특징을 사용했는지 검증한다. ${draft.validationStatus!=='PASS'?`초안 의미 품질 미통과(${draft.semanticQuality.problems.join(', ')})이므로 그대로 설계 기준선으로 넘기지 말고 반드시 재검토한다.`:''} ${summary}`.trim();
-  workOrder.sourceEvidence=[...(Array.isArray(workOrder.sourceEvidence)?workOrder.sourceEvidence:[]),`${output} (Vibe2 proposal + embedded deterministic game fact pack)`].filter((v,i,a)=>a.indexOf(v)===i);writeJson(workOrderPath,workOrder);
-  const daily=readJson('artbook-daily-context.json',{});writeJson('artbook-daily-context.json',{...daily,vibe2FirstDraftPath:output,targetArtbookPages:target,vibe2DraftPages:visuals.length,pagePolicy:workOrder.pagePolicy,vibe2ValidationStatus:draft.validationStatus,factPackStats:gameFactPack.stats});
-  console.log(`VIBE2_FIRST_DRAFT=${output}`);console.log(`VIBE2_FACT_PACK_EVIDENCE=${gameFactPack.stats.totalEvidence}`);console.log(`VIBE2_FACT_PACK_TERMS=${gameFactPack.stats.gameSpecificTerms}`);console.log(`VIBE2_DRAFT_STAGE_LABELS_NORMALIZED=${draft.runner?.stageLabelsNormalized===true?'YES':'NO'}`);console.log(`VIBE2_DRAFT_VALIDATION=${draft.validationStatus}`);if(semanticProblems.length)console.log(`VIBE2_DRAFT_SEMANTIC_PROBLEMS=${semanticProblems.join('|')}`);console.log(`VIBE2_DRAFT_GENERATION_MODE=${draft.generationMode}`);console.log('VIBE2_DRAFT_PROPOSAL_ONLY=YES');
+  workOrder.departmentTasks=workOrder.departmentTasks||{};workOrder.departmentTasks.planning=workOrder.departmentTasks.planning||{};workOrder.departmentTasks.planning.vibe2FirstDraftPath=output;workOrder.departmentTasks.planning.scope=`${clean(workOrder.departmentTasks.planning.scope)} 게임 사실 자료팩과 Vibe2 1차 초안(PROPOSAL)을 대조한다. FACT/EVIDENCE와 UNKNOWN/PROPOSAL을 섞지 말고, 6단계가 서로 다른 실제 게임 특징을 사용했는지 검증한다. Vibe2 초안의 storySpine.creativeDirections A/B/C는 서로 다른 가벼운 방향 제안이다. 기획부는 셋 중 하나를 선택하거나 최대 두 개를 혼합해도 되고 셋을 모두 살릴 필요는 없다. conceptPlan.creativeIdeas 첫 항목을 [DIRECTION:A], [DIRECTION:B], [DIRECTION:C] 또는 [MIX:A+B]처럼 시작해 선택 이유와 이 게임에서만 통하는 근거를 적는다. 다른 게임 이름으로 바꿔도 자연스러운 일반론이면 버린다. ${draft.validationStatus!=='PASS'?`초안 의미 품질 미통과(${draft.semanticQuality.problems.join(', ')})이므로 그대로 설계 기준선으로 넘기지 말고 반드시 재검토한다.`:''} ${summary}`.trim();
+  workOrder.sourceEvidence=[...(Array.isArray(workOrder.sourceEvidence)?workOrder.sourceEvidence:[]),`${output} (Vibe2 proposal + embedded deterministic game fact pack + three creative directions)`].filter((v,i,a)=>a.indexOf(v)===i);writeJson(workOrderPath,workOrder);
+  const daily=readJson('artbook-daily-context.json',{});writeJson('artbook-daily-context.json',{...daily,vibe2FirstDraftPath:output,targetArtbookPages:target,vibe2DraftPages:visuals.length,pagePolicy:workOrder.pagePolicy,vibe2ValidationStatus:draft.validationStatus,factPackStats:gameFactPack.stats,creativeDirectionCount:creativeDirections.length});
+  console.log(`VIBE2_FIRST_DRAFT=${output}`);console.log(`VIBE2_FACT_PACK_EVIDENCE=${gameFactPack.stats.totalEvidence}`);console.log(`VIBE2_FACT_PACK_TERMS=${gameFactPack.stats.gameSpecificTerms}`);console.log(`VIBE2_DRAFT_STAGE_LABELS_NORMALIZED=${draft.runner?.stageLabelsNormalized===true?'YES':'NO'}`);console.log(`VIBE2_DRAFT_VALIDATION=${draft.validationStatus}`);if(semanticProblems.length)console.log(`VIBE2_DRAFT_SEMANTIC_PROBLEMS=${semanticProblems.join('|')}`);console.log(`VIBE2_DRAFT_GENERATION_MODE=${draft.generationMode}`);console.log(`VIBE2_CREATIVE_DIRECTIONS=${creativeDirections.map(x=>x.id).join(',')}`);console.log(`VIBE2_CREATIVE_DIRECTION_FALLBACK=${directionProblems.length?'YES':'NO'}`);console.log('VIBE2_DRAFT_PROPOSAL_ONLY=YES');
 }
 
 if(String(workOrder.mode||'INITIAL').toUpperCase()==='SECOND_WORK'&&fs.existsSync(reusablePath)){
@@ -82,19 +121,25 @@ if(String(workOrder.mode||'INITIAL').toUpperCase()==='SECOND_WORK'&&fs.existsSyn
 
 const shortString={type:'string',maxLength:110};
 const phaseSeed={type:'object',required:['stage','region','quest','cause','playerAction','result'],additionalProperties:false,properties:{stage:{type:'string',enum:REQUIRED_STAGES},region:shortString,quest:shortString,cause:shortString,playerAction:shortString,result:shortString}};
-const compactSchema={type:'object',required:['recommendedPages','playerMotivation','centralConflict','twist','phases','finalBoss','ending','postgame','npcSeeds'],additionalProperties:false,properties:{recommendedPages:{type:'integer',minimum:12,maximum:30},playerMotivation:shortString,centralConflict:shortString,twist:shortString,phases:{type:'array',minItems:6,maxItems:6,items:phaseSeed},finalBoss:{type:'object',required:['boss','trigger','whyNow','winConsequence'],additionalProperties:false,properties:{boss:shortString,trigger:shortString,whyNow:shortString,winConsequence:shortString}},ending:shortString,postgame:shortString,npcSeeds:{type:'array',maxItems:4,items:{type:'object',required:['name','goal','conflict','relationshipToPlayer'],additionalProperties:false,properties:{name:shortString,goal:shortString,conflict:shortString,relationshipToPlayer:shortString}}}}};
+const creativeDirectionSeed={type:'object',required:['id','focus','playerExperience','signatureMoment'],additionalProperties:false,properties:{id:{type:'string',enum:DIRECTION_IDS},focus:shortString,playerExperience:shortString,signatureMoment:shortString}};
+const compactSchema={type:'object',required:['recommendedPages','playerMotivation','centralConflict','twist','phases','finalBoss','ending','postgame','npcSeeds','creativeDirections'],additionalProperties:false,properties:{recommendedPages:{type:'integer',minimum:12,maximum:30},playerMotivation:shortString,centralConflict:shortString,twist:shortString,phases:{type:'array',minItems:6,maxItems:6,items:phaseSeed},finalBoss:{type:'object',required:['boss','trigger','whyNow','winConsequence'],additionalProperties:false,properties:{boss:shortString,trigger:shortString,whyNow:shortString,winConsequence:shortString}},ending:shortString,postgame:shortString,npcSeeds:{type:'array',maxItems:4,items:{type:'object',required:['name','goal','conflict','relationshipToPlayer'],additionalProperties:false,properties:{name:shortString,goal:shortString,conflict:shortString,relationshipToPlayer:shortString}}},creativeDirections:{type:'array',minItems:3,maxItems:3,items:creativeDirectionSeed}}};
 async function callCompact(){
   let last=null;
-  const system='/no_think\n너는 Vibe2 게임 기획 1차 초안 엔진이다. 입력의 gameFactPack은 코드에서 먼저 추출한 검토 자료다. categories의 SOURCE_EVIDENCE는 실제 근거이며 unknownAreas는 확인되지 않은 영역이다. 확인되지 않은 세계관을 FACT처럼 만들지 말고 PROPOSAL로만 보완한다. gameSpecificTerms가 4개 이상이면 서로 다른 실제 용어를 최소 2개 이상 사용하고, 최소 2개 단계가 실제 게임 특징에 직접 연결되어야 한다. phases 배열 순서는 반드시 OPENING, EARLY, MID, LATE, FINAL_BOSS, ENDING 순서다. 각 단계의 원인→행동→결과가 다음 단계로 이어져야 한다. 단계마다 같은 전략적 계획/전략적 이해 같은 문장을 반복하지 않는다. 렌더링·카메라·canvas·DPR·resize·DOM·CSS·픽셀·이벤트리스너 같은 기술 구현을 세계관이나 사건으로 쓰지 않는다. 짧은 한국어 JSON만 출력한다.';
+  const system='/no_think\n너는 Vibe2 게임 기획 1차 초안 엔진이다. 입력의 gameFactPack은 코드에서 먼저 추출한 검토 자료다. categories의 SOURCE_EVIDENCE는 실제 근거이며 unknownAreas는 확인되지 않은 영역이다. 확인되지 않은 세계관을 FACT처럼 만들지 말고 PROPOSAL로만 보완한다. gameSpecificTerms가 4개 이상이면 서로 다른 실제 용어를 최소 2개 이상 사용하고, 최소 2개 단계가 실제 게임 특징에 직접 연결되어야 한다. phases 배열 순서는 반드시 OPENING, EARLY, MID, LATE, FINAL_BOSS, ENDING 순서다. 각 단계의 원인→행동→결과가 다음 단계로 이어져야 한다. 단계마다 같은 전략적 계획/전략적 이해 같은 문장을 반복하지 않는다. creativeDirections는 A/B/C 정확히 3개를 만든다. 세 방향은 플레이어가 무엇을 보고·결정하고·반복하는지가 서로 달라야 하며, 각 방향에 이 게임 코드에서 나온 고유 용어나 규칙을 넣는다. A/B/C 중 하나만 채택해도 완성될 정도로 독립된 짧은 방향이어야 한다. 다른 게임 이름으로 바꿔도 자연스러운 일반론은 쓰지 않는다. 렌더링·카메라·canvas·DPR·resize·DOM·CSS·픽셀·이벤트리스너 같은 기술 구현을 세계관이나 사건으로 쓰지 않는다. 짧은 한국어 JSON만 출력한다.';
   for(let attempt=1;attempt<=2;attempt++){
     try{
       const payload={gameId,gameName,genre:genreText,sourceMode,minimumRecommendedPages:minimumPages,gameFactPack:compactFactPack,evidenceSnippets:evidenceSnippets.slice(0,attempt===1?18:10)};
-      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,format:compactSchema,messages:[{role:'system',content:system},{role:'user',content:JSON.stringify(payload)}],options:{temperature:attempt===1?0.18:0.08,seed:8100+attempt,num_ctx:6144,num_predict:1800}})});
+      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,format:compactSchema,messages:[{role:'system',content:system},{role:'user',content:JSON.stringify(payload)}],options:{temperature:attempt===1?0.24:0.12,seed:8100+attempt,num_ctx:6144,num_predict:1950}})});
       if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
       const packet=await response.json(),text=clean(packet?.message?.content).replace(/^```json\s*/i,'').replace(/```$/,'');
       const parsed=JSON.parse(text),normalized=normalizeCompactSeedStages(parsed);
       if(!normalized.valid)throw new Error(`compact ${normalized.reason}`);
+      normalized.seed.creativeDirections=normalizeCreativeDirections(normalized.seed.creativeDirections);
+      const directionProblems=creativeDirectionProblems(normalized.seed.creativeDirections);
+      if(directionProblems.length)throw new Error(`creative directions: ${directionProblems.join(',')}`);
       const preview=expandCompactSeed(normalized.seed,{gameName,genreText,minimumPages,evidenceSnippets});
+      preview.creativeDirections=normalized.seed.creativeDirections;
+      preview.storySpine={...(preview.storySpine||{}),creativeDirections:normalized.seed.creativeDirections};
       if(!validExpandedDraft(preview))throw new Error('expanded draft shape invalid');
       const semantic=draftSemanticProblems(preview,{factPack:gameFactPack,generationMode:'COMPACT_MODEL_PLUS_DETERMINISTIC_EXPANSION'});
       if(semantic.length)throw new Error(`semantic quality: ${semantic.join(',')}`);
@@ -102,13 +147,15 @@ async function callCompact(){
       return {seed:normalized.seed,attempt,stageLabelsNormalized:normalized.normalized,originalStages:normalized.originalStages};
     }catch(error){last=error;console.error(`VIBE2_COMPACT_RETRY=${attempt}:${error.message}`);}
   }
-  return {seed:buildFallbackSeed({gameName,genreText,minimumPages}),attempt:2,fallbackReason:clean(last?.message||'compact generation failed'),stageLabelsNormalized:false,originalStages:null};
+  return {seed:{...buildFallbackSeed({gameName,genreText,minimumPages}),creativeDirections:fallbackCreativeDirections()},attempt:2,fallbackReason:clean(last?.message||'compact generation failed'),stageLabelsNormalized:false,originalStages:null};
 }
 const generated=await callCompact();
 const draft=expandCompactSeed(generated.seed,{gameName,genreText,minimumPages,evidenceSnippets});
+draft.creativeDirections=normalizeCreativeDirections(generated.seed.creativeDirections);
+draft.storySpine={...(draft.storySpine||{}),creativeDirections:draft.creativeDirections};
 draft.generationMode=generated.fallbackReason?'DETERMINISTIC_FALLBACK':'COMPACT_MODEL_PLUS_DETERMINISTIC_EXPANSION';
 draft.fallbackReason=generated.fallbackReason||null;
-draft.runner={type:'vibe2-local-open-model-compact-first-draft',model,localInference:true,paidApi:false,apiKeyRequired:false,modelAttempts:generated.attempt,stageLabelsNormalized:generated.stageLabelsNormalized===true,originalStageLabels:generated.originalStages||null,stages:['DETERMINISTIC_GAME_FACT_PACK','COMPACT_CAUSALITY_SEED','DETERMINISTIC_STAGE_LABEL_NORMALIZATION','DETERMINISTIC_EXPANSION','SEMANTIC_GROUNDING_GATE','TECHNICAL_NARRATIVE_FILTER']};
+draft.runner={type:'vibe2-local-open-model-compact-first-draft',model,localInference:true,paidApi:false,apiKeyRequired:false,modelAttempts:generated.attempt,stageLabelsNormalized:generated.stageLabelsNormalized===true,originalStageLabels:generated.originalStages||null,stages:['DETERMINISTIC_GAME_FACT_PACK','COMPACT_CAUSALITY_SEED','THREE_CREATIVE_DIRECTIONS','DETERMINISTIC_STAGE_LABEL_NORMALIZATION','DETERMINISTIC_EXPANSION','SEMANTIC_GROUNDING_GATE','TECHNICAL_NARRATIVE_FILTER']};
 draft.sourceMode=sourceMode;draft.evidenceFiles=evidenceFiles.slice(0,24);draft.evidenceSnippets=evidenceSnippets.slice(0,32);
 if(!validExpandedDraft(draft))throw new Error('Vibe2 draft quality contract failed after compact expansion');
 applyDraft(draft);
