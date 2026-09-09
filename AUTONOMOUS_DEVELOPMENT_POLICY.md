@@ -133,6 +133,10 @@ Game UI 버튼 연결 1곳의 null 경로 보강
 
 - Ollama 로컬 무료 모델만 사용한다.
 - 유료 API fallback은 없다.
+- GitHub Actions의 모델 Job은 `.github/actions/prepare-ollama/action.yml`을 통해 **고정 버전 Ollama 런타임 archive를 cache 복원**한다.
+- 각 부서 Job에서 `install.sh`를 반복 실행하거나 systemd/user/GPU 자동설정을 매번 다시 수행하지 않는다.
+- source-root 예약은 빠르게 끝낸 뒤 별도 runtime warmup Job이 cache를 준비한다. 모델 런타임 다운로드 때문에 `autonomous-dev-writer` 예약 잠금을 오래 점유하지 않는다.
+- 모델 파일은 현재 측정상 pull 시간이 런타임 설치보다 훨씬 짧으므로 각 ephemeral runner에서 필요할 때 pull한다. 실제 계측으로 이득이 확인되기 전에는 대형 모델 cache를 추가하지 않는다.
 - JSON Schema 구조화 출력을 사용한다.
 - 한 책임 단위에서 최대 2회 생성한다.
 - 1차 실패를 분류해 2차 프롬프트에 넣는다.
@@ -244,6 +248,7 @@ Promotion이나 workspace가 직접 `main`을 쓰지 않는다. 공개는 기존
 - 결정론적 진단: `tools/autonomous-diagnostics.mjs`
 - 안전 규칙 패치: `tools/autonomous-rule-patcher.mjs`
 - 모델/후보 생성: `tools/autonomous-development-worker.mjs`
+- 로컬 Ollama 런타임 준비/cache: `.github/actions/prepare-ollama/action.yml`
 - exact edit 보호: `tools/autonomous-safe-edit.mjs`
 - 연속 실행: `.github/workflows/autonomous-continuous-development.yml`
 - 독립 후보 승격: `.github/workflows/autonomous-candidate-promotion.yml`
@@ -263,6 +268,8 @@ Promotion이나 workspace가 직접 `main`을 쓰지 않는다. 공개는 기존
 - free budget telemetry tests
 - queue tests
 - `node --check` 대상 스크립트
+- Ollama runtime cache 계약: pinned archive + cache restore + 직원별 `install.sh` 반복 금지
+- 실제 Actions에서 cache-hit runtime 준비 시간이 기존 반복 설치 시간보다 줄었는지 계측
 - GitHub Actions 실제 5부서 병렬 review
 - planning-final handoff
 - code workspace 병렬 생성
