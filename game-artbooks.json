@@ -109,6 +109,18 @@
       "cutCount": 18,
       "postprocessComplete": true,
       "visualFirst": true
+    },
+    {
+      "date": "2026-09-09",
+      "gameId": "chess-battle",
+      "artbookId": "chess-battle-2026-09-09-initial",
+      "workMode": "INITIAL",
+      "status": "completed-artbook",
+      "lifecycleState": "DESIGN_BASELINE",
+      "productionApproval": false,
+      "cutCount": 18,
+      "postprocessComplete": true,
+      "visualFirst": true
     }
   ],
   "artbooks": [
@@ -4865,6 +4877,671 @@
         "proposalOnly": true,
         "pageCount": 8
       }
+    },
+    {
+      "id": "chess-battle-2026-09-09-initial",
+      "gameId": "chess-battle",
+      "gameName": "체스 배틀",
+      "edition": 1,
+      "title": "체스 배틀 · 통합 아트북",
+      "subtitle": "전술 교본 + 전장 연대기",
+      "status": "completed-artbook",
+      "published": true,
+      "homepageVisible": true,
+      "productionApproval": false,
+      "createdAt": "2026-09-09",
+      "workMode": "INITIAL",
+      "intent": "5개 부서 독립 결과와 5표 평가를 통합한 최초 설계 기준 후보.",
+      "sourceFile": "artbook-submissions/chess-battle/2026-09-09/artbook.json",
+      "lifecycle": {
+        "state": "DESIGN_BASELINE",
+        "targetState": "DESIGN_BASELINE",
+        "trigger": "INITIAL_DESIGN",
+        "sourceArtbookId": null,
+        "currentBaseline": true,
+        "approved": true,
+        "approvedAt": "2026-09-09",
+        "createsNewVersion": true,
+        "overwriteApprovedVersion": false,
+        "historyPreserved": true
+      },
+      "departmentReadiness": {
+        "planning": "BLOCKED",
+        "graphics": "READY",
+        "development": "READY",
+        "qa": "READY",
+        "balance": "READY"
+      },
+      "departmentOpinions": {
+        "planning": {
+          "headline": "체스 배틀 기획 부서 1차 독립 아트북",
+          "readiness": "BLOCKED",
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 4.8,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "현재 코드에서 스토리 근거가 적어 기획부가 세계관·NPC·지역 설정을 추가 검증해야 함.",
+          "priorityImprovementFrom": "director",
+          "ratings": [
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 4,
+              "improvement": "현재 코드에서 스토리 근거가 적어 기획부가 세계관·NPC·지역 설정을 추가 검증해야 함."
+            },
+            {
+              "reviewerDepartment": "graphics",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "현재 코드에서 스토리 근거가 적어 기획부가 세계관·NPC·지역 설정을 추가 검증해야 함"
+            },
+            {
+              "reviewerDepartment": "development",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "현재 코드에서 스토리 근거가 적어 기획부가 세계관·NPC·지역 설정을 추가 검증해야 함"
+            },
+            {
+              "reviewerDepartment": "qa",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "현재 코드에서 스토리 근거가 적어 기획부가 세계관·NPC·지역 설정을 추가 검증해야 함"
+            },
+            {
+              "reviewerDepartment": "balance",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "현재 코드에서 스토리 근거가 적어 기획부가 세계관·NPC·지역 설정을 추가 검증해야 함"
+            }
+          ],
+          "overallDepartmentAverage": 4.92,
+          "secondWorkSameDay": true,
+          "secondWorkDueDate": "2026-09-09",
+          "unverified": [
+            "현재 코드에서 스토리 근거가 적어 기획부가 세계관·NPC·지역 설정을 추가 검증해야 함",
+            "현재 근거에서 정식 스토리/사건 인과가 충분히 확인되지 않음"
+          ]
+        },
+        "graphics": {
+          "headline": "체스 배틀",
+          "readiness": "READY",
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 5,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+          "priorityImprovementFrom": "planning",
+          "ratings": [
+            {
+              "reviewerDepartment": "planning",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "development",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "체스 배틀 게임의 시각 구성은 전술 팀과 전장 연대기 기반으로 구성되어 있으며, 미완성 영역을 해결할 수 있는 기능을 추가하면 더욱 강력한 게임을 만들 수 있습니다."
+            },
+            {
+              "reviewerDepartment": "qa",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "보완점: 전술 팀의 모습을 기반으로 쌓인 전술 시각을 추가로 명시합니다."
+            },
+            {
+              "reviewerDepartment": "balance",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 5,
+              "improvement": "미완성 영역을 보완하여 전술 시각과 전장 연대기 시각을 강화하고, 기존 부족점을 해결할 수 있습니다."
+            }
+          ],
+          "overallDepartmentAverage": 4.92,
+          "secondWorkSameDay": false,
+          "secondWorkDueDate": null,
+          "unverified": [
+            "전술 팀의 모습을 기반으로 쌓인 전술 시각",
+            "전투의 규칙과 전략을 기반으로 쌓인 전장 연대기 시각",
+            "진형 도해의 시각을 기반으로 전략적 접근을 표현"
+          ]
+        },
+        "development": {
+          "headline": "체스 배틀",
+          "readiness": "READY",
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 5,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+          "priorityImprovementFrom": "planning",
+          "ratings": [
+            {
+              "reviewerDepartment": "planning",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "graphics",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "qa",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "balance",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 5,
+              "improvement": "보완점: 개발팀의 개선 사항이 부서 결과물의 검토 점수를 정확히 1개로 명시됩니다."
+            }
+          ],
+          "overallDepartmentAverage": 4.92,
+          "secondWorkSameDay": false,
+          "secondWorkDueDate": null,
+          "unverified": [
+            "storyCausalityIsCritical",
+            "creativeIdeasAreProposals"
+          ]
+        },
+        "qa": {
+          "headline": "체스 배틀",
+          "readiness": "READY",
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 4.8,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "부서 결과물의 품질점수는 4점으로 평가되었으며, 보완점은 '체스 규칙이 세계의 전쟁 규칙이어야 하며 각 말의 이동·전투 특성이 역할과 서사에 이유를 가져야 한다.'를 추가하여 부족한 내용을 정확히 보완했습니다.",
+          "priorityImprovementFrom": "director",
+          "ratings": [
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 4,
+              "improvement": "부서 결과물의 품질점수는 4점으로 평가되었으며, 보완점은 '체스 규칙이 세계의 전쟁 규칙이어야 하며 각 말의 이동·전투 특성이 역할과 서사에 이유를 가져야 한다.'를 추가하여 부족한 내용을 정확히 보완했습니다."
+            },
+            {
+              "reviewerDepartment": "planning",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "graphics",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+            },
+            {
+              "reviewerDepartment": "development",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "현재 팀의 팀워크와 팀 역량을 강화할 수 있습니다."
+            },
+            {
+              "reviewerDepartment": "balance",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "현재 부서 결과물은 체스 배틀의 테스트 시나리오 설계를 이미지 중심으로 설명했으나, 테스트 시나리오의 실제 실행 중의 오류 예측을 강화해 보는 것이 더 좋습니다."
+            }
+          ],
+          "overallDepartmentAverage": 4.92,
+          "secondWorkSameDay": true,
+          "secondWorkDueDate": "2026-09-09",
+          "unverified": [
+            "currentStage"
+          ]
+        },
+        "balance": {
+          "headline": "체스 배틀 독립 아트북",
+          "readiness": "READY",
+          "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+          "averageStars": 5,
+          "maxStars": 5,
+          "reviewsReceived": 5,
+          "departmentVotes": 4,
+          "directorVotes": 1,
+          "priorityImprovement": "본 결과물은 체스 배틀 독립 아트북의 전략적 시스템 구축을 잘 설명하고 있지만, 더 구체적인 전략적 도구나 코딩 구조를 설명하는 내용을 추가하면 더 효과적입니다.",
+          "priorityImprovementFrom": "planning",
+          "ratings": [
+            {
+              "reviewerDepartment": "planning",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 결과물은 체스 배틀 독립 아트북의 전략적 시스템 구축을 잘 설명하고 있지만, 더 구체적인 전략적 도구나 코딩 구조를 설명하는 내용을 추가하면 더 효과적입니다."
+            },
+            {
+              "reviewerDepartment": "graphics",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+            },
+            {
+              "reviewerDepartment": "development",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 부서 결과물은 체스 배틀 독립 아트북의 전략 시스템 구조를 명확히 하였으나, 전술의 역할과 전장 규칙의 구현 방식을 더 구체적으로 설명해 줘야 합니다."
+            },
+            {
+              "reviewerDepartment": "qa",
+              "reviewerType": "department",
+              "stars": 5,
+              "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+            },
+            {
+              "reviewerDepartment": "director",
+              "reviewerType": "director",
+              "stars": 5,
+              "improvement": "점수: 5"
+            }
+          ],
+          "overallDepartmentAverage": 4.92,
+          "secondWorkSameDay": false,
+          "secondWorkDueDate": null,
+          "unverified": [
+            "1. 전술 계급 시스템: 전술의 역할을 기준으로 전술의 수준을 정리하고, 전술의 이동을 시뮬레이션하여 전술의 역할을 재구성합니다.",
+            "2. 전장 규칙 시스템: 전장의 규칙을 기준으로 전장의 규칙을 정리하고, 전장의 규칙을 시뮬레이션하여 전장의 규칙을 재구성합니다.",
+            "3. 진형 도해 시스템: 전략적 도해를 기준으로 전략적 도해를 시뮬레이션하여 전략적 도해를 재구성합니다."
+          ]
+        }
+      },
+      "ratingSummary": {
+        "scale": "STARS_1_TO_5",
+        "ratingsPerDepartment": 5,
+        "departmentVotesPerResult": 4,
+        "directorVotesPerResult": 1,
+        "departmentAverageStars": {
+          "planning": 4.8,
+          "graphics": 5,
+          "development": 5,
+          "qa": 4.8,
+          "balance": 5
+        },
+        "overallAverageStars": 4.92,
+        "secondWorkCriterion": "DEPARTMENT_AVERAGE_OR_BELOW_OVERALL_AVERAGE",
+        "secondWorkDepartments": [
+          "planning",
+          "qa"
+        ],
+        "secondWorkDueDate": "2026-09-09"
+      },
+      "homepageOpinionMode": "IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS",
+      "collaborationProtocol": "PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5",
+      "cuts": [
+        {
+          "no": 1,
+          "kind": "director",
+          "title": "체스 배틀",
+          "body": "전술과 전쟁의 끝나는 시각",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/director-cover.svg",
+          "sourceDepartment": "director",
+          "pageType": "cover",
+          "visualType": "game-concept-cover",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 2,
+          "kind": "vibe2",
+          "title": "오프닝",
+          "body": "전사 — 전사 · 전사: 전사 → 전사 → 전사 → 기마병에서 기마병",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/vibe2-draft-1.svg",
+          "sourceDepartment": "vibe2",
+          "pageType": "vibe2-first-draft",
+          "visualType": "story-draft",
+          "employeeAuthored": false,
+          "vibe2Authored": true,
+          "assistantAuthored": false,
+          "proposal": true,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 3,
+          "kind": "vibe2",
+          "title": "초반",
+          "body": "기마병 — 기마병 · 기마병: 기마병 → 기마병 → 기마병 → 원거리 마법사에서 원거리 마법사",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/vibe2-draft-2.svg",
+          "sourceDepartment": "vibe2",
+          "pageType": "vibe2-first-draft",
+          "visualType": "story-draft",
+          "employeeAuthored": false,
+          "vibe2Authored": true,
+          "assistantAuthored": false,
+          "proposal": true,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 4,
+          "kind": "vibe2",
+          "title": "중반",
+          "body": "원거리 마법사 — 원거리 마법사 · 원거리 마법사: 원거리 마법사 → 원거리 마법사 → 원거리 마법사 → 원거리 장군에서 원거리 장군",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/vibe2-draft-3.svg",
+          "sourceDepartment": "vibe2",
+          "pageType": "vibe2-first-draft",
+          "visualType": "story-draft",
+          "employeeAuthored": false,
+          "vibe2Authored": true,
+          "assistantAuthored": false,
+          "proposal": true,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 5,
+          "kind": "vibe2",
+          "title": "후반",
+          "body": "원거리 장군 — 원거리 장군 · 원거리 장군: 원거리 장군 → 원거리 장군 → 원거리 장군 → 원거리 검에서 원거리 검",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/vibe2-draft-4.svg",
+          "sourceDepartment": "vibe2",
+          "pageType": "vibe2-first-draft",
+          "visualType": "story-draft",
+          "employeeAuthored": false,
+          "vibe2Authored": true,
+          "assistantAuthored": false,
+          "proposal": true,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 6,
+          "kind": "vibe2",
+          "title": "최종보스",
+          "body": "원거리 검 — 원거리 검 · 원거리 검: 원거리 검 → 원거리 검 → 원거리 검 → 전사에서 전사 · 원거리 검: 원거리 마법사 → 원거리 검 → 승리 결과 원…",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/vibe2-draft-5.svg",
+          "sourceDepartment": "vibe2",
+          "pageType": "vibe2-first-draft",
+          "visualType": "story-draft",
+          "employeeAuthored": false,
+          "vibe2Authored": true,
+          "assistantAuthored": false,
+          "proposal": true,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 7,
+          "kind": "vibe2",
+          "title": "엔딩",
+          "body": "전사 — 전사 · 전사: 전사 → 전사 → 전사 → 전사 · 전사 · 전사",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/vibe2-draft-6.svg",
+          "sourceDepartment": "vibe2",
+          "pageType": "vibe2-first-draft",
+          "visualType": "story-draft",
+          "employeeAuthored": false,
+          "vibe2Authored": true,
+          "assistantAuthored": false,
+          "proposal": true,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 8,
+          "kind": "vibe2",
+          "title": "지역 흐름",
+          "body": "전사 → 기마병 → 원거리 마법사 → 원거리 장군 → 원거리 검 · 전사 → 기마병: 전사 / 해금 기마병 · 기마병 → 원거리 마법사: 기마병 / 해금 원거리…",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/vibe2-draft-7.svg",
+          "sourceDepartment": "vibe2",
+          "pageType": "vibe2-first-draft",
+          "visualType": "story-draft",
+          "employeeAuthored": false,
+          "vibe2Authored": true,
+          "assistantAuthored": false,
+          "proposal": true,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 9,
+          "kind": "vibe2",
+          "title": "메인 퀘스트",
+          "body": "OPENING/전사: 전사 · 전사 → 전사 → 전사 → 기마병에서 기마병 · EARLY/기마병: 기마병 · 기마병 → 기마병 → 기마병 → 원거리 마법사에서 …",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/vibe2-draft-8.svg",
+          "sourceDepartment": "vibe2",
+          "pageType": "vibe2-first-draft",
+          "visualType": "story-draft",
+          "employeeAuthored": false,
+          "vibe2Authored": true,
+          "assistantAuthored": false,
+          "proposal": true,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 10,
+          "kind": "planning",
+          "title": "체스 배틀 기획 부서 1차 독립…",
+          "body": "전술 교본 + 전장 연대기 + 전투 사례",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/planning-1.svg",
+          "sourceDepartment": "planning",
+          "pageType": "department-visual",
+          "visualType": "world-map",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 11,
+          "kind": "planning",
+          "title": "체스 배틀 기획 부서 2차 독립…",
+          "body": "전술 교본 + 전장 연대기 + 전투 사례",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/planning-2.svg",
+          "sourceDepartment": "planning",
+          "pageType": "department-visual",
+          "visualType": "story-flow",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 12,
+          "kind": "graphics",
+          "title": "체스 배틀",
+          "body": "전술 팀의 모습을 기반으로 쌓인 전술 시각",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/graphics-1.svg",
+          "sourceDepartment": "graphics",
+          "pageType": "department-visual",
+          "visualType": "concept-board",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 13,
+          "kind": "graphics",
+          "title": "전투의 규칙과 전략",
+          "body": "전투의 규칙과 전략을 기반으로 쌓인 전장 연대기 시각",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/graphics-2.svg",
+          "sourceDepartment": "graphics",
+          "pageType": "department-visual",
+          "visualType": "style-board",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 14,
+          "kind": "development",
+          "title": "체스 배틀",
+          "body": "체스 배틀은 플레이 루프와 시스템 연결을 흐름도로 보여준다.",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/development-1.svg",
+          "sourceDepartment": "development",
+          "pageType": "department-visual",
+          "visualType": "gameplay-loop",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 15,
+          "kind": "development",
+          "title": "실행",
+          "body": "실행은 실제 아트북 페이지를 설계한다.",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/development-2.svg",
+          "sourceDepartment": "development",
+          "pageType": "department-visual",
+          "visualType": "system-flow",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 16,
+          "kind": "qa",
+          "title": "체스 배틀",
+          "body": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/qa-1.svg",
+          "sourceDepartment": "qa",
+          "pageType": "department-visual",
+          "visualType": "test-journey",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 17,
+          "kind": "balance",
+          "title": "체스 배틀 독립 아트북",
+          "body": "체스 배틀 독립 아트북",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/balance-1.svg",
+          "sourceDepartment": "balance",
+          "pageType": "department-visual",
+          "visualType": "balance-curve",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        },
+        {
+          "no": 18,
+          "kind": "director",
+          "title": "체스 배틀 기획 부서 1차 독립…",
+          "body": "체스 전쟁의 끝나는 시각을 만들어내는 전술과 전쟁의 …",
+          "image": "artbook-submissions/chess-battle/2026-09-09/visuals/director-summary.svg",
+          "sourceDepartment": "director",
+          "pageType": "summary",
+          "visualType": "department-summary",
+          "employeeAuthored": true,
+          "vibe2Authored": false,
+          "assistantAuthored": false,
+          "proposal": false,
+          "displayLanguage": "ko"
+        }
+      ],
+      "feedback": null,
+      "cutCount": 18,
+      "requiredCuts": 18,
+      "completionLabel": "설계 기준본",
+      "presentation": {
+        "mode": "VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_AUTHORED",
+        "directorSource": "artbook-submissions/chess-battle/2026-09-09/presentation/director-presentation.json",
+        "departmentPageCounts": {
+          "planning": 2,
+          "graphics": 2,
+          "development": 2,
+          "qa": 1,
+          "balance": 1
+        },
+        "vibe2DraftPages": 8,
+        "employeeAuthoredPages": 10,
+        "assistantAuthored": false
+      },
+      "postprocess": {
+        "version": 6,
+        "complete": true,
+        "checkedAt": "2026-09-09T12:15:56.789Z",
+        "requiredCuts": 18,
+        "cutCount": 18,
+        "pagePolicy": {
+          "min": 12,
+          "default": 16,
+          "max": 30,
+          "target": 18,
+          "legacyTenPageCompatible": true
+        },
+        "pagePlan": [
+          "director",
+          "Vibe2:오프닝",
+          "Vibe2:초반",
+          "Vibe2:중반",
+          "Vibe2:후반",
+          "Vibe2:최종보스",
+          "Vibe2:엔딩",
+          "Vibe2:지역 흐름",
+          "Vibe2:메인 퀘스트",
+          "planning",
+          "planning",
+          "graphics",
+          "graphics",
+          "development",
+          "development",
+          "qa",
+          "balance",
+          "director"
+        ],
+        "cutsPerDepartment": {
+          "planning": 2,
+          "graphics": 2,
+          "development": 2,
+          "qa": 1,
+          "balance": 1,
+          "director": 2,
+          "vibe2": 8
+        },
+        "formatChecked": true,
+        "emptyContentChecked": true,
+        "uniqueVisualsChecked": true,
+        "imagePathsChecked": true,
+        "newClaimsAdded": false,
+        "sourceMode": "VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_OWNED_VISUAL_PAGES_PLUS_DIRECTOR_PRESENTATION",
+        "assistantAuthorship": false,
+        "vibe2DraftAuthorship": true,
+        "imageFirst": true,
+        "shortText": true,
+        "displayLanguage": "ko"
+      },
+      "vibe2FirstDraft": {
+        "sourceFile": "artbook-submissions/chess-battle/2026-09-09/vibe2-first-draft.json",
+        "status": "FIRST_DRAFT_READY",
+        "proposalOnly": true,
+        "pageCount": 8
+      }
     }
   ],
   "legacyArchive": [
@@ -4911,6 +5588,13 @@
     },
     "egg-heist": {
       "artbookId": "egg-heist-2026-09-09-initial",
+      "edition": 1,
+      "state": "DESIGN_BASELINE",
+      "workMode": "INITIAL",
+      "updatedAt": "2026-09-09"
+    },
+    "chess-battle": {
+      "artbookId": "chess-battle-2026-09-09-initial",
       "edition": 1,
       "state": "DESIGN_BASELINE",
       "workMode": "INITIAL",
