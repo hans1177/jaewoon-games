@@ -14,6 +14,7 @@ namespace JaewoonGames.DaechungRpg
     public sealed class PrototypeAnimatedVisuals : MonoBehaviour
     {
         private const string SourceRoot = "https://raw.githubusercontent.com/chongdashu/ai-pixel-snapped-game-sprites/main/spritesheets";
+        private const int RequestTimeoutSeconds = 12;
         private static readonly string[] Actions = { "idle", "walk", "attack", "hurt", "death" };
 
         public static PrototypeAnimatedVisuals Instance { get; private set; }
@@ -165,6 +166,7 @@ namespace JaewoonGames.DaechungRpg
             {
                 using (var request = UnityWebRequest.Get(baseUrl + "/manifest.json"))
                 {
+                    request.timeout = RequestTimeoutSeconds;
                     yield return request.SendWebRequest();
                     if (request.result != UnityWebRequest.Result.Success)
                     {
@@ -199,6 +201,7 @@ namespace JaewoonGames.DaechungRpg
             {
                 using (var request = UnityWebRequest.Get(baseUrl + "/spritesheet.png"))
                 {
+                    request.timeout = RequestTimeoutSeconds;
                     yield return request.SendWebRequest();
                     if (request.result != UnityWebRequest.Result.Success)
                     {
