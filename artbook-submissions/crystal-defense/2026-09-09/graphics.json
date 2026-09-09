@@ -1,0 +1,164 @@
+{
+  "version": 6,
+  "gameId": "crystal-defense",
+  "date": "2026-09-09",
+  "department": "graphics",
+  "status": "SUBMITTED",
+  "departmentReadiness": "NEEDS_VALIDATION",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "게임 로딩 실패",
+  "evidence": [
+    {
+      "source": "web-games/crystal-defense/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-crystal-defense.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentVisualEvidence": "게임 로딩 실패",
+    "identityDirection": "game",
+    "characterMonsterEnvironmentLogic": "game",
+    "mobileReadability": "N/A",
+    "assetConstraints": "N/A",
+    "gaps": "N/A",
+    "handoffs": "N/A"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "game",
+      "game",
+      "game"
+    ],
+    "implementationPlan": [
+      "game",
+      "game",
+      "game"
+    ],
+    "demoValidation": [
+      "game",
+      "game",
+      "game"
+    ]
+  },
+  "unverified": [],
+  "cuts": [
+    {
+      "kind": "graphics",
+      "title": "게임 로딩 실패",
+      "body": "game · game · game",
+      "image": "artbook-submissions/crystal-defense/2026-09-09/visuals/graphics.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "graphics",
+        "ownerName": "그래픽",
+        "pageSlot": 1,
+        "visualType": "concept-board",
+        "title": "게임 로딩 실패",
+        "focus": "게임 로딩 실패",
+        "caption": "게임 로딩 시 오류 발생",
+        "elements": [
+          {
+            "label": "게임 로딩 실패",
+            "note": "게임 로딩 시 오류 발생",
+            "kind": ""
+          },
+          {
+            "label": "게임 로딩 실패",
+            "note": "게임 로딩 시 오류 발생",
+            "kind": ""
+          },
+          {
+            "label": "게임 로딩 실패",
+            "note": "게임 로딩 시 오류 발생",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/crystal-defense/2026-09-09/visuals/graphics-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "graphics"
+      },
+      {
+        "owner": "graphics",
+        "ownerName": "그래픽",
+        "pageSlot": 2,
+        "visualType": "style-board",
+        "title": "게임 로딩 실패",
+        "focus": "게임 로딩 실패",
+        "caption": "게임 로딩 시 오류 발생",
+        "elements": [
+          {
+            "label": "게임 로딩 실패",
+            "note": "게임 로딩 시 오류 발생",
+            "kind": ""
+          },
+          {
+            "label": "게임 로딩 실패",
+            "note": "게임 로딩 시 오류 발생",
+            "kind": ""
+          },
+          {
+            "label": "게임 로딩 실패",
+            "note": "게임 로딩 시 오류 발생",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/crystal-defense/2026-09-09/visuals/graphics-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "graphics"
+      }
+    ],
+    "generatedBy": {
+      "department": "graphics",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}
