@@ -1,9 +1,11 @@
+// 파일명: qa/autonomous-development-worker.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {
   assertRelativeOutputPath,
+  browserFailureFeedback,
   buildPrompt,
   extractStorageKeys,
   generateAutonomousCandidate,
@@ -19,6 +21,7 @@ import { buildVibeCoreContext, selectVerifiedVibeLearning } from '../tools/auton
 const fixture='web-games/__autonomous-worker-test__';
 const candidateRoot='web-games/.autonomous-candidates/TEST';
 const evidenceRoot='.autonomous/evidence';
+const browserFailureFile='.autonomous/browser-failures/TEST.json';
 function setup(){
   fs.rmSync(fixture,{recursive:true,force:true});
   fs.rmSync(candidateRoot,{recursive:true,force:true});
@@ -29,6 +32,7 @@ function setup(){
 function cleanup(){
   fs.rmSync(fixture,{recursive:true,force:true});
   fs.rmSync(candidateRoot,{recursive:true,force:true});
+  fs.rmSync(browserFailureFile,{force:true});
   if(fs.existsSync(evidenceRoot))for(const name of fs.readdirSync(evidenceRoot))if(name.startsWith('TEST-'))fs.rmSync(path.join(evidenceRoot,name),{force:true});
 }
 
@@ -114,7 +118,7 @@ test('large source context is bounded and exact diagnostic area is focused inste
     assert.ok(index);
     assert.equal(index.focused,true);
     assert.ok(index.content.includes(marker));
-    assert.ok(context.bytes<=56000);
+    assert.ok(context.bytes<=48000);
   }finally{cleanup();}
 });
 
@@ -126,6 +130,19 @@ test('prompt includes role, exact diagnostic evidence and stronger bounded gener
   assert.match(prompt,/직전 실패: OUTPUT_FORMAT/);
   assert.ok(MODEL_MAX_PREDICT>=2048);
   assert.ok(MODEL_CONTEXT_TOKENS>=8192);
+});
+
+test('persisted browser failure evidence is read and injected into the next worker prompt',()=>{
+  fs.mkdirSync(path.dirname(browserFailureFile),{recursive:true});
+  fs.writeFileSync(browserFailureFile,JSON.stringify({pass:false,errors:['console:Failed to load resource'],consoleErrors:['boom'],metrics:{viewportWidth:390,width:390,height:844,visibleInteractive:2},screenshot:'qa/failure.png'}));
+  try{
+    const feedback=browserFailureFeedback('TEST');
+    assert.match(feedback,/Failed to load resource/);
+    assert.match(feedback,/screenshot=qa\/failure.png/);
+    const prompt=buildPrompt({gameId:'TEST',sourcePath:'web-games/test',goal:'리소스 오류 수정',context:{files:[{path:'index.html',content:'<img src="bad.png">',preferred:true,focused:true,truncated:false,originalBytes:19}]},responsibilityFiles:['index.html'],role:'development',browserFeedback:feedback});
+    assert.match(prompt,/직전 브라우저 실패 근거/);
+    assert.match(prompt,/Failed to load resource/);
+  }finally{cleanup();}
 });
 
 test('syntax-invalid generated javascript cannot pass worker gate',async()=>{
