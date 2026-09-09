@@ -1,8 +1,8 @@
 {
-  "version": 1,
+  "version": 2,
   "updatedAt": "2026-09-09",
-  "overall": "REVISE",
-  "reason": "Five department evidence standards are strengthened and web runtime QA is connected, but Unity runtime/play automation is not yet proven.",
+  "overall": "VERIFYING",
+  "reason": "Department evidence standards are strengthened, web runtime QA is connected, and Unity Android runtime smoke automation is installed. Unity remains unverified until the first successful APK runtime-smoke evidence is produced.",
   "policy": {
     "genericPraiseIsEvidence": false,
     "domainSpecificEvidenceRequired": true,
@@ -26,7 +26,7 @@
       "currentProtection": "BUILD_EVIDENCE_REQUIRED + DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
     },
     "qa": {
-      "status": "PARTIAL",
+      "status": "VERIFYING_UNITY_RUNTIME",
       "passGate": "2+ QA-domain evidence items plus successful build plus runtime/play evidence",
       "checks": ["launch", "input", "core action", "progression", "save/reload", "restart", "mobile UI/touch", "reproduction"],
       "webRuntime": {
@@ -37,10 +37,12 @@
         "persistentEvidence": "company-qa-runtime-evidence.json"
       },
       "unityRuntime": {
-        "status": "MISSING_AUTOMATED_PLAY_PROOF",
-        "buildPipelineExists": true,
-        "buildAloneCountsAsQaPass": false,
-        "needed": "APK/device or emulator launch plus scripted input/play smoke evidence"
+        "status": "AUTOMATION_INSTALLED_PENDING_FIRST_SUCCESSFUL_RUN",
+        "trigger": "Successful Unity Hybrid Android Build completion",
+        "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
+        "probe": "tools/unity-apk-runtime-smoke.sh",
+        "method": "APK install -> launch -> Android tap/swipe input -> process survival -> fatal log scan -> screenshot",
+        "buildAloneCountsAsQaPass": false
       },
       "currentProtection": "RUNTIME_PLAY_EVIDENCE_REQUIRED + BUILD_EVIDENCE_REQUIRED + DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
     },
@@ -67,13 +69,14 @@
   },
   "verification": {
     "departmentStandardsWorkflow": {
-      "runId": 34304706736,
-      "conclusion": "success"
+      "latestKnownSuccessfulRunId": 34304706736,
+      "unitySmokeContractRunId": 34305065242,
+      "unitySmokeContractStatusAtAudit": "in_progress"
     },
     "vibeQaWorkflow": {
       "runId": 34304811810,
       "conclusion": "success"
     }
   },
-  "nextPriority": "Implement Unity runtime/play smoke evidence without weakening the QA PASS gate."
+  "nextPriority": "Verify the Unity Android runtime-smoke workflow on the next successful APK build and only then upgrade Unity QA runtime capability to VERIFIED."
 }
