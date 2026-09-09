@@ -67,13 +67,14 @@ export function resolveDepartmentScope({role,sourcePath,responsibilityFiles=[],d
     if(role!=='development')return {run:false,scope:[],reason:'RULE_PATCH_DEVELOPMENT_ONLY'};
     return {run:refs.length>0,scope:refs.slice(0,1),reason:refs.length?'RULE_PATCH_EXACT_SCOPE':'RULE_PATCH_NO_SCOPE'};
   }
-  const focus=[goal,diagnostic?.type,diagnostic?.message,departmentResult?.summary,departmentResult?.nextAction].map(clean).filter(Boolean).join(' ');
+  const ownerFocus=[goal,diagnostic?.type,diagnostic?.message].map(clean).filter(Boolean).join(' ');
+  const focus=[ownerFocus,departmentResult?.summary,departmentResult?.nextAction].map(clean).filter(Boolean).join(' ');
   const files=listFiles(source);
   if(refs.length===1){
     const row=files.find(item=>item.path===refs[0]);
     if(row){
-      const owner=singleFileOwner(row,{refs,focus});
-      if(role!==owner)return {run:false,scope:[],reason:`SINGLE_FILE_MICROTASK_OWNED_BY_${owner.toUpperCase()}`,scores:[{path:row.path,score:scoreFile(role,row,{refs,focus})}]};
+      const owner=singleFileOwner(row,{refs,focus:ownerFocus});
+      if(role!==owner)return {run:false,scope:[],reason:`SINGLE_FILE_MICROTASK_OWNED_BY_${owner.toUpperCase()}`,scores:[{path:row.path,score:scoreFile(role,row,{refs,focus:ownerFocus})}]};
     }
   }
   const ranked=files.map(row=>({...row,score:scoreFile(role,row,{refs,focus})})).filter(row=>row.score>0).sort((a,b)=>b.score-a.score||a.path.localeCompare(b.path));
