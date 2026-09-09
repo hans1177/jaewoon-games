@@ -13,6 +13,7 @@ on:
     paths:
       - 'tools/company-status-sync.mjs'
       - 'tools/autonomous-24h-work-planner.mjs'
+      - 'qa/production-diversity.test.mjs'
       - '.github/workflows/company-status-sync.yml'
       - 'director-supervision-status.json'
       - 'autonomous-portfolio.json'
@@ -44,6 +45,7 @@ jobs:
         run: |
           node --check tools/company-status-sync.mjs
           node --check tools/autonomous-24h-work-planner.mjs
+          node --test qa/production-diversity.test.mjs
           node tools/company-status-sync.mjs
 
       - name: Validate synchronized state
@@ -77,9 +79,11 @@ jobs:
 
           const catalogTier1=catalog.games.filter(g=>Number(g.productionTier)===1);
           const catalogTier2=catalog.games.filter(g=>Number(g.productionTier)===2);
+          const catalogTier3=catalog.games.filter(g=>Number(g.productionTier)===3);
           if(catalogTier1.length!==2||catalogTier2.length!==3)throw new Error('catalog tier count mismatch');
           if(catalogTier1.some(g=>g.homepageCategory!=='release-confirmed'))throw new Error('catalog tier1 category mismatch');
           if(catalogTier2.some(g=>g.homepageCategory!=='development-confirmed'))throw new Error('catalog tier2 category mismatch');
+          if(catalogTier3.some(g=>g.homepageCategory!=='design-only'))throw new Error('catalog tier3 category mismatch');
 
           const focusPolicy=portfolio.developmentFocusPolicy||{};
           const focus=company.operations?.autonomousFocus;
@@ -94,8 +98,11 @@ jobs:
           const state=portfolio.productionTierState||{};
           if(state.membershipMode!=='AUTO_EVIDENCE_RANKED'||state.fixedGameIds!==false||state.autoPromotionDemotion!==true)throw new Error('automatic tier state missing');
           if((state.releaseConfirmedGameIds||[]).length!==2||(state.developmentConfirmedGameIds||[]).length!==3)throw new Error('automatic tier state count mismatch');
+          if(state.diversity?.enabled!==true||state.diversity?.maxFocusScoreGap!==1)throw new Error('portfolio gameplay diversity policy missing');
+          if(!Array.isArray(state.diversity?.distinctFamilies))throw new Error('portfolio gameplay diversity evidence missing');
           console.log('COMPANY_STATUS_SYNC_QA=PASS');
           console.log(`PRODUCTION_TIER_COUNTS_QA=2/3/${tier3.length}`);
+          console.log(`PRODUCTION_DIVERSITY_QA=${state.diversity.distinctFamilies.join(',')||'none'}`);
           console.log(`COMPANY_AUTONOMOUS_FOCUS_QA=${focus.focusedGameIds.join(',')||'none'}`);
           NODE
 
