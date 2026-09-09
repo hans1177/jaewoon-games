@@ -120,7 +120,7 @@
         "P0009"
       ],
       "selection": "AUTO_TIER1_READY_THEN_SCORE_WITH_IMPACT_AWARE_TIER2",
-      "activeDevelopmentRunId": 34400504863,
+      "activeDevelopmentRunId": 34401056561,
       "syncIntervalMs": 30000,
       "updatedAtKst": "2026-09-10",
       "source": [
@@ -305,104 +305,104 @@
     "dateKst": "2026-09-10",
     "runningLabelAloneCountsAsWork": false,
     "counts": {
-      "WORKING": 6,
-      "DONE": 1,
+      "WORKING": 1,
+      "DONE": 6,
       "IDLE_NO_TASK": 1,
       "BLOCKED": 0,
       "FAILED": 0,
       "STALE": 0
     },
     "liveStates": {
-      "ACTIVE": 6,
+      "ACTIVE": 1,
       "WAITING": 1,
       "BLOCKED": 0,
-      "DONE": 1
+      "DONE": 6
     },
-    "activeDevelopmentRunId": 34400504863,
+    "activeDevelopmentRunId": 34401056561,
     "primaryFindings": [],
     "staff": {
       "planning": {
-        "status": "WORKING",
-        "workState": "ACTIVE",
+        "status": "DONE",
+        "workState": "DONE",
         "task": "daechung-rpg daily artbook section",
         "source": "artbook",
-        "reason": "this department job is currently executing",
+        "reason": "department submission is recorded for the resolved active artbook target",
         "jobEvidence": {
           "id": 102632005229,
           "name": "round1 (planning)",
-          "status": "in_progress",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "success",
           "failedStep": null,
           "startedAt": "2026-09-09T20:24:22Z",
-          "completedAt": null,
+          "completedAt": "2026-09-09T20:26:43Z",
           "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34400298682/job/102632005229"
         }
       },
       "development": {
-        "status": "WORKING",
-        "workState": "ACTIVE",
+        "status": "DONE",
+        "workState": "DONE",
         "task": "daechung-rpg daily artbook section",
         "source": "artbook",
-        "reason": "this department job is currently executing",
+        "reason": "department submission is recorded for the resolved active artbook target",
         "jobEvidence": {
           "id": 102632005102,
           "name": "round1 (development)",
-          "status": "in_progress",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "success",
           "failedStep": null,
           "startedAt": "2026-09-09T20:24:22Z",
-          "completedAt": null,
+          "completedAt": "2026-09-09T20:26:11Z",
           "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34400298682/job/102632005102"
         }
       },
       "qa": {
-        "status": "WORKING",
-        "workState": "ACTIVE",
+        "status": "DONE",
+        "workState": "DONE",
         "task": "daechung-rpg daily artbook section",
         "source": "artbook",
-        "reason": "this department job is currently executing",
+        "reason": "department submission is recorded for the resolved active artbook target",
         "jobEvidence": {
           "id": 102632005042,
           "name": "round1 (qa)",
-          "status": "in_progress",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "success",
           "failedStep": null,
           "startedAt": "2026-09-09T20:24:23Z",
-          "completedAt": null,
+          "completedAt": "2026-09-09T20:26:08Z",
           "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34400298682/job/102632005042"
         }
       },
       "graphics": {
-        "status": "WORKING",
-        "workState": "ACTIVE",
+        "status": "DONE",
+        "workState": "DONE",
         "task": "daechung-rpg daily artbook section",
         "source": "artbook",
-        "reason": "this department job is currently executing",
+        "reason": "department submission is recorded for the resolved active artbook target",
         "jobEvidence": {
           "id": 102632004986,
           "name": "round1 (graphics)",
-          "status": "in_progress",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "success",
           "failedStep": null,
           "startedAt": "2026-09-09T20:24:21Z",
-          "completedAt": null,
+          "completedAt": "2026-09-09T20:27:10Z",
           "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34400298682/job/102632004986"
         }
       },
       "balance": {
-        "status": "WORKING",
-        "workState": "ACTIVE",
+        "status": "DONE",
+        "workState": "DONE",
         "task": "daechung-rpg daily artbook section",
         "source": "artbook",
-        "reason": "this department job is currently executing",
+        "reason": "department submission is recorded for the resolved active artbook target",
         "jobEvidence": {
           "id": 102632005047,
           "name": "round1 (balance)",
-          "status": "in_progress",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "success",
           "failedStep": null,
           "startedAt": "2026-09-09T20:24:22Z",
-          "completedAt": null,
+          "completedAt": "2026-09-09T20:26:28Z",
           "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34400298682/job/102632005047"
         }
       },
@@ -617,39 +617,39 @@
     },
     "departmentTasks": {
       "planning": {
-        "status": "working",
+        "status": "done",
         "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "ACTIVE",
-        "reason": "this department job is currently executing"
+        "workState": "DONE",
+        "reason": "department submission is recorded for the resolved active artbook target"
       },
       "development": {
-        "status": "working",
+        "status": "done",
         "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "ACTIVE",
-        "reason": "this department job is currently executing"
+        "workState": "DONE",
+        "reason": "department submission is recorded for the resolved active artbook target"
       },
       "qa": {
-        "status": "working",
+        "status": "done",
         "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "ACTIVE",
-        "reason": "this department job is currently executing"
+        "workState": "DONE",
+        "reason": "department submission is recorded for the resolved active artbook target"
       },
       "graphics": {
-        "status": "working",
+        "status": "done",
         "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "ACTIVE",
-        "reason": "this department job is currently executing"
+        "workState": "DONE",
+        "reason": "department submission is recorded for the resolved active artbook target"
       },
       "balance": {
-        "status": "working",
+        "status": "done",
         "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "ACTIVE",
-        "reason": "this department job is currently executing"
+        "workState": "DONE",
+        "reason": "department submission is recorded for the resolved active artbook target"
       },
       "director": {
         "status": "working",
