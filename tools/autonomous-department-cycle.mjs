@@ -72,8 +72,10 @@ async function callRole(role,ctx){
       if(!response.ok)throw new Error(`Ollama ${response.status}`);
       const payload=await response.json();const value=JSON.parse(clean(payload.response));
       if(!SCHEMA.properties.decision.enum.includes(value.decision)||!clean(value.nextAction))throw new Error('department schema validation failed');
+      const metrics={promptEvalCount:Number(payload.prompt_eval_count||0),evalCount:Number(payload.eval_count||0),promptEvalMs:Math.round(Number(payload.prompt_eval_duration||0)/1e6),evalMs:Math.round(Number(payload.eval_duration||0)/1e6),totalMs:Math.round(Number(payload.total_duration||0)/1e6)};
+      console.log(`DEPARTMENT_MODEL_METRICS=${role}:prompt_tokens=${metrics.promptEvalCount}:output_tokens=${metrics.evalCount}:prompt_ms=${metrics.promptEvalMs}:output_ms=${metrics.evalMs}:total_ms=${metrics.totalMs}`);
       const completedAt=new Date().toISOString();console.log(`DEPARTMENT_STATE=${role}:DONE`);
-      return {role,department:ROLE_NAME[role],workState:'DONE',decision:value.decision,summary:clean(value.summary),nextAction:clean(value.nextAction),checks:Array.isArray(value.checks)?value.checks.map(clean).filter(Boolean).slice(0,4):[],risks:Array.isArray(value.risks)?value.risks.map(clean).filter(Boolean).slice(0,4):[],model:MODEL,attempt,startedAt,completedAt};
+      return {role,department:ROLE_NAME[role],workState:'DONE',decision:value.decision,summary:clean(value.summary),nextAction:clean(value.nextAction),checks:Array.isArray(value.checks)?value.checks.map(clean).filter(Boolean).slice(0,4):[],risks:Array.isArray(value.risks)?value.risks.map(clean).filter(Boolean).slice(0,4):[],model:MODEL,attempt,startedAt,completedAt,modelMetrics:metrics};
     }catch(error){lastError=error;if(attempt===2){console.log(`DEPARTMENT_STATE=${role}:BLOCKED`);throw new Error(`${ROLE_NAME[role]} AI 작업 실패: ${clean(error?.message||error)}`);}}finally{clearTimeout(timeout);}
   }
   throw lastError;
@@ -91,32 +93,53 @@ export async function runDepartmentRole({role,order,book,vibeCore}={}){
   return callRole(role,{order,book,vibeCore,previous:[]});
 }
 
+export function canUseDeterministicFinalization({vibeCore,results}={}){
+  if(!Array.isArray(results)||results.length!==CORE_ROLES.length)return false;
+  const routing=vibeCore?.routing||{};
+  if(routing.mayDispatch!==true||routing.mayExecute!==true||routing.requiresOwnerAction===true)return false;
+  const byRole=new Map(results.map(row=>[row?.role,row]));
+  return CORE_ROLES.every(role=>{
+    const row=byRole.get(role);
+    return row?.workState==='DONE'&&row?.decision==='PROCEED'&&clean(row?.nextAction)&&Array.isArray(row?.risks)&&row.risks.map(clean).filter(Boolean).length===0;
+  });
+}
+
+export function buildDeterministicFinalization(results=[]){
+  const now=new Date().toISOString();
+  const actions=[...new Set(results.map(row=>clean(row?.nextAction)).filter(Boolean))];
+  const checks=[...new Set(results.flatMap(row=>Array.isArray(row?.checks)?row.checks:[]).map(clean).filter(Boolean))].slice(0,4);
+  return {role:FINAL_ROLE,department:ROLE_NAME[FINAL_ROLE],workState:'DONE',decision:'PROCEED',summary:'5개 독립 부서가 모두 PROCEED이고 위험 보고가 없어 추가 AI 재판단 없이 합의 제약을 통합했다.',nextAction:actions.join(' / ').slice(0,1600),checks,risks:[],model:'deterministic-department-consensus',attempt:0,startedAt:now,completedAt:now,integrationMode:'DETERMINISTIC_SAFE_CONSENSUS'};
+}
+
 function buildCycle({order,vibeCore,results,final}){
   if(final.decision==='BLOCK')throw new Error(`기획부 최종확인 BLOCK: ${final.summary||final.nextAction}`);
   const all=[...results,final];const originalGoal=clean(order.goal),constraint=clean(final.nextAction),qualityTier=vibeCore.qualityBar?.tier?`T${vibeCore.qualityBar.tier}`:'현재 품질바';
   const finalGoal=`${originalGoal} Vibe 공용 실행계약(${vibeCore.stageId}, ${qualityTier})을 따르되 AI 부서 교정이 우선한다. 부서 사이클 최종 제약: ${constraint}`.slice(0,2200);
   const adjustments=all.filter(row=>row.decision==='ADJUST').map(row=>({role:row.role,summary:row.summary,nextAction:row.nextAction}));
   const fast=laneFor(order)==='FAST';
-  return {version:3,gameId:order.gameId,gameSlug:order.gameSlug,candidateId:process.env.AUTONOMOUS_CANDIDATE_ID||order.candidateId||null,sourcePath:order.sourcePath,workLane:fast?'FAST':'FULL',sequence:ROLES,parallelDepartments:CORE_ROLES,activeReviewRoles:fast?FAST_REVIEW_ROLES:CORE_ROLES,finalIntegrator:fast?'deterministic-fast-integrator':FINAL_ROLE,allDepartmentsWorked:!fast,paidApi:false,localModel:MODEL,originalGoal,finalGoal,finalDecision:final.decision,vibeCore,collaboration:{mode:fast?'FAST_DEV_QA_REVIEW_THEN_DETERMINISTIC_INTEGRATION':'VIBE_PROPOSES_PARALLEL_AI_DEPARTMENTS_REVIEW_THEN_PLANNING_INTEGRATES',vibeProposalReviewedBy:fast?FAST_REVIEW_ROLES:ROLES,departmentAdjustmentCount:adjustments.length,departmentAdjustments:adjustments,verifiedLearningUsed:vibeCore.learning.patterns.length,antiPatternsUsed:vibeCore.learning.antiPatterns.length,learningWriteAuthority:'independent-qa-verified-outcome-only',vibeMaySelfApprove:false,vibeMayOverrideDepartments:false,sourceWriteConcurrency:'SERIAL_AFTER_PARALLEL_REVIEW'},results:all,completedAt:new Date().toISOString()};
+  return {version:3,gameId:order.gameId,gameSlug:order.gameSlug,candidateId:process.env.AUTONOMOUS_CANDIDATE_ID||order.candidateId||null,sourcePath:order.sourcePath,workLane:fast?'FAST':'FULL',sequence:ROLES,parallelDepartments:CORE_ROLES,activeReviewRoles:fast?FAST_REVIEW_ROLES:CORE_ROLES,finalIntegrator:fast?'deterministic-fast-integrator':FINAL_ROLE,allDepartmentsWorked:!fast,paidApi:false,localModel:MODEL,originalGoal,finalGoal,finalDecision:final.decision,vibeCore,collaboration:{mode:fast?'FAST_DEV_QA_REVIEW_THEN_DETERMINISTIC_INTEGRATION':'VIBE_PROPOSES_PARALLEL_AI_DEPARTMENTS_REVIEW_THEN_PLANNING_INTEGRATES',finalIntegrationMode:final.integrationMode||(fast?'DETERMINISTIC_FAST_LANE':'PLANNING_AI'),vibeProposalReviewedBy:fast?FAST_REVIEW_ROLES:ROLES,departmentAdjustmentCount:adjustments.length,departmentAdjustments:adjustments,verifiedLearningUsed:vibeCore.learning.patterns.length,antiPatternsUsed:vibeCore.learning.antiPatterns.length,learningWriteAuthority:'independent-qa-verified-outcome-only',vibeMaySelfApprove:false,vibeMayOverrideDepartments:false,sourceWriteConcurrency:'SERIAL_AFTER_PARALLEL_REVIEW'},results:all,completedAt:new Date().toISOString()};
 }
 
 function deterministicFastFinal(order,results){
   const active=results.filter(row=>FAST_REVIEW_ROLES.includes(row.role));
   const blocked=active.find(row=>row.decision==='BLOCK');
-  if(blocked)return {role:FINAL_ROLE,department:'FAST 결정론적 통합',workState:'DONE',decision:'BLOCK',summary:`${blocked.role}: ${blocked.summary}`,nextAction:blocked.nextAction,checks:blocked.checks||[],risks:blocked.risks||[],model:'none',attempt:0,startedAt:new Date().toISOString(),completedAt:new Date().toISOString(),deterministicFast:true};
+  if(blocked)return {role:FINAL_ROLE,department:'FAST 결정론적 통합',workState:'DONE',decision:'BLOCK',summary:`${blocked.role}: ${blocked.summary}`,nextAction:blocked.nextAction,checks:blocked.checks||[],risks:blocked.risks||[],model:'none',attempt:0,startedAt:new Date().toISOString(),completedAt:new Date().toISOString(),deterministicFast:true,integrationMode:'DETERMINISTIC_FAST_LANE'};
   const adjusted=active.filter(row=>row.decision==='ADJUST');
   const dev=active.find(row=>row.role==='development'),qa=active.find(row=>row.role==='qa');
   const qaChecks=(qa?.checks||[]).slice(0,2).join(' / ');
   const nextAction=[dev?.nextAction,qaChecks?`QA 확인: ${qaChecks}`:qa?.nextAction].map(clean).filter(Boolean).join(' ').slice(0,1000)||clean(order.goal);
   const now=new Date().toISOString();
-  return {role:FINAL_ROLE,department:'FAST 결정론적 통합',workState:'DONE',decision:adjusted.length?'ADJUST':'PROCEED',summary:'FAST 복구는 개발부 수정 제약과 QA 재현 조건만 결합한다.',nextAction,checks:(qa?.checks||[]).slice(0,4),risks:[...(dev?.risks||[]),...(qa?.risks||[])].slice(0,4),model:'none',attempt:0,startedAt:now,completedAt:now,deterministicFast:true};
+  return {role:FINAL_ROLE,department:'FAST 결정론적 통합',workState:'DONE',decision:adjusted.length?'ADJUST':'PROCEED',summary:'FAST 복구는 개발부 수정 제약과 QA 재현 조건만 결합한다.',nextAction,checks:(qa?.checks||[]).slice(0,4),risks:[...(dev?.risks||[]),...(qa?.risks||[])].slice(0,4),model:'none',attempt:0,startedAt:now,completedAt:now,deterministicFast:true,integrationMode:'DETERMINISTIC_FAST_LANE'};
 }
 
 export async function finalizeDepartmentCycle({order,book,vibeCore,results}={}){
   if(!Array.isArray(results)||results.length!==CORE_ROLES.length)throw new Error('5개 독립 부서 결과가 모두 필요함');
   const byRole=new Map(results.map(row=>[row.role,row]));for(const role of CORE_ROLES)if(!byRole.has(role)||byRole.get(role)?.workState!=='DONE')throw new Error(`${role} 결과 미완료`);
   const ordered=CORE_ROLES.map(role=>byRole.get(role));
-  const final=laneFor(order)==='FAST'?deterministicFastFinal(order,ordered):await callRole(FINAL_ROLE,{order,book,vibeCore,previous:ordered});
+  const fast=laneFor(order)==='FAST';
+  const deterministic=!fast&&canUseDeterministicFinalization({vibeCore,results:ordered});
+  const final=fast?deterministicFastFinal(order,ordered):deterministic?buildDeterministicFinalization(ordered):await callRole(FINAL_ROLE,{order,book,vibeCore,previous:ordered});
+  console.log(`PLANNING_FINAL_MODE=${final.integrationMode||(fast?'DETERMINISTIC_FAST_LANE':'PLANNING_AI')}`);
   return buildCycle({order,vibeCore,results:ordered,final});
 }
 
@@ -136,9 +159,9 @@ async function main(){
   }
   if(finalize){
     const dir=process.env.AUTONOMOUS_DEPARTMENT_RESULTS_DIR||'.autonomous/department-results';const packages=CORE_ROLES.map(role=>readJson(path.join(dir,`${role}.json`))).filter(Boolean);if(packages.length!==CORE_ROLES.length)throw new Error(`부서 결과 ${packages.length}/5`);
-    const cycle=await finalizeDepartmentCycle({order,book,vibeCore,results:packages.map(item=>item.result)});const output=process.env.AUTONOMOUS_DEPARTMENT_CYCLE_OUTPUT||'/tmp/autonomous-department-cycle.json';writeJson(output,cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,activeReviewRoles:cycle.activeReviewRoles,workLane:cycle.workLane,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount,output}));return;
+    const cycle=await finalizeDepartmentCycle({order,book,vibeCore,results:packages.map(item=>item.result)});const output=process.env.AUTONOMOUS_DEPARTMENT_CYCLE_OUTPUT||'/tmp/autonomous-department-cycle.json';writeJson(output,cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,activeReviewRoles:cycle.activeReviewRoles,workLane:cycle.workLane,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,finalIntegrationMode:cycle.collaboration.finalIntegrationMode,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount,output}));return;
   }
-  const artbooks=readJson('game-artbooks.json',{artbooks:[]});const companyDna=readJson('company-learning/company-dna.json',{version:1,items:[],antiPatterns:[]});const cycle=await runDepartmentCycle({order,artbooks,companyDna});writeJson('/tmp/autonomous-department-cycle.json',cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,activeReviewRoles:cycle.activeReviewRoles,workLane:cycle.workLane,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount}));
+  const artbooks=readJson('game-artbooks.json',{artbooks:[]});const companyDna=readJson('company-learning/company-dna.json',{version:1,items:[],antiPatterns:[]});const cycle=await runDepartmentCycle({order,artbooks,companyDna});writeJson('/tmp/autonomous-department-cycle.json',cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,activeReviewRoles:cycle.activeReviewRoles,workLane:cycle.workLane,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,finalIntegrationMode:cycle.collaboration.finalIntegrationMode,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount}));
 }
 
 const isMain=process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href;
