@@ -1,7 +1,93 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-09T20:45:13.966Z",
-  "items": [],
-  "evidenceIds": [],
+  "updatedAt": "2026-09-09T21:41:20.582Z",
+  "items": [
+    {
+      "key": "VIBE2:autonomous-candidate-safe-promotion",
+      "type": "VIBE2",
+      "patternId": "autonomous-candidate-safe-promotion",
+      "title": "Autonomous candidate scope + regression safe promotion",
+      "stage": "GAME_VERIFIED",
+      "jayApproved": false,
+      "evidence": [
+        {
+          "id": "vibe2-P0009-20260910-34407235062",
+          "gameId": "P0009",
+          "genre": "UNKNOWN",
+          "conditionKey": "AUTONOMOUS_DEV",
+          "outcome": "SUCCESS",
+          "delta": 0,
+          "blockers": [],
+          "sourceRevision": "c2c22680267f117c5f788e66d7cec0f063fbef43",
+          "evidence": [
+            ".autonomous/evidence/P0009-20260910-34407235062.json",
+            "independent-candidate-browser-qa",
+            "vibe-regression"
+          ],
+          "verifiedAt": "2026-09-09T21:39:39.070Z"
+        }
+      ],
+      "createdAt": "2026-09-09T21:41:20.582Z",
+      "updatedAt": "2026-09-09T21:41:20.582Z",
+      "summary": {
+        "successEvidence": 1,
+        "failureEvidence": 0,
+        "distinctGames": 1,
+        "distinctGenres": 0,
+        "distinctConditions": 1,
+        "averageDelta": 0,
+        "criticalFailures": 0,
+        "multiGameEligible": false,
+        "selfPromote": false,
+        "jayDecisionRequired": false
+      }
+    },
+    {
+      "key": "VIBE2:public-release-health-verified",
+      "type": "VIBE2",
+      "patternId": "public-release-health-verified",
+      "title": "Public release health verified outcome",
+      "stage": "GAME_VERIFIED",
+      "jayApproved": false,
+      "evidence": [
+        {
+          "id": "vibe2-post-release-monster-adventure-34408180925",
+          "gameId": "monster-adventure",
+          "genre": "UNKNOWN",
+          "conditionKey": "POST_RELEASE_PUBLIC_HEALTH",
+          "outcome": "SUCCESS",
+          "delta": 0,
+          "blockers": [],
+          "sourceRevision": "55f081bf6af39b17d5d320bb979c61eadd8fba51",
+          "evidence": [
+            "public-game-health.json",
+            "company-qa-runtime-evidence.json",
+            "release-task-autonomous-P0009-20260910-34407235062",
+            "status-healthy",
+            "score-100"
+          ],
+          "verifiedAt": "2026-09-09T21:41:06.934Z"
+        }
+      ],
+      "createdAt": "2026-09-09T21:41:20.582Z",
+      "updatedAt": "2026-09-09T21:41:20.582Z",
+      "summary": {
+        "successEvidence": 1,
+        "failureEvidence": 0,
+        "distinctGames": 1,
+        "distinctGenres": 0,
+        "distinctConditions": 1,
+        "averageDelta": 0,
+        "criticalFailures": 0,
+        "multiGameEligible": false,
+        "selfPromote": false,
+        "jayDecisionRequired": false
+      }
+    }
+  ],
+  "evidenceIds": [
+    "vibe2-P0009-20260910-34407235062",
+    "vibe2-post-release-monster-adventure-34408180925"
+  ],
   "antiPatterns": []
 }
