@@ -8,22 +8,32 @@ on:
     workflows:
       - Free Artbook Department Bots
       - Homepage Manager
+      - Public Game Health
+      - Unity Hybrid Android Build
+      - Unity Android Runtime Smoke
     types: [completed]
   push:
     branches: [main]
     paths:
       - 'company-directive.json'
       - 'company-status.json'
+      - 'company-department-audit.json'
       - 'artbook-submission-queue.json'
       - 'artbook-work-orders/**'
       - 'artbook-submissions/**'
       - 'homepage-manager-status.json'
+      - 'public-game-health.json'
+      - 'company-qa-runtime-evidence.json'
       - 'tools/director-supervisor.mjs'
       - 'tools/artbook-department-runner.mjs'
+      - 'tools/company-qa-public-web-evidence.mjs'
+      - 'tools/unity-apk-runtime-smoke.sh'
       - '.github/agents/director.agent.md'
       - '.github/workflows/director-supervisor.yml'
       - '.github/workflows/artbook-free-department-bots.yml'
       - '.github/workflows/homepage-manager.yml'
+      - '.github/workflows/public-game-health.yml'
+      - '.github/workflows/unity-android-runtime-smoke.yml'
 
 permissions:
   contents: write
@@ -95,16 +105,27 @@ jobs:
           node - <<'NODE'
           const fs=require('fs');
           const s=JSON.parse(fs.readFileSync('director-supervision-status.json','utf8'));
+          const company=JSON.parse(fs.readFileSync('company-status.json','utf8'));
           const required=['planning','development','qa','graphics','balance','homepage','release','director'];
           for(const d of required){if(!s.staff?.[d])throw new Error(`missing staff check: ${d}`);}
           if(s.checks?.staffChecked!=='8/8')throw new Error('staff check is not 8/8');
           if(s.checks?.runningLabelAloneCountsAsWork!==false)throw new Error('running label can falsely count as work');
           if(s.checks?.directorMayGhostwriteMissingDepartmentWork!==false)throw new Error('director ghostwriting protection missing');
+          if(s.checks?.homepageDiagnosticOnlyRecognized!==true)throw new Error('homepage diagnostic-only role is not recognized');
+          if(s.checks?.releaseArtifactEvidenceAdapterRegistered!==true)throw new Error('release artifact evidence adapter missing');
           if(s.workflowEvidence?.artbook&&!s.checks?.jobLevelEvidenceUsed)throw new Error('artbook run exists but department job evidence was not used');
           for(const d of ['planning','development','qa','graphics','balance']){
             const item=s.staff?.[d];
             if(item?.jobEvidence?.conclusion==='failure'&&!item.directCause)throw new Error(`${d}: failed job has no direct cause evidence`);
           }
+          const hp=company?.policy?.homepageOperations||{};
+          if(hp.diagnosticOnly===true&&hp.runtimeDataSync===true&&hp.autoMaintenance===false&&s.staff.homepage?.status==='STALE'){
+            throw new Error('diagnostic-only homepage must not be classified as stale standing work');
+          }
+          const builds=Array.isArray(company.testBuilds)?company.testBuilds:[];
+          const latest=[...builds].sort((a,b)=>new Date(b.builtAt||0)-new Date(a.builtAt||0))[0];
+          const verified=Boolean(latest&&['ready','released','done'].includes(String(latest.status||'').toLowerCase())&&latest.release&&latest.download&&/^[a-f0-9]{64}$/i.test(String(latest.sha256||''))&&Number(latest.bytes)>0&&latest.builtAt);
+          if(verified&&['BLOCKED','FAILED'].includes(s.staff.release?.status))throw new Error('verified test release artifact must not remain dependency-blocked');
           console.log('DIRECTOR_SUPERVISION_QA=PASS');
           NODE
 
