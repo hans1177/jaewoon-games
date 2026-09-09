@@ -3,11 +3,11 @@
   "dateKst": "2026-09-10",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
-  "activeDevelopmentRunId": 34399736596,
+  "activeDevelopmentRunId": 34400504863,
   "checks": {
     "staffChecked": "8/8",
-    "activeWorkOrder": null,
-    "activeWorkOrderExists": false,
+    "activeWorkOrder": "artbook-work-orders/2026-09-10-daechung-rpg.json",
+    "activeWorkOrderExists": true,
     "evidenceAdapterMismatch": false,
     "jobLevelEvidenceUsed": true,
     "autonomousDepartmentJobEvidenceUsed": true,
@@ -17,30 +17,28 @@
     "directorMayGhostwriteMissingDepartmentWork": false,
     "homepageDiagnosticOnlyRecognized": true,
     "releaseArtifactEvidenceAdapterRegistered": true,
-    "artbookLiveTargetResolved": false,
-    "artbookTargetSource": "persisted-queue-fallback",
+    "artbookLiveTargetResolved": true,
+    "artbookTargetSource": "artbook-context-log",
     "liveJobPrecedesPersistedSubmission": true,
     "playImpactEvidenceUsed": false,
     "completionAndPerformanceSeparated": true
   },
   "counts": {
-    "WORKING": 1,
-    "DONE": 6,
+    "WORKING": 6,
+    "DONE": 1,
     "IDLE_NO_TASK": 1,
     "BLOCKED": 0,
     "FAILED": 0,
     "STALE": 0
   },
   "liveStates": {
-    "ACTIVE": 1,
+    "ACTIVE": 6,
     "WAITING": 1,
     "BLOCKED": 0,
-    "DONE": 6
+    "DONE": 1
   },
   "attentionRequired": false,
-  "primaryFindings": [
-    "NO_WORK_ORDER:artbook-work-orders/2026-09-10-daechung-rpg.json"
-  ],
+  "primaryFindings": [],
   "workflowEvidence": {
     "artbook": {
       "id": 34400298682,
@@ -48,20 +46,28 @@
       "conclusion": null,
       "event": "push",
       "createdAt": "2026-09-09T20:19:04Z",
-      "updatedAt": "2026-09-09T20:19:08Z",
+      "updatedAt": "2026-09-09T20:24:24Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34400298682"
     },
     "autonomousDevelopment": {
-      "id": 34399736596,
+      "id": 34400504863,
       "status": "in_progress",
       "conclusion": null,
       "event": "workflow_dispatch",
-      "createdAt": "2026-09-09T20:13:29Z",
-      "updatedAt": "2026-09-09T20:17:54Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34399736596"
+      "createdAt": "2026-09-09T20:21:06Z",
+      "updatedAt": "2026-09-09T20:23:54Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34400504863"
     },
     "homepage": null,
-    "publicGameHealth": null,
+    "publicGameHealth": {
+      "id": 34400656121,
+      "status": "completed",
+      "conclusion": "failure",
+      "event": "push",
+      "createdAt": "2026-09-09T20:22:39Z",
+      "updatedAt": "2026-09-09T20:23:38Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34400656121"
+    },
     "unityBuild": null,
     "unityRuntime": null
   },
@@ -74,101 +80,151 @@
     "planning": {
       "department": "planning",
       "taskAssigned": true,
-      "status": "DONE",
-      "workState": "DONE",
+      "status": "WORKING",
+      "workState": "ACTIVE",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
+        "work-order:artbook-work-orders/2026-09-10-daechung-rpg.json",
+        "live-artbook-target:daechung-rpg",
         "queue-submission:planning",
-        "workflow:34400298682:in_progress:pending"
+        "workflow:34400298682:in_progress:pending",
+        "job:102632005229:in_progress:pending"
       ],
-      "resultVerified": true,
-      "jobEvidence": null,
+      "resultVerified": false,
+      "jobEvidence": {
+        "id": 102632005229,
+        "name": "round1 (planning)",
+        "status": "in_progress",
+        "conclusion": null,
+        "failedStep": null,
+        "startedAt": "2026-09-09T20:24:22Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34400298682/job/102632005229"
+      },
       "directCause": null,
-      "blockers": [
-        "NO_WORK_ORDER"
-      ],
-      "reason": "department submission is recorded for the resolved active artbook target",
-      "action": "hold for collaboration/gate verification",
+      "blockers": [],
+      "reason": "this department job is currently executing",
+      "action": "check department output after job completes",
       "source": "artbook"
     },
     "development": {
       "department": "development",
       "taskAssigned": true,
-      "status": "DONE",
-      "workState": "DONE",
+      "status": "WORKING",
+      "workState": "ACTIVE",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
+        "work-order:artbook-work-orders/2026-09-10-daechung-rpg.json",
+        "live-artbook-target:daechung-rpg",
         "queue-submission:development",
-        "workflow:34400298682:in_progress:pending"
+        "workflow:34400298682:in_progress:pending",
+        "job:102632005102:in_progress:pending"
       ],
-      "resultVerified": true,
-      "jobEvidence": null,
+      "resultVerified": false,
+      "jobEvidence": {
+        "id": 102632005102,
+        "name": "round1 (development)",
+        "status": "in_progress",
+        "conclusion": null,
+        "failedStep": null,
+        "startedAt": "2026-09-09T20:24:22Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34400298682/job/102632005102"
+      },
       "directCause": null,
-      "blockers": [
-        "NO_WORK_ORDER"
-      ],
-      "reason": "department submission is recorded for the resolved active artbook target",
-      "action": "hold for collaboration/gate verification",
+      "blockers": [],
+      "reason": "this department job is currently executing",
+      "action": "check department output after job completes",
       "source": "artbook"
     },
     "qa": {
       "department": "qa",
       "taskAssigned": true,
-      "status": "DONE",
-      "workState": "DONE",
+      "status": "WORKING",
+      "workState": "ACTIVE",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
+        "work-order:artbook-work-orders/2026-09-10-daechung-rpg.json",
+        "live-artbook-target:daechung-rpg",
         "queue-submission:qa",
-        "workflow:34400298682:in_progress:pending"
+        "workflow:34400298682:in_progress:pending",
+        "job:102632005042:in_progress:pending"
       ],
-      "resultVerified": true,
-      "jobEvidence": null,
+      "resultVerified": false,
+      "jobEvidence": {
+        "id": 102632005042,
+        "name": "round1 (qa)",
+        "status": "in_progress",
+        "conclusion": null,
+        "failedStep": null,
+        "startedAt": "2026-09-09T20:24:23Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34400298682/job/102632005042"
+      },
       "directCause": null,
-      "blockers": [
-        "NO_WORK_ORDER"
-      ],
-      "reason": "department submission is recorded for the resolved active artbook target",
-      "action": "hold for collaboration/gate verification",
+      "blockers": [],
+      "reason": "this department job is currently executing",
+      "action": "check department output after job completes",
       "source": "artbook"
     },
     "graphics": {
       "department": "graphics",
       "taskAssigned": true,
-      "status": "DONE",
-      "workState": "DONE",
+      "status": "WORKING",
+      "workState": "ACTIVE",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
+        "work-order:artbook-work-orders/2026-09-10-daechung-rpg.json",
+        "live-artbook-target:daechung-rpg",
         "queue-submission:graphics",
-        "workflow:34400298682:in_progress:pending"
+        "workflow:34400298682:in_progress:pending",
+        "job:102632004986:in_progress:pending"
       ],
-      "resultVerified": true,
-      "jobEvidence": null,
+      "resultVerified": false,
+      "jobEvidence": {
+        "id": 102632004986,
+        "name": "round1 (graphics)",
+        "status": "in_progress",
+        "conclusion": null,
+        "failedStep": null,
+        "startedAt": "2026-09-09T20:24:21Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34400298682/job/102632004986"
+      },
       "directCause": null,
-      "blockers": [
-        "NO_WORK_ORDER"
-      ],
-      "reason": "department submission is recorded for the resolved active artbook target",
-      "action": "hold for collaboration/gate verification",
+      "blockers": [],
+      "reason": "this department job is currently executing",
+      "action": "check department output after job completes",
       "source": "artbook"
     },
     "balance": {
       "department": "balance",
       "taskAssigned": true,
-      "status": "DONE",
-      "workState": "DONE",
+      "status": "WORKING",
+      "workState": "ACTIVE",
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
+        "work-order:artbook-work-orders/2026-09-10-daechung-rpg.json",
+        "live-artbook-target:daechung-rpg",
         "queue-submission:balance",
-        "workflow:34400298682:in_progress:pending"
+        "workflow:34400298682:in_progress:pending",
+        "job:102632005047:in_progress:pending"
       ],
-      "resultVerified": true,
-      "jobEvidence": null,
+      "resultVerified": false,
+      "jobEvidence": {
+        "id": 102632005047,
+        "name": "round1 (balance)",
+        "status": "in_progress",
+        "conclusion": null,
+        "failedStep": null,
+        "startedAt": "2026-09-09T20:24:22Z",
+        "completedAt": null,
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34400298682/job/102632005047"
+      },
       "directCause": null,
-      "blockers": [
-        "NO_WORK_ORDER"
-      ],
-      "reason": "department submission is recorded for the resolved active artbook target",
-      "action": "hold for collaboration/gate verification",
+      "blockers": [],
+      "reason": "this department job is currently executing",
+      "action": "check department output after job completes",
       "source": "artbook"
     },
     "homepage": {
@@ -179,7 +235,8 @@
       "task": "no standing homepage worker task; runtime data sync is automatic",
       "executionEvidence": [
         "homepage-manager-status.json:snapshot-only",
-        "company-status:homepage-runtime-sync-active"
+        "company-status:homepage-runtime-sync-active",
+        "public-health:34400656121:completed:failure"
       ],
       "resultVerified": true,
       "blockers": [],
