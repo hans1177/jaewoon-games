@@ -74,13 +74,23 @@ function requiredMilestoneUpgrade(gameId){
   }
   return null;
 }
+function revisionReadyForScheduling(task){
+  const status=clean(task?.status).toUpperCase();
+  if(status==='SCHEDULED')return true;
+  if(status!=='SUBMITTED_FOR_REVIEW')return false;
+  const revisionPath=clean(task?.revisionPath);
+  if(!revisionPath)return false;
+  const candidate=readJson(revisionPath,null);
+  if(!candidate||clean(candidate.gameId)!==clean(task.gameId)||candidate.productionApproval===true)return false;
+  return ['REVIEW_REQUIRED','FIX_REQUIRED'].includes(clean(candidate.status).toUpperCase());
+}
 
 const milestoneUpgradeCandidates=existingOrder.map(requiredMilestoneUpgrade).filter(Boolean).sort((a,b)=>{
   const priority={RELEASE_UPGRADE:0,DEVELOPMENT_UPGRADE:1};
   return priority[a.mode]-priority[b.mode]||existingOrder.indexOf(a.gameId)-existingOrder.indexOf(b.gameId);
 });
 const dueRevision=(revisionQueue.tasks||[]).filter(x=>
-  x.status==='SCHEDULED'&&String(x.dueDate||date)<=date&&completedInitial.has(x.gameId)
+  revisionReadyForScheduling(x)&&String(x.dueDate||date)<=date&&completedInitial.has(x.gameId)
 ).sort((a,b)=>String(a.dueDate||'').localeCompare(String(b.dueDate||''))||String(a.requestedAt||'').localeCompare(String(b.requestedAt||'')))[0]||null;
 const dueSecond=(secondQueue.tasks||[]).filter(x=>
   x.status==='SCHEDULED'&&String(x.dueDate||'')<=date&&Array.isArray(x.selectedDepartments)&&x.selectedDepartments.length

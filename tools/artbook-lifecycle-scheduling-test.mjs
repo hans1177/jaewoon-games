@@ -23,13 +23,14 @@ const completed=(gameId,edition=1,lifecycleState='DESIGN_BASELINE',workMode='INI
   presentation:{mode:'VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_AUTHORED',assistantAuthored:false},
   lifecycle:{state:lifecycleState,currentBaseline:true}
 });
-function runFixture({games,artbooks,dailySubmissions=[],revisions=[],secondTasks=[],queueExtra={}}){
+function runFixture({games,artbooks,dailySubmissions=[],revisions=[],secondTasks=[],queueExtra={},revisionArtifacts=[]}){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'artbook-life-'));
   write(root,'artbook-submission-queue.json',{requiredRoles:roles,queueOrder:games.map(x=>x.id),games:games.map(x=>({gameId:x.id,name:x.name||x.id,styleProfile:''})),...queueExtra});
   write(root,'game-catalog.json',{games:games.map(x=>({id:x.id,name:x.name||x.id,hasWebArchive:true,homepageCategory:x.stage||'reviewing'}))});
   write(root,'game-artbooks.json',{policy:{dailyFinalSubmissionLimit:1},artbooks,dailySubmissions});
   write(root,'artbook-second-work-queue.json',{tasks:secondTasks});
   write(root,'artbook-revision-queue.json',{tasks:revisions});
+  for(const artifact of revisionArtifacts)write(root,artifact.path,artifact.value);
   const result=spawnSync(process.execPath,[prepareScript],{cwd:root,encoding:'utf8'});
   if(result.status!==0)throw new Error(`prepare failed\nSTDOUT:${result.stdout}\nSTDERR:${result.stderr}`);
   const context=JSON.parse(fs.readFileSync(path.join(root,'artbook-daily-context.json'),'utf8'));
@@ -83,6 +84,30 @@ function runFixture({games,artbooks,dailySubmissions=[],revisions=[],secondTasks
   assert.equal(result.context.lifecycle.targetState,'DEVELOPMENT_BASELINE');
   assert.equal(result.context.lifecycle.sourceArtbookId,v2.id);
   assert.equal(result.context.lifecycle.overwriteApprovedVersion,false);
+}
+
+// SUBMITTED_FOR_REVIEW 상태라도 실제 revision 결과가 REVIEW_REQUIRED/FIX_REQUIRED이면 미완료 작업으로 재개한다.
+{
+  const games=[{id:'a',stage:'reviewing'}];
+  const v1=completed('a');
+  const revisionPath=`artbook-submissions/a/${date}/artbook.json`;
+  const revisions=[{id:'r2',gameId:'a',status:'SUBMITTED_FOR_REVIEW',dueDate:date,requestedAt:`${date}T00:00:00Z`,trigger:'QA_DESIGN_FINDING',reason:'의미 품질 재검토',selectedDepartments:roles,sourceArtbookId:v1.id,sourceLifecycleState:'DESIGN_BASELINE',revisionPath}];
+  const result=runFixture({games,artbooks:[v1],revisions,revisionArtifacts:[{path:revisionPath,value:{gameId:'a',status:'REVIEW_REQUIRED',productionApproval:false}}]});
+  assert.equal(result.context.run,true);
+  assert.equal(result.context.gameId,'a');
+  assert.equal(result.context.mode,'REVISION');
+  assert.deepEqual(result.context.revisionDepartments,roles);
+}
+
+// SUBMITTED_FOR_REVIEW이더라도 완료/승인 결과는 다시 예약하지 않는다.
+{
+  const games=[{id:'a',stage:'reviewing'}];
+  const v1=completed('a');
+  const revisionPath=`artbook-submissions/a/${date}/artbook.json`;
+  const revisions=[{id:'r3',gameId:'a',status:'SUBMITTED_FOR_REVIEW',dueDate:date,requestedAt:`${date}T00:00:00Z`,trigger:'QA_DESIGN_FINDING',reason:'완료 결과',selectedDepartments:roles,sourceArtbookId:v1.id,sourceLifecycleState:'DESIGN_BASELINE',revisionPath}];
+  const result=runFixture({games,artbooks:[v1],revisions,revisionArtifacts:[{path:revisionPath,value:{gameId:'a',status:'completed-artbook',productionApproval:false}}]});
+  assert.equal(result.context.run,false);
+  assert.equal(result.context.reason,'NO_ARTBOOK_WORK_DUE');
 }
 
 // 처리할 작업이 없으면 과거 currentDailyTarget/currentTargetExecution을 남기지 않고 큐를 IDLE로 갱신한다.
