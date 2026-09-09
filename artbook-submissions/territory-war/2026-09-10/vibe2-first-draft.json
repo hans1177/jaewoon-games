@@ -1,0 +1,713 @@
+{
+  "recommendedPages": 18,
+  "playerMotivation": "영토전쟁의 핵심 목표를 달성하며 현재 구현보다 넓은 중·후반 진행을 완성한다.",
+  "centralConflict": "초반 핵심 루프에서 시작한 문제가 단계마다 확대되어 최종 결전으로 이어진다.",
+  "causalitySummary": "OPENING:현재 세계의 첫 문제와 마주친다→더 큰 갈등의 단서를 얻는다 / EARLY:첫 성공 뒤 새로운 장애물이 등장한다→다음 지역의 목표가 열린다 / MID:기존 방식으로 해결되지 않는 문제가 커진다→최종 갈등의 주체가 드러난다 / LATE:주요 세력의 충돌이 최고조에 이른다→최종 지역 진입 조건을 얻는다 / FINAL_BOSS:최종 적이 목표 달성을 직접 막는다→세계 상태가 결정적으로 변화한다 / ENDING:핵심 갈등은 끝났지만 후속 문제가 남는다→본편 종료와 다음 목표가 연결된다",
+  "storySpine": {
+    "opening": "핵심 목표를 이해한다 — 더 큰 갈등의 단서를 얻는다",
+    "early": "핵심 플레이 루프를 확립한다 — 다음 지역의 목표가 열린다",
+    "mid": "갈등의 원인을 추적한다 — 최종 갈등의 주체가 드러난다",
+    "late": "최종 결전을 준비한다 — 최종 지역 진입 조건을 얻는다",
+    "finalBoss": "핵심 갈등을 끝낸다 — 세계 상태가 결정적으로 변화한다",
+    "ending": "승리 이후의 선택을 마무리한다 — 본편 종료와 다음 목표가 연결된다",
+    "creativeDirections": [
+      {
+        "id": "A",
+        "focus": "영토전쟁를 중심으로 관찰·판단의 재미를 전면에 둔다.",
+        "playerExperience": "플레이어가 ko의 상태와 주변 단서를 읽고 다음 행동을 스스로 고르게 한다.",
+        "signatureMoment": "영토전쟁와 utf-8의 관계를 한 장면에서 바로 이해하는 순간을 만든다."
+      },
+      {
+        "id": "B",
+        "focus": "money를 중심으로 위험·압박과 돌파의 재미를 강조한다.",
+        "playerExperience": "플레이어가 wrap 때문에 익숙한 방식이 막히고 다른 수단으로 위기를 넘기게 한다.",
+        "signatureMoment": "money의 위협이 map과 동시에 작동해 선택을 강요하는 장면을 만든다."
+      },
+      {
+        "id": "C",
+        "focus": "utf-8를 중심으로 성장·구축·변화의 재미를 강조한다.",
+        "playerExperience": "플레이어의 반복 행동이 영토전쟁을 눈에 보이게 바꾸고 다음 목표를 열도록 한다.",
+        "signatureMoment": "초반의 ko가 후반에는 완전히 다른 역할로 돌아오는 장면을 만든다."
+      }
+    ],
+    "planningDirectionSelection": {
+      "version": 1,
+      "status": "SELECTED",
+      "gameId": "territory-war",
+      "date": "2026-09-10",
+      "choice": "A+B",
+      "selectedDirectionIds": [
+        "A",
+        "B"
+      ],
+      "focus": "영토전쟁를 중심으로 관찰·판단의 재미를 전면에 둔다. + money를 중심으로 위험·압박과 돌파의 재미를 강조한다.",
+      "playerExperience": "플레이어가 ko의 상태와 주변 단서를 읽고 다음 행동을 스스로 고르게 한다. + 플레이어가 wrap 때문에 익숙한 방식이 막히고 다른 수단으로 위기를 넘기게 한다.",
+      "signatureMoment": "영토전쟁와 utf-8의 관계를 한 장면에서 바로 이해하는 순간을 만든다. + money의 위협이 map과 동시에 작동해 선택을 강요하는 장면을 만든다.",
+      "reason": "A+B 방향은 영토전쟁의 관찰·판단과 utf-8의 관계를 중심으로, 플레이어의 경험과 재미를 전면적으로 강조합니다. B 방향은 money의 위험과 돌파를 강조하며, C 방향은 utf-8의 성장과 변화를 강조합니다. A+B 방향은 일반적인 게임 방향으로",
+      "selectedBy": "planning-local-open-model",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "paidApi": false,
+      "apiKeyRequired": false,
+      "fallbackUsed": false,
+      "fallbackReason": null
+    }
+  },
+  "phasePlans": [
+    {
+      "stage": "OPENING",
+      "region": "시작 지역",
+      "quest": "핵심 목표를 이해한다",
+      "cause": "현재 세계의 첫 문제와 마주친다",
+      "playerAction": "기본 행동으로 첫 문제를 해결한다",
+      "result": "더 큰 갈등의 단서를 얻는다",
+      "nextHook": "초기 지역에서 핵심 플레이 루프를 확립한다"
+    },
+    {
+      "stage": "EARLY",
+      "region": "초기 지역",
+      "quest": "핵심 플레이 루프를 확립한다",
+      "cause": "첫 성공 뒤 새로운 장애물이 등장한다",
+      "playerAction": "기본 능력과 자원을 활용한다",
+      "result": "다음 지역의 목표가 열린다",
+      "nextHook": "중간 지역에서 갈등의 원인을 추적한다"
+    },
+    {
+      "stage": "MID",
+      "region": "중간 지역",
+      "quest": "갈등의 원인을 추적한다",
+      "cause": "기존 방식으로 해결되지 않는 문제가 커진다",
+      "playerAction": "새 시스템과 선택을 활용한다",
+      "result": "최종 갈등의 주체가 드러난다",
+      "nextHook": "후반 지역에서 최종 결전을 준비한다"
+    },
+    {
+      "stage": "LATE",
+      "region": "후반 지역",
+      "quest": "최종 결전을 준비한다",
+      "cause": "주요 세력의 충돌이 최고조에 이른다",
+      "playerAction": "축적한 성장 요소를 결집한다",
+      "result": "최종 지역 진입 조건을 얻는다",
+      "nextHook": "최종 지역에서 핵심 갈등을 끝낸다"
+    },
+    {
+      "stage": "FINAL_BOSS",
+      "region": "최종 지역",
+      "quest": "핵심 갈등을 끝낸다",
+      "cause": "최종 적이 목표 달성을 직접 막는다",
+      "playerAction": "게임 전체에서 익힌 수단을 활용해 결전을 치른다",
+      "result": "세계 상태가 결정적으로 변화한다",
+      "nextHook": "결말 지역에서 승리 이후의 선택을 마무리한다"
+    },
+    {
+      "stage": "ENDING",
+      "region": "결말 지역",
+      "quest": "승리 이후의 선택을 마무리한다",
+      "cause": "핵심 갈등은 끝났지만 후속 문제가 남는다",
+      "playerAction": "남은 관계와 목표를 정리한다",
+      "result": "본편 종료와 다음 목표가 연결된다",
+      "nextHook": "본편 이후 남은 지역·고난도 목표·선택형 과제를 이어서 플레이할 수 있다."
+    }
+  ],
+  "regions": [
+    "시작 지역",
+    "초기 지역",
+    "중간 지역",
+    "후반 지역",
+    "최종 지역",
+    "결말 지역"
+  ],
+  "regionTransitions": [
+    {
+      "from": "시작 지역",
+      "to": "초기 지역",
+      "cause": "더 큰 갈등의 단서를 얻는다",
+      "unlock": "핵심 플레이 루프를 확립한다"
+    },
+    {
+      "from": "초기 지역",
+      "to": "중간 지역",
+      "cause": "다음 지역의 목표가 열린다",
+      "unlock": "갈등의 원인을 추적한다"
+    },
+    {
+      "from": "중간 지역",
+      "to": "후반 지역",
+      "cause": "최종 갈등의 주체가 드러난다",
+      "unlock": "최종 결전을 준비한다"
+    },
+    {
+      "from": "후반 지역",
+      "to": "최종 지역",
+      "cause": "최종 지역 진입 조건을 얻는다",
+      "unlock": "핵심 갈등을 끝낸다"
+    },
+    {
+      "from": "최종 지역",
+      "to": "결말 지역",
+      "cause": "세계 상태가 결정적으로 변화한다",
+      "unlock": "승리 이후의 선택을 마무리한다"
+    }
+  ],
+  "mainQuestChain": [
+    {
+      "id": "MAIN-01",
+      "stage": "OPENING",
+      "region": "시작 지역",
+      "quest": "핵심 목표를 이해한다",
+      "cause": "현재 세계의 첫 문제와 마주친다",
+      "playerAction": "기본 행동으로 첫 문제를 해결한다",
+      "result": "더 큰 갈등의 단서를 얻는다",
+      "nextHook": "초기 지역에서 핵심 플레이 루프를 확립한다"
+    },
+    {
+      "id": "MAIN-02",
+      "stage": "EARLY",
+      "region": "초기 지역",
+      "quest": "핵심 플레이 루프를 확립한다",
+      "cause": "첫 성공 뒤 새로운 장애물이 등장한다",
+      "playerAction": "기본 능력과 자원을 활용한다",
+      "result": "다음 지역의 목표가 열린다",
+      "nextHook": "중간 지역에서 갈등의 원인을 추적한다"
+    },
+    {
+      "id": "MAIN-03",
+      "stage": "MID",
+      "region": "중간 지역",
+      "quest": "갈등의 원인을 추적한다",
+      "cause": "기존 방식으로 해결되지 않는 문제가 커진다",
+      "playerAction": "새 시스템과 선택을 활용한다",
+      "result": "최종 갈등의 주체가 드러난다",
+      "nextHook": "후반 지역에서 최종 결전을 준비한다"
+    },
+    {
+      "id": "MAIN-04",
+      "stage": "LATE",
+      "region": "후반 지역",
+      "quest": "최종 결전을 준비한다",
+      "cause": "주요 세력의 충돌이 최고조에 이른다",
+      "playerAction": "축적한 성장 요소를 결집한다",
+      "result": "최종 지역 진입 조건을 얻는다",
+      "nextHook": "최종 지역에서 핵심 갈등을 끝낸다"
+    },
+    {
+      "id": "MAIN-05",
+      "stage": "FINAL_BOSS",
+      "region": "최종 지역",
+      "quest": "핵심 갈등을 끝낸다",
+      "cause": "최종 적이 목표 달성을 직접 막는다",
+      "playerAction": "게임 전체에서 익힌 수단을 활용해 결전을 치른다",
+      "result": "세계 상태가 결정적으로 변화한다",
+      "nextHook": "결말 지역에서 승리 이후의 선택을 마무리한다"
+    },
+    {
+      "id": "MAIN-06",
+      "stage": "ENDING",
+      "region": "결말 지역",
+      "quest": "승리 이후의 선택을 마무리한다",
+      "cause": "핵심 갈등은 끝났지만 후속 문제가 남는다",
+      "playerAction": "남은 관계와 목표를 정리한다",
+      "result": "본편 종료와 다음 목표가 연결된다",
+      "nextHook": "본편 이후 남은 지역·고난도 목표·선택형 과제를 이어서 플레이할 수 있다."
+    }
+  ],
+  "sideQuestHooks": [],
+  "npcMotivations": [],
+  "majorBosses": [
+    "최종 위협의 핵심 개체"
+  ],
+  "bossCausality": [
+    {
+      "boss": "최종 위협의 핵심 개체",
+      "trigger": "후반 목표를 완료해 최종 지역이 열린다",
+      "whyNow": "누적된 갈등이 더 이상 미룰 수 없는 상태가 된다",
+      "winConsequence": "핵심 갈등이 해소되고 엔딩 선택이 열린다"
+    }
+  ],
+  "gaps": [
+    "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요"
+  ],
+  "proposalAdditions": [
+    "OPENING: 시작 지역 / 핵심 목표를 이해한다",
+    "EARLY: 초기 지역 / 핵심 플레이 루프를 확립한다",
+    "MID: 중간 지역 / 갈등의 원인을 추적한다",
+    "LATE: 후반 지역 / 최종 결전을 준비한다",
+    "FINAL_BOSS: 최종 지역 / 핵심 갈등을 끝낸다",
+    "ENDING: 결말 지역 / 승리 이후의 선택을 마무리한다"
+  ],
+  "conflictEscalation": "현재 세계의 첫 문제와 마주친다 → 첫 성공 뒤 새로운 장애물이 등장한다 → 기존 방식으로 해결되지 않는 문제가 커진다 → 주요 세력의 충돌이 최고조에 이른다 → 최종 적이 목표 달성을 직접 막는다 → 핵심 갈등은 끝났지만 후속 문제가 남는다",
+  "twist": "중반에 초반의 문제와 최종 위협이 같은 원인에서 이어졌다는 단서가 드러난다.",
+  "finalRegion": "최종 지역",
+  "endgame": "플레이어의 행동으로 핵심 갈등이 정리되고 세계의 다음 상태가 제시된다.",
+  "postgame": "본편 이후 남은 지역·고난도 목표·선택형 과제를 이어서 플레이할 수 있다.",
+  "progressionBridge": "시작 지역→초기 지역:핵심 플레이 루프를 확립한다 / 초기 지역→중간 지역:갈등의 원인을 추적한다 / 중간 지역→후반 지역:최종 결전을 준비한다 / 후반 지역→최종 지역:핵심 갈등을 끝낸다 / 최종 지역→결말 지역:승리 이후의 선택을 마무리한다",
+  "technicalContaminationRemoved": [],
+  "creativeDirections": [
+    {
+      "id": "A",
+      "focus": "영토전쟁를 중심으로 관찰·판단의 재미를 전면에 둔다.",
+      "playerExperience": "플레이어가 ko의 상태와 주변 단서를 읽고 다음 행동을 스스로 고르게 한다.",
+      "signatureMoment": "영토전쟁와 utf-8의 관계를 한 장면에서 바로 이해하는 순간을 만든다."
+    },
+    {
+      "id": "B",
+      "focus": "money를 중심으로 위험·압박과 돌파의 재미를 강조한다.",
+      "playerExperience": "플레이어가 wrap 때문에 익숙한 방식이 막히고 다른 수단으로 위기를 넘기게 한다.",
+      "signatureMoment": "money의 위협이 map과 동시에 작동해 선택을 강요하는 장면을 만든다."
+    },
+    {
+      "id": "C",
+      "focus": "utf-8를 중심으로 성장·구축·변화의 재미를 강조한다.",
+      "playerExperience": "플레이어의 반복 행동이 영토전쟁을 눈에 보이게 바꾸고 다음 목표를 열도록 한다.",
+      "signatureMoment": "초반의 ko가 후반에는 완전히 다른 역할로 돌아오는 장면을 만든다."
+    }
+  ],
+  "generationMode": "DETERMINISTIC_FALLBACK",
+  "fallbackReason": "creative directions: creative-direction-too-shallow,creative-directions-not-distinct,creative-directions-weak-game-grounding",
+  "runner": {
+    "type": "vibe2-local-open-model-compact-first-draft",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "modelAttempts": 2,
+    "stageLabelsNormalized": false,
+    "originalStageLabels": null,
+    "stages": [
+      "DETERMINISTIC_GAME_FACT_PACK",
+      "COMPACT_CAUSALITY_SEED",
+      "THREE_CREATIVE_DIRECTIONS",
+      "DETERMINISTIC_STAGE_LABEL_NORMALIZATION",
+      "DETERMINISTIC_EXPANSION",
+      "SEMANTIC_GROUNDING_GATE",
+      "TECHNICAL_NARRATIVE_FILTER"
+    ]
+  },
+  "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+  "evidenceFiles": [
+    "web-games/territory-war/index.html"
+  ],
+  "evidenceSnippets": [
+    "lock}.battle b{display:block;background:#172033;padding:12px}.unit{position:absolute;width:14px;height:14px;border-radius:50%}.me{background:#3b82f6}.enemy{background:#ef4444}.back{position:absolute;right:8px;bottom:8px;padding:10px;border:0;border-radius:9px…",
+    "k=\"build('farm')\">농장 시장 병영 공격 col=['#3b82f6','#ef4444','#f59e0b','#8b5cf6','#16a34a','#db2777']; gold=120,food=120,sel=-1,targ",
+    "')\">농장 시장 병영 공격 col=['#3b82f6','#ef4444','#f59e0b','#8b5cf6','#16a34a','#db2777']; gold=120,food=120,sel=-1,targetMode=fal",
+    "atk\" onclick=\"attackMode()\">공격 col=['#3b82f6','#ef4444','#f59e0b','#8b5cf6','#16a34a','#db2777']; gold=120,food=120,sel=-1,targetMode=false; rows=4,cols=5,W=180,H=155,S=[]; ( r=0;r<rows;r++) ( c=0;c<cols;c++){ i=r*cols+c;S.push({i,r,c,owner:i=",
+    "setAttribute('class','txt');t.textContent=(s.capital?'♛':'')+s.troops;map.appendChild(t)});money.textContent='G '+Math.floor(gold)+' · F '+Math.floor(food)} pick(i){ (targetMode){targetMode=false; a=S[sel],d=S[i]; (a&&a.owner===0&&d.owner!==0&&adjacent(a,d))f…",
+    "ction pick(i){ (targetMode){targetMode=false; a=S[sel],d=S[i]; (a&&a.owner===0&&d.owner!==0&&adjacent(a,d))fight(a,d); info.textContent='인접한 적 영지를 골라.'; }sel=i; s=S[i];title.textContent='영지 '+(i+1)+(s.capital?' · 수도':'');info.textContent=(s.owner===0?'내 영토':'…",
+    "e info.textContent='인접한 적 영지를 골라.'; }sel=i; s=S[i];title.textContent='영지 '+(i+1)+(s.capital?' · 수도':'');info.textContent=(s.owner===0?'내 영토':'적 영토')+' · 병력 '+s.troops+' · 농장 '+s.farm+' 시장 '+s.market+' 병영 '+s.barracks;render()} build(k){ s=S[sel]; (!s||s.owner…",
+    ".textContent='내 영지를 선택해.'; cost=k==='barracks'?45:35; (gold<cost) info.textContent='골드가 부족해.';gold-=cost;s[k]++;render();pick(sel)} attackMode(){ s=S[sel]; (!s||s.owner!==0) info.textContent='내 영지를 먼저 선택해.'; (s.troops<12) info.textContent='병력이 너무 적어.';targetM…",
+    "ick(sel)} attackMode(){ s=S[sel]; (!s||s.owner!==0) info.textContent='내 영지를 먼저 선택해.'; (s.troops<12) info.textContent='병력이 너무 적어.';targetMode=true;info.textContent='공격할 인접 적 영지를 터치해.'} fight(a,d){ send=Math.max(10,Math.floor(a.troops*.65));a.troops-=send; def=…",
+    "sel]; (!s||s.owner!==0) info.textContent='내 영지를 먼저 선택해.'; (s.troops<12) info.textContent='병력이 너무 적어.';targetMode=true;info.textContent='공격할 인접 적 영지를 터치해.'} fight(a,d){ send=Math.max(10,Math.floor(a.troops*.65));a.troops-=send; def=d.troops*(d.capital?1.22:1),…",
+    "(!s||s.owner!==0) info.textContent='내 영지를 먼저 선택해.'; (s.troops<12) info.textContent='병력이 너무 적어.';targetMode=true;info.textContent='공격할 인접 적 영지를 터치해.'} fight(a,d){ send=Math.max(10,Math.floor(a.troops*.65));a.troops-=send; def=d.troops*(d.capital?1.22:1),atk=se…",
+    "vs '+d.troops; ( i=0;i { (win){d.owner=0;d.troops=Math.max(5,Math.floor(send-def*.55));bt.textContent+=' · 승리! 영토",
+    "f*.55));bt.textContent+=' · 승리! 영토 점령'} {d.troops=Math.max(5,Math.floor(d.troops-send*.55));a.troops+=Math.floor(send*.18);bt.textContent+=' · 패배, 생존병 후퇴'}render();save()},1300)} spawn(c,x,y){ u=document.createElement('i');u.className='unit '+c;u.style.left=x…",
+    "owner=owner;d.troops=Math.max(6,send-Math.floor(d.troops*.6))}}}render()} save(){localStorage.setItem('territory-war-v1',JSON.stringify({gold,food,S}))}setInterval(()=>{ own=S.filter(s=>s.owner===0);gold+=2+own.reduce((n,s)=>n+s.market*2,0);food+=2+own.reduce…",
+    "setItem('territory-war-v1',JSON.stringify({gold,food,S}))}setInterval(()=>{ own=S.filter(s=>s.owner===0);gold+=2+own.reduce((n,s)=>n+s.market*2,0);food+=2+own.reduce((n,s)=>n+s.farm*2,0);own.forEach(s=>{ (s.barracks&&food>=s.barracks){s.troops+=s.barracks;foo…",
+    ")=>{ own=S.filter(s=>s.owner===0);gold+=2+own.reduce((n,s)=>n+s.market*2,0);food+=2+own.reduce((n,s)=>n+s.farm*2,0);own.forEach(s=>{ (s.barracks&&food>=s.barracks){s.troops+=s.barracks;food-=s.barracks}});ai();save()},4000);try{ z=JSON.parse(localStorage.getI…",
+    "ld+=2+own.reduce((n,s)=>n+s.market*2,0);food+=2+own.reduce((n,s)=>n+s.farm*2,0);own.forEach(s=>{ (s.barracks&&food>=s.barracks){s.troops+=s.barracks;food-=s.barracks}});ai();save()},4000);try{ z=JSON.parse(localStorage.getItem('territory-war-v1')); (z&&z.S?.l…",
+    "racks;food-=s.barracks}});ai();save()},4000);try{ z=JSON.parse(localStorage.getItem('territory-war-v1')); (z&&z.S?.length===S.length){gold=z.gold;food=z.food;z.S.forEach((v,i)=>Object.assign(S[i],v))}}catch(e){}render();",
+    "ood-=s.barracks}});ai();save()},4000);try{ z=JSON.parse(localStorage.getItem('territory-war-v1')); (z&&z.S?.length===S.length){gold=z.gold;food=z.food;z.S.forEach((v,i)=>Object.assign(S[i],v))}}catch(e){}render();"
+  ],
+  "gameFactPack": {
+    "version": 1,
+    "gameId": "territory-war",
+    "gameName": "영토전쟁",
+    "genreText": "전략 영토",
+    "evidencePolicy": {
+      "sourcePriority": [
+        "EXECUTION_LOGIC",
+        "GAME_DATA_CONSTANTS",
+        "SAVE_STRUCTURE",
+        "VISIBLE_UI_TEXT",
+        "COMMENTS_OR_DOCS",
+        "IDENTIFIER_ONLY"
+      ],
+      "technicalImplementationExcluded": true,
+      "unsupportedLoreBecomesProposal": true
+    },
+    "categories": {
+      "GOAL": [
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "tackMode()\">공격 const col=['#3b82f6','#ef4444','#f59e0b','#8b5cf6','#16a34a','#db2777'];let gold=120,food=120,sel=-1,targetMode=false;const rows=4,cols=5,W=180,H=155,S=[];for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){let i=r*cols+c;S.push({i,r,c,owner:i===12?…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": ");t.textContent=(s.capital?'♛':'')+s.troops;map.appendChild(t)});money.textContent='G '+Math.floor(gold)+' · F '+Math.floor(food)}function pick(i){if(targetMode){targetMode=false;let a=S[sel],d=S[i];if(a&&a.owner===0&&d.owner!==0&&adjacent(a,d))fight(a,d);els…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "ent=(s.capital?'♛':'')+s.troops;map.appendChild(t)});money.textContent='G '+Math.floor(gold)+' · F '+Math.floor(food)}function pick(i){if(targetMode){targetMode=false;let a=S[sel],d=S[i];if(a&&a.owner===0&&d.owner!==0&&adjacent(a,d))fight(a,d);else info.textC…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "CORE_LOOP": [
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "n-top:9px}.row button{flex:1;border:0;border-radius:10px;padding:11px 3px;color:#fff;font-weight:900;background:#28754b}.row .atk{background:#b93636}.battle{display:none;position:absolute;inset:0;z-index:5;background:#718c55}.battle.on{display:block}.battle b…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "lor:#fff;font-weight:900;background:#28754b}.row .atk{background:#b93636}.battle{display:none;position:absolute;inset:0;z-index:5;background:#718c55}.battle.on{display:block}.battle b{display:block;background:#172033;padding:12px}.unit{position:absolute;width…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "background:#28754b}.row .atk{background:#b93636}.battle{display:none;position:absolute;inset:0;z-index:5;background:#718c55}.battle.on{display:block}.battle b{display:block;background:#172033;padding:12px}.unit{position:absolute;width:14px;height:14px;border-…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "COMBAT": [
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "k=\"build('farm')\">농장 시장 병영 공격 const col=['#3b82f6','#ef4444','#f59e0b','#8b5cf6','#16a34a','#db2777'];let gold=120,food=120,sel=-1,targ",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "')\">농장 시장 병영 공격 const col=['#3b82f6','#ef4444','#f59e0b','#8b5cf6','#16a34a','#db2777'];let gold=120,food=120,sel=-1,targetMode=fal",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": ".textContent='내 영지를 선택해.';let cost=k==='barracks'?45:35;if(gold<cost)return info.textContent='골드가 부족해.';gold-=cost;s[k]++;render();pick(sel)}function attackMode(){let s=S[sel];if(!s||s.owner!==0)return info.textContent='내 영지를 먼저 선택해.';if(s.troops<12)return in…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "ENEMIES": [
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "lock}.battle b{display:block;background:#172033;padding:12px}.unit{position:absolute;width:14px;height:14px;border-radius:50%}.me{background:#3b82f6}.enemy{background:#ef4444}.back{position:absolute;right:8px;bottom:8px;padding:10px;border:0;border-radius:9px…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "ction pick(i){if(targetMode){targetMode=false;let a=S[sel],d=S[i];if(a&&a.owner===0&&d.owner!==0&&adjacent(a,d))fight(a,d);else info.textContent='인접한 적 영지를 골라.';return}sel=i;let s=S[i];title.textContent='영지 '+(i+1)+(s.capital?' · 수도':'');info.textContent=(s.o…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "e info.textContent='인접한 적 영지를 골라.';return}sel=i;let s=S[i];title.textContent='영지 '+(i+1)+(s.capital?' · 수도':'');info.textContent=(s.owner===0?'내 영토':'적 영토')+' · 병력 '+s.troops+' · 농장 '+s.farm+' 시장 '+s.market+' 병영 '+s.barracks;render()}function build(k){let s=S…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "BOSSES": [],
+      "PROGRESSION": [
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "t.setAttribute('y',s.r*H+85);t.setAttribute('class','txt');t.textContent=(s.capital?'♛':'')+s.troops;map.appendChild(t)});money.textContent='G '+Math.floor(gold)+' · F '+Math.floor(food)}function pick(i){if(targetMode){targetMode=false;let a=S[sel],d=S[i];if(…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "85);t.setAttribute('class','txt');t.textContent=(s.capital?'♛':'')+s.troops;map.appendChild(t)});money.textContent='G '+Math.floor(gold)+' · F '+Math.floor(food)}function pick(i){if(targetMode){targetMode=false;let a=S[sel],d=S[i];if(a&&a.owner===0&&d.owner!=…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "f(s.troops def;battle.classList.add('on');battle.query",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "RESOURCES": [
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "ck{position:absolute;right:8px;bottom:8px;padding:10px;border:0;border-radius:9px;font-weight:900} 영토전쟁 전투 <butto",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "n class=\"atk\" onclick=\"attackMode()\">공격 const col=['#3b82f6','#ef4444','#f59e0b','#8b5cf6','#16a34a','#db2777'];let gold=120,food=120,sel=-1,targetMode=false;const rows=4,cols=5,W=180,H=155,S=[];for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){let i=r*cols+c;S.…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "atk\" onclick=\"attackMode()\">공격 const col=['#3b82f6','#ef4444','#f59e0b','#8b5cf6','#16a34a','#db2777'];let gold=120,food=120,sel=-1,targetMode=false;const rows=4,cols=5,W=180,H=155,S=[];for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){let i=r*cols+c;S.push({i,r…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "EQUIPMENT": [
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "body{margin:0;background:#101827;color:#fff;font-family:system-ui;overflow:hidden}header{height:56px;display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#172033}h1{font-size:19px}.wrap{height:calc(100dvh - 56px);display:g…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": ".55);if(send>d.troops*1.12){a.troops-=send;d.owner=owner;d.troops=Math.max(6,send-Math.floor(d.troops*.6))}}}render()}function save(){localStorage.setItem('territory-war-v1',JSON.stringify({gold,food,S}))}setInterval(()=>{let own=S.filter(s=>s.owner===0);gold…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": ",0);own.forEach(s=>{if(s.barracks&&food>=s.barracks){s.troops+=s.barracks;food-=s.barracks}});ai();save()},4000);try{let z=JSON.parse(localStorage.getItem('territory-war-v1'));if(z&&z.S?.length===S.length){gold=z.gold;food=z.food;z.S.forEach((v,i)=>Object.ass…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "REGIONS": [
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": ";align-items:center;padding:8px 12px;background:#172033}h1{font-size:19px}.wrap{height:calc(100dvh - 56px);display:grid;grid-template-rows:1fr 145px}.map{position:relative;background:#587b62}.map svg{width:100%;height:100%}.land{stroke:#eadfbd;stroke-width:3}…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "round:#172033}h1{font-size:19px}.wrap{height:calc(100dvh - 56px);display:grid;grid-template-rows:1fr 145px}.map{position:relative;background:#587b62}.map svg{width:100%;height:100%}.land{stroke:#eadfbd;stroke-width:3}.land.sel{stroke:#fff;stroke-width:8}.txt{…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "x;border:0;border-radius:9px;font-weight:900} 영토전쟁 전투 <button class=\"back\" onclick=\"battle.classList.remove('on",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "SPECIAL_MECHANICS": [
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "접 적 영지를 터치해.'}function fight(a,d){let send=Math.max(10,Math.floor(a.troops*.65));a.troops-=send;let def=d.troops*(d.capital?1.22:1),atk=send*(.9+Math.random()*.25),win=atk>def;battle.classList.add('on');battle.querySelectorAll('.unit').forEach(x=>x.remove());…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": ").forEach(x=>x.remove());bt.textContent='영지 '+(a.i+1)+' → '+(d.i+1)+' · '+send+' vs '+d.troops;for(let i=0;i {if(win){d.ow",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "e());bt.textContent='영지 '+(a.i+1)+' → '+(d.i+1)+' · '+send+' vs '+d.troops;for(let i=0;i {if(win){d.owner=0;d.troops=Math.",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "SAVE_RULES": [
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "ntent+=' · 승리! 영토 점령'}else{d.troops=Math.max(5,Math.floor(d.troops-send*.55));a.troops+=Math.floor(send*.18);bt.textContent+=' · 패배, 생존병 후퇴'}render();save()},1300)}function spawn(c,x,y){let u=document.createElement('i');u.className='unit '+c;u.style.left=x+'%…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": "nd=Math.floor(a.troops*.55);if(send>d.troops*1.12){a.troops-=send;d.owner=owner;d.troops=Math.max(6,send-Math.floor(d.troops*.6))}}}render()}function save(){localStorage.setItem('territory-war-v1',JSON.stringify({gold,food,S}))}setInterval(()=>{let own=S.filt…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/territory-war/index.html",
+          "statement": ".floor(a.troops*.55);if(send>d.troops*1.12){a.troops-=send;d.owner=owner;d.troops=Math.max(6,send-Math.floor(d.troops*.6))}}}render()}function save(){localStorage.setItem('territory-war-v1',JSON.stringify({gold,food,S}))}setInterval(()=>{let own=S.filter(s=>s…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "STORY_FACTS": []
+    },
+    "gameSpecificTerms": [
+      "영토전쟁",
+      "ko",
+      "utf-8",
+      "money",
+      "wrap",
+      "map",
+      "battle",
+      "bt",
+      "back",
+      "farm",
+      "market",
+      "barracks",
+      "#3b82f6",
+      "#ef4444",
+      "#f59e0b",
+      "#8b5cf6",
+      "#16a34a",
+      "#db2777",
+      "polygon",
+      "points",
+      "fill",
+      "land",
+      "sel",
+      "text"
+    ],
+    "unknownAreas": [
+      "BOSSES",
+      "STORY_FACTS"
+    ],
+    "stats": {
+      "sourceFiles": 1,
+      "totalEvidence": 30,
+      "categoriesWithEvidence": 10,
+      "gameSpecificTerms": 24
+    }
+  },
+  "semanticQuality": {
+    "pass": false,
+    "problems": [
+      "deterministic-fallback-needs-validation",
+      "game-specific-fact-grounding-too-low",
+      "game-specific-phase-grounding-too-low"
+    ],
+    "gameSpecificTermsUsed": [
+      "영토전쟁",
+      "ko",
+      "utf-8",
+      "money",
+      "wrap",
+      "map",
+      "battle",
+      "bt",
+      "back",
+      "farm",
+      "market",
+      "barracks",
+      "#3b82f6",
+      "#ef4444",
+      "#f59e0b",
+      "#8b5cf6"
+    ],
+    "creativeDirectionsPass": true,
+    "creativeDirectionFallbackUsed": false
+  },
+  "validationStatus": "NEEDS_VALIDATION",
+  "version": 5,
+  "gameId": "territory-war",
+  "date": "2026-09-10",
+  "status": "FIRST_DRAFT_READY",
+  "author": "vibe2",
+  "proposalOnly": true,
+  "requiredStoryStages": [
+    "OPENING",
+    "EARLY",
+    "MID",
+    "LATE",
+    "FINAL_BOSS",
+    "ENDING"
+  ],
+  "qualityContract": {
+    "phasePlans": 6,
+    "minMainQuests": 6,
+    "causalityRequired": true,
+    "evidenceProposalSeparation": true,
+    "compactGeneration": true,
+    "technicalNarrativeFilter": true,
+    "gameFactPackRequired": true,
+    "semanticDistinctnessRequired": true,
+    "gameSpecificGroundingRequired": true,
+    "creativeDirections": 3,
+    "planningSelectOrMix": true,
+    "nameSwapGenericityRejected": true,
+    "planningDirectionSelectedBeforeDepartmentRound": true,
+    "departmentRoundUsesSharedDirection": true
+  },
+  "visualPages": [
+    {
+      "no": 1,
+      "title": "오프닝",
+      "body": "핵심 목표를 이해한다 — 더 큰 갈등의 단서를 얻는다 · 시작 지역: 현재 세계의 첫 문제와 마주친다 → 기본 행동으로 첫 문제를 해결한다 → 더 큰 갈등의 단서를 얻는다 → 초기 지역에서 핵심 플레이 루프를 확립한다",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/vibe2-draft-1.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 2,
+      "title": "초반",
+      "body": "핵심 플레이 루프를 확립한다 — 다음 지역의 목표가 열린다 · 초기 지역: 첫 성공 뒤 새로운 장애물이 등장한다 → 기본 능력과 자원을 활용한다 → 다음 지역의 목표가 열린다 → 중간 지역에서 갈등의 원인을 추적한다",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/vibe2-draft-2.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 3,
+      "title": "중반",
+      "body": "갈등의 원인을 추적한다 — 최종 갈등의 주체가 드러난다 · 중간 지역: 기존 방식으로 해결되지 않는 문제가 커진다 → 새 시스템과 선택을 활용한다 → 최종 갈등의 주체가 드러난다 → 후반 지역에서 최종 결전을 준비한다",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/vibe2-draft-3.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 4,
+      "title": "후반",
+      "body": "최종 결전을 준비한다 — 최종 지역 진입 조건을 얻는다 · 후반 지역: 주요 세력의 충돌이 최고조에 이른다 → 축적한 성장 요소를 결집한다 → 최종 지역 진입 조건을 얻는다 → 최종 지역에서 핵심 갈등을 끝낸다",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/vibe2-draft-4.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 5,
+      "title": "최종보스",
+      "body": "핵심 갈등을 끝낸다 — 세계 상태가 결정적으로 변화한다 · 최종 지역: 최종 적이 목표 달성을 직접 막는다 → 게임 전체에서 익힌 수단을 활용해 결전을 치른다 → 세계 상태가 결정적으로 변화한다 → 결말 지역에서 승리 이후의 선택을 마무리한다 · 최종 위협의 핵심 개체: 후반 목표를 완료해 최종 지역이 열린다 → 누적된 갈등이 더 이상 미룰 수 없는 상태가 된다 → 승리 결과 핵심 갈등이 해소되고 엔딩 선택이 열린다",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/vibe2-draft-5.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 6,
+      "title": "엔딩",
+      "body": "승리 이후의 선택을 마무리한다 — 본편 종료와 다음 목표가 연결된다 · 결말 지역: 핵심 갈등은 끝났지만 후속 문제가 남는다 → 남은 관계와 목표를 정리한다 → 본편 종료와 다음 목표가 연결된다 → 본편 이후 남은 지역·고난도 목표·선택형 과제를 이어서 플레이할 수 있다. · 플레이어의 행동으로 핵심 갈등이 정리되고 세계의 다음 상태가 제시된다. · 본편 이후 남은 지역·고난도 목표·선택형 과제를 이어서 플레이할 수 있다.",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/vibe2-draft-6.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 7,
+      "title": "지역 흐름",
+      "body": "시작 지역 → 초기 지역 → 중간 지역 → 후반 지역 → 최종 지역 → 결말 지역 · 시작 지역 → 초기 지역: 더 큰 갈등의 단서를 얻는다 / 해금 핵심 플레이 루프를 확립한다 · 초기 지역 → 중간 지역: 다음 지역의 목표가 열린다 / 해금 갈등의 원인을 추적한다 · 중간 지역 → 후반 지역: 최종 갈등의 주체가 드러난다 / 해금 최종 결전을 준비한다",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/vibe2-draft-7.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 8,
+      "title": "메인 퀘스트",
+      "body": "OPENING/시작 지역: 핵심 목표를 이해한다 · 현재 세계의 첫 문제와 마주친다 → 기본 행동으로 첫 문제를 해결한다 → 더 큰 갈등의 단서를 얻는다 → 초기 지역에서 핵심 플레이 루프를 확립한다 · EARLY/초기 지역: 핵심 플레이 루프를 확립한다 · 첫 성공 뒤 새로운 장애물이 등장한다 → 기본 능력과 자원을 활용한다 → 다음 지역의 목표가 열린다 → 중간 지역에서 갈등의 원인을 추적한다 · MID/중간 지역: 갈등의 원인을 추적한다 · 기존 방식으로…",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/vibe2-draft-8.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    }
+  ],
+  "visualPageCount": 8,
+  "targetArtbookPages": 18,
+  "sourceOfTruth": "proposal-before-planning-review",
+  "planningDirectionSelection": {
+    "version": 1,
+    "status": "SELECTED",
+    "gameId": "territory-war",
+    "date": "2026-09-10",
+    "choice": "A+B",
+    "selectedDirectionIds": [
+      "A",
+      "B"
+    ],
+    "focus": "영토전쟁를 중심으로 관찰·판단의 재미를 전면에 둔다. + money를 중심으로 위험·압박과 돌파의 재미를 강조한다.",
+    "playerExperience": "플레이어가 ko의 상태와 주변 단서를 읽고 다음 행동을 스스로 고르게 한다. + 플레이어가 wrap 때문에 익숙한 방식이 막히고 다른 수단으로 위기를 넘기게 한다.",
+    "signatureMoment": "영토전쟁와 utf-8의 관계를 한 장면에서 바로 이해하는 순간을 만든다. + money의 위협이 map과 동시에 작동해 선택을 강요하는 장면을 만든다.",
+    "reason": "A+B 방향은 영토전쟁의 관찰·판단과 utf-8의 관계를 중심으로, 플레이어의 경험과 재미를 전면적으로 강조합니다. B 방향은 money의 위험과 돌파를 강조하며, C 방향은 utf-8의 성장과 변화를 강조합니다. A+B 방향은 일반적인 게임 방향으로",
+    "selectedBy": "planning-local-open-model",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "fallbackUsed": false,
+    "fallbackReason": null
+  }
+}

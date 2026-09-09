@@ -1,0 +1,1064 @@
+{
+  "version": 10,
+  "gameId": "territory-war",
+  "gameName": "영토전쟁",
+  "date": "2026-09-10",
+  "status": "COMPLETED",
+  "workMode": "INITIAL",
+  "initialArtbook": true,
+  "secondWorkArtbook": false,
+  "revisionArtbook": false,
+  "developmentUpgradeArtbook": false,
+  "releaseUpgradeArtbook": false,
+  "productionApproval": false,
+  "styleProfile": "세력사 + 전쟁 지도첩",
+  "lifecycle": {
+    "documentType": "LIVING_GAME_DESIGN_ARTBOOK",
+    "state": "DESIGN_BASELINE",
+    "targetState": "DESIGN_BASELINE",
+    "trigger": "INITIAL_DESIGN",
+    "sourceArtbookId": null,
+    "currentBaseline": true,
+    "approved": true,
+    "approvedAt": "2026-09-10",
+    "createsNewVersion": true,
+    "overwriteApprovedVersion": false,
+    "historyPreserved": true
+  },
+  "departments": {
+    "planning": {
+      "status": "SUBMITTED",
+      "readiness": "BLOCKED",
+      "sourceFile": "artbook-submissions/territory-war/2026-09-10/planning.json",
+      "headline": "영토전쟁 기획 부서 1차 독립 아트북",
+      "evidence": [
+        {
+          "source": "web-games/territory-war/index.html",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "artbook-work-orders/2026-09-10-territory-war.json",
+          "usage": "department-work-order"
+        },
+        {
+          "source": "artbook-submissions/territory-war/2026-09-10/vibe2-first-draft.json",
+          "usage": "vibe2-first-draft-proposal-reviewed-by-planning"
+        }
+      ],
+      "section": {
+        "worldEvidence": "영토전쟁의 원인과 세력의 목표는 실제 게임에서 관찰·판단의 재미를 전면적으로 강조합니다.",
+        "protagonistMotivationEvidence": "플레이어가 영토전쟁과 utf-8의 관계를 한 장면에서 직접 이해하는 순간을 강조합니다.",
+        "regionCausality": "초기 지역에서 핵심 플레이 루프를 확립하는 문제는 기존 방식으로 해결되지 않으며, 새로운 시스템과 선택을 활용해야 합니다.",
+        "storyGameplayConnection": "영토전쟁과 utf-8의 관계는 게임의 재미를 전면적으로 강조합니다.",
+        "gaps": "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요.",
+        "handoffs": "플레이어의 경험과 재미를 전면적으로 강조합니다."
+      },
+      "unverified": [
+        "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요.",
+        "현재 근거에서 정식 스토리/사건 인과가 충분히 확인되지 않음"
+      ],
+      "revision": null
+    },
+    "graphics": {
+      "status": "SUBMITTED",
+      "readiness": "READY",
+      "sourceFile": "artbook-submissions/territory-war/2026-09-10/graphics.json",
+      "headline": "세력사 + 전쟁 지도첩",
+      "evidence": [
+        {
+          "source": "web-games/territory-war/index.html",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "artbook-work-orders/2026-09-10-territory-war.json",
+          "usage": "department-work-order"
+        }
+      ],
+      "section": {
+        "currentVisualEvidence": "영토전쟁을 중심으로 관찰·판단의 재미를 전면에 둔다. money를 중심으로 위험·압박과 돌파의 재미를 강조한다.",
+        "identityDirection": "A+B",
+        "characterMonsterEnvironmentLogic": "영토를 다투는 이유와 각 세력의 목표가 점령·자원·병력 성장 규칙과 연결돼야 한다.",
+        "mobileReadability": "WEB_ARCHIVE_READ_ONLY",
+        "assetConstraints": "noOtherDepartmentSubmissionReading",
+        "gaps": "none",
+        "handoffs": "none"
+      },
+      "unverified": [
+        "none"
+      ],
+      "revision": null
+    },
+    "development": {
+      "status": "SUBMITTED",
+      "readiness": "READY",
+      "sourceFile": "artbook-submissions/territory-war/2026-09-10/development.json",
+      "headline": "영토전쟁",
+      "evidence": [
+        {
+          "source": "web-games/territory-war/index.html",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "artbook-work-orders/2026-09-10-territory-war.json",
+          "usage": "department-work-order"
+        }
+      ],
+      "section": {
+        "implementedNow": "플레이어블 시연 구조",
+        "architecture": "Unity 씬·프리팹·데이터·시스템 연결을 이미지 중심 2장으로 설계 [PLANNING_DIRECTION:A+B]",
+        "prototypeLimits": "40~140자",
+        "technicalRisks": "40~140자",
+        "demoPlan": "시연 검증 계획",
+        "handoffs": "40~140자"
+      },
+      "unverified": [
+        "currentStage"
+      ],
+      "revision": null
+    },
+    "qa": {
+      "status": "SUBMITTED",
+      "readiness": "READY",
+      "sourceFile": "artbook-submissions/territory-war/2026-09-10/qa.json",
+      "headline": "영토전쟁",
+      "evidence": [
+        {
+          "source": "web-games/territory-war/index.html",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "artbook-work-orders/2026-09-10-territory-war.json",
+          "usage": "department-work-order"
+        }
+      ],
+      "section": {
+        "currentPlayableFlow": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계 [PLANNING_DIRECTION:A+B] 기획부 선행 방향 확정: 영토전쟁를 중심으로 관찰·판단의 재미를 전면에 둔다. + money를 중심으로 위험·압박과 돌파의 재미를 강조한다.",
+        "verifiedEvidence": "영토전쟁의 관찰·판단과 money의 위협을 중심으로 설계되었습니다.",
+        "problemScenes": "영토전쟁과 utf-8의 관계를 한 장면에서 이해하는 순간을 만든다. + money의 위협이 map과 동시에 작동해 선택을 강요하는 장면을 만든다.",
+        "mobileSaveErrorRisks": "영토전쟁의 관찰·판단과 money의 위협을 중심으로 설계되었습니다.",
+        "testScenarios": "영토전쟁과 utf-8의 관계를 한 장면에서 이해하는 순간을 만든다. + money의 위협이 map과 동시에 작동해 선택을 강요하는 장면을 만든다.",
+        "unverified": "영토전쟁의 관찰·판단과 money의 위협을 중심으로 설계되었습니다.",
+        "handoffs": "영토전쟁의 관찰·판단과 money의 위협을 중심으로 설계되었습니다."
+      },
+      "unverified": [
+        "영토전쟁의 관찰·판단과 money의 위협을 중심으로 설계되었습니다."
+      ],
+      "revision": null
+    },
+    "balance": {
+      "status": "SUBMITTED",
+      "readiness": "BLOCKED",
+      "sourceFile": "artbook-submissions/territory-war/2026-09-10/balance.json",
+      "headline": "영토전쟁",
+      "evidence": [
+        {
+          "source": "web-games/territory-war/index.html",
+          "usage": "role-scoped-read-only-evidence"
+        },
+        {
+          "source": "artbook-work-orders/2026-09-10-territory-war.json",
+          "usage": "department-work-order"
+        }
+      ],
+      "section": {
+        "currentNumbers": "1-4",
+        "progressionCurve": "A-B-C",
+        "combatFeel": "10%",
+        "economyRewards": "50%",
+        "difficultyTransitions": "15%",
+        "testMeasurements": "1000+ player interactions",
+        "handoffs": "300+ player interactions"
+      },
+      "unverified": [
+        "currentNumbers: 1-4",
+        "progressionCurve: A-B-C",
+        "coombFees: 10%",
+        "economyReward: 50%"
+      ],
+      "revision": null
+    }
+  },
+  "departmentOpinions": {
+    "planning": {
+      "headline": "영토전쟁 기획 부서 1차 독립 아트북",
+      "readiness": "BLOCKED",
+      "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+      "averageStars": 4.8,
+      "maxStars": 5,
+      "reviewsReceived": 5,
+      "departmentVotes": 4,
+      "directorVotes": 1,
+      "priorityImprovement": "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요.",
+      "priorityImprovementFrom": "director",
+      "ratings": [
+        {
+          "reviewerDepartment": "director",
+          "reviewerType": "director",
+          "stars": 4,
+          "improvement": "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요."
+        },
+        {
+          "reviewerDepartment": "graphics",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "development",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "qa",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "balance",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        }
+      ],
+      "overallDepartmentAverage": 4.88,
+      "secondWorkSameDay": true,
+      "secondWorkDueDate": "2026-09-10",
+      "unverified": [
+        "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요.",
+        "현재 근거에서 정식 스토리/사건 인과가 충분히 확인되지 않음"
+      ]
+    },
+    "graphics": {
+      "headline": "세력사 + 전쟁 지도첩",
+      "readiness": "READY",
+      "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+      "averageStars": 5,
+      "maxStars": 5,
+      "reviewsReceived": 5,
+      "departmentVotes": 4,
+      "directorVotes": 1,
+      "priorityImprovement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+      "priorityImprovementFrom": "planning",
+      "ratings": [
+        {
+          "reviewerDepartment": "planning",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "development",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본부에서 개발된 게임 결과물의 장점과 보완점을 정확히 1개로 명시합니다."
+        },
+        {
+          "reviewerDepartment": "qa",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "balance",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본부 결과물에서 영토전쟁을 중심으로 관찰·판단의 재미를 전면에 둔다는 점을 강조하면, 재미를 더 잘 전달할 수 있다."
+        },
+        {
+          "reviewerDepartment": "director",
+          "reviewerType": "director",
+          "stars": 5,
+          "improvement": "부서 결과물의 내용이 재미를 전면적으로 강조하고, 보완점이 없음"
+        }
+      ],
+      "overallDepartmentAverage": 4.88,
+      "secondWorkSameDay": false,
+      "secondWorkDueDate": null,
+      "unverified": [
+        "none"
+      ]
+    },
+    "development": {
+      "headline": "영토전쟁",
+      "readiness": "READY",
+      "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+      "averageStars": 4.8,
+      "maxStars": 5,
+      "reviewsReceived": 5,
+      "departmentVotes": 4,
+      "directorVotes": 1,
+      "priorityImprovement": "본 개발 과정에서 플레이어블 시연 구조의 구조적 복잡성을 보완하고, 시연 검증 계획의 구조적 효율성을 개선했습니다.",
+      "priorityImprovementFrom": "director",
+      "ratings": [
+        {
+          "reviewerDepartment": "director",
+          "reviewerType": "director",
+          "stars": 4,
+          "improvement": "본 개발 과정에서 플레이어블 시연 구조의 구조적 복잡성을 보완하고, 시연 검증 계획의 구조적 효율성을 개선했습니다."
+        },
+        {
+          "reviewerDepartment": "planning",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "graphics",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "qa",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "balance",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        }
+      ],
+      "overallDepartmentAverage": 4.88,
+      "secondWorkSameDay": true,
+      "secondWorkDueDate": "2026-09-10",
+      "unverified": [
+        "currentStage"
+      ]
+    },
+    "qa": {
+      "headline": "영토전쟁",
+      "readiness": "READY",
+      "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+      "averageStars": 5,
+      "maxStars": 5,
+      "reviewsReceived": 5,
+      "departmentVotes": 4,
+      "directorVotes": 1,
+      "priorityImprovement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다.",
+      "priorityImprovementFrom": "planning",
+      "ratings": [
+        {
+          "reviewerDepartment": "planning",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+        },
+        {
+          "reviewerDepartment": "graphics",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "영토전쟁의 관찰·판단과 money의 위협을 중심으로 설계되었습니다."
+        },
+        {
+          "reviewerDepartment": "development",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "영토전쟁과 utf-8의 관계를 한 장면에서 이해하는 순간을 만든다. + money의 위협이 map과 동시에 작동해 선택을 강요하는 장면을 만든다."
+        },
+        {
+          "reviewerDepartment": "balance",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "영토전쟁과 utf-8의 관계를 한 장면에서 이해하는 순간을 만든다. + money의 위협이 map과 동시에 작동해 선택을 강요하는 장면을 만든다."
+        },
+        {
+          "reviewerDepartment": "director",
+          "reviewerType": "director",
+          "stars": 5,
+          "improvement": "부서 결과물의 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+        }
+      ],
+      "overallDepartmentAverage": 4.88,
+      "secondWorkSameDay": false,
+      "secondWorkDueDate": null,
+      "unverified": [
+        "영토전쟁의 관찰·판단과 money의 위협을 중심으로 설계되었습니다."
+      ]
+    },
+    "balance": {
+      "headline": "영토전쟁",
+      "readiness": "BLOCKED",
+      "reviewScope": "RECEIVED_FROM_FOUR_DEPARTMENTS_PLUS_DIRECTOR",
+      "averageStars": 4.8,
+      "maxStars": 5,
+      "reviewsReceived": 5,
+      "departmentVotes": 4,
+      "directorVotes": 1,
+      "priorityImprovement": "부서 결과물의 영상 효과를 강화하고, 코칭 효과를 더 명확히 하도록 노력하세요.",
+      "priorityImprovementFrom": "director",
+      "ratings": [
+        {
+          "reviewerDepartment": "director",
+          "reviewerType": "director",
+          "stars": 4,
+          "improvement": "부서 결과물의 영상 효과를 강화하고, 코칭 효과를 더 명확히 하도록 노력하세요."
+        },
+        {
+          "reviewerDepartment": "planning",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본부 결과물의 영상화 및 텍스트 구조를 개선하여 사용자 인터페이스를 더 명확하게 보여주도록 노력했습니다."
+        },
+        {
+          "reviewerDepartment": "graphics",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+        },
+        {
+          "reviewerDepartment": "development",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본 개발 부서 결과물의 영토전쟁 팀의 Readiness Level이 'BLOCKED' 상태로, 더 나은 Readiness를 위해 'A-B-C' 과정을 더 명확하게 설명해 줘야 합니다."
+        },
+        {
+          "reviewerDepartment": "qa",
+          "reviewerType": "department",
+          "stars": 5,
+          "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+        }
+      ],
+      "overallDepartmentAverage": 4.88,
+      "secondWorkSameDay": true,
+      "secondWorkDueDate": "2026-09-10",
+      "unverified": [
+        "currentNumbers: 1-4",
+        "progressionCurve: A-B-C",
+        "coombFees: 10%",
+        "economyReward: 50%"
+      ]
+    }
+  },
+  "ratingSummary": {
+    "scale": "STARS_1_TO_5",
+    "ratingsPerDepartment": 5,
+    "departmentVotesPerResult": 4,
+    "directorVotesPerResult": 1,
+    "departmentAverageStars": {
+      "planning": 4.8,
+      "graphics": 5,
+      "development": 4.8,
+      "qa": 5,
+      "balance": 4.8
+    },
+    "overallAverageStars": 4.88,
+    "secondWorkCriterion": "DEPARTMENT_AVERAGE_OR_BELOW_OVERALL_AVERAGE",
+    "secondWorkDepartments": [
+      "planning",
+      "development",
+      "balance"
+    ],
+    "secondWorkDueDate": "2026-09-10"
+  },
+  "collaboration": {
+    "protocol": "PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5",
+    "departmentReviews": {
+      "planning": {
+        "sourceFile": "artbook-submissions/territory-war/2026-09-10/reviews/planning.json",
+        "protocol": "PEER_IMPROVEMENT_STAR_5",
+        "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+        "reviewedDepartments": [
+          "graphics",
+          "development",
+          "qa",
+          "balance"
+        ],
+        "peerReviews": [
+          {
+            "targetDepartment": "graphics",
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "development",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "qa",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "balance",
+            "improvement": "본부 결과물의 영상화 및 텍스트 구조를 개선하여 사용자 인터페이스를 더 명확하게 보여주도록 노력했습니다.",
+            "stars": 5
+          }
+        ]
+      },
+      "graphics": {
+        "sourceFile": "artbook-submissions/territory-war/2026-09-10/reviews/graphics.json",
+        "protocol": "PEER_IMPROVEMENT_STAR_5",
+        "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+        "reviewedDepartments": [
+          "planning",
+          "development",
+          "qa",
+          "balance"
+        ],
+        "peerReviews": [
+          {
+            "targetDepartment": "planning",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "development",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "qa",
+            "improvement": "영토전쟁의 관찰·판단과 money의 위협을 중심으로 설계되었습니다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "balance",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          }
+        ]
+      },
+      "development": {
+        "sourceFile": "artbook-submissions/territory-war/2026-09-10/reviews/development.json",
+        "protocol": "PEER_IMPROVEMENT_STAR_5",
+        "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+        "reviewedDepartments": [
+          "planning",
+          "graphics",
+          "qa",
+          "balance"
+        ],
+        "peerReviews": [
+          {
+            "targetDepartment": "planning",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "graphics",
+            "improvement": "본부에서 개발된 게임 결과물의 장점과 보완점을 정확히 1개로 명시합니다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "qa",
+            "improvement": "영토전쟁과 utf-8의 관계를 한 장면에서 이해하는 순간을 만든다. + money의 위협이 map과 동시에 작동해 선택을 강요하는 장면을 만든다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "balance",
+            "improvement": "본 개발 부서 결과물의 영토전쟁 팀의 Readiness Level이 'BLOCKED' 상태로, 더 나은 Readiness를 위해 'A-B-C' 과정을 더 명확하게 설명해 줘야 합니다.",
+            "stars": 5
+          }
+        ]
+      },
+      "qa": {
+        "sourceFile": "artbook-submissions/territory-war/2026-09-10/reviews/qa.json",
+        "protocol": "PEER_IMPROVEMENT_STAR_5",
+        "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+        "reviewedDepartments": [
+          "planning",
+          "graphics",
+          "development",
+          "balance"
+        ],
+        "peerReviews": [
+          {
+            "targetDepartment": "planning",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "graphics",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "development",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "balance",
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다.",
+            "stars": 5
+          }
+        ]
+      },
+      "balance": {
+        "sourceFile": "artbook-submissions/territory-war/2026-09-10/reviews/balance.json",
+        "protocol": "PEER_IMPROVEMENT_STAR_5",
+        "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+        "reviewedDepartments": [
+          "planning",
+          "graphics",
+          "development",
+          "qa"
+        ],
+        "peerReviews": [
+          {
+            "targetDepartment": "planning",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "graphics",
+            "improvement": "본부 결과물에서 영토전쟁을 중심으로 관찰·판단의 재미를 전면에 둔다는 점을 강조하면, 재미를 더 잘 전달할 수 있다.",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "development",
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+            "stars": 5
+          },
+          {
+            "targetDepartment": "qa",
+            "improvement": "영토전쟁과 utf-8의 관계를 한 장면에서 이해하는 순간을 만든다. + money의 위협이 map과 동시에 작동해 선택을 강요하는 장면을 만든다.",
+            "stars": 5
+          }
+        ]
+      }
+    },
+    "directorReview": {
+      "sourceFile": "artbook-submissions/territory-war/2026-09-10/reviews/director.json",
+      "protocol": "DIRECTOR_IMPROVEMENT_STAR_5",
+      "reviewScope": "ALL_FIVE_DEPARTMENT_RESULTS",
+      "ratings": [
+        {
+          "targetDepartment": "planning",
+          "improvement": "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요.",
+          "stars": 4
+        },
+        {
+          "targetDepartment": "graphics",
+          "improvement": "부서 결과물의 내용이 재미를 전면적으로 강조하고, 보완점이 없음",
+          "stars": 5
+        },
+        {
+          "targetDepartment": "development",
+          "improvement": "본 개발 과정에서 플레이어블 시연 구조의 구조적 복잡성을 보완하고, 시연 검증 계획의 구조적 효율성을 개선했습니다.",
+          "stars": 4
+        },
+        {
+          "targetDepartment": "qa",
+          "improvement": "부서 결과물의 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다.",
+          "stars": 5
+        },
+        {
+          "targetDepartment": "balance",
+          "improvement": "부서 결과물의 영상 효과를 강화하고, 코칭 효과를 더 명확히 하도록 노력하세요.",
+          "stars": 4
+        }
+      ]
+    },
+    "sourceFiles": [
+      "artbook-submissions/territory-war/2026-09-10/reviews/planning.json",
+      "artbook-submissions/territory-war/2026-09-10/reviews/graphics.json",
+      "artbook-submissions/territory-war/2026-09-10/reviews/development.json",
+      "artbook-submissions/territory-war/2026-09-10/reviews/qa.json",
+      "artbook-submissions/territory-war/2026-09-10/reviews/balance.json",
+      "artbook-submissions/territory-war/2026-09-10/reviews/director.json"
+    ],
+    "allFiveDepartmentsReviewed": true,
+    "homepageOpinionMode": "IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS"
+  },
+  "directorSummary": {
+    "assemblyMode": "department-material-plus-director-rating-plus-deterministic-five-vote-aggregation",
+    "sourceDepartments": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "balance"
+    ],
+    "sourceFiles": [
+      "artbook-submissions/territory-war/2026-09-10/planning.json",
+      "artbook-submissions/territory-war/2026-09-10/graphics.json",
+      "artbook-submissions/territory-war/2026-09-10/development.json",
+      "artbook-submissions/territory-war/2026-09-10/qa.json",
+      "artbook-submissions/territory-war/2026-09-10/balance.json"
+    ],
+    "reviewFiles": [
+      "artbook-submissions/territory-war/2026-09-10/reviews/planning.json",
+      "artbook-submissions/territory-war/2026-09-10/reviews/graphics.json",
+      "artbook-submissions/territory-war/2026-09-10/reviews/development.json",
+      "artbook-submissions/territory-war/2026-09-10/reviews/qa.json",
+      "artbook-submissions/territory-war/2026-09-10/reviews/balance.json",
+      "artbook-submissions/territory-war/2026-09-10/reviews/director.json"
+    ],
+    "readinessSummary": {
+      "planning": "BLOCKED",
+      "graphics": "READY",
+      "development": "READY",
+      "qa": "READY",
+      "balance": "BLOCKED"
+    },
+    "newDepartmentClaimsAdded": false,
+    "productionDecisionMade": false
+  },
+  "cuts": [
+    {
+      "no": 1,
+      "kind": "director",
+      "title": "영토전쟁",
+      "body": "세력과 전쟁의 균형",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/director-cover.svg",
+      "sourceDepartment": "director",
+      "pageType": "cover",
+      "visualType": "game-concept-cover",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 2,
+      "kind": "vibe2",
+      "title": "오프닝",
+      "body": "핵심 목표를 이해한다 — 더 큰 갈등의 단서를 얻는다 · 시작 지역: 현재 세계의 첫 문제와 마주친다 → 기본 행동으로 첫 문제를 해결한다 → 더 큰 갈등의 단…",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/vibe2-draft-1.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 3,
+      "kind": "vibe2",
+      "title": "초반",
+      "body": "핵심 플레이 루프를 확립한다 — 다음 지역의 목표가 열린다 · 초기 지역: 첫 성공 뒤 새로운 장애물이 등장한다 → 기본 능력과 자원을 활용한다 → 다음 지역의…",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/vibe2-draft-2.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 4,
+      "kind": "vibe2",
+      "title": "중반",
+      "body": "갈등의 원인을 추적한다 — 최종 갈등의 주체가 드러난다 · 중간 지역: 기존 방식으로 해결되지 않는 문제가 커진다 → 새 시스템과 선택을 활용한다 → 최종 갈등…",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/vibe2-draft-3.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 5,
+      "kind": "vibe2",
+      "title": "후반",
+      "body": "최종 결전을 준비한다 — 최종 지역 진입 조건을 얻는다 · 후반 지역: 주요 세력의 충돌이 최고조에 이른다 → 축적한 성장 요소를 결집한다 → 최종 지역 진입 …",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/vibe2-draft-4.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 6,
+      "kind": "vibe2",
+      "title": "최종보스",
+      "body": "핵심 갈등을 끝낸다 — 세계 상태가 결정적으로 변화한다 · 최종 지역: 최종 적이 목표 달성을 직접 막는다 → 게임 전체에서 익힌 수단을 활용해 결전을 치른다 …",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/vibe2-draft-5.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 7,
+      "kind": "vibe2",
+      "title": "엔딩",
+      "body": "승리 이후의 선택을 마무리한다 — 본편 종료와 다음 목표가 연결된다 · 결말 지역: 핵심 갈등은 끝났지만 후속 문제가 남는다 → 남은 관계와 목표를 정리한다 →…",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/vibe2-draft-6.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 8,
+      "kind": "vibe2",
+      "title": "지역 흐름",
+      "body": "시작 지역 → 초기 지역 → 중간 지역 → 후반 지역 → 최종 지역 → 결말 지역 · 시작 지역 → 초기 지역: 더 큰 갈등의 단서를 얻는다 / 해금 핵심 플레…",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/vibe2-draft-7.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 9,
+      "kind": "vibe2",
+      "title": "메인 퀘스트",
+      "body": "OPENING/시작 지역: 핵심 목표를 이해한다 · 현재 세계의 첫 문제와 마주친다 → 기본 행동으로 첫 문제를 해결한다 → 더 큰 갈등의 단서를 얻는다 → 초…",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/vibe2-draft-8.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "visualType": "story-draft",
+      "employeeAuthored": false,
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 10,
+      "kind": "planning",
+      "title": "영토전쟁 기획 부서 1차 독립 …",
+      "body": "영토전쟁의 원인과 세력의 목표는 실제 게임에서 관찰·판단의 재미를 전면적으로 강…",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/planning-1.svg",
+      "sourceDepartment": "planning",
+      "pageType": "department-visual",
+      "visualType": "world-map",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 11,
+      "kind": "planning",
+      "title": "영토전쟁 기획 부서 2차 독립 …",
+      "body": "영토전쟁의 원인과 세력의 목표는 실제 게임에서 관찰·판단의 재미를 전면적으로 강…",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/planning-2.svg",
+      "sourceDepartment": "planning",
+      "pageType": "department-visual",
+      "visualType": "story-flow",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 12,
+      "kind": "graphics",
+      "title": "세력사 + 전쟁 지도첩",
+      "body": "영토를 다투는 이유와 각 세력의 목표가 점령·자원·병력 성장 규칙과 연결돼야 한…",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/graphics-1.svg",
+      "sourceDepartment": "graphics",
+      "pageType": "department-visual",
+      "visualType": "concept-board",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 13,
+      "kind": "graphics",
+      "title": "영토전쟁",
+      "body": "영토를 다투는 이유와 각 세력의 목표가 점령·자원·병력 성장 규칙과 연결돼야 한…",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/graphics-2.svg",
+      "sourceDepartment": "graphics",
+      "pageType": "department-visual",
+      "visualType": "style-board",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 14,
+      "kind": "development",
+      "title": "영토전쟁",
+      "body": "Unity 씬·프리팹·데이터·시스템 연결을 이미지 중심 2장으로 설계",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/development-1.svg",
+      "sourceDepartment": "development",
+      "pageType": "department-visual",
+      "visualType": "gameplay-loop",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 15,
+      "kind": "development",
+      "title": "영토전쟁",
+      "body": "새 설정 없음",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/development-2.svg",
+      "sourceDepartment": "development",
+      "pageType": "department-visual",
+      "visualType": "system-flow",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 16,
+      "kind": "qa",
+      "title": "영토전쟁",
+      "body": "영토전쟁의 관찰·판단과 money의 위협을 중심으로 설계되었습니다.",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/qa-1.svg",
+      "sourceDepartment": "qa",
+      "pageType": "department-visual",
+      "visualType": "test-journey",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 17,
+      "kind": "balance",
+      "title": "영토전쟁",
+      "body": "영토전쟁은 체력과 공격을 균형 있게 관리하는 전략적 전략입니다.",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/balance-1.svg",
+      "sourceDepartment": "balance",
+      "pageType": "department-visual",
+      "visualType": "balance-curve",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    },
+    {
+      "no": 18,
+      "kind": "director",
+      "title": "영토전쟁 기획 부서 1차 독립 …",
+      "body": "영토전쟁은 체력과 공격을 균형 있게 관리하는 전략적 …",
+      "image": "artbook-submissions/territory-war/2026-09-10/visuals/director-summary.svg",
+      "sourceDepartment": "director",
+      "pageType": "summary",
+      "visualType": "department-summary",
+      "employeeAuthored": true,
+      "vibe2Authored": false,
+      "assistantAuthored": false,
+      "proposal": false,
+      "displayLanguage": "ko"
+    }
+  ],
+  "publication": {
+    "automaticProductionApproval": false,
+    "homepageVisibilityMayBeEnabledSeparately": true,
+    "displayReady": true,
+    "departmentOpinionsRequired": true,
+    "fiveVoteRatingsRequired": true,
+    "requiredCuts": 18,
+    "exactCutCountRequired": true,
+    "minCuts": 12,
+    "maxCuts": 30,
+    "postprocessRequired": true,
+    "postprocessComplete": true,
+    "homepageMode": "compact-card-detail-viewer"
+  },
+  "vibe2FirstDraft": {
+    "sourceFile": "artbook-submissions/territory-war/2026-09-10/vibe2-first-draft.json",
+    "status": "FIRST_DRAFT_READY",
+    "proposalOnly": true,
+    "pageCount": 8
+  },
+  "presentation": {
+    "mode": "VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_AUTHORED",
+    "directorSource": "artbook-submissions/territory-war/2026-09-10/presentation/director-presentation.json",
+    "departmentPageCounts": {
+      "planning": 2,
+      "graphics": 2,
+      "development": 2,
+      "qa": 1,
+      "balance": 1
+    },
+    "vibe2DraftPages": 8,
+    "employeeAuthoredPages": 10,
+    "assistantAuthored": false
+  },
+  "postprocess": {
+    "version": 6,
+    "complete": true,
+    "checkedAt": "2026-09-09T17:29:56.837Z",
+    "requiredCuts": 18,
+    "cutCount": 18,
+    "pagePolicy": {
+      "min": 12,
+      "default": 16,
+      "max": 30,
+      "target": 18,
+      "legacyTenPageCompatible": true
+    },
+    "pagePlan": [
+      "director",
+      "Vibe2:오프닝",
+      "Vibe2:초반",
+      "Vibe2:중반",
+      "Vibe2:후반",
+      "Vibe2:최종보스",
+      "Vibe2:엔딩",
+      "Vibe2:지역 흐름",
+      "Vibe2:메인 퀘스트",
+      "planning",
+      "planning",
+      "graphics",
+      "graphics",
+      "development",
+      "development",
+      "qa",
+      "balance",
+      "director"
+    ],
+    "cutsPerDepartment": {
+      "planning": 2,
+      "graphics": 2,
+      "development": 2,
+      "qa": 1,
+      "balance": 1,
+      "director": 2,
+      "vibe2": 8
+    },
+    "formatChecked": true,
+    "emptyContentChecked": true,
+    "uniqueVisualsChecked": true,
+    "imagePathsChecked": true,
+    "newClaimsAdded": false,
+    "sourceMode": "VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_OWNED_VISUAL_PAGES_PLUS_DIRECTOR_PRESENTATION",
+    "assistantAuthorship": false,
+    "vibe2DraftAuthorship": true,
+    "imageFirst": true,
+    "shortText": true,
+    "displayLanguage": "ko"
+  }
+}
