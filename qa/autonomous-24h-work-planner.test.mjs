@@ -64,7 +64,7 @@ test('all active eligible roots stop fanout cleanly instead of falling through t
   ]};
   const order=build24hAutonomousWorkOrder({portfolio,artbooks,health:{games:[]},catalog,queueState,date:'2026-09-09',filesystem,now:new Date('2026-09-09T02:00:00Z')});
   assert.equal(order.run,false);
-  assert.equal(order.reason,'ALL_FOCUSED_SOURCE_ROOTS_ACTIVE');
+  assert.equal(order.reason,'ALL_ELIGIBLE_SOURCE_ROOTS_ACTIVE');
 });
 
 test('released main source invalidates the old lease and makes the game eligible again',()=>{
