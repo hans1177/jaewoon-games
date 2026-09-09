@@ -1,12 +1,12 @@
 {
-  "version": 1,
+  "version": 2,
   "status": "ACTIVE",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
   "continuousDevelopmentBranch": "autonomous-dev",
   "candidateBranchPrefix": "autonomous/candidate-",
   "paidApi": false,
-  "maxModelCallsPerRun": 1,
+  "maxModelCallsPerRun": 2,
   "maxRunnerMinutesPerRun": 20,
   "maxAutonomousWorkItemsPerDay": 8,
   "projects": [
@@ -15,13 +15,9 @@
       "slug": "survival",
       "name": "나의 생존기",
       "sourcePath": "web-games/survival",
-      "profileStatus": "AUDITED_PARTIAL",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "IMPROVE",
-      "protectedValues": [
-        "jaewoon-survival-v1",
-        "worldVersion",
-        "save-meaning"
-      ]
+      "protectedValues": ["jaewoon-survival-v1", "worldVersion", "save-meaning", "core-loop"]
     },
     {
       "id": "P0002",
@@ -30,10 +26,7 @@
       "sourcePath": "web-games/insect-survival",
       "profileStatus": "NEEDS_AUDIT",
       "mode": "EXPERIMENT_ONLY",
-      "protectedValues": [
-        "save-meaning",
-        "core-loop"
-      ]
+      "protectedValues": ["save-meaning", "core-loop"]
     },
     {
       "id": "P0003",
@@ -42,10 +35,7 @@
       "sourcePath": "web-games/crystal-defense",
       "profileStatus": "NEEDS_AUDIT",
       "mode": "EXPERIMENT_ONLY",
-      "protectedValues": [
-        "save-meaning",
-        "core-loop"
-      ]
+      "protectedValues": ["save-meaning", "core-loop"]
     },
     {
       "id": "P0004",
@@ -54,10 +44,7 @@
       "sourcePath": "web-games/bug-defense",
       "profileStatus": "NEEDS_AUDIT",
       "mode": "EXPERIMENT_ONLY",
-      "protectedValues": [
-        "save-meaning",
-        "core-loop"
-      ]
+      "protectedValues": ["save-meaning", "core-loop"]
     },
     {
       "id": "P0005",
@@ -66,22 +53,16 @@
       "sourcePath": "web-games/human-go",
       "profileStatus": "NEEDS_AUDIT",
       "mode": "EXPERIMENT_ONLY",
-      "protectedValues": [
-        "save-meaning",
-        "core-loop"
-      ]
+      "protectedValues": ["save-meaning", "core-loop"]
     },
     {
       "id": "P0006",
       "slug": "daechung-rpg",
       "name": "대충 RPG",
       "sourcePath": "web-games/daechung-rpg",
-      "profileStatus": "NEEDS_AUDIT",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "EXPERIMENT_ONLY",
-      "protectedValues": [
-        "save-meaning",
-        "core-loop"
-      ]
+      "protectedValues": ["save-meaning", "core-loop", "unity-primary"]
     },
     {
       "id": "P0007",
@@ -108,13 +89,34 @@
       "sourcePath": "web-games/monster-adventure",
       "profileStatus": "REDESIGN_IDENTITY",
       "mode": "REDESIGN",
-      "protectedValues": [
-        "save-meaning",
-        "monster-party",
-        "capture",
-        "battle",
-        "dex"
-      ]
+      "protectedValues": ["save-meaning", "monster-party", "capture", "battle", "dex"]
+    },
+    {
+      "id": "P0101",
+      "slug": "chess-battle",
+      "name": "체스 배틀",
+      "sourcePath": "web-games/chess-battle",
+      "profileStatus": "RELEASE_CONFIRMED",
+      "mode": "MAINTENANCE",
+      "protectedValues": ["save-meaning", "core-loop", "public-stable"]
+    },
+    {
+      "id": "P0102",
+      "slug": "survival2",
+      "name": "숲의 생존자들",
+      "sourcePath": "web-games/survival2",
+      "profileStatus": "RELEASE_CONFIRMED",
+      "mode": "MAINTENANCE",
+      "protectedValues": ["save-meaning", "core-loop", "public-stable"]
+    },
+    {
+      "id": "P0103",
+      "slug": "territory-war",
+      "name": "영토전쟁",
+      "sourcePath": "web-games/territory-war",
+      "profileStatus": "RELEASE_CONFIRMED",
+      "mode": "MAINTENANCE",
+      "protectedValues": ["save-meaning", "core-loop", "public-stable"]
     }
   ]
 }
