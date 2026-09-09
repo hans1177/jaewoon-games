@@ -1,0 +1,89 @@
+name: Unity Android Runtime Smoke
+
+on:
+  workflow_run:
+    workflows: ["Unity Hybrid Android Build"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Successful Unity Hybrid Android Build run id'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: unity-android-runtime-smoke
+  cancel-in-progress: false
+
+jobs:
+  runtime-smoke:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout QA tools
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Resolve upstream build run
+        id: upstream
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ '${{ github.event_name }}' == 'workflow_run' ]]; then
+            run_id='${{ github.event.workflow_run.id }}'
+          else
+            run_id='${{ inputs.run_id }}'
+          fi
+          [[ "$run_id" =~ ^[0-9]+$ ]] || { echo "invalid run id: $run_id" >&2; exit 2; }
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+
+      - name: Download APK build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ steps.upstream.outputs.run_id }}
+          path: upstream-artifacts
+
+      - name: Locate APK
+        id: apk
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="$(find upstream-artifacts -type f -name '*.apk' -size +0c | head -n 1 || true)"
+          [[ -n "$apk" && -s "$apk" ]] || { echo 'No APK artifact found in upstream build.' >&2; find upstream-artifacts -maxdepth 4 -type f -print || true; exit 3; }
+          echo "path=$apk" >> "$GITHUB_OUTPUT"
+          echo "UNITY_RUNTIME_APK=$apk"
+
+      - name: Prepare Android emulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
+          [[ -n "$SDK" ]] || { echo 'Android SDK path missing.' >&2; exit 4; }
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager 'platform-tools' 'emulator' 'build-tools;35.0.0' 'system-images;android-35;google_apis;x86_64'
+          echo no | avdmanager create avd --force --name jaewoon-qa --package 'system-images;android-35;google_apis;x86_64' --device 'pixel_6'
+          if [[ -e /dev/kvm ]]; then sudo chmod 666 /dev/kvm || true; fi
+          nohup "$SDK/emulator/emulator" -avd jaewoon-qa -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > /tmp/jaewoon-emulator.log 2>&1 &
+          echo $! > /tmp/jaewoon-emulator.pid
+
+      - name: Run black-box APK play smoke
+        shell: bash
+        run: bash tools/unity-apk-runtime-smoke.sh '${{ steps.apk.outputs.path }}' qa-artifacts/unity-runtime-smoke
+
+      - name: Upload Unity runtime QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-runtime-smoke-${{ steps.upstream.outputs.run_id }}
+          path: |
+            qa-artifacts/unity-runtime-smoke/
+            /tmp/jaewoon-emulator.log
+          if-no-files-found: warn
+          retention-days: 14
