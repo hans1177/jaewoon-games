@@ -91,6 +91,20 @@ jobs:
           test -s /tmp/artbook-jobs.json
           test -s /tmp/autonomous-jobs.json
 
+          : > /tmp/artbook-context.log
+          if [ -n "$ARTBOOK_RUN_ID" ]; then
+            CONTEXT_JOB_ID="$(node - <<'NODE'
+          const fs=require('fs');
+          const p=JSON.parse(fs.readFileSync('/tmp/artbook-jobs.json','utf8'));
+          const job=(p.jobs||[]).find(j=>String(j.name||'').toLowerCase()==='context');
+          process.stdout.write(String(job?.id||''));
+          NODE
+          )"
+            if [ -n "$CONTEXT_JOB_ID" ]; then
+              gh run view "$ARTBOOK_RUN_ID" --repo "$GITHUB_REPOSITORY" --job "$CONTEXT_JOB_ID" --log > /tmp/artbook-context.log 2>&1 || true
+            fi
+          fi
+
           mkdir -p /tmp/director-failed-logs
           node - <<'NODE' > /tmp/failed-round1-jobs.tsv
           const fs=require('fs');
@@ -106,7 +120,7 @@ jobs:
           done < /tmp/failed-round1-jobs.tsv
 
       - name: Run director staff supervision
-        run: node tools/director-supervisor.mjs /tmp/actions-runs.json /tmp/artbook-jobs.json /tmp/director-failed-logs /tmp/autonomous-jobs.json
+        run: node tools/director-supervisor.mjs /tmp/actions-runs.json /tmp/artbook-jobs.json /tmp/director-failed-logs /tmp/autonomous-jobs.json /tmp/artbook-context.log
 
       - name: Validate supervisor contract
         run: |
@@ -123,7 +137,9 @@ jobs:
           if(s.checks?.homepageDiagnosticOnlyRecognized!==true)throw new Error('homepage diagnostic-only role is not recognized');
           if(s.checks?.releaseArtifactEvidenceAdapterRegistered!==true)throw new Error('release artifact evidence adapter missing');
           if(s.checks?.liveDepartmentStates!==true)throw new Error('live department state contract missing');
+          if(s.checks?.liveJobPrecedesPersistedSubmission!==true)throw new Error('live job evidence must precede persisted submission state');
           if(s.workflowEvidence?.artbook&&!s.checks?.jobLevelEvidenceUsed)throw new Error('artbook run exists but department job evidence was not used');
+          if(s.checks?.artbookLiveTargetResolved===true&&s.checks?.artbookTargetSource!=='artbook-context-log')throw new Error('resolved live artbook target must come from context job evidence');
           const auto=s.workflowEvidence?.autonomousDevelopment;
           if(auto&&['queued','in_progress','completed'].includes(auto.status)&&!s.checks?.autonomousDepartmentJobEvidenceUsed){
             const runActive=['queued','in_progress'].includes(auto.status);
@@ -133,6 +149,7 @@ jobs:
             const item=s.staff?.[d];
             if(!['ACTIVE','WAITING','BLOCKED','DONE'].includes(item?.workState))throw new Error(`${d}: invalid live work state`);
             if(item?.source==='artbook'&&item?.jobEvidence?.conclusion==='failure'&&!item.directCause)throw new Error(`${d}: failed artbook job has no direct cause evidence`);
+            if(item?.source==='artbook'&&['queued','in_progress'].includes(String(item?.jobEvidence?.status||''))&&item?.workState==='DONE')throw new Error(`${d}: live artbook job cannot be DONE`);
           }
           const hp=company?.policy?.homepageOperations||{};
           if(hp.diagnosticOnly===true&&hp.runtimeDataSync===true&&hp.autoMaintenance===false&&s.staff.homepage?.status==='STALE')throw new Error('diagnostic-only homepage must not be classified as stale standing work');
@@ -142,6 +159,7 @@ jobs:
           if(verified&&['BLOCKED','FAILED'].includes(s.staff.release?.status))throw new Error('verified test release artifact must not remain dependency-blocked');
           console.log('DIRECTOR_SUPERVISION_QA=PASS');
           console.log('AUTONOMOUS_LIVE_DEPARTMENT_STATES=PASS');
+          console.log(`ARTBOOK_LIVE_TARGET_QA=${s.checks?.artbookLiveTargetResolved?'PASS':'FALLBACK'}`);
           NODE
 
       - name: Resolve low-risk operational bottlenecks by company priority
