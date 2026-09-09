@@ -7,6 +7,8 @@ on:
       - '.github/workflows/autonomous-continuous-development.yml'
       - '.github/workflows/autonomous-candidate-promotion.yml'
       - '.github/workflows/autonomous-continuous-queue-qa.yml'
+      - '.github/workflows/vibe2-candidate-release.yml'
+      - '.github/workflows/vibe2-unity-release-result.yml'
       - '.github/workflows/autonomous-portfolio-continuation.yml'
       - '.github/workflows/autonomous-new-game-incubator.yml'
       - 'tools/autonomous-work-planner.mjs'
@@ -14,6 +16,7 @@ on:
       - 'tools/autonomous-department-cycle.mjs'
       - 'tools/autonomous-queue-state.mjs'
       - 'tools/autonomous-development-worker.mjs'
+      - 'tools/autonomous-vibe-release-handoff.mjs'
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/autonomous-diagnostics.mjs'
       - 'tools/autonomous-rule-patcher.mjs'
@@ -23,6 +26,7 @@ on:
       - 'qa/autonomous-24h-work-planner.test.mjs'
       - 'qa/autonomous-queue-state.test.mjs'
       - 'qa/autonomous-development-worker.test.mjs'
+      - 'qa/autonomous-vibe-release-handoff.test.mjs'
       - 'qa/autonomous-diagnostics.test.mjs'
       - 'qa/autonomous-rule-patcher.test.mjs'
       - 'qa/autonomous-portfolio-continuation.test.mjs'
@@ -33,6 +37,8 @@ on:
       - '.github/workflows/autonomous-continuous-development.yml'
       - '.github/workflows/autonomous-candidate-promotion.yml'
       - '.github/workflows/autonomous-continuous-queue-qa.yml'
+      - '.github/workflows/vibe2-candidate-release.yml'
+      - '.github/workflows/vibe2-unity-release-result.yml'
       - '.github/workflows/autonomous-portfolio-continuation.yml'
       - '.github/workflows/autonomous-new-game-incubator.yml'
       - 'tools/autonomous-work-planner.mjs'
@@ -40,6 +46,7 @@ on:
       - 'tools/autonomous-department-cycle.mjs'
       - 'tools/autonomous-queue-state.mjs'
       - 'tools/autonomous-development-worker.mjs'
+      - 'tools/autonomous-vibe-release-handoff.mjs'
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/autonomous-diagnostics.mjs'
       - 'tools/autonomous-rule-patcher.mjs'
@@ -49,6 +56,7 @@ on:
       - 'qa/autonomous-24h-work-planner.test.mjs'
       - 'qa/autonomous-queue-state.test.mjs'
       - 'qa/autonomous-development-worker.test.mjs'
+      - 'qa/autonomous-vibe-release-handoff.test.mjs'
       - 'qa/autonomous-diagnostics.test.mjs'
       - 'qa/autonomous-rule-patcher.test.mjs'
       - 'qa/autonomous-portfolio-continuation.test.mjs'
@@ -76,6 +84,7 @@ jobs:
           node --check tools/autonomous-24h-work-planner.mjs
           node --check tools/autonomous-department-cycle.mjs
           node --check tools/autonomous-development-worker.mjs
+          node --check tools/autonomous-vibe-release-handoff.mjs
           node --check tools/autonomous-safe-edit.mjs
           node --check tools/autonomous-diagnostics.mjs
           node --check tools/autonomous-rule-patcher.mjs
@@ -85,6 +94,7 @@ jobs:
           node --test qa/autonomous-work-planner.test.mjs
           node --test qa/autonomous-24h-work-planner.test.mjs
           node --test qa/autonomous-development-worker.test.mjs
+          node --test qa/autonomous-vibe-release-handoff.test.mjs
           node --test qa/autonomous-diagnostics.test.mjs
           node --test qa/autonomous-rule-patcher.test.mjs
           node --test qa/autonomous-portfolio-continuation.test.mjs
@@ -97,9 +107,12 @@ jobs:
           const fs=require('fs');
           const continuous=fs.readFileSync('.github/workflows/autonomous-continuous-development.yml','utf8');
           const promotion=fs.readFileSync('.github/workflows/autonomous-candidate-promotion.yml','utf8');
+          const release=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
+          const unityResult=fs.readFileSync('.github/workflows/vibe2-unity-release-result.yml','utf8');
           const continuation=fs.readFileSync('.github/workflows/autonomous-portfolio-continuation.yml','utf8');
           const incubator=fs.readFileSync('.github/workflows/autonomous-new-game-incubator.yml','utf8');
           const worker=fs.readFileSync('tools/autonomous-development-worker.mjs','utf8');
+          const handoff=fs.readFileSync('tools/autonomous-vibe-release-handoff.mjs','utf8');
           const planner=fs.readFileSync('tools/autonomous-24h-work-planner.mjs','utf8');
           const department=fs.readFileSync('tools/autonomous-department-cycle.mjs','utf8');
           const incubatorTool=fs.readFileSync('tools/autonomous-new-game-incubator.mjs','utf8');
@@ -126,6 +139,7 @@ jobs:
           must(continuous.includes('completed DESIGN_BASELINE daily work cap: NONE'),'completed-artbook unlimited evidence missing');
           must(continuous.includes("if: failure() && steps.reserve.outputs.reserved == 'true'"),'reserved failure continuation missing');
           must(continuous.includes('FAILED_FLOOR_NEXT=DISPATCHED'),'failed floor must dispatch another floor');
+          must(continuous.includes('gh workflow run autonomous-candidate-promotion.yml --ref main -f candidate_branch='),'candidate promotion explicit dispatch missing');
           must(planner.includes("selection:'LEAST_KST_ATTEMPTS_FIRST'"),'fair repeated-floor selection missing');
           must(department.includes("const ROLES=['planning','development','graphics','qa','balance','planning-final']"),'all AI departments are not wired');
           must(department.includes('allDepartmentsWorked:true'),'department completion evidence missing');
@@ -137,9 +151,21 @@ jobs:
           must(incubator.includes('created_today'),'new-concept duplicate guard missing');
           must(incubatorTool.includes('stream:true'),'incubator model response must be streamed');
           must(promotion.includes('actions: write'),'promotion dispatch permission missing');
-          must(promotion.includes('gh workflow run autonomous-continuous-development.yml --ref main'),'immediate next-floor dispatch missing');
+          must(promotion.includes('workflow_dispatch:')&&promotion.includes('candidate_branch:'),'promotion explicit candidate input missing');
+          must(promotion.includes('gh workflow run autonomous-continuous-development.yml --ref main'),'next-floor fallback dispatch missing');
           must(promotion.includes('if: always()'),'queue continuation must survive candidate rejection');
-          must(promotion.includes('public game main promotion: NO'),'public main promotion guard missing');
-          must(!promotion.includes('PUBLIC_RELEASE=YES'),'public release must never be automatic');
+          must(promotion.includes('public game main direct promotion: NO'),'promotion direct-main guard missing');
+          must(promotion.includes('gh workflow run vibe2-candidate-release.yml --ref main -f candidate_branch='),'verified candidate must enter existing Vibe release gate');
+          must(promotion.includes('tools/autonomous-vibe-release-handoff.mjs'),'release handoff bridge missing');
+          must(!promotion.includes('PUBLIC_RELEASE=YES'),'promotion must never self-authorize public release');
+          must(handoff.includes('AUTONOMOUS_DEV_VERIFIED_HANDOFF'),'verified autonomous handoff marker missing');
+          must(handoff.includes("['development-confirmed','release-confirmed']"),'release authority gate missing');
+          must(release.includes('workflow_dispatch:')&&release.includes('candidate_branch:'),'Vibe release gate explicit dispatch missing');
+          must(release.includes('candidate_sha="$(git rev-parse HEAD)"'),'exact release candidate SHA resolution missing');
+          must(release.includes('AUTONOMOUS_DEV_VERIFIED_HANDOFF'),'Web release autonomous-origin routing missing');
+          must(release.includes('gh workflow run autonomous-continuous-development.yml'),'Web release must resume autonomous queue');
+          must(unityResult.includes('AUTONOMOUS_DEV_VERIFIED_HANDOFF'),'Unity release autonomous-origin routing missing');
+          must(unityResult.includes('gh workflow run autonomous-continuous-development.yml'),'Unity release must resume autonomous queue');
           console.log('CONTINUOUS_24H_DEPARTMENT_QUEUE_CONTRACT=PASS');
+          console.log('DEVELOPMENT_TO_RELEASE_QUEUE_CONTRACT=PASS');
           NODE
