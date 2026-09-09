@@ -11,6 +11,7 @@ import {
   readContext,
   validateCandidateAgainstSource,
 } from '../tools/autonomous-development-worker.mjs';
+import { buildVibeCoreContext, selectVerifiedVibeLearning } from '../tools/autonomous-department-cycle.mjs';
 
 const fixture='web-games/__autonomous-worker-test__';
 const candidateRoot='web-games/.autonomous-candidates/TEST';
@@ -116,4 +117,34 @@ test('syntax-invalid generated javascript cannot pass worker gate',async()=>{
     const response=JSON.stringify({files:[{path:'app.js',content:"localStorage.setItem('save-v1','ok');\nfunction broken( {"}]});
     await assert.rejects(()=>generateAutonomousCandidate({gameId:'TEST',sourcePath:fixture,goal:'test',candidateId:'TEST-badsyntax',candidatePath:`${candidateRoot}/TEST-badsyntax`,evidencePath:`${evidenceRoot}/TEST-badsyntax.json`,modelResponse:response,sourceCommit:'abc'}),/문법검증 실패/);
   }finally{cleanup();}
+});
+
+test('Vibe collaboration core reuses only verified Company DNA and never self-approves',()=>{
+  const learning=selectVerifiedVibeLearning({
+    items:[
+      {type:'VIBE2',patternId:'verified-one',stage:'GAME_VERIFIED',updatedAt:'2026-09-09T00:00:00Z'},
+      {type:'VIBE2',patternId:'experiment-only',stage:'EXPERIMENTING',updatedAt:'2026-09-09T01:00:00Z'},
+      {type:'QA',patternId:'other-domain',stage:'COMPANY_STANDARD',updatedAt:'2026-09-09T02:00:00Z'},
+    ],
+    antiPatterns:[{type:'VIBE2',patternId:'repeat-failure',reason:'REPEATED_VERIFIED_FAILURE',failureEvidence:2}],
+  });
+  assert.deepEqual(learning.patterns.map(x=>x.patternId),['verified-one']);
+  assert.deepEqual(learning.antiPatterns.map(x=>x.patternId),['repeat-failure']);
+  assert.equal(learning.verifiedOnly,true);
+});
+
+test('autonomous development routes through existing Vibe company bridge before department review',()=>{
+  const order={
+    run:true,gameId:'TEST',gameSlug:'test-game',gameName:'테스트',sourcePath:'web-games/test-game',projectStage:'development',goal:'UI 피드백을 작은 범위로 개선',responsibilityFiles:['web-games/test-game/index.html'],protectedValues:['save keys','core loop'],
+  };
+  const book={id:'test-artbook',gameId:'test-game',status:'COMPLETED',cuts:Array.from({length:16},(_,i)=>({i})),postprocess:{complete:true},lifecycle:{state:'DESIGN_BASELINE'}};
+  const core=buildVibeCoreContext({order,book,companyDna:{version:1,items:[],antiPatterns:[]}});
+  assert.equal(core.engine,'VIBE2_COMPANY_CORE');
+  assert.equal(core.source,'assets/vibe-company-orchestration-bridge.js');
+  assert.equal(core.initialMaturity,'EARLY_COLLABORATIVE');
+  assert.equal(core.departmentReviewRequired,true);
+  assert.equal(core.maySelfApprove,false);
+  assert.equal(core.verifiedLearningOnly,true);
+  assert.equal(core.routing.completedArtbookLocked,true);
+  assert.ok(Array.isArray(core.executionQa));
 });
