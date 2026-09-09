@@ -5,6 +5,11 @@ on:
     branches: [main]
     paths:
       - "autonomous-portfolio.json"
+      - "assets/vibe-company-orchestration-bridge.js"
+      - "assets/vibe-company-experiment.js"
+      - "assets/vibe-quality-intelligence.js"
+      - "company-learning/company-dna.json"
+      - "tools/company-dna-learning.mjs"
       - "tools/autonomous-development-worker.mjs"
       - "tools/autonomous-work-planner.mjs"
       - "tools/autonomous-24h-work-planner.mjs"
@@ -23,6 +28,11 @@ on:
   pull_request:
     paths:
       - "autonomous-portfolio.json"
+      - "assets/vibe-company-orchestration-bridge.js"
+      - "assets/vibe-company-experiment.js"
+      - "assets/vibe-quality-intelligence.js"
+      - "company-learning/company-dna.json"
+      - "tools/company-dna-learning.mjs"
       - "tools/autonomous-development-worker.mjs"
       - "tools/autonomous-work-planner.mjs"
       - "tools/autonomous-24h-work-planner.mjs"
@@ -74,6 +84,7 @@ jobs:
           const promotion=fs.readFileSync('.github/workflows/autonomous-candidate-promotion.yml','utf8');
           const department=fs.readFileSync('tools/autonomous-department-cycle.mjs','utf8');
           const planner=fs.readFileSync('tools/autonomous-24h-work-planner.mjs','utf8');
+          const dna=fs.readFileSync('tools/company-dna-learning.mjs','utf8');
           const must=(ok,msg)=>{if(!ok)throw new Error(msg)};
           must(p.fixedProjectCount===false,'fixed project count must remain false');
           must(p.paidApi===false,'paidApi must remain false');
@@ -99,6 +110,13 @@ jobs:
           must(continuous.includes('SELF_PROMOTE_MAIN=NO'),'main self-promotion guard missing');
           must(department.includes("const ROLES=['planning','development','graphics','qa','balance','planning-final']"),'department role sequence missing');
           must(department.includes('allDepartmentsWorked:true'),'department completion evidence missing');
+          must(department.includes("planCompanyDevelopmentTask")&&department.includes("../assets/vibe-company-orchestration-bridge.js"),'Vibe company bridge not connected to autonomous department cycle');
+          must(department.includes("company-learning/company-dna.json")&&department.includes('selectVerifiedVibeLearning'),'verified Company DNA not fed into Vibe collaboration');
+          must(department.includes("VIBE_PROPOSES_AI_DEPARTMENTS_REVIEW_AND_CORRECT"),'Vibe/AI collaboration contract missing');
+          must(department.includes('vibeMaySelfApprove:false')&&department.includes('vibeMayOverrideDepartments:false'),'early Vibe authority guard missing');
+          must(dna.includes("'VIBE2'")&&dna.includes('GAME_VERIFIED')&&dna.includes('MULTI_GAME_VERIFIED'),'existing Vibe learning memory contract missing');
+          must(promotion.includes('--type=VIBE2'),'verified Vibe learning evidence not emitted by promotion');
+          must(promotion.includes('--independent-qa=PASS'),'Vibe learning evidence must require independent QA');
           must(planner.includes("selection:'LEAST_KST_ATTEMPTS_FIRST'"),'fair 24h floor rotation missing');
           must(promotion.includes('gh workflow run autonomous-continuous-development.yml --ref main'),'immediate next-floor dispatch missing');
           must(promotion.includes('public game main promotion: NO'),'public main protection missing');
@@ -107,4 +125,5 @@ jobs:
           const text=files.map(file=>fs.readFileSync(file,'utf8')).join('\n');
           must(!/OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY/.test(text),'paid/external key path found');
           console.log('AUTONOMOUS_24H_SYSTEM_CONTRACT=PASS');
+          console.log('VIBE_AI_COLLABORATION_CONTRACT=PASS');
           NODE
