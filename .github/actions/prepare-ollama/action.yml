@@ -12,16 +12,32 @@ inputs:
     description: Whether this caller needs a runnable Ollama server and the requested model. false is cache-warm mode only.
     required: false
     default: 'true'
+  department-role:
+    description: Optional autonomous department role. FAST lanes only need development and qa model reviews.
+    required: false
+    default: ''
 runs:
   using: composite
   steps:
-    - name: Detect deterministic planning-final no-model path
+    - name: Detect no-model path
       id: model-need
       shell: bash
       run: |
         set -euo pipefail
         skip=false
-        if [ "${{ inputs.pull-model }}" = 'true' ] && [ "${GITHUB_JOB:-}" = 'planning_final' ] && [ -s .autonomous/work-order.json ] && [ -d department-results ]; then
+        reason=''
+        role='${{ inputs.department-role }}'
+
+        if [ "${{ inputs.pull-model }}" = 'true' ] && [ -n "$role" ] && [ -s .autonomous/work-order.json ]; then
+          lane="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('.autonomous/work-order.json','utf8'));process.stdout.write(String(o.workLane||'FULL').trim().toUpperCase())")"
+          if [ "$lane" = 'FAST' ] && [ "$role" != 'development' ] && [ "$role" != 'qa' ]; then
+            skip=true
+            reason='FAST_INACTIVE_DEPARTMENT'
+            echo "FAST_DEPARTMENT_MODEL_RUNTIME=$role:SKIPPED"
+          fi
+        fi
+
+        if [ "$skip" != 'true' ] && [ "${{ inputs.pull-model }}" = 'true' ] && [ "${GITHUB_JOB:-}" = 'planning_final' ] && [ -s .autonomous/work-order.json ] && [ -d department-results ]; then
           if node --input-type=module <<'NODE'
         import fs from 'node:fs';
         import path from 'node:path';
@@ -38,19 +54,22 @@ runs:
         NODE
           then
             skip=true
+            reason='DETERMINISTIC_PLANNING_FINAL'
           else
             echo 'PLANNING_FINAL_MODEL_RUNTIME=REQUIRED_AI_OR_PROBE_FAILED'
           fi
         fi
-        echo "skip=$skip" >> "$GITHUB_OUTPUT"
 
-    - name: Deterministic planning-final runtime summary
+        echo "skip=$skip" >> "$GITHUB_OUTPUT"
+        echo "reason=$reason" >> "$GITHUB_OUTPUT"
+
+    - name: No-model runtime summary
       if: steps.model-need.outputs.skip == 'true'
       shell: bash
       run: |
         set -euo pipefail
-        echo 'OLLAMA_RUNTIME=SKIPPED_DETERMINISTIC_PLANNING_FINAL'
-        echo 'OLLAMA_MODEL_PULL=SKIPPED_DETERMINISTIC_PLANNING_FINAL'
+        echo "OLLAMA_RUNTIME=SKIPPED_${{ steps.model-need.outputs.reason }}"
+        echo "OLLAMA_MODEL_PULL=SKIPPED_${{ steps.model-need.outputs.reason }}"
         echo 'PAID_API=NO'
 
     - name: Probe or restore pinned CPU-only Ollama runtime archive
