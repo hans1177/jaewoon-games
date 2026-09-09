@@ -1,0 +1,146 @@
+{
+  "version": 6,
+  "gameId": "monster-adventure",
+  "date": "2026-09-09",
+  "department": "qa",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "몬스터 어드벤처",
+  "evidence": [
+    {
+      "source": "web-games/monster-adventure/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-monster-adventure.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentPlayableFlow": "플레이 흐름",
+    "verifiedEvidence": "플레이 흐름",
+    "problemScenes": "몬스터 어드벤처",
+    "mobileSaveErrorRisks": "no-blocking-smoke-errors",
+    "testScenarios": "몬스터 포획",
+    "unverified": "no-blocking-smoke-errors",
+    "handoffs": "no-blocking-smoke-errors"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "몬스터 어드벤처의 지역 생태를 바탕으로 포획된 몬스터를 탐험하는 방식을 시각화",
+      "몬스터 도감과 성장 과정을 여행 목적으로 연결하는 토론 방식",
+      "포획을 통해 지역 생태를 보존하고 성장하는 전략을 시각화"
+    ],
+    "implementationPlan": [
+      "몬스터의 지역 생태를 바탕으로 포획된 몬스터를 탐험하는 방식을 시각화",
+      "몬스터 도감과 성장 과정을 여행 목적으로 연결하는 토론 방식",
+      "포획을 통해 지역 생태를 보존하고 성장하는 전략을 시각화"
+    ],
+    "demoValidation": [
+      "몬스터 어드벤처의 지역 생태를 바탕으로 포획된 몬스터를 탐험하는 방식을 시각화",
+      "몬스터 도감과 성장 과정을 여행 목적으로 연결하는 토론 방식",
+      "포획을 통해 지역 생태를 보존하고 성장하는 전략을 시각화"
+    ]
+  },
+  "unverified": [
+    "no-blocking-smoke-errors"
+  ],
+  "cuts": [
+    {
+      "kind": "qa",
+      "title": "몬스터 어드벤처",
+      "body": "몬스터의 지역 생태를 바탕으로 포획된 몬스터를 탐험하는 방식을 시각화 · 몬스터 도감과 성장 과정을 여행 목적으로 연결하는 토론 방식 · 포획을 통해 지역 생태를 보존하고 성장하는 전략을 시각화",
+      "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/qa.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 1,
+    "pages": [
+      {
+        "owner": "qa",
+        "ownerName": "QA",
+        "pageSlot": 1,
+        "visualType": "test-journey",
+        "title": "몬스터 어드벤처",
+        "focus": "플레이 흐름",
+        "caption": "몬스터 어드벤처",
+        "elements": [
+          {
+            "label": "verifiedEvi…",
+            "note": "플레이 흐름",
+            "kind": ""
+          },
+          {
+            "label": "problemScen…",
+            "note": "몬스터 어드벤처",
+            "kind": ""
+          },
+          {
+            "label": "testScenari…",
+            "note": "몬스터 포획",
+            "kind": ""
+          },
+          {
+            "label": "unverified",
+            "note": "no-blocking-smoke-e…",
+            "kind": ""
+          },
+          {
+            "label": "handoffs",
+            "note": "no-blocking-smoke-e…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/qa-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "qa"
+      }
+    ],
+    "generatedBy": {
+      "department": "qa",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

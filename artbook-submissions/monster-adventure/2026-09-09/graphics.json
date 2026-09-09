@@ -1,0 +1,165 @@
+{
+  "version": 6,
+  "gameId": "monster-adventure",
+  "date": "2026-09-09",
+  "department": "graphics",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "몬스터 어드벤처",
+  "evidence": [
+    {
+      "source": "web-games/monster-adventure/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-monster-adventure.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentVisualEvidence": "몬스터 어드벤처",
+    "identityDirection": "MONSTER",
+    "characterMonsterEnvironmentLogic": "몬스터가 지역 생태와 사건 속에서 존재하고 포획·성장이 여행 목적과 관계 형성으로 이어져야 한다.",
+    "mobileReadability": "WEB_ARCHIVE_READ_ONLY",
+    "assetConstraints": "WEB_ARCHIVE_READ_ONLY",
+    "gaps": "none",
+    "handoffs": "none"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "몬스터 어드벤처: 지역 생태를 바탕으로 설계된 캐릭터, 몬스터, 보스, 배경, UI, 인트로 컨셉을 이미지 중심 2장으로 제안합니다.",
+      "몬스터의 생태적 성격과 여행 목적을 결합한 캐릭터, 몬스터, 보스, 배경, UI, 인트로 컨셉을 이미지 중심 2장으로 제안합니다.",
+      "몬스터의 생태적 성격과 여행 목적을 결합한 캐릭터, 몬스터, 보스, 배경, UI, 인트로 컨셉을 이미지 중심 2장으로 제안합니다."
+    ],
+    "implementationPlan": [
+      "몬스터 어드벤처: 지역 생태를 바탕으로 설계된 캐릭터, 몬스터, 보스, 배경, UI, 인트로 컨셉을 이미지 중심 2장으로 제안합니다.",
+      "몬스터의 생태적 성격과 여행 목적을 결합한 캐릭터, 몬스터, 보스, 배경, UI, 인트로 컨셉을 이미지 중심 2장으로 제안합니다."
+    ],
+    "demoValidation": [
+      "몬스터 어드벤처: 지역 생태를 바탕으로 설계된 캐릭터, 몬스터, 보스, 배경, UI, 인트로 컨셉을 이미지 중심 2장으로 제안합니다.",
+      "몬스터의 생태적 성격과 여행 목적을 결합한 캐릭터, 몬스터, 보스, 배경, UI, 인트로 컨셉을 이미지 중심 2장으로 제안합니다."
+    ]
+  },
+  "unverified": [
+    "몬스터 어드벤처: 지역 생태를 바탕으로 설계된 캐릭터, 몬스터, 보스, 배경, UI, 인트로 컨셉을 이미지 중심 2장으로 제안합니다.",
+    "몬스터의 생태적 성격과 여행 목적을 결합한 캐릭터, 몬스터, 보스, 배경, UI, 인트로 컨셉을 이미지 중심 2장으로 제안합니다."
+  ],
+  "cuts": [
+    {
+      "kind": "graphics",
+      "title": "몬스터 어드벤처",
+      "body": "몬스터 어드벤처: 지역 생태를 바탕으로 설계된 캐릭터, 몬스터, 보스, 배경, UI, 인트로 컨셉을 이미지 중심 2장으로 제안합니다. · 몬스터의 생태적 성격과 여행 목적을 결합한 캐릭터, 몬스터, 보스, 배경, UI, 인트로 컨셉을 이미지 중심 2장으로 제안합니다.",
+      "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/graphics.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "graphics",
+        "ownerName": "그래픽",
+        "pageSlot": 1,
+        "visualType": "concept-board",
+        "title": "MONSTER ADVENTURE",
+        "focus": "MONSTER",
+        "caption": "몬스터가 지역 생태와 사건 속에서 존재하고 포획·성장이 여행 목적과 관계 형성으…",
+        "elements": [
+          {
+            "label": "MONSTER",
+            "note": "몬스터의 생태적 성격과 여행 목적을…",
+            "kind": ""
+          },
+          {
+            "label": "MONSTER ENV…",
+            "note": "몬스터가 지역 생태를 바탕으로 설계…",
+            "kind": ""
+          },
+          {
+            "label": "UI",
+            "note": "UI를 통해 캐릭터, 몬스터, 보스…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/graphics-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "graphics"
+      },
+      {
+        "owner": "graphics",
+        "ownerName": "그래픽",
+        "pageSlot": 2,
+        "visualType": "style-board",
+        "title": "UNVERIFIED",
+        "focus": "MONSTER",
+        "caption": "몬스터 어드벤처: 지역 생태를 바탕으로 설계된 캐릭터, 몬스터, 보스, 배경, …",
+        "elements": [
+          {
+            "label": "MONSTER",
+            "note": "몬스터의 생태적 성격과 여행 목적을…",
+            "kind": ""
+          },
+          {
+            "label": "MONSTER ENV…",
+            "note": "몬스터가 지역 생태를 바탕으로 설계…",
+            "kind": ""
+          },
+          {
+            "label": "UI",
+            "note": "UI를 통해 캐릭터, 몬스터, 보스…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/graphics-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "graphics"
+      }
+    ],
+    "generatedBy": {
+      "department": "graphics",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

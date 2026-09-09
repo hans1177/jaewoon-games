@@ -1,0 +1,148 @@
+{
+  "version": 6,
+  "gameId": "monster-adventure",
+  "date": "2026-09-09",
+  "department": "balance",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "몬스터 어드벤처",
+  "evidence": [
+    {
+      "source": "web-games/monster-adventure/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-monster-adventure.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentNumbers": "1-10",
+    "progressionCurve": "linear",
+    "combatFeel": "increasing",
+    "economyRewards": "increasing",
+    "difficultyTransitions": "smooth",
+    "testMeasurements": "40-140",
+    "handoffs": "100-200"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "몬스터의 도감을 통해 전투의 흐름을 유도하는 방식",
+      "포획을 통해 지역 생태를 형성하는 방식",
+      "몬스터의 성장 과정을 기반으로 전투의 진화를 나타내는 방식"
+    ],
+    "implementationPlan": [
+      "지역 생태를 기반으로 전투의 흐름을 유도하는 방식",
+      "포획을 통해 지역 생태를 형성하는 방식",
+      "몬스터의 성장 과정을 기반으로 전투의 진화를 나타내는 방식"
+    ],
+    "demoValidation": [
+      "전투의 흐름을 시뮬레이션하여 테스트",
+      "포획의 성공 여부를 측정",
+      "전투의 진화를 시뮬레이션하여 테스트"
+    ]
+  },
+  "unverified": [
+    "몬스터의 도감을 통해 전투의 흐름을 유도하는 방식",
+    "포획을 통해 지역 생태를 형성하는 방식",
+    "몬스터의 성장 과정을 기반으로 전투의 진화를 나타내는 방식"
+  ],
+  "cuts": [
+    {
+      "kind": "balance",
+      "title": "몬스터 어드벤처",
+      "body": "전투의 흐름을 시뮬레이션하여 테스트 · 포획의 성공 여부를 측정 · 전투의 진화를 시뮬레이션하여 테스트",
+      "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/balance.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 1,
+    "pages": [
+      {
+        "owner": "balance",
+        "ownerName": "밸런스",
+        "pageSlot": 1,
+        "visualType": "balance-curve",
+        "title": "몬스터 어드벤처",
+        "focus": "몬스터의 도감을 통해 전투의 흐름을 유도하는 방식",
+        "caption": "몬스터의 성장 과정을 기반으로 전투의 진화를 나타내는 방식",
+        "elements": [
+          {
+            "label": "체력",
+            "note": "1-10",
+            "kind": ""
+          },
+          {
+            "label": "공격",
+            "note": "increasing",
+            "kind": ""
+          },
+          {
+            "label": "보상",
+            "note": "increasing",
+            "kind": ""
+          },
+          {
+            "label": "성장",
+            "note": "smooth",
+            "kind": ""
+          },
+          {
+            "label": "난이도",
+            "note": "40-140",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/balance-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "balance"
+      }
+    ],
+    "generatedBy": {
+      "department": "balance",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

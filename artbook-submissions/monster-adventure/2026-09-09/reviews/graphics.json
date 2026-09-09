@@ -1,0 +1,57 @@
+{
+  "version": 6,
+  "gameId": "monster-adventure",
+  "date": "2026-09-09",
+  "department": "graphics",
+  "status": "REVIEWED",
+  "round": 2,
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "independentFirstRoundCompleted": true,
+    "onePeerPerGeneration": true
+  },
+  "protocol": "PEER_IMPROVEMENT_STAR_5",
+  "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+  "reviewedDepartments": [
+    "planning",
+    "development",
+    "qa",
+    "balance"
+  ],
+  "ratingScale": {
+    "type": "STARS",
+    "min": 1,
+    "max": 5
+  },
+  "peerReviews": [
+    {
+      "targetDepartment": "planning",
+      "improvement": "몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 구체적으로 지적해.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "development",
+      "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "qa",
+      "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "balance",
+      "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+      "stars": 5
+    }
+  ],
+  "guard": {
+    "mayRewriteOtherDepartments": false,
+    "mayEvaluateOwnDepartment": false,
+    "productionApproval": false,
+    "starRatingIsProductionApproval": false
+  }
+}

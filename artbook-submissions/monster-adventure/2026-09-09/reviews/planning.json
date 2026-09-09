@@ -1,0 +1,57 @@
+{
+  "version": 6,
+  "gameId": "monster-adventure",
+  "date": "2026-09-09",
+  "department": "planning",
+  "status": "REVIEWED",
+  "round": 2,
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "independentFirstRoundCompleted": true,
+    "onePeerPerGeneration": true
+  },
+  "protocol": "PEER_IMPROVEMENT_STAR_5",
+  "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+  "reviewedDepartments": [
+    "graphics",
+    "development",
+    "qa",
+    "balance"
+  ],
+  "ratingScale": {
+    "type": "STARS",
+    "min": 1,
+    "max": 5
+  },
+  "peerReviews": [
+    {
+      "targetDepartment": "graphics",
+      "improvement": "본 부서 결과물은 기능적 성능을 잘 보여주지만, '한국어'로 쓰지 않는 부분이 있다. 특히 '몬스터 어드벤처'의 이미지 중심 제안이 명확하지 않으며, 한국어를 포함한 내용을 추가하면 더 효과적입니다.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "development",
+      "improvement": "본 개발 부서 결과물의 점수는 5점으로 평가됩니다. 개발 부서의 기능 구현은 완료되었으며, 기술적 리스크는 제한되었으며, 테스트 계획과 팀 협업은 완료되었습니다.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "qa",
+      "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "balance",
+      "improvement": "본 결과물의 복잡한 구조를 단순화하여 명확한 목표를 명시할 수 있습니다.",
+      "stars": 5
+    }
+  ],
+  "guard": {
+    "mayRewriteOtherDepartments": false,
+    "mayEvaluateOwnDepartment": false,
+    "productionApproval": false,
+    "starRatingIsProductionApproval": false
+  }
+}
