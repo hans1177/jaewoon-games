@@ -11,6 +11,15 @@ on:
       - 'qa/department-learning-memory.test.mjs'
       - 'company-learning/**'
       - '.github/workflows/company-dna-learning.yml'
+  pull_request:
+    paths:
+      - 'tools/company-dna-learning.mjs'
+      - 'tools/department-learning-memory.mjs'
+      - 'tools/evolution-evidence-recorder.mjs'
+      - 'tools/autonomous-department-cycle.mjs'
+      - 'qa/company-dna-learning.test.mjs'
+      - 'qa/department-learning-memory.test.mjs'
+      - '.github/workflows/company-dna-learning.yml'
   workflow_run:
     workflows: ['Autonomous Candidate Promotion']
     types: [completed]
@@ -33,7 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -41,6 +50,7 @@ jobs:
       - run: node --check tools/company-dna-learning.mjs
       - run: node --check tools/department-learning-memory.mjs
       - run: node --check tools/evolution-evidence-recorder.mjs
+      - run: node --check tools/autonomous-department-cycle.mjs
       - run: node --test qa/company-dna-learning.test.mjs
       - run: node --test qa/department-learning-memory.test.mjs
       - name: Deterministic evidence ingestion
@@ -57,6 +67,7 @@ jobs:
           echo 'DNA_SELF_PROMOTION=NO'
           echo 'DEPARTMENT_LEARNING_EXPANDS_AUTHORITY=NO'
       - name: Persist refreshed memory when changed
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
