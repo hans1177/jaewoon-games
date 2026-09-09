@@ -18,7 +18,7 @@ const MAX_NEW_FILES = 2;
 const MAX_FILE_BYTES = 220000;
 const MODEL_TIMEOUT_MS = Math.max(10000, Math.min(300000, Number(process.env.VIBE2_MODEL_TIMEOUT_MS || 240000)));
 const MODEL_MAX_PREDICT = Math.max(256, Math.min(2048, Number(process.env.VIBE2_MODEL_MAX_PREDICT || 1536)));
-const DEFAULT_MODEL = process.env.VIBE2_LOCAL_MODEL || 'qwen3:0.6b';
+const DEFAULT_MODEL = process.env.VIBE2_LOCAL_MODEL || 'qwen3:1.7b';
 
 const TARGET_EXTENSIONS = Object.freeze({
   web: new Set(['.html', '.htm', '.css', '.js', '.mjs', '.cjs', '.json', '.svg']),
@@ -198,6 +198,9 @@ function buildPrompt(order, context, responsibleFiles) {
     `Department: ${order.department || 'development'}`,
     `Allowed edit paths: ${allowed}`,
     'Every edits[].path MUST be one exact path from Allowed edit paths. Never output example placeholders such as relative/to/source/root.',
+    'Every edits[].find MUST be copied character-for-character from the matching FILE block below. Never paraphrase, reformat, abbreviate or invent find text.',
+    'Use the smallest unique contiguous find block possible, preferably 1 line and normally no more than 6 lines. Never use ellipses in find.',
+    'Before returning JSON, verify silently that every find occurs exactly once in its matching FILE content. For insertion, keep the exact anchor text in replace and add new text beside it.',
     'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
     'Do not output binary assets. Do not use wrapper/monkey patches. Prefer direct edits to responsible existing source files.',
     'For web target, maintain only the existing game root; do not create a new web game or change homepage/company files.',
