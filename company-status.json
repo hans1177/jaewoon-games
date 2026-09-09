@@ -1,11 +1,14 @@
 {
-  "version": 1,
-  "updatedAt": "2026-09-08",
+  "version": 2,
+  "updatedAt": "2026-09-09",
   "policy": {
-    "webGames": "archive-read-only",
-    "webGameDevelopment": false,
+    "webGames": "existing-maintenance-allowed",
+    "webGameDevelopment": true,
+    "existingWebMaintenance": true,
+    "newWebGameProduction": false,
     "webGamesRemainPlayable": true,
     "futurePrimaryTarget": "unity-android",
+    "policyAuthority": "company-directive.json",
     "aiDirector": {
       "mode": "rotating-local",
       "providers": [
@@ -27,17 +30,21 @@
       "continueOwnerDirectiveUntilVerifiedComplete": true
     },
     "homepageOperations": {
-      "manager": "homepage",
-      "autoMaintenance": true,
+      "manager": "homepage-diagnostics",
+      "diagnosticOnly": true,
+      "autoMaintenance": false,
+      "runtimeDataSync": true,
+      "runtimeRenderer": "assets/homepage-enhancements.js",
       "publicHomepage": "index.html",
       "companyDashboard": "company.html",
       "catalog": "game-catalog.json",
       "operationsGuide": "HOMEPAGE_OPERATIONS.md",
       "webArchiveWriteBack": false,
-      "manageGameClassification": true,
-      "manageMobileLayout": true,
-      "manageLinksAndStatus": true,
-      "manageLowRiskFeatures": true,
+      "autoLayoutWrite": false,
+      "manageGameClassification": false,
+      "manageMobileLayout": false,
+      "manageLinksAndStatus": false,
+      "manageLowRiskFeatures": false,
       "proposeImprovements": true,
       "otherGamesMayAppearOnHomepage": true,
       "homepageLengthControl": "compact-cards-and-dedicated-artbook-detail-pages",
@@ -50,25 +57,28 @@
   },
   "summary": {
     "webArchiveCount": 11,
+    "existingWebGamesMaintenanceAllowed": true,
     "activeUnityProjects": 1,
     "pendingApprovals": 0,
     "testBuilds": 1
   },
   "operations": {
     "homepage": {
-      "manager": "homepage",
-      "status": "running",
-      "task": "홈 길이·11개 게임 고유 대표 이미지·진행 중 아트북·링크·모바일 가독성을 실제 화면 기준으로 관리",
+      "manager": "homepage-diagnostics",
+      "status": "stale",
+      "task": "홈페이지 데이터/이미지/링크/카탈로그 일치 여부를 진단한다. 최신 자료 표시는 홈페이지 런타임 JSON 동기화가 담당한다.",
       "scope": [
         "index.html",
         "company.html",
         "game-catalog.json"
       ],
-      "lastReviewedAt": "2026-09-08",
-      "lastCheckResult": "PASS",
-      "execution": "github-actions",
+      "lastReviewedAt": "2026-09-09",
+      "lastCheckResult": "FALSE_RUNNING",
+      "execution": "github-actions-diagnostic",
       "workflow": ".github/workflows/homepage-manager.yml",
-      "statusFile": "homepage-manager-status.json"
+      "statusFile": "homepage-manager-status.json",
+      "runtimeDataSync": "active",
+      "evidenceSource": "director-supervision-status.json"
     },
     "ownerDirectives": {
       "source": "company-directive.json",
@@ -78,6 +88,23 @@
       "repeatUntilVerifiedComplete": true,
       "coreDecisionProtection": true
     }
+  },
+  "supervision": {
+    "source": "director-supervision-status.json",
+    "dateKst": "2026-09-09",
+    "runningLabelAloneCountsAsWork": false,
+    "counts": {
+      "WORKING": 1,
+      "DONE": 5,
+      "IDLE_NO_TASK": 0,
+      "BLOCKED": 1,
+      "FAILED": 0,
+      "STALE": 1
+    },
+    "primaryFindings": [
+      "homepage:FALSE_RUNNING",
+      "release:DEPENDENCY_BLOCKED"
+    ]
   },
   "projects": [
     {
@@ -135,7 +162,7 @@
     }
   ],
   "redevelopmentReview": {
-    "status": "running",
+    "status": "evidence-migrated",
     "scope": "all-existing-web-games",
     "employees": [
       "planning",
@@ -155,6 +182,7 @@
     "remainingGames": 10,
     "currentGameId": "insect-survival",
     "currentGameName": "곤충 생존기",
+    "statusAuthority": "director-supervision-status.json",
     "queue": [
       {
         "gameId": "daechung-rpg",
@@ -279,28 +307,34 @@
     },
     "departmentTasks": {
       "planning": {
-        "status": "running",
-        "task": "곤충 생존기 핵심 재미·게임 루프·Unity 재개발 가치 평가"
+        "status": "done",
+        "task": "daechung-rpg daily artbook section",
+        "evidenceSource": "director-supervision-status.json"
       },
       "development": {
-        "status": "running",
-        "task": "대충 RPG Unity 핵심 시스템 구현과 곤충 생존기 구조 평가 병행"
+        "status": "done",
+        "task": "daechung-rpg daily artbook section",
+        "evidenceSource": "director-supervision-status.json"
       },
       "qa": {
-        "status": "running",
-        "task": "대충 RPG Unity 데이터 이식 기준 검증과 곤충 생존기 플레이 위험 평가"
+        "status": "done",
+        "task": "daechung-rpg daily artbook section",
+        "evidenceSource": "director-supervision-status.json"
       },
       "graphics": {
-        "status": "running",
-        "task": "대충 RPG Unity 3D 전환 기준과 곤충 생존기 에셋 전환 효과 평가"
+        "status": "done",
+        "task": "daechung-rpg daily artbook section",
+        "evidenceSource": "director-supervision-status.json"
       },
       "balance": {
-        "status": "running",
-        "task": "대충 RPG 후반 수치 재조정안과 곤충 생존기 성장·보상 구조 평가"
+        "status": "done",
+        "task": "daechung-rpg daily artbook section",
+        "evidenceSource": "director-supervision-status.json"
       },
       "director": {
-        "status": "running",
-        "task": "대충 RPG 본개발 진행 관리와 다음 재평가 결과 종합"
+        "status": "working",
+        "task": "staff supervision, blocker tracking and verification",
+        "evidenceSource": "director-supervision-status.json"
       }
     }
   },
