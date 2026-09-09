@@ -19,6 +19,28 @@ test('mobile viewport, broken path, save parse and duplicate listener are detect
     assert.ok(types.has('UNGUARDED_SAVE_PARSE'));
     assert.ok(types.has('ADJACENT_DUPLICATE_EVENT_LISTENER'));
     assert.equal(result.hasActionableIssue,true);
+    const broken=result.issues.find(x=>x.type==='BROKEN_LOCAL_PATH');
+    assert.equal(broken.needle,'missing.png');
+    assert.equal(broken.line,1);
+    const save=result.issues.find(x=>x.type==='UNGUARDED_SAVE_PARSE');
+    assert.equal(save.line,1);
+    assert.ok(save.needle.includes('JSON.parse'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('diagnostics records related files so a multi-file issue can feed parallel department scopes',()=>{
+  const root=fixture();
+  try{
+    fs.writeFileSync(path.join(root,'index.html'),'<html><head><meta name="viewport" content="width=device-width"></head><body><button>GO</button><script src="app.js"></script><link rel="stylesheet" href="style.css"></body></html>');
+    fs.writeFileSync(path.join(root,'app.js'),"document.getElementById('go').addEventListener('click',go);\n");
+    fs.writeFileSync(path.join(root,'style.css'),'button{touch-action:none}\n');
+    const result=diagnoseGame(root);
+    const dom=result.issues.find(x=>x.type==='DOM_NULL_EVENT_BIND');
+    assert.ok(dom);
+    assert.ok(dom.relatedFiles.includes('app.js'));
+    const task=microTaskFromIssue(dom);
+    assert.ok(task.files.includes('app.js'));
+    assert.equal(task.line,1);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -40,9 +62,12 @@ test('an unguarded storage parse after a completed inner try is still detected',
   assert.equal(findUnguardedStorageParses(actuallyUnguarded).length,1);
 });
 
-test('safe diagnostic is converted into one-file micro task',()=>{
-  const task=microTaskFromIssue({type:'MISSING_VIEWPORT',severity:'high',file:'index.html',microTask:'viewport 1개 추가',repairMode:'RULE_PATCH',autoPatch:{type:'INSERT_VIEWPORT',path:'index.html'}});
+test('safe diagnostic is converted into evidence-rich micro task',()=>{
+  const task=microTaskFromIssue({type:'MISSING_VIEWPORT',severity:'high',file:'index.html',relatedFiles:['app.js'],line:2,needle:'<head',microTask:'viewport 1개 추가',repairMode:'RULE_PATCH',autoPatch:{type:'INSERT_VIEWPORT',path:'index.html'}});
   assert.equal(task.repairMode,'RULE_PATCH');
   assert.equal(task.file,'index.html');
+  assert.deepEqual(task.files,['index.html','app.js']);
+  assert.equal(task.line,2);
+  assert.equal(task.needle,'<head');
   assert.match(task.goal,/viewport/);
 });

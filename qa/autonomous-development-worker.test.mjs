@@ -1,11 +1,16 @@
+// 파일명: qa/autonomous-development-worker.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {
   assertRelativeOutputPath,
+  browserFailureFeedback,
+  buildPrompt,
   extractStorageKeys,
   generateAutonomousCandidate,
+  MODEL_CONTEXT_TOKENS,
+  MODEL_MAX_PREDICT,
   normalizeModelCandidateShape,
   parseModelCandidate,
   readContext,
@@ -16,6 +21,7 @@ import { buildVibeCoreContext, selectVerifiedVibeLearning } from '../tools/auton
 const fixture='web-games/__autonomous-worker-test__';
 const candidateRoot='web-games/.autonomous-candidates/TEST';
 const evidenceRoot='.autonomous/evidence';
+const browserFailureFile='.autonomous/browser-failures/TEST.json';
 function setup(){
   fs.rmSync(fixture,{recursive:true,force:true});
   fs.rmSync(candidateRoot,{recursive:true,force:true});
@@ -26,6 +32,7 @@ function setup(){
 function cleanup(){
   fs.rmSync(fixture,{recursive:true,force:true});
   fs.rmSync(candidateRoot,{recursive:true,force:true});
+  fs.rmSync(browserFailureFile,{force:true});
   if(fs.existsSync(evidenceRoot))for(const name of fs.readdirSync(evidenceRoot))if(name.startsWith('TEST-'))fs.rmSync(path.join(evidenceRoot,name),{force:true});
 }
 
@@ -75,13 +82,15 @@ test('worker writes only autonomous candidate copy and leaves source unchanged',
   const original=fs.readFileSync(path.join(fixture,'app.js'),'utf8');
   try{
     const response=JSON.stringify({summary:'candidate improvement',expectedEffect:'clearer feedback',tests:['syntax'],files:[{path:'app.js',content:"const KEY='save-v1';\nlocalStorage.setItem('save-v1','ok');\nconsole.log('candidate');\n"}]});
-    const evidence=await generateAutonomousCandidate({gameId:'TEST',sourcePath:fixture,goal:'피드백 개선',candidateId:'TEST-good',candidatePath:`${candidateRoot}/TEST-good`,evidencePath:`${evidenceRoot}/TEST-good.json`,modelResponse:response,sourceCommit:'abc'});
+    const evidence=await generateAutonomousCandidate({gameId:'TEST',sourcePath:fixture,goal:'피드백 개선',candidateId:'TEST-good-development',candidatePath:`${candidateRoot}/TEST-good-development`,evidencePath:`${evidenceRoot}/TEST-good-development.json`,modelResponse:response,sourceCommit:'abc',diagnostic:{type:'CONSOLE',file:'app.js',line:3,needle:"console.log('base')"}});
     assert.equal(evidence.candidateOnly,true);
     assert.equal(evidence.selfPromote,false);
     assert.equal(evidence.publicStableModified,false);
     assert.equal(evidence.sourceCommit,'abc');
+    assert.equal(evidence.role,'development');
+    assert.equal(evidence.diagnosticFocus.line,3);
     assert.equal(fs.readFileSync(path.join(fixture,'app.js'),'utf8'),original);
-    assert.match(fs.readFileSync(path.join(candidateRoot,'TEST-good','app.js'),'utf8'),/candidate/);
+    assert.match(fs.readFileSync(path.join(candidateRoot,'TEST-good-development','app.js'),'utf8'),/candidate/);
   }finally{cleanup();}
 });
 
@@ -99,15 +108,40 @@ test('repaired singular exact edit applies once and records normalization',async
   }finally{cleanup();}
 });
 
-test('large single-file source produces bounded truncated context instead of disappearing',()=>{
+test('large source context is bounded and exact diagnostic area is focused instead of flooding the model',()=>{
   setup();
   try{
-    fs.writeFileSync(path.join(fixture,'index.html'),`<html>${'x'.repeat(700000)}<\/html>`);
-    const context=readContext(fixture);
+    const marker='TARGET_BROKEN_RESOURCE';
+    fs.writeFileSync(path.join(fixture,'index.html'),`<html>${'x'.repeat(300000)}${marker}${'y'.repeat(300000)}</html>`);
+    const context=readContext(fixture,{preferredFiles:['index.html'],diagnostic:{file:'index.html',needle:marker,line:1}});
     const index=context.files.find(x=>x.path==='index.html');
     assert.ok(index);
-    assert.equal(index.truncated,true);
-    assert.ok(context.bytes<=420000);
+    assert.equal(index.focused,true);
+    assert.ok(index.content.includes(marker));
+    assert.ok(context.bytes<=48000);
+  }finally{cleanup();}
+});
+
+test('prompt includes role, exact diagnostic evidence and stronger bounded generation contract',()=>{
+  const prompt=buildPrompt({gameId:'TEST',sourcePath:'web-games/test',goal:'버튼 오류 수정',context:{files:[{path:'app.js',content:'broken()',preferred:true,focused:true,truncated:false,originalBytes:8}]},responsibilityFiles:['app.js'],diagnostic:{type:'DOM_NULL_EVENT_BIND',file:'app.js',line:10,needle:'broken()',message:'버튼 오류'},role:'qa',attempt:2,failureReason:'OUTPUT_FORMAT'});
+  assert.match(prompt,/부서 역할: qa/);
+  assert.match(prompt,/"line": 10/);
+  assert.match(prompt,/broken\(\)/);
+  assert.match(prompt,/직전 실패: OUTPUT_FORMAT/);
+  assert.ok(MODEL_MAX_PREDICT>=2048);
+  assert.ok(MODEL_CONTEXT_TOKENS>=8192);
+});
+
+test('persisted browser failure evidence is read and injected into the next worker prompt',()=>{
+  fs.mkdirSync(path.dirname(browserFailureFile),{recursive:true});
+  fs.writeFileSync(browserFailureFile,JSON.stringify({pass:false,errors:['console:Failed to load resource'],consoleErrors:['boom'],metrics:{viewportWidth:390,width:390,height:844,visibleInteractive:2},screenshot:'qa/failure.png'}));
+  try{
+    const feedback=browserFailureFeedback('TEST');
+    assert.match(feedback,/Failed to load resource/);
+    assert.match(feedback,/screenshot=qa\/failure.png/);
+    const prompt=buildPrompt({gameId:'TEST',sourcePath:'web-games/test',goal:'리소스 오류 수정',context:{files:[{path:'index.html',content:'<img src="bad.png">',preferred:true,focused:true,truncated:false,originalBytes:19}]},responsibilityFiles:['index.html'],role:'development',browserFeedback:feedback});
+    assert.match(prompt,/직전 브라우저 실패 근거/);
+    assert.match(prompt,/Failed to load resource/);
   }finally{cleanup();}
 });
 
