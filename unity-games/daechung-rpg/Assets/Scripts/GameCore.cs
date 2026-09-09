@@ -294,6 +294,34 @@ namespace JaewoonGames.DaechungRpg
             {
                 var data = JsonUtility.FromJson<GameSaveData>(PlayerPrefs.GetString(SaveKey));
                 Player = data?.player ?? new PlayerState();
+
+                if (Player.ownedWeapons == null)
+                {
+                    Player.ownedWeapons = new List<string>();
+                }
+                if (Player.ownedArmors == null)
+                {
+                    Player.ownedArmors = new List<string>();
+                }
+                if (Player.completedHiddenQuests == null)
+                {
+                    Player.completedHiddenQuests = new List<string>();
+                }
+                if (string.IsNullOrEmpty(Player.currentRegionId) || !GameCatalog.Regions.ContainsKey(Player.currentRegionId))
+                {
+                    Player.currentRegionId = "town";
+                }
+                if (string.IsNullOrEmpty(Player.equippedWeaponId) ||
+                    (Player.equippedWeaponId != "bare-hands" && !GameCatalog.Weapons.ContainsKey(Player.equippedWeaponId)))
+                {
+                    Player.equippedWeaponId = "bare-hands";
+                }
+                if (string.IsNullOrEmpty(Player.equippedArmorId) ||
+                    (Player.equippedArmorId != "none" && !GameCatalog.Armors.ContainsKey(Player.equippedArmorId)))
+                {
+                    Player.equippedArmorId = "none";
+                }
+
                 Player.currentHp = Mathf.Clamp(Player.currentHp, 1, GetMaxHp());
             }
             catch (Exception)
