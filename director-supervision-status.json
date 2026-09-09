@@ -22,8 +22,8 @@
     "liveJobPrecedesPersistedSubmission": true
   },
   "counts": {
-    "WORKING": 6,
-    "DONE": 1,
+    "WORKING": 1,
+    "DONE": 6,
     "IDLE_NO_TASK": 1,
     "BLOCKED": 0,
     "FAILED": 0,
@@ -31,9 +31,9 @@
   },
   "liveStates": {
     "ACTIVE": 1,
-    "WAITING": 6,
+    "WAITING": 1,
     "BLOCKED": 0,
-    "DONE": 1
+    "DONE": 6
   },
   "attentionRequired": false,
   "primaryFindings": [],
@@ -49,11 +49,11 @@
     },
     "autonomousDevelopment": {
       "id": 34364657861,
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "success",
       "event": "push",
       "createdAt": "2026-09-09T14:35:53Z",
-      "updatedAt": "2026-09-09T14:35:57Z",
+      "updatedAt": "2026-09-09T14:36:06Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34364657861"
     },
     "homepage": null,
@@ -64,15 +64,15 @@
   "staff": {
     "planning": {
       "department": "planning",
-      "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
+      "taskAssigned": false,
+      "status": "DONE",
+      "workState": "DONE",
       "task": "autonomous development floor 34364657861",
       "executionEvidence": [
-        "autonomous-workflow:34364657861:in_progress:pending",
+        "autonomous-workflow:34364657861:completed:success",
         "autonomous-job:102510235726:department (planning-final):completed:skipped"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": {
         "id": 102510235726,
         "name": "department (planning-final)",
@@ -85,76 +85,76 @@
       },
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous development floor completed without a separate active role job",
+      "action": "none",
       "source": "autonomous-development"
     },
     "development": {
       "department": "development",
-      "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
+      "taskAssigned": false,
+      "status": "DONE",
+      "workState": "DONE",
       "task": "autonomous development floor 34364657861",
       "executionEvidence": [
-        "autonomous-workflow:34364657861:in_progress:pending"
+        "autonomous-workflow:34364657861:completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous development floor completed without a separate active role job",
+      "action": "none",
       "source": "autonomous-development"
     },
     "qa": {
       "department": "qa",
-      "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
+      "taskAssigned": false,
+      "status": "DONE",
+      "workState": "DONE",
       "task": "autonomous development floor 34364657861",
       "executionEvidence": [
-        "autonomous-workflow:34364657861:in_progress:pending"
+        "autonomous-workflow:34364657861:completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous development floor completed without a separate active role job",
+      "action": "none",
       "source": "autonomous-development"
     },
     "graphics": {
       "department": "graphics",
-      "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
+      "taskAssigned": false,
+      "status": "DONE",
+      "workState": "DONE",
       "task": "autonomous development floor 34364657861",
       "executionEvidence": [
-        "autonomous-workflow:34364657861:in_progress:pending"
+        "autonomous-workflow:34364657861:completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous development floor completed without a separate active role job",
+      "action": "none",
       "source": "autonomous-development"
     },
     "balance": {
       "department": "balance",
-      "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
+      "taskAssigned": false,
+      "status": "DONE",
+      "workState": "DONE",
       "task": "autonomous development floor 34364657861",
       "executionEvidence": [
-        "autonomous-workflow:34364657861:in_progress:pending"
+        "autonomous-workflow:34364657861:completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous development floor completed without a separate active role job",
+      "action": "none",
       "source": "autonomous-development"
     },
     "homepage": {
@@ -230,7 +230,7 @@
     "enabled": true,
     "artbookBacklogCount": 3,
     "nextMissingInitialArtbook": "survival",
-    "artbookRecoveryDispatched": true,
+    "artbookRecoveryDispatched": false,
     "autonomousRecoveryDispatched": false,
     "duplicateActiveWorkflowDispatchForbidden": true
   }
