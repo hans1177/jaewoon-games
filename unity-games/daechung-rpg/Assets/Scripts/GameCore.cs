@@ -295,6 +295,22 @@ namespace JaewoonGames.DaechungRpg
                 var data = JsonUtility.FromJson<GameSaveData>(PlayerPrefs.GetString(SaveKey));
                 Player = data?.player ?? new PlayerState();
 
+                if (Player.level < 1)
+                {
+                    Player.level = 1;
+                }
+                if (Player.baseMaxHp <= 0)
+                {
+                    Player.baseMaxHp = 100;
+                }
+                if (Player.baseAttack <= 0)
+                {
+                    Player.baseAttack = 3;
+                }
+                if (!Enum.IsDefined(typeof(JobType), Player.job))
+                {
+                    Player.job = JobType.None;
+                }
                 if (Player.ownedWeapons == null)
                 {
                     Player.ownedWeapons = new List<string>();
