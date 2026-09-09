@@ -103,97 +103,97 @@
       "STALE": 0
     },
     "liveStates": {
-      "ACTIVE": 6,
-      "WAITING": 1,
+      "ACTIVE": 1,
+      "WAITING": 6,
       "BLOCKED": 0,
       "DONE": 1
     },
-    "activeDevelopmentRunId": 34356420644,
+    "activeDevelopmentRunId": 34356845082,
     "primaryFindings": [],
     "staff": {
       "planning": {
         "status": "WORKING",
-        "workState": "ACTIVE",
-        "task": "survival daily artbook section",
-        "source": "artbook",
-        "reason": "this department job is currently executing",
+        "workState": "WAITING",
+        "task": "autonomous development floor 34356845082",
+        "source": "autonomous-development",
+        "reason": "autonomous development department job is queued for a runner",
         "jobEvidence": {
-          "id": 102487862925,
-          "name": "round1 (planning)",
-          "status": "in_progress",
+          "id": 102488642722,
+          "name": "department (planning)",
+          "status": "queued",
           "conclusion": null,
           "failedStep": null,
-          "startedAt": "2026-09-09T13:36:09Z",
+          "startedAt": "2026-09-09T13:38:14Z",
           "completedAt": null,
-          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34357432956/job/102487862925"
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34356845082/job/102488642722"
         }
       },
       "development": {
         "status": "WORKING",
-        "workState": "ACTIVE",
-        "task": "survival daily artbook section",
-        "source": "artbook",
-        "reason": "this department job is currently executing",
+        "workState": "WAITING",
+        "task": "autonomous development floor 34356845082",
+        "source": "autonomous-development",
+        "reason": "autonomous development department job is queued for a runner",
         "jobEvidence": {
-          "id": 102487862837,
-          "name": "round1 (development)",
-          "status": "in_progress",
+          "id": 102488642932,
+          "name": "department (development)",
+          "status": "queued",
           "conclusion": null,
           "failedStep": null,
-          "startedAt": "2026-09-09T13:36:10Z",
+          "startedAt": "2026-09-09T13:38:14Z",
           "completedAt": null,
-          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34357432956/job/102487862837"
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34356845082/job/102488642932"
         }
       },
       "qa": {
         "status": "WORKING",
-        "workState": "ACTIVE",
-        "task": "survival daily artbook section",
-        "source": "artbook",
-        "reason": "this department job is currently executing",
+        "workState": "WAITING",
+        "task": "autonomous development floor 34356845082",
+        "source": "autonomous-development",
+        "reason": "autonomous development department job is queued for a runner",
         "jobEvidence": {
-          "id": 102487862681,
-          "name": "round1 (qa)",
-          "status": "in_progress",
+          "id": 102488642713,
+          "name": "department (qa)",
+          "status": "queued",
           "conclusion": null,
           "failedStep": null,
-          "startedAt": "2026-09-09T13:36:10Z",
+          "startedAt": "2026-09-09T13:38:14Z",
           "completedAt": null,
-          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34357432956/job/102487862681"
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34356845082/job/102488642713"
         }
       },
       "graphics": {
         "status": "WORKING",
-        "workState": "ACTIVE",
-        "task": "survival daily artbook section",
-        "source": "artbook",
-        "reason": "this department job is currently executing",
+        "workState": "WAITING",
+        "task": "autonomous development floor 34356845082",
+        "source": "autonomous-development",
+        "reason": "autonomous development department job is queued for a runner",
         "jobEvidence": {
-          "id": 102487862867,
-          "name": "round1 (graphics)",
-          "status": "in_progress",
+          "id": 102488643016,
+          "name": "department (graphics)",
+          "status": "queued",
           "conclusion": null,
           "failedStep": null,
-          "startedAt": "2026-09-09T13:36:10Z",
+          "startedAt": "2026-09-09T13:38:14Z",
           "completedAt": null,
-          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34357432956/job/102487862867"
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34356845082/job/102488643016"
         }
       },
       "balance": {
         "status": "WORKING",
-        "workState": "ACTIVE",
-        "task": "survival daily artbook section",
-        "source": "artbook",
-        "reason": "this department job is currently executing",
+        "workState": "WAITING",
+        "task": "autonomous development floor 34356845082",
+        "source": "autonomous-development",
+        "reason": "autonomous development department job is queued for a runner",
         "jobEvidence": {
-          "id": 102487862717,
-          "name": "round1 (balance)",
-          "status": "in_progress",
+          "id": 102488642720,
+          "name": "department (balance)",
+          "status": "queued",
           "conclusion": null,
           "failedStep": null,
-          "startedAt": "2026-09-09T13:36:10Z",
+          "startedAt": "2026-09-09T13:38:14Z",
           "completedAt": null,
-          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34357432956/job/102487862717"
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34356845082/job/102488642720"
         }
       },
       "director": {
@@ -408,38 +408,38 @@
     "departmentTasks": {
       "planning": {
         "status": "working",
-        "task": "survival daily artbook section",
+        "task": "autonomous development floor 34356845082",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "ACTIVE",
-        "reason": "this department job is currently executing"
+        "workState": "WAITING",
+        "reason": "autonomous development department job is queued for a runner"
       },
       "development": {
         "status": "working",
-        "task": "survival daily artbook section",
+        "task": "autonomous development floor 34356845082",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "ACTIVE",
-        "reason": "this department job is currently executing"
+        "workState": "WAITING",
+        "reason": "autonomous development department job is queued for a runner"
       },
       "qa": {
         "status": "working",
-        "task": "survival daily artbook section",
+        "task": "autonomous development floor 34356845082",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "ACTIVE",
-        "reason": "this department job is currently executing"
+        "workState": "WAITING",
+        "reason": "autonomous development department job is queued for a runner"
       },
       "graphics": {
         "status": "working",
-        "task": "survival daily artbook section",
+        "task": "autonomous development floor 34356845082",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "ACTIVE",
-        "reason": "this department job is currently executing"
+        "workState": "WAITING",
+        "reason": "autonomous development department job is queued for a runner"
       },
       "balance": {
         "status": "working",
-        "task": "survival daily artbook section",
+        "task": "autonomous development floor 34356845082",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "ACTIVE",
-        "reason": "this department job is currently executing"
+        "workState": "WAITING",
+        "reason": "autonomous development department job is queued for a runner"
       },
       "director": {
         "status": "working",
