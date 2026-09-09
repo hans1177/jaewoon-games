@@ -99,7 +99,7 @@ jobs:
           node --test qa/autonomous-rule-patcher.test.mjs
           node --test qa/autonomous-portfolio-continuation.test.mjs
           node --test qa/autonomous-new-game-incubator.test.mjs
-      - name: Enforce 24h event-driven department queue contract
+      - name: Enforce 24h event-driven parallel department queue contract
         shell: bash
         run: |
           set -euo pipefail
@@ -124,6 +124,8 @@ jobs:
           must(portfolio.sameGameDailyFloorCap===null,'same game must be allowed multiple floors per day');
           must(portfolio.completedArtbookDailyWorkCap===null,'completed artbook daily cap must be disabled');
           must(Array.isArray(portfolio.departmentDevelopmentCycle)&&portfolio.departmentDevelopmentCycle.join(',')==='planning,development,graphics,qa,balance,planning-final','department cycle mismatch');
+          must(portfolio.departmentReviewMode==='PARALLEL_INDEPENDENT','department review mode mismatch');
+          must(portfolio.sourceWriteConcurrency==='SERIAL','source writes must remain serial');
           must(continuous.includes("cron: '17 * * * *'"),'hourly recovery wake missing');
           must(continuous.includes('actions: write'),'continuous workflow dispatch permission missing');
           must(continuous.includes("AUTONOMOUS_MODEL_MAX_PREDICT: '1536'"),'CPU model output bound missing');
@@ -132,17 +134,22 @@ jobs:
           must(continuous.includes('node tools/autonomous-24h-work-planner.mjs'),'24h planner missing');
           must(continuous.includes('Reserve this development floor'),'repeatable floor reservation missing');
           must(continuous.indexOf('Verified free budget preflight') < continuous.indexOf('Reserve this development floor'),'budget preflight must precede reservation');
-          must(continuous.indexOf('Reserve this development floor') < continuous.indexOf('Install local Ollama'),'reservation must precede AI work');
-          must(continuous.includes('AI departments run the development floor'),'department cycle step missing');
+          must(continuous.includes('role: [planning, development, graphics, qa, balance]'),'five independent department jobs missing');
+          must(continuous.includes('AUTONOMOUS_DEPARTMENT_ROLE: ${{ matrix.role }}'),'matrix role handoff missing');
+          must(continuous.includes('pattern: autonomous-department-*-${{ github.run_id }}'),'five department artifact handoff missing');
+          must(continuous.includes('DEPARTMENT_HANDOFFS=5/5'),'planning integration handoff gate missing');
+          must(continuous.includes("AUTONOMOUS_DEPARTMENT_FINALIZE: 'true'"),'planning-final integration mode missing');
+          must(continuous.includes('name: serial source implementation'),'serial source worker missing');
           must(continuous.includes('Attach department cycle to candidate evidence'),'department evidence gate missing');
-          must(continuous.includes('same game daily floor cap: NONE'),'same-game unlimited evidence missing');
-          must(continuous.includes('completed DESIGN_BASELINE daily work cap: NONE'),'completed-artbook unlimited evidence missing');
-          must(continuous.includes("if: failure() && steps.reserve.outputs.reserved == 'true'"),'reserved failure continuation missing');
+          must(continuous.includes("needs.prepare.outputs.reserved == 'true'"),'reserved failure recovery gate missing');
           must(continuous.includes('FAILED_FLOOR_NEXT=DISPATCHED'),'failed floor must dispatch another floor');
           must(continuous.includes('gh workflow run autonomous-candidate-promotion.yml --ref main -f candidate_branch='),'candidate promotion explicit dispatch missing');
           must(planner.includes("selection:'LEAST_KST_ATTEMPTS_FIRST'"),'fair repeated-floor selection missing');
-          must(department.includes("const ROLES=['planning','development','graphics','qa','balance','planning-final']"),'all AI departments are not wired');
+          must(department.includes("const CORE_ROLES=['planning','development','graphics','qa','balance']"),'five parallel AI departments are not wired');
+          must(department.includes('Promise.all(CORE_ROLES.map'),'department analysis must execute concurrently');
+          must(department.includes("const FINAL_ROLE='planning-final'"),'planning-final integration missing');
           must(department.includes('allDepartmentsWorked:true'),'department completion evidence missing');
+          must(department.includes("sourceWriteConcurrency:'SERIAL_AFTER_PARALLEL_REVIEW'"),'parallel-review/serial-write contract missing');
           must(worker.includes('stream:true'),'worker Ollama response must be streamed');
           must(worker.includes("modelTransport:repairMode==='RULE_PATCH'?'NONE':'NDJSON_STREAM_STRUCTURED_SCHEMA'"),'structured stream transport evidence missing');
           must(worker.includes('modelNormalization:candidate.normalization'),'deterministic model-normalization evidence missing');
@@ -166,6 +173,7 @@ jobs:
           must(release.includes('gh workflow run autonomous-continuous-development.yml'),'Web release must resume autonomous queue');
           must(unityResult.includes('AUTONOMOUS_DEV_VERIFIED_HANDOFF'),'Unity release autonomous-origin routing missing');
           must(unityResult.includes('gh workflow run autonomous-continuous-development.yml'),'Unity release must resume autonomous queue');
-          console.log('CONTINUOUS_24H_DEPARTMENT_QUEUE_CONTRACT=PASS');
+          console.log('CONTINUOUS_24H_PARALLEL_DEPARTMENT_QUEUE_CONTRACT=PASS');
+          console.log('SERIAL_SOURCE_WRITE_SAFETY_CONTRACT=PASS');
           console.log('DEVELOPMENT_TO_RELEASE_QUEUE_CONTRACT=PASS');
           NODE
