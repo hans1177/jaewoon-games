@@ -1,34 +1,55 @@
 {
-  "version": 2,
+  "version": 3,
   "updatedAt": "2026-09-09",
-  "overall": "VERIFYING",
-  "reason": "Department evidence standards are strengthened, web runtime QA is connected, and Unity Android runtime smoke automation is installed. Unity remains unverified until the first successful APK runtime-smoke evidence is produced.",
+  "overall": "VERIFYING_UNITY_RUNTIME",
+  "reason": "Department evidence standards, web runtime QA, director supervision, release evidence verification, and company-status synchronization are operating with verified workflow evidence. Unity Android runtime smoke contract is verified, but Unity QA remains unverified until a real APK emulator smoke run succeeds and produces runtime evidence.",
   "policy": {
     "genericPraiseIsEvidence": false,
     "domainSpecificEvidenceRequired": true,
     "qaCodeReviewOnlyAllowed": false,
     "qaBuildOnlyAllowed": false,
-    "directorMayInventMissingEvidence": false
+    "directorMayInventMissingEvidence": false,
+    "runtimeEvidenceRequiredForUnityQaPass": true
   },
   "departments": {
     "planning": {
       "status": "STRENGTHENED",
       "passGate": "2+ planning-domain evidence items",
-      "checks": ["core loop", "core fun", "story/quest/progression", "game identity"],
+      "checks": [
+        "core loop",
+        "core fun",
+        "story/quest/progression",
+        "game identity"
+      ],
       "previousWeakness": "Generic code-structure praise could appear as planning evidence.",
       "currentProtection": "DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
     },
     "development": {
       "status": "STRENGTHENED",
       "passGate": "2+ development-domain evidence items plus successful compile/build",
-      "checks": ["changed files", "compile/build", "dependencies", "save/data compatibility", "regression risk"],
+      "checks": [
+        "changed files",
+        "compile/build",
+        "dependencies",
+        "save/data compatibility",
+        "regression risk"
+      ],
       "previousWeakness": "Model review could praise structure even when verification build failed.",
       "currentProtection": "BUILD_EVIDENCE_REQUIRED + DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
     },
     "qa": {
       "status": "VERIFYING_UNITY_RUNTIME",
       "passGate": "2+ QA-domain evidence items plus successful build plus runtime/play evidence",
-      "checks": ["launch", "input", "core action", "progression", "save/reload", "restart", "mobile UI/touch", "reproduction"],
+      "checks": [
+        "launch",
+        "input",
+        "core action",
+        "progression",
+        "save/reload",
+        "restart",
+        "mobile UI/touch",
+        "reproduction"
+      ],
       "webRuntime": {
         "status": "CONNECTED",
         "engine": "Playwright",
@@ -37,11 +58,14 @@
         "persistentEvidence": "company-qa-runtime-evidence.json"
       },
       "unityRuntime": {
-        "status": "AUTOMATION_INSTALLED_PENDING_FIRST_SUCCESSFUL_RUN",
+        "status": "AUTOMATION_INSTALLED_CONTRACT_VERIFIED_RUNTIME_EVIDENCE_PENDING",
         "trigger": "Successful Unity Hybrid Android Build completion",
         "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
         "probe": "tools/unity-apk-runtime-smoke.sh",
         "method": "APK install -> launch -> Android tap/swipe input -> process survival -> fatal log scan -> screenshot",
+        "contractVerificationRunId": 34305065242,
+        "contractVerificationConclusion": "success",
+        "successfulRuntimeEvidenceRunId": null,
         "buildAloneCountsAsQaPass": false
       },
       "currentProtection": "RUNTIME_PLAY_EVIDENCE_REQUIRED + BUILD_EVIDENCE_REQUIRED + DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
@@ -49,14 +73,26 @@
     "graphics": {
       "status": "STRENGTHENED",
       "passGate": "1+ graphics-domain evidence item",
-      "checks": ["UI/readability", "visual identity", "assets/licenses", "animation/motion/VFX", "mobile presentation"],
+      "checks": [
+        "UI/readability",
+        "visual identity",
+        "assets/licenses",
+        "animation/motion/VFX",
+        "mobile presentation"
+      ],
       "previousWeakness": "Generic code/UI praise could be treated as graphics PASS evidence.",
       "currentProtection": "DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
     },
     "balance": {
       "status": "STRENGTHENED",
       "passGate": "1+ balance-domain evidence item",
-      "checks": ["damage/HP", "difficulty", "growth", "rewards/economy", "cooldown/drop rates"],
+      "checks": [
+        "damage/HP",
+        "difficulty",
+        "growth",
+        "rewards/economy",
+        "cooldown/drop rates"
+      ],
       "previousWeakness": "Code-structure praise could be used without numeric balance analysis.",
       "currentProtection": "DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
     },
@@ -64,19 +100,47 @@
       "status": "STRENGTHENED",
       "passGate": "All five votes submitted and every department evidence gate passed",
       "aggregation": "DROP if any DROP; REVISE if any REVISE or evidence gate failure; otherwise PASS",
-      "currentProtection": "Director cannot invent or replace missing department evidence."
+      "currentProtection": "Director cannot invent or replace missing department evidence.",
+      "latestSupervisorRunId": 34310605013,
+      "latestSupervisorConclusion": "success",
+      "latestSupervisorCounts": {
+        "BLOCKED": 0,
+        "FAILED": 0,
+        "STALE": 0
+      }
     }
   },
   "verification": {
     "departmentStandardsWorkflow": {
-      "latestKnownSuccessfulRunId": 34304706736,
+      "latestKnownSuccessfulRunId": 34305065242,
       "unitySmokeContractRunId": 34305065242,
-      "unitySmokeContractStatusAtAudit": "in_progress"
+      "unitySmokeContractConclusion": "success"
     },
-    "vibeQaWorkflow": {
-      "runId": 34304811810,
-      "conclusion": "success"
+    "latestVerifiedUnityBuild": {
+      "runId": 34201876835,
+      "workflow": "Unity Hybrid Android Build",
+      "conclusion": "success",
+      "headSha": "f78b6a53186c3a6765e75bdb92801d512ed8d8e7",
+      "note": "This successful build predates installation of the Unity Android runtime-smoke workflow and therefore does not count as runtime QA evidence."
+    },
+    "unityRuntimeSmoke": {
+      "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
+      "contractVerified": true,
+      "successfulRuntimeEvidenceObserved": false,
+      "successfulRuntimeEvidenceRunId": null
+    },
+    "directorSupervision": {
+      "runId": 34310605013,
+      "conclusion": "success",
+      "blocked": 0,
+      "failed": 0,
+      "stale": 0
+    },
+    "companyStatusSync": {
+      "runId": 34310685102,
+      "conclusion": "success",
+      "syncedCommit": "665f8f7256a7c812ccea4ce31d555b45c2a8293b"
     }
   },
-  "nextPriority": "Verify the Unity Android runtime-smoke workflow on the next successful APK build and only then upgrade Unity QA runtime capability to VERIFIED."
+  "nextPriority": "On the next successful Unity Hybrid Android Build after runtime-smoke installation, require a successful Android emulator smoke artifact before upgrading Unity QA runtime capability to VERIFIED."
 }
