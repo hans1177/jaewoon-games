@@ -1,5 +1,5 @@
 name: Prepare cached local Ollama runtime
-description: Probe or restore a pinned Ollama runtime archive from GitHub cache, install it without system service setup only when a worker needs it, start the local server, and optionally pull the model.
+description: Build or restore a pinned CPU-only Ollama runtime cache, start the local server only when needed, and optionally pull the model.
 inputs:
   model:
     description: Ollama model name to make available locally.
@@ -9,66 +9,94 @@ inputs:
     required: false
     default: '0.33.3'
   pull-model:
-    description: Whether this caller needs a runnable Ollama server and the requested model. false is cache-warm/probe mode only.
+    description: Whether this caller needs a runnable Ollama server and the requested model. false is cache-warm mode only.
     required: false
     default: 'true'
 runs:
   using: composite
   steps:
-    - name: Probe or restore pinned Ollama runtime archive
+    - name: Restore pinned CPU-only Ollama runtime archive
       id: runtime-cache
       uses: actions/cache@v4
       with:
-        path: ~/.cache/jaewoon-ollama/ollama-linux-amd64-${{ inputs.version }}.tar.zst
-        key: jaewoon-ollama-runtime-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
-        lookup-only: ${{ inputs.pull-model == 'false' }}
+        path: ~/.cache/jaewoon-ollama/ollama-linux-amd64-cpu-${{ inputs.version }}.tar.zst
+        key: jaewoon-ollama-cpu-runtime-v2-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
 
-    - name: Download pinned runtime on cache miss
+    - name: Build slim CPU runtime on cache miss
       if: steps.runtime-cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
         set -euo pipefail
         cache_dir="$HOME/.cache/jaewoon-ollama"
-        archive="$cache_dir/ollama-linux-amd64-${{ inputs.version }}.tar.zst"
-        mkdir -p "$cache_dir"
+        slim="$cache_dir/ollama-linux-amd64-cpu-${{ inputs.version }}.tar.zst"
+        upstream="$RUNNER_TEMP/ollama-linux-amd64-${{ inputs.version }}.tar.zst"
+        stage="$RUNNER_TEMP/ollama-cpu-${{ inputs.version }}"
+        manifest="$RUNNER_TEMP/ollama-cpu-files-${{ inputs.version }}.txt"
+        mkdir -p "$cache_dir" "$stage"
         downloaded=0
         for attempt in 1 2 3; do
-          echo "OLLAMA_RUNTIME_DOWNLOAD_ATTEMPT=$attempt/3"
+          echo "OLLAMA_UPSTREAM_DOWNLOAD_ATTEMPT=$attempt/3"
           if curl -fL --retry 3 --retry-all-errors --connect-timeout 15 \
             "https://ollama.com/download/ollama-linux-amd64.tar.zst?version=${{ inputs.version }}" \
-            -o "$archive"; then
+            -o "$upstream"; then
             downloaded=1
             break
           fi
           sleep $((attempt * 4))
         done
         test "$downloaded" = 1
-        test -s "$archive"
+        test -s "$upstream"
+
+        # GitHub-hosted ubuntu runners have no production GPU workload here. Keep the
+        # Ollama executable and root CPU runtime libraries, while excluding the very
+        # large CUDA/ROCm/MLX payload directories bundled in the 1GB+ upstream archive.
+        tar --zstd -tf "$upstream" | awk '
+          $0 == "bin/ollama" || $0 ~ /^lib\/ollama\/[^/]+$/ { print }
+        ' > "$manifest"
+        grep -qx 'bin/ollama' "$manifest"
+        grep -qx 'lib/ollama/llama-server' "$manifest"
+        tar --zstd -xf "$upstream" -C "$stage" -T "$manifest"
+        test -x "$stage/bin/ollama"
+        test -x "$stage/lib/ollama/llama-server"
+        tar --zstd -cf "$slim" -C "$stage" bin lib
+        test -s "$slim"
+        full_bytes="$(stat -c %s "$upstream")"
+        slim_bytes="$(stat -c %s "$slim")"
+        test "$slim_bytes" -lt "$full_bytes"
+        echo "OLLAMA_UPSTREAM_BYTES=$full_bytes"
+        echo "OLLAMA_CPU_SLIM_BYTES=$slim_bytes"
+        echo 'OLLAMA_GPU_PAYLOAD_EXCLUDED=YES'
+        rm -rf "$upstream" "$stage" "$manifest"
 
     - name: Cache warmup fast-path summary
       if: inputs.pull-model == 'false'
       shell: bash
       run: |
         set -euo pipefail
-        echo "OLLAMA_RUNTIME_CACHE_LOOKUP_ONLY=true"
-        echo "OLLAMA_RUNTIME_CACHE_HIT=${{ steps.runtime-cache.outputs.cache-hit }}"
+        slim="$HOME/.cache/jaewoon-ollama/ollama-linux-amd64-cpu-${{ inputs.version }}.tar.zst"
+        test -s "$slim"
+        echo "OLLAMA_CPU_RUNTIME_CACHE_HIT=${{ steps.runtime-cache.outputs.cache-hit }}"
+        echo "OLLAMA_CPU_SLIM_BYTES=$(stat -c %s "$slim")"
+        echo 'OLLAMA_CPU_SLIM_RUNTIME=YES'
         echo 'OLLAMA_RUNTIME_EXTRACTION=SKIPPED_FOR_WARMUP'
         echo 'OLLAMA_SERVER_START=SKIPPED_FOR_WARMUP'
 
-    - name: Install cached runtime and start local server
+    - name: Install slim CPU runtime and start local server
       if: inputs.pull-model == 'true'
       shell: bash
       run: |
         set -euo pipefail
-        archive="$HOME/.cache/jaewoon-ollama/ollama-linux-amd64-${{ inputs.version }}.tar.zst"
-        test -s "$archive"
+        slim="$HOME/.cache/jaewoon-ollama/ollama-linux-amd64-cpu-${{ inputs.version }}.tar.zst"
+        test -s "$slim"
         command -v zstd >/dev/null
-        sudo tar --zstd -xf "$archive" -C /usr
+        sudo tar --zstd -xf "$slim" -C /usr
         command -v ollama >/dev/null
+        test -x /usr/lib/ollama/llama-server
         nohup ollama serve > /tmp/ollama-autonomous.log 2>&1 &
         for i in $(seq 1 30); do
           if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
-            echo "OLLAMA_RUNTIME_CACHE_HIT=${{ steps.runtime-cache.outputs.cache-hit }}"
+            echo "OLLAMA_CPU_RUNTIME_CACHE_HIT=${{ steps.runtime-cache.outputs.cache-hit }}"
+            echo 'OLLAMA_CPU_SLIM_RUNTIME=YES'
             echo 'OLLAMA_SYSTEM_SERVICE_SETUP=SKIPPED'
             exit 0
           fi
