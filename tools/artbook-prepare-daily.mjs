@@ -127,11 +127,19 @@ if(nextExistingInitial){
 }
 
 if(!gameId){
+  queue.currentDailyTarget='';
+  queue.updatedAt=date;
+  queue.currentTargetExecution={
+    date,mode:'IDLE',status:'NO_ARTBOOK_WORK_DUE',existingInitialPriority:true,existingInitialRemaining:0,
+    submissionCountPolicy,runnerDispatch:null,runnerPaidApi:false,runnerApiKeyRequired:false,directorGhostwritingFallback:false
+  };
+  writeJson('artbook-submission-queue.json',queue);
   writeJson('artbook-daily-context.json',{
     date,run:false,reason:'NO_ARTBOOK_WORK_DUE',existingInitialPriority:true,existingInitialRemaining:[],
     submissionCountPolicy
   });
   console.log('ARTBOOK_DAILY=ALL_DONE');
+  console.log('ARTBOOK_QUEUE_STATE=IDLE');
   console.log('ARTBOOK_SUBMISSION_COUNT_POLICY=UNLIMITED');
   process.exit(0);
 }
