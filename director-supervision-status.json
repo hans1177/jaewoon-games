@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "dateKst": "2026-09-09",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
@@ -11,20 +11,20 @@
     "jobLevelEvidenceUsed": true,
     "failureLogsUsed": true,
     "runningLabelAloneCountsAsWork": false,
-    "directorMayGhostwriteMissingDepartmentWork": false
+    "directorMayGhostwriteMissingDepartmentWork": false,
+    "homepageDiagnosticOnlyRecognized": true,
+    "releaseArtifactEvidenceAdapterRegistered": true
   },
   "counts": {
     "WORKING": 1,
-    "DONE": 5,
-    "IDLE_NO_TASK": 0,
-    "BLOCKED": 1,
+    "DONE": 6,
+    "IDLE_NO_TASK": 1,
+    "BLOCKED": 0,
     "FAILED": 0,
-    "STALE": 1
+    "STALE": 0
   },
-  "attentionRequired": true,
-  "primaryFindings": [
-    "release:DEPENDENCY_BLOCKED"
-  ],
+  "attentionRequired": false,
+  "primaryFindings": [],
   "workflowEvidence": {
     "artbook": {
       "id": 34309803047,
@@ -35,7 +35,10 @@
       "updatedAt": "2026-09-09T04:08:43Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34309803047"
     },
-    "homepage": null
+    "homepage": null,
+    "publicGameHealth": null,
+    "unityBuild": null,
+    "unityRuntime": null
   },
   "staff": {
     "planning": {
@@ -125,29 +128,34 @@
     },
     "homepage": {
       "department": "homepage",
-      "taskAssigned": true,
-      "status": "STALE",
-      "task": "homepage compact layout, links, status and mobile maintenance",
+      "taskAssigned": false,
+      "status": "IDLE_NO_TASK",
+      "task": "no standing homepage worker task; runtime data sync is automatic",
       "executionEvidence": [
-        "homepage-manager-status.json"
+        "homepage-manager-status.json:snapshot-only",
+        "company-status:homepage-runtime-sync-active"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "blockers": [],
-      "reason": "homepage status exists but no recent execution evidence was supplied to supervisor",
-      "action": "run/verify Homepage Manager workflow"
+      "reason": "homepage latest-data sync is handled by runtime JSON refresh; Homepage Manager is diagnostic-only and has no standing worker task",
+      "action": "none"
     },
     "release": {
       "department": "release",
       "taskAssigned": true,
-      "status": "BLOCKED",
-      "task": "verify active build/release",
-      "executionEvidence": [],
-      "resultVerified": false,
-      "blockers": [
-        "DEPENDENCY_BLOCKED"
+      "status": "DONE",
+      "task": "verify active build/release evidence",
+      "executionEvidence": [
+        "company-status:test-build:daechung-rpg-hybrid-017:ready",
+        "release:https://github.com/hans1177/jaewoon-games/releases/tag/test-daechung-rpg-34201876835-1",
+        "download:https://github.com/hans1177/jaewoon-games/releases/download/test-daechung-rpg-34201876835-1/daechung-rpg-test.apk",
+        "sha256:bca2596f93ea71e5ad311d9d3a322083ae768f8ac0c9c046125b33c9a4f1e817",
+        "bytes:24392700"
       ],
-      "reason": "release/build task exists but no release execution adapter is registered in this supervisor",
-      "action": "inspect build and release workflow"
+      "resultVerified": true,
+      "blockers": [],
+      "reason": "test APK release evidence is complete: release URL, download URL, SHA-256, non-empty bytes and build timestamp are present",
+      "action": "runtime QA remains tracked separately from release artifact verification"
     },
     "director": {
       "department": "director",
@@ -169,6 +177,8 @@
     "distinguishIndividualFailureFromBlockedPeers": true,
     "falseRunningForbidden": true,
     "idleWithoutTaskIsNotFailure": true,
+    "homepageDiagnosticToolIsNotStandingWorker": true,
+    "verifiedReleaseArtifactCanSatisfyReleaseEvidence": true,
     "fixLowRiskOperationalBlockers": true,
     "escalateCoreDecisions": true,
     "directorIntegrationOnlyForDepartmentContent": true
