@@ -147,6 +147,8 @@ jobs:
           const fs=require('fs');
           const s=JSON.parse(fs.readFileSync('director-supervision-status.json','utf8'));
           const company=JSON.parse(fs.readFileSync('company-status.json','utf8'));
+          const artbookJobs=JSON.parse(fs.readFileSync('/tmp/artbook-jobs.json','utf8')).jobs||[];
+          const hasArtbookDepartmentJobs=artbookJobs.some(j=>/^round1 \((planning|development|qa|graphics|balance)\)$/i.test(String(j.name||'')));
           const required=['planning','development','qa','graphics','balance','homepage','release','director'];
           for(const d of required){if(!s.staff?.[d])throw new Error(`missing staff check: ${d}`);}
           if(s.checks?.staffChecked!=='8/8')throw new Error('staff check is not 8/8');
@@ -156,7 +158,7 @@ jobs:
           if(s.checks?.releaseArtifactEvidenceAdapterRegistered!==true)throw new Error('release artifact evidence adapter missing');
           if(s.checks?.liveDepartmentStates!==true)throw new Error('live department state contract missing');
           if(s.checks?.liveJobPrecedesPersistedSubmission!==true)throw new Error('live job evidence must precede persisted submission state');
-          if(s.workflowEvidence?.artbook&&!s.checks?.jobLevelEvidenceUsed)throw new Error('artbook run exists but department job evidence was not used');
+          if(s.workflowEvidence?.artbook&&hasArtbookDepartmentJobs&&!s.checks?.jobLevelEvidenceUsed)throw new Error('artbook department jobs exist but department job evidence was not used');
           if(s.checks?.artbookLiveTargetResolved===true&&s.checks?.artbookTargetSource!=='artbook-context-log')throw new Error('resolved live artbook target must come from current artbook context evidence');
           const auto=s.workflowEvidence?.autonomousDevelopment;
           if(auto&&['queued','in_progress','completed'].includes(auto.status)&&!s.checks?.autonomousDepartmentJobEvidenceUsed){
