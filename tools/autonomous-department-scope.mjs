@@ -19,7 +19,19 @@ const SIGNALS={
   qa:{path:/(?:^|\/)(?:test|tests|qa|spec)(?:\/|\.|-|_)|\.(?:test|spec)\./i,code:/\b(?:console\.(?:error|warn)|try\s*\{|catch\s*\(|throw\s+new|requestfailed|error|loading|localStorage|sessionStorage|getElementById|addEventListener|fetch\s*\()\b/i},
   balance:{path:/\.json$|(?:balance|economy|reward|wave|stat|difficulty|enemy|loot)/i,code:/\b(?:hp|health|maxHp|maxHealth|damage|attack|enemy|boss|wave|reward|gold|coin|xp|level|speed|difficulty|loot|drop|cooldown|stun|crit|spawnRate)\b/i},
 };
+const IMPLEMENTATION_ACTION=/(?:수정|구현|추가|변경|적용|연결|교체|제거|작성|조정|튜닝|개선|고치|fix(?:es|ed|ing)?|implement(?:s|ed|ing)?|add(?:s|ed|ing)?|change(?:s|d|ing)?|update(?:s|d|ing)?|wire(?:s|d|ing)?|replace(?:s|d|ing)?|remove(?:s|d|ing)?|tune(?:s|d|ing)?|improve(?:s|d|ing)?)/i;
+const IMPLEMENTATION_TARGETS={
+  graphics:/(?:\b(?:css|style|ui|hud|render|sprite|asset|animation|effect|vfx|canvas|svg)\b|그래픽|화면|렌더|스타일|애니메이션|이펙트|스프라이트|이미지)/i,
+  qa:/(?:\b(?:assert|guard|fallback|exception|error handling|test code|spec file)\b|테스트\s*코드|검증\s*코드|오류\s*처리|에러\s*처리|예외\s*처리|가드|폴백)/i,
+  balance:/(?:\b(?:hp|health|damage|attack|enemy|boss|wave|reward|gold|coin|xp|level|speed|difficulty|loot|drop|cooldown|stun|crit|spawn(?:rate)?)\b|수치|체력|공격|데미지|적|보스|웨이브|보상|난이도|드롭|쿨다운|기절|치명타|스폰)/i,
+};
 
+function hasFunctionalResponsibility(role,departmentResult){
+  if(role==='development')return true;
+  const text=clean(departmentResult?.nextAction||departmentResult?.summary);
+  if(!text)return true;
+  return IMPLEMENTATION_ACTION.test(text)&&IMPLEMENTATION_TARGETS[role].test(text);
+}
 function listFiles(sourcePath){
   const rows=[];
   const walk=current=>{
@@ -72,6 +84,7 @@ export function resolveDepartmentScope({role,sourcePath,responsibilityFiles=[],d
     if(role!=='development')return {run:false,scope:[],reason:'RULE_PATCH_DEVELOPMENT_ONLY'};
     return {run:refs.length>0,scope:refs.slice(0,1),reason:refs.length?'RULE_PATCH_EXACT_SCOPE':'RULE_PATCH_NO_SCOPE'};
   }
+  if(!hasFunctionalResponsibility(role,departmentResult))return {run:false,scope:[],reason:'NO_FUNCTIONAL_RESPONSIBILITY'};
   const ownerFocus=[goal,diagnostic?.type,diagnostic?.message].map(clean).filter(Boolean).join(' ');
   const focus=[ownerFocus,departmentResult?.summary,departmentResult?.nextAction].map(clean).filter(Boolean).join(' ');
   const files=listFiles(source);
