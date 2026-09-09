@@ -18,18 +18,18 @@
       "lastEvidence": "Vibe QA run 34326324607 PASS · be194944bdf87f844dc7c521c10c8f5ec156e8d1"
     },
     "development": {
-      "xp": 5840,
+      "xp": 5880,
       "level": 9,
-      "verifiedCompletions": 146,
-      "learningEvents": 146,
-      "lastEvidence": "Vibe QA run 34358682553 PASS · 61c41392655b4b6f74b552cf03d4674d3cd38f3c"
+      "verifiedCompletions": 147,
+      "learningEvents": 147,
+      "lastEvidence": "Vibe QA run 34365245528 PASS · 8cb34e5b21d46ba84ea241c74f2bd5a9ba2ded1b"
     },
     "qa": {
-      "xp": 1400,
+      "xp": 1440,
       "level": 6,
-      "verifiedCompletions": 35,
-      "learningEvents": 35,
-      "lastEvidence": "Vibe QA run 34356845026 PASS · 8eae7dab1f05bb3fe2b3fde12231784dad3c5970"
+      "verifiedCompletions": 36,
+      "learningEvents": 36,
+      "lastEvidence": "Vibe QA run 34365245528 PASS · 8cb34e5b21d46ba84ea241c74f2bd5a9ba2ded1b"
     },
     "graphics": {
       "xp": 360,
@@ -60,11 +60,11 @@
       "lastEvidence": "Vibe QA run 34201876632 PASS · f78b6a53186c3a6765e75bdb92801d512ed8d8e7"
     },
     "director": {
-      "xp": 720,
+      "xp": 760,
       "level": 4,
-      "verifiedCompletions": 18,
-      "learningEvents": 18,
-      "lastEvidence": "Vibe QA run 34307510492 PASS · 9b187e784c45346dfa74ea75b161912bf1ef8bfe"
+      "verifiedCompletions": 19,
+      "learningEvents": 19,
+      "lastEvidence": "Vibe QA run 34365245528 PASS · 8cb34e5b21d46ba84ea241c74f2bd5a9ba2ded1b"
     }
   },
   "history": [
@@ -3076,6 +3076,20 @@
       "changedFilesCount": 4,
       "evidence": "Vibe QA PASS for 61c41392655b4b6f74b552cf03d4674d3cd38f3c",
       "recordedAt": "2026-09-09T13:41:49.793Z"
+    },
+    {
+      "type": "verified-qa-pass",
+      "sourceCommit": "8cb34e5b21d46ba84ea241c74f2bd5a9ba2ded1b",
+      "runId": "34365245528",
+      "xpPerDepartment": 40,
+      "departments": [
+        "development",
+        "qa",
+        "director"
+      ],
+      "changedFilesCount": 7,
+      "evidence": "Vibe QA PASS for 8cb34e5b21d46ba84ea241c74f2bd5a9ba2ded1b",
+      "recordedAt": "2026-09-09T14:41:30.223Z"
     }
   ]
 }
