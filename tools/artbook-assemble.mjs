@@ -1,6 +1,7 @@
 // 파일명: tools/artbook-assemble.mjs
 // 역할: 검증된 부서 결과를 버전형 살아있는 아트북 후보로 조립하고 5표 평가를 기록한다.
 // 총괄은 평가/조립만 하며 부서 결과물을 대신 작성하지 않는다.
+// 제출 수량 정책: 같은 날 여러 게임의 INITIAL/업그레이드/수정 조립을 허용한다.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -35,18 +36,6 @@ if(gate.readyForDirectorAssembly!==true||Number(gate.readyCount)!==roles.length|
   throw new Error(`section/rating gate incomplete: sections ${gate.readyCount||0}/${roles.length}, peer reviews ${gate.reviewReadyCount||0}/${roles.length}, director ${gate.directorReviewReady?'1/1':'0/1'}, ratingsPerDepartment=${gate.ratingsPerDepartment||0}`);
 }
 if(gate.directorMayAuthorMissingSections!==false||gate.directorMayAuthorMissingReviews!==false)throw new Error('director ghostwriting guard missing');
-
-// 하루 1개 제한은 최초 아트북에만 적용한다. 기존 아트북 업그레이드/수정은 제한 대상이 아니다.
-if(workMode==='INITIAL'){
-  const submissionsRoot='artbook-submissions';
-  if(fs.existsSync(submissionsRoot))for(const entry of fs.readdirSync(submissionsRoot,{withFileTypes:true})){
-    if(!entry.isDirectory())continue;
-    const candidate=path.join(submissionsRoot,entry.name,date,'artbook.json');
-    if(!fs.existsSync(candidate)||path.normalize(candidate)===path.normalize(output))continue;
-    const other=readJson(candidate,{});
-    if(clean(other.workMode||'INITIAL').toUpperCase()==='INITIAL')throw new Error(`daily initial artbook limit reached by ${candidate}`);
-  }
-}
 
 const departments={};
 const collaborationReviews={};
@@ -196,8 +185,9 @@ const registered={
   homepageOpinionMode:'IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS',collaborationProtocol:'PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5',cuts,
   feedback:feedback?{issueNumber:feedback.issueNumber,issueUrl:feedback.issueUrl}:null
 };
-registry.version=Math.max(13,Number(registry.version)||0);
+registry.version=Math.max(14,Number(registry.version)||0);
 registry.updatedAt=date;
+registry.policy={...(registry.policy||{}),submissionCountPolicy:'UNLIMITED',dailyFinalSubmissionLimit:null};
 registry.artbooks=[...(registry.artbooks||[]).filter(x=>x.id!==artbookId),registered];
 registry.dailySubmissions=[...(registry.dailySubmissions||[]).filter(x=>!(x.date===date&&x.gameId===gameId&&x.artbookId===artbookId)),{date,gameId,artbookId,workMode,status:registered.status,lifecycleState:'REVISION_CANDIDATE',productionApproval:false}];
 writeJson('game-artbooks.json',registry);
@@ -208,6 +198,7 @@ writeJson('artbook-gate-status.json',{
   ratingsPerDepartment:5,departmentVotesPerResult:4,directorVotesPerResult:1,overallAverageStars:overallAverage,
   secondWorkDepartments:secondWorkRoles,secondWorkDueDate,assemblyAddsNewDepartmentClaims:false,
   artbookLifecycle:{workMode,state:'REVISION_CANDIDATE',targetState:lifecycleTarget,sourceArtbookId:lifecycle.sourceArtbookId||null,overwriteApprovedVersion:false},
+  submissionCountPolicy:'UNLIMITED',
   formalProductionGate:'ARTBOOK_ASSEMBLED_AWAITING_POSTPROCESS'
 });
 console.log('ARTBOOK_ASSEMBLED=YES');
@@ -222,6 +213,7 @@ console.log(`ARTBOOK_SECOND_WORK_SAME_DAY=${secondWorkRoles.join(',')||'NONE'}`)
 console.log(`ARTBOOK_SECOND_WORK_DUE=${secondWorkDueDate||'NONE'}`);
 console.log(`ARTBOOK_LIFECYCLE_TARGET=${lifecycleTarget}`);
 console.log(`ARTBOOK_SOURCE_BASELINE=${lifecycle.sourceArtbookId||'NONE'}`);
+console.log('ARTBOOK_SUBMISSION_COUNT_POLICY=UNLIMITED');
 console.log(`ARTBOOK_CUTS=${cuts.length}/10`);
 console.log(`ARTBOOK_REGISTERED=${artbookId}`);
 console.log(`HOMEPAGE_PUBLISHED=${registered.published?'YES':'NO'}`);
