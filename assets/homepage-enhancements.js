@@ -2,6 +2,7 @@
 // 역할: 승인된 재운게임즈 홈페이지 레이아웃을 구성하고 최신 공개 상태를 준실시간 동기화한다.
 // 공개 Web 안정판과 기존 게임 데이터는 보존하고 홈 표시 구조만 재배치한다.
 const SYNC_INTERVAL_MS=30000;
+const focusMode='active';
 let refreshInFlight=false;
 const getJson=async url=>{try{const r=await fetch(`${url}${url.includes('?')?'&':'?'}ts=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));return await r.json();}catch{return null;}};
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -127,10 +128,6 @@ function getLatestArtbook(artbooks,gameId){
   return rows.sort((a,b)=>String(b.createdAt||b.updatedAt||'').localeCompare(String(a.createdAt||a.updatedAt||''))||Number(b.edition||0)-Number(a.edition||0))[0]||null;
 }
 
-function getGameHealth(health,gameId){
-  return health?.games?.find(g=>g.gameId===gameId)||null;
-}
-
 function getReleaseDate(game,baseline,build){
   return game?.releaseDate||game?.releasedAt||game?.publishedAt||baseline?.releaseDate||baseline?.releasedAt||baseline?.publishedAt||build?.releasedAt||null;
 }
@@ -148,7 +145,7 @@ function buildFocus(catalog,status,artbooks){
   hero.className='panel hero homeFocus';
   hero.style.setProperty('--focus-bg',`url('${String(game.image||'assets/fantasy-rpg-v2.webp').replaceAll("'",'%27')}')`);
   hero.innerHTML=`<div class="homeFocusInner">
-    <small>현재 집중 개발</small>
+    <small class="gameFocusBar" data-focus-mode="${focusMode}">현재 집중 개발 · 최신자료 자동동기화</small>
     <h1>${esc(game.name)} · ${esc(game.homepageStage||project?.stageLabel||'개발 중')}</h1>
     <p>${esc(game.homepageRecentWork||project?.stageLabel||game.description)}</p>
     <div class="homeFocusMeta">
@@ -161,18 +158,16 @@ function buildFocus(catalog,status,artbooks){
   </div>`;
 }
 
-function buildGameCard(game,catalog,status,baselines,artbooks,health){
+function buildGameCard(game,catalog,status,baselines,artbooks){
   const category=CATEGORY_META[game.homepageCategory]||CATEGORY_META.reviewing;
   const build=getGameBuild(status,game.id);
   const baseline=getGameBaseline(baselines,game.id);
   const artbook=getLatestArtbook(artbooks,game.id);
-  const healthRow=getGameHealth(health,game.id);
   const webDate=formatDate(game.webUpdatedAt||catalog?.updatedAt);
   const buildDate=build?.builtAt?formatDate(build.builtAt):'없음';
   const artbookDate=artbook?formatDate(artbook.createdAt||artbooks?.updatedAt):'없음';
   const releaseDate=getReleaseDate(game,baseline,build);
   const releaseText=releaseDate?`출시 ${formatDate(releaseDate)}`:(game.homepageCategory==='release-confirmed'?'출시일 정보 없음':'출시 전');
-  const healthText=healthRow?`Web QA ${healthRow.status||'확인'} ${formatDate(healthRow.checkedAt||health?.updatedAt)}`:'Web QA 정보 없음';
   const webPlayable=game.homepageWebPlayable!==false&&Boolean(game.webPath);
   const unityUrl=baseline?.rollbackActive&&baseline?.fallbackDownload?baseline.fallbackDownload:build?.download;
   const unityLabel=baseline?.rollbackActive&&baseline?.fallbackDownload?'안정판 APK':build?'Unity 테스트':'Unity 준비중';
@@ -194,7 +189,7 @@ function buildGameCard(game,catalog,status,baselines,artbooks,health){
         <span class="foldBadge">${esc(game.homepageStage||game.description)}</span>
       </div>
       <p><b>최근 작업</b> ${esc(game.homepageRecentWork||'현재 공개판 유지.')}</p>
-      <div class="foldGameMeta">Web 수정 ${esc(webDate)} · Unity 테스트 ${esc(buildDate)} · 아트북 ${esc(artbookDate)}<br>${esc(releaseText)} · ${esc(healthText)}</div>
+      <div class="foldGameMeta">Web 수정 ${esc(webDate)} · Unity 테스트 ${esc(buildDate)} · 아트북 ${esc(artbookDate)}<br>${esc(releaseText)}</div>
       <div class="foldGameActions">
         ${webButton}
         ${unityUrl?`<a class="${unityClass}" href="${esc(unityUrl)}">${unityLabel}</a>`:`<span class="${unityClass}">${unityLabel}</span>`}
@@ -204,7 +199,7 @@ function buildGameCard(game,catalog,status,baselines,artbooks,health){
   </article>`;
 }
 
-function buildGameCenter(catalog,status,baselines,artbooks,health){
+function buildGameCenter(catalog,status,baselines,artbooks){
   const hub=document.getElementById('gameHub');
   if(!hub)return;
   hub.querySelector('.sectionHead')?.remove();
@@ -231,7 +226,7 @@ function buildGameCenter(catalog,status,baselines,artbooks,health){
       const isOpen=openState.has(key)?openState.get(key):true;
       return `<details class="gameFold"${isOpen?' open':''} data-category="${key}">
         <summary><strong>${meta.order}. ${meta.title}</strong><span>${meta.note}</span><i>⌃</i></summary>
-        <div class="foldGameGrid">${items.map(game=>buildGameCard(game,catalog,status,baselines,artbooks,health)).join('')}</div>
+        <div class="foldGameGrid">${items.map(game=>buildGameCard(game,catalog,status,baselines,artbooks)).join('')}</div>
       </details>`;
     }).join('');
   const grid=document.getElementById('gameGrid');
@@ -286,16 +281,15 @@ async function refreshHomepageData(){
   if(refreshInFlight)return;
   refreshInFlight=true;
   try{
-    const [catalog,status,baselines,artbooks,health]=await Promise.all([
+    const [catalog,status,baselines,artbooks]=await Promise.all([
       getJson('/game-catalog.json'),
       getJson('/company-status.json'),
       getJson('/public-release-baselines.json'),
-      getJson('/game-artbooks.json'),
-      getJson('/public-game-health.json')
+      getJson('/game-artbooks.json')
     ]);
     if(catalog){
       buildFocus(catalog,status||{},artbooks||{});
-      buildGameCenter(catalog,status||{},baselines||{},artbooks||{},health||{});
+      buildGameCenter(catalog,status||{},baselines||{},artbooks||{});
     }
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
   }finally{
