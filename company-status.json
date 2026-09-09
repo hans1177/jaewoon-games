@@ -65,15 +65,15 @@
   "operations": {
     "homepage": {
       "manager": "homepage-diagnostics",
-      "status": "stale",
-      "task": "홈페이지 데이터/이미지/링크/카탈로그 일치 여부를 진단한다. 최신 자료 표시는 홈페이지 런타임 JSON 동기화가 담당한다.",
+      "status": "idle",
+      "task": "no standing homepage worker task; runtime data sync is automatic",
       "scope": [
         "index.html",
         "company.html",
         "game-catalog.json"
       ],
       "lastReviewedAt": "2026-09-09",
-      "lastCheckResult": "FALSE_RUNNING",
+      "lastCheckResult": "IDLE_NO_TASK",
       "execution": "github-actions-diagnostic",
       "workflow": ".github/workflows/homepage-manager.yml",
       "statusFile": "homepage-manager-status.json",
@@ -95,16 +95,13 @@
     "runningLabelAloneCountsAsWork": false,
     "counts": {
       "WORKING": 1,
-      "DONE": 5,
-      "IDLE_NO_TASK": 0,
-      "BLOCKED": 1,
+      "DONE": 6,
+      "IDLE_NO_TASK": 1,
+      "BLOCKED": 0,
       "FAILED": 0,
-      "STALE": 1
+      "STALE": 0
     },
-    "primaryFindings": [
-      "homepage:FALSE_RUNNING",
-      "release:DEPENDENCY_BLOCKED"
-    ]
+    "primaryFindings": []
   },
   "projects": [
     {
@@ -333,7 +330,7 @@
       },
       "director": {
         "status": "working",
-        "task": "staff supervision, blocker tracking and verification",
+        "task": "supervise staff execution, blockers, direct causes and verification",
         "evidenceSource": "director-supervision-status.json"
       }
     }
