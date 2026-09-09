@@ -1,0 +1,149 @@
+{
+  "version": 6,
+  "gameId": "egg-heist",
+  "date": "2026-09-09",
+  "department": "balance",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "알 도둑 대작전 밸런스 부서 1차 독립 아트북",
+  "evidence": [
+    {
+      "source": "web-games/egg-heist/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-egg-heist.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentNumbers": "1~3장",
+    "progressionCurve": "성장곡선·전투 체감·보상·난이도를 이미지 중심 1장으로 설계",
+    "combatFeel": "전투 체감을 이미지 중심으로 측정",
+    "economyRewards": "보상 구조를 이미지 중심으로 측정",
+    "difficultyTransitions": "난이도를 이미지 중심으로 측정",
+    "testMeasurements": "플레이테스트 측정 계획을 포함",
+    "handoffs": "플레이테스트 측정 계획을 포함"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "알 도둑의 전투를 이미지 중심으로 측정",
+      "전투 체감을 이미지 중심으로 측정",
+      "보상 구조를 이미지 중심으로 측정"
+    ],
+    "implementationPlan": [
+      "전투 목표를 이미지 중심으로 측정",
+      "침투 지도를 이미지 중심으로 측정",
+      "알 도감을 이미지 중심으로 측정"
+    ],
+    "demoValidation": [
+      "플레이테스트 측정 계획을 포함",
+      "플레이테스트 측정 계획을 포함"
+    ]
+  },
+  "unverified": [
+    "실제 코드의 전투·성장·보상 수치를 평가하고, 자기 범위의 조정 아이디어를 PROPOSAL로 제안한다.",
+    "구현 가능한 조정 지점과 플레이테스트 측정 계획을 함께 적는다."
+  ],
+  "cuts": [
+    {
+      "kind": "balance",
+      "title": "알 도둑 대작전 밸런스 부서 1차 독립 아트북",
+      "body": "이미지 중심으로 전투 목표, 보상 구조, 난이도를 측정 · 플레이테스트 측정 계획을 포함",
+      "image": "artbook-submissions/egg-heist/2026-09-09/visuals/balance.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 1,
+    "pages": [
+      {
+        "owner": "balance",
+        "ownerName": "밸런스",
+        "pageSlot": 1,
+        "visualType": "balance-curve",
+        "title": "1차 독립 아트북",
+        "focus": "알 도둑 대작전",
+        "caption": "밸런스 부서 1차 독립 아트북",
+        "elements": [
+          {
+            "label": "체력",
+            "note": "1~3장 전에 설정",
+            "kind": ""
+          },
+          {
+            "label": "성장",
+            "note": "성장곡선 이미지",
+            "kind": ""
+          },
+          {
+            "label": "전투",
+            "note": "전투 체감 이미지",
+            "kind": ""
+          },
+          {
+            "label": "보상",
+            "note": "보상 구조 이미지",
+            "kind": ""
+          },
+          {
+            "label": "난이도",
+            "note": "난이도를 이미지 중심으로 측정",
+            "kind": ""
+          }
+        ],
+        "callouts": [
+          "실제 코드의 전투·성장·보상 수치를…",
+          "구현 가능한 조정 지점과 플레이테스…"
+        ],
+        "image": "artbook-submissions/egg-heist/2026-09-09/visuals/balance-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "balance"
+      }
+    ],
+    "generatedBy": {
+      "department": "balance",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

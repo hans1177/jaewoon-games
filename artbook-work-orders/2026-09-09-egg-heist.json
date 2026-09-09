@@ -1,0 +1,195 @@
+{
+  "version": 12,
+  "date": "2026-09-09",
+  "mode": "INITIAL",
+  "gameId": "egg-heist",
+  "gameName": "알 도둑 대작전",
+  "status": "INITIAL_ARTBOOK_WORK_SCHEDULED",
+  "submissionCountPolicy": "UNLIMITED",
+  "existingInitialPriority": true,
+  "existingInitialRemaining": 6,
+  "styleProfile": "침투 작전 파일 + 부화 생물 관찰일지",
+  "lifecycle": {
+    "documentType": "LIVING_GAME_DESIGN_ARTBOOK",
+    "createsNewVersion": true,
+    "overwriteApprovedVersion": false,
+    "revisionAllowedAnytime": true,
+    "sourceArtbookId": null,
+    "fromState": null,
+    "targetState": "DESIGN_BASELINE",
+    "trigger": "INITIAL_DESIGN",
+    "requiredMilestoneUpgrade": false
+  },
+  "sourceEvidence": [
+    "web-games/egg-heist (read-only)",
+    "unity-games/egg-heist (if present)",
+    "existing build/test/error records",
+    "artbook-submissions/egg-heist/2026-09-09/vibe2-first-draft.json (Vibe2 proposal + embedded deterministic game fact pack)"
+  ],
+  "departmentTasks": {
+    "planning": {
+      "owner": "planning",
+      "scope": "스토리·세계관·캐릭터 동기·사건 인과를 이미지 중심 2장으로 설계 게임 사실 자료팩과 Vibe2 1차 초안(PROPOSAL)을 대조한다. FACT/EVIDENCE와 UNKNOWN/PROPOSAL을 섞지 말고, 6단계가 서로 다른 실제 게임 특징을 사용했는지 검증한다. 초안 의미 품질 미통과(deterministic-fallback-needs-validation, fact-pack-evidence-insufficient, game-specific-fact-grounding-too-low, game-specific-phase-grounding-too-low)이므로 그대로 설계 기준선으로 넘기지 말고 반드시 재검토한다. OPENING=핵심 목표를 이해한다 — 더 큰 갈등의 단서를 얻는다 | EARLY=핵심 플레이 루프를 확립한다 — 다음 지역의 목표가 열린다 | MID=갈등의 원인을 추적한다 — 최종 갈등의 주체가 드러난다 | LATE=최종 결전을 준비한다 — 최종 지역 진입 조건을 얻는다 | FINAL=핵심 갈등을 끝낸다 — 세계 상태가 결정적으로 변화한다 | ENDING=승리 이후의 선택을 마무리한다 — 본편 종료와 다음 목표가 연결된다 | QUESTS=6",
+      "deliverable": "visual-story-world-pages",
+      "submissionPath": "artbook-submissions/egg-heist/2026-09-09/planning.json",
+      "mayWriteOtherSections": false,
+      "status": "FREE_LOCAL_AI_SCHEDULED",
+      "lifecycleTargetState": "DESIGN_BASELINE",
+      "vibe2FirstDraftPath": "artbook-submissions/egg-heist/2026-09-09/vibe2-first-draft.json"
+    },
+    "graphics": {
+      "owner": "graphics",
+      "scope": "캐릭터·몬스터·보스·배경·UI·로고·인트로 컨셉을 이미지 중심 2장으로 설계",
+      "deliverable": "visual-concept-style-pages",
+      "submissionPath": "artbook-submissions/egg-heist/2026-09-09/graphics.json",
+      "mayWriteOtherSections": false,
+      "status": "FREE_LOCAL_AI_SCHEDULED",
+      "lifecycleTargetState": "DESIGN_BASELINE"
+    },
+    "development": {
+      "owner": "development",
+      "scope": "실제 구현 구조·플레이 루프·시스템 연결을 이미지 중심 2장으로 설계",
+      "deliverable": "visual-gameplay-system-pages",
+      "submissionPath": "artbook-submissions/egg-heist/2026-09-09/development.json",
+      "mayWriteOtherSections": false,
+      "status": "FREE_LOCAL_AI_SCHEDULED",
+      "lifecycleTargetState": "DESIGN_BASELINE"
+    },
+    "qa": {
+      "owner": "qa",
+      "scope": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계",
+      "deliverable": "visual-test-journey-page",
+      "submissionPath": "artbook-submissions/egg-heist/2026-09-09/qa.json",
+      "mayWriteOtherSections": false,
+      "status": "FREE_LOCAL_AI_SCHEDULED",
+      "lifecycleTargetState": "DESIGN_BASELINE"
+    },
+    "balance": {
+      "owner": "balance",
+      "scope": "성장곡선·전투 체감·보상·난이도를 이미지 중심 1장으로 설계",
+      "deliverable": "visual-balance-page",
+      "submissionPath": "artbook-submissions/egg-heist/2026-09-09/balance.json",
+      "mayWriteOtherSections": false,
+      "status": "FREE_LOCAL_AI_SCHEDULED",
+      "lifecycleTargetState": "DESIGN_BASELINE"
+    }
+  },
+  "runnerDispatch": {
+    "requestedRunner": "vibe2-local-open-model-department-bots",
+    "workflow": ".github/workflows/artbook-free-department-bots.yml",
+    "modelPrimary": "qwen3:0.6b",
+    "modelLicense": "Apache-2.0",
+    "execution": "github-hosted-ubuntu-local-inference",
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "readsOtherDepartmentSubmissions": false,
+    "fallbackGhostwritingAllowed": false
+  },
+  "collaboration": {
+    "enabled": true,
+    "reviewProtocol": "PEER_IMPROVEMENT_STAR_5",
+    "eachReviewerRatesOtherFour": true,
+    "selfRatingForbidden": true,
+    "oneImprovementPerTarget": true,
+    "starMax": 5,
+    "crossDepartmentGhostwriting": false,
+    "directorMayOnlyAssemble": true
+  },
+  "pagePolicy": {
+    "min": 12,
+    "default": 16,
+    "max": 30,
+    "target": 18,
+    "legacyCompletedPages": 10,
+    "homepageMode": "compact-card-detail-viewer"
+  },
+  "presentation": {
+    "visualFirst": true,
+    "exactPages": 18,
+    "minPages": 12,
+    "maxPages": 30,
+    "vibe2DraftPages": 8,
+    "departmentAuthoredPages": 8,
+    "directorAuthoredPages": 2,
+    "assistantAuthoredPages": 0,
+    "pagePlan": [
+      "director-cover",
+      "vibe2-draft-1",
+      "vibe2-draft-2",
+      "vibe2-draft-3",
+      "vibe2-draft-4",
+      "vibe2-draft-5",
+      "vibe2-draft-6",
+      "vibe2-draft-7",
+      "vibe2-draft-8",
+      "planning-1",
+      "planning-2",
+      "graphics-1",
+      "graphics-2",
+      "development-1",
+      "development-2",
+      "qa-1",
+      "balance-1",
+      "director-summary"
+    ]
+  },
+  "secondWork": null,
+  "revision": null,
+  "completionGate": {
+    "allFiveSectionsRequired": true,
+    "allFiveReviewsRequired": true,
+    "verifiedOrExplicitlyUnverifiedEvidenceRequired": true,
+    "uniformTemplateForbidden": true,
+    "minCutsRequired": 12,
+    "maxCutsAllowed": 30,
+    "targetCutsRequired": true,
+    "legacyTenPageCompatible": true,
+    "vibe2FirstDraftRequired": true,
+    "postprocessRequired": true,
+    "employeeVisualPresentationRequired": true,
+    "assistantAuthorshipForbidden": true,
+    "readyForDirectorAssembly": false,
+    "livingArtbookVersionRequired": true,
+    "previousBaselineOverwriteForbidden": true
+  },
+  "vibe2FirstDraftPath": "artbook-submissions/egg-heist/2026-09-09/vibe2-first-draft.json",
+  "vibe2FirstDraft": {
+    "status": "FIRST_DRAFT_READY",
+    "proposalOnly": true,
+    "targetArtbookPages": 18,
+    "requiredStoryStages": [
+      "OPENING",
+      "EARLY",
+      "MID",
+      "LATE",
+      "FINAL_BOSS",
+      "ENDING"
+    ],
+    "qualityContract": {
+      "phasePlans": 6,
+      "minMainQuests": 6,
+      "causalityRequired": true,
+      "evidenceProposalSeparation": true,
+      "compactGeneration": true,
+      "technicalNarrativeFilter": true,
+      "gameFactPackRequired": true,
+      "semanticDistinctnessRequired": true,
+      "gameSpecificGroundingRequired": true
+    },
+    "generationMode": "DETERMINISTIC_FALLBACK",
+    "validationStatus": "NEEDS_VALIDATION",
+    "semanticProblems": [
+      "deterministic-fallback-needs-validation",
+      "fact-pack-evidence-insufficient",
+      "game-specific-fact-grounding-too-low",
+      "game-specific-phase-grounding-too-low"
+    ],
+    "factPackStats": {
+      "sourceFiles": 1,
+      "totalEvidence": 1,
+      "categoriesWithEvidence": 1,
+      "gameSpecificTerms": 4
+    },
+    "stageLabelsNormalized": false
+  }
+}

@@ -1,0 +1,426 @@
+{
+  "recommendedPages": 18,
+  "playerMotivation": "알 도둑 대작전의 핵심 목표를 달성하며 현재 구현보다 넓은 중·후반 진행을 완성한다.",
+  "centralConflict": "초반 핵심 루프에서 시작한 문제가 단계마다 확대되어 최종 결전으로 이어진다.",
+  "causalitySummary": "OPENING:현재 세계의 첫 문제와 마주친다→더 큰 갈등의 단서를 얻는다 / EARLY:첫 성공 뒤 새로운 장애물이 등장한다→다음 지역의 목표가 열린다 / MID:기존 방식으로 해결되지 않는 문제가 커진다→최종 갈등의 주체가 드러난다 / LATE:주요 세력의 충돌이 최고조에 이른다→최종 지역 진입 조건을 얻는다 / FINAL_BOSS:최종 적이 목표 달성을 직접 막는다→세계 상태가 결정적으로 변화한다 / ENDING:핵심 갈등은 끝났지만 후속 문제가 남는다→본편 종료와 다음 목표가 연결된다",
+  "storySpine": {
+    "opening": "핵심 목표를 이해한다 — 더 큰 갈등의 단서를 얻는다",
+    "early": "핵심 플레이 루프를 확립한다 — 다음 지역의 목표가 열린다",
+    "mid": "갈등의 원인을 추적한다 — 최종 갈등의 주체가 드러난다",
+    "late": "최종 결전을 준비한다 — 최종 지역 진입 조건을 얻는다",
+    "finalBoss": "핵심 갈등을 끝낸다 — 세계 상태가 결정적으로 변화한다",
+    "ending": "승리 이후의 선택을 마무리한다 — 본편 종료와 다음 목표가 연결된다"
+  },
+  "phasePlans": [
+    {
+      "stage": "OPENING",
+      "region": "시작 지역",
+      "quest": "핵심 목표를 이해한다",
+      "cause": "현재 세계의 첫 문제와 마주친다",
+      "playerAction": "기본 행동으로 첫 문제를 해결한다",
+      "result": "더 큰 갈등의 단서를 얻는다",
+      "nextHook": "초기 지역에서 핵심 플레이 루프를 확립한다"
+    },
+    {
+      "stage": "EARLY",
+      "region": "초기 지역",
+      "quest": "핵심 플레이 루프를 확립한다",
+      "cause": "첫 성공 뒤 새로운 장애물이 등장한다",
+      "playerAction": "기본 능력과 자원을 활용한다",
+      "result": "다음 지역의 목표가 열린다",
+      "nextHook": "중간 지역에서 갈등의 원인을 추적한다"
+    },
+    {
+      "stage": "MID",
+      "region": "중간 지역",
+      "quest": "갈등의 원인을 추적한다",
+      "cause": "기존 방식으로 해결되지 않는 문제가 커진다",
+      "playerAction": "새 시스템과 선택을 활용한다",
+      "result": "최종 갈등의 주체가 드러난다",
+      "nextHook": "후반 지역에서 최종 결전을 준비한다"
+    },
+    {
+      "stage": "LATE",
+      "region": "후반 지역",
+      "quest": "최종 결전을 준비한다",
+      "cause": "주요 세력의 충돌이 최고조에 이른다",
+      "playerAction": "축적한 성장 요소를 결집한다",
+      "result": "최종 지역 진입 조건을 얻는다",
+      "nextHook": "최종 지역에서 핵심 갈등을 끝낸다"
+    },
+    {
+      "stage": "FINAL_BOSS",
+      "region": "최종 지역",
+      "quest": "핵심 갈등을 끝낸다",
+      "cause": "최종 적이 목표 달성을 직접 막는다",
+      "playerAction": "게임 전체에서 익힌 수단을 활용해 결전을 치른다",
+      "result": "세계 상태가 결정적으로 변화한다",
+      "nextHook": "결말 지역에서 승리 이후의 선택을 마무리한다"
+    },
+    {
+      "stage": "ENDING",
+      "region": "결말 지역",
+      "quest": "승리 이후의 선택을 마무리한다",
+      "cause": "핵심 갈등은 끝났지만 후속 문제가 남는다",
+      "playerAction": "남은 관계와 목표를 정리한다",
+      "result": "본편 종료와 다음 목표가 연결된다",
+      "nextHook": "본편 이후 남은 지역·고난도 목표·선택형 과제를 이어서 플레이할 수 있다."
+    }
+  ],
+  "regions": [
+    "시작 지역",
+    "초기 지역",
+    "중간 지역",
+    "후반 지역",
+    "최종 지역",
+    "결말 지역"
+  ],
+  "regionTransitions": [
+    {
+      "from": "시작 지역",
+      "to": "초기 지역",
+      "cause": "더 큰 갈등의 단서를 얻는다",
+      "unlock": "핵심 플레이 루프를 확립한다"
+    },
+    {
+      "from": "초기 지역",
+      "to": "중간 지역",
+      "cause": "다음 지역의 목표가 열린다",
+      "unlock": "갈등의 원인을 추적한다"
+    },
+    {
+      "from": "중간 지역",
+      "to": "후반 지역",
+      "cause": "최종 갈등의 주체가 드러난다",
+      "unlock": "최종 결전을 준비한다"
+    },
+    {
+      "from": "후반 지역",
+      "to": "최종 지역",
+      "cause": "최종 지역 진입 조건을 얻는다",
+      "unlock": "핵심 갈등을 끝낸다"
+    },
+    {
+      "from": "최종 지역",
+      "to": "결말 지역",
+      "cause": "세계 상태가 결정적으로 변화한다",
+      "unlock": "승리 이후의 선택을 마무리한다"
+    }
+  ],
+  "mainQuestChain": [
+    {
+      "id": "MAIN-01",
+      "stage": "OPENING",
+      "region": "시작 지역",
+      "quest": "핵심 목표를 이해한다",
+      "cause": "현재 세계의 첫 문제와 마주친다",
+      "playerAction": "기본 행동으로 첫 문제를 해결한다",
+      "result": "더 큰 갈등의 단서를 얻는다",
+      "nextHook": "초기 지역에서 핵심 플레이 루프를 확립한다"
+    },
+    {
+      "id": "MAIN-02",
+      "stage": "EARLY",
+      "region": "초기 지역",
+      "quest": "핵심 플레이 루프를 확립한다",
+      "cause": "첫 성공 뒤 새로운 장애물이 등장한다",
+      "playerAction": "기본 능력과 자원을 활용한다",
+      "result": "다음 지역의 목표가 열린다",
+      "nextHook": "중간 지역에서 갈등의 원인을 추적한다"
+    },
+    {
+      "id": "MAIN-03",
+      "stage": "MID",
+      "region": "중간 지역",
+      "quest": "갈등의 원인을 추적한다",
+      "cause": "기존 방식으로 해결되지 않는 문제가 커진다",
+      "playerAction": "새 시스템과 선택을 활용한다",
+      "result": "최종 갈등의 주체가 드러난다",
+      "nextHook": "후반 지역에서 최종 결전을 준비한다"
+    },
+    {
+      "id": "MAIN-04",
+      "stage": "LATE",
+      "region": "후반 지역",
+      "quest": "최종 결전을 준비한다",
+      "cause": "주요 세력의 충돌이 최고조에 이른다",
+      "playerAction": "축적한 성장 요소를 결집한다",
+      "result": "최종 지역 진입 조건을 얻는다",
+      "nextHook": "최종 지역에서 핵심 갈등을 끝낸다"
+    },
+    {
+      "id": "MAIN-05",
+      "stage": "FINAL_BOSS",
+      "region": "최종 지역",
+      "quest": "핵심 갈등을 끝낸다",
+      "cause": "최종 적이 목표 달성을 직접 막는다",
+      "playerAction": "게임 전체에서 익힌 수단을 활용해 결전을 치른다",
+      "result": "세계 상태가 결정적으로 변화한다",
+      "nextHook": "결말 지역에서 승리 이후의 선택을 마무리한다"
+    },
+    {
+      "id": "MAIN-06",
+      "stage": "ENDING",
+      "region": "결말 지역",
+      "quest": "승리 이후의 선택을 마무리한다",
+      "cause": "핵심 갈등은 끝났지만 후속 문제가 남는다",
+      "playerAction": "남은 관계와 목표를 정리한다",
+      "result": "본편 종료와 다음 목표가 연결된다",
+      "nextHook": "본편 이후 남은 지역·고난도 목표·선택형 과제를 이어서 플레이할 수 있다."
+    }
+  ],
+  "sideQuestHooks": [],
+  "npcMotivations": [],
+  "majorBosses": [
+    "최종 위협의 핵심 개체"
+  ],
+  "bossCausality": [
+    {
+      "boss": "최종 위협의 핵심 개체",
+      "trigger": "후반 목표를 완료해 최종 지역이 열린다",
+      "whyNow": "누적된 갈등이 더 이상 미룰 수 없는 상태가 된다",
+      "winConsequence": "핵심 갈등이 해소되고 엔딩 선택이 열린다"
+    }
+  ],
+  "gaps": [
+    "현재 코드에서 스토리 근거가 적어 기획부가 세계관·NPC·지역 설정을 추가 검증해야 함",
+    "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요"
+  ],
+  "proposalAdditions": [
+    "OPENING: 시작 지역 / 핵심 목표를 이해한다",
+    "EARLY: 초기 지역 / 핵심 플레이 루프를 확립한다",
+    "MID: 중간 지역 / 갈등의 원인을 추적한다",
+    "LATE: 후반 지역 / 최종 결전을 준비한다",
+    "FINAL_BOSS: 최종 지역 / 핵심 갈등을 끝낸다",
+    "ENDING: 결말 지역 / 승리 이후의 선택을 마무리한다"
+  ],
+  "conflictEscalation": "현재 세계의 첫 문제와 마주친다 → 첫 성공 뒤 새로운 장애물이 등장한다 → 기존 방식으로 해결되지 않는 문제가 커진다 → 주요 세력의 충돌이 최고조에 이른다 → 최종 적이 목표 달성을 직접 막는다 → 핵심 갈등은 끝났지만 후속 문제가 남는다",
+  "twist": "중반에 초반의 문제와 최종 위협이 같은 원인에서 이어졌다는 단서가 드러난다.",
+  "finalRegion": "최종 지역",
+  "endgame": "플레이어의 행동으로 핵심 갈등이 정리되고 세계의 다음 상태가 제시된다.",
+  "postgame": "본편 이후 남은 지역·고난도 목표·선택형 과제를 이어서 플레이할 수 있다.",
+  "progressionBridge": "시작 지역→초기 지역:핵심 플레이 루프를 확립한다 / 초기 지역→중간 지역:갈등의 원인을 추적한다 / 중간 지역→후반 지역:최종 결전을 준비한다 / 후반 지역→최종 지역:핵심 갈등을 끝낸다 / 최종 지역→결말 지역:승리 이후의 선택을 마무리한다",
+  "technicalContaminationRemoved": [],
+  "generationMode": "DETERMINISTIC_FALLBACK",
+  "fallbackReason": "Unterminated string in JSON at position 2677 (line 1 column 2678)",
+  "runner": {
+    "type": "vibe2-local-open-model-compact-first-draft",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "modelAttempts": 2,
+    "stageLabelsNormalized": false,
+    "originalStageLabels": null,
+    "stages": [
+      "DETERMINISTIC_GAME_FACT_PACK",
+      "COMPACT_CAUSALITY_SEED",
+      "DETERMINISTIC_STAGE_LABEL_NORMALIZATION",
+      "DETERMINISTIC_EXPANSION",
+      "SEMANTIC_GROUNDING_GATE",
+      "TECHNICAL_NARRATIVE_FILTER"
+    ]
+  },
+  "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+  "evidenceFiles": [
+    "web-games/egg-heist/index.html"
+  ],
+  "evidenceSnippets": [],
+  "gameFactPack": {
+    "version": 1,
+    "gameId": "egg-heist",
+    "gameName": "알 도둑 대작전",
+    "genreText": "수집 모험",
+    "evidencePolicy": {
+      "sourcePriority": [
+        "EXECUTION_LOGIC",
+        "GAME_DATA_CONSTANTS",
+        "SAVE_STRUCTURE",
+        "VISIBLE_UI_TEXT",
+        "COMMENTS_OR_DOCS",
+        "IDENTIFIER_ONLY"
+      ],
+      "technicalImplementationExcluded": true,
+      "unsupportedLoreBecomesProposal": true
+    },
+    "categories": {
+      "GOAL": [],
+      "CORE_LOOP": [
+        {
+          "source": "web-games/egg-heist/index.html",
+          "statement": "ewport\" content=\"width=device-width,initial-scale=1\"> 재운게임즈 location.replace('/')",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "COMBAT": [],
+      "ENEMIES": [],
+      "BOSSES": [],
+      "PROGRESSION": [],
+      "RESOURCES": [],
+      "EQUIPMENT": [],
+      "REGIONS": [],
+      "SPECIAL_MECHANICS": [],
+      "SAVE_RULES": [],
+      "STORY_FACTS": []
+    },
+    "gameSpecificTerms": [
+      "알 도둑 대작전",
+      "ko",
+      "utf-8",
+      "refresh"
+    ],
+    "unknownAreas": [
+      "GOAL",
+      "COMBAT",
+      "ENEMIES",
+      "BOSSES",
+      "PROGRESSION",
+      "RESOURCES",
+      "EQUIPMENT",
+      "REGIONS",
+      "SPECIAL_MECHANICS",
+      "SAVE_RULES",
+      "STORY_FACTS"
+    ],
+    "stats": {
+      "sourceFiles": 1,
+      "totalEvidence": 1,
+      "categoriesWithEvidence": 1,
+      "gameSpecificTerms": 4
+    }
+  },
+  "semanticQuality": {
+    "pass": false,
+    "problems": [
+      "deterministic-fallback-needs-validation",
+      "fact-pack-evidence-insufficient",
+      "game-specific-fact-grounding-too-low",
+      "game-specific-phase-grounding-too-low"
+    ],
+    "gameSpecificTermsUsed": [
+      "알 도둑 대작전",
+      "ko",
+      "utf-8",
+      "refresh"
+    ]
+  },
+  "validationStatus": "NEEDS_VALIDATION",
+  "version": 4,
+  "gameId": "egg-heist",
+  "date": "2026-09-09",
+  "status": "FIRST_DRAFT_READY",
+  "author": "vibe2",
+  "proposalOnly": true,
+  "requiredStoryStages": [
+    "OPENING",
+    "EARLY",
+    "MID",
+    "LATE",
+    "FINAL_BOSS",
+    "ENDING"
+  ],
+  "qualityContract": {
+    "phasePlans": 6,
+    "minMainQuests": 6,
+    "causalityRequired": true,
+    "evidenceProposalSeparation": true,
+    "compactGeneration": true,
+    "technicalNarrativeFilter": true,
+    "gameFactPackRequired": true,
+    "semanticDistinctnessRequired": true,
+    "gameSpecificGroundingRequired": true
+  },
+  "visualPages": [
+    {
+      "no": 1,
+      "title": "오프닝",
+      "body": "핵심 목표를 이해한다 — 더 큰 갈등의 단서를 얻는다 · 시작 지역: 현재 세계의 첫 문제와 마주친다 → 기본 행동으로 첫 문제를 해결한다 → 더 큰 갈등의 단서를 얻는다 → 초기 지역에서 핵심 플레이 루프를 확립한다",
+      "image": "artbook-submissions/egg-heist/2026-09-09/visuals/vibe2-draft-1.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 2,
+      "title": "초반",
+      "body": "핵심 플레이 루프를 확립한다 — 다음 지역의 목표가 열린다 · 초기 지역: 첫 성공 뒤 새로운 장애물이 등장한다 → 기본 능력과 자원을 활용한다 → 다음 지역의 목표가 열린다 → 중간 지역에서 갈등의 원인을 추적한다",
+      "image": "artbook-submissions/egg-heist/2026-09-09/visuals/vibe2-draft-2.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 3,
+      "title": "중반",
+      "body": "갈등의 원인을 추적한다 — 최종 갈등의 주체가 드러난다 · 중간 지역: 기존 방식으로 해결되지 않는 문제가 커진다 → 새 시스템과 선택을 활용한다 → 최종 갈등의 주체가 드러난다 → 후반 지역에서 최종 결전을 준비한다",
+      "image": "artbook-submissions/egg-heist/2026-09-09/visuals/vibe2-draft-3.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 4,
+      "title": "후반",
+      "body": "최종 결전을 준비한다 — 최종 지역 진입 조건을 얻는다 · 후반 지역: 주요 세력의 충돌이 최고조에 이른다 → 축적한 성장 요소를 결집한다 → 최종 지역 진입 조건을 얻는다 → 최종 지역에서 핵심 갈등을 끝낸다",
+      "image": "artbook-submissions/egg-heist/2026-09-09/visuals/vibe2-draft-4.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 5,
+      "title": "최종보스",
+      "body": "핵심 갈등을 끝낸다 — 세계 상태가 결정적으로 변화한다 · 최종 지역: 최종 적이 목표 달성을 직접 막는다 → 게임 전체에서 익힌 수단을 활용해 결전을 치른다 → 세계 상태가 결정적으로 변화한다 → 결말 지역에서 승리 이후의 선택을 마무리한다 · 최종 위협의 핵심 개체: 후반 목표를 완료해 최종 지역이 열린다 → 누적된 갈등이 더 이상 미룰 수 없는 상태가 된다 → 승리 결과 핵심 갈등이 해소되고 엔딩 선택이 열린다",
+      "image": "artbook-submissions/egg-heist/2026-09-09/visuals/vibe2-draft-5.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 6,
+      "title": "엔딩",
+      "body": "승리 이후의 선택을 마무리한다 — 본편 종료와 다음 목표가 연결된다 · 결말 지역: 핵심 갈등은 끝났지만 후속 문제가 남는다 → 남은 관계와 목표를 정리한다 → 본편 종료와 다음 목표가 연결된다 → 본편 이후 남은 지역·고난도 목표·선택형 과제를 이어서 플레이할 수 있다. · 플레이어의 행동으로 핵심 갈등이 정리되고 세계의 다음 상태가 제시된다. · 본편 이후 남은 지역·고난도 목표·선택형 과제를 이어서 플레이할 수 있다.",
+      "image": "artbook-submissions/egg-heist/2026-09-09/visuals/vibe2-draft-6.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 7,
+      "title": "지역 흐름",
+      "body": "시작 지역 → 초기 지역 → 중간 지역 → 후반 지역 → 최종 지역 → 결말 지역 · 시작 지역 → 초기 지역: 더 큰 갈등의 단서를 얻는다 / 해금 핵심 플레이 루프를 확립한다 · 초기 지역 → 중간 지역: 다음 지역의 목표가 열린다 / 해금 갈등의 원인을 추적한다 · 중간 지역 → 후반 지역: 최종 갈등의 주체가 드러난다 / 해금 최종 결전을 준비한다",
+      "image": "artbook-submissions/egg-heist/2026-09-09/visuals/vibe2-draft-7.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 8,
+      "title": "메인 퀘스트",
+      "body": "OPENING/시작 지역: 핵심 목표를 이해한다 · 현재 세계의 첫 문제와 마주친다 → 기본 행동으로 첫 문제를 해결한다 → 더 큰 갈등의 단서를 얻는다 → 초기 지역에서 핵심 플레이 루프를 확립한다 · EARLY/초기 지역: 핵심 플레이 루프를 확립한다 · 첫 성공 뒤 새로운 장애물이 등장한다 → 기본 능력과 자원을 활용한다 → 다음 지역의 목표가 열린다 → 중간 지역에서 갈등의 원인을 추적한다 · MID/중간 지역: 갈등의 원인을 추적한다 · 기존 방식으로…",
+      "image": "artbook-submissions/egg-heist/2026-09-09/visuals/vibe2-draft-8.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    }
+  ],
+  "visualPageCount": 8,
+  "targetArtbookPages": 18,
+  "sourceOfTruth": "proposal-before-planning-review"
+}
