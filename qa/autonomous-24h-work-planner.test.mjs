@@ -198,6 +198,29 @@ test('active Tier2 runtime incident does not mask a free Tier2 runtime incident 
   assert.deepEqual(order.implementationRoles,['development']);
 });
 
+test('Tier1 ordinary diagnostic cannot mask a free Tier2 runtime incident from FAST lane',()=>{
+  const fixture=tierFixture();
+  rebalanceProductionTiers({...fixture,filesystem:tierFilesystem});
+  const tier1Issue={type:'DOM_NULL_EVENT_BIND',severity:'high',file:'index.html',message:'tier1 ordinary diagnostic'};
+  const diagnostics={ga:{issues:[tier1Issue],topIssue:tier1Issue,counts:{high:1}}};
+  const health={games:[{gameId:'gc',status:'warning',issues:['404 free'],healthReason:'same-origin-resource-failure'}]};
+  const order=build24hAutonomousWorkOrder({
+    portfolio:fixture.portfolio,
+    artbooks:fixture.artbooks,
+    health,
+    catalog:fixture.catalog,
+    diagnostics,
+    queueState:{version:2,attempts:[]},
+    date:'2026-09-10',
+    filesystem:tierFilesystem,
+  });
+  assert.equal(order.gameId,'C');
+  assert.equal(order.selectedReason,'RUNTIME_INCIDENT_FIRST');
+  assert.equal(order.workLane,'FAST');
+  assert.deepEqual(order.departmentReviewRoles,['development','qa']);
+  assert.deepEqual(order.implementationRoles,['development']);
+});
+
 test('fixed tier counts auto-promote and demote games without pinned IDs',()=>{
   const first=tierFixture();
   const result=rebalanceProductionTiers({...first,filesystem:tierFilesystem});

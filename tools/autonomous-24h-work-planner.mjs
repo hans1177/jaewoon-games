@@ -9,6 +9,7 @@ import {
   buildDiagnosticsMap,
   kstDate,
   latestArtbookFor,
+  runtimeIncident,
 } from './autonomous-work-planner.mjs';
 import { activeReservations, attemptsForDate } from './autonomous-queue-state.mjs';
 import { lowImpactStreak, priorityPenaltyForGame } from './autonomous-play-impact.mjs';
@@ -152,8 +153,13 @@ export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},qu
 export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={games:[]},diagnostics={},queueState={version:2,attempts:[]},impactHistory={version:1,entries:[]},date=kstDate(),filesystem=fs,priorityGameId='',now=new Date(),isSourceReleased=()=>false}={}){
   const active=activeReservations(queueState,{now,isSourceReleased});
   const activeGameIds=new Set(active.map(row=>row.gameId)),activeSourcePaths=new Set(active.map(row=>clean(row.sourcePath)).filter(Boolean));
-  const urgentPortfolio={...portfolio,projects:(portfolio?.projects??[]).filter(project=>!activeGameIds.has(project.id)&&!activeSourcePaths.has(clean(project.sourcePath)))};
-  const urgent=buildAutonomousWorkOrder({portfolio:urgentPortfolio,artbooks,health,catalog,diagnostics,queueState:{version:1,attempts:[]},date,filesystem,priorityGameId:''});
+  const urgentProjects=(portfolio?.projects??[]).filter(project=>
+    !activeGameIds.has(project.id)&&
+    !activeSourcePaths.has(clean(project.sourcePath))&&
+    Boolean(runtimeIncident(health,project.slug))
+  );
+  const urgentPortfolio={...portfolio,projects:urgentProjects};
+  const urgent=urgentProjects.length?buildAutonomousWorkOrder({portfolio:urgentPortfolio,artbooks,health,catalog,diagnostics:{},queueState:{version:1,attempts:[]},date,filesystem,priorityGameId:''}):{run:false};
   const tierPolicyEnabled=Boolean(portfolio?.productionTierPolicy);
   const urgentProject=(portfolio?.projects??[]).find(project=>project.id===urgent?.gameId),urgentTier=Number(urgentProject?.productionTier||0);
   const urgentTierAllowed=!tierPolicyEnabled||(urgentTier>0&&urgentTier<3);

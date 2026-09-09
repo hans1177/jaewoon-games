@@ -49,16 +49,21 @@ test('무료 외부 제작툴은 후보만 제공하고 자동 설치하지 않�
   assert.equal(plan.policy.externalToolAutoInstall,false);
 });
 
-test('그래픽 AI는 2분류 Web 1차 구현에서 모바일 장르킷을 실제 게임 그래픽 기준으로 사용한다',()=>{
-  const agent=fs.readFileSync(new URL('../.github/agents/graphics.agent.md',import.meta.url),'utf8');
+test('2분류 Web은 최종 제품이 아니라 Unity Android 본개발 전 테스트베드로 고정된다',()=>{
+  const agents=fs.readFileSync(new URL('../AGENTS.md',import.meta.url),'utf8');
+  const development=fs.readFileSync(new URL('../.github/agents/development.agent.md',import.meta.url),'utf8');
+  const graphics=fs.readFileSync(new URL('../.github/agents/graphics.agent.md',import.meta.url),'utf8');
   const cycle=fs.readFileSync(new URL('../tools/autonomous-department-cycle.mjs',import.meta.url),'utf8');
-  assert.match(agent,/2분류 `WEB_FIRST_IMPLEMENTATION`/);
-  assert.match(agent,/platformProfiles\.mobileWeb/);
-  assert.match(agent,/실제 게임처럼 보여야 한다/);
-  assert.match(agent,/placeholder만으로 플레이 화면을 끝내는 결과는 그래픽 완료로 보지 않는다/);
-  assert.match(agent,/Unity WebGL을 만들거나 제안하지 않는다/);
-  assert.match(agent,/라이선스 장부/);
-  assert.doesNotMatch(agent,/web-games\/`는 시각 참고용 읽기 전용/);
-  assert.doesNotMatch(agent,/하루 총 1개 통합 아트북/);
+  assert.match(agents,/Unity Android 본개발 전 사전검증용 Web 테스트베드\/밑그림/);
+  assert.match(agents,/최종 제품은 Web이 아니며/);
+  assert.match(agents,/2분류 Web은 \*\*최종 게임 제작 대상이 아니라 Unity 전 테스트 수단\*\*/);
+  assert.match(development,/최종 Web 게임을 만들지 않는다/);
+  assert.match(development,/KEEP \/ CHANGE \/ DROP \/ UNITY_IMPLEMENTATION_NOTE/);
+  assert.match(graphics,/최종 Web 게임을 만들지 않는다/);
+  assert.match(graphics,/KEEP \/ CHANGE \/ DROP \/ UNITY_ART_NOTE/);
+  assert.match(graphics,/Unity WebGL을 만들거나 제안하지 않는다/);
+  assert.match(graphics,/최종 Web 제품 품질을 목표로 하지 않는다/);
+  assert.doesNotMatch(development,/하루 총 1개 통합 아트북/);
+  assert.doesNotMatch(graphics,/하루 총 1개 통합 아트북/);
   assert.match(cycle,/\.github\/agents\/\$\{ROLE_AGENT\[role\]\}\.agent\.md/);
 });
