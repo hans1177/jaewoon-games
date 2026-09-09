@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { build24hAutonomousWorkOrder, rankDevelopmentFocus, selectContinuousTarget } from '../tools/autonomous-24h-work-planner.mjs';
 import { runDepartmentRole } from '../tools/autonomous-department-cycle.mjs';
+import { rebalanceProductionTiers } from '../tools/company-status-sync.mjs';
 
 const filesystem={existsSync:()=>true};
 const portfolio={status:'ACTIVE',paidApi:false,projects:[
@@ -83,8 +84,7 @@ test('release-confirmed stable game is not fed into arbitrary 24h feature develo
 
 test('focus policy keeps only two deep-development games and counts dedicated Unity as one slot',()=>{
   const focusedPortfolio={
-    status:'ACTIVE',
-    paidApi:false,
+    status:'ACTIVE',paidApi:false,
     developmentFocusPolicy:{maxFocusedGames:2,focusThreshold:8,nextDevelopmentThreshold:5},
     projects:[
       {id:'P1',slug:'a',sourcePath:'web-games/a',profileStatus:'DEVELOPMENT_CONFIRMED',mode:'IMPROVE',developmentFocus:{total:9}},
@@ -112,8 +112,7 @@ test('focus policy keeps only two deep-development games and counts dedicated Un
 
 test('non-focused artbook priority cannot steal a deep-development slot',()=>{
   const focusedPortfolio={
-    status:'ACTIVE',
-    paidApi:false,
+    status:'ACTIVE',paidApi:false,
     developmentFocusPolicy:{maxFocusedGames:1,focusThreshold:8,nextDevelopmentThreshold:5},
     projects:[
       {id:'P1',slug:'a',sourcePath:'web-games/a',profileStatus:'DEVELOPMENT_CONFIRMED',mode:'IMPROVE',developmentFocus:{total:9}},
@@ -128,10 +127,7 @@ test('non-focused artbook priority cannot steal a deep-development slot',()=>{
 
 test('runtime incident preempts deep development through FAST lane',()=>{
   const focusPortfolio={
-    status:'ACTIVE',
-    paidApi:false,
-    maxModelCallsPerRun:2,
-    maxRunnerMinutesPerRun:20,
+    status:'ACTIVE',paidApi:false,maxModelCallsPerRun:2,maxRunnerMinutesPerRun:20,
     developmentFocusPolicy:{maxFocusedGames:1,focusThreshold:8,nextDevelopmentThreshold:5,fastLane:{reviewRoles:['development','qa'],implementationRoles:['development']}},
     projects:[
       {id:'P1',slug:'a',name:'A',sourcePath:'web-games/a',profileStatus:'DEVELOPMENT_CONFIRMED',mode:'IMPROVE',developmentFocus:{total:9},protectedValues:['core-loop']},
@@ -152,4 +148,79 @@ test('FAST lane skips nonessential department AI calls deterministically',async(
   assert.equal(result.workState,'DONE');
   assert.equal(result.skippedFast,true);
   assert.equal(result.model,'none');
+});
+
+const tierFixture=()=>({
+  portfolio:{
+    status:'ACTIVE',paidApi:false,maxModelCallsPerRun:2,maxRunnerMinutesPerRun:20,
+    productionTierPolicy:{releaseConfirmedCount:2,developmentConfirmedCount:3,fixedGameIds:false,autoPromotionDemotion:true},
+    developmentFocusPolicy:{maxFocusedGames:1,targetFocusedGames:1,focusStage:'RELEASE_CONFIRMED',fillVacantFocusedSlots:true,focusThreshold:0,nextDevelopmentThreshold:0,tier2WebPrototypeAllowedAlongsideUnityFocus:true,fastLane:{reviewRoles:['development','qa'],implementationRoles:['development']}},
+    projects:[
+      {id:'A',slug:'ga',name:'A',sourcePath:'web-games/ga',developmentFocus:{total:9},protectedValues:['core-loop']},
+      {id:'B',slug:'gb',name:'B',sourcePath:'web-games/gb',productionSourcePath:'unity-games/gb',developmentFocus:{total:8},protectedValues:['core-loop']},
+      {id:'C',slug:'gc',name:'C',sourcePath:'web-games/gc',developmentFocus:{total:7},protectedValues:['core-loop']},
+      {id:'D',slug:'gd',name:'D',sourcePath:'web-games/gd',developmentFocus:{total:6},protectedValues:['core-loop']},
+      {id:'E',slug:'ge',name:'E',sourcePath:'web-games/ge',developmentFocus:{total:5},protectedValues:['core-loop']},
+      {id:'F',slug:'gf',name:'F',sourcePath:'web-games/gf',developmentFocus:{total:4},protectedValues:['core-loop']},
+      {id:'G',slug:'gg',name:'G',sourcePath:'web-games/gg',developmentFocus:{total:3},protectedValues:['core-loop']},
+    ],
+  },
+  catalog:{games:['ga','gb','gc','gd','ge','gf','gg'].map(id=>({id,hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'reviewing'}))},
+  artbooks:{artbooks:['ga','gb','gc','gd','ge','gf','gg'].map((gameId,index)=>({id:`book-${index}`,gameId,status:'completed-artbook',lifecycle:{state:'DESIGN_BASELINE'}}))},
+});
+const tierFilesystem={existsSync:path=>String(path).startsWith('web-games/')||path==='unity-games/gb'};
+
+test('fixed tier counts auto-promote and demote games without pinned IDs',()=>{
+  const first=tierFixture();
+  const result=rebalanceProductionTiers({...first,filesystem:tierFilesystem});
+  assert.deepEqual(result.state.releaseConfirmedGameIds,['A','B']);
+  assert.deepEqual(result.state.developmentConfirmedGameIds,['C','D','E']);
+  assert.equal(result.state.fixedGameIds,false);
+  assert.equal(result.state.autoPromotionDemotion,true);
+  assert.equal(first.portfolio.projects.filter(p=>p.productionTier===1).length,2);
+  assert.equal(first.portfolio.projects.filter(p=>p.productionTier===2).length,3);
+
+  const changed=tierFixture();
+  changed.portfolio.projects.find(p=>p.id==='F').developmentFocus.total=10;
+  const rotated=rebalanceProductionTiers({...changed,filesystem:tierFilesystem});
+  assert.ok(rotated.state.releaseConfirmedGameIds.includes('F'));
+  assert.ok(!rotated.state.releaseConfirmedGameIds.includes('B'));
+  assert.ok(rotated.state.developmentConfirmedGameIds.includes('B'));
+  assert.equal(changed.portfolio.projects.filter(p=>p.productionTier===1).length,2);
+  assert.equal(changed.portfolio.projects.filter(p=>p.productionTier===2).length,3);
+});
+
+test('dynamic tier planner focuses one Tier1 Unity candidate and feeds Tier2 Web only',()=>{
+  const fixture=tierFixture();
+  rebalanceProductionTiers({...fixture,filesystem:tierFilesystem});
+  const target=selectContinuousTarget({portfolio:fixture.portfolio,artbooks:fixture.artbooks,catalog:fixture.catalog,queueState:{version:2,attempts:[]},date:'2026-09-10',filesystem:tierFilesystem});
+  assert.deepEqual(target.focusedGameIds,['B']);
+  assert.deepEqual(target.nextFocusGameIds,['A']);
+  assert.equal(target.project.id,'C');
+  assert.equal(target.projectLane,'TIER2_WEB_FIRST_IMPLEMENTATION');
+  assert.equal(target.focusedGameIds.length,1);
+});
+
+test('Tier1 priority is handed to Unity lane instead of Web feature development',()=>{
+  const fixture=tierFixture();
+  rebalanceProductionTiers({...fixture,filesystem:tierFilesystem});
+  const order=build24hAutonomousWorkOrder({portfolio:fixture.portfolio,artbooks:fixture.artbooks,health:{games:[]},catalog:fixture.catalog,diagnostics:{},queueState:{version:2,attempts:[]},date:'2026-09-10',priorityGameId:'gb',filesystem:tierFilesystem});
+  assert.equal(order.run,false);
+  assert.equal(order.reason,'TIER1_UNITY_FOCUS_HANDOFF');
+  assert.equal(order.requestedGameId,'B');
+});
+
+test('Tier3 runtime issue cannot enter autonomous source-code FAST lane',()=>{
+  const tier3Portfolio={
+    status:'ACTIVE',paidApi:false,maxModelCallsPerRun:2,
+    productionTierPolicy:{releaseConfirmedCount:2,developmentConfirmedCount:3,fixedGameIds:false,autoPromotionDemotion:true},
+    developmentFocusPolicy:{maxFocusedGames:1,targetFocusedGames:1,focusStage:'RELEASE_CONFIRMED',fillVacantFocusedSlots:true,focusThreshold:0,nextDevelopmentThreshold:0,tier2WebPrototypeAllowedAlongsideUnityFocus:true,fastLane:{reviewRoles:['development','qa'],implementationRoles:['development']}},
+    projects:[{id:'T3',slug:'tier3',name:'Tier3',sourcePath:'web-games/tier3',profileStatus:'DESIGN_ONLY',mode:'REDESIGN',productionTier:3,targetEngine:'design-only',developmentFocus:{total:10}}],
+  };
+  const tier3Catalog={games:[{id:'tier3',homepageCategory:'reviewing',productionTier:3}]};
+  const tier3Books={artbooks:[{gameId:'tier3',status:'completed-artbook',lifecycle:{state:'DESIGN_BASELINE'}}]};
+  const health={games:[{gameId:'tier3',status:'warning',issues:['404 asset'],healthReason:'same-origin-resource-failure'}]};
+  const order=build24hAutonomousWorkOrder({portfolio:tier3Portfolio,artbooks:tier3Books,health,catalog:tier3Catalog,diagnostics:{},queueState:{version:2,attempts:[]},date:'2026-09-10',filesystem});
+  assert.equal(order.run,false);
+  assert.notEqual(order.workLane,'FAST');
 });
