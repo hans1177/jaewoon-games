@@ -9,10 +9,11 @@ on:
       - '.github/workflows/autonomous-candidate-promotion.yml'
       - 'tools/autonomous-development-worker.mjs'
       - 'tools/autonomous-department-scope.mjs'
-      - 'tools/autonomous-browser-smoke.mjs'
+      - 'tools/autonomous-candidate-browser-qa.mjs'
       - 'tools/autonomous-candidate-review.mjs'
       - 'qa/autonomous-development-worker.test.mjs'
       - 'qa/autonomous-department-scope.test.mjs'
+      - 'qa/autonomous-candidate-browser-qa.test.mjs'
       - 'qa/autonomous-candidate-review.test.mjs'
   workflow_dispatch:
 
@@ -37,7 +38,7 @@ jobs:
           set -euo pipefail
           node --check tools/autonomous-development-worker.mjs
           node --check tools/autonomous-department-scope.mjs
-          node --check tools/autonomous-browser-smoke.mjs
+          node --check tools/autonomous-candidate-browser-qa.mjs
           node --check tools/autonomous-candidate-review.mjs
           ruby -e "require 'yaml'; YAML.load_file('.github/workflows/autonomous-continuous-development.yml'); YAML.load_file('.github/workflows/autonomous-candidate-promotion.yml')"
           git diff --check origin/main...HEAD
@@ -45,28 +46,30 @@ jobs:
         run: |
           node --test qa/autonomous-development-worker.test.mjs
           node --test qa/autonomous-department-scope.test.mjs
+          node --test qa/autonomous-candidate-browser-qa.test.mjs
           node --test qa/autonomous-candidate-review.test.mjs
           node --test qa/autonomous-diagnostics.test.mjs
           node --test qa/autonomous-work-planner.test.mjs
-      - name: Install headless Chromium for real candidate smoke
+      - name: Install headless Chromium for real candidate QA
         shell: bash
         run: |
           set -euo pipefail
           npm install --no-save playwright
           npx playwright install --with-deps chromium
-          echo "AUTONOMOUS_BROWSER_BIN=$(node -e \"const {chromium}=require('playwright'); process.stdout.write(chromium.executablePath())\")" >> "$GITHUB_ENV"
-      - name: Real mobile browser smoke fixture
+      - name: Real mobile browser QA fixture
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf /tmp/vibe2-smoke-fixture
-          mkdir -p /tmp/vibe2-smoke-fixture
-          cat > /tmp/vibe2-smoke-fixture/index.html <<'HTML'
+          fixture='web-games/__vibe2-browser-review__'
+          rm -rf "$fixture"
+          mkdir -p "$fixture"
+          cat > "$fixture/index.html" <<'HTML'
           <!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><button id="go">GO</button><script>document.getElementById('go').addEventListener('click',()=>document.body.dataset.ok='1')</script></body></html>
           HTML
-          node --input-type=module <<'NODE'
-          import { runAutonomousBrowserSmoke } from './tools/autonomous-browser-smoke.mjs';
-          const result=await runAutonomousBrowserSmoke('/tmp/vibe2-smoke-fixture',{candidateId:'ci-smoke',required:true});
-          console.log(JSON.stringify(result,null,2));
-          if(!result.pass)process.exit(1);
-          NODE
+          node tools/autonomous-candidate-browser-qa.mjs \
+            --source="$fixture" \
+            --port=4183 \
+            --output=/tmp/vibe2-browser-review.json \
+            --screenshot=/tmp/vibe2-browser-review.png
+          rm -rf "$fixture"
+          test "$(node -p "require('/tmp/vibe2-browser-review.json').pass")" = true
