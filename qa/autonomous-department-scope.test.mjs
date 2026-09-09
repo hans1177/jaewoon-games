@@ -64,6 +64,31 @@ test('single CSS micro-task is assigned to graphics instead of development fallb
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('generated hashed bundles are never selected as model-owned responsibility files',()=>{
+  const source='web-games/__scope-bundle-test__';
+  fs.rmSync(source,{recursive:true,force:true});
+  fs.mkdirSync(path.join(source,'assets'),{recursive:true});
+  fs.writeFileSync(path.join(source,'index.html'),'<main id="app"></main><script type="module" src="./src/main.js"></script>');
+  fs.mkdirSync(path.join(source,'src'),{recursive:true});
+  fs.writeFileSync(path.join(source,'src','main.js'),'const app=document.getElementById("app");app.addEventListener("pointerdown",()=>{});function update(){requestAnimationFrame(update)}update();');
+  fs.writeFileSync(path.join(source,'assets','framework-DjPHiq1u.js'),'function generated(){return "bundle"}'.repeat(5000));
+  fs.writeFileSync(path.join(source,'assets','index-3qxzORsP.css'),'.generated{display:block}'.repeat(5000));
+  try{
+    const result=resolveDepartmentScope({
+      role:'development',
+      sourcePath:source,
+      responsibilityFiles:['assets/framework-DjPHiq1u.js','assets/index-3qxzORsP.css'],
+      diagnostic:{file:'assets/framework-DjPHiq1u.js',type:'same-origin-resource-failure'},
+      goal:'404 runtime 사고 1개만 복구',
+      repairMode:'MODEL'
+    });
+    assert.equal(result.run,true);
+    assert.deepEqual(result.scope,['index.html','src/main.js']);
+    assert.equal(result.scope.some(file=>file.startsWith('assets/')),false);
+    assert.equal(result.scores.some(row=>row.path==='assets/framework-DjPHiq1u.js'),false);
+  }finally{fs.rmSync(source,{recursive:true,force:true});}
+});
+
 test('rule patch stays development-only',()=>{
   const source='web-games/__scope-rule-test__';
   fs.rmSync(source,{recursive:true,force:true});fs.mkdirSync(source,{recursive:true});fs.writeFileSync(path.join(source,'index.html'),'<html></html>');
