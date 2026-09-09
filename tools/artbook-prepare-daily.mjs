@@ -3,6 +3,7 @@
 // 제출 수량 정책: INITIAL/업그레이드/수정 모두 일일 개수 제한 없음.
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 
 const readJson=(file,fallback={})=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -10,6 +11,26 @@ const clean=value=>String(value??'').trim();
 const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
 const pick=type=>parts.find(x=>x.type===type)?.value||'';
 const date=`${pick('year')}-${pick('month')}-${pick('day')}`;
+
+function git(args){
+  const result=spawnSync('git',args,{encoding:'utf8'});
+  if(result.status!==0)throw new Error(`git ${args.join(' ')} failed: ${clean(result.stderr||result.stdout)}`);
+  return clean(result.stdout);
+}
+function persistIdleQueueIfActions(){
+  if(process.env.GITHUB_ACTIONS!=='true')return false;
+  git(['config','user.name','jaewoon-artbook-bots']);
+  git(['config','user.email','actions@users.noreply.github.com']);
+  git(['add','--','artbook-submission-queue.json']);
+  const diff=spawnSync('git',['diff','--cached','--quiet']);
+  if(diff.status===0){console.log('ARTBOOK_IDLE_QUEUE_PERSIST=NO_CHANGES');return false;}
+  if(diff.status!==1)throw new Error('git diff --cached --quiet failed');
+  git(['commit','-m','artbook: persist idle queue state [skip ci]']);
+  git(['pull','--rebase','origin','main']);
+  git(['push','origin','HEAD:main']);
+  console.log('ARTBOOK_IDLE_QUEUE_PERSIST=SUCCESS');
+  return true;
+}
 
 const queue=readJson('artbook-submission-queue.json',{games:[],queueOrder:[]});
 const registry=readJson('game-artbooks.json',{artbooks:[],dailySubmissions:[],policy:{}});
@@ -138,6 +159,7 @@ if(!gameId){
     date,run:false,reason:'NO_ARTBOOK_WORK_DUE',existingInitialPriority:true,existingInitialRemaining:[],
     submissionCountPolicy
   });
+  persistIdleQueueIfActions();
   console.log('ARTBOOK_DAILY=ALL_DONE');
   console.log('ARTBOOK_QUEUE_STATE=IDLE');
   console.log('ARTBOOK_SUBMISSION_COUNT_POLICY=UNLIMITED');
@@ -176,7 +198,7 @@ queue.currentTargetExecution={
 const queueGameMutable=(queue.games||[]).find(x=>x.gameId===gameId);
 if(queueGameMutable){
   queueGameMutable.status=mode==='SECOND_WORK'?'SAME_DAY_SECOND_WORK_SCHEDULED':mode==='REVISION'?'ARTBOOK_REVISION_SCHEDULED':`${mode}_ARTBOOK_SCHEDULED`;
-  queueGameMutable.currentStage=mode==='INITIAL'?'artbook-department-review':mode==='DEVELOPMENT_UPGRADE'?'artbook-development-upgrade':mode==='RELEASE_UPGRADE'?'artbook-release-upgrade':mode==='REVISION'?'artbook-revision':'artbook-second-work';
+  queueGameMutable.currentStage=mode==='INITIAL'?'artbook-department-review':mode==='DEVELOPMENT_UPgrade'?'artbook-development-upgrade':mode==='RELEASE_UPGRADE'?'artbook-release-upgrade':mode==='REVISION'?'artbook-revision':'artbook-second-work';
 }
 writeJson('artbook-submission-queue.json',queue);
 
