@@ -46,6 +46,9 @@ function runtimeIncident(health,slug){
   return blocked?{status:item.status??'unknown',issues,healthReason:item.healthReason??null}:null;
 }
 function catalogEntry(catalog,slug){return (catalog?.games??[]).find(game=>game.id===slug)||null;}
+function isCompletedDesignBaseline(book){
+  return clean(book?.status).toLowerCase()==='completed-artbook'&&clean(book?.lifecycle?.state).toUpperCase()==='DESIGN_BASELINE';
+}
 export function classifyProjectStage(project,catalog){
   const entry=catalogEntry(catalog,project.slug);
   const category=clean(entry?.homepageCategory).toLowerCase();
@@ -64,13 +67,13 @@ function baseGoal(project,book){
 }
 function diagnosticSeverity(row){return SEVERITY_SCORE[row?.severity]||0;}
 function diagnosticsFor(map,slug){return map?.[slug]||{issues:[],topIssue:null,counts:{}};}
-function actionableForStage(stage,{incident,diagnostic,book}){
+function actionableForStage(stage,{incident,diagnostic,book,artbookHandoffReady=false}){
   if(stage.id==='RELEASE_CONFIRMED')return Boolean(incident||diagnostic?.topIssue);
   if(stage.id==='PLANNING_IDENTITY_REQUIRED'||stage.id==='HOLD')return false;
-  return Boolean(incident||diagnostic?.topIssue||improvementHints(book).length);
+  return Boolean(artbookHandoffReady||incident||diagnostic?.topIssue||improvementHints(book).length);
 }
 
-export function buildAutonomousWorkOrder({portfolio,artbooks,health,catalog={games:[]},diagnostics={},queueState={version:1,attempts:[]},date=kstDate(),filesystem=fs}={}){
+export function buildAutonomousWorkOrder({portfolio,artbooks,health,catalog={games:[]},diagnostics={},queueState={version:1,attempts:[]},date=kstDate(),filesystem=fs,priorityGameId=''}={}){
   if(portfolio?.status!=='ACTIVE'||!Array.isArray(portfolio.projects))throw new Error('autonomous portfolio 비활성/오류');
   if(portfolio.paidApi!==false)throw new Error('무료정책 위반: paidApi');
   const maxDaily=Math.max(1,Math.min(24,Number(portfolio.maxAutonomousWorkItemsPerDay??8)||8));
@@ -82,22 +85,34 @@ export function buildAutonomousWorkOrder({portfolio,artbooks,health,catalog={gam
   const remaining=eligible.filter(project=>!attempted.has(project.id));
   if(!remaining.length)return {version:2,run:false,reason:'NO_UNPROCESSED_WORK_TODAY',date,paidApi:false,attemptsToday:attemptsToday.length,maxDaily};
 
+  const requestedPriority=clean(priorityGameId);
   const rows=remaining.map(project=>{
     const stage=classifyProjectStage(project,catalog),incident=runtimeIncident(health,project.slug),diagnostic=diagnosticsFor(diagnostics,project.slug),book=latestArtbookFor(artbooks,project.slug);
-    return {project,stage,incident,diagnostic,book,actionable:actionableForStage(stage,{incident,diagnostic,book})};
+    const priorityMatch=Boolean(requestedPriority&&(requestedPriority===project.slug||requestedPriority===project.id));
+    const artbookHandoffReady=priorityMatch&&stage.id==='DEVELOPMENT_CONFIRMED'&&isCompletedDesignBaseline(book);
+    return {project,stage,incident,diagnostic,book,priorityMatch,artbookHandoffReady,actionable:actionableForStage(stage,{incident,diagnostic,book,artbookHandoffReady})};
   });
   const actionable=rows.filter(row=>row.actionable&&row.stage.codeWork);
   if(!actionable.length){
     const planning=rows.find(row=>row.stage.id==='PLANNING_IDENTITY_REQUIRED');
-    return {version:2,run:false,reason:planning?'PLANNING_IDENTITY_REQUIRED':'NO_ACTIONABLE_DIAGNOSTIC',date,paidApi:false,attemptsToday:attemptsToday.length,maxDaily,planningGameId:planning?.project.id||null};
+    return {version:2,run:false,reason:planning?'PLANNING_IDENTITY_REQUIRED':'NO_ACTIONABLE_DIAGNOSTIC',date,paidApi:false,attemptsToday:attemptsToday.length,maxDaily,planningGameId:planning?.project.id||null,priorityGameId:requestedPriority||null};
   }
-  actionable.sort((a,b)=>a.stage.rank-b.stage.rank||Number(Boolean(b.incident))-Number(Boolean(a.incident))||diagnosticSeverity(b.diagnostic?.topIssue)-diagnosticSeverity(a.diagnostic?.topIssue)||a.project.id.localeCompare(b.project.id));
-  const selectedRow=actionable[0],selected=selectedRow.project,incident=selectedRow.incident,diagnostic=selectedRow.diagnostic,book=selectedRow.book,stage=selectedRow.stage;
+
+  const releaseIncident=actionable.find(row=>row.stage.id==='RELEASE_CONFIRMED'&&row.incident);
+  const artbookHandoff=actionable.find(row=>row.artbookHandoffReady);
+  if(!releaseIncident&&!artbookHandoff){
+    actionable.sort((a,b)=>a.stage.rank-b.stage.rank||Number(Boolean(b.incident))-Number(Boolean(a.incident))||diagnosticSeverity(b.diagnostic?.topIssue)-diagnosticSeverity(a.diagnostic?.topIssue)||a.project.id.localeCompare(b.project.id));
+  }
+  const selectedRow=releaseIncident||artbookHandoff||actionable[0],selected=selectedRow.project,incident=selectedRow.incident,diagnostic=selectedRow.diagnostic,book=selectedRow.book,stage=selectedRow.stage;
   const microTask=microTaskFromIssue(diagnostic?.topIssue);
   let reason='STAGE_PRIORITY';
   let goal=baseGoal(selected,book);
   if(incident){reason='RUNTIME_INCIDENT_FIRST';goal=`실행/표시 사고 1건만 복구하는 작은 후보를 만든다. 근거: ${[incident.healthReason,...incident.issues].filter(Boolean).join(' / ')}. 공개 main은 건드리지 않고 저장키를 유지한다.`;}
-  else if(microTask){reason='DIAGNOSTIC_MICROTASK';goal=microTask.goal;}
+  else if(selectedRow.artbookHandoffReady){
+    reason='ARTBOOK_COMPLETED_DEVELOPMENT_HANDOFF';
+    const firstTask=microTask?.goal||baseGoal(selected,book);
+    goal=`방금 완성된 최신 아트북 DESIGN_BASELINE을 현재 개발 설계도로 사용한다. 기술 구조 → 플레이어블 개발판 B로 이어지는 첫 작은 구현 작업 1개만 수행한다. ${firstTask} 아트북의 장르·핵심루프·스토리 큰 방향·저장 의미는 임의로 바꾸지 않는다.`;
+  }else if(microTask){reason='DIAGNOSTIC_MICROTASK';goal=microTask.goal;}
   const repairMode=microTask?.repairMode==='RULE_PATCH'?'RULE_PATCH':'MODEL';
   const responsibilityFiles=microTask?.file?[microTask.file]:[];
   const configuredMax=Math.max(0,Math.min(2,Number(portfolio.maxModelCallsPerRun??2)||0));
@@ -112,7 +127,7 @@ export function buildAutonomousWorkOrder({portfolio,artbooks,health,catalog={gam
     baselineBranch:portfolio.continuousDevelopmentBranch||'autonomous-dev',publicStableBranch:portfolio.publicStableBranch||'main',candidateBranchPrefix:portfolio.candidateBranchPrefix||'autonomous/candidate-',
     queue:{attemptsToday:attemptsToday.length,maxDaily,remainingBeforeSelection:remaining.length},
     budget:{cashKRW:0,paidApi:false,modelCalls,maxModelCalls:configuredMax,maxRunnerMinutes:Number(portfolio.maxRunnerMinutesPerRun??20),emergencyReserveUse:Boolean(incident),policy:'FREE_LIMIT_EQUALS_COMPANY_BUDGET'},
-    evidence:{latestArtbookId:book?.id??null,latestArtbookProductionApproval:book?.productionApproval??null,improvementHints:improvementHints(book),runtimeIncident:incident,diagnostics:{filesScanned:diagnostic?.filesScanned??0,counts:diagnostic?.counts??{},topIssue:diagnostic?.topIssue??null},healthScoreUsedAsGameQuality:false}
+    evidence:{latestArtbookId:book?.id??null,latestArtbookProductionApproval:book?.productionApproval??null,improvementHints:improvementHints(book),runtimeIncident:incident,diagnostics:{filesScanned:diagnostic?.filesScanned??0,counts:diagnostic?.counts??{},topIssue:diagnostic?.topIssue??null},healthScoreUsedAsGameQuality:false,artbookDevelopmentHandoff:{requestedGameId:requestedPriority||null,matched:selectedRow.artbookHandoffReady,baselineState:book?.lifecycle?.state??null,nextStage:selectedRow.artbookHandoffReady?'technical-architecture/playable-draft':null}}
   };
 }
 
@@ -127,11 +142,12 @@ function buildDiagnosticsMap(portfolio){
 async function main(){
   const output=process.argv.find(x=>x.startsWith('--output='))?.slice('--output='.length)||'.autonomous/work-order.json';
   const date=process.argv.find(x=>x.startsWith('--date='))?.slice('--date='.length)||kstDate();
+  const priorityGameId=process.argv.find(x=>x.startsWith('--priority-game-id='))?.slice('--priority-game-id='.length)||clean(process.env.AUTONOMOUS_PRIORITY_GAME_ID);
   const portfolio=readJson('autonomous-portfolio.json'),artbooks=readJson('game-artbooks.json',{artbooks:[]}),health=readJson('public-game-health.json',{games:[]}),catalog=readJson('game-catalog.json',{games:[]}),queueState=readJson('.autonomous/queue-state.json',{version:1,attempts:[]});
   const diagnostics=buildDiagnosticsMap(portfolio);
-  const order=buildAutonomousWorkOrder({portfolio,artbooks,health,catalog,diagnostics,queueState,date});
+  const order=buildAutonomousWorkOrder({portfolio,artbooks,health,catalog,diagnostics,queueState,date,priorityGameId});
   writeJson(output,order);console.log(JSON.stringify(order,null,2));
 }
 if(import.meta.url===pathToFileURL(process.argv[1]).href)main().catch(error=>{console.error(error.message);process.exitCode=1;});
 
-export { baseGoal, improvementHints, issueText, kstDate, latestArtbookFor, runtimeIncident, buildDiagnosticsMap };
+export { baseGoal, improvementHints, issueText, kstDate, latestArtbookFor, runtimeIncident, buildDiagnosticsMap, isCompletedDesignBaseline };
