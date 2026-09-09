@@ -95,14 +95,19 @@
       "worker": "chatgpt",
       "taskId": "artbook-planning-structured-output-recovery",
       "gameId": "daechung-rpg",
-      "files": ["tools/artbook-department-runner.mjs"],
+      "files": [
+        "tools/artbook-department-runner.mjs",
+        "tools/vibe2-artbook-story-draft.mjs",
+        "tools/artbook-postprocess.mjs"
+      ],
       "baseSha": "be1d86a3f5becf47027380997ed390fa76d5dbee",
       "acquiredAt": "2026-09-09T01:43:00.000Z",
       "expiresAt": "2026-09-09T02:28:00.000Z",
       "status": "active",
       "evidence": [
         "actions-run-34297818392-planning-json-truncation",
-        "vibe2-first-draft-stage-confirmed-success"
+        "vibe2-first-draft-stage-confirmed-success",
+        "cross-job-vibe2-draft-artifact-gap-found"
       ]
     }
   ]
