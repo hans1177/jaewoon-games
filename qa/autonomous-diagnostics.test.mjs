@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { diagnoseGame, microTaskFromIssue } from '../tools/autonomous-diagnostics.mjs';
+import { diagnoseGame, findUnguardedStorageParses, microTaskFromIssue } from '../tools/autonomous-diagnostics.mjs';
 
 function fixture(){const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-diagnostics-'));return root;}
 
@@ -20,6 +20,24 @@ test('mobile viewport, broken path, save parse and duplicate listener are detect
     assert.ok(types.has('ADJACENT_DUPLICATE_EVENT_LISTENER'));
     assert.equal(result.hasActionableIssue,true);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('save JSON.parse already enclosed by try/catch is not diagnosed as unguarded',()=>{
+  const source="function load(){try{const z=JSON.parse(localStorage.getItem('territory-war-v1'));if(z)apply(z)}catch(e){}}";
+  assert.equal(findUnguardedStorageParses(source).length,0);
+  const root=fixture();
+  try{
+    fs.writeFileSync(path.join(root,'index.html'),`<html><head><meta name="viewport" content="width=device-width"></head><body><script>${source}</script></body></html>`);
+    const result=diagnoseGame(root);
+    assert.equal(result.issues.some(x=>x.type==='UNGUARDED_SAVE_PARSE'),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('an unguarded storage parse after a completed inner try is still detected',()=>{
+  const source="try{try{noop()}catch(e){} const z=JSON.parse(localStorage.getItem('save-v1'));}catch(e){}";
+  assert.equal(findUnguardedStorageParses(source).length,0);
+  const actuallyUnguarded="try{noop()}catch(e){} const z=JSON.parse(localStorage.getItem('save-v1'));";
+  assert.equal(findUnguardedStorageParses(actuallyUnguarded).length,1);
 });
 
 test('safe diagnostic is converted into one-file micro task',()=>{
