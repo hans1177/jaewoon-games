@@ -3,15 +3,16 @@ name: Director Staff Supervisor
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 * * * *' # hourly supervision
+    - cron: '17 * * * *' # hourly fallback supervision
   workflow_run:
     workflows:
       - Free Artbook Department Bots
+      - Autonomous Continuous Development
       - Homepage Manager
       - Public Game Health
       - Unity Hybrid Android Build
       - Unity Android Runtime Smoke
-    types: [completed]
+    types: [requested, in_progress, completed]
   push:
     branches: [main]
     paths:
@@ -26,11 +27,13 @@ on:
       - 'company-qa-runtime-evidence.json'
       - 'tools/director-supervisor.mjs'
       - 'tools/artbook-department-runner.mjs'
+      - 'tools/autonomous-department-cycle.mjs'
       - 'tools/company-qa-public-web-evidence.mjs'
       - 'tools/unity-apk-runtime-smoke.sh'
       - '.github/agents/director.agent.md'
       - '.github/workflows/director-supervisor.yml'
       - '.github/workflows/artbook-free-department-bots.yml'
+      - '.github/workflows/autonomous-continuous-development.yml'
       - '.github/workflows/homepage-manager.yml'
       - '.github/workflows/public-game-health.yml'
       - '.github/workflows/unity-android-runtime-smoke.yml'
@@ -65,21 +68,27 @@ jobs:
           gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" > /tmp/actions-runs.json
           test -s /tmp/actions-runs.json
 
-          ARTBOOK_RUN_ID=$(node - <<'NODE'
+          node - <<'NODE' > /tmp/supervision-run-ids.env
           const fs=require('fs');
           const p=JSON.parse(fs.readFileSync('/tmp/actions-runs.json','utf8'));
-          const runs=(p.workflow_runs||[]).filter(r=>r.name==='Free Artbook Department Bots');
-          runs.sort((a,b)=>new Date(b.updated_at||b.created_at||0)-new Date(a.updated_at||a.created_at||0));
-          process.stdout.write(runs[0]?.id?String(runs[0].id):'');
+          const latest=name=>(p.workflow_runs||[]).filter(r=>r.name===name).sort((a,b)=>new Date(b.updated_at||b.created_at||0)-new Date(a.updated_at||a.created_at||0))[0];
+          console.log(`ARTBOOK_RUN_ID=${latest('Free Artbook Department Bots')?.id||''}`);
+          console.log(`AUTONOMOUS_RUN_ID=${latest('Autonomous Continuous Development')?.id||''}`);
           NODE
-          )
+          source /tmp/supervision-run-ids.env
 
           if [ -n "$ARTBOOK_RUN_ID" ]; then
             gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${ARTBOOK_RUN_ID}/jobs?per_page=100" > /tmp/artbook-jobs.json
           else
             printf '{"jobs":[]}' > /tmp/artbook-jobs.json
           fi
+          if [ -n "$AUTONOMOUS_RUN_ID" ]; then
+            gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${AUTONOMOUS_RUN_ID}/jobs?per_page=100" > /tmp/autonomous-jobs.json
+          else
+            printf '{"jobs":[]}' > /tmp/autonomous-jobs.json
+          fi
           test -s /tmp/artbook-jobs.json
+          test -s /tmp/autonomous-jobs.json
 
           mkdir -p /tmp/director-failed-logs
           node - <<'NODE' > /tmp/failed-round1-jobs.tsv
@@ -90,14 +99,13 @@ jobs:
             if(m&&job.conclusion==='failure')console.log(`${m[1].toLowerCase()}\t${job.id}`);
           }
           NODE
-
           while IFS=$'\t' read -r ROLE JOB_ID; do
             [ -n "$ROLE" ] || continue
             gh run view "$ARTBOOK_RUN_ID" --repo "$GITHUB_REPOSITORY" --job "$JOB_ID" --log > "/tmp/director-failed-logs/${ROLE}.log" 2>&1 || true
           done < /tmp/failed-round1-jobs.tsv
 
       - name: Run director staff supervision
-        run: node tools/director-supervisor.mjs /tmp/actions-runs.json /tmp/artbook-jobs.json /tmp/director-failed-logs
+        run: node tools/director-supervisor.mjs /tmp/actions-runs.json /tmp/artbook-jobs.json /tmp/director-failed-logs /tmp/autonomous-jobs.json
 
       - name: Validate supervisor contract
         run: |
@@ -113,20 +121,26 @@ jobs:
           if(s.checks?.directorMayGhostwriteMissingDepartmentWork!==false)throw new Error('director ghostwriting protection missing');
           if(s.checks?.homepageDiagnosticOnlyRecognized!==true)throw new Error('homepage diagnostic-only role is not recognized');
           if(s.checks?.releaseArtifactEvidenceAdapterRegistered!==true)throw new Error('release artifact evidence adapter missing');
+          if(s.checks?.liveDepartmentStates!==true)throw new Error('live department state contract missing');
           if(s.workflowEvidence?.artbook&&!s.checks?.jobLevelEvidenceUsed)throw new Error('artbook run exists but department job evidence was not used');
+          const auto=s.workflowEvidence?.autonomousDevelopment;
+          if(auto&&['queued','in_progress','completed'].includes(auto.status)&&!s.checks?.autonomousDepartmentJobEvidenceUsed){
+            const runActive=['queued','in_progress'].includes(auto.status);
+            if(!runActive)throw new Error('completed autonomous run exists but department job evidence was not used');
+          }
           for(const d of ['planning','development','qa','graphics','balance']){
             const item=s.staff?.[d];
-            if(item?.jobEvidence?.conclusion==='failure'&&!item.directCause)throw new Error(`${d}: failed job has no direct cause evidence`);
+            if(!['ACTIVE','WAITING','BLOCKED','DONE'].includes(item?.workState))throw new Error(`${d}: invalid live work state`);
+            if(item?.source==='artbook'&&item?.jobEvidence?.conclusion==='failure'&&!item.directCause)throw new Error(`${d}: failed artbook job has no direct cause evidence`);
           }
           const hp=company?.policy?.homepageOperations||{};
-          if(hp.diagnosticOnly===true&&hp.runtimeDataSync===true&&hp.autoMaintenance===false&&s.staff.homepage?.status==='STALE'){
-            throw new Error('diagnostic-only homepage must not be classified as stale standing work');
-          }
+          if(hp.diagnosticOnly===true&&hp.runtimeDataSync===true&&hp.autoMaintenance===false&&s.staff.homepage?.status==='STALE')throw new Error('diagnostic-only homepage must not be classified as stale standing work');
           const builds=Array.isArray(company.testBuilds)?company.testBuilds:[];
           const latest=[...builds].sort((a,b)=>new Date(b.builtAt||0)-new Date(a.builtAt||0))[0];
           const verified=Boolean(latest&&['ready','released','done'].includes(String(latest.status||'').toLowerCase())&&latest.release&&latest.download&&/^[a-f0-9]{64}$/i.test(String(latest.sha256||''))&&Number(latest.bytes)>0&&latest.builtAt);
           if(verified&&['BLOCKED','FAILED'].includes(s.staff.release?.status))throw new Error('verified test release artifact must not remain dependency-blocked');
           console.log('DIRECTOR_SUPERVISION_QA=PASS');
+          console.log('AUTONOMOUS_LIVE_DEPARTMENT_STATES=PASS');
           NODE
 
       - name: Commit supervision state when changed

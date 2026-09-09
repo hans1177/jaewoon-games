@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "status": "ACTIVE",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
@@ -8,6 +8,10 @@
   "paidApi": false,
   "continuous24hDevelopment": true,
   "departmentDevelopmentCycle": ["planning", "development", "graphics", "qa", "balance", "planning-final"],
+  "departmentReviewMode": "PARALLEL_INDEPENDENT",
+  "departmentFinalIntegrator": "planning-final",
+  "departmentLiveStateAuthority": "github-actions-jobs",
+  "sourceWriteConcurrency": "SERIAL",
   "sameGameDailyFloorCap": null,
   "completedArtbookDailyWorkCap": null,
   "maxModelCallsPerRun": 2,
