@@ -265,6 +265,24 @@ jobs:
           echo "CANDIDATE_COMMIT=$(git rev-parse HEAD)"
           echo "SELF_PROMOTE_MAIN=NO"
 
+      - name: Dispatch independent candidate promotion explicitly
+        if: steps.order.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if gh workflow run autonomous-candidate-promotion.yml --ref main -f candidate_branch="${{ steps.branch.outputs.name }}"; then
+              echo "CANDIDATE_PROMOTION_DISPATCHED=YES"
+              echo "CANDIDATE_PROMOTION_DISPATCH_MODE=workflow_dispatch"
+              exit 0
+            fi
+            sleep $((attempt * 2))
+          done
+          echo "candidate promotion dispatch failed" >&2
+          exit 1
+
       - name: Continue 24h loop after a reserved floor failure
         if: failure() && steps.reserve.outputs.reserved == 'true'
         env:
@@ -290,4 +308,4 @@ jobs:
           echo "- cash budget: 0" >> "$GITHUB_STEP_SUMMARY"
           echo "- paid API: NO" >> "$GITHUB_STEP_SUMMARY"
           echo "- worker model calls/run: max 2; departments use the same free local model" >> "$GITHUB_STEP_SUMMARY"
-          echo "- candidate promotion: separate independent QA" >> "$GITHUB_STEP_SUMMARY"
+          echo "- candidate promotion: explicit workflow_dispatch + separate independent QA" >> "$GITHUB_STEP_SUMMARY"
