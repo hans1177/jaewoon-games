@@ -45,12 +45,8 @@ permissions:
   contents: write
   actions: write
 
-# One floor owns one game source root at a time. Inside the floor, department review/code workspaces run in parallel.
-# Only the integrated candidate/promotion path may write shared branches.
-concurrency:
-  group: autonomous-dev-writer
-  cancel-in-progress: false
-
+# Reservation/state writes are serialized, but different reserved game roots may run their department floors in parallel.
+# Only the integrated candidate/promotion path may write shared game branches.
 env:
   AUTONOMOUS_LOCAL_MODEL: qwen3:1.7b
   AUTONOMOUS_MODEL_MAX_PREDICT: '2560'
@@ -66,6 +62,9 @@ jobs:
     name: prepare development floor
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    concurrency:
+      group: autonomous-dev-writer
+      cancel-in-progress: false
     outputs:
       run: ${{ steps.order.outputs.run }}
       reason: ${{ steps.order.outputs.reason }}
@@ -219,10 +218,35 @@ jobs:
         if: always()
         run: |
           echo '### Autonomous floor preparation' >> "$GITHUB_STEP_SUMMARY"
+          echo '- game floor scheduling: PARALLEL_BY_SOURCE_ROOT' >> "$GITHUB_STEP_SUMMARY"
+          echo '- reservation writer: SERIAL_ONLY' >> "$GITHUB_STEP_SUMMARY"
           echo '- department review: PARALLEL_5' >> "$GITHUB_STEP_SUMMARY"
           echo '- department code workspaces: PARALLEL_ISOLATED_4' >> "$GITHUB_STEP_SUMMARY"
           echo '- planning: integration/ownership authority, no direct source overwrite' >> "$GITHUB_STEP_SUMMARY"
           echo '- shared branch write: FINAL_INTEGRATION_ONLY' >> "$GITHUB_STEP_SUMMARY"
+
+  fanout:
+    name: fill another free game floor
+    needs: prepare
+    if: needs.prepare.outputs.reserved == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch next free source-root planner
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main; then
+              echo 'PARALLEL_FANOUT_NEXT=DISPATCHED'
+              echo 'SAME_SOURCE_ROOT_DUPLICATION=LEASE_BLOCKED'
+              exit 0
+            fi
+            sleep $((attempt * 2))
+          done
+          exit 1
 
   departments:
     name: department (${{ matrix.role }})
@@ -617,7 +641,7 @@ jobs:
           git commit -m "candidate: integrated parallel departments ${{ needs.prepare.outputs.game_id }} ${GITHUB_RUN_ID}"
           git push origin "HEAD:${{ steps.branch.outputs.name }}"
           echo 'DEPARTMENT_CODE_WORKSPACES=PARALLEL'
-          echo 'FINAL_INTEGRATION_WRITE=SERIAL'
+          echo 'FINAL_INTEGRATION_WRITE=SERIAL_PROMOTION_GATE'
           echo 'SELF_PROMOTE_MAIN=NO'
       - name: Dispatch one strong independent final QA gate
         env:
@@ -642,7 +666,7 @@ jobs:
           echo '- code: development/graphics/qa/balance isolated workspaces in parallel' >> "$GITHUB_STEP_SUMMARY"
           echo '- planning: final constraints + functional code ownership' >> "$GITHUB_STEP_SUMMARY"
           echo '- same-file handling: isolated departments may share a functional file; common-base 3-way merge resolves it' >> "$GITHUB_STEP_SUMMARY"
-          echo '- final independent QA: Autonomous Candidate Promotion' >> "$GITHUB_STEP_SUMMARY"
+          echo '- final independent QA: Autonomous Candidate Promotion (serialized shared write)' >> "$GITHUB_STEP_SUMMARY"
           echo '- public main write here: NO' >> "$GITHUB_STEP_SUMMARY"
 
   recover:
@@ -656,13 +680,43 @@ jobs:
            needs.implementations.result == 'cancelled' || needs.integrate.result == 'failure' ||
            needs.integrate.result == 'cancelled') }}
     runs-on: ubuntu-latest
+    concurrency:
+      group: autonomous-dev-writer
+      cancel-in-progress: false
     steps:
+      - name: Checkout latest autonomous queue state
+        uses: actions/checkout@v4
+        with:
+          ref: autonomous-dev
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Release failed source-root lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/autonomous-queue-state.mjs --state=.autonomous/queue-state.json --settle-run-id="$GITHUB_RUN_ID" --status=FAILED
+          git config user.name 'jaewoon-autonomous-recovery'
+          git config user.email 'autonomous-recovery@users.noreply.github.com'
+          git add .autonomous/queue-state.json
+          if ! git diff --cached --quiet; then
+            git commit -m "autonomy: release failed floor ${GITHUB_RUN_ID} [skip ci]"
+            git push origin HEAD:autonomous-dev
+          fi
+          echo 'FAILED_SOURCE_ROOT_LEASE=RELEASED'
       - name: Continue 24h loop after a reserved floor failure
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run autonomous-continuous-development.yml --ref main
-          echo 'FAILED_FLOOR_NEXT=DISPATCHED'
-          echo 'PUBLIC_MAIN_RELEASE=NO'
+          for attempt in 1 2 3; do
+            if gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main; then
+              echo 'FAILED_FLOOR_NEXT=DISPATCHED'
+              echo 'PUBLIC_MAIN_RELEASE=NO'
+              exit 0
+            fi
+            sleep $((attempt * 2))
+          done
+          exit 1
