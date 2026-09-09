@@ -4,7 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const ROLES=new Set(['development','graphics','qa','balance']);
+const ROLE_ORDER=['development','graphics','qa','balance'];
+const ROLES=new Set(ROLE_ORDER);
 const EXTENSIONS=new Set(['.html','.htm','.js','.mjs','.cjs','.css','.json','.svg']);
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const posix=v=>String(v??'').replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -42,11 +43,17 @@ function scoreFile(role,row,{refs=[],focus=''}){
   if(signal.path.test(row.path))score+=6;
   if(signal.code.test(text))score+=7;
   if(refs.includes(row.path)&&score>0)score+=12;
-  if(role==='development'&&refs.includes(row.path))score+=8;
+  if(role==='development'&&refs.includes(row.path)&&score>0)score+=8;
   const roleWords={development:['개발','구현','logic','runtime'],graphics:['그래픽','ui','화면','render','asset','animation'],qa:['qa','오류','에러','검증','test','runtime'],balance:['밸런스','난이도','보상','전투','damage','wave','enemy']}[role];
   if(roleWords.some(word=>lowerFocus.includes(word)))score+=2;
   if(/(?:save|storage|persist)/i.test(row.path)&&role!=='qa')score-=3;
   return score;
+}
+function singleFileOwner(row,{refs=[],focus=''}){
+  const ranked=ROLE_ORDER.map((role,index)=>({role,index,score:scoreFile(role,row,{refs,focus})}))
+    .filter(item=>item.score>0)
+    .sort((a,b)=>b.score-a.score||a.index-b.index);
+  return ranked[0]?.role||'development';
 }
 
 export function resolveDepartmentScope({role,sourcePath,responsibilityFiles=[],diagnostic=null,goal='',departmentResult=null,repairMode='MODEL',workLane='FULL'}={}){
@@ -61,7 +68,15 @@ export function resolveDepartmentScope({role,sourcePath,responsibilityFiles=[],d
     return {run:refs.length>0,scope:refs.slice(0,1),reason:refs.length?'RULE_PATCH_EXACT_SCOPE':'RULE_PATCH_NO_SCOPE'};
   }
   const focus=[goal,diagnostic?.type,diagnostic?.message,departmentResult?.summary,departmentResult?.nextAction].map(clean).filter(Boolean).join(' ');
-  const ranked=listFiles(source).map(row=>({...row,score:scoreFile(role,row,{refs,focus})})).filter(row=>row.score>0).sort((a,b)=>b.score-a.score||a.path.localeCompare(b.path));
+  const files=listFiles(source);
+  if(refs.length===1){
+    const row=files.find(item=>item.path===refs[0]);
+    if(row){
+      const owner=singleFileOwner(row,{refs,focus});
+      if(role!==owner)return {run:false,scope:[],reason:`SINGLE_FILE_MICROTASK_OWNED_BY_${owner.toUpperCase()}`,scores:[{path:row.path,score:scoreFile(role,row,{refs,focus})}]};
+    }
+  }
+  const ranked=files.map(row=>({...row,score:scoreFile(role,row,{refs,focus})})).filter(row=>row.score>0).sort((a,b)=>b.score-a.score||a.path.localeCompare(b.path));
   const threshold=role==='development'?5:7;
   let scope=ranked.filter(row=>row.score>=threshold).slice(0,2).map(row=>row.path);
   if(role==='development'&&!scope.length&&refs.length)scope=refs.slice(0,1);
