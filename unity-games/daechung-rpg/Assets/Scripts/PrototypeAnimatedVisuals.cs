@@ -228,10 +228,29 @@ namespace JaewoonGames.DaechungRpg
             texture.filterMode = FilterMode.Point;
             texture.wrapMode = TextureWrapMode.Clamp;
 
-            var frameCount = Mathf.Max(1, manifest.frames);
-            var columns = Mathf.Max(1, manifest.columns);
-            var frameWidth = Mathf.Max(1, manifest.frameWidth);
-            var frameHeight = Mathf.Max(1, manifest.frameHeight);
+            if (manifest.frames <= 0 || manifest.columns <= 0 || manifest.frameWidth <= 0 || manifest.frameHeight <= 0 || manifest.fps <= 0)
+            {
+                Destroy(texture);
+                try { File.Delete(manifestPath); } catch { }
+                _loadError = $"manifest values {actorId}/{action}";
+                yield break;
+            }
+
+            var frameCount = manifest.frames;
+            var columns = manifest.columns;
+            var frameWidth = manifest.frameWidth;
+            var frameHeight = manifest.frameHeight;
+            var requiredWidth = Mathf.Min(frameCount, columns) * frameWidth;
+            var requiredHeight = Mathf.CeilToInt(frameCount / (float)columns) * frameHeight;
+            if (requiredWidth > texture.width || requiredHeight > texture.height)
+            {
+                Destroy(texture);
+                try { File.Delete(manifestPath); } catch { }
+                try { File.Delete(spritePath); } catch { }
+                _loadError = $"asset bounds {actorId}/{action}";
+                yield break;
+            }
+
             var frames = new Sprite[frameCount];
 
             for (var i = 0; i < frameCount; i++)
@@ -245,7 +264,7 @@ namespace JaewoonGames.DaechungRpg
                 frames[i].name = $"{actorId}-{action}-{i:00}";
             }
 
-            actor.AddClip(action, frames, Mathf.Max(1, manifest.fps));
+            actor.AddClip(action, frames, manifest.fps);
         }
 
         private IEnumerator TravelRoutine()
