@@ -1,0 +1,171 @@
+{
+  "version": 6,
+  "gameId": "survival2",
+  "date": "2026-09-10",
+  "department": "qa",
+  "status": "SUBMITTED",
+  "departmentReadiness": "NEEDS_VALIDATION",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "survival-25d",
+  "evidence": [
+    {
+      "source": "web-games/survival2/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/survival2/survival-25d-buildings.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/survival2/survival-25d-flare-fix.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/survival2/survival-25d-runtime.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/survival2/survival-25d.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-10-survival2.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentPlayableFlow": "survival-25d",
+    "verifiedEvidence": "survival-25d",
+    "problemScenes": "survival-25d",
+    "mobileSaveErrorRisks": "survival-25d",
+    "testScenarios": "survival-25d",
+    "unverified": "survival-25d",
+    "handoffs": "survival-25d"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "survival-25d",
+      "survival-25d",
+      "survival-25d"
+    ],
+    "implementationPlan": [
+      "survival-25d",
+      "survival-25d",
+      "survival-25d"
+    ],
+    "demoValidation": [
+      "survival-25d",
+      "survival-25d",
+      "survival-25d"
+    ]
+  },
+  "unverified": [
+    "survival-25d"
+  ],
+  "cuts": [
+    {
+      "kind": "qa",
+      "title": "survival-25d",
+      "body": "survival-25d · survival-25d · survival-25d",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/qa.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 1,
+    "pages": [
+      {
+        "owner": "qa",
+        "ownerName": "QA",
+        "pageSlot": 1,
+        "visualType": "test-journey",
+        "title": "survival-25d",
+        "focus": "survival-25d",
+        "caption": "survival-25d",
+        "elements": [
+          {
+            "label": "headline",
+            "note": "survival-25d",
+            "kind": ""
+          },
+          {
+            "label": "section",
+            "note": "survival-25d",
+            "kind": ""
+          },
+          {
+            "label": "unverified",
+            "note": "survival-25d",
+            "kind": ""
+          },
+          {
+            "label": "testScenari…",
+            "note": "survival-25d",
+            "kind": ""
+          },
+          {
+            "label": "problemScen…",
+            "note": "survival-25d",
+            "kind": ""
+          },
+          {
+            "label": "mobileSaveE…",
+            "note": "survival-25d",
+            "kind": ""
+          }
+        ],
+        "callouts": [
+          "testScenarios",
+          "problemScenes",
+          "mobileSaveErrorRisks"
+        ],
+        "image": "artbook-submissions/survival2/2026-09-10/visuals/qa-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "qa"
+      }
+    ],
+    "generatedBy": {
+      "department": "qa",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

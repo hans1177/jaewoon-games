@@ -1,0 +1,194 @@
+{
+  "version": 6,
+  "gameId": "survival2",
+  "date": "2026-09-10",
+  "department": "planning",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "숲의 생존자들 기획 부서 1차 독립 아트북 작업",
+  "evidence": [
+    {
+      "source": "web-games/survival2/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/survival2/survival-25d-buildings.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/survival2/survival-25d-flare-fix.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/survival2/survival-25d-runtime.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/survival2/survival-25d.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-10-survival2.json",
+      "usage": "department-work-order"
+    },
+    {
+      "source": "artbook-submissions/survival2/2026-09-10/vibe2-first-draft.json",
+      "usage": "vibe2-first-draft-proposal-reviewed-by-planning"
+    }
+  ],
+  "section": {
+    "worldEvidence": "숲의 생존자들이 주변 생태의 단서를 얻는다. 이는 초기 생존 기반을 확보하는 데 기여합니다.",
+    "protagonistMotivationEvidence": "숲의 생존자들이 위협을 극복하는 데 기여합니다. 이는 중간 생존 규칙에 적응하는 데 기여합니다.",
+    "regionCausality": "시작 생존권에서 자원 루프를 만든다. 이는 초기 위기를 넘기 위해 더 위험한 지역으로 갈 이유가 생긴다.",
+    "storyGameplayConnection": "숲의 생존자들이 동료와 상호작용하는 데 기여합니다. 이는 초기 생존 기반을 확보하는 데 기여합니다.",
+    "gaps": "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요",
+    "handoffs": "새로운 생태 질서를 선택하는 데 기여합니다. 이는 본편을 마치고 확장 탐험이 열린다."
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "A: 숲의 생존자들이 관찰·판단의 재미를 전면에 둔다. 이는 초기 생존 기반을 확보하는 데 기여합니다.",
+      "B: Noto Sans KR를 중심으로 위험·압박과 돌파의 재미를 강조한다. 이는 중간 생존 규칙에 적응하는 데 기여합니다.",
+      "C: utf-8를 중심으로 성장·구축·변화의 재미를 강조한다. 이는 후반 위협과 최종 세력의 존재를 이해하는 데 기여합니다."
+    ],
+    "implementationPlan": [
+      "A: 숲의 생존자들이 주변 생태의 단서를 얻는다. 이는 초기 생존 기반을 확보하는 데 기여합니다.",
+      "B: Noto Sans KR의 위협이 ui와 동시에 작동해 선택을 강요하는 장면을 만든다. 이는 중간 생존 규칙에 적응하는 데 기여합니다.",
+      "C: utf-8의 관계를 한 장면에서 이해하는 순간을 만든다. 이는 후반 위협과 최종 세력의 존재를 이해하는 데 기여합니다."
+    ],
+    "demoValidation": [
+      "A: 숲의 생존자들이 관찰·판단의 재미를 전면에 둔다. 이는 초기 생존 기반을 확보하는 데 기여합니다.",
+      "B: Noto Sans KR의 위협이 ui와 동시에 작동해 선택을 강요하는 장면을 만든다. 이는 중간 생존 규칙에 적응하는 데 기여합니다.",
+      "C: utf-8의 관계를 한 장면에서 이해하는 순간을 만든다. 이는 후반 위협과 최종 세력의 존재를 이해하는 데 기여합니다."
+    ]
+  },
+  "unverified": [
+    "A: 숲의 생존자들이 관찰·판단의 재미를 전면에 둔다. 이는 초기 생존 기반을 확보하는 데 기여합니다.",
+    "B: Noto Sans KR의 위협이 ui와 동시에 작동해 선택을 강요하는 장면을 만든다. 이는 중간 생존 규칙에 적응하는 데 기여합니다.",
+    "C: utf-8의 관계를 한 장면에서 이해하는 순간을 만든다. 이는 후반 위협과 최종 세력의 존재를 이해하는 데 기여합니다."
+  ],
+  "cuts": [
+    {
+      "kind": "planning",
+      "title": "숲의 생존자들 기획 부서 1차 독립 아트북 작업",
+      "body": "A: 숲의 생존자들이 주변 생태의 단서를 얻는다. 이는 초기 생존 기반을 확보하는 데 기여합니다. · B: Noto Sans KR의 위협이 ui와 동시에 작동해 선택을 강요하는 장면을 만든다. 이는 중간 생존 규칙에 적응하는 데 기여합니다. · C: utf-8의 관계를 한 장면에서 이해하는 순간을 만든다. 이는 후반 위협과 최종 세력의 존재를 이해하는 데 기여합니다.",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/planning.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "vibe2FirstDraftReviewed": true,
+    "planningSemanticQuality": true,
+    "planningFallbackUsed": false,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "planning",
+        "ownerName": "기획",
+        "pageSlot": 1,
+        "visualType": "world-map",
+        "title": "world-map",
+        "focus": "숲의 생존자들이 주변 생태의 단서를 얻는다. 이는…",
+        "caption": "숲의 생존자들이 주변 생태의 단서를 얻는다. 이는 초기 생존 기반을 확보하는 데…",
+        "elements": [
+          {
+            "label": "worldEviden…",
+            "note": "A: 숲의 생존자들이 관찰·판단의 …",
+            "kind": ""
+          },
+          {
+            "label": "protagonist…",
+            "note": "B: Noto Sans KR의 위협…",
+            "kind": ""
+          },
+          {
+            "label": "regionCausa…",
+            "note": "C: utf-8의 관계를 한 장면에…",
+            "kind": ""
+          }
+        ],
+        "callouts": [
+          "A: 숲의 생존자들이 관찰·판단의 …",
+          "B: Noto Sans KR의 위협…",
+          "C: utf-8의 관계를 한 장면에…"
+        ],
+        "image": "artbook-submissions/survival2/2026-09-10/visuals/planning-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "planning"
+      },
+      {
+        "owner": "planning",
+        "ownerName": "기획",
+        "pageSlot": 2,
+        "visualType": "story-flow",
+        "title": "story-flow",
+        "focus": "숲의 생존자들이 동료와 상호작용하는 데 기여합니다…",
+        "caption": "숲의 생존자들이 동료와 상호작용하는 데 기여합니다. 이는 초기 생존 기반을 확보…",
+        "elements": [
+          {
+            "label": "storyGamepl…",
+            "note": "A: 숲의 생존자들이 관찰·판단의 …",
+            "kind": ""
+          },
+          {
+            "label": "gaps",
+            "note": "B: Noto Sans KR의 위협…",
+            "kind": ""
+          },
+          {
+            "label": "handoffs",
+            "note": "C: utf-8의 관계를 한 장면에…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/survival2/2026-09-10/visuals/planning-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "planning"
+      }
+    ],
+    "generatedBy": {
+      "department": "planning",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

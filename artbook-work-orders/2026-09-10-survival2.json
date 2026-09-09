@@ -1,0 +1,261 @@
+{
+  "version": 14,
+  "date": "2026-09-10",
+  "mode": "INITIAL",
+  "gameId": "survival2",
+  "gameName": "숲의 생존자들",
+  "status": "INITIAL_ARTBOOK_WORK_SCHEDULED",
+  "submissionCountPolicy": "UNLIMITED",
+  "existingInitialPriority": true,
+  "existingInitialRemaining": 2,
+  "styleProfile": "생존 공동체 기록 + 동료 관계 일지",
+  "lifecycle": {
+    "documentType": "LIVING_GAME_DESIGN_ARTBOOK",
+    "createsNewVersion": true,
+    "overwriteApprovedVersion": false,
+    "revisionAllowedAnytime": true,
+    "sourceArtbookId": null,
+    "fromState": null,
+    "targetState": "DESIGN_BASELINE",
+    "trigger": "INITIAL_DESIGN",
+    "requiredMilestoneUpgrade": false
+  },
+  "sourceEvidence": [
+    "web-games/survival2 (read-only)",
+    "unity-games/survival2 (if present)",
+    "existing build/test/error records",
+    "artbook-submissions/survival2/2026-09-10/vibe2-first-draft.json (Vibe2 proposal + embedded deterministic game fact pack + three creative directions)"
+  ],
+  "departmentTasks": {
+    "planning": {
+      "owner": "planning",
+      "scope": "스토리·세계관·캐릭터 동기·사건 인과를 이미지 중심 2장으로 설계 게임 사실 자료팩과 Vibe2 1차 초안(PROPOSAL)을 대조한다. FACT/EVIDENCE와 UNKNOWN/PROPOSAL을 섞지 말고, 6단계가 서로 다른 실제 게임 특징을 사용했는지 검증한다. Vibe2 초안의 storySpine.creativeDirections A/B/C는 서로 다른 가벼운 방향 제안이다. 기획부는 셋 중 하나를 선택하거나 최대 두 개를 혼합해도 되고 셋을 모두 살릴 필요는 없다. conceptPlan.creativeIdeas 첫 항목을 [DIRECTION:A], [DIRECTION:B], [DIRECTION:C] 또는 [MIX:A+B]처럼 시작해 선택 이유와 이 게임에서만 통하는 근거를 적는다. 다른 게임 이름으로 바꿔도 자연스러운 일반론이면 버린다. 초안 의미 품질 미통과(deterministic-fallback-needs-validation, game-specific-fact-grounding-too-low, game-specific-phase-grounding-too-low)이므로 그대로 설계 기준선으로 넘기지 말고 반드시 재검토한다. OPENING=첫날 생존 기반을 확보한다 — 첫 위기를 넘기고 주변 생태의 단서를 얻는다 | EARLY=안정적인 자원 루프를 만든다 — 더 위험한 지역으로 갈 이유가 생긴다 | MID=새 생존 규칙에 적응한다 — 후반 위협과 최종 세력의 존재가 드러난다 | LATE=최종 위협에 맞설 준비를 끝낸다 — 최종보스와 맞설 조건이 완성된다 | FINAL=생태 위기의 원인을 제거한다 — 생존권의 주도권을 되찾는다 | ENDING=새로운 생태 질서를 선택한다 — 본편을 마치고 확장 탐험이 열린다 | QUESTS=6 [PLANNING_DIRECTION:A+B] 기획부 선행 방향 확정: 숲의 생존자들를 중심으로 관찰·판단의 재미를 전면에 둔다. + Noto Sans KR를 중심으로 위험·압박과 돌파의 재미를 강조한다. 대표 장면: 숲의 생존자들와 utf-8의 관계를 한 장면에서 바로 이해하는 순간을 만든다. + Noto Sans KR의 위협이 ui과 동시에 작동해 선택을 강요하는 장면을 만든다. 선택 이유: A+B 방향은 숲의 생존자들의 관찰·판단의 재미를 중심으로, utf-8의 관계와 Noto Sans KR의 위험·압박을 강조하며, 플레이어의 경험과 시각적 경험을 통합적으로 전달합니다. 이 방향은 게임의 구조적 재구성과 플레이어의 경험적 흐름을 자연스럽 모든 부서는 이 방향을 공통 기준으로 삼아 자기 전문 범위에서 구체화한다. A/B/C를 다시 고르거나 다른 방향으로 교체하지 않는다.",
+      "deliverable": "visual-story-world-pages",
+      "submissionPath": "artbook-submissions/survival2/2026-09-10/planning.json",
+      "mayWriteOtherSections": false,
+      "status": "FREE_LOCAL_AI_SCHEDULED",
+      "lifecycleTargetState": "DESIGN_BASELINE",
+      "vibe2FirstDraftPath": "artbook-submissions/survival2/2026-09-10/vibe2-first-draft.json"
+    },
+    "graphics": {
+      "owner": "graphics",
+      "scope": "캐릭터·몬스터·보스·배경·UI·로고·인트로 컨셉을 이미지 중심 2장으로 설계 [PLANNING_DIRECTION:A+B] 기획부 선행 방향 확정: 숲의 생존자들를 중심으로 관찰·판단의 재미를 전면에 둔다. + Noto Sans KR를 중심으로 위험·압박과 돌파의 재미를 강조한다. 대표 장면: 숲의 생존자들와 utf-8의 관계를 한 장면에서 바로 이해하는 순간을 만든다. + Noto Sans KR의 위협이 ui과 동시에 작동해 선택을 강요하는 장면을 만든다. 선택 이유: A+B 방향은 숲의 생존자들의 관찰·판단의 재미를 중심으로, utf-8의 관계와 Noto Sans KR의 위험·압박을 강조하며, 플레이어의 경험과 시각적 경험을 통합적으로 전달합니다. 이 방향은 게임의 구조적 재구성과 플레이어의 경험적 흐름을 자연스럽 모든 부서는 이 방향을 공통 기준으로 삼아 자기 전문 범위에서 구체화한다. A/B/C를 다시 고르거나 다른 방향으로 교체하지 않는다.",
+      "deliverable": "visual-concept-style-pages",
+      "submissionPath": "artbook-submissions/survival2/2026-09-10/graphics.json",
+      "mayWriteOtherSections": false,
+      "status": "FREE_LOCAL_AI_SCHEDULED",
+      "lifecycleTargetState": "DESIGN_BASELINE"
+    },
+    "development": {
+      "owner": "development",
+      "scope": "실제 구현 구조·플레이 루프·시스템 연결을 이미지 중심 2장으로 설계 [PLANNING_DIRECTION:A+B] 기획부 선행 방향 확정: 숲의 생존자들를 중심으로 관찰·판단의 재미를 전면에 둔다. + Noto Sans KR를 중심으로 위험·압박과 돌파의 재미를 강조한다. 대표 장면: 숲의 생존자들와 utf-8의 관계를 한 장면에서 바로 이해하는 순간을 만든다. + Noto Sans KR의 위협이 ui과 동시에 작동해 선택을 강요하는 장면을 만든다. 선택 이유: A+B 방향은 숲의 생존자들의 관찰·판단의 재미를 중심으로, utf-8의 관계와 Noto Sans KR의 위험·압박을 강조하며, 플레이어의 경험과 시각적 경험을 통합적으로 전달합니다. 이 방향은 게임의 구조적 재구성과 플레이어의 경험적 흐름을 자연스럽 모든 부서는 이 방향을 공통 기준으로 삼아 자기 전문 범위에서 구체화한다. A/B/C를 다시 고르거나 다른 방향으로 교체하지 않는다.",
+      "deliverable": "visual-gameplay-system-pages",
+      "submissionPath": "artbook-submissions/survival2/2026-09-10/development.json",
+      "mayWriteOtherSections": false,
+      "status": "FREE_LOCAL_AI_SCHEDULED",
+      "lifecycleTargetState": "DESIGN_BASELINE"
+    },
+    "qa": {
+      "owner": "qa",
+      "scope": "플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계 [PLANNING_DIRECTION:A+B] 기획부 선행 방향 확정: 숲의 생존자들를 중심으로 관찰·판단의 재미를 전면에 둔다. + Noto Sans KR를 중심으로 위험·압박과 돌파의 재미를 강조한다. 대표 장면: 숲의 생존자들와 utf-8의 관계를 한 장면에서 바로 이해하는 순간을 만든다. + Noto Sans KR의 위협이 ui과 동시에 작동해 선택을 강요하는 장면을 만든다. 선택 이유: A+B 방향은 숲의 생존자들의 관찰·판단의 재미를 중심으로, utf-8의 관계와 Noto Sans KR의 위험·압박을 강조하며, 플레이어의 경험과 시각적 경험을 통합적으로 전달합니다. 이 방향은 게임의 구조적 재구성과 플레이어의 경험적 흐름을 자연스럽 모든 부서는 이 방향을 공통 기준으로 삼아 자기 전문 범위에서 구체화한다. A/B/C를 다시 고르거나 다른 방향으로 교체하지 않는다.",
+      "deliverable": "visual-test-journey-page",
+      "submissionPath": "artbook-submissions/survival2/2026-09-10/qa.json",
+      "mayWriteOtherSections": false,
+      "status": "FREE_LOCAL_AI_SCHEDULED",
+      "lifecycleTargetState": "DESIGN_BASELINE"
+    },
+    "balance": {
+      "owner": "balance",
+      "scope": "성장곡선·전투 체감·보상·난이도를 이미지 중심 1장으로 설계 [PLANNING_DIRECTION:A+B] 기획부 선행 방향 확정: 숲의 생존자들를 중심으로 관찰·판단의 재미를 전면에 둔다. + Noto Sans KR를 중심으로 위험·압박과 돌파의 재미를 강조한다. 대표 장면: 숲의 생존자들와 utf-8의 관계를 한 장면에서 바로 이해하는 순간을 만든다. + Noto Sans KR의 위협이 ui과 동시에 작동해 선택을 강요하는 장면을 만든다. 선택 이유: A+B 방향은 숲의 생존자들의 관찰·판단의 재미를 중심으로, utf-8의 관계와 Noto Sans KR의 위험·압박을 강조하며, 플레이어의 경험과 시각적 경험을 통합적으로 전달합니다. 이 방향은 게임의 구조적 재구성과 플레이어의 경험적 흐름을 자연스럽 모든 부서는 이 방향을 공통 기준으로 삼아 자기 전문 범위에서 구체화한다. A/B/C를 다시 고르거나 다른 방향으로 교체하지 않는다.",
+      "deliverable": "visual-balance-page",
+      "submissionPath": "artbook-submissions/survival2/2026-09-10/balance.json",
+      "mayWriteOtherSections": false,
+      "status": "FREE_LOCAL_AI_SCHEDULED",
+      "lifecycleTargetState": "DESIGN_BASELINE"
+    }
+  },
+  "runnerDispatch": {
+    "requestedRunner": "vibe2-local-open-model-department-bots",
+    "workflow": ".github/workflows/artbook-free-department-bots.yml",
+    "modelPrimary": "qwen3:0.6b",
+    "modelLicense": "Apache-2.0",
+    "execution": "github-hosted-ubuntu-local-inference",
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "readsOtherDepartmentSubmissions": false,
+    "fallbackGhostwritingAllowed": false
+  },
+  "collaboration": {
+    "enabled": true,
+    "reviewProtocol": "PEER_IMPROVEMENT_STAR_5",
+    "eachReviewerRatesOtherFour": true,
+    "selfRatingForbidden": true,
+    "oneImprovementPerTarget": true,
+    "starMax": 5,
+    "crossDepartmentGhostwriting": false,
+    "directorMayOnlyAssemble": true
+  },
+  "pagePolicy": {
+    "min": 12,
+    "default": 16,
+    "max": 30,
+    "target": 18,
+    "legacyCompletedPages": 10,
+    "homepageMode": "compact-card-detail-viewer"
+  },
+  "presentation": {
+    "visualFirst": true,
+    "exactPages": 18,
+    "minPages": 12,
+    "maxPages": 30,
+    "vibe2DraftPages": 8,
+    "departmentAuthoredPages": 8,
+    "directorAuthoredPages": 2,
+    "assistantAuthoredPages": 0,
+    "pagePlan": [
+      "director-cover",
+      "vibe2-draft-1",
+      "vibe2-draft-2",
+      "vibe2-draft-3",
+      "vibe2-draft-4",
+      "vibe2-draft-5",
+      "vibe2-draft-6",
+      "vibe2-draft-7",
+      "vibe2-draft-8",
+      "planning-1",
+      "planning-2",
+      "graphics-1",
+      "graphics-2",
+      "development-1",
+      "development-2",
+      "qa-1",
+      "balance-1",
+      "director-summary"
+    ]
+  },
+  "secondWork": null,
+  "revision": null,
+  "completionGate": {
+    "allFiveSectionsRequired": true,
+    "allFiveReviewsRequired": true,
+    "verifiedOrExplicitlyUnverifiedEvidenceRequired": true,
+    "uniformTemplateForbidden": true,
+    "minCutsRequired": 12,
+    "maxCutsAllowed": 30,
+    "targetCutsRequired": true,
+    "legacyTenPageCompatible": true,
+    "vibe2FirstDraftRequired": true,
+    "postprocessRequired": true,
+    "employeeVisualPresentationRequired": true,
+    "assistantAuthorshipForbidden": true,
+    "readyForDirectorAssembly": false,
+    "livingArtbookVersionRequired": true,
+    "previousBaselineOverwriteForbidden": true
+  },
+  "vibe2FirstDraftPath": "artbook-submissions/survival2/2026-09-10/vibe2-first-draft.json",
+  "vibe2FirstDraft": {
+    "status": "FIRST_DRAFT_READY",
+    "proposalOnly": true,
+    "targetArtbookPages": 18,
+    "requiredStoryStages": [
+      "OPENING",
+      "EARLY",
+      "MID",
+      "LATE",
+      "FINAL_BOSS",
+      "ENDING"
+    ],
+    "qualityContract": {
+      "phasePlans": 6,
+      "minMainQuests": 6,
+      "causalityRequired": true,
+      "evidenceProposalSeparation": true,
+      "compactGeneration": true,
+      "technicalNarrativeFilter": true,
+      "gameFactPackRequired": true,
+      "semanticDistinctnessRequired": true,
+      "gameSpecificGroundingRequired": true,
+      "creativeDirections": 3,
+      "planningSelectOrMix": true,
+      "nameSwapGenericityRejected": true
+    },
+    "generationMode": "DETERMINISTIC_FALLBACK",
+    "validationStatus": "NEEDS_VALIDATION",
+    "semanticProblems": [
+      "deterministic-fallback-needs-validation",
+      "game-specific-fact-grounding-too-low",
+      "game-specific-phase-grounding-too-low"
+    ],
+    "factPackStats": {
+      "sourceFiles": 5,
+      "totalEvidence": 66,
+      "categoriesWithEvidence": 12,
+      "gameSpecificTerms": 24
+    },
+    "stageLabelsNormalized": false,
+    "creativeDirections": [
+      {
+        "id": "A",
+        "focus": "숲의 생존자들를 중심으로 관찰·판단의 재미를 전면에 둔다.",
+        "playerExperience": "플레이어가 ko의 상태와 주변 단서를 읽고 다음 행동을 스스로 고르게 한다.",
+        "signatureMoment": "숲의 생존자들와 utf-8의 관계를 한 장면에서 바로 이해하는 순간을 만든다."
+      },
+      {
+        "id": "B",
+        "focus": "Noto Sans KR를 중심으로 위험·압박과 돌파의 재미를 강조한다.",
+        "playerExperience": "플레이어가 assets/survival-atlas.svg 때문에 익숙한 방식이 막히고 다른 수단으로 위기를 넘기게 한다.",
+        "signatureMoment": "Noto Sans KR의 위협이 ui과 동시에 작동해 선택을 강요하는 장면을 만든다."
+      },
+      {
+        "id": "C",
+        "focus": "utf-8를 중심으로 성장·구축·변화의 재미를 강조한다.",
+        "playerExperience": "플레이어의 반복 행동이 숲의 생존자들을 눈에 보이게 바꾸고 다음 목표를 열도록 한다.",
+        "signatureMoment": "초반의 ko가 후반에는 완전히 다른 역할로 돌아오는 장면을 만든다."
+      }
+    ],
+    "planningDirectionSelection": {
+      "version": 1,
+      "status": "SELECTED",
+      "gameId": "survival2",
+      "date": "2026-09-10",
+      "choice": "A+B",
+      "selectedDirectionIds": [
+        "A",
+        "B"
+      ],
+      "focus": "숲의 생존자들를 중심으로 관찰·판단의 재미를 전면에 둔다. + Noto Sans KR를 중심으로 위험·압박과 돌파의 재미를 강조한다.",
+      "playerExperience": "플레이어가 ko의 상태와 주변 단서를 읽고 다음 행동을 스스로 고르게 한다. + 플레이어가 assets/survival-atlas.svg 때문에 익숙한 방식이 막히고 다른 수단으로 위기를 넘기게 한다.",
+      "signatureMoment": "숲의 생존자들와 utf-8의 관계를 한 장면에서 바로 이해하는 순간을 만든다. + Noto Sans KR의 위협이 ui과 동시에 작동해 선택을 강요하는 장면을 만든다.",
+      "reason": "A+B 방향은 숲의 생존자들의 관찰·판단의 재미를 중심으로, utf-8의 관계와 Noto Sans KR의 위험·압박을 강조하며, 플레이어의 경험과 시각적 경험을 통합적으로 전달합니다. 이 방향은 게임의 구조적 재구성과 플레이어의 경험적 흐름을 자연스럽",
+      "selectedBy": "planning-local-open-model",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "paidApi": false,
+      "apiKeyRequired": false,
+      "fallbackUsed": false,
+      "fallbackReason": null
+    }
+  },
+  "planningDirectionSelection": {
+    "version": 1,
+    "status": "SELECTED",
+    "gameId": "survival2",
+    "date": "2026-09-10",
+    "choice": "A+B",
+    "selectedDirectionIds": [
+      "A",
+      "B"
+    ],
+    "focus": "숲의 생존자들를 중심으로 관찰·판단의 재미를 전면에 둔다. + Noto Sans KR를 중심으로 위험·압박과 돌파의 재미를 강조한다.",
+    "playerExperience": "플레이어가 ko의 상태와 주변 단서를 읽고 다음 행동을 스스로 고르게 한다. + 플레이어가 assets/survival-atlas.svg 때문에 익숙한 방식이 막히고 다른 수단으로 위기를 넘기게 한다.",
+    "signatureMoment": "숲의 생존자들와 utf-8의 관계를 한 장면에서 바로 이해하는 순간을 만든다. + Noto Sans KR의 위협이 ui과 동시에 작동해 선택을 강요하는 장면을 만든다.",
+    "reason": "A+B 방향은 숲의 생존자들의 관찰·판단의 재미를 중심으로, utf-8의 관계와 Noto Sans KR의 위험·압박을 강조하며, 플레이어의 경험과 시각적 경험을 통합적으로 전달합니다. 이 방향은 게임의 구조적 재구성과 플레이어의 경험적 흐름을 자연스럽",
+    "selectedBy": "planning-local-open-model",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "fallbackUsed": false,
+    "fallbackReason": null
+  }
+}

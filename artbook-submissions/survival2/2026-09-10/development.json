@@ -1,0 +1,183 @@
+{
+  "version": 6,
+  "gameId": "survival2",
+  "date": "2026-09-10",
+  "department": "development",
+  "status": "SUBMITTED",
+  "departmentReadiness": "NEEDS_VALIDATION",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "survival2",
+  "evidence": [
+    {
+      "source": "web-games/survival2/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/survival2/survival-25d-buildings.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/survival2/survival-25d-flare-fix.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/survival2/survival-25d-runtime.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/survival2/survival-25d.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-10-survival2.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "implementedNow": "true",
+    "architecture": "2D",
+    "prototypeLimits": "100",
+    "technicalRisks": "none",
+    "demoPlan": "live",
+    "handoffs": "none"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "2D",
+      "isometric",
+      "mobile"
+    ],
+    "implementationPlan": [
+      "2D",
+      "isometric",
+      "mobile"
+    ],
+    "demoValidation": [
+      "2D",
+      "isometric",
+      "mobile"
+    ]
+  },
+  "unverified": [
+    "2D",
+    "isometric",
+    "mobile"
+  ],
+  "cuts": [
+    {
+      "kind": "development",
+      "title": "survival2",
+      "body": "2D · isometric · mobile",
+      "image": "artbook-submissions/survival2/2026-09-10/visuals/development.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "development",
+        "ownerName": "개발",
+        "pageSlot": 1,
+        "visualType": "gameplay-loop",
+        "title": "플레이 루프",
+        "focus": "플레이 루프 구조",
+        "caption": "플레이 루프 구조 설계",
+        "elements": [
+          {
+            "label": "2D",
+            "note": "플레이 루프의 2D 구조",
+            "kind": ""
+          },
+          {
+            "label": "isometric",
+            "note": "플레이 루프의 isometric 구조",
+            "kind": ""
+          },
+          {
+            "label": "mobile",
+            "note": "플레이 루프의 mobile 구조",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/survival2/2026-09-10/visuals/development-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "development"
+      },
+      {
+        "owner": "development",
+        "ownerName": "개발",
+        "pageSlot": 2,
+        "visualType": "system-flow",
+        "title": "시스템 연결",
+        "focus": "시스템 연결",
+        "caption": "시스템 연결 구조",
+        "elements": [
+          {
+            "label": "gameplay-lo…",
+            "note": "플레이 루프의 연결",
+            "kind": ""
+          },
+          {
+            "label": "system-flow",
+            "note": "시스템 연결의 구조",
+            "kind": ""
+          },
+          {
+            "label": "prototype",
+            "note": "플랫폼의 prototype",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/survival2/2026-09-10/visuals/development-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "development"
+      }
+    ],
+    "generatedBy": {
+      "department": "development",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

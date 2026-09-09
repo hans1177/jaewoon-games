@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "gameId": "survival2",
+  "date": "2026-09-10",
+  "author": "director",
+  "status": "READY",
+  "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+  "cover": {
+    "title": "survival2",
+    "tagline": "생존자, 무기, 섬유, 나무, 돌, …",
+    "motifs": [
+      "survival2",
+      "survival25d",
+      "survival2",
+      "survival25d"
+    ],
+    "image": "artbook-submissions/survival2/2026-09-10/visuals/director-cover.svg",
+    "employeeAuthored": true
+  },
+  "summary": {
+    "title": "survival2",
+    "departmentHighlights": [
+      {
+        "department": "planning",
+        "departmentName": "기획",
+        "label": "숲의 생존자들 기획 부서 1차 …"
+      },
+      {
+        "department": "graphics",
+        "departmentName": "그래픽",
+        "label": "survival25d"
+      },
+      {
+        "department": "development",
+        "departmentName": "개발",
+        "label": "survival2"
+      },
+      {
+        "department": "qa",
+        "departmentName": "QA",
+        "label": "survival-25d"
+      },
+      {
+        "department": "balance",
+        "departmentName": "밸런스",
+        "label": "생존자: ${s.name}, 무…"
+      }
+    ],
+    "closing": "survival25d",
+    "image": "artbook-submissions/survival2/2026-09-10/visuals/director-summary.svg",
+    "employeeAuthored": true
+  },
+  "sourceDepartments": [
+    "planning",
+    "graphics",
+    "development",
+    "qa",
+    "balance"
+  ],
+  "newClaimsAdded": false,
+  "runner": {
+    "type": "vibe2-local-open-model-director-presentation",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "assistantAuthored": false
+  }
+}
