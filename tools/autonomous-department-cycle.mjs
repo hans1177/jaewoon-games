@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { planCompanyDevelopmentTask } from '../assets/vibe-company-orchestration-bridge.js';
+import { selectVerifiedDepartmentLearning } from './department-learning-memory.mjs';
 
 const MODEL=process.env.AUTONOMOUS_LOCAL_MODEL||'qwen3:0.6b';
 const HOST=process.env.OLLAMA_HOST?`http://${process.env.OLLAMA_HOST}`:'http://127.0.0.1:11434';
@@ -49,18 +50,21 @@ export function selectVerifiedVibeLearning(companyDna={},max=6){
   return {source:'company-learning/company-dna.json',verifiedOnly:true,patterns,antiPatterns};
 }
 
-export function buildVibeCoreContext({order,book,companyDna={}}={}){
+export function buildVibeCoreContext({order,book,companyDna={},departmentExperience={}}={}){
   if(!order?.run)throw new Error('실행 가능한 work-order가 필요함');
   const target=targetFor(order),stageId=stageFor(order,book),responsibleFiles=Array.isArray(order.responsibilityFiles)?order.responsibilityFiles:[];
   const plan=planCompanyDevelopmentTask({request:clean(order.goal),target,gameId:clean(order.gameSlug||order.gameId),responsibleFiles,knownBroken:clean(order.repairMode).toUpperCase()==='RULE_PATCH',stageId,artbook:book,artbookStatus:bookStatus(book),artbookCutCount:bookCutCount(book),artbookPostprocessComplete:bookPostprocessComplete(book),artbookRef:clean(book?.id||book?.sourcePath||book?.path)});
   const learning=selectVerifiedVibeLearning(companyDna);
-  return {version:1,engine:'VIBE2_COMPANY_CORE',source:'assets/vibe-company-orchestration-bridge.js',authority:'proposal-and-execution-contract-not-final-department-verdict',initialMaturity:'EARLY_COLLABORATIVE',target,stageId:plan?.stage?.id||stageId,routing:{mayDispatch:plan?.routing?.mayDispatch===true,mayExecute:plan?.routing?.mayExecute===true,requiresOwnerAction:plan?.routing?.requiresOwnerAction===true,completedArtbookLocked:plan?.routing?.completedArtbookLocked===true,artbookRevisionAllowed:plan?.routing?.artbookRevisionAllowed===true,conceptChangeRule:plan?.routing?.conceptChangeRule||null},qualityBar:plan?.qualityBar??null,executionQa:Array.isArray(plan?.execution?.qa)?plan.execution.qa.slice(0,16):[],learning,departmentReviewRequired:true,maySelfApprove:false,verifiedLearningOnly:true};
+  const departmentLearningByRole=Object.fromEntries(CORE_ROLES.map(role=>[role,selectVerifiedDepartmentLearning(departmentExperience,{role,gameId:order.gameId,gameSlug:order.gameSlug,sourcePath:order.sourcePath,workLane:laneFor(order)},3)]));
+  const departmentLearning={source:'department-experience.json',verifiedOnly:true,authority:'past-evidence-not-current-verdict',byRole:departmentLearningByRole,totalUsed:Object.values(departmentLearningByRole).reduce((sum,rows)=>sum+rows.length,0)};
+  return {version:1,engine:'VIBE2_COMPANY_CORE',source:'assets/vibe-company-orchestration-bridge.js',authority:'proposal-and-execution-contract-not-final-department-verdict',initialMaturity:'EARLY_COLLABORATIVE',target,stageId:plan?.stage?.id||stageId,routing:{mayDispatch:plan?.routing?.mayDispatch===true,mayExecute:plan?.routing?.mayExecute===true,requiresOwnerAction:plan?.routing?.requiresOwnerAction===true,completedArtbookLocked:plan?.routing?.completedArtbookLocked===true,artbookRevisionAllowed:plan?.routing?.artbookRevisionAllowed===true,conceptChangeRule:plan?.routing?.conceptChangeRule||null},qualityBar:plan?.qualityBar??null,executionQa:Array.isArray(plan?.execution?.qa)?plan.execution.qa.slice(0,16):[],learning,departmentLearning,departmentReviewRequired:true,maySelfApprove:false,verifiedLearningOnly:true};
 }
 
 function rolePrompt({role,order,book,previous,vibeCore}){
   const agent=readText(`.github/agents/${ROLE_AGENT[role]}.agent.md`);
   const collaborationRule=role===FINAL_ROLE?'다섯 부서 독립 결과를 모두 읽고 충돌을 조정한다.':'다른 부서 결과를 기다리지 않고 자기 전문영역을 독립적으로 판단한다.';
-  return `/no_think\n너는 재운컴퍼니 ${ROLE_NAME[role]}다. 아트북 완성 후 24시간 연속 개발의 한 플로어를 검토한다. Vibe는 회사 공용 제작 엔진이지만 아직 초기 단계라 단독 확정자가 아니다. Vibe 제안을 근거와 부서 전문성으로 검토하고 틀리거나 부족하면 ADJUST로 교정한다.\n\n부서 책임:\n${ROLE_TASK[role]}\n협업 방식: ${collaborationRule}\n\n현재 개발 작업:\n- 게임: ${order.gameName||order.gameId}\n- 경로: ${order.sourcePath}\n- 단계: ${order.projectStage}\n- 원래 작은 목표: ${order.goal}\n- 책임 파일: ${(order.responsibilityFiles||[]).join(', ')||'아직 미지정'}\n- 보호값: ${(order.protectedValues||[]).join(', ')||'save key / core loop'}\n\nVibe 공용 핵심 엔진 제안/실행계약:\n${compact(vibeCore,3000)}\n\n완성 아트북 근거:\n${compact(bookEvidence(book),2200)}\n\n부서 인계/독립 결과:\n${compact(previous,3000)}\n\n부서 규칙 발췌:\n${compact(agent,3200)}\n\n반드시 지켜라:\n1. Vibe 결과를 그대로 믿지 말고 현재 코드·아트북·부서 근거와 비교한다. 오류/누락은 ADJUST로 구체적으로 교정한다.\n2. Company DNA에서는 검증된 VIBE2 패턴만 재사용하고 anti-pattern은 반복하지 않는다.\n3. 이번 한 플로어의 작은 변경만 다룬다. 전면 재작성 금지.\n4. 저장 의미·핵심 루프·완성 아트북의 큰 방향을 임의 변경하지 않는다.\n5. 출시 완료나 QA PASS를 허위로 선언하지 않는다.\n6. 다른 부서의 책임을 대신 구현하지 않는다.\n7. BLOCK은 실제 안전/정체성/검증 충돌이 있을 때만 사용한다.\n8. JSON Schema 형식만 출력한다.\n9. nextAction은 개발 워커가 그대로 참고할 수 있는 한 문장의 구체적 제약이어야 한다.\n10. summary는 결론만 한 문장으로 쓰고, checks는 검증할 조건만, risks는 아직 해결되지 않은 위험만 쓴다.\n11. 같은 사실이나 의미를 summary, nextAction, checks, risks 여러 필드에 반복하거나 표현만 바꿔 재작성하지 않는다.\n12. checks와 risks는 서로 독립적인 필수 항목만 넣는다. 없으면 빈 배열, 보통 1~2개만 쓰고 실제로 다른 고위험 근거가 있을 때만 최대 4개까지 쓴다.`;
+  const verifiedDepartmentLearning=role===FINAL_ROLE?vibeCore?.departmentLearning?.byRole:(vibeCore?.departmentLearning?.byRole?.[role]??[]);
+  return `/no_think\n너는 재운컴퍼니 ${ROLE_NAME[role]}다. 아트북 완성 후 24시간 연속 개발의 한 플로어를 검토한다. Vibe는 회사 공용 제작 엔진이지만 아직 초기 단계라 단독 확정자가 아니다. Vibe 제안을 근거와 부서 전문성으로 검토하고 틀리거나 부족하면 ADJUST로 교정한다.\n\n부서 책임:\n${ROLE_TASK[role]}\n협업 방식: ${collaborationRule}\n\n현재 개발 작업:\n- 게임: ${order.gameName||order.gameId}\n- 경로: ${order.sourcePath}\n- 단계: ${order.projectStage}\n- 원래 작은 목표: ${order.goal}\n- 책임 파일: ${(order.responsibilityFiles||[]).join(', ')||'아직 미지정'}\n- 보호값: ${(order.protectedValues||[]).join(', ')||'save key / core loop'}\n\nVibe 공용 핵심 엔진 제안/실행계약:\n${compact(vibeCore,3000)}\n\n독립 QA를 통과한 과거 부서 경험(참고 근거이며 현재 판단 권한이 아님):\n${compact(verifiedDepartmentLearning,2600)}\n\n완성 아트북 근거:\n${compact(bookEvidence(book),2200)}\n\n부서 인계/독립 결과:\n${compact(previous,3000)}\n\n부서 규칙 발췌:\n${compact(agent,3200)}\n\n반드시 지켜라:\n1. Vibe 결과를 그대로 믿지 말고 현재 코드·아트북·부서 근거와 비교한다. 오류/누락은 ADJUST로 구체적으로 교정한다.\n2. Company DNA에서는 검증된 VIBE2 패턴만 재사용하고 anti-pattern은 반복하지 않는다. 검증된 과거 부서 경험도 현재 코드/아트북에 맞을 때만 참고하며 XP·레벨이나 과거 결론을 현재 권한으로 승격하지 않는다.\n3. 이번 한 플로어의 작은 변경만 다룬다. 전면 재작성 금지.\n4. 저장 의미·핵심 루프·완성 아트북의 큰 방향을 임의 변경하지 않는다.\n5. 출시 완료나 QA PASS를 허위로 선언하지 않는다.\n6. 다른 부서의 책임을 대신 구현하지 않는다.\n7. BLOCK은 실제 안전/정체성/검증 충돌이 있을 때만 사용한다.\n8. JSON Schema 형식만 출력한다.\n9. nextAction은 개발 워커가 그대로 참고할 수 있는 한 문장의 구체적 제약이어야 한다.\n10. summary는 결론만 한 문장으로 쓰고, checks는 검증할 조건만, risks는 아직 해결되지 않은 위험만 쓴다.\n11. 같은 사실이나 의미를 summary, nextAction, checks, risks 여러 필드에 반복하거나 표현만 바꿔 재작성하지 않는다.\n12. checks와 risks는 서로 독립적인 필수 항목만 넣는다. 없으면 빈 배열, 보통 1~2개만 쓰고 실제로 다른 고위험 근거가 있을 때만 최대 4개까지 쓴다.`;
 }
 
 async function callRole(role,ctx){
@@ -82,9 +86,9 @@ async function callRole(role,ctx){
 }
 
 function loadInputs(){
-  const order=readJson('.autonomous/work-order.json');const artbooks=readJson('game-artbooks.json',{artbooks:[]});const companyDna=readJson('company-learning/company-dna.json',{version:1,items:[],antiPatterns:[]});
+  const order=readJson('.autonomous/work-order.json');const artbooks=readJson('game-artbooks.json',{artbooks:[]});const companyDna=readJson('company-learning/company-dna.json',{version:1,items:[],antiPatterns:[]});const departmentExperience=readJson('department-experience.json',{version:1,verifiedLearning:[]});
   if(!order?.run)throw new Error('실행 가능한 work-order가 필요함');
-  const book=latestBook(artbooks,order.gameSlug);const vibeCore=buildVibeCoreContext({order,book,companyDna});return {order,artbooks,companyDna,book,vibeCore};
+  const book=latestBook(artbooks,order.gameSlug);const vibeCore=buildVibeCoreContext({order,book,companyDna,departmentExperience});return {order,artbooks,companyDna,departmentExperience,book,vibeCore};
 }
 
 export async function runDepartmentRole({role,order,book,vibeCore}={}){
@@ -117,7 +121,7 @@ function buildCycle({order,vibeCore,results,final}){
   const finalGoal=`${originalGoal} Vibe 공용 실행계약(${vibeCore.stageId}, ${qualityTier})을 따르되 AI 부서 교정이 우선한다. 부서 사이클 최종 제약: ${constraint}`.slice(0,2200);
   const adjustments=all.filter(row=>row.decision==='ADJUST').map(row=>({role:row.role,summary:row.summary,nextAction:row.nextAction}));
   const fast=laneFor(order)==='FAST';
-  return {version:3,gameId:order.gameId,gameSlug:order.gameSlug,candidateId:process.env.AUTONOMOUS_CANDIDATE_ID||order.candidateId||null,sourcePath:order.sourcePath,workLane:fast?'FAST':'FULL',sequence:ROLES,parallelDepartments:CORE_ROLES,activeReviewRoles:fast?FAST_REVIEW_ROLES:CORE_ROLES,finalIntegrator:fast?'deterministic-fast-integrator':FINAL_ROLE,allDepartmentsWorked:!fast,paidApi:false,localModel:MODEL,originalGoal,finalGoal,finalDecision:final.decision,vibeCore,collaboration:{mode:fast?'FAST_DEV_QA_REVIEW_THEN_DETERMINISTIC_INTEGRATION':'VIBE_PROPOSES_PARALLEL_AI_DEPARTMENTS_REVIEW_THEN_PLANNING_INTEGRATES',finalIntegrationMode:final.integrationMode||(fast?'DETERMINISTIC_FAST_LANE':'PLANNING_AI'),vibeProposalReviewedBy:fast?FAST_REVIEW_ROLES:ROLES,departmentAdjustmentCount:adjustments.length,departmentAdjustments:adjustments,verifiedLearningUsed:vibeCore.learning.patterns.length,antiPatternsUsed:vibeCore.learning.antiPatterns.length,learningWriteAuthority:'independent-qa-verified-outcome-only',vibeMaySelfApprove:false,vibeMayOverrideDepartments:false,sourceWriteConcurrency:'SERIAL_AFTER_PARALLEL_REVIEW'},results:all,completedAt:new Date().toISOString()};
+  return {version:3,gameId:order.gameId,gameSlug:order.gameSlug,candidateId:process.env.AUTONOMOUS_CANDIDATE_ID||order.candidateId||null,sourcePath:order.sourcePath,workLane:fast?'FAST':'FULL',sequence:ROLES,parallelDepartments:CORE_ROLES,activeReviewRoles:fast?FAST_REVIEW_ROLES:CORE_ROLES,finalIntegrator:fast?'deterministic-fast-integrator':FINAL_ROLE,allDepartmentsWorked:!fast,paidApi:false,localModel:MODEL,originalGoal,finalGoal,finalDecision:final.decision,vibeCore,collaboration:{mode:fast?'FAST_DEV_QA_REVIEW_THEN_DETERMINISTIC_INTEGRATION':'VIBE_PROPOSES_PARALLEL_AI_DEPARTMENTS_REVIEW_THEN_PLANNING_INTEGRATES',finalIntegrationMode:final.integrationMode||(fast?'DETERMINISTIC_FAST_LANE':'PLANNING_AI'),vibeProposalReviewedBy:fast?FAST_REVIEW_ROLES:ROLES,departmentAdjustmentCount:adjustments.length,departmentAdjustments:adjustments,verifiedLearningUsed:vibeCore.learning.patterns.length,antiPatternsUsed:vibeCore.learning.antiPatterns.length,verifiedDepartmentLearningUsed:vibeCore.departmentLearning?.totalUsed||0,learningWriteAuthority:'independent-qa-verified-outcome-only',vibeMaySelfApprove:false,vibeMayOverrideDepartments:false,sourceWriteConcurrency:'SERIAL_AFTER_PARALLEL_REVIEW'},results:all,completedAt:new Date().toISOString()};
 }
 
 function deterministicFastFinal(order,results){
@@ -143,9 +147,9 @@ export async function finalizeDepartmentCycle({order,book,vibeCore,results}={}){
   return buildCycle({order,vibeCore,results:ordered,final});
 }
 
-export async function runDepartmentCycle({order,artbooks,companyDna={}}={}){
+export async function runDepartmentCycle({order,artbooks,companyDna={},departmentExperience={}}={}){
   if(!order?.run)throw new Error('실행 가능한 work-order가 필요함');
-  const book=latestBook(artbooks,order.gameSlug);const vibeCore=buildVibeCoreContext({order,book,companyDna});const results=await Promise.all(CORE_ROLES.map(role=>runDepartmentRole({role,order,book,vibeCore})));return finalizeDepartmentCycle({order,book,vibeCore,results});
+  const book=latestBook(artbooks,order.gameSlug);const vibeCore=buildVibeCoreContext({order,book,companyDna,departmentExperience});const results=await Promise.all(CORE_ROLES.map(role=>runDepartmentRole({role,order,book,vibeCore})));return finalizeDepartmentCycle({order,book,vibeCore,results});
 }
 
 function writeJson(file,value){ensureDir(file);fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');}
@@ -159,9 +163,9 @@ async function main(){
   }
   if(finalize){
     const dir=process.env.AUTONOMOUS_DEPARTMENT_RESULTS_DIR||'.autonomous/department-results';const packages=CORE_ROLES.map(role=>readJson(path.join(dir,`${role}.json`))).filter(Boolean);if(packages.length!==CORE_ROLES.length)throw new Error(`부서 결과 ${packages.length}/5`);
-    const cycle=await finalizeDepartmentCycle({order,book,vibeCore,results:packages.map(item=>item.result)});const output=process.env.AUTONOMOUS_DEPARTMENT_CYCLE_OUTPUT||'/tmp/autonomous-department-cycle.json';writeJson(output,cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,activeReviewRoles:cycle.activeReviewRoles,workLane:cycle.workLane,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,finalIntegrationMode:cycle.collaboration.finalIntegrationMode,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount,output}));return;
+    const cycle=await finalizeDepartmentCycle({order,book,vibeCore,results:packages.map(item=>item.result)});const output=process.env.AUTONOMOUS_DEPARTMENT_CYCLE_OUTPUT||'/tmp/autonomous-department-cycle.json';writeJson(output,cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,activeReviewRoles:cycle.activeReviewRoles,workLane:cycle.workLane,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,finalIntegrationMode:cycle.collaboration.finalIntegrationMode,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount,verifiedDepartmentLearningUsed:cycle.collaboration.verifiedDepartmentLearningUsed,output}));return;
   }
-  const artbooks=readJson('game-artbooks.json',{artbooks:[]});const companyDna=readJson('company-learning/company-dna.json',{version:1,items:[],antiPatterns:[]});const cycle=await runDepartmentCycle({order,artbooks,companyDna});writeJson('/tmp/autonomous-department-cycle.json',cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,activeReviewRoles:cycle.activeReviewRoles,workLane:cycle.workLane,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,finalIntegrationMode:cycle.collaboration.finalIntegrationMode,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount}));
+  const artbooks=readJson('game-artbooks.json',{artbooks:[]});const companyDna=readJson('company-learning/company-dna.json',{version:1,items:[],antiPatterns:[]});const departmentExperience=readJson('department-experience.json',{version:1,verifiedLearning:[]});const cycle=await runDepartmentCycle({order,artbooks,companyDna,departmentExperience});writeJson('/tmp/autonomous-department-cycle.json',cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,activeReviewRoles:cycle.activeReviewRoles,workLane:cycle.workLane,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,finalIntegrationMode:cycle.collaboration.finalIntegrationMode,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount,verifiedDepartmentLearningUsed:cycle.collaboration.verifiedDepartmentLearningUsed}));
 }
 
 const isMain=process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href;
