@@ -844,7 +844,101 @@
         ]
       },
       "productionApproval": false
+    },
+    {
+      "id": "survival-2026-09-10-initial-followup",
+      "gameId": "survival",
+      "gameName": "나의 생존기",
+      "sourceDate": "2026-09-10",
+      "dueDate": "2026-09-10",
+      "status": "SCHEDULED",
+      "sourceWorkMode": "INITIAL",
+      "sourceLifecycleState": "DESIGN_BASELINE",
+      "criterion": "FIVE_VOTE_DEPARTMENT_AVERAGE_STARS_LE_OVERALL_AVERAGE",
+      "overallAverageStars": 4.92,
+      "maxStars": 5,
+      "ratingsPerDepartment": 5,
+      "departmentVotesPerResult": 4,
+      "directorVotesPerResult": 1,
+      "selectedDepartments": [
+        "qa",
+        "balance"
+      ],
+      "departmentAverageStars": {
+        "planning": 5,
+        "graphics": 5,
+        "development": 5,
+        "qa": 4.8,
+        "balance": 4.8
+      },
+      "feedbackByDepartment": {
+        "qa": [
+          {
+            "reviewerDepartment": "planning",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본부 결과물의 개선점은 '플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계 [PLANNING_DIRECTION:A+B]'의 내용을 정확히 1개로 쓴다."
+          },
+          {
+            "reviewerDepartment": "graphics",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+          },
+          {
+            "reviewerDepartment": "development",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본 부서 결과물의 점수는 5점으로 평가됩니다. 본 개발 부서의 결과물은 게임 개발 부서의 개발 결과물로 검증되지 않습니다."
+          },
+          {
+            "reviewerDepartment": "balance",
+            "reviewerType": "department",
+            "stars": 4,
+            "improvement": "본부 결과물은 기능적 성능을 잘 보여주지만, '플레이 흐름·문제 장면·테스트 동선을 이미지 중심 1장으로 설계 [PLANNING_DIRECTION:A+B]'이라는 구조를 강조하지 않아, 부서의 전문성과 구체화도 미흡한 점이 있다."
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 5,
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+          }
+        ],
+        "balance": [
+          {
+            "reviewerDepartment": "planning",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본부 결과물의 개선점은 '나의 생존기'의 전략적 전환 방향을 명확히 하며, 부서 결과물의 구조적 풍부함을 유지하는 데 기대할 수 있습니다."
+          },
+          {
+            "reviewerDepartment": "graphics",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          },
+          {
+            "reviewerDepartment": "development",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본부서 결과물의 개선점은 1개로 정확히 'Noto Sans KR의 위험과 압박을 통해 전투의 흥미를 강조하는 방향으로 전환'을 추가하여 부서의 전략적 전환을 명확히 하였습니다."
+          },
+          {
+            "reviewerDepartment": "qa",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 4,
+            "improvement": "부서 결과물의 내용을 정확히 1개로 보완하고, 별점 4점을 받을 수 있습니다."
+          }
+        ]
+      },
+      "productionApproval": false
     }
   ],
-  "updatedAt": "2026-09-09"
+  "updatedAt": "2026-09-10"
 }
