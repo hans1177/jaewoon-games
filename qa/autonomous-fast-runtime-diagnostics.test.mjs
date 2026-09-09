@@ -4,6 +4,32 @@ import { build24hAutonomousWorkOrder } from '../tools/autonomous-24h-work-planne
 
 const filesystem={existsSync:()=>true};
 
+const portfolio={
+  status:'ACTIVE',
+  paidApi:false,
+  maxModelCallsPerRun:2,
+  maxRunnerMinutesPerRun:20,
+  developmentFocusPolicy:{
+    maxFocusedGames:1,
+    fastLane:{reviewRoles:['development','qa'],implementationRoles:['development']},
+  },
+  projects:[{
+    id:'P3',
+    slug:'release',
+    name:'Release',
+    sourcePath:'web-games/release',
+    profileStatus:'RELEASE_CONFIRMED',
+    mode:'MAINTENANCE',
+    protectedValues:['public-stable'],
+  }],
+};
+const health={games:[{
+  gameId:'release',
+  status:'warning',
+  issues:['requestfailed: http://127.0.0.1:4173/assets/runtime.js net::ERR_ABORTED'],
+  healthReason:'same-origin-resource-failure',
+}]};
+
 test('FAST runtime recovery preserves deterministic diagnostic scope',()=>{
   const issue={
     type:'BROKEN_LOCAL_PATH',
@@ -15,31 +41,6 @@ test('FAST runtime recovery preserves deterministic diagnostic scope',()=>{
     relatedFiles:['index.html'],
     microTask:'index.html의 깨진 runtime 경로 1개만 복구한다.',
   };
-  const portfolio={
-    status:'ACTIVE',
-    paidApi:false,
-    maxModelCallsPerRun:2,
-    maxRunnerMinutesPerRun:20,
-    developmentFocusPolicy:{
-      maxFocusedGames:1,
-      fastLane:{reviewRoles:['development','qa'],implementationRoles:['development']},
-    },
-    projects:[{
-      id:'P3',
-      slug:'release',
-      name:'Release',
-      sourcePath:'web-games/release',
-      profileStatus:'RELEASE_CONFIRMED',
-      mode:'MAINTENANCE',
-      protectedValues:['public-stable'],
-    }],
-  };
-  const health={games:[{
-    gameId:'release',
-    status:'warning',
-    issues:['requestfailed: http://127.0.0.1:4173/assets/runtime.js net::ERR_ABORTED'],
-    healthReason:'same-origin-resource-failure',
-  }]};
   const diagnostics={release:{
     version:2,
     sourcePath:'web-games/release',
@@ -67,4 +68,29 @@ test('FAST runtime recovery preserves deterministic diagnostic scope',()=>{
   assert.deepEqual(order.responsibilityFiles,['index.html']);
   assert.equal(order.microTask.file,'index.html');
   assert.equal(order.microTask.goal,'index.html의 깨진 runtime 경로 1개만 복구한다.');
+});
+
+test('FAST same-origin runtime incident falls back to index.html when diagnostics are empty',()=>{
+  const order=build24hAutonomousWorkOrder({
+    portfolio,
+    artbooks:{artbooks:[]},
+    health,
+    catalog:{games:[{id:'release',homepageCategory:'release-confirmed'}]},
+    diagnostics:{},
+    queueState:{version:2,attempts:[]},
+    date:'2026-09-10',
+    filesystem,
+  });
+
+  assert.equal(order.selectedReason,'RUNTIME_INCIDENT_FIRST');
+  assert.equal(order.workLane,'FAST');
+  assert.equal(order.diagnosticTopIssue.type,'HEALTH_RUNTIME_ENTRYPOINT_FALLBACK');
+  assert.deepEqual(order.responsibilityFiles,['index.html']);
+  assert.equal(order.microTask.file,'index.html');
+  assert.match(order.microTask.goal,/same-origin runtime 사고 1건/);
+  assert.deepEqual(order.evidence.runtimeFallbackScope,{
+    used:true,
+    file:'index.html',
+    reason:'SAME_ORIGIN_RUNTIME_WITHOUT_DIAGNOSTIC_SCOPE',
+  });
 });
