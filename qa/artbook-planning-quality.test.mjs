@@ -22,16 +22,19 @@ function baseFixture(){
   writeJson(root,'public-game-health.json',{games:[]});
   writeJson(root,'asset-health.json',{assets:[]});
   const draftPath=`artbook-submissions/${gameId}/${date}/vibe2-first-draft.json`;
-  writeJson(root,`artbook-work-orders/${date}-${gameId}.json`,{gameName:'기획 QA 게임',vibe2FirstDraftPath:draftPath,departmentTasks:{planning:{scope:'6단계 스토리와 퀘스트 인과를 검토한다.'}}});
+  writeJson(root,`artbook-work-orders/${date}-${gameId}.json`,{gameName:'기획 QA 게임',vibe2FirstDraftPath:draftPath,departmentTasks:{planning:{scope:'6단계 스토리와 퀘스트 인과를 검토한다.'},qa:{scope:'플레이 흐름과 저장 위험을 검토한다.'}}});
   const stages=['OPENING','EARLY','MID','LATE','FINAL_BOSS','ENDING'];
   const phases=stages.map((stage,i)=>({stage,region:`${i+1}구역`,quest:`${stage} 핵심 목표를 해결한다`,cause:`이전 단계 결과로 ${i+1}구역 문제가 발생한다`,playerAction:`플레이어가 ${i+1}구역의 위협을 조사하고 대응한다`,result:`${i+1}구역 문제가 해결되어 다음 단계가 열린다`,nextHook:i<5?`${i+2}구역으로 이동한다`:'엔딩 이후 탐험이 열린다'}));
   writeJson(root,draftPath,{proposalOnly:true,generationMode:'DETERMINISTIC_FALLBACK',storySpine:{opening:'첫 생존 목표',early:'초반 자원 확보',mid:'중반 위협 추적',late:'후반 결전 준비',finalBoss:'최종 위협 격파',ending:'생존권 회복'},phasePlans:phases,regions:phases.map(x=>x.region),mainQuestChain:phases,npcMotivations:[],bossCausality:[{boss:'최종 포식자',trigger:'후반 목표 완료',whyNow:'생태 위기가 최고조에 이름',winConsequence:'생존권이 회복됨'}],gaps:['NPC와 세력의 고유 설정은 추가 검증 필요'],recommendedPages:18});
   fs.mkdirSync(path.join(root,'web-games',gameId),{recursive:true});
-  fs.writeFileSync(path.join(root,'web-games',gameId,'index.html'),'<html><body><script>const story="생존 지역에서 자원을 모으고 boss를 추적한다"; const quest="최종 보스를 찾아간다";</script></body></html>');
+  fs.writeFileSync(path.join(root,'web-games',gameId,'index.html'),'<html><body><script>const story="생존 지역에서 자원을 모으고 boss를 추적한다"; const quest="최종 보스를 찾아간다"; localStorage.setItem("save","ok");</script></body></html>');
   return root;
 }
 function lowCandidate(){
   return {headline:'survival',readiness:'NEEDS_VALIDATION',section:{worldEvidence:'survival',protagonistMotivationEvidence:'survival',regionCausality:'survival',storyGameplayConnection:'survival',gaps:'survival',handoffs:'survival'},conceptPlan:{creativeIdeas:['survival','survival','survival'],implementationPlan:['survival','survival','survival'],demoValidation:['survival','survival','survival']},unverified:[],visualNotes:['survival']};
+}
+function qaCandidate(){
+  return {headline:'저장과 재실행 흐름 검토',readiness:'READY',section:{currentPlayableFlow:'시작 후 핵심 행동을 수행하고 저장한 뒤 재실행하는 흐름을 확인한다.',verifiedEvidence:'게임 코드에서 시작 처리와 localStorage 저장 호출을 함께 확인했다.',problemScenes:'저장 직후 새로고침과 빈 저장값 복구 장면을 우선 문제 구간으로 본다.',mobileSaveErrorRisks:'모바일 탭 종료 직전 저장과 손상된 저장값 복구 실패 가능성을 점검한다.',testScenarios:'시작→행동→저장→새로고침→복구 순서로 실제 상태 유지 여부를 확인한다.',unverified:'장시간 플레이 후 저장 데이터 크기와 브라우저별 종료 타이밍은 추가 확인이 필요하다.',handoffs:'개발부에는 저장 실패 처리 지점을, 기획부에는 재실행 후 목표 연속성을 전달한다.'},conceptPlan:{creativeIdeas:['[PROPOSAL] 저장 복구 상태를 플레이어가 이해할 수 있는 안내로 보여준다.'],implementationPlan:['저장 파싱 실패 시 안전한 기본 상태 복구 경로를 기존 저장 책임 시스템에서 처리한다.'],demoValidation:['저장값 정상·빈값·손상값 세 경우를 재실행해 진행 상태와 오류 표시를 확인한다.']},unverified:['실기기 종료 타이밍은 추가 검증 필요'],visualNotes:['시작→저장→재실행→복구 흐름을 한 장에 표시']};
 }
 function runNode(script,args,{cwd,env={}}={}){
   return new Promise((resolve,reject)=>{
@@ -55,6 +58,29 @@ test('planning runner rejects repeated one-word model output and uses meaningful
     assert.match(output.section.regionCausality,/EARLY|MID|LATE/);
     assert.equal(output.conceptPlan.implementationPlan.length,3);
     assert.match(result.stdout,/ARTBOOK_PLANNING_FALLBACK_USED=YES/);
+  }finally{server.close();fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('QA runner retries truncated JSON once with a larger output budget and reduced retry prompt',async()=>{
+  const root=baseFixture();
+  let calls=0;const budgets=[];const prompts=[];
+  const server=http.createServer((req,res)=>{let body='';req.on('data',d=>body+=d);req.on('end',()=>{
+    const packet=JSON.parse(body);calls++;budgets.push(packet.options?.num_predict);prompts.push(packet.messages?.[1]?.content||'');
+    const content=calls===1?'{"headline":"저장 흐름 검토","readiness":"READY","section":{"currentPlayableFlow":"시작 후 저장':JSON.stringify(qaCandidate());
+    res.writeHead(200,{'content-type':'application/json'});res.end(JSON.stringify({message:{content}}));
+  });});
+  await new Promise((resolve,reject)=>server.listen(11434,'127.0.0.1',resolve).once('error',reject));
+  try{
+    const result=await runNode(runner,[],{cwd:root,env:{ARTBOOK_ROLE:'qa',ARTBOOK_DATE:date,ARTBOOK_GAME_ID:gameId,ARTBOOK_LOCAL_MODEL:'fake-model'}});
+    assert.equal(result.code,0,result.stderr||result.stdout);
+    assert.equal(calls,2);
+    assert.deepEqual(budgets,[900,1300]);
+    assert.match(prompts[1],/이전 시도 실패 사유/);
+    assert.ok(prompts[1].length<prompts[0].length);
+    const output=JSON.parse(fs.readFileSync(path.join(root,'artbook-submissions',gameId,date,'qa.json'),'utf8'));
+    assert.equal(output.runner.modelAttempts,2);
+    assert.equal(output.departmentReadiness,'READY');
+    assert.match(result.stderr,/ARTBOOK_LOCAL_MODEL_RETRY=qa:attempt=1/);
   }finally{server.close();fs.rmSync(root,{recursive:true,force:true});}
 });
 
