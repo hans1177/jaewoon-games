@@ -15,12 +15,13 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Restore pinned CPU-only Ollama runtime archive
+    - name: Probe or restore pinned CPU-only Ollama runtime archive
       id: runtime-cache
       uses: actions/cache@v4
       with:
         path: ~/.cache/jaewoon-ollama/ollama-linux-amd64-cpu-${{ inputs.version }}.tar.zst
         key: jaewoon-ollama-cpu-runtime-v2-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
+        lookup-only: ${{ inputs.pull-model == 'false' }}
 
     - name: Build slim CPU runtime on cache miss
       if: steps.runtime-cache.outputs.cache-hit != 'true'
@@ -73,10 +74,17 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        slim="$HOME/.cache/jaewoon-ollama/ollama-linux-amd64-cpu-${{ inputs.version }}.tar.zst"
-        test -s "$slim"
-        echo "OLLAMA_CPU_RUNTIME_CACHE_HIT=${{ steps.runtime-cache.outputs.cache-hit }}"
-        echo "OLLAMA_CPU_SLIM_BYTES=$(stat -c %s "$slim")"
+        cache_hit="${{ steps.runtime-cache.outputs.cache-hit }}"
+        echo 'OLLAMA_RUNTIME_CACHE_LOOKUP_ONLY=YES'
+        echo "OLLAMA_CPU_RUNTIME_CACHE_HIT=$cache_hit"
+        if [ "$cache_hit" = 'true' ]; then
+          echo 'OLLAMA_CPU_RUNTIME_RESTORE=SKIPPED_CACHE_HIT'
+        else
+          slim="$HOME/.cache/jaewoon-ollama/ollama-linux-amd64-cpu-${{ inputs.version }}.tar.zst"
+          test -s "$slim"
+          echo "OLLAMA_CPU_SLIM_BYTES=$(stat -c %s "$slim")"
+          echo 'OLLAMA_CPU_RUNTIME_REBUILT=YES'
+        fi
         echo 'OLLAMA_CPU_SLIM_RUNTIME=YES'
         echo 'OLLAMA_RUNTIME_EXTRACTION=SKIPPED_FOR_WARMUP'
         echo 'OLLAMA_SERVER_START=SKIPPED_FOR_WARMUP'
