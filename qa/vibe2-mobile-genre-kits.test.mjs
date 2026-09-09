@@ -32,6 +32,14 @@ test('명시적 Web 또는 Unity 요청은 장르 기본값보다 우선한다',
   assert.equal(unity.production.recommendedTarget,'unity-android');
 });
 
+test('Unity WebGL은 제작 타깃으로 허용하지 않고 Web은 네이티브 모바일 Web 경로로 유지한다',()=>{
+  assert.deepEqual(presetCatalog.rules.supportedTargets,['mobile-web','unity-android']);
+  assert.equal(presetCatalog.rules.supportedTargets.includes('unity-webgl'),false);
+  const plan=planAssetApplication({prompt:'Unity WebGL 생존 게임',manifest,presetCatalog});
+  assert.equal(plan.production.recommendedTarget,'mobile-web');
+  assert.notEqual(plan.production.recommendedTarget,'unity-webgl');
+});
+
 test('무료 외부 제작툴은 후보만 제공하고 자동 설치하지 않는다',()=>{
   const plan=planAssetApplication({prompt:'모바일 액션 RPG',manifest,presetCatalog});
   assert.equal(plan.production.externalToolAutoInstall,false);
