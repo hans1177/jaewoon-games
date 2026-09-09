@@ -53,3 +53,44 @@ jobs:
       - name: Backfill queue drained
         if: steps.next.outputs.continue != 'true'
         run: echo 'ARTBOOK_BACKFILL=NO_EXISTING_INITIAL_BACKLOG'
+
+  handoff-completed-design-baseline:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Resolve completed artbook development handoff
+        id: handoff
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs=require('fs');
+          const gate=JSON.parse(fs.readFileSync('artbook-gate-status.json','utf8'));
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const gameId=String(gate.gameId||'').trim();
+          const game=(catalog.games||[]).find(x=>x.id===gameId)||{};
+          const state=String(gate.artbookLifecycle?.state||'').toUpperCase();
+          const category=String(game.homepageCategory||'').toLowerCase();
+          const completed=gate.completedArtbook===true&&gate.postprocessComplete===true;
+          const should=completed&&state==='DESIGN_BASELINE'&&category==='development-confirmed';
+          console.log(`dispatch=${should?'true':'false'}`);
+          console.log(`game_id=${should?gameId:''}`);
+          console.log(`artbook_id=${should?String(gate.artbookLifecycle?.latestBaselineId||''):''}`);
+          console.log(`reason=${should?'COMPLETED_DESIGN_BASELINE_TO_DEVELOPMENT':'NO_DEVELOPMENT_HANDOFF'}`);
+          NODE
+      - name: Dispatch prioritized development for completed artbook
+        if: steps.handoff.outputs.dispatch == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run autonomous-continuous-development.yml --ref main -f priority_game_id="${{ steps.handoff.outputs.game_id }}"
+          echo "ARTBOOK_DEVELOPMENT_HANDOFF=DISPATCHED"
+          echo "ARTBOOK_DEVELOPMENT_GAME=${{ steps.handoff.outputs.game_id }}"
+          echo "ARTBOOK_DEVELOPMENT_BASELINE=${{ steps.handoff.outputs.artbook_id }}"
+      - name: No development handoff required
+        if: steps.handoff.outputs.dispatch != 'true'
+        run: echo 'ARTBOOK_DEVELOPMENT_HANDOFF=NO'

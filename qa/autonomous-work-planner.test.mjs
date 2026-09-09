@@ -39,6 +39,28 @@ test('출시확정 게임이 깨끗하면 개발확정의 실제 문제를 처�
   assert.equal(order.projectStage,'DEVELOPMENT_CONFIRMED');
 });
 
+test('완성된 DESIGN_BASELINE을 넘긴 개발확정 게임은 일반 개발 작업보다 먼저 시작한다',()=>{
+  const diagnostics={release:{issues:[],topIssue:null},a:diag(),b:diag()};
+  const artbooks={artbooks:[
+    {id:'a-design',gameId:'a',createdAt:'2026-09-08',status:'completed-artbook',lifecycle:{state:'DESIGN_BASELINE'},departmentOpinions:{development:{averageStars:4,priorityImprovement:'A 개선'}}},
+    {id:'b-design',gameId:'b',createdAt:'2026-09-09',status:'completed-artbook',lifecycle:{state:'DESIGN_BASELINE'},departmentOpinions:{development:{averageStars:4,priorityImprovement:'B 첫 개발'}}},
+  ]};
+  const order=buildAutonomousWorkOrder({portfolio:basePortfolio,artbooks,health:{games:[]},catalog,diagnostics,date:'2026-09-09',filesystem,queueState:queue(),priorityGameId:'b'});
+  assert.equal(order.gameId,'P0002');
+  assert.equal(order.selectedReason,'ARTBOOK_COMPLETED_DEVELOPMENT_HANDOFF');
+  assert.equal(order.evidence.artbookDevelopmentHandoff.matched,true);
+  assert.match(order.goal,/DESIGN_BASELINE/);
+});
+
+test('출시확정 런타임 사고는 아트북 개발 handoff보다 먼저 복구한다',()=>{
+  const diagnostics={release:diag(),b:diag()};
+  const health={games:[{gameId:'release',status:'critical',healthReason:'load failed',issues:['blank-screen'],signals:{loadOk:false}}]};
+  const artbooks={artbooks:[{id:'b-design',gameId:'b',createdAt:'2026-09-09',status:'completed-artbook',lifecycle:{state:'DESIGN_BASELINE'}}]};
+  const order=buildAutonomousWorkOrder({portfolio:basePortfolio,artbooks,health,catalog,diagnostics,date:'2026-09-09',filesystem,queueState:queue(),priorityGameId:'b'});
+  assert.equal(order.gameId,'P0101');
+  assert.equal(order.selectedReason,'RUNTIME_INCIDENT_FIRST');
+});
+
 test('진단 microtask는 책임 파일을 지정하고 모델 작업은 최대 2회 예산을 쓴다',()=>{
   const portfolio={...basePortfolio,projects:[basePortfolio.projects[0]]};
   const order=buildAutonomousWorkOrder({portfolio,artbooks:{artbooks:[]},health:{games:[]},catalog,diagnostics:{a:diag()},date:'2026-09-09',filesystem,queueState:queue()});
