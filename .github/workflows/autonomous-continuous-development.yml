@@ -303,6 +303,7 @@ jobs:
         with:
           model: ${{ env.AUTONOMOUS_LOCAL_MODEL }}
           version: ${{ env.OLLAMA_VERSION }}
+          department-role: ${{ matrix.role }}
       - name: Mark independent department active
         run: echo 'DEPARTMENT_WORK_STATE=ACTIVE'
       - name: Independent department review
