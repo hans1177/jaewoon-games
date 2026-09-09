@@ -64,6 +64,27 @@ function requestMentionsEditorOnlyCapability(target, request) {
 function responsibleFilesRequireEditor(task) {
   return (task?.responsibleFiles || []).some((file) => EDITOR_BINARY_EXTENSIONS.has(path.extname(posix(file)).toLowerCase()));
 }
+function buildLearningGuidance(learning = {}) {
+  const records = Array.isArray(learning?.records) ? learning.records.slice(0, 5) : [];
+  if (!records.length) return '';
+  const lines = [
+    '[VERIFIED EXPERIENCE MEMORY - advisory only]',
+    '다음 기록은 검증된 과거 경험이다. 관련될 때만 패치 전략/회피 패턴으로 참고하고 승인 권한, 보호 규칙, 게임 수치를 자동 변경하지 않는다.'
+  ];
+  for (const record of records) {
+    const parts = [
+      `경험 ${clean(record.id)}`,
+      `결과=${clean(record.outcome)}`,
+      clean(record.problem) ? `문제=${clean(record.problem).slice(0, 240)}` : '',
+      clean(record.change) ? `검증변경=${clean(record.change).slice(0, 240)}` : '',
+      clean(record.failureCause) ? `검증실패원인=${clean(record.failureCause).slice(0, 240)}` : '',
+      (record.reusablePatterns || []).length ? `재사용=${record.reusablePatterns.join(' | ').slice(0, 300)}` : '',
+      (record.avoidPatterns || []).length ? `회피=${record.avoidPatterns.join(' | ').slice(0, 300)}` : ''
+    ].filter(Boolean);
+    lines.push(`- ${parts.join('; ')}`);
+  }
+  return lines.join('\n');
+}
 export function classifyVibeExecutionRoute({ target = '', task = {}, adapter = {} } = {}) {
   const normalizedTarget = clean(target).toLowerCase();
   if (!taskRequiresWrite(task)) return freeze({ route: 'analysis-only', requiresEditor: false, reason: 'non-write-task' });
@@ -130,6 +151,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     && ['web', 'unity'].includes(plan.target)
     && task.requiresOwnerDecision !== true
     && task.protectedChange !== true;
+  const learningGuidance = buildLearningGuidance(plan.learning);
+  const executionGoal = learningGuidance ? `${task.goal}\n\n${learningGuidance}` : task.goal;
 
   return freeze({
     ...base,
@@ -143,7 +166,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     workMode: route.route === 'analysis-only' ? 'analysis-only' : route.route === 'engine-editor' ? 'engine-editor-task' : 'source-change-candidate',
     executionRoute: route.route,
     route,
-    goal: task.goal,
+    goal: executionGoal,
+    originalGoal: task.goal,
     department: task.department,
     priority: task.priority,
     releaseState,
@@ -160,6 +184,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     }),
     qa: freezeList(plan.qa || []),
     learning: plan.learning,
+    learningAppliedToWorkerGoal: Boolean(learningGuidance),
     motion: plan.motion,
     executionGate: plan.executionGate,
     deployment: freeze({
@@ -223,5 +248,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_AUTO_DEPLOY_ELIGIBLE=${order.deployment.automaticEligible ? 'YES' : 'NO'}`);
     console.log(`VIBE2_EXECUTION_ROUTE=${order.executionRoute}`);
     console.log(`VIBE2_SOURCE_ROOT=${order.source.root}`);
+    console.log(`VIBE2_EXPERIENCE_CONTEXT_APPLIED=${order.learningAppliedToWorkerGoal ? 'YES' : 'NO'}`);
   }
 }

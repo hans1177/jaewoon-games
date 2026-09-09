@@ -24,6 +24,19 @@ function hash(value = '') {
   return (h >>> 0).toString(36);
 }
 
+function experienceFingerprint({ gameId = '', engine = '', taskType = '', problem = '', goal = '', change = '', outcome = '', failureCause = '' } = {}) {
+  return `fp_${hash([
+    clean(gameId).toLowerCase(),
+    clean(engine).toLowerCase(),
+    clean(taskType).toLowerCase(),
+    clean(problem),
+    clean(goal),
+    clean(change),
+    clean(outcome).toUpperCase(),
+    clean(failureCause)
+  ].join('::'))}`;
+}
+
 export function createVibeExperienceRecord({
   id = '',
   gameId = '',
@@ -48,10 +61,12 @@ export function createVibeExperienceRecord({
   const failure = clean(failureCause);
   const validEvidence = Boolean(verified && proof.length > 0);
   const learningValid = validEvidence && (normalizedOutcome === 'PASS' || Boolean(failure));
-  const seed = [gameId, engine, taskType, problem, goal, change, normalizedOutcome, proof.join('|')].join('::');
+  const fingerprint = experienceFingerprint({ gameId, engine, taskType, problem, goal, change, outcome: normalizedOutcome, failureCause: failure });
+  const seed = [fingerprint, proof.join('|')].join('::');
   return freeze({
-    version: 1,
+    version: 2,
     id: clean(id) || `exp_${hash(seed)}`,
+    fingerprint,
     gameId: clean(gameId) || null,
     engine: clean(engine) || null,
     departments: freezeList(departments),
@@ -75,15 +90,23 @@ export function createVibeExperienceRecord({
 
 export function createVibeExperienceMemory(seed = {}) {
   const input = Array.isArray(seed) ? seed : Array.isArray(seed?.records) ? seed.records : [];
-  const records = input
-    .map((record) => createVibeExperienceRecord(record))
-    .filter((record) => record.reusable);
+  const records = [];
+  const seenIds = new Set();
+  const seenFingerprints = new Set();
+  for (const inputRecord of input) {
+    const record = createVibeExperienceRecord(inputRecord);
+    if (!record.reusable || seenIds.has(record.id) || seenFingerprints.has(record.fingerprint)) continue;
+    seenIds.add(record.id);
+    seenFingerprints.add(record.fingerprint);
+    records.push(record);
+  }
   return freeze({
-    version: 1,
+    version: 2,
     policy: freeze({
       verifiedEvidenceRequired: true,
       verifiedFailureMayTeach: true,
       unverifiedAttemptReusable: false,
+      exactDuplicateSuppressed: true,
       mayExpandAuthority: false,
       mayAutoCopyGameplayValues: false
     }),
@@ -102,9 +125,11 @@ export function addVibeExperience(memory, recordInput = {}) {
       memory: current
     });
   }
-  const records = current.records.filter((item) => item.id !== record.id);
-  records.push(record);
-  return freeze({ added: true, record, memory: createVibeExperienceMemory(records) });
+  const duplicate = current.records.find((item) => item.id === record.id || item.fingerprint === record.fingerprint);
+  if (duplicate) {
+    return freeze({ added: false, reason: 'duplicate-experience', record: duplicate, memory: current });
+  }
+  return freeze({ added: true, record, memory: createVibeExperienceMemory([...current.records, record]) });
 }
 
 function scoreRecord(record, query) {
@@ -170,6 +195,7 @@ export function createVibeLearningContext(memory, query = {}, options = {}) {
     version: 1,
     records: freeze(result.matches.map(({ record, score, reasons }) => freeze({
       id: record.id,
+      fingerprint: record.fingerprint,
       engine: record.engine,
       taskType: record.taskType,
       outcome: record.outcome,

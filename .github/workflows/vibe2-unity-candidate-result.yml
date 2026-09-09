@@ -12,7 +12,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: vibe2-control-state-${{ github.event.repository.default_branch }}
+  group: vibe2-control-state-vibe2-unreal-core
   cancel-in-progress: false
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
       - name: Checkout default Vibe2 control line
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.repository.default_branch }}
+          ref: vibe2-unreal-core
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
@@ -34,7 +34,7 @@ jobs:
       - name: Reconcile and persist candidate verification safely
         id: reconcile
         env:
-          CONTROL_BRANCH: ${{ github.event.repository.default_branch }}
+          CONTROL_BRANCH: vibe2-unreal-core
           CANDIDATE_BRANCH: ${{ github.event.workflow_run.head_branch }}
           BUILD_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           BUILD_RUN_ID: ${{ github.event.workflow_run.id }}
@@ -91,13 +91,13 @@ jobs:
           echo "continue_work=$final_continue" >> "$GITHUB_OUTPUT"
           echo 'VIBE2_AUTO_MAIN_PROMOTION=NO'
           echo 'VIBE2_AUTO_FINAL_PASS=NO'
-          echo 'VIBE2_AUTO_LEARNING=NO'
+          echo 'VIBE2_AUTO_LEARNING=AFTER_VERIFIED_REVOTE'
 
       - name: Continue next independent Vibe2 work
         if: steps.reconcile.outputs.updated == '1' && steps.reconcile.outputs.continue_work == '1'
         env:
           GH_TOKEN: ${{ github.token }}
-          CONTROL_BRANCH: ${{ github.event.repository.default_branch }}
+          CONTROL_BRANCH: vibe2-unreal-core
         shell: bash
         run: |
           set -euo pipefail

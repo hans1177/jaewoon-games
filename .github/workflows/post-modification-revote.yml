@@ -207,3 +207,63 @@ jobs:
           git commit -m "company: record ${{ needs.context.outputs.game_id }} post-modification revote"
           git pull --rebase origin main
           git push origin main
+
+      - name: Promote verified revote to Vibe2 Experience Memory
+        env:
+          REQUEST_FILE: ${{ needs.context.outputs.request_file }}
+          REQUEST_ID: ${{ needs.context.outputs.request_id }}
+          CONTROL_BRANCH: vibe2-unreal-core
+        shell: bash
+        run: |
+          set -u
+          mkdir -p /tmp/vibe2-revote-input
+          cp "$REQUEST_FILE" /tmp/vibe2-revote-input/request.json
+          cp .company-revote-output/*.json /tmp/vibe2-revote-input/
+
+          git config user.name 'jaewoon-vibe2-learning'
+          git config user.email 'vibe2-learning@users.noreply.github.com'
+          persisted=0
+          no_change=0
+          for attempt in 1 2 3; do
+            echo "VIBE2_EXPERIENCE_PERSIST_ATTEMPT=$attempt/3"
+            git fetch origin "$CONTROL_BRANCH" || continue
+            git checkout -B vibe2-learning "origin/$CONTROL_BRANCH" || continue
+
+            if ! node tools/vibe2-experience-control.mjs \
+              --auto-revote=true \
+              --memory=.vibe2/experience.json \
+              --request=/tmp/vibe2-revote-input/request.json \
+              --votes-root=/tmp/vibe2-revote-input \
+              --director=/tmp/vibe2-revote-input/director.json | tee /tmp/vibe2-experience.log; then
+              echo 'VIBE2_EXPERIENCE_AUTOMATION=ADAPTER_ERROR'
+              break
+            fi
+
+            if grep -q 'VIBE2_EXPERIENCE_REASON=duplicate-experience' /tmp/vibe2-experience.log || \
+               grep -q 'VIBE2_EXPERIENCE_PROMOTED=NO' /tmp/vibe2-experience.log; then
+              no_change=1
+              break
+            fi
+
+            git add .vibe2/experience.json
+            if git diff --cached --quiet; then
+              no_change=1
+              break
+            fi
+            git commit -m "vibe2: learn verified revote ${REQUEST_ID} [skip ci]" || break
+            if git push origin "HEAD:$CONTROL_BRANCH"; then
+              persisted=1
+              break
+            fi
+            sleep $((attempt * 2))
+          done
+
+          if [ "$persisted" = 1 ]; then
+            echo 'VIBE2_EXPERIENCE_AUTOMATION=PERSISTED'
+          elif [ "$no_change" = 1 ]; then
+            echo 'VIBE2_EXPERIENCE_AUTOMATION=NO_ELIGIBLE_OR_DUPLICATE'
+          else
+            echo 'VIBE2_EXPERIENCE_AUTOMATION=STORAGE_FAILED_NON_BLOCKING'
+          fi
+          echo 'VIBE2_REVOTE_RESULT_PRESERVED=YES'
+          exit 0
