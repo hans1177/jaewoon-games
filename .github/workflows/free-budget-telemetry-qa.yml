@@ -33,8 +33,6 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -79,7 +77,7 @@ jobs:
             const ollama=text.indexOf('Install local Ollama');
             if(gate<0||ollama<0||gate>ollama)throw new Error(`${file}: free budget gate must precede Ollama install`);
             if(!text.includes('runs-on: ubuntu-latest'))throw new Error(`${file}: standard runner contract missing`);
-            if(!text.includes('timeout-minutes: 20'))throw new Error(`${file}: runner cap contract missing`);
+            if(!text.includes('--runner-minutes=20'))throw new Error(`${file}: verified free-budget runner-minute contract missing`);
             if(!text.includes('--verify-public-repo=true'))throw new Error(`${file}: live repository verification missing`);
           }
           console.log('WORKER_FREE_BUDGET_CONTRACT=PASS');

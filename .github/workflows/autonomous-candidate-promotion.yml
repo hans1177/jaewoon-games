@@ -15,6 +15,7 @@ permissions:
   contents: write
   actions: write
 
+# Shared autonomous-dev promotion remains serialized with reservation/state writers.
 concurrency:
   group: autonomous-dev-writer
   cancel-in-progress: false
@@ -34,7 +35,7 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Resolve exact candidate evidence and source revision
+      - name: Resolve exact candidate evidence and source-root revision
         id: evidence
         shell: bash
         run: |
@@ -49,7 +50,14 @@ jobs:
             exit 1
           fi
           evidence="${evidence_files[0]}"
-          node tools/autonomous-candidate-review.mjs --evidence="$evidence" --expected-source-commit="$dev_sha"
+          source_commit="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(String(e.sourceCommit||''));" "$evidence")"
+          source_path="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(String(e.sourcePath||''));" "$evidence")"
+          test -n "$source_commit" && test -n "$source_path"
+          node tools/autonomous-candidate-review.mjs --evidence="$evidence" --expected-source-commit="$source_commit"
+          if [ -n "$(git diff --name-only "$source_commit" origin/autonomous-dev -- "$source_path")" ]; then
+            echo "SOURCE_ROOT_REVISION_MISMATCH path=$source_path base=$source_commit current=$dev_sha" >&2
+            exit 1
+          fi
           node <<'NODE' >> "$GITHUB_ENV"
           const fs=require('fs');
           const files=require('child_process').execFileSync('git',['diff','--name-only','origin/autonomous-dev...HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
@@ -66,6 +74,7 @@ jobs:
           line('PROMOTE_NEW_PROJECT',e.newProject===true?'true':'false');
           NODE
           echo "dev_sha=$dev_sha" >> "$GITHUB_OUTPUT"
+          echo 'SOURCE_FRESHNESS_SCOPE=GAME_ROOT_ONLY'
 
       - name: Enforce candidate-branch change scope
         shell: bash
@@ -116,7 +125,7 @@ jobs:
           retention-days: 7
           if-no-files-found: warn
 
-      - name: Persist browser failure feedback and retry same game
+      - name: Persist browser failure feedback, release lease and retry same game
         if: steps.browser_qa.outcome != 'success'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -125,19 +134,28 @@ jobs:
           set -euo pipefail
           cp qa-artifacts/autonomous-candidate-browser/report.json /tmp/autonomous-browser-qa.json
           git checkout -B autonomous-dev origin/autonomous-dev
-          current="$(git rev-parse HEAD)"
-          [ "$current" = "$PROMOTE_SOURCE_COMMIT" ] || { echo "SOURCE_REVISION_MISMATCH current=$current expected=$PROMOTE_SOURCE_COMMIT" >&2; exit 1; }
+          if [ -n "$(git diff --name-only "$PROMOTE_SOURCE_COMMIT" HEAD -- "$PROMOTE_SOURCE_PATH")" ]; then
+            echo "SOURCE_ROOT_REVISION_MISMATCH path=$PROMOTE_SOURCE_PATH" >&2
+            exit 1
+          fi
           mkdir -p .autonomous/browser-failures
           cp /tmp/autonomous-browser-qa.json ".autonomous/browser-failures/$PROMOTE_GAME_ID.json"
+          original_run_id="${PROMOTE_CANDIDATE_ID##*-}"
+          node tools/autonomous-queue-state.mjs --state=.autonomous/queue-state.json --settle-run-id="$original_run_id" --status=FAILED
           git config user.name 'jaewoon-browser-qa-feedback'
           git config user.email 'browser-qa-feedback@users.noreply.github.com'
-          git add ".autonomous/browser-failures/$PROMOTE_GAME_ID.json"
+          git add ".autonomous/browser-failures/$PROMOTE_GAME_ID.json" .autonomous/queue-state.json
           if ! git diff --cached --quiet; then
             git commit -m "qa: retain browser failure $PROMOTE_GAME_ID [skip ci]"
             git push origin HEAD:autonomous-dev
           fi
-          gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main -f priority_game_id="$PROMOTE_GAME_ID"
-          echo 'BROWSER_QA_FEEDBACK_REQUEUED=YES'
+          for attempt in 1 2 3; do
+            if gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main -f priority_game_id="$PROMOTE_GAME_ID"; then
+              echo 'BROWSER_QA_FEEDBACK_REQUEUED=YES'
+              exit 1
+            fi
+            sleep $((attempt * 2))
+          done
           exit 1
 
       - name: Preserve reviewed candidate outside worktree
@@ -154,15 +172,15 @@ jobs:
         run: |
           set -euo pipefail
           git checkout -B autonomous-dev origin/autonomous-dev
-          current="$(git rev-parse HEAD)"
-          if [ "$current" != "$PROMOTE_SOURCE_COMMIT" ]; then
-            echo "SOURCE_REVISION_MISMATCH current=$current expected=$PROMOTE_SOURCE_COMMIT" >&2
+          if [ -n "$(git diff --name-only "$PROMOTE_SOURCE_COMMIT" HEAD -- "$PROMOTE_SOURCE_PATH")" ]; then
+            echo "SOURCE_ROOT_REVISION_MISMATCH path=$PROMOTE_SOURCE_PATH base=$PROMOTE_SOURCE_COMMIT current=$(git rev-parse HEAD)" >&2
             exit 1
           fi
           rm -rf "$PROMOTE_SOURCE_PATH"
           mkdir -p "$(dirname "$PROMOTE_SOURCE_PATH")"
           cp -R /tmp/jaewoon-reviewed-candidate/game "$PROMOTE_SOURCE_PATH"
           echo "PUBLIC_MAIN_WRITE=NO"
+          echo "UNRELATED_AUTONOMOUS_DEV_ADVANCE=ALLOWED"
 
       - name: Full dev regression after applying candidate
         shell: bash
@@ -320,10 +338,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run autonomous-continuous-development.yml --ref main
-          echo "CONTINUOUS_QUEUE_NEXT=DISPATCHED"
-          echo "QUEUE_DISPATCH_SOURCE=workflow_dispatch"
-          echo "PUBLIC_MAIN_RELEASE=NO"
+          for attempt in 1 2 3; do
+            if gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main; then
+              echo "CONTINUOUS_QUEUE_NEXT=DISPATCHED"
+              echo "QUEUE_DISPATCH_SOURCE=workflow_dispatch"
+              echo "PUBLIC_MAIN_RELEASE=NO"
+              exit 0
+            fi
+            sleep $((attempt * 2))
+          done
+          exit 1
 
       - name: Summary
         if: always()
@@ -331,8 +355,10 @@ jobs:
           echo "### Autonomous Candidate Promotion" >> "$GITHUB_STEP_SUMMARY"
           echo "- independent QA: required" >> "$GITHUB_STEP_SUMMARY"
           echo "- candidate mobile browser QA: required before autonomous-dev/main" >> "$GITHUB_STEP_SUMMARY"
-          echo "- browser failure feedback: persisted to autonomous-dev and requeued for same game" >> "$GITHUB_STEP_SUMMARY"
+          echo "- source freshness: exact game source root only; unrelated queue/game commits do not block" >> "$GITHUB_STEP_SUMMARY"
+          echo "- browser failure feedback: persists evidence, releases the failed lease, and requeues same game" >> "$GITHUB_STEP_SUMMARY"
           echo "- promotion target: autonomous-dev first" >> "$GITHUB_STEP_SUMMARY"
+          echo "- shared autonomous-dev writes: serialized" >> "$GITHUB_STEP_SUMMARY"
           echo "- public game main direct promotion: NO" >> "$GITHUB_STEP_SUMMARY"
           echo "- verified release handoff: existing Vibe2 Candidate Release Gate" >> "$GITHUB_STEP_SUMMARY"
           echo "- verified learning evidence: existing company-learning + Company DNA workflow" >> "$GITHUB_STEP_SUMMARY"
