@@ -1,10 +1,11 @@
 // 파일명: tools/autonomous-candidate-review.mjs
-// 역할: 생성 Worker와 분리된 독립 결정론 검증. public main 승격 권한은 없다.
+// 역할: 생성 Worker와 분리된 독립 결정론/브라우저 검증. public main 승격 권한은 없다.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { extractStorageKeys } from './autonomous-development-worker.mjs';
+import { runAutonomousBrowserSmoke } from './autonomous-browser-smoke.mjs';
 
 const clean=v=>String(v??'').trim();
 const posix=v=>String(v??'').replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -53,16 +54,29 @@ export function reviewAutonomousCandidate({evidence,expectedSourceCommit=null}={
     promotionScope:'AUTONOMOUS_DEV_ONLY',
     publicReleaseAllowed:false,
     requiresIndependentQa:true,
+    requiresBrowserSmoke:true,
   };
+}
+
+export async function reviewAutonomousCandidateWithRuntime({evidence,expectedSourceCommit=null,browserOptions={}}={}){
+  const staticReview=reviewAutonomousCandidate({evidence,expectedSourceCommit});
+  if(!staticReview.pass)return {...staticReview,browserSmoke:null};
+  const browserSmoke=await runAutonomousBrowserSmoke(staticReview.candidatePath,{candidateId:staticReview.candidateId||'candidate',required:true,...browserOptions});
+  const blockers=[...staticReview.blockers,...(browserSmoke.pass?[]:browserSmoke.blockers.map(x=>`BROWSER:${x}`))];
+  return {...staticReview,pass:blockers.length===0,blockers,browserSmoke};
 }
 
 async function main(){
   const evidenceArg=process.argv.find(x=>x.startsWith('--evidence='))?.slice('--evidence='.length);
   const expected=process.argv.find(x=>x.startsWith('--expected-source-commit='))?.slice('--expected-source-commit='.length)||null;
+  const runtime=process.argv.includes('--runtime')||process.argv.includes('--runtime=true');
+  const output=process.argv.find(x=>x.startsWith('--output='))?.slice('--output='.length)||null;
   if(!evidenceArg)throw new Error('--evidence 필요');
   const evidence=JSON.parse(fs.readFileSync(evidenceArg,'utf8'));
-  const review=reviewAutonomousCandidate({evidence,expectedSourceCommit:expected});
-  console.log(JSON.stringify(review,null,2));
+  const review=runtime?await reviewAutonomousCandidateWithRuntime({evidence,expectedSourceCommit:expected}):reviewAutonomousCandidate({evidence,expectedSourceCommit:expected});
+  const rendered=JSON.stringify(review,null,2);
+  if(output){fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,`${rendered}\n`,'utf8');}
+  console.log(rendered);
   if(!review.pass)process.exitCode=1;
 }
 if(import.meta.url===pathToFileURL(process.argv[1]).href){main().catch(error=>{console.error(error.message);process.exitCode=1;});}
