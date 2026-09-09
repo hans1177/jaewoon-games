@@ -1,0 +1,634 @@
+{
+  "recommendedPages": 18,
+  "playerMotivation": "휴먼 GO의 핵심 목표를 달성하며 현재 구현보다 넓은 중·후반 진행을 완성한다.",
+  "centralConflict": "초반 핵심 루프에서 시작한 문제가 단계마다 확대되어 최종 결전으로 이어진다.",
+  "causalitySummary": "OPENING:현재 세계의 첫 문제와 마주친다→더 큰 갈등의 단서를 얻는다 / EARLY:첫 성공 뒤 새로운 장애물이 등장한다→다음 지역의 목표가 열린다 / MID:기존 방식으로 해결되지 않는 문제가 커진다→최종 갈등의 주체가 드러난다 / LATE:주요 세력의 충돌이 최고조에 이른다→최종 지역 진입 조건을 얻는다 / FINAL_BOSS:최종 적이 목표 달성을 직접 막는다→세계 상태가 결정적으로 변화한다 / ENDING:핵심 갈등은 끝났지만 후속 문제가 남는다→본편 종료와 다음 목표가 연결된다",
+  "storySpine": {
+    "opening": "핵심 목표를 이해한다 — 더 큰 갈등의 단서를 얻는다",
+    "early": "핵심 플레이 루프를 확립한다 — 다음 지역의 목표가 열린다",
+    "mid": "갈등의 원인을 추적한다 — 최종 갈등의 주체가 드러난다",
+    "late": "최종 결전을 준비한다 — 최종 지역 진입 조건을 얻는다",
+    "finalBoss": "핵심 갈등을 끝낸다 — 세계 상태가 결정적으로 변화한다",
+    "ending": "승리 이후의 선택을 마무리한다 — 본편 종료와 다음 목표가 연결된다"
+  },
+  "phasePlans": [
+    {
+      "stage": "OPENING",
+      "region": "시작 지역",
+      "quest": "핵심 목표를 이해한다",
+      "cause": "현재 세계의 첫 문제와 마주친다",
+      "playerAction": "기본 행동으로 첫 문제를 해결한다",
+      "result": "더 큰 갈등의 단서를 얻는다",
+      "nextHook": "초기 지역에서 핵심 플레이 루프를 확립한다"
+    },
+    {
+      "stage": "EARLY",
+      "region": "초기 지역",
+      "quest": "핵심 플레이 루프를 확립한다",
+      "cause": "첫 성공 뒤 새로운 장애물이 등장한다",
+      "playerAction": "기본 능력과 자원을 활용한다",
+      "result": "다음 지역의 목표가 열린다",
+      "nextHook": "중간 지역에서 갈등의 원인을 추적한다"
+    },
+    {
+      "stage": "MID",
+      "region": "중간 지역",
+      "quest": "갈등의 원인을 추적한다",
+      "cause": "기존 방식으로 해결되지 않는 문제가 커진다",
+      "playerAction": "새 시스템과 선택을 활용한다",
+      "result": "최종 갈등의 주체가 드러난다",
+      "nextHook": "후반 지역에서 최종 결전을 준비한다"
+    },
+    {
+      "stage": "LATE",
+      "region": "후반 지역",
+      "quest": "최종 결전을 준비한다",
+      "cause": "주요 세력의 충돌이 최고조에 이른다",
+      "playerAction": "축적한 성장 요소를 결집한다",
+      "result": "최종 지역 진입 조건을 얻는다",
+      "nextHook": "최종 지역에서 핵심 갈등을 끝낸다"
+    },
+    {
+      "stage": "FINAL_BOSS",
+      "region": "최종 지역",
+      "quest": "핵심 갈등을 끝낸다",
+      "cause": "최종 적이 목표 달성을 직접 막는다",
+      "playerAction": "게임 전체에서 익힌 수단을 활용해 결전을 치른다",
+      "result": "세계 상태가 결정적으로 변화한다",
+      "nextHook": "결말 지역에서 승리 이후의 선택을 마무리한다"
+    },
+    {
+      "stage": "ENDING",
+      "region": "결말 지역",
+      "quest": "승리 이후의 선택을 마무리한다",
+      "cause": "핵심 갈등은 끝났지만 후속 문제가 남는다",
+      "playerAction": "남은 관계와 목표를 정리한다",
+      "result": "본편 종료와 다음 목표가 연결된다",
+      "nextHook": "본편 이후 남은 지역·고난도 목표·선택형 과제를 이어서 플레이할 수 있다."
+    }
+  ],
+  "regions": [
+    "시작 지역",
+    "초기 지역",
+    "중간 지역",
+    "후반 지역",
+    "최종 지역",
+    "결말 지역"
+  ],
+  "regionTransitions": [
+    {
+      "from": "시작 지역",
+      "to": "초기 지역",
+      "cause": "더 큰 갈등의 단서를 얻는다",
+      "unlock": "핵심 플레이 루프를 확립한다"
+    },
+    {
+      "from": "초기 지역",
+      "to": "중간 지역",
+      "cause": "다음 지역의 목표가 열린다",
+      "unlock": "갈등의 원인을 추적한다"
+    },
+    {
+      "from": "중간 지역",
+      "to": "후반 지역",
+      "cause": "최종 갈등의 주체가 드러난다",
+      "unlock": "최종 결전을 준비한다"
+    },
+    {
+      "from": "후반 지역",
+      "to": "최종 지역",
+      "cause": "최종 지역 진입 조건을 얻는다",
+      "unlock": "핵심 갈등을 끝낸다"
+    },
+    {
+      "from": "최종 지역",
+      "to": "결말 지역",
+      "cause": "세계 상태가 결정적으로 변화한다",
+      "unlock": "승리 이후의 선택을 마무리한다"
+    }
+  ],
+  "mainQuestChain": [
+    {
+      "id": "MAIN-01",
+      "stage": "OPENING",
+      "region": "시작 지역",
+      "quest": "핵심 목표를 이해한다",
+      "cause": "현재 세계의 첫 문제와 마주친다",
+      "playerAction": "기본 행동으로 첫 문제를 해결한다",
+      "result": "더 큰 갈등의 단서를 얻는다",
+      "nextHook": "초기 지역에서 핵심 플레이 루프를 확립한다"
+    },
+    {
+      "id": "MAIN-02",
+      "stage": "EARLY",
+      "region": "초기 지역",
+      "quest": "핵심 플레이 루프를 확립한다",
+      "cause": "첫 성공 뒤 새로운 장애물이 등장한다",
+      "playerAction": "기본 능력과 자원을 활용한다",
+      "result": "다음 지역의 목표가 열린다",
+      "nextHook": "중간 지역에서 갈등의 원인을 추적한다"
+    },
+    {
+      "id": "MAIN-03",
+      "stage": "MID",
+      "region": "중간 지역",
+      "quest": "갈등의 원인을 추적한다",
+      "cause": "기존 방식으로 해결되지 않는 문제가 커진다",
+      "playerAction": "새 시스템과 선택을 활용한다",
+      "result": "최종 갈등의 주체가 드러난다",
+      "nextHook": "후반 지역에서 최종 결전을 준비한다"
+    },
+    {
+      "id": "MAIN-04",
+      "stage": "LATE",
+      "region": "후반 지역",
+      "quest": "최종 결전을 준비한다",
+      "cause": "주요 세력의 충돌이 최고조에 이른다",
+      "playerAction": "축적한 성장 요소를 결집한다",
+      "result": "최종 지역 진입 조건을 얻는다",
+      "nextHook": "최종 지역에서 핵심 갈등을 끝낸다"
+    },
+    {
+      "id": "MAIN-05",
+      "stage": "FINAL_BOSS",
+      "region": "최종 지역",
+      "quest": "핵심 갈등을 끝낸다",
+      "cause": "최종 적이 목표 달성을 직접 막는다",
+      "playerAction": "게임 전체에서 익힌 수단을 활용해 결전을 치른다",
+      "result": "세계 상태가 결정적으로 변화한다",
+      "nextHook": "결말 지역에서 승리 이후의 선택을 마무리한다"
+    },
+    {
+      "id": "MAIN-06",
+      "stage": "ENDING",
+      "region": "결말 지역",
+      "quest": "승리 이후의 선택을 마무리한다",
+      "cause": "핵심 갈등은 끝났지만 후속 문제가 남는다",
+      "playerAction": "남은 관계와 목표를 정리한다",
+      "result": "본편 종료와 다음 목표가 연결된다",
+      "nextHook": "본편 이후 남은 지역·고난도 목표·선택형 과제를 이어서 플레이할 수 있다."
+    }
+  ],
+  "sideQuestHooks": [],
+  "npcMotivations": [],
+  "majorBosses": [
+    "최종 위협의 핵심 개체"
+  ],
+  "bossCausality": [
+    {
+      "boss": "최종 위협의 핵심 개체",
+      "trigger": "후반 목표를 완료해 최종 지역이 열린다",
+      "whyNow": "누적된 갈등이 더 이상 미룰 수 없는 상태가 된다",
+      "winConsequence": "핵심 갈등이 해소되고 엔딩 선택이 열린다"
+    }
+  ],
+  "gaps": [
+    "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요"
+  ],
+  "proposalAdditions": [
+    "OPENING: 시작 지역 / 핵심 목표를 이해한다",
+    "EARLY: 초기 지역 / 핵심 플레이 루프를 확립한다",
+    "MID: 중간 지역 / 갈등의 원인을 추적한다",
+    "LATE: 후반 지역 / 최종 결전을 준비한다",
+    "FINAL_BOSS: 최종 지역 / 핵심 갈등을 끝낸다",
+    "ENDING: 결말 지역 / 승리 이후의 선택을 마무리한다"
+  ],
+  "conflictEscalation": "현재 세계의 첫 문제와 마주친다 → 첫 성공 뒤 새로운 장애물이 등장한다 → 기존 방식으로 해결되지 않는 문제가 커진다 → 주요 세력의 충돌이 최고조에 이른다 → 최종 적이 목표 달성을 직접 막는다 → 핵심 갈등은 끝났지만 후속 문제가 남는다",
+  "twist": "중반에 초반의 문제와 최종 위협이 같은 원인에서 이어졌다는 단서가 드러난다.",
+  "finalRegion": "최종 지역",
+  "endgame": "플레이어의 행동으로 핵심 갈등이 정리되고 세계의 다음 상태가 제시된다.",
+  "postgame": "본편 이후 남은 지역·고난도 목표·선택형 과제를 이어서 플레이할 수 있다.",
+  "progressionBridge": "시작 지역→초기 지역:핵심 플레이 루프를 확립한다 / 초기 지역→중간 지역:갈등의 원인을 추적한다 / 중간 지역→후반 지역:최종 결전을 준비한다 / 후반 지역→최종 지역:핵심 갈등을 끝낸다 / 최종 지역→결말 지역:승리 이후의 선택을 마무리한다",
+  "technicalContaminationRemoved": [],
+  "generationMode": "DETERMINISTIC_FALLBACK",
+  "fallbackReason": "semantic quality: phase-content-too-repetitive,phase-semantic-similarity-too-high,game-specific-fact-grounding-too-low,game-specific-phase-grounding-too-low",
+  "runner": {
+    "type": "vibe2-local-open-model-compact-first-draft",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "modelAttempts": 2,
+    "stageLabelsNormalized": false,
+    "originalStageLabels": null,
+    "stages": [
+      "DETERMINISTIC_GAME_FACT_PACK",
+      "COMPACT_CAUSALITY_SEED",
+      "DETERMINISTIC_STAGE_LABEL_NORMALIZATION",
+      "DETERMINISTIC_EXPANSION",
+      "SEMANTIC_GROUNDING_GATE",
+      "TECHNICAL_NARRATIVE_FILTER"
+    ]
+  },
+  "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+  "evidenceFiles": [
+    "web-games/human-go/index.html"
+  ],
+  "evidenceSnippets": [
+    "und:#142038dd;border-radius:9px;text-align:center;padding:6px;font-size:12px} #battle{background:linear-gradient(#77ccff 0 48%,#9dde76 48%)} #battle.bossbg{background:linear-gradient(#101827 0 44%,#353b48 44%)} #battleTitle{text-align:center;margin-top:76px;f…",
+    "ight:900} #playerF{left:10px;bottom:138px;width:190px} #heroFight{width:180px;height:285px;object-fit:contain;filter:drop-shadow(0 12px 10px #0005)} #enemyF{right:8px;top:135px;width:180px} #enemySprite{width:150px;height:180px;object-fit:contain;display:bloc…",
+    ";width:190px} #heroFight{width:180px;height:285px;object-fit:contain;filter:drop-shadow(0 12px 10px #0005)} #enemyF{right:8px;top:135px;width:180px} #enemySprite{width:150px;height:180px;object-fit:contain;display:block;margin:0 auto;image-rendering:pixelated…",
+    "keletonSprite{display:none;width:155px;height:190px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 10px 6px #0005);margin:0 auto} #bossSprite{display:none;width:185px;height:280px;object-fit:contain;filter:drop-shadow(0 12px 8px #0007);marg…",
+    "kground:#283247;border-radius:8px;overflow:hidden;border:1px solid #fff5;margin-top:6px} .hpmini i{display:block;height:100%;background:#ef4444} .heroAttack{animation:heroAtk .28s ease} @keyframes heroAtk{45%{transform:translate(72px,-10px) rotate(-3deg) scal…",
+    "100%;background:#ef4444} .heroAttack{animation:heroAtk .28s ease} @keyframes heroAtk{45%{transform:translate(72px,-10px) rotate(-3deg) scale(1.05)}} .enemyAttack{animation:enemyAtk .28s ease} @keyframes enemyAtk{45%{transform:translate(-65px,12px) rotate(5deg…",
+    "background:#ef4444} .heroAttack{animation:heroAtk .28s ease} @keyframes heroAtk{45%{transform:translate(72px,-10px) rotate(-3deg) scale(1.05)}} .enemyAttack{animation:enemyAtk .28s ease} @keyframes enemyAtk{45%{transform:translate(-65px,12px) rotate(5deg) sca…",
+    "4} .heroAttack{animation:heroAtk .28s ease} @keyframes heroAtk{45%{transform:translate(72px,-10px) rotate(-3deg) scale(1.05)}} .enemyAttack{animation:enemyAtk .28s ease} @keyframes enemyAtk{45%{transform:translate(-65px,12px) rotate(5deg) scale(1.06)}} .hit{a…",
+    "k .28s ease} @keyframes heroAtk{45%{transform:translate(72px,-10px) rotate(-3deg) scale(1.05)}} .enemyAttack{animation:enemyAtk .28s ease} @keyframes enemyAtk{45%{transform:translate(-65px,12px) rotate(5deg) scale(1.06)}} .hit{animation:hit .22s ease} @keyfra…",
+    ") scale(1.06)}} .hit{animation:hit .22s ease} @keyframes hit{30%{transform:translateX(-10px);filter:brightness(1.8)}70%{transform:translateX(10px)}} .bossIn{animation:bossIn .7s cubic-bezier(.18,.89,.32,1.28)} @keyframes bossIn{from{transform:translateX(200px…",
+    "hit{animation:hit .22s ease} @keyframes hit{30%{transform:translateX(-10px);filter:brightness(1.8)}70%{transform:translateX(10px)}} .bossIn{animation:bossIn .7s cubic-bezier(.18,.89,.32,1.28)} @keyframes bossIn{from{transform:translateX(200px) scale(.45);opac…",
+    "orm:translateX(-10px);filter:brightness(1.8)}70%{transform:translateX(10px)}} .bossIn{animation:bossIn .7s cubic-bezier(.18,.89,.32,1.28)} @keyframes bossIn{from{transform:translateX(200px) scale(.45);opacity:0}to{transform:none;opacity:1}} .shuriken{position…",
+    "enFly{0%{opacity:1;transform:translate(0,0) rotate(0deg) scale(.8)}100%{opacity:1;transform:translate(190px,-205px) rotate(720deg) scale(1.1)}} .swordwave{ position:absolute; z-index:22; left:150px; top:405px; width:70px; height:18px; border-radius:50%; borde…",
+    "radius:50%; border-top:6px solid #dbeafe; border-right:6px solid #93c5fd; opacity:0; transform:rotate(-20deg); pointer-events:none; } .swordwave.fly{ animation:swordWaveFly .65s ease-out forwards; } @keyframes swordWaveFly{ 0%{opacity:0;transform:translate(0,…",
+    "x solid #dbeafe; border-right:6px solid #93c5fd; opacity:0; transform:rotate(-20deg); pointer-events:none; } .swordwave.fly{ animation:swordWaveFly .65s ease-out forwards; } @keyframes swordWaveFly{ 0%{opacity:0;transform:translate(0,0) rotate(-20deg) scale(.…",
+    "opacity:0; transform:rotate(-20deg); pointer-events:none; } .swordwave.fly{ animation:swordWaveFly .65s ease-out forwards; } @keyframes swordWaveFly{ 0%{opacity:0;transform:translate(0,0) rotate(-20deg) scale(.5)} 20%{opacity:1} 100%{opacity:0;transform:trans…",
+    "height:180px; align-items:center; justify-content:center; filter:drop-shadow(0 12px 10px #0008); transform-origin:50% 90%; } #goblinSprite.enemyAttack{animation:goblinLunge .42s ease} @keyframes goblinLunge{ 0%{transform:translateX(0) rotate(0)} 45%{transform…",
+    "ight:180px; align-items:center; justify-content:center; filter:drop-shadow(0 12px 10px #0008); transform-origin:50% 90%; } #goblinSprite.enemyAttack{animation:goblinLunge .42s ease} @keyframes goblinLunge{ 0%{transform:translateX(0) rotate(0)} 45%{transform:t…",
+    "0%{transform:translateX(0) rotate(0)} 45%{transform:translateX(-54px) rotate(-12deg) scale(1.12)} 100%{transform:translateX(0) rotate(0)} } .enemyCard{ display:none; position:absolute; right:8%; top:18%; width:150px; height:205px; z-index:18; border-radius:16…",
+    "; overflow:visible; border:3px solid #7588ad; background:#111827; box-shadow:0 0 18px #0008,0 14px 24px #0009; transform-origin:50% 85%; } .enemyCard.show{display:block} .enemyCard img{ width:100%; height:100%; object-fit:cover; object-position:center; displa…",
+    "3px solid #7588ad; background:#111827; box-shadow:0 0 18px #0008,0 14px 24px #0009; transform-origin:50% 85%; } .enemyCard.show{display:block} .enemyCard img{ width:100%; height:100%; object-fit:cover; object-position:center; display:block; border-radius:13px…",
+    "w{display:block} .enemyCard img{ width:100%; height:100%; object-fit:cover; object-position:center; display:block; border-radius:13px; } .enemyCard .enemyBadge{ position:absolute; left:7px; bottom:7px; right:7px; padding:5px 7px; border-radius:9px; background…",
+    "lock} .enemyCard img{ width:100%; height:100%; object-fit:cover; object-position:center; display:block; border-radius:13px; } .enemyCard .enemyBadge{ position:absolute; left:7px; bottom:7px; right:7px; padding:5px 7px; border-radius:9px; background:#10121ddd;…",
+    "nd:#10121ddd; border:1px solid #ffffff66; color:#fff; font-size:11px; font-weight:1000; text-align:center; text-shadow:0 1px 3px #000; } .enemyCard.hit{animation:enemyCardHit .28s ease} .enemyCard.enemyAttack{animation:enemyCardAttack .45s ease} .enemyCard.sh…",
+    "px solid #ffffff66; color:#fff; font-size:11px; font-weight:1000; text-align:center; text-shadow:0 1px 3px #000; } .enemyCard.hit{animation:enemyCardHit .28s ease} .enemyCard.enemyAttack{animation:enemyCardAttack .45s ease} .enemyCard.shrunk{transform:scale(.…",
+    "or:#fff; font-size:11px; font-weight:1000; text-align:center; text-shadow:0 1px 3px #000; } .enemyCard.hit{animation:enemyCardHit .28s ease} .enemyCard.enemyAttack{animation:enemyCardAttack .45s ease} .enemyCard.shrunk{transform:scale(.62);transform-origin:50…",
+    "font-size:11px; font-weight:1000; text-align:center; text-shadow:0 1px 3px #000; } .enemyCard.hit{animation:enemyCardHit .28s ease} .enemyCard.enemyAttack{animation:enemyCardAttack .45s ease} .enemyCard.shrunk{transform:scale(.62);transform-origin:50% 85%} .e…",
+    "-size:11px; font-weight:1000; text-align:center; text-shadow:0 1px 3px #000; } .enemyCard.hit{animation:enemyCardHit .28s ease} .enemyCard.enemyAttack{animation:enemyCardAttack .45s ease} .enemyCard.shrunk{transform:scale(.62);transform-origin:50% 85%} .enemy…",
+    "t-weight:1000; text-align:center; text-shadow:0 1px 3px #000; } .enemyCard.hit{animation:enemyCardHit .28s ease} .enemyCard.enemyAttack{animation:enemyCardAttack .45s ease} .enemyCard.shrunk{transform:scale(.62);transform-origin:50% 85%} .enemyCard.shrunk.ene…",
+    "1000; text-align:center; text-shadow:0 1px 3px #000; } .enemyCard.hit{animation:enemyCardHit .28s ease} .enemyCard.enemyAttack{animation:enemyCardAttack .45s ease} .enemyCard.shrunk{transform:scale(.62);transform-origin:50% 85%} .enemyCard.shrunk.enemyAttack{…",
+    "center; text-shadow:0 1px 3px #000; } .enemyCard.hit{animation:enemyCardHit .28s ease} .enemyCard.enemyAttack{animation:enemyCardAttack .45s ease} .enemyCard.shrunk{transform:scale(.62);transform-origin:50% 85%} .enemyCard.shrunk.enemyAttack{animation:enemyCa…",
+    "enemyCardHit .28s ease} .enemyCard.enemyAttack{animation:enemyCardAttack .45s ease} .enemyCard.shrunk{transform:scale(.62);transform-origin:50% 85%} .enemyCard.shrunk.enemyAttack{animation:enemyCardAttackShrunk .45s ease} @keyframes enemyCardAttackShrunk{ 0%{…"
+  ],
+  "gameFactPack": {
+    "version": 1,
+    "gameId": "human-go",
+    "gameName": "휴먼 GO",
+    "genreText": "수집 성장",
+    "evidencePolicy": {
+      "sourcePriority": [
+        "EXECUTION_LOGIC",
+        "GAME_DATA_CONSTANTS",
+        "SAVE_STRUCTURE",
+        "VISIBLE_UI_TEXT",
+        "COMMENTS_OR_DOCS",
+        "IDENTIFIER_ONLY"
+      ],
+      "technicalImplementationExcluded": true,
+      "unsupportedLoreBecomesProposal": true
+    },
+    "categories": {
+      "GOAL": [
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "ock} #relicBadge{display:none!important} body.gameStarted #achievementBtn, body.gameStarted #petBookBtn{ display:block!important; } /* 펫 뽑기: 보스 클리어 후 장비 뽑기 패널 내부에서만 표시 */ body:has(#achievementPanel.on) #achievementBtn{display:none!important} body:has(#petBook…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "CORE_LOOP": [
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "emplate-columns:repeat(4,1fr);gap:5px;margin-bottom:7px} .stat{background:#142038dd;border-radius:9px;text-align:center;padding:6px;font-size:12px} #battle{background:linear-gradient(#77ccff 0 48%,#9dde76 48%)} #battle.bossbg{background:linear-gradient(#10182…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "background:#142038dd;border-radius:9px;text-align:center;padding:6px;font-size:12px} #battle{background:linear-gradient(#77ccff 0 48%,#9dde76 48%)} #battle.bossbg{background:linear-gradient(#101827 0 44%,#353b48 44%)} #battleTitle{text-align:center;margin-top…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "ont-size:12px} #battle{background:linear-gradient(#77ccff 0 48%,#9dde76 48%)} #battle.bossbg{background:linear-gradient(#101827 0 44%,#353b48 44%)} #battleTitle{text-align:center;margin-top:76px;font-size:24px;text-shadow:0 3px 6px #0004} .fighter{position:ab…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "COMBAT": [
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "ow{flex:1;text-align:center} .bar{height:12px;background:#263149;border-radius:8px;overflow:hidden;margin-top:5px} .bar i{display:block;height:100%} .hp{background:#ef4444} .xp{background:#3b82f6} .btn{width:100%;border:0;border-radius:16px;padding:15px 16px;…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "kground:#283247;border-radius:8px;overflow:hidden;border:1px solid #fff5;margin-top:6px} .hpmini i{display:block;height:100%;background:#ef4444} .heroAttack{animation:heroAtk .28s ease} @keyframes heroAtk{45%{transform:translate(72px,-10px) rotate(-3deg) scal…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "background:#ef4444} .heroAttack{animation:heroAtk .28s ease} @keyframes heroAtk{45%{transform:translate(72px,-10px) rotate(-3deg) scale(1.05)}} .enemyAttack{animation:enemyAtk .28s ease} @keyframes enemyAtk{45%{transform:translate(-65px,12px) rotate(5deg) sca…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "ENEMIES": [
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "ight:900} #playerF{left:10px;bottom:138px;width:190px} #heroFight{width:180px;height:285px;object-fit:contain;filter:drop-shadow(0 12px 10px #0005)} #enemyF{right:8px;top:135px;width:180px} #enemySprite{width:150px;height:180px;object-fit:contain;display:bloc…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": ";width:190px} #heroFight{width:180px;height:285px;object-fit:contain;filter:drop-shadow(0 12px 10px #0005)} #enemyF{right:8px;top:135px;width:180px} #enemySprite{width:150px;height:180px;object-fit:contain;display:block;margin:0 auto;image-rendering:pixelated…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "100%;background:#ef4444} .heroAttack{animation:heroAtk .28s ease} @keyframes heroAtk{45%{transform:translate(72px,-10px) rotate(-3deg) scale(1.05)}} .enemyAttack{animation:enemyAtk .28s ease} @keyframes enemyAtk{45%{transform:translate(-65px,12px) rotate(5deg…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "BOSSES": [
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "und:#142038dd;border-radius:9px;text-align:center;padding:6px;font-size:12px} #battle{background:linear-gradient(#77ccff 0 48%,#9dde76 48%)} #battle.bossbg{background:linear-gradient(#101827 0 44%,#353b48 44%)} #battleTitle{text-align:center;margin-top:76px;f…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "keletonSprite{display:none;width:155px;height:190px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 10px 6px #0005);margin:0 auto} #bossSprite{display:none;width:185px;height:280px;object-fit:contain;filter:drop-shadow(0 12px 8px #0007);marg…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": ") scale(1.06)}} .hit{animation:hit .22s ease} @keyframes hit{30%{transform:translateX(-10px);filter:brightness(1.8)}70%{transform:translateX(10px)}} .bossIn{animation:bossIn .7s cubic-bezier(.18,.89,.32,1.28)} @keyframes bossIn{from{transform:translateX(200px…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "PROGRESSION": [
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "ter} .bar{height:12px;background:#263149;border-radius:8px;overflow:hidden;margin-top:5px} .bar i{display:block;height:100%} .hp{background:#ef4444} .xp{background:#3b82f6} .btn{width:100%;border:0;border-radius:16px;padding:15px 16px;font-size:19px;font-weig…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "tonLordCard{border-color:#d6d3d1}#eliteGoblinCard{border-color:#f59e0b}#returnedWerewolfCard{border-color:#ef4444} #goblinCard{border-color:#b58a54} .stage1Card{border-color:#7f92b8} #slimeCard{border-color:#4fc3f7;box-shadow:0 0 20px #35bdf688,0 14px 24px #0…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "4WPerjZEtBwz4TWrpVUBE9fReBgx5JdjFVOLTBnIkS/yl7t+Rsb4XnxF3UTI+l5hLwUE0dblDDCQHSqlGTv1+D8cgaHZXOMpNs/KPx/6dkDo3OBUIuEM+llmmQjmtOnPuEsYUV/Inr7R3pCFCMmpvHxp/rPvBAJvKKGdSFirhlwgH9NzEXi8eQe9XMv3r95jFIGQzTo5CpByfiaux0OUhl0BxdSVGQSk+V3EqL0JrgeejtFuO1bnypTv+4f0pn6YWVC…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "RESOURCES": [
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "tPanel{width:min(92vw,520px);max-height:86vh;overflow:hidden;display:flex;flex-direction:column} .petPanel h2{margin:2px 0 8px;text-align:center} .petCoinLine{text-align:center;font-size:16px;margin-bottom:8px} .petSummonResult{min-height:230px;border:1px sol…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "hPq9ImDODIpMC1mncTvw6d8gthZVfnGDRWb4wi/BULntFILog/KTE/G/me4Oiywaua+adMFrWXcgxMpukbgeORTSZ8tC4tHYr4sB5ZuMTGVjgRqn0dyrsED/teEK5MspC1lrAubTP29yrHZLENtrn2coInKskJ0dfaBmB/lzkMnqHA1nuZ5NV/fOkhaYy7CAKLmUghqvxFJSV+CSi0Ty1kYcy0StRSKgdVUwtYnoAu1CUNaKJQQiJy+Ti6PAGRwBMmV…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "EQUIPMENT": [
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "k} .top{position:absolute;top:0;left:0;right:0;padding:10px 12px;z-index:10;background:linear-gradient(#0009,#0000)} .row{display:flex;gap:7px;align-items:center} .tag{background:#142238dd;border:1px solid #ffffff55;border-radius:11px;padding:6px 9px;font-wei…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "rm:translateX(-50%);width:78px;height:78px;border-radius:50%;background:#ffffff66;border:4px solid #ffffffbb;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 10px #0002} .node .icon{font-size:27px;font-weight:900;l…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "hurikenFly{0%{opacity:1;transform:translate(0,0) rotate(0deg) scale(.8)}100%{opacity:1;transform:translate(190px,-205px) rotate(720deg) scale(1.1)}} .swordwave{ position:absolute; z-index:22; left:150px; top:405px; width:70px; height:18px; border-radius:50%; …",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "REGIONS": [
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "lter:drop-shadow(0 12px 10px #0005);animation:idle 1s infinite alternate} @keyframes idle{to{transform:translateY(-8px)}} #startBtn{margin-top:6px} #map{background:linear-gradient(#7bd0ff 0 26%,#9dde76 26%)} #road{position:absolute;top:92px;bottom:150px;left:…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "ulse .7s infinite alternate} .node.locked{background:#5b667f99;border-color:#c9d1ff77} @keyframes pulse{to{transform:translateX(-50%) scale(1.08)}} #mapHero{position:absolute;left:50%;bottom:128px;transform:translateX(-50%);width:150px;height:225px;object-fit…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "solute;left:50%;bottom:128px;transform:translateX(-50%);width:150px;height:225px;object-fit:contain;z-index:5;filter:drop-shadow(0 10px 10px #0005)} #mapHero.run{animation:run .18s infinite alternate} @keyframes run{from{transform:translateX(-50%) translateY(…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "SPECIAL_MECHANICS": [
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "0;transform:translateY(10px) scale(.7)} 20%{opacity:1;transform:translateY(0) scale(1.2)} 100%{opacity:0;transform:translateY(-55px) scale(1)} } .stunFx{ position:absolute; z-index:23; right:72px; top:160px; font-size:32px; opacity:0; pointer-events:none; } .…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "eY(-55px) scale(1)} } .stunFx{ position:absolute; z-index:23; right:72px; top:160px; font-size:32px; opacity:0; pointer-events:none; } .stunFx.show{ animation:stunPop 1s ease forwards; } @keyframes stunPop{ 0%{opacity:0;transform:scale(.5)} 20%{opacity:1;tran…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "unFx{ position:absolute; z-index:23; right:72px; top:160px; font-size:32px; opacity:0; pointer-events:none; } .stunFx.show{ animation:stunPop 1s ease forwards; } @keyframes stunPop{ 0%{opacity:0;transform:scale(.5)} 20%{opacity:1;transform:scale(1.2)} 100%{op…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "SAVE_RULES": [],
+      "STORY_FACTS": [
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "nPop{ 0%{transform:scale(.3) rotate(-14deg);opacity:0} 30%{transform:scale(1.25) rotate(8deg);opacity:1} 100%{transform:scale(1);opacity:0} } #intro{ position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; padding:18px…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": "position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; padding:18px; background:#070b12; } #intro.off{display:none} .introBox{ width:min(92vw,520px); text-align:center; color:#fff; } #introArt{ width:min(92vw,360px); …",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/human-go/index.html",
+          "statement": ":0; z-index:9999; display:flex; align-items:center; justify-content:center; padding:18px; background:#070b12; } #intro.off{display:none} .introBox{ width:min(92vw,520px); text-align:center; color:#fff; } #introArt{ width:min(92vw,360px); height:190px; margin:…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ]
+    },
+    "gameSpecificTerms": [
+      "휴먼 GO",
+      "ko",
+      "utf-8",
+      "petBookBtn",
+      "inventoryBtn",
+      "achievementBtn",
+      "intro",
+      "introSkipBtn",
+      "autoIntroText",
+      "classSelect",
+      "classBox",
+      "classTitle",
+      "classSub",
+      "classCards",
+      "classCard",
+      "warrior",
+      "ct",
+      "cs",
+      "statsLine",
+      "mage",
+      "classPortrait",
+      "archer",
+      "bossbg",
+      "enemyF"
+    ],
+    "unknownAreas": [
+      "SAVE_RULES"
+    ],
+    "stats": {
+      "sourceFiles": 1,
+      "totalEvidence": 30,
+      "categoriesWithEvidence": 11,
+      "gameSpecificTerms": 24
+    }
+  },
+  "semanticQuality": {
+    "pass": false,
+    "problems": [
+      "deterministic-fallback-needs-validation",
+      "game-specific-fact-grounding-too-low",
+      "game-specific-phase-grounding-too-low"
+    ],
+    "gameSpecificTermsUsed": [
+      "휴먼 GO",
+      "ko",
+      "utf-8",
+      "petBookBtn",
+      "inventoryBtn",
+      "achievementBtn",
+      "intro",
+      "introSkipBtn",
+      "autoIntroText",
+      "classSelect",
+      "classBox",
+      "classTitle",
+      "classSub",
+      "classCards",
+      "classCard",
+      "warrior"
+    ]
+  },
+  "validationStatus": "NEEDS_VALIDATION",
+  "version": 4,
+  "gameId": "human-go",
+  "date": "2026-09-09",
+  "status": "FIRST_DRAFT_READY",
+  "author": "vibe2",
+  "proposalOnly": true,
+  "requiredStoryStages": [
+    "OPENING",
+    "EARLY",
+    "MID",
+    "LATE",
+    "FINAL_BOSS",
+    "ENDING"
+  ],
+  "qualityContract": {
+    "phasePlans": 6,
+    "minMainQuests": 6,
+    "causalityRequired": true,
+    "evidenceProposalSeparation": true,
+    "compactGeneration": true,
+    "technicalNarrativeFilter": true,
+    "gameFactPackRequired": true,
+    "semanticDistinctnessRequired": true,
+    "gameSpecificGroundingRequired": true
+  },
+  "visualPages": [
+    {
+      "no": 1,
+      "title": "오프닝",
+      "body": "핵심 목표를 이해한다 — 더 큰 갈등의 단서를 얻는다 · 시작 지역: 현재 세계의 첫 문제와 마주친다 → 기본 행동으로 첫 문제를 해결한다 → 더 큰 갈등의 단서를 얻는다 → 초기 지역에서 핵심 플레이 루프를 확립한다",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/vibe2-draft-1.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 2,
+      "title": "초반",
+      "body": "핵심 플레이 루프를 확립한다 — 다음 지역의 목표가 열린다 · 초기 지역: 첫 성공 뒤 새로운 장애물이 등장한다 → 기본 능력과 자원을 활용한다 → 다음 지역의 목표가 열린다 → 중간 지역에서 갈등의 원인을 추적한다",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/vibe2-draft-2.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 3,
+      "title": "중반",
+      "body": "갈등의 원인을 추적한다 — 최종 갈등의 주체가 드러난다 · 중간 지역: 기존 방식으로 해결되지 않는 문제가 커진다 → 새 시스템과 선택을 활용한다 → 최종 갈등의 주체가 드러난다 → 후반 지역에서 최종 결전을 준비한다",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/vibe2-draft-3.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 4,
+      "title": "후반",
+      "body": "최종 결전을 준비한다 — 최종 지역 진입 조건을 얻는다 · 후반 지역: 주요 세력의 충돌이 최고조에 이른다 → 축적한 성장 요소를 결집한다 → 최종 지역 진입 조건을 얻는다 → 최종 지역에서 핵심 갈등을 끝낸다",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/vibe2-draft-4.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 5,
+      "title": "최종보스",
+      "body": "핵심 갈등을 끝낸다 — 세계 상태가 결정적으로 변화한다 · 최종 지역: 최종 적이 목표 달성을 직접 막는다 → 게임 전체에서 익힌 수단을 활용해 결전을 치른다 → 세계 상태가 결정적으로 변화한다 → 결말 지역에서 승리 이후의 선택을 마무리한다 · 최종 위협의 핵심 개체: 후반 목표를 완료해 최종 지역이 열린다 → 누적된 갈등이 더 이상 미룰 수 없는 상태가 된다 → 승리 결과 핵심 갈등이 해소되고 엔딩 선택이 열린다",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/vibe2-draft-5.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 6,
+      "title": "엔딩",
+      "body": "승리 이후의 선택을 마무리한다 — 본편 종료와 다음 목표가 연결된다 · 결말 지역: 핵심 갈등은 끝났지만 후속 문제가 남는다 → 남은 관계와 목표를 정리한다 → 본편 종료와 다음 목표가 연결된다 → 본편 이후 남은 지역·고난도 목표·선택형 과제를 이어서 플레이할 수 있다. · 플레이어의 행동으로 핵심 갈등이 정리되고 세계의 다음 상태가 제시된다. · 본편 이후 남은 지역·고난도 목표·선택형 과제를 이어서 플레이할 수 있다.",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/vibe2-draft-6.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 7,
+      "title": "지역 흐름",
+      "body": "시작 지역 → 초기 지역 → 중간 지역 → 후반 지역 → 최종 지역 → 결말 지역 · 시작 지역 → 초기 지역: 더 큰 갈등의 단서를 얻는다 / 해금 핵심 플레이 루프를 확립한다 · 초기 지역 → 중간 지역: 다음 지역의 목표가 열린다 / 해금 갈등의 원인을 추적한다 · 중간 지역 → 후반 지역: 최종 갈등의 주체가 드러난다 / 해금 최종 결전을 준비한다",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/vibe2-draft-7.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 8,
+      "title": "메인 퀘스트",
+      "body": "OPENING/시작 지역: 핵심 목표를 이해한다 · 현재 세계의 첫 문제와 마주친다 → 기본 행동으로 첫 문제를 해결한다 → 더 큰 갈등의 단서를 얻는다 → 초기 지역에서 핵심 플레이 루프를 확립한다 · EARLY/초기 지역: 핵심 플레이 루프를 확립한다 · 첫 성공 뒤 새로운 장애물이 등장한다 → 기본 능력과 자원을 활용한다 → 다음 지역의 목표가 열린다 → 중간 지역에서 갈등의 원인을 추적한다 · MID/중간 지역: 갈등의 원인을 추적한다 · 기존 방식으로…",
+      "image": "artbook-submissions/human-go/2026-09-09/visuals/vibe2-draft-8.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    }
+  ],
+  "visualPageCount": 8,
+  "targetArtbookPages": 18,
+  "sourceOfTruth": "proposal-before-planning-review"
+}

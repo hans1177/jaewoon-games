@@ -308,6 +308,194 @@
         ]
       },
       "productionApproval": false
+    },
+    {
+      "id": "bug-defense-2026-09-09-initial-followup",
+      "gameId": "bug-defense",
+      "gameName": "곤충 디펜스",
+      "sourceDate": "2026-09-09",
+      "dueDate": "2026-09-09",
+      "status": "SCHEDULED",
+      "sourceWorkMode": "INITIAL",
+      "sourceLifecycleState": "DESIGN_BASELINE",
+      "criterion": "FIVE_VOTE_DEPARTMENT_AVERAGE_STARS_LE_OVERALL_AVERAGE",
+      "overallAverageStars": 4,
+      "maxStars": 5,
+      "ratingsPerDepartment": 5,
+      "departmentVotesPerResult": 4,
+      "directorVotesPerResult": 1,
+      "selectedDepartments": [
+        "graphics",
+        "qa"
+      ],
+      "departmentAverageStars": {
+        "planning": 5,
+        "graphics": 1.8,
+        "development": 4.8,
+        "qa": 3.4,
+        "balance": 5
+      },
+      "feedbackByDepartment": {
+        "graphics": [
+          {
+            "reviewerDepartment": "planning",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "The review indicates that the plan needs to address gaps in the HUD design, such as improving visual evidence and character logic."
+          },
+          {
+            "reviewerDepartment": "development",
+            "reviewerType": "department",
+            "stars": 1,
+            "improvement": "The review indicates that the game has significant gaps in its visual and logical components, which could be improved to enhance user experience."
+          },
+          {
+            "reviewerDepartment": "qa",
+            "reviewerType": "department",
+            "stars": 1,
+            "improvement": "The system needs to improve the visual design and user interface for better accessibility and clarity."
+          },
+          {
+            "reviewerDepartment": "balance",
+            "reviewerType": "department",
+            "stars": 1,
+            "improvement": "The review shows that the graphics section is not ready for the first round, but there are no gaps or unverified areas to address."
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 1,
+            "improvement": "The review highlights that the HUD design lacks clarity in how different elements interact with the user interface, which could improve usability."
+          }
+        ],
+        "qa": [
+          {
+            "reviewerDepartment": "planning",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "The review is complete and the results are accurate. No improvements are needed."
+          },
+          {
+            "reviewerDepartment": "graphics",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "The review is complete and shows readiness for the first round. The section details are accurate and provide a clear structure for the game layout."
+          },
+          {
+            "reviewerDepartment": "development",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "The review is complete and shows readiness for testing. The section details are accurate, but there is no improvement in the content."
+          },
+          {
+            "reviewerDepartment": "balance",
+            "reviewerType": "department",
+            "stars": 1,
+            "improvement": "The review shows that Bug Defense is ready for the QA department with a verified evidence of 1, but there are no specific improvements needed for the current flow."
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 1,
+            "improvement": "부서 결과물의 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수"
+          }
+        ]
+      },
+      "productionApproval": false
+    },
+    {
+      "id": "human-go-2026-09-09-initial-followup",
+      "gameId": "human-go",
+      "gameName": "휴먼 GO",
+      "sourceDate": "2026-09-09",
+      "dueDate": "2026-09-09",
+      "status": "SCHEDULED",
+      "sourceWorkMode": "INITIAL",
+      "sourceLifecycleState": "DESIGN_BASELINE",
+      "criterion": "FIVE_VOTE_DEPARTMENT_AVERAGE_STARS_LE_OVERALL_AVERAGE",
+      "overallAverageStars": 4.92,
+      "maxStars": 5,
+      "ratingsPerDepartment": 5,
+      "departmentVotesPerResult": 4,
+      "directorVotesPerResult": 1,
+      "selectedDepartments": [
+        "graphics",
+        "balance"
+      ],
+      "departmentAverageStars": {
+        "planning": 5,
+        "graphics": 4.8,
+        "development": 5,
+        "qa": 5,
+        "balance": 4.8
+      },
+      "feedbackByDepartment": {
+        "graphics": [
+          {
+            "reviewerDepartment": "planning",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본부 결과물의 기술적 품질과 구조를 강화하여 콘텐츠의 풍부함을 유지할 수 있습니다."
+          },
+          {
+            "reviewerDepartment": "development",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본부에서의 개선점은 '인물 도감: 캐릭터의 성장 과정을 기반으로 한 도감을 제작합니다.'"
+          },
+          {
+            "reviewerDepartment": "qa",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+          },
+          {
+            "reviewerDepartment": "balance",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본부 결과물은 캐릭터와 몬스터의 관계를 통해 성장 시스템을 구축하는 기능을 강화했으며, 풍부한 내용을 제공했습니다."
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 4,
+            "improvement": "사진 기반으로 창작된 인물 도감과 배경을 제출하지 않으면, 인물 도감의 성장 시스템 구축을 더 복잡하게 만들 수 있습니다."
+          }
+        ],
+        "balance": [
+          {
+            "reviewerDepartment": "planning",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "The review is focused on the AI-generated section, but it could be improved by adding more details on how the AI's effectiveness is validated."
+          },
+          {
+            "reviewerDepartment": "graphics",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+          },
+          {
+            "reviewerDepartment": "development",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본 부서 결과물의 개선점은 'AI-generated' 타겟과 'NEEDS_VALIDATION' 수준을 더 명확하게 설명할 수 있습니다."
+          },
+          {
+            "reviewerDepartment": "qa",
+            "reviewerType": "department",
+            "stars": 5,
+            "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다."
+          },
+          {
+            "reviewerDepartment": "director",
+            "reviewerType": "director",
+            "stars": 4,
+            "improvement": "부서 결과물의 내용을 보완하고, 별점 4점으로 작성"
+          }
+        ]
+      },
+      "productionApproval": false
     }
   ],
   "updatedAt": "2026-09-09"

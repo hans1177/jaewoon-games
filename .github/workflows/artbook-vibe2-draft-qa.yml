@@ -6,14 +6,22 @@ on:
     paths:
       - 'tools/vibe2-artbook-story-draft.mjs'
       - 'tools/vibe2-artbook-story-core.mjs'
+      - 'tools/vibe2-game-fact-pack.mjs'
+      - 'tools/vibe2-compact-seed-normalizer.mjs'
       - 'qa/vibe2-artbook-story-core.test.mjs'
+      - 'qa/artbook-story-quality.test.mjs'
+      - 'qa/vibe2-compact-stage-normalizer.test.mjs'
       - 'VIBE2_ARTBOOK_DRAFT_POLICY.md'
       - '.github/workflows/artbook-vibe2-draft-qa.yml'
   pull_request:
     paths:
       - 'tools/vibe2-artbook-story-draft.mjs'
       - 'tools/vibe2-artbook-story-core.mjs'
+      - 'tools/vibe2-game-fact-pack.mjs'
+      - 'tools/vibe2-compact-seed-normalizer.mjs'
       - 'qa/vibe2-artbook-story-core.test.mjs'
+      - 'qa/artbook-story-quality.test.mjs'
+      - 'qa/vibe2-compact-stage-normalizer.test.mjs'
       - 'VIBE2_ARTBOOK_DRAFT_POLICY.md'
       - '.github/workflows/artbook-vibe2-draft-qa.yml'
   workflow_dispatch:
@@ -34,16 +42,22 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/vibe2-artbook-story-core.mjs
+          node --check tools/vibe2-game-fact-pack.mjs
+          node --check tools/vibe2-compact-seed-normalizer.mjs
           node --check tools/vibe2-artbook-story-draft.mjs
-      - name: Compact planning core tests
-        run: node --test qa/vibe2-artbook-story-core.test.mjs
+      - name: Compact planning and semantic grounding tests
+        run: node --test qa/vibe2-artbook-story-core.test.mjs qa/artbook-story-quality.test.mjs qa/vibe2-compact-stage-normalizer.test.mjs
       - name: Enforce compact generation contract
         shell: bash
         run: |
           set -euo pipefail
           grep -Fq 'COMPACT_MODEL_PLUS_DETERMINISTIC_EXPANSION' tools/vibe2-artbook-story-draft.mjs
           grep -Fq 'DETERMINISTIC_FALLBACK' tools/vibe2-artbook-story-draft.mjs
-          grep -Fq 'TECHNICAL_NARRATIVE_FILTER' tools/vibe2-artbook-story-draft.mjs
+          grep -Fq 'DETERMINISTIC_GAME_FACT_PACK' tools/vibe2-artbook-story-draft.mjs
+          grep -Fq 'DETERMINISTIC_STAGE_LABEL_NORMALIZATION' tools/vibe2-artbook-story-draft.mjs
+          grep -Fq 'SEMANTIC_GROUNDING_GATE' tools/vibe2-artbook-story-draft.mjs
+          grep -Fq 'draftSemanticProblems' tools/vibe2-game-fact-pack.mjs
+          grep -Fq 'normalizeCompactSeedStages' tools/vibe2-compact-seed-normalizer.mjs
           grep -Fq 'num_predict:1800' tools/vibe2-artbook-story-draft.mjs
           grep -Fq "REQUIRED_STAGES=['OPENING','EARLY','MID','LATE','FINAL_BOSS','ENDING']" tools/vibe2-artbook-story-core.mjs
           echo 'VIBE2_ARTBOOK_DRAFT_CONTRACT=PASS'
