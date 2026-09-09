@@ -222,7 +222,7 @@ namespace JaewoonGames.DaechungRpg
 
         public bool TryBuyWeapon(string weaponId)
         {
-            if (!GameCatalog.Weapons.TryGetValue(weaponId, out var weapon) || weapon.hidden || Player.gold < weapon.price)
+            if (!GameCatalog.Weapons.TryGetValue(weaponId, out var weapon) || weapon.hidden || Player.ownedWeapons.Contains(weaponId) || Player.gold < weapon.price)
             {
                 return false;
             }
@@ -238,7 +238,7 @@ namespace JaewoonGames.DaechungRpg
 
         public bool TryBuyArmor(string armorId)
         {
-            if (!GameCatalog.Armors.TryGetValue(armorId, out var armor) || Player.gold < armor.price)
+            if (!GameCatalog.Armors.TryGetValue(armorId, out var armor) || Player.ownedArmors.Contains(armorId) || Player.gold < armor.price)
             {
                 return false;
             }
