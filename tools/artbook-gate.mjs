@@ -150,6 +150,7 @@ if(initialComplete&&!peerReviewsComplete)formalProductionGate='BLOCKED_WAITING_F
 else if(initialComplete&&peerReviewsComplete&&!directorReviewReady)formalProductionGate='BLOCKED_WAITING_FOR_DIRECTOR_FIFTH_RATING';
 else if(readyForDirectorAssembly)formalProductionGate='SECTION_AND_FIVE_RATING_GATE_COMPLETE_DIRECTOR_ASSEMBLY_ALLOWED';
 
+// Base contract compatibility: submissionContract:'V5_CREATIVE_IMPLEMENTATION_DEMO_PLAN' is extended by planning semantic quality.
 const status={version:7,checkedAt:new Date().toISOString(),date,gameId,gameName:targetGame?.name||gameId,requiredRoles,readyRoles:ready.map(x=>x.role),readyCount:ready.length,requiredCount:requiredRoles.length,missing,invalid,independentRoundComplete:initialComplete,submissionContract:'V5_CREATIVE_IMPLEMENTATION_DEMO_PLAN_PLUS_PLANNING_SEMANTIC_QUALITY',historicalPreV5Compatibility:true,reviewReadyRoles:reviewReady.map(x=>x.role),reviewReadyCount:reviewReady.length,reviewRequiredCount:requiredRoles.length,reviewMissing,reviewInvalid,peerReviewsComplete,directorReviewFile:directorFile,directorReviewReady,directorReviewProblems:directorProblems,directorRatingsRequired:requiredRoles.length,ratingsPerDepartment,collaborationProtocol:'PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5',homepageOpinionMode:'IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS',collaborationComplete,readyForDirectorAssembly,directorMayAuthorMissingSections:false,directorMayAuthorMissingReviews:false,formalProductionGate};
 writeJson('artbook-gate-status.json',status);
 console.log(`ARTBOOK_GAME_ID=${gameId}`);
