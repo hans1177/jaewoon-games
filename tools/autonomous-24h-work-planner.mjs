@@ -43,21 +43,32 @@ function focusTotal(project){
 }
 function unityPriority(project){return clean(project?.dedicatedDevelopmentLane).toUpperCase()==='UNITY_PRIMARY'||(project?.protectedValues||[]).includes('unity-primary');}
 function focusPolicy(portfolio){return portfolio?.developmentFocusPolicy&&Number(portfolio.developmentFocusPolicy.maxFocusedGames)>0?portfolio.developmentFocusPolicy:null;}
+function preferredRank(policy,project){
+  const preferred=Array.isArray(policy?.preferredFocusedGameIds)?policy.preferredFocusedGameIds:[];
+  const index=preferred.indexOf(project?.id);
+  return index<0?Number.MAX_SAFE_INTEGER:index;
+}
+function sortFocusCandidates(policy){
+  return (a,b)=>preferredRank(policy,a)-preferredRank(policy,b)||focusTotal(b)-focusTotal(a)||Number(unityPriority(b))-Number(unityPriority(a))||a.id.localeCompare(b.id);
+}
+function preparedDevelopmentCandidates({portfolio,catalog={games:[]},artbooks,filesystem=fs,minScore=0,excludeIds=new Set()}={}){
+  const policy=focusPolicy(portfolio);
+  return (portfolio?.projects??[]).filter(project=>{
+    if(excludeIds.has(project.id)||isHold(project)||isRelease(project,catalog)||!isDevelopmentConfirmed(project,catalog))return false;
+    if(!clean(project.sourcePath)||!filesystem.existsSync(project.sourcePath))return false;
+    if(!isCompletedDesignBaselineFor(artbooks,project.slug))return false;
+    return focusTotal(project)>=minScore;
+  }).sort(sortFocusCandidates(policy));
+}
 export function rankDevelopmentFocus({portfolio,catalog={games:[]},artbooks,filesystem=fs}={}){
   const policy=focusPolicy(portfolio);
   if(!policy)return [];
-  const threshold=Number(policy.focusThreshold??8);
-  return (portfolio?.projects??[]).filter(project=>{
-    if(isHold(project)||isRelease(project,catalog)||!isDevelopmentConfirmed(project,catalog))return false;
-    if(!clean(project.sourcePath)||!filesystem.existsSync(project.sourcePath))return false;
-    if(!isCompletedDesignBaselineFor(artbooks,project.slug))return false;
-    return focusTotal(project)>=threshold;
-  }).sort((a,b)=>focusTotal(b)-focusTotal(a)||Number(unityPriority(b))-Number(unityPriority(a))||a.id.localeCompare(b.id));
+  return preparedDevelopmentCandidates({portfolio,catalog,artbooks,filesystem,minScore:Number(policy.focusThreshold??8)});
 }
 function nextDevelopmentIds({portfolio,catalog,focusedIds}){
   const policy=focusPolicy(portfolio);if(!policy)return [];
   const threshold=Number(policy.nextDevelopmentThreshold??5);
-  return (portfolio?.projects??[]).filter(project=>!focusedIds.has(project.id)&&!isHold(project)&&!isRelease(project,catalog)&&isDevelopmentConfirmed(project,catalog)&&focusTotal(project)>=threshold).sort((a,b)=>focusTotal(b)-focusTotal(a)||a.id.localeCompare(b.id)).map(project=>project.id);
+  return (portfolio?.projects??[]).filter(project=>!focusedIds.has(project.id)&&!isHold(project)&&!isRelease(project,catalog)&&isDevelopmentConfirmed(project,catalog)&&focusTotal(project)>=threshold).sort(sortFocusCandidates(policy)).map(project=>project.id);
 }
 function defaultSourceReleased(row){
   const commit=clean(row?.sourceCommit),sourcePath=clean(row?.sourcePath);
@@ -81,7 +92,16 @@ export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},qu
   });
   const policy=focusPolicy(portfolio);
   const rankedFocus=policy?rankDevelopmentFocus({portfolio,catalog,artbooks,filesystem}):eligible;
-  const focused=policy?rankedFocus.slice(0,Math.max(1,Number(policy.maxFocusedGames)||2)):eligible;
+  const maxFocused=policy?Math.max(1,Number(policy.maxFocusedGames)||2):eligible.length;
+  const focused=policy?rankedFocus.slice(0,maxFocused):eligible;
+  if(policy?.fillVacantFocusedSlots===true&&focused.length<maxFocused){
+    const fallback=preparedDevelopmentCandidates({
+      portfolio,catalog,artbooks,filesystem,
+      minScore:Number(policy.nextDevelopmentThreshold??5),
+      excludeIds:new Set(focused.map(project=>project.id)),
+    });
+    focused.push(...fallback.slice(0,maxFocused-focused.length));
+  }
   const focusedIds=new Set(focused.map(project=>project.id));
   const nextIds=nextDevelopmentIds({portfolio,catalog,focusedIds});
   const runnable=focused.filter(project=>clean(project.dedicatedDevelopmentLane).toUpperCase()!=='UNITY_PRIMARY');
@@ -169,7 +189,7 @@ export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={
     maxFocusedGames:Number(portfolio?.developmentFocusPolicy?.maxFocusedGames||2),
     focusedGameIds:selected.focusedGameIds||[],
     nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],
-    selection:'FOCUS_SCORE_THEN_LEAST_KST_ATTEMPTS',
+    selection:'PREFERRED_READY_THEN_SCORE_THEN_LEAST_KST_ATTEMPTS',
     selectedGameAttemptsToday:selected.attemptsToday,
     activeGameIds:selected.activeGameIds||[],
     sourceRootLock:'ACTIVE_RESERVATION_LEASE',
