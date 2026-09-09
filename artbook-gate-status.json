@@ -1,9 +1,9 @@
 {
-  "version": 7,
-  "checkedAt": "2026-09-09T17:29:56.841Z",
+  "version": 8,
+  "checkedAt": "2026-09-09T20:19:15.776Z",
   "date": "2026-09-10",
-  "gameId": "territory-war",
-  "gameName": "영토전쟁",
+  "gameId": "daechung-rpg",
+  "gameName": "대충 RPG",
   "requiredRoles": [
     "planning",
     "graphics",
@@ -11,129 +11,84 @@
     "qa",
     "balance"
   ],
-  "readyRoles": [
-    "planning",
-    "graphics",
-    "development",
-    "qa",
-    "balance"
-  ],
-  "readyCount": 5,
+  "readyRoles": [],
+  "readyCount": 0,
   "requiredCount": 5,
-  "missing": [],
-  "invalid": [],
-  "independentRoundComplete": true,
-  "submissionContract": "V5_CREATIVE_IMPLEMENTATION_DEMO_PLAN_PLUS_PLANNING_SEMANTIC_QUALITY",
-  "historicalPreV5Compatibility": true,
-  "reviewReadyRoles": [
-    "planning",
-    "graphics",
-    "development",
-    "qa",
-    "balance"
+  "missing": [
+    {
+      "role": "planning",
+      "file": "artbook-submissions/daechung-rpg/2026-09-10/planning.json",
+      "reason": "missing-file"
+    },
+    {
+      "role": "graphics",
+      "file": "artbook-submissions/daechung-rpg/2026-09-10/graphics.json",
+      "reason": "missing-file"
+    },
+    {
+      "role": "development",
+      "file": "artbook-submissions/daechung-rpg/2026-09-10/development.json",
+      "reason": "missing-file"
+    },
+    {
+      "role": "qa",
+      "file": "artbook-submissions/daechung-rpg/2026-09-10/qa.json",
+      "reason": "missing-file"
+    },
+    {
+      "role": "balance",
+      "file": "artbook-submissions/daechung-rpg/2026-09-10/balance.json",
+      "reason": "missing-file"
+    }
   ],
-  "reviewReadyCount": 5,
+  "invalid": [],
+  "independentRoundComplete": false,
+  "submissionContract": "V6_FIVE_DEPARTMENT_SEMANTIC_QUALITY_AND_REVIEW_SPECIFICITY",
+  "historicalPreV5Compatibility": true,
+  "reviewReadyRoles": [],
+  "reviewReadyCount": 0,
   "reviewRequiredCount": 5,
-  "reviewMissing": [],
+  "reviewMissing": [
+    {
+      "role": "planning",
+      "file": "artbook-submissions/daechung-rpg/2026-09-10/reviews/planning.json",
+      "reason": "missing-review"
+    },
+    {
+      "role": "graphics",
+      "file": "artbook-submissions/daechung-rpg/2026-09-10/reviews/graphics.json",
+      "reason": "missing-review"
+    },
+    {
+      "role": "development",
+      "file": "artbook-submissions/daechung-rpg/2026-09-10/reviews/development.json",
+      "reason": "missing-review"
+    },
+    {
+      "role": "qa",
+      "file": "artbook-submissions/daechung-rpg/2026-09-10/reviews/qa.json",
+      "reason": "missing-review"
+    },
+    {
+      "role": "balance",
+      "file": "artbook-submissions/daechung-rpg/2026-09-10/reviews/balance.json",
+      "reason": "missing-review"
+    }
+  ],
   "reviewInvalid": [],
-  "peerReviewsComplete": true,
-  "directorReviewFile": "artbook-submissions/territory-war/2026-09-10/reviews/director.json",
-  "directorReviewReady": true,
-  "directorReviewProblems": [],
+  "peerReviewsComplete": false,
+  "directorReviewFile": "artbook-submissions/daechung-rpg/2026-09-10/reviews/director.json",
+  "directorReviewReady": false,
+  "directorReviewProblems": [
+    "director-review-missing"
+  ],
   "directorRatingsRequired": 5,
-  "ratingsPerDepartment": 5,
+  "ratingsPerDepartment": 0,
   "collaborationProtocol": "PEER_PLUS_DIRECTOR_IMPROVEMENT_STAR_5",
   "homepageOpinionMode": "IMPROVEMENT_AND_FIVE_VOTE_AVERAGE_STARS",
-  "collaborationComplete": true,
-  "readyForDirectorAssembly": true,
+  "collaborationComplete": false,
+  "readyForDirectorAssembly": false,
   "directorMayAuthorMissingSections": false,
   "directorMayAuthorMissingReviews": false,
-  "formalProductionGate": "ARTBOOK_COMPLETED_CURRENT_BASELINE_READY",
-  "assembled": true,
-  "assembledFile": "artbook-submissions/territory-war/2026-09-10/artbook.json",
-  "registeredArtbookId": "territory-war-2026-09-10-initial",
-  "homepagePublished": true,
-  "departmentOpinionsPublished": true,
-  "departmentVotesPerResult": 4,
-  "directorVotesPerResult": 1,
-  "overallAverageStars": 4.88,
-  "secondWorkDepartments": [
-    "planning",
-    "development",
-    "balance"
-  ],
-  "secondWorkDueDate": "2026-09-10",
-  "assemblyAddsNewDepartmentClaims": false,
-  "artbookLifecycle": {
-    "workMode": "INITIAL",
-    "state": "DESIGN_BASELINE",
-    "trigger": "INITIAL_DESIGN",
-    "sourceArtbookId": null,
-    "currentBaseline": true,
-    "latestBaselineId": "territory-war-2026-09-10-initial",
-    "historyPreserved": true
-  },
-  "submissionCountPolicy": "UNLIMITED",
-  "postprocessComplete": true,
-  "postprocessChecks": {
-    "version": 6,
-    "complete": true,
-    "checkedAt": "2026-09-09T17:29:56.837Z",
-    "requiredCuts": 18,
-    "cutCount": 18,
-    "pagePolicy": {
-      "min": 12,
-      "default": 16,
-      "max": 30,
-      "target": 18,
-      "legacyTenPageCompatible": true
-    },
-    "pagePlan": [
-      "director",
-      "Vibe2:오프닝",
-      "Vibe2:초반",
-      "Vibe2:중반",
-      "Vibe2:후반",
-      "Vibe2:최종보스",
-      "Vibe2:엔딩",
-      "Vibe2:지역 흐름",
-      "Vibe2:메인 퀘스트",
-      "planning",
-      "planning",
-      "graphics",
-      "graphics",
-      "development",
-      "development",
-      "qa",
-      "balance",
-      "director"
-    ],
-    "cutsPerDepartment": {
-      "planning": 2,
-      "graphics": 2,
-      "development": 2,
-      "qa": 1,
-      "balance": 1,
-      "director": 2,
-      "vibe2": 8
-    },
-    "formatChecked": true,
-    "emptyContentChecked": true,
-    "uniqueVisualsChecked": true,
-    "imagePathsChecked": true,
-    "newClaimsAdded": false,
-    "sourceMode": "VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_OWNED_VISUAL_PAGES_PLUS_DIRECTOR_PRESENTATION",
-    "assistantAuthorship": false,
-    "vibe2DraftAuthorship": true,
-    "imageFirst": true,
-    "shortText": true,
-    "displayLanguage": "ko"
-  },
-  "cutCount": 18,
-  "requiredCuts": 18,
-  "completedArtbook": true,
-  "visualFirst": true,
-  "employeeAuthoredPages": 10,
-  "vibe2DraftPages": 8,
-  "assistantAuthoredPages": 0
+  "formalProductionGate": "BLOCKED_WAITING_FOR_REAL_DEPARTMENT_SUBMISSIONS"
 }
