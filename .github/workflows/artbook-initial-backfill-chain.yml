@@ -16,7 +16,6 @@ concurrency:
 
 jobs:
   continue-existing-initials:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout latest main
@@ -29,6 +28,8 @@ jobs:
       - name: Resolve next existing game without an initial artbook
         id: next
         shell: bash
+        env:
+          SOURCE_CONCLUSION: ${{ github.event.workflow_run.conclusion || 'manual' }}
         run: |
           set -euo pipefail
           node tools/artbook-prepare-daily.mjs
@@ -39,17 +40,21 @@ jobs:
           const game=(catalog.games||[]).find(x=>x.id===context.gameId)||{};
           const existing=game.hasWebArchive===true||String(game.unityProjectPath||'').trim().length>0;
           const shouldContinue=context.run===true&&String(context.mode||'').toUpperCase()==='INITIAL'&&existing;
+          const sourceConclusion=String(process.env.SOURCE_CONCLUSION||'manual');
           console.log(`continue=${shouldContinue?'true':'false'}`);
           console.log(`game_id=${shouldContinue?context.gameId:''}`);
-          console.log(`reason=${shouldContinue?'EXISTING_INITIAL_BACKLOG_REMAINS':'NO_EXISTING_INITIAL_BACKLOG'}`);
+          console.log(`source_conclusion=${sourceConclusion}`);
+          console.log(`reason=${shouldContinue?(sourceConclusion==='success'?'EXISTING_INITIAL_BACKLOG_REMAINS':'RECOVER_INCOMPLETE_INITIAL_AFTER_FAILED_RUN'):'NO_EXISTING_INITIAL_BACKLOG'}`);
           NODE
-      - name: Dispatch next initial artbook
+      - name: Dispatch next or retry incomplete initial artbook
         if: steps.next.outputs.continue == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh workflow run artbook-free-department-bots.yml --ref main
           echo "ARTBOOK_BACKFILL_DISPATCHED=${{ steps.next.outputs.game_id }}"
+          echo "ARTBOOK_BACKFILL_SOURCE_CONCLUSION=${{ steps.next.outputs.source_conclusion }}"
+          echo "ARTBOOK_BACKFILL_REASON=${{ steps.next.outputs.reason }}"
       - name: Backfill queue drained
         if: steps.next.outputs.continue != 'true'
         run: echo 'ARTBOOK_BACKFILL=NO_EXISTING_INITIAL_BACKLOG'

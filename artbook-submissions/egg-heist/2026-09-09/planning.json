@@ -1,0 +1,184 @@
+{
+  "version": 6,
+  "gameId": "egg-heist",
+  "date": "2026-09-09",
+  "department": "planning",
+  "status": "SUBMITTED",
+  "departmentReadiness": "BLOCKED",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "Vibe2 1차 초안",
+  "evidence": [
+    {
+      "source": "web-games/egg-heist/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-egg-heist.json",
+      "usage": "department-work-order"
+    },
+    {
+      "source": "artbook-submissions/egg-heist/2026-09-09/vibe2-first-draft.json",
+      "usage": "vibe2-first-draft-proposal-reviewed-by-planning"
+    }
+  ],
+  "section": {
+    "worldEvidence": "알 도둑 대작전 세계관을 기존 사실과 충돌하지 않으며, 6단계별로 실제 게임 특징을 기반으로 설계되었습니다.",
+    "protagonistMotivationEvidence": "알 도둑의 본성과 부화 결과가 실제 게임의 캐릭터 동기와 세계관 구성에 직접 연결되어 있습니다.",
+    "regionCausality": "시작 지역에서 현재 문제를 해결하고, 중간 지역에서 갈등 원인을 추적하며, 후반 지역에서 최종 결전을 준비하는 방식으로 실제 게임의 지역 진입 조건을 설정했습니다.",
+    "storyGameplayConnection": "6단계별로 실제 게임의 플레이 루프를 확립하고, 캐릭터 동기와 세계관 구성에 직접 연결되어 있습니다.",
+    "gaps": "현재 코드에서 스토리 근거가 적어 기획부가 추가 세계관·NPC·지역 설정을 검증해야 함.",
+    "handoffs": "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요."
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "알 도둑의 본성과 부화 결과가 실제 게임의 캐릭터 동기와 세계관 구성에 직접 연결되어 있습니다.",
+      "시작 지역에서 현재 문제를 해결하고, 중간 지역에서 갈등 원인을 추적하며, 후반 지역에서 최종 결전을 준비하는 방식으로 실제 게임의 지역 진입 조건을 설정했습니다.",
+      "6단계별로 실제 게임의 플레이 루프를 확립하고, 캐릭터 동기와 세계관 구성에 직접 연결되어 있습니다."
+    ],
+    "implementationPlan": [
+      "시작 지역에서 현재 문제를 해결하고, 중간 지역에서 갈등 원인을 추적하며, 후반 지역에서 최종 결전을 준비하는 방식으로 실제 게임의 지역 진입 조건을 설정했습니다.",
+      "6단계별로 실제 게임의 플레이 루프를 확립하고, 캐릭터 동기와 세계관 구성에 직접 연결되어 있습니다."
+    ],
+    "demoValidation": [
+      "현재 코드에서 스토리 근거가 적어 기획부가 추가 세계관·NPC·지역 설정을 검증해야 함.",
+      "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요."
+    ]
+  },
+  "unverified": [
+    "현재 코드에서 스토리 근거가 적어 기획부가 추가 세계관·NPC·지역 설정을 검증해야 함.",
+    "주요 NPC/세력은 기존 근거가 부족해 기획부 확정 필요.",
+    "현재 근거에서 정식 스토리/사건 인과가 충분히 확인되지 않음"
+  ],
+  "cuts": [
+    {
+      "kind": "planning",
+      "title": "Vibe2 1차 초안",
+      "body": "시작 지역에서 현재 문제를 해결하고, 중간 지역에서 갈등 원인을 추적하며, 후반 지역에서 최종 결전을 준비하는 방식으로 실제 게임의 지역 진입 조건을 설정했습니다. · 6단계별로 실제 게임의 플레이 루프를 확립하고, 캐릭터 동기와 세계관 구성에 직접 연결되어 있습니다.",
+      "image": "artbook-submissions/egg-heist/2026-09-09/visuals/planning.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "vibe2FirstDraftReviewed": true,
+    "planningSemanticQuality": true,
+    "planningFallbackUsed": false,
+    "policyBlocks": [
+      "현재 근거에서 정식 스토리/사건 인과가 충분히 확인되지 않음"
+    ]
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "planning",
+        "ownerName": "기획",
+        "pageSlot": 1,
+        "visualType": "world-map",
+        "title": "Vibe2 1차 초안",
+        "focus": "알 도둑의 세계관과 플레이 루프를 기반으로 설계",
+        "caption": "6단계별로 실제 게임 특징을 기반으로 세계관과 캐릭터 동기 확보",
+        "elements": [
+          {
+            "label": "world-map",
+            "note": "시작 지역에서 문제 해결, 중간 지…",
+            "kind": ""
+          },
+          {
+            "label": "story-flow",
+            "note": "6단계별로 실제 게임 플레이 루프 …",
+            "kind": ""
+          },
+          {
+            "label": "gaps",
+            "note": "현재 코드에서 스토리 근거 부족으로…",
+            "kind": ""
+          },
+          {
+            "label": "handoffs",
+            "note": "주요 NPC/세력 기존 근거 부족으…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/egg-heist/2026-09-09/visuals/planning-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "planning"
+      },
+      {
+        "owner": "planning",
+        "ownerName": "기획",
+        "pageSlot": 2,
+        "visualType": "story-flow",
+        "title": "Vibe2 2차 초안",
+        "focus": "추가 세계관·NPC·지역 설정 확보",
+        "caption": "현실 세계관과 캐릭터 동기 확보를 위한 추가 설정",
+        "elements": [
+          {
+            "label": "world-evide…",
+            "note": "알 도둑 대작전 세계관 기존 사실과…",
+            "kind": ""
+          },
+          {
+            "label": "protagonist…",
+            "note": "알 도둑의 본성과 부화 결과 실제 …",
+            "kind": ""
+          },
+          {
+            "label": "region-caus…",
+            "note": "시작 지역 문제 해결, 중간 지역 …",
+            "kind": ""
+          },
+          {
+            "label": "story-gamep…",
+            "note": "6단계 플레이 루프 확립 및 캐릭터…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/egg-heist/2026-09-09/visuals/planning-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "planning"
+      }
+    ],
+    "generatedBy": {
+      "department": "planning",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

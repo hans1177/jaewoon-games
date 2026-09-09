@@ -19,6 +19,10 @@ const catalog=readJson('game-catalog.json',{games:[]});
 
 const roles=['planning','graphics','development','qa','balance'];
 const submissionCountPolicy='UNLIMITED';
+queue.dailyFinalSubmissionLimit=null;
+queue.submissionCountPolicy=submissionCountPolicy;
+queue.initialBackfillPolicy='EXISTING_INITIAL_FIRST_UNTIL_DRAINED';
+queue.rule='one-collaborative-initial-artbook-per-game-before-formal-production; unlimited sequential initial backfill until existing backlog is drained';
 const validCompletedPageCount=n=>Number(n)===10||(Number(n)>=12&&Number(n)<=30);
 const validPresentationMode=m=>['VISUAL_FIRST_EMPLOYEE_AUTHORED','VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_AUTHORED'].includes(String(m||''));
 const validSourceMode=m=>['EMPLOYEE_OWNED_VISUAL_PAGES_PLUS_DIRECTOR_PRESENTATION','VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_OWNED_VISUAL_PAGES_PLUS_DIRECTOR_PRESENTATION'].includes(String(m||''));
