@@ -105,6 +105,20 @@ function defaultSourceReleased(row){
   if(!commit||!sourcePath)return false;
   try{execFileSync('git',['diff','--quiet',commit,'origin/main','--',sourcePath],{stdio:'ignore'});return false;}catch(error){return error?.status===1;}
 }
+function scopeRuntimeEntryFallback(order,filesystem=fs){
+  if(!order?.run||order.selectedReason!=='RUNTIME_INCIDENT_FIRST')return order;
+  if(Array.isArray(order.responsibilityFiles)&&order.responsibilityFiles.length)return order;
+  if(order.diagnosticTopIssue)return order;
+  const incident=order?.evidence?.runtimeIncident||{};
+  const incidentText=[incident.healthReason,...(Array.isArray(incident.issues)?incident.issues:[])].map(clean).join(' ').toLowerCase();
+  if(!/(?:same-origin-resource-failure|requestfailed|404|err_aborted)/.test(incidentText))return order;
+  const sourcePath=clean(order.sourcePath),file='index.html';
+  if(!sourcePath||!filesystem.existsSync(path.join(sourcePath,file)))return order;
+  const goal=`${file}에서 health가 보고한 same-origin runtime 사고 1건만 복구한다. 게임 본체·저장키·밸런스는 변경하지 않는다.`;
+  const diagnosticTopIssue={type:'HEALTH_RUNTIME_ENTRYPOINT_FALLBACK',severity:'high',file,message:'runtime 사고는 확인됐지만 정적 진단 책임 파일이 없어 공개 진입점 1파일로 범위를 제한함',relatedFiles:[file],microTask:goal};
+  const microTask={type:diagnosticTopIssue.type,severity:'high',file,files:[file],line:null,needle:null,goal,repairMode:'MODEL',autoPatch:null};
+  return {...order,microTask,responsibilityFiles:[file],diagnosticTopIssue,evidence:{...(order.evidence||{}),runtimeFallbackScope:{used:true,file,reason:'SAME_ORIGIN_RUNTIME_WITHOUT_DIAGNOSTIC_SCOPE'}}};
+}
 
 export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},queueState={version:2,attempts:[]},impactHistory={version:1,entries:[]},date=kstDate(),priorityGameId='',filesystem=fs,now=new Date(),isSourceReleased=()=>false}={}){
   const attempts=attemptsForDate(queueState,date);
@@ -159,7 +173,8 @@ export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={
     Boolean(runtimeIncident(health,project.slug))
   );
   const urgentPortfolio={...portfolio,projects:urgentProjects};
-  const urgent=urgentProjects.length?buildAutonomousWorkOrder({portfolio:urgentPortfolio,artbooks,health,catalog,diagnostics,queueState:{version:1,attempts:[]},date,filesystem,priorityGameId:''}):{run:false};
+  const urgentBase=urgentProjects.length?buildAutonomousWorkOrder({portfolio:urgentPortfolio,artbooks,health,catalog,diagnostics,queueState:{version:1,attempts:[]},date,filesystem,priorityGameId:''}):{run:false};
+  const urgent=scopeRuntimeEntryFallback(urgentBase,filesystem);
   const tierPolicyEnabled=Boolean(portfolio?.productionTierPolicy);
   const urgentProject=(portfolio?.projects??[]).find(project=>project.id===urgent?.gameId),urgentTier=Number(urgentProject?.productionTier||0);
   const urgentTierAllowed=!tierPolicyEnabled||(urgentTier>0&&urgentTier<3);
