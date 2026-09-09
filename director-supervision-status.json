@@ -3,7 +3,7 @@
   "dateKst": "2026-09-09",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "survival",
-  "activeDevelopmentRunId": 34360180029,
+  "activeDevelopmentRunId": 34361758492,
   "checks": {
     "staffChecked": "8/8",
     "activeWorkOrder": "artbook-work-orders/2026-09-09-survival.json",
@@ -40,21 +40,21 @@
   "workflowEvidence": {
     "artbook": {
       "id": 34359028470,
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "failure",
       "event": "workflow_dispatch",
       "createdAt": "2026-09-09T13:44:32Z",
-      "updatedAt": "2026-09-09T13:52:42Z",
+      "updatedAt": "2026-09-09T14:00:11Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34359028470"
     },
     "autonomousDevelopment": {
-      "id": 34360180029,
+      "id": 34361758492,
       "status": "in_progress",
       "conclusion": null,
-      "event": "workflow_dispatch",
-      "createdAt": "2026-09-09T13:55:06Z",
-      "updatedAt": "2026-09-09T13:55:13Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34360180029"
+      "event": "push",
+      "createdAt": "2026-09-09T14:09:30Z",
+      "updatedAt": "2026-09-09T14:09:35Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34361758492"
     },
     "homepage": null,
     "publicGameHealth": null,
@@ -67,9 +67,9 @@
       "taskAssigned": true,
       "status": "WORKING",
       "workState": "WAITING",
-      "task": "autonomous development floor 34360180029",
+      "task": "autonomous development floor 34361758492",
       "executionEvidence": [
-        "autonomous-workflow:34360180029:in_progress:pending"
+        "autonomous-workflow:34361758492:in_progress:pending"
       ],
       "resultVerified": false,
       "jobEvidence": null,
@@ -84,9 +84,9 @@
       "taskAssigned": true,
       "status": "WORKING",
       "workState": "WAITING",
-      "task": "autonomous development floor 34360180029",
+      "task": "autonomous development floor 34361758492",
       "executionEvidence": [
-        "autonomous-workflow:34360180029:in_progress:pending"
+        "autonomous-workflow:34361758492:in_progress:pending"
       ],
       "resultVerified": false,
       "jobEvidence": null,
@@ -101,9 +101,9 @@
       "taskAssigned": true,
       "status": "WORKING",
       "workState": "WAITING",
-      "task": "autonomous development floor 34360180029",
+      "task": "autonomous development floor 34361758492",
       "executionEvidence": [
-        "autonomous-workflow:34360180029:in_progress:pending"
+        "autonomous-workflow:34361758492:in_progress:pending"
       ],
       "resultVerified": false,
       "jobEvidence": null,
@@ -118,9 +118,9 @@
       "taskAssigned": true,
       "status": "WORKING",
       "workState": "WAITING",
-      "task": "autonomous development floor 34360180029",
+      "task": "autonomous development floor 34361758492",
       "executionEvidence": [
-        "autonomous-workflow:34360180029:in_progress:pending"
+        "autonomous-workflow:34361758492:in_progress:pending"
       ],
       "resultVerified": false,
       "jobEvidence": null,
@@ -135,9 +135,9 @@
       "taskAssigned": true,
       "status": "WORKING",
       "workState": "WAITING",
-      "task": "autonomous development floor 34360180029",
+      "task": "autonomous development floor 34361758492",
       "executionEvidence": [
-        "autonomous-workflow:34360180029:in_progress:pending"
+        "autonomous-workflow:34361758492:in_progress:pending"
       ],
       "resultVerified": false,
       "jobEvidence": null,
@@ -220,7 +220,7 @@
     "enabled": true,
     "artbookBacklogCount": 3,
     "nextMissingInitialArtbook": "survival",
-    "artbookRecoveryDispatched": false,
+    "artbookRecoveryDispatched": true,
     "autonomousRecoveryDispatched": false,
     "duplicateActiveWorkflowDispatchForbidden": true
   }
