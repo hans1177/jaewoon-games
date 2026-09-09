@@ -1,5 +1,5 @@
 {
-  "version": 8,
+  "version": 9,
   "status": "ACTIVE",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
@@ -8,9 +8,25 @@
   "paidApi": false,
   "continuous24hDevelopment": true,
   "productionTierPolicy": {
+    "assignmentMode": "AUTO_REBALANCE_FIXED_COUNTS",
+    "fixedGameIds": false,
+    "autoPromotionDemotion": true,
     "releaseConfirmedCount": 2,
     "developmentConfirmedCount": 3,
     "designOnlyRemainder": true,
+    "rebalanceTrigger": "VERIFIED_EVIDENCE_CHANGE",
+    "rebalanceEvidence": [
+      "ARTBOOK_BASELINE_MATURITY",
+      "IMPLEMENTATION_PROGRESS",
+      "QA_RUNTIME_EVIDENCE",
+      "ENGINE_READINESS",
+      "DEVELOPMENT_EFFICIENCY",
+      "SCALABILITY",
+      "BLOCKAGE_RISK",
+      "RELEASE_READINESS"
+    ],
+    "fullTierPromotionPolicy": "PROMOTE_BEST_ELIGIBLE_AND_DEMOTE_LOWEST_RANKED_OCCUPANT",
+    "vacancyPolicy": "PROMOTE_BEST_ELIGIBLE_LOWER_TIER_GAME",
     "tier1": {
       "name": "RELEASE_CONFIRMED",
       "engine": "UNITY_ANDROID",
@@ -35,14 +51,16 @@
     "maxFocusedGames": 1,
     "targetFocusedGames": 1,
     "focusStage": "RELEASE_CONFIRMED",
-    "preferredFocusedGameIds": ["P0006"],
-    "fillVacantFocusedSlots": false,
+    "preferredFocusedGameIds": [],
+    "fixedFocusedGameId": null,
+    "autoRotateFocus": true,
+    "fillVacantFocusedSlots": true,
     "scoreAxes": ["playability", "distinctiveness", "developmentEfficiency", "scalability", "lowBlockage"],
     "axisMin": 0,
     "axisMax": 2,
     "focusThreshold": 8,
     "nextDevelopmentThreshold": 5,
-    "selection": "OWNER_TIER_THEN_PREFERRED_UNITY_THEN_SCORE",
+    "selection": "UNITY_PROJECT_READY_THEN_SCORE_THEN_LOW_BLOCKAGE",
     "releaseConfirmedExcludedFromFocus": false,
     "releaseConfirmedOnlyForDeepFocus": true,
     "tier2WebPrototypeAllowedAlongsideUnityFocus": true,
@@ -55,10 +73,11 @@
       "releaseGateRequired": true
     },
     "swapTriggers": [
+      "TIER_REBALANCE",
       "MATERIAL_MILESTONE_COMPLETED",
       "TWO_CONSECUTIVE_NO_MEANINGFUL_PROGRESS",
       "BLOCKED_BY_STRUCTURE_OR_DEPENDENCY",
-      "OWNER_PRIORITY_CHANGE",
+      "VERIFIED_READINESS_SCORE_CHANGE",
       "RELEASE_READY"
     ]
   },
@@ -73,7 +92,7 @@
   "sourceWriteConcurrency": "PARALLEL_ISOLATED_WORKSPACES",
   "finalIntegrationConcurrency": "SERIAL",
   "finalVerificationGate": "AUTONOMOUS_CANDIDATE_PROMOTION_INDEPENDENT_QA",
-  "postReleaseFlow": ["PUBLIC_HEALTH", "COMPANY_DNA_LEARNING", "ARTBOOK_MILESTONE_OR_REVISION", "NEXT_DEVELOPMENT_FLOOR"],
+  "postReleaseFlow": ["PUBLIC_HEALTH", "COMPANY_DNA_LEARNING", "ARTBOOK_MILESTONE_OR_REVISION", "TIER_REBALANCE", "NEXT_DEVELOPMENT_FLOOR"],
   "sameGameDailyFloorCap": null,
   "completedArtbookDailyWorkCap": null,
   "maxModelCallsPerRun": 2,
@@ -92,11 +111,10 @@
       "targetEngine": "unity-android",
       "dedicatedDevelopmentLane": "UNITY_PRIMARY",
       "unityProjectReady": false,
-      "focusRole": "NEXT_FOCUS",
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 2, "developmentEfficiency": 2, "scalability": 2, "lowBlockage": 1},
         "total": 9,
-        "evidenceNote": "공개 플레이 가능성과 반응형 생태 정체성은 강하지만 Unity 전환 프로젝트가 아직 준비되지 않아 현재 집중 슬롯은 사용하지 않음"
+        "evidenceNote": "현재 1분류 스냅샷. Unity 전환 프로젝트가 준비되면 집중 순위가 자동 재평가됨"
       },
       "protectedValues": ["jaewoon-survival-v1", "worldVersion", "save-meaning", "core-loop", "public-web-archive"]
     },
@@ -112,7 +130,7 @@
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 2, "developmentEfficiency": 1, "scalability": 2, "lowBlockage": 1},
         "total": 8,
-        "evidenceNote": "곤충 생태 차별성과 확장성이 높아 Web 1차 플레이어블 구현으로 핵심 루프를 검증하기 적합"
+        "evidenceNote": "현재 2분류 스냅샷. 검증 근거가 올라가거나 내려가면 분류가 자동 재평가됨"
       },
       "protectedValues": ["save-meaning", "core-loop"]
     },
@@ -128,7 +146,7 @@
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 2, "developmentEfficiency": 0, "scalability": 2, "lowBlockage": 0},
         "total": 6,
-        "evidenceNote": "수정 공명 정체성은 유지하되 전체 설계를 재현하지 않고 Web 1차 구현에서 핵심 방어 루프만 검증"
+        "evidenceNote": "현재 2분류 스냅샷. 전체 설계 재현보다 Web 1차 구현 근거를 쌓고 자동 재분류에 사용"
       },
       "protectedValues": ["save-meaning", "core-loop"]
     },
@@ -144,7 +162,7 @@
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 1, "developmentEfficiency": 1, "scalability": 2, "lowBlockage": 1},
         "total": 7,
-        "evidenceNote": "현상금 위험 선택을 중심으로 Web 1차 구현을 만들고 전체 아트북 기능 재현은 후속 판단으로 남김"
+        "evidenceNote": "현재 2분류 스냅샷. 실제 플레이/QA 근거에 따라 자동 승격·하락 가능"
       },
       "protectedValues": ["save-meaning", "core-loop"]
     },
@@ -160,7 +178,7 @@
       "developmentFocus": {
         "scores": {"playability": 1, "distinctiveness": 1, "developmentEfficiency": 0, "scalability": 1, "lowBlockage": 1},
         "total": 4,
-        "evidenceNote": "현재는 코드 개발보다 아트북·정체성·구조 설계 최적화가 우선"
+        "evidenceNote": "현재 3분류 스냅샷. 아트북/설계 근거가 충분해지면 상위 분류 후보가 됨"
       },
       "protectedValues": ["save-meaning", "core-loop"]
     },
@@ -176,11 +194,10 @@
       "targetEngine": "unity-android",
       "dedicatedDevelopmentLane": "UNITY_PRIMARY",
       "unityProjectReady": true,
-      "focusRole": "FOCUSED",
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 2, "developmentEfficiency": 1, "scalability": 2, "lowBlockage": 1},
         "total": 8,
-        "evidenceNote": "실제 Unity 본개발 프로젝트와 테스트 빌드 근거가 있어 1개 집중개발 슬롯의 우선 대상"
+        "evidenceNote": "현재 1분류 스냅샷. 실제 Unity 프로젝트 준비 근거 때문에 현재 집중 후보 우선순위가 높음"
       },
       "protectedValues": ["save-meaning", "core-loop", "unity-primary", "public-web-archive"]
     },
@@ -220,7 +237,7 @@
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 1, "developmentEfficiency": 1, "scalability": 1, "lowBlockage": 0},
         "total": 5,
-        "evidenceNote": "4마리 릴레이 전투 정체성과 콘텐츠 구조를 아트북에서 먼저 보완"
+        "evidenceNote": "현재 3분류 스냅샷. 아트북/설계와 검증 근거가 좋아지면 2분류 승격 후보"
       },
       "protectedValues": ["save-meaning", "monster-party", "capture", "battle", "dex"]
     },
