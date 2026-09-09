@@ -1,5 +1,6 @@
 // 파일명: tools/artbook-prepare-daily.mjs
 // 역할: 기존 게임의 최초 아트북을 우선 채운 뒤, 개발/출시 단계 업그레이드와 필요 수정 요청을 처리한다.
+// 제출 수량 정책: INITIAL/업그레이드/수정 모두 일일 개수 제한 없음.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -17,7 +18,7 @@ const revisionQueue=readJson('artbook-revision-queue.json',{tasks:[]});
 const catalog=readJson('game-catalog.json',{games:[]});
 
 const roles=['planning','graphics','development','qa','balance'];
-const finalSubmissionLimitToday=Math.max(1,Number(registry.policy?.dailyFinalSubmissionLimit)||1);
+const submissionCountPolicy='UNLIMITED';
 const validCompletedPageCount=n=>Number(n)===10||(Number(n)>=12&&Number(n)<=30);
 const validPresentationMode=m=>['VISUAL_FIRST_EMPLOYEE_AUTHORED','VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_AUTHORED'].includes(String(m||''));
 const validSourceMode=m=>['EMPLOYEE_OWNED_VISUAL_PAGES_PLUS_DIRECTOR_PRESENTATION','VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_OWNED_VISUAL_PAGES_PLUS_DIRECTOR_PRESENTATION'].includes(String(m||''));
@@ -32,15 +33,6 @@ const completedInitial=new Set(completedArtbooks.filter(x=>
   validPresentationMode(x.presentation?.mode)&&
   x.presentation?.assistantAuthored===false
 ).map(x=>x.gameId));
-
-const artbookById=new Map((registry.artbooks||[]).map(x=>[x.id,x]));
-const completedInitialFinalsToday=(registry.dailySubmissions||[]).filter(x=>{
-  if(String(x.date||'')!==date||String(x.status||'')!=='completed-artbook')return false;
-  const artbook=artbookById.get(x.artbookId);
-  if(artbook)return String(artbook.workMode||'INITIAL').toUpperCase()==='INITIAL';
-  return /-initial$/i.test(String(x.artbookId||''));
-});
-const initialSlotAvailable=completedInitialFinalsToday.length<finalSubmissionLimitToday;
 
 const order=(queue.queueOrder||[]).length?queue.queueOrder:(queue.games||[]).map(x=>x.gameId);
 const existingGameIds=new Set((catalog.games||[]).filter(x=>x&&x.id&&(x.hasWebArchive===true||clean(x.unityProjectPath))).map(x=>x.id));
@@ -97,16 +89,6 @@ let revision=null;
 let lifecycleUpgrade=null;
 
 if(nextExistingInitial){
-  if(!initialSlotAvailable){
-    writeJson('artbook-daily-context.json',{
-      date,run:false,reason:'DAILY_INITIAL_ARTBOOK_LIMIT_REACHED',finalSubmissionLimitToday,
-      completedInitialFinalsToday:completedInitialFinalsToday.map(x=>({gameId:x.gameId,artbookId:x.artbookId,status:x.status})),
-      existingInitialPriority:true,existingInitialRemaining
-    });
-    console.log('ARTBOOK_DAILY=SKIP_DAILY_INITIAL_LIMIT');
-    console.log(`ARTBOOK_INITIAL_FINALS_TODAY=${completedInitialFinalsToday.length}/${finalSubmissionLimitToday}`);
-    process.exit(0);
-  }
   gameId=nextExistingInitial;
 }else if(milestoneUpgradeCandidates.length){
   lifecycleUpgrade=milestoneUpgradeCandidates[0];
@@ -137,22 +119,16 @@ if(nextExistingInitial){
     sourceArtbookId:baseline?.id||null,targetState:baseline?.__state||'DESIGN_BASELINE'
   };
 }else{
-  const nextOtherInitial=order.find(id=>!completedInitial.has(id))||'';
-  if(nextOtherInitial&&!initialSlotAvailable){
-    writeJson('artbook-daily-context.json',{
-      date,run:false,reason:'DAILY_INITIAL_ARTBOOK_LIMIT_REACHED',finalSubmissionLimitToday,
-      completedInitialFinalsToday:completedInitialFinalsToday.map(x=>({gameId:x.gameId,artbookId:x.artbookId,status:x.status})),
-      existingInitialPriority:false,existingInitialRemaining:[]
-    });
-    console.log('ARTBOOK_DAILY=SKIP_DAILY_INITIAL_LIMIT');
-    process.exit(0);
-  }
-  gameId=nextOtherInitial;
+  gameId=order.find(id=>!completedInitial.has(id))||'';
 }
 
 if(!gameId){
-  writeJson('artbook-daily-context.json',{date,run:false,reason:'NO_ARTBOOK_WORK_DUE',existingInitialPriority:true,existingInitialRemaining:[]});
+  writeJson('artbook-daily-context.json',{
+    date,run:false,reason:'NO_ARTBOOK_WORK_DUE',existingInitialPriority:true,existingInitialRemaining:[],
+    submissionCountPolicy
+  });
   console.log('ARTBOOK_DAILY=ALL_DONE');
+  console.log('ARTBOOK_SUBMISSION_COUNT_POLICY=UNLIMITED');
   process.exit(0);
 }
 
@@ -182,7 +158,7 @@ queue.currentTargetExecution={
   ...(queue.currentTargetExecution||{}),date,mode,readySections:0,requiredSections:5,readyReviews:0,requiredReviews:5,
   directorAssemblyReady:false,pagePolicy:{min:12,default:16,max:30,legacyCompletedPages:10},requiredCuts:16,
   postprocessComplete:false,visualFirstRequired:true,employeeAuthorshipRequired:true,vibe2FirstDraftRequired:true,
-  existingInitialPriority:true,existingInitialRemaining:existingInitialRemaining.length,lifecycle,
+  existingInitialPriority:true,existingInitialRemaining:existingInitialRemaining.length,lifecycle,submissionCountPolicy,
   runnerDispatch,runnerPaidApi:false,runnerApiKeyRequired:false,directorGhostwritingFallback:false
 };
 const queueGameMutable=(queue.games||[]).find(x=>x.gameId===gameId);
@@ -205,9 +181,9 @@ const mk=(owner,scope,deliverable)=>({
   mayWriteOtherSections:false,status:taskStatus(owner),lifecycleTargetState:lifecycle.targetState
 });
 const workOrder={
-  version:10,date,mode,gameId,gameName:game.name,status:`${mode}_ARTBOOK_WORK_SCHEDULED`,
-  finalSubmissionLimitToday,initialSubmissionLimitApplies:mode==='INITIAL',existingInitialPriority:true,
-  existingInitialRemaining:existingInitialRemaining.length,styleProfile:game.styleProfile||'',lifecycle,
+  version:11,date,mode,gameId,gameName:game.name,status:`${mode}_ARTBOOK_WORK_SCHEDULED`,
+  submissionCountPolicy,existingInitialPriority:true,existingInitialRemaining:existingInitialRemaining.length,
+  styleProfile:game.styleProfile||'',lifecycle,
   sourceEvidence:[`web-games/${gameId} (read-only)`,`unity-games/${gameId} (if present)`,'existing build/test/error records',...(lifecycle.sourceArtbookId?[`artbook:${lifecycle.sourceArtbookId}`]:[])],
   departmentTasks:{
     planning:mk('planning','스토리·세계관·캐릭터 동기·사건 인과를 이미지 중심 2장으로 설계','visual-story-world-pages'),
@@ -230,8 +206,7 @@ writeJson('artbook-daily-context.json',{
   date,run:true,mode,gameId,gameName:game.name,workOrderPath,sourceDate:secondWork?.sourceDate||null,
   secondWorkDepartments:secondWork?.selectedDepartments||[],revisionDepartments:revision?.selectedDepartments||[],
   existingInitialPriority:true,existingInitialRemaining,visualFirstRequired:true,employeeAuthorshipRequired:true,
-  vibe2FirstDraftRequired:true,pagePolicy:workOrder.pagePolicy,sameDaySecondWork,finalSubmissionLimitToday,
-  completedInitialFinalsToday:completedInitialFinalsToday.length,lifecycle
+  vibe2FirstDraftRequired:true,pagePolicy:workOrder.pagePolicy,sameDaySecondWork,submissionCountPolicy,lifecycle
 });
 console.log(`ARTBOOK_DAILY_TARGET=${gameId}`);
 console.log(`ARTBOOK_DAILY_MODE=${mode}`);
@@ -249,4 +224,4 @@ console.log('ARTBOOK_VISUAL_FIRST_REQUIRED=YES');
 console.log('ARTBOOK_EMPLOYEE_AUTHORSHIP_REQUIRED=YES');
 console.log('ARTBOOK_POSTPROCESS_REQUIRED=YES');
 console.log(`ARTBOOK_SAME_DAY_SECOND_WORK=${sameDaySecondWork?'YES':'NO'}`);
-console.log(`DAILY_INITIAL_FINAL_LIMIT=${finalSubmissionLimitToday}`);
+console.log('ARTBOOK_SUBMISSION_COUNT_POLICY=UNLIMITED');

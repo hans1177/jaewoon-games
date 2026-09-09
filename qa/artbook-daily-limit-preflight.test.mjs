@@ -15,45 +15,50 @@ function completedInitial(gameId,date){return{
   presentation:{mode:'VIBE2_FIRST_DRAFT_PLUS_EMPLOYEE_AUTHORED',assistantAuthored:false},
   lifecycle:{state:'DESIGN_BASELINE',currentBaseline:true}
 };}
-function fixture({withCompletedToday}){
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'artbook-daily-limit-')),date=kstDate();
-  writeJson(root,'artbook-submission-queue.json',{queueOrder:['game-a'],games:[{gameId:'game-a',name:'게임 A'}]});
-  writeJson(root,'game-catalog.json',{games:[{id:'game-a',hasWebArchive:true}]});
+function fixture({completed=[]}={}){
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'artbook-unlimited-')),date=kstDate();
+  const games=['game-a','game-b'];
+  writeJson(root,'artbook-submission-queue.json',{queueOrder:games,games:games.map(gameId=>({gameId,name:gameId}))});
+  writeJson(root,'game-catalog.json',{games:games.map(id=>({id,hasWebArchive:true}))});
   writeJson(root,'artbook-second-work-queue.json',{tasks:[]});
   writeJson(root,'artbook-revision-queue.json',{tasks:[]});
-  const done=withCompletedToday?completedInitial('done-game',date):null;
-  writeJson(root,'game-artbooks.json',{policy:{dailyFinalSubmissionLimit:1},dailySubmissions:done?[{date,gameId:done.gameId,artbookId:done.id,status:'completed-artbook'}]:[],artbooks:done?[done]:[]});
+  const artbooks=completed.map(id=>completedInitial(id,date));
+  writeJson(root,'game-artbooks.json',{
+    policy:{dailyFinalSubmissionLimit:1},
+    dailySubmissions:artbooks.map(x=>({date,gameId:x.gameId,artbookId:x.id,status:'completed-artbook'})),
+    artbooks
+  });
   return {root,date};
 }
 
-test('daily initial limit stops before scheduling another initial artbook',()=>{
-  const {root,date}=fixture({withCompletedToday:true});
+test('a completed initial today does not block another existing initial today',()=>{
+  const {root,date}=fixture({completed:['game-a']});
   try{
     const result=spawnSync(process.execPath,[prepare],{cwd:root,encoding:'utf8'});
     assert.equal(result.status,0,result.stderr);
-    assert.match(result.stdout,/ARTBOOK_DAILY=SKIP_DAILY_INITIAL_LIMIT/);
-    assert.match(result.stdout,/ARTBOOK_INITIAL_FINALS_TODAY=1\/1/);
+    assert.match(result.stdout,/ARTBOOK_DAILY_TARGET=game-b/);
+    assert.match(result.stdout,/ARTBOOK_SUBMISSION_COUNT_POLICY=UNLIMITED/);
+    assert.doesNotMatch(result.stdout,/DAILY_INITIAL_ARTBOOK_LIMIT/);
     const context=JSON.parse(fs.readFileSync(path.join(root,'artbook-daily-context.json'),'utf8'));
-    assert.equal(context.run,false);
-    assert.equal(context.reason,'DAILY_INITIAL_ARTBOOK_LIMIT_REACHED');
-    assert.equal(context.finalSubmissionLimitToday,1);
-    const queue=JSON.parse(fs.readFileSync(path.join(root,'artbook-submission-queue.json'),'utf8'));
-    assert.equal(queue.currentDailyTarget,undefined);
-    assert.equal(fs.existsSync(path.join(root,'artbook-work-orders',`${date}-game-a.json`)),false);
+    assert.equal(context.run,true);
+    assert.equal(context.gameId,'game-b');
+    assert.equal(context.mode,'INITIAL');
+    assert.equal(context.submissionCountPolicy,'UNLIMITED');
+    assert.equal(fs.existsSync(path.join(root,'artbook-work-orders',`${date}-game-b.json`)),true);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('under the daily initial limit still schedules the next existing initial artbook',()=>{
-  const {root,date}=fixture({withCompletedToday:false});
+test('legacy dailyFinalSubmissionLimit value is ignored for initial backfill',()=>{
+  const {root,date}=fixture();
   try{
     const result=spawnSync(process.execPath,[prepare],{cwd:root,encoding:'utf8'});
     assert.equal(result.status,0,result.stderr);
     assert.match(result.stdout,/ARTBOOK_DAILY_TARGET=game-a/);
     const context=JSON.parse(fs.readFileSync(path.join(root,'artbook-daily-context.json'),'utf8'));
-    assert.equal(context.run,true);
+    assert.equal(context.submissionCountPolicy,'UNLIMITED');
     assert.equal(context.gameId,'game-a');
-    assert.equal(context.mode,'INITIAL');
-    assert.equal(context.finalSubmissionLimitToday,1);
-    assert.equal(fs.existsSync(path.join(root,'artbook-work-orders',`${date}-game-a.json`)),true);
+    const order=JSON.parse(fs.readFileSync(path.join(root,'artbook-work-orders',`${date}-game-a.json`),'utf8'));
+    assert.equal(order.submissionCountPolicy,'UNLIMITED');
+    assert.equal('finalSubmissionLimitToday' in order,false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });

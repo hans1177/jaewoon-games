@@ -35,13 +35,15 @@ function runFixture({games,artbooks,dailySubmissions=[],revisions=[],secondTasks
   return {context,stdout:result.stdout,root};
 }
 
-// 기존 게임 최초 아트북이 남아 있으면 하루 최초 슬롯을 이미 쓴 날에는 업그레이드가 앞질러 가지 않는다.
+// 기존 게임 최초 아트북이 남아 있으면 같은 날 이미 INITIAL이 완료됐어도 다음 기존 게임 INITIAL을 계속 처리한다.
 {
   const games=[{id:'a',stage:'development-confirmed'},{id:'b',stage:'release-confirmed'}];
   const a=completed('a');
   const result=runFixture({games,artbooks:[a],dailySubmissions:[{date,gameId:'a',artbookId:a.id,status:'completed-artbook'}]});
-  assert.equal(result.context.run,false);
-  assert.equal(result.context.reason,'DAILY_INITIAL_ARTBOOK_LIMIT_REACHED');
+  assert.equal(result.context.run,true);
+  assert.equal(result.context.gameId,'b');
+  assert.equal(result.context.mode,'INITIAL');
+  assert.equal(result.context.submissionCountPolicy,'UNLIMITED');
   assert.deepEqual(result.context.existingInitialRemaining,['b']);
 }
 
@@ -67,7 +69,6 @@ function runFixture({games,artbooks,dailySubmissions=[],revisions=[],secondTasks
 }
 
 // V1 최초 설계본 이력과 V2 개발 기준본을 모두 보존한 상태에서 필요 수정 요청은 V3 후보 REVISION으로 처리한다.
-// 같은 날 최초 아트북 슬롯을 이미 사용했어도 기존 아트북 수정은 막히지 않아야 한다.
 {
   const games=[{id:'a',stage:'development-confirmed'}];
   const v1=completed('a',1,'DESIGN_BASELINE','INITIAL');
