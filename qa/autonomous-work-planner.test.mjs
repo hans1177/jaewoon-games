@@ -117,6 +117,34 @@ test('최신 아트북의 낮은 부서 보완점을 진단이 없을 때 작은
   assert.match(order.goal,/보스 실루엣/);assert.equal(order.evidence.latestArtbookProductionApproval,false);
 });
 
+test('아트북 평가문 자체는 게임 코드 작업으로 만들지 않는다',()=>{
+  const portfolio={...basePortfolio,projects:[basePortfolio.projects[0]]};
+  const artbooks={artbooks:[{id:'a-1',gameId:'a',createdAt:'2026-09-08',departmentOpinions:{qa:{averageStars:2,priorityImprovement:'본부 결과물의 이번 검토 점수와 전문성과 구체화도를 개선한다'}}}]};
+  const order=buildAutonomousWorkOrder({portfolio,artbooks,health:{games:[]},catalog,diagnostics:{a:{issues:[],topIssue:null}},date:'2026-09-09',filesystem,queueState:queue()});
+  assert.equal(order.run,false);
+  assert.equal(order.reason,'NO_ACTIONABLE_DIAGNOSTIC');
+});
+
+test('집중 DESIGN_BASELINE에서 대형 단일 파일은 개발 목표가 아니라 편집 제약으로만 남긴다',()=>{
+  const portfolio={...basePortfolio,projects:[basePortfolio.projects[0]]};
+  const large={type:'LARGE_SINGLE_FILE',severity:'high',file:'index.html',message:'large file',microTask:'대형 파일 전체 재작성 금지',repairMode:'MODEL'};
+  const diagnostics={a:{filesScanned:1,counts:{high:1},topIssue:large,issues:[large]}};
+  const artbooks={artbooks:[{
+    id:'a-design',gameId:'a',createdAt:'2026-09-09',status:'completed-artbook',lifecycle:{state:'DESIGN_BASELINE'},
+    departments:{planning:{section:{storyGameplayConnection:'시작 지역의 자원 루프를 안정화한 뒤 위험 지역으로 확장한다.'}}},
+    departmentOpinions:{qa:{averageStars:1,priorityImprovement:'본부 결과물은 이미지 중심 1장 구조와 이번 검토 점수를 더 강조해야 한다'}}
+  }]};
+  const order=buildAutonomousWorkOrder({portfolio,artbooks,health:{games:[]},catalog,diagnostics,date:'2026-09-09',filesystem,queueState:queue(),priorityGameId:'a'});
+  assert.equal(order.selectedReason,'ARTBOOK_COMPLETED_DEVELOPMENT_HANDOFF');
+  assert.equal(order.microTask,null);
+  assert.deepEqual(order.responsibilityFiles,[]);
+  assert.match(order.goal,/\[FEATURE_DEVELOPMENT\]/);
+  assert.match(order.goal,/시작 지역의 자원 루프/);
+  assert.doesNotMatch(order.goal,/이번 검토 점수/);
+  assert.equal(order.evidence.diagnostics.editConstraints[0].type,'LARGE_SINGLE_FILE');
+  assert.equal(order.evidence.diagnostics.topIssue,null);
+});
+
 test('기획 정체성만 필요한 프로젝트는 코드 생성으로 밀어 넣지 않는다',()=>{
   const portfolio={...basePortfolio,projects:[{id:'P9',slug:'r',name:'R',sourcePath:'web-games/r',profileStatus:'REDESIGN_IDENTITY',mode:'REDESIGN',protectedValues:[]}]};
   const order=buildAutonomousWorkOrder({portfolio,artbooks:{artbooks:[]},health:{games:[]},catalog:{games:[]},diagnostics:{r:diag()},date:'2026-09-09',filesystem,queueState:queue()});
