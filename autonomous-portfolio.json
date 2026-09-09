@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "status": "ACTIVE",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
@@ -9,12 +9,15 @@
   "continuous24hDevelopment": true,
   "developmentFocusPolicy": {
     "maxFocusedGames": 2,
+    "targetFocusedGames": 2,
+    "preferredFocusedGameIds": ["P0001", "P0002"],
+    "fillVacantFocusedSlots": true,
     "scoreAxes": ["playability", "distinctiveness", "developmentEfficiency", "scalability", "lowBlockage"],
     "axisMin": 0,
     "axisMax": 2,
     "focusThreshold": 8,
     "nextDevelopmentThreshold": 5,
-    "selection": "TOP_SCORE_THEN_EXISTING_UNITY_PRIORITY",
+    "selection": "PREFERRED_READY_THEN_SCORE_WITH_NEXT_DEVELOPMENT_BACKFILL",
     "releaseConfirmedExcludedFromFocus": true,
     "fastLane": {
       "enabled": true,
