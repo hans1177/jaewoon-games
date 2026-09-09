@@ -23,17 +23,23 @@ const actionsPath=process.argv[2]||'';
 const artbookJobsPath=process.argv[3]||'';
 const failedLogsDir=process.argv[4]||'';
 const autonomousJobsPath=process.argv[5]||'';
+const artbookContextPath=process.argv[6]||'';
 const actions=actionsPath?readJson(actionsPath,{workflow_runs:[]}):{workflow_runs:[]};
 const artbookJobsPacket=artbookJobsPath?readJson(artbookJobsPath,{jobs:[]}):{jobs:[]};
 const autonomousJobsPacket=autonomousJobsPath?readJson(autonomousJobsPath,{jobs:[]}):{jobs:[]};
+const artbookContextLog=artbookContextPath?readText(artbookContextPath):'';
 const runs=Array.isArray(actions?.workflow_runs)?actions.workflow_runs:[];
 const artbookJobs=Array.isArray(artbookJobsPacket?.jobs)?artbookJobsPacket.jobs:[];
 const autonomousJobs=Array.isArray(autonomousJobsPacket?.jobs)?autonomousJobsPacket.jobs:[];
 const date=kstDate();
-const activeGameId=queue.currentDailyTarget||'';
+const liveArtbookTarget=String(artbookContextLog.match(/ARTBOOK_DAILY_TARGET=([^\s]+)/)?.[1]||'').trim();
+const liveArtbookWorkOrder=String(artbookContextLog.match(/ARTBOOK_WORK_ORDER=([^\s]+)/)?.[1]||'').trim();
+const activeGameId=liveArtbookTarget||queue.currentDailyTarget||'';
+const activeTargetSource=liveArtbookTarget?'artbook-context-log':'persisted-queue-fallback';
 const activeGame=(queue.games||[]).find(g=>g.gameId===activeGameId)||{};
-const submitted=new Set(activeGame.submitted||activeGame.sectionsReady||[]);
-const workOrder=`artbook-work-orders/${date}-${activeGameId}.json`;
+const persistedTargetMatches=String(queue.currentDailyTarget||'')===activeGameId;
+const submitted=new Set(persistedTargetMatches?(activeGame.submitted||activeGame.sectionsReady||[]):[]);
+const workOrder=liveArtbookWorkOrder||`artbook-work-orders/${date}-${activeGameId}.json`;
 const workOrderExists=Boolean(activeGameId&&exists(workOrder));
 const activeUnityDir=activeGameId?`unity-games/${activeGameId}`:'';
 const activeWebDir=activeGameId?`web-games/${activeGameId}`:'';
@@ -79,6 +85,7 @@ function detectDirectCause(log){
 function classifyArtbookRole(role,run){
   const roleJob=latestArtbookRoleJob(role,run);const log=roleFailureLog(role);const directCause=detectDirectCause(log);const evidence=[];const blockers=[];
   if(workOrderExists)evidence.push(`work-order:${workOrder}`);
+  if(liveArtbookTarget)evidence.push(`live-artbook-target:${liveArtbookTarget}`);
   if(submitted.has(role))evidence.push(`queue-submission:${role}`);
   if(run)evidence.push(`workflow:${run.id}:${run.status}:${run.conclusion||'pending'}`);
   if(roleJob)evidence.push(`job:${roleJob.id}:${roleJob.status}:${roleJob.conclusion||'pending'}`);
@@ -86,12 +93,12 @@ function classifyArtbookRole(role,run){
   if(!workOrderExists)blockers.push('NO_WORK_ORDER');
   if(evidenceAdapterMismatch)blockers.push('EVIDENCE_ADAPTER_MISMATCH');
   let status='BLOCKED',workState='BLOCKED',reason='assigned artbook work has no verified completion evidence',action='fix operational blocker, then re-run department workflow';
-  if(submitted.has(role)){status='DONE';workState='DONE';reason='department submission is recorded for the active daily target';action='hold for collaboration/gate verification';}
-  else if(roleJob?.status==='in_progress'){status='WORKING';workState='ACTIVE';reason='this department job is currently executing';action='check department output after job completes';}
+  if(roleJob?.status==='in_progress'){status='WORKING';workState='ACTIVE';reason='this department job is currently executing';action='check department output after job completes';}
   else if(roleJob?.status==='queued'){status='WORKING';workState='WAITING';reason='this department job is queued';action='wait for assigned runner';}
   else if(roleJob?.conclusion==='failure'){status='FAILED';workState='BLOCKED';blockers.push('WORKFLOW_FAILED');if(directCause?.code)blockers.push(directCause.code);reason=directCause?.detail||'this department job failed';action=directCause?.action||'inspect this department job log, fix the direct cause, then retry';}
   else if(roleJob?.conclusion==='success'&&run?.conclusion&&run.conclusion!=='success'){status='BLOCKED';workState='BLOCKED';blockers.push('DEPENDENCY_BLOCKED');reason='this department completed its independent round, but a downstream dependency failed';action='preserve this successful department result and unblock the failed dependency';}
   else if(roleJob?.conclusion==='success'&&run?.conclusion==='success'){status='DONE';workState='DONE';reason='department job completed successfully';action='none';}
+  else if(submitted.has(role)){status='DONE';workState='DONE';reason='department submission is recorded for the resolved active artbook target';action='hold for collaboration/gate verification';}
   else if(run?.status==='in_progress'||run?.status==='queued'){status='WORKING';workState='WAITING';reason='artbook workflow is active and this role job has not started yet';action='wait for this role job';}
   else if(!workOrderExists){reason='active daily target has no matching work order, so department automation skips';}
   else if(run?.conclusion&&run.conclusion!=='success'){status='BLOCKED';workState='BLOCKED';blockers.push('DEPENDENCY_BLOCKED');reason='overall workflow failed before this department produced a conclusive job result';action='inspect failed dependency and rerun';}
@@ -168,19 +175,21 @@ for(const item of Object.values(staff)){counts[item.status]=(counts[item.status]
 const attention=Object.values(staff).filter(x=>['BLOCKED','FAILED','STALE'].includes(x.status));
 
 const report={
-  version:5,dateKst:date,directorRole:'staff-supervisor-not-substitute-worker',activeDailyTarget:activeGameId||null,activeDevelopmentRunId:autonomousRun?.id||null,
-  checks:{staffChecked:`${allDepartments.length}/${allDepartments.length}`,activeWorkOrder:workOrderExists?workOrder:null,activeWorkOrderExists:workOrderExists,evidenceAdapterMismatch,jobLevelEvidenceUsed:artbookJobs.length>0,autonomousDepartmentJobEvidenceUsed:autonomousJobs.length>0,liveDepartmentStates:true,failureLogsUsed:Boolean(failedLogsDir),runningLabelAloneCountsAsWork:false,directorMayGhostwriteMissingDepartmentWork:false,homepageDiagnosticOnlyRecognized:true,releaseArtifactEvidenceAdapterRegistered:true},
+  version:6,dateKst:date,directorRole:'staff-supervisor-not-substitute-worker',activeDailyTarget:activeGameId||null,activeDevelopmentRunId:autonomousRun?.id||null,
+  checks:{staffChecked:`${allDepartments.length}/${allDepartments.length}`,activeWorkOrder:workOrderExists?workOrder:null,activeWorkOrderExists:workOrderExists,evidenceAdapterMismatch,jobLevelEvidenceUsed:artbookJobs.length>0,autonomousDepartmentJobEvidenceUsed:autonomousJobs.length>0,liveDepartmentStates:true,failureLogsUsed:Boolean(failedLogsDir),runningLabelAloneCountsAsWork:false,directorMayGhostwriteMissingDepartmentWork:false,homepageDiagnosticOnlyRecognized:true,releaseArtifactEvidenceAdapterRegistered:true,artbookLiveTargetResolved:Boolean(liveArtbookTarget),artbookTargetSource:activeTargetSource,liveJobPrecedesPersistedSubmission:true},
   counts,liveStates,attentionRequired:attention.length>0,
   primaryFindings:[...(!workOrderExists&&activeGameId?[`NO_WORK_ORDER:${workOrder}`]:[]),...(evidenceAdapterMismatch?['EVIDENCE_ADAPTER_MISMATCH:artbook runner is Unity-script-centric while active target has Web archive evidence and no Unity project']:[]),...attention.flatMap(x=>x.blockers.map(b=>`${x.department}:${b}`))],
   workflowEvidence:{artbook:runEvidence(artbookRun),autonomousDevelopment:runEvidence(autonomousRun),homepage:runEvidence(homepageRun),publicGameHealth:runEvidence(publicHealthRun),unityBuild:runEvidence(unityBuildRun),unityRuntime:runEvidence(unityRuntimeRun)},
   staff,
-  policy:{findWhyWorkStopped:true,inspectFailedJobLogs:true,distinguishIndividualFailureFromBlockedPeers:true,falseRunningForbidden:true,idleWithoutTaskIsNotFailure:true,homepageDiagnosticToolIsNotStandingWorker:true,verifiedReleaseArtifactCanSatisfyReleaseEvidence:true,parallelAutonomousDepartmentJobsRecognized:true,sourceWritesRemainSerial:true,fixLowRiskOperationalBlockers:true,escalateCoreDecisions:true,directorIntegrationOnlyForDepartmentContent:true}
+  policy:{findWhyWorkStopped:true,inspectFailedJobLogs:true,distinguishIndividualFailureFromBlockedPeers:true,falseRunningForbidden:true,idleWithoutTaskIsNotFailure:true,homepageDiagnosticToolIsNotStandingWorker:true,verifiedReleaseArtifactCanSatisfyReleaseEvidence:true,parallelAutonomousDepartmentJobsRecognized:true,sourceWritesRemainSerial:true,fixLowRiskOperationalBlockers:true,escalateCoreDecisions:true,directorIntegrationOnlyForDepartmentContent:true,liveExecutionEvidencePrecedesPersistedQueue:true}
 };
 fs.writeFileSync('director-supervision-status.json',JSON.stringify(report,null,2)+'\n');
 console.log(`STAFF_CHECK=${allDepartments.length}/${allDepartments.length}`);
 console.log(`DIRECTOR_ATTENTION=${report.attentionRequired?'YES':'NO'}`);
 console.log(`ACTIVE_WORK_ORDER=${workOrderExists?'FOUND':'MISSING'}`);
 console.log(`ARTBOOK_JOB_LEVEL_EVIDENCE=${artbookJobs.length?'YES':'NO'}`);
+console.log(`ARTBOOK_LIVE_TARGET=${liveArtbookTarget||'UNRESOLVED'}`);
+console.log(`ARTBOOK_TARGET_SOURCE=${activeTargetSource}`);
 console.log(`AUTONOMOUS_DEPARTMENT_JOB_EVIDENCE=${autonomousJobs.length?'YES':'NO'}`);
 console.log(`FAILURE_LOG_EVIDENCE=${failedLogsDir?'YES':'NO'}`);
 for(const [k,v] of Object.entries(counts))console.log(`STAFF_${k}=${v}`);
