@@ -2,7 +2,7 @@
   "version": 3,
   "updatedAt": "2026-09-09",
   "overall": "VERIFYING_UNITY_RUNTIME",
-  "reason": "Department evidence standards, web runtime QA, director supervision, release evidence verification, and company-status synchronization are operating with verified workflow evidence. Unity Android runtime smoke contract is verified, but Unity QA remains unverified until a real APK emulator smoke run succeeds and produces runtime evidence.",
+  "reason": "Unity runtime smoke automation is installed, but a successful real APK emulator run is still required.",
   "policy": {
     "genericPraiseIsEvidence": false,
     "domainSpecificEvidenceRequired": true,
@@ -58,15 +58,17 @@
         "persistentEvidence": "company-qa-runtime-evidence.json"
       },
       "unityRuntime": {
-        "status": "AUTOMATION_INSTALLED_CONTRACT_VERIFIED_RUNTIME_EVIDENCE_PENDING",
+        "status": "AUTOMATION_INSTALLED_RUNTIME_EVIDENCE_PENDING",
         "trigger": "Successful Unity Hybrid Android Build completion",
         "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
         "probe": "tools/unity-apk-runtime-smoke.sh",
         "method": "APK install -> launch -> Android tap/swipe input -> process survival -> fatal log scan -> screenshot",
-        "contractVerificationRunId": 34305065242,
-        "contractVerificationConclusion": "success",
+        "contractVerificationRunId": null,
+        "contractVerificationConclusion": null,
         "successfulRuntimeEvidenceRunId": null,
-        "buildAloneCountsAsQaPass": false
+        "buildAloneCountsAsQaPass": false,
+        "latestRuntimeRunId": null,
+        "latestRuntimeConclusion": null
       },
       "currentProtection": "RUNTIME_PLAY_EVIDENCE_REQUIRED + BUILD_EVIDENCE_REQUIRED + DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
     },
@@ -112,35 +114,46 @@
   },
   "verification": {
     "departmentStandardsWorkflow": {
-      "latestKnownSuccessfulRunId": 34305065242,
-      "unitySmokeContractRunId": 34305065242,
-      "unitySmokeContractConclusion": "success"
+      "latestRun": null,
+      "latestSuccessfulRun": null,
+      "unitySmokeContractVerified": false
     },
-    "latestVerifiedUnityBuild": {
-      "runId": 34201876835,
-      "workflow": "Unity Hybrid Android Build",
-      "conclusion": "success",
-      "headSha": "f78b6a53186c3a6765e75bdb92801d512ed8d8e7",
-      "note": "This successful build predates installation of the Unity Android runtime-smoke workflow and therefore does not count as runtime QA evidence."
+    "latestUnityBuild": {
+      "latestRun": null,
+      "latestSuccessfulRun": null,
+      "publishedTestBuild": {
+        "requestId": "daechung-rpg-hybrid-017",
+        "builtAt": "2026-09-08T08:07:37.760135+00:00",
+        "sourceCommit": "f78b6a53186c3a6765e75bdb92801d512ed8d8e7",
+        "sha256": "bca2596f93ea71e5ad311d9d3a322083ae768f8ac0c9c046125b33c9a4f1e817",
+        "bytes": 24392700
+      }
     },
     "unityRuntimeSmoke": {
       "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
-      "contractVerified": true,
-      "successfulRuntimeEvidenceObserved": false,
-      "successfulRuntimeEvidenceRunId": null
+      "contractVerified": false,
+      "latestRun": null,
+      "latestSuccessfulRun": null,
+      "successfulRuntimeEvidenceObserved": false
+    },
+    "webRuntimeHealth": {
+      "latestRun": null,
+      "latestSuccessfulRun": null,
+      "formalBridge": "tools/company-qa-public-web-evidence.mjs"
     },
     "directorSupervision": {
-      "runId": 34310605013,
-      "conclusion": "success",
-      "blocked": 0,
-      "failed": 0,
-      "stale": 0
-    },
-    "companyStatusSync": {
-      "runId": 34310685102,
-      "conclusion": "success",
-      "syncedCommit": "665f8f7256a7c812ccea4ce31d555b45c2a8293b"
+      "dateKst": "2026-09-09",
+      "attentionRequired": false,
+      "counts": {
+        "WORKING": 1,
+        "DONE": 6,
+        "IDLE_NO_TASK": 1,
+        "BLOCKED": 0,
+        "FAILED": 0,
+        "STALE": 0
+      },
+      "primaryFindings": []
     }
   },
-  "nextPriority": "On the next successful Unity Hybrid Android Build after runtime-smoke installation, require a successful Android emulator smoke artifact before upgrading Unity QA runtime capability to VERIFIED."
+  "nextPriority": "Require a successful Unity Android emulator runtime-smoke run before marking Unity QA VERIFIED."
 }
