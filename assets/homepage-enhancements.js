@@ -9,9 +9,16 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const formatDate=value=>{if(!value)return'정보 없음';const d=new Date(value);if(Number.isNaN(d.getTime()))return String(value).replaceAll('-','.');return new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}).format(d).replace(/\. /g,'.').replace(/\.$/,'');};
 
 const CATEGORY_META={
-  'release-confirmed':{order:1,title:'출시확정',note:'공개 안정판',className:'release'},
-  'development-confirmed':{order:2,title:'개발확정',note:'개발 진행 확정',className:'development'},
-  reviewing:{order:3,title:'검토중',note:'보류 · 재설계 · 검토',className:'review'}
+  'release-confirmed':{order:1,title:'1분류 출시확정',note:'Unity Android 본개발 · Web 안정 아카이브',className:'release'},
+  'development-confirmed':{order:2,title:'2분류 개발확정',note:'Web 1차 플레이어블 구현',className:'development'},
+  'design-only':{order:3,title:'3분류 설계전용',note:'아트북 · 컨셉 · 설계 최적화',className:'review'}
+};
+const categoryKeyForGame=game=>{
+  const tier=Number(game?.productionTier);
+  if(tier===1)return'release-confirmed';
+  if(tier===2)return'development-confirmed';
+  if(tier===3)return'design-only';
+  return CATEGORY_META[game?.homepageCategory]?game.homepageCategory:'design-only';
 };
 
 function installStyles(){
@@ -41,7 +48,7 @@ function installStyles(){
 .autonomousFocusHead{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:9px}
 .autonomousFocusHead strong{font-size:15px;color:#155e9f;font-weight:1000}
 .autonomousFocusHead span{font-size:9px;color:#6c8799;font-weight:850;text-align:right}
-.autonomousFocusSlots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.autonomousFocusSlots{display:grid;grid-template-columns:repeat(var(--focus-columns,2),minmax(0,1fr));gap:8px}
 .autonomousFocusSlot{min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;padding:10px;border:1px solid #d7e8f1;border-radius:12px;background:#f5fbff;color:#315f7c;text-decoration:none}
 .autonomousFocusSlot.backfill{background:#fff9eb;border-color:#ead9a7}
 .autonomousFocusSlot.empty{background:#f3f6f8;color:#7b8d98}
@@ -209,12 +216,14 @@ function buildAutonomousFocus(catalog,status){
     panel.className='autonomousFocusStrip';
     hero.insertAdjacentElement('afterend',panel);
   }
+  panel.style.setProperty('--focus-columns',String(Math.min(target,2)));
   const run=focus.activeDevelopmentRunId?` · 실행 #${esc(focus.activeDevelopmentRunId)}`:'';
   panel.innerHTML=`<div class="autonomousFocusHead"><strong>자율 집중개발 · ${target}슬롯</strong><span>실제 개발선과 30초 자동 동기화${run}</span></div><div class="autonomousFocusSlots">${slots}</div>`;
 }
 
 function buildGameCard(game,catalog,status,baselines,artbooks){
-  const category=CATEGORY_META[game.homepageCategory]||CATEGORY_META.reviewing;
+  const categoryKey=categoryKeyForGame(game);
+  const category=CATEGORY_META[categoryKey]||CATEGORY_META['design-only'];
   const build=getGameBuild(status,game.id);
   const baseline=getGameBaseline(baselines,game.id);
   const artbook=getLatestArtbook(artbooks,game.id);
@@ -222,7 +231,7 @@ function buildGameCard(game,catalog,status,baselines,artbooks){
   const buildDate=build?.builtAt?formatDate(build.builtAt):'없음';
   const artbookDate=artbook?formatDate(artbook.createdAt||artbooks?.updatedAt):'없음';
   const releaseDate=getReleaseDate(game,baseline,build);
-  const releaseText=releaseDate?`출시 ${formatDate(releaseDate)}`:(game.homepageCategory==='release-confirmed'?'출시일 정보 없음':'출시 전');
+  const releaseText=releaseDate?`출시 ${formatDate(releaseDate)}`:(categoryKey==='release-confirmed'?'출시일 정보 없음':'출시 전');
   const webPlayable=game.homepageWebPlayable!==false&&Boolean(game.webPath);
   const unityUrl=baseline?.rollbackActive&&baseline?.fallbackDownload?baseline.fallbackDownload:build?.download;
   const unityLabel=baseline?.rollbackActive&&baseline?.fallbackDownload?'안정판 APK':build?'Unity 테스트':'Unity 준비중';
@@ -269,7 +278,7 @@ function buildGameCenter(catalog,status,baselines,artbooks){
   const games=catalog?.games||[];
   const grouped=new Map(Object.keys(CATEGORY_META).map(key=>[key,[]]));
   for(const game of games){
-    const key=grouped.has(game.homepageCategory)?game.homepageCategory:'reviewing';
+    const key=categoryKeyForGame(game);
     grouped.get(key).push(game);
   }
   const wrapper=document.createElement('div');
