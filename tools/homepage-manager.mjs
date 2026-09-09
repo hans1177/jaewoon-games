@@ -16,7 +16,8 @@ const index=readText('index.html');
 
 const games=catalog.games||[];
 const catalogIds=new Set(games.map(g=>g.id));
-const queueIds=new Set((queue.games||[]).map(g=>g.gameId));
+const catalogBackedQueueGames=(queue.games||[]).filter(g=>g.source!=='INCUBATOR_METADATA_ONLY'&&g.currentStage!=='incubator-concept-redesign');
+const queueIds=new Set(catalogBackedQueueGames.map(g=>g.gameId));
 const missingCatalog=[...queueIds].filter(id=>!catalogIds.has(id));
 const visibleBooks=(books.artbooks||[]).filter(b=>b.published===true||b.homepageVisible===true);
 const brokenBookRefs=visibleBooks.filter(b=>!catalogIds.has(b.gameId)).map(b=>b.id);
@@ -49,10 +50,10 @@ const checks={
   indexExists:exists('index.html'),
   homepageEnhancementLoaded:index.includes('/assets/homepage-enhancements.js')||index.includes('assets/homepage-enhancements.js'),
   automaticLayoutInjectionAbsent:!index.includes('/assets/homepage-layout-v2.css')&&!index.includes('/assets/homepage-layout-v2.js'),
-  allQueuedGamesInCatalog:missingCatalog.length===0,
+  allCatalogBackedQueuedGamesInCatalog:missingCatalog.length===0,
   publishedBooksReferenceCatalogGames:brokenBookRefs.length===0,
   requiredArtbookRolesIntact:JSON.stringify(queue.requiredRoles||[])===JSON.stringify(roles),
-  webGamesRemainReadOnly:status?.policy?.webGames==='archive-read-only',
+  existingWebMaintenancePolicyAligned:status?.policy?.webGames==='existing-maintenance-allowed'&&status?.policy?.existingWebMaintenance===true&&status?.policy?.newWebGameProduction===false,
   expectedGameCount:games.length===11,
   allGameImagesPresent:brokenGameImages.length===0,
   allGameImagesUnique:duplicateGameImages.length===0,
