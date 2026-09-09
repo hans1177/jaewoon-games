@@ -57,10 +57,12 @@ jobs:
           const fs=require('fs');
           const d=JSON.parse(fs.readFileSync('/tmp/free-budget-live.json','utf8'));
           const actions=d.providers.find(x=>x.providerId==='GITHUB_PUBLIC_STANDARD');
+          const authoritativeVisibilitySources=new Set(['GITHUB_REPO_API','GITHUB_EVENT_PAYLOAD']);
           if(d.allowed!==true)throw new Error('free budget live gate not allowed');
-          if(d.execution.visibility!=='public'||d.execution.visibilitySource!=='GITHUB_REPO_API')throw new Error('public visibility was not live verified');
+          if(d.execution.visibility!=='public'||!authoritativeVisibilitySources.has(d.execution.visibilitySource))throw new Error('public visibility was not authoritatively verified');
+          if(d.execution.publicRepoVerified!==true)throw new Error('public repository verification flag missing');
           if(actions?.quotaMode!=='UNMETERED_FREE'||actions?.status!=='AVAILABLE')throw new Error('public standard runner not classified as unmetered free');
-          console.log('LIVE_FREE_BUDGET=PASS');
+          console.log(`LIVE_FREE_BUDGET=PASS source=${d.execution.visibilitySource}`);
           NODE
       - name: Enforce preflight-before-Ollama contract
         run: |
