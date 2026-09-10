@@ -81,7 +81,7 @@ out,apk,package,pid,runtime_pass,fatal,update_pass=sys.argv[1:]
 data={
   'version':2,
   'target':'unity-android',
-  'testMethod':'Android emulator black-box fresh install + launch + update smoke',
+  'testMethod':'Android emulator black-box APK smoke: fresh install + launch + update',
   'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),
   'apk':apk,
   'package':package,
