@@ -67,7 +67,7 @@
         "contractVerificationConclusion": "success",
         "successfulRuntimeEvidenceRunId": null,
         "buildAloneCountsAsQaPass": false,
-        "latestRuntimeRunId": 34438190603,
+        "latestRuntimeRunId": 34458475595,
         "latestRuntimeConclusion": "skipped"
       },
       "currentProtection": "RUNTIME_PLAY_EVIDENCE_REQUIRED + BUILD_EVIDENCE_REQUIRED + DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
@@ -132,11 +132,11 @@
     },
     "latestUnityBuild": {
       "latestRun": {
-        "runId": 34437205886,
+        "runId": 34457495387,
         "status": "completed",
         "conclusion": "failure",
-        "headSha": "ab69afaf7bc1cea65ba50c31a8e8ee9263ae45c5",
-        "updatedAt": "2026-09-10T04:42:01Z"
+        "headSha": "f9057e8138ac30fa1fb0f88bf79aeba1b8908c54",
+        "updatedAt": "2026-09-10T09:02:53Z"
       },
       "latestSuccessfulRun": {
         "runId": 34201876835,
@@ -157,11 +157,11 @@
       "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
       "contractVerified": true,
       "latestRun": {
-        "runId": 34438190603,
+        "runId": 34458475595,
         "status": "completed",
         "conclusion": "skipped",
-        "headSha": "3f2b65c02757b0b07476519d8a0e2dbe2927a27a",
-        "updatedAt": "2026-09-10T04:42:04Z"
+        "headSha": "98b0a5ce045110c9483b3296f43530492ee96658",
+        "updatedAt": "2026-09-10T09:02:56Z"
       },
       "latestSuccessfulRun": null,
       "successfulRuntimeEvidenceObserved": false
@@ -187,8 +187,8 @@
       "dateKst": "2026-09-10",
       "attentionRequired": false,
       "counts": {
-        "WORKING": 1,
-        "DONE": 6,
+        "WORKING": 3,
+        "DONE": 4,
         "IDLE_NO_TASK": 1,
         "BLOCKED": 0,
         "FAILED": 0,
