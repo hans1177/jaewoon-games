@@ -1,0 +1,23 @@
+{
+  "id": "vibe2-P0009-20260911-34506261742",
+  "type": "VIBE2",
+  "patternId": "autonomous-candidate-safe-promotion",
+  "title": "Autonomous candidate scope + regression safe promotion",
+  "gameId": "P0009",
+  "genre": "UNKNOWN",
+  "conditionKey": "AUTONOMOUS_DEV",
+  "outcome": "SUCCESS",
+  "delta": 0,
+  "blockers": [],
+  "verified": true,
+  "sourceRevision": "48b543208360bf04cec01918cd0d6e2ffbf657b9",
+  "evidence": [
+    ".autonomous/evidence/P0009-20260911-34506261742.json",
+    "independent-candidate-browser-qa",
+    "vibe-regression"
+  ],
+  "verifiedAt": "2026-09-10T17:13:28.869Z",
+  "independentQa": "PASS",
+  "publicRelease": false,
+  "selfPromote": false
+}

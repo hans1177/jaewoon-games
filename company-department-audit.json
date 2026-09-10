@@ -67,7 +67,7 @@
         "contractVerificationConclusion": "success",
         "successfulRuntimeEvidenceRunId": null,
         "buildAloneCountsAsQaPass": false,
-        "latestRuntimeRunId": 34468578640,
+        "latestRuntimeRunId": 34506763782,
         "latestRuntimeConclusion": "skipped"
       },
       "currentProtection": "RUNTIME_PLAY_EVIDENCE_REQUIRED + BUILD_EVIDENCE_REQUIRED + DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
@@ -132,11 +132,11 @@
     },
     "latestUnityBuild": {
       "latestRun": {
-        "runId": 34467670408,
+        "runId": 34505580080,
         "status": "completed",
         "conclusion": "failure",
-        "headSha": "7cf67ed802cfc88a13e18468b4d3889e8c0f29b9",
-        "updatedAt": "2026-09-10T10:55:27Z"
+        "headSha": "4c7e73a6f2dbebf278b86669eab4fb1582b62693",
+        "updatedAt": "2026-09-10T17:12:14Z"
       },
       "latestSuccessfulRun": {
         "runId": 34201876835,
@@ -157,29 +157,29 @@
       "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
       "contractVerified": true,
       "latestRun": {
-        "runId": 34468578640,
+        "runId": 34506763782,
         "status": "completed",
         "conclusion": "skipped",
-        "headSha": "b69fb8c500ee600767e22311709204f4801c05c7",
-        "updatedAt": "2026-09-10T10:55:29Z"
+        "headSha": "54d9d0feaf6bf28a2695ec31056c69bb31db7570",
+        "updatedAt": "2026-09-10T17:12:26Z"
       },
       "latestSuccessfulRun": null,
       "successfulRuntimeEvidenceObserved": false
     },
     "webRuntimeHealth": {
       "latestRun": {
-        "runId": 34501852793,
+        "runId": 34505518499,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "6dda8a2a0de9cbf60745ab4a61c67378ad3cea3f",
-        "updatedAt": "2026-09-10T16:25:14Z"
+        "headSha": "f92666cbd2d3a4e22a058da3c51f0322fd50b543",
+        "updatedAt": "2026-09-10T17:01:17Z"
       },
       "latestSuccessfulRun": {
-        "runId": 34501852793,
+        "runId": 34505518499,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "6dda8a2a0de9cbf60745ab4a61c67378ad3cea3f",
-        "updatedAt": "2026-09-10T16:25:14Z"
+        "headSha": "f92666cbd2d3a4e22a058da3c51f0322fd50b543",
+        "updatedAt": "2026-09-10T17:01:17Z"
       },
       "formalBridge": "tools/company-qa-public-web-evidence.mjs"
     },
@@ -187,8 +187,8 @@
       "dateKst": "2026-09-11",
       "attentionRequired": false,
       "counts": {
-        "WORKING": 2,
-        "DONE": 5,
+        "WORKING": 1,
+        "DONE": 6,
         "IDLE_NO_TASK": 1,
         "BLOCKED": 0,
         "FAILED": 0,
