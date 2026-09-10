@@ -88,7 +88,11 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null } =
     tasks: started.tasks || [],
     queue: started.queue,
     selection: started.selection,
-    matrix: (started.tasks || []).map((task) => ({ taskId: task.id, shard: task.shard, speculativeVariants: task.speculativeEligible && task.estimatedRisk === 'high' ? 2 : 1 }))
+    matrix: (started.tasks || []).map((task) => ({
+      taskId: task.id,
+      shard: task.shard,
+      speculativeVariants: task.target !== 'unity' && task.speculativeEligible && task.estimatedRisk === 'high' ? 2 : 1
+    }))
   };
 }
 
@@ -128,12 +132,14 @@ export function applyVibeFanInResults(queueInput, results = []) {
   for (const [taskId, variants] of grouped.entries()) {
     const passes = variants.filter((row) => clean(row.outcome).toUpperCase() === 'PASS');
     const winner = passes.sort((a,b) => Number(a.durationMs || 0) - Number(b.durationMs || 0))[0] || variants[0];
-    const evidence = [...new Set(variants.flatMap((row) => Array.isArray(row.evidence) ? row.evidence : []).map(clean).filter(Boolean))];
+    const allEvidence = [...new Set(variants.flatMap((row) => Array.isArray(row.evidence) ? row.evidence : []).map(clean).filter(Boolean))];
     if (passes.length) {
+      const winnerEvidence = Array.isArray(winner.evidence) ? winner.evidence.map(clean).filter(Boolean) : [];
+      const variantSummary = variants.map((row) => `speculative-result:${clean(row.variant) || 'primary'}:${clean(row.outcome).toUpperCase() || 'UNKNOWN'}`);
       queue = markVibeTaskAwaiting(queue, {
         taskId,
         blocker: clean(winner.blocker) || 'candidate-awaiting-qa-and-deployment',
-        evidence: [...evidence, `speculative-variants:${variants.length}`, `speculative-winner:${clean(winner.variant) || 'primary'}`]
+        evidence: [...winnerEvidence, ...variantSummary, `speculative-variants:${variants.length}`, `speculative-winner:${clean(winner.variant) || 'primary'}`]
       });
       applied.push({ taskId, outcome:'AWAIT', winner: clean(winner.variant) || 'primary' });
       continue;
@@ -144,7 +150,7 @@ export function applyVibeFanInResults(queueInput, results = []) {
       taskId,
       outcome,
       blocker: clean(winner.blocker) || (blocked ? 'worker-route-blocked' : 'parallel-candidate-generation-failed'),
-      evidence,
+      evidence: allEvidence,
       retryable: outcome === 'FAIL'
     });
     queue = settled.queue;
