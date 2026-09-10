@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-core-engine-motion.test.mjs
-// 역할: Vibe2 엔진 어댑터, Core Runtime, Motion, 경험 학습, 직렬 우선순위 큐를 회귀검사한다.
+// 역할: Vibe2 엔진 어댑터, Core Runtime, Motion, 경험 학습, 병렬 우선순위 큐를 회귀검사한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -15,7 +15,7 @@ import {
   createVibeMotionLearningRecord
 } from '../assets/vibe-motion-core.js';
 import { createVibeExperienceMemory, addVibeExperience, searchVibeExperience } from '../assets/vibe-experience-memory.js';
-import { createVibeContinuousQueue, selectNextVibeQueueTask, beginVibeQueueTask, finishVibeQueueTask } from '../assets/vibe-continuous-queue.js';
+import { createVibeContinuousQueue, selectNextVibeQueueTask, selectVibeQueueBatch, beginVibeQueueTask, finishVibeQueueTask } from '../assets/vibe-continuous-queue.js';
 
 test('engine adapters expose Unreal and existing web maintenance contracts', () => {
   assert.equal(detectVibeEngineTarget('언리얼 UE5 블루프린트'), 'unreal');
@@ -117,31 +117,33 @@ test('only verified evidence becomes reusable learning', () => {
 
 test('queue priority is owner directive then release state then task priority', () => {
   const queue = createVibeContinuousQueue([
-    { id:'dev-unity', target:'unity', goal:'개발확정', releaseState:'development-confirmed', priority:'critical' },
-    { id:'release-web', target:'web', goal:'출시확정', releaseState:'release-confirmed', priority:'normal' },
-    { id:'owner', target:'unity', goal:'사용자 지시', releaseState:'other', priority:'owner-immediate', ownerDirective:true }
+    { id:'dev-unity', target:'unity', gameId:'dev-unity', sourceRoot:'unity-games/dev-unity', goal:'개발확정', releaseState:'development-confirmed', priority:'critical' },
+    { id:'release-web', target:'web', gameId:'release-web', sourceRoot:'web-games/release-web', goal:'출시확정', releaseState:'release-confirmed', priority:'normal' },
+    { id:'owner', target:'unity', gameId:'owner', sourceRoot:'unity-games/owner', goal:'사용자 지시', releaseState:'other', priority:'owner-immediate', ownerDirective:true }
   ]);
   assert.equal(selectNextVibeQueueTask(queue).selected.id, 'owner');
   const afterOwner = finishVibeQueueTask(beginVibeQueueTask(queue, 'owner').queue, { taskId:'owner', outcome:'PASS', evidence:['qa'] });
-  assert.equal(afterOwner.next.selected.id, 'release-web');
+  assert.equal(afterOwner.next.selected[0].id, 'release-web');
 });
 
-test('running task prevents Vibe2 from starting another task', () => {
-  let queue = createVibeContinuousQueue([
-    { id:'release', target:'web', goal:'출시확정 유지보수', releaseState:'release-confirmed' },
-    { id:'dev', target:'unity', goal:'개발확정 작업', releaseState:'development-confirmed' }
-  ]);
+test('running task allows another independent source root but blocks its own root', () => {
+  let queue = createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
+    { id:'release', gameId:'release', sourceRoot:'web-games/release', target:'web', goal:'출시확정 유지보수', releaseState:'release-confirmed' },
+    { id:'same-root', gameId:'release', sourceRoot:'web-games/release', target:'web', goal:'같은 루트 후속 작업', releaseState:'development-confirmed' },
+    { id:'dev', gameId:'dev', sourceRoot:'unity-games/dev', target:'unity', goal:'개발확정 작업', releaseState:'development-confirmed' }
+  ]});
   queue = beginVibeQueueTask(queue, 'release').queue;
-  const next = selectNextVibeQueueTask(queue);
-  assert.equal(next.hasEligibleWork, false);
-  assert.equal(next.stopReason, 'RUNNING_TASK_EXISTS');
+  const next = selectVibeQueueBatch(queue);
+  assert.equal(next.selected.some(task=>task.id==='dev'), true);
+  assert.equal(next.selected.some(task=>task.id==='same-root'), false);
+  assert.equal(next.deferredConflicts.some(row=>row.task.id==='same-root'), true);
 });
 
 test('protected or paid autonomous work remains blocked while web maintenance is eligible', () => {
   const queue = createVibeContinuousQueue([
-    { id:'web-maintenance', target:'web', goal:'기존 웹게임 버튼 버그 수정', releaseState:'release-confirmed' },
-    { id:'core-change', target:'unity', goal:'핵심 규칙 변경', requiresOwnerDecision:true },
-    { id:'paid', target:'unreal', goal:'유료 API 작업', paidResourceRequired:true }
+    { id:'web-maintenance', target:'web', gameId:'web-maintenance', sourceRoot:'web-games/web-maintenance', goal:'기존 웹게임 버튼 버그 수정', releaseState:'release-confirmed' },
+    { id:'core-change', target:'unity', gameId:'core-change', sourceRoot:'unity-games/core-change', goal:'핵심 규칙 변경', requiresOwnerDecision:true },
+    { id:'paid', target:'unreal', gameId:'paid', sourceRoot:'unreal-games/paid', goal:'유료 API 작업', paidResourceRequired:true }
   ]);
   const next = selectNextVibeQueueTask(queue);
   assert.equal(next.selected.id, 'web-maintenance');

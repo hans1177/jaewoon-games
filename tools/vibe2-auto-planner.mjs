@@ -1,11 +1,11 @@
 // 파일명: tools/vibe2-auto-planner.mjs
-// 역할: Vibe2 큐가 비었을 때 최신 회사 상태·게임 카탈로그·실제 소스에서 근거 있는 저위험 다음 작업 1개를 고른다.
-// 원칙: 사용자 지시 다음으로 출시확정 > 개발확정, 같은 등급은 기존 Unity > 기존 Web > 기타 순서다.
+// 역할: 최신 회사 상태·게임 카탈로그·실제 소스에서 서로 충돌하지 않는 저위험 작업을 병렬 슬롯만큼 계획한다.
+// 원칙: 사용자 지시 > 출시확정 > 개발확정. 동일 source root는 한 번에 하나, 1분류 Unity 집중 슬롯은 하나만 유지한다.
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
+import { createVibeContinuousQueue, DEFAULT_MAX_CONCURRENT_TASKS } from '../assets/vibe-continuous-queue.js';
 
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/+$/, '');
@@ -25,6 +25,7 @@ function parseArgs(argv = process.argv.slice(2)) {
   }
   return args;
 }
+function parallelLimit(value) { return Math.max(1, Math.min(8, Math.floor(Number(value) || DEFAULT_MAX_CONCURRENT_TASKS))); }
 function releaseState(value) {
   const normalized = clean(value).toLowerCase();
   return Object.hasOwn(RELEASE_RANK, normalized) ? normalized : 'other';
@@ -62,14 +63,7 @@ function collectProjects(status = {}, catalog = {}, repoRoot = process.cwd()) {
     if (!id || !root || game.hasWebArchive !== true || game.homepageWebPlayable !== true) continue;
     if (!fs.existsSync(path.join(repoRoot, root))) continue;
     if (rows.some((row) => row.gameId === id && row.engine === 'web')) continue;
-    rows.push({
-      gameId:id,
-      name:clean(game.name),
-      engine:'web', target:'web', projectPath:root, existing:true,
-      releaseState:releaseState(game.homepageCategory),
-      progress:0,
-      source:'game-catalog'
-    });
+    rows.push({ gameId:id, name:clean(game.name), engine:'web', target:'web', projectPath:root, existing:true, releaseState:releaseState(game.homepageCategory), progress:0, source:'game-catalog' });
   }
   return rows;
 }
@@ -81,20 +75,20 @@ function projectSort(a, b) {
   return Number(b.progress || 0) - Number(a.progress || 0) || a.gameId.localeCompare(b.gameId);
 }
 function eligibleProjects(status, catalog, repoRoot) {
-  return collectProjects(status, catalog, repoRoot)
-    .filter((project) => ['release-confirmed','development-confirmed'].includes(project.releaseState))
-    .sort(projectSort);
+  return collectProjects(status, catalog, repoRoot).filter((project) => ['release-confirmed','development-confirmed'].includes(project.releaseState)).sort(projectSort);
 }
 function sourceFile(root, relative) { return path.join(root, ...posix(relative).split('/')); }
 function readText(file) { try { return fs.readFileSync(file, 'utf8'); } catch { return ''; } }
 function hasTask(queue, id) { return queue.tasks.some((item) => item.id === id); }
-function hasActiveWork(queue) { return queue.tasks.some((item) => ['queued','running'].includes(clean(item.status).toLowerCase())); }
-function task(id, project, goal, responsibleFiles, priority = 'normal') {
+function activeTasks(queue) { return queue.tasks.filter((item) => ['queued','running'].includes(clean(item.status).toLowerCase())); }
+function activeSourceRoots(queue) { return new Set(activeTasks(queue).map((item) => posix(item.sourceRoot)).filter(Boolean)); }
+function task(id, project, goal, responsibleFiles, priority = 'normal', estimatedRisk = 'low') {
   return {
     id, gameId:project.gameId, target:project.engine, department:'development', type:'implementation', goal,
     responsibleFiles, dependencies:[], priority, releaseState:project.releaseState, status:'queued', retries:0, maxRetries:2,
     ownerDirective:false, requiresOwnerDecision:false, protectedChange:false, paidResourceRequired:false,
-    evidence:[`vibe2-auto-planner:${project.source}`, `release-state:${project.releaseState}`]
+    sourceRoot:posix(project.projectPath), estimatedRisk, speculativeEligible:estimatedRisk === 'high',
+    evidence:[`vibe2-auto-planner:${project.source}`, `release-state:${project.releaseState}`, `source-root:${posix(project.projectPath)}`]
   };
 }
 function findUnityTask(project, repoRoot, queue) {
@@ -139,7 +133,7 @@ function scanExplicitMarkerTask(project, repoRoot, queue) {
       const id = `${project.gameId}-explicit-maintenance-${relative.replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-|-$/g,'').slice(-48)}`;
       if (hasTask(queue, id)) continue;
       return task(id, project,
-        `책임 파일 ${relative}에 이미 표시된 TODO/FIXME/NotImplementedException 중 현재 구조 안에서 해결 가능한 저위험 항목 1개를 직접 구현한다. 핵심 규칙·밸런스·세이브 의미·유료 의존성은 바꾸지 않는다.`, [relative], 'low');
+        `책임 파일 ${relative}에 이미 표시된 TODO/FIXME/NotImplementedException 중 현재 구조 안에서 해결 가능한 저위험 항목 1개를 직접 구현한다. 핵심 규칙·밸런스·세이브 의미·유료 의존성은 바꾸지 않는다.`, [relative], 'low', 'medium');
     }
   }
   return null;
@@ -148,27 +142,49 @@ function findSafeTask(project, repoRoot, queue) {
   if (project.engine === 'unity') return findUnityTask(project, repoRoot, queue) || scanExplicitMarkerTask(project, repoRoot, queue);
   return scanExplicitMarkerTask(project, repoRoot, queue);
 }
-
-export function planVibe2AutonomousTask({ status = {}, catalog = {}, queue:queueInput = {}, repoRoot = process.cwd() } = {}) {
-  const queue = createVibeContinuousQueue(queueInput);
-  if (hasActiveWork(queue)) return { planned:false, reason:'ACTIVE_QUEUE_WORK_EXISTS', queue, task:null };
-  const projects = eligibleProjects(status, catalog, repoRoot);
-  if (!projects.length) return { planned:false, reason:'NO_CONFIRMED_PRODUCTION_PROJECT', queue, task:null };
-  for (const project of projects) {
-    const next = findSafeTask(project, repoRoot, queue);
-    if (!next) continue;
-    return {
-      planned:true, reason:'SAFE_TASK_PLANNED', queue:createVibeContinuousQueue([...queue.tasks, next]), task:next,
-      projectId:project.gameId, projectReleaseState:project.releaseState, projectEngine:project.engine,
-      projectPriorityPolicy:'OWNER_THEN_RELEASE_STATE_THEN_EXISTING_UNITY_WEB'
-    };
-  }
-  return { planned:false, reason:'NO_SAFE_AUTONOMOUS_TASK', queue, task:null, projectId:projects[0]?.gameId || null };
+function releaseUnityFocusBusy(queue) {
+  return activeTasks(queue).some((item) => item.target === 'unity' && item.releaseState === 'release-confirmed');
 }
 
-export function runVibe2AutoPlanner({ statusFile='.vibe2/main-company-status.json', catalogFile='.vibe2/main-game-catalog.json', queueFile='.vibe2/queue.json', repoRoot=process.cwd() } = {}) {
-  const result = planVibe2AutonomousTask({
-    status:readJson(statusFile, {}), catalog:readJson(catalogFile, {}), queue:readJson(queueFile, { tasks:[] }), repoRoot
+export function planVibe2AutonomousTasks({ status = {}, catalog = {}, queue:queueInput = {}, repoRoot = process.cwd(), maxConcurrentTasks = DEFAULT_MAX_CONCURRENT_TASKS } = {}) {
+  let queue = createVibeContinuousQueue({ ...(queueInput || {}), maxConcurrentTasks: parallelLimit(maxConcurrentTasks) });
+  const active = activeTasks(queue);
+  if (active.some((item) => item.ownerDirective)) return { planned:false, count:0, reason:'OWNER_DIRECTIVE_ACTIVE', queue, tasks:[] };
+  const capacity = Math.max(0, queue.maxConcurrentTasks - active.length);
+  if (!capacity) return { planned:false, count:0, reason:'PARALLEL_QUEUE_AT_CAPACITY', queue, tasks:[] };
+  const projects = eligibleProjects(status, catalog, repoRoot);
+  if (!projects.length) return { planned:false, count:0, reason:'NO_CONFIRMED_PRODUCTION_PROJECT', queue, tasks:[] };
+
+  const roots = activeSourceRoots(queue);
+  let unityReleaseFocusTaken = releaseUnityFocusBusy(queue);
+  const planned = [];
+  for (const project of projects) {
+    if (planned.length >= capacity) break;
+    const root = posix(project.projectPath);
+    if (roots.has(root)) continue;
+    if (project.engine === 'unity' && project.releaseState === 'release-confirmed' && unityReleaseFocusTaken) continue;
+    const next = findSafeTask(project, repoRoot, queue);
+    if (!next) continue;
+    queue = createVibeContinuousQueue({ tasks:[...queue.tasks, next], maxConcurrentTasks:queue.maxConcurrentTasks });
+    planned.push(next);
+    roots.add(root);
+    if (project.engine === 'unity' && project.releaseState === 'release-confirmed') unityReleaseFocusTaken = true;
+  }
+  if (!planned.length) return { planned:false, count:0, reason:active.length ? 'NO_INDEPENDENT_SAFE_AUTONOMOUS_TASK' : 'NO_SAFE_AUTONOMOUS_TASK', queue, tasks:[], projectId:projects[0]?.gameId || null };
+  return {
+    planned:true, count:planned.length, reason:'SAFE_PARALLEL_TASKS_PLANNED', queue, tasks:planned, task:planned[0],
+    projectId:planned[0].gameId, projectReleaseState:planned[0].releaseState, projectEngine:planned[0].target,
+    projectPriorityPolicy:'OWNER_THEN_RELEASE_STATE_THEN_EXISTING_UNITY_WEB_WITH_SOURCE_ROOT_EXCLUSIVITY'
+  };
+}
+
+export function planVibe2AutonomousTask(args = {}) {
+  return planVibe2AutonomousTasks(args);
+}
+
+export function runVibe2AutoPlanner({ statusFile='.vibe2/main-company-status.json', catalogFile='.vibe2/main-game-catalog.json', queueFile='.vibe2/queue.json', repoRoot=process.cwd(), maxConcurrentTasks=process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS || DEFAULT_MAX_CONCURRENT_TASKS } = {}) {
+  const result = planVibe2AutonomousTasks({
+    status:readJson(statusFile, {}), catalog:readJson(catalogFile, {}), queue:readJson(queueFile, { tasks:[] }), repoRoot, maxConcurrentTasks
   });
   if (result.planned) writeJson(queueFile, result.queue);
   return result;
@@ -180,13 +196,16 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     statusFile:clean(args.status) || '.vibe2/main-company-status.json',
     catalogFile:clean(args.catalog) || '.vibe2/main-game-catalog.json',
     queueFile:clean(args.queue) || '.vibe2/queue.json',
-    repoRoot:clean(args.root) || process.cwd()
+    repoRoot:clean(args.root) || process.cwd(),
+    maxConcurrentTasks:clean(args.max) || process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS || DEFAULT_MAX_CONCURRENT_TASKS
   });
   console.log(`VIBE2_AUTO_PLAN=${result.planned ? 'YES' : 'NO'}`);
   console.log(`VIBE2_AUTO_PLAN_REASON=${result.reason}`);
+  console.log(`VIBE2_AUTO_PLAN_COUNT=${result.count || 0}`);
   console.log(`VIBE2_AUTO_PLAN_PROJECT=${result.projectId || 'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN_RELEASE_STATE=${result.projectReleaseState || 'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN_ENGINE=${result.projectEngine || 'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN_PRIORITY=${result.projectPriorityPolicy || 'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN_TASK=${result.task?.id || 'NONE'}`);
+  console.log(`VIBE2_AUTO_PLAN_TASKS=${(result.tasks || []).map((task) => task.id).join(',') || 'NONE'}`);
 }

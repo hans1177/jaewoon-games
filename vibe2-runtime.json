@@ -1,21 +1,31 @@
 {
-  "version": 4,
+  "version": 5,
   "mode": "continuous-core",
   "continuous": {
     "enabled": true,
-    "strategy": "single-worker-priority-serial-queue",
+    "strategy": "hierarchical-dag-sharded-work-stealing",
     "singleLongRunningJob": false,
-    "wakeMode": "hourly-plus-immediate-chain",
+    "wakeMode": "event-driven-plus-hourly-safety-net",
     "wakeCron": "17 * * * *",
     "scheduleBecomesActiveOnDefaultBranchIntegration": true,
     "maxTaskRetries": 2,
-    "maxWorkMinutes": 20,
-    "maxModelCallsPerRun": 1,
-    "dispatchNextWhenVerified": true,
+    "maxWorkMinutes": 22,
+    "maxModelCallsPerWorker": 1,
+    "dispatchNextWhenCapacityOpens": true,
     "ownerDirectivePreemptsAutonomy": true,
-    "maxConcurrentGameTasks": 1,
+    "maxConcurrentGameTasks": 4,
+    "unityReleaseFocusSlots": 1,
     "priorityOrder": ["owner-directive", "release-confirmed", "development-confirmed", "reviewing", "other"],
-    "sameTierEngineOrder": ["existing-unity", "existing-web", "new-unity", "other-engine"]
+    "sameTierEngineOrder": ["existing-unity", "existing-web", "new-unity", "other-engine"],
+    "shards": ["unity", "web", "verification", "support"],
+    "workStealing": true,
+    "dynamicBackpressure": true,
+    "speculativeParallelism": {
+      "enabled": true,
+      "variants": 2,
+      "highRiskOptInOnly": true,
+      "unityBuildCandidatesExcluded": true
+    }
   },
   "sources": {
     "queue": ".vibe2/queue.json",
@@ -26,7 +36,7 @@
     "textSource": {
       "configured": true,
       "tool": "tools/vibe2-source-worker.mjs",
-      "model": "qwen3:0.6b",
+      "model": "qwen3:1.7b",
       "candidateBranchPrefix": "vibe2/candidate/",
       "directMainWrite": false
     },
@@ -36,12 +46,24 @@
     }
   },
   "coordination": {
-    "mode": "single-vibe2-worker-plus-base-sha-freshness",
-    "separateFileLocks": false,
+    "mode": "dag-batch-source-root-exclusive-file-aware",
+    "sourceRootExclusive": true,
+    "separateFileLocks": true,
     "activeTaskSource": ".vibe2/queue.json",
     "chatgptAvoidsActiveResponsibleFiles": true,
     "baseShaOverlapAction": "REPLAN_REQUIRED",
-    "baseShaNonOverlapAction": "REBASE_THEN_QA"
+    "baseShaNonOverlapAction": "REBASE_THEN_QA",
+    "fanOutFanIn": true,
+    "stateWritesSerialized": true,
+    "workerBranchesIsolated": true
+  },
+  "qaOptimization": {
+    "incrementalFirst": true,
+    "tool": "tools/vibe2-incremental-qa.mjs",
+    "contentHashCache": true,
+    "persistentActionsCache": true,
+    "fullCoreRegressionOnceAtFanIn": true,
+    "incrementalPassNeverReplacesFinalVerification": true
   },
   "assetDecision": {
     "mode": "fixed-safety-plus-verified-preference-learning",
@@ -67,6 +89,7 @@
   },
   "verification": {
     "candidateCreationIsFinalPass": false,
+    "incrementalQaIsFinalPass": false,
     "engineBuildSuccessIsFinalPass": false,
     "engineBuildSuccessState": "verification-passed-awaiting-review",
     "automaticMainPromotion": false,
@@ -86,6 +109,7 @@
     "directMainWriteByWorker": false,
     "binaryAssetsDirectTextEditForbidden": true,
     "sharedWorkLockRequired": false,
+    "queueSourceRootLeaseRequired": true,
     "homepagePublicationAutomatic": false
   }
 }
