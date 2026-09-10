@@ -13,6 +13,9 @@ const agents = readText('AGENTS.md');
 const directive = readJson('company-directive.json');
 const multimodelWorkflow = readText('.github/workflows/artbook-free-department-bots.yml');
 const designCycle = readText('tools/company-design-cycle.mjs');
+const developmentCycle = readText('tools/company-development-validation-cycle.mjs');
+const releaseCycle = readText('tools/company-release-production-cycle.mjs');
+const productionPipeline = readText('tools/artbook-production-pipeline.mjs');
 
 test('COMPANY_FLOW.md remains the single machine-oriented production policy source', () => {
   assert.equal(directive.policyDocument, 'COMPANY_FLOW.md');
@@ -25,24 +28,15 @@ test('COMPANY_FLOW.md remains the single machine-oriented production policy sour
   assert.match(agents, /company-directive\.json/);
 });
 
-test('central policy owns the end-to-end production architecture without requiring narrative headings', () => {
+test('central policy owns the end-to-end production architecture without narrative-only requirements', () => {
   for (const token of [
-    'production:',
-    'bootstrapGameSeeds:',
-    'GAME_SEED:',
-    'platformStrategy:',
-    'aiOrganization:',
-    'meeting:',
-    'GameDesigner:',
-    'ArtbookEditor:',
-    'Vibe2:',
-    'flows:',
-    'promotion:',
-    'developmentSafety:',
-    'learning:',
+    'production:', 'bootstrapGameSeeds:', 'GAME_SEED:', 'discardPolicy:', 'platformStrategy:', 'aiOrganization:',
+    'meeting:', 'GameDesigner:', 'ArtbookEditor:', 'Vibe2:', 'flows:', 'promotion:', 'developmentSafety:', 'learning:',
   ]) assert.ok(flow.includes(token), `missing central policy token: ${token}`);
   assert.match(flow, /OWNER_LATEST_DIRECT_INSTRUCTION[\s\S]*COMPANY_FLOW[\s\S]*COMPANY_DIRECTIVE/);
-  assert.match(flow, /DESIGN_ONLY:[\s\S]*GAME_SEED[\s\S]*GAME_DESIGNER_DRAFT/);
+  assert.match(flow, /DESIGN_ONLY:[\s\S]*GAME_SEED[\s\S]*GAME_DESIGNER_DRAFT[\s\S]*DESIGN_BASELINE_GATE[\s\S]*ARTBOOK_EDITOR_CORE_STRATEGY/);
+  assert.match(flow, /Vibe2:[\s\S]*startsAt: DEVELOPMENT_CONFIRMED/);
+  assert.doesNotMatch(flow, /VIBE2_VALIDATION_LEARNING/);
   assert.match(flow, /DEVELOPMENT_CONFIRMED:[\s\S]*WEB_GAMEPLAY_VALIDATION[\s\S]*UNITY_ANDROID_TECHNICAL_VALIDATION/);
   assert.match(flow, /RELEASE_CONFIRMED:[\s\S]*VIBE2_PRIMARY_DEVELOPMENT[\s\S]*ANDROID_RUNTIME_VALIDATION[\s\S]*INDEPENDENT_QA_AND_REGRESSION/);
 });
@@ -51,14 +45,9 @@ test('GAME_SEED policy encodes six-seed bootstrap, famous-success benchmark, tar
   assert.match(flow, /initialSeedBatchCount: 6/);
   assert.match(flow, /initialSeedGenerationMode: SINGLE_BOOTSTRAP_BATCH/);
   assert.match(flow, /initialSeedBatchCreatesAllCategoriesAtOnce: true/);
-  for (const category of [
-    'ACTION_SURVIVAL_ROGUELITE',
-    'SINGLE_DEFENSE_STRATEGY',
-    'PUZZLE',
-    'CASUAL',
-    'IDLE_GROWTH_RPG',
-    'STORY_COMPLETE_RPG',
-  ]) assert.match(flow, new RegExp(`- ${category}`));
+  for (const category of ['ACTION_SURVIVAL_ROGUELITE','SINGLE_DEFENSE_STRATEGY','PUZZLE','CASUAL','IDLE_GROWTH_RPG','STORY_COMPLETE_RPG']) {
+    assert.match(flow, new RegExp(`- ${category}`));
+  }
   assert.match(flow, /selectionMode: FAMOUS_SUCCESSFUL_GAME_COPY_BENCHMARK/);
   assert.match(flow, /- HOMAGE[\s\S]*- REINTERPRETATION/);
   assert.match(flow, /sourceCodeRule: IMPLEMENT_EQUIVALENT_OR_INSPIRED_FUNCTIONALITY_WITH_OWN_CODE/);
@@ -91,40 +80,33 @@ test('discard policy separates DESIGN_ONLY design survival from DEVELOPMENT_CONF
 
 test('semantic production classes are canonical and class counts are derived, not fixed quotas', () => {
   assert.equal(directive.production.canonicalField, 'productionClass');
-  assert.deepEqual(directive.production.canonicalClasses, [
-    'DESIGN_ONLY',
-    'DEVELOPMENT_CONFIRMED',
-    'RELEASE_CONFIRMED',
-  ]);
+  assert.deepEqual(directive.production.canonicalClasses, ['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED']);
   assert.equal(directive.production.membership, 'DYNAMIC_EVIDENCE');
   assert.equal(directive.production.countsDerivedFromMembership, true);
   assert.equal(directive.production.fixedClassCounts, false);
   assert.equal(directive.production.gameIdsPinned, false);
   assert.equal(directive.production.numericLabelsAreAliasesOnly, true);
   assert.equal(directive.production.numericLabelsOwnerRemappable, true);
-  assert.deepEqual(directive.production.numericLabels, {
-    RELEASE_CONFIRMED: 1,
-    DEVELOPMENT_CONFIRMED: 2,
-    DESIGN_ONLY: 3,
-  });
+  assert.deepEqual(directive.production.numericLabels, {RELEASE_CONFIRMED:1,DEVELOPMENT_CONFIRMED:2,DESIGN_ONLY:3});
   assert.equal('tierCounts' in directive.production, false);
   assert.equal(directive.production.preserveExistingWebArchives, true);
   assert.equal(directive.production.preserveSaveMeaning, true);
 });
 
-test('multimodel workflow and cycle route by productionClass, never by fixed numeric meaning', () => {
+test('runtime routes semantic classes to separate responsible cycles', () => {
   assert.match(multimodelWorkflow, /productionClassOf/);
   assert.match(multimodelWorkflow, /EXPECTED_PRODUCTION_CLASS/);
   assert.match(multimodelWorkflow, /NUMERIC_TIER_POLICY=ALIAS_ONLY/);
   assert.doesNotMatch(multimodelWorkflow, /\[1,2,3\]\.includes\(Number\(g\.productionTier\)\)/);
   assert.doesNotMatch(multimodelWorkflow, /Number\(s\.tier\)===1/);
   assert.doesNotMatch(multimodelWorkflow, /Number\(s\.tier\)===2/);
-  assert.match(designCycle, /productionClassOf/);
-  assert.match(designCycle, /PRODUCTION_CLASSES\.RELEASE_CONFIRMED/);
-  assert.match(designCycle, /PRODUCTION_CLASSES\.DEVELOPMENT_CONFIRMED/);
   assert.match(designCycle, /PRODUCTION_CLASSES\.DESIGN_ONLY/);
-  assert.doesNotMatch(designCycle, /const tier=Number\(game\.productionTier/);
-  assert.doesNotMatch(designCycle, /if\(tier===/);
+  assert.match(designCycle, /DESIGN_ONLY_REQUIRED/);
+  assert.doesNotMatch(designCycle, /PRODUCTION_CLASSES\.DEVELOPMENT_CONFIRMED/);
+  assert.doesNotMatch(designCycle, /PRODUCTION_CLASSES\.RELEASE_CONFIRMED/);
+  assert.match(developmentCycle, /PRODUCTION_CLASSES\.DEVELOPMENT_CONFIRMED/);
+  assert.match(releaseCycle, /PRODUCTION_CLASSES\.RELEASE_CONFIRMED/);
+  assert.match(productionPipeline, /company-design-cycle\.mjs[\s\S]*company-design-baseline-gate\.mjs[\s\S]*company-design-artbook\.mjs/);
 });
 
 test('current directive keeps distinct department leads and one Game Designer', () => {
@@ -140,23 +122,25 @@ test('current directive keeps distinct department leads and one Game Designer', 
   assert.equal(directive.ai.departmentModeByClass.RELEASE_CONFIRMED, 'DISTINCT_LEAD_GATED_DIRECT_RELEASE_RISK_WATCH');
 });
 
-test('current execution directive preserves gated development and release semantics during policy-first migration', () => {
+test('Vibe2 starts at DEVELOPMENT_CONFIRMED and is absent from DESIGN_ONLY', () => {
   const development = directive.classes.DEVELOPMENT_CONFIRMED;
   const release = directive.classes.RELEASE_CONFIRMED;
-  assert.equal(directive.ai.vibe2.roleByClass.DESIGN_ONLY, 'VALIDATION_AND_LEARNING');
+  assert.equal(directive.ai.vibe2.startsAtClass, 'DEVELOPMENT_CONFIRMED');
+  assert.equal('DESIGN_ONLY' in directive.ai.vibe2.roleByClass, false);
   assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED, 'VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT');
   assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED, 'PRIMARY_DEVELOPMENT_ENGINE');
+  assert.equal(directive.classes.DESIGN_ONLY.requiredFlow.includes('VIBE2_VALIDATION_LEARNING'), false);
   assert.equal(development.baseline, 'DEVELOPMENT_BASELINE');
   assert.equal(development.executionMode, 'GATED_DIRECT');
   assert.equal(development.webPurpose, 'GAMEPLAY_VALIDATION_TESTBED');
   assert.equal(development.unityPurpose, 'TECHNICAL_VALIDATION_PROTOTYPE');
   assert.equal(development.aiMayInventValidationPass, false);
-  assert.deepEqual(development.decisionStates, ['KEEP', 'CHANGE', 'DROP', 'HOLD']);
+  assert.deepEqual(development.decisionStates, ['KEEP','CHANGE','DROP','HOLD']);
   assert.equal(release.baseline, 'RELEASE_BASELINE');
   assert.equal(release.target, 'UNITY_ANDROID');
   assert.equal(release.vibe2PrimaryDeveloper, true);
   assert.equal(release.coreDesignLock, true);
-  assert.deepEqual(release.releaseStates, ['FIX_AND_REVERIFY', 'RELEASE_BLOCKED', 'RELEASE_READY']);
+  assert.deepEqual(release.releaseStates, ['FIX_AND_REVERIFY','RELEASE_BLOCKED','RELEASE_READY']);
 });
 
 test('legacy numeric tiers remain aliases only', () => {
