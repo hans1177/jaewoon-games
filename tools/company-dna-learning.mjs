@@ -1,3 +1,4 @@
+// 파일명: tools/company-dna-learning.mjs
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -7,6 +8,18 @@ export const DNA_TYPES = Object.freeze(['MOTION','GRAPHICS','VIBE2','BUDGET','QA
 
 const unique=(values=[])=>[...new Set((values||[]).filter(v=>typeof v==='string'&&v.trim()).map(v=>v.trim()))];
 const finite=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
+
+function vibe2PositiveTraceComplete(e={}){
+  if(e.type!=='VIBE2'&&e.itemType!=='VIBE2')return true;
+  if(e.outcome!=='SUCCESS')return true;
+  const condition=String(e.conditionKey||'').toUpperCase();
+  const refs=unique(e.evidence).map(v=>v.toLowerCase());
+  const postRelease=/^POST_RELEASE_/.test(condition);
+  const releaseBound=refs.some(v=>v.includes('release-task')||v.includes('release-pr')||v.includes('promotion'));
+  const runtimeBound=refs.some(v=>v.includes('runtime')||v.includes('public-game-health')||v.includes('device-validation'));
+  const qaBound=refs.some(v=>v.includes('qa')||v.includes('regression')||v.includes('health'));
+  return postRelease&&releaseBound&&runtimeBound&&qaBound;
+}
 
 export function validateDnaEvidence(e={}){
   const missing=[];
@@ -18,6 +31,7 @@ export function validateDnaEvidence(e={}){
   if(e.verified!==true)missing.push('verified=true');
   if(!String(e.sourceRevision||'').trim())missing.push('sourceRevision');
   if(!Array.isArray(e.evidence)||e.evidence.length===0)missing.push('evidence');
+  if(e.type==='VIBE2'&&e.outcome==='SUCCESS'&&!vibe2PositiveTraceComplete(e))missing.push('complete-vibe2-positive-trace');
   return{pass:missing.length===0,missing};
 }
 
@@ -39,7 +53,11 @@ export function recordDnaEvidence(store,e,timestamp=new Date().toISOString()){
 }
 
 export function recomputeDnaItem(item,store=null){
-  const rows=item.evidence||[],success=rows.filter(x=>x.outcome==='SUCCESS'&&x.blockers.length===0),failure=rows.filter(x=>x.outcome==='FAILURE'||x.blockers.length>0);
+  const rows=item.evidence||[];
+  const completePositive=row=>item.type!=='VIBE2'||vibe2PositiveTraceComplete({...row,itemType:item.type});
+  const success=rows.filter(x=>x.outcome==='SUCCESS'&&x.blockers.length===0&&completePositive(x));
+  const incompletePositive=rows.filter(x=>x.outcome==='SUCCESS'&&x.blockers.length===0&&!completePositive(x));
+  const failure=rows.filter(x=>x.outcome==='FAILURE'||x.blockers.length>0);
   const games=new Set(success.map(x=>x.gameId)),genres=new Set(success.map(x=>x.genre).filter(x=>x&&x!=='UNKNOWN')),conditions=new Set(success.map(x=>x.conditionKey).filter(x=>x&&x!=='UNKNOWN'));
   const avg=success.length?success.reduce((s,x)=>s+finite(x.delta),0)/success.length:0;
   const criticalFailures=failure.filter(x=>x.blockers.some(b=>/^CRITICAL_|^SAVE_|^CONTROL_|^LEGAL_/.test(b))).length;
@@ -51,7 +69,7 @@ export function recomputeDnaItem(item,store=null){
   if(item.jayApproved===true&&multiEligible)stage='COMPANY_STANDARD';
   if(item.retired===true)stage='RETIRED';
   item.stage=stage;
-  item.summary={successEvidence:success.length,failureEvidence:failure.length,distinctGames:games.size,distinctGenres:genres.size,distinctConditions:conditions.size,averageDelta:avg,criticalFailures,multiGameEligible:multiEligible,selfPromote:false,jayDecisionRequired:multiEligible&&item.jayApproved!==true};
+  item.summary={successEvidence:success.length,incompletePositiveEvidence:incompletePositive.length,failureEvidence:failure.length,distinctGames:games.size,distinctGenres:genres.size,distinctConditions:conditions.size,averageDelta:avg,criticalFailures,multiGameEligible:multiEligible,selfPromote:false,jayDecisionRequired:multiEligible&&item.jayApproved!==true};
   if(store){
     const antiKey=`${item.type}:${item.patternId}`;
     const isAnti=failure.length>=2&&success.length===0;
@@ -76,6 +94,7 @@ export function ingestEvidenceDirectory(store,dir='company-learning/evidence'){
   if(!fs.existsSync(dir))return{files:0,added:0,rejected:[]};
   const files=fs.readdirSync(dir).filter(f=>f.endsWith('.json')).sort();let added=0;const rejected=[];
   for(const file of files){try{const raw=JSON.parse(fs.readFileSync(path.join(dir,file),'utf8'));const rows=Array.isArray(raw)?raw:raw.items||[raw];for(const row of rows){const r=recordDnaEvidence(store,row);if(r.added)added++;}}catch(error){rejected.push({file,error:error.message});}}
+  for(const item of store.items||[])recomputeDnaItem(item,store);
   return{files:files.length,added,rejected};
 }
 
