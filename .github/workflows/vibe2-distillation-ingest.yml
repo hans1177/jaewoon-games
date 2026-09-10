@@ -23,9 +23,10 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
-  group: vibe2-distillation-ingest
+  group: vibe2-distillation-ingest-pr
   cancel-in-progress: false
 
 jobs:
@@ -94,45 +95,37 @@ jobs:
           console.log(`LOCAL_TRAINING_REQUEST_STATE=${request.state}`);
           NODE
 
-      - name: Persist only verified training samples and readiness
+      - name: Propose verified training samples and readiness through PR
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-vibe2-learning'
           git config user.email 'actions@users.noreply.github.com'
 
-          for attempt in 1 2 3 4 5; do
-            if [ "$attempt" -gt 1 ]; then
-              echo "main moved; recomputing verified samples on fresh main ($attempt/5)"
-              git fetch origin main \
-                '+refs/heads/autonomous-dev:refs/remotes/origin/autonomous-dev' \
-                '+refs/heads/autonomous/candidate-*:refs/remotes/origin/autonomous/candidate-*' \
-                --prune
-              git reset --hard origin/main
-              git clean -fd company-learning/training-samples || true
-              node tools/vibe2-distillation-ingest.mjs --dev-ref=origin/autonomous-dev --out-dir=company-learning/training-samples
-              node tools/vibe2-distillation-status.mjs --evidence-dir=company-learning/evidence --sample-dir=company-learning/training-samples --out=company-learning/distillation-status.json
-              node tools/vibe2-training-request.mjs --status=company-learning/distillation-status.json --out=company-learning/distillation-training-request.json
-            fi
+          if [ -d company-learning/training-samples ]; then git add company-learning/training-samples; fi
+          git add company-learning/distillation-status.json company-learning/distillation-training-request.json
+          if git diff --cached --quiet; then
+            echo 'DISTILLATION_MEMORY_PR=NO_CHANGES'
+            exit 0
+          fi
 
-            if [ -d company-learning/training-samples ]; then git add company-learning/training-samples; fi
-            git add company-learning/distillation-status.json company-learning/distillation-training-request.json
-            if git diff --cached --quiet; then
-              echo 'DISTILLATION_MEMORY_CHANGE=NO'
-              exit 0
-            fi
+          branch="automation/vibe2-distillation-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git checkout -b "$branch"
+          git commit -m 'learning: refresh distillation samples and local training request [skip ci]'
+          git push origin "HEAD:refs/heads/$branch"
 
-            git commit -m 'learning: refresh distillation samples and local training request [skip ci]'
-            if git push origin HEAD:main; then
-              echo 'DISTILLATION_MEMORY_CHANGE=YES'
-              echo 'GITHUB_HOSTED_MODEL_TRAINING=NO'
-              echo 'PUBLIC_GAME_CODE_WRITE=NO'
-              exit 0
-            fi
-          done
-
-          echo 'Failed to persist distillation state after 5 fresh-main attempts.'
-          exit 1
+          pr_url="$(gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$branch" \
+            --title 'learning: refresh distillation samples and local training request' \
+            --body "Verified Vibe2 distillation sample/status refresh.\n\n- workflow run: ${GITHUB_RUN_ID}\n- direct main write: NO\n- GitHub-hosted model training: NO\n- public game code write: NO")"
+          echo "DISTILLATION_MEMORY_PR=$pr_url"
+          echo 'GITHUB_HOSTED_MODEL_TRAINING=NO'
+          echo 'PUBLIC_GAME_CODE_WRITE=NO'
+          echo 'PUBLIC_MAIN_WRITE=NO'
 
       - name: Summary
         if: always()
@@ -144,4 +137,5 @@ jobs:
           echo '- paid API: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- GitHub-hosted model training: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- ready work emits deterministic local training request' >> "$GITHUB_STEP_SUMMARY"
+          echo '- persistence: feature branch + PR; direct main write forbidden' >> "$GITHUB_STEP_SUMMARY"
           echo '- promotion: fixed holdout A/B then Canary' >> "$GITHUB_STEP_SUMMARY"
