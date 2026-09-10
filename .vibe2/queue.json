@@ -221,6 +221,48 @@
         "artbookPostprocessComplete": false,
         "reviewRequired": true
       }
+    },
+    {
+      "id": "pwa-40fc7d01-b9a0-42f3-9589-9160f07c63e5",
+      "gameId": "daechung-rpg",
+      "target": "unity",
+      "department": "development",
+      "type": "implementation",
+      "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 대충 RPG\n사용자 직접 지시: 영토전쟁 전략 게임의 내 영토 표시 및 게임 플레이 설명 UI 추가 설계 및 수정 작업\n\n추가 지시:\n- 야\n- 뭐냐 왜그래\n- 야\n- 야\n- 말해\n- 야\n- 미안해\n- 생각중이야 지금게임들 워잇지?\n- 3분류게임중에\n- 개발은 잘되가?\n- 같이 만들어 볼가? 영토전쟁 전략게임인데 내영토 안나오고 전체적으로 게임이 무슨설명이 없어\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
+      "responsibleFiles": [],
+      "dependencies": [],
+      "priority": "owner-immediate",
+      "releaseState": "release-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": true,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "evidence": [
+        "pwa-task:40fc7d01-b9a0-42f3-9589-9160f07c63e5",
+        "pwa-kind:directive",
+        "pwa-priority:normal",
+        "actual-release-state:release-confirmed",
+        "source-root:unity-games/daechung-rpg",
+        "owner-auto-deploy-authorization",
+        "verified-qa-required"
+      ],
+      "companyContext": {
+        "stageId": "owner-immediate",
+        "role": "director",
+        "assignmentAuthority": "owner-directive",
+        "sourceRef": "pwa-task:40fc7d01-b9a0-42f3-9589-9160f07c63e5",
+        "reviewRequired": true
+      }
     }
-  ]
+  ],
+  "ingest": {
+    "added": true,
+    "taskId": "pwa-40fc7d01-b9a0-42f3-9589-9160f07c63e5",
+    "gameId": "daechung-rpg",
+    "target": "unity",
+    "reason": "OWNER_IMMEDIATE_PWA"
+  }
 }
