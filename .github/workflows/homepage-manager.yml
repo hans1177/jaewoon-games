@@ -1,13 +1,26 @@
 name: Homepage Manager
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'company.html'
+      - 'game-catalog.json'
+      - 'company-status.json'
+      - 'public-release-baselines.json'
+      - 'game-artbooks.json'
+      - 'assets/**'
+      - '_headers'
+      - 'tools/homepage-manager.mjs'
+      - '.github/workflows/homepage-manager.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: homepage-manager-manual
+  group: homepage-manager-live
   cancel-in-progress: true
 
 jobs:
@@ -24,11 +37,21 @@ jobs:
       - name: Run homepage diagnostics
         run: node tools/homepage-manager.mjs
 
-      - name: Validate homepage files
+      - name: Validate homepage live files
         run: |
           set -euo pipefail
           test -f index.html
           test -f game-catalog.json
-          node -e "JSON.parse(require('fs').readFileSync('game-catalog.json','utf8'))"
+          test -f company-status.json
+          test -f public-release-baselines.json
+          test -f game-artbooks.json
+          test -f assets/homepage-enhancements.js
+          test -f _headers
+          node -e "for (const file of ['game-catalog.json','company-status.json','public-release-baselines.json','game-artbooks.json']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
+          node --check assets/homepage-enhancements.js
           grep -Fq '/assets/homepage-enhancements.js' index.html
-          echo 'HOMEPAGE_DIAGNOSTICS=PASS'
+          grep -Fq 'const SYNC_INTERVAL_MS=5000;' assets/homepage-enhancements.js
+          grep -Fq "const RAW_MAIN_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/main';" assets/homepage-enhancements.js
+          grep -Fxq '/*.json' _headers
+          grep -Fxq '/assets/*' _headers
+          echo 'HOMEPAGE_LIVE_SYNC=PASS'

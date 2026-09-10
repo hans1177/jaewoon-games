@@ -65,21 +65,21 @@
   "operations": {
     "homepage": {
       "manager": "homepage-diagnostics",
-      "status": "idle",
-      "task": "no standing homepage worker task; runtime data sync is automatic",
+      "status": "done",
+      "task": "homepage diagnostics",
       "scope": [
         "index.html",
         "company.html",
         "game-catalog.json"
       ],
       "lastReviewedAt": "2026-09-10",
-      "lastCheckResult": "IDLE_NO_TASK",
+      "lastCheckResult": "DONE",
       "execution": "github-actions-diagnostic",
       "workflow": ".github/workflows/homepage-manager.yml",
       "statusFile": "homepage-manager-status.json",
       "runtimeDataSync": "active",
       "evidenceSource": "director-supervision-status.json",
-      "workState": "WAITING"
+      "workState": "DONE"
     },
     "ownerDirectives": {
       "source": "company-directive.json",
@@ -120,7 +120,7 @@
         "P0009"
       ],
       "selection": "AUTO_TIER1_READY_THEN_SCORE_WITH_IMPACT_AWARE_TIER2",
-      "activeDevelopmentRunId": 34468396617,
+      "activeDevelopmentRunId": 34469123893,
       "syncIntervalMs": 30000,
       "updatedAtKst": "2026-09-10",
       "source": [
@@ -306,19 +306,19 @@
     "runningLabelAloneCountsAsWork": false,
     "counts": {
       "WORKING": 1,
-      "DONE": 6,
-      "IDLE_NO_TASK": 1,
+      "DONE": 7,
+      "IDLE_NO_TASK": 0,
       "BLOCKED": 0,
       "FAILED": 0,
       "STALE": 0
     },
     "liveStates": {
       "ACTIVE": 1,
-      "WAITING": 1,
+      "WAITING": 0,
       "BLOCKED": 0,
-      "DONE": 6
+      "DONE": 7
     },
-    "activeDevelopmentRunId": 34468396617,
+    "activeDevelopmentRunId": 34469123893,
     "primaryFindings": [
       "NO_WORK_ORDER:artbook-work-orders/2026-09-10-daechung-rpg.json"
     ],
@@ -326,24 +326,24 @@
       "planning": {
         "status": "DONE",
         "workState": "DONE",
-        "task": "autonomous development floor 34468396617",
+        "task": "autonomous development floor 34469123893",
         "source": "autonomous-development",
         "reason": "latest autonomous development floor completed without a separate active role job",
         "jobEvidence": {
-          "id": 102842542571,
+          "id": 102844698652,
           "name": "department (planning-final)",
           "status": "completed",
           "conclusion": "skipped",
           "failedStep": null,
-          "startedAt": "2026-09-10T10:54:16Z",
-          "completedAt": "2026-09-10T10:54:15Z",
-          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34468396617/job/102842542571"
+          "startedAt": "2026-09-10T11:02:01Z",
+          "completedAt": "2026-09-10T11:02:00Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34469123893/job/102844698652"
         }
       },
       "development": {
         "status": "DONE",
         "workState": "DONE",
-        "task": "autonomous development floor 34468396617",
+        "task": "autonomous development floor 34469123893",
         "source": "autonomous-development",
         "reason": "latest autonomous development floor completed without a separate active role job",
         "jobEvidence": null
@@ -351,7 +351,7 @@
       "qa": {
         "status": "DONE",
         "workState": "DONE",
-        "task": "autonomous development floor 34468396617",
+        "task": "autonomous development floor 34469123893",
         "source": "autonomous-development",
         "reason": "latest autonomous development floor completed without a separate active role job",
         "jobEvidence": null
@@ -359,7 +359,7 @@
       "graphics": {
         "status": "DONE",
         "workState": "DONE",
-        "task": "autonomous development floor 34468396617",
+        "task": "autonomous development floor 34469123893",
         "source": "autonomous-development",
         "reason": "latest autonomous development floor completed without a separate active role job",
         "jobEvidence": null
@@ -367,7 +367,7 @@
       "balance": {
         "status": "DONE",
         "workState": "DONE",
-        "task": "autonomous development floor 34468396617",
+        "task": "autonomous development floor 34469123893",
         "source": "autonomous-development",
         "reason": "latest autonomous development floor completed without a separate active role job",
         "jobEvidence": null
@@ -584,35 +584,35 @@
     "departmentTasks": {
       "planning": {
         "status": "done",
-        "task": "autonomous development floor 34468396617",
+        "task": "autonomous development floor 34469123893",
         "evidenceSource": "director-supervision-status.json",
         "workState": "DONE",
         "reason": "latest autonomous development floor completed without a separate active role job"
       },
       "development": {
         "status": "done",
-        "task": "autonomous development floor 34468396617",
+        "task": "autonomous development floor 34469123893",
         "evidenceSource": "director-supervision-status.json",
         "workState": "DONE",
         "reason": "latest autonomous development floor completed without a separate active role job"
       },
       "qa": {
         "status": "done",
-        "task": "autonomous development floor 34468396617",
+        "task": "autonomous development floor 34469123893",
         "evidenceSource": "director-supervision-status.json",
         "workState": "DONE",
         "reason": "latest autonomous development floor completed without a separate active role job"
       },
       "graphics": {
         "status": "done",
-        "task": "autonomous development floor 34468396617",
+        "task": "autonomous development floor 34469123893",
         "evidenceSource": "director-supervision-status.json",
         "workState": "DONE",
         "reason": "latest autonomous development floor completed without a separate active role job"
       },
       "balance": {
         "status": "done",
-        "task": "autonomous development floor 34468396617",
+        "task": "autonomous development floor 34469123893",
         "evidenceSource": "director-supervision-status.json",
         "workState": "DONE",
         "reason": "latest autonomous development floor completed without a separate active role job"
