@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {PRODUCTION_CLASSES,productionClassOf,tierAliasForProductionClass} from './production-classification.mjs';
 
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -30,7 +31,8 @@ if(!gameId)throw new Error('ARTBOOK_GAME_ID or GAME_ID is required');
 const catalog=readJson('game-catalog.json',{games:[]});
 const game=(catalog.games||[]).find(x=>x.id===gameId);
 if(!game)throw new Error(`Unknown game: ${gameId}`);
-const tier=Number(game.productionTier||3);
+const productionClass=productionClassOf({},game);
+const tier=tierAliasForProductionClass(productionClass)??Number(game.productionTier||3);
 const statusPath=path.join('design',gameId,date,'cycle-status.json');
 const status=readJson(statusPath,null);
 if(!status||status.status!=='COMPLETE')throw new Error(`Completed cycle-status missing: ${statusPath}`);
@@ -45,49 +47,54 @@ const blockers=[];
 let state='NOT_APPLICABLE';
 let ready=false;
 
-if(tier===3){
+if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
   const conflicts=Number(status.meeting?.conflictCount||0);
   ready=conflicts===0;
   state=ready?'DESIGN_BASELINE_READY':'DESIGN_BASELINE_PENDING_CONFLICT_RESOLUTION';
   if(conflicts>0)blockers.push(`meeting-conflicts:${conflicts}`);
-}else if(tier===2){
+}else if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
   if(!webGameplay.pass)blockers.push('web-gameplay-validation-required');
   if(!unityProjectPresent)blockers.push('unity-project-required-for-technical-validation');
   if(!unityTechnical.pass)blockers.push('unity-technical-validation-required');
   ready=webGameplay.pass&&unityProjectPresent&&unityTechnical.pass;
   state=ready?'DEVELOPMENT_BASELINE_READY':'DEVELOPMENT_BASELINE_PENDING_VALIDATION';
-}else if(tier===1){
+}else if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
   state='RELEASE_BASELINE_MANAGED_BY_RELEASE_PIPELINE';
   ready=false;
 }
 
+const developmentRequired=productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED;
 status.baselineGate={
   policyDocument:'COMPANY_FLOW.md',
+  productionClass,
+  tierAlias:tier,
   tier,
   state,
   ready,
   blockers,
   evidence:{
     webSmoke:{supportingOnly:true,pass:webSmokePass,source:webSmoke?'company-qa-runtime-evidence.json':null},
-    webGameplay:{required:tier===2,pass:webGameplay.pass,source:webGameplay.path},
-    unityProject:{required:tier===2,present:unityProjectPresent,path:clean(game.unityProjectPath)||null},
-    unityTechnical:{required:tier===2,pass:unityTechnical.pass,source:unityTechnical.path}
+    webGameplay:{required:developmentRequired,pass:webGameplay.pass,source:webGameplay.path},
+    unityProject:{required:developmentRequired,present:unityProjectPresent,path:clean(game.unityProjectPath)||null},
+    unityTechnical:{required:developmentRequired,pass:unityTechnical.pass,source:unityTechnical.path}
   },
   contracts:{
     aiMeetingCompletionDoesNotEqualBaselineApproval:true,
     webSmokeDoesNotEqualGameplayValidation:true,
-    tier2RequiresExplicitWebGameplayValidation:true,
-    tier2RequiresUnityTechnicalValidation:true,
-    tier1ReleaseBaselineOwnedByReleasePipeline:true
+    developmentConfirmedRequiresExplicitWebGameplayValidation:true,
+    developmentConfirmedRequiresUnityTechnicalValidation:true,
+    releaseConfirmedBaselineOwnedByReleasePipeline:true,
+    numericTierIsCompatibilityAliasOnly:true
   },
   checkedAt:new Date().toISOString()
 };
 writeJson(statusPath,status);
+console.log(`BASELINE_GATE_CLASS=${productionClass}`);
 console.log(`BASELINE_GATE_TIER=${tier}`);
 console.log(`BASELINE_GATE_STATE=${state}`);
 console.log(`BASELINE_GATE_READY=${ready?'YES':'NO'}`);
 console.log(`WEB_SMOKE_SUPPORT=${webSmokePass?'PASS':'NO_PASS_EVIDENCE'}`);
-if(tier===2){
+if(developmentRequired){
   console.log(`WEB_GAMEPLAY_VALIDATION=${webGameplay.pass?'PASS':'PENDING'}`);
   console.log(`UNITY_PROJECT=${unityProjectPresent?'PRESENT':'PENDING'}`);
   console.log(`UNITY_TECHNICAL_VALIDATION=${unityTechnical.pass?'PASS':'PENDING'}`);
