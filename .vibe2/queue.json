@@ -233,13 +233,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "release-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
+      "blocker": null,
       "evidence": [
         "pwa-task:40fc7d01-b9a0-42f3-9589-9160f07c63e5",
         "pwa-kind:directive",
@@ -249,20 +250,19 @@
         "owner-auto-deploy-authorization",
         "verified-qa-required"
       ],
+      "lastOutcome": null,
       "companyContext": {
         "stageId": "owner-immediate",
         "role": "director",
         "assignmentAuthority": "owner-directive",
         "sourceRef": "pwa-task:40fc7d01-b9a0-42f3-9589-9160f07c63e5",
+        "artbookLocked": false,
+        "artbookRef": null,
+        "artbookStatus": null,
+        "artbookCutCount": 0,
+        "artbookPostprocessComplete": false,
         "reviewRequired": true
       }
     }
-  ],
-  "ingest": {
-    "added": true,
-    "taskId": "pwa-40fc7d01-b9a0-42f3-9589-9160f07c63e5",
-    "gameId": "daechung-rpg",
-    "target": "unity",
-    "reason": "OWNER_IMMEDIATE_PWA"
-  }
+  ]
 }
