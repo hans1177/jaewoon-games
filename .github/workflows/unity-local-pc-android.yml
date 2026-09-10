@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   build:
@@ -198,13 +199,20 @@ jobs:
             dist/build-info.json
           fail_on_unmatched_files: true
 
-      - name: Publish verified build to approved homepage state
+      - name: Publish verified build to approved homepage state by PR
         if: steps.request.outputs.publish_homepage == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           $game = '${{ steps.request.outputs.game_id }}'
           $tag = '${{ steps.artifact.outputs.release_tag }}'
           $releaseUrl = "https://github.com/$env:GITHUB_REPOSITORY/releases/tag/$tag"
           $downloadUrl = "https://github.com/$env:GITHUB_REPOSITORY/releases/download/$tag/$game-test.apk"
+          $stateBranch = "automation/test-build-state-$game-$env:GITHUB_RUN_ID"
+
+          git fetch origin main
+          git checkout -B $stateBranch origin/main
+
           $path = Join-Path $env:GITHUB_WORKSPACE 'company-status.json'
           $data = [System.IO.File]::ReadAllText($path, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
           $kept = @($data.testBuilds | Where-Object { $_.gameId -ne $game })
@@ -234,7 +242,12 @@ jobs:
           git add company-status.json
           if (-not (git diff --cached --quiet)) {
             git commit -m "company-ai: publish $game verified local test build"
-            git pull --rebase origin main
-            git push origin HEAD:main
+            git push origin "HEAD:$stateBranch"
+            gh pr create --repo "$env:GITHUB_REPOSITORY" --base main --head $stateBranch --title "company-ai: publish $game verified local test build" --body "Automated state update from Unity Android run $env:GITHUB_RUN_ID. Source commit: $env:GITHUB_SHA. PUBLIC_MAIN_WRITE=NO."
+            Write-Host "[PASS] Approved homepage build state PR opened: $downloadUrl"
+            Write-Host 'PUBLIC_MAIN_WRITE=NO'
+            Write-Host "STATE_UPDATE_BRANCH=$stateBranch"
+          } else {
+            Write-Host '[PASS] Approved homepage build state already current; no PR needed.'
+            Write-Host 'PUBLIC_MAIN_WRITE=NO'
           }
-          Write-Host "[PASS] Approved homepage build state updated: $downloadUrl"
