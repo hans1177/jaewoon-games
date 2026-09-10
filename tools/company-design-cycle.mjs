@@ -83,15 +83,32 @@ const ROLE_RISK={type:'object',required:['risks','evidence'],properties:{risks:{
 
 async function callModel(model,system,user,schema,{predict=900,temperature=0.25}={}){
   let lastError=null;
-  for(let attempt=1;attempt<=2;attempt++){
+  const basePredict=Math.max(1800,Number(predict)||900);
+  for(let attempt=1;attempt<=3;attempt++){
+    const attemptPredict=Math.min(4096,attempt===1?basePredict:attempt===2?Math.ceil(basePredict*1.5):Math.ceil(basePredict*2.25));
+    const retryInstruction=attempt===1?'':'\n\n재시도 지시: 이전 응답이 길이 제한 또는 JSON 파싱 오류로 실패했다. 같은 스키마를 유지하되 각 문자열과 배열 항목을 더 짧게 줄이고, 설명이나 마크다운 없이 유효한 JSON 객체를 반드시 끝까지 닫아라.';
     try{
-      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,format:schema,messages:[{role:'system',content:system},{role:'user',content:user}],options:{temperature:attempt===1?temperature:0,num_ctx:8192,num_predict:predict}})});
+      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,format:schema,messages:[{role:'system',content:system},{role:'user',content:user+retryInstruction}],options:{temperature:attempt===1?temperature:0,num_ctx:12288,num_predict:attemptPredict}})});
       if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
       const body=await response.json();
-      const text=clean(body?.message?.content);
+      const text=String(body?.message?.content??'').trim();
       if(!text)throw new Error('empty model response');
-      return JSON.parse(text);
-    }catch(error){lastError=error;}
+      const doneReason=clean(body?.done_reason).toLowerCase();
+      try{
+        return JSON.parse(text);
+      }catch(error){
+        const truncated=doneReason==='length'||/unterminated|unexpected end|end of json input|end of data/i.test(clean(error?.message));
+        lastError=new Error(`${truncated?'truncated JSON':'invalid JSON'} done_reason=${doneReason||'unknown'} predict=${attemptPredict}: ${clean(error?.message)}`);
+        if(attempt<3){
+          console.warn(`MODEL_CALL_RETRY model=${model} attempt=${attempt+1}/3 reason=${truncated?'TRUNCATED_JSON':'INVALID_JSON'} next_predict=${Math.min(4096,attempt===1?Math.ceil(basePredict*1.5):Math.ceil(basePredict*2.25))}`);
+          continue;
+        }
+        throw lastError;
+      }
+    }catch(error){
+      lastError=error;
+      if(attempt<3)continue;
+    }
   }
   throw new Error(`MODEL_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
 }
