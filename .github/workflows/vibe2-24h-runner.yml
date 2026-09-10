@@ -16,7 +16,7 @@ permissions:
 env:
   VIBE2_PRIORITY_POLICY: owner-release-development
   VIBE2_AUTO_DEPLOY_VERIFIED_ONLY: 'true'
-  VIBE2_MAX_CONCURRENT_GAME_TASKS: '1'
+  VIBE2_MAX_CONCURRENT_GAME_TASKS: '4'
 
 concurrency:
   group: vibe2-24h-runner
@@ -37,7 +37,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Select one safe autonomous task when queue is idle
+      - name: Fill available conflict-free parallel slots
         shell: bash
         run: |
           set -euo pipefail
@@ -59,7 +59,8 @@ jobs:
               --status=/tmp/vibe2-main/company-status.json \
               --catalog=/tmp/vibe2-main/game-catalog.json \
               --queue=.vibe2/queue.json \
-              --root=/tmp/vibe2-main | tee /tmp/vibe2-autoplan.log
+              --root=/tmp/vibe2-main \
+              --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-autoplan.log
 
             if ! grep -q '^VIBE2_AUTO_PLAN=YES$' /tmp/vibe2-autoplan.log; then
               echo 'VIBE2_AUTOPLAN_WRITE=NO'
@@ -67,7 +68,7 @@ jobs:
             fi
 
             git add .vibe2/queue.json
-            git commit -m 'vibe2: autonomously plan next safe game task [skip ci]'
+            git commit -m 'vibe2: autonomously fill safe parallel task slots [skip ci]'
             if git push origin HEAD:vibe2-unreal-core; then
               echo 'VIBE2_AUTOPLAN_WRITE=YES'
               exit 0
