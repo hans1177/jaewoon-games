@@ -41,11 +41,36 @@ def dataset_hash(rows):
 
 
 def validate_manifest(args, manifest, train_rows, eval_rows):
+    if int(manifest.get("version", 0)) < 3:
+        raise RuntimeError("dataset manifest v3 or newer is required")
     if manifest.get("readyForTraining") is not True:
         raise RuntimeError("dataset manifest is not readyForTraining")
+
     contamination = manifest.get("contamination") or {}
     if contamination.get("pass") is not True or float(contamination.get("contaminationRate", 1)) > 0:
         raise RuntimeError("contaminated dataset is forbidden")
+
+    diversity = manifest.get("diversity") or {}
+    if diversity.get("pass") is not True:
+        raise RuntimeError("dataset diversity gate did not pass")
+    batching = manifest.get("batching") or {}
+    if batching.get("pass") is not True:
+        raise RuntimeError("dataset batch gate did not pass")
+
+    target_task_type = manifest.get("targetTaskType")
+    if target_task_type and target_task_type != args.task_type:
+        raise RuntimeError("trainer task type must match dataset targetTaskType")
+
+    task_plan = manifest.get("taskTrainingPlan") or {}
+    if target_task_type:
+        target_plan = task_plan.get(target_task_type) or {}
+        if target_plan.get("ready") is not True:
+            raise RuntimeError("target task adapter is not ready for training")
+
+    policy = manifest.get("policy") or {}
+    if policy.get("teacherOnlyDifficult") is not True:
+        raise RuntimeError("teacher-only-difficult policy must be enabled")
+
     stats = manifest.get("stats") or {}
     if stats.get("deprecatedUsed") is True:
         raise RuntimeError("deprecated/obsolete samples are forbidden")
@@ -59,6 +84,7 @@ def validate_manifest(args, manifest, train_rows, eval_rows):
         raise RuntimeError("synthetic-only self-training is forbidden")
     if args.seed != int(manifest.get("seed", args.seed)):
         raise RuntimeError("trainer seed must match dataset manifest seed")
+
     for row in train_rows + eval_rows:
         qa = row.get("qa") or {}
         if qa.get("independentQa") != "PASS" or qa.get("browserQa") != "PASS":
@@ -67,6 +93,8 @@ def validate_manifest(args, manifest, train_rows, eval_rows):
             raise RuntimeError("inactive sample reached trainer")
         if float(row.get("qualityScore", 0)) < 0.75:
             raise RuntimeError("low-quality sample reached trainer")
+        if target_task_type and row.get("taskType") != target_task_type:
+            raise RuntimeError("mixed task type reached task-specific trainer")
 
 
 def main():
@@ -98,33 +126,63 @@ def main():
         model_kwargs["device_map"] = "auto"
         model_kwargs["torch_dtype"] = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
     if args.method == "qlora":
-        model_kwargs["quantization_config"] = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_use_double_quant=True, bnb_4bit_compute_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16)
+        model_kwargs["quantization_config"] = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16,
+        )
     model = AutoModelForCausalLM.from_pretrained(args.base_model, **model_kwargs)
     if args.method == "qlora":
         model = prepare_model_for_kbit_training(model)
     model.config.use_cache = False
     model.gradient_checkpointing_enable()
-    model = get_peft_model(model, LoraConfig(r=16, lora_alpha=32, lora_dropout=0.05, bias="none", task_type="CAUSAL_LM", target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]))
+    model = get_peft_model(
+        model,
+        LoraConfig(
+            r=16,
+            lora_alpha=32,
+            lora_dropout=0.05,
+            bias="none",
+            task_type="CAUSAL_LM",
+            target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+        ),
+    )
 
     def encode(row):
         instruction, user_input, answer = row["instruction"].strip(), row.get("input", "").strip(), row["output"].strip()
         user_text = instruction if not user_input else f"{instruction}\n\n입력:\n{user_input}"
         if getattr(tokenizer, "chat_template", None):
-            prompt = tokenizer.apply_chat_template([{"role": "user", "content": user_text}], tokenize=False, add_generation_prompt=True)
-            full = tokenizer.apply_chat_template([{"role": "user", "content": user_text}, {"role": "assistant", "content": answer}], tokenize=False, add_generation_prompt=False)
+            prompt = tokenizer.apply_chat_template(
+                [{"role": "user", "content": user_text}],
+                tokenize=False,
+                add_generation_prompt=True,
+            )
+            full = tokenizer.apply_chat_template(
+                [{"role": "user", "content": user_text}, {"role": "assistant", "content": answer}],
+                tokenize=False,
+                add_generation_prompt=False,
+            )
         else:
-            prompt, full = f"### 지시\n{user_text}\n\n### 답변\n", f"### 지시\n{user_text}\n\n### 답변\n{answer}{tokenizer.eos_token or ''}"
+            prompt = f"### 지시\n{user_text}\n\n### 답변\n"
+            full = f"### 지시\n{user_text}\n\n### 답변\n{answer}{tokenizer.eos_token or ''}"
         prompt_ids = tokenizer(prompt, add_special_tokens=False)["input_ids"]
         encoded = tokenizer(full, truncation=True, max_length=args.max_length, add_special_tokens=False)
-        labels, masked = list(encoded["input_ids"]), min(len(prompt_ids), len(encoded["input_ids"]))
+        labels = list(encoded["input_ids"])
+        masked = min(len(prompt_ids), len(encoded["input_ids"]))
         labels[:masked] = [-100] * masked
         encoded["labels"] = labels
         return encoded
 
     class JsonlDataset(torch.utils.data.Dataset):
-        def __init__(self, rows): self.rows = [encode(row) for row in rows]
-        def __len__(self): return len(self.rows)
-        def __getitem__(self, index): return self.rows[index]
+        def __init__(self, rows):
+            self.rows = [encode(row) for row in rows]
+
+        def __len__(self):
+            return len(self.rows)
+
+        def __getitem__(self, index):
+            return self.rows[index]
 
     class Collator:
         def __call__(self, features):
@@ -132,13 +190,38 @@ def main():
             labels = [item.pop("labels") for item in features]
             batch = tokenizer.pad(features, padding=True, return_tensors="pt")
             max_len = batch["input_ids"].shape[1]
-            batch["labels"] = torch.tensor([label + [-100] * (max_len - len(label)) for label in labels], dtype=torch.long)
+            batch["labels"] = torch.tensor(
+                [label + [-100] * (max_len - len(label)) for label in labels],
+                dtype=torch.long,
+            )
             return batch
 
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
-    training_args = TrainingArguments(output_dir=str(output / "checkpoints"), num_train_epochs=args.epochs, learning_rate=args.learning_rate, per_device_train_batch_size=args.batch_size, per_device_eval_batch_size=args.batch_size, gradient_accumulation_steps=args.grad_accum, logging_steps=5, eval_strategy="epoch", save_strategy="epoch", report_to=[], seed=args.seed, data_seed=args.seed, bf16=torch.cuda.is_available() and torch.cuda.is_bf16_supported(), fp16=torch.cuda.is_available() and not torch.cuda.is_bf16_supported(), remove_unused_columns=False)
-    trainer = Trainer(model=model, args=training_args, train_dataset=JsonlDataset(train_rows), eval_dataset=JsonlDataset(eval_rows), data_collator=Collator())
+    training_args = TrainingArguments(
+        output_dir=str(output / "checkpoints"),
+        num_train_epochs=args.epochs,
+        learning_rate=args.learning_rate,
+        per_device_train_batch_size=args.batch_size,
+        per_device_eval_batch_size=args.batch_size,
+        gradient_accumulation_steps=args.grad_accum,
+        logging_steps=5,
+        eval_strategy="epoch",
+        save_strategy="epoch",
+        report_to=[],
+        seed=args.seed,
+        data_seed=args.seed,
+        bf16=torch.cuda.is_available() and torch.cuda.is_bf16_supported(),
+        fp16=torch.cuda.is_available() and not torch.cuda.is_bf16_supported(),
+        remove_unused_columns=False,
+    )
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=JsonlDataset(train_rows),
+        eval_dataset=JsonlDataset(eval_rows),
+        data_collator=Collator(),
+    )
     train_result = trainer.train()
     eval_result = trainer.evaluate()
     losses = [float(train_result.metrics.get("train_loss", 0)), float(eval_result.get("eval_loss", 0))]
@@ -146,8 +229,31 @@ def main():
         raise RuntimeError("non-finite loss: adapter is not saved")
     model.save_pretrained(output / "adapter")
     tokenizer.save_pretrained(output / "adapter")
-    metadata = {"version": 2, "adapterVersion": args.adapter_version, "taskType": args.task_type, "baseModel": args.base_model, "method": args.method, "seed": args.seed, "parentAdapter": args.parent_adapter or None, "datasetVersion": manifest.get("version"), "datasetTrainSha256": manifest.get("trainSha256"), "datasetEvalSha256": manifest.get("evalSha256"), "datasetHoldoutSha256": manifest.get("holdoutSha256"), "contaminationRate": (manifest.get("contamination") or {}).get("contaminationRate"), "trainMetrics": train_result.metrics, "evalMetrics": eval_result, "promotionState": "UNVERIFIED", "runtimePromotionAllowed": False, "requiredNextGate": "FIXED_HOLDOUT_AB_AND_CANARY"}
-    (output / "training-metadata.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    metadata = {
+        "version": 3,
+        "adapterVersion": args.adapter_version,
+        "taskType": args.task_type,
+        "baseModel": args.base_model,
+        "method": args.method,
+        "seed": args.seed,
+        "parentAdapter": args.parent_adapter or None,
+        "datasetVersion": manifest.get("version"),
+        "datasetTrainSha256": manifest.get("trainSha256"),
+        "datasetEvalSha256": manifest.get("evalSha256"),
+        "datasetHoldoutSha256": manifest.get("holdoutSha256"),
+        "datasetDiversity": manifest.get("diversity"),
+        "datasetBatching": manifest.get("batching"),
+        "contaminationRate": (manifest.get("contamination") or {}).get("contaminationRate"),
+        "trainMetrics": train_result.metrics,
+        "evalMetrics": eval_result,
+        "promotionState": "UNVERIFIED",
+        "runtimePromotionAllowed": False,
+        "requiredNextGate": "FIXED_HOLDOUT_AB_AND_CANARY",
+    }
+    (output / "training-metadata.json").write_text(
+        json.dumps(metadata, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     print(json.dumps(metadata, ensure_ascii=False))
 
 
