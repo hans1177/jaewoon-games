@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "instruction": "[WEB_FIRST_IMPLEMENTATION] 아트북 전체 기능을 한 번에 재현하지 않는다. 핵심 루프가 실제로 플레이되는 가장 작은 Web 1차 구현만 만들고 모바일 입력·저장 의미·현재 정체성을 유지한다. 방금 완성된 최신 아트북 DESIGN_BASELINE을 현재 개발 설계도로 사용한다. 기술 구조 → 플레이어블 개발판 B로 이어지는 첫 작은 구현 작업 1개만 수행한다. [FEATURE_DEVELOPMENT] 최신 DESIGN_BASELINE을 실제 플레이 가능한 작은 기능 1개로 구현한다. 우선순위는 맵/지역 확장 → 그래픽·환경·UI → 적·몬스터·콘텐츠 → 퀘스트·전투·성장 시스템 순이며, 현재 코드에 안전하게 연결되는 가장 작은 vertical slice 1개만 고른다. 설계 근거: 몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 …. 평가문·별점·아트북 문서 표현·이미지 장수 자체를 게임 코드 목표로 삼지 않는다. 몬스터 어드벤처의 저장키·핵심루프·기존 플레이 의미를 유지하고 전면 재작성은 하지 않는다. 아트북의 장르·핵심루프·스토리 큰 방향·저장 의미는 임의로 바꾸지 않는다. Vibe 공용 실행계약(full-development, T5)을 따르되 AI 부서 교정이 우선한다. 부서 사이클 최종 제약: 개발 워커가 2분류 테스트에서 Unity 본편으로 넘길 시각 메모를 정리하고, 아트북 플로어에 기반하여 자기 파트를 작성해야 한다.",
+  "input": "{\n  \"gameId\": \"P0009\",\n  \"sourcePath\": \"web-games/monster-adventure\",\n  \"role\": \"development\",\n  \"diagnostic\": null,\n  \"responsibilityFiles\": [\n    \"index.html\"\n  ],\n  \"browserFailureFeedbackUsed\": false,\n  \"protectedValues\": [\n    \"save keys\",\n    \"progression meaning\",\n    \"public stable behavior\"\n  ]\n}",
+  "output": "요약: Integrated parallel department implementation\n기대 효과: Department-owned code changes combined after planning integration\n변경 파일: index.html\n\n검증된 패치:\ndiff --git a/web-games/monster-adventure/index.html b/web-games/monster-adventure/index.html\nindex a4e63ac7..7b75d19a 100644\n--- a/web-games/monster-adventure/index.html\n+++ b/web-games/monster-adventure/index.html\n@@ -1,2 +1,2 @@\n const $ = s => document.querySelector(s),$$ = s => [...document.querySelectorAll(s)];\n-$$('.starter')forEach(b => b.onclick = () => chooseStarter(b.dataset.starter)); .forEach(b => b.onclick = () => chooseStarter(b.dataset.starter));.forEach(b => b.onclick = () => handleStarterClick(b.dataset.starter)); .forEach(b => b.onclick = () => chooseStarter(b.dataset.starter));.forEach(b => b.onclick = () => handleStarterClick(b.dataset.starter));.forEach(b => b.onclick = () => chooseStarter(b.dataset.starter));\n\\ No newline at end of file\n+$$('.starter')forEach(b => b.onclick = () => chooseStarter(b.dataset.starter));forEach(b => b.onclick = () => chooseStarter(b.dataset.starter)); .forEach(b => b.onclick = () => chooseStarter(b.dataset.starter));.forEach(b => b.onclick = () => handleStarterClick(b.dataset.starter)); .forEach(b => b.onclick = () => chooseStarter(b.dataset.starter));.forEach(b => b.onclick = () => handleStarterClick(b.dataset.starter));.forEach(b => b.onclick = () => chooseStarter(b.dataset.starter));\n\\ No newline at end of file",
+  "taskType": "general",
+  "difficulty": "simple",
+  "lifecycle": "active",
+  "sourceKind": "vibe2",
+  "project": "P0009",
+  "gameId": "P0009",
+  "candidateId": "P0009-20260911-34506968967",
+  "sourceCommit": "a2467c071d3fd3436fadefab7a3919c6e178d5f6",
+  "sourceRevision": "a2467c071d3fd3436fadefab7a3919c6e178d5f6",
+  "independentQa": "PASS",
+  "browserQa": "PASS",
+  "quality": {
+    "codeQuality": 1,
+    "noRegression": true,
+    "playImprovement": 0,
+    "ruleCompliance": 1
+  },
+  "provenance": {
+    "sourceKind": "vibe2",
+    "sourceRevision": "a2467c071d3fd3436fadefab7a3919c6e178d5f6",
+    "gameId": "P0009",
+    "candidateId": "P0009-20260911-34506968967",
+    "devHistoryPath": ".autonomous/dev-history/P0009-20260911-34506968967.json",
+    "candidateCommit": "c984d24d816409a7f725bdc6a0399a5caa5f2451",
+    "promotionCommit": "a2467c071d3fd3436fadefab7a3919c6e178d5f6"
+  },
+  "verification": {
+    "independentQa": "PASS",
+    "browserQa": "PASS",
+    "fullRegression": "PASS",
+    "saveKeyValidation": "PASS",
+    "syntaxChecks": [],
+    "proposedTests": [
+      "Vibe 제안은 기존 아트북의 스토리, 저장 의미, 핵심 루프, 그리고 기존 프로토타입의 방향을 유지해야 함",
+      "몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 구체적으로 지적해는 기능이 부족함",
+      "한국어로 쓰지 않는 부분이 존재하는 점",
+      "아트북 플로어에서 개발부의 책임 파일을 수정하여 '몬스터 어드벤처'의 이미지 중심 제안이 명확해야 함",
+      "아트북 플로어에서 개발부의 책임 파일을 수정하여 '몬스터 어드벤처'의 이미지 중심 제안이 명확하지 않음",
+      "아트북 플로어에서 그래픽부의 자기 파트만 작성",
+      "2분류 테스트에서 Unity 본편으로 넘길 시각 메모를 정리",
+      "기존 저장소의 검증 에셋과 재사용 가능한 공용 킷을 우선 사용"
+    ]
+  }
+}
