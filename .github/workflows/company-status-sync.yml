@@ -24,9 +24,10 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
-  group: company-status-sync-main
+  group: company-status-sync-pr
   cancel-in-progress: true
 
 jobs:
@@ -124,17 +125,32 @@ jobs:
           console.log(`COMPANY_AUTONOMOUS_FOCUS_QA=${focus.focusedGameIds.join(',')||'none'}`);
           NODE
 
-      - name: Commit synchronized company status and production classes
+      - name: Propose synchronized company status and production classes through PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-company-status-sync'
           git config user.email 'actions@users.noreply.github.com'
-          git add company-status.json autonomous-portfolio.json game-catalog.json
+          git add -- company-status.json autonomous-portfolio.json game-catalog.json
           if git diff --cached --quiet; then
             echo 'COMPANY_STATUS_SYNC_COMMIT=NO_CHANGES'
             exit 0
           fi
+
+          branch="automation/company-status-sync-${GITHUB_RUN_ID}"
+          git checkout -b "$branch"
           git commit -m 'company: sync semantic production classes and focus [skip ci]'
-          git pull --rebase origin main
-          git push origin main
-          echo 'COMPANY_STATUS_SYNC_COMMIT=SUCCESS'
+          git push origin "HEAD:refs/heads/$branch"
+
+          pr_url="$(gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$branch" \
+            --title 'company: sync semantic production classes and focus' \
+            --body "Validated company status/classification synchronization.\n\n- workflow run: ${GITHUB_RUN_ID}\n- policy: COMPANY_FLOW.md\n- direct main write: NO")"
+
+          echo "COMPANY_STATUS_SYNC_PR=$pr_url"
+          echo 'COMPANY_STATUS_SYNC_COMMIT=PR_OPENED'
+          echo 'PUBLIC_MAIN_WRITE=NO'
