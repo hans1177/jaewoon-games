@@ -22,24 +22,24 @@ const developmentFocusPolicy = {
 
 const projects = [
   {
-    id: 'T1-A', slug: 'tier1-a', name: 'Tier1 A', productionTier: 1,
+    id: 'T1-A', slug: 'tier1-a', name: 'Release A', productionClass: 'RELEASE_CONFIRMED', productionTier: 3,
     sourcePath: 'web-games/tier1-a', productionSourcePath: 'unity-games/tier1-a',
     unityProjectReady: true, dedicatedDevelopmentLane: 'UNITY_PRIMARY',
     developmentFocus: { total: 10 }, protectedValues: ['core-loop'],
   },
   {
-    id: 'T1-B', slug: 'tier1-b', name: 'Tier1 B', productionTier: 1,
+    id: 'T1-B', slug: 'tier1-b', name: 'Release B', productionClass: 'RELEASE_CONFIRMED', productionTier: 3,
     sourcePath: 'web-games/tier1-b', productionSourcePath: 'unity-games/tier1-b',
     unityProjectReady: true, dedicatedDevelopmentLane: 'UNITY_PRIMARY',
     developmentFocus: { total: 8 }, protectedValues: ['core-loop'],
   },
   {
-    id: 'T2', slug: 'tier2', name: 'Tier2', productionTier: 2,
+    id: 'T2', slug: 'tier2', name: 'Development', productionClass: 'DEVELOPMENT_CONFIRMED', productionTier: 1,
     sourcePath: 'web-games/tier2', profileStatus: 'DEVELOPMENT_CONFIRMED', mode: 'IMPROVE',
     developmentFocus: { total: 7 }, protectedValues: ['core-loop'],
   },
   {
-    id: 'T3', slug: 'tier3', name: 'Tier3', productionTier: 3,
+    id: 'T3', slug: 'tier3', name: 'Design', productionClass: 'DESIGN_ONLY', productionTier: 1,
     sourcePath: 'web-games/tier3', profileStatus: 'DEVELOPMENT_CONFIRMED', mode: 'IMPROVE',
     developmentFocus: { total: 99 }, protectedValues: ['core-loop'],
   },
@@ -47,14 +47,15 @@ const projects = [
 
 const portfolio = {
   status: 'ACTIVE', paidApi: false, maxModelCallsPerRun: 2, maxRunnerMinutesPerRun: 20,
+  productionClassPolicy: { fixedCounts: false },
   developmentFocusPolicy,
   projects,
 };
 const catalog = { games: [
-  { id: 'tier1-a', homepageCategory: 'release-confirmed' },
-  { id: 'tier1-b', homepageCategory: 'release-confirmed' },
-  { id: 'tier2', homepageCategory: 'development-confirmed' },
-  { id: 'tier3', homepageCategory: 'design-only' },
+  { id: 'tier1-a', productionClass: 'RELEASE_CONFIRMED', homepageCategory: 'design-only' },
+  { id: 'tier1-b', productionClass: 'RELEASE_CONFIRMED', homepageCategory: 'design-only' },
+  { id: 'tier2', productionClass: 'DEVELOPMENT_CONFIRMED', homepageCategory: 'release-confirmed' },
+  { id: 'tier3', productionClass: 'DESIGN_ONLY', homepageCategory: 'development-confirmed' },
 ] };
 const artbooks = { artbooks: [
   { gameId: 'tier1-a', status: 'completed-artbook', lifecycle: { state: 'RELEASE_BASELINE' } },
@@ -78,16 +79,17 @@ function build(priorityGameId = '') {
   });
 }
 
-test('machine policy exposes the same 3 -> 2 -> 1 ownership split as the central document', () => {
+test('machine policy exposes semantic ownership classes and numeric aliases separately', () => {
   assert.equal(directive.policyDocument, 'COMPANY_FLOW.md');
-  assert.equal(directive.tiers['3'].sourceCodeAutoDevelopment, false);
-  assert.equal(directive.tiers['2'].webPurpose, 'GAMEPLAY_VALIDATION_TESTBED');
-  assert.equal(directive.tiers['2'].unityPurpose, 'TECHNICAL_VALIDATION_PROTOTYPE');
-  assert.equal(directive.tiers['1'].vibe2PrimaryDeveloper, true);
-  assert.equal(directive.ai.departmentModeTier1, 'MULTIMODEL_ERROR_RISK_WATCH');
+  assert.equal(directive.classes.DESIGN_ONLY.sourceCodeAutoDevelopment, false);
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webPurpose, 'GAMEPLAY_VALIDATION_TESTBED');
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityPurpose, 'TECHNICAL_VALIDATION_PROTOTYPE');
+  assert.equal(directive.classes.RELEASE_CONFIRMED.vibe2PrimaryDeveloper, true);
+  assert.equal(directive.ai.departmentModeByClass.RELEASE_CONFIRMED, 'MULTIMODEL_ERROR_RISK_WATCH');
+  assert.equal(directive.production.numericLabelsAreAliasesOnly, true);
 });
 
-test('runtime scheduler keeps one Tier1 Unity focus while Tier2 Web validation can run beside it', () => {
+test('runtime scheduler keeps one RELEASE_CONFIRMED Unity focus while DEVELOPMENT_CONFIRMED Web validation can run beside it', () => {
   const selected = select();
   assert.equal(selected.project.id, 'T2');
   assert.equal(selected.projectLane, 'TIER2_WEB_FIRST_IMPLEMENTATION');
@@ -96,7 +98,7 @@ test('runtime scheduler keeps one Tier1 Unity focus while Tier2 Web validation c
   assert.ok(!selected.nextDevelopmentGameIds.includes('T3'));
 });
 
-test('Tier2 runtime order is a validation slice with all departments reviewing, not Tier1 release development', () => {
+test('DEVELOPMENT_CONFIRMED runtime order is a validation slice with all departments reviewing', () => {
   const order = build();
   assert.equal(order.run, true);
   assert.equal(order.gameId, 'T2');
@@ -106,7 +108,7 @@ test('Tier2 runtime order is a validation slice with all departments reviewing, 
   assert.match(order.goal, /^\[WEB_FIRST_IMPLEMENTATION\]/);
 });
 
-test('Tier1 owner priority hands off to the dedicated Vibe2 Unity lane instead of the generic Web worker', () => {
+test('RELEASE_CONFIRMED owner priority hands off to the dedicated Vibe2 Unity lane', () => {
   const selected = select('tier1-a');
   assert.equal(selected.project, null);
   assert.equal(selected.dedicatedFocus, true);
@@ -118,7 +120,7 @@ test('Tier1 owner priority hands off to the dedicated Vibe2 Unity lane instead o
   assert.equal(order.continuous24h.mode, 'TIER1_UNITY_FOCUS_EXTERNAL_LANE');
 });
 
-test('Tier3 cannot steal a code slot even when it has the highest score or is requested as priority', () => {
+test('DESIGN_ONLY cannot steal a code slot even with stale numeric tier and the highest score', () => {
   const selected = select('tier3');
   assert.equal(selected.project.id, 'T2');
   assert.equal(selected.projectLane, 'TIER2_WEB_FIRST_IMPLEMENTATION');
