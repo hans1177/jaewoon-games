@@ -3,7 +3,26 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { planVibe2AutonomousTask, planVibe2AutonomousTasks } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks } from '../tools/vibe2-auto-planner.mjs';
+
+function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
+  const dir=path.join(root,'design',gameId,'2026-09-11');
+  fs.mkdirSync(dir,{recursive:true});
+  const gate={
+    policyDocument:'COMPANY_FLOW.md',
+    tier:2,
+    state:'DEVELOPMENT_BASELINE_READY',
+    ready:true,
+    blockers:[],
+    evidence:{
+      webGameplay:{required:true,pass:true,source:`design/${gameId}/2026-09-11/web-gameplay-validation.json`},
+      unityProject:{required:true,present:true,path:`unity-games/${gameId}`},
+      unityTechnical:{required:true,pass:true,source:`design/${gameId}/2026-09-11/unity-technical-validation.json`}
+    },
+    ...overrides
+  };
+  fs.writeFileSync(path.join(dir,'cycle-status.json'),JSON.stringify({status:'COMPLETE',baselineGate:gate},null,2),'utf8');
+}
 
 function tempRepo() {
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-auto-plan-'));
@@ -16,6 +35,7 @@ function tempRepo() {
     fs.mkdirSync(path.join(root,`web-games/${game}`),{recursive:true});
     fs.writeFileSync(path.join(root,`web-games/${game}/index.js`),'// TODO: remove duplicate click handler\nfunction start() {}\n','utf8');
   }
+  writeDevelopmentBaseline(root);
   return root;
 }
 const status={projects:[{gameId:'demo',ownerDecision:'PASS',target:'unity-android',projectPath:'unity-games/demo',progress:80}]};
@@ -65,17 +85,45 @@ test('release-confirmed web archive is never an autonomous feature target',()=>{
   assert.equal(result.tasks.some(t=>t.gameId==='release-web'),false);
 });
 
-test('release-confirmed Unity is selected while same-tier web stays archived',()=>{
+test('release-confirmed Unity is selected only with explicit Development Baseline evidence',()=>{
   const root=tempRepo();
   const releaseCatalog={games:[
     {id:'demo',homepageCategory:'release-confirmed'},
     {id:'release-web',webPath:'/web-games/release-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'release-confirmed'}
   ]};
+  const evidence=latestDevelopmentBaselineEvidence('demo',root);
+  assert.equal(evidence.ready,true);
   const result=planVibe2AutonomousTask({status,catalog:releaseCatalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
   assert.equal(result.planned,true);
   assert.equal(result.task.id,'demo-region-controls-4-7');
   assert.equal(result.task.target,'unity');
   assert.equal(result.task.releaseState,'release-confirmed');
+  assert.equal(result.task.evidence.some(x=>x.startsWith('development-baseline:design/demo/')),true);
+});
+
+test('release-confirmed Unity cannot enter Tier1 without Development Baseline PASS',()=>{
+  const root=tempRepo();
+  fs.rmSync(path.join(root,'design','demo'),{recursive:true,force:true});
+  const releaseCatalog={games:[{id:'demo',homepageCategory:'release-confirmed'}]};
+  const result=planVibe2AutonomousTask({status,catalog:releaseCatalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
+  assert.equal(result.planned,false);
+  assert.equal(result.reason,'DEVELOPMENT_BASELINE_REQUIRED');
+  assert.deepEqual(result.blockedTier1GameIds,['demo']);
+});
+
+test('partial or forged-looking Development Baseline evidence cannot unlock Tier1',()=>{
+  const root=tempRepo();
+  writeDevelopmentBaseline(root,'demo',{
+    evidence:{
+      webGameplay:{required:true,pass:true},
+      unityProject:{required:true,present:true,path:'unity-games/demo'},
+      unityTechnical:{required:true,pass:false}
+    }
+  });
+  assert.equal(latestDevelopmentBaselineEvidence('demo',root).ready,false);
+  const result=planVibe2AutonomousTask({status,catalog:{games:[{id:'demo',homepageCategory:'release-confirmed'}]},queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
+  assert.equal(result.planned,false);
+  assert.equal(result.reason,'DEVELOPMENT_BASELINE_REQUIRED');
 });
 
 test('development-confirmed Unity is not autonomous source development before promotion',()=>{

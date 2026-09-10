@@ -48,6 +48,30 @@ function webRootFromCatalog(game = {}) {
 function catalogById(catalog = {}) {
   return new Map((Array.isArray(catalog.games) ? catalog.games : []).map((game) => [clean(game.id), game]));
 }
+export function latestDevelopmentBaselineEvidence(gameId, repoRoot = process.cwd()) {
+  const id = clean(gameId);
+  const root = path.join(repoRoot, 'design', id);
+  const missing = { ready:false, reason:'DEVELOPMENT_BASELINE_REQUIRED', source:null, gate:null };
+  if (!id || !fs.existsSync(root)) return missing;
+  let dates = [];
+  try {
+    dates = fs.readdirSync(root, { withFileTypes:true })
+      .filter((entry) => entry.isDirectory() && /^\d{4}-\d{2}-\d{2}$/.test(entry.name))
+      .map((entry) => entry.name)
+      .sort()
+      .reverse();
+  } catch { return missing; }
+  for (const date of dates) {
+    const file = path.join(root, date, 'cycle-status.json');
+    const status = readJson(file, null);
+    const gate = status?.baselineGate;
+    if (!gate || gate.policyDocument !== 'COMPANY_FLOW.md' || gate.state !== 'DEVELOPMENT_BASELINE_READY' || gate.ready !== true) continue;
+    const evidence = gate.evidence || {};
+    if (evidence.webGameplay?.pass !== true || evidence.unityProject?.present !== true || evidence.unityTechnical?.pass !== true) continue;
+    return { ready:true, reason:'DEVELOPMENT_BASELINE_READY', source:posix(path.relative(repoRoot, file)), gate };
+  }
+  return missing;
+}
 function collectProjects(status = {}, catalog = {}, repoRoot = process.cwd()) {
   const byId = catalogById(catalog);
   const rows = [];
@@ -57,7 +81,11 @@ function collectProjects(status = {}, catalog = {}, repoRoot = process.cwd()) {
     const root = posix(project.projectPath || project.source);
     if (!id || !engine || !root || clean(project.ownerDecision).toUpperCase() !== 'PASS') continue;
     const game = byId.get(id) || {};
-    rows.push({ ...project, gameId:id, engine, projectPath:root, releaseState:releaseState(game.homepageCategory), existing:true, source:'company-status' });
+    const state = releaseState(game.homepageCategory);
+    const developmentBaseline = state === 'release-confirmed' && engine === 'unity'
+      ? latestDevelopmentBaselineEvidence(id, repoRoot)
+      : null;
+    rows.push({ ...project, gameId:id, engine, projectPath:root, releaseState:state, existing:true, source:'company-status', developmentBaseline });
   }
   for (const game of Array.isArray(catalog.games) ? catalog.games : []) {
     const id = clean(game.id);
@@ -65,7 +93,7 @@ function collectProjects(status = {}, catalog = {}, repoRoot = process.cwd()) {
     if (!id || !root || game.hasWebArchive !== true || game.homepageWebPlayable !== true) continue;
     if (!fs.existsSync(path.join(repoRoot, root))) continue;
     if (rows.some((row) => row.gameId === id && row.engine === 'web')) continue;
-    rows.push({ gameId:id, name:clean(game.name), engine:'web', target:'web', projectPath:root, existing:true, releaseState:releaseState(game.homepageCategory), progress:0, source:'game-catalog' });
+    rows.push({ gameId:id, name:clean(game.name), engine:'web', target:'web', projectPath:root, existing:true, releaseState:releaseState(game.homepageCategory), progress:0, source:'game-catalog', developmentBaseline:null });
   }
   return rows;
 }
@@ -77,12 +105,9 @@ function projectSort(a, b) {
   return Number(b.progress || 0) - Number(a.progress || 0) || a.gameId.localeCompare(b.gameId);
 }
 function isAutonomousProductionTarget(project = {}) {
-  if (project.releaseState === 'release-confirmed') return project.engine === 'unity';
+  if (project.releaseState === 'release-confirmed') return project.engine === 'unity' && project.developmentBaseline?.ready === true;
   if (project.releaseState === 'development-confirmed') return project.engine === 'web';
   return false;
-}
-function eligibleProjects(status, catalog, repoRoot) {
-  return collectProjects(status, catalog, repoRoot).filter(isAutonomousProductionTarget).sort(projectSort);
 }
 function sourceFile(root, relative) { return path.join(root, ...posix(relative).split('/')); }
 function readText(file) { try { return fs.readFileSync(file, 'utf8'); } catch { return ''; } }
@@ -90,12 +115,15 @@ function hasTask(queue, id) { return queue.tasks.some((item) => item.id === id);
 function activeTasks(queue) { return queue.tasks.filter((item) => ['queued','running'].includes(clean(item.status).toLowerCase())); }
 function activeSourceRoots(queue) { return new Set(activeTasks(queue).map((item) => posix(item.sourceRoot)).filter(Boolean)); }
 function task(id, project, goal, responsibleFiles, priority = 'normal', estimatedRisk = 'low', extraEvidence = []) {
+  const baselineEvidence = project.releaseState === 'release-confirmed' && project.engine === 'unity' && project.developmentBaseline?.ready === true
+    ? [`development-baseline:${project.developmentBaseline.source}`]
+    : [];
   return {
     id, gameId:project.gameId, target:project.engine, department:'development', type:'implementation', goal,
     responsibleFiles, dependencies:[], priority, releaseState:project.releaseState, status:'queued', retries:0, maxRetries:2,
     ownerDirective:false, requiresOwnerDecision:false, protectedChange:false, paidResourceRequired:false,
     sourceRoot:posix(project.projectPath), estimatedRisk, speculativeEligible:estimatedRisk === 'high',
-    evidence:[`vibe2-auto-planner:${project.source}`, `release-state:${project.releaseState}`, `source-root:${posix(project.projectPath)}`, ...extraEvidence]
+    evidence:[`vibe2-auto-planner:${project.source}`, `release-state:${project.releaseState}`, `source-root:${posix(project.projectPath)}`, ...baselineEvidence, ...extraEvidence]
   };
 }
 function findUnityTask(project, repoRoot, queue) {
@@ -188,8 +216,12 @@ export function planVibe2AutonomousTasks({ status = {}, catalog = {}, queue:queu
   if (active.some((item) => item.ownerDirective)) return { planned:false, count:0, reason:'OWNER_DIRECTIVE_ACTIVE', queue, tasks:[] };
   const capacity = Math.max(0, queue.maxConcurrentTasks - active.length);
   if (!capacity) return { planned:false, count:0, reason:'PARALLEL_QUEUE_AT_CAPACITY', queue, tasks:[] };
-  const projects = eligibleProjects(status, catalog, repoRoot);
-  if (!projects.length) return { planned:false, count:0, reason:'NO_CONFIRMED_PRODUCTION_PROJECT', queue, tasks:[] };
+  const allProjects = collectProjects(status, catalog, repoRoot);
+  const blockedTier1 = allProjects.filter((project) => project.releaseState === 'release-confirmed' && project.engine === 'unity' && project.developmentBaseline?.ready !== true);
+  const projects = allProjects.filter(isAutonomousProductionTarget).sort(projectSort);
+  if (!projects.length) {
+    return { planned:false, count:0, reason:blockedTier1.length ? 'DEVELOPMENT_BASELINE_REQUIRED' : 'NO_CONFIRMED_PRODUCTION_PROJECT', queue, tasks:[], blockedTier1GameIds:blockedTier1.map((project) => project.gameId) };
+  }
 
   const roots = activeSourceRoots(queue);
   let unityReleaseFocusTaken = releaseUnityFocusBusy(queue);
@@ -206,11 +238,12 @@ export function planVibe2AutonomousTasks({ status = {}, catalog = {}, queue:queu
     roots.add(root);
     if (project.engine === 'unity' && project.releaseState === 'release-confirmed') unityReleaseFocusTaken = true;
   }
-  if (!planned.length) return { planned:false, count:0, reason:active.length ? 'NO_INDEPENDENT_SAFE_AUTONOMOUS_TASK' : 'NO_SAFE_AUTONOMOUS_TASK', queue, tasks:[], projectId:projects[0]?.gameId || null };
+  if (!planned.length) return { planned:false, count:0, reason:active.length ? 'NO_INDEPENDENT_SAFE_AUTONOMOUS_TASK' : 'NO_SAFE_AUTONOMOUS_TASK', queue, tasks:[], projectId:projects[0]?.gameId || null, blockedTier1GameIds:blockedTier1.map((project) => project.gameId) };
   return {
     planned:true, count:planned.length, reason:'SAFE_PARALLEL_TASKS_PLANNED', queue, tasks:planned, task:planned[0],
     projectId:planned[0].gameId, projectReleaseState:planned[0].releaseState, projectEngine:planned[0].target,
-    projectPriorityPolicy:'OWNER_THEN_RELEASE_UNITY_FOCUS_THEN_DEVELOPMENT_WEB_DIAGNOSTICS_WITH_SOURCE_ROOT_EXCLUSIVITY'
+    blockedTier1GameIds:blockedTier1.map((project) => project.gameId),
+    projectPriorityPolicy:'OWNER_THEN_DEVELOPMENT_BASELINE_THEN_RELEASE_UNITY_FOCUS_THEN_DEVELOPMENT_WEB_DIAGNOSTICS_WITH_SOURCE_ROOT_EXCLUSIVITY'
   };
 }
 
@@ -244,4 +277,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_AUTO_PLAN_PRIORITY=${result.projectPriorityPolicy || 'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN_TASK=${result.task?.id || 'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN_TASKS=${(result.tasks || []).map((task) => task.id).join(',') || 'NONE'}`);
+  console.log(`VIBE2_AUTO_PLAN_BLOCKED_TIER1=${(result.blockedTier1GameIds || []).join(',') || 'NONE'}`);
 }
