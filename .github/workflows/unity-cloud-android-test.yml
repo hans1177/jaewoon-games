@@ -244,14 +244,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          apk="$(find build '${{ steps.request.outputs.project_path }}/Build' '${{ steps.request.outputs.project_path }}/build' -type f -name '*.apk' -size +0c 2>/dev/null | head -n 1 || true)"
-          [[ -n "$apk" && -s "$apk" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[APK_OUTPUT_MISSING]::No non-empty APK was produced.'; exit 41; }
-          mkdir -p dist
           game='${{ steps.request.outputs.game_id }}'
+          apk="build/Android/${game}.apk"
+          [[ -s "$apk" ]] || { echo "::error title=JAEWOON_BUILD_ERROR[APK_OUTPUT_MISSING]::Expected non-empty Unity APK at $apk."; exit 41; }
+          mkdir -p dist
           out="dist/${game}-test.apk"
+          source_sha="$(sha256sum "$apk" | awk '{print $1}')"
+          source_bytes="$(stat -c%s "$apk")"
           cp "$apk" "$out"
           sha="$(sha256sum "$out" | awk '{print $1}')"
           bytes="$(stat -c%s "$out")"
+          [[ "$source_sha" == "$sha" && "$source_bytes" == "$bytes" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[APK_COPY_MISMATCH]::Collected APK does not match the exact Unity output.'; exit 51; }
           tag="test-${game}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           artifact_name="${game}-android-cloud-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           printf '%s  %s\n' "$sha" "${game}-test.apk" > "${out}.sha256"
@@ -261,7 +264,7 @@ jobs:
           echo "artifact_name=$artifact_name" >> "$GITHUB_OUTPUT"
           echo "sha256=$sha" >> "$GITHUB_OUTPUT"
           echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
-          echo "[PASS] APK collected: $out bytes=$bytes sha256=$sha"
+          echo "[PASS] APK source=$apk output=$out bytes=$bytes sha256=$sha"
 
       - name: Verify APK signature, package and CPU payloads
         id: apk_verify
