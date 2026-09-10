@@ -93,13 +93,12 @@ jobs:
           echo 'VIBE2_AUTO_FINAL_PASS=NO'
           echo 'VIBE2_AUTO_LEARNING=AFTER_VERIFIED_REVOTE'
 
-      - name: Continue next independent Vibe2 work
+      - name: Event-driven refill after verification frees capacity
         if: steps.reconcile.outputs.updated == '1' && steps.reconcile.outputs.continue_work == '1'
         env:
           GH_TOKEN: ${{ github.token }}
-          CONTROL_BRANCH: vibe2-unreal-core
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run vibe2-continuous-core.yml --ref "$CONTROL_BRANCH"
-          echo 'VIBE2_NEXT_WORK_DISPATCH=YES'
+          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'VIBE2_EVENT_DRIVEN_REFILL=YES'
