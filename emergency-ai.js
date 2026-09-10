@@ -12,12 +12,18 @@ const EXEC_RE=/(진행|수정해|고쳐|만들어|적용해|반영해|개발해|
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let remoteState=navigator.onLine?'checking':'emergency';
-let probing=false,replaying=false,lastProbe=0;
+let probing=false,replaying=false,lastProbe=0,brandObserver=null;
 function readJson(key,fallback){try{const v=JSON.parse(localStorage.getItem(key)||'');return v??fallback;}catch{return fallback;}}
 function writeJson(key,value){try{localStorage.setItem(key,JSON.stringify(value));}catch{}}
 function queue(){const q=readJson(QUEUE_KEY,[]);return Array.isArray(q)?q:[];}
 function history(){const h=readJson(HISTORY_KEY,[]);return Array.isArray(h)?h:[];}
 function saveHistory(rows){writeJson(HISTORY_KEY,rows.slice(-80));}
+function modeLabel(){
+  const n=queue().length;
+  if(remoteState==='online')return `기본 모드${n?` · 전송대기 ${n}`:''}`;
+  if(remoteState==='checking')return '재연결 중';
+  return `비상 AI 모드${n?` · 전송대기 ${n}`:''}`;
+}
 function ensureUi(){
   if(!$('networkMode')){
     const bar=document.createElement('div');bar.id='networkMode';bar.setAttribute('role','status');bar.style.cssText='width:min(calc(100% - 24px),760px);margin:0 auto 3px;padding:5px 10px;border-radius:10px;text-align:center;font-size:12px;line-height:1.35;color:#aaa9a4;background:#2b2b2a;display:none';
@@ -27,17 +33,27 @@ function ensureUi(){
     const box=document.createElement('div');box.id='emergencyHistory';
     $('chat')?.appendChild(box);
   }
+  const brand=$('brand');
+  if(brand&&!brandObserver){
+    brandObserver=new MutationObserver(()=>{const wanted=modeLabel();if(brand.textContent!==wanted)brand.textContent=wanted;});
+    brandObserver.observe(brand,{childList:true,characterData:true,subtree:true});
+  }
   renderEmergencyHistory();updateModeUi();
 }
 function updateModeUi(){
-  const bar=$('networkMode');if(!bar)return;
-  const n=queue().length;
-  if(remoteState==='online'){bar.style.display=n?'block':'none';bar.style.color='#b8e8c8';bar.textContent=n?`온라인 복구됨 · 대기 지시 ${n}건 전송 준비`:'온라인 AI';}
-  else if(remoteState==='checking'){bar.style.display='block';bar.style.color='#e6c889';bar.textContent='연결 확인 중…';}
-  else{bar.style.display='block';bar.style.color='#e6c889';bar.textContent=`비상 AI · 원격 연결 차단/오프라인 감지${n?` · 지시 ${n}건 대기`:''}`;}
+  const n=queue().length,brand=$('brand'),bar=$('networkMode');
+  if(brand){const wanted=modeLabel();if(brand.textContent!==wanted)brand.textContent=wanted;brand.dataset.mode=remoteState;}
+  if(!bar)return;
+  if(remoteState==='online'){
+    bar.style.display=n?'block':'none';bar.style.color='#b8e8c8';bar.textContent=n?`온라인 복구됨 · 대기 지시 ${n}건 전송 준비`:'온라인 AI';
+  }else if(remoteState==='checking'){
+    bar.style.display='block';bar.style.color='#e6c889';bar.textContent='원격 연결 확인 중…';
+  }else{
+    bar.style.display='block';bar.style.color='#e6c889';bar.textContent=`원격 연결 차단/오프라인 감지${n?` · 지시 ${n}건 대기`:''}`;
+  }
 }
 function currentGame(){return localStorage.getItem(GAME_KEY)||'';}
-function currentGameName(){const id=currentGame();if(!id)return'회사 공통';const btn=document.querySelector(`.gameItem[data-game="${CSS.escape(id)}"] .gameName`);return btn?.textContent?.trim()||$('brand')?.textContent?.trim()||id;}
+function currentGameName(){const id=currentGame();if(!id)return'회사 공통';const btn=document.querySelector(`.gameItem[data-game="${CSS.escape(id)}"] .gameName`);return btn?.textContent?.trim()||id;}
 function addLocal(sender,body,kind='chat'){
   const rows=history();rows.push({id:crypto.randomUUID(),sender,body:String(body).slice(0,3000),kind,gameId:currentGame(),gameName:currentGameName(),createdAt:new Date().toISOString()});saveHistory(rows);renderEmergencyHistory();
 }
@@ -80,20 +96,31 @@ async function probe(force=false){
   if(!navigator.onLine){setState('emergency');return;}
   const token=localStorage.getItem(TOKEN_KEY)||'';if(!token){setState('online');return;}
   probing=true;const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),3500);
+  if(remoteState!=='emergency'){remoteState='checking';updateModeUi();}
   try{
     const res=await fetch(CHAT_API,{method:'POST',headers:{'Content-Type':'application/json','apikey':API_KEY,'x-jaewoon-device':token},body:'{"action":"status"}',cache:'no-store',signal:controller.signal});
-    // HTTP 응답이 왔다는 것 자체가 원격 경로가 살아 있다는 뜻이다.
-    setState('online');if(res.ok)cacheContext();
+    const contentType=res.headers.get('content-type')||'';
+    const data=res.ok&&contentType.includes('application/json')?await res.json().catch(()=>null):null;
+    if(!res.ok||!data||data.ok!==true){setState('emergency');return;}
+    setState('online');cacheContext();
   }catch{setState('emergency');}finally{clearTimeout(timer);probing=false;}
 }
-function setState(next){const changed=remoteState!==next;remoteState=next;updateModeUi();if(next==='online'){if(changed)addLocal('ai','원격 연결이 복구됐어. 비상 모드에서 저장한 개발 지시를 Vibe2로 전달할게.','system');flushQueue();}else if(changed){addLocal('ai','원격 연결이 끊긴 걸 감지했어. 비상 AI로 전환했어. 여기서 계속 말하면 되고, 실제 개발 지시는 기기에 저장할게.','system');}}
+function setState(next){
+  const previous=remoteState;remoteState=next;updateModeUi();
+  if(next==='online'){
+    if(previous==='emergency')addLocal('ai','원격 연결이 복구됐어. 비상 모드에서 저장한 개발 지시를 Vibe2로 전달할게.','system');
+    flushQueue();
+  }else if(next==='emergency'&&previous!=='emergency'){
+    addLocal('ai','원격 연결이 끊긴 걸 감지했어. 비상 AI로 전환했어. 여기서 계속 말하면 되고, 실제 개발 지시는 기기에 저장할게.','system');
+  }
+}
 async function waitOriginalSend(){
   const started=Date.now();while(Date.now()-started<15000){await new Promise(r=>setTimeout(r,350));const pending=document.querySelector('.pendingAi');const err=$('runtimeError');if(!pending){if(err&&!err.hidden&&err.textContent.trim())return false;return true;}}return false;
 }
 async function flushQueue(){
   if(replaying||remoteState!=='online'||!queue().length||document.hidden)return;
   const body=$('body');if(!body||body.value.trim()||document.querySelector('.pendingAi')||document.querySelector('#attachTray')?.children.length)return;
-  replaying=true;
+  replaying=true;updateModeUi();
   try{
     while(remoteState==='online'){
       const q=queue();if(!q.length)break;const item=q[0];
@@ -109,6 +136,11 @@ function installCapture(){
   $('sendBtn')?.addEventListener('click',emergencySend,true);
   $('body')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&remoteState!=='online')emergencySend(e);},true);
 }
-function boot(){ensureUi();installCapture();probe(true);setInterval(()=>probe(false),10000);setInterval(()=>{if(remoteState==='online')flushQueue();},5000);window.addEventListener('online',()=>probe(true));window.addEventListener('offline',()=>setState('emergency'));document.addEventListener('visibilitychange',()=>{if(!document.hidden)probe(true);});}
+function boot(){
+  ensureUi();installCapture();probe(true);
+  setInterval(()=>probe(false),10000);setInterval(()=>{if(remoteState==='online')flushQueue();},5000);
+  window.addEventListener('online',()=>probe(true));window.addEventListener('offline',()=>setState('emergency'));
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)probe(true);});
+}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
