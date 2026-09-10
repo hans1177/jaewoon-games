@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "requestId": "distill-2caeb9e66e7e25a4",
+  "sourceStatusState": "WAITING_FOR_VERIFIED_SAMPLES",
+  "state": "WAITING_FOR_VERIFIED_SAMPLES",
+  "execution": {
+    "route": "LOCAL_SELF_HOSTED_ONLY",
+    "githubHostedTrainingAllowed": false,
+    "paidApiAllowed": false,
+    "requiresCudaForQlora": true,
+    "preflightRequired": [
+      "python",
+      "torch",
+      "transformers",
+      "peft"
+    ]
+  },
+  "requests": [],
+  "blockedTasks": {
+    "coding": {
+      "blockers": [
+        "INSUFFICIENT_BATCH",
+        "INSUFFICIENT_PROJECT_DIVERSITY",
+        "TASK_PLAN_NOT_READY",
+        "EVAL_SPLIT_EMPTY"
+      ],
+      "accepted": 8,
+      "train": 6,
+      "distinctProjects": 1
+    },
+    "bugfix": {
+      "blockers": [
+        "INSUFFICIENT_BATCH",
+        "INSUFFICIENT_PROJECT_DIVERSITY",
+        "TASK_PLAN_NOT_READY",
+        "EVAL_SPLIT_EMPTY",
+        "HOLDOUT_SPLIT_EMPTY"
+      ],
+      "accepted": 0,
+      "train": 0,
+      "distinctProjects": 0
+    },
+    "unity": {
+      "blockers": [
+        "INSUFFICIENT_BATCH",
+        "INSUFFICIENT_PROJECT_DIVERSITY",
+        "TASK_PLAN_NOT_READY",
+        "EVAL_SPLIT_EMPTY",
+        "HOLDOUT_SPLIT_EMPTY"
+      ],
+      "accepted": 0,
+      "train": 0,
+      "distinctProjects": 0
+    },
+    "qa": {
+      "blockers": [
+        "INSUFFICIENT_BATCH",
+        "INSUFFICIENT_PROJECT_DIVERSITY",
+        "TASK_PLAN_NOT_READY",
+        "EVAL_SPLIT_EMPTY",
+        "HOLDOUT_SPLIT_EMPTY"
+      ],
+      "accepted": 0,
+      "train": 0,
+      "distinctProjects": 0
+    },
+    "planning": {
+      "blockers": [
+        "INSUFFICIENT_BATCH",
+        "INSUFFICIENT_PROJECT_DIVERSITY",
+        "TASK_PLAN_NOT_READY",
+        "EVAL_SPLIT_EMPTY",
+        "HOLDOUT_SPLIT_EMPTY"
+      ],
+      "accepted": 0,
+      "train": 0,
+      "distinctProjects": 0
+    },
+    "general": {
+      "blockers": [
+        "INSUFFICIENT_BATCH",
+        "INSUFFICIENT_PROJECT_DIVERSITY",
+        "TASK_PLAN_NOT_READY",
+        "EVAL_SPLIT_EMPTY",
+        "HOLDOUT_SPLIT_EMPTY"
+      ],
+      "accepted": 0,
+      "train": 0,
+      "distinctProjects": 0
+    }
+  },
+  "nextAction": "COLLECT_MORE_INDEPENDENT_AND_BROWSER_QA_VERIFIED_SAMPLES_ACROSS_PROJECTS"
+}
