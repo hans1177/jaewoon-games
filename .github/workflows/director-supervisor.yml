@@ -42,6 +42,7 @@ on:
 permissions:
   contents: write
   actions: write
+  pull-requests: write
 
 concurrency:
   group: director-staff-supervisor-main
@@ -243,7 +244,10 @@ jobs:
           fs.writeFileSync(file,JSON.stringify(s,null,2)+'\n');
           NODE
 
-      - name: Commit supervision state when changed
+      - name: Open supervision state pull request when changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-director-supervisor'
@@ -253,7 +257,13 @@ jobs:
             echo 'DIRECTOR_SUPERVISION_COMMIT=NO_CHANGES'
             exit 0
           fi
+          BRANCH="automation/director-supervision-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$BRANCH"
           git commit -m 'director: record staff supervision state [skip ci]'
-          git pull --rebase origin main
-          git push origin main
-          echo 'DIRECTOR_SUPERVISION_COMMIT=SUCCESS'
+          git push origin "$BRANCH"
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title 'director: record staff supervision state' \
+            --body "Automated director supervision-state persistence from run ${GITHUB_RUN_ID}. Source workflow: Director Staff Supervisor."
+          echo 'DIRECTOR_SUPERVISION_PR=OPEN'
