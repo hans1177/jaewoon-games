@@ -60,6 +60,32 @@ function checkBalanced(text, open, close, file, label) {
   }
   if (depth!==0) throw new Error(`${label} unbalanced: ${file}`);
 }
+function syntaxFailure(file, error) {
+  const detail = String(error?.stderr || error?.message || '').trim();
+  return new Error(`SyntaxError in ${file}${detail ? `: ${detail}` : ''}`);
+}
+function runNodeSyntax(text, inputType) {
+  execFileSync(process.execPath,[`--input-type=${inputType}`,'--check'],{
+    input:text,
+    encoding:'utf8',
+    stdio:['pipe','pipe','pipe']
+  });
+}
+function checkNodeSyntax(text, ext, file) {
+  if (ext === '.mjs') {
+    try { runNodeSyntax(text,'module'); return; }
+    catch (error) { throw syntaxFailure(file,error); }
+  }
+  if (ext === '.cjs') {
+    try { runNodeSyntax(text,'commonjs'); return; }
+    catch (error) { throw syntaxFailure(file,error); }
+  }
+  let moduleError;
+  try { runNodeSyntax(text,'module'); return; }
+  catch (error) { moduleError=error; }
+  try { runNodeSyntax(text,'commonjs'); return; }
+  catch { throw syntaxFailure(file,moduleError); }
+}
 function deterministicCheck(root, relative) {
   const file = assertInside(root, relative);
   if (!fs.existsSync(file) || !fs.statSync(file).isFile()) throw new Error(`changed file missing: ${relative}`);
@@ -70,7 +96,7 @@ function deterministicCheck(root, relative) {
   checkConflictMarkers(text, relative);
   const checks = ['exists','non-empty','conflict-marker-scan'];
   if (['.js','.mjs','.cjs'].includes(ext)) {
-    execFileSync(process.execPath,['--check',file],{stdio:'pipe'});
+    checkNodeSyntax(text,ext,relative);
     checks.push('node-syntax');
   } else if (ext === '.json') {
     JSON.parse(text);
@@ -91,7 +117,7 @@ function deterministicCheck(root, relative) {
 export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', cacheFile='', namespace='default', force=false }={}) {
   const started = Date.now();
   const changed = collectFiles({root, files, manifest});
-  const payload = ['vibe2-incremental-qa-v2', namespace];
+  const payload = ['vibe2-incremental-qa-v3', namespace];
   for (const relative of [...changed].sort()) {
     const file = assertInside(root, relative);
     if (!fs.existsSync(file)) throw new Error(`changed file missing: ${relative}`);
@@ -99,17 +125,17 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   }
   const contentHash = sha256(payload);
   const cachePath = clean(cacheFile);
-  const cache = cachePath ? readJson(cachePath,{version:2,entries:{}}) : {version:2,entries:{}};
+  const cache = cachePath ? readJson(cachePath,{version:3,entries:{}}) : {version:3,entries:{}};
   const cached = cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
     return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], durationMs:Date.now()-started, fullRegressionStillRequired:true };
   }
 
-  execFileSync('git',['diff','--check'],{cwd:root,stdio:'pipe'});
   const checks = changed.map((relative)=>deterministicCheck(root,relative));
+  execFileSync('git',['diff','--check'],{cwd:root,stdio:'pipe'});
   const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   if (cachePath) {
-    cache.version=2; cache.entries=cache.entries||{};
+    cache.version=3; cache.entries=cache.entries||{};
     cache.entries[contentHash]={ outcome:'PASS', namespace, checks, savedAt:new Date().toISOString() };
     const entries=Object.entries(cache.entries).slice(-200);
     cache.entries=Object.fromEntries(entries);
