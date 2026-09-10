@@ -113,3 +113,18 @@ test('development and release responsibilities use semantic production classes',
   assert.match(releaseCycle,/currentBuildEvidenceBindingRequired:true/);
   assert.match(pipeline,/RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION/);
 });
+
+test('release current Unity source tree binds implementation build runtime and QA evidence',()=>{
+  const release=directive.classes.RELEASE_CONFIRMED;
+  assert.equal(release.currentSourceTreeBindingRequired,true);
+  assert.equal(release.currentBuildEvidenceBindingRequired,true);
+  assert.equal(release.revalidationRequiredAfterSourceChange,true);
+  assert.ok(release.requiredFlow.includes('BIND_CURRENT_UNITY_SOURCE_TREE'));
+  assert.match(releaseCycle,/currentUnitySourceTreeSha/);
+  assert.match(releaseCycle,/sourceTreeSha/);
+  assert.match(releaseCycle,/boundToCurrentSource/);
+  assert.match(releaseCycle,/boundToImplementation/);
+  assert.match(releaseCycle,/SOURCE_TO_BUILD_BINDING=PASS/);
+  assert.match(workflow,/'unity-games\/\*\*'/);
+  assert.match(workflow,/file\.startsWith\(`\$\{project\}\//);
+});

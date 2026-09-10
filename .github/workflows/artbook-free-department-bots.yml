@@ -23,6 +23,7 @@ on:
       - 'design/**/unity-android-build.json'
       - 'design/**/android-runtime-validation.json'
       - 'design/**/independent-release-qa.json'
+      - 'unity-games/**'
       - 'tools/production-classification.mjs'
       - 'tools/company-design-cycle.mjs'
       - 'tools/company-development-validation-cycle.mjs'
@@ -93,6 +94,10 @@ jobs:
               m=file.match(/^design\/([^/]+)\/[^/]+\/(vibe2-release-implementation|unity-android-build|android-runtime-validation|independent-release-qa)\.json$/);
               if(m)releaseIds.add(m[1]);
             }
+            for(const row of games.filter(x=>x.productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED)){
+              const project=String(row.game.unityProjectPath||'').replace(/^\/+|\/+$/g,'');
+              if(project&&changed.some(file=>file===project||file.startsWith(`${project}/`)))releaseIds.add(row.game.id);
+            }
             if(developmentIds.size||releaseIds.size){
               selected=games.filter(row=>(
                 developmentIds.has(row.game.id)&&row.productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED
@@ -114,7 +119,7 @@ jobs:
           console.log(`run=${targets.length>0?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
           console.error(`PRODUCTION_TARGET_COUNT=${targets.length}`);
-          console.error(`PRODUCTION_TARGETS=${targets.map(x=>`${x.game_id}:${x.production_class}`).join(',')}`);
+          console.error(`PRODUCTION_TARGETS=${targets.map(x=>`${x.game_id}:${x.productionClass}`).join(',')}`);
           NODE
 
   production-cycle:
@@ -240,7 +245,9 @@ jobs:
             if(!allowed.has(s.state))throw new Error(`invalid release direct state: ${s.state}`);
             if(s.flow!=='RELEASE_CONFIRMED_GATED_DIRECT_RELEASE_PRODUCTION'||s.executionMode!=='GATED_DIRECT_RELEASE_PRODUCTION')throw new Error('release gated direct flow missing');
             if(s.vibe2PrimaryDeveloper!==true||s.coreDesignLock!==true)throw new Error('release role/core lock contract failed');
-            if(s.contracts?.currentBuildEvidenceBindingRequired!==true||s.contracts?.aiMayInventBuildPass!==false||s.contracts?.aiMayInventDeviceValidationPass!==false||s.contracts?.aiMayInventIndependentQaPass!==false)throw new Error('release evidence safety contract missing');
+            if(s.contracts?.currentSourceTreeBindingRequired!==true||s.contracts?.currentBuildEvidenceBindingRequired!==true||s.contracts?.aiMayInventBuildPass!==false||s.contracts?.aiMayInventDeviceValidationPass!==false||s.contracts?.aiMayInventIndependentQaPass!==false)throw new Error('release evidence safety contract missing');
+            if(s.evidence?.implementation&&s.evidence.implementation.boundToCurrentSource!==true)throw new Error('release implementation is not bound to current Unity source tree');
+            if(s.evidence?.build?.state==='PASS'&&(s.evidence.build.boundToCurrentSource!==true||s.evidence.build.boundToImplementation!==true))throw new Error('release build is not bound to current source/implementation');
             if(s.state==='RELEASE_READY'){
               if(s.status!=='COMPLETE')throw new Error('release ready status not complete');
               const baselineFile=path.join(base,'release-baseline.json');
@@ -249,7 +256,8 @@ jobs:
               const baseline=JSON.parse(fs.readFileSync(baselineFile,'utf8'));
               const artbook=JSON.parse(fs.readFileSync(artbookFile,'utf8'));
               if(baseline.status!=='RELEASE_READY'||baseline.coreDesignLockPreserved!==true)throw new Error('release baseline invalid');
-              if(artbook.releaseBaseline!==true||artbook.verification?.supported!==true)throw new Error('release final artbook provenance failed');
+              if(!s.currentSourceTreeSha||baseline.currentSourceTreeSha!==s.currentSourceTreeSha||baseline.currentBuild?.sourceTreeSha!==s.currentSourceTreeSha)throw new Error('release baseline not bound to current source tree');
+              if(artbook.releaseBaseline!==true||artbook.verification?.supported!==true||artbook.sourceTreeSha!==s.currentSourceTreeSha)throw new Error('release final artbook provenance/source binding failed');
               if(s.evidence?.runtime?.state!=='PASS'||s.evidence?.runtime?.bound!==true||s.evidence?.independentQa?.state!=='PASS'||s.evidence?.independentQa?.bound!==true)throw new Error('release ready without current-build runtime+QA evidence');
               if(Number(s.departments?.releaseBlockerCount||0)!==0)throw new Error('release ready with department blocker');
               console.log('DIRECT_RESULT=RELEASE_BASELINE_AND_FINAL_ARTBOOK_COMPLETE');
@@ -280,6 +288,6 @@ jobs:
           git checkout -b "$branch"
           git commit -m "production: ${PRODUCTION_CLASS} cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}"
           git push origin "HEAD:refs/heads/$branch"
-          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "production: ${PRODUCTION_CLASS} cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}" --body "Central production flow from COMPANY_FLOW.md. DESIGN_ONLY runs direct through artbook. DEVELOPMENT_CONFIRMED resumes from real Web/Unity evidence. RELEASE_CONFIRMED uses Vibe2 primary development and resumes only from current-build Android/runtime/independent-QA evidence, stopping at exact gated state when evidence is missing or failed. Direct main write: NO. Run: ${GITHUB_RUN_ID}"
+          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "production: ${PRODUCTION_CLASS} cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}" --body "Central production flow from COMPANY_FLOW.md. DESIGN_ONLY runs direct through artbook. DEVELOPMENT_CONFIRMED resumes from real Web/Unity evidence. RELEASE_CONFIRMED uses Vibe2 primary development and binds the current Unity source tree to the Android build, runtime and independent-QA evidence before Release Baseline. Direct main write: NO. Run: ${GITHUB_RUN_ID}"
           echo 'PRODUCTION_CYCLE_COMMIT=PR_OPENED'
           echo 'PUBLIC_MAIN_WRITE=NO'
