@@ -1,12 +1,12 @@
 {
   "version": 7,
-  "dateKst": "2026-09-10",
+  "dateKst": "2026-09-11",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
-  "activeDevelopmentRunId": 34492361584,
+  "activeDevelopmentRunId": 34501746293,
   "checks": {
     "staffChecked": "8/8",
-    "activeWorkOrder": "artbook-work-orders/2026-09-10-daechung-rpg.json",
+    "activeWorkOrder": "artbook-work-orders/2026-09-11-daechung-rpg.json",
     "activeWorkOrderExists": true,
     "evidenceAdapterMismatch": false,
     "jobLevelEvidenceUsed": true,
@@ -41,32 +41,32 @@
   "primaryFindings": [],
   "workflowEvidence": {
     "artbook": {
-      "id": 34491136110,
+      "id": 34492877248,
       "status": "completed",
       "conclusion": "failure",
       "event": "workflow_dispatch",
-      "createdAt": "2026-09-10T14:45:16Z",
-      "updatedAt": "2026-09-10T14:55:12Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34491136110"
+      "createdAt": "2026-09-10T15:01:09Z",
+      "updatedAt": "2026-09-10T15:19:08Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34492877248"
     },
     "autonomousDevelopment": {
-      "id": 34492361584,
-      "status": "completed",
-      "conclusion": "success",
-      "event": "push",
-      "createdAt": "2026-09-10T14:56:29Z",
-      "updatedAt": "2026-09-10T14:56:46Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34492361584"
-    },
-    "homepage": null,
-    "publicGameHealth": {
-      "id": 34491960167,
+      "id": 34501746293,
       "status": "completed",
       "conclusion": "success",
       "event": "workflow_dispatch",
-      "createdAt": "2026-09-10T14:52:50Z",
-      "updatedAt": "2026-09-10T14:53:54Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34491960167"
+      "createdAt": "2026-09-10T16:23:05Z",
+      "updatedAt": "2026-09-10T16:23:20Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34501746293"
+    },
+    "homepage": null,
+    "publicGameHealth": {
+      "id": 34501852793,
+      "status": "in_progress",
+      "conclusion": null,
+      "event": "schedule",
+      "createdAt": "2026-09-10T16:24:05Z",
+      "updatedAt": "2026-09-10T16:24:09Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34501852793"
     },
     "unityBuild": null,
     "unityRuntime": null
@@ -74,17 +74,17 @@
   "performance": {
     "latestAutonomousPlayImpact": {
       "gameId": "P0009",
-      "candidateId": "P0009-20260910-34491139194",
+      "candidateId": "P0009-20260911-34492879802",
       "totalScore": 5,
       "executionQualityScore": 5,
       "playerImpactScore": 0,
       "impactStatus": "NOT_OBSERVED_BY_SMOKE_QA",
       "confidence": "LOW",
-      "lowImpactStreak": 1,
-      "priorityPenalty": 0,
-      "evaluatedAt": "2026-09-10T14:52:15.933Z"
+      "lowImpactStreak": 3,
+      "priorityPenalty": 2,
+      "evaluatedAt": "2026-09-10T15:07:47.184Z"
     },
-    "historyEntries": 3,
+    "historyEntries": 5,
     "priorityRule": "NO_PENALTY_ON_FIRST_UNOBSERVED_IMPACT; PENALTY_AFTER_2_CONSECUTIVE"
   },
   "staff": {
@@ -93,21 +93,21 @@
       "taskAssigned": false,
       "status": "DONE",
       "workState": "DONE",
-      "task": "autonomous development floor 34492361584",
+      "task": "autonomous development floor 34501746293",
       "executionEvidence": [
-        "autonomous-workflow:34492361584:completed:success",
-        "autonomous-job:102922157477:department (planning-final):completed:skipped"
+        "autonomous-workflow:34501746293:completed:success",
+        "autonomous-job:102954031018:department (planning-final):completed:skipped"
       ],
       "resultVerified": true,
       "jobEvidence": {
-        "id": 102922157477,
+        "id": 102954031018,
         "name": "department (planning-final)",
         "status": "completed",
         "conclusion": "skipped",
         "failedStep": null,
-        "startedAt": "2026-09-10T14:56:45Z",
-        "completedAt": "2026-09-10T14:56:45Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34492361584/job/102922157477"
+        "startedAt": "2026-09-10T16:23:20Z",
+        "completedAt": "2026-09-10T16:23:19Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34501746293/job/102954031018"
       },
       "directCause": null,
       "blockers": [],
@@ -117,7 +117,7 @@
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
-        "candidateId": "P0009-20260910-34491139194",
+        "candidateId": "P0009-20260911-34492879802",
         "totalScore": 5,
         "executionQualityScore": 5,
         "playerImpactScore": 0,
@@ -125,7 +125,7 @@
         "confidence": "LOW",
         "reviewContributor": true,
         "implementationContributor": false,
-        "evaluatedAt": "2026-09-10T14:52:15.933Z"
+        "evaluatedAt": "2026-09-10T15:07:47.184Z"
       }
     },
     "development": {
@@ -133,9 +133,9 @@
       "taskAssigned": false,
       "status": "DONE",
       "workState": "DONE",
-      "task": "autonomous development floor 34492361584",
+      "task": "autonomous development floor 34501746293",
       "executionEvidence": [
-        "autonomous-workflow:34492361584:completed:success"
+        "autonomous-workflow:34501746293:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -147,7 +147,7 @@
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
-        "candidateId": "P0009-20260910-34491139194",
+        "candidateId": "P0009-20260911-34492879802",
         "totalScore": 5,
         "executionQualityScore": 5,
         "playerImpactScore": 0,
@@ -155,7 +155,7 @@
         "confidence": "LOW",
         "reviewContributor": true,
         "implementationContributor": true,
-        "evaluatedAt": "2026-09-10T14:52:15.933Z"
+        "evaluatedAt": "2026-09-10T15:07:47.184Z"
       }
     },
     "qa": {
@@ -163,9 +163,9 @@
       "taskAssigned": false,
       "status": "DONE",
       "workState": "DONE",
-      "task": "autonomous development floor 34492361584",
+      "task": "autonomous development floor 34501746293",
       "executionEvidence": [
-        "autonomous-workflow:34492361584:completed:success"
+        "autonomous-workflow:34501746293:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -177,7 +177,7 @@
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
-        "candidateId": "P0009-20260910-34491139194",
+        "candidateId": "P0009-20260911-34492879802",
         "totalScore": 5,
         "executionQualityScore": 5,
         "playerImpactScore": 0,
@@ -185,7 +185,7 @@
         "confidence": "LOW",
         "reviewContributor": true,
         "implementationContributor": false,
-        "evaluatedAt": "2026-09-10T14:52:15.933Z"
+        "evaluatedAt": "2026-09-10T15:07:47.184Z"
       }
     },
     "graphics": {
@@ -193,9 +193,9 @@
       "taskAssigned": false,
       "status": "DONE",
       "workState": "DONE",
-      "task": "autonomous development floor 34492361584",
+      "task": "autonomous development floor 34501746293",
       "executionEvidence": [
-        "autonomous-workflow:34492361584:completed:success"
+        "autonomous-workflow:34501746293:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -207,7 +207,7 @@
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
-        "candidateId": "P0009-20260910-34491139194",
+        "candidateId": "P0009-20260911-34492879802",
         "totalScore": 5,
         "executionQualityScore": 5,
         "playerImpactScore": 0,
@@ -215,7 +215,7 @@
         "confidence": "LOW",
         "reviewContributor": true,
         "implementationContributor": false,
-        "evaluatedAt": "2026-09-10T14:52:15.933Z"
+        "evaluatedAt": "2026-09-10T15:07:47.184Z"
       }
     },
     "balance": {
@@ -223,9 +223,9 @@
       "taskAssigned": false,
       "status": "DONE",
       "workState": "DONE",
-      "task": "autonomous development floor 34492361584",
+      "task": "autonomous development floor 34501746293",
       "executionEvidence": [
-        "autonomous-workflow:34492361584:completed:success"
+        "autonomous-workflow:34501746293:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -237,7 +237,7 @@
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
-        "candidateId": "P0009-20260910-34491139194",
+        "candidateId": "P0009-20260911-34492879802",
         "totalScore": 5,
         "executionQualityScore": 5,
         "playerImpactScore": 0,
@@ -245,7 +245,7 @@
         "confidence": "LOW",
         "reviewContributor": true,
         "implementationContributor": false,
-        "evaluatedAt": "2026-09-10T14:52:15.933Z"
+        "evaluatedAt": "2026-09-10T15:07:47.184Z"
       }
     },
     "homepage": {
@@ -257,7 +257,7 @@
       "executionEvidence": [
         "homepage-manager-status.json:snapshot-only",
         "company-status:homepage-runtime-sync-active",
-        "public-health:34491960167:completed:success"
+        "public-health:34501852793:in_progress:pending"
       ],
       "resultVerified": true,
       "blockers": [],
