@@ -62,13 +62,35 @@ jobs:
               --root=/tmp/vibe2-main \
               --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-autoplan.log
 
-            if ! grep -q '^VIBE2_AUTO_PLAN=YES$' /tmp/vibe2-autoplan.log; then
+            node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { createVibeContinuousQueue } from './assets/vibe-continuous-queue.js';
+          const file = '.vibe2/queue.json';
+          const beforeText = fs.readFileSync(file, 'utf8');
+          const before = JSON.parse(beforeText);
+          const maxConcurrentTasks = Math.max(1, Math.min(8, Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS) || 4));
+          const normalized = createVibeContinuousQueue({ ...before, maxConcurrentTasks });
+          const afterText = `${JSON.stringify(normalized, null, 2)}\n`;
+          if (beforeText !== afterText) {
+            fs.writeFileSync(file, afterText, 'utf8');
+            console.log('VIBE2_QUEUE_SCHEMA_MIGRATED=YES');
+          } else {
+            console.log('VIBE2_QUEUE_SCHEMA_MIGRATED=NO');
+          }
+          NODE
+
+            git add .vibe2/queue.json
+            if git diff --cached --quiet; then
               echo 'VIBE2_AUTOPLAN_WRITE=NO'
               exit 0
             fi
 
-            git add .vibe2/queue.json
-            git commit -m 'vibe2: autonomously fill safe parallel task slots [skip ci]'
+            if grep -q '^VIBE2_AUTO_PLAN=YES$' /tmp/vibe2-autoplan.log; then
+              commit_message='vibe2: fill safe parallel task slots [skip ci]'
+            else
+              commit_message='vibe2: persist four-slot parallel queue state [skip ci]'
+            fi
+            git commit -m "$commit_message"
             if git push origin HEAD:vibe2-unreal-core; then
               echo 'VIBE2_AUTOPLAN_WRITE=YES'
               exit 0
