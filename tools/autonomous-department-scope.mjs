@@ -3,6 +3,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import Graphics from '../assets/jaewoon-graphics-engine.js';
+import { rankAdaptiveContextCandidates } from './vibe2-development-intelligence.mjs';
 
 const ROLE_ORDER=['development','graphics','qa','balance'];
 const ROLES=new Set(ROLE_ORDER);
@@ -26,12 +28,6 @@ const IMPLEMENTATION_TARGETS={
   balance:/(?:\b(?:hp|health|damage|attack|enemy|boss|wave|reward|gold|coin|xp|level|speed|difficulty|loot|drop|cooldown|stun|crit|spawn(?:rate)?)\b|수치|체력|공격|데미지|적|보스|웨이브|보상|난이도|드롭|쿨다운|기절|치명타|스폰)/i,
 };
 
-function hasFunctionalResponsibility(role,departmentResult){
-  if(role==='development')return true;
-  const text=clean(departmentResult?.nextAction||departmentResult?.summary);
-  if(!text)return true;
-  return IMPLEMENTATION_ACTION.test(text)&&IMPLEMENTATION_TARGETS[role].test(text);
-}
 function listFiles(sourcePath){
   const rows=[];
   const walk=current=>{
@@ -49,6 +45,23 @@ function listFiles(sourcePath){
   };
   if(exists(sourcePath))walk(sourcePath);
   return rows;
+}
+function graphicsPlanFor({sourcePath,goal='',diagnostic=null,departmentResult=null,files=null}={}){
+  const rows=files||listFiles(sourcePath);
+  const visualText=[goal,diagnostic?.type,diagnostic?.message,diagnostic?.needle,departmentResult?.summary,departmentResult?.nextAction].map(clean).filter(Boolean).join(' ');
+  const anomalies=Graphics.inferVisualAnomalies(visualText);
+  return Graphics.planGraphicsImplementation({anomalies,files:rows.map(row=>({path:row.path,score:Number(row.score||0)})),goal:visualText,deviceTier:'MID',maxFiles:2});
+}
+function hasFunctionalResponsibility(role,departmentResult,context={}){
+  if(role==='development')return true;
+  const text=clean(departmentResult?.nextAction||departmentResult?.summary);
+  if(!text)return true;
+  if(IMPLEMENTATION_ACTION.test(text)&&IMPLEMENTATION_TARGETS[role].test(text))return true;
+  if(role==='graphics'){
+    const plan=graphicsPlanFor({...context,departmentResult});
+    return plan.run&&plan.anomalies.length>0;
+  }
+  return false;
 }
 function normalizeRefs(sourcePath,refs=[]){
   const source=posix(sourcePath);
@@ -84,10 +97,10 @@ export function resolveDepartmentScope({role,sourcePath,responsibilityFiles=[],d
     if(role!=='development')return {run:false,scope:[],reason:'RULE_PATCH_DEVELOPMENT_ONLY'};
     return {run:refs.length>0,scope:refs.slice(0,1),reason:refs.length?'RULE_PATCH_EXACT_SCOPE':'RULE_PATCH_NO_SCOPE'};
   }
-  if(!hasFunctionalResponsibility(role,departmentResult))return {run:false,scope:[],reason:'NO_FUNCTIONAL_RESPONSIBILITY'};
+  const files=listFiles(source);
+  if(!hasFunctionalResponsibility(role,departmentResult,{sourcePath:source,goal,diagnostic,files}))return {run:false,scope:[],reason:'NO_FUNCTIONAL_RESPONSIBILITY'};
   const ownerFocus=[goal,diagnostic?.type,diagnostic?.message].map(clean).filter(Boolean).join(' ');
   const focus=[ownerFocus,departmentResult?.summary,departmentResult?.nextAction].map(clean).filter(Boolean).join(' ');
-  const files=listFiles(source);
   if(refs.length===1){
     const row=files.find(item=>item.path===refs[0]);
     if(row){
@@ -95,18 +108,30 @@ export function resolveDepartmentScope({role,sourcePath,responsibilityFiles=[],d
       if(role!==owner)return {run:false,scope:[],reason:`SINGLE_FILE_MICROTASK_OWNED_BY_${owner.toUpperCase()}`,scores:[{path:row.path,score:scoreFile(role,row,{refs,focus:ownerFocus})}]};
     }
   }
-  const ranked=files.map(row=>({...row,score:scoreFile(role,row,{refs,focus})})).filter(row=>row.score>0).sort((a,b)=>b.score-a.score||a.path.localeCompare(b.path));
+  let ranked=files.map(row=>({...row,score:scoreFile(role,row,{refs,focus})})).filter(row=>row.score>0).sort((a,b)=>b.score-a.score||a.path.localeCompare(b.path));
+  const adaptive=rankAdaptiveContextCandidates({files:ranked.map(row=>({path:row.path,baseScore:row.score,content:fs.readFileSync(row.full,'utf8').slice(0,8000)})),diagnostic,responsibilityFiles:refs,role});
+  const adaptiveOrder=new Map(adaptive.map((row,index)=>[row.path,index]));
+  ranked.sort((a,b)=>(adaptiveOrder.get(a.path)??999)-(adaptiveOrder.get(b.path)??999)||b.score-a.score||a.path.localeCompare(b.path));
   const threshold=role==='development'?5:7;
   let scope=ranked.filter(row=>row.score>=threshold).slice(0,2).map(row=>row.path);
+  let graphicsPlan=null;
+  if(role==='graphics'){
+    graphicsPlan=graphicsPlanFor({sourcePath:source,goal,diagnostic,departmentResult,files:ranked});
+    if(graphicsPlan.run){
+      const planned=graphicsPlan.scope.filter(rel=>ranked.some(row=>row.path===rel));
+      if(planned.length)scope=planned.slice(0,2);
+    }
+  }
   if(role==='development'&&!scope.length&&refs.length)scope=refs.slice(0,1);
   if(role==='development'&&!scope.length&&ranked.length)scope=[ranked[0].path];
-  return {run:scope.length>0,scope,reason:scope.length?'CONTENT_AWARE_SCOPE':'NO_ROLE_SIGNAL',scores:ranked.slice(0,5).map(({path,score})=>({path,score}))};
+  return {run:scope.length>0,scope,reason:scope.length?(role==='graphics'&&graphicsPlan?.run?'GRAPHICS_ENGINE_ACTIONABLE_SCOPE':'CONTENT_AWARE_SCOPE'):'NO_ROLE_SIGNAL',scores:ranked.slice(0,5).map(({path,score})=>({path,score})),adaptiveContextOrder:adaptive.slice(0,8).map(row=>row.path),graphicsPlan:role==='graphics'?graphicsPlan:undefined};
 }
 
 export function bindDepartmentScope({role=process.env.ROLE||process.env.AUTONOMOUS_DEPARTMENT_ROLE,baseCandidateId=process.env.BASE_CANDIDATE_ID,orderFile='.autonomous/work-order.json',cycleFile='department-cycle.json'}={}){
   const order=readJson(orderFile),cycle=readJson(cycleFile),result=(cycle.results||[]).find(x=>x.role===role)||{};
   const resolved=resolveDepartmentScope({role,sourcePath:order.sourcePath,responsibilityFiles:order.responsibilityFiles||[],diagnostic:order.diagnosticTopIssue,goal:cycle.finalGoal||order.goal,departmentResult:result,repairMode:order.repairMode||'MODEL',workLane:order.workLane||'FULL'});
   order.responsibilityFiles=resolved.scope;
+  order.vibe2ContextPlan={version:1,role,adaptiveContextOrder:resolved.adaptiveContextOrder||[],scopeReason:resolved.reason,graphicsPlan:role==='graphics'?resolved.graphicsPlan||null:null};
   fs.writeFileSync(orderFile,JSON.stringify(order,null,2)+'\n');
   const candidateId=`${baseCandidateId}-${role}`;
   const goal=`${cycle.finalGoal||order.goal} ${role}부 구현 책임: ${result.nextAction||result.summary||'자기 전문영역의 최소 변경만 수행한다.'}`;
