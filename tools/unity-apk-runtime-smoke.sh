@@ -3,7 +3,7 @@ set -euo pipefail
 
 apk="${1:-}"
 out_dir="${2:-qa-artifacts/unity-runtime-smoke}"
-[[ -n "$apk" && -s "$apk" ]] || { echo "APK missing or empty: $apk" >&2; exit 2; }
+[[ -n "$apk" && -s "$apk" ]] || { echo "[JAEWOON_BUILD_ERROR:APK_SMOKE_INPUT_MISSING] APK missing or empty: $apk" >&2; exit 2; }
 mkdir -p "$out_dir"
 
 adb wait-for-device
@@ -11,14 +11,36 @@ for _ in $(seq 1 60); do
   [[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" == "1" ]] && break
   sleep 2
 done
-[[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" == "1" ]] || { echo 'Android emulator did not finish booting.' >&2; exit 3; }
+[[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" == "1" ]] || { echo '[JAEWOON_BUILD_ERROR:ANDROID_EMULATOR_BOOT_TIMEOUT] Android emulator did not finish booting.' >&2; exit 3; }
 
 aapt_bin="$(find "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools" -type f -name aapt 2>/dev/null | sort -V | tail -n 1)"
-[[ -n "$aapt_bin" && -x "$aapt_bin" ]] || { echo 'aapt not found.' >&2; exit 4; }
+[[ -n "$aapt_bin" && -x "$aapt_bin" ]] || { echo '[JAEWOON_BUILD_ERROR:AAPT_MISSING] aapt not found.' >&2; exit 4; }
 package="$($aapt_bin dump badging "$apk" | sed -n "s/package: name='\([^']*\)'.*/\1/p" | head -n 1)"
-[[ -n "$package" ]] || { echo 'Could not resolve APK package id.' >&2; exit 5; }
+[[ -n "$package" ]] || { echo '[JAEWOON_BUILD_ERROR:APK_PACKAGE_UNRESOLVED] Could not resolve APK package id.' >&2; exit 5; }
 
-adb install -r "$apk" > "$out_dir/install.log"
+adb shell getprop ro.build.version.sdk > "$out_dir/device-api.txt" || true
+adb shell getprop ro.product.cpu.abilist > "$out_dir/device-abis.txt" || true
+"$aapt_bin" dump badging "$apk" > "$out_dir/apk-badging.txt" || true
+
+# Fresh install is the primary gate because that matches the owner-reported Samsung failure.
+adb uninstall "$package" >/dev/null 2>&1 || true
+set +e
+adb install -t "$apk" > "$out_dir/install.log" 2>&1
+install_status=$?
+set -e
+if [[ "$install_status" -ne 0 ]]; then
+  cat "$out_dir/install.log" >&2
+  echo "[JAEWOON_BUILD_ERROR:APK_FRESH_INSTALL_FAILED] adb install failed for $package with status=$install_status" >&2
+  exit 7
+fi
+if ! grep -q 'Success' "$out_dir/install.log"; then
+  cat "$out_dir/install.log" >&2
+  echo "[JAEWOON_BUILD_ERROR:APK_INSTALL_NO_SUCCESS] Android package manager did not report Success for $package" >&2
+  exit 8
+fi
+
+adb shell pm path "$package" > "$out_dir/package-path.txt" 2>&1 || { echo "[JAEWOON_BUILD_ERROR:APK_PACKAGE_NOT_REGISTERED] $package is not registered after install" >&2; exit 9; }
+
 adb logcat -c
 adb shell monkey -p "$package" -c android.intent.category.LAUNCHER 1 > "$out_dir/launch.log" 2>&1
 sleep 5
@@ -41,35 +63,51 @@ fi
 runtime_pass=false
 if [[ -n "$pid" && "$fatal" -eq 0 ]]; then runtime_pass=true; fi
 
-python3 - "$out_dir/evidence.json" "$apk" "$package" "$pid" "$runtime_pass" "$fatal" <<'PY'
+# Verify the same signed APK can also update the installed copy.
+update_pass=false
+if [[ "$runtime_pass" == "true" ]]; then
+  set +e
+  adb install -r -t "$apk" > "$out_dir/update-install.log" 2>&1
+  update_status=$?
+  set -e
+  if [[ "$update_status" -eq 0 ]] && grep -q 'Success' "$out_dir/update-install.log"; then
+    update_pass=true
+  fi
+fi
+
+python3 - "$out_dir/evidence.json" "$apk" "$package" "$pid" "$runtime_pass" "$fatal" "$update_pass" <<'PY'
 import json,sys,datetime,pathlib
-out,apk,package,pid,runtime_pass,fatal=sys.argv[1:]
+out,apk,package,pid,runtime_pass,fatal,update_pass=sys.argv[1:]
 data={
-  'version':1,
+  'version':2,
   'target':'unity-android',
-  'testMethod':'Android emulator black-box APK smoke',
+  'testMethod':'Android emulator black-box APK smoke: fresh install + launch + update',
   'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),
   'apk':apk,
   'package':package,
+  'freshInstallPassed':True,
   'runtimeSmokePassed':runtime_pass.lower()=='true',
-  'qaPassEligibleRuntimeEvidence':runtime_pass.lower()=='true',
+  'updateInstallPassed':update_pass.lower()=='true',
+  'qaPassEligibleRuntimeEvidence':runtime_pass.lower()=='true' and update_pass.lower()=='true',
   'processAliveAfterInput':bool(pid.strip()),
   'fatalRuntimeErrorDetected':fatal=='1',
   'playTestEvidence':[
-    f'APK installed package={package}',
+    f'fresh APK install passed package={package}',
     'launcher start via Android intent/monkey',
     'Android tap/swipe/tap input sequence delivered',
     f'process alive after input={bool(pid.strip())}',
     f'fatal runtime error detected={fatal=="1"}',
+    f'same-signed APK update install passed={update_pass.lower()=="true"}',
     'runtime screenshot captured'
   ],
   'artifacts':{
-    'installLog':'install.log','launchLog':'launch.log','logcat':'logcat.txt','screenshot':'screenshot.png'
+    'installLog':'install.log','updateInstallLog':'update-install.log','launchLog':'launch.log','logcat':'logcat.txt','screenshot':'screenshot.png','apkBadging':'apk-badging.txt','deviceApi':'device-api.txt','deviceAbis':'device-abis.txt'
   }
 }
 pathlib.Path(out).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 PY
 
 cat "$out_dir/evidence.json"
-[[ "$runtime_pass" == "true" ]] || { echo "Unity APK runtime smoke failed for $package" >&2; exit 6; }
-echo "UNITY_APK_RUNTIME_SMOKE=PASS package=$package pid=$pid"
+[[ "$runtime_pass" == "true" ]] || { echo "[JAEWOON_BUILD_ERROR:APK_RUNTIME_SMOKE_FAILED] Unity APK runtime smoke failed for $package" >&2; exit 10; }
+[[ "$update_pass" == "true" ]] || { cat "$out_dir/update-install.log" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_UPDATE_INSTALL_FAILED] Same APK could not update installed package $package" >&2; exit 11; }
+echo "UNITY_APK_RUNTIME_SMOKE=PASS package=$package pid=$pid fresh_install=true update_install=true"
