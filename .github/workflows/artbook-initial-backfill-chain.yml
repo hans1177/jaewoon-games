@@ -1,11 +1,8 @@
 name: Artbook Initial Backfill Chain
 
 on:
-  workflow_run:
-    workflows: ['Free Artbook Department Bots']
-    types: [completed]
   schedule:
-    - cron: '29 * * * *' # recovery watchdog until all existing-game INITIAL artbooks are complete
+    - cron: '29 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -13,103 +10,57 @@ permissions:
   actions: write
 
 concurrency:
-  group: artbook-initial-backfill-chain
-  cancel-in-progress: false
+  group: design-tier-transition-watch
+  cancel-in-progress: true
 
 jobs:
-  continue-existing-initials:
+  tier-transition-watch:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout latest main
         uses: actions/checkout@v4
         with:
           ref: main
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Resolve next existing game without an initial artbook
-        id: next
-        shell: bash
-        env:
-          SOURCE_CONCLUSION: ${{ github.event.workflow_run.conclusion || 'manual' }}
-        run: |
-          set -euo pipefail
-          node tools/artbook-prepare-daily.mjs
-          node - <<'NODE' >> "$GITHUB_OUTPUT"
-          const fs=require('fs');
-          const context=JSON.parse(fs.readFileSync('artbook-daily-context.json','utf8'));
-          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
-          const game=(catalog.games||[]).find(x=>x.id===context.gameId)||{};
-          const existing=game.hasWebArchive===true||String(game.unityProjectPath||'').trim().length>0;
-          const shouldContinue=context.run===true&&String(context.mode||'').toUpperCase()==='INITIAL'&&existing;
-          const sourceConclusion=String(process.env.SOURCE_CONCLUSION||'manual');
-          console.log(`continue=${shouldContinue?'true':'false'}`);
-          console.log(`game_id=${shouldContinue?context.gameId:''}`);
-          console.log(`source_conclusion=${sourceConclusion}`);
-          console.log(`reason=${shouldContinue?(sourceConclusion==='success'?'EXISTING_INITIAL_BACKLOG_REMAINS':'RECOVER_INCOMPLETE_INITIAL_AFTER_FAILED_RUN'):'NO_EXISTING_INITIAL_BACKLOG'}`);
-          NODE
-      - name: Dispatch next or retry incomplete initial artbook
-        if: steps.next.outputs.continue == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh workflow run artbook-free-department-bots.yml --ref main
-          echo "ARTBOOK_BACKFILL_DISPATCHED=${{ steps.next.outputs.game_id }}"
-          echo "ARTBOOK_BACKFILL_SOURCE_CONCLUSION=${{ steps.next.outputs.source_conclusion }}"
-          echo "ARTBOOK_BACKFILL_REASON=${{ steps.next.outputs.reason }}"
-      - name: Backfill queue drained
-        if: steps.next.outputs.continue != 'true'
-        run: echo 'ARTBOOK_BACKFILL=NO_EXISTING_INITIAL_BACKLOG'
 
-  handoff-completed-design-baseline:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout latest main
-        uses: actions/checkout@v4
-        with:
-          ref: main
-      - name: Resolve completed artbook development handoff
-        id: handoff
+      - name: Find tier changed game requiring design or artbook refresh
+        id: target
         shell: bash
         run: |
           set -euo pipefail
-          node - <<'NODE' >> "$GITHUB_OUTPUT"
+          node <<'NODE' >> "$GITHUB_OUTPUT"
           const fs=require('fs');
-          const read=(file)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return null;}};
-          const gate=read('artbook-gate-status.json')||{};
-          const catalog=read('game-catalog.json')||{games:[]};
-          const gameId=String(gate.gameId||'').trim();
-          const date=String(gate.date||'').trim();
-          const game=(catalog.games||[]).find(x=>x.id===gameId)||{};
-          const state=String(gate.artbookLifecycle?.state||'').toUpperCase();
-          const category=String(game.homepageCategory||'').toLowerCase();
-          const completed=gate.completedArtbook===true&&gate.postprocessComplete===true;
-          const draft=read(`artbook-submissions/${gameId}/${date}/vibe2-first-draft.json`);
-          const planning=read(`artbook-submissions/${gameId}/${date}/planning.json`);
-          const draftQuality=draft?.semanticQuality?.pass===true&&String(draft?.validationStatus||'').toUpperCase()==='PASS'&&String(draft?.generationMode||'').toUpperCase()!=='DETERMINISTIC_FALLBACK'&&Number(draft?.gameFactPack?.stats?.totalEvidence||0)>=4;
-          const planningQuality=planning?.verification?.planningSemanticQuality===true&&planning?.runner?.planningFallbackUsed!==true&&!(planning?.verification?.policyBlocks||[]).length;
-          const storyDesignReady=draftQuality&&planningQuality;
-          const should=completed&&storyDesignReady&&state==='DESIGN_BASELINE'&&category==='development-confirmed';
-          console.log(`dispatch=${should?'true':'false'}`);
-          console.log(`game_id=${should?gameId:''}`);
-          console.log(`artbook_id=${should?String(gate.artbookLifecycle?.latestBaselineId||''):''}`);
-          console.log(`story_design_ready=${storyDesignReady?'true':'false'}`);
-          console.log(`draft_quality=${draftQuality?'true':'false'}`);
-          console.log(`planning_quality=${planningQuality?'true':'false'}`);
-          console.log(`reason=${should?'COMPLETED_QUALITY_VALIDATED_DESIGN_BASELINE_TO_DEVELOPMENT':completed&&!storyDesignReady?'STORY_DESIGN_NEEDS_VALIDATION':'NO_DEVELOPMENT_HANDOFF'}`);
+          const path=require('path');
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          function latestStatus(gameId){
+            const root=path.join('design',gameId);
+            if(!fs.existsSync(root))return null;
+            for(const date of fs.readdirSync(root).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x)).sort().reverse()){
+              const file=path.join(root,date,'cycle-status.json');
+              if(!fs.existsSync(file))continue;
+              try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{}
+            }
+            return null;
+          }
+          const games=(catalog.games||[]).filter(g=>[1,2,3].includes(Number(g.productionTier)));
+          const changed=games.map(g=>({g,last:latestStatus(g.id)})).filter(x=>x.last&&Number(x.last.tier)!==Number(x.g.productionTier));
+          const missing=games.map(g=>({g,last:latestStatus(g.id)})).filter(x=>!x.last);
+          const target=changed[0]?.g||missing[0]?.g||null;
+          console.log(`dispatch=${target?'true':'false'}`);
+          console.log(`game_id=${target?.id||''}`);
+          console.log(`tier=${target?.productionTier||''}`);
+          console.log(`reason=${changed.length?'TIER_CHANGED_NEEDS_BASELINE_AND_ARTBOOK_REFRESH':missing.length?'NO_CENTRAL_DESIGN_CYCLE_YET':'UP_TO_DATE'}`);
           NODE
-      - name: Dispatch prioritized development for completed artbook
-        if: steps.handoff.outputs.dispatch == 'true'
+
+      - name: Dispatch central multimodel cycle
+        if: steps.target.outputs.dispatch == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh workflow run autonomous-continuous-development.yml --ref main -f priority_game_id="${{ steps.handoff.outputs.game_id }}"
-          echo "ARTBOOK_DEVELOPMENT_HANDOFF=DISPATCHED"
-          echo "ARTBOOK_DEVELOPMENT_GAME=${{ steps.handoff.outputs.game_id }}"
-          echo "ARTBOOK_DEVELOPMENT_BASELINE=${{ steps.handoff.outputs.artbook_id }}"
-      - name: No development handoff required
-        if: steps.handoff.outputs.dispatch != 'true'
-        run: |
-          echo 'ARTBOOK_DEVELOPMENT_HANDOFF=NO'
-          echo 'ARTBOOK_DEVELOPMENT_HANDOFF_REQUIRES=VIBE2_SEMANTIC_PASS+GAME_FACT_PACK+PLANNING_SEMANTIC_PASS'
+          gh workflow run artbook-free-department-bots.yml --ref main -f game_id="${{ steps.target.outputs.game_id }}"
+          echo "DESIGN_REFRESH_DISPATCHED=${{ steps.target.outputs.game_id }}"
+          echo "TARGET_TIER=${{ steps.target.outputs.tier }}"
+          echo "REASON=${{ steps.target.outputs.reason }}"
+
+      - name: No refresh needed
+        if: steps.target.outputs.dispatch != 'true'
+        run: echo 'DESIGN_TIER_TRANSITION=UP_TO_DATE'
