@@ -1,18 +1,30 @@
 {
   "version": 1,
-  "revision": 19,
+  "revision": 20,
   "updatedAt": "2026-09-11",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
   "instruction": "Use COMPANY_FLOW.md as the single human-readable production policy. This file stores only machine execution values and invariant flags.",
   "production": {
-    "tierCounts": {
-      "releaseConfirmed": 2,
-      "developmentConfirmed": 3,
-      "designOnly": "ALL_REMAINING"
-    },
-    "membership": "DYNAMIC_EVIDENCE_RANKED",
+    "classificationMode": "SEMANTIC_EVIDENCE_DYNAMIC_MEMBERSHIP",
+    "canonicalField": "productionClass",
+    "canonicalClasses": [
+      "DESIGN_ONLY",
+      "DEVELOPMENT_CONFIRMED",
+      "RELEASE_CONFIRMED"
+    ],
+    "membership": "DYNAMIC_EVIDENCE",
+    "countsDerivedFromMembership": true,
+    "fixedClassCounts": false,
     "gameIdsPinned": false,
+    "numericField": "productionTier",
+    "numericLabels": {
+      "RELEASE_CONFIRMED": 1,
+      "DEVELOPMENT_CONFIRMED": 2,
+      "DESIGN_ONLY": 3
+    },
+    "numericLabelsAreAliasesOnly": true,
+    "numericLabelsOwnerRemappable": true,
     "preserveExistingWebArchives": true,
     "preserveSaveMeaning": true
   },
@@ -21,6 +33,7 @@
     "paidRunnerAllowed": false,
     "roleIdentityFixed": true,
     "modelIdentityFixed": false,
+    "departmentMultimodelStartsAtClass": "DESIGN_ONLY",
     "departmentMultimodelStartsAtTier": 3,
     "minDistinctModelsPerDepartment": 3,
     "modelPool": [
@@ -40,6 +53,11 @@
       "qa",
       "balance"
     ],
+    "departmentModeByClass": {
+      "DESIGN_ONLY": "MULTIMODEL_DESIGN_REVIEW_AND_MEETING",
+      "DEVELOPMENT_CONFIRMED": "MULTIMODEL_DETAILED_PLAY_TECH_REVIEW_AND_MEETING",
+      "RELEASE_CONFIRMED": "MULTIMODEL_ERROR_RISK_WATCH"
+    },
     "departmentModeTier3": "MULTIMODEL_DESIGN_REVIEW_AND_MEETING",
     "departmentModeTier2": "MULTIMODEL_DETAILED_PLAY_TECH_REVIEW_AND_MEETING",
     "departmentModeTier1": "MULTIMODEL_ERROR_RISK_WATCH",
@@ -61,14 +79,19 @@
       "departmentPageAuthorship": false
     },
     "vibe2": {
+      "roleByClass": {
+        "DESIGN_ONLY": "VALIDATION_AND_LEARNING",
+        "DEVELOPMENT_CONFIRMED": "VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT",
+        "RELEASE_CONFIRMED": "PRIMARY_DEVELOPMENT_ENGINE"
+      },
       "tier3Role": "VALIDATION_AND_LEARNING",
       "tier2Role": "VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT",
       "tier1Role": "PRIMARY_DEVELOPMENT_ENGINE",
       "designOrArtbookPrimaryAuthorInTier3Or2": false
     }
   },
-  "tiers": {
-    "3": {
+  "classes": {
+    "DESIGN_ONLY": {
       "baseline": "DESIGN_BASELINE",
       "sourceCodeAutoDevelopment": false,
       "requiredFlow": [
@@ -83,7 +106,7 @@
         "VIBE2_VALIDATION_LEARNING"
       ]
     },
-    "2": {
+    "DEVELOPMENT_CONFIRMED": {
       "baseline": "DEVELOPMENT_BASELINE",
       "webPurpose": "GAMEPLAY_VALIDATION_TESTBED",
       "unityPurpose": "TECHNICAL_VALIDATION_PROTOTYPE",
@@ -97,7 +120,7 @@
         "HOLD"
       ]
     },
-    "1": {
+    "RELEASE_CONFIRMED": {
       "baseline": "RELEASE_BASELINE",
       "target": "UNITY_ANDROID",
       "vibe2PrimaryDeveloper": true,
@@ -111,19 +134,42 @@
       ]
     }
   },
+  "tiersCompatibility": {
+    "purpose": "DISPLAY_AND_BACKWARD_COMPATIBILITY_ALIAS_ONLY",
+    "3": "DESIGN_ONLY",
+    "2": "DEVELOPMENT_CONFIRMED",
+    "1": "RELEASE_CONFIRMED"
+  },
+  "tiers": {
+    "3": {
+      "productionClass": "DESIGN_ONLY",
+      "baseline": "DESIGN_BASELINE",
+      "sourceCodeAutoDevelopment": false
+    },
+    "2": {
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "baseline": "DEVELOPMENT_BASELINE"
+    },
+    "1": {
+      "productionClass": "RELEASE_CONFIRMED",
+      "baseline": "RELEASE_BASELINE",
+      "target": "UNITY_ANDROID"
+    }
+  },
   "rules": [
     "new-owner-instruction-overrides-autonomous-plan",
     "company-flow-is-single-human-policy-source",
     "do-not-duplicate-tier-policy-across-documents",
-    "production-tier-counts-fixed-membership-dynamic",
-    "tier1-release-confirmed-count-exactly-two",
-    "tier2-development-confirmed-count-exactly-three",
-    "tier3-is-all-remaining-games",
-    "tier-game-ids-must-not-be-pinned",
-    "tier-membership-auto-promotes-and-demotes-from-current-evidence",
-    "tier-rebalance-never-expands-fixed-counts",
-    "tier3-detailed-design-single-game-designer-author",
-    "tier3-and-tier2-five-departments-use-multiple-distinct-real-models",
+    "semantic-production-class-is-canonical",
+    "production-class-counts-derived-from-current-membership",
+    "production-class-counts-are-not-fixed-quotas",
+    "numeric-tier-is-display-and-backward-compatibility-alias-only",
+    "numeric-tier-labels-may-be-remapped-by-owner-without-changing-class-meaning",
+    "production-game-ids-must-not-be-pinned",
+    "production-class-membership-promotes-and-demotes-from-current-evidence",
+    "status-sync-must-not-reclassify-games-to-satisfy-a-count-quota",
+    "design-only-detailed-design-single-game-designer-author",
+    "design-only-and-development-confirmed-five-departments-use-multiple-distinct-real-models",
     "department-role-fixed-model-variable",
     "minimum-three-distinct-models-per-department",
     "departments-review-design-they-do-not-coauthor-initial-draft",
@@ -135,15 +181,15 @@
     "single-artbook-editor-writes-entire-artbook",
     "departments-do-not-author-artbook-pages",
     "artbook-editor-must-not-invent-new-claims",
-    "vibe2-does-not-primary-author-design-or-artbook-in-tier3-or-tier2",
-    "tier2-web-validates-gameplay-before-expensive-unity-work-by-default",
-    "tier2-unity-validates-technical-performance-device-feasibility",
-    "tier2-development-baseline-requires-play-and-technical-evidence",
-    "tier1-vibe2-is-primary-development-engine",
-    "tier1-departments-default-to-error-risk-watch",
-    "tier1-core-design-change-requires-release-blocking-exception-or-owner-decision",
+    "vibe2-does-not-primary-author-design-or-artbook-in-design-only-or-development-confirmed",
+    "development-confirmed-web-validates-gameplay-before-expensive-unity-work-by-default",
+    "development-confirmed-unity-validates-technical-performance-device-feasibility",
+    "development-baseline-requires-play-and-technical-evidence",
+    "release-confirmed-vibe2-is-primary-development-engine",
+    "release-confirmed-departments-default-to-error-risk-watch",
+    "release-confirmed-core-design-change-requires-release-blocking-exception-or-owner-decision",
     "release-must-pass-independent-qa-and-runtime-verification",
-    "existing-public-web-builds-survive-tier-movement",
+    "existing-public-web-builds-survive-class-movement",
     "core-production-decisions-still-require-owner-decision",
     "paid-ai-paid-overage-and-paid-runners-remain-forbidden"
   ]

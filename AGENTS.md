@@ -27,13 +27,15 @@
 
 분류와 설계 정책의 상세 내용은 **오직 `COMPANY_FLOW.md`를 따른다.** 실행 도구는 `company-directive.json`의 다음 값을 기계적으로 사용한다.
 
-- 고정 분류 개수와 동적 멤버십
+- `productionClass` 의미 기반 분류와 근거 기반 동적 멤버십
+- 분류별 개수는 현재 멤버십에서 계산하며 고정 슬롯 수를 두지 않는 조건
+- `productionTier` 숫자는 표시/레거시 호환 별칭이며 정책 판단에 사용하지 않는 조건
 - 무료 실제 모델 풀
 - 부서당 최소 distinct model 수
 - Game Designer 단일 저자/동일 모델 수정 조건
 - 부서 내부 합의 및 부서 간 1회 반박 회의
 - Artbook Editor 단일 편집자 조건
-- 3/2/1분류별 Vibe2 역할
+- `DESIGN_ONLY` / `DEVELOPMENT_CONFIRMED` / `RELEASE_CONFIRMED`별 Vibe2 역할
 
 새 분류·아트북·회의 정책을 이 파일에 추가하지 말고 `COMPANY_FLOW.md`를 수정한다.
 
