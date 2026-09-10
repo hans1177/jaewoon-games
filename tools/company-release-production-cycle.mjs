@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {execFileSync} from 'node:child_process';
 import {PRODUCTION_CLASSES,productionClassOf,tierAliasForProductionClass} from './production-classification.mjs';
 
 const ROLES=['planning','graphics','development','qa','balance'];
@@ -48,6 +49,13 @@ if(productionClass!==PRODUCTION_CLASSES.RELEASE_CONFIRMED)throw new Error(`RELEA
 const tierAlias=tierAliasForProductionClass(productionClass,{numericLabels})??(Number(game.productionTier||0)||null);
 const base=path.join('design',gameId,date);
 fs.mkdirSync(base,{recursive:true});
+
+const unityProjectPath=clean(game.unityProjectPath);
+function currentUnitySourceTreeSha(){
+  if(!unityProjectPath||!fs.existsSync(unityProjectPath))return null;
+  try{return clean(execFileSync('git',['rev-parse',`HEAD:${unityProjectPath}`],{encoding:'utf8'}));}catch{return null;}
+}
+const currentSourceTreeSha=currentUnitySourceTreeSha();
 
 const RISK={type:'object',required:['blockers','warnings','evidence'],properties:{blockers:{type:'array',items:{type:'string'}},warnings:{type:'array',items:{type:'string'}},evidence:{type:'array',items:{type:'string'}}},additionalProperties:false};
 const ARTBOOK={type:'object',required:['identity','playerFantasy','coreLoop','signatureSystems','progressionDirection','visualDirection'],properties:{identity:{type:'string'},playerFantasy:{type:'string'},coreLoop:{type:'array',items:{type:'string'}},signatureSystems:{type:'array',items:{type:'string'}},progressionDirection:{type:'string'},visualDirection:{type:'string'}},additionalProperties:false};
@@ -100,10 +108,10 @@ function explicitState(data){
   if(['FAIL','FAILED','REJECTED','BLOCKED','ERROR'].includes(value))return 'FAIL';
   return 'MISSING';
 }
-function buildIdentity(data){
-  return clean(data?.buildId||data?.build_id||data?.sha256||data?.artifactSha256||data?.sourceRevision||data?.sourceSha||data?.commitSha);
-}
-function evidenceBuildIdentity(data){return clean(data?.buildId||data?.build_id||data?.buildSha256||data?.artifactSha256||data?.sha256||data?.sourceRevision||data?.sourceSha||data?.commitSha);}
+function implementationSourceTreeSha(data){return clean(data?.sourceTreeSha||data?.source_tree_sha);}
+function buildSourceTreeSha(data){return clean(data?.sourceTreeSha||data?.source_tree_sha);}
+function buildIdentity(data){return clean(data?.buildId||data?.build_id||data?.sha256||data?.artifactSha256);}
+function evidenceBuildIdentity(data){return clean(data?.buildId||data?.build_id||data?.buildSha256||data?.artifactSha256||data?.sha256);}
 function evidenceForBuild(record,identity){
   const state=explicitState(record?.data);
   if(state==='MISSING')return {...record,state:'MISSING',bound:false};
@@ -111,19 +119,20 @@ function evidenceForBuild(record,identity){
   const bound=Boolean(identity&&ref&&ref===identity);
   return {...record,state:bound?state:'MISSING',bound,referencedBuild:ref||null};
 }
-function hasCoreLockViolation(...records){
-  return records.some(record=>record?.data?.coreDesignLockViolation===true||record?.data?.core_design_lock_violation===true);
-}
+function hasCoreLockViolation(...records){return records.some(record=>record?.data?.coreDesignLockViolation===true||record?.data?.core_design_lock_violation===true);}
 function writeState(state,{baseline=null,implementation=null,build=null,runtime=null,qa=null,riskWatch=null,blockers=[],nextAction=null,releaseBaseline=null,artbook=null}={}){
+  const implementationTree=implementationSourceTreeSha(implementation?.data);
+  const buildTree=buildSourceTreeSha(build?.data);
   const status={
-    version:1,gameId,date,productionClass,tierAlias,tier:tierAlias,policyDocument:'COMPANY_FLOW.md',
+    version:2,gameId,date,productionClass,tierAlias,tier:tierAlias,policyDocument:'COMPANY_FLOW.md',
     flow:'RELEASE_CONFIRMED_GATED_DIRECT_RELEASE_PRODUCTION',executionMode:'GATED_DIRECT_RELEASE_PRODUCTION',
     status:state==='RELEASE_READY'?'COMPLETE':state==='RELEASE_BLOCKED'?'BLOCKED':state==='BUILDING'?'BUILDING':'WAITING',state,
     vibe2PrimaryDeveloper:true,coreDesignLock:true,
+    unityProjectPath:unityProjectPath||null,currentSourceTreeSha,
     developmentBaseline:baseline?{path:baseline.path,date:baseline.date}:null,
     evidence:{
-      implementation:implementation?{state:explicitState(implementation.data),path:implementation.path}:null,
-      build:build?{state:explicitState(build.data),path:build.path,identity:buildIdentity(build.data)||null}:null,
+      implementation:implementation?{state:explicitState(implementation.data),path:implementation.path,sourceTreeSha:implementationTree||null,boundToCurrentSource:Boolean(currentSourceTreeSha&&implementationTree===currentSourceTreeSha)}:null,
+      build:build?{state:explicitState(build.data),path:build.path,identity:buildIdentity(build.data)||null,sourceTreeSha:buildTree||null,boundToCurrentSource:Boolean(currentSourceTreeSha&&buildTree===currentSourceTreeSha),boundToImplementation:Boolean(implementationTree&&buildTree===implementationTree)}:null,
       runtime:runtime?{state:runtime.state,path:runtime.path,bound:runtime.bound,referencedBuild:runtime.referencedBuild}:null,
       independentQa:qa?{state:qa.state,path:qa.path,bound:qa.bound,referencedBuild:qa.referencedBuild}:null
     },
@@ -132,21 +141,22 @@ function writeState(state,{baseline=null,implementation=null,build=null,runtime=
     contracts:{
       gatedDirect:true,resumeFromLatestEvidence:true,vibe2PrimaryDeveloper:true,coreDesignLock:true,
       aiMayInventBuildPass:false,aiMayInventDeviceValidationPass:false,aiMayInventIndependentQaPass:false,
-      currentBuildEvidenceBindingRequired:true,sourceChangeInvalidatesOldBuildValidation:true,
+      currentSourceTreeBindingRequired:true,currentBuildEvidenceBindingRequired:true,sourceChangeInvalidatesOldBuildValidation:true,
       finalArtbookOnlyAfterReleaseReady:true,numericTierIsCompatibilityAliasOnly:true
     },
     updatedAt:new Date().toISOString()
   };
   writeJson(path.join(base,'release-production-status.json'),status);
   writeJson(path.join(base,'cycle-status.json'),status);
-  writeJson(path.join(base,'release-production-request.json'),{version:1,gameId,date,state,nextAction,blockers,policyDocument:'COMPANY_FLOW.md',vibe2PrimaryDeveloper:true,coreDesignLock:true});
+  writeJson(path.join(base,'release-production-request.json'),{version:2,gameId,date,state,nextAction,blockers,policyDocument:'COMPANY_FLOW.md',vibe2PrimaryDeveloper:true,coreDesignLock:true,unityProjectPath:unityProjectPath||null,currentSourceTreeSha});
   console.log(`RELEASE_DIRECT_STATE=${state}`);
+  console.log(`CURRENT_SOURCE_TREE_SHA=${currentSourceTreeSha||'MISSING'}`);
   if(nextAction)console.log(`NEXT_ACTION=${nextAction}`);
   return status;
 }
 
 async function runRiskWatch(baseline,build){
-  const evidence={developmentBaseline:baseline.content,build:build.data,game:{id:game.id,name:game.name,unityProjectPath:game.unityProjectPath||null}};
+  const evidence={developmentBaseline:baseline.content,build:build.data,currentSourceTreeSha,game:{id:game.id,name:game.name,unityProjectPath:unityProjectPath||null}};
   const departmentRiskWatch={};
   let releaseBlockerCount=0;
   for(const role of ROLES){
@@ -163,7 +173,7 @@ async function runRiskWatch(baseline,build){
     departmentRiskWatch[role]={leadModel:lead,assistantModels:models.filter(m=>m!==lead),models,passes,representative};
   }
   const file=path.join(base,'release-risk-watch.json');
-  writeJson(file,{version:1,gameId,date,productionClass,buildIdentity:buildIdentity(build.data),leadModels,distinctLeadModels,reviewModels,departmentRiskWatch,releaseBlockerCount,departmentErrorWatchOnly:true,newFeatureProposalDefault:false});
+  writeJson(file,{version:2,gameId,date,productionClass,buildIdentity:buildIdentity(build.data),sourceTreeSha:currentSourceTreeSha,leadModels,distinctLeadModels,reviewModels,departmentRiskWatch,releaseBlockerCount,departmentErrorWatchOnly:true,newFeatureProposalDefault:false});
   return {path:file.replaceAll('\\','/'),releaseBlockerCount,departmentRiskWatch};
 }
 
@@ -172,27 +182,43 @@ if(!baseline){
   writeState('RELEASE_BLOCKED',{blockers:['development-baseline-required'],nextAction:'2분류에서 DEVELOPMENT_BASELINE_READY를 먼저 만든다.'});
   process.exit(0);
 }
+if(!unityProjectPath||!fs.existsSync(unityProjectPath)||!currentSourceTreeSha){
+  writeJson(path.join(base,'vibe2-release-work-request.json'),{version:2,gameId,date,productionClass,owner:'VIBE2',role:'PRIMARY_DEVELOPMENT_ENGINE',state:'BUILDING',developmentBaseline:baseline.path,unityProjectPath:unityProjectPath||null,coreDesignLock:true,instruction:'Development Baseline을 따라 Unity Android 프로젝트/본개발을 준비하고 현재 Unity source tree SHA를 기록할 수 있는 상태로 만든다.',policyDocument:'COMPANY_FLOW.md'});
+  writeState('BUILDING',{baseline,blockers:['unity-project-or-source-tree-required'],nextAction:'Vibe2가 Unity Android 프로젝트와 실제 소스 트리를 준비한다.'});
+  process.exit(0);
+}
 
 const implementation=latestFile('vibe2-release-implementation.json');
-if(explicitState(implementation.data)!=='PASS'){
+if(hasCoreLockViolation(implementation)){
+  writeState('RELEASE_BLOCKED',{baseline,implementation,blockers:['core-design-lock-violation'],nextAction:'사용자 결정 또는 출시차단 예외 설계회의 없이 Core Design Lock 변경을 진행하지 않는다.'});
+  process.exit(0);
+}
+if(explicitState(implementation.data)==='FAIL'){
+  writeState('FIX_AND_REVERIFY',{baseline,implementation,blockers:['vibe2-release-implementation-failed'],nextAction:'Vibe2가 확인된 구현 실패를 수정하고 현재 source tree SHA를 포함한 새 구현 근거를 기록한다.'});
+  process.exit(0);
+}
+const implementationTree=implementationSourceTreeSha(implementation.data);
+if(explicitState(implementation.data)!=='PASS'||!implementationTree||implementationTree!==currentSourceTreeSha){
   writeJson(path.join(base,'vibe2-release-work-request.json'),{
-    version:1,gameId,date,productionClass,owner:'VIBE2',role:'PRIMARY_DEVELOPMENT_ENGINE',state:'BUILDING',
-    developmentBaseline:baseline.path,unityProjectPath:clean(game.unityProjectPath)||null,coreDesignLock:true,
-    instruction:'Development Baseline을 따라 Unity Android 본개발/통합을 수행한다. 새 핵심 기능을 임의 추가하지 말고 구현 완료 근거를 vibe2-release-implementation.json에 기록한다.',
+    version:2,gameId,date,productionClass,owner:'VIBE2',role:'PRIMARY_DEVELOPMENT_ENGINE',state:'BUILDING',
+    developmentBaseline:baseline.path,unityProjectPath,currentSourceTreeSha,coreDesignLock:true,
+    instruction:'Development Baseline을 따라 Unity Android 본개발/통합을 수행한다. 새 핵심 기능을 임의 추가하지 말고 구현 완료 근거에 현재 sourceTreeSha를 정확히 기록한다.',
     policyDocument:'COMPANY_FLOW.md'
   });
-  writeState('BUILDING',{baseline,implementation,nextAction:'Vibe2 본개발/통합을 완료하고 현재 소스 revision을 포함한 vibe2-release-implementation.json 근거를 기록한다.'});
+  writeState('BUILDING',{baseline,implementation,blockers:['current-source-vibe2-implementation-evidence-required'],nextAction:`현재 Unity source tree ${currentSourceTreeSha}를 참조하는 vibe2-release-implementation.json 근거를 기록한다.`});
   process.exit(0);
 }
 
 const build=latestFile('unity-android-build.json');
-if(explicitState(build.data)==='FAIL'){
-  writeState('FIX_AND_REVERIFY',{baseline,implementation,build,blockers:['unity-android-build-failed'],nextAction:'Vibe2가 빌드 실패 원인을 수정하고 새 Unity Android build 근거를 만든다.'});
+const buildState=explicitState(build.data);
+const identity=buildIdentity(build.data);
+const buildTree=buildSourceTreeSha(build.data);
+if(buildState==='FAIL'&&buildTree===currentSourceTreeSha){
+  writeState('FIX_AND_REVERIFY',{baseline,implementation,build,blockers:['unity-android-build-failed'],nextAction:'Vibe2가 현재 소스의 빌드 실패 원인을 수정하고 새 Unity Android build 근거를 만든다.'});
   process.exit(0);
 }
-const identity=buildIdentity(build.data);
-if(explicitState(build.data)!=='PASS'||!identity){
-  writeState('WAITING_BUILD',{baseline,implementation,build,blockers:['current-unity-android-build-required'],nextAction:'현재 Vibe2 구현 revision으로 Unity Android 빌드를 수행하고 buildId 또는 sha256이 있는 unity-android-build.json을 기록한다.'});
+if(buildState!=='PASS'||!identity||!buildTree||buildTree!==currentSourceTreeSha||buildTree!==implementationTree){
+  writeState('WAITING_BUILD',{baseline,implementation,build,blockers:['current-source-unity-android-build-required'],nextAction:`현재 sourceTreeSha ${currentSourceTreeSha}로 Unity Android 빌드를 수행하고 buildId 또는 sha256 + 같은 sourceTreeSha를 unity-android-build.json에 기록한다.`});
   process.exit(0);
 }
 
@@ -203,7 +229,7 @@ if(hasCoreLockViolation(build,runtime)){
   process.exit(0);
 }
 if(runtime.state==='FAIL'){
-  writeState('FIX_AND_REVERIFY',{baseline,implementation,build,runtime,riskWatch,blockers:['android-runtime-validation-failed'],nextAction:'Vibe2가 현재 빌드의 실제 Android 런타임 실패 원인을 수정하고 새 빌드로 재검증한다.'});
+  writeState('FIX_AND_REVERIFY',{baseline,implementation,build,runtime,riskWatch,blockers:['android-runtime-validation-failed'],nextAction:'Vibe2가 현재 빌드의 실제 Android 런타임 실패 원인을 수정하고 새 소스/빌드로 재검증한다.'});
   process.exit(0);
 }
 if(runtime.state!=='PASS'){
@@ -211,7 +237,7 @@ if(runtime.state!=='PASS'){
   process.exit(0);
 }
 if(riskWatch.releaseBlockerCount>0){
-  writeState('FIX_AND_REVERIFY',{baseline,implementation,build,runtime,riskWatch,blockers:[`department-release-blockers:${riskWatch.releaseBlockerCount}`],nextAction:'Vibe2가 5부서가 근거로 확정한 출시 차단 결함을 수정하고 새 빌드부터 다시 검증한다.'});
+  writeState('FIX_AND_REVERIFY',{baseline,implementation,build,runtime,riskWatch,blockers:[`department-release-blockers:${riskWatch.releaseBlockerCount}`],nextAction:'Vibe2가 5부서가 근거로 확정한 출시 차단 결함을 수정하고 새 소스/빌드부터 다시 검증한다.'});
   process.exit(0);
 }
 
@@ -221,7 +247,7 @@ if(hasCoreLockViolation(qa)){
   process.exit(0);
 }
 if(qa.state==='FAIL'){
-  writeState('FIX_AND_REVERIFY',{baseline,implementation,build,runtime,qa,riskWatch,blockers:['independent-release-qa-failed'],nextAction:'Vibe2가 독립 QA 실패를 수정하고 새 빌드/기기/회귀 검증을 수행한다.'});
+  writeState('FIX_AND_REVERIFY',{baseline,implementation,build,runtime,qa,riskWatch,blockers:['independent-release-qa-failed'],nextAction:'Vibe2가 독립 QA 실패를 수정하고 새 소스/빌드/기기/회귀 검증을 수행한다.'});
   process.exit(0);
 }
 if(qa.state!=='PASS'){
@@ -231,8 +257,8 @@ if(qa.state!=='PASS'){
 
 const releaseBaselinePath=path.join(base,'release-baseline.json');
 writeJson(releaseBaselinePath,{
-  version:1,gameId,date,productionClass,tierAlias,tier:tierAlias,status:'RELEASE_READY',baseline:'RELEASE_BASELINE',
-  developmentBaseline:baseline.path,currentBuild:{identity,evidence:build.path},androidRuntimeValidation:runtime.path,independentQa:qa.path,
+  version:2,gameId,date,productionClass,tierAlias,tier:tierAlias,status:'RELEASE_READY',baseline:'RELEASE_BASELINE',
+  developmentBaseline:baseline.path,currentSourceTreeSha,currentBuild:{identity,sourceTreeSha:buildTree,evidence:build.path},androidRuntimeValidation:runtime.path,independentQa:qa.path,
   departmentRiskWatch:riskWatch.path,coreDesignLockPreserved:true,policyDocument:'COMPANY_FLOW.md',createdAt:new Date().toISOString()
 });
 
@@ -242,11 +268,13 @@ const artbook=await callModel(editorModel,'너는 단일 Artbook Editor AI다. R
 const verification=await callModel(verifierModel,'너는 Vibe2 검증 역할이다. 아트북 작성자가 아니다. 최종 아트북이 Development Baseline에 없는 새 주장을 만들지 않았는지 확인한다.',`DEVELOPMENT_BASELINE=${clip(baseline.content,12000)}\nFINAL_ARTBOOK=${clip(artbook,7000)}`,VERIFY,{predict:320,temperature:0});
 if(!verification.supported)throw new Error(`RELEASE_ARTBOOK_PROVENANCE_GATE: ${verification.unsupportedClaims.join(' | ')}`);
 const artbookPath=path.join(base,'core-artbook.json');
-writeJson(artbookPath,{version:5,gameId,date,productionClass,tierAlias,tier:tierAlias,editorRole:'ARTBOOK_EDITOR_AI',editorModel,singleEditor:true,releaseBaseline:true,releaseBaselineSource:releaseBaselinePath.replaceAll('\\','/'),sourceDesign:baseline.path,departmentPageAuthorship:false,newClaimsAdded:false,verification,content:artbook});
+writeJson(artbookPath,{version:6,gameId,date,productionClass,tierAlias,tier:tierAlias,editorRole:'ARTBOOK_EDITOR_AI',editorModel,singleEditor:true,releaseBaseline:true,releaseBaselineSource:releaseBaselinePath.replaceAll('\\','/'),sourceDesign:baseline.path,sourceTreeSha:currentSourceTreeSha,departmentPageAuthorship:false,newClaimsAdded:false,verification,content:artbook});
 writeState('RELEASE_READY',{baseline,implementation,build,runtime,qa,riskWatch,releaseBaseline:{path:releaseBaselinePath.replaceAll('\\','/')},artbook:{path:artbookPath.replaceAll('\\','/')}});
 console.log('RELEASE_GATE=READY');
+console.log(`CURRENT_SOURCE_TREE_SHA=${currentSourceTreeSha}`);
 console.log(`CURRENT_BUILD_IDENTITY=${identity}`);
 console.log(`DISTINCT_DEPARTMENT_LEADS=${distinctLeadModels.length}`);
+console.log('SOURCE_TO_BUILD_BINDING=PASS');
 console.log('INDEPENDENT_QA=CURRENT_BUILD_PASS');
 console.log('FINAL_ARTBOOK_REVISION=CREATED_AFTER_RELEASE_READY');
 console.log('PAID_API=NO');
