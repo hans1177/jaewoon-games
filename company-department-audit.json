@@ -63,7 +63,7 @@
         "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
         "probe": "tools/unity-apk-runtime-smoke.sh",
         "method": "APK install -> launch -> Android tap/swipe input -> process survival -> fatal log scan -> screenshot",
-        "contractVerificationRunId": 34428039765,
+        "contractVerificationRunId": 34428090459,
         "contractVerificationConclusion": "success",
         "successfulRuntimeEvidenceRunId": null,
         "buildAloneCountsAsQaPass": false,
@@ -116,27 +116,27 @@
     "departmentStandardsWorkflow": {
       "latestRun": {
         "runId": 34428090459,
-        "status": "in_progress",
-        "conclusion": null,
-        "headSha": "b3bbdb53c6968dc9a6c501dae013857e724d0a83",
-        "updatedAt": "2026-09-10T02:05:56Z"
-      },
-      "latestSuccessfulRun": {
-        "runId": 34428039765,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "cca5d0476bf68a12beb2fada160fb043f5e4e312",
-        "updatedAt": "2026-09-10T02:05:17Z"
+        "headSha": "b3bbdb53c6968dc9a6c501dae013857e724d0a83",
+        "updatedAt": "2026-09-10T02:06:02Z"
+      },
+      "latestSuccessfulRun": {
+        "runId": 34428090459,
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "b3bbdb53c6968dc9a6c501dae013857e724d0a83",
+        "updatedAt": "2026-09-10T02:06:02Z"
       },
       "unitySmokeContractVerified": true
     },
     "latestUnityBuild": {
       "latestRun": {
         "runId": 34428090705,
-        "status": "queued",
+        "status": "in_progress",
         "conclusion": null,
         "headSha": "b3bbdb53c6968dc9a6c501dae013857e724d0a83",
-        "updatedAt": "2026-09-10T02:06:01Z"
+        "updatedAt": "2026-09-10T02:06:05Z"
       },
       "latestSuccessfulRun": {
         "runId": 34201876835,
@@ -181,14 +181,16 @@
       "dateKst": "2026-09-10",
       "attentionRequired": false,
       "counts": {
-        "WORKING": 1,
-        "DONE": 6,
+        "WORKING": 2,
+        "DONE": 5,
         "IDLE_NO_TASK": 1,
         "BLOCKED": 0,
         "FAILED": 0,
         "STALE": 0
       },
-      "primaryFindings": []
+      "primaryFindings": [
+        "NO_WORK_ORDER:artbook-work-orders/2026-09-10-daechung-rpg.json"
+      ]
     }
   },
   "nextPriority": "Require a successful Unity Android emulator runtime-smoke run before marking Unity QA VERIFIED."
