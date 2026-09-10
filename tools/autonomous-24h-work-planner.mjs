@@ -55,6 +55,10 @@ function focusTotal(project){
 }
 function unityPriority(project){return clean(project?.dedicatedDevelopmentLane).toUpperCase()==='UNITY_PRIMARY'||clean(project?.targetEngine).toLowerCase()==='unity-android'||(project?.protectedValues||[]).includes('unity-primary');}
 function unityProjectReady(project){return project?.unityProjectReady===true;}
+function unityDeepFocusReady(project,filesystem=fs){
+  const productionSourcePath=clean(project?.productionSourcePath);
+  return unityProjectReady(project)&&Boolean(productionSourcePath)&&filesystem.existsSync(productionSourcePath);
+}
 function focusPolicy(portfolio){return portfolio?.developmentFocusPolicy&&Number(portfolio.developmentFocusPolicy.maxFocusedGames)>0?portfolio.developmentFocusPolicy:null;}
 function focusStage(policy){return clean(policy?.focusStage||'DEVELOPMENT_CONFIRMED').toUpperCase();}
 function sortFocusCandidates(policy){
@@ -127,10 +131,12 @@ export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},qu
   const legacyEligible=(portfolio?.projects??[]).filter(project=>!isHold(project)&&!isRelease(project,catalog)&&clean(project.sourcePath)&&filesystem.existsSync(project.sourcePath)&&isCompletedDesignBaselineFor(artbooks,project.slug));
   const eligible=policy?preparedFocusCandidates({portfolio,catalog,artbooks,filesystem,minScore:0}):legacyEligible;
   const rankedFocus=policy?rankDevelopmentFocus({portfolio,catalog,artbooks,filesystem}):eligible;
+  const rankedDeepFocus=releaseFocus?rankedFocus.filter(project=>unityDeepFocusReady(project,filesystem)):rankedFocus;
   const maxFocused=policy?Math.max(1,Number(policy.maxFocusedGames)||1):eligible.length;
-  const focused=policy?rankedFocus.slice(0,maxFocused):eligible;
+  const focused=policy?rankedDeepFocus.slice(0,maxFocused):eligible;
   if(policy?.fillVacantFocusedSlots===true&&focused.length<maxFocused){
-    const fallback=preparedFocusCandidates({portfolio,catalog,artbooks,filesystem,minScore:releaseFocus?0:Number(policy.nextDevelopmentThreshold??5),excludeIds:new Set(focused.map(project=>project.id))});
+    const fallbackCandidates=preparedFocusCandidates({portfolio,catalog,artbooks,filesystem,minScore:releaseFocus?0:Number(policy.nextDevelopmentThreshold??5),excludeIds:new Set(focused.map(project=>project.id))});
+    const fallback=releaseFocus?fallbackCandidates.filter(project=>unityDeepFocusReady(project,filesystem)):fallbackCandidates;
     focused.push(...fallback.slice(0,maxFocused-focused.length));
   }
   const focusedIds=new Set(focused.map(project=>project.id));
@@ -148,7 +154,7 @@ export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},qu
   const meta={focusedGameIds:[...focusedIds],nextFocusGameIds:nextFocus,nextDevelopmentGameIds:nextIds,activeGameIds:[...activeGameIds],activeSourcePaths:[...activeSourcePaths],focusPolicyEnabled:Boolean(policy),focusStage:focusStage(policy),impactPriorityPenalties};
   if(requested){
     const tier1=(portfolio?.projects??[]).find(project=>(project.id===requested||project.slug===requested)&&Number(project?.productionTier)===1);
-    if(releaseFocus&&tier1)return {project:null,dedicatedFocus:true,explicitPriority:true,requestedGameId:tier1.id,...meta};
+    if(releaseFocus&&tier1&&focusedIds.has(tier1.id)&&unityDeepFocusReady(tier1,filesystem))return {project:null,dedicatedFocus:true,explicitPriority:true,requestedGameId:tier1.id,...meta};
     const exactRunnable=runnable.find(project=>project.id===requested||project.slug===requested);
     if(exactRunnable&&(activeGameIds.has(exactRunnable.id)||activeSourcePaths.has(clean(exactRunnable.sourcePath))))return {project:null,blockedByActive:true,explicitPriority:true,requestedGameId:exactRunnable.id,...meta};
     const exact=available.find(project=>project.id===requested||project.slug===requested);
