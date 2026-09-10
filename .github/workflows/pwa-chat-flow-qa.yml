@@ -1,0 +1,33 @@
+name: PWA Chat Flow QA
+
+on:
+  pull_request:
+    paths:
+      - 'command.html'
+      - 'emergency-ai.js'
+      - 'sw.js'
+      - 'qa/pwa-chat-flow.test.mjs'
+      - '.github/workflows/pwa-chat-flow-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'command.html'
+      - 'emergency-ai.js'
+      - 'sw.js'
+      - 'qa/pwa-chat-flow.test.mjs'
+      - '.github/workflows/pwa-chat-flow-qa.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  chat-flow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify ChatGPT-style PWA chat contract
+        run: node --test qa/pwa-chat-flow.test.mjs
