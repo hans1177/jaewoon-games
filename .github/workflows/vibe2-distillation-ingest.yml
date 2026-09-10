@@ -13,6 +13,7 @@ on:
       - 'qa/vibe2-distillation-status.test.mjs'
       - 'qa/vibe2-training-request.test.mjs'
       - '.github/workflows/vibe2-distillation-ingest.yml'
+      - '.github/workflows/vibe2-local-distillation-train.yml'
   workflow_run:
     workflows: ['Autonomous Candidate Promotion']
     types: [completed]
