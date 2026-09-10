@@ -57,7 +57,10 @@ function hasFunctionalResponsibility(role,departmentResult,context={}){
   const text=clean(departmentResult?.nextAction||departmentResult?.summary);
   if(!text)return true;
   if(IMPLEMENTATION_ACTION.test(text)&&IMPLEMENTATION_TARGETS[role].test(text))return true;
-  if(role==='graphics')return graphicsPlanFor({...context,departmentResult}).run;
+  if(role==='graphics'){
+    const plan=graphicsPlanFor({...context,departmentResult});
+    return plan.run&&plan.anomalies.length>0;
+  }
   return false;
 }
 function normalizeRefs(sourcePath,refs=[]){
