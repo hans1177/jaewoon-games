@@ -55,9 +55,10 @@ RELEASE_CONFIRMED
   → Unity Android 실제 빌드
   → 부서별 Lead AI + 보조 AI 오류·출시위험 감시
   → 독립 QA/회귀 검증
-  → Vibe2 수정
+  → 문제 있으면 Vibe2 수정 → 재빌드 → 재검증 반복
   → Release Gate
   → Release Baseline
+  → Artbook Editor 최종 revision
 
 모든 단계의 실제 검증 근거
 → 성공/실패 원인 라벨링
@@ -378,50 +379,152 @@ AI 회의 완료는 Development Baseline 승인과 동일하지 않다. Web smok
 
 2분류가 `WAITING_*` 또는 `DEVELOPMENT_BLOCKED`면 **통과된 최종 아트북으로 위장하지 않는다.** 후보 수정 기록은 남길 수 있지만 Development Baseline 아트북 revision은 만들지 않는다.
 
-## 7. RELEASE_CONFIRMED — Release Baseline / Vibe2 본개발
+## 7. RELEASE_CONFIRMED — Gated Direct Release Production
 
-현재 표시 별칭은 **1분류**다. 이 단계에서는 운영 중심이 바뀐다.
+현재 표시 별칭은 **1분류**다. 목적은 확정된 Development Baseline을 **Vibe2가 실제 Unity Android 제품으로 구현·통합하고, 실제 빌드와 기기 근거, 5개 부서 위험감시, 독립 QA, 수정·재검증을 통과시켜 Release Baseline을 만드는 것**이다.
 
-**Vibe2가 확정된 Development Baseline을 따라 실제 구현·통합·수정의 주 개발 주체가 되고, 부서 AI는 기본적으로 오류·위험 감시 역할을 맡는다.** 부서별 서로 다른 Lead 배정은 유지하지만 일상적으로 새 대형 기능을 제안하지 않는다.
+1분류도 사용자 입장에서는 **한 번 시작하는 다이렉트 파이프라인**이다. 내부에서는 실제 빌드·기기·QA 근거가 필요한 지점에서만 멈추며, 필요한 근거가 추가되면 같은 릴리즈 사이클을 다음 가능한 단계부터 재개한다.
 
-### 기본 루프
+### 7.1 시작 조건과 Vibe2 본개발
+
+1분류 시작에는 `DEVELOPMENT_BASELINE_READY` 근거가 필요하다. 분류 표시 숫자만 1이라고 해서 본개발을 승인하지 않는다.
 
 ```text
-Development Baseline
-→ Vibe2 구현
-→ Unity 빌드/실행
-→ 부서별 Lead + 보조 AI 오류·위험 검토
-→ 독립 QA
-→ Vibe2 수정
-→ 재빌드·재검증
-→ Release Gate
+1분류 시작
+→ Development Baseline 로드
+→ Core Design Lock 적용
+→ Vibe2 본개발/통합
+→ Unity Android Build 요청
 ```
 
-### RELEASE_CONFIRMED 부서 역할
+Vibe2는 이 단계의 **주 개발 엔진**이다. 확정된 설계·기술 기준선을 구현하고, 통합하고, 발견된 결함을 수정한다. 부서 AI가 일상 개발을 대신하거나 매 사이클 새 기능을 추가하지 않는다.
 
-- 기획: 핵심 재미·설계 기준선 이탈 감지
-- 개발: 크래시, 성능, 구조, 세이브, 빌드 위험 감지
-- 그래픽: 깨짐, 가독성, 애니메이션/에셋 오류, 렌더링 비용 감지
-- QA: 버그, 재현 절차, 회귀, 기기·입력·복귀 문제 감지
-- 밸런스: 명백한 밸런스 붕괴와 악용 가능 수치 감지
+### 7.2 Core Design Lock
 
-핵심 루프 붕괴, 치명적 성능 한계, 저장 손상, 구현 불가능한 핵심 설계, 출시 차단 수준의 밸런스/UX 문제만 예외 설계회의를 다시 열 수 있다. 사용자 직접 결정은 언제든 우선한다.
+1분류 기본 상태에서는 핵심 재미, 입력 방식, 전투 규칙, 핵심 성장 구조, 핵심 경제 구조를 잠근다.
 
-### RELEASE_CONFIRMED 테스트
+다음 경우에만 예외 설계회의를 열 수 있다.
 
-Web은 안정판/참고 아카이브다. 기능 본개발 기준은 Unity Android 실제 빌드다.
+- 실제 구현에서 핵심 루프가 붕괴함
+- 확정 핵심 기능이 기술적으로 구현 불가능함
+- 치명적인 성능 한계가 핵심 구조와 직접 충돌함
+- 저장 손상·업데이트 호환 파괴가 구조적 원인으로 발생함
+- 출시 차단 수준의 UX/밸런스 문제가 핵심 설계에서 발생함
+- 사용자가 직접 설계 변경을 지시함
 
+예외 사유 없이 부서 AI나 Vibe2가 대형 기능, 핵심 규칙, 게임 정체성을 임의 변경하면 안 된다.
+
+### 7.3 Unity Android Build Gate
+
+Vibe2 구현 또는 수정 후에는 실제 Unity Android 빌드 근거가 필요하다.
+
+```text
+빌드 성공 + 검증 가능한 APK/빌드 근거 존재
+→ 5부서 위험감시 + 독립 QA로 진행
+
+빌드 실패
+→ 실패 로그/원인 기록
+→ FIX_AND_REVERIFY
+→ Vibe2 수정 후 재빌드
+
+빌드 실행 환경 또는 빌드 근거 없음
+→ WAITING_BUILD
+→ AI 추정으로 build PASS 금지
+```
+
+소스가 변경됐는데 이전 빌드의 PASS를 새 빌드 근거로 재사용하면 안 된다.
+
+### 7.4 5개 부서 출시위험 감시
+
+빌드가 존재하면 5개 고유 Lead + 각 부서 보조 AI가 **동일한 빌드/런타임/QA 근거**를 읽고 오류와 출시 차단 위험만 감시한다.
+
+- 기획: Development Baseline·핵심 재미 이탈
+- 개발: 크래시, ANR성 문제, 성능, 구조, 빌드, 저장 위험
+- 그래픽: 깨짐, 가독성, 애니메이션/에셋, 렌더링·메모리 비용
+- QA: 재현 절차, 회귀, 입력, 화면비, 중단/복귀, 기기별 오류
+- 밸런스: 명백한 밸런스 붕괴, 악용, 진행 불가능 구간
+
+각 부서 Lead가 보조 AI 결과를 검토해 근거 없는 추측을 제거하고 대표 위험 목록을 확정한다. 새 기능 제안은 기본 출력이 아니다.
+
+### 7.5 실제 기기/런타임 검증
+
+Release Gate에는 실제 Android 근거가 필요하다.
+
+검증 대상:
 - 실제 Android 입력
-- FPS/메모리/발열/로딩
-- 장시간 실행
+- FPS·프레임 안정성
+- 메모리·발열·로딩
+- 장시간 실행 안정성
 - 크래시·ANR성 문제
 - 앱 중단/복귀
 - 저장 데이터 손상
 - 업데이트 후 세이브 호환
 - 다양한 화면비와 UI
-- 전체 회귀 테스트
 
-최종 판정은 `RELEASE_READY / FIX_AND_REVERIFY / RELEASE_BLOCKED`로 남긴다.
+실제 기기 또는 이에 준하는 승인된 런타임 근거가 없으면 `WAITING_DEVICE_VALIDATION`에서 멈춘다. 정적 빌드 성공만으로 기기 검증 PASS를 만들 수 없다.
+
+### 7.6 독립 QA와 회귀 검증
+
+독립 QA는 Vibe2 자기검사와 분리한다. 최소 다음을 검증한다.
+
+- Development Baseline 핵심 요구 재현
+- 변경 기능과 인접 기능 회귀
+- 저장/불러오기/업데이트
+- 중단/복귀
+- 모바일 입력과 화면비
+- 크래시/치명 오류
+- 출시 차단 밸런스/진행 문제
+
+QA가 실패하면 실패 항목, 재현 절차, 근거, 영향 범위를 기록하고 `FIX_AND_REVERIFY`로 보낸다.
+
+### 7.7 Vibe2 수정 → 재빌드 → 재검증 반복
+
+`FIX_AND_REVERIFY`에서는 Vibe2가 확인된 결함만 수정한다.
+
+```text
+확인된 실패 근거
+→ Vibe2 수정
+→ 새 Unity Android Build
+→ 영향 범위 기기 검증
+→ 5부서 위험감시 재확인
+→ 독립 QA/회귀 재검증
+→ Release Gate 재평가
+```
+
+수정 후 이전 빌드/이전 QA PASS를 그대로 재사용하지 않는다. 현재 빌드와 현재 수정본을 참조한 재검증 근거가 필요하다.
+
+### 7.8 Release Gate와 상태
+
+1분류 파이프라인은 가능한 데까지 자동 진행하고 다음 상태 중 하나로 종료한다.
+
+- `BUILDING`: Vibe2가 확정 Development Baseline을 구현·통합 중
+- `WAITING_BUILD`: 실제 Unity Android 빌드/빌드 근거 필요
+- `WAITING_DEVICE_VALIDATION`: 현재 빌드의 실제 Android 런타임 근거 필요
+- `FIX_AND_REVERIFY`: 빌드·부서감시·기기검증·독립 QA에서 수정 가능한 실패 발견
+- `RELEASE_BLOCKED`: 현재 조건에서 자동 수정으로 해소할 수 없는 출시 차단 사유 존재
+- `RELEASE_READY`: 현재 빌드가 모든 필수 출시 근거와 독립 QA를 통과
+
+`RELEASE_READY`는 다음을 모두 만족해야 한다.
+
+```text
+Development Baseline 확인
++ 현재 소스에 대응하는 Unity Android Build 성공
++ 현재 빌드 실제 Android 런타임 검증 PASS
++ 5개 부서 출시위험 감시에서 unresolved release blocker 없음
++ 독립 QA PASS
++ 필수 회귀 재검증 PASS
++ Core Design Lock 위반 없음
+```
+
+AI 의견만으로 `RELEASE_READY`를 만들 수 없다.
+
+### 7.9 Release Baseline과 최종 아트북
+
+`RELEASE_READY`가 확인되면 `RELEASE_BASELINE`을 생성하고 실제 승인 빌드·검증 근거를 연결한다.
+
+그 뒤 **Artbook Editor가 최종 revision을 자동 생성**한다. 최종 아트북은 출시에서 살아남은 핵심 정체성·루프·시그니처 시스템·성장/밸런스·비주얼 방향만 압축하며, 긴 QA/기기 로그를 복제하지 않는다.
+
+`BUILDING`, `WAITING_*`, `FIX_AND_REVERIFY`, `RELEASE_BLOCKED` 상태에서는 최종 Release Baseline 아트북 revision으로 위장하지 않는다.
 
 ## 8. 승격·하락과 아트북 처리
 
@@ -434,11 +537,11 @@ Design Baseline 존재
 
 DEVELOPMENT_CONFIRMED → RELEASE_CONFIRMED
 DEVELOPMENT_BASELINE_READY + 실제 플레이/Unity 근거 확인
-→ Release 개발계획
-→ 아트북 revision 확인
+→ 1분류 Gated Direct Release Production 시작
 
 출시 직전
-Release Baseline 확정
+RELEASE_READY
+→ Release Baseline 확정
 → 최종 아트북 revision
 ```
 
@@ -448,7 +551,7 @@ Release Baseline 확정
 
 - 한 개발 플로어는 한 게임 source root를 독점한다.
 - 같은 source root를 여러 AI가 동시에 직접 수정하지 않는다.
-- `RELEASE_CONFIRMED` 실제 코드 수정은 Vibe2 개발 흐름에서 격리 후보 → 통합 → 독립 QA → release gate 순서로 간다.
+- `RELEASE_CONFIRMED` 실제 코드 수정은 Vibe2 개발 흐름에서 격리 후보 → 통합 → 실제 빌드 → 5부서 위험감시 → 독립 QA → release gate 순서로 간다.
 - 수정 직후 검증 없이 main/public으로 바로 내보내지 않는다.
 - 기존 게임 핵심 규칙, 세이브 의미, 과금, 플랫폼, 대형 콘텐츠 방향은 사용자 결정 없이 몰래 바꾸지 않는다.
 - 임시 wrapper·override 체인을 누적하기보다 담당 시스템을 직접 수정한다.
