@@ -4318,6 +4318,20 @@
       "status": "RESERVED",
       "reservedAt": "2026-09-10T13:48:40.592Z",
       "leaseExpiresAt": "2026-09-10T15:18:40.592Z"
+    },
+    {
+      "date": "2026-09-10",
+      "gameId": "P0009",
+      "gameSlug": "monster-adventure",
+      "sourcePath": "web-games/monster-adventure",
+      "reason": "TIER2_WEB_FIRST_IMPLEMENTATION",
+      "runId": "34486072807",
+      "workId": "34486072807",
+      "sourceCommit": "1baf7eaf1143e6c5a581000938c65d4f4467974e",
+      "floor": 83,
+      "status": "RESERVED",
+      "reservedAt": "2026-09-10T13:59:14.354Z",
+      "leaseExpiresAt": "2026-09-10T15:29:14.354Z"
     }
   ],
   "workLedger": [
@@ -6847,6 +6861,28 @@
         {
           "state": "ASSIGNED",
           "at": "2026-09-10T13:48:40.592Z",
+          "progress": "INCOMPLETE_PROGRESS"
+        }
+      ]
+    },
+    {
+      "workId": "34486072807",
+      "workState": "ASSIGNED",
+      "developmentProgress": "INCOMPLETE_PROGRESS",
+      "owner": "autonomous-development",
+      "sourceRoot": "web-games/monster-adventure",
+      "sourceCommit": "1baf7eaf1143e6c5a581000938c65d4f4467974e",
+      "createdAt": "2026-09-10T13:59:14.354Z",
+      "updatedAt": "2026-09-10T13:59:14.354Z",
+      "retryCount": 0,
+      "evidenceRefs": [],
+      "explicitReason": null,
+      "qaVerdict": null,
+      "implementationChanged": false,
+      "history": [
+        {
+          "state": "ASSIGNED",
+          "at": "2026-09-10T13:59:14.354Z",
           "progress": "INCOMPLETE_PROGRESS"
         }
       ]
