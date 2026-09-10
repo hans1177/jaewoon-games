@@ -13,6 +13,7 @@ const agents = readText('AGENTS.md');
 const directive = readJson('company-directive.json');
 
 const requiredFlowHeadings = [
+  '## 0. 회사 최종목표와 시스템 아키텍처',
   '## 5. DESIGN_ONLY — Design Baseline',
   '## 6. DEVELOPMENT_CONFIRMED — Development Baseline',
   '## 7. RELEASE_CONFIRMED — Release Baseline / Vibe2 본개발',
@@ -35,6 +36,15 @@ test('COMPANY_FLOW.md remains the single human-readable production policy source
   assert.match(agents, /COMPANY_FLOW\.md.*하나만 원본|유일한 사람용 제작 정책 원본/s);
   assert.match(agents, /company-directive\.json/);
   for (const heading of requiredFlowHeadings) assert.ok(flow.includes(heading), `missing central policy heading: ${heading}`);
+});
+
+test('central policy explicitly owns the company final goal and end-to-end architecture', () => {
+  assert.match(flow, /게임을 만들수록 회사 전체의 설계·개발·검증·출시 능력이 향상되는 자율 게임 제작 시스템/);
+  assert.match(flow, /사용자 최신 지시[\s\S]*COMPANY_FLOW\.md 중앙 정책[\s\S]*company-directive\.json 실행 설정/);
+  assert.match(flow, /DESIGN_ONLY[\s\S]*Game Designer AI[\s\S]*5개 부서 × 다중 실제 모델 검토/);
+  assert.match(flow, /DEVELOPMENT_CONFIRMED[\s\S]*Web Gameplay Validation[\s\S]*Unity Technical Validation/);
+  assert.match(flow, /RELEASE_CONFIRMED[\s\S]*Vibe2 본개발\/통합[\s\S]*독립 QA\/회귀 검증/);
+  assert.match(flow, /성공\/실패 원인 라벨링[\s\S]*검증된 패턴만 Vibe2 학습 근거/);
 });
 
 test('semantic production classes are canonical and class counts are derived, not fixed quotas', () => {
