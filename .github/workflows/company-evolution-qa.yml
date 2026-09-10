@@ -23,12 +23,17 @@ on:
       - tools/company-design-cycle.mjs
       - tools/company-development-validation-cycle.mjs
       - tools/company-release-production-cycle.mjs
+      - tools/company-release-stale-artifact-guard.mjs
       - tools/company-baseline-gate.mjs
       - tools/artbook-production-pipeline.mjs
       - tools/artbook-fact-pack.mjs
       - tools/homepage-manager.mjs
       - qa/artbook-editorial-role-contract.test.mjs
+      - qa/company-release-production-cycle.test.mjs
+      - qa/release-stale-artifact-guard.test.mjs
+      - qa/tier1-development-baseline-gate.test.mjs
       - .github/workflows/artbook-free-department-bots.yml
+      - .github/workflows/company-release-artifact-safety-qa.yml
       - .github/workflows/vibe2-24h-runner.yml
       - .github/workflows/vibe2-candidate-release.yml
       - .github/workflows/vibe2-unity-release-result.yml
@@ -58,8 +63,12 @@ jobs:
           node --check tools/company-design-cycle.mjs
           node --check tools/company-development-validation-cycle.mjs
           node --check tools/company-release-production-cycle.mjs
+          node --check tools/company-release-stale-artifact-guard.mjs
           node --check tools/company-baseline-gate.mjs
           node --check tools/artbook-production-pipeline.mjs
+          node --check qa/company-release-production-cycle.test.mjs
+          node --check qa/release-stale-artifact-guard.test.mjs
+          node --check qa/tier1-development-baseline-gate.test.mjs
 
       - name: Validate centralized production policy contract
         run: |
@@ -79,7 +88,22 @@ jobs:
           if(directive.ai?.departmentLeadModelsMustBeDistinct!==true||distinctLeads.length<5)throw new Error('five distinct lead model gate failed');
           if(leads.some(model=>!pool.includes(model)))throw new Error('department lead model must be in modelPool');
           if(directive.ai?.departmentRepresentativeAuthoredByLead!==true||directive.ai?.departmentRebuttalAuthoredByLead!==true)throw new Error('department lead ownership contract missing');
-          for(const token of ['회사 최종목표','전체 시스템 아키텍처','Gated Direct','WAITING_WEB_VALIDATION','DEVELOPMENT_BASELINE_READY','Gated Direct Release Production','Build Preflight','Final Release Review','BUILDING','WAITING_BUILD','WAITING_DEVICE_VALIDATION','FIX_AND_REVERIFY','RELEASE_BLOCKED','RELEASE_READY','Core Design Lock']){
+          for(const token of [
+            'sourceOfTruth: COMPANY_FLOW.md',
+            'format: MACHINE_ORIENTED_POLICY_SPEC',
+            'canonicalField: productionClass',
+            'DESIGN_ONLY:',
+            'DEVELOPMENT_CONFIRMED:',
+            'RELEASE_CONFIRMED:',
+            'executionMode: GATED_DIRECT',
+            'executionMode: GATED_DIRECT_RELEASE_PRODUCTION',
+            'buildPreflightIsNotFinalApproval: true',
+            'finalReviewMustReadSameCurrentBuildRuntimeQaEvidence: true',
+            'independentQaSeparatedFromVibe2SelfCheck: true',
+            'sourceChangeInvalidatesOldBuildValidation: true',
+            'coreDesignLock: true',
+            'finalArtbookOnlyAfterReleaseReady: true'
+          ]){
             if(!policy.includes(token))throw new Error(`central policy missing: ${token}`);
           }
           if(directive.production?.canonicalField!=='productionClass')throw new Error('productionClass must remain canonical');
@@ -144,6 +168,9 @@ jobs:
           grep -Fq 'FINAL_DEPARTMENT_REVIEW_BUILD_RUNTIME_QA_BINDING=PASS' tools/company-release-production-cycle.mjs
           grep -Fq 'FINAL_ARTBOOK_REVISION=CREATED_AFTER_RELEASE_READY' tools/company-release-production-cycle.mjs
           node --test qa/artbook-editorial-role-contract.test.mjs
+          node --test qa/company-release-production-cycle.test.mjs
+          node --test qa/release-stale-artifact-guard.test.mjs
+          node --test qa/tier1-development-baseline-gate.test.mjs
           if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/company-design-cycle.mjs tools/company-development-validation-cycle.mjs tools/company-release-production-cycle.mjs tools/company-baseline-gate.mjs tools/artbook-production-pipeline.mjs; then
             echo 'paid/external AI key leaked into free multimodel path' >&2
             exit 1
