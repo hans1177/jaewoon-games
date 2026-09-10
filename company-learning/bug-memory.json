@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-09T21:40:45.178Z",
+  "updatedAt": "2026-09-10T04:43:29.021Z",
   "policy": {
     "dedupeBySignature": true,
     "retainResolvedPatterns": true,
@@ -332,7 +332,7 @@
       "status": "open",
       "symptom": "Failed to load resource: net::ERR_INVALID_URL",
       "firstSeen": "2026-09-07",
-      "lastSeen": "2026-09-09",
+      "lastSeen": "2026-09-10",
       "occurrences": [
         {
           "checkedAt": "2026-09-07T22:30:07.614Z",
@@ -362,6 +362,11 @@
         {
           "checkedAt": "2026-09-09T21:40:45.178Z",
           "runId": "34408180925",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-10T04:43:29.021Z",
+          "runId": "34438226080",
           "url": "http://127.0.0.1:4173/web-games/human-go/"
         }
       ],
