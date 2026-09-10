@@ -24,8 +24,8 @@
     "completionAndPerformanceSeparated": true
   },
   "counts": {
-    "WORKING": 6,
-    "DONE": 1,
+    "WORKING": 1,
+    "DONE": 6,
     "IDLE_NO_TASK": 1,
     "BLOCKED": 0,
     "FAILED": 0,
@@ -33,9 +33,9 @@
   },
   "liveStates": {
     "ACTIVE": 1,
-    "WAITING": 6,
+    "WAITING": 1,
     "BLOCKED": 0,
-    "DONE": 1
+    "DONE": 6
   },
   "attentionRequired": false,
   "primaryFindings": [],
@@ -51,11 +51,11 @@
     },
     "autonomousDevelopment": {
       "id": 34424045785,
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "success",
       "event": "schedule",
       "createdAt": "2026-09-10T01:05:26Z",
-      "updatedAt": "2026-09-10T01:05:30Z",
+      "updatedAt": "2026-09-10T01:05:41Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34424045785"
     },
     "homepage": null,
@@ -82,15 +82,15 @@
   "staff": {
     "planning": {
       "department": "planning",
-      "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
+      "taskAssigned": false,
+      "status": "DONE",
+      "workState": "DONE",
       "task": "autonomous development floor 34424045785",
       "executionEvidence": [
-        "autonomous-workflow:34424045785:in_progress:pending",
+        "autonomous-workflow:34424045785:completed:success",
         "autonomous-job:102705409368:department (planning-final):completed:skipped"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": {
         "id": 102705409368,
         "name": "department (planning-final)",
@@ -103,8 +103,8 @@
       },
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous development floor completed without a separate active role job",
+      "action": "none",
       "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
@@ -122,19 +122,19 @@
     },
     "development": {
       "department": "development",
-      "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
+      "taskAssigned": false,
+      "status": "DONE",
+      "workState": "DONE",
       "task": "autonomous development floor 34424045785",
       "executionEvidence": [
-        "autonomous-workflow:34424045785:in_progress:pending"
+        "autonomous-workflow:34424045785:completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous development floor completed without a separate active role job",
+      "action": "none",
       "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
@@ -152,19 +152,19 @@
     },
     "qa": {
       "department": "qa",
-      "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
+      "taskAssigned": false,
+      "status": "DONE",
+      "workState": "DONE",
       "task": "autonomous development floor 34424045785",
       "executionEvidence": [
-        "autonomous-workflow:34424045785:in_progress:pending"
+        "autonomous-workflow:34424045785:completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous development floor completed without a separate active role job",
+      "action": "none",
       "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
@@ -182,19 +182,19 @@
     },
     "graphics": {
       "department": "graphics",
-      "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
+      "taskAssigned": false,
+      "status": "DONE",
+      "workState": "DONE",
       "task": "autonomous development floor 34424045785",
       "executionEvidence": [
-        "autonomous-workflow:34424045785:in_progress:pending"
+        "autonomous-workflow:34424045785:completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous development floor completed without a separate active role job",
+      "action": "none",
       "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
@@ -212,19 +212,19 @@
     },
     "balance": {
       "department": "balance",
-      "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
+      "taskAssigned": false,
+      "status": "DONE",
+      "workState": "DONE",
       "task": "autonomous development floor 34424045785",
       "executionEvidence": [
-        "autonomous-workflow:34424045785:in_progress:pending"
+        "autonomous-workflow:34424045785:completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous development floor completed without a separate active role job",
+      "action": "none",
       "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
