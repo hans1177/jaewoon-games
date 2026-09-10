@@ -7,8 +7,12 @@ import {
   attemptedGameIds,
   attemptCountForGameOnDate,
   attemptsForDate,
+  classifyDevelopmentProgress,
+  evaluateReleaseReadiness,
   reserveQueueWork,
   settleQueueWork,
+  transitionWorkLedger,
+  validateReleaseEvidence,
 } from '../tools/autonomous-queue-state.mjs';
 
 test('same game can reserve multiple 24h development floors on one KST work date after prior lease settles',()=>{
@@ -53,6 +57,53 @@ test('old queue attempts are pruned while recent evidence is retained',()=>{
   const next=reserveQueueWork(state,{date:'2026-09-09',gameId:'P0001',now:new Date('2026-09-09T00:00:00Z')});
   assert.equal(next.attempts.some(x=>x.gameId==='P0009'),false);
   assert.equal(next.attempts.some(x=>x.gameId==='P0002'),true);
+});
+
+test('release evidence rejects stale or SHA-mismatched proof',()=>{
+  const base={category:'core_loop',source:'android-runtime',timestamp:'2026-09-10T10:00:00Z',commitSha:'abc123',runId:'run-1',verdict:'PASS'};
+  assert.equal(validateReleaseEvidence(base,{expectedCommit:'abc123',now:new Date('2026-09-10T11:00:00Z')}).valid,true);
+  assert.equal(validateReleaseEvidence({...base,commitSha:'wrong'},{expectedCommit:'abc123',now:new Date('2026-09-10T11:00:00Z')}).reason,'SHA_MISMATCH');
+  assert.equal(validateReleaseEvidence({...base,timestamp:'2026-08-01T10:00:00Z'},{expectedCommit:'abc123',now:new Date('2026-09-10T11:00:00Z')}).reason,'STALE_EVIDENCE');
+});
+
+test('release readiness uses deterministic 20/20/20/15/10/10/5 weights',()=>{
+  const now=new Date('2026-09-10T11:00:00Z');
+  const evidence=['install_update','core_loop','stability','content','graphics_ui','monetization','store'].map((category,index)=>({
+    category,source:`qa-${category}`,timestamp:'2026-09-10T10:00:00Z',commitSha:'abc123',runId:`run-${index}`,verdict:'PASS',evidenceRef:`artifact-${index}`,
+  }));
+  const readiness=evaluateReleaseReadiness({evidence,expectedCommit:'abc123',now});
+  assert.equal(readiness.score,100);
+  assert.equal(readiness.pass,true);
+  assert.deepEqual(Object.values(readiness.categories).map(row=>row.weight),[20,20,20,15,10,10,5]);
+});
+
+test('Actions success or one generic evidence ref cannot become positive development progress',()=>{
+  assert.equal(classifyDevelopmentProgress({workState:'PASS',implementationChanged:true,qaVerdict:'PASS',evidenceRefs:['actions-success']}),'INCOMPLETE_PROGRESS');
+});
+
+test('WORK_ID becomes PASS only with complete commit-bound release evidence',()=>{
+  const now=new Date('2026-09-10T11:00:00Z');
+  const releaseEvidence=['install_update','core_loop','stability','content','graphics_ui','monetization','store'].map((category,index)=>({
+    category,source:`qa-${category}`,timestamp:'2026-09-10T10:00:00Z',commitSha:'abc123',testId:`test-${index}`,verdict:'PASS',evidenceRef:`artifact-${index}`,
+  }));
+  const next=transitionWorkLedger({version:4,attempts:[],workLedger:[]},{
+    workId:'W-1',workState:'PASS',owner:'qa',sourceRoot:'unity-games/daechung-rpg',sourceCommit:'abc123',implementationChanged:true,qaVerdict:'PASS',evidenceRefs:['qa-run'],releaseEvidence,now,
+  });
+  assert.equal(next.workLedger[0].developmentProgress,'PASS');
+  assert.equal(next.workLedger[0].releaseReadiness.score,100);
+  assert.equal(next.workLedger[0].releaseEvidence.length,7);
+});
+
+test('missing release category keeps completed-looking WORK_ID incomplete',()=>{
+  const now=new Date('2026-09-10T11:00:00Z');
+  const releaseEvidence=['install_update','core_loop','stability'].map((category,index)=>({
+    category,source:`qa-${category}`,timestamp:'2026-09-10T10:00:00Z',commitSha:'abc123',runId:`run-${index}`,verdict:'PASS',
+  }));
+  const next=transitionWorkLedger({version:4,attempts:[],workLedger:[]},{
+    workId:'W-2',workState:'PASS',sourceCommit:'abc123',implementationChanged:true,qaVerdict:'PASS',evidenceRefs:['qa-run'],releaseEvidence,now,
+  });
+  assert.equal(next.workLedger[0].developmentProgress,'INCOMPLETE_PROGRESS');
+  assert.equal(next.workLedger[0].releaseReadiness.score,60);
 });
 
 test('failed-floor recovery cannot be evicted by the prepare writer queue and retries branch races',()=>{
