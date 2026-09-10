@@ -23,6 +23,9 @@ on:
 permissions:
   contents: write
 
+env:
+  JAEWOON_ANDROID_VERIFY_API: '36'
+
 concurrency:
   group: unity-cloud-android-test
   cancel-in-progress: false
@@ -30,7 +33,17 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 75
+    outputs:
+      game_id: ${{ steps.request.outputs.game_id }}
+      request_id: ${{ steps.request.outputs.request_id }}
+      application_id: ${{ steps.apk_verify.outputs.application_id }}
+      publish_homepage: ${{ steps.request.outputs.publish_homepage }}
+      artifact_name: ${{ steps.artifact.outputs.artifact_name }}
+      release_tag: ${{ steps.artifact.outputs.release_tag }}
+      apk_name: ${{ steps.artifact.outputs.apk_name }}
+      sha256: ${{ steps.artifact.outputs.sha256 }}
+      bytes: ${{ steps.artifact.outputs.bytes }}
 
     steps:
       - name: Checkout
@@ -49,33 +62,34 @@ jobs:
           import json, pathlib, re, sys
           request_file, output = sys.argv[1], sys.argv[2]
           if not re.fullmatch(r'\.build-requests/unity/[A-Za-z0-9._-]+\.json', request_file):
-              raise SystemExit(f'invalid request path: {request_file}')
+              raise SystemExit('[JAEWOON_BUILD_ERROR:INVALID_REQUEST_PATH] invalid Unity build request path')
           path = pathlib.Path(request_file)
           if not path.is_file():
-              raise SystemExit(f'build request missing: {request_file}')
+              raise SystemExit('[JAEWOON_BUILD_ERROR:REQUEST_MISSING] Unity build request file is missing')
           data = json.loads(path.read_text(encoding='utf-8'))
           if data.get('version') != 1:
-              raise SystemExit('unsupported build request version')
+              raise SystemExit('[JAEWOON_BUILD_ERROR:REQUEST_VERSION_UNSUPPORTED] unsupported build request version')
           game_id = str(data.get('gameId',''))
           project = str(data.get('projectPath','')).replace('\\','/').strip('/')
           method = str(data.get('buildMethod','')).strip()
           request_id = str(data.get('requestId') or f'run-{game_id}')
+          application_id = str(data.get('applicationId','')).strip()
           if not re.fullmatch(r'[a-z0-9][a-z0-9-]{1,48}', game_id):
-              raise SystemExit(f'invalid gameId: {game_id}')
+              raise SystemExit('[JAEWOON_BUILD_ERROR:INVALID_GAME_ID] invalid gameId')
           if not re.fullmatch(r'unity-games/[A-Za-z0-9._-]+', project) or '..' in project:
-              raise SystemExit(f'invalid projectPath: {project}')
+              raise SystemExit('[JAEWOON_BUILD_ERROR:INVALID_PROJECT_PATH] invalid Unity projectPath')
           if not method or not re.fullmatch(r'[A-Za-z0-9_.]+', method):
-              raise SystemExit('buildMethod is required and must be a fully qualified Unity static method')
+              raise SystemExit('[JAEWOON_BUILD_ERROR:INVALID_BUILD_METHOD] buildMethod must be a fully qualified Unity static method')
+          if application_id and not re.fullmatch(r'[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*){2,}', application_id):
+              raise SystemExit('[JAEWOON_BUILD_ERROR:INVALID_APPLICATION_ID] invalid Android applicationId')
           version_path = pathlib.Path(project) / 'ProjectSettings' / 'ProjectVersion.txt'
           if not version_path.is_file():
-              raise SystemExit(f'not a Unity project: {project}')
+              raise SystemExit('[JAEWOON_BUILD_ERROR:UNITY_PROJECT_MISSING] ProjectVersion.txt is missing')
           version_text = version_path.read_text(encoding='utf-8')
           m = re.search(r'm_EditorVersion:\s*([^\s]+)', version_text)
           r = re.search(r'm_EditorVersionWithRevision:\s*[^\s]+\s*\(([A-Za-z0-9]+)\)', version_text)
           if not m or not r:
-              raise SystemExit('could not resolve Unity editor version/revision')
-          unity_version = m.group(1)
-          unity_revision = r.group(1)
+              raise SystemExit('[JAEWOON_BUILD_ERROR:UNITY_VERSION_UNRESOLVED] could not resolve Unity editor version/revision')
 
           publish_homepage = False
           catalog_path = pathlib.Path('game-catalog.json')
@@ -91,8 +105,9 @@ jobs:
               f.write(f'project_path={project}\n')
               f.write(f'build_method={method}\n')
               f.write(f'request_id={request_id}\n')
-              f.write(f'unity_version={unity_version}\n')
-              f.write(f'unity_revision={unity_revision}\n')
+              f.write(f'application_id={application_id}\n')
+              f.write(f'unity_version={m.group(1)}\n')
+              f.write(f'unity_revision={r.group(1)}\n')
               f.write(f'publish_homepage={str(publish_homepage).lower()}\n')
           PY
 
@@ -103,9 +118,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          [[ -n "$UNITY_EMAIL" ]] || { echo 'UNITY_EMAIL secret is required.' >&2; exit 2; }
-          [[ -n "$UNITY_PASSWORD" ]] || { echo 'UNITY_PASSWORD secret is required.' >&2; exit 2; }
-          echo '[PASS] Unity account credentials are present. Cloud activation will run directly on the GitHub host.'
+          [[ -n "$UNITY_EMAIL" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[UNITY_EMAIL_MISSING]::UNITY_EMAIL secret is required.'; exit 21; }
+          [[ -n "$UNITY_PASSWORD" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[UNITY_PASSWORD_MISSING]::UNITY_PASSWORD secret is required.'; exit 22; }
+          echo '[PASS] Unity account credentials are present.'
 
       - name: Cache Unity Library
         uses: actions/cache@v4
@@ -123,7 +138,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           sudo sh -c 'dbus-uuidgen > /etc/machine-id'
           sudo mkdir -p /var/lib/dbus
           sudo ln -sfn /etc/machine-id /var/lib/dbus/machine-id
@@ -143,16 +157,11 @@ jobs:
             unityhub xvfb ffmpeg libgtk2.0-0 libglu1-mesa libgconf-2-4 libncurses5 pulseaudio desktop-file-utils
 
           hub_bin="$(readlink -f "$(command -v unityhub)")"
-          [[ -n "$hub_bin" && -x "$hub_bin" ]] || { echo 'Unity Hub executable not found after installation.' >&2; exit 3; }
-          echo "[PASS] Unity Hub executable: $hub_bin"
+          [[ -n "$hub_bin" && -x "$hub_bin" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[UNITY_HUB_MISSING]::Unity Hub executable was not found.'; exit 23; }
 
-          # activate-unity-license v2 still resolves the legacy /opt/unityhub tree.
-          # Bridge the current Hub 3.20+ /usr/lib layout to that legacy path so
-          # both the Hub executable and bundled Unity.Licensing.Client are visible.
           sudo rm -rf /opt/unityhub
           sudo ln -s /usr/lib/unityhub /opt/unityhub
-          [[ -x /opt/unityhub/unityhub ]] || { echo 'Legacy Unity Hub compatibility path is invalid.' >&2; exit 3; }
-          echo '[PASS] Legacy Unity Hub compatibility path is ready.'
+          [[ -x /opt/unityhub/unityhub ]] || { echo '::error title=JAEWOON_BUILD_ERROR[UNITY_HUB_COMPAT_PATH]::Unity Hub compatibility path is invalid.'; exit 24; }
 
           sudo tee /usr/local/bin/unity-hub >/dev/null <<'EOF'
           #!/bin/bash
@@ -165,8 +174,6 @@ jobs:
           install_root=/opt/unity/editors
           sudo mkdir -p "$install_root"
           sudo chown -R "$(id -u):$(id -g)" /opt/unity
-
-          echo "[INFO] Installing Unity $UNITY_VERSION ($UNITY_REVISION) with Android modules through Hub headless CLI."
           unity-hub install-path --set "$install_root"
           unity-hub install --version "$UNITY_VERSION" --changeset "$UNITY_REVISION" -m android --cm
 
@@ -174,11 +181,13 @@ jobs:
           if [[ -z "$editor" ]]; then
             editor="$(find "$HOME" /opt -type f -path "*/$UNITY_VERSION/Editor/Unity" -perm -111 2>/dev/null | head -n 1 || true)"
           fi
-          [[ -n "$editor" && -x "$editor" ]] || { echo "Unity $UNITY_VERSION executable was not found after Hub installation." >&2; exit 4; }
+          [[ -n "$editor" && -x "$editor" ]] || { echo "::error title=JAEWOON_BUILD_ERROR[UNITY_EDITOR_MISSING]::Unity $UNITY_VERSION executable was not found after installation."; exit 25; }
           echo "unity_editor_path=$editor" >> "$GITHUB_OUTPUT"
           echo "[PASS] Unity Editor installed: $editor"
 
       - name: Activate Unity Personal on GitHub host
+        id: unity_license
+        continue-on-error: true
         uses: RageAgainstThePixel/activate-unity-license@v2
         env:
           UNITY_HUB_PATH: /opt/unityhub/unityhub
@@ -189,6 +198,17 @@ jobs:
           password: ${{ secrets.UNITY_PASSWORD }}
           license-version: 6.x
 
+      - name: Enforce Unity activation result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ '${{ steps.unity_license.outcome }}' != 'success' ]]; then
+            echo '::error title=JAEWOON_BUILD_ERROR[UNITY_LICENSE_198]::Unity Personal activation failed. Historical Unity exit code 198 means no valid Editor license was available.'
+            exit 198
+          fi
+          echo '[PASS] Unity Personal activation succeeded.'
+
       - name: Build Android APK on GitHub host
         env:
           UNITY_EDITOR_PATH: ${{ steps.unity_install.outputs.unity_editor_path }}
@@ -197,23 +217,35 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          [[ -n "$UNITY_EDITOR_PATH" && -x "$UNITY_EDITOR_PATH" ]] || { echo "Unity executable not found: $UNITY_EDITOR_PATH" >&2; exit 3; }
-          echo '[INFO] Unity Personal is active on this same GitHub host. Starting Android build.'
+          [[ -n "$UNITY_EDITOR_PATH" && -x "$UNITY_EDITOR_PATH" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[UNITY_EDITOR_UNAVAILABLE]::Unity executable is unavailable at build time.'; exit 31; }
+          echo '[INFO] Unity Personal is active. Starting Android build.'
+          set +e
           "$UNITY_EDITOR_PATH" \
             -batchmode \
             -nographics \
             -quit \
+            -buildTarget Android \
             -projectPath "$GITHUB_WORKSPACE/$PROJECT_PATH" \
             -executeMethod "$BUILD_METHOD" \
             -logFile /dev/stdout
+          status=$?
+          set -e
+          if [[ "$status" -ne 0 ]]; then
+            if [[ "$status" -eq 198 ]]; then
+              echo '::error title=JAEWOON_BUILD_ERROR[UNITY_LICENSE_198]::Unity returned exit code 198 while building; the Editor license is not valid on this host.'
+            else
+              echo "::error title=JAEWOON_BUILD_ERROR[UNITY_BUILD_PROCESS_FAILED]::Unity Android build process exited with code $status."
+            fi
+            exit "$status"
+          fi
 
-      - name: Verify APK and create metadata
+      - name: Collect APK
         id: artifact
         shell: bash
         run: |
           set -euo pipefail
           apk="$(find build '${{ steps.request.outputs.project_path }}/Build' '${{ steps.request.outputs.project_path }}/build' -type f -name '*.apk' -size +0c 2>/dev/null | head -n 1 || true)"
-          [[ -n "$apk" && -s "$apk" ]] || { echo 'No non-empty APK was produced.' >&2; exit 1; }
+          [[ -n "$apk" && -s "$apk" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[APK_OUTPUT_MISSING]::No non-empty APK was produced.'; exit 41; }
           mkdir -p dist
           game='${{ steps.request.outputs.game_id }}'
           out="dist/${game}-test.apk"
@@ -221,14 +253,73 @@ jobs:
           sha="$(sha256sum "$out" | awk '{print $1}')"
           bytes="$(stat -c%s "$out")"
           tag="test-${game}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          artifact_name="${game}-android-cloud-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           printf '%s  %s\n' "$sha" "${game}-test.apk" > "${out}.sha256"
-          python3 - "$game" '${{ steps.request.outputs.request_id }}' "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$tag" "$sha" "$bytes" '${{ steps.request.outputs.publish_homepage }}' > dist/build-info.json <<'PY'
+          echo "apk_path=$out" >> "$GITHUB_OUTPUT"
+          echo "apk_name=${game}-test.apk" >> "$GITHUB_OUTPUT"
+          echo "release_tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=$artifact_name" >> "$GITHUB_OUTPUT"
+          echo "sha256=$sha" >> "$GITHUB_OUTPUT"
+          echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
+          echo "[PASS] APK collected: $out bytes=$bytes sha256=$sha"
+
+      - name: Verify APK signature, package and CPU payloads
+        id: apk_verify
+        env:
+          APK_PATH: ${{ steps.artifact.outputs.apk_path }}
+          EXPECTED_APPLICATION_ID: ${{ steps.request.outputs.application_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
+          [[ -n "$SDK" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[ANDROID_SDK_MISSING]::Android SDK path is unavailable.'; exit 42; }
+          build_tools="$(find "$SDK/build-tools" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort -V | tail -n 1 || true)"
+          apksigner="$build_tools/apksigner"
+          zipalign="$build_tools/zipalign"
+          aapt="$build_tools/aapt"
+          [[ -x "$apksigner" && -x "$zipalign" && -x "$aapt" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[ANDROID_BUILD_TOOLS_MISSING]::apksigner, zipalign or aapt is missing.'; exit 43; }
+
+          "$zipalign" -c -v 4 "$APK_PATH" >/tmp/zipalign-check.log || { cat /tmp/zipalign-check.log; echo '::error title=JAEWOON_BUILD_ERROR[APK_ZIPALIGN_FAILED]::APK zip alignment validation failed.'; exit 44; }
+          "$apksigner" verify --verbose --print-certs "$APK_PATH" >/tmp/apksigner-check.log 2>&1 || { cat /tmp/apksigner-check.log; echo '::error title=JAEWOON_BUILD_ERROR[APK_SIGNATURE_INVALID]::APK signature verification failed.'; exit 45; }
+          cat /tmp/apksigner-check.log
+
+          badging="$($aapt dump badging "$APK_PATH")" || { echo '::error title=JAEWOON_BUILD_ERROR[APK_BADGING_UNREADABLE]::aapt could not read APK metadata.'; exit 46; }
+          package="$(sed -n "s/^package: name='\([^']*\)'.*/\1/p" <<<"$badging" | head -n 1)"
+          [[ -n "$package" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[APK_PACKAGE_MISSING]::APK package id could not be resolved.'; exit 47; }
+          if [[ -n "$EXPECTED_APPLICATION_ID" && "$package" != "$EXPECTED_APPLICATION_ID" ]]; then
+            echo "::error title=JAEWOON_BUILD_ERROR[APK_PACKAGE_MISMATCH]::Expected $EXPECTED_APPLICATION_ID but APK contains $package."
+            exit 48
+          fi
+
+          unzip -Z1 "$APK_PATH" | grep -q '^lib/arm64-v8a/' || { echo '::error title=JAEWOON_BUILD_ERROR[APK_ARM64_MISSING]::APK does not contain ARM64 native libraries.'; exit 49; }
+          unzip -Z1 "$APK_PATH" | grep -q '^lib/x86_64/' || { echo '::error title=JAEWOON_BUILD_ERROR[APK_X86_64_MISSING]::Test APK must include x86_64 so the same APK can be installed and launched in CI.'; exit 50; }
+
+          min_sdk="$(sed -n "s/^sdkVersion:'\([^']*\)'.*/\1/p" <<<"$badging" | head -n 1)"
+          target_sdk="$(sed -n "s/^targetSdkVersion:'\([^']*\)'.*/\1/p" <<<"$badging" | head -n 1)"
+          echo "application_id=$package" >> "$GITHUB_OUTPUT"
+          echo "[PASS] APK package=$package minSdk=${min_sdk:-unknown} targetSdk=${target_sdk:-unknown} architectures=arm64-v8a,x86_64"
+
+      - name: Create pre-gate build metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - \
+            '${{ steps.request.outputs.game_id }}' \
+            '${{ steps.request.outputs.request_id }}' \
+            '${{ steps.apk_verify.outputs.application_id }}' \
+            "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" \
+            '${{ steps.artifact.outputs.release_tag }}' \
+            '${{ steps.artifact.outputs.sha256 }}' \
+            '${{ steps.artifact.outputs.bytes }}' \
+            '${{ steps.request.outputs.publish_homepage }}' \
+            "$JAEWOON_ANDROID_VERIFY_API" > dist/build-info.json <<'PY'
           import json, sys, datetime
-          game, req, source, run_id, attempt, tag, apk_sha, size, approved = sys.argv[1:]
+          game, req, app_id, source, run_id, attempt, tag, apk_sha, size, approved, api = sys.argv[1:]
           print(json.dumps({
-              'version': 1,
+              'version': 2,
               'gameId': game,
               'requestId': req,
+              'applicationId': app_id,
               'sourceCommit': source,
               'runId': int(run_id),
               'runAttempt': int(attempt),
@@ -238,21 +329,20 @@ jobs:
               'bytes': int(size),
               'channel': 'test',
               'buildRoute': 'github-cloud-host-personal',
+              'architectures': ['arm64-v8a', 'x86_64'],
+              'androidVerificationApi': int(api),
+              'signatureVerified': True,
+              'installAndLaunchVerified': False,
               'homepagePublicationApproved': approved.lower() == 'true',
               'homepagePublished': False,
               'builtAt': datetime.datetime.now(datetime.timezone.utc).isoformat()
           }, ensure_ascii=False, indent=2))
           PY
-          echo "apk_path=$out" >> "$GITHUB_OUTPUT"
-          echo "release_tag=$tag" >> "$GITHUB_OUTPUT"
-          echo "sha256=$sha" >> "$GITHUB_OUTPUT"
-          echo "bytes=$bytes" >> "$GITHUB_OUTPUT"
-          echo "[PASS] CLOUD APK=$out bytes=$bytes sha256=$sha"
 
-      - name: Upload workflow artifact
+      - name: Upload unverified APK for install gate
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.request.outputs.game_id }}-android-cloud-${{ github.run_id }}-${{ github.run_attempt }}
+          name: ${{ steps.artifact.outputs.artifact_name }}
           path: |
             ${{ steps.artifact.outputs.apk_path }}
             ${{ steps.artifact.outputs.apk_path }}.sha256
@@ -260,33 +350,134 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Publish test prerelease download
+  android16-install-gate:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout runtime QA tools
+        uses: actions/checkout@v4
+
+      - name: Download exact APK built above
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.artifact_name }}
+          path: gate-input
+
+      - name: Locate exact APK
+        id: apk
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="$(find gate-input -type f -name '*.apk' -size +0c | head -n 1 || true)"
+          [[ -n "$apk" && -s "$apk" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[INSTALL_GATE_APK_MISSING]::Install gate could not find the built APK.'; exit 51; }
+          echo "path=$apk" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare Android 16 emulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
+          [[ -n "$SDK" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[ANDROID_SDK_MISSING]::Android SDK path is unavailable.'; exit 52; }
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager 'platform-tools' 'emulator' 'build-tools;36.0.0' 'system-images;android-36;google_apis;x86_64'
+          echo no | avdmanager create avd --force --name jaewoon-install-gate --package 'system-images;android-36;google_apis;x86_64' --device 'pixel_6'
+          if [[ -e /dev/kvm ]]; then sudo chmod 666 /dev/kvm || true; fi
+          nohup "$SDK/emulator/emulator" -avd jaewoon-install-gate -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > /tmp/jaewoon-install-emulator.log 2>&1 &
+          echo $! > /tmp/jaewoon-install-emulator.pid
+
+      - name: Install and launch exact APK on Android 16
+        shell: bash
+        run: |
+          set +e
+          bash tools/unity-apk-runtime-smoke.sh '${{ steps.apk.outputs.path }}' qa-artifacts/android16-install-gate
+          status=$?
+          set -e
+          if [[ "$status" -ne 0 ]]; then
+            echo "::error title=JAEWOON_BUILD_ERROR[APK_ANDROID16_INSTALL_OR_LAUNCH_FAILED]::The exact APK failed Android 16 install/runtime smoke; smoke exit=$status."
+            exit 53
+          fi
+          echo '[PASS] Exact APK installed and launched on Android 16 emulator.'
+
+      - name: Upload install gate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android16-install-gate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            qa-artifacts/android16-install-gate/
+            /tmp/jaewoon-install-emulator.log
+          if-no-files-found: warn
+          retention-days: 14
+
+  publish:
+    needs: [build, android16-install-gate]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout publication baseline
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download install-verified APK
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.artifact_name }}
+          path: dist
+
+      - name: Mark metadata install-verified
+        shell: bash
+        run: |
+          set -euo pipefail
+          info="$(find dist -type f -name build-info.json | head -n 1 || true)"
+          apk="$(find dist -type f -name '*.apk' -size +0c | head -n 1 || true)"
+          checksum="$(find dist -type f -name '*.apk.sha256' | head -n 1 || true)"
+          [[ -n "$info" && -n "$apk" && -n "$checksum" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[PUBLISH_ARTIFACT_INCOMPLETE]::Verified publication files are incomplete.'; exit 61; }
+          python3 - "$info" <<'PY'
+          import json, pathlib, sys, datetime
+          path = pathlib.Path(sys.argv[1])
+          data = json.loads(path.read_text(encoding='utf-8'))
+          data['installAndLaunchVerified'] = True
+          data['installVerifiedAt'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+          mkdir -p release-files
+          cp "$apk" "release-files/${{ needs.build.outputs.apk_name }}"
+          cp "$checksum" "release-files/${{ needs.build.outputs.apk_name }}.sha256"
+          cp "$info" release-files/build-info.json
+
+      - name: Publish install-verified test prerelease
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.artifact.outputs.release_tag }}
-          name: ${{ steps.request.outputs.game_id }} Android Test #${{ github.run_number }}
+          tag_name: ${{ needs.build.outputs.release_tag }}
+          name: ${{ needs.build.outputs.game_id }} Android Test #${{ github.run_number }}
           prerelease: true
           make_latest: false
           body: |
             Automated Jaewoon Company Android test build.
-            Route: GitHub-hosted Unity Personal direct activation
-            Game: ${{ steps.request.outputs.game_id }}
+            Android 16 install + launch gate: PASS
+            Package: ${{ needs.build.outputs.application_id }}
+            Architectures: arm64-v8a + x86_64
             Source: ${{ github.sha }}
-            Request: ${{ steps.request.outputs.request_id }}
+            Request: ${{ needs.build.outputs.request_id }}
           files: |
-            ${{ steps.artifact.outputs.apk_path }}
-            ${{ steps.artifact.outputs.apk_path }}.sha256
-            dist/build-info.json
+            release-files/${{ needs.build.outputs.apk_name }}
+            release-files/${{ needs.build.outputs.apk_name }}.sha256
+            release-files/build-info.json
           fail_on_unmatched_files: true
 
       - name: Publish verified build to approved homepage state
-        if: steps.request.outputs.publish_homepage == 'true'
+        if: needs.build.outputs.publish_homepage == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          game='${{ steps.request.outputs.game_id }}'
-          tag='${{ steps.artifact.outputs.release_tag }}'
-          apk_name="${game}-test.apk"
+          game='${{ needs.build.outputs.game_id }}'
+          tag='${{ needs.build.outputs.release_tag }}'
+          apk_name='${{ needs.build.outputs.apk_name }}'
           release_url="https://github.com/${GITHUB_REPOSITORY}/releases/tag/${tag}"
           download_url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/${apk_name}"
           git config user.name 'github-actions[bot]'
@@ -295,9 +486,9 @@ jobs:
           for attempt in 1 2 3; do
             git fetch origin main
             git checkout -B homepage-build-state origin/main
-            python3 - "$game" '${{ steps.request.outputs.request_id }}' "$GITHUB_SHA" "$tag" "$release_url" "$download_url" '${{ steps.artifact.outputs.sha256 }}' '${{ steps.artifact.outputs.bytes }}' <<'PY'
+            python3 - "$game" '${{ needs.build.outputs.request_id }}' "$GITHUB_SHA" "$tag" "$release_url" "$download_url" '${{ needs.build.outputs.sha256 }}' '${{ needs.build.outputs.bytes }}' '${{ needs.build.outputs.application_id }}' <<'PY'
           import json, pathlib, sys, datetime
-          game, request_id, source_commit, tag, release_url, download_url, sha256, size = sys.argv[1:]
+          game, request_id, source_commit, tag, release_url, download_url, sha256, size, application_id = sys.argv[1:]
           path = pathlib.Path('company-status.json')
           data = json.loads(path.read_text(encoding='utf-8'))
           builds = [b for b in data.get('testBuilds', []) if b.get('gameId') != game]
@@ -312,8 +503,12 @@ jobs:
               'releaseTag': tag,
               'release': release_url,
               'download': download_url,
+              'applicationId': application_id,
               'sha256': sha256,
               'bytes': int(size),
+              'androidVerificationApi': 36,
+              'signatureVerified': True,
+              'installAndLaunchVerified': True,
               'builtAt': datetime.datetime.now(datetime.timezone.utc).isoformat()
           })
           data['testBuilds'] = builds
@@ -325,12 +520,12 @@ jobs:
             if git diff --cached --quiet; then
               exit 0
             fi
-            git commit -m "company-ai: publish ${game} verified cloud test build"
+            git commit -m "company-ai: publish ${game} install-verified test build"
             if git push origin HEAD:main; then
               echo "[PASS] Approved homepage build state updated: $download_url"
               exit 0
             fi
             sleep $((attempt * 2))
           done
-          echo 'Could not publish approved homepage build state after 3 attempts.' >&2
-          exit 1
+          echo '::error title=JAEWOON_BUILD_ERROR[HOMEPAGE_STATE_PUBLISH_FAILED]::Could not publish approved homepage build state after 3 attempts.'
+          exit 62

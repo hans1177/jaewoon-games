@@ -23,7 +23,7 @@ jobs:
   runtime-smoke:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - name: Checkout QA tools
         uses: actions/checkout@v4
@@ -40,7 +40,7 @@ jobs:
           else
             run_id='${{ inputs.run_id }}'
           fi
-          [[ "$run_id" =~ ^[0-9]+$ ]] || { echo "invalid run id: $run_id" >&2; exit 2; }
+          [[ "$run_id" =~ ^[0-9]+$ ]] || { echo '[JAEWOON_BUILD_ERROR:INVALID_UPSTREAM_RUN_ID] invalid upstream run id' >&2; exit 2; }
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
 
       - name: Download APK build artifacts
@@ -56,24 +56,24 @@ jobs:
         run: |
           set -euo pipefail
           apk="$(find upstream-artifacts -type f -name '*.apk' -size +0c | head -n 1 || true)"
-          [[ -n "$apk" && -s "$apk" ]] || { echo 'No APK artifact found in upstream build.' >&2; find upstream-artifacts -maxdepth 4 -type f -print || true; exit 3; }
+          [[ -n "$apk" && -s "$apk" ]] || { echo '[JAEWOON_BUILD_ERROR:RUNTIME_SMOKE_APK_MISSING] No APK artifact found in upstream build.' >&2; find upstream-artifacts -maxdepth 4 -type f -print || true; exit 3; }
           echo "path=$apk" >> "$GITHUB_OUTPUT"
           echo "UNITY_RUNTIME_APK=$apk"
 
-      - name: Prepare Android emulator
+      - name: Prepare Android 16 emulator
         shell: bash
         run: |
           set -euo pipefail
           SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
-          [[ -n "$SDK" ]] || { echo 'Android SDK path missing.' >&2; exit 4; }
+          [[ -n "$SDK" ]] || { echo '[JAEWOON_BUILD_ERROR:ANDROID_SDK_MISSING] Android SDK path missing.' >&2; exit 4; }
           yes | sdkmanager --licenses >/dev/null || true
-          sdkmanager 'platform-tools' 'emulator' 'build-tools;35.0.0' 'system-images;android-35;google_apis;x86_64'
-          echo no | avdmanager create avd --force --name jaewoon-qa --package 'system-images;android-35;google_apis;x86_64' --device 'pixel_6'
+          sdkmanager 'platform-tools' 'emulator' 'build-tools;36.0.0' 'system-images;android-36;google_apis;x86_64'
+          echo no | avdmanager create avd --force --name jaewoon-qa --package 'system-images;android-36;google_apis;x86_64' --device 'pixel_6'
           if [[ -e /dev/kvm ]]; then sudo chmod 666 /dev/kvm || true; fi
           nohup "$SDK/emulator/emulator" -avd jaewoon-qa -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > /tmp/jaewoon-emulator.log 2>&1 &
           echo $! > /tmp/jaewoon-emulator.pid
 
-      - name: Run black-box APK play smoke
+      - name: Run Android 16 black-box APK play smoke
         shell: bash
         run: bash tools/unity-apk-runtime-smoke.sh '${{ steps.apk.outputs.path }}' qa-artifacts/unity-runtime-smoke
 
