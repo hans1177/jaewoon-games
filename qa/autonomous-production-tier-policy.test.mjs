@@ -13,14 +13,14 @@ const catalog={games:[
   {id:'legacy-release',homepageCategory:'reviewing'},
 ]};
 
-const project=(id,productionClass,productionTier)=>({
+const project=(id,productionClass,productionTier,profileStatus='DEVELOPMENT_CONFIRMED')=>({
   id:`P-${id}`,
   slug:id,
   name:id,
   productionClass,
   productionTier,
   sourcePath:`web-games/${id}`,
-  profileStatus:'DEVELOPMENT_CONFIRMED',
+  profileStatus,
   mode:'IMPROVE',
   protectedValues:[],
 });
@@ -31,8 +31,8 @@ test('productionClass가 오래된 숫자 tier·홈페이지·프로필보다 �
   assert.deepEqual(classifyProjectStage(project('design','DESIGN_ONLY',1),catalog),{id:'DESIGN_ONLY',rank:4,codeWork:false});
 });
 
-test('productionClass가 없는 레거시 데이터는 숫자 tier fallback을 계속 지원한다',()=>{
-  assert.deepEqual(classifyProjectStage(project('legacy-release',undefined,1),catalog),{id:'RELEASE_CONFIRMED',rank:1,codeWork:true});
+test('productionClass·프로필·홈페이지 의미값이 없는 레거시 데이터는 숫자 tier fallback을 계속 지원한다',()=>{
+  assert.deepEqual(classifyProjectStage(project('legacy-release',undefined,1,'REVIEWING'),catalog),{id:'RELEASE_CONFIRMED',rank:1,codeWork:true});
 });
 
 test('DESIGN_ONLY만 있으면 진단 근거가 있어도 코드 작업을 만들지 않는다',()=>{
