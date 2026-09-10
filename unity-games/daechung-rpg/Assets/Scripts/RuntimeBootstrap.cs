@@ -132,6 +132,22 @@ namespace JaewoonGames.DaechungRpg
             if (GUILayout.Button("FIELD 3")) MoveTo("field-3");
             GUI.enabled = true;
             GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUI.enabled = _core.Player.level >= 5;
+            if (GUILayout.Button("FIELD 4")) MoveTo("field-4");
+            GUI.enabled = _core.Player.level >= 7;
+            if (GUILayout.Button("FIELD 5")) MoveTo("field-5");
+            GUI.enabled = true;
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUI.enabled = _core.Player.level >= 8;
+            if (GUILayout.Button("FIELD 6")) MoveTo("field-6");
+            GUI.enabled = _core.Player.level >= 11;
+            if (GUILayout.Button("JUNGLE")) MoveTo("jungle");
+            GUI.enabled = true;
+            GUILayout.EndHorizontal();
         }
 
         private void DrawCombatControls()
