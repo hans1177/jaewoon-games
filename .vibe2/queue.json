@@ -131,6 +131,48 @@
       ],
       "lastOutcome": "FAIL",
       "companyContext": null
+    },
+    {
+      "id": "pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827",
+      "gameId": "daechung-rpg",
+      "target": "unity",
+      "department": "development",
+      "type": "implementation",
+      "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 대충 RPG\n사용자 직접 지시: 대충 RPG의 3D 애니메이션 모션을 부드럽게 개선하고 전환 블렌딩을 최적화한다.\n\n추가 지시:\n- 안녕\n- 앙녕\n- 뭐하냐\n- 뭐해\n- 뭐해\n- 야\n- 뭐해\n- 안녕하세요\n- 안녕\n- 연결해 제미나이\n- 좋아 그냥 얘기좀 가진도 올릴수 잇어?\n- 대답안해?\n- 야\n- 젛아\n- 오늘 뭐햇어?\n- 왜\n- 추천해줘\n- 게임개발 하자고?\n- 우이 개발중인거\n- 대충 알피지\n- 게임이름이 대충 알피지야\n- 게임 개발\n- 니가 가능해?\n- 우리 게임 개발중인거 뭐야\n- 야..빨리\n- 추천\n- 모르겟어\n- UI 그리고 지금 어플 다운 가능해? 빌드 배포 성공?\n- 오늘 넌 뭐햇냐?\n- 대충 알피지 그래픽좀 신경써 애니 모션 부드럽게 드리고 3디애?\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
+      "responsibleFiles": [],
+      "dependencies": [],
+      "priority": "owner-immediate",
+      "releaseState": "release-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": true,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "evidence": [
+        "pwa-task:c9ce17c0-bf0f-4066-90c0-5d047f728827",
+        "pwa-kind:directive",
+        "pwa-priority:normal",
+        "actual-release-state:release-confirmed",
+        "source-root:unity-games/daechung-rpg",
+        "owner-auto-deploy-authorization",
+        "verified-qa-required"
+      ],
+      "companyContext": {
+        "stageId": "owner-immediate",
+        "role": "director",
+        "assignmentAuthority": "owner-directive",
+        "sourceRef": "pwa-task:c9ce17c0-bf0f-4066-90c0-5d047f728827",
+        "reviewRequired": true
+      }
     }
-  ]
+  ],
+  "ingest": {
+    "added": true,
+    "taskId": "pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827",
+    "gameId": "daechung-rpg",
+    "target": "unity",
+    "reason": "OWNER_IMMEDIATE_PWA"
+  }
 }
