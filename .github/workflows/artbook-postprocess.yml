@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: artbook-postprocess-main
@@ -71,8 +72,10 @@ jobs:
           console.log('HOMEPAGE_COMPLETION=YES');
           NODE
 
-      - name: Commit completed artbook
+      - name: Persist completed artbook through review PR
         if: steps.target.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -84,7 +87,10 @@ jobs:
             echo 'ARTBOOK_POSTPROCESS_COMMIT=NO_CHANGES'
             exit 0
           fi
+          BRANCH="automation/artbook-postprocess-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$BRANCH"
           git commit -m "artbook: postprocess ${GAME_ID} ${DATE_KST}"
-          git pull --rebase origin main
-          git push origin main
-          echo 'ARTBOOK_POSTPROCESS_COMMIT=SUCCESS'
+          git push origin "HEAD:${BRANCH}"
+          PR_URL="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$BRANCH" --title "artbook: postprocess ${GAME_ID} ${DATE_KST}" --body "Automated artbook postprocess persistence from workflow run ${GITHUB_RUN_ID}. Direct writes to main are forbidden; this PR preserves review and CI before integration.")"
+          echo "ARTBOOK_POSTPROCESS_PR=${PR_URL}"
+          echo 'ARTBOOK_POSTPROCESS_COMMIT=PR_OPENED'
