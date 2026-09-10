@@ -26,7 +26,7 @@ const game=(catalog.games||[]).find(x=>x.id===gameId);
 if(!game)throw new Error(`Unknown game: ${gameId}`);
 const productionClass=productionClassOf({},game,{numericLabels});
 if(!Object.values(PRODUCTION_CLASSES).includes(productionClass))throw new Error(`Invalid production class: ${productionClass}`);
-const tierAlias=tierAliasForProductionClass(productionClass,{numericLabels})??Number(game.productionTier||0)||null;
+const tierAlias=tierAliasForProductionClass(productionClass,{numericLabels})??(Number(game.productionTier||0)||null);
 const idx=hash(gameId)%pool.length;
 const designerModel=pool[idx];
 const editorModel=pool[(idx+1)%pool.length];
