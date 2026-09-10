@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { buildVerifiedTrainingSample } from './vibe2-training-sample.mjs';
+import { buildVerifiedTrainingSample, TRAINING_SAMPLE_VERSION } from './vibe2-training-sample.mjs';
 
 const SAFE_ID = /^[A-Za-z0-9._-]+$/;
 
@@ -24,6 +24,10 @@ function readJsonAt(ref, file) {
   const content = gitText(['show', `${ref}:${file}`], { allowFailure: true });
   if (!content) return null;
   try { return JSON.parse(content); } catch { return null; }
+}
+
+function readJsonFile(file) {
+  try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return null; }
 }
 
 export function listDevHistoryPaths(devRef = 'origin/autonomous-dev') {
@@ -62,7 +66,7 @@ export function readPromotionPatch(promotionCommit, sourcePath) {
 
 export function ingestVerifiedHistories({ devRef = 'origin/autonomous-dev', outDir = 'company-learning/training-samples' } = {}) {
   fs.mkdirSync(outDir, { recursive: true });
-  const result = { version: 1, devRef, written: [], skipped: [], examined: 0 };
+  const result = { version: 2, trainingSampleVersion: TRAINING_SAMPLE_VERSION, devRef, written: [], refreshed: [], skipped: [], examined: 0 };
 
   for (const historyPath of listDevHistoryPaths(devRef)) {
     result.examined += 1;
@@ -73,8 +77,15 @@ export function ingestVerifiedHistories({ devRef = 'origin/autonomous-dev', outD
       result.skipped.push({ historyPath, reason: 'INVALID_CANDIDATE_ID' });
       continue;
     }
-    if (fs.existsSync(outFile)) {
-      result.skipped.push({ candidateId, reason: 'ALREADY_INGESTED' });
+
+    const existing = fs.existsSync(outFile) ? readJsonFile(outFile) : null;
+    const currentEnough = existing
+      && Number(existing.version ?? 0) >= TRAINING_SAMPLE_VERSION
+      && existing.independentQa === 'PASS'
+      && existing.browserQa === 'PASS'
+      && existing.provenance?.sourceRevision;
+    if (currentEnough) {
+      result.skipped.push({ candidateId, reason: 'ALREADY_CURRENT' });
       continue;
     }
     if (history?.verdict !== 'ADVANCE_TO_AUTONOMOUS_DEV' || history?.independentQa !== 'PASS' || history?.browserQa !== 'PASS') {
@@ -118,7 +129,9 @@ export function ingestVerifiedHistories({ devRef = 'origin/autonomous-dev', outD
       sample.provenance.candidateCommit = candidateCommit;
       sample.provenance.promotionCommit = promotionCommit;
       fs.writeFileSync(outFile, `${JSON.stringify(sample, null, 2)}\n`);
-      result.written.push({ candidateId, gameId: sample.gameId, taskType: sample.taskType, promotionCommit, outFile });
+      const record = { candidateId, gameId: sample.gameId, taskType: sample.taskType, promotionCommit, outFile };
+      if (existing) result.refreshed.push(record);
+      else result.written.push(record);
     } catch (error) {
       result.skipped.push({ candidateId, reason: 'SAMPLE_REJECTED', detail: String(error?.message ?? error).slice(0, 300) });
     }
