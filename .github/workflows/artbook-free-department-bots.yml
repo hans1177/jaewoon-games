@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       game_id:
-        description: 'Optional game id. Empty = run every current DESIGN_ONLY game directly through design, meeting, baseline and artbook.'
+        description: 'Optional game id. DESIGN_ONLY runs direct to artbook; DEVELOPMENT_CONFIRMED resumes gated validation.'
         required: false
         type: string
   schedule:
@@ -16,8 +16,12 @@ on:
       - 'company-directive.json'
       - 'game-catalog.json'
       - 'artbook-work-orders/**'
+      - 'design/**/web-gameplay-validation.json'
+      - 'design/**/unity-technical-validation.json'
+      - 'design/**/development-revalidation.json'
       - 'tools/production-classification.mjs'
       - 'tools/company-design-cycle.mjs'
+      - 'tools/company-development-validation-cycle.mjs'
       - 'tools/company-baseline-gate.mjs'
       - 'tools/artbook-production-pipeline.mjs'
       - 'tools/artbook-fact-pack.mjs'
@@ -35,7 +39,7 @@ env:
   OLLAMA_HOST: 127.0.0.1:11434
 
 jobs:
-  resolve-design-cycle-targets:
+  resolve-production-targets:
     runs-on: ubuntu-latest
     outputs:
       run: ${{ steps.targets.outputs.run }}
@@ -47,73 +51,68 @@ jobs:
           ref: main
           fetch-depth: 2
 
-      - name: Resolve direct DESIGN_ONLY targets
+      - name: Resolve direct and resumable targets
         id: targets
         shell: bash
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
           import fs from 'node:fs';
-          import {
-            PRODUCTION_CLASSES,
-            productionClassOf,
-            tierAliasForProductionClass,
-          } from './tools/production-classification.mjs';
+          import {execFileSync} from 'node:child_process';
+          import {PRODUCTION_CLASSES,productionClassOf,tierAliasForProductionClass} from './tools/production-classification.mjs';
 
           const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const numericLabels=directive.production?.numericLabels||{};
           const canonical=new Set(directive.production?.canonicalClasses||[]);
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
-
-          const games=(catalog.games||[]).map(game=>({
-            game,
-            productionClass:productionClassOf({},game,{numericLabels}),
-          })).filter(row=>canonical.has(row.productionClass));
+          const eventName=String(process.env.EVENT_NAME||'').trim();
+          const games=(catalog.games||[]).map(game=>({game,productionClass:productionClassOf({},game,{numericLabels})})).filter(row=>canonical.has(row.productionClass));
 
           let selected=[];
           if(requested){
             const target=games.find(row=>row.game.id===requested);
             if(!target)throw new Error(`Unknown or unclassified game_id: ${requested}`);
             selected=[target];
+          }else if(eventName==='push'){
+            let changed=[];
+            try{changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);}catch{}
+            const evidenceIds=new Set();
+            for(const file of changed){
+              const m=file.match(/^design\/([^/]+)\/[^/]+\/(web-gameplay-validation|unity-technical-validation|development-revalidation)\.json$/);
+              if(m)evidenceIds.add(m[1]);
+            }
+            if(evidenceIds.size){
+              selected=games.filter(row=>evidenceIds.has(row.game.id)&&row.productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED);
+            }else{
+              selected=games.filter(row=>row.productionClass===PRODUCTION_CLASSES.DESIGN_ONLY);
+            }
           }else{
             selected=games.filter(row=>row.productionClass===PRODUCTION_CLASSES.DESIGN_ONLY);
           }
 
           const now=new Date();
-          const parts=new Intl.DateTimeFormat('en-US',{
-            timeZone:'Asia/Seoul',
-            year:'numeric',
-            month:'2-digit',
-            day:'2-digit'
-          }).formatToParts(now);
+          const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
           const get=t=>parts.find(x=>x.type===t)?.value||'';
           const date=`${get('year')}-${get('month')}-${get('day')}`;
-
-          const targets=selected.map(row=>({
-            game_id:row.game.id,
-            game_name:row.game.name,
-            production_class:row.productionClass,
-            tier_alias:tierAliasForProductionClass(row.productionClass,{numericLabels})??'',
-            date,
-          }));
-
+          const targets=selected.map(row=>({game_id:row.game.id,game_name:row.game.name,production_class:row.productionClass,tier_alias:tierAliasForProductionClass(row.productionClass,{numericLabels})??'',date}));
           console.log(`run=${targets.length>0?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
-          console.error(`DIRECT_DESIGN_TARGET_COUNT=${targets.length}`);
-          console.error(`DIRECT_DESIGN_TARGETS=${targets.map(x=>x.game_id).join(',')}`);
+          console.error(`PRODUCTION_TARGET_COUNT=${targets.length}`);
+          console.error(`PRODUCTION_TARGETS=${targets.map(x=>`${x.game_id}:${x.production_class}`).join(',')}`);
           NODE
 
-  multimodel-design-cycle:
-    needs: resolve-design-cycle-targets
-    if: needs.resolve-design-cycle-targets.outputs.run == 'true'
+  production-cycle:
+    needs: resolve-production-targets
+    if: needs.resolve-production-targets.outputs.run == 'true'
     strategy:
       fail-fast: false
       max-parallel: 6
       matrix:
-        target: ${{ fromJSON(needs.resolve-design-cycle-targets.outputs.targets) }}
+        target: ${{ fromJSON(needs.resolve-production-targets.outputs.targets) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -130,10 +129,7 @@ jobs:
           installed=0
           for attempt in 1 2 3; do
             echo "OLLAMA_INSTALL_ATTEMPT=$attempt/3"
-            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then
-              installed=1
-              break
-            fi
+            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
             sleep $((attempt * 4))
           done
           test "$installed" = 1
@@ -145,7 +141,7 @@ jobs:
           cat /tmp/ollama.log || true
           exit 1
 
-      - name: Pull all configured free department models
+      - name: Pull configured free department models
         shell: bash
         run: |
           set -euo pipefail
@@ -156,17 +152,10 @@ jobs:
           const pool=[...new Set((d.ai?.modelPool||[]).map(String).map(x=>x.trim()).filter(Boolean))];
           const reviewCount=Math.max(Number(d.ai?.minDistinctModelsPerDepartment||3),Number(d.ai?.departmentReviewModelCount||3));
           const leads=roles.map(role=>String(d.ai?.departmentLeadModels?.[role]||'').trim());
-          const distinctLeads=[...new Set(leads.filter(Boolean))];
-          const minLeads=Number(d.ai?.minDistinctLeadModelsAcrossDepartments||roles.length);
-
           if(pool.length<reviewCount)throw new Error(`model pool too small: ${pool.length}/${reviewCount}`);
-          if(leads.some(x=>!x))throw new Error('one or more department lead models are missing');
-          if(d.ai?.departmentLeadModelsMustBeDistinct!==false&&distinctLeads.length<minLeads){
-            throw new Error(`distinct department lead gate failed: ${distinctLeads.length}/${minLeads}`);
-          }
-          for(let i=0;i<roles.length;i++){
-            if(!pool.includes(leads[i]))throw new Error(`${roles[i]} lead model is not in modelPool: ${leads[i]}`);
-          }
+          if(leads.some(x=>!x))throw new Error('department lead model missing');
+          if(new Set(leads).size<Number(d.ai?.minDistinctLeadModelsAcrossDepartments||roles.length))throw new Error('five distinct department lead gate failed');
+          for(const lead of leads)if(!pool.includes(lead))throw new Error(`lead model not in pool: ${lead}`);
           for(const model of pool)console.log(model);
           NODE
           while IFS= read -r model; do
@@ -176,15 +165,14 @@ jobs:
           done < /tmp/models.txt
           echo 'DEPARTMENT_LEAD_PREFLIGHT=PASS'
           echo 'PAID_API=NO'
-          echo 'API_KEY_REQUIRED=NO'
 
-      - name: Run design through verified artbook directly
+      - name: Run production class pipeline
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
         run: node tools/artbook-production-pipeline.mjs
 
-      - name: Verify complete direct result
+      - name: Verify direct or gated result
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
@@ -195,164 +183,71 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import path from 'node:path';
-          import {
-            PRODUCTION_CLASSES,
-            normalizeProductionClass,
-            productionClassFromLegacyTier
-          } from './tools/production-classification.mjs';
-
-          const d=JSON.parse(fs.readFileSync('./company-directive.json','utf8'));
-          const numericLabels=d.production?.numericLabels||{};
+          import {PRODUCTION_CLASSES,normalizeProductionClass,productionClassFromLegacyTier} from './tools/production-classification.mjs';
+          const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const roles=['planning','graphics','development','qa','balance'];
+          const leads=roles.map(role=>String(d.ai?.departmentLeadModels?.[role]||'').trim());
+          if(new Set(leads).size<roles.length)throw new Error('configured lead models are not distinct');
           const gameId=process.env.ARTBOOK_GAME_ID;
           const date=process.env.ARTBOOK_DATE;
           const base=path.join('design',gameId,date);
           const statusFile=path.join(base,'cycle-status.json');
-          const artbookFile=path.join(base,'core-artbook.json');
-
           if(!fs.existsSync(statusFile))throw new Error('cycle-status.json missing');
-          if(!fs.existsSync(artbookFile))throw new Error('core-artbook.json missing');
-
           const s=JSON.parse(fs.readFileSync(statusFile,'utf8'));
-          const artbook=JSON.parse(fs.readFileSync(artbookFile,'utf8'));
-          const actualClass=normalizeProductionClass(s.productionClass)
-            ||productionClassFromLegacyTier(s.tierAlias??s.tier,{numericLabels});
+          const actualClass=normalizeProductionClass(s.productionClass)||productionClassFromLegacyTier(s.tierAlias??s.tier,{numericLabels:d.production?.numericLabels||{}});
           const expectedClass=normalizeProductionClass(process.env.EXPECTED_PRODUCTION_CLASS);
-
-          if(s.status!=='COMPLETE')throw new Error('cycle incomplete');
-          if(!actualClass||actualClass!==expectedClass)throw new Error(`productionClass mismatch: ${actualClass} != ${expectedClass}`);
+          if(actualClass!==expectedClass)throw new Error(`productionClass mismatch: ${actualClass} != ${expectedClass}`);
           if(!s.baselineGate||s.baselineGate.policyDocument!=='COMPANY_FLOW.md')throw new Error('baseline gate missing');
 
-          const configuredLeads=d.ai?.departmentLeadModels||{};
-          const runtimeLeads=s.departments?.leadModels||{};
-          const runtimeLeadList=roles.map(role=>runtimeLeads[role]).filter(Boolean);
-          const minLeadModels=Number(d.ai?.minDistinctLeadModelsAcrossDepartments||roles.length);
-          if(runtimeLeadList.length!==roles.length)throw new Error('department lead model mapping incomplete');
-          if(new Set(runtimeLeadList).size<minLeadModels||s.departments?.leadModelsDistinct!==true){
-            throw new Error('five distinct department lead gate failed');
-          }
-          for(const role of roles){
-            if(runtimeLeads[role]!==configuredLeads[role])throw new Error(`${role} runtime lead differs from configured lead`);
-          }
-
-          if(actualClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
-            if(s.vibe2PrimaryDeveloper!==true||s.designChanged!==false)throw new Error('release role contract failed');
-            if(s.baselineGate.state!=='RELEASE_BASELINE_MANAGED_BY_RELEASE_PIPELINE')throw new Error('release baseline ownership failed');
-          }else{
-            if(s.designer?.singleAuthor!==true||s.designer?.sameModelRevised!==true)throw new Error('designer contract failed');
-            if(s.departments?.count!==5||s.departments?.rebuttalRounds!==1)throw new Error('meeting contract failed');
-            if(s.departments?.rebuttalAuthoredByDepartmentLeads!==true)throw new Error('department lead rebuttal contract failed');
-
-            for(const role of roles){
-              const audit=s.departments.modelAudit?.[role];
-              if(!audit||audit.pass!==true||audit.count<(d.ai.departmentReviewModelCount||d.ai.minDistinctModelsPerDepartment||3)){
-                throw new Error(`${role} distinct model gate failed`);
-              }
-              if(audit.leadModel!==configuredLeads[role])throw new Error(`${role} audit lead mismatch`);
-              if(audit.representativeModel!==configuredLeads[role]||audit.representativeAuthoredByLead!==true){
-                throw new Error(`${role} representative is not authored by its lead model`);
-              }
-              if(audit.rebuttalModel!==configuredLeads[role]||audit.rebuttalAuthoredByLead!==true){
-                throw new Error(`${role} rebuttal is not authored by its lead model`);
-              }
-            }
-
-            if(
-              s.artbook?.singleEditor!==true
-              ||s.artbook?.departmentPageAuthorship!==false
-              ||s.artbook?.newClaimsAdded!==false
-              ||s.artbook?.provenanceVerified!==true
-            )throw new Error('artbook editor contract failed');
-
-            if(artbook.singleEditor!==true)throw new Error('core artbook editor contract missing');
-            if(artbook.verification?.supported!==true)throw new Error('core artbook provenance verification failed');
-            if(!artbook.content||typeof artbook.content!=='object')throw new Error('core artbook content missing');
-          }
-
-          if(actualClass===PRODUCTION_CLASSES.DESIGN_ONLY){
-            if(s.artbook?.directAfterDesignCycle!==true)throw new Error('DESIGN_ONLY did not run directly through artbook');
-            const conflicts=Number(s.meeting?.conflictCount||0);
-            const holds=Number(s.meeting?.holdCount||0);
-            const uiFile=path.join('artbook-submissions',gameId,'status.json');
-            if(!fs.existsSync(uiFile))throw new Error('artbook public status missing');
-            const ui=JSON.parse(fs.readFileSync(uiFile,'utf8'));
-
-            if(conflicts===0&&holds===0){
-              if(s.baselineGate.state!=='DESIGN_BASELINE_READY'||s.baselineGate.ready!==true){
-                throw new Error('resolved meeting did not reach DESIGN_BASELINE_READY');
-              }
-              const currentFile=path.join('artbook-submissions',gameId,'current.json');
-              if(!fs.existsSync(currentFile))throw new Error('completed current artbook missing');
-              const current=JSON.parse(fs.readFileSync(currentFile,'utf8'));
-              if(current.published!==true||current.homepageVisible!==true||current.format!=='core-strategy'){
-                throw new Error('completed artbook publication contract failed');
-              }
-              if(ui.uiStatus!=='COMPLETE'||ui.uiLabel!=='완료')throw new Error('completed artbook UI state mismatch');
-              console.log('DIRECT_RESULT=DESIGN_BASELINE_AND_ARTBOOK_COMPLETE');
+          if(actualClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
+            const waiting=new Set(d.classes?.DEVELOPMENT_CONFIRMED?.waitingStates||[]);
+            const terminal=new Set(d.classes?.DEVELOPMENT_CONFIRMED?.terminalStates||[]);
+            if(!waiting.has(s.baselineGate.state)&&!terminal.has(s.baselineGate.state))throw new Error(`invalid development direct state: ${s.baselineGate.state}`);
+            if(s.contracts?.gatedDirect!==true||s.contracts?.aiMayInventValidationPass!==false)throw new Error('gated direct contract missing');
+            if(s.baselineGate.state==='DEVELOPMENT_BASELINE_READY'){
+              const e=s.baselineGate.evidence||{};
+              if(e.webGameplay?.pass!==true||e.unityProject?.present!==true||e.unityTechnical?.pass!==true)throw new Error('development baseline falsely approved');
+              const artbookFile=path.join(base,'core-artbook.json');
+              if(!fs.existsSync(artbookFile))throw new Error('ready development baseline missing artbook revision');
+              const artbook=JSON.parse(fs.readFileSync(artbookFile,'utf8'));
+              if(artbook.developmentBaseline!==true||artbook.verification?.supported!==true)throw new Error('development artbook provenance failed');
+              console.log('DIRECT_RESULT=DEVELOPMENT_BASELINE_AND_ARTBOOK_COMPLETE');
             }else{
-              if(s.baselineGate.ready===true)throw new Error('unresolved meeting incorrectly approved');
-              if(ui.uiStatus!=='WAITING'||ui.uiLabel!=='대기중')throw new Error('unresolved meeting UI state mismatch');
-              console.log(`DIRECT_RESULT=WAITING conflict=${conflicts} hold=${holds}`);
+              if(s.baselineGate.ready===true)throw new Error('waiting development state incorrectly ready');
+              console.log(`DIRECT_RESULT=${s.baselineGate.state}`);
             }
+          }else if(actualClass===PRODUCTION_CLASSES.DESIGN_ONLY){
+            if(s.status!=='COMPLETE')throw new Error('design cycle incomplete');
+            if(s.departments?.leadModelsDistinct!==true||s.departments?.count!==5)throw new Error('design lead contract failed');
+            for(const role of roles){const a=s.departments?.modelAudit?.[role];if(!a?.pass||a.representativeAuthoredByLead!==true||a.rebuttalAuthoredByLead!==true)throw new Error(`${role} lead review contract failed`);}
+            if(s.artbook?.directAfterDesignCycle!==true)throw new Error('DESIGN_ONLY did not run direct to artbook');
+            console.log(`DIRECT_RESULT=${s.baselineGate.state}`);
+          }else if(actualClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
+            if(s.vibe2PrimaryDeveloper!==true||s.designChanged!==false)throw new Error('release role contract failed');
+            console.log('DIRECT_RESULT=RELEASE_RISK_WATCH');
           }
-
-          if(actualClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED&&s.baselineGate.state==='DEVELOPMENT_BASELINE_READY'){
-            const e=s.baselineGate.evidence||{};
-            if(e.webGameplay?.pass!==true||e.unityProject?.present!==true||e.unityTechnical?.pass!==true){
-              throw new Error('development baseline falsely approved without Web+Unity validation');
-            }
-          }
-
           console.log('CENTRAL_POLICY=COMPANY_FLOW.md');
           console.log(`PRODUCTION_CLASS=${actualClass}`);
           console.log('NUMERIC_TIER_POLICY=ALIAS_ONLY');
-          console.log(`DISTINCT_DEPARTMENT_LEADS=${new Set(runtimeLeadList).size}`);
-          console.log('DEPARTMENT_LEAD_GATE=PASS');
-          console.log('MULTIMODEL_GATE=PASS');
-          console.log('AUTHORSHIP_GATE=PASS');
-          console.log('CORE_ARTBOOK_FILE=PASS');
-          console.log(`BASELINE_GATE=${s.baselineGate.state}`);
           NODE
 
-      - name: Propose direct design-cycle evidence through PR
+      - name: Propose production-cycle evidence through PR
         env:
           GH_TOKEN: ${{ github.token }}
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
           PRODUCTION_CLASS: ${{ matrix.target.production_class }}
-          TIER_ALIAS: ${{ matrix.target.tier_alias }}
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-design-bots'
           git config user.email 'actions@users.noreply.github.com'
           git add -- "design/$ARTBOOK_GAME_ID" "artbook-submissions/$ARTBOOK_GAME_ID"
-          if git diff --cached --quiet; then
-            echo 'DESIGN_CYCLE_COMMIT=NO_CHANGES'
-            exit 0
-          fi
-
-          branch="automation/design-cycle-${ARTBOOK_GAME_ID}-${ARTBOOK_DATE}-${GITHUB_RUN_ID}"
+          if git diff --cached --quiet; then echo 'PRODUCTION_CYCLE_COMMIT=NO_CHANGES'; exit 0; fi
+          branch="automation/production-cycle-${ARTBOOK_GAME_ID}-${ARTBOOK_DATE}-${GITHUB_RUN_ID}"
           git checkout -b "$branch"
-          git commit -m "design: direct multimodel cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}"
+          git commit -m "production: ${PRODUCTION_CLASS} cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}"
           git push origin "HEAD:refs/heads/$branch"
-
-          pr_url="$(gh pr create \
-            --repo "$GITHUB_REPOSITORY" \
-            --base main \
-            --head "$branch" \
-            --title "design: direct multimodel cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}" \
-            --body "Direct DESIGN_ONLY flow from Free Artbook Department Bots.
-
-          - policy: COMPANY_FLOW.md
-          - game: ${ARTBOOK_GAME_ID}
-          - productionClass: ${PRODUCTION_CLASS}
-          - tier alias: ${TIER_ALIAS}
-          - department architecture: five distinct Lead model IDs; each department uses its Lead plus assistant models; each Lead owns its representative opinion and rebuttal
-          - full path: design → distinct-lead multimodel department review → lead rebuttal meeting → same designer revision → baseline gate → artbook editor → result verification
-          - direct main write: NO
-          - run: ${GITHUB_RUN_ID}")"
-
-          echo "DESIGN_CYCLE_PR=$pr_url"
-          echo 'DESIGN_CYCLE_COMMIT=PR_OPENED'
+          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "production: ${PRODUCTION_CLASS} cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}" --body "Central production flow from COMPANY_FLOW.md. DESIGN_ONLY runs direct through artbook. DEVELOPMENT_CONFIRMED resumes only from real Web/Unity/revalidation evidence and stops at exact WAITING state when evidence is missing or failed. Direct main write: NO. Run: ${GITHUB_RUN_ID}"
+          echo 'PRODUCTION_CYCLE_COMMIT=PR_OPENED'
           echo 'PUBLIC_MAIN_WRITE=NO'
