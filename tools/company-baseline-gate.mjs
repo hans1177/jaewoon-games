@@ -28,11 +28,13 @@ function latestDesignValidation(gameId,fileName){
 const gameId=clean(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
 const date=clean(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||kstDate());
 if(!gameId)throw new Error('ARTBOOK_GAME_ID or GAME_ID is required');
+const directive=readJson('company-directive.json',{});
+const numericLabels=directive.production?.numericLabels||{};
 const catalog=readJson('game-catalog.json',{games:[]});
 const game=(catalog.games||[]).find(x=>x.id===gameId);
 if(!game)throw new Error(`Unknown game: ${gameId}`);
-const productionClass=productionClassOf({},game);
-const tier=tierAliasForProductionClass(productionClass)??Number(game.productionTier||3);
+const productionClass=productionClassOf({},game,{numericLabels});
+const tierAlias=tierAliasForProductionClass(productionClass,{numericLabels})??(Number(game.productionTier||0)||null);
 const statusPath=path.join('design',gameId,date,'cycle-status.json');
 const status=readJson(statusPath,null);
 if(!status||status.status!=='COMPLETE')throw new Error(`Completed cycle-status missing: ${statusPath}`);
@@ -75,8 +77,8 @@ const developmentRequired=productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFI
 status.baselineGate={
   policyDocument:'COMPANY_FLOW.md',
   productionClass,
-  tierAlias:tier,
-  tier,
+  tierAlias,
+  tier:tierAlias,
   state,
   ready,
   blockers,
@@ -99,7 +101,8 @@ status.baselineGate={
     developmentConfirmedRequiresExplicitWebGameplayValidation:true,
     developmentConfirmedRequiresUnityTechnicalValidation:true,
     releaseConfirmedBaselineOwnedByReleasePipeline:true,
-    numericTierIsCompatibilityAliasOnly:true
+    numericTierIsCompatibilityAliasOnly:true,
+    numericTierAliasOwnerRemappable:true
   },
   checkedAt:new Date().toISOString()
 };
@@ -120,7 +123,8 @@ if(publishable){
     date,
     createdAt:date,
     productionClass,
-    tier,
+    tierAlias,
+    tier:tierAlias,
     status:'completed-artbook',
     lifecycleState:state.replace('_READY',''),
     published:true,
@@ -151,7 +155,8 @@ writeJson(publicStatusPath,{
   gameName:game.name,
   date,
   productionClass,
-  tier,
+  tierAlias,
+  tier:tierAlias,
   uiStatus,
   uiLabel,
   baselineGateState:state,
@@ -165,7 +170,7 @@ status.artbookUi={status:uiStatus,label:uiLabel,path:publicStatusPath.replaceAll
 
 writeJson(statusPath,status);
 console.log(`BASELINE_GATE_CLASS=${productionClass}`);
-console.log(`BASELINE_GATE_TIER=${tier}`);
+console.log(`BASELINE_GATE_TIER_ALIAS=${tierAlias??'NONE'}`);
 console.log(`BASELINE_GATE_STATE=${state}`);
 console.log(`BASELINE_GATE_READY=${ready?'YES':'NO'}`);
 console.log(`ARTBOOK_UI_STATUS=${uiStatus}`);

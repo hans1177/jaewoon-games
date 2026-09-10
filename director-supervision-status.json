@@ -3,13 +3,13 @@
   "dateKst": "2026-09-11",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
-  "activeDevelopmentRunId": 34526152720,
+  "activeDevelopmentRunId": 34526236053,
   "checks": {
     "staffChecked": "8/8",
     "activeWorkOrder": null,
     "activeWorkOrderExists": false,
     "evidenceAdapterMismatch": false,
-    "jobLevelEvidenceUsed": true,
+    "jobLevelEvidenceUsed": false,
     "autonomousDepartmentJobEvidenceUsed": true,
     "liveDepartmentStates": true,
     "failureLogsUsed": true,
@@ -43,22 +43,22 @@
   ],
   "workflowEvidence": {
     "artbook": {
-      "id": 34526127595,
-      "status": "in_progress",
+      "id": 34526579694,
+      "status": "pending",
       "conclusion": null,
       "event": "push",
-      "createdAt": "2026-09-10T20:23:52Z",
-      "updatedAt": "2026-09-10T20:24:46Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34526127595"
+      "createdAt": "2026-09-10T20:28:24Z",
+      "updatedAt": "2026-09-10T20:28:25Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34526579694"
     },
     "autonomousDevelopment": {
-      "id": 34526152720,
+      "id": 34526236053,
       "status": "completed",
       "conclusion": "failure",
       "event": "workflow_dispatch",
-      "createdAt": "2026-09-10T20:24:07Z",
-      "updatedAt": "2026-09-10T20:24:25Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34526152720"
+      "createdAt": "2026-09-10T20:24:57Z",
+      "updatedAt": "2026-09-10T20:25:18Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34526236053"
     },
     "homepage": {
       "id": 34526067529,
@@ -98,7 +98,7 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "queue-submission:planning",
-        "workflow:34526127595:in_progress:pending"
+        "workflow:34526579694:pending:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -131,7 +131,7 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "queue-submission:development",
-        "workflow:34526127595:in_progress:pending"
+        "workflow:34526579694:pending:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -164,7 +164,7 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "queue-submission:qa",
-        "workflow:34526127595:in_progress:pending"
+        "workflow:34526579694:pending:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -197,7 +197,7 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "queue-submission:graphics",
-        "workflow:34526127595:in_progress:pending"
+        "workflow:34526579694:pending:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -230,7 +230,7 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "queue-submission:balance",
-        "workflow:34526127595:in_progress:pending"
+        "workflow:34526579694:pending:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
