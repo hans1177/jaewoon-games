@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+const TRAINING_SAMPLE_VERSION = 2;
 const MAX_PATCH_BYTES = 120_000;
 const ALLOWED_TASK_TYPES = new Set(['coding', 'bugfix', 'unity', 'qa', 'planning', 'general']);
 
@@ -16,18 +17,30 @@ function readJson(file) {
 function inferTaskType(evidence) {
   const sourcePath = clean(evidence?.sourcePath).toLowerCase();
   const role = clean(evidence?.role).toLowerCase();
+  const goal = clean(evidence?.goal).toLowerCase();
+  const summary = clean(evidence?.summary).toLowerCase();
   const diagnostic = evidence?.diagnosticFocus;
+  const changedFiles = Array.isArray(evidence?.changedFiles)
+    ? evidence.changedFiles.map((file) => clean(file).toLowerCase()).filter(Boolean)
+    : [];
+  const allQaFiles = changedFiles.length > 0 && changedFiles.every((file) => /(^|\/)(qa|tests?|test)(\/|$)|\.(test|spec)\./.test(file));
+
   if (sourcePath.startsWith('unity-games/')) return 'unity';
-  if (role === 'qa') return 'qa';
+  if (allQaFiles || role === 'qa') return 'qa';
   if (diagnostic?.type || diagnostic?.file || diagnostic?.needle) return 'bugfix';
+  if (/\[(bugfix|repair|regression)\]|\bbug\b|\bfix\b|\brepair\b|버그|오류|회귀|크래시/.test(goal)) return 'bugfix';
+  if (/\[(feature_development|web_first_implementation|implementation)\]|기능|구현|개발|vertical slice|플레이어블/.test(goal)) return 'coding';
   if (role === 'development' || role === 'graphics' || role === 'balance') return 'coding';
+  if (/implement|implementation|integrat|code change|기능|구현|개발/.test(summary)) return 'coding';
+  if (/^(web-games|godot-games)\//.test(sourcePath) && changedFiles.length > 0) return 'coding';
+  if (/기획|설계|planning|artbook/.test(goal) && changedFiles.length === 0) return 'planning';
   return 'general';
 }
 
 function inferDifficulty(evidence, taskType) {
   if (taskType === 'unity') return 'unity-build';
   if (taskType === 'qa') return 'regression';
-  if (evidence?.diagnosticFocus?.type) return 'bug';
+  if (taskType === 'bugfix' || evidence?.diagnosticFocus?.type) return 'bug';
   return 'simple';
 }
 
@@ -72,7 +85,7 @@ export function buildVerifiedTrainingSample({ evidence, patch, sourceRevision, i
   const playerImpactScore = clamp01(Number(performance?.playerImpactScore ?? 0) / 5);
 
   return {
-    version: 1,
+    version: TRAINING_SAMPLE_VERSION,
     instruction,
     input: buildInput(evidence),
     output: buildOutput(evidence, verifiedPatch),
@@ -146,4 +159,4 @@ if (isMain) {
   try { main(); } catch (error) { console.error(error.message); process.exitCode = 1; }
 }
 
-export { MAX_PATCH_BYTES };
+export { TRAINING_SAMPLE_VERSION, MAX_PATCH_BYTES };
