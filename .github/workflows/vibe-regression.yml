@@ -51,6 +51,7 @@ jobs:
             qa/vibe-v2-e2e.mjs
             qa/vibe-company-experiment.test.mjs
             qa/vibe-company-flow-v2.test.mjs
+            qa/pwa-chat-flow.test.mjs
           )
           for file in "${files[@]}"; do
             node --input-type=module --check < "$file"
@@ -66,6 +67,9 @@ jobs:
 
       - name: Test Vibe2 company authority flow
         run: node qa/vibe-company-flow-v2.test.mjs
+
+      - name: Test PWA ChatGPT-style chat flow
+        run: node --test qa/pwa-chat-flow.test.mjs
 
       - name: Run integrated regression suite
         run: node qa/vibe-regression.mjs
