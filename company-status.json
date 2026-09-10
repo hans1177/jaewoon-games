@@ -65,21 +65,21 @@
   "operations": {
     "homepage": {
       "manager": "homepage-diagnostics",
-      "status": "done",
-      "task": "homepage diagnostics",
+      "status": "idle",
+      "task": "no standing homepage worker task; runtime data sync is automatic",
       "scope": [
         "index.html",
         "company.html",
         "game-catalog.json"
       ],
       "lastReviewedAt": "2026-09-11",
-      "lastCheckResult": "DONE",
+      "lastCheckResult": "IDLE_NO_TASK",
       "execution": "github-actions-diagnostic",
       "workflow": ".github/workflows/homepage-manager.yml",
       "statusFile": "homepage-manager-status.json",
       "runtimeDataSync": "active",
       "evidenceSource": "director-supervision-status.json",
-      "workState": "DONE"
+      "workState": "WAITING"
     },
     "ownerDirectives": {
       "source": "company-directive.json",
@@ -114,13 +114,9 @@
       "nextFocusGameIds": [
         "P0001"
       ],
-      "nextDevelopmentGameIds": [
-        "P0002",
-        "P0004",
-        "P0009"
-      ],
+      "nextDevelopmentGameIds": [],
       "selection": "AUTO_RELEASE_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT",
-      "activeDevelopmentRunId": 34525047019,
+      "activeDevelopmentRunId": 34531173768,
       "syncIntervalMs": 30000,
       "updatedAtKst": "2026-09-11",
       "source": [
@@ -183,9 +179,9 @@
           "slug": "survival",
           "productionClass": "RELEASE_CONFIRMED",
           "gameplayFamily": "SURVIVAL",
-          "evidenceScore": 914,
+          "evidenceScore": 909,
           "developmentFocus": 9,
-          "artbookBaselineRank": 1,
+          "artbookBaselineRank": 0.5,
           "unityReady": false,
           "sourceReady": true
         },
@@ -209,9 +205,9 @@
           "slug": "insect-survival",
           "productionClass": "DEVELOPMENT_CONFIRMED",
           "gameplayFamily": "SURVIVAL",
-          "evidenceScore": 814,
+          "evidenceScore": 809,
           "developmentFocus": 8,
-          "artbookBaselineRank": 1,
+          "artbookBaselineRank": 0.5,
           "unityReady": false,
           "sourceReady": true
         },
@@ -222,87 +218,22 @@
           "slug": "bug-defense",
           "productionClass": "DEVELOPMENT_CONFIRMED",
           "gameplayFamily": "DEFENSE",
-          "evidenceScore": 714,
+          "evidenceScore": 709,
           "developmentFocus": 7,
-          "artbookBaselineRank": 1,
+          "artbookBaselineRank": 0.5,
           "unityReady": false,
           "sourceReady": true
         },
         {
           "rank": 5,
           "rawEvidenceRank": 5,
-          "gameId": "P0003",
-          "slug": "crystal-defense",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "DEFENSE",
-          "evidenceScore": 614,
-          "developmentFocus": 6,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 6,
-          "rawEvidenceRank": 6,
           "gameId": "P0009",
           "slug": "monster-adventure",
           "productionClass": "DEVELOPMENT_CONFIRMED",
           "gameplayFamily": "TURN_BASED",
-          "evidenceScore": 514,
+          "evidenceScore": 509,
           "developmentFocus": 5,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 7,
-          "rawEvidenceRank": 7,
-          "gameId": "P0005",
-          "slug": "human-go",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "COLLECTION",
-          "evidenceScore": 414,
-          "developmentFocus": 4,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 8,
-          "rawEvidenceRank": 8,
-          "gameId": "P0101",
-          "slug": "chess-battle",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "STRATEGY",
-          "evidenceScore": 14,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 9,
-          "rawEvidenceRank": 9,
-          "gameId": "P0102",
-          "slug": "survival2",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "SURVIVAL",
-          "evidenceScore": 14,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 10,
-          "rawEvidenceRank": 10,
-          "gameId": "P0103",
-          "slug": "territory-war",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "STRATEGY",
-          "evidenceScore": 14,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 1,
+          "artbookBaselineRank": 0.5,
           "unityReady": false,
           "sourceReady": true
         }
@@ -368,9 +299,9 @@
           "slug": "survival",
           "productionClass": "RELEASE_CONFIRMED",
           "gameplayFamily": "SURVIVAL",
-          "evidenceScore": 914,
+          "evidenceScore": 909,
           "developmentFocus": 9,
-          "artbookBaselineRank": 1,
+          "artbookBaselineRank": 0.5,
           "unityReady": false,
           "sourceReady": true
         },
@@ -394,9 +325,9 @@
           "slug": "insect-survival",
           "productionClass": "DEVELOPMENT_CONFIRMED",
           "gameplayFamily": "SURVIVAL",
-          "evidenceScore": 814,
+          "evidenceScore": 809,
           "developmentFocus": 8,
-          "artbookBaselineRank": 1,
+          "artbookBaselineRank": 0.5,
           "unityReady": false,
           "sourceReady": true
         },
@@ -407,87 +338,22 @@
           "slug": "bug-defense",
           "productionClass": "DEVELOPMENT_CONFIRMED",
           "gameplayFamily": "DEFENSE",
-          "evidenceScore": 714,
+          "evidenceScore": 709,
           "developmentFocus": 7,
-          "artbookBaselineRank": 1,
+          "artbookBaselineRank": 0.5,
           "unityReady": false,
           "sourceReady": true
         },
         {
           "rank": 5,
           "rawEvidenceRank": 5,
-          "gameId": "P0003",
-          "slug": "crystal-defense",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "DEFENSE",
-          "evidenceScore": 614,
-          "developmentFocus": 6,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 6,
-          "rawEvidenceRank": 6,
           "gameId": "P0009",
           "slug": "monster-adventure",
           "productionClass": "DEVELOPMENT_CONFIRMED",
           "gameplayFamily": "TURN_BASED",
-          "evidenceScore": 514,
+          "evidenceScore": 509,
           "developmentFocus": 5,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 7,
-          "rawEvidenceRank": 7,
-          "gameId": "P0005",
-          "slug": "human-go",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "COLLECTION",
-          "evidenceScore": 414,
-          "developmentFocus": 4,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 8,
-          "rawEvidenceRank": 8,
-          "gameId": "P0101",
-          "slug": "chess-battle",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "STRATEGY",
-          "evidenceScore": 14,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 9,
-          "rawEvidenceRank": 9,
-          "gameId": "P0102",
-          "slug": "survival2",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "SURVIVAL",
-          "evidenceScore": 14,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 10,
-          "rawEvidenceRank": 10,
-          "gameId": "P0103",
-          "slug": "territory-war",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "STRATEGY",
-          "evidenceScore": 14,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 1,
+          "artbookBaselineRank": 0.5,
           "unityReady": false,
           "sourceReady": true
         }
@@ -505,62 +371,71 @@
     "dateKst": "2026-09-11",
     "runningLabelAloneCountsAsWork": false,
     "counts": {
-      "WORKING": 6,
-      "DONE": 2,
-      "IDLE_NO_TASK": 0,
+      "WORKING": 1,
+      "DONE": 1,
+      "IDLE_NO_TASK": 6,
       "BLOCKED": 0,
       "FAILED": 0,
       "STALE": 0
     },
     "liveStates": {
       "ACTIVE": 1,
-      "WAITING": 5,
+      "WAITING": 6,
       "BLOCKED": 0,
-      "DONE": 2
+      "DONE": 1
     },
-    "activeDevelopmentRunId": 34525047019,
+    "activeDevelopmentRunId": 34531173768,
     "primaryFindings": [
       "NO_WORK_ORDER:artbook-work-orders/2026-09-11-daechung-rpg.json"
     ],
     "staff": {
       "planning": {
-        "status": "WORKING",
+        "status": "IDLE_NO_TASK",
         "workState": "WAITING",
-        "task": "autonomous development floor 34525047019",
+        "task": "autonomous development floor 34531173768",
         "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
-        "jobEvidence": null
+        "reason": "latest autonomous development floor has no department task",
+        "jobEvidence": {
+          "id": 103052065952,
+          "name": "department (planning-final)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "failedStep": null,
+          "startedAt": "2026-09-10T21:15:54Z",
+          "completedAt": "2026-09-10T21:15:53Z",
+          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34531173768/job/103052065952"
+        }
       },
       "development": {
-        "status": "WORKING",
+        "status": "IDLE_NO_TASK",
         "workState": "WAITING",
-        "task": "autonomous development floor 34525047019",
+        "task": "autonomous development floor 34531173768",
         "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
+        "reason": "latest autonomous development floor has no department task",
         "jobEvidence": null
       },
       "qa": {
-        "status": "WORKING",
+        "status": "IDLE_NO_TASK",
         "workState": "WAITING",
-        "task": "autonomous development floor 34525047019",
+        "task": "autonomous development floor 34531173768",
         "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
+        "reason": "latest autonomous development floor has no department task",
         "jobEvidence": null
       },
       "graphics": {
-        "status": "WORKING",
+        "status": "IDLE_NO_TASK",
         "workState": "WAITING",
-        "task": "autonomous development floor 34525047019",
+        "task": "autonomous development floor 34531173768",
         "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
+        "reason": "latest autonomous development floor has no department task",
         "jobEvidence": null
       },
       "balance": {
-        "status": "WORKING",
+        "status": "IDLE_NO_TASK",
         "workState": "WAITING",
-        "task": "autonomous development floor 34525047019",
+        "task": "autonomous development floor 34531173768",
         "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
+        "reason": "latest autonomous development floor has no department task",
         "jobEvidence": null
       },
       "director": {
@@ -774,39 +649,39 @@
     },
     "departmentTasks": {
       "planning": {
-        "status": "working",
-        "task": "autonomous development floor 34525047019",
+        "status": "idle",
+        "task": "autonomous development floor 34531173768",
         "evidenceSource": "director-supervision-status.json",
         "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "reason": "latest autonomous development floor has no department task"
       },
       "development": {
-        "status": "working",
-        "task": "autonomous development floor 34525047019",
+        "status": "idle",
+        "task": "autonomous development floor 34531173768",
         "evidenceSource": "director-supervision-status.json",
         "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "reason": "latest autonomous development floor has no department task"
       },
       "qa": {
-        "status": "working",
-        "task": "autonomous development floor 34525047019",
+        "status": "idle",
+        "task": "autonomous development floor 34531173768",
         "evidenceSource": "director-supervision-status.json",
         "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "reason": "latest autonomous development floor has no department task"
       },
       "graphics": {
-        "status": "working",
-        "task": "autonomous development floor 34525047019",
+        "status": "idle",
+        "task": "autonomous development floor 34531173768",
         "evidenceSource": "director-supervision-status.json",
         "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "reason": "latest autonomous development floor has no department task"
       },
       "balance": {
-        "status": "working",
-        "task": "autonomous development floor 34525047019",
+        "status": "idle",
+        "task": "autonomous development floor 34531173768",
         "evidenceSource": "director-supervision-status.json",
         "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "reason": "latest autonomous development floor has no department task"
       },
       "director": {
         "status": "working",
