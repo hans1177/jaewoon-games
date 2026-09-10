@@ -35,9 +35,13 @@ if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
   console.log('DEVELOPMENT_ARTBOOK_ONLY_AFTER_BASELINE_READY=YES');
 }else if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
   await run('tools/company-release-production-cycle.mjs');
+  // RELEASE_READY가 아닌 상태에서는 같은 날짜에 남은 과거 최종 Release 산출물을
+  // 활성 위치에 두지 않는다. 삭제하지 않고 release-history로 보존 이동한다.
+  await run('tools/company-release-stale-artifact-guard.mjs');
   console.log('RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION');
   console.log('RELEASE_VIBE2_PRIMARY_DEVELOPER=YES');
   console.log('RELEASE_CURRENT_BUILD_EVIDENCE_BINDING=REQUIRED');
+  console.log('RELEASE_STALE_FINAL_ARTIFACT_GUARD=ENABLED');
   console.log('RELEASE_FINAL_ARTBOOK_ONLY_AFTER_READY=YES');
 }else{
   await run('tools/company-design-cycle.mjs');
