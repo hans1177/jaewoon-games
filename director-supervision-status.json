@@ -32,8 +32,8 @@
     "STALE": 0
   },
   "liveStates": {
-    "ACTIVE": 1,
-    "WAITING": 2,
+    "ACTIVE": 2,
+    "WAITING": 1,
     "BLOCKED": 0,
     "DONE": 5
   },
@@ -56,11 +56,11 @@
     "publicGameHealth": null,
     "unityBuild": {
       "id": 34428090705,
-      "status": "queued",
+      "status": "in_progress",
       "conclusion": null,
       "event": "push",
       "createdAt": "2026-09-10T02:05:52Z",
-      "updatedAt": "2026-09-10T02:06:01Z",
+      "updatedAt": "2026-09-10T02:06:05Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34428090705"
     },
     "unityRuntime": null
@@ -261,7 +261,7 @@
       "department": "release",
       "taskAssigned": true,
       "status": "WORKING",
-      "workState": "WAITING",
+      "workState": "ACTIVE",
       "task": "verify active build/release evidence",
       "executionEvidence": [
         "company-status:test-build:daechung-rpg-hybrid-017:ready",
@@ -269,12 +269,12 @@
         "download:https://github.com/hans1177/jaewoon-games/releases/download/test-daechung-rpg-34201876835-1/daechung-rpg-test.apk",
         "sha256:bca2596f93ea71e5ad311d9d3a322083ae768f8ac0c9c046125b33c9a4f1e817",
         "bytes:24392700",
-        "unity-build-workflow:34428090705:queued:pending"
+        "unity-build-workflow:34428090705:in_progress:pending"
       ],
       "resultVerified": false,
       "blockers": [],
-      "reason": "Unity build workflow is queued",
-      "action": "wait for build runner"
+      "reason": "Unity build workflow is executing",
+      "action": "verify APK artifact after build completion"
     },
     "director": {
       "department": "director",
