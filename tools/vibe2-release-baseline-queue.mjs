@@ -16,7 +16,7 @@ function latestJson(repoRoot,gameId,fileName){
   for(const date of dates){
     const file=path.join(root,date,fileName);
     const data=readJson(file,null);
-    if(data)return {file,posix(path.relative(repoRoot,file)),date,data};
+    if(data)return {file,path:posix(path.relative(repoRoot,file)),date,data};
   }
   return null;
 }
@@ -50,7 +50,16 @@ function compactBaseline(content){
   return text.length>5500?text.slice(0,5500):text;
 }
 function activeForGame(queue,gameId,sourceTreeSha){
-  return (queue.tasks||[]).some(task=>task.gameId===gameId&&['queued','running'].includes(clean(task.status).toLowerCase())&&task.evidence?.includes(`source-tree:${sourceTreeSha}`));
+  return (queue.tasks||[]).some(task=>task.gameId===gameId&&['queued','running'].includes(clean(task.status).toLowerCase())&&Array.isArray(task.evidence)&&task.evidence.includes(`source-tree:${sourceTreeSha}`));
+}
+function requestAllowsBaselineWork(request){
+  if(!request?.data?.state)return true;
+  if(request.data.state==='BUILDING')return true;
+  if(request.data.state==='RELEASE_BLOCKED'){
+    const blockers=Array.isArray(request.data.blockers)?request.data.blockers:[];
+    return blockers.includes('development-baseline-required');
+  }
+  return false;
 }
 
 export function queueReleaseBaselineGap({catalogFile,queueFile,repoRoot}){
@@ -64,7 +73,7 @@ export function queueReleaseBaselineGap({catalogFile,queueFile,repoRoot}){
     const baseline=latestDevelopmentBaseline(repoRoot,game.id);
     if(!baseline)continue;
     const request=latestJson(repoRoot,game.id,'release-production-request.json');
-    if(request&&request.data?.state&&request.data.state!=='BUILDING')continue;
+    if(!requestAllowsBaselineWork(request))continue;
     const sourceTreeSha=currentTreeSha(repoRoot,sourceRoot);
     if(!sourceTreeSha||activeForGame(queue,game.id,sourceTreeSha))continue;
     const taskId=`${game.id}-release-baseline-gap-${sourceTreeSha.slice(0,12)}`;
