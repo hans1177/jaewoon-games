@@ -11,8 +11,10 @@ import {
   classifyGenerationFailure,
   extractStorageKeys,
   generateAutonomousCandidate,
+  modelAttemptBudget,
   MODEL_CONTEXT_TOKENS,
   MODEL_MAX_PREDICT,
+  MODEL_RUNTIME_RETRY_MAX_PREDICT,
   normalizeModelCandidateShape,
   parseModelCandidate,
   readContext,
@@ -118,6 +120,10 @@ test('model-runtime retry narrows context and contract to one responsibility fil
   assert.match(prompt,/재시도 강제계약/);
   assert.match(prompt,/game\.html 1개만 수정/);
   assert.doesNotMatch(prompt,/책임 파일: index\.html/);
+  assert.equal(modelAttemptBudget({attempt:1,failureType:''}),MODEL_MAX_PREDICT);
+  assert.equal(modelAttemptBudget({attempt:2,failureType}),MODEL_RUNTIME_RETRY_MAX_PREDICT);
+  assert.ok(MODEL_RUNTIME_RETRY_MAX_PREDICT<MODEL_MAX_PREDICT);
+  assert.equal(modelAttemptBudget({attempt:2,failureType:'OUTPUT_FORMAT'}),MODEL_MAX_PREDICT);
 });
 
 test('save key changes are rejected by deterministic guard',()=>{
