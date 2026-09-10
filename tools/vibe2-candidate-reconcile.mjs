@@ -30,6 +30,7 @@ function findTask(queue, candidateBranch) {
   return queue.tasks.find((task) => (task.evidence || []).includes(branch)) || null;
 }
 function nextParallel(queue) { return selectVibeQueueBatch(queue, { maxConcurrentTasks: queue.maxConcurrentTasks }); }
+function shouldRefill(next) { return Boolean(next?.continueRequired || Number(next?.freeSlots || 0) > 0); }
 
 export function reconcileVibeCandidateVerification(queueInput, { candidateBranch = '', target = 'unity', conclusion = '', runId = '', headSha = '' } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
@@ -46,18 +47,19 @@ export function reconcileVibeCandidateVerification(queueInput, { candidateBranch
     } : { ...item });
     const nextQueue=createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks});
     const next=nextParallel(nextQueue);
-    return Object.freeze({ updated:true, taskId:task.id, verificationPassed:true, finalPass:false, promotionAllowed:false, learningEligible:false, queue:nextQueue, next, dispatchNext:next.continueRequired, reason:'engine-verification-passed-awaiting-review' });
+    return Object.freeze({ updated:true, taskId:task.id, verificationPassed:true, finalPass:false, promotionAllowed:false, learningEligible:false, queue:nextQueue, next, dispatchNext:shouldRefill(next), reason:'engine-verification-passed-awaiting-review' });
   }
   if (['failure','timed_out','startup_failure'].includes(result)) {
     const failed=finishVibeQueueTask(queue,{ taskId:task.id, outcome:'FAIL', evidence, blocker:`candidate-${clean(target)||'engine'}-verification-failed`, retryable:true });
-    return Object.freeze({ ...failed, taskId:task.id, verificationPassed:false, finalPass:false, promotionAllowed:false, learningEligible:false, reason:'engine-verification-failed' });
+    const next=failed.next;
+    return Object.freeze({ ...failed, dispatchNext:shouldRefill(next), taskId:task.id, verificationPassed:false, finalPass:false, promotionAllowed:false, learningEligible:false, reason:'engine-verification-failed' });
   }
   const tasks=queue.tasks.map((item)=>item.id===task.id?{
     ...item,status:'blocked',blocker:`candidate-${clean(target)||'engine'}-verification-incomplete`,evidence:unique([...(item.evidence||[]),...evidence]),lastOutcome:'ENGINE_QA_INCOMPLETE'
   }:{...item});
   const nextQueue=createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks});
   const next=nextParallel(nextQueue);
-  return Object.freeze({ updated:true, taskId:task.id, verificationPassed:false, finalPass:false, promotionAllowed:false, learningEligible:false, queue:nextQueue, next, dispatchNext:next.continueRequired, reason:'engine-verification-incomplete' });
+  return Object.freeze({ updated:true, taskId:task.id, verificationPassed:false, finalPass:false, promotionAllowed:false, learningEligible:false, queue:nextQueue, next, dispatchNext:shouldRefill(next), reason:'engine-verification-incomplete' });
 }
 
 export function runCandidateReconcile({ queueFile='.vibe2/queue.json', candidateBranch='', target='unity', conclusion='', runId='', headSha='' }={}) {
