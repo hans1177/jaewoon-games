@@ -39,6 +39,8 @@ bootstrapGameSeeds:
   enabled: true
   initialSeedBatchCount: 6
   initialSeedBatchIsProductionQuota: false
+  initialSeedGenerationMode: SINGLE_BOOTSTRAP_BATCH
+  initialSeedBatchCreatesAllCategoriesAtOnce: true
   oneSeedPerCategory: true
   categories:
     - ACTION_SURVIVAL_ROGUELITE
@@ -48,23 +50,62 @@ bootstrapGameSeeds:
     - IDLE_GROWTH_RPG
     - STORY_COMPLETE_RPG
   ownerMayReplaceOrExpandCategories: true
+  replenishment:
+    mode: ONE_FOR_ONE_ONLY
+    normalPromotionDoesNotTriggerReplenishment: true
+    redesignOrHoldDoesNotTriggerReplenishment: true
+    triggers:
+      - DISCARDED
+      - OWNER_REMOVED
+      - OWNER_REQUESTED_ADDITIONAL_SEED
+      - OWNER_ADDED_CATEGORY
+    replacementCategory: SAME_CATEGORY_UNLESS_OWNER_CHANGES_CATEGORY
+    replacementCountPerVacancy: 1
+    automaticGrowthBeyondVacanciesForbidden: true
 
 GAME_SEED:
   stage: BEFORE_GAME_DESIGNER_DRAFT
   purpose: DEFINE_WHAT_GAME_TO_BUILD
+  selectionMode: FAMOUS_SUCCESSFUL_GAME_COPY_BENCHMARK
+  transformationModes:
+    - HOMAGE
+    - REINTERPRETATION
+  primaryIntent: SELECT_SUCCESSFUL_REFERENCE_AND_REBUILD_CORE_SUCCESS_PATTERN
   referenceStrategy:
-    mode: RELEASED_GAME_BENCHMARK
+    mode: FAMOUS_SUCCESSFUL_RELEASED_GAME_BENCHMARK
     sourcesAllowed:
       - FAMOUS_MOBILE_GAMES
       - RELEASED_STEAM_GAMES
+    selectionPriority:
+      - PROVEN_COMMERCIAL_OR_POPULAR_SUCCESS
+      - CLEAR_PROVEN_CORE_FUN_AND_CORE_LOOP
+      - ANDROID_SINGLE_PLAYER_FIT
+      - PRODUCIBLE_AT_COMPANY_SCALE
+      - COMMERCIAL_VIABILITY_WITHOUT_MULTIPLAYER
+      - FUTURE_STEAM_OR_MULTIPLAYER_EXPANSION_VALUE
     mayStudy:
       - CORE_FUN
       - CORE_LOOP
+      - COMBAT_TEMPO
       - SESSION_STRUCTURE
       - PROGRESSION_PATTERN
       - ECONOMY_PATTERN
       - UX_PATTERN
       - MARKET_POSITIONING
+    mayCarryOverAbstractPatternsThroughReimplementation:
+      - GAMEPLAY_RULE_PATTERN
+      - CORE_LOOP_PATTERN
+      - PROGRESSION_STRUCTURE_PATTERN
+      - ECONOMY_STRUCTURE_PATTERN
+      - SESSION_STRUCTURE_PATTERN
+      - UX_PATTERN
+    mustReinterpret:
+      - WORLD_AND_SETTING
+      - VISUAL_IDENTITY
+      - CHARACTERS
+      - SYSTEM_COMBINATION
+      - PROGRESSION_EXPRESSION
+      - PRESENTATION_AND_DIRECTION
     directCopyForbidden:
       - SOURCE_CODE
       - ART_ASSETS
@@ -75,18 +116,54 @@ GAME_SEED:
       - MAPS
       - UI_ARTWORK
       - TRADE_DRESS
-    requirement: REINTERPRET_REFERENCE_INTO_DISTINCT_GAME_IDENTITY
+    sourceCodeRule: IMPLEMENT_EQUIVALENT_OR_INSPIRED_FUNCTIONALITY_WITH_OWN_CODE
+    requirement: HOMAGE_OR_REINTERPRET_REFERENCE_INTO_DISTINCT_GAME_IDENTITY
+
+  marketEvidence:
+    role: TARGET_DESIGN_REFERENCE
+    hardPassFailGate: false
+    missingMarketDataDoesNotAutoRejectSeed: true
+    marketDataAloneCannotDiscardGame: true
+    useWhenAvailable:
+      - REVENUE_RANK_OR_REVENUE_SIGNAL
+      - POPULARITY_OR_DOWNLOAD_RANK
+      - TARGET_AGE_OR_AGE_DISTRIBUTION
+      - AVERAGE_PLAYTIME
+      - MEDIAN_PLAYTIME
+      - SESSION_LENGTH
+      - RETENTION
+      - CONCURRENT_OR_ACTIVE_USERS
+      - REVIEW_VOLUME_AND_RATING
+    targetDecisionsSupported:
+      - TARGET_AUDIENCE
+      - TARGET_AGE_RANGE
+      - TARGET_SESSION_LENGTH
+      - GAME_LENGTH_AND_CONTENT_VOLUME
+      - MONETIZATION_OR_SALES_MODEL
+      - PROGRESSION_PACING
+      - UX_COMPLEXITY
+    evidenceRules:
+      numericClaimRequiresSource: true
+      numericClaimRequiresObservedAt: true
+      unverifiableNumericClaimForbidden: true
+      unavailableFieldMayBeUNKNOWN: true
+      qualitativeBenchmarkAllowedWhenNumericDataUnavailable: true
+
   requiredFields:
     - GAME_CATEGORY
     - REFERENCE_GAMES
     - CORE_FUN_TO_LEARN
     - CORE_LOOP
     - DISTINCT_IDENTITY
+    - MARKET_EVIDENCE_SUMMARY
+    - TARGET_AUDIENCE
+    - TARGET_SESSION_DIRECTION
     - INITIAL_TARGET_PLATFORM
     - INITIAL_PLAY_MODE
     - STEAM_EXPANSION_POSSIBLE
     - MULTIPLAYER_EXPANSION_POSSIBLE
     - MULTIPLAYER_EXPANSION_VALUE
+
   initialTargetPlatform: ANDROID_MOBILE
   initialPlayMode: SINGLE_PLAYER
   steam:
@@ -111,6 +188,70 @@ GAME_SEED:
       - PVP
       - NONE
   commercialRule: INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_WITHOUT_MULTIPLAYER
+
+discardPolicy:
+  general:
+    singleFailureDoesNotImmediatelyDiscard: true
+    correctableProblemMustAttemptRevisionFirst: true
+    marketMetricAloneCannotDiscard: true
+    ownerMayDiscardDirectly: true
+    discardState: DISCARDED
+    discardCreatesSameCategorySeedVacancy: true
+
+  DESIGN_ONLY:
+    question: CAN_THE_GAME_IDEA_AND_DESIGN_SURVIVE
+    firstResponseToFatalIssue: REDESIGN
+    requiredBeforeDiscard:
+      - FATAL_ISSUE_RECORDED_WITH_EVIDENCE
+      - SAME_GAME_DESIGNER_REVISION_ATTEMPTED
+      - FIVE_DEPARTMENT_REVIEW_REPEATED
+      - SAME_FATAL_OR_EQUIVALENT_STRUCTURAL_BLOCKER_REMAINS
+    fatalCriteria:
+      - CORE_FUN_CANNOT_BE_RECOVERED
+      - HOMAGE_OR_REINTERTATION_CANNOT_PRODUCE_DISTINCT_IDENTITY
+      - ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT
+      - REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN
+      - CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME
+      - IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION
+      - FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION
+    nonDiscardStates:
+      - REDESIGN
+      - CONFLICT
+      - HOLD
+    finalOutcomes:
+      - ACTIVE
+      - REDESIGN
+      - DISCARDED
+
+  DEVELOPMENT_CONFIRMED:
+    question: CAN_THE_VALIDATED_DESIGN_SURVIVE_REAL_IMPLEMENTATION_AND_PLAY
+    firstResponseToFatalIssue:
+      - BLOCKED
+      - HOLD
+      - FIX_AND_REVALIDATE
+    requiredBeforeDiscard:
+      - REAL_WEB_OR_UNITY_OR_PLAY_EVIDENCE_EXISTS
+      - FATAL_ISSUE_RECORDED_WITH_EVIDENCE
+      - TARGETED_FIX_ATTEMPTED_WHEN_PRACTICAL
+      - TARGETED_REVALIDATION_PERFORMED
+      - STRUCTURAL_FATAL_BLOCKER_REMAINS
+    fatalCriteria:
+      - REAL_PLAY_CORE_FUN_REMAINS_UNACCEPTABLE_AFTER_FIX
+      - REPETITION_OR_SESSION_STRUCTURE_REMAINS_UNACCEPTABLE_AFTER_FIX
+      - MOBILE_TOUCH_OR_UX_IS_STRUCTURALLY_UNFIT
+      - PERFORMANCE_MEMORY_HEAT_OR_RUNTIME_COST_IS_STRUCTURALLY_UNRESOLVABLE
+      - IMPLEMENTATION_OR_CONTENT_PRODUCTION_COST_IS_UNSUSTAINABLE
+      - ECONOMY_PROGRESSION_OR_BALANCE_REPEATEDLY_COLLAPSES_IN_REAL_PLAY
+      - SAME_FATAL_IMPLEMENTATION_OR_PLAY_BLOCKER_REPEATS_AFTER_REVALIDATION
+    recoveryBeforeDiscard:
+      - FIX_IN_DEVELOPMENT_CONFIRMED
+      - HOLD_FOR_EVIDENCE
+      - DEMOTE_TO_DESIGN_ONLY_IF_CORE_DESIGN_MUST_BE_REBUILT
+    finalOutcomes:
+      - DEVELOPMENT_CONFIRMED_CONTINUE
+      - HOLD_OR_BLOCKED
+      - DEMOTE_TO_DESIGN_ONLY
+      - DISCARDED
 
 platformStrategy:
   initialActualProduct: ANDROID_MOBILE_SINGLE_PLAYER
@@ -219,6 +360,7 @@ flows:
       - DISTINCT_GAME_IDENTITY
       - CORE_FUN_CLEAR
       - CORE_LOOP_ACTION_FEEDBACK_CHOICE_REWARD
+      - MARKET_TARGET_DIRECTION_RECORDED
       - MOBILE_UX_DIRECTION_DEFINED
       - STEAM_EXPANSION_DECISION_RECORDED
       - MULTIPLAYER_EXPANSION_DECISION_RECORDED
@@ -366,6 +508,7 @@ promotion:
       - REAL_PLAY_EVIDENCE
       - REAL_UNITY_EVIDENCE
   classMovementNeverUsedToSatisfyCountQuota: true
+  normalPromotionNeverTriggersSeedReplenishment: true
   demotionRequiresRecordedReasonAndEvidence: true
 
 developmentSafety:
