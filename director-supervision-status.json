@@ -3,7 +3,7 @@
   "dateKst": "2026-09-10",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
-  "activeDevelopmentRunId": 34423098797,
+  "activeDevelopmentRunId": 34423957662,
   "checks": {
     "staffChecked": "8/8",
     "activeWorkOrder": "artbook-work-orders/2026-09-10-daechung-rpg.json",
@@ -32,8 +32,8 @@
     "STALE": 0
   },
   "liveStates": {
-    "ACTIVE": 6,
-    "WAITING": 1,
+    "ACTIVE": 1,
+    "WAITING": 6,
     "BLOCKED": 0,
     "DONE": 1
   },
@@ -42,21 +42,21 @@
   "workflowEvidence": {
     "artbook": {
       "id": 34423291153,
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "failure",
       "event": "schedule",
       "createdAt": "2026-09-10T00:54:47Z",
-      "updatedAt": "2026-09-10T00:59:20Z",
+      "updatedAt": "2026-09-10T01:04:13Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34423291153"
     },
     "autonomousDevelopment": {
-      "id": 34423098797,
+      "id": 34423957662,
       "status": "in_progress",
       "conclusion": null,
       "event": "workflow_dispatch",
-      "createdAt": "2026-09-10T00:52:05Z",
-      "updatedAt": "2026-09-10T00:55:52Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34423098797"
+      "createdAt": "2026-09-10T01:04:15Z",
+      "updatedAt": "2026-09-10T01:04:19Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34423957662"
     },
     "homepage": null,
     "publicGameHealth": null,
@@ -84,31 +84,18 @@
       "department": "planning",
       "taskAssigned": true,
       "status": "WORKING",
-      "workState": "ACTIVE",
-      "task": "daechung-rpg daily artbook section",
+      "workState": "WAITING",
+      "task": "autonomous development floor 34423957662",
       "executionEvidence": [
-        "work-order:artbook-work-orders/2026-09-10-daechung-rpg.json",
-        "live-artbook-target:daechung-rpg",
-        "queue-submission:planning",
-        "workflow:34423291153:in_progress:pending",
-        "job:102704047435:in_progress:pending"
+        "autonomous-workflow:34423957662:in_progress:pending"
       ],
       "resultVerified": false,
-      "jobEvidence": {
-        "id": 102704047435,
-        "name": "round1 (planning)",
-        "status": "in_progress",
-        "conclusion": null,
-        "failedStep": null,
-        "startedAt": "2026-09-10T00:59:18Z",
-        "completedAt": null,
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34423291153/job/102704047435"
-      },
+      "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "this department job is currently executing",
-      "action": "check department output after job completes",
-      "source": "artbook",
+      "reason": "autonomous floor is active but this department job has not started yet",
+      "action": "wait for department matrix scheduling",
+      "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
@@ -127,31 +114,18 @@
       "department": "development",
       "taskAssigned": true,
       "status": "WORKING",
-      "workState": "ACTIVE",
-      "task": "daechung-rpg daily artbook section",
+      "workState": "WAITING",
+      "task": "autonomous development floor 34423957662",
       "executionEvidence": [
-        "work-order:artbook-work-orders/2026-09-10-daechung-rpg.json",
-        "live-artbook-target:daechung-rpg",
-        "queue-submission:development",
-        "workflow:34423291153:in_progress:pending",
-        "job:102704047353:in_progress:pending"
+        "autonomous-workflow:34423957662:in_progress:pending"
       ],
       "resultVerified": false,
-      "jobEvidence": {
-        "id": 102704047353,
-        "name": "round1 (development)",
-        "status": "in_progress",
-        "conclusion": null,
-        "failedStep": null,
-        "startedAt": "2026-09-10T00:59:18Z",
-        "completedAt": null,
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34423291153/job/102704047353"
-      },
+      "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "this department job is currently executing",
-      "action": "check department output after job completes",
-      "source": "artbook",
+      "reason": "autonomous floor is active but this department job has not started yet",
+      "action": "wait for department matrix scheduling",
+      "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
@@ -170,31 +144,18 @@
       "department": "qa",
       "taskAssigned": true,
       "status": "WORKING",
-      "workState": "ACTIVE",
-      "task": "daechung-rpg daily artbook section",
+      "workState": "WAITING",
+      "task": "autonomous development floor 34423957662",
       "executionEvidence": [
-        "work-order:artbook-work-orders/2026-09-10-daechung-rpg.json",
-        "live-artbook-target:daechung-rpg",
-        "queue-submission:qa",
-        "workflow:34423291153:in_progress:pending",
-        "job:102704047389:in_progress:pending"
+        "autonomous-workflow:34423957662:in_progress:pending"
       ],
       "resultVerified": false,
-      "jobEvidence": {
-        "id": 102704047389,
-        "name": "round1 (qa)",
-        "status": "in_progress",
-        "conclusion": null,
-        "failedStep": null,
-        "startedAt": "2026-09-10T00:59:18Z",
-        "completedAt": null,
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34423291153/job/102704047389"
-      },
+      "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "this department job is currently executing",
-      "action": "check department output after job completes",
-      "source": "artbook",
+      "reason": "autonomous floor is active but this department job has not started yet",
+      "action": "wait for department matrix scheduling",
+      "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
@@ -213,31 +174,18 @@
       "department": "graphics",
       "taskAssigned": true,
       "status": "WORKING",
-      "workState": "ACTIVE",
-      "task": "daechung-rpg daily artbook section",
+      "workState": "WAITING",
+      "task": "autonomous development floor 34423957662",
       "executionEvidence": [
-        "work-order:artbook-work-orders/2026-09-10-daechung-rpg.json",
-        "live-artbook-target:daechung-rpg",
-        "queue-submission:graphics",
-        "workflow:34423291153:in_progress:pending",
-        "job:102704047404:in_progress:pending"
+        "autonomous-workflow:34423957662:in_progress:pending"
       ],
       "resultVerified": false,
-      "jobEvidence": {
-        "id": 102704047404,
-        "name": "round1 (graphics)",
-        "status": "in_progress",
-        "conclusion": null,
-        "failedStep": null,
-        "startedAt": "2026-09-10T00:59:18Z",
-        "completedAt": null,
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34423291153/job/102704047404"
-      },
+      "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "this department job is currently executing",
-      "action": "check department output after job completes",
-      "source": "artbook",
+      "reason": "autonomous floor is active but this department job has not started yet",
+      "action": "wait for department matrix scheduling",
+      "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
@@ -256,31 +204,18 @@
       "department": "balance",
       "taskAssigned": true,
       "status": "WORKING",
-      "workState": "ACTIVE",
-      "task": "daechung-rpg daily artbook section",
+      "workState": "WAITING",
+      "task": "autonomous development floor 34423957662",
       "executionEvidence": [
-        "work-order:artbook-work-orders/2026-09-10-daechung-rpg.json",
-        "live-artbook-target:daechung-rpg",
-        "queue-submission:balance",
-        "workflow:34423291153:in_progress:pending",
-        "job:102704047419:in_progress:pending"
+        "autonomous-workflow:34423957662:in_progress:pending"
       ],
       "resultVerified": false,
-      "jobEvidence": {
-        "id": 102704047419,
-        "name": "round1 (balance)",
-        "status": "in_progress",
-        "conclusion": null,
-        "failedStep": null,
-        "startedAt": "2026-09-10T00:59:20Z",
-        "completedAt": null,
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34423291153/job/102704047419"
-      },
+      "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "this department job is currently executing",
-      "action": "check department output after job completes",
-      "source": "artbook",
+      "reason": "autonomous floor is active but this department job has not started yet",
+      "action": "wait for department matrix scheduling",
+      "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
