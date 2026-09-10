@@ -1,19 +1,16 @@
-name: Autonomous New Game QA
+name: Autonomous Candidate QA
 
 on:
   push:
     branches: [main]
     paths:
-      - 'autonomous-incubator.json'
       - 'autonomous-portfolio.json'
-      - 'tools/autonomous-new-game-incubator.mjs'
       - 'tools/autonomous-prototype-worker.mjs'
+      - 'tools/autonomous-candidate-review.mjs'
       - 'tools/incubator-promotion-state.mjs'
-      - 'qa/autonomous-new-game-incubator.test.mjs'
       - 'qa/autonomous-prototype-worker.test.mjs'
+      - 'qa/autonomous-candidate-review.test.mjs'
       - 'qa/incubator-promotion-state.test.mjs'
-      - 'qa/autonomous-new-game-closed-loop.test.mjs'
-      - '.github/workflows/autonomous-new-game-incubator.yml'
       - '.github/workflows/autonomous-prototype-worker.yml'
       - '.github/workflows/autonomous-continuous-development.yml'
       - '.github/workflows/autonomous-candidate-promotion.yml'
@@ -21,14 +18,12 @@ on:
       - '.github/workflows/autonomous-new-game-qa.yml'
   pull_request:
     paths:
-      - 'tools/autonomous-new-game-incubator.mjs'
       - 'tools/autonomous-prototype-worker.mjs'
+      - 'tools/autonomous-candidate-review.mjs'
       - 'tools/incubator-promotion-state.mjs'
-      - 'qa/autonomous-new-game-incubator.test.mjs'
       - 'qa/autonomous-prototype-worker.test.mjs'
+      - 'qa/autonomous-candidate-review.test.mjs'
       - 'qa/incubator-promotion-state.test.mjs'
-      - 'qa/autonomous-new-game-closed-loop.test.mjs'
-      - '.github/workflows/autonomous-new-game-incubator.yml'
       - '.github/workflows/autonomous-prototype-worker.yml'
       - '.github/workflows/autonomous-continuous-development.yml'
       - '.github/workflows/autonomous-candidate-promotion.yml'
@@ -40,7 +35,7 @@ permissions:
   contents: read
 
 jobs:
-  closed-loop-contract:
+  candidate-contract:
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
@@ -48,28 +43,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Deterministic new-game tests
+      - name: Deterministic candidate tests
         run: |
-          node --check tools/autonomous-new-game-incubator.mjs
           node --check tools/autonomous-prototype-worker.mjs
+          node --check tools/autonomous-candidate-review.mjs
           node --check tools/incubator-promotion-state.mjs
-          node --test qa/autonomous-new-game-incubator.test.mjs
           node --test qa/autonomous-prototype-worker.test.mjs
           node --test qa/autonomous-candidate-review.test.mjs
           node --test qa/incubator-promotion-state.test.mjs
-          node --test qa/autonomous-new-game-closed-loop.test.mjs
-      - name: Validate closed-loop contracts
+      - name: Validate isolated candidate contracts
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq "cron: '30 22 * * *'" .github/workflows/autonomous-new-game-incubator.yml
-          grep -Fq "workflows: ['Free Artbook Department Bots']" .github/workflows/autonomous-new-game-incubator.yml
-          grep -Fq "need_model=" .github/workflows/autonomous-new-game-incubator.yml
-          grep -Fq "git commit -m \"incubator: advance operational new-game pipeline\"" .github/workflows/autonomous-new-game-incubator.yml
-          if grep -F 'incubator: advance operational new-game pipeline [skip ci]' .github/workflows/autonomous-new-game-incubator.yml; then
-            echo 'incubator commit would suppress prototype worker' >&2
-            exit 1
-          fi
           grep -Fq "'.autonomous/prototype-request.json'" .github/workflows/autonomous-prototype-worker.yml
           grep -Fq 'git fetch origin main autonomous-dev' .github/workflows/autonomous-prototype-worker.yml
           grep -Fq 'git merge --no-edit origin/main' .github/workflows/autonomous-prototype-worker.yml
@@ -81,17 +66,12 @@ jobs:
           grep -Fq 'PROMOTED_DEV_REVISION' .github/workflows/autonomous-candidate-promotion.yml
           grep -Fq 'MAIN_GAME_CODE_WRITE=NO' .github/workflows/autonomous-candidate-promotion.yml
 
-          # The continuous workflow no longer holds the writer lock for the whole floor.
-          # Reservation prepare stays serialized; failed recovery is run-scoped and resolves branch races by retrying on latest autonomous-dev.
           if grep -Eq '^concurrency:$' .github/workflows/autonomous-continuous-development.yml; then
             echo 'continuous workflow is globally serialized; cross-game parallelism blocked' >&2
             exit 1
           fi
           continuous_locks="$(grep -c '^      group: autonomous-dev-writer$' .github/workflows/autonomous-continuous-development.yml)"
-          if [ "$continuous_locks" -ne 1 ]; then
-            echo 'continuous prepare writer lock missing or duplicated' >&2
-            exit 1
-          fi
+          test "$continuous_locks" -eq 1
           grep -Eq '^      group: autonomous-dev-recovery-.*github\.run_id.*$' .github/workflows/autonomous-continuous-development.yml
           grep -Fq 'for attempt in 1 2 3 4 5; do' .github/workflows/autonomous-continuous-development.yml
           grep -Fq 'git reset --hard origin/autonomous-dev' .github/workflows/autonomous-continuous-development.yml
@@ -99,29 +79,18 @@ jobs:
           grep -Fq 'PARALLEL_FANOUT_NEXT=DISPATCHED' .github/workflows/autonomous-continuous-development.yml
           grep -Fq 'SAME_SOURCE_ROOT_DUPLICATION=LEASE_BLOCKED' .github/workflows/autonomous-continuous-development.yml
 
-          for writer in \
-            .github/workflows/autonomous-prototype-worker.yml \
-            .github/workflows/autonomous-candidate-promotion.yml; do
+          for writer in .github/workflows/autonomous-prototype-worker.yml .github/workflows/autonomous-candidate-promotion.yml; do
             count="$(grep -c '^  group: autonomous-dev-writer$' "$writer")"
-            if [ "$count" -ne 1 ]; then
-              echo "autonomous-dev writer lock missing or duplicated: $writer" >&2
-              exit 1
-            fi
+            test "$count" -eq 1
             grep -Fq 'cancel-in-progress: false' "$writer"
           done
           grep -Fq "workflows: ['Autonomous Candidate Promotion']" .github/workflows/company-dna-learning.yml
           grep -Fq 'jayApproved===true' tools/company-dna-learning.mjs
           grep -Fq 'selfPromote:false' tools/company-dna-learning.mjs
-          if grep -Eq 'secrets\.(OPENAI|ANTHROPIC|GROQ|MISTRAL)|process\.env\.(OPENAI|ANTHROPIC|GROQ|MISTRAL)' \
-            tools/autonomous-new-game-incubator.mjs tools/autonomous-prototype-worker.mjs \
-            .github/workflows/autonomous-new-game-incubator.yml .github/workflows/autonomous-prototype-worker.yml; then
+          if grep -Eq 'secrets\.(OPENAI|ANTHROPIC|GROQ|MISTRAL)|process\.env\.(OPENAI|ANTHROPIC|GROQ|MISTRAL)' tools/autonomous-prototype-worker.mjs .github/workflows/autonomous-prototype-worker.yml; then
             echo 'real paid/external credential usage found' >&2
             exit 1
           fi
-          echo 'AUTONOMOUS_DEV_SHARED_WRITER_SERIALIZATION=PASS'
-          echo 'AUTONOMOUS_FAILED_LEASE_RECOVERY_NON_EVICTABLE=PASS'
-          echo 'AUTONOMOUS_GAME_FLOORS_PARALLEL=PASS'
-          echo 'NEW_GAME_CLOSED_LOOP_DRY_RUN=PASS'
-          echo 'NEW_GAME_CLOSED_LOOP_CONTRACT=PASS'
+          echo 'AUTONOMOUS_CANDIDATE_CONTRACT=PASS'
           echo 'PUBLIC_MAIN_GAME_CODE_AUTO_PROMOTION=NO'
           echo 'PAID_API=NO'
