@@ -44,14 +44,22 @@ const webGameplay=latestDesignValidation(gameId,'web-gameplay-validation.json');
 const unityTechnical=latestDesignValidation(gameId,'unity-technical-validation.json');
 const unityProjectPresent=Boolean(clean(game.unityProjectPath)&&fs.existsSync(clean(game.unityProjectPath)));
 const blockers=[];
+const meetingConflicts=Number(status.meeting?.conflictCount||0);
+const meetingHolds=Number(status.meeting?.holdCount||0);
 let state='NOT_APPLICABLE';
 let ready=false;
 
 if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
-  const conflicts=Number(status.meeting?.conflictCount||0);
-  ready=conflicts===0;
-  state=ready?'DESIGN_BASELINE_READY':'DESIGN_BASELINE_PENDING_CONFLICT_RESOLUTION';
-  if(conflicts>0)blockers.push(`meeting-conflicts:${conflicts}`);
+  ready=meetingConflicts===0&&meetingHolds===0;
+  if(ready){
+    state='DESIGN_BASELINE_READY';
+  }else if(meetingConflicts>0){
+    state='DESIGN_BASELINE_PENDING_CONFLICT_RESOLUTION';
+  }else{
+    state='DESIGN_BASELINE_PENDING_MEETING_HOLD';
+  }
+  if(meetingConflicts>0)blockers.push(`meeting-conflicts:${meetingConflicts}`);
+  if(meetingHolds>0)blockers.push(`meeting-holds:${meetingHolds}`);
 }else if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
   if(!webGameplay.pass)blockers.push('web-gameplay-validation-required');
   if(!unityProjectPresent)blockers.push('unity-project-required-for-technical-validation');
@@ -72,6 +80,11 @@ status.baselineGate={
   state,
   ready,
   blockers,
+  meeting:{
+    conflictCount:meetingConflicts,
+    holdCount:meetingHolds,
+    allResolved:meetingConflicts===0&&meetingHolds===0
+  },
   evidence:{
     webSmoke:{supportingOnly:true,pass:webSmokePass,source:webSmoke?'company-qa-runtime-evidence.json':null},
     webGameplay:{required:developmentRequired,pass:webGameplay.pass,source:webGameplay.path},
@@ -80,6 +93,8 @@ status.baselineGate={
   },
   contracts:{
     aiMeetingCompletionDoesNotEqualBaselineApproval:true,
+    meetingHoldBlocksDesignBaseline:true,
+    meetingConflictBlocksDesignBaseline:true,
     webSmokeDoesNotEqualGameplayValidation:true,
     developmentConfirmedRequiresExplicitWebGameplayValidation:true,
     developmentConfirmedRequiresUnityTechnicalValidation:true,
@@ -125,11 +140,35 @@ if(publishable){
   status.artbookPublication={published:false,path:null,baselineGateState:state,reason:coreArtbook?'baseline-not-ready':'core-artbook-missing'};
 }
 
+let uiStatus='WAITING';
+if(publishable)uiStatus='COMPLETE';
+else if(ready&&!coreArtbook)uiStatus='WRITING';
+const uiLabel={MEETING:'회의중',WRITING:'작성중',WAITING:'대기중',COMPLETE:'완료'}[uiStatus];
+const publicStatusPath=path.join('artbook-submissions',gameId,'status.json');
+writeJson(publicStatusPath,{
+  version:1,
+  gameId,
+  gameName:game.name,
+  date,
+  productionClass,
+  tier,
+  uiStatus,
+  uiLabel,
+  baselineGateState:state,
+  baselineReady:ready,
+  meeting:{conflictCount:meetingConflicts,holdCount:meetingHolds},
+  artbookPublished:publishable,
+  currentPublicationRetained:!publishable,
+  updatedAt:new Date().toISOString()
+});
+status.artbookUi={status:uiStatus,label:uiLabel,path:publicStatusPath.replaceAll('\\','/')};
+
 writeJson(statusPath,status);
 console.log(`BASELINE_GATE_CLASS=${productionClass}`);
 console.log(`BASELINE_GATE_TIER=${tier}`);
 console.log(`BASELINE_GATE_STATE=${state}`);
 console.log(`BASELINE_GATE_READY=${ready?'YES':'NO'}`);
+console.log(`ARTBOOK_UI_STATUS=${uiStatus}`);
 console.log(`ARTBOOK_HOMEPAGE_PUBLICATION=${publishable?'PUBLISHED':'NOT_PUBLISHED'}`);
 console.log(`WEB_SMOKE_SUPPORT=${webSmokePass?'PASS':'NO_PASS_EVIDENCE'}`);
 if(developmentRequired){
