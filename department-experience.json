@@ -25,11 +25,11 @@
       "lastEvidence": "Vibe QA run 34523194909 PASS · c2cf8a0ded19b52311b14b2ff106fcbe53b5df9c"
     },
     "qa": {
-      "xp": 3600,
+      "xp": 3640,
       "level": 8,
-      "verifiedCompletions": 90,
-      "learningEvents": 90,
-      "lastEvidence": "Vibe QA run 34523213276 PASS · 36b989ae37e5b438a8d579dcbaa2335284f3d472"
+      "verifiedCompletions": 91,
+      "learningEvents": 91,
+      "lastEvidence": "Vibe QA run 34523238444 PASS · 934461563c79227e6eb1a594ef690d6e7b0aaf7f"
     },
     "graphics": {
       "xp": 400,
@@ -68,18 +68,6 @@
     }
   },
   "history": [
-    {
-      "type": "verified-qa-pass",
-      "sourceCommit": "14592febff1ea308eaa4b84fe410755528c9411c",
-      "runId": "34181818560",
-      "xpPerDepartment": 40,
-      "departments": [
-        "director"
-      ],
-      "changedFilesCount": 1,
-      "evidence": "Vibe QA PASS for 14592febff1ea308eaa4b84fe410755528c9411c",
-      "recordedAt": "2026-09-08T02:57:28.955Z"
-    },
     {
       "type": "verified-qa-pass",
       "sourceCommit": "b3c8790c4a3ad00f18c5488d91a70397b4c28b36",
@@ -3712,6 +3700,18 @@
       "changedFilesCount": 1,
       "evidence": "Vibe QA PASS for 36b989ae37e5b438a8d579dcbaa2335284f3d472",
       "recordedAt": "2026-09-10T19:55:30.008Z"
+    },
+    {
+      "type": "verified-qa-pass",
+      "sourceCommit": "934461563c79227e6eb1a594ef690d6e7b0aaf7f",
+      "runId": "34523238444",
+      "xpPerDepartment": 40,
+      "departments": [
+        "qa"
+      ],
+      "changedFilesCount": 1,
+      "evidence": "Vibe QA PASS for 934461563c79227e6eb1a594ef690d6e7b0aaf7f",
+      "recordedAt": "2026-09-10T19:55:39.354Z"
     }
   ],
   "verifiedLearning": []
