@@ -1,10 +1,21 @@
 // 파일명: assets/homepage-enhancements.js
-// 역할: 승인된 재운게임즈 홈페이지 레이아웃을 구성하고 최신 공개 상태를 준실시간 동기화한다.
+// 역할: 승인된 재운게임즈 홈페이지 레이아웃을 구성하고 최신 main 공개 상태를 5초 주기로 자동 동기화한다.
 // 공개 Web 안정판과 기존 게임 데이터는 보존하고 홈 표시 구조만 재배치한다.
-const SYNC_INTERVAL_MS=30000;
+const SYNC_INTERVAL_MS=5000;
+const RAW_MAIN_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/main';
 const focusMode='active';
 let refreshInFlight=false;
-const getJson=async url=>{try{const r=await fetch(`${url}${url.includes('?')?'&':'?'}ts=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));return await r.json();}catch{return null;}};
+let lastDataSignature='';
+const getJson=async path=>{
+  const stamp=Date.now();
+  for(const url of [`${RAW_MAIN_BASE}${path}`,path]){
+    try{
+      const r=await fetch(`${url}${url.includes('?')?'&':'?'}ts=${stamp}`,{cache:'no-store'});
+      if(r.ok)return await r.json();
+    }catch{}
+  }
+  return null;
+};
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const formatDate=value=>{if(!value)return'정보 없음';const d=new Date(value);if(Number.isNaN(d.getTime()))return String(value).replaceAll('-','.');return new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}).format(d).replace(/\. /g,'.').replace(/\.$/,'');};
 
@@ -299,8 +310,15 @@ async function refreshHomepageData(){
       getJson('/game-artbooks.json')
     ]);
     if(catalog){
-      buildFocus(catalog,status||{},artbooks||{});
-      buildGameCenter(catalog,status||{},baselines||{},artbooks||{});
+      const signature=JSON.stringify([catalog,status||{},baselines||{},artbooks||{}]);
+      if(signature!==lastDataSignature){
+        buildFocus(catalog,status||{},artbooks||{});
+        buildGameCenter(catalog,status||{},baselines||{},artbooks||{});
+        lastDataSignature=signature;
+      }
+      document.documentElement.dataset.homeSyncSource='github-main';
+    }else{
+      document.documentElement.dataset.homeSyncSource='offline';
     }
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
   }finally{
@@ -312,6 +330,7 @@ function installRealtimeSync(){
   window.setInterval(()=>{if(!document.hidden)refreshHomepageData();},SYNC_INTERVAL_MS);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshHomepageData();});
   window.addEventListener('focus',()=>refreshHomepageData());
+  window.addEventListener('online',()=>refreshHomepageData());
 }
 
 async function main(){
