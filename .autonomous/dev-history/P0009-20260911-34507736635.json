@@ -1,0 +1,64 @@
+{
+  "version": 2,
+  "candidateId": "P0009-20260911-34507736635",
+  "incubatorCandidateId": null,
+  "newProject": false,
+  "gameId": "P0009",
+  "sourceCommit": "4e773e64be8145dca327930f9ff98d7e59732854",
+  "candidateCommit": "33445447ae3c408a066cce0bdf6218259b809a43",
+  "verdict": "ADVANCE_TO_AUTONOMOUS_DEV",
+  "publicRelease": false,
+  "selfPromoteMain": false,
+  "independentQa": "PASS",
+  "browserQa": "PASS",
+  "performance": {
+    "version": 1,
+    "kind": "AUTONOMOUS_PLAY_IMPACT",
+    "gameId": "P0009",
+    "candidateId": "P0009-20260911-34507736635",
+    "executionQualityScore": 5,
+    "playerImpactScore": 0,
+    "totalScore": 5,
+    "impactStatus": "NOT_OBSERVED_BY_SMOKE_QA",
+    "confidence": "LOW",
+    "priorityEligibleLowImpact": true,
+    "reviewDepartments": [
+      "planning",
+      "development",
+      "graphics",
+      "qa",
+      "balance"
+    ],
+    "implementationDepartments": [
+      "development"
+    ],
+    "changedFiles": [
+      "index.html"
+    ],
+    "signals": {
+      "baselinePass": true,
+      "candidatePass": true,
+      "baselineErrorCount": 0,
+      "candidateErrorCount": 0,
+      "defectReduction": 0,
+      "baselineOverflow": 0,
+      "candidateOverflow": 0,
+      "overflowReduction": 0,
+      "visibleInteractiveBefore": 0,
+      "visibleInteractiveAfter": 0,
+      "interactiveChanged": false,
+      "canvasChanged": false,
+      "titleChanged": false,
+      "observableSurfaceChange": false
+    },
+    "scoring": {
+      "executionQualityMax": 5,
+      "playerImpactMax": 5,
+      "totalMax": 10,
+      "lowImpactPenaltyAfterConsecutive": 2
+    },
+    "evaluatedAt": "2026-09-10T17:27:20.550Z"
+  },
+  "jayAuthority": "L4_DEV_ONLY",
+  "recordedAt": "2026-09-10T17:27:22.820Z"
+}
