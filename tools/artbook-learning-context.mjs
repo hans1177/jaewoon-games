@@ -1,11 +1,13 @@
 // 파일명: tools/artbook-learning-context.mjs
-// 역할: 과거 검증 피드백과 장르 가설을 기존 work-order scope에 안전하게 재사용한다.
+// 역할: 과거 검증 피드백, 장르 가설, 외부 게임설계 증류 원리를 기존 work-order scope에 안전하게 재사용한다.
 import fs from 'node:fs';
 import path from 'node:path';
 import { validateDemoFeedback } from './artbook-demo-concept-gate.mjs';
+import { loadExternalDesignLibrary, buildExternalDesignScope } from './artbook-external-design-distillation.mjs';
 
 const ROLES=['planning','graphics','development','qa','balance'];
 const MARK='[VIBE2_LEARNING_CONTEXT]';
+const DESIGN_LIBRARY_PATH='company-learning/external-game-design-principles.json';
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const readJson=(f,d=null)=>{try{return JSON.parse(fs.readFileSync(f,'utf8'));}catch{return d;}};
 const writeJson=(f,v)=>fs.writeFileSync(f,JSON.stringify(v,null,2)+'\n');
@@ -16,6 +18,7 @@ if(!gameId)throw new Error('ARTBOOK_GAME_ID is required');
 const workOrderPath=`artbook-work-orders/${date}-${gameId}.json`;
 if(!fs.existsSync(workOrderPath)){console.log(`ARTBOOK_LEARNING_SKIP=no-work-order:${workOrderPath}`);process.exit(0);}
 const workOrder=readJson(workOrderPath,{}),styles=readJson('artbook-style-profiles.json',{games:{}}),style=styles.games?.[gameId]||{};
+const externalDesignLibrary=loadExternalDesignLibrary(DESIGN_LIBRARY_PATH);
 
 function jsonFiles(root,out=[]){if(!fs.existsSync(root))return out;for(const e of fs.readdirSync(root,{withFileTypes:true})){const p=path.join(root,e.name);if(e.isDirectory())jsonFiles(p,out);else if(e.name.endsWith('.json'))out.push(p.replaceAll('\\','/'));}return out;}
 const LEGACY_LABELS={keep:'KEEP',change:'CHANGE',fixrequired:'FIX_REQUIRED',unityimplementationnote:'UNITY_IMPLEMENTATION_NOTE',unityartnote:'UNITY_ART_NOTE'};
@@ -50,7 +53,7 @@ function collectFeedback(value,{source,out,rejected}){
 }
 
 const previousFiles=jsonFiles(path.join('artbook-submissions',gameId)).filter(f=>!f.includes(`/${date}/`)&&!f.endsWith('/learning-context.json'));
-const feedback=[],rejectedFeedback=[],sourceFiles=[...previousFiles];
+const feedback=[],rejectedFeedback=[],sourceFiles=[...previousFiles,DESIGN_LIBRARY_PATH];
 for(const file of previousFiles)collectFeedback(readJson(file,{}),{source:file,out:feedback,rejected:rejectedFeedback});
 const demoGate=readJson('artbook-demo-concept-gate.json',{}),demoFeedback=demoGate.games?.[gameId]?.feedback;
 if(demoFeedback){
@@ -96,19 +99,26 @@ const GENRE_QUESTIONS={
 const ROLE_FOCUS={planning:'원인→플레이어 행동→결과→다음 훅의 인과를 답한다.',graphics:'시각 계층·캐릭터/적 역할·모바일 가독성으로 답한다.',development:'기존 시스템 재사용·데이터 경계·Unity 구현 단위로 답한다.',qa:'실제 시작→핵심행동→성장→저장/재실행 시나리오로 답한다.',balance:'전투/성장/보상 수치의 선택 효과와 측정법으로 답한다.'};
 const compactLearn=Object.entries(learned).flatMap(([type,rows])=>rows.slice(-2).map(x=>`${type}: ${x.text}`));
 const questions=GENRE_QUESTIONS[genre]||GENRE_QUESTIONS.general;
+const externalByRole={};
 workOrder.departmentTasks=workOrder.departmentTasks||{};
 for(const role of ROLES){
+  const external=buildExternalDesignScope({library:externalDesignLibrary,role,genre,limit:3});
+  externalByRole[role]=external.selected;
   if(!workOrder.departmentTasks[role])continue;
   const old=clean(workOrder.departmentTasks[role].scope).split(MARK)[0].trim();
-  const context=[MARK,`genreHypothesis=${genreHypothesis.name}(${genreHypothesis.confidence}); 확정 장르가 아니라 질문 선택용 가설이다.`,...questions.map((q,i)=>`genreQuestion${i+1}: ${q}`),`roleFocus: ${ROLE_FOCUS[role]}`,...compactLearn].join(' | ');
+  const context=[MARK,'artbookMeaning=GAME_DESIGN_SOURCE_OF_TRUTH',`genreHypothesis=${genreHypothesis.name}(${genreHypothesis.confidence}); 확정 장르가 아니라 질문 선택용 가설이다.`,...questions.map((q,i)=>`genreQuestion${i+1}: ${q}`),`roleFocus: ${ROLE_FOCUS[role]}`,external.scope,...compactLearn].filter(Boolean).join(' | ');
   workOrder.departmentTasks[role].scope=clean(`${old} ${context}`);
 }
+const externalSourceIds=[...new Set(Object.values(externalByRole).flat().flatMap(row=>row.sourceIds||[]))];
 const outDir=path.join('artbook-submissions',gameId,date);fs.mkdirSync(outDir,{recursive:true});
 const contextPath=path.join(outDir,'learning-context.json');
-writeJson(contextPath,{version:3,gameId,date,generatedBy:'deterministic-artbook-learning-context',paidApi:false,genreHypothesis,genreQuestions:questions,learnedFeedback:learned,rejectedFeedback,sourceFiles,contracts:{feedbackIsPriorEvidenceOnly:true,structuredFeedbackValidated:true,demoGateFeedbackBound:true,legacyDropRequiresRootCause:true,selfGeneratedLearningExcluded:true,genreIsHypothesisOnly:true,noAutomaticRuleChange:true,noProductionApproval:true}});
+writeJson(contextPath,{version:4,gameId,date,generatedBy:'deterministic-artbook-learning-context',paidApi:false,artifactMeaning:'GAME_DESIGN_SOURCE_OF_TRUTH',genreHypothesis,genreQuestions:questions,externalDesignDistillation:{library:DESIGN_LIBRARY_PATH,sourceIds:externalSourceIds,byRole:externalByRole,usage:'IMMEDIATE_DESIGN_CONTEXT_NOT_DIRECT_WEIGHT_TRAINING'},learnedFeedback:learned,rejectedFeedback,sourceFiles,contracts:{artbookIsGameDesignSourceOfTruth:true,feedbackIsPriorEvidenceOnly:true,structuredFeedbackValidated:true,demoGateFeedbackBound:true,legacyDropRequiresRootCause:true,selfGeneratedLearningExcluded:true,genreIsHypothesisOnly:true,externalPrinciplesProposalOnly:true,externalSourceTextNotStored:true,externalPrinciplesNotDirectWeightTraining:true,userAndGameFactsOverrideExternal:true,noAutomaticRuleChange:true,noProductionApproval:true}});
 writeJson(workOrderPath,workOrder);
 console.log(`ARTBOOK_LEARNING_CONTEXT=${contextPath}`);
+console.log(`ARTBOOK_MEANING=GAME_DESIGN_SOURCE_OF_TRUTH`);
 console.log(`ARTBOOK_GENRE_HYPOTHESIS=${genreHypothesis.name}:${genreHypothesis.confidence}`);
+console.log(`ARTBOOK_EXTERNAL_DESIGN_PRINCIPLES=${Object.values(externalByRole).flat().length}`);
+console.log(`ARTBOOK_EXTERNAL_DESIGN_SOURCES=${externalSourceIds.length}`);
 console.log(`ARTBOOK_FEEDBACK_REUSED=${compactLearn.length}`);
 console.log(`ARTBOOK_FEEDBACK_REJECTED=${rejectedFeedback.length}`);
 console.log('PAID_API=NO');
