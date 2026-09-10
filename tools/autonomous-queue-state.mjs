@@ -150,7 +150,7 @@ export function transitionWorkLedger(state,{workId,workState,owner=null,sourceRo
   const mergedEvidence=normalizeEvidenceRefs([...(previous?.evidenceRefs||[]),...evidenceRefs]);
   const mergedReleaseEvidence=normalizeReleaseEvidence([...(previous?.releaseEvidence||[]),...releaseEvidence]);
   const resolvedCommit=clean(sourceCommit)||previous?.sourceCommit||'';
-  const releaseReadiness=evaluateReleaseReadiness({evidence:mergedReleaseEvidence,expectedCommit:resolvedCommit,now,evidenceMaxAgeMs});
+  const releaseReadiness=evaluateReleaseReadiness({evidence:mergedReleaseEvidence,expectedCommit:resolvedCommit,now,maxAgeMs:evidenceMaxAgeMs});
   const progress=developmentProgress?clean(developmentProgress).toUpperCase():classifyDevelopmentProgress({
     workState:nextState,explicitReason,implementationChanged:Boolean(implementationChanged||previous?.implementationChanged),qaVerdict:clean(qaVerdict).toUpperCase()||previous?.qaVerdict,evidenceRefs:mergedEvidence,releaseReadiness,
   });
