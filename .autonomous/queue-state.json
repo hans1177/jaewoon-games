@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "attempts": [
     {
       "date": "2026-09-09",
@@ -5265,9 +5265,10 @@
       "workId": "34517634282",
       "sourceCommit": "7c4a2ee0a44fc6c74305c681b51251c7c527745d",
       "floor": 19,
-      "status": "RESERVED",
+      "status": "FAILED",
       "reservedAt": "2026-09-10T18:59:18.171Z",
-      "leaseExpiresAt": "2026-09-10T20:29:18.171Z"
+      "leaseExpiresAt": null,
+      "settledAt": "2026-09-10T19:12:11.334Z"
     },
     {
       "date": "2026-09-11",
