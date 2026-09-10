@@ -1,8 +1,8 @@
 {
   "version": 1,
   "sourceRepository": "hans1177/jaewoon-games",
-  "sourceRevision": "fc53ad7be3fa75ac02db652781d2a8ce2eda5e88",
-  "generatedAt": "2026-09-09T17:26:41.553Z",
+  "sourceRevision": "cae105ecfc8a77b77561c416720170cff48bc0d6",
+  "generatedAt": "2026-09-10T16:35:49.399Z",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
   "continuousDevelopmentBranch": "autonomous-dev",
@@ -37,7 +37,7 @@
         "score": 100,
         "healthReason": "no-blocking-smoke-errors",
         "issues": [],
-        "checkedAt": "2026-09-09T04:42:27.017Z"
+        "checkedAt": "2026-09-10T16:24:44.945Z"
       }
     },
     {
@@ -52,7 +52,7 @@
         "score": 100,
         "healthReason": "no-blocking-smoke-errors",
         "issues": [],
-        "checkedAt": "2026-09-09T04:42:27.017Z"
+        "checkedAt": "2026-09-10T16:24:44.945Z"
       }
     },
     {
@@ -60,14 +60,14 @@
       "slug": "crystal-defense",
       "name": "수정 디펜스",
       "sourcePath": "web-games/crystal-defense",
-      "mode": "WEB_FIRST_IMPLEMENTATION",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "REDESIGN",
+      "profileStatus": "DESIGN_ONLY",
       "health": {
         "status": "healthy",
         "score": 100,
         "healthReason": "no-blocking-smoke-errors",
         "issues": [],
-        "checkedAt": "2026-09-09T04:42:27.017Z"
+        "checkedAt": "2026-09-10T16:24:44.945Z"
       }
     },
     {
@@ -78,17 +78,11 @@
       "mode": "WEB_FIRST_IMPLEMENTATION",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "health": {
-        "status": "warning",
-        "score": 74,
-        "healthReason": "same-origin-resource-failure",
-        "issues": [
-          "console: Failed to load resource: the server responded with a status of 404 (File not found)",
-          "requestfailed: http://127.0.0.1:4173/assets/rolldown-runtime-S-ySWqyJ.js net::ERR_ABORTED",
-          "requestfailed: http://127.0.0.1:4173/assets/framework-DjPHiq1u.js net::ERR_ABORTED",
-          "requestfailed: http://127.0.0.1:4173/assets/layout-segment-context-B4l5MHMQ.js net::ERR_ABORTED",
-          "requestfailed: http://127.0.0.1:4173/assets/page-CgY6ZelV.js net::ERR_ABORTED"
-        ],
-        "checkedAt": "2026-09-09T04:42:27.017Z"
+        "status": "healthy",
+        "score": 100,
+        "healthReason": "no-blocking-smoke-errors",
+        "issues": [],
+        "checkedAt": "2026-09-10T16:24:44.945Z"
       }
     },
     {
@@ -105,7 +99,7 @@
         "issues": [
           "console: Failed to load resource: net::ERR_INVALID_URL"
         ],
-        "checkedAt": "2026-09-09T04:42:27.017Z"
+        "checkedAt": "2026-09-10T16:24:44.945Z"
       }
     },
     {
@@ -120,7 +114,7 @@
         "score": 100,
         "healthReason": "no-blocking-smoke-errors",
         "issues": [],
-        "checkedAt": "2026-09-09T04:42:27.017Z"
+        "checkedAt": "2026-09-10T16:24:44.945Z"
       }
     },
     {
@@ -144,7 +138,7 @@
         "score": 100,
         "healthReason": "no-blocking-smoke-errors",
         "issues": [],
-        "checkedAt": "2026-09-09T04:42:27.017Z"
+        "checkedAt": "2026-09-10T16:24:44.945Z"
       }
     },
     {
@@ -152,14 +146,14 @@
       "slug": "monster-adventure",
       "name": "몬스터 어드벤처",
       "sourcePath": "web-games/monster-adventure",
-      "mode": "REDESIGN",
-      "profileStatus": "DESIGN_ONLY",
+      "mode": "WEB_FIRST_IMPLEMENTATION",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
       "health": {
         "status": "healthy",
         "score": 100,
         "healthReason": "no-blocking-smoke-errors",
         "issues": [],
-        "checkedAt": "2026-09-09T04:42:27.017Z"
+        "checkedAt": "2026-09-10T16:24:44.945Z"
       }
     },
     {
@@ -174,7 +168,7 @@
         "score": 100,
         "healthReason": "no-blocking-smoke-errors",
         "issues": [],
-        "checkedAt": "2026-09-09T04:42:27.017Z"
+        "checkedAt": "2026-09-10T16:24:44.945Z"
       }
     },
     {
@@ -189,7 +183,7 @@
         "score": 100,
         "healthReason": "no-blocking-smoke-errors",
         "issues": [],
-        "checkedAt": "2026-09-09T04:42:27.017Z"
+        "checkedAt": "2026-09-10T16:24:44.945Z"
       }
     },
     {
@@ -204,11 +198,50 @@
         "score": 100,
         "healthReason": "no-blocking-smoke-errors",
         "issues": [],
-        "checkedAt": "2026-09-09T04:42:27.017Z"
+        "checkedAt": "2026-09-10T16:24:44.945Z"
       }
     }
   ],
-  "companyDna": [],
+  "companyDna": [
+    {
+      "key": "VIBE2:autonomous-candidate-safe-promotion",
+      "type": "VIBE2",
+      "patternId": "autonomous-candidate-safe-promotion",
+      "stage": "GAME_VERIFIED",
+      "summary": {
+        "successEvidence": 5,
+        "failureEvidence": 0,
+        "distinctGames": 1,
+        "distinctGenres": 0,
+        "distinctConditions": 1,
+        "averageDelta": 0,
+        "criticalFailures": 0,
+        "multiGameEligible": false,
+        "selfPromote": false,
+        "jayDecisionRequired": false
+      },
+      "jayApproved": false
+    },
+    {
+      "key": "VIBE2:public-release-health-verified",
+      "type": "VIBE2",
+      "patternId": "public-release-health-verified",
+      "stage": "GAME_VERIFIED",
+      "summary": {
+        "successEvidence": 5,
+        "failureEvidence": 0,
+        "distinctGames": 1,
+        "distinctGenres": 0,
+        "distinctConditions": 1,
+        "averageDelta": 0,
+        "criticalFailures": 0,
+        "multiGameEligible": false,
+        "selfPromote": false,
+        "jayDecisionRequired": false
+      },
+      "jayApproved": false
+    }
+  ],
   "latestArtbooks": [
     {
       "id": "daechung-rpg-2026-09-08-initial",
@@ -290,6 +323,13 @@
     {
       "id": "survival2-2026-09-10-initial",
       "gameId": "survival2",
+      "status": "completed-artbook",
+      "productionApproval": false,
+      "createdAt": "2026-09-10"
+    },
+    {
+      "id": "territory-war-2026-09-10-initial",
+      "gameId": "territory-war",
       "status": "completed-artbook",
       "productionApproval": false,
       "createdAt": "2026-09-10"
