@@ -16,6 +16,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: artbook-section-gate-main
@@ -65,7 +66,10 @@ jobs:
           console.log('ARTBOOK_SECTION_GATE_FINAL=COMPLETED_10/10');
           NODE
 
-      - name: Persist completed gate artbook and second-work queue
+      - name: Open completed gate artbook persistence pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
           set -euo pipefail
           git config user.name "jaewoon-company-ai"
@@ -78,6 +82,13 @@ jobs:
             echo "No artbook gate/assembly changes."
             exit 0
           fi
+          BRANCH="automation/artbook-section-gate-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$BRANCH"
           git commit -m "artbook-gate: persist completed 10-cut artbook [skip ci]"
-          git pull --rebase origin main
-          git push origin main
+          git push origin "$BRANCH"
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title 'artbook-gate: persist completed 10-cut artbook' \
+            --body "Automated Artbook Section Gate persistence from run ${GITHUB_RUN_ID}. Direct main write: NO."
+          echo 'ARTBOOK_SECTION_GATE_PR=OPEN'
