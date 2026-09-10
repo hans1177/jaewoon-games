@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       game_id:
-        description: 'Optional game id. DESIGN_ONLY runs direct to artbook; DEVELOPMENT_CONFIRMED resumes gated validation.'
+        description: 'Optional game id. DESIGN_ONLY runs direct to artbook; DEVELOPMENT_CONFIRMED and RELEASE_CONFIRMED resume gated pipelines.'
         required: false
         type: string
   schedule:
@@ -19,9 +19,14 @@ on:
       - 'design/**/web-gameplay-validation.json'
       - 'design/**/unity-technical-validation.json'
       - 'design/**/development-revalidation.json'
+      - 'design/**/vibe2-release-implementation.json'
+      - 'design/**/unity-android-build.json'
+      - 'design/**/android-runtime-validation.json'
+      - 'design/**/independent-release-qa.json'
       - 'tools/production-classification.mjs'
       - 'tools/company-design-cycle.mjs'
       - 'tools/company-development-validation-cycle.mjs'
+      - 'tools/company-release-production-cycle.mjs'
       - 'tools/company-baseline-gate.mjs'
       - 'tools/artbook-production-pipeline.mjs'
       - 'tools/artbook-fact-pack.mjs'
@@ -80,13 +85,20 @@ jobs:
           }else if(eventName==='push'){
             let changed=[];
             try{changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);}catch{}
-            const evidenceIds=new Set();
+            const developmentIds=new Set();
+            const releaseIds=new Set();
             for(const file of changed){
-              const m=file.match(/^design\/([^/]+)\/[^/]+\/(web-gameplay-validation|unity-technical-validation|development-revalidation)\.json$/);
-              if(m)evidenceIds.add(m[1]);
+              let m=file.match(/^design\/([^/]+)\/[^/]+\/(web-gameplay-validation|unity-technical-validation|development-revalidation)\.json$/);
+              if(m){developmentIds.add(m[1]);continue;}
+              m=file.match(/^design\/([^/]+)\/[^/]+\/(vibe2-release-implementation|unity-android-build|android-runtime-validation|independent-release-qa)\.json$/);
+              if(m)releaseIds.add(m[1]);
             }
-            if(evidenceIds.size){
-              selected=games.filter(row=>evidenceIds.has(row.game.id)&&row.productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED);
+            if(developmentIds.size||releaseIds.size){
+              selected=games.filter(row=>(
+                developmentIds.has(row.game.id)&&row.productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED
+              )||(
+                releaseIds.has(row.game.id)&&row.productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED
+              ));
             }else{
               selected=games.filter(row=>row.productionClass===PRODUCTION_CLASSES.DESIGN_ONLY);
             }
@@ -197,9 +209,9 @@ jobs:
           const actualClass=normalizeProductionClass(s.productionClass)||productionClassFromLegacyTier(s.tierAlias??s.tier,{numericLabels:d.production?.numericLabels||{}});
           const expectedClass=normalizeProductionClass(process.env.EXPECTED_PRODUCTION_CLASS);
           if(actualClass!==expectedClass)throw new Error(`productionClass mismatch: ${actualClass} != ${expectedClass}`);
-          if(!s.baselineGate||s.baselineGate.policyDocument!=='COMPANY_FLOW.md')throw new Error('baseline gate missing');
 
           if(actualClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
+            if(!s.baselineGate||s.baselineGate.policyDocument!=='COMPANY_FLOW.md')throw new Error('development baseline gate missing');
             const waiting=new Set(d.classes?.DEVELOPMENT_CONFIRMED?.waitingStates||[]);
             const terminal=new Set(d.classes?.DEVELOPMENT_CONFIRMED?.terminalStates||[]);
             if(!waiting.has(s.baselineGate.state)&&!terminal.has(s.baselineGate.state))throw new Error(`invalid development direct state: ${s.baselineGate.state}`);
@@ -217,14 +229,34 @@ jobs:
               console.log(`DIRECT_RESULT=${s.baselineGate.state}`);
             }
           }else if(actualClass===PRODUCTION_CLASSES.DESIGN_ONLY){
+            if(!s.baselineGate||s.baselineGate.policyDocument!=='COMPANY_FLOW.md')throw new Error('design baseline gate missing');
             if(s.status!=='COMPLETE')throw new Error('design cycle incomplete');
             if(s.departments?.leadModelsDistinct!==true||s.departments?.count!==5)throw new Error('design lead contract failed');
             for(const role of roles){const a=s.departments?.modelAudit?.[role];if(!a?.pass||a.representativeAuthoredByLead!==true||a.rebuttalAuthoredByLead!==true)throw new Error(`${role} lead review contract failed`);}
             if(s.artbook?.directAfterDesignCycle!==true)throw new Error('DESIGN_ONLY did not run direct to artbook');
             console.log(`DIRECT_RESULT=${s.baselineGate.state}`);
           }else if(actualClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
-            if(s.vibe2PrimaryDeveloper!==true||s.designChanged!==false)throw new Error('release role contract failed');
-            console.log('DIRECT_RESULT=RELEASE_RISK_WATCH');
+            const allowed=new Set([...(d.classes?.RELEASE_CONFIRMED?.waitingStates||[]),...(d.classes?.RELEASE_CONFIRMED?.releaseStates||[])]);
+            if(!allowed.has(s.state))throw new Error(`invalid release direct state: ${s.state}`);
+            if(s.flow!=='RELEASE_CONFIRMED_GATED_DIRECT_RELEASE_PRODUCTION'||s.executionMode!=='GATED_DIRECT_RELEASE_PRODUCTION')throw new Error('release gated direct flow missing');
+            if(s.vibe2PrimaryDeveloper!==true||s.coreDesignLock!==true)throw new Error('release role/core lock contract failed');
+            if(s.contracts?.currentBuildEvidenceBindingRequired!==true||s.contracts?.aiMayInventBuildPass!==false||s.contracts?.aiMayInventDeviceValidationPass!==false||s.contracts?.aiMayInventIndependentQaPass!==false)throw new Error('release evidence safety contract missing');
+            if(s.state==='RELEASE_READY'){
+              if(s.status!=='COMPLETE')throw new Error('release ready status not complete');
+              const baselineFile=path.join(base,'release-baseline.json');
+              const artbookFile=path.join(base,'core-artbook.json');
+              if(!fs.existsSync(baselineFile)||!fs.existsSync(artbookFile))throw new Error('release ready missing baseline or final artbook');
+              const baseline=JSON.parse(fs.readFileSync(baselineFile,'utf8'));
+              const artbook=JSON.parse(fs.readFileSync(artbookFile,'utf8'));
+              if(baseline.status!=='RELEASE_READY'||baseline.coreDesignLockPreserved!==true)throw new Error('release baseline invalid');
+              if(artbook.releaseBaseline!==true||artbook.verification?.supported!==true)throw new Error('release final artbook provenance failed');
+              if(s.evidence?.runtime?.state!=='PASS'||s.evidence?.runtime?.bound!==true||s.evidence?.independentQa?.state!=='PASS'||s.evidence?.independentQa?.bound!==true)throw new Error('release ready without current-build runtime+QA evidence');
+              if(Number(s.departments?.releaseBlockerCount||0)!==0)throw new Error('release ready with department blocker');
+              console.log('DIRECT_RESULT=RELEASE_BASELINE_AND_FINAL_ARTBOOK_COMPLETE');
+            }else{
+              if(s.releaseBaseline||s.artbook)throw new Error('non-ready release state must not expose final release baseline/artbook');
+              console.log(`DIRECT_RESULT=${s.state}`);
+            }
           }
           console.log('CENTRAL_POLICY=COMPANY_FLOW.md');
           console.log(`PRODUCTION_CLASS=${actualClass}`);
@@ -248,6 +280,6 @@ jobs:
           git checkout -b "$branch"
           git commit -m "production: ${PRODUCTION_CLASS} cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}"
           git push origin "HEAD:refs/heads/$branch"
-          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "production: ${PRODUCTION_CLASS} cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}" --body "Central production flow from COMPANY_FLOW.md. DESIGN_ONLY runs direct through artbook. DEVELOPMENT_CONFIRMED resumes only from real Web/Unity/revalidation evidence and stops at exact WAITING state when evidence is missing or failed. Direct main write: NO. Run: ${GITHUB_RUN_ID}"
+          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "production: ${PRODUCTION_CLASS} cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}" --body "Central production flow from COMPANY_FLOW.md. DESIGN_ONLY runs direct through artbook. DEVELOPMENT_CONFIRMED resumes from real Web/Unity evidence. RELEASE_CONFIRMED uses Vibe2 primary development and resumes only from current-build Android/runtime/independent-QA evidence, stopping at exact gated state when evidence is missing or failed. Direct main write: NO. Run: ${GITHUB_RUN_ID}"
           echo 'PRODUCTION_CYCLE_COMMIT=PR_OPENED'
           echo 'PUBLIC_MAIN_WRITE=NO'
