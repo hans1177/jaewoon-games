@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-09T21:39:40.817Z",
+  "updatedAt": "2026-09-10T14:43:43.145Z",
   "entries": [
     {
       "version": 1,
@@ -49,6 +49,54 @@
         "lowImpactPenaltyAfterConsecutive": 2
       },
       "evaluatedAt": "2026-09-09T21:39:36.932Z"
+    },
+    {
+      "version": 1,
+      "kind": "AUTONOMOUS_PLAY_IMPACT",
+      "gameId": "P0009",
+      "candidateId": "P0009-20260910-34489285338",
+      "executionQualityScore": 5,
+      "playerImpactScore": 1,
+      "totalScore": 6,
+      "impactStatus": "OBSERVABLE_CHANGE",
+      "confidence": "MEDIUM",
+      "priorityEligibleLowImpact": false,
+      "reviewDepartments": [
+        "planning",
+        "development",
+        "graphics",
+        "qa",
+        "balance"
+      ],
+      "implementationDepartments": [
+        "development"
+      ],
+      "changedFiles": [
+        "index.html"
+      ],
+      "signals": {
+        "baselinePass": true,
+        "candidatePass": true,
+        "baselineErrorCount": 0,
+        "candidateErrorCount": 0,
+        "defectReduction": 0,
+        "baselineOverflow": 0,
+        "candidateOverflow": 0,
+        "overflowReduction": 0,
+        "visibleInteractiveBefore": 4,
+        "visibleInteractiveAfter": 0,
+        "interactiveChanged": true,
+        "canvasChanged": false,
+        "titleChanged": true,
+        "observableSurfaceChange": true
+      },
+      "scoring": {
+        "executionQualityMax": 5,
+        "playerImpactMax": 5,
+        "totalMax": 10,
+        "lowImpactPenaltyAfterConsecutive": 2
+      },
+      "evaluatedAt": "2026-09-10T14:43:39.375Z"
     }
   ]
 }
