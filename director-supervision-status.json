@@ -24,9 +24,9 @@
     "completionAndPerformanceSeparated": true
   },
   "counts": {
-    "WORKING": 6,
+    "WORKING": 1,
     "DONE": 2,
-    "IDLE_NO_TASK": 0,
+    "IDLE_NO_TASK": 5,
     "BLOCKED": 0,
     "FAILED": 0,
     "STALE": 0
@@ -53,11 +53,11 @@
     },
     "autonomousDevelopment": {
       "id": 34522773360,
-      "status": "queued",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "failure",
       "event": "workflow_dispatch",
       "createdAt": "2026-09-10T19:50:29Z",
-      "updatedAt": "2026-09-10T19:50:29Z",
+      "updatedAt": "2026-09-10T19:50:45Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34522773360"
     },
     "homepage": {
@@ -93,18 +93,28 @@
     "planning": {
       "department": "planning",
       "taskAssigned": true,
-      "status": "WORKING",
+      "status": "IDLE_NO_TASK",
       "workState": "WAITING",
       "task": "autonomous development floor 34522773360",
       "executionEvidence": [
-        "autonomous-workflow:34522773360:queued:pending"
+        "autonomous-workflow:34522773360:completed:failure",
+        "autonomous-job:103024165208:department (planning-final):completed:skipped"
       ],
       "resultVerified": false,
-      "jobEvidence": null,
+      "jobEvidence": {
+        "id": 103024165208,
+        "name": "department (planning-final)",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failedStep": null,
+        "startedAt": "2026-09-10T19:50:44Z",
+        "completedAt": "2026-09-10T19:50:44Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34522773360/job/103024165208"
+      },
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous development floor has no department task",
+      "action": "none",
       "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
@@ -122,19 +132,19 @@
     },
     "development": {
       "department": "development",
-      "taskAssigned": true,
-      "status": "WORKING",
+      "taskAssigned": false,
+      "status": "IDLE_NO_TASK",
       "workState": "WAITING",
       "task": "autonomous development floor 34522773360",
       "executionEvidence": [
-        "autonomous-workflow:34522773360:queued:pending"
+        "autonomous-workflow:34522773360:completed:failure"
       ],
       "resultVerified": false,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous development floor has no department task",
+      "action": "none",
       "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
@@ -152,19 +162,19 @@
     },
     "qa": {
       "department": "qa",
-      "taskAssigned": true,
-      "status": "WORKING",
+      "taskAssigned": false,
+      "status": "IDLE_NO_TASK",
       "workState": "WAITING",
       "task": "autonomous development floor 34522773360",
       "executionEvidence": [
-        "autonomous-workflow:34522773360:queued:pending"
+        "autonomous-workflow:34522773360:completed:failure"
       ],
       "resultVerified": false,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous development floor has no department task",
+      "action": "none",
       "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
@@ -182,19 +192,19 @@
     },
     "graphics": {
       "department": "graphics",
-      "taskAssigned": true,
-      "status": "WORKING",
+      "taskAssigned": false,
+      "status": "IDLE_NO_TASK",
       "workState": "WAITING",
       "task": "autonomous development floor 34522773360",
       "executionEvidence": [
-        "autonomous-workflow:34522773360:queued:pending"
+        "autonomous-workflow:34522773360:completed:failure"
       ],
       "resultVerified": false,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous development floor has no department task",
+      "action": "none",
       "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
@@ -212,19 +222,19 @@
     },
     "balance": {
       "department": "balance",
-      "taskAssigned": true,
-      "status": "WORKING",
+      "taskAssigned": false,
+      "status": "IDLE_NO_TASK",
       "workState": "WAITING",
       "task": "autonomous development floor 34522773360",
       "executionEvidence": [
-        "autonomous-workflow:34522773360:queued:pending"
+        "autonomous-workflow:34522773360:completed:failure"
       ],
       "resultVerified": false,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
+      "reason": "latest autonomous development floor has no department task",
+      "action": "none",
       "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
@@ -317,7 +327,7 @@
     "artbookBacklogCount": 0,
     "nextMissingInitialArtbook": null,
     "artbookRecoveryDispatched": false,
-    "autonomousRecoveryDispatched": false,
+    "autonomousRecoveryDispatched": true,
     "duplicateActiveWorkflowDispatchForbidden": true
   }
 }
