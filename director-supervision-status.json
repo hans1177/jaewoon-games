@@ -9,7 +9,7 @@
     "activeWorkOrder": null,
     "activeWorkOrderExists": false,
     "evidenceAdapterMismatch": false,
-    "jobLevelEvidenceUsed": false,
+    "jobLevelEvidenceUsed": true,
     "autonomousDepartmentJobEvidenceUsed": true,
     "liveDepartmentStates": true,
     "failureLogsUsed": true,
@@ -43,13 +43,13 @@
   ],
   "workflowEvidence": {
     "artbook": {
-      "id": 34522218609,
-      "status": "pending",
+      "id": 34522316021,
+      "status": "in_progress",
       "conclusion": null,
       "event": "push",
-      "createdAt": "2026-09-10T19:44:51Z",
-      "updatedAt": "2026-09-10T19:44:52Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34522218609"
+      "createdAt": "2026-09-10T19:45:48Z",
+      "updatedAt": "2026-09-10T19:45:59Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34522316021"
     },
     "autonomousDevelopment": {
       "id": 34521547127,
@@ -90,7 +90,7 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "queue-submission:planning",
-        "workflow:34522218609:pending:pending"
+        "workflow:34522316021:in_progress:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -123,7 +123,7 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "queue-submission:development",
-        "workflow:34522218609:pending:pending"
+        "workflow:34522316021:in_progress:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -156,7 +156,7 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "queue-submission:qa",
-        "workflow:34522218609:pending:pending"
+        "workflow:34522316021:in_progress:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -189,7 +189,7 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "queue-submission:graphics",
-        "workflow:34522218609:pending:pending"
+        "workflow:34522316021:in_progress:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -222,7 +222,7 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "queue-submission:balance",
-        "workflow:34522218609:pending:pending"
+        "workflow:34522316021:in_progress:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
