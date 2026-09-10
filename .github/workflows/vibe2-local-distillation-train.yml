@@ -1,0 +1,205 @@
+name: Vibe2 Local Distillation Training
+
+on:
+  workflow_run:
+    workflows: ['Vibe2 Distillation Sample Ingest']
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vibe2-local-distillation-training
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      ready: ${{ steps.request.outputs.ready }}
+      request_id: ${{ steps.request.outputs.request_id }}
+      task_types: ${{ steps.request.outputs.task_types }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate training handoff
+        id: request
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs = require('fs');
+          const file = 'company-learning/distillation-training-request.json';
+          if (!fs.existsSync(file)) throw new Error(`missing ${file}`);
+          const request = JSON.parse(fs.readFileSync(file, 'utf8'));
+          if (request.version !== 1) throw new Error('unsupported training request version');
+          if (request.execution?.route !== 'LOCAL_SELF_HOSTED_ONLY') throw new Error('local-only training route required');
+          if (request.execution?.githubHostedTrainingAllowed !== false) throw new Error('GitHub-hosted training must stay disabled');
+          if (request.execution?.paidApiAllowed !== false) throw new Error('paid API must stay disabled');
+          const ready = request.state === 'READY_FOR_LOCAL_TRAINING' && Array.isArray(request.requests) && request.requests.length > 0;
+          const taskTypes = ready ? request.requests.map((item) => item.taskType).join(',') : '';
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `ready=${ready}\nrequest_id=${request.requestId || ''}\ntask_types=${taskTypes}\n`);
+          console.log(`LOCAL_TRAINING_READY=${ready}`);
+          console.log(`REQUEST_ID=${request.requestId || 'NONE'}`);
+          console.log(`TASK_TYPES=${taskTypes || 'NONE'}`);
+          if (!ready) console.log(`NEXT_ACTION=${request.nextAction || 'COLLECT_MORE_VERIFIED_SAMPLES'}`);
+          NODE
+
+      - name: Confirm hosted runner does not train
+        shell: bash
+        run: |
+          echo 'GITHUB_HOSTED_MODEL_TRAINING=NO'
+          echo 'PAID_API=NO'
+
+  train-local:
+    needs: gate
+    if: needs.gate.outputs.ready == 'true'
+    runs-on: [self-hosted, Windows, X64, jaewoon-unity]
+    timeout-minutes: 180
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
+
+    steps:
+      - name: Checkout ready request
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Resolve request and local output root
+        id: request
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $requestFile = Join-Path $env:GITHUB_WORKSPACE 'company-learning\distillation-training-request.json'
+          if (-not (Test-Path $requestFile)) { throw 'distillation training request missing' }
+          $request = [System.IO.File]::ReadAllText($requestFile, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+          if ($request.version -ne 1) { throw 'unsupported training request version' }
+          if ($request.state -ne 'READY_FOR_LOCAL_TRAINING') { throw 'training request is no longer ready' }
+          if ($request.execution.route -ne 'LOCAL_SELF_HOSTED_ONLY') { throw 'local-only training route required' }
+          if ($request.execution.githubHostedTrainingAllowed -ne $false) { throw 'hosted training policy violation' }
+          if ($request.execution.paidApiAllowed -ne $false) { throw 'paid API policy violation' }
+          if (-not $request.requests -or @($request.requests).Count -lt 1) { throw 'no ready task requests' }
+
+          $root = Join-Path $env:USERPROFILE 'jaewoon-vibe2-learning'
+          New-Item -ItemType Directory -Path $root -Force | Out-Null
+          "LOCAL_TRAINING_ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "REQUEST_ID=$($request.requestId)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "[PASS] request=$($request.requestId) tasks=$(@($request.requests).Count)"
+
+      - name: Preflight Python and CUDA training stack
+        id: preflight
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $python = Get-Command python -ErrorAction SilentlyContinue
+          if (-not $python) { throw 'Python is not installed on the local training runner.' }
+          python -c "import sys; print(sys.version)"
+          python -c "import torch, transformers, peft; print('torch=' + torch.__version__); print('transformers=' + transformers.__version__); print('peft=' + peft.__version__); assert torch.cuda.is_available(), 'CUDA GPU is required for local Vibe2 training'; print('cuda=' + torch.cuda.get_device_name(0))"
+
+          $method = 'lora'
+          python -c "import bitsandbytes" 2>$null
+          if ($LASTEXITCODE -eq 0) { $method = 'qlora' }
+          "TRAINING_METHOD=$method" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "[PASS] local CUDA training stack ready; method=$method"
+
+      - name: Build task datasets and train adapters locally
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $requestFile = Join-Path $env:GITHUB_WORKSPACE 'company-learning\distillation-training-request.json'
+          $request = [System.IO.File]::ReadAllText($requestFile, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+          $runtimeItems = @()
+
+          foreach ($item in @($request.requests)) {
+            $taskType = [string]$item.taskType
+            $adapterVersion = [string]$item.adapterVersion
+            if ($taskType -notmatch '^(coding|bugfix|unity|qa|planning|general)$') { throw "invalid task type: $taskType" }
+            if ($adapterVersion -notmatch '^[A-Za-z0-9._-]+$') { throw "invalid adapter version: $adapterVersion" }
+
+            $datasetDir = Join-Path $env:GITHUB_WORKSPACE ("vibe2-learning\datasets\$taskType\$env:REQUEST_ID")
+            if (Test-Path $datasetDir) { Remove-Item $datasetDir -Recurse -Force }
+
+            node tools/vibe2-weight-learning.mjs dataset `
+              --input company-learning/training-samples `
+              --out $datasetDir `
+              --task-type $taskType `
+              --min-train-samples 24 `
+              --min-fresh-train-samples 12 `
+              --min-distinct-projects 2 `
+              --max-project-share 0.75 `
+              --synthetic-ratio-cap 0.5
+            if ($LASTEXITCODE -ne 0) { throw "dataset gate failed for $taskType" }
+
+            $manifestPath = Join-Path $datasetDir 'manifest.json'
+            $manifest = [System.IO.File]::ReadAllText($manifestPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+            if ($manifest.readyForTraining -ne $true) { throw "manifest is not training-ready for $taskType" }
+            if ($manifest.targetTaskType -ne $taskType) { throw "manifest task mismatch for $taskType" }
+
+            $adapterDir = Join-Path $env:LOCAL_TRAINING_ROOT ("adapters\$taskType\$adapterVersion")
+            if (Test-Path $adapterDir) { Remove-Item $adapterDir -Recurse -Force }
+            New-Item -ItemType Directory -Path $adapterDir -Force | Out-Null
+
+            $trainPath = Join-Path $datasetDir 'train.jsonl'
+            $evalPath = Join-Path $datasetDir 'eval.jsonl'
+            python tools/vibe2-train.py `
+              --train $trainPath `
+              --eval $evalPath `
+              --dataset-manifest $manifestPath `
+              --output $adapterDir `
+              --adapter-version $adapterVersion `
+              --task-type $taskType `
+              --method $env:TRAINING_METHOD
+            if ($LASTEXITCODE -ne 0) { throw "adapter training failed for $taskType" }
+
+            $metadataPath = Join-Path $adapterDir 'training-metadata.json'
+            if (-not (Test-Path $metadataPath)) { throw "training metadata missing for $taskType" }
+            $metadata = [System.IO.File]::ReadAllText($metadataPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+            if ($metadata.promotionState -ne 'UNVERIFIED' -or $metadata.runtimePromotionAllowed -ne $false) {
+              throw "fresh adapter must remain unverified for $taskType"
+            }
+            $runtimeItems += [pscustomobject]@{
+              taskType = $taskType
+              adapterVersion = $adapterVersion
+              method = $env:TRAINING_METHOD
+              localAdapterPath = $adapterDir
+              datasetManifest = $manifestPath
+              promotionState = 'UNVERIFIED'
+              runtimePromotionAllowed = $false
+              requiredNextGate = 'FIXED_HOLDOUT_AB_AND_CANARY'
+            }
+          }
+
+          $runtime = [ordered]@{
+            version = 1
+            requestId = $env:REQUEST_ID
+            state = 'TRAINED_UNVERIFIED'
+            trainedAt = (Get-Date).ToUniversalTime().ToString('o')
+            runner = $env:RUNNER_NAME
+            items = $runtimeItems
+            hostedTraining = $false
+            paidApi = $false
+            nextGate = 'FIXED_HOLDOUT_AB_AND_CANARY'
+          }
+          $runtimePath = Join-Path $env:LOCAL_TRAINING_ROOT 'latest-training-runtime.json'
+          $runtime | ConvertTo-Json -Depth 12 | Set-Content $runtimePath -Encoding utf8
+          Write-Host "[PASS] trained adapters remain UNVERIFIED: $runtimePath"
+
+      - name: Training summary
+        if: always()
+        run: |
+          Write-Host "REQUEST_ID=$env:REQUEST_ID"
+          Write-Host "GITHUB_HOSTED_MODEL_TRAINING=NO"
+          Write-Host "PAID_API=NO"
+          Write-Host "AUTO_PROMOTION=NO"
+          Write-Host "NEXT_GATE=FIXED_HOLDOUT_AB_AND_CANARY"
