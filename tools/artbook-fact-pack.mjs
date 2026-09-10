@@ -49,11 +49,15 @@ function snippets(sources,pattern,max=18){
   for(const source of sources){
     const lines=source.text.split(/\r?\n/);
     for(let i=0;i<lines.length&&out.length<max;i++){
-      const match=lines[i].match(pattern);
-      if(!match)continue;
-      const column=(match.index||0)+1;
-      const start=Math.max(0,column-1-80);
-      out.push({source:source.source,line:i+1,column,text:clean(lines[i].slice(start,start+300)).slice(0,220)});
+      const flags=pattern.flags.includes('g')?pattern.flags:`${pattern.flags}g`;
+      const matcher=new RegExp(pattern.source,flags);
+      let match;
+      while((match=matcher.exec(lines[i]))&&out.length<max){
+        const column=(match.index||0)+1;
+        const start=Math.max(0,column-1-80);
+        out.push({source:source.source,line:i+1,column,text:clean(lines[i].slice(start,start+300)).slice(0,220)});
+        if(match[0].length===0)matcher.lastIndex+=1;
+      }
     }
     if(out.length>=max)break;
   }
@@ -70,7 +74,7 @@ const sources=sourceTexts(files);
 const decodedSources=sources.filter(x=>x.kind==='embedded-gzip');
 const topics=Object.fromEntries(Object.entries(TOPICS).map(([key,pattern])=>[key,snippets(sources,pattern)]));
 const missing=Object.entries(topics).filter(([,rows])=>rows.length===0).map(([key])=>key);
-const pack={version:2,gameId,date,generatedBy:'deterministic-source-scan',paidApi:false,sourceMode:unity.length&&web.length?'UNITY_PLUS_WEB_ARCHIVE':unity.length?'UNITY':web.length?'WEB_ARCHIVE_READ_ONLY':'METADATA_ONLY',sourceFiles:files,decodedSources:decodedSources.map(x=>({source:x.source,container:x.container,encoding:'gzip-base64'})),topics,missingEvidence:missing,contracts:{factsAreEvidenceOnly:true,proposalsForbidden:true,numericChangesForbidden:true,approvedBaselineOverwriteForbidden:true,packedSourceDecodeBounded:true,packedSourceExecuted:false,packedLiteralMasked:true,persistenceRequiresStorageEvidence:true}};
+const pack={version:3,gameId,date,generatedBy:'deterministic-source-scan',paidApi:false,sourceMode:unity.length&&web.length?'UNITY_PLUS_WEB_ARCHIVE':unity.length?'UNITY':web.length?'WEB_ARCHIVE_READ_ONLY':'METADATA_ONLY',sourceFiles:files,decodedSources:decodedSources.map(x=>({source:x.source,container:x.container,encoding:'gzip-base64'})),topics,missingEvidence:missing,contracts:{factsAreEvidenceOnly:true,proposalsForbidden:true,numericChangesForbidden:true,approvedBaselineOverwriteForbidden:true,packedSourceDecodeBounded:true,packedSourceExecuted:false,packedLiteralMasked:true,persistenceRequiresStorageEvidence:true,multipleMatchesPerLine:true}};
 const output=`artbook-submissions/${gameId}/${date}/fact-pack.json`;
 writeJson(output,pack);
 console.log(`ARTBOOK_FACT_PACK=${output}`);
