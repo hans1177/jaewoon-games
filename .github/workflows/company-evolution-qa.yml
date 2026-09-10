@@ -25,6 +25,7 @@ on:
       - tools/artbook-production-pipeline.mjs
       - tools/artbook-fact-pack.mjs
       - tools/homepage-manager.mjs
+      - qa/artbook-editorial-role-contract.test.mjs
       - .github/workflows/artbook-free-department-bots.yml
       - .github/workflows/company-evolution-qa.yml
   workflow_dispatch:
@@ -77,10 +78,19 @@ jobs:
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const policy=fs.readFileSync('COMPANY_FLOW.md','utf8');
           if(directive.policyDocument!=='COMPANY_FLOW.md')throw new Error('machine settings must point to COMPANY_FLOW.md');
+          const roles=['planning','graphics','development','qa','balance'];
           const pool=[...new Set(directive.ai?.modelPool||[])];
           const min=Number(directive.ai?.minDistinctModelsPerDepartment||0);
-          if(min<3||pool.length<min)throw new Error(`multimodel pool insufficient: ${pool.length}/${min}`);
-          for(const token of ['회사 최종목표','전체 시스템 아키텍처','Game Designer AI','Artbook Editor AI','CONSENSUS / CONFLICT / HOLD','Web Gameplay Validation','Unity Technical Validation','Vibe2가 확정된 개발 기준선']){
+          const reviewCount=Number(directive.ai?.departmentReviewModelCount||0);
+          const leads=roles.map(role=>directive.ai?.departmentLeadModels?.[role]).filter(Boolean);
+          const distinctLeads=[...new Set(leads)];
+          const minLeads=Number(directive.ai?.minDistinctLeadModelsAcrossDepartments||0);
+          if(min<3||reviewCount<3||pool.length<reviewCount)throw new Error(`multimodel pool insufficient: pool=${pool.length} review=${reviewCount} min=${min}`);
+          if(directive.ai?.departmentLeadModelsMustBeDistinct!==true)throw new Error('department lead models must be distinct');
+          if(leads.length!==roles.length||minLeads<5||distinctLeads.length<minLeads)throw new Error(`distinct lead model gate failed: ${distinctLeads.length}/${minLeads}`);
+          if(leads.some(model=>!pool.includes(model)))throw new Error('department lead model must be in modelPool');
+          if(directive.ai?.departmentRepresentativeAuthoredByLead!==true||directive.ai?.departmentRebuttalAuthoredByLead!==true)throw new Error('department lead ownership contract missing');
+          for(const token of ['회사 최종목표','전체 시스템 아키텍처','Game Designer AI','Artbook Editor AI','CONSENSUS / CONFLICT / HOLD','Web Gameplay Validation','Unity Technical Validation','Vibe2가 확정된 개발 기준선','서로 다른 실제 Lead AI 모델','Lead 모델 ID는 서로 중복되면 안 된다']){
             if(!policy.includes(token))throw new Error(`central policy missing: ${token}`);
           }
           if(directive.production?.canonicalField!=='productionClass')throw new Error('productionClass must remain canonical');
@@ -92,6 +102,8 @@ jobs:
           }
           console.log('CENTRAL_POLICY=PASS');
           console.log(`DISTINCT_MODEL_POOL=${pool.length}`);
+          console.log(`DISTINCT_DEPARTMENT_LEADS=${distinctLeads.length}`);
+          console.log('DEPARTMENT_LEAD_OWNERSHIP=PASS');
           console.log('NUMERIC_CLASS_LABELS=REMAPPABLE_ALIAS_ONLY');
           NODE
 
@@ -100,15 +112,22 @@ jobs:
           set -euo pipefail
           grep -Fq 'tools/artbook-production-pipeline.mjs' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'Pull all configured free department models' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'DEPARTMENT_LEAD_PREFLIGHT=PASS' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'DEPARTMENT_LEAD_GATE=PASS' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'tools/company-baseline-gate.mjs' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'DISTINCT_DEPARTMENT_LEADS' tools/company-design-cycle.mjs
           grep -Fq 'DISTINCT_MODELS_PER_DEPARTMENT' tools/company-design-cycle.mjs
+          grep -Fq 'DEPARTMENT_REPRESENTATIVE_OWNER=LEAD_MODEL' tools/company-design-cycle.mjs
+          grep -Fq 'DEPARTMENT_REBUTTAL_OWNER=LEAD_MODEL' tools/company-design-cycle.mjs
           grep -Fq 'DEPARTMENT_REBUTTAL_ROUNDS=1' tools/company-design-cycle.mjs
+          grep -Fq 'DESIGN_ONLY_ARTBOOK_DIRECT=YES' tools/company-design-cycle.mjs
           grep -Fq 'sameModelAsDraft:true' tools/company-design-cycle.mjs
           grep -Fq 'departmentPageAuthorship:false' tools/company-design-cycle.mjs
           grep -Fq 'ARTBOOK_PROVENANCE_GATE=PASS' tools/company-design-cycle.mjs
           grep -Fq 'aiMeetingCompletionDoesNotEqualBaselineApproval:true' tools/company-baseline-gate.mjs
           grep -Fq 'webSmokeDoesNotEqualGameplayValidation:true' tools/company-baseline-gate.mjs
           grep -Fq 'developmentConfirmedRequiresUnityTechnicalValidation:true' tools/company-baseline-gate.mjs
+          node --test qa/artbook-editorial-role-contract.test.mjs
           if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/company-design-cycle.mjs tools/company-baseline-gate.mjs tools/artbook-production-pipeline.mjs; then
             echo 'paid/external AI key leaked into free multimodel path' >&2
             exit 1
