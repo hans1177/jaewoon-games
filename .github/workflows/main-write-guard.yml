@@ -51,12 +51,15 @@ jobs:
             fi
           fi
 
-      - name: Reject new workflow direct writes to main
+      - name: Reject changed workflow direct writes to main
         run: node tools/main-write-guard.mjs --base='${{ steps.base.outputs.ref }}' --head=HEAD
+
+      - name: Reject any repository workflow direct writes to main
+        run: node tools/main-write-guard.mjs --base='${{ steps.base.outputs.ref }}' --head=HEAD --all=true
 
       - name: Protection status
         shell: bash
         run: |
           echo 'MAIN_DIRECT_WRITE_GUARD=PASS'
-          echo 'PR_ONLY_MERGE_GUARD=ACTIVE_FOR_CHANGED_WORKFLOWS'
+          echo 'PR_ONLY_MERGE_GUARD=ACTIVE_FOR_ALL_WORKFLOWS'
           echo 'ADMIN_PROTECTION_BLOCKER=branch/ruleset protection must still be enforced by repository admin settings'
