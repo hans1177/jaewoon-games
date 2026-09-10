@@ -25,28 +25,32 @@ function run(script){
 console.log(`ARTBOOK_PIPELINE_GAME=${gameId}`);
 console.log(`PRODUCTION_CLASS=${productionClass}`);
 console.log('POLICY_DOCUMENT=COMPANY_FLOW.md');
-await run('tools/artbook-fact-pack.mjs');
 
 if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
+  await run('tools/artbook-fact-pack.mjs');
   await run('tools/company-development-validation-cycle.mjs');
   await run('tools/company-baseline-gate.mjs');
   console.log('DEVELOPMENT_EXECUTION_MODE=GATED_DIRECT');
   console.log('DEVELOPMENT_RESUME_FROM_LATEST_EVIDENCE=YES');
   console.log('DEVELOPMENT_ARTBOOK_ONLY_AFTER_BASELINE_READY=YES');
 }else if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
+  await run('tools/artbook-fact-pack.mjs');
   await run('tools/company-release-production-cycle.mjs');
-  // RELEASE_READY가 아닌 상태에서는 같은 날짜에 남은 과거 최종 Release 산출물을
-  // 활성 위치에 두지 않는다. 삭제하지 않고 release-history로 보존 이동한다.
   await run('tools/company-release-stale-artifact-guard.mjs');
   console.log('RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION');
   console.log('RELEASE_VIBE2_PRIMARY_DEVELOPER=YES');
   console.log('RELEASE_CURRENT_BUILD_EVIDENCE_BINDING=REQUIRED');
   console.log('RELEASE_STALE_FINAL_ARTIFACT_GUARD=ENABLED');
   console.log('RELEASE_FINAL_ARTBOOK_ONLY_AFTER_READY=YES');
-}else{
+}else if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
   await run('tools/company-design-cycle.mjs');
-  await run('tools/company-baseline-gate.mjs');
-  console.log('DESIGN_ONLY_ARTBOOK_DIRECT=YES');
+  await run('tools/company-design-baseline-gate.mjs');
+  await run('tools/company-design-artbook.mjs');
+  console.log('DESIGN_FLOW=GAME_SEED_TO_DESIGN_BASELINE_TO_ARTBOOK');
+  console.log('DESIGN_ARTBOOK_REQUIRES_BASELINE_READY=YES');
+  console.log('DESIGN_ONLY_VIBE2_USED=NO');
+}else{
+  throw new Error(`Unsupported productionClass:${productionClass}`);
 }
 
 console.log('ARTBOOK_PIPELINE_COMPLETE=YES');
