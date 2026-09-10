@@ -3,7 +3,7 @@
   "dateKst": "2026-09-11",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
-  "activeDevelopmentRunId": 34522863402,
+  "activeDevelopmentRunId": 34522973961,
   "checks": {
     "staffChecked": "8/8",
     "activeWorkOrder": null,
@@ -24,9 +24,9 @@
     "completionAndPerformanceSeparated": true
   },
   "counts": {
-    "WORKING": 1,
+    "WORKING": 6,
     "DONE": 2,
-    "IDLE_NO_TASK": 5,
+    "IDLE_NO_TASK": 0,
     "BLOCKED": 0,
     "FAILED": 0,
     "STALE": 0
@@ -52,13 +52,13 @@
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34522701704"
     },
     "autonomousDevelopment": {
-      "id": 34522863402,
-      "status": "completed",
-      "conclusion": "failure",
+      "id": 34522973961,
+      "status": "queued",
+      "conclusion": null,
       "event": "workflow_dispatch",
-      "createdAt": "2026-09-10T19:51:24Z",
-      "updatedAt": "2026-09-10T19:51:38Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34522863402"
+      "createdAt": "2026-09-10T19:52:32Z",
+      "updatedAt": "2026-09-10T19:52:32Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34522973961"
     },
     "homepage": {
       "id": 34522491844,
@@ -93,28 +93,18 @@
     "planning": {
       "department": "planning",
       "taskAssigned": true,
-      "status": "IDLE_NO_TASK",
+      "status": "WORKING",
       "workState": "WAITING",
-      "task": "autonomous development floor 34522863402",
+      "task": "autonomous development floor 34522973961",
       "executionEvidence": [
-        "autonomous-workflow:34522863402:completed:failure",
-        "autonomous-job:103024458528:department (planning-final):completed:skipped"
+        "autonomous-workflow:34522973961:queued:pending"
       ],
       "resultVerified": false,
-      "jobEvidence": {
-        "id": 103024458528,
-        "name": "department (planning-final)",
-        "status": "completed",
-        "conclusion": "skipped",
-        "failedStep": null,
-        "startedAt": "2026-09-10T19:51:38Z",
-        "completedAt": "2026-09-10T19:51:37Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34522863402/job/103024458528"
-      },
+      "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "latest autonomous development floor has no department task",
-      "action": "none",
+      "reason": "autonomous floor is active but this department job has not started yet",
+      "action": "wait for department matrix scheduling",
       "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
@@ -132,19 +122,19 @@
     },
     "development": {
       "department": "development",
-      "taskAssigned": false,
-      "status": "IDLE_NO_TASK",
+      "taskAssigned": true,
+      "status": "WORKING",
       "workState": "WAITING",
-      "task": "autonomous development floor 34522863402",
+      "task": "autonomous development floor 34522973961",
       "executionEvidence": [
-        "autonomous-workflow:34522863402:completed:failure"
+        "autonomous-workflow:34522973961:queued:pending"
       ],
       "resultVerified": false,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "latest autonomous development floor has no department task",
-      "action": "none",
+      "reason": "autonomous floor is active but this department job has not started yet",
+      "action": "wait for department matrix scheduling",
       "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
@@ -162,19 +152,19 @@
     },
     "qa": {
       "department": "qa",
-      "taskAssigned": false,
-      "status": "IDLE_NO_TASK",
+      "taskAssigned": true,
+      "status": "WORKING",
       "workState": "WAITING",
-      "task": "autonomous development floor 34522863402",
+      "task": "autonomous development floor 34522973961",
       "executionEvidence": [
-        "autonomous-workflow:34522863402:completed:failure"
+        "autonomous-workflow:34522973961:queued:pending"
       ],
       "resultVerified": false,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "latest autonomous development floor has no department task",
-      "action": "none",
+      "reason": "autonomous floor is active but this department job has not started yet",
+      "action": "wait for department matrix scheduling",
       "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
@@ -192,19 +182,19 @@
     },
     "graphics": {
       "department": "graphics",
-      "taskAssigned": false,
-      "status": "IDLE_NO_TASK",
+      "taskAssigned": true,
+      "status": "WORKING",
       "workState": "WAITING",
-      "task": "autonomous development floor 34522863402",
+      "task": "autonomous development floor 34522973961",
       "executionEvidence": [
-        "autonomous-workflow:34522863402:completed:failure"
+        "autonomous-workflow:34522973961:queued:pending"
       ],
       "resultVerified": false,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "latest autonomous development floor has no department task",
-      "action": "none",
+      "reason": "autonomous floor is active but this department job has not started yet",
+      "action": "wait for department matrix scheduling",
       "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
@@ -222,19 +212,19 @@
     },
     "balance": {
       "department": "balance",
-      "taskAssigned": false,
-      "status": "IDLE_NO_TASK",
+      "taskAssigned": true,
+      "status": "WORKING",
       "workState": "WAITING",
-      "task": "autonomous development floor 34522863402",
+      "task": "autonomous development floor 34522973961",
       "executionEvidence": [
-        "autonomous-workflow:34522863402:completed:failure"
+        "autonomous-workflow:34522973961:queued:pending"
       ],
       "resultVerified": false,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "latest autonomous development floor has no department task",
-      "action": "none",
+      "reason": "autonomous floor is active but this department job has not started yet",
+      "action": "wait for department matrix scheduling",
       "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
@@ -327,7 +317,7 @@
     "artbookBacklogCount": 0,
     "nextMissingInitialArtbook": null,
     "artbookRecoveryDispatched": false,
-    "autonomousRecoveryDispatched": true,
+    "autonomousRecoveryDispatched": false,
     "duplicateActiveWorkflowDispatchForbidden": true
   }
 }
