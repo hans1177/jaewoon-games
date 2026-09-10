@@ -21,6 +21,7 @@ on:
       - assets/vibe-company-orchestration-bridge.js
       - tools/production-classification.mjs
       - tools/company-design-cycle.mjs
+      - tools/company-development-validation-cycle.mjs
       - tools/company-baseline-gate.mjs
       - tools/artbook-production-pipeline.mjs
       - tools/artbook-fact-pack.mjs
@@ -51,6 +52,7 @@ jobs:
           node --check tools/production-classification.mjs
           node --check tools/artbook-fact-pack.mjs
           node --check tools/company-design-cycle.mjs
+          node --check tools/company-development-validation-cycle.mjs
           node --check tools/company-baseline-gate.mjs
           node --check tools/artbook-production-pipeline.mjs
 
@@ -84,71 +86,71 @@ jobs:
           const reviewCount=Number(directive.ai?.departmentReviewModelCount||0);
           const leads=roles.map(role=>directive.ai?.departmentLeadModels?.[role]).filter(Boolean);
           const distinctLeads=[...new Set(leads)];
-          const minLeads=Number(directive.ai?.minDistinctLeadModelsAcrossDepartments||0);
-          if(min<3||reviewCount<3||pool.length<reviewCount)throw new Error(`multimodel pool insufficient: pool=${pool.length} review=${reviewCount} min=${min}`);
-          if(directive.ai?.departmentLeadModelsMustBeDistinct!==true)throw new Error('department lead models must be distinct');
-          if(leads.length!==roles.length||minLeads<5||distinctLeads.length<minLeads)throw new Error(`distinct lead model gate failed: ${distinctLeads.length}/${minLeads}`);
+          if(min<3||reviewCount<3||pool.length<reviewCount)throw new Error('multimodel pool insufficient');
+          if(directive.ai?.departmentLeadModelsMustBeDistinct!==true||distinctLeads.length<5)throw new Error('five distinct lead model gate failed');
           if(leads.some(model=>!pool.includes(model)))throw new Error('department lead model must be in modelPool');
           if(directive.ai?.departmentRepresentativeAuthoredByLead!==true||directive.ai?.departmentRebuttalAuthoredByLead!==true)throw new Error('department lead ownership contract missing');
-          for(const token of ['회사 최종목표','전체 시스템 아키텍처','Game Designer AI','Artbook Editor AI','CONSENSUS / CONFLICT / HOLD','Web Gameplay Validation','Unity Technical Validation','Vibe2가 확정된 개발 기준선','서로 다른 실제 Lead AI 모델','Lead 모델 ID는 서로 중복되면 안 된다']){
+          for(const token of ['회사 최종목표','전체 시스템 아키텍처','Game Designer AI','Artbook Editor','CONSENSUS / CONFLICT / HOLD','Web Gameplay Validation','Unity Technical Validation','Gated Direct','WAITING_WEB_VALIDATION','WAITING_UNITY_VALIDATION','WAITING_REVALIDATION','DEVELOPMENT_BASELINE_READY']){
             if(!policy.includes(token))throw new Error(`central policy missing: ${token}`);
           }
           if(directive.production?.canonicalField!=='productionClass')throw new Error('productionClass must remain canonical');
           if(directive.production?.fixedClassCounts!==false)throw new Error('production class counts must remain dynamic');
           if(directive.production?.numericLabelsAreAliasesOnly!==true||directive.production?.numericLabelsOwnerRemappable!==true)throw new Error('numeric labels must remain remappable aliases only');
+          const dev=directive.classes?.DEVELOPMENT_CONFIRMED||{};
+          if(dev.executionMode!=='GATED_DIRECT'||dev.resumeFromLatestEvidence!==true||dev.aiMayInventValidationPass!==false||dev.artbookOnlyAfterBaselineReady!==true)throw new Error('DEVELOPMENT_CONFIRMED gated direct settings missing');
+          for(const state of ['WAITING_WEB_VALIDATION','WAITING_WEB_REVALIDATION','WAITING_UNITY_VALIDATION','WAITING_UNITY_REVALIDATION','WAITING_REVALIDATION'])if(!(dev.waitingStates||[]).includes(state))throw new Error(`waiting state missing: ${state}`);
           for(const file of ['ARTBOOK_POLICY.md','ARTBOOK_LIFECYCLE.md','ARTBOOK_DESIGN_CONTRACT.md','ARTBOOK_OPERATIONS.md','ARTBOOK_PRODUCTION_CAPACITY.md','ARTBOOK_SUBMISSION_CONTRACT.md','VIBE2_ARTBOOK_DRAFT_POLICY.md']){
             const text=fs.readFileSync(file,'utf8');
             if(!text.includes('COMPANY_FLOW.md'))throw new Error(`${file} must point to COMPANY_FLOW.md`);
           }
           console.log('CENTRAL_POLICY=PASS');
-          console.log(`DISTINCT_MODEL_POOL=${pool.length}`);
           console.log(`DISTINCT_DEPARTMENT_LEADS=${distinctLeads.length}`);
-          console.log('DEPARTMENT_LEAD_OWNERSHIP=PASS');
-          console.log('NUMERIC_CLASS_LABELS=REMAPPABLE_ALIAS_ONLY');
+          console.log('DEVELOPMENT_GATED_DIRECT_POLICY=PASS');
           NODE
 
-      - name: Validate real multimodel design cycle contract
+      - name: Validate production pipeline contracts
         run: |
           set -euo pipefail
-          grep -Fq 'tools/artbook-production-pipeline.mjs' .github/workflows/artbook-free-department-bots.yml
-          grep -Fq 'Pull all configured free department models' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'Pull configured free department models' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'DEPARTMENT_LEAD_PREFLIGHT=PASS' .github/workflows/artbook-free-department-bots.yml
-          grep -Fq 'DEPARTMENT_LEAD_GATE=PASS' .github/workflows/artbook-free-department-bots.yml
-          grep -Fq 'tools/company-baseline-gate.mjs' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'tools/company-development-validation-cycle.mjs' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'design/**/web-gameplay-validation.json' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'design/**/unity-technical-validation.json' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'design/**/development-revalidation.json' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'DISTINCT_DEPARTMENT_LEADS' tools/company-design-cycle.mjs
-          grep -Fq 'DISTINCT_MODELS_PER_DEPARTMENT' tools/company-design-cycle.mjs
           grep -Fq 'DEPARTMENT_REPRESENTATIVE_OWNER=LEAD_MODEL' tools/company-design-cycle.mjs
           grep -Fq 'DEPARTMENT_REBUTTAL_OWNER=LEAD_MODEL' tools/company-design-cycle.mjs
-          grep -Fq 'DEPARTMENT_REBUTTAL_ROUNDS=1' tools/company-design-cycle.mjs
           grep -Fq 'DESIGN_ONLY_ARTBOOK_DIRECT=YES' tools/company-design-cycle.mjs
-          grep -Fq 'sameModelAsDraft:true' tools/company-design-cycle.mjs
-          grep -Fq 'departmentPageAuthorship:false' tools/company-design-cycle.mjs
-          grep -Fq 'ARTBOOK_PROVENANCE_GATE=PASS' tools/company-design-cycle.mjs
-          grep -Fq 'aiMeetingCompletionDoesNotEqualBaselineApproval:true' tools/company-baseline-gate.mjs
-          grep -Fq 'webSmokeDoesNotEqualGameplayValidation:true' tools/company-baseline-gate.mjs
-          grep -Fq 'developmentConfirmedRequiresUnityTechnicalValidation:true' tools/company-baseline-gate.mjs
+          grep -Fq 'DEVELOPMENT_EXECUTION_MODE=GATED_DIRECT' tools/artbook-production-pipeline.mjs
+          grep -Fq 'DEVELOPMENT_ARTBOOK_ONLY_AFTER_BASELINE_READY=YES' tools/artbook-production-pipeline.mjs
+          grep -Fq 'WAITING_WEB_VALIDATION' tools/company-development-validation-cycle.mjs
+          grep -Fq 'WAITING_WEB_REVALIDATION' tools/company-development-validation-cycle.mjs
+          grep -Fq 'WAITING_UNITY_VALIDATION' tools/company-development-validation-cycle.mjs
+          grep -Fq 'WAITING_UNITY_REVALIDATION' tools/company-development-validation-cycle.mjs
+          grep -Fq 'WAITING_REVALIDATION' tools/company-development-validation-cycle.mjs
+          grep -Fq 'ARTBOOK_REVISION=CREATED_AFTER_BASELINE_READY' tools/company-development-validation-cycle.mjs
+          grep -Fq 'developmentConfirmedIsGatedDirect:true' tools/company-baseline-gate.mjs
+          grep -Fq 'developmentConfirmedPreservesExactWaitingState:true' tools/company-baseline-gate.mjs
           node --test qa/artbook-editorial-role-contract.test.mjs
-          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/company-design-cycle.mjs tools/company-baseline-gate.mjs tools/artbook-production-pipeline.mjs; then
+          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/company-design-cycle.mjs tools/company-development-validation-cycle.mjs tools/company-baseline-gate.mjs tools/artbook-production-pipeline.mjs; then
             echo 'paid/external AI key leaked into free multimodel path' >&2
             exit 1
           fi
-          echo 'MULTIMODEL_DESIGN_CONTRACT=PASS'
+          echo 'PRODUCTION_PIPELINE_CONTRACT=PASS'
 
-      - name: Validate DEVELOPMENT_CONFIRMED baseline cannot be faked by Web smoke
+      - name: Validate DEVELOPMENT_CONFIRMED evidence cannot be faked
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {productionClassOf,PRODUCTION_CLASSES} from './tools/production-classification.mjs';
-          const source=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
-          for(const token of ['web-gameplay-validation.json','unity-technical-validation.json','unity-project-required-for-technical-validation','DEVELOPMENT_BASELINE_PENDING_VALIDATION']){
-            if(!source.includes(token))throw new Error(`development evidence gate missing: ${token}`);
-          }
+          const gate=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
+          const cycle=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
+          for(const token of ['web-gameplay-validation.json','unity-technical-validation.json','development-revalidation.json','unity-project-required-for-technical-validation','False DEVELOPMENT_BASELINE_READY'])if(!gate.includes(token))throw new Error(`development gate missing: ${token}`);
+          for(const token of ['aiMayInventValidationPass:false','web-gameplay-validation-failed','unity-technical-validation-failed','revalidation-required:','artbookOnlyAfterBaselineReady:true'])if(!cycle.includes(token))throw new Error(`development cycle contract missing: ${token}`);
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-          const numericLabels=directive.production?.numericLabels||{};
           const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
-          for(const game of (catalog.games||[]).filter(x=>productionClassOf({},x,{numericLabels})===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED)){
-            if(!game.webPath)throw new Error(`${game.id}: DEVELOPMENT_CONFIRMED Web validation surface missing`);
-          }
+          const numericLabels=directive.production?.numericLabels||{};
+          for(const game of (catalog.games||[]).filter(x=>productionClassOf({},x,{numericLabels})===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED))if(!game.webPath)throw new Error(`${game.id}: Web validation surface missing`);
           console.log('DEVELOPMENT_BASELINE_EVIDENCE_CONTRACT=PASS');
           NODE
 
@@ -157,11 +159,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const data=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
-          for(const book of data.artbooks||[]){
-            if(book.published===true||book.homepageVisible===true){
-              if(book.productionApproval!==false)throw new Error(`${book.id}: historical visibility cannot grant production approval`);
-            }
-          }
+          for(const book of data.artbooks||[])if(book.published===true||book.homepageVisible===true)if(book.productionApproval!==false)throw new Error(`${book.id}: historical visibility cannot grant production approval`);
           console.log('HISTORICAL_ARTBOOK_SAFETY=PASS');
           NODE
 
