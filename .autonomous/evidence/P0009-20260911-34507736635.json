@@ -1,0 +1,543 @@
+{
+  "version": 5,
+  "candidateOnly": true,
+  "selfPromote": false,
+  "publicStableModified": false,
+  "paidApi": false,
+  "model": "PARALLEL_DEPARTMENT_LOCAL_AI",
+  "modelTransport": "ISOLATED_DEPARTMENT_WORKSPACES_THREE_WAY_INTEGRATION",
+  "modelAttempts": 1,
+  "repairMode": "MODEL",
+  "gameId": "P0009",
+  "gameSlug": "monster-adventure",
+  "sourcePath": "web-games/monster-adventure",
+  "candidateId": "P0009-20260911-34507736635",
+  "candidatePath": "web-games/.autonomous-candidates/P0009/P0009-20260911-34507736635",
+  "sourceCommit": "4e773e64be8145dca327930f9ff98d7e59732854",
+  "goal": "[WEB_FIRST_IMPLEMENTATION] 아트북 전체 기능을 한 번에 재현하지 않는다. 핵심 루프가 실제로 플레이되는 가장 작은 Web 1차 구현만 만들고 모바일 입력·저장 의미·현재 정체성을 유지한다. 방금 완성된 최신 아트북 DESIGN_BASELINE을 현재 개발 설계도로 사용한다. 기술 구조 → 플레이어블 개발판 B로 이어지는 첫 작은 구현 작업 1개만 수행한다. [FEATURE_DEVELOPMENT] 최신 DESIGN_BASELINE을 실제 플레이 가능한 작은 기능 1개로 구현한다. 우선순위는 맵/지역 확장 → 그래픽·환경·UI → 적·몬스터·콘텐츠 → 퀘스트·전투·성장 시스템 순이며, 현재 코드에 안전하게 연결되는 가장 작은 vertical slice 1개만 고른다. 설계 근거: 몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 …. 평가문·별점·아트북 문서 표현·이미지 장수 자체를 게임 코드 목표로 삼지 않는다. 몬스터 어드벤처의 저장키·핵심루프·기존 플레이 의미를 유지하고 전면 재작성은 하지 않는다. 아트북의 장르·핵심루프·스토리 큰 방향·저장 의미는 임의로 바꾸지 않는다. Vibe 공용 실행계약(full-development, T5)을 따르되 AI 부서 교정이 우선한다. 부서 사이클 최종 제약: 개발 워커에게 VIBE2_COMPANY_CORE 엔진의 기능적 성능 검증 결과와 현재 아트북의 기준선 비교하여 교정 요청",
+  "responsibilityFiles": [
+    "index.html"
+  ],
+  "changedFiles": [
+    "index.html"
+  ],
+  "summary": "Integrated parallel department implementation",
+  "expectedEffect": "Department-owned code changes combined after planning integration",
+  "proposedTests": [
+    "아트북 기준선과 실제 구현의 컨셉 일치 확인",
+    "기존 아트북의 저장 의미·핵심 루프·장르·스토리 방향 유지",
+    "아트북 플로어에서 개발부의 책임 파일을 수정하여 '몬스터 어드벤처'의 이미지 중심 제안이 명확하게 반영됨",
+    "아트북 플로어에서 개발부의 책임 파일을 수정하여 '한국어'로 쓰지 않는 부분이 제거됨",
+    "아트북 플로어에서 그래픽부 자기 파트만 작성됨",
+    "2분류 테스트에서 Unity 본편으로 넘길 시각 메모를 정리함",
+    "Unity 본편으로 넘길 시각 메모는 아트북과 Unity 제작계획에 환류됨",
+    "VIBE2_COMPANY_CORE 엔진의 기준선과 현재 아트북의 기준선 비교"
+  ],
+  "changeMode": "PARALLEL_DEPARTMENT_INTEGRATION",
+  "fileCount": 1,
+  "editCount": 0,
+  "saveKeyValidation": "PASS",
+  "syntaxChecks": [],
+  "departmentCycle": {
+    "version": 3,
+    "gameId": "P0009",
+    "gameSlug": "monster-adventure",
+    "candidateId": "P0009-20260911-34507736635",
+    "sourcePath": "web-games/monster-adventure",
+    "workLane": "FULL",
+    "sequence": [
+      "planning",
+      "development",
+      "graphics",
+      "qa",
+      "balance",
+      "planning-final"
+    ],
+    "parallelDepartments": [
+      "planning",
+      "development",
+      "graphics",
+      "qa",
+      "balance"
+    ],
+    "activeReviewRoles": [
+      "planning",
+      "development",
+      "graphics",
+      "qa",
+      "balance"
+    ],
+    "finalIntegrator": "planning-final",
+    "allDepartmentsWorked": true,
+    "paidApi": false,
+    "localModel": "qwen3:1.7b",
+    "originalGoal": "[WEB_FIRST_IMPLEMENTATION] 아트북 전체 기능을 한 번에 재현하지 않는다. 핵심 루프가 실제로 플레이되는 가장 작은 Web 1차 구현만 만들고 모바일 입력·저장 의미·현재 정체성을 유지한다. 방금 완성된 최신 아트북 DESIGN_BASELINE을 현재 개발 설계도로 사용한다. 기술 구조 → 플레이어블 개발판 B로 이어지는 첫 작은 구현 작업 1개만 수행한다. [FEATURE_DEVELOPMENT] 최신 DESIGN_BASELINE을 실제 플레이 가능한 작은 기능 1개로 구현한다. 우선순위는 맵/지역 확장 → 그래픽·환경·UI → 적·몬스터·콘텐츠 → 퀘스트·전투·성장 시스템 순이며, 현재 코드에 안전하게 연결되는 가장 작은 vertical slice 1개만 고른다. 설계 근거: 몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 …. 평가문·별점·아트북 문서 표현·이미지 장수 자체를 게임 코드 목표로 삼지 않는다. 몬스터 어드벤처의 저장키·핵심루프·기존 플레이 의미를 유지하고 전면 재작성은 하지 않는다. 아트북의 장르·핵심루프·스토리 큰 방향·저장 의미는 임의로 바꾸지 않는다.",
+    "finalGoal": "[WEB_FIRST_IMPLEMENTATION] 아트북 전체 기능을 한 번에 재현하지 않는다. 핵심 루프가 실제로 플레이되는 가장 작은 Web 1차 구현만 만들고 모바일 입력·저장 의미·현재 정체성을 유지한다. 방금 완성된 최신 아트북 DESIGN_BASELINE을 현재 개발 설계도로 사용한다. 기술 구조 → 플레이어블 개발판 B로 이어지는 첫 작은 구현 작업 1개만 수행한다. [FEATURE_DEVELOPMENT] 최신 DESIGN_BASELINE을 실제 플레이 가능한 작은 기능 1개로 구현한다. 우선순위는 맵/지역 확장 → 그래픽·환경·UI → 적·몬스터·콘텐츠 → 퀘스트·전투·성장 시스템 순이며, 현재 코드에 안전하게 연결되는 가장 작은 vertical slice 1개만 고른다. 설계 근거: 몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 …. 평가문·별점·아트북 문서 표현·이미지 장수 자체를 게임 코드 목표로 삼지 않는다. 몬스터 어드벤처의 저장키·핵심루프·기존 플레이 의미를 유지하고 전면 재작성은 하지 않는다. 아트북의 장르·핵심루프·스토리 큰 방향·저장 의미는 임의로 바꾸지 않는다. Vibe 공용 실행계약(full-development, T5)을 따르되 AI 부서 교정이 우선한다. 부서 사이클 최종 제약: 개발 워커에게 VIBE2_COMPANY_CORE 엔진의 기능적 성능 검증 결과와 현재 아트북의 기준선 비교하여 교정 요청",
+    "finalDecision": "ADJUST",
+    "vibeCore": {
+      "version": 1,
+      "engine": "VIBE2_COMPANY_CORE",
+      "source": "assets/vibe-company-orchestration-bridge.js",
+      "authority": "proposal-and-execution-contract-not-final-department-verdict",
+      "initialMaturity": "EARLY_COLLABORATIVE",
+      "target": "web",
+      "stageId": "full-development",
+      "routing": {
+        "mayDispatch": true,
+        "mayExecute": true,
+        "requiresOwnerAction": false,
+        "completedArtbookLocked": true,
+        "artbookRevisionAllowed": true,
+        "conceptChangeRule": "ARTBOOK_REVISION_REQUEST_REQUIRED"
+      },
+      "qualityBar": {
+        "version": 1,
+        "averageLevel": 5.2,
+        "tier": 5,
+        "name": "PROVEN",
+        "requirements": {
+          "prototypeEnemyKinds": 3,
+          "requiredEvidence": 4,
+          "requiredRegression": "expanded",
+          "mobileCheck": true,
+          "saveCheck": true,
+          "crossDepartmentReview": true,
+          "deviceEvidence": true
+        },
+        "rule": "quality-bar-rises-with-verified-department-experience-without-expanding-authority"
+      },
+      "executionQa": [
+        "로딩/시작",
+        "진행 막힘",
+        "터치 버튼",
+        "조이스틱",
+        "저장/불러오기",
+        "일시정지/재시작",
+        "콘솔 오류",
+        "모바일 화면",
+        "안전 여백",
+        "가로/세로 자동 대응",
+        "퀘스트 진행/완료/보상",
+        "세이브 버전/게임 ID/기존 데이터",
+        "회사 품질바 T5 PROVEN: {\"prototypeEnemyKinds\":3,\"requiredEvidence\":4,\"requiredRegression\":\"expanded\",\"mobileCheck\":true,\"saveCheck\":true,\"crossDepartmentReview\":true,\"deviceEvidence\":true}",
+        "최신 승인 아트북 기준선과 실제 구현의 컨셉 일치 검사",
+        "장르·핵심루프·스토리·아트방향·전투·성장 컨셉 드리프트 없음",
+        "기준선 변경 필요 시 ARTBOOK_REVISION_REQUEST로 중단하고 승인 전 기존 기준선을 유지했는지 확인"
+      ],
+      "learning": {
+        "source": "company-learning/company-dna.json",
+        "verifiedOnly": true,
+        "patterns": [
+          {
+            "patternId": "autonomous-candidate-safe-promotion",
+            "stage": "GAME_VERIFIED",
+            "title": "Autonomous candidate scope + regression safe promotion",
+            "summary": {
+              "successEvidence": 7,
+              "failureEvidence": 0,
+              "distinctGames": 1,
+              "distinctGenres": 0,
+              "distinctConditions": 1,
+              "averageDelta": 0,
+              "criticalFailures": 0,
+              "multiGameEligible": false,
+              "selfPromote": false,
+              "jayDecisionRequired": false
+            }
+          },
+          {
+            "patternId": "public-release-health-verified",
+            "stage": "GAME_VERIFIED",
+            "title": "Public release health verified outcome",
+            "summary": {
+              "successEvidence": 7,
+              "failureEvidence": 0,
+              "distinctGames": 1,
+              "distinctGenres": 0,
+              "distinctConditions": 1,
+              "averageDelta": 0,
+              "criticalFailures": 0,
+              "multiGameEligible": false,
+              "selfPromote": false,
+              "jayDecisionRequired": false
+            }
+          }
+        ],
+        "antiPatterns": []
+      },
+      "departmentLearning": {
+        "source": "department-experience.json",
+        "verifiedOnly": true,
+        "authority": "past-evidence-not-current-verdict",
+        "byRole": {
+          "planning": [],
+          "development": [],
+          "graphics": [],
+          "qa": [],
+          "balance": []
+        },
+        "totalUsed": 0
+      },
+      "departmentReviewRequired": true,
+      "maySelfApprove": false,
+      "verifiedLearningOnly": true
+    },
+    "collaboration": {
+      "mode": "VIBE_PROPOSES_PARALLEL_AI_DEPARTMENTS_REVIEW_THEN_PLANNING_INTEGRATES",
+      "finalIntegrationMode": "PLANNING_AI",
+      "vibeProposalReviewedBy": [
+        "planning",
+        "development",
+        "graphics",
+        "qa",
+        "balance",
+        "planning-final"
+      ],
+      "departmentAdjustmentCount": 5,
+      "departmentAdjustments": [
+        {
+          "role": "planning",
+          "summary": "Vibe 제안은 아트북 기준선과 실제 구현의 컨셉 일치가 부족하며, 기존 아트북의 저장 의미·핵심 루프·장르·스토리 방향을 임의로 변경하고 있다.",
+          "nextAction": "개발 워커에게 아트북 기준선과 실제 구현의 컨셉 일치를 확인하고, 기존 아트북의 저장 의미·핵심 루프·장르·스토리 방향을 유지하는 작은 구현 작업을 수행할 수 있도록 조치"
+        },
+        {
+          "role": "graphics",
+          "summary": "아트북 플로어에서 그래픽부 자기 파트만 작성하며, 2분류 테스트에서 Unity 본편으로 넘길 시각 메모를 정리해야 한다.",
+          "nextAction": "Unity 본편으로 넘길 시각 메모를 정리하여 아트북과 Unity 제작계획에 환류한다."
+        },
+        {
+          "role": "qa",
+          "summary": "Vibe 제안은 현재 코드와 아트북의 기준선에 맞지 않으며, 저장 의미, 핵심 루프, 아트북의 큰 방향에 대한 근거가 부족합니다.",
+          "nextAction": "개발 워커에게 VIBE2_COMPANY_CORE 엔진의 기준선과 현재 아트북의 기준선을 비교하여 교정 요청"
+        },
+        {
+          "role": "balance",
+          "summary": "Vibe 제안은 현재 코드와 아트북에 부합하지 않으며, 기존 설계 근거와 기능적 성능에 대한 검증이 부족한 상태입니다.",
+          "nextAction": "개발 워커에게 VIBE2_COMPANY_CORE 엔진의 기능적 성능과 아트북 설계 근거에 대한 검증을 요청하고, 기존 아트북의 저장 의미와 핵심 루프를 유지하며, 틀리거나 부족한 부분을 ADJUST로 교정합니다."
+        },
+        {
+          "role": "planning-final",
+          "summary": "VIBE2_COMPANY_CORE 엔진의 기준선과 현재 아트북의 기준선이 불일치하며, 저장 의미, 핵심 루프, 아트북의 큰 방향에 대한 근거가 부족합니다.",
+          "nextAction": "개발 워커에게 VIBE2_COMPANY_CORE 엔진의 기능적 성능 검증 결과와 현재 아트북의 기준선 비교하여 교정 요청"
+        }
+      ],
+      "verifiedLearningUsed": 2,
+      "antiPatternsUsed": 0,
+      "verifiedDepartmentLearningUsed": 0,
+      "learningWriteAuthority": "independent-qa-verified-outcome-only",
+      "vibeMaySelfApprove": false,
+      "vibeMayOverrideDepartments": false,
+      "sourceWriteConcurrency": "SERIAL_AFTER_PARALLEL_REVIEW"
+    },
+    "results": [
+      {
+        "role": "planning",
+        "department": "기획부",
+        "workState": "DONE",
+        "decision": "ADJUST",
+        "summary": "Vibe 제안은 아트북 기준선과 실제 구현의 컨셉 일치가 부족하며, 기존 아트북의 저장 의미·핵심 루프·장르·스토리 방향을 임의로 변경하고 있다.",
+        "nextAction": "개발 워커에게 아트북 기준선과 실제 구현의 컨셉 일치를 확인하고, 기존 아트북의 저장 의미·핵심 루프·장르·스토리 방향을 유지하는 작은 구현 작업을 수행할 수 있도록 조치",
+        "checks": [
+          "아트북 기준선과 실제 구현의 컨셉 일치 확인",
+          "기존 아트북의 저장 의미·핵심 루프·장르·스토리 방향 유지"
+        ],
+        "risks": [
+          "아트북 기준선과 실제 구현의 컨셉 일치가 부족할 경우 게임의 품질 저하 가능성",
+          "기존 아트북의 저장 의미·핵심 루프·장르·스토리 방향이 변경될 경우 게임의 전면 재작성 필요 가능성"
+        ],
+        "model": "qwen3:1.7b",
+        "attempt": 1,
+        "startedAt": "2026-09-10T17:22:34.738Z",
+        "completedAt": "2026-09-10T17:24:08.221Z",
+        "modelMetrics": {
+          "promptEvalCount": 3334,
+          "evalCount": 283,
+          "promptEvalMs": 69597,
+          "evalMs": 22310,
+          "totalMs": 93334
+        }
+      },
+      {
+        "role": "development",
+        "department": "개발부",
+        "workState": "DONE",
+        "decision": "BLOCK",
+        "summary": "아트북 플로어에서 개발부의 책임 파일을 수정하여 '몬스터 어드벤처'의 이미지 중심 제안이 명확하지 않음",
+        "nextAction": "개발 워커가 책임 파일을 수정하여 '몬스터 어드벤처'의 이미지 중심 제안을 명확히 하기",
+        "checks": [
+          "아트북 플로어에서 개발부의 책임 파일을 수정하여 '몬스터 어드벤처'의 이미지 중심 제안이 명확하게 반영됨",
+          "아트북 플로어에서 개발부의 책임 파일을 수정하여 '한국어'로 쓰지 않는 부분이 제거됨",
+          "아트북 플로어에서 개발부의 책임 파일을 수정하여 '몬스터 어드벤처'의 이미지 중심 제안이 명확하게 반영됨"
+        ],
+        "risks": [
+          "아트북 플로어에서 개발부의 책임 파일을 수정하여 '몬스터 어드벤처'의 이미지 중심 제안이 명확하게 반영되지 않음",
+          "아트북 플로어에서 개발부의 책임 파일을 수정하여 '한국어'로 쓰지 않는 부분이 남아 있음"
+        ],
+        "model": "qwen3:1.7b",
+        "attempt": 1,
+        "startedAt": "2026-09-10T17:22:31.835Z",
+        "completedAt": "2026-09-10T17:23:45.641Z",
+        "modelMetrics": {
+          "promptEvalCount": 2050,
+          "evalCount": 308,
+          "promptEvalMs": 33701,
+          "evalMs": 38137,
+          "totalMs": 73748
+        }
+      },
+      {
+        "role": "graphics",
+        "department": "그래픽부",
+        "workState": "DONE",
+        "decision": "ADJUST",
+        "summary": "아트북 플로어에서 그래픽부 자기 파트만 작성하며, 2분류 테스트에서 Unity 본편으로 넘길 시각 메모를 정리해야 한다.",
+        "nextAction": "Unity 본편으로 넘길 시각 메모를 정리하여 아트북과 Unity 제작계획에 환류한다.",
+        "checks": [
+          "아트북 플로어에서 그래픽부 자기 파트만 작성됨",
+          "2분류 테스트에서 Unity 본편으로 넘길 시각 메모를 정리함",
+          "Unity 본편으로 넘길 시각 메모는 아트북과 Unity 제작계획에 환류됨"
+        ],
+        "risks": [
+          "시각 메모의 정리가 부족할 수 있음",
+          "Unity 본편으로 넘길 시각 메모의 내용이 아트북에 부적절할 수 있음"
+        ],
+        "model": "qwen3:1.7b",
+        "attempt": 1,
+        "startedAt": "2026-09-10T17:22:34.754Z",
+        "completedAt": "2026-09-10T17:23:21.001Z",
+        "modelMetrics": {
+          "promptEvalCount": 2050,
+          "evalCount": 222,
+          "promptEvalMs": 15791,
+          "evalMs": 28782,
+          "totalMs": 46199
+        }
+      },
+      {
+        "role": "qa",
+        "department": "QA부",
+        "workState": "DONE",
+        "decision": "ADJUST",
+        "summary": "Vibe 제안은 현재 코드와 아트북의 기준선에 맞지 않으며, 저장 의미, 핵심 루프, 아트북의 큰 방향에 대한 근거가 부족합니다.",
+        "nextAction": "개발 워커에게 VIBE2_COMPANY_CORE 엔진의 기준선과 현재 아트북의 기준선을 비교하여 교정 요청",
+        "checks": [
+          "VIBE2_COMPANY_CORE 엔진의 기준선과 현재 아트북의 기준선 비교",
+          "저장 의미, 핵심 루프, 아트북의 큰 방향에 대한 근거 확인",
+          "아트북의 장르, 핵심 루프, 스토리, 저장 의미가 임의로 변경된 것 확인"
+        ],
+        "risks": [
+          "VIBE2_COMPANY_CORE 엔진의 기준선과 현재 아트북의 기준선 불일치",
+          "저장 의미, 핵심 루프, 아트북의 큰 방향에 대한 근거 부족",
+          "아트북의 장르, 핵심 루프, 스토리, 저장 의미가 임의로 변경됨"
+        ],
+        "model": "qwen3:1.7b",
+        "attempt": 1,
+        "startedAt": "2026-09-10T17:22:30.965Z",
+        "completedAt": "2026-09-10T17:24:09.627Z",
+        "modelMetrics": {
+          "promptEvalCount": 3246,
+          "evalCount": 296,
+          "promptEvalMs": 71475,
+          "evalMs": 25696,
+          "totalMs": 98600
+        }
+      },
+      {
+        "role": "balance",
+        "department": "밸런스부",
+        "workState": "DONE",
+        "decision": "ADJUST",
+        "summary": "Vibe 제안은 현재 코드와 아트북에 부합하지 않으며, 기존 설계 근거와 기능적 성능에 대한 검증이 부족한 상태입니다.",
+        "nextAction": "개발 워커에게 VIBE2_COMPANY_CORE 엔진의 기능적 성능과 아트북 설계 근거에 대한 검증을 요청하고, 기존 아트북의 저장 의미와 핵심 루프를 유지하며, 틀리거나 부족한 부분을 ADJUST로 교정합니다.",
+        "checks": [
+          "VIBE2_COMPANY_CORE 엔진의 기능적 성능과 아트북 설계 근거에 대한 검증이 완료되지 않았습니다.",
+          "아트북의 저장 의미와 핵심 루프가 전면 재작성되지 않았습니다.",
+          "VIBE 제안은 현재 코드와 아트북에 부합하지 않습니다."
+        ],
+        "risks": [
+          "VIBE 제안의 오류/누락이 현재 코드와 아트북에 영향을 미칠 수 있습니다.",
+          "아트북의 저장 의미와 핵심 루프가 전면 재작성되지 않았습니다."
+        ],
+        "model": "qwen3:1.7b",
+        "attempt": 1,
+        "startedAt": "2026-09-10T17:22:33.560Z",
+        "completedAt": "2026-09-10T17:24:08.055Z",
+        "modelMetrics": {
+          "promptEvalCount": 3235,
+          "evalCount": 288,
+          "promptEvalMs": 68677,
+          "evalMs": 23938,
+          "totalMs": 94294
+        }
+      },
+      {
+        "role": "planning-final",
+        "department": "기획부 최종확인",
+        "workState": "DONE",
+        "decision": "ADJUST",
+        "summary": "VIBE2_COMPANY_CORE 엔진의 기준선과 현재 아트북의 기준선이 불일치하며, 저장 의미, 핵심 루프, 아트북의 큰 방향에 대한 근거가 부족합니다.",
+        "nextAction": "개발 워커에게 VIBE2_COMPANY_CORE 엔진의 기능적 성능 검증 결과와 현재 아트북의 기준선 비교하여 교정 요청",
+        "checks": [
+          "VIBE2_COMPANY_CORE 엔진의 기준선과 현재 아트북의 기준선 비교",
+          "저장 의미, 핵심 루프, 아트북의 큰 방향에 대한 근거 확인",
+          "아트북의 장르, 핵심 루프, 스토리, 저장 의미가 임의로 변경됨"
+        ],
+        "risks": [
+          "VIBE2_COMPANY_CORE 엔진의 기준선과 현재 아트북의 기준선 불일치",
+          "저장 의미, 핵심 루프, 아트북의 큰 방향에 대한 근거 부족"
+        ],
+        "model": "qwen3:1.7b",
+        "attempt": 1,
+        "startedAt": "2026-09-10T17:24:32.360Z",
+        "completedAt": "2026-09-10T17:25:18.692Z",
+        "modelMetrics": {
+          "promptEvalCount": 2050,
+          "evalCount": 271,
+          "promptEvalMs": 25765,
+          "evalMs": 19379,
+          "totalMs": 46283
+        }
+      }
+    ],
+    "completedAt": "2026-09-10T17:25:18.692Z"
+  },
+  "departmentCycleGate": "PASS",
+  "departmentImplementations": [
+    {
+      "role": "development",
+      "status": "PASS",
+      "candidateId": "P0009-20260911-34507736635-development",
+      "changedFiles": [
+        "index.html"
+      ],
+      "summary": "index.html 파일에서 시작자 선택 버튼의 클릭 이벤트 처리를 재현 가능한 원인으로 고친다.",
+      "expectedEffect": "버튼 클릭 이벤트가 정확히 처리되며, 원본 저장키와 핵심 규칙을 유지한다."
+    },
+    {
+      "role": "graphics",
+      "status": "NO_SCOPE",
+      "reason": "NO_FUNCTIONAL_RESPONSIBILITY_FOR_THIS_FLOOR"
+    },
+    {
+      "role": "qa",
+      "status": "NO_SCOPE",
+      "reason": "NO_FUNCTIONAL_RESPONSIBILITY_FOR_THIS_FLOOR"
+    },
+    {
+      "role": "balance",
+      "status": "NO_SCOPE",
+      "reason": "NO_FUNCTIONAL_RESPONSIBILITY_FOR_THIS_FLOOR"
+    }
+  ],
+  "integration": {
+    "mode": "COMMON_BASE_THREE_WAY",
+    "mergeModes": [
+      {
+        "path": "index.html",
+        "role": "development",
+        "mode": "THEIRS_ONLY"
+      }
+    ],
+    "conflictsResolved": 0,
+    "conflicts": [],
+    "finalIntegrationQa": "PENDING_INDEPENDENT_PROMOTION_GATE"
+  },
+  "vibe2DevelopmentIntelligence": {
+    "version": 2,
+    "contextPlan": null,
+    "failureFingerprint": null,
+    "priorVerifiedResolution": null,
+    "priorVerifiedCheckpoint": null,
+    "implementationImpact": {
+      "version": 1,
+      "status": "GAMEPLAY_IMPLEMENTATION",
+      "score": 5,
+      "max": 5,
+      "changedFiles": [
+        "index.html"
+      ],
+      "metaOnly": [],
+      "visualFiles": [],
+      "gameplayFiles": [
+        "index.html"
+      ],
+      "implementationCredit": true
+    },
+    "policy": {
+      "version": 1,
+      "role": "integration",
+      "precedence": [
+        "VERIFIED_LEARNING",
+        "PROJECT_POLICY",
+        "AGENTS_POLICY",
+        "ACTIVE_OWNER_INTENT",
+        "IMMUTABLE_SAFETY"
+      ],
+      "effective": {
+        "priorCheckpointCandidateId": null,
+        "priorFailureResolutionCandidateId": null,
+        "sourcePath": "web-games/monster-adventure",
+        "workLane": "FULL",
+        "repairMode": "MODEL",
+        "sourceRootExclusive": true,
+        "protectedValues": [
+          "save-meaning",
+          "monster-party",
+          "capture",
+          "battle",
+          "dex"
+        ],
+        "independentQaRequired": true,
+        "goal": "[WEB_FIRST_IMPLEMENTATION] 아트북 전체 기능을 한 번에 재현하지 않는다. 핵심 루프가 실제로 플레이되는 가장 작은 Web 1차 구현만 만들고 모바일 입력·저장 의미·현재 정체성을 유지한다. 방금 완성된 최신 아트북 DESIGN_BASELINE을 현재 개발 설계도로 사용한다. 기술 구조 → 플레이어블 개발판 B로 이어지는 첫 작은 구현 작업 1개만 수행한다. [FEATURE_DEVELOPMENT] 최신 DESIGN_BASELINE을 실제 플레이 가능한 작은 기능 1개로 구현한다. 우선순위는 맵/지역 확장 → 그래픽·환경·UI → 적·몬스터·콘텐츠 → 퀘스트·전투·성장 시스템 순이며, 현재 코드에 안전하게 연결되는 가장 작은 vertical slice 1개만 고른다. 설계 근거: 몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 …. 평가문·별점·아트북 문서 표현·이미지 장수 자체를 게임 코드 목표로 삼지 않는다. 몬스터 어드벤처의 저장키·핵심루프·기존 플레이 의미를 유지하고 전면 재작성은 하지 않는다. 아트북의 장르·핵심루프·스토리 큰 방향·저장 의미는 임의로 바꾸지 않는다. Vibe 공용 실행계약(full-development, T5)을 따르되 AI 부서 교정이 우선한다. 부서 사이클 최종 제약: 개발 워커에게 VIBE2_COMPANY_CORE 엔진의 기능적 성능 검증 결과와 현재 아트북의 기준선 비교하여 교정 요청",
+        "gameId": "P0009",
+        "directMainWrite": false,
+        "selfApprove": false,
+        "paidApi": false,
+        "bypassIndependentQa": false,
+        "graphicsGameplayAuthority": false
+      },
+      "immutableSafety": {
+        "directMainWrite": false,
+        "selfApprove": false,
+        "paidApi": false,
+        "bypassIndependentQa": false,
+        "graphicsGameplayAuthority": false
+      }
+    },
+    "checkpoint": {
+      "version": 1,
+      "status": "IMPLEMENTED_PENDING_QA",
+      "gameId": "P0009",
+      "role": "integration",
+      "sourceCommit": "4e773e64be8145dca327930f9ff98d7e59732854",
+      "candidateId": "P0009-20260911-34507736635",
+      "goal": "[WEB_FIRST_IMPLEMENTATION] 아트북 전체 기능을 한 번에 재현하지 않는다. 핵심 루프가 실제로 플레이되는 가장 작은 Web 1차 구현만 만들고 모바일 입력·저장 의미·현재 정체성을 유지한다. 방금 완성된 최신 아트북 DESIGN_BASELINE을 현재 개발 설계도로 사용한다. 기술 구조 → 플레이어블 개발판 B로 이어지는 첫 작은 구현 작업 1개만 수행한다. [FEATURE_DEVELOPMENT] 최신 DESIGN_BASELINE을 실제 플레이 가능한 작은 기능 1개로 구현한다. 우선순위는 맵/지역 확장 → 그래픽·환경·UI → 적·몬스터·콘텐츠 → 퀘스트·전투·성장 시스템 순이며, 현재 코드에 안전하게 연결되는 가장 작은 vertical slice 1개만 고른다. 설계 근거: 몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 …. 평가문·별점·아트북 문서 표현·이미지 장수 자체를 게임 코드 목표로 삼지 않는다. 몬스터 어드벤처의 저장키·핵심루프·기존 플레이 의미를 유지하고 전면 재작성은 하지 않는다. 아트북의 장르·핵심루프·스토리 큰 방향·저장 의미는 임의로 바꾸지 않는다. Vibe 공용 실행계약(full-development, T5)을 따르되 AI 부서 교정이 우선한다. 부서 사이클 최종 제약: 개발 워커에게 VIBE2_COMPANY_CORE 엔진의 기능적 성능 검증 결과와 현재 아트북의 기준선 비교하여 교정 요청",
+      "completed": [
+        "development: index.html 파일에서 시작자 선택 버튼의 클릭 이벤트 처리를 재현 가능한 원인으로 고친다."
+      ],
+      "changedFiles": [
+        "index.html"
+      ],
+      "nextAction": "독립 후보 QA와 Vibe2 release gate를 통과한 뒤에만 승격한다.",
+      "pendingCi": [
+        "INDEPENDENT_PROMOTION_QA",
+        "VIBE2_RELEASE_GATE"
+      ],
+      "blocker": null,
+      "acceptanceCriteria": [
+        "아트북 기준선과 실제 구현의 컨셉 일치 확인",
+        "기존 아트북의 저장 의미·핵심 루프·장르·스토리 방향 유지",
+        "아트북 플로어에서 개발부의 책임 파일을 수정하여 '몬스터 어드벤처'의 이미지 중심 제안이 명확하게 반영됨",
+        "아트북 플로어에서 개발부의 책임 파일을 수정하여 '한국어'로 쓰지 않는 부분이 제거됨",
+        "아트북 플로어에서 그래픽부 자기 파트만 작성됨",
+        "2분류 테스트에서 Unity 본편으로 넘길 시각 메모를 정리함",
+        "Unity 본편으로 넘길 시각 메모는 아트북과 Unity 제작계획에 환류됨",
+        "VIBE2_COMPANY_CORE 엔진의 기준선과 현재 아트북의 기준선 비교"
+      ],
+      "failureFingerprint": null,
+      "updatedAt": "2026-09-10T17:26:38.150Z"
+    }
+  },
+  "generatedAt": "2026-09-10T17:26:38.150Z",
+  "completionAuthority": "INDEPENDENT_QA_AND_JAY"
+}
