@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       game_id:
-        description: 'Optional game id. Empty = automatically select the game most in need of a design cycle.'
+        description: 'Optional game id. Empty = run every current DESIGN_ONLY game directly through design, meeting, baseline and artbook.'
         required: false
         type: string
   schedule:
@@ -35,7 +35,85 @@ env:
   OLLAMA_HOST: 127.0.0.1:11434
 
 jobs:
+  resolve-design-cycle-targets:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.targets.outputs.run }}
+      targets: ${{ steps.targets.outputs.targets }}
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 2
+
+      - name: Resolve direct DESIGN_ONLY targets
+        id: targets
+        shell: bash
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
+          import fs from 'node:fs';
+          import {
+            PRODUCTION_CLASSES,
+            productionClassOf,
+            tierAliasForProductionClass,
+          } from './tools/production-classification.mjs';
+
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+          const numericLabels=directive.production?.numericLabels||{};
+          const canonical=new Set(directive.production?.canonicalClasses||[]);
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+
+          const games=(catalog.games||[]).map(game=>({
+            game,
+            productionClass:productionClassOf({},game,{numericLabels}),
+          })).filter(row=>canonical.has(row.productionClass));
+
+          let selected=[];
+          if(requested){
+            const target=games.find(row=>row.game.id===requested);
+            if(!target)throw new Error(`Unknown or unclassified game_id: ${requested}`);
+            selected=[target];
+          }else{
+            selected=games.filter(row=>row.productionClass===PRODUCTION_CLASSES.DESIGN_ONLY);
+          }
+
+          const now=new Date();
+          const parts=new Intl.DateTimeFormat('en-US',{
+            timeZone:'Asia/Seoul',
+            year:'numeric',
+            month:'2-digit',
+            day:'2-digit'
+          }).formatToParts(now);
+          const get=t=>parts.find(x=>x.type===t)?.value||'';
+          const date=`${get('year')}-${get('month')}-${get('day')}`;
+
+          const targets=selected.map(row=>({
+            game_id:row.game.id,
+            game_name:row.game.name,
+            production_class:row.productionClass,
+            tier_alias:tierAliasForProductionClass(row.productionClass,{numericLabels})??'',
+            date,
+          }));
+
+          console.log(`run=${targets.length>0?'true':'false'}`);
+          console.log(`targets=${JSON.stringify(targets)}`);
+          console.error(`DIRECT_DESIGN_TARGET_COUNT=${targets.length}`);
+          console.error(`DIRECT_DESIGN_TARGETS=${targets.map(x=>x.game_id).join(',')}`);
+          NODE
+
   multimodel-design-cycle:
+    needs: resolve-design-cycle-targets
+    if: needs.resolve-design-cycle-targets.outputs.run == 'true'
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        target: ${{ fromJSON(needs.resolve-design-cycle-targets.outputs.targets) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -45,88 +123,7 @@ jobs:
           ref: main
           fetch-depth: 2
 
-      - name: Resolve design-cycle target by productionClass
-        id: target
-        shell: bash
-        env:
-          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
-        run: |
-          set -euo pipefail
-          node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
-          import fs from 'node:fs';
-          import path from 'node:path';
-          import {
-            normalizeProductionClass,
-            productionClassOf,
-            productionClassFromLegacyTier,
-            tierAliasForProductionClass,
-          } from './tools/production-classification.mjs';
-
-          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
-          const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-          const numericLabels=directive.production?.numericLabels||{};
-          const canonical=new Set(directive.production?.canonicalClasses||[]);
-          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
-          const games=(catalog.games||[]).map((game,index)=>({
-            game,
-            index,
-            productionClass:productionClassOf({},game,{numericLabels}),
-          })).filter(row=>canonical.has(row.productionClass));
-
-          function latestStatus(gameId){
-            const root=path.join('design',gameId);
-            if(!fs.existsSync(root))return null;
-            const dates=fs.readdirSync(root).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x)).sort().reverse();
-            for(const date of dates){
-              const file=path.join(root,date,'cycle-status.json');
-              if(!fs.existsSync(file))continue;
-              try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{}
-            }
-            return null;
-          }
-
-          function statusProductionClass(status){
-            if(!status)return null;
-            return normalizeProductionClass(status.productionClass)
-              ||productionClassFromLegacyTier(status.tierAlias??status.tier,{numericLabels});
-          }
-
-          let target=null;
-          if(requested){
-            target=games.find(row=>row.game.id===requested)||null;
-            if(!target)throw new Error(`Unknown or unclassified game_id: ${requested}`);
-          }else{
-            const classPriority={DEVELOPMENT_CONFIRMED:0,DESIGN_ONLY:1,RELEASE_CONFIRMED:2};
-            const ranked=games.map(row=>{
-              const latest=latestStatus(row.game.id);
-              const latestClass=statusProductionClass(latest);
-              const classMismatch=!latest||latestClass!==row.productionClass;
-              const date=String(latest?.date||'0000-00-00');
-              const regularPriority=classPriority[row.productionClass]??99;
-              return {...row,latest,classMismatch,date,regularPriority};
-            }).sort((a,b)=>Number(b.classMismatch)-Number(a.classMismatch)||a.regularPriority-b.regularPriority||a.date.localeCompare(b.date)||a.index-b.index);
-            target=ranked[0]||null;
-          }
-
-          if(!target){
-            console.log('run=false');
-            process.exit(0);
-          }
-
-          const now=new Date();
-          const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
-          const get=t=>parts.find(x=>x.type===t)?.value||'';
-          const date=`${get('year')}-${get('month')}-${get('day')}`;
-          const tierAlias=tierAliasForProductionClass(target.productionClass,{numericLabels});
-          console.log('run=true');
-          console.log(`game_id=${target.game.id}`);
-          console.log(`production_class=${target.productionClass}`);
-          console.log(`tier_alias=${tierAlias??''}`);
-          console.log(`date=${date}`);
-          NODE
-
       - name: Install local Ollama
-        if: steps.target.outputs.run == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -149,7 +146,6 @@ jobs:
           exit 1
 
       - name: Pull all configured free department models
-        if: steps.target.outputs.run == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -162,78 +158,156 @@ jobs:
           echo 'PAID_API=NO'
           echo 'API_KEY_REQUIRED=NO'
 
-      - name: Run centralized design, meeting and artbook cycle
-        if: steps.target.outputs.run == 'true'
+      - name: Run design through verified artbook directly
         env:
-          ARTBOOK_GAME_ID: ${{ steps.target.outputs.game_id }}
-          ARTBOOK_DATE: ${{ steps.target.outputs.date }}
+          ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
+          ARTBOOK_DATE: ${{ matrix.target.date }}
         run: node tools/artbook-production-pipeline.mjs
 
-      - name: Verify multimodel, authorship and baseline gates by productionClass
-        if: steps.target.outputs.run == 'true'
+      - name: Verify complete direct result
         env:
-          ARTBOOK_GAME_ID: ${{ steps.target.outputs.game_id }}
-          ARTBOOK_DATE: ${{ steps.target.outputs.date }}
-          EXPECTED_PRODUCTION_CLASS: ${{ steps.target.outputs.production_class }}
+          ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
+          ARTBOOK_DATE: ${{ matrix.target.date }}
+          EXPECTED_PRODUCTION_CLASS: ${{ matrix.target.production_class }}
         shell: bash
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import path from 'node:path';
-          import {normalizeProductionClass,productionClassFromLegacyTier} from './tools/production-classification.mjs';
+          import {
+            PRODUCTION_CLASSES,
+            normalizeProductionClass,
+            productionClassFromLegacyTier
+          } from './tools/production-classification.mjs';
+
           const d=JSON.parse(fs.readFileSync('./company-directive.json','utf8'));
           const numericLabels=d.production?.numericLabels||{};
-          const file=path.join('design',process.env.ARTBOOK_GAME_ID,process.env.ARTBOOK_DATE,'cycle-status.json');
-          const s=JSON.parse(fs.readFileSync(file,'utf8'));
-          const actualClass=normalizeProductionClass(s.productionClass)||productionClassFromLegacyTier(s.tierAlias??s.tier,{numericLabels});
+          const gameId=process.env.ARTBOOK_GAME_ID;
+          const date=process.env.ARTBOOK_DATE;
+          const base=path.join('design',gameId,date);
+          const statusFile=path.join(base,'cycle-status.json');
+          const artbookFile=path.join(base,'core-artbook.json');
+
+          if(!fs.existsSync(statusFile))throw new Error('cycle-status.json missing');
+          if(!fs.existsSync(artbookFile))throw new Error('core-artbook.json missing');
+
+          const s=JSON.parse(fs.readFileSync(statusFile,'utf8'));
+          const artbook=JSON.parse(fs.readFileSync(artbookFile,'utf8'));
+          const actualClass=normalizeProductionClass(s.productionClass)
+            ||productionClassFromLegacyTier(s.tierAlias??s.tier,{numericLabels});
           const expectedClass=normalizeProductionClass(process.env.EXPECTED_PRODUCTION_CLASS);
+
           if(s.status!=='COMPLETE')throw new Error('cycle incomplete');
           if(!actualClass||actualClass!==expectedClass)throw new Error(`productionClass mismatch: ${actualClass} != ${expectedClass}`);
           if(!s.baselineGate||s.baselineGate.policyDocument!=='COMPANY_FLOW.md')throw new Error('baseline gate missing');
-          if(actualClass==='RELEASE_CONFIRMED'){
+
+          if(actualClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
             if(s.vibe2PrimaryDeveloper!==true||s.designChanged!==false)throw new Error('release role contract failed');
             if(s.baselineGate.state!=='RELEASE_BASELINE_MANAGED_BY_RELEASE_PIPELINE')throw new Error('release baseline ownership failed');
           }else{
             if(s.designer?.singleAuthor!==true||s.designer?.sameModelRevised!==true)throw new Error('designer contract failed');
             if(s.departments?.count!==5||s.departments?.rebuttalRounds!==1)throw new Error('meeting contract failed');
+
             for(const role of ['planning','graphics','development','qa','balance']){
               const audit=s.departments.modelAudit?.[role];
-              if(!audit||audit.pass!==true||audit.count<(d.ai.minDistinctModelsPerDepartment||3))throw new Error(`${role} distinct model gate failed`);
+              if(!audit||audit.pass!==true||audit.count<(d.ai.minDistinctModelsPerDepartment||3)){
+                throw new Error(`${role} distinct model gate failed`);
+              }
             }
-            if(s.artbook?.singleEditor!==true||s.artbook?.departmentPageAuthorship!==false||s.artbook?.newClaimsAdded!==false||s.artbook?.provenanceVerified!==true)throw new Error('artbook editor contract failed');
-            if(actualClass==='DEVELOPMENT_CONFIRMED'&&s.baselineGate.state==='DEVELOPMENT_BASELINE_READY'){
-              const e=s.baselineGate.evidence||{};
-              if(e.webGameplay?.pass!==true||e.unityProject?.present!==true||e.unityTechnical?.pass!==true)throw new Error('development baseline falsely approved without Web+Unity validation');
+
+            if(
+              s.artbook?.singleEditor!==true
+              ||s.artbook?.departmentPageAuthorship!==false
+              ||s.artbook?.newClaimsAdded!==false
+              ||s.artbook?.provenanceVerified!==true
+            )throw new Error('artbook editor contract failed');
+
+            if(artbook.singleEditor!==true)throw new Error('core artbook editor contract missing');
+            if(artbook.verification?.supported!==true)throw new Error('core artbook provenance verification failed');
+            if(!artbook.content||typeof artbook.content!=='object')throw new Error('core artbook content missing');
+          }
+
+          if(actualClass===PRODUCTION_CLASSES.DESIGN_ONLY){
+            const conflicts=Number(s.meeting?.conflictCount||0);
+            const holds=Number(s.meeting?.holdCount||0);
+            const uiFile=path.join('artbook-submissions',gameId,'status.json');
+            if(!fs.existsSync(uiFile))throw new Error('artbook public status missing');
+            const ui=JSON.parse(fs.readFileSync(uiFile,'utf8'));
+
+            if(conflicts===0&&holds===0){
+              if(s.baselineGate.state!=='DESIGN_BASELINE_READY'||s.baselineGate.ready!==true){
+                throw new Error('resolved meeting did not reach DESIGN_BASELINE_READY');
+              }
+              const currentFile=path.join('artbook-submissions',gameId,'current.json');
+              if(!fs.existsSync(currentFile))throw new Error('completed current artbook missing');
+              const current=JSON.parse(fs.readFileSync(currentFile,'utf8'));
+              if(current.published!==true||current.homepageVisible!==true||current.format!=='core-strategy'){
+                throw new Error('completed artbook publication contract failed');
+              }
+              if(ui.uiStatus!=='COMPLETE'||ui.uiLabel!=='완료')throw new Error('completed artbook UI state mismatch');
+              console.log('DIRECT_RESULT=DESIGN_BASELINE_AND_ARTBOOK_COMPLETE');
+            }else{
+              if(s.baselineGate.ready===true)throw new Error('unresolved meeting incorrectly approved');
+              if(ui.uiStatus!=='WAITING'||ui.uiLabel!=='대기중')throw new Error('unresolved meeting UI state mismatch');
+              console.log(`DIRECT_RESULT=WAITING conflict=${conflicts} hold=${holds}`);
             }
           }
+
+          if(actualClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED&&s.baselineGate.state==='DEVELOPMENT_BASELINE_READY'){
+            const e=s.baselineGate.evidence||{};
+            if(e.webGameplay?.pass!==true||e.unityProject?.present!==true||e.unityTechnical?.pass!==true){
+              throw new Error('development baseline falsely approved without Web+Unity validation');
+            }
+          }
+
           console.log('CENTRAL_POLICY=COMPANY_FLOW.md');
           console.log(`PRODUCTION_CLASS=${actualClass}`);
           console.log('NUMERIC_TIER_POLICY=ALIAS_ONLY');
           console.log('MULTIMODEL_GATE=PASS');
           console.log('AUTHORSHIP_GATE=PASS');
+          console.log('CORE_ARTBOOK_FILE=PASS');
           console.log(`BASELINE_GATE=${s.baselineGate.state}`);
           NODE
 
-      - name: Propose design-cycle evidence through PR
-        if: steps.target.outputs.run == 'true'
+      - name: Propose direct design-cycle evidence through PR
         env:
           GH_TOKEN: ${{ github.token }}
+          ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
+          ARTBOOK_DATE: ${{ matrix.target.date }}
+          PRODUCTION_CLASS: ${{ matrix.target.production_class }}
+          TIER_ALIAS: ${{ matrix.target.tier_alias }}
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-design-bots'
           git config user.email 'actions@users.noreply.github.com'
-          git add -- design artbook-submissions
+          git add -- "design/$ARTBOOK_GAME_ID" "artbook-submissions/$ARTBOOK_GAME_ID"
           if git diff --cached --quiet; then
             echo 'DESIGN_CYCLE_COMMIT=NO_CHANGES'
             exit 0
           fi
-          branch="automation/design-cycle-${{ steps.target.outputs.game_id }}-${{ steps.target.outputs.date }}-${GITHUB_RUN_ID}"
+
+          branch="automation/design-cycle-${ARTBOOK_GAME_ID}-${ARTBOOK_DATE}-${GITHUB_RUN_ID}"
           git checkout -b "$branch"
-          git commit -m "design: multimodel cycle ${{ steps.target.outputs.game_id }} ${{ steps.target.outputs.date }} [skip ci]"
+          git commit -m "design: direct multimodel cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}"
           git push origin "HEAD:refs/heads/$branch"
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "design: multimodel cycle ${{ steps.target.outputs.game_id }} ${{ steps.target.outputs.date }}" --body "Central policy evidence update from Free Artbook Department Bots.\n\n- policy: COMPANY_FLOW.md\n- game: ${{ steps.target.outputs.game_id }}\n- productionClass: ${{ steps.target.outputs.production_class }}\n- tier alias: ${{ steps.target.outputs.tier_alias }}\n- date: ${{ steps.target.outputs.date }}\n- run: $GITHUB_RUN_ID\n- direct main write: NO")"
+
+          pr_url="$(gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$branch" \
+            --title "design: direct multimodel cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}" \
+            --body "Direct DESIGN_ONLY flow from Free Artbook Department Bots.
+
+          - policy: COMPANY_FLOW.md
+          - game: ${ARTBOOK_GAME_ID}
+          - productionClass: ${PRODUCTION_CLASS}
+          - tier alias: ${TIER_ALIAS}
+          - full path: design → independent multimodel department review → rebuttal meeting → same designer revision → baseline gate → artbook editor → result verification
+          - direct main write: NO
+          - run: ${GITHUB_RUN_ID}")"
+
           echo "DESIGN_CYCLE_PR=$pr_url"
           echo 'DESIGN_CYCLE_COMMIT=PR_OPENED'
           echo 'PUBLIC_MAIN_WRITE=NO'
