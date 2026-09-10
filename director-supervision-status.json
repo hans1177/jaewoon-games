@@ -3,7 +3,7 @@
   "dateKst": "2026-09-11",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
-  "activeDevelopmentRunId": 34515036778,
+  "activeDevelopmentRunId": 34516372341,
   "checks": {
     "staffChecked": "8/8",
     "activeWorkOrder": "artbook-work-orders/2026-09-11-daechung-rpg.json",
@@ -25,26 +25,20 @@
   },
   "counts": {
     "WORKING": 1,
-    "DONE": 1,
+    "DONE": 6,
     "IDLE_NO_TASK": 1,
-    "BLOCKED": 5,
+    "BLOCKED": 0,
     "FAILED": 0,
     "STALE": 0
   },
   "liveStates": {
     "ACTIVE": 1,
     "WAITING": 1,
-    "BLOCKED": 5,
-    "DONE": 1
+    "BLOCKED": 0,
+    "DONE": 6
   },
-  "attentionRequired": true,
-  "primaryFindings": [
-    "planning:DEPENDENCY_BLOCKED",
-    "development:DEPENDENCY_BLOCKED",
-    "qa:DEPENDENCY_BLOCKED",
-    "graphics:DEPENDENCY_BLOCKED",
-    "balance:DEPENDENCY_BLOCKED"
-  ],
+  "attentionRequired": false,
+  "primaryFindings": [],
   "workflowEvidence": {
     "artbook": {
       "id": 34513890650,
@@ -56,13 +50,13 @@
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34513890650"
     },
     "autonomousDevelopment": {
-      "id": 34515036778,
+      "id": 34516372341,
       "status": "in_progress",
       "conclusion": null,
       "event": "workflow_dispatch",
-      "createdAt": "2026-09-10T18:33:10Z",
-      "updatedAt": "2026-09-10T18:36:07Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34515036778"
+      "createdAt": "2026-09-10T18:46:22Z",
+      "updatedAt": "2026-09-10T18:50:45Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34516372341"
     },
     "homepage": null,
     "publicGameHealth": {
@@ -97,34 +91,30 @@
     "planning": {
       "department": "planning",
       "taskAssigned": true,
-      "status": "BLOCKED",
-      "workState": "BLOCKED",
-      "task": "daechung-rpg daily artbook section",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34516372341",
       "executionEvidence": [
-        "work-order:artbook-work-orders/2026-09-11-daechung-rpg.json",
-        "live-artbook-target:daechung-rpg",
-        "queue-submission:planning",
-        "workflow:34513890650:completed:failure",
-        "job:102996208026:completed:success"
+        "autonomous-workflow:34516372341:in_progress:pending",
+        "autonomous-job:103003676154:department (planning-final):completed:success",
+        "autonomous-job:103002840098:department (planning):completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": {
-        "id": 102996208026,
-        "name": "round1 (planning)",
+        "id": 103003676154,
+        "name": "department (planning-final)",
         "status": "completed",
         "conclusion": "success",
         "failedStep": null,
-        "startedAt": "2026-09-10T18:27:23Z",
-        "completedAt": "2026-09-10T18:32:16Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34513890650/job/102996208026"
+        "startedAt": "2026-09-10T18:49:22Z",
+        "completedAt": "2026-09-10T18:50:41Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34516372341/job/103003676154"
       },
       "directCause": null,
-      "blockers": [
-        "DEPENDENCY_BLOCKED"
-      ],
-      "reason": "this department completed its independent round, but a downstream dependency failed",
-      "action": "preserve this successful department result and unblock the failed dependency",
-      "source": "artbook",
+      "blockers": [],
+      "reason": "latest autonomous department handoff completed successfully",
+      "action": "none",
+      "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
@@ -142,34 +132,29 @@
     "development": {
       "department": "development",
       "taskAssigned": true,
-      "status": "BLOCKED",
-      "workState": "BLOCKED",
-      "task": "daechung-rpg daily artbook section",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34516372341",
       "executionEvidence": [
-        "work-order:artbook-work-orders/2026-09-11-daechung-rpg.json",
-        "live-artbook-target:daechung-rpg",
-        "queue-submission:development",
-        "workflow:34513890650:completed:failure",
-        "job:102996207941:completed:success"
+        "autonomous-workflow:34516372341:in_progress:pending",
+        "autonomous-job:103002839935:department (development):completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": {
-        "id": 102996207941,
-        "name": "round1 (development)",
+        "id": 103002839935,
+        "name": "department (development)",
         "status": "completed",
         "conclusion": "success",
         "failedStep": null,
-        "startedAt": "2026-09-10T18:27:23Z",
-        "completedAt": "2026-09-10T18:29:44Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34513890650/job/102996207941"
+        "startedAt": "2026-09-10T18:46:53Z",
+        "completedAt": "2026-09-10T18:49:01Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34516372341/job/103002839935"
       },
       "directCause": null,
-      "blockers": [
-        "DEPENDENCY_BLOCKED"
-      ],
-      "reason": "this department completed its independent round, but a downstream dependency failed",
-      "action": "preserve this successful department result and unblock the failed dependency",
-      "source": "artbook",
+      "blockers": [],
+      "reason": "latest autonomous department handoff completed successfully",
+      "action": "none",
+      "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
@@ -187,34 +172,29 @@
     "qa": {
       "department": "qa",
       "taskAssigned": true,
-      "status": "BLOCKED",
-      "workState": "BLOCKED",
-      "task": "daechung-rpg daily artbook section",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34516372341",
       "executionEvidence": [
-        "work-order:artbook-work-orders/2026-09-11-daechung-rpg.json",
-        "live-artbook-target:daechung-rpg",
-        "queue-submission:qa",
-        "workflow:34513890650:completed:failure",
-        "job:102996207965:completed:success"
+        "autonomous-workflow:34516372341:in_progress:pending",
+        "autonomous-job:103002839982:department (qa):completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": {
-        "id": 102996207965,
-        "name": "round1 (qa)",
+        "id": 103002839982,
+        "name": "department (qa)",
         "status": "completed",
         "conclusion": "success",
         "failedStep": null,
-        "startedAt": "2026-09-10T18:27:23Z",
-        "completedAt": "2026-09-10T18:30:46Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34513890650/job/102996207965"
+        "startedAt": "2026-09-10T18:46:53Z",
+        "completedAt": "2026-09-10T18:49:00Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34516372341/job/103002839982"
       },
       "directCause": null,
-      "blockers": [
-        "DEPENDENCY_BLOCKED"
-      ],
-      "reason": "this department completed its independent round, but a downstream dependency failed",
-      "action": "preserve this successful department result and unblock the failed dependency",
-      "source": "artbook",
+      "blockers": [],
+      "reason": "latest autonomous department handoff completed successfully",
+      "action": "none",
+      "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
@@ -232,34 +212,29 @@
     "graphics": {
       "department": "graphics",
       "taskAssigned": true,
-      "status": "BLOCKED",
-      "workState": "BLOCKED",
-      "task": "daechung-rpg daily artbook section",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34516372341",
       "executionEvidence": [
-        "work-order:artbook-work-orders/2026-09-11-daechung-rpg.json",
-        "live-artbook-target:daechung-rpg",
-        "queue-submission:graphics",
-        "workflow:34513890650:completed:failure",
-        "job:102996208011:completed:success"
+        "autonomous-workflow:34516372341:in_progress:pending",
+        "autonomous-job:103002840092:department (graphics):completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": {
-        "id": 102996208011,
-        "name": "round1 (graphics)",
+        "id": 103002840092,
+        "name": "department (graphics)",
         "status": "completed",
         "conclusion": "success",
         "failedStep": null,
-        "startedAt": "2026-09-10T18:27:23Z",
-        "completedAt": "2026-09-10T18:29:59Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34513890650/job/102996208011"
+        "startedAt": "2026-09-10T18:46:53Z",
+        "completedAt": "2026-09-10T18:49:00Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34516372341/job/103002840092"
       },
       "directCause": null,
-      "blockers": [
-        "DEPENDENCY_BLOCKED"
-      ],
-      "reason": "this department completed its independent round, but a downstream dependency failed",
-      "action": "preserve this successful department result and unblock the failed dependency",
-      "source": "artbook",
+      "blockers": [],
+      "reason": "latest autonomous department handoff completed successfully",
+      "action": "none",
+      "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
@@ -277,34 +252,29 @@
     "balance": {
       "department": "balance",
       "taskAssigned": true,
-      "status": "BLOCKED",
-      "workState": "BLOCKED",
-      "task": "daechung-rpg daily artbook section",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34516372341",
       "executionEvidence": [
-        "work-order:artbook-work-orders/2026-09-11-daechung-rpg.json",
-        "live-artbook-target:daechung-rpg",
-        "queue-submission:balance",
-        "workflow:34513890650:completed:failure",
-        "job:102996207937:completed:success"
+        "autonomous-workflow:34516372341:in_progress:pending",
+        "autonomous-job:103002839949:department (balance):completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": {
-        "id": 102996207937,
-        "name": "round1 (balance)",
+        "id": 103002839949,
+        "name": "department (balance)",
         "status": "completed",
         "conclusion": "success",
         "failedStep": null,
-        "startedAt": "2026-09-10T18:27:23Z",
-        "completedAt": "2026-09-10T18:30:00Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34513890650/job/102996207937"
+        "startedAt": "2026-09-10T18:46:53Z",
+        "completedAt": "2026-09-10T18:49:19Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34516372341/job/103002839949"
       },
       "directCause": null,
-      "blockers": [
-        "DEPENDENCY_BLOCKED"
-      ],
-      "reason": "this department completed its independent round, but a downstream dependency failed",
-      "action": "preserve this successful department result and unblock the failed dependency",
-      "source": "artbook",
+      "blockers": [],
+      "reason": "latest autonomous department handoff completed successfully",
+      "action": "none",
+      "source": "autonomous-development",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
