@@ -17,6 +17,7 @@ env:
   VIBE2_PRIORITY_POLICY: owner-release-development
   VIBE2_AUTO_DEPLOY_VERIFIED_ONLY: 'true'
   VIBE2_MAX_CONCURRENT_GAME_TASKS: '4'
+  VIBE2_WORK_ORDER_OUTPUT_CONTRACT: explicit-cli-first
 
 concurrency:
   group: vibe2-24h-runner
@@ -46,6 +47,7 @@ jobs:
           echo "VIBE2_PRIORITY_POLICY=$VIBE2_PRIORITY_POLICY"
           echo "VIBE2_AUTO_DEPLOY_VERIFIED_ONLY=$VIBE2_AUTO_DEPLOY_VERIFIED_ONLY"
           echo "VIBE2_MAX_CONCURRENT_GAME_TASKS=$VIBE2_MAX_CONCURRENT_GAME_TASKS"
+          echo "VIBE2_WORK_ORDER_OUTPUT_CONTRACT=$VIBE2_WORK_ORDER_OUTPUT_CONTRACT"
 
           for attempt in 1 2 3; do
             echo "VIBE2_AUTOPLAN_ATTEMPT=$attempt/3"
