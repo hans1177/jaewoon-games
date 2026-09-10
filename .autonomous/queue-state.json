@@ -5342,6 +5342,20 @@
       "status": "RESERVED",
       "reservedAt": "2026-09-10T19:25:10.847Z",
       "leaseExpiresAt": "2026-09-10T20:55:10.847Z"
+    },
+    {
+      "date": "2026-09-11",
+      "gameId": "P0004",
+      "gameSlug": "bug-defense",
+      "sourcePath": "web-games/bug-defense",
+      "reason": "TIER2_WEB_FIRST_IMPLEMENTATION",
+      "runId": "34520383564",
+      "workId": "34520383564",
+      "sourceCommit": "5eb0b6e741744dadd977ed9ed19642517046c59e",
+      "floor": 21,
+      "status": "RESERVED",
+      "reservedAt": "2026-09-10T19:26:17.564Z",
+      "leaseExpiresAt": "2026-09-10T20:56:17.564Z"
     }
   ],
   "workLedger": [
@@ -9608,6 +9622,83 @@
         {
           "state": "ASSIGNED",
           "at": "2026-09-10T19:25:10.847Z",
+          "progress": "INCOMPLETE_PROGRESS",
+          "releaseReadinessScore": 0
+        }
+      ]
+    },
+    {
+      "workId": "34520383564",
+      "workState": "ASSIGNED",
+      "developmentProgress": "INCOMPLETE_PROGRESS",
+      "owner": "autonomous-development",
+      "sourceRoot": "web-games/bug-defense",
+      "sourceCommit": "5eb0b6e741744dadd977ed9ed19642517046c59e",
+      "createdAt": "2026-09-10T19:26:17.564Z",
+      "updatedAt": "2026-09-10T19:26:17.564Z",
+      "retryCount": 0,
+      "evidenceRefs": [],
+      "releaseEvidence": [],
+      "releaseReadiness": {
+        "score": 0,
+        "maxScore": 100,
+        "pass": false,
+        "categories": {
+          "install_update": {
+            "weight": 20,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "core_loop": {
+            "weight": 20,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "stability": {
+            "weight": 20,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "content": {
+            "weight": 15,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "graphics_ui": {
+            "weight": 10,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "monetization": {
+            "weight": 10,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "store": {
+            "weight": 5,
+            "earned": 0,
+            "evidenceCount": 0
+          }
+        },
+        "missingCategories": [
+          "install_update",
+          "core_loop",
+          "stability",
+          "content",
+          "graphics_ui",
+          "monetization",
+          "store"
+        ],
+        "validEvidenceCount": 0,
+        "invalidEvidence": []
+      },
+      "explicitReason": null,
+      "qaVerdict": null,
+      "implementationChanged": false,
+      "history": [
+        {
+          "state": "ASSIGNED",
+          "at": "2026-09-10T19:26:17.564Z",
           "progress": "INCOMPLETE_PROGRESS",
           "releaseReadinessScore": 0
         }
