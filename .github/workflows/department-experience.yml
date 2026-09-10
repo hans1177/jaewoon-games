@@ -7,9 +7,10 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
-  group: department-experience-main
+  group: department-experience-pr
   cancel-in-progress: false
 
 jobs:
@@ -34,34 +35,34 @@ jobs:
           SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
         run: node tools/award-department-experience.mjs "$SOURCE_SHA" "$SOURCE_RUN_ID"
 
-      - name: Commit XP state when changed
+      - name: Propose XP state through PR when changed
         env:
+          GH_TOKEN: ${{ github.token }}
           SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
           SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+        shell: bash
         run: |
+          set -euo pipefail
           git config user.name "jaewoon-company-ai"
           git config user.email "actions@users.noreply.github.com"
 
-          for attempt in 1 2 3 4 5; do
-            if [ "$attempt" -gt 1 ]; then
-              echo "main moved while recording XP; refreshing before retry $attempt/5"
-              git fetch origin main
-              git reset --hard origin/main
-              node tools/award-department-experience.mjs "$SOURCE_SHA" "$SOURCE_RUN_ID"
-            fi
+          if git diff --quiet -- department-experience.json assets/department-experience-state.js; then
+            echo "No new verified XP to record."
+            exit 0
+          fi
 
-            if git diff --quiet -- department-experience.json assets/department-experience-state.js; then
-              echo "No new verified XP to record."
-              exit 0
-            fi
+          branch="automation/department-experience-${SOURCE_RUN_ID}-${GITHUB_RUN_ID}"
+          git checkout -b "$branch"
+          git add -- department-experience.json assets/department-experience-state.js
+          git commit -m "company-xp: record verified department experience [skip ci]"
+          git push origin "HEAD:refs/heads/$branch"
 
-            git add department-experience.json assets/department-experience-state.js
-            git commit -m "company-xp: record verified department experience [skip ci]"
+          pr_url="$(gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$branch" \
+            --title "company-xp: record verified department experience" \
+            --body "Verified department experience update from Vibe QA.\n\n- source SHA: ${SOURCE_SHA}\n- source run: ${SOURCE_RUN_ID}\n- workflow run: ${GITHUB_RUN_ID}\n- direct main write: NO")"
 
-            if git push origin HEAD:main; then
-              exit 0
-            fi
-          done
-
-          echo "Failed to record verified XP after 5 fresh-main attempts."
-          exit 1
+          echo "DEPARTMENT_EXPERIENCE_PR=$pr_url"
+          echo "PUBLIC_MAIN_WRITE=NO"
