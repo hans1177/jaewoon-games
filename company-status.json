@@ -305,9 +305,9 @@
     "dateKst": "2026-09-10",
     "runningLabelAloneCountsAsWork": false,
     "counts": {
-      "WORKING": 1,
+      "WORKING": 6,
       "DONE": 2,
-      "IDLE_NO_TASK": 5,
+      "IDLE_NO_TASK": 0,
       "BLOCKED": 0,
       "FAILED": 0,
       "STALE": 0
@@ -324,43 +324,43 @@
     ],
     "staff": {
       "planning": {
-        "status": "IDLE_NO_TASK",
+        "status": "WORKING",
         "workState": "WAITING",
         "task": "autonomous development floor 34470981849",
         "source": "autonomous-development",
-        "reason": "latest autonomous development floor has no department task",
+        "reason": "autonomous floor is active but this department job has not started yet",
         "jobEvidence": null
       },
       "development": {
-        "status": "IDLE_NO_TASK",
+        "status": "WORKING",
         "workState": "WAITING",
         "task": "autonomous development floor 34470981849",
         "source": "autonomous-development",
-        "reason": "latest autonomous development floor has no department task",
+        "reason": "autonomous floor is active but this department job has not started yet",
         "jobEvidence": null
       },
       "qa": {
-        "status": "IDLE_NO_TASK",
+        "status": "WORKING",
         "workState": "WAITING",
         "task": "autonomous development floor 34470981849",
         "source": "autonomous-development",
-        "reason": "latest autonomous development floor has no department task",
+        "reason": "autonomous floor is active but this department job has not started yet",
         "jobEvidence": null
       },
       "graphics": {
-        "status": "IDLE_NO_TASK",
+        "status": "WORKING",
         "workState": "WAITING",
         "task": "autonomous development floor 34470981849",
         "source": "autonomous-development",
-        "reason": "latest autonomous development floor has no department task",
+        "reason": "autonomous floor is active but this department job has not started yet",
         "jobEvidence": null
       },
       "balance": {
-        "status": "IDLE_NO_TASK",
+        "status": "WORKING",
         "workState": "WAITING",
         "task": "autonomous development floor 34470981849",
         "source": "autonomous-development",
-        "reason": "latest autonomous development floor has no department task",
+        "reason": "autonomous floor is active but this department job has not started yet",
         "jobEvidence": null
       },
       "director": {
@@ -574,39 +574,39 @@
     },
     "departmentTasks": {
       "planning": {
-        "status": "idle",
+        "status": "working",
         "task": "autonomous development floor 34470981849",
         "evidenceSource": "director-supervision-status.json",
         "workState": "WAITING",
-        "reason": "latest autonomous development floor has no department task"
+        "reason": "autonomous floor is active but this department job has not started yet"
       },
       "development": {
-        "status": "idle",
+        "status": "working",
         "task": "autonomous development floor 34470981849",
         "evidenceSource": "director-supervision-status.json",
         "workState": "WAITING",
-        "reason": "latest autonomous development floor has no department task"
+        "reason": "autonomous floor is active but this department job has not started yet"
       },
       "qa": {
-        "status": "idle",
+        "status": "working",
         "task": "autonomous development floor 34470981849",
         "evidenceSource": "director-supervision-status.json",
         "workState": "WAITING",
-        "reason": "latest autonomous development floor has no department task"
+        "reason": "autonomous floor is active but this department job has not started yet"
       },
       "graphics": {
-        "status": "idle",
+        "status": "working",
         "task": "autonomous development floor 34470981849",
         "evidenceSource": "director-supervision-status.json",
         "workState": "WAITING",
-        "reason": "latest autonomous development floor has no department task"
+        "reason": "autonomous floor is active but this department job has not started yet"
       },
       "balance": {
-        "status": "idle",
+        "status": "working",
         "task": "autonomous development floor 34470981849",
         "evidenceSource": "director-supervision-status.json",
         "workState": "WAITING",
-        "reason": "latest autonomous development floor has no department task"
+        "reason": "autonomous floor is active but this department job has not started yet"
       },
       "director": {
         "status": "working",
