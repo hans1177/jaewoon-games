@@ -102,6 +102,24 @@ test('no-change retry prefers an exact diagnostic responsibility file over file 
   assert.deepEqual(retry.context.files.map(file=>file.path),['index.html']);
 });
 
+test('model-runtime retry narrows context and contract to one responsibility file',()=>{
+  const context={files:[
+    {path:'index.html',content:'<iframe src="game.html"></iframe>',preferred:true,focused:false,truncated:false,originalBytes:35},
+    {path:'game.html',content:'x'.repeat(4200),preferred:true,focused:false,truncated:false,originalBytes:4200},
+  ]};
+  const failureType=classifyGenerationFailure(new Error('Ollama 생성 제한시간 초과: 300000ms'));
+  assert.equal(failureType,'MODEL_RUNTIME');
+  const retry=buildRetryAttempt({context,responsibilityFiles:['index.html','game.html'],failureType});
+  assert.equal(retry.strict,true);
+  assert.equal(retry.target,'game.html');
+  assert.deepEqual(retry.responsibilityFiles,['game.html']);
+  assert.deepEqual(retry.context.files.map(file=>file.path),['game.html']);
+  const prompt=buildPrompt({gameId:'TEST',sourcePath:'web-games/test',goal:'작은 기능 수정',context:retry.context,responsibilityFiles:retry.responsibilityFiles,role:'development',attempt:2,failureReason:`${failureType}: Ollama 생성 제한시간 초과`});
+  assert.match(prompt,/재시도 강제계약/);
+  assert.match(prompt,/game\.html 1개만 수정/);
+  assert.doesNotMatch(prompt,/책임 파일: index\.html/);
+});
+
 test('save key changes are rejected by deterministic guard',()=>{
   setup();
   try{
