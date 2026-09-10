@@ -3,17 +3,27 @@ name: Artbook Planning Quality QA
 on:
   pull_request:
     paths:
+      - 'ARTBOOK_DESIGN_CONTRACT.md'
+      - 'company-learning/external-game-design-principles.json'
+      - 'tools/artbook-learning-context.mjs'
+      - 'tools/artbook-external-design-distillation.mjs'
       - 'tools/artbook-department-runner.mjs'
       - 'tools/artbook-gate.mjs'
       - 'tools/vibe2-artbook-story-core.mjs'
+      - 'qa/artbook-external-design-distillation.test.mjs'
       - 'qa/artbook-planning-quality.test.mjs'
       - '.github/workflows/artbook-planning-quality-qa.yml'
   push:
     branches: [main]
     paths:
+      - 'ARTBOOK_DESIGN_CONTRACT.md'
+      - 'company-learning/external-game-design-principles.json'
+      - 'tools/artbook-learning-context.mjs'
+      - 'tools/artbook-external-design-distillation.mjs'
       - 'tools/artbook-department-runner.mjs'
       - 'tools/artbook-gate.mjs'
       - 'tools/vibe2-artbook-story-core.mjs'
+      - 'qa/artbook-external-design-distillation.test.mjs'
       - 'qa/artbook-planning-quality.test.mjs'
       - '.github/workflows/artbook-planning-quality-qa.yml'
 
@@ -30,7 +40,11 @@ jobs:
           node-version: 22
       - name: Syntax
         run: |
+          node --check tools/artbook-learning-context.mjs
+          node --check tools/artbook-external-design-distillation.mjs
           node --check tools/artbook-department-runner.mjs
           node --check tools/artbook-gate.mjs
+      - name: External design distillation regression
+        run: node --test qa/artbook-external-design-distillation.test.mjs
       - name: Planning semantic regression
         run: node --test qa/artbook-planning-quality.test.mjs
