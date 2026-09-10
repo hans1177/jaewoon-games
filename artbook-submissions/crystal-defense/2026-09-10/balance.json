@@ -1,31 +1,48 @@
 {
-  "version": 7,
+  "version": 8,
   "gameId": "crystal-defense",
   "date": "2026-09-10",
   "department": "balance",
   "status": "SUBMITTED",
-  "departmentReadiness": "BLOCKED",
+  "departmentReadiness": "NEEDS_VALIDATION",
   "revision": {"trigger":"QA_DESIGN_FINDING","sourceEdition":1,"sourceFile":"artbook-submissions/crystal-defense/2026-09-09/balance.json","historyPreserved":true},
   "evidence": [
-    {"source":"web-games/crystal-defense/index.html","usage":"read-only source for numeric extraction"},
+    {"source":"web-games/crystal-defense/index.html#embedded-gzip-1","usage":"read-only decoded source for verified static numeric/economy evidence"},
+    {"source":"tools/artbook-fact-pack.mjs","usage":"deterministic bounded gzip/base64 evidence extraction; payload not executed"},
+    {"source":"qa/artbook-fact-pack.test.mjs","usage":"real crystal-defense archive regression proving decoded combat/progression evidence and no persistence API evidence"},
     {"source":"artbook-submissions/crystal-defense/2026-09-09/balance.json","usage":"rejected shallow baseline"},
     {"source":"artbook-revision-queue.json","usage":"revision scope"}
   ],
   "section": {
-    "currentNumbers": "초판의 '[{'와 같은 파싱 잔여값은 수치 근거로 폐기한다. 현재 구현에서 체력, 피해, 공격 간격, 이동 속도, 웨이브 규모/간격, 보상/비용이 존재하는 경우 원본 상수와 계산식을 먼저 추출하며 확인 전에는 어떤 값도 새로 정하지 않는다.",
-    "progressionCurve": "진행 곡선은 실제 웨이브별 적 수·내구·압박 시간과 플레이어 대응 자원의 변화로 측정한다. 'linear' 같은 단일 라벨로 확정하지 않고 웨이브별 생존 여유와 처리 시간을 표로 남긴다.",
-    "combatFeel": "체감 평가는 적 처치 시간, 수정/방어선 손실 속도, 공격 사이 의사결정 여유, 위험 예고 시간으로 분해한다. VFX 강도나 프레임 저하를 실제 난이도 증가로 계산하지 않는다.",
-    "economyRewards": "경제/업그레이드가 현재 구현에 존재하는지 먼저 확인한다. 존재하면 획득량·비용·구매 시점·회수 기간을 원본 기준으로 기록하고, 존재하지 않으면 Unity 전환을 이유로 임의 추가하지 않는다.",
-    "difficultyTransitions": "난이도 전환은 적 조합, 동시 압박, 속도, 체력, 피해 중 실제로 바뀌는 축을 식별해 기록한다. 갑작스러운 실패 구간은 전환 직전 30초의 자원/위험/입력 여유를 비교한다.",
+    "currentNumbers": "압축 해제된 현재 Web 소스에서 S.wave=0, 수정 체력 crystal=500을 확인했다. 직업 테이블에서 검사 기본 HP 100/ATK 5, 궁수 기본 HP 70/ATK 10이 확인되며 플레이어 생성 시 hp/max는 직업 HP, atk는 직업 ATK, gold는 0으로 시작한다. 이는 기준선 기록이며 수치 변경 제안이 아니다. 힐러 기본값, 적 HP/피해/속도, 전체 스폰·웨이브 수식과 공격 간격은 아직 추가 추출/플레이 검증이 필요하다.",
+    "progressionCurve": "진행 곡선은 실제 웨이브별 적 수·내구·압박 시간과 플레이어 대응 자원의 변화로 측정한다. 현재 wave 초기값 0은 확인됐지만 전체 웨이브 증가식·스폰 수식·전환 시간은 아직 확정하지 않는다. 'linear' 같은 단일 라벨로 추정하지 않고 추가 소스 근거와 플레이 측정으로 표를 완성한다.",
+    "combatFeel": "체감 평가는 확인된 검사 HP100/ATK5·궁수 HP70/ATK10·수정 체력500을 기준점으로 삼되, 적 HP/피해/속도와 공격 간격이 아직 완전 추출되지 않았으므로 적 처치시간이나 생존시간을 확정값으로 계산하지 않는다. 이후 적 수치와 위험 예고 시간을 확보해 동일 입력 시나리오로 비교한다.",
+    "economyRewards": "경제 시스템 존재는 확인됐다. 플레이어 골드는 0에서 시작하고, 처치 보상은 giant/mage 30골드, 그 외 적 3골드다. 인벤토리는 최대 4개이며 sword와 shield 가격은 각각 50골드다. '집중의 목걸이'는 현재 소스에서 가격 미정/null 경로로 처리된다. 이 값들은 Web 기준선이며 카테고리 3 단계에서 임의 조정하지 않는다.",
+    "difficultyTransitions": "난이도 전환은 적 조합, 동시 압박, 속도, 체력, 피해 중 실제로 바뀌는 축을 식별해 기록한다. 현재 정적 플레이어/수정/경제 기준값만 확인됐으므로 적/웨이브 세부 수식이 확보되기 전에는 난이도 상승 배율을 추정하지 않는다. 갑작스러운 실패 구간은 전환 직전 30초의 자원/위험/입력 여유를 비교한다.",
     "testMeasurements": "BAL-01 웨이브별 소요시간, BAL-02 플레이어/수정 잔여 여유, BAL-03 동시 적 최고치, BAL-04 위험 예고→피격 시간, BAL-05 반복 5회 결과 분산을 기록한다. Unity에서는 동일 기준선과 비교해 의도하지 않은 밸런스 드리프트를 검출한다.",
-    "changePolicy": "카테고리 3 문서 단계에서는 원본 수치를 변경하지 않는다. Unity vertical slice에서 원본 재현이 확인된 뒤에만 테스트 근거와 함께 KEEP/CHANGE/DROP 결정을 기록한다.",
-    "handoffs": "개발부는 실제 상수와 계산식의 소유 위치를, QA는 동일 입력 시나리오 측정을 제공한다. 그래픽 효과는 수치 비교에서 분리한다."
+    "changePolicy": "카테고리 3 문서 단계에서는 확인된 원본 수치를 변경하지 않는다. Unity vertical slice에서 원본 재현이 확인된 뒤에만 테스트 근거와 함께 KEEP/CHANGE/DROP 결정을 기록하며, 시스템/구현 결함은 DROP이 아니라 CHANGE/FIX_REQUIRED로 처리한다.",
+    "handoffs": "개발부는 적 HP/피해/속도·공격 간격·웨이브/스폰 계산식의 정확한 소유 위치를 추가 추출하고, QA는 동일 입력 시나리오 측정을 제공한다. 현재 소스에서는 localStorage/sessionStorage/indexedDB/saveGame/loadGame/saveData/loadData/persist/serialize/JSON.stringify 계열 지속성 근거가 검출되지 않았으므로 저장 기능이 있다고 가정하지 않는다."
   },
   "conceptPlan": {
     "creativeIdeas": ["웨이브 난이도를 단일 배율이 아니라 압박 시간과 동시 위협으로 설명한다.","수치 변경 제안은 원본 기준선과 테스트 결과가 모두 있을 때만 만든다.","Unity 전환 드리프트를 밸런스 변경으로 오인하지 않도록 원본 재현 단계와 개선 단계를 분리한다."],
-    "implementationPlan": ["압축 소스에서 실제 수치와 계산식을 추출해 기준표를 만든다.","Unity 데이터 에셋 후보는 원본 수치가 확인된 뒤 생성한다.","KEEP/CHANGE/DROP은 테스트 증거와 영향 범위를 함께 기록한다."],
-    "demoValidation": ["원본 웹과 Unity vertical slice의 동일 웨이브 결과를 비교한다.","최소 5회 반복에서 결과 분산과 비정상 급변을 기록한다."]
+    "implementationPlan": ["확인된 수정500·검사100/5·궁수70/10·처치보상3/30·상점50 기준값을 원본 재현 표의 첫 항목으로 고정한다.","적 수치와 웨이브/스폰 계산식을 추가 추출한 뒤에만 Unity 데이터 에셋 후보를 완성한다.","KEEP/CHANGE/DROP은 테스트 증거와 영향 범위를 함께 기록하고 결함성 실패는 CHANGE/FIX_REQUIRED로 분리한다."],
+    "demoValidation": ["원본 웹과 Unity vertical slice에서 동일 직업·동일 웨이브의 HP/ATK/수정 체력/골드 흐름을 비교한다.","최소 5회 반복에서 웨이브 소요시간·잔여 체력·골드 수입/소비·결과 분산과 비정상 급변을 기록한다."]
   },
-  "unverified": ["체력·피해·웨이브·경제의 실제 값은 원본 소스 추출 전 미확인","경제 시스템 존재 여부 미확인"],
-  "verification": {"evidenceOnly":true,"productionApproval":false,"meaningfulDepartmentDepth":true,"numericChangesApplied":false,"sourceGameModified":false}
+  "unverified": [
+    "힐러 기본 HP/ATK는 현재 캡처된 근거 범위에서 아직 확정하지 않음",
+    "적 HP·피해·속도·공격 간격과 전체 스폰/웨이브 계산식·전환 시간은 추가 추출 필요",
+    "현재 압축 해제 소스에서 지속성 API 근거가 검출되지 않았으며 저장 기능이 존재한다고 가정하지 않음"
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "productionApproval": false,
+    "meaningfulDepartmentDepth": true,
+    "numericChangesApplied": false,
+    "sourceGameModified": false,
+    "packedSourceDecoded": true,
+    "sourceNumericEvidencePartial": true,
+    "economyEvidenceVerified": true,
+    "persistenceEvidenceFound": false,
+    "factPackVersion": 3
+  }
 }
