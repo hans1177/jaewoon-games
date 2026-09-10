@@ -5284,6 +5284,20 @@
       "reservedAt": "2026-09-10T18:59:46.133Z",
       "leaseExpiresAt": null,
       "settledAt": "2026-09-10T19:12:19.551Z"
+    },
+    {
+      "date": "2026-09-11",
+      "gameId": "P0002",
+      "gameSlug": "insect-survival",
+      "sourcePath": "web-games/insect-survival",
+      "reason": "TIER2_WEB_FIRST_IMPLEMENTATION",
+      "runId": "34519003452",
+      "workId": "34519003452",
+      "sourceCommit": "26a53c52e9a0732ef98dfc9dc592500a9991d356",
+      "floor": 20,
+      "status": "RESERVED",
+      "reservedAt": "2026-09-10T19:13:15.632Z",
+      "leaseExpiresAt": "2026-09-10T20:43:15.632Z"
     }
   ],
   "workLedger": [
@@ -9244,6 +9258,83 @@
           "state": "ASSIGNED",
           "at": "2026-09-10T18:59:46.133Z",
           "progress": "INCOMPLETE_PROGRESS"
+        }
+      ]
+    },
+    {
+      "workId": "34519003452",
+      "workState": "ASSIGNED",
+      "developmentProgress": "INCOMPLETE_PROGRESS",
+      "owner": "autonomous-development",
+      "sourceRoot": "web-games/insect-survival",
+      "sourceCommit": "26a53c52e9a0732ef98dfc9dc592500a9991d356",
+      "createdAt": "2026-09-10T19:13:15.632Z",
+      "updatedAt": "2026-09-10T19:13:15.632Z",
+      "retryCount": 0,
+      "evidenceRefs": [],
+      "releaseEvidence": [],
+      "releaseReadiness": {
+        "score": 0,
+        "maxScore": 100,
+        "pass": false,
+        "categories": {
+          "install_update": {
+            "weight": 20,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "core_loop": {
+            "weight": 20,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "stability": {
+            "weight": 20,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "content": {
+            "weight": 15,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "graphics_ui": {
+            "weight": 10,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "monetization": {
+            "weight": 10,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "store": {
+            "weight": 5,
+            "earned": 0,
+            "evidenceCount": 0
+          }
+        },
+        "missingCategories": [
+          "install_update",
+          "core_loop",
+          "stability",
+          "content",
+          "graphics_ui",
+          "monetization",
+          "store"
+        ],
+        "validEvidenceCount": 0,
+        "invalidEvidence": []
+      },
+      "explicitReason": null,
+      "qaVerdict": null,
+      "implementationChanged": false,
+      "history": [
+        {
+          "state": "ASSIGNED",
+          "at": "2026-09-10T19:13:15.632Z",
+          "progress": "INCOMPLETE_PROGRESS",
+          "releaseReadinessScore": 0
         }
       ]
     }
