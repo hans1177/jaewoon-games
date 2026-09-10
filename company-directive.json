@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 20,
+  "revision": 21,
   "updatedAt": "2026-09-11",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
@@ -36,11 +36,27 @@
     "departmentMultimodelStartsAtClass": "DESIGN_ONLY",
     "departmentMultimodelStartsAtTier": 3,
     "minDistinctModelsPerDepartment": 3,
+    "departmentReviewModelCount": 3,
+    "minDistinctLeadModelsAcrossDepartments": 5,
+    "departmentLeadModelsMustBeDistinct": true,
+    "departmentLeadAssignmentRemappable": true,
+    "assistantModelsMayOverlapAcrossDepartments": true,
+    "departmentRepresentativeAuthoredByLead": true,
+    "departmentRebuttalAuthoredByLead": true,
     "modelPool": [
       "qwen3:0.6b",
       "gemma3:1b",
-      "llama3.2:1b"
+      "llama3.2:1b",
+      "deepseek-r1:1.5b",
+      "smollm2:1.7b"
     ],
+    "departmentLeadModels": {
+      "planning": "qwen3:0.6b",
+      "graphics": "gemma3:1b",
+      "development": "llama3.2:1b",
+      "qa": "deepseek-r1:1.5b",
+      "balance": "smollm2:1.7b"
+    },
     "gameDesigner": {
       "authorsInitialDetailedDesign": true,
       "singleAuthorPerRevisionCycle": true,
@@ -54,16 +70,18 @@
       "balance"
     ],
     "departmentModeByClass": {
-      "DESIGN_ONLY": "MULTIMODEL_DESIGN_REVIEW_AND_MEETING",
-      "DEVELOPMENT_CONFIRMED": "MULTIMODEL_DETAILED_PLAY_TECH_REVIEW_AND_MEETING",
-      "RELEASE_CONFIRMED": "MULTIMODEL_ERROR_RISK_WATCH"
+      "DESIGN_ONLY": "DISTINCT_LEAD_MULTIMODEL_DESIGN_REVIEW_AND_MEETING",
+      "DEVELOPMENT_CONFIRMED": "DISTINCT_LEAD_MULTIMODEL_DETAILED_PLAY_TECH_REVIEW_AND_MEETING",
+      "RELEASE_CONFIRMED": "DISTINCT_LEAD_MULTIMODEL_ERROR_RISK_WATCH"
     },
-    "departmentModeTier3": "MULTIMODEL_DESIGN_REVIEW_AND_MEETING",
-    "departmentModeTier2": "MULTIMODEL_DETAILED_PLAY_TECH_REVIEW_AND_MEETING",
-    "departmentModeTier1": "MULTIMODEL_ERROR_RISK_WATCH",
+    "departmentModeTier3": "DISTINCT_LEAD_MULTIMODEL_DESIGN_REVIEW_AND_MEETING",
+    "departmentModeTier2": "DISTINCT_LEAD_MULTIMODEL_DETAILED_PLAY_TECH_REVIEW_AND_MEETING",
+    "departmentModeTier1": "DISTINCT_LEAD_MULTIMODEL_ERROR_RISK_WATCH",
     "meeting": {
       "internalDepartmentConsensus": true,
+      "internalRepresentativeOwner": "DEPARTMENT_LEAD_MODEL",
       "crossDepartmentRebuttalRounds": 1,
+      "rebuttalOwner": "DEPARTMENT_LEAD_MODEL",
       "issueStates": [
         "CONSENSUS",
         "CONFLICT",
@@ -96,10 +114,11 @@
       "sourceCodeAutoDevelopment": false,
       "requiredFlow": [
         "GAME_DESIGNER_DRAFT",
-        "FIVE_DEPARTMENT_MULTIMODEL_REVIEW",
-        "DEPARTMENT_INTERNAL_CONSENSUS",
-        "CROSS_DEPARTMENT_MEETING",
-        "ONE_REBUTTAL_ROUND",
+        "FIVE_DISTINCT_DEPARTMENT_LEADS",
+        "DEPARTMENT_LEAD_PLUS_ASSISTANT_MULTIMODEL_REVIEW",
+        "DEPARTMENT_LEAD_INTERNAL_CONSENSUS",
+        "CROSS_DEPARTMENT_LEAD_MEETING",
+        "ONE_LEAD_REBUTTAL_ROUND",
         "GAME_DESIGNER_REVISION",
         "DESIGN_BASELINE_GATE",
         "ARTBOOK_EDITOR_CORE_STRATEGY",
@@ -169,9 +188,12 @@
     "production-class-membership-promotes-and-demotes-from-current-evidence",
     "status-sync-must-not-reclassify-games-to-satisfy-a-count-quota",
     "design-only-detailed-design-single-game-designer-author",
-    "design-only-and-development-confirmed-five-departments-use-multiple-distinct-real-models",
-    "department-role-fixed-model-variable",
-    "minimum-three-distinct-models-per-department",
+    "five-departments-must-have-five-distinct-lead-model-ids-per-cycle",
+    "department-lead-role-fixed-model-assignment-remappable",
+    "each-department-uses-lead-plus-assistants-with-minimum-three-distinct-models",
+    "assistant-models-may-overlap-between-departments-but-not-within-one-department-review-set",
+    "department-lead-authors-department-representative-opinion",
+    "department-lead-authors-own-cross-department-rebuttal",
     "departments-review-design-they-do-not-coauthor-initial-draft",
     "department-internal-consensus-before-company-meeting",
     "cross-department-meeting-has-one-rebuttal-round",

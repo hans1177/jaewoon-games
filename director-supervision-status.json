@@ -3,7 +3,7 @@
   "dateKst": "2026-09-11",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
-  "activeDevelopmentRunId": 34527611178,
+  "activeDevelopmentRunId": 34528123521,
   "checks": {
     "staffChecked": "8/8",
     "activeWorkOrder": null,
@@ -25,17 +25,17 @@
   },
   "counts": {
     "WORKING": 1,
-    "DONE": 7,
-    "IDLE_NO_TASK": 0,
+    "DONE": 6,
+    "IDLE_NO_TASK": 1,
     "BLOCKED": 0,
     "FAILED": 0,
     "STALE": 0
   },
   "liveStates": {
     "ACTIVE": 1,
-    "WAITING": 0,
+    "WAITING": 1,
     "BLOCKED": 0,
-    "DONE": 7
+    "DONE": 6
   },
   "attentionRequired": false,
   "primaryFindings": [
@@ -43,32 +43,24 @@
   ],
   "workflowEvidence": {
     "artbook": {
-      "id": 34528104853,
+      "id": 34528153451,
       "status": "pending",
       "conclusion": null,
       "event": "push",
-      "createdAt": "2026-09-10T20:43:49Z",
-      "updatedAt": "2026-09-10T20:43:50Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34528104853"
+      "createdAt": "2026-09-10T20:44:21Z",
+      "updatedAt": "2026-09-10T20:44:22Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34528153451"
     },
     "autonomousDevelopment": {
-      "id": 34527611178,
+      "id": 34528123521,
       "status": "completed",
       "conclusion": "failure",
       "event": "workflow_dispatch",
-      "createdAt": "2026-09-10T20:38:44Z",
-      "updatedAt": "2026-09-10T20:38:58Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34527611178"
+      "createdAt": "2026-09-10T20:44:02Z",
+      "updatedAt": "2026-09-10T20:44:15Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34528123521"
     },
-    "homepage": {
-      "id": 34526067529,
-      "status": "completed",
-      "conclusion": "success",
-      "event": "push",
-      "createdAt": "2026-09-10T20:23:17Z",
-      "updatedAt": "2026-09-10T20:23:29Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34526067529"
-    },
+    "homepage": null,
     "publicGameHealth": null,
     "unityBuild": null,
     "unityRuntime": null
@@ -98,7 +90,7 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "queue-submission:planning",
-        "workflow:34528104853:pending:pending"
+        "workflow:34528153451:pending:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -131,7 +123,7 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "queue-submission:development",
-        "workflow:34528104853:pending:pending"
+        "workflow:34528153451:pending:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -164,7 +156,7 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "queue-submission:qa",
-        "workflow:34528104853:pending:pending"
+        "workflow:34528153451:pending:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -197,7 +189,7 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "queue-submission:graphics",
-        "workflow:34528104853:pending:pending"
+        "workflow:34528153451:pending:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -230,7 +222,7 @@
       "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
         "queue-submission:balance",
-        "workflow:34528104853:pending:pending"
+        "workflow:34528153451:pending:pending"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -257,18 +249,17 @@
     },
     "homepage": {
       "department": "homepage",
-      "taskAssigned": true,
-      "status": "DONE",
-      "workState": "DONE",
-      "task": "homepage diagnostics",
+      "taskAssigned": false,
+      "status": "IDLE_NO_TASK",
+      "workState": "WAITING",
+      "task": "no standing homepage worker task; runtime data sync is automatic",
       "executionEvidence": [
         "homepage-manager-status.json:snapshot-only",
-        "company-status:homepage-runtime-sync-active",
-        "workflow:34526067529:completed:success"
+        "company-status:homepage-runtime-sync-active"
       ],
       "resultVerified": true,
       "blockers": [],
-      "reason": "latest Homepage Manager diagnostic workflow completed successfully; runtime JSON sync remains separate",
+      "reason": "homepage latest-data sync is handled by runtime JSON refresh; Homepage Manager is diagnostic-only and has no standing worker task",
       "action": "none"
     },
     "release": {
