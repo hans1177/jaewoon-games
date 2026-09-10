@@ -29,9 +29,10 @@
 
 DESIGN_ONLY
   Game Designer AI
-  → 5개 부서 × 다중 실제 모델 검토
-  → 부서 내부 합의
-  → 부서 간 회의/반박
+  → 5개 부서 × 서로 다른 Lead AI 5개
+      └ 각 부서: Lead AI + 보조 AI들 = 최소 3개 실제 모델 검토
+  → 각 부서 Lead AI가 부서 내부 의견 통합
+  → 5개 Lead AI가 부서 간 회의/반박
   → Game Designer AI 설계 수정
   → Design Baseline
   → Artbook Editor 핵심 전략 압축
@@ -40,7 +41,7 @@ DEVELOPMENT_CONFIRMED
   Design Baseline
   → Web Gameplay Validation
   → Unity Technical Validation
-  → 5개 부서 상세 근거 회의
+  → 5개 부서 Lead AI + 보조 다중모델 상세 근거 회의
   → Game Designer AI 수정
   → Development Baseline
   → Artbook revision
@@ -49,7 +50,7 @@ RELEASE_CONFIRMED
   Development Baseline
   → Vibe2 본개발/통합
   → Unity Android 실제 빌드
-  → 부서 AI 오류·출시위험 감시
+  → 부서별 Lead AI + 보조 AI 오류·출시위험 감시
   → 독립 QA/회귀 검증
   → Vibe2 수정
   → Release Gate
@@ -102,33 +103,60 @@ RELEASE_CONFIRMED
 ### 고정되는 것과 바뀌는 것
 
 - **역할은 고정**한다. 게임 디자이너, 기획, 그래픽, 개발, QA, 밸런스, 아트북 편집의 책임은 실행마다 바뀌지 않는다.
-- **실제 모델은 하나로 고정하지 않는다.** 무료 로컬 오픈모델 풀에서 여러 계열을 사용한다.
-- `DESIGN_ONLY` 단계부터 각 부서는 최소 3개의 **서로 다른 실제 모델**이 같은 설계안을 독립 검토한다.
-- 기본 경량 모델 풀은 `qwen3:0.6b`, `gemma3:1b`, `llama3.2:1b`이며 실행 설정에서 교체·확장할 수 있다.
-- 같은 모델 풀을 여러 부서가 사용할 수 있지만, 한 부서의 한 회의에는 최소 3개의 distinct model 결과가 실제로 존재해야 한다.
+- **실제 모델은 영구 고정하지 않는다.** 무료 로컬 오픈모델 풀에서 교체·확장할 수 있다.
+- `DESIGN_ONLY` 단계부터 5개 부서에는 각각 **서로 다른 실제 Lead AI 모델**을 배정한다.
+- 같은 회의 사이클에서 `planning / graphics / development / qa / balance`의 Lead 모델 ID는 서로 중복되면 안 된다.
+- 각 부서는 **Lead 모델 1개 + 보조 모델 2개 이상**, 합계 최소 3개의 서로 다른 실제 모델이 같은 설계안을 독립 검토한다.
+- 보조 모델은 부서 사이에서 겹칠 수 있지만, 각 부서 내부에서는 Lead와 보조 모델의 실제 model ID가 모두 달라야 한다.
+- 부서 Lead 모델은 영구 직원 모델이 아니다. 부서 역할·책임은 유지하면서 성능·가용성·검증 결과에 따라 다른 무료 모델로 교체할 수 있다.
+- 서로 다른 부서 이름이나 프롬프트만 붙인 같은 실제 모델을 서로 다른 Lead AI로 계산하지 않는다.
 - 유료 API, 유료 모델, 유료 runner, 자동 초과결제는 사용하지 않는다.
+
+### 부서 Lead AI 배정 규칙
+
+```text
+planning     → Lead Model A
+             + Assistant Models
+
+graphics     → Lead Model B
+             + Assistant Models
+
+development  → Lead Model C
+             + Assistant Models
+
+qa           → Lead Model D
+             + Assistant Models
+
+balance      → Lead Model E
+             + Assistant Models
+
+A, B, C, D, E는 같은 사이클에서 모두 서로 다른 실제 model ID여야 한다.
+```
+
+중앙 실행 설정은 `departmentLeadModels`로 현재 Lead 배정을 기록한다. 모델 교체는 이 설정을 변경해 수행하며, 코드에 부서별 모델명을 하드코딩하지 않는다.
 
 ### 부서 내부 회의
 
 각 부서는 한 모델의 답을 곧바로 부서 의견으로 쓰지 않는다.
 
 ```text
-서로 다른 모델들의 독립 검토
-→ 각 의견 상호 비교
+해당 부서 Lead AI 독립 검토
++ 해당 부서 보조 AI 독립 검토
+→ 의견 상호 비교
 → 충돌·공통점 정리
-→ 부서 대표 의견 1개
+→ 해당 부서 Lead AI가 대표 의견 1개 확정
 ```
 
-부서 대표 의견에는 최소한 `KEEP / FIX / ADD / RISK / EVIDENCE`가 남아야 한다.
+부서 대표 의견에는 최소한 `KEEP / FIX / ADD / RISK / EVIDENCE`가 남아야 한다. 대표 의견에는 Lead model ID와 보조 model ID를 함께 기록해 실제 모델 다양성을 감사할 수 있어야 한다.
 
 ### 부서 간 회의
 
 5개 부서는 같은 설계 기준선을 읽는다.
 
 ```text
-5개 부서 대표 의견
-→ 서로의 의견 전체 열람
-→ 1회 반박·수정 라운드
+5개 부서 Lead AI의 대표 의견
+→ 각 Lead AI가 다른 4개 부서 대표 의견 전체 열람
+→ 각 Lead AI가 자기 부서 책임으로 1회 반박·수정
 → 총괄/회의 조정기가 안건별 CONSENSUS / CONFLICT / HOLD 판정
 ```
 
@@ -173,9 +201,10 @@ RELEASE_CONFIRMED
 
 ```text
 Game Designer AI 1명 상세 설계 초안
-→ 5개 부서 × 각 최소 3개 실제 모델 독립 검토
-→ 부서 내부 대표 의견
-→ 5부서 회의 + 1회 반박
+→ 5개 부서에 서로 다른 Lead AI 5개 배정
+→ 각 부서 Lead + 보조 AI, 최소 3개 실제 모델 독립 검토
+→ 각 부서 Lead AI가 내부 대표 의견 확정
+→ 5개 Lead AI 부서간 회의 + 각 Lead 1회 반박
 → CONSENSUS / CONFLICT / HOLD 정리
 → 같은 Game Designer AI가 CONSENSUS 반영 수정
 → Design Baseline 게이트
@@ -190,6 +219,7 @@ Game Designer AI 1명 상세 설계 초안
 - 대표 시스템과 성장 방향이 서로 모순되지 않는다.
 - 비주얼 방향과 모바일 UX 방향이 정의돼 있다.
 - 개발부·QA가 최소 프로토타입에서 검증할 질문을 만들 수 있다.
+- 5개 부서 Lead model ID가 실제로 서로 다르고 각 부서의 최소 다중모델 검토 기준을 통과한다.
 - 치명적인 미해결 충돌을 합의된 것처럼 숨기지 않는다.
 
 이 조건을 만족하면 `DESIGN_BASELINE`이다. 이는 영구 설계 잠금이 아니라 **`DEVELOPMENT_CONFIRMED` 검증에 넘길 수 있는 기준선**이다.
@@ -198,7 +228,7 @@ Game Designer AI 1명 상세 설계 초안
 
 현재 표시 별칭은 **2분류**다. 목적은 **Design Baseline 설계가 실제로 재미있고 현실적으로 구현 가능한지 검증해 개발 기준선을 확정하는 것**이다.
 
-이 단계부터 회의는 아이디어 중심이 아니라 실제 플레이·기술·제작·QA 근거 중심으로 더 상세해진다.
+이 단계부터 회의는 아이디어 중심이 아니라 실제 플레이·기술·제작·QA 근거 중심으로 더 상세해진다. 5개 부서의 서로 다른 Lead AI 구조와 부서별 보조 다중모델 검증은 그대로 유지한다.
 
 ### 6A. Web Gameplay Validation
 
@@ -249,7 +279,7 @@ Web/Unity 근거를 반영한 설계와 기술 계획이 통과하면 `DEVELOPME
 
 현재 표시 별칭은 **1분류**다. 이 단계에서는 운영 중심이 바뀐다.
 
-**Vibe2가 확정된 개발 기준선을 따라 실제 구현·통합·수정의 주 개발 주체가 되고, 부서 AI는 기본적으로 오류·위험 감시 역할을 맡는다.**
+**Vibe2가 확정된 개발 기준선을 따라 실제 구현·통합·수정의 주 개발 주체가 되고, 부서 AI는 기본적으로 오류·위험 감시 역할을 맡는다.** 부서별 서로 다른 Lead AI 배정은 유지하되, 일상적으로 새 기능을 제안하는 대신 각 전문 영역의 오류·출시 위험을 책임진다.
 
 ### 기본 루프
 
@@ -257,7 +287,7 @@ Web/Unity 근거를 반영한 설계와 기술 계획이 통과하면 `DEVELOPME
 확정 설계/Development Baseline
 → Vibe2 구현
 → Unity 빌드/실행
-→ 부서 AI 오류·위험 검토
+→ 부서별 Lead AI + 보조 AI 오류·위험 검토
 → 독립 QA
 → Vibe2 수정
 → 재빌드·재검증
@@ -318,26 +348,3 @@ Release Baseline 확정 → 최종 아트북 revision
 - 기존 게임 핵심 규칙, 세이브 의미, 과금, 플랫폼, 대형 콘텐츠 방향은 사용자 결정 없이 몰래 바꾸지 않는다.
 - 임시 wrapper·override 체인을 누적하기보다 담당 시스템을 직접 수정한다.
 - Unity MCP 등 로컬 개발 연결은 외부 공개 포트가 아니라 `127.0.0.1` 우선이다.
-- APK 성공은 비어 있지 않은 실제 파일과 SHA-256 등 검증 근거가 있어야 한다.
-
-## 10. 검증 결과의 Vibe2 학습
-
-학습 우선순위는 다음과 같다.
-
-```text
-AI 설계 제안
-→ 부서 다중모델 검토
-→ 실제 Web/Unity 테스트
-→ 독립 QA
-→ 실제 개발/출시 결과
-→ 성공/실패 원인 라벨링
-→ 검증된 패턴만 Vibe2 학습 근거
-```
-
-AI끼리 서로 높은 점수를 준 것만으로 성공 샘플이 되지 않는다. 프로젝트 단위 데이터 분리를 유지하고, 검증되지 않은 외부 원리나 합성 설계는 `PROPOSAL` 컨텍스트로만 사용할 수 있다.
-
-## 11. 중앙화 규칙
-
-이 정책을 수정할 때는 **이 파일만 사람용 정책 원본으로 수정한다.**
-
-다른 문서에는 이 문장의 세부 내용을 복사해 별도 정책 버전을 만들지 않는다. 실행에 필요한 분류명·현재 숫자 표시 별칭·모델 목록·게이트 플래그만 `company-directive.json`에 기계 설정으로 둔다. 분류별 현재 개수는 상태에서 계산하고 중앙 정책 숫자로 고정하지 않는다. 과거 아트북/로그/상태 파일은 역사적 증거로 보존하며 새 정책 문서처럼 취급하지 않는다.
