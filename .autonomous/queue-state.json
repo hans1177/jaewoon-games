@@ -4614,6 +4614,20 @@
       "status": "RESERVED",
       "reservedAt": "2026-09-10T15:30:15.673Z",
       "leaseExpiresAt": "2026-09-10T17:00:15.673Z"
+    },
+    {
+      "date": "2026-09-11",
+      "gameId": "P0004",
+      "gameSlug": "bug-defense",
+      "sourcePath": "web-games/bug-defense",
+      "reason": "TIER2_WEB_FIRST_IMPLEMENTATION",
+      "runId": "34496046635",
+      "workId": "34496046635",
+      "sourceCommit": "ccf9314b63a877947ddb751ef1a39abea036a63a",
+      "floor": 3,
+      "status": "RESERVED",
+      "reservedAt": "2026-09-10T15:30:34.973Z",
+      "leaseExpiresAt": "2026-09-10T17:00:34.973Z"
     }
   ],
   "workLedger": [
@@ -7583,6 +7597,28 @@
         {
           "state": "ASSIGNED",
           "at": "2026-09-10T15:30:15.673Z",
+          "progress": "INCOMPLETE_PROGRESS"
+        }
+      ]
+    },
+    {
+      "workId": "34496046635",
+      "workState": "ASSIGNED",
+      "developmentProgress": "INCOMPLETE_PROGRESS",
+      "owner": "autonomous-development",
+      "sourceRoot": "web-games/bug-defense",
+      "sourceCommit": "ccf9314b63a877947ddb751ef1a39abea036a63a",
+      "createdAt": "2026-09-10T15:30:34.973Z",
+      "updatedAt": "2026-09-10T15:30:34.973Z",
+      "retryCount": 0,
+      "evidenceRefs": [],
+      "explicitReason": null,
+      "qaVerdict": null,
+      "implementationChanged": false,
+      "history": [
+        {
+          "state": "ASSIGNED",
+          "at": "2026-09-10T15:30:34.973Z",
           "progress": "INCOMPLETE_PROGRESS"
         }
       ]
