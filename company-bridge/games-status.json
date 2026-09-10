@@ -1,8 +1,8 @@
 {
   "version": 1,
   "sourceRepository": "hans1177/jaewoon-games",
-  "sourceRevision": "a4bb93c65cd4f034b1b107746e8ce9fc35e2dfef",
-  "generatedAt": "2026-09-10T19:57:16.187Z",
+  "sourceRevision": "8126aa2fa91ceb09881b7e8077c8a2fe1c3b91ef",
+  "generatedAt": "2026-09-10T22:11:07.855Z",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
   "continuousDevelopmentBranch": "autonomous-dev",
@@ -207,13 +207,14 @@
       "key": "VIBE2:autonomous-candidate-safe-promotion",
       "type": "VIBE2",
       "patternId": "autonomous-candidate-safe-promotion",
-      "stage": "GAME_VERIFIED",
+      "stage": "EXPERIMENTING",
       "summary": {
-        "successEvidence": 11,
+        "successEvidence": 0,
+        "incompletePositiveEvidence": 11,
         "failureEvidence": 0,
-        "distinctGames": 1,
+        "distinctGames": 0,
         "distinctGenres": 0,
-        "distinctConditions": 1,
+        "distinctConditions": 0,
         "averageDelta": 0,
         "criticalFailures": 0,
         "multiGameEligible": false,
@@ -229,6 +230,7 @@
       "stage": "GAME_VERIFIED",
       "summary": {
         "successEvidence": 11,
+        "incompletePositiveEvidence": 0,
         "failureEvidence": 0,
         "distinctGames": 1,
         "distinctGenres": 0,
@@ -244,20 +246,6 @@
   ],
   "latestArtbooks": [
     {
-      "id": "daechung-rpg-2026-09-08-initial",
-      "gameId": "daechung-rpg",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "createdAt": "2026-09-08"
-    },
-    {
-      "id": "daechung-rpg-2026-09-08-second",
-      "gameId": "daechung-rpg",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "createdAt": "2026-09-08"
-    },
-    {
       "id": "daechung-rpg-2026-09-09-initial",
       "gameId": "daechung-rpg",
       "status": "completed-artbook",
@@ -272,36 +260,8 @@
       "createdAt": "2026-09-09"
     },
     {
-      "id": "crystal-defense-2026-09-09-initial",
-      "gameId": "crystal-defense",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "createdAt": "2026-09-09"
-    },
-    {
       "id": "bug-defense-2026-09-09-initial",
       "gameId": "bug-defense",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "createdAt": "2026-09-09"
-    },
-    {
-      "id": "human-go-2026-09-09-initial",
-      "gameId": "human-go",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "createdAt": "2026-09-09"
-    },
-    {
-      "id": "egg-heist-2026-09-09-initial",
-      "gameId": "egg-heist",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "createdAt": "2026-09-09"
-    },
-    {
-      "id": "chess-battle-2026-09-09-initial",
-      "gameId": "chess-battle",
       "status": "completed-artbook",
       "productionApproval": false,
       "createdAt": "2026-09-09"
@@ -316,20 +276,6 @@
     {
       "id": "survival-2026-09-10-initial",
       "gameId": "survival",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "createdAt": "2026-09-10"
-    },
-    {
-      "id": "survival2-2026-09-10-initial",
-      "gameId": "survival2",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "createdAt": "2026-09-10"
-    },
-    {
-      "id": "territory-war-2026-09-10-initial",
-      "gameId": "territory-war",
       "status": "completed-artbook",
       "productionApproval": false,
       "createdAt": "2026-09-10"
