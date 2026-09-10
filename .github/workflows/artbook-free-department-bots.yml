@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       game_id:
-        description: 'Optional game id. DESIGN_ONLY runs direct to artbook; DEVELOPMENT_CONFIRMED and RELEASE_CONFIRMED resume gated pipelines.'
+        description: 'Optional game id. DESIGN_ONLY runs GAME_SEED -> design review -> Design Baseline -> Artbook; later classes resume gated pipelines.'
         required: false
         type: string
   schedule:
@@ -15,7 +15,9 @@ on:
       - 'COMPANY_FLOW.md'
       - 'company-directive.json'
       - 'game-catalog.json'
+      - 'game-seed-registry.json'
       - 'artbook-work-orders/**'
+      - 'design/**/game-seed.json'
       - 'design/**/web-gameplay-validation.json'
       - 'design/**/unity-technical-validation.json'
       - 'design/**/development-revalidation.json'
@@ -26,6 +28,8 @@ on:
       - 'unity-games/**'
       - 'tools/production-classification.mjs'
       - 'tools/company-design-cycle.mjs'
+      - 'tools/company-design-baseline-gate.mjs'
+      - 'tools/company-design-artbook.mjs'
       - 'tools/company-development-validation-cycle.mjs'
       - 'tools/company-release-production-cycle.mjs'
       - 'tools/company-baseline-gate.mjs'
@@ -86,10 +90,13 @@ jobs:
           }else if(eventName==='push'){
             let changed=[];
             try{changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);}catch{}
+            const designIds=new Set();
             const developmentIds=new Set();
             const releaseIds=new Set();
             for(const file of changed){
-              let m=file.match(/^design\/([^/]+)\/[^/]+\/(web-gameplay-validation|unity-technical-validation|development-revalidation)\.json$/);
+              let m=file.match(/^design\/([^/]+)\/[^/]+\/game-seed\.json$/);
+              if(m){designIds.add(m[1]);continue;}
+              m=file.match(/^design\/([^/]+)\/[^/]+\/(web-gameplay-validation|unity-technical-validation|development-revalidation)\.json$/);
               if(m){developmentIds.add(m[1]);continue;}
               m=file.match(/^design\/([^/]+)\/[^/]+\/(vibe2-release-implementation|unity-android-build|android-runtime-validation|independent-release-qa)\.json$/);
               if(m)releaseIds.add(m[1]);
@@ -98,8 +105,10 @@ jobs:
               const project=String(row.game.unityProjectPath||'').replace(/^\/+|\/+$/g,'');
               if(project&&changed.some(file=>file===project||file.startsWith(`${project}/`)))releaseIds.add(row.game.id);
             }
-            if(developmentIds.size||releaseIds.size){
+            if(designIds.size||developmentIds.size||releaseIds.size){
               selected=games.filter(row=>(
+                designIds.has(row.game.id)&&row.productionClass===PRODUCTION_CLASSES.DESIGN_ONLY
+              )||(
                 developmentIds.has(row.game.id)&&row.productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED
               )||(
                 releaseIds.has(row.game.id)&&row.productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED
@@ -235,11 +244,22 @@ jobs:
             }
           }else if(actualClass===PRODUCTION_CLASSES.DESIGN_ONLY){
             if(!s.baselineGate||s.baselineGate.policyDocument!=='COMPANY_FLOW.md')throw new Error('design baseline gate missing');
-            if(s.status!=='COMPLETE')throw new Error('design cycle incomplete');
+            if(s.gameSeed?.complete!==true)throw new Error('GAME_SEED was not completed before design');
             if(s.departments?.leadModelsDistinct!==true||s.departments?.count!==5)throw new Error('design lead contract failed');
             for(const role of roles){const a=s.departments?.modelAudit?.[role];if(!a?.pass||a.representativeAuthoredByLead!==true||a.rebuttalAuthoredByLead!==true)throw new Error(`${role} lead review contract failed`);}
-            if(s.artbook?.directAfterDesignCycle!==true)throw new Error('DESIGN_ONLY did not run direct to artbook');
-            console.log(`DIRECT_RESULT=${s.baselineGate.state}`);
+            if(s.baselineGate.contracts?.designOnlyVibe2Used!==false)throw new Error('DESIGN_ONLY Vibe2 contract invalid');
+            const artbookFile=path.join(base,'core-artbook.json');
+            if(s.baselineGate.state==='DESIGN_BASELINE_READY'){
+              if(s.baselineGate.ready!==true)throw new Error('ready design baseline marked not ready');
+              if(!fs.existsSync(artbookFile))throw new Error('ready design baseline missing artbook');
+              if(s.artbook?.created!==true||s.artbook?.afterBaseline!==true||s.artbook?.vibe2Used!==false)throw new Error('design artbook order/Vibe2 contract failed');
+              if(s.artbookPublication?.published!==true)throw new Error('design baseline artbook not published');
+              console.log('DIRECT_RESULT=DESIGN_BASELINE_AND_ARTBOOK_COMPLETE');
+            }else{
+              if(s.baselineGate.ready===true)throw new Error('non-ready design state incorrectly ready');
+              if(fs.existsSync(artbookFile)||s.artbook?.created===true)throw new Error('DESIGN_ONLY artbook created before baseline ready');
+              console.log(`DIRECT_RESULT=${s.baselineGate.state}`);
+            }
           }else if(actualClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
             const allowed=new Set([...(d.classes?.RELEASE_CONFIRMED?.waitingStates||[]),...(d.classes?.RELEASE_CONFIRMED?.releaseStates||[])]);
             if(!allowed.has(s.state))throw new Error(`invalid release direct state: ${s.state}`);
@@ -283,11 +303,12 @@ jobs:
           git config user.name 'jaewoon-design-bots'
           git config user.email 'actions@users.noreply.github.com'
           git add -- "design/$ARTBOOK_GAME_ID" "artbook-submissions/$ARTBOOK_GAME_ID"
+          if [ -f game-seed-registry.json ]; then git add game-seed-registry.json; fi
           if git diff --cached --quiet; then echo 'PRODUCTION_CYCLE_COMMIT=NO_CHANGES'; exit 0; fi
           branch="automation/production-cycle-${ARTBOOK_GAME_ID}-${ARTBOOK_DATE}-${GITHUB_RUN_ID}"
           git checkout -b "$branch"
           git commit -m "production: ${PRODUCTION_CLASS} cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}"
           git push origin "HEAD:refs/heads/$branch"
-          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "production: ${PRODUCTION_CLASS} cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}" --body "Central production flow from COMPANY_FLOW.md. DESIGN_ONLY runs direct through artbook. DEVELOPMENT_CONFIRMED resumes from real Web/Unity evidence. RELEASE_CONFIRMED uses Vibe2 primary development and binds the current Unity source tree to the Android build, runtime and independent-QA evidence before Release Baseline. Direct main write: NO. Run: ${GITHUB_RUN_ID}"
+          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "production: ${PRODUCTION_CLASS} cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}" --body "Central production flow from COMPANY_FLOW.md. DESIGN_ONLY uses GAME_SEED -> detailed design -> five-department review -> Design Baseline -> Artbook, with no Vibe2 stage. DEVELOPMENT_CONFIRMED resumes from real Web/Unity evidence. RELEASE_CONFIRMED uses Vibe2 primary development and binds the current Unity source tree to the Android build, runtime and independent-QA evidence before Release Baseline. Direct main write: NO. Run: ${GITHUB_RUN_ID}"
           echo 'PRODUCTION_CYCLE_COMMIT=PR_OPENED'
           echo 'PUBLIC_MAIN_WRITE=NO'
