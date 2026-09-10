@@ -3,32 +3,25 @@ import assert from 'node:assert/strict';
 import { gameplayFamily, rebalanceProductionTiers, selectDiverseTopRows } from '../tools/company-status-sync.mjs';
 
 const fsStub={existsSync:()=>true};
-const project=(id,slug,total)=>({id,slug,name:slug,sourcePath:`web-games/${slug}`,profileStatus:'DESIGN_ONLY',mode:'REDESIGN',developmentFocus:{total}});
-const game=(id,genre)=>({id,name:id,genre,homepageWebPlayable:true,hasWebArchive:true,webPath:`/web-games/${id}/`});
+const project=(id,slug,total,productionClass)=>({id,slug,name:slug,sourcePath:`web-games/${slug}`,productionClass,profileStatus:productionClass,mode:productionClass==='DESIGN_ONLY'?'REDESIGN':'IMPROVE',developmentFocus:{total}});
+const game=(id,genre,productionClass)=>({id,name:id,genre,productionClass,homepageWebPlayable:true,hasWebArchive:true,webPath:`/web-games/${id}/`});
 
 function fixture(){
+  const assignments=[
+    ['P1','survival-a',9,'RELEASE_CONFIRMED',['생존','제작']],
+    ['P2','rpg-a',8,'RELEASE_CONFIRMED',['RPG','탐험']],
+    ['P3','survival-b',8,'RELEASE_CONFIRMED',['생존','탐험']],
+    ['P4','defense-a',7,'DEVELOPMENT_CONFIRMED',['웨이브','전략']],
+    ['P5','defense-b',6,'DESIGN_ONLY',['디펜스','전략']],
+    ['P6','monster-a',5,'DESIGN_ONLY',['몬스터','턴제','모험']],
+    ['P7','collection-a',4,'DESIGN_ONLY',['수집','성장']],
+  ];
   return {
     portfolio:{
-      productionTierPolicy:{releaseConfirmedCount:2,developmentConfirmedCount:3,fixedGameIds:false,autoPromotionDemotion:true,portfolioDiversity:{enabled:true,maxFocusScoreGap:1}},
-      projects:[
-        project('P1','survival-a',9),
-        project('P2','rpg-a',8),
-        project('P3','survival-b',8),
-        project('P4','defense-a',7),
-        project('P5','defense-b',6),
-        project('P6','monster-a',5),
-        project('P7','collection-a',4),
-      ],
+      productionClassPolicy:{fixedCounts:false,countsDerivedFromMembership:true,portfolioDiversity:{enabled:true,maxFocusScoreGap:1}},
+      projects:assignments.map(([id,slug,total,productionClass])=>project(id,slug,total,productionClass)),
     },
-    catalog:{games:[
-      game('survival-a',['생존','제작']),
-      game('rpg-a',['RPG','탐험']),
-      game('survival-b',['생존','탐험']),
-      game('defense-a',['웨이브','전략']),
-      game('defense-b',['디펜스','전략']),
-      game('monster-a',['몬스터','턴제','모험']),
-      game('collection-a',['수집','성장']),
-    ]},
+    catalog:{games:assignments.map(([,slug,,productionClass,genre])=>game(slug,genre,productionClass))},
     artbooks:{artbooks:[]},
   };
 }
@@ -40,20 +33,24 @@ test('gameplay family normalizes gameplay genres without game ID rules',()=>{
   assert.equal(gameplayFamily({genre:['수집','성장']}),'COLLECTION');
 });
 
-test('top five prefers a new gameplay family when quality is within one focus point',()=>{
+test('status sync preserves semantic memberships instead of forcing a 2/3/top-five quota',()=>{
   const {portfolio,catalog,artbooks}=fixture();
   const result=rebalanceProductionTiers({portfolio,catalog,artbooks,filesystem:fsStub});
-  assert.deepEqual(result.state.releaseConfirmedGameIds,['P1','P2']);
-  assert.deepEqual(result.state.developmentConfirmedGameIds,['P3','P4','P6']);
-  assert.equal(result.state.diversity.adjusted,true);
-  assert.deepEqual(result.state.diversity.distinctFamilies.sort(),['DEFENSE','RPG','SURVIVAL','TURN_BASED'].sort());
-  assert.equal(portfolio.projects.find(row=>row.id==='P5').productionTier,3);
-  assert.equal(portfolio.projects.find(row=>row.id==='P6').productionTier,2);
-  assert.equal(catalog.games.find(row=>row.id==='monster-a').homepageCategory,'development-confirmed');
-  assert.equal(catalog.games.find(row=>row.id==='defense-b').homepageCategory,'design-only');
+  assert.deepEqual(result.state.releaseConfirmedGameIds,['P1','P2','P3']);
+  assert.deepEqual(result.state.developmentConfirmedGameIds,['P4']);
+  assert.deepEqual(result.state.designOnlyGameIds,['P5','P6','P7']);
+  assert.deepEqual(result.state.counts,{releaseConfirmed:3,developmentConfirmed:1,designOnly:3});
+  assert.equal(result.state.fixedCounts,false);
+  assert.equal(result.state.countsDerivedFromMembership,true);
+  assert.equal(result.state.diversity.membershipInfluence,false);
+  assert.equal(result.state.diversity.adjusted,false);
+  assert.equal(portfolio.projects.find(row=>row.id==='P3').productionClass,'RELEASE_CONFIRMED');
+  assert.equal(portfolio.projects.find(row=>row.id==='P3').productionTier,1);
+  assert.equal(portfolio.projects.find(row=>row.id==='P6').productionClass,'DESIGN_ONLY');
+  assert.equal(catalog.games.find(row=>row.id==='monster-a').homepageCategory,'design-only');
 });
 
-test('diversity does not force a much weaker unique game into the top five',()=>{
+test('legacy diversity selector remains available for diagnostics without controlling membership',()=>{
   const rows=[
     {project:{id:'A'},gameplayFamily:'SURVIVAL',score:9,evidenceScore:900},
     {project:{id:'B'},gameplayFamily:'RPG',score:8,evidenceScore:800},
