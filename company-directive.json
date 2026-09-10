@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 26,
+  "revision": 27,
   "updatedAt": "2026-09-11",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
@@ -173,15 +173,14 @@
       "departmentPageAuthorship": false
     },
     "vibe2": {
+      "startsAtClass": "DEVELOPMENT_CONFIRMED",
       "roleByClass": {
-        "DESIGN_ONLY": "VALIDATION_AND_LEARNING",
         "DEVELOPMENT_CONFIRMED": "VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT",
         "RELEASE_CONFIRMED": "PRIMARY_DEVELOPMENT_ENGINE"
       },
-      "tier3Role": "VALIDATION_AND_LEARNING",
       "tier2Role": "VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT",
       "tier1Role": "PRIMARY_DEVELOPMENT_ENGINE",
-      "designOrArtbookPrimaryAuthorInTier3Or2": false
+      "designOrArtbookPrimaryAuthorInDevelopmentConfirmed": false
     }
   },
   "classes": {
@@ -199,8 +198,7 @@
         "ONE_LEAD_REBUTTAL_ROUND",
         "GAME_DESIGNER_REVISION",
         "DESIGN_BASELINE_GATE",
-        "ARTBOOK_EDITOR_CORE_STRATEGY",
-        "VIBE2_VALIDATION_LEARNING"
+        "ARTBOOK_EDITOR_CORE_STRATEGY"
       ]
     },
     "DEVELOPMENT_CONFIRMED": {
@@ -328,7 +326,8 @@
     "single-artbook-editor-writes-entire-artbook",
     "departments-do-not-author-artbook-pages",
     "artbook-editor-must-not-invent-new-claims",
-    "vibe2-does-not-primary-author-design-or-artbook-in-design-only-or-development-confirmed",
+    "vibe2-not-used-in-design-only",
+    "vibe2-does-not-primary-author-design-or-artbook-in-development-confirmed",
     "development-confirmed-is-gated-direct-and-resumable",
     "development-confirmed-stops-at-missing-or-failed-real-evidence",
     "development-confirmed-web-validates-gameplay-before-expensive-unity-work-by-default",
