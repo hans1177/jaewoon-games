@@ -4,8 +4,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
-import { classifyVibeExecutionRoute } from '../tools/vibe2-continuous-runner.mjs';
+import { classifyVibeExecutionRoute, runVibeContinuousRunner } from '../tools/vibe2-continuous-runner.mjs';
 
 const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
 const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
@@ -86,4 +88,23 @@ test('event-driven refill removes hourly-only idle gaps',()=>{
   assert(workflow.includes('Event-driven refill of free slots'));
   assert(workflow.includes('gh workflow run vibe2-24h-runner.yml'));
   assert.equal(runtime.continuous.wakeMode,'event-driven-plus-hourly-safety-net');
+});
+
+test('explicit work-order output path overrides runtime default path',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-output-path-'));
+  const queueFile=path.join(root,'queue.json');
+  const experienceFile=path.join(root,'experience.json');
+  const runtimeDefault=path.join(root,'runtime-default.json');
+  const explicitOutput=path.join(root,'explicit-output.json');
+  const runtimeFile=path.join(root,'runtime.json');
+  fs.writeFileSync(queueFile,JSON.stringify({tasks:[]}), 'utf8');
+  fs.writeFileSync(experienceFile,JSON.stringify({records:[]}), 'utf8');
+  fs.writeFileSync(runtimeFile,JSON.stringify({
+    continuous:{enabled:false},
+    sources:{queue:queueFile,experience:experienceFile,workOrder:runtimeDefault}
+  }), 'utf8');
+  const order=runVibeContinuousRunner({runtimeFile,outputFile:explicitOutput});
+  assert.equal(order.reason,'CONTINUOUS_DISABLED');
+  assert.equal(fs.existsSync(explicitOutput),true);
+  assert.equal(fs.existsSync(runtimeDefault),false);
 });

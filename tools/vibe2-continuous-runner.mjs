@@ -163,11 +163,11 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   });
 }
 
-export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queueFile='.vibe2/queue.json', experienceFile='.vibe2/experience.json', outputFile='.vibe2/work-order.json', taskId='' } = {}) {
+export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queueFile='.vibe2/queue.json', experienceFile='.vibe2/experience.json', outputFile='', taskId='' } = {}) {
   const runtime = readJson(runtimeFile, {});
   const resolvedQueueFile = clean(runtime?.sources?.queue) || queueFile;
   const resolvedExperienceFile = clean(runtime?.sources?.experience) || experienceFile;
-  const resolvedOutputFile = clean(runtime?.sources?.workOrder) || outputFile;
+  const resolvedOutputFile = clean(outputFile) || clean(runtime?.sources?.workOrder) || '.vibe2/work-order.json';
   const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), taskId });
   writeJson(resolvedOutputFile, order);
   return order;
@@ -176,7 +176,7 @@ export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queu
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const args = parseArgs();
   const order = runVibeContinuousRunner({
-    runtimeFile:clean(args.runtime)||'vibe2-runtime.json', queueFile:clean(args.queue)||'.vibe2/queue.json', experienceFile:clean(args.experience)||'.vibe2/experience.json', outputFile:clean(args.output)||'.vibe2/work-order.json', taskId:clean(args['task-id'])
+    runtimeFile:clean(args.runtime)||'vibe2-runtime.json', queueFile:clean(args.queue)||'.vibe2/queue.json', experienceFile:clean(args.experience)||'.vibe2/experience.json', outputFile:clean(args.output), taskId:clean(args['task-id'])
   });
   console.log(`VIBE2_CONTINUOUS_RUN=${order.run?'YES':'NO'}`);
   console.log(`VIBE2_CONTINUOUS_REASON=${order.reason}`);
