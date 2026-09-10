@@ -4,7 +4,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
-const DATASET_VERSION = 2;
+const DATASET_VERSION = 3;
 const DEFAULT_SEED = 20260910;
 const REQUIRED_QA = Object.freeze({ independentQa: 'PASS', browserQa: 'PASS' });
 const ACTIVE_LIFECYCLES = new Set(['active']);
@@ -12,6 +12,8 @@ const TASK_TYPES = Object.freeze(['coding', 'bugfix', 'unity', 'qa', 'planning',
 const DIFFICULTY_ORDER = Object.freeze(['simple', 'bug', 'regression', 'unity-build']);
 const FAILURE_TAXONOMY = Object.freeze(['BUILD', 'SIGNING', 'NULL', 'SAVE', 'UI', 'COMBAT_LOGIC', 'ROUTING', 'MODEL_RUNTIME', 'OTHER']);
 const RULE_PRIORITY = Object.freeze(['LATEST_USER', 'AGENTS', 'PROJECT_RULES', 'VERIFIED_LEARNING', 'BASE_MODEL']);
+const DIFFICULT_TEACHER_TASKS = new Set(['bugfix', 'unity', 'qa']);
+const DIFFICULT_LEVELS = new Set(['bug', 'regression', 'unity-build']);
 
 function stableStringify(value) {
   if (value === null || typeof value !== 'object') return JSON.stringify(value);
@@ -146,9 +148,22 @@ function normalizeLifecycle(record) {
   return ['active', 'deprecated', 'obsolete'].includes(value) ? value : 'active';
 }
 
+function sourceKindOf(record) {
+  return String(record?.provenance?.sourceKind ?? record?.sourceKind ?? (record?.teacher ? 'teacher' : 'vibe2')).toLowerCase();
+}
+
 function isSynthetic(record) {
-  const sourceKind = String(record?.provenance?.sourceKind ?? record?.sourceKind ?? (record?.teacher ? 'teacher' : 'vibe2')).toLowerCase();
+  const sourceKind = sourceKindOf(record);
   return ['teacher', 'synthetic', 'ai'].includes(sourceKind) || record?.synthetic === true;
+}
+
+export function isTeacherEligible(record) {
+  if (!isSynthetic(record)) return true;
+  const sourceKind = sourceKindOf(record);
+  if (sourceKind !== 'teacher' && record?.teacher !== true) return true;
+  const taskType = inferTaskType(record);
+  const difficulty = inferDifficulty(record);
+  return DIFFICULT_TEACHER_TASKS.has(taskType) && DIFFICULT_LEVELS.has(difficulty);
 }
 
 function normalizeSample(record, sourceFile, index) {
@@ -216,6 +231,50 @@ export function detectContamination(groups, { similarityThreshold = 0.92 } = {})
   };
 }
 
+export function summarizeDiversity(samples) {
+  const projectCounts = {};
+  const taskTypeCounts = {};
+  for (const sample of samples) {
+    projectCounts[sample.project] = (projectCounts[sample.project] ?? 0) + 1;
+    taskTypeCounts[sample.taskType] = (taskTypeCounts[sample.taskType] ?? 0) + 1;
+  }
+  const total = samples.length;
+  const maxProjectShare = total ? Math.max(0, ...Object.values(projectCounts)) / total : 0;
+  const maxTaskTypeShare = total ? Math.max(0, ...Object.values(taskTypeCounts)) / total : 0;
+  return {
+    distinctProjects: Object.keys(projectCounts).length,
+    distinctTaskTypes: Object.keys(taskTypeCounts).length,
+    maxProjectShare,
+    maxTaskTypeShare,
+    projectCounts,
+    taskTypeCounts,
+  };
+}
+
+export function buildTaskTrainingPlan(samples, options = {}) {
+  const {
+    minSamplesPerTask = 8,
+    minProjectsPerTask = 2,
+    syntheticRatioCap = 0.5,
+  } = options;
+  const plan = {};
+  for (const taskType of TASK_TYPES) {
+    const rows = samples.filter((sample) => sample.taskType === taskType);
+    const projects = new Set(rows.map((sample) => sample.project));
+    const synthetic = rows.filter((sample) => sample.synthetic).length;
+    const syntheticShare = rows.length ? synthetic / rows.length : 0;
+    plan[taskType] = {
+      samples: rows.length,
+      distinctProjects: projects.size,
+      syntheticShare,
+      ready: rows.length >= minSamplesPerTask
+        && projects.size >= minProjectsPerTask
+        && syntheticShare <= syntheticRatioCap,
+    };
+  }
+  return plan;
+}
+
 export function buildDataset(recordsWithSource, options = {}) {
   const {
     seed = DEFAULT_SEED,
@@ -225,19 +284,36 @@ export function buildDataset(recordsWithSource, options = {}) {
     similarityThreshold = 0.92,
     syntheticRatioCap = 0.5,
     minTrainSamples = 1,
+    minFreshTrainSamples = 0,
+    minDistinctProjects = 1,
+    minDistinctTaskTypes = 1,
+    maxProjectShare = 1,
+    targetTaskType = '',
+    teacherOnlyDifficult = true,
     replay = [],
+    taskPlanMinSamples = 8,
+    taskPlanMinProjects = 2,
   } = options;
   if (!(evalRatio > 0 && holdoutRatio > 0 && evalRatio + holdoutRatio < 1)) {
     throw new Error('evalRatio/holdoutRatio 합은 0과 1 사이여야 함');
   }
+  if (targetTaskType && !TASK_TYPES.includes(targetTaskType)) throw new Error(`unknown task type: ${targetTaskType}`);
+
   const accepted = [];
   let skippedUnverified = 0;
   let skippedIncomplete = 0;
   let skippedQuality = 0;
   let skippedLifecycle = 0;
+  let skippedTeacherSimple = 0;
+  let skippedTaskType = 0;
+
   for (const { record, sourceFile, index } of recordsWithSource) {
     if (!isVerifiedPass(record)) {
       skippedUnverified += 1;
+      continue;
+    }
+    if (teacherOnlyDifficult && !isTeacherEligible(record)) {
+      skippedTeacherSimple += 1;
       continue;
     }
     const sample = normalizeSample(record, sourceFile, index);
@@ -253,14 +329,20 @@ export function buildDataset(recordsWithSource, options = {}) {
       skippedQuality += 1;
       continue;
     }
+    if (targetTaskType && sample.taskType !== targetTaskType) {
+      skippedTaskType += 1;
+      continue;
+    }
     accepted.push(sample);
   }
+
   const exact = [...new Map(accepted.map((sample) => [sample.contentHash, sample])).values()]
     .sort((a, b) => a.sampleId.localeCompare(b.sampleId));
   const deduped = [];
   for (const sample of exact) {
     if (!deduped.some((existing) => nearDuplicate(existing, sample, similarityThreshold))) deduped.push(sample);
   }
+
   const holdout = [];
   const evalSet = [];
   const trainFresh = [];
@@ -270,13 +352,16 @@ export function buildDataset(recordsWithSource, options = {}) {
     else if (score < holdoutRatio + evalRatio) evalSet.push(sample);
     else trainFresh.push(sample);
   }
+
   const eligibleReplay = replay
     .filter((sample) => sample?.lifecycle === 'active' && sample?.qa?.independentQa === 'PASS' && sample?.qa?.browserQa === 'PASS')
+    .filter((sample) => !targetTaskType || sample.taskType === targetTaskType)
     .filter((sample) => !holdout.some((item) => nearDuplicate(item, sample, similarityThreshold)) && !evalSet.some((item) => nearDuplicate(item, sample, similarityThreshold)));
   const replayLimit = Math.min(eligibleReplay.length, Math.floor(trainFresh.length * 0.25));
   const selectedReplay = [...eligibleReplay]
     .sort((a, b) => splitScore(a.sampleId, seed, 'replay') - splitScore(b.sampleId, seed, 'replay'))
     .slice(0, replayLimit);
+
   let train = [...trainFresh, ...selectedReplay];
   const synthetic = train.filter((sample) => sample.synthetic);
   const real = train.filter((sample) => !sample.synthetic);
@@ -285,13 +370,38 @@ export function buildDataset(recordsWithSource, options = {}) {
     train = [...real, ...synthetic.sort((a, b) => b.qualityScore - a.qualityScore).slice(0, maxSynthetic)]
       .sort((a, b) => a.sampleId.localeCompare(b.sampleId));
   }
+
   const contamination = detectContamination({ train, eval: evalSet, holdout }, { similarityThreshold });
-  const readyForTraining = contamination.pass && train.length >= minTrainSamples && evalSet.length > 0 && holdout.length > 0;
+  const diversity = summarizeDiversity(train);
+  const requiredTaskTypes = targetTaskType ? 1 : minDistinctTaskTypes;
+  const diversityPass = diversity.distinctProjects >= minDistinctProjects
+    && diversity.distinctTaskTypes >= requiredTaskTypes
+    && diversity.maxProjectShare <= maxProjectShare;
+  const batchingPass = train.length >= minTrainSamples && trainFresh.length >= minFreshTrainSamples;
+  const readyForTraining = contamination.pass
+    && batchingPass
+    && diversityPass
+    && evalSet.length > 0
+    && holdout.length > 0;
+
   return {
     train,
     eval: evalSet,
     holdout,
     contamination,
+    diversity: { ...diversity, pass: diversityPass },
+    batching: {
+      pass: batchingPass,
+      minTrainSamples,
+      minFreshTrainSamples,
+      trainSamples: train.length,
+      freshTrainSamples: trainFresh.length,
+    },
+    taskTrainingPlan: buildTaskTrainingPlan(train, {
+      minSamplesPerTask: taskPlanMinSamples,
+      minProjectsPerTask: taskPlanMinProjects,
+      syntheticRatioCap,
+    }),
     readyForTraining,
     curriculum: DIFFICULTY_ORDER.map((difficulty) => ({ difficulty, count: train.filter((sample) => sample.difficulty === difficulty).length })),
     stats: {
@@ -300,11 +410,14 @@ export function buildDataset(recordsWithSource, options = {}) {
       train: train.length,
       eval: evalSet.length,
       holdout: holdout.length,
+      freshTrain: trainFresh.length,
       replay: selectedReplay.length,
       skippedUnverified,
       skippedIncomplete,
       skippedQuality,
       skippedLifecycle,
+      skippedTeacherSimple,
+      skippedTaskType,
       duplicatesRemoved: accepted.length - deduped.length,
       syntheticTrain: train.filter((sample) => sample.synthetic).length,
       deprecatedUsed: train.some((sample) => sample.lifecycle !== 'active'),
@@ -316,6 +429,7 @@ export function computeLearningMetrics(runs) {
   const total = runs.length;
   if (!total) {
     return {
+      sampleCount: 0,
       successRate: 0,
       firstAttemptQaPassRate: 0,
       repeatedErrorRecurrenceRate: 0,
@@ -328,6 +442,7 @@ export function computeLearningMetrics(runs) {
   }
   const sum = (key) => runs.reduce((totalValue, run) => totalValue + Math.max(0, Number(run[key]) || 0), 0);
   return {
+    sampleCount: total,
     successRate: runs.filter((run) => run.success === true).length / total,
     firstAttemptQaPassRate: runs.filter((run) => run.firstAttemptQaPass === true).length / total,
     repeatedErrorRecurrenceRate: runs.filter((run) => run.sameErrorRecurred === true).length / total,
@@ -340,11 +455,19 @@ export function computeLearningMetrics(runs) {
 }
 
 export function evaluateAdapter(baseline, candidate, options = {}) {
-  const { minGain = 0.02, maxRuntimeRatio = 1.5, maxMemoryRatio = 1.5, canary = null } = options;
+  const {
+    minGain = 0.02,
+    maxRuntimeRatio = 1.5,
+    maxMemoryRatio = 1.5,
+    canary = null,
+    requireCanary = true,
+    minimumEvaluationSamples = 0,
+  } = options;
   const higherBetter = ['successRate', 'firstAttemptQaPassRate', 'ruleComplianceRate'];
   const lowerBetter = ['repeatedErrorRecurrenceRate', 'averageFixIterations', 'averageRetries'];
   const regressions = [];
   let gain = 0;
+
   for (const key of higherBetter) {
     const delta = Number(candidate[key] ?? 0) - Number(baseline[key] ?? 0);
     if (delta < -1e-9) regressions.push(key);
@@ -355,21 +478,38 @@ export function evaluateAdapter(baseline, candidate, options = {}) {
     if (delta < -1e-9) regressions.push(key);
     gain += delta;
   }
+
+  if (minimumEvaluationSamples > 0) {
+    if (Number(baseline.sampleCount ?? 0) < minimumEvaluationSamples) regressions.push('baselineSampleCount');
+    if (Number(candidate.sampleCount ?? 0) < minimumEvaluationSamples) regressions.push('candidateSampleCount');
+  }
+
   const runtimeRatio = Number(baseline.averageRuntimeMs) > 0 ? Number(candidate.averageRuntimeMs) / Number(baseline.averageRuntimeMs) : 1;
   const memoryRatio = Number(baseline.averageMemoryMb) > 0 ? Number(candidate.averageMemoryMb) / Number(baseline.averageMemoryMb) : 1;
   if (runtimeRatio > maxRuntimeRatio) regressions.push('runtimeEfficiency');
   if (memoryRatio > maxMemoryRatio) regressions.push('memoryEfficiency');
-  if (canary && (canary.regressions > 0 || canary.ruleCompliance === false || canary.samples < Number(canary.minimumSamples ?? 1))) {
+
+  if (requireCanary && !canary) regressions.push('canaryRequired');
+  if (canary && (
+    Number(canary.regressions ?? 0) > 0
+    || canary.ruleCompliance === false
+    || Number(canary.samples ?? 0) < Number(canary.minimumSamples ?? 1)
+    || Number(canary.failureRate ?? 0) > Number(canary.maxFailureRate ?? 0)
+  )) {
     regressions.push('canary');
   }
+
   const averageGain = gain / (higherBetter.length + lowerBetter.length);
+  const verdict = regressions.length === 0 && averageGain >= minGain ? 'PROMOTE' : 'REJECT';
   return {
-    verdict: regressions.length === 0 && averageGain >= minGain ? 'PROMOTE' : 'REJECT',
+    verdict,
     averageGain,
     minGain,
     regressions: [...new Set(regressions)],
     runtimeRatio,
     memoryRatio,
+    deploymentAction: verdict === 'PROMOTE' ? 'PROMOTE' : canary ? 'ROLLBACK_TO_BASELINE' : 'KEEP_BASELINE',
+    rollbackRequired: verdict !== 'PROMOTE' && Boolean(canary),
   };
 }
 
@@ -386,10 +526,11 @@ export function shouldAbortTraining(signal = {}) {
 
 export function buildLineage({ adapterVersion, baseModel = 'Qwen/Qwen3-1.7B', datasetManifest = {}, teacher = null, training = {}, evaluation = {}, parentAdapter = null }) {
   return {
-    version: 1,
+    version: 2,
     adapterVersion,
     baseModel,
     parentAdapter,
+    taskType: training.taskType ?? datasetManifest.targetTaskType ?? 'general',
     datasetVersion: datasetManifest.version ?? null,
     trainSha256: datasetManifest.trainSha256 ?? null,
     evalSha256: datasetManifest.evalSha256 ?? null,
@@ -452,10 +593,16 @@ function loadReplay(file) {
   return readRecords(file);
 }
 
+function asBool(value, defaultValue) {
+  if (value === undefined) return defaultValue;
+  return String(value).toLowerCase() !== 'false';
+}
+
 function runDataset(args) {
   if (!args.input.length) throw new Error('dataset requires at least one --input');
   const outDir = args.out || 'vibe2-learning/datasets/latest';
   const seed = Number(args.seed ?? DEFAULT_SEED);
+  const targetTaskType = String(args['task-type'] ?? '');
   const files = collectInputFiles(args.input);
   const recordsWithSource = files.flatMap((file) => readRecords(file).map((record, index) => ({
     record,
@@ -469,9 +616,18 @@ function runDataset(args) {
     qualityThreshold: Number(args['quality-threshold'] ?? 0.75),
     similarityThreshold: Number(args['similarity-threshold'] ?? 0.92),
     syntheticRatioCap: Number(args['synthetic-ratio-cap'] ?? 0.5),
-    minTrainSamples: Number(args['min-train-samples'] ?? 8),
+    minTrainSamples: Number(args['min-train-samples'] ?? 24),
+    minFreshTrainSamples: Number(args['min-fresh-train-samples'] ?? 12),
+    minDistinctProjects: Number(args['min-distinct-projects'] ?? 2),
+    minDistinctTaskTypes: Number(args['min-distinct-task-types'] ?? 2),
+    maxProjectShare: Number(args['max-project-share'] ?? 0.75),
+    targetTaskType,
+    teacherOnlyDifficult: asBool(args['teacher-only-difficult'], true),
     replay: loadReplay(args.replay),
+    taskPlanMinSamples: Number(args['task-plan-min-samples'] ?? 8),
+    taskPlanMinProjects: Number(args['task-plan-min-projects'] ?? 2),
   });
+
   writeJsonl(path.join(outDir, 'train.jsonl'), dataset.train);
   writeJsonl(path.join(outDir, 'eval.jsonl'), dataset.eval);
   writeJsonl(path.join(outDir, 'holdout.jsonl'), dataset.holdout);
@@ -479,11 +635,24 @@ function runDataset(args) {
     version: DATASET_VERSION,
     createdAt: new Date().toISOString(),
     seed,
+    targetTaskType: targetTaskType || null,
     qaRequirement: REQUIRED_QA,
     rulePriority: RULE_PRIORITY,
     failureTaxonomy: FAILURE_TAXONOMY,
+    policy: {
+      teacherOnlyDifficult: true,
+      minTrainSamples: Number(args['min-train-samples'] ?? 24),
+      minFreshTrainSamples: Number(args['min-fresh-train-samples'] ?? 12),
+      minDistinctProjects: Number(args['min-distinct-projects'] ?? 2),
+      minDistinctTaskTypes: targetTaskType ? 1 : Number(args['min-distinct-task-types'] ?? 2),
+      maxProjectShare: Number(args['max-project-share'] ?? 0.75),
+      syntheticRatioCap: Number(args['synthetic-ratio-cap'] ?? 0.5),
+    },
     sources: files.map((file) => ({ file: path.relative(process.cwd(), file), sha256: sha256(fs.readFileSync(file)) })),
     stats: dataset.stats,
+    diversity: dataset.diversity,
+    batching: dataset.batching,
+    taskTrainingPlan: dataset.taskTrainingPlan,
     curriculum: dataset.curriculum,
     contamination: dataset.contamination,
     readyForTraining: dataset.readyForTraining,
@@ -505,12 +674,15 @@ function runGate(args) {
     minGain: Number(args['min-gain'] ?? 0.02),
     maxRuntimeRatio: Number(args['max-runtime-ratio'] ?? 1.5),
     maxMemoryRatio: Number(args['max-memory-ratio'] ?? 1.5),
+    minimumEvaluationSamples: Number(args['min-evaluation-samples'] ?? 20),
+    requireCanary: asBool(args['require-canary'], true),
     canary,
   });
   const record = {
-    version: 2,
+    version: 3,
     adapterVersion: args['adapter-version'] || 'unversioned',
     baselineVersion: args['baseline-version'] || 'unknown',
+    taskType: args['task-type'] || 'general',
     baseline,
     candidate,
     canary,
