@@ -117,6 +117,13 @@
     loadJson('/game-artbooks.json',function(err,registry){
       if(err||!registry){if(normalizeUiStatus(publicStatus))showProgress(publicStatus);else showError(err&&err.message);return;}
       var item=latestBook(registry,gameId);
+      if(item&&item.sourceFile&&!(item.cuts&&item.cuts.length)&&!(item.format==='core-strategy'&&item.content)){
+        loadJson(pathOf(item.sourceFile),function(sourceErr,sourceItem){
+          if(!sourceErr&&sourceItem){render(sourceItem);addProgressNotice(publicStatus);return;}
+          if(normalizeUiStatus(publicStatus))showProgress(publicStatus);else showError(sourceErr&&sourceErr.message||'아트북 원본을 불러오지 못했어.');
+        });
+        return;
+      }
       if(item){render(item);addProgressNotice(publicStatus);return;}
       if(normalizeUiStatus(publicStatus))showProgress(publicStatus);else showError('이 게임의 공개 아트북이 아직 없어.');
     });

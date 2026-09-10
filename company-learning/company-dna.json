@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-10T19:06:17.653Z",
+  "updatedAt": "2026-09-10T21:59:36.743Z",
   "items": [
     {
       "key": "VIBE2:autonomous-candidate-safe-promotion",
       "type": "VIBE2",
       "patternId": "autonomous-candidate-safe-promotion",
       "title": "Autonomous candidate scope + regression safe promotion",
-      "stage": "GAME_VERIFIED",
+      "stage": "EXPERIMENTING",
       "jayApproved": false,
       "evidence": [
         {
@@ -190,11 +190,12 @@
       "createdAt": "2026-09-09T21:41:20.582Z",
       "updatedAt": "2026-09-10T19:06:17.652Z",
       "summary": {
-        "successEvidence": 11,
+        "successEvidence": 0,
+        "incompletePositiveEvidence": 11,
         "failureEvidence": 0,
-        "distinctGames": 1,
+        "distinctGames": 0,
         "distinctGenres": 0,
-        "distinctConditions": 1,
+        "distinctConditions": 0,
         "averageDelta": 0,
         "criticalFailures": 0,
         "multiGameEligible": false,
@@ -413,6 +414,7 @@
       "updatedAt": "2026-09-10T19:06:17.653Z",
       "summary": {
         "successEvidence": 11,
+        "incompletePositiveEvidence": 0,
         "failureEvidence": 0,
         "distinctGames": 1,
         "distinctGenres": 0,

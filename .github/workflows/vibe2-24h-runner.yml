@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/vibe2-24h-runner.yml'
+      - 'game-catalog.json'
+      - 'design/**/design-development-baseline.json'
+      - 'design/**/release-production-request.json'
+      - 'unity-games/**'
   schedule:
     - cron: '11 * * * *'
   workflow_dispatch:
@@ -49,6 +53,9 @@ jobs:
           echo "VIBE2_MAX_CONCURRENT_GAME_TASKS=$VIBE2_MAX_CONCURRENT_GAME_TASKS"
           echo "VIBE2_WORK_ORDER_OUTPUT_CONTRACT=$VIBE2_WORK_ORDER_OUTPUT_CONTRACT"
 
+          node --check tools/vibe2-release-baseline-queue.mjs
+          node --check tools/vibe2-auto-planner.mjs
+
           for attempt in 1 2 3; do
             echo "VIBE2_AUTOPLAN_ATTEMPT=$attempt/3"
             git fetch origin main vibe2-unreal-core --quiet
@@ -56,6 +63,11 @@ jobs:
             rm -rf /tmp/vibe2-main
             git worktree prune
             git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
+
+            node tools/vibe2-release-baseline-queue.mjs \
+              --catalog=/tmp/vibe2-main/game-catalog.json \
+              --queue=.vibe2/queue.json \
+              --root=/tmp/vibe2-main | tee /tmp/vibe2-release-baseline-plan.log
 
             node tools/vibe2-auto-planner.mjs \
               --status=/tmp/vibe2-main/company-status.json \
@@ -87,7 +99,9 @@ jobs:
               exit 0
             fi
 
-            if grep -q '^VIBE2_AUTO_PLAN=YES$' /tmp/vibe2-autoplan.log; then
+            if grep -q '^VIBE2_RELEASE_BASELINE_GAP_PLAN=YES$' /tmp/vibe2-release-baseline-plan.log; then
+              commit_message='vibe2: queue release baseline implementation gap [skip ci]'
+            elif grep -q '^VIBE2_AUTO_PLAN=YES$' /tmp/vibe2-autoplan.log; then
               commit_message='vibe2: fill safe parallel task slots [skip ci]'
             else
               commit_message='vibe2: persist four-slot parallel queue state [skip ci]'

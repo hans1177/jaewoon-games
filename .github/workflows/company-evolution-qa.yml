@@ -29,6 +29,9 @@ on:
       - tools/homepage-manager.mjs
       - qa/artbook-editorial-role-contract.test.mjs
       - .github/workflows/artbook-free-department-bots.yml
+      - .github/workflows/vibe2-24h-runner.yml
+      - .github/workflows/vibe2-candidate-release.yml
+      - .github/workflows/vibe2-unity-release-result.yml
       - .github/workflows/company-evolution-qa.yml
   workflow_dispatch:
 
@@ -103,7 +106,7 @@ jobs:
           const release=directive.classes?.RELEASE_CONFIRMED||{};
           if(release.executionMode!=='GATED_DIRECT_RELEASE_PRODUCTION'||release.resumeFromLatestEvidence!==true||release.vibe2PrimaryDeveloper!==true||release.coreDesignLock!==true)throw new Error('RELEASE_CONFIRMED gated direct settings missing');
           if(release.aiMayInventBuildPass!==false||release.aiMayInventDeviceValidationPass!==false||release.aiMayInventIndependentQaPass!==false)throw new Error('release anti-fake evidence settings missing');
-          if(release.currentBuildEvidenceBindingRequired!==true||release.finalArtbookOnlyAfterReleaseReady!==true)throw new Error('release build binding/artbook gate missing');
+          if(release.currentSourceTreeBindingRequired!==true||release.currentBuildEvidenceBindingRequired!==true||release.revalidationRequiredAfterSourceChange!==true||release.finalArtbookOnlyAfterReleaseReady!==true)throw new Error('release source/build binding or artbook gate missing');
           for(const state of ['BUILDING','WAITING_BUILD','WAITING_DEVICE_VALIDATION'])if(!(release.waitingStates||[]).includes(state))throw new Error(`release waiting state missing: ${state}`);
           for(const state of ['FIX_AND_REVERIFY','RELEASE_BLOCKED','RELEASE_READY'])if(!(release.releaseStates||[]).includes(state))throw new Error(`release state missing: ${state}`);
           for(const file of ['ARTBOOK_POLICY.md','ARTBOOK_LIFECYCLE.md','ARTBOOK_DESIGN_CONTRACT.md','ARTBOOK_OPERATIONS.md','ARTBOOK_PRODUCTION_CAPACITY.md','ARTBOOK_SUBMISSION_CONTRACT.md','VIBE2_ARTBOOK_DRAFT_POLICY.md']){
@@ -127,9 +130,13 @@ jobs:
           grep -Fq 'design/**/unity-android-build.json' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'design/**/android-runtime-validation.json' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'design/**/independent-release-qa.json' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq "'unity-games/**'" .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'DEVELOPMENT_EXECUTION_MODE=GATED_DIRECT' tools/artbook-production-pipeline.mjs
           grep -Fq 'RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION' tools/artbook-production-pipeline.mjs
           grep -Fq 'RELEASE_CURRENT_BUILD_EVIDENCE_BINDING=REQUIRED' tools/artbook-production-pipeline.mjs
+          grep -Fq 'currentUnitySourceTreeSha' tools/company-release-production-cycle.mjs
+          grep -Fq 'boundToCurrentSource' tools/company-release-production-cycle.mjs
+          grep -Fq 'boundToImplementation' tools/company-release-production-cycle.mjs
           grep -Fq 'BUILDING' tools/company-release-production-cycle.mjs
           grep -Fq 'WAITING_BUILD' tools/company-release-production-cycle.mjs
           grep -Fq 'WAITING_DEVICE_VALIDATION' tools/company-release-production-cycle.mjs
@@ -138,6 +145,7 @@ jobs:
           grep -Fq 'RELEASE_READY' tools/company-release-production-cycle.mjs
           grep -Fq 'vibe2PrimaryDeveloper:true' tools/company-release-production-cycle.mjs
           grep -Fq 'currentBuildEvidenceBindingRequired:true' tools/company-release-production-cycle.mjs
+          grep -Fq 'SOURCE_TO_BUILD_BINDING=PASS' tools/company-release-production-cycle.mjs
           grep -Fq 'FINAL_ARTBOOK_REVISION=CREATED_AFTER_RELEASE_READY' tools/company-release-production-cycle.mjs
           node --test qa/artbook-editorial-role-contract.test.mjs
           if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/company-design-cycle.mjs tools/company-development-validation-cycle.mjs tools/company-release-production-cycle.mjs tools/company-baseline-gate.mjs tools/artbook-production-pipeline.mjs; then
@@ -157,21 +165,28 @@ jobs:
           console.log('DEVELOPMENT_BASELINE_EVIDENCE_CONTRACT=PASS');
           NODE
 
-      - name: Validate RELEASE_CONFIRMED evidence cannot be faked
+      - name: Validate RELEASE_CONFIRMED evidence and Vibe2 handoff cannot be faked
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const cycle=fs.readFileSync('tools/company-release-production-cycle.mjs','utf8');
-          for(const token of ['design-development-baseline.json','vibe2-release-implementation.json','unity-android-build.json','android-runtime-validation.json','independent-release-qa.json','buildIdentity','evidenceForBuild','core-design-lock-violation','RELEASE_ARTBOOK_PROVENANCE_GATE']){
-            if(!cycle.includes(token))throw new Error(`release evidence contract missing: ${token}`);
-          }
-          for(const token of ['aiMayInventBuildPass:false','aiMayInventDeviceValidationPass:false','aiMayInventIndependentQaPass:false','currentBuildEvidenceBindingRequired:true','sourceChangeInvalidatesOldBuildValidation:true','finalArtbookOnlyAfterReleaseReady:true']){
-            if(!cycle.includes(token))throw new Error(`release safety contract missing: ${token}`);
-          }
+          const candidate=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
+          const unityResult=fs.readFileSync('.github/workflows/vibe2-unity-release-result.yml','utf8');
+          const vibeRunner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+          for(const token of ['design-development-baseline.json','vibe2-release-implementation.json','unity-android-build.json','android-runtime-validation.json','independent-release-qa.json','buildIdentity','evidenceForBuild','core-design-lock-violation','RELEASE_ARTBOOK_PROVENANCE_GATE'])if(!cycle.includes(token))throw new Error(`release evidence contract missing: ${token}`);
+          for(const token of ['aiMayInventBuildPass:false','aiMayInventDeviceValidationPass:false','aiMayInventIndependentQaPass:false','currentSourceTreeBindingRequired:true','currentBuildEvidenceBindingRequired:true','sourceChangeInvalidatesOldBuildValidation:true','finalArtbookOnlyAfterReleaseReady:true'])if(!cycle.includes(token))throw new Error(`release safety contract missing: ${token}`);
+          for(const token of ['productionClass','DEVELOPMENT_BASELINE_READY','development-baseline-required'])if(!candidate.includes(token))throw new Error(`candidate release baseline guard missing: ${token}`);
+          for(const token of ['PARTIAL_BUILD_VERIFIED','developmentBaselineImplemented:false','INDEPENDENT_RELEASE_QA=NOT_ASSERTED','DEVICE_VALIDATION=NOT_ASSERTED','gh run download','apk_sha256'])if(!unityResult.includes(token))throw new Error(`Unity result evidence separation missing: ${token}`);
+          if(unityResult.includes('--independent-qa=PASS'))throw new Error('APK build workflow must not claim independent release QA PASS');
+          const baselinePlan=vibeRunner.indexOf('node tools/vibe2-release-baseline-queue.mjs');
+          const genericPlan=vibeRunner.indexOf('node tools/vibe2-auto-planner.mjs');
+          if(baselinePlan<0||genericPlan<=baselinePlan)throw new Error('Vibe2 release-baseline queue must run before generic autoplan');
+          if(!vibeRunner.includes("'unity-games/**'"))throw new Error('Vibe2 runner must resume after Unity source changes');
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const release=directive.classes?.RELEASE_CONFIRMED||{};
-          if(release.developmentBaselineRequired!==true||release.currentBuildEvidenceBindingRequired!==true||release.revalidationRequiredAfterSourceChange!==true)throw new Error('release directive evidence gate incomplete');
+          if(release.developmentBaselineRequired!==true||release.currentSourceTreeBindingRequired!==true||release.currentBuildEvidenceBindingRequired!==true||release.revalidationRequiredAfterSourceChange!==true)throw new Error('release directive evidence gate incomplete');
           console.log('RELEASE_BASELINE_EVIDENCE_CONTRACT=PASS');
+          console.log('VIBE2_RELEASE_HANDOFF_CONTRACT=PASS');
           NODE
 
       - name: Validate historical artbook safety
