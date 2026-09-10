@@ -12,9 +12,11 @@ on:
     branches: [main]
     paths:
       - 'tools/company-status-sync.mjs'
+      - 'tools/production-classification.mjs'
       - 'tools/autonomous-24h-work-planner.mjs'
       - 'qa/production-diversity.test.mjs'
       - '.github/workflows/company-status-sync.yml'
+      - 'company-directive.json'
       - 'director-supervision-status.json'
       - 'autonomous-portfolio.json'
       - 'game-artbooks.json'
@@ -41,8 +43,9 @@ jobs:
       - name: Sync main
         run: git pull --ff-only origin main
 
-      - name: Sync company status and fixed-count dynamic production tiers
+      - name: Sync company status and semantic production classes
         run: |
+          node --check tools/production-classification.mjs
           node --check tools/company-status-sync.mjs
           node --check tools/autonomous-24h-work-planner.mjs
           node --test qa/production-diversity.test.mjs
@@ -57,6 +60,7 @@ jobs:
           const supervision=JSON.parse(fs.readFileSync('director-supervision-status.json','utf8'));
           const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
           const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           if(company.supervision?.dateKst!==supervision.dateKst)throw new Error('supervision date not synchronized');
           if(JSON.stringify(company.supervision?.counts||{})!==JSON.stringify(supervision.counts||{}))throw new Error('supervision counts not synchronized');
           if(JSON.stringify(company.supervision?.primaryFindings||[])!==JSON.stringify(supervision.primaryFindings||[]))throw new Error('supervision findings not synchronized');
@@ -64,49 +68,63 @@ jobs:
           const expected=map[supervision.staff?.homepage?.status]||String(supervision.staff?.homepage?.status||'').toLowerCase();
           if(company.operations?.homepage?.status!==expected)throw new Error('homepage operation status not synchronized');
 
-          const tierPolicy=portfolio.productionTierPolicy||{};
-          if(tierPolicy.releaseConfirmedCount!==2||tierPolicy.developmentConfirmedCount!==3)throw new Error('fixed production tier counts changed');
-          if(tierPolicy.fixedGameIds!==false||tierPolicy.autoPromotionDemotion!==true)throw new Error('tier membership must remain automatic');
-          const tier1=portfolio.projects.filter(p=>Number(p.productionTier)===1);
-          const tier2=portfolio.projects.filter(p=>Number(p.productionTier)===2);
-          const tier3=portfolio.projects.filter(p=>Number(p.productionTier)===3);
-          if(tier1.length!==2)throw new Error(`tier1 count mismatch: ${tier1.length}`);
-          if(tier2.length!==3)throw new Error(`tier2 count mismatch: ${tier2.length}`);
-          if(tier1.some(p=>p.targetEngine!=='unity-android'))throw new Error('tier1 must target Unity Android');
-          if(tier2.some(p=>p.targetEngine!=='web'||p.mode!=='WEB_FIRST_IMPLEMENTATION'))throw new Error('tier2 must target Web first implementation');
-          if(tier3.some(p=>p.mode!=='HOLD'&&p.targetEngine!=='design-only'))throw new Error('tier3 must remain design-only');
+          const classes=['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED','DESIGN_ONLY'];
+          const validClass=new Set(classes);
+          const semanticPolicy=portfolio.productionClassPolicy||{};
+          const tierCompat=portfolio.productionTierPolicy||{};
+          const numericLabels=directive.production?.numericLabels||{RELEASE_CONFIRMED:1,DEVELOPMENT_CONFIRMED:2,DESIGN_ONLY:3};
+          if(semanticPolicy.canonicalField!=='productionClass'||semanticPolicy.fixedCounts!==false||semanticPolicy.countsDerivedFromMembership!==true)throw new Error('semantic production class policy missing');
+          if(semanticPolicy.fixedGameIds!==false||semanticPolicy.autoPromotionDemotion!==true||semanticPolicy.quotaRebalanceForbidden!==true)throw new Error('semantic membership must stay dynamic and quota-free');
+          if(tierCompat.compatibilityAliasOnly!==true||tierCompat.canonicalField!=='productionClass'||tierCompat.fixedCounts!==false)throw new Error('numeric tier must remain compatibility-only');
+
+          const projects=portfolio.projects||[];
+          if(projects.some(p=>!validClass.has(p.productionClass)))throw new Error('project productionClass missing or invalid');
+          for(const p of projects){
+            const expectedAlias=Number(numericLabels[p.productionClass]);
+            if(Number.isFinite(expectedAlias)&&Number(p.productionTier)!==expectedAlias)throw new Error(`project numeric alias mismatch: ${p.id}`);
+          }
+          const release=projects.filter(p=>p.productionClass==='RELEASE_CONFIRMED');
+          const development=projects.filter(p=>p.productionClass==='DEVELOPMENT_CONFIRMED');
+          const design=projects.filter(p=>p.productionClass==='DESIGN_ONLY');
+          if(release.some(p=>p.targetEngine!=='unity-android'))throw new Error('release-confirmed must target Unity Android');
+          if(development.some(p=>p.targetEngine!=='web'||p.mode!=='WEB_FIRST_IMPLEMENTATION'))throw new Error('development-confirmed must target Web first implementation');
+          if(design.some(p=>p.mode!=='HOLD'&&p.targetEngine!=='design-only'))throw new Error('design-only must remain design-only');
           if(Array.isArray(portfolio.developmentFocusPolicy?.preferredFocusedGameIds)&&portfolio.developmentFocusPolicy.preferredFocusedGameIds.length)throw new Error('focused game IDs must not be pinned');
 
-          const catalogTier1=catalog.games.filter(g=>Number(g.productionTier)===1);
-          const catalogTier2=catalog.games.filter(g=>Number(g.productionTier)===2);
-          const catalogTier3=catalog.games.filter(g=>Number(g.productionTier)===3);
-          if(catalogTier1.length!==2||catalogTier2.length!==3)throw new Error('catalog tier count mismatch');
-          if(catalogTier1.some(g=>g.homepageCategory!=='release-confirmed'))throw new Error('catalog tier1 category mismatch');
-          if(catalogTier2.some(g=>g.homepageCategory!=='development-confirmed'))throw new Error('catalog tier2 category mismatch');
-          if(catalogTier3.some(g=>g.homepageCategory!=='design-only'))throw new Error('catalog tier3 category mismatch');
+          const categoryByClass={RELEASE_CONFIRMED:'release-confirmed',DEVELOPMENT_CONFIRMED:'development-confirmed',DESIGN_ONLY:'design-only'};
+          for(const g of catalog.games||[]){
+            if(!validClass.has(g.productionClass))throw new Error(`catalog productionClass missing or invalid: ${g.id}`);
+            const expectedAlias=Number(numericLabels[g.productionClass]);
+            if(Number.isFinite(expectedAlias)&&Number(g.productionTier)!==expectedAlias)throw new Error(`catalog numeric alias mismatch: ${g.id}`);
+            if(g.homepageCategory!==categoryByClass[g.productionClass])throw new Error(`catalog category mismatch: ${g.id}`);
+          }
 
           const focusPolicy=portfolio.developmentFocusPolicy||{};
           const focus=company.operations?.autonomousFocus;
           const target=Math.max(0,Number(focusPolicy.targetFocusedGames??focusPolicy.maxFocusedGames??0)||0);
-          if(target!==1)throw new Error('tier1 deep focus must stay exactly one');
+          if(target!==1)throw new Error('release deep focus must stay exactly one');
           if(!focus||focus.enabled!==Boolean(portfolio.developmentFocusPolicy))throw new Error('autonomous focus status missing');
           if(focus.targetSlots!==1)throw new Error('autonomous focus target mismatch');
           if(!Array.isArray(focus.focusedGameIds)||!Array.isArray(focus.games))throw new Error('autonomous focus arrays missing');
           if(focus.focusedGameIds.length>1||focus.games.length>1)throw new Error('autonomous focus exceeds one slot');
           if(focus.games.some((row,index)=>row.gameId!==focus.focusedGameIds[index]))throw new Error('autonomous focus game mapping mismatch');
           if((focus.preferredGameIds||[]).length)throw new Error('company focus exposes pinned IDs');
+
           const state=portfolio.productionTierState||{};
-          if(state.membershipMode!=='AUTO_EVIDENCE_RANKED'||state.fixedGameIds!==false||state.autoPromotionDemotion!==true)throw new Error('automatic tier state missing');
-          if((state.releaseConfirmedGameIds||[]).length!==2||(state.developmentConfirmedGameIds||[]).length!==3)throw new Error('automatic tier state count mismatch');
-          if(state.diversity?.enabled!==true||state.diversity?.maxFocusScoreGap!==1)throw new Error('portfolio gameplay diversity policy missing');
+          if(state.membershipMode!=='SEMANTIC_EVIDENCE_DYNAMIC'||state.canonicalField!=='productionClass'||state.fixedCounts!==false||state.countsDerivedFromMembership!==true)throw new Error('semantic production state missing');
+          if(state.numericTierAliasOnly!==true||state.fixedGameIds!==false||state.autoPromotionDemotion!==true)throw new Error('production state compatibility flags invalid');
+          const expectedCounts={releaseConfirmed:release.length,developmentConfirmed:development.length,designOnly:design.length};
+          if(JSON.stringify(state.counts)!==JSON.stringify(expectedCounts))throw new Error(`derived class counts mismatch: ${JSON.stringify(state.counts)} vs ${JSON.stringify(expectedCounts)}`);
+          if((state.releaseConfirmedGameIds||[]).length!==release.length||(state.developmentConfirmedGameIds||[]).length!==development.length||(state.designOnlyGameIds||[]).length!==design.length)throw new Error('production state member arrays mismatch');
+          if(state.diversity?.membershipInfluence!==false)throw new Error('diversity must not force production membership');
           if(!Array.isArray(state.diversity?.distinctFamilies))throw new Error('portfolio gameplay diversity evidence missing');
           console.log('COMPANY_STATUS_SYNC_QA=PASS');
-          console.log(`PRODUCTION_TIER_COUNTS_QA=2/3/${tier3.length}`);
+          console.log(`PRODUCTION_CLASS_COUNTS_QA=${release.length}/${development.length}/${design.length}`);
           console.log(`PRODUCTION_DIVERSITY_QA=${state.diversity.distinctFamilies.join(',')||'none'}`);
           console.log(`COMPANY_AUTONOMOUS_FOCUS_QA=${focus.focusedGameIds.join(',')||'none'}`);
           NODE
 
-      - name: Commit synchronized company status and production tiers
+      - name: Commit synchronized company status and production classes
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-company-status-sync'
@@ -116,7 +134,7 @@ jobs:
             echo 'COMPANY_STATUS_SYNC_COMMIT=NO_CHANGES'
             exit 0
           fi
-          git commit -m 'company: sync dynamic production tiers and focus [skip ci]'
+          git commit -m 'company: sync semantic production classes and focus [skip ci]'
           git pull --rebase origin main
           git push origin main
           echo 'COMPANY_STATUS_SYNC_COMMIT=SUCCESS'
