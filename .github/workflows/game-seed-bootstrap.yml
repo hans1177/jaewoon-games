@@ -1,0 +1,157 @@
+name: GAME_SEED Bootstrap
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 22 * * *' # 07:15 KST; no-op unless initial batch or vacancy exists
+  push:
+    branches: [main]
+    paths:
+      - 'company-directive.json'
+      - 'game-seed-registry.json'
+      - 'game-seed-reference-pool.json'
+      - 'tools/game-seed-selector.mjs'
+      - 'tools/game-seed-bootstrap.mjs'
+      - '.github/workflows/game-seed-bootstrap.yml'
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: game-seed-bootstrap
+  cancel-in-progress: false
+
+env:
+  OLLAMA_HOST: 127.0.0.1:11434
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate GAME_SEED runtime
+        run: |
+          node --check tools/game-seed-selector.mjs
+          node --check tools/game-seed-bootstrap.mjs
+          node --test qa/game-seed-bootstrap.test.mjs
+      - name: Resolve bootstrap or one-for-one vacancy
+        id: mode
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
+          import fs from 'node:fs';
+          const state=fs.existsSync('game-seed-registry.json')?JSON.parse(fs.readFileSync('game-seed-registry.json','utf8')):{bootstrapComplete:false,seeds:[],vacancies:[]};
+          if(state.bootstrapComplete!==true){
+            console.log('run=true');console.log('mode=bootstrap');console.log('category=');console.log('vacancy=');console.log('trigger=');
+          }else{
+            const v=(state.vacancies||[]).find(x=>x.status==='OPEN');
+            if(v){console.log('run=true');console.log('mode=replenish');console.log(`category=${v.category}`);console.log(`vacancy=${v.id}`);console.log(`trigger=${v.reason==='OWNER_REMOVED'?'OWNER_REMOVED':'DISCARDED'}`);}
+            else{console.log('run=false');console.log('mode=none');console.log('category=');console.log('vacancy=');console.log('trigger=');}
+          }
+          NODE
+      - name: No seed work
+        if: steps.mode.outputs.run != 'true'
+        run: |
+          echo 'GAME_SEED_ACTION=NONE'
+          echo 'NORMAL_PROMOTION_REPLENISHMENT=NO'
+      - name: Install local Ollama
+        if: steps.mode.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          installed=0
+          for attempt in 1 2 3; do
+            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
+            sleep $((attempt * 4))
+          done
+          test "$installed" = 1
+          nohup ollama serve > /tmp/ollama-game-seed.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break; sleep 2; done
+          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
+      - name: Pull configured free seed model
+        if: steps.mode.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          model="$(node -e "const d=require('./company-directive.json');process.stdout.write(d.ai.modelPool[0])")"
+          ollama pull "$model"
+          echo "GAME_SEED_MODEL=$model" >> "$GITHUB_ENV"
+          echo 'PAID_API=NO'
+      - name: Select famous-success benchmark seed
+        if: steps.mode.outputs.run == 'true'
+        shell: bash
+        env:
+          MODE: ${{ steps.mode.outputs.mode }}
+          CATEGORY: ${{ steps.mode.outputs.category }}
+          VACANCY: ${{ steps.mode.outputs.vacancy }}
+          TRIGGER: ${{ steps.mode.outputs.trigger }}
+        run: |
+          set -euo pipefail
+          if [ "$MODE" = "bootstrap" ]; then
+            node tools/game-seed-selector.mjs --mode=bootstrap --model="$GAME_SEED_MODEL" --output=.autonomous/game-seed-selection.json
+          else
+            node tools/game-seed-selector.mjs --mode=replenish --category="$CATEGORY" --vacancy="$VACANCY" --trigger="$TRIGGER" --model="$GAME_SEED_MODEL" --output=.autonomous/game-seed-selection.json
+          fi
+          echo 'MARKET_EVIDENCE_ROLE=TARGET_DESIGN_REFERENCE'
+          echo 'UNSOURCED_NUMERIC_MARKET_CLAIMS=FORBIDDEN'
+      - name: Materialize GAME_SEED before design
+        if: steps.mode.outputs.run == 'true'
+        shell: bash
+        env:
+          MODE: ${{ steps.mode.outputs.mode }}
+          VACANCY: ${{ steps.mode.outputs.vacancy }}
+          TRIGGER: ${{ steps.mode.outputs.trigger }}
+        run: |
+          set -euo pipefail
+          if [ "$MODE" = "bootstrap" ]; then
+            node tools/game-seed-bootstrap.mjs --input=.autonomous/game-seed-selection.json
+          else
+            node tools/game-seed-bootstrap.mjs --mode=replenish --input=.autonomous/game-seed-selection.json --vacancy="$VACANCY" --trigger="$TRIGGER"
+          fi
+          node - <<'NODE' > /tmp/game-seed-ids.txt
+          const x=require('./.autonomous/game-seed-selection.json');for(const s of (x.seeds||[x.seed]).filter(Boolean))console.log(s.gameId);
+          NODE
+      - name: Persist seed batch or replacement through PR
+        id: persist
+        if: steps.mode.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-game-seed'
+          git config user.email 'actions@users.noreply.github.com'
+          git add game-seed-registry.json game-catalog.json design artbook-submissions
+          if git diff --cached --quiet; then echo 'merged=false' >> "$GITHUB_OUTPUT"; exit 0; fi
+          branch="automation/game-seed-${GITHUB_RUN_ID}"
+          git checkout -b "$branch"
+          git commit -m "game-seed: materialize bootstrap or vacancy replacement"
+          git push origin "HEAD:$branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title 'game-seed: materialize seed batch' --body "GAME_SEED precedes Game Designer draft. Famous-success benchmark is homage/reinterpretation only; source code and direct expression are not copied. Market evidence is target-reference only. Run ${GITHUB_RUN_ID}.")"
+          pr_number="${pr_url##*/}"
+          gh pr checks "$pr_number" --repo "$GITHUB_REPOSITORY" --watch --fail-fast
+          gh pr merge "$pr_number" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          echo 'merged=true' >> "$GITHUB_OUTPUT"
+          echo 'GAME_SEED_MAIN_WRITE=PR_MERGED'
+      - name: Start DESIGN_ONLY cycles for new seeds
+        if: steps.persist.outputs.merged == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r game_id; do
+            [ -n "$game_id" ] || continue
+            gh workflow run artbook-free-department-bots.yml --ref main -f game_id="$game_id"
+            echo "DESIGN_ONLY_DISPATCHED=$game_id"
+          done < /tmp/game-seed-ids.txt
+          echo 'DESIGN_ONLY_FLOW=GAME_SEED_TO_DESIGN_BASELINE_TO_ARTBOOK'
