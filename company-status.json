@@ -120,7 +120,7 @@
         "P0009"
       ],
       "selection": "AUTO_RELEASE_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT",
-      "activeDevelopmentRunId": 34525047019,
+      "activeDevelopmentRunId": 34526152720,
       "syncIntervalMs": 30000,
       "updatedAtKst": "2026-09-11",
       "source": [
@@ -505,8 +505,8 @@
     "dateKst": "2026-09-11",
     "runningLabelAloneCountsAsWork": false,
     "counts": {
-      "WORKING": 6,
-      "DONE": 2,
+      "WORKING": 1,
+      "DONE": 7,
       "IDLE_NO_TASK": 0,
       "BLOCKED": 0,
       "FAILED": 0,
@@ -514,53 +514,53 @@
     },
     "liveStates": {
       "ACTIVE": 1,
-      "WAITING": 5,
+      "WAITING": 0,
       "BLOCKED": 0,
-      "DONE": 2
+      "DONE": 7
     },
-    "activeDevelopmentRunId": 34525047019,
+    "activeDevelopmentRunId": 34526152720,
     "primaryFindings": [
       "NO_WORK_ORDER:artbook-work-orders/2026-09-11-daechung-rpg.json"
     ],
     "staff": {
       "planning": {
-        "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34525047019",
-        "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
+        "status": "DONE",
+        "workState": "DONE",
+        "task": "daechung-rpg daily artbook section",
+        "source": "artbook",
+        "reason": "department submission is recorded for the resolved active artbook target",
         "jobEvidence": null
       },
       "development": {
-        "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34525047019",
-        "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
+        "status": "DONE",
+        "workState": "DONE",
+        "task": "daechung-rpg daily artbook section",
+        "source": "artbook",
+        "reason": "department submission is recorded for the resolved active artbook target",
         "jobEvidence": null
       },
       "qa": {
-        "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34525047019",
-        "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
+        "status": "DONE",
+        "workState": "DONE",
+        "task": "daechung-rpg daily artbook section",
+        "source": "artbook",
+        "reason": "department submission is recorded for the resolved active artbook target",
         "jobEvidence": null
       },
       "graphics": {
-        "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34525047019",
-        "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
+        "status": "DONE",
+        "workState": "DONE",
+        "task": "daechung-rpg daily artbook section",
+        "source": "artbook",
+        "reason": "department submission is recorded for the resolved active artbook target",
         "jobEvidence": null
       },
       "balance": {
-        "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34525047019",
-        "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
+        "status": "DONE",
+        "workState": "DONE",
+        "task": "daechung-rpg daily artbook section",
+        "source": "artbook",
+        "reason": "department submission is recorded for the resolved active artbook target",
         "jobEvidence": null
       },
       "director": {
@@ -774,39 +774,39 @@
     },
     "departmentTasks": {
       "planning": {
-        "status": "working",
-        "task": "autonomous development floor 34525047019",
+        "status": "done",
+        "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "workState": "DONE",
+        "reason": "department submission is recorded for the resolved active artbook target"
       },
       "development": {
-        "status": "working",
-        "task": "autonomous development floor 34525047019",
+        "status": "done",
+        "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "workState": "DONE",
+        "reason": "department submission is recorded for the resolved active artbook target"
       },
       "qa": {
-        "status": "working",
-        "task": "autonomous development floor 34525047019",
+        "status": "done",
+        "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "workState": "DONE",
+        "reason": "department submission is recorded for the resolved active artbook target"
       },
       "graphics": {
-        "status": "working",
-        "task": "autonomous development floor 34525047019",
+        "status": "done",
+        "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "workState": "DONE",
+        "reason": "department submission is recorded for the resolved active artbook target"
       },
       "balance": {
-        "status": "working",
-        "task": "autonomous development floor 34525047019",
+        "status": "done",
+        "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
+        "workState": "DONE",
+        "reason": "department submission is recorded for the resolved active artbook target"
       },
       "director": {
         "status": "working",
