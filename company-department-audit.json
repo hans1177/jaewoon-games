@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-09-10",
+  "updatedAt": "2026-09-11",
   "overall": "VERIFYING_UNITY_RUNTIME",
   "reason": "Unity runtime smoke automation is installed, but a successful real APK emulator run is still required.",
   "policy": {
@@ -67,7 +67,7 @@
         "contractVerificationConclusion": "success",
         "successfulRuntimeEvidenceRunId": null,
         "buildAloneCountsAsQaPass": false,
-        "latestRuntimeRunId": 34458475595,
+        "latestRuntimeRunId": 34468578640,
         "latestRuntimeConclusion": "skipped"
       },
       "currentProtection": "RUNTIME_PLAY_EVIDENCE_REQUIRED + BUILD_EVIDENCE_REQUIRED + DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
@@ -132,11 +132,11 @@
     },
     "latestUnityBuild": {
       "latestRun": {
-        "runId": 34457495387,
+        "runId": 34467670408,
         "status": "completed",
         "conclusion": "failure",
-        "headSha": "f9057e8138ac30fa1fb0f88bf79aeba1b8908c54",
-        "updatedAt": "2026-09-10T09:02:53Z"
+        "headSha": "7cf67ed802cfc88a13e18468b4d3889e8c0f29b9",
+        "updatedAt": "2026-09-10T10:55:27Z"
       },
       "latestSuccessfulRun": {
         "runId": 34201876835,
@@ -157,46 +157,44 @@
       "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
       "contractVerified": true,
       "latestRun": {
-        "runId": 34458475595,
+        "runId": 34468578640,
         "status": "completed",
         "conclusion": "skipped",
-        "headSha": "98b0a5ce045110c9483b3296f43530492ee96658",
-        "updatedAt": "2026-09-10T09:02:56Z"
+        "headSha": "b69fb8c500ee600767e22311709204f4801c05c7",
+        "updatedAt": "2026-09-10T10:55:29Z"
       },
       "latestSuccessfulRun": null,
       "successfulRuntimeEvidenceObserved": false
     },
     "webRuntimeHealth": {
       "latestRun": {
-        "runId": 34438226080,
+        "runId": 34501852793,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "7802a88ab0e03576041737244a7593244b28fc5f",
-        "updatedAt": "2026-09-10T04:43:59Z"
+        "headSha": "6dda8a2a0de9cbf60745ab4a61c67378ad3cea3f",
+        "updatedAt": "2026-09-10T16:25:14Z"
       },
       "latestSuccessfulRun": {
-        "runId": 34438226080,
+        "runId": 34501852793,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "7802a88ab0e03576041737244a7593244b28fc5f",
-        "updatedAt": "2026-09-10T04:43:59Z"
+        "headSha": "6dda8a2a0de9cbf60745ab4a61c67378ad3cea3f",
+        "updatedAt": "2026-09-10T16:25:14Z"
       },
       "formalBridge": "tools/company-qa-public-web-evidence.mjs"
     },
     "directorSupervision": {
-      "dateKst": "2026-09-10",
+      "dateKst": "2026-09-11",
       "attentionRequired": false,
       "counts": {
-        "WORKING": 3,
-        "DONE": 4,
+        "WORKING": 2,
+        "DONE": 5,
         "IDLE_NO_TASK": 1,
         "BLOCKED": 0,
         "FAILED": 0,
         "STALE": 0
       },
-      "primaryFindings": [
-        "NO_WORK_ORDER:artbook-work-orders/2026-09-10-daechung-rpg.json"
-      ]
+      "primaryFindings": []
     }
   },
   "nextPriority": "Require a successful Unity Android emulator runtime-smoke run before marking Unity QA VERIFIED."
