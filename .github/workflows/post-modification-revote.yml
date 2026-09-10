@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: post-modification-department-revote
@@ -205,13 +206,26 @@ jobs:
           p.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           PY
           echo 'POST_MODIFICATION_REVOTE=5_DEPARTMENTS_PLUS_DIRECTOR'
-      - name: Commit verified revote
+      - name: Open verified revote pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-company-revote'
           git config user.email 'actions@users.noreply.github.com'
           git add company-revotes company-status.json
+          if git diff --cached --quiet; then
+            echo 'POST_MODIFICATION_REVOTE_CHANGE=NO'
+            exit 0
+          fi
+          BRANCH="automation/post-modification-revote-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$BRANCH"
           git commit -m "company: record ${{ needs.context.outputs.game_id }} post-modification revote"
-          git pull --rebase origin main
-          git push origin main
+          git push origin "$BRANCH"
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "company: record ${{ needs.context.outputs.game_id }} post-modification revote" \
+            --body "Automated verified post-modification revote from run ${GITHUB_RUN_ID}. Direct main write: NO."
+          echo 'POST_MODIFICATION_REVOTE_PR=OPEN'
