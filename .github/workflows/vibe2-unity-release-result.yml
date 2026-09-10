@@ -8,6 +8,7 @@ on:
 permissions:
   contents: write
   actions: write
+  pull-requests: write
 
 concurrency:
   group: vibe2-release-serial
@@ -17,7 +18,7 @@ jobs:
   candidate-result:
     if: startsWith(github.event.workflow_run.head_branch, 'vibe2/candidate/')
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 20
     steps:
       - name: Checkout exact candidate result
         uses: actions/checkout@v4
@@ -70,11 +71,12 @@ jobs:
           test -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")"
           echo 'VIBE2_UNITY_CANDIDATE_APK_QA=PASS'
 
-      - name: Promote verified Unity source root to latest main
+      - name: Promote verified Unity source root through reviewed PR
         id: promote
         if: github.event.workflow_run.conclusion == 'success' && steps.revalidate.outcome == 'success'
         continue-on-error: true
         env:
+          GH_TOKEN: ${{ github.token }}
           SOURCE_ROOT: ${{ steps.manifest.outputs.source_root }}
           BASE_SHA: ${{ steps.manifest.outputs.base_sha }}
           TASK_ID: ${{ steps.manifest.outputs.task_id }}
@@ -82,30 +84,39 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for attempt in 1 2 3; do
-            git fetch origin main --quiet
-            test -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" || exit 1
-            rm -rf /tmp/vibe2-promote
-            git worktree prune
-            git worktree add --detach /tmp/vibe2-promote origin/main >/dev/null
-            cd /tmp/vibe2-promote
-            git config user.name 'jaewoon-vibe2-release'
-            git config user.email 'vibe2-release@users.noreply.github.com'
-            git checkout "$CANDIDATE_SHA" -- "$SOURCE_ROOT"
-            git diff --check
-            git add "$SOURCE_ROOT"
-            git diff --cached --quiet && exit 1
-            git commit -m "vibe2: deploy ${TASK_ID}"
-            git push origin HEAD:main && exit 0
-            cd "$GITHUB_WORKSPACE"
-            rm -rf /tmp/vibe2-promote
-            sleep $((attempt * 2))
-          done
-          exit 1
+          git fetch origin main --quiet
+          test -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" || exit 1
+          rm -rf /tmp/vibe2-promote
+          git worktree prune
+          safe_task="$(printf '%s' "$TASK_ID" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-60)"
+          release_branch="automation/vibe2-unity-release-${safe_task}-${GITHUB_RUN_ID}"
+          git worktree add -b "$release_branch" /tmp/vibe2-promote origin/main >/dev/null
+          cd /tmp/vibe2-promote
+          git config user.name 'jaewoon-vibe2-release'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          git checkout "$CANDIDATE_SHA" -- "$SOURCE_ROOT"
+          git diff --check
+          git add "$SOURCE_ROOT"
+          git diff --cached --quiet && exit 1
+          git commit -m "vibe2: deploy ${TASK_ID}"
+          release_commit="$(git rev-parse HEAD)"
+          git push origin "HEAD:$release_branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$release_branch" --title "vibe2: deploy ${TASK_ID}" --body "Verified Unity release candidate. APK build: ${{ github.event.workflow_run.id }}. Direct main write: NO. Release PASS requires this PR's CI and merge.")"
+          sleep 5
+          gh pr checks "$pr_url" --watch --fail-fast --interval 10
+          git fetch origin main --quiet
+          test -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" || exit 1
+          gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          git fetch origin main --quiet
+          git diff --quiet "$release_commit" origin/main -- "$SOURCE_ROOT"
+          echo "VIBE2_MAIN_PROMOTION_SHA=$(git rev-parse origin/main)"
+          echo "VIBE2_RELEASE_PR=$pr_url"
+          echo 'DIRECT_MAIN_WRITE=NO'
 
       - name: Record autonomous Unity release outcome as verified Vibe evidence
         if: steps.manifest.outputs.origin == 'AUTONOMOUS_DEV_VERIFIED_HANDOFF'
         env:
+          GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.manifest.outputs.game_id }}
           TASK_ID: ${{ steps.manifest.outputs.task_id }}
           BUILD_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
@@ -118,31 +129,37 @@ jobs:
           git fetch origin main --quiet
           rm -rf /tmp/jaewoon-unity-release-memory
           git worktree prune
-          git worktree add --detach /tmp/jaewoon-unity-release-memory origin/main >/dev/null
+          safe_game="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-')"
+          evidence_branch="automation/vibe2-unity-evidence-${safe_game}-${GITHUB_RUN_ID}"
+          git worktree add -b "$evidence_branch" /tmp/jaewoon-unity-release-memory origin/main >/dev/null
           cd /tmp/jaewoon-unity-release-memory
           mkdir -p company-learning/evidence
-          safe_game="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-')"
           node tools/evolution-evidence-recorder.mjs \
             --output="company-learning/evidence/post-release-unity-${safe_game}-${GITHUB_RUN_ID}.json" \
             --id="vibe2-post-release-unity-${safe_game}-${GITHUB_RUN_ID}" \
             --type=VIBE2 \
             --pattern-id=unity-release-apk-verified \
-            --title="Unity release APK and main promotion verified outcome" \
+            --title="Unity release APK and merged promotion verified outcome" \
             --game-id="$GAME_ID" \
             --condition=POST_RELEASE_UNITY_APK_QA \
             --outcome="$outcome" \
             --delta=0 \
-            --source-revision="$(git rev-parse HEAD)" \
+            --source-revision="$(git rev-parse origin/main)" \
             --independent-qa=PASS \
             --evidence="unity-build-${BUILD_CONCLUSION},revalidate-${REVALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},release-task-${TASK_ID}"
           git config user.name 'jaewoon-company-learning'
           git config user.email 'actions@users.noreply.github.com'
           git add company-learning/evidence
           if ! git diff --cached --quiet; then
-            git commit -m "learning: record Unity release outcome [skip ci]"
-            git push origin HEAD:main
+            git commit -m "learning: record Unity release outcome"
+            git push origin "HEAD:$evidence_branch"
+            pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$evidence_branch" --title "learning: record Unity release outcome" --body "Verified Unity release outcome evidence for ${TASK_ID}. Direct main write: NO.")"
+            sleep 5
+            gh pr checks "$pr_url" --watch --fail-fast --interval 10
+            gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
           fi
           echo "AUTONOMOUS_UNITY_POST_RELEASE_EVIDENCE=$outcome"
+          echo 'DIRECT_MAIN_WRITE=NO'
 
       - name: Settle Unity result and continue correct source queue
         if: always()
@@ -181,7 +198,7 @@ jobs:
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
           if [ "$result" = PASS ]; then
-            node tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="unity-candidate-apk-pass,unity-build-run-${{ github.event.workflow_run.id }},main-auto-promoted,actions-run-${GITHUB_RUN_ID}"
+            node tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="unity-candidate-apk-pass,unity-build-run-${{ github.event.workflow_run.id }},main-pr-merged,actions-run-${GITHUB_RUN_ID}"
           else
             node tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-or-promotion-failed --evidence="build-${BUILD_CONCLUSION},revalidate-${REVALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},unity-build-run-${{ github.event.workflow_run.id }}"
           fi
