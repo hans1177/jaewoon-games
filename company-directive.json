@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 21,
+  "revision": 22,
   "updatedAt": "2026-09-11",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
@@ -8,11 +8,7 @@
   "production": {
     "classificationMode": "SEMANTIC_EVIDENCE_DYNAMIC_MEMBERSHIP",
     "canonicalField": "productionClass",
-    "canonicalClasses": [
-      "DESIGN_ONLY",
-      "DEVELOPMENT_CONFIRMED",
-      "RELEASE_CONFIRMED"
-    ],
+    "canonicalClasses": ["DESIGN_ONLY", "DEVELOPMENT_CONFIRMED", "RELEASE_CONFIRMED"],
     "membership": "DYNAMIC_EVIDENCE",
     "countsDerivedFromMembership": true,
     "fixedClassCounts": false,
@@ -62,31 +58,21 @@
       "singleAuthorPerRevisionCycle": true,
       "sameModelRevisesAfterMeeting": true
     },
-    "departments": [
-      "planning",
-      "graphics",
-      "development",
-      "qa",
-      "balance"
-    ],
+    "departments": ["planning", "graphics", "development", "qa", "balance"],
     "departmentModeByClass": {
       "DESIGN_ONLY": "DISTINCT_LEAD_MULTIMODEL_DESIGN_REVIEW_AND_MEETING",
-      "DEVELOPMENT_CONFIRMED": "DISTINCT_LEAD_MULTIMODEL_DETAILED_PLAY_TECH_REVIEW_AND_MEETING",
+      "DEVELOPMENT_CONFIRMED": "DISTINCT_LEAD_GATED_DIRECT_PLAY_TECH_VALIDATION",
       "RELEASE_CONFIRMED": "DISTINCT_LEAD_MULTIMODEL_ERROR_RISK_WATCH"
     },
     "departmentModeTier3": "DISTINCT_LEAD_MULTIMODEL_DESIGN_REVIEW_AND_MEETING",
-    "departmentModeTier2": "DISTINCT_LEAD_MULTIMODEL_DETAILED_PLAY_TECH_REVIEW_AND_MEETING",
+    "departmentModeTier2": "DISTINCT_LEAD_GATED_DIRECT_PLAY_TECH_VALIDATION",
     "departmentModeTier1": "DISTINCT_LEAD_MULTIMODEL_ERROR_RISK_WATCH",
     "meeting": {
       "internalDepartmentConsensus": true,
       "internalRepresentativeOwner": "DEPARTMENT_LEAD_MODEL",
       "crossDepartmentRebuttalRounds": 1,
       "rebuttalOwner": "DEPARTMENT_LEAD_MODEL",
-      "issueStates": [
-        "CONSENSUS",
-        "CONFLICT",
-        "HOLD"
-      ],
+      "issueStates": ["CONSENSUS", "CONFLICT", "HOLD"],
       "autoRevisionUsesConsensusOnly": true
     },
     "artbookEditor": {
@@ -112,6 +98,7 @@
     "DESIGN_ONLY": {
       "baseline": "DESIGN_BASELINE",
       "sourceCodeAutoDevelopment": false,
+      "directResultMode": true,
       "requiredFlow": [
         "GAME_DESIGNER_DRAFT",
         "FIVE_DISTINCT_DEPARTMENT_LEADS",
@@ -127,16 +114,37 @@
     },
     "DEVELOPMENT_CONFIRMED": {
       "baseline": "DEVELOPMENT_BASELINE",
+      "executionMode": "GATED_DIRECT",
+      "resumeFromLatestEvidence": true,
       "webPurpose": "GAMEPLAY_VALIDATION_TESTBED",
       "unityPurpose": "TECHNICAL_VALIDATION_PROTOTYPE",
       "webBeforeUnityByDefault": true,
       "unityMayRunEarlyWhenEngineBehaviorDefinesCoreFun": true,
+      "aiMayInventValidationPass": false,
+      "webSmokeCountsAsGameplayValidation": false,
+      "artbookOnlyAfterBaselineReady": true,
+      "revalidationRequiredAfterMaterialChange": true,
       "meetingDetail": "IMPLEMENTATION_PERFORMANCE_PRODUCTION_QA_BALANCE",
-      "decisionStates": [
-        "KEEP",
-        "CHANGE",
-        "DROP",
-        "HOLD"
+      "decisionStates": ["KEEP", "CHANGE", "DROP", "HOLD"],
+      "waitingStates": [
+        "WAITING_WEB_VALIDATION",
+        "WAITING_WEB_REVALIDATION",
+        "WAITING_UNITY_VALIDATION",
+        "WAITING_UNITY_REVALIDATION",
+        "WAITING_REVALIDATION"
+      ],
+      "terminalStates": ["DEVELOPMENT_BASELINE_READY", "DEVELOPMENT_BLOCKED"],
+      "requiredFlow": [
+        "LOAD_DESIGN_BASELINE",
+        "WEB_GAMEPLAY_VALIDATION",
+        "WEB_EVIDENCE_DEPARTMENT_MEETING",
+        "GAME_DESIGNER_WEB_REVISION",
+        "UNITY_TECHNICAL_VALIDATION",
+        "UNITY_EVIDENCE_DEPARTMENT_MEETING",
+        "GAME_DESIGNER_TECH_REVISION",
+        "TARGETED_REVALIDATION",
+        "DEVELOPMENT_BASELINE_GATE",
+        "ARTBOOK_EDITOR_REVISION"
       ]
     },
     "RELEASE_CONFIRMED": {
@@ -146,11 +154,7 @@
       "departmentDefaultRole": "ERROR_AND_RELEASE_RISK_REVIEW",
       "coreDesignLock": true,
       "exceptionMeetingForReleaseBlockingIssues": true,
-      "releaseStates": [
-        "RELEASE_READY",
-        "FIX_AND_REVERIFY",
-        "RELEASE_BLOCKED"
-      ]
+      "releaseStates": ["RELEASE_READY", "FIX_AND_REVERIFY", "RELEASE_BLOCKED"]
     }
   },
   "tiersCompatibility": {
@@ -160,20 +164,9 @@
     "1": "RELEASE_CONFIRMED"
   },
   "tiers": {
-    "3": {
-      "productionClass": "DESIGN_ONLY",
-      "baseline": "DESIGN_BASELINE",
-      "sourceCodeAutoDevelopment": false
-    },
-    "2": {
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "baseline": "DEVELOPMENT_BASELINE"
-    },
-    "1": {
-      "productionClass": "RELEASE_CONFIRMED",
-      "baseline": "RELEASE_BASELINE",
-      "target": "UNITY_ANDROID"
-    }
+    "3": {"productionClass": "DESIGN_ONLY", "baseline": "DESIGN_BASELINE", "sourceCodeAutoDevelopment": false},
+    "2": {"productionClass": "DEVELOPMENT_CONFIRMED", "baseline": "DEVELOPMENT_BASELINE"},
+    "1": {"productionClass": "RELEASE_CONFIRMED", "baseline": "RELEASE_BASELINE", "target": "UNITY_ANDROID"}
   },
   "rules": [
     "new-owner-instruction-overrides-autonomous-plan",
@@ -204,9 +197,13 @@
     "departments-do-not-author-artbook-pages",
     "artbook-editor-must-not-invent-new-claims",
     "vibe2-does-not-primary-author-design-or-artbook-in-design-only-or-development-confirmed",
+    "development-confirmed-is-gated-direct-and-resumable",
+    "development-confirmed-stops-at-missing-or-failed-real-evidence",
     "development-confirmed-web-validates-gameplay-before-expensive-unity-work-by-default",
     "development-confirmed-unity-validates-technical-performance-device-feasibility",
-    "development-baseline-requires-play-and-technical-evidence",
+    "development-confirmed-material-change-requires-targeted-revalidation",
+    "development-baseline-requires-play-technical-and-revalidation-evidence",
+    "development-artbook-revision-only-after-baseline-ready",
     "release-confirmed-vibe2-is-primary-development-engine",
     "release-confirmed-departments-default-to-error-risk-watch",
     "release-confirmed-core-design-change-requires-release-blocking-exception-or-owner-decision",
