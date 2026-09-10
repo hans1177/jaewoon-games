@@ -88,11 +88,49 @@ status.baselineGate={
   },
   checkedAt:new Date().toISOString()
 };
+
+const coreArtbookPath=path.join('design',gameId,date,'core-artbook.json');
+const coreArtbook=readJson(coreArtbookPath,null);
+const publishable=ready&&Boolean(coreArtbook)&&[
+  'DESIGN_BASELINE_READY',
+  'DEVELOPMENT_BASELINE_READY'
+].includes(state);
+if(publishable){
+  const publicPath=path.join('artbook-submissions',gameId,'current.json');
+  const published={
+    ...coreArtbook,
+    version:Math.max(2,Number(coreArtbook.version||1)),
+    gameId,
+    gameName:game.name,
+    date,
+    createdAt:date,
+    productionClass,
+    tier,
+    status:'completed-artbook',
+    lifecycleState:state.replace('_READY',''),
+    published:true,
+    homepageVisible:true,
+    format:'core-strategy',
+    sourceFile:coreArtbookPath.replaceAll('\\','/'),
+    publication:{
+      policyDocument:'COMPANY_FLOW.md',
+      baselineGateState:state,
+      baselineReady:true,
+      publishedAt:new Date().toISOString()
+    }
+  };
+  writeJson(publicPath,published);
+  status.artbookPublication={published:true,path:publicPath.replaceAll('\\','/'),baselineGateState:state};
+}else{
+  status.artbookPublication={published:false,path:null,baselineGateState:state,reason:coreArtbook?'baseline-not-ready':'core-artbook-missing'};
+}
+
 writeJson(statusPath,status);
 console.log(`BASELINE_GATE_CLASS=${productionClass}`);
 console.log(`BASELINE_GATE_TIER=${tier}`);
 console.log(`BASELINE_GATE_STATE=${state}`);
 console.log(`BASELINE_GATE_READY=${ready?'YES':'NO'}`);
+console.log(`ARTBOOK_HOMEPAGE_PUBLICATION=${publishable?'PUBLISHED':'NOT_PUBLISHED'}`);
 console.log(`WEB_SMOKE_SUPPORT=${webSmokePass?'PASS':'NO_PASS_EVIDENCE'}`);
 if(developmentRequired){
   console.log(`WEB_GAMEPLAY_VALIDATION=${webGameplay.pass?'PASS':'PENDING'}`);
