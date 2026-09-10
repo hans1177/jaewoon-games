@@ -11,6 +11,8 @@ const readJson = (relative) => JSON.parse(readText(relative));
 const flow = readText('COMPANY_FLOW.md');
 const agents = readText('AGENTS.md');
 const directive = readJson('company-directive.json');
+const multimodelWorkflow = readText('.github/workflows/artbook-free-department-bots.yml');
+const designCycle = readText('tools/company-design-cycle.mjs');
 
 const requiredFlowHeadings = [
   '## 0. 회사 최종목표와 시스템 아키텍처',
@@ -68,6 +70,21 @@ test('semantic production classes are canonical and class counts are derived, no
   assert.equal('tierCounts' in directive.production, false);
   assert.equal(directive.production.preserveExistingWebArchives, true);
   assert.equal(directive.production.preserveSaveMeaning, true);
+});
+
+test('multimodel workflow and cycle route by productionClass, never by fixed numeric meaning', () => {
+  assert.match(multimodelWorkflow, /productionClassOf/);
+  assert.match(multimodelWorkflow, /EXPECTED_PRODUCTION_CLASS/);
+  assert.match(multimodelWorkflow, /NUMERIC_TIER_POLICY=ALIAS_ONLY/);
+  assert.doesNotMatch(multimodelWorkflow, /\[1,2,3\]\.includes\(Number\(g\.productionTier\)\)/);
+  assert.doesNotMatch(multimodelWorkflow, /Number\(s\.tier\)===1/);
+  assert.doesNotMatch(multimodelWorkflow, /Number\(s\.tier\)===2/);
+  assert.match(designCycle, /productionClassOf/);
+  assert.match(designCycle, /PRODUCTION_CLASSES\.RELEASE_CONFIRMED/);
+  assert.match(designCycle, /PRODUCTION_CLASSES\.DEVELOPMENT_CONFIRMED/);
+  assert.match(designCycle, /PRODUCTION_CLASSES\.DESIGN_ONLY/);
+  assert.doesNotMatch(designCycle, /const tier=Number\(game\.productionTier/);
+  assert.doesNotMatch(designCycle, /if\(tier===/);
 });
 
 test('DESIGN_ONLY is multimodel design review led by one Game Designer, not source-code development', () => {
