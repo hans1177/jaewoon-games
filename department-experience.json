@@ -18,18 +18,18 @@
       "lastEvidence": "Vibe QA run 34326324607 PASS · be194944bdf87f844dc7c521c10c8f5ec156e8d1"
     },
     "development": {
-      "xp": 7880,
+      "xp": 7920,
       "level": 10,
-      "verifiedCompletions": 197,
-      "learningEvents": 197,
-      "lastEvidence": "Vibe QA run 34469119904 PASS · 17814d07414b082dae3f8ffcce01a0e28cbae0bd"
+      "verifiedCompletions": 198,
+      "learningEvents": 198,
+      "lastEvidence": "Vibe QA run 34486107718 PASS · 256d79b6f7e09c83e7679f75bbc2a95bbe602c6b"
     },
     "qa": {
-      "xp": 2840,
+      "xp": 2880,
       "level": 7,
-      "verifiedCompletions": 71,
-      "learningEvents": 71,
-      "lastEvidence": "Vibe QA run 34466554197 PASS · 049c35eadc7bb145590e78821c92617e3a291871"
+      "verifiedCompletions": 72,
+      "learningEvents": 72,
+      "lastEvidence": "Vibe QA run 34486107718 PASS · 256d79b6f7e09c83e7679f75bbc2a95bbe602c6b"
     },
     "graphics": {
       "xp": 400,
@@ -68,19 +68,6 @@
     }
   },
   "history": [
-    {
-      "type": "verified-qa-pass",
-      "sourceCommit": "f9a3e285f9fbb7adcdec3d2cae172945b2338f9e",
-      "runId": "34166815463",
-      "xpPerDepartment": 40,
-      "departments": [
-        "development",
-        "graphics"
-      ],
-      "changedFilesCount": 1,
-      "evidence": "Vibe QA PASS for f9a3e285f9fbb7adcdec3d2cae172945b2338f9e",
-      "recordedAt": "2026-09-07T22:29:39.793Z"
-    },
     {
       "type": "verified-qa-pass",
       "sourceCommit": "8770e245f39e2fd38d0ac2193e90dbe02caf96f2",
@@ -3706,6 +3693,19 @@
       "changedFilesCount": 1,
       "evidence": "Vibe QA PASS for 17814d07414b082dae3f8ffcce01a0e28cbae0bd",
       "recordedAt": "2026-09-10T11:02:05.500Z"
+    },
+    {
+      "type": "verified-qa-pass",
+      "sourceCommit": "256d79b6f7e09c83e7679f75bbc2a95bbe602c6b",
+      "runId": "34486107718",
+      "xpPerDepartment": 40,
+      "departments": [
+        "development",
+        "qa"
+      ],
+      "changedFilesCount": 2,
+      "evidence": "Vibe QA PASS for 256d79b6f7e09c83e7679f75bbc2a95bbe602c6b",
+      "recordedAt": "2026-09-10T13:59:49.973Z"
     }
   ],
   "verifiedLearning": []
