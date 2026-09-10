@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>곤충 디펜스</title>
+  <meta name="description" content="포탑과 인간을 강화해 30웨이브 말벌여왕을 물리치는 곤충 디펜스 게임">
+  <style>
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:#0d2116;color:#f4f7f2;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+    body{min-height:100dvh;padding:10px}
+    .game-shell{width:min(1100px,100%);margin:0 auto}
+    .game-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 12px 12px}
+    .game-header p{margin:0 0 3px;color:#b2c2b5;font-size:13px}
+    .game-header h1{margin:0;font-size:clamp(22px,5vw,32px)}
+    .game-header span{white-space:nowrap;color:#f0bb3f;font-weight:700}
+    .game-frame{display:block;width:100%;height:calc(100dvh - 96px);min-height:560px;border:1px solid #466c50;border-radius:14px;background:#0d2116}
+    @media(max-width:560px){
+      body{padding:0}
+      .game-header{padding:9px 10px;gap:8px}
+      .game-header span{font-size:12px}
+      .game-frame{height:calc(100dvh - 78px);min-height:520px;border-left:0;border-right:0;border-radius:0}
+    }
+  </style>
+</head>
+<body>
+  <main class="game-shell">
+    <header class="game-header">
+      <div>
+        <p>곤충의 습격을 막아라</p>
+        <h1>곤충 디펜스</h1>
+      </div>
+      <span>30웨이브 · 최종전</span>
+    </header>
+    <iframe class="game-frame" src="game.html" title="곤충 디펜스 게임" allow="fullscreen" loading="eager"></iframe>
+  </main>
+</body>
+</html>

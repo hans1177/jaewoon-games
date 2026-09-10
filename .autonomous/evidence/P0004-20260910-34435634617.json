@@ -1,0 +1,545 @@
+{
+  "version": 5,
+  "candidateOnly": true,
+  "selfPromote": false,
+  "publicStableModified": false,
+  "paidApi": false,
+  "model": "PARALLEL_DEPARTMENT_LOCAL_AI",
+  "modelTransport": "ISOLATED_DEPARTMENT_WORKSPACES_THREE_WAY_INTEGRATION",
+  "modelAttempts": 1,
+  "repairMode": "MODEL",
+  "gameId": "P0004",
+  "gameSlug": "bug-defense",
+  "sourcePath": "web-games/bug-defense",
+  "candidateId": "P0004-20260910-34435634617",
+  "candidatePath": "web-games/.autonomous-candidates/P0004/P0004-20260910-34435634617",
+  "sourceCommit": "3b8fc45b944e084b21d3b57bcae6d954e3d50e1b",
+  "goal": "[WEB_FIRST_IMPLEMENTATION] 아트북 전체 기능을 한 번에 재현하지 않는다. 핵심 루프가 실제로 플레이되는 가장 작은 Web 1차 구현만 만들고 모바일 입력·저장 의미·현재 정체성을 유지한다. 방금 완성된 최신 아트북 DESIGN_BASELINE을 현재 개발 설계도로 사용한다. 기술 구조 → 플레이어블 개발판 B로 이어지는 첫 작은 구현 작업 1개만 수행한다. [FEATURE_DEVELOPMENT] 최신 DESIGN_BASELINE을 실제 플레이 가능한 작은 기능 1개로 구현한다. 우선순위는 맵/지역 확장 → 그래픽·환경·UI → 적·몬스터·콘텐츠 → 퀘스트·전투·성장 시스템 순이며, 현재 코드에 안전하게 연결되는 가장 작은 vertical slice 1개만 고른다. 설계 근거: 6단계·퀘스트·지역·보스 인과를 실제 게임 사실 자료팩과 Vibe2 1차 초안(…. 평가문·별점·아트북 문서 표현·이미지 장수 자체를 게임 코드 목표로 삼지 않는다. 곤충 디펜스의 저장키·핵심루프·기존 플레이 의미를 유지하고 전면 재작성은 하지 않는다. 아트북의 장르·핵심루프·스토리 큰 방향·저장 의미는 임의로 바꾸지 않는다. Vibe 공용 실행계약(full-development, T5)을 따르되 AI 부서 교정이 우선한다. 부서 사이클 최종 제약: 개발 워커에게 VIBE2 1차 초안과 실제 구현의 차이점, 테스트 시나리오, 재현 가능성에 대한 구체적 제약을 제공",
+  "responsibilityFiles": [
+    "game.html"
+  ],
+  "changedFiles": [
+    "game.html"
+  ],
+  "summary": "Integrated parallel department implementation",
+  "expectedEffect": "Department-owned code changes combined after planning integration",
+  "proposedTests": [
+    "기획부의 자기 전문 범위 근거 요약이 명확히 설명되어 있어",
+    "기획부의 자기 전문 범위 근거 요약이 정확히 1개 문장으로 쓰여 있어",
+    "Vibe2 1차 초안의 기획 부서 확정이 부족",
+    "아트북 컨셉 드리프트가 존재함",
+    "기존 아트북의 저장 의미와 핵심 루프를 유지해야 함",
+    "Vibe 결과는 현재 코드와 아트북 기준선에 맞지 않음",
+    "저장 의미·핵심 루프·완성 아트북의 큰 방향을 임의로 변경함",
+    "QA PASS를 허위로 선언함"
+  ],
+  "changeMode": "PARALLEL_DEPARTMENT_INTEGRATION",
+  "fileCount": 1,
+  "editCount": 0,
+  "saveKeyValidation": "PASS",
+  "syntaxChecks": [],
+  "departmentCycle": {
+    "version": 3,
+    "gameId": "P0004",
+    "gameSlug": "bug-defense",
+    "candidateId": "P0004-20260910-34435634617",
+    "sourcePath": "web-games/bug-defense",
+    "workLane": "FULL",
+    "sequence": [
+      "planning",
+      "development",
+      "graphics",
+      "qa",
+      "balance",
+      "planning-final"
+    ],
+    "parallelDepartments": [
+      "planning",
+      "development",
+      "graphics",
+      "qa",
+      "balance"
+    ],
+    "activeReviewRoles": [
+      "planning",
+      "development",
+      "graphics",
+      "qa",
+      "balance"
+    ],
+    "finalIntegrator": "planning-final",
+    "allDepartmentsWorked": true,
+    "paidApi": false,
+    "localModel": "qwen3:1.7b",
+    "originalGoal": "[WEB_FIRST_IMPLEMENTATION] 아트북 전체 기능을 한 번에 재현하지 않는다. 핵심 루프가 실제로 플레이되는 가장 작은 Web 1차 구현만 만들고 모바일 입력·저장 의미·현재 정체성을 유지한다. 방금 완성된 최신 아트북 DESIGN_BASELINE을 현재 개발 설계도로 사용한다. 기술 구조 → 플레이어블 개발판 B로 이어지는 첫 작은 구현 작업 1개만 수행한다. [FEATURE_DEVELOPMENT] 최신 DESIGN_BASELINE을 실제 플레이 가능한 작은 기능 1개로 구현한다. 우선순위는 맵/지역 확장 → 그래픽·환경·UI → 적·몬스터·콘텐츠 → 퀘스트·전투·성장 시스템 순이며, 현재 코드에 안전하게 연결되는 가장 작은 vertical slice 1개만 고른다. 설계 근거: 6단계·퀘스트·지역·보스 인과를 실제 게임 사실 자료팩과 Vibe2 1차 초안(…. 평가문·별점·아트북 문서 표현·이미지 장수 자체를 게임 코드 목표로 삼지 않는다. 곤충 디펜스의 저장키·핵심루프·기존 플레이 의미를 유지하고 전면 재작성은 하지 않는다. 아트북의 장르·핵심루프·스토리 큰 방향·저장 의미는 임의로 바꾸지 않는다.",
+    "finalGoal": "[WEB_FIRST_IMPLEMENTATION] 아트북 전체 기능을 한 번에 재현하지 않는다. 핵심 루프가 실제로 플레이되는 가장 작은 Web 1차 구현만 만들고 모바일 입력·저장 의미·현재 정체성을 유지한다. 방금 완성된 최신 아트북 DESIGN_BASELINE을 현재 개발 설계도로 사용한다. 기술 구조 → 플레이어블 개발판 B로 이어지는 첫 작은 구현 작업 1개만 수행한다. [FEATURE_DEVELOPMENT] 최신 DESIGN_BASELINE을 실제 플레이 가능한 작은 기능 1개로 구현한다. 우선순위는 맵/지역 확장 → 그래픽·환경·UI → 적·몬스터·콘텐츠 → 퀘스트·전투·성장 시스템 순이며, 현재 코드에 안전하게 연결되는 가장 작은 vertical slice 1개만 고른다. 설계 근거: 6단계·퀘스트·지역·보스 인과를 실제 게임 사실 자료팩과 Vibe2 1차 초안(…. 평가문·별점·아트북 문서 표현·이미지 장수 자체를 게임 코드 목표로 삼지 않는다. 곤충 디펜스의 저장키·핵심루프·기존 플레이 의미를 유지하고 전면 재작성은 하지 않는다. 아트북의 장르·핵심루프·스토리 큰 방향·저장 의미는 임의로 바꾸지 않는다. Vibe 공용 실행계약(full-development, T5)을 따르되 AI 부서 교정이 우선한다. 부서 사이클 최종 제약: 개발 워커에게 VIBE2 1차 초안과 실제 구현의 차이점, 테스트 시나리오, 재현 가능성에 대한 구체적 제약을 제공",
+    "finalDecision": "ADJUST",
+    "vibeCore": {
+      "version": 1,
+      "engine": "VIBE2_COMPANY_CORE",
+      "source": "assets/vibe-company-orchestration-bridge.js",
+      "authority": "proposal-and-execution-contract-not-final-department-verdict",
+      "initialMaturity": "EARLY_COLLABORATIVE",
+      "target": "web",
+      "stageId": "full-development",
+      "routing": {
+        "mayDispatch": true,
+        "mayExecute": true,
+        "requiresOwnerAction": false,
+        "completedArtbookLocked": true,
+        "artbookRevisionAllowed": true,
+        "conceptChangeRule": "ARTBOOK_REVISION_REQUEST_REQUIRED"
+      },
+      "qualityBar": {
+        "version": 1,
+        "averageLevel": 5,
+        "tier": 5,
+        "name": "PROVEN",
+        "requirements": {
+          "prototypeEnemyKinds": 3,
+          "requiredEvidence": 4,
+          "requiredRegression": "expanded",
+          "mobileCheck": true,
+          "saveCheck": true,
+          "crossDepartmentReview": true,
+          "deviceEvidence": true
+        },
+        "rule": "quality-bar-rises-with-verified-department-experience-without-expanding-authority"
+      },
+      "executionQa": [
+        "로딩/시작",
+        "진행 막힘",
+        "터치 버튼",
+        "조이스틱",
+        "저장/불러오기",
+        "일시정지/재시작",
+        "콘솔 오류",
+        "모바일 화면",
+        "안전 여백",
+        "가로/세로 자동 대응",
+        "스폰/웨이브 종료/보스",
+        "퀘스트 진행/완료/보상",
+        "세이브 버전/게임 ID/기존 데이터",
+        "회사 품질바 T5 PROVEN: {\"prototypeEnemyKinds\":3,\"requiredEvidence\":4,\"requiredRegression\":\"expanded\",\"mobileCheck\":true,\"saveCheck\":true,\"crossDepartmentReview\":true,\"deviceEvidence\":true}",
+        "최신 승인 아트북 기준선과 실제 구현의 컨셉 일치 검사",
+        "장르·핵심루프·스토리·아트방향·전투·성장 컨셉 드리프트 없음"
+      ],
+      "learning": {
+        "source": "company-learning/company-dna.json",
+        "verifiedOnly": true,
+        "patterns": [
+          {
+            "patternId": "autonomous-candidate-safe-promotion",
+            "stage": "GAME_VERIFIED",
+            "title": "Autonomous candidate scope + regression safe promotion",
+            "summary": {
+              "successEvidence": 1,
+              "failureEvidence": 0,
+              "distinctGames": 1,
+              "distinctGenres": 0,
+              "distinctConditions": 1,
+              "averageDelta": 0,
+              "criticalFailures": 0,
+              "multiGameEligible": false,
+              "selfPromote": false,
+              "jayDecisionRequired": false
+            }
+          },
+          {
+            "patternId": "public-release-health-verified",
+            "stage": "GAME_VERIFIED",
+            "title": "Public release health verified outcome",
+            "summary": {
+              "successEvidence": 1,
+              "failureEvidence": 0,
+              "distinctGames": 1,
+              "distinctGenres": 0,
+              "distinctConditions": 1,
+              "averageDelta": 0,
+              "criticalFailures": 0,
+              "multiGameEligible": false,
+              "selfPromote": false,
+              "jayDecisionRequired": false
+            }
+          }
+        ],
+        "antiPatterns": []
+      },
+      "departmentLearning": {
+        "source": "department-experience.json",
+        "verifiedOnly": true,
+        "authority": "past-evidence-not-current-verdict",
+        "byRole": {
+          "planning": [],
+          "development": [],
+          "graphics": [],
+          "qa": [],
+          "balance": []
+        },
+        "totalUsed": 0
+      },
+      "departmentReviewRequired": true,
+      "maySelfApprove": false,
+      "verifiedLearningOnly": true
+    },
+    "collaboration": {
+      "mode": "VIBE_PROPOSES_PARALLEL_AI_DEPARTMENTS_REVIEW_THEN_PLANNING_INTEGRATES",
+      "finalIntegrationMode": "PLANNING_AI",
+      "vibeProposalReviewedBy": [
+        "planning",
+        "development",
+        "graphics",
+        "qa",
+        "balance",
+        "planning-final"
+      ],
+      "departmentAdjustmentCount": 6,
+      "departmentAdjustments": [
+        {
+          "role": "planning",
+          "summary": "Vibe2 1차 초안의 스토리·세계관·사건 인과관계가 기획부 확정 요구에 부합하지 않음. 아트북의 저장 의미·핵심 루프·완성 방향은 임의 변경 금지, 기존 프로토타입의 이야기 자산과 재설계 부분이 명확히 정리되지 않음.",
+          "nextAction": "개발 워커가 기획부의 자기 전문 범위 근거 요약을 정확히 1개 문장으로 쓰고, 기획부의 자기 전문 범위 근거 요약을 정리하는 작업을 수행"
+        },
+        {
+          "role": "development",
+          "summary": "Vibe2 1차 초안의 기획 부서 확정이 부족하여 아트북 컨셉 드리프트가 존재합니다. 기술 구조와 플레이어블 시연을 기반으로 한 최소 변경이 필요하며, 기존 아트북의 저장 의미와 핵심 루프를 유지해야 합니다.",
+          "nextAction": "개발 워커가 Vibe2 1차 초안의 기획 부서 확정을 확인하고, 아트북 컨셉 드리프트를 검증하여 교정 작업을 수행합니다."
+        },
+        {
+          "role": "graphics",
+          "summary": "Vibe 제안은 아트북 기준선과 현재 코드, 부서 근거에 맞지 않으며, 저장 의미·핵심 루프·완성 아트북의 큰 방향을 임의로 변경하고, QA PASS를 허위로 선언하지 않는다.",
+          "nextAction": "개발 워커가 현재 코드와 아트북 기준선을 기준으로 재사용할 수 있는 한 문장의 구체적 제약을 제공"
+        },
+        {
+          "role": "qa",
+          "summary": "Vibe2 1차 초안의 기능과 실제 구현의 컨셉이 일치하지 않아, 테스트 시나리오와 재현 가능성에 대한 근거가 부족하며, 편집 및 교정이 필요하다.",
+          "nextAction": "개발 워커에게 VIBE2 1차 초안과 실제 구현의 차이점, 테스트 시나리오, 재현 가능성에 대한 구체적 제약을 제공"
+        },
+        {
+          "role": "balance",
+          "summary": "Vibe2 공용 엔진의 기능 및 성장곡선, 전투 체감, 보상 시스템 등은 아트북 기준으로 기존 근거 부족으로 인해 재검토 필요",
+          "nextAction": "개발 워커에게 VIBE2 공용 엔진의 기능 및 성장곡선, 전투 체감, 보상 시스템 등에 대한 재검토 요청"
+        },
+        {
+          "role": "planning-final",
+          "summary": "Vibe2 1차 초안과 실제 구현의 차이점, 테스트 시나리오, 재현 가능성에 대한 구체적 제약을 제공",
+          "nextAction": "개발 워커에게 VIBE2 1차 초안과 실제 구현의 차이점, 테스트 시나리오, 재현 가능성에 대한 구체적 제약을 제공"
+        }
+      ],
+      "verifiedLearningUsed": 2,
+      "antiPatternsUsed": 0,
+      "verifiedDepartmentLearningUsed": 0,
+      "learningWriteAuthority": "independent-qa-verified-outcome-only",
+      "vibeMaySelfApprove": false,
+      "vibeMayOverrideDepartments": false,
+      "sourceWriteConcurrency": "SERIAL_AFTER_PARALLEL_REVIEW"
+    },
+    "results": [
+      {
+        "role": "planning",
+        "department": "기획부",
+        "workState": "DONE",
+        "decision": "ADJUST",
+        "summary": "Vibe2 1차 초안의 스토리·세계관·사건 인과관계가 기획부 확정 요구에 부합하지 않음. 아트북의 저장 의미·핵심 루프·완성 방향은 임의 변경 금지, 기존 프로토타입의 이야기 자산과 재설계 부분이 명확히 정리되지 않음.",
+        "nextAction": "개발 워커가 기획부의 자기 전문 범위 근거 요약을 정확히 1개 문장으로 쓰고, 기획부의 자기 전문 범위 근거 요약을 정리하는 작업을 수행",
+        "checks": [
+          "기획부의 자기 전문 범위 근거 요약이 명확히 설명되어 있어",
+          "기획부의 자기 전문 범위 근거 요약이 정확히 1개 문장으로 쓰여 있어"
+        ],
+        "risks": [
+          "기획부의 자기 전문 범위 근거 요약이 명확하지 않음",
+          "기획부의 자기 전문 범위 근거 요약이 정확하지 않음"
+        ],
+        "model": "qwen3:1.7b",
+        "attempt": 1,
+        "startedAt": "2026-09-10T04:03:27.946Z",
+        "completedAt": "2026-09-10T04:04:43.638Z",
+        "modelMetrics": {
+          "promptEvalCount": 3086,
+          "evalCount": 294,
+          "promptEvalMs": 26881,
+          "evalMs": 47130,
+          "totalMs": 75642
+        }
+      },
+      {
+        "role": "development",
+        "department": "개발부",
+        "workState": "DONE",
+        "decision": "ADJUST",
+        "summary": "Vibe2 1차 초안의 기획 부서 확정이 부족하여 아트북 컨셉 드리프트가 존재합니다. 기술 구조와 플레이어블 시연을 기반으로 한 최소 변경이 필요하며, 기존 아트북의 저장 의미와 핵심 루프를 유지해야 합니다.",
+        "nextAction": "개발 워커가 Vibe2 1차 초안의 기획 부서 확정을 확인하고, 아트북 컨셉 드리프트를 검증하여 교정 작업을 수행합니다.",
+        "checks": [
+          "Vibe2 1차 초안의 기획 부서 확정이 부족",
+          "아트북 컨셉 드리프트가 존재함",
+          "기존 아트북의 저장 의미와 핵심 루프를 유지해야 함"
+        ],
+        "risks": [
+          "아트북 컨셉 드리프트가 영향을 미칠 수 있음",
+          "기획 부서 확정이 부족한 경우 기술 구조가 훼손될 수 있음"
+        ],
+        "model": "qwen3:1.7b",
+        "attempt": 1,
+        "startedAt": "2026-09-10T04:03:22.922Z",
+        "completedAt": "2026-09-10T04:05:12.603Z",
+        "modelMetrics": {
+          "promptEvalCount": 3870,
+          "evalCount": 273,
+          "promptEvalMs": 84122,
+          "evalMs": 24009,
+          "totalMs": 109609
+        }
+      },
+      {
+        "role": "graphics",
+        "department": "그래픽부",
+        "workState": "DONE",
+        "decision": "ADJUST",
+        "summary": "Vibe 제안은 아트북 기준선과 현재 코드, 부서 근거에 맞지 않으며, 저장 의미·핵심 루프·완성 아트북의 큰 방향을 임의로 변경하고, QA PASS를 허위로 선언하지 않는다.",
+        "nextAction": "개발 워커가 현재 코드와 아트북 기준선을 기준으로 재사용할 수 있는 한 문장의 구체적 제약을 제공",
+        "checks": [
+          "Vibe 결과는 현재 코드와 아트북 기준선에 맞지 않음",
+          "저장 의미·핵심 루프·완성 아트북의 큰 방향을 임의로 변경함",
+          "QA PASS를 허위로 선언함"
+        ],
+        "risks": [
+          "Vibe 결과와 현재 코드, 아트북 기준선의 불일치",
+          "저장 의미·핵심 루프·완성 아트북의 큰 방향 변경",
+          "QA PASS 허위 선언"
+        ],
+        "model": "qwen3:1.7b",
+        "attempt": 1,
+        "startedAt": "2026-09-10T04:03:26.331Z",
+        "completedAt": "2026-09-10T04:05:26.589Z",
+        "modelMetrics": {
+          "promptEvalCount": 3916,
+          "evalCount": 259,
+          "promptEvalMs": 72967,
+          "evalMs": 45314,
+          "totalMs": 120200
+        }
+      },
+      {
+        "role": "qa",
+        "department": "QA부",
+        "workState": "DONE",
+        "decision": "ADJUST",
+        "summary": "Vibe2 1차 초안의 기능과 실제 구현의 컨셉이 일치하지 않아, 테스트 시나리오와 재현 가능성에 대한 근거가 부족하며, 편집 및 교정이 필요하다.",
+        "nextAction": "개발 워커에게 VIBE2 1차 초안과 실제 구현의 차이점, 테스트 시나리오, 재현 가능성에 대한 구체적 제약을 제공",
+        "checks": [
+          "VIBE2 1차 초안의 기능과 실제 구현의 차이점 확인",
+          "테스트 시나리오의 재현 가능성 검증",
+          "모바일 조작/화면/저장/재시작 위험 분석"
+        ],
+        "risks": [
+          "VIBE2 1차 초안과 실제 구현의 컨셉 차이로 인한 테스트 실패 가능성",
+          "모바일 화면의 불확실성으로 인한 사용자 경험 저하 위험"
+        ],
+        "model": "qwen3:1.7b",
+        "attempt": 1,
+        "startedAt": "2026-09-10T04:03:25.777Z",
+        "completedAt": "2026-09-10T04:04:47.623Z",
+        "modelMetrics": {
+          "promptEvalCount": 2998,
+          "evalCount": 252,
+          "promptEvalMs": 60614,
+          "evalMs": 19747,
+          "totalMs": 81787
+        }
+      },
+      {
+        "role": "balance",
+        "department": "밸런스부",
+        "workState": "DONE",
+        "decision": "ADJUST",
+        "summary": "Vibe2 공용 엔진의 기능 및 성장곡선, 전투 체감, 보상 시스템 등은 아트북 기준으로 기존 근거 부족으로 인해 재검토 필요",
+        "nextAction": "개발 워커에게 VIBE2 공용 엔진의 기능 및 성장곡선, 전투 체감, 보상 시스템 등에 대한 재검토 요청",
+        "checks": [
+          "VIBE2 공용 엔진의 기능 및 성장곡선, 전투 체감, 보상 시스템 등은 아트북 기준으로 기존 근거 부족",
+          "아트북 기준으로 기존 근거 부족이 확인됨",
+          "VIBE2 공용 엔진의 기능 및 성장곡선, 전투 체감, 보상 시스템 등은 아트북 기준으로 기존 근거 부족"
+        ],
+        "risks": [
+          "아트북 기준으로 기존 근거 부족이 확인됨",
+          "VIBE2 공용 엔진의 기능 및 성장곡선, 전투 체감, 보상 시스템 등은 아트북 기준으로 기존 근거 부족"
+        ],
+        "model": "qwen3:1.7b",
+        "attempt": 1,
+        "startedAt": "2026-09-10T04:03:34.549Z",
+        "completedAt": "2026-09-10T04:05:01.672Z",
+        "modelMetrics": {
+          "promptEvalCount": 2987,
+          "evalCount": 305,
+          "promptEvalMs": 60353,
+          "evalMs": 25170,
+          "totalMs": 86935
+        }
+      },
+      {
+        "role": "planning-final",
+        "department": "기획부 최종확인",
+        "workState": "DONE",
+        "decision": "ADJUST",
+        "summary": "Vibe2 1차 초안과 실제 구현의 차이점, 테스트 시나리오, 재현 가능성에 대한 구체적 제약을 제공",
+        "nextAction": "개발 워커에게 VIBE2 1차 초안과 실제 구현의 차이점, 테스트 시나리오, 재현 가능성에 대한 구체적 제약을 제공",
+        "checks": [
+          "VIBE2 1차 초안과 실제 구현의 차이점 확인",
+          "테스트 시나리오의 재현 가능성 검증",
+          "모바일 조작/화면/저장/재시작 위험 분석"
+        ],
+        "risks": [
+          "VIBE2 1차 초안과 실제 구현의 컨셉 차이로 인한 테스트 실패 가능성",
+          "모바일 화면의 불확실성으로 인한 사용자 경험 저하 위험"
+        ],
+        "model": "qwen3:1.7b",
+        "attempt": 1,
+        "startedAt": "2026-09-10T04:05:50.959Z",
+        "completedAt": "2026-09-10T04:06:49.353Z",
+        "modelMetrics": {
+          "promptEvalCount": 2050,
+          "evalCount": 229,
+          "promptEvalMs": 41211,
+          "evalMs": 15356,
+          "totalMs": 58225
+        }
+      }
+    ],
+    "completedAt": "2026-09-10T04:06:49.353Z"
+  },
+  "departmentCycleGate": "PASS",
+  "departmentImplementations": [
+    {
+      "role": "development",
+      "status": "PASS",
+      "candidateId": "P0004-20260910-34435634617-development",
+      "changedFiles": [
+        "game.html"
+      ],
+      "summary": "게임의 핵심 루프를 실제 플레이 가능한 작은 기능 1개로 구현합니다. 최신 DESIGN_BASELINE을 실제 플레이 가능한 작은 기능 1개로 구현합니다.",
+      "expectedEffect": "게임의 핵심 루프가 실제로 플레이되는 가장 작은 Web 1차 구현만 만들고 모바일 입력·저장 의미·현재 정체성을 유지합니다."
+    },
+    {
+      "role": "graphics",
+      "status": "NO_SCOPE",
+      "reason": "NO_FUNCTIONAL_RESPONSIBILITY_FOR_THIS_FLOOR"
+    },
+    {
+      "role": "qa",
+      "status": "NO_SCOPE",
+      "reason": "NO_FUNCTIONAL_RESPONSIBILITY_FOR_THIS_FLOOR"
+    },
+    {
+      "role": "balance",
+      "status": "NO_SCOPE",
+      "reason": "NO_FUNCTIONAL_RESPONSIBILITY_FOR_THIS_FLOOR"
+    }
+  ],
+  "integration": {
+    "mode": "COMMON_BASE_THREE_WAY",
+    "mergeModes": [
+      {
+        "path": "game.html",
+        "role": "development",
+        "mode": "THEIRS_ONLY"
+      }
+    ],
+    "conflictsResolved": 0,
+    "conflicts": [],
+    "finalIntegrationQa": "PENDING_INDEPENDENT_PROMOTION_GATE"
+  },
+  "vibe2DevelopmentIntelligence": {
+    "version": 2,
+    "contextPlan": null,
+    "failureFingerprint": null,
+    "priorVerifiedResolution": null,
+    "priorVerifiedCheckpoint": null,
+    "implementationImpact": {
+      "version": 1,
+      "status": "GAMEPLAY_IMPLEMENTATION",
+      "score": 5,
+      "max": 5,
+      "changedFiles": [
+        "game.html"
+      ],
+      "metaOnly": [],
+      "visualFiles": [],
+      "gameplayFiles": [
+        "game.html"
+      ],
+      "implementationCredit": true
+    },
+    "policy": {
+      "version": 1,
+      "role": "integration",
+      "precedence": [
+        "VERIFIED_LEARNING",
+        "PROJECT_POLICY",
+        "AGENTS_POLICY",
+        "ACTIVE_OWNER_INTENT",
+        "IMMUTABLE_SAFETY"
+      ],
+      "effective": {
+        "priorCheckpointCandidateId": null,
+        "priorFailureResolutionCandidateId": null,
+        "sourcePath": "web-games/bug-defense",
+        "workLane": "FULL",
+        "repairMode": "MODEL",
+        "sourceRootExclusive": true,
+        "protectedValues": [
+          "save-meaning",
+          "core-loop"
+        ],
+        "independentQaRequired": true,
+        "goal": "[WEB_FIRST_IMPLEMENTATION] 아트북 전체 기능을 한 번에 재현하지 않는다. 핵심 루프가 실제로 플레이되는 가장 작은 Web 1차 구현만 만들고 모바일 입력·저장 의미·현재 정체성을 유지한다. 방금 완성된 최신 아트북 DESIGN_BASELINE을 현재 개발 설계도로 사용한다. 기술 구조 → 플레이어블 개발판 B로 이어지는 첫 작은 구현 작업 1개만 수행한다. [FEATURE_DEVELOPMENT] 최신 DESIGN_BASELINE을 실제 플레이 가능한 작은 기능 1개로 구현한다. 우선순위는 맵/지역 확장 → 그래픽·환경·UI → 적·몬스터·콘텐츠 → 퀘스트·전투·성장 시스템 순이며, 현재 코드에 안전하게 연결되는 가장 작은 vertical slice 1개만 고른다. 설계 근거: 6단계·퀘스트·지역·보스 인과를 실제 게임 사실 자료팩과 Vibe2 1차 초안(…. 평가문·별점·아트북 문서 표현·이미지 장수 자체를 게임 코드 목표로 삼지 않는다. 곤충 디펜스의 저장키·핵심루프·기존 플레이 의미를 유지하고 전면 재작성은 하지 않는다. 아트북의 장르·핵심루프·스토리 큰 방향·저장 의미는 임의로 바꾸지 않는다. Vibe 공용 실행계약(full-development, T5)을 따르되 AI 부서 교정이 우선한다. 부서 사이클 최종 제약: 개발 워커에게 VIBE2 1차 초안과 실제 구현의 차이점, 테스트 시나리오, 재현 가능성에 대한 구체적 제약을 제공",
+        "gameId": "P0004",
+        "directMainWrite": false,
+        "selfApprove": false,
+        "paidApi": false,
+        "bypassIndependentQa": false,
+        "graphicsGameplayAuthority": false
+      },
+      "immutableSafety": {
+        "directMainWrite": false,
+        "selfApprove": false,
+        "paidApi": false,
+        "bypassIndependentQa": false,
+        "graphicsGameplayAuthority": false
+      }
+    },
+    "checkpoint": {
+      "version": 1,
+      "status": "IMPLEMENTED_PENDING_QA",
+      "gameId": "P0004",
+      "role": "integration",
+      "sourceCommit": "3b8fc45b944e084b21d3b57bcae6d954e3d50e1b",
+      "candidateId": "P0004-20260910-34435634617",
+      "goal": "[WEB_FIRST_IMPLEMENTATION] 아트북 전체 기능을 한 번에 재현하지 않는다. 핵심 루프가 실제로 플레이되는 가장 작은 Web 1차 구현만 만들고 모바일 입력·저장 의미·현재 정체성을 유지한다. 방금 완성된 최신 아트북 DESIGN_BASELINE을 현재 개발 설계도로 사용한다. 기술 구조 → 플레이어블 개발판 B로 이어지는 첫 작은 구현 작업 1개만 수행한다. [FEATURE_DEVELOPMENT] 최신 DESIGN_BASELINE을 실제 플레이 가능한 작은 기능 1개로 구현한다. 우선순위는 맵/지역 확장 → 그래픽·환경·UI → 적·몬스터·콘텐츠 → 퀘스트·전투·성장 시스템 순이며, 현재 코드에 안전하게 연결되는 가장 작은 vertical slice 1개만 고른다. 설계 근거: 6단계·퀘스트·지역·보스 인과를 실제 게임 사실 자료팩과 Vibe2 1차 초안(…. 평가문·별점·아트북 문서 표현·이미지 장수 자체를 게임 코드 목표로 삼지 않는다. 곤충 디펜스의 저장키·핵심루프·기존 플레이 의미를 유지하고 전면 재작성은 하지 않는다. 아트북의 장르·핵심루프·스토리 큰 방향·저장 의미는 임의로 바꾸지 않는다. Vibe 공용 실행계약(full-development, T5)을 따르되 AI 부서 교정이 우선한다. 부서 사이클 최종 제약: 개발 워커에게 VIBE2 1차 초안과 실제 구현의 차이점, 테스트 시나리오, 재현 가능성에 대한 구체적 제약을 제공",
+      "completed": [
+        "development: 게임의 핵심 루프를 실제 플레이 가능한 작은 기능 1개로 구현합니다. 최신 DESIGN_BASELINE을 실제 플레이 가능한 작은 기능 1개로 구현합니다."
+      ],
+      "changedFiles": [
+        "game.html"
+      ],
+      "nextAction": "독립 후보 QA와 Vibe2 release gate를 통과한 뒤에만 승격한다.",
+      "pendingCi": [
+        "INDEPENDENT_PROMOTION_QA",
+        "VIBE2_RELEASE_GATE"
+      ],
+      "blocker": null,
+      "acceptanceCriteria": [
+        "기획부의 자기 전문 범위 근거 요약이 명확히 설명되어 있어",
+        "기획부의 자기 전문 범위 근거 요약이 정확히 1개 문장으로 쓰여 있어",
+        "Vibe2 1차 초안의 기획 부서 확정이 부족",
+        "아트북 컨셉 드리프트가 존재함",
+        "기존 아트북의 저장 의미와 핵심 루프를 유지해야 함",
+        "Vibe 결과는 현재 코드와 아트북 기준선에 맞지 않음",
+        "저장 의미·핵심 루프·완성 아트북의 큰 방향을 임의로 변경함",
+        "QA PASS를 허위로 선언함"
+      ],
+      "failureFingerprint": null,
+      "updatedAt": "2026-09-10T04:16:11.991Z"
+    }
+  },
+  "generatedAt": "2026-09-10T04:16:11.991Z",
+  "completionAuthority": "INDEPENDENT_QA_AND_JAY"
+}
