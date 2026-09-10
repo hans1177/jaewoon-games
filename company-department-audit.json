@@ -168,18 +168,18 @@
     },
     "webRuntimeHealth": {
       "latestRun": {
-        "runId": 34505518499,
+        "runId": 34518269999,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "f92666cbd2d3a4e22a058da3c51f0322fd50b543",
-        "updatedAt": "2026-09-10T17:01:17Z"
+        "headSha": "317fd2ee09d9e854243cf9148df1b8707da000d7",
+        "updatedAt": "2026-09-10T19:06:12Z"
       },
       "latestSuccessfulRun": {
-        "runId": 34505518499,
+        "runId": 34518269999,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "f92666cbd2d3a4e22a058da3c51f0322fd50b543",
-        "updatedAt": "2026-09-10T17:01:17Z"
+        "headSha": "317fd2ee09d9e854243cf9148df1b8707da000d7",
+        "updatedAt": "2026-09-10T19:06:12Z"
       },
       "formalBridge": "tools/company-qa-public-web-evidence.mjs"
     },
@@ -194,7 +194,9 @@
         "FAILED": 0,
         "STALE": 0
       },
-      "primaryFindings": []
+      "primaryFindings": [
+        "NO_WORK_ORDER:artbook-work-orders/2026-09-11-daechung-rpg.json"
+      ]
     }
   },
   "nextPriority": "Require a successful Unity Android emulator runtime-smoke run before marking Unity QA VERIFIED."
