@@ -1,7 +1,7 @@
 // 파일명: qa/vibe2-training-sample.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildVerifiedTrainingSample, MAX_PATCH_BYTES } from '../tools/vibe2-training-sample.mjs';
+import { buildVerifiedTrainingSample, MAX_PATCH_BYTES, TRAINING_SAMPLE_VERSION } from '../tools/vibe2-training-sample.mjs';
 
 function evidence(overrides = {}) {
   return {
@@ -30,6 +30,7 @@ test('검증된 실제 diff를 bugfix 학습 샘플로 만든다', () => {
     browserQa: 'PASS',
     performance: { playerImpactScore: 0 },
   });
+  assert.equal(sample.version, TRAINING_SAMPLE_VERSION);
   assert.equal(sample.taskType, 'bugfix');
   assert.equal(sample.difficulty, 'bug');
   assert.equal(sample.independentQa, 'PASS');
@@ -39,6 +40,31 @@ test('검증된 실제 diff를 bugfix 학습 샘플로 만든다', () => {
   assert.match(sample.output, /검증된 패치/);
   assert.match(sample.output, /\+new/);
   assert.equal(sample.provenance.sourceRevision, 'abc123');
+});
+
+test('role이 비어 있어도 실제 기능 구현 goal과 게임 코드 변경은 coding으로 분류한다', () => {
+  const sample = buildVerifiedTrainingSample({
+    evidence: evidence({
+      role: '',
+      diagnosticFocus: null,
+      goal: '[FEATURE_DEVELOPMENT] 플레이 가능한 작은 기능 1개를 구현한다',
+      summary: 'Integrated parallel department implementation',
+    }),
+    patch: 'diff --git a/index.html b/index.html\n-old\n+new',
+    sourceRevision: 'def456',
+  });
+  assert.equal(sample.taskType, 'coding');
+  assert.equal(sample.difficulty, 'simple');
+});
+
+test('Unity 게임 소스 변경은 unity 작업으로 우선 분류한다', () => {
+  const sample = buildVerifiedTrainingSample({
+    evidence: evidence({ sourcePath: 'unity-games/daechung-rpg', role: '', diagnosticFocus: null, goal: '플레이어 이동을 구현한다' }),
+    patch: 'diff --git a/Assets/Move.cs b/Assets/Move.cs\n-old\n+new',
+    sourceRevision: 'unity123',
+  });
+  assert.equal(sample.taskType, 'unity');
+  assert.equal(sample.difficulty, 'unity-build');
 });
 
 test('브라우저 QA 실패 샘플은 생성하지 않는다', () => {
