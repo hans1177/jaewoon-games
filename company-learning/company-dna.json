@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-10T15:01:18.440Z",
+  "updatedAt": "2026-09-10T15:10:02.819Z",
   "items": [
     {
       "key": "VIBE2:autonomous-candidate-safe-promotion",
@@ -73,12 +73,28 @@
             "vibe-regression"
           ],
           "verifiedAt": "2026-09-10T14:59:34.086Z"
+        },
+        {
+          "id": "vibe2-P0009-20260911-34492879802",
+          "gameId": "P0009",
+          "genre": "UNKNOWN",
+          "conditionKey": "AUTONOMOUS_DEV",
+          "outcome": "SUCCESS",
+          "delta": 0,
+          "blockers": [],
+          "sourceRevision": "856487911a139abccacbec49c8bd8157689e9a04",
+          "evidence": [
+            ".autonomous/evidence/P0009-20260911-34492879802.json",
+            "independent-candidate-browser-qa",
+            "vibe-regression"
+          ],
+          "verifiedAt": "2026-09-10T15:07:49.144Z"
         }
       ],
       "createdAt": "2026-09-09T21:41:20.582Z",
-      "updatedAt": "2026-09-10T15:01:18.439Z",
+      "updatedAt": "2026-09-10T15:10:02.818Z",
       "summary": {
-        "successEvidence": 4,
+        "successEvidence": 5,
         "failureEvidence": 0,
         "distinctGames": 1,
         "distinctGenres": 0,
@@ -169,12 +185,30 @@
             "score-100"
           ],
           "verifiedAt": "2026-09-10T15:01:01.490Z"
+        },
+        {
+          "id": "vibe2-post-release-monster-adventure-34493677517",
+          "gameId": "monster-adventure",
+          "genre": "UNKNOWN",
+          "conditionKey": "POST_RELEASE_PUBLIC_HEALTH",
+          "outcome": "SUCCESS",
+          "delta": 0,
+          "blockers": [],
+          "sourceRevision": "cb5552270ba5b6adf4bd33188fd883f609600d85",
+          "evidence": [
+            "public-game-health.json",
+            "company-qa-runtime-evidence.json",
+            "release-task-autonomous-P0009-20260911-34492879802",
+            "status-healthy",
+            "score-100"
+          ],
+          "verifiedAt": "2026-09-10T15:09:43.678Z"
         }
       ],
       "createdAt": "2026-09-09T21:41:20.582Z",
-      "updatedAt": "2026-09-10T15:01:18.440Z",
+      "updatedAt": "2026-09-10T15:10:02.819Z",
       "summary": {
-        "successEvidence": 4,
+        "successEvidence": 5,
         "failureEvidence": 0,
         "distinctGames": 1,
         "distinctGenres": 0,
@@ -195,7 +229,9 @@
     "vibe2-P0009-20260910-34491139194",
     "vibe2-post-release-monster-adventure-34491960167",
     "vibe2-P0009-20260910-34492075119",
-    "vibe2-post-release-monster-adventure-34492751327"
+    "vibe2-post-release-monster-adventure-34492751327",
+    "vibe2-P0009-20260911-34492879802",
+    "vibe2-post-release-monster-adventure-34493677517"
   ],
   "antiPatterns": []
 }
