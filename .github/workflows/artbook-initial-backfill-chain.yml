@@ -1,9 +1,6 @@
 name: Artbook Initial Backfill Chain
 
 on:
-  workflow_run:
-    workflows: ['Free Artbook Department Bots']
-    types: [completed]
   schedule:
     - cron: '29 * * * *'
   workflow_dispatch:
