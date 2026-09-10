@@ -1,0 +1,62 @@
+name: Main Write Guard
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - 'tools/main-write-guard.mjs'
+      - 'qa/main-write-guard.test.mjs'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - 'tools/main-write-guard.mjs'
+      - 'qa/main-write-guard.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Unit test deterministic guard
+        run: node --test qa/main-write-guard.test.mjs
+
+      - name: Resolve comparison base
+        id: base
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            git fetch origin "${{ github.base_ref }}"
+            echo "ref=origin/${{ github.base_ref }}" >> "$GITHUB_OUTPUT"
+          else
+            before='${{ github.event.before }}'
+            if [[ -n "$before" && "$before" != '0000000000000000000000000000000000000000' ]]; then
+              echo "ref=$before" >> "$GITHUB_OUTPUT"
+            else
+              echo "ref=HEAD^" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - name: Reject new workflow direct writes to main
+        run: node tools/main-write-guard.mjs --base='${{ steps.base.outputs.ref }}' --head=HEAD
+
+      - name: Protection status
+        shell: bash
+        run: |
+          echo 'MAIN_DIRECT_WRITE_GUARD=PASS'
+          echo 'PR_ONLY_MERGE_GUARD=ACTIVE_FOR_CHANGED_WORKFLOWS'
+          echo 'ADMIN_PROTECTION_BLOCKER=branch/ruleset protection must still be enforced by repository admin settings'
