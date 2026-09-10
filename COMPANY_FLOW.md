@@ -334,11 +334,11 @@ ArtbookEditor:
   preserveRevisionHistoryByDefault: true
 
 Vibe2:
-  DESIGN_ONLY: VALIDATION_AND_LEARNING
+  startsAt: DEVELOPMENT_CONFIRMED
   DEVELOPMENT_CONFIRMED: VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT
   RELEASE_CONFIRMED: PRIMARY_DEVELOPMENT_ENGINE
-  primaryDesignAuthorInDesignOrDevelopmentClass: false
-  primaryArtbookAuthorInDesignOrDevelopmentClass: false
+  primaryDesignAuthorInDevelopmentClass: false
+  primaryArtbookAuthorInDevelopmentClass: false
 
 flows:
   DESIGN_ONLY:
@@ -354,7 +354,6 @@ flows:
       - GAME_DESIGNER_REVISION
       - DESIGN_BASELINE_GATE
       - ARTBOOK_EDITOR_CORE_STRATEGY
-      - VIBE2_VALIDATION_LEARNING
     baselineReadyRequires:
       - GAME_SEED_COMPLETE
       - DISTINCT_GAME_IDENTITY
