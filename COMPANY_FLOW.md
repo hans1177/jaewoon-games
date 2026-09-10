@@ -1,206 +1,263 @@
-# 재운컴퍼니 게임 개발 플로우
+# 재운컴퍼니 중앙 제작 플로우
 
-## 문서 권한 순서
+이 문서는 재운컴퍼니의 **유일한 사람용 제작 정책 원본**이다. 분류, 설계, 부서 회의, 테스트, Vibe2 역할, 아트북 역할이 충돌하면 이 문서를 기준으로 판단한다.
 
-운영 규칙이 충돌하면 다음 순서로 판단한다.
+`company-directive.json`은 이 문서를 실행하기 위한 짧은 기계 설정만 가진다. 다른 문서에는 같은 정책을 다시 복제하지 않는다. 다른 문서·상태 파일·과거 아트북에 예전 규칙이 남아 있더라도 이 문서와 충돌하면 이 문서가 우선한다.
 
-1. 한재운의 최신 직접 지시
-2. `company-directive.json`
-3. `COMPANY_FLOW.md`, `DEPARTMENT_STANDARDS.md`, `ARTBOOK_POLICY.md`, `ARTBOOK_LIFECYCLE.md`, `AUTONOMOUS_DEVELOPMENT_POLICY.md`
-4. `company-status.json`, `director-supervision-status.json`, 각종 감사·빌드·health 상태
+## 1. 권한 순서
 
-상태 파일은 증거와 이력을 기록하며 상위 정책을 덮어쓰지 않는다.
+1. 사용자의 최신 직접 지시
+2. `COMPANY_FLOW.md`의 현재 중앙 정책
+3. `company-directive.json`의 실행 설정
+4. 구현 세부 문서와 도구 계약
+5. 상태·감사·빌드·health 기록
 
-## 회사 구조
+상태 파일은 증거와 이력을 기록할 뿐 정책을 새로 만들지 않는다.
 
-재운컴퍼니는 planning, development, graphics, QA, balance 5개 실무 부서와 총괄 AI로 운영한다.
+## 2. 회사 AI 구조
 
-- **Vibe2**: 회사 전체가 사용하는 제작·분석·구현·그래픽·QA·검증 공용 엔진
-- **AI 부서**: 각 전문영역의 판단, 구현, 검토, 반론, 증거 책임
-- **총괄**: 우선순위 집행, 배정, 실제 실행 확인, 병목 해결, 통합/검증/인계 감독
+재운컴퍼니는 `planning`, `graphics`, `development`, `qa`, `balance` 5개 부서와 Game Designer AI, Artbook Editor AI, Vibe2, 총괄 조정 역할로 운영한다.
 
-Vibe2는 초안 전용이 아니다. 아트북 PROPOSAL은 Vibe2의 한 작업 단계일 뿐이고, 개발·그래픽·QA·릴리즈 피드백에서도 Vibe 기능을 계속 사용한다. Vibe2 결과는 부서 근거와 필요한 QA가 없으면 확정하지 않는다.
+### 고정되는 것과 바뀌는 것
 
-## 회사 우선순위
+- **역할은 고정**한다. 게임 디자이너, 기획, 그래픽, 개발, QA, 밸런스, 아트북 편집의 책임은 실행마다 바뀌지 않는다.
+- **실제 모델은 하나로 고정하지 않는다.** 무료 로컬 오픈모델 풀에서 여러 계열을 사용한다.
+- 3분류부터 각 부서는 최소 3개의 **서로 다른 실제 모델**이 같은 설계안을 독립 검토한다.
+- 기본 경량 모델 풀은 `qwen3:0.6b`, `gemma3:1b`, `llama3.2:1b`이며 실행 설정에서 교체·확장할 수 있다.
+- 같은 모델 풀을 여러 부서가 사용할 수 있지만, 한 부서의 한 회의에는 최소 3개의 distinct model 결과가 실제로 존재해야 한다.
+- 유료 API, 유료 모델, 유료 runner, 자동 초과결제는 사용하지 않는다.
 
-```text
-한재운 최신 직접 지시(owner-immediate)
-→ release-confirmed 치명적 안정성 사고
-→ completed DESIGN_BASELINE 개발 handoff
-→ development-confirmed
-→ structure-improvement
-→ planning/identity-required
-→ reviewing / other
-→ HOLD
-```
+### 부서 내부 회의
 
-새 사용자 직접 지시는 아직 시작하지 않은 자율 계획보다 항상 우선한다. 같은 단계에서는 `company-directive.json`의 엔진/기존 프로젝트 우선순위를 따른다.
-
-## 총괄의 감독 및 병목 해결
-
-총괄은 `running` 라벨을 그대로 믿지 않는다. 부서별로 다음을 확인한다.
+각 부서는 한 모델의 답을 곧바로 부서 의견으로 쓰지 않는다.
 
 ```text
-TASK_ASSIGNED
-→ EXECUTION_EVIDENCE
-→ RESULT_EVIDENCE
-→ VERIFICATION
-→ BLOCKER
-→ ACTION
+서로 다른 모델들의 독립 검토
+→ 각 의견 상호 비교
+→ 충돌·공통점 정리
+→ 부서 대표 의견 1개
 ```
 
-실시간 업무 상태는 `ACTIVE / WAITING / BLOCKED / DONE`으로 기록한다.
+부서 대표 의견에는 최소한 `KEEP / FIX / ADD / RISK / EVIDENCE`가 남아야 한다.
 
-할 일이 있는데 멈췄다면 `NO_WORK_ORDER`, `AUTOMATION_NOT_TRIGGERED`, `WORKFLOW_FAILED`, `OUTPUT_MISSING`, `VALIDATION_FAILED`, `DEPENDENCY_BLOCKED`, `PERMISSION_BLOCKED`, `EVIDENCE_ADAPTER_MISMATCH`, `STALE_QUEUE`, `BACKFILL_CHAIN_STOPPED`, `DEVELOPMENT_CHAIN_STOPPED` 등을 직접 분류한다.
+### 부서 간 회의
 
-총괄은 다음 저위험 운영 병목을 직접 복구할 수 있다.
-
-- 기존 승인 workflow가 멈췄고 같은 workflow가 active가 아니면 재-dispatch
-- 기존 게임 INITIAL 아트북 backlog가 남았는데 Artbook/Backfill chain이 모두 멈췄으면 backfill 재기동
-- 자율개발이 failure/cancelled로 끝났고 recovery run이 없으면 기존 autonomous workflow 재기동
-- owner-immediate 지시가 큐보다 우선이면 우선순위 재적용
-- stale/false-running 상태 교정
-
-같은 workflow가 queued/in_progress일 때는 중복 실행하지 않는다. 장르, 핵심 루프, 스토리 큰 방향, 전투/성장 핵심 모델, 플랫폼, 저장 호환 파괴, 과금, 유료 서비스는 총괄이 임의 결정하지 않고 사용자에게 올린다.
-
-## 아트북 = 설계도
-
-아트북은 개발 그 자체가 아니라 **개발을 지휘하는 살아있는 설계 기준선**이다.
+5개 부서는 같은 설계 기준선을 읽는다.
 
 ```text
-V0 PROPOSAL
-→ V1 DESIGN_BASELINE
-→ 필요 시 REVISION
-→ DEVELOPMENT_BASELINE
-→ 필요 시 REVISION
-→ RELEASE_BASELINE
-→ 이후 필요 시 V4+ REVISION
+5개 부서 대표 의견
+→ 서로의 의견 전체 열람
+→ 1회 반박·수정 라운드
+→ 총괄/회의 조정기가 안건별 CONSENSUS / CONFLICT / HOLD 판정
 ```
 
-- INITIAL/업데이트/수정/백필은 일일·주간 개수 제한이 없다.
-- 모든 기존 게임은 INITIAL 아트북을 가져야 하며 backlog가 0이 될 때까지 계속 처리한다.
-- Vibe2가 첫 PROPOSAL을 만든다.
-- planning/graphics/development/QA/balance가 자기 전문영역을 독립 제출한다.
-- 부서 간 교차검토는 가능하지만 다른 부서 파트를 대신 쓰지 않는다.
-- 총괄은 제출된 내용만 통합·요약한다.
-- 현재 정책 분량은 12~30컷이며 과거 10컷은 레거시 이력으로만 인정한다.
-- 아트북 완료가 곧 본개발/릴리즈 PASS를 뜻하지 않는다.
+`CONSENSUS`만 자동 설계 수정 근거가 된다. 핵심 규칙을 바꾸는 `CONFLICT`나 `HOLD`는 임의로 숨겨서 확정하지 않는다.
 
-기존 게임 INITIAL 백필은 `workflow_run` 연쇄뿐 아니라 watchdog 복구도 사용한다. 한 게임 아트북 완료 후 다음 INITIAL이 자동으로 이어져야 하고, 체인이 끊기면 총괄이 다시 기동한다.
+## 3. 설계와 아트북의 분리
 
-## 아트북 완료 후 개발 handoff
+**상세 설계와 아트북은 같은 문서가 아니다.**
 
-개발확정 게임의 `DESIGN_BASELINE`이 완료되면 그 게임은 우선 개발 큐로 넘긴다. 동시에 다른 게임의 INITIAL 아트북 백필은 독립적으로 계속된다.
+### 상세 설계
+
+- 한 프로젝트의 상세 설계 초안은 **Game Designer AI 1명**이 처음부터 끝까지 작성한다.
+- 여러 AI가 초안의 각 부분을 나눠 공동 집필하지 않는다.
+- 실제 모델은 프로젝트마다 무료 모델 풀에서 선택할 수 있다.
+- 한 수정 사이클 안에서는 초안을 작성한 Game Designer AI와 같은 모델/역할이 회의 결과를 반영해 수정본을 작성한다.
+- 부서 AI는 초안을 대신 쓰지 않고 검토·반박·근거 제출을 담당한다.
+
+### 아트북
+
+아트북은 상세 설계의 **핵심 전략 압축본**이다.
+
+- 별도의 **Artbook Editor AI 1명**이 수정 완료된 상세 설계를 읽고 전체 아트북을 편집한다.
+- 부서 AI가 아트북 페이지를 분담 집필하지 않는다.
+- Artbook Editor는 새 설정·새 수치·새 규칙을 발명할 수 없다.
+- 핵심 정체성, 플레이어 판타지, 핵심 루프, 시그니처 시스템, 성장 방향, 비주얼 방향을 중심으로 압축한다.
+- 세부 구현 설명, 긴 QA 케이스, 모든 밸런스 수치를 아트북에 복제하지 않는다.
+- 기존 아트북 이력은 덮어쓰지 않고 보존한다.
+
+### Vibe2
+
+- 3분류와 2분류에서 Vibe2는 상세 설계나 아트북의 주 저자가 아니다.
+- 검증된 설계 패턴, 수정 이유, 테스트 결과를 분석·검증·학습 컨텍스트로 축적한다.
+- AI가 만든 설계는 그 자체로 성공 학습 데이터가 아니다. 실제 QA·플레이·출시 근거가 붙은 결과만 성공 근거로 승격할 수 있다.
+
+## 4. 3분류 — Design Baseline
+
+3분류의 목적은 **좋은 게임 방향을 설계하고 개발에 넘길 수 있는 설계 기준선을 확정하는 것**이다.
+
+자동 source-code 신규 개발은 하지 않는다. 기존 공개 Web판은 아카이브/근거로 보존한다.
+
+### 3분류 흐름
 
 ```text
-게임 A DESIGN_BASELINE 완료 ─→ 게임 A 개발 handoff
-                         └→ 게임 B INITIAL 백필 계속
+Game Designer AI 1명 상세 설계 초안
+→ 5개 부서 × 각 최소 3개 실제 모델 독립 검토
+→ 부서 내부 대표 의견
+→ 5부서 회의 + 1회 반박
+→ CONSENSUS / CONFLICT / HOLD 정리
+→ 같은 Game Designer AI가 CONSENSUS 반영 수정
+→ Design Baseline 게이트
+→ Artbook Editor AI 1명이 핵심 전략 아트북 작성
+→ Vibe2 검증·학습 후보 기록
 ```
 
-개발 중 설계 변경이 필요하면 구현에서 몰래 바꾸지 않고 `ARTBOOK_REVISION_REQUEST`를 만든다.
+### 3분류 확정 조건
 
-## 한 개발 플로어의 실제 구조
+- 게임 정체성과 플레이어가 느껴야 할 핵심 재미가 명확하다.
+- 핵심 루프가 행동 → 피드백 → 선택 → 보상으로 연결된다.
+- 대표 시스템과 성장 방향이 서로 모순되지 않는다.
+- 비주얼 방향과 모바일 UX 방향이 정의돼 있다.
+- 개발부·QA가 최소 프로토타입에서 검증할 질문을 만들 수 있다.
+- 치명적인 미해결 충돌을 합의된 것처럼 숨기지 않는다.
 
-현재 자동개발은 한 게임 source root를 한 플로어가 소유하고, 그 안에서 부서 작업을 병렬화한다.
+이 조건을 만족하면 `DESIGN_BASELINE`이다. 이는 영구 설계 잠금이 아니라 **2분류 검증에 넘길 수 있는 기준선**이다.
+
+## 5. 2분류 — Development Baseline
+
+2분류의 목적은 **3분류 설계가 실제로 재미있고 현실적으로 구현 가능한지 검증해 개발 기준선을 확정하는 것**이다.
+
+2분류부터 회의는 아이디어 중심이 아니라 실제 플레이·기술·제작·QA 근거 중심으로 더 상세해진다.
+
+### 2A. Web Gameplay Validation
+
+Web 테스트베드는 최종 제품이 아니라 빠른 검증 수단이다.
+
+검증 대상:
+- 핵심 루프와 반복 재미
+- 전투/상호작용 템포
+- 성장·보상·경제 구조
+- 난이도와 적 수치
+- 스킬/선택 구조
+- 모바일 터치 동선과 UI 흐름
+- 반복 플레이에서 생기는 지루함·악용 구조
+
+Web에서 핵심 재미가 검증되지 않으면 Unity 본개발 범위를 키우지 않고 설계 수정으로 돌린다.
+
+### 2B. Unity Technical Validation
+
+Web 검증을 통과한 핵심, 또는 엔진 자체가 재미에 직접 영향을 주는 핵심을 작은 Unity 프로토타입으로 검증한다.
+
+검증 대상:
+- 실제 Android FPS와 프레임 안정성
+- 메모리·발열·로딩
+- 물리·카메라·애니메이션
+- AI/NavMesh 및 다수 객체 처리
+- 파티클·이펙트 비용
+- 화면비·터치 입력
+- 저장/불러오기와 업데이트 호환
+- 앱 중단 → 복귀
+- 구현 복잡도와 기술 부채
+- 에셋 제작량과 QA 경우의 수
+
+턴제·카드·디펜스처럼 Web으로 핵심 재미를 충분히 확인할 수 있는 게임은 Web 우선으로 간다. 3D 액션·물리·대규모 맵처럼 엔진 특성이 핵심 재미에 직접 관여하면 작은 Unity 기술 프로토타입을 더 일찍 병행할 수 있다.
+
+### 2분류 상세 회의
+
+- **기획:** 핵심 재미 보존, 기능 축소 시 재미 손실
+- **개발:** 구현 난이도, 구조 복잡도, 성능, 세이브, Unity 이전성
+- **그래픽:** 에셋 제작량, 애니메이션/이펙트 비용, GPU·메모리 부담
+- **QA:** 재현성, 회귀 위험, 입력·저장·복귀·기기별 오류
+- **밸런스:** 성장 속도, 전투 시간, 경제 인플레, 난이도 곡선
+
+각 안건은 `KEEP / CHANGE / DROP / HOLD`로 끝낸다. Game Designer AI는 합의된 테스트 결과를 반영하되 **핵심 재미를 보존하면서 기술 비용과 위험을 낮추는 방향**으로 설계를 수정한다.
+
+Web/Unity 근거를 반영한 설계와 기술 계획이 통과하면 `DEVELOPMENT_BASELINE`이다. 3→2 승격 시 Artbook Editor가 아트북을 새 revision으로 갱신한다.
+
+## 6. 1분류 — Release Baseline / Vibe2 본개발
+
+1분류에서는 운영 중심이 바뀐다.
+
+**Vibe2가 확정된 개발 기준선을 따라 실제 구현·통합·수정의 주 개발 주체가 되고, 부서 AI는 기본적으로 오류·위험 감시 역할을 맡는다.**
+
+### 기본 루프
 
 ```text
-플로어 준비/예약
-→ 5부서 독립 리뷰 병렬
-→ planning-final 통합 + 책임 파일 배정
-→ development / graphics / QA / balance 격리 code workspace 병렬 수정
-→ 비충돌 변경 자동 통합
-→ 진짜 same-file conflict만 명시적 해결
-→ 통합 후보 생성
-→ 강한 독립 최종 QA/Promotion
-→ 기존 Vibe 릴리즈 게이트
-→ main 공개
-→ Public Game Health / Unity runtime 검증
-→ Company DNA/Vibe 학습
-→ 필요 시 Artbook revision/baseline upgrade
-→ 다음 플로어
+확정 설계/Development Baseline
+→ Vibe2 구현
+→ Unity 빌드/실행
+→ 부서 AI 오류·위험 검토
+→ 독립 QA
+→ Vibe2 수정
+→ 재빌드·재검증
+→ 출시 게이트
 ```
 
-### 부서 코드 작업 원칙
+### 1분류 부서 역할
 
-- planning은 최종 제약과 파일 소유권을 통합하고 소스를 직접 덮어쓰지 않는다.
-- development/graphics/QA/balance는 서로 겹치지 않는 책임 파일이 있으면 격리 workspace에서 동시에 수정할 수 있다.
-- `NO_SCOPE`는 해당 부서가 이번 플로어에서 분리 가능한 책임 파일을 갖지 않았다는 정상 결과다.
-- 비충돌 변경은 공통 baseline에서 자동 통합한다.
-- 같은 파일/같은 줄의 실제 충돌만 conflict 해결 단계로 보낸다.
-- 공유 branch 쓰기는 최종 통합 이후에만 허용한다.
+- **기획:** 핵심 재미·설계 기준선 이탈 감지
+- **개발:** 크래시, 성능, 구조, 세이브, 빌드 위험 감지
+- **그래픽:** 깨짐, 가독성, 애니메이션/에셋 오류, 렌더링 비용 감지
+- **QA:** 버그, 재현 절차, 회귀, 기기별·입력·복귀 문제 감지
+- **밸런스:** 명백한 밸런스 붕괴, 악용 가능 수치 감지
 
-## 수정 직후 바로 릴리즈하지 않는다
+일상 개발마다 부서가 새로운 대형 기능을 제안해 개발 방향을 흔들지 않는다.
 
-부서별 수정본은 공개 대상이 아니다.
+다만 핵심 루프 붕괴, 치명적 성능 한계, 저장 손상, 구현 불가능한 핵심 설계, 출시 차단 수준의 밸런스/UX 문제를 발견하면 **예외 설계 회의**를 다시 열 수 있다.
+
+### 1분류 테스트
+
+Web은 안정판/참고 아카이브다. 기능 본개발의 기준은 Unity Android 실제 빌드다.
+
+- 실제 Android 입력
+- FPS/메모리/발열/로딩
+- 장시간 실행
+- 크래시·ANR성 문제
+- 앱 중단/복귀
+- 저장 데이터 손상
+- 업데이트 후 세이브 호환
+- 다양한 화면비와 UI
+- 전체 회귀 테스트
+
+최종 판정은 `RELEASE_READY / FIX_AND_REVERIFY / RELEASE_BLOCKED`로 남긴다. 2→1 승격 시 아트북을 갱신하고, 출시 기준이 확정되면 최종 `RELEASE_BASELINE` revision을 남긴다.
+
+## 7. 분류 수와 승격
+
+- 1분류 `release-confirmed`: 정확히 2개
+- 2분류 `development-confirmed`: 정확히 3개
+- 3분류 `design-only`: 나머지 전부
+- 게임 ID를 특정 분류에 영구 고정하지 않는다.
+- 최신 설계 성숙도, 실제 playable 근거, 기술 검증, Unity 준비도, QA 근거를 사용해 승격·하락한다.
+- 한 게임이 승격해 고정 수를 넘으면 다른 게임이 자동 하락해 2/3/나머지 개수를 유지한다.
+- 기존 공개 Web판과 저장 의미는 분류 이동 때문에 삭제하지 않는다.
+
+### 승격에 따른 설계/아트북 처리
 
 ```text
-부서별 병렬 수정
-→ 통합 후보
-→ 최종 통합 QA
-→ Promotion
-→ Vibe 릴리즈 게이트
-→ 공개
+3 → 2: Design Baseline + 부서회의 결과 확인 → Web/Unity 검증 계획 → 아트북 revision
+2 → 1: Development Baseline + 실제 기술/플레이 근거 확인 → Release 개발계획 → 아트북 revision
+출시 직전: Release Baseline 확정 → 최종 아트북 revision
 ```
 
-즉 **수정 직후 자동 검증은 즉시 시작하지만, 검증을 건너뛰고 즉시 공개하지 않는다.**
+## 8. 개발 플로어와 안전 규칙
 
-## 릴리즈 후 루프
+- 한 개발 플로어는 한 게임 source root를 독점한다.
+- 같은 source root를 여러 AI가 동시에 직접 수정하지 않는다.
+- 1분류 실제 코드 수정은 Vibe2 개발 흐름에서 격리 후보 → 통합 → 독립 QA → release gate 순서로 간다.
+- 수정 직후 검증 없이 main/public으로 바로 내보내지 않는다.
+- 기존 게임 핵심 규칙, 세이브 의미, 과금, 플랫폼, 대형 콘텐츠 방향은 사용자 결정 없이 몰래 바꾸지 않는다.
+- 임시 wrapper·override 체인을 누적하기보다 담당 시스템을 직접 수정한다.
+- Unity MCP 등 로컬 개발 연결은 외부 공개 포트가 아니라 `127.0.0.1` 우선이다.
+- APK 성공은 비어 있지 않은 실제 파일과 SHA-256 등 검증 근거가 있어야 한다.
 
-릴리즈가 끝이 아니다.
+## 9. 검증 결과의 Vibe2 학습
+
+학습 우선순위는 다음과 같다.
 
 ```text
-검증된 통합본
-→ 릴리즈
-→ 실제 public health/runtime 확인
-→ 기획/개발/QA/그래픽/밸런스 재평가
-→ Company DNA/Vibe에 검증된 성공/실패 학습
-→ 설계 영향이 있으면 Artbook revision 또는 baseline upgrade
-→ 다음 개발
+AI 설계 제안
+→ 부서 다중모델 검토
+→ 실제 Web/Unity 테스트
+→ 독립 QA
+→ 실제 개발/출시 결과
+→ 성공/실패 원인 라벨링
+→ 검증된 패턴만 Vibe2 학습 근거
 ```
 
-Web 릴리즈는 공개 health 결과를 확인하고, Unity는 APK/런타임 증거를 확인한다. 성공 학습과 다음 성공 사이클은 실제 운영 검증 뒤에 이어진다. 실패 시 공개 안정판 보호와 복구 개발을 우선한다.
+AI끼리 서로 높은 점수를 준 것만으로 성공 샘플이 되지 않는다. 프로젝트 단위 데이터 분리를 유지하고, 검증되지 않은 외부 원리나 합성 설계는 `PROPOSAL` 컨텍스트로만 사용할 수 있다.
 
-## 기존 Web 게임 정책
+## 10. 중앙화 규칙
 
-기존 Web 게임은 읽기 전용이 아니다. 다음 저위험 유지보수가 가능하다.
+이 정책을 수정할 때는 **이 파일만 사람용 정책 원본으로 수정한다.**
 
-- 버그 수정
-- 모바일 UI/UX
-- 접근성
-- 성능
-- 구조 정리
-- 회귀 수정
-- 경로/실행 오류 수정
-
-핵심 게임플레이, 밸런스, 세이브 의미, 주요 콘텐츠 방향 변경은 owner gate를 따른다. 신규 Web 게임 제작은 기본 자동 타깃이 아니다.
-
-## QA와 검증
-
-QA는 코드 문구만 보는 부서가 아니라 실제 게임 검증 부서다.
-
-- Web: 실제 브라우저 실행, 입력, 재로드, 저장 유지, 모바일 화면, 런타임 오류
-- Unity: APK 빌드뿐 아니라 런타임 실행, 입력, 프로세스 생존, 치명 오류, 화면 증거
-
-빌드 성공만으로 QA PASS하지 않는다. 의미 있는 수정 뒤에는 기존 부서 판정을 그대로 승계하지 않고 현재 상태를 다시 평가한다.
-
-## 공개/빌드 원칙
-
-- 테스트 APK와 정식 Play Store 출시는 구분한다.
-- APK 성공은 비어 있지 않은 실제 파일과 SHA-256 등 검증 근거를 요구한다.
-- 홈페이지 노출은 제작 승인/릴리즈 승인과 동일하지 않다.
-- 유료 API, 유료 runner, 유료 초과 사용은 명시 승인 없이는 금지한다.
-
-## 주요 파일
-
-- `company-directive.json` — 최신 사용자 지시와 회사 최상위 운영 정책
-- `COMPANY_FLOW.md` — 회사 전체 제작/검증/인계 흐름
-- `.github/agents/director.agent.md` — 총괄 실제 감독/복구 역할
-- `DEPARTMENT_STANDARDS.md` — 부서별 최소 업무/검증 기준
-- `ARTBOOK_POLICY.md`, `ARTBOOK_LIFECYCLE.md` — 아트북 설계도 정책과 버전 수명주기
-- `AUTONOMOUS_DEVELOPMENT_POLICY.md` — 자동개발 선택/진단/실행 계약
-- `director-supervision-status.json` — 실제 직원 상태와 병목/복구 근거
-- `game-artbooks.json` — 아트북 완료 기준 registry
-- `game-catalog.json` — 게임별 단계/공개 메타데이터
-- `public-game-health.json` — 공개판 운영 검증 근거
-
-회사 문서가 실제 최신 구현과 충돌하면 최신 직접 지시와 `company-directive.json`을 우선하고, 문서를 즉시 현재 구현에 맞춰 갱신한다.
+다른 문서에는 이 문장의 세부 내용을 복사해 별도 정책 버전을 만들지 않는다. 실행에 필요한 숫자·모델 목록·게이트 플래그만 `company-directive.json`에 기계 설정으로 둔다. 과거 아트북/로그/상태 파일은 역사적 증거로 보존하며 새 정책 문서처럼 취급하지 않는다.

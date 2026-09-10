@@ -2,24 +2,24 @@ name: Free Artbook Department Bots
 
 on:
   workflow_dispatch:
+    inputs:
+      game_id:
+        description: 'Optional game id. Empty = automatically select the game most in need of a design cycle.'
+        required: false
+        type: string
   schedule:
     - cron: '5 23 * * *' # 08:05 KST
   push:
     branches: [main]
     paths:
+      - 'COMPANY_FLOW.md'
+      - 'company-directive.json'
+      - 'game-catalog.json'
       - 'artbook-work-orders/**'
-      - 'artbook-second-work-queue.json'
-      - 'tools/artbook-prepare-daily.mjs'
-      - 'tools/vibe2-artbook-story-draft.mjs'
-      - 'tools/artbook-department-runner.mjs'
-      - 'tools/artbook-second-work-runner.mjs'
-      - 'tools/artbook-visual-plan-runner.mjs'
-      - 'tools/artbook-collaboration-runner.mjs'
-      - 'tools/artbook-director-review.mjs'
-      - 'tools/artbook-director-presentation.mjs'
-      - 'tools/artbook-gate.mjs'
-      - 'tools/artbook-assemble.mjs'
-      - 'tools/artbook-postprocess.mjs'
+      - 'tools/company-design-cycle.mjs'
+      - 'tools/artbook-production-pipeline.mjs'
+      - 'tools/artbook-fact-pack.mjs'
+      - 'tools/artbook-learning-context.mjs'
       - '.github/workflows/artbook-free-department-bots.yml'
 
 permissions:
@@ -30,108 +30,73 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  ARTBOOK_LOCAL_MODEL: qwen3:0.6b
   OLLAMA_HOST: 127.0.0.1:11434
 
 jobs:
-  context:
+  multimodel-design-cycle:
     runs-on: ubuntu-latest
-    outputs:
-      run: ${{ steps.target.outputs.run }}
-      date: ${{ steps.target.outputs.date }}
-      mode: ${{ steps.target.outputs.mode }}
-      game_id: ${{ steps.target.outputs.game_id }}
-      work_order: ${{ steps.target.outputs.work_order }}
+    timeout-minutes: 45
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
         with:
           ref: main
-      - name: Prepare daily initial or same-day second work
-        run: node tools/artbook-prepare-daily.mjs
-      - name: Resolve prepared target
+          fetch-depth: 2
+
+      - name: Resolve design-cycle target
         id: target
         shell: bash
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         run: |
           set -euo pipefail
-          node - <<'NODE' >> "$GITHUB_OUTPUT"
+          node <<'NODE' >> "$GITHUB_OUTPUT"
           const fs=require('fs');
-          const c=JSON.parse(fs.readFileSync('artbook-daily-context.json','utf8'));
-          console.log(`run=${c.run?'true':'false'}`);
-          console.log(`date=${c.date||''}`);
-          console.log(`mode=${c.mode||''}`);
-          console.log(`game_id=${c.gameId||''}`);
-          console.log(`work_order=${c.workOrderPath||''}`);
+          const path=require('path');
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const games=(catalog.games||[]).filter(g=>[1,2,3].includes(Number(g.productionTier)));
+          function latestStatus(gameId){
+            const root=path.join('design',gameId);
+            if(!fs.existsSync(root))return null;
+            const dates=fs.readdirSync(root).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x)).sort().reverse();
+            for(const date of dates){
+              const file=path.join(root,date,'cycle-status.json');
+              if(!fs.existsSync(file))continue;
+              try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{}
+            }
+            return null;
+          }
+          let target=null;
+          if(requested){
+            target=games.find(g=>g.id===requested)||null;
+            if(!target)throw new Error(`Unknown game_id: ${requested}`);
+          }else{
+            const ranked=games.map((g,index)=>{
+              const latest=latestStatus(g.id);
+              const tierMismatch=!latest||Number(latest.tier)!==Number(g.productionTier);
+              const date=String(latest?.date||'0000-00-00');
+              const regularPriority=Number(g.productionTier)===2?0:Number(g.productionTier)===3?1:2;
+              return {g,index,latest,tierMismatch,date,regularPriority};
+            }).sort((a,b)=>Number(b.tierMismatch)-Number(a.tierMismatch)||a.regularPriority-b.regularPriority||a.date.localeCompare(b.date)||a.index-b.index);
+            target=ranked[0]?.g||null;
+          }
+          if(!target){
+            console.log('run=false');
+            process.exit(0);
+          }
+          const now=new Date();
+          const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
+          const get=t=>parts.find(x=>x.type===t)?.value||'';
+          const date=`${get('year')}-${get('month')}-${get('day')}`;
+          console.log('run=true');
+          console.log(`game_id=${target.id}`);
+          console.log(`tier=${target.productionTier}`);
+          console.log(`date=${date}`);
           NODE
-      - name: Install local Ollama for Vibe2 draft
-        if: steps.target.outputs.run == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          installed=0
-          for attempt in 1 2 3; do
-            echo "OLLAMA_INSTALL_ATTEMPT=$attempt/3"
-            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then
-              installed=1
-              break
-            fi
-            sleep $((attempt * 4))
-          done
-          test "$installed" = 1
-          command -v ollama >/dev/null
-          nohup ollama serve > /tmp/ollama.log 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0
-            sleep 2
-          done
-          cat /tmp/ollama.log || true
-          exit 1
-      - name: Pull free open model for Vibe2 draft
-        if: steps.target.outputs.run == 'true'
-        run: |
-          ollama pull "$ARTBOOK_LOCAL_MODEL"
-          echo "LOCAL_MODEL=$ARTBOOK_LOCAL_MODEL"
-          echo 'PAID_API=NO'
-          echo 'API_KEY_REQUIRED=NO'
-      - name: Vibe2 authors first story draft
-        if: steps.target.outputs.run == 'true'
-        env:
-          ARTBOOK_DATE: ${{ steps.target.outputs.date }}
-          ARTBOOK_GAME_ID: ${{ steps.target.outputs.game_id }}
-        run: node tools/vibe2-artbook-story-draft.mjs
-      - name: Upload prepared work order
-        if: steps.target.outputs.run == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: daily-work-order
-          path: |
-            artbook-daily-context.json
-            artbook-work-orders/${{ steps.target.outputs.date }}-${{ steps.target.outputs.game_id }}.json
-            artbook-submissions/${{ steps.target.outputs.game_id }}/${{ steps.target.outputs.date }}/vibe2-first-draft.json
-            artbook-submissions/${{ steps.target.outputs.game_id }}/${{ steps.target.outputs.date }}/visuals/vibe2-draft-*.svg
-          retention-days: 1
-          if-no-files-found: error
 
-  round1:
-    needs: context
-    if: needs.context.outputs.run == 'true'
-    strategy:
-      fail-fast: false
-      matrix:
-        role: [planning, graphics, development, qa, balance]
-    runs-on: ubuntu-latest
-    timeout-minutes: 18
-    steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
-        with:
-          ref: main
-      - name: Restore today's work order
-        uses: actions/download-artifact@v4
-        with:
-          name: daily-work-order
-          path: .
       - name: Install local Ollama
+        if: steps.target.outputs.run == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -145,7 +110,6 @@ jobs:
             sleep $((attempt * 4))
           done
           test "$installed" = 1
-          command -v ollama >/dev/null
           nohup ollama serve > /tmp/ollama.log 2>&1 &
           for i in $(seq 1 30); do
             curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0
@@ -153,254 +117,72 @@ jobs:
           done
           cat /tmp/ollama.log || true
           exit 1
-      - name: Pull free open model
-        run: |
-          ollama pull "$ARTBOOK_LOCAL_MODEL"
-          echo "LOCAL_MODEL=$ARTBOOK_LOCAL_MODEL"
-          echo 'PAID_API=NO'
-          echo 'API_KEY_REQUIRED=NO'
-      - name: Department initial or second work
-        env:
-          ARTBOOK_ROLE: ${{ matrix.role }}
-          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
-          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
+
+      - name: Pull all configured free department models
+        if: steps.target.outputs.run == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          if [ '${{ needs.context.outputs.mode }}' = 'SECOND_WORK' ]; then
-            node tools/artbook-second-work-runner.mjs
-          else
-            node tools/artbook-department-runner.mjs
-          fi
-      - name: Department AI authors visual-first pages
-        env:
-          ARTBOOK_ROLE: ${{ matrix.role }}
-          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
-          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
-        run: node tools/artbook-visual-plan-runner.mjs
-      - name: Upload department-owned section and visuals
-        uses: actions/upload-artifact@v4
-        with:
-          name: round1-${{ matrix.role }}
-          path: |
-            artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/${{ matrix.role }}.json
-            artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/visuals/${{ matrix.role }}.svg
-            artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/visuals/${{ matrix.role }}-*.svg
-          retention-days: 1
-          if-no-files-found: error
+          node -e "const d=require('./company-directive.json'); const p=[...new Set(d.ai.modelPool||[])]; if(p.length<(d.ai.minDistinctModelsPerDepartment||3)) process.exit(2); for(const m of p) console.log(m)" > /tmp/models.txt
+          while IFS= read -r model; do
+            [ -n "$model" ] || continue
+            echo "PULL_MODEL=$model"
+            ollama pull "$model"
+          done < /tmp/models.txt
+          echo 'PAID_API=NO'
+          echo 'API_KEY_REQUIRED=NO'
 
-  collect-round1:
-    needs: [context, round1]
-    if: needs.context.outputs.run == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download all department sections
-        uses: actions/download-artifact@v4
-        with:
-          pattern: round1-*
-          path: .artbook-round1
-          merge-multiple: true
-      - name: Verify five employee visual assignments
+      - name: Run centralized design, meeting and artbook cycle
+        if: steps.target.outputs.run == 'true'
+        env:
+          ARTBOOK_GAME_ID: ${{ steps.target.outputs.game_id }}
+          ARTBOOK_DATE: ${{ steps.target.outputs.date }}
+        run: node tools/artbook-production-pipeline.mjs
+
+      - name: Verify multimodel and authorship gates
+        if: steps.target.outputs.run == 'true'
+        env:
+          ARTBOOK_GAME_ID: ${{ steps.target.outputs.game_id }}
+          ARTBOOK_DATE: ${{ steps.target.outputs.date }}
         shell: bash
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs');
-          const expected={planning:2,graphics:2,development:2,qa:1,balance:1};
-          for(const [role,count] of Object.entries(expected)){
-            const file=`.artbook-round1/${role}.json`;
-            if(!fs.existsSync(file))throw new Error(`${role} json missing`);
-            const d=JSON.parse(fs.readFileSync(file,'utf8')),p=d.presentation;
-            if(p?.mode!=='VISUAL_FIRST_EMPLOYEE_AUTHORED'||p?.generatedBy?.assistantAuthored!==false||p?.pages?.length!==count)throw new Error(`${role} visual assignment incomplete`);
-            for(let i=1;i<=count;i++)if(!fs.existsSync(`.artbook-round1/visuals/${role}-${i}.svg`))throw new Error(`${role}-${i}.svg missing`);
+          const path=require('path');
+          const d=require('./company-directive.json');
+          const file=path.join('design',process.env.ARTBOOK_GAME_ID,process.env.ARTBOOK_DATE,'cycle-status.json');
+          const s=JSON.parse(fs.readFileSync(file,'utf8'));
+          if(s.status!=='COMPLETE')throw new Error('cycle incomplete');
+          if(Number(s.tier)!==Number('${{ steps.target.outputs.tier }}'))throw new Error('tier mismatch');
+          if(Number(s.tier)===1){
+            if(s.vibe2PrimaryDeveloper!==true||s.designChanged!==false)throw new Error('tier1 role contract failed');
+          }else{
+            if(s.designer?.singleAuthor!==true||s.designer?.sameModelRevised!==true)throw new Error('designer contract failed');
+            if(s.departments?.count!==5||s.departments?.rebuttalRounds!==1)throw new Error('meeting contract failed');
+            for(const [role,audit] of Object.entries(s.departments.modelAudit||{})){
+              if(audit.pass!==true||audit.count<(d.ai.minDistinctModelsPerDepartment||3))throw new Error(`${role} distinct model gate failed`);
+            }
+            if(s.artbook?.singleEditor!==true||s.artbook?.departmentPageAuthorship!==false||s.artbook?.newClaimsAdded!==false)throw new Error('artbook editor contract failed');
           }
-          console.log('DEPARTMENT_ROUND=5/5');
-          console.log('DEPARTMENT_VISUAL_PAGES=8/8');
-          console.log('ASSISTANT_AUTHORED_PAGES=0');
+          console.log('CENTRAL_POLICY=COMPANY_FLOW.md');
+          console.log('MULTIMODEL_GATE=PASS');
+          console.log('AUTHORSHIP_GATE=PASS');
           NODE
-      - name: Bundle department round for peer review
-        uses: actions/upload-artifact@v4
-        with:
-          name: round1-bundle
-          path: .artbook-round1/
-          include-hidden-files: true
-          retention-days: 1
-          if-no-files-found: error
 
-  round2:
-    needs: [context, collect-round1]
-    if: needs.context.outputs.run == 'true'
-    strategy:
-      fail-fast: false
-      matrix:
-        role: [planning, graphics, development, qa, balance]
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
-        with:
-          ref: main
-      - name: Restore all five department results
-        uses: actions/download-artifact@v4
-        with:
-          name: round1-bundle
-          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
-      - name: Install local Ollama
+      - name: Commit design-cycle evidence
+        if: steps.target.outputs.run == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          installed=0
-          for attempt in 1 2 3; do
-            echo "OLLAMA_INSTALL_ATTEMPT=$attempt/3"
-            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then
-              installed=1
-              break
-            fi
-            sleep $((attempt * 4))
-          done
-          test "$installed" = 1
-          command -v ollama >/dev/null
-          nohup ollama serve > /tmp/ollama.log 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0
-            sleep 2
-          done
-          cat /tmp/ollama.log || true
-          exit 1
-      - name: Pull free open model
-        run: ollama pull "$ARTBOOK_LOCAL_MODEL"
-      - name: Rate other departments with one improvement and five-star scale
-        env:
-          ARTBOOK_ROLE: ${{ matrix.role }}
-          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
-          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
-        run: node tools/artbook-collaboration-runner.mjs
-      - name: Upload peer rating review
-        uses: actions/upload-artifact@v4
-        with:
-          name: round2-${{ matrix.role }}
-          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews/${{ matrix.role }}.json
-          retention-days: 1
-          if-no-files-found: error
-
-  director:
-    needs: [context, collect-round1, round2]
-    if: needs.context.outputs.run == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
-        with:
-          ref: main
-      - name: Restore department results
-        uses: actions/download-artifact@v4
-        with:
-          name: round1-bundle
-          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
-      - name: Restore peer reviews
-        uses: actions/download-artifact@v4
-        with:
-          pattern: round2-*
-          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews
-          merge-multiple: true
-      - name: Install local Ollama
-        shell: bash
-        run: |
-          set -euo pipefail
-          installed=0
-          for attempt in 1 2 3; do
-            echo "OLLAMA_INSTALL_ATTEMPT=$attempt/3"
-            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then
-              installed=1
-              break
-            fi
-            sleep $((attempt * 4))
-          done
-          test "$installed" = 1
-          command -v ollama >/dev/null
-          nohup ollama serve > /tmp/ollama.log 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0
-            sleep 2
-          done
-          cat /tmp/ollama.log || true
-          exit 1
-      - name: Pull free open model
-        run: ollama pull "$ARTBOOK_LOCAL_MODEL"
-      - name: Director fifth vote
-        env:
-          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
-          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
-        run: node tools/artbook-director-review.mjs
-      - name: Director visual cover and summary
-        env:
-          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
-          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
-        run: node tools/artbook-director-presentation.mjs
-      - name: Upload director outputs
-        uses: actions/upload-artifact@v4
-        with:
-          name: director-round
-          path: |
-            artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews/director.json
-            artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/presentation/director-presentation.json
-            artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/visuals/director-*.svg
-          retention-days: 1
-          if-no-files-found: error
-
-  finalize:
-    needs: [context, collect-round1, round2, director]
-    if: needs.context.outputs.run == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout latest main
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
-      - name: Restore department results
-        uses: actions/download-artifact@v4
-        with:
-          name: round1-bundle
-          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
-      - name: Restore peer reviews
-        uses: actions/download-artifact@v4
-        with:
-          pattern: round2-*
-          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}/reviews
-          merge-multiple: true
-      - name: Restore director outputs
-        uses: actions/download-artifact@v4
-        with:
-          name: director-round
-          path: artbook-submissions/${{ needs.context.outputs.game_id }}/${{ needs.context.outputs.date }}
-      - name: Restore prepared work order and Vibe2 draft
-        uses: actions/download-artifact@v4
-        with:
-          name: daily-work-order
-          path: .
-      - name: Run gate, assemble, and postprocess
-        env:
-          ARTBOOK_DATE: ${{ needs.context.outputs.date }}
-          ARTBOOK_GAME_ID: ${{ needs.context.outputs.game_id }}
-        run: |
-          node tools/artbook-gate.mjs
-          node tools/artbook-assemble.mjs
-          node tools/artbook-postprocess.mjs
-      - name: Commit completed artbook state
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name 'jaewoon-artbook-bots'
+          git config user.name 'jaewoon-design-bots'
           git config user.email 'actions@users.noreply.github.com'
-          git add artbook-submissions artbook-gate-status.json artbook-submission-queue.json artbook-second-work-queue.json game-artbooks.json artbook-work-orders
+          git add -- design artbook-submissions
           if git diff --cached --quiet; then
-            echo 'ARTBOOK_COMMIT=NO_CHANGES'
+            echo 'DESIGN_CYCLE_COMMIT=NO_CHANGES'
             exit 0
           fi
-          git commit -m "artbook: complete ${ARTBOOK_DATE:-today} ${ARTBOOK_GAME_ID:-target} ${ARTBOOK_MODE:-round} [skip ci]"
+          git commit -m "design: multimodel cycle ${{ steps.target.outputs.game_id }} ${{ steps.target.outputs.date }} [skip ci]"
           git pull --rebase origin main
           git push origin main
-          echo 'ARTBOOK_COMMIT=SUCCESS'
+          echo 'DESIGN_CYCLE_COMMIT=SUCCESS'
