@@ -115,11 +115,11 @@
   "verification": {
     "departmentStandardsWorkflow": {
       "latestRun": {
-        "runId": 34401753739,
+        "runId": 34427970156,
         "status": "completed",
-        "conclusion": "success",
-        "headSha": "747edca62cab9c1e8ad757d6700348c21f598bca",
-        "updatedAt": "2026-09-09T20:33:41Z"
+        "conclusion": "failure",
+        "headSha": "767b9ae1a93647c40610b6b8d60c6a71a2dfacce",
+        "updatedAt": "2026-09-10T02:04:18Z"
       },
       "latestSuccessfulRun": {
         "runId": 34401753739,
@@ -162,18 +162,18 @@
     },
     "webRuntimeHealth": {
       "latestRun": {
-        "runId": 34401932264,
+        "runId": 34408180925,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "377119a844293ef10a7a5d2efd72b1641adc6e1a",
-        "updatedAt": "2026-09-09T20:36:34Z"
+        "headSha": "55f081bf6af39b17d5d320bb979c61eadd8fba51",
+        "updatedAt": "2026-09-09T21:41:16Z"
       },
       "latestSuccessfulRun": {
-        "runId": 34401932264,
+        "runId": 34408180925,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "377119a844293ef10a7a5d2efd72b1641adc6e1a",
-        "updatedAt": "2026-09-09T20:36:34Z"
+        "headSha": "55f081bf6af39b17d5d320bb979c61eadd8fba51",
+        "updatedAt": "2026-09-09T21:41:16Z"
       },
       "formalBridge": "tools/company-qa-public-web-evidence.mjs"
     },
@@ -188,9 +188,7 @@
         "FAILED": 0,
         "STALE": 0
       },
-      "primaryFindings": [
-        "NO_WORK_ORDER:artbook-work-orders/2026-09-10-daechung-rpg.json"
-      ]
+      "primaryFindings": []
     }
   },
   "nextPriority": "Require a successful Unity Android emulator runtime-smoke run before marking Unity QA VERIFIED."
