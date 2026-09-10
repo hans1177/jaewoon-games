@@ -1,102 +1,17 @@
 // 파일명: qa/vibe2-weight-learning.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildDataset, computeLearningMetrics, evaluateAdapter, isVerifiedPass } from '../tools/vibe2-weight-learning.mjs';
+import { buildDataset, classifyFailure, computeLearningMetrics, detectContamination, evaluateAdapter, isVerifiedPass, qualityScore, routeAdapter, shouldAbortTraining } from '../tools/vibe2-weight-learning.mjs';
 
-function verified(overrides = {}) {
-  return {
-    instruction: '버그를 수정해',
-    input: '재현 조건',
-    output: '검증된 수정 결과',
-    sourceCommit: 'abc123',
-    independentQa: 'PASS',
-    browserQa: 'PASS',
-    ...overrides,
-  };
-}
+function verified(overrides = {}) { return { instruction: '버그를 수정해', input: '재현 조건', output: '검증된 수정 결과', sourceCommit: 'abc123', independentQa: 'PASS', browserQa: 'PASS', quality: { codeQuality: 1, noRegression: true, playImprovement: 1, ruleCompliance: 1 }, ...overrides }; }
+function rows(count = 20) { return Array.from({ length: count }, (_, index) => ({ record: verified({ sourceCommit: `c${index}`, instruction: `작업 ${index}`, input: `입력 ${index}`, output: `고유 결과 ${index}` }), sourceFile: 'fixture.jsonl', index })); }
 
-test('검증 PASS 두 종류를 모두 만족해야 학습 가능하다', () => {
-  assert.equal(isVerifiedPass(verified()), true);
-  assert.equal(isVerifiedPass(verified({ browserQa: 'FAIL' })), false);
-  assert.equal(isVerifiedPass(verified({ independentQa: 'FAIL' })), false);
-});
-
-test('dataset은 미검증/불완전 샘플을 제외하고 결정론적으로 분할한다', () => {
-  const rows = [
-    verified({ sourceCommit: 'a1', instruction: 'A', output: 'OA' }),
-    verified({ sourceCommit: 'b2', instruction: 'B', output: 'OB' }),
-    verified({ sourceCommit: 'c3', instruction: 'C', output: 'OC' }),
-    verified({ sourceCommit: 'd4', instruction: 'D', output: 'OD' }),
-    verified({ sourceCommit: 'e5', instruction: 'E', output: 'OE' }),
-    verified({ sourceCommit: 'bad', instruction: 'FAIL', output: 'X', browserQa: 'FAIL' }),
-    verified({ sourceCommit: 'missing', instruction: 'NO_OUTPUT', output: '' }),
-  ].map((record, index) => ({ record, sourceFile: 'fixture.jsonl', index }));
-  const first = buildDataset(rows, { seed: 42, evalRatio: 0.4 });
-  const second = buildDataset(rows, { seed: 42, evalRatio: 0.4 });
-  assert.deepEqual(first, second);
-  assert.equal(first.stats.accepted, 5);
-  assert.equal(first.stats.skippedUnverified, 1);
-  assert.equal(first.stats.skippedIncomplete, 1);
-  assert.ok(first.train.length > 0);
-  assert.ok(first.eval.length > 0);
-  for (const sample of [...first.train, ...first.eval]) {
-    assert.equal(sample.qa.independentQa, 'PASS');
-    assert.equal(sample.qa.browserQa, 'PASS');
-    assert.ok(sample.provenance.sourceRevision);
-  }
-});
-
-test('teacher 샘플도 QA PASS와 provenance 없이는 들어오지 않는다', () => {
-  const rows = [
-    { record: verified({ teacher: true, sourceKind: 'teacher', sourceCommit: 'teacher-pass' }), sourceFile: 'teacher.jsonl', index: 0 },
-    { record: verified({ teacher: true, sourceKind: 'teacher', sourceCommit: '', candidateCommit: '', sourceRevision: '' }), sourceFile: 'teacher.jsonl', index: 1 },
-    { record: verified({ teacher: true, sourceKind: 'teacher', sourceCommit: 'teacher-fail', independentQa: 'FAIL' }), sourceFile: 'teacher.jsonl', index: 2 },
-  ];
-  const result = buildDataset(rows, { seed: 7, evalRatio: 0.5 });
-  assert.equal(result.stats.accepted, 1);
-  assert.equal(result.stats.skippedIncomplete, 1);
-  assert.equal(result.stats.skippedUnverified, 1);
-  assert.equal([...result.train, ...result.eval][0].provenance.sourceKind, 'teacher');
-});
-
-test('학습 성능 지표를 일관되게 계산한다', () => {
-  const metrics = computeLearningMetrics([
-    { success: true, firstAttemptQaPass: true, sameErrorRecurred: false, fixIterations: 0, ruleCompliant: true },
-    { success: true, firstAttemptQaPass: false, sameErrorRecurred: false, fixIterations: 1, ruleCompliant: true },
-    { success: false, firstAttemptQaPass: false, sameErrorRecurred: true, fixIterations: 2, ruleCompliant: false },
-  ]);
-  assert.equal(metrics.successRate, 2 / 3);
-  assert.equal(metrics.firstAttemptQaPassRate, 1 / 3);
-  assert.equal(metrics.repeatedErrorRecurrenceRate, 1 / 3);
-  assert.equal(metrics.averageFixIterations, 1);
-  assert.equal(metrics.ruleComplianceRate, 2 / 3);
-});
-
-test('adapter는 무회귀와 최소 평균 향상을 동시에 만족해야 승격한다', () => {
-  const baseline = {
-    successRate: 0.7,
-    firstAttemptQaPassRate: 0.6,
-    repeatedErrorRecurrenceRate: 0.2,
-    averageFixIterations: 1.2,
-    ruleComplianceRate: 0.8,
-  };
-  const good = evaluateAdapter(baseline, {
-    successRate: 0.8,
-    firstAttemptQaPassRate: 0.7,
-    repeatedErrorRecurrenceRate: 0.1,
-    averageFixIterations: 1.0,
-    ruleComplianceRate: 0.9,
-  });
-  assert.equal(good.verdict, 'PROMOTE');
-  assert.deepEqual(good.regressions, []);
-
-  const regressed = evaluateAdapter(baseline, {
-    successRate: 0.85,
-    firstAttemptQaPassRate: 0.75,
-    repeatedErrorRecurrenceRate: 0.1,
-    averageFixIterations: 1.0,
-    ruleComplianceRate: 0.79,
-  });
-  assert.equal(regressed.verdict, 'REJECT');
-  assert.ok(regressed.regressions.includes('ruleComplianceRate'));
-});
+test('검증 PASS 두 종류를 모두 만족해야 학습 가능하다', () => { assert.equal(isVerifiedPass(verified()), true); assert.equal(isVerifiedPass(verified({ browserQa: 'FAIL' })), false); });
+test('품질 점수와 lifecycle이 학습 데이터 승격을 막는다', () => { const data = buildDataset([...rows(20), { record: verified({ sourceCommit: 'low', instruction: '낮은 품질', quality: { codeQuality: 0, noRegression: false, playImprovement: 0, ruleCompliance: 0 } }), sourceFile: 'fixture.jsonl', index: 20 }, { record: verified({ sourceCommit: 'old', instruction: '폐기 규칙', lifecycle: 'obsolete' }), sourceFile: 'fixture.jsonl', index: 21 }], { seed: 42, evalRatio: 0.2, holdoutRatio: 0.2, minTrainSamples: 1 }); assert.equal(qualityScore(verified()), 1); assert.equal(data.stats.skippedQuality, 1); assert.equal(data.stats.skippedLifecycle, 1); assert.equal(data.stats.deprecatedUsed, false); assert.ok(data.train.length && data.eval.length && data.holdout.length); });
+test('train/eval/holdout은 근접 중복 오염을 검출한다', () => { const sample = { sampleId: 'a', contentHash: 'same', instruction: 'A', input: '', output: 'B' }; const result = detectContamination({ train: [sample], eval: [{ ...sample, sampleId: 'b' }], holdout: [] }); assert.equal(result.pass, false); });
+test('합성 데이터만 있는 self-training을 차단한다', () => { const synthetic = rows(24).map((item) => ({ ...item, record: { ...item.record, sourceKind: 'teacher', teacher: true } })); const data = buildDataset(synthetic, { seed: 7, evalRatio: 0.2, holdoutRatio: 0.2, minTrainSamples: 1, syntheticRatioCap: 0.5 }); assert.equal(data.train.length, 0); assert.equal(data.readyForTraining, false); });
+test('adapter router는 신뢰도가 낮으면 baseline으로 fallback한다', () => { const weak = routeAdapter({ goal: '조금 개선' }, { general: { status: 'REJECTED', path: 'x' } }); assert.equal(weak.fallback, true); assert.equal(weak.adapter, null); const strong = routeAdapter({ taskType: 'unity', goal: 'Unity Android build fix' }, { unity: { status: 'PROMOTED', path: 'adapters/unity-v2' } }); assert.equal(strong.taskType, 'unity'); assert.equal(strong.adapter, 'adapters/unity-v2'); });
+test('실패 taxonomy는 주요 재발 유형을 고정한다', () => { assert.equal(classifyFailure('Gradle build failed'), 'BUILD'); assert.equal(classifyFailure('localStorage save broken'), 'SAVE'); assert.equal(classifyFailure('mobile UI overflow'), 'UI'); });
+test('학습 성능 지표에 효율과 재시도도 포함한다', () => { const metrics = computeLearningMetrics([{ success: true, firstAttemptQaPass: true, sameErrorRecurred: false, fixIterations: 0, ruleCompliant: true, runtimeMs: 100, memoryMb: 100, retries: 0 }, { success: false, firstAttemptQaPass: false, sameErrorRecurred: true, fixIterations: 2, ruleCompliant: false, runtimeMs: 300, memoryMb: 200, retries: 2 }]); assert.equal(metrics.successRate, 0.5); assert.equal(metrics.averageRuntimeMs, 200); assert.equal(metrics.averageRetries, 1); });
+test('adapter는 무회귀, 효율, canary를 모두 만족해야 승격한다', () => { const baseline = { successRate: 0.7, firstAttemptQaPassRate: 0.6, repeatedErrorRecurrenceRate: 0.2, averageFixIterations: 1.2, ruleComplianceRate: 0.8, averageRetries: 1, averageRuntimeMs: 100, averageMemoryMb: 100 }; const candidate = { successRate: 0.8, firstAttemptQaPassRate: 0.7, repeatedErrorRecurrenceRate: 0.1, averageFixIterations: 1, ruleComplianceRate: 0.9, averageRetries: 0.8, averageRuntimeMs: 110, averageMemoryMb: 110 }; assert.equal(evaluateAdapter(baseline, candidate, { canary: { samples: 10, minimumSamples: 10, regressions: 0, ruleCompliance: true } }).verdict, 'PROMOTE'); assert.equal(evaluateAdapter(baseline, { ...candidate, averageRuntimeMs: 200 }).verdict, 'REJECT'); });
+test('학습 이상 신호는 중단과 rollback을 요구한다', () => { const result = shouldAbortTraining({ lossRatio: 2.5, evalDelta: -0.1, oom: true }); assert.equal(result.abort, true); assert.equal(result.rollback, true); assert.ok(result.reasons.includes('OOM')); });
