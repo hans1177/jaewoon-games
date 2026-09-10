@@ -19,6 +19,7 @@ on:
       - assets/homepage-layout-v2.js
       - assets/company-quality-bar.js
       - assets/vibe-company-orchestration-bridge.js
+      - tools/production-classification.mjs
       - tools/company-design-cycle.mjs
       - tools/company-baseline-gate.mjs
       - tools/artbook-production-pipeline.mjs
@@ -46,6 +47,7 @@ jobs:
           node --input-type=module --check < assets/company-quality-bar.js
           node --input-type=module --check < assets/vibe-company-orchestration-bridge.js
           node --check tools/homepage-manager.mjs
+          node --check tools/production-classification.mjs
           node --check tools/artbook-fact-pack.mjs
           node --check tools/company-design-cycle.mjs
           node --check tools/company-baseline-gate.mjs
@@ -78,15 +80,19 @@ jobs:
           const pool=[...new Set(directive.ai?.modelPool||[])];
           const min=Number(directive.ai?.minDistinctModelsPerDepartment||0);
           if(min<3||pool.length<min)throw new Error(`multimodel pool insufficient: ${pool.length}/${min}`);
-          for(const token of ['Game Designer AI','Artbook Editor AI','CONSENSUS / CONFLICT / HOLD','2A. Web Gameplay Validation','2B. Unity Technical Validation','Vibe2가 확정된 개발 기준선']){
+          for(const token of ['회사 최종목표','전체 시스템 아키텍처','Game Designer AI','Artbook Editor AI','CONSENSUS / CONFLICT / HOLD','Web Gameplay Validation','Unity Technical Validation','Vibe2가 확정된 개발 기준선']){
             if(!policy.includes(token))throw new Error(`central policy missing: ${token}`);
           }
+          if(directive.production?.canonicalField!=='productionClass')throw new Error('productionClass must remain canonical');
+          if(directive.production?.fixedClassCounts!==false)throw new Error('production class counts must remain dynamic');
+          if(directive.production?.numericLabelsAreAliasesOnly!==true||directive.production?.numericLabelsOwnerRemappable!==true)throw new Error('numeric labels must remain remappable aliases only');
           for(const file of ['ARTBOOK_POLICY.md','ARTBOOK_LIFECYCLE.md','ARTBOOK_DESIGN_CONTRACT.md','ARTBOOK_OPERATIONS.md','ARTBOOK_PRODUCTION_CAPACITY.md','ARTBOOK_SUBMISSION_CONTRACT.md','VIBE2_ARTBOOK_DRAFT_POLICY.md']){
             const text=fs.readFileSync(file,'utf8');
             if(!text.includes('COMPANY_FLOW.md'))throw new Error(`${file} must point to COMPANY_FLOW.md`);
           }
-          console.log(`CENTRAL_POLICY=PASS`);
+          console.log('CENTRAL_POLICY=PASS');
           console.log(`DISTINCT_MODEL_POOL=${pool.length}`);
+          console.log('NUMERIC_CLASS_LABELS=REMAPPABLE_ALIAS_ONLY');
           NODE
 
       - name: Validate real multimodel design cycle contract
@@ -109,19 +115,22 @@ jobs:
           fi
           echo 'MULTIMODEL_DESIGN_CONTRACT=PASS'
 
-      - name: Validate tier2 baseline cannot be faked by Web smoke
+      - name: Validate DEVELOPMENT_CONFIRMED baseline cannot be faked by Web smoke
         run: |
-          node <<'NODE'
-          const fs=require('fs');
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {productionClassOf,PRODUCTION_CLASSES} from './tools/production-classification.mjs';
           const source=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
           for(const token of ['web-gameplay-validation.json','unity-technical-validation.json','unity-project-required-for-technical-validation','DEVELOPMENT_BASELINE_PENDING_VALIDATION']){
-            if(!source.includes(token))throw new Error(`tier2 evidence gate missing: ${token}`);
+            if(!source.includes(token))throw new Error(`development evidence gate missing: ${token}`);
           }
+          const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+          const numericLabels=directive.production?.numericLabels||{};
           const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
-          for(const game of (catalog.games||[]).filter(x=>Number(x.productionTier)===2)){
-            if(!game.webPath)throw new Error(`${game.id}: tier2 Web validation surface missing`);
+          for(const game of (catalog.games||[]).filter(x=>productionClassOf({},x,{numericLabels})===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED)){
+            if(!game.webPath)throw new Error(`${game.id}: DEVELOPMENT_CONFIRMED Web validation surface missing`);
           }
-          console.log('TIER2_BASELINE_EVIDENCE_CONTRACT=PASS');
+          console.log('DEVELOPMENT_BASELINE_EVIDENCE_CONTRACT=PASS');
           NODE
 
       - name: Validate historical artbook safety
