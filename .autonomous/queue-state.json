@@ -5313,6 +5313,20 @@
       "status": "RESERVED",
       "reservedAt": "2026-09-10T19:13:41.934Z",
       "leaseExpiresAt": "2026-09-10T20:43:41.934Z"
+    },
+    {
+      "date": "2026-09-11",
+      "gameId": "P0009",
+      "gameSlug": "monster-adventure",
+      "sourcePath": "web-games/monster-adventure",
+      "reason": "TIER2_WEB_FIRST_IMPLEMENTATION",
+      "runId": "34520217033",
+      "workId": "34520217033",
+      "sourceCommit": "2507c7f612d41179e381f0c8b33fd9ce3770b271",
+      "floor": 15,
+      "status": "RESERVED",
+      "reservedAt": "2026-09-10T19:24:38.948Z",
+      "leaseExpiresAt": "2026-09-10T20:54:38.948Z"
     }
   ],
   "workLedger": [
@@ -9425,6 +9439,83 @@
         {
           "state": "ASSIGNED",
           "at": "2026-09-10T19:13:41.934Z",
+          "progress": "INCOMPLETE_PROGRESS",
+          "releaseReadinessScore": 0
+        }
+      ]
+    },
+    {
+      "workId": "34520217033",
+      "workState": "ASSIGNED",
+      "developmentProgress": "INCOMPLETE_PROGRESS",
+      "owner": "autonomous-development",
+      "sourceRoot": "web-games/monster-adventure",
+      "sourceCommit": "2507c7f612d41179e381f0c8b33fd9ce3770b271",
+      "createdAt": "2026-09-10T19:24:38.948Z",
+      "updatedAt": "2026-09-10T19:24:38.948Z",
+      "retryCount": 0,
+      "evidenceRefs": [],
+      "releaseEvidence": [],
+      "releaseReadiness": {
+        "score": 0,
+        "maxScore": 100,
+        "pass": false,
+        "categories": {
+          "install_update": {
+            "weight": 20,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "core_loop": {
+            "weight": 20,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "stability": {
+            "weight": 20,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "content": {
+            "weight": 15,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "graphics_ui": {
+            "weight": 10,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "monetization": {
+            "weight": 10,
+            "earned": 0,
+            "evidenceCount": 0
+          },
+          "store": {
+            "weight": 5,
+            "earned": 0,
+            "evidenceCount": 0
+          }
+        },
+        "missingCategories": [
+          "install_update",
+          "core_loop",
+          "stability",
+          "content",
+          "graphics_ui",
+          "monetization",
+          "store"
+        ],
+        "validEvidenceCount": 0,
+        "invalidEvidence": []
+      },
+      "explicitReason": null,
+      "qaVerdict": null,
+      "implementationChanged": false,
+      "history": [
+        {
+          "state": "ASSIGNED",
+          "at": "2026-09-10T19:24:38.948Z",
           "progress": "INCOMPLETE_PROGRESS",
           "releaseReadinessScore": 0
         }
