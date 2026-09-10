@@ -4719,6 +4719,20 @@
       "status": "RESERVED",
       "reservedAt": "2026-09-10T16:10:00.121Z",
       "leaseExpiresAt": "2026-09-10T17:40:00.121Z"
+    },
+    {
+      "date": "2026-09-11",
+      "gameId": "P0002",
+      "gameSlug": "insect-survival",
+      "sourcePath": "web-games/insect-survival",
+      "reason": "TIER2_WEB_FIRST_IMPLEMENTATION",
+      "runId": "34501582554",
+      "workId": "34501582554",
+      "sourceCommit": "69faac5b7f3d61cf851964fe151206100f277a0d",
+      "floor": 7,
+      "status": "RESERVED",
+      "reservedAt": "2026-09-10T16:21:43.395Z",
+      "leaseExpiresAt": "2026-09-10T17:51:43.395Z"
     }
   ],
   "workLedger": [
@@ -7842,6 +7856,28 @@
         {
           "state": "ASSIGNED",
           "at": "2026-09-10T16:10:00.121Z",
+          "progress": "INCOMPLETE_PROGRESS"
+        }
+      ]
+    },
+    {
+      "workId": "34501582554",
+      "workState": "ASSIGNED",
+      "developmentProgress": "INCOMPLETE_PROGRESS",
+      "owner": "autonomous-development",
+      "sourceRoot": "web-games/insect-survival",
+      "sourceCommit": "69faac5b7f3d61cf851964fe151206100f277a0d",
+      "createdAt": "2026-09-10T16:21:43.395Z",
+      "updatedAt": "2026-09-10T16:21:43.395Z",
+      "retryCount": 0,
+      "evidenceRefs": [],
+      "explicitReason": null,
+      "qaVerdict": null,
+      "implementationChanged": false,
+      "history": [
+        {
+          "state": "ASSIGNED",
+          "at": "2026-09-10T16:21:43.395Z",
           "progress": "INCOMPLETE_PROGRESS"
         }
       ]
