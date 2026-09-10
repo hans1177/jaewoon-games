@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: post-modification-department-revote
@@ -205,13 +206,26 @@ jobs:
           p.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           PY
           echo 'POST_MODIFICATION_REVOTE=5_DEPARTMENTS_PLUS_DIRECTOR'
-      - name: Commit verified revote
+      - name: Commit verified revote to PR branch
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-company-revote'
           git config user.email 'actions@users.noreply.github.com'
           git add company-revotes company-status.json
+          if git diff --cached --quiet; then
+            echo 'No verified revote changes to persist.'
+            exit 0
+          fi
+          safe_request="$(printf '%s' '${{ needs.context.outputs.request_id }}' | tr -cs 'A-Za-z0-9._-' '-')"
+          branch="automation/post-modification-revote-${safe_request}-${GITHUB_RUN_ID}"
+          git switch -c "$branch"
           git commit -m "company: record ${{ needs.context.outputs.game_id }} post-modification revote"
-          git pull --rebase origin main
-          git push origin main
+          git push origin "HEAD:$branch"
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "company: record ${{ needs.context.outputs.game_id }} post-modification revote" \
+            --body "Verified five-department + director revote evidence from workflow run ${GITHUB_RUN_ID}."
