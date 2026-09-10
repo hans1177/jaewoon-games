@@ -191,6 +191,13 @@ namespace JaewoonGames.DaechungRpg
                 yield break;
             }
 
+            if (manifest == null)
+            {
+                try { File.Delete(manifestPath); } catch { }
+                _loadError = $"manifest parse {actorId}/{action}";
+                yield break;
+            }
+
             byte[] textureBytes = null;
             if (File.Exists(spritePath))
             {
