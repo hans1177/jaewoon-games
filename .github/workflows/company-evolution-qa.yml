@@ -108,7 +108,7 @@ jobs:
           grep -Fq 'ARTBOOK_PROVENANCE_GATE=PASS' tools/company-design-cycle.mjs
           grep -Fq 'aiMeetingCompletionDoesNotEqualBaselineApproval:true' tools/company-baseline-gate.mjs
           grep -Fq 'webSmokeDoesNotEqualGameplayValidation:true' tools/company-baseline-gate.mjs
-          grep -Fq 'tier2RequiresUnityTechnicalValidation:true' tools/company-baseline-gate.mjs
+          grep -Fq 'developmentConfirmedRequiresUnityTechnicalValidation:true' tools/company-baseline-gate.mjs
           if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/company-design-cycle.mjs tools/company-baseline-gate.mjs tools/artbook-production-pipeline.mjs; then
             echo 'paid/external AI key leaked into free multimodel path' >&2
             exit 1
