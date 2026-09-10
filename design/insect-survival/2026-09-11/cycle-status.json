@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "gameId": "insect-survival",
+  "date": "2026-09-11",
+  "productionClass": "DEVELOPMENT_CONFIRMED",
+  "tierAlias": 2,
+  "tier": 2,
+  "policyDocument": "COMPANY_FLOW.md",
+  "flow": "DEVELOPMENT_CONFIRMED_GATED_DIRECT",
+  "status": "BLOCKED",
+  "state": "DEVELOPMENT_BLOCKED",
+  "sourceDesign": null,
+  "evidence": {
+    "web": null,
+    "unity": null,
+    "revalidation": null
+  },
+  "meetings": {
+    "web": null,
+    "unity": null
+  },
+  "finalDesign": null,
+  "artbook": null,
+  "blockers": [
+    "design-baseline-required"
+  ],
+  "nextAction": "DESIGN_ONLY에서 DESIGN_BASELINE_READY를 먼저 만든다.",
+  "contracts": {
+    "gatedDirect": true,
+    "resumeFromLatestEvidence": true,
+    "aiMayInventValidationPass": false,
+    "webSmokeDoesNotEqualGameplayValidation": true,
+    "artbookOnlyAfterBaselineReady": true
+  },
+  "updatedAt": "2026-09-10T22:44:43.694Z",
+  "baselineGate": {
+    "policyDocument": "COMPANY_FLOW.md",
+    "productionClass": "DEVELOPMENT_CONFIRMED",
+    "tierAlias": 2,
+    "tier": 2,
+    "state": "DEVELOPMENT_BLOCKED",
+    "ready": false,
+    "blockers": [
+      "web-gameplay-validation-required",
+      "unity-project-required-for-technical-validation",
+      "unity-technical-validation-required",
+      "design-baseline-required"
+    ],
+    "meeting": {
+      "conflictCount": 0,
+      "holdCount": 0,
+      "allResolved": true
+    },
+    "evidence": {
+      "webSmoke": {
+        "supportingOnly": true,
+        "pass": true,
+        "source": "company-qa-runtime-evidence.json"
+      },
+      "webGameplay": {
+        "required": true,
+        "pass": false,
+        "source": null
+      },
+      "unityProject": {
+        "required": true,
+        "present": false,
+        "path": null
+      },
+      "unityTechnical": {
+        "required": true,
+        "pass": false,
+        "source": null
+      },
+      "revalidation": {
+        "conditional": true,
+        "pass": false,
+        "source": null
+      }
+    },
+    "contracts": {
+      "aiMeetingCompletionDoesNotEqualBaselineApproval": true,
+      "meetingHoldBlocksDesignBaseline": true,
+      "meetingConflictBlocksDesignBaseline": true,
+      "webSmokeDoesNotEqualGameplayValidation": true,
+      "developmentConfirmedIsGatedDirect": true,
+      "developmentConfirmedResumesFromLatestEvidence": true,
+      "developmentConfirmedRequiresExplicitWebGameplayValidation": true,
+      "developmentConfirmedRequiresUnityTechnicalValidation": true,
+      "developmentConfirmedPreservesExactWaitingState": true,
+      "developmentArtbookOnlyAfterBaselineReady": true,
+      "releaseConfirmedBaselineOwnedByReleasePipeline": true,
+      "numericTierIsCompatibilityAliasOnly": true,
+      "numericTierAliasOwnerRemappable": true
+    },
+    "checkedAt": "2026-09-10T22:44:43.725Z"
+  },
+  "artbookPublication": {
+    "published": false,
+    "path": null,
+    "baselineGateState": "DEVELOPMENT_BLOCKED",
+    "reason": "core-artbook-missing"
+  },
+  "artbookUi": {
+    "status": "WAITING",
+    "label": "대기중",
+    "path": "artbook-submissions/insect-survival/status.json"
+  }
+}
