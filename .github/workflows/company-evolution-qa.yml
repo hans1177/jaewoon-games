@@ -61,22 +61,6 @@ jobs:
           node --check tools/company-baseline-gate.mjs
           node --check tools/artbook-production-pipeline.mjs
 
-      - name: Validate homepage manager contract
-        run: |
-          set -euo pipefail
-          grep -Fq '홈페이지를 수정하지 않고 현재 홈 구조와 게임 데이터만 진단한다.' tools/homepage-manager.mjs
-          grep -Fq 'automaticLayoutInjectionAbsent' tools/homepage-manager.mjs
-          grep -Fq 'homepageEnhancementLoaded' tools/homepage-manager.mjs
-          grep -Fq 'HOMEPAGE_AUTO_LAYOUT_WRITE=DISABLED' tools/homepage-manager.mjs
-          grep -Fq 'workflow_dispatch:' .github/workflows/homepage-manager.yml
-          grep -Fq 'contents: read' .github/workflows/homepage-manager.yml
-          if grep -Eq '^[[:space:]]+schedule:|contents: write' .github/workflows/homepage-manager.yml; then
-            echo 'homepage manager must stay manual/read-only' >&2
-            exit 1
-          fi
-          node tools/homepage-manager.mjs
-          echo 'HOMEPAGE_MANAGER_CONTRACT=PASS'
-
       - name: Validate centralized production policy contract
         run: |
           set -euo pipefail
@@ -95,7 +79,7 @@ jobs:
           if(directive.ai?.departmentLeadModelsMustBeDistinct!==true||distinctLeads.length<5)throw new Error('five distinct lead model gate failed');
           if(leads.some(model=>!pool.includes(model)))throw new Error('department lead model must be in modelPool');
           if(directive.ai?.departmentRepresentativeAuthoredByLead!==true||directive.ai?.departmentRebuttalAuthoredByLead!==true)throw new Error('department lead ownership contract missing');
-          for(const token of ['회사 최종목표','전체 시스템 아키텍처','Gated Direct','WAITING_WEB_VALIDATION','DEVELOPMENT_BASELINE_READY','Gated Direct Release Production','BUILDING','WAITING_BUILD','WAITING_DEVICE_VALIDATION','FIX_AND_REVERIFY','RELEASE_BLOCKED','RELEASE_READY','Core Design Lock']){
+          for(const token of ['회사 최종목표','전체 시스템 아키텍처','Gated Direct','WAITING_WEB_VALIDATION','DEVELOPMENT_BASELINE_READY','Gated Direct Release Production','Build Preflight','Final Release Review','BUILDING','WAITING_BUILD','WAITING_DEVICE_VALIDATION','FIX_AND_REVERIFY','RELEASE_BLOCKED','RELEASE_READY','Core Design Lock']){
             if(!policy.includes(token))throw new Error(`central policy missing: ${token}`);
           }
           if(directive.production?.canonicalField!=='productionClass')throw new Error('productionClass must remain canonical');
@@ -107,6 +91,13 @@ jobs:
           if(release.executionMode!=='GATED_DIRECT_RELEASE_PRODUCTION'||release.resumeFromLatestEvidence!==true||release.vibe2PrimaryDeveloper!==true||release.coreDesignLock!==true)throw new Error('RELEASE_CONFIRMED gated direct settings missing');
           if(release.aiMayInventBuildPass!==false||release.aiMayInventDeviceValidationPass!==false||release.aiMayInventIndependentQaPass!==false)throw new Error('release anti-fake evidence settings missing');
           if(release.currentSourceTreeBindingRequired!==true||release.currentBuildEvidenceBindingRequired!==true||release.revalidationRequiredAfterSourceChange!==true||release.finalArtbookOnlyAfterReleaseReady!==true)throw new Error('release source/build binding or artbook gate missing');
+          if(release.buildPreflightRiskWatchRequired!==true||release.finalDepartmentRiskWatchRequiresCurrentBuildRuntimeQa!==true)throw new Error('release two-stage department risk review settings missing');
+          const releaseFlow=release.requiredFlow||[];
+          const preflight=releaseFlow.indexOf('FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT_RISK_WATCH');
+          const runtime=releaseFlow.indexOf('ANDROID_RUNTIME_VALIDATION');
+          const independentQa=releaseFlow.indexOf('INDEPENDENT_QA_AND_REGRESSION');
+          const finalReview=releaseFlow.indexOf('FIVE_DISTINCT_LEAD_FINAL_RELEASE_REVIEW');
+          if(!(preflight>=0&&runtime>preflight&&independentQa>runtime&&finalReview>independentQa))throw new Error('release two-stage review order invalid');
           for(const state of ['BUILDING','WAITING_BUILD','WAITING_DEVICE_VALIDATION'])if(!(release.waitingStates||[]).includes(state))throw new Error(`release waiting state missing: ${state}`);
           for(const state of ['FIX_AND_REVERIFY','RELEASE_BLOCKED','RELEASE_READY'])if(!(release.releaseStates||[]).includes(state))throw new Error(`release state missing: ${state}`);
           for(const file of ['ARTBOOK_POLICY.md','ARTBOOK_LIFECYCLE.md','ARTBOOK_DESIGN_CONTRACT.md','ARTBOOK_OPERATIONS.md','ARTBOOK_PRODUCTION_CAPACITY.md','ARTBOOK_SUBMISSION_CONTRACT.md','VIBE2_ARTBOOK_DRAFT_POLICY.md']){
@@ -117,6 +108,7 @@ jobs:
           console.log(`DISTINCT_DEPARTMENT_LEADS=${distinctLeads.length}`);
           console.log('DEVELOPMENT_GATED_DIRECT_POLICY=PASS');
           console.log('RELEASE_GATED_DIRECT_POLICY=PASS');
+          console.log('RELEASE_TWO_STAGE_RISK_REVIEW_POLICY=PASS');
           NODE
 
       - name: Validate production pipeline contracts
@@ -145,7 +137,11 @@ jobs:
           grep -Fq 'RELEASE_READY' tools/company-release-production-cycle.mjs
           grep -Fq 'vibe2PrimaryDeveloper:true' tools/company-release-production-cycle.mjs
           grep -Fq 'currentBuildEvidenceBindingRequired:true' tools/company-release-production-cycle.mjs
+          grep -Fq 'finalDepartmentRiskWatchUsesBuildRuntimeQaEvidence:true' tools/company-release-production-cycle.mjs
+          grep -Fq 'FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_RUNTIME_PASS' tools/company-release-production-cycle.mjs
+          grep -Fq 'FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_INDEPENDENT_QA_PASS' tools/company-release-production-cycle.mjs
           grep -Fq 'SOURCE_TO_BUILD_BINDING=PASS' tools/company-release-production-cycle.mjs
+          grep -Fq 'FINAL_DEPARTMENT_REVIEW_BUILD_RUNTIME_QA_BINDING=PASS' tools/company-release-production-cycle.mjs
           grep -Fq 'FINAL_ARTBOOK_REVISION=CREATED_AFTER_RELEASE_READY' tools/company-release-production-cycle.mjs
           node --test qa/artbook-editorial-role-contract.test.mjs
           if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/company-design-cycle.mjs tools/company-development-validation-cycle.mjs tools/company-release-production-cycle.mjs tools/company-baseline-gate.mjs tools/artbook-production-pipeline.mjs; then
@@ -174,7 +170,8 @@ jobs:
           const unityResult=fs.readFileSync('.github/workflows/vibe2-unity-release-result.yml','utf8');
           const vibeRunner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
           for(const token of ['design-development-baseline.json','vibe2-release-implementation.json','unity-android-build.json','android-runtime-validation.json','independent-release-qa.json','buildIdentity','evidenceForBuild','core-design-lock-violation','RELEASE_ARTBOOK_PROVENANCE_GATE'])if(!cycle.includes(token))throw new Error(`release evidence contract missing: ${token}`);
-          for(const token of ['aiMayInventBuildPass:false','aiMayInventDeviceValidationPass:false','aiMayInventIndependentQaPass:false','currentSourceTreeBindingRequired:true','currentBuildEvidenceBindingRequired:true','sourceChangeInvalidatesOldBuildValidation:true','finalArtbookOnlyAfterReleaseReady:true'])if(!cycle.includes(token))throw new Error(`release safety contract missing: ${token}`);
+          for(const token of ['aiMayInventBuildPass:false','aiMayInventDeviceValidationPass:false','aiMayInventIndependentQaPass:false','currentSourceTreeBindingRequired:true','currentBuildEvidenceBindingRequired:true','sourceChangeInvalidatesOldBuildValidation:true','finalDepartmentRiskWatchUsesBuildRuntimeQaEvidence:true','finalArtbookOnlyAfterReleaseReady:true'])if(!cycle.includes(token))throw new Error(`release safety contract missing: ${token}`);
+          for(const token of ['FINAL_RELEASE_REVIEW','FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_RUNTIME_PASS','FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_INDEPENDENT_QA_PASS','release-risk-watch-preflight.json','release-risk-watch.json','FINAL_DEPARTMENT_REVIEW_BUILD_RUNTIME_QA_BINDING=PASS'])if(!cycle.includes(token))throw new Error(`release final department review contract missing: ${token}`);
           for(const token of ['productionClass','DEVELOPMENT_BASELINE_READY','development-baseline-required'])if(!candidate.includes(token))throw new Error(`candidate release baseline guard missing: ${token}`);
           for(const token of ['PARTIAL_BUILD_VERIFIED','developmentBaselineImplemented:false','INDEPENDENT_RELEASE_QA=NOT_ASSERTED','DEVICE_VALIDATION=NOT_ASSERTED','gh run download','apk_sha256'])if(!unityResult.includes(token))throw new Error(`Unity result evidence separation missing: ${token}`);
           if(unityResult.includes('--independent-qa=PASS'))throw new Error('APK build workflow must not claim independent release QA PASS');
@@ -185,9 +182,27 @@ jobs:
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const release=directive.classes?.RELEASE_CONFIRMED||{};
           if(release.developmentBaselineRequired!==true||release.currentSourceTreeBindingRequired!==true||release.currentBuildEvidenceBindingRequired!==true||release.revalidationRequiredAfterSourceChange!==true)throw new Error('release directive evidence gate incomplete');
+          if(release.buildPreflightRiskWatchRequired!==true||release.finalDepartmentRiskWatchRequiresCurrentBuildRuntimeQa!==true)throw new Error('release two-stage risk review directive incomplete');
           console.log('RELEASE_BASELINE_EVIDENCE_CONTRACT=PASS');
+          console.log('RELEASE_FINAL_DEPARTMENT_REVIEW_BINDING=PASS');
           console.log('VIBE2_RELEASE_HANDOFF_CONTRACT=PASS');
           NODE
+
+      - name: Validate homepage manager contract
+        run: |
+          set -euo pipefail
+          grep -Fq '홈페이지를 수정하지 않고 현재 홈 구조와 게임 데이터만 진단한다.' tools/homepage-manager.mjs
+          grep -Fq 'automaticLayoutInjectionAbsent' tools/homepage-manager.mjs
+          grep -Fq 'homepageEnhancementLoaded' tools/homepage-manager.mjs
+          grep -Fq 'HOMEPAGE_AUTO_LAYOUT_WRITE=DISABLED' tools/homepage-manager.mjs
+          grep -Fq 'workflow_dispatch:' .github/workflows/homepage-manager.yml
+          grep -Fq 'contents: read' .github/workflows/homepage-manager.yml
+          if grep -Eq '^[[:space:]]+schedule:|contents: write' .github/workflows/homepage-manager.yml; then
+            echo 'homepage manager must stay manual/read-only' >&2
+            exit 1
+          fi
+          node tools/homepage-manager.mjs
+          echo 'HOMEPAGE_MANAGER_CONTRACT=PASS'
 
       - name: Validate historical artbook safety
         run: |
