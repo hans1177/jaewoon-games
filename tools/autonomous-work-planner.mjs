@@ -107,6 +107,12 @@ function featureDevelopmentGoal(project,book){
   const anchorText=anchor?` 설계 근거: ${anchor}.`:'';
   return `[FEATURE_DEVELOPMENT] 최신 DESIGN_BASELINE을 실제 플레이 가능한 작은 기능 1개로 구현한다. 우선순위는 맵/지역 확장 → 그래픽·환경·UI → 적·몬스터·콘텐츠 → 퀘스트·전투·성장 시스템 순이며, 현재 코드에 안전하게 연결되는 가장 작은 vertical slice 1개만 고른다.${anchorText} 평가문·별점·아트북 문서 표현·이미지 장수 자체를 게임 코드 목표로 삼지 않는다. ${clean(project?.name)||'현재 게임'}의 저장키·핵심루프·기존 플레이 의미를 유지하고 전면 재작성은 하지 않는다.`;
 }
+function unityDeepFocusGoal(project){
+  const priority=project?.slug==='daechung-rpg'
+    ?'기존 장비 UI 연결 → 퀘스트 루프 → 비어 있는 후반 지역 적/콘텐츠 연결 → 전투 UX → 모바일 UI 개선'
+    :'현재 Unity 핵심루프에서 플레이 체감이 가장 큰 미완료 기능';
+  return `[UNITY_DEEP_FOCUS] ${clean(project?.name)||'현재 게임'}의 실제 Unity 프로젝트에서 작은 구현 작업 1개를 수행한다. 우선순위: ${priority}. 기존 GameCore·카탈로그·세이브 구조를 먼저 재사용하고 저장 의미·전투 규칙·밸런스를 임의 변경하지 않는다. Web 공개판은 아카이브로 유지한다. 완료 판정에는 Android build/install/launch/runtime/save/update-install evidence가 모두 필요하다.`;
+}
 function runtimeIncident(health,slug){
   const item=(health?.games??[]).find(game=>game.gameId===slug);
   if(!item)return null;
@@ -117,6 +123,15 @@ function runtimeIncident(health,slug){
 function catalogEntry(catalog,slug){return (catalog?.games??[]).find(game=>game.id===slug)||null;}
 function isCompletedDesignBaseline(book){
   return clean(book?.status).toLowerCase()==='completed-artbook'&&clean(book?.lifecycle?.state).toUpperCase()==='DESIGN_BASELINE';
+}
+function isUnityDeepFocusReady(project,stage,filesystem=fs){
+  const productionSourcePath=clean(project?.productionSourcePath);
+  return stage?.id==='RELEASE_CONFIRMED'
+    &&clean(project?.targetEngine).toLowerCase()==='unity-android'
+    &&project?.unityProjectReady===true
+    &&clean(project?.dedicatedDevelopmentLane)==='UNITY_PRIMARY'
+    &&Boolean(productionSourcePath)
+    &&filesystem.existsSync(productionSourcePath);
 }
 export function classifyProjectStage(project,catalog){
   const entry=catalogEntry(catalog,project.slug);
@@ -140,8 +155,8 @@ function baseGoal(project,book){
 }
 function diagnosticSeverity(row){return SEVERITY_SCORE[row?.severity]||0;}
 function diagnosticsFor(map,slug){return map?.[slug]||{issues:[],topIssue:null,counts:{}};}
-function actionableForStage(stage,{incident,diagnostic,book,artbookHandoffReady=false}){
-  if(stage.id==='RELEASE_CONFIRMED')return Boolean(incident||diagnostic?.topIssue);
+function actionableForStage(stage,{incident,diagnostic,book,artbookHandoffReady=false,unityDeepFocusReady=false}){
+  if(stage.id==='RELEASE_CONFIRMED')return Boolean(incident||diagnostic?.topIssue||unityDeepFocusReady);
   if(stage.id==='PLANNING_IDENTITY_REQUIRED'||stage.id==='DESIGN_ONLY'||stage.id==='HOLD')return false;
   return Boolean(artbookHandoffReady||incident||diagnostic?.topIssue||actionableImprovementHints(book).length);
 }
@@ -163,7 +178,8 @@ export function buildAutonomousWorkOrder({portfolio,artbooks,health,catalog={gam
     const stage=classifyProjectStage(project,catalog),incident=runtimeIncident(health,project.slug),rawDiagnostic=diagnosticsFor(diagnostics,project.slug),diagnostic=actionableDiagnostic(rawDiagnostic),book=latestArtbookFor(artbooks,project.slug);
     const priorityMatch=Boolean(requestedPriority&&(requestedPriority===project.slug||requestedPriority===project.id));
     const artbookHandoffReady=priorityMatch&&stage.id==='DEVELOPMENT_CONFIRMED'&&isCompletedDesignBaseline(book);
-    return {project,stage,incident,diagnostic,rawDiagnostic,book,priorityMatch,artbookHandoffReady,actionable:actionableForStage(stage,{incident,diagnostic,book,artbookHandoffReady})};
+    const unityDeepFocusReady=isUnityDeepFocusReady(project,stage,filesystem);
+    return {project,stage,incident,diagnostic,rawDiagnostic,book,priorityMatch,artbookHandoffReady,unityDeepFocusReady,actionable:actionableForStage(stage,{incident,diagnostic,book,artbookHandoffReady,unityDeepFocusReady})};
   });
   const actionable=rows.filter(row=>row.actionable&&row.stage.codeWork);
   if(!actionable.length){
@@ -176,15 +192,18 @@ export function buildAutonomousWorkOrder({portfolio,artbooks,health,catalog={gam
   }
 
   const releaseIncident=actionable.find(row=>row.stage.id==='RELEASE_CONFIRMED'&&row.incident);
+  const unityDeepFocus=actionable.filter(row=>row.unityDeepFocusReady).sort((a,b)=>Number(b.project?.developmentFocus?.total||0)-Number(a.project?.developmentFocus?.total||0)||a.project.id.localeCompare(b.project.id))[0]||null;
   const artbookHandoff=actionable.find(row=>row.artbookHandoffReady);
-  if(!releaseIncident&&!artbookHandoff){
+  if(!releaseIncident&&!unityDeepFocus&&!artbookHandoff){
     actionable.sort((a,b)=>a.stage.rank-b.stage.rank||Number(Boolean(b.incident))-Number(Boolean(a.incident))||diagnosticSeverity(b.diagnostic?.topIssue)-diagnosticSeverity(a.diagnostic?.topIssue)||a.project.id.localeCompare(b.project.id));
   }
-  const selectedRow=releaseIncident||artbookHandoff||actionable[0],selected=selectedRow.project,incident=selectedRow.incident,diagnostic=selectedRow.diagnostic,rawDiagnostic=selectedRow.rawDiagnostic,book=selectedRow.book,stage=selectedRow.stage;
-  const microTask=microTaskFromIssue(diagnostic?.topIssue);
+  const selectedRow=releaseIncident||unityDeepFocus||artbookHandoff||actionable[0],selected=selectedRow.project,incident=selectedRow.incident,diagnostic=selectedRow.diagnostic,rawDiagnostic=selectedRow.rawDiagnostic,book=selectedRow.book,stage=selectedRow.stage;
+  const unityExecution=Boolean(selectedRow.unityDeepFocusReady&&!incident);
+  const microTask=unityExecution?null:microTaskFromIssue(diagnostic?.topIssue);
   let reason='STAGE_PRIORITY';
   let goal=baseGoal(selected,book);
   if(incident){reason='RUNTIME_INCIDENT_FIRST';goal=`실행/표시 사고 1건만 복구하는 작은 후보를 만든다. 근거: ${[incident.healthReason,...incident.issues].filter(Boolean).join(' / ')}. 공개 main은 건드리지 않고 저장키를 유지한다.`;}
+  else if(unityExecution){reason='UNITY_DEEP_FOCUS_IMPLEMENTATION';goal=unityDeepFocusGoal(selected);}
   else if(selectedRow.artbookHandoffReady){
     reason='ARTBOOK_COMPLETED_DEVELOPMENT_HANDOFF';
     const firstTask=microTask?.goal||featureDevelopmentGoal(selected,book);
@@ -195,16 +214,20 @@ export function buildAutonomousWorkOrder({portfolio,artbooks,health,catalog={gam
   const configuredMax=Math.max(0,Math.min(2,Number(portfolio.maxModelCallsPerRun??2)||0));
   const modelCalls=repairMode==='RULE_PATCH'?0:Math.max(1,configuredMax);
   const candidateId=`${selected.id}-${date.replaceAll('-','')}-${attemptsToday.length+1}`;
+  const executionSourcePath=unityExecution?clean(selected.productionSourcePath):selected.sourcePath;
+  const executionEngine=unityExecution?'unity-android':'web';
   return {
-    version:4,run:true,date,selectedReason:reason,
-    gameId:selected.id,gameSlug:selected.slug,gameName:selected.name,sourcePath:selected.sourcePath,
+    version:5,run:true,date,selectedReason:reason,
+    gameId:selected.id,gameSlug:selected.slug,gameName:selected.name,sourcePath:executionSourcePath,
+    archiveSourcePath:selected.sourcePath,productionSourcePath:selected.productionSourcePath??null,executionEngine,
     profileStatus:selected.profileStatus,mode:selected.mode,projectStage:stage.id,
-    goal,microTask,repairMode,responsibilityFiles,diagnosticTopIssue:diagnostic?.topIssue||null,
+    goal,microTask,repairMode,responsibilityFiles,diagnosticTopIssue:unityExecution?null:(diagnostic?.topIssue||null),
     protectedValues:selected.protectedValues??[],candidateId,
+    verificationContract:unityExecution?{requiresAndroidEvidence:true,requiredEvidence:['build','install','launch','runtime','save','update-install'],completionWithoutEvidence:'INCOMPLETE_PROGRESS'}:{requiresAndroidEvidence:false,requiredEvidence:[]},
     baselineBranch:portfolio.continuousDevelopmentBranch||'autonomous-dev',publicStableBranch:portfolio.publicStableBranch||'main',candidateBranchPrefix:portfolio.candidateBranchPrefix||'autonomous/candidate-',
     queue:{attemptsToday:attemptsToday.length,maxDaily,remainingBeforeSelection:remaining.length},
     budget:{cashKRW:0,paidApi:false,modelCalls,maxModelCalls:configuredMax,maxRunnerMinutes:Number(portfolio.maxRunnerMinutesPerRun??20),emergencyReserveUse:Boolean(incident),policy:'FREE_LIMIT_EQUALS_COMPANY_BUDGET'},
-    evidence:{latestArtbookId:book?.id??null,latestArtbookProductionApproval:book?.productionApproval??null,improvementHints:improvementHints(book),actionableImprovementHints:actionableImprovementHints(book),runtimeIncident:incident,diagnostics:{filesScanned:rawDiagnostic?.filesScanned??0,counts:rawDiagnostic?.counts??{},topIssue:diagnostic?.topIssue??null,editConstraints:diagnosticConstraints(rawDiagnostic)},healthScoreUsedAsGameQuality:false,artbookDevelopmentHandoff:{requestedGameId:requestedPriority||null,matched:selectedRow.artbookHandoffReady,baselineState:book?.lifecycle?.state??null,nextStage:selectedRow.artbookHandoffReady?'technical-architecture/playable-draft':null,featureAnchor:featureAnchor(book)}}
+    evidence:{latestArtbookId:book?.id??null,latestArtbookProductionApproval:book?.productionApproval??null,improvementHints:improvementHints(book),actionableImprovementHints:actionableImprovementHints(book),runtimeIncident:incident,diagnostics:{filesScanned:rawDiagnostic?.filesScanned??0,counts:rawDiagnostic?.counts??{},topIssue:unityExecution?null:(diagnostic?.topIssue??null),editConstraints:diagnosticConstraints(rawDiagnostic)},healthScoreUsedAsGameQuality:false,unityDeepFocus:{ready:selectedRow.unityDeepFocusReady,selected:unityExecution,lane:selected.dedicatedDevelopmentLane??null,projectReady:selected.unityProjectReady===true,productionSourcePath:selected.productionSourcePath??null},artbookDevelopmentHandoff:{requestedGameId:requestedPriority||null,matched:selectedRow.artbookHandoffReady,baselineState:book?.lifecycle?.state??null,nextStage:selectedRow.artbookHandoffReady?'technical-architecture/playable-draft':null,featureAnchor:featureAnchor(book)}}
   };
 }
 
@@ -228,4 +251,4 @@ async function main(){
 }
 if(import.meta.url===pathToFileURL(process.argv[1]).href)main().catch(error=>{console.error(error.message);process.exitCode=1;});
 
-export { actionableDiagnostic, actionableImprovementHints, baseGoal, diagnosticConstraints, featureDevelopmentGoal, improvementHints, issueText, kstDate, latestArtbookFor, runtimeIncident, buildDiagnosticsMap, isCompletedDesignBaseline };
+export { actionableDiagnostic, actionableImprovementHints, baseGoal, diagnosticConstraints, featureDevelopmentGoal, improvementHints, issueText, kstDate, latestArtbookFor, runtimeIncident, buildDiagnosticsMap, isCompletedDesignBaseline, isUnityDeepFocusReady, unityDeepFocusGoal };
