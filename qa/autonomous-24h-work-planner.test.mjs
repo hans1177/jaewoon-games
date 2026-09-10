@@ -261,6 +261,17 @@ test('Tier1 priority is handed to Unity lane instead of Web feature development'
   assert.equal(order.requestedGameId,'B');
 });
 
+test('non-focused Tier1 priority cannot steal the single Unity focus slot',()=>{
+  const fixture=tierFixture();
+  rebalanceProductionTiers({...fixture,filesystem:tierFilesystem});
+  const target=selectContinuousTarget({portfolio:fixture.portfolio,artbooks:fixture.artbooks,catalog:fixture.catalog,queueState:{version:2,attempts:[]},date:'2026-09-10',priorityGameId:'ga',filesystem:tierFilesystem});
+  assert.deepEqual(target.focusedGameIds,['B']);
+  assert.equal(target.project.id,'C');
+  assert.equal(target.projectLane,'TIER2_WEB_FIRST_IMPLEMENTATION');
+  assert.equal(target.explicitPriority,false);
+  assert.equal(target.dedicatedFocus,undefined);
+});
+
 test('Tier3 runtime issue cannot enter autonomous source-code FAST lane',()=>{
   const tier3Portfolio={
     status:'ACTIVE',paidApi:false,maxModelCallsPerRun:2,
