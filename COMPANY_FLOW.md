@@ -53,8 +53,11 @@ RELEASE_CONFIRMED
   Development Baseline
   → Vibe2 본개발/통합
   → Unity Android 실제 빌드
-  → 부서별 Lead AI + 보조 AI 오류·출시위험 감시
+  → 5개 부서 빌드 preflight 위험감시
+  → 실제 Android 런타임 검증
   → 독립 QA/회귀 검증
+  → 5개 부서 최종 위험감시
+      └ 동일한 현재 빌드 + 런타임 + 독립 QA 근거 사용
   → 문제 있으면 Vibe2 수정 → 재빌드 → 재검증 반복
   → Release Gate
   → Release Baseline
@@ -420,7 +423,10 @@ Vibe2 구현 또는 수정 후에는 실제 Unity Android 빌드 근거가 필�
 
 ```text
 빌드 성공 + 검증 가능한 APK/빌드 근거 존재
-→ 5부서 위험감시 + 독립 QA로 진행
+→ 5부서 빌드 preflight 위험감시
+→ 실제 Android 런타임 검증
+→ 독립 QA/회귀 검증
+→ 5부서 최종 위험감시
 
 빌드 실패
 → 실패 로그/원인 기록
@@ -434,9 +440,17 @@ Vibe2 구현 또는 수정 후에는 실제 Unity Android 빌드 근거가 필�
 
 소스가 변경됐는데 이전 빌드의 PASS를 새 빌드 근거로 재사용하면 안 된다.
 
-### 7.4 5개 부서 출시위험 감시
+### 7.4 5개 부서 출시위험 감시 — 빌드 preflight + 최종 검토
 
-빌드가 존재하면 5개 고유 Lead + 각 부서 보조 AI가 **동일한 빌드/런타임/QA 근거**를 읽고 오류와 출시 차단 위험만 감시한다.
+5개 고유 Lead + 각 부서 보조 AI의 위험감시는 **두 단계**로 수행한다.
+
+#### 1차: Build Preflight
+
+Unity Android 빌드가 현재 소스와 정확히 연결되면, 먼저 Development Baseline과 현재 빌드 근거만으로 확인 가능한 명백한 출시 차단 위험을 빠르게 점검한다. 이 단계는 실제 기기/독립 QA를 대체하지 않으며 최종 출시 승인이 아니다.
+
+#### 2차: Final Release Review
+
+실제 Android 런타임 검증과 독립 QA/회귀 검증이 모두 완료된 뒤, 5개 부서는 반드시 **동일한 현재 빌드 + 그 빌드에 묶인 Android 런타임 결과 + 그 빌드에 묶인 독립 QA 근거**를 함께 읽고 최종 위험감시를 수행한다.
 
 - 기획: Development Baseline·핵심 재미 이탈
 - 개발: 크래시, ANR성 문제, 성능, 구조, 빌드, 저장 위험
@@ -445,6 +459,8 @@ Vibe2 구현 또는 수정 후에는 실제 Unity Android 빌드 근거가 필�
 - 밸런스: 명백한 밸런스 붕괴, 악용, 진행 불가능 구간
 
 각 부서 Lead가 보조 AI 결과를 검토해 근거 없는 추측을 제거하고 대표 위험 목록을 확정한다. 새 기능 제안은 기본 출력이 아니다.
+
+최종 5부서 검토에서 사용하는 runtime/QA 근거가 현재 build ID 또는 SHA에 묶여 있지 않으면 **Final Release Review를 실행하거나 `RELEASE_READY`를 승인하면 안 된다.**
 
 ### 7.5 실제 기기/런타임 검증
 
@@ -485,9 +501,10 @@ QA가 실패하면 실패 항목, 재현 절차, 근거, 영향 범위를 기록
 확인된 실패 근거
 → Vibe2 수정
 → 새 Unity Android Build
-→ 영향 범위 기기 검증
-→ 5부서 위험감시 재확인
+→ 5부서 Build Preflight
+→ 영향 범위 Android 런타임 검증
 → 독립 QA/회귀 재검증
+→ 현재 build/runtime/QA를 읽는 5부서 Final Release Review
 → Release Gate 재평가
 ```
 
@@ -499,7 +516,7 @@ QA가 실패하면 실패 항목, 재현 절차, 근거, 영향 범위를 기록
 
 - `BUILDING`: Vibe2가 확정 Development Baseline을 구현·통합 중
 - `WAITING_BUILD`: 실제 Unity Android 빌드/빌드 근거 필요
-- `WAITING_DEVICE_VALIDATION`: 현재 빌드의 실제 Android 런타임 근거 필요
+- `WAITING_DEVICE_VALIDATION`: 현재 빌드의 실제 Android 런타임 또는 독립 QA/회귀 근거 필요
 - `FIX_AND_REVERIFY`: 빌드·부서감시·기기검증·독립 QA에서 수정 가능한 실패 발견
 - `RELEASE_BLOCKED`: 현재 조건에서 자동 수정으로 해소할 수 없는 출시 차단 사유 존재
 - `RELEASE_READY`: 현재 빌드가 모든 필수 출시 근거와 독립 QA를 통과
@@ -509,10 +526,10 @@ QA가 실패하면 실패 항목, 재현 절차, 근거, 영향 범위를 기록
 ```text
 Development Baseline 확인
 + 현재 소스에 대응하는 Unity Android Build 성공
++ 5개 부서 Build Preflight에 명백한 release blocker 없음
 + 현재 빌드 실제 Android 런타임 검증 PASS
-+ 5개 부서 출시위험 감시에서 unresolved release blocker 없음
-+ 독립 QA PASS
-+ 필수 회귀 재검증 PASS
++ 현재 빌드 독립 QA/회귀 PASS
++ 동일한 현재 build/runtime/QA 근거를 읽은 5개 부서 Final Release Review에서 unresolved release blocker 없음
 + Core Design Lock 위반 없음
 ```
 
@@ -520,7 +537,7 @@ AI 의견만으로 `RELEASE_READY`를 만들 수 없다.
 
 ### 7.9 Release Baseline과 최종 아트북
 
-`RELEASE_READY`가 확인되면 `RELEASE_BASELINE`을 생성하고 실제 승인 빌드·검증 근거를 연결한다.
+`RELEASE_READY`가 확인되면 `RELEASE_BASELINE`을 생성하고 실제 승인 빌드·검증 근거와 **최종 5부서 위험감시 근거**를 연결한다.
 
 그 뒤 **Artbook Editor가 최종 revision을 자동 생성**한다. 최종 아트북은 출시에서 살아남은 핵심 정체성·루프·시그니처 시스템·성장/밸런스·비주얼 방향만 압축하며, 긴 QA/기기 로그를 복제하지 않는다.
 
@@ -551,7 +568,7 @@ RELEASE_READY
 
 - 한 개발 플로어는 한 게임 source root를 독점한다.
 - 같은 source root를 여러 AI가 동시에 직접 수정하지 않는다.
-- `RELEASE_CONFIRMED` 실제 코드 수정은 Vibe2 개발 흐름에서 격리 후보 → 통합 → 실제 빌드 → 5부서 위험감시 → 독립 QA → release gate 순서로 간다.
+- `RELEASE_CONFIRMED` 실제 코드 수정은 Vibe2 개발 흐름에서 격리 후보 → 통합 → 실제 빌드 → 5부서 Build Preflight → Android 런타임 검증 → 독립 QA → 5부서 Final Release Review → release gate 순서로 간다.
 - 수정 직후 검증 없이 main/public으로 바로 내보내지 않는다.
 - 기존 게임 핵심 규칙, 세이브 의미, 과금, 플랫폼, 대형 콘텐츠 방향은 사용자 결정 없이 몰래 바꾸지 않는다.
 - 임시 wrapper·override 체인을 누적하기보다 담당 시스템을 직접 수정한다.

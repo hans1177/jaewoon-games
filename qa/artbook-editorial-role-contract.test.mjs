@@ -132,6 +132,19 @@ test('release current Unity source tree binds implementation build runtime and Q
   assert.match(workflow,/file\.startsWith\(`\$\{project\}\//);
 });
 
+test('final five-department release review requires current build runtime and independent QA evidence',()=>{
+  assert.match(releaseCycle,/finalDepartmentRiskWatchUsesBuildRuntimeQaEvidence:true/);
+  assert.match(releaseCycle,/FINAL_RELEASE_REVIEW/);
+  assert.match(releaseCycle,/FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_RUNTIME_PASS/);
+  assert.match(releaseCycle,/FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_INDEPENDENT_QA_PASS/);
+  assert.match(releaseCycle,/release-risk-watch-preflight\.json/);
+  assert.match(releaseCycle,/release-risk-watch\.json/);
+  assert.match(releaseCycle,/androidRuntimeValidation:runtime\?\.data/);
+  assert.match(releaseCycle,/independentReleaseQa:qa\?\.data/);
+  assert.match(releaseCycle,/allFinalEvidenceBound/);
+  assert.match(releaseCycle,/FINAL_DEPARTMENT_REVIEW_BUILD_RUNTIME_QA_BINDING=PASS/);
+});
+
 test('release-confirmed Unity candidate cannot bypass Development Baseline',()=>{
   assert.match(candidateRelease,/productionClass/);
   assert.match(candidateRelease,/RELEASE_CONFIRMED/);
