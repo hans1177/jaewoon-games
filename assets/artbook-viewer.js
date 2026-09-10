@@ -7,6 +7,7 @@
   var closeBtn=document.getElementById('reviewClose');
   var footer=document.querySelector('.footer');
   var roleNames={vibe2:'Vibe2 1차 초안',planning:'기획',graphics:'그래픽',development:'개발',qa:'QA',balance:'밸런스',director:'총괄'};
+  var statusLabels={MEETING:'회의중',WRITING:'작성중',WAITING:'대기중',COMPLETE:'완료'};
 
   function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function pathOf(v){v=String(v||'').trim();if(!v)return '/assets/mock.webp';return v.charAt(0)==='/'?v:'/'+v;}
@@ -23,6 +24,19 @@
     xhr.send();
   }
   function validCount(n){return n===10||(n>=12&&n<=30);}
+  function normalizeUiStatus(status){var v=String(status&&status.uiStatus||'').toUpperCase();return statusLabels[v]?v:'';}
+  function progressMessage(uiStatus){
+    if(uiStatus==='MEETING')return '부서 검토와 회의가 끝나기 전이라 확정 아트북을 만들지 않아.';
+    if(uiStatus==='WRITING')return '설계 기준선이 확정돼서 Artbook Editor AI가 최신 아트북을 작성하고 있어.';
+    if(uiStatus==='WAITING')return '회의에서 아직 확정되지 않은 안건이 남아 있어. 해결 전에는 새 확정 아트북을 공개하지 않아.';
+    return '최신 확정 아트북 공개가 완료됐어.';
+  }
+  function showProgress(status){
+    var uiStatus=normalizeUiStatus(status)||'WAITING';
+    var label=statusLabels[uiStatus];
+    bookEl.innerHTML='<div class="head"><small>GAME ARTBOOK · '+esc(label)+'</small><h1>'+esc(label)+'</h1><p>'+esc(progressMessage(uiStatus))+'</p></div><div class="status"><b>'+esc(status&&status.gameName||status&&status.gameId||'아트북')+'</b>'+esc(status&&status.date||'')+'</div>';
+    if(footer)footer.textContent='새 아트북 상태 · '+label;
+  }
   function showError(message){
     bookEl.innerHTML='<div class="head"><small>GAME ARTBOOK</small><h1>아트북 준비중</h1><p>확정된 최신 아트북이 아직 공개되지 않았어.</p></div><div class="status"><b>설계 기준선 통과 후 자동 공개돼.</b>'+esc(message||'공개 아트북 없음')+'</div>';
     if(footer)footer.textContent='DESIGN_BASELINE 통과 후 최신 아트북 자동 공개';
@@ -67,12 +81,12 @@
     var gate=(item.publication&&item.publication.baselineGateState)||item.lifecycleState||'BASELINE';
     var title=item.title||item.gameName||'게임 아트북';
     var hook=c.oneLineHook||c.identity||'확정 설계 핵심 전략';
-    var html='<div class="head"><small>확정 아트북 · CORE STRATEGY</small><h1>'+esc(title)+'</h1><p>'+esc(hook)+'</p><div class="meta"><span>'+esc(item.gameName||item.gameId||'게임')+'</span><span>'+esc(item.createdAt||item.date||'')+'</span><span>'+esc(gate)+'</span><span>공개본</span></div></div>';
+    var html='<div class="head"><small>확정 아트북 · CORE STRATEGY</small><h1>'+esc(title)+'</h1><p>'+esc(hook)+'</p><div class="meta"><span>'+esc(item.gameName||item.gameId||'게임')+'</span><span>'+esc(item.createdAt||item.date||'')+'</span><span>'+esc(gate)+'</span><span>완료</span></div></div>';
     html+='<div class="notice">설계 기준선을 통과한 상세 설계에서 핵심 전략만 압축한 현재 공개 아트북이야.</div><div class="pages">';
     for(var i=0;i<sections.length;i++)html+='<article class="page"><div class="info"><div class="pageTop"><span class="pageNo">'+(i+1)+' / '+sections.length+'</span><span class="role">ARTBOOK EDITOR</span></div><h2>'+esc(sections[i][0])+'</h2><p>'+esc(sections[i][1])+'</p></div></article>';
     html+='</div>';
     bookEl.innerHTML=html;
-    if(footer)footer.textContent='확정 설계 핵심 전략 아트북 · 최신 공개본';
+    if(footer)footer.textContent='확정 설계 핵심 전략 아트북 · 완료';
   }
   function render(item){
     if(item&&item.format==='core-strategy'&&item.content){renderCore(item);return;}
@@ -91,19 +105,30 @@
     if(footer)footer.textContent='아트북 '+count+'장 · 부서 평가 별도 확인';
     bindReview(item);
   }
-  function loadLegacy(gameId){
+  function addProgressNotice(status){
+    var uiStatus=normalizeUiStatus(status);
+    if(!uiStatus||uiStatus==='COMPLETE')return;
+    var label=statusLabels[uiStatus];
+    var head=bookEl.querySelector('.head');
+    if(head)head.insertAdjacentHTML('afterend','<div class="notice"><b>새 아트북 '+esc(label)+'</b><br>'+esc(progressMessage(uiStatus))+' 지금 보이는 내용은 이전에 완료된 확정본이야.</div>');
+    if(footer)footer.textContent='새 아트북 '+label+' · 현재 화면은 이전 완료본';
+  }
+  function loadLegacy(gameId,publicStatus){
     loadJson('/game-artbooks.json',function(err,registry){
-      if(err||!registry){showError(err&&err.message);return;}
+      if(err||!registry){if(normalizeUiStatus(publicStatus))showProgress(publicStatus);else showError(err&&err.message);return;}
       var item=latestBook(registry,gameId);
-      if(item){render(item);return;}
-      showError('이 게임의 공개 아트북이 아직 없어.');
+      if(item){render(item);addProgressNotice(publicStatus);return;}
+      if(normalizeUiStatus(publicStatus))showProgress(publicStatus);else showError('이 게임의 공개 아트북이 아직 없어.');
     });
   }
   function start(){
     var gameId=getParam('game')||'daechung-rpg';
-    loadJson('/artbook-submissions/'+encodeURIComponent(gameId)+'/current.json',function(err,current){
-      if(!err&&current&&current.published===true&&current.homepageVisible===true){render(current);return;}
-      loadLegacy(gameId);
+    loadJson('/artbook-submissions/'+encodeURIComponent(gameId)+'/status.json',function(statusErr,publicStatus){
+      if(statusErr)publicStatus=null;
+      loadJson('/artbook-submissions/'+encodeURIComponent(gameId)+'/current.json',function(err,current){
+        if(!err&&current&&current.published===true&&current.homepageVisible===true){render(current);addProgressNotice(publicStatus);return;}
+        loadLegacy(gameId,publicStatus);
+      });
     });
   }
 
