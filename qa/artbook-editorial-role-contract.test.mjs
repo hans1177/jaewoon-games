@@ -6,6 +6,7 @@ const flow=fs.readFileSync('COMPANY_FLOW.md','utf8');
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const cycle=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const devCycle=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
+const releaseCycle=fs.readFileSync('tools/company-release-production-cycle.mjs','utf8');
 const pipeline=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
 const workflow=fs.readFileSync('.github/workflows/artbook-free-department-bots.yml','utf8');
 const roles=['planning','graphics','development','qa','balance'];
@@ -27,6 +28,7 @@ test('five departments have five distinct lead model ids and remappable assignme
   assert.match(flow,/Lead model ID는 중복되면 안 된다|Lead model ID/);
   assert.match(cycle,/DEPARTMENT_LEAD_GATE/);
   assert.match(devCycle,/DEPARTMENT_LEAD_GATE/);
+  assert.match(releaseCycle,/DEPARTMENT_LEAD_GATE/);
 });
 
 test('each department uses lead plus assistants with at least three distinct real models',()=>{
@@ -38,6 +40,7 @@ test('each department uses lead plus assistants with at least three distinct rea
   assert.equal(directive.ai.modelIdentityFixed,false);
   assert.match(cycle,/reviewModelsFor/);
   assert.match(devCycle,/reviewModelsFor/);
+  assert.match(releaseCycle,/reviewModelsFor/);
   assert.match(workflow,/Pull configured free department models/);
 });
 
@@ -101,7 +104,12 @@ test('development and release responsibilities use semantic production classes',
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityPurpose,'TECHNICAL_VALIDATION_PROTOTYPE');
   assert.equal(directive.classes.RELEASE_CONFIRMED.vibe2PrimaryDeveloper,true);
   assert.equal(directive.classes.RELEASE_CONFIRMED.departmentDefaultRole,'ERROR_AND_RELEASE_RISK_REVIEW');
+  assert.equal(directive.classes.RELEASE_CONFIRMED.executionMode,'GATED_DIRECT_RELEASE_PRODUCTION');
   assert.match(flow,/Web Gameplay Validation/);
   assert.match(flow,/Unity Technical Validation/);
-  assert.match(flow,/Vibe2가 확정된 Development Baseline/);
+  assert.match(flow,/Development Baseline.*Vibe2|Vibe2.*Development Baseline/s);
+  assert.match(flow,/Core Design Lock/);
+  assert.match(releaseCycle,/vibe2PrimaryDeveloper:true/);
+  assert.match(releaseCycle,/currentBuildEvidenceBindingRequired:true/);
+  assert.match(pipeline,/RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION/);
 });
