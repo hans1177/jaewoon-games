@@ -1,5 +1,5 @@
 // 파일명: tools/artbook-production-pipeline.mjs
-// 역할: 중앙 정책에 따라 FACT PACK → 단일 디자이너 초안 → 다중모델 부서회의 → 동일 디자이너 수정 → 단일 아트북 편집을 실행한다.
+// 역할: 중앙 정책에 따라 FACT PACK → 단일 디자이너 초안 → 다중모델 부서회의 → 동일 디자이너 수정 → 단일 아트북 편집 → 분류별 근거 게이트를 실행한다.
 import { spawn } from 'node:child_process';
 
 const gameId=String(process.env.ARTBOOK_GAME_ID||'').trim();
@@ -18,9 +18,11 @@ console.log(`ARTBOOK_PIPELINE_GAME=${gameId}`);
 console.log('POLICY_DOCUMENT=COMPANY_FLOW.md');
 await run('tools/artbook-fact-pack.mjs');
 await run('tools/company-design-cycle.mjs');
+await run('tools/company-baseline-gate.mjs');
 console.log('ARTBOOK_PIPELINE_COMPLETE=YES');
 console.log('DESIGN_AUTHOR=ONE_GAME_DESIGNER_AI');
 console.log('DEPARTMENT_MODE=MULTIMODEL_REVIEW_MEETING');
 console.log('ARTBOOK_AUTHOR=ONE_ARTBOOK_EDITOR_AI');
 console.log('DEPARTMENT_ARTBOOK_AUTHORSHIP=NO');
+console.log('BASELINE_APPROVAL=EVIDENCE_GATE_SEPARATE_FROM_AI_MEETING');
 console.log('PAID_API=NO');
