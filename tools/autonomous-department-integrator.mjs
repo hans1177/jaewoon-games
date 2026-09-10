@@ -5,6 +5,14 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { extractStorageKeys } from './autonomous-development-worker.mjs';
+import {
+  buildExecutionCheckpoint,
+  classifyImplementationImpact,
+  compileDevelopmentPolicy,
+  failureFingerprint,
+  findVerifiedFailureResolution,
+  loadLatestVerifiedCheckpoint,
+} from './vibe2-development-intelligence.mjs';
 
 const ROLES=['development','graphics','qa','balance'];
 const clean=v=>String(v??'').trim();
@@ -117,7 +125,27 @@ export function integrateDepartmentCandidates({order,cycle,implementationsDir,ca
   }
   if(saveViolations.length)throw new Error(`integrated save key change: ${saveViolations.map(x=>x.path).join(',')}`);
   const syntax=syntaxChecks(finalPath,changedFiles);if(syntax.some(x=>x.status!=='PASS'))throw new Error(`integrated syntax failure: ${syntax.filter(x=>x.status!=='PASS').map(x=>x.name).join(',')}`);
-  const evidence={version:4,candidateOnly:true,selfPromote:false,publicStableModified:false,paidApi:false,model:'PARALLEL_DEPARTMENT_LOCAL_AI',modelTransport:'ISOLATED_DEPARTMENT_WORKSPACES_THREE_WAY_INTEGRATION',modelAttempts:components.filter(x=>x.status==='PASS').length,repairMode:order.repairMode||'MODEL',gameId:order.gameId,gameSlug:order.gameSlug,sourcePath,candidateId:finalId,candidatePath:finalPath,sourceCommit,goal:cycle?.finalGoal||order.goal,responsibilityFiles:[...new Set(components.flatMap(x=>x.changedFiles||[]))],changedFiles,summary:'Integrated parallel department implementation',expectedEffect:'Department-owned code changes combined after planning integration',proposedTests:[...new Set((cycle?.results||[]).flatMap(x=>x.checks||[]))].slice(0,8),changeMode:'PARALLEL_DEPARTMENT_INTEGRATION',fileCount:changedFiles.length,editCount:0,saveKeyValidation:'PASS',syntaxChecks:syntax,departmentCycle:cycle,departmentCycleGate:'PASS',departmentImplementations:components,integration:{mode:'COMMON_BASE_THREE_WAY',mergeModes,conflictsResolved:conflicts.length,conflicts,finalIntegrationQa:'PENDING_INDEPENDENT_PROMOTION_GATE'},generatedAt:new Date().toISOString(),completionAuthority:'INDEPENDENT_QA_AND_JAY'};
+
+  const diagnostic=order.diagnosticTopIssue||order.microTask||null;
+  const fingerprint=diagnostic&&(diagnostic.type||diagnostic.message)?failureFingerprint({type:diagnostic.type,message:diagnostic.message||order.goal,stack:diagnostic.stack,test:diagnostic.test,platform:order.targetEngine||order.projectStage,file:diagnostic.file}):null;
+  const priorCheckpoint=loadLatestVerifiedCheckpoint({gameId:order.gameId,role:'integration'});
+  const priorResolution=fingerprint?findVerifiedFailureResolution({gameId:order.gameId,fingerprint}):null;
+  const implementationImpact=classifyImplementationImpact({changedFiles,role:components.filter(x=>x.status==='PASS').length===1?components.find(x=>x.status==='PASS')?.role:'integration'});
+  const policy=compileDevelopmentPolicy({
+    role:'integration',
+    verifiedLearning:{priorCheckpointCandidateId:priorCheckpoint?.candidateId||null,priorFailureResolutionCandidateId:priorResolution?.candidateId||null},
+    projectPolicy:{sourcePath,workLane:order.workLane||'FULL',repairMode:order.repairMode||'MODEL'},
+    agentsPolicy:{sourceRootExclusive:true,protectedValues:order.protectedValues||[],independentQaRequired:true},
+    activeIntent:{goal:cycle?.finalGoal||order.goal,gameId:order.gameId},
+  });
+  const acceptanceCriteria=[...new Set((cycle?.results||[]).flatMap(x=>x.checks||[]))].slice(0,8);
+  const checkpoint=buildExecutionCheckpoint({
+    gameId:order.gameId,role:'integration',sourceCommit,candidateId:finalId,goal:cycle?.finalGoal||order.goal,
+    completed:components.filter(x=>x.status==='PASS').map(x=>`${x.role}: ${clean(x.summary||x.expectedEffect||'implementation')}`),changedFiles,
+    nextAction:'독립 후보 QA와 Vibe2 release gate를 통과한 뒤에만 승격한다.',pendingCi:['INDEPENDENT_PROMOTION_QA','VIBE2_RELEASE_GATE'],acceptanceCriteria,fingerprint,status:'IMPLEMENTED_PENDING_QA'
+  });
+
+  const evidence={version:5,candidateOnly:true,selfPromote:false,publicStableModified:false,paidApi:false,model:'PARALLEL_DEPARTMENT_LOCAL_AI',modelTransport:'ISOLATED_DEPARTMENT_WORKSPACES_THREE_WAY_INTEGRATION',modelAttempts:components.filter(x=>x.status==='PASS').length,repairMode:order.repairMode||'MODEL',gameId:order.gameId,gameSlug:order.gameSlug,sourcePath,candidateId:finalId,candidatePath:finalPath,sourceCommit,goal:cycle?.finalGoal||order.goal,responsibilityFiles:[...new Set(components.flatMap(x=>x.changedFiles||[]))],changedFiles,summary:'Integrated parallel department implementation',expectedEffect:'Department-owned code changes combined after planning integration',proposedTests:acceptanceCriteria,changeMode:'PARALLEL_DEPARTMENT_INTEGRATION',fileCount:changedFiles.length,editCount:0,saveKeyValidation:'PASS',syntaxChecks:syntax,departmentCycle:cycle,departmentCycleGate:'PASS',departmentImplementations:components,integration:{mode:'COMMON_BASE_THREE_WAY',mergeModes,conflictsResolved:conflicts.length,conflicts,finalIntegrationQa:'PENDING_INDEPENDENT_PROMOTION_GATE'},vibe2DevelopmentIntelligence:{version:2,contextPlan:order.vibe2ContextPlan||null,failureFingerprint:fingerprint,priorVerifiedResolution:priorResolution,priorVerifiedCheckpoint:priorCheckpoint,implementationImpact,policy,checkpoint},generatedAt:new Date().toISOString(),completionAuthority:'INDEPENDENT_QA_AND_JAY'};
   writeJson(evidencePath,evidence);report.evidencePath=evidencePath;writeJson(reportPath,report);return report;
 }
 
