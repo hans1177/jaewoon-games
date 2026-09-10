@@ -7,6 +7,7 @@ import { pathToFileURL } from 'node:url';
 import { attemptedGameIds, attemptsForDate } from './autonomous-queue-state.mjs';
 import { diagnoseGame, microTaskFromIssue, SEVERITY_SCORE } from './autonomous-diagnostics.mjs';
 import { latestDevelopmentBaselineEvidence } from './development-baseline-evidence.mjs';
+import {PRODUCTION_CLASSES,productionClassOf} from './production-classification.mjs';
 
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const clean=v=>String(v??'').trim();
@@ -74,13 +75,13 @@ function runtimeIncident(health,slug){
 function catalogEntry(catalog,slug){return (catalog?.games??[]).find(game=>game.id===slug)||null;}
 function isCompletedDesignBaseline(book){return clean(book?.status).toLowerCase()==='completed-artbook'&&clean(book?.lifecycle?.state).toUpperCase()==='DESIGN_BASELINE';}
 export function classifyProjectStage(project,catalog){
-  const entry=catalogEntry(catalog,project.slug),category=clean(entry?.homepageCategory).toLowerCase(),productionTier=Number(project?.productionTier);
+  const entry=catalogEntry(catalog,project.slug),productionClass=productionClassOf(project,entry||{});
   if(project.mode==='HOLD'||/^HOLD/.test(clean(project.profileStatus)))return {id:'HOLD',rank:99,codeWork:false};
-  if(productionTier===1)return {id:'RELEASE_CONFIRMED',rank:1,codeWork:true};
-  if(productionTier===2)return {id:'DEVELOPMENT_CONFIRMED',rank:2,codeWork:true};
-  if(productionTier===3)return {id:'DESIGN_ONLY',rank:4,codeWork:false};
-  if(category==='release-confirmed'||clean(project.profileStatus)==='RELEASE_CONFIRMED'||project.mode==='MAINTENANCE')return {id:'RELEASE_CONFIRMED',rank:1,codeWork:true};
-  if(category==='development-confirmed'||clean(project.profileStatus)==='DEVELOPMENT_CONFIRMED'||project.mode==='IMPROVE')return {id:'DEVELOPMENT_CONFIRMED',rank:2,codeWork:true};
+  if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED)return {id:'RELEASE_CONFIRMED',rank:1,codeWork:true};
+  if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED)return {id:'DEVELOPMENT_CONFIRMED',rank:2,codeWork:true};
+  if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY)return {id:'DESIGN_ONLY',rank:4,codeWork:false};
+  if(project.mode==='MAINTENANCE')return {id:'RELEASE_CONFIRMED',rank:1,codeWork:true};
+  if(project.mode==='IMPROVE')return {id:'DEVELOPMENT_CONFIRMED',rank:2,codeWork:true};
   if(project.mode==='EXPERIMENT_ONLY'||clean(project.profileStatus)==='NEEDS_AUDIT')return {id:'STRUCTURE_IMPROVEMENT',rank:3,codeWork:true};
   if(project.mode==='REDESIGN'||/REDESIGN|IDENTITY/.test(clean(project.profileStatus)))return {id:'PLANNING_IDENTITY_REQUIRED',rank:4,codeWork:false};
   return {id:'REVIEWING',rank:5,codeWork:true};
@@ -111,10 +112,10 @@ export function buildAutonomousWorkOrder({portfolio,artbooks,health,catalog={gam
 
   const requestedPriority=clean(priorityGameId);
   const rows=remaining.map(project=>{
-    const stage=classifyProjectStage(project,catalog),incident=runtimeIncident(health,project.slug),rawDiagnostic=diagnosticsFor(diagnostics,project.slug),diagnostic=actionableDiagnostic(rawDiagnostic),book=latestArtbookFor(artbooks,project.slug);
+    const stage=classifyProjectStage(project,catalog),entry=catalogEntry(catalog,project.slug)||{},incident=runtimeIncident(health,project.slug),rawDiagnostic=diagnosticsFor(diagnostics,project.slug),diagnostic=actionableDiagnostic(rawDiagnostic),book=latestArtbookFor(artbooks,project.slug);
     const priorityMatch=Boolean(requestedPriority&&(requestedPriority===project.slug||requestedPriority===project.id));
     const artbookHandoffReady=priorityMatch&&stage.id==='DEVELOPMENT_CONFIRMED'&&isCompletedDesignBaseline(book);
-    const isTier1=Number(project?.productionTier)===1;
+    const isTier1=productionClassOf(project,entry)===PRODUCTION_CLASSES.RELEASE_CONFIRMED;
     const developmentBaseline=isTier1?latestDevelopmentBaselineEvidence(project.slug,{repoRoot}):null;
     const tier1EntryReady=!isTier1||developmentBaseline.ready===true;
     return {project,stage,incident,diagnostic,rawDiagnostic,book,priorityMatch,artbookHandoffReady,isTier1,developmentBaseline,tier1EntryReady,actionable:actionableForStage(stage,{incident,diagnostic,book,artbookHandoffReady,tier1EntryReady})};
