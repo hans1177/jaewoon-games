@@ -14,39 +14,79 @@ const directive = readJson('company-directive.json');
 const multimodelWorkflow = readText('.github/workflows/artbook-free-department-bots.yml');
 const designCycle = readText('tools/company-design-cycle.mjs');
 
-const requiredFlowHeadings = [
-  '## 0. 회사 최종목표와 시스템 아키텍처',
-  '## 5. DESIGN_ONLY — Design Baseline',
-  '## 6. DEVELOPMENT_CONFIRMED — Development Baseline',
-  '## 7. RELEASE_CONFIRMED — Release Baseline / Vibe2 본개발',
-];
-
-const requiredDesignFlow = [
-  'GAME_DESIGNER_DRAFT',
-  'FIVE_DEPARTMENT_MULTIMODEL_REVIEW',
-  'DEPARTMENT_INTERNAL_CONSENSUS',
-  'CROSS_DEPARTMENT_MEETING',
-  'ONE_REBUTTAL_ROUND',
-  'GAME_DESIGNER_REVISION',
-  'DESIGN_BASELINE_GATE',
-  'ARTBOOK_EDITOR_CORE_STRATEGY',
-  'VIBE2_VALIDATION_LEARNING',
-];
-
-test('COMPANY_FLOW.md remains the single human-readable production policy source', () => {
+test('COMPANY_FLOW.md remains the single machine-oriented production policy source', () => {
   assert.equal(directive.policyDocument, 'COMPANY_FLOW.md');
-  assert.match(agents, /COMPANY_FLOW\.md.*하나만 원본|유일한 사람용 제작 정책 원본/s);
+  assert.match(flow, /sourceOfTruth: COMPANY_FLOW\.md/);
+  assert.match(flow, /format: MACHINE_ORIENTED_POLICY_SPEC/);
+  assert.match(flow, /humanReadableNarrativeRequired: false/);
+  assert.match(flow, /ownerInstructionOverridesPolicy: true/);
+  assert.match(agents, /제작 정책 원본은 \*\*`COMPANY_FLOW\.md` 하나\*\*/);
+  assert.match(agents, /기계 중심 정책 명세/);
   assert.match(agents, /company-directive\.json/);
-  for (const heading of requiredFlowHeadings) assert.ok(flow.includes(heading), `missing central policy heading: ${heading}`);
 });
 
-test('central policy explicitly owns the company final goal and end-to-end architecture', () => {
-  assert.match(flow, /게임을 만들수록 회사 전체의 설계·개발·검증·출시 능력이 향상되는 자율 게임 제작 시스템/);
-  assert.match(flow, /사용자 최신 지시[\s\S]*COMPANY_FLOW\.md 중앙 정책[\s\S]*company-directive\.json 실행 설정/);
-  assert.match(flow, /DESIGN_ONLY[\s\S]*Game Designer AI[\s\S]*5개 부서 × 다중 실제 모델 검토/);
-  assert.match(flow, /DEVELOPMENT_CONFIRMED[\s\S]*Web Gameplay Validation[\s\S]*Unity Technical Validation/);
-  assert.match(flow, /RELEASE_CONFIRMED[\s\S]*Vibe2 본개발\/통합[\s\S]*독립 QA\/회귀 검증/);
-  assert.match(flow, /성공\/실패 원인 라벨링[\s\S]*검증된 패턴만 Vibe2 학습 근거/);
+test('central policy owns the end-to-end production architecture without requiring narrative headings', () => {
+  for (const token of [
+    'production:',
+    'bootstrapGameSeeds:',
+    'GAME_SEED:',
+    'platformStrategy:',
+    'aiOrganization:',
+    'meeting:',
+    'GameDesigner:',
+    'ArtbookEditor:',
+    'Vibe2:',
+    'flows:',
+    'promotion:',
+    'developmentSafety:',
+    'learning:',
+  ]) assert.ok(flow.includes(token), `missing central policy token: ${token}`);
+  assert.match(flow, /OWNER_LATEST_DIRECT_INSTRUCTION[\s\S]*COMPANY_FLOW[\s\S]*COMPANY_DIRECTIVE/);
+  assert.match(flow, /DESIGN_ONLY:[\s\S]*GAME_SEED[\s\S]*GAME_DESIGNER_DRAFT/);
+  assert.match(flow, /DEVELOPMENT_CONFIRMED:[\s\S]*WEB_GAMEPLAY_VALIDATION[\s\S]*UNITY_ANDROID_TECHNICAL_VALIDATION/);
+  assert.match(flow, /RELEASE_CONFIRMED:[\s\S]*VIBE2_PRIMARY_DEVELOPMENT[\s\S]*ANDROID_RUNTIME_VALIDATION[\s\S]*INDEPENDENT_QA_AND_REGRESSION/);
+});
+
+test('GAME_SEED policy encodes six-seed bootstrap, famous-success benchmark, target-market evidence, and one-for-one replenishment', () => {
+  assert.match(flow, /initialSeedBatchCount: 6/);
+  assert.match(flow, /initialSeedGenerationMode: SINGLE_BOOTSTRAP_BATCH/);
+  assert.match(flow, /initialSeedBatchCreatesAllCategoriesAtOnce: true/);
+  for (const category of [
+    'ACTION_SURVIVAL_ROGUELITE',
+    'SINGLE_DEFENSE_STRATEGY',
+    'PUZZLE',
+    'CASUAL',
+    'IDLE_GROWTH_RPG',
+    'STORY_COMPLETE_RPG',
+  ]) assert.match(flow, new RegExp(`- ${category}`));
+  assert.match(flow, /selectionMode: FAMOUS_SUCCESSFUL_GAME_COPY_BENCHMARK/);
+  assert.match(flow, /- HOMAGE[\s\S]*- REINTERPRETATION/);
+  assert.match(flow, /sourceCodeRule: IMPLEMENT_EQUIVALENT_OR_INSPIRED_FUNCTIONALITY_WITH_OWN_CODE/);
+  assert.match(flow, /marketEvidence:[\s\S]*role: TARGET_DESIGN_REFERENCE/);
+  assert.match(flow, /hardPassFailGate: false/);
+  assert.match(flow, /marketDataAloneCannotDiscardGame: true/);
+  assert.match(flow, /REVENUE_RANK_OR_REVENUE_SIGNAL/);
+  assert.match(flow, /TARGET_AGE_OR_AGE_DISTRIBUTION/);
+  assert.match(flow, /AVERAGE_PLAYTIME/);
+  assert.match(flow, /SESSION_LENGTH/);
+  assert.match(flow, /numericClaimRequiresSource: true/);
+  assert.match(flow, /numericClaimRequiresObservedAt: true/);
+  assert.match(flow, /replenishment:[\s\S]*mode: ONE_FOR_ONE_ONLY/);
+  assert.match(flow, /normalPromotionDoesNotTriggerReplenishment: true/);
+  assert.match(flow, /replacementCountPerVacancy: 1/);
+});
+
+test('discard policy separates DESIGN_ONLY design survival from DEVELOPMENT_CONFIRMED real implementation survival', () => {
+  assert.match(flow, /discardPolicy:[\s\S]*singleFailureDoesNotImmediatelyDiscard: true/);
+  assert.match(flow, /marketMetricAloneCannotDiscard: true/);
+  assert.match(flow, /DESIGN_ONLY:[\s\S]*question: CAN_THE_GAME_IDEA_AND_DESIGN_SURVIVE/);
+  assert.match(flow, /SAME_GAME_DESIGNER_REVISION_ATTEMPTED/);
+  assert.match(flow, /FIVE_DEPARTMENT_REVIEW_REPEATED/);
+  assert.match(flow, /HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY/);
+  assert.match(flow, /DEVELOPMENT_CONFIRMED:[\s\S]*question: CAN_THE_VALIDATED_DESIGN_SURVIVE_REAL_IMPLEMENTATION_AND_PLAY/);
+  assert.match(flow, /TARGETED_REVALIDATION_PERFORMED/);
+  assert.match(flow, /REAL_PLAY_CORE_FUN_REMAINS_UNACCEPTABLE_AFTER_FIX/);
+  assert.match(flow, /DEMOTE_TO_DESIGN_ONLY_IF_CORE_DESIGN_MUST_BE_REBUILT/);
 });
 
 test('semantic production classes are canonical and class counts are derived, not fixed quotas', () => {
@@ -87,43 +127,36 @@ test('multimodel workflow and cycle route by productionClass, never by fixed num
   assert.doesNotMatch(designCycle, /if\(tier===/);
 });
 
-test('DESIGN_ONLY is multimodel design review led by one Game Designer, not source-code development', () => {
+test('current directive keeps distinct department leads and one Game Designer', () => {
   assert.equal(directive.ai.departmentMultimodelStartsAtClass, 'DESIGN_ONLY');
   assert.equal(directive.ai.minDistinctModelsPerDepartment, 3);
+  assert.equal(directive.ai.minDistinctLeadModelsAcrossDepartments, 5);
+  assert.equal(directive.ai.departmentLeadModelsMustBeDistinct, true);
   assert.equal(directive.ai.gameDesigner.authorsInitialDetailedDesign, true);
   assert.equal(directive.ai.gameDesigner.singleAuthorPerRevisionCycle, true);
   assert.equal(directive.ai.gameDesigner.sameModelRevisesAfterMeeting, true);
-  assert.equal(directive.ai.departmentModeByClass.DESIGN_ONLY, 'MULTIMODEL_DESIGN_REVIEW_AND_MEETING');
+  assert.equal(directive.ai.departmentModeByClass.DESIGN_ONLY, 'DISTINCT_LEAD_MULTIMODEL_DESIGN_REVIEW_AND_MEETING');
+  assert.equal(directive.ai.departmentModeByClass.DEVELOPMENT_CONFIRMED, 'DISTINCT_LEAD_GATED_DIRECT_PLAY_TECH_VALIDATION');
+  assert.equal(directive.ai.departmentModeByClass.RELEASE_CONFIRMED, 'DISTINCT_LEAD_GATED_DIRECT_RELEASE_RISK_WATCH');
+});
+
+test('current execution directive preserves gated development and release semantics during policy-first migration', () => {
+  const development = directive.classes.DEVELOPMENT_CONFIRMED;
+  const release = directive.classes.RELEASE_CONFIRMED;
   assert.equal(directive.ai.vibe2.roleByClass.DESIGN_ONLY, 'VALIDATION_AND_LEARNING');
-  assert.equal(directive.ai.vibe2.designOrArtbookPrimaryAuthorInTier3Or2, false);
-  assert.equal(directive.classes.DESIGN_ONLY.baseline, 'DESIGN_BASELINE');
-  assert.equal(directive.classes.DESIGN_ONLY.sourceCodeAutoDevelopment, false);
-  assert.deepEqual(directive.classes.DESIGN_ONLY.requiredFlow, requiredDesignFlow);
-});
-
-test('DEVELOPMENT_CONFIRMED validates fun in Web and feasibility in Unity with multimodel departments', () => {
-  const policy = directive.classes.DEVELOPMENT_CONFIRMED;
-  assert.equal(directive.ai.departmentModeByClass.DEVELOPMENT_CONFIRMED, 'MULTIMODEL_DETAILED_PLAY_TECH_REVIEW_AND_MEETING');
   assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED, 'VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT');
-  assert.equal(policy.baseline, 'DEVELOPMENT_BASELINE');
-  assert.equal(policy.webPurpose, 'GAMEPLAY_VALIDATION_TESTBED');
-  assert.equal(policy.unityPurpose, 'TECHNICAL_VALIDATION_PROTOTYPE');
-  assert.equal(policy.webBeforeUnityByDefault, true);
-  assert.equal(policy.unityMayRunEarlyWhenEngineBehaviorDefinesCoreFun, true);
-  assert.deepEqual(policy.decisionStates, ['KEEP', 'CHANGE', 'DROP', 'HOLD']);
-});
-
-test('RELEASE_CONFIRMED keeps Vibe2 as primary Unity Android developer and departments on risk watch', () => {
-  const policy = directive.classes.RELEASE_CONFIRMED;
-  assert.equal(directive.ai.departmentModeByClass.RELEASE_CONFIRMED, 'MULTIMODEL_ERROR_RISK_WATCH');
   assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED, 'PRIMARY_DEVELOPMENT_ENGINE');
-  assert.equal(policy.baseline, 'RELEASE_BASELINE');
-  assert.equal(policy.target, 'UNITY_ANDROID');
-  assert.equal(policy.vibe2PrimaryDeveloper, true);
-  assert.equal(policy.departmentDefaultRole, 'ERROR_AND_RELEASE_RISK_REVIEW');
-  assert.equal(policy.coreDesignLock, true);
-  assert.equal(policy.exceptionMeetingForReleaseBlockingIssues, true);
-  assert.deepEqual(policy.releaseStates, ['RELEASE_READY', 'FIX_AND_REVERIFY', 'RELEASE_BLOCKED']);
+  assert.equal(development.baseline, 'DEVELOPMENT_BASELINE');
+  assert.equal(development.executionMode, 'GATED_DIRECT');
+  assert.equal(development.webPurpose, 'GAMEPLAY_VALIDATION_TESTBED');
+  assert.equal(development.unityPurpose, 'TECHNICAL_VALIDATION_PROTOTYPE');
+  assert.equal(development.aiMayInventValidationPass, false);
+  assert.deepEqual(development.decisionStates, ['KEEP', 'CHANGE', 'DROP', 'HOLD']);
+  assert.equal(release.baseline, 'RELEASE_BASELINE');
+  assert.equal(release.target, 'UNITY_ANDROID');
+  assert.equal(release.vibe2PrimaryDeveloper, true);
+  assert.equal(release.coreDesignLock, true);
+  assert.deepEqual(release.releaseStates, ['FIX_AND_REVERIFY', 'RELEASE_BLOCKED', 'RELEASE_READY']);
 });
 
 test('legacy numeric tiers remain aliases only', () => {
