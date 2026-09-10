@@ -9,6 +9,9 @@ const devCycle=fs.readFileSync('tools/company-development-validation-cycle.mjs',
 const releaseCycle=fs.readFileSync('tools/company-release-production-cycle.mjs','utf8');
 const pipeline=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
 const workflow=fs.readFileSync('.github/workflows/artbook-free-department-bots.yml','utf8');
+const candidateRelease=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
+const unityReleaseResult=fs.readFileSync('.github/workflows/vibe2-unity-release-result.yml','utf8');
+const vibeRunner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
 const roles=['planning','graphics','development','qa','balance'];
 
 test('one central human policy source owns class, design, meeting and artbook rules',()=>{
@@ -127,4 +130,32 @@ test('release current Unity source tree binds implementation build runtime and Q
   assert.match(releaseCycle,/SOURCE_TO_BUILD_BINDING=PASS/);
   assert.match(workflow,/'unity-games\/\*\*'/);
   assert.match(workflow,/file\.startsWith\(`\$\{project\}\//);
+});
+
+test('release-confirmed Unity candidate cannot bypass Development Baseline',()=>{
+  assert.match(candidateRelease,/productionClass/);
+  assert.match(candidateRelease,/RELEASE_CONFIRMED/);
+  assert.match(candidateRelease,/DEVELOPMENT_BASELINE_READY/);
+  assert.match(candidateRelease,/development-baseline-required/);
+  assert.match(candidateRelease,/webGameplay\?\.pass===true/);
+  assert.match(candidateRelease,/unityTechnical\?\.pass===true/);
+});
+
+test('APK build evidence never impersonates independent release QA or full implementation completion',()=>{
+  assert.match(unityReleaseResult,/PARTIAL_BUILD_VERIFIED/);
+  assert.match(unityReleaseResult,/developmentBaselineImplemented:false/);
+  assert.match(unityReleaseResult,/INDEPENDENT_RELEASE_QA=NOT_ASSERTED/);
+  assert.match(unityReleaseResult,/DEVICE_VALIDATION=NOT_ASSERTED/);
+  assert.match(unityReleaseResult,/gh run download/);
+  assert.match(unityReleaseResult,/apk_sha256/);
+  assert.doesNotMatch(unityReleaseResult,/--independent-qa=PASS/);
+});
+
+test('Vibe2 runner feeds central release-baseline implementation gaps before generic autoplan',()=>{
+  assert.match(vibeRunner,/tools\/vibe2-release-baseline-queue\.mjs/);
+  assert.match(vibeRunner,/design\/\*\*\/release-production-request\.json/);
+  assert.match(vibeRunner,/unity-games\/\*\*/);
+  const releasePlan=vibeRunner.indexOf('node tools/vibe2-release-baseline-queue.mjs');
+  const genericPlan=vibeRunner.indexOf('node tools/vibe2-auto-planner.mjs');
+  assert.ok(releasePlan>=0&&genericPlan>releasePlan);
 });
