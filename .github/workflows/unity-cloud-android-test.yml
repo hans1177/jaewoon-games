@@ -291,8 +291,9 @@ jobs:
             exit 48
           fi
 
-          unzip -Z1 "$APK_PATH" | grep -q '^lib/arm64-v8a/' || { echo '::error title=JAEWOON_BUILD_ERROR[APK_ARM64_MISSING]::APK does not contain ARM64 native libraries.'; exit 49; }
-          unzip -Z1 "$APK_PATH" | grep -q '^lib/x86_64/' || { echo '::error title=JAEWOON_BUILD_ERROR[APK_X86_64_MISSING]::Test APK must include x86_64 so the same APK can be installed and launched in CI.'; exit 50; }
+          apk_entries="$(unzip -Z1 "$APK_PATH")" || { echo '::error title=JAEWOON_BUILD_ERROR[APK_ENTRY_LIST_UNREADABLE]::Could not list APK archive entries.'; exit 49; }
+          grep -q '^lib/arm64-v8a/' <<<"$apk_entries" || { echo '::error title=JAEWOON_BUILD_ERROR[APK_ARM64_MISSING]::APK does not contain ARM64 native libraries.'; exit 49; }
+          grep -q '^lib/x86_64/' <<<"$apk_entries" || { echo '::error title=JAEWOON_BUILD_ERROR[APK_X86_64_MISSING]::Test APK must include x86_64 so the same APK can be installed and launched in CI.'; exit 50; }
 
           min_sdk="$(sed -n "s/^sdkVersion:'\([^']*\)'.*/\1/p" <<<"$badging" | head -n 1)"
           target_sdk="$(sed -n "s/^targetSdkVersion:'\([^']*\)'.*/\1/p" <<<"$badging" | head -n 1)"
