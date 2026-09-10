@@ -20,18 +20,22 @@ function history(){const h=readJson(HISTORY_KEY,[]);return Array.isArray(h)?h:[]
 function saveHistory(rows){writeJson(HISTORY_KEY,rows.slice(-80));}
 function visibleHistory(){return history().filter(r=>r&&r.kind!=='system'&&r.sender!=='system');}
 function modeLabel(){const n=queue().length;if(remoteState==='online')return `기본 모드${n?` · 대기 ${n}`:''}`;if(remoteState==='checking')return '재연결 중';return `비상 AI 모드${n?` · 대기 ${n}`:''}`;}
-function scrollLatest(force=false){const chat=$('chat');if(!chat||(!force&&!followLatest))return;requestAnimationFrame(()=>{chat.scrollTop=chat.scrollHeight;});}
+function syncScrollButton(){const chat=$('chat'),btn=$('scrollToBottomBtn');if(!chat||!btn)return;btn.hidden=followLatest||chat.scrollHeight<=chat.clientHeight+96;}
+function scrollLatest(force=false){const chat=$('chat');if(!chat||(!force&&!followLatest)){syncScrollButton();return;}requestAnimationFrame(()=>{chat.scrollTop=chat.scrollHeight;followLatest=true;syncScrollButton();});}
 function installChatFlow(){
   const chat=$('chat');if(!chat||chat.dataset.gptFlow==='1')return;chat.dataset.gptFlow='1';
-  chat.addEventListener('scroll',()=>{followLatest=chat.scrollHeight-chat.scrollTop-chat.clientHeight<96;},{passive:true});
-  const observer=new MutationObserver(()=>scrollLatest(false));observer.observe(chat,{childList:true,subtree:true,characterData:true});
+  if(typeof window.scrollBottom==='function'&&!window.__jaewoonOriginalScrollBottom){window.__jaewoonOriginalScrollBottom=window.scrollBottom;window.scrollBottom=()=>scrollLatest(false);}
+  chat.addEventListener('scroll',()=>{followLatest=chat.scrollHeight-chat.scrollTop-chat.clientHeight<96;syncScrollButton();},{passive:true});
+  const observer=new MutationObserver(()=>{scrollLatest(false);syncScrollButton();});observer.observe(chat,{childList:true,subtree:true,characterData:true});
   const vv=window.visualViewport;if(vv){const sync=()=>setTimeout(()=>scrollLatest(true),40);vv.addEventListener('resize',sync);vv.addEventListener('scroll',sync);}
   $('body')?.addEventListener('focus',()=>setTimeout(()=>scrollLatest(true),80));
+  syncScrollButton();
 }
 function ensureUi(){
   $('networkMode')?.remove();
   if(!$('emergencyHistory')){const box=document.createElement('div');box.id='emergencyHistory';$('chat')?.appendChild(box);}
-  if(!$('gptEmergencyStyle')){const style=document.createElement('style');style.id='gptEmergencyStyle';style.textContent='.groupTitle{display:none!important}#emergencyHistory .group{margin-bottom:22px}';document.head.appendChild(style);}
+  if(!$('gptEmergencyStyle')){const style=document.createElement('style');style.id='gptEmergencyStyle';style.textContent='.groupTitle{display:none!important}#emergencyHistory .group{margin-bottom:22px}.bubble{font-size:18px!important}.composer textarea{font-size:18px!important}#scrollToBottomBtn{position:absolute;left:50%;top:-43px;z-index:30;width:38px;height:38px;transform:translateX(-50%);border:1px solid #4c4c4a;border-radius:50%;background:#30302f;color:#deddd8;display:flex;align-items:center;justify-content:center;font-size:23px;line-height:1;box-shadow:0 4px 14px #0008}#scrollToBottomBtn:active{background:#3b3b39}#scrollToBottomBtn[hidden]{display:none!important}';document.head.appendChild(style);}
+  if(!$('scrollToBottomBtn')){const composer=$('composer');if(composer){const btn=document.createElement('button');btn.id='scrollToBottomBtn';btn.type='button';btn.setAttribute('aria-label','맨 아래로');btn.textContent='↓';btn.hidden=true;btn.addEventListener('click',()=>{followLatest=true;scrollLatest(true);});composer.prepend(btn);}}
   const brand=$('brand');if(brand&&!brandObserver){brandObserver=new MutationObserver(()=>{const wanted=modeLabel();if(brand.textContent!==wanted)brand.textContent=wanted;});brandObserver.observe(brand,{childList:true,characterData:true,subtree:true});}
   // 이전 버전이 남긴 긴 상태문구는 보존하되 화면에서는 제거한다.
   const cleaned=history().filter(r=>r&&r.kind!=='system'&&r.sender!=='system');if(cleaned.length!==history().length)saveHistory(cleaned);
@@ -52,7 +56,7 @@ async function probe(force=false){const now=Date.now();if(probing||(!force&&now-
 function setState(next){const previous=remoteState;remoteState=next;updateModeUi();if(next==='online'){flushQueue();}else if(next==='emergency'&&previous!=='emergency'){scrollLatest(false);}}
 async function waitOriginalSend(){const started=Date.now();while(Date.now()-started<15000){await new Promise(r=>setTimeout(r,350));const pending=document.querySelector('.pendingAi');const err=$('runtimeError');if(!pending){if(err&&!err.hidden&&err.textContent.trim())return false;return true;}}return false;}
 async function flushQueue(){if(replaying||remoteState!=='online'||!queue().length||document.hidden)return;const body=$('body');if(!body||body.value.trim()||document.querySelector('.pendingAi')||document.querySelector('#attachTray')?.children.length)return;replaying=true;updateModeUi();try{while(remoteState==='online'){const q=queue();if(!q.length)break;const item=q[0];if(item.gameId){const game=document.querySelector(`.gameItem[data-game="${CSS.escape(item.gameId)}"]`);game?.click();}const priority=$('priority');if(priority)priority.value=item.priority||'normal';followLatest=true;body.value=`[비상 AI 대기 지시]\n${item.text}`;body.dispatchEvent(new Event('input',{bubbles:true}));$('sendBtn')?.click();const ok=await waitOriginalSend();if(!ok){setState('emergency');break;}const latest=queue();if(latest[0]?.id===item.id){latest.shift();writeJson(QUEUE_KEY,latest);}updateModeUi();await new Promise(r=>setTimeout(r,500));}}finally{replaying=false;updateModeUi();}}
-function installCapture(){$('sendBtn')?.addEventListener('click',emergencySend,true);$('body')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&remoteState!=='online')emergencySend(e);},true);}
+function installCapture(){$('sendBtn')?.addEventListener('click',e=>{followLatest=true;emergencySend(e);},true);$('body')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){followLatest=true;if(remoteState!=='online')emergencySend(e);}},true);}
 function boot(){ensureUi();installCapture();probe(true);setInterval(()=>probe(false),10000);setInterval(()=>{if(remoteState==='online')flushQueue();},5000);window.addEventListener('online',()=>probe(true));window.addEventListener('offline',()=>setState('emergency'));document.addEventListener('visibilitychange',()=>{if(!document.hidden){followLatest=true;probe(true);scrollLatest(true);}});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
