@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 22,
+  "revision": 23,
   "updatedAt": "2026-09-11",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
@@ -62,11 +62,11 @@
     "departmentModeByClass": {
       "DESIGN_ONLY": "DISTINCT_LEAD_MULTIMODEL_DESIGN_REVIEW_AND_MEETING",
       "DEVELOPMENT_CONFIRMED": "DISTINCT_LEAD_GATED_DIRECT_PLAY_TECH_VALIDATION",
-      "RELEASE_CONFIRMED": "DISTINCT_LEAD_MULTIMODEL_ERROR_RISK_WATCH"
+      "RELEASE_CONFIRMED": "DISTINCT_LEAD_GATED_DIRECT_RELEASE_RISK_WATCH"
     },
     "departmentModeTier3": "DISTINCT_LEAD_MULTIMODEL_DESIGN_REVIEW_AND_MEETING",
     "departmentModeTier2": "DISTINCT_LEAD_GATED_DIRECT_PLAY_TECH_VALIDATION",
-    "departmentModeTier1": "DISTINCT_LEAD_MULTIMODEL_ERROR_RISK_WATCH",
+    "departmentModeTier1": "DISTINCT_LEAD_GATED_DIRECT_RELEASE_RISK_WATCH",
     "meeting": {
       "internalDepartmentConsensus": true,
       "internalRepresentativeOwner": "DEPARTMENT_LEAD_MODEL",
@@ -150,11 +150,34 @@
     "RELEASE_CONFIRMED": {
       "baseline": "RELEASE_BASELINE",
       "target": "UNITY_ANDROID",
+      "executionMode": "GATED_DIRECT_RELEASE_PRODUCTION",
+      "resumeFromLatestEvidence": true,
       "vibe2PrimaryDeveloper": true,
       "departmentDefaultRole": "ERROR_AND_RELEASE_RISK_REVIEW",
       "coreDesignLock": true,
       "exceptionMeetingForReleaseBlockingIssues": true,
-      "releaseStates": ["RELEASE_READY", "FIX_AND_REVERIFY", "RELEASE_BLOCKED"]
+      "developmentBaselineRequired": true,
+      "aiMayInventBuildPass": false,
+      "aiMayInventDeviceValidationPass": false,
+      "aiMayInventIndependentQaPass": false,
+      "currentBuildEvidenceBindingRequired": true,
+      "revalidationRequiredAfterSourceChange": true,
+      "finalArtbookOnlyAfterReleaseReady": true,
+      "waitingStates": ["BUILDING", "WAITING_BUILD", "WAITING_DEVICE_VALIDATION"],
+      "releaseStates": ["FIX_AND_REVERIFY", "RELEASE_BLOCKED", "RELEASE_READY"],
+      "requiredFlow": [
+        "LOAD_DEVELOPMENT_BASELINE",
+        "CORE_DESIGN_LOCK",
+        "VIBE2_PRIMARY_DEVELOPMENT",
+        "UNITY_ANDROID_BUILD",
+        "FIVE_DISTINCT_LEAD_RELEASE_RISK_WATCH",
+        "ANDROID_RUNTIME_VALIDATION",
+        "INDEPENDENT_QA_AND_REGRESSION",
+        "VIBE2_FIX_AND_REBUILD_LOOP",
+        "RELEASE_GATE",
+        "RELEASE_BASELINE",
+        "ARTBOOK_EDITOR_FINAL_REVISION"
+      ]
     }
   },
   "tiersCompatibility": {
@@ -204,10 +227,14 @@
     "development-confirmed-material-change-requires-targeted-revalidation",
     "development-baseline-requires-play-technical-and-revalidation-evidence",
     "development-artbook-revision-only-after-baseline-ready",
+    "release-confirmed-is-gated-direct-and-resumable",
     "release-confirmed-vibe2-is-primary-development-engine",
     "release-confirmed-departments-default-to-error-risk-watch",
     "release-confirmed-core-design-change-requires-release-blocking-exception-or-owner-decision",
+    "release-confirmed-current-build-must-bind-device-qa-and-regression-evidence",
+    "release-confirmed-source-change-invalidates-old-build-validation",
     "release-must-pass-independent-qa-and-runtime-verification",
+    "release-artbook-final-revision-only-after-release-ready",
     "existing-public-web-builds-survive-class-movement",
     "core-production-decisions-still-require-owner-decision",
     "paid-ai-paid-overage-and-paid-runners-remain-forbidden"
