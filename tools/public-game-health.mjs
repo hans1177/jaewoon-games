@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { chromium } from 'playwright';
+import { assessPlayableDocument, summarizeFrameSignals } from './public-game-health-signals.mjs';
 
 const readJson=(file,fallback={})=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file)==='.'?'.':path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -54,14 +55,14 @@ function addBug({gameId,type,message,severity='MEDIUM',url=''}){
   });
 }
 
-function classifyHealth({loadOk,contentSignal,overflowOk,storageStatus,uniqueErrors,sameOriginFailed,calculatedScore}){
+function classifyHealth({loadOk,contentSignal,documentShapeOk,playableSurfaceSignal,overflowOk,storageStatus,uniqueErrors,sameOriginFailed,calculatedScore}){
   const highErrors=uniqueErrors.filter(x=>['pageerror','navigation'].includes(x.type));
   const consoleErrors=uniqueErrors.filter(x=>x.type==='console');
   let status='healthy';
   let reason='no-blocking-smoke-errors';
-  if(!loadOk||!contentSignal||highErrors.length){
+  if(!loadOk||!documentShapeOk||!playableSurfaceSignal||!contentSignal||highErrors.length){
     status='critical';
-    reason=!loadOk?'page-load-failed':!contentSignal?'no-rendered-content-signal':'runtime-page-error';
+    reason=!loadOk?'page-load-failed':!documentShapeOk?'invalid-html-document':!playableSurfaceSignal?'no-playable-surface':!contentSignal?'no-rendered-content-signal':'runtime-page-error';
   }else if(sameOriginFailed.length||consoleErrors.length||!overflowOk||storageStatus==='lost'){
     status='warning';
     reason=sameOriginFailed.length?'same-origin-resource-failure':consoleErrors.length?'console-error':!overflowOk?'mobile-horizontal-overflow':'storage-regression';
@@ -88,21 +89,32 @@ try{
     page.on('console',msg=>{if(msg.type()==='error')errors.push({type:'console',message:clean(msg.text())});});
     page.on('requestfailed',request=>failed.push({url:request.url(),message:clean(request.failure()?.errorText)}));
     const url=`${base}${game.webPath.startsWith('/')?'':'/'}${game.webPath}`;
-    let loadOk=false,reloadOk=false,overflowOk=false,contentSignal=false,storageStatus='not-detected';
+    let loadOk=false,reloadOk=false,overflowOk=false,contentSignal=false,documentShapeOk=false,playableSurfaceSignal=false,storageStatus='not-detected';
     let renderedTextLength=0,canvasCount=0,interactiveCount=0;
     try{
       const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:25000});
       loadOk=Boolean(response&&response.ok());
-      const renderSignals=await page.evaluate(()=>({
-        text:(document.body?.innerText||'').trim().length,
-        canvas:document.querySelectorAll('canvas').length,
-        interactive:document.querySelectorAll('button,a,input,select,textarea,[role="button"]').length,
-        visual:document.querySelectorAll('main,svg,img,video,iframe').length
-      })).catch(()=>({text:0,canvas:0,interactive:0,visual:0}));
+      const frameSignals=[];
+      for(const frame of page.frames()){
+        frameSignals.push(await frame.evaluate(()=>({
+          text:(document.body?.innerText||'').trim().length,
+          canvas:document.querySelectorAll('canvas').length,
+          interactive:document.querySelectorAll('button,a,input,select,textarea,[role="button"]').length,
+          visual:document.querySelectorAll('main,svg,img,video').length
+        })).catch(()=>({text:0,canvas:0,interactive:0,visual:0})));
+      }
+      const renderSignals=summarizeFrameSignals(frameSignals);
+      const documentShape=await page.evaluate(()=>({
+        hasDoctype:Boolean(document.doctype),
+        htmlElement:document.documentElement?.tagName==='HTML'
+      })).catch(()=>({hasDoctype:false,htmlElement:false}));
+      const playable=assessPlayableDocument({...documentShape,...renderSignals});
       renderedTextLength=renderSignals.text;
       canvasCount=renderSignals.canvas;
       interactiveCount=renderSignals.interactive;
-      contentSignal=renderSignals.text>0||renderSignals.canvas>0||renderSignals.interactive>0||renderSignals.visual>0;
+      documentShapeOk=playable.documentShapeOk;
+      playableSurfaceSignal=playable.playableSurfaceSignal;
+      contentSignal=playable.contentSignal;
       overflowOk=await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2).catch(()=>false);
 
       const startTexts=scenarios?.generic?.startButtonTexts||[];
@@ -138,7 +150,7 @@ try{
     const assetScore=Math.max(0,10-(sameOriginFailed.length*4));
     const reloadScore=reloadOk?10:0;
     const calculatedScore=Math.max(0,Math.min(100,runtimeScore+errorScore+mobileScore+interactionScore+assetScore+reloadScore));
-    const classification=classifyHealth({loadOk,contentSignal,overflowOk,storageStatus,uniqueErrors,sameOriginFailed,calculatedScore});
+    const classification=classifyHealth({loadOk,contentSignal,documentShapeOk,playableSurfaceSignal,overflowOk,storageStatus,uniqueErrors,sameOriginFailed,calculatedScore});
     const dimensions={runtime:runtimeScore,errors:errorScore,mobile:mobileScore,interaction:interactionScore,assets:assetScore,reload:reloadScore,storage:storageStatus};
     const issues=[...uniqueErrors,...sameOriginFailed.map(x=>({type:'requestfailed',message:`${x.url} ${x.message}`}))].slice(0,20);
     for(const issue of issues)addBug({gameId:game.id,type:issue.type,message:issue.message,severity:['pageerror','navigation'].includes(issue.type)?'HIGH':'MEDIUM',url});
@@ -155,7 +167,7 @@ try{
       checkedAt:now,
       url,
       dimensions,
-      signals:{loadOk,contentSignal,renderedTextLength,canvasCount,interactiveCount,inputDelivered:clicked,reloadOk,overflowOk},
+      signals:{loadOk,contentSignal,documentShapeOk,playableSurfaceSignal,renderedTextLength,canvasCount,interactiveCount,inputDelivered:clicked,reloadOk,overflowOk},
       trend:{previousScore,scoreDelta},
       issues,
       failedRequestCount:sameOriginFailed.length,
@@ -172,7 +184,7 @@ const health={
   policy:{
     scope:'homepage-published-games',scoreRange:[0,100],criticalBelow:55,warningBelow:75,healthyAtLeast:75,
     forcedWarningOnConsoleOrSameOriginFailure:true,
-    forcedCriticalOnNavigationPageErrorOrNoContentSignal:true,
+    forcedCriticalOnNavigationPageErrorOrNoContentSignal:true,forcedCriticalOnInvalidDocumentOrNoPlayableSurface:true,
     webArchiveMutation:'forbidden',autoRollbackDisplay:true,rollbackRequiresVerifiedHealthyBaseline:true
   },
   games:results.map(item=>({...item,buildHealth:buildById.get(item.gameId)||null}))

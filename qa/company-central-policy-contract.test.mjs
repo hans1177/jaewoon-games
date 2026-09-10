@@ -13,12 +13,12 @@ const agents = readText('AGENTS.md');
 const directive = readJson('company-directive.json');
 
 const requiredFlowHeadings = [
-  '## 4. 3분류 — Design Baseline',
-  '## 5. 2분류 — Development Baseline',
-  '## 6. 1분류 — Release Baseline / Vibe2 본개발',
+  '## 5. DESIGN_ONLY — Design Baseline',
+  '## 6. DEVELOPMENT_CONFIRMED — Development Baseline',
+  '## 7. RELEASE_CONFIRMED — Release Baseline / Vibe2 본개발',
 ];
 
-const requiredTier3Flow = [
+const requiredDesignFlow = [
   'GAME_DESIGNER_DRAFT',
   'FIVE_DEPARTMENT_MULTIMODEL_REVIEW',
   'DEPARTMENT_INTERNAL_CONSENSUS',
@@ -37,53 +37,76 @@ test('COMPANY_FLOW.md remains the single human-readable production policy source
   for (const heading of requiredFlowHeadings) assert.ok(flow.includes(heading), `missing central policy heading: ${heading}`);
 });
 
-test('fixed tier counts and dynamic membership stay intact', () => {
-  assert.deepEqual(directive.production.tierCounts, {
-    releaseConfirmed: 2,
-    developmentConfirmed: 3,
-    designOnly: 'ALL_REMAINING',
-  });
-  assert.equal(directive.production.membership, 'DYNAMIC_EVIDENCE_RANKED');
+test('semantic production classes are canonical and class counts are derived, not fixed quotas', () => {
+  assert.equal(directive.production.canonicalField, 'productionClass');
+  assert.deepEqual(directive.production.canonicalClasses, [
+    'DESIGN_ONLY',
+    'DEVELOPMENT_CONFIRMED',
+    'RELEASE_CONFIRMED',
+  ]);
+  assert.equal(directive.production.membership, 'DYNAMIC_EVIDENCE');
+  assert.equal(directive.production.countsDerivedFromMembership, true);
+  assert.equal(directive.production.fixedClassCounts, false);
   assert.equal(directive.production.gameIdsPinned, false);
+  assert.equal(directive.production.numericLabelsAreAliasesOnly, true);
+  assert.equal(directive.production.numericLabelsOwnerRemappable, true);
+  assert.deepEqual(directive.production.numericLabels, {
+    RELEASE_CONFIRMED: 1,
+    DEVELOPMENT_CONFIRMED: 2,
+    DESIGN_ONLY: 3,
+  });
+  assert.equal('tierCounts' in directive.production, false);
   assert.equal(directive.production.preserveExistingWebArchives, true);
   assert.equal(directive.production.preserveSaveMeaning, true);
 });
 
-test('tier 3 is multimodel design review led by one Game Designer, not source-code development', () => {
-  assert.equal(directive.ai.departmentMultimodelStartsAtTier, 3);
+test('DESIGN_ONLY is multimodel design review led by one Game Designer, not source-code development', () => {
+  assert.equal(directive.ai.departmentMultimodelStartsAtClass, 'DESIGN_ONLY');
   assert.equal(directive.ai.minDistinctModelsPerDepartment, 3);
   assert.equal(directive.ai.gameDesigner.authorsInitialDetailedDesign, true);
   assert.equal(directive.ai.gameDesigner.singleAuthorPerRevisionCycle, true);
   assert.equal(directive.ai.gameDesigner.sameModelRevisesAfterMeeting, true);
-  assert.equal(directive.ai.departmentModeTier3, 'MULTIMODEL_DESIGN_REVIEW_AND_MEETING');
-  assert.equal(directive.ai.vibe2.tier3Role, 'VALIDATION_AND_LEARNING');
+  assert.equal(directive.ai.departmentModeByClass.DESIGN_ONLY, 'MULTIMODEL_DESIGN_REVIEW_AND_MEETING');
+  assert.equal(directive.ai.vibe2.roleByClass.DESIGN_ONLY, 'VALIDATION_AND_LEARNING');
   assert.equal(directive.ai.vibe2.designOrArtbookPrimaryAuthorInTier3Or2, false);
-  assert.equal(directive.tiers['3'].baseline, 'DESIGN_BASELINE');
-  assert.equal(directive.tiers['3'].sourceCodeAutoDevelopment, false);
-  assert.deepEqual(directive.tiers['3'].requiredFlow, requiredTier3Flow);
+  assert.equal(directive.classes.DESIGN_ONLY.baseline, 'DESIGN_BASELINE');
+  assert.equal(directive.classes.DESIGN_ONLY.sourceCodeAutoDevelopment, false);
+  assert.deepEqual(directive.classes.DESIGN_ONLY.requiredFlow, requiredDesignFlow);
 });
 
-test('tier 2 validates fun in Web and feasibility in Unity with multimodel departments', () => {
-  assert.equal(directive.ai.departmentModeTier2, 'MULTIMODEL_DETAILED_PLAY_TECH_REVIEW_AND_MEETING');
-  assert.equal(directive.ai.vibe2.tier2Role, 'VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT');
-  assert.equal(directive.tiers['2'].baseline, 'DEVELOPMENT_BASELINE');
-  assert.equal(directive.tiers['2'].webPurpose, 'GAMEPLAY_VALIDATION_TESTBED');
-  assert.equal(directive.tiers['2'].unityPurpose, 'TECHNICAL_VALIDATION_PROTOTYPE');
-  assert.equal(directive.tiers['2'].webBeforeUnityByDefault, true);
-  assert.equal(directive.tiers['2'].unityMayRunEarlyWhenEngineBehaviorDefinesCoreFun, true);
-  assert.deepEqual(directive.tiers['2'].decisionStates, ['KEEP', 'CHANGE', 'DROP', 'HOLD']);
+test('DEVELOPMENT_CONFIRMED validates fun in Web and feasibility in Unity with multimodel departments', () => {
+  const policy = directive.classes.DEVELOPMENT_CONFIRMED;
+  assert.equal(directive.ai.departmentModeByClass.DEVELOPMENT_CONFIRMED, 'MULTIMODEL_DETAILED_PLAY_TECH_REVIEW_AND_MEETING');
+  assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED, 'VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT');
+  assert.equal(policy.baseline, 'DEVELOPMENT_BASELINE');
+  assert.equal(policy.webPurpose, 'GAMEPLAY_VALIDATION_TESTBED');
+  assert.equal(policy.unityPurpose, 'TECHNICAL_VALIDATION_PROTOTYPE');
+  assert.equal(policy.webBeforeUnityByDefault, true);
+  assert.equal(policy.unityMayRunEarlyWhenEngineBehaviorDefinesCoreFun, true);
+  assert.deepEqual(policy.decisionStates, ['KEEP', 'CHANGE', 'DROP', 'HOLD']);
 });
 
-test('tier 1 keeps Vibe2 as primary Unity Android developer and departments on risk watch', () => {
-  assert.equal(directive.ai.departmentModeTier1, 'MULTIMODEL_ERROR_RISK_WATCH');
-  assert.equal(directive.ai.vibe2.tier1Role, 'PRIMARY_DEVELOPMENT_ENGINE');
-  assert.equal(directive.tiers['1'].baseline, 'RELEASE_BASELINE');
-  assert.equal(directive.tiers['1'].target, 'UNITY_ANDROID');
-  assert.equal(directive.tiers['1'].vibe2PrimaryDeveloper, true);
-  assert.equal(directive.tiers['1'].departmentDefaultRole, 'ERROR_AND_RELEASE_RISK_REVIEW');
-  assert.equal(directive.tiers['1'].coreDesignLock, true);
-  assert.equal(directive.tiers['1'].exceptionMeetingForReleaseBlockingIssues, true);
-  assert.deepEqual(directive.tiers['1'].releaseStates, ['RELEASE_READY', 'FIX_AND_REVERIFY', 'RELEASE_BLOCKED']);
+test('RELEASE_CONFIRMED keeps Vibe2 as primary Unity Android developer and departments on risk watch', () => {
+  const policy = directive.classes.RELEASE_CONFIRMED;
+  assert.equal(directive.ai.departmentModeByClass.RELEASE_CONFIRMED, 'MULTIMODEL_ERROR_RISK_WATCH');
+  assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED, 'PRIMARY_DEVELOPMENT_ENGINE');
+  assert.equal(policy.baseline, 'RELEASE_BASELINE');
+  assert.equal(policy.target, 'UNITY_ANDROID');
+  assert.equal(policy.vibe2PrimaryDeveloper, true);
+  assert.equal(policy.departmentDefaultRole, 'ERROR_AND_RELEASE_RISK_REVIEW');
+  assert.equal(policy.coreDesignLock, true);
+  assert.equal(policy.exceptionMeetingForReleaseBlockingIssues, true);
+  assert.deepEqual(policy.releaseStates, ['RELEASE_READY', 'FIX_AND_REVERIFY', 'RELEASE_BLOCKED']);
+});
+
+test('legacy numeric tiers remain aliases only', () => {
+  assert.equal(directive.tiersCompatibility.purpose, 'DISPLAY_AND_BACKWARD_COMPATIBILITY_ALIAS_ONLY');
+  assert.equal(directive.tiersCompatibility['1'], 'RELEASE_CONFIRMED');
+  assert.equal(directive.tiersCompatibility['2'], 'DEVELOPMENT_CONFIRMED');
+  assert.equal(directive.tiersCompatibility['3'], 'DESIGN_ONLY');
+  assert.equal(directive.tiers['1'].productionClass, 'RELEASE_CONFIRMED');
+  assert.equal(directive.tiers['2'].productionClass, 'DEVELOPMENT_CONFIRMED');
+  assert.equal(directive.tiers['3'].productionClass, 'DESIGN_ONLY');
 });
 
 test('central contract cannot silently enable paid AI or paid runners', () => {
