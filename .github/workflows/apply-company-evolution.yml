@@ -8,9 +8,10 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
-  group: company-evolution-main
+  group: company-evolution-pr
   cancel-in-progress: false
 
 jobs:
@@ -25,15 +26,31 @@ jobs:
       - name: Wire discussed systems into existing runtime
         run: node tools/apply-company-evolution.mjs
 
-      - name: Commit wiring
+      - name: Propose wiring through PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
+          set -euo pipefail
           git config user.name "jaewoon-company-ai"
           git config user.email "actions@users.noreply.github.com"
-          git add index.html assets/vibe-company-orchestration-bridge.js COMPANY_FLOW.md HOMEPAGE_OPERATIONS.md .github/agents/director.agent.md ASSET_RULES.md
+          git add -- index.html assets/vibe-company-orchestration-bridge.js COMPANY_FLOW.md HOMEPAGE_OPERATIONS.md .github/agents/director.agent.md ASSET_RULES.md
           if git diff --cached --quiet; then
             echo "Evolution wiring already applied."
             exit 0
           fi
+
+          branch="automation/company-evolution-${GITHUB_RUN_ID}"
+          git checkout -b "$branch"
           git commit -m "company-ai: wire artbook health learning and quality systems"
-          git pull --rebase origin main
-          git push origin main
+          git push origin "HEAD:refs/heads/$branch"
+
+          pr_url="$(gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$branch" \
+            --title 'company-ai: wire artbook health learning and quality systems' \
+            --body "Automated company evolution wiring proposal.\n\n- workflow run: ${GITHUB_RUN_ID}\n- policy review required for COMPANY_FLOW.md changes\n- direct main write: NO")"
+
+          echo "COMPANY_EVOLUTION_PR=$pr_url"
+          echo "PUBLIC_MAIN_WRITE=NO"
