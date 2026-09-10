@@ -305,18 +305,18 @@
     "dateKst": "2026-09-11",
     "runningLabelAloneCountsAsWork": false,
     "counts": {
-      "WORKING": 2,
-      "DONE": 5,
+      "WORKING": 1,
+      "DONE": 6,
       "IDLE_NO_TASK": 1,
       "BLOCKED": 0,
       "FAILED": 0,
       "STALE": 0
     },
     "liveStates": {
-      "ACTIVE": 2,
+      "ACTIVE": 1,
       "WAITING": 1,
       "BLOCKED": 0,
-      "DONE": 5
+      "DONE": 6
     },
     "activeDevelopmentRunId": 34517593111,
     "primaryFindings": [
@@ -324,89 +324,44 @@
     ],
     "staff": {
       "planning": {
-        "status": "WORKING",
-        "workState": "ACTIVE",
-        "task": "autonomous development floor 34517593111",
-        "source": "autonomous-development",
-        "reason": "autonomous development department job is executing now",
-        "jobEvidence": {
-          "id": 103007714266,
-          "name": "department (planning-final)",
-          "status": "in_progress",
-          "conclusion": null,
-          "failedStep": null,
-          "startedAt": "2026-09-10T19:01:12Z",
-          "completedAt": null,
-          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34517593111/job/103007714266"
-        }
+        "status": "DONE",
+        "workState": "DONE",
+        "task": "daechung-rpg daily artbook section",
+        "source": "artbook",
+        "reason": "department submission is recorded for the resolved active artbook target",
+        "jobEvidence": null
       },
       "development": {
         "status": "DONE",
         "workState": "DONE",
-        "task": "autonomous development floor 34517593111",
-        "source": "autonomous-development",
-        "reason": "latest autonomous department handoff completed successfully",
-        "jobEvidence": {
-          "id": 103006963244,
-          "name": "department (development)",
-          "status": "completed",
-          "conclusion": "success",
-          "failedStep": null,
-          "startedAt": "2026-09-10T18:59:01Z",
-          "completedAt": "2026-09-10T19:00:18Z",
-          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34517593111/job/103006963244"
-        }
+        "task": "daechung-rpg daily artbook section",
+        "source": "artbook",
+        "reason": "department submission is recorded for the resolved active artbook target",
+        "jobEvidence": null
       },
       "qa": {
         "status": "DONE",
         "workState": "DONE",
-        "task": "autonomous development floor 34517593111",
-        "source": "autonomous-development",
-        "reason": "latest autonomous department handoff completed successfully",
-        "jobEvidence": {
-          "id": 103006963280,
-          "name": "department (qa)",
-          "status": "completed",
-          "conclusion": "success",
-          "failedStep": null,
-          "startedAt": "2026-09-10T18:59:02Z",
-          "completedAt": "2026-09-10T19:00:57Z",
-          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34517593111/job/103006963280"
-        }
+        "task": "daechung-rpg daily artbook section",
+        "source": "artbook",
+        "reason": "department submission is recorded for the resolved active artbook target",
+        "jobEvidence": null
       },
       "graphics": {
         "status": "DONE",
         "workState": "DONE",
-        "task": "autonomous development floor 34517593111",
-        "source": "autonomous-development",
-        "reason": "latest autonomous department handoff completed successfully",
-        "jobEvidence": {
-          "id": 103006963189,
-          "name": "department (graphics)",
-          "status": "completed",
-          "conclusion": "success",
-          "failedStep": null,
-          "startedAt": "2026-09-10T18:59:01Z",
-          "completedAt": "2026-09-10T19:00:13Z",
-          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34517593111/job/103006963189"
-        }
+        "task": "daechung-rpg daily artbook section",
+        "source": "artbook",
+        "reason": "department submission is recorded for the resolved active artbook target",
+        "jobEvidence": null
       },
       "balance": {
         "status": "DONE",
         "workState": "DONE",
-        "task": "autonomous development floor 34517593111",
-        "source": "autonomous-development",
-        "reason": "latest autonomous department handoff completed successfully",
-        "jobEvidence": {
-          "id": 103006963273,
-          "name": "department (balance)",
-          "status": "completed",
-          "conclusion": "success",
-          "failedStep": null,
-          "startedAt": "2026-09-10T18:59:01Z",
-          "completedAt": "2026-09-10T19:00:52Z",
-          "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34517593111/job/103006963273"
-        }
+        "task": "daechung-rpg daily artbook section",
+        "source": "artbook",
+        "reason": "department submission is recorded for the resolved active artbook target",
+        "jobEvidence": null
       },
       "director": {
         "status": "WORKING",
@@ -619,39 +574,39 @@
     },
     "departmentTasks": {
       "planning": {
-        "status": "working",
-        "task": "autonomous development floor 34517593111",
+        "status": "done",
+        "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
-        "workState": "ACTIVE",
-        "reason": "autonomous development department job is executing now"
+        "workState": "DONE",
+        "reason": "department submission is recorded for the resolved active artbook target"
       },
       "development": {
         "status": "done",
-        "task": "autonomous development floor 34517593111",
+        "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
         "workState": "DONE",
-        "reason": "latest autonomous department handoff completed successfully"
+        "reason": "department submission is recorded for the resolved active artbook target"
       },
       "qa": {
         "status": "done",
-        "task": "autonomous development floor 34517593111",
+        "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
         "workState": "DONE",
-        "reason": "latest autonomous department handoff completed successfully"
+        "reason": "department submission is recorded for the resolved active artbook target"
       },
       "graphics": {
         "status": "done",
-        "task": "autonomous development floor 34517593111",
+        "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
         "workState": "DONE",
-        "reason": "latest autonomous department handoff completed successfully"
+        "reason": "department submission is recorded for the resolved active artbook target"
       },
       "balance": {
         "status": "done",
-        "task": "autonomous development floor 34517593111",
+        "task": "daechung-rpg daily artbook section",
         "evidenceSource": "director-supervision-status.json",
         "workState": "DONE",
-        "reason": "latest autonomous department handoff completed successfully"
+        "reason": "department submission is recorded for the resolved active artbook target"
       },
       "director": {
         "status": "working",
