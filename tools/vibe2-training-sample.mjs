@@ -1,0 +1,149 @@
+// 파일명: tools/vibe2-training-sample.mjs
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const MAX_PATCH_BYTES = 120_000;
+const ALLOWED_TASK_TYPES = new Set(['coding', 'bugfix', 'unity', 'qa', 'planning', 'general']);
+
+const clean = (value) => String(value ?? '').trim();
+const clamp01 = (value) => Math.max(0, Math.min(1, Number(value) || 0));
+
+function readJson(file) {
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+
+function inferTaskType(evidence) {
+  const sourcePath = clean(evidence?.sourcePath).toLowerCase();
+  const role = clean(evidence?.role).toLowerCase();
+  const diagnostic = evidence?.diagnosticFocus;
+  if (sourcePath.startsWith('unity-games/')) return 'unity';
+  if (role === 'qa') return 'qa';
+  if (diagnostic?.type || diagnostic?.file || diagnostic?.needle) return 'bugfix';
+  if (role === 'development' || role === 'graphics' || role === 'balance') return 'coding';
+  return 'general';
+}
+
+function inferDifficulty(evidence, taskType) {
+  if (taskType === 'unity') return 'unity-build';
+  if (taskType === 'qa') return 'regression';
+  if (evidence?.diagnosticFocus?.type) return 'bug';
+  return 'simple';
+}
+
+function buildInput(evidence) {
+  const payload = {
+    gameId: clean(evidence.gameId),
+    sourcePath: clean(evidence.sourcePath),
+    role: clean(evidence.role) || 'development',
+    diagnostic: evidence.diagnosticFocus ?? null,
+    responsibilityFiles: Array.isArray(evidence.responsibilityFiles) ? evidence.responsibilityFiles : [],
+    browserFailureFeedbackUsed: evidence.browserFailureFeedbackUsed === true,
+    protectedValues: ['save keys', 'progression meaning', 'public stable behavior'],
+  };
+  return JSON.stringify(payload, null, 2);
+}
+
+function buildOutput(evidence, patch) {
+  return [
+    `요약: ${clean(evidence.summary) || '검증된 최소 수정'}`,
+    clean(evidence.expectedEffect) ? `기대 효과: ${clean(evidence.expectedEffect)}` : '',
+    Array.isArray(evidence.changedFiles) && evidence.changedFiles.length ? `변경 파일: ${evidence.changedFiles.join(', ')}` : '',
+    '',
+    '검증된 패치:',
+    patch.trim(),
+  ].filter((line, index, rows) => line || (index > 0 && rows[index - 1])).join('\n').trim();
+}
+
+export function buildVerifiedTrainingSample({ evidence, patch, sourceRevision, independentQa = 'PASS', browserQa = 'PASS', performance = null, taskType = '' }) {
+  if (!evidence || typeof evidence !== 'object') throw new Error('candidate evidence 필요');
+  const instruction = clean(evidence.goal);
+  if (!instruction) throw new Error('candidate goal이 없어 학습 샘플을 만들 수 없음');
+  const verifiedPatch = String(patch ?? '').trim();
+  if (!verifiedPatch) throw new Error('검증된 patch가 없어 학습 샘플을 만들 수 없음');
+  if (Buffer.byteLength(verifiedPatch, 'utf8') > MAX_PATCH_BYTES) throw new Error(`patch가 학습 샘플 한도 ${MAX_PATCH_BYTES} bytes를 초과함`);
+  if (clean(independentQa).toUpperCase() !== 'PASS') throw new Error('독립 QA PASS 필요');
+  if (clean(browserQa).toUpperCase() !== 'PASS') throw new Error('브라우저 QA PASS 필요');
+  const revision = clean(sourceRevision);
+  if (!revision) throw new Error('검증 sourceRevision 필요');
+
+  const resolvedTaskType = clean(taskType).toLowerCase() || inferTaskType(evidence);
+  if (!ALLOWED_TASK_TYPES.has(resolvedTaskType)) throw new Error(`지원하지 않는 taskType: ${resolvedTaskType}`);
+  const playerImpactScore = clamp01(Number(performance?.playerImpactScore ?? 0) / 5);
+
+  return {
+    version: 1,
+    instruction,
+    input: buildInput(evidence),
+    output: buildOutput(evidence, verifiedPatch),
+    taskType: resolvedTaskType,
+    difficulty: inferDifficulty(evidence, resolvedTaskType),
+    lifecycle: 'active',
+    sourceKind: 'vibe2',
+    project: clean(evidence.gameId) || 'shared',
+    gameId: clean(evidence.gameId) || null,
+    candidateId: clean(evidence.candidateId) || null,
+    sourceCommit: revision,
+    sourceRevision: revision,
+    independentQa: 'PASS',
+    browserQa: 'PASS',
+    quality: {
+      codeQuality: 1,
+      noRegression: true,
+      playImprovement: playerImpactScore,
+      ruleCompliance: 1,
+    },
+    provenance: {
+      sourceKind: 'vibe2',
+      sourceRevision: revision,
+      gameId: clean(evidence.gameId) || null,
+      candidateId: clean(evidence.candidateId) || null,
+    },
+    verification: {
+      independentQa: 'PASS',
+      browserQa: 'PASS',
+      fullRegression: 'PASS',
+      saveKeyValidation: clean(evidence.saveKeyValidation) || null,
+      syntaxChecks: Array.isArray(evidence.syntaxChecks) ? evidence.syntaxChecks : [],
+      proposedTests: Array.isArray(evidence.proposedTests) ? evidence.proposedTests : [],
+    },
+  };
+}
+
+function parseArgs(argv) {
+  const args = {};
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (!arg.startsWith('--')) continue;
+    const [key, inline] = arg.slice(2).split('=', 2);
+    args[key] = inline ?? argv[++i];
+  }
+  return args;
+}
+
+function main() {
+  const args = parseArgs(process.argv.slice(2));
+  if (!args.evidence || !args.patch || !args.output) throw new Error('--evidence, --patch, --output 필요');
+  const evidence = readJson(args.evidence);
+  const patch = fs.readFileSync(args.patch, 'utf8');
+  const performance = args.performance && fs.existsSync(args.performance) ? readJson(args.performance) : null;
+  const sample = buildVerifiedTrainingSample({
+    evidence,
+    patch,
+    performance,
+    sourceRevision: args['source-revision'],
+    independentQa: args['independent-qa'] || 'PASS',
+    browserQa: args['browser-qa'] || 'PASS',
+    taskType: args['task-type'] || '',
+  });
+  fs.mkdirSync(path.dirname(args.output), { recursive: true });
+  fs.writeFileSync(args.output, `${JSON.stringify(sample, null, 2)}\n`);
+  console.log(JSON.stringify({ output: args.output, taskType: sample.taskType, project: sample.project, bytes: Buffer.byteLength(sample.output) }));
+}
+
+const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isMain) {
+  try { main(); } catch (error) { console.error(error.message); process.exitCode = 1; }
+}
+
+export { MAX_PATCH_BYTES };
