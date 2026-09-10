@@ -1,6 +1,7 @@
 // 파일명: tools/main-write-guard.mjs
 // 역할: 자동화/워크플로우 변경에서 main 직접 쓰기를 결정론적으로 차단한다.
 import fs from 'node:fs';
+import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
@@ -10,9 +11,10 @@ const DIRECT_MAIN_PATTERNS=[
   /refs\/heads\/main\b[^\n]*(?:PATCH|POST|PUT)/i,
 ];
 const WORKFLOW_EXT=/\.ya?ml$/i;
+const WORKFLOW_ROOT='.github/workflows';
 
 export function isWorkflowPath(file=''){
-  return String(file).startsWith('.github/workflows/')&&WORKFLOW_EXT.test(file);
+  return String(file).startsWith(`${WORKFLOW_ROOT}/`)&&WORKFLOW_EXT.test(file);
 }
 
 export function scanTextForDirectMainWrite(text=''){
@@ -27,7 +29,7 @@ export function scanTextForDirectMainWrite(text=''){
   return violations;
 }
 
-export function scanChangedWorkflowFiles(files=[]){
+export function scanWorkflowFiles(files=[]){
   const violations=[];
   for(const file of files.filter(isWorkflowPath)){
     if(!fs.existsSync(file))continue;
@@ -36,6 +38,18 @@ export function scanChangedWorkflowFiles(files=[]){
     }
   }
   return violations;
+}
+
+export function listAllWorkflowFiles(root=WORKFLOW_ROOT){
+  if(!fs.existsSync(root))return [];
+  return fs.readdirSync(root,{withFileTypes:true})
+    .filter(entry=>entry.isFile()&&WORKFLOW_EXT.test(entry.name))
+    .map(entry=>path.posix.join(root,entry.name))
+    .sort();
+}
+
+export function scanChangedWorkflowFiles(files=[]){
+  return scanWorkflowFiles(files);
 }
 
 function changedFiles(baseRef,headRef){
@@ -51,12 +65,16 @@ function arg(name,fallback=''){
 function main(){
   const base=arg('base','origin/main');
   const head=arg('head','HEAD');
-  const files=changedFiles(base,head);
-  const violations=scanChangedWorkflowFiles(files);
+  const all=arg('all','false')==='true';
+  const changed=changedFiles(base,head);
+  const files=all?listAllWorkflowFiles():changed;
+  const violations=scanWorkflowFiles(files);
   const result={
     status:violations.length?'FAIL':'PASS',
     developmentProgress:violations.length?'BLOCKED':'INCOMPLETE_PROGRESS',
-    changedWorkflowFiles:files.filter(isWorkflowPath),
+    scanMode:all?'ALL_WORKFLOWS':'CHANGED_WORKFLOWS',
+    scannedWorkflowFiles:files.filter(isWorkflowPath),
+    changedWorkflowFiles:changed.filter(isWorkflowPath),
     violations,
     adminProtection:'ADMIN_PROTECTION_BLOCKER',
     rule:'feature branch -> PR -> CI -> merge; workflow direct-write to main forbidden',
