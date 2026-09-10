@@ -9,7 +9,7 @@
     "activeWorkOrder": null,
     "activeWorkOrderExists": false,
     "evidenceAdapterMismatch": false,
-    "jobLevelEvidenceUsed": true,
+    "jobLevelEvidenceUsed": false,
     "autonomousDepartmentJobEvidenceUsed": true,
     "liveDepartmentStates": true,
     "failureLogsUsed": true,
@@ -24,8 +24,8 @@
     "completionAndPerformanceSeparated": true
   },
   "counts": {
-    "WORKING": 6,
-    "DONE": 1,
+    "WORKING": 1,
+    "DONE": 6,
     "IDLE_NO_TASK": 1,
     "BLOCKED": 0,
     "FAILED": 0,
@@ -33,9 +33,9 @@
   },
   "liveStates": {
     "ACTIVE": 1,
-    "WAITING": 6,
+    "WAITING": 1,
     "BLOCKED": 0,
-    "DONE": 1
+    "DONE": 6
   },
   "attentionRequired": false,
   "primaryFindings": [
@@ -43,21 +43,21 @@
   ],
   "workflowEvidence": {
     "artbook": {
-      "id": 34528292634,
-      "status": "in_progress",
+      "id": 34528501719,
+      "status": "pending",
       "conclusion": null,
       "event": "push",
-      "createdAt": "2026-09-10T20:45:45Z",
-      "updatedAt": "2026-09-10T20:46:51Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34528292634"
+      "createdAt": "2026-09-10T20:47:57Z",
+      "updatedAt": "2026-09-10T20:47:58Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34528501719"
     },
     "autonomousDevelopment": {
       "id": 34528395292,
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "failure",
       "event": "workflow_dispatch",
       "createdAt": "2026-09-10T20:46:49Z",
-      "updatedAt": "2026-09-10T20:46:54Z",
+      "updatedAt": "2026-09-10T20:47:06Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34528395292"
     },
     "homepage": null,
@@ -85,19 +85,22 @@
     "planning": {
       "department": "planning",
       "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
-      "task": "autonomous development floor 34528395292",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
-        "autonomous-workflow:34528395292:in_progress:pending"
+        "queue-submission:planning",
+        "workflow:34528501719:pending:pending"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
-      "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
-      "source": "autonomous-development",
+      "blockers": [
+        "NO_WORK_ORDER"
+      ],
+      "reason": "department submission is recorded for the resolved active artbook target",
+      "action": "hold for collaboration/gate verification",
+      "source": "artbook",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
@@ -115,19 +118,22 @@
     "development": {
       "department": "development",
       "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
-      "task": "autonomous development floor 34528395292",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
-        "autonomous-workflow:34528395292:in_progress:pending"
+        "queue-submission:development",
+        "workflow:34528501719:pending:pending"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
-      "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
-      "source": "autonomous-development",
+      "blockers": [
+        "NO_WORK_ORDER"
+      ],
+      "reason": "department submission is recorded for the resolved active artbook target",
+      "action": "hold for collaboration/gate verification",
+      "source": "artbook",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
@@ -145,19 +151,22 @@
     "qa": {
       "department": "qa",
       "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
-      "task": "autonomous development floor 34528395292",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
-        "autonomous-workflow:34528395292:in_progress:pending"
+        "queue-submission:qa",
+        "workflow:34528501719:pending:pending"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
-      "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
-      "source": "autonomous-development",
+      "blockers": [
+        "NO_WORK_ORDER"
+      ],
+      "reason": "department submission is recorded for the resolved active artbook target",
+      "action": "hold for collaboration/gate verification",
+      "source": "artbook",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
@@ -175,19 +184,22 @@
     "graphics": {
       "department": "graphics",
       "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
-      "task": "autonomous development floor 34528395292",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
-        "autonomous-workflow:34528395292:in_progress:pending"
+        "queue-submission:graphics",
+        "workflow:34528501719:pending:pending"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
-      "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
-      "source": "autonomous-development",
+      "blockers": [
+        "NO_WORK_ORDER"
+      ],
+      "reason": "department submission is recorded for the resolved active artbook target",
+      "action": "hold for collaboration/gate verification",
+      "source": "artbook",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
@@ -205,19 +217,22 @@
     "balance": {
       "department": "balance",
       "taskAssigned": true,
-      "status": "WORKING",
-      "workState": "WAITING",
-      "task": "autonomous development floor 34528395292",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "daechung-rpg daily artbook section",
       "executionEvidence": [
-        "autonomous-workflow:34528395292:in_progress:pending"
+        "queue-submission:balance",
+        "workflow:34528501719:pending:pending"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
-      "blockers": [],
-      "reason": "autonomous floor is active but this department job has not started yet",
-      "action": "wait for department matrix scheduling",
-      "source": "autonomous-development",
+      "blockers": [
+        "NO_WORK_ORDER"
+      ],
+      "reason": "department submission is recorded for the resolved active artbook target",
+      "action": "hold for collaboration/gate verification",
+      "source": "artbook",
       "performance": {
         "source": "company-learning/autonomous-impact-history.json",
         "gameId": "P0009",
@@ -308,7 +323,7 @@
     "artbookBacklogCount": 0,
     "nextMissingInitialArtbook": null,
     "artbookRecoveryDispatched": false,
-    "autonomousRecoveryDispatched": false,
+    "autonomousRecoveryDispatched": true,
     "duplicateActiveWorkflowDispatchForbidden": true
   }
 }
