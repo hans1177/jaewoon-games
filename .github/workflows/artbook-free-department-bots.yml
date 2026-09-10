@@ -24,6 +24,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: free-artbook-departments-main
@@ -178,8 +179,10 @@ jobs:
           console.log(`BASELINE_GATE=${s.baselineGate.state}`);
           NODE
 
-      - name: Commit design-cycle evidence
+      - name: Propose design-cycle evidence through PR
         if: steps.target.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -190,7 +193,11 @@ jobs:
             echo 'DESIGN_CYCLE_COMMIT=NO_CHANGES'
             exit 0
           fi
+          branch="automation/design-cycle-${{ steps.target.outputs.game_id }}-${{ steps.target.outputs.date }}-${GITHUB_RUN_ID}"
+          git checkout -b "$branch"
           git commit -m "design: multimodel cycle ${{ steps.target.outputs.game_id }} ${{ steps.target.outputs.date }} [skip ci]"
-          git pull --rebase origin main
-          git push origin main
-          echo 'DESIGN_CYCLE_COMMIT=SUCCESS'
+          git push origin "HEAD:refs/heads/$branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "design: multimodel cycle ${{ steps.target.outputs.game_id }} ${{ steps.target.outputs.date }}" --body "Central policy evidence update from Free Artbook Department Bots.\n\n- policy: COMPANY_FLOW.md\n- game: ${{ steps.target.outputs.game_id }}\n- tier: ${{ steps.target.outputs.tier }}\n- date: ${{ steps.target.outputs.date }}\n- run: $GITHUB_RUN_ID\n- direct main write: NO")"
+          echo "DESIGN_CYCLE_PR=$pr_url"
+          echo 'DESIGN_CYCLE_COMMIT=PR_OPENED'
+          echo 'PUBLIC_MAIN_WRITE=NO'
