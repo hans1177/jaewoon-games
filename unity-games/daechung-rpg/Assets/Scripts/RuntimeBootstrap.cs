@@ -250,7 +250,17 @@ namespace JaewoonGames.DaechungRpg
                 return;
             }
 
-            _enemy = region.enemies[0];
+            var enemyIndex = 0;
+            if (_enemy != null)
+            {
+                var currentIndex = region.enemies.FindIndex(enemy => enemy.id == _enemy.id);
+                if (currentIndex >= 0)
+                {
+                    enemyIndex = (currentIndex + 1) % region.enemies.Count;
+                }
+            }
+
+            _enemy = region.enemies[enemyIndex];
             _enemyHp = _enemy.maxHp;
             if (announceEncounter)
             {
