@@ -1,16 +1,18 @@
 // 파일명: tools/vibe2-auto-planner.mjs
 // 역할: 최신 회사 상태·게임 카탈로그·실제 소스에서 서로 충돌하지 않는 저위험 작업을 병렬 슬롯만큼 계획한다.
-// 원칙: 사용자 지시 > 출시확정 > 개발확정. 동일 source root는 한 번에 하나, 1분류 Unity 집중 슬롯은 하나만 유지한다.
+// 원칙: 사용자 지시 > 출시확정 Unity 집중개발 > 개발확정 Web 사전검증. 동일 source root는 한 번에 하나, 1분류 Unity 집중 슬롯은 하나만 유지한다.
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeContinuousQueue, DEFAULT_MAX_CONCURRENT_TASKS } from '../assets/vibe-continuous-queue.js';
+import { diagnoseGame, microTaskFromIssue } from './autonomous-diagnostics.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/+$/, '');
 const RELEASE_RANK = Object.freeze({ 'release-confirmed': 0, 'development-confirmed': 1, reviewing: 2, other: 3 });
 const ENGINE_RANK = Object.freeze({ unity: 0, web: 1, unreal: 2, godot: 3 });
+const SEVERITY_PRIORITY = Object.freeze({ critical:'critical', high:'high', medium:'normal', low:'low' });
 
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
@@ -74,21 +76,26 @@ function projectSort(a, b) {
   if (engine) return engine;
   return Number(b.progress || 0) - Number(a.progress || 0) || a.gameId.localeCompare(b.gameId);
 }
+function isAutonomousProductionTarget(project = {}) {
+  if (project.releaseState === 'release-confirmed') return project.engine === 'unity';
+  if (project.releaseState === 'development-confirmed') return project.engine === 'web';
+  return false;
+}
 function eligibleProjects(status, catalog, repoRoot) {
-  return collectProjects(status, catalog, repoRoot).filter((project) => ['release-confirmed','development-confirmed'].includes(project.releaseState)).sort(projectSort);
+  return collectProjects(status, catalog, repoRoot).filter(isAutonomousProductionTarget).sort(projectSort);
 }
 function sourceFile(root, relative) { return path.join(root, ...posix(relative).split('/')); }
 function readText(file) { try { return fs.readFileSync(file, 'utf8'); } catch { return ''; } }
 function hasTask(queue, id) { return queue.tasks.some((item) => item.id === id); }
 function activeTasks(queue) { return queue.tasks.filter((item) => ['queued','running'].includes(clean(item.status).toLowerCase())); }
 function activeSourceRoots(queue) { return new Set(activeTasks(queue).map((item) => posix(item.sourceRoot)).filter(Boolean)); }
-function task(id, project, goal, responsibleFiles, priority = 'normal', estimatedRisk = 'low') {
+function task(id, project, goal, responsibleFiles, priority = 'normal', estimatedRisk = 'low', extraEvidence = []) {
   return {
     id, gameId:project.gameId, target:project.engine, department:'development', type:'implementation', goal,
     responsibleFiles, dependencies:[], priority, releaseState:project.releaseState, status:'queued', retries:0, maxRetries:2,
     ownerDirective:false, requiresOwnerDecision:false, protectedChange:false, paidResourceRequired:false,
     sourceRoot:posix(project.projectPath), estimatedRisk, speculativeEligible:estimatedRisk === 'high',
-    evidence:[`vibe2-auto-planner:${project.source}`, `release-state:${project.releaseState}`, `source-root:${posix(project.projectPath)}`]
+    evidence:[`vibe2-auto-planner:${project.source}`, `release-state:${project.releaseState}`, `source-root:${posix(project.projectPath)}`, ...extraEvidence]
   };
 }
 function findUnityTask(project, repoRoot, queue) {
@@ -110,6 +117,34 @@ function findUnityTask(project, repoRoot, queue) {
   if (motion && motion.includes('public void PlayTravelToBattle()') && !/PlayTravelToBattle\(\)[\s\S]{0,500}StopCoroutine\(_combatRoutine\)/.test(motion) && !hasTask(queue, `${project.gameId}-motion-routine-safety`)) {
     return task(`${project.gameId}-motion-routine-safety`, project,
       'PrototypeAnimatedVisuals에서 전투 코루틴 중 새 이동 모션을 시작할 때 이전 combat routine을 안전하게 중지해 애니메이션 상태 덮어쓰기를 막는다. 전투 판정 타이밍·데미지·보상·에셋은 변경하지 않는다.', [motionRel]);
+  }
+  return null;
+}
+function diagnosticTaskId(project, issue, micro) {
+  const token = `${clean(issue?.type)}-${posix(micro?.file)}`.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').slice(-64) || 'issue';
+  return `${project.gameId}-diagnostic-${token}`;
+}
+function findWebDiagnosticTask(project, repoRoot, queue) {
+  if (project.engine !== 'web' || project.releaseState !== 'development-confirmed') return null;
+  const root = sourceFile(repoRoot, project.projectPath);
+  if (!fs.existsSync(root)) return null;
+  let report;
+  try { report = diagnoseGame(root, { maxIssues:12 }); }
+  catch { return null; }
+  for (const issue of report.issues || []) {
+    const micro = microTaskFromIssue(issue);
+    if (!micro?.file || !micro?.goal) continue;
+    const id = diagnosticTaskId(project, issue, micro);
+    if (hasTask(queue, id)) continue;
+    const relative = `${posix(project.projectPath)}/${posix(micro.file)}`;
+    const priority = SEVERITY_PRIORITY[clean(issue.severity).toLowerCase()] || 'normal';
+    const estimatedRisk = micro.repairMode === 'RULE_PATCH' ? 'low' : 'medium';
+    return task(id, project, micro.goal, [relative], priority, estimatedRisk, [
+      `diagnostic:${clean(issue.type) || 'UNKNOWN'}`,
+      `diagnostic-severity:${clean(issue.severity) || 'unknown'}`,
+      `repair-mode:${clean(micro.repairMode) || 'MODEL'}`,
+      `diagnostic-primary-file:${relative}`
+    ]);
   }
   return null;
 }
@@ -140,7 +175,8 @@ function scanExplicitMarkerTask(project, repoRoot, queue) {
 }
 function findSafeTask(project, repoRoot, queue) {
   if (project.engine === 'unity') return findUnityTask(project, repoRoot, queue) || scanExplicitMarkerTask(project, repoRoot, queue);
-  return scanExplicitMarkerTask(project, repoRoot, queue);
+  if (project.engine === 'web') return findWebDiagnosticTask(project, repoRoot, queue) || scanExplicitMarkerTask(project, repoRoot, queue);
+  return null;
 }
 function releaseUnityFocusBusy(queue) {
   return activeTasks(queue).some((item) => item.target === 'unity' && item.releaseState === 'release-confirmed');
@@ -174,7 +210,7 @@ export function planVibe2AutonomousTasks({ status = {}, catalog = {}, queue:queu
   return {
     planned:true, count:planned.length, reason:'SAFE_PARALLEL_TASKS_PLANNED', queue, tasks:planned, task:planned[0],
     projectId:planned[0].gameId, projectReleaseState:planned[0].releaseState, projectEngine:planned[0].target,
-    projectPriorityPolicy:'OWNER_THEN_RELEASE_STATE_THEN_EXISTING_UNITY_WEB_WITH_SOURCE_ROOT_EXCLUSIVITY'
+    projectPriorityPolicy:'OWNER_THEN_RELEASE_UNITY_FOCUS_THEN_DEVELOPMENT_WEB_DIAGNOSTICS_WITH_SOURCE_ROOT_EXCLUSIVITY'
   };
 }
 
