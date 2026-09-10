@@ -25,6 +25,7 @@ on:
 permissions:
   contents: write
   actions: write
+  pull-requests: write
 
 concurrency:
   group: public-game-health-main
@@ -159,7 +160,9 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Persist health, learning evidence and revision request when changed
+      - name: Open health, learning evidence and revision request pull request when changed
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -173,9 +176,16 @@ jobs:
             echo "No health-state changes."
             exit 0
           fi
+          BRANCH="automation/public-game-health-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$BRANCH"
           git commit -m "qa-health: record public game monitoring [skip ci]"
-          git pull --rebase origin main
-          git push origin main
+          git push origin "$BRANCH"
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title 'qa-health: record public game monitoring' \
+            --body "Automated verified Public Game Health persistence from run ${GITHUB_RUN_ID}. Direct main write: NO."
+          echo 'PUBLIC_GAME_HEALTH_PR=OPEN'
 
       - name: Close autonomous post-release loop only after health result
         if: github.event.inputs.release_origin == 'AUTONOMOUS_DEV_VERIFIED_HANDOFF'
@@ -186,7 +196,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run company-dna-learning.yml --repo "$GITHUB_REPOSITORY" --ref main
           if [ "$RELEASE_RESULT" = PASS ] || [ "$REVISION_ENQUEUED" = true ]; then
             active="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow artbook-free-department-bots.yml --limit 10 --json status --jq '[.[]|select(.status=="in_progress" or .status=="queued" or .status=="pending")]|length')"
             if [ "$active" = 0 ]; then
@@ -198,5 +207,5 @@ jobs:
           fi
           gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main
           echo "POST_RELEASE_NEXT_FLOOR=DISPATCHED"
-          echo "POST_RELEASE_VIBE_LEARNING=DISPATCHED"
+          echo "POST_RELEASE_VIBE_LEARNING=DEFERRED_TO_HEALTH_PR_MERGE"
           [ "$RELEASE_RESULT" = PASS ]
