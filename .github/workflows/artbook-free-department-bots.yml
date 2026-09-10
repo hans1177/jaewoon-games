@@ -17,9 +17,9 @@ on:
       - 'game-catalog.json'
       - 'artbook-work-orders/**'
       - 'tools/company-design-cycle.mjs'
+      - 'tools/company-baseline-gate.mjs'
       - 'tools/artbook-production-pipeline.mjs'
       - 'tools/artbook-fact-pack.mjs'
-      - 'tools/artbook-learning-context.mjs'
       - '.github/workflows/artbook-free-department-bots.yml'
 
 permissions:
@@ -139,7 +139,7 @@ jobs:
           ARTBOOK_DATE: ${{ steps.target.outputs.date }}
         run: node tools/artbook-production-pipeline.mjs
 
-      - name: Verify multimodel and authorship gates
+      - name: Verify multimodel, authorship and baseline gates
         if: steps.target.outputs.run == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ steps.target.outputs.game_id }}
@@ -155,19 +155,27 @@ jobs:
           const s=JSON.parse(fs.readFileSync(file,'utf8'));
           if(s.status!=='COMPLETE')throw new Error('cycle incomplete');
           if(Number(s.tier)!==Number('${{ steps.target.outputs.tier }}'))throw new Error('tier mismatch');
+          if(!s.baselineGate||s.baselineGate.policyDocument!=='COMPANY_FLOW.md')throw new Error('baseline gate missing');
           if(Number(s.tier)===1){
             if(s.vibe2PrimaryDeveloper!==true||s.designChanged!==false)throw new Error('tier1 role contract failed');
+            if(s.baselineGate.state!=='RELEASE_BASELINE_MANAGED_BY_RELEASE_PIPELINE')throw new Error('tier1 baseline ownership failed');
           }else{
             if(s.designer?.singleAuthor!==true||s.designer?.sameModelRevised!==true)throw new Error('designer contract failed');
             if(s.departments?.count!==5||s.departments?.rebuttalRounds!==1)throw new Error('meeting contract failed');
-            for(const [role,audit] of Object.entries(s.departments.modelAudit||{})){
-              if(audit.pass!==true||audit.count<(d.ai.minDistinctModelsPerDepartment||3))throw new Error(`${role} distinct model gate failed`);
+            for(const role of ['planning','graphics','development','qa','balance']){
+              const audit=s.departments.modelAudit?.[role];
+              if(!audit||audit.pass!==true||audit.count<(d.ai.minDistinctModelsPerDepartment||3))throw new Error(`${role} distinct model gate failed`);
             }
-            if(s.artbook?.singleEditor!==true||s.artbook?.departmentPageAuthorship!==false||s.artbook?.newClaimsAdded!==false)throw new Error('artbook editor contract failed');
+            if(s.artbook?.singleEditor!==true||s.artbook?.departmentPageAuthorship!==false||s.artbook?.newClaimsAdded!==false||s.artbook?.provenanceVerified!==true)throw new Error('artbook editor contract failed');
+            if(Number(s.tier)===2&&s.baselineGate.state==='DEVELOPMENT_BASELINE_READY'){
+              const e=s.baselineGate.evidence||{};
+              if(e.webGameplay?.pass!==true||e.unityProject?.present!==true||e.unityTechnical?.pass!==true)throw new Error('tier2 baseline falsely approved without Web+Unity validation');
+            }
           }
           console.log('CENTRAL_POLICY=COMPANY_FLOW.md');
           console.log('MULTIMODEL_GATE=PASS');
           console.log('AUTHORSHIP_GATE=PASS');
+          console.log(`BASELINE_GATE=${s.baselineGate.state}`);
           NODE
 
       - name: Commit design-cycle evidence
