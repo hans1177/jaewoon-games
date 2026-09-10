@@ -8,8 +8,18 @@ const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const clean=value=>String(value??'').trim();
 export const DEFAULT_RESERVATION_LEASE_MS=90*60*1000;
+export const DEFAULT_EVIDENCE_MAX_AGE_MS=7*24*60*60*1000;
 export const WORK_STATES=Object.freeze(['ASSIGNED','IMPLEMENTING','PR_OPEN','CI','MERGED','QA','PASS','FAIL','STALLED']);
 export const DEVELOPMENT_PROGRESS=Object.freeze(['PASS','NO_ACTIONABLE_WORK','BLOCKED','INCOMPLETE_PROGRESS']);
+export const RELEASE_READINESS_WEIGHTS=Object.freeze({
+  install_update:20,
+  core_loop:20,
+  stability:20,
+  content:15,
+  graphics_ui:10,
+  monetization:10,
+  store:5,
+});
 const TERMINAL_WORK_STATES=new Set(['PASS','FAIL','STALLED']);
 
 function normalizeEvidenceRefs(value){
@@ -17,9 +27,61 @@ function normalizeEvidenceRefs(value){
   return [...new Set(value.map(clean).filter(Boolean))].slice(-50);
 }
 
+function normalizeReleaseEvidence(value){
+  if(!Array.isArray(value))return [];
+  return value.filter(item=>item&&typeof item==='object').slice(-100).map(item=>({
+    category:clean(item.category).toLowerCase(),
+    source:clean(item.source),
+    timestamp:clean(item.timestamp),
+    commitSha:clean(item.commitSha),
+    runId:clean(item.runId)||null,
+    testId:clean(item.testId)||null,
+    verdict:clean(item.verdict).toUpperCase(),
+    evidenceRef:clean(item.evidenceRef)||null,
+  }));
+}
+
+export function validateReleaseEvidence(item,{expectedCommit='',now=new Date(),maxAgeMs=DEFAULT_EVIDENCE_MAX_AGE_MS}={}){
+  const evidence=normalizeReleaseEvidence([item])[0];
+  if(!evidence)return {valid:false,reason:'INVALID_EVIDENCE'};
+  if(!Object.hasOwn(RELEASE_READINESS_WEIGHTS,evidence.category))return {valid:false,reason:'UNKNOWN_CATEGORY',evidence};
+  if(!evidence.source)return {valid:false,reason:'MISSING_SOURCE',evidence};
+  if(!evidence.commitSha)return {valid:false,reason:'MISSING_COMMIT_SHA',evidence};
+  if(expectedCommit&&evidence.commitSha!==clean(expectedCommit))return {valid:false,reason:'SHA_MISMATCH',evidence};
+  if(!evidence.runId&&!evidence.testId)return {valid:false,reason:'MISSING_RUN_OR_TEST_ID',evidence};
+  if(evidence.verdict!=='PASS')return {valid:false,reason:'NON_PASS_VERDICT',evidence};
+  const evidenceMs=Date.parse(evidence.timestamp);
+  const nowMs=new Date(now).getTime();
+  if(!Number.isFinite(evidenceMs))return {valid:false,reason:'INVALID_TIMESTAMP',evidence};
+  if(evidenceMs>nowMs+5*60*1000)return {valid:false,reason:'FUTURE_TIMESTAMP',evidence};
+  if(Number.isFinite(maxAgeMs)&&maxAgeMs>=0&&nowMs-evidenceMs>maxAgeMs)return {valid:false,reason:'STALE_EVIDENCE',evidence};
+  return {valid:true,reason:'VALID',evidence};
+}
+
+export function evaluateReleaseReadiness({evidence=[],expectedCommit='',now=new Date(),maxAgeMs=DEFAULT_EVIDENCE_MAX_AGE_MS}={}){
+  const checks=normalizeReleaseEvidence(evidence).map(item=>validateReleaseEvidence(item,{expectedCommit,now,maxAgeMs}));
+  const valid=checks.filter(check=>check.valid).map(check=>check.evidence);
+  const categories={};
+  for(const [category,weight] of Object.entries(RELEASE_READINESS_WEIGHTS)){
+    const categoryEvidence=valid.filter(item=>item.category===category);
+    categories[category]={weight,earned:categoryEvidence.length?weight:0,evidenceCount:categoryEvidence.length};
+  }
+  const score=Object.values(categories).reduce((sum,row)=>sum+row.earned,0);
+  const missingCategories=Object.entries(categories).filter(([,row])=>row.earned===0).map(([category])=>category);
+  return {
+    score,
+    maxScore:100,
+    pass:score===100,
+    categories,
+    missingCategories,
+    validEvidenceCount:valid.length,
+    invalidEvidence:checks.filter(check=>!check.valid).map(check=>({reason:check.reason,evidence:check.evidence||null})),
+  };
+}
+
 export function normalizeQueueState(raw={}){
   return {
-    version:3,
+    version:4,
     attempts:Array.isArray(raw.attempts)?raw.attempts.filter(x=>x&&x.date&&x.gameId):[],
     workLedger:Array.isArray(raw.workLedger)?raw.workLedger.filter(x=>x&&clean(x.workId)):[],
   };
@@ -61,18 +123,18 @@ export function workById(state,workId){
   return normalizeQueueState(state).workLedger.find(row=>clean(row.workId)===id)||null;
 }
 
-export function classifyDevelopmentProgress({workState='',explicitReason='',implementationChanged=false,qaVerdict='',evidenceRefs=[]}={}){
+export function classifyDevelopmentProgress({workState='',explicitReason='',implementationChanged=false,qaVerdict='',evidenceRefs=[],releaseReadiness=null}={}){
   const state=clean(workState).toUpperCase();
   const reason=clean(explicitReason).toUpperCase();
   const verdict=clean(qaVerdict).toUpperCase();
   const evidence=normalizeEvidenceRefs(evidenceRefs);
   if(reason==='NO_ACTIONABLE_WORK')return 'NO_ACTIONABLE_WORK';
   if(state==='FAIL'||state==='STALLED'||reason==='BLOCKED')return 'BLOCKED';
-  if(state==='PASS'&&implementationChanged&&verdict==='PASS'&&evidence.length>0)return 'PASS';
+  if(state==='PASS'&&implementationChanged&&verdict==='PASS'&&evidence.length>0&&releaseReadiness?.pass===true)return 'PASS';
   return 'INCOMPLETE_PROGRESS';
 }
 
-export function transitionWorkLedger(state,{workId,workState,owner=null,sourceRoot=null,sourceCommit=null,retryCount=null,evidenceRefs=[],developmentProgress=null,explicitReason=null,implementationChanged=false,qaVerdict=null,now=new Date()}={}){
+export function transitionWorkLedger(state,{workId,workState,owner=null,sourceRoot=null,sourceCommit=null,retryCount=null,evidenceRefs=[],releaseEvidence=[],developmentProgress=null,explicitReason=null,implementationChanged=false,qaVerdict=null,now=new Date(),evidenceMaxAgeMs=DEFAULT_EVIDENCE_MAX_AGE_MS}={}){
   const id=clean(workId);
   const nextState=clean(workState).toUpperCase();
   if(!id)throw new Error('workId required');
@@ -86,23 +148,29 @@ export function transitionWorkLedger(state,{workId,workState,owner=null,sourceRo
   }
   const timestamp=new Date(now).toISOString();
   const mergedEvidence=normalizeEvidenceRefs([...(previous?.evidenceRefs||[]),...evidenceRefs]);
+  const mergedReleaseEvidence=normalizeReleaseEvidence([...(previous?.releaseEvidence||[]),...releaseEvidence]);
+  const resolvedCommit=clean(sourceCommit)||previous?.sourceCommit||'';
+  const releaseReadiness=evaluateReleaseReadiness({evidence:mergedReleaseEvidence,expectedCommit:resolvedCommit,now,evidenceMaxAgeMs});
   const progress=developmentProgress?clean(developmentProgress).toUpperCase():classifyDevelopmentProgress({
-    workState:nextState,explicitReason,implementationChanged,qaVerdict,evidenceRefs:mergedEvidence,
+    workState:nextState,explicitReason,implementationChanged:Boolean(implementationChanged||previous?.implementationChanged),qaVerdict:clean(qaVerdict).toUpperCase()||previous?.qaVerdict,evidenceRefs:mergedEvidence,releaseReadiness,
   });
   if(!DEVELOPMENT_PROGRESS.includes(progress))throw new Error(`unsupported development progress: ${developmentProgress}`);
   if(progress==='PASS'&&nextState!=='PASS')throw new Error('DEVELOPMENT_PROGRESS=PASS requires WORK state PASS');
-  const history=[...(Array.isArray(previous?.history)?previous.history:[]),{state:nextState,at:timestamp,progress}].slice(-100);
+  if(progress==='PASS'&&!releaseReadiness.pass)throw new Error('DEVELOPMENT_PROGRESS=PASS requires release readiness 100/100');
+  const history=[...(Array.isArray(previous?.history)?previous.history:[]),{state:nextState,at:timestamp,progress,releaseReadinessScore:releaseReadiness.score}].slice(-100);
   const row={
     workId:id,
     workState:nextState,
     developmentProgress:progress,
     owner:clean(owner)||previous?.owner||null,
     sourceRoot:clean(sourceRoot)||previous?.sourceRoot||null,
-    sourceCommit:clean(sourceCommit)||previous?.sourceCommit||null,
+    sourceCommit:resolvedCommit||null,
     createdAt:previous?.createdAt||timestamp,
     updatedAt:timestamp,
     retryCount:retryCount==null?Number(previous?.retryCount||0):Math.max(0,Number(retryCount)||0),
     evidenceRefs:mergedEvidence,
+    releaseEvidence:mergedReleaseEvidence,
+    releaseReadiness,
     explicitReason:clean(explicitReason)||null,
     qaVerdict:clean(qaVerdict).toUpperCase()||previous?.qaVerdict||null,
     implementationChanged:Boolean(implementationChanged||previous?.implementationChanged),
@@ -159,7 +227,7 @@ function arg(name){return process.argv.find(x=>x.startsWith(`--${name}=`))?.slic
 
 function main(){
   const stateFile=arg('state')||'.autonomous/queue-state.json';
-  const state=readJson(stateFile,{version:3,attempts:[],workLedger:[]});
+  const state=readJson(stateFile,{version:4,attempts:[],workLedger:[]});
   const transitionWorkId=arg('work-id');
   const transitionState=arg('work-state');
   if(transitionWorkId&&transitionState){
