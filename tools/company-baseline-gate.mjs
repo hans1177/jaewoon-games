@@ -37,37 +37,38 @@ const productionClass=productionClassOf({},game,{numericLabels});
 const tierAlias=tierAliasForProductionClass(productionClass,{numericLabels})??(Number(game.productionTier||0)||null);
 const statusPath=path.join('design',gameId,date,'cycle-status.json');
 const status=readJson(statusPath,null);
-if(!status||status.status!=='COMPLETE')throw new Error(`Completed cycle-status missing: ${statusPath}`);
+if(!status)throw new Error(`cycle-status missing: ${statusPath}`);
 
 const runtime=readJson('company-qa-runtime-evidence.json',{games:[]});
 const webSmoke=(runtime.games||[]).find(x=>x.gameId===gameId&&x.target==='web')||null;
 const webSmokePass=Boolean(webSmoke?.runtimeSmokePassed===true&&webSmoke?.qaPassEligible===true&&(!Array.isArray(webSmoke?.blockers)||webSmoke.blockers.length===0));
 const webGameplay=latestDesignValidation(gameId,'web-gameplay-validation.json');
 const unityTechnical=latestDesignValidation(gameId,'unity-technical-validation.json');
+const revalidation=latestDesignValidation(gameId,'development-revalidation.json');
 const unityProjectPresent=Boolean(clean(game.unityProjectPath)&&fs.existsSync(clean(game.unityProjectPath)));
-const blockers=[];
 const meetingConflicts=Number(status.meeting?.conflictCount||0);
 const meetingHolds=Number(status.meeting?.holdCount||0);
+const blockers=[];
 let state='NOT_APPLICABLE';
 let ready=false;
 
 if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
+  if(status.status!=='COMPLETE')throw new Error('DESIGN_ONLY cycle must complete before baseline gate');
   ready=meetingConflicts===0&&meetingHolds===0;
-  if(ready){
-    state='DESIGN_BASELINE_READY';
-  }else if(meetingConflicts>0){
-    state='DESIGN_BASELINE_PENDING_CONFLICT_RESOLUTION';
-  }else{
-    state='DESIGN_BASELINE_PENDING_MEETING_HOLD';
-  }
+  state=ready?'DESIGN_BASELINE_READY':meetingConflicts>0?'DESIGN_BASELINE_PENDING_CONFLICT_RESOLUTION':'DESIGN_BASELINE_PENDING_MEETING_HOLD';
   if(meetingConflicts>0)blockers.push(`meeting-conflicts:${meetingConflicts}`);
   if(meetingHolds>0)blockers.push(`meeting-holds:${meetingHolds}`);
 }else if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
+  const declared=clean(status.state).toUpperCase();
+  const allowed=new Set([...(directive.classes?.DEVELOPMENT_CONFIRMED?.waitingStates||[]),...(directive.classes?.DEVELOPMENT_CONFIRMED?.terminalStates||[])]);
+  if(!allowed.has(declared))throw new Error(`Invalid DEVELOPMENT_CONFIRMED direct state: ${declared||'EMPTY'}`);
+  state=declared;
   if(!webGameplay.pass)blockers.push('web-gameplay-validation-required');
   if(!unityProjectPresent)blockers.push('unity-project-required-for-technical-validation');
   if(!unityTechnical.pass)blockers.push('unity-technical-validation-required');
-  ready=webGameplay.pass&&unityProjectPresent&&unityTechnical.pass;
-  state=ready?'DEVELOPMENT_BASELINE_READY':'DEVELOPMENT_BASELINE_PENDING_VALIDATION';
+  for(const blocker of status.blockers||[])if(!blockers.includes(blocker))blockers.push(blocker);
+  ready=state==='DEVELOPMENT_BASELINE_READY'&&webGameplay.pass&&unityProjectPresent&&unityTechnical.pass&&blockers.length===0;
+  if(state==='DEVELOPMENT_BASELINE_READY'&&!ready)throw new Error(`False DEVELOPMENT_BASELINE_READY: ${blockers.join(',')}`);
 }else if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
   state='RELEASE_BASELINE_MANAGED_BY_RELEASE_PIPELINE';
   ready=false;
@@ -75,31 +76,26 @@ if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
 
 const developmentRequired=productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED;
 status.baselineGate={
-  policyDocument:'COMPANY_FLOW.md',
-  productionClass,
-  tierAlias,
-  tier:tierAlias,
-  state,
-  ready,
-  blockers,
-  meeting:{
-    conflictCount:meetingConflicts,
-    holdCount:meetingHolds,
-    allResolved:meetingConflicts===0&&meetingHolds===0
-  },
+  policyDocument:'COMPANY_FLOW.md',productionClass,tierAlias,tier:tierAlias,state,ready,blockers,
+  meeting:{conflictCount:meetingConflicts,holdCount:meetingHolds,allResolved:meetingConflicts===0&&meetingHolds===0},
   evidence:{
     webSmoke:{supportingOnly:true,pass:webSmokePass,source:webSmoke?'company-qa-runtime-evidence.json':null},
     webGameplay:{required:developmentRequired,pass:webGameplay.pass,source:webGameplay.path},
     unityProject:{required:developmentRequired,present:unityProjectPresent,path:clean(game.unityProjectPath)||null},
-    unityTechnical:{required:developmentRequired,pass:unityTechnical.pass,source:unityTechnical.path}
+    unityTechnical:{required:developmentRequired,pass:unityTechnical.pass,source:unityTechnical.path},
+    revalidation:{conditional:true,pass:revalidation.pass,source:revalidation.path}
   },
   contracts:{
     aiMeetingCompletionDoesNotEqualBaselineApproval:true,
     meetingHoldBlocksDesignBaseline:true,
     meetingConflictBlocksDesignBaseline:true,
     webSmokeDoesNotEqualGameplayValidation:true,
+    developmentConfirmedIsGatedDirect:true,
+    developmentConfirmedResumesFromLatestEvidence:true,
     developmentConfirmedRequiresExplicitWebGameplayValidation:true,
     developmentConfirmedRequiresUnityTechnicalValidation:true,
+    developmentConfirmedPreservesExactWaitingState:true,
+    developmentArtbookOnlyAfterBaselineReady:true,
     releaseConfirmedBaselineOwnedByReleasePipeline:true,
     numericTierIsCompatibilityAliasOnly:true,
     numericTierAliasOwnerRemappable:true
@@ -109,35 +105,10 @@ status.baselineGate={
 
 const coreArtbookPath=path.join('design',gameId,date,'core-artbook.json');
 const coreArtbook=readJson(coreArtbookPath,null);
-const publishable=ready&&Boolean(coreArtbook)&&[
-  'DESIGN_BASELINE_READY',
-  'DEVELOPMENT_BASELINE_READY'
-].includes(state);
+const publishable=ready&&Boolean(coreArtbook)&&['DESIGN_BASELINE_READY','DEVELOPMENT_BASELINE_READY'].includes(state);
 if(publishable){
   const publicPath=path.join('artbook-submissions',gameId,'current.json');
-  const published={
-    ...coreArtbook,
-    version:Math.max(2,Number(coreArtbook.version||1)),
-    gameId,
-    gameName:game.name,
-    date,
-    createdAt:date,
-    productionClass,
-    tierAlias,
-    tier:tierAlias,
-    status:'completed-artbook',
-    lifecycleState:state.replace('_READY',''),
-    published:true,
-    homepageVisible:true,
-    format:'core-strategy',
-    sourceFile:coreArtbookPath.replaceAll('\\','/'),
-    publication:{
-      policyDocument:'COMPANY_FLOW.md',
-      baselineGateState:state,
-      baselineReady:true,
-      publishedAt:new Date().toISOString()
-    }
-  };
+  const published={...coreArtbook,version:Math.max(2,Number(coreArtbook.version||1)),gameId,gameName:game.name,date,createdAt:date,productionClass,tierAlias,tier:tierAlias,status:'completed-artbook',lifecycleState:state.replace('_READY',''),published:true,homepageVisible:true,format:'core-strategy',sourceFile:coreArtbookPath.replaceAll('\\','/'),publication:{policyDocument:'COMPANY_FLOW.md',baselineGateState:state,baselineReady:true,publishedAt:new Date().toISOString()}};
   writeJson(publicPath,published);
   status.artbookPublication={published:true,path:publicPath.replaceAll('\\','/'),baselineGateState:state};
 }else{
@@ -149,26 +120,10 @@ if(publishable)uiStatus='COMPLETE';
 else if(ready&&!coreArtbook)uiStatus='WRITING';
 const uiLabel={MEETING:'회의중',WRITING:'작성중',WAITING:'대기중',COMPLETE:'완료'}[uiStatus];
 const publicStatusPath=path.join('artbook-submissions',gameId,'status.json');
-writeJson(publicStatusPath,{
-  version:1,
-  gameId,
-  gameName:game.name,
-  date,
-  productionClass,
-  tierAlias,
-  tier:tierAlias,
-  uiStatus,
-  uiLabel,
-  baselineGateState:state,
-  baselineReady:ready,
-  meeting:{conflictCount:meetingConflicts,holdCount:meetingHolds},
-  artbookPublished:publishable,
-  currentPublicationRetained:!publishable,
-  updatedAt:new Date().toISOString()
-});
+writeJson(publicStatusPath,{version:2,gameId,gameName:game.name,date,productionClass,tierAlias,tier:tierAlias,uiStatus,uiLabel,baselineGateState:state,baselineReady:ready,meeting:{conflictCount:meetingConflicts,holdCount:meetingHolds},artbookPublished:publishable,currentPublicationRetained:!publishable,nextAction:status.nextAction||null,updatedAt:new Date().toISOString()});
 status.artbookUi={status:uiStatus,label:uiLabel,path:publicStatusPath.replaceAll('\\','/')};
-
 writeJson(statusPath,status);
+
 console.log(`BASELINE_GATE_CLASS=${productionClass}`);
 console.log(`BASELINE_GATE_TIER_ALIAS=${tierAlias??'NONE'}`);
 console.log(`BASELINE_GATE_STATE=${state}`);
@@ -180,4 +135,5 @@ if(developmentRequired){
   console.log(`WEB_GAMEPLAY_VALIDATION=${webGameplay.pass?'PASS':'PENDING'}`);
   console.log(`UNITY_PROJECT=${unityProjectPresent?'PRESENT':'PENDING'}`);
   console.log(`UNITY_TECHNICAL_VALIDATION=${unityTechnical.pass?'PASS':'PENDING'}`);
+  console.log(`DEVELOPMENT_DIRECT_STATE=${state}`);
 }
