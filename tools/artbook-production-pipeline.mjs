@@ -1,40 +1,27 @@
 // 파일명: tools/artbook-production-pipeline.mjs
-// 역할: FACT PACK → 검증 학습 컨텍스트 → 5부서 독립 작성 → 의미 품질 재작성 → 5부서 교차검토 → 품질 게이트를 한 번에 실행한다.
+// 역할: 중앙 정책에 따라 FACT PACK → 학습 컨텍스트 → 단일 디자이너 초안 → 다중모델 부서회의 → 동일 디자이너 수정 → 단일 아트북 편집을 실행한다.
 import { spawn } from 'node:child_process';
 
-const ROLES=['planning','graphics','development','qa','balance'];
 const gameId=String(process.env.ARTBOOK_GAME_ID||'').trim();
 const date=String(process.env.ARTBOOK_DATE||'').trim();
-const maxParallel=Math.max(1,Math.min(5,Number(process.env.ARTBOOK_DEPARTMENT_PARALLEL||2)||2));
 if(!gameId)throw new Error('ARTBOOK_GAME_ID is required');
 
-function run(script,extraEnv={}){
+function run(script){
   return new Promise((resolve,reject)=>{
-    const child=spawn(process.execPath,[script],{stdio:'inherit',env:{...process.env,ARTBOOK_GAME_ID:gameId,...(date?{ARTBOOK_DATE:date}:{}),...extraEnv}});
+    const child=spawn(process.execPath,[script],{stdio:'inherit',env:{...process.env,ARTBOOK_GAME_ID:gameId,...(date?{ARTBOOK_DATE:date}:{})}});
     child.on('error',reject);
     child.on('close',code=>code===0?resolve():reject(new Error(`${script} exited ${code}`)));
   });
 }
-async function pool(items,limit,worker){
-  let next=0;
-  const workers=Array.from({length:Math.min(limit,items.length)},async()=>{
-    while(true){
-      const index=next++;
-      if(index>=items.length)return;
-      await worker(items[index]);
-    }
-  });
-  await Promise.all(workers);
-}
 
 console.log(`ARTBOOK_PIPELINE_GAME=${gameId}`);
-console.log(`ARTBOOK_PIPELINE_PARALLEL=${maxParallel}`);
+console.log('POLICY_DOCUMENT=COMPANY_FLOW.md');
 await run('tools/artbook-fact-pack.mjs');
 await run('tools/artbook-learning-context.mjs');
-await pool(ROLES,maxParallel,role=>run('tools/artbook-department-runner.mjs',{ARTBOOK_ROLE:role}));
-await pool(ROLES,maxParallel,role=>run('tools/artbook-department-rewrite.mjs',{ARTBOOK_ROLE:role}));
-await run('tools/artbook-cross-review-feedback.mjs');
-await run('tools/artbook-gate.mjs');
+await run('tools/company-design-cycle.mjs');
 console.log('ARTBOOK_PIPELINE_COMPLETE=YES');
-console.log('ARTBOOK_CROSS_REVIEW=FIVE_DEPARTMENTS');
+console.log('DESIGN_AUTHOR=ONE_GAME_DESIGNER_AI');
+console.log('DEPARTMENT_MODE=MULTIMODEL_REVIEW_MEETING');
+console.log('ARTBOOK_AUTHOR=ONE_ARTBOOK_EDITOR_AI');
+console.log('DEPARTMENT_ARTBOOK_AUTHORSHIP=NO');
 console.log('PAID_API=NO');
