@@ -1,5 +1,6 @@
 # 파일명: tools/vibe2-train.py
 import argparse
+import hashlib
 import json
 import os
 import random
@@ -16,6 +17,8 @@ def parse_args():
     parser.add_argument("--seed", type=int, default=20260910)
     parser.add_argument("--adapter-version", required=True)
     parser.add_argument("--dataset-manifest", required=True)
+    parser.add_argument("--task-type", choices=("coding", "bugfix", "unity", "qa", "planning", "general"), default="general")
+    parser.add_argument("--parent-adapter", default="")
     parser.add_argument("--epochs", type=float, default=1.0)
     parser.add_argument("--learning-rate", type=float, default=2e-4)
     parser.add_argument("--max-length", type=int, default=2048)
@@ -29,15 +32,64 @@ def load_jsonl(path):
         return [json.loads(line) for line in handle if line.strip()]
 
 
+def stable_row(row):
+    return json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
+def dataset_hash(rows):
+    payload = "\n".join(stable_row(row) for row in rows).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def validate_manifest(args, manifest, train_rows, eval_rows):
+    if manifest.get("readyForTraining") is not True:
+        raise RuntimeError("dataset manifest is not readyForTraining")
+    contamination = manifest.get("contamination") or {}
+    if contamination.get("pass") is not True or float(contamination.get("contaminationRate", 1)) > 0:
+        raise RuntimeError("contaminated dataset is forbidden")
+    stats = manifest.get("stats") or {}
+    if stats.get("deprecatedUsed") is True:
+        raise RuntimeError("deprecated/obsolete samples are forbidden")
+    if int(stats.get("train", 0)) != len(train_rows) or int(stats.get("eval", 0)) != len(eval_rows):
+        raise RuntimeError("dataset row counts do not match manifest")
+    if dataset_hash(train_rows) != manifest.get("trainSha256"):
+        raise RuntimeError("train dataset hash mismatch")
+    if dataset_hash(eval_rows) != manifest.get("evalSha256"):
+        raise RuntimeError("eval dataset hash mismatch")
+    if int(stats.get("syntheticTrain", 0)) >= len(train_rows) and len(train_rows) > 0:
+        raise RuntimeError("synthetic-only self-training is forbidden")
+    if args.seed != int(manifest.get("seed", args.seed)):
+        raise RuntimeError("trainer seed must match dataset manifest seed")
+    for row in train_rows + eval_rows:
+        qa = row.get("qa") or {}
+        if qa.get("independentQa") != "PASS" or qa.get("browserQa") != "PASS":
+            raise RuntimeError("unverified sample reached trainer")
+        if row.get("lifecycle") != "active":
+            raise RuntimeError("inactive sample reached trainer")
+        if float(row.get("qualityScore", 0)) < 0.75:
+            raise RuntimeError("low-quality sample reached trainer")
+
+
 def main():
     args = parse_args()
     os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+    os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
     random.seed(args.seed)
+
+    train_rows = load_jsonl(args.train)
+    eval_rows = load_jsonl(args.eval)
+    if not train_rows or not eval_rows:
+        raise RuntimeError("train and eval datasets must both contain verified samples")
+    manifest = json.loads(Path(args.dataset_manifest).read_text(encoding="utf-8"))
+    validate_manifest(args, manifest, train_rows, eval_rows)
 
     import torch
     from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, Trainer, TrainingArguments
 
+    torch.manual_seed(args.seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(args.seed)
     if args.method == "qlora" and not torch.cuda.is_available():
         raise RuntimeError("QLoRA requires a local CUDA GPU; paid remote runners are not used")
 
@@ -78,14 +130,8 @@ def main():
         answer = row["output"].strip()
         user_text = instruction if not user_input else f"{instruction}\n\n입력:\n{user_input}"
         if getattr(tokenizer, "chat_template", None):
-            prompt = tokenizer.apply_chat_template(
-                [{"role": "user", "content": user_text}], tokenize=False, add_generation_prompt=True
-            )
-            full = tokenizer.apply_chat_template(
-                [{"role": "user", "content": user_text}, {"role": "assistant", "content": answer}],
-                tokenize=False,
-                add_generation_prompt=False,
-            )
+            prompt = tokenizer.apply_chat_template([{"role": "user", "content": user_text}], tokenize=False, add_generation_prompt=True)
+            full = tokenizer.apply_chat_template([{"role": "user", "content": user_text}, {"role": "assistant", "content": answer}], tokenize=False, add_generation_prompt=False)
         else:
             prompt = f"### 지시\n{user_text}\n\n### 답변\n"
             full = prompt + answer + (tokenizer.eos_token or "")
@@ -109,17 +155,12 @@ def main():
 
     class Collator:
         def __call__(self, features):
+            features = [dict(item) for item in features]
             labels = [item.pop("labels") for item in features]
             batch = tokenizer.pad(features, padding=True, return_tensors="pt")
             max_len = batch["input_ids"].shape[1]
-            padded_labels = [label + [-100] * (max_len - len(label)) for label in labels]
-            batch["labels"] = torch.tensor(padded_labels, dtype=torch.long)
+            batch["labels"] = torch.tensor([label + [-100] * (max_len - len(label)) for label in labels], dtype=torch.long)
             return batch
-
-    train_rows = load_jsonl(args.train)
-    eval_rows = load_jsonl(args.eval)
-    if not train_rows or not eval_rows:
-        raise RuntimeError("train and eval datasets must both contain verified samples")
 
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
@@ -140,32 +181,33 @@ def main():
         fp16=torch.cuda.is_available() and not torch.cuda.is_bf16_supported(),
         remove_unused_columns=False,
     )
-    trainer = Trainer(
-        model=model,
-        args=training_args,
-        train_dataset=JsonlDataset(train_rows),
-        eval_dataset=JsonlDataset(eval_rows),
-        data_collator=Collator(),
-    )
+    trainer = Trainer(model=model, args=training_args, train_dataset=JsonlDataset(train_rows), eval_dataset=JsonlDataset(eval_rows), data_collator=Collator())
     train_result = trainer.train()
     eval_result = trainer.evaluate()
+    losses = [float(train_result.metrics.get("train_loss", 0)), float(eval_result.get("eval_loss", 0))]
+    if not all(value == value and abs(value) != float("inf") for value in losses):
+        raise RuntimeError("non-finite loss: adapter is not saved")
+
     model.save_pretrained(output / "adapter")
     tokenizer.save_pretrained(output / "adapter")
-
-    manifest = json.loads(Path(args.dataset_manifest).read_text(encoding="utf-8"))
     metadata = {
-        "version": 1,
+        "version": 2,
         "adapterVersion": args.adapter_version,
+        "taskType": args.task_type,
         "baseModel": args.base_model,
         "method": args.method,
         "seed": args.seed,
+        "parentAdapter": args.parent_adapter or None,
         "datasetVersion": manifest.get("version"),
         "datasetTrainSha256": manifest.get("trainSha256"),
         "datasetEvalSha256": manifest.get("evalSha256"),
+        "datasetHoldoutSha256": manifest.get("holdoutSha256"),
+        "contaminationRate": (manifest.get("contamination") or {}).get("contaminationRate"),
         "trainMetrics": train_result.metrics,
         "evalMetrics": eval_result,
         "promotionState": "UNVERIFIED",
         "runtimePromotionAllowed": False,
+        "requiredNextGate": "FIXED_HOLDOUT_AB_AND_CANARY",
     }
     (output / "training-metadata.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(metadata, ensure_ascii=False))
