@@ -310,6 +310,43 @@
       "speculativeEligible": false,
       "estimatedRisk": "low",
       "shard": "unity"
+    },
+    {
+      "id": "insect-survival-diagnostic-LARGE-SINGLE-FILE-insect-survival-28-html",
+      "gameId": "insect-survival",
+      "target": "web",
+      "department": "development",
+      "type": "implementation",
+      "goal": "대형 파일 전체를 다시 쓰지 말고 책임 코드 영역 1개만 찾아 최소 수정한다.",
+      "responsibleFiles": [
+        "web-games/insect-survival/insect_survival-28.html"
+      ],
+      "dependencies": [],
+      "priority": "high",
+      "releaseState": "development-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": false,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "blocker": null,
+      "evidence": [
+        "vibe2-auto-planner:game-catalog",
+        "release-state:development-confirmed",
+        "source-root:web-games/insect-survival",
+        "diagnostic:LARGE_SINGLE_FILE",
+        "diagnostic-severity:high",
+        "repair-mode:MODEL",
+        "diagnostic-primary-file:web-games/insect-survival/insect_survival-28.html"
+      ],
+      "lastOutcome": null,
+      "companyContext": null,
+      "sourceRoot": "web-games/insect-survival",
+      "speculativeEligible": false,
+      "estimatedRisk": "medium",
+      "shard": "web"
     }
   ]
 }
