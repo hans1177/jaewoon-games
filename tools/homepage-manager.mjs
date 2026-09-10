@@ -1,7 +1,7 @@
 // 파일명: tools/homepage-manager.mjs
-// 역할: 홈페이지를 수정하지 않고 현재 홈 구조와 활성 게임 데이터만 진단한다.
+// 역할: 홈페이지를 수정하지 않고 현재 홈 구조와 게임 데이터만 진단한다.
 // 원칙: 자동 배치 변경 금지. index.html, company-status.json 등 운영 파일에 쓰지 않는다.
-// 과거 artbook queue 항목은 이력으로 보존하며 현재 game-catalog 멤버십을 강제로 복원하지 않는다.
+// 현재 game-catalog만 활성 멤버십으로 보고 과거 artbook queue 항목은 이력으로 보존한다.
 import fs from 'node:fs';
 
 const readJson=path=>JSON.parse(fs.readFileSync(path,'utf8'));
