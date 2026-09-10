@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#79d6ff">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/assets/pwa-icon.svg" type="image/svg+xml">
+<title>재운게임즈 설치</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:#07111c;color:#eef7ff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+body{min-height:100dvh;padding:max(18px,env(safe-area-inset-top)) 14px max(24px,env(safe-area-inset-bottom));display:grid;place-items:center}
+.card{width:min(100%,520px);padding:20px;border:1px solid #284963;border-radius:20px;background:linear-gradient(180deg,#0e2132,#0a1a29);box-shadow:0 18px 40px #0005}
+.icon{width:88px;height:88px;border-radius:22px;display:block;margin-bottom:14px}small{color:#72c8f5;font-weight:900;letter-spacing:.12em}h1{margin:4px 0 7px;font-size:28px}p{margin:0 0 16px;color:#9cb9cd;font-size:13px;line-height:1.6}
+.actions{display:grid;gap:8px}.btn{min-height:48px;border:1px solid #31587a;border-radius:12px;background:#16334c;color:#eef7ff;font:inherit;font-size:13px;font-weight:900;text-decoration:none;display:flex;align-items:center;justify-content:center}.btn.primary{background:#216da8;border-color:#2c7db8}.btn[hidden]{display:none}
+.note{margin-top:13px;padding:10px;border-radius:11px;background:#10283a;color:#8fb3ce;font-size:11px;line-height:1.55}
+</style>
+</head>
+<body>
+<main class="card">
+  <img class="icon" src="/assets/pwa-icon.svg" alt="">
+  <small>JAEWOON GAMES PWA</small>
+  <h1>홈 화면에 설치</h1>
+  <p>기존 재운게임즈 홈페이지는 그대로 두고 앱처럼 실행해. 게임/상태 자료는 네트워크 최신본을 우선 사용해.</p>
+  <div class="actions">
+    <button class="btn primary" id="installBtn" type="button" hidden>홈 화면에 설치</button>
+    <a class="btn primary" id="manualBtn" href="#" hidden>설치 방법 확인</a>
+    <a class="btn" href="/command.html">작업 지시판</a>
+    <a class="btn" href="/">기존 홈페이지</a>
+  </div>
+  <div class="note" id="state">설치 가능 여부 확인 중</div>
+</main>
+<script>
+let deferredPrompt=null;
+const installBtn=document.getElementById('installBtn');
+const manualBtn=document.getElementById('manualBtn');
+const state=document.getElementById('state');
+const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+
+async function registerPwa(){
+  if('serviceWorker' in navigator){
+    try{
+      const registration=await navigator.serviceWorker.register('/sw.js',{scope:'/'});
+      registration.update().catch(()=>{});
+    }catch{}
+  }
+}
+
+if(standalone){
+  state.textContent='이미 앱으로 실행 중이야.';
+}else{
+  state.textContent='안드로이드 크롬에서는 설치 버튼이 나타나거나 브라우저 메뉴의 “앱 설치/홈 화면에 추가”를 사용할 수 있어.';
+  manualBtn.hidden=false;
+  manualBtn.addEventListener('click',event=>{
+    event.preventDefault();
+    state.textContent='크롬 오른쪽 위 메뉴(⋮) → “앱 설치” 또는 “홈 화면에 추가”를 눌러.';
+  });
+}
+
+window.addEventListener('beforeinstallprompt',event=>{
+  event.preventDefault();
+  deferredPrompt=event;
+  installBtn.hidden=false;
+  manualBtn.hidden=true;
+  state.textContent='설치 준비 완료.';
+});
+
+installBtn.addEventListener('click',async()=>{
+  if(!deferredPrompt)return;
+  await deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt=null;
+  installBtn.hidden=true;
+  state.textContent='설치 요청을 처리했어.';
+});
+
+window.addEventListener('appinstalled',()=>{
+  installBtn.hidden=true;
+  manualBtn.hidden=true;
+  state.textContent='홈 화면 설치 완료.';
+});
+
+registerPwa();
+</script>
+</body>
+</html>

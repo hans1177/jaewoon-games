@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07111c">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/assets/pwa-icon.svg" type="image/svg+xml">
+<title>작업 지시 · 재운컴퍼니</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#07111c;--card:#0e2132;--line:#284963;--muted:#8fb3ce;--blue:#216da8;--text:#eef7ff;--good:#8ff0ba;--warn:#ffd980}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+body{min-height:100dvh;padding:max(10px,env(safe-area-inset-top)) 10px max(20px,env(safe-area-inset-bottom))}
+.app{width:min(100%,720px);margin:auto}.top{display:flex;justify-content:space-between;gap:8px;align-items:center;margin:4px 2px 12px}.top h1{margin:0;font-size:24px}.top small{display:block;color:#72c8f5;font-weight:900;font-size:9px;letter-spacing:.12em}
+.nav{display:flex;gap:6px}.nav a{display:flex;align-items:center;justify-content:center;min-height:38px;padding:0 10px;border:1px solid #31587a;border-radius:10px;background:#16334c;color:var(--text);text-decoration:none;font-size:9px;font-weight:900}
+.card{padding:13px;margin-bottom:10px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#0e2132,#0a1a29);box-shadow:0 8px 22px #0003}.card h2{margin:0 0 9px;font-size:15px}.sub{margin:-4px 0 10px;color:var(--muted);font-size:10px;line-height:1.5}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.field{display:grid;gap:5px}.field.full{grid-column:1/-1}label{color:#9cc5df;font-size:9px;font-weight:900}
+select,textarea,input{width:100%;border:1px solid #31587a;border-radius:10px;background:#0a1d2b;color:var(--text);font:inherit;font-size:12px;outline:none}select,input{height:42px;padding:0 10px}textarea{min-height:112px;padding:10px;resize:vertical;line-height:1.5}
+select:focus,textarea:focus,input:focus{border-color:#60b8ef;box-shadow:0 0 0 3px #3c99d422}.actions{display:grid;grid-template-columns:1fr auto;gap:7px;margin-top:8px}.btn{min-height:44px;padding:0 13px;border:1px solid #31587a;border-radius:10px;background:#16334c;color:var(--text);font:inherit;font-size:11px;font-weight:900}.btn.primary{background:var(--blue);border-color:#2c7db8}.btn:disabled{opacity:.45}
+.state{padding:9px 10px;border-radius:10px;background:#10283a;color:var(--muted);font-size:10px;line-height:1.5}.state.good{color:var(--good)}.state.warn{color:var(--warn)}
+.taskList{display:grid;gap:8px}.task{padding:11px;border:1px solid #1d4059;border-radius:12px;background:#102537}.taskTop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.taskTop b{font-size:11px}.pill{flex:0 0 auto;padding:4px 7px;border-radius:999px;background:#143653;color:#9edbff;font-size:8px;font-weight:900}.pill.done{background:#133c2b;color:#8ff0ba}.pill.warn{background:#4a3519;color:#ffd87a}.task p{margin:7px 0 0;color:#d6e7f3;font-size:11px;line-height:1.5;white-space:pre-wrap;word-break:break-word}.meta{margin-top:6px;color:#7598b1;font-size:8px}.messages{display:grid;gap:5px;margin-top:8px}.message{padding:7px 8px;border-radius:9px;background:#0a1d2b;color:#bcd2e2;font-size:10px;line-height:1.45}.message.ai{border-left:3px solid #8ff0ba}.reply{display:grid;grid-template-columns:1fr auto;gap:6px;margin-top:8px}.reply input{height:38px}.reply .btn{min-height:38px}.empty{padding:14px;text-align:center;color:var(--muted);font-size:10px}.claim{display:grid;gap:7px}
+@media(max-width:520px){.top{align-items:flex-start;flex-direction:column}.nav{width:100%}.nav a{flex:1}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.actions{grid-template-columns:1fr}.actions .btn{width:100%}}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div><small>JAEWOON COMPANY</small><h1>작업 지시</h1></div>
+    <nav class="nav"><a href="/">게임 홈</a><a href="/company.html">개발연구소</a></nav>
+  </header>
+
+  <section class="card" id="claimCard" hidden>
+    <h2>이 기기 등록</h2>
+    <p class="sub">처음 한 번만 등록해. 등록 토큰은 이 브라우저 안에만 저장돼.</p>
+    <div class="claim">
+      <input id="claimCode" type="password" autocomplete="one-time-code" placeholder="기기 등록 코드">
+      <button class="btn primary" id="claimBtn" type="button">기기 등록</button>
+      <div class="state" id="claimState">등록 코드가 필요해.</div>
+    </div>
+  </section>
+
+  <section class="card" id="commandCard">
+    <h2>지시 · 게임 피드백</h2>
+    <p class="sub">게임을 고르고 말하듯 입력하면 작업함에 접수돼.</p>
+    <div class="grid">
+      <div class="field"><label for="game">게임</label><select id="game"><option value="">전체/회사 공통</option></select></div>
+      <div class="field"><label for="kind">종류</label><select id="kind"><option value="directive">작업 지시</option><option value="feedback">게임 피드백</option></select></div>
+      <div class="field"><label for="priority">우선순위</label><select id="priority"><option value="normal">일반</option><option value="priority">우선</option><option value="urgent">긴급</option></select></div>
+      <div class="field"><label for="quick">빠른 명령</label><select id="quick"><option value="">직접 입력</option><option>진행</option><option>수정</option><option>적용</option><option>테스트</option><option>되돌려</option></select></div>
+      <div class="field full"><label for="body">내용</label><textarea id="body" maxlength="3000" placeholder="예: 곤충 생존기 거미 공격 모션이 끊겨. 모바일에서 확인하고 수정해."></textarea></div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="sendBtn" type="button">작업 지시 보내기</button>
+      <button class="btn" id="voiceBtn" type="button" hidden>음성 입력</button>
+    </div>
+    <div class="state" id="sendState" style="margin-top:8px">기기 상태 확인 중</div>
+  </section>
+
+  <section class="card">
+    <h2>작업 현황</h2>
+    <p class="sub">접수 → 작업중 → 테스트중 → 완료 상태와 답변을 확인해.</p>
+    <div class="taskList" id="taskList"><div class="empty">불러오는 중</div></div>
+  </section>
+
+  <section class="card">
+    <div class="state">현재 버전은 안전한 지시 접수·조회 기반이야. AI 자동 실행 연결 전에는 “접수” 상태로만 남을 수 있어.</div>
+  </section>
+</main>
+<script>
+const API='https://njpexgqvituaxrjpnqsi.supabase.co/functions/v1/company-command';
+const API_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
+const TOKEN_KEY='jaewoon_command_device_v1';
+const $=id=>document.getElementById(id);
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const statusLabel={received:'접수',working:'작업중',testing:'테스트중',needs_input:'확인필요',done:'완료',failed:'실패',cancelled:'취소'};
+let token=localStorage.getItem(TOKEN_KEY)||'';
+let refreshTimer=null;
+
+async function api(payload,needsToken=true){
+  const headers={'Content-Type':'application/json','apikey':API_KEY};
+  if(needsToken&&token)headers['x-jaewoon-device']=token;
+  const response=await fetch(API,{method:'POST',headers,body:JSON.stringify(payload),cache:'no-store'});
+  const data=await response.json().catch(()=>({ok:false,error:'INVALID_RESPONSE'}));
+  if(!response.ok)throw new Error(data.error||`HTTP_${response.status}`);
+  return data;
+}
+
+function setRegistered(registered){
+  $('claimCard').hidden=registered;
+  $('commandCard').style.opacity=registered?'1':'.55';
+  $('sendBtn').disabled=!registered;
+  $('sendState').textContent=registered?'지시를 보낼 수 있어.':'먼저 이 기기를 등록해.';
+}
+
+async function loadGames(){
+  try{
+    const response=await fetch(`/game-catalog.json?ts=${Date.now()}`,{cache:'no-store'});
+    const catalog=await response.json();
+    for(const game of (catalog.games||[])){
+      const option=document.createElement('option');
+      option.value=game.id||'';
+      option.textContent=game.name||game.id||'게임';
+      $('game').appendChild(option);
+    }
+  }catch{}
+}
+
+function statusClass(status){
+  if(status==='done')return 'done';
+  if(['failed','needs_input'].includes(status))return 'warn';
+  return '';
+}
+
+function renderTasks(tasks){
+  if(!tasks.length){
+    $('taskList').innerHTML='<div class="empty">아직 등록된 작업이 없어.</div>';
+    return;
+  }
+  $('taskList').innerHTML=tasks.map(task=>{
+    const messages=(task.messages||[]).map(message=>`<div class="message ${message.sender==='ai'?'ai':''}"><b>${message.sender==='ai'?'AI':message.sender==='system'?'시스템':'추가 지시'}</b><br>${esc(message.body)}</div>`).join('');
+    const replyAllowed=!['done','cancelled'].includes(task.status);
+    return `<article class="task">
+      <div class="taskTop"><div><b>${task.kind==='feedback'?'게임 피드백':'작업 지시'}${task.game_id?` · ${esc(task.game_id)}`:''}</b><div class="meta">${new Date(task.created_at).toLocaleString('ko-KR')} · ${task.priority==='urgent'?'긴급':task.priority==='priority'?'우선':'일반'}</div></div><span class="pill ${statusClass(task.status)}">${esc(statusLabel[task.status]||task.status)}</span></div>
+      <p>${esc(task.body)}</p>
+      ${messages?`<div class="messages">${messages}</div>`:''}
+      ${replyAllowed?`<div class="reply"><input id="reply-${task.id}" maxlength="3000" placeholder="추가 지시/답변"><button class="btn" data-reply="${task.id}" type="button">보내기</button></div>`:''}
+    </article>`;
+  }).join('');
+  document.querySelectorAll('[data-reply]').forEach(button=>button.addEventListener('click',()=>sendReply(button.dataset.reply)));
+}
+
+async function refreshTasks(){
+  if(!token){
+    renderTasks([]);
+    return;
+  }
+  try{
+    const data=await api({action:'list'});
+    renderTasks(data.tasks||[]);
+  }catch(error){
+    $('taskList').innerHTML=`<div class="state warn">작업 현황을 불러오지 못했어. ${esc(error.message)}</div>`;
+  }
+}
+
+async function claim(){
+  const code=$('claimCode').value.trim();
+  if(!code)return;
+  $('claimBtn').disabled=true;
+  $('claimState').textContent='등록 중';
+  try{
+    const data=await api({action:'claim',code,label:navigator.userAgent.slice(0,64)},false);
+    token=data.token||'';
+    if(!token)throw new Error('TOKEN_MISSING');
+    localStorage.setItem(TOKEN_KEY,token);
+    $('claimCode').value='';
+    $('claimState').className='state good';
+    $('claimState').textContent='기기 등록 완료.';
+    setRegistered(true);
+    await refreshTasks();
+  }catch(error){
+    $('claimState').className='state warn';
+    $('claimState').textContent=`등록 실패: ${error.message}`;
+  }finally{
+    $('claimBtn').disabled=false;
+  }
+}
+
+async function sendTask(){
+  const quick=$('quick').value.trim();
+  let body=$('body').value.trim();
+  if(quick&& !body)body=quick;
+  else if(quick&&body)body=`${quick}. ${body}`;
+  if(!body){
+    $('sendState').className='state warn';
+    $('sendState').textContent='지시 내용을 입력해.';
+    return;
+  }
+  $('sendBtn').disabled=true;
+  $('sendState').className='state';
+  $('sendState').textContent='접수 중';
+  try{
+    await api({action:'create',gameId:$('game').value,kind:$('kind').value,priority:$('priority').value,body});
+    $('body').value='';
+    $('quick').value='';
+    $('sendState').className='state good';
+    $('sendState').textContent='작업함에 접수했어.';
+    await refreshTasks();
+  }catch(error){
+    $('sendState').className='state warn';
+    $('sendState').textContent=`접수 실패: ${error.message}`;
+  }finally{
+    $('sendBtn').disabled=!token;
+  }
+}
+
+async function sendReply(taskId){
+  const input=document.getElementById(`reply-${taskId}`);
+  const body=input?.value.trim()||'';
+  if(!body)return;
+  try{
+    await api({action:'message',taskId,body});
+    input.value='';
+    await refreshTasks();
+  }catch(error){
+    alert(`전송 실패: ${error.message}`);
+  }
+}
+
+function setupVoice(){
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SpeechRecognition)return;
+  $('voiceBtn').hidden=false;
+  $('voiceBtn').addEventListener('click',()=>{
+    const recognition=new SpeechRecognition();
+    recognition.lang='ko-KR';
+    recognition.interimResults=false;
+    recognition.maxAlternatives=1;
+    recognition.onresult=event=>{
+      const text=event.results?.[0]?.[0]?.transcript||'';
+      $('body').value=[$('body').value.trim(),text].filter(Boolean).join(' ');
+    };
+    recognition.start();
+  });
+}
+
+async function registerPwa(){
+  if(!('serviceWorker' in navigator))return;
+  try{
+    const registration=await navigator.serviceWorker.register('/sw.js',{scope:'/'});
+    registration.update().catch(()=>{});
+  }catch{}
+}
+
+$('claimBtn').addEventListener('click',claim);
+$('sendBtn').addEventListener('click',sendTask);
+$('claimCode').addEventListener('keydown',event=>{if(event.key==='Enter')claim();});
+setRegistered(Boolean(token));
+loadGames();
+setupVoice();
+registerPwa();
+refreshTasks();
+refreshTimer=setInterval(()=>{if(!document.hidden)refreshTasks();},15000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshTasks();});
+</script>
+</body>
+</html>

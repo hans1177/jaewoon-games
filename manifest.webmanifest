@@ -1,0 +1,41 @@
+{
+  "name": "재운게임즈",
+  "short_name": "재운게임즈",
+  "description": "재운게임즈 모바일 PWA",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07111c",
+  "theme_color": "#79d6ff",
+  "lang": "ko-KR",
+  "icons": [
+    {
+      "src": "/assets/pwa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "작업 지시",
+      "short_name": "작업 지시",
+      "description": "게임 개발 지시와 피드백 보내기",
+      "url": "/command.html",
+      "icons": [
+        {
+          "src": "/assets/pwa-icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "개발연구소",
+      "short_name": "개발연구소",
+      "url": "/company.html"
+    }
+  ]
+}
