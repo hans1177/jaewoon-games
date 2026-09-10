@@ -1,0 +1,53 @@
+name: Company Release Artifact Safety QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'COMPANY_FLOW.md'
+      - 'company-directive.json'
+      - 'game-catalog.json'
+      - 'tools/production-classification.mjs'
+      - 'tools/company-release-production-cycle.mjs'
+      - 'tools/company-release-stale-artifact-guard.mjs'
+      - 'tools/artbook-production-pipeline.mjs'
+      - 'qa/release-stale-artifact-guard.test.mjs'
+      - '.github/workflows/company-release-artifact-safety-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-artifact-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check release guard syntax
+        run: |
+          set -euo pipefail
+          node --check tools/company-release-stale-artifact-guard.mjs
+          node --check tools/artbook-production-pipeline.mjs
+          node --check qa/release-stale-artifact-guard.test.mjs
+
+      - name: Verify central release safety contract
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const policy=fs.readFileSync('COMPANY_FLOW.md','utf8');
+          const pipeline=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
+          const guard=fs.readFileSync('tools/company-release-stale-artifact-guard.mjs','utf8');
+          for(const token of ['sourceChangeInvalidatesOldBuildValidation: true','finalArtbookOnlyAfterReleaseReady: true']){
+            if(!policy.includes(token))throw new Error(`central release safety policy missing: ${token}`);
+          }
+          if(!pipeline.includes("await run('tools/company-release-stale-artifact-guard.mjs')"))throw new Error('release stale artifact guard is not wired into production pipeline');
+          for(const token of ['release-history','preservedAsHistory:true','FINAL_RELEASE_ARTIFACTS_ACTIVE=NO']){
+            if(!guard.includes(token))throw new Error(`release guard contract missing: ${token}`);
+          }
+          console.log('RELEASE_ARTIFACT_SAFETY_CONTRACT=PASS');
+          NODE
+
+      - name: Test stale final artifact archival and ready preservation
+        run: node --test qa/release-stale-artifact-guard.test.mjs
