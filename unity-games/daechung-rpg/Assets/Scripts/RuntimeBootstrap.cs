@@ -196,7 +196,7 @@ namespace JaewoonGames.DaechungRpg
 
         private void MoveTo(string regionId)
         {
-            if (!GameCatalog.Regions.TryGetValue(regionId, out var region))
+            if (string.IsNullOrEmpty(regionId) || !GameCatalog.Regions.TryGetValue(regionId, out var region))
             {
                 _message = "That region is unavailable.";
                 return;
