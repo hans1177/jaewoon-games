@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "revision": 25,
+  "revision": 26,
   "updatedAt": "2026-09-11",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
-  "instruction": "Use COMPANY_FLOW.md as the single human-readable production policy. This file stores only machine execution values and invariant flags.",
+  "instruction": "Use COMPANY_FLOW.md as the single machine-oriented production policy source. This file stores execution values and invariant flags only.",
   "production": {
     "classificationMode": "SEMANTIC_EVIDENCE_DYNAMIC_MEMBERSHIP",
     "canonicalField": "productionClass",
@@ -23,6 +23,96 @@
     "numericLabelsOwnerRemappable": true,
     "preserveExistingWebArchives": true,
     "preserveSaveMeaning": true
+  },
+  "gameSeed": {
+    "enabled": true,
+    "stage": "BEFORE_GAME_DESIGNER_DRAFT",
+    "selectionMode": "FAMOUS_SUCCESSFUL_GAME_COPY_BENCHMARK",
+    "transformationModes": ["HOMAGE", "REINTERPRETATION"],
+    "bootstrap": {
+      "initialSeedBatchCount": 6,
+      "initialSeedGenerationMode": "SINGLE_BOOTSTRAP_BATCH",
+      "initialSeedBatchCreatesAllCategoriesAtOnce": true,
+      "initialSeedBatchIsProductionQuota": false,
+      "oneSeedPerCategory": true,
+      "categories": [
+        "ACTION_SURVIVAL_ROGUELITE",
+        "SINGLE_DEFENSE_STRATEGY",
+        "PUZZLE",
+        "CASUAL",
+        "IDLE_GROWTH_RPG",
+        "STORY_COMPLETE_RPG"
+      ]
+    },
+    "reference": {
+      "sourcesAllowed": ["FAMOUS_MOBILE_GAMES", "RELEASED_STEAM_GAMES"],
+      "sourceCodeRule": "IMPLEMENT_EQUIVALENT_OR_INSPIRED_FUNCTIONALITY_WITH_OWN_CODE",
+      "directCopyForbidden": ["SOURCE_CODE", "ART_ASSETS", "AUDIO", "CHARACTERS", "NAMES", "STORY_TEXT", "MAPS", "UI_ARTWORK", "TRADE_DRESS"]
+    },
+    "marketEvidence": {
+      "role": "TARGET_DESIGN_REFERENCE",
+      "hardPassFailGate": false,
+      "missingDataMayBeUnknown": true,
+      "marketDataAloneCannotDiscardGame": true,
+      "metrics": [
+        "REVENUE_RANK_OR_REVENUE_SIGNAL",
+        "POPULARITY_OR_DOWNLOAD_RANK",
+        "TARGET_AGE_OR_AGE_DISTRIBUTION",
+        "AVERAGE_PLAYTIME",
+        "MEDIAN_PLAYTIME",
+        "SESSION_LENGTH",
+        "RETENTION",
+        "CONCURRENT_OR_ACTIVE_USERS",
+        "REVIEW_VOLUME_AND_RATING"
+      ],
+      "numericClaimRequiresSource": true,
+      "numericClaimRequiresObservedAt": true,
+      "unverifiableNumericClaimForbidden": true
+    },
+    "initialTargetPlatform": "ANDROID_MOBILE",
+    "initialPlayMode": "SINGLE_PLAYER",
+    "steamDecisionValues": ["POSSIBLE", "NOT_RECOMMENDED"],
+    "multiplayerDecisionValues": ["POSSIBLE", "NOT_RECOMMENDED"],
+    "multiplayerExpansionValueValues": ["LOW", "MEDIUM", "HIGH"],
+    "initialCommercialReleaseRequiresMultiplayer": false,
+    "replenishment": {
+      "mode": "ONE_FOR_ONE_ONLY",
+      "normalPromotionTriggersReplenishment": false,
+      "redesignOrHoldTriggersReplenishment": false,
+      "triggers": ["DISCARDED", "OWNER_REMOVED", "OWNER_REQUESTED_ADDITIONAL_SEED", "OWNER_ADDED_CATEGORY"],
+      "replacementCategory": "SAME_CATEGORY_UNLESS_OWNER_CHANGES_CATEGORY",
+      "replacementCountPerVacancy": 1,
+      "automaticGrowthBeyondVacanciesForbidden": true
+    }
+  },
+  "discard": {
+    "singleFailureImmediatelyDiscards": false,
+    "marketMetricAloneCanDiscard": false,
+    "ownerMayDiscardDirectly": true,
+    "DESIGN_ONLY": {
+      "firstResponse": "REDESIGN",
+      "requiresRevisionBeforeDiscard": true,
+      "requiresFiveDepartmentRereviewBeforeDiscard": true,
+      "requiresFatalBlockerAfterRevision": true,
+      "finalOutcomes": ["ACTIVE", "REDESIGN", "DISCARDED"]
+    },
+    "DEVELOPMENT_CONFIRMED": {
+      "firstResponses": ["BLOCKED", "HOLD", "FIX_AND_REVALIDATE"],
+      "requiresRealEvidenceBeforeDiscard": true,
+      "requiresTargetedFixWhenPractical": true,
+      "requiresTargetedRevalidation": true,
+      "demoteToDesignOnlyWhenCoreDesignMustBeRebuilt": true,
+      "finalOutcomes": ["DEVELOPMENT_CONFIRMED_CONTINUE", "HOLD_OR_BLOCKED", "DEMOTE_TO_DESIGN_ONLY", "DISCARDED"]
+    }
+  },
+  "platform": {
+    "initialActualProduct": "ANDROID_MOBILE_SINGLE_PLAYER",
+    "initialReleaseTarget": "UNITY_ANDROID",
+    "steamBuiltInitially": false,
+    "multiplayerBuiltInitially": false,
+    "oneGameOneUnityProject": true,
+    "separatePcProjectByDefault": false,
+    "coreGameplayPlatformIndependentWherePractical": true
   },
   "ai": {
     "paidAiAllowed": false,
@@ -100,6 +190,7 @@
       "sourceCodeAutoDevelopment": false,
       "directResultMode": true,
       "requiredFlow": [
+        "GAME_SEED",
         "GAME_DESIGNER_DRAFT",
         "FIVE_DISTINCT_DEPARTMENT_LEADS",
         "DEPARTMENT_LEAD_PLUS_ASSISTANT_MULTIMODEL_REVIEW",
@@ -118,6 +209,7 @@
       "resumeFromLatestEvidence": true,
       "webPurpose": "GAMEPLAY_VALIDATION_TESTBED",
       "unityPurpose": "TECHNICAL_VALIDATION_PROTOTYPE",
+      "actualImplementationFocus": "MOBILE_ANDROID",
       "webBeforeUnityByDefault": true,
       "unityMayRunEarlyWhenEngineBehaviorDefinesCoreFun": true,
       "aiMayInventValidationPass": false,
@@ -199,8 +291,8 @@
   },
   "rules": [
     "new-owner-instruction-overrides-autonomous-plan",
-    "company-flow-is-single-human-policy-source",
-    "do-not-duplicate-tier-policy-across-documents",
+    "company-flow-is-single-machine-policy-source",
+    "company-directive-is-execution-config-not-policy-source",
     "semantic-production-class-is-canonical",
     "production-class-counts-derived-from-current-membership",
     "production-class-counts-are-not-fixed-quotas",
@@ -209,6 +301,17 @@
     "production-game-ids-must-not-be-pinned",
     "production-class-membership-promotes-and-demotes-from-current-evidence",
     "status-sync-must-not-reclassify-games-to-satisfy-a-count-quota",
+    "game-seed-precedes-game-designer-draft",
+    "initial-game-seed-bootstrap-creates-six-categories-in-one-batch",
+    "normal-promotion-does-not-replenish-game-seed",
+    "discarded-seed-or-game-replenishes-one-for-one",
+    "market-evidence-guides-target-design-not-hard-pass-fail",
+    "market-metric-alone-cannot-discard-game",
+    "numeric-market-claims-require-source-and-observed-at",
+    "famous-successful-game-reference-must-be-homage-or-reinterpretation",
+    "reference-source-code-must-not-be-copied",
+    "design-only-discard-requires-redesign-and-five-department-rereview-unless-owner-directly-discards",
+    "development-confirmed-discard-requires-real-evidence-and-revalidation-unless-owner-directly-discards",
     "design-only-detailed-design-single-game-designer-author",
     "five-departments-must-have-five-distinct-lead-model-ids-per-cycle",
     "department-lead-role-fixed-model-assignment-remappable",
