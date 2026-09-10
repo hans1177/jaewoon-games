@@ -247,8 +247,9 @@ namespace JaewoonGames.DaechungRpg
             var columns = manifest.columns;
             var frameWidth = manifest.frameWidth;
             var frameHeight = manifest.frameHeight;
-            var requiredWidth = Mathf.Min(frameCount, columns) * frameWidth;
-            var requiredHeight = Mathf.CeilToInt(frameCount / (float)columns) * frameHeight;
+            var rows = ((long)frameCount + columns - 1L) / columns;
+            var requiredWidth = (long)Mathf.Min(frameCount, columns) * frameWidth;
+            var requiredHeight = rows * frameHeight;
             if (requiredWidth > texture.width || requiredHeight > texture.height)
             {
                 Destroy(texture);
