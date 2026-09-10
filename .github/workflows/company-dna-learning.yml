@@ -37,6 +37,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: company-dna-learning
@@ -46,7 +47,7 @@ jobs:
   learn:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
@@ -83,38 +84,37 @@ jobs:
           echo 'DNA_SELF_PROMOTION=NO'
           echo 'DEPARTMENT_LEARNING_EXPANDS_AUTHORITY=NO'
           echo 'DISTILLATION_AUTO_PROMOTION=NO'
-      - name: Persist refreshed memory when changed
+      - name: Persist refreshed memory through checked PR
         if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "jaewoon-company-learning"
           git config user.email "actions@users.noreply.github.com"
+          git add company-learning/company-dna.json company-learning/distillation-status.json department-experience.json
+          if git diff --cached --quiet; then
+            echo 'LEARNING_MEMORY_CHANGE=NO'
+            exit 0
+          fi
 
-          for attempt in 1 2 3 4 5; do
-            if [ "$attempt" -gt 1 ]; then
-              echo "main moved while recording learning memory; refreshing before retry $attempt/5"
-              git fetch origin main
-              git reset --hard origin/main
-              node tools/company-dna-learning.mjs
-              node tools/department-learning-memory.mjs --evidence-dir=company-learning/evidence --ledger=department-experience.json
-              node tools/vibe2-distillation-status.mjs --evidence-dir=company-learning/evidence --sample-dir=company-learning/training-samples --out=company-learning/distillation-status.json
-            fi
-
-            git add company-learning/company-dna.json company-learning/distillation-status.json department-experience.json
-            if git diff --cached --quiet; then
-              echo 'LEARNING_MEMORY_CHANGE=NO'
-              exit 0
-            fi
-
-            git commit -m "learning: refresh Company DNA, department memory and distillation status [skip ci]"
-            if git push origin HEAD:main; then
-              echo 'PUBLIC_GAME_CODE_WRITE=NO'
-              echo 'VERIFIED_DEPARTMENT_MEMORY_WRITE=YES'
-              echo 'DISTILLATION_STATUS_WRITE=YES'
-              exit 0
-            fi
+          safe_run="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          branch="automation/company-dna-memory-${safe_run}"
+          git checkout -b "$branch"
+          git commit -m "learning: refresh Company DNA, department memory and distillation status"
+          learning_commit="$(git rev-parse HEAD)"
+          git push origin "HEAD:$branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "learning: refresh Company DNA memory" --body "Deterministic verified-evidence refresh. No game source changes. Direct main write: NO. Run: ${GITHUB_RUN_ID}")"
+          sleep 5
+          gh pr checks "$pr_url" --watch --fail-fast --interval 10
+          git fetch origin main --quiet
+          gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          git fetch origin main --quiet
+          for file in company-learning/company-dna.json company-learning/distillation-status.json department-experience.json; do
+            git diff --quiet "$learning_commit" origin/main -- "$file"
           done
-
-          echo 'Failed to persist learning memory after 5 fresh-main attempts.'
-          exit 1
+          echo 'PUBLIC_GAME_CODE_WRITE=NO'
+          echo 'VERIFIED_DEPARTMENT_MEMORY_WRITE=YES'
+          echo 'DISTILLATION_STATUS_WRITE=YES'
+          echo 'DIRECT_MAIN_WRITE=NO'

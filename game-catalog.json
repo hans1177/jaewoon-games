@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "updatedAt": "2026-09-11",
   "classificationPolicy": {
     "canonicalField": "productionClass",
@@ -40,28 +40,6 @@
       "productionTarget": "web-first-playable",
       "homepageStage": "2분류 개발확정 · Web 1차 구현",
       "homepageRecentWork": "곤충 먹이사슬·세력 생태를 중심으로 핵심 루프가 실제 플레이되는 Web 1차 구현을 검증.",
-      "homepageWebPlayable": true
-    },
-    {
-      "id": "crystal-defense",
-      "name": "수정 디펜스",
-      "description": "수정을 지키는 웨이브 디펜스",
-      "genre": [
-        "디펜스",
-        "전략"
-      ],
-      "image": "assets/crystal-v2.webp",
-      "webPath": "/web-games/crystal-defense/",
-      "hasWebArchive": true,
-      "featured": true,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "productionTier": 3,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
-      "productionTarget": "design-only",
-      "homepageStage": "3분류 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "수정 공명 정체성을 유지하면서 핵심 방어 루프의 Web 1차 구현을 검증.",
       "homepageWebPlayable": true
     },
     {
@@ -116,72 +94,6 @@
       "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg"
     },
     {
-      "id": "human-go",
-      "name": "휴먼 GO",
-      "description": "뽑고 성장하는 수집형 게임",
-      "genre": [
-        "수집",
-        "성장"
-      ],
-      "image": "assets/card-rpg-v2.webp",
-      "webPath": "/web-games/human-go/",
-      "hasWebArchive": true,
-      "featured": false,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "productionTier": 3,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
-      "productionTarget": "design-only",
-      "homepageStage": "3분류 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "코드 확장보다 아트북·정체성·구조 설계 보완을 우선.",
-      "homepageWebPlayable": true
-    },
-    {
-      "id": "egg-heist",
-      "name": "알 도둑 대작전",
-      "description": "알을 훔치고 부화시키는 수집 게임",
-      "genre": [
-        "수집",
-        "모험"
-      ],
-      "image": "assets/title-egg-heist.svg",
-      "webPath": "/web-games/egg-heist/",
-      "hasWebArchive": true,
-      "featured": false,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "productionTier": 3,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
-      "productionTarget": "design-only",
-      "homepageStage": "HOLD · 원본/경로 확인",
-      "homepageRecentWork": "현재 Web 경로가 게임을 실행하지 않고 홈으로 이동해 원본 위치와 공개 의도를 확인 중.",
-      "homepageWebPlayable": false
-    },
-    {
-      "id": "chess-battle",
-      "name": "체스 배틀",
-      "description": "체스 기반 전투 게임",
-      "genre": [
-        "전략",
-        "보드"
-      ],
-      "image": "assets/title-chess-battle.svg",
-      "webPath": "/web-games/chess-battle/",
-      "hasWebArchive": true,
-      "featured": false,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "productionTier": 3,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
-      "productionTarget": "design-only",
-      "homepageStage": "3분류 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "기존 공개 Web판은 보존하고 다음 승격 근거가 쌓일 때까지 설계도를 보완.",
-      "homepageWebPlayable": true
-    },
-    {
       "id": "monster-adventure",
       "name": "몬스터 어드벤처",
       "description": "몬스터 포획과 성장 모험",
@@ -224,50 +136,6 @@
       "productionTarget": "unity-android",
       "homepageStage": "1분류 출시확정 · Unity Android",
       "homepageRecentWork": "현재 자동 근거 순위의 출시확정권. Unity 본개발 준비도와 아트북을 계속 보완하며 단일 집중 슬롯 재평가 대상.",
-      "homepageWebPlayable": true
-    },
-    {
-      "id": "survival2",
-      "name": "숲의 생존자들",
-      "description": "동료와 함께 살아남는 확장 생존 게임",
-      "genre": [
-        "생존",
-        "동료"
-      ],
-      "image": "assets/title-survival2.svg",
-      "webPath": "/web-games/survival2/",
-      "hasWebArchive": true,
-      "featured": false,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "productionTier": 3,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
-      "productionTarget": "design-only",
-      "homepageStage": "3분류 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "기존 공개 Web판과 최신 아트북은 보존하며 설계 근거를 쌓아 자동 재평가.",
-      "homepageWebPlayable": true
-    },
-    {
-      "id": "territory-war",
-      "name": "영토전쟁",
-      "description": "영지를 확장하는 전략 게임",
-      "genre": [
-        "전략",
-        "영토"
-      ],
-      "image": "assets/title-territory-war.svg",
-      "webPath": "/web-games/territory-war/",
-      "hasWebArchive": true,
-      "featured": false,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "productionTier": 3,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
-      "productionTarget": "design-only",
-      "homepageStage": "3분류 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "기존 공개 Web판은 보존하고 아트북·컨셉·시스템 설계 최적화를 진행.",
       "homepageWebPlayable": true
     }
   ]
