@@ -59,6 +59,7 @@ function unityDeepFocusReady(project,filesystem=fs){
   const productionSourcePath=clean(project?.productionSourcePath);
   return unityProjectReady(project)&&Boolean(productionSourcePath)&&filesystem.existsSync(productionSourcePath);
 }
+function executionSourcePath(project,filesystem=fs){return unityDeepFocusReady(project,filesystem)?clean(project.productionSourcePath):clean(project?.sourcePath);}
 function focusPolicy(portfolio){return portfolio?.developmentFocusPolicy&&Number(portfolio.developmentFocusPolicy.maxFocusedGames)>0?portfolio.developmentFocusPolicy:null;}
 function focusStage(policy){return clean(policy?.focusStage||'DEVELOPMENT_CONFIRMED').toUpperCase();}
 function sortFocusCandidates(policy){
@@ -142,30 +143,36 @@ export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},qu
   const focusedIds=new Set(focused.map(project=>project.id));
   const nextIds=nextDevelopmentIds({portfolio,catalog,artbooks,focusedIds,filesystem});
   const nextFocus=nextFocusIds({portfolio,catalog,artbooks,focusedIds,filesystem});
-  const focusRunnable=releaseFocus?[]:focused.filter(project=>clean(project.dedicatedDevelopmentLane).toUpperCase()!=='UNITY_PRIMARY');
+  const focusRunnable=releaseFocus?focused:focused.filter(project=>clean(project.dedicatedDevelopmentLane).toUpperCase()!=='UNITY_PRIMARY');
   const tier2Runnable=releaseFocus&&policy?.tier2WebPrototypeAllowedAlongsideUnityFocus!==false?preparedTier2WebCandidates({portfolio,catalog,artbooks,filesystem}):[];
-  const runnable=releaseFocus?tier2Runnable:focusRunnable;
+  const runnable=releaseFocus?[...focusRunnable,...tier2Runnable]:focusRunnable;
   const active=activeReservations(queueState,{now,isSourceReleased});
   const activeGameIds=new Set(active.map(row=>row.gameId)),activeSourcePaths=new Set(active.map(row=>clean(row.sourcePath)).filter(Boolean));
-  const available=runnable.filter(project=>!activeGameIds.has(project.id)&&!activeSourcePaths.has(clean(project.sourcePath)));
+  const available=runnable.filter(project=>!activeGameIds.has(project.id)&&!activeSourcePaths.has(executionSourcePath(project,filesystem)));
   const requested=clean(priorityGameId);
   const tracked=[...new Map([...focused,...runnable].map(project=>[project.id,project])).values()];
   const impactPriorityPenalties=Object.fromEntries(tracked.map(project=>[project.id,{penalty:priorityPenaltyForGame(impactHistory,project.id),lowImpactStreak:lowImpactStreak(impactHistory,project.id)}]));
   const meta={focusedGameIds:[...focusedIds],nextFocusGameIds:nextFocus,nextDevelopmentGameIds:nextIds,activeGameIds:[...activeGameIds],activeSourcePaths:[...activeSourcePaths],focusPolicyEnabled:Boolean(policy),focusStage:focusStage(policy),impactPriorityPenalties};
   if(requested){
-    const tier1=(portfolio?.projects??[]).find(project=>(project.id===requested||project.slug===requested)&&Number(project?.productionTier)===1);
-    if(releaseFocus&&tier1&&focusedIds.has(tier1.id)&&unityDeepFocusReady(tier1,filesystem))return {project:null,dedicatedFocus:true,explicitPriority:true,requestedGameId:tier1.id,...meta};
     const exactRunnable=runnable.find(project=>project.id===requested||project.slug===requested);
-    if(exactRunnable&&(activeGameIds.has(exactRunnable.id)||activeSourcePaths.has(clean(exactRunnable.sourcePath))))return {project:null,blockedByActive:true,explicitPriority:true,requestedGameId:exactRunnable.id,...meta};
+    if(exactRunnable&&(activeGameIds.has(exactRunnable.id)||activeSourcePaths.has(executionSourcePath(exactRunnable,filesystem))))return {project:null,blockedByActive:true,explicitPriority:true,requestedGameId:exactRunnable.id,...meta};
     const exact=available.find(project=>project.id===requested||project.slug===requested);
-    if(exact)return {project:exact,projectLane:releaseFocus?'TIER2_WEB_FIRST_IMPLEMENTATION':'FOCUSED_DEVELOPMENT',attemptsToday:counts.get(exact.id)||0,impactPriorityPenalty:priorityPenaltyForGame(impactHistory,exact.id),lowImpactStreak:lowImpactStreak(impactHistory,exact.id),explicitPriority:true,...meta};
+    if(exact){
+      const unityLane=releaseFocus&&focusedIds.has(exact.id)&&unityDeepFocusReady(exact,filesystem);
+      return {project:exact,projectLane:unityLane?'TIER1_UNITY_DEEP_FOCUS':(releaseFocus?'TIER2_WEB_FIRST_IMPLEMENTATION':'FOCUSED_DEVELOPMENT'),attemptsToday:counts.get(exact.id)||0,impactPriorityPenalty:priorityPenaltyForGame(impactHistory,exact.id),lowImpactStreak:lowImpactStreak(impactHistory,exact.id),explicitPriority:true,...meta};
+    }
   }
   available.sort((a,b)=>{
+    const unityA=releaseFocus&&focusedIds.has(a.id)&&unityDeepFocusReady(a,filesystem),unityB=releaseFocus&&focusedIds.has(b.id)&&unityDeepFocusReady(b,filesystem);
+    if(unityA!==unityB)return Number(unityB)-Number(unityA);
     const effectiveA=(counts.get(a.id)||0)+priorityPenaltyForGame(impactHistory,a.id),effectiveB=(counts.get(b.id)||0)+priorityPenaltyForGame(impactHistory,b.id);
     return effectiveA-effectiveB||focusTotal(b)-focusTotal(a)||a.id.localeCompare(b.id);
   });
   const project=available[0]||null;
-  if(project)return {project,projectLane:releaseFocus?'TIER2_WEB_FIRST_IMPLEMENTATION':'FOCUSED_DEVELOPMENT',attemptsToday:counts.get(project.id)||0,impactPriorityPenalty:priorityPenaltyForGame(impactHistory,project.id),lowImpactStreak:lowImpactStreak(impactHistory,project.id),explicitPriority:false,...meta};
+  if(project){
+    const unityLane=releaseFocus&&focusedIds.has(project.id)&&unityDeepFocusReady(project,filesystem);
+    return {project,projectLane:unityLane?'TIER1_UNITY_DEEP_FOCUS':(releaseFocus?'TIER2_WEB_FIRST_IMPLEMENTATION':'FOCUSED_DEVELOPMENT'),attemptsToday:counts.get(project.id)||0,impactPriorityPenalty:priorityPenaltyForGame(impactHistory,project.id),lowImpactStreak:lowImpactStreak(impactHistory,project.id),explicitPriority:false,...meta};
+  }
   if(runnable.length&&active.length)return {project:null,blockedByActive:true,explicitPriority:false,...meta};
   return policy?{project:null,focusIdle:true,explicitPriority:false,...meta}:null;
 }
@@ -175,7 +182,7 @@ export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={
   const activeGameIds=new Set(active.map(row=>row.gameId)),activeSourcePaths=new Set(active.map(row=>clean(row.sourcePath)).filter(Boolean));
   const urgentProjects=(portfolio?.projects??[]).filter(project=>
     !activeGameIds.has(project.id)&&
-    !activeSourcePaths.has(clean(project.sourcePath))&&
+    !activeSourcePaths.has(executionSourcePath(project,filesystem))&&
     Boolean(runtimeIncident(health,project.slug))
   );
   const urgentPortfolio={...portfolio,projects:urgentProjects};
@@ -190,14 +197,13 @@ export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={
   }
 
   const selected=selectContinuousTarget({portfolio,artbooks,catalog,queueState,impactHistory,date,priorityGameId,filesystem,now,isSourceReleased});
-  if(selected?.dedicatedFocus)return {run:false,reason:'TIER1_UNITY_FOCUS_HANDOFF',date,requestedGameId:selected.requestedGameId,continuous24h:{enabled:true,mode:'TIER1_UNITY_FOCUS_EXTERNAL_LANE',maxFocusedGames:Number(portfolio?.developmentFocusPolicy?.maxFocusedGames||1),focusedGameIds:selected.focusedGameIds||[],nextFocusGameIds:selected.nextFocusGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],impactPriorityPenalties:selected.impactPriorityPenalties||{},recoveryWakeup:'HOURLY'}};
   if(selected?.blockedByActive){
     const focusedMode=selected.focusPolicyEnabled===true,releaseFocus=selected.focusStage==='RELEASE_CONFIRMED';
-    return {run:false,reason:releaseFocus?'ALL_TIER2_WEB_SOURCE_ROOTS_ACTIVE':(focusedMode?'ALL_FOCUSED_SOURCE_ROOTS_ACTIVE':LEGACY_ALL_ACTIVE_REASON),date,continuous24h:{enabled:true,mode:releaseFocus?'TIER2_WEB_FIRST_IMPLEMENTATION':(focusedMode?'FOCUSED_GAME_FLOORS':'PARALLEL_GAME_FLOORS'),maxFocusedGames:focusedMode?Number(portfolio?.developmentFocusPolicy?.maxFocusedGames||1):null,focusedGameIds:selected.focusedGameIds||[],nextFocusGameIds:selected.nextFocusGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],impactPriorityPenalties:selected.impactPriorityPenalties||{},sourceRootLock:'ACTIVE_RESERVATION_LEASE',activeGameIds:selected.activeGameIds||[],activeSourcePaths:selected.activeSourcePaths||[],recoveryWakeup:'HOURLY'}};
+    return {run:false,reason:releaseFocus?'ALL_RELEASE_FOCUS_SOURCE_ROOTS_ACTIVE':(focusedMode?'ALL_FOCUSED_SOURCE_ROOTS_ACTIVE':LEGACY_ALL_ACTIVE_REASON),date,continuous24h:{enabled:true,mode:releaseFocus?'TIER1_UNITY_FOCUS_PLUS_TIER2_WEB':(focusedMode?'FOCUSED_GAME_FLOORS':'PARALLEL_GAME_FLOORS'),maxFocusedGames:focusedMode?Number(portfolio?.developmentFocusPolicy?.maxFocusedGames||1):null,focusedGameIds:selected.focusedGameIds||[],nextFocusGameIds:selected.nextFocusGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],impactPriorityPenalties:selected.impactPriorityPenalties||{},sourceRootLock:'ACTIVE_RESERVATION_LEASE',activeGameIds:selected.activeGameIds||[],activeSourcePaths:selected.activeSourcePaths||[],recoveryWakeup:'HOURLY'}};
   }
   if(selected?.focusIdle){
     const releaseFocus=selected.focusStage==='RELEASE_CONFIRMED';
-    return {run:false,reason:releaseFocus?'NO_TIER2_WEB_FIRST_IMPLEMENTATION_NOW':'NO_FOCUSED_DEVELOPMENT_FLOOR_NOW',date,continuous24h:{enabled:true,mode:releaseFocus?'TIER1_UNITY_FOCUS_PLUS_TIER2_WEB':'FOCUSED_GAME_FLOORS',focusedGameIds:selected.focusedGameIds||[],nextFocusGameIds:selected.nextFocusGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],impactPriorityPenalties:selected.impactPriorityPenalties||{},recoveryWakeup:'HOURLY'}};
+    return {run:false,reason:releaseFocus?'NO_RELEASE_FOCUS_WORK_NOW':'NO_FOCUSED_DEVELOPMENT_FLOOR_NOW',date,continuous24h:{enabled:true,mode:releaseFocus?'TIER1_UNITY_FOCUS_PLUS_TIER2_WEB':'FOCUSED_GAME_FLOORS',focusedGameIds:selected.focusedGameIds||[],nextFocusGameIds:selected.nextFocusGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],impactPriorityPenalties:selected.impactPriorityPenalties||{},recoveryWakeup:'HOURLY'}};
   }
   if(!selected){
     const fallback=buildAutonomousWorkOrder({portfolio,artbooks,health,catalog,diagnostics,queueState:{version:1,attempts:[]},date,filesystem,priorityGameId});
@@ -205,18 +211,27 @@ export function build24hAutonomousWorkOrder({portfolio,artbooks,health,catalog={
     if(tierPolicyEnabled&&Number(fallbackProject?.productionTier)===3)return {run:false,reason:'TIER3_DESIGN_ONLY',date,gameId:fallbackProject.id,continuous24h:{enabled:true,mode:'TIER3_ARTBOOK_DESIGN_ONLY'}};
     return {...fallback,workLane:fallback.run?'FULL':null,departmentReviewRoles:fallback.run?['planning','development','graphics','qa','balance']:[],implementationRoles:fallback.run?['development','graphics','qa','balance']:[],continuous24h:{enabled:true,mode:'RECOVERY_FALLBACK',dailyCap:null,sameGameDailyCap:null}};
   }
-  const target=selected.project,tier2Prototype=selected.projectLane==='TIER2_WEB_FIRST_IMPLEMENTATION';
-  const forcedProject={...target,profileStatus:'DEVELOPMENT_CONFIRMED',mode:tier2Prototype?'WEB_FIRST_IMPLEMENTATION':'IMPROVE'};
-  const games=[...(catalog?.games??[])],index=games.findIndex(game=>game.id===target.slug);
-  if(index>=0)games[index]={...games[index],homepageCategory:'development-confirmed'};else games.push({id:target.slug,homepageCategory:'development-confirmed'});
-  const order=buildAutonomousWorkOrder({portfolio:{...portfolio,projects:[forcedProject]},artbooks,health,catalog:{...catalog,games},diagnostics,queueState:{version:1,attempts:[]},date,filesystem,priorityGameId:target.slug});
+  const target=selected.project,tier1Unity=selected.projectLane==='TIER1_UNITY_DEEP_FOCUS',tier2Prototype=selected.projectLane==='TIER2_WEB_FIRST_IMPLEMENTATION';
+  let order;
+  if(tier1Unity){
+    order=buildAutonomousWorkOrder({portfolio:{...portfolio,projects:[target]},artbooks,health,catalog,diagnostics,queueState:{version:1,attempts:[]},date,filesystem,priorityGameId:target.slug});
+  }else{
+    const forcedProject={...target,profileStatus:'DEVELOPMENT_CONFIRMED',mode:tier2Prototype?'WEB_FIRST_IMPLEMENTATION':'IMPROVE'};
+    const games=[...(catalog?.games??[])],index=games.findIndex(game=>game.id===target.slug);
+    if(index>=0)games[index]={...games[index],homepageCategory:'development-confirmed'};else games.push({id:target.slug,homepageCategory:'development-confirmed'});
+    order=buildAutonomousWorkOrder({portfolio:{...portfolio,projects:[forcedProject]},artbooks,health,catalog:{...catalog,games},diagnostics,queueState:{version:1,attempts:[]},date,filesystem,priorityGameId:target.slug});
+  }
   if(!order.run)return order;
   const originalProfile={profileStatus:target.profileStatus,mode:target.mode,homepageCategory:catalogEntry(catalog,target.slug)?.homepageCategory??null,productionTier:target.productionTier??null};
-  if(tier2Prototype){order.selectedReason='TIER2_WEB_FIRST_IMPLEMENTATION';order.goal=`[WEB_FIRST_IMPLEMENTATION] 아트북 전체 기능을 한 번에 재현하지 않는다. 핵심 루프가 실제로 플레이되는 가장 작은 Web 1차 구현만 만들고 모바일 입력·저장 의미·현재 정체성을 유지한다. ${order.goal}`.slice(0,2400);}else order.selectedReason=selected.explicitPriority?'FOCUSED_ARTBOOK_PRIORITY_HANDOFF':'FOCUSED_CONTINUOUS_DEVELOPMENT';
-  order.workLane='FULL';order.departmentReviewRoles=['planning','development','graphics','qa','balance'];order.implementationRoles=['development','graphics','qa','balance'];order.planningFinalMode='AI_FULL';
-  order.continuous24h={enabled:true,mode:tier2Prototype?'TIER2_WEB_FIRST_IMPLEMENTATION':'FOCUSED_ARTBOOK_DEPARTMENT_LOOP',maxFocusedGames:Number(portfolio?.developmentFocusPolicy?.maxFocusedGames||1),focusedGameIds:selected.focusedGameIds||[],nextFocusGameIds:selected.nextFocusGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],selection:tier2Prototype?'AUTO_TIER2_LOW_IMPACT_PENALTY_THEN_SCORE_THEN_LEAST_KST_ATTEMPTS':'AUTO_TIER1_READY_THEN_SCORE',selectedGameAttemptsToday:selected.attemptsToday,impactPriorityPenalty:selected.impactPriorityPenalty||0,lowImpactStreak:selected.lowImpactStreak||0,impactPriorityPenalties:selected.impactPriorityPenalties||{},activeGameIds:selected.activeGameIds||[],sourceRootLock:'ACTIVE_RESERVATION_LEASE',departmentSequence:['planning','development','graphics','qa','balance','planning-final'],recoveryWakeup:'HOURLY'};
+  if(tier1Unity){order.selectedReason='UNITY_DEEP_FOCUS_IMPLEMENTATION';}
+  else if(tier2Prototype){order.selectedReason='TIER2_WEB_FIRST_IMPLEMENTATION';order.goal=`[WEB_FIRST_IMPLEMENTATION] 아트북 전체 기능을 한 번에 재현하지 않는다. 핵심 루프가 실제로 플레이되는 가장 작은 Web 1차 구현만 만들고 모바일 입력·저장 의미·현재 정체성을 유지한다. ${order.goal}`.slice(0,2400);}else order.selectedReason=selected.explicitPriority?'FOCUSED_ARTBOOK_PRIORITY_HANDOFF':'FOCUSED_CONTINUOUS_DEVELOPMENT';
+  order.workLane=tier1Unity?'UNITY':'FULL';
+  order.departmentReviewRoles=tier1Unity?['planning','development','qa']:['planning','development','graphics','qa','balance'];
+  order.implementationRoles=tier1Unity?['development']:['development','graphics','qa','balance'];
+  order.planningFinalMode=tier1Unity?'UNITY_DETERMINISTIC':'AI_FULL';
+  order.continuous24h={enabled:true,mode:tier1Unity?'TIER1_UNITY_DEEP_FOCUS':(tier2Prototype?'TIER2_WEB_FIRST_IMPLEMENTATION':'FOCUSED_ARTBOOK_DEPARTMENT_LOOP'),maxFocusedGames:Number(portfolio?.developmentFocusPolicy?.maxFocusedGames||1),focusedGameIds:selected.focusedGameIds||[],nextFocusGameIds:selected.nextFocusGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],selection:tier1Unity?'AUTO_TIER1_READY_THEN_SCORE':(tier2Prototype?'AUTO_TIER2_LOW_IMPACT_PENALTY_THEN_SCORE_THEN_LEAST_KST_ATTEMPTS':'AUTO_TIER1_READY_THEN_SCORE'),selectedGameAttemptsToday:selected.attemptsToday,impactPriorityPenalty:selected.impactPriorityPenalty||0,lowImpactStreak:selected.lowImpactStreak||0,impactPriorityPenalties:selected.impactPriorityPenalties||{},activeGameIds:selected.activeGameIds||[],sourceRootLock:'ACTIVE_RESERVATION_LEASE',departmentSequence:tier1Unity?['planning','development','qa','planning-final']:['planning','development','graphics','qa','balance','planning-final'],recoveryWakeup:'HOURLY'};
   order.queue={...(order.queue||{}),attemptsToday:attemptsForDate(queueState,date).length,maxDaily:null,remainingBeforeSelection:null};
-  order.evidence={...(order.evidence||{}),continuous24hOriginalProfile:originalProfile,developmentFocus:{score:focusTotal(target),focusedGameIds:selected.focusedGameIds||[],nextFocusGameIds:selected.nextFocusGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],tier2Prototype,autoRotate:true,impactPriorityPenalty:selected.impactPriorityPenalty||0,lowImpactStreak:selected.lowImpactStreak||0}};
+  order.evidence={...(order.evidence||{}),continuous24hOriginalProfile:originalProfile,developmentFocus:{score:focusTotal(target),focusedGameIds:selected.focusedGameIds||[],nextFocusGameIds:selected.nextFocusGameIds||[],nextDevelopmentGameIds:selected.nextDevelopmentGameIds||[],tier1Unity,tier2Prototype,autoRotate:true,impactPriorityPenalty:selected.impactPriorityPenalty||0,lowImpactStreak:selected.lowImpactStreak||0}};
   return order;
 }
 
