@@ -3,7 +3,7 @@
   "dateKst": "2026-09-10",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
-  "activeDevelopmentRunId": 34438270838,
+  "activeDevelopmentRunId": 34443277766,
   "checks": {
     "staffChecked": "8/8",
     "activeWorkOrder": null,
@@ -44,13 +44,13 @@
   "workflowEvidence": {
     "artbook": null,
     "autonomousDevelopment": {
-      "id": 34438270838,
+      "id": 34443277766,
       "status": "completed",
       "conclusion": "success",
-      "event": "workflow_dispatch",
-      "createdAt": "2026-09-10T04:43:17Z",
-      "updatedAt": "2026-09-10T04:43:28Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34438270838"
+      "event": "schedule",
+      "createdAt": "2026-09-10T05:59:29Z",
+      "updatedAt": "2026-09-10T05:59:46Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34443277766"
     },
     "homepage": null,
     "publicGameHealth": {
@@ -62,15 +62,7 @@
       "updatedAt": "2026-09-10T04:43:59Z",
       "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34438226080"
     },
-    "unityBuild": {
-      "id": 34437205886,
-      "status": "completed",
-      "conclusion": "failure",
-      "event": "push",
-      "createdAt": "2026-09-10T04:26:44Z",
-      "updatedAt": "2026-09-10T04:42:01Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34437205886"
-    },
+    "unityBuild": null,
     "unityRuntime": {
       "id": 34438190603,
       "status": "completed",
@@ -103,21 +95,21 @@
       "taskAssigned": false,
       "status": "DONE",
       "workState": "DONE",
-      "task": "autonomous development floor 34438270838",
+      "task": "autonomous development floor 34443277766",
       "executionEvidence": [
-        "autonomous-workflow:34438270838:completed:success",
-        "autonomous-job:102747815003:department (planning-final):completed:skipped"
+        "autonomous-workflow:34443277766:completed:success",
+        "autonomous-job:102762631019:department (planning-final):completed:skipped"
       ],
       "resultVerified": true,
       "jobEvidence": {
-        "id": 102747815003,
+        "id": 102762631019,
         "name": "department (planning-final)",
         "status": "completed",
         "conclusion": "skipped",
         "failedStep": null,
-        "startedAt": "2026-09-10T04:43:28Z",
-        "completedAt": "2026-09-10T04:43:27Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34438270838/job/102747815003"
+        "startedAt": "2026-09-10T05:59:46Z",
+        "completedAt": "2026-09-10T05:59:45Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34443277766/job/102762631019"
       },
       "directCause": null,
       "blockers": [],
@@ -143,9 +135,9 @@
       "taskAssigned": false,
       "status": "DONE",
       "workState": "DONE",
-      "task": "autonomous development floor 34438270838",
+      "task": "autonomous development floor 34443277766",
       "executionEvidence": [
-        "autonomous-workflow:34438270838:completed:success"
+        "autonomous-workflow:34443277766:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -173,9 +165,9 @@
       "taskAssigned": false,
       "status": "DONE",
       "workState": "DONE",
-      "task": "autonomous development floor 34438270838",
+      "task": "autonomous development floor 34443277766",
       "executionEvidence": [
-        "autonomous-workflow:34438270838:completed:success"
+        "autonomous-workflow:34443277766:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -203,9 +195,9 @@
       "taskAssigned": false,
       "status": "DONE",
       "workState": "DONE",
-      "task": "autonomous development floor 34438270838",
+      "task": "autonomous development floor 34443277766",
       "executionEvidence": [
-        "autonomous-workflow:34438270838:completed:success"
+        "autonomous-workflow:34443277766:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -233,9 +225,9 @@
       "taskAssigned": false,
       "status": "DONE",
       "workState": "DONE",
-      "task": "autonomous development floor 34438270838",
+      "task": "autonomous development floor 34443277766",
       "executionEvidence": [
-        "autonomous-workflow:34438270838:completed:success"
+        "autonomous-workflow:34443277766:completed:success"
       ],
       "resultVerified": true,
       "jobEvidence": null,
@@ -286,7 +278,6 @@
         "download:https://github.com/hans1177/jaewoon-games/releases/download/test-daechung-rpg-34201876835-1/daechung-rpg-test.apk",
         "sha256:bca2596f93ea71e5ad311d9d3a322083ae768f8ac0c9c046125b33c9a4f1e817",
         "bytes:24392700",
-        "unity-build-workflow:34437205886:completed:failure",
         "unity-runtime-workflow:34438190603:completed:skipped"
       ],
       "resultVerified": true,

@@ -9,47 +9,26 @@
 <title>재운컴퍼니 · AI 개발 채팅</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{color-scheme:dark;--bg:#212121;--panel:#2f2f2f;--panel2:#303030;--line:#464646;--text:#ececec;--muted:#b4b4b4;--soft:#8e8e8e;--white:#f4f4f4;--danger:#ffb4ab;--ok:#b8f2ce;--warn:#f5d08a}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",system-ui,sans-serif}
-body{min-height:100dvh}
-button,select,textarea,input{font:inherit}
+:root{color-scheme:dark;--bg:#212121;--panel:#303030;--text:#ececec;--muted:#a9a9a9;--line:#454545;--danger:#ffd1cc;--ok:#b8f2ce;--warn:#f5d08a}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",system-ui,sans-serif}body{min-height:100dvh}button,select,textarea,input{font:inherit}
 .app{width:min(100%,820px);height:100dvh;margin:auto;display:grid;grid-template-rows:auto auto minmax(0,1fr);background:var(--bg)}
-.top{z-index:10;padding:max(10px,env(safe-area-inset-top)) 14px 8px;background:rgba(33,33,33,.96);backdrop-filter:blur(16px)}
-.topRow{height:48px;display:flex;align-items:center;justify-content:space-between;gap:10px}.brand small{display:none}.brand h1{margin:0;font-size:18px;line-height:1.2;font-weight:650;letter-spacing:-.01em}.nav{display:flex;gap:8px}.nav a{height:38px;padding:0 13px;border:0;border-radius:19px;display:flex;align-items:center;justify-content:center;background:#2f2f2f;color:#ececec;text-decoration:none;font-size:14px;font-weight:600}.nav a:last-child{display:none}
-.controls{display:flex;gap:8px;overflow-x:auto;padding:0 14px 10px;background:var(--bg);scrollbar-width:none}.controls::-webkit-scrollbar{display:none}.controls select{flex:1;min-width:0;height:42px;padding:0 34px 0 13px;border:1px solid #444;border-radius:21px;background:#2a2a2a;color:#ececec;font-size:14px;font-weight:560;outline:none}.controls select:focus{border-color:#666}
-.chat{min-height:0;overflow-y:auto;overscroll-behavior:contain;scroll-behavior:smooth;padding:8px 14px 116px;scrollbar-width:none}.chat::-webkit-scrollbar{display:none}.intro{max-width:680px;margin:22px auto 26px;padding:0 18px;text-align:center;color:#a8a8a8;font-size:15px;line-height:1.55}.intro b{display:block;margin-bottom:5px;color:#ececec;font-size:20px;font-weight:650}.group{width:min(100%,720px);margin:0 auto 24px}.group>.bubbleHead{margin:0 2px 7px!important;color:#8f8f8f!important;font-size:12px!important;font-weight:600!important}.bubble{white-space:pre-wrap;word-break:break-word;font-size:16.5px;line-height:1.58;letter-spacing:-.01em}.bubble .bubbleHead{display:none}.owner{width:fit-content;max-width:85%;margin-left:auto;padding:10px 14px;border-radius:20px;background:#303030;color:#f3f3f3}.company{max-width:100%;margin-right:auto;padding:8px 2px;color:#ececec;background:transparent;border:0}.company.ai{color:#ececec}.company.system{margin-top:6px;padding:11px 13px;border-radius:16px;background:#292929;color:#cfcfcf}.statusLine{display:flex;justify-content:flex-end;margin:7px 3px 0}.status{display:inline-flex;align-items:center;min-height:25px;padding:0 9px;border-radius:999px;background:#2b2b2b;color:#aaa;font-size:11px;font-weight:650}.status.done{color:var(--ok)}.status.warn{color:var(--warn)}.status.fail{color:var(--danger)}.status.chat{color:#cfcfcf}.time{opacity:.7}.empty{padding:44px 12px;text-align:center;color:#8f8f8f;font-size:15px;line-height:1.5}.localError{width:min(100%,720px);margin:0 auto 16px;padding:11px 13px;border-radius:14px;background:#342522;color:#ffd1cc;font-size:14px;line-height:1.5}
-.claimWrap{padding:14px}.claim{width:min(100%,620px);margin:auto;padding:18px;border:1px solid #444;border-radius:18px;background:#2b2b2b}.claim h2{margin:0 0 6px;font-size:20px}.claim p{margin:0 0 12px;color:#b5b5b5;font-size:14px;line-height:1.55}.claimGrid{display:grid;grid-template-columns:1fr auto;gap:8px}.claim input{height:50px;padding:0 13px;border:1px solid #555;border-radius:14px;background:#202020;color:#fff;font-size:16px;outline:none}.btn{min-height:50px;padding:0 16px;border:0;border-radius:14px;background:#f2f2f2;color:#111;font-size:15px;font-weight:700}.state{margin-top:10px;color:#aaa;font-size:13px}
-.composer{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:18px 10px max(10px,env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(33,33,33,0),#212121 28%,#212121)}.composerInner{width:min(calc(100% - 8px),760px);margin:auto;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:6px;padding:7px 7px 7px 12px;border:1px solid #454545;border-radius:27px;background:#303030;box-shadow:0 4px 18px rgba(0,0,0,.16)}.composerInner:focus-within{border-color:#555}.composer textarea{width:100%;min-height:44px;max-height:160px;padding:10px 4px 9px;border:0;background:transparent;color:#f1f1f1;font-size:16px;line-height:1.45;resize:none;outline:none;overflow-y:auto}.composer textarea::placeholder{color:#9b9b9b}.composerActions{display:flex;align-items:flex-end}.send{width:40px;height:40px;min-width:40px;border:0;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f1f1f1;color:#111;font-size:26px;line-height:1;font-weight:500;padding:0 0 3px}.send:disabled{background:#555;color:#9a9a9a}.send:active:not(:disabled){transform:scale(.96)}
-@media(max-width:520px){.top{padding-left:10px;padding-right:10px}.controls{padding-left:10px;padding-right:10px}.controls select{font-size:14px}.chat{padding-left:12px;padding-right:12px}.intro{margin-top:16px}.bubble{font-size:16.5px}.owner{max-width:88%}.claimGrid{grid-template-columns:1fr}.claimGrid .btn{width:100%}.composer{padding-left:7px;padding-right:7px}.composerInner{width:100%}}
+.top{z-index:10;padding:max(10px,env(safe-area-inset-top)) 14px 8px;background:#212121f5;backdrop-filter:blur(16px)}.topRow{height:48px;display:flex;align-items:center;justify-content:space-between;gap:10px}.brand h1{margin:0;font-size:18px;font-weight:650;letter-spacing:-.01em}.nav a{height:38px;padding:0 13px;border:0;border-radius:19px;display:flex;align-items:center;background:#2f2f2f;color:#ececec;text-decoration:none;font-size:14px;font-weight:600}
+.controls{display:flex;gap:8px;padding:0 14px 10px;overflow-x:auto;scrollbar-width:none}.controls::-webkit-scrollbar{display:none}.controls select{flex:1;min-width:0;height:42px;padding:0 34px 0 13px;border:1px solid #444;border-radius:21px;background:#2a2a2a;color:#ececec;font-size:14px;font-weight:560;outline:none}
+.chat{min-height:0;overflow-y:auto;overscroll-behavior:contain;scroll-behavior:smooth;padding:8px 14px 116px;scrollbar-width:none}.chat::-webkit-scrollbar{display:none}.intro{max-width:680px;margin:28px auto 30px;padding:0 18px;text-align:center;color:#a8a8a8;font-size:15px;line-height:1.55}.intro b{display:block;margin-bottom:5px;color:#ececec;font-size:21px;font-weight:650}.intro[hidden]{display:none}
+.group{width:min(100%,720px);margin:0 auto 24px}.groupTitle{margin:0 2px 7px;color:#8f8f8f;font-size:12px;font-weight:600}.bubble{white-space:pre-wrap;word-break:break-word;font-size:16.5px;line-height:1.58;letter-spacing:-.01em}.owner{width:fit-content;max-width:85%;margin-left:auto;padding:10px 14px;border-radius:20px;background:#303030;color:#f3f3f3}.company{max-width:100%;padding:8px 2px;color:#ececec}.company.system{margin-top:6px;padding:10px 13px;border-radius:16px;background:#292929;color:#cfcfcf;font-size:14px}.bubbleHead{display:none}.statusLine{display:flex;justify-content:flex-end;margin:7px 3px 0}.status{display:inline-flex;align-items:center;min-height:25px;padding:0 9px;border-radius:999px;background:#2b2b2b;color:#aaa;font-size:11px;font-weight:650}.status.done{color:var(--ok)}.status.warn{color:var(--warn)}.status.fail{color:#ffb4ab}.empty{padding:44px 12px;text-align:center;color:#8f8f8f;font-size:15px}.localError{width:min(100%,720px);margin:0 auto 16px;padding:11px 13px;border-radius:14px;background:#342522;color:var(--danger);font-size:14px;line-height:1.5}
+.claimWrap{padding:14px}.claim{width:min(100%,620px);margin:auto;padding:18px;border:1px solid #444;border-radius:18px;background:#2b2b2b}.claim h2{margin:0 0 6px;font-size:20px}.claim p{margin:0 0 12px;color:#b5b5b5;font-size:14px}.claimGrid{display:grid;grid-template-columns:1fr auto;gap:8px}.claim input{height:50px;padding:0 13px;border:1px solid #555;border-radius:14px;background:#202020;color:#fff;font-size:16px;outline:none}.btn{min-height:50px;padding:0 16px;border:0;border-radius:14px;background:#f2f2f2;color:#111;font-size:15px;font-weight:700}.state{margin-top:10px;color:#aaa;font-size:13px}
+.composer{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:18px 10px max(10px,env(safe-area-inset-bottom));background:linear-gradient(180deg,#21212100,#212121 28%,#212121)}.composerInner{width:min(calc(100% - 8px),760px);margin:auto;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:6px;padding:7px 7px 7px 12px;border:1px solid var(--line);border-radius:27px;background:var(--panel)}.composer textarea{width:100%;min-height:44px;max-height:160px;padding:10px 4px 9px;border:0;background:transparent;color:#f1f1f1;font-size:16px;line-height:1.45;resize:none;outline:none;overflow-y:auto}.composer textarea::placeholder{color:#9b9b9b}.send{width:40px;height:40px;min-width:40px;border:0;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f1f1f1;color:#111;font-size:26px;line-height:1;font-weight:500;padding:0 0 3px}.send:disabled{background:#555;color:#9a9a9a}.send:active:not(:disabled){transform:scale(.96)}
+@media(max-width:520px){.top,.controls{padding-left:10px;padding-right:10px}.chat{padding-left:12px;padding-right:12px}.owner{max-width:88%}.claimGrid{grid-template-columns:1fr}.composer{padding-left:7px;padding-right:7px}.composerInner{width:100%}}
 </style>
 </head>
 <body>
 <main class="app">
-  <header class="top">
-    <div class="topRow">
-      <div class="brand"><small>JAEWOON COMPANY</small><h1>재운컴퍼니</h1></div>
-      <nav class="nav"><a href="/">게임 홈</a><a href="/company.html">개발연구소</a></nav>
-    </div>
-  </header>
-  <section class="controls" id="controls">
-    <select id="game" aria-label="게임"><option value="">회사 공통 / 게임 미선택</option></select>
-    <select id="priority" aria-label="우선순위"><option value="normal">일반</option><option value="priority">우선</option><option value="urgent">긴급</option></select>
-  </section>
-  <section class="claimWrap" id="claimWrap" hidden>
-    <div class="claim"><h2>이 휴대폰 등록</h2><p>처음 한 번만 등록해. 기기 토큰은 이 브라우저에만 저장돼.</p><div class="claimGrid"><input id="claimCode" type="password" autocomplete="one-time-code" placeholder="기기 등록 코드"><button class="btn" id="claimBtn" type="button">등록</button></div><div class="state" id="claimState">등록 코드가 필요해.</div></div>
-  </section>
-  <section class="chat" id="chat">
-    <div class="intro"><b>무엇을 개발할까?</b>게임을 선택한 뒤 평소처럼 말하면 돼. 실제 수정 지시는 Vibe2 작업 큐로 넘어가고 QA 후 자동배포해.</div>
-    <div id="runtimeError" class="localError" hidden></div>
-    <div id="messages"><div class="empty">대화 기록 불러오는 중</div></div>
-  </section>
+<header class="top"><div class="topRow"><div class="brand"><h1>재운컴퍼니</h1></div><nav class="nav"><a href="/">게임 홈</a></nav></div></header>
+<section class="controls" id="controls"><select id="game" aria-label="게임"><option value="">회사 공통 / 게임 미선택</option></select><select id="priority" aria-label="우선순위"><option value="normal">일반</option><option value="priority">우선</option><option value="urgent">긴급</option></select></section>
+<section class="claimWrap" id="claimWrap" hidden><div class="claim"><h2>이 휴대폰 등록</h2><p>처음 한 번만 등록해. 기기 토큰은 이 브라우저에만 저장돼.</p><div class="claimGrid"><input id="claimCode" type="password" autocomplete="one-time-code" placeholder="기기 등록 코드"><button class="btn" id="claimBtn" type="button">등록</button></div><div class="state" id="claimState">등록 코드가 필요해.</div></div></section>
+<section class="chat" id="chat"><div class="intro" id="intro"><b>무엇을 개발할까?</b>게임을 선택한 뒤 평소처럼 말하면 돼.</div><div id="runtimeError" class="localError" hidden></div><div id="messages"><div class="empty">대화 기록 불러오는 중</div></div></section>
 </main>
-<div class="composer" id="composer">
-  <div class="composerInner">
-    <textarea id="body" maxlength="3000" rows="1" enterkeyhint="send" placeholder="메시지 보내기"></textarea>
-    <div class="composerActions"><button class="send" id="sendBtn" type="button" aria-label="전송">↑</button></div>
-  </div>
-</div>
+<div class="composer" id="composer"><div class="composerInner"><textarea id="body" maxlength="3000" rows="1" enterkeyhint="send" placeholder="메시지 보내기"></textarea><button class="send" id="sendBtn" type="button" aria-label="전송">↑</button></div></div>
 <script>
 const API='https://njpexgqvituaxrjpnqsi.supabase.co/functions/v1/company-command';
 const API_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
@@ -57,106 +36,28 @@ const TOKEN_KEY='jaewoon_command_device_v1';
 const ACTIVE_KEY='jaewoon_ai_chat_task_v1';
 const $=id=>document.getElementById(id);
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-const labels={chatting:'AI 대화중',received:'지시 접수',working:'작업중',testing:'QA·배포검증',needs_input:'확인필요',done:'완료',failed:'실패',cancelled:'취소'};
-const errorLabels={GEMINI_NOT_CONFIGURED:'Gemini 서버 연결 설정이 아직 없어. 실제 작업 지시는 Vibe2로 보낼 수 있어.',GEMINI_LIMIT:'Gemini 무료 사용 한도에 걸렸어. 잠시 뒤 다시 보내줘.',GEMINI_ERROR:'Gemini 연결이 잠깐 실패했어. 다시 보내줘.'};
+const labels={received:'지시 접수',working:'작업중',testing:'QA·배포검증',needs_input:'확인필요',done:'완료',failed:'실패',cancelled:'취소'};
+const errorLabels={GEMINI_NOT_CONFIGURED:'Gemini 연결 설정이 아직 없어. 실제 작업 지시는 Vibe2로 보낼 수 있어.',GEMINI_LIMIT:'Gemini 무료 사용 한도에 걸렸어. 잠시 뒤 다시 보내줘.',GEMINI_ERROR:'Gemini 연결이 잠깐 실패했어. 다시 보내줘.'};
 const gameNames=new Map();
 let token=localStorage.getItem(TOKEN_KEY)||'';
 let activeTaskId=localStorage.getItem(ACTIVE_KEY)||'';
-let refreshTimer=null;
-let loading=false;
-let sending=false;
-
-async function api(payload,needsToken=true){
-  const headers={'Content-Type':'application/json','apikey':API_KEY};
-  if(needsToken&&token)headers['x-jaewoon-device']=token;
-  const response=await fetch(API,{method:'POST',headers,body:JSON.stringify(payload),cache:'no-store'});
-  const data=await response.json().catch(()=>({ok:false,error:'INVALID_RESPONSE'}));
-  if(!response.ok){const error=new Error(data.error||`HTTP_${response.status}`);error.data=data;throw error;}
-  return data;
-}
-function fmt(value){try{return new Intl.DateTimeFormat('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(value));}catch{return'';}}
-function statusClass(status){if(status==='chatting')return'chat';if(status==='done')return'done';if(status==='failed')return'fail';if(status==='needs_input')return'warn';return'';}
+let refreshTimer=null,loading=false,sending=false;
+async function api(payload,needsToken=true){const headers={'Content-Type':'application/json','apikey':API_KEY};if(needsToken&&token)headers['x-jaewoon-device']=token;const response=await fetch(API,{method:'POST',headers,body:JSON.stringify(payload),cache:'no-store'});const data=await response.json().catch(()=>({ok:false,error:'INVALID_RESPONSE'}));if(!response.ok){const error=new Error(data.error||`HTTP_${response.status}`);error.data=data;throw error;}return data;}
+function statusClass(status){if(status==='done')return'done';if(status==='failed')return'fail';if(status==='needs_input')return'warn';return'';}
 function showRuntimeError(message=''){$('runtimeError').textContent=message;$('runtimeError').hidden=!message;}
 function setRegistered(ok){$('claimWrap').hidden=ok;$('composer').style.display=ok?'block':'none';$('controls').style.opacity=ok?'1':'.45';$('game').disabled=!ok;$('priority').disabled=!ok;}
 function syncSendState(){$('sendBtn').disabled=sending||!$('body').value.trim();}
 function resizeComposer(){const box=$('body');box.style.height='auto';box.style.height=`${Math.min(box.scrollHeight,160)}px`;syncSendState();}
 function scrollBottom(){requestAnimationFrame(()=>{$('chat').scrollTop=$('chat').scrollHeight;});}
-
-async function loadGames(){
-  try{
-    const response=await fetch(`/game-catalog.json?ts=${Date.now()}`,{cache:'no-store'});
-    const catalog=await response.json();
-    for(const game of(catalog.games||[])){
-      gameNames.set(game.id,game.name||game.id);
-      const option=document.createElement('option');
-      option.value=game.id;
-      option.textContent=`${game.name||game.id} · ${game.homepageStage||''}`;
-      $('game').appendChild(option);
-    }
-  }catch{}
-}
-function bubble(sender,body,created){
-  const owner=sender==='owner';
-  const cls=owner?'bubble owner':`bubble company ${sender==='ai'?'ai':'system'}`;
-  const who=owner?'나':sender==='ai'?'재운컴퍼니 AI':'시스템';
-  return `<div class="${cls}"><div class="bubbleHead">${who}<span class="time">${fmt(created)}</span></div>${esc(body)}</div>`;
-}
-function render(tasks){
-  if(!tasks.length){$('messages').innerHTML='<div class="empty">아직 대화가 없어. 바로 말해.</div>';return;}
-  const ordered=[...tasks].reverse();
-  $('messages').innerHTML=ordered.map(task=>{
-    const name=gameNames.get(task.game_id)||task.game_id||'회사 공통';
-    const rows=task.messages||[];
-    const hasOwner=rows.some(m=>m.sender==='owner');
-    const content=hasOwner?rows.map(m=>bubble(m.sender,m.body,m.created_at)).join(''):bubble('owner',task.body,task.created_at)+rows.map(m=>bubble(m.sender,m.body,m.created_at)).join('');
-    return `<div class="group"><div class="bubbleHead">${esc(name)}</div>${content}<div class="statusLine"><span class="status ${statusClass(task.status)}">${esc(labels[task.status]||task.status)}</span></div></div>`;
-  }).join('');
-  scrollBottom();
-  const active=tasks.find(t=>t.status==='chatting');
-  if(active){activeTaskId=active.id;localStorage.setItem(ACTIVE_KEY,activeTaskId);if(active.game_id)$('game').value=active.game_id;}
-  else if(activeTaskId){activeTaskId='';localStorage.removeItem(ACTIVE_KEY);}
-}
-async function refresh(){
-  if(!token||loading)return;
-  loading=true;
-  try{const data=await api({action:'list'});render(data.tasks||[]);}
-  catch(error){$('messages').innerHTML=`<div class="empty">대화 기록을 못 불러왔어. ${esc(error.message)}</div>`;}
-  finally{loading=false;}
-}
-async function send(){
-  const text=$('body').value.trim();
-  if(!text||!token||sending)return;
-  sending=true;syncSendState();showRuntimeError('');
-  try{
-    const data=await api({action:'chat',taskId:activeTaskId||null,gameId:$('game').value||null,priority:$('priority').value,body:text});
-    $('body').value='';resizeComposer();
-    if(data.taskId&&data.status==='chatting'){activeTaskId=data.taskId;localStorage.setItem(ACTIVE_KEY,activeTaskId);}else{activeTaskId='';localStorage.removeItem(ACTIVE_KEY);}
-    await refresh();
-  }catch(error){
-    const code=error.message;
-    showRuntimeError(errorLabels[code]||`전송 실패: ${code}`);
-    if(error.data?.taskId){activeTaskId=error.data.taskId;localStorage.setItem(ACTIVE_KEY,activeTaskId);}
-    await refresh();
-  }finally{
-    sending=false;syncSendState();$('body').focus();scrollBottom();
-  }
-}
-async function claim(){
-  const code=$('claimCode').value.trim();if(!code)return;
-  $('claimBtn').disabled=true;
-  try{const data=await api({action:'claim',code,label:navigator.userAgent.slice(0,60)},false);token=data.token||'';localStorage.setItem(TOKEN_KEY,token);setRegistered(true);await refresh();}
-  catch(error){$('claimState').textContent=`등록 실패: ${error.message}`;}
-  finally{$('claimBtn').disabled=false;}
-}
+async function loadGames(){try{const response=await fetch(`/game-catalog.json?ts=${Date.now()}`,{cache:'no-store'});const catalog=await response.json();for(const game of(catalog.games||[])){gameNames.set(game.id,game.name||game.id);const option=document.createElement('option');option.value=game.id;option.textContent=`${game.name||game.id} · ${game.homepageStage||''}`;$('game').appendChild(option);}}catch{}}
+function normalizeMessages(rows){let geminiNotice=false;return rows.filter(row=>{const body=String(row.body??'');const duplicate=row.sender==='system'&&body.startsWith('Gemini API 키가 아직 서버에 연결되지 않았어.');if(!duplicate)return true;if(geminiNotice)return false;geminiNotice=true;return true;});}
+function bubble(sender,body){const owner=sender==='owner';const cls=owner?'bubble owner':`bubble company ${sender==='ai'?'ai':'system'}`;return `<div class="${cls}">${esc(body)}</div>`;}
+function render(tasks){$('intro').hidden=tasks.length>0;if(!tasks.length){$('messages').innerHTML='<div class="empty">아직 대화가 없어. 바로 말해.</div>';return;}const ordered=[...tasks].reverse();$('messages').innerHTML=ordered.map(task=>{const name=gameNames.get(task.game_id)||task.game_id||'회사 공통';const rows=normalizeMessages(task.messages||[]);const hasOwner=rows.some(m=>m.sender==='owner');const content=hasOwner?rows.map(m=>bubble(m.sender,m.body)).join(''):bubble('owner',task.body)+rows.map(m=>bubble(m.sender,m.body)).join('');const status=task.status==='chatting'?'':`<div class="statusLine"><span class="status ${statusClass(task.status)}">${esc(labels[task.status]||task.status)}</span></div>`;return `<div class="group"><div class="groupTitle">${esc(name)}</div>${content}${status}</div>`;}).join('');scrollBottom();const active=tasks.find(t=>t.status==='chatting');if(active){activeTaskId=active.id;localStorage.setItem(ACTIVE_KEY,activeTaskId);if(active.game_id)$('game').value=active.game_id;}else if(activeTaskId){activeTaskId='';localStorage.removeItem(ACTIVE_KEY);}}
+async function refresh(){if(!token||loading)return;loading=true;try{const data=await api({action:'list'});render(data.tasks||[]);}catch(error){$('messages').innerHTML=`<div class="empty">대화 기록을 못 불러왔어. ${esc(error.message)}</div>`;}finally{loading=false;}}
+async function send(){const text=$('body').value.trim();if(!text||!token||sending)return;sending=true;syncSendState();showRuntimeError('');try{const data=await api({action:'chat',taskId:activeTaskId||null,gameId:$('game').value||null,priority:$('priority').value,body:text});$('body').value='';resizeComposer();if(data.taskId&&data.status==='chatting'){activeTaskId=data.taskId;localStorage.setItem(ACTIVE_KEY,activeTaskId);}else{activeTaskId='';localStorage.removeItem(ACTIVE_KEY);}await refresh();}catch(error){showRuntimeError(errorLabels[error.message]||`전송 실패: ${error.message}`);if(error.data?.taskId){activeTaskId=error.data.taskId;localStorage.setItem(ACTIVE_KEY,activeTaskId);}await refresh();}finally{sending=false;syncSendState();$('body').focus();scrollBottom();}}
+async function claim(){const code=$('claimCode').value.trim();if(!code)return;$('claimBtn').disabled=true;try{const data=await api({action:'claim',code,label:navigator.userAgent.slice(0,60)},false);token=data.token||'';localStorage.setItem(TOKEN_KEY,token);setRegistered(true);await refresh();}catch(error){$('claimState').textContent=`등록 실패: ${error.message}`;}finally{$('claimBtn').disabled=false;}}
 function registerPwa(){if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').then(reg=>reg.update().catch(()=>{})).catch(()=>{});}
-
-$('sendBtn').addEventListener('click',send);
-$('claimBtn').addEventListener('click',claim);
-$('body').addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send();}});
-$('body').addEventListener('input',resizeComposer);
-$('body').addEventListener('focus',()=>setTimeout(scrollBottom,120));
-if(window.visualViewport){window.visualViewport.addEventListener('resize',()=>setTimeout(scrollBottom,60));window.visualViewport.addEventListener('scroll',()=>setTimeout(scrollBottom,60));}
-
+$('sendBtn').addEventListener('click',send);$('claimBtn').addEventListener('click',claim);$('body').addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send();}});$('body').addEventListener('input',resizeComposer);$('body').addEventListener('focus',()=>setTimeout(scrollBottom,120));if(window.visualViewport){window.visualViewport.addEventListener('resize',()=>setTimeout(scrollBottom,60));window.visualViewport.addEventListener('scroll',()=>setTimeout(scrollBottom,60));}
 (async()=>{await loadGames();setRegistered(Boolean(token));registerPwa();resizeComposer();if(token)await refresh();clearInterval(refreshTimer);refreshTimer=setInterval(()=>{if(!document.hidden)refresh();},7000);document.addEventListener('visibilitychange',()=>{if(!document.hidden){registerPwa();refresh();}});})();
 </script>
 </body>
