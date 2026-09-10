@@ -3,7 +3,7 @@
   "dateKst": "2026-09-10",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
-  "activeDevelopmentRunId": 34469123893,
+  "activeDevelopmentRunId": 34470981849,
   "checks": {
     "staffChecked": "8/8",
     "activeWorkOrder": null,
@@ -25,17 +25,17 @@
   },
   "counts": {
     "WORKING": 1,
-    "DONE": 7,
-    "IDLE_NO_TASK": 0,
+    "DONE": 2,
+    "IDLE_NO_TASK": 5,
     "BLOCKED": 0,
     "FAILED": 0,
     "STALE": 0
   },
   "liveStates": {
     "ACTIVE": 1,
-    "WAITING": 0,
+    "WAITING": 5,
     "BLOCKED": 0,
-    "DONE": 7
+    "DONE": 2
   },
   "attentionRequired": false,
   "primaryFindings": [
@@ -44,13 +44,13 @@
   "workflowEvidence": {
     "artbook": null,
     "autonomousDevelopment": {
-      "id": 34469123893,
-      "status": "completed",
-      "conclusion": "success",
+      "id": 34470981849,
+      "status": "pending",
+      "conclusion": null,
       "event": "workflow_dispatch",
-      "createdAt": "2026-09-10T11:01:46Z",
-      "updatedAt": "2026-09-10T11:02:01Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34469123893"
+      "createdAt": "2026-09-10T11:22:50Z",
+      "updatedAt": "2026-09-10T11:22:51Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34470981849"
     },
     "homepage": {
       "id": 34469184987,
@@ -101,27 +101,17 @@
     "planning": {
       "department": "planning",
       "taskAssigned": false,
-      "status": "DONE",
-      "workState": "DONE",
-      "task": "autonomous development floor 34469123893",
+      "status": "IDLE_NO_TASK",
+      "workState": "WAITING",
+      "task": "autonomous development floor 34470981849",
       "executionEvidence": [
-        "autonomous-workflow:34469123893:completed:success",
-        "autonomous-job:102844698652:department (planning-final):completed:skipped"
+        "autonomous-workflow:34470981849:pending:pending"
       ],
-      "resultVerified": true,
-      "jobEvidence": {
-        "id": 102844698652,
-        "name": "department (planning-final)",
-        "status": "completed",
-        "conclusion": "skipped",
-        "failedStep": null,
-        "startedAt": "2026-09-10T11:02:01Z",
-        "completedAt": "2026-09-10T11:02:00Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34469123893/job/102844698652"
-      },
+      "resultVerified": false,
+      "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "latest autonomous development floor completed without a separate active role job",
+      "reason": "latest autonomous development floor has no department task",
       "action": "none",
       "source": "autonomous-development",
       "performance": {
@@ -141,17 +131,17 @@
     "development": {
       "department": "development",
       "taskAssigned": false,
-      "status": "DONE",
-      "workState": "DONE",
-      "task": "autonomous development floor 34469123893",
+      "status": "IDLE_NO_TASK",
+      "workState": "WAITING",
+      "task": "autonomous development floor 34470981849",
       "executionEvidence": [
-        "autonomous-workflow:34469123893:completed:success"
+        "autonomous-workflow:34470981849:pending:pending"
       ],
-      "resultVerified": true,
+      "resultVerified": false,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "latest autonomous development floor completed without a separate active role job",
+      "reason": "latest autonomous development floor has no department task",
       "action": "none",
       "source": "autonomous-development",
       "performance": {
@@ -171,17 +161,17 @@
     "qa": {
       "department": "qa",
       "taskAssigned": false,
-      "status": "DONE",
-      "workState": "DONE",
-      "task": "autonomous development floor 34469123893",
+      "status": "IDLE_NO_TASK",
+      "workState": "WAITING",
+      "task": "autonomous development floor 34470981849",
       "executionEvidence": [
-        "autonomous-workflow:34469123893:completed:success"
+        "autonomous-workflow:34470981849:pending:pending"
       ],
-      "resultVerified": true,
+      "resultVerified": false,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "latest autonomous development floor completed without a separate active role job",
+      "reason": "latest autonomous development floor has no department task",
       "action": "none",
       "source": "autonomous-development",
       "performance": {
@@ -201,17 +191,17 @@
     "graphics": {
       "department": "graphics",
       "taskAssigned": false,
-      "status": "DONE",
-      "workState": "DONE",
-      "task": "autonomous development floor 34469123893",
+      "status": "IDLE_NO_TASK",
+      "workState": "WAITING",
+      "task": "autonomous development floor 34470981849",
       "executionEvidence": [
-        "autonomous-workflow:34469123893:completed:success"
+        "autonomous-workflow:34470981849:pending:pending"
       ],
-      "resultVerified": true,
+      "resultVerified": false,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "latest autonomous development floor completed without a separate active role job",
+      "reason": "latest autonomous development floor has no department task",
       "action": "none",
       "source": "autonomous-development",
       "performance": {
@@ -231,17 +221,17 @@
     "balance": {
       "department": "balance",
       "taskAssigned": false,
-      "status": "DONE",
-      "workState": "DONE",
-      "task": "autonomous development floor 34469123893",
+      "status": "IDLE_NO_TASK",
+      "workState": "WAITING",
+      "task": "autonomous development floor 34470981849",
       "executionEvidence": [
-        "autonomous-workflow:34469123893:completed:success"
+        "autonomous-workflow:34470981849:pending:pending"
       ],
-      "resultVerified": true,
+      "resultVerified": false,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "latest autonomous development floor completed without a separate active role job",
+      "reason": "latest autonomous development floor has no department task",
       "action": "none",
       "source": "autonomous-development",
       "performance": {
