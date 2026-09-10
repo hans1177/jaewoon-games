@@ -22,7 +22,7 @@ const MODEL_RETRY_MAX_PREDICT=Math.max(128,Math.min(256,Number(process.env.AUTON
 const MODEL_RETRY_TIMEOUT_MS=Math.max(30000,Math.min(MODEL_TIMEOUT_MS,Number(process.env.AUTONOMOUS_MODEL_RETRY_TIMEOUT_MS||180000)));
 const MODEL_CONTEXT_TOKENS=Math.max(8192,Math.min(32768,Number(process.env.AUTONOMOUS_MODEL_CONTEXT_TOKENS||16384)));
 const MAX_MODEL_ATTEMPTS=Math.max(1,Math.min(2,Number(process.env.AUTONOMOUS_MODEL_MAX_ATTEMPTS||2)));
-const ALLOWED_EXTENSIONS=new Set(['.html','.js','.mjs','.cjs','.css','.json','.md','.txt','.svg']);
+const ALLOWED_EXTENSIONS=new Set(['.html','.js','.mjs','.cjs','.css','.json','.md','.txt','.svg','.cs']);
 const FORBIDDEN_OUTPUT_NAMES=new Set(['.git','.github','package-lock.json']);
 const SAVE_PATTERNS=[/localStorage\.(?:getItem|setItem|removeItem)\(\s*['"]([^'"]+)['"]/g,/sessionStorage\.(?:getItem|setItem|removeItem)\(\s*['"]([^'"]+)['"]/g];
 const WRAPPER_KEYS=['candidate','result','output','proposal'];
@@ -60,9 +60,10 @@ export function browserFailureFeedback(gameId){
   return clean(`직전 후보 모바일 브라우저 QA 실패. 같은 실패를 반복하지 말고 원인을 직접 고쳐라. ${rows.join(' | ')} ${metrics} screenshot=${report.screenshot||'artifact-only'}`);
 }
 
-function assertSourcePath(sourcePath){
+export function assertSourcePath(sourcePath){
   const normalized=posix(sourcePath);
-  if(!normalized.startsWith('web-games/')||normalized.includes('..')||normalized.includes('/.autonomous-candidates/'))throw new Error(`허용되지 않은 sourcePath: ${sourcePath}`);
+  const allowedRoot=normalized.startsWith('web-games/')||normalized.startsWith('unity-games/');
+  if(!allowedRoot||normalized.includes('..')||normalized.includes('/.autonomous-candidates/'))throw new Error(`허용되지 않은 sourcePath: ${sourcePath}`);
   if(!exists(normalized)||!fs.statSync(normalized).isDirectory())throw new Error(`sourcePath 없음: ${normalized}`);
   return normalized;
 }
@@ -80,7 +81,7 @@ function listTextFiles(root){
     const entries=fs.readdirSync(current,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name));
     for(const entry of entries){
       if(rows.length>=80)return;
-      if(entry.name.startsWith('.git')||entry.name==='node_modules')continue;
+      if(entry.name.startsWith('.git')||entry.name==='node_modules'||entry.name==='Library'||entry.name==='Temp'||entry.name==='Logs'||entry.name==='obj')continue;
       const full=path.join(current,entry.name);
       if(entry.isDirectory())walk(full);
       else if(ALLOWED_EXTENSIONS.has(path.extname(entry.name).toLowerCase()))rows.push({full,relative:posix(path.relative(root,full)),size:fs.statSync(full).size});
@@ -190,14 +191,15 @@ export function parseModelCandidate(raw){
 }
 export function validateCandidateAgainstSource(sourcePath,candidate,{allowSaveKeyChange=false}={}){const violations=[];for(const file of candidate.files||[]){const sourceFile=path.join(sourcePath,file.path);if(exists(sourceFile)&&fs.statSync(sourceFile).isFile()&&!allowSaveKeyChange){const before=extractStorageKeys(fs.readFileSync(sourceFile,'utf8')),after=extractStorageKeys(file.content);if(JSON.stringify(before)!==JSON.stringify(after))violations.push({path:file.path,reason:'SAVE_KEY_CHANGE',before,after});}}return {pass:violations.length===0,violations};}
 function validateChangedTree(sourcePath,candidatePath,changedPaths,{allowSaveKeyChange=false}={}){if(allowSaveKeyChange)return {pass:true,violations:[]};const violations=[];for(const relative of changedPaths){const sourceFile=path.join(sourcePath,relative),candidateFile=path.join(candidatePath,relative),before=exists(sourceFile)&&fs.statSync(sourceFile).isFile()?extractStorageKeys(fs.readFileSync(sourceFile,'utf8')):[],after=exists(candidateFile)&&fs.statSync(candidateFile).isFile()?extractStorageKeys(fs.readFileSync(candidateFile,'utf8')):[];if(JSON.stringify(before)!==JSON.stringify(after))violations.push({path:relative,reason:'SAVE_KEY_CHANGE',before,after});}return {pass:violations.length===0,violations};}
-function copySource(sourcePath,candidatePath){if(exists(candidatePath))fs.rmSync(candidatePath,{recursive:true,force:true});fs.mkdirSync(candidatePath,{recursive:true});fs.cpSync(sourcePath,candidatePath,{recursive:true,filter:(src)=>!src.includes(`${path.sep}.git`)&&!src.includes(`${path.sep}node_modules`)});}
+function copySource(sourcePath,candidatePath){if(exists(candidatePath))fs.rmSync(candidatePath,{recursive:true,force:true});fs.mkdirSync(candidatePath,{recursive:true});fs.cpSync(sourcePath,candidatePath,{recursive:true,filter:(src)=>!src.includes(`${path.sep}.git`)&&!src.includes(`${path.sep}node_modules`)&&!src.includes(`${path.sep}Library`)&&!src.includes(`${path.sep}Temp`)&&!src.includes(`${path.sep}Logs`)&&!src.includes(`${path.sep}obj`)});}
 
 export function buildPrompt({gameId,sourcePath,goal,context,protectedValues=[],responsibilityFiles=[],attempt=1,failureReason='',diagnostic=null,role='development',browserFeedback=''}){
   const evidence=context.files.map(file=>`\n### FILE ${file.path}${file.preferred?' [RESPONSIBILITY]':''}${file.focused?' [FOCUSED]':''}${file.truncated?` [TRUNCATED originalBytes=${file.originalBytes}]`:''}\n${file.content}`).join('\n');
   const diagnosis=diagnostic?JSON.stringify({type:diagnostic.type,severity:diagnostic.severity,file:diagnostic.file,line:diagnostic.line??null,needle:diagnostic.needle??null,message:diagnostic.message,reference:diagnostic.reference??null,relatedFiles:diagnostic.relatedFiles??[]},null,2):'없음';
   const strictRetry=attempt>1&&/^(?:NO_CHANGE|OUTPUT_FORMAT|MODEL_RUNTIME):/.test(failureReason),retryTarget=responsibilityFiles[0]||context.files[0]?.path||'제공된 책임 파일';
   const retryContract=strictRetry?`\n재시도 강제계약:\n- 이번 시도는 책임 파일 ${retryTarget} 1개만 수정한다.\n- files 또는 edits 중 정확히 하나를 사용하고 해당 배열을 비우지 않는다.\n- summary/expectedEffect/tests만 쓰고 실제 변경을 생략하는 응답은 금지한다.\n- 제공된 코드에서 정확히 한 번 일치하는 가장 작은 exact edit 1개를 우선한다.`:'';
-  return `/no_think\n너는 재운컴퍼니 Autonomous Development Worker다. 안정판 원본은 읽기 전용이며 별도 후보 복사본에 적용할 변경만 제안한다.\n게임: ${gameId}\n원본경로: ${sourcePath}\n부서 역할: ${role}\n부서 책임: ${ROLE_GUIDANCE[role]||ROLE_GUIDANCE.development}\n작은 목표: ${goal}${browserFeedback?`\n직전 브라우저 실패 근거: ${browserFeedback}`:''}\n책임 파일: ${responsibilityFiles.join(', ')||'근거에서 가장 직접적인 파일 1개'}\n정확한 진단 근거:\n${diagnosis}\n시도: ${attempt}/${MAX_MODEL_ATTEMPTS}${failureReason?`\n직전 실패: ${failureReason}`:''}${retryContract}\n보호값: ${protectedValues.join(', ')||'save key / 진행 의미 / 공개 안정판'}\n규칙:\n1. JSON Schema에 맞는 객체만 출력한다.\n2. 한 번에 문제 1개만 해결한다. 책임 파일이 지정되면 그 범위 밖은 수정하지 않는다.\n3. 작은 일반 파일은 files, 큰 파일/[TRUNCATED] 파일은 edits를 사용한다. files와 edits를 동시에 쓰지 않는다.\n4. edit find는 제공된 근거에서 그대로 복사하고 정확히 한 번만 일치하는 문맥을 포함한다.\n5. 원본 저장키·핵심 규칙·세이브 의미를 변경하지 않는다.\n6. .github, 권한, 배포, 결제, 비밀정보 파일을 만들지 않는다.\n7. 전면 재작성 금지. 목표 해결에 필요한 최소 변경만 한다.\n8. 수정 파일 0개 출력 금지. 완료/PASS/출시 승인이라고 주장하지 않는다.\n9. 직전 실패가 있으면 같은 답을 반복하지 말고 진단 line/needle 주변의 더 좁은 exact edit로 고친다.\n10. 근거가 부족하면 추측으로 기능을 만들지 말고 제공된 책임 코드 안의 재현 가능한 원인만 수정한다.\n\n읽기 전용 근거:${evidence}`;
+  const unityRules=sourcePath.startsWith('unity-games/')?'\n11. Unity 작업은 기존 C# 책임 파일을 우선 수정하고 GameCore·카탈로그·세이브 구조를 재사용한다. 씬/프리팹/ProjectSettings 대량 생성·전면 교체는 금지한다.\n12. Android build/install/launch/runtime/save/update-install 검증 전에는 완료를 주장하지 않는다.':'';
+  return `/no_think\n너는 재운컴퍼니 Autonomous Development Worker다. 안정판 원본은 읽기 전용이며 별도 후보 복사본에 적용할 변경만 제안한다.\n게임: ${gameId}\n원본경로: ${sourcePath}\n부서 역할: ${role}\n부서 책임: ${ROLE_GUIDANCE[role]||ROLE_GUIDANCE.development}\n작은 목표: ${goal}${browserFeedback?`\n직전 브라우저 실패 근거: ${browserFeedback}`:''}\n책임 파일: ${responsibilityFiles.join(', ')||'근거에서 가장 직접적인 파일 1개'}\n정확한 진단 근거:\n${diagnosis}\n시도: ${attempt}/${MAX_MODEL_ATTEMPTS}${failureReason?`\n직전 실패: ${failureReason}`:''}${retryContract}\n보호값: ${protectedValues.join(', ')||'save key / 진행 의미 / 공개 안정판'}\n규칙:\n1. JSON Schema에 맞는 객체만 출력한다.\n2. 한 번에 문제 1개만 해결한다. 책임 파일이 지정되면 그 범위 밖은 수정하지 않는다.\n3. 작은 일반 파일은 files, 큰 파일/[TRUNCATED] 파일은 edits를 사용한다. files와 edits를 동시에 쓰지 않는다.\n4. edit find는 제공된 근거에서 그대로 복사하고 정확히 한 번만 일치하는 문맥을 포함한다.\n5. 원본 저장키·핵심 규칙·세이브 의미를 변경하지 않는다.\n6. .github, 권한, 배포, 결제, 비밀정보 파일을 만들지 않는다.\n7. 전면 재작성 금지. 목표 해결에 필요한 최소 변경만 한다.\n8. 수정 파일 0개 출력 금지. 완료/PASS/출시 승인이라고 주장하지 않는다.\n9. 직전 실패가 있으면 같은 답을 반복하지 말고 진단 line/needle 주변의 더 좁은 exact edit로 고친다.\n10. 근거가 부족하면 추측으로 기능을 만들지 말고 제공된 책임 코드 안의 재현 가능한 원인만 수정한다.${unityRules}\n\n읽기 전용 근거:${evidence}`;
 }
 function appendOllamaLine(line,state){const text=String(line||'').trim();if(!text)return;const event=JSON.parse(text);if(event.error)throw new Error(`Ollama 실패: ${event.error}`);if(typeof event.response==='string')state.response+=event.response;if(event.done===true)state.done=true;}
 async function callOllama(prompt,model=DEFAULT_MODEL,numPredict=MODEL_MAX_PREDICT,timeoutMs=MODEL_TIMEOUT_MS){
