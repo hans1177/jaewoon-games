@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "attempts": [
     {
       "date": "2026-09-09",
@@ -2564,9 +2564,10 @@
       "runId": "34435360642",
       "sourceCommit": "4d685d563854cfa71aed379a46254fac7cf446d9",
       "floor": 47,
-      "status": "RESERVED",
+      "status": "FAILED",
       "reservedAt": "2026-09-10T03:58:49.191Z",
-      "leaseExpiresAt": "2026-09-10T05:28:49.191Z"
+      "leaseExpiresAt": null,
+      "settledAt": "2026-09-10T04:13:24.084Z"
     },
     {
       "date": "2026-09-10",
@@ -2594,5 +2595,6 @@
       "reservedAt": "2026-09-10T04:02:54.498Z",
       "leaseExpiresAt": "2026-09-10T05:32:54.498Z"
     }
-  ]
+  ],
+  "workLedger": []
 }
