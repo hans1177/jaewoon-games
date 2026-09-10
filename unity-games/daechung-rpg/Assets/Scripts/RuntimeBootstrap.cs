@@ -196,6 +196,17 @@ namespace JaewoonGames.DaechungRpg
 
         private void MoveTo(string regionId)
         {
+            if (!GameCatalog.Regions.TryGetValue(regionId, out var region))
+            {
+                _message = "That region is unavailable.";
+                return;
+            }
+            if (regionId != "town" && _core.Player.level < region.recommendedLevelMin)
+            {
+                _message = $"Reach LV {region.recommendedLevelMin} to enter {region.displayName}.";
+                return;
+            }
+
             _core.SetRegion(regionId);
             _enemy = null;
             _enemyHp = 0;
