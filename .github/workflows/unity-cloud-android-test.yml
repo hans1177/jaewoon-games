@@ -334,8 +334,12 @@ jobs:
               'androidVerificationApi': int(api),
               'signatureVerified': True,
               'installAndLaunchVerified': False,
+              'verificationStatus': 'pending',
+              'runtimeVerification': 'android-16-avd-api-36-pending',
+              'runtimeInstallLaunchVerified': False,
+              'testBuildStatus': 'ready',
               'homepagePublicationApproved': approved.lower() == 'true',
-              'homepagePublished': False,
+              'homepagePublished': approved.lower() == 'true',
               'builtAt': datetime.datetime.now(datetime.timezone.utc).isoformat()
           }, ensure_ascii=False, indent=2))
           PY
@@ -350,6 +354,98 @@ jobs:
             dist/build-info.json
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish test prerelease immediately for owner testing
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.artifact.outputs.release_tag }}
+          name: ${{ steps.request.outputs.game_id }} Android Test #${{ github.run_number }}
+          prerelease: true
+          make_latest: false
+          body: |
+            Automated Jaewoon Company Android TEST build.
+            Static signature/package/ABI verification: PASS
+            Android 16 install + launch gate: PENDING
+            This APK is synchronized immediately for owner device testing and is not production/stable verified yet.
+            Package: ${{ steps.apk_verify.outputs.application_id }}
+            Architectures: arm64-v8a + x86_64
+            Source: ${{ github.sha }}
+            Request: ${{ steps.request.outputs.request_id }}
+          files: |
+            ${{ steps.artifact.outputs.apk_path }}
+            ${{ steps.artifact.outputs.apk_path }}.sha256
+            dist/build-info.json
+          fail_on_unmatched_files: true
+          overwrite_files: true
+
+      - name: Sync test APK to approved homepage immediately
+        if: steps.request.outputs.publish_homepage == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          game='${{ steps.request.outputs.game_id }}'
+          tag='${{ steps.artifact.outputs.release_tag }}'
+          apk_name='${{ steps.artifact.outputs.apk_name }}'
+          release_url="https://github.com/${GITHUB_REPOSITORY}/releases/tag/${tag}"
+          download_url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/${apk_name}"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git reset --hard HEAD
+
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git checkout -B homepage-build-state origin/main
+            python3 - "$game" '${{ steps.request.outputs.request_id }}' "$GITHUB_SHA" "$tag" "$release_url" "$download_url" '${{ steps.artifact.outputs.sha256 }}' '${{ steps.artifact.outputs.bytes }}' '${{ steps.apk_verify.outputs.application_id }}' <<'PY'
+          import json, pathlib, sys, datetime
+          game, request_id, source_commit, tag, release_url, download_url, sha256, size, application_id = sys.argv[1:]
+          path = pathlib.Path('company-status.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+          builds = [b for b in data.get('testBuilds', []) if b.get('gameId') != game]
+          builds.append({
+              'gameId': game,
+              'requestId': request_id,
+              'status': 'ready',
+              'channel': 'test',
+              'buildRoute': 'github-cloud-host-personal',
+              'mobileReady': True,
+              'homepagePublished': True,
+              'homepagePublishedAt': now,
+              'deviceCompatibility': 'android-10+',
+              'sourceCommit': source_commit,
+              'releaseTag': tag,
+              'release': release_url,
+              'download': download_url,
+              'applicationId': application_id,
+              'sha256': sha256,
+              'bytes': int(size),
+              'androidVerificationApi': 36,
+              'signatureVerified': True,
+              'installAndLaunchVerified': False,
+              'runtimeVerification': 'android-16-avd-api-36-pending',
+              'runtimeVerificationSource': 'github-actions',
+              'runtimeInstallLaunchVerified': False,
+              'testBuildStatus': 'ready',
+              'builtAt': now
+          })
+          data['testBuilds'] = builds
+          data.setdefault('summary', {})['testBuilds'] = len(builds)
+          data['updatedAt'] = datetime.datetime.now(datetime.timezone.utc).date().isoformat()
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+            git add company-status.json
+            if git diff --cached --quiet; then
+              exit 0
+            fi
+            git commit -m "company-ai: sync ${game} test APK before runtime gate"
+            if git push origin HEAD:main; then
+              echo "[PASS] Owner test APK synchronized immediately: $download_url"
+              exit 0
+            fi
+            sleep $((attempt * 2))
+          done
+          echo '::error title=JAEWOON_BUILD_ERROR[TEST_SYNC_FAILED]::Could not synchronize owner test APK after 3 attempts.'
+          exit 63
 
   android16-install-gate:
     needs: build
@@ -443,6 +539,10 @@ jobs:
           path = pathlib.Path(sys.argv[1])
           data = json.loads(path.read_text(encoding='utf-8'))
           data['installAndLaunchVerified'] = True
+          data['verificationStatus'] = 'verified'
+          data['runtimeVerification'] = 'android-16-avd-api-36-passed'
+          data['runtimeInstallLaunchVerified'] = True
+          data['testBuildStatus'] = 'verified'
           data['installVerifiedAt'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
           path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
           PY
@@ -470,6 +570,7 @@ jobs:
             release-files/${{ needs.build.outputs.apk_name }}.sha256
             release-files/build-info.json
           fail_on_unmatched_files: true
+          overwrite_files: true
 
       - name: Publish verified build to approved homepage state
         if: needs.build.outputs.publish_homepage == 'true'
@@ -492,6 +593,7 @@ jobs:
           game, request_id, source_commit, tag, release_url, download_url, sha256, size, application_id = sys.argv[1:]
           path = pathlib.Path('company-status.json')
           data = json.loads(path.read_text(encoding='utf-8'))
+          now = datetime.datetime.now(datetime.timezone.utc).isoformat()
           builds = [b for b in data.get('testBuilds', []) if b.get('gameId') != game]
           builds.append({
               'gameId': game,
@@ -499,7 +601,10 @@ jobs:
               'status': 'ready',
               'channel': 'test',
               'buildRoute': 'github-cloud-host-personal',
+              'mobileReady': True,
               'homepagePublished': True,
+              'homepagePublishedAt': now,
+              'deviceCompatibility': 'android-10+',
               'sourceCommit': source_commit,
               'releaseTag': tag,
               'release': release_url,
@@ -510,7 +615,11 @@ jobs:
               'androidVerificationApi': 36,
               'signatureVerified': True,
               'installAndLaunchVerified': True,
-              'builtAt': datetime.datetime.now(datetime.timezone.utc).isoformat()
+              'runtimeVerification': 'android-16-avd-api-36-passed',
+              'runtimeVerificationSource': 'github-actions',
+              'runtimeInstallLaunchVerified': True,
+              'testBuildStatus': 'verified',
+              'builtAt': now
           })
           data['testBuilds'] = builds
           data.setdefault('summary', {})['testBuilds'] = len(builds)
@@ -530,3 +639,64 @@ jobs:
           done
           echo '::error title=JAEWOON_BUILD_ERROR[HOMEPAGE_STATE_PUBLISH_FAILED]::Could not publish approved homepage build state after 3 attempts.'
           exit 62
+
+  mark-runtime-failure:
+    needs: [build, android16-install-gate]
+    if: ${{ always() && needs.build.result == 'success' && needs.android16-install-gate.result == 'failure' && needs.build.outputs.publish_homepage == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout runtime failure baseline
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Keep owner test APK available and mark runtime gate failed
+        shell: bash
+        run: |
+          set -euo pipefail
+          game='${{ needs.build.outputs.game_id }}'
+          tag='${{ needs.build.outputs.release_tag }}'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git checkout -B homepage-build-state origin/main
+            python3 - "$game" "$tag" <<'PY'
+          import json, pathlib, sys, datetime
+          game, tag = sys.argv[1:]
+          path = pathlib.Path('company-status.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          target = None
+          for build in data.get('testBuilds', []):
+              if build.get('gameId') == game and build.get('releaseTag') == tag:
+                  target = build
+                  break
+          if target is None:
+              raise SystemExit(f'latest synchronized test build not found for {game} tag={tag}')
+          target['status'] = 'ready'
+          target['installAndLaunchVerified'] = False
+          target['runtimeVerification'] = 'android-16-avd-api-36-failed'
+          target['runtimeVerificationSource'] = 'github-actions'
+          target['runtimeInstallLaunchVerified'] = False
+          target['testBuildStatus'] = 'runtime-failed'
+          target['runtimeVerificationUpdatedAt'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+          data['updatedAt'] = datetime.datetime.now(datetime.timezone.utc).date().isoformat()
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+            git add company-status.json
+            if git diff --cached --quiet; then
+              exit 0
+            fi
+            git commit -m "company-ai: record ${game} Android runtime gate failure"
+            if git push origin HEAD:main; then
+              echo '[PASS] Runtime gate failure recorded while owner test APK remains downloadable.'
+              exit 0
+            fi
+            sleep $((attempt * 2))
+          done
+          echo '::error title=JAEWOON_BUILD_ERROR[RUNTIME_FAILURE_STATE_SYNC_FAILED]::Could not record Android runtime gate failure after 3 attempts.'
+          exit 64
