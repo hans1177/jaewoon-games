@@ -14,6 +14,7 @@ on:
 permissions:
   contents: write
   actions: write
+  pull-requests: write
 
 concurrency:
   group: vibe2-release-serial
@@ -107,7 +108,7 @@ jobs:
     needs: inspect
     if: needs.inspect.outputs.decision == 'web'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - name: Checkout candidate
         uses: actions/checkout@v4
@@ -131,11 +132,12 @@ jobs:
           done < <(find "$SOURCE_ROOT" -type f -print0)
           echo 'VIBE2_WEB_STATIC_QA=PASS'
 
-      - name: Promote approved web source root to latest main
+      - name: Promote approved web source root through reviewed PR
         id: promote
         if: steps.webqa.outcome == 'success'
         continue-on-error: true
         env:
+          GH_TOKEN: ${{ github.token }}
           SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
           BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
@@ -143,26 +145,34 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for attempt in 1 2 3; do
-            git fetch origin main --quiet
-            [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" ] || { echo 'main source changed; replan required' >&2; exit 1; }
-            rm -rf /tmp/vibe2-promote
-            git worktree prune
-            git worktree add --detach /tmp/vibe2-promote origin/main >/dev/null
-            cd /tmp/vibe2-promote
-            git config user.name 'jaewoon-vibe2-release'
-            git config user.email 'vibe2-release@users.noreply.github.com'
-            git checkout "$CANDIDATE_SHA" -- "$SOURCE_ROOT"
-            git diff --check
-            git add "$SOURCE_ROOT"
-            git diff --cached --quiet && { echo 'nothing to promote' >&2; exit 1; }
-            git commit -m "vibe2: deploy ${TASK_ID}"
-            if git push origin HEAD:main; then echo "VIBE2_MAIN_PROMOTION_SHA=$(git rev-parse HEAD)"; exit 0; fi
-            cd "$GITHUB_WORKSPACE"
-            rm -rf /tmp/vibe2-promote
-            sleep $((attempt * 2))
-          done
-          exit 1
+          git fetch origin main --quiet
+          [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" ] || { echo 'main source changed; replan required' >&2; exit 1; }
+          rm -rf /tmp/vibe2-promote
+          git worktree prune
+          safe_task="$(printf '%s' "$TASK_ID" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-60)"
+          release_branch="automation/vibe2-web-release-${safe_task}-${GITHUB_RUN_ID}"
+          git worktree add -b "$release_branch" /tmp/vibe2-promote origin/main >/dev/null
+          cd /tmp/vibe2-promote
+          git config user.name 'jaewoon-vibe2-release'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          git checkout "$CANDIDATE_SHA" -- "$SOURCE_ROOT"
+          git diff --check
+          git add "$SOURCE_ROOT"
+          git diff --cached --quiet && { echo 'nothing to promote' >&2; exit 1; }
+          git commit -m "vibe2: deploy ${TASK_ID}"
+          release_commit="$(git rev-parse HEAD)"
+          git push origin "HEAD:$release_branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$release_branch" --title "vibe2: deploy ${TASK_ID}" --body "Verified Web release candidate. Direct main write: NO. Release PASS requires this PR's CI and merge.")"
+          sleep 5
+          gh pr checks "$pr_url" --watch --fail-fast --interval 10
+          git fetch origin main --quiet
+          [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" ] || { echo 'main source changed before merge; replan required' >&2; exit 1; }
+          gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          git fetch origin main --quiet
+          git diff --quiet "$release_commit" origin/main -- "$SOURCE_ROOT"
+          echo "VIBE2_MAIN_PROMOTION_SHA=$(git rev-parse origin/main)"
+          echo "VIBE2_RELEASE_PR=$pr_url"
+          echo 'DIRECT_MAIN_WRITE=NO'
 
       - name: Settle web result and continue correct source queue
         if: always()
@@ -199,7 +209,7 @@ jobs:
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
           if [ "$result" = PASS ]; then
-            node tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-static-qa-pass,main-auto-promoted,actions-run-${GITHUB_RUN_ID}"
+            node tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-static-qa-pass,main-pr-merged,actions-run-${GITHUB_RUN_ID}"
           else
             node tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=web-qa-or-promotion-failed --evidence="web-qa-${QA_OUTCOME},promotion-${PROMOTE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
           fi
