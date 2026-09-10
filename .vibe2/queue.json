@@ -1,8 +1,7 @@
 {
-  "version": 3,
-  "mode": "single-worker-priority-serial-queue",
-  "maxConcurrentTasks": 1,
-  "longRunningSingleJobRequired": false,
+  "version": 4,
+  "mode": "hierarchical-dag-sharded-work-stealing-queue",
+  "maxConcurrentTasks": 4,
   "ownerDirectivePreemptsAutonomy": true,
   "releaseStatePriority": [
     "release-confirmed",
@@ -10,6 +9,23 @@
     "reviewing",
     "other"
   ],
+  "scheduling": {
+    "dagDependencies": true,
+    "hierarchicalParallelism": true,
+    "shardAware": true,
+    "workStealing": true,
+    "sourceRootExclusive": true,
+    "responsibleFileExclusive": true,
+    "unityReleaseFocusSlots": 1,
+    "baseShardSlots": {
+      "unity": 1,
+      "web": 1,
+      "verification": 1,
+      "support": 1
+    },
+    "dynamicBackpressure": true,
+    "speculativeParallelism": "high-risk-opt-in-only"
+  },
   "defaultMaxRetries": 2,
   "tasks": [
     {
@@ -41,7 +57,11 @@
         "actions-run-34336322998"
       ],
       "lastOutcome": "FAIL",
-      "companyContext": null
+      "companyContext": null,
+      "sourceRoot": "unity-games/daechung-rpg",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "shard": "unity"
     },
     {
       "id": "daechung-rpg-save-null-guards",
@@ -70,7 +90,11 @@
         "actions-run-34282606814"
       ],
       "lastOutcome": "FAIL",
-      "companyContext": null
+      "companyContext": null,
+      "sourceRoot": "unity-games/daechung-rpg",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "shard": "unity"
     },
     {
       "id": "daechung-rpg-motion-routine-safety",
@@ -99,7 +123,11 @@
         "actions-run-34283225907"
       ],
       "lastOutcome": "FAIL",
-      "companyContext": null
+      "companyContext": null,
+      "sourceRoot": "unity-games/daechung-rpg",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "shard": "unity"
     },
     {
       "id": "insect-survival-explicit-maintenance-eb-games-insect-survival-insect-survival-28-html",
@@ -130,7 +158,11 @@
         "actions-run-34290836958"
       ],
       "lastOutcome": "FAIL",
-      "companyContext": null
+      "companyContext": null,
+      "sourceRoot": "web-games/insect-survival",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "shard": "web"
     },
     {
       "id": "pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827",
@@ -175,7 +207,11 @@
         "artbookCutCount": 0,
         "artbookPostprocessComplete": false,
         "reviewRequired": true
-      }
+      },
+      "sourceRoot": "unity-games/daechung-rpg",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "shard": "unity"
     },
     {
       "id": "pwa-80cf960a-2b5f-48db-bff1-38da39e9fe60",
@@ -220,7 +256,11 @@
         "artbookCutCount": 0,
         "artbookPostprocessComplete": false,
         "reviewRequired": true
-      }
+      },
+      "sourceRoot": "unity-games/daechung-rpg",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "shard": "unity"
     },
     {
       "id": "pwa-40fc7d01-b9a0-42f3-9589-9160f07c63e5",
@@ -265,7 +305,11 @@
         "artbookCutCount": 0,
         "artbookPostprocessComplete": false,
         "reviewRequired": true
-      }
+      },
+      "sourceRoot": "unity-games/daechung-rpg",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "shard": "unity"
     }
   ]
 }
