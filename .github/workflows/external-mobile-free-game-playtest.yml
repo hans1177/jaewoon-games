@@ -67,6 +67,36 @@ jobs:
           Write-Host 'EXTERNAL_REFERENCE_INSTALL_POLICY=OFFICIAL_GOOGLE_PLAY_ONLY'
           Write-Host 'EXTERNAL_REFERENCE_CODE_EXTRACTION=NO'
 
+      - name: Resolve Android platform tools from local Unity SDK
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $candidates = New-Object System.Collections.Generic.List[string]
+          if (-not [string]::IsNullOrWhiteSpace($env:ANDROID_SDK_ROOT)) { $candidates.Add((Join-Path $env:ANDROID_SDK_ROOT 'platform-tools\adb.exe')) }
+          if (-not [string]::IsNullOrWhiteSpace($env:ANDROID_HOME)) { $candidates.Add((Join-Path $env:ANDROID_HOME 'platform-tools\adb.exe')) }
+          $localSdk = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'Android\Sdk\platform-tools\adb.exe'
+          $candidates.Add($localSdk)
+          $unityRoot = Join-Path $env:ProgramFiles 'Unity\Hub\Editor'
+          if (Test-Path $unityRoot) {
+            Get-ChildItem $unityRoot -Directory -ErrorAction SilentlyContinue | Sort-Object Name -Descending | ForEach-Object {
+              $candidates.Add((Join-Path $_.FullName 'Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe'))
+            }
+          }
+          $adb = $candidates | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
+          if (-not $adb) {
+            Write-Host 'ADB_DISCOVERY_CANDIDATES:'
+            $candidates | ForEach-Object { Write-Host " - $_" }
+            throw 'BLOCKED_ADB_EXECUTABLE_NOT_FOUND_IN_INSTALLED_ANDROID_SDKS'
+          }
+          $platformTools = Split-Path $adb -Parent
+          $sdkRoot = Split-Path $platformTools -Parent
+          $platformTools | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "ANDROID_SDK_ROOT=$sdkRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "ANDROID_HOME=$sdkRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "ADB_EXE=$adb"
+          Write-Host "ANDROID_SDK_ROOT=$sdkRoot"
+          & $adb version
+          if ($LASTEXITCODE -ne 0) { throw 'resolved adb executable did not run' }
+
       - name: Prepare runtime evidence directory
         run: |
           $ErrorActionPreference = 'Stop'
