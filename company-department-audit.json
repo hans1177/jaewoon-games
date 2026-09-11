@@ -63,11 +63,11 @@
         "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
         "probe": "tools/unity-apk-runtime-smoke.sh",
         "method": "APK install -> launch -> Android tap/swipe input -> process survival -> fatal log scan -> screenshot",
-        "contractVerificationRunId": 34428090459,
+        "contractVerificationRunId": 34540792428,
         "contractVerificationConclusion": "success",
         "successfulRuntimeEvidenceRunId": null,
         "buildAloneCountsAsQaPass": false,
-        "latestRuntimeRunId": 34506763782,
+        "latestRuntimeRunId": 34579458312,
         "latestRuntimeConclusion": "skipped"
       },
       "currentProtection": "RUNTIME_PLAY_EVIDENCE_REQUIRED + BUILD_EVIDENCE_REQUIRED + DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
@@ -115,28 +115,28 @@
   "verification": {
     "departmentStandardsWorkflow": {
       "latestRun": {
-        "runId": 34428090459,
+        "runId": 34540792428,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "b3bbdb53c6968dc9a6c501dae013857e724d0a83",
-        "updatedAt": "2026-09-10T02:06:02Z"
+        "headSha": "c1eb6cf6654586777edc9f04ff4451e70be9f79d",
+        "updatedAt": "2026-09-10T23:08:43Z"
       },
       "latestSuccessfulRun": {
-        "runId": 34428090459,
+        "runId": 34540792428,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "b3bbdb53c6968dc9a6c501dae013857e724d0a83",
-        "updatedAt": "2026-09-10T02:06:02Z"
+        "headSha": "c1eb6cf6654586777edc9f04ff4451e70be9f79d",
+        "updatedAt": "2026-09-10T23:08:43Z"
       },
       "unitySmokeContractVerified": true
     },
     "latestUnityBuild": {
       "latestRun": {
-        "runId": 34505580080,
+        "runId": 34578506895,
         "status": "completed",
         "conclusion": "failure",
-        "headSha": "4c7e73a6f2dbebf278b86669eab4fb1582b62693",
-        "updatedAt": "2026-09-10T17:12:14Z"
+        "headSha": "66e7f3a2bc68366786fd7fefcfe4dca40f74c48c",
+        "updatedAt": "2026-09-11T08:29:43Z"
       },
       "latestSuccessfulRun": {
         "runId": 34201876835,
@@ -157,29 +157,29 @@
       "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
       "contractVerified": true,
       "latestRun": {
-        "runId": 34506763782,
+        "runId": 34579458312,
         "status": "completed",
         "conclusion": "skipped",
-        "headSha": "54d9d0feaf6bf28a2695ec31056c69bb31db7570",
-        "updatedAt": "2026-09-10T17:12:26Z"
+        "headSha": "b13caf4e8cac150758ed0212acbcce38eba41acd",
+        "updatedAt": "2026-09-11T08:29:46Z"
       },
       "latestSuccessfulRun": null,
       "successfulRuntimeEvidenceObserved": false
     },
     "webRuntimeHealth": {
       "latestRun": {
-        "runId": 34505518499,
+        "runId": 34563061976,
         "status": "completed",
-        "conclusion": "success",
-        "headSha": "f92666cbd2d3a4e22a058da3c51f0322fd50b543",
-        "updatedAt": "2026-09-10T17:01:17Z"
+        "conclusion": "failure",
+        "headSha": "1b625c7dffc8841aa2b065b8fb6125a22cbf583d",
+        "updatedAt": "2026-09-11T04:41:09Z"
       },
       "latestSuccessfulRun": {
-        "runId": 34505518499,
+        "runId": 34518269999,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "f92666cbd2d3a4e22a058da3c51f0322fd50b543",
-        "updatedAt": "2026-09-10T17:01:17Z"
+        "headSha": "317fd2ee09d9e854243cf9148df1b8707da000d7",
+        "updatedAt": "2026-09-10T19:06:12Z"
       },
       "formalBridge": "tools/company-qa-public-web-evidence.mjs"
     },
@@ -188,13 +188,15 @@
       "attentionRequired": false,
       "counts": {
         "WORKING": 1,
-        "DONE": 6,
-        "IDLE_NO_TASK": 1,
+        "DONE": 1,
+        "IDLE_NO_TASK": 6,
         "BLOCKED": 0,
         "FAILED": 0,
         "STALE": 0
       },
-      "primaryFindings": []
+      "primaryFindings": [
+        "NO_WORK_ORDER:artbook-work-orders/2026-09-11-daechung-rpg.json"
+      ]
     }
   },
   "nextPriority": "Require a successful Unity Android emulator runtime-smoke run before marking Unity QA VERIFIED."
