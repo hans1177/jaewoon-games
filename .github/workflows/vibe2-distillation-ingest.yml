@@ -107,6 +107,14 @@ jobs:
           console.log(`LOCAL_TRAINING_REQUEST_STATE=${request.state}`);
           NODE
 
+      - name: Upload verified samples for online Unity teacher
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-verified-training-samples
+          path: company-learning/training-samples
+          retention-days: 1
+          if-no-files-found: warn
+
       - name: Propose verified training samples and readiness through PR
         env:
           GH_TOKEN: ${{ github.token }}
@@ -128,13 +136,18 @@ jobs:
           git commit -m 'learning: refresh distillation samples and local training request [skip ci]'
           git push origin "HEAD:refs/heads/$branch"
 
-          pr_url="$(gh pr create \
+          if pr_url="$(gh pr create \
             --repo "$GITHUB_REPOSITORY" \
             --base main \
             --head "$branch" \
             --title 'learning: refresh distillation samples and local training request' \
-            --body "Verified Vibe2 distillation sample/status refresh.\n\n- workflow run: ${GITHUB_RUN_ID}\n- direct main write: NO\n- GitHub-hosted model training: NO\n- public game code write: NO")"
-          echo "DISTILLATION_MEMORY_PR=$pr_url"
+            --body "Verified Vibe2 distillation sample/status refresh.\n\n- workflow run: ${GITHUB_RUN_ID}\n- direct main write: NO\n- GitHub-hosted model training: NO\n- public game code write: NO")"; then
+            echo "DISTILLATION_MEMORY_PR=$pr_url"
+          else
+            echo 'DISTILLATION_MEMORY_PR=SKIPPED_ACTIONS_PR_PERMISSION'
+            git checkout main
+            git push origin --delete "$branch" || true
+          fi
           echo 'GITHUB_HOSTED_MODEL_TRAINING=NO'
           echo 'PUBLIC_GAME_CODE_WRITE=NO'
           echo 'PUBLIC_MAIN_WRITE=NO'
@@ -148,8 +161,9 @@ jobs:
           echo '- Unity source: RELEASE_READY + current source/build binding + Android runtime PASS + independent QA PASS + merged PR' >> "$GITHUB_STEP_SUMMARY"
           echo '- Unity browser QA: NOT_APPLICABLE; never synthesized as PASS' >> "$GITHUB_STEP_SUMMARY"
           echo '- answer target: exact verified source diff' >> "$GITHUB_STEP_SUMMARY"
+          echo '- online teacher handoff: short-lived verified-sample artifact' >> "$GITHUB_STEP_SUMMARY"
           echo '- paid API: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- GitHub-hosted model training: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- ready work emits deterministic training request' >> "$GITHUB_STEP_SUMMARY"
-          echo '- persistence: feature branch + PR; direct main write forbidden' >> "$GITHUB_STEP_SUMMARY"
+          echo '- persistence: PR when Actions PR creation is permitted; direct main write forbidden' >> "$GITHUB_STEP_SUMMARY"
           echo '- promotion: fixed holdout A/B then Canary' >> "$GITHUB_STEP_SUMMARY"
