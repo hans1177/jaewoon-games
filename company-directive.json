@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 26,
+  "revision": 27,
   "updatedAt": "2026-09-11",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
@@ -23,6 +23,7 @@
   "gameSeed": {
     "enabled": true,
     "stage": "BEFORE_GAME_DESIGNER_DRAFT",
+    "requiredBeforeDesignerDraft": true,
     "selectionMode": "FAMOUS_SUCCESSFUL_GAME_COPY_BENCHMARK",
     "transformationModes": ["HOMAGE", "REINTERPRETATION"],
     "sourceCodeRule": "OWN_IMPLEMENTATION_ONLY",
@@ -71,6 +72,15 @@
     },
     "initialTargetPlatform": "ANDROID_MOBILE",
     "initialPlayMode": "SINGLE_PLAYER",
+    "steamDecisionValues": ["POSSIBLE", "NOT_RECOMMENDED"],
+    "multiplayerDecisionValues": ["POSSIBLE", "NOT_RECOMMENDED"],
+    "multiplayerExpansionValueValues": ["LOW", "MEDIUM", "HIGH"],
+    "numericMarketClaimRequiresSource": true,
+    "numericMarketClaimRequiresObservedAt": true,
+    "unverifiableNumericMarketClaimForbidden": true,
+    "unavailableMarketFieldMayBeUnknown": true,
+    "marketEvidenceHardPassFailGate": false,
+    "directCopyForbidden": true,
     "requiredFields": [
       "GAME_CATEGORY",
       "REFERENCE_GAMES",
@@ -153,7 +163,11 @@
       "qa": "deepseek-r1:1.5b",
       "balance": "smollm2:1.7b"
     },
-    "gameDesigner": {"authorsInitialDetailedDesign": true, "singleAuthorPerRevisionCycle": true, "sameModelRevisesAfterMeeting": true},
+    "gameDesigner": {
+      "authorsInitialDetailedDesign": true,
+      "singleAuthorPerRevisionCycle": true,
+      "sameModelRevisesAfterMeeting": true
+    },
     "departments": ["planning", "graphics", "development", "qa", "balance"],
     "departmentModeByClass": {
       "DESIGN_ONLY": "DISTINCT_LEAD_MULTIMODEL_DESIGN_REVIEW_AND_MEETING",
@@ -171,9 +185,16 @@
       "issueStates": ["CONSENSUS", "CONFLICT", "HOLD"],
       "autoRevisionUsesConsensusOnly": true
     },
-    "artbookEditor": {"singleEditor": true, "readsRevisedDetailedDesign": true, "coreStrategyOnly": true, "mayInventNewClaims": false, "departmentPageAuthorship": false},
+    "artbookEditor": {
+      "singleEditor": true,
+      "readsRevisedDetailedDesign": true,
+      "coreStrategyOnly": true,
+      "mayInventNewClaims": false,
+      "departmentPageAuthorship": false
+    },
     "vibe2": {
       "startsAtClass": "DEVELOPMENT_CONFIRMED",
+      "designOnlyActive": false,
       "roleByClass": {
         "DEVELOPMENT_CONFIRMED": "VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT",
         "RELEASE_CONFIRMED": "PRIMARY_DEVELOPMENT_ENGINE"
@@ -181,6 +202,7 @@
       "tier2Role": "VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT",
       "tier1Role": "PRIMARY_DEVELOPMENT_ENGINE",
       "designOnlyRole": null,
+      "designOrArtbookPrimaryAuthorInDevelopmentClass": false,
       "designOrArtbookPrimaryAuthorInDevelopmentConfirmed": false
     }
   },
@@ -213,7 +235,8 @@
         "FIVE_DISTINCT_LEAD_MODELS",
         "PER_DEPARTMENT_MULTIMODEL_REVIEW_PASS",
         "NO_HIDDEN_FATAL_CONFLICT"
-      ]
+      ],
+      "readyState": "DESIGN_BASELINE_READY"
     },
     "DEVELOPMENT_CONFIRMED": {
       "baseline": "DEVELOPMENT_BASELINE",
@@ -289,7 +312,12 @@
     "steamNotBuiltInitially": true,
     "multiplayerNotBuiltInitially": true
   },
-  "tiersCompatibility": {"purpose": "DISPLAY_AND_BACKWARD_COMPATIBILITY_ALIAS_ONLY", "3": "DESIGN_ONLY", "2": "DEVELOPMENT_CONFIRMED", "1": "RELEASE_CONFIRMED"},
+  "tiersCompatibility": {
+    "purpose": "DISPLAY_AND_BACKWARD_COMPATIBILITY_ALIAS_ONLY",
+    "3": "DESIGN_ONLY",
+    "2": "DEVELOPMENT_CONFIRMED",
+    "1": "RELEASE_CONFIRMED"
+  },
   "tiers": {
     "3": {"productionClass": "DESIGN_ONLY", "baseline": "DESIGN_BASELINE", "sourceCodeAutoDevelopment": false},
     "2": {"productionClass": "DEVELOPMENT_CONFIRMED", "baseline": "DEVELOPMENT_BASELINE"},
@@ -298,10 +326,17 @@
   "rules": [
     "new-owner-instruction-overrides-autonomous-plan",
     "company-flow-is-machine-policy-source",
+    "do-not-duplicate-tier-policy-across-documents",
     "semantic-production-class-is-canonical",
+    "production-class-counts-derived-from-current-membership",
     "production-class-counts-are-not-fixed-quotas",
     "numeric-tier-is-display-and-backward-compatibility-alias-only",
+    "numeric-tier-labels-may-be-remapped-by-owner-without-changing-class-meaning",
+    "production-game-ids-must-not-be-pinned",
+    "production-class-membership-promotes-and-demotes-from-current-evidence",
+    "status-sync-must-not-reclassify-games-to-satisfy-a-count-quota",
     "game-seed-precedes-game-designer-draft",
+    "design-only-game-seed-required-before-game-designer-draft",
     "initial-six-game-seeds-created-in-one-bootstrap-batch",
     "famous-successful-games-are-benchmarked-through-homage-or-reinterpretation",
     "third-party-source-code-assets-expression-must-not-be-copied",
@@ -309,30 +344,50 @@
     "numeric-market-claim-requires-source-and-observed-at",
     "seed-replenishment-is-one-for-one-vacancy-only",
     "normal-promotion-redesign-or-hold-does-not-create-seed-vacancy",
+    "design-only-game-seed-must-record-market-target-and-platform-expansion-decisions",
     "design-only-detailed-design-single-game-designer-author",
     "five-departments-must-have-five-distinct-lead-model-ids-per-cycle",
+    "department-lead-role-fixed-model-assignment-remappable",
     "each-department-uses-lead-plus-assistants-with-minimum-three-distinct-models",
+    "assistant-models-may-overlap-between-departments-but-not-within-one-department-review-set",
     "department-lead-authors-department-representative-opinion",
     "department-lead-authors-own-cross-department-rebuttal",
+    "departments-review-design-they-do-not-coauthor-initial-draft",
+    "department-internal-consensus-before-company-meeting",
     "cross-department-meeting-has-one-rebuttal-round",
     "only-consensus-auto-feeds-design-revision",
     "same-game-designer-model-revises-after-meeting",
     "design-discard-requires-revision-and-repeated-five-department-fatal-review",
+    "design-baseline-requires-market-target-mobile-ux-steam-and-multiplayer-decisions",
     "design-baseline-gate-precedes-artbook-creation",
     "design-only-does-not-use-vibe2",
+    "artbook-is-core-strategy-distillation-not-detailed-design-source",
     "single-artbook-editor-writes-entire-artbook-after-baseline-ready",
+    "single-artbook-editor-writes-entire-artbook",
+    "departments-do-not-author-artbook-pages",
+    "artbook-editor-must-not-invent-new-claims",
+    "vibe2-starts-at-development-confirmed",
     "development-confirmed-is-gated-direct-and-resumable",
     "development-confirmed-stops-at-missing-or-failed-real-evidence",
     "development-confirmed-web-validates-gameplay-before-expensive-unity-work-by-default",
     "development-confirmed-unity-validates-android-technical-feasibility",
+    "development-confirmed-unity-validates-technical-performance-device-feasibility",
+    "development-confirmed-material-change-requires-targeted-revalidation",
+    "development-baseline-requires-play-technical-and-revalidation-evidence",
     "development-discard-requires-real-evidence-fix-revalidation-and-five-department-agreement",
     "development-may-demote-to-design-only-when-core-design-rebuild-is-required",
     "development-artbook-revision-only-after-baseline-ready",
     "release-confirmed-is-gated-direct-and-resumable",
     "release-confirmed-vibe2-is-primary-development-engine",
     "release-confirmed-departments-default-to-error-risk-watch",
+    "release-confirmed-core-design-change-requires-release-blocking-exception-or-owner-decision",
     "release-confirmed-current-source-tree-must-bind-implementation-and-build-evidence",
+    "release-confirmed-build-preflight-risk-watch-runs-before-device-validation",
+    "release-confirmed-current-build-must-bind-device-qa-and-regression-evidence",
+    "release-confirmed-final-department-risk-watch-requires-current-build-runtime-and-independent-qa",
+    "release-confirmed-source-change-invalidates-old-build-validation",
     "release-must-pass-independent-qa-and-runtime-verification",
+    "release-artbook-final-revision-only-after-release-ready",
     "existing-public-web-builds-survive-class-movement",
     "core-production-decisions-still-require-owner-decision",
     "paid-ai-paid-overage-and-paid-runners-remain-forbidden"
