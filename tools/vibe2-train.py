@@ -130,15 +130,23 @@ def main():
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, Trainer, TrainingArguments
 
     torch.manual_seed(args.seed)
-    if torch.cuda.is_available():
+    use_cuda = torch.cuda.is_available()
+    if use_cuda:
         torch.cuda.manual_seed_all(args.seed)
-    if args.method == "qlora" and not torch.cuda.is_available():
+    if args.method == "qlora" and not use_cuda:
         raise RuntimeError("QLoRA requires a local CUDA GPU; paid remote runners are not used")
+
+    cpu_practice_fast_path = (
+        not use_cuda
+        and manifest.get("authority") == "PRACTICE_ONLY"
+        and manifest.get("practiceOnly") is True
+    )
+
     tokenizer = AutoTokenizer.from_pretrained(args.base_model, trust_remote_code=True)
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
     model_kwargs = {"trust_remote_code": True}
-    if torch.cuda.is_available():
+    if use_cuda:
         model_kwargs["device_map"] = "auto"
         model_kwargs["torch_dtype"] = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
     if args.method == "qlora":
@@ -152,7 +160,8 @@ def main():
     if args.method == "qlora":
         model = prepare_model_for_kbit_training(model)
     model.config.use_cache = False
-    model.gradient_checkpointing_enable()
+    if not cpu_practice_fast_path:
+        model.gradient_checkpointing_enable()
     model = get_peft_model(
         model,
         LoraConfig(
@@ -222,13 +231,13 @@ def main():
         per_device_eval_batch_size=args.batch_size,
         gradient_accumulation_steps=args.grad_accum,
         logging_steps=5,
-        eval_strategy="epoch",
-        save_strategy="epoch",
+        eval_strategy="no" if cpu_practice_fast_path else "epoch",
+        save_strategy="no" if cpu_practice_fast_path else "epoch",
         report_to=[],
         seed=args.seed,
         data_seed=args.seed,
-        bf16=torch.cuda.is_available() and torch.cuda.is_bf16_supported(),
-        fp16=torch.cuda.is_available() and not torch.cuda.is_bf16_supported(),
+        bf16=use_cuda and torch.cuda.is_bf16_supported(),
+        fp16=use_cuda and not torch.cuda.is_bf16_supported(),
         remove_unused_columns=False,
     )
     trainer = Trainer(
@@ -263,6 +272,12 @@ def main():
         "verifiedRealOnly": args.task_type == "unity",
         "trainMetrics": train_result.metrics,
         "evalMetrics": eval_result,
+        "trainingEfficiency": {
+            "cpuPracticeFastPath": cpu_practice_fast_path,
+            "singleFinalEval": cpu_practice_fast_path,
+            "intermediateCheckpointing": not cpu_practice_fast_path,
+            "gradientCheckpointing": not cpu_practice_fast_path,
+        },
         "promotionState": "UNVERIFIED",
         "runtimePromotionAllowed": False,
         "requiredNextGate": "FIXED_HOLDOUT_AB_AND_CANARY",
