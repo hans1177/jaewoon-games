@@ -28,7 +28,7 @@ test('legacy autonomous top-level workflow namespace is removed',()=>{
   assert.deepEqual(legacy,[]);
 });
 
-test('central production pipeline exists and follows design promotion web then Unity handoff',()=>{
+test('central production pipeline exists and follows design promotion web then serial cloud Unity handoff',()=>{
   for(const file of centralWorkflows)assert.equal(exists(file),true,`${file} must exist`);
   const promotion=read('.github/workflows/company-design-promotion-sync.yml');
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
@@ -42,12 +42,15 @@ test('central production pipeline exists and follows design promotion web then U
   assert.match(development,/WAITING_UNITY_VALIDATION\|DEVELOPMENT_BASELINE_READY/);
   assert.match(unity,/currentStep\|\|''\)\.toUpperCase\(\)==='UNITY_ANDROID_TECHNICAL_VALIDATION'/);
   assert.match(unity,/canonicalState\|\|''\)\.toUpperCase\(\)==='WAITING_UNITY_VALIDATION'/);
+  assert.match(unity,/max-parallel:\s*1/);
   assert.match(unity,/company-development-unity-bootstrap\.mjs/);
   assert.match(unity,/company-development-unity-evidence\.mjs/);
-  assert.match(unity,/unity-local-pc-android\.yml/);
+  assert.match(unity,/unity-cloud-android-test\.yml/);
+  assert.doesNotMatch(unity,/unity-local-pc-android\.yml/);
   assert.doesNotMatch(unity,/unity-hybrid-android-build\.yml/);
   assert.match(unity,/unity-android-runtime-smoke\.yml/);
   assert.match(unity,/unity-android-independent-qa\.yml/);
+  assert.match(unity,/HOMEPAGE_TEST_APK_PUBLISH=YES/);
   assert.match(unity,/Run canonical Unity evidence meeting and same-designer revision/);
   assert.match(unity,/PAID_RUNNER_FOR_UNITY_BUILD=NO/);
 });
