@@ -13,6 +13,7 @@ on:
       - 'tools/game-seed-state.mjs'
       - 'tools/company-game-seed-contract.mjs'
       - 'tools/company-game-seed-bootstrap.mjs'
+      - 'tools/company-game-seed-semantic-normalize.mjs'
       - 'tools/company-game-seed-quality-gate.mjs'
       - 'qa/company-game-seed-flow.test.mjs'
       - '.github/workflows/company-game-seed-bootstrap.yml'
@@ -66,6 +67,7 @@ jobs:
           node --check tools/game-seed-state.mjs
           node --check tools/company-game-seed-contract.mjs
           node --check tools/company-game-seed-bootstrap.mjs
+          node --check tools/company-game-seed-semantic-normalize.mjs
           node --check tools/company-game-seed-quality-gate.mjs
           node --test qa/company-game-seed-flow.test.mjs
           node --test qa/autonomous-portfolio-continuation.test.mjs
@@ -115,6 +117,14 @@ jobs:
           grep -q 'GAME_SEED_PAID_API=NO' /tmp/game-seed-result.txt
           grep -q 'GAME_SEED_MODEL_CALLS=1' /tmp/game-seed-result.txt
           grep -q 'GAME_SEED_MARKET_SCOPE=GLOBAL' /tmp/game-seed-result.txt
+
+      - name: Normalize category semantics and global target evidence
+        if: steps.need.outputs.model == 'true'
+        env:
+          GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
+        run: |
+          set -euo pipefail
+          node tools/company-game-seed-semantic-normalize.mjs
 
       - name: Reject category-mismatched generic or country-scoped GAME_SEED output
         if: steps.need.outputs.model == 'true'
@@ -175,7 +185,7 @@ jobs:
           echo '- target market: GLOBAL; country-specific evidence is secondary context only' >> "$GITHUB_STEP_SUMMARY"
           echo '- initial generation: one atomic six-category batch' >> "$GITHUB_STEP_SUMMARY"
           echo '- local model calls: one batch call per generation run' >> "$GITHUB_STEP_SUMMARY"
-          echo '- semantic quality: category benchmark match + concrete identity/loop + sourced global market evidence required before persistence' >> "$GITHUB_STEP_SUMMARY"
+          echo '- semantic quality: category concept groups + concrete core loop + sourced global age/revenue/playtime evidence required before persistence' >> "$GITHUB_STEP_SUMMARY"
           echo '- recurring schedule: vacancy check only; no vacancy = no new seed' >> "$GITHUB_STEP_SUMMARY"
           echo '- replenishment: one-for-one same category unless owner changes category' >> "$GITHUB_STEP_SUMMARY"
           echo '- runtime persistence: company-runtime branch; main stays unchanged' >> "$GITHUB_STEP_SUMMARY"
