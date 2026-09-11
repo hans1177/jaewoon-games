@@ -529,7 +529,7 @@ urgentCases:
     authority: OWNER_DIRECT_EMERGENCY_CASE
     ownerDirectiveRecordedAt: 2026-09-12
     directAssistantReviewedAt: 2026-09-12
-    status: ACTIVE_BLOCKED_WITH_PARTIAL_GAME_ENTRY
+    status: VERIFIED_RUNTIME_PASS_TRUE
     objective: VERIFIED_BLACK_BOX_RUNTIME_PLAYTEST
     gameId: block-blast
     packageId: com.block.juggle
@@ -539,10 +539,28 @@ urgentCases:
       - UNAVOIDABLE_OWNER_ACTION_REQUIRED
     ownerObservedGameEntry:
       gameEntryObserved: true
-      evidenceAuthority: OWNER_DIRECT_OBSERVATION
-      exactRunCorrelationConfirmed: false
-      stableRuntimePassConfirmed: false
+      evidenceAuthority: OWNER_DIRECT_OBSERVATION_PLUS_CORRELATED_RUN30_EVIDENCE
+      exactRunCorrelationConfirmed: true
+      stableRuntimePassConfirmed: true
+      correlatedRunNumber: 30
+      correlatedWorkflowRunId: 34653320467
+      correlatedArtifactId: 10284397608
       rule: PRESERVE_GAME_ENTRY_SUCCESS_AND_LATER_FAILURE_AS_SEPARATE_EVIDENCE_STAGES
+    verifiedRuntimePass:
+      value: true
+      run: 30
+      workflowRunId: 34653320467
+      artifactId: 10284397608
+      artifactDigest: sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1
+      runtimeType: REDROID_NATIVE_ARM64_DIRECT_EXEC
+      hostArch: aarch64
+      guestAndroid: 14
+      guestAbi: arm64-v8a
+      actualGameEntryCaptured: true
+      meaningfulInputExerciseCaptured: true
+      processSurvivedInput: true
+      foregroundAfterInput: true
+      noFatalExceptionNativeCrashOrAnrInCapturedWindow: true
     safety:
       officialGooglePlayExportOnly: true
       blackBoxObservationOnly: true
@@ -662,21 +680,38 @@ urgentCases:
         workflowRunId: 34639996916
         artifactId: 10279414322
         finalError: REDROID_INTERNAL_BOOT_FAILED
+      - run: 28
+        route: NATIVE_ARM64_REDROID_ANDROID14_DIRECT_SERVICE_CALLS
+        result: PASS_RUNTIME_ONLY
+        evidence: RUNTIMEPASS_TRUE_BUT_VISUAL_REVIEW_FOUND_SYSTEM_OVERLAY_AND_FIRST_RUN_CONSENT_STILL_BLOCKING_GAMEPLAY_ENTRY
+        workflowRunId: 34649947806
+        artifactId: 10284105242
+      - run: 29
+        route: RUN30_GAME_ENTRY_EVIDENCE_WORKFLOW_WITH_EXPIRED_EPHEMERAL_TRANSFER
+        result: FAIL_INFRA
+        evidence: NATIVE_ANDROID_READY_THEN_APK_DOWNLOAD_FAILED_BEFORE_INSTALL_OR_GAMEPLAY
+        workflowRunId: 34653150525
+      - run: 30
+        route: NATIVE_ARM64_REDROID_ANDROID14_CORRELATED_GAME_ENTRY_AND_DRAG_INPUT
+        result: PASS
+        evidence: ACTUAL_TUTORIAL_BOARD_CAPTURED_DRAG_INPUT_CHANGED_BOARD_PROCESS_SURVIVED_FOREGROUND_NO_FATAL_NATIVE_CRASH_OR_ANR_MARKER
+        workflowRunId: 34653320467
+        artifactId: 10284397608
     provenFacts:
       - GITHUB_UBUNTU_24_04_ARM_HOST_IS_NATIVE_AARCH64
       - HOST_PAGE_SIZE_IS_4096
       - BINDER_LINUX_CAN_LOAD_ON_CURRENT_ARM64_RUNNER
       - BINDERFS_BINDER_HWBINDER_VNDBINDER_DEVICES_CAN_BE_CREATED
       - ACTUAL_GAME_ENTRY_WAS_OBSERVED_IN_AT_LEAST_ONE_PRIOR_SERVER_EXPERIMENT
-      - EXACT_RUN_TO_GAME_ENTRY_CORRELATION_REMAINS_UNCONFIRMED
+      - RUN30_CORRELATED_ACTUAL_GAME_ENTRY_AND_INPUT_EVIDENCE_CONFIRMED
       - X86_64_ARM_TRANSLATION_CAN_REACH_INSTALL_OR_LAUNCH_BUT_REPEATEDLY_FAILS_SUSTAINED_RUNTIME_COMPATIBILITY
       - GITHUB_MACOS_ARM64_DOES_NOT_PROVIDE_REQUIRED_NESTED_HVF_FOR_ANDROID_ARM64_EMULATOR
-      - BINDER_READY_NATIVE_ARM64_HOST_DOES_NOT_GUARANTEE_REDROID_ANDROID_USERSPACE_BOOT
-      - NO_STABLE_VERIFIED_RUNTIME_PASS_EXISTS_THROUGH_RUN_20
+      - NATIVE_ANDROID14_REDROID_BOOT_INSTALL_LAUNCH_GAME_ENTRY_AND_INPUT_SUCCEEDED_ON_GITHUB_HOSTED_ARM64
+      - VERIFIED_RUNTIME_PASS_TRUE_IN_RUN_30
     routeState:
       x86ArmTranslation: EXHAUSTED_FOR_STABLE_RUNTIME_UNLESS_MATERIALLY_NEW_EVIDENCE
       hostedMacArm64Emulator: BLOCKED_BY_NESTED_HVF
-      githubHostedArm64Redroid: BLOCKED_BY_ANDROID_USERSPACE_BOOT_AS_OF_RUN_20
+      githubHostedArm64Redroid: VERIFIED_WORKING_ANDROID14_NATIVE_ARM64_RUN30
       randomAndroidApiCycling: FORBIDDEN_WITHOUT_NEW_HYPOTHESIS
     nextExperimentRules:
       - START_FROM_LATEST_EVIDENCE_NOT_STALE_RUN_IDS
@@ -684,14 +719,15 @@ urgentCases:
       - DO_NOT_REPEAT_EXHAUSTED_ROUTE_WITHOUT_MATERIALLY_NEW_CAPABILITY_OR_HYPOTHESIS
       - PROBE_RUNTIME_CAPABILITY_BEFORE_DOWNLOADING_PROPRIETARY_APK_BYTES
       - REMOVE_EPHEMERAL_APK_BYTES_AFTER_EACH_RUN
-      - PREFER_FREE_MANAGED_ANDROID_RUNTIME_IF_HOSTED_CONTAINER_OR_EMULATOR_ROUTE_REMAINS_BLOCKED
-      - REQUIRE_REAL_STABLE_RUNTIME_EVIDENCE_BEFORE_FULL_GAMEPLAY_OR_UX_POSITIVE_DISTILLATION
+      - REQUIRE_CORRELATED_VISUAL_GAME_ENTRY_AND_INPUT_EVIDENCE_FOR_FUTURE_RUNTIME_PROMOTION
     learningUse:
       negativeEvidenceAllowed: true
       partialObservableDistillationAllowed: true
-      positiveGameplayDistillationAllowed: false
-      partialObservationBoundary: DIRECTLY_OBSERVED_GAME_ENTRY_AND_CAPTURED_RUNTIME_STAGES_ONLY
+      positiveGameplayDistillationAllowed: true
+      partialObservationBoundary: DIRECTLY_CAPTURED_BLACK_BOX_BEHAVIOR_ONLY
       positiveGameplayDistillationUnlockCondition: VERIFIED_RUNTIME_PASS_TRUE
+      positiveGameplayDistillationUnlockConditionSatisfied: true
+      positiveGameplayDistillationScope: DIRECTLY_CAPTURED_GAME_ENTRY_INPUT_RESPONSE_AND_VISIBLE_STATE_CHANGE_ONLY
       allowedNegativeTopics:
         - HOSTED_ANDROID_ABI_COMPATIBILITY
         - NATIVE_BRIDGE_LIMITATIONS
