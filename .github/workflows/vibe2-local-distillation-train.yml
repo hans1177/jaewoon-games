@@ -114,7 +114,8 @@ jobs:
           "TRAINING_METHOD=$method" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
           $vramGiB = [int](python -c "import torch; print(int(torch.cuda.get_device_properties(0).total_memory // (1024**3)))")
-          $drive = Get-PSDrive -Name ([System.IO.Path]::GetPathRoot($env:USERPROFILE).TrimEnd(':','\\'))
+          $driveName = [System.IO.Path]::GetPathRoot($env:USERPROFILE).Substring(0,1)
+          $drive = Get-PSDrive -Name $driveName
           $diskGiB = [int]($drive.Free / 1GB)
           "CUDA_VRAM_GIB=$vramGiB" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "TRAINING_DISK_GIB=$diskGiB" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
