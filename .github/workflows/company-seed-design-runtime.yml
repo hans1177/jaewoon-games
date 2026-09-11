@@ -2,6 +2,16 @@ name: Company Seed DESIGN_ONLY Runtime
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/company-seed-design-runtime.yml'
+      - 'tools/company-design-cycle.mjs'
+      - 'tools/artbook-production-pipeline.mjs'
+      - 'tools/company-baseline-gate.mjs'
+      - 'tools/company-design-artbook.mjs'
+      - 'company-directive.json'
   schedule:
     - cron: '0 16 * * *' # 01:00 KST fallback; bootstrap normally dispatches immediately
 

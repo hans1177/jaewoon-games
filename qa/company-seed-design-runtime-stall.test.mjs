@@ -26,6 +26,18 @@ test('seed design runtime removes serial throughput bottleneck without paid runn
   assert.match(workflow,/ollama-seed-design-\$\{\{ runner\.os \}\}-\$\{\{ hashFiles\('company-directive\.json'\) \}\}/);
 });
 
+test('seed design runtime restarts when its main engine inputs change',()=>{
+  assert.match(workflow,/push:\s+branches:\s+- main\s+paths:/);
+  for(const path of [
+    '.github/workflows/company-seed-design-runtime.yml',
+    'tools/company-design-cycle.mjs',
+    'tools/artbook-production-pipeline.mjs',
+    'tools/company-baseline-gate.mjs',
+    'tools/company-design-artbook.mjs',
+    'company-directive.json',
+  ]) assert.ok(workflow.includes(`- '${path}'`),`missing push path: ${path}`);
+});
+
 test('parallel seed jobs synchronize company-runtime writes before push',()=>{
   assert.match(workflow,/for attempt in 1 2 3 4/);
   assert.match(workflow,/git fetch origin \"\$COMPANY_RUNTIME_BRANCH\"/);
