@@ -11,6 +11,7 @@ const flow=readText('COMPANY_FLOW.md');
 const agents=readText('AGENTS.md');
 const directive=readJson('company-directive.json');
 const multimodelWorkflow=readText('.github/workflows/artbook-free-department-bots.yml');
+const androidBuildWorkflow=readText('.github/workflows/unity-hybrid-android-build.yml');
 const designCycle=readText('tools/company-design-cycle.mjs');
 const pipeline=readText('tools/artbook-production-pipeline.mjs');
 
@@ -121,6 +122,32 @@ test('development and release retain gated execution while Vibe2 begins at devel
   assert.equal(release.vibe2PrimaryDeveloper,true);
   assert.equal(release.coreDesignLock,true);
   assert.match(flow,/unityPurpose: ANDROID_TECHNICAL_VALIDATION_PROTOTYPE/);
+});
+
+test('Unity Android APK build route is synchronized to central policy before routing',()=>{
+  const release=directive.classes.RELEASE_CONFIRMED;
+  assert.equal(directive.policyDocument,'COMPANY_FLOW.md');
+  assert.equal(directive.platformStrategy.initialReleaseTarget,'UNITY_ANDROID');
+  assert.equal(release.target,'UNITY_ANDROID');
+  assert.equal(release.currentSourceTreeBindingRequired,true);
+  assert.equal(release.currentBuildEvidenceBindingRequired,true);
+  assert.equal(release.revalidationRequiredAfterSourceChange,true);
+  assert.equal(release.aiMayInventBuildPass,false);
+  assert.equal(release.aiMayInventDeviceValidationPass,false);
+  assert.equal(release.aiMayInventIndependentQaPass,false);
+  assert.ok(release.requiredFlow.includes('UNITY_ANDROID_BUILD'));
+  assert.ok(release.requiredFlow.includes('ANDROID_RUNTIME_VALIDATION'));
+  assert.ok(release.requiredFlow.includes('INDEPENDENT_QA_AND_REGRESSION'));
+  assert.match(flow,/CURRENT_SOURCE_UNITY_ANDROID_BUILD_SUCCESS/);
+  assert.match(flow,/CURRENT_BUILD_ANDROID_RUNTIME_PASS/);
+  assert.match(flow,/CURRENT_BUILD_INDEPENDENT_QA_REGRESSION_PASS/);
+  assert.match(androidBuildWorkflow,/Validate central Android build policy/);
+  assert.match(androidBuildWorkflow,/COMPANY_FLOW\.md/);
+  assert.match(androidBuildWorkflow,/company-directive\.json/);
+  assert.match(androidBuildWorkflow,/currentSourceTreeBindingRequired/);
+  assert.match(androidBuildWorkflow,/currentBuildEvidenceBindingRequired/);
+  assert.match(androidBuildWorkflow,/revalidationRequiredAfterSourceChange/);
+  assert.match(androidBuildWorkflow,/CENTRAL_POLICY_SYNC=PASS/);
 });
 
 test('paid execution remains forbidden',()=>{
