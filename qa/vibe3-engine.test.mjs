@@ -6,6 +6,7 @@ import {
   createVibeRepairLoop,
   createVibeTrajectoryRecord,
   createVibeV3ExecutionContract,
+  createVibePumpModeContract,
 } from '../assets/vibe-v3-engine.js';
 import {
   createVibeAssetReconstructionContract,
@@ -29,8 +30,11 @@ const tournament=runVibeCandidateTournament({candidates:[
   {id:'a',changedFiles:4,diffBytes:8000,evidence:{...passEvidence,qualityScore:.82,performanceScore:.8}},
   {id:'b',changedFiles:1,diffBytes:1500,evidence:{...passEvidence,qualityScore:.96,performanceScore:.92}},
   {id:'c',changedFiles:1,diffBytes:1200,evidence:{...passEvidence,runtimePass:false,qualityScore:1,performanceScore:1},failure:'runtime crash'},
+  {id:'d',changedFiles:2,diffBytes:2000,evidence:{...passEvidence,qualityScore:.88,performanceScore:.9}},
+  {id:'e',changedFiles:2,diffBytes:2200,evidence:{...passEvidence,qualityScore:.86,performanceScore:.89}},
 ]});
 assert.equal(tournament.ready,true);
+assert.equal(tournament.requiredCandidateCount,5);
 assert.equal(tournament.winner.id,'b');
 assert.equal(tournament.evaluations.find(item=>item.id==='c').eligible,false);
 
@@ -44,12 +48,22 @@ assert.equal(trajectory.learningUse.failedCandidatesPreserved,true);
 
 const execution=createVibeV3ExecutionContract();
 assert.equal(execution.version,3);
-assert.equal(execution.candidateTournament.count,3);
+assert.equal(execution.candidateTournament.count,5);
 assert.equal(execution.integration.parallelPipeline,false);
+assert.equal(execution.verifiedContext.retrieveBeforeGeneration,true);
+const pump=createVibePumpModeContract();
+assert.equal(pump.enabled,true);
+assert.equal(pump.candidateTournament.default,5);
+assert.equal(pump.repairLoop.maxAttempts,3);
+assert.equal(pump.experiencePump.benchmarkCountsAsTrainingSample,false);
+assert.equal(pump.weights.localWeightsRequiredForPump,false);
 const dev=createVibeDevelopmentPipeline({environment:'chatgpt',request:'기존 전투 코드 오류 수정',responsibleFiles:['game/combat.js']});
-assert.equal(dev.generation,'V3');
+assert.equal(dev.generation,'V3-PUMP');
 assert.equal(dev.v3.candidateTournament.required,true);
-assert(dev.steps.includes('build-source-dependency-graph'));
+assert.equal(dev.candidatePlan.candidateCount,5);
+assert(dev.steps.includes('v3-verified-rag'));
+assert(dev.steps.includes('v3-failure-memory'));
+assert(dev.steps.includes('v3-task-playbook'));
 assert(dev.steps.includes('deterministic-candidate-tournament'));
 assert(dev.steps.includes('persist-success-and-failure-trajectory'));
 
@@ -79,4 +93,4 @@ assert.equal(art.art.selfTransformExistingAssets,true);
 assert.equal(art.art.originalOverwriteForbidden,true);
 assert.equal(art.art.variantTournament,true);
 
-console.log('PASS Vibe3 candidate tournament, repair loop, trajectory and asset variants');
+console.log('PASS Vibe3 Pump tournament, repair loop, trajectory and asset variants');
