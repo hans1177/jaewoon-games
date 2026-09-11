@@ -38,7 +38,10 @@ jobs:
           set -euo pipefail
           node --check tools/vibe2-structural-repair-distillation.mjs
           node --test qa/vibe2-structural-repair-distillation.test.mjs
+          node --test qa/vibe2-unity-teacher-rubric.test.mjs
           node --test qa/vibe2-weight-learning.test.mjs
+          test -f company-learning/unity-teacher-rubric.json
+          test -f company-learning/unity-teacher-materials/core-lessons.json
           echo 'LEARNING_FOCUS=UNITY_CODING_ONLY'
           echo 'PAID_API=NO'
           echo 'TEACHER_CODE_AUTHORITY=NO'
@@ -74,6 +77,27 @@ jobs:
           New-Item -ItemType Directory -Path $root -Force | Out-Null
           "LOCAL_TRAINING_ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
+      - name: Sync GPT Unity teacher materials to persistent local folder
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $target = Join-Path $env:LOCAL_TRAINING_ROOT 'teacher-materials'
+          New-Item -ItemType Directory -Path $target -Force | Out-Null
+          Copy-Item 'company-learning/unity-teacher-rubric.json' (Join-Path $target 'unity-teacher-rubric.json') -Force
+          Copy-Item 'company-learning/unity-teacher-materials/core-lessons.json' (Join-Path $target 'core-lessons.json') -Force
+          $manifest = [ordered]@{
+            version = 1
+            syncedAtUtc = [DateTime]::UtcNow.ToString('o')
+            sourceSha = $env:GITHUB_SHA
+            learningFocus = 'UNITY_CODING_ONLY'
+            rubric = (Join-Path $target 'unity-teacher-rubric.json')
+            coreLessons = (Join-Path $target 'core-lessons.json')
+            schedule = 'HOURLY_24H'
+            answerTarget = 'VERIFIED_FINAL_DIFF_ONLY'
+          }
+          $manifest | ConvertTo-Json -Depth 10 | Set-Content (Join-Path $target 'local-materials-manifest.json') -Encoding utf8
+          "LOCAL_TEACHER_MATERIALS=$target" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "LOCAL_TEACHER_MATERIALS=$target"
+
       - name: Discover verified Unity coding candidates only
         run: |
           $ErrorActionPreference = 'Stop'
@@ -106,9 +130,9 @@ jobs:
             $promptFile = Join-Path $teacherDir "$safeId.prompt.txt"
             $responseFile = Join-Path $teacherDir "$safeId.response.json"
             $sampleOut = Join-Path $outDir "$safeId.json"
-            node tools/vibe2-structural-repair-distillation.mjs prompt --sample $item.sourceFile --out $promptFile
+            node tools/vibe2-structural-repair-distillation.mjs prompt --sample $item.sourceFile --rubric company-learning/unity-teacher-rubric.json --out $promptFile
             if ($LASTEXITCODE -ne 0) { throw "teacher prompt build failed: $safeId" }
-            $prompt = "UNITY C# CODING ONLY. Focus on MonoBehaviour lifecycle, component responsibility, state/save boundaries, event ownership, null/runtime safety, mobile performance, and regression-safe structural repair.`n`n" + [System.IO.File]::ReadAllText($promptFile, [System.Text.Encoding]::UTF8)
+            $prompt = "UNITY C# CODING ONLY. Follow the synced GPT Unity teacher rubric and core lessons. Focus on MonoBehaviour lifecycle, component responsibility, state/save boundaries, event ownership, null/runtime safety, mobile performance, and regression-safe structural repair.`n`n" + [System.IO.File]::ReadAllText($promptFile, [System.Text.Encoding]::UTF8)
             $body = @{ model=$env:STRUCTURAL_TEACHER_MODEL; prompt=$prompt; stream=$false; format='json'; options=@{ temperature=0.1 } } | ConvertTo-Json -Depth 8
             $response = Invoke-RestMethod -Uri "http://$env:OLLAMA_HOST/api/generate" -Method Post -ContentType 'application/json' -Body $body -TimeoutSec 180
             $response | ConvertTo-Json -Depth 20 | Set-Content $responseFile -Encoding utf8
@@ -154,6 +178,7 @@ jobs:
         run: |
           Write-Host 'LEARNING_FOCUS=UNITY_CODING_ONLY'
           Write-Host 'SCHEDULE=HOURLY_24H'
+          Write-Host "LOCAL_TEACHER_MATERIALS=$env:LOCAL_TEACHER_MATERIALS"
           Write-Host "TEACHER_MODEL=$env:STRUCTURAL_TEACHER_MODEL"
           Write-Host 'TEACHER_ROUTE=FREE_TEACHER_WITH_LOCAL_ZERO_COST_FALLBACK'
           Write-Host 'PAID_API=NO'
