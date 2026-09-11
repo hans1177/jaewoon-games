@@ -1,31 +1,59 @@
 {
-  "version": 1,
+  "version": 2,
   "gameId": "block-blast",
   "packageId": "com.block.juggle",
-  "sourceType": "EXTERNAL_COMMERCIAL_BLACK_BOX_RUNTIME_NEGATIVE_EVIDENCE",
-  "authority": "PRACTICE_ONLY_NEGATIVE_EVIDENCE",
+  "sourceType": "EXTERNAL_COMMERCIAL_BLACK_BOX_MIXED_RUNTIME_EVIDENCE",
+  "authority": "PRACTICE_ONLY_MIXED_EVIDENCE",
   "observedThrough": "2026-09-12",
   "runtimePromotionAllowed": false,
   "gameplayBehaviorPromotionAllowed": false,
+  "partialObservableDistillationAllowed": true,
   "codeExtractionAllowed": false,
   "binaryRedistributionAllowed": false,
   "positiveTrainingSample": false,
   "verifiedRuntimePass": false,
+  "stablePlaytestVerified": false,
+  "gameEntryObserved": true,
+  "gameEntryEvidenceAuthority": "OWNER_DIRECT_OBSERVATION",
+  "gameEntryObservationRecordedAt": "2026-09-12",
   "sourceEvidence": {
     "privateRepository": "hans1177/jaewoon-ai-company",
     "historyPath": "server-playtest/block-blast-experiment-history.md",
     "latestCompletedRun": 34639996916,
     "latestRunNumber": 20,
     "latestArtifactId": 10279414322,
-    "latestFailure": "REDROID_INTERNAL_BOOT_FAILED"
+    "latestFailure": "REDROID_INTERNAL_BOOT_FAILED",
+    "ownerCorrection": "Actual game entry was observed during a prior server experiment. Do not reduce all prior launch evidence to splash-only. Exact run-to-observation correlation remains separate from the latest Run 20 failure."
   },
+  "partialObservedFacts": [
+    {
+      "id": "actual-game-entry-observed",
+      "evidenceAuthority": "OWNER_DIRECT_OBSERVATION",
+      "fact": "The commercial game reached the actual game after launch in at least one prior server experiment.",
+      "boundary": "This proves a real game-entry boundary was crossed, but does not by itself prove a stable long-running input playtest or runtimePass:true."
+    }
+  ],
+  "distilledPartialRuntimePatterns": [
+    {
+      "id": "preserve-partial-success-before-later-crash",
+      "scope": "qa-evidence",
+      "lesson": "If an app reaches the actual game before a later crash or compatibility failure, record both the successful game-entry boundary and the later failure boundary. Do not collapse the entire run into a statement that the game never entered.",
+      "reuseRule": "Track INSTALL, LAUNCH, GAME_ENTRY, INPUT_EXERCISE, STABILITY and CRASH as separate evidence stages."
+    },
+    {
+      "id": "game-entry-is-not-full-runtime-pass",
+      "scope": "runtime-evidence",
+      "lesson": "Actual game entry is meaningful positive partial runtime evidence even when the full stable-play gate is not satisfied.",
+      "reuseRule": "Allow directly observed launch/game-entry facts to be distilled as partial evidence while keeping full gameplay and runtime promotion blocked until stable input and survival evidence exists."
+    }
+  ],
   "distilledFailurePatterns": [
     {
       "id": "android-hosted-x86-arm-translation-native-crash",
       "scope": "android-runtime-compatibility",
       "evidence": [5, 6, 16, 17],
-      "lesson": "A successful ARM64 split-APK install on an x86_64 Android guest does not prove runtime compatibility. Native translation can fail after launch in JNI/native-library or application initialization paths.",
-      "reuseRule": "Do not promote install success to runtime success. Require process survival, foreground state and crash-free runtime evidence after launch and input."
+      "lesson": "A successful ARM64 split-APK install on an x86_64 Android guest does not prove sustained runtime compatibility. Native translation can still fail after launch or game entry in JNI/native-library or application initialization paths.",
+      "reuseRule": "Do not promote install or game-entry success to stable runtime success. Preserve the partial success boundary, then require process survival, foreground state and crash-free input evidence for full runtime pass."
     },
     {
       "id": "adb-streaming-install-finalization-fragility",
@@ -66,12 +94,12 @@
       "id": "runtime-pass-evidence-gate",
       "scope": "qa-evidence",
       "evidence": [4, 5, 6, 15, 16, 17, 20],
-      "lesson": "Install PASS, splash visibility, process creation, or infrastructure readiness are not equivalent to a verified playtest.",
-      "reuseRule": "runtimePass:true requires actual launch, foreground ownership, process survival, input exercise, and absence of fatal exception/ANR in the captured evidence window."
+      "lesson": "Install PASS, game entry, process creation, or infrastructure readiness are useful staged evidence but are not individually equivalent to a verified stable playtest.",
+      "reuseRule": "runtimePass:true requires launch, foreground ownership, process survival, input exercise, and absence of fatal exception/ANR in the captured evidence window."
     }
   ],
   "negativeRouteDecisions": {
-    "x86ArmTranslation": "EXHAUSTED_UNLESS_NEW_MATERIAL_EVIDENCE",
+    "x86ArmTranslation": "EXHAUSTED_FOR_STABLE_RUNTIME_UNLESS_NEW_MATERIAL_EVIDENCE",
     "hostedMacArm64Emulator": "BLOCKED_BY_NESTED_HVF",
     "githubHostedArm64Redroid": "CURRENTLY_BLOCKED_BY_ANDROID_USERSPACE_BOOT",
     "localPc": "FORBIDDEN_BY_OWNER_FOR_THIS_FLOW",
@@ -83,14 +111,16 @@
       "ABI/native-bridge preflight design",
       "split-APK install recovery strategy",
       "host capability versus guest readiness separation",
-      "evidence gating for runtime success",
+      "staged runtime evidence gating",
+      "partial success boundary preservation",
+      "actual launch/game-entry fact distillation",
       "failure-to-next-experiment decision quality"
     ],
-    "forbiddenUntilRuntimePass": [
-      "gameplay pacing distillation",
-      "input-response timing distillation",
+    "forbiddenUntilStableRuntimePass": [
+      "detailed gameplay pacing distillation",
+      "input-response timing distillation beyond directly captured evidence",
       "reward-loop distillation",
-      "UI density or interaction-flow distillation",
+      "UI interaction-flow distillation beyond directly captured game entry",
       "positive gameplay training sample promotion"
     ]
   }
