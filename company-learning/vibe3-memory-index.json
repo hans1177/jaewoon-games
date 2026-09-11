@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "generation": "V3-PUMP",
+  "positive": [
+    {
+      "id": "external-black-box-block-blast-run-30",
+      "kind": "verified-sample",
+      "taskType": "qa",
+      "project": "block-blast",
+      "request": "외부 상용 Android 게임을 black-box로 검증할 때 실행, 실제 게임 진입, 입력 반응, 프로세스 생존, 크래시 부재를 단계별 증거로 결속해 판정하고 코드·에셋·내부 알고리즘은 추출하거나 추론하지 않는다.",
+      "instruction": "외부 상용 Android 게임을 black-box로 검증할 때 실행, 실제 게임 진입, 입력 반응, 프로세스 생존, 크래시 부재를 단계별 증거로 결속해 판정하고 코드·에셋·내부 알고리즘은 추출하거나 추론하지 않는다.",
+      "input": "",
+      "output": "검증된 관찰 원칙: 실행과 실제 게임 진입을 분리하고, 입력 전후 의미 있는 화면 변화와 프로세스 생존을 함께 확인하며, 성공 범위를 캡처된 검증 구간으로 제한한다.",
+      "sourcePaths": [],
+      "sourceRevision": "sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1",
+      "tags": ["external-black-box", "runtime", "qa", "input-response"],
+      "authority": "verified-memory-entry"
+    }
+  ],
+  "failureWarnings": [],
+  "policy": {
+    "verifiedPositiveOnly": true,
+    "failuresNeverPromotedAsPositive": true,
+    "benchmarkCountsAsTrainingSample": false
+  },
+  "authority": "verified-rag-memory-index",
+  "sourceFiles": {
+    "trainingSamples": ["company-learning/training-samples/external-black-box-block-blast-run-30.json"],
+    "trajectories": []
+  },
+  "refresh": {
+    "mode": "HOURLY_24H",
+    "workflow": "Vibe2 Distillation Sample Ingest",
+    "localWeightTrainingRequired": false,
+    "bootstrap": "RUN30_VERIFIED_SAMPLE_ONLY_UNTIL_FIRST_CANONICAL_REFRESH"
+  }
+}

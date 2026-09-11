@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "generation": "V3-PUMP",
+  "generatedFrom": "VERIFIED_MEMORY_PLUS_LOCKED_BASE_CHECKLISTS",
+  "taskTypes": {
+    "coding": {"taskType":"coding","checklist":["rank-responsible-source-before-edit","generate-3-to-5-independent-candidates","prefer-smallest-behavior-preserving-diff","run-syntax-tests-runtime-regression"],"reuse":[],"avoid":[],"authority":"verified-task-playbook"},
+    "bugfix": {"taskType":"bugfix","checklist":["reproduce-or-bind-failure-evidence","trace-failure-to-responsible-source","repair-smallest-surface","rerun-original-failure-and-regression"],"reuse":[],"avoid":[],"authority":"verified-task-playbook"},
+    "qa": {"taskType":"qa","checklist":["bind-exact-revision","separate-launch-from-real-success","preserve-positive-and-negative-boundaries","require-observed-runtime-evidence"],"reuse":[{"id":"external-black-box-block-blast-run-30","project":"block-blast","sourceRevision":"sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1"}],"avoid":[],"authority":"verified-task-playbook"},
+    "unity": {"taskType":"unity","checklist":["bind-current-source-tree-and-build","require-android-runtime-pass","require-independent-qa","preserve-save-and-core-design-lock"],"reuse":[],"avoid":[],"authority":"verified-task-playbook"},
+    "graphics": {"taskType":"graphics","checklist":["rights-gate-before-derivative","never-overwrite-original","generate-3-to-5-derived-variants","score-style-silhouette-quality-animation-mobile-performance"],"reuse":[],"avoid":[],"authority":"verified-task-playbook"},
+    "planning": {"taskType":"planning","checklist":["retrieve-verified-project-patterns","preserve-owner-and-design-locks","compare-alternatives","separate-evidence-from-inference"],"reuse":[],"avoid":[],"authority":"verified-task-playbook"},
+    "general": {"taskType":"general","checklist":["retrieve-verified-success-and-failure-memory","rank-responsible-context","compare-candidates","require-verifiable-completion"],"reuse":[],"avoid":[],"authority":"verified-task-playbook"}
+  },
+  "policy": {
+    "localWeightTrainingRequired": false,
+    "paidApiRequired": false,
+    "benchmarkCountsAsTrainingSample": false,
+    "hourlyCanonicalRefresh": true
+  }
+}
