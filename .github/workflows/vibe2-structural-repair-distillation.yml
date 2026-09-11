@@ -1,21 +1,24 @@
-name: Vibe2 Structural Repair Distillation
+name: Vibe2 Unity Coding Structural Distillation
 
 on:
   workflow_run:
     workflows: ['Vibe2 Distillation Sample Ingest']
     types: [completed]
+  schedule:
+    - cron: '17 * * * *'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: vibe2-local-distillation-training
+  group: vibe2-unity-coding-distillation
   cancel-in-progress: false
 
 env:
   STRUCTURAL_TEACHER_MODEL: qwen2.5-coder:7b
   OLLAMA_HOST: 127.0.0.1:11434
+  LEARNING_FOCUS: UNITY_CODING_ONLY
 
 jobs:
   static-gate:
@@ -30,17 +33,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate structural repair distillation contract
+      - name: Validate Unity coding learning contract
         run: |
           set -euo pipefail
           node --check tools/vibe2-structural-repair-distillation.mjs
           node --test qa/vibe2-structural-repair-distillation.test.mjs
           node --test qa/vibe2-weight-learning.test.mjs
+          echo 'LEARNING_FOCUS=UNITY_CODING_ONLY'
           echo 'PAID_API=NO'
           echo 'TEACHER_CODE_AUTHORITY=NO'
           echo 'ANSWER_TARGET=VERIFIED_FINAL_DIFF_ONLY'
 
-  local-teacher-and-train:
+  unity-teacher-and-train:
     needs: static-gate
     runs-on: [self-hosted, Windows, X64, jaewoon-unity]
     timeout-minutes: 180
@@ -53,11 +57,11 @@ jobs:
           ref: main
           fetch-depth: 1
 
-      - name: Preflight local-only teacher and training stack
+      - name: Preflight free local Unity teacher and training stack
         run: |
           $ErrorActionPreference = 'Stop'
           $ollama = Get-Command ollama -ErrorAction SilentlyContinue
-          if (-not $ollama) { throw 'Ollama is required on the free local structural teacher runner.' }
+          if (-not $ollama) { throw 'Ollama is required as the zero-cost fallback teacher.' }
           try { Invoke-RestMethod -Uri "http://$env:OLLAMA_HOST/api/tags" -Method Get -TimeoutSec 8 | Out-Null } catch { throw "Local Ollama is not reachable at $env:OLLAMA_HOST" }
           ollama show $env:STRUCTURAL_TEACHER_MODEL *> $null
           if ($LASTEXITCODE -ne 0) { ollama pull $env:STRUCTURAL_TEACHER_MODEL; if ($LASTEXITCODE -ne 0) { throw 'free local teacher model pull failed' } }
@@ -70,24 +74,30 @@ jobs:
           New-Item -ItemType Directory -Path $root -Force | Out-Null
           "LOCAL_TRAINING_ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Discover verified structural repair candidates
+      - name: Discover verified Unity coding candidates only
         run: |
           $ErrorActionPreference = 'Stop'
-          $plan = Join-Path $env:RUNNER_TEMP 'structural-repair-candidates.json'
-          node tools/vibe2-structural-repair-distillation.mjs discover --sample-dir company-learning/training-samples --max 24 --out $plan
+          $raw = Join-Path $env:RUNNER_TEMP 'structural-candidates-all.json'
+          $plan = Join-Path $env:RUNNER_TEMP 'unity-coding-candidates.json'
+          node tools/vibe2-structural-repair-distillation.mjs discover --sample-dir company-learning/training-samples --max 96 --out $raw
           if ($LASTEXITCODE -ne 0) { throw 'candidate discovery failed' }
-          $json = [System.IO.File]::ReadAllText($plan, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+          $json = [System.IO.File]::ReadAllText($raw, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+          $unity = @($json.candidates | Where-Object {
+            $_.taskType -eq 'unity' -or
+            ([string]$_.sourceFile -match '(?i)(unity|\.cs$|Assets[/\\].*Scripts|MonoBehaviour|ScriptableObject)')
+          })
+          [ordered]@{ version=1; state=$(if($unity.Count){'UNITY_CANDIDATES_AVAILABLE'}else{'NO_UNITY_CANDIDATES'}); learningFocus='UNITY_CODING_ONLY'; candidates=$unity } | ConvertTo-Json -Depth 20 | Set-Content $plan -Encoding utf8
           "CANDIDATE_PLAN=$plan" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "CANDIDATE_COUNT=$(@($json.candidates).Count)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Write-Host "STRUCTURAL_CANDIDATES=$(@($json.candidates).Count)"
+          "CANDIDATE_COUNT=$($unity.Count)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "UNITY_CODING_CANDIDATES=$($unity.Count)"
 
-      - name: Run free local teacher analysis and build verified-target samples
+      - name: Run free teacher analysis for Unity code structure
         if: env.CANDIDATE_COUNT != '0'
         run: |
           $ErrorActionPreference = 'Stop'
           $plan = [System.IO.File]::ReadAllText($env:CANDIDATE_PLAN, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
-          $outDir = Join-Path $env:RUNNER_TEMP 'structural-repair-samples'
-          $teacherDir = Join-Path $env:RUNNER_TEMP 'structural-repair-teacher'
+          $outDir = Join-Path $env:RUNNER_TEMP 'unity-structural-repair-samples'
+          $teacherDir = Join-Path $env:RUNNER_TEMP 'unity-structural-repair-teacher'
           New-Item -ItemType Directory -Path $outDir -Force | Out-Null
           New-Item -ItemType Directory -Path $teacherDir -Force | Out-Null
           $written = 0
@@ -98,8 +108,8 @@ jobs:
             $sampleOut = Join-Path $outDir "$safeId.json"
             node tools/vibe2-structural-repair-distillation.mjs prompt --sample $item.sourceFile --out $promptFile
             if ($LASTEXITCODE -ne 0) { throw "teacher prompt build failed: $safeId" }
-            $prompt = [System.IO.File]::ReadAllText($promptFile, [System.Text.Encoding]::UTF8)
-            $body = @{ model = $env:STRUCTURAL_TEACHER_MODEL; prompt = $prompt; stream = $false; format = 'json'; options = @{ temperature = 0.1 } } | ConvertTo-Json -Depth 8
+            $prompt = "UNITY C# CODING ONLY. Focus on MonoBehaviour lifecycle, component responsibility, state/save boundaries, event ownership, null/runtime safety, mobile performance, and regression-safe structural repair.`n`n" + [System.IO.File]::ReadAllText($promptFile, [System.Text.Encoding]::UTF8)
+            $body = @{ model=$env:STRUCTURAL_TEACHER_MODEL; prompt=$prompt; stream=$false; format='json'; options=@{ temperature=0.1 } } | ConvertTo-Json -Depth 8
             $response = Invoke-RestMethod -Uri "http://$env:OLLAMA_HOST/api/generate" -Method Post -ContentType 'application/json' -Body $body -TimeoutSec 180
             $response | ConvertTo-Json -Depth 20 | Set-Content $responseFile -Encoding utf8
             node tools/vibe2-structural-repair-distillation.mjs enrich --sample $item.sourceFile --teacher $responseFile --teacher-model $env:STRUCTURAL_TEACHER_MODEL --out $sampleOut
@@ -108,46 +118,44 @@ jobs:
           }
           "STRUCTURAL_SAMPLE_DIR=$outDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "STRUCTURAL_SAMPLE_COUNT=$written" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Write-Host "STRUCTURAL_SAMPLES_WRITTEN=$written"
+          Write-Host "UNITY_STRUCTURAL_SAMPLES_WRITTEN=$written"
           Write-Host 'TEACHER_CODE_AUTHORITY=NO'
           Write-Host 'ANSWER_TARGET=VERIFIED_FINAL_DIFF_ONLY'
-          Write-Host 'PAID_API=NO'
 
-      - name: Build bootstrap dataset
+      - name: Build Unity bootstrap dataset
         if: env.STRUCTURAL_SAMPLE_COUNT != '' && env.STRUCTURAL_SAMPLE_COUNT != '0'
         run: |
           $ErrorActionPreference = 'Stop'
-          if ([int]$env:STRUCTURAL_SAMPLE_COUNT -lt 12) { Write-Host "WAITING_FOR_STRUCTURAL_SAMPLES=$env:STRUCTURAL_SAMPLE_COUNT/12"; "STRUCTURAL_DATASET_READY=false" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append; exit 0 }
-          $datasetDir = Join-Path $env:RUNNER_TEMP "structural-$env:GITHUB_RUN_ID"
+          if ([int]$env:STRUCTURAL_SAMPLE_COUNT -lt 12) { Write-Host "WAITING_FOR_UNITY_SAMPLES=$env:STRUCTURAL_SAMPLE_COUNT/12"; "STRUCTURAL_DATASET_READY=false" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append; exit 0 }
+          $datasetDir = Join-Path $env:RUNNER_TEMP "unity-structural-$env:GITHUB_RUN_ID"
           node tools/vibe2-weight-learning.mjs dataset --input $env:STRUCTURAL_SAMPLE_DIR --out $datasetDir --task-type bugfix --min-train-samples 8 --min-fresh-train-samples 6 --min-distinct-projects 1 --max-project-share 1 --task-plan-min-samples 8 --task-plan-min-projects 1 --synthetic-ratio-cap 0
           if ($LASTEXITCODE -ne 0) { "STRUCTURAL_DATASET_READY=false" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append; exit 0 }
           "STRUCTURAL_DATASET_READY=true" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "STRUCTURAL_DATASET_DIR=$datasetDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Train structural repair specialist adapter locally
+      - name: Train Unity coding specialist adapter locally
         if: env.STRUCTURAL_DATASET_READY == 'true'
         run: |
           $ErrorActionPreference = 'Stop'
-          $adapterVersion = "structural-repair-$env:GITHUB_RUN_ID"
-          $adapterDir = Join-Path $env:LOCAL_TRAINING_ROOT "adapters\structural-repair\$adapterVersion"
+          $adapterVersion = "unity-coding-$env:GITHUB_RUN_ID"
+          $adapterDir = Join-Path $env:LOCAL_TRAINING_ROOT "adapters\unity-coding\$adapterVersion"
           if (Test-Path $adapterDir) { Remove-Item $adapterDir -Recurse -Force }
           New-Item -ItemType Directory -Path $adapterDir -Force | Out-Null
           python tools/vibe2-train.py --train (Join-Path $env:STRUCTURAL_DATASET_DIR 'train.jsonl') --eval (Join-Path $env:STRUCTURAL_DATASET_DIR 'eval.jsonl') --dataset-manifest (Join-Path $env:STRUCTURAL_DATASET_DIR 'manifest.json') --output $adapterDir --adapter-version $adapterVersion --task-type bugfix --method $env:TRAINING_METHOD
-          if ($LASTEXITCODE -ne 0) { throw 'structural repair adapter training failed' }
-          $metadataPath = Join-Path $adapterDir 'training-metadata.json'
-          $metadata = [System.IO.File]::ReadAllText($metadataPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
-          if ($metadata.promotionState -ne 'UNVERIFIED' -or $metadata.runtimePromotionAllowed -ne $false) { throw 'fresh structural adapter must stay UNVERIFIED' }
-          $runtime = [ordered]@{ version=1; specialization='structural-repair'; adapterVersion=$adapterVersion; localAdapterPath=$adapterDir; teacherModel=$env:STRUCTURAL_TEACHER_MODEL; teacherRole='ANALYSIS_ONLY'; answerTarget='VERIFIED_FINAL_DIFF_ONLY'; paidApi=$false; promotionState='UNVERIFIED'; runtimePromotionAllowed=$false; requiredNextGate='FIXED_HOLDOUT_AB_AND_CANARY' }
-          $runtime | ConvertTo-Json -Depth 10 | Set-Content (Join-Path $env:LOCAL_TRAINING_ROOT 'latest-structural-repair-runtime.json') -Encoding utf8
-          Write-Host "STRUCTURAL_REPAIR_ADAPTER=$adapterDir"
+          if ($LASTEXITCODE -ne 0) { throw 'Unity coding adapter training failed' }
+          $metadata = [System.IO.File]::ReadAllText((Join-Path $adapterDir 'training-metadata.json'), [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+          if ($metadata.promotionState -ne 'UNVERIFIED' -or $metadata.runtimePromotionAllowed -ne $false) { throw 'fresh Unity coding adapter must stay UNVERIFIED' }
+          [ordered]@{ version=1; specialization='unity-coding'; learningFocus='UNITY_CODING_ONLY'; adapterVersion=$adapterVersion; localAdapterPath=$adapterDir; teacherModel=$env:STRUCTURAL_TEACHER_MODEL; teacherRole='ANALYSIS_ONLY'; answerTarget='VERIFIED_FINAL_DIFF_ONLY'; paidApi=$false; promotionState='UNVERIFIED'; runtimePromotionAllowed=$false; requiredNextGate='FIXED_HOLDOUT_AB_AND_CANARY' } | ConvertTo-Json -Depth 10 | Set-Content (Join-Path $env:LOCAL_TRAINING_ROOT 'latest-unity-coding-runtime.json') -Encoding utf8
+          Write-Host "UNITY_CODING_ADAPTER=$adapterDir"
           Write-Host 'AUTO_PROMOTION=NO'
-          Write-Host 'NEXT_GATE=FIXED_HOLDOUT_AB_AND_CANARY'
 
       - name: Summary
         if: always()
         run: |
+          Write-Host 'LEARNING_FOCUS=UNITY_CODING_ONLY'
+          Write-Host 'SCHEDULE=HOURLY_24H'
           Write-Host "TEACHER_MODEL=$env:STRUCTURAL_TEACHER_MODEL"
-          Write-Host 'TEACHER_ROUTE=LOCAL_OLLAMA_ONLY'
+          Write-Host 'TEACHER_ROUTE=FREE_TEACHER_WITH_LOCAL_ZERO_COST_FALLBACK'
           Write-Host 'PAID_API=NO'
           Write-Host 'TEACHER_CODE_AUTHORITY=NO'
           Write-Host 'ANSWER_TARGET=VERIFIED_FINAL_DIFF_ONLY'
