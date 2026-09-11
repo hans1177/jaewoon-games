@@ -87,6 +87,12 @@ function Normalize-PlayStoreFlag {
     if (-not $raw.EndsWith("`r`n") -and -not $raw.EndsWith("`n")) { $raw += "`r`n" }
     $raw += "PlayStore.enabled=yes`r`n"
   }
+  if ($raw -match '(?im)^disk\.dataPartition\.size\s*=.*$') {
+    $raw = [regex]::Replace($raw, '(?im)^disk\.dataPartition\.size\s*=.*$', 'disk.dataPartition.size=17179869184')
+  } else {
+    if (-not $raw.EndsWith("`r`n") -and -not $raw.EndsWith("`n")) { $raw += "`r`n" }
+    $raw += "disk.dataPartition.size=17179869184`r`n"
+  }
   [System.IO.File]::WriteAllText($ConfigPath, $raw, [System.Text.Encoding]::UTF8)
 }
 
@@ -154,6 +160,7 @@ Write-Host "E_ANDROID_SDK=$targetSdk"
 Write-Host "E_AVDMANAGER=$targetAvdManager"
 Write-Host "PLAY_STORE_IMAGE=$imagePackage"
 Write-Host "E_ANDROID_AVD=$targetAvd"
+Write-Host 'AVD_DATA_PARTITION_TARGET=16GB'
 
 $ready = Test-PlayStoreAvdConfig $avdConfig
 if ($ready) {
