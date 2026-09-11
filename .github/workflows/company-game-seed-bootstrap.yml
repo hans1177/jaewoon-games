@@ -33,6 +33,7 @@ jobs:
       - name: Static GAME_SEED contract QA
         run: |
           node --check tools/game-seed-state.mjs
+          node --check tools/company-game-seed-contract.mjs
           node --check tools/company-game-seed-bootstrap.mjs
           node --test qa/company-game-seed-flow.test.mjs
           node --test qa/autonomous-portfolio-continuation.test.mjs
@@ -50,6 +51,21 @@ jobs:
           console.log(`reason=${!s.bootstrapCompletedAt?'INITIAL_SIX_SEED_BOOTSTRAP':need?'ONE_FOR_ONE_VACANCY':'NO_VACANCY'}`);
           NODE
 
+      - name: Verified free budget preflight
+        if: steps.need.outputs.model == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/free-budget-telemetry.mjs \
+            --verify-public-repo=true \
+            --runner=ubuntu-latest \
+            --model-calls=1 \
+            --runner-minutes=20 \
+            --output=.autonomous/free-budget-telemetry.json
+          node -e "const r=require('./.autonomous/free-budget-telemetry.json');if(r.allowed!==true)process.exit(1)"
+          echo 'GAME_SEED_FREE_BUDGET_PREFLIGHT=PASS'
+          echo 'GAME_SEED_MODEL_CALLS_MAX_THIS_RUN=1'
+
       - name: Prepare free local GAME_SEED model
         if: steps.need.outputs.model == 'true'
         uses: ./.github/actions/prepare-ollama
@@ -65,6 +81,7 @@ jobs:
         run: |
           node tools/company-game-seed-bootstrap.mjs | tee /tmp/game-seed-result.txt
           grep -q 'GAME_SEED_PAID_API=NO' /tmp/game-seed-result.txt
+          grep -q 'GAME_SEED_MODEL_CALLS=1' /tmp/game-seed-result.txt
 
       - name: Stop with no growth when there is no vacancy
         if: steps.need.outputs.model != 'true'
@@ -110,6 +127,7 @@ jobs:
         run: |
           echo '### Company GAME_SEED Bootstrap' >> "$GITHUB_STEP_SUMMARY"
           echo '- initial generation: one atomic six-category batch' >> "$GITHUB_STEP_SUMMARY"
+          echo '- local model calls: one batch call per generation run' >> "$GITHUB_STEP_SUMMARY"
           echo '- recurring schedule: vacancy check only; no vacancy = no new seed' >> "$GITHUB_STEP_SUMMARY"
           echo '- replenishment: one-for-one same category unless owner changes category' >> "$GITHUB_STEP_SUMMARY"
           echo '- market evidence: target/audience/session/monetization reference only' >> "$GITHUB_STEP_SUMMARY"
