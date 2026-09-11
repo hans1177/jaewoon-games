@@ -19,9 +19,14 @@ jobs:
           node --input-type=module --check < assets/vibe-v3-engine.js
           node --input-type=module --check < assets/vibe-development-ai.js
           node --input-type=module --check < assets/vibe-art-pipeline.js
+          node --input-type=module --check < tools/vibe3-trajectory-ingest.mjs
+          node --input-type=module --check < tools/vibe3-model-selection.mjs
 
       - name: Run Vibe3 engine contract tests
         run: node qa/vibe3-engine.test.mjs
+
+      - name: Run Vibe3 trajectory and model-selection tests
+        run: node qa/vibe3-trajectory-ingest.test.mjs
 
       - name: Check trainer syntax
         run: python -m py_compile tools/vibe2-train.py qa/vibe3-trainer-black-box.test.py
