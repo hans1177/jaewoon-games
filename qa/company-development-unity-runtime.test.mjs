@@ -48,7 +48,7 @@ test('creates one distinct cloud-build-ready Unity technical prototype per promo
     assert.equal(meta.unityEditorRevision,expectedUnityEditorRevision);
     assert.equal(manifest.dependencies['com.unity.modules.imgui'],'1.0.0');
     assert.match(buildScript,/SeedAndroidBuild/);
-    assert.match(buildScript,/Path\.Combine\(projectRoot, "build", "Android"\)/);
+    assert.match(buildScript,/Path\.GetFullPath\(Path\.Combine\(projectRoot, "\.\.", "\.\.", "build", "Android"\)\)/);
     assert.match(buildScript,/AndroidArchitecture\.ARM64 \| AndroidArchitecture\.X86_64/);
     assert.match(runtimeScript,/JAEWOON_TECH_METRIC/);
     assert.match(runtimeScript,/PlayerPrefs/);
