@@ -1,0 +1,162 @@
+name: Unity Android Independent QA
+
+on:
+  workflow_run:
+    workflows: ["Unity Hybrid Android Build"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Successful Unity Hybrid Android Build run id'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: unity-android-independent-qa
+  cancel-in-progress: false
+
+jobs:
+  independent-qa:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout QA tools
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Resolve upstream build run
+        id: upstream
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ '${{ github.event_name }}' == 'workflow_run' ]]; then
+            run_id='${{ github.event.workflow_run.id }}'
+          else
+            run_id='${{ inputs.run_id }}'
+          fi
+          [[ "$run_id" =~ ^[0-9]+$ ]] || { echo 'invalid upstream run id' >&2; exit 2; }
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+
+      - name: Download exact upstream build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ steps.upstream.outputs.run_id }}
+          path: upstream-artifacts
+
+      - name: Bind APK to build metadata
+        id: apk
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="$(find upstream-artifacts -type f -name '*.apk' -size +0c | head -n 1 || true)"
+          info="$(find upstream-artifacts -type f -name 'build-info.json' | head -n 1 || true)"
+          [[ -n "$apk" && -s "$apk" && -n "$info" && -s "$info" ]] || { echo 'APK/build-info missing' >&2; exit 3; }
+          expected="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8-sig"))["sha256"])' "$info")"
+          source_commit="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8-sig"))["sourceCommit"])' "$info")"
+          actual="$(sha256sum "$apk" | awk '{print $1}')"
+          [[ "$actual" == "$expected" ]] || { echo "APK SHA mismatch expected=$expected actual=$actual" >&2; exit 4; }
+          echo "path=$apk" >> "$GITHUB_OUTPUT"
+          echo "sha256=$actual" >> "$GITHUB_OUTPUT"
+          echo "source_commit=$source_commit" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare independent Android 16 emulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
+          [[ -n "$SDK" ]] || { echo 'Android SDK missing' >&2; exit 5; }
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager 'platform-tools' 'emulator' 'build-tools;36.0.0' 'system-images;android-36;google_apis;x86_64'
+          echo no | avdmanager create avd --force --name jaewoon-independent-qa --package 'system-images;android-36;google_apis;x86_64' --device 'pixel_6'
+          if [[ -e /dev/kvm ]]; then sudo chmod 666 /dev/kvm || true; fi
+          nohup "$SDK/emulator/emulator" -avd jaewoon-independent-qa -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > /tmp/jaewoon-independent-emulator.log 2>&1 &
+          adb wait-for-device
+          timeout 240 bash -c 'until [[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" == "1" ]]; do sleep 4; done'
+
+      - name: Independently install, stress, background and resume APK
+        id: qa
+        env:
+          APK: ${{ steps.apk.outputs.path }}
+          BUILD_SHA: ${{ steps.apk.outputs.sha256 }}
+          BUILD_SOURCE_COMMIT: ${{ steps.apk.outputs.source_commit }}
+          UPSTREAM_RUN: ${{ steps.upstream.outputs.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p qa-artifacts/unity-independent-qa
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
+          AAPT="$(find "$SDK/build-tools" -type f -name aapt | sort -V | tail -n 1)"
+          package="$($AAPT dump badging "$APK" | sed -n "s/^package: name='\([^']*\)'.*/\1/p" | head -n1)"
+          [[ -n "$package" ]] || { echo 'could not resolve package id' >&2; exit 6; }
+
+          adb logcat -c
+          adb install -r -t "$APK" >/tmp/independent-install.log
+          adb shell monkey -p "$package" -c android.intent.category.LAUNCHER 1 >/tmp/independent-launch.log
+          sleep 5
+          pid="$(adb shell pidof "$package" | tr -d '\r' | awk '{print $1}')"
+          [[ -n "$pid" ]] || { echo 'process did not start' >&2; exit 7; }
+
+          # Independent stress differs from the normal runtime smoke: rapid taps, swipes,
+          # background/foreground transition, then another burst of input.
+          for xy in '540 1500' '540 1320' '300 1480' '780 1480' '540 1180' '540 1500'; do adb shell input tap $xy; sleep 0.15; done
+          adb shell input swipe 820 1500 240 1500 220
+          adb shell input keyevent 3
+          sleep 2
+          adb shell monkey -p "$package" -c android.intent.category.LAUNCHER 1 >/tmp/independent-resume.log
+          sleep 4
+          for xy in '540 1500' '540 1320' '540 1500' '540 1320'; do adb shell input tap $xy; sleep 0.15; done
+
+          pid_after="$(adb shell pidof "$package" | tr -d '\r' | awk '{print $1}')"
+          [[ -n "$pid_after" ]] || { echo 'process died during independent QA' >&2; exit 8; }
+          adb exec-out screencap -p > qa-artifacts/unity-independent-qa/screen.png
+          adb logcat -d > qa-artifacts/unity-independent-qa/logcat.txt
+          if grep -Eiq "FATAL EXCEPTION|ANR in ${package}|Fatal signal|Process ${package} .* has died" qa-artifacts/unity-independent-qa/logcat.txt; then
+            echo 'fatal runtime signal found during independent QA' >&2
+            exit 9
+          fi
+
+          python3 - <<'PY'
+          import json, os
+          evidence = {
+              'version': 1,
+              'state': 'PASS',
+              'independentQa': 'PASS',
+              'independent': True,
+              'upstreamBuildRunId': int(os.environ['UPSTREAM_RUN']),
+              'buildId': os.environ['BUILD_SHA'],
+              'apkSha256': os.environ['BUILD_SHA'],
+              'buildSourceCommit': os.environ['BUILD_SOURCE_COMMIT'],
+              'checks': {
+                  'freshInstall': 'PASS',
+                  'processLaunch': 'PASS',
+                  'rapidInputStress': 'PASS',
+                  'backgroundResume': 'PASS',
+                  'processAliveAfterStress': 'PASS',
+                  'fatalCrashScan': 'PASS',
+                  'screenshotCaptured': 'PASS'
+              }
+          }
+          with open('qa-artifacts/unity-independent-qa/evidence.json','w',encoding='utf-8') as f:
+              json.dump(evidence,f,ensure_ascii=False,indent=2)
+              f.write('\n')
+          PY
+          echo "INDEPENDENT_QA=PASS"
+          echo "INDEPENDENT_BUILD_ID=$BUILD_SHA"
+
+      - name: Upload independent Unity QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-independent-qa-${{ steps.upstream.outputs.run_id }}
+          path: |
+            qa-artifacts/unity-independent-qa/
+            /tmp/jaewoon-independent-emulator.log
+          if-no-files-found: warn
+          retention-days: 14
