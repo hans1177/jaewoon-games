@@ -27,9 +27,14 @@ assert.ok(rejected.validation.touched.includes('progression'));
 assert.ok(rejected.blockedReasons.includes('protected-mutation'));
 
 const pipeline=createVibeDevelopmentPipeline({environment:'chatgpt'});
-assert.equal(pipeline.version,3);
+assert.equal(pipeline.version,5);
+assert.equal(pipeline.generation,'V3-PUMP');
+assert.equal(pipeline.candidatePlan.candidateCount,5);
+assert.equal(pipeline.v3.repairLoop.maxAttempts,3);
 assert.equal(pipeline.finalAuthority,'deterministic-vibe-engine');
 assert.equal(pipeline.completionGate,'deterministic-evidence-gate');
+assert.ok(pipeline.steps.includes('v3-verified-rag'));
+assert.ok(pipeline.steps.includes('v3-task-playbook'));
 assert.ok(pipeline.steps.includes('runtime-observation'));
 assert.ok(pipeline.steps.includes('regression-check'));
 assert.ok(pipeline.steps.includes('exact-revision-evidence'));
