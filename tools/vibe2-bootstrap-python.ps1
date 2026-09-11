@@ -105,6 +105,21 @@ if ($nvidiaSmi) {
   Write-Host 'NVIDIA_SMI_FOUND=NO'
 }
 
+try {
+  $videoControllers = @(Get-CimInstance Win32_VideoController -ErrorAction Stop)
+  Write-Host "WINDOWS_GPU_COUNT=$($videoControllers.Count)"
+  for ($i = 0; $i -lt $videoControllers.Count; $i++) {
+    $gpu = $videoControllers[$i]
+    Write-Host "WINDOWS_GPU_${i}_NAME=$($gpu.Name)"
+    Write-Host "WINDOWS_GPU_${i}_VENDOR=$($gpu.AdapterCompatibility)"
+    Write-Host "WINDOWS_GPU_${i}_DRIVER=$($gpu.DriverVersion)"
+    Write-Host "WINDOWS_GPU_${i}_PROCESSOR=$($gpu.VideoProcessor)"
+    Write-Host "WINDOWS_GPU_${i}_STATUS=$($gpu.Status)"
+  }
+} catch {
+  Write-Host "WINDOWS_GPU_QUERY=UNAVAILABLE:$($_.Exception.Message)"
+}
+
 & $resolved --version
 & $resolved -m pip --version
 & $resolved -c "import torch, transformers, peft, accelerate; available=torch.cuda.is_available(); print('PYTHON_ML_STACK=PASS'); print('TORCH=' + torch.__version__); print('TORCH_CUDA=' + str(torch.version.cuda)); print('TORCH_CUDA_AVAILABLE=' + str(available)); print('TORCH_GPU_NAME=' + (torch.cuda.get_device_name(0) if available else 'NONE')); print('TORCH_GPU_MEMORY=' + (str(torch.cuda.get_device_properties(0).total_memory) if available else '0'))"
