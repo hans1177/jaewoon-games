@@ -13,7 +13,7 @@ test('seed design runtime cancels stale runs and revalidates matrix targets befo
   const modelCacheIndex=workflow.indexOf('- name: Restore Ollama model cache');
   const resolveModelsIndex=workflow.indexOf('- name: Resolve configured free department models');
   const runtimeIndex=workflow.indexOf('- name: Prepare cached local Ollama runtime');
-  const pullIndex=workflow.indexOf('- name: Pull remaining configured free department models');
+  const pullIndex=workflow.indexOf('- name: Pull only missing configured free department models');
   assert.ok(checkoutIndex>=0&&revalidateIndex>checkoutIndex&&modelCacheIndex>revalidateIndex&&resolveModelsIndex>modelCacheIndex&&runtimeIndex>resolveModelsIndex&&pullIndex>runtimeIndex);
   assert.match(workflow,/TARGET_SEED_ID: \$\{\{ matrix\.target\.seed_id \}\}/);
   assert.match(workflow,/STALE_SEED_TARGET_SKIP/);
@@ -32,6 +32,15 @@ test('seed design runtime removes serial throughput and repeated Ollama install 
   assert.match(workflow,/model: \$\{\{ steps\.models\.outputs\.primary_model \}\}/);
   assert.match(workflow,/version: \$\{\{ env\.OLLAMA_VERSION \}\}/);
   assert.doesNotMatch(workflow,/https:\/\/ollama\.com\/install\.sh/);
+});
+
+test('seed design runtime reuses restored model files instead of repulling known models',()=>{
+  assert.match(workflow,/ollama list \| awk 'NR>1 \{print \$1\}' > \/tmp\/local-models\.txt/);
+  assert.match(workflow,/grep -Fxq \"\$model\" \/tmp\/local-models\.txt/);
+  assert.match(workflow,/OLLAMA_MODEL_CACHE_HIT=\$model/);
+  assert.match(workflow,/OLLAMA_MODEL_CACHE_MISS=\$model/);
+  assert.match(workflow,/OLLAMA_MODEL_CACHE_HITS=\$cached/);
+  assert.match(workflow,/OLLAMA_MODEL_PULLS=\$pulled/);
 });
 
 test('main engine changes are serialized through bootstrap before one DESIGN_ONLY dispatch',()=>{
