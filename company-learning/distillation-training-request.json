@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "requestId": "distill-e4e666cdcfebdd2c",
+  "requestId": "distill-9aaad227845bef7a",
   "sourceStatusState": "WAITING_FOR_VERIFIED_SAMPLES",
   "state": "WAITING_FOR_VERIFIED_SAMPLES",
   "execution": {
@@ -21,11 +21,10 @@
       "blockers": [
         "INSUFFICIENT_BATCH",
         "INSUFFICIENT_PROJECT_DIVERSITY",
-        "TASK_PLAN_NOT_READY",
-        "EVAL_SPLIT_EMPTY"
+        "TASK_PLAN_NOT_READY"
       ],
       "accepted": 8,
-      "train": 6,
+      "train": 4,
       "distinctProjects": 1
     },
     "bugfix": {
