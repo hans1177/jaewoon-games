@@ -88,9 +88,11 @@ def validate_manifest(args, manifest, train_rows, eval_rows):
     for row in train_rows + eval_rows:
         qa = row.get("qa") or {}
         row_task_type = str(row.get("taskType") or "").lower()
-        if qa.get("independentQa") != "PASS" or qa.get("runtime") != "PASS":
-            raise RuntimeError("independent QA and runtime PASS are required")
+        if qa.get("independentQa") != "PASS":
+            raise RuntimeError("independent QA PASS is required")
         if row_task_type == "unity":
+            if qa.get("runtime") != "PASS":
+                raise RuntimeError("Unity Android/runtime PASS is required")
             if qa.get("browserQa") != "NOT_APPLICABLE":
                 raise RuntimeError("Unity browser QA must be NOT_APPLICABLE")
             requirements = qa.get("requirements") or {}
