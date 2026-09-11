@@ -48,6 +48,8 @@ test('bootstrap batches all requested seeds in one model call and mutates state 
   assert.match(bootstrap,/referenceGamesOutsideCategoryPool/);
   assert.match(bootstrap,/benchmarkCandidates:t\.benchmarkCandidates/);
   assert.match(bootstrap,/targetMarketScope:'GLOBAL'/);
+  assert.match(bootstrap,/requestId:target\.requestId,category:target\.category/);
+  assert.doesNotMatch(bootstrap,/requestId:clean\(p\?\.requestId\)\|\|target\.requestId/);
   assert.match(bootstrap,/const pending=\[\]/);
   const pendingBuild=bootstrap.indexOf('pending.push({seed:buildSeed');
   const stateMutation=bootstrap.indexOf('for(const item of pending){state.seeds.push');
