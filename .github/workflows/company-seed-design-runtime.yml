@@ -239,23 +239,42 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-seed-design'
           git config user.email 'seed-design@users.noreply.github.com'
-          git add -- "design/${{ matrix.target.game_id }}" "artbook-submissions/${{ matrix.target.game_id }}" game-seed-state.json
+          game_path="design/${{ matrix.target.game_id }}"
+          artbook_path="artbook-submissions/${{ matrix.target.game_id }}"
+          git add -- "$game_path" "$artbook_path" game-seed-state.json
           if git diff --cached --quiet; then
             echo 'SEED_DESIGN_RUNTIME_CHANGE=NO'
             exit 0
           fi
+          seed_changed=0
+          if ! git diff --cached --quiet -- game-seed-state.json; then
+            seed_changed=1
+          fi
           git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}"
+          generated_commit="$(git rev-parse HEAD)"
           pushed=0
           for attempt in 1 2 3 4; do
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
-            if git rebase "origin/$COMPANY_RUNTIME_BRANCH"; then
-              if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
-                pushed=1
-                break
-              fi
-            else
-              git rebase --abort || true
+            git checkout -B seed-design-persist "origin/$COMPANY_RUNTIME_BRANCH"
+            git checkout "$generated_commit" -- "$game_path" "$artbook_path"
+            if [ "$seed_changed" = 1 ]; then
+              git checkout "$generated_commit" -- game-seed-state.json
             fi
+            git add -- "$game_path" "$artbook_path"
+            if [ "$seed_changed" = 1 ]; then
+              git add -- game-seed-state.json
+            fi
+            if git diff --cached --quiet; then
+              pushed=1
+              echo 'SEED_DESIGN_RUNTIME_CHANGE=ALREADY_PERSISTED'
+              break
+            fi
+            git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}"
+            if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
+              pushed=1
+              break
+            fi
+            git reset --hard "$generated_commit"
             sleep $((attempt * 2))
           done
           test "$pushed" = 1
