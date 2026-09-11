@@ -80,9 +80,34 @@ $scriptsDir = Join-Path $pythonDir 'Scripts'
 $pythonDir | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 if (Test-Path $scriptsDir) { $scriptsDir | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append }
 
+$nvidiaSmi = $null
+$nvidiaCandidates = @(
+  (Join-Path $env:WINDIR 'System32\nvidia-smi.exe'),
+  (Join-Path $env:ProgramFiles 'NVIDIA Corporation\NVSMI\nvidia-smi.exe')
+)
+foreach ($candidate in $nvidiaCandidates) {
+  if (Test-Path $candidate) {
+    $nvidiaSmi = $candidate
+    break
+  }
+}
+if (-not $nvidiaSmi) {
+  $driverStore = Join-Path $env:WINDIR 'System32\DriverStore\FileRepository'
+  if (Test-Path $driverStore) {
+    $nvidiaSmi = Get-ChildItem -Path $driverStore -Filter 'nvidia-smi.exe' -File -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName
+  }
+}
+if ($nvidiaSmi) {
+  $nvidiaDir = Split-Path -Parent $nvidiaSmi
+  $nvidiaDir | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+  Write-Host "NVIDIA_SMI_FOUND=$nvidiaSmi"
+} else {
+  Write-Host 'NVIDIA_SMI_FOUND=NO'
+}
+
 & $resolved --version
 & $resolved -m pip --version
-& $resolved -c "import torch, transformers, peft, accelerate; print('PYTHON_ML_STACK=PASS'); print('TORCH=' + torch.__version__); print('TORCH_CUDA=' + str(torch.version.cuda))"
+& $resolved -c "import torch, transformers, peft, accelerate; available=torch.cuda.is_available(); print('PYTHON_ML_STACK=PASS'); print('TORCH=' + torch.__version__); print('TORCH_CUDA=' + str(torch.version.cuda)); print('TORCH_CUDA_AVAILABLE=' + str(available)); print('TORCH_GPU_NAME=' + (torch.cuda.get_device_name(0) if available else 'NONE')); print('TORCH_GPU_MEMORY=' + (str(torch.cuda.get_device_properties(0).total_memory) if available else '0'))"
 if ($LASTEXITCODE -ne 0) { throw 'Unity LoRA runtime validation failed' }
 Write-Host 'PYTHON_RUNTIME=PASS'
 Write-Host 'PYTHON_BOOTSTRAP=REGISTRY_FREE_EMBEDDED'
