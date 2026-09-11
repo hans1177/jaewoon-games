@@ -45,7 +45,7 @@ test('online teacher는 non-Unity source를 거부한다', () => {
 test('그래픽·애니·모션 전문 노하우가 core lesson과 함께 자동 주입된다', () => {
   const loaded = loadTeacherLessons('company-learning/unity-teacher-materials/core-lessons.json');
   const ids = new Set(loaded.map((lesson) => lesson.id));
-  for (const id of ['motion-01','motion-06','motion-08','graphics-01','graphics-02','transfer-02','transfer-03','transfer-04']) {
+  for (const id of ['motion-01','motion-06','motion-08','graphics-01','graphics-02','transfer-02','transfer-03','transfer-04','transfer-06','transfer-07']) {
     assert.ok(ids.has(id), `missing specialist lesson: ${id}`);
   }
 });
@@ -62,12 +62,21 @@ test('검증 내부 패턴은 복제 후 재배치·변형·조합하는 판단�
   assert.ok(result.patchScope.some((item) => /재배치|이동|카메라|바인딩|owner/i.test(item)));
 });
 
-test('외부 benchmark는 추상 노하우만 가져오고 코드·에셋 직접 복제를 허용하지 않는다', () => {
+test('타사 독점 코드 복제 재배치는 오마주로 분류하지 않는다', () => {
   const doc = JSON.parse(fs.readFileSync('company-learning/unity-teacher-materials/graphics-motion-lessons.json', 'utf8'));
-  assert.equal(doc.transferMode, 'ABSTRACT_KNOWHOW_ONLY');
+  assert.equal(doc.transferMode, 'ABSTRACT_KNOWHOW_PLUS_LICENSED_REUSE');
   const external = doc.lessons.find((lesson) => lesson.id === 'transfer-05');
-  assert.match(`${external.rule} ${external.badPattern}`, /코드|에셋/);
-  assert.match(external.mastery, /행동 원리/);
+  assert.match(external.rule, /독점 코드를 복제 후 재배치.*오마주나 재해석으로 취급하지 않는다/);
+  assert.match(external.mastery, /새 코드를 작성/);
+});
+
+test('라이선스가 명확한 코드는 조건 안에서 복제·수정·재배치할 수 있다', () => {
+  const doc = JSON.parse(fs.readFileSync('company-learning/unity-teacher-materials/graphics-motion-lessons.json', 'utf8'));
+  const licensed = doc.lessons.find((lesson) => lesson.id === 'transfer-06');
+  const cleanRoom = doc.lessons.find((lesson) => lesson.id === 'transfer-07');
+  assert.match(licensed.rule, /라이선스 조건 안에서 복제·수정·재배치/);
+  assert.match(licensed.mastery, /licensed reuse/);
+  assert.match(cleanRoom.rule, /관찰 가능한 동작·문서·인터페이스/);
 });
 
 test('ingest에서 검증 샘플을 artifact로 넘기고 Actions PR 권한 실패가 학습을 막지 않는다', () => {
