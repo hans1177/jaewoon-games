@@ -60,7 +60,7 @@
     "existingWebGamesMaintenanceAllowed": true,
     "activeUnityProjects": 1,
     "pendingApprovals": 0,
-    "testBuilds": 1
+    "testBuilds": 2
   },
   "operations": {
     "homepage": {
@@ -626,6 +626,33 @@
       "sha256": "bca2596f93ea71e5ad311d9d3a322083ae768f8ac0c9c046125b33c9a4f1e817",
       "bytes": 24392700,
       "builtAt": "2026-09-08T08:07:37.760135+00:00"
+    },
+    {
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "requestId": "development-unity-seed-single-defense-strat-celestial-bastion-34616834304",
+      "status": "ready",
+      "channel": "test",
+      "buildRoute": "github-cloud-host-personal",
+      "mobileReady": true,
+      "homepagePublished": true,
+      "homepagePublishedAt": "2026-09-11T18:22:54.330160+00:00",
+      "deviceCompatibility": "android-10+",
+      "sourceCommit": "92a62ea52a8edeeb5a4056e8d5b057dfe8104310",
+      "releaseTag": "test-seed-single-defense-strat-celestial-bastion-34631890603-1",
+      "release": "https://github.com/hans1177/jaewoon-games/releases/tag/test-seed-single-defense-strat-celestial-bastion-34631890603-1",
+      "download": "https://github.com/hans1177/jaewoon-games/releases/download/test-seed-single-defense-strat-celestial-bastion-34631890603-1/seed-single-defense-strat-celestial-bastion-test.apk",
+      "applicationId": "com.jaewoongames.seedsingledefensestratcelestialbastion",
+      "sha256": "e97b95a53813a09f65c9d55f4ce7c1274260fa014f836c67bd1baee2d49e7658",
+      "bytes": 21093980,
+      "androidVerificationApi": 36,
+      "signatureVerified": true,
+      "installAndLaunchVerified": false,
+      "runtimeVerification": "android-16-avd-api-36-failed",
+      "runtimeVerificationSource": "github-actions",
+      "runtimeInstallLaunchVerified": false,
+      "testBuildStatus": "runtime-failed",
+      "builtAt": "2026-09-11T18:22:54.330160+00:00",
+      "runtimeVerificationUpdatedAt": "2026-09-11T18:23:27.323365+00:00"
     }
   ],
   "redevelopmentReview": {

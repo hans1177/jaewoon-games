@@ -482,9 +482,24 @@ jobs:
           set -euo pipefail
           SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
           [[ -n "$SDK" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[ANDROID_SDK_MISSING]::Android SDK path is unavailable.'; exit 52; }
-          yes | sdkmanager --licenses >/dev/null || true
-          sdkmanager 'platform-tools' 'emulator' 'build-tools;36.0.0' 'system-images;android-36;google_apis;x86_64'
-          echo no | avdmanager create avd --force --name jaewoon-install-gate --package 'system-images;android-36;google_apis;x86_64' --device 'pixel_6'
+          sdkmanager_bin="$(find "$SDK/cmdline-tools" -type f -name sdkmanager 2>/dev/null | sort -V | tail -n 1 || true)"
+          avdmanager_bin="$(find "$SDK/cmdline-tools" -type f -name avdmanager 2>/dev/null | sort -V | tail -n 1 || true)"
+          [[ -x "$sdkmanager_bin" ]] || { echo "::error title=JAEWOON_BUILD_ERROR[SDKMANAGER_MISSING]::sdkmanager not found under $SDK/cmdline-tools"; exit 52; }
+          [[ -x "$avdmanager_bin" ]] || { echo "::error title=JAEWOON_BUILD_ERROR[AVDMANAGER_MISSING]::avdmanager not found under $SDK/cmdline-tools"; exit 52; }
+          cmdline_bin="$(dirname "$sdkmanager_bin")"
+          avd_home="$RUNNER_TEMP/android-avd-install-gate"
+          mkdir -p "$avd_home"
+          export ANDROID_AVD_HOME="$avd_home"
+          export PATH="$cmdline_bin:$SDK/platform-tools:$SDK/emulator:$PATH"
+          echo "ANDROID_AVD_HOME=$avd_home" >> "$GITHUB_ENV"
+          echo "$cmdline_bin" >> "$GITHUB_PATH"
+          echo "$SDK/platform-tools" >> "$GITHUB_PATH"
+          echo "$SDK/emulator" >> "$GITHUB_PATH"
+          yes | "$sdkmanager_bin" --licenses >/dev/null || true
+          "$sdkmanager_bin" 'platform-tools' 'emulator' 'build-tools;36.0.0' 'system-images;android-36;google_apis;x86_64'
+          echo no | "$avdmanager_bin" create avd --force --name jaewoon-install-gate --package 'system-images;android-36;google_apis;x86_64' --device 'pixel_6'
+          "$SDK/emulator/emulator" -list-avds | tee /tmp/jaewoon-install-avd-list.txt
+          grep -Fxq 'jaewoon-install-gate' /tmp/jaewoon-install-avd-list.txt || { echo '::error title=JAEWOON_BUILD_ERROR[ANDROID_AVD_NOT_CREATED]::jaewoon-install-gate missing from emulator AVD list.'; exit 52; }
           if [[ -e /dev/kvm ]]; then sudo chmod 666 /dev/kvm || true; fi
           nohup "$SDK/emulator/emulator" -avd jaewoon-install-gate -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > /tmp/jaewoon-install-emulator.log 2>&1 &
           echo $! > /tmp/jaewoon-install-emulator.pid
@@ -510,6 +525,7 @@ jobs:
           path: |
             qa-artifacts/android16-install-gate/
             /tmp/jaewoon-install-emulator.log
+            /tmp/jaewoon-install-avd-list.txt
           if-no-files-found: warn
           retention-days: 14
 

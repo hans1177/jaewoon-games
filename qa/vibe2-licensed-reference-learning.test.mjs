@@ -10,10 +10,11 @@ import { buildPracticeDataset } from '../tools/vibe2-practice-dataset.mjs';
 
 const teacherFile = 'company-learning/unity-teacher-materials/gpt-practice-drills.json';
 const licensedFile = 'company-learning/unity-teacher-materials/licensed-reference-drills.json';
+const licensedDrillCount = JSON.parse(fs.readFileSync(licensedFile, 'utf8')).drills.length;
 
 test('licensed Unity reference pack is pinned and practice-only', () => {
   const drills = loadLicensedReferenceDrills(licensedFile);
-  assert.equal(drills.length, 8);
+  assert.equal(drills.length, licensedDrillCount);
   for (const { source } of drills) {
     assert.match(source.commit, /^[0-9a-f]{40}$/i);
     assert.equal(source.licenseSpdx, 'MIT');
@@ -28,12 +29,12 @@ test('teacher and licensed references become a mixed non-promotable Unity datase
   const dataset = path.join(root, 'dataset');
   buildPracticeTeacherSamples({ drillsFile: teacherFile, outDir: samples, maxPractice: 96 });
   const licensed = buildLicensedReferenceSamples({ drillsFile: licensedFile, outDir: samples, max: 96 });
-  assert.equal(licensed.written, 8);
+  assert.equal(licensed.written, licensedDrillCount);
 
   const rawRefs = fs.readdirSync(samples)
     .filter((name) => name.startsWith('licensed-u-') && name.endsWith('.json'))
     .map((name) => JSON.parse(fs.readFileSync(path.join(samples, name), 'utf8')));
-  assert.equal(rawRefs.length, 8);
+  assert.equal(rawRefs.length, licensedDrillCount);
   for (const row of rawRefs) {
     assert.equal(row.verification.modelPromptProvenanceExcluded, true);
     assert.match(row.provenance.commit, /^[0-9a-f]{40}$/i);
@@ -45,7 +46,7 @@ test('teacher and licensed references become a mixed non-promotable Unity datase
   assert.equal(manifest.runtimePromotionAllowed, false);
   assert.equal(manifest.containsLicensedReference, true);
   assert.equal(manifest.syntheticOnly, false);
-  assert.equal(manifest.stats.licensedReferenceTotal, 8);
+  assert.equal(manifest.stats.licensedReferenceTotal, licensedDrillCount);
   assert.ok(manifest.sourceKinds.includes('teacher'));
   assert.ok(manifest.sourceKinds.includes('licensed-reference'));
   const rows = [
@@ -53,7 +54,7 @@ test('teacher and licensed references become a mixed non-promotable Unity datase
     ...fs.readFileSync(path.join(dataset, 'eval.jsonl'), 'utf8').trim().split('\n'),
   ].map(JSON.parse);
   const refs = rows.filter((row) => row.sourceKind === 'licensed-reference');
-  assert.equal(refs.length, 8);
+  assert.equal(refs.length, licensedDrillCount);
   for (const row of refs) {
     assert.equal(row.synthetic, false);
     assert.equal(row.practiceOnly, true);
