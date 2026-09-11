@@ -60,25 +60,49 @@ jobs:
           [[ -n "$apk" && -s "$apk" && -n "$info" && -s "$info" ]] || { echo 'APK/build-info missing' >&2; exit 3; }
           expected="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8-sig"))["sha256"])' "$info")"
           source_commit="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8-sig"))["sourceCommit"])' "$info")"
+          source_tree="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8-sig")).get("sourceTreeSha", ""))' "$info")"
           actual="$(sha256sum "$apk" | awk '{print $1}')"
           [[ "$actual" == "$expected" ]] || { echo "APK SHA mismatch expected=$expected actual=$actual" >&2; exit 4; }
+          [[ "$source_commit" =~ ^[0-9a-f]{40}$ ]] || { echo 'invalid exact source commit' >&2; exit 5; }
+          [[ -z "$source_tree" || "$source_tree" =~ ^[0-9a-f]{40}$ ]] || { echo 'invalid source tree sha' >&2; exit 6; }
           echo "path=$apk" >> "$GITHUB_OUTPUT"
           echo "sha256=$actual" >> "$GITHUB_OUTPUT"
           echo "source_commit=$source_commit" >> "$GITHUB_OUTPUT"
+          echo "source_tree=$source_tree" >> "$GITHUB_OUTPUT"
 
       - name: Prepare independent Android 16 emulator
         shell: bash
         run: |
           set -euo pipefail
           SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
-          [[ -n "$SDK" ]] || { echo 'Android SDK missing' >&2; exit 5; }
-          yes | sdkmanager --licenses >/dev/null || true
-          sdkmanager 'platform-tools' 'emulator' 'build-tools;36.0.0' 'system-images;android-36;google_apis;x86_64'
-          echo no | avdmanager create avd --force --name jaewoon-independent-qa --package 'system-images;android-36;google_apis;x86_64' --device 'pixel_6'
+          [[ -n "$SDK" ]] || { echo 'Android SDK missing' >&2; exit 7; }
+          sdkmanager_bin="$(find "$SDK/cmdline-tools" -type f -name sdkmanager 2>/dev/null | sort -V | tail -n 1 || true)"
+          avdmanager_bin="$(find "$SDK/cmdline-tools" -type f -name avdmanager 2>/dev/null | sort -V | tail -n 1 || true)"
+          [[ -x "$sdkmanager_bin" ]] || { echo "sdkmanager missing under $SDK/cmdline-tools" >&2; find "$SDK" -maxdepth 4 -type f \( -name sdkmanager -o -name avdmanager \) -print || true; exit 8; }
+          [[ -x "$avdmanager_bin" ]] || { echo "avdmanager missing under $SDK/cmdline-tools" >&2; exit 9; }
+          cmdline_bin="$(dirname "$sdkmanager_bin")"
+          export PATH="$cmdline_bin:$SDK/platform-tools:$SDK/emulator:$PATH"
+          echo "$cmdline_bin" >> "$GITHUB_PATH"
+          echo "$SDK/platform-tools" >> "$GITHUB_PATH"
+          echo "$SDK/emulator" >> "$GITHUB_PATH"
+          yes | "$sdkmanager_bin" --licenses >/dev/null || true
+          "$sdkmanager_bin" 'platform-tools' 'emulator' 'build-tools;36.0.0' 'system-images;android-36;google_apis;x86_64'
+          echo no | "$avdmanager_bin" create avd --force --name jaewoon-independent-qa --package 'system-images;android-36;google_apis;x86_64' --device 'pixel_6'
           if [[ -e /dev/kvm ]]; then sudo chmod 666 /dev/kvm || true; fi
+          adb start-server >/dev/null 2>&1 || true
           nohup "$SDK/emulator/emulator" -avd jaewoon-independent-qa -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > /tmp/jaewoon-independent-emulator.log 2>&1 &
-          adb wait-for-device
-          timeout 240 bash -c 'until [[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" == "1" ]]; do sleep 4; done'
+          if ! timeout 150 adb wait-for-device; then
+            echo '[JAEWOON_BUILD_ERROR:INDEPENDENT_ADB_DEVICE_TIMEOUT] adb did not discover the independent emulator within 150 seconds.' >&2
+            adb devices -l >&2 || true
+            cat /tmp/jaewoon-independent-emulator.log >&2 || true
+            exit 10
+          fi
+          if ! timeout 150 bash -c 'until [[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" == "1" ]]; do sleep 3; done'; then
+            echo '[JAEWOON_BUILD_ERROR:INDEPENDENT_EMULATOR_BOOT_TIMEOUT] independent Android emulator did not finish booting within 150 seconds.' >&2
+            adb devices -l >&2 || true
+            cat /tmp/jaewoon-independent-emulator.log >&2 || true
+            exit 11
+          fi
 
       - name: Independently install, stress, background and resume APK
         id: qa
@@ -86,6 +110,7 @@ jobs:
           APK: ${{ steps.apk.outputs.path }}
           BUILD_SHA: ${{ steps.apk.outputs.sha256 }}
           BUILD_SOURCE_COMMIT: ${{ steps.apk.outputs.source_commit }}
+          BUILD_SOURCE_TREE: ${{ steps.apk.outputs.source_tree }}
           UPSTREAM_RUN: ${{ steps.upstream.outputs.run_id }}
         shell: bash
         run: |
@@ -94,17 +119,15 @@ jobs:
           SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
           AAPT="$(find "$SDK/build-tools" -type f -name aapt | sort -V | tail -n 1)"
           package="$($AAPT dump badging "$APK" | sed -n "s/^package: name='\([^']*\)'.*/\1/p" | head -n1)"
-          [[ -n "$package" ]] || { echo 'could not resolve package id' >&2; exit 6; }
+          [[ -n "$package" ]] || { echo 'could not resolve package id' >&2; exit 12; }
 
           adb logcat -c
           adb install -r -t "$APK" >/tmp/independent-install.log
           adb shell monkey -p "$package" -c android.intent.category.LAUNCHER 1 >/tmp/independent-launch.log
           sleep 5
           pid="$(adb shell pidof "$package" | tr -d '\r' | awk '{print $1}')"
-          [[ -n "$pid" ]] || { echo 'process did not start' >&2; exit 7; }
+          [[ -n "$pid" ]] || { echo 'process did not start' >&2; exit 13; }
 
-          # Independent stress differs from the normal runtime smoke: rapid taps, swipes,
-          # background/foreground transition, then another burst of input.
           for xy in '540 1500' '540 1320' '300 1480' '780 1480' '540 1180' '540 1500'; do adb shell input tap $xy; sleep 0.15; done
           adb shell input swipe 820 1500 240 1500 220
           adb shell input keyevent 3
@@ -114,12 +137,12 @@ jobs:
           for xy in '540 1500' '540 1320' '540 1500' '540 1320'; do adb shell input tap $xy; sleep 0.15; done
 
           pid_after="$(adb shell pidof "$package" | tr -d '\r' | awk '{print $1}')"
-          [[ -n "$pid_after" ]] || { echo 'process died during independent QA' >&2; exit 8; }
+          [[ -n "$pid_after" ]] || { echo 'process died during independent QA' >&2; exit 14; }
           adb exec-out screencap -p > qa-artifacts/unity-independent-qa/screen.png
           adb logcat -d > qa-artifacts/unity-independent-qa/logcat.txt
           if grep -Eiq "FATAL EXCEPTION|ANR in ${package}|Fatal signal|Process ${package} .* has died" qa-artifacts/unity-independent-qa/logcat.txt; then
             echo 'fatal runtime signal found during independent QA' >&2
-            exit 9
+            exit 15
           fi
 
           python3 - <<'PY'
@@ -133,6 +156,7 @@ jobs:
               'buildId': os.environ['BUILD_SHA'],
               'apkSha256': os.environ['BUILD_SHA'],
               'buildSourceCommit': os.environ['BUILD_SOURCE_COMMIT'],
+              'sourceTreeSha': os.environ.get('BUILD_SOURCE_TREE') or None,
               'checks': {
                   'freshInstall': 'PASS',
                   'processLaunch': 'PASS',
@@ -149,6 +173,8 @@ jobs:
           PY
           echo "INDEPENDENT_QA=PASS"
           echo "INDEPENDENT_BUILD_ID=$BUILD_SHA"
+          echo "INDEPENDENT_SOURCE_COMMIT=$BUILD_SOURCE_COMMIT"
+          echo "INDEPENDENT_SOURCE_TREE=$BUILD_SOURCE_TREE"
 
       - name: Upload independent Unity QA evidence
         if: always()

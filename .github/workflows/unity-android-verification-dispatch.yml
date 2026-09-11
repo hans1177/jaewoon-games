@@ -1,0 +1,114 @@
+name: Unity Android Verification Dispatch Bridge
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.qa-requests/unity/*.json'
+  workflow_dispatch:
+    inputs:
+      request_file:
+        description: 'Tracked .qa-requests/unity/*.json request file'
+        required: true
+        type: string
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: unity-android-verification-dispatch
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve verification request
+        id: request
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            request_file='${{ inputs.request_file }}'
+          else
+            before='${{ github.event.before }}'
+            if [[ -n "$before" && ! "$before" =~ ^0+$ ]]; then
+              mapfile -t files < <(git diff --name-only "$before" "$GITHUB_SHA" -- '.qa-requests/unity/*.json')
+            else
+              mapfile -t files < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" -- '.qa-requests/unity/*.json')
+            fi
+            if [[ ${#files[@]} -ne 1 ]]; then
+              echo "Exactly one Unity QA request must change. Found ${#files[@]}: ${files[*]}" >&2
+              exit 2
+            fi
+            request_file="${files[0]}"
+          fi
+
+          python3 - "$request_file" "$GITHUB_OUTPUT" <<'PY'
+          import json, pathlib, re, sys
+          request_file, output = sys.argv[1:]
+          if not re.fullmatch(r'\.qa-requests/unity/[A-Za-z0-9._-]+\.json', request_file):
+              raise SystemExit(f'invalid request path: {request_file}')
+          path = pathlib.Path(request_file)
+          if not path.is_file():
+              raise SystemExit(f'request missing: {request_file}')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          if data.get('version') != 1:
+              raise SystemExit('unsupported request version')
+          run_id = str(data.get('upstreamBuildRunId', '')).strip()
+          source = str(data.get('sourceCommit', '')).strip().lower()
+          tree = str(data.get('sourceTreeSha', '')).strip().lower()
+          apk = str(data.get('apkSha256', '')).strip().lower()
+          if not re.fullmatch(r'[0-9]+', run_id):
+              raise SystemExit('upstreamBuildRunId must be numeric')
+          if not re.fullmatch(r'[0-9a-f]{40}', source):
+              raise SystemExit('sourceCommit must be an exact 40-character SHA')
+          if not re.fullmatch(r'[0-9a-f]{40}', tree):
+              raise SystemExit('sourceTreeSha must be an exact 40-character SHA')
+          if not re.fullmatch(r'[0-9a-f]{64}', apk):
+              raise SystemExit('apkSha256 must be an exact 64-character SHA256')
+          with open(output, 'a', encoding='utf-8') as f:
+              f.write(f'run_id={run_id}\n')
+              f.write(f'source_commit={source}\n')
+              f.write(f'source_tree_sha={tree}\n')
+              f.write(f'apk_sha256={apk}\n')
+          PY
+
+      - name: Dispatch real Android runtime smoke
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ steps.request.outputs.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -n --arg ref main --arg run "$RUN_ID" '{ref:$ref,inputs:{run_id:$run}}' \
+            | gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-runtime-smoke.yml/dispatches" --input -
+          echo "RUNTIME_SMOKE_DISPATCHED=true upstreamBuildRunId=$RUN_ID"
+
+      - name: Dispatch independent Android QA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ steps.request.outputs.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -n --arg ref main --arg run "$RUN_ID" '{ref:$ref,inputs:{run_id:$run}}' \
+            | gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-independent-qa.yml/dispatches" --input -
+          echo "INDEPENDENT_QA_DISPATCHED=true upstreamBuildRunId=$RUN_ID"
+
+      - name: Verification binding summary
+        shell: bash
+        run: |
+          echo "upstreamBuildRunId=${{ steps.request.outputs.run_id }}"
+          echo "sourceCommit=${{ steps.request.outputs.source_commit }}"
+          echo "sourceTreeSha=${{ steps.request.outputs.source_tree_sha }}"
+          echo "apkSha256=${{ steps.request.outputs.apk_sha256 }}"
+          echo 'SYNTHETIC_DATA=NO'
+          echo 'PRODUCTION_PROMOTION=NO'
