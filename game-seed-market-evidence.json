@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "observedAt": "2026-09-11",
+  "role": "TARGET_DESIGN_REFERENCE",
+  "marketSignals": {
+    "southKoreaPlayerAge": {
+      "source": "https://www.theesa.com/wp-content/uploads/2025/09/PoP-2025-v10-web-spreads.pdf",
+      "observedAt": "2025-09",
+      "metrics": {
+        "age16_24Percent": 10,
+        "age25_34Percent": 19,
+        "age35_44Percent": 23,
+        "age45_54Percent": 23,
+        "age55_64Percent": 15,
+        "age65PlusPercent": 10,
+        "mobileFavoriteDevicePercent": 57,
+        "puzzleRegularGenrePercent": 48,
+        "actionRegularGenrePercent": 37
+      }
+    },
+    "mobileSessionBenchmarks": {
+      "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+      "observedAt": "2025-report-2024-data",
+      "metrics": {
+        "actionMedianSessionMinutes": 4.0,
+        "casualMedianSessionMinutes": 4.0,
+        "puzzleMedianSessionMinutes": 5.7,
+        "rolePlayingMedianSessionMinutes": 4.7,
+        "strategyMedianSessionMinutes": 5.5
+      }
+    },
+    "mobileRevenue": {
+      "source": "https://sensortower.com/press/press-release-sensor-tower-state-of-gaming-gaming-drove-52-billion-downloads-82b-iap-revenue-on-mobile-and-12b-premium-revenue-on-steam",
+      "observedAt": "2026-02-26",
+      "metrics": {
+        "mobileIapRevenue2025UsdBillion": 82
+      }
+    },
+    "topGrossingDecember2025": {
+      "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+      "observedAt": "2025-12",
+      "metrics": {
+        "rank1": "Last War: Survival",
+        "rank2": "Whiteout Survival",
+        "rank3": "Royal Match",
+        "rank4": "MONOPOLY GO!",
+        "rank5": "Candy Crush Saga"
+      }
+    }
+  },
+  "categories": {
+    "ACTION_SURVIVAL_ROGUELITE": {
+      "benchmarkCandidates": ["Vampire Survivors", "Brotato", "Survivor.io", "20 Minutes Till Dawn"],
+      "requiredConceptTerms": ["survive", "survival", "horde", "enemy", "combat", "upgrade", "build", "roguelite"],
+      "references": [
+        {"title": "South Korea player profile", "metrics": [{"metric":"actionRegularGenrePercent","value":37,"source":"https://www.theesa.com/wp-content/uploads/2025/09/PoP-2025-v10-web-spreads.pdf","observedAt":"2025-09"}]},
+        {"title": "Action session benchmark", "metrics": [{"metric":"medianSessionMinutes","value":4.0,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2025-report-2024-data"}]},
+        {"title": "Mobile market revenue", "metrics": [{"metric":"mobileIapRevenue2025UsdBillion","value":82,"source":"https://sensortower.com/press/press-release-sensor-tower-state-of-gaming-gaming-drove-52-billion-downloads-82b-iap-revenue-on-mobile-and-12b-premium-revenue-on-steam","observedAt":"2026-02-26"}]}
+      ]
+    },
+    "SINGLE_DEFENSE_STRATEGY": {
+      "benchmarkCandidates": ["Kingdom Rush", "Bloons TD 6", "Plants vs. Zombies 2", "The Battle Cats"],
+      "requiredConceptTerms": ["defend", "defense", "wave", "tower", "placement", "lane", "enemy", "strategy"],
+      "references": [
+        {"title": "Strategy session benchmark", "metrics": [{"metric":"medianSessionMinutes","value":5.5,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2025-report-2024-data"}]},
+        {"title": "Top grossing strategy/survival signal", "metrics": [{"metric":"December2025TopGrossing","value":"Last War: Survival #1; Whiteout Survival #2","source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12"}]}
+      ]
+    },
+    "PUZZLE": {
+      "benchmarkCandidates": ["Royal Match", "Candy Crush Saga", "Monument Valley 2", "Two Dots"],
+      "requiredConceptTerms": ["puzzle", "match", "solve", "board", "level", "combo", "goal"],
+      "references": [
+        {"title": "South Korea puzzle demand", "metrics": [{"metric":"puzzleRegularGenrePercent","value":48,"source":"https://www.theesa.com/wp-content/uploads/2025/09/PoP-2025-v10-web-spreads.pdf","observedAt":"2025-09"}]},
+        {"title": "Puzzle session benchmark", "metrics": [{"metric":"medianSessionMinutes","value":5.7,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2025-report-2024-data"}]},
+        {"title": "Top grossing puzzle proof", "metrics": [{"metric":"December2025TopGrossing","value":"Royal Match #3; Candy Crush Saga #5","source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12"}]}
+      ]
+    },
+    "CASUAL": {
+      "benchmarkCandidates": ["Subway Surfers", "Crossy Road", "Angry Birds 2", "MONOPOLY GO!"],
+      "requiredConceptTerms": ["short", "retry", "score", "simple", "casual", "session", "reward"],
+      "references": [
+        {"title": "Casual session benchmark", "metrics": [{"metric":"medianSessionMinutes","value":4.0,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2025-report-2024-data"}]},
+        {"title": "Mobile favorite device in South Korea", "metrics": [{"metric":"mobileFavoriteDevicePercent","value":57,"source":"https://www.theesa.com/wp-content/uploads/2025/09/PoP-2025-v10-web-spreads.pdf","observedAt":"2025-09"}]},
+        {"title": "Top grossing casual proof", "metrics": [{"metric":"December2025TopGrossing","value":"MONOPOLY GO! #4","source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12"}]}
+      ]
+    },
+    "IDLE_GROWTH_RPG": {
+      "benchmarkCandidates": ["AFK Arena", "Legend of Slime", "Idle Heroes", "Tap Titans 2"],
+      "requiredConceptTerms": ["idle", "offline", "growth", "upgrade", "hero", "equipment", "progression", "rpg"],
+      "references": [
+        {"title": "RPG session benchmark", "metrics": [{"metric":"medianSessionMinutes","value":4.7,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2025-report-2024-data"}]},
+        {"title": "South Korea player age profile", "metrics": [{"metric":"largestAgeBands","value":"35-44 23%; 45-54 23%","source":"https://www.theesa.com/wp-content/uploads/2025/09/PoP-2025-v10-web-spreads.pdf","observedAt":"2025-09"}]},
+        {"title": "Mobile market revenue", "metrics": [{"metric":"mobileIapRevenue2025UsdBillion","value":82,"source":"https://sensortower.com/press/press-release-sensor-tower-state-of-gaming-gaming-drove-52-billion-downloads-82b-iap-revenue-on-mobile-and-12b-premium-revenue-on-steam","observedAt":"2026-02-26"}]}
+      ]
+    },
+    "STORY_COMPLETE_RPG": {
+      "benchmarkCandidates": ["Chrono Trigger", "FINAL FANTASY VI", "Battle Chasers: Nightwar", "DRAGON QUEST VIII"],
+      "requiredConceptTerms": ["story", "quest", "battle", "boss", "ending", "character", "explore", "rpg"],
+      "references": [
+        {"title": "RPG session benchmark", "metrics": [{"metric":"medianSessionMinutes","value":4.7,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2025-report-2024-data"}]},
+        {"title": "South Korea player age profile", "metrics": [{"metric":"largestAgeBands","value":"35-44 23%; 45-54 23%","source":"https://www.theesa.com/wp-content/uploads/2025/09/PoP-2025-v10-web-spreads.pdf","observedAt":"2025-09"}]},
+        {"title": "Mobile favorite device in South Korea", "metrics": [{"metric":"mobileFavoriteDevicePercent","value":57,"source":"https://www.theesa.com/wp-content/uploads/2025/09/PoP-2025-v10-web-spreads.pdf","observedAt":"2025-09"}]}
+      ]
+    }
+  }
+}
