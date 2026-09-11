@@ -107,6 +107,7 @@ if ($drive.Free -lt 12GB) { throw "E_DRIVE_FREE_SPACE_TOO_LOW:$([math]::Round($d
 
 $sourceSdk = Find-ExistingAndroidSdk
 $sdkManager = Find-CmdlineTool $sourceSdk 'sdkmanager'
+$avdManager = Find-CmdlineTool $sourceSdk 'avdmanager'
 $targetSdk = Join-Path $TargetRoot 'Sdk'
 $targetAvd = Join-Path $TargetRoot 'avd'
 $targetTemp = Join-Path $TargetRoot 'temp'
@@ -122,14 +123,18 @@ $env:TEMP = $targetTemp
 $env:TMP = $targetTemp
 
 $yesFile = Join-Path $targetTemp 'sdkmanager-yes.txt'
-$outFile = Join-Path $targetTemp 'sdkmanager-output.txt'
+$noFile = Join-Path $targetTemp 'avdmanager-no.txt'
+$sdkOutFile = Join-Path $targetTemp 'sdkmanager-output.txt'
+$avdOutFile = Join-Path $targetTemp 'avdmanager-output.txt'
 (1..800 | ForEach-Object { 'y' }) | Set-Content -LiteralPath $yesFile -Encoding ASCII
+(1..100 | ForEach-Object { 'no' }) | Set-Content -LiteralPath $noFile -Encoding ASCII
 
 Write-Host "SOURCE_ANDROID_SDK=$sourceSdk"
 Write-Host "TARGET_ANDROID_SDK=$targetSdk"
 Write-Host "TARGET_ANDROID_AVD=$targetAvd"
 Write-Host "E_FREE_GB=$([math]::Round((Get-PSDrive E).Free/1GB,2))"
 Write-Host "SDKMANAGER=$sdkManager"
+Write-Host "AVDMANAGER=$avdManager"
 
 $installedRoot = Join-Path $targetSdk 'system-images'
 $installed = @()
@@ -139,6 +144,8 @@ if (Test-Path -LiteralPath $installedRoot) {
   })
 }
 
+$imagePackage = $null
+$imageApi = $null
 if ($installed.Count -eq 0) {
   $list = Invoke-Native $sdkManager @('--list')
   if ($list.ExitCode -ne 0) { throw "SDKMANAGER_LIST_FAILED:$(@($list.Output | Select-Object -Last 20) -join "`n")" }
@@ -165,12 +172,12 @@ if ($installed.Count -eq 0) {
   }
 
   Write-Host 'ANDROID_SDK_LICENSE_ACCEPTANCE=START'
-  $license = Invoke-CmdWithInputFile $sdkManager @("--sdk_root=$targetSdk",'--licenses') $yesFile $outFile
+  $license = Invoke-CmdWithInputFile $sdkManager @("--sdk_root=$targetSdk",'--licenses') $yesFile $sdkOutFile
   if ($license.ExitCode -eq 0) { Write-Host 'ANDROID_SDK_LICENSE_ACCEPTANCE=PASS' }
   else { Write-Host 'ANDROID_SDK_LICENSE_ACCEPTANCE=DEFER_TO_INSTALL' }
 
   Write-Host "INSTALLING_PLAY_STORE_SYSTEM_IMAGE=$($best.Package)"
-  $install = Invoke-CmdWithInputFile $sdkManager @("--sdk_root=$targetSdk",$best.Package) $yesFile $outFile
+  $install = Invoke-CmdWithInputFile $sdkManager @("--sdk_root=$targetSdk",$best.Package) $yesFile $sdkOutFile
   if ($install.ExitCode -ne 0) {
     throw "PLAY_STORE_SYSTEM_IMAGE_INSTALL_FAILED:$(@($install.Output | Select-Object -Last 40) -join "`n")"
   }
@@ -182,16 +189,53 @@ if ($installed.Count -eq 0) {
     }
     throw "PLAY_STORE_SYSTEM_IMAGE_INSTALL_NOT_FOUND_OR_INCOMPLETE:$expected; FOUND=$($where -join ';')"
   }
-  Write-Host "PLAY_STORE_SYSTEM_IMAGE_INSTALL=PASS api=$($best.Api)"
+  $imagePackage = $best.Package
+  $imageApi = $best.Api
+  Write-Host "PLAY_STORE_SYSTEM_IMAGE_INSTALL=PASS api=$imageApi"
 } else {
   $bestInstalled = $installed | Sort-Object { [int]($_.Parent.Parent.Name -replace '^android-','') } -Descending | Select-Object -First 1
-  Write-Host "PLAY_STORE_SYSTEM_IMAGE_ALREADY_INSTALLED=$($bestInstalled.Parent.Parent.Name)"
+  $imageApi = [int]($bestInstalled.Parent.Parent.Name -replace '^android-','')
+  $imagePackage = "system-images;android-$imageApi;google_apis_playstore;x86_64"
+  Write-Host "PLAY_STORE_SYSTEM_IMAGE_ALREADY_INSTALLED=android-$imageApi"
 }
 
 $env:ANDROID_SDK_ROOT = $targetSdk
 $env:ANDROID_HOME = $targetSdk
 $env:ANDROID_AVD_HOME = $targetAvd
 $env:ANDROID_EMULATOR_HOME = $TargetRoot
+
+$playAvd = 'Vibe2PlayStore'
+$avdConfig = Join-Path $targetAvd "$playAvd.avd\config.ini"
+$avdIni = Join-Path $targetAvd "$playAvd.ini"
+$avdReady = $false
+if (Test-Path -LiteralPath $avdConfig) {
+  $configText = [System.IO.File]::ReadAllText($avdConfig)
+  if ($configText -match '(?im)^PlayStore\.enabled\s*=\s*yes\s*$') { $avdReady = $true }
+}
+
+if (-not $avdReady) {
+  Write-Host "CREATING_PLAY_STORE_AVD=$playAvd"
+  if (Test-Path -LiteralPath (Join-Path $targetAvd "$playAvd.avd")) {
+    Remove-Item -LiteralPath (Join-Path $targetAvd "$playAvd.avd") -Recurse -Force -ErrorAction SilentlyContinue
+  }
+  if (Test-Path -LiteralPath $avdIni) { Remove-Item -LiteralPath $avdIni -Force -ErrorAction SilentlyContinue }
+
+  $create = Invoke-CmdWithInputFile $avdManager @('create','avd','--name',$playAvd,'--package',$imagePackage,'--device','pixel_6','--force') $noFile $avdOutFile
+  if ($create.ExitCode -ne 0) {
+    $create = Invoke-CmdWithInputFile $avdManager @('create','avd','--name',$playAvd,'--package',$imagePackage,'--device','pixel','--force') $noFile $avdOutFile
+  }
+  if ($create.ExitCode -ne 0) {
+    throw "AVD_CREATE_FAILED:$(@($create.Output | Select-Object -Last 40) -join "`n")"
+  }
+  if (-not (Test-Path -LiteralPath $avdConfig)) { throw "AVD_CONFIG_NOT_CREATED:$avdConfig" }
+  $configText = [System.IO.File]::ReadAllText($avdConfig)
+  if ($configText -notmatch '(?im)^PlayStore\.enabled\s*=\s*yes\s*$') {
+    throw "AVD_CREATED_WITHOUT_PLAY_STORE:$avdConfig"
+  }
+  Write-Host "CREATED_PLAY_STORE_AVD=$playAvd"
+} else {
+  Write-Host "PLAY_STORE_AVD_ALREADY_READY=$playAvd"
+}
 
 $oneClick = Join-Path $PSScriptRoot 'vibe2-playstore-oneclick.ps1'
 if (-not (Test-Path -LiteralPath $oneClick)) { throw "ONECLICK_SCRIPT_NOT_FOUND:$oneClick" }
