@@ -80,8 +80,10 @@ try {
   }
 } catch {}
 
-$consumerInstalled = ($foundPaths | Where-Object { $_ -match '(?i)Google\\Play Games$' }).Count -gt 0 -or $registryNames.Count -gt 0
-$developerEmulatorInstalled = ($foundPaths | Where-Object { $_ -match '(?i)Developer Emulator' }).Count -gt 0
+$consumerPaths = @($foundPaths | Where-Object { $_ -match '(?i)Google\\Play Games$' })
+$developerEmulatorPaths = @($foundPaths | Where-Object { $_ -match '(?i)Developer Emulator' })
+$consumerInstalled = $consumerPaths.Count -gt 0 -or $registryNames.Count -gt 0
+$developerEmulatorInstalled = $developerEmulatorPaths.Count -gt 0
 
 $playableFromRunner = $consumerInstalled -and -not $runnerIsServiceAccount -and $interactiveExplorer
 $status = if ($playableFromRunner) { 'READY_FOR_INTERACTIVE_GPG_PC_PROBE' } elseif ($consumerInstalled) { 'BLOCKED_GPG_PC_INSTALLED_BUT_RUNNER_SESSION_NOT_INTERACTIVE' } elseif ($developerEmulatorInstalled -or $adbDevice6520) { 'READY_DEVELOPER_EMULATOR_PRESENT' } else { 'BLOCKED_GPG_PC_NOT_INSTALLED' }
