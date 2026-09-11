@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {GAME_SEED_REQUIRED_FIELDS,GAME_SEED_POLICY,validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 
 const flow=fs.readFileSync('COMPANY_FLOW.md','utf8');
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
@@ -19,6 +20,59 @@ test('one central policy source owns class, design, meeting and artbook rules',(
   assert.match(flow,/sourceOfTruth: COMPANY_FLOW\.md/);
   assert.match(flow,/format: MACHINE_ORIENTED_POLICY_SPEC/);
   assert.match(flow,/evidenceFilesCannotCreatePolicy: true/);
+});
+
+test('DESIGN_ONLY begins with GAME_SEED before Game Designer draft',()=>{
+  const design=directive.classes.DESIGN_ONLY;
+  assert.equal(design.requiredFlow[0],'GAME_SEED');
+  assert.equal(design.requiredFlow[1],'GAME_DESIGNER_DRAFT');
+  assert.equal(directive.gameSeed.requiredBeforeDesignerDraft,true);
+  assert.deepEqual(directive.gameSeed.requiredFields,GAME_SEED_REQUIRED_FIELDS);
+  assert.equal(directive.gameSeed.initialTargetPlatform,GAME_SEED_POLICY.initialTargetPlatform);
+  assert.equal(directive.gameSeed.initialPlayMode,GAME_SEED_POLICY.initialPlayMode);
+  assert.match(flow,/GAME_SEED:\n  stage: BEFORE_GAME_DESIGNER_DRAFT/);
+  assert.match(flow,/requiredFlow:\n      - GAME_SEED\n      - GAME_DESIGNER_DRAFT/);
+});
+
+test('DESIGN_ONLY baseline requires seed identity market mobile and expansion decisions',()=>{
+  const required=directive.classes.DESIGN_ONLY.baselineReadyRequires||[];
+  for(const token of [
+    'GAME_SEED_COMPLETE',
+    'DISTINCT_GAME_IDENTITY',
+    'CORE_FUN_CLEAR',
+    'CORE_LOOP_ACTION_FEEDBACK_CHOICE_REWARD',
+    'MARKET_TARGET_DIRECTION_RECORDED',
+    'MOBILE_UX_DIRECTION_DEFINED',
+    'STEAM_EXPANSION_DECISION_RECORDED',
+    'MULTIPLAYER_EXPANSION_DECISION_RECORDED',
+    'FIVE_DISTINCT_LEAD_MODELS',
+    'PER_DEPARTMENT_MULTIMODEL_REVIEW_PASS',
+    'NO_HIDDEN_FATAL_CONFLICT'
+  ])assert.ok(required.includes(token),`missing DESIGN_ONLY baseline requirement: ${token}`);
+  assert.equal(directive.classes.DESIGN_ONLY.readyState,'DESIGN_BASELINE_READY');
+});
+
+test('GAME_SEED validator permits UNKNOWN market numbers but rejects unsourced numeric claims',()=>{
+  const base={
+    GAME_CATEGORY:'CASUAL',
+    REFERENCE_GAMES:['Released successful reference'],
+    CORE_FUN_TO_LEARN:'clear repeatable interaction pattern',
+    CORE_LOOP:['action','feedback','choice','reward'],
+    DISTINCT_IDENTITY:'original world visual identity characters and system combination',
+    MARKET_EVIDENCE_SUMMARY:'UNKNOWN numeric fields; qualitative benchmark only',
+    TARGET_AUDIENCE:'mobile players',
+    TARGET_SESSION_DIRECTION:'short repeatable sessions',
+    INITIAL_TARGET_PLATFORM:'ANDROID_MOBILE',
+    INITIAL_PLAY_MODE:'SINGLE_PLAYER',
+    STEAM_EXPANSION_POSSIBLE:'POSSIBLE',
+    MULTIPLAYER_EXPANSION_POSSIBLE:'NOT_RECOMMENDED',
+    MULTIPLAYER_EXPANSION_VALUE:'LOW'
+  };
+  assert.equal(validateGameSeed(base).pass,true);
+  const invalid=validateGameSeed({...base,MARKET_EVIDENCE_SUMMARY:{numericClaims:[{metric:'rating',value:4.8}]}});
+  assert.equal(invalid.pass,false);
+  assert.ok(invalid.errors.some(x=>x.includes('.source is required')));
+  assert.ok(invalid.errors.some(x=>x.includes('.observedAt is required')));
 });
 
 test('five departments have five distinct lead model ids and remappable assignments',()=>{
@@ -77,10 +131,20 @@ test('detailed design keeps one game designer role for revision',()=>{
 test('design only runs directly through artbook',()=>{
   assert.equal(directive.classes.DESIGN_ONLY.directResultMode,true);
   assert.ok(directive.classes.DESIGN_ONLY.requiredFlow.includes('ARTBOOK_EDITOR_CORE_STRATEGY'));
+  assert.equal(directive.classes.DESIGN_ONLY.requiredFlow.includes('VIBE2_VALIDATION_LEARNING'),false);
   assert.match(flow,/DESIGN_ONLY:[\s\S]*?directResultMode: true/);
   assert.match(flow,/ARTBOOK_EDITOR_CORE_STRATEGY/);
   assert.match(cycle,/DESIGN_ONLY_ARTBOOK_DIRECT=YES/);
   assert.match(pipeline,/DESIGN_ONLY_ARTBOOK_DIRECT=YES/);
+});
+
+test('Vibe2 starts at DEVELOPMENT_CONFIRMED and is inactive in DESIGN_ONLY',()=>{
+  assert.equal(directive.ai.vibe2.startsAtClass,'DEVELOPMENT_CONFIRMED');
+  assert.equal(directive.ai.vibe2.designOnlyActive,false);
+  assert.equal(Object.hasOwn(directive.ai.vibe2.roleByClass,'DESIGN_ONLY'),false);
+  assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED,'VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT');
+  assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_DEVELOPMENT_ENGINE');
+  assert.match(flow,/Vibe2:\n  startsAt: DEVELOPMENT_CONFIRMED/);
 });
 
 test('development confirmed is gated direct and resumable',()=>{
@@ -105,11 +169,11 @@ test('development artbook is created only after baseline ready',()=>{
   assert.ok(firstArtbookWrite>firstWaiting);
 });
 
-test('artbook remains single-editor core strategy and Vibe2 is not tier2/3 primary author',()=>{
+test('artbook remains single-editor core strategy and Vibe2 is not its primary author in development',()=>{
   assert.equal(directive.ai.artbookEditor.singleEditor,true);
   assert.equal(directive.ai.artbookEditor.departmentPageAuthorship,false);
   assert.equal(directive.ai.artbookEditor.mayInventNewClaims,false);
-  assert.equal(directive.ai.vibe2.designOrArtbookPrimaryAuthorInTier3Or2,false);
+  assert.equal(directive.ai.vibe2.designOrArtbookPrimaryAuthorInDevelopmentClass,false);
   assert.match(flow,/ArtbookEditor:[\s\S]*?singleEditor: true/);
   assert.match(flow,/mayInventNewClaims: false/);
   assert.match(pipeline,/DEPARTMENT_ARTBOOK_AUTHORSHIP=NO/);
@@ -117,7 +181,6 @@ test('artbook remains single-editor core strategy and Vibe2 is not tier2/3 prima
 
 test('development and release responsibilities use semantic production classes',()=>{
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webPurpose,'GAMEPLAY_VALIDATION_TESTBED');
-  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityPurpose,'TECHNICAL_VALIDATION_PROTOTYPE');
   assert.equal(directive.classes.RELEASE_CONFIRMED.vibe2PrimaryDeveloper,true);
   assert.equal(directive.classes.RELEASE_CONFIRMED.departmentDefaultRole,'ERROR_AND_RELEASE_RISK_REVIEW');
   assert.equal(directive.classes.RELEASE_CONFIRMED.executionMode,'GATED_DIRECT_RELEASE_PRODUCTION');
