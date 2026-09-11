@@ -23,7 +23,19 @@ if(clean(status.disposition?.state).toUpperCase()!=='ACTIVE')throw new Error(`DE
 const directive=readJson('company-directive.json',{});const pool=uniq(directive.ai?.modelPool||[]);if(!pool.length)throw new Error('MODEL_POOL_EMPTY');
 const editorModel=pool[hash(`${gameId}:design-artbook-editor`)%pool.length];
 const ARTBOOK={type:'object',required:['identity','playerFantasy','coreLoop','signatureSystems','progressionDirection','visualDirection'],properties:{identity:{type:'string',maxLength:800},playerFantasy:{type:'string',maxLength:800},coreLoop:{type:'array',maxItems:7,items:{type:'string',maxLength:320}},signatureSystems:{type:'array',maxItems:6,items:{type:'string',maxLength:420}},progressionDirection:{type:'string',maxLength:800},visualDirection:{type:'string',maxLength:800}},additionalProperties:false};
-async function callModel(model,system,user,schema){const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,keep_alive:'0s',format:schema,messages:[{role:'system',content:system},{role:'user',content:user}],options:{temperature:0.1,num_ctx:8192,num_predict:1400}})});if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);const body=await response.json();const text=clean(body?.message?.content);if(!text)throw new Error('empty model response');return JSON.parse(text);}
+async function callModel(model,system,user,schema){
+  const started=Date.now();
+  let lastError=null;
+  for(let attempt=1;attempt<=3;attempt++){
+    try{
+      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,keep_alive:'0s',format:schema,messages:[{role:'system',content:system},{role:'user',content:user}],options:{temperature:attempt===1?0.1:0,num_ctx:8192,num_predict:Math.min(2800,1400*attempt)}})});
+      if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
+      const body=await response.json();const text=clean(body?.message?.content);if(!text)throw new Error('empty model response');
+      const parsed=JSON.parse(text);console.log(`ARTBOOK_MODEL_CALL_MS=${model}|${Date.now()-started}|attempt=${attempt}`);return parsed;
+    }catch(error){lastError=error;if(attempt<3)await new Promise(r=>setTimeout(r,800*attempt));}
+  }
+  throw new Error(`ARTBOOK_MODEL_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
+}
 const artbook=await callModel(editorModel,'너는 이 프로젝트의 단일 Artbook Editor AI다. DESIGN_BASELINE_READY가 확정된 수정 상세설계에서 핵심 전략만 압축한다. 원문에 없는 설정·수치·시스템·스토리·시장주장을 추가하지 않는다.',`다음 수정 상세설계의 정체성, 플레이어 판타지, 핵심 루프, 시그니처 시스템, 성장 방향, 비주얼 방향만 압축하라.\nREVISED_DESIGN=${clip(revised.content,16000)}`,ARTBOOK);
 const artbookPath=path.join(base,'core-artbook.json');const output={version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,editorRole:'ARTBOOK_EDITOR_AI',editorModel,singleEditor:true,sourceDesign:revisedPath.replaceAll('\\','/'),baselineGateState:'DESIGN_BASELINE_READY',departmentPageAuthorship:false,newClaimsAdded:false,vibe2Used:false,content:artbook};writeJson(artbookPath,output);
 const seed=seedForGame(loadSeedState(),gameId);const catalog=readJson('game-catalog.json',{games:[]});const catalogGame=(catalog.games||[]).find(x=>x.id===gameId);const gameName=clean(catalogGame?.name||seed?.gameName||gameId);
