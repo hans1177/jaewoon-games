@@ -27,6 +27,7 @@ jobs:
     outputs:
       run: ${{ steps.queue.outputs.run }}
       matrix: ${{ steps.queue.outputs.matrix }}
+      parallel: ${{ steps.queue.outputs.parallel }}
       main_sha: ${{ steps.main.outputs.sha }}
     steps:
       - uses: actions/checkout@v4
@@ -63,9 +64,12 @@ jobs:
             String(x.currentStep||'').toUpperCase()==='UNITY_ANDROID_TECHNICAL_VALIDATION' &&
             String(x.canonicalState||'').toUpperCase()==='WAITING_UNITY_VALIDATION'
           ).map(x=>({gameId:x.gameId,gameName:x.gameName,designBaselineSource:x.designBaselineSource,sourcePath:x.sourcePath}));
+          const parallel=Math.max(1,rows.length);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`run=${rows.length?'true':'false'}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify(rows)}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`parallel=${parallel}\n`);
           console.log(`UNITY_TECH_PENDING_COUNT=${rows.length}`);
+          console.log(`UNITY_TECH_PARALLEL_N=${parallel}`);
           console.log(`UNITY_TECH_PENDING_IDS=${rows.map(x=>x.gameId).join(',')}`);
           NODE
 
@@ -75,7 +79,7 @@ jobs:
     if: needs.prepare.outputs.run == 'true'
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: ${{ fromJSON(needs.prepare.outputs.parallel) }}
       matrix:
         item: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     runs-on: ubuntu-latest
@@ -464,7 +468,8 @@ jobs:
         if: always()
         run: |
           echo 'UNITY_BUILD_ROUTE=GITHUB_CLOUD_SERIAL'
-          echo 'UNITY_GAME_PARALLELISM=1'
+          echo 'UNITY_PARENT_PARALLELISM=DYNAMIC_N'
+          echo 'UNITY_CHILD_REQUESTS=DYNAMIC_N'
           echo 'PAID_RUNNER_FOR_UNITY_BUILD=NO'
           echo 'REAL_APK_REQUIRED=YES'
           echo 'ANDROID_RUNTIME_SMOKE_REQUIRED=YES'
