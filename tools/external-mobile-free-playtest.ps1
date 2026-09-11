@@ -7,6 +7,27 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
+function New-TextFromCodePoints {
+  param([int[]]$Points)
+  return -join @($Points | ForEach-Object { [char]$_ })
+}
+
+function Write-BlockerEvidence {
+  param([string]$Reason, [string]$Detail = '')
+  New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
+  $payload = [ordered]@{
+    version = 1
+    authority = 'EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE'
+    practiceOnly = $true
+    runtimePromotionAllowed = $false
+    status = 'BLOCKED'
+    blocker = $Reason
+    detail = $Detail
+    observedAt = (Get-Date).ToUniversalTime().ToString('o')
+  }
+  $payload | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $OutDir 'diagnostic.json') -Encoding UTF8
+}
+
 function Invoke-Adb {
   param([string]$Serial, [string[]]$Args, [switch]$AllowFailure)
   $all = @('-s', $Serial) + $Args
@@ -59,13 +80,21 @@ function Find-InstallButtonCenter {
   Invoke-Adb -Serial $Serial -Args @('pull',$remote,$local) -AllowFailure | Out-Null
   if (-not (Test-Path $local)) { return $null }
   try { [xml]$xml = Get-Content -Raw -Encoding UTF8 $local } catch { return $null }
-  $installWords = @('Install','설치')
-  $blockedWords = @('Sign in','로그인','Add account','계정 추가')
+
+  # Keep this script ASCII-only because Windows PowerShell 5.1 can parse UTF-8-without-BOM source as ANSI.
+  $installKo = New-TextFromCodePoints @(0xC124,0xCE58)
+  $signInKo = New-TextFromCodePoints @(0xB85C,0xADF8,0xC778)
+  $addAccountKo = (New-TextFromCodePoints @(0xACC4,0xC815)) + ' ' + (New-TextFromCodePoints @(0xCD94,0xAC00))
+  $installWords = @('Install',$installKo)
+  $blockedWords = @('Sign in',$signInKo,'Add account',$addAccountKo)
+
   foreach ($node in $xml.SelectNodes('//node')) {
     $text = [string]$node.text
     $desc = [string]$node.'content-desc'
     foreach ($blocked in $blockedWords) {
-      if ($text -eq $blocked -or $desc -eq $blocked) { return @{ Blocked=$true; Reason='PLAY_STORE_SIGN_IN_REQUIRED' } }
+      if ($text -eq $blocked -or $desc -eq $blocked) {
+        return @{ Blocked=$true; Reason='PLAY_STORE_SIGN_IN_REQUIRED' }
+      }
     }
   }
   foreach ($node in $xml.SelectNodes('//node')) {
@@ -74,8 +103,8 @@ function Find-InstallButtonCenter {
     if (($installWords -contains $text) -or ($installWords -contains $desc)) {
       $bounds = [string]$node.bounds
       if ($bounds -match '^\[(\d+),(\d+)\]\[(\d+),(\d+)\]$') {
-        $x = [int]( ([int]$Matches[1] + [int]$Matches[3]) / 2 )
-        $y = [int]( ([int]$Matches[2] + [int]$Matches[4]) / 2 )
+        $x = [int](([int]$Matches[1] + [int]$Matches[3]) / 2)
+        $y = [int](([int]$Matches[2] + [int]$Matches[4]) / 2)
         return @{ Blocked=$false; X=$x; Y=$y }
       }
     }
@@ -85,20 +114,32 @@ function Find-InstallButtonCenter {
 
 function Install-FromPlayStore {
   param([string]$Serial, [string]$PackageId, [string]$Directory)
-  if (Test-PackageInstalled -Serial $Serial -PackageId $PackageId) { return @{ Pass=$true; AlreadyInstalled=$true; Reason='ALREADY_INSTALLED' } }
+  if (Test-PackageInstalled -Serial $Serial -PackageId $PackageId) {
+    return @{ Pass=$true; AlreadyInstalled=$true; Reason='ALREADY_INSTALLED' }
+  }
   $play = Invoke-Adb -Serial $Serial -Args @('shell','pm','path','com.android.vending') -AllowFailure
-  if (($play -join "`n") -notmatch '^package:') { return @{ Pass=$false; AlreadyInstalled=$false; Reason='PLAY_STORE_NOT_PRESENT' } }
+  if (($play -join "`n") -notmatch '^package:') {
+    return @{ Pass=$false; AlreadyInstalled=$false; Reason='PLAY_STORE_NOT_PRESENT' }
+  }
   Invoke-Adb -Serial $Serial -Args @('shell','am','start','-a','android.intent.action.VIEW','-d',"market://details?id=$PackageId",'-p','com.android.vending') -AllowFailure | Out-Null
   Start-Sleep -Seconds 6
-  if (Test-PackageInstalled -Serial $Serial -PackageId $PackageId) { return @{ Pass=$true; AlreadyInstalled=$false; Reason='INSTALLED_AFTER_STORE_OPEN' } }
+  if (Test-PackageInstalled -Serial $Serial -PackageId $PackageId) {
+    return @{ Pass=$true; AlreadyInstalled=$false; Reason='INSTALLED_AFTER_STORE_OPEN' }
+  }
   $button = Find-InstallButtonCenter -Serial $Serial -Directory $Directory
-  if ($null -eq $button) { return @{ Pass=$false; AlreadyInstalled=$false; Reason='INSTALL_BUTTON_NOT_FOUND' } }
-  if ($button.Blocked -eq $true) { return @{ Pass=$false; AlreadyInstalled=$false; Reason=$button.Reason } }
+  if ($null -eq $button) {
+    return @{ Pass=$false; AlreadyInstalled=$false; Reason='INSTALL_BUTTON_NOT_FOUND' }
+  }
+  if ($button.Blocked -eq $true) {
+    return @{ Pass=$false; AlreadyInstalled=$false; Reason=$button.Reason }
+  }
   Invoke-Adb -Serial $Serial -Args @('shell','input','tap',[string]$button.X,[string]$button.Y) | Out-Null
   $deadline = (Get-Date).AddMinutes(15)
   do {
     Start-Sleep -Seconds 5
-    if (Test-PackageInstalled -Serial $Serial -PackageId $PackageId) { return @{ Pass=$true; AlreadyInstalled=$false; Reason='PLAY_STORE_INSTALL_PASS' } }
+    if (Test-PackageInstalled -Serial $Serial -PackageId $PackageId) {
+      return @{ Pass=$true; AlreadyInstalled=$false; Reason='PLAY_STORE_INSTALL_PASS' }
+    }
   } while ((Get-Date) -lt $deadline)
   return @{ Pass=$false; AlreadyInstalled=$false; Reason='PLAY_STORE_INSTALL_TIMEOUT' }
 }
@@ -140,83 +181,99 @@ function Invoke-SafeInputProfile {
   }
 }
 
-if (-not (Get-Command adb -ErrorAction SilentlyContinue)) { throw 'BLOCKED_ADB_NOT_FOUND' }
-if (-not (Test-Path $ManifestPath)) { throw "manifest missing: $ManifestPath" }
-$manifest = Get-Content -Raw -Encoding UTF8 $ManifestPath | ConvertFrom-Json
-if ($manifest.authority -ne 'EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE' -or $manifest.practiceOnly -ne $true -or $manifest.runtimePromotionAllowed -ne $false) { throw 'unsafe external playtest manifest' }
-New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
-$devices = @(Get-ConnectedDevices)
-if ($devices.Count -eq 0) { throw 'BLOCKED_ANDROID_DEVICE_NOT_CONNECTED' }
-$serial = $null
-foreach ($candidate in $devices) {
-  $store = Invoke-Adb -Serial $candidate -Args @('shell','pm','path','com.android.vending') -AllowFailure
-  if (($store -join "`n") -match '^package:') { $serial = $candidate; break }
-}
-if (-not $serial) { throw 'BLOCKED_PLAY_STORE_NOT_PROVISIONED' }
-$size = Get-ScreenSize -Serial $serial
-$games = @($manifest.games | Select-Object -First $MaxGames)
-$summary = @()
-foreach ($game in $games) {
-  $gameDir = Join-Path $OutDir $game.id
-  New-Item -ItemType Directory -Path $gameDir -Force | Out-Null
-  $packageId = $null
-  $install = $null
-  foreach ($candidatePackage in @($game.packageIds)) {
-    $install = Install-FromPlayStore -Serial $serial -PackageId $candidatePackage -Directory $gameDir
-    if ($install.Pass) { $packageId = $candidatePackage; break }
+function Invoke-ExternalMobilePlaytest {
+  if (-not (Get-Command adb -ErrorAction SilentlyContinue)) { throw 'BLOCKED_ADB_NOT_FOUND' }
+  if (-not (Test-Path $ManifestPath)) { throw "MANIFEST_MISSING:$ManifestPath" }
+  $manifest = Get-Content -Raw -Encoding UTF8 $ManifestPath | ConvertFrom-Json
+  if ($manifest.authority -ne 'EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE' -or $manifest.practiceOnly -ne $true -or $manifest.runtimePromotionAllowed -ne $false) {
+    throw 'UNSAFE_EXTERNAL_PLAYTEST_MANIFEST'
   }
-  if (-not $packageId) {
+  New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
+  $devices = @(Get-ConnectedDevices)
+  if ($devices.Count -eq 0) { throw 'BLOCKED_ANDROID_DEVICE_NOT_CONNECTED' }
+
+  $serial = $null
+  foreach ($candidate in $devices) {
+    $store = Invoke-Adb -Serial $candidate -Args @('shell','pm','path','com.android.vending') -AllowFailure
+    if (($store -join "`n") -match '^package:') { $serial = $candidate; break }
+  }
+  if (-not $serial) { throw 'BLOCKED_PLAY_STORE_NOT_PROVISIONED' }
+
+  $size = Get-ScreenSize -Serial $serial
+  $games = @($manifest.games | Select-Object -First $MaxGames)
+  $summary = @()
+  foreach ($game in $games) {
+    $gameDir = Join-Path $OutDir $game.id
+    New-Item -ItemType Directory -Path $gameDir -Force | Out-Null
+    $packageId = $null
+    $install = $null
+    foreach ($candidatePackage in @($game.packageIds)) {
+      $install = Install-FromPlayStore -Serial $serial -PackageId $candidatePackage -Directory $gameDir
+      if ($install.Pass) { $packageId = $candidatePackage; break }
+    }
+    if (-not $packageId) {
+      $result = [ordered]@{
+        version=1; gameId=$game.id; title=$game.title; category=$game.category; packageId=$null; storeUrl=$game.storeUrl;
+        authority='EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE'; practiceOnly=$true; runtimePromotionAllowed=$false;
+        installPass=$false; installReason=$install.Reason; launchPass=$false; foregroundPass=$false; processAliveAfter=$false;
+        visualChange=$false; noCrash=$false; inputProfile=$game.inputProfile; observedAt=(Get-Date).ToUniversalTime().ToString('o')
+      }
+      $result | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $gameDir 'result.json') -Encoding UTF8
+      $summary += $result
+      continue
+    }
+
+    Invoke-Adb -Serial $serial -Args @('logcat','-c') -AllowFailure | Out-Null
+    $launch = Invoke-Adb -Serial $serial -Args @('shell','monkey','-p',$packageId,'-c','android.intent.category.LAUNCHER','1') -AllowFailure
+    Start-Sleep -Seconds 8
+    $before = Save-Screenshot -Serial $serial -Name 'before' -Directory $gameDir
+    $focusBefore = (Invoke-Adb -Serial $serial -Args @('shell','dumpsys','window') -AllowFailure) -join "`n"
+    $foregroundPass = $focusBefore -match [regex]::Escape($packageId)
+    Invoke-SafeInputProfile -Serial $serial -Profile $game.inputProfile -Size $size
+    Start-Sleep -Seconds 6
+    $after = Save-Screenshot -Serial $serial -Name 'after' -Directory $gameDir
+    $focusAfter = (Invoke-Adb -Serial $serial -Args @('shell','dumpsys','window') -AllowFailure) -join "`n"
+    $pidAfter = ((Invoke-Adb -Serial $serial -Args @('shell','pidof',$packageId) -AllowFailure) -join '').Trim()
+    $logPath = Join-Path $gameDir 'logcat.txt'
+    & adb -s $serial logcat -d -v threadtime | Set-Content $logPath -Encoding UTF8
+    $logText = Get-Content -Raw -Encoding UTF8 $logPath
+    $crashPattern = "FATAL EXCEPTION|ANR in $([regex]::Escape($packageId))|Process $([regex]::Escape($packageId)).*has died|Force finishing activity.*$([regex]::Escape($packageId))"
+    $noCrash = $logText -notmatch $crashPattern
+    $beforeHash = (Get-FileHash $before -Algorithm SHA256).Hash.ToLowerInvariant()
+    $afterHash = (Get-FileHash $after -Algorithm SHA256).Hash.ToLowerInvariant()
+    $visualChange = $beforeHash -ne $afterHash
     $result = [ordered]@{
-      version=1; gameId=$game.id; title=$game.title; category=$game.category; packageId=$null; storeUrl=$game.storeUrl;
+      version=1; gameId=$game.id; title=$game.title; category=$game.category; packageId=$packageId; storeUrl=$game.storeUrl;
       authority='EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE'; practiceOnly=$true; runtimePromotionAllowed=$false;
-      installPass=$false; installReason=$install.Reason; launchPass=$false; foregroundPass=$false; processAliveAfter=$false;
-      visualChange=$false; noCrash=$false; inputProfile=$game.inputProfile; observedAt=(Get-Date).ToUniversalTime().ToString('o')
+      installPass=$true; installReason=$install.Reason; launchPass=(($launch -join "`n") -match 'Events injected: 1');
+      foregroundPass=($foregroundPass -or ($focusAfter -match [regex]::Escape($packageId))); processAliveAfter=([bool]$pidAfter);
+      visualChange=$visualChange; noCrash=$noCrash; inputProfile=$game.inputProfile;
+      beforeScreenshotSha256=$beforeHash; afterScreenshotSha256=$afterHash;
+      evidenceRetention='EPHEMERAL_ARTIFACT_ONLY'; binaryRedistributed=$false; codeExtracted=$false;
+      observedAt=(Get-Date).ToUniversalTime().ToString('o')
     }
     $result | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $gameDir 'result.json') -Encoding UTF8
     $summary += $result
-    continue
+    Invoke-Adb -Serial $serial -Args @('shell','am','force-stop',$packageId) -AllowFailure | Out-Null
   }
-  Invoke-Adb -Serial $serial -Args @('logcat','-c') -AllowFailure | Out-Null
-  $launch = Invoke-Adb -Serial $serial -Args @('shell','monkey','-p',$packageId,'-c','android.intent.category.LAUNCHER','1') -AllowFailure
-  Start-Sleep -Seconds 8
-  $before = Save-Screenshot -Serial $serial -Name 'before' -Directory $gameDir
-  $focusBefore = (Invoke-Adb -Serial $serial -Args @('shell','dumpsys','window') -AllowFailure) -join "`n"
-  $foregroundPass = $focusBefore -match [regex]::Escape($packageId)
-  $pidBefore = ((Invoke-Adb -Serial $serial -Args @('shell','pidof',$packageId) -AllowFailure) -join '').Trim()
-  Invoke-SafeInputProfile -Serial $serial -Profile $game.inputProfile -Size $size
-  Start-Sleep -Seconds 6
-  $after = Save-Screenshot -Serial $serial -Name 'after' -Directory $gameDir
-  $focusAfter = (Invoke-Adb -Serial $serial -Args @('shell','dumpsys','window') -AllowFailure) -join "`n"
-  $pidAfter = ((Invoke-Adb -Serial $serial -Args @('shell','pidof',$packageId) -AllowFailure) -join '').Trim()
-  $logPath = Join-Path $gameDir 'logcat.txt'
-  & adb -s $serial logcat -d -v threadtime | Set-Content $logPath -Encoding UTF8
-  $logText = Get-Content -Raw -Encoding UTF8 $logPath
-  $crashPattern = "FATAL EXCEPTION|ANR in $([regex]::Escape($packageId))|Process $([regex]::Escape($packageId)).*has died|Force finishing activity.*$([regex]::Escape($packageId))"
-  $noCrash = $logText -notmatch $crashPattern
-  $beforeHash = (Get-FileHash $before -Algorithm SHA256).Hash.ToLowerInvariant()
-  $afterHash = (Get-FileHash $after -Algorithm SHA256).Hash.ToLowerInvariant()
-  $visualChange = $beforeHash -ne $afterHash
-  $result = [ordered]@{
-    version=1; gameId=$game.id; title=$game.title; category=$game.category; packageId=$packageId; storeUrl=$game.storeUrl;
-    authority='EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE'; practiceOnly=$true; runtimePromotionAllowed=$false;
-    installPass=$true; installReason=$install.Reason; launchPass=($launch -join "`n") -match 'Events injected: 1';
-    foregroundPass=($foregroundPass -or ($focusAfter -match [regex]::Escape($packageId))); processAliveAfter=([bool]$pidAfter);
-    visualChange=$visualChange; noCrash=$noCrash; inputProfile=$game.inputProfile;
-    beforeScreenshotSha256=$beforeHash; afterScreenshotSha256=$afterHash;
-    evidenceRetention='EPHEMERAL_ARTIFACT_ONLY'; binaryRedistributed=$false; codeExtracted=$false;
-    observedAt=(Get-Date).ToUniversalTime().ToString('o')
-  }
-  $result | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $gameDir 'result.json') -Encoding UTF8
-  $summary += $result
-  Invoke-Adb -Serial $serial -Args @('shell','am','force-stop',$packageId) -AllowFailure | Out-Null
+
+  $summaryPath = Join-Path $OutDir 'summary.json'
+  @{
+    version=1; authority='EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE'; practiceOnly=$true; runtimePromotionAllowed=$false;
+    deviceSerial=$serial; games=$summary; observedAt=(Get-Date).ToUniversalTime().ToString('o')
+  } | ConvertTo-Json -Depth 12 | Set-Content $summaryPath -Encoding UTF8
+  $passCount = @($summary | Where-Object { $_.installPass -and $_.launchPass -and $_.foregroundPass -and $_.processAliveAfter -and $_.noCrash }).Count
+  Write-Host "EXTERNAL_MOBILE_PLAYTEST_PASS_COUNT=$passCount"
+  Write-Host "EXTERNAL_MOBILE_PLAYTEST_TOTAL=$($summary.Count)"
+  Write-Host "EXTERNAL_MOBILE_PLAYTEST_SUMMARY=$summaryPath"
+  if ($passCount -lt 1) { throw 'EXTERNAL_MOBILE_PLAYTEST_NO_VALID_RUNTIME_SAMPLE' }
 }
-$summaryPath = Join-Path $OutDir 'summary.json'
-@{
-  version=1; authority='EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE'; practiceOnly=$true; runtimePromotionAllowed=$false;
-  deviceSerial=$serial; games=$summary; observedAt=(Get-Date).ToUniversalTime().ToString('o')
-} | ConvertTo-Json -Depth 12 | Set-Content $summaryPath -Encoding UTF8
-$passCount = @($summary | Where-Object { $_.installPass -and $_.launchPass -and $_.foregroundPass -and $_.processAliveAfter -and $_.noCrash }).Count
-Write-Host "EXTERNAL_MOBILE_PLAYTEST_PASS_COUNT=$passCount"
-Write-Host "EXTERNAL_MOBILE_PLAYTEST_TOTAL=$($summary.Count)"
-Write-Host "EXTERNAL_MOBILE_PLAYTEST_SUMMARY=$summaryPath"
-if ($passCount -lt 1) { throw 'EXTERNAL_MOBILE_PLAYTEST_NO_VALID_RUNTIME_SAMPLE' }
+
+try {
+  Invoke-ExternalMobilePlaytest
+} catch {
+  $reason = [string]$_.Exception.Message
+  Write-BlockerEvidence -Reason $reason -Detail ([string]$_)
+  Write-Host "EXTERNAL_MOBILE_PLAYTEST_BLOCKER=$reason"
+  throw
+}

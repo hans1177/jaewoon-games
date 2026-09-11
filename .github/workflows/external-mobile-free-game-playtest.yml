@@ -67,19 +67,27 @@ jobs:
           Write-Host 'EXTERNAL_REFERENCE_INSTALL_POLICY=OFFICIAL_GOOGLE_PLAY_ONLY'
           Write-Host 'EXTERNAL_REFERENCE_CODE_EXTRACTION=NO'
 
+      - name: Prepare runtime evidence directory
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $out = Join-Path $env:RUNNER_TEMP "external-mobile-playtest-$env:GITHUB_RUN_ID"
+          New-Item -ItemType Directory -Path $out -Force | Out-Null
+          "EXTERNAL_PLAYTEST_OUT=$out" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "EXTERNAL_PLAYTEST_OUT=$out"
+
       - name: Install and black-box playtest free mobile reference game
         id: playtest
         continue-on-error: true
         run: |
           $ErrorActionPreference = 'Stop'
-          $out = Join-Path $env:RUNNER_TEMP "external-mobile-playtest-$env:GITHUB_RUN_ID"
-          .\tools\external-mobile-free-playtest.ps1 `
+          & .\tools\external-mobile-free-playtest.ps1 `
             -ManifestPath 'company-learning/external-game-playtest/mobile-free-seed-games.json' `
-            -OutDir $out `
+            -OutDir $env:EXTERNAL_PLAYTEST_OUT `
             -MaxGames ([int]$env:PLAYTEST_MAX_GAMES)
           if ($LASTEXITCODE -ne 0) { throw 'external mobile playtest script failed' }
-          "EXTERNAL_PLAYTEST_OUT=$out" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          $summary = [System.IO.File]::ReadAllText((Join-Path $out 'summary.json'), [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+          $summaryPath = Join-Path $env:EXTERNAL_PLAYTEST_OUT 'summary.json'
+          if (-not (Test-Path $summaryPath)) { throw 'runtime playtest summary missing' }
+          $summary = [System.IO.File]::ReadAllText($summaryPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
           $pass = @($summary.games | Where-Object { $_.installPass -and $_.launchPass -and $_.foregroundPass -and $_.processAliveAfter -and $_.noCrash }).Count
           if ($pass -lt 1) { throw 'no valid runtime-observed commercial game' }
           Write-Host "EXTERNAL_RUNTIME_VALID_GAMES=$pass"
@@ -101,7 +109,7 @@ jobs:
           Write-Host 'COMMERCIAL_RUNTIME_REFERENCE_VERIFIED_PRODUCTION_POSITIVE=NO'
 
       - name: Upload ephemeral runtime evidence
-        if: always() && env.EXTERNAL_PLAYTEST_OUT != ''
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: external-mobile-gameplay-evidence
@@ -122,6 +130,9 @@ jobs:
         if: always()
         run: |
           if ('${{ steps.playtest.outcome }}' -ne 'success') {
+            if (Test-Path (Join-Path $env:EXTERNAL_PLAYTEST_OUT 'diagnostic.json')) {
+              Get-Content -Raw (Join-Path $env:EXTERNAL_PLAYTEST_OUT 'diagnostic.json') | Write-Host
+            }
             throw 'EXTERNAL_MOBILE_PLAYTEST=BLOCKED_OR_FAILED; no sample is accepted until an official Play Store install and real runtime test pass'
           }
           Write-Host 'EXTERNAL_MOBILE_PLAYTEST=PASS'
