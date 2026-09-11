@@ -71,17 +71,55 @@ async function parallelObject(keys,worker){
   }));
   return Object.fromEntries(entries);
 }
+function parseJsonObject(text){
+  const raw=String(text??'').trim();
+  if(!raw)throw new Error('empty model response');
+  const unfenced=raw.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+  try{return JSON.parse(unfenced);}catch{}
+  const first=unfenced.indexOf('{');const last=unfenced.lastIndexOf('}');
+  if(first>=0&&last>first)return JSON.parse(unfenced.slice(first,last+1));
+  throw new Error('model response is not a JSON object');
+}
+function assertSchemaValue(value,schema,label='root'){
+  if(!schema||typeof schema!=='object')return;
+  if(schema.enum&&!schema.enum.includes(value))throw new Error(`schema enum mismatch: ${label}`);
+  if(schema.type==='object'){
+    if(!value||Array.isArray(value)||typeof value!=='object')throw new Error(`schema object mismatch: ${label}`);
+    for(const key of schema.required||[])if(!(key in value))throw new Error(`schema required missing: ${label}.${key}`);
+    if(schema.additionalProperties===false)for(const key of Object.keys(value))if(!Object.prototype.hasOwnProperty.call(schema.properties||{},key))throw new Error(`schema additional property: ${label}.${key}`);
+    for(const [key,child] of Object.entries(schema.properties||{}))if(key in value)assertSchemaValue(value[key],child,`${label}.${key}`);
+    return;
+  }
+  if(schema.type==='array'){
+    if(!Array.isArray(value))throw new Error(`schema array mismatch: ${label}`);
+    if(Number.isFinite(schema.minItems)&&value.length<schema.minItems)throw new Error(`schema minItems mismatch: ${label}`);
+    if(Number.isFinite(schema.maxItems)&&value.length>schema.maxItems)throw new Error(`schema maxItems mismatch: ${label}`);
+    for(let i=0;i<value.length;i++)assertSchemaValue(value[i],schema.items,`${label}[${i}]`);
+    return;
+  }
+  if(schema.type==='string'){
+    if(typeof value!=='string')throw new Error(`schema string mismatch: ${label}`);
+    if(Number.isFinite(schema.maxLength)&&value.length>schema.maxLength)throw new Error(`schema maxLength mismatch: ${label}`);
+  }
+}
 
 async function callModel(model,system,user,schema,{predict=1100,temperature=0.25}={}){
   const callStarted=Date.now();
   let lastError=null;
   for(let attempt=1;attempt<=3;attempt++){
+    const mode=attempt===1?'schema':attempt===2?'json':'plain-json';
     try{
-      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,keep_alive:modelKeepAlive,format:schema,messages:[{role:'system',content:system},{role:'user',content:user+'\n출력은 스키마에 맞는 JSON 객체만 반환한다.'}],options:{temperature:attempt===1?temperature:0,num_ctx:8192,num_predict:Math.min(4096,predict*attempt)}})});
+      const fallbackSchema=attempt===1?'':`\nJSON_SCHEMA=${JSON.stringify(schema)}\n사고 과정이나 설명 없이 위 스키마를 만족하는 JSON 객체만 반환한다.`;
+      const payload={model,stream:false,think:false,keep_alive:modelKeepAlive,messages:[{role:'system',content:system},{role:'user',content:user+'\n출력은 스키마에 맞는 JSON 객체만 반환한다.'+fallbackSchema}],options:{temperature:attempt===1?temperature:0,num_ctx:8192,num_predict:model.startsWith('deepseek-r1')&&attempt>1?4096:Math.min(4096,predict*attempt)}};
+      if(attempt===1)payload.format=schema;
+      else if(attempt===2)payload.format='json';
+      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
       if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
-      const body=await response.json();const text=clean(body?.message?.content);if(!text)throw new Error('empty model response');
-      const parsed=JSON.parse(text);const elapsedMs=Date.now()-callStarted;modelCallStats.push({model,attempt,elapsedMs,predict});console.log(`MODEL_CALL_MS=${model}|${elapsedMs}|attempt=${attempt}|predict=${predict}`);return parsed;
-    }catch(error){lastError=error;if(attempt<3)await new Promise(r=>setTimeout(r,800*attempt));}
+      const body=await response.json();const text=String(body?.message?.content??'').trim();
+      if(!text){if(clean(body?.message?.thinking))console.log(`MODEL_EMPTY_CONTENT_WITH_THINKING=${model}|attempt=${attempt}|mode=${mode}`);throw new Error(`empty model response (${mode})`);}
+      const parsed=parseJsonObject(text);assertSchemaValue(parsed,schema);
+      const elapsedMs=Date.now()-callStarted;modelCallStats.push({model,attempt,elapsedMs,predict,mode});console.log(`MODEL_CALL_MS=${model}|${elapsedMs}|attempt=${attempt}|predict=${predict}|mode=${mode}`);return parsed;
+    }catch(error){lastError=error;if(attempt<3){console.log(`MODEL_CALL_FALLBACK=${model}|attempt=${attempt}|next=${attempt===1?'json':'plain-json'}|reason=${clean(error?.message)}`);await new Promise(r=>setTimeout(r,800*attempt));}}
   }
   throw new Error(`MODEL_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
 }
