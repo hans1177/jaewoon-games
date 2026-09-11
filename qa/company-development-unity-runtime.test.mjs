@@ -7,6 +7,7 @@ import {spawnSync} from 'node:child_process';
 
 const generatorSource=process.env.UNITY_BOOTSTRAP_SOURCE||path.resolve('tools/company-development-unity-bootstrap.mjs');
 const workflowSource=fs.readFileSync(path.resolve('.github/workflows/company-development-unity-runtime.yml'),'utf8');
+const expectedUnityEditorVersion='6000.6.0f1';
 const cases=[
   ['seed-action-survival-rogu-echoes-of-the-lost-star','Echoes of the Lost Star','SURVIVAL'],
   ['seed-single-defense-strat-celestial-bastion','Celestial Bastion','DEFENSE'],
@@ -38,10 +39,11 @@ test('creates one distinct Unity technical prototype per promoted seed from real
     assert.equal(meta.webEvidenceBound,true);
     assert.equal(meta.releaseAuthority,false);
     assert.equal(meta.purpose,'UNITY_ANDROID_TECHNICAL_VALIDATION');
+    assert.equal(meta.unityEditorVersion,expectedUnityEditorVersion);
     assert.match(fs.readFileSync(path.join(project,'Assets','Editor','SeedAndroidBuild.cs'),'utf8'),/SeedAndroidBuild/);
     assert.match(fs.readFileSync(path.join(project,'Assets','Scripts','SeedTechnicalPrototype.cs'),'utf8'),/JAEWOON_TECH_METRIC/);
     assert.match(fs.readFileSync(path.join(project,'Assets','Scripts','SeedTechnicalPrototype.cs'),'utf8'),/PlayerPrefs/);
-    assert.equal(fs.readFileSync(path.join(project,'ProjectSettings','ProjectVersion.txt'),'utf8').trim(),'m_EditorVersion: 6000.0.30f1');
+    assert.equal(fs.readFileSync(path.join(project,'ProjectSettings','ProjectVersion.txt'),'utf8').trim(),`m_EditorVersion: ${expectedUnityEditorVersion}`);
   }
 });
 
