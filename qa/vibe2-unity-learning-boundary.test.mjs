@@ -15,7 +15,18 @@ test('Unity 학습은 실제 게임 프로젝트와 분리된다', () => {
   assert.equal(contract.gameProjectRules.verifiedGameWorkMayBecomeTrainingEvidence, true);
 });
 
-test('학습 산출물은 로컬 전용 루트에 남고 새 adapter는 검증 전 실전에 투입되지 않는다', () => {
+test('teacher 단계는 GitHub-hosted 온라인에서 실행되고 local Ollama를 요구하지 않는다', () => {
+  assert.equal(contract.teacherExecution, 'GITHUB_HOSTED_ONLINE');
+  assert.equal(contract.teacherRoute, 'GPT_AUTHORED_CURRICULUM_ON_GITHUB_HOSTED_RUNNER');
+  assert.equal(contract.localOllamaTeacherRequired, false);
+  assert.equal(contract.paidApiRequired, false);
+  assert.match(workflow, /online-teacher:/);
+  assert.match(workflow, /runs-on: ubuntu-latest/);
+  assert.match(workflow, /LOCAL_OLLAMA_TEACHER=NO/);
+  assert.doesNotMatch(workflow, /ollama show|ollama pull|api\/generate/);
+});
+
+test('학습 산출물은 별도 학습 루트에 남고 새 adapter는 검증 전 실전에 투입되지 않는다', () => {
   assert.match(workflow, /jaewoon-vibe2-learning/);
   assert.match(workflow, /adapters\\unity-coding/);
   assert.match(workflow, /promotionState='UNVERIFIED'/);
@@ -23,9 +34,12 @@ test('학습 산출물은 로컬 전용 루트에 남고 새 adapter는 검증 �
   assert.equal(contract.adapterRules.requiredGate, 'FIXED_HOLDOUT_AB_AND_CANARY');
 });
 
-test('teacher는 분석만 하고 정답은 검증된 실제 Unity patch다', () => {
+test('teacher는 분석만 하고 정답은 검증된 실제 Unity patch이며 taskType도 unity다', () => {
   assert.equal(contract.teacherAuthority, 'ANALYSIS_ONLY');
   assert.equal(contract.answerTarget, 'VERIFIED_FINAL_DIFF_ONLY');
+  assert.equal(contract.taskType, 'unity');
   assert.ok(contract.allowedTrainingInputs.includes('VERIFIED_UNITY_FINAL_PATCHES'));
   assert.ok(contract.allowedTrainingInputs.includes('BOUND_QA_CI_RUNTIME_EVIDENCE'));
+  assert.match(workflow, /--task-type unity/);
+  assert.doesNotMatch(workflow, /--task-type bugfix/);
 });
