@@ -9,6 +9,12 @@ on:
       - 'company-learning/training-samples/**'
       - 'tools/vibe2-online-unity-teacher.mjs'
       - 'tools/vibe2-structural-repair-distillation.mjs'
+      - 'tools/vibe2-weight-learning.mjs'
+      - 'qa/vibe2-structural-repair-distillation.test.mjs'
+      - 'qa/vibe2-online-unity-teacher.test.mjs'
+      - 'qa/vibe2-unity-teacher-rubric.test.mjs'
+      - 'qa/vibe2-unity-learning-boundary.test.mjs'
+      - 'qa/vibe2-weight-learning.test.mjs'
       - '.github/workflows/vibe2-structural-repair-distillation.yml'
   workflow_run:
     workflows: ['Vibe2 Distillation Sample Ingest']
@@ -54,7 +60,12 @@ jobs:
           node --test qa/vibe2-weight-learning.test.mjs
           test -f company-learning/unity-teacher-rubric.json
           test -f company-learning/unity-teacher-materials/core-lessons.json
+          test -f company-learning/unity-teacher-materials/graphics-motion-lessons.json
           echo 'LEARNING_FOCUS=UNITY_CODING_ONLY'
+          echo 'SPECIALIZATION=GRAPHICS_ANIMATION_MOTION_SMOOTHNESS'
+          echo 'KNOWHOW_TRANSFER=REPLICATE_REARRANGE_VARY_RECOMBINE_VERIFIED_INTERNAL_PATTERNS'
+          echo 'EXTERNAL_PROPRIETARY_CODE_REUSE=NO'
+          echo 'LICENSED_CODE_REUSE=LICENSE_TERMS_ONLY'
           echo 'ONLINE_TEACHER=YES'
           echo 'LOCAL_OLLAMA_TEACHER=NO'
           echo 'PAID_API=NO'
@@ -112,6 +123,7 @@ jobs:
           echo "sample_count=$count" >> "$GITHUB_OUTPUT"
           echo "ONLINE_UNITY_TEACHER_SAMPLES=$count"
           echo 'TEACHER_ROUTE=GPT_AUTHORED_CURRICULUM_ON_GITHUB_HOSTED_RUNNER'
+          echo 'SPECIALIZATION=GRAPHICS_ANIMATION_MOTION_SMOOTHNESS'
           echo 'LOCAL_OLLAMA_TEACHER=NO'
           echo 'PAID_API=NO'
       - name: Upload online teacher samples
@@ -212,6 +224,7 @@ jobs:
           Write-Host 'LEARNING_FOCUS=UNITY_CODING_ONLY'
           Write-Host 'TASK_TYPE=unity'
           Write-Host 'SCHEDULE=HOURLY_24H'
+          Write-Host 'SPECIALIZATION=GRAPHICS_ANIMATION_MOTION_SMOOTHNESS'
           Write-Host 'TEACHER_ROUTE=GPT_AUTHORED_CURRICULUM_ON_GITHUB_HOSTED_RUNNER'
           Write-Host 'LOCAL_OLLAMA_TEACHER=NO'
           Write-Host 'PAID_API=NO'
