@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "gameId": "seed-casual-realm-weaver",
   "date": "2026-09-11",
   "productionClass": "DESIGN_ONLY",
@@ -15,20 +15,37 @@
   "vibe2Used": false,
   "localization": "ko-KR",
   "localizedFromRuntime": true,
-  "content": {
-    "identity": "Realm Weaver",
-    "playerFantasy": "한 손으로 바로 시작해 짧은 플레이 안에서 점수와 보상을 쌓고 빠르게 다시 도전하는 캐주얼 모바일 게임.",
+  "designCoreSource": "design/seed-casual-realm-weaver/2026-09-11/design-revised.json",
+  "designCore": {
+    "identity": "세계의 직조자",
+    "coreFun": "한 손 탭 이동과 짧은 런, 빠른 재도전이 중심인 캐주얼 플레이.",
+    "playerFantasy": "한 손으로 즉시 시작해 짧은 플레이 안에서 점수와 보상을 쌓고 작은 위험 선택을 한 뒤 빠르게 다시 도전한다.",
     "coreLoop": [
       "간단한 한 손 탭 또는 스와이프 조작과 명확한 점수, 거리, 짧은 세션 목표로 즉시 플레이를 시작한다.",
       "읽기 쉬운 피드백 속에서 짧은 런을 진행하고 보상을 모으며 종료 전 작은 위험 선택이나 경로 선택을 한다.",
       "성공하거나 실패하면 점수와 보상을 받고 작은 성장 혜택을 해금한 뒤 최소한의 대기 없이 빠르게 다시 도전한다."
     ],
     "signatureSystems": [
-      "간단한 탭 이동",
-      "가벼운 누적 성장",
-      "유휴 보상",
-      "짧은 세션 중심 캐주얼 구조"
+      {"name":"간단한 탭 이동","purpose":"한 손 조작으로 즉시 시작하고 이동 판단을 단순하게 만든다.","playerChoice":"짧은 런에서 위험과 경로를 빠르게 선택한다."},
+      {"name":"가벼운 누적 성장","purpose":"반복 플레이가 작은 성장 혜택으로 이어지게 한다.","playerChoice":"다음 플레이에 적용할 성장 방향을 고른다."},
+      {"name":"유휴 보상","purpose":"접속 사이에도 가벼운 보상 축적을 제공한다.","playerChoice":"모인 보상을 언제 수령하고 어디에 사용할지 결정한다."}
     ],
+    "progressionDirection": "싱글 플레이 중심으로 짧은 반복 플레이와 누적 성장이 자연스럽게 이어지게 한다.",
+    "visualDirection": "글로벌 모바일 이용자가 즉시 이해할 수 있는 단순하고 선명한 피드백과 터치 중심 화면 구성을 우선한다.",
+    "mobileUx": "터치 우선 조작과 한 손 플레이를 기본 전제로 한다.",
+    "marketTargetDirection": "짧고 부담 없는 반복 플레이를 선호하는 글로벌 모바일 캐주얼 이용자.",
+    "steamExpansionDecision": "Steam 확장은 현재 권장하지 않음.",
+    "multiplayerExpansionDecision": "멀티플레이 확장은 현재 권장하지 않음.",
+    "technicalAssumptions": [
+      "초기 플랫폼은 Android 모바일이다.",
+      "입력은 터치 기반으로 설계한다."
+    ]
+  },
+  "content": {
+    "identity": "Realm Weaver",
+    "playerFantasy": "한 손으로 바로 시작해 짧은 플레이 안에서 점수와 보상을 쌓고 빠르게 다시 도전하는 캐주얼 모바일 게임.",
+    "coreLoop": ["간단한 한 손 탭 또는 스와이프 조작과 명확한 점수, 거리, 짧은 세션 목표로 즉시 플레이를 시작한다.","읽기 쉬운 피드백 속에서 짧은 런을 진행하고 보상을 모으며 종료 전 작은 위험 선택이나 경로 선택을 한다.","성공하거나 실패하면 점수와 보상을 받고 작은 성장 혜택을 해금한 뒤 최소한의 대기 없이 빠르게 다시 도전한다."],
+    "signatureSystems": ["간단한 탭 이동","가벼운 누적 성장","유휴 보상","짧은 세션 중심 캐주얼 구조"],
     "progressionDirection": "싱글 플레이 중심으로 짧은 반복 플레이와 누적 성장이 자연스럽게 이어지게 한다.",
     "visualDirection": "글로벌 모바일 이용자가 즉시 이해할 수 있는 단순하고 선명한 피드백과 터치 중심 화면 구성을 우선한다."
   },
@@ -40,10 +57,5 @@
   "homepageVisible": true,
   "format": "core-strategy",
   "sourceFile": "design/seed-casual-realm-weaver/2026-09-11/core-artbook.json",
-  "publication": {
-    "policyDocument": "COMPANY_FLOW.md",
-    "baselineGateState": "DESIGN_BASELINE_READY",
-    "baselineReady": true,
-    "publishedAt": "2026-09-11T07:04:55.104Z"
-  }
+  "publication": {"policyDocument":"COMPANY_FLOW.md","baselineGateState":"DESIGN_BASELINE_READY","baselineReady":true,"publishedAt":"2026-09-11T07:04:55.104Z"}
 }
