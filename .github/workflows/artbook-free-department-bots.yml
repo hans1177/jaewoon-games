@@ -69,15 +69,14 @@ jobs:
           node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
           import fs from 'node:fs';
           import {execFileSync} from 'node:child_process';
-          import {PRODUCTION_CLASSES,productionClassOf,tierAliasForProductionClass} from './tools/production-classification.mjs';
+          import {PRODUCTION_CLASSES,productionClassOf} from './tools/production-classification.mjs';
 
           const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-          const numericLabels=directive.production?.numericLabels||{};
           const canonical=new Set(directive.production?.canonicalClasses||[]);
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           const eventName=String(process.env.EVENT_NAME||'').trim();
-          const catalogRows=(catalog.games||[]).map(game=>({game,productionClass:productionClassOf({},game,{numericLabels}),source:'CATALOG'})).filter(row=>canonical.has(row.productionClass));
+          const catalogRows=(catalog.games||[]).map(game=>({game,productionClass:productionClassOf({},game),source:'CATALOG'})).filter(row=>canonical.has(row.productionClass));
           let seedState={seeds:[]};
           try{seedState=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));}catch{}
           const catalogIds=new Set(catalogRows.map(row=>row.game.id));
@@ -88,8 +87,7 @@ jobs:
               game:{
                 id:seed.gameId,
                 name:String(seed.gameName||seed.DISTINCT_IDENTITY||seed.gameId).trim(),
-                productionClass:PRODUCTION_CLASSES.DESIGN_ONLY,
-                productionTier:numericLabels[PRODUCTION_CLASSES.DESIGN_ONLY]??null
+                productionClass:PRODUCTION_CLASSES.DESIGN_ONLY
               },
               productionClass:PRODUCTION_CLASSES.DESIGN_ONLY,
               source:'GAME_SEED'
@@ -133,11 +131,11 @@ jobs:
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
           const get=t=>parts.find(x=>x.type===t)?.value||'';
           const date=`${get('year')}-${get('month')}-${get('day')}`;
-          const targets=selected.map(row=>({game_id:row.game.id,game_name:row.game.name,production_class:row.productionClass,tier_alias:tierAliasForProductionClass(row.productionClass,{numericLabels})??'',source:row.source,date}));
+          const targets=selected.map(row=>({game_id:row.game.id,game_name:row.game.name,production_class:row.productionClass,source:row.source,date}));
           console.log(`run=${targets.length>0?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
           console.error(`PRODUCTION_TARGET_COUNT=${targets.length}`);
-          console.error(`PRODUCTION_TARGETS=${targets.map(x=>`${x.game_id}:${x.productionClass}:${x.source}`).join(',')}`);
+          console.error(`PRODUCTION_TARGETS=${targets.map(x=>`${x.game_id}:${x.production_class}:${x.source}`).join(',')}`);
           NODE
 
   production-cycle:
@@ -218,7 +216,7 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import path from 'node:path';
-          import {PRODUCTION_CLASSES,normalizeProductionClass,productionClassFromLegacyTier} from './tools/production-classification.mjs';
+          import {PRODUCTION_CLASSES,normalizeProductionClass} from './tools/production-classification.mjs';
           const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const roles=['planning','graphics','development','qa','balance'];
           const leads=roles.map(role=>String(d.ai?.departmentLeadModels?.[role]||'').trim());
@@ -229,8 +227,9 @@ jobs:
           const statusFile=path.join(base,'cycle-status.json');
           if(!fs.existsSync(statusFile))throw new Error('cycle-status.json missing');
           const s=JSON.parse(fs.readFileSync(statusFile,'utf8'));
-          const actualClass=normalizeProductionClass(s.productionClass)||productionClassFromLegacyTier(s.tierAlias??s.tier,{numericLabels:d.production?.numericLabels||{}});
+          const actualClass=normalizeProductionClass(s.productionClass);
           const expectedClass=normalizeProductionClass(process.env.EXPECTED_PRODUCTION_CLASS);
+          if(!actualClass)throw new Error('cycle status productionClass missing or invalid');
           if(actualClass!==expectedClass)throw new Error(`productionClass mismatch: ${actualClass} != ${expectedClass}`);
 
           if(actualClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
@@ -287,7 +286,7 @@ jobs:
           }
           console.log('CENTRAL_POLICY=COMPANY_FLOW.md');
           console.log(`PRODUCTION_CLASS=${actualClass}`);
-          console.log('NUMERIC_TIER_POLICY=ALIAS_ONLY');
+          console.log('PRODUCTION_CLASS_POLICY=SEMANTIC_ONLY');
           NODE
 
       - name: Propose production-cycle evidence through PR
