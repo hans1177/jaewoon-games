@@ -1,8 +1,8 @@
 {
   "version": 3,
   "updatedAt": "2026-09-11",
-  "overall": "VERIFYING_UNITY_RUNTIME",
-  "reason": "Unity runtime smoke automation is installed, but a successful real APK emulator run is still required.",
+  "overall": "STRENGTHENED",
+  "reason": "A successful Unity Android emulator runtime-smoke run provides real runtime QA evidence.",
   "policy": {
     "genericPraiseIsEvidence": false,
     "domainSpecificEvidenceRequired": true,
@@ -38,7 +38,7 @@
       "currentProtection": "BUILD_EVIDENCE_REQUIRED + DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
     },
     "qa": {
-      "status": "VERIFYING_UNITY_RUNTIME",
+      "status": "VERIFIED_UNITY_RUNTIME",
       "passGate": "2+ QA-domain evidence items plus successful build plus runtime/play evidence",
       "checks": [
         "launch",
@@ -58,17 +58,17 @@
         "persistentEvidence": "company-qa-runtime-evidence.json"
       },
       "unityRuntime": {
-        "status": "AUTOMATION_INSTALLED_CONTRACT_VERIFIED_RUNTIME_EVIDENCE_PENDING",
+        "status": "VERIFIED_RUNTIME_EVIDENCE",
         "trigger": "Successful Unity Hybrid Android Build completion",
         "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
         "probe": "tools/unity-apk-runtime-smoke.sh",
         "method": "APK install -> launch -> Android tap/swipe input -> process survival -> fatal log scan -> screenshot",
-        "contractVerificationRunId": 34428090459,
+        "contractVerificationRunId": 34651553318,
         "contractVerificationConclusion": "success",
-        "successfulRuntimeEvidenceRunId": null,
+        "successfulRuntimeEvidenceRunId": 34650174925,
         "buildAloneCountsAsQaPass": false,
-        "latestRuntimeRunId": 34506763782,
-        "latestRuntimeConclusion": "skipped"
+        "latestRuntimeRunId": 34652535577,
+        "latestRuntimeConclusion": null
       },
       "currentProtection": "RUNTIME_PLAY_EVIDENCE_REQUIRED + BUILD_EVIDENCE_REQUIRED + DOMAIN_SPECIFIC_EVIDENCE_REQUIRED"
     },
@@ -115,71 +115,77 @@
   "verification": {
     "departmentStandardsWorkflow": {
       "latestRun": {
-        "runId": 34428090459,
+        "runId": 34651553318,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "b3bbdb53c6968dc9a6c501dae013857e724d0a83",
-        "updatedAt": "2026-09-10T02:06:02Z"
+        "headSha": "963e07e7f7d847356bbd49da8f157825e6b5be6e",
+        "updatedAt": "2026-09-11T21:54:04Z"
       },
       "latestSuccessfulRun": {
-        "runId": 34428090459,
+        "runId": 34651553318,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "b3bbdb53c6968dc9a6c501dae013857e724d0a83",
-        "updatedAt": "2026-09-10T02:06:02Z"
+        "headSha": "963e07e7f7d847356bbd49da8f157825e6b5be6e",
+        "updatedAt": "2026-09-11T21:54:04Z"
       },
       "unitySmokeContractVerified": true
     },
     "latestUnityBuild": {
       "latestRun": {
-        "runId": 34505580080,
-        "status": "completed",
-        "conclusion": "failure",
-        "headSha": "4c7e73a6f2dbebf278b86669eab4fb1582b62693",
-        "updatedAt": "2026-09-10T17:12:14Z"
-      },
-      "latestSuccessfulRun": {
-        "runId": 34201876835,
+        "runId": 34651567525,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "f78b6a53186c3a6765e75bdb92801d512ed8d8e7",
-        "updatedAt": "2026-09-08T08:07:49Z"
+        "headSha": "6564d7e78f54286b823f1aa8edfdcbee89080cc6",
+        "updatedAt": "2026-09-11T22:06:51Z"
+      },
+      "latestSuccessfulRun": {
+        "runId": 34651567525,
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "6564d7e78f54286b823f1aa8edfdcbee89080cc6",
+        "updatedAt": "2026-09-11T22:06:51Z"
       },
       "publishedTestBuild": {
-        "requestId": "daechung-rpg-hybrid-017",
-        "builtAt": "2026-09-08T08:07:37.760135+00:00",
-        "sourceCommit": "f78b6a53186c3a6765e75bdb92801d512ed8d8e7",
-        "sha256": "bca2596f93ea71e5ad311d9d3a322083ae768f8ac0c9c046125b33c9a4f1e817",
-        "bytes": 24392700
+        "requestId": "development-unity-seed-casual-realm-weaver-34647586728",
+        "builtAt": "2026-09-11T22:05:54.199433+00:00",
+        "sourceCommit": "8e347b1bc47a467872bb001c4e71d41231def7d0",
+        "sha256": "6b9d40ac5446e161cbe7b6dee634fdddc2b3a7e588be2414fb837047aa898808",
+        "bytes": 21092532
       }
     },
     "unityRuntimeSmoke": {
       "workflow": ".github/workflows/unity-android-runtime-smoke.yml",
       "contractVerified": true,
       "latestRun": {
-        "runId": 34506763782,
-        "status": "completed",
-        "conclusion": "skipped",
-        "headSha": "54d9d0feaf6bf28a2695ec31056c69bb31db7570",
-        "updatedAt": "2026-09-10T17:12:26Z"
+        "runId": 34652535577,
+        "status": "in_progress",
+        "conclusion": null,
+        "headSha": "352b33109c43ae20b392ccfce1aceb5bce218de2",
+        "updatedAt": "2026-09-11T22:06:57Z"
       },
-      "latestSuccessfulRun": null,
-      "successfulRuntimeEvidenceObserved": false
+      "latestSuccessfulRun": {
+        "runId": 34650174925,
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "17593aef46ac958a8c92bacc0b2226bd2a60ca7b",
+        "updatedAt": "2026-09-11T21:39:26Z"
+      },
+      "successfulRuntimeEvidenceObserved": true
     },
     "webRuntimeHealth": {
       "latestRun": {
-        "runId": 34505518499,
+        "runId": 34622191560,
         "status": "completed",
-        "conclusion": "success",
-        "headSha": "f92666cbd2d3a4e22a058da3c51f0322fd50b543",
-        "updatedAt": "2026-09-10T17:01:17Z"
+        "conclusion": "failure",
+        "headSha": "f9475d67dcbb001ce480b8e0da7e0b018f48cb71",
+        "updatedAt": "2026-09-11T16:29:54Z"
       },
       "latestSuccessfulRun": {
-        "runId": 34505518499,
+        "runId": 34518269999,
         "status": "completed",
         "conclusion": "success",
-        "headSha": "f92666cbd2d3a4e22a058da3c51f0322fd50b543",
-        "updatedAt": "2026-09-10T17:01:17Z"
+        "headSha": "317fd2ee09d9e854243cf9148df1b8707da000d7",
+        "updatedAt": "2026-09-10T19:06:12Z"
       },
       "formalBridge": "tools/company-qa-public-web-evidence.mjs"
     },
@@ -188,14 +194,16 @@
       "attentionRequired": false,
       "counts": {
         "WORKING": 1,
-        "DONE": 6,
-        "IDLE_NO_TASK": 1,
+        "DONE": 1,
+        "IDLE_NO_TASK": 6,
         "BLOCKED": 0,
         "FAILED": 0,
         "STALE": 0
       },
-      "primaryFindings": []
+      "primaryFindings": [
+        "NO_WORK_ORDER:artbook-work-orders/2026-09-11-daechung-rpg.json"
+      ]
     }
   },
-  "nextPriority": "Require a successful Unity Android emulator runtime-smoke run before marking Unity QA VERIFIED."
+  "nextPriority": "Keep Unity runtime smoke mandatory and treat later failures as regressions."
 }
