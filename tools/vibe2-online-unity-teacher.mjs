@@ -17,6 +17,12 @@ const RISK_BY_TOPIC = Object.freeze({
   scene: ['씬/프리팹 직렬화 참조 손실', '런타임 탐색 의존 증가'],
   performance: ['Android 프레임당 할당 증가', '반복 Find/GetComponent 또는 Instantiate/Destroy 비용'],
   state: ['권한 없는 계층의 상태 직접 변경', 'UI와 gameplay 상태 불일치'],
+  movement: ['다중 이동 권한으로 인한 떨림 또는 이중 이동', 'FPS 변화에 따른 이동감 변화'],
+  velocity: ['넉백·대시·기본 이동의 속도 권한 충돌', '상태 전환 뒤 속도 누수'],
+  camera: ['카메라 효과 종료 뒤 위치/FOV 복귀 실패', '여러 효과의 transform 경쟁'],
+  animation: ['Animator와 gameplay 상태 불일치', 'transition 증가로 인한 입력 지연'],
+  graphics: ['모바일 오버드로우·파티클·셰이더 비용 증가', '시각 효과로 gameplay 가독성 저하'],
+  transfer: ['이전 프로젝트의 소유권·씬 참조를 잘못 재사용', '검증 패턴을 현재 구조에 재바인딩하지 못함'],
 });
 
 function lessonScore(lesson, text) {
@@ -27,9 +33,9 @@ function lessonScore(lesson, text) {
 
 function selectLessons(lessons, text) {
   const ranked = lessons.map((lesson) => ({ lesson, score: lessonScore(lesson, text) })).sort((a,b) => b.score - a.score || a.lesson.id.localeCompare(b.lesson.id));
-  const positive = ranked.filter((item) => item.score > 0).slice(0, 4).map((item) => item.lesson);
+  const positive = ranked.filter((item) => item.score > 0).slice(0, 6).map((item) => item.lesson);
   if (positive.length) return positive;
-  return lessons.filter((lesson) => ['repair-01','evidence-01','verified-target-01'].includes(lesson.id));
+  return lessons.filter((lesson) => ['repair-01','evidence-01','verified-target-01','transfer-01','transfer-02'].includes(lesson.id)).slice(0, 5);
 }
 
 function risksForLessons(lessons) {
@@ -39,7 +45,28 @@ function risksForLessons(lessons) {
     for (const risk of key ? RISK_BY_TOPIC[key] : []) if (!out.includes(risk)) out.push(risk);
   }
   if (!out.length) out.push('책임 경계 밖의 동작 변경', '검증된 기존 게임 규칙 회귀');
-  return out.slice(0, 5);
+  return out.slice(0, 6);
+}
+
+export function loadTeacherLessons(primaryFile, extraFiles = []) {
+  const primary = readJson(primaryFile);
+  if (primary.scope !== 'UNITY_CODING_ONLY' || !Array.isArray(primary.lessons) || primary.lessons.length < 10) throw new Error('Unity core lessons contract mismatch');
+  const files = [...extraFiles];
+  const specialist = path.join(path.dirname(primaryFile), 'graphics-motion-lessons.json');
+  if (fs.existsSync(specialist) && !files.includes(specialist)) files.push(specialist);
+  const lessons = [...primary.lessons];
+  const seen = new Set(lessons.map((lesson) => lesson.id));
+  for (const file of files) {
+    if (!file || !fs.existsSync(file)) continue;
+    const doc = readJson(file);
+    if (doc.scope !== 'UNITY_CODING_ONLY' || doc.authority === 'CODE_AUTHORITY' || !Array.isArray(doc.lessons)) throw new Error(`Unity lesson pack contract mismatch: ${file}`);
+    for (const lesson of doc.lessons) {
+      if (!lesson?.id || seen.has(lesson.id)) continue;
+      lessons.push(lesson);
+      seen.add(lesson.id);
+    }
+  }
+  return lessons;
 }
 
 export function buildOnlineTeacherAnalysis(record, lessons) {
@@ -53,43 +80,45 @@ export function buildOnlineTeacherAnalysis(record, lessons) {
   const topics = selected.map((lesson) => clean(lesson.topic)).filter(Boolean);
   return {
     structuralRepair: true,
-    rootCause: `검증된 Unity 수정 사례의 문제를 ${topics.join(', ') || 'responsibility boundary'} 관점에서 추적해야 하며, 증상만 막는 수정이 아니라 실제 상태/수명주기 책임 위치가 원인 범위다.`,
+    rootCause: `검증된 Unity 수정 사례를 ${topics.join(', ') || 'responsibility boundary'} 관점에서 분석하고, 코드 문장을 외우지 않고 원인·판단·책임경계·효과 관계를 추출한다.`,
     responsibilityBoundary: topics.join(' + ') || 'Unity component responsibility and lifecycle boundary',
     patchScope: mastery.length ? mastery : ['기존 책임 시스템 안에서 최소한의 올바른 책임 수리를 적용한다.'],
-    whyNotSmallerPatch: '한 호출이나 null guard만 바꾸면 동일 책임의 다른 등록·상태쓰기·수명주기 경로가 남을 수 있으므로, 검증된 주변 책임 경계를 확인한 뒤 최소 안전 범위를 정해야 한다.',
+    whyNotSmallerPatch: '한 호출이나 보간값만 바꾸면 동일 책임의 다른 상태쓰기·이동권한·수명주기·표현 경로가 남을 수 있으므로, 검증된 주변 책임 경계를 확인하고 현재 프로젝트에 다시 바인딩해야 한다.',
     regressionRisks: risksForLessons(selected),
     evidence: [
       `verified taskType=${taskType}`,
       `sourceRevision=${clean(record?.provenance?.sourceRevision ?? record?.sourceRevision ?? record?.sourceCommit)}`,
       'verification trace: CI PASS + independent QA PASS + runtime PASS',
+      'transfer mode: verified knowhow may be replicated, rearranged, varied, and recombined inside the current project responsibility graph',
       ...selected.map((lesson) => `lesson=${lesson.id}:${lesson.topic}`),
     ],
   };
 }
 
-export function buildOnlineTeacherSamples({ sampleDir, lessonsFile, outDir, maxCandidates = 96 }) {
-  const lessonsDoc = readJson(lessonsFile);
-  if (lessonsDoc.scope !== 'UNITY_CODING_ONLY' || !Array.isArray(lessonsDoc.lessons) || lessonsDoc.lessons.length < 10) throw new Error('Unity core lessons contract mismatch');
+export function buildOnlineTeacherSamples({ sampleDir, lessonsFile, outDir, maxCandidates = 96, extraLessonFiles = [] }) {
+  const lessons = loadTeacherLessons(lessonsFile, extraLessonFiles);
   const candidates = discoverStructuralCandidates(sampleDir, { maxCandidates }).filter((item) => item.taskType === 'unity');
   fs.mkdirSync(outDir, { recursive: true });
   let written = 0;
   for (const item of candidates) {
     const record = readJson(item.sourceFile);
-    const analysis = buildOnlineTeacherAnalysis(record, lessonsDoc.lessons);
-    const enriched = buildDistilledStructuralSample(record, analysis, { teacherModel: 'GPT-5.6-Sol-authored-online-curriculum-v1' });
+    const analysis = buildOnlineTeacherAnalysis(record, lessons);
+    const enriched = buildDistilledStructuralSample(record, analysis, { teacherModel: 'GPT-5.6-Sol-authored-online-curriculum-v2' });
     if (!enriched) continue;
     writeJson(path.join(outDir, `${item.candidateId.replace(/[^A-Za-z0-9._-]/g, '_')}.json`), enriched);
     written += 1;
   }
-  return { version: 1, learningFocus: 'UNITY_CODING_ONLY', teacherRoute: 'GPT_AUTHORED_CURRICULUM_ON_GITHUB_HOSTED_RUNNER', paidApi: false, candidateCount: candidates.length, written };
+  return { version: 2, learningFocus: 'UNITY_CODING_ONLY', teacherRoute: 'GPT_AUTHORED_CURRICULUM_ON_GITHUB_HOSTED_RUNNER', paidApi: false, lessonCount: lessons.length, candidateCount: candidates.length, written };
 }
 
 function parseArgs(argv) { const out = {}; for (let i=0;i<argv.length;i+=1) { const arg=argv[i]; if (!arg.startsWith('--')) continue; const [key,inline] = arg.slice(2).split('=',2); out[key] = inline ?? argv[++i]; } return out; }
 function main() {
   const args = parseArgs(process.argv.slice(2));
+  const extraLessonFiles = clean(args['extra-lessons']).split(',').map((x) => x.trim()).filter(Boolean);
   const result = buildOnlineTeacherSamples({
     sampleDir: args['sample-dir'] || 'company-learning/training-samples',
     lessonsFile: args.lessons || 'company-learning/unity-teacher-materials/core-lessons.json',
+    extraLessonFiles,
     outDir: args['out-dir'] || 'tmp/unity-online-teacher-samples',
     maxCandidates: Number(args.max ?? 96),
   });

@@ -19,6 +19,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: vibe2-unity-coding-distillation
@@ -74,6 +75,28 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Download verified ingest samples
+        if: github.event_name == 'workflow_run'
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: vibe2-verified-training-samples
+          path: ${{ runner.temp }}/vibe2-ingest-samples
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Resolve verified sample source
+        id: sample-source
+        shell: bash
+        run: |
+          set -euo pipefail
+          artifact_dir="$RUNNER_TEMP/vibe2-ingest-samples"
+          if [ "${{ github.event_name }}" = 'workflow_run' ] && find "$artifact_dir" -type f -name '*.json' -print -quit 2>/dev/null | grep -q .; then
+            echo "sample_dir=$artifact_dir" >> "$GITHUB_OUTPUT"
+            echo 'VERIFIED_SAMPLE_SOURCE=INGEST_ARTIFACT'
+          else
+            echo 'sample_dir=company-learning/training-samples' >> "$GITHUB_OUTPUT"
+            echo 'VERIFIED_SAMPLE_SOURCE=MAIN_REPOSITORY'
+          fi
       - name: Apply GPT-authored Unity curriculum online
         id: teach
         shell: bash
@@ -81,7 +104,7 @@ jobs:
           set -euo pipefail
           out="$RUNNER_TEMP/unity-online-teacher-samples"
           node tools/vibe2-online-unity-teacher.mjs \
-            --sample-dir company-learning/training-samples \
+            --sample-dir "${{ steps.sample-source.outputs.sample_dir }}" \
             --lessons company-learning/unity-teacher-materials/core-lessons.json \
             --out-dir "$out" \
             --max 96 | tee "$RUNNER_TEMP/unity-online-teacher-result.json"
