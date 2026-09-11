@@ -13,7 +13,7 @@ test('seed design runtime cancels stale runs and revalidates matrix targets befo
   const modelCacheIndex=workflow.indexOf('- name: Restore Ollama model cache');
   const resolveModelsIndex=workflow.indexOf('- name: Resolve configured free department models');
   const runtimeIndex=workflow.indexOf('- name: Prepare cached local Ollama runtime');
-  const pullIndex=workflow.indexOf('- name: Pull remaining configured free department models');
+  const pullIndex=workflow.indexOf('- name: Pull only missing configured free department models');
   assert.ok(checkoutIndex>=0&&revalidateIndex>checkoutIndex&&modelCacheIndex>revalidateIndex&&resolveModelsIndex>modelCacheIndex&&runtimeIndex>resolveModelsIndex&&pullIndex>runtimeIndex);
   assert.match(workflow,/TARGET_SEED_ID: \$\{\{ matrix\.target\.seed_id \}\}/);
   assert.match(workflow,/STALE_SEED_TARGET_SKIP/);
@@ -21,17 +21,28 @@ test('seed design runtime cancels stale runs and revalidates matrix targets befo
   assert.match(workflow,/if: steps\.target\.outputs\.should_run == 'true'/);
 });
 
-test('seed design runtime removes serial throughput and repeated Ollama install bottlenecks without paid runners',()=>{
+test('seed design runtime removes serial throughput and repeated Ollama setup bottlenecks without paid runners',()=>{
   assert.match(workflow,/max-parallel: 3/);
   assert.match(workflow,/runs-on: ubuntu-latest/);
   assert.match(workflow,/uses: actions\/cache@v4/);
   assert.match(workflow,/path: ~\/\.ollama\/models/);
   assert.match(workflow,/ollama-seed-design-\$\{\{ runner\.os \}\}-\$\{\{ hashFiles\('company-directive\.json'\) \}\}/);
   assert.match(workflow,/OLLAMA_VERSION: '0\.33\.3'/);
+  assert.match(workflow,/OLLAMA_MAX_LOADED_MODELS: '3'/);
+  assert.match(workflow,/COMPANY_MODEL_PHASE_CONCURRENCY: '3'/);
+  assert.match(workflow,/COMPANY_MODEL_KEEP_ALIVE: '2m'/);
   assert.match(workflow,/uses: \.\/\.github\/actions\/prepare-ollama/);
   assert.match(workflow,/model: \$\{\{ steps\.models\.outputs\.primary_model \}\}/);
   assert.match(workflow,/version: \$\{\{ env\.OLLAMA_VERSION \}\}/);
   assert.doesNotMatch(workflow,/https:\/\/ollama\.com\/install\.sh/);
+});
+
+test('restored model cache skips unnecessary network pulls',()=>{
+  assert.match(workflow,/ollama list \| awk 'NR>1 \{print \$1\}' > \/tmp\/ollama-present-models\.txt/);
+  assert.match(workflow,/grep -Fxq \"\$model\" \/tmp\/ollama-present-models\.txt/);
+  assert.match(workflow,/OLLAMA_MODEL_CACHE_HIT=\$model/);
+  assert.match(workflow,/OLLAMA_MODEL_CACHE_MISS=\$model/);
+  assert.match(workflow,/OLLAMA_MODEL_PULL_COUNT=\$pulls/);
 });
 
 test('main engine changes are serialized through bootstrap before one DESIGN_ONLY dispatch',()=>{
@@ -60,8 +71,9 @@ test('parallel seed jobs synchronize company-runtime writes before push',()=>{
   assert.match(workflow,/test \"\$pushed\" = 1/);
 });
 
-test('structured Ollama design calls disable thinking so JSON content budget is preserved',()=>{
-  assert.match(design,/JSON\.stringify\(\{model,stream:false,think:false,keep_alive:'0s',format:schema/);
+test('structured Ollama design calls preserve JSON budget and reuse loaded models briefly',()=>{
+  assert.match(design,/JSON\.stringify\(\{model,stream:false,think:false,keep_alive:modelKeepAlive,format:schema/);
+  assert.match(design,/const modelKeepAlive=clean\(process\.env\.COMPANY_MODEL_KEEP_ALIVE\|\|'2m'\)/);
   assert.match(design,/if\(!text\)throw new Error\('empty model response'\)/);
 });
 
@@ -69,15 +81,26 @@ test('independent review generation only emits departments assigned to each mode
   assert.match(design,/const modelReviewRoles=Object\.fromEntries\(pool\.map\(model=>\[model,ROLES\.filter\(role=>departmentReviewModels\[role\]\.includes\(model\)\)\]\)\);/);
   assert.match(design,/const activeReviewModels=pool\.filter\(model=>modelReviewRoles\[model\]\.length>0\);/);
   assert.match(design,/const reviewsSchemaFor=roles=>/);
-  assert.match(design,/for\(const model of activeReviewModels\)/);
+  assert.match(design,/parallelObject\(activeReviewModels,async model=>/);
   assert.match(design,/ASSIGNED_DEPARTMENTS=\$\{roles\.join\(','\)\}/);
   assert.match(design,/DEPARTMENT_REVIEW_MISSING/);
-  assert.doesNotMatch(design,/for\(const model of pool\)\{independentBatches\[model\]=await callModel/);
+});
+
+test('independent five-way department phases use bounded parallel execution without removing reviews',()=>{
+  assert.match(design,/const modelPhaseConcurrency=Math\.max\(1,Math\.min\(3,Number\(process\.env\.COMPANY_MODEL_PHASE_CONCURRENCY\|\|3\)\)\)/);
+  assert.match(design,/async function parallelObject\(keys,worker\)/);
+  assert.match(design,/department_representatives',[\s\S]*parallelObject\(ROLES,async role=>/);
+  assert.match(design,/lead_rebuttals',[\s\S]*parallelObject\(ROLES,async role=>/);
+  assert.match(design,/five_lead_fatal_review',[\s\S]*parallelObject\(ROLES,role=>/);
+  assert.match(design,/repeatedFatalReview:true/);
+  assert.match(design,/rebuttalRounds:1/);
+  assert.match(design,/sameModelRevised:true/);
 });
 
 test('design runtime emits persistent phase timing evidence for the next bottleneck',()=>{
   assert.match(design,/DESIGN_PHASE_MS=/);
   assert.match(design,/MODEL_CALL_MS=/);
   assert.match(design,/runtimeMetrics=\{phaseMs,totalModelCalls:modelCallStats\.length,totalModelCallMs:/);
+  assert.match(design,/modelPhaseConcurrency,modelKeepAlive/);
   assert.match(design,/INDEPENDENT_REVIEW_OUTPUTS=/);
 });
