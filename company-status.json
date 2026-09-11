@@ -60,7 +60,7 @@
     "existingWebGamesMaintenanceAllowed": true,
     "activeUnityProjects": 1,
     "pendingApprovals": 0,
-    "testBuilds": 3
+    "testBuilds": 4
   },
   "operations": {
     "homepage": {
@@ -432,6 +432,32 @@
       "runtimeInstallLaunchVerified": true,
       "testBuildStatus": "verified",
       "builtAt": "2026-09-11T21:36:02.015265+00:00"
+    },
+    {
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "requestId": "development-unity-seed-puzzle-chromatic-cascade-34647586728",
+      "status": "ready",
+      "channel": "test",
+      "buildRoute": "github-cloud-host-personal",
+      "mobileReady": true,
+      "homepagePublished": true,
+      "homepagePublishedAt": "2026-09-11T21:51:03.246108+00:00",
+      "deviceCompatibility": "android-10+",
+      "sourceCommit": "eed7eb934df9bdfe7ffb8ed97e8b879eeb92e3a5",
+      "releaseTag": "test-seed-puzzle-chromatic-cascade-34650451782-1",
+      "release": "https://github.com/hans1177/jaewoon-games/releases/tag/test-seed-puzzle-chromatic-cascade-34650451782-1",
+      "download": "https://github.com/hans1177/jaewoon-games/releases/download/test-seed-puzzle-chromatic-cascade-34650451782-1/seed-puzzle-chromatic-cascade-test.apk",
+      "applicationId": "com.jaewoongames.seedpuzzlechromaticcascade",
+      "sha256": "8b6b8200dee33ffbbe0de08946d1f307342f310e6757fd9286d426b5f06d3148",
+      "bytes": 21092948,
+      "androidVerificationApi": 36,
+      "signatureVerified": true,
+      "installAndLaunchVerified": false,
+      "runtimeVerification": "android-16-avd-api-36-pending",
+      "runtimeVerificationSource": "github-actions",
+      "runtimeInstallLaunchVerified": false,
+      "testBuildStatus": "ready",
+      "builtAt": "2026-09-11T21:51:03.246108+00:00"
     }
   ],
   "redevelopmentReview": {
