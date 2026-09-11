@@ -81,7 +81,7 @@ jobs:
       matrix:
         item: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 110
+    timeout-minutes: 140
     steps:
       - name: Checkout central implementation
         uses: actions/checkout@v4
@@ -133,18 +133,29 @@ jobs:
         id: source
         env:
           GAME_ID: ${{ matrix.item.gameId }}
-          GAME_NAME: ${{ matrix.item.gameName }}
           BRANCH: ${{ steps.context.outputs.branch }}
           PROJECT: ${{ steps.context.outputs.project }}
           REQUEST: ${{ steps.context.outputs.request }}
         shell: bash
         run: |
           set -euo pipefail
-          git restore --worktree --staged game-catalog.json "${{ steps.context.outputs.base }}" 2>/dev/null || true
+          git restore --worktree --staged "${{ steps.context.outputs.base }}" 2>/dev/null || true
+          node <<'NODE'
+          const fs=require('fs');
+          const gameId=process.env.GAME_ID;
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const game=(catalog.games||[]).find(x=>x.id===gameId);
+          if(!game) throw new Error(`runtime catalog game missing: ${gameId}`);
+          game.homepagePublicationApproved=true;
+          game.publishTestBuildWhenReady=true;
+          game.homepageCategory='development-confirmed';
+          game.homepageStage='2분류 개발확정 · Unity Android 기술검증';
+          fs.writeFileSync('game-catalog.json',JSON.stringify(catalog,null,2)+'\n');
+          NODE
           git config user.name 'jaewoon-development-unity-runtime'
           git config user.email 'actions@users.noreply.github.com'
           git checkout -b "$BRANCH"
-          git add "$PROJECT"
+          git add "$PROJECT" game-catalog.json
           git diff --cached --check
           git commit -m "dev: bootstrap $GAME_ID Unity technical prototype [skip ci]"
           source_commit="$(git rev-parse HEAD)"
@@ -156,17 +167,20 @@ jobs:
             version:1,
             requestId:`development-unity-${gameId}-${runId}`,
             gameId,projectPath,buildMethod:'SeedAndroidBuild.Build',sourceCommit,
-            productionClass:'DEVELOPMENT_CONFIRMED',purpose:'UNITY_ANDROID_TECHNICAL_VALIDATION',releaseAuthority:false
+            productionClass:'DEVELOPMENT_CONFIRMED',purpose:'UNITY_ANDROID_TECHNICAL_VALIDATION',
+            homepagePublicationApproved:true,publishTestBuildWhenReady:true,releaseAuthority:false
           },null,2)+'\n');
           NODE
           git add "$REQUEST"
-          git commit -m "ci: request $GAME_ID local Unity technical build [skip ci]"
+          git commit -m "ci: request $GAME_ID cloud Unity technical build [skip ci]"
+          request_commit="$(git rev-parse HEAD)"
           git push origin HEAD:"$BRANCH"
           echo "source_commit=$source_commit" >> "$GITHUB_OUTPUT"
-          echo "request_commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "request_commit=$request_commit" >> "$GITHUB_OUTPUT"
           echo "UNITY_TECH_SOURCE_COMMIT=$source_commit"
-          echo 'PUBLIC_MAIN_WRITE=NO'
-      - name: Dispatch local Unity Personal Android build only
+          echo "UNITY_TECH_REQUEST_COMMIT=$request_commit"
+          echo 'PUBLIC_MAIN_SOURCE_WRITE=NO'
+      - name: Dispatch serial Unity cloud Android build
         id: build
         env:
           GH_TOKEN: ${{ github.token }}
@@ -175,36 +189,36 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-local-pc-android.yml"
+          api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-cloud-android-test.yml"
           baseline="$(gh api "$api/runs?branch=$BRANCH&event=workflow_dispatch&per_page=10" --jq '[.workflow_runs[].id] | max // 0')"
           jq -n --arg ref "$BRANCH" --arg request "$REQUEST" '{ref:$ref,inputs:{request_file:$request}}' | gh api --method POST "$api/dispatches" --input -
           run_id=''
-          for _ in $(seq 1 36); do
+          for _ in $(seq 1 48); do
             run_id="$(gh api "$api/runs?branch=$BRANCH&event=workflow_dispatch&per_page=10" | jq -r --argjson b "$baseline" '[.workflow_runs[] | select(.id > $b) | .id] | max // empty')"
             [[ -n "$run_id" ]] && break
             sleep 5
           done
-          [[ "$run_id" =~ ^[0-9]+$ ]] || { echo 'local Unity build run was not created' >&2; exit 2; }
+          [[ "$run_id" =~ ^[0-9]+$ ]] || { echo 'Unity cloud build run was not created' >&2; exit 2; }
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
-          echo "LOCAL_UNITY_BUILD_RUN_ID=$run_id"
-      - name: Wait for real local Unity APK build
+          echo "CLOUD_UNITY_BUILD_RUN_ID=$run_id"
+      - name: Wait for real cloud Unity APK build and Android install gate
         env:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ steps.build.outputs.run_id }}
         shell: bash
         run: |
           set -euo pipefail
-          for _ in $(seq 1 720); do
+          for _ in $(seq 1 1320); do
             row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" --jq '[.status,.conclusion] | @tsv')"
             status="${row%%$'\t'*}"; conclusion="${row#*$'\t'}"
             if [[ "$status" == 'completed' ]]; then
-              [[ "$conclusion" == 'success' ]] || { echo "LOCAL_UNITY_BUILD_FAILED=$conclusion run=$RUN_ID" >&2; exit 3; }
-              echo "LOCAL_UNITY_BUILD=PASS run=$RUN_ID"
+              [[ "$conclusion" == 'success' ]] || { echo "CLOUD_UNITY_BUILD_FAILED=$conclusion run=$RUN_ID" >&2; exit 3; }
+              echo "CLOUD_UNITY_BUILD=PASS run=$RUN_ID"
               exit 0
             fi
             sleep 5
           done
-          echo "LOCAL_UNITY_BUILD_TIMEOUT=$RUN_ID" >&2
+          echo "CLOUD_UNITY_BUILD_TIMEOUT=$RUN_ID" >&2
           exit 4
       - name: Dispatch bound Android runtime smoke and independent QA
         id: qa
@@ -254,7 +268,7 @@ jobs:
           done
           echo 'UNITY_ANDROID_QA_TIMEOUT' >&2
           exit 7
-      - name: Download exact build and QA evidence
+      - name: Download exact cloud build and QA evidence
         env:
           GH_TOKEN: ${{ github.token }}
           BUILD_RUN: ${{ steps.build.outputs.run_id }}
@@ -268,6 +282,25 @@ jobs:
           gh run download "$SMOKE_RUN" -D /tmp/unity-smoke
           gh run download "$QA_RUN" -D /tmp/unity-independent
           find /tmp/unity-build /tmp/unity-smoke /tmp/unity-independent -type f -maxdepth 8 -print
+      - name: Bind cloud source tree into build evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          build_info="$(find /tmp/unity-build -type f -name build-info.json | head -n1)"
+          test -n "$build_info"
+          source_commit="$(node -e "const b=require(process.argv[1]);process.stdout.write(String(b.sourceCommit||''))" "$build_info")"
+          [[ "$source_commit" =~ ^[0-9a-f]{40}$ ]] || { echo "invalid cloud build source commit: $source_commit" >&2; exit 8; }
+          git cat-file -e "${source_commit}^{commit}" 2>/dev/null || git fetch origin "$source_commit"
+          source_tree="$(git rev-parse "${source_commit}^{tree}")"
+          [[ "$source_tree" =~ ^[0-9a-f]{40}$ ]] || { echo 'cloud source tree binding failed' >&2; exit 9; }
+          node - "$build_info" "$source_tree" <<'NODE'
+          const fs=require('fs');
+          const [file,tree]=process.argv.slice(2);
+          const b=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
+          b.sourceTreeSha=tree;
+          fs.writeFileSync(file,JSON.stringify(b,null,2)+'\n');
+          NODE
+          echo "CLOUD_SOURCE_TREE_SHA=$source_tree"
       - name: Bind real Android evidence into canonical Unity technical validation
         env:
           GAME_ID: ${{ matrix.item.gameId }}
@@ -338,7 +371,7 @@ jobs:
           state="$(node -e "const s=require('./${BASE}/cycle-status.json');process.stdout.write(String(s.state||''))")"
           case "$state" in
             WAITING_REVALIDATION|WAITING_UNITY_REVALIDATION|DEVELOPMENT_BASELINE_READY) ;;
-            *) echo "unexpected post-Unity state: $state" >&2; exit 8;;
+            *) echo "unexpected post-Unity state: $state" >&2; exit 10;;
           esac
           echo "state=$state" >> "$GITHUB_OUTPUT"
           echo "DEVELOPMENT_POST_UNITY_STATE=$state"
@@ -348,7 +381,7 @@ jobs:
           BASE: ${{ steps.context.outputs.base }}
           BRANCH: ${{ steps.context.outputs.branch }}
           PROJECT: ${{ steps.context.outputs.project }}
-          SOURCE_COMMIT: ${{ steps.source.outputs.source_commit }}
+          SOURCE_COMMIT: ${{ steps.source.outputs.request_commit }}
           BUILD_RUN: ${{ steps.build.outputs.run_id }}
           SMOKE_RUN: ${{ steps.qa.outputs.smoke_run }}
           QA_RUN: ${{ steps.qa.outputs.independent_run }}
@@ -432,9 +465,11 @@ jobs:
       - name: Unity runtime summary
         if: always()
         run: |
-          echo 'UNITY_BUILD_ROUTE=LOCAL_SELF_HOSTED_ONLY'
+          echo 'UNITY_BUILD_ROUTE=GITHUB_CLOUD_SERIAL'
+          echo 'UNITY_GAME_PARALLELISM=1'
           echo 'PAID_RUNNER_FOR_UNITY_BUILD=NO'
           echo 'REAL_APK_REQUIRED=YES'
           echo 'ANDROID_RUNTIME_SMOKE_REQUIRED=YES'
           echo 'INDEPENDENT_QA_REQUIRED=YES'
-          echo 'PUBLIC_MAIN_WRITE=NO'
+          echo 'HOMEPAGE_TEST_APK_PUBLISH=YES'
+          echo 'PUBLIC_MAIN_SOURCE_WRITE=NO'

@@ -16,6 +16,7 @@ if(!webEvidencePath||!fs.existsSync(webEvidencePath))throw new Error(`web eviden
 if(!/^unity-games\/[A-Za-z0-9._-]+$/.test(output)||output.includes('..'))throw new Error(`invalid Unity output: ${output}`);
 
 const UNITY_EDITOR_VERSION='6000.6.0f1';
+const UNITY_EDITOR_REVISION='f7f8ed4d1e24';
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const baseline=readJson(baselinePath);
 const web=readJson(webEvidencePath);
@@ -39,8 +40,8 @@ const prefix=gameId.replace(/[^a-zA-Z0-9]/g,'_');
 
 fs.rmSync(output,{recursive:true,force:true});
 for(const dir of ['Assets/Scripts','Assets/Editor','Packages','ProjectSettings'])fs.mkdirSync(path.join(output,dir),{recursive:true});
-fs.writeFileSync(path.join(output,'Packages/manifest.json'),'{\n  "dependencies": {}\n}\n');
-fs.writeFileSync(path.join(output,'ProjectSettings/ProjectVersion.txt'),`m_EditorVersion: ${UNITY_EDITOR_VERSION}\n`);
+fs.writeFileSync(path.join(output,'Packages/manifest.json'),JSON.stringify({dependencies:{'com.unity.modules.imgui':'1.0.0'}},null,2)+'\n');
+fs.writeFileSync(path.join(output,'ProjectSettings/ProjectVersion.txt'),`m_EditorVersion: ${UNITY_EDITOR_VERSION}\nm_EditorVersionWithRevision: ${UNITY_EDITOR_VERSION} (${UNITY_EDITOR_REVISION})\n`);
 
 const runtime=`using System;
 using UnityEngine;
@@ -256,7 +257,7 @@ public static class SeedAndroidBuild
     {
         EnsureScene();
         string projectRoot = Directory.GetParent(Application.dataPath).FullName;
-        string outputDir = Path.Combine(projectRoot, "Build");
+        string outputDir = Path.GetFullPath(Path.Combine(projectRoot, "..", "..", "build", "Android"));
         string outputPath = Path.Combine(outputDir, "${csharp(gameId)}.apk");
         Directory.CreateDirectory(outputDir);
 
@@ -265,6 +266,7 @@ public static class SeedAndroidBuild
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, "${packageId}");
         PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
         PlayerSettings.Android.forceInternetPermission = false;
+        PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64 | AndroidArchitecture.X86_64;
 
         BuildPlayerOptions options = new BuildPlayerOptions
         {
@@ -301,10 +303,10 @@ public static class SeedAndroidBuild
 
 fs.writeFileSync(path.join(output,'Assets/Scripts/SeedTechnicalPrototype.cs'),runtime);
 fs.writeFileSync(path.join(output,'Assets/Editor/SeedAndroidBuild.cs'),build);
-fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — DEVELOPMENT_CONFIRMED Unity technical prototype\n\n- gameId: \`${gameId}\`\n- mode: \`${category}\`\n- Unity editor: \`${UNITY_EDITOR_VERSION}\`\n- source design: \`${baselinePath}\`\n- source web evidence: \`${webEvidencePath}\`\n- build method: \`SeedAndroidBuild.Build\`\n- purpose: \`UNITY_ANDROID_TECHNICAL_VALIDATION\`\n- public/release authority: **NO**\n\nThis project is generated from the locked design baseline only after real Web gameplay validation PASS.\nIt is a one-game-one-Unity-project technical prototype, not a RELEASE_CONFIRMED production build.\n`);
+fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — DEVELOPMENT_CONFIRMED Unity technical prototype\n\n- gameId: \`${gameId}\`\n- mode: \`${category}\`\n- Unity editor: \`${UNITY_EDITOR_VERSION}\` (${UNITY_EDITOR_REVISION})\n- source design: \`${baselinePath}\`\n- source web evidence: \`${webEvidencePath}\`\n- build method: \`SeedAndroidBuild.Build\`\n- purpose: \`UNITY_ANDROID_TECHNICAL_VALIDATION\`\n- public/release authority: **NO**\n\nThis project is generated from the locked design baseline only after real Web gameplay validation PASS.\nIt is a one-game-one-Unity-project technical prototype, not a RELEASE_CONFIRMED production build.\n`);
 fs.writeFileSync(path.join(output,'prototype-source.json'),JSON.stringify({
   version:1,gameId,gameName,category,identity,coreLoop,
-  unityEditorVersion:UNITY_EDITOR_VERSION,
+  unityEditorVersion:UNITY_EDITOR_VERSION,unityEditorRevision:UNITY_EDITOR_REVISION,
   designBaseline:baselinePath,webEvidence:webEvidencePath,
   webEvidenceBound:true,productionClass:'DEVELOPMENT_CONFIRMED',
   purpose:'UNITY_ANDROID_TECHNICAL_VALIDATION',releaseAuthority:false,
@@ -312,6 +314,7 @@ fs.writeFileSync(path.join(output,'prototype-source.json'),JSON.stringify({
 },null,2)+'\n');
 console.log(`UNITY_TECH_PROJECT=${output}`);
 console.log(`UNITY_EDITOR_VERSION=${UNITY_EDITOR_VERSION}`);
+console.log(`UNITY_EDITOR_REVISION=${UNITY_EDITOR_REVISION}`);
 console.log(`UNITY_TECH_MODE=${category}`);
 console.log('UNITY_TECH_BUILD_METHOD=SeedAndroidBuild.Build');
 console.log('WEB_EVIDENCE_BOUND=YES');
