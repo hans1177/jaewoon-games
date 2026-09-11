@@ -8,6 +8,7 @@ import {spawnSync} from 'node:child_process';
 const generatorSource=process.env.UNITY_BOOTSTRAP_SOURCE||path.resolve('tools/company-development-unity-bootstrap.mjs');
 const workflowSource=fs.readFileSync(path.resolve('.github/workflows/company-development-unity-runtime.yml'),'utf8');
 const expectedUnityEditorVersion='6000.6.0f1';
+const expectedUnityEditorRevision='f7f8ed4d1e24';
 const cases=[
   ['seed-action-survival-rogu-echoes-of-the-lost-star','Echoes of the Lost Star','SURVIVAL'],
   ['seed-single-defense-strat-celestial-bastion','Celestial Bastion','DEFENSE'],
@@ -24,7 +25,7 @@ function fixtures(root, pass=true){
   return {baseline,web};
 }
 
-test('creates one distinct Unity technical prototype per promoted seed from real Web PASS evidence',()=>{
+test('creates one distinct cloud-build-ready Unity technical prototype per promoted seed from real Web PASS evidence',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-unity-bootstrap-'));
   const {baseline,web}=fixtures(root,true);
   for(const [id,name,mode] of cases){
@@ -35,15 +36,23 @@ test('creates one distinct Unity technical prototype per promoted seed from real
     assert.equal(run.status,0,run.stderr||run.stdout);
     const project=path.join(sandbox,'unity-games',id);
     const meta=JSON.parse(fs.readFileSync(path.join(project,'prototype-source.json'),'utf8'));
+    const manifest=JSON.parse(fs.readFileSync(path.join(project,'Packages','manifest.json'),'utf8'));
+    const projectVersion=fs.readFileSync(path.join(project,'ProjectSettings','ProjectVersion.txt'),'utf8');
+    const buildScript=fs.readFileSync(path.join(project,'Assets','Editor','SeedAndroidBuild.cs'),'utf8');
+    const runtimeScript=fs.readFileSync(path.join(project,'Assets','Scripts','SeedTechnicalPrototype.cs'),'utf8');
     assert.equal(meta.category,mode);
     assert.equal(meta.webEvidenceBound,true);
     assert.equal(meta.releaseAuthority,false);
     assert.equal(meta.purpose,'UNITY_ANDROID_TECHNICAL_VALIDATION');
     assert.equal(meta.unityEditorVersion,expectedUnityEditorVersion);
-    assert.match(fs.readFileSync(path.join(project,'Assets','Editor','SeedAndroidBuild.cs'),'utf8'),/SeedAndroidBuild/);
-    assert.match(fs.readFileSync(path.join(project,'Assets','Scripts','SeedTechnicalPrototype.cs'),'utf8'),/JAEWOON_TECH_METRIC/);
-    assert.match(fs.readFileSync(path.join(project,'Assets','Scripts','SeedTechnicalPrototype.cs'),'utf8'),/PlayerPrefs/);
-    assert.equal(fs.readFileSync(path.join(project,'ProjectSettings','ProjectVersion.txt'),'utf8').trim(),`m_EditorVersion: ${expectedUnityEditorVersion}`);
+    assert.equal(meta.unityEditorRevision,expectedUnityEditorRevision);
+    assert.equal(manifest.dependencies['com.unity.modules.imgui'],'1.0.0');
+    assert.match(buildScript,/SeedAndroidBuild/);
+    assert.match(buildScript,/Path\.Combine\(projectRoot, "build", "Android"\)/);
+    assert.match(buildScript,/AndroidArchitecture\.ARM64 \| AndroidArchitecture\.X86_64/);
+    assert.match(runtimeScript,/JAEWOON_TECH_METRIC/);
+    assert.match(runtimeScript,/PlayerPrefs/);
+    assert.equal(projectVersion.trim(),`m_EditorVersion: ${expectedUnityEditorVersion}\nm_EditorVersionWithRevision: ${expectedUnityEditorVersion} (${expectedUnityEditorRevision})`);
   }
 });
 
@@ -56,6 +65,17 @@ test('refuses Unity prototype generation without real Web gameplay PASS',()=>{
   const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs','--game-id=seed-puzzle-chromatic-cascade','--game-name=Chromatic Cascade',`--baseline=${baseline}`,`--web-evidence=${web}`],{cwd:sandbox,encoding:'utf8'});
   assert.notEqual(run.status,0);
   assert.match(run.stderr,/REAL_WEB_GAMEPLAY_PASS_REQUIRED/);
+});
+
+test('DEVELOPMENT Unity runtime is serial cloud-only and keeps homepage test publication enabled',()=>{
+  assert.match(workflowSource,/max-parallel:\s*1/);
+  assert.match(workflowSource,/unity-cloud-android-test\.yml/);
+  assert.doesNotMatch(workflowSource,/unity-local-pc-android\.yml/);
+  assert.match(workflowSource,/CLOUD_UNITY_BUILD_RUN_ID/);
+  assert.match(workflowSource,/homepagePublicationApproved=true/);
+  assert.match(workflowSource,/publishTestBuildWhenReady=true/);
+  assert.match(workflowSource,/HOMEPAGE_TEST_APK_PUBLISH=YES/);
+  assert.match(workflowSource,/sourceTreeSha=tree/);
 });
 
 test('discovers dispatched workflow runs with standalone jq instead of invalid gh --jq arguments',()=>{
