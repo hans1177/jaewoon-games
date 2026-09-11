@@ -1,0 +1,53 @@
+{
+  "version": 2,
+  "candidateId": "seed-story-complete-rpg-chronicles-of-eldoria-34588687850",
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "sourcePath": "web-games/seed-story-complete-rpg-chronicles-of-eldoria",
+  "candidatePath": "web-games/.autonomous-candidates/seed-story-complete-rpg-chronicles-of-eldoria-34588687850",
+  "sourceCommit": "7018186f7b9f9397cb96ba758611912138dd98c3",
+  "candidateOnly": true,
+  "selfPromote": false,
+  "publicStableModified": false,
+  "paidApi": false,
+  "newProject": true,
+  "changedFiles": [
+    "index.html"
+  ],
+  "summary": "DEVELOPMENT_CONFIRMED first playable: seed-story-complete-rpg-chronicles-of-eldoria의 잠긴 핵심 루프가 모바일 입력 후 SCORE/HP/WAVE/RESOURCE/PROGRESS 상태 변화로 실제 검증되는가?",
+  "expectedEffect": "DESIGN_BASELINE 핵심 루프를 모바일 실제 상호작용으로 검증할 수 있는 첫 Web vertical slice 생성",
+  "tests": [
+    "company-development-web-bootstrap-contract",
+    "company-development-web-gameplay-validation",
+    "independent-candidate-browser-qa"
+  ],
+  "validationQuestion": "seed-story-complete-rpg-chronicles-of-eldoria의 잠긴 핵심 루프가 모바일 입력 후 SCORE/HP/WAVE/RESOURCE/PROGRESS 상태 변화로 실제 검증되는가?",
+  "implementationNotes": [
+    "locked DESIGN_BASELINE genre=STORY_COMPLETE_RPG",
+    "model output contract recovery: deterministic self-contained vertical slice",
+    "no external assets, persistence, or network dependencies",
+    "baseline core loop reference: Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter."
+  ],
+  "model": "llama3.2:1b",
+  "generationMode": "DETERMINISTIC_CONTRACT_RECOVERY",
+  "modelAttempts": 2,
+  "modelContractFailures": [
+    {
+      "attempt": 1,
+      "error": "fetch failed"
+    },
+    {
+      "attempt": 2,
+      "blockers": [
+        "HTML_TOO_SMALL",
+        "SCRIPT_REQUIRED",
+        "INPUT_HANDLER_REQUIRED"
+      ]
+    }
+  ],
+  "bootstrapContract": {
+    "pass": true,
+    "blockers": [],
+    "bytes": 6913
+  },
+  "createdAt": "2026-09-11T10:25:58.044Z"
+}
