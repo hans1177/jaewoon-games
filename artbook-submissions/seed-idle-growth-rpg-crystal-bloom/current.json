@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "gameId": "seed-idle-growth-rpg-crystal-bloom",
   "date": "2026-09-11",
   "productionClass": "DESIGN_ONLY",
@@ -15,20 +15,38 @@
   "vibe2Used": false,
   "localization": "ko-KR",
   "localizedFromRuntime": true,
-  "content": {
-    "identity": "Crystal Bloom",
-    "playerFantasy": "자동 전투와 방치 보상을 바탕으로 영웅을 꾸준히 키우고 더 강한 스테이지를 밀어붙이는 글로벌 모바일 싱글 플레이 성장 RPG.",
+  "designCoreSource": "design/seed-idle-growth-rpg-crystal-bloom/2026-09-11/design-revised.json",
+  "designCore": {
+    "identity": "수정의 개화",
+    "coreFun": "자동 전투 · 자원 관리 · 레벨 성장 · 투자 선택이 이어지는 방치 성장 RPG.",
+    "playerFantasy": "접속하지 않는 동안에도 성장 자원을 쌓고, 돌아와 영웅과 장비를 강화해 더 강한 스테이지와 보스를 밀어붙인다.",
     "coreLoop": [
-      "영웅이나 캐릭터가 자동으로 전투하고, 접속하지 않는 동안에도 방치 또는 오프라인 성장 자원을 계속 만든다.",
+      "영웅이나 캐릭터가 자동으로 전투하고 접속하지 않는 동안에도 방치 또는 오프라인 성장 자원을 계속 만든다.",
       "보상을 수령하고 레벨, 스킬, 장비를 강화하며 다음 투자를 어떤 영웅이나 능력치에 줄지 선택한다.",
       "강해진 편성으로 더 어려운 스테이지나 보스에 도전하고 새로운 성장 층을 연 뒤 다음 방치 보상 주기를 기다린다."
     ],
     "signatureSystems": [
-      "방치형 자동 전투",
-      "자원 관리",
-      "레벨 및 스킬 성장",
-      "성장 투자 선택"
+      {"name":"방치형 자동 전투","purpose":"접속 여부와 관계없이 전투와 보상 축적이 이어지게 한다.","playerChoice":"돌아온 뒤 누적 자원을 어느 성장 요소에 투자할지 고른다."},
+      {"name":"자원 관리","purpose":"한정된 보상을 레벨·스킬·장비에 배분하게 한다.","playerChoice":"현재 막힌 스테이지를 뚫기 위한 우선 투자 대상을 선택한다."},
+      {"name":"레벨 및 스킬 성장","purpose":"반복되는 방치 보상을 눈에 보이는 전투력 상승으로 전환한다.","playerChoice":"영웅·스킬·장비 중 다음 성장 축을 정한다."}
     ],
+    "progressionDirection": "짧은 터치 세션에서도 성장 선택이 분명하게 보이고 접속 사이의 방치 보상이 장기 성장으로 이어지게 한다.",
+    "visualDirection": "독자적인 세계관과 캐릭터 정체성을 유지하면서 성장 단계와 보상 상태를 모바일 화면에서 빠르게 읽을 수 있게 한다.",
+    "mobileUx": "터치 중심의 단순한 수령·강화·편성 흐름으로 짧은 접속에서도 핵심 행동을 완료하게 한다.",
+    "marketTargetDirection": "방치형 성장 RPG를 선호하는 글로벌 모바일 이용자를 대상으로 짧은 접속과 장기 성장을 함께 제공한다.",
+    "steamExpansionDecision": "Steam 확장은 현재 권장하지 않음.",
+    "multiplayerExpansionDecision": "멀티플레이 확장은 현재 권장하지 않음.",
+    "technicalAssumptions": [
+      "터치 우선 조작과 쉬운 접근성을 기본 전제로 한다.",
+      "성장 단계와 보상 상태는 모바일 화면에서 즉시 읽혀야 한다.",
+      "장기 성장과 짧은 접속 루프가 함께 작동해야 한다."
+    ]
+  },
+  "content": {
+    "identity": "Crystal Bloom",
+    "playerFantasy": "자동 전투와 방치 보상을 바탕으로 영웅을 꾸준히 키우고 더 강한 스테이지를 밀어붙이는 글로벌 모바일 싱글 플레이 성장 RPG.",
+    "coreLoop": ["영웅이나 캐릭터가 자동으로 전투하고, 접속하지 않는 동안에도 방치 또는 오프라인 성장 자원을 계속 만든다.","보상을 수령하고 레벨, 스킬, 장비를 강화하며 다음 투자를 어떤 영웅이나 능력치에 줄지 선택한다.","강해진 편성으로 더 어려운 스테이지나 보스에 도전하고 새로운 성장 층을 연 뒤 다음 방치 보상 주기를 기다린다."],
+    "signatureSystems": ["방치형 자동 전투","자원 관리","레벨 및 스킬 성장","성장 투자 선택"],
     "progressionDirection": "짧은 터치 세션에서도 성장 선택이 분명하게 보이고, 접속 사이의 방치 보상이 장기 성장으로 이어지게 한다.",
     "visualDirection": "독자적인 세계관과 캐릭터 정체성을 유지하면서 성장 단계와 보상 상태를 모바일 화면에서 빠르게 읽을 수 있게 한다."
   },
@@ -40,10 +58,5 @@
   "homepageVisible": true,
   "format": "core-strategy",
   "sourceFile": "design/seed-idle-growth-rpg-crystal-bloom/2026-09-11/core-artbook.json",
-  "publication": {
-    "policyDocument": "COMPANY_FLOW.md",
-    "baselineGateState": "DESIGN_BASELINE_READY",
-    "baselineReady": true,
-    "publishedAt": "2026-09-11T07:05:16.918Z"
-  }
+  "publication": {"policyDocument":"COMPANY_FLOW.md","baselineGateState":"DESIGN_BASELINE_READY","baselineReady":true,"publishedAt":"2026-09-11T07:05:16.918Z"}
 }
