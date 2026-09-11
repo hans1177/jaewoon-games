@@ -12,6 +12,7 @@ on:
       - 'tools/vibe2-weight-learning.mjs'
       - 'tools/vibe2-practice-dataset.mjs'
       - 'tools/vibe2-practice-train.py'
+      - 'tools/vibe2-bootstrap-python.ps1'
       - 'qa/vibe2-structural-repair-distillation.test.mjs'
       - 'qa/vibe2-online-unity-teacher.test.mjs'
       - 'qa/vibe2-unity-teacher-rubric.test.mjs'
@@ -69,7 +70,8 @@ jobs:
           test -f company-learning/unity-teacher-materials/core-lessons.json
           test -f company-learning/unity-teacher-materials/graphics-motion-lessons.json
           test -f company-learning/unity-teacher-materials/gpt-practice-drills.json
-          grep -q 'actions/setup-python@v5' .github/workflows/vibe2-structural-repair-distillation.yml
+          test -f tools/vibe2-bootstrap-python.ps1
+          grep -q 'vibe2-bootstrap-python.ps1' .github/workflows/vibe2-structural-repair-distillation.yml
           echo 'LEARNING_FOCUS=UNITY_CODING_ONLY'
           echo 'SPECIALIZATION=GRAPHICS_ANIMATION_MOTION_SMOOTHNESS'
           echo 'KNOWHOW_TRANSFER=REPLICATE_REARRANGE_VARY_RECOMBINE_VERIFIED_INTERNAL_PATTERNS'
@@ -178,9 +180,8 @@ jobs:
         with:
           ref: main
           fetch-depth: 1
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - name: Provision user-scoped Python runtime
+        run: .\tools\vibe2-bootstrap-python.ps1
       - name: Download GPT Unity practice samples
         uses: actions/download-artifact@v4
         with:
@@ -189,21 +190,21 @@ jobs:
       - name: Ensure local ML training dependencies
         run: |
           $ErrorActionPreference = 'Stop'
-          python -c "import torch, transformers, peft, accelerate" 2>$null
+          & $env:PYTHON_EXE -c "import torch, transformers, peft, accelerate" 2>$null
           if ($LASTEXITCODE -ne 0) {
-            python -m pip install --disable-pip-version-check torch transformers peft accelerate sentencepiece
+            & $env:PYTHON_EXE -m pip install --disable-pip-version-check torch transformers peft accelerate sentencepiece
             if ($LASTEXITCODE -ne 0) { throw 'ML dependency installation failed' }
           }
-          python -c "import torch, transformers, peft, accelerate; print('PYTHON_ML_STACK=PASS'); print('TORCH=' + torch.__version__); print('TORCH_CUDA=' + str(torch.version.cuda))"
+          & $env:PYTHON_EXE -c "import torch, transformers, peft, accelerate; print('PYTHON_ML_STACK=PASS'); print('TORCH=' + torch.__version__); print('TORCH_CUDA=' + str(torch.version.cuda))"
       - name: Preflight local GPU practice training stack
         run: |
           $ErrorActionPreference = 'Stop'
           $nvidia = Get-Command nvidia-smi -ErrorAction SilentlyContinue
           if ($null -eq $nvidia) { throw 'nvidia-smi not found on self-hosted Unity runner' }
           nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader
-          python -c "import torch; assert torch.cuda.is_available(), 'CUDA GPU is required for practice adapter training'; print('PRACTICE_CUDA=' + torch.cuda.get_device_name(0)); print('PRACTICE_CUDA_MEMORY=' + str(torch.cuda.get_device_properties(0).total_memory))"
+          & $env:PYTHON_EXE -c "import torch; assert torch.cuda.is_available(), 'CUDA GPU is required for practice adapter training'; print('PRACTICE_CUDA=' + torch.cuda.get_device_name(0)); print('PRACTICE_CUDA_MEMORY=' + str(torch.cuda.get_device_properties(0).total_memory))"
           $method = 'lora'
-          python -c "import bitsandbytes" 2>$null
+          & $env:PYTHON_EXE -c "import bitsandbytes" 2>$null
           if ($LASTEXITCODE -eq 0) { $method = 'qlora' }
           "PRACTICE_TRAINING_METHOD=$method" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           $root = Join-Path $env:USERPROFILE 'jaewoon-vibe2-learning'
@@ -232,7 +233,7 @@ jobs:
           $adapterDir = Join-Path $env:LOCAL_TRAINING_ROOT "adapters\unity-practice\$adapterVersion"
           if (Test-Path $adapterDir) { Remove-Item $adapterDir -Recurse -Force }
           New-Item -ItemType Directory -Path $adapterDir -Force | Out-Null
-          python tools/vibe2-practice-train.py --train (Join-Path $env:PRACTICE_DATASET_DIR 'train.jsonl') --eval (Join-Path $env:PRACTICE_DATASET_DIR 'eval.jsonl') --dataset-manifest (Join-Path $env:PRACTICE_DATASET_DIR 'manifest.json') --output $adapterDir --adapter-version $adapterVersion --task-type unity --method $env:PRACTICE_TRAINING_METHOD --epochs 1
+          & $env:PYTHON_EXE tools/vibe2-practice-train.py --train (Join-Path $env:PRACTICE_DATASET_DIR 'train.jsonl') --eval (Join-Path $env:PRACTICE_DATASET_DIR 'eval.jsonl') --dataset-manifest (Join-Path $env:PRACTICE_DATASET_DIR 'manifest.json') --output $adapterDir --adapter-version $adapterVersion --task-type unity --method $env:PRACTICE_TRAINING_METHOD --epochs 1
           if ($LASTEXITCODE -ne 0) { throw 'practice Unity adapter training failed' }
           $metadata = [System.IO.File]::ReadAllText((Join-Path $adapterDir 'training-metadata.json'), [System.Text.Encoding]::UTF8) | ConvertFrom-Json
           if ($metadata.practiceOnly -ne $true -or $metadata.promotionState -ne 'UNVERIFIED' -or $metadata.runtimePromotionAllowed -ne $false) { throw 'practice adapter safety gate failed' }
@@ -262,9 +263,8 @@ jobs:
         with:
           ref: main
           fetch-depth: 1
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - name: Provision user-scoped Python runtime
+        run: .\tools\vibe2-bootstrap-python.ps1
       - name: Download online Unity teacher samples
         uses: actions/download-artifact@v4
         with:
@@ -273,21 +273,21 @@ jobs:
       - name: Ensure local ML training dependencies
         run: |
           $ErrorActionPreference = 'Stop'
-          python -c "import torch, transformers, peft, accelerate" 2>$null
+          & $env:PYTHON_EXE -c "import torch, transformers, peft, accelerate" 2>$null
           if ($LASTEXITCODE -ne 0) {
-            python -m pip install --disable-pip-version-check torch transformers peft accelerate sentencepiece
+            & $env:PYTHON_EXE -m pip install --disable-pip-version-check torch transformers peft accelerate sentencepiece
             if ($LASTEXITCODE -ne 0) { throw 'ML dependency installation failed' }
           }
-          python -c "import torch, transformers, peft, accelerate; print('PYTHON_ML_STACK=PASS'); print('TORCH=' + torch.__version__); print('TORCH_CUDA=' + str(torch.version.cuda))"
+          & $env:PYTHON_EXE -c "import torch, transformers, peft, accelerate; print('PYTHON_ML_STACK=PASS'); print('TORCH=' + torch.__version__); print('TORCH_CUDA=' + str(torch.version.cuda))"
       - name: Preflight local GPU training stack only
         run: |
           $ErrorActionPreference = 'Stop'
           $nvidia = Get-Command nvidia-smi -ErrorAction SilentlyContinue
           if ($null -eq $nvidia) { throw 'nvidia-smi not found on self-hosted Unity runner' }
           nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader
-          python -c "import torch; assert torch.cuda.is_available(), 'CUDA GPU is required for adapter training'; print('cuda=' + torch.cuda.get_device_name(0))"
+          & $env:PYTHON_EXE -c "import torch; assert torch.cuda.is_available(), 'CUDA GPU is required for adapter training'; print('cuda=' + torch.cuda.get_device_name(0))"
           $method = 'lora'
-          python -c "import bitsandbytes" 2>$null
+          & $env:PYTHON_EXE -c "import bitsandbytes" 2>$null
           if ($LASTEXITCODE -eq 0) { $method = 'qlora' }
           "TRAINING_METHOD=$method" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           $root = Join-Path $env:USERPROFILE 'jaewoon-vibe2-learning'
@@ -325,7 +325,7 @@ jobs:
           $adapterDir = Join-Path $env:LOCAL_TRAINING_ROOT "adapters\unity-coding\$adapterVersion"
           if (Test-Path $adapterDir) { Remove-Item $adapterDir -Recurse -Force }
           New-Item -ItemType Directory -Path $adapterDir -Force | Out-Null
-          python tools/vibe2-train.py --train (Join-Path $env:STRUCTURAL_DATASET_DIR 'train.jsonl') --eval (Join-Path $env:STRUCTURAL_DATASET_DIR 'eval.jsonl') --dataset-manifest (Join-Path $env:STRUCTURAL_DATASET_DIR 'manifest.json') --output $adapterDir --adapter-version $adapterVersion --task-type unity --method $env:TRAINING_METHOD
+          & $env:PYTHON_EXE tools/vibe2-train.py --train (Join-Path $env:STRUCTURAL_DATASET_DIR 'train.jsonl') --eval (Join-Path $env:STRUCTURAL_DATASET_DIR 'eval.jsonl') --dataset-manifest (Join-Path $env:STRUCTURAL_DATASET_DIR 'manifest.json') --output $adapterDir --adapter-version $adapterVersion --task-type unity --method $env:TRAINING_METHOD
           if ($LASTEXITCODE -ne 0) { throw 'Unity coding adapter training failed' }
           $metadata = [System.IO.File]::ReadAllText((Join-Path $adapterDir 'training-metadata.json'), [System.Text.Encoding]::UTF8) | ConvertFrom-Json
           if ($metadata.promotionState -ne 'UNVERIFIED' -or $metadata.runtimePromotionAllowed -ne $false) { throw 'fresh Unity coding adapter must stay UNVERIFIED' }
