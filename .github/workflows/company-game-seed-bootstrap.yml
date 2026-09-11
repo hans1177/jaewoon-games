@@ -4,6 +4,15 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '30 15 * * *' # 00:30 KST; no vacancy means no seed creation
+  push:
+    branches: [main]
+    paths:
+      - 'COMPANY_FLOW.md'
+      - 'company-directive.json'
+      - 'tools/game-seed-state.mjs'
+      - 'tools/company-game-seed-contract.mjs'
+      - 'tools/company-game-seed-bootstrap.mjs'
+      - '.github/workflows/company-game-seed-bootstrap.yml'
 
 permissions:
   contents: write
