@@ -64,10 +64,13 @@ test('main engine changes are serialized through bootstrap before one DESIGN_ONL
   assert.match(bootstrap,/GAME_SEED_DESIGN_DISPATCH_SOURCE=/);
 });
 
-test('parallel seed jobs synchronize company-runtime writes before push',()=>{
+test('parallel seed jobs persist only generated target paths on the latest company-runtime head',()=>{
   assert.match(workflow,/for attempt in 1 2 3 4/);
-  assert.match(workflow,/git fetch origin \"\$COMPANY_RUNTIME_BRANCH\"/);
-  assert.match(workflow,/git rebase \"origin\/\$COMPANY_RUNTIME_BRANCH\"/);
+  assert.match(workflow,/generated_commit=\"\$\(git rev-parse HEAD\)\"/);
+  assert.match(workflow,/git checkout -B seed-design-persist \"origin\/\$COMPANY_RUNTIME_BRANCH\"/);
+  assert.match(workflow,/git checkout \"\$generated_commit\" -- \"\$game_path\" \"\$artbook_path\"/);
+  assert.match(workflow,/git push origin \"HEAD:refs\/heads\/\$COMPANY_RUNTIME_BRANCH\"/);
+  assert.doesNotMatch(workflow,/git rebase \"origin\/\$COMPANY_RUNTIME_BRANCH\"/);
   assert.match(workflow,/test \"\$pushed\" = 1/);
 });
 
