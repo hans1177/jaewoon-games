@@ -1,0 +1,192 @@
+name: Company Seed DESIGN_ONLY Runtime
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 16 * * *' # 01:00 KST fallback; bootstrap normally dispatches immediately
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: company-seed-design-runtime
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+  OLLAMA_HOST: 127.0.0.1:11434
+
+jobs:
+  resolve-seed-targets:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.targets.outputs.run }}
+      targets: ${{ steps.targets.outputs.targets }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Load latest company runtime state
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! git ls-remote --exit-code --heads origin "$COMPANY_RUNTIME_BRANCH" >/dev/null 2>&1; then
+            echo 'COMPANY_RUNTIME_STATE=NOT_CREATED'
+            exit 0
+          fi
+          git fetch origin "$COMPANY_RUNTIME_BRANCH" main
+          git checkout -B "$COMPANY_RUNTIME_BRANCH" "origin/$COMPANY_RUNTIME_BRANCH"
+          git merge --no-edit origin/main
+
+      - name: Resolve active incomplete GAME_SEED targets
+        id: targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const state=(()=>{try{return JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));}catch{return{seeds:[]};}})();
+          const active=(state.seeds||[]).filter(seed=>String(seed.status||'').toUpperCase()==='ACTIVE');
+          const pending=active.filter(seed=>{
+            const current=path.join('artbook-submissions',String(seed.gameId),'current.json');
+            if(!fs.existsSync(current))return true;
+            try{const a=JSON.parse(fs.readFileSync(current,'utf8'));return a.baselineGateState!=='DESIGN_BASELINE_READY';}catch{return true;}
+          });
+          const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+          const get=t=>parts.find(x=>x.type===t)?.value||'';
+          const date=`${get('year')}-${get('month')}-${get('day')}`;
+          const targets=pending.map(seed=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,date}));
+          console.log(`run=${targets.length?'true':'false'}`);
+          console.log(`targets=${JSON.stringify(targets)}`);
+          console.error(`GAME_SEED_DESIGN_TARGET_COUNT=${targets.length}`);
+          NODE
+
+  design-cycle:
+    needs: resolve-seed-targets
+    if: needs.resolve-seed-targets.outputs.run == 'true'
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        target: ${{ fromJSON(needs.resolve-seed-targets.outputs.targets) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Checkout isolated company runtime branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "$COMPANY_RUNTIME_BRANCH" main
+          git checkout -B "$COMPANY_RUNTIME_BRANCH" "origin/$COMPANY_RUNTIME_BRANCH"
+          git merge --no-edit origin/main
+          test -f game-seed-state.json
+          echo 'PUBLIC_MAIN_WRITE=NO'
+
+      - name: Install local Ollama
+        shell: bash
+        run: |
+          set -euo pipefail
+          installed=0
+          for attempt in 1 2 3; do
+            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
+            sleep $((attempt * 4))
+          done
+          test "$installed" = 1
+          nohup ollama serve > /tmp/ollama-seed-design.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break; sleep 2; done
+          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
+
+      - name: Pull configured free department models
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE' > /tmp/models.txt
+          import fs from 'node:fs';
+          const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+          const roles=['planning','graphics','development','qa','balance'];
+          const pool=[...new Set((d.ai?.modelPool||[]).map(String).map(x=>x.trim()).filter(Boolean))];
+          const leads=roles.map(role=>String(d.ai?.departmentLeadModels?.[role]||'').trim());
+          if(pool.length<Number(d.ai?.minDistinctModelsPerDepartment||3))throw new Error('model pool too small');
+          if(new Set(leads).size<5)throw new Error('five distinct lead models required');
+          for(const lead of leads)if(!pool.includes(lead))throw new Error(`lead not in pool: ${lead}`);
+          for(const model of pool)console.log(model);
+          NODE
+          while IFS= read -r model; do [ -z "$model" ] || ollama pull "$model"; done < /tmp/models.txt
+          echo 'PAID_API=NO'
+
+      - name: Run seed-backed DESIGN_ONLY pipeline
+        env:
+          ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
+          ARTBOOK_DATE: ${{ matrix.target.date }}
+        run: node tools/artbook-production-pipeline.mjs
+
+      - name: Verify baseline-before-artbook contract
+        env:
+          ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
+          ARTBOOK_DATE: ${{ matrix.target.date }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const gameId=process.env.ARTBOOK_GAME_ID,date=process.env.ARTBOOK_DATE;
+          const base=path.join('design',gameId,date);
+          const status=JSON.parse(fs.readFileSync(path.join(base,'cycle-status.json'),'utf8'));
+          if(status.productionClass!=='DESIGN_ONLY')throw new Error('seed runtime must remain DESIGN_ONLY');
+          if(status.status!=='COMPLETE')throw new Error('design cycle incomplete');
+          if(status.departments?.count!==5||status.departments?.leadModelsDistinct!==true)throw new Error('five department lead contract failed');
+          if(status.vibe2?.used===true||status.artbook?.vibe2Used===true)throw new Error('DESIGN_ONLY Vibe2 forbidden');
+          const ready=status.baselineGate?.state==='DESIGN_BASELINE_READY'&&status.baselineGate?.ready===true;
+          const artbookPath=path.join(base,'core-artbook.json');
+          if(ready){
+            if(!fs.existsSync(artbookPath))throw new Error('ready baseline missing post-baseline artbook');
+            const artbook=JSON.parse(fs.readFileSync(artbookPath,'utf8'));
+            if(artbook.baselineGateState!=='DESIGN_BASELINE_READY'||artbook.vibe2Used!==false)throw new Error('artbook provenance invalid');
+            if(status.artbook?.createdAfterBaselineReady!==true)throw new Error('artbook was not recorded after baseline');
+          }else if(fs.existsSync(artbookPath))throw new Error('artbook exists before DESIGN_BASELINE_READY');
+          console.log(`SEED_DESIGN_RESULT=${status.baselineGate?.state||status.disposition?.state||'UNKNOWN'}`);
+          console.log('DESIGN_ONLY_VIBE2_USED=NO');
+          NODE
+
+      - name: Persist validated design evidence to company runtime branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-seed-design'
+          git config user.email 'seed-design@users.noreply.github.com'
+          git add -- "design/${{ matrix.target.game_id }}" "artbook-submissions/${{ matrix.target.game_id }}" game-seed-state.json
+          if git diff --cached --quiet; then
+            echo 'SEED_DESIGN_RUNTIME_CHANGE=NO'
+            exit 0
+          fi
+          git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}"
+          git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"
+          echo 'SEED_DESIGN_RUNTIME_CHANGE=PERSISTED'
+          echo 'PUBLIC_MAIN_WRITE=NO'
+
+      - name: Replenish only if a discard created a vacancy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if node --input-type=module <<'NODE'
+          import {loadSeedState,unfilledVacancies} from './tools/game-seed-state.mjs';
+          process.exit(unfilledVacancies(loadSeedState()).length>0?0:1);
+          NODE
+          then
+            gh workflow run company-game-seed-bootstrap.yml --ref main
+            echo 'GAME_SEED_VACANCY_REPLENISHMENT_DISPATCHED=YES'
+          else
+            echo 'GAME_SEED_VACANCY_REPLENISHMENT_DISPATCHED=NO'
+          fi
