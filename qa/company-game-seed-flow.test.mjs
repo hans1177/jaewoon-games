@@ -134,7 +134,7 @@ test('autonomous runtime does not depend on GitHub Actions PR creation permissio
   assert.match(seedWorkflow,/git push origin "HEAD:refs\/heads\/\$COMPANY_RUNTIME_BRANCH"/);
   assert.match(seedWorkflow,/gh workflow run company-seed-design-runtime\.yml --ref main/);
   assert.match(seedDesignWorkflow,/game-seed-state\.json/);
-  assert.match(seedDesignWorkflow,/max-parallel: 1/);
+  assert.match(seedDesignWorkflow,/max-parallel: 3/);
   assert.match(seedDesignWorkflow,/node tools\/artbook-production-pipeline\.mjs/);
   assert.match(seedDesignWorkflow,/artbook exists before DESIGN_BASELINE_READY/);
   assert.match(statusWorkflow,/COMPANY_STATUS_SYNC_COMMIT=RUNTIME_PERSISTED/);
