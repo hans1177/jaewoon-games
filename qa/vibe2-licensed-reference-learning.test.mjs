@@ -70,3 +70,18 @@ test('teacher and licensed references become a mixed non-promotable Unity datase
     assert.ok(row.output.length > 40, 'licensed sample must retain a substantive answer');
   }
 });
+
+test('CPU practice speedup removes duplicate eval without reducing train or eval data', () => {
+  const trainer = fs.readFileSync('tools/vibe2-train.py', 'utf8');
+  const workflow = fs.readFileSync('.github/workflows/vibe2-practice-cpu-fallback.yml', 'utf8');
+
+  assert.match(trainer, /--final-eval-only/);
+  assert.match(trainer, /eval_strategy="no" if args\.final_eval_only else "epoch"/);
+  assert.match(trainer, /save_strategy="no" if args\.final_eval_only else "epoch"/);
+  assert.match(trainer, /eval_result = trainer\.evaluate\(\)/);
+  assert.match(trainer, /supervised_tokens == 0/);
+  assert.match(workflow, /'--epochs', '0\.25'/);
+  assert.match(workflow, /'--max-length', '256'/);
+  assert.match(workflow, /'--final-eval-only'/);
+  assert.match(workflow, /PRACTICE_EVAL_PASSES=1/);
+});
