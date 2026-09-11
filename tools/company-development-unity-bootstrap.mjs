@@ -266,7 +266,7 @@ public static class SeedAndroidBuild
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, "${packageId}");
         PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
         PlayerSettings.Android.forceInternetPermission = false;
-        PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64 | AndroidArchitecture.X86_64;
+        PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
 
         BuildPlayerOptions options = new BuildPlayerOptions
         {
