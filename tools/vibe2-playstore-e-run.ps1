@@ -74,6 +74,51 @@ function Get-EmulatorLogTail {
   @($parts | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join "`n"
 }
 
+function Wake-UnlockScreen {
+  param([string]$Adb,[string]$Serial)
+  [void](Invoke-Native $Adb @('-s',$Serial,'shell','input','keyevent','224'))
+  [void](Invoke-Native $Adb @('-s',$Serial,'shell','wm','dismiss-keyguard'))
+  [void](Invoke-Native $Adb @('-s',$Serial,'shell','input','keyevent','82'))
+  [void](Invoke-Native $Adb @('-s',$Serial,'shell','settings','put','system','screen_off_timeout','1800000'))
+  Start-Sleep 1
+  Write-Host 'DISPLAY_WAKE_UNLOCK=PASS'
+}
+
+function Get-ForegroundSummary {
+  param([string]$Adb,[string]$Serial)
+  $r=Invoke-Native $Adb @('-s',$Serial,'shell','dumpsys','window','windows')
+  $text=$r.Output -join "`n"
+  $m=[regex]::Match($text,'(?im)^\s*mCurrentFocus=.*$')
+  if($m.Success){ return $m.Value.Trim() }
+  $m=[regex]::Match($text,'(?im)^\s*mFocusedApp=.*$')
+  if($m.Success){ return $m.Value.Trim() }
+  'FOREGROUND_UNKNOWN'
+}
+
+function Get-UiTextSummary {
+  param([string]$Xml)
+  if([string]::IsNullOrWhiteSpace($Xml)){ return 'UI_XML_EMPTY' }
+  $values=New-Object System.Collections.Generic.List[string]
+  foreach($m in [regex]::Matches($Xml,'(?:text|content-desc)="([^"]+)"')){
+    $v=$m.Groups[1].Value.Trim()
+    if([string]::IsNullOrWhiteSpace($v)){ continue }
+    if(-not $values.Contains($v)){ $values.Add($v) }
+    if($values.Count -ge 12){ break }
+  }
+  if($values.Count -eq 0){ return 'UI_TEXT_EMPTY' }
+  ($values -join ' | ')
+}
+
+function Start-OfficialPlayStorePage {
+  param([string]$Adb,[string]$Serial,[string]$Package)
+  Wake-UnlockScreen $Adb $Serial
+  [void](Invoke-Native $Adb @('-s',$Serial,'shell','am','force-stop','com.android.vending'))
+  Start-Sleep 1
+  $r=Invoke-Native $Adb @('-s',$Serial,'shell','am','start','-W','-a','android.intent.action.VIEW','-d',"market://details?id=$Package",'-p','com.android.vending')
+  Write-Host "PLAY_STORE_START_EXIT=$($r.ExitCode)"
+  Start-Sleep 3
+}
+
 $sourceSdk=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'Android\Sdk'
 $targetSdk=Join-Path $TargetRoot 'Sdk'
 $targetAvd=Join-Path $TargetRoot 'avd'
@@ -129,14 +174,19 @@ Write-Host 'PLAY_STORE_PACKAGE=PASS'
 
 if(-not (Test-PackageInstalled $adb $serial $PackageId)){
   Write-Host 'OPENING_OFFICIAL_GOOGLE_PLAY=YES'
-  [void](Invoke-Native $adb @('-s',$serial,'shell','am','start','-a','android.intent.action.VIEW','-d',"market://details?id=$PackageId",'-p','com.android.vending'))
+  Start-OfficialPlayStorePage $adb $serial $PackageId
   $deadline=(Get-Date).AddMinutes($InstallWaitMinutes)
   $signInShown=$false
+  $setupShown=$false
+  $retried=$false
+  $nextDiagnostic=(Get-Date)
   $signInPattern='(?i)(Sign in|Add account|\uB85C\uADF8\uC778|\uACC4\uC815\s*\uCD94\uAC00)'
   do{
     if(Test-PackageInstalled $adb $serial $PackageId){ break }
     Start-Sleep 5
     $xml=Get-UiXml $adb $serial
+    $foreground=Get-ForegroundSummary $adb $serial
+
     if(-not $signInShown -and $xml -match $signInPattern){
       Write-Host 'PLAY_STORE_SIGN_IN_REQUIRED=YES'
       Write-Host 'SIGN_IN_LOCATION=EMULATOR_UI_ONLY'
@@ -144,7 +194,27 @@ if(-not (Test-PackageInstalled $adb $serial $PackageId)){
       Write-Host 'ACCOUNT_TOKEN_EXPORTED=NO'
       $signInShown=$true
     }
+    if(-not $setupShown -and $foreground -match '(?i)(setupwizard|provision)'){
+      Write-Host 'ANDROID_INITIAL_SETUP_REQUIRED=YES'
+      Write-Host 'COMPLETE_SETUP_IN_EMULATOR_UI=YES'
+      $setupShown=$true
+    }
+
     [void](Try-TapInstall $adb $serial $xml)
+
+    if((Get-Date) -ge $nextDiagnostic){
+      Write-Host "FOREGROUND=$foreground"
+      Write-Host "UI_TEXT=$(Get-UiTextSummary $xml)"
+      $nextDiagnostic=(Get-Date).AddSeconds(20)
+    }
+
+    if(-not $retried -and (Get-Date) -gt $deadline.AddMinutes(-($InstallWaitMinutes-1))){
+      if($foreground -notmatch '(?i)com\.android\.vending'){
+        Write-Host 'PLAY_STORE_FOREGROUND_RECOVERY=START'
+        Start-OfficialPlayStorePage $adb $serial $PackageId
+        $retried=$true
+      }
+    }
   }while((Get-Date)-lt $deadline)
 }
 
@@ -159,7 +229,7 @@ $launchPass=($launch.ExitCode -eq 0 -and -not [string]::IsNullOrWhiteSpace($pid)
 
 $outPath=Join-Path $TargetRoot 'vibe2-playstore-bootstrap.json'
 [ordered]@{
-  version=3; packageId=$PackageId; installPolicy='OFFICIAL_GOOGLE_PLAY_ONLY'; codeExtractionAllowed=$false; binaryRedistributionAllowed=$false; runtimePromotionAllowed=$false;
+  version=4; packageId=$PackageId; installPolicy='OFFICIAL_GOOGLE_PLAY_ONLY'; codeExtractionAllowed=$false; binaryRedistributionAllowed=$false; runtimePromotionAllowed=$false;
   serial=$serial; androidVersion=$androidVersion; apiLevel=$api; abi=$abi; installed=$true; launchPass=$launchPass; foregroundPass=[bool]$foreground; processId=$pid;
   observedAt=(Get-Date).ToUniversalTime().ToString('o')
 }|ConvertTo-Json -Depth 8|Set-Content -LiteralPath $outPath -Encoding UTF8
