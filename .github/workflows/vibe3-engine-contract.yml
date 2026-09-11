@@ -1,0 +1,42 @@
+name: Vibe3 Engine Contract
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Vibe3 JavaScript syntax
+        run: |
+          node --input-type=module --check < assets/vibe-v3-engine.js
+          node --input-type=module --check < assets/vibe-development-ai.js
+          node --input-type=module --check < assets/vibe-art-pipeline.js
+
+      - name: Run Vibe3 engine contract tests
+        run: node qa/vibe3-engine.test.mjs
+
+      - name: Check trainer syntax
+        run: python -m py_compile tools/vibe2-train.py qa/vibe3-trainer-black-box.test.py
+
+      - name: Verify external black-box trainer contract
+        run: python qa/vibe3-trainer-black-box.test.py
+
+      - name: Verify no parallel bypass contract
+        run: |
+          node --input-type=module <<'NODE'
+          import { createVibeV3ExecutionContract } from './assets/vibe-v3-engine.js';
+          const c=createVibeV3ExecutionContract();
+          if(c.integration.parallelPipeline!==false) throw new Error('parallel V3 pipeline forbidden');
+          if(c.integration.reuseExistingCheckpoint!==true) throw new Error('existing checkpoint must be reused');
+          if(c.integration.reuseExistingQaAndRegression!==true) throw new Error('existing QA/regression must be reused');
+          if(c.policy.originalSourceOverwriteBeforeWinnerForbidden!==true) throw new Error('candidate source overwrite before winner is forbidden');
+          console.log('PASS Vibe3 canonical integration contract');
+          NODE
