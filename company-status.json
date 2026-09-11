@@ -613,21 +613,6 @@
   ],
   "testBuilds": [
     {
-      "gameId": "daechung-rpg",
-      "requestId": "daechung-rpg-hybrid-017",
-      "status": "ready",
-      "channel": "test",
-      "buildRoute": "github-cloud-host-personal",
-      "homepagePublished": true,
-      "sourceCommit": "f78b6a53186c3a6765e75bdb92801d512ed8d8e7",
-      "releaseTag": "test-daechung-rpg-34201876835-1",
-      "release": "https://github.com/hans1177/jaewoon-games/releases/tag/test-daechung-rpg-34201876835-1",
-      "download": "https://github.com/hans1177/jaewoon-games/releases/download/test-daechung-rpg-34201876835-1/daechung-rpg-test.apk",
-      "sha256": "bca2596f93ea71e5ad311d9d3a322083ae768f8ac0c9c046125b33c9a4f1e817",
-      "bytes": 24392700,
-      "builtAt": "2026-09-08T08:07:37.760135+00:00"
-    },
-    {
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
       "requestId": "development-unity-seed-action-survival-rogu-echoes-of-the-lost-star-34647586728",
       "status": "ready",
@@ -731,6 +716,32 @@
       "runtimeInstallLaunchVerified": true,
       "testBuildStatus": "verified",
       "builtAt": "2026-09-11T22:08:56.404322+00:00"
+    },
+    {
+      "gameId": "daechung-rpg",
+      "requestId": "daechung-rpg-cloud-rebuild-20260912-004",
+      "status": "ready",
+      "channel": "test",
+      "buildRoute": "github-cloud-host-personal",
+      "mobileReady": true,
+      "homepagePublished": true,
+      "homepagePublishedAt": "2026-09-11T22:22:58.522684+00:00",
+      "deviceCompatibility": "android-10+",
+      "sourceCommit": "e91ed68073e9d60e84290c4a4f475ae76934c250",
+      "releaseTag": "test-daechung-rpg-34652938139-1",
+      "release": "https://github.com/hans1177/jaewoon-games/releases/tag/test-daechung-rpg-34652938139-1",
+      "download": "https://github.com/hans1177/jaewoon-games/releases/download/test-daechung-rpg-34652938139-1/daechung-rpg-test.apk",
+      "applicationId": "com.jaewoon.games.daechungrpg",
+      "sha256": "33f9ef331a4cd43a7a32ae644d54fedc8185794d21051abc21b3d91df6bcb010",
+      "bytes": 24401816,
+      "androidVerificationApi": 36,
+      "signatureVerified": true,
+      "installAndLaunchVerified": false,
+      "runtimeVerification": "android-16-avd-api-36-pending",
+      "runtimeVerificationSource": "github-actions",
+      "runtimeInstallLaunchVerified": false,
+      "testBuildStatus": "ready",
+      "builtAt": "2026-09-11T22:22:58.522684+00:00"
     }
   ],
   "redevelopmentReview": {
