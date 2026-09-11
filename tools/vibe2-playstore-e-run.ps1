@@ -55,14 +55,22 @@ function Try-TapInstall {
     $s=$node.Value
     if($s -notmatch '(?i)(text|content-desc)="(?:Install|설치)"'){ continue }
     if($s -match 'bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"'){
-      $x=[int](($Matches[1]+$Matches[3])/2)
-      $y=[int](($Matches[2]+$Matches[4])/2)
+      $x1=[int]$Matches[1]; $y1=[int]$Matches[2]; $x2=[int]$Matches[3]; $y2=[int]$Matches[4]
+      $x=[int](($x1+$x2)/2); $y=[int](($y1+$y2)/2)
       [void](Invoke-Native $Adb @('-s',$Serial,'shell','input','tap',[string]$x,[string]$y))
       Write-Host "PLAY_STORE_INSTALL_TAP=$x,$y"
       return $true
     }
   }
   $false
+}
+
+function Get-EmulatorLogTail {
+  param([string]$StdoutLog,[string]$StderrLog)
+  $parts=New-Object System.Collections.Generic.List[string]
+  if(Test-Path -LiteralPath $StdoutLog){ $parts.Add(((Get-Content -LiteralPath $StdoutLog -Tail 40 -ErrorAction SilentlyContinue)-join "`n")) }
+  if(Test-Path -LiteralPath $StderrLog){ $parts.Add(((Get-Content -LiteralPath $StderrLog -Tail 40 -ErrorAction SilentlyContinue)-join "`n")) }
+  @($parts | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join "`n"
 }
 
 $sourceSdk=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'Android\Sdk'
@@ -95,24 +103,18 @@ Write-Host "PACKAGE_ID=$PackageId"
 $serial=Get-PlayStoreBootedSerial $adb
 if(-not $serial){
   Write-Host "STARTING_PLAY_STORE_AVD=$AvdName"
-  $log=Join-Path $TargetRoot 'emulator.log'
-  $proc=Start-Process $emulator -ArgumentList @('-avd',$AvdName,'-no-audio','-no-boot-anim','-gpu','swiftshader_indirect') -RedirectStandardOutput $log -RedirectStandardError $log -PassThru
+  $stdoutLog=Join-Path $TargetRoot 'emulator-stdout.log'
+  $stderrLog=Join-Path $TargetRoot 'emulator-stderr.log'
+  Remove-Item -LiteralPath $stdoutLog,$stderrLog -Force -ErrorAction SilentlyContinue
+  $proc=Start-Process $emulator -ArgumentList @('-avd',$AvdName,'-no-audio','-no-boot-anim','-gpu','swiftshader_indirect') -RedirectStandardOutput $stdoutLog -RedirectStandardError $stderrLog -PassThru
   $deadline=(Get-Date).AddMinutes(10)
   do{
     Start-Sleep 5
     $serial=Get-PlayStoreBootedSerial $adb
     if($serial){ break }
-    if($proc.HasExited){
-      $tail=''
-      if(Test-Path -LiteralPath $log){ $tail=(Get-Content -LiteralPath $log -Tail 60 -ErrorAction SilentlyContinue)-join "`n" }
-      throw "PLAY_STORE_AVD_EXITED_EARLY:$tail"
-    }
+    if($proc.HasExited){ throw "PLAY_STORE_AVD_EXITED_EARLY:$(Get-EmulatorLogTail $stdoutLog $stderrLog)" }
   }while((Get-Date)-lt $deadline)
-  if(-not $serial){
-    $tail=''
-    if(Test-Path -LiteralPath $log){ $tail=(Get-Content -LiteralPath $log -Tail 60 -ErrorAction SilentlyContinue)-join "`n" }
-    throw "PLAY_STORE_AVD_BOOT_TIMEOUT:$tail"
-  }
+  if(-not $serial){ throw "PLAY_STORE_AVD_BOOT_TIMEOUT:$(Get-EmulatorLogTail $stdoutLog $stderrLog)" }
 }
 
 $androidVersion=((Invoke-Native $adb @('-s',$serial,'shell','getprop','ro.build.version.release')).Output -join '').Trim()
@@ -144,9 +146,7 @@ if(-not (Test-PackageInstalled $adb $serial $PackageId)){
   }while((Get-Date)-lt $deadline)
 }
 
-if(-not (Test-PackageInstalled $adb $serial $PackageId)){
-  throw "INSTALL_NOT_DETECTED_WITHIN_${InstallWaitMinutes}_MINUTES"
-}
+if(-not (Test-PackageInstalled $adb $serial $PackageId)){ throw "INSTALL_NOT_DETECTED_WITHIN_${InstallWaitMinutes}_MINUTES" }
 
 $launch=Invoke-Native $adb @('-s',$serial,'shell','monkey','-p',$PackageId,'-c','android.intent.category.LAUNCHER','1')
 Start-Sleep 8
@@ -157,20 +157,8 @@ $launchPass=($launch.ExitCode -eq 0 -and -not [string]::IsNullOrWhiteSpace($pid)
 
 $outPath=Join-Path $TargetRoot 'vibe2-playstore-bootstrap.json'
 [ordered]@{
-  version=3
-  packageId=$PackageId
-  installPolicy='OFFICIAL_GOOGLE_PLAY_ONLY'
-  codeExtractionAllowed=$false
-  binaryRedistributionAllowed=$false
-  runtimePromotionAllowed=$false
-  serial=$serial
-  androidVersion=$androidVersion
-  apiLevel=$api
-  abi=$abi
-  installed=$true
-  launchPass=$launchPass
-  foregroundPass=[bool]$foreground
-  processId=$pid
+  version=3; packageId=$PackageId; installPolicy='OFFICIAL_GOOGLE_PLAY_ONLY'; codeExtractionAllowed=$false; binaryRedistributionAllowed=$false; runtimePromotionAllowed=$false;
+  serial=$serial; androidVersion=$androidVersion; apiLevel=$api; abi=$abi; installed=$true; launchPass=$launchPass; foregroundPass=[bool]$foreground; processId=$pid;
   observedAt=(Get-Date).ToUniversalTime().ToString('o')
 }|ConvertTo-Json -Depth 8|Set-Content -LiteralPath $outPath -Encoding UTF8
 
