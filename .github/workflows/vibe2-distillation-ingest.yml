@@ -25,7 +25,7 @@ on:
     types: [completed]
   workflow_dispatch:
   schedule:
-    - cron: '17 */6 * * *'
+    - cron: '17 * * * *'
 
 permissions:
   contents: write
@@ -157,6 +157,7 @@ jobs:
         shell: bash
         run: |
           echo '### Vibe2 Distillation Sample Ingest' >> "$GITHUB_STEP_SUMMARY"
+          echo '- schedule: HOURLY_24H' >> "$GITHUB_STEP_SUMMARY"
           echo '- web source: independent-QA + browser-QA verified autonomous promotions' >> "$GITHUB_STEP_SUMMARY"
           echo '- Unity source: RELEASE_READY + current source/build binding + Android runtime PASS + independent QA PASS + merged PR' >> "$GITHUB_STEP_SUMMARY"
           echo '- Unity browser QA: NOT_APPLICABLE; never synthesized as PASS' >> "$GITHUB_STEP_SUMMARY"
