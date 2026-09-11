@@ -81,12 +81,13 @@
     var gate=(item.publication&&item.publication.baselineGateState)||item.lifecycleState||'BASELINE';
     var title=item.title||item.gameName||'게임 아트북';
     var hook=c.oneLineHook||c.identity||'확정 설계 핵심 전략';
+    ensureMobilePaging();
     var html='<div class="head"><small>확정 아트북 · CORE STRATEGY</small><h1>'+esc(title)+'</h1><p>'+esc(hook)+'</p><div class="meta"><span>'+esc(item.gameName||item.gameId||'게임')+'</span><span>'+esc(item.createdAt||item.date||'')+'</span><span>'+esc(gate)+'</span><span>완료</span></div></div>';
-    html+='<div class="notice">설계 기준선을 통과한 상세 설계에서 핵심 전략만 압축한 현재 공개 아트북이야.</div><div class="pages">';
+    html+='<div class="notice">설계 기준선을 통과한 핵심 전략 아트북이야. 모바일에서는 페이지를 좌우로 넘겨서 볼 수 있어.</div><div class="pages">';
     for(var i=0;i<sections.length;i++)html+='<article class="page"><div class="info"><div class="pageTop"><span class="pageNo">'+(i+1)+' / '+sections.length+'</span><span class="role">ARTBOOK EDITOR</span></div><h2>'+esc(sections[i][0])+'</h2><p>'+esc(sections[i][1])+'</p></div></article>';
     html+='</div>';
     bookEl.innerHTML=html;
-    if(footer)footer.textContent='확정 설계 핵심 전략 아트북 · 완료';
+    if(footer)footer.textContent='확정 설계 핵심 전략 아트북 · 좌우 넘김 · 완료';
   }
   function render(item){
     if(item&&item.format==='core-strategy'&&item.content){renderCore(item);return;}
