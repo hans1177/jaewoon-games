@@ -10,21 +10,28 @@ test('seed design runtime cancels stale runs and revalidates matrix targets befo
   assert.match(workflow,/group: company-seed-design-runtime\s+cancel-in-progress: true/);
   const checkoutIndex=workflow.indexOf('- name: Checkout isolated company runtime branch');
   const revalidateIndex=workflow.indexOf('- name: Revalidate current seed target');
-  const cacheIndex=workflow.indexOf('- name: Restore Ollama model cache');
-  const ollamaIndex=workflow.indexOf('- name: Install local Ollama');
-  assert.ok(checkoutIndex>=0&&revalidateIndex>checkoutIndex&&cacheIndex>revalidateIndex&&ollamaIndex>cacheIndex);
+  const modelCacheIndex=workflow.indexOf('- name: Restore Ollama model cache');
+  const resolveModelsIndex=workflow.indexOf('- name: Resolve configured free department models');
+  const runtimeIndex=workflow.indexOf('- name: Prepare cached local Ollama runtime');
+  const pullIndex=workflow.indexOf('- name: Pull remaining configured free department models');
+  assert.ok(checkoutIndex>=0&&revalidateIndex>checkoutIndex&&modelCacheIndex>revalidateIndex&&resolveModelsIndex>modelCacheIndex&&runtimeIndex>resolveModelsIndex&&pullIndex>runtimeIndex);
   assert.match(workflow,/TARGET_SEED_ID: \$\{\{ matrix\.target\.seed_id \}\}/);
   assert.match(workflow,/STALE_SEED_TARGET_SKIP/);
   assert.match(workflow,/baselineGateState==='DESIGN_BASELINE_READY'/);
   assert.match(workflow,/if: steps\.target\.outputs\.should_run == 'true'/);
 });
 
-test('seed design runtime removes serial throughput bottleneck without paid runners',()=>{
+test('seed design runtime removes serial throughput and repeated Ollama install bottlenecks without paid runners',()=>{
   assert.match(workflow,/max-parallel: 3/);
   assert.match(workflow,/runs-on: ubuntu-latest/);
   assert.match(workflow,/uses: actions\/cache@v4/);
   assert.match(workflow,/path: ~\/\.ollama\/models/);
   assert.match(workflow,/ollama-seed-design-\$\{\{ runner\.os \}\}-\$\{\{ hashFiles\('company-directive\.json'\) \}\}/);
+  assert.match(workflow,/OLLAMA_VERSION: '0\.33\.3'/);
+  assert.match(workflow,/uses: \.\/\.github\/actions\/prepare-ollama/);
+  assert.match(workflow,/model: \$\{\{ steps\.models\.outputs\.primary_model \}\}/);
+  assert.match(workflow,/version: \$\{\{ env\.OLLAMA_VERSION \}\}/);
+  assert.doesNotMatch(workflow,/https:\/\/ollama\.com\/install\.sh/);
 });
 
 test('main engine changes are serialized through bootstrap before one DESIGN_ONLY dispatch',()=>{
