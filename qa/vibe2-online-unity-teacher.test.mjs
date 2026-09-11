@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { buildOnlineTeacherAnalysis } from '../tools/vibe2-online-unity-teacher.mjs';
 
 const lessons = [
@@ -38,4 +39,23 @@ test('online teacher는 Unity verified sample만 분석하고 코드 권한을 �
 
 test('online teacher는 non-Unity source를 거부한다', () => {
   assert.throws(() => buildOnlineTeacherAnalysis({ ...verifiedUnity(), taskType: 'bugfix' }, lessons), /taskType=unity only/);
+});
+
+test('ingest에서 검증 샘플을 artifact로 넘기고 Actions PR 권한 실패가 학습을 막지 않는다', () => {
+  const ingest = fs.readFileSync('.github/workflows/vibe2-distillation-ingest.yml', 'utf8');
+  assert.match(ingest, /name: vibe2-verified-training-samples/);
+  assert.match(ingest, /retention-days: 1/);
+  assert.match(ingest, /DISTILLATION_MEMORY_PR=SKIPPED_ACTIONS_PR_PERMISSION/);
+  assert.match(ingest, /git push origin --delete/);
+});
+
+test('24시간 Unity teacher는 ingest artifact를 우선 소비하고 없으면 main 샘플로 안전하게 fallback한다', () => {
+  const workflow = fs.readFileSync('.github/workflows/vibe2-structural-repair-distillation.yml', 'utf8');
+  assert.match(workflow, /actions: read/);
+  assert.match(workflow, /actions\/download-artifact@v4/);
+  assert.match(workflow, /name: vibe2-verified-training-samples/);
+  assert.match(workflow, /run-id: \$\{\{ github\.event\.workflow_run\.id \}\}/);
+  assert.match(workflow, /VERIFIED_SAMPLE_SOURCE=INGEST_ARTIFACT/);
+  assert.match(workflow, /VERIFIED_SAMPLE_SOURCE=MAIN_REPOSITORY/);
+  assert.match(workflow, /steps\.sample-source\.outputs\.sample_dir/);
 });
