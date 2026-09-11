@@ -1,0 +1,46 @@
+{
+  "version": 4,
+  "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "SEED-ACTION_SURVIVAL_ROGUELITE-001",
+  "gameSeedSource": "game-seed-state.json",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "qwen3:0.6b",
+  "singleAuthor": true,
+  "content": {
+    "identity": "Echoes of the Lost Star",
+    "playerFantasy": "Global mobile players across age groups interested in action survival roguelite gameplay.",
+    "coreFun": "Combat, Upgrade, Run, and Horde-centered progression.",
+    "coreLoop": [
+      "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    ],
+    "signatureSystems": [
+      {
+        "name": "Action Survival Roguelite",
+        "purpose": "Reinterpret successful structural lessons from Vampire Survivors and Brotato through a distinct setting, visual identity, progression mix, and touch-first presentation.",
+        "playerChoice": "Short touch session with readable gameplay loops, while preserving longer-term progression between sessions."
+      }
+    ],
+    "progressionDirection": "Preserve the core loop for short touch sessions and allow progression to longer-term results.",
+    "visualDirection": "Reinterpret visual identity, progression mix, and touch-first presentation to align with global mobile engagement.",
+    "mobileUx": "Designed for Android mobile platforms, with a focus on touch-first presentation and short session readability.",
+    "marketTargetDirection": "Use global mobile engagement and session evidence as a directional reference, while keeping the action survival roguelite core loop readable in short touch sessions.",
+    "steamExpansionDecision": "Not recommended for Steam expansion.",
+    "multiplayerExpansionDecision": "Not recommended for Multiplayer expansion.",
+    "technicalAssumptions": [
+      "The action survival roguelite core loop is preserved for short touch sessions.",
+      "Global mobile engagement and session evidence are used as directional references."
+    ],
+    "validationQuestions": [
+      "What is the core gameplay loop of the Echoes of the Lost Star?"
+    ],
+    "openQuestions": [
+      "How does the Echoes of the Lost Star align with global mobile engagement and session evidence?"
+    ]
+  }
+}

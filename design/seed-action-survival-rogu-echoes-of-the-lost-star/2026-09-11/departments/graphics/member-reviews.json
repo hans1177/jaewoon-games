@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Visual style"
+        ],
+        "fix": [
+          "Color palette"
+        ],
+        "add": [
+          "UI design"
+        ],
+        "risks": [
+          "Visual consistency"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "What is the visual style of the Echoes of the Lost Star?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "short touch session with readable gameplay loops"
+        ],
+        "fix": [
+          "no change needed for visual identity, progression mix, and touch-first presentation"
+        ],
+        "add": [
+          "no additional elements needed for visual identity, progression mix, and touch-first presentation"
+        ],
+        "risks": [
+          "no risks identified for visual identity, progression mix, and touch-first presentation"
+        ],
+        "evidence": [
+          "global mobile engagement and session evidence as a directional reference"
+        ],
+        "questions": [
+          "What is the core gameplay loop of the Echoes of the Lost Star?"
+        ]
+      }
+    }
+  ]
+}

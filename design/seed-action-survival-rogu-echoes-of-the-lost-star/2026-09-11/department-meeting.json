@@ -1,0 +1,166 @@
+{
+  "version": 4,
+  "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "llama3.2:1b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "coreFun: Combat, Upgrade, Run, and Horde-centered progression."
+      ],
+      "fix": [
+        "coreLoop: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+      ],
+      "add": [
+        "coreLoop: Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
+      ],
+      "risks": [
+        "coreLoop: Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next choice"
+      ],
+      "evidence": [
+        "coreFun: Combat, Upgrade, Run, and Horde-centered progression."
+      ],
+      "questions": [
+        "What is the core gameplay loop of the Echoes of the Lost Star?"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "Visual style"
+      ],
+      "fix": [
+        "Color palette"
+      ],
+      "add": [
+        "UI design"
+      ],
+      "risks": [
+        "Visual consistency"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json"
+      ],
+      "questions": [
+        "What is the visual style of the Echoes of the Lost Star?"
+      ]
+    },
+    "development": {
+      "keep": [
+        "game-seed"
+      ],
+      "fix": [
+        "no change needed for visual identity, progression mix, and touch-first presentation"
+      ],
+      "add": [
+        "no additional elements needed for visual identity, progression mix, and touch-first presentation"
+      ],
+      "risks": [
+        "no risks identified for visual identity, progression mix, and touch-first presentation"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json"
+      ],
+      "questions": [
+        "How does the Echoes of the Lost Star align with global mobile engagement and session evidence?"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "short touch session with readable gameplay loops"
+      ],
+      "fix": [
+        "no change needed for visual identity, progression mix, and touch-first presentation"
+      ],
+      "add": [
+        "no additional elements needed for visual identity, progression mix, and touch-first presentation"
+      ],
+      "risks": [
+        "no risks identified for visual identity, progression mix, and touch-first presentation"
+      ],
+      "evidence": [
+        "global mobile engagement and session evidence as a directional reference"
+      ],
+      "questions": [
+        "What is the core gameplay loop of the Echoes of the Lost Star?"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "Echoes of the Lost Star"
+      ],
+      "fix": [
+        "GAME_SEED"
+      ],
+      "add": [
+        "balance"
+      ],
+      "risks": [
+        "GAME_SEED"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json"
+      ],
+      "questions": [
+        "What is the core gameplay loop of the Echoes of the Lost Star?"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "The visual style should be consistent with the game's theme and target audience. A strong visual style will enhance player engagement and create a memorable experience.",
+      "departments": [
+        "graphics"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "own.json",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "coreLoop: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "departments": [
+        "qa"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "What is the core gameplay loop of the Echoes of the Lost Star?",
+      "departments": [
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 4,
+    "conflict": 0,
+    "hold": 0
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "coreFun: Combat, Upgrade, Run, and Horde-centered progression."
+        ],
+        "fix": [
+          "coreLoop: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        ],
+        "add": [
+          "coreLoop: Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
+        ],
+        "risks": [
+          "coreLoop: Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next choice"
+        ],
+        "evidence": [
+          "coreFun: Combat, Upgrade, Run, and Horde-centered progression."
+        ],
+        "questions": [
+          "What is the core gameplay loop of the Echoes of the Lost Star?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Gameplay loop design"
+        ],
+        "fix": [
+          "Visual design"
+        ],
+        "add": [
+          "Market data analysis"
+        ],
+        "risks": [
+          "Market competition"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "What is the core gameplay loop of the Echoes of the Lost Star?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    }
+  ]
+}

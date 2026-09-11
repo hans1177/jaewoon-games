@@ -1,0 +1,342 @@
+{
+  "version": 5,
+  "date": "2026-09-11",
+  "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+  "gameName": "Echoes of the Lost Star",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "status": "COMPLETE",
+  "policyDocument": "COMPANY_FLOW.md",
+  "flow": "GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE",
+  "gameSeed": {
+    "seedId": "SEED-ACTION_SURVIVAL_ROGUELITE-001",
+    "category": "ACTION_SURVIVAL_ROGUELITE",
+    "source": "game-seed-state.json",
+    "complete": true
+  },
+  "designer": {
+    "role": "GAME_DESIGNER_AI",
+    "model": "qwen3:0.6b",
+    "singleAuthor": true,
+    "sameModelRevised": true
+  },
+  "departments": {
+    "count": 5,
+    "roles": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "balance"
+    ],
+    "leadModels": {
+      "planning": "qwen3:0.6b",
+      "graphics": "gemma3:1b",
+      "development": "llama3.2:1b",
+      "qa": "qwen2.5:1.5b",
+      "balance": "smollm2:1.7b"
+    },
+    "distinctLeadModels": [
+      "qwen3:0.6b",
+      "gemma3:1b",
+      "llama3.2:1b",
+      "qwen2.5:1.5b",
+      "smollm2:1.7b"
+    ],
+    "distinctLeadModelCount": 5,
+    "leadModelsDistinct": true,
+    "reviewModelCount": 3,
+    "modelAudit": {
+      "planning": {
+        "leadModel": "qwen3:0.6b",
+        "assistantModels": [
+          "gemma3:1b",
+          "llama3.2:1b"
+        ],
+        "models": [
+          "qwen3:0.6b",
+          "gemma3:1b",
+          "llama3.2:1b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "qwen3:0.6b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "qwen3:0.6b",
+        "rebuttalAuthoredByLead": true
+      },
+      "graphics": {
+        "leadModel": "gemma3:1b",
+        "assistantModels": [
+          "llama3.2:1b",
+          "qwen2.5:1.5b"
+        ],
+        "models": [
+          "gemma3:1b",
+          "llama3.2:1b",
+          "qwen2.5:1.5b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "gemma3:1b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "gemma3:1b",
+        "rebuttalAuthoredByLead": true
+      },
+      "development": {
+        "leadModel": "llama3.2:1b",
+        "assistantModels": [
+          "qwen2.5:1.5b",
+          "smollm2:1.7b"
+        ],
+        "models": [
+          "llama3.2:1b",
+          "qwen2.5:1.5b",
+          "smollm2:1.7b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "llama3.2:1b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "llama3.2:1b",
+        "rebuttalAuthoredByLead": true
+      },
+      "qa": {
+        "leadModel": "qwen2.5:1.5b",
+        "assistantModels": [
+          "smollm2:1.7b",
+          "qwen3:0.6b"
+        ],
+        "models": [
+          "qwen2.5:1.5b",
+          "smollm2:1.7b",
+          "qwen3:0.6b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "qwen2.5:1.5b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "qwen2.5:1.5b",
+        "rebuttalAuthoredByLead": true
+      },
+      "balance": {
+        "leadModel": "smollm2:1.7b",
+        "assistantModels": [
+          "qwen3:0.6b",
+          "gemma3:1b"
+        ],
+        "models": [
+          "smollm2:1.7b",
+          "qwen3:0.6b",
+          "gemma3:1b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "smollm2:1.7b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "smollm2:1.7b",
+        "rebuttalAuthoredByLead": true
+      }
+    },
+    "rebuttalRounds": 1,
+    "rebuttalAuthoredByDepartmentLeads": true,
+    "repeatedFatalReview": true
+  },
+  "meeting": {
+    "consensusCount": 4,
+    "conflictCount": 0,
+    "holdCount": 0,
+    "coordinatorModel": "llama3.2:1b"
+  },
+  "disposition": {
+    "version": 1,
+    "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+    "date": "2026-09-11",
+    "state": "REDESIGN",
+    "sameDesignerRevisionAttempted": true,
+    "repeatedFiveDepartmentReview": true,
+    "allFiveLeadModelsReviewed": true,
+    "discardVotes": 1,
+    "commonFatalCriteria": [],
+    "unanimousFatalDiscard": false,
+    "fatalReviews": {
+      "planning": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [],
+        "evidence": [
+          "globalMobilePlayerSharePercent: 55%",
+          "globalAveragePlayerAge: 41%",
+          "globalGamesRevenue2025UsdBillion: 201.6",
+          "globalMobileGamesRevenue2025UsdBillion: 113.3"
+        ],
+        "reason": "The game's core gameplay loop is preserved for short touch sessions, and its visual and progression elements align with global mobile engagement and session evidence. The design is consistent with the target audience and the game's thematic elements."
+      },
+      "graphics": {
+        "recommendedState": "DISCARD",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json",
+          "game-seed-market-evidence.json",
+          "game-seed-market-evidence.json",
+          "game-seed-market-evidence.json"
+        ],
+        "reason": "The current design exhibits several issues that warrant DISCARD. The core loop, while aiming for a mobile experience, feels overly complex and lacks a clear, concise gameplay experience. The visual style is not clearly defined, and the design seems to prioritize a long-term progression over short, engaging sessions. The design also seems to be overly reliant on a specific visual style, which may not be suitable for a global mobile audience.  The design also seems to be overly focused on reinterpreting Vampire Survivors, which may not be the best approach for a new game.  The design also seems to be overly focused on the action survival roguelite core loop, which may not be the best approach."
+      },
+      "development": {
+        "recommendedState": "REDESIGN",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "Evidence from market research and user feedback",
+          "Insights from gameplay testing and analysis"
+        ],
+        "reason": "The current design of the game is not meeting the requirements of the fatal criteria. The core gameplay loop is not being preserved for short touch sessions, and the game is not aligning with global mobile engagement and session evidence. The redesign will focus on preserving the core loop for short touch sessions and aligning with global mobile engagement and session evidence."
+      },
+      "qa": {
+        "recommendedState": "REDESIGN",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "Vampire Survivors",
+          "Brotato",
+          "Survivor.io",
+          "20 Minutes Till Dawn"
+        ],
+        "reason": "The current design does not meet the core gameplay loop requirement, which is essential for the Echoes of the Lost Star's success."
+      },
+      "balance": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [],
+        "reason": "The action survival roguelite core loop is preserved for short touch sessions."
+      }
+    },
+    "marketMetricAloneUsedForDiscard": false
+  },
+  "runtimeMetrics": {
+    "phaseMs": {
+      "designer_draft": 56198,
+      "independent_department_reviews": 354191,
+      "department_representatives": 58404,
+      "lead_rebuttals": 67298,
+      "cross_department_meeting": 27548,
+      "designer_revision": 42545,
+      "five_lead_fatal_review": 283883
+    },
+    "totalModelCalls": 23,
+    "totalModelCallMs": 1858400,
+    "modelPhaseConcurrency": 3,
+    "modelKeepAlive": "2m",
+    "independentReviewOutputs": 15,
+    "fullPoolReviewOutputs": 25
+  },
+  "artbook": {
+    "created": false,
+    "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
+  },
+  "vibe2Used": false,
+  "paidApi": false,
+  "baselineGate": {
+    "policyDocument": "COMPANY_FLOW.md",
+    "productionClass": "DESIGN_ONLY",
+    "tierAlias": 3,
+    "tier": 3,
+    "state": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "ready": false,
+    "blockers": [
+      "design-disposition:REDESIGN"
+    ],
+    "meeting": {
+      "conflictCount": 0,
+      "holdCount": 0,
+      "allResolved": true
+    },
+    "evidence": {
+      "gameSeed": {
+        "required": true,
+        "present": true,
+        "seedId": "SEED-ACTION_SURVIVAL_ROGUELITE-001",
+        "source": "game-seed-state.json"
+      },
+      "webSmoke": {
+        "supportingOnly": true,
+        "pass": false,
+        "source": null
+      },
+      "webGameplay": {
+        "required": false,
+        "pass": false,
+        "source": null
+      },
+      "unityProject": {
+        "required": false,
+        "present": false,
+        "path": null
+      },
+      "unityTechnical": {
+        "required": false,
+        "pass": false,
+        "source": null
+      },
+      "revalidation": {
+        "conditional": true,
+        "pass": false,
+        "source": null
+      }
+    },
+    "contracts": {
+      "aiMeetingCompletionDoesNotEqualBaselineApproval": true,
+      "gameSeedRequiredBeforeDesignBaseline": true,
+      "marketEvidenceIsTargetReferenceNotHardGate": true,
+      "meetingHoldBlocksDesignBaseline": true,
+      "meetingConflictBlocksDesignBaseline": true,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": true,
+      "designArtbookOnlyAfterBaselineReady": true,
+      "designOnlyVibe2Forbidden": true,
+      "webSmokeDoesNotEqualGameplayValidation": true,
+      "developmentConfirmedIsGatedDirect": true,
+      "developmentConfirmedResumesFromLatestEvidence": true,
+      "developmentConfirmedRequiresExplicitWebGameplayValidation": true,
+      "developmentConfirmedRequiresUnityTechnicalValidation": true,
+      "developmentArtbookOnlyAfterBaselineReady": true,
+      "releaseConfirmedBaselineOwnedByReleasePipeline": true,
+      "numericTierIsCompatibilityAliasOnly": true
+    },
+    "checkedAt": "2026-09-11T06:25:19.033Z"
+  },
+  "artbookUi": {
+    "status": "WAITING",
+    "label": "대기중",
+    "path": "artbook-submissions/seed-action-survival-rogu-echoes-of-the-lost-star/status.json"
+  },
+  "artbookPublication": {
+    "published": false,
+    "path": null,
+    "baselineGateState": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "reason": "baseline-not-ready"
+  }
+}

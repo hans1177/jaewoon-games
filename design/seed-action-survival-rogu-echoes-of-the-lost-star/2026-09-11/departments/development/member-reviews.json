@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "short touch session with readable gameplay loops"
+        ],
+        "fix": [
+          "no change needed for visual identity, progression mix, and touch-first presentation"
+        ],
+        "add": [
+          "no additional elements needed for visual identity, progression mix, and touch-first presentation"
+        ],
+        "risks": [
+          "no risks identified for visual identity, progression mix, and touch-first presentation"
+        ],
+        "evidence": [
+          "global mobile engagement and session evidence as a directional reference"
+        ],
+        "questions": [
+          "How does the Echoes of the Lost Star align with global mobile engagement and session evidence?"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Echoes of the Lost Star"
+        ],
+        "fix": [
+          "GAME_SEED"
+        ],
+        "add": [
+          "development, qa, balance"
+        ],
+        "risks": [
+          "GAME_SEED"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "What is the core gameplay loop of the Echoes of the Lost Star?"
+        ]
+      }
+    }
+  ]
+}

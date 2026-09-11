@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "representativeModel": "qwen2.5:1.5b",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "short touch session with readable gameplay loops"
+    ],
+    "fix": [
+      "no change needed for visual identity, progression mix, and touch-first presentation"
+    ],
+    "add": [
+      "no additional elements needed for visual identity, progression mix, and touch-first presentation"
+    ],
+    "risks": [
+      "no risks identified for visual identity, progression mix, and touch-first presentation"
+    ],
+    "evidence": [
+      "global mobile engagement and session evidence as a directional reference"
+    ],
+    "questions": [
+      "What is the core gameplay loop of the Echoes of the Lost Star?"
+    ]
+  }
+}
