@@ -80,12 +80,16 @@ def main():
     metadata_file = output / 'training-metadata.json'
     metadata = json.loads(metadata_file.read_text(encoding='utf-8'))
     dataset_manifest = json.loads(dataset_manifest_path.read_text(encoding='utf-8'))
+    stats = dataset_manifest.get('stats') or {}
     metadata['practiceOnly'] = True
     metadata['trainingAuthority'] = 'PRACTICE_ONLY'
     metadata['syntheticOnly'] = bool(dataset_manifest.get('syntheticOnly', False))
+    metadata['containsSyntheticTeacherSamples'] = int(stats.get('syntheticTotal', 0)) > 0
     metadata['containsLicensedReference'] = bool(dataset_manifest.get('containsLicensedReference', False))
     metadata['practiceSourceKinds'] = dataset_manifest.get('sourceKinds', [])
-    metadata['licensedReferenceSamples'] = int((dataset_manifest.get('stats') or {}).get('licensedReferenceTotal', 0))
+    metadata['licensedReferenceSamples'] = int(stats.get('licensedReferenceTotal', 0))
+    metadata['verifiedRealOnly'] = False
+    metadata['verifiedProductionEvidence'] = False
     metadata['promotionState'] = 'UNVERIFIED'
     metadata['runtimePromotionAllowed'] = False
     metadata['requiredNextGate'] = 'VERIFIED_UNITY_HOLDOUT_AB_AND_CANARY'
@@ -97,6 +101,8 @@ def main():
         'runtimePromotionAllowed': metadata['runtimePromotionAllowed'],
         'containsLicensedReference': metadata['containsLicensedReference'],
         'licensedReferenceSamples': metadata['licensedReferenceSamples'],
+        'verifiedRealOnly': metadata['verifiedRealOnly'],
+        'verifiedProductionEvidence': metadata['verifiedProductionEvidence'],
         'requiredNextGate': metadata['requiredNextGate'],
         'trainLoss': (metadata.get('trainMetrics') or {}).get('train_loss'),
         'evalLoss': (metadata.get('evalMetrics') or {}).get('eval_loss'),
