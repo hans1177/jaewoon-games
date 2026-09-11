@@ -180,7 +180,7 @@ jobs:
           jq -n --arg ref "$BRANCH" --arg request "$REQUEST" '{ref:$ref,inputs:{request_file:$request}}' | gh api --method POST "$api/dispatches" --input -
           run_id=''
           for _ in $(seq 1 36); do
-            run_id="$(gh api "$api/runs?branch=$BRANCH&event=workflow_dispatch&per_page=10" --jq --argjson b "$baseline" '[.workflow_runs[] | select(.id > $b) | .id] | max // empty')"
+            run_id="$(gh api "$api/runs?branch=$BRANCH&event=workflow_dispatch&per_page=10" | jq -r --argjson b "$baseline" '[.workflow_runs[] | select(.id > $b) | .id] | max // empty')"
             [[ -n "$run_id" ]] && break
             sleep 5
           done
@@ -222,8 +222,8 @@ jobs:
           jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$qa_api/dispatches" --input -
           smoke=''; independent=''
           for _ in $(seq 1 48); do
-            [[ -n "$smoke" ]] || smoke="$(gh api "$smoke_api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq --argjson b "$smoke_base" '[.workflow_runs[] | select(.id > $b) | .id] | max // empty')"
-            [[ -n "$independent" ]] || independent="$(gh api "$qa_api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq --argjson b "$qa_base" '[.workflow_runs[] | select(.id > $b) | .id] | max // empty')"
+            [[ -n "$smoke" ]] || smoke="$(gh api "$smoke_api/runs?branch=main&event=workflow_dispatch&per_page=20" | jq -r --argjson b "$smoke_base" '[.workflow_runs[] | select(.id > $b) | .id] | max // empty')"
+            [[ -n "$independent" ]] || independent="$(gh api "$qa_api/runs?branch=main&event=workflow_dispatch&per_page=20" | jq -r --argjson b "$qa_base" '[.workflow_runs[] | select(.id > $b) | .id] | max // empty')"
             [[ "$smoke" =~ ^[0-9]+$ && "$independent" =~ ^[0-9]+$ ]] && break
             sleep 5
           done
