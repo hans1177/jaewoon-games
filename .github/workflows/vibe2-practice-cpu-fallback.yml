@@ -111,18 +111,21 @@ jobs:
           $adapterDir = Join-Path $root "adapters\unity-practice\$adapterVersion"
           if (Test-Path $adapterDir) { Remove-Item $adapterDir -Recurse -Force }
           New-Item -ItemType Directory -Path $adapterDir -Force | Out-Null
-          & $env:PYTHON_EXE tools/vibe2-practice-train.py \
-            --train (Join-Path $env:PRACTICE_DATASET_DIR 'train.jsonl') \
-            --eval (Join-Path $env:PRACTICE_DATASET_DIR 'eval.jsonl') \
-            --dataset-manifest (Join-Path $env:PRACTICE_DATASET_DIR 'manifest.json') \
-            --output $adapterDir \
-            --adapter-version $adapterVersion \
-            --task-type unity \
-            --method lora \
-            --epochs 0.25 \
-            --max-length 256 \
-            --batch-size 1 \
-            --grad-accum 1
+          $trainArgs = @(
+            'tools/vibe2-practice-train.py',
+            '--train', (Join-Path $env:PRACTICE_DATASET_DIR 'train.jsonl'),
+            '--eval', (Join-Path $env:PRACTICE_DATASET_DIR 'eval.jsonl'),
+            '--dataset-manifest', (Join-Path $env:PRACTICE_DATASET_DIR 'manifest.json'),
+            '--output', $adapterDir,
+            '--adapter-version', $adapterVersion,
+            '--task-type', 'unity',
+            '--method', 'lora',
+            '--epochs', '0.25',
+            '--max-length', '256',
+            '--batch-size', '1',
+            '--grad-accum', '1'
+          )
+          & $env:PYTHON_EXE @trainArgs
           if ($LASTEXITCODE -ne 0) { throw 'CPU practice LoRA training failed' }
           $metadataPath = Join-Path $adapterDir 'training-metadata.json'
           $metadata = [System.IO.File]::ReadAllText($metadataPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
