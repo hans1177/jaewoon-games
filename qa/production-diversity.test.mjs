@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { gameplayFamily, rebalanceProductionTiers, selectDiverseTopRows } from '../tools/company-status-sync.mjs';
+import { gameplayFamily, selectDiverseTopRows, syncProductionClasses } from '../tools/company-status-sync.mjs';
 
 const fsStub={existsSync:()=>true};
 const project=(id,slug,total,productionClass)=>({id,slug,name:slug,sourcePath:`web-games/${slug}`,productionClass,profileStatus:productionClass,mode:productionClass==='DESIGN_ONLY'?'REDESIGN':'IMPROVE',developmentFocus:{total}});
@@ -33,9 +33,9 @@ test('gameplay family normalizes gameplay genres without game ID rules',()=>{
   assert.equal(gameplayFamily({genre:['수집','성장']}),'COLLECTION');
 });
 
-test('status sync preserves semantic memberships instead of forcing a 2/3/top-five quota',()=>{
+test('status sync preserves semantic memberships without numeric tier state or fixed quotas',()=>{
   const {portfolio,catalog,artbooks}=fixture();
-  const result=rebalanceProductionTiers({portfolio,catalog,artbooks,filesystem:fsStub});
+  const result=syncProductionClasses({portfolio,catalog,artbooks,filesystem:fsStub});
   assert.deepEqual(result.state.releaseConfirmedGameIds,['P1','P2','P3']);
   assert.deepEqual(result.state.developmentConfirmedGameIds,['P4']);
   assert.deepEqual(result.state.designOnlyGameIds,['P5','P6','P7']);
@@ -45,12 +45,13 @@ test('status sync preserves semantic memberships instead of forcing a 2/3/top-fi
   assert.equal(result.state.diversity.membershipInfluence,false);
   assert.equal(result.state.diversity.adjusted,false);
   assert.equal(portfolio.projects.find(row=>row.id==='P3').productionClass,'RELEASE_CONFIRMED');
-  assert.equal(portfolio.projects.find(row=>row.id==='P3').productionTier,1);
+  assert.equal(Object.hasOwn(portfolio.projects.find(row=>row.id==='P3'),'productionTier'),false);
   assert.equal(portfolio.projects.find(row=>row.id==='P6').productionClass,'DESIGN_ONLY');
   assert.equal(catalog.games.find(row=>row.id==='monster-a').homepageCategory,'design-only');
+  assert.equal(Object.hasOwn(catalog.games.find(row=>row.id==='monster-a'),'productionTier'),false);
 });
 
-test('legacy diversity selector remains available for diagnostics without controlling membership',()=>{
+test('diversity selector remains diagnostic-only and does not control membership',()=>{
   const rows=[
     {project:{id:'A'},gameplayFamily:'SURVIVAL',score:9,evidenceScore:900},
     {project:{id:'B'},gameplayFamily:'RPG',score:8,evidenceScore:800},
