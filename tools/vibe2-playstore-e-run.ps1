@@ -51,6 +51,21 @@ function Test-PackageInstalled {
   ($r.ExitCode -eq 0 -and (($r.Output -join "`n") -match '^package:'))
 }
 
+function Test-GoogleAccountPresent {
+  param([string]$Adb,[string]$Serial)
+  $r = Invoke-Native $Adb @('-s',$Serial,'shell','dumpsys','account')
+  if ($r.ExitCode -ne 0) { return $false }
+  $text = $r.Output -join "`n"
+  return ($text -match '(?i)Account\s*\{[^\r\n}]*type=com\.google[^\r\n}]*\}')
+}
+
+function Get-ProvisionState {
+  param([string]$Adb,[string]$Serial)
+  $provisioned = ((Invoke-Native $Adb @('-s',$Serial,'shell','settings','get','global','device_provisioned')).Output -join '').Trim()
+  $setup = ((Invoke-Native $Adb @('-s',$Serial,'shell','settings','get','secure','user_setup_complete')).Output -join '').Trim()
+  [pscustomobject]@{ DeviceProvisioned=$provisioned; UserSetupComplete=$setup }
+}
+
 function Get-UiXml {
   param([string]$Adb,[string]$Serial)
   [void](Invoke-Native $Adb @('-s',$Serial,'shell','uiautomator','dump','/sdcard/vibe2-window.xml'))
@@ -81,6 +96,18 @@ function Try-TapInstall {
   Tap-UiNode $Adb $Serial $Xml $pattern 'PLAY_STORE_INSTALL_TAP'
 }
 
+function Test-InstallInProgressOrReady {
+  param([string]$Xml)
+  if ([string]::IsNullOrWhiteSpace($Xml)) { return $false }
+  return ($Xml -match '(?i)(text|content-desc)="(?:Pending[^\"]*|Installing[^\"]*|Cancel|Play|Open|\uC2E4\uD589|\uC5F4\uAE30)"')
+}
+
+function Test-PlayActionVisible {
+  param([string]$Xml)
+  if ([string]::IsNullOrWhiteSpace($Xml)) { return $false }
+  return ($Xml -match '(?i)(text|content-desc)="(?:Play|Open|\uC2E4\uD589|\uC5F4\uAE30)"')
+}
+
 function Try-TapWait {
   param([string]$Adb,[string]$Serial,[string]$Xml)
   $pattern='(?i)(text|content-desc)="(?:Wait|\uB300\uAE30)"'
@@ -94,6 +121,26 @@ function Test-SystemUiAnr {
   $notResponding = ($Xml -match "(?i)(isn't responding|is not responding|not responding)")
   $waitButton = ($Xml -match '(?i)(text|content-desc)="(?:Wait|\uB300\uAE30)"')
   ($systemUi -and $notResponding -and $waitButton)
+}
+
+function Recover-SystemUiAnr {
+  param([string]$Adb,[string]$Serial,[string]$InitialXml)
+  $xml = $InitialXml
+  for ($attempt=1; $attempt -le 5; $attempt++) {
+    if (-not (Test-SystemUiAnr $xml)) {
+      Write-Host "SYSTEM_UI_ANR_STABLE=PASS attempt=$attempt"
+      return $true
+    }
+    Write-Host "SYSTEM_UI_ANR_WAIT_ATTEMPT=$attempt"
+    [void](Try-TapWait $Adb $Serial $xml)
+    Start-Sleep 8
+    $xml=Get-UiXml $Adb $Serial
+  }
+  if (-not (Test-SystemUiAnr $xml)) {
+    Write-Host 'SYSTEM_UI_ANR_STABLE=PASS attempt=final'
+    return $true
+  }
+  return $false
 }
 
 function Get-EmulatorLogTail {
@@ -174,37 +221,24 @@ function Stop-Vibe2Emulator {
 
 function Start-EAvdColdBoot {
   param(
-    [string]$Adb,
-    [string]$Emulator,
-    [string]$Serial,
-    [string]$Name,
-    [string]$AvdDir,
-    [string]$SystemImage,
-    [string]$Root
+    [string]$Adb,[string]$Emulator,[string]$Serial,[string]$Name,
+    [string]$AvdDir,[string]$SystemImage,[string]$Root
   )
   Write-Host 'PLAY_STORE_SOFTWARE_COLD_BOOT=START'
   Stop-Vibe2Emulator $Adb $Serial $Name
   [void](Invoke-Native $Adb @('kill-server'))
   Start-Sleep 2
   [void](Invoke-Native $Adb @('start-server'))
-
   Get-ChildItem -LiteralPath $AvdDir -Force -ErrorAction SilentlyContinue |
     Where-Object { $_.Name -like '*.lock' -or $_.Name -like '*.lock.*' } |
     Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-
   $stdoutLog=Join-Path $Root 'emulator-ui-recover-stdout.log'
   $stderrLog=Join-Path $Root 'emulator-ui-recover-stderr.log'
   Remove-Item -LiteralPath $stdoutLog,$stderrLog -Force -ErrorAction SilentlyContinue
-
   $proc=Start-Process $Emulator -ArgumentList @(
-    '-avd',$Name,
-    '-sysdir',$SystemImage,
-    '-no-snapshot',
-    '-no-audio',
-    '-gpu','swiftshader_indirect',
-    '-accel','auto'
+    '-avd',$Name,'-sysdir',$SystemImage,'-no-snapshot','-no-audio',
+    '-gpu','swiftshader_indirect','-accel','auto'
   ) -RedirectStandardOutput $stdoutLog -RedirectStandardError $stderrLog -PassThru
-
   $deadline=(Get-Date).AddMinutes(12)
   $nextStatus=(Get-Date)
   do {
@@ -214,9 +248,7 @@ function Start-EAvdColdBoot {
       Write-Host "PLAY_STORE_SOFTWARE_COLD_BOOT=PASS serial=$booted"
       return $booted
     }
-    if ($proc.HasExited) {
-      throw "PLAY_STORE_SOFTWARE_COLD_BOOT_EXITED:$(Get-EmulatorLogTail $stdoutLog $stderrLog)"
-    }
+    if ($proc.HasExited) { throw "PLAY_STORE_SOFTWARE_COLD_BOOT_EXITED:$(Get-EmulatorLogTail $stdoutLog $stderrLog)" }
     if ((Get-Date) -ge $nextStatus) {
       Write-Host "ADB_STATE=$(Get-EmulatorState $Adb)"
       $nextStatus=(Get-Date).AddSeconds(20)
@@ -236,7 +268,6 @@ $emulator=Join-Path $sourceSdk 'emulator\emulator.exe'
 if (-not (Test-Path -LiteralPath $adb)) { throw "ADB_NOT_FOUND:$adb" }
 if (-not (Test-Path -LiteralPath $emulator)) { throw "EMULATOR_NOT_FOUND:$emulator" }
 if (-not (Test-Path -LiteralPath $avdConfig)) { throw "E_AVD_CONFIG_NOT_FOUND:$avdConfig" }
-
 $cfg=[System.IO.File]::ReadAllText($avdConfig)
 $m=[regex]::Match($cfg,'(?im)^image\.sysdir\.1\s*=\s*(.+?)\s*$')
 if (-not $m.Success) { throw "AVD_IMAGE_SYSDIR_NOT_FOUND:$avdConfig" }
@@ -260,9 +291,11 @@ Write-Host "E_SYSTEM_IMAGE=$systemImage"
 Write-Host "AVD_NAME=$AvdName"
 Write-Host "PACKAGE_ID=$PackageId"
 
+$coldBootUsed=$false
 $serial=Get-PlayStoreBootedSerial $adb
 if (-not $serial) {
   $serial=Start-EAvdColdBoot $adb $emulator $null $AvdName $avdDir $systemImage $TargetRoot
+  $coldBootUsed=$true
 }
 
 $androidVersion=((Invoke-Native $adb @('-s',$serial,'shell','getprop','ro.build.version.release')).Output -join '').Trim()
@@ -274,6 +307,12 @@ Write-Host "ANDROID_API=$api"
 Write-Host "ANDROID_ABI=$abi"
 Write-Host 'PLAY_STORE_PACKAGE=PASS'
 
+$initialGoogleAccount=Test-GoogleAccountPresent $adb $serial
+Write-Host "GOOGLE_ACCOUNT_PRESENT=$($(if($initialGoogleAccount){'YES'}else{'NO'}))"
+$provision=Get-ProvisionState $adb $serial
+Write-Host "DEVICE_PROVISIONED=$($provision.DeviceProvisioned)"
+Write-Host "USER_SETUP_COMPLETE=$($provision.UserSetupComplete)"
+
 if (-not (Test-PackageInstalled $adb $serial $PackageId)) {
   Write-Host 'OPENING_OFFICIAL_GOOGLE_PLAY=YES'
   Start-OfficialPlayStorePage $adb $serial $PackageId
@@ -281,7 +320,9 @@ if (-not (Test-PackageInstalled $adb $serial $PackageId)) {
   $signInShown=$false
   $setupShown=$false
   $playStoreRetried=$false
-  $softwareColdBooted=$false
+  $accountLoopRecovered=$false
+  $installRequested=$false
+  $installWaitingShown=$false
   $anrAfterColdBoot=0
   $nextDiagnostic=(Get-Date)
   $signInPattern='(?i)(Sign in|Add account|\uB85C\uADF8\uC778|\uACC4\uC815\s*\uCD94\uAC00)'
@@ -291,34 +332,45 @@ if (-not (Test-PackageInstalled $adb $serial $PackageId)) {
     Start-Sleep 5
     $xml=Get-UiXml $adb $serial
     $foreground=Get-ForegroundSummary $adb $serial
+    $inGoogleAuthFlow=($foreground -match '(?i)(com\.google\.android\.gms/.auth|com\.google\.android\.apps\.restore|setupwizard|provision)')
 
     if (Test-SystemUiAnr $xml) {
       Write-Host 'SYSTEM_UI_ANR=DETECTED'
-      $tapped=Try-TapWait $adb $serial $xml
-      if ($tapped) {
-        Start-Sleep 4
-        $afterWait=Get-UiXml $adb $serial
-        if (-not (Test-SystemUiAnr $afterWait)) {
-          Write-Host 'SYSTEM_UI_ANR_WAIT_RECOVERY=PASS'
-          Start-OfficialPlayStorePage $adb $serial $PackageId
-          continue
-        }
+      $recovered=Recover-SystemUiAnr $adb $serial $xml
+      if ($recovered) {
+        Write-Host 'SYSTEM_UI_ANR_WAIT_RECOVERY=PASS'
+        Write-Host 'SYSTEM_UI_STABILIZING=15_SECONDS'
+        Start-Sleep 15
+        $nextDiagnostic=(Get-Date)
+        continue
       }
 
-      if (-not $softwareColdBooted) {
+      if (-not $coldBootUsed) {
         Write-Host 'SYSTEM_UI_ANR_WAIT_RECOVERY=FAILED'
         $serial=Start-EAvdColdBoot $adb $emulator $serial $AvdName $avdDir $systemImage $TargetRoot
-        $softwareColdBooted=$true
+        $coldBootUsed=$true
+        Start-Sleep 15
         Start-OfficialPlayStorePage $adb $serial $PackageId
         $nextDiagnostic=(Get-Date)
         continue
       }
 
       $anrAfterColdBoot++
-      Write-Host "SYSTEM_UI_ANR_AFTER_COLD_BOOT=$anrAfterColdBoot"
-      if ($anrAfterColdBoot -ge 2) {
-        throw 'SYSTEM_UI_ANR_PERSISTED_AFTER_SOFTWARE_COLD_BOOT'
-      }
+      Write-Host "SYSTEM_UI_ANR_AFTER_SINGLE_COLD_BOOT=$anrAfterColdBoot"
+      throw 'SYSTEM_UI_ANR_PERSISTED_AFTER_SINGLE_COLD_BOOT'
+    }
+
+    $googleAccountPresent=Test-GoogleAccountPresent $adb $serial
+    if ($googleAccountPresent -and -not $accountLoopRecovered -and $inGoogleAuthFlow -and $xml -match $signInPattern) {
+      Write-Host 'GOOGLE_ACCOUNT_PRESENT=YES'
+      Write-Host 'GOOGLE_ACCOUNT_LOGIN_LOOP_RECOVERY=START'
+      [void](Invoke-Native $adb @('-s',$serial,'shell','input','keyevent','3'))
+      Start-Sleep 2
+      Start-OfficialPlayStorePage $adb $serial $PackageId
+      $accountLoopRecovered=$true
+      $signInShown=$false
+      $playStoreRetried=$true
+      Write-Host 'GOOGLE_ACCOUNT_LOGIN_LOOP_RECOVERY=PASS'
       continue
     }
 
@@ -330,21 +382,42 @@ if (-not (Test-PackageInstalled $adb $serial $PackageId)) {
       $signInShown=$true
     }
 
-    if (-not $setupShown -and ($foreground -match '(?i)(setupwizard|provision)' -or $xml -match '(?i)(Start|Get started|Copy apps|Google services)')) {
+    $provisionNow=Get-ProvisionState $adb $serial
+    $setupIncomplete=($provisionNow.DeviceProvisioned -ne '1' -or $provisionNow.UserSetupComplete -ne '1')
+    if (-not $setupShown -and $setupIncomplete -and ($inGoogleAuthFlow -or $xml -match '(?i)(Get started|Copy apps|Google services:)')) {
       Write-Host 'ANDROID_INITIAL_SETUP_REQUIRED=YES'
       Write-Host 'COMPLETE_SETUP_IN_EMULATOR_UI=YES'
       $setupShown=$true
     }
 
-    [void](Try-TapInstall $adb $serial $xml)
+    $installState=Test-InstallInProgressOrReady $xml
+    $playVisible=Test-PlayActionVisible $xml
+
+    if ($playVisible) {
+      Write-Host 'PLAY_STORE_PLAY_ACTION_VISIBLE=YES'
+      if (Test-PackageInstalled $adb $serial $PackageId) { break }
+    }
+
+    if (-not $installRequested -and -not $installState) {
+      $didTap=Try-TapInstall $adb $serial $xml
+      if ($didTap) {
+        $installRequested=$true
+        Write-Host 'PLAY_STORE_INSTALL_REQUESTED=YES'
+        Start-Sleep 3
+      }
+    } elseif (($installRequested -or $installState) -and -not $installWaitingShown) {
+      Write-Host 'PLAY_STORE_INSTALL_WAITING=YES'
+      $installWaitingShown=$true
+    }
 
     if ((Get-Date) -ge $nextDiagnostic) {
       Write-Host "FOREGROUND=$foreground"
       Write-Host "UI_TEXT=$(Get-UiTextSummary $xml)"
+      Write-Host "GOOGLE_ACCOUNT_PRESENT=$($(if($googleAccountPresent){'YES'}else{'NO'}))"
       $nextDiagnostic=(Get-Date).AddSeconds(20)
     }
 
-    if (-not $playStoreRetried -and (Get-Date) -gt $deadline.AddMinutes(-($InstallWaitMinutes-1))) {
+    if (-not $playStoreRetried -and -not $inGoogleAuthFlow -and (Get-Date) -gt $deadline.AddMinutes(-($InstallWaitMinutes-1))) {
       if ($foreground -notmatch '(?i)com\.android\.vending') {
         Write-Host 'PLAY_STORE_FOREGROUND_RECOVERY=START'
         Start-OfficialPlayStorePage $adb $serial $PackageId
@@ -362,10 +435,9 @@ $pid=((Invoke-Native $adb @('-s',$serial,'shell','pidof',$PackageId)).Output -jo
 $focus=((Invoke-Native $adb @('-s',$serial,'shell','dumpsys','window')).Output -join "`n")
 $foreground=$focus -match [regex]::Escape($PackageId)
 $launchPass=($launch.ExitCode -eq 0 -and -not [string]::IsNullOrWhiteSpace($pid))
-
 $outPath=Join-Path $TargetRoot 'vibe2-playstore-bootstrap.json'
 [ordered]@{
-  version=5
+  version=8
   packageId=$PackageId
   installPolicy='OFFICIAL_GOOGLE_PLAY_ONLY'
   codeExtractionAllowed=$false
