@@ -1,0 +1,30 @@
+{
+  "version": 5,
+  "gameId": "seed-single-defense-strat-celestial-bastion",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "editorRole": "ARTBOOK_EDITOR_AI",
+  "editorModel": "qwen3:0.6b",
+  "singleEditor": true,
+  "sourceDesign": "design/seed-single-defense-strat-celestial-bastion/2026-09-11/design-revised.json",
+  "baselineGateState": "DESIGN_BASELINE_READY",
+  "departmentPageAuthorship": false,
+  "newClaimsAdded": false,
+  "vibe2Used": false,
+  "content": {
+    "identity": "game",
+    "playerFantasy": "Celestial Bastion",
+    "coreLoop": [
+      "Read next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+      "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+    ],
+    "signatureSystems": [
+      "single-player"
+    ],
+    "progressionDirection": "wave-by-wave",
+    "visualDirection": "tower-placement"
+  }
+}

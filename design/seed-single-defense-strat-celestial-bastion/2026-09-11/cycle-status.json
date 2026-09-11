@@ -256,8 +256,12 @@
     "fullPoolReviewOutputs": 25
   },
   "artbook": {
-    "created": false,
-    "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
+    "singleEditor": true,
+    "editorModel": "qwen3:0.6b",
+    "sourceDesign": "design/seed-single-defense-strat-celestial-bastion/2026-09-11/design-revised.json",
+    "createdAfterBaselineReady": true,
+    "vibe2Used": false,
+    "path": "design/seed-single-defense-strat-celestial-bastion/2026-09-11/core-artbook.json"
   },
   "vibe2Used": false,
   "paidApi": false,
@@ -266,11 +270,11 @@
     "productionClass": "DESIGN_ONLY",
     "tierAlias": 3,
     "tier": 3,
-    "state": "DESIGN_BASELINE_REDESIGN_REQUIRED",
-    "ready": false,
-    "blockers": [
-      "design-disposition:REDESIGN"
-    ],
+    "state": "DESIGN_BASELINE_READY",
+    "ready": true,
+    "blockers": [],
+    "advisoryDisposition": "REDESIGN",
+    "unanimousFatalDiscard": false,
     "meeting": {
       "conflictCount": 0,
       "holdCount": 0,
@@ -315,6 +319,8 @@
       "marketEvidenceIsTargetReferenceNotHardGate": true,
       "meetingHoldBlocksDesignBaseline": true,
       "meetingConflictBlocksDesignBaseline": true,
+      "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
+      "unanimousFatalDiscardRequiredToDiscard": true,
       "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": true,
       "designArtbookOnlyAfterBaselineReady": true,
       "designOnlyVibe2Forbidden": true,
@@ -327,17 +333,16 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-11T06:25:27.065Z"
+    "checkedAt": "2026-09-11T07:04:09.911Z"
   },
   "artbookUi": {
-    "status": "WAITING",
-    "label": "대기중",
+    "status": "COMPLETE",
+    "label": "완료",
     "path": "artbook-submissions/seed-single-defense-strat-celestial-bastion/status.json"
   },
   "artbookPublication": {
-    "published": false,
-    "path": null,
-    "baselineGateState": "DESIGN_BASELINE_REDESIGN_REQUIRED",
-    "reason": "baseline-not-ready"
+    "published": true,
+    "path": "artbook-submissions/seed-single-defense-strat-celestial-bastion/current.json",
+    "baselineGateState": "DESIGN_BASELINE_READY"
   }
 }
