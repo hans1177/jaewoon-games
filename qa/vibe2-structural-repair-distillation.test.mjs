@@ -10,7 +10,7 @@ function verified(overrides = {}) {
     input: '기존 이벤트 등록 흐름과 저장 의미를 유지해야 한다.',
     output: '요약: 책임 핸들러를 정상화\n\n검증된 패치:\ndiff --git a/game.js b/game.js\n--- a/game.js\n+++ b/game.js\n@@ -1 +1 @@\n-old\n+new',
     taskType: 'unity', difficulty: 'bug', lifecycle: 'active', project: 'fixture-game',
-    sourceCommit: sourceRevision, sourceRevision, independentQa: 'PASS', browserQa: 'PASS',
+    sourceCommit: sourceRevision, sourceRevision, independentQa: 'PASS', browserQa: 'NOT_APPLICABLE',
     quality: { codeQuality: 1, noRegression: true, playImprovement: 1, ruleCompliance: 1 },
     provenance: { sourceKind: 'vibe2', sourceRevision, candidateId: 'candidate-1', gameId: 'fixture-game' },
     verification: { trace: { state: 'PASS', sourceRevision, commitSha: sourceRevision, pullRequest: 1, ci: 'PASS', independentQa: 'PASS', runtime: 'PASS', stale: false, flaky: false } },
@@ -31,9 +31,11 @@ function teacher(overrides = {}) {
   };
 }
 
-test('완결 QA/runtime trace가 있는 실제 성공 샘플만 teacher 입력이 된다', () => {
+test('완결 CI·독립 QA·Unity runtime trace가 있는 실제 성공 샘플만 teacher 입력이 된다', () => {
   assert.equal(isVerifiedStructuralSource(verified()), true);
-  assert.equal(isVerifiedStructuralSource(verified({ browserQa: 'FAIL' })), false);
+  assert.equal(isVerifiedStructuralSource(verified({ browserQa: 'FAIL' })), true);
+  const runtimeFail = verified(); runtimeFail.verification.trace.runtime = 'FAIL';
+  assert.equal(isVerifiedStructuralSource(runtimeFail), false);
   const stale = verified(); stale.verification.trace.stale = true;
   assert.equal(isVerifiedStructuralSource(stale), false);
   assert.equal(isVerifiedStructuralSource(verified({ quality: null })), false);
@@ -54,7 +56,7 @@ test('teacher 응답은 구조화 필드가 없거나 코드 권한을 시도하
 
 test('증류 정답은 teacher 코드가 아니라 원래 검증된 최종 patch를 그대로 유지하고 Unity task로 정규화한다', () => {
   const source = verified();
-  const distilled = buildDistilledStructuralSample(source, teacher(), { teacherModel: 'GPT-5.6-Sol-authored-online-curriculum-v1' });
+  const distilled = buildDistilledStructuralSample(source, teacher(), { teacherModel: 'GPT-5.6-Sol-authored-online-curriculum-v2' });
   assert.ok(distilled);
   assert.equal(distilled.specialization, 'unity-structural-repair');
   assert.equal(distilled.taskType, 'unity');
