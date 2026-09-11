@@ -10,11 +10,14 @@ on:
       - 'tools/vibe2-online-unity-teacher.mjs'
       - 'tools/vibe2-structural-repair-distillation.mjs'
       - 'tools/vibe2-weight-learning.mjs'
+      - 'tools/vibe2-practice-dataset.mjs'
+      - 'tools/vibe2-practice-train.py'
       - 'qa/vibe2-structural-repair-distillation.test.mjs'
       - 'qa/vibe2-online-unity-teacher.test.mjs'
       - 'qa/vibe2-unity-teacher-rubric.test.mjs'
       - 'qa/vibe2-unity-learning-boundary.test.mjs'
       - 'qa/vibe2-weight-learning.test.mjs'
+      - 'qa/vibe2-practice-weight-learning.test.mjs'
       - '.github/workflows/vibe2-structural-repair-distillation.yml'
   workflow_run:
     workflows: ['Vibe2 Distillation Sample Ingest']
@@ -53,11 +56,14 @@ jobs:
           set -euo pipefail
           node --check tools/vibe2-structural-repair-distillation.mjs
           node --check tools/vibe2-online-unity-teacher.mjs
+          node --check tools/vibe2-practice-dataset.mjs
+          python -m py_compile tools/vibe2-practice-train.py
           node --test qa/vibe2-structural-repair-distillation.test.mjs
           node --test qa/vibe2-online-unity-teacher.test.mjs
           node --test qa/vibe2-unity-teacher-rubric.test.mjs
           node --test qa/vibe2-unity-learning-boundary.test.mjs
           node --test qa/vibe2-weight-learning.test.mjs
+          node --test qa/vibe2-practice-weight-learning.test.mjs
           test -f company-learning/unity-teacher-rubric.json
           test -f company-learning/unity-teacher-materials/core-lessons.json
           test -f company-learning/unity-teacher-materials/graphics-motion-lessons.json
@@ -70,6 +76,7 @@ jobs:
           echo 'ONLINE_TEACHER=YES'
           echo 'GPT_PRACTICE_SAMPLE_SUPPLY=YES'
           echo 'PRACTICE_SAMPLE_AUTHORITY=PRACTICE_ONLY'
+          echo 'PRACTICE_WEIGHT_TRAINING=ENABLED'
           echo 'LOCAL_OLLAMA_TEACHER=NO'
           echo 'PAID_API=NO'
           echo 'TEACHER_CODE_AUTHORITY=NO'
@@ -155,6 +162,75 @@ jobs:
           path: ${{ runner.temp }}/unity-online-teacher-samples
           retention-days: 1
           if-no-files-found: error
+
+  unity-practice-train:
+    needs: online-teacher
+    if: needs.online-teacher.outputs.practice_count != '0'
+    runs-on: [self-hosted, Windows, X64, jaewoon-unity]
+    timeout-minutes: 180
+    defaults:
+      run:
+        shell: powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - name: Download GPT Unity practice samples
+        uses: actions/download-artifact@v4
+        with:
+          name: unity-gpt-practice-samples
+          path: ${{ runner.temp }}/unity-gpt-practice-samples
+      - name: Preflight local GPU practice training stack
+        run: |
+          $ErrorActionPreference = 'Stop'
+          python -c "import torch, transformers, peft; assert torch.cuda.is_available(), 'CUDA GPU is required for practice adapter training'; print('PRACTICE_CUDA=' + torch.cuda.get_device_name(0))"
+          $method = 'lora'
+          python -c "import bitsandbytes" 2>$null
+          if ($LASTEXITCODE -eq 0) { $method = 'qlora' }
+          "PRACTICE_TRAINING_METHOD=$method" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $root = Join-Path $env:USERPROFILE 'jaewoon-vibe2-learning'
+          New-Item -ItemType Directory -Path $root -Force | Out-Null
+          "LOCAL_TRAINING_ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $samples = Join-Path $env:RUNNER_TEMP 'unity-gpt-practice-samples'
+          $count = @(Get-ChildItem $samples -Filter '*.json' -File).Count
+          if ($count -lt 12) { throw "practice sample count $count/12" }
+          "PRACTICE_SAMPLE_DIR=$samples" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "PRACTICE_SAMPLE_COUNT=$count"
+      - name: Build practice-only Unity dataset
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $datasetDir = Join-Path $env:RUNNER_TEMP "unity-practice-$env:GITHUB_RUN_ID"
+          node tools/vibe2-practice-dataset.mjs --input $env:PRACTICE_SAMPLE_DIR --out $datasetDir --min-samples 12
+          if ($LASTEXITCODE -ne 0) { throw 'practice dataset build failed' }
+          $manifest = [System.IO.File]::ReadAllText((Join-Path $datasetDir 'manifest.json'), [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+          if ($manifest.authority -ne 'PRACTICE_ONLY' -or $manifest.runtimePromotionAllowed -ne $false -or $manifest.readyForTraining -ne $true) { throw 'practice dataset authority gate failed' }
+          "PRACTICE_DATASET_DIR=$datasetDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "PRACTICE_DATASET_TRAIN=$($manifest.stats.train)"
+          Write-Host "PRACTICE_DATASET_EVAL=$($manifest.stats.eval)"
+      - name: Train practice-only Unity adapter
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $adapterVersion = "unity-practice-$env:GITHUB_RUN_ID"
+          $adapterDir = Join-Path $env:LOCAL_TRAINING_ROOT "adapters\unity-practice\$adapterVersion"
+          if (Test-Path $adapterDir) { Remove-Item $adapterDir -Recurse -Force }
+          New-Item -ItemType Directory -Path $adapterDir -Force | Out-Null
+          python tools/vibe2-practice-train.py --train (Join-Path $env:PRACTICE_DATASET_DIR 'train.jsonl') --eval (Join-Path $env:PRACTICE_DATASET_DIR 'eval.jsonl') --dataset-manifest (Join-Path $env:PRACTICE_DATASET_DIR 'manifest.json') --output $adapterDir --adapter-version $adapterVersion --task-type unity --method $env:PRACTICE_TRAINING_METHOD --epochs 1
+          if ($LASTEXITCODE -ne 0) { throw 'practice Unity adapter training failed' }
+          $metadata = [System.IO.File]::ReadAllText((Join-Path $adapterDir 'training-metadata.json'), [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+          if ($metadata.practiceOnly -ne $true -or $metadata.promotionState -ne 'UNVERIFIED' -or $metadata.runtimePromotionAllowed -ne $false) { throw 'practice adapter safety gate failed' }
+          Write-Host "PRACTICE_WEIGHT_LEARNING=PASS"
+          Write-Host "PRACTICE_ADAPTER=$adapterDir"
+          Write-Host "PRACTICE_TRAIN_LOSS=$($metadata.trainMetrics.train_loss)"
+          Write-Host "PRACTICE_EVAL_LOSS=$($metadata.evalMetrics.eval_loss)"
+          Write-Host 'PRACTICE_RUNTIME_PROMOTION=NO'
+      - name: Practice learning summary
+        if: always()
+        run: |
+          Write-Host 'LEARNING_STAGE=SAMPLE_TO_DATASET_TO_LORA'
+          Write-Host 'AUTHORITY=PRACTICE_ONLY'
+          Write-Host 'RUNTIME_PROMOTION_ALLOWED=NO'
+          Write-Host 'NEXT_GATE=VERIFIED_UNITY_HOLDOUT_AB_AND_CANARY'
 
   unity-train:
     needs: online-teacher
