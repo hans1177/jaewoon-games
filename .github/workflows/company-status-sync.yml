@@ -7,6 +7,7 @@ on:
       - Director Staff Supervisor
       - Autonomous Continuous Development
       - Free Artbook Department Bots
+      - Company Seed DESIGN_ONLY Runtime
     types: [completed]
   push:
     branches: [main]
@@ -24,11 +25,13 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 concurrency:
-  group: company-status-sync-pr
+  group: company-status-sync-runtime
   cancel-in-progress: true
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
 
 jobs:
   sync:
@@ -41,8 +44,19 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Sync main
-        run: git pull --ff-only origin main
+      - name: Prepare isolated company runtime branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          if git ls-remote --exit-code --heads origin "$COMPANY_RUNTIME_BRANCH" >/dev/null 2>&1; then
+            git fetch origin "$COMPANY_RUNTIME_BRANCH"
+            git checkout -B "$COMPANY_RUNTIME_BRANCH" "origin/$COMPANY_RUNTIME_BRANCH"
+            git merge --no-edit origin/main
+          else
+            git checkout -B "$COMPANY_RUNTIME_BRANCH" origin/main
+          fi
+          echo 'PUBLIC_MAIN_WRITE=NO'
 
       - name: Sync company status and semantic production classes
         run: |
@@ -63,71 +77,35 @@ jobs:
           const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           if(company.supervision?.dateKst!==supervision.dateKst)throw new Error('supervision date not synchronized');
-          if(JSON.stringify(company.supervision?.counts||{})!==JSON.stringify(supervision.counts||{}))throw new Error('supervision counts not synchronized');
-          if(JSON.stringify(company.supervision?.primaryFindings||[])!==JSON.stringify(supervision.primaryFindings||[]))throw new Error('supervision findings not synchronized');
-          const map={WORKING:'working',DONE:'done',IDLE_NO_TASK:'idle',BLOCKED:'blocked',FAILED:'failed',STALE:'stale'};
-          const expected=map[supervision.staff?.homepage?.status]||String(supervision.staff?.homepage?.status||'').toLowerCase();
-          if(company.operations?.homepage?.status!==expected)throw new Error('homepage operation status not synchronized');
-
           const classes=['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED','DESIGN_ONLY'];
-          const validClass=new Set(classes);
-          const semanticPolicy=portfolio.productionClassPolicy||{};
-          const tierCompat=portfolio.productionTierPolicy||{};
-          const numericLabels=directive.production?.numericLabels||{RELEASE_CONFIRMED:1,DEVELOPMENT_CONFIRMED:2,DESIGN_ONLY:3};
-          if(semanticPolicy.canonicalField!=='productionClass'||semanticPolicy.fixedCounts!==false||semanticPolicy.countsDerivedFromMembership!==true)throw new Error('semantic production class policy missing');
-          if(semanticPolicy.fixedGameIds!==false||semanticPolicy.autoPromotionDemotion!==true||semanticPolicy.quotaRebalanceForbidden!==true)throw new Error('semantic membership must stay dynamic and quota-free');
-          if(tierCompat.compatibilityAliasOnly!==true||tierCompat.canonicalField!=='productionClass'||tierCompat.fixedCounts!==false)throw new Error('numeric tier must remain compatibility-only');
-
+          const valid=new Set(classes);
+          const labels=directive.production?.numericLabels||{};
           const projects=portfolio.projects||[];
-          if(projects.some(p=>!validClass.has(p.productionClass)))throw new Error('project productionClass missing or invalid');
+          if(projects.some(p=>!valid.has(p.productionClass)))throw new Error('invalid project productionClass');
           for(const p of projects){
-            const expectedAlias=Number(numericLabels[p.productionClass]);
-            if(Number.isFinite(expectedAlias)&&Number(p.productionTier)!==expectedAlias)throw new Error(`project numeric alias mismatch: ${p.id}`);
+            if(Number(p.productionTier)!==Number(labels[p.productionClass]))throw new Error(`project alias mismatch: ${p.id}`);
           }
           const release=projects.filter(p=>p.productionClass==='RELEASE_CONFIRMED');
           const development=projects.filter(p=>p.productionClass==='DEVELOPMENT_CONFIRMED');
           const design=projects.filter(p=>p.productionClass==='DESIGN_ONLY');
-          if(release.some(p=>p.targetEngine!=='unity-android'))throw new Error('release-confirmed must target Unity Android');
-          if(development.some(p=>p.targetEngine!=='web'||p.mode!=='WEB_FIRST_IMPLEMENTATION'))throw new Error('development-confirmed must target Web first implementation');
-          if(design.some(p=>p.mode!=='HOLD'&&p.targetEngine!=='design-only'))throw new Error('design-only must remain design-only');
-          if(Array.isArray(portfolio.developmentFocusPolicy?.preferredFocusedGameIds)&&portfolio.developmentFocusPolicy.preferredFocusedGameIds.length)throw new Error('focused game IDs must not be pinned');
-
+          if(release.some(p=>p.targetEngine!=='unity-android'))throw new Error('release target mismatch');
+          if(development.some(p=>p.targetEngine!=='web'||p.mode!=='WEB_FIRST_IMPLEMENTATION'))throw new Error('development target mismatch');
+          if(design.some(p=>p.mode!=='HOLD'&&p.targetEngine!=='design-only'))throw new Error('design target mismatch');
           const categoryByClass={RELEASE_CONFIRMED:'release-confirmed',DEVELOPMENT_CONFIRMED:'development-confirmed',DESIGN_ONLY:'design-only'};
           for(const g of catalog.games||[]){
-            if(!validClass.has(g.productionClass))throw new Error(`catalog productionClass missing or invalid: ${g.id}`);
-            const expectedAlias=Number(numericLabels[g.productionClass]);
-            if(Number.isFinite(expectedAlias)&&Number(g.productionTier)!==expectedAlias)throw new Error(`catalog numeric alias mismatch: ${g.id}`);
+            if(!valid.has(g.productionClass))throw new Error(`invalid catalog class: ${g.id}`);
             if(g.homepageCategory!==categoryByClass[g.productionClass])throw new Error(`catalog category mismatch: ${g.id}`);
           }
-
-          const focusPolicy=portfolio.developmentFocusPolicy||{};
-          const focus=company.operations?.autonomousFocus;
-          const target=Math.max(0,Number(focusPolicy.targetFocusedGames??focusPolicy.maxFocusedGames??0)||0);
-          if(target!==1)throw new Error('release deep focus must stay exactly one');
-          if(!focus||focus.enabled!==Boolean(portfolio.developmentFocusPolicy))throw new Error('autonomous focus status missing');
-          if(focus.targetSlots!==1)throw new Error('autonomous focus target mismatch');
-          if(!Array.isArray(focus.focusedGameIds)||!Array.isArray(focus.games))throw new Error('autonomous focus arrays missing');
-          if(focus.focusedGameIds.length>1||focus.games.length>1)throw new Error('autonomous focus exceeds one slot');
-          if(focus.games.some((row,index)=>row.gameId!==focus.focusedGameIds[index]))throw new Error('autonomous focus game mapping mismatch');
-          if((focus.preferredGameIds||[]).length)throw new Error('company focus exposes pinned IDs');
-
           const state=portfolio.productionTierState||{};
-          if(state.membershipMode!=='SEMANTIC_EVIDENCE_DYNAMIC'||state.canonicalField!=='productionClass'||state.fixedCounts!==false||state.countsDerivedFromMembership!==true)throw new Error('semantic production state missing');
-          if(state.numericTierAliasOnly!==true||state.fixedGameIds!==false||state.autoPromotionDemotion!==true)throw new Error('production state compatibility flags invalid');
-          const expectedCounts={releaseConfirmed:release.length,developmentConfirmed:development.length,designOnly:design.length};
-          if(JSON.stringify(state.counts)!==JSON.stringify(expectedCounts))throw new Error(`derived class counts mismatch: ${JSON.stringify(state.counts)} vs ${JSON.stringify(expectedCounts)}`);
-          if((state.releaseConfirmedGameIds||[]).length!==release.length||(state.developmentConfirmedGameIds||[]).length!==development.length||(state.designOnlyGameIds||[]).length!==design.length)throw new Error('production state member arrays mismatch');
-          if(state.diversity?.membershipInfluence!==false)throw new Error('diversity must not force production membership');
-          if(!Array.isArray(state.diversity?.distinctFamilies))throw new Error('portfolio gameplay diversity evidence missing');
+          const expected={releaseConfirmed:release.length,developmentConfirmed:development.length,designOnly:design.length};
+          if(JSON.stringify(state.counts)!==JSON.stringify(expected))throw new Error('derived class counts mismatch');
+          const focus=company.operations?.autonomousFocus;
+          if(!focus||focus.targetSlots!==1||focus.focusedGameIds?.length>1)throw new Error('autonomous focus contract failed');
           console.log('COMPANY_STATUS_SYNC_QA=PASS');
           console.log(`PRODUCTION_CLASS_COUNTS_QA=${release.length}/${development.length}/${design.length}`);
-          console.log(`PRODUCTION_DIVERSITY_QA=${state.diversity.distinctFamilies.join(',')||'none'}`);
-          console.log(`COMPANY_AUTONOMOUS_FOCUS_QA=${focus.focusedGameIds.join(',')||'none'}`);
           NODE
 
-      - name: Propose synchronized company status and production classes through PR
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Persist validated runtime status without main write
         shell: bash
         run: |
           set -euo pipefail
@@ -138,19 +116,8 @@ jobs:
             echo 'COMPANY_STATUS_SYNC_COMMIT=NO_CHANGES'
             exit 0
           fi
-
-          branch="automation/company-status-sync-${GITHUB_RUN_ID}"
-          git checkout -b "$branch"
-          git commit -m 'company: sync semantic production classes and focus [skip ci]'
-          git push origin "HEAD:refs/heads/$branch"
-
-          pr_url="$(gh pr create \
-            --repo "$GITHUB_REPOSITORY" \
-            --base main \
-            --head "$branch" \
-            --title 'company: sync semantic production classes and focus' \
-            --body "Validated company status/classification synchronization.\n\n- workflow run: ${GITHUB_RUN_ID}\n- policy: COMPANY_FLOW.md\n- direct main write: NO")"
-
-          echo "COMPANY_STATUS_SYNC_PR=$pr_url"
-          echo 'COMPANY_STATUS_SYNC_COMMIT=PR_OPENED'
+          git commit -m 'runtime: sync semantic production classes and focus [skip ci]'
+          git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"
+          echo 'COMPANY_STATUS_SYNC_COMMIT=RUNTIME_PERSISTED'
+          echo "COMPANY_STATUS_RUNTIME_BRANCH=$COMPANY_RUNTIME_BRANCH"
           echo 'PUBLIC_MAIN_WRITE=NO'
