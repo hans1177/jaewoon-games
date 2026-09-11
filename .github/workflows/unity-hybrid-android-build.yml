@@ -30,6 +30,7 @@ jobs:
     timeout-minutes: 5
     outputs:
       request_file: ${{ steps.request.outputs.request_file }}
+      policy_sha256: ${{ steps.policy.outputs.policy_sha256 }}
       target: ${{ steps.probe.outputs.target }}
       heartbeat_age_seconds: ${{ steps.probe.outputs.heartbeat_age_seconds }}
       route_reason: ${{ steps.probe.outputs.route_reason }}
@@ -38,6 +39,78 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Validate central Android build policy
+        id: policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "$GITHUB_OUTPUT" <<'PY'
+          import hashlib, json, pathlib, sys
+
+          output = sys.argv[1]
+          flow_path = pathlib.Path('COMPANY_FLOW.md')
+          directive_path = pathlib.Path('company-directive.json')
+          if not flow_path.is_file() or not directive_path.is_file():
+              raise SystemExit('central policy files are required before Unity Android build routing')
+
+          flow = flow_path.read_text(encoding='utf-8')
+          directive = json.loads(directive_path.read_text(encoding='utf-8'))
+          if directive.get('policyDocument') != 'COMPANY_FLOW.md':
+              raise SystemExit('company-directive policyDocument must be COMPANY_FLOW.md')
+
+          release = directive.get('classes', {}).get('RELEASE_CONFIRMED', {})
+          platform = directive.get('platformStrategy', {})
+          ai = directive.get('ai', {})
+          required_flow = release.get('requiredFlow', [])
+
+          required_release_flow = [
+              'UNITY_ANDROID_BUILD',
+              'ANDROID_RUNTIME_VALIDATION',
+              'INDEPENDENT_QA_AND_REGRESSION',
+              'RELEASE_GATE',
+          ]
+          missing_release_flow = [item for item in required_release_flow if item not in required_flow]
+          if release.get('target') != 'UNITY_ANDROID':
+              raise SystemExit('central RELEASE_CONFIRMED target must be UNITY_ANDROID')
+          if platform.get('initialReleaseTarget') != 'UNITY_ANDROID':
+              raise SystemExit('central platform initialReleaseTarget must be UNITY_ANDROID')
+          if release.get('currentSourceTreeBindingRequired') is not True:
+              raise SystemExit('central policy must require exact current source tree binding')
+          if release.get('currentBuildEvidenceBindingRequired') is not True:
+              raise SystemExit('central policy must require current build evidence binding')
+          if release.get('revalidationRequiredAfterSourceChange') is not True:
+              raise SystemExit('central policy must invalidate old build validation after source changes')
+          if release.get('aiMayInventBuildPass') is not False:
+              raise SystemExit('central policy must forbid invented build PASS')
+          if release.get('aiMayInventDeviceValidationPass') is not False:
+              raise SystemExit('central policy must forbid invented device PASS')
+          if release.get('aiMayInventIndependentQaPass') is not False:
+              raise SystemExit('central policy must forbid invented independent QA PASS')
+          if ai.get('paidRunnerAllowed') is not False:
+              raise SystemExit('central policy must keep paid runners disabled')
+          if missing_release_flow:
+              raise SystemExit('central release flow missing: ' + ','.join(missing_release_flow))
+
+          required_tokens = [
+              'sourceOfTruth: COMPANY_FLOW.md',
+              'UNITY_ANDROID_BUILD',
+              'CURRENT_SOURCE_UNITY_ANDROID_BUILD_SUCCESS',
+              'CURRENT_BUILD_ANDROID_RUNTIME_PASS',
+              'CURRENT_BUILD_INDEPENDENT_QA_REGRESSION_PASS',
+              'sourceChangeInvalidatesOldBuildValidation: true',
+          ]
+          missing_tokens = [token for token in required_tokens if token not in flow]
+          if missing_tokens:
+              raise SystemExit('COMPANY_FLOW Android build contract missing: ' + ', '.join(missing_tokens))
+
+          policy_sha256 = hashlib.sha256(flow_path.read_bytes()).hexdigest()
+          directive_sha256 = hashlib.sha256(directive_path.read_bytes()).hexdigest()
+          print(f'CENTRAL_POLICY_SYNC=PASS policy_sha256={policy_sha256} directive_sha256={directive_sha256}')
+          with open(output, 'a', encoding='utf-8') as f:
+              f.write(f'policy_sha256={policy_sha256}\n')
+              f.write(f'directive_sha256={directive_sha256}\n')
+          PY
 
       - name: Resolve build request
         id: request
@@ -192,6 +265,7 @@ jobs:
       - name: Route summary
         shell: bash
         run: |
+          echo "Central policy SHA256: ${{ steps.policy.outputs.policy_sha256 }}"
           echo "Build request: ${{ steps.request.outputs.request_file }}"
           echo "Selected route: ${{ steps.probe.outputs.target }}"
           echo "Route reason: ${{ steps.probe.outputs.route_reason }}"
