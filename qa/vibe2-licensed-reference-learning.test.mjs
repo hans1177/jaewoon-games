@@ -85,3 +85,18 @@ test('CPU practice speedup removes duplicate eval without reducing train or eval
   assert.match(workflow, /'--final-eval-only'/);
   assert.match(workflow, /PRACTICE_EVAL_PASSES=1/);
 });
+
+test('CPU practice skips activation recompute without changing production default', () => {
+  const trainer = fs.readFileSync('tools/vibe2-train.py', 'utf8');
+
+  assert.match(trainer, /cpu_practice_no_recompute = \(/);
+  assert.match(trainer, /manifest\.get\("authority"\) == "PRACTICE_ONLY"/);
+  assert.match(trainer, /manifest\.get\("practiceOnly"\) is True/);
+  assert.match(trainer, /if not cpu_practice_no_recompute:\n        model\.gradient_checkpointing_enable\(\)/);
+  assert.match(trainer, /"gradientCheckpointing": not cpu_practice_no_recompute/);
+  assert.match(trainer, /r=16/);
+  assert.match(trainer, /lora_alpha=32/);
+  assert.match(trainer, /lora_dropout=0\.05/);
+  assert.match(trainer, /num_train_epochs=args\.epochs/);
+  assert.match(trainer, /learning_rate=args\.learning_rate/);
+});
