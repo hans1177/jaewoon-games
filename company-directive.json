@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "revision": 29,
-  "updatedAt": "2026-09-11",
+  "revision": 30,
+  "updatedAt": "2026-09-12",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
   "instruction": "Use COMPANY_FLOW.md as the machine-oriented production policy source of truth. This file stores executable values and invariant flags only.",
@@ -13,10 +13,6 @@
     "countsDerivedFromMembership": true,
     "fixedClassCounts": false,
     "gameIdsPinned": false,
-    "numericField": "productionTier",
-    "numericLabels": {"RELEASE_CONFIRMED": 1, "DEVELOPMENT_CONFIRMED": 2, "DESIGN_ONLY": 3},
-    "numericLabelsAreAliasesOnly": true,
-    "numericLabelsOwnerRemappable": true,
     "preserveExistingWebArchives": true,
     "preserveSaveMeaning": true
   },
@@ -152,7 +148,6 @@
     "roleIdentityFixed": true,
     "modelIdentityFixed": false,
     "departmentMultimodelStartsAtClass": "DESIGN_ONLY",
-    "departmentMultimodelStartsAtTier": 3,
     "minDistinctModelsPerDepartment": 3,
     "departmentReviewModelCount": 3,
     "minDistinctLeadModelsAcrossDepartments": 5,
@@ -180,9 +175,6 @@
       "DEVELOPMENT_CONFIRMED": "DISTINCT_LEAD_GATED_DIRECT_PLAY_TECH_VALIDATION",
       "RELEASE_CONFIRMED": "DISTINCT_LEAD_GATED_DIRECT_RELEASE_RISK_WATCH"
     },
-    "departmentModeTier3": "DISTINCT_LEAD_MULTIMODEL_DESIGN_REVIEW_AND_MEETING",
-    "departmentModeTier2": "DISTINCT_LEAD_GATED_DIRECT_PLAY_TECH_VALIDATION",
-    "departmentModeTier1": "DISTINCT_LEAD_GATED_DIRECT_RELEASE_RISK_WATCH",
     "meeting": {
       "internalDepartmentConsensus": true,
       "internalRepresentativeOwner": "DEPARTMENT_LEAD_MODEL",
@@ -205,8 +197,6 @@
         "DEVELOPMENT_CONFIRMED": "VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT",
         "RELEASE_CONFIRMED": "PRIMARY_DEVELOPMENT_ENGINE"
       },
-      "tier2Role": "VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT",
-      "tier1Role": "PRIMARY_DEVELOPMENT_ENGINE",
       "designOnlyRole": null,
       "designOrArtbookPrimaryAuthorInDevelopmentClass": false,
       "designOrArtbookPrimaryAuthorInDevelopmentConfirmed": false
@@ -318,26 +308,13 @@
     "steamNotBuiltInitially": true,
     "multiplayerNotBuiltInitially": true
   },
-  "tiersCompatibility": {
-    "purpose": "DISPLAY_AND_BACKWARD_COMPATIBILITY_ALIAS_ONLY",
-    "3": "DESIGN_ONLY",
-    "2": "DEVELOPMENT_CONFIRMED",
-    "1": "RELEASE_CONFIRMED"
-  },
-  "tiers": {
-    "3": {"productionClass": "DESIGN_ONLY", "baseline": "DESIGN_BASELINE", "sourceCodeAutoDevelopment": false},
-    "2": {"productionClass": "DEVELOPMENT_CONFIRMED", "baseline": "DEVELOPMENT_BASELINE"},
-    "1": {"productionClass": "RELEASE_CONFIRMED", "baseline": "RELEASE_BASELINE", "target": "UNITY_ANDROID"}
-  },
   "rules": [
     "new-owner-instruction-overrides-autonomous-plan",
     "company-flow-is-machine-policy-source",
-    "do-not-duplicate-tier-policy-across-documents",
+    "do-not-duplicate-production-class-policy-across-documents",
     "semantic-production-class-is-canonical",
     "production-class-counts-derived-from-current-membership",
     "production-class-counts-are-not-fixed-quotas",
-    "numeric-tier-is-display-and-backward-compatibility-alias-only",
-    "numeric-tier-labels-may-be-remapped-by-owner-without-changing-class-meaning",
     "production-game-ids-must-not-be-pinned",
     "production-class-membership-promotes-and-demotes-from-current-evidence",
     "status-sync-must-not-reclassify-games-to-satisfy-a-count-quota",
