@@ -20,15 +20,11 @@ production:
   canonicalField: productionClass
   classes:
     DESIGN_ONLY:
-      displayTier: 3
       purpose: DESIGN_BASELINE
     DEVELOPMENT_CONFIRMED:
-      displayTier: 2
       purpose: DEVELOPMENT_BASELINE
     RELEASE_CONFIRMED:
-      displayTier: 1
       purpose: RELEASE_BASELINE
-  numericTierIsAliasOnly: true
   membership: DYNAMIC_EVIDENCE
   fixedClassCounts: false
   pinnedGameIds: false
