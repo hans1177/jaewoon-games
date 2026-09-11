@@ -275,7 +275,9 @@ jobs:
           }
 
           git commit -m "company-ai: publish $game verified local test build"
+          if ($LASTEXITCODE -ne 0) { throw 'Could not commit homepage build-state proposal.' }
           git push origin "HEAD:refs/heads/$branch"
+          if ($LASTEXITCODE -ne 0) { throw 'Could not push homepage build-state proposal branch.' }
 
           $headers = @{
             Authorization = "Bearer $env:GITHUB_TOKEN"
@@ -288,7 +290,17 @@ jobs:
             base = 'main'
             body = "Automated verified Unity Android build-state update. Exact game source: $sourceCommit`nBuild request source: $env:GITHUB_SHA`nRun: $env:GITHUB_RUN_ID/$env:GITHUB_RUN_ATTEMPT`nDirect main write: NO"
           } | ConvertTo-Json
-          $response = Invoke-RestMethod -Method Post -Uri "https://api.github.com/repos/$env:GITHUB_REPOSITORY/pulls" -Headers $headers -ContentType 'application/json' -Body $prBody
-          Write-Host "[PASS] Approved homepage build state PR opened: $($response.html_url)"
+
+          try {
+            $response = Invoke-RestMethod -Method Post -Uri "https://api.github.com/repos/$env:GITHUB_REPOSITORY/pulls" -Headers $headers -ContentType 'application/json' -Body $prBody -ErrorAction Stop
+            Write-Host "[PASS] Approved homepage build state PR opened: $($response.html_url)"
+            Write-Host 'HOMEPAGE_STATE_PR=OPENED'
+          }
+          catch {
+            Write-Warning "Homepage state branch was pushed but this Actions token cannot open the PR: $($_.Exception.Message)"
+            Write-Host "HOMEPAGE_STATE_BRANCH=$branch"
+            Write-Host 'HOMEPAGE_STATE_PR=DEFERRED'
+            Write-Host 'VERIFIED_APK_STATE=PASS'
+          }
           Write-Host 'PUBLIC_MAIN_WRITE=NO'
           Write-Host "[PASS] Verified test build download: $downloadUrl"
