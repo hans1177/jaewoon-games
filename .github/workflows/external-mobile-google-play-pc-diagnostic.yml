@@ -1,11 +1,6 @@
 name: Vibe2 Google Play Games PC Diagnostic
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/external-mobile-google-play-pc-diagnostic.yml'
-      - 'tools/diagnose-google-play-games-pc.ps1'
   workflow_dispatch:
 
 permissions:
