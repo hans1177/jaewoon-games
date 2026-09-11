@@ -1,92 +1,203 @@
 {
-  "version": 1,
+  "version": 2,
   "teacher": "GPT-5.6 Sol authored rubric",
   "scope": "UNITY_CODING_ONLY",
   "authority": "ANALYSIS_ONLY",
   "answerTarget": "VERIFIED_FINAL_DIFF_ONLY",
   "paidApiRequired": false,
+  "primaryGoal": "MAXIMIZE_REAL_UNITY_GAME_IMPLEMENTATION_JUDGMENT",
   "principles": [
+    "Translate the requested player-visible behavior into authoritative runtime state changes before choosing files or classes.",
+    "Read the existing Unity responsibility graph first: input, controller, domain/gameplay state, presentation, persistence, scene/prefab wiring, and runtime lifetime.",
+    "Prefer extending the existing responsible system over creating parallel managers, duplicate state, wrapper chains, or replacement subsystems.",
     "Find the responsible Unity component or system before proposing patch scope.",
     "Prefer fixing the real responsibility boundary over stacking wrappers, overrides, duplicate listeners, or temporary guards.",
-    "Preserve existing gameplay rules, serialized field meaning, save meaning, and public behavior unless owner evidence explicitly changes them.",
-    "Treat Awake, OnEnable, Start, Update, FixedUpdate, OnDisable, OnDestroy, scene reload, pause/resume, and domain reload as lifecycle-sensitive boundaries.",
+    "Preserve existing gameplay rules, serialized field meaning, save meaning, balance values, and public behavior unless owner evidence explicitly changes them.",
+    "Treat Awake, OnEnable, Start, Update, FixedUpdate, LateUpdate, OnDisable, OnDestroy, scene reload, pause/resume, and domain reload as lifecycle-sensitive boundaries.",
     "Event subscribe and unsubscribe ownership must be symmetric and idempotent.",
     "Do not move state ownership across MonoBehaviours, ScriptableObjects, services, or save models without evidence that the original boundary is wrong.",
     "Inspect nullability, destroyed UnityEngine.Object semantics, prefab/scene references, GetComponent assumptions, and initialization order before classifying a null fix.",
-    "For combat bugs, identify which system owns damage calculation, hit application, cooldown, status effects, death, and UI projection instead of patching the symptom in UI code.",
+    "For new features, identify command/input, authoritative mutation, feedback/presentation, persistence, and QA boundaries before implementation.",
+    "For combat, identify which system owns damage calculation, hit application, cooldown, status effects, death, rewards, and UI projection instead of patching symptoms in presentation code.",
+    "For AI, separate sensing, decision, movement, attack execution, cooldown, and death/despawn ownership; do not hide AI state in animation callbacks unless already authoritative.",
+    "For spawning, preserve spawn rules, caps, respawn timing, pooling/reset semantics, and scene ownership.",
+    "For inventory/equipment/progression, keep catalog data, runtime ownership, equip/mutation rules, persistence, and UI projection distinct.",
     "For save/load bugs, distinguish runtime state, persistent state, migration/defaults, and presentation cache. Preserve existing save keys and meaning unless migration evidence exists.",
-    "For mobile Android, flag per-frame allocations, repeated Find/GetComponent calls, Instantiate/Destroy churn, uncontrolled coroutines, expensive Update loops, and input polling that can be event-driven.",
+    "For scene transitions, bind cross-scene lifetime explicitly and avoid accidental duplicate DontDestroyOnLoad objects or stale scene references.",
+    "For mobile input, separate touch sampling, gesture interpretation, gameplay command, and visual feedback; do not couple gameplay authority to UI widget internals.",
+    "For physics, separate input sampling, physics mutation, collision interpretation, and visual interpolation; avoid frame-rate-dependent force or movement.",
+    "For animation and VFX, gameplay state must remain authoritative unless the project explicitly uses animation events as a verified command boundary.",
+    "For mobile Android, flag per-frame allocations, repeated Find/GetComponent calls, Instantiate/Destroy churn, uncontrolled coroutines, expensive Update loops, synchronous loading, and unnecessary input polling.",
     "A one-line patch is acceptable only when the surrounding responsibility graph is already sound and the failure is genuinely local.",
     "If duplicate handlers, duplicated state writes, wrapper chains, or conflicting lifecycle paths exist, prefer normalizing the responsible function/component rather than changing one visible call site.",
+    "When reimplementing a proven game pattern, copy only abstract gameplay behavior and feedback structure; preserve the target project's distinct identity, codebase, assets, names, maps, UI artwork, and data model.",
+    "Benchmark-inspired implementation must express the mechanic through the target project's existing architecture rather than importing another game's code structure.",
     "Regression risk must name concrete Unity behavior that could break, not generic statements such as 'may cause bugs'.",
     "Evidence must point to observable code or runtime facts from the verified sample; never invent unseen project structure.",
-    "Teacher output never has code authority. It may explain root cause and scope only; the verified final patch remains the learning answer."
+    "Teacher output never has code authority. It may explain root cause, implementation decomposition, scope, and risk only; the verified final patch remains the learning answer."
   ],
   "masteryAreas": [
+    "REQUIREMENT_TO_RUNTIME_BEHAVIOR",
+    "FEATURE_DECOMPOSITION",
+    "EXISTING_ARCHITECTURE_MAPPING",
     "MONOBEHAVIOUR_LIFECYCLE",
     "COMPONENT_RESPONSIBILITY",
     "EVENT_OWNERSHIP",
     "STATE_OWNERSHIP",
+    "INPUT_COMMAND_BOUNDARY",
+    "COMBAT_SYSTEM_BOUNDARY",
+    "AI_STATE_AND_BEHAVIOR_BOUNDARY",
+    "SPAWN_RESPAWN_POOLING",
+    "INVENTORY_EQUIPMENT_PROGRESSION",
     "SAVE_LOAD_BOUNDARY",
     "NULL_AND_REFERENCE_SAFETY",
-    "COMBAT_SYSTEM_BOUNDARY",
     "COROUTINE_AND_ASYNC_LIFETIME",
     "SCENE_PREFAB_DEPENDENCY",
+    "PHYSICS_COLLISION_TIMING",
+    "ANIMATION_VFX_FEEDBACK",
+    "MOBILE_TOUCH_AND_UI",
     "MOBILE_PERFORMANCE",
-    "REGRESSION_SAFE_REPAIR"
+    "BENCHMARK_PATTERN_REIMPLEMENTATION",
+    "REGRESSION_SAFE_REPAIR",
+    "RUNTIME_QA_REASONING"
   ],
   "decisionOrder": [
-    "ROOT_CAUSE",
+    "PLAYER_VISIBLE_REQUIREMENT",
+    "AUTHORITATIVE_RUNTIME_STATE",
+    "EXISTING_RESPONSIBILITY_GRAPH",
+    "ROOT_CAUSE_OR_FEATURE_GAP",
     "RESPONSIBILITY_BOUNDARY",
     "LIFECYCLE_OR_STATE_BOUNDARY",
+    "DEPENDENCIES_AND_DATA_FLOW",
     "MINIMUM_SAFE_PATCH_SCOPE",
-    "WHY_NOT_SMALLER_PATCH",
+    "WHY_NOT_SMALLER_OR_PARALLEL_PATCH",
+    "ANDROID_RUNTIME_RISKS",
     "REGRESSION_RISKS",
     "VERIFIABLE_EVIDENCE"
   ],
   "antiPatterns": [
+    "Create a new manager or singleton before checking whether an existing system already owns the behavior",
     "Add another wrapper to hide a broken responsibility boundary",
     "Add a boolean guard without explaining duplicate ownership",
     "Subscribe in multiple lifecycle methods without symmetric unsubscribe",
     "Use Update polling for a condition already owned by an event or state transition",
     "Change save keys or serialized meaning for a runtime-only bug",
     "Fix combat outcome inside presentation/UI when authoritative combat state lives elsewhere",
+    "Let UI widgets directly own inventory, progression, combat, or save state",
     "Catch or ignore exceptions instead of fixing initialization or ownership",
-    "Create a new singleton/service when an existing responsible system already exists",
-    "Patch only the first duplicate listener or duplicated state write when equivalent paths remain"
+    "Replace stable serialized references with repeated scene searches",
+    "Create a parallel spawn, pool, inventory, save, or combat system when one already exists",
+    "Patch only the first duplicate listener or duplicated state write when equivalent paths remain",
+    "Use animation/VFX completion as hidden gameplay authority without project evidence",
+    "Copy another game's source code, assets, names, maps, UI artwork, or trade dress when implementing a benchmark-inspired mechanic",
+    "Treat APK build success as proof of gameplay correctness without Android runtime and independent QA evidence"
+  ],
+  "implementationChecklist": [
+    "What exact player-visible behavior changes?",
+    "Which runtime state is authoritative?",
+    "Which existing component or system owns that state?",
+    "What input or event starts the behavior?",
+    "What dependencies and serialized references are required?",
+    "What lifecycle owns initialization, registration, update, cancellation, and cleanup?",
+    "Does the feature need persistence or save migration?",
+    "What scene/prefab wiring changes are required?",
+    "What Android performance or touch risks exist?",
+    "Which existing rules, save keys, balance values, and public behavior must remain unchanged?",
+    "What concrete runtime and regression checks prove the implementation?"
   ],
   "exemplars": [
+    {
+      "case": "new combat ability",
+      "rootCause": "The requested ability does not yet have a complete command-to-authoritative-state-to-feedback path in the existing combat architecture.",
+      "responsibilityBoundary": "Input issues a command; combat owns cooldown, cost, hit and state mutation; presentation owns animation/VFX/UI projection; save owns only persistent unlock/progression state.",
+      "patchScope": [
+        "extend the existing combat ability path",
+        "reuse existing cooldown/damage/status ownership",
+        "wire presentation to authoritative results",
+        "preserve existing balance and save meaning unless explicitly changed"
+      ],
+      "whyNotSmallerPatch": "Adding only a UI button or animation creates visible behavior without authoritative combat ownership and can desync cooldown, damage, AI, or save state.",
+      "regressionRisks": [
+        "ability fires twice through old and new input paths",
+        "cooldown survives incorrectly across disable/scene reload",
+        "UI shows ready while combat state is not ready"
+      ]
+    },
+    {
+      "case": "benchmark-inspired mechanic",
+      "rootCause": "A proven external mechanic must be translated into the target game's own data flow and responsibility graph rather than copied as foreign code structure.",
+      "responsibilityBoundary": "The target project's existing gameplay systems own the reimplemented mechanic; external reference provides only abstract loop, timing, feedback, progression, or risk/reward patterns.",
+      "patchScope": [
+        "extract abstract mechanic behavior",
+        "map it onto existing project systems",
+        "keep names/assets/maps/UI/code original",
+        "validate the mechanic in Android runtime"
+      ],
+      "whyNotSmallerPatch": "Superficial visual imitation can miss the actual fun loop, while direct structural copying can conflict with the target architecture and create maintenance or IP risk.",
+      "regressionRisks": [
+        "parallel gameplay system bypasses existing save or balance logic",
+        "mechanic works in editor but breaks mobile input or performance"
+      ]
+    },
     {
       "case": "duplicate event subscription",
       "rootCause": "The same gameplay event is subscribed from more than one lifecycle path or is not symmetrically unsubscribed, so one logical action invokes the handler multiple times.",
       "responsibilityBoundary": "The MonoBehaviour or controller that owns registration for that gameplay event.",
-      "patchScope": ["normalize subscription to one lifecycle owner", "make unsubscribe symmetric", "remove duplicate registration path"],
+      "patchScope": [
+        "normalize subscription to one lifecycle owner",
+        "make unsubscribe symmetric",
+        "remove duplicate registration path"
+      ],
       "whyNotSmallerPatch": "Changing only the visible handler call leaves the duplicate registration source active and the defect can recur after enable/disable or scene reload.",
-      "regressionRisks": ["handler no longer registered after re-enable", "double unsubscribe or stale listener after destroy"]
+      "regressionRisks": [
+        "handler no longer registered after re-enable",
+        "double unsubscribe or stale listener after destroy"
+      ]
     },
     {
       "case": "save state written from UI and gameplay",
       "rootCause": "Persistent state has multiple writers, so UI projection and authoritative gameplay state can diverge or overwrite each other.",
       "responsibilityBoundary": "The gameplay/save system that owns the persistent value; UI should project state but not become an independent authority.",
-      "patchScope": ["retain one authoritative persistent writer", "route UI through existing gameplay/save API", "preserve existing save key and meaning"],
+      "patchScope": [
+        "retain one authoritative persistent writer",
+        "route UI through existing gameplay/save API",
+        "preserve existing save key and meaning"
+      ],
       "whyNotSmallerPatch": "Updating only the UI value can make the screen look correct while the next load restores stale persistent state.",
-      "regressionRisks": ["old saves fail to load", "runtime UI no longer refreshes after authoritative state change"]
+      "regressionRisks": [
+        "old saves fail to load",
+        "runtime UI no longer refreshes after authoritative state change"
+      ]
     },
     {
       "case": "null reference caused by initialization order",
       "rootCause": "A component assumes another reference is initialized before the Unity lifecycle guarantees that ordering.",
       "responsibilityBoundary": "The component that owns acquiring/validating the dependency and the lifecycle phase where that dependency is required.",
-      "patchScope": ["move or validate dependency acquisition at the owning lifecycle boundary", "remove repeated late lookups if a stable reference exists", "preserve prefab/scene wiring semantics"],
+      "patchScope": [
+        "move or validate dependency acquisition at the owning lifecycle boundary",
+        "remove repeated late lookups if a stable reference exists",
+        "preserve prefab/scene wiring semantics"
+      ],
       "whyNotSmallerPatch": "A null guard can suppress the crash while silently skipping required gameplay behavior and leaving ordering nondeterministic.",
-      "regressionRisks": ["dependency unavailable on scene transition", "serialized reference unintentionally overridden"]
+      "regressionRisks": [
+        "dependency unavailable on scene transition",
+        "serialized reference unintentionally overridden"
+      ]
     },
     {
       "case": "combat rule duplicated in UI",
       "rootCause": "Damage or state transition logic is duplicated outside the authoritative combat system, creating inconsistent outcomes.",
       "responsibilityBoundary": "The combat/domain system that owns damage, cooldown, status, death, and authoritative state mutation.",
-      "patchScope": ["keep combat rule in authoritative combat system", "make UI consume projected results only", "remove duplicate mutation path"],
+      "patchScope": [
+        "keep combat rule in authoritative combat system",
+        "make UI consume projected results only",
+        "remove duplicate mutation path"
+      ],
       "whyNotSmallerPatch": "Tweaking the displayed value leaves the underlying combat state inconsistent and can desync save, AI, or later calculations.",
-      "regressionRisks": ["UI stops updating after combat event", "damage applied twice through old and new paths"]
+      "regressionRisks": [
+        "UI stops updating after combat event",
+        "damage applied twice through old and new paths"
+      ]
     }
   ]
 }
