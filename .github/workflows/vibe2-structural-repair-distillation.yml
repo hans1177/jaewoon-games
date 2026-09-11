@@ -37,6 +37,7 @@ concurrency:
 env:
   LEARNING_FOCUS: UNITY_CODING_ONLY
   ONLINE_TEACHER_ROUTE: GPT_AUTHORED_CURRICULUM_ON_GITHUB_HOSTED_RUNNER
+  PSExecutionPolicyPreference: Bypass
 
 jobs:
   static-gate:
