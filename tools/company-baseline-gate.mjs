@@ -19,7 +19,9 @@ const catalog=readJson('game-catalog.json',{games:[]});const catalogGame=(catalo
 const seedState=loadSeedState();const seedAny=seedForGame(seedState,gameId);const seedActive=activeSeedForGame(seedState,gameId);
 if(!catalogGame&&!seedAny)throw new Error(`Unknown game or GAME_SEED: ${gameId}`);
 const productionClass=catalogGame?productionClassOf({},catalogGame,{numericLabels}):PRODUCTION_CLASSES.DESIGN_ONLY;
-const tierAlias=catalogGame?(tierAliasForProductionClass(productionClass,{numericLabels})??Number(catalogGame.productionTier||0)||null):3;
+const derivedTier=catalogGame?tierAliasForProductionClass(productionClass,{numericLabels}):3;
+const catalogTier=catalogGame?(Number(catalogGame.productionTier||0)||null):3;
+const tierAlias=catalogGame?(derivedTier??catalogTier):3;
 const game=catalogGame||{id:gameId,name:seedAny?.gameName||gameId,productionClass:'DESIGN_ONLY',productionTier:3,unityProjectPath:null};
 const statusPath=path.join('design',gameId,date,'cycle-status.json');const status=readJson(statusPath,null);if(!status)throw new Error(`cycle-status missing: ${statusPath}`);
 const runtime=readJson('company-qa-runtime-evidence.json',{games:[]});const webSmoke=(runtime.games||[]).find(x=>x.gameId===gameId&&x.target==='web')||null;const webSmokePass=Boolean(webSmoke?.runtimeSmokePassed===true&&webSmoke?.qaPassEligible===true&&(!Array.isArray(webSmoke?.blockers)||webSmoke.blockers.length===0));
