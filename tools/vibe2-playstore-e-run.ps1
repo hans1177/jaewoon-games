@@ -96,6 +96,18 @@ function Try-TapInstall {
   Tap-UiNode $Adb $Serial $Xml $pattern 'PLAY_STORE_INSTALL_TAP'
 }
 
+function Test-InstallInProgressOrReady {
+  param([string]$Xml)
+  if ([string]::IsNullOrWhiteSpace($Xml)) { return $false }
+  return ($Xml -match '(?i)(text|content-desc)="(?:Pending[^\"]*|Installing[^\"]*|Cancel|Play|Open|\uC2E4\uD589|\uC5F4\uAE30)"')
+}
+
+function Test-PlayActionVisible {
+  param([string]$Xml)
+  if ([string]::IsNullOrWhiteSpace($Xml)) { return $false }
+  return ($Xml -match '(?i)(text|content-desc)="(?:Play|Open|\uC2E4\uD589|\uC5F4\uAE30)"')
+}
+
 function Try-TapWait {
   param([string]$Adb,[string]$Serial,[string]$Xml)
   $pattern='(?i)(text|content-desc)="(?:Wait|\uB300\uAE30)"'
@@ -309,6 +321,8 @@ if (-not (Test-PackageInstalled $adb $serial $PackageId)) {
   $setupShown=$false
   $playStoreRetried=$false
   $accountLoopRecovered=$false
+  $installRequested=$false
+  $installWaitingShown=$false
   $anrAfterColdBoot=0
   $nextDiagnostic=(Get-Date)
   $signInPattern='(?i)(Sign in|Add account|\uB85C\uADF8\uC778|\uACC4\uC815\s*\uCD94\uAC00)'
@@ -368,13 +382,33 @@ if (-not (Test-PackageInstalled $adb $serial $PackageId)) {
       $signInShown=$true
     }
 
-    if (-not $setupShown -and ($inGoogleAuthFlow -or $xml -match '(?i)(Start|Get started|Copy apps|Google services)')) {
+    $provisionNow=Get-ProvisionState $adb $serial
+    $setupIncomplete=($provisionNow.DeviceProvisioned -ne '1' -or $provisionNow.UserSetupComplete -ne '1')
+    if (-not $setupShown -and $setupIncomplete -and ($inGoogleAuthFlow -or $xml -match '(?i)(Get started|Copy apps|Google services:)')) {
       Write-Host 'ANDROID_INITIAL_SETUP_REQUIRED=YES'
       Write-Host 'COMPLETE_SETUP_IN_EMULATOR_UI=YES'
       $setupShown=$true
     }
 
-    [void](Try-TapInstall $adb $serial $xml)
+    $installState=Test-InstallInProgressOrReady $xml
+    $playVisible=Test-PlayActionVisible $xml
+
+    if ($playVisible) {
+      Write-Host 'PLAY_STORE_PLAY_ACTION_VISIBLE=YES'
+      if (Test-PackageInstalled $adb $serial $PackageId) { break }
+    }
+
+    if (-not $installRequested -and -not $installState) {
+      $didTap=Try-TapInstall $adb $serial $xml
+      if ($didTap) {
+        $installRequested=$true
+        Write-Host 'PLAY_STORE_INSTALL_REQUESTED=YES'
+        Start-Sleep 3
+      }
+    } elseif (($installRequested -or $installState) -and -not $installWaitingShown) {
+      Write-Host 'PLAY_STORE_INSTALL_WAITING=YES'
+      $installWaitingShown=$true
+    }
 
     if ((Get-Date) -ge $nextDiagnostic) {
       Write-Host "FOREGROUND=$foreground"
@@ -403,7 +437,7 @@ $foreground=$focus -match [regex]::Escape($PackageId)
 $launchPass=($launch.ExitCode -eq 0 -and -not [string]::IsNullOrWhiteSpace($pid))
 $outPath=Join-Path $TargetRoot 'vibe2-playstore-bootstrap.json'
 [ordered]@{
-  version=7
+  version=8
   packageId=$PackageId
   installPolicy='OFFICIAL_GOOGLE_PLAY_ONLY'
   codeExtractionAllowed=$false
