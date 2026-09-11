@@ -189,33 +189,6 @@ GAME_SEED:
       - NONE
   commercialRule: INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_WITHOUT_MULTIPLAYER
 
-ownerRequestedProjectOverride:
-  enabled: true
-  scope: PER_PROJECT_ONLY
-  trigger: OWNER_EXPLICIT_PROJECT_TARGET
-  allowedProjectModes:
-    - WEB_GAME
-    - UNITY_GAME
-    - ANDROID_MOBILE_GAME
-  ownerExplicitTargetOverridesAutonomousDefault: true
-  ownerExplicitTargetOverridesPlatformSpecificValidationAndDiscardAssertions: true
-  autonomousGameSeedDefaultRemainsAndroidMobileSinglePlayer: true
-  doesNotChangeOtherProjects: true
-  doesNotChangeSeedBatchCountOrReplenishmentRules: true
-  doesNotAutoEnableSteamOrMultiplayer: true
-  WEB_GAME:
-    implementationTarget: WEB
-    webMayBeFinalProduct: true
-    unityRequired: false
-    androidRuntimeRequired: false
-    validationMustMatchRequestedWebTarget: true
-  UNITY_GAME:
-    implementationTarget: UNITY
-    unityIsEngineChoiceNotImplicitStoreOrDeviceChoice: true
-    platformMustFollowOwnerRequestWhenSpecified: true
-    unspecifiedPlatformDoesNotImplicitlyMeanSteamOrMultiplayer: true
-    validationMustMatchRequestedUnityTarget: true
-
 discardPolicy:
   general:
     singleFailureDoesNotImmediatelyDiscard: true
@@ -236,7 +209,7 @@ discardPolicy:
     fatalCriteria:
       - CORE_FUN_CANNOT_BE_RECOVERED
       - HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY
-      - DEFAULT_ANDROID_MOBILE_SINGLE_PLAYER_OR_OWNER_REQUESTED_TARGET_CANNOT_WORK_AS_PRODUCT
+      - ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT
       - REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN
       - CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME
       - IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION
@@ -265,8 +238,8 @@ discardPolicy:
     fatalCriteria:
       - REAL_PLAY_CORE_FUN_REMAINS_UNACCEPTABLE_AFTER_FIX
       - REPETITION_OR_SESSION_STRUCTURE_REMAINS_UNACCEPTABLE_AFTER_FIX
-      - REQUESTED_TARGET_INPUT_OR_UX_IS_STRUCTURALLY_UNFIT
-      - PERFORMANCE_MEMORY_HEAT_OR_RUNTIME_COST_IS_STRUCTURALLY_UNRESOLVABLE_FOR_REQUESTED_TARGET
+      - MOBILE_TOUCH_OR_UX_IS_STRUCTURALLY_UNFIT
+      - PERFORMANCE_MEMORY_HEAT_OR_RUNTIME_COST_IS_STRUCTURALLY_UNRESOLVABLE
       - IMPLEMENTATION_OR_CONTENT_PRODUCTION_COST_IS_UNSUSTAINABLE
       - ECONOMY_PROGRESSION_OR_BALANCE_REPEATEDLY_COLLAPSES_IN_REAL_PLAY
       - SAME_FATAL_IMPLEMENTATION_OR_PLAY_BLOCKER_REPEATS_AFTER_REVALIDATION
@@ -281,9 +254,8 @@ discardPolicy:
       - DISCARDED
 
 platformStrategy:
-  defaultAutonomousInitialActualProduct: ANDROID_MOBILE_SINGLE_PLAYER
-  defaultAutonomousInitialReleaseTarget: UNITY_ANDROID
-  ownerRequestedProjectOverrideRef: ownerRequestedProjectOverride
+  initialActualProduct: ANDROID_MOBILE_SINGLE_PLAYER
+  initialReleaseTarget: UNITY_ANDROID
   steamNotBuiltInitially: true
   multiplayerNotBuiltInitially: true
   futureExpansionMustNotRequireSeparateGameCoreByDefault: true
@@ -293,16 +265,14 @@ platformStrategy:
     coreGameplayPlatformIndependentWherePractical: true
     inputUiPlatformAdaptersAllowed: true
   developmentConfirmed:
-    defaultAutonomousImplementationFocus: MOBILE_ANDROID
-    ownerRequestedTargetUsesTargetSpecificValidation: true
+    actualImplementationFocus: MOBILE_ANDROID
     requireSteamApiNow: false
     requirePcInputNow: false
     requireNetworkServerNow: false
     requireMultiplayerGameplayNow: false
     architectureMustAvoidUnnecessaryMobileOnlyCoupling: true
   releaseConfirmed:
-    defaultAutonomousReleaseGateTarget: UNITY_ANDROID
-    ownerRequestedTargetMayUseDifferentReleaseGate: true
+    currentReleaseGateTarget: UNITY_ANDROID
     steamReleaseGateDeferredUntilOwnerRequestsSteamRelease: true
     multiplayerReleaseGateDeferredUntilOwnerRequestsMultiplayer: true
 
@@ -390,7 +360,7 @@ flows:
       - CORE_FUN_CLEAR
       - CORE_LOOP_ACTION_FEEDBACK_CHOICE_REWARD
       - MARKET_TARGET_DIRECTION_RECORDED
-      - TARGET_PLATFORM_UX_DIRECTION_DEFINED
+      - MOBILE_UX_DIRECTION_DEFINED
       - STEAM_EXPANSION_DECISION_RECORDED
       - MULTIPLAYER_EXPANSION_DECISION_RECORDED
       - FIVE_DISTINCT_LEAD_MODELS
@@ -401,28 +371,27 @@ flows:
   DEVELOPMENT_CONFIRMED:
     executionMode: GATED_DIRECT
     resumeFromLatestEvidence: true
-    defaultAutonomousWebPurpose: GAMEPLAY_VALIDATION_TESTBED
-    defaultAutonomousUnityPurpose: ANDROID_TECHNICAL_VALIDATION_PROTOTYPE
-    ownerRequestedTargetValidationOverridesDefaults: true
+    webPurpose: GAMEPLAY_VALIDATION_TESTBED
+    unityPurpose: ANDROID_TECHNICAL_VALIDATION_PROTOTYPE
     webBeforeUnityByDefault: true
     unityMayRunEarlyWhenEngineBehaviorDefinesCoreFun: true
     aiMayInventValidationPass: false
     webSmokeCountsAsGameplayValidation: false
-    defaultAutonomousActualProductFocus: MOBILE_SINGLE_PLAYER
+    actualProductFocus: MOBILE_SINGLE_PLAYER
     futureSteamOrMultiplayerDecisionMustBePreservedFromSeed: true
     futureExpansionArchitectureCheckedDuringTechnicalReview: true
     requiredFlow:
       - LOAD_DESIGN_BASELINE
-      - TARGET_APPROPRIATE_GAMEPLAY_VALIDATION
-      - GAMEPLAY_EVIDENCE_DEPARTMENT_MEETING
-      - GAME_DESIGNER_GAMEPLAY_REVISION
-      - TARGET_APPROPRIATE_TECHNICAL_VALIDATION
-      - TECHNICAL_EVIDENCE_DEPARTMENT_MEETING
+      - WEB_GAMEPLAY_VALIDATION
+      - WEB_EVIDENCE_DEPARTMENT_MEETING
+      - GAME_DESIGNER_WEB_REVISION
+      - UNITY_ANDROID_TECHNICAL_VALIDATION
+      - UNITY_EVIDENCE_DEPARTMENT_MEETING
       - GAME_DESIGNER_TECH_REVISION
       - TARGETED_REVALIDATION
       - DEVELOPMENT_BASELINE_GATE
       - ARTBOOK_EDITOR_REVISION
-    defaultAutonomousWebValidationMustCover:
+    webValidationMustCover:
       - CORE_LOOP
       - TEMPO
       - PROGRESSION
@@ -431,17 +400,15 @@ flows:
       - CHOICE_STRUCTURE
       - MOBILE_TOUCH_UI
       - REPETITION_AND_EXPLOITS
-    targetTechnicalValidationMustCoverAsApplicable:
-      - TARGET_INPUT
-      - FPS_FRAME_STABILITY
-      - MEMORY_LOADING
-      - HEAT_IF_DEVICE_APPLICABLE
+    unityValidationMustCover:
+      - ANDROID_FPS_FRAME_STABILITY
+      - MEMORY_HEAT_LOADING
       - PHYSICS_CAMERA_ANIMATION
       - AI_NAVMESH_OBJECT_COUNT
       - VFX_COST
-      - ASPECT_RATIO_UI
+      - ASPECT_RATIO_TOUCH
       - SAVE_LOAD_UPDATE_COMPATIBILITY
-      - APP_PAUSE_RESUME_IF_APPLICABLE
+      - APP_PAUSE_RESUME
       - IMPLEMENTATION_COMPLEXITY
       - ASSET_AND_QA_COST
       - FUTURE_STEAM_EXPANSION_FEASIBILITY_IF_SEED_POSSIBLE
@@ -452,18 +419,18 @@ flows:
       - DROP
       - HOLD
     waitingStates:
-      - WAITING_GAMEPLAY_VALIDATION
-      - WAITING_GAMEPLAY_REVALIDATION
-      - WAITING_TECHNICAL_VALIDATION
-      - WAITING_TECHNICAL_REVALIDATION
+      - WAITING_WEB_VALIDATION
+      - WAITING_WEB_REVALIDATION
+      - WAITING_UNITY_VALIDATION
+      - WAITING_UNITY_REVALIDATION
       - WAITING_REVALIDATION
     terminalStates:
       - DEVELOPMENT_BASELINE_READY
       - DEVELOPMENT_BLOCKED
     baselineReadyRequires:
       - DESIGN_BASELINE_EXISTS
-      - REAL_TARGET_GAMEPLAY_PASS
-      - REAL_TARGET_TECHNICAL_PASS
+      - REAL_WEB_GAMEPLAY_PASS
+      - REAL_UNITY_ANDROID_TECHNICAL_PASS
       - REQUIRED_FIXES_APPLIED
       - REQUIRED_REVALIDATION_PASS
       - NO_FATAL_UNRESOLVED_VALIDATION_BLOCKER
@@ -472,11 +439,10 @@ flows:
 
   RELEASE_CONFIRMED:
     executionMode: GATED_DIRECT_RELEASE_PRODUCTION
-    defaultAutonomousTarget: UNITY_ANDROID
-    ownerRequestedTargetOverridesDefault: true
+    target: UNITY_ANDROID
     resumeFromLatestEvidence: true
     developmentBaselineRequired: true
-    targetProjectRequired: true
+    unityProjectRequired: true
     coreDesignLock: true
     vibe2PrimaryDeveloper: true
     departmentDefaultRole: ERROR_AND_RELEASE_RISK_WATCH
@@ -491,10 +457,10 @@ flows:
       - LOAD_DEVELOPMENT_BASELINE
       - CORE_DESIGN_LOCK
       - VIBE2_PRIMARY_DEVELOPMENT
-      - BIND_CURRENT_TARGET_SOURCE_TREE
-      - TARGET_BUILD_OR_DEPLOYABLE_ARTIFACT
+      - BIND_CURRENT_UNITY_SOURCE_TREE
+      - UNITY_ANDROID_BUILD
       - FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT
-      - TARGET_RUNTIME_VALIDATION
+      - ANDROID_RUNTIME_VALIDATION
       - INDEPENDENT_QA_AND_REGRESSION
       - FIVE_DISTINCT_LEAD_FINAL_RELEASE_REVIEW
       - VIBE2_FIX_AND_REBUILD_LOOP_IF_REQUIRED
@@ -503,31 +469,30 @@ flows:
       - ARTBOOK_EDITOR_FINAL_REVISION
     buildPreflightIsNotFinalApproval: true
     finalReviewMustReadSameCurrentBuildRuntimeQaEvidence: true
-    runtimeValidationMustCoverAsApplicable:
-      - TARGET_INPUT
+    runtimeValidationMustCover:
+      - ANDROID_INPUT
       - FPS_FRAME_STABILITY
-      - MEMORY_LOADING
-      - HEAT_IF_DEVICE_APPLICABLE
+      - MEMORY_HEAT_LOADING
       - LONG_RUN_STABILITY
-      - CRASH_OR_RUNTIME_ERROR_RISK
-      - PAUSE_RESUME_IF_APPLICABLE
+      - CRASH_ANR_RISK
+      - PAUSE_RESUME
       - SAVE_CORRUPTION
       - UPDATE_SAVE_COMPATIBILITY
       - SCREEN_RATIO_UI
     independentQaSeparatedFromVibe2SelfCheck: true
     waitingStates:
       - BUILDING
-      - WAITING_BUILD_OR_DEPLOYABLE_ARTIFACT
-      - WAITING_TARGET_RUNTIME_VALIDATION
+      - WAITING_BUILD
+      - WAITING_DEVICE_VALIDATION
     releaseStates:
       - FIX_AND_REVERIFY
       - RELEASE_BLOCKED
       - RELEASE_READY
     releaseReadyRequires:
       - DEVELOPMENT_BASELINE_CONFIRMED
-      - CURRENT_SOURCE_TARGET_BUILD_OR_DEPLOYABLE_ARTIFACT_SUCCESS
+      - CURRENT_SOURCE_UNITY_ANDROID_BUILD_SUCCESS
       - BUILD_PREFLIGHT_NO_RELEASE_BLOCKER
-      - CURRENT_TARGET_RUNTIME_PASS
+      - CURRENT_BUILD_ANDROID_RUNTIME_PASS
       - CURRENT_BUILD_INDEPENDENT_QA_REGRESSION_PASS
       - FINAL_REVIEW_SAME_BUILD_RUNTIME_QA_NO_UNRESOLVED_BLOCKER
       - CORE_DESIGN_LOCK_NOT_VIOLATED
@@ -540,7 +505,7 @@ promotion:
     requires:
       - DEVELOPMENT_BASELINE_READY
       - REAL_PLAY_EVIDENCE
-      - REAL_TARGET_TECHNICAL_EVIDENCE
+      - REAL_UNITY_EVIDENCE
   classMovementNeverUsedToSatisfyCountQuota: true
   normalPromotionNeverTriggersSeedReplenishment: true
   demotionRequiresRecordedReasonAndEvidence: true
@@ -563,7 +528,7 @@ learning:
     - REAL_PLAY
     - WEB_GAMEPLAY_VALIDATION
     - UNITY_TECHNICAL_VALIDATION
-    - TARGET_RUNTIME
+    - ANDROID_RUNTIME
     - INDEPENDENT_QA
     - RELEASE_RESULT
   labelSuccessAndFailureCauses: true
