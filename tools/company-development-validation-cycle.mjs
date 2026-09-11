@@ -47,25 +47,37 @@ const tierAlias=tierAliasForProductionClass(productionClass,{numericLabels})??(N
 const base=path.join('design',gameId,date);
 fs.mkdirSync(base,{recursive:true});
 
-const REVIEW={type:'object',required:['keep','change','drop','hold','risks','evidence','questions'],properties:{keep:{type:'array',items:{type:'string'}},change:{type:'array',items:{type:'string'}},drop:{type:'array',items:{type:'string'}},hold:{type:'array',items:{type:'string'}},risks:{type:'array',items:{type:'string'}},evidence:{type:'array',items:{type:'string'}},questions:{type:'array',items:{type:'string'}}},additionalProperties:false};
-const REVIEWS={type:'object',required:ROLES,properties:Object.fromEntries(ROLES.map(r=>[r,REVIEW])),additionalProperties:false};
-const REBUTTAL={type:'object',required:['accept','challenge','revision','reason'],properties:{accept:{type:'array',items:{type:'string'}},challenge:{type:'array',items:{type:'string'}},revision:{type:'array',items:{type:'string'}},reason:{type:'string'}},additionalProperties:false};
-const MEETING={type:'object',required:['summary','decisions'],properties:{summary:{type:'string'},decisions:{type:'array',items:{type:'object',required:['topic','decision','reason','departments','validationImpact'],properties:{topic:{type:'string'},decision:{type:'string',enum:['KEEP','CHANGE','DROP','HOLD']},reason:{type:'string'},departments:{type:'array',items:{type:'string'}},validationImpact:{type:'string',enum:['WEB','UNITY','BOTH','NONE']}},additionalProperties:false}}},additionalProperties:false};
+const shortString=maxLength=>({type:'string',maxLength});
+const shortList=(maxItems=1,maxLength=120)=>({type:'array',items:shortString(maxLength),maxItems});
+const reviewSchema=(maxItems,maxLength)=>({type:'object',required:['keep','change','drop','hold','risks','evidence','questions'],properties:{keep:shortList(maxItems,maxLength),change:shortList(maxItems,maxLength),drop:shortList(maxItems,maxLength),hold:shortList(maxItems,maxLength),risks:shortList(maxItems,maxLength),evidence:shortList(maxItems,maxLength),questions:shortList(maxItems,maxLength)},additionalProperties:false});
+const MEMBER_REVIEW=reviewSchema(1,120);
+const REVIEW=reviewSchema(2,160);
+const REVIEWS={type:'object',required:ROLES,properties:Object.fromEntries(ROLES.map(r=>[r,MEMBER_REVIEW])),additionalProperties:false};
+const REBUTTAL={type:'object',required:['accept','challenge','revision','reason'],properties:{accept:shortList(2,140),challenge:shortList(2,140),revision:shortList(2,140),reason:shortString(220)},additionalProperties:false};
+const MEETING={type:'object',required:['summary','decisions'],properties:{summary:shortString(320),decisions:{type:'array',maxItems:8,items:{type:'object',required:['topic','decision','reason','departments','validationImpact'],properties:{topic:shortString(120),decision:{type:'string',enum:['KEEP','CHANGE','DROP','HOLD']},reason:shortString(220),departments:{type:'array',items:{type:'string',enum:ROLES},maxItems:ROLES.length},validationImpact:{type:'string',enum:['WEB','UNITY','BOTH','NONE']}},additionalProperties:false}}},additionalProperties:false};
 const DESIGN={type:'object',required:['identity','playerFantasy','coreLoop','signatureSystems','progressionDirection','visualDirection','mobileUx','technicalAssumptions','validationQuestions','openQuestions'],properties:{identity:{type:'string'},playerFantasy:{type:'string'},coreLoop:{type:'array',items:{type:'string'}},signatureSystems:{type:'array',items:{type:'object',required:['name','purpose','playerChoice'],properties:{name:{type:'string'},purpose:{type:'string'},playerChoice:{type:'string'}},additionalProperties:false}},progressionDirection:{type:'string'},visualDirection:{type:'string'},mobileUx:{type:'string'},technicalAssumptions:{type:'array',items:{type:'string'}},validationQuestions:{type:'array',items:{type:'string'}},openQuestions:{type:'array',items:{type:'string'}}},additionalProperties:false};
 const ARTBOOK={type:'object',required:['identity','playerFantasy','coreLoop','signatureSystems','progressionDirection','visualDirection','implementationDirection'],properties:{identity:{type:'string'},playerFantasy:{type:'string'},coreLoop:{type:'array',items:{type:'string'}},signatureSystems:{type:'array',items:{type:'string'}},progressionDirection:{type:'string'},visualDirection:{type:'string'},implementationDirection:{type:'array',items:{type:'string'}}},additionalProperties:false};
 const VERIFY={type:'object',required:['supported','unsupportedClaims'],properties:{supported:{type:'boolean'},unsupportedClaims:{type:'array',items:{type:'string'}}},additionalProperties:false};
 
-async function callModel(model,system,user,schema,{predict=900,temperature=0.2}={}){
+async function callModel(model,system,user,schema,{predict=900,temperature=0.2,compact=false}={}){
   let lastError=null;
   for(let attempt=1;attempt<=2;attempt++){
+    const compactRule=compact?'\nOUTPUT_BUDGET=COMPACT_JSON. 스키마의 모든 필수 키는 유지하되 각 배열에는 가장 중요한 항목만 넣고 빈 배열이 허용되는 곳은 불필요한 항목을 만들지 마라. maxItems/maxLength를 반드시 지켜라.':'';
+    const retryRule=attempt===1?'':`\nPREVIOUS_VALIDATION_ERROR=${clean(lastError?.message).slice(0,240)}\n이전 응답은 잘리거나 유효하지 않았다. 판단 내용을 새로 발명하지 말고 같은 근거를 유지한 채 더 짧은 완전한 JSON으로 처음부터 다시 반환하라. 설명문/마크다운/코드펜스는 금지한다.`;
+    const retryPredict=attempt===1?predict:Math.min(1800,predict+400);
     try{
-      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,format:schema,messages:[{role:'system',content:system},{role:'user',content:user}],options:{temperature:attempt===1?temperature:0,num_ctx:8192,num_predict:predict}})});
+      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,format:schema,messages:[{role:'system',content:system},{role:'user',content:`${user}${compactRule}${retryRule}`}],options:{temperature:attempt===1?temperature:0,num_ctx:8192,num_predict:retryPredict}})});
       if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
       const body=await response.json();
       const text=clean(body?.message?.content);
       if(!text)throw new Error('empty model response');
-      return JSON.parse(text);
-    }catch(error){lastError=error;}
+      const parsed=JSON.parse(text);
+      if(attempt>1)console.log(`MODEL_JSON_RETRY_RECOVERED=${model}`);
+      return parsed;
+    }catch(error){
+      lastError=error;
+      if(attempt===1)console.log(`MODEL_JSON_RETRY=${model}:${clean(error?.message).slice(0,180)}`);
+    }
   }
   throw new Error(`MODEL_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
 }
@@ -128,7 +140,7 @@ async function runMeeting(stage,sourceDesign,evidence){
   const stageLabel=stage==='WEB'?'Web Gameplay Validation':'Unity Technical Validation';
   const independent={};
   for(const model of pool){
-    independent[model]=await callModel(model,'너는 독립 검토 AI다. 같은 실제 검증 근거를 5개 전문부서 관점으로 분리해서 검토한다. 근거에 없는 결과를 만들지 않는다.',`${stageLabel} 실제 근거와 현재 설계를 planning/graphics/development/qa/balance 관점으로 각각 검토하라. KEEP/CHANGE/DROP/HOLD를 구분하고 근거를 적어라.\nDESIGN=${clip(sourceDesign,13000)}\nEVIDENCE=${clip(evidence,12000)}`,REVIEWS,{predict:1200});
+    independent[model]=await callModel(model,'너는 독립 검토 AI다. 같은 실제 검증 근거를 5개 전문부서 관점으로 분리해서 검토한다. 근거에 없는 결과를 만들지 않는다.',`${stageLabel} 실제 근거와 현재 설계를 planning/graphics/development/qa/balance 관점으로 각각 검토하라. KEEP/CHANGE/DROP/HOLD를 구분하고 근거를 적어라.\nDESIGN=${clip(sourceDesign,13000)}\nEVIDENCE=${clip(evidence,12000)}`,REVIEWS,{predict:1500,compact:true});
   }
   const representatives={};
   const memberReviews={};
@@ -136,14 +148,14 @@ async function runMeeting(stage,sourceDesign,evidence){
     const models=reviewModels[role];
     const lead=leadModels[role];
     memberReviews[role]=models.map(model=>({model,memberRole:model===lead?'LEAD':'ASSISTANT',review:independent[model][role]}));
-    representatives[role]=await callModel(lead,`너는 ${role} 부서 Lead AI다. 보조 AI 의견을 읽고 실제 근거가 있는 것만 부서 대표 의견으로 확정한다.`,`${stageLabel} ${role} 부서 내부 검토를 통합하라. 다수결보다 실제 근거를 우선하라.\nREVIEWS=${clip(memberReviews[role],10000)}`,REVIEW,{predict:650});
+    representatives[role]=await callModel(lead,`너는 ${role} 부서 Lead AI다. 보조 AI 의견을 읽고 실제 근거가 있는 것만 부서 대표 의견으로 확정한다.`,`${stageLabel} ${role} 부서 내부 검토를 통합하라. 다수결보다 실제 근거를 우선하라.\nREVIEWS=${clip(memberReviews[role],10000)}`,REVIEW,{predict:700,compact:true});
   }
   const rebuttals={};
   for(const role of ROLES){
-    rebuttals[role]=await callModel(leadModels[role],`너는 ${role} 부서 Lead AI다. 다른 4개 부서 대표 의견을 읽고 자기 전문영역에서 한 번만 반박·수정한다.`,`${stageLabel} 대표 의견 전체를 읽고 ${role} 관점 반박을 작성하라.\nREPRESENTATIVES=${clip(representatives,13000)}`,REBUTTAL,{predict:450});
+    rebuttals[role]=await callModel(leadModels[role],`너는 ${role} 부서 Lead AI다. 다른 4개 부서 대표 의견을 읽고 자기 전문영역에서 한 번만 반박·수정한다.`,`${stageLabel} 대표 의견 전체를 읽고 ${role} 관점 반박을 작성하라.\nREPRESENTATIVES=${clip(representatives,13000)}`,REBUTTAL,{predict:500,compact:true});
   }
   const coordinatorModel=pool[(hash(`${gameId}:${stage}:coordinator`))%pool.length];
-  const meeting=await callModel(coordinatorModel,'너는 재운컴퍼니 검증회의 조정 AI다. 새 기능을 창작하지 말고 실제 근거와 5부서 의견을 바탕으로 KEEP/CHANGE/DROP/HOLD를 판정한다. 변경이 재검증을 필요로 하는 영역도 WEB/UNITY/BOTH/NONE으로 표시한다.',`${stageLabel} 부서 대표 의견과 반박을 정리하라. 실제 근거가 없는 항목은 HOLD로 둔다.\nREPRESENTATIVES=${clip(representatives,11000)}\nREBUTTALS=${clip(rebuttals,9000)}\nEVIDENCE=${clip(evidence,8000)}`,MEETING,{predict:900});
+  const meeting=await callModel(coordinatorModel,'너는 재운컴퍼니 검증회의 조정 AI다. 새 기능을 창작하지 말고 실제 근거와 5부서 의견을 바탕으로 KEEP/CHANGE/DROP/HOLD를 판정한다. 변경이 재검증을 필요로 하는 영역도 WEB/UNITY/BOTH/NONE으로 표시한다.',`${stageLabel} 부서 대표 의견과 반박을 정리하라. 실제 근거가 없는 항목은 HOLD로 둔다.\nREPRESENTATIVES=${clip(representatives,11000)}\nREBUTTALS=${clip(rebuttals,9000)}\nEVIDENCE=${clip(evidence,8000)}`,MEETING,{predict:1000,compact:true});
   const counts=Object.fromEntries(['KEEP','CHANGE','DROP','HOLD'].map(x=>[x,meeting.decisions.filter(d=>d.decision===x).length]));
   const file=path.join(base,stage==='WEB'?'web-evidence-meeting.json':'unity-evidence-meeting.json');
   writeJson(file,{version:1,gameId,date,productionClass,stage,stageLabel,leadModels,reviewModels,memberReviews,representatives,rebuttals,coordinatorModel,...meeting,decisionCounts:counts});
