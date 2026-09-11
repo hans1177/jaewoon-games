@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {normalizeSeedState,createSeedVacancy,markSeedDiscarded,unfilledVacancies,fillVacancy} from '../tools/game-seed-state.mjs';
+import {normalizeSeedState,markSeedDiscarded,unfilledVacancies,fillVacancy} from '../tools/game-seed-state.mjs';
 
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const bootstrap=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
+const seedWorkflow=fs.readFileSync('.github/workflows/company-game-seed-bootstrap.yml','utf8');
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const gate=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
 const artbook=fs.readFileSync('tools/company-design-artbook.mjs','utf8');
@@ -26,14 +27,23 @@ test('directive encodes one atomic six-category GAME_SEED bootstrap',()=>{
   assert.equal(directive.gameSeed.sourceCodeRule,'OWN_IMPLEMENTATION_ONLY');
 });
 
-test('bootstrap stages all six initial seeds before saving and only replenishes vacancies later',()=>{
+test('bootstrap batches all requested seeds in one model call and mutates state only after full validation',()=>{
   assert.match(bootstrap,/PARTIAL_INITIAL_BOOTSTRAP_STATE_FORBIDDEN/);
-  assert.match(bootstrap,/pending\.push\(\{seed:buildSeed/);
-  assert.match(bootstrap,/for\(const item of pending\)\{state\.seeds\.push\(item\.seed\)/);
+  assert.match(bootstrap,/callModelBatch\(targets\)/);
+  assert.match(bootstrap,/GAME_SEED_BATCH_COUNT_MISMATCH/);
+  assert.match(bootstrap,/const pending=\[\]/);
+  const pendingBuild=bootstrap.indexOf('pending.push({seed:buildSeed');
+  const stateMutation=bootstrap.indexOf('for(const item of pending){state.seeds.push');
+  assert.ok(pendingBuild>=0,'validated pending seed build missing');
+  assert.ok(stateMutation>pendingBuild,'state must mutate only after all pending seeds validate');
+  assert.match(bootstrap,/modelCalls:proposalProvider\?0:1/);
   assert.match(bootstrap,/unfilledVacancies\(state\)/);
   assert.match(bootstrap,/fillVacancy\(item\.vacancy,item\.seed,timestamp\)/);
   assert.match(bootstrap,/numericClaimAccepted:numericLike\?Boolean\(source&&observedAt\):false/);
   assert.match(bootstrap,/if\(numericLike&&\(!source\|\|!observedAt\)\)value='UNKNOWN'/);
+  assert.match(seedWorkflow,/Verified free budget preflight/);
+  assert.match(seedWorkflow,/--model-calls=1/);
+  assert.ok(seedWorkflow.indexOf('Verified free budget preflight')<seedWorkflow.indexOf('uses: ./.github/actions/prepare-ollama'));
 });
 
 test('seed vacancy state is one-for-one and discard is idempotent',()=>{
@@ -72,7 +82,7 @@ test('DESIGN_ONLY order is design then baseline then artbook, never artbook befo
   assert.match(artbook,/vibe2Used:false/);
 });
 
-test('development discard or demotion requires explicit real evidence, fix, revalidation and five-lead agreement',()=>{
+test('development discard or demotion requires real evidence fix revalidation and five-lead agreement',()=>{
   assert.match(devDisposition,/realEvidenceExists:data\.realEvidenceExists===true/);
   assert.match(devDisposition,/targetedFixAttempted/);
   assert.match(devDisposition,/targetedRevalidationPerformed/);
@@ -85,13 +95,9 @@ test('development discard or demotion requires explicit real evidence, fix, reva
 
 test('obsolete free-concept and direct prototype creation entrypoints are removed',()=>{
   for(const file of [
-    'tools/autonomous-new-game-incubator.mjs',
-    'tools/autonomous-prototype-worker.mjs',
-    '.github/workflows/autonomous-new-game-incubator.yml',
-    '.github/workflows/autonomous-prototype-worker.yml',
-    'qa/autonomous-new-game-incubator.test.mjs',
-    'qa/autonomous-prototype-worker.test.mjs',
-    'qa/autonomous-new-game-closed-loop.test.mjs'
-  ]) assert.equal(fs.existsSync(file),false,`obsolete path still exists: ${file}`);
+    'tools/autonomous-new-game-incubator.mjs','tools/autonomous-prototype-worker.mjs',
+    '.github/workflows/autonomous-new-game-incubator.yml','.github/workflows/autonomous-prototype-worker.yml',
+    'qa/autonomous-new-game-incubator.test.mjs','qa/autonomous-prototype-worker.test.mjs','qa/autonomous-new-game-closed-loop.test.mjs'
+  ])assert.equal(fs.existsSync(file),false,`obsolete path still exists: ${file}`);
   assert.equal(fs.existsSync('.github/workflows/company-game-seed-bootstrap.yml'),true);
 });
