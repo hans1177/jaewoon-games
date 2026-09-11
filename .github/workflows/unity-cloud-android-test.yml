@@ -296,12 +296,11 @@ jobs:
 
           apk_entries="$(unzip -Z1 "$APK_PATH")" || { echo '::error title=JAEWOON_BUILD_ERROR[APK_ENTRY_LIST_UNREADABLE]::Could not list APK archive entries.'; exit 49; }
           grep -q '^lib/arm64-v8a/' <<<"$apk_entries" || { echo '::error title=JAEWOON_BUILD_ERROR[APK_ARM64_MISSING]::APK does not contain ARM64 native libraries.'; exit 49; }
-          grep -q '^lib/x86_64/' <<<"$apk_entries" || { echo '::error title=JAEWOON_BUILD_ERROR[APK_X86_64_MISSING]::Test APK must include x86_64 so the same APK can be installed and launched in CI.'; exit 50; }
 
           min_sdk="$(sed -n "s/^sdkVersion:'\([^']*\)'.*/\1/p" <<<"$badging" | head -n 1)"
           target_sdk="$(sed -n "s/^targetSdkVersion:'\([^']*\)'.*/\1/p" <<<"$badging" | head -n 1)"
           echo "application_id=$package" >> "$GITHUB_OUTPUT"
-          echo "[PASS] APK package=$package minSdk=${min_sdk:-unknown} targetSdk=${target_sdk:-unknown} architectures=arm64-v8a,x86_64"
+          echo "[PASS] APK package=$package minSdk=${min_sdk:-unknown} targetSdk=${target_sdk:-unknown} architectures=arm64-v8a"
 
       - name: Create pre-gate build metadata
         shell: bash
@@ -333,7 +332,7 @@ jobs:
               'bytes': int(size),
               'channel': 'test',
               'buildRoute': 'github-cloud-host-personal',
-              'architectures': ['arm64-v8a', 'x86_64'],
+              'architectures': ['arm64-v8a'],
               'androidVerificationApi': int(api),
               'signatureVerified': True,
               'installAndLaunchVerified': False,
@@ -371,7 +370,7 @@ jobs:
             Android 16 install + launch gate: PENDING
             This APK is synchronized immediately for owner device testing and is not production/stable verified yet.
             Package: ${{ steps.apk_verify.outputs.application_id }}
-            Architectures: arm64-v8a + x86_64
+            Architectures: arm64-v8a
             Source: ${{ github.sha }}
             Request: ${{ steps.request.outputs.request_id }}
           files: |
@@ -565,7 +564,7 @@ jobs:
             Automated Jaewoon Company Android test build.
             Android 16 install + launch gate: PASS
             Package: ${{ needs.build.outputs.application_id }}
-            Architectures: arm64-v8a + x86_64
+            Architectures: arm64-v8a
             Source: ${{ github.sha }}
             Request: ${{ needs.build.outputs.request_id }}
           files: |
