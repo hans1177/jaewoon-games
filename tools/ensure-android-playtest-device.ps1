@@ -67,6 +67,60 @@ function Get-SdkRoots {
   return @($roots | Where-Object { $_ } | Select-Object -Unique)
 }
 
+function Find-JavaHome {
+  $candidates = New-Object System.Collections.Generic.List[string]
+  if (-not [string]::IsNullOrWhiteSpace($env:JAVA_HOME)) { $candidates.Add($env:JAVA_HOME) }
+
+  $unityRoot = Join-Path $env:ProgramFiles 'Unity\Hub\Editor'
+  if (Test-Path $unityRoot) {
+    Get-ChildItem $unityRoot -Directory -ErrorAction SilentlyContinue | Sort-Object Name -Descending | ForEach-Object {
+      $candidates.Add((Join-Path $_.FullName 'Editor\Data\PlaybackEngines\AndroidPlayer\OpenJDK'))
+    }
+  }
+
+  $adoptiumRoot = Join-Path $env:ProgramFiles 'Eclipse Adoptium'
+  if (Test-Path $adoptiumRoot) {
+    Get-ChildItem $adoptiumRoot -Directory -ErrorAction SilentlyContinue | Sort-Object Name -Descending | ForEach-Object {
+      $candidates.Add($_.FullName)
+    }
+  }
+
+  $javaRoot = Join-Path $env:ProgramFiles 'Java'
+  if (Test-Path $javaRoot) {
+    Get-ChildItem $javaRoot -Directory -ErrorAction SilentlyContinue | Sort-Object Name -Descending | ForEach-Object {
+      $candidates.Add($_.FullName)
+    }
+  }
+
+  foreach ($candidate in @($candidates | Where-Object { $_ } | Select-Object -Unique)) {
+    if (Test-Path (Join-Path $candidate 'bin\java.exe')) { return $candidate }
+  }
+  return $null
+}
+
+function Set-JavaEnvironment {
+  $javaHome = Find-JavaHome
+  if (-not $javaHome) {
+    Write-ProvisionEvidence -Status 'BLOCKED' -Reason 'BLOCKED_JAVA_NOT_FOUND_FOR_ANDROID_SDK' -Extra @{
+      unityRoot = (Join-Path $env:ProgramFiles 'Unity\Hub\Editor')
+      currentJavaHome = [string]$env:JAVA_HOME
+    }
+    throw 'BLOCKED_JAVA_NOT_FOUND_FOR_ANDROID_SDK'
+  }
+
+  $javaExe = Join-Path $javaHome 'bin\java.exe'
+  $env:JAVA_HOME = $javaHome
+  $env:Path = "$(Join-Path $javaHome 'bin');$env:Path"
+  $probe = Invoke-Native -Exe $javaExe -NativeArgs @('-version')
+  Write-Host "JAVA_HOME=$javaHome"
+  Write-Host ($probe.Output -join "`n")
+  if ($probe.ExitCode -ne 0) {
+    Write-ProvisionEvidence -Status 'BLOCKED' -Reason 'BLOCKED_JAVA_RUNTIME_FAILED' -Extra @{ javaHome=$javaHome; exitCode=$probe.ExitCode; output=$probe.Output }
+    throw 'BLOCKED_JAVA_RUNTIME_FAILED'
+  }
+  return $javaHome
+}
+
 function Find-SdkTool {
   param([string]$ToolName)
   foreach ($root in @(Get-SdkRoots)) {
@@ -119,6 +173,7 @@ function Ensure-PlayStoreAvd {
     throw 'BLOCKED_ANDROID_COMMANDLINE_TOOLS_NOT_INSTALLED'
   }
 
+  $javaHome = Set-JavaEnvironment
   New-Item -ItemType Directory -Path $UserSdkRoot -Force | Out-Null
   Write-Host "ANDROID_PROVISION_SDK_ROOT=$UserSdkRoot"
   Write-Host "ANDROID_SDKMANAGER=$sdkManager"
@@ -128,7 +183,7 @@ function Ensure-PlayStoreAvd {
   $license = Invoke-Native -Exe $sdkManager -NativeArgs @("--sdk_root=$UserSdkRoot",'--licenses') -StdinLines $yes
   Write-Host ($license.Output -join "`n")
   if ($license.ExitCode -ne 0) {
-    Write-ProvisionEvidence -Status 'BLOCKED' -Reason 'BLOCKED_ANDROID_SDK_LICENSE_ACCEPTANCE_FAILED' -Extra @{ exitCode=$license.ExitCode; sdkManager=$sdkManager }
+    Write-ProvisionEvidence -Status 'BLOCKED' -Reason 'BLOCKED_ANDROID_SDK_LICENSE_ACCEPTANCE_FAILED' -Extra @{ exitCode=$license.ExitCode; sdkManager=$sdkManager; javaHome=$javaHome; output=@($license.Output | Select-Object -Last 80) }
     throw 'BLOCKED_ANDROID_SDK_LICENSE_ACCEPTANCE_FAILED'
   }
 
@@ -139,6 +194,7 @@ function Ensure-PlayStoreAvd {
     Write-ProvisionEvidence -Status 'BLOCKED' -Reason 'BLOCKED_ANDROID_EMULATOR_PACKAGE_INSTALL_FAILED' -Extra @{
       exitCode=$install.ExitCode
       sdkRoot=$UserSdkRoot
+      javaHome=$javaHome
       packages=$packages
       output=@($install.Output | Select-Object -Last 80)
     }
@@ -152,7 +208,7 @@ function Ensure-PlayStoreAvd {
 
   $emulator = Join-Path $UserSdkRoot 'emulator\emulator.exe'
   if (-not (Test-Path $emulator)) {
-    Write-ProvisionEvidence -Status 'BLOCKED' -Reason 'BLOCKED_ANDROID_EMULATOR_INSTALL_MISSING_BINARY' -Extra @{ sdkRoot=$UserSdkRoot }
+    Write-ProvisionEvidence -Status 'BLOCKED' -Reason 'BLOCKED_ANDROID_EMULATOR_INSTALL_MISSING_BINARY' -Extra @{ sdkRoot=$UserSdkRoot; javaHome=$javaHome }
     throw 'BLOCKED_ANDROID_EMULATOR_INSTALL_MISSING_BINARY'
   }
 
@@ -169,6 +225,7 @@ function Ensure-PlayStoreAvd {
       Write-ProvisionEvidence -Status 'BLOCKED' -Reason 'BLOCKED_ANDROID_PLAY_STORE_AVD_CREATE_FAILED' -Extra @{
         exitCode=$create.ExitCode
         sdkRoot=$UserSdkRoot
+        javaHome=$javaHome
         systemImage=$ProvisionImage
         output=@($create.Output | Select-Object -Last 80)
       }
@@ -177,7 +234,7 @@ function Ensure-PlayStoreAvd {
   }
 
   if (-not (Test-AvdPlayStoreFlag -AvdName $ProvisionAvdName)) {
-    Write-ProvisionEvidence -Status 'BLOCKED' -Reason 'BLOCKED_CREATED_AVD_HAS_NO_PLAY_STORE_FLAG' -Extra @{ avd=$ProvisionAvdName; systemImage=$ProvisionImage }
+    Write-ProvisionEvidence -Status 'BLOCKED' -Reason 'BLOCKED_CREATED_AVD_HAS_NO_PLAY_STORE_FLAG' -Extra @{ avd=$ProvisionAvdName; systemImage=$ProvisionImage; javaHome=$javaHome }
     throw 'BLOCKED_CREATED_AVD_HAS_NO_PLAY_STORE_FLAG'
   }
 
@@ -290,4 +347,5 @@ Write-ProvisionEvidence -Status 'PASS' -Reason 'PLAY_STORE_AVD_READY' -Extra @{
   availableAvds=$avds
   provisionedSdkRoot=$UserSdkRoot
   systemImage=$ProvisionImage
+  javaHome=$env:JAVA_HOME
 }
