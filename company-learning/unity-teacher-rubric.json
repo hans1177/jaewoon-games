@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "teacher": "GPT-5.6 Sol authored rubric",
+  "scope": "UNITY_CODING_ONLY",
+  "authority": "ANALYSIS_ONLY",
+  "answerTarget": "VERIFIED_FINAL_DIFF_ONLY",
+  "paidApiRequired": false,
+  "principles": [
+    "Find the responsible Unity component or system before proposing patch scope.",
+    "Prefer fixing the real responsibility boundary over stacking wrappers, overrides, duplicate listeners, or temporary guards.",
+    "Preserve existing gameplay rules, serialized field meaning, save meaning, and public behavior unless owner evidence explicitly changes them.",
+    "Treat Awake, OnEnable, Start, Update, FixedUpdate, OnDisable, OnDestroy, scene reload, pause/resume, and domain reload as lifecycle-sensitive boundaries.",
+    "Event subscribe and unsubscribe ownership must be symmetric and idempotent.",
+    "Do not move state ownership across MonoBehaviours, ScriptableObjects, services, or save models without evidence that the original boundary is wrong.",
+    "Inspect nullability, destroyed UnityEngine.Object semantics, prefab/scene references, GetComponent assumptions, and initialization order before classifying a null fix.",
+    "For combat bugs, identify which system owns damage calculation, hit application, cooldown, status effects, death, and UI projection instead of patching the symptom in UI code.",
+    "For save/load bugs, distinguish runtime state, persistent state, migration/defaults, and presentation cache. Preserve existing save keys and meaning unless migration evidence exists.",
+    "For mobile Android, flag per-frame allocations, repeated Find/GetComponent calls, Instantiate/Destroy churn, uncontrolled coroutines, expensive Update loops, and input polling that can be event-driven.",
+    "A one-line patch is acceptable only when the surrounding responsibility graph is already sound and the failure is genuinely local.",
+    "If duplicate handlers, duplicated state writes, wrapper chains, or conflicting lifecycle paths exist, prefer normalizing the responsible function/component rather than changing one visible call site.",
+    "Regression risk must name concrete Unity behavior that could break, not generic statements such as 'may cause bugs'.",
+    "Evidence must point to observable code or runtime facts from the verified sample; never invent unseen project structure.",
+    "Teacher output never has code authority. It may explain root cause and scope only; the verified final patch remains the learning answer."
+  ],
+  "masteryAreas": [
+    "MONOBEHAVIOUR_LIFECYCLE",
+    "COMPONENT_RESPONSIBILITY",
+    "EVENT_OWNERSHIP",
+    "STATE_OWNERSHIP",
+    "SAVE_LOAD_BOUNDARY",
+    "NULL_AND_REFERENCE_SAFETY",
+    "COMBAT_SYSTEM_BOUNDARY",
+    "COROUTINE_AND_ASYNC_LIFETIME",
+    "SCENE_PREFAB_DEPENDENCY",
+    "MOBILE_PERFORMANCE",
+    "REGRESSION_SAFE_REPAIR"
+  ],
+  "decisionOrder": [
+    "ROOT_CAUSE",
+    "RESPONSIBILITY_BOUNDARY",
+    "LIFECYCLE_OR_STATE_BOUNDARY",
+    "MINIMUM_SAFE_PATCH_SCOPE",
+    "WHY_NOT_SMALLER_PATCH",
+    "REGRESSION_RISKS",
+    "VERIFIABLE_EVIDENCE"
+  ],
+  "antiPatterns": [
+    "Add another wrapper to hide a broken responsibility boundary",
+    "Add a boolean guard without explaining duplicate ownership",
+    "Subscribe in multiple lifecycle methods without symmetric unsubscribe",
+    "Use Update polling for a condition already owned by an event or state transition",
+    "Change save keys or serialized meaning for a runtime-only bug",
+    "Fix combat outcome inside presentation/UI when authoritative combat state lives elsewhere",
+    "Catch or ignore exceptions instead of fixing initialization or ownership",
+    "Create a new singleton/service when an existing responsible system already exists",
+    "Patch only the first duplicate listener or duplicated state write when equivalent paths remain"
+  ],
+  "exemplars": [
+    {
+      "case": "duplicate event subscription",
+      "rootCause": "The same gameplay event is subscribed from more than one lifecycle path or is not symmetrically unsubscribed, so one logical action invokes the handler multiple times.",
+      "responsibilityBoundary": "The MonoBehaviour or controller that owns registration for that gameplay event.",
+      "patchScope": ["normalize subscription to one lifecycle owner", "make unsubscribe symmetric", "remove duplicate registration path"],
+      "whyNotSmallerPatch": "Changing only the visible handler call leaves the duplicate registration source active and the defect can recur after enable/disable or scene reload.",
+      "regressionRisks": ["handler no longer registered after re-enable", "double unsubscribe or stale listener after destroy"]
+    },
+    {
+      "case": "save state written from UI and gameplay",
+      "rootCause": "Persistent state has multiple writers, so UI projection and authoritative gameplay state can diverge or overwrite each other.",
+      "responsibilityBoundary": "The gameplay/save system that owns the persistent value; UI should project state but not become an independent authority.",
+      "patchScope": ["retain one authoritative persistent writer", "route UI through existing gameplay/save API", "preserve existing save key and meaning"],
+      "whyNotSmallerPatch": "Updating only the UI value can make the screen look correct while the next load restores stale persistent state.",
+      "regressionRisks": ["old saves fail to load", "runtime UI no longer refreshes after authoritative state change"]
+    },
+    {
+      "case": "null reference caused by initialization order",
+      "rootCause": "A component assumes another reference is initialized before the Unity lifecycle guarantees that ordering.",
+      "responsibilityBoundary": "The component that owns acquiring/validating the dependency and the lifecycle phase where that dependency is required.",
+      "patchScope": ["move or validate dependency acquisition at the owning lifecycle boundary", "remove repeated late lookups if a stable reference exists", "preserve prefab/scene wiring semantics"],
+      "whyNotSmallerPatch": "A null guard can suppress the crash while silently skipping required gameplay behavior and leaving ordering nondeterministic.",
+      "regressionRisks": ["dependency unavailable on scene transition", "serialized reference unintentionally overridden"]
+    },
+    {
+      "case": "combat rule duplicated in UI",
+      "rootCause": "Damage or state transition logic is duplicated outside the authoritative combat system, creating inconsistent outcomes.",
+      "responsibilityBoundary": "The combat/domain system that owns damage, cooldown, status, death, and authoritative state mutation.",
+      "patchScope": ["keep combat rule in authoritative combat system", "make UI consume projected results only", "remove duplicate mutation path"],
+      "whyNotSmallerPatch": "Tweaking the displayed value leaves the underlying combat state inconsistent and can desync save, AI, or later calculations.",
+      "regressionRisks": ["UI stops updating after combat event", "damage applied twice through old and new paths"]
+    }
+  ]
+}
