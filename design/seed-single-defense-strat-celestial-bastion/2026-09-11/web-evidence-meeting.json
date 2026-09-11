@@ -1,0 +1,690 @@
+{
+  "version": 1,
+  "gameId": "seed-single-defense-strat-celestial-bastion",
+  "date": "2026-09-11",
+  "productionClass": "DEVELOPMENT_CONFIRMED",
+  "stage": "WEB",
+  "stageLabel": "Web Gameplay Validation",
+  "leadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "reviewModels": {
+    "planning": [
+      "qwen3:0.6b",
+      "gemma3:1b",
+      "llama3.2:1b"
+    ],
+    "graphics": [
+      "gemma3:1b",
+      "llama3.2:1b",
+      "qwen2.5:1.5b"
+    ],
+    "development": [
+      "llama3.2:1b",
+      "qwen2.5:1.5b",
+      "smollm2:1.7b"
+    ],
+    "qa": [
+      "qwen2.5:1.5b",
+      "smollm2:1.7b",
+      "qwen3:0.6b"
+    ],
+    "balance": [
+      "smollm2:1.7b",
+      "qwen3:0.6b",
+      "gemma3:1b"
+    ]
+  },
+  "memberReviews": {
+    "planning": [
+      {
+        "model": "qwen3:0.6b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "DEVELOPMENT_CONFIRMED · 방어 전략 game Celestial Bastion is an original global mobile single-player single defense strategy,"
+          ],
+          "change": [
+            "the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion,"
+          ],
+          "drop": [
+            "the single-player defense strategy's structure and core fun,"
+          ],
+          "hold": [
+            "the validation questions and open questions related to the gameplay validation process,"
+          ],
+          "risks": [
+            "the validation questions and open questions related to the gameplay validation process,"
+          ],
+          "evidence": [
+            "the interaction count, state change, reload visibility, and mobile viewport details,"
+          ],
+          "questions": [
+            "What is the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion?"
+          ]
+        }
+      },
+      {
+        "model": "gemma3:1b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "coreFun"
+          ],
+          "change": [
+            "visualDirection"
+          ],
+          "drop": [],
+          "hold": [],
+          "risks": [],
+          "evidence": [
+            "single-player"
+          ],
+          "questions": [
+            "How does the single-player defense strategy reinterpret the successful structural lessons of Kingdom Rush and Bloons TD "
+          ]
+        }
+      },
+      {
+        "model": "llama3.2:1b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "keepsafe"
+          ],
+          "change": [
+            "changeit"
+          ],
+          "drop": [
+            "dropit"
+          ],
+          "hold": [
+            "holdit"
+          ],
+          "risks": [
+            "riskit"
+          ],
+          "evidence": [
+            "evidenceit"
+          ],
+          "questions": [
+            "questionit"
+          ]
+        }
+      }
+    ],
+    "graphics": [
+      {
+        "model": "gemma3:1b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "tower-placement"
+          ],
+          "change": [],
+          "drop": [],
+          "hold": [],
+          "risks": [],
+          "evidence": [
+            "visualDirection"
+          ],
+          "questions": [
+            "What does the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion?"
+          ]
+        }
+      },
+      {
+        "model": "llama3.2:1b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "keepit"
+          ],
+          "change": [
+            "changeit"
+          ],
+          "drop": [
+            "dropit"
+          ],
+          "hold": [
+            "holdit"
+          ],
+          "risks": [
+            "riskit"
+          ],
+          "evidence": [
+            "evidenceit"
+          ],
+          "questions": [
+            "questionit"
+          ]
+        }
+      },
+      {
+        "model": "qwen2.5:1.5b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "tower-placement"
+          ],
+          "change": [
+            "visual-direction"
+          ],
+          "drop": [
+            "validationQuestions"
+          ],
+          "hold": [
+            "DESIGN"
+          ],
+          "risks": [
+            "mobileOverflow"
+          ],
+          "evidence": [
+            "wave-pressure-and-threat-coverage"
+          ],
+          "questions": [
+            "How does the single-player defense strategy adapt to enemy types and wave composition, protect the objective, and clear"
+          ]
+        }
+      }
+    ],
+    "development": [
+      {
+        "model": "llama3.2:1b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "keepit"
+          ],
+          "change": [
+            "changeit"
+          ],
+          "drop": [
+            "dropit"
+          ],
+          "hold": [
+            "holdit"
+          ],
+          "risks": [
+            "riskit"
+          ],
+          "evidence": [
+            "evidenceit"
+          ],
+          "questions": [
+            "questionit"
+          ]
+        }
+      },
+      {
+        "model": "qwen2.5:1.5b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "progression-direction"
+          ],
+          "change": [
+            "validationQuestions"
+          ],
+          "drop": [
+            "mobile-ux"
+          ],
+          "hold": [
+            "DESIGN"
+          ],
+          "risks": [
+            "mobileOverflow"
+          ],
+          "evidence": [
+            "signature-systems"
+          ],
+          "questions": [
+            "What is the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion?"
+          ]
+        }
+      },
+      {
+        "model": "smollm2:1.7b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "change": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "drop": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "hold": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "risks": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "evidence": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "questions": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ]
+        }
+      }
+    ],
+    "qa": [
+      {
+        "model": "qwen2.5:1.5b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "validationQuestions"
+          ],
+          "change": [
+            "validationQuestions"
+          ],
+          "drop": [
+            "mobile-ux"
+          ],
+          "hold": [
+            "DESIGN"
+          ],
+          "risks": [
+            "mobileOverflow"
+          ],
+          "evidence": [
+            "validation-questions"
+          ],
+          "questions": [
+            "How does the single-player defense strategy reinterpret the successful structural lessons of Kingdom Rush and Bloons TD "
+          ]
+        }
+      },
+      {
+        "model": "smollm2:1.7b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "change": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "drop": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "hold": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "risks": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "evidence": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "questions": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ]
+        }
+      },
+      {
+        "model": "qwen3:0.6b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "the validation questions and open questions related to gameplay validation process,"
+          ],
+          "change": [
+            "the validation questions and open questions related to gameplay validation process,"
+          ],
+          "drop": [
+            "the validation questions and open questions related to gameplay validation process,"
+          ],
+          "hold": [
+            "the technical assumptions and validation questions related to gameplay validation process,"
+          ],
+          "risks": [
+            "the validation questions and open questions related to gameplay validation process,"
+          ],
+          "evidence": [
+            "the interaction count, state change, reload visibility, and mobile viewport details,"
+          ],
+          "questions": [
+            "What is the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion?"
+          ]
+        }
+      }
+    ],
+    "balance": [
+      {
+        "model": "smollm2:1.7b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "change": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "drop": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "hold": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "risks": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "evidence": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ],
+          "questions": [
+            "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+          ]
+        }
+      },
+      {
+        "model": "qwen3:0.6b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "the validation questions and open questions related to gameplay validation process,"
+          ],
+          "change": [
+            "the validation questions and open questions related to gameplay validation process,"
+          ],
+          "drop": [
+            "the validation questions and open questions related to gameplay validation process,"
+          ],
+          "hold": [
+            "the technical assumptions and validation questions related to gameplay validation process,"
+          ],
+          "risks": [
+            "the validation questions and open questions related to gameplay validation process,"
+          ],
+          "evidence": [
+            "the interaction count, state change, reload visibility, and mobile viewport details,"
+          ],
+          "questions": [
+            "What is the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion?"
+          ]
+        }
+      },
+      {
+        "model": "gemma3:1b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "single-player"
+          ],
+          "change": [],
+          "drop": [],
+          "hold": [],
+          "risks": [],
+          "evidence": [
+            "coreFun"
+          ],
+          "questions": [
+            "What is the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion?"
+          ]
+        }
+      }
+    ]
+  },
+  "representatives": {
+    "planning": {
+      "keep": [
+        "DEVELOPMENT_CONFIRMED · 방어 전략 game Celestial Bastion is an original global mobile single-player single defense strategy",
+        "the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion"
+      ],
+      "change": [
+        "the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion"
+      ],
+      "drop": [
+        "the single-player defense strategy's structure and core fun"
+      ],
+      "hold": [
+        "the validation questions and open questions related to the gameplay validation process"
+      ],
+      "risks": [
+        "the validation questions and open questions related to the gameplay validation process"
+      ],
+      "evidence": [
+        "the interaction count, state change, reload visibility, and mobile viewport details"
+      ],
+      "questions": [
+        "What is the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion?"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "Web Gameplay Validation graphics 부서 내부 검토를 통합하라. 다수결보다 실제 근거를 우선하라.",
+        "REVIEWS=[{"
+      ],
+      "change": [],
+      "drop": [],
+      "hold": [],
+      "risks": [],
+      "evidence": [
+        "visualDirection"
+      ],
+      "questions": [
+        "What does the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion?",
+        "How does the single-player defense strategy adapt to enemy types and wave composition, protect the objective, and clear?"
+      ]
+    },
+    "development": {
+      "keep": [
+        "keepit"
+      ],
+      "change": [
+        "changeit"
+      ],
+      "drop": [
+        "dropit"
+      ],
+      "hold": [
+        "holdit"
+      ],
+      "risks": [
+        "riskit"
+      ],
+      "evidence": [
+        "evidenceit"
+      ],
+      "questions": [
+        "questionit"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "validationQuestions"
+      ],
+      "change": [
+        "validationQuestions"
+      ],
+      "drop": [
+        "mobile-ux"
+      ],
+      "hold": [
+        "DESIGN"
+      ],
+      "risks": [
+        "mobileOverflow"
+      ],
+      "evidence": [
+        "validation-questions"
+      ],
+      "questions": [
+        "How does the single-player defense strategy reinterpret the successful structural lessons of Kingdom Rush and Bloons TD "
+      ]
+    },
+    "balance": {
+      "keep": [
+        "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+      ],
+      "change": [
+        "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+      ],
+      "drop": [
+        "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+      ],
+      "hold": [
+        "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+      ],
+      "risks": [
+        "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+      ],
+      "evidence": [
+        "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful..."
+      ],
+      "questions": [
+        "What is the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion?"
+      ]
+    }
+  },
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keepit",
+        "changeit"
+      ],
+      "challenge": [
+        "dropit",
+        "holdit"
+      ],
+      "revision": [
+        "mobile-ux",
+        "DESIGN"
+      ],
+      "reason": "The validation questions and open questions related to the gameplay validation process are important for ensuring the process is thorough and effective. We should prioritize addressing these questions and questions to be"
+    },
+    "graphics": {
+      "accept": [
+        "The core gameplay loop of Celestial Bastion’s single-player defense strategy – its unique setting, visual identity, progression, and touch-f"
+      ],
+      "challenge": [
+        "The validation questions are broad and require a deeper understanding of the game’s mechanics and design choices. Focus should be on how it"
+      ],
+      "revision": [
+        "The validation questions need to be more specific and tied to the gameplay mechanics, rather than just general setting descriptions. The '\""
+      ],
+      "reason": "Specificity is key to ensuring the validation process is focused and delivers actionable insights. The current questions are too high-level."
+    },
+    "development": {
+      "accept": [
+        "Web Gameplay Validation 대표 의견 전체를 읽고 development 관점 반박을 작성하라",
+        "REPRESENTATIVES={"
+      ],
+      "challenge": [
+        "REPRESENTATIVES",
+        "development 관점 반박을 작성하라"
+      ],
+      "revision": [
+        "REPRESENTATIVES",
+        "challenge"
+      ],
+      "reason": "Web Gameplay Validation 대표 의견 전체를 읽고 development 관점 반박을 작성하라"
+    },
+    "qa": {
+      "accept": [
+        "keep"
+      ],
+      "challenge": [
+        "change"
+      ],
+      "revision": [
+        "drop"
+      ],
+      "reason": "validationQuestions"
+    },
+    "balance": {
+      "accept": [
+        "DEVELOPMENT_CONFIRMED · 방어 전략 game Celestial Bastion is an original global mobile single-player single defense strategy"
+      ],
+      "challenge": [
+        "the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion"
+      ],
+      "revision": [
+        "the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion"
+      ],
+      "reason": "the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion"
+    }
+  },
+  "coordinatorModel": "gemma3:1b",
+  "summary": "웹 게임 검증 회의 조정 AI의 KEEP/CHANGE/DROP/HOLD 판정 결과입니다. 실제 근거 없는 항목은 HOLD로 표시됩니다.",
+  "decisions": [
+    {
+      "topic": "KEEP",
+      "decision": "KEEP",
+      "reason": "Validation 질문과 개방 질문을 중요하게 생각합니다. 핵심 게임 메커니즘과 디자인 선택을 이해하는 데 도움이 됩니다. 현재 질문은 너무 일반적입니다. 핵심적인 부분에 집중해야 합니다.",
+      "departments": [
+        "planning"
+      ],
+      "validationImpact": "WEB"
+    },
+    {
+      "topic": "CHANGE",
+      "decision": "CHANGE",
+      "reason": "웹 게임 검증 회의에서 제시된 변경 사항을 분석하고, 변경 사항이 게임의 핵심 메커니즘에 미치는 영향을 평가합니다. 변경 사항이 게임의 핵심 기능에 영향을 미치는지 확인합니다.",
+      "departments": [
+        "development"
+      ],
+      "validationImpact": "WEB"
+    },
+    {
+      "topic": "DROP",
+      "decision": "DROP",
+      "reason": "Validation 질문과 개방 질문에 대한 답변이 불필요하거나 과도한 경우, 해당 질문을 삭제합니다. 핵심적인 부분에 집중해야 합니다.",
+      "departments": [
+        "qa"
+      ],
+      "validationImpact": "WEB"
+    },
+    {
+      "topic": "HOLD",
+      "decision": "HOLD",
+      "reason": "Validation 질문과 개방 질문에 대한 답변이 핵심적인 부분에 대한 이해를 돕지 못하는 경우, 해당 질문을 HOLD로 표시합니다. 핵심적인 부분에 집중해야 합니다.",
+      "departments": [
+        "qa"
+      ],
+      "validationImpact": "WEB"
+    },
+    {
+      "topic": "risks",
+      "decision": "HOLD",
+      "reason": "Validation 질문과 개방 질문에 대한 답변이 게임의 핵심 메커니즘에 미치는 위험을 평가합니다. 핵심적인 부분에 집중해야 합니다.",
+      "departments": [
+        "development"
+      ],
+      "validationImpact": "WEB"
+    },
+    {
+      "topic": "evidence",
+      "decision": "HOLD",
+      "reason": "Validation 질문에 대한 답변을 뒷받침하는 증거를 찾습니다. 핵심적인 부분에 집중해야 합니다.",
+      "departments": [
+        "qa"
+      ],
+      "validationImpact": "WEB"
+    },
+    {
+      "topic": "questions",
+      "decision": "HOLD",
+      "reason": "Validation 질문에 대한 답변을 더 명확하고 구체적으로 합니다. 핵심적인 부분에 집중해야 합니다.",
+      "departments": [
+        "qa"
+      ],
+      "validationImpact": "WEB"
+    }
+  ],
+  "decisionCounts": {
+    "KEEP": 1,
+    "CHANGE": 1,
+    "DROP": 1,
+    "HOLD": 4
+  }
+}

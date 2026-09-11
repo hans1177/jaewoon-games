@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "gameId": "seed-single-defense-strat-celestial-bastion",
+  "target": "web",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 6,
+  "stateChanged": true,
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "before": {
+    "text": "DEVELOPMENT_CONFIRMED · 방어 전략 game Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful structural lessons of Kingdom Rush and Bloons TD 6 through a distinct setting, visual identity, progression mix, and touch-first presentation. 0 SCORE 100 HP 1 WAVE / LEVEL 30 RESOURCE 수비 배치 수비 강화 웨이브 진행 STATUS: 수비 배치 · TURN 0 · PROGRESS 0 검증 루프: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+    "visibleButtons": 3,
+    "canvases": [],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "0SCORE100HP1WAVE / LEVEL30RESOURCE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-0"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "30"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "after": {
+    "text": "DEVELOPMENT_CONFIRMED · 방어 전략 game Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful structural lessons of Kingdom Rush and Bloons TD 6 through a distinct setting, visual identity, progression mix, and touch-first presentation. 30 SCORE 85 HP 4 WAVE / LEVEL 50 RESOURCE 수비 배치 수비 강화 웨이브 진행 STATUS: 웨이브 진행 · TURN 7 · PROGRESS 76 검증 루프: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+    "visibleButtons": 3,
+    "canvases": [],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "30SCORE85HP4WAVE / LEVEL50RESOURCE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-7"
+          ],
+          [
+            "data-score",
+            "30"
+          ],
+          [
+            "data-health",
+            "85"
+          ],
+          [
+            "data-resource",
+            "50"
+          ],
+          [
+            "data-progress",
+            "76"
+          ]
+        ]
+      }
+    ],
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "interactionCount=6",
+    "stateChanged=true",
+    "reloadVisible=true",
+    "mobileOverflow=true"
+  ],
+  "checkedAt": "2026-09-11T14:16:32.979Z",
+  "sourcePath": "web-games/.autonomous-candidates/seed-single-defense-strat-celestial-bastion-34608940401",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/seed-single-defense-strat-celestial-bastion-34608940401/",
+  "screenshot": "qa-artifacts/development-web/seed-single-defense-strat-celestial-bastion.png"
+}
