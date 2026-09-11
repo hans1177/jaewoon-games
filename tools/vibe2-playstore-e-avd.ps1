@@ -71,6 +71,25 @@ function Invoke-CmdWithInputFile {
   [pscustomobject]@{ ExitCode=[int]$code; Output=$output }
 }
 
+function Test-PlayStoreAvdConfig {
+  param([string]$ConfigPath)
+  if (-not (Test-Path -LiteralPath $ConfigPath)) { return $false }
+  $raw = [System.IO.File]::ReadAllText($ConfigPath)
+  return ($raw -match '(?im)^image\.sysdir\.1\s*=\s*.*google_apis_playstore[\\/]+x86_64[\\/]*\s*$')
+}
+
+function Normalize-PlayStoreFlag {
+  param([string]$ConfigPath)
+  $raw = [System.IO.File]::ReadAllText($ConfigPath)
+  if ($raw -match '(?im)^PlayStore\.enabled\s*=.*$') {
+    $raw = [regex]::Replace($raw, '(?im)^PlayStore\.enabled\s*=.*$', 'PlayStore.enabled=yes')
+  } else {
+    if (-not $raw.EndsWith("`r`n") -and -not $raw.EndsWith("`n")) { $raw += "`r`n" }
+    $raw += "PlayStore.enabled=yes`r`n"
+  }
+  [System.IO.File]::WriteAllText($ConfigPath, $raw, [System.Text.Encoding]::UTF8)
+}
+
 if (-not (Test-Path -LiteralPath 'E:\')) { throw 'E_DRIVE_NOT_FOUND' }
 
 $sourceSdk = Find-SourceSdk
@@ -136,10 +155,10 @@ Write-Host "E_AVDMANAGER=$targetAvdManager"
 Write-Host "PLAY_STORE_IMAGE=$imagePackage"
 Write-Host "E_ANDROID_AVD=$targetAvd"
 
-$ready = $false
-if (Test-Path -LiteralPath $avdConfig) {
-  $raw = [System.IO.File]::ReadAllText($avdConfig)
-  if ($raw -match '(?im)^PlayStore\.enabled\s*=\s*yes\s*$') { $ready = $true }
+$ready = Test-PlayStoreAvdConfig $avdConfig
+if ($ready) {
+  Normalize-PlayStoreFlag $avdConfig
+  Write-Host "PLAY_STORE_AVD_IMAGE_VERIFIED=$playAvd"
 }
 
 if (-not $ready) {
@@ -157,10 +176,11 @@ if (-not $ready) {
   if (-not (Test-Path -LiteralPath $avdConfig)) {
     throw "AVD_CONFIG_NOT_CREATED:$avdConfig"
   }
-  $raw = [System.IO.File]::ReadAllText($avdConfig)
-  if ($raw -notmatch '(?im)^PlayStore\.enabled\s*=\s*yes\s*$') {
-    throw "AVD_CREATED_WITHOUT_PLAY_STORE:$avdConfig"
+  if (-not (Test-PlayStoreAvdConfig $avdConfig)) {
+    $raw = [System.IO.File]::ReadAllText($avdConfig)
+    throw "AVD_CREATED_WITH_WRONG_SYSTEM_IMAGE:$(@($raw -split "`r?`n" | Where-Object { $_ -match '^image\.sysdir\.1=' }) -join ';')"
   }
+  Normalize-PlayStoreFlag $avdConfig
   Write-Host "CREATED_PLAY_STORE_AVD=$playAvd"
 } else {
   Write-Host "PLAY_STORE_AVD_ALREADY_READY=$playAvd"
