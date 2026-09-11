@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "requestId": "distill-e4e666cdcfebdd2c",
+  "requestId": "distill-0d43847b019e1402",
   "sourceStatusState": "WAITING_FOR_VERIFIED_SAMPLES",
   "state": "WAITING_FOR_VERIFIED_SAMPLES",
   "execution": {
@@ -21,11 +21,10 @@
       "blockers": [
         "INSUFFICIENT_BATCH",
         "INSUFFICIENT_PROJECT_DIVERSITY",
-        "TASK_PLAN_NOT_READY",
-        "EVAL_SPLIT_EMPTY"
+        "TASK_PLAN_NOT_READY"
       ],
       "accepted": 8,
-      "train": 6,
+      "train": 4,
       "distinctProjects": 1
     },
     "bugfix": {
@@ -60,9 +59,9 @@
         "EVAL_SPLIT_EMPTY",
         "HOLDOUT_SPLIT_EMPTY"
       ],
-      "accepted": 0,
-      "train": 0,
-      "distinctProjects": 0
+      "accepted": 1,
+      "train": 1,
+      "distinctProjects": 1
     },
     "planning": {
       "blockers": [
