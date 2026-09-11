@@ -9,9 +9,13 @@ on:
       - 'tools/vibe2-distillation-status.mjs'
       - 'tools/vibe2-training-request.mjs'
       - 'tools/vibe2-weight-learning.mjs'
+      - 'tools/vibe3-trajectory-ingest.mjs'
+      - 'tools/vibe3-model-selection.mjs'
       - 'qa/vibe2-training-sample.test.mjs'
       - 'qa/vibe2-distillation-status.test.mjs'
       - 'qa/vibe2-training-request.test.mjs'
+      - 'qa/vibe3-trajectory-ingest.test.mjs'
+      - 'company-learning/vibe3-trajectories/**'
       - 'company-learning/external-game-playtest/**'
       - 'design/**/release-baseline.json'
       - 'design/**/release-production-status.json'
@@ -71,12 +75,15 @@ jobs:
           node --check tools/vibe2-distillation-status.mjs
           node --check tools/vibe2-training-request.mjs
           node --check tools/vibe2-weight-learning.mjs
+          node --check tools/vibe3-trajectory-ingest.mjs
+          node --check tools/vibe3-model-selection.mjs
           node --test qa/vibe2-training-sample.test.mjs
           node --test qa/vibe2-distillation-status.test.mjs
           node --test qa/vibe2-training-request.test.mjs
           node --test qa/vibe2-weight-learning.test.mjs
+          node qa/vibe3-trajectory-ingest.test.mjs
 
-      - name: Ingest verified diffs and refresh readiness
+      - name: Ingest verified diffs, Vibe3 trajectories and refresh readiness
         id: ingest
         env:
           GH_TOKEN: ${{ github.token }}
@@ -87,6 +94,9 @@ jobs:
             --dev-ref=origin/autonomous-dev \
             --main-ref=origin/main \
             --out-dir=company-learning/training-samples | tee /tmp/vibe2-distillation-ingest.json
+          node tools/vibe3-trajectory-ingest.mjs \
+            --trajectory-dir=company-learning/vibe3-trajectories \
+            --out-dir=company-learning/training-samples | tee /tmp/vibe3-trajectory-ingest.json
           node tools/vibe2-distillation-status.mjs \
             --evidence-dir=company-learning/evidence \
             --sample-dir=company-learning/training-samples \
@@ -97,6 +107,7 @@ jobs:
           node - <<'NODE'
           const fs=require('fs');
           const ingest=JSON.parse(fs.readFileSync('/tmp/vibe2-distillation-ingest.json','utf8').trim().split(/\r?\n/).at(-1));
+          const trajectory=JSON.parse(fs.readFileSync('/tmp/vibe3-trajectory-ingest.json','utf8').trim().split(/\r?\n/).at(-1));
           const status=JSON.parse(fs.readFileSync('/tmp/vibe2-distillation-status.json','utf8').trim().split(/\r?\n/).at(-1));
           const request=JSON.parse(fs.readFileSync('/tmp/vibe2-distillation-request.json','utf8').trim().split(/\r?\n/).at(-1));
           console.log(`DISTILLATION_SAMPLES_WRITTEN=${ingest.written.length}`);
@@ -106,6 +117,9 @@ jobs:
           console.log(`EXTERNAL_BLACK_BOX_EXAMINED=${ingest.externalBlackBox?.examined||0}`);
           console.log(`EXTERNAL_BLACK_BOX_SAMPLES_WRITTEN=${ingest.externalBlackBox?.written?.length||0}`);
           console.log(`EXTERNAL_BLACK_BOX_SAMPLES_REFRESHED=${ingest.externalBlackBox?.refreshed?.length||0}`);
+          console.log(`VIBE3_TRAJECTORIES_EXAMINED=${trajectory.examined||0}`);
+          console.log(`VIBE3_TRAJECTORY_SAMPLES_WRITTEN=${trajectory.written?.length||0}`);
+          console.log(`VIBE3_TRAJECTORY_SAMPLES_REFRESHED=${trajectory.refreshed?.length||0}`);
           console.log(`DISTILLATION_READY_TASKS=${status.readyTasks.join(',')||'NONE'}`);
           console.log(`DISTILLATION_STATE=${status.state}`);
           console.log(`LOCAL_TRAINING_REQUEST_STATE=${request.state}`);
@@ -145,7 +159,7 @@ jobs:
             --base main \
             --head "$branch" \
             --title 'learning: refresh distillation samples and local training request' \
-            --body "Verified Vibe2 distillation sample/status refresh.\n\n- workflow run: ${GITHUB_RUN_ID}\n- direct main write: NO\n- GitHub-hosted model training: NO\n- public game code write: NO")"; then
+            --body "Verified Vibe2/Vibe3 distillation sample/status refresh.\n\n- workflow run: ${GITHUB_RUN_ID}\n- direct main write: NO\n- GitHub-hosted model training: NO\n- public game code write: NO")"; then
             echo "DISTILLATION_MEMORY_PR=$pr_url"
           else
             echo 'DISTILLATION_MEMORY_PR=SKIPPED_ACTIONS_PR_PERMISSION'
@@ -160,11 +174,13 @@ jobs:
         if: always()
         shell: bash
         run: |
-          echo '### Vibe2 Distillation Sample Ingest' >> "$GITHUB_STEP_SUMMARY"
+          echo '### Vibe2/Vibe3 Canonical Distillation Sample Ingest' >> "$GITHUB_STEP_SUMMARY"
           echo '- schedule: HOURLY_24H' >> "$GITHUB_STEP_SUMMARY"
           echo '- web source: independent-QA + browser-QA verified autonomous promotions' >> "$GITHUB_STEP_SUMMARY"
           echo '- Unity source: RELEASE_READY + current source/build binding + Android runtime PASS + independent QA PASS + merged PR' >> "$GITHUB_STEP_SUMMARY"
           echo '- external commercial source: verified black-box runtime/game-entry/input evidence only; no proprietary code/assets/internal algorithms' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Vibe3 trajectory source: verified winner + runtime + QA + regression + exact revision + protected-state evidence only' >> "$GITHUB_STEP_SUMMARY"
+          echo '- failed Vibe3 candidates: comparison context only, never promoted as answer targets' >> "$GITHUB_STEP_SUMMARY"
           echo '- Unity browser QA: NOT_APPLICABLE; never synthesized as PASS' >> "$GITHUB_STEP_SUMMARY"
           echo '- external black-box browser QA: NOT_APPLICABLE; dedicated evidence marker required' >> "$GITHUB_STEP_SUMMARY"
           echo '- answer target: exact verified source diff or bounded observable QA pattern' >> "$GITHUB_STEP_SUMMARY"
