@@ -9,6 +9,7 @@ on:
       - Company Seed DESIGN_ONLY Runtime
       - Company DESIGN_ONLY Promotion Sync
       - Company DEVELOPMENT_CONFIRMED Runtime
+      - Company DEVELOPMENT_CONFIRMED Unity Runtime
       - Homepage Manager
       - Public Game Health
       - Unity Hybrid Android Build
@@ -23,6 +24,7 @@ on:
       - '.github/workflows/company-seed-design-runtime.yml'
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
+      - '.github/workflows/company-development-unity-runtime.yml'
       - '.github/workflows/director-supervisor.yml'
 
 permissions:
@@ -77,29 +79,51 @@ jobs:
           const runs=actions.workflow_runs||[];
           const active=name=>runs.some(r=>r.name===name&&['queued','in_progress'].includes(String(r.status||'')));
           const latest=name=>runs.filter(r=>r.name===name).sort((a,b)=>new Date(b.updated_at||b.created_at||0)-new Date(a.updated_at||a.created_at||0))[0]||null;
-          const pending=(queue.items||[]).filter(x=>String(x.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&String(x.status||'').toUpperCase()==='PENDING');
+          const development=(queue.items||[]).filter(x=>String(x.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED');
+          const pending=development.filter(x=>String(x.status||'').toUpperCase()==='PENDING');
+          const unityPending=development.filter(x=>
+            String(x.status||'').toUpperCase()==='ACTIVE' &&
+            String(x.currentStep||'').toUpperCase()==='UNITY_ANDROID_TECHNICAL_VALIDATION' &&
+            String(x.canonicalState||'').toUpperCase()==='WAITING_UNITY_VALIDATION'
+          );
           const devName='Company DEVELOPMENT_CONFIRMED Runtime';
+          const unityName='Company DEVELOPMENT_CONFIRMED Unity Runtime';
           const devActive=active(devName);
+          const unityActive=active(unityName);
           const latestDev=latest(devName);
+          const latestUnity=latest(unityName);
           console.log(`PENDING_DEVELOPMENT_COUNT=${pending.length}`);
           console.log(`PENDING_DEVELOPMENT_IDS=${pending.map(x=>x.gameId).join(',')}`);
+          console.log(`WAITING_UNITY_DEVELOPMENT_COUNT=${unityPending.length}`);
+          console.log(`WAITING_UNITY_DEVELOPMENT_IDS=${unityPending.map(x=>x.gameId).join(',')}`);
           console.log(`DEVELOPMENT_RUNTIME_ACTIVE=${devActive?'true':'false'}`);
           console.log(`DEVELOPMENT_RUNTIME_LAST_CONCLUSION=${latestDev?.conclusion||''}`);
+          console.log(`DEVELOPMENT_UNITY_RUNTIME_ACTIVE=${unityActive?'true':'false'}`);
+          console.log(`DEVELOPMENT_UNITY_RUNTIME_LAST_CONCLUSION=${latestUnity?.conclusion||''}`);
           console.log(`DEVELOPMENT_RECOVER=${pending.length>0&&!devActive?'true':'false'}`);
+          console.log(`DEVELOPMENT_UNITY_RECOVER=${unityPending.length>0&&!unityActive?'true':'false'}`);
           NODE
           cat /tmp/director-central.env
 
-      - name: Recover pending central development queue
+      - name: Recover central development queues
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           source /tmp/director-central.env
+          recovered='false'
           if [ "$DEVELOPMENT_RECOVER" = 'true' ]; then
             gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
             echo 'DIRECTOR_RECOVERY=COMPANY_DEVELOPMENT_CONFIRMED_RUNTIME'
-          else
+            recovered='true'
+          fi
+          if [ "$DEVELOPMENT_UNITY_RECOVER" = 'true' ]; then
+            gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'DIRECTOR_RECOVERY=COMPANY_DEVELOPMENT_CONFIRMED_UNITY_RUNTIME'
+            recovered='true'
+          fi
+          if [ "$recovered" = 'false' ]; then
             echo 'DIRECTOR_RECOVERY=NOT_REQUIRED'
           fi
           echo 'LEGACY_AUTONOMOUS_PIPELINE_DISPATCH=FORBIDDEN'
@@ -114,10 +138,13 @@ jobs:
             echo '- design pipeline: Company Seed DESIGN_ONLY Runtime'
             echo '- promotion pipeline: Company DESIGN_ONLY Promotion Sync'
             echo '- development pipeline: Company DEVELOPMENT_CONFIRMED Runtime'
+            echo '- Unity technical validation: Company DEVELOPMENT_CONFIRMED Unity Runtime'
             echo '- legacy autonomous top-level pipeline: removed'
             if [ -f /tmp/director-central.env ]; then
               source /tmp/director-central.env
               echo "- pending development games: ${PENDING_DEVELOPMENT_COUNT:-0}"
+              echo "- waiting Unity development games: ${WAITING_UNITY_DEVELOPMENT_COUNT:-0}"
               echo "- central development runtime active: ${DEVELOPMENT_RUNTIME_ACTIVE:-false}"
+              echo "- Unity development runtime active: ${DEVELOPMENT_UNITY_RUNTIME_ACTIVE:-false}"
             fi
           } >> "$GITHUB_STEP_SUMMARY"
