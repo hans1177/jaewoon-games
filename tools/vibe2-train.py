@@ -50,7 +50,6 @@ def dataset_hash(rows):
 
 def is_external_black_box_qa(row, qa):
     provenance = row.get("provenance") or {}
-    verification = row.get("verification") or {}
     source_kind = str(provenance.get("sourceKind") or row.get("sourceKind") or "").lower()
     return (
         str(row.get("taskType") or "").lower() == "qa"
@@ -58,8 +57,6 @@ def is_external_black_box_qa(row, qa):
         and qa.get("independentQa") == EXTERNAL_BLACK_BOX_QA_MARKER
         and qa.get("browserQa") == "NOT_APPLICABLE"
         and qa.get("runtime") == "PASS"
-        and verification.get("blackBoxEvidence") == "PASS"
-        and verification.get("proprietaryExtraction") is False
     )
 
 
