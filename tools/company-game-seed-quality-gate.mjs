@@ -32,18 +32,23 @@ for(const category of categories){
     if(!refs.length)failures.push(`${prefix}:no-reference-game`);
     if(invalidRefs.length)failures.push(`${prefix}:reference-outside-category-pool=${invalidRefs.join('|')}`);
 
-    const combined=[...(seed.CORE_FUN_TO_LEARN||[]),...(seed.CORE_LOOP||[]),seed.DISTINCT_IDENTITY].map(norm).join(' ');
     const groups=Array.isArray(cfg.requiredConceptGroups)?cfg.requiredConceptGroups.filter(Array.isArray):[];
     const minimumGroups=Math.max(1,Number(cfg.minimumRequiredConceptGroups||groups.length||1));
-    const matchedGroups=groups.filter(group=>uniq(group).some(term=>combined.includes(norm(term))));
     if(!groups.length)failures.push(`${prefix}:required-concept-groups-missing`);
+    const combined=[...(seed.CORE_FUN_TO_LEARN||[]),...(seed.CORE_LOOP||[]),seed.DISTINCT_IDENTITY].map(norm).join(' ');
+    const matchedGroups=groups.filter(group=>uniq(group).some(term=>combined.includes(norm(term))));
     if(matchedGroups.length<minimumGroups)failures.push(`${prefix}:category-concept-groups=${matchedGroups.length}/${minimumGroups}`);
 
-    const identity=clean(seed.DISTINCT_IDENTITY);
-    if(identity.length<60||genericIdentity.some(re=>re.test(identity))||businessMeta.test(identity))failures.push(`${prefix}:distinct-identity-too-generic`);
     const loops=uniq(seed.CORE_LOOP);
-    if(loops.length<3||loops.some(x=>x.length<20))failures.push(`${prefix}:core-loop-not-concrete`);
+    const loopText=loops.map(norm).join(' ');
+    const loopMatchedGroups=groups.filter(group=>uniq(group).some(term=>loopText.includes(norm(term))));
+    if(loops.length<3||loops.some(x=>x.length<70))failures.push(`${prefix}:core-loop-not-concrete`);
+    if(loopMatchedGroups.length<minimumGroups)failures.push(`${prefix}:core-loop-concept-groups=${loopMatchedGroups.length}/${minimumGroups}`);
     if(loops.some(x=>businessMeta.test(x)))failures.push(`${prefix}:core-loop-business-meta-language`);
+
+    const identity=clean(seed.DISTINCT_IDENTITY);
+    if(identity.length<100||genericIdentity.some(re=>re.test(identity))||businessMeta.test(identity))failures.push(`${prefix}:distinct-identity-too-generic`);
+    if(!/(original|distinct|reinterpret|독자|재해석)/i.test(identity))failures.push(`${prefix}:distinct-identity-reinterpretation-missing`);
 
     const market=seed.MARKET_EVIDENCE_SUMMARY||{};
     if(clean(market.targetMarketScope).toUpperCase()!=='GLOBAL')failures.push(`${prefix}:market-scope-not-global`);
@@ -76,4 +81,5 @@ console.log(`GAME_SEED_ACTIVE_SEED_COUNT=${active.length}`);
 console.log('GAME_SEED_TARGET_MARKET_SCOPE=GLOBAL');
 console.log('GAME_SEED_CATEGORY_BENCHMARK_MATCH=PASS');
 console.log('GAME_SEED_CATEGORY_CONCEPT_GROUPS=PASS');
+console.log('GAME_SEED_CORE_LOOP_CONCEPT_GROUPS=PASS');
 console.log('GAME_SEED_GLOBAL_AGE_REVENUE_PLAYTIME_EVIDENCE=PASS');
