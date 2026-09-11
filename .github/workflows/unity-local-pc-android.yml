@@ -45,10 +45,13 @@ jobs:
           $projectPath = ([string]$data.projectPath).Replace('\','/').Trim('/')
           $buildMethod = [string]$data.buildMethod
           $requestId = [string]$data.requestId
+          $sourceCommit = [string]$data.sourceCommit
           if ($gameId -notmatch '^[a-z0-9][a-z0-9-]{1,48}$') { throw "Invalid gameId: $gameId" }
           if ($projectPath -notmatch '^unity-games/[A-Za-z0-9._-]+$' -or $projectPath.Contains('..')) { throw "Invalid projectPath: $projectPath" }
           if ([string]::IsNullOrWhiteSpace($buildMethod) -or $buildMethod -notmatch '^[A-Za-z0-9_.]+$') { throw 'buildMethod is required.' }
           if ([string]::IsNullOrWhiteSpace($requestId)) { $requestId = "run-$gameId" }
+          if ([string]::IsNullOrWhiteSpace($sourceCommit)) { $sourceCommit = $env:GITHUB_SHA }
+          if ($sourceCommit -notmatch '^[0-9a-fA-F]{40}$') { throw "sourceCommit must be an exact 40-character Git SHA: $sourceCommit" }
 
           $publishHomepage = $false
           $catalogPath = Join-Path $env:GITHUB_WORKSPACE 'game-catalog.json'
@@ -62,7 +65,24 @@ jobs:
           "project_path=$projectPath" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           "build_method=$buildMethod" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           "request_id=$requestId" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "source_commit=$sourceCommit" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           "publish_homepage=$($publishHomepage.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Checkout exact Unity source revision
+        run: |
+          $sourceCommit = '${{ steps.request.outputs.source_commit }}'
+          git cat-file -e "$sourceCommit`^{commit}" 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            git fetch origin $sourceCommit
+            if ($LASTEXITCODE -ne 0) { throw "Exact source commit is unavailable: $sourceCommit" }
+          }
+          git checkout --detach $sourceCommit
+          if ($LASTEXITCODE -ne 0) { throw "Could not checkout exact source commit: $sourceCommit" }
+          git lfs pull
+          if ($LASTEXITCODE -ne 0) { throw 'git lfs pull failed for exact source revision.' }
+          $actual = (git rev-parse HEAD).Trim()
+          if ($actual -ne $sourceCommit) { throw "Exact source binding failed: expected=$sourceCommit actual=$actual" }
+          Write-Host "[PASS] Exact Unity source revision checked out: $actual"
 
       - name: Preflight local Unity, Android support and Personal license
         run: |
@@ -139,17 +159,22 @@ jobs:
           $dist = Join-Path $env:GITHUB_WORKSPACE 'dist'
           New-Item -ItemType Directory -Path $dist -Force | Out-Null
           $game = '${{ steps.request.outputs.game_id }}'
+          $sourceCommit = '${{ steps.request.outputs.source_commit }}'
           $out = Join-Path $dist "$game-test.apk"
           Copy-Item $apk.FullName $out -Force
           $sha = (Get-FileHash $out -Algorithm SHA256).Hash.ToLowerInvariant()
           $bytes = (Get-Item $out).Length
+          $sourceTreeSha = (git rev-parse "$sourceCommit`^{tree}").Trim()
+          if ($LASTEXITCODE -ne 0 -or $sourceTreeSha -notmatch '^[0-9a-f]{40}$') { throw 'Could not resolve exact source tree SHA.' }
           $tag = "test-$game-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
           "$sha  $game-test.apk" | Set-Content "$out.sha256" -Encoding ascii
           $info = [ordered]@{
-            version = 1
+            version = 2
             gameId = $game
             requestId = '${{ steps.request.outputs.request_id }}'
-            sourceCommit = $env:GITHUB_SHA
+            sourceCommit = $sourceCommit
+            sourceTreeSha = $sourceTreeSha
+            buildRequestCommit = $env:GITHUB_SHA
             runId = [int64]$env:GITHUB_RUN_ID
             runAttempt = [int]$env:GITHUB_RUN_ATTEMPT
             releaseTag = $tag
@@ -167,7 +192,7 @@ jobs:
           "release_tag=$tag" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           "sha256=$sha" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           "bytes=$bytes" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-          Write-Host "[PASS] LOCAL APK bytes=$bytes sha256=$sha"
+          Write-Host "[PASS] LOCAL APK sourceCommit=$sourceCommit sourceTreeSha=$sourceTreeSha bytes=$bytes sha256=$sha"
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
@@ -191,7 +216,8 @@ jobs:
             Automated Jaewoon Company Android test build.
             Route: local PC self-hosted Unity
             Game: ${{ steps.request.outputs.game_id }}
-            Source: ${{ github.sha }}
+            Source: ${{ steps.request.outputs.source_commit }}
+            Build request commit: ${{ github.sha }}
             Request: ${{ steps.request.outputs.request_id }}
           files: |
             ${{ steps.artifact.outputs.apk_path }}
@@ -205,6 +231,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           $game = '${{ steps.request.outputs.game_id }}'
+          $sourceCommit = '${{ steps.request.outputs.source_commit }}'
           $tag = '${{ steps.artifact.outputs.release_tag }}'
           $releaseUrl = "https://github.com/$env:GITHUB_REPOSITORY/releases/tag/$tag"
           $downloadUrl = "https://github.com/$env:GITHUB_REPOSITORY/releases/download/$tag/$game-test.apk"
@@ -223,7 +250,7 @@ jobs:
             channel = 'test'
             buildRoute = 'local-pc'
             homepagePublished = $true
-            sourceCommit = $env:GITHUB_SHA
+            sourceCommit = $sourceCommit
             releaseTag = $tag
             release = $releaseUrl
             download = $downloadUrl
@@ -248,7 +275,9 @@ jobs:
           }
 
           git commit -m "company-ai: publish $game verified local test build"
+          if ($LASTEXITCODE -ne 0) { throw 'Could not commit homepage build-state proposal.' }
           git push origin "HEAD:refs/heads/$branch"
+          if ($LASTEXITCODE -ne 0) { throw 'Could not push homepage build-state proposal branch.' }
 
           $headers = @{
             Authorization = "Bearer $env:GITHUB_TOKEN"
@@ -259,9 +288,19 @@ jobs:
             title = "company-ai: publish $game verified local test build"
             head = $branch
             base = 'main'
-            body = "Automated verified Unity Android build-state update. Build source: $env:GITHUB_SHA`nRun: $env:GITHUB_RUN_ID/$env:GITHUB_RUN_ATTEMPT`nDirect main write: NO"
+            body = "Automated verified Unity Android build-state update. Exact game source: $sourceCommit`nBuild request source: $env:GITHUB_SHA`nRun: $env:GITHUB_RUN_ID/$env:GITHUB_RUN_ATTEMPT`nDirect main write: NO"
           } | ConvertTo-Json
-          $response = Invoke-RestMethod -Method Post -Uri "https://api.github.com/repos/$env:GITHUB_REPOSITORY/pulls" -Headers $headers -ContentType 'application/json' -Body $prBody
-          Write-Host "[PASS] Approved homepage build state PR opened: $($response.html_url)"
+
+          try {
+            $response = Invoke-RestMethod -Method Post -Uri "https://api.github.com/repos/$env:GITHUB_REPOSITORY/pulls" -Headers $headers -ContentType 'application/json' -Body $prBody -ErrorAction Stop
+            Write-Host "[PASS] Approved homepage build state PR opened: $($response.html_url)"
+            Write-Host 'HOMEPAGE_STATE_PR=OPENED'
+          }
+          catch {
+            Write-Warning "Homepage state branch was pushed but this Actions token cannot open the PR: $($_.Exception.Message)"
+            Write-Host "HOMEPAGE_STATE_BRANCH=$branch"
+            Write-Host 'HOMEPAGE_STATE_PR=DEFERRED'
+            Write-Host 'VERIFIED_APK_STATE=PASS'
+          }
           Write-Host 'PUBLIC_MAIN_WRITE=NO'
           Write-Host "[PASS] Verified test build download: $downloadUrl"

@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "date": "2026-09-11",
   "productionClass": "DESIGN_ONLY",
@@ -15,17 +15,36 @@
   "vibe2Used": false,
   "localization": "ko-KR",
   "localizedFromRuntime": true,
-  "content": {
-    "identity": "Celestial Bastion",
-    "playerFantasy": "다가오는 적의 흐름을 읽고 방어선을 설계해 끝까지 거점을 지켜내는 싱글 플레이 디펜스 전략 게임.",
+  "designCoreSource": "design/seed-single-defense-strat-celestial-bastion/2026-09-11/design-revised.json",
+  "designCore": {
+    "identity": "천상의 보루",
+    "coreFun": "다가오는 웨이브를 읽고 타워와 수비 유닛을 배치해 위협 경로를 막는 싱글 디펜스 전략.",
+    "playerFantasy": "적의 이동 경로와 웨이브 구성을 읽어 가장 효율적인 방어선을 설계하고 거점을 끝까지 지킨다.",
     "coreLoop": [
       "다음 적 웨이브를 확인하고 위협받는 경로를 커버하도록 타워나 수비 유닛을 배치한다.",
       "적을 처치해 자원을 얻고 압박이 커지기 전에 업그레이드, 신규 배치, 전술 변경에 투자한다.",
       "적 유형과 웨이브 구성에 맞춰 방어를 조정하고 목표물을 지켜 스테이지나 보스를 클리어한 뒤 더 어려운 방어 선택을 연다."
     ],
     "signatureSystems": [
-      "싱글 플레이 방어 전략"
+      {"name":"싱글 플레이 디펜스 전략","purpose":"Kingdom Rush와 Bloons TD 6의 구조적 장점을 참고하되 독자적인 배경·비주얼·성장 조합·터치 중심 표현으로 재해석한다.","playerChoice":"타워 배치와 업그레이드 경로 선택으로 각 웨이브의 위협을 대응한다."}
     ],
+    "progressionDirection": "웨이브 단위로 방어 선택과 성장 압박이 단계적으로 커지는 구조.",
+    "visualDirection": "타워 배치, 공격 범위, 적 이동 경로가 모바일 화면에서 즉시 읽히도록 한다.",
+    "mobileUx": "터치 우선 조작으로 배치와 업그레이드를 빠르게 수행하게 한다.",
+    "marketTargetDirection": "글로벌 모바일 싱글 플레이 디펜스 전략 이용자를 기본 대상으로 한다.",
+    "steamExpansionDecision": "Steam 확장은 현재 권장하지 않음.",
+    "multiplayerExpansionDecision": "멀티플레이 확장은 현재 권장하지 않음.",
+    "technicalAssumptions": [
+      "타워 배치와 업그레이드 경로의 시너지가 핵심 선택이다.",
+      "웨이브 압박과 위협 범위가 전술 판단의 중심이다.",
+      "타워·수비 유닛과 적 유형 사이의 카운터 선택이 필요하다."
+    ]
+  },
+  "content": {
+    "identity": "Celestial Bastion",
+    "playerFantasy": "다가오는 적의 흐름을 읽고 방어선을 설계해 끝까지 거점을 지켜내는 싱글 플레이 디펜스 전략 게임.",
+    "coreLoop": ["다음 적 웨이브를 확인하고 위협받는 경로를 커버하도록 타워나 수비 유닛을 배치한다.","적을 처치해 자원을 얻고 압박이 커지기 전에 업그레이드, 신규 배치, 전술 변경에 투자한다.","적 유형과 웨이브 구성에 맞춰 방어를 조정하고 목표물을 지켜 스테이지나 보스를 클리어한 뒤 더 어려운 방어 선택을 연다."],
+    "signatureSystems": ["싱글 플레이 방어 전략"],
     "progressionDirection": "웨이브 단위로 방어 선택과 성장 압박이 단계적으로 커지는 구조.",
     "visualDirection": "타워 배치와 공격 범위, 적 이동 경로가 모바일 화면에서 즉시 읽히는 방향."
   },
@@ -37,10 +56,5 @@
   "homepageVisible": true,
   "format": "core-strategy",
   "sourceFile": "design/seed-single-defense-strat-celestial-bastion/2026-09-11/core-artbook.json",
-  "publication": {
-    "policyDocument": "COMPANY_FLOW.md",
-    "baselineGateState": "DESIGN_BASELINE_READY",
-    "baselineReady": true,
-    "publishedAt": "2026-09-11T07:04:21.739Z"
-  }
+  "publication": {"policyDocument":"COMPANY_FLOW.md","baselineGateState":"DESIGN_BASELINE_READY","baselineReady":true,"publishedAt":"2026-09-11T07:04:21.739Z"}
 }

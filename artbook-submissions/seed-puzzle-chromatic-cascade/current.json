@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "gameId": "seed-puzzle-chromatic-cascade",
   "date": "2026-09-11",
   "productionClass": "DESIGN_ONLY",
@@ -15,19 +15,36 @@
   "vibe2Used": false,
   "localization": "ko-KR",
   "localizedFromRuntime": true,
-  "content": {
-    "identity": "Chromatic Cascade",
-    "playerFantasy": "짧은 시간에도 목표가 명확하고 연쇄 조합의 손맛을 느낄 수 있는 글로벌 모바일 퍼즐 게임.",
+  "designCoreSource": "design/seed-puzzle-chromatic-cascade/2026-09-11/design-revised.json",
+  "designCore": {
+    "identity": "색채의 연쇄",
+    "coreFun": "매치3 · 퍼즐 해결 · 패턴 인식 · 보드 중심 연쇄 조합의 손맛.",
+    "playerFantasy": "짧은 시간에도 명확한 목표를 풀고 연쇄 조합과 즉각적인 보드 피드백으로 퍼즐을 정복한다.",
     "coreLoop": [
       "명확한 목표와 제한 이동 수, 장애물 또는 다른 퍼즐 제약이 있는 보드나 그리드 레벨을 시작한다.",
       "매치나 의도적인 퍼즐 이동을 만들고 콤보와 즉각적인 보드 피드백을 활용해 현재 목표를 해결한다.",
-      "레벨 목표를 달성해 보상이나 다음 스테이지를 열고, 새로운 보드 패턴이나 장애물 조합에 도전한다."
+      "레벨 목표를 달성해 보상이나 다음 스테이지를 열고 새로운 보드 패턴이나 장애물 조합에 도전한다."
     ],
     "signatureSystems": [
-      "독자적인 비주얼 정체성",
-      "퍼즐 진행과 장기 성장의 조합",
-      "터치 우선 모바일 조작"
+      {"name":"독자적 비주얼 정체성","purpose":"Royal Match와 Candy Crush Saga의 구조적 장점을 참고하되 독자적인 배경·비주얼·성장 조합으로 재해석한다.","playerChoice":"게임의 분위기와 테마에 맞는 시각적 정체성과 퍼즐 선택을 경험한다."}
     ],
+    "progressionDirection": "퍼즐 스테이지 해결이 다음 보드와 장기 진행으로 자연스럽게 연결되도록 한다.",
+    "visualDirection": "짧은 모바일 세션에서도 퍼즐 목표와 보드 상태를 빠르게 읽을 수 있게 하고 장기 진행도 자연스럽게 이어지게 한다.",
+    "mobileUx": "Android 모바일 싱글 플레이를 기준으로 터치 조작과 즉각적인 보드 피드백을 우선한다.",
+    "marketTargetDirection": "글로벌 모바일 퍼즐 이용자를 대상으로 짧은 세션에서도 핵심 보드 루프가 분명하게 읽히는 방향.",
+    "steamExpansionDecision": "Steam 확장은 현재 우선하지 않음.",
+    "multiplayerExpansionDecision": "멀티플레이 확장은 현재 권장하지 않음.",
+    "technicalAssumptions": [
+      "핵심 퍼즐 로직은 자체 구현한다.",
+      "기본 설계에는 멀티플레이 기능을 포함하지 않는다.",
+      "현재 핵심 재미를 위해 멀티플레이가 필수는 아니다."
+    ]
+  },
+  "content": {
+    "identity": "Chromatic Cascade",
+    "playerFantasy": "짧은 시간에도 목표가 명확하고 연쇄 조합의 손맛을 느낄 수 있는 글로벌 모바일 퍼즐 게임.",
+    "coreLoop": ["명확한 목표와 제한 이동 수, 장애물 또는 다른 퍼즐 제약이 있는 보드나 그리드 레벨을 시작한다.","매치나 의도적인 퍼즐 이동을 만들고 콤보와 즉각적인 보드 피드백을 활용해 현재 목표를 해결한다.","레벨 목표를 달성해 보상이나 다음 스테이지를 열고 새로운 보드 패턴이나 장애물 조합에 도전한다."],
+    "signatureSystems": ["독자적인 비주얼 정체성","퍼즐 진행과 장기 성장의 조합","터치 우선 모바일 조작"],
     "progressionDirection": "Royal Match와 Candy Crush Saga의 성공적인 구조적 장점을 참고하되 독자적인 배경, 비주얼, 성장 조합, 터치 중심 표현으로 재해석한다.",
     "visualDirection": "짧은 모바일 세션에서도 퍼즐 목표와 보드 상태를 빠르게 읽을 수 있게 하고, 세션 사이의 장기 진행도 자연스럽게 이어지게 한다."
   },
@@ -39,10 +56,5 @@
   "homepageVisible": true,
   "format": "core-strategy",
   "sourceFile": "design/seed-puzzle-chromatic-cascade/2026-09-11/core-artbook.json",
-  "publication": {
-    "policyDocument": "COMPANY_FLOW.md",
-    "baselineGateState": "DESIGN_BASELINE_READY",
-    "baselineReady": true,
-    "publishedAt": "2026-09-11T07:04:45.408Z"
-  }
+  "publication": {"policyDocument":"COMPANY_FLOW.md","baselineGateState":"DESIGN_BASELINE_READY","baselineReady":true,"publishedAt":"2026-09-11T07:04:45.408Z"}
 }

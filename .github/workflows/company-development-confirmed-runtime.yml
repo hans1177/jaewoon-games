@@ -1,0 +1,354 @@
+name: Company DEVELOPMENT_CONFIRMED Runtime
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/company-development-confirmed-runtime.yml'
+      - 'tools/company-development-web-bootstrap.mjs'
+      - 'tools/company-development-web-gameplay-validation.mjs'
+      - 'qa/company-development-web-runtime.test.mjs'
+  workflow_dispatch:
+  schedule:
+    - cron: '37 * * * *'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: company-development-confirmed-runtime
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: prepare DEVELOPMENT_CONFIRMED queue
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    concurrency:
+      group: autonomous-dev-writer
+      cancel-in-progress: false
+    outputs:
+      run: ${{ steps.queue.outputs.run }}
+      matrix: ${{ steps.queue.outputs.matrix }}
+      dev_sha: ${{ steps.sync.outputs.dev_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Runtime contract tests
+        run: |
+          node --check tools/company-development-web-bootstrap.mjs
+          node --check tools/company-development-web-gameplay-validation.mjs
+          node --test qa/company-development-web-runtime.test.mjs
+      - name: Sync current main into autonomous development line
+        id: sync
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-development-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git fetch origin main autonomous-dev company-runtime
+          git checkout -B autonomous-dev origin/autonomous-dev
+          git merge --no-edit origin/main
+          git push origin HEAD:autonomous-dev
+          dev_sha="$(git rev-parse HEAD)"
+          echo "dev_sha=$dev_sha" >> "$GITHUB_OUTPUT"
+          echo "DEVELOPMENT_RUNTIME_BASE=$dev_sha"
+          echo 'PUBLIC_MAIN_WRITE=NO'
+      - name: Resolve pending promoted seeds
+        id: queue
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show origin/company-runtime:development-queue.json > /tmp/development-queue.json
+          node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const rows=(q.items||[]).filter(x=>String(x.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&String(x.status||'').toUpperCase()==='PENDING').map(x=>({
+            gameId:x.gameId,gameName:x.gameName,sourcePath:x.sourcePath,designBaselineSource:x.designBaselineSource,artbookSource:x.artbookSource
+          }));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run=${rows.length?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify(rows)}\n`);
+          console.log(`DEVELOPMENT_PENDING_COUNT=${rows.length}`);
+          console.log(`DEVELOPMENT_PENDING_IDS=${rows.map(x=>x.gameId).join(',')}`);
+          NODE
+
+  web-first-playable:
+    name: web first playable (${{ matrix.item.gameName }})
+    needs: prepare
+    if: needs.prepare.outputs.run == 'true'
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        item: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact autonomous development base
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.dev_sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fetch company runtime evidence
+        run: git fetch origin company-runtime
+      - name: Resolve configured development lead model
+        id: model
+        shell: bash
+        run: |
+          set -euo pipefail
+          model="$(node -e "const d=require('./company-directive.json');process.stdout.write(String(d.ai?.departmentLeadModels?.development||'llama3.2:1b'))")"
+          test -n "$model"
+          echo "model=$model" >> "$GITHUB_OUTPUT"
+          echo "DEVELOPMENT_LEAD_MODEL=$model"
+      - name: Prepare free local development model
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: ${{ steps.model.outputs.model }}
+          version: '0.33.3'
+          pull-model: 'true'
+          department-role: development
+      - name: Materialize immutable design baseline
+        id: context
+        env:
+          GAME_ID: ${{ matrix.item.gameId }}
+          SOURCE_PATH: ${{ matrix.item.sourcePath }}
+          DESIGN_SOURCE: ${{ matrix.item.designBaselineSource }}
+          ARTBOOK_SOURCE: ${{ matrix.item.artbookSource }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$GAME_ID" && test -n "$DESIGN_SOURCE" && test -n "$ARTBOOK_SOURCE"
+          base="$(dirname "$DESIGN_SOURCE")"
+          date="$(basename "$base")"
+          git show "origin/company-runtime:$DESIGN_SOURCE" > /tmp/design-baseline.json
+          git show "origin/company-runtime:$ARTBOOK_SOURCE" > /tmp/current-artbook.json
+          git show "origin/company-runtime:game-catalog.json" > /tmp/runtime-game-catalog.json
+          git show "origin/company-runtime:$base/cycle-status.json" > /tmp/design-cycle-status.json
+          mkdir -p "$base"
+          cp /tmp/design-baseline.json "$DESIGN_SOURCE"
+          cp /tmp/design-cycle-status.json "$base/cycle-status.json"
+          cp /tmp/runtime-game-catalog.json game-catalog.json
+          candidate_id="${GAME_ID}-${GITHUB_RUN_ID}"
+          candidate_path="web-games/.autonomous-candidates/$candidate_id"
+          branch="autonomous/candidate-$candidate_id"
+          evidence=".autonomous/evidence/$candidate_id.json"
+          {
+            echo "base=$base"
+            echo "date=$date"
+            echo "candidate_id=$candidate_id"
+            echo "candidate_path=$candidate_path"
+            echo "branch=$branch"
+            echo "evidence=$evidence"
+          } >> "$GITHUB_OUTPUT"
+          echo "DESIGN_BASELINE_SOURCE=$DESIGN_SOURCE"
+          echo "DEVELOPMENT_CANDIDATE_BRANCH=$branch"
+      - name: Generate first playable from locked design baseline
+        env:
+          GAME_ID: ${{ matrix.item.gameId }}
+          GAME_NAME: ${{ matrix.item.gameName }}
+          SOURCE_PATH: ${{ matrix.item.sourcePath }}
+          MODEL: ${{ steps.model.outputs.model }}
+        run: |
+          node tools/company-development-web-bootstrap.mjs \
+            --game-id="$GAME_ID" \
+            --game-name="$GAME_NAME" \
+            --baseline=/tmp/design-baseline.json \
+            --artbook=/tmp/current-artbook.json \
+            --source-path="$SOURCE_PATH" \
+            --candidate-id="${{ steps.context.outputs.candidate_id }}" \
+            --candidate-path="${{ steps.context.outputs.candidate_path }}" \
+            --source-commit="${{ needs.prepare.outputs.dev_sha }}" \
+            --model="$MODEL" \
+            --evidence="${{ steps.context.outputs.evidence }}"
+      - name: Install mobile gameplay validation runtime
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Execute actual mobile gameplay validation
+        env:
+          GAME_ID: ${{ matrix.item.gameId }}
+        run: |
+          mkdir -p qa-artifacts/development-web
+          node tools/company-development-web-gameplay-validation.mjs \
+            --game-id="$GAME_ID" \
+            --source="${{ steps.context.outputs.candidate_path }}" \
+            --port=4181 \
+            --output="${{ steps.context.outputs.base }}/web-gameplay-validation.json" \
+            --screenshot="qa-artifacts/development-web/$GAME_ID.png"
+      - name: Ensure all configured free department models for evidence meeting
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t models < <(node -e "const d=require('./company-directive.json');for(const m of [...new Set(d.ai?.modelPool||[])])console.log(m)")
+          test "${#models[@]}" -ge 5
+          have="$(ollama list | awk 'NR>1{print $1}')"
+          for model in "${models[@]}"; do
+            if grep -Fxq "$model" <<<"$have"; then
+              echo "DEPARTMENT_MODEL_READY=$model:CACHED"
+            else
+              ollama pull "$model"
+              echo "DEPARTMENT_MODEL_READY=$model:PULLED"
+            fi
+          done
+          echo 'PAID_API=NO'
+      - name: Run canonical DEVELOPMENT_CONFIRMED validation cycle
+        env:
+          ARTBOOK_GAME_ID: ${{ matrix.item.gameId }}
+          ARTBOOK_DATE: ${{ steps.context.outputs.date }}
+        run: node tools/company-development-validation-cycle.mjs
+      - name: Verify canonical next state
+        env:
+          BASE: ${{ steps.context.outputs.base }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          state="$(node -e "const s=require('./${BASE}/cycle-status.json');process.stdout.write(String(s.state||''))")"
+          case "$state" in
+            WAITING_UNITY_VALIDATION|DEVELOPMENT_BASELINE_READY) ;;
+            *) echo "unexpected DEVELOPMENT_CONFIRMED state: $state" >&2; exit 1;;
+          esac
+          echo "DEVELOPMENT_CANONICAL_STATE=$state"
+      - name: Preserve company-runtime evidence package
+        env:
+          GAME_ID: ${{ matrix.item.gameId }}
+          SOURCE_PATH: ${{ matrix.item.sourcePath }}
+          BASE: ${{ steps.context.outputs.base }}
+          BRANCH: ${{ steps.context.outputs.branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p runtime-persist/"$(dirname "$BASE")" runtime-persist/queue
+          cp -R "$BASE" runtime-persist/"$(dirname "$BASE")"/
+          node <<'NODE'
+          const fs=require('fs');
+          const base=process.env.BASE,gameId=process.env.GAME_ID;
+          const status=JSON.parse(fs.readFileSync(`${base}/cycle-status.json`,'utf8'));
+          const currentStep=status.state==='DEVELOPMENT_BASELINE_READY'?'DEVELOPMENT_BASELINE_GATE':'UNITY_ANDROID_TECHNICAL_VALIDATION';
+          fs.writeFileSync(`runtime-persist/queue/${gameId}.json`,JSON.stringify({gameId,status:'ACTIVE',currentStep,canonicalState:status.state,candidateBranch:process.env.BRANCH,sourcePath:process.env.SOURCE_PATH,updatedAt:new Date().toISOString()},null,2)+'\n');
+          NODE
+      - name: Upload validated runtime evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: development-runtime-${{ matrix.item.gameId }}-${{ github.run_id }}
+          path: |
+            runtime-persist/
+            qa-artifacts/development-web/
+          retention-days: 7
+          if-no-files-found: error
+      - name: Clean runtime-only material before candidate commit
+        env:
+          BASE: ${{ steps.context.outputs.base }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git restore --worktree --staged game-catalog.json || true
+          git restore --worktree --staged -- "$BASE" 2>/dev/null || true
+          git clean -fd -- "$BASE" runtime-persist qa-artifacts >/dev/null
+      - name: Push isolated candidate only
+        env:
+          BRANCH: ${{ steps.context.outputs.branch }}
+          CANDIDATE_PATH: ${{ steps.context.outputs.candidate_path }}
+          EVIDENCE: ${{ steps.context.outputs.evidence }}
+          GAME_ID: ${{ matrix.item.gameId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-development-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git checkout -b "$BRANCH"
+          git add "$CANDIDATE_PATH" "$EVIDENCE"
+          test -n "$(git diff --cached --name-only)"
+          git diff --cached --name-only | while read -r file; do
+            [[ "$file" == "$CANDIDATE_PATH"/* || "$file" == "$EVIDENCE" ]] || { echo "unauthorized candidate path: $file" >&2; exit 1; }
+          done
+          git commit -m "dev: bootstrap $GAME_ID first playable [skip ci]"
+          git push origin HEAD:"$BRANCH"
+          echo 'CANDIDATE_ONLY=YES'
+          echo 'PUBLIC_MAIN_WRITE=NO'
+
+  persist-runtime:
+    name: persist DEVELOPMENT_CONFIRMED evidence
+    needs: [prepare, web-first-playable]
+    if: needs.prepare.outputs.run == 'true' && always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    concurrency:
+      group: company-runtime-writer
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          fetch-depth: 0
+      - name: Download successful validated packages
+        id: packages
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: development-runtime-*-${{ github.run_id }}
+          path: /tmp/development-runtime
+          merge-multiple: true
+      - name: Merge successful evidence into company runtime
+        if: steps.packages.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin company-runtime
+          git reset --hard origin/company-runtime
+          test -d /tmp/development-runtime/runtime-persist/design
+          cp -R /tmp/development-runtime/runtime-persist/design/. design/
+          node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const dir='/tmp/development-runtime/runtime-persist/queue';
+          const updates=fs.readdirSync(dir).filter(x=>x.endsWith('.json')).map(x=>JSON.parse(fs.readFileSync(path.join(dir,x),'utf8')));
+          for(const update of updates){
+            const item=(queue.items||[]).find(x=>x.gameId===update.gameId);
+            if(!item)throw new Error(`queue item missing: ${update.gameId}`);
+            Object.assign(item,update);
+          }
+          queue.updatedAt=new Date().toISOString();
+          fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          console.log(`DEVELOPMENT_RUNTIME_PERSIST_COUNT=${updates.length}`);
+          NODE
+          git config user.name 'jaewoon-development-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git add design development-queue.json
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'COMPANY_RUNTIME_PERSIST=NO_CHANGE'
+            exit 0
+          fi
+          git commit -m "runtime: persist DEVELOPMENT_CONFIRMED web validation [skip ci]"
+          for attempt in 1 2 3; do
+            if git push origin HEAD:company-runtime; then
+              echo 'COMPANY_RUNTIME_PERSIST=PASS'
+              exit 0
+            fi
+            git fetch origin company-runtime
+            if ! git rebase origin/company-runtime; then
+              git rebase --abort || true
+              echo 'company-runtime changed on overlapping evidence; leaving successful artifacts for targeted retry' >&2
+              exit 1
+            fi
+            sleep $((attempt * 2))
+          done
+          exit 1
+      - name: Runtime summary
+        if: always()
+        run: |
+          echo 'DEVELOPMENT_CONFIRMED_PARALLEL=6_MAX'
+          echo 'WEB_GAMEPLAY_VALIDATION=REAL_INPUT_AND_STATE_CHANGE'
+          echo 'SUCCESSFUL_GAMES_PERSIST_INDEPENDENTLY=YES'
+          echo 'FAILED_GAMES_REMAIN_PENDING=YES'
+          echo 'NEXT_GATE=UNITY_ANDROID_TECHNICAL_VALIDATION'
+          echo 'PUBLIC_MAIN_WRITE=NO'

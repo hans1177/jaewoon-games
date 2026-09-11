@@ -44,19 +44,18 @@ export function buildLicensedReferenceSamples({ drillsFile, outDir, max = 96 }) 
   let written = 0;
   for (const { drill, source } of rows) {
     const sourceRevision = `${source.repository}@${source.commit}`;
+    // 모델 입력에는 구현 판단에 필요한 최소 정보만 둔다. 긴 commit/path/license provenance는
+    // 아래 provenance에 보존해 256-token practice 학습에서 정답 토큰이 잘리지 않게 한다.
+    const modelInput = {
+      topic: clean(drill.topic),
+      evidenceSymbol: clean(drill.evidenceSymbol),
+      avoid: drill.avoid ?? [],
+      verify: drill.verify ?? [],
+    };
     const sample = {
       version: 1,
       instruction: `Unity 실제 코드 근거 구현판단 연습: ${clean(drill.scenario)}`,
-      input: JSON.stringify({
-        topic: clean(drill.topic),
-        evidenceSymbol: clean(drill.evidenceSymbol),
-        sourceRepository: source.repository,
-        sourceCommit: source.commit,
-        sourceLicense: source.licenseSpdx,
-        sourcePaths: source.sourcePaths,
-        avoid: drill.avoid ?? [],
-        verify: drill.verify ?? [],
-      }, null, 2),
+      input: JSON.stringify(modelInput, null, 2),
       output: [
         clean(drill.answer),
         Array.isArray(drill.avoid) && drill.avoid.length ? `피해야 할 접근: ${drill.avoid.join(' / ')}` : '',
@@ -95,7 +94,8 @@ export function buildLicensedReferenceSamples({ drillsFile, outDir, max = 96 }) 
         practiceOnly: true,
         productionEvidence: false,
         sourceBacked: true,
-        note: 'Licensed external source distilled into implementation judgment. Never count as internal verified production evidence.',
+        modelPromptProvenanceExcluded: true,
+        note: 'Licensed external source distilled into implementation judgment. Exact source provenance is retained outside the model prompt and never counts as internal verified production evidence.',
       },
     };
     const file = `${clean(drill.id).replace(/[^A-Za-z0-9._-]/g, '_')}.json`;
