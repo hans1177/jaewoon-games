@@ -9,6 +9,7 @@ on:
       - 'tools/external-mobile-free-playtest.ps1'
       - 'tools/ensure-android-playtest-device.ps1'
       - 'tools/ensure-android-playtest-device-preaccepted.ps1'
+      - 'tools/ensure-android-playtest-device-installed-only.ps1'
       - 'tools/vibe2-external-gameplay-distill.mjs'
       - '.playtest-requests/mobile-free.json'
   workflow_dispatch:
@@ -107,12 +108,12 @@ jobs:
           "EXTERNAL_PLAYTEST_OUT=$out" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "EXTERNAL_PLAYTEST_OUT=$out"
 
-      - name: Ensure Android runtime device from preaccepted SDK or existing AVD
+      - name: Ensure Android runtime device from accessible preinstalled Play Store image
         id: ensure_device
         continue-on-error: true
         run: |
           $ErrorActionPreference = 'Stop'
-          & .\tools\ensure-android-playtest-device-preaccepted.ps1 -OutDir $env:EXTERNAL_PLAYTEST_OUT
+          & .\tools\ensure-android-playtest-device-installed-only.ps1 -OutDir $env:EXTERNAL_PLAYTEST_OUT
           if ($LASTEXITCODE -ne 0) { throw 'Android playtest device provisioning failed' }
 
       - name: Install and black-box playtest free mobile reference game
