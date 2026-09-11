@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-single-defense-strat-celestial-bastion",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
+        ],
+        "fix": [
+          "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+        ],
+        "add": [
+          "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense"
+        ],
+        "risks": [
+          "How does the single-player defense strategy reinterpret the successful structural lessons of Kingdom Rush and Bloons TD 6 through"
+        ],
+        "evidence": [
+          "How does the distinct setting, visual identity, progression mix, and touch-first presentation bring to the single-player defense"
+        ],
+        "questions": [
+          "What is the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion?"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "GAME_SEED"
+        ],
+        "add": [
+          "GAME_SEED"
+        ],
+        "risks": [
+          "GAME_SEED"
+        ],
+        "evidence": [
+          "GAME_SEED"
+        ],
+        "questions": [
+          "GAME_SEED"
+        ]
+      }
+    }
+  ]
+}

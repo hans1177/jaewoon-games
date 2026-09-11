@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "gameId": "seed-single-defense-strat-celestial-bastion",
+  "date": "2026-09-11",
+  "state": "REDESIGN",
+  "sameDesignerRevisionAttempted": true,
+  "repeatedFiveDepartmentReview": true,
+  "allFiveLeadModelsReviewed": true,
+  "discardVotes": 1,
+  "commonFatalCriteria": [],
+  "unanimousFatalDiscard": false,
+  "fatalReviews": {
+    "planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "The distinct setting, visual identity, progression mix, and touch-first presentation bring to the single-player defense a unique approach that enhances gameplay and strategy, as evidenced by reference games such as Kingdom Rush and Bloons TD 6.",
+        "The visual direction and market data should be balanced to avoid potential drawbacks."
+      ],
+      "reason": "The distinct setting, visual identity, progression mix, and touch-first presentation bring to the single-player defense a unique approach that enhances gameplay and strategy, as evidenced by reference games such as Kingdom Rush and Bloons TD 6. However, the implementation should ensure that the visual direction and market data are balanced to avoid potential drawbacks."
+    },
+    "graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "VALID_FATAL_CRITERIA"
+      ],
+      "reason": "The core gameplay loop, while aiming for a distinct style, introduces a significant risk of being a rehash of established games. The 'single-player' designation, while potentially beneficial, risks diluting the core experience. The 'reinterpretation' aspect, while potentially interesting, needs careful consideration to avoid a superficial imitation. The 'mobile single-player' designation, combined with the 'touch-first presentation' and 'strategic adaptation' elements, raises concerns about the game's long-term viability and potential for market appeal. The 'core loop' and 'visual direction' elements are also a concern, as the game's design is heavily reliant on established game mechanics.  "
+    },
+    "development": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "MARKET_EVIDENCE_SUMMARY",
+        "REVISED_DESIGN",
+        "INITIAL_MEETING"
+      ],
+      "reason": "The revised design brings a unique approach to the single-player defense strategy, enhancing gameplay and strategy. However, the implementation should ensure that the visual direction and market data are balanced to avoid potential drawbacks."
+    },
+    "qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "Kingdom Rush",
+        "Bloons TD 6",
+        "Plants vs. Zombies 2",
+        "The Battle Cats"
+      ],
+      "reason": "The current design does not meet the criteria of being an original and distinct single-player defense strategy that reinterprets the successful structural lessons of Kingdom Rush and Bloons TD 6 through a distinct setting, visual identity, progression mix, and touch-first presentation. The implementation should ensure that the visual direction and market data are balanced to avoid potential drawbacks."
+    },
+    "balance": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful structural lessons of Kingdom Rush and Bloons TD 6 through a distinct setting, visual identity, progression mix, and touch-first presentation.",
+        "What is the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion?",
+        "What does the distinct setting, visual identity, progression mix, and touch-first presentation bring to the single-player defense strategy?",
+        "What is the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion?"
+      ],
+      "reason": "The distinct setting, visual identity, progression mix, and touch-first presentation bring to the single-player defense a unique approach that enhances gameplay and strategy, as evidenced by reference games such as Kingdom Rush and Bloons TD 6."
+    }
+  },
+  "marketMetricAloneUsedForDiscard": false
+}

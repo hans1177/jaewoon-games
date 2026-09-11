@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-single-defense-strat-celestial-bastion",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "GAME_SEED"
+        ],
+        "add": [
+          "GAME_SEED"
+        ],
+        "risks": [
+          "GAME_SEED"
+        ],
+        "evidence": [
+          "GAME_SEED"
+        ],
+        "questions": [
+          "GAME_SEED"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "the distinct setting, visual identity, progression mix, and touch-first presentation"
+        ],
+        "fix": [
+          "the distinct setting, visual identity, progression mix, and touch-first presentation"
+        ],
+        "add": [
+          "the distinct setting, visual identity, progression mix, and touch-first presentation"
+        ],
+        "risks": [
+          "the distinct setting, visual identity, progression mix, and touch-first presentation"
+        ],
+        "evidence": [
+          "reference games: Kingdom Rush, Bloons TD 6, Plants vs. Zombies 2, Global strategy/session signal"
+        ],
+        "questions": [
+          "what does the distinct setting, visual identity, progression mix, and touch-first presentation bring to the single-player defense"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Not_Recommended"
+        ],
+        "fix": [
+          "Multiplayer Expansion Decision"
+        ],
+        "add": [
+          "validationQuestions"
+        ],
+        "risks": [
+          "Market Data Alone Cannot Discard"
+        ],
+        "evidence": [
+          "Kingdom Rush"
+        ],
+        "questions": [
+          "What is the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion?"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "version": 4,
+  "gameId": "seed-single-defense-strat-celestial-bastion",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "SEED-SINGLE_DEFENSE_STRATEGY-001",
+  "gameSeedSource": "game-seed-state.json",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "smollm2:1.7b",
+  "singleAuthor": true,
+  "content": {
+    "identity": "game",
+    "playerFantasy": "Celestial Bastion",
+    "coreFun": "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful structural lessons of Kingdom Rush and Bloons TD 6 through a distinct setting, visual identity, progression mix, and touch-first presentation.",
+    "coreLoop": [
+      "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+      "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+    ],
+    "signatureSystems": [
+      {
+        "name": "single-player",
+        "purpose": "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful structural lessons of Kingdom Rush and Bloons TD 6 through a distinct setting, visual identity, progression mix, and touch-first presentation.",
+        "playerChoice": "Tower Defense"
+      }
+    ],
+    "progressionDirection": "wave-by-wave",
+    "visualDirection": "tower-placement",
+    "mobileUx": "Touch-first presentation",
+    "marketTargetDirection": "GLOBAL",
+    "steamExpansionDecision": "NOT_RECOMMENDED",
+    "multiplayerExpansionDecision": "NOT_RECOMMENDED",
+    "technicalAssumptions": [
+      "Tower Placement and Upgrade-Path Synergy",
+      "Wave Pressure and Threat Coverage",
+      "Defender and Tower Balance and Counter-Choice"
+    ],
+    "validationQuestions": [
+      "How does the single-player defense strategy reinterpret the successful structural lessons of Kingdom Rush and Bloons TD 6 through a distinct setting, visual identity, progression mix, and touch-first presentation?",
+      "What does the distinct setting, visual identity, progression mix, and touch-first presentation bring to the single-player defense strategy?",
+      "How does the single-player defense strategy adapt to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices?"
+    ],
+    "openQuestions": [
+      "What is the distinct setting, visual identity, progression mix, and touch-first presentation of Celestial Bastion?",
+      "What does the distinct setting, visual identity, progression mix, and touch-first presentation bring to the single-player defense strategy?",
+      "How does the distinct setting, visual identity, progression mix, and touch-first presentation reinterpret the successful structural lessons of Kingdom Rush and Bloons TD 6 through a distinct setting, visual identity, progression mix, and touch-first presentation?"
+    ]
+  }
+}

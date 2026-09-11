@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-single-defense-strat-celestial-bastion",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "reason": "The distinct setting, visual identity, progression mix, and touch-first presentation bring to the single-player defense a unique approach that enhances gameplay and strategy, as evidenced by reference games such as Kingdom Rush and Bloons TD 6. However, the implementation should ensure that the visual direction and market data are balanced to avoid potential drawbacks."
+    },
+    "graphics": {
+      "accept": [
+        "Tower Placement and Upgrade-Path Synergy",
+        "fix",
+        "Defender and Tower Balance and Counter-Choice"
+      ],
+      "challenge": [
+        "Visual Direction"
+      ],
+      "revision": [
+        "Kingdom Rush"
+      ],
+      "reason": "The distinct setting, visual identity, progression mix, and touch-first presentation brings to the single-player defense"
+    },
+    "development": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "reason": "이러한 부서의 대표 의견은 개발 부서의 책임 범위에서 한 번만 수용/반박/수정해야 합니다."
+    },
+    "qa": {
+      "accept": [
+        "the distinct setting, visual identity, progression mix, and touch-first presentation"
+      ],
+      "challenge": [
+        "the distinct setting, visual identity, progression mix, and touch-first presentation"
+      ],
+      "revision": [
+        "the distinct setting, visual identity, progression mix, and touch-first presentation"
+      ],
+      "reason": "The distinct setting, visual identity, progression mix, and touch-first presentation bring unique gameplay elements that enhance the single-player defense experience, as evidenced by reference games like Kingdom Rush, Bloons TD 6, Plants vs. Zombies 2, and Global strategy/session signal."
+    },
+    "balance": {
+      "accept": [
+        "GAME_SEED"
+      ],
+      "challenge": [
+        "GAME_SEED"
+      ],
+      "revision": [
+        "GAME_SEED"
+      ],
+      "reason": "GAME_SEED"
+    }
+  }
+}

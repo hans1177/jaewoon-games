@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-single-defense-strat-celestial-bastion",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Celestial Bastion is an original global mobile single-player single defense strategy that reinterprets the successful structural"
+        ],
+        "fix": [
+          "the successful structural lessons of Kingdom Rush and Bloons TD 6 through a distinct setting, visual identity, progression mix,"
+        ],
+        "add": [
+          "touch-first presentation"
+        ],
+        "risks": [
+          "the distinct setting, visual identity, progression mix, and touch-first presentation"
+        ],
+        "evidence": [
+          "reference games: Kingdom Rush, Bloons TD 6, Plants vs. Zombies 2, Global strategy/session signal"
+        ],
+        "questions": [
+          "what does the distinct setting, visual identity, progression mix, and touch-first presentation bring to the single-player defense"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Core Fun"
+        ],
+        "fix": [
+          "Core Loop"
+        ],
+        "add": [
+          "Visual Direction"
+        ],
+        "risks": [
+          "Market Data Alone Cannot Discard"
+        ],
+        "evidence": [
+          "Kingdom Rush"
+        ],
+        "questions": [
+          "How does the single-player defense strategy reinterpret the successful structural lessons of Kingdom Rush and Bloons TD 6 through…"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    }
+  ]
+}
