@@ -50,18 +50,34 @@ function Set-AndroidJava {
   }
 }
 
-function Invoke-CmdWithYes {
-  param([string]$Exe,[string[]]$ArgumentList)
-  $quotedExe = '"' + $Exe.Replace('"','""') + '"'
-  $quotedArgs = @($ArgumentList | ForEach-Object { '"' + ([string]$_).Replace('"','""') + '"' }) -join ' '
-  $command = "(for /L %i in (1,1,500) do @echo y) | $quotedExe $quotedArgs"
+function Quote-CmdArg {
+  param([string]$Value)
+  '"' + $Value.Replace('"','""') + '"'
+}
+
+function Invoke-CmdWithInputFile {
+  param(
+    [string]$Exe,
+    [string[]]$ArgumentList,
+    [string]$InputFile,
+    [string]$OutputFile
+  )
+  $exePart = Quote-CmdArg $Exe
+  $argPart = @($ArgumentList | ForEach-Object { Quote-CmdArg ([string]$_) }) -join ' '
+  $inPart = Quote-CmdArg $InputFile
+  $outPart = Quote-CmdArg $OutputFile
+  $command = "call $exePart $argPart < $inPart > $outPart 2>&1"
   $old = $ErrorActionPreference
   try {
     $ErrorActionPreference = 'Continue'
-    $output = & $env:ComSpec /d /s /c $command 2>&1
+    & $env:ComSpec /d /s /c $command
     $code = $LASTEXITCODE
   } finally { $ErrorActionPreference = $old }
-  [pscustomobject]@{ ExitCode=[int]$code; Output=@($output | ForEach-Object { [string]$_ }) }
+  $output = @()
+  if (Test-Path -LiteralPath $OutputFile) {
+    $output = @([System.IO.File]::ReadAllLines($OutputFile) | ForEach-Object { [string]$_ })
+  }
+  [pscustomobject]@{ ExitCode=[int]$code; Output=$output; Command=$command }
 }
 
 function Invoke-Native {
@@ -75,6 +91,16 @@ function Invoke-Native {
   [pscustomobject]@{ ExitCode=[int]$code; Output=@($output | ForEach-Object { [string]$_ }) }
 }
 
+function Test-PlayStoreImageComplete {
+  param([string]$ImagePath)
+  if (-not (Test-Path -LiteralPath $ImagePath)) { return $false }
+  $required = @('source.properties','system.img','vendor.img','ramdisk.img')
+  foreach ($name in $required) {
+    if (-not (Test-Path -LiteralPath (Join-Path $ImagePath $name))) { return $false }
+  }
+  $true
+}
+
 if (-not (Test-Path -LiteralPath 'E:\')) { throw 'E_DRIVE_NOT_FOUND' }
 $drive = Get-PSDrive E
 if ($drive.Free -lt 12GB) { throw "E_DRIVE_FREE_SPACE_TOO_LOW:$([math]::Round($drive.Free/1GB,2))GB; need at least 12GB" }
@@ -86,7 +112,6 @@ $targetAvd = Join-Path $TargetRoot 'avd'
 $targetTemp = Join-Path $TargetRoot 'temp'
 New-Item -ItemType Directory -Force $targetSdk,$targetAvd,$targetTemp | Out-Null
 
-# Clean only known failed SDK download temp data on C:. Do not remove installed SDK packages.
 $sourceTemp = Join-Path $sourceSdk '.temp'
 if (Test-Path -LiteralPath $sourceTemp) {
   Remove-Item (Join-Path $sourceTemp '*') -Recurse -Force -ErrorAction SilentlyContinue
@@ -95,6 +120,10 @@ if (Test-Path -LiteralPath $sourceTemp) {
 Set-AndroidJava
 $env:TEMP = $targetTemp
 $env:TMP = $targetTemp
+
+$yesFile = Join-Path $targetTemp 'sdkmanager-yes.txt'
+$outFile = Join-Path $targetTemp 'sdkmanager-output.txt'
+(1..800 | ForEach-Object { 'y' }) | Set-Content -LiteralPath $yesFile -Encoding ASCII
 
 Write-Host "SOURCE_ANDROID_SDK=$sourceSdk"
 Write-Host "TARGET_ANDROID_SDK=$targetSdk"
@@ -106,7 +135,7 @@ $installedRoot = Join-Path $targetSdk 'system-images'
 $installed = @()
 if (Test-Path -LiteralPath $installedRoot) {
   $installed = @(Get-ChildItem $installedRoot -Directory -Recurse -ErrorAction SilentlyContinue | Where-Object {
-    $_.Name -eq 'x86_64' -and $_.Parent -and $_.Parent.Name -eq 'google_apis_playstore' -and $_.Parent.Parent -and $_.Parent.Parent.Name -match '^android-\d+$'
+    $_.Name -eq 'x86_64' -and $_.Parent -and $_.Parent.Name -eq 'google_apis_playstore' -and $_.Parent.Parent -and $_.Parent.Parent.Name -match '^android-\d+$' -and (Test-PlayStoreImageComplete $_.FullName)
   })
 }
 
@@ -123,16 +152,36 @@ if ($installed.Count -eq 0) {
   }
   if ($null -eq $best) { throw 'NO_GOOGLE_PLAY_X86_64_SYSTEM_IMAGE_IN_SDKMANAGER_LIST' }
 
+  $expected = Join-Path $targetSdk "system-images\android-$($best.Api)\google_apis_playstore\x86_64"
+  if ((Test-Path -LiteralPath $expected) -and -not (Test-PlayStoreImageComplete $expected)) {
+    Write-Host "REMOVING_INCOMPLETE_E_IMAGE=$expected"
+    Remove-Item -LiteralPath $expected -Recurse -Force -ErrorAction SilentlyContinue
+  }
+
+  $sourceExpected = Join-Path $sourceSdk "system-images\android-$($best.Api)\google_apis_playstore\x86_64"
+  if ((Test-Path -LiteralPath $sourceExpected) -and -not (Test-PlayStoreImageComplete $sourceExpected)) {
+    Write-Host "REMOVING_INCOMPLETE_C_IMAGE=$sourceExpected"
+    Remove-Item -LiteralPath $sourceExpected -Recurse -Force -ErrorAction SilentlyContinue
+  }
+
   Write-Host 'ANDROID_SDK_LICENSE_ACCEPTANCE=START'
-  $license = Invoke-CmdWithYes $sdkManager @("--sdk_root=$targetSdk",'--licenses')
+  $license = Invoke-CmdWithInputFile $sdkManager @("--sdk_root=$targetSdk",'--licenses') $yesFile $outFile
   if ($license.ExitCode -eq 0) { Write-Host 'ANDROID_SDK_LICENSE_ACCEPTANCE=PASS' }
   else { Write-Host 'ANDROID_SDK_LICENSE_ACCEPTANCE=DEFER_TO_INSTALL' }
 
   Write-Host "INSTALLING_PLAY_STORE_SYSTEM_IMAGE=$($best.Package)"
-  $install = Invoke-CmdWithYes $sdkManager @("--sdk_root=$targetSdk",$best.Package)
-  if ($install.ExitCode -ne 0) { throw "PLAY_STORE_SYSTEM_IMAGE_INSTALL_FAILED:$(@($install.Output | Select-Object -Last 40) -join "`n")" }
-  $expected = Join-Path $targetSdk "system-images\android-$($best.Api)\google_apis_playstore\x86_64"
-  if (-not (Test-Path -LiteralPath $expected)) { throw "PLAY_STORE_SYSTEM_IMAGE_INSTALL_NOT_FOUND:$expected" }
+  $install = Invoke-CmdWithInputFile $sdkManager @("--sdk_root=$targetSdk",$best.Package) $yesFile $outFile
+  if ($install.ExitCode -ne 0) {
+    throw "PLAY_STORE_SYSTEM_IMAGE_INSTALL_FAILED:$(@($install.Output | Select-Object -Last 40) -join "`n")"
+  }
+  if (-not (Test-PlayStoreImageComplete $expected)) {
+    $where = @()
+    foreach ($root in @($targetSdk,$sourceSdk)) {
+      $probe = Join-Path $root "system-images\android-$($best.Api)\google_apis_playstore\x86_64"
+      if (Test-Path -LiteralPath $probe) { $where += $probe }
+    }
+    throw "PLAY_STORE_SYSTEM_IMAGE_INSTALL_NOT_FOUND_OR_INCOMPLETE:$expected; FOUND=$($where -join ';')"
+  }
   Write-Host "PLAY_STORE_SYSTEM_IMAGE_INSTALL=PASS api=$($best.Api)"
 } else {
   $bestInstalled = $installed | Sort-Object { [int]($_.Parent.Parent.Name -replace '^android-','') } -Descending | Select-Object -First 1
