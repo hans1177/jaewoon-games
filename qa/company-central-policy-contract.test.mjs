@@ -32,6 +32,10 @@ test('GAME_SEED central policy owns bootstrap benchmark global market evidence a
   assert.equal(directive.gameSeed.bootstrap.count,6);
   assert.equal(new Set(directive.gameSeed.bootstrap.categories).size,6);
   assert.equal(directive.gameSeed.marketEvidence.role,'TARGET_DESIGN_REFERENCE');
+  assert.equal(directive.gameSeed.marketEvidence.targetMarketScope,'GLOBAL');
+  assert.equal(directive.gameSeed.marketEvidence.countrySpecificEvidenceRole,'SECONDARY_CONTEXT_ONLY');
+  assert.equal(directive.gameSeed.marketEvidence.defaultTargetMustNotBeCountrySpecific,true);
+  assert.equal(directive.gameSeed.marketEvidence.globalEvidencePreferred,true);
   assert.equal(directive.gameSeed.marketEvidence.hardPassFailGate,false);
   assert.equal(directive.gameSeed.marketEvidence.numericClaimRequiresSource,true);
   assert.equal(directive.gameSeed.marketEvidence.numericClaimRequiresObservedAt,true);
