@@ -3,7 +3,7 @@
   "dateKst": "2026-09-11",
   "directorRole": "staff-supervisor-not-substitute-worker",
   "activeDailyTarget": "daechung-rpg",
-  "activeDevelopmentRunId": 34531173768,
+  "activeDevelopmentRunId": 34574754742,
   "checks": {
     "staffChecked": "8/8",
     "activeWorkOrder": null,
@@ -25,42 +25,51 @@
   },
   "counts": {
     "WORKING": 1,
-    "DONE": 1,
-    "IDLE_NO_TASK": 6,
+    "DONE": 6,
+    "IDLE_NO_TASK": 0,
     "BLOCKED": 0,
-    "FAILED": 0,
+    "FAILED": 1,
     "STALE": 0
   },
   "liveStates": {
     "ACTIVE": 1,
-    "WAITING": 6,
-    "BLOCKED": 0,
-    "DONE": 1
+    "WAITING": 0,
+    "BLOCKED": 1,
+    "DONE": 6
   },
-  "attentionRequired": false,
+  "attentionRequired": true,
   "primaryFindings": [
-    "NO_WORK_ORDER:artbook-work-orders/2026-09-11-daechung-rpg.json"
+    "NO_WORK_ORDER:artbook-work-orders/2026-09-11-daechung-rpg.json",
+    "homepage:WORKFLOW_FAILED"
   ],
   "workflowEvidence": {
     "artbook": {
-      "id": 34531143237,
+      "id": 34574694313,
       "status": "in_progress",
       "conclusion": null,
-      "event": "push",
-      "createdAt": "2026-09-10T21:15:17Z",
-      "updatedAt": "2026-09-10T21:15:48Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34531143237"
+      "event": "workflow_dispatch",
+      "createdAt": "2026-09-11T07:30:24Z",
+      "updatedAt": "2026-09-11T07:30:37Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34574694313"
     },
     "autonomousDevelopment": {
-      "id": 34531173768,
+      "id": 34574754742,
+      "status": "completed",
+      "conclusion": "success",
+      "event": "push",
+      "createdAt": "2026-09-11T07:31:08Z",
+      "updatedAt": "2026-09-11T07:31:25Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34574754742"
+    },
+    "homepage": {
+      "id": 34574754601,
       "status": "completed",
       "conclusion": "failure",
-      "event": "workflow_dispatch",
-      "createdAt": "2026-09-10T21:15:35Z",
-      "updatedAt": "2026-09-10T21:15:54Z",
-      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34531173768"
+      "event": "push",
+      "createdAt": "2026-09-11T07:31:08Z",
+      "updatedAt": "2026-09-11T07:31:17Z",
+      "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34574754601"
     },
-    "homepage": null,
     "publicGameHealth": null,
     "unityBuild": null,
     "unityRuntime": null
@@ -84,28 +93,28 @@
   "staff": {
     "planning": {
       "department": "planning",
-      "taskAssigned": true,
-      "status": "IDLE_NO_TASK",
-      "workState": "WAITING",
-      "task": "autonomous development floor 34531173768",
+      "taskAssigned": false,
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34574754742",
       "executionEvidence": [
-        "autonomous-workflow:34531173768:completed:failure",
-        "autonomous-job:103052065952:department (planning-final):completed:skipped"
+        "autonomous-workflow:34574754742:completed:success",
+        "autonomous-job:103184631341:department (planning-final):completed:skipped"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": {
-        "id": 103052065952,
+        "id": 103184631341,
         "name": "department (planning-final)",
         "status": "completed",
         "conclusion": "skipped",
         "failedStep": null,
-        "startedAt": "2026-09-10T21:15:54Z",
-        "completedAt": "2026-09-10T21:15:53Z",
-        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34531173768/job/103052065952"
+        "startedAt": "2026-09-11T07:31:25Z",
+        "completedAt": "2026-09-11T07:31:24Z",
+        "htmlUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/34574754742/job/103184631341"
       },
       "directCause": null,
       "blockers": [],
-      "reason": "latest autonomous development floor has no department task",
+      "reason": "latest autonomous development floor completed without a separate active role job",
       "action": "none",
       "source": "autonomous-development",
       "performance": {
@@ -125,17 +134,17 @@
     "development": {
       "department": "development",
       "taskAssigned": false,
-      "status": "IDLE_NO_TASK",
-      "workState": "WAITING",
-      "task": "autonomous development floor 34531173768",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34574754742",
       "executionEvidence": [
-        "autonomous-workflow:34531173768:completed:failure"
+        "autonomous-workflow:34574754742:completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "latest autonomous development floor has no department task",
+      "reason": "latest autonomous development floor completed without a separate active role job",
       "action": "none",
       "source": "autonomous-development",
       "performance": {
@@ -155,17 +164,17 @@
     "qa": {
       "department": "qa",
       "taskAssigned": false,
-      "status": "IDLE_NO_TASK",
-      "workState": "WAITING",
-      "task": "autonomous development floor 34531173768",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34574754742",
       "executionEvidence": [
-        "autonomous-workflow:34531173768:completed:failure"
+        "autonomous-workflow:34574754742:completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "latest autonomous development floor has no department task",
+      "reason": "latest autonomous development floor completed without a separate active role job",
       "action": "none",
       "source": "autonomous-development",
       "performance": {
@@ -185,17 +194,17 @@
     "graphics": {
       "department": "graphics",
       "taskAssigned": false,
-      "status": "IDLE_NO_TASK",
-      "workState": "WAITING",
-      "task": "autonomous development floor 34531173768",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34574754742",
       "executionEvidence": [
-        "autonomous-workflow:34531173768:completed:failure"
+        "autonomous-workflow:34574754742:completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "latest autonomous development floor has no department task",
+      "reason": "latest autonomous development floor completed without a separate active role job",
       "action": "none",
       "source": "autonomous-development",
       "performance": {
@@ -215,17 +224,17 @@
     "balance": {
       "department": "balance",
       "taskAssigned": false,
-      "status": "IDLE_NO_TASK",
-      "workState": "WAITING",
-      "task": "autonomous development floor 34531173768",
+      "status": "DONE",
+      "workState": "DONE",
+      "task": "autonomous development floor 34574754742",
       "executionEvidence": [
-        "autonomous-workflow:34531173768:completed:failure"
+        "autonomous-workflow:34574754742:completed:success"
       ],
-      "resultVerified": false,
+      "resultVerified": true,
       "jobEvidence": null,
       "directCause": null,
       "blockers": [],
-      "reason": "latest autonomous development floor has no department task",
+      "reason": "latest autonomous development floor completed without a separate active role job",
       "action": "none",
       "source": "autonomous-development",
       "performance": {
@@ -244,18 +253,21 @@
     },
     "homepage": {
       "department": "homepage",
-      "taskAssigned": false,
-      "status": "IDLE_NO_TASK",
-      "workState": "WAITING",
-      "task": "no standing homepage worker task; runtime data sync is automatic",
+      "taskAssigned": true,
+      "status": "FAILED",
+      "workState": "BLOCKED",
+      "task": "homepage diagnostics",
       "executionEvidence": [
         "homepage-manager-status.json:snapshot-only",
-        "company-status:homepage-runtime-sync-active"
+        "company-status:homepage-runtime-sync-active",
+        "workflow:34574754601:completed:failure"
       ],
-      "resultVerified": true,
-      "blockers": [],
-      "reason": "homepage latest-data sync is handled by runtime JSON refresh; Homepage Manager is diagnostic-only and has no standing worker task",
-      "action": "none"
+      "resultVerified": false,
+      "blockers": [
+        "WORKFLOW_FAILED"
+      ],
+      "reason": "latest Homepage Manager diagnostic workflow failed",
+      "action": "inspect and fix Homepage Manager diagnostics"
     },
     "release": {
       "department": "release",
@@ -315,10 +327,10 @@
   },
   "bottleneckRecovery": {
     "enabled": true,
-    "artbookBacklogCount": 0,
-    "nextMissingInitialArtbook": null,
+    "artbookBacklogCount": 6,
+    "nextMissingInitialArtbook": "seed-action-survival-rogu-echoes-of-the-lost-star",
     "artbookRecoveryDispatched": false,
-    "autonomousRecoveryDispatched": true,
+    "autonomousRecoveryDispatched": false,
     "duplicateActiveWorkflowDispatchForbidden": true
   }
 }
