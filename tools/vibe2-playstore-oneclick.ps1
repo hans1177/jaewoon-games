@@ -19,6 +19,20 @@ function Invoke-Native {
   [pscustomobject]@{ ExitCode=[int]$code; Output=@($out | ForEach-Object { [string]$_ }) }
 }
 
+function Invoke-NativeWithYes {
+  param([string]$Exe, [string[]]$Args)
+  $old = $ErrorActionPreference
+  try {
+    $ErrorActionPreference = 'Continue'
+    $answers = 1..200 | ForEach-Object { 'y' }
+    $out = $answers | & $Exe @Args 2>&1
+    $code = $LASTEXITCODE
+  } finally {
+    $ErrorActionPreference = $old
+  }
+  [pscustomobject]@{ ExitCode=[int]$code; Output=@($out | ForEach-Object { [string]$_ }) }
+}
+
 function Add-IfDirectory {
   param([System.Collections.Generic.List[string]]$List, [string]$Path)
   if ([string]::IsNullOrWhiteSpace($Path)) { return }
@@ -50,17 +64,17 @@ function Find-Tool {
   $null
 }
 
-function Find-AvdManager {
-  param([string[]]$Roots)
+function Find-CmdlineTool {
+  param([string[]]$Roots, [string]$Name)
   foreach ($root in $Roots) {
     $candidates = New-Object System.Collections.Generic.List[string]
-    $candidates.Add((Join-Path $root 'cmdline-tools\latest\bin\avdmanager.bat'))
-    $candidates.Add((Join-Path $root 'tools\bin\avdmanager.bat'))
+    $candidates.Add((Join-Path $root "cmdline-tools\latest\bin\$Name.bat"))
+    $candidates.Add((Join-Path $root "tools\bin\$Name.bat"))
     $cmdRoot = Join-Path $root 'cmdline-tools'
     try {
       if ([System.IO.Directory]::Exists($cmdRoot)) {
         Get-ChildItem $cmdRoot -Directory -ErrorAction SilentlyContinue | Sort-Object Name -Descending | ForEach-Object {
-          $candidates.Add((Join-Path $_.FullName 'bin\avdmanager.bat'))
+          $candidates.Add((Join-Path $_.FullName "bin\$Name.bat"))
         }
       }
     } catch {}
@@ -69,6 +83,32 @@ function Find-AvdManager {
     }
   }
   $null
+}
+
+function Set-JavaForAndroidTools {
+  if (Get-Command java.exe -ErrorAction SilentlyContinue) { return }
+  $candidates = New-Object System.Collections.Generic.List[string]
+  $candidates.Add((Join-Path $env:ProgramFiles 'Android\Android Studio\jbr'))
+  $candidates.Add((Join-Path $env:ProgramFiles 'Android\Android Studio\jre'))
+  $unityRoot = Join-Path $env:ProgramFiles 'Unity\Hub\Editor'
+  try {
+    if ([System.IO.Directory]::Exists($unityRoot)) {
+      Get-ChildItem $unityRoot -Directory -ErrorAction SilentlyContinue | Sort-Object Name -Descending | ForEach-Object {
+        $candidates.Add((Join-Path $_.FullName 'Editor\Data\PlaybackEngines\AndroidPlayer\OpenJDK'))
+      }
+    }
+  } catch {}
+  foreach ($home in $candidates) {
+    try {
+      $java = Join-Path $home 'bin\java.exe'
+      if ([System.IO.File]::Exists($java)) {
+        $env:JAVA_HOME = $home
+        $env:Path = "$(Join-Path $home 'bin');$env:Path"
+        Write-Host "JAVA_HOME=$home"
+        return
+      }
+    } catch {}
+  }
 }
 
 function Find-PlayStoreSystemImage {
@@ -92,6 +132,50 @@ function Find-PlayStoreSystemImage {
   $best
 }
 
+function Get-LatestAvailablePlayStoreImage {
+  param([string]$SdkManager, [string]$SdkRoot)
+  $env:ANDROID_SDK_ROOT = $SdkRoot
+  $env:ANDROID_HOME = $SdkRoot
+  $list = Invoke-Native $SdkManager @('--list','--channel=0')
+  if ($list.ExitCode -ne 0) {
+    throw "SDKMANAGER_LIST_FAILED:$($list.Output | Select-Object -Last 12 | Out-String)"
+  }
+  $best = $null
+  foreach ($row in @($list.Output)) {
+    $text = ([string]$row).Trim()
+    if ($text -match '^(system-images;android-(\d+);google_apis_playstore;x86_64)\s*\|') {
+      $pkg = $Matches[1]
+      $api = [int]$Matches[2]
+      if ($null -eq $best -or $api -gt $best.Api) {
+        $best = [pscustomobject]@{ Root=$SdkRoot; Api=$api; Package=$pkg }
+      }
+    }
+  }
+  $best
+}
+
+function Install-PlayStoreSystemImage {
+  param([string]$SdkManager, [string]$SdkRoot)
+  $env:ANDROID_SDK_ROOT = $SdkRoot
+  $env:ANDROID_HOME = $SdkRoot
+  Set-JavaForAndroidTools
+  Write-Host 'ANDROID_SDK_LICENSE_ACCEPTANCE=START'
+  $licenses = Invoke-NativeWithYes $SdkManager @('--licenses')
+  if ($licenses.ExitCode -ne 0) {
+    throw "ANDROID_SDK_LICENSE_ACCEPTANCE_FAILED:$($licenses.Output | Select-Object -Last 12 | Out-String)"
+  }
+  Write-Host 'ANDROID_SDK_LICENSE_ACCEPTANCE=PASS'
+  $available = Get-LatestAvailablePlayStoreImage $SdkManager $SdkRoot
+  if ($null -eq $available) { throw 'NO_AVAILABLE_GOOGLE_PLAY_X86_64_SYSTEM_IMAGE_FOUND_BY_SDKMANAGER' }
+  Write-Host "INSTALLING_PLAY_STORE_SYSTEM_IMAGE=$($available.Package)"
+  $install = Invoke-NativeWithYes $SdkManager @($available.Package)
+  if ($install.ExitCode -ne 0) {
+    throw "PLAY_STORE_SYSTEM_IMAGE_INSTALL_FAILED:$($install.Output | Select-Object -Last 20 | Out-String)"
+  }
+  Write-Host "PLAY_STORE_SYSTEM_IMAGE_INSTALL=PASS api=$($available.Api)"
+  $available
+}
+
 function Get-PlayStoreDevice {
   param([string]$Adb)
   $devices = Invoke-Native $Adb @('devices')
@@ -107,7 +191,7 @@ function Get-PlayStoreDevice {
 }
 
 function Wait-ForBoot {
-  param([string]$Adb,[int]$Minutes=8)
+  param([string]$Adb,[int]$Minutes=10)
   $deadline=(Get-Date).AddMinutes($Minutes)
   do {
     Start-Sleep 5
@@ -157,7 +241,8 @@ if (-not $roots.Count) { throw 'ANDROID_SDK_NOT_FOUND; install Android Studio or
 $adb=Find-Tool $roots 'platform-tools\adb.exe'
 if (-not $adb) { throw 'ADB_NOT_FOUND_IN_ANDROID_SDK' }
 $emulator=Find-Tool $roots 'emulator\emulator.exe'
-$avdManager=Find-AvdManager $roots
+$avdManager=Find-CmdlineTool $roots 'avdmanager'
+$sdkManager=Find-CmdlineTool $roots 'sdkmanager'
 $env:Path="$(Split-Path $adb -Parent);$env:Path"
 & $adb start-server | Out-Null
 
@@ -185,17 +270,30 @@ if (-not $serial) {
   if (-not $playAvd) {
     if (-not $avdManager) { throw 'NO_PLAY_STORE_AVD_AND_AVDMANAGER_NOT_FOUND' }
     $image=Find-PlayStoreSystemImage $roots
-    if ($null -eq $image) { throw 'NO_INSTALLED_PLAY_STORE_SYSTEM_IMAGE; install Android x86_64 Google Play system image in Android Studio SDK Manager, then rerun' }
-    $env:ANDROID_SDK_ROOT=$image.Root; $env:ANDROID_HOME=$image.Root
+    if ($null -eq $image) {
+      if (-not $sdkManager) { throw 'NO_INSTALLED_PLAY_STORE_SYSTEM_IMAGE_AND_SDKMANAGER_NOT_FOUND' }
+      $sdkRoot = Split-Path (Split-Path (Split-Path $sdkManager -Parent) -Parent) -Parent
+      if ((Split-Path $sdkManager -Parent) -match '\\tools\\bin$') {
+        $sdkRoot = Split-Path (Split-Path $sdkManager -Parent) -Parent
+      }
+      if (-not (Test-Path -LiteralPath (Join-Path $sdkRoot 'platform-tools'))) {
+        $sdkRoot = @($roots | Where-Object { Test-Path -LiteralPath (Join-Path $_ 'platform-tools') }) | Select-Object -First 1
+      }
+      if (-not $sdkRoot) { throw 'SDKMANAGER_SDK_ROOT_RESOLUTION_FAILED' }
+      $image=Install-PlayStoreSystemImage $sdkManager $sdkRoot
+      $roots=@(Get-SdkRoots)
+    }
+    $env:ANDROID_SDK_ROOT=$image.Root
+    $env:ANDROID_HOME=$image.Root
     $playAvd='Vibe2PlayStore'
-    $create=Invoke-Native $avdManager @('create','avd','--name',$playAvd,'--package',$image.Package,'--device','pixel_6','--force')
-    if ($create.ExitCode -ne 0) { $create=Invoke-Native $avdManager @('create','avd','--name',$playAvd,'--package',$image.Package,'--device','pixel','--force') }
+    $create=Invoke-NativeWithYes $avdManager @('create','avd','--name',$playAvd,'--package',$image.Package,'--device','pixel_6','--force')
+    if ($create.ExitCode -ne 0) { $create=Invoke-NativeWithYes $avdManager @('create','avd','--name',$playAvd,'--package',$image.Package,'--device','pixel','--force') }
     if ($create.ExitCode -ne 0) { throw "AVD_CREATE_FAILED:$($create.Output -join ' ')" }
     Write-Host "CREATED_PLAY_STORE_AVD=$playAvd"
   }
   Write-Host "STARTING_PLAY_STORE_AVD=$playAvd"
   $proc=Start-Process $emulator -ArgumentList @('-avd',$playAvd,'-no-audio','-no-boot-anim','-gpu','swiftshader_indirect') -PassThru
-  $serial=Wait-ForBoot $adb 8
+  $serial=Wait-ForBoot $adb 10
   if (-not $serial) {
     if (-not $proc.HasExited) { try{Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue}catch{} }
     throw 'PLAY_STORE_AVD_BOOT_TIMEOUT'
@@ -230,7 +328,7 @@ $foreground=$focus -match [regex]::Escape($packageId)
 $launchPass=($launch.ExitCode -eq 0 -and -not [string]::IsNullOrWhiteSpace($pid))
 $outPath=Join-Path $env:TEMP 'vibe2-playstore-bootstrap.json'
 [ordered]@{
-  version=1; gameId=$GameId; gameTitle=[string]$game.title; packageId=$packageId;
+  version=2; gameId=$GameId; gameTitle=[string]$game.title; packageId=$packageId;
   installPolicy='OFFICIAL_GOOGLE_PLAY_ONLY'; codeExtractionAllowed=$false; binaryRedistributionAllowed=$false; runtimePromotionAllowed=$false;
   serial=$serial; androidVersion=$androidVersion; apiLevel=$apiLevel; abi=$abi; installed=$installed; launchPass=$launchPass; foregroundPass=[bool]$foreground; processId=$pid;
   observedAt=(Get-Date).ToUniversalTime().ToString('o')
