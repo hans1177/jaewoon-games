@@ -5,6 +5,8 @@ import {normalizeSeedState,markSeedDiscarded,unfilledVacancies,fillVacancy} from
 
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const bootstrap=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
+const qualityGate=fs.readFileSync('tools/company-game-seed-quality-gate.mjs','utf8');
+const marketEvidence=JSON.parse(fs.readFileSync('game-seed-market-evidence.json','utf8'));
 const seedWorkflow=fs.readFileSync('.github/workflows/company-game-seed-bootstrap.yml','utf8');
 const seedDesignWorkflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
 const statusWorkflow=fs.readFileSync('.github/workflows/company-status-sync.yml','utf8');
@@ -14,7 +16,7 @@ const artbook=fs.readFileSync('tools/company-design-artbook.mjs','utf8');
 const pipeline=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
 const devDisposition=fs.readFileSync('tools/company-development-disposition-gate.mjs','utf8');
 
-test('directive encodes one atomic six-category GAME_SEED bootstrap',()=>{
+test('directive encodes one atomic six-category global GAME_SEED bootstrap',()=>{
   assert.equal(directive.gameSeed.enabled,true);
   assert.equal(directive.gameSeed.bootstrap.mode,'SINGLE_BOOTSTRAP_BATCH');
   assert.equal(directive.gameSeed.bootstrap.count,6);
@@ -23,16 +25,29 @@ test('directive encodes one atomic six-category GAME_SEED bootstrap',()=>{
   assert.equal(directive.gameSeed.replenishment.mode,'ONE_FOR_ONE_ONLY');
   assert.equal(directive.gameSeed.replenishment.normalPromotionDoesNotTrigger,true);
   assert.equal(directive.gameSeed.marketEvidence.role,'TARGET_DESIGN_REFERENCE');
+  assert.equal(directive.gameSeed.marketEvidence.targetMarketScope,'GLOBAL');
+  assert.equal(directive.gameSeed.marketEvidence.countrySpecificEvidenceRole,'SECONDARY_CONTEXT_ONLY');
+  assert.equal(directive.gameSeed.marketEvidence.defaultTargetMustNotBeCountrySpecific,true);
   assert.equal(directive.gameSeed.marketEvidence.hardPassFailGate,false);
   assert.equal(directive.gameSeed.marketEvidence.numericClaimRequiresSource,true);
   assert.equal(directive.gameSeed.marketEvidence.numericClaimRequiresObservedAt,true);
   assert.equal(directive.gameSeed.sourceCodeRule,'OWN_IMPLEMENTATION_ONLY');
+  assert.equal(marketEvidence.targetMarketScope,'GLOBAL');
+  assert.equal(Object.keys(marketEvidence.categories).length,6);
+  for(const category of directive.gameSeed.bootstrap.categories){
+    assert.ok(Array.isArray(marketEvidence.categories[category].benchmarkCandidates));
+    assert.ok(marketEvidence.categories[category].benchmarkCandidates.length>=2);
+  }
 });
 
 test('bootstrap batches all requested seeds in one model call and mutates state only after full validation',()=>{
   assert.match(bootstrap,/PARTIAL_INITIAL_BOOTSTRAP_STATE_FORBIDDEN/);
   assert.match(bootstrap,/callModelBatch\(targets\)/);
   assert.match(bootstrap,/GAME_SEED_BATCH_COUNT_MISMATCH/);
+  assert.match(bootstrap,/GAME_SEED_TARGET_MARKET_SCOPE_MUST_BE_GLOBAL/);
+  assert.match(bootstrap,/referenceGamesOutsideCategoryPool/);
+  assert.match(bootstrap,/benchmarkCandidates:t\.benchmarkCandidates/);
+  assert.match(bootstrap,/targetMarketScope:'GLOBAL'/);
   assert.match(bootstrap,/const pending=\[\]/);
   const pendingBuild=bootstrap.indexOf('pending.push({seed:buildSeed');
   const stateMutation=bootstrap.indexOf('for(const item of pending){state.seeds.push');
@@ -45,7 +60,19 @@ test('bootstrap batches all requested seeds in one model call and mutates state 
   assert.match(bootstrap,/if\(numericLike&&\(!source\|\|!observedAt\)\)value='UNKNOWN'/);
   assert.match(seedWorkflow,/Verified free budget preflight/);
   assert.match(seedWorkflow,/--model-calls=1/);
+  assert.match(seedWorkflow,/Reject category-mismatched generic or country-scoped GAME_SEED output/);
+  assert.match(seedWorkflow,/GAME_SEED_MARKET_SCOPE=GLOBAL/);
   assert.ok(seedWorkflow.indexOf('Verified free budget preflight')<seedWorkflow.indexOf('uses: ./.github/actions/prepare-ollama'));
+});
+
+test('semantic quality gate rejects wrong category benchmarks, generic seeds and non-global target scope',()=>{
+  assert.match(qualityGate,/GAME_SEED_QUALITY_EVIDENCE_SCOPE_NOT_GLOBAL/);
+  assert.match(qualityGate,/reference-outside-category-pool/);
+  assert.match(qualityGate,/category-concept-match/);
+  assert.match(qualityGate,/distinct-identity-too-generic/);
+  assert.match(qualityGate,/market-scope-not-global/);
+  assert.match(qualityGate,/country-specific-default-audience/);
+  assert.match(qualityGate,/no-sourced-market-metric/);
 });
 
 test('autonomous runtime does not depend on GitHub Actions PR creation permission',()=>{
