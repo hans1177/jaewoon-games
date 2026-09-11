@@ -36,7 +36,7 @@ test('creates one distinct cloud-build-ready Unity technical prototype per promo
     assert.equal(run.status,0,run.stderr||run.stdout);
     const project=path.join(sandbox,'unity-games',id);
     const meta=JSON.parse(fs.readFileSync(path.join(project,'prototype-source.json'),'utf8'));
-    const manifest=JSON.parse(fs.readFileSync(path.join(project,'Packages','manifest.json'),'utf8'));
+    const manifest=JSON.parse(fs.readFileSync(path.join(project,'Packages','manifest.json'),'utf8');
     const projectVersion=fs.readFileSync(path.join(project,'ProjectSettings','ProjectVersion.txt'),'utf8');
     const buildScript=fs.readFileSync(path.join(project,'Assets','Editor','SeedAndroidBuild.cs'),'utf8');
     const runtimeScript=fs.readFileSync(path.join(project,'Assets','Scripts','SeedTechnicalPrototype.cs'),'utf8');
@@ -49,7 +49,8 @@ test('creates one distinct cloud-build-ready Unity technical prototype per promo
     assert.equal(manifest.dependencies['com.unity.modules.imgui'],'1.0.0');
     assert.match(buildScript,/SeedAndroidBuild/);
     assert.match(buildScript,/Path\.GetFullPath\(Path\.Combine\(projectRoot, "\.\.", "\.\.", "build", "Android"\)\)/);
-    assert.match(buildScript,/AndroidArchitecture\.ARM64 \| AndroidArchitecture\.X86_64/);
+    assert.match(buildScript,/targetArchitectures = AndroidArchitecture\.ARM64;/);
+    assert.doesNotMatch(buildScript,/AndroidArchitecture\.X86_64/);
     assert.match(runtimeScript,/JAEWOON_TECH_METRIC/);
     assert.match(runtimeScript,/PlayerPrefs/);
     assert.equal(projectVersion.trim(),`m_EditorVersion: ${expectedUnityEditorVersion}\nm_EditorVersionWithRevision: ${expectedUnityEditorVersion} (${expectedUnityEditorRevision})`);
