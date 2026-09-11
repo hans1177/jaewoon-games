@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {GAME_SEED_REQUIRED_FIELDS,GAME_SEED_POLICY,validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 
 const flow=fs.readFileSync('COMPANY_FLOW.md','utf8');
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
@@ -14,10 +15,64 @@ const unityReleaseResult=fs.readFileSync('.github/workflows/vibe2-unity-release-
 const vibeRunner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
 const roles=['planning','graphics','development','qa','balance'];
 
-test('one central human policy source owns class, design, meeting and artbook rules',()=>{
+test('one central policy source owns class, design, meeting and artbook rules',()=>{
   assert.equal(directive.policyDocument,'COMPANY_FLOW.md');
-  assert.match(flow,/유일한 사람용 제작 정책 원본/);
-  assert.match(flow,/다른 문서에는 같은 정책을 다시 복제하지 않는다/);
+  assert.match(flow,/sourceOfTruth: COMPANY_FLOW\.md/);
+  assert.match(flow,/format: MACHINE_ORIENTED_POLICY_SPEC/);
+  assert.match(flow,/evidenceFilesCannotCreatePolicy: true/);
+});
+
+test('DESIGN_ONLY begins with GAME_SEED before Game Designer draft',()=>{
+  const design=directive.classes.DESIGN_ONLY;
+  assert.equal(design.requiredFlow[0],'GAME_SEED');
+  assert.equal(design.requiredFlow[1],'GAME_DESIGNER_DRAFT');
+  assert.equal(directive.gameSeed.requiredBeforeDesignerDraft,true);
+  assert.deepEqual(directive.gameSeed.requiredFields,GAME_SEED_REQUIRED_FIELDS);
+  assert.equal(directive.gameSeed.initialTargetPlatform,GAME_SEED_POLICY.initialTargetPlatform);
+  assert.equal(directive.gameSeed.initialPlayMode,GAME_SEED_POLICY.initialPlayMode);
+  assert.match(flow,/GAME_SEED:\n  stage: BEFORE_GAME_DESIGNER_DRAFT/);
+  assert.match(flow,/requiredFlow:\n      - GAME_SEED\n      - GAME_DESIGNER_DRAFT/);
+});
+
+test('DESIGN_ONLY baseline requires seed identity market mobile and expansion decisions',()=>{
+  const required=directive.classes.DESIGN_ONLY.baselineReadyRequires||[];
+  for(const token of [
+    'GAME_SEED_COMPLETE',
+    'DISTINCT_GAME_IDENTITY',
+    'CORE_FUN_CLEAR',
+    'CORE_LOOP_ACTION_FEEDBACK_CHOICE_REWARD',
+    'MARKET_TARGET_DIRECTION_RECORDED',
+    'MOBILE_UX_DIRECTION_DEFINED',
+    'STEAM_EXPANSION_DECISION_RECORDED',
+    'MULTIPLAYER_EXPANSION_DECISION_RECORDED',
+    'FIVE_DISTINCT_LEAD_MODELS',
+    'PER_DEPARTMENT_MULTIMODEL_REVIEW_PASS',
+    'NO_HIDDEN_FATAL_CONFLICT'
+  ])assert.ok(required.includes(token),`missing DESIGN_ONLY baseline requirement: ${token}`);
+  assert.equal(directive.classes.DESIGN_ONLY.readyState,'DESIGN_BASELINE_READY');
+});
+
+test('GAME_SEED validator permits UNKNOWN market numbers but rejects unsourced numeric claims',()=>{
+  const base={
+    GAME_CATEGORY:'CASUAL',
+    REFERENCE_GAMES:['Released successful reference'],
+    CORE_FUN_TO_LEARN:'clear repeatable interaction pattern',
+    CORE_LOOP:['action','feedback','choice','reward'],
+    DISTINCT_IDENTITY:'original world visual identity characters and system combination',
+    MARKET_EVIDENCE_SUMMARY:'UNKNOWN numeric fields; qualitative benchmark only',
+    TARGET_AUDIENCE:'mobile players',
+    TARGET_SESSION_DIRECTION:'short repeatable sessions',
+    INITIAL_TARGET_PLATFORM:'ANDROID_MOBILE',
+    INITIAL_PLAY_MODE:'SINGLE_PLAYER',
+    STEAM_EXPANSION_POSSIBLE:'POSSIBLE',
+    MULTIPLAYER_EXPANSION_POSSIBLE:'NOT_RECOMMENDED',
+    MULTIPLAYER_EXPANSION_VALUE:'LOW'
+  };
+  assert.equal(validateGameSeed(base).pass,true);
+  const invalid=validateGameSeed({...base,MARKET_EVIDENCE_SUMMARY:{numericClaims:[{metric:'rating',value:4.8}]}});
+  assert.equal(invalid.pass,false);
+  assert.ok(invalid.errors.some(x=>x.includes('.source is required')));
+  assert.ok(invalid.errors.some(x=>x.includes('.observedAt is required')));
 });
 
 test('five departments have five distinct lead model ids and remappable assignments',()=>{
@@ -28,7 +83,8 @@ test('five departments have five distinct lead model ids and remappable assignme
   assert.ok(leadModels.every(Boolean));
   assert.equal(new Set(leadModels).size,5);
   assert.ok(leadModels.every(model=>directive.ai.modelPool.includes(model)));
-  assert.match(flow,/Lead model ID는 중복되면 안 된다|Lead model ID/);
+  assert.match(flow,/fiveDistinctLeadModelIdsRequiredPerCycle: true/);
+  assert.match(flow,/leadModelAssignmentRemappable: true/);
   assert.match(cycle,/DEPARTMENT_LEAD_GATE/);
   assert.match(devCycle,/DEPARTMENT_LEAD_GATE/);
   assert.match(releaseCycle,/DEPARTMENT_LEAD_GATE/);
@@ -41,6 +97,8 @@ test('each department uses lead plus assistants with at least three distinct rea
   assert.ok(directive.ai.departmentReviewModelCount>=3);
   assert.equal(directive.ai.assistantModelsMayOverlapAcrossDepartments,true);
   assert.equal(directive.ai.modelIdentityFixed,false);
+  assert.match(flow,/assistantMinCount: 2/);
+  assert.match(flow,/allModelsWithinDepartmentMustBeDistinct: true/);
   assert.match(cycle,/reviewModelsFor/);
   assert.match(devCycle,/reviewModelsFor/);
   assert.match(releaseCycle,/reviewModelsFor/);
@@ -52,6 +110,8 @@ test('department lead owns representative opinion and rebuttal',()=>{
   assert.equal(directive.ai.departmentRebuttalAuthoredByLead,true);
   assert.equal(directive.ai.meeting.internalRepresentativeOwner,'DEPARTMENT_LEAD_MODEL');
   assert.equal(directive.ai.meeting.rebuttalOwner,'DEPARTMENT_LEAD_MODEL');
+  assert.match(flow,/representativeAuthor: DEPARTMENT_LEAD/);
+  assert.match(flow,/rebuttalAuthor: SAME_DEPARTMENT_LEAD/);
   assert.match(cycle,/representativeAuthoredByLead:true/);
   assert.match(cycle,/rebuttalAuthoredByDepartmentLeads:true/);
   assert.match(devCycle,/representatives\[role\]=await callModel\(lead/);
@@ -61,6 +121,8 @@ test('department lead owns representative opinion and rebuttal',()=>{
 test('detailed design keeps one game designer role for revision',()=>{
   assert.equal(directive.ai.gameDesigner.singleAuthorPerRevisionCycle,true);
   assert.equal(directive.ai.gameDesigner.sameModelRevisesAfterMeeting,true);
+  assert.match(flow,/onePrimaryAuthorPerProjectRevisionCycle: true/);
+  assert.match(flow,/sameDesignerRevisesAfterMeeting: true/);
   assert.match(cycle,/authorRole:'GAME_DESIGNER_AI'/);
   assert.match(cycle,/sameModelAsDraft:true/);
   assert.match(devCycle,/authorRole:'GAME_DESIGNER_AI'/);
@@ -69,9 +131,20 @@ test('detailed design keeps one game designer role for revision',()=>{
 test('design only runs directly through artbook',()=>{
   assert.equal(directive.classes.DESIGN_ONLY.directResultMode,true);
   assert.ok(directive.classes.DESIGN_ONLY.requiredFlow.includes('ARTBOOK_EDITOR_CORE_STRATEGY'));
-  assert.match(flow,/DESIGN_ONLY 다이렉트 흐름/);
+  assert.equal(directive.classes.DESIGN_ONLY.requiredFlow.includes('VIBE2_VALIDATION_LEARNING'),false);
+  assert.match(flow,/DESIGN_ONLY:[\s\S]*?directResultMode: true/);
+  assert.match(flow,/ARTBOOK_EDITOR_CORE_STRATEGY/);
   assert.match(cycle,/DESIGN_ONLY_ARTBOOK_DIRECT=YES/);
   assert.match(pipeline,/DESIGN_ONLY_ARTBOOK_DIRECT=YES/);
+});
+
+test('Vibe2 starts at DEVELOPMENT_CONFIRMED and is inactive in DESIGN_ONLY',()=>{
+  assert.equal(directive.ai.vibe2.startsAtClass,'DEVELOPMENT_CONFIRMED');
+  assert.equal(directive.ai.vibe2.designOnlyActive,false);
+  assert.equal(Object.hasOwn(directive.ai.vibe2.roleByClass,'DESIGN_ONLY'),false);
+  assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED,'VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT');
+  assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_DEVELOPMENT_ENGINE');
+  assert.match(flow,/Vibe2:\n  startsAt: DEVELOPMENT_CONFIRMED/);
 });
 
 test('development confirmed is gated direct and resumable',()=>{
@@ -81,7 +154,9 @@ test('development confirmed is gated direct and resumable',()=>{
   assert.equal(dev.aiMayInventValidationPass,false);
   assert.equal(dev.artbookOnlyAfterBaselineReady,true);
   for(const state of ['WAITING_WEB_VALIDATION','WAITING_WEB_REVALIDATION','WAITING_UNITY_VALIDATION','WAITING_UNITY_REVALIDATION','WAITING_REVALIDATION'])assert.ok(dev.waitingStates.includes(state));
-  assert.match(flow,/Gated Direct Development Validation/);
+  assert.match(flow,/DEVELOPMENT_CONFIRMED:[\s\S]*?executionMode: GATED_DIRECT/);
+  assert.match(flow,/webPurpose: GAMEPLAY_VALIDATION_TESTBED/);
+  assert.match(flow,/unityPurpose: ANDROID_TECHNICAL_VALIDATION_PROTOTYPE/);
   assert.match(devCycle,/DEVELOPMENT_DIRECT_STATE=/);
   assert.match(pipeline,/DEVELOPMENT_EXECUTION_MODE=GATED_DIRECT/);
 });
@@ -94,24 +169,25 @@ test('development artbook is created only after baseline ready',()=>{
   assert.ok(firstArtbookWrite>firstWaiting);
 });
 
-test('artbook remains single-editor core strategy and Vibe2 is not tier2/3 primary author',()=>{
+test('artbook remains single-editor core strategy and Vibe2 is not its primary author in development',()=>{
   assert.equal(directive.ai.artbookEditor.singleEditor,true);
   assert.equal(directive.ai.artbookEditor.departmentPageAuthorship,false);
   assert.equal(directive.ai.artbookEditor.mayInventNewClaims,false);
-  assert.equal(directive.ai.vibe2.designOrArtbookPrimaryAuthorInTier3Or2,false);
+  assert.equal(directive.ai.vibe2.designOrArtbookPrimaryAuthorInDevelopmentClass,false);
+  assert.match(flow,/ArtbookEditor:[\s\S]*?singleEditor: true/);
+  assert.match(flow,/mayInventNewClaims: false/);
   assert.match(pipeline,/DEPARTMENT_ARTBOOK_AUTHORSHIP=NO/);
 });
 
 test('development and release responsibilities use semantic production classes',()=>{
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webPurpose,'GAMEPLAY_VALIDATION_TESTBED');
-  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityPurpose,'TECHNICAL_VALIDATION_PROTOTYPE');
   assert.equal(directive.classes.RELEASE_CONFIRMED.vibe2PrimaryDeveloper,true);
   assert.equal(directive.classes.RELEASE_CONFIRMED.departmentDefaultRole,'ERROR_AND_RELEASE_RISK_REVIEW');
   assert.equal(directive.classes.RELEASE_CONFIRMED.executionMode,'GATED_DIRECT_RELEASE_PRODUCTION');
-  assert.match(flow,/Web Gameplay Validation/);
-  assert.match(flow,/Unity Technical Validation/);
-  assert.match(flow,/Development Baseline.*Vibe2|Vibe2.*Development Baseline/s);
-  assert.match(flow,/Core Design Lock/);
+  assert.match(flow,/webPurpose: GAMEPLAY_VALIDATION_TESTBED/);
+  assert.match(flow,/unityPurpose: ANDROID_TECHNICAL_VALIDATION_PROTOTYPE/);
+  assert.match(flow,/RELEASE_CONFIRMED: PRIMARY_DEVELOPMENT_ENGINE/);
+  assert.match(flow,/RELEASE_CONFIRMED:[\s\S]*?coreDesignLock: true/);
   assert.match(releaseCycle,/vibe2PrimaryDeveloper:true/);
   assert.match(releaseCycle,/currentBuildEvidenceBindingRequired:true/);
   assert.match(pipeline,/RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION/);

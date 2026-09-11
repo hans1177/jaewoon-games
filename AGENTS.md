@@ -2,11 +2,12 @@
 
 ## 정책 원본
 
-재운컴퍼니의 사람용 제작 정책은 **`COMPANY_FLOW.md` 하나만 원본**이다.
+재운컴퍼니의 제작 정책 원본은 **`COMPANY_FLOW.md` 하나**다.
 
-- 분류별 역할, Game Designer AI, 다중모델 부서회의, Web/Unity 검증, Artbook Editor, Vibe2 역할을 이 파일에 다시 복제하지 않는다.
+- `COMPANY_FLOW.md`는 기계 중심 정책 명세이며 사람용 서술 형식을 요구하지 않는다.
+- 분류별 역할, GAME_SEED, Game Designer AI, 다중모델 부서회의, Web/Unity 검증, 폐기/강등, Artbook Editor, Vibe2 역할을 이 파일에 다시 복제하지 않는다.
 - AI 직원과 자동화는 작업 시작 전 `COMPANY_FLOW.md`와 `company-directive.json`을 읽는다.
-- `company-directive.json`은 중앙 정책을 실행하기 위한 기계 설정값만 가진다.
+- `company-directive.json`은 중앙 정책을 실행하기 위한 기계 설정값과 불변조건을 가진다.
 - 과거 아트북, 상태 파일, 로그, 레거시 문서의 문구가 중앙 정책과 충돌하면 중앙 정책이 우선한다.
 - 사용자의 최신 직접 지시는 중앙 정책보다도 우선한다.
 
@@ -25,7 +26,7 @@
 
 ## 분류/설계 실행
 
-분류와 설계 정책의 상세 내용은 **오직 `COMPANY_FLOW.md`를 따른다.** 실행 도구는 `company-directive.json`의 다음 값을 기계적으로 사용한다.
+분류와 설계 정책의 상세 내용은 **오직 `COMPANY_FLOW.md`를 따른다.** 실행 도구는 `company-directive.json`의 기계 설정을 사용하되 중앙 정책보다 우선할 수 없다.
 
 - `productionClass` 의미 기반 분류와 근거 기반 동적 멤버십
 - 분류별 개수는 현재 멤버십에서 계산하며 고정 슬롯 수를 두지 않는 조건
@@ -37,7 +38,7 @@
 - Artbook Editor 단일 편집자 조건
 - `DESIGN_ONLY` / `DEVELOPMENT_CONFIRMED` / `RELEASE_CONFIRMED`별 Vibe2 역할
 
-새 분류·아트북·회의 정책을 이 파일에 추가하지 말고 `COMPANY_FLOW.md`를 수정한다.
+새 분류·GAME_SEED·폐기·아트북·회의 정책을 이 파일에 추가하지 말고 `COMPANY_FLOW.md`를 수정한다.
 
 ## 코드 작업 원칙
 

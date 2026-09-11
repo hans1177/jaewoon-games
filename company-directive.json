@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 25,
+  "revision": 26,
   "updatedAt": "2026-09-11",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
@@ -23,6 +23,37 @@
     "numericLabelsOwnerRemappable": true,
     "preserveExistingWebArchives": true,
     "preserveSaveMeaning": true
+  },
+  "gameSeed": {
+    "requiredBeforeDesignerDraft": true,
+    "selectionMode": "FAMOUS_SUCCESSFUL_GAME_COPY_BENCHMARK",
+    "transformationModes": ["HOMAGE", "REINTERPRETATION"],
+    "requiredFields": [
+      "GAME_CATEGORY",
+      "REFERENCE_GAMES",
+      "CORE_FUN_TO_LEARN",
+      "CORE_LOOP",
+      "DISTINCT_IDENTITY",
+      "MARKET_EVIDENCE_SUMMARY",
+      "TARGET_AUDIENCE",
+      "TARGET_SESSION_DIRECTION",
+      "INITIAL_TARGET_PLATFORM",
+      "INITIAL_PLAY_MODE",
+      "STEAM_EXPANSION_POSSIBLE",
+      "MULTIPLAYER_EXPANSION_POSSIBLE",
+      "MULTIPLAYER_EXPANSION_VALUE"
+    ],
+    "initialTargetPlatform": "ANDROID_MOBILE",
+    "initialPlayMode": "SINGLE_PLAYER",
+    "steamDecisionValues": ["POSSIBLE", "NOT_RECOMMENDED"],
+    "multiplayerDecisionValues": ["POSSIBLE", "NOT_RECOMMENDED"],
+    "multiplayerExpansionValueValues": ["LOW", "MEDIUM", "HIGH"],
+    "numericMarketClaimRequiresSource": true,
+    "numericMarketClaimRequiresObservedAt": true,
+    "unverifiableNumericMarketClaimForbidden": true,
+    "unavailableMarketFieldMayBeUnknown": true,
+    "marketEvidenceHardPassFailGate": false,
+    "directCopyForbidden": true
   },
   "ai": {
     "paidAiAllowed": false,
@@ -83,15 +114,13 @@
       "departmentPageAuthorship": false
     },
     "vibe2": {
+      "startsAtClass": "DEVELOPMENT_CONFIRMED",
+      "designOnlyActive": false,
       "roleByClass": {
-        "DESIGN_ONLY": "VALIDATION_AND_LEARNING",
         "DEVELOPMENT_CONFIRMED": "VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT",
         "RELEASE_CONFIRMED": "PRIMARY_DEVELOPMENT_ENGINE"
       },
-      "tier3Role": "VALIDATION_AND_LEARNING",
-      "tier2Role": "VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT",
-      "tier1Role": "PRIMARY_DEVELOPMENT_ENGINE",
-      "designOrArtbookPrimaryAuthorInTier3Or2": false
+      "designOrArtbookPrimaryAuthorInDevelopmentClass": false
     }
   },
   "classes": {
@@ -100,6 +129,7 @@
       "sourceCodeAutoDevelopment": false,
       "directResultMode": true,
       "requiredFlow": [
+        "GAME_SEED",
         "GAME_DESIGNER_DRAFT",
         "FIVE_DISTINCT_DEPARTMENT_LEADS",
         "DEPARTMENT_LEAD_PLUS_ASSISTANT_MULTIMODEL_REVIEW",
@@ -108,9 +138,22 @@
         "ONE_LEAD_REBUTTAL_ROUND",
         "GAME_DESIGNER_REVISION",
         "DESIGN_BASELINE_GATE",
-        "ARTBOOK_EDITOR_CORE_STRATEGY",
-        "VIBE2_VALIDATION_LEARNING"
-      ]
+        "ARTBOOK_EDITOR_CORE_STRATEGY"
+      ],
+      "baselineReadyRequires": [
+        "GAME_SEED_COMPLETE",
+        "DISTINCT_GAME_IDENTITY",
+        "CORE_FUN_CLEAR",
+        "CORE_LOOP_ACTION_FEEDBACK_CHOICE_REWARD",
+        "MARKET_TARGET_DIRECTION_RECORDED",
+        "MOBILE_UX_DIRECTION_DEFINED",
+        "STEAM_EXPANSION_DECISION_RECORDED",
+        "MULTIPLAYER_EXPANSION_DECISION_RECORDED",
+        "FIVE_DISTINCT_LEAD_MODELS",
+        "PER_DEPARTMENT_MULTIMODEL_REVIEW_PASS",
+        "NO_HIDDEN_FATAL_CONFLICT"
+      ],
+      "readyState": "DESIGN_BASELINE_READY"
     },
     "DEVELOPMENT_CONFIRMED": {
       "baseline": "DEVELOPMENT_BASELINE",
@@ -209,6 +252,8 @@
     "production-game-ids-must-not-be-pinned",
     "production-class-membership-promotes-and-demotes-from-current-evidence",
     "status-sync-must-not-reclassify-games-to-satisfy-a-count-quota",
+    "design-only-game-seed-required-before-game-designer-draft",
+    "design-only-game-seed-must-record-market-target-and-platform-expansion-decisions",
     "design-only-detailed-design-single-game-designer-author",
     "five-departments-must-have-five-distinct-lead-model-ids-per-cycle",
     "department-lead-role-fixed-model-assignment-remappable",
@@ -221,11 +266,12 @@
     "cross-department-meeting-has-one-rebuttal-round",
     "only-consensus-auto-feeds-design-revision",
     "same-game-designer-model-revises-after-meeting",
+    "design-baseline-requires-market-target-mobile-ux-steam-and-multiplayer-decisions",
     "artbook-is-core-strategy-distillation-not-detailed-design-source",
     "single-artbook-editor-writes-entire-artbook",
     "departments-do-not-author-artbook-pages",
     "artbook-editor-must-not-invent-new-claims",
-    "vibe2-does-not-primary-author-design-or-artbook-in-design-only-or-development-confirmed",
+    "vibe2-starts-at-development-confirmed",
     "development-confirmed-is-gated-direct-and-resumable",
     "development-confirmed-stops-at-missing-or-failed-real-evidence",
     "development-confirmed-web-validates-gameplay-before-expensive-unity-work-by-default",
