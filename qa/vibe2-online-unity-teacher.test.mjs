@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { buildOnlineTeacherAnalysis, loadTeacherLessons } from '../tools/vibe2-online-unity-teacher.mjs';
+import os from 'node:os';
+import path from 'node:path';
+import { buildOnlineTeacherAnalysis, buildPracticeTeacherSamples, loadTeacherLessons, loadTeacherPracticeDrills } from '../tools/vibe2-online-unity-teacher.mjs';
 
 const lessons = [
   { id:'events-01', topic:'event ownership', rule:'one owner', badPattern:'duplicate listener', mastery:'keep registration ownership symmetric' },
@@ -79,6 +81,23 @@ test('라이선스가 명확한 코드는 조건 안에서 복제·수정·재�
   assert.match(cleanRoom.rule, /관찰 가능한 동작·문서·인터페이스/);
 });
 
+test('GPT practice drill은 실제 verified positive와 분리되어 생성된다', () => {
+  const file = 'company-learning/unity-teacher-materials/gpt-practice-drills.json';
+  const drills = loadTeacherPracticeDrills(file);
+  assert.ok(drills.length >= 24);
+  const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-practice-'));
+  const result = buildPracticeTeacherSamples({ drillsFile: file, outDir, maxPractice: 24 });
+  assert.equal(result.practiceWritten, 24);
+  const first = JSON.parse(fs.readFileSync(path.join(outDir, `${drills[0].id}.json`), 'utf8'));
+  assert.equal(first.taskType, 'unity');
+  assert.equal(first.synthetic, true);
+  assert.equal(first.practiceOnly, true);
+  assert.equal(first.runtimePromotionAllowed, false);
+  assert.equal(first.qa.independentQa, 'NOT_APPLICABLE');
+  assert.equal(first.qa.runtime, 'NOT_APPLICABLE');
+  assert.equal(first.verification.productionEvidence, false);
+});
+
 test('ingest에서 검증 샘플을 artifact로 넘기고 Actions PR 권한 실패가 학습을 막지 않는다', () => {
   const ingest = fs.readFileSync('.github/workflows/vibe2-distillation-ingest.yml', 'utf8');
   assert.match(ingest, /name: vibe2-verified-training-samples/);
@@ -96,4 +115,6 @@ test('24시간 Unity teacher는 ingest artifact를 우선 소비하고 없으면
   assert.match(workflow, /VERIFIED_SAMPLE_SOURCE=INGEST_ARTIFACT/);
   assert.match(workflow, /VERIFIED_SAMPLE_SOURCE=MAIN_REPOSITORY/);
   assert.match(workflow, /steps\.sample-source\.outputs\.sample_dir/);
+  assert.match(workflow, /gpt-practice-drills\.json/);
+  assert.match(workflow, /unity-gpt-practice-samples/);
 });
