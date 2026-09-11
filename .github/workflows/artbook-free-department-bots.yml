@@ -15,6 +15,7 @@ on:
       - 'COMPANY_FLOW.md'
       - 'company-directive.json'
       - 'game-catalog.json'
+      - 'game-seed-state.json'
       - 'artbook-work-orders/**'
       - 'design/**/web-gameplay-validation.json'
       - 'design/**/unity-technical-validation.json'
@@ -76,7 +77,24 @@ jobs:
           const canonical=new Set(directive.production?.canonicalClasses||[]);
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           const eventName=String(process.env.EVENT_NAME||'').trim();
-          const games=(catalog.games||[]).map(game=>({game,productionClass:productionClassOf({},game,{numericLabels})})).filter(row=>canonical.has(row.productionClass));
+          const catalogRows=(catalog.games||[]).map(game=>({game,productionClass:productionClassOf({},game,{numericLabels}),source:'CATALOG'})).filter(row=>canonical.has(row.productionClass));
+          let seedState={seeds:[]};
+          try{seedState=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));}catch{}
+          const catalogIds=new Set(catalogRows.map(row=>row.game.id));
+          const seedRows=(seedState.seeds||[])
+            .filter(seed=>seed&&seed.gameId&&!['DISCARDED','REMOVED'].includes(String(seed.status||'').trim().toUpperCase()))
+            .filter(seed=>!catalogIds.has(seed.gameId))
+            .map(seed=>({
+              game:{
+                id:seed.gameId,
+                name:String(seed.gameName||seed.DISTINCT_IDENTITY||seed.gameId).trim(),
+                productionClass:PRODUCTION_CLASSES.DESIGN_ONLY,
+                productionTier:numericLabels[PRODUCTION_CLASSES.DESIGN_ONLY]??null
+              },
+              productionClass:PRODUCTION_CLASSES.DESIGN_ONLY,
+              source:'GAME_SEED'
+            }));
+          const games=[...catalogRows,...seedRows];
 
           let selected=[];
           if(requested){
@@ -115,11 +133,11 @@ jobs:
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
           const get=t=>parts.find(x=>x.type===t)?.value||'';
           const date=`${get('year')}-${get('month')}-${get('day')}`;
-          const targets=selected.map(row=>({game_id:row.game.id,game_name:row.game.name,production_class:row.productionClass,tier_alias:tierAliasForProductionClass(row.productionClass,{numericLabels})??'',date}));
+          const targets=selected.map(row=>({game_id:row.game.id,game_name:row.game.name,production_class:row.productionClass,tier_alias:tierAliasForProductionClass(row.productionClass,{numericLabels})??'',source:row.source,date}));
           console.log(`run=${targets.length>0?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
           console.error(`PRODUCTION_TARGET_COUNT=${targets.length}`);
-          console.error(`PRODUCTION_TARGETS=${targets.map(x=>`${x.game_id}:${x.productionClass}`).join(',')}`);
+          console.error(`PRODUCTION_TARGETS=${targets.map(x=>`${x.game_id}:${x.productionClass}:${x.source}`).join(',')}`);
           NODE
 
   production-cycle:
@@ -238,7 +256,8 @@ jobs:
             if(s.status!=='COMPLETE')throw new Error('design cycle incomplete');
             if(s.departments?.leadModelsDistinct!==true||s.departments?.count!==5)throw new Error('design lead contract failed');
             for(const role of roles){const a=s.departments?.modelAudit?.[role];if(!a?.pass||a.representativeAuthoredByLead!==true||a.rebuttalAuthoredByLead!==true)throw new Error(`${role} lead review contract failed`);}
-            if(s.artbook?.directAfterDesignCycle!==true)throw new Error('DESIGN_ONLY did not run direct to artbook');
+            if(s.baselineGate.state!=='DESIGN_BASELINE_READY'||s.baselineGate.ready!==true)throw new Error(`DESIGN_ONLY baseline not ready: ${s.baselineGate.state}`);
+            if(s.artbook?.createdAfterBaselineReady!==true||s.artbook?.vibe2Used!==false)throw new Error('DESIGN_ONLY artbook was not created after baseline gate');
             console.log(`DIRECT_RESULT=${s.baselineGate.state}`);
           }else if(actualClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
             const allowed=new Set([...(d.classes?.RELEASE_CONFIRMED?.waitingStates||[]),...(d.classes?.RELEASE_CONFIRMED?.releaseStates||[])]);
@@ -288,6 +307,6 @@ jobs:
           git checkout -b "$branch"
           git commit -m "production: ${PRODUCTION_CLASS} cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}"
           git push origin "HEAD:refs/heads/$branch"
-          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "production: ${PRODUCTION_CLASS} cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}" --body "Central production flow from COMPANY_FLOW.md. DESIGN_ONLY runs direct through artbook. DEVELOPMENT_CONFIRMED resumes from real Web/Unity evidence. RELEASE_CONFIRMED uses Vibe2 primary development and binds the current Unity source tree to the Android build, runtime and independent-QA evidence before Release Baseline. Direct main write: NO. Run: ${GITHUB_RUN_ID}"
+          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "production: ${PRODUCTION_CLASS} cycle ${ARTBOOK_GAME_ID} ${ARTBOOK_DATE}" --body "Central production flow from COMPANY_FLOW.md. DESIGN_ONLY runs direct through artbook after Design Baseline. DEVELOPMENT_CONFIRMED resumes from real Web/Unity evidence. RELEASE_CONFIRMED uses Vibe2 primary development and binds the current Unity source tree to the Android build, runtime and independent-QA evidence before Release Baseline. Direct main write: NO. Run: ${GITHUB_RUN_ID}"
           echo 'PRODUCTION_CYCLE_COMMIT=PR_OPENED'
           echo 'PUBLIC_MAIN_WRITE=NO'
