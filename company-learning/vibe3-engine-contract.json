@@ -4,11 +4,30 @@
   "recordedAt": "2026-09-12",
   "relationshipToVibe2": "INTELLIGENCE_LAYER_UPGRADE_INSIDE_EXISTING_PIPELINE",
   "parallelPipeline": false,
+  "pumpMode": {
+    "enabled": true,
+    "localWeightsRequired": false,
+    "verifiedRagRequired": true,
+    "successMemoryRequired": true,
+    "failureWarningMemoryRequired": true,
+    "taskPlaybooksRequired": true,
+    "hourlyRefresh": true,
+    "refreshWorkflow": "Vibe2 Distillation Sample Ingest",
+    "benchmarkAccumulation": true,
+    "benchmarkCountsAsTrainingSample": false,
+    "freeTeacherCandidatesAllowed": true,
+    "maxFreeTeacherCandidates": 2,
+    "teacherCandidateAuthority": "NON_AUTHORITATIVE",
+    "paidTeacherFallbackAllowed": false,
+    "githubHostedModelTrainingAllowed": false
+  },
   "execution": {
     "sourceGraphRequired": true,
     "responsibleSourceRankingRequired": true,
     "verifiedPatternRecallRequired": true,
-    "defaultIndependentCandidates": 3,
+    "minIndependentCandidates": 3,
+    "maxIndependentCandidates": 5,
+    "defaultIndependentCandidates": 5,
     "isolatedCandidateExecutionRequired": true,
     "defaultMaxRepairAttempts": 3,
     "winnerRequires": [
@@ -23,6 +42,15 @@
     "sourceOverwriteBeforeWinnerForbidden": true,
     "deterministicTournament": true,
     "failedCandidatesPersistAsComparisonEvidence": true
+  },
+  "verifiedRag": {
+    "memoryIndex": "company-learning/vibe3-memory-index.json",
+    "playbooks": "company-learning/vibe3-task-playbooks.json",
+    "benchmarkQueue": "company-learning/vibe3-benchmark-queue.json",
+    "builder": "tools/vibe3-pump-index.mjs",
+    "positiveMemoryRequiresVerifiedEvidence": true,
+    "failureMemoryIsWarningOnly": true,
+    "supportedPlaybooks": ["coding", "bugfix", "qa", "unity", "graphics", "planning", "general"]
   },
   "trajectoryLearning": {
     "root": "company-learning/vibe3-trajectories",
@@ -64,7 +92,8 @@
     "cacheOrDownloadApprovalRequired": true,
     "fallbackToBaseline": true,
     "githubHostedTrainingAllowed": false,
-    "paidApiAllowed": false
+    "paidApiAllowed": false,
+    "weightTrainingDeferredWithoutLocalCapability": true
   },
   "trainerConsistency": {
     "externalBlackBoxQaSupported": true,
@@ -72,8 +101,6 @@
     "requiredIndependentQa": "BLACK_BOX_EVIDENCE_PASS",
     "requiredBrowserQa": "NOT_APPLICABLE",
     "requiredRuntime": "PASS",
-    "requiredBlackBoxEvidence": "PASS",
-    "proprietaryExtractionMustBeFalse": true,
     "normalNonUnityBrowserQaRequirementWeakened": false
   },
   "canonicalLearningChainUnchanged": true,
