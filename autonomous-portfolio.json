@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "status": "ACTIVE",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
@@ -48,44 +48,6 @@
     },
     "livingArtbookForAllClasses": true
   },
-  "productionTierPolicy": {
-    "compatibilityAliasOnly": true,
-    "canonicalField": "productionClass",
-    "fixedCounts": false,
-    "countsDerivedFromMembership": true,
-    "numericLabels": {
-      "1": "RELEASE_CONFIRMED",
-      "2": "DEVELOPMENT_CONFIRMED",
-      "3": "DESIGN_ONLY"
-    },
-    "tier1": {
-      "name": "RELEASE_CONFIRMED",
-      "engine": "UNITY_ANDROID",
-      "deepFocusSlots": 1,
-      "featureDevelopmentOnWeb": false,
-      "webArchiveMaintenance": "FAST_RUNTIME_INCIDENT_ONLY"
-    },
-    "tier2": {
-      "name": "DEVELOPMENT_CONFIRMED",
-      "engine": "WEB",
-      "scope": "FIRST_PLAYABLE_IMPLEMENTATION",
-      "fullArtbookReproductionRequired": false
-    },
-    "tier3": {
-      "name": "DESIGN_ONLY",
-      "codeWork": false,
-      "scope": [
-        "ARTBOOK",
-        "CONCEPT",
-        "IDENTITY",
-        "STORY",
-        "SYSTEM_DESIGN",
-        "BALANCE_DESIGN",
-        "UI_UX_DESIGN"
-      ]
-    },
-    "livingArtbookForAllTiers": true
-  },
   "developmentFocusPolicy": {
     "maxFocusedGames": 1,
     "targetFocusedGames": 1,
@@ -105,7 +67,7 @@
     "selection": "AUTO_RELEASE_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT",
     "releaseConfirmedExcludedFromFocus": false,
     "releaseConfirmedOnlyForDeepFocus": true,
-    "tier2WebPrototypeAllowedAlongsideUnityFocus": true,
+    "developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus": true,
     "fastLane": {
       "enabled": true,
       "trigger": "RUNTIME_INCIDENT",
@@ -171,8 +133,6 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "RELEASE_CONFIRMED",
       "mode": "UNITY_NEXT",
-      "productionTier": 1,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
       "targetEngine": "unity-android",
       "unityProjectReady": false,
       "developmentFocus": {
@@ -203,8 +163,6 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "WEB_FIRST_IMPLEMENTATION",
-      "productionTier": 2,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
       "targetEngine": "web",
       "developmentFocus": {
         "scores": {
@@ -231,8 +189,6 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DESIGN_ONLY",
       "mode": "REDESIGN",
-      "productionTier": 3,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
       "targetEngine": "design-only",
       "developmentFocus": {
         "scores": {
@@ -259,8 +215,6 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "WEB_FIRST_IMPLEMENTATION",
-      "productionTier": 2,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
       "targetEngine": "web",
       "developmentFocus": {
         "scores": {
@@ -287,8 +241,6 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DESIGN_ONLY",
       "mode": "REDESIGN",
-      "productionTier": 3,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
       "targetEngine": "design-only",
       "developmentFocus": {
         "scores": {
@@ -316,8 +268,6 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "RELEASE_CONFIRMED",
       "mode": "UNITY_DEVELOP",
-      "productionTier": 1,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
       "targetEngine": "unity-android",
       "dedicatedDevelopmentLane": "UNITY_PRIMARY",
       "unityProjectReady": true,
@@ -348,8 +298,6 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "HOLD_MISSING_SOURCE",
       "mode": "HOLD",
-      "productionTier": 3,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
       "targetEngine": "design-only",
       "protectedValues": []
     },
@@ -362,8 +310,6 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "HOLD_REDIRECT_ONLY",
       "mode": "HOLD",
-      "productionTier": 3,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
       "targetEngine": "design-only",
       "protectedValues": []
     },
@@ -376,8 +322,6 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "WEB_FIRST_IMPLEMENTATION",
-      "productionTier": 2,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
       "targetEngine": "web",
       "developmentFocus": {
         "scores": {
@@ -407,8 +351,6 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DESIGN_ONLY",
       "mode": "REDESIGN",
-      "productionTier": 3,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
       "targetEngine": "design-only",
       "publicArchiveStable": true,
       "protectedValues": [
@@ -426,8 +368,6 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DESIGN_ONLY",
       "mode": "REDESIGN",
-      "productionTier": 3,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
       "targetEngine": "design-only",
       "publicArchiveStable": true,
       "protectedValues": [
@@ -445,8 +385,6 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DESIGN_ONLY",
       "mode": "REDESIGN",
-      "productionTier": 3,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
       "targetEngine": "design-only",
       "publicArchiveStable": true,
       "protectedValues": [
@@ -454,192 +392,6 @@
         "core-loop",
         "public-stable"
       ]
-    },
-    {
-      "id": "SEED-SEED-ACTION_SURVIVAL_ROGUELITE-001",
-      "slug": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "name": "Echoes of the Lost Star",
-      "sourcePath": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-      "protectedValues": [
-        "core-loop",
-        "design-baseline",
-        "save-meaning"
-      ],
-      "developmentFocus": {
-        "scores": {
-          "playability": 0,
-          "distinctiveness": 0,
-          "developmentEfficiency": 0,
-          "scalability": 0,
-          "lowBlockage": 0
-        },
-        "total": 0,
-        "evidenceNote": "승격 직후. 2분류 실제 Web/Unity 근거 수집 전."
-      },
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "WEB_FIRST_IMPLEMENTATION",
-      "productionTier": 2,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
-      "targetEngine": "web",
-      "designBaselineSource": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-09-11/design-revised.json",
-      "designArtbookSource": "artbook-submissions/seed-action-survival-rogu-echoes-of-the-lost-star/current.json"
-    },
-    {
-      "id": "SEED-SEED-SINGLE_DEFENSE_STRATEGY-001",
-      "slug": "seed-single-defense-strat-celestial-bastion",
-      "name": "Celestial Bastion",
-      "sourcePath": "web-games/seed-single-defense-strat-celestial-bastion",
-      "protectedValues": [
-        "core-loop",
-        "design-baseline",
-        "save-meaning"
-      ],
-      "developmentFocus": {
-        "scores": {
-          "playability": 0,
-          "distinctiveness": 0,
-          "developmentEfficiency": 0,
-          "scalability": 0,
-          "lowBlockage": 0
-        },
-        "total": 0,
-        "evidenceNote": "승격 직후. 2분류 실제 Web/Unity 근거 수집 전."
-      },
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "WEB_FIRST_IMPLEMENTATION",
-      "productionTier": 2,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
-      "targetEngine": "web",
-      "designBaselineSource": "design/seed-single-defense-strat-celestial-bastion/2026-09-11/design-revised.json",
-      "designArtbookSource": "artbook-submissions/seed-single-defense-strat-celestial-bastion/current.json"
-    },
-    {
-      "id": "SEED-SEED-PUZZLE-001",
-      "slug": "seed-puzzle-chromatic-cascade",
-      "name": "Chromatic Cascade",
-      "sourcePath": "web-games/seed-puzzle-chromatic-cascade",
-      "protectedValues": [
-        "core-loop",
-        "design-baseline",
-        "save-meaning"
-      ],
-      "developmentFocus": {
-        "scores": {
-          "playability": 0,
-          "distinctiveness": 0,
-          "developmentEfficiency": 0,
-          "scalability": 0,
-          "lowBlockage": 0
-        },
-        "total": 0,
-        "evidenceNote": "승격 직후. 2분류 실제 Web/Unity 근거 수집 전."
-      },
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "WEB_FIRST_IMPLEMENTATION",
-      "productionTier": 2,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
-      "targetEngine": "web",
-      "designBaselineSource": "design/seed-puzzle-chromatic-cascade/2026-09-11/design-revised.json",
-      "designArtbookSource": "artbook-submissions/seed-puzzle-chromatic-cascade/current.json"
-    },
-    {
-      "id": "SEED-SEED-CASUAL-001",
-      "slug": "seed-casual-realm-weaver",
-      "name": "Realm Weaver",
-      "sourcePath": "web-games/seed-casual-realm-weaver",
-      "protectedValues": [
-        "core-loop",
-        "design-baseline",
-        "save-meaning"
-      ],
-      "developmentFocus": {
-        "scores": {
-          "playability": 0,
-          "distinctiveness": 0,
-          "developmentEfficiency": 0,
-          "scalability": 0,
-          "lowBlockage": 0
-        },
-        "total": 0,
-        "evidenceNote": "승격 직후. 2분류 실제 Web/Unity 근거 수집 전."
-      },
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "WEB_FIRST_IMPLEMENTATION",
-      "productionTier": 2,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
-      "targetEngine": "web",
-      "designBaselineSource": "design/seed-casual-realm-weaver/2026-09-11/design-revised.json",
-      "designArtbookSource": "artbook-submissions/seed-casual-realm-weaver/current.json"
-    },
-    {
-      "id": "SEED-SEED-IDLE_GROWTH_RPG-001",
-      "slug": "seed-idle-growth-rpg-crystal-bloom",
-      "name": "Crystal Bloom",
-      "sourcePath": "web-games/seed-idle-growth-rpg-crystal-bloom",
-      "protectedValues": [
-        "core-loop",
-        "design-baseline",
-        "save-meaning"
-      ],
-      "developmentFocus": {
-        "scores": {
-          "playability": 0,
-          "distinctiveness": 0,
-          "developmentEfficiency": 0,
-          "scalability": 0,
-          "lowBlockage": 0
-        },
-        "total": 0,
-        "evidenceNote": "승격 직후. 2분류 실제 Web/Unity 근거 수집 전."
-      },
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "WEB_FIRST_IMPLEMENTATION",
-      "productionTier": 2,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
-      "targetEngine": "web",
-      "designBaselineSource": "design/seed-idle-growth-rpg-crystal-bloom/2026-09-11/design-revised.json",
-      "designArtbookSource": "artbook-submissions/seed-idle-growth-rpg-crystal-bloom/current.json"
-    },
-    {
-      "id": "SEED-SEED-STORY_COMPLETE_RPG-001",
-      "slug": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "name": "Chronicles of Eldoria",
-      "sourcePath": "web-games/seed-story-complete-rpg-chronicles-of-eldoria",
-      "protectedValues": [
-        "core-loop",
-        "design-baseline",
-        "save-meaning"
-      ],
-      "developmentFocus": {
-        "scores": {
-          "playability": 0,
-          "distinctiveness": 0,
-          "developmentEfficiency": 0,
-          "scalability": 0,
-          "lowBlockage": 0
-        },
-        "total": 0,
-        "evidenceNote": "승격 직후. 2분류 실제 Web/Unity 근거 수집 전."
-      },
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "DESIGN_BASELINE_READY",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "WEB_FIRST_IMPLEMENTATION",
-      "productionTier": 2,
-      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
-      "targetEngine": "web",
-      "designBaselineSource": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-11/design-revised.json",
-      "designArtbookSource": "artbook-submissions/seed-story-complete-rpg-chronicles-of-eldoria/current.json"
     }
   ],
   "productionClassState": {
@@ -648,53 +400,6 @@
     "fixedGameIds": false,
     "fixedCounts": false,
     "countsDerivedFromMembership": true,
-    "numericTierAliasOnly": true,
-    "autoPromotionDemotion": true,
-    "diversity": {
-      "enabled": true,
-      "maxFocusScoreGap": 1,
-      "scope": "DIAGNOSTIC_ONLY",
-      "source": "CATALOG_GENRE",
-      "membershipInfluence": false,
-      "adjusted": false,
-      "distinctFamilies": [
-        "SURVIVAL",
-        "RPG",
-        "DEFENSE",
-        "TURN_BASED"
-      ]
-    },
-    "counts": {
-      "releaseConfirmed": 2,
-      "developmentConfirmed": 3,
-      "designOnly": 7
-    },
-    "releaseConfirmedGameIds": [
-      "P0001",
-      "P0006"
-    ],
-    "developmentConfirmedGameIds": [
-      "P0002",
-      "P0004",
-      "P0009"
-    ],
-    "designOnlyGameIds": [
-      "P0003",
-      "P0005",
-      "P0007",
-      "P0008",
-      "P0101",
-      "P0102",
-      "P0103"
-    ]
-  },
-  "productionTierState": {
-    "membershipMode": "SEMANTIC_EVIDENCE_DYNAMIC",
-    "canonicalField": "productionClass",
-    "fixedGameIds": false,
-    "fixedCounts": false,
-    "countsDerivedFromMembership": true,
-    "numericTierAliasOnly": true,
     "autoPromotionDemotion": true,
     "diversity": {
       "enabled": true,
