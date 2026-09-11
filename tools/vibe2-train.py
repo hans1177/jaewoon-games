@@ -87,13 +87,27 @@ def validate_manifest(args, manifest, train_rows, eval_rows):
 
     for row in train_rows + eval_rows:
         qa = row.get("qa") or {}
-        if qa.get("independentQa") != "PASS" or qa.get("browserQa") != "PASS":
-            raise RuntimeError("unverified sample reached trainer")
+        row_task_type = str(row.get("taskType") or "").lower()
+        if qa.get("independentQa") != "PASS" or qa.get("runtime") != "PASS":
+            raise RuntimeError("independent QA and runtime PASS are required")
+        if row_task_type == "unity":
+            if qa.get("browserQa") != "NOT_APPLICABLE":
+                raise RuntimeError("Unity browser QA must be NOT_APPLICABLE")
+            requirements = qa.get("requirements") or {}
+            if requirements.get("androidRuntimeRequired") is not True:
+                raise RuntimeError("Unity Android runtime requirement is missing")
+            if row.get("synthetic") is not False:
+                raise RuntimeError("Unity production training forbids synthetic rows")
+            provenance = row.get("provenance") or {}
+            if str(provenance.get("sourceKind") or "").lower() != "vibe2":
+                raise RuntimeError("Unity production training requires verified Vibe2 source evidence")
+        elif qa.get("browserQa") != "PASS":
+            raise RuntimeError("browser QA PASS is required for non-Unity samples")
         if row.get("lifecycle") != "active":
             raise RuntimeError("inactive sample reached trainer")
         if float(row.get("qualityScore", 0)) < 0.75:
             raise RuntimeError("low-quality sample reached trainer")
-        if target_task_type and row.get("taskType") != target_task_type:
+        if target_task_type and row_task_type != target_task_type:
             raise RuntimeError("mixed task type reached task-specific trainer")
 
 
@@ -244,6 +258,7 @@ def main():
         "datasetDiversity": manifest.get("diversity"),
         "datasetBatching": manifest.get("batching"),
         "contaminationRate": (manifest.get("contamination") or {}).get("contaminationRate"),
+        "verifiedRealOnly": args.task_type == "unity",
         "trainMetrics": train_result.metrics,
         "evalMetrics": eval_result,
         "promotionState": "UNVERIFIED",
