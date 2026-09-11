@@ -8,7 +8,7 @@ test('structured design calls recover DeepSeek structure without dropping its re
   assert.match(design,/think:false/);
   assert.match(design,/for\(let attempt=1;attempt<=2;attempt\+\+\)/);
   assert.match(design,/const deepSeek=model\.startsWith\('deepseek-r1'\)/);
-  assert.match(design,/deepSeek\?\(attempt===1\?'json':'plain-json'\)/);
+  assert.match(design,/const mode=deepSeek\?'json':\(attempt===1\?'schema':'json'\)/);
   assert.match(design,/if\(!deepSeek&&attempt===1\)payload\.format=schema/);
   assert.match(design,/else if\(mode==='json'\)payload\.format='json'/);
   assert.match(design,/PREVIOUS_VALIDATION_ERROR=/);
@@ -17,6 +17,8 @@ test('structured design calls recover DeepSeek structure without dropping its re
   assert.match(design,/fill-empty-array:/);
   assert.match(design,/drop-extra:/);
   assert.match(design,/assertSchemaValue\(normalized,schema\)/);
+  assert.match(design,/const nextMode='json'/);
+  assert.doesNotMatch(design,/plain-json/);
   assert.doesNotMatch(design,/attempt<=3/);
   assert.doesNotMatch(design,/message\?\.thinking\).*return/);
 });
