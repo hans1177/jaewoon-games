@@ -6,12 +6,19 @@ out_dir="${2:-qa-artifacts/unity-runtime-smoke}"
 [[ -n "$apk" && -s "$apk" ]] || { echo "[JAEWOON_BUILD_ERROR:APK_SMOKE_INPUT_MISSING] APK missing or empty: $apk" >&2; exit 2; }
 mkdir -p "$out_dir"
 
-adb wait-for-device
-for _ in $(seq 1 60); do
-  [[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" == "1" ]] && break
-  sleep 2
-done
-[[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" == "1" ]] || { echo '[JAEWOON_BUILD_ERROR:ANDROID_EMULATOR_BOOT_TIMEOUT] Android emulator did not finish booting.' >&2; exit 3; }
+adb start-server >/dev/null 2>&1 || true
+if ! timeout 150 adb wait-for-device; then
+  echo '[JAEWOON_BUILD_ERROR:ANDROID_ADB_DEVICE_TIMEOUT] adb did not discover the Android emulator within 150 seconds.' >&2
+  adb devices -l >&2 || true
+  cat /tmp/jaewoon-emulator.log >&2 2>/dev/null || true
+  exit 3
+fi
+if ! timeout 150 bash -c 'until [[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" == "1" ]]; do sleep 3; done'; then
+  echo '[JAEWOON_BUILD_ERROR:ANDROID_EMULATOR_BOOT_TIMEOUT] Android emulator did not finish booting within 150 seconds.' >&2
+  adb devices -l >&2 || true
+  cat /tmp/jaewoon-emulator.log >&2 2>/dev/null || true
+  exit 3
+fi
 
 aapt_bin="$(find "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools" -type f -name aapt 2>/dev/null | sort -V | tail -n 1)"
 [[ -n "$aapt_bin" && -x "$aapt_bin" ]] || { echo '[JAEWOON_BUILD_ERROR:AAPT_MISSING] aapt not found.' >&2; exit 4; }
