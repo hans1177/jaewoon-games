@@ -75,8 +75,10 @@ test('refuses Unity prototype generation without real Web gameplay PASS',()=>{
   assert.match(run.stderr,/REAL_WEB_GAMEPLAY_PASS_REQUIRED/);
 });
 
-test('DEVELOPMENT Unity runtime scales parent validation to dynamic N while keeping cloud-only child builds',()=>{
-  assert.match(workflowSource,/const parallel=Math\.max\(1,rows\.length\)/);
+test('DEVELOPMENT Unity runtime keeps a dynamic N target matrix with a serial-safe two-parent child window',()=>{
+  assert.match(workflowSource,/const parallel=Math\.min\(2,Math\.max\(1,rows\.length\)\)/);
+  assert.match(workflowSource,/UNITY_TECH_TARGET_N=\$\{rows\.length\}/);
+  assert.match(workflowSource,/UNITY_TECH_ACTIVE_PARENT_WINDOW=\$\{parallel\}/);
   assert.match(workflowSource,/parallel=\$\{parallel\}/);
   assert.match(workflowSource,/max-parallel:\s*\$\{\{\s*fromJSON\(needs\.prepare\.outputs\.parallel\)\s*\}\}/);
   assert.match(workflowSource,/matrix:\s*\n\s*item:\s*\$\{\{\s*fromJSON\(needs\.prepare\.outputs\.matrix\)\s*\}\}/);
@@ -84,6 +86,8 @@ test('DEVELOPMENT Unity runtime scales parent validation to dynamic N while keep
   assert.match(workflowSource,/unity-cloud-android-test\.yml/);
   assert.doesNotMatch(workflowSource,/unity-local-pc-android\.yml/);
   assert.match(workflowSource,/CLOUD_UNITY_BUILD_RUN_ID/);
+  assert.match(workflowSource,/UNITY_TARGET_MATRIX=DYNAMIC_N/);
+  assert.match(workflowSource,/UNITY_ACTIVE_PARENT_WINDOW=2/);
   assert.match(workflowSource,/homepagePublicationApproved=true/);
   assert.match(workflowSource,/publishTestBuildWhenReady=true/);
   assert.match(workflowSource,/HOMEPAGE_TEST_APK_PUBLISH=YES/);
