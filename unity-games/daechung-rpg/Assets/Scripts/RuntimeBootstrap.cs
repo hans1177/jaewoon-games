@@ -114,7 +114,8 @@ namespace JaewoonGames.DaechungRpg
 
             GUILayout.Label($"LV {player.level}   HP {player.currentHp}/{_core.GetMaxHp()}   ATK {_core.GetAttackPower()}");
             GUILayout.Label($"EXP {player.experience}/{ExperienceNeeded(player.level)}   GOLD {player.gold}");
-            GUILayout.Label($"REGION {regionName}   JOB {player.job}   WEAPON {player.equippedWeaponId}");
+            GUILayout.Label($"REGION {regionName}   JOB {player.job}");
+            GUILayout.Label($"WEAPON {player.equippedWeaponId}   ARMOR {player.equippedArmorId}");
         }
 
         private void DrawRegionControls()
@@ -190,6 +191,17 @@ namespace JaewoonGames.DaechungRpg
             }
             GUI.enabled = true;
             GUILayout.EndHorizontal();
+
+            var ownsWoodArmor = _core.Player.ownedArmors.Contains("wood-armor");
+            GUI.enabled = !ownsWoodArmor && _core.Player.gold >= 50;
+            if (GUILayout.Button(ownsWoodArmor ? "WOOD ARMOR OWNED" : "BUY WOOD ARMOR · 50G"))
+            {
+                if (_core.TryBuyArmor("wood-armor"))
+                {
+                    _message = "Purchased and equipped wood armor.";
+                }
+            }
+            GUI.enabled = true;
 
             if (_core.Player.level >= 5 && _core.Player.job == JobType.None)
             {
