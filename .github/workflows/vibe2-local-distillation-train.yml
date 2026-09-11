@@ -129,6 +129,7 @@ jobs:
 
             $datasetDir = Join-Path $env:GITHUB_WORKSPACE ("vibe2-learning\datasets\$taskType\$env:REQUEST_ID")
             if (Test-Path $datasetDir) { Remove-Item $datasetDir -Recurse -Force }
+            $syntheticRatioCap = if ($taskType -eq 'unity') { '0' } else { '0.5' }
 
             node tools/vibe2-weight-learning.mjs dataset `
               --input company-learning/training-samples `
@@ -138,20 +139,33 @@ jobs:
               --min-fresh-train-samples 12 `
               --min-distinct-projects 2 `
               --max-project-share 0.75 `
-              --synthetic-ratio-cap 0.5
+              --synthetic-ratio-cap $syntheticRatioCap
             if ($LASTEXITCODE -ne 0) { throw "dataset gate failed for $taskType" }
 
             $manifestPath = Join-Path $datasetDir 'manifest.json'
+            $trainPath = Join-Path $datasetDir 'train.jsonl'
+            $evalPath = Join-Path $datasetDir 'eval.jsonl'
+            $holdoutPath = Join-Path $datasetDir 'holdout.jsonl'
             $manifest = [System.IO.File]::ReadAllText($manifestPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
             if ($manifest.readyForTraining -ne $true) { throw "manifest is not training-ready for $taskType" }
             if ($manifest.targetTaskType -ne $taskType) { throw "manifest task mismatch for $taskType" }
+
+            if ($taskType -eq 'unity') {
+              node tools/vibe2-real-unity-dataset-gate.mjs `
+                --manifest $manifestPath `
+                --train $trainPath `
+                --eval $evalPath `
+                --holdout $holdoutPath `
+                --samples-root (Join-Path $env:GITHUB_WORKSPACE 'company-learning\training-samples')
+              if ($LASTEXITCODE -ne 0) { throw 'real verified Unity dataset gate failed' }
+              Write-Host 'UNITY_TRAINING_AUTHORITY=VERIFIED_PRODUCTION_EVIDENCE_ONLY'
+              Write-Host 'UNITY_SYNTHETIC_TRAINING=NO'
+            }
 
             $adapterDir = Join-Path $env:LOCAL_TRAINING_ROOT ("adapters\$taskType\$adapterVersion")
             if (Test-Path $adapterDir) { Remove-Item $adapterDir -Recurse -Force }
             New-Item -ItemType Directory -Path $adapterDir -Force | Out-Null
 
-            $trainPath = Join-Path $datasetDir 'train.jsonl'
-            $evalPath = Join-Path $datasetDir 'eval.jsonl'
             python tools/vibe2-train.py `
               --train $trainPath `
               --eval $evalPath `
@@ -167,6 +181,9 @@ jobs:
             $metadata = [System.IO.File]::ReadAllText($metadataPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
             if ($metadata.promotionState -ne 'UNVERIFIED' -or $metadata.runtimePromotionAllowed -ne $false) {
               throw "fresh adapter must remain unverified for $taskType"
+            }
+            if ($taskType -eq 'unity' -and $metadata.verifiedRealOnly -ne $true) {
+              throw 'Unity adapter must be marked verified-real-only'
             }
             $runtimeItems += [pscustomobject]@{
               taskType = $taskType

@@ -54,17 +54,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-company-runtime'
-          git config user.email 'company-runtime@users.noreply.github.com'
           git fetch origin main
           if git ls-remote --exit-code --heads origin "$COMPANY_RUNTIME_BRANCH" >/dev/null 2>&1; then
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
-            git checkout -B "$COMPANY_RUNTIME_BRANCH" "origin/$COMPANY_RUNTIME_BRANCH"
-            git merge --no-edit origin/main
-          else
-            git checkout -B "$COMPANY_RUNTIME_BRANCH" origin/main
+            if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" 2>/dev/null; then
+              git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- game-seed-state.json
+              git reset -- game-seed-state.json >/dev/null 2>&1 || true
+            fi
           fi
-          echo "COMPANY_RUNTIME_BASE=$(git rev-parse HEAD)"
+          test -f game-seed-state.json
+          cp game-seed-state.json /tmp/company-runtime-seed-state-before.json
+          echo "COMPANY_ENGINE_BASE=$(git rev-parse HEAD)"
+          echo 'COMPANY_RUNTIME_STATE_OVERLAY=GAME_SEED_ONLY'
+          echo 'COMPANY_ENGINE_SOURCE=main'
           echo 'PUBLIC_MAIN_WRITE=NO'
 
       - name: Static GAME_SEED contract QA
@@ -156,15 +158,41 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-game-seed'
           git config user.email 'game-seed@users.noreply.github.com'
-          git add game-seed-state.json
-          if git diff --cached --quiet; then
+          if cmp -s game-seed-state.json /tmp/company-runtime-seed-state-before.json; then
             echo 'persisted=false' >> "$GITHUB_OUTPUT"
             echo 'GAME_SEED_STATE_CHANGE=NO'
             exit 0
           fi
+          git add -- game-seed-state.json
           git commit -m "runtime: normalize or replenish GAME_SEED state"
-          git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"
-          echo 'persisted=true' >> "$GITHUB_OUTPUT"
+          generated_commit="$(git rev-parse HEAD)"
+          pushed=0
+          persisted=false
+          for attempt in 1 2 3 4; do
+            git fetch origin "$COMPANY_RUNTIME_BRANCH" main
+            if git show-ref --verify --quiet "refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"; then
+              git checkout -B game-seed-persist "origin/$COMPANY_RUNTIME_BRANCH"
+            else
+              git checkout -B game-seed-persist origin/main
+            fi
+            git checkout "$generated_commit" -- game-seed-state.json
+            git add -- game-seed-state.json
+            if git diff --cached --quiet; then
+              pushed=1
+              echo 'GAME_SEED_STATE_CHANGE=ALREADY_PERSISTED'
+              break
+            fi
+            git commit -m "runtime: normalize or replenish GAME_SEED state"
+            if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
+              pushed=1
+              persisted=true
+              break
+            fi
+            git reset --hard "$generated_commit"
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+          echo "persisted=$persisted" >> "$GITHUB_OUTPUT"
           echo "GAME_SEED_RUNTIME_BRANCH=$COMPANY_RUNTIME_BRANCH"
           echo 'PUBLIC_MAIN_WRITE=NO'
           echo 'PAID_API=NO'

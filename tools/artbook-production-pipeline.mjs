@@ -19,6 +19,16 @@ const productionClass=game?productionClassOf({},game,{numericLabels:directive.pr
 function run(script){return new Promise((resolve,reject)=>{const child=spawn(process.execPath,[script],{stdio:'inherit',env:{...process.env,ARTBOOK_GAME_ID:gameId,GAME_ID:gameId,...(date?{ARTBOOK_DATE:date,DESIGN_DATE:date}:{})}});child.on('error',reject);child.on('close',code=>code===0?resolve():reject(new Error(`${script} exited ${code}`)));});}
 function kstDate(){const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const g=t=>p.find(x=>x.type===t)?.value||'';return`${g('year')}-${g('month')}-${g('day')}`;}
 function readCycleStatus(){const d=date||kstDate();try{return JSON.parse(fs.readFileSync(path.join('design',gameId,d,'cycle-status.json'),'utf8'));}catch{return null;}}
+function canReuseCompletedDesign(status){
+  if(status?.status!=='COMPLETE')return false;
+  if(String(status?.disposition?.state||'').toUpperCase()!=='REDESIGN')return false;
+  if(Number(status?.meeting?.conflictCount||0)!==0||Number(status?.meeting?.holdCount||0)!==0)return false;
+  if(status?.disposition?.unanimousFatalDiscard===true)return false;
+  const blockers=Array.isArray(status?.baselineGate?.blockers)?status.baselineGate.blockers:[];
+  if(!blockers.length||blockers.some(blocker=>!String(blocker).startsWith('design-disposition:')))return false;
+  const d=date||kstDate();
+  return fs.existsSync(path.join('design',gameId,d,'design-revised.json'));
+}
 
 console.log(`ARTBOOK_PIPELINE_GAME=${gameId}`);console.log(`PRODUCTION_CLASS=${productionClass}`);console.log('POLICY_DOCUMENT=COMPANY_FLOW.md');
 await run('tools/artbook-fact-pack.mjs');
@@ -31,7 +41,9 @@ if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
   await run('tools/company-release-production-cycle.mjs');await run('tools/company-release-stale-artifact-guard.mjs');
   console.log('RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION');console.log('RELEASE_VIBE2_PRIMARY_DEVELOPER=YES');console.log('RELEASE_CURRENT_BUILD_EVIDENCE_BINDING=REQUIRED');console.log('RELEASE_STALE_FINAL_ARTIFACT_GUARD=ENABLED');console.log('RELEASE_FINAL_ARTBOOK_ONLY_AFTER_READY=YES');
 }else{
-  await run('tools/company-design-cycle.mjs');
+  const existingStatus=readCycleStatus();
+  if(canReuseCompletedDesign(existingStatus))console.log('DESIGN_CYCLE_REUSED=YES');
+  else{await run('tools/company-design-cycle.mjs');console.log('DESIGN_CYCLE_REUSED=NO');}
   await run('tools/company-baseline-gate.mjs');
   const status=readCycleStatus();
   if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true){await run('tools/company-design-artbook.mjs');console.log('DESIGN_ONLY_ARTBOOK_AFTER_BASELINE=YES');}

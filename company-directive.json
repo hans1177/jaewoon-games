@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 28,
+  "revision": 29,
   "updatedAt": "2026-09-11",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
@@ -148,6 +148,7 @@
   "ai": {
     "paidAiAllowed": false,
     "paidRunnerAllowed": false,
+    "bannedModels": ["deepseek-r1:1.5b"],
     "roleIdentityFixed": true,
     "modelIdentityFixed": false,
     "departmentMultimodelStartsAtClass": "DESIGN_ONLY",
@@ -160,12 +161,12 @@
     "assistantModelsMayOverlapAcrossDepartments": true,
     "departmentRepresentativeAuthoredByLead": true,
     "departmentRebuttalAuthoredByLead": true,
-    "modelPool": ["qwen3:0.6b", "gemma3:1b", "llama3.2:1b", "deepseek-r1:1.5b", "smollm2:1.7b"],
+    "modelPool": ["qwen3:0.6b", "gemma3:1b", "llama3.2:1b", "qwen2.5:1.5b", "smollm2:1.7b"],
     "departmentLeadModels": {
       "planning": "qwen3:0.6b",
       "graphics": "gemma3:1b",
       "development": "llama3.2:1b",
-      "qa": "deepseek-r1:1.5b",
+      "qa": "qwen2.5:1.5b",
       "balance": "smollm2:1.7b"
     },
     "gameDesigner": {
@@ -397,6 +398,7 @@
     "release-artbook-final-revision-only-after-release-ready",
     "existing-public-web-builds-survive-class-movement",
     "core-production-decisions-still-require-owner-decision",
-    "paid-ai-paid-overage-and-paid-runners-remain-forbidden"
+    "paid-ai-paid-overage-and-paid-runners-remain-forbidden",
+    "deepseek-r1-1.5b-banned-from-company-ai-workforce"
   ]
 }

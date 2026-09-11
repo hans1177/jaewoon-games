@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "scope": "UNITY_CODING_ONLY",
+  "sourceKind": "licensed-reference",
+  "synthetic": false,
+  "authority": "PRACTICE_ONLY",
+  "runtimePromotionAllowed": false,
+  "purpose": "Source-backed Unity implementation judgment distilled from explicitly licensed public code. Never treat as internal verified production evidence.",
+  "sources": [
+    {
+      "id": "unitask-mit-20260708",
+      "repository": "Cysharp/UniTask",
+      "commit": "ceac8d6946b1125fe782cd171fbcb245b567dbf9",
+      "licenseSpdx": "MIT",
+      "sourcePaths": [
+        "src/UniTask/Assets/Plugins/UniTask/Runtime/UnityAsyncExtensions.MonoBehaviour.cs",
+        "src/UniTask/Assets/Plugins/UniTask/Runtime/UnityAsyncExtensions.uGUI.cs",
+        "src/UniTask/Assets/Plugins/UniTask/Runtime/UniTask.Factory.cs"
+      ]
+    },
+    {
+      "id": "openkcc-mit-20230915",
+      "repository": "nicholas-maltbie/OpenKCC",
+      "commit": "a1a30ed7f7722ea82a1df6bd01849e0bfde6abf4",
+      "licenseSpdx": "MIT",
+      "sourcePaths": [
+        "Packages/com.nickmaltbie.openkcc/OpenKCC/Character/KCCStateMachine.cs",
+        "Packages/com.nickmaltbie.openkcc/OpenKCC/Character/KCCMovementEngine.cs",
+        "Assets/Samples/MoleKCCSample/Scripts/MoleCharacter.cs"
+      ]
+    }
+  ],
+  "drills": [
+    {
+      "id": "licensed-u-001",
+      "sourceId": "unitask-mit-20260708",
+      "topic": "async-lifecycle",
+      "difficulty": "regression",
+      "evidenceSymbol": "GetCancellationTokenOnDestroy / StartAsyncCoroutine",
+      "scenario": "MonoBehaviour가 파괴된 뒤에도 비동기 로딩이나 지연 작업이 완료되어 이미 사라진 UI/게임 오브젝트를 건드린다.",
+      "answer": "비동기 작업 수명을 소유 GameObject의 생명주기에 결속한다. 취소 토큰은 호출부마다 임의 생성하지 말고 작업을 소유한 MonoBehaviour 경계에서 전달하고, 파괴 시 취소되어 이후 상태 쓰기가 실행되지 않게 한다.",
+      "avoid": ["Destroy 뒤에도 살아 있는 전역 CancellationToken 사용", "완료 콜백에서 null 체크만 추가해 수명 문제 숨기기"],
+      "verify": ["작업 중 GameObject Destroy", "씬 전환 중 비동기 작업", "취소 후 상태 쓰기 0회"]
+    },
+    {
+      "id": "licensed-u-002",
+      "sourceId": "unitask-mit-20260708",
+      "topic": "ui-event-lifecycle",
+      "difficulty": "bug",
+      "evidenceSymbol": "UnityAsyncExtensions.uGUI event enumerable + GetCancellationTokenOnDestroy",
+      "scenario": "UI를 열고 닫을수록 비동기 버튼 이벤트 소비자가 남아서 한 번 클릭에 여러 작업이 시작된다.",
+      "answer": "UI 이벤트 스트림의 수명을 UI 컴포넌트 수명과 묶는다. 이벤트 소비 루프가 소유 UI 파괴 시 함께 종료되게 하고, 실제 gameplay 변경 권한은 UI가 아니라 도메인 시스템에 둔다.",
+      "avoid": ["매 OnEnable마다 새 비동기 루프 시작 후 취소 없음", "중복 클릭 방지만 추가하고 누수된 소비자 유지"],
+      "verify": ["UI 열기/닫기 20회", "클릭 1회당 명령 1회", "Destroy 후 이벤트 소비 0회"]
+    },
+    {
+      "id": "licensed-u-003",
+      "sourceId": "unitask-mit-20260708",
+      "topic": "async-ownership",
+      "difficulty": "unity-build",
+      "evidenceSymbol": "StartAsyncCoroutine(Func<CancellationToken, UniTask>)",
+      "scenario": "여러 컴포넌트가 같은 장기 비동기 작업을 시작하고 누가 취소해야 하는지 불명확해 씬 종료 후 작업이 남는다.",
+      "answer": "장기 작업을 시작하는 객체가 그 작업의 cancellation ownership도 가진다. 작업 함수에는 토큰을 명시적으로 전달하고, 하위 작업도 같은 수명 경계를 이어받게 해 소유권을 추적 가능하게 만든다.",
+      "avoid": ["정적 전역 토큰 하나로 모든 작업 공유", "Task를 시작하고 핸들/취소 경계 없이 Forget"],
+      "verify": ["소유 객체 비활성/파괴", "중첩 비동기 작업 취소 전파", "씬 종료 후 작업 잔존 없음"]
+    },
+    {
+      "id": "licensed-u-004",
+      "sourceId": "unitask-mit-20260708",
+      "topic": "async-ui-command",
+      "difficulty": "regression",
+      "evidenceSymbol": "UniTask.UnityAction cancellation-token overload",
+      "scenario": "비동기 UI 명령이 실행 중인데 화면이 닫히거나 교체되어 완료 시 이전 화면 상태를 다시 덮어쓴다.",
+      "answer": "UI에서 시작한 비동기 명령은 UI 수명 토큰을 전달하되, 영속 gameplay 상태 변경은 별도 도메인 책임자가 소유한다. 화면 수명 종료 후에는 presentation 갱신을 중단하고 결과 적용 경계를 분리한다.",
+      "avoid": ["async void 콜백에서 화면 참조를 끝까지 보유", "취소와 gameplay transaction rollback을 동일 개념으로 취급"],
+      "verify": ["요청 중 화면 닫기", "재진입 후 이전 요청 완료", "도메인 상태와 화면 상태 불일치 없음"]
+    },
+    {
+      "id": "licensed-u-005",
+      "sourceId": "openkcc-mit-20230915",
+      "topic": "movement-velocity-ownership",
+      "difficulty": "regression",
+      "evidenceSymbol": "KCCStateMachine.Velocity protected setter",
+      "scenario": "걷기, 대시, 넉백 코드가 각각 velocity를 직접 덮어써 방향전환 때 떨림과 속도 누수가 발생한다.",
+      "answer": "현재 velocity의 쓰기 권한을 이동 시스템 한 경계에 집중한다. 외부 상태는 이동 의도나 modifier를 전달하고, 최종 velocity 합성·충돌 반영은 이동 책임자가 수행하게 한다.",
+      "avoid": ["여러 MonoBehaviour가 Rigidbody/CharacterController 속도 직접 덮기", "상태마다 별도 transform 이동 추가"],
+      "verify": ["대시 중 넉백", "벽 충돌 중 방향전환", "상태 종료 후 잔여 속도 없음"]
+    },
+    {
+      "id": "licensed-u-006",
+      "sourceId": "openkcc-mit-20230915",
+      "topic": "input-vs-motion-state",
+      "difficulty": "unity-build",
+      "evidenceSymbol": "MoleCharacter input movement separated from world-space Velocity",
+      "scenario": "입력 벡터와 실제 월드 속도를 같은 변수로 써서 경사면·공중·충돌 후 애니메이션과 이동 판단이 틀어진다.",
+      "answer": "플레이어 입력 의도와 실제 물리 결과 velocity를 분리한다. 입력은 목표 방향/속도의 재료이고 실제 velocity는 접지·충돌·중력·상태를 반영한 결과로 유지하며 애니메이션은 필요한 결과 값을 읽는다.",
+      "avoid": ["input magnitude를 실제 속도로 간주", "Animator가 movement velocity를 다시 수정"],
+      "verify": ["경사면", "공중 입력", "벽 밀착 상태에서 애니메이션/속도 일치"]
+    },
+    {
+      "id": "licensed-u-007",
+      "sourceId": "openkcc-mit-20230915",
+      "topic": "grounded-state-boundary",
+      "difficulty": "bug",
+      "evidenceSymbol": "KCCMovementEngine.GroundedState protected setter",
+      "scenario": "점프·착지·슬로프 코드가 각자 grounded bool을 수정해 한 프레임 안에 상태가 여러 번 뒤집힌다.",
+      "answer": "접지 판정의 source of truth를 이동/충돌 엔진에 둔다. 점프나 애니메이션 시스템은 접지 결과를 읽어 전이를 요청할 뿐 직접 접지 상태를 쓰지 않게 한다.",
+      "avoid": ["Raycast 결과마다 전역 grounded bool 덮기", "Animator state로 gameplay 접지 여부 결정"],
+      "verify": ["경사 경계", "낮은 턱", "점프 시작/착지 프레임에 상태 전이 1회"]
+    },
+    {
+      "id": "licensed-u-008",
+      "sourceId": "openkcc-mit-20230915",
+      "topic": "character-state-machine",
+      "difficulty": "regression",
+      "evidenceSymbol": "KCCStateMachine movement state and protected motion state",
+      "scenario": "이동 상태가 늘면서 각 상태가 입력·회전·중력·충돌을 전부 직접 처리해 수정 하나가 다른 상태를 깨뜨린다.",
+      "answer": "상태머신은 상태 전이와 의도 선택을 담당하고, 공통 이동 계산·충돌·velocity ownership은 이동 엔진 책임으로 유지한다. 새 상태는 공통 경계를 우회하지 말고 필요한 modifier만 제공한다.",
+      "avoid": ["상태 클래스마다 완전한 이동 코드 복제", "특수 상태만 transform 직접 이동"],
+      "verify": ["걷기→점프→착지", "대시/넉백 조합", "새 상태 추가 후 기존 이동 회귀 없음"]
+    }
+  ]
+}

@@ -64,10 +64,26 @@ test('main engine changes are serialized through bootstrap before one DESIGN_ONL
   assert.match(bootstrap,/GAME_SEED_DESIGN_DISPATCH_SOURCE=/);
 });
 
-test('parallel seed jobs synchronize company-runtime writes before push',()=>{
+test('runtime state is overlaid onto the main engine without merging unrelated branch history',()=>{
+  assert.match(workflow,/COMPANY_RUNTIME_STATE_OVERLAY=YES/);
+  assert.match(workflow,/COMPANY_RUNTIME_STATE_OVERLAY=TARGET_ONLY/);
+  assert.match(workflow,/COMPANY_ENGINE_SOURCE=main/);
+  assert.match(bootstrap,/COMPANY_RUNTIME_STATE_OVERLAY=GAME_SEED_ONLY/);
+  assert.match(bootstrap,/COMPANY_ENGINE_SOURCE=main/);
+  assert.match(workflow,/git cat-file -e \"origin\/\$COMPANY_RUNTIME_BRANCH:\$runtime_path\"/);
+  assert.match(bootstrap,/git cat-file -e \"origin\/\$COMPANY_RUNTIME_BRANCH:game-seed-state\.json\"/);
+  assert.doesNotMatch(workflow,/git merge --no-edit origin\/main/);
+  assert.doesNotMatch(bootstrap,/git merge --no-edit origin\/main/);
+});
+
+test('parallel seed jobs persist only generated target paths on the latest company-runtime head',()=>{
   assert.match(workflow,/for attempt in 1 2 3 4/);
-  assert.match(workflow,/git fetch origin \"\$COMPANY_RUNTIME_BRANCH\"/);
-  assert.match(workflow,/git rebase \"origin\/\$COMPANY_RUNTIME_BRANCH\"/);
+  assert.match(workflow,/generated_commit=\"\$\(git rev-parse HEAD\)\"/);
+  assert.match(workflow,/if \[ \"\$seed_changed\" = 0 \]; then\s+rm -f game-seed-state\.json\s+fi/);
+  assert.match(workflow,/git checkout -B seed-design-persist \"origin\/\$COMPANY_RUNTIME_BRANCH\"/);
+  assert.match(workflow,/git checkout \"\$generated_commit\" -- \"\$game_path\" \"\$artbook_path\"/);
+  assert.match(workflow,/git push origin \"HEAD:refs\/heads\/\$COMPANY_RUNTIME_BRANCH\"/);
+  assert.doesNotMatch(workflow,/git rebase \"origin\/\$COMPANY_RUNTIME_BRANCH\"/);
   assert.match(workflow,/test \"\$pushed\" = 1/);
 });
 

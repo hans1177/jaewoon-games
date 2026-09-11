@@ -1,0 +1,190 @@
+name: Vibe2 Unity Practice CPU Fallback
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/vibe2-practice-cpu-fallback.yml'
+      - 'company-learning/unity-teacher-materials/**'
+      - 'tools/vibe2-online-unity-teacher.mjs'
+      - 'tools/vibe2-licensed-reference-samples.mjs'
+      - 'tools/vibe2-practice-dataset.mjs'
+      - 'tools/vibe2-practice-train.py'
+      - 'tools/vibe2-train.py'
+      - 'tools/vibe2-bootstrap-python.ps1'
+  schedule:
+    - cron: '27 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: vibe2-unity-practice-cpu-fallback
+  cancel-in-progress: false
+
+env:
+  LEARNING_FOCUS: UNITY_CODING_ONLY
+  PRACTICE_AUTHORITY: PRACTICE_ONLY
+  PRACTICE_RUNTIME_PROMOTION: 'NO'
+
+jobs:
+  prepare-practice:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build GPT Unity teacher samples
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/unity-online-teacher-samples"
+          practice="$RUNNER_TEMP/unity-gpt-practice-samples"
+          node tools/vibe2-online-unity-teacher.mjs \
+            --sample-dir company-learning/training-samples \
+            --lessons company-learning/unity-teacher-materials/core-lessons.json \
+            --practice-drills company-learning/unity-teacher-materials/gpt-practice-drills.json \
+            --out-dir "$out" \
+            --practice-out-dir "$practice" \
+            --max 96 \
+            --max-practice 96
+          teacher_count=$(find "$practice" -maxdepth 1 -type f -name 'gpt-u-*.json' | wc -l | tr -d ' ')
+          test "$teacher_count" -ge 12
+          echo "TEACHER_PRACTICE_SAMPLES=$teacher_count"
+      - name: Distill licensed external Unity code references
+        shell: bash
+        run: |
+          set -euo pipefail
+          practice="$RUNNER_TEMP/unity-gpt-practice-samples"
+          node tools/vibe2-licensed-reference-samples.mjs \
+            --drills company-learning/unity-teacher-materials/licensed-reference-drills.json \
+            --out "$practice" \
+            --max 96
+          licensed_count=$(find "$practice" -maxdepth 1 -type f -name 'licensed-u-*.json' | wc -l | tr -d ' ')
+          test "$licensed_count" -ge 8
+          total_count=$(find "$practice" -maxdepth 1 -type f -name '*.json' | wc -l | tr -d ' ')
+          test "$total_count" -ge 20
+          echo "LICENSED_REFERENCE_SAMPLES=$licensed_count"
+          echo "TOTAL_PRACTICE_SAMPLES=$total_count"
+          echo 'LICENSED_REFERENCE_IS_VERIFIED_PRODUCTION_POSITIVE=NO'
+          echo 'PRACTICE_RUNTIME_PROMOTION=NO'
+      - name: Upload practice samples
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-gpt-practice-samples-cpu
+          path: ${{ runner.temp }}/unity-gpt-practice-samples
+          retention-days: 1
+          if-no-files-found: error
+
+  cpu-practice-train:
+    needs: prepare-practice
+    runs-on: [self-hosted, Windows, X64, jaewoon-unity]
+    timeout-minutes: 180
+    defaults:
+      run:
+        shell: powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - name: Provision local Python and ML stack
+        run: .\tools\vibe2-bootstrap-python.ps1
+      - name: Confirm CPU fallback is required
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & $env:PYTHON_EXE -c "import torch; print('CPU_FALLBACK_CUDA_AVAILABLE=' + str(torch.cuda.is_available())); print('CPU_FALLBACK_DEVICE=' + ('cuda' if torch.cuda.is_available() else 'cpu'))"
+          if ($LASTEXITCODE -ne 0) { throw 'PyTorch device probe failed' }
+      - name: Download Unity practice and licensed-reference samples
+        uses: actions/download-artifact@v4
+        with:
+          name: unity-gpt-practice-samples-cpu
+          path: ${{ runner.temp }}/unity-gpt-practice-samples-cpu
+      - name: Build mixed practice-only dataset
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $samples = Join-Path $env:RUNNER_TEMP 'unity-gpt-practice-samples-cpu'
+          $datasetDir = Join-Path $env:RUNNER_TEMP "unity-practice-cpu-$env:GITHUB_RUN_ID"
+          node tools/vibe2-practice-dataset.mjs --input $samples --out $datasetDir --min-samples 20
+          if ($LASTEXITCODE -ne 0) { throw 'practice dataset build failed' }
+          $manifestPath = Join-Path $datasetDir 'manifest.json'
+          $manifest = [System.IO.File]::ReadAllText($manifestPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+          if ($manifest.authority -ne 'PRACTICE_ONLY' -or $manifest.practiceOnly -ne $true -or $manifest.runtimePromotionAllowed -ne $false -or $manifest.readyForTraining -ne $true) { throw 'practice dataset safety gate failed' }
+          if ($manifest.containsLicensedReference -ne $true -or $manifest.stats.licensedReferenceTotal -lt 8) { throw 'licensed Unity reference samples missing from dataset' }
+          "PRACTICE_DATASET_DIR=$datasetDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "PRACTICE_DATASET_TRAIN=$($manifest.stats.train)"
+          Write-Host "PRACTICE_DATASET_EVAL=$($manifest.stats.eval)"
+          Write-Host "PRACTICE_LICENSED_REFERENCE_TOTAL=$($manifest.stats.licensedReferenceTotal)"
+          Write-Host "PRACTICE_SOURCE_KINDS=$($manifest.sourceKinds -join ',')"
+      - name: Train actual CPU LoRA adapter
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = Join-Path $env:USERPROFILE 'jaewoon-vibe2-learning'
+          $adapterVersion = "unity-practice-licensed-cpu-$env:GITHUB_RUN_ID"
+          $adapterDir = Join-Path $root "adapters\unity-practice\$adapterVersion"
+          if (Test-Path $adapterDir) { Remove-Item $adapterDir -Recurse -Force }
+          New-Item -ItemType Directory -Path $adapterDir -Force | Out-Null
+          $trainArgs = @(
+            'tools/vibe2-practice-train.py',
+            '--train', (Join-Path $env:PRACTICE_DATASET_DIR 'train.jsonl'),
+            '--eval', (Join-Path $env:PRACTICE_DATASET_DIR 'eval.jsonl'),
+            '--dataset-manifest', (Join-Path $env:PRACTICE_DATASET_DIR 'manifest.json'),
+            '--output', $adapterDir,
+            '--adapter-version', $adapterVersion,
+            '--task-type', 'unity',
+            '--method', 'lora',
+            '--epochs', '0.25',
+            '--max-length', '256',
+            '--batch-size', '1',
+            '--grad-accum', '1'
+          )
+          & $env:PYTHON_EXE @trainArgs
+          if ($LASTEXITCODE -ne 0) { throw 'CPU practice LoRA training failed' }
+          $metadataPath = Join-Path $adapterDir 'training-metadata.json'
+          $metadata = [System.IO.File]::ReadAllText($metadataPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+          if ($metadata.practiceOnly -ne $true -or $metadata.promotionState -ne 'UNVERIFIED' -or $metadata.runtimePromotionAllowed -ne $false) { throw 'practice adapter safety gate failed' }
+          if ($metadata.containsLicensedReference -ne $true -or $metadata.licensedReferenceSamples -lt 8) { throw 'adapter metadata lost licensed-reference provenance' }
+          $weights = Get-ChildItem (Join-Path $adapterDir 'adapter') -Filter 'adapter_model*.safetensors' -File | Select-Object -First 1
+          if ($null -eq $weights -or $weights.Length -le 0) { throw 'adapter weights were not created' }
+          $sha = (Get-FileHash $weights.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          $receipt = [ordered]@{
+            version = 2
+            adapterVersion = $adapterVersion
+            method = 'lora'
+            device = 'cpu'
+            baseModel = $metadata.baseModel
+            trainLoss = $metadata.trainMetrics.train_loss
+            evalLoss = $metadata.evalMetrics.eval_loss
+            practiceSourceKinds = $metadata.practiceSourceKinds
+            licensedReferenceSamples = $metadata.licensedReferenceSamples
+            adapterWeightsBytes = $weights.Length
+            adapterWeightsSha256 = $sha
+            promotionState = $metadata.promotionState
+            runtimePromotionAllowed = $metadata.runtimePromotionAllowed
+            requiredNextGate = $metadata.requiredNextGate
+          }
+          $receiptPath = Join-Path $env:RUNNER_TEMP 'vibe2-cpu-practice-learning-receipt.json'
+          $receipt | ConvertTo-Json -Depth 10 | Set-Content $receiptPath -Encoding utf8
+          "PRACTICE_RECEIPT=$receiptPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host 'PRACTICE_WEIGHT_LEARNING=PASS'
+          Write-Host "PRACTICE_TRAIN_LOSS=$($metadata.trainMetrics.train_loss)"
+          Write-Host "PRACTICE_EVAL_LOSS=$($metadata.evalMetrics.eval_loss)"
+          Write-Host "PRACTICE_LICENSED_REFERENCE_SAMPLES=$($metadata.licensedReferenceSamples)"
+          Write-Host "PRACTICE_ADAPTER_WEIGHTS_BYTES=$($weights.Length)"
+          Write-Host "PRACTICE_ADAPTER_WEIGHTS_SHA256=$sha"
+          Write-Host 'PRACTICE_PROMOTION_STATE=UNVERIFIED'
+          Write-Host 'PRACTICE_RUNTIME_PROMOTION=NO'
+      - name: Upload learning receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-cpu-practice-learning-receipt
+          path: ${{ env.PRACTICE_RECEIPT }}
+          retention-days: 1
+          if-no-files-found: error
