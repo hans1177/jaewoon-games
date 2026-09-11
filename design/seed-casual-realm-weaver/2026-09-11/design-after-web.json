@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "gameId": "seed-casual-realm-weaver",
+  "date": "2026-09-11",
+  "productionClass": "DEVELOPMENT_CONFIRMED",
+  "stage": "WEB",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "llama3.2:1b",
+  "sourceMeeting": "design/seed-casual-realm-weaver/2026-09-11/web-evidence-meeting.json",
+  "content": {
+    "identity": "Realm Weaver",
+    "playerFantasy": "Realm Weaver",
+    "coreLoop": [
+      "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+      "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    ],
+    "signatureSystems": [
+      {
+        "name": "Simple Tap-to-Move",
+        "purpose": "Tap-to-Move",
+        "playerChoice": "Simple Tap-to-Move"
+      },
+      {
+        "name": "Idle Progression",
+        "purpose": "Idle Progression",
+        "playerChoice": "Idle Progression"
+      },
+      {
+        "name": "Idle Rewards",
+        "purpose": "Idle Rewards",
+        "playerChoice": "Idle Rewards"
+      },
+      {
+        "name": "shortcenteredCasualHakken",
+        "purpose": "shortcenteredCasualHakken",
+        "playerChoice": "shortcenteredCasualHakken"
+      }
+    ],
+    "progressionDirection": "single-player",
+    "visualDirection": "global",
+    "mobileUx": "touch-first",
+    "technicalAssumptions": [
+      "Android mobile platform",
+      "Touch-based input"
+    ],
+    "validationQuestions": [
+      "What is the target audience for the game?",
+      "What is the target session direction for the game?",
+      "What is the initial target platform for the game?"
+    ],
+    "openQuestions": [
+      "What is the core fun of the game?",
+      "What is the purpose of the core loop?",
+      "What is the purpose of the signature systems?"
+    ]
+  }
+}

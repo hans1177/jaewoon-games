@@ -1,0 +1,710 @@
+{
+  "version": 1,
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "date": "2026-09-11",
+  "productionClass": "DEVELOPMENT_CONFIRMED",
+  "stage": "WEB",
+  "stageLabel": "Web Gameplay Validation",
+  "leadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "reviewModels": {
+    "planning": [
+      "qwen3:0.6b",
+      "gemma3:1b",
+      "llama3.2:1b"
+    ],
+    "graphics": [
+      "gemma3:1b",
+      "llama3.2:1b",
+      "qwen2.5:1.5b"
+    ],
+    "development": [
+      "llama3.2:1b",
+      "qwen2.5:1.5b",
+      "smollm2:1.7b"
+    ],
+    "qa": [
+      "qwen2.5:1.5b",
+      "smollm2:1.7b",
+      "qwen3:0.6b"
+    ],
+    "balance": [
+      "smollm2:1.7b",
+      "qwen3:0.6b",
+      "gemma3:1b"
+    ]
+  },
+  "memberReviews": {
+    "planning": [
+      {
+        "model": "qwen3:0.6b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "Design: Identity: Seed-story-complete-rpg-chronicles-of-eldoria, Core Fun: Learn: Explore an area, meet characters, etc."
+          ],
+          "change": [],
+          "drop": [],
+          "hold": [],
+          "risks": [
+            "Validation Questions: Core gameplay loop of Chronicles of Eldoria"
+          ],
+          "evidence": [
+            "interactionCount=6"
+          ],
+          "questions": [
+            "What is the core gameplay loop of Chronicles of Eldoria?"
+          ]
+        }
+      },
+      {
+        "model": "gemma3:1b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "Story Driven"
+          ],
+          "change": [
+            "Character Progression"
+          ],
+          "drop": [
+            "Battle"
+          ],
+          "hold": [
+            "Quest Completion"
+          ],
+          "risks": [
+            "Balance"
+          ],
+          "evidence": [
+            "validationQuestions"
+          ],
+          "questions": [
+            "What is the core gameplay loop of Chronicles of Eldoria?"
+          ]
+        }
+      },
+      {
+        "model": "llama3.2:1b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "storyDriven"
+          ],
+          "change": [
+            "characterProgression"
+          ],
+          "drop": [
+            "battle"
+          ],
+          "hold": [
+            "steamExpansionDecision"
+          ],
+          "risks": [
+            "multiplayerExpansionDecision"
+          ],
+          "evidence": [
+            "progressionDirection"
+          ],
+          "questions": [
+            "validationQuestions"
+          ]
+        }
+      }
+    ],
+    "graphics": [
+      {
+        "model": "gemma3:1b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "Visual Direction"
+          ],
+          "change": [
+            "Visual Driven"
+          ],
+          "drop": [
+            "Visuals"
+          ],
+          "hold": [
+            "Visuals"
+          ],
+          "risks": [
+            "Design"
+          ],
+          "evidence": [
+            "validationQuestions"
+          ],
+          "questions": [
+            "What is the core gameplay mechanics of Chronicles of Eldoria?"
+          ]
+        }
+      },
+      {
+        "model": "llama3.2:1b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "progressionDirection"
+          ],
+          "change": [
+            "characterProgression"
+          ],
+          "drop": [
+            "storyDriven"
+          ],
+          "hold": [
+            "steamExpansionDecision"
+          ],
+          "risks": [
+            "multiplayerExpansionDecision"
+          ],
+          "evidence": [
+            "progressionDirection"
+          ],
+          "questions": [
+            "validationQuestions"
+          ]
+        }
+      },
+      {
+        "model": "qwen2.5:1.5b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "Story Driven"
+          ],
+          "change": [
+            "Character Progression"
+          ],
+          "drop": [
+            "Quest Completion"
+          ],
+          "hold": [
+            "battle"
+          ],
+          "risks": [
+            "Story Driven"
+          ],
+          "evidence": [
+            "interactionCount=6"
+          ],
+          "questions": [
+            "What is the core gameplay loop of Chronicles of Eldoria?"
+          ]
+        }
+      }
+    ],
+    "development": [
+      {
+        "model": "llama3.2:1b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "progressionDirection"
+          ],
+          "change": [
+            "characterProgression"
+          ],
+          "drop": [
+            "storyDriven"
+          ],
+          "hold": [
+            "steamExpansionDecision"
+          ],
+          "risks": [
+            "multiplayerExpansionDecision"
+          ],
+          "evidence": [
+            "progressionDirection"
+          ],
+          "questions": [
+            "validationQuestions"
+          ]
+        }
+      },
+      {
+        "model": "qwen2.5:1.5b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "Story Driven"
+          ],
+          "change": [
+            "Character Progression"
+          ],
+          "drop": [
+            "Quest Completion"
+          ],
+          "hold": [
+            "battle"
+          ],
+          "risks": [
+            "Story Driven"
+          ],
+          "evidence": [
+            "interactionCount=6"
+          ],
+          "questions": [
+            "What is the core gameplay loop of Chronicles of Eldoria?"
+          ]
+        }
+      },
+      {
+        "model": "smollm2:1.7b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "change": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "drop": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "hold": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "risks": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "evidence": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "questions": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ]
+        }
+      }
+    ],
+    "qa": [
+      {
+        "model": "qwen2.5:1.5b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "Story Driven"
+          ],
+          "change": [
+            "Character Progression"
+          ],
+          "drop": [
+            "Quest Completion"
+          ],
+          "hold": [
+            "battle"
+          ],
+          "risks": [
+            "Story Driven"
+          ],
+          "evidence": [
+            "interactionCount=6"
+          ],
+          "questions": [
+            "What is the core gameplay loop of Chronicles of Eldoria?"
+          ]
+        }
+      },
+      {
+        "model": "smollm2:1.7b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "change": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "drop": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "hold": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "risks": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "evidence": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "questions": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ]
+        }
+      },
+      {
+        "model": "qwen3:0.6b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "Story Driven, Character Progression, Quest Completion, battle"
+          ],
+          "change": [],
+          "drop": [],
+          "hold": [],
+          "risks": [
+            "Validation Questions: Core gameplay mechanics of Chronicles of Eldoria"
+          ],
+          "evidence": [
+            "stateChanged=true"
+          ],
+          "questions": [
+            "What are the core gameplay mechanics of Chronicles of Eldoria?"
+          ]
+        }
+      }
+    ],
+    "balance": [
+      {
+        "model": "smollm2:1.7b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "change": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "drop": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "hold": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "risks": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "evidence": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ],
+          "questions": [
+            "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+          ]
+        }
+      },
+      {
+        "model": "qwen3:0.6b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "Story Driven, Character Progression, Quest Completion, battle"
+          ],
+          "change": [],
+          "drop": [],
+          "hold": [],
+          "risks": [
+            "Validation Questions: Core gameplay loop of Chronicles of Eldoria"
+          ],
+          "evidence": [
+            "stateChanged=true"
+          ],
+          "questions": [
+            "What is the core gameplay loop of Chronicles of Eldoria?"
+          ]
+        }
+      },
+      {
+        "model": "gemma3:1b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "Balance"
+          ],
+          "change": [
+            "Balance"
+          ],
+          "drop": [
+            "Balance"
+          ],
+          "hold": [
+            "Balance"
+          ],
+          "risks": [
+            "Balance"
+          ],
+          "evidence": [
+            "validationQuestions"
+          ],
+          "questions": [
+            "What is the core gameplay mechanics of Chronicles of Eldoria?"
+          ]
+        }
+      }
+    ]
+  },
+  "representatives": {
+    "planning": {
+      "keep": [
+        "Design: Identity: Seed-story-complete-rpg-chronicles-of-eldoria, Core Fun: Learn: Explore an area, meet characters, etc.",
+        "Story Driven"
+      ],
+      "change": [
+        "Character Progression",
+        "Quest Completion"
+      ],
+      "drop": [
+        "Battle"
+      ],
+      "hold": [
+        "Steam Expansion Decision"
+      ],
+      "risks": [
+        "Validation Questions: Core gameplay loop of Chronicles of Eldoria"
+      ],
+      "evidence": [
+        "interactionCount=6"
+      ],
+      "questions": [
+        "What is the core gameplay loop of Chronicles of Eldoria?"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "Web Gameplay Validation graphics 부서 내부 검토를 통합하라. 다수결보다 실제 근거를 우선하라.",
+        "웹 게임 플레이 검증 그래픽 부서 내부 검토를 통합하라. 다수결보다 실제 근거를 우선하라."
+      ],
+      "change": [
+        "웹 게임 플레이 검증 그래픽 부서 내부 검토를 통합하라. 다수결보다 실제 근거를 우선하라.",
+        "웹 게임 플레이 검증 그래픽 부서 내부 검토를 통합하라. 다수결보다 실제 근거를 우선하라."
+      ],
+      "drop": [
+        "웹 게임 플레이 검증 그래픽 부서 내부 검토를 통합하라. 다수결보다 실제 근거를 우선하라.",
+        "웹 게임 플레이 검증 그래픽 부서 내부 검토를 통합하라. 다수결보다 실제 근거를 우선하라."
+      ],
+      "hold": [
+        "스키마의 모든 필수 키는 유지하되 각 배열에는 가장 중요한 항목만 넣고 빈 배열이 허용되는 곳는 불필요한 항목을 만들지 마라. maxItems/maxLength를 반드시 지켜라.",
+        "웹 게임 플레이 검증 그래픽 부서 내부 검토를 통합하라. 다수결보다 실제 근거를 우선하라."
+      ],
+      "risks": [
+        "Design",
+        "validationQuestions"
+      ],
+      "evidence": [
+        "validationQuestions"
+      ],
+      "questions": [
+        "What is the core gameplay mechanics of Chronicles of Eldoria?"
+      ]
+    },
+    "development": {
+      "keep": [
+        "progressionDirection",
+        "characterProgression"
+      ],
+      "change": [
+        "characterProgression",
+        "storyDriven"
+      ],
+      "drop": [
+        "storyDriven",
+        "steamExpansionDecision"
+      ],
+      "hold": [
+        "steamExpansionDecision",
+        "multiplayerExpansionDecision"
+      ],
+      "risks": [
+        "multiplayerExpansionDecision",
+        "steamExpansionDecision"
+      ],
+      "evidence": [
+        "progressionDirection",
+        "characterProgression"
+      ],
+      "questions": [
+        "validationQuestions"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "Story Driven"
+      ],
+      "change": [],
+      "drop": [],
+      "hold": [],
+      "risks": [
+        "Validation Questions: Core gameplay mechanics of Chronicles of Eldoria"
+      ],
+      "evidence": [
+        "interactionCount=6"
+      ],
+      "questions": [
+        "What are the core gameplay mechanics of Chronicles of Eldoria?"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+      ],
+      "change": [],
+      "drop": [],
+      "hold": [],
+      "risks": [
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful stu"
+      ],
+      "evidence": [
+        "stateChanged=true"
+      ],
+      "questions": [
+        "What is the core gameplay loop of Chronicles of Eldoria?"
+      ]
+    }
+  },
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "Design: Identity: Seed-story-complete-rpg-chronicles-of-eldoria, Core Fun: Learn: Explore an area, meet characters, etc.",
+        "Story Driven"
+      ],
+      "challenge": [
+        "Character Progression",
+        "Quest Completion"
+      ],
+      "revision": [
+        "Character Progression",
+        "Quest Completion"
+      ],
+      "reason": "The core gameplay loop of Chronicles of Eldoria is the central element that drives the narrative and player experience. By focusing on the core gameplay loop, we ensure that the validation process is aligned with the RPG"
+    },
+    "graphics": {
+      "accept": [
+        "Design"
+      ],
+      "challenge": [
+        "validationQuestions"
+      ],
+      "revision": [
+        "web game play validation graphics"
+      ],
+      "reason": "Graphics are the core of the game. We need to ensure the visual fidelity and gameplay mechanics are solid, and the validation process is focused on that aspect. The current design is a starting point, and validation is"
+    },
+    "development": {
+      "accept": [
+        "keep",
+        "change"
+      ],
+      "challenge": [
+        "Character Progression",
+        "Story Driven"
+      ],
+      "revision": [
+        "Character Progression",
+        "Story Driven"
+      ],
+      "reason": "Web Gameplay Validation 대표 의견을 반박하는 이유는 Web Gameplay Validation 대표 의견이 Development 부서의 대표 의견과 다르기 때문이다. Web Gameplay Validation 대표 의견은 Development 부서의 대표 의견과 다른 점이 있다. Development 부서의 대표 의견은 Web Gameplay Validation 부서 내부"
+    },
+    "qa": {
+      "accept": [
+        "keep"
+      ],
+      "challenge": [
+        "change"
+      ],
+      "revision": [
+        "drop"
+      ],
+      "reason": "웹 게임 플레이 검증 그래픽 부서 내부 검토를 통합하라. 다수결보다 실제 근거를 우선하라."
+    },
+    "balance": {
+      "accept": [
+        "balance",
+        "graphics"
+      ],
+      "challenge": [
+        "graphics"
+      ],
+      "revision": [
+        "graphics"
+      ],
+      "reason": "graphics"
+    }
+  },
+  "coordinatorModel": "llama3.2:1b",
+  "summary": "Web Gameplay Validation 부서의 대표 의견과 반박",
+  "decisions": [
+    {
+      "topic": "graphics",
+      "decision": "CHANGE",
+      "reason": "Graphics are the core of the game. We need to ensure the visual fidelity and gameplay mechanics are solid, and the validation process is focused on that aspect. The current design is a starting point, and validation is",
+      "departments": [
+        "graphics"
+      ],
+      "validationImpact": "WEB"
+    },
+    {
+      "topic": "qa",
+      "decision": "CHANGE",
+      "reason": "웹 게임 플레이 검증 그래픽 부서 내부 검토를 통합하라. 다수결보다 실제 근거를 우선하라.",
+      "departments": [
+        "qa"
+      ],
+      "validationImpact": "WEB"
+    },
+    {
+      "topic": "development",
+      "decision": "CHANGE",
+      "reason": "Web Gameplay Validation 대표 의견을 반박하는 이유는 Web Gameplay Validation 대표 의견이 Development 부서의 대표 의견과 다르기 때문이다. Web Gameplay Validation 대표 의견은 Development 부서의 대표 의견과 다른 점이 있다. Development 부서의 대표 의견은 Web Gameplay Validation 부서 내부",
+      "departments": [
+        "development"
+      ],
+      "validationImpact": "WEB"
+    },
+    {
+      "topic": "balance",
+      "decision": "CHANGE",
+      "reason": "graphics",
+      "departments": [
+        "balance"
+      ],
+      "validationImpact": "WEB"
+    },
+    {
+      "topic": "qa",
+      "decision": "HOLD",
+      "reason": "Story Driven",
+      "departments": [
+        "qa"
+      ],
+      "validationImpact": "NONE"
+    },
+    {
+      "topic": "graphics",
+      "decision": "HOLD",
+      "reason": "Design",
+      "departments": [
+        "graphics"
+      ],
+      "validationImpact": "NONE"
+    },
+    {
+      "topic": "development",
+      "decision": "HOLD",
+      "reason": "Character Progression",
+      "departments": [
+        "development"
+      ],
+      "validationImpact": "NONE"
+    },
+    {
+      "topic": "qa",
+      "decision": "HOLD",
+      "reason": "Story Driven",
+      "departments": [
+        "qa"
+      ],
+      "validationImpact": "NONE"
+    }
+  ],
+  "decisionCounts": {
+    "KEEP": 0,
+    "CHANGE": 4,
+    "DROP": 0,
+    "HOLD": 4
+  }
+}

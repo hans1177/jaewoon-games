@@ -1,0 +1,698 @@
+{
+  "version": 1,
+  "gameId": "seed-casual-realm-weaver",
+  "date": "2026-09-11",
+  "productionClass": "DEVELOPMENT_CONFIRMED",
+  "stage": "WEB",
+  "stageLabel": "Web Gameplay Validation",
+  "leadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "reviewModels": {
+    "planning": [
+      "qwen3:0.6b",
+      "gemma3:1b",
+      "llama3.2:1b"
+    ],
+    "graphics": [
+      "gemma3:1b",
+      "llama3.2:1b",
+      "qwen2.5:1.5b"
+    ],
+    "development": [
+      "llama3.2:1b",
+      "qwen2.5:1.5b",
+      "smollm2:1.7b"
+    ],
+    "qa": [
+      "qwen2.5:1.5b",
+      "smollm2:1.7b",
+      "qwen3:0.6b"
+    ],
+    "balance": [
+      "smollm2:1.7b",
+      "qwen3:0.6b",
+      "gemma3:1b"
+    ]
+  },
+  "memberReviews": {
+    "planning": [
+      {
+        "model": "qwen3:0.6b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "Design: Identity: Realm Weaver, Player Fantasy: Realm Weaver, Core Fun: Simple Tap-to-Move, Core Loop: Start immediately"
+          ],
+          "change": [
+            "Signature Systems: Simple Tap-to-Move, Idle Progression, Idle Rewards, shortcenteredCasualHakken"
+          ],
+          "drop": [
+            "Progression Direction: single-player"
+          ],
+          "hold": [
+            "Visual Direction: global"
+          ],
+          "risks": [
+            "Mobile UX: touch-first"
+          ],
+          "evidence": [
+            "Validation Questions: What is the target audience for the game? What is the target session direction for the game? What"
+          ],
+          "questions": [
+            "What is the core fun of the game? What is the purpose of the core loop? What is the purpose of the signature systems?"
+          ]
+        }
+      },
+      {
+        "model": "gemma3:1b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "Core Fun"
+          ],
+          "change": [
+            "Visual Direction"
+          ],
+          "drop": [
+            "QA"
+          ],
+          "hold": [
+            "Balance"
+          ],
+          "risks": [
+            "shortcenteredCasualHakken"
+          ],
+          "evidence": [
+            "version=1"
+          ],
+          "questions": [
+            "What is the target audience for the game?"
+          ]
+        }
+      },
+      {
+        "model": "llama3.2:1b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "change": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "drop": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "hold": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "risks": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "evidence": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "questions": [
+            "What is the target audience for the game?"
+          ]
+        }
+      }
+    ],
+    "graphics": [
+      {
+        "model": "gemma3:1b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "Simple Tap-to-Move"
+          ],
+          "change": [
+            "Idle Progression"
+          ],
+          "drop": [
+            "Idle Rewards"
+          ],
+          "hold": [
+            "shortcenteredCasualHakken"
+          ],
+          "risks": [
+            "shortcenteredCasualHakken"
+          ],
+          "evidence": [
+            "visibleButtons=3"
+          ],
+          "questions": [
+            "What is the purpose of the core loop?"
+          ]
+        }
+      },
+      {
+        "model": "llama3.2:1b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "change": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "drop": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "hold": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "risks": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "evidence": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "questions": [
+            "What is the target audience for the game?"
+          ]
+        }
+      },
+      {
+        "model": "qwen2.5:1.5b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "simple tap-to-move"
+          ],
+          "change": [
+            "idle progression"
+          ],
+          "drop": [
+            "idle rewards"
+          ],
+          "hold": [
+            "shortcenteredCasualHakken"
+          ],
+          "risks": [
+            "validationQuestions"
+          ],
+          "evidence": [
+            "interactionCount=6"
+          ],
+          "questions": [
+            "What is the purpose of the signature systems?"
+          ]
+        }
+      }
+    ],
+    "development": [
+      {
+        "model": "llama3.2:1b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "change": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "drop": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "hold": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "risks": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "evidence": [
+            "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+          ],
+          "questions": [
+            "What is the target audience for the game?"
+          ]
+        }
+      },
+      {
+        "model": "qwen2.5:1.5b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "simple tap-to-move"
+          ],
+          "change": [
+            "idle progression"
+          ],
+          "drop": [
+            "idle rewards"
+          ],
+          "hold": [
+            "shortcenteredCasualHakken"
+          ],
+          "risks": [
+            "validationQuestions"
+          ],
+          "evidence": [
+            "interactionCount=6"
+          ],
+          "questions": [
+            "What is the purpose of the core loop?"
+          ]
+        }
+      },
+      {
+        "model": "smollm2:1.7b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "Realm Weaver is a casual mobile game that allows players to tap to move their character through a fantasy world."
+          ],
+          "change": [
+            "The core loop of the game involves tapping to move the character, collecting rewards, and making small risk or route-cho"
+          ],
+          "drop": [
+            "The game ends when the player fails to collect rewards or complete a short-session goal."
+          ],
+          "hold": [
+            "The game ends when the player completes a short-session goal or fails to collect rewards."
+          ],
+          "risks": [
+            "The game offers a risk-reward system where players can choose to take a risk and try for a higher reward or play it safe"
+          ],
+          "evidence": [
+            "The evidence collected during gameplay includes the number of interactions, state changes, and reloads."
+          ],
+          "questions": [
+            "What is the target audience for the game? What is the target session direction for the game? What is the initial target"
+          ]
+        }
+      }
+    ],
+    "qa": [
+      {
+        "model": "qwen2.5:1.5b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "simple tap-to-move"
+          ],
+          "change": [
+            "idle progression"
+          ],
+          "drop": [
+            "idle rewards"
+          ],
+          "hold": [
+            "shortcenteredCasualHakken"
+          ],
+          "risks": [
+            "validationQuestions"
+          ],
+          "evidence": [
+            "interactionCount=6"
+          ],
+          "questions": [
+            "What is the target session direction for the game?"
+          ]
+        }
+      },
+      {
+        "model": "smollm2:1.7b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "Realm Weaver is a casual mobile game that allows players to tap to move their character through a fantasy world."
+          ],
+          "change": [
+            "The core loop of the game involves tapping to move the character, collecting rewards, and making small risk or route-cho"
+          ],
+          "drop": [
+            "The game ends when the player fails to collect rewards or complete a short-session goal."
+          ],
+          "hold": [
+            "The game ends when the player completes a short-session goal or fails to collect rewards."
+          ],
+          "risks": [
+            "The game offers a risk-reward system where players can choose to take a risk and try for a higher reward or play it safe"
+          ],
+          "evidence": [
+            "The evidence collected during gameplay includes the number of interactions, state changes, and reloads."
+          ],
+          "questions": [
+            "What is the target audience for the game? What is the target session direction for the game? What is the initial target"
+          ]
+        }
+      },
+      {
+        "model": "qwen3:0.6b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "What is the core fun of the game? What is the purpose of the core loop? What is the purpose of the signature systems?"
+          ],
+          "change": [
+            "What is the target audience for the game? What is the target session direction for the game? What is the initial target"
+          ],
+          "drop": [
+            "What is the core fun of the game? What is the purpose of the core loop?"
+          ],
+          "hold": [
+            "What is the purpose of the signature systems?"
+          ],
+          "risks": [
+            "What is the initial target platform for the game?"
+          ],
+          "evidence": [
+            "Validation Questions: What is the target audience for the game? What is the target session direction for the game? What"
+          ],
+          "questions": [
+            "What is the core fun of the game? What is the purpose of the core loop? What is the purpose of the signature systems?"
+          ]
+        }
+      }
+    ],
+    "balance": [
+      {
+        "model": "smollm2:1.7b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "Realm Weaver is a casual mobile game that allows players to tap to move their character through a fantasy world."
+          ],
+          "change": [
+            "The core loop of the game involves tapping to move the character, collecting rewards, and making small risk or route-cho"
+          ],
+          "drop": [
+            "The game ends when the player fails to collect rewards or complete a short-session goal."
+          ],
+          "hold": [
+            "The game ends when the player completes a short-session goal or fails to collect rewards."
+          ],
+          "risks": [
+            "The game offers a risk-reward system where players can choose to take a risk and try for a higher reward or play it safe"
+          ],
+          "evidence": [
+            "The evidence collected during gameplay includes the number of interactions, state changes, and reloads."
+          ],
+          "questions": [
+            "What is the target audience for the game? What is the target session direction for the game? What is the initial target"
+          ]
+        }
+      },
+      {
+        "model": "qwen3:0.6b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "Keep the core fun: Simple Tap-to-Move"
+          ],
+          "change": [
+            "Keep the core loop: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short"
+          ],
+          "drop": [
+            "Keep the core fun: Simple Tap-to-Move"
+          ],
+          "hold": [
+            "Keep the core fun: Simple Tap-to-Move"
+          ],
+          "risks": [
+            "Keep the core fun: Simple Tap-to-Move"
+          ],
+          "evidence": [
+            "Validation Questions: What is the target audience for the game? What is the target session direction for the game? What"
+          ],
+          "questions": [
+            "What is the core fun of the game? What is the purpose of the core loop? What is the purpose of the signature systems?"
+          ]
+        }
+      },
+      {
+        "model": "gemma3:1b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "Balance"
+          ],
+          "change": [
+            "shortcenteredCasualHakken"
+          ],
+          "drop": [
+            "idleProgression"
+          ],
+          "hold": [
+            "score/distance/shortsession goal"
+          ],
+          "risks": [
+            "shortcenteredCasualHakken"
+          ],
+          "evidence": [
+            "idleProgression"
+          ],
+          "questions": [
+            "What is the initial target platform for the game?"
+          ]
+        }
+      }
+    ]
+  },
+  "representatives": {
+    "planning": {
+      "keep": [
+        "Design: Identity: Realm Weaver, Player Fantasy: Realm Weaver, Core Fun: Simple Tap-to-Move, Core Loop: Start immediately",
+        "Core Fun"
+      ],
+      "change": [
+        "Visual Direction"
+      ],
+      "drop": [
+        "QA"
+      ],
+      "hold": [
+        "Balance"
+      ],
+      "risks": [
+        "shortcenteredCasualHakken"
+      ],
+      "evidence": [
+        "Validation Questions: What is the target audience for the game? What is the target session direction for the game? What"
+      ],
+      "questions": [
+        "What is the target audience for the game?"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "Web Gameplay Validation graphics 부서 내부 검토를 통합하라.",
+        "다수결보다 실제 근거를 우선하라."
+      ],
+      "change": [
+        "REVIEWS=[{"
+      ],
+      "drop": [
+        "simpleTapToMove"
+      ],
+      "hold": [
+        "shortCenteredCasualHakken"
+      ],
+      "risks": [
+        "validationQuestions"
+      ],
+      "evidence": [
+        "interactionCount=6"
+      ],
+      "questions": [
+        "What is the purpose of the signature systems?"
+      ]
+    },
+    "development": {
+      "keep": [
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "change": [
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "drop": [
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "hold": [
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "risks": [
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "evidence": [
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "questions": [
+        "What is the target audience for the game?"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "simple tap-to-move"
+      ],
+      "change": [
+        "idle progression"
+      ],
+      "drop": [
+        "idle rewards"
+      ],
+      "hold": [
+        "shortcenteredCasualHakken"
+      ],
+      "risks": [
+        "validationQuestions"
+      ],
+      "evidence": [
+        "interactionCount=6"
+      ],
+      "questions": [
+        "What is the target session direction for the game?"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "Realm Weaver is a casual mobile game that allows players to tap to move their character through a fantasy world."
+      ],
+      "change": [
+        "The core loop of the game involves tapping to move the character, collecting rewards, and making small risk or route-cho"
+      ],
+      "drop": [
+        "The game ends when the player fails to collect rewards or complete a short-session goal."
+      ],
+      "hold": [
+        "The game ends when the player completes a short-session goal or fails to collect rewards."
+      ],
+      "risks": [
+        "The game offers a risk-reward system where players can choose to take a risk and try for a higher reward or play it safe"
+      ],
+      "evidence": [
+        "The evidence collected during gameplay includes the number of interactions, state changes, and reloads."
+      ],
+      "questions": [
+        "What is the target audience for the game? What is the target session direction for the game? What is the initial target"
+      ]
+    }
+  },
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keep",
+        "change"
+      ],
+      "challenge": [
+        "drop",
+        "hold"
+      ],
+      "revision": [
+        "keep",
+        "change"
+      ],
+      "reason": "The planning department should focus on refining the validation process to ensure it aligns with the game's core mechanics and user experience. Here are the key points to consider:"
+    },
+    "graphics": {
+      "accept": [
+        "Planning"
+      ],
+      "challenge": [
+        "Validation Questions"
+      ],
+      "revision": [
+        "Web Gameplay Validation graphics 부서 내부 검토를 통합하라."
+      ],
+      "reason": "validationQuestions는 6개의 interactionCount를 가지고 있습니다. 긍정적인 feedback를 위해, interactionCount를 6개로 유지하는 것이 좋습니다. 긍정적인 feedback를 위해, interactionCount를 6개로 유지하는 것이 좋습니다. 긍정적인 feedback를 위해, interactionCount를 6개로 유지하는 것이 좋습니다. 긍정"
+    },
+    "development": {
+      "accept": [
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "challenge": [
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "revision": [
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "reason": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+    },
+    "qa": {
+      "accept": [
+        "simple tap-to-move"
+      ],
+      "challenge": [
+        "idle progression"
+      ],
+      "revision": [
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
+      ],
+      "reason": "The initial setup should be straightforward and easy to understand, making it accessible to a wider audience. This approach ensures that the game can be played by players of varying skill levels, enhancing the overall UX"
+    },
+    "balance": {
+      "accept": [
+        "Realm Weaver is a casual mobile game that allows players to tap to move their character through a fantasy world.",
+        "The core loop of the game involves tapping to move the character, collecting rewards, and making small risk or route-cho"
+      ],
+      "challenge": [
+        "The game ends when the player fails to collect rewards or complete a short-session goal.",
+        "The game ends when the player completes a short-session goal or fails to collect rewards."
+      ],
+      "revision": [
+        "What is the target audience for the game? What is the target session direction for the game? What is the initial target"
+      ],
+      "reason": "The target audience for the game is casual mobile players. The target session direction for the game is to start immediately. The initial target is to have a short-session goal or fail to collect rewards."
+    }
+  },
+  "coordinatorModel": "qwen2.5:1.5b",
+  "summary": "Web Gameplay Validation 부서 대표 의견과 반박",
+  "decisions": [
+    {
+      "topic": "Planning",
+      "decision": "KEEP",
+      "reason": "The planning department should focus on refining the validation process to ensure it aligns with the game's core mechanics and user experience. Here are the key points to consider:",
+      "departments": [
+        "planning"
+      ],
+      "validationImpact": "WEB"
+    },
+    {
+      "topic": "Graphics",
+      "decision": "CHANGE",
+      "reason": "Web Gameplay Validation graphics 부서 내부 검토를 통합하라.",
+      "departments": [
+        "graphics"
+      ],
+      "validationImpact": "WEB"
+    },
+    {
+      "topic": "QA",
+      "decision": "CHANGE",
+      "reason": "The initial setup should be straightforward and easy to understand, making it accessible to a wider audience. This approach ensures that the game can be played by players of varying skill levels, enhancing the overall UX",
+      "departments": [
+        "qa"
+      ],
+      "validationImpact": "WEB"
+    },
+    {
+      "topic": "Balance",
+      "decision": "CHANGE",
+      "reason": "The target audience for the game is casual mobile players. The target session direction for the game is to start immediately. The initial target is to have a short-session goal or fail to collect rewards.",
+      "departments": [
+        "balance"
+      ],
+      "validationImpact": "WEB"
+    }
+  ],
+  "decisionCounts": {
+    "KEEP": 1,
+    "CHANGE": 3,
+    "DROP": 0,
+    "HOLD": 0
+  }
+}

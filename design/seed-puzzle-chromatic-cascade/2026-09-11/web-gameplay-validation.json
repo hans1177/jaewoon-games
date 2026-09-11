@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "gameId": "seed-puzzle-chromatic-cascade",
+  "target": "web",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 6,
+  "stateChanged": true,
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "before": {
+    "text": "DEVELOPMENT_CONFIRMED · 퍼즐 Chromatic Cascade Match-3, Puzzle Solving, Pattern Recognition, board-centered puzzle patterns. 0 SCORE 12 HP 1 WAVE / LEVEL 0 RESOURCE 색 맞추기 연쇄 만들기 보드 정리 STATUS: 색 맞추기 · TURN 0 · PROGRESS 0 검증 루프: Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+    "visibleButtons": 3,
+    "canvases": [],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "0SCORE12HP1WAVE / LEVEL0RESOURCE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-0"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-health",
+            "12"
+          ],
+          [
+            "data-resource",
+            "0"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "after": {
+    "text": "DEVELOPMENT_CONFIRMED · 퍼즐 Chromatic Cascade Match-3, Puzzle Solving, Pattern Recognition, board-centered puzzle patterns. 78 SCORE 9 HP 2 WAVE / LEVEL 0 RESOURCE 색 맞추기 연쇄 만들기 보드 정리 STATUS: 보드 정리 · TURN 7 · PROGRESS 12 검증 루프: Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+    "visibleButtons": 3,
+    "canvases": [],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "78SCORE9HP2WAVE / LEVEL0RESOURCE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-7"
+          ],
+          [
+            "data-score",
+            "78"
+          ],
+          [
+            "data-health",
+            "9"
+          ],
+          [
+            "data-resource",
+            "0"
+          ],
+          [
+            "data-progress",
+            "12"
+          ]
+        ]
+      }
+    ],
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "interactionCount=6",
+    "stateChanged=true",
+    "reloadVisible=true",
+    "mobileOverflow=true"
+  ],
+  "checkedAt": "2026-09-11T10:21:30.243Z",
+  "sourcePath": "web-games/.autonomous-candidates/seed-puzzle-chromatic-cascade-34588687850",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/seed-puzzle-chromatic-cascade-34588687850/",
+  "screenshot": "qa-artifacts/development-web/seed-puzzle-chromatic-cascade.png"
+}
