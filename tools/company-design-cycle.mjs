@@ -55,7 +55,7 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
   let lastError=null;
   for(let attempt=1;attempt<=3;attempt++){
     try{
-      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,keep_alive:'0s',format:schema,messages:[{role:'system',content:system},{role:'user',content:user+'\n출력은 스키마에 맞는 JSON 객체만 반환한다.'}],options:{temperature:attempt===1?temperature:0,num_ctx:8192,num_predict:Math.min(4096,predict*attempt)}})});
+      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,keep_alive:'0s',format:schema,messages:[{role:'system',content:system},{role:'user',content:user+'\n출력은 스키마에 맞는 JSON 객체만 반환한다.'}],options:{temperature:attempt===1?temperature:0,num_ctx:8192,num_predict:Math.min(4096,predict*attempt)}})});
       if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
       const body=await response.json();const text=clean(body?.message?.content);if(!text)throw new Error('empty model response');return JSON.parse(text);
     }catch(error){lastError=error;if(attempt<3)await new Promise(r=>setTimeout(r,800*attempt));}

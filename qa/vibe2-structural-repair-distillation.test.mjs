@@ -9,7 +9,7 @@ function verified(overrides = {}) {
     instruction: '중복 이벤트 핸들러 때문에 전투 입력이 두 번 실행되는 문제를 고쳐',
     input: '기존 이벤트 등록 흐름과 저장 의미를 유지해야 한다.',
     output: '요약: 책임 핸들러를 정상화\n\n검증된 패치:\ndiff --git a/game.js b/game.js\n--- a/game.js\n+++ b/game.js\n@@ -1 +1 @@\n-old\n+new',
-    taskType: 'bugfix', difficulty: 'bug', lifecycle: 'active', project: 'fixture-game',
+    taskType: 'unity', difficulty: 'bug', lifecycle: 'active', project: 'fixture-game',
     sourceCommit: sourceRevision, sourceRevision, independentQa: 'PASS', browserQa: 'PASS',
     quality: { codeQuality: 1, noRegression: true, playImprovement: 1, ruleCompliance: 1 },
     provenance: { sourceKind: 'vibe2', sourceRevision, candidateId: 'candidate-1', gameId: 'fixture-game' },
@@ -52,12 +52,12 @@ test('teacher 응답은 구조화 필드가 없거나 코드 권한을 시도하
   assert.throws(() => validateTeacherAnalysis({ ...teacher(), code: 'function bad(){}' }), /금지된 코드 필드/);
 });
 
-test('증류 정답은 teacher 코드가 아니라 원래 검증된 최종 patch를 그대로 유지한다', () => {
+test('증류 정답은 teacher 코드가 아니라 원래 검증된 최종 patch를 그대로 유지하고 Unity task로 정규화한다', () => {
   const source = verified();
-  const distilled = buildDistilledStructuralSample(source, teacher(), { teacherModel: 'qwen2.5-coder:7b' });
+  const distilled = buildDistilledStructuralSample(source, teacher(), { teacherModel: 'GPT-5.6-Sol-authored-online-curriculum-v1' });
   assert.ok(distilled);
-  assert.equal(distilled.specialization, 'structural-repair');
-  assert.equal(distilled.taskType, 'bugfix');
+  assert.equal(distilled.specialization, 'unity-structural-repair');
+  assert.equal(distilled.taskType, 'unity');
   assert.equal(distilled.output, source.output);
   assert.equal(distilled.sourceKind, 'vibe2');
   assert.equal(distilled.teacherSupport.codeAuthority, false);
