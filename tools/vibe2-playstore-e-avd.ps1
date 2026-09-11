@@ -21,6 +21,29 @@ function Find-SourceSdk {
   throw 'SOURCE_ANDROID_SDK_WITH_CMDLINE_TOOLS_NOT_FOUND'
 }
 
+function Set-AndroidJava {
+  $candidates = @(
+    (Join-Path $env:ProgramFiles 'Android\Android Studio\jbr'),
+    (Join-Path $env:ProgramFiles 'Android\Android Studio\jre')
+  )
+  foreach ($javaHomeCandidate in $candidates) {
+    if ([string]::IsNullOrWhiteSpace($javaHomeCandidate)) { continue }
+    $javaExe = Join-Path $javaHomeCandidate 'bin\java.exe'
+    if (Test-Path -LiteralPath $javaExe) {
+      $env:JAVA_HOME = $javaHomeCandidate
+      $env:Path = "$(Join-Path $javaHomeCandidate 'bin');$env:Path"
+      Write-Host "JAVA_HOME=$javaHomeCandidate"
+      return
+    }
+  }
+  $javaOnPath = Get-Command java.exe -ErrorAction SilentlyContinue
+  if ($javaOnPath) {
+    Write-Host "JAVA_EXE=$($javaOnPath.Source)"
+    return
+  }
+  throw 'JAVA_NOT_FOUND_FOR_AVDMANAGER'
+}
+
 function Invoke-CmdWithInputFile {
   param(
     [string]$Exe,
@@ -90,6 +113,7 @@ $bestImage = $images | Sort-Object { [int]($_.Parent.Parent.Name -replace '^andr
 $api = [int]($bestImage.Parent.Parent.Name -replace '^android-','')
 $imagePackage = "system-images;android-$api;google_apis_playstore;x86_64"
 
+Set-AndroidJava
 $env:ANDROID_SDK_ROOT = $targetSdk
 $env:ANDROID_HOME = $targetSdk
 $env:ANDROID_AVD_HOME = $targetAvd
