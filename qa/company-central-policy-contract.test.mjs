@@ -82,15 +82,17 @@ test('discard policy requires redesign or real implementation evidence instead o
   assert.match(flow,/TARGETED_REVALIDATION_PERFORMED/);
 });
 
-test('semantic production classes are canonical and counts are evidence-derived',()=>{
+test('semantic production classes are canonical and numeric tier compatibility is retired',()=>{
   assert.equal(directive.production.canonicalField,'productionClass');
   assert.deepEqual(directive.production.canonicalClasses,['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED']);
   assert.equal(directive.production.membership,'DYNAMIC_EVIDENCE');
   assert.equal(directive.production.countsDerivedFromMembership,true);
   assert.equal(directive.production.fixedClassCounts,false);
   assert.equal(directive.production.gameIdsPinned,false);
-  assert.equal(directive.production.numericLabelsAreAliasesOnly,true);
-  assert.deepEqual(directive.production.numericLabels,{RELEASE_CONFIRMED:1,DEVELOPMENT_CONFIRMED:2,DESIGN_ONLY:3});
+  assert.equal(Object.hasOwn(directive.production,'numericLabels'),false);
+  assert.equal(Object.hasOwn(directive.production,'numericLabelsAreAliasesOnly'),false);
+  assert.equal(Object.hasOwn(directive,'tiersCompatibility'),false);
+  assert.doesNotMatch(flow,/displayTier|numericTierIsAliasOnly/);
 });
 
 test('five departments keep distinct lead models and one Game Designer',()=>{
@@ -102,7 +104,7 @@ test('five departments keep distinct lead models and one Game Designer',()=>{
   assert.equal(directive.ai.gameDesigner.singleAuthorPerRevisionCycle,true);
   assert.equal(directive.ai.gameDesigner.sameModelRevisesAfterMeeting,true);
   assert.match(multimodelWorkflow,/productionClassOf/);
-  assert.match(multimodelWorkflow,/NUMERIC_TIER_POLICY=ALIAS_ONLY/);
+  assert.doesNotMatch(multimodelWorkflow,/tierAliasForProductionClass|productionClassFromLegacyTier|NUMERIC_TIER_POLICY/);
 });
 
 test('development and release retain gated execution while Vibe2 begins at development',()=>{
@@ -121,11 +123,7 @@ test('development and release retain gated execution while Vibe2 begins at devel
   assert.match(flow,/unityPurpose: ANDROID_TECHNICAL_VALIDATION_PROTOTYPE/);
 });
 
-test('legacy numeric tiers remain aliases and paid execution remains forbidden',()=>{
-  assert.equal(directive.tiersCompatibility.purpose,'DISPLAY_AND_BACKWARD_COMPATIBILITY_ALIAS_ONLY');
-  assert.equal(directive.tiersCompatibility['1'],'RELEASE_CONFIRMED');
-  assert.equal(directive.tiersCompatibility['2'],'DEVELOPMENT_CONFIRMED');
-  assert.equal(directive.tiersCompatibility['3'],'DESIGN_ONLY');
+test('paid execution remains forbidden',()=>{
   assert.equal(directive.ai.paidAiAllowed,false);
   assert.equal(directive.ai.paidRunnerAllowed,false);
   assert.ok(directive.rules.includes('paid-ai-paid-overage-and-paid-runners-remain-forbidden'));
