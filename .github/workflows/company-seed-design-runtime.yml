@@ -16,6 +16,7 @@ concurrency:
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   OLLAMA_HOST: 127.0.0.1:11434
+  OLLAMA_VERSION: '0.33.3'
 
 jobs:
   resolve-seed-targets:
@@ -132,22 +133,8 @@ jobs:
           restore-keys: |
             ollama-seed-design-${{ runner.os }}-
 
-      - name: Install local Ollama
-        if: steps.target.outputs.should_run == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          installed=0
-          for attempt in 1 2 3; do
-            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
-            sleep $((attempt * 4))
-          done
-          test "$installed" = 1
-          nohup ollama serve > /tmp/ollama-seed-design.log 2>&1 &
-          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break; sleep 2; done
-          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
-
-      - name: Pull configured free department models
+      - name: Resolve configured free department models
+        id: models
         if: steps.target.outputs.should_run == 'true'
         shell: bash
         run: |
@@ -163,7 +150,31 @@ jobs:
           for(const lead of leads)if(!pool.includes(lead))throw new Error(`lead not in pool: ${lead}`);
           for(const model of pool)console.log(model);
           NODE
-          while IFS= read -r model; do [ -z "$model" ] || ollama pull "$model"; done < /tmp/models.txt
+          primary="$(head -n 1 /tmp/models.txt)"
+          test -n "$primary"
+          echo "primary_model=$primary" >> "$GITHUB_OUTPUT"
+          echo "GAME_SEED_MODEL_COUNT=$(wc -l < /tmp/models.txt | tr -d ' ')"
+
+      - name: Prepare cached local Ollama runtime
+        if: steps.target.outputs.should_run == 'true'
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: ${{ steps.models.outputs.primary_model }}
+          version: ${{ env.OLLAMA_VERSION }}
+          pull-model: 'true'
+
+      - name: Pull remaining configured free department models
+        if: steps.target.outputs.should_run == 'true'
+        env:
+          PRIMARY_MODEL: ${{ steps.models.outputs.primary_model }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r model; do
+            [ -z "$model" ] && continue
+            [ "$model" = "$PRIMARY_MODEL" ] && continue
+            ollama pull "$model"
+          done < /tmp/models.txt
           echo 'PAID_API=NO'
 
       - name: Run seed-backed DESIGN_ONLY pipeline
