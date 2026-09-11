@@ -1,0 +1,35 @@
+{
+  "version": 4,
+  "gameId": "seed-puzzle-chromatic-cascade",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "representativeModel": "qwen3:0.6b",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "Reinterpret the successful structural lessons of Royal Match and Candy Crush Saga through a distinct setting, visual identity, and",
+      "add: A distinct visual identity that aligns with the game's aesthetic and thematic elements."
+    ],
+    "fix": [
+      "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+    ],
+    "add": [
+      "A distinct visual identity that aligns with the game's aesthetic and thematic elements."
+    ],
+    "risks": [
+      "Ensure the core gameplay loop is easily understood in short touch sessions and preserved over time."
+    ],
+    "evidence": [
+      "Use sourced global mobile engagement and category-session evidence as a directional reference."
+    ],
+    "questions": [
+      "What is the core gameplay loop of Chromatic Cascade?"
+    ]
+  }
+}

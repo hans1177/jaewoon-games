@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-puzzle-chromatic-cascade",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Reinterpret the successful structural lessons of Royal Match and Candy Crush Saga through a distinct setting, visual identity, and"
+        ],
+        "fix": [
+          "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        ],
+        "add": [
+          "A distinct visual identity that aligns with the game's aesthetic and thematic elements."
+        ],
+        "risks": [
+          "Ensure the core gameplay loop is easily understood in short touch sessions and preserved over time."
+        ],
+        "evidence": [
+          "Use sourced global mobile engagement and category-session evidence as a directional reference."
+        ],
+        "questions": [
+          "What is the core gameplay loop of Chromatic Cascade?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_seed_market_evidence.json"
+        ],
+        "fix": [
+          "chromatic_cascade_design_reference"
+        ],
+        "add": [
+          "market_data_summary"
+        ],
+        "risks": [
+          "missing_data"
+        ],
+        "evidence": [
+          "Royal Match"
+        ],
+        "questions": [
+          "What is the core gameplay loop of Chromatic Cascade?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        ],
+        "fix": [
+          "make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        ],
+        "add": [
+          "clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        ],
+        "risks": [
+          "make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        ],
+        "evidence": [
+          "use sourced global mobile engagement and category-session evidence as a directional reference, while keeping the puzzle core loop"
+        ],
+        "questions": [
+          "what is the core gameplay loop of Chromatic Cascade?"
+        ]
+      }
+    }
+  ]
+}

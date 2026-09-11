@@ -1,0 +1,149 @@
+{
+  "version": 4,
+  "gameId": "seed-puzzle-chromatic-cascade",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen3:0.6b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "Reinterpret the successful structural lessons of Royal Match and Candy Crush Saga through a distinct setting, visual identity, and",
+        "add: A distinct visual identity that aligns with the game's aesthetic and thematic elements."
+      ],
+      "fix": [
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "add": [
+        "A distinct visual identity that aligns with the game's aesthetic and thematic elements."
+      ],
+      "risks": [
+        "Ensure the core gameplay loop is easily understood in short touch sessions and preserved over time."
+      ],
+      "evidence": [
+        "Use sourced global mobile engagement and category-session evidence as a directional reference."
+      ],
+      "questions": [
+        "What is the core gameplay loop of Chromatic Cascade?"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "game_seed_market_evidence.json"
+      ],
+      "fix": [
+        "make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+      ],
+      "add": [
+        "clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "risks": [
+        "make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+      ],
+      "evidence": [
+        "referenceGames"
+      ],
+      "questions": [
+        "what is the core gameplay loop of Chromatic Cascade?"
+      ]
+    },
+    "development": {
+      "keep": [
+        "start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+      ],
+      "fix": [
+        "make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "coreLoop"
+      ],
+      "add": [
+        "clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
+        "validationQuestions"
+      ],
+      "risks": [
+        "make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+      ],
+      "evidence": [
+        "use sourced global mobile engagement and category-session evidence as a directional reference, while keeping the puzzle core loop"
+      ],
+      "questions": [
+        "what is the core gameplay loop of Chromatic Cascade?"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "coreFun"
+      ],
+      "fix": [
+        "coreLoop"
+      ],
+      "add": [
+        "validationQuestions"
+      ],
+      "risks": [
+        "openQuestions"
+      ],
+      "evidence": [
+        "referenceGames"
+      ],
+      "questions": [
+        "marketTargetDirection"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+      ],
+      "fix": [
+        "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+      ],
+      "add": [
+        "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+      ],
+      "risks": [
+        "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+      ],
+      "evidence": [
+        "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+      ],
+      "questions": [
+        "What is the core gameplay loop of Chromatic Cascade?"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal Match and Candy Crush through a distinct setting, visual identity, and aesthetic. This approach aligns with the game's goals and provides a clear direction for development. The risks of maintaining the core gameplay loop are mitigated by ensuring immediate feedback and clear objectives.",
+  "decisions": [
+    {
+      "topic": "CONSENSUS",
+      "status": "CONSENSUS",
+      "reason": "The core gameplay loop of Chromatic Cascade is reinterpreting the successful structural lessons of Royal Match and Candy Crush through a distinct setting, visual identity, and aesthetic. This approach aligns with the game's goals and provides a clear direction for development. The risks of maintaining the core gameplay loop are mitigated by ensuring immediate feedback and clear objectives.",
+      "departments": [
+        "planning",
+        "graphics",
+        "development",
+        "qa"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 1,
+    "conflict": 0,
+    "hold": 0
+  }
+}

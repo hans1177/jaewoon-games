@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-puzzle-chromatic-cascade",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game_seed_market_evidence.json"
+        ],
+        "fix": [
+          "chromatic_cascade_design_reference"
+        ],
+        "add": [
+          "chromatic_cascade_design_reference"
+        ],
+        "risks": [
+          "missing_data"
+        ],
+        "evidence": [
+          "Royal Match"
+        ],
+        "questions": [
+          "What is the core gameplay loop of Chromatic Cascade?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        ],
+        "fix": [
+          "make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        ],
+        "add": [
+          "clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        ],
+        "risks": [
+          "make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        ],
+        "evidence": [
+          "use sourced global mobile engagement and category-session evidence as a directional reference, while keeping the puzzle core loop"
+        ],
+        "questions": [
+          "what is the core gameplay loop of Chromatic Cascade?"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "coreFun"
+        ],
+        "fix": [
+          "signatureSystems"
+        ],
+        "add": [
+          "validationQuestions"
+        ],
+        "risks": [
+          "openQuestions"
+        ],
+        "evidence": [
+          "referenceGames"
+        ],
+        "questions": [
+          "marketTargetDirection"
+        ]
+      }
+    }
+  ]
+}

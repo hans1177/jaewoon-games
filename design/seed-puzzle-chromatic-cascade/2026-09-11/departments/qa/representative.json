@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "seed-puzzle-chromatic-cascade",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "representativeModel": "qwen2.5:1.5b",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "coreFun"
+    ],
+    "fix": [
+      "coreLoop"
+    ],
+    "add": [
+      "validationQuestions"
+    ],
+    "risks": [
+      "openQuestions"
+    ],
+    "evidence": [
+      "referenceGames"
+    ],
+    "questions": [
+      "marketTargetDirection"
+    ]
+  }
+}

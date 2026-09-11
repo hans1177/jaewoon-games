@@ -1,0 +1,54 @@
+{
+  "version": 4,
+  "gameId": "seed-puzzle-chromatic-cascade",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "SEED-PUZZLE-001",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "qwen3:0.6b",
+  "sameModelAsDraft": true,
+  "appliedConsensusCount": 1,
+  "unresolvedConflictCount": 0,
+  "heldCount": 0,
+  "status": "DESIGN_BASELINE_CANDIDATE",
+  "content": {
+    "identity": "Chromatic Cascade",
+    "playerFantasy": "Global mobile players across age groups who are interested in puzzle gameplay.",
+    "coreFun": "Match-3, Puzzle Solving, Pattern Recognition, board-centered puzzle patterns.",
+    "coreLoop": [
+      "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+      "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+      "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+    ],
+    "signatureSystems": [
+      {
+        "name": "Visual Identity",
+        "purpose": "Reinterpret the successful structural lessons of Royal Match and Candy Crush Saga through a distinct setting, visual identity, progression mix, and touch-first presentation.",
+        "playerChoice": "Choose a distinct visual identity that aligns with the game's aesthetic and thematic elements."
+      }
+    ],
+    "progressionDirection": "Reinterpret the successful structural lessons of Royal Match and Candy Crush Saga through a distinct setting, visual identity, progression mix, and touch-first presentation.",
+    "visualDirection": "Use sourced global mobile engagement and category-session evidence as a directional reference, while keeping the puzzle core loop readable in short touch sessions and preserving longer-term progression between sessions.",
+    "mobileUx": "Android mobile platform with single-player mode.",
+    "marketTargetDirection": "Use sourced global mobile engagement and category-session evidence as a directional reference, while keeping the puzzle core loop readable in short touch sessions and preserving longer-term progression between sessions.",
+    "steamExpansionDecision": "Not recommended for multiplayer expansion.",
+    "multiplayerExpansionDecision": "Not recommended for multiplayer expansion.",
+    "technicalAssumptions": [
+      "Own implementation of the game's core logic and features.",
+      "No multiplayer features are included.",
+      "No multiplayer features are considered necessary."
+    ],
+    "validationQuestions": [
+      "What is the core gameplay loop of Chromatic Cascade?",
+      "How does the game's visual identity differ from the original game designs?",
+      "What is the target audience of the game?"
+    ],
+    "openQuestions": [
+      "What is the core gameplay loop of Chromatic Cascade?",
+      "How does the game's visual identity differ from the original game designs?",
+      "What is the target audience of the game?"
+    ]
+  }
+}

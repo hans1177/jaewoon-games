@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-puzzle-chromatic-cascade",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+        ],
+        "fix": [
+          "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+        ],
+        "add": [
+          "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+        ],
+        "risks": [
+          "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+        ],
+        "evidence": [
+          "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+        ],
+        "questions": [
+          "What is the core gameplay loop of Chromatic Cascade?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Ensure the core gameplay loop is easily understood in short touch sessions and preserved over time."
+        ],
+        "fix": [
+          "Use sourced global mobile engagement and category-session evidence as a directional reference."
+        ],
+        "add": [
+          "Keep the puzzle core loop readable in short touch sessions and preserve longer-term progression between sessions."
+        ],
+        "risks": [
+          "Avoid including or recommending multiplayer features."
+        ],
+        "evidence": [
+          "Use sourced global mobile engagement and category-session evidence as a directional reference."
+        ],
+        "questions": [
+          "What is the core gameplay loop of Chromatic Cascade?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_seed_market_evidence.json"
+        ],
+        "fix": [
+          "chromatic_cascade_design_reference"
+        ],
+        "add": [
+          "chromatic_cascade_design_reference"
+        ],
+        "risks": [
+          "missing_data"
+        ],
+        "evidence": [
+          "Royal Match"
+        ],
+        "questions": [
+          "What is the core gameplay loop of Chromatic Cascade?"
+        ]
+      }
+    }
+  ]
+}

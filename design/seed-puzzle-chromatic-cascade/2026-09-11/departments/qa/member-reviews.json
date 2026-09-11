@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-puzzle-chromatic-cascade",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "coreFun"
+        ],
+        "fix": [
+          "coreLoop"
+        ],
+        "add": [
+          "validationQuestions"
+        ],
+        "risks": [
+          "openQuestions"
+        ],
+        "evidence": [
+          "referenceGames"
+        ],
+        "questions": [
+          "marketTargetDirection"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+        ],
+        "fix": [
+          "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+        ],
+        "add": [
+          "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+        ],
+        "risks": [
+          "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+        ],
+        "evidence": [
+          "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+        ],
+        "questions": [
+          "What is the core gameplay loop of Chromatic Cascade?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "How does the game's visual identity differ from the original game designs?"
+        ],
+        "fix": [
+          "What is the target audience of the game?"
+        ],
+        "add": [
+          "What is the core gameplay loop of Chromatic Cascade?"
+        ],
+        "risks": [
+          "Ensure the core gameplay loop is easily understood in short touch sessions and preserved over time."
+        ],
+        "evidence": [
+          "Use sourced global mobile engagement and category-session evidence as a directional reference."
+        ],
+        "questions": [
+          "What is the core gameplay loop of Chromatic Cascade?"
+        ]
+      }
+    }
+  ]
+}

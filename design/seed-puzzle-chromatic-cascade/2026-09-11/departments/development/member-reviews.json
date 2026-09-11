@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-puzzle-chromatic-cascade",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        ],
+        "fix": [
+          "make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        ],
+        "add": [
+          "clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        ],
+        "risks": [
+          "make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        ],
+        "evidence": [
+          "use sourced global mobile engagement and category-session evidence as a directional reference, while keeping the puzzle core loop"
+        ],
+        "questions": [
+          "what is the core gameplay loop of Chromatic Cascade?"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "coreFun"
+        ],
+        "fix": [
+          "coreLoop"
+        ],
+        "add": [
+          "validationQuestions"
+        ],
+        "risks": [
+          "openQuestions"
+        ],
+        "evidence": [
+          "referenceGames"
+        ],
+        "questions": [
+          "marketTargetDirection"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+        ],
+        "fix": [
+          "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+        ],
+        "add": [
+          "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+        ],
+        "risks": [
+          "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+        ],
+        "evidence": [
+          "Chromatic Cascade is an original global mobile single-player puzzle that reinterprets the successful structural lessons of Royal M"
+        ],
+        "questions": [
+          "What is the core gameplay loop of Chromatic Cascade?"
+        ]
+      }
+    }
+  ]
+}
