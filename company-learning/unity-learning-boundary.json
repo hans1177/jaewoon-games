@@ -1,11 +1,16 @@
 {
-  "version": 1,
+  "version": 2,
   "scope": "UNITY_CODING_ONLY",
   "trainingWorkspace": "%USERPROFILE%\\jaewoon-vibe2-learning",
   "gameProjectIsTrainingWorkspace": false,
   "createDedicatedUnityTrainingProject": false,
+  "teacherExecution": "GITHUB_HOSTED_ONLINE",
+  "teacherRoute": "GPT_AUTHORED_CURRICULUM_ON_GITHUB_HOSTED_RUNNER",
+  "localOllamaTeacherRequired": false,
+  "paidApiRequired": false,
   "teacherAuthority": "ANALYSIS_ONLY",
   "answerTarget": "VERIFIED_FINAL_DIFF_ONLY",
+  "taskType": "unity",
   "allowedTrainingInputs": [
     "GPT_AUTHORED_UNITY_TEACHER_MATERIALS",
     "VERIFIED_UNITY_FINAL_PATCHES",
