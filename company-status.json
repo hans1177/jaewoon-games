@@ -60,7 +60,7 @@
     "existingWebGamesMaintenanceAllowed": true,
     "activeUnityProjects": 1,
     "pendingApprovals": 0,
-    "testBuilds": 4
+    "testBuilds": 5
   },
   "operations": {
     "homepage": {
@@ -459,6 +459,32 @@
       "testBuildStatus": "runtime-failed",
       "builtAt": "2026-09-11T21:51:03.246108+00:00",
       "runtimeVerificationUpdatedAt": "2026-09-11T21:54:04.876629+00:00"
+    },
+    {
+      "gameId": "seed-casual-realm-weaver",
+      "requestId": "development-unity-seed-casual-realm-weaver-34647586728",
+      "status": "ready",
+      "channel": "test",
+      "buildRoute": "github-cloud-host-personal",
+      "mobileReady": true,
+      "homepagePublished": true,
+      "homepagePublishedAt": "2026-09-11T22:05:54.199433+00:00",
+      "deviceCompatibility": "android-10+",
+      "sourceCommit": "8e347b1bc47a467872bb001c4e71d41231def7d0",
+      "releaseTag": "test-seed-casual-realm-weaver-34651598558-1",
+      "release": "https://github.com/hans1177/jaewoon-games/releases/tag/test-seed-casual-realm-weaver-34651598558-1",
+      "download": "https://github.com/hans1177/jaewoon-games/releases/download/test-seed-casual-realm-weaver-34651598558-1/seed-casual-realm-weaver-test.apk",
+      "applicationId": "com.jaewoongames.seedcasualrealmweaver",
+      "sha256": "6b9d40ac5446e161cbe7b6dee634fdddc2b3a7e588be2414fb837047aa898808",
+      "bytes": 21092532,
+      "androidVerificationApi": 36,
+      "signatureVerified": true,
+      "installAndLaunchVerified": false,
+      "runtimeVerification": "android-16-avd-api-36-pending",
+      "runtimeVerificationSource": "github-actions",
+      "runtimeInstallLaunchVerified": false,
+      "testBuildStatus": "ready",
+      "builtAt": "2026-09-11T22:05:54.199433+00:00"
     }
   ],
   "redevelopmentReview": {
