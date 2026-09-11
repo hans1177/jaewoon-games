@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "gameId": "block-blast",
+  "packageId": "com.block.juggle",
+  "sourceType": "EXTERNAL_COMMERCIAL_BLACK_BOX_RUNTIME_NEGATIVE_EVIDENCE",
+  "authority": "PRACTICE_ONLY_NEGATIVE_EVIDENCE",
+  "observedThrough": "2026-09-12",
+  "runtimePromotionAllowed": false,
+  "gameplayBehaviorPromotionAllowed": false,
+  "codeExtractionAllowed": false,
+  "binaryRedistributionAllowed": false,
+  "positiveTrainingSample": false,
+  "verifiedRuntimePass": false,
+  "sourceEvidence": {
+    "privateRepository": "hans1177/jaewoon-ai-company",
+    "historyPath": "server-playtest/block-blast-experiment-history.md",
+    "latestCompletedRun": 34639996916,
+    "latestRunNumber": 20,
+    "latestArtifactId": 10279414322,
+    "latestFailure": "REDROID_INTERNAL_BOOT_FAILED"
+  },
+  "distilledFailurePatterns": [
+    {
+      "id": "android-hosted-x86-arm-translation-native-crash",
+      "scope": "android-runtime-compatibility",
+      "evidence": [5, 6, 16, 17],
+      "lesson": "A successful ARM64 split-APK install on an x86_64 Android guest does not prove runtime compatibility. Native translation can fail after launch in JNI/native-library or application initialization paths.",
+      "reuseRule": "Do not promote install success to runtime success. Require process survival, foreground state and crash-free runtime evidence after launch and input."
+    },
+    {
+      "id": "adb-streaming-install-finalization-fragility",
+      "scope": "android-package-install",
+      "evidence": [15, 16],
+      "lesson": "Large split-APK streaming installs can fail at session finalization even when transfer appears complete; no-streaming materially changed the failure boundary and allowed installation to complete.",
+      "reuseRule": "When a split install fails at finalization or package-service transport, test a no-streaming path before changing Android API levels or application payload assumptions."
+    },
+    {
+      "id": "nested-virtualization-unavailable-on-hosted-macos-arm64",
+      "scope": "hosted-emulator-infrastructure",
+      "evidence": [14],
+      "lesson": "A native ARM64 CI host does not imply nested hardware virtualization is available to an Android ARM64 emulator.",
+      "reuseRule": "Probe acceleration capability before downloading or booting a large ARM64 system image; treat HV_UNSUPPORTED as an infrastructure blocker, not an app failure."
+    },
+    {
+      "id": "abi-list-and-native-bridge-must-be-proven",
+      "scope": "android-abi-validation",
+      "evidence": [13, 15],
+      "lesson": "Host architecture and guest architecture labels are insufficient. The guest must explicitly expose arm64-v8a in ro.product.cpu.abilist and a working native bridge when running ARM64 binaries on x86_64.",
+      "reuseRule": "Gate ARM64 split installation on observed guest ABI list and native-bridge evidence."
+    },
+    {
+      "id": "hosted-arm64-binder-ready-does-not-guarantee-redroid-boot",
+      "scope": "android-container-runtime",
+      "evidence": [18, 19, 20],
+      "lesson": "On GitHub-hosted ubuntu-24.04-arm, native aarch64, 4K pages, Docker availability and binder/hwbinder/vndbinder devices can all be valid while Redroid userspace still fails to reach sys.boot_completed.",
+      "reuseRule": "Separate host-capability PASS from Android-userspace-boot PASS. Do not download proprietary APK bytes until the Android container itself reaches a verified ready state."
+    },
+    {
+      "id": "avoid-random-api-cycling-after-repeated-class-failure",
+      "scope": "experiment-strategy",
+      "evidence": [5, 6, 13, 15, 16, 17, 20],
+      "lesson": "Repeated failures sharing the same compatibility class should narrow the search space instead of causing random Android API cycling.",
+      "reuseRule": "After two or more materially similar failures, require a new hypothesis or infrastructure capability before retrying another API/image variant."
+    },
+    {
+      "id": "runtime-pass-evidence-gate",
+      "scope": "qa-evidence",
+      "evidence": [4, 5, 6, 15, 16, 17, 20],
+      "lesson": "Install PASS, splash visibility, process creation, or infrastructure readiness are not equivalent to a verified playtest.",
+      "reuseRule": "runtimePass:true requires actual launch, foreground ownership, process survival, input exercise, and absence of fatal exception/ANR in the captured evidence window."
+    }
+  ],
+  "negativeRouteDecisions": {
+    "x86ArmTranslation": "EXHAUSTED_UNLESS_NEW_MATERIAL_EVIDENCE",
+    "hostedMacArm64Emulator": "BLOCKED_BY_NESTED_HVF",
+    "githubHostedArm64Redroid": "CURRENTLY_BLOCKED_BY_ANDROID_USERSPACE_BOOT",
+    "localPc": "FORBIDDEN_BY_OWNER_FOR_THIS_FLOW",
+    "paidRunnerOrPaidCloud": "FORBIDDEN_BY_OWNER_FOR_THIS_FLOW"
+  },
+  "learningUse": {
+    "allowed": [
+      "runtime-infrastructure failure classification",
+      "ABI/native-bridge preflight design",
+      "split-APK install recovery strategy",
+      "host capability versus guest readiness separation",
+      "evidence gating for runtime success",
+      "failure-to-next-experiment decision quality"
+    ],
+    "forbiddenUntilRuntimePass": [
+      "gameplay pacing distillation",
+      "input-response timing distillation",
+      "reward-loop distillation",
+      "UI density or interaction-flow distillation",
+      "positive gameplay training sample promotion"
+    ]
+  }
+}
