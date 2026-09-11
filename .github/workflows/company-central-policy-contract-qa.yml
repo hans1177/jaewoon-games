@@ -10,14 +10,18 @@ on:
       - 'tools/design-only-promotion-sync.mjs'
       - 'tools/company-development-web-bootstrap.mjs'
       - 'tools/company-development-web-gameplay-validation.mjs'
+      - 'tools/company-development-unity-bootstrap.mjs'
+      - 'tools/company-development-unity-evidence.mjs'
       - 'tools/company-development-validation-cycle.mjs'
       - 'tools/company-release-production-cycle.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - 'qa/company-central-pipeline-only.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
+      - 'qa/company-development-unity-runtime.test.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
+      - '.github/workflows/company-development-unity-runtime.yml'
       - '.github/workflows/director-supervisor.yml'
       - '.github/workflows/company-central-policy-contract-qa.yml'
   push:
@@ -30,14 +34,18 @@ on:
       - 'tools/design-only-promotion-sync.mjs'
       - 'tools/company-development-web-bootstrap.mjs'
       - 'tools/company-development-web-gameplay-validation.mjs'
+      - 'tools/company-development-unity-bootstrap.mjs'
+      - 'tools/company-development-unity-evidence.mjs'
       - 'tools/company-development-validation-cycle.mjs'
       - 'tools/company-release-production-cycle.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - 'qa/company-central-pipeline-only.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
+      - 'qa/company-development-unity-runtime.test.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
+      - '.github/workflows/company-development-unity-runtime.yml'
       - '.github/workflows/director-supervisor.yml'
       - '.github/workflows/company-central-policy-contract-qa.yml'
   workflow_dispatch:
@@ -48,7 +56,7 @@ permissions:
 jobs:
   central-policy-contract:
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -60,9 +68,12 @@ jobs:
           node --check tools/design-only-promotion-sync.mjs
           node --check tools/company-development-web-bootstrap.mjs
           node --check tools/company-development-web-gameplay-validation.mjs
+          node --check tools/company-development-unity-bootstrap.mjs
+          node --check tools/company-development-unity-evidence.mjs
           node --check tools/company-development-validation-cycle.mjs
           node --check tools/company-release-production-cycle.mjs
           node --test \
             qa/company-central-policy-contract.test.mjs \
             qa/company-central-pipeline-only.test.mjs \
-            qa/company-development-web-runtime.test.mjs
+            qa/company-development-web-runtime.test.mjs \
+            qa/company-development-unity-runtime.test.mjs
