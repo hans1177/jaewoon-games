@@ -67,14 +67,6 @@ public sealed class SeedTechnicalPrototype : MonoBehaviour
     private int fpsFrames;
     private string lastAction = "READY";
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    private static void Bootstrap()
-    {
-        var root = new GameObject("JAEWOON_DEVELOPMENT_UNITY_TECHNICAL_PROTOTYPE");
-        DontDestroyOnLoad(root);
-        root.AddComponent<SeedTechnicalPrototype>();
-    }
-
     private void Awake()
     {
         Application.targetFrameRate = 60;
@@ -98,7 +90,7 @@ public sealed class SeedTechnicalPrototype : MonoBehaviour
             progress += level;
         }
 
-        if (metricTimer >= 5f)
+        if (metricTimer >= 2f)
         {
             float fps = fpsTime > 0.001f ? fpsFrames / fpsTime : 0f;
             long memory = Profiler.GetTotalAllocatedMemoryLong();
@@ -252,6 +244,7 @@ public static class SeedAndroidBuild
 {
     private const string SceneFolder = "Assets/Scenes";
     private const string ScenePath = "Assets/Scenes/Main.unity";
+    private const string PrototypeRootName = "JAEWOON_DEVELOPMENT_UNITY_TECHNICAL_PROTOTYPE";
 
     public static void Build()
     {
@@ -287,15 +280,26 @@ public static class SeedAndroidBuild
     {
         if (!AssetDatabase.IsValidFolder(SceneFolder))
             AssetDatabase.CreateFolder("Assets", "Scenes");
+
+        Scene scene;
         SceneAsset sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath);
         if (sceneAsset == null)
-        {
-            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            EditorSceneManager.SaveScene(scene, ScenePath);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-        }
+            scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        else
+            scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+
+        GameObject root = GameObject.Find(PrototypeRootName);
+        if (root == null)
+            root = new GameObject(PrototypeRootName);
+        if (root.GetComponent<SeedTechnicalPrototype>() == null)
+            root.AddComponent<SeedTechnicalPrototype>();
+
+        EditorSceneManager.MarkSceneDirty(scene);
+        EditorSceneManager.SaveScene(scene, ScenePath);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
         EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
+        Debug.Log("JAEWOON_TECH_SCENE_BOUND=" + ScenePath + " ROOT=" + PrototypeRootName);
     }
 }
 #endif
