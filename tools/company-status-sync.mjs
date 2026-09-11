@@ -110,8 +110,6 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
     const {project,productionClass}=row;
     project.productionClass=productionClass;
     project.productionClassSource=project.productionClassSource||'CURRENT_EVIDENCE_STATE';
-    delete project.productionTier;
-    delete project.productionTierSource;
     if(isHold(project))continue;
     if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
       project.profileStatus='RELEASE_CONFIRMED';
@@ -136,8 +134,6 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
     const productionClass=productionClassOf(project,game);
     game.productionClass=productionClass;
     game.productionClassSource=game.productionClassSource||project.productionClassSource||'CURRENT_EVIDENCE_STATE';
-    delete game.productionTier;
-    delete game.productionTierSource;
     game.homepageCategory=homepageCategoryForProductionClass(productionClass)||game.homepageCategory;
     if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
       game.productionTarget='unity-android';
@@ -171,8 +167,6 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
     designOnlyGameIds:designIds,
     ranking:ranked.map((row,index)=>({rank:index+1,rawEvidenceRank:rawRankById.get(row.project.id),gameId:row.project.id,slug:row.project.slug,productionClass:row.productionClass,gameplayFamily:row.gameplayFamily,evidenceScore:row.evidenceScore,developmentFocus:row.score,artbookBaselineRank:row.baseline,unityReady:row.unityReady,sourceReady:row.sourceReady})),
   };
-  delete portfolio.productionTierState;
-  delete portfolio.productionTierPolicy;
   return {portfolio,catalog,state:portfolio.productionClassState};
 }
 
@@ -232,7 +226,6 @@ export function runCompanyStatusSync({filesystem=fs}={}){
     source:[portfolioPath,artbooksPath,catalogPath,'tools/autonomous-24h-work-planner.mjs'],
   };
   company.operations.productionClasses={...classResult.state,source:[portfolioPath,catalogPath,artbooksPath,'tools/company-status-sync.mjs']};
-  delete company.operations.productionTiers;
 
   const departmentTasks=company?.redevelopmentReview?.departmentTasks;
   if(departmentTasks&&typeof departmentTasks==='object'){
