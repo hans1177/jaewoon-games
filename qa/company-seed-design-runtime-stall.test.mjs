@@ -79,6 +79,7 @@ test('runtime state is overlaid onto the main engine without merging unrelated b
 test('parallel seed jobs persist only generated target paths on the latest company-runtime head',()=>{
   assert.match(workflow,/for attempt in 1 2 3 4/);
   assert.match(workflow,/generated_commit=\"\$\(git rev-parse HEAD\)\"/);
+  assert.match(workflow,/if \[ \"\$seed_changed\" = 0 \]; then\s+rm -f game-seed-state\.json\s+fi/);
   assert.match(workflow,/git checkout -B seed-design-persist \"origin\/\$COMPANY_RUNTIME_BRANCH\"/);
   assert.match(workflow,/git checkout \"\$generated_commit\" -- \"\$game_path\" \"\$artbook_path\"/);
   assert.match(workflow,/git push origin \"HEAD:refs\/heads\/\$COMPANY_RUNTIME_BRANCH\"/);
