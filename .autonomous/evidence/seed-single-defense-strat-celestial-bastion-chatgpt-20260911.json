@@ -1,0 +1,48 @@
+{
+  "version": 2,
+  "candidateId": "seed-single-defense-strat-celestial-bastion-chatgpt-20260911",
+  "gameId": "seed-single-defense-strat-celestial-bastion",
+  "sourcePath": "web-games/seed-single-defense-strat-celestial-bastion",
+  "candidatePath": "web-games/.autonomous-candidates/seed-single-defense-strat-celestial-bastion-chatgpt-20260911",
+  "sourceCommit": "993004ffb38ea7c539ede416408fcecfe260c6b1",
+  "candidateOnly": true,
+  "selfPromote": false,
+  "publicStableModified": false,
+  "paidApi": false,
+  "newProject": true,
+  "changedFiles": [
+    "index.html"
+  ],
+  "summary": "DEVELOPMENT_CONFIRMED first playable candidate for Celestial Bastion",
+  "expectedEffect": "DESIGN_BASELINE 핵심 루프를 모바일 실제 상호작용으로 검증할 수 있는 첫 Web vertical slice 생성",
+  "tests": [
+    "company-development-web-bootstrap-contract",
+    "inline-javascript-syntax"
+  ],
+  "pendingTests": [
+    "company-development-web-gameplay-validation",
+    "independent-candidate-browser-qa",
+    "unity-android-technical-validation"
+  ],
+  "validationQuestion": "Celestial Bastion의 잠긴 방어 핵심 루프가 모바일 입력 후 SCORE/HP/WAVE/RESOURCE/PROGRESS 상태 변화로 실제 검증되는가?",
+  "implementationNotes": [
+    "locked DESIGN_BASELINE genre=SINGLE_DEFENSE_STRATEGY",
+    "existing deterministic contract recovery path used",
+    "no external assets, persistence, or network dependencies",
+    "real mobile browser gameplay validation has not been executed in this connected session"
+  ],
+  "generationMode": "DETERMINISTIC_CONTRACT_RECOVERY",
+  "modelAttempts": 0,
+  "modelContractFailures": [],
+  "bootstrapContract": {
+    "pass": true,
+    "blockers": [],
+    "bytes": 5323
+  },
+  "verification": {
+    "inlineJavaScriptSyntax": "PASS",
+    "mobileBrowserGameplay": "NOT_RUN",
+    "unityAndroidTechnicalValidation": "NOT_RUN"
+  },
+  "createdAt": "2026-09-11"
+}
