@@ -22,9 +22,9 @@ const PROPOSAL_PROPERTIES={
   requestId:{type:'string',maxLength:120},
   category:{type:'string',maxLength:80},
   gameName:{type:'string',maxLength:120},
-  referenceGames:{type:'array',minItems:1,maxItems:4,items:{type:'string',maxLength:120}},
-  coreFunToLearn:{type:'array',minItems:1,maxItems:6,items:{type:'string',maxLength:300}},
-  coreLoop:{type:'array',minItems:3,maxItems:8,items:{type:'string',maxLength:300}},
+  referenceGames:{type:'array',minItems:1,maxItems:4,uniqueItems:true,items:{type:'string',maxLength:120}},
+  coreFunToLearn:{type:'array',minItems:1,maxItems:6,uniqueItems:true,items:{type:'string',maxLength:300}},
+  coreLoop:{type:'array',minItems:3,maxItems:8,uniqueItems:true,items:{type:'string',maxLength:300}},
   distinctIdentity:TEXT,
   targetAudience:{type:'string',maxLength:600},
   targetSessionDirection:{type:'string',maxLength:500},
@@ -70,6 +70,19 @@ function uniqueGameId(category,name,used){
   const categorySlug=category.toLowerCase().replace(/_/g,'-').slice(0,20);const nameSlug=slugify(name)||'game';let id=`seed-${categorySlug}-${nameSlug}`.slice(0,63);let n=2;
   while(used.has(id)){id=`seed-${categorySlug}-${nameSlug}-${n++}`.slice(0,63);}used.add(id);return id;
 }
+function normalizeProposal(target,p){
+  const proposal={...(p||{}),requestId:clean(p?.requestId)||target.requestId,category:clean(p?.category)||target.category};
+  proposal.referenceGames=uniq(p?.referenceGames);
+  proposal.coreFunToLearn=uniq(p?.coreFunToLearn);
+  proposal.coreLoop=uniq(p?.coreLoop);
+  const structuralFallback=[
+    `${target.category} 핵심 행동을 수행한다`,
+    '행동 결과와 위험·보상 피드백을 확인한다',
+    '획득한 보상과 정보로 다음 선택·성장을 결정한다'
+  ];
+  for(const step of structuralFallback){if(proposal.coreLoop.length>=3)break;if(!proposal.coreLoop.includes(step))proposal.coreLoop.push(step);}
+  return proposal;
+}
 function validateProposal(target,p){
   const missing=[];
   if(clean(p?.requestId)!==target.requestId)missing.push('requestId');
@@ -90,9 +103,9 @@ function validateProposal(target,p){
 async function callModelBatch(targets){
   const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),MODEL_TIMEOUT_MS);
   const requestPayload=targets.map(t=>({requestId:t.requestId,category:t.category,generation:t.generation,replacement:t.vacancy?{vacancyId:t.vacancy.id,sourceSeedId:t.vacancy.sourceSeedId}:null,marketEvidence:t.marketEvidence.available?t.marketEvidence.references:'UNKNOWN'}));
-  const prompt=`다음 GAME_SEED 요청을 한 번의 배치로 모두 작성하라. 요청 수와 requestId/category를 정확히 보존한다. 각 분류마다 유명하고 상업적 또는 대중적 성공이 검증된 출시작을 레퍼런스로 골라 핵심 재미·루프·성장·경제·UX 구조를 학습하되, 새 게임은 HOMAGE 또는 REINTERPRETATION으로 독자 정체성을 만든다. 원작 이름/캐릭터/스토리/맵/아트/음악/UI 아트/소스코드를 복제하지 않는다. 소스코드는 반드시 자체 구현한다. 초기 제품은 Android 모바일 싱글플레이다. 멀티 없이도 상품성이 있어야 한다. 시장근거는 통과/탈락 게이트가 아니라 타겟 연령·세션·콘텐츠량·수익모델 방향 참고용이다. 제공되지 않은 매출·연령·플레이시간 숫자는 절대 추정하지 않는다. REQUESTS=${JSON.stringify(requestPayload)}. JSON 스키마만 출력하라.`;
+  const prompt=`다음 GAME_SEED 요청을 한 번의 배치로 모두 작성하라. 요청 수와 requestId/category를 정확히 보존한다. coreLoop는 반드시 서로 다른 3개 이상의 단계로 작성하며 행동 → 결과 피드백 → 다음 선택/보상 흐름이 보여야 한다. 각 분류마다 유명하고 상업적 또는 대중적 성공이 검증된 출시작을 레퍼런스로 골라 핵심 재미·루프·성장·경제·UX 구조를 학습하되, 새 게임은 HOMAGE 또는 REINTERPRETATION으로 독자 정체성을 만든다. 원작 이름/캐릭터/스토리/맵/아트/음악/UI 아트/소스코드를 복제하지 않는다. 소스코드는 반드시 자체 구현한다. 초기 제품은 Android 모바일 싱글플레이다. 멀티 없이도 상품성이 있어야 한다. 시장근거는 통과/탈락 게이트가 아니라 타겟 연령·세션·콘텐츠량·수익모델 방향 참고용이다. 제공되지 않은 매출·연령·플레이시간 숫자는 절대 추정하지 않는다. REQUESTS=${JSON.stringify(requestPayload)}. JSON 스키마만 출력하라.`;
   try{
-    const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,keep_alive:'0s',format:batchSchema(targets.length),messages:[{role:'system',content:'너는 재운컴퍼니 GAME_SEED 선택 AI다. 성공 구조는 오마주/재해석하지만 보호되는 표현과 소스코드는 복제하지 않는다. 여러 요청을 반드시 한 응답에서 완성한다.'},{role:'user',content:prompt}],options:{temperature:0.3,num_ctx:16384,num_predict:6000}}),signal:controller.signal});
+    const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,keep_alive:'0s',format:batchSchema(targets.length),messages:[{role:'system',content:'너는 재운컴퍼니 GAME_SEED 선택 AI다. 성공 구조는 오마주/재해석하지만 보호되는 표현과 소스코드는 복제하지 않는다. 여러 요청을 반드시 한 응답에서 완성하고, 각 coreLoop는 중복 없는 최소 3단계로 작성한다.'},{role:'user',content:prompt}],options:{temperature:0.3,num_ctx:16384,num_predict:6000}}),signal:controller.signal});
     if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
     const body=await response.json();const text=clean(body?.message?.content);if(!text)throw new Error('empty model response');
     const parsed=JSON.parse(text);if(!Array.isArray(parsed.proposals)||parsed.proposals.length!==targets.length)throw new Error(`GAME_SEED_BATCH_COUNT_MISMATCH ${parsed.proposals?.length||0}/${targets.length}`);
@@ -125,7 +138,7 @@ export async function runGameSeedBootstrap({timestamp=new Date().toISOString(),p
 
   const pending=[];const serials=new Map(categories.map(category=>[category,initialSerialCount(category)]));const usedGameIds=new Set((state.seeds||[]).map(s=>s.gameId));
   for(let i=0;i<targets.length;i++){
-    const target=targets[i];const proposal={...proposals[i],requestId:proposals[i]?.requestId||target.requestId,category:proposals[i]?.category||target.category};
+    const target=targets[i];const proposal=normalizeProposal(target,proposals[i]);
     validateProposal(target,proposal);
     const serial=(serials.get(target.category)||0)+1;serials.set(target.category,serial);
     const gameId=uniqueGameId(target.category,proposal.gameName,usedGameIds);
