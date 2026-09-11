@@ -22,6 +22,7 @@ on:
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
       - '.github/workflows/company-development-unity-runtime.yml'
+      - '.github/workflows/unity-hybrid-android-build.yml'
       - '.github/workflows/director-supervisor.yml'
       - '.github/workflows/company-central-policy-contract-qa.yml'
   push:
@@ -46,6 +47,7 @@ on:
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
       - '.github/workflows/company-development-unity-runtime.yml'
+      - '.github/workflows/unity-hybrid-android-build.yml'
       - '.github/workflows/director-supervisor.yml'
       - '.github/workflows/company-central-policy-contract-qa.yml'
   workflow_dispatch:
