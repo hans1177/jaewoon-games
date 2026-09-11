@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-10T19:05:41.162Z",
+  "updatedAt": "2026-09-11T16:29:24.564Z",
   "policy": {
     "dedupeBySignature": true,
     "retainResolvedPatterns": true,
@@ -423,6 +423,162 @@
           "checkedAt": "2026-09-10T19:05:41.162Z",
           "runId": "34518269999",
           "url": "http://127.0.0.1:4173/web-games/human-go/"
+        }
+      ],
+      "rootCause": null,
+      "fix": null,
+      "prevention": null,
+      "learningVerified": false,
+      "xpAwarded": false,
+      "notes": [
+        "Detected by public game smoke-play monitor: console"
+      ]
+    },
+    {
+      "id": "public-seed-action-survival-rogu-echoes-of-the-lost-star-console-d630f9ee85c77765",
+      "signature": "public-seed-action-survival-rogu-echoes-of-the-lost-star-console-d630f9ee85c77765",
+      "scope": "public-game-runtime",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "severity": "MEDIUM",
+      "status": "open",
+      "symptom": "Failed to load resource: the server responded with a status of # (File not found)",
+      "firstSeen": "2026-09-11",
+      "lastSeen": "2026-09-11",
+      "occurrences": [
+        {
+          "checkedAt": "2026-09-11T16:29:24.564Z",
+          "runId": "34622191560",
+          "url": "http://127.0.0.1:4173/artbook-viewer.html?game=seed-action-survival-rogu-echoes-of-the-lost-star"
+        }
+      ],
+      "rootCause": null,
+      "fix": null,
+      "prevention": null,
+      "learningVerified": false,
+      "xpAwarded": false,
+      "notes": [
+        "Detected by public game smoke-play monitor: console"
+      ]
+    },
+    {
+      "id": "public-seed-single-defense-strat-celestial-bastion-console-d630f9ee85c77765",
+      "signature": "public-seed-single-defense-strat-celestial-bastion-console-d630f9ee85c77765",
+      "scope": "public-game-runtime",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "severity": "MEDIUM",
+      "status": "open",
+      "symptom": "Failed to load resource: the server responded with a status of # (File not found)",
+      "firstSeen": "2026-09-11",
+      "lastSeen": "2026-09-11",
+      "occurrences": [
+        {
+          "checkedAt": "2026-09-11T16:29:24.564Z",
+          "runId": "34622191560",
+          "url": "http://127.0.0.1:4173/artbook-viewer.html?game=seed-single-defense-strat-celestial-bastion"
+        }
+      ],
+      "rootCause": null,
+      "fix": null,
+      "prevention": null,
+      "learningVerified": false,
+      "xpAwarded": false,
+      "notes": [
+        "Detected by public game smoke-play monitor: console"
+      ]
+    },
+    {
+      "id": "public-seed-puzzle-chromatic-cascade-console-d630f9ee85c77765",
+      "signature": "public-seed-puzzle-chromatic-cascade-console-d630f9ee85c77765",
+      "scope": "public-game-runtime",
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "severity": "MEDIUM",
+      "status": "open",
+      "symptom": "Failed to load resource: the server responded with a status of # (File not found)",
+      "firstSeen": "2026-09-11",
+      "lastSeen": "2026-09-11",
+      "occurrences": [
+        {
+          "checkedAt": "2026-09-11T16:29:24.564Z",
+          "runId": "34622191560",
+          "url": "http://127.0.0.1:4173/artbook-viewer.html?game=seed-puzzle-chromatic-cascade"
+        }
+      ],
+      "rootCause": null,
+      "fix": null,
+      "prevention": null,
+      "learningVerified": false,
+      "xpAwarded": false,
+      "notes": [
+        "Detected by public game smoke-play monitor: console"
+      ]
+    },
+    {
+      "id": "public-seed-casual-realm-weaver-console-d630f9ee85c77765",
+      "signature": "public-seed-casual-realm-weaver-console-d630f9ee85c77765",
+      "scope": "public-game-runtime",
+      "gameId": "seed-casual-realm-weaver",
+      "severity": "MEDIUM",
+      "status": "open",
+      "symptom": "Failed to load resource: the server responded with a status of # (File not found)",
+      "firstSeen": "2026-09-11",
+      "lastSeen": "2026-09-11",
+      "occurrences": [
+        {
+          "checkedAt": "2026-09-11T16:29:24.564Z",
+          "runId": "34622191560",
+          "url": "http://127.0.0.1:4173/artbook-viewer.html?game=seed-casual-realm-weaver"
+        }
+      ],
+      "rootCause": null,
+      "fix": null,
+      "prevention": null,
+      "learningVerified": false,
+      "xpAwarded": false,
+      "notes": [
+        "Detected by public game smoke-play monitor: console"
+      ]
+    },
+    {
+      "id": "public-seed-idle-growth-rpg-crystal-bloom-console-d630f9ee85c77765",
+      "signature": "public-seed-idle-growth-rpg-crystal-bloom-console-d630f9ee85c77765",
+      "scope": "public-game-runtime",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "severity": "MEDIUM",
+      "status": "open",
+      "symptom": "Failed to load resource: the server responded with a status of # (File not found)",
+      "firstSeen": "2026-09-11",
+      "lastSeen": "2026-09-11",
+      "occurrences": [
+        {
+          "checkedAt": "2026-09-11T16:29:24.564Z",
+          "runId": "34622191560",
+          "url": "http://127.0.0.1:4173/artbook-viewer.html?game=seed-idle-growth-rpg-crystal-bloom"
+        }
+      ],
+      "rootCause": null,
+      "fix": null,
+      "prevention": null,
+      "learningVerified": false,
+      "xpAwarded": false,
+      "notes": [
+        "Detected by public game smoke-play monitor: console"
+      ]
+    },
+    {
+      "id": "public-seed-story-complete-rpg-chronicles-of-eldoria-console-d630f9ee85c77765",
+      "signature": "public-seed-story-complete-rpg-chronicles-of-eldoria-console-d630f9ee85c77765",
+      "scope": "public-game-runtime",
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "severity": "MEDIUM",
+      "status": "open",
+      "symptom": "Failed to load resource: the server responded with a status of # (File not found)",
+      "firstSeen": "2026-09-11",
+      "lastSeen": "2026-09-11",
+      "occurrences": [
+        {
+          "checkedAt": "2026-09-11T16:29:24.564Z",
+          "runId": "34622191560",
+          "url": "http://127.0.0.1:4173/artbook-viewer.html?game=seed-story-complete-rpg-chronicles-of-eldoria"
         }
       ],
       "rootCause": null,

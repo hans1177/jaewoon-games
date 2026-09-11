@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-10T19:05:41.162Z",
+  "generatedAt": "2026-09-11T16:29:24.564Z",
   "source": "public-game-health.json",
   "testMethod": "Playwright mobile smoke-play",
   "policy": {
@@ -13,55 +13,31 @@
     {
       "gameId": "insect-survival",
       "target": "web",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
+      "checkedAt": "2026-09-11T16:29:24.564Z",
       "source": "public-game-health.json",
-      "runtimeSmokePassed": true,
-      "qaPassEligible": true,
+      "runtimeSmokePassed": false,
+      "qaPassEligible": false,
       "requiredSignals": {
         "loadOk": true,
-        "contentSignal": true,
+        "contentSignal": false,
         "inputDelivered": true,
         "reloadOk": true,
         "overflowOk": true
       },
       "playTestEvidence": [
-        "Playwright launch=PASS content=PASS",
+        "Playwright launch=PASS content=FAIL",
         "input smoke=PASS reload=PASS",
         "mobile overflow=PASS viewport smoke",
-        "health=healthy score=100",
+        "health=critical score=54",
         "screenshot=qa-artifacts/public-game-health/insect-survival.png"
       ],
       "blockers": [],
       "screenshot": "qa-artifacts/public-game-health/insect-survival.png"
     },
     {
-      "gameId": "crystal-defense",
-      "target": "web",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
-      "source": "public-game-health.json",
-      "runtimeSmokePassed": true,
-      "qaPassEligible": true,
-      "requiredSignals": {
-        "loadOk": true,
-        "contentSignal": true,
-        "inputDelivered": true,
-        "reloadOk": true,
-        "overflowOk": true
-      },
-      "playTestEvidence": [
-        "Playwright launch=PASS content=PASS",
-        "input smoke=PASS reload=PASS",
-        "mobile overflow=PASS viewport smoke",
-        "health=healthy score=100",
-        "screenshot=qa-artifacts/public-game-health/crystal-defense.png"
-      ],
-      "blockers": [],
-      "screenshot": "qa-artifacts/public-game-health/crystal-defense.png"
-    },
-    {
       "gameId": "bug-defense",
       "target": "web",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
+      "checkedAt": "2026-09-11T16:29:24.564Z",
       "source": "public-game-health.json",
       "runtimeSmokePassed": true,
       "qaPassEligible": true,
@@ -85,7 +61,7 @@
     {
       "gameId": "daechung-rpg",
       "target": "web",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
+      "checkedAt": "2026-09-11T16:29:24.564Z",
       "source": "public-game-health.json",
       "runtimeSmokePassed": true,
       "qaPassEligible": true,
@@ -107,98 +83,24 @@
       "screenshot": "qa-artifacts/public-game-health/daechung-rpg.png"
     },
     {
-      "gameId": "human-go",
+      "gameId": "monster-adventure",
       "target": "web",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
+      "checkedAt": "2026-09-11T16:29:24.564Z",
       "source": "public-game-health.json",
       "runtimeSmokePassed": false,
       "qaPassEligible": false,
       "requiredSignals": {
         "loadOk": true,
-        "contentSignal": true,
+        "contentSignal": false,
         "inputDelivered": true,
         "reloadOk": true,
         "overflowOk": true
       },
       "playTestEvidence": [
-        "Playwright launch=PASS content=PASS",
+        "Playwright launch=PASS content=FAIL",
         "input smoke=PASS reload=PASS",
         "mobile overflow=PASS viewport smoke",
-        "health=warning score=74",
-        "screenshot=qa-artifacts/public-game-health/human-go.png"
-      ],
-      "blockers": [
-        "console: Failed to load resource: net::ERR_INVALID_URL"
-      ],
-      "screenshot": "qa-artifacts/public-game-health/human-go.png"
-    },
-    {
-      "gameId": "egg-heist",
-      "target": "web",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
-      "source": "public-game-health.json",
-      "runtimeSmokePassed": true,
-      "qaPassEligible": true,
-      "requiredSignals": {
-        "loadOk": true,
-        "contentSignal": true,
-        "inputDelivered": true,
-        "reloadOk": true,
-        "overflowOk": true
-      },
-      "playTestEvidence": [
-        "Playwright launch=PASS content=PASS",
-        "input smoke=PASS reload=PASS",
-        "mobile overflow=PASS viewport smoke",
-        "health=healthy score=100",
-        "screenshot=qa-artifacts/public-game-health/egg-heist.png"
-      ],
-      "blockers": [],
-      "screenshot": "qa-artifacts/public-game-health/egg-heist.png"
-    },
-    {
-      "gameId": "chess-battle",
-      "target": "web",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
-      "source": "public-game-health.json",
-      "runtimeSmokePassed": true,
-      "qaPassEligible": true,
-      "requiredSignals": {
-        "loadOk": true,
-        "contentSignal": true,
-        "inputDelivered": true,
-        "reloadOk": true,
-        "overflowOk": true
-      },
-      "playTestEvidence": [
-        "Playwright launch=PASS content=PASS",
-        "input smoke=PASS reload=PASS",
-        "mobile overflow=PASS viewport smoke",
-        "health=healthy score=100",
-        "screenshot=qa-artifacts/public-game-health/chess-battle.png"
-      ],
-      "blockers": [],
-      "screenshot": "qa-artifacts/public-game-health/chess-battle.png"
-    },
-    {
-      "gameId": "monster-adventure",
-      "target": "web",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
-      "source": "public-game-health.json",
-      "runtimeSmokePassed": true,
-      "qaPassEligible": true,
-      "requiredSignals": {
-        "loadOk": true,
-        "contentSignal": true,
-        "inputDelivered": true,
-        "reloadOk": true,
-        "overflowOk": true
-      },
-      "playTestEvidence": [
-        "Playwright launch=PASS content=PASS",
-        "input smoke=PASS reload=PASS",
-        "mobile overflow=PASS viewport smoke",
-        "health=healthy score=100",
+        "health=critical score=54",
         "screenshot=qa-artifacts/public-game-health/monster-adventure.png"
       ],
       "blockers": [],
@@ -207,7 +109,7 @@
     {
       "gameId": "survival",
       "target": "web",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
+      "checkedAt": "2026-09-11T16:29:24.564Z",
       "source": "public-game-health.json",
       "runtimeSmokePassed": true,
       "qaPassEligible": true,
@@ -229,12 +131,12 @@
       "screenshot": "qa-artifacts/public-game-health/survival.png"
     },
     {
-      "gameId": "survival2",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
       "target": "web",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
+      "checkedAt": "2026-09-11T16:29:24.564Z",
       "source": "public-game-health.json",
-      "runtimeSmokePassed": true,
-      "qaPassEligible": true,
+      "runtimeSmokePassed": false,
+      "qaPassEligible": false,
       "requiredSignals": {
         "loadOk": true,
         "contentSignal": true,
@@ -246,19 +148,21 @@
         "Playwright launch=PASS content=PASS",
         "input smoke=PASS reload=PASS",
         "mobile overflow=PASS viewport smoke",
-        "health=healthy score=100",
-        "screenshot=qa-artifacts/public-game-health/survival2.png"
+        "health=warning score=74",
+        "screenshot=qa-artifacts/public-game-health/seed-action-survival-rogu-echoes-of-the-lost-star.png"
       ],
-      "blockers": [],
-      "screenshot": "qa-artifacts/public-game-health/survival2.png"
+      "blockers": [
+        "console: Failed to load resource: the server responded with a status of 404 (File not found)"
+      ],
+      "screenshot": "qa-artifacts/public-game-health/seed-action-survival-rogu-echoes-of-the-lost-star.png"
     },
     {
-      "gameId": "territory-war",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
       "target": "web",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
+      "checkedAt": "2026-09-11T16:29:24.564Z",
       "source": "public-game-health.json",
-      "runtimeSmokePassed": true,
-      "qaPassEligible": true,
+      "runtimeSmokePassed": false,
+      "qaPassEligible": false,
       "requiredSignals": {
         "loadOk": true,
         "contentSignal": true,
@@ -270,11 +174,117 @@
         "Playwright launch=PASS content=PASS",
         "input smoke=PASS reload=PASS",
         "mobile overflow=PASS viewport smoke",
-        "health=healthy score=100",
-        "screenshot=qa-artifacts/public-game-health/territory-war.png"
+        "health=warning score=74",
+        "screenshot=qa-artifacts/public-game-health/seed-single-defense-strat-celestial-bastion.png"
       ],
-      "blockers": [],
-      "screenshot": "qa-artifacts/public-game-health/territory-war.png"
+      "blockers": [
+        "console: Failed to load resource: the server responded with a status of 404 (File not found)"
+      ],
+      "screenshot": "qa-artifacts/public-game-health/seed-single-defense-strat-celestial-bastion.png"
+    },
+    {
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "target": "web",
+      "checkedAt": "2026-09-11T16:29:24.564Z",
+      "source": "public-game-health.json",
+      "runtimeSmokePassed": false,
+      "qaPassEligible": false,
+      "requiredSignals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "playTestEvidence": [
+        "Playwright launch=PASS content=PASS",
+        "input smoke=PASS reload=PASS",
+        "mobile overflow=PASS viewport smoke",
+        "health=warning score=74",
+        "screenshot=qa-artifacts/public-game-health/seed-puzzle-chromatic-cascade.png"
+      ],
+      "blockers": [
+        "console: Failed to load resource: the server responded with a status of 404 (File not found)"
+      ],
+      "screenshot": "qa-artifacts/public-game-health/seed-puzzle-chromatic-cascade.png"
+    },
+    {
+      "gameId": "seed-casual-realm-weaver",
+      "target": "web",
+      "checkedAt": "2026-09-11T16:29:24.564Z",
+      "source": "public-game-health.json",
+      "runtimeSmokePassed": false,
+      "qaPassEligible": false,
+      "requiredSignals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "playTestEvidence": [
+        "Playwright launch=PASS content=PASS",
+        "input smoke=PASS reload=PASS",
+        "mobile overflow=PASS viewport smoke",
+        "health=warning score=74",
+        "screenshot=qa-artifacts/public-game-health/seed-casual-realm-weaver.png"
+      ],
+      "blockers": [
+        "console: Failed to load resource: the server responded with a status of 404 (File not found)"
+      ],
+      "screenshot": "qa-artifacts/public-game-health/seed-casual-realm-weaver.png"
+    },
+    {
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "target": "web",
+      "checkedAt": "2026-09-11T16:29:24.564Z",
+      "source": "public-game-health.json",
+      "runtimeSmokePassed": false,
+      "qaPassEligible": false,
+      "requiredSignals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "playTestEvidence": [
+        "Playwright launch=PASS content=PASS",
+        "input smoke=PASS reload=PASS",
+        "mobile overflow=PASS viewport smoke",
+        "health=warning score=74",
+        "screenshot=qa-artifacts/public-game-health/seed-idle-growth-rpg-crystal-bloom.png"
+      ],
+      "blockers": [
+        "console: Failed to load resource: the server responded with a status of 404 (File not found)"
+      ],
+      "screenshot": "qa-artifacts/public-game-health/seed-idle-growth-rpg-crystal-bloom.png"
+    },
+    {
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "target": "web",
+      "checkedAt": "2026-09-11T16:29:24.564Z",
+      "source": "public-game-health.json",
+      "runtimeSmokePassed": false,
+      "qaPassEligible": false,
+      "requiredSignals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "playTestEvidence": [
+        "Playwright launch=PASS content=PASS",
+        "input smoke=PASS reload=PASS",
+        "mobile overflow=PASS viewport smoke",
+        "health=warning score=74",
+        "screenshot=qa-artifacts/public-game-health/seed-story-complete-rpg-chronicles-of-eldoria.png"
+      ],
+      "blockers": [
+        "console: Failed to load resource: the server responded with a status of 404 (File not found)"
+      ],
+      "screenshot": "qa-artifacts/public-game-health/seed-story-complete-rpg-chronicles-of-eldoria.png"
     }
   ]
 }
