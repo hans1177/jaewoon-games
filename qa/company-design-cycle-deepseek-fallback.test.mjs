@@ -22,3 +22,12 @@ test('structured design calls recover DeepSeek structure without dropping its re
   assert.doesNotMatch(design,/attempt<=3/);
   assert.doesNotMatch(design,/message\?\.thinking\).*return/);
 });
+
+test('full design author role avoids DeepSeek while department reviews retain the full configured pool',()=>{
+  assert.match(design,/const designerPool=pool\.filter\(model=>!model\.startsWith\('deepseek-r1'\)\)/);
+  assert.match(design,/GAME_DESIGNER_MODEL_POOL_EMPTY/);
+  assert.match(design,/const designerModel=designerPool\[hash\(`\$\{gameId\}:designer`\)%designerPool\.length\]/);
+  assert.match(design,/const activeReviewModels=pool\.filter/);
+  assert.match(design,/sameModelAsDraft:true/);
+  assert.match(design,/sameModelRevised:true/);
+});
