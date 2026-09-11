@@ -41,11 +41,15 @@ jobs:
             echo 'COMPANY_RUNTIME_STATE=NOT_CREATED'
             exit 0
           fi
-          git config user.name 'jaewoon-company-runtime'
-          git config user.email 'company-runtime@users.noreply.github.com'
-          git fetch origin "$COMPANY_RUNTIME_BRANCH" main
-          git checkout -B "$COMPANY_RUNTIME_BRANCH" "origin/$COMPANY_RUNTIME_BRANCH"
-          git merge --no-edit origin/main
+          git fetch origin "$COMPANY_RUNTIME_BRANCH"
+          for runtime_path in game-seed-state.json artbook-submissions; do
+            if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" 2>/dev/null; then
+              git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- "$runtime_path"
+            fi
+          done
+          git reset -- game-seed-state.json artbook-submissions >/dev/null 2>&1 || true
+          echo 'COMPANY_RUNTIME_STATE_OVERLAY=YES'
+          echo 'COMPANY_ENGINE_SOURCE=main'
 
       - name: Resolve active incomplete GAME_SEED targets
         id: targets
@@ -91,12 +95,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-company-runtime'
-          git config user.email 'company-runtime@users.noreply.github.com'
-          git fetch origin "$COMPANY_RUNTIME_BRANCH" main
-          git checkout -B "$COMPANY_RUNTIME_BRANCH" "origin/$COMPANY_RUNTIME_BRANCH"
-          git merge --no-edit origin/main
+          git fetch origin "$COMPANY_RUNTIME_BRANCH"
+          game_path="design/${{ matrix.target.game_id }}"
+          artbook_path="artbook-submissions/${{ matrix.target.game_id }}"
+          for runtime_path in game-seed-state.json "$game_path" "$artbook_path"; do
+            if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" 2>/dev/null; then
+              git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- "$runtime_path"
+            fi
+          done
+          git reset -- game-seed-state.json "$game_path" "$artbook_path" >/dev/null 2>&1 || true
           test -f game-seed-state.json
+          cp game-seed-state.json /tmp/company-runtime-seed-state-before.json
+          echo 'COMPANY_RUNTIME_STATE_OVERLAY=TARGET_ONLY'
+          echo 'COMPANY_ENGINE_SOURCE=main'
           echo 'PUBLIC_MAIN_WRITE=NO'
 
       - name: Revalidate current seed target
@@ -241,14 +252,17 @@ jobs:
           git config user.email 'seed-design@users.noreply.github.com'
           game_path="design/${{ matrix.target.game_id }}"
           artbook_path="artbook-submissions/${{ matrix.target.game_id }}"
-          git add -- "$game_path" "$artbook_path" game-seed-state.json
+          seed_changed=0
+          if ! cmp -s game-seed-state.json /tmp/company-runtime-seed-state-before.json; then
+            seed_changed=1
+          fi
+          git add -- "$game_path" "$artbook_path"
+          if [ "$seed_changed" = 1 ]; then
+            git add -- game-seed-state.json
+          fi
           if git diff --cached --quiet; then
             echo 'SEED_DESIGN_RUNTIME_CHANGE=NO'
             exit 0
-          fi
-          seed_changed=0
-          if ! git diff --cached --quiet -- game-seed-state.json; then
-            seed_changed=1
           fi
           git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}"
           generated_commit="$(git rev-parse HEAD)"
