@@ -81,7 +81,8 @@ function uniqueGameId(category,name,used){
   while(used.has(id)){id=`seed-${categorySlug}-${nameSlug}-${n++}`.slice(0,63);}used.add(id);return id;
 }
 function normalizeProposal(target,p){
-  const proposal={...(p||{}),requestId:clean(p?.requestId)||target.requestId,category:clean(p?.category)||target.category};
+  // requestId/category are orchestration keys chosen by the company runtime, never model-authored decisions.
+  const proposal={...(p||{}),requestId:target.requestId,category:target.category};
   const canonicalBenchmarks=new Map(target.benchmarkCandidates.map(name=>[norm(name),name]));
   proposal.referenceGames=uniq(p?.referenceGames).map(name=>canonicalBenchmarks.get(norm(name))).filter(Boolean);
   if(!proposal.referenceGames.length)proposal.referenceGames=target.benchmarkCandidates.slice(0,Math.min(2,target.benchmarkCandidates.length));
