@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "gameId": "insect-survival",
+  "date": "2026-09-11",
+  "productionClass": "DEVELOPMENT_CONFIRMED",
+  "tierAlias": 2,
+  "tier": 2,
+  "policyDocument": "COMPANY_FLOW.md",
+  "flow": "DEVELOPMENT_CONFIRMED_GATED_DIRECT",
+  "status": "BLOCKED",
+  "state": "DEVELOPMENT_BLOCKED",
+  "sourceDesign": null,
+  "evidence": {
+    "web": null,
+    "unity": null,
+    "revalidation": null
+  },
+  "meetings": {
+    "web": null,
+    "unity": null
+  },
+  "finalDesign": null,
+  "artbook": null,
+  "blockers": [
+    "design-baseline-required"
+  ],
+  "nextAction": "DESIGN_ONLY에서 DESIGN_BASELINE_READY를 먼저 만든다.",
+  "contracts": {
+    "gatedDirect": true,
+    "resumeFromLatestEvidence": true,
+    "aiMayInventValidationPass": false,
+    "webSmokeDoesNotEqualGameplayValidation": true,
+    "artbookOnlyAfterBaselineReady": true
+  },
+  "updatedAt": "2026-09-11T08:51:53.695Z"
+}
