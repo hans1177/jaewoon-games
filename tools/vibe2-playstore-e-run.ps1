@@ -51,9 +51,10 @@ function Get-UiXml {
 
 function Try-TapInstall {
   param([string]$Adb,[string]$Serial,[string]$Xml)
+  $installPattern='(?i)(text|content-desc)="(?:Install|\uC124\uCE58)"'
   foreach($node in [regex]::Matches($Xml,'<node\b[^>]*>')){
     $s=$node.Value
-    if($s -notmatch '(?i)(text|content-desc)="(?:Install|설치)"'){ continue }
+    if($s -notmatch $installPattern){ continue }
     if($s -match 'bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"'){
       $x1=[int]$Matches[1]; $y1=[int]$Matches[2]; $x2=[int]$Matches[3]; $y2=[int]$Matches[4]
       $x=[int](($x1+$x2)/2); $y=[int](($y1+$y2)/2)
@@ -131,11 +132,12 @@ if(-not (Test-PackageInstalled $adb $serial $PackageId)){
   [void](Invoke-Native $adb @('-s',$serial,'shell','am','start','-a','android.intent.action.VIEW','-d',"market://details?id=$PackageId",'-p','com.android.vending'))
   $deadline=(Get-Date).AddMinutes($InstallWaitMinutes)
   $signInShown=$false
+  $signInPattern='(?i)(Sign in|Add account|\uB85C\uADF8\uC778|\uACC4\uC815\s*\uCD94\uAC00)'
   do{
     if(Test-PackageInstalled $adb $serial $PackageId){ break }
     Start-Sleep 5
     $xml=Get-UiXml $adb $serial
-    if(-not $signInShown -and $xml -match '(?i)(Sign in|로그인|Add account|계정 추가)'){
+    if(-not $signInShown -and $xml -match $signInPattern){
       Write-Host 'PLAY_STORE_SIGN_IN_REQUIRED=YES'
       Write-Host 'SIGN_IN_LOCATION=EMULATOR_UI_ONLY'
       Write-Host 'PASSWORD_CAPTURED=NO'
