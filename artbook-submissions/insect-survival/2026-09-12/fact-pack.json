@@ -1,0 +1,691 @@
+{
+  "version": 3,
+  "gameId": "insect-survival",
+  "date": "2026-09-12",
+  "generatedBy": "deterministic-source-scan",
+  "paidApi": false,
+  "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+  "sourceFiles": [
+    "web-games/insect-survival/index.html",
+    "web-games/insect-survival/insect_survival-28.html",
+    "web-games/insect-survival/play_survival.html"
+  ],
+  "decodedSources": [],
+  "topics": {
+    "gameplayLoop": [
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 8,
+        "column": 11,
+        "text": "const ap0=attackPower;attackPower=function(){return ap0()+(armor.face==='scorpionHelmet'?20:0)};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 8,
+        "column": 23,
+        "text": "const ap0=attackPower;attackPower=function(){return ap0()+(armor.face==='scorpionHelmet'?20:0)};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 11,
+        "column": 11,
+        "text": "const longCraft=btn('longBandageCraft','긴 붕대 제작<small>섬유 밧줄 4 → 1개</small>');"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 11,
+        "column": 33,
+        "text": "const longCraft=btn('longBandageCraft','긴 붕대 제작<small>섬유 밧줄 4 → 1개</small>');"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 11,
+        "column": 46,
+        "text": "const longCraft=btn('longBandageCraft','긴 붕대 제작<small>섬유 밧줄 4 → 1개</small>');"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 15,
+        "column": 86,
+        "text": "helmetBtn=btn('scorpionHelmetBtn','전갈 헬멧<small>꿀벌 독침 1 + 개미 몸통 2 · 최대체력 +100 · 공격력 +20</small>');"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 18,
+        "column": 106,
+        "text": "ent.getElementById('bandageUse');if(weaponSec){for(const id of['emergencyBandageCraft','emergencyBandageUse','enhancedBandageCraft','enhancedBandageUse']){const x=document.getElementById(id);if(x)panelEl.insertBefore(x,w"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 18,
+        "column": 151,
+        "text": "){for(const id of['emergencyBandageCraft','emergencyBandageUse','enhancedBandageCraft','enhancedBandageUse']){const x=document.getElementById(id);if(x)panelEl.insertBefore(x,weaponSec)}panelEl.insertBefore(longCraft,weap"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 18,
+        "column": 281,
+        "text": "ElementById(id);if(x)panelEl.insertBefore(x,weaponSec)}panelEl.insertBefore(longCraft,weaponSec);panelEl.insertBefore(longUse,weaponSec)}else{end.parentNode.insertBefore(longCraft,end);end.parentNode.insertBefore(longUse"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 18,
+        "column": 375,
+        "text": "c);panelEl.insertBefore(longUse,weaponSec)}else{end.parentNode.insertBefore(longCraft,end);end.parentNode.insertBefore(longUse,end)}"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 21,
+        "column": 5,
+        "text": "longCraft.onclick=()=>{if(rope<4)return toast('섬유 밧줄 4 필요');rope-=4;longBandage++;toast('긴 붕대 +1');ui()};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 30,
+        "column": 50,
+        "text": "const ui0=ui;ui=function(){ui0();apt.textContent=attackPower();if(armor.face==='scorpionHelmet')fslot.textContent='얼굴: 전갈 헬멧';if(armor.torso==='scorpionTorso')tslot.textContent='몸통: 전갈 몸통 방어구';if(armor.legs==='scorpionLe"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 33,
+        "column": 7,
+        "text": "const enemy0=drawEnemy;"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 33,
+        "column": 18,
+        "text": "const enemy0=drawEnemy;"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 38,
+        "column": 17,
+        "text": "const ladyBomb0=enemy0;drawEnemy=function(e){if(!['bee','butterfly','spiderJunior'].includes(e.type))return ladyBomb0(e);const a=ph(),x=Math.round(e.x),y=Math.round(e.y),dir=p.x<e.x?-1:1;drawShadow(x,y+18,e.r,8,.25);if(e"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 38,
+        "column": 28,
+        "text": "const ladyBomb0=enemy0;drawEnemy=function(e){if(!['bee','butterfly','spiderJunior'].includes(e.type))return ladyBomb0(e);const a=ph(),x=Math.round(e.x),y=Math.round(e.y),dir=p.x<e.x?-1:1;drawShadow(x,y+18,e.r,8,.25);if(e"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 40,
+        "column": 21,
+        "text": "ui();toast('화면 복구 · 제작 분류 정리 · 34프레임 모션 적용');})();`)}catch(e){console.error('v10 inner patch',e)}};if(mid.contentDocument&&mid.contentDocument.readyState==='complete')setTimeout(apply,650);mid.addEventListener('load',()="
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 3,
+        "column": 730,
+        "text": "0005}#top{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:6px;align-items:start}#phase{text-align:center}#res{text-align:right;line-height:1.35}.bar{height:8px;background:#ffffff22;border-radius:10px;overflow:hidde"
+      }
+    ],
+    "input": [
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 10,
+        "column": 90,
+        "text": "btn(id,html){let b=document.getElementById(id);if(!b){b=document.createElement('button');b.className='item';b.id=id}b.innerHTML=html;return b}"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 26,
+        "column": 142,
+        "text": "ument.getElementById('inventoryBtn');if(!invBtn){invBtn=document.createElement('button');invBtn.id='inventoryBtn';invBtn.textContent='🎒 인벤토리';invBtn.style.cssText='position:absolute;right:10px;top:10px;z-index:8;backgro"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 27,
+        "column": 316,
+        "text": "px solid #ffffff35;border-radius:14px;padding:12px;display:none;overflow-y:auto;touch-action:pan-y;color:#fff;font-weight:800';inv.innerHTML='<div style=\"position:sticky;top:-12px;background:#101b16;padding:10px 0;border"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 27,
+        "column": 543,
+        "text": ":1px solid #ffffff22;display:flex;justify-content:space-between\"><b>🎒 인벤토리</b><button id=\"inventoryClose\" style=\"border:0;border-radius:9px;padding:7px 10px;background:#ffffff20;color:#fff;font-weight:900\">닫기 ✕</button>"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 27,
+        "column": 676,
+        "text": "ius:9px;padding:7px 10px;background:#ffffff20;color:#fff;font-weight:900\">닫기 ✕</button></div><div id=\"inventoryList\" style=\"line-height:1.9;padding-top:8px\"></div>';gameRoot.appendChild(inv)}"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 3,
+        "column": 455,
+        "text": "26391f;color:#fff;font-family:system-ui,-apple-system,\"Noto Sans KR\",sans-serif;touch-action:none}#hud{height:108px;background:linear-gradient(180deg,#0b160df7,#122117f2);padding:6px 8px;font-size:11px;font-weight:900;bo"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 3,
+        "column": 1388,
+        "text": ":calc(100% - 108px);overflow:hidden}canvas{width:100%;height:100%;display:block;touch-action:none}button{touch-action:manipulation}#craft{position:absolute;left:10px;top:10px;z-index:6;background:linear-gradient(180deg,#"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 3,
+        "column": 1406,
+        "text": ");overflow:hidden}canvas{width:100%;height:100%;display:block;touch-action:none}button{touch-action:manipulation}#craft{position:absolute;left:10px;top:10px;z-index:6;background:linear-gradient(180deg,#ffd84c,#f4ad20);co"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 3,
+        "column": 1413,
+        "text": "low:hidden}canvas{width:100%;height:100%;display:block;touch-action:none}button{touch-action:manipulation}#craft{position:absolute;left:10px;top:10px;z-index:6;background:linear-gradient(180deg,#ffd84c,#f4ad20);color:#21"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 3,
+        "column": 1822,
+        "text": "lid #ffffff35;border-radius:14px;display:none;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:thin}#panel *{touch-action:pan-y}#panel butt"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 3,
+        "column": 1868,
+        "text": "overflow-y:auto;overflow-x:hidden;touch-action:pan-y;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:thin}#panel *{touch-action:pan-y}#panel button{touch-action:manipulation}#panelHead{positi"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 3,
+        "column": 1932,
+        "text": "rflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:thin}#panel *{touch-action:pan-y}#panel button{touch-action:manipulation}#panelHead{position:sticky;top:-9px;z-index:3;margin:-9px -9px 7px;padding:9px;ba"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 3,
+        "column": 1958,
+        "text": "scroll-behavior:contain;scrollbar-width:thin}#panel *{touch-action:pan-y}#panel button{touch-action:manipulation}#panelHead{position:sticky;top:-9px;z-index:3;margin:-9px -9px 7px;padding:9px;background:#101b16f8;border-"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 3,
+        "column": 1965,
+        "text": "behavior:contain;scrollbar-width:thin}#panel *{touch-action:pan-y}#panel button{touch-action:manipulation}#panelHead{position:sticky;top:-9px;z-index:3;margin:-9px -9px 7px;padding:9px;background:#101b16f8;border-bottom:"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 3,
+        "column": 2946,
+        "text": "t:116px;border-radius:50%;background:#0007;border:2px solid #ffffff66;z-index:5;touch-action:none}#knob{position:absolute;left:36px;top:36px;width:44px;height:44px;border-radius:50%;background:#ddd;border:2px solid #fff}"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 3,
+        "column": 3808,
+        "text": "ems:center;justify-content:center;text-align:center;z-index:10;padding:24px}.ov button{padding:14px 24px;border:0;border-radius:15px;background:#8c5;font-weight:900;font-size:19px}#over{display:none}</style></head><body>"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 3,
+        "column": 4537,
+        "text": "t\" id=\"setfx\">세트효과: 없음</div></div></div><div id=\"game\"><canvas id=\"c\"></canvas><button id=\"craft\">🛠️ 제작</button><div id=\"panel\"><div id=\"panelHead\"><b>🛠️ 제작</b><button id=\"closeCraft\">닫기 ✕</button></div><div class=\"sec"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 3,
+        "column": 4563,
+        "text": "v></div></div><div id=\"game\"><canvas id=\"c\"></canvas><button id=\"craft\">🛠️ 제작</button><div id=\"panel\"><div id=\"panelHead\"><b>🛠️ 제작</b><button id=\"closeCraft\">닫기 ✕</button></div><div class=\"sec\">재료 / 소모품</div><button cl"
+      }
+    ],
+    "combat": [
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 7,
+        "column": 7,
+        "text": "const hp0=maxHp;maxHp=function(){let v=hp0();if(armor.torso==='scorpionTorso')v+=200;if(armor.legs==='scorpionLeg')v+=140;if(armor.face==='scorpionHelmet')v+=100;return v};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 7,
+        "column": 14,
+        "text": "const hp0=maxHp;maxHp=function(){let v=hp0();if(armor.torso==='scorpionTorso')v+=200;if(armor.legs==='scorpionLeg')v+=140;if(armor.face==='scorpionHelmet')v+=100;return v};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 7,
+        "column": 20,
+        "text": "const hp0=maxHp;maxHp=function(){let v=hp0();if(armor.torso==='scorpionTorso')v+=200;if(armor.legs==='scorpionLeg')v+=140;if(armor.face==='scorpionHelmet')v+=100;return v};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 7,
+        "column": 40,
+        "text": "const hp0=maxHp;maxHp=function(){let v=hp0();if(armor.torso==='scorpionTorso')v+=200;if(armor.legs==='scorpionLeg')v+=140;if(armor.face==='scorpionHelmet')v+=100;return v};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 8,
+        "column": 11,
+        "text": "const ap0=attackPower;attackPower=function(){return ap0()+(armor.face==='scorpionHelmet'?20:0)};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 8,
+        "column": 23,
+        "text": "const ap0=attackPower;attackPower=function(){return ap0()+(armor.face==='scorpionHelmet'?20:0)};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 12,
+        "column": 56,
+        "text": "const longUse=btn('longBandageUse','긴 붕대 사용<small>2초마다 체력 +20 · 10초 지속</small>');"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 13,
+        "column": 78,
+        "text": "const torsoBtn=btn('scorpionTorsoBtn','전갈 몸통 방어구<small>전갈 꼬리 1 + 꿀벌 독침 2 · 최대체력 +200</small>');"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 14,
+        "column": 74,
+        "text": "const legBtn=btn('scorpionLegBtn','전갈 다리 보호대<small>전갈 꼬리 3 + 꿀벌 독침 1 · 최대체력 +140</small>');"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 15,
+        "column": 76,
+        "text": "const helmetBtn=btn('scorpionHelmetBtn','전갈 헬멧<small>꿀벌 독침 1 + 개미 몸통 2 · 최대체력 +100 · 공격력 +20</small>');"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 15,
+        "column": 86,
+        "text": "helmetBtn=btn('scorpionHelmetBtn','전갈 헬멧<small>꿀벌 독침 1 + 개미 몸통 2 · 최대체력 +100 · 공격력 +20</small>');"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 30,
+        "column": 50,
+        "text": "const ui0=ui;ui=function(){ui0();apt.textContent=attackPower();if(armor.face==='scorpionHelmet')fslot.textContent='얼굴: 전갈 헬멧';if(armor.torso==='scorpionTorso')tslot.textContent='몸통: 전갈 몸통 방어구';if(armor.legs==='scorpionLe"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 31,
+        "column": 243,
+        "text": "dageLeft-dt);longBandageTick+=dt;while(longBandageTick>=2){longBandageTick-=2;p.hp=Math.min(maxHp(),p.hp+20);toast('긴 붕대 회복 +20')}if(longBandageLeft<=0)longBandageTick=0}};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 31,
+        "column": 258,
+        "text": "ngBandageTick+=dt;while(longBandageTick>=2){longBandageTick-=2;p.hp=Math.min(maxHp(),p.hp+20);toast('긴 붕대 회복 +20')}if(longBandageLeft<=0)longBandageTick=0}};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 31,
+        "column": 265,
+        "text": "geTick+=dt;while(longBandageTick>=2){longBandageTick-=2;p.hp=Math.min(maxHp(),p.hp+20);toast('긴 붕대 회복 +20')}if(longBandageLeft<=0)longBandageTick=0}};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 33,
+        "column": 7,
+        "text": "const enemy0=drawEnemy;"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 33,
+        "column": 18,
+        "text": "const enemy0=drawEnemy;"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 34,
+        "column": 157,
+        "text": "-e.r-24,w,7);ctx.fillStyle='#ff5b55';ctx.fillRect(x-w/2,y-e.r-24,w*Math.max(0,e.hp/e.max),7);ctx.fillStyle='#fff';ctx.font='800 10px system-ui';ctx.textAlign='center';ctx.fillText(e.label||e.type,x,y-e.r-29)}"
+      }
+    ],
+    "progression": [
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 28,
+        "column": 478,
+        "text": "#ffffff22\"><b>소모품</b><br>🩹 붕대 '+bandage+'<br>🩹 응급붕대 '+emergencyBandage+'<br>✨ 강화붕대 '+enhancedBandage+'<br>🩹 긴 붕대 '+longBandage+(longBandageLeft>0?' ('+Math.ceil(longBandageLeft)+'초)':'')+'<hr style=\"border-color:#ffff"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 4874,
+        "text": "xEEURACCdSqMr04F1fUsiM1t3o7kmbBijXq/DSoJ2gRZZkO+i0NOHyy5NfWzzNbynwZRxAPtSE1fsf6jxpVpzBEoGcKRA2nfRqFXQrJZhdQzf68Tll11/eON6vivLOH3qILfKx1koQbbQx6K/l6y31DYQS69WoYEmcTcsdY1MYkujzjdXatXFYVRDs1lBvV4GYCElI5/PggSh1Yjg+N1YsnTllOd"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 5717,
+        "text": "SUFlIqKCWhhAMpAVcpKCkhhISQBkIkhQclCK7jIl9y0dmRxeTQ3OKZmWkUvCyMYVzoFklYnD17BqXeAQxPZ69aDBxSDAsibZk1LCf1NCKI9rqFYQhjDDzHheun0N1F+5WyNUBEOjCKn9/RjRkqnnnKDuqsXHlmGr8uJK+fq4yj1ZzB1MxZQDQhVARPEZTjQDkpCCHAVsJ3U7CxBHEOfT1ZdHYuqS"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 6639,
+        "text": "kM1m4DouYmtQbTWgINDb04Wzk+MIZsuYms7f/i9+fkkEQJ95ia4GgHQm1XahFlobaG2gFEFbganyFE6dXPmp/XPxb0+MjmO2PIvZ6XFkPIVcOgXPl+jqzsN3cwhji0o1RCbbn2xgKAACviK4UAhbLTz22LO44boBrF29oby8jz+rIxrbeDueBB6aaYc5zwHA6NEd3WHZ1tZeKr524HlxY6MWX2+N"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 6644,
+        "text": "DouYmtQbTWgINDb04Wzk+MIZsuYms7f/i9+fkkEQJ95ia4GgHQm1XahFlobaG2gFEFbganyFE6dXPmp/XPxb0+MjmO2PIvZ6XFkPIVcOgXPl+jqzsN3cwhji0o1RCbbn2xgKAACviK4UAhbLTz22LO44boBrF29oby8jz+rIxrbeDueBB6aaYc5zwHA6NEd3WHZ1tZeKr524HlxY6MWX2+N+wtHm"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 6669,
+        "text": "uYms7f/i9+fkkEQJ95ia4GgHQm1XahFlobaG2gFEFbganyFE6dXPmp/XPxb0+MjmO2PIvZ6XFkPIVcOgXPl+jqzsN3cwhji0o1RCbbn2xgKAACviK4UAhbLTz22LO44boBrF29oby8jz+rIxrbeDueBB6aaYc5zwHA6NEd3WHZ1tZeKr524HlxY6MWX2+N+wtHm1TqKvKn4Kkp1IHQ/gS2q5oA5l"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 8218,
+        "text": "71XXoLvVgamwSXT3dcFwXmgBrQzTnQri+B1IOFEmcOTuOTZvWPfEzV+M/Vssc5z3C8ci6jSqtkhJoNpKxpcQAWQuiRLULACnfBzGghIIjFBQprFm1Cp25ImpzFRw9dgzDw0NYvnwJBpcvQq5Qgp+awPDQLMZHZvFL/+pX8N73p9938hCurlfIdiqeZBYpTLLOKa7wfdsy9KEf3mgn2tOYPLEVnqX"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 10229,
+        "text": "uqVAlr2mEEJ3FL215BEMGyhTUWgubrE4nlAhuQPU/AsFYFWwZZC6U1SFt4QiGlPPgyjb6uEjrzGeR8D+XpOvY98wzq5RjGMkqdvfD9LLLpGHEzQrNl4aQFBFkwJYTwPA/CsfBSLryUiyBuodibGyvPxdefHR1CJpcHs0hk4BZoZhNFCdd29AKAltYXJGw2zw9esemaVSPjB+GlGLlcBp2dJZRKna"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 10976,
+        "text": "RmxucJrGH1aoHtm9pXvHRSGW9qSjg0CCIlUJgflYTgCtwq4mLyvq2U7dGzX9X/xv44X6vUyBpdlH5IO3xpELdQbDYRhCCJ5geqBLihc2XNVdtEWPlkGrDZJSUMxiCxALkCJYkLw+Svhi2pgiVVUxiKlATlfzRAEx3HhOy58z4OvfPR39aFebmD80Bkcn2si5WVRqzZhtUBXrh/DUxMo9nRBKIWgF"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 12575,
+        "text": "DoTrQygP0nFgJcE4DCEZVhlIAdSjKuKZKqanplBtziGTKkC6BPIEWAGx0mAwjEhiNqEUHNdDM2xirlLDxPgUOkpFrFu3Dr1LnK+MnTIfPF/OgFq9kY8B1oyH8tLyNJYdeYH/aGp6FFMzIyBIdHYWUOrsR09v6bud3fyFTIYPVuo8dP2VSYa382tfLt153a9O7PzCztwrujVj2zLpgAVA1jJpEyMg"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 12891,
+        "text": "j4I3tM5WO/5oNdOzJa19CSraMAnIWeVd0eGkbfqKTdinVBJqqRSKPomVElR4/rB8/9HDo1cEkcbSwUEsXpZ5csVaeigwgAXHQsIKwLqgSDCsQFIYqzSpy+ru9zUruGp67DTOnJgAQQNkkdYaKlVGlikRG7o+HOVCOj7SeQ+OAWLNkK6XWDPJgOJk3IGUgLLQrBEbhuM76O7tQhjEEI4BqQhWEKyI"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 14240,
+        "text": "4ZTW9Kv9n33PLWz1CrD3nST+cZzz0nlyoGPNBqzG0kScnkPYTFGvR6ANRBrjVYcQ7GElEkphdt3IRAMzxPQCNGot1Bp1jEzN4MgCOB5DjzPQy6XQS5XQsq3SPt5gF2AFbSmZq1ul03NVjDQtwyLFnc9dOt1+NPDdequtUiv7MbJTphZNyPvV3NOKl/oSFkLVwgcd1M46Ofo1JpVONrbx9Pdnm27x"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 16086,
+        "text": "l/2n3YeIFwBtMntHBliLH44OKUAkBoRssbHW+pETYO7R9UdG3jbND9I0l1L9Cx/zO8hQO/NJ77AMTgThXPDYt0pmeLemxfUCmZ0taCOkI4gozi+7rb8l/ufTz/q/e8/GZN6XO9v0TO3o3r5Arv/88PvjS/vJH2Up84MO5K6OQa82qrR3Z+2j1tcYf/5i7SWKel7nxLlYdaZFiya4CZTymjHStL11"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 18225,
+        "text": "vYfHXfzo5u+41SB58mwGoIBDGr8gis4/1oizZPNGshHIdVi5PhxGnB1loW7BhDsZTWQgsB5Qmy84R7OXxPOOfJCljLImiiYC11ZXPpIeXwODNJIgRKsLAK2mqOowiRMXCtBkgiRURWWdbzxCCCFYrADJ0QmmMpISxB6xaHWlPEEYcOkWWZuEutL67YE1F0IcHa5LHz7j+lEsvttcnUchKSyfb3Tk"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 18244,
+        "text": "GoIBDGr8gis4/1oizZPNGshHIdVi5PhxGnB1loW7BhDsZTWQgsB5Qmy84R7OXxPOOfJCljLImiiYC11ZXPpIeXwODNJIgRKsLAK2mqOowiRMXCtBkgiRURWWdbzxCCCFYrADJ0QmmMpISxB6xaHWlPEEYcOkWWZuEutL67YE1F0IcHa5LHz7j+lEsvttcnUchKSyfb3Tk5EF8esiUV6GXmxoWerH"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 20085,
+        "text": "YvIdmmD/3kkuvlWLKGvlmZ4O6zR/k9AA68qZbt4gD24sEw7V/R51P3Hy82e6Pwcr3VfNo+Wt3R7edk6sxpXrH/Cfr8wFL87uYb8ETjqJ6rD4lzZc4gZhHGEIVFCfE8NwnU0zZRzP4kW7B/fJ1/8COA3jDL9gom0mtTzL7VmGw80uzJ/GA5uYT1J87SzakMKttu4D3HK6wyRNH8KSK3f6vvO2QBhu"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 23053,
+        "text": "e0dHW2BjHC0aHUD+NmbcZBH9/c1hWNs8laArjh5VNgyswAooRSybFBrFEXz5IJhmrAMIw8wBJFM2FyI1XPheEvtApFeY/z09r6W7w2JSwXgWRYNLUryo9NV7qpqejDbUH9uJQy7ItBlP7m5/7vv+Pimg2+GgeUnb2gbKhiObZFuW3FXjlZu83isO8H7n01YpJUntgMz1GxKUFoR2pl5aRSG0FpDm"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 23324,
+        "text": "NV11/KXWJE2cn9DTtxXEcpPxCGtUbdPOK4324TJdDOCkJxJzdwLj9xbvunvjP9sWH2jes/HRfVsvOwQtxpAA4AMIZMRP9mfpjE25E/U5dAChXI5rRZmqX0EkJYRWMIUDxzRhMCAskjEXXiLGHhKn5v7odSHSzlu7E0fdS+u1L2KHhsQfMyMLAA7joGuwtyylZnOAmbCwq+TzRVJRDoTDoeb3S02f"
+      }
+    ],
+    "persistence": [],
+    "uiArt": [
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 1,
+        "column": 252,
+        "text": "생존 디펜스</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}iframe{display:block;border:0;width:100%;height:100dvh}</style></head><body><iframe id=\"outer\" src=\"play_survival.html\" allow"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 21,
+        "column": 100,
+        "text": ")=>{if(rope<4)return toast('섬유 밧줄 4 필요');rope-=4;longBandage++;toast('긴 붕대 +1');ui()};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 22,
+        "column": 184,
+        "text": "용 중');longBandage--;longBandageLeft=10;longBandageTick=0;toast('긴 붕대 사용 · 10초');ui()};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 23,
+        "column": 163,
+        "text": "toast('전갈 꼬리1 + 꿀벌 독침2 필요');scorpionTail--;stinger-=2;made.scorpionTorso=true}equipArmor('torso','scorpionTorso');toast('전갈 몸통 방어구 장착');ui()};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 23,
+        "column": 219,
+        "text": "de.scorpionTorso=true}equipArmor('torso','scorpionTorso');toast('전갈 몸통 방어구 장착');ui()};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 24,
+        "column": 157,
+        "text": "n toast('전갈 꼬리3 + 꿀벌 독침1 필요');scorpionTail-=3;stinger--;made.scorpionLeg=true}equipArmor('legs','scorpionLeg');toast('전갈 다리 보호대 장착');ui()};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 24,
+        "column": 210,
+        "text": "--;made.scorpionLeg=true}equipArmor('legs','scorpionLeg');toast('전갈 다리 보호대 장착');ui()};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 25,
+        "column": 156,
+        "text": "urn toast('꿀벌 독침1 + 개미 몸통2 필요');stinger--;antBody-=2;made.scorpionHelmet=true}equipArmor('face','scorpionHelmet');toast('전갈 헬멧 장착');ui()};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 25,
+        "column": 208,
+        "text": ";made.scorpionHelmet=true}equipArmor('face','scorpionHelmet');toast('전갈 헬멧 장착');ui()};"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 26,
+        "column": 275,
+        "text": "'🎒 인벤토리';invBtn.style.cssText='position:absolute;right:10px;top:10px;z-index:8;background:#334a35;color:#fff;border:1px solid #ffffff55;border-radius:12px;padding:9px 12px;font-weight:950';gameRoot.appendChild(invBtn)}"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 26,
+        "column": 294,
+        "text": "yle.cssText='position:absolute;right:10px;top:10px;z-index:8;background:#334a35;color:#fff;border:1px solid #ffffff55;border-radius:12px;padding:9px 12px;font-weight:950';gameRoot.appendChild(invBtn)}"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 27,
+        "column": 207,
+        "text": ".cssText='position:absolute;left:10px;right:10px;top:52px;bottom:10px;z-index:9;background:#101b16f8;border:1px solid #ffffff35;border-radius:14px;padding:12px;display:none;overflow-y:auto;touch-action:pan-y;color:#fff;f"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 27,
+        "column": 335,
+        "text": "border-radius:14px;padding:12px;display:none;overflow-y:auto;touch-action:pan-y;color:#fff;font-weight:800';inv.innerHTML='<div style=\"position:sticky;top:-12px;background:#101b16;padding:10px 0;border-bottom:1px solid #"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 27,
+        "column": 416,
+        "text": "olor:#fff;font-weight:800';inv.innerHTML='<div style=\"position:sticky;top:-12px;background:#101b16;padding:10px 0;border-bottom:1px solid #ffffff22;display:flex;justify-content:space-between\"><b>🎒 인벤토리</b><button id=\"in"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 27,
+        "column": 621,
+        "text": "><button id=\"inventoryClose\" style=\"border:0;border-radius:9px;padding:7px 10px;background:#ffffff20;color:#fff;font-weight:900\">닫기 ✕</button></div><div id=\"inventoryList\" style=\"line-height:1.9;padding-top:8px\"></div>';"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 27,
+        "column": 642,
+        "text": "yClose\" style=\"border:0;border-radius:9px;padding:7px 10px;background:#ffffff20;color:#fff;font-weight:900\">닫기 ✕</button></div><div id=\"inventoryList\" style=\"line-height:1.9;padding-top:8px\"></div>';gameRoot.appendChild("
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 28,
+        "column": 392,
+        "text": "+antJaw+'<br>🐜 개미 몸통 '+antBody+'<br>🦂 전갈 꼬리 '+scorpionTail+'<hr style=\"border-color:#ffffff22\"><b>소모품</b><br>🩹 붕대 '+bandage+'<br>🩹 응급붕대 '+emergencyBandage+'<br>✨ 강화붕대 '+enhancedBandage+'<br>🩹 긴 붕대 '+longBandage+(lon"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 28,
+        "column": 607,
+        "text": "+(longBandageLeft>0?' ('+Math.ceil(longBandageLeft)+'초)':'')+'<hr style=\"border-color:#ffffff22\"><b>장착</b><br>무기: '+wname+'<br>몸통: '+(armor.torso==='scorpionTorso'?'전갈 몸통 방어구':armor.torso==='antTorso'?'개미 몸통 방어구':armor.t"
+      }
+    ],
+    "risk": [
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 1,
+        "column": 72,
+        "text": "<!doctype html><html lang=\"ko\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no\"><title>곤충 생존 디펜스</title><style>html,body{margin:0;width:10"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 1,
+        "column": 126,
+        "text": "arset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no\"><title>곤충 생존 디펜스</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#00"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 3,
+        "column": 114,
+        "text": "er.contentDocument&&outer.contentDocument.getElementById('game');if(!mid)return setTimeout(boot,120);const apply=()=>{try{const w=mid.contentWindow;if(!w||!w.eval)return;w.eval(`(()=>{if(window.__jwPatchV10)return;window"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 40,
+        "column": 54,
+        "text": "ui();toast('화면 복구 · 제작 분류 정리 · 34프레임 모션 적용');})();`)}catch(e){console.error('v10 inner patch',e)}};if(mid.contentDocument&&mid.contentDocument.readyState==='complete')setTimeout(apply,650);mid.addEventListener('load',()="
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 40,
+        "column": 71,
+        "text": "ui();toast('화면 복구 · 제작 분류 정리 · 34프레임 모션 적용');})();`)}catch(e){console.error('v10 inner patch',e)}};if(mid.contentDocument&&mid.contentDocument.readyState==='complete')setTimeout(apply,650);mid.addEventListener('load',()="
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 40,
+        "column": 168,
+        "text": "patch',e)}};if(mid.contentDocument&&mid.contentDocument.readyState==='complete')setTimeout(apply,650);mid.addEventListener('load',()=>setTimeout(apply,650),{once:true})}catch(e){console.error('v10 patch',e)}}outer.addEve"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 40,
+        "column": 222,
+        "text": "t.readyState==='complete')setTimeout(apply,650);mid.addEventListener('load',()=>setTimeout(apply,650),{once:true})}catch(e){console.error('v10 patch',e)}}outer.addEventListener('load',boot);setTimeout(boot,300);"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 40,
+        "column": 257,
+        "text": "t(apply,650);mid.addEventListener('load',()=>setTimeout(apply,650),{once:true})}catch(e){console.error('v10 patch',e)}}outer.addEventListener('load',boot);setTimeout(boot,300);"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 40,
+        "column": 274,
+        "text": "addEventListener('load',()=>setTimeout(apply,650),{once:true})}catch(e){console.error('v10 patch',e)}}outer.addEventListener('load',boot);setTimeout(boot,300);"
+      },
+      {
+        "source": "web-games/insect-survival/index.html",
+        "line": 40,
+        "column": 332,
+        "text": "ue})}catch(e){console.error('v10 patch',e)}}outer.addEventListener('load',boot);setTimeout(boot,300);"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 3,
+        "column": 129,
+        "text": "ta content=\"width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover\" name=\"viewport\"/><meta content=\"#26391f\" name=\"theme-color\"/><title>곤충 생존 디펜스</title><style>*{box-sizing:border-box;-web"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 3,
+        "column": 155,
+        "text": "idth,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover\" name=\"viewport\"/><meta content=\"#26391f\" name=\"theme-color\"/><title>곤충 생존 디펜스</title><style>*{box-sizing:border-box;-webkit-tap-highlight-color:tr"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 4,
+        "column": 48734,
+        "text": "WCqwbzgwBGS8yjVowmaG5/uOg9m58pF03vrZW/wgLwJ3/Su+P6G7sTXe5li7Smlxzr+c5LaqnrN944sLNULL/fzKSW3XJL/9Dx5HzNVnEPgLDgWRK5gBDTCqZpW1P1DZlOwVw1wLtLBqWU5IJ2kVpaECW3BbMv5dx9fX1NvhKNDCRs20XMsaFlCMO2QIQSLNKV4OSL7H5L82XucZ0eYQROLeRNaW"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 5,
+        "column": 473926,
+        "text": "x89hKDJROI2VzpmW80o7OabbUQKx3YDOHtbP75u5HW7SwQowEVZOtmc4f17q4a6MYEmAgIdaIvAWRne0cAtCHEIP6g/S6xLETyoEsMAC4K7HLjk0gdgIsZ+QDkA2HdgJwoJfsVOxvqpGhzQ1x9K9OHq2LLAa+w8NoAHAFsnellh0awY7tJJkWYBjHTCHVOaxsWQF5VmHqSudurJKRNAXYDsM2+ar"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 5,
+        "column": 796520,
+        "text": "QxfEttsV+nUPwn0KwYSpHGFF0a0DJDZHRfGBCme3xaAAx2FEqdG6EGlmmCb3Zl+lHutVj2yKUirmXF4BNULLalSJVhSMScAUUUCY6IIZL3JZEK4yGF3iZarOvGUb7jBEfOHBFl+/v0a0l7j6eM8LZ85bVbIA+OhixCom61OHIGI0QxD3d3eivN3a2ni6tLP8Yow8iwm6Vpur4eVuwG4utumFqxSQ"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 5,
+        "column": 1797089,
+        "text": "uJn9qC8zx30X3138D6ekS8bu3Y+g7/wb41OPIn3ucoqbibJERfvCDUNffBf3ZT0POnGR5+17m46d59VMnULlxHcIf/P7+0tPTzx//8qs/fu8vv/L8J7BPHt9/iA+84UftVSf1Nw3fSnPBnydXYxP+z+HNRBkC4B6cQFzfPPF9g/X4waSwW4+emRMrfaO0IzbWSUlgESjhLKjUjr3AIyJCoDyuNSp"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 7,
+        "column": 282871,
+        "text": "JeBRqDce+6RlkbPwEyL/GP1MhggjNrEjG2ZrEBtgIaX7Z1975zsg6v/YbXBAjMwMLXJBAhRvWy/lmviINULL3/CqgMNYQB1ZMYv/OBDHrZXWLKKcQgBahgw1dVfOPdb6IFvJoJhDLMDqO2Xx1jIg3S3oJi88qnbS00xcyk/d++imxHIvdccsfZCS6+6zIxCrfrA3Hlzw7pruHtt5haPFHk4puF1D"
+      },
+      {
+        "source": "web-games/insect-survival/insect_survival-28.html",
+        "line": 7,
+        "column": 658045,
+        "text": "BiqFDxTmUid8UCWobdrkyQCLTt0Lme5FoayfozCx416jn/jO9J3GUSgNBcNS/GvSlk69mDUTUP7/YKC9NuLlJinGl/TPyRPkMnUweyt3qDLQE2pAx+11ptv5wLwjNvU7ZGFnAo+Yg3u4H0Pq91rhwHt6sEup7gHKbVfX7FvAUpx+jI9WJNPEZvzOM3BbdeqB8V2FDzxbojY9Gi6VbnTHGHFtFBD5"
+      }
+    ]
+  },
+  "missingEvidence": [
+    "persistence"
+  ],
+  "contracts": {
+    "factsAreEvidenceOnly": true,
+    "proposalsForbidden": true,
+    "numericChangesForbidden": true,
+    "approvedBaselineOverwriteForbidden": true,
+    "packedSourceDecodeBounded": true,
+    "packedSourceExecuted": false,
+    "packedLiteralMasked": true,
+    "persistenceRequiresStorageEvidence": true,
+    "multipleMatchesPerLine": true
+  }
+}
