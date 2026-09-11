@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#9bd6b3">
+  <title>포근섬</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main id="app" aria-label="포근섬 게임">
+    <canvas id="game" aria-label="포근섬 게임 화면"></canvas>
+
+    <section class="hud" aria-live="polite">
+      <div class="hud-main">
+        <strong id="dayText">1일차</strong>
+        <span id="timeText">오전 8:00</span>
+        <span id="weatherText">☀️ 맑음</span>
+      </div>
+      <div class="hud-main right">
+        <span>🪙 <b id="coinText">40</b></span>
+        <button id="inventoryButton" class="small-button" type="button">가방</button>
+      </div>
+    </section>
+
+    <div id="hint" class="hint">섬을 천천히 둘러봐</div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <section class="controls" aria-label="조작 버튼">
+      <div class="dpad" aria-label="이동">
+        <button class="move up" data-dir="up" type="button" aria-label="위로 이동">▲</button>
+        <button class="move left" data-dir="left" type="button" aria-label="왼쪽으로 이동">◀</button>
+        <button class="move down" data-dir="down" type="button" aria-label="아래로 이동">▼</button>
+        <button class="move right" data-dir="right" type="button" aria-label="오른쪽으로 이동">▶</button>
+      </div>
+      <div class="actions">
+        <button id="toolButton" class="tool" type="button">🤲<small>손</small></button>
+        <button id="actionButton" class="action" type="button">행동</button>
+      </div>
+    </section>
+
+    <dialog id="panel" class="panel">
+      <div class="panel-head">
+        <h2 id="panelTitle">가방</h2>
+        <button id="panelClose" type="button" aria-label="닫기">×</button>
+      </div>
+      <div id="panelBody" class="panel-body"></div>
+    </dialog>
+
+    <dialog id="fishing" class="panel fishing-panel">
+      <h2>낚시</h2>
+      <p>물고기가 초록 구간에 들어왔을 때 잡아!</p>
+      <div class="fish-track" aria-label="낚시 타이밍 바">
+        <div class="fish-good"></div>
+        <div id="fishMarker" class="fish-marker">🐟</div>
+      </div>
+      <button id="catchButton" class="wide-button" type="button">지금 잡기</button>
+      <button id="cancelFishing" class="link-button" type="button">그만두기</button>
+    </dialog>
+  </main>
+
+  <script type="module" src="./game.js"></script>
+</body>
+</html>
