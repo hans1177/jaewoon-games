@@ -2,6 +2,10 @@ name: Unity Local Runner Heartbeat
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/unity-local-runner-heartbeat.yml'
 
 permissions:
   contents: read
@@ -15,10 +19,44 @@ jobs:
     runs-on: [self-hosted, Windows, X64, jaewoon-unity]
     timeout-minutes: 3
     steps:
-      - name: Confirm local Unity runner is online
+      - name: Confirm local Unity runner and editor capabilities
         shell: powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           $now = (Get-Date).ToUniversalTime().ToString('o')
           Write-Host "LOCAL_UNITY_RUNNER_ONLINE=true"
           Write-Host "HEARTBEAT_UTC=$now"
           Write-Host "RUNNER_NAME=$env:RUNNER_NAME"
+
+          $root = Join-Path $env:ProgramFiles 'Unity\Hub\Editor'
+          if (-not (Test-Path $root)) {
+            Write-Host 'UNITY_EDITOR_ROOT_PRESENT=false'
+            throw "Unity Hub editor root missing: $root"
+          }
+
+          $editors = @(Get-ChildItem $root -Directory -ErrorAction Stop | ForEach-Object {
+            $unity = Join-Path $_.FullName 'Editor\Unity.exe'
+            $android = Join-Path $_.FullName 'Editor\Data\PlaybackEngines\AndroidPlayer'
+            if (Test-Path $unity) {
+              [pscustomobject]@{
+                Version = $_.Name
+                UnityExe = $unity
+                AndroidSupport = (Test-Path $android)
+              }
+            }
+          } | Sort-Object Version)
+
+          if ($editors.Count -eq 0) {
+            Write-Host 'UNITY_EDITOR_COUNT=0'
+            throw 'No local Unity editors were detected.'
+          }
+
+          Write-Host "UNITY_EDITOR_COUNT=$($editors.Count)"
+          foreach ($editor in $editors) {
+            Write-Host "UNITY_EDITOR version=$($editor.Version) androidSupport=$($editor.AndroidSupport) path=$($editor.UnityExe)"
+          }
+          $androidEditors = @($editors | Where-Object { $_.AndroidSupport -eq $true })
+          Write-Host "UNITY_ANDROID_EDITOR_COUNT=$($androidEditors.Count)"
+          if ($androidEditors.Count -eq 0) {
+            throw 'No installed Unity editor has Android Build Support.'
+          }
+          Write-Host "LOCAL_UNITY_RUNNER_CAPABILITY=PASS"
