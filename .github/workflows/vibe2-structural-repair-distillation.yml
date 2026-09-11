@@ -61,12 +61,15 @@ jobs:
           test -f company-learning/unity-teacher-rubric.json
           test -f company-learning/unity-teacher-materials/core-lessons.json
           test -f company-learning/unity-teacher-materials/graphics-motion-lessons.json
+          test -f company-learning/unity-teacher-materials/gpt-practice-drills.json
           echo 'LEARNING_FOCUS=UNITY_CODING_ONLY'
           echo 'SPECIALIZATION=GRAPHICS_ANIMATION_MOTION_SMOOTHNESS'
           echo 'KNOWHOW_TRANSFER=REPLICATE_REARRANGE_VARY_RECOMBINE_VERIFIED_INTERNAL_PATTERNS'
           echo 'EXTERNAL_PROPRIETARY_CODE_REUSE=NO'
           echo 'LICENSED_CODE_REUSE=LICENSE_TERMS_ONLY'
           echo 'ONLINE_TEACHER=YES'
+          echo 'GPT_PRACTICE_SAMPLE_SUPPLY=YES'
+          echo 'PRACTICE_SAMPLE_AUTHORITY=PRACTICE_ONLY'
           echo 'LOCAL_OLLAMA_TEACHER=NO'
           echo 'PAID_API=NO'
           echo 'TEACHER_CODE_AUTHORITY=NO'
@@ -78,6 +81,7 @@ jobs:
     timeout-minutes: 10
     outputs:
       sample_count: ${{ steps.teach.outputs.sample_count }}
+      practice_count: ${{ steps.teach.outputs.practice_count }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -114,19 +118,36 @@ jobs:
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/unity-online-teacher-samples"
+          practice="$RUNNER_TEMP/unity-gpt-practice-samples"
           node tools/vibe2-online-unity-teacher.mjs \
             --sample-dir "${{ steps.sample-source.outputs.sample_dir }}" \
             --lessons company-learning/unity-teacher-materials/core-lessons.json \
+            --practice-drills company-learning/unity-teacher-materials/gpt-practice-drills.json \
             --out-dir "$out" \
-            --max 96 | tee "$RUNNER_TEMP/unity-online-teacher-result.json"
+            --practice-out-dir "$practice" \
+            --max 96 \
+            --max-practice 96 | tee "$RUNNER_TEMP/unity-online-teacher-result.json"
           count=$(find "$out" -maxdepth 1 -type f -name '*.json' 2>/dev/null | wc -l | tr -d ' ')
+          practice_count=$(find "$practice" -maxdepth 1 -type f -name '*.json' 2>/dev/null | wc -l | tr -d ' ')
           echo "sample_count=$count" >> "$GITHUB_OUTPUT"
+          echo "practice_count=$practice_count" >> "$GITHUB_OUTPUT"
           echo "ONLINE_UNITY_TEACHER_SAMPLES=$count"
+          echo "GPT_UNITY_PRACTICE_SAMPLES=$practice_count"
+          echo 'PRACTICE_SAMPLES_ARE_VERIFIED_POSITIVE=NO'
+          echo 'PRACTICE_RUNTIME_PROMOTION=NO'
           echo 'TEACHER_ROUTE=GPT_AUTHORED_CURRICULUM_ON_GITHUB_HOSTED_RUNNER'
           echo 'SPECIALIZATION=GRAPHICS_ANIMATION_MOTION_SMOOTHNESS'
           echo 'LOCAL_OLLAMA_TEACHER=NO'
           echo 'PAID_API=NO'
-      - name: Upload online teacher samples
+      - name: Upload GPT Unity practice samples
+        if: steps.teach.outputs.practice_count != '0'
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-gpt-practice-samples
+          path: ${{ runner.temp }}/unity-gpt-practice-samples
+          retention-days: 1
+          if-no-files-found: error
+      - name: Upload online teacher verified samples
         if: steps.teach.outputs.sample_count != '0'
         uses: actions/upload-artifact@v4
         with:
