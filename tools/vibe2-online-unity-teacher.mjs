@@ -69,6 +69,69 @@ export function loadTeacherLessons(primaryFile, extraFiles = []) {
   return lessons;
 }
 
+export function loadTeacherPracticeDrills(file) {
+  if (!file || !fs.existsSync(file)) return [];
+  const doc = readJson(file);
+  if (doc.scope !== 'UNITY_CODING_ONLY' || doc.sourceKind !== 'teacher' || doc.synthetic !== true || doc.authority !== 'PRACTICE_ONLY' || doc.runtimePromotionAllowed !== false || !Array.isArray(doc.drills)) {
+    throw new Error('Unity practice drill contract mismatch');
+  }
+  const seen = new Set();
+  return doc.drills.filter((drill) => {
+    if (!drill?.id || !drill?.scenario || !drill?.answer || seen.has(drill.id)) return false;
+    seen.add(drill.id);
+    return true;
+  });
+}
+
+export function buildPracticeTeacherSamples({ drillsFile, outDir, maxPractice = 96 }) {
+  const drills = loadTeacherPracticeDrills(drillsFile).slice(0, Math.max(0, maxPractice));
+  fs.mkdirSync(outDir, { recursive: true });
+  let written = 0;
+  for (const drill of drills) {
+    const sample = {
+      version: 1,
+      instruction: `Unity 실전 판단 연습: ${clean(drill.scenario)}`,
+      input: JSON.stringify({ topic: clean(drill.topic), avoid: drill.avoid ?? [], verify: drill.verify ?? [] }, null, 2),
+      output: [
+        clean(drill.answer),
+        Array.isArray(drill.avoid) && drill.avoid.length ? `피해야 할 접근: ${drill.avoid.join(' / ')}` : '',
+        Array.isArray(drill.verify) && drill.verify.length ? `검증 포인트: ${drill.verify.join(' / ')}` : '',
+      ].filter(Boolean).join('\n'),
+      taskType: 'unity',
+      difficulty: clean(drill.difficulty) || 'unity-build',
+      lifecycle: 'active',
+      teacher: true,
+      synthetic: true,
+      practiceOnly: true,
+      sourceKind: 'teacher',
+      runtimePromotionAllowed: false,
+      project: 'unity-teacher-practice',
+      teacherId: 'GPT-5.6-Sol-practice-v1',
+      sourceRevision: `teacher-practice-v1:${clean(drill.id)}`,
+      provenance: {
+        sourceKind: 'teacher',
+        sourceRevision: `teacher-practice-v1:${clean(drill.id)}`,
+        teacherId: 'GPT-5.6-Sol-practice-v1',
+        drillId: clean(drill.id),
+      },
+      qa: {
+        teacherReview: 'PASS',
+        independentQa: 'NOT_APPLICABLE',
+        browserQa: 'NOT_APPLICABLE',
+        runtime: 'NOT_APPLICABLE',
+      },
+      verification: {
+        practiceOnly: true,
+        productionEvidence: false,
+        note: 'Teacher-authored reasoning drill. Never treat as verified production positive or runtime promotion evidence.',
+      },
+    };
+    writeJson(path.join(outDir, `${clean(drill.id).replace(/[^A-Za-z0-9._-]/g, '_')}.json`), sample);
+    written += 1;
+  }
+  return { practiceCandidateCount: drills.length, practiceWritten: written };
+}
+
 export function buildOnlineTeacherAnalysis(record, lessons) {
   if (!isVerifiedStructuralSource(record)) throw new Error('verified Unity source required');
   const sample = record?.trainingSample && typeof record.trainingSample === 'object' ? record.trainingSample : record;
@@ -108,21 +171,26 @@ export function buildOnlineTeacherSamples({ sampleDir, lessonsFile, outDir, maxC
     writeJson(path.join(outDir, `${item.candidateId.replace(/[^A-Za-z0-9._-]/g, '_')}.json`), enriched);
     written += 1;
   }
-  return { version: 2, learningFocus: 'UNITY_CODING_ONLY', teacherRoute: 'GPT_AUTHORED_CURRICULUM_ON_GITHUB_HOSTED_RUNNER', paidApi: false, lessonCount: lessons.length, candidateCount: candidates.length, written };
+  return { version: 3, learningFocus: 'UNITY_CODING_ONLY', teacherRoute: 'GPT_AUTHORED_CURRICULUM_ON_GITHUB_HOSTED_RUNNER', paidApi: false, lessonCount: lessons.length, candidateCount: candidates.length, written };
 }
 
 function parseArgs(argv) { const out = {}; for (let i=0;i<argv.length;i+=1) { const arg=argv[i]; if (!arg.startsWith('--')) continue; const [key,inline] = arg.slice(2).split('=',2); out[key] = inline ?? argv[++i]; } return out; }
 function main() {
   const args = parseArgs(process.argv.slice(2));
   const extraLessonFiles = clean(args['extra-lessons']).split(',').map((x) => x.trim()).filter(Boolean);
-  const result = buildOnlineTeacherSamples({
+  const verified = buildOnlineTeacherSamples({
     sampleDir: args['sample-dir'] || 'company-learning/training-samples',
     lessonsFile: args.lessons || 'company-learning/unity-teacher-materials/core-lessons.json',
     extraLessonFiles,
     outDir: args['out-dir'] || 'tmp/unity-online-teacher-samples',
     maxCandidates: Number(args.max ?? 96),
   });
-  console.log(JSON.stringify(result));
+  const practice = buildPracticeTeacherSamples({
+    drillsFile: args['practice-drills'] || 'company-learning/unity-teacher-materials/gpt-practice-drills.json',
+    outDir: args['practice-out-dir'] || 'tmp/unity-practice-teacher-samples',
+    maxPractice: Number(args['max-practice'] ?? 96),
+  });
+  console.log(JSON.stringify({ ...verified, ...practice }));
 }
 
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
