@@ -44,20 +44,21 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Prepare isolated company runtime branch
+      - name: Prepare main engine without runtime history merge
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-company-status-sync'
-          git config user.email 'actions@users.noreply.github.com'
           git fetch origin main
+          git checkout -B company-status-engine origin/main
           if git ls-remote --exit-code --heads origin "$COMPANY_RUNTIME_BRANCH" >/dev/null 2>&1; then
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
-            git checkout -B "$COMPANY_RUNTIME_BRANCH" "origin/$COMPANY_RUNTIME_BRANCH"
-            git merge --no-edit origin/main
+            echo "COMPANY_RUNTIME_HEAD=$(git rev-parse origin/$COMPANY_RUNTIME_BRANCH)"
           else
-            git checkout -B "$COMPANY_RUNTIME_BRANCH" origin/main
+            echo 'COMPANY_RUNTIME_HEAD=NOT_CREATED'
           fi
+          echo "COMPANY_ENGINE_BASE=$(git rev-parse HEAD)"
+          echo 'COMPANY_ENGINE_SOURCE=main'
+          echo 'COMPANY_RUNTIME_HISTORY_MERGE=NO'
           echo 'PUBLIC_MAIN_WRITE=NO'
 
       - name: Sync company status and semantic production classes
@@ -111,13 +112,43 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git add -- company-status.json autonomous-portfolio.json game-catalog.json
-          if git diff --cached --quiet; then
-            echo 'COMPANY_STATUS_SYNC_COMMIT=NO_CHANGES'
-            exit 0
+          git config user.name 'jaewoon-company-status-sync'
+          git config user.email 'actions@users.noreply.github.com'
+          runtime_paths=(company-status.json autonomous-portfolio.json game-catalog.json)
+          git add -- "${runtime_paths[@]}"
+          if ! git diff --cached --quiet; then
+            git commit -m 'runtime: generate semantic production class status [skip ci]'
           fi
-          git commit -m 'runtime: sync semantic production classes and focus [skip ci]'
-          git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"
-          echo 'COMPANY_STATUS_SYNC_COMMIT=RUNTIME_PERSISTED'
+          generated_commit="$(git rev-parse HEAD)"
+          persisted=0
+          changed=0
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if git ls-remote --exit-code --heads origin "$COMPANY_RUNTIME_BRANCH" >/dev/null 2>&1; then
+              git fetch origin "$COMPANY_RUNTIME_BRANCH"
+              git checkout -B company-status-persist "origin/$COMPANY_RUNTIME_BRANCH"
+            else
+              git checkout -B company-status-persist origin/main
+            fi
+            git checkout "$generated_commit" -- "${runtime_paths[@]}"
+            git add -- "${runtime_paths[@]}"
+            if git diff --cached --quiet; then
+              persisted=1
+              echo 'COMPANY_STATUS_SYNC_COMMIT=NO_CHANGES'
+              break
+            fi
+            changed=1
+            git commit -m 'runtime: sync semantic production classes and focus [skip ci]'
+            if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
+              persisted=1
+              echo 'COMPANY_STATUS_SYNC_COMMIT=RUNTIME_PERSISTED'
+              break
+            fi
+            git checkout -B company-status-engine "$generated_commit"
+            sleep $((attempt * 2))
+          done
+          test "$persisted" = 1
+          echo "COMPANY_STATUS_RUNTIME_CHANGED=$changed"
           echo "COMPANY_STATUS_RUNTIME_BRANCH=$COMPANY_RUNTIME_BRANCH"
+          echo 'COMPANY_RUNTIME_HISTORY_MERGE=NO'
           echo 'PUBLIC_MAIN_WRITE=NO'
