@@ -60,7 +60,7 @@
     "existingWebGamesMaintenanceAllowed": true,
     "activeUnityProjects": 1,
     "pendingApprovals": 0,
-    "testBuilds": 5
+    "testBuilds": 6
   },
   "operations": {
     "homepage": {
@@ -496,6 +496,32 @@
       "runtimeInstallLaunchVerified": true,
       "testBuildStatus": "verified",
       "builtAt": "2026-09-11T22:26:32.403202+00:00"
+    },
+    {
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "requestId": "development-unity-seed-idle-growth-rpg-crystal-bloom-34647586728",
+      "status": "ready",
+      "channel": "test",
+      "buildRoute": "github-cloud-host-personal",
+      "mobileReady": true,
+      "homepagePublished": true,
+      "homepagePublishedAt": "2026-09-11T22:42:19.467509+00:00",
+      "deviceCompatibility": "android-10+",
+      "sourceCommit": "e61af80ed4cf420b419b2b7f7b3a7202a840615b",
+      "releaseTag": "test-seed-idle-growth-rpg-crystal-bloom-34652984461-1",
+      "release": "https://github.com/hans1177/jaewoon-games/releases/tag/test-seed-idle-growth-rpg-crystal-bloom-34652984461-1",
+      "download": "https://github.com/hans1177/jaewoon-games/releases/download/test-seed-idle-growth-rpg-crystal-bloom-34652984461-1/seed-idle-growth-rpg-crystal-bloom-test.apk",
+      "applicationId": "com.jaewoongames.seedidlegrowthrpgcrystalbloom",
+      "sha256": "09dcd3d05690e79fbebb05c1765aa71fa266a815e1df6c200a6d9492dc738e4a",
+      "bytes": 21093348,
+      "androidVerificationApi": 36,
+      "signatureVerified": true,
+      "installAndLaunchVerified": true,
+      "runtimeVerification": "android-16-avd-api-36-passed",
+      "runtimeVerificationSource": "github-actions",
+      "runtimeInstallLaunchVerified": true,
+      "testBuildStatus": "verified",
+      "builtAt": "2026-09-11T22:42:19.467509+00:00"
     }
   ],
   "redevelopmentReview": {
