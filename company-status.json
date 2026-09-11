@@ -1,846 +1,848 @@
-{
-  "version": 1,
-  "updatedAt": "2026-09-11",
-  "policy": {
-    "webGames": "existing-maintenance-allowed",
-    "webGameDevelopment": true,
-    "existingWebMaintenance": true,
-    "newWebGameProduction": false,
-    "webGamesRemainPlayable": true,
-    "futurePrimaryTarget": "unity-android",
-    "policyAuthority": "company-directive.json",
-    "aiDirector": {
-      "mode": "rotating-local",
-      "providers": [
-        "codex",
-        "antigravity",
-        "codebuddy",
-        "copilot"
-      ],
-      "rotationPolicy": "stay-until-quota-auth-or-repeated-failure",
-      "paidOverageAllowed": false,
-      "paidApiKeysAllowed": false,
-      "manualVsCodeDailyRequired": false,
-      "stopOnCoreDecision": true,
-      "autoPush": true,
-      "verifiedCommitsOnly": true,
-      "remoteSyncSeconds": 30,
-      "ownerDirectiveFile": "company-directive.json",
-      "ownerDirectivePriority": "immediate-before-autonomous-plan",
-      "continueOwnerDirectiveUntilVerifiedComplete": true
-    },
-    "homepageOperations": {
-      "manager": "homepage-diagnostics",
-      "diagnosticOnly": true,
-      "autoMaintenance": false,
-      "runtimeDataSync": true,
-      "runtimeRenderer": "assets/homepage-enhancements.js",
-      "publicHomepage": "index.html",
-      "companyDashboard": "company.html",
-      "catalog": "game-catalog.json",
-      "operationsGuide": "HOMEPAGE_OPERATIONS.md",
-      "webArchiveWriteBack": false,
-      "autoLayoutWrite": false,
-      "manageGameClassification": false,
-      "manageMobileLayout": false,
-      "manageLinksAndStatus": false,
-      "manageLowRiskFeatures": false,
-      "proposeImprovements": true,
-      "otherGamesMayAppearOnHomepage": true,
-      "homepageLengthControl": "compact-cards-and-dedicated-artbook-detail-pages",
-      "publicationVisibilityIsProductionApproval": false,
-      "statusFile": "homepage-manager-status.json",
-      "workflow": ".github/workflows/homepage-manager.yml",
-      "runtimeGameHealthBadgeVisible": false,
-      "gameCardsRequireUniqueTitleImages": true
-    }
-  },
-  "summary": {
-    "webArchiveCount": 11,
-    "existingWebGamesMaintenanceAllowed": true,
-    "activeUnityProjects": 1,
-    "pendingApprovals": 0,
-    "testBuilds": 1
-  },
-  "operations": {
-    "homepage": {
-      "manager": "homepage-diagnostics",
-      "status": "done",
-      "task": "homepage diagnostics",
-      "scope": [
-        "index.html",
-        "company.html",
-        "game-catalog.json"
-      ],
-      "lastReviewedAt": "2026-09-11",
-      "lastCheckResult": "DONE",
-      "execution": "github-actions-diagnostic",
-      "workflow": ".github/workflows/homepage-manager.yml",
-      "statusFile": "homepage-manager-status.json",
-      "runtimeDataSync": "active",
-      "evidenceSource": "director-supervision-status.json",
-      "workState": "DONE"
-    },
-    "ownerDirectives": {
-      "source": "company-directive.json",
-      "priority": "immediate",
-      "normalPlanPreemptedByNewDirective": true,
-      "syncTargetSeconds": 30,
-      "repeatUntilVerifiedComplete": true,
-      "coreDecisionProtection": true
-    },
-    "autonomousFocus": {
-      "enabled": true,
-      "targetSlots": 1,
-      "filledSlots": 1,
-      "preferredGameIds": [],
-      "focusedGameIds": [
-        "P0006"
-      ],
-      "games": [
-        {
-          "slot": 1,
-          "gameId": "P0006",
-          "slug": "daechung-rpg",
-          "name": "대충 RPG",
-          "score": 8,
-          "slotRole": "auto-ranked",
-          "lane": "unity-primary",
-          "unityReady": true,
-          "homepageCategory": "release-confirmed",
-          "webPath": "/web-games/daechung-rpg/"
-        }
-      ],
-      "nextFocusGameIds": [
-        "P0001"
-      ],
-      "nextDevelopmentGameIds": [
-        "P0002",
-        "P0004",
-        "P0009"
-      ],
-      "selection": "AUTO_RELEASE_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT",
-      "activeDevelopmentRunId": 34525047019,
-      "syncIntervalMs": 30000,
-      "updatedAtKst": "2026-09-11",
-      "source": [
-        "autonomous-portfolio.json",
-        "game-artbooks.json",
-        "game-catalog.json",
-        "tools/autonomous-24h-work-planner.mjs"
-      ]
-    },
-    "productionTiers": {
-      "membershipMode": "SEMANTIC_EVIDENCE_DYNAMIC",
-      "canonicalField": "productionClass",
-      "fixedGameIds": false,
-      "fixedCounts": false,
-      "countsDerivedFromMembership": true,
-      "numericTierAliasOnly": true,
-      "autoPromotionDemotion": true,
-      "diversity": {
-        "enabled": true,
-        "maxFocusScoreGap": 1,
-        "scope": "DIAGNOSTIC_ONLY",
-        "source": "CATALOG_GENRE",
-        "membershipInfluence": false,
-        "adjusted": false,
-        "distinctFamilies": [
-          "SURVIVAL",
-          "DEFENSE",
-          "RPG",
-          "TURN_BASED"
-        ]
-      },
-      "counts": {
-        "releaseConfirmed": 2,
-        "developmentConfirmed": 3,
-        "designOnly": 7
-      },
-      "releaseConfirmedGameIds": [
-        "P0001",
-        "P0006"
-      ],
-      "developmentConfirmedGameIds": [
-        "P0002",
-        "P0004",
-        "P0009"
-      ],
-      "designOnlyGameIds": [
-        "P0003",
-        "P0005",
-        "P0007",
-        "P0008",
-        "P0101",
-        "P0102",
-        "P0103"
-      ],
-      "ranking": [
-        {
-          "rank": 1,
-          "rawEvidenceRank": 1,
-          "gameId": "P0001",
-          "slug": "survival",
-          "productionClass": "RELEASE_CONFIRMED",
-          "gameplayFamily": "SURVIVAL",
-          "evidenceScore": 914,
-          "developmentFocus": 9,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 2,
-          "rawEvidenceRank": 2,
-          "gameId": "P0006",
-          "slug": "daechung-rpg",
-          "productionClass": "RELEASE_CONFIRMED",
-          "gameplayFamily": "RPG",
-          "evidenceScore": 815,
-          "developmentFocus": 8,
-          "artbookBaselineRank": 0.5,
-          "unityReady": true,
-          "sourceReady": true
-        },
-        {
-          "rank": 3,
-          "rawEvidenceRank": 3,
-          "gameId": "P0002",
-          "slug": "insect-survival",
-          "productionClass": "DEVELOPMENT_CONFIRMED",
-          "gameplayFamily": "SURVIVAL",
-          "evidenceScore": 814,
-          "developmentFocus": 8,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 4,
-          "rawEvidenceRank": 4,
-          "gameId": "P0004",
-          "slug": "bug-defense",
-          "productionClass": "DEVELOPMENT_CONFIRMED",
-          "gameplayFamily": "DEFENSE",
-          "evidenceScore": 714,
-          "developmentFocus": 7,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 5,
-          "rawEvidenceRank": 5,
-          "gameId": "P0003",
-          "slug": "crystal-defense",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "DEFENSE",
-          "evidenceScore": 614,
-          "developmentFocus": 6,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 6,
-          "rawEvidenceRank": 6,
-          "gameId": "P0009",
-          "slug": "monster-adventure",
-          "productionClass": "DEVELOPMENT_CONFIRMED",
-          "gameplayFamily": "TURN_BASED",
-          "evidenceScore": 514,
-          "developmentFocus": 5,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 7,
-          "rawEvidenceRank": 7,
-          "gameId": "P0005",
-          "slug": "human-go",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "COLLECTION",
-          "evidenceScore": 414,
-          "developmentFocus": 4,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 8,
-          "rawEvidenceRank": 8,
-          "gameId": "P0101",
-          "slug": "chess-battle",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "STRATEGY",
-          "evidenceScore": 14,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 9,
-          "rawEvidenceRank": 9,
-          "gameId": "P0102",
-          "slug": "survival2",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "SURVIVAL",
-          "evidenceScore": 14,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 10,
-          "rawEvidenceRank": 10,
-          "gameId": "P0103",
-          "slug": "territory-war",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "STRATEGY",
-          "evidenceScore": 14,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        }
-      ],
-      "compatibilityAlias": true,
-      "source": [
-        "autonomous-portfolio.json",
-        "game-catalog.json",
-        "game-artbooks.json",
-        "tools/company-status-sync.mjs"
-      ]
-    },
-    "productionClasses": {
-      "membershipMode": "SEMANTIC_EVIDENCE_DYNAMIC",
-      "canonicalField": "productionClass",
-      "fixedGameIds": false,
-      "fixedCounts": false,
-      "countsDerivedFromMembership": true,
-      "numericTierAliasOnly": true,
-      "autoPromotionDemotion": true,
-      "diversity": {
-        "enabled": true,
-        "maxFocusScoreGap": 1,
-        "scope": "DIAGNOSTIC_ONLY",
-        "source": "CATALOG_GENRE",
-        "membershipInfluence": false,
-        "adjusted": false,
-        "distinctFamilies": [
-          "SURVIVAL",
-          "DEFENSE",
-          "RPG",
-          "TURN_BASED"
-        ]
-      },
-      "counts": {
-        "releaseConfirmed": 2,
-        "developmentConfirmed": 3,
-        "designOnly": 7
-      },
-      "releaseConfirmedGameIds": [
-        "P0001",
-        "P0006"
-      ],
-      "developmentConfirmedGameIds": [
-        "P0002",
-        "P0004",
-        "P0009"
-      ],
-      "designOnlyGameIds": [
-        "P0003",
-        "P0005",
-        "P0007",
-        "P0008",
-        "P0101",
-        "P0102",
-        "P0103"
-      ],
-      "ranking": [
-        {
-          "rank": 1,
-          "rawEvidenceRank": 1,
-          "gameId": "P0001",
-          "slug": "survival",
-          "productionClass": "RELEASE_CONFIRMED",
-          "gameplayFamily": "SURVIVAL",
-          "evidenceScore": 914,
-          "developmentFocus": 9,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 2,
-          "rawEvidenceRank": 2,
-          "gameId": "P0006",
-          "slug": "daechung-rpg",
-          "productionClass": "RELEASE_CONFIRMED",
-          "gameplayFamily": "RPG",
-          "evidenceScore": 815,
-          "developmentFocus": 8,
-          "artbookBaselineRank": 0.5,
-          "unityReady": true,
-          "sourceReady": true
-        },
-        {
-          "rank": 3,
-          "rawEvidenceRank": 3,
-          "gameId": "P0002",
-          "slug": "insect-survival",
-          "productionClass": "DEVELOPMENT_CONFIRMED",
-          "gameplayFamily": "SURVIVAL",
-          "evidenceScore": 814,
-          "developmentFocus": 8,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 4,
-          "rawEvidenceRank": 4,
-          "gameId": "P0004",
-          "slug": "bug-defense",
-          "productionClass": "DEVELOPMENT_CONFIRMED",
-          "gameplayFamily": "DEFENSE",
-          "evidenceScore": 714,
-          "developmentFocus": 7,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 5,
-          "rawEvidenceRank": 5,
-          "gameId": "P0003",
-          "slug": "crystal-defense",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "DEFENSE",
-          "evidenceScore": 614,
-          "developmentFocus": 6,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 6,
-          "rawEvidenceRank": 6,
-          "gameId": "P0009",
-          "slug": "monster-adventure",
-          "productionClass": "DEVELOPMENT_CONFIRMED",
-          "gameplayFamily": "TURN_BASED",
-          "evidenceScore": 514,
-          "developmentFocus": 5,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 7,
-          "rawEvidenceRank": 7,
-          "gameId": "P0005",
-          "slug": "human-go",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "COLLECTION",
-          "evidenceScore": 414,
-          "developmentFocus": 4,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 8,
-          "rawEvidenceRank": 8,
-          "gameId": "P0101",
-          "slug": "chess-battle",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "STRATEGY",
-          "evidenceScore": 14,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 9,
-          "rawEvidenceRank": 9,
-          "gameId": "P0102",
-          "slug": "survival2",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "SURVIVAL",
-          "evidenceScore": 14,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        },
-        {
-          "rank": 10,
-          "rawEvidenceRank": 10,
-          "gameId": "P0103",
-          "slug": "territory-war",
-          "productionClass": "DESIGN_ONLY",
-          "gameplayFamily": "STRATEGY",
-          "evidenceScore": 14,
-          "developmentFocus": 0,
-          "artbookBaselineRank": 1,
-          "unityReady": false,
-          "sourceReady": true
-        }
-      ],
-      "source": [
-        "autonomous-portfolio.json",
-        "game-catalog.json",
-        "game-artbooks.json",
-        "tools/company-status-sync.mjs"
-      ]
-    }
-  },
-  "supervision": {
-    "source": "director-supervision-status.json",
-    "dateKst": "2026-09-11",
-    "runningLabelAloneCountsAsWork": false,
-    "counts": {
-      "WORKING": 6,
-      "DONE": 2,
-      "IDLE_NO_TASK": 0,
-      "BLOCKED": 0,
-      "FAILED": 0,
-      "STALE": 0
-    },
-    "liveStates": {
-      "ACTIVE": 1,
-      "WAITING": 5,
-      "BLOCKED": 0,
-      "DONE": 2
-    },
-    "activeDevelopmentRunId": 34525047019,
-    "primaryFindings": [
-      "NO_WORK_ORDER:artbook-work-orders/2026-09-11-daechung-rpg.json"
-    ],
-    "staff": {
-      "planning": {
-        "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34525047019",
-        "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
-        "jobEvidence": null
-      },
-      "development": {
-        "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34525047019",
-        "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
-        "jobEvidence": null
-      },
-      "qa": {
-        "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34525047019",
-        "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
-        "jobEvidence": null
-      },
-      "graphics": {
-        "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34525047019",
-        "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
-        "jobEvidence": null
-      },
-      "balance": {
-        "status": "WORKING",
-        "workState": "WAITING",
-        "task": "autonomous development floor 34525047019",
-        "source": "autonomous-development",
-        "reason": "autonomous floor is active but this department job has not started yet",
-        "jobEvidence": null
-      },
-      "director": {
-        "status": "WORKING",
-        "workState": "ACTIVE",
-        "task": "supervise staff execution, blockers, direct causes and verification",
-        "source": null,
-        "reason": "current supervisor check is executing from repository evidence",
-        "jobEvidence": null
-      }
-    }
-  },
-  "projects": [
-    {
-      "gameId": "daechung-rpg",
-      "name": "대충 RPG",
-      "stage": "full-development",
-      "stageLabel": "Unity 본개발 시작 · 핵심 시스템 재구축",
-      "progress": 64,
-      "target": "unity-android",
-      "source": "web-games/daechung-rpg",
-      "projectPath": "unity-games/daechung-rpg",
-      "ownerDecision": "PASS",
-      "internalScore": 76,
-      "latestPostModificationReview": {
-        "requestId": "daechung-rpg-cloud-license-20260908-002",
-        "gameId": "daechung-rpg",
-        "status": "completed",
-        "decision": "REVISE",
-        "score": 75,
-        "modificationCommit": "04000f8ccefb048b8d261a8186e40e2331669862",
-        "buildRunId": 34191899205,
-        "buildConclusion": "failure",
-        "resultPath": "company-revotes/daechung-rpg/daechung-rpg-cloud-license-20260908-002/director.json",
-        "completedAt": "2026-09-08T06:02:46.100951+00:00"
-      }
-    }
-  ],
-  "approvals": [
-    {
-      "id": "daechung-rpg-unity-redevelopment",
-      "gameId": "daechung-rpg",
-      "title": "대충 RPG Unity 재개발 승인",
-      "reason": "5개 부서 내부평가 PASS. 기존 웹판의 전투·지역·퀘스트·전직·히든 콘텐츠는 보존하되 패치 누적 구조는 폐기하고 Unity 본체 구조로 재설계한다.",
-      "decision": "PASS",
-      "internalScore": 76,
-      "recommended": true,
-      "target": "unity-android"
-    }
-  ],
-  "testBuilds": [
-    {
-      "gameId": "daechung-rpg",
-      "requestId": "daechung-rpg-hybrid-017",
-      "status": "ready",
-      "channel": "test",
-      "buildRoute": "github-cloud-host-personal",
-      "homepagePublished": true,
-      "sourceCommit": "f78b6a53186c3a6765e75bdb92801d512ed8d8e7",
-      "releaseTag": "test-daechung-rpg-34201876835-1",
-      "release": "https://github.com/hans1177/jaewoon-games/releases/tag/test-daechung-rpg-34201876835-1",
-      "download": "https://github.com/hans1177/jaewoon-games/releases/download/test-daechung-rpg-34201876835-1/daechung-rpg-test.apk",
-      "sha256": "bca2596f93ea71e5ad311d9d3a322083ae768f8ac0c9c046125b33c9a4f1e817",
-      "bytes": 24392700,
-      "builtAt": "2026-09-08T08:07:37.760135+00:00"
-    }
-  ],
-  "redevelopmentReview": {
-    "status": "evidence-migrated",
-    "scope": "all-existing-web-games",
-    "employees": [
-      "planning",
-      "development",
-      "qa",
-      "graphics",
-      "balance"
-    ],
-    "directorAggregates": true,
-    "ownerFinalApproval": true,
-    "ownerApprovalScope": "core-decisions-only",
-    "directorOperationalAuthority": true,
-    "writeBackToWebGames": false,
-    "output": "unity-redevelopment-candidate-report",
-    "totalGames": 11,
-    "completedGames": 1,
-    "remainingGames": 10,
-    "currentGameId": "insect-survival",
-    "currentGameName": "곤충 생존기",
-    "statusAuthority": "director-supervision-status.json",
-    "queue": [
-      {
-        "gameId": "daechung-rpg",
-        "name": "대충 RPG",
-        "status": "development"
-      },
-      {
-        "gameId": "insect-survival",
-        "name": "곤충 생존기",
-        "status": "in-review"
-      },
-      {
-        "gameId": "crystal-defense",
-        "name": "수정 디펜스",
-        "status": "queued"
-      },
-      {
-        "gameId": "bug-defense",
-        "name": "곤충 디펜스",
-        "status": "queued"
-      },
-      {
-        "gameId": "human-go",
-        "name": "휴먼 GO",
-        "status": "queued"
-      },
-      {
-        "gameId": "egg-heist",
-        "name": "알 도둑 대작전",
-        "status": "queued"
-      },
-      {
-        "gameId": "chess-battle",
-        "name": "체스 배틀",
-        "status": "queued"
-      },
-      {
-        "gameId": "monster-adventure",
-        "name": "몬스터 어드벤처",
-        "status": "queued"
-      },
-      {
-        "gameId": "survival",
-        "name": "나의 생존기",
-        "status": "queued"
-      },
-      {
-        "gameId": "survival2",
-        "name": "숲의 생존자들",
-        "status": "queued"
-      },
-      {
-        "gameId": "territory-war",
-        "name": "영토전쟁",
-        "status": "queued"
-      }
-    ],
-    "reviewResults": {
-      "daechung-rpg": {
-        "gameId": "daechung-rpg",
-        "name": "대충 RPG",
-        "decision": "PASS",
-        "overallScore": 76,
-        "recommendation": "unity-redevelop",
-        "preserve": [
-          "탐험-전투-성장 핵심 루프",
-          "지역/포탈 진행 구조",
-          "촌장 메인 퀘스트와 히든 퀘스트",
-          "전사·궁수·마법사 전직",
-          "무기·갑옷·물약·보스 보상 구조"
-        ],
-        "rebuild": [
-          "v15~v18 런타임 패치 누적 구조를 제거하고 Unity 시스템으로 통합",
-          "지역/포탈/퀘스트 상태를 단일 데이터 모델로 재설계",
-          "전투·몬스터·상점·세이브를 독립 시스템으로 분리",
-          "모바일 조작/UI를 Unity 입력 시스템 기준으로 재구성"
-        ],
-        "risks": [
-          "여러 패치가 전역 함수를 반복 래핑해 회귀 위험이 큼",
-          "공동묘지 f9 포탈을 v17에서 제거하지만 core18이 다시 일반 포탈 배열에 추가해 충돌 가능성 존재",
-          "히든 패시브의 체력 +30%, 공격 +50%, 이동속도 +50%는 후반 밸런스 검증 필요"
-        ],
-        "departments": {
-          "planning": {
-            "status": "done",
-            "score": 92,
-            "decision": "PASS",
-            "summary": "지역 탐험, 퀘스트, 전직, 장비, 히든 콘텐츠가 연결돼 RPG 재개발 가치가 높다."
-          },
-          "development": {
-            "status": "done",
-            "score": 62,
-            "decision": "PASS_WITH_REBUILD",
-            "summary": "기능량은 충분하지만 런타임 패치 체인이 길어 웹 코드를 직접 이식하지 말고 Unity에서 시스템별로 재구축해야 한다."
-          },
-          "qa": {
-            "status": "done",
-            "score": 58,
-            "decision": "PASS_WITH_FIXES",
-            "summary": "패치 간 함수/포탈 상태 충돌 위험이 있어 Unity 이전 전 기능 목록과 진행 상태 회귀 테스트가 필요하다."
-          },
-          "graphics": {
-            "status": "done",
-            "score": 78,
-            "decision": "PASS",
-            "summary": "Canvas 기반 지역과 몬스터 표현을 Unity 2D/3D로 확장했을 때 체감 개선 폭이 크다."
-          },
-          "balance": {
-            "status": "done",
-            "score": 70,
-            "decision": "PASS_WITH_TUNING",
-            "summary": "지역별 레벨/장비/보상 기반은 유지 가치가 있으나 히든 패시브와 후반 수치 상승은 재조정이 필요하다."
-          },
-          "director": {
-            "status": "done",
-            "score": 76,
-            "decision": "PASS",
-            "summary": "Unity Android 재개발 후보로 승인 추천. 기존 웹판 수정 없이 별도 Unity 프로젝트로 진행한다."
-          }
-        }
-      }
-    },
-    "departmentTasks": {
-      "planning": {
-        "status": "working",
-        "task": "autonomous development floor 34525047019",
-        "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
-      },
-      "development": {
-        "status": "working",
-        "task": "autonomous development floor 34525047019",
-        "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
-      },
-      "qa": {
-        "status": "working",
-        "task": "autonomous development floor 34525047019",
-        "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
-      },
-      "graphics": {
-        "status": "working",
-        "task": "autonomous development floor 34525047019",
-        "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
-      },
-      "balance": {
-        "status": "working",
-        "task": "autonomous development floor 34525047019",
-        "evidenceSource": "director-supervision-status.json",
-        "workState": "WAITING",
-        "reason": "autonomous floor is active but this department job has not started yet"
-      },
-      "director": {
-        "status": "working",
-        "task": "supervise staff execution, blockers, direct causes and verification",
-        "evidenceSource": "director-supervision-status.json",
-        "workState": "ACTIVE",
-        "reason": "current supervisor check is executing from repository evidence"
-      }
-    }
-  },
-  "postModificationReviews": [
-    {
-      "requestId": "daechung-rpg-cloud-license-20260908-001",
-      "gameId": "daechung-rpg",
-      "status": "completed",
-      "decision": "PASS",
-      "score": 88,
-      "modificationCommit": "776f8099b6c44dec1ea1c75b2672eb8158ea45e6",
-      "buildRunId": 34191899205,
-      "buildConclusion": "failure",
-      "resultPath": "company-revotes/daechung-rpg/daechung-rpg-cloud-license-20260908-001/director.json",
-      "completedAt": "2026-09-08T05:56:37.778974+00:00"
-    },
-    {
-      "requestId": "daechung-rpg-cloud-license-20260908-002",
-      "gameId": "daechung-rpg",
-      "status": "completed",
-      "decision": "REVISE",
-      "score": 75,
-      "modificationCommit": "04000f8ccefb048b8d261a8186e40e2331669862",
-      "buildRunId": 34191899205,
-      "buildConclusion": "failure",
-      "resultPath": "company-revotes/daechung-rpg/daechung-rpg-cloud-license-20260908-002/director.json",
-      "completedAt": "2026-09-08T06:02:46.100951+00:00"
-    }
-  ]
+﻿{
+    "version":  1,
+    "updatedAt":  "2026-09-11",
+    "policy":  {
+                   "webGames":  "existing-maintenance-allowed",
+                   "webGameDevelopment":  true,
+                   "existingWebMaintenance":  true,
+                   "newWebGameProduction":  false,
+                   "webGamesRemainPlayable":  true,
+                   "futurePrimaryTarget":  "unity-android",
+                   "policyAuthority":  "company-directive.json",
+                   "aiDirector":  {
+                                      "mode":  "rotating-local",
+                                      "providers":  [
+                                                        "codex",
+                                                        "antigravity",
+                                                        "codebuddy",
+                                                        "copilot"
+                                                    ],
+                                      "rotationPolicy":  "stay-until-quota-auth-or-repeated-failure",
+                                      "paidOverageAllowed":  false,
+                                      "paidApiKeysAllowed":  false,
+                                      "manualVsCodeDailyRequired":  false,
+                                      "stopOnCoreDecision":  true,
+                                      "autoPush":  true,
+                                      "verifiedCommitsOnly":  true,
+                                      "remoteSyncSeconds":  30,
+                                      "ownerDirectiveFile":  "company-directive.json",
+                                      "ownerDirectivePriority":  "immediate-before-autonomous-plan",
+                                      "continueOwnerDirectiveUntilVerifiedComplete":  true
+                                  },
+                   "homepageOperations":  {
+                                              "manager":  "homepage-diagnostics",
+                                              "diagnosticOnly":  true,
+                                              "autoMaintenance":  false,
+                                              "runtimeDataSync":  true,
+                                              "runtimeRenderer":  "assets/homepage-enhancements.js",
+                                              "publicHomepage":  "index.html",
+                                              "companyDashboard":  "company.html",
+                                              "catalog":  "game-catalog.json",
+                                              "operationsGuide":  "HOMEPAGE_OPERATIONS.md",
+                                              "webArchiveWriteBack":  false,
+                                              "autoLayoutWrite":  false,
+                                              "manageGameClassification":  false,
+                                              "manageMobileLayout":  false,
+                                              "manageLinksAndStatus":  false,
+                                              "manageLowRiskFeatures":  false,
+                                              "proposeImprovements":  true,
+                                              "otherGamesMayAppearOnHomepage":  true,
+                                              "homepageLengthControl":  "compact-cards-and-dedicated-artbook-detail-pages",
+                                              "publicationVisibilityIsProductionApproval":  false,
+                                              "statusFile":  "homepage-manager-status.json",
+                                              "workflow":  ".github/workflows/homepage-manager.yml",
+                                              "runtimeGameHealthBadgeVisible":  false,
+                                              "gameCardsRequireUniqueTitleImages":  true
+                                          }
+               },
+    "summary":  {
+                    "webArchiveCount":  11,
+                    "existingWebGamesMaintenanceAllowed":  true,
+                    "activeUnityProjects":  1,
+                    "pendingApprovals":  0,
+                    "testBuilds":  1
+                },
+    "operations":  {
+                       "homepage":  {
+                                        "manager":  "homepage-diagnostics",
+                                        "status":  "done",
+                                        "task":  "homepage diagnostics",
+                                        "scope":  [
+                                                      "index.html",
+                                                      "company.html",
+                                                      "game-catalog.json"
+                                                  ],
+                                        "lastReviewedAt":  "2026-09-11",
+                                        "lastCheckResult":  "DONE",
+                                        "execution":  "github-actions-diagnostic",
+                                        "workflow":  ".github/workflows/homepage-manager.yml",
+                                        "statusFile":  "homepage-manager-status.json",
+                                        "runtimeDataSync":  "active",
+                                        "evidenceSource":  "director-supervision-status.json",
+                                        "workState":  "DONE"
+                                    },
+                       "ownerDirectives":  {
+                                               "source":  "company-directive.json",
+                                               "priority":  "immediate",
+                                               "normalPlanPreemptedByNewDirective":  true,
+                                               "syncTargetSeconds":  30,
+                                               "repeatUntilVerifiedComplete":  true,
+                                               "coreDecisionProtection":  true
+                                           },
+                       "autonomousFocus":  {
+                                               "enabled":  true,
+                                               "targetSlots":  1,
+                                               "filledSlots":  1,
+                                               "preferredGameIds":  [
+
+                                                                    ],
+                                               "focusedGameIds":  [
+                                                                      "P0006"
+                                                                  ],
+                                               "games":  [
+                                                             {
+                                                                 "slot":  1,
+                                                                 "gameId":  "P0006",
+                                                                 "slug":  "daechung-rpg",
+                                                                 "name":  "대충 RPG",
+                                                                 "score":  8,
+                                                                 "slotRole":  "auto-ranked",
+                                                                 "lane":  "unity-primary",
+                                                                 "unityReady":  true,
+                                                                 "homepageCategory":  "release-confirmed",
+                                                                 "webPath":  "/web-games/daechung-rpg/"
+                                                             }
+                                                         ],
+                                               "nextFocusGameIds":  [
+                                                                        "P0001"
+                                                                    ],
+                                               "nextDevelopmentGameIds":  [
+                                                                              "P0002",
+                                                                              "P0004",
+                                                                              "P0009"
+                                                                          ],
+                                               "selection":  "AUTO_RELEASE_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT",
+                                               "activeDevelopmentRunId":  34525047019,
+                                               "syncIntervalMs":  30000,
+                                               "updatedAtKst":  "2026-09-11",
+                                               "source":  [
+                                                              "autonomous-portfolio.json",
+                                                              "game-artbooks.json",
+                                                              "game-catalog.json",
+                                                              "tools/autonomous-24h-work-planner.mjs"
+                                                          ]
+                                           },
+                       "productionTiers":  {
+                                               "membershipMode":  "SEMANTIC_EVIDENCE_DYNAMIC",
+                                               "canonicalField":  "productionClass",
+                                               "fixedGameIds":  false,
+                                               "fixedCounts":  false,
+                                               "countsDerivedFromMembership":  true,
+                                               "numericTierAliasOnly":  true,
+                                               "autoPromotionDemotion":  true,
+                                               "diversity":  {
+                                                                 "enabled":  true,
+                                                                 "maxFocusScoreGap":  1,
+                                                                 "scope":  "DIAGNOSTIC_ONLY",
+                                                                 "source":  "CATALOG_GENRE",
+                                                                 "membershipInfluence":  false,
+                                                                 "adjusted":  false,
+                                                                 "distinctFamilies":  [
+                                                                                          "SURVIVAL",
+                                                                                          "DEFENSE",
+                                                                                          "RPG",
+                                                                                          "TURN_BASED"
+                                                                                      ]
+                                                             },
+                                               "counts":  {
+                                                              "releaseConfirmed":  2,
+                                                              "developmentConfirmed":  3,
+                                                              "designOnly":  7
+                                                          },
+                                               "releaseConfirmedGameIds":  [
+                                                                               "P0001",
+                                                                               "P0006"
+                                                                           ],
+                                               "developmentConfirmedGameIds":  [
+                                                                                   "P0002",
+                                                                                   "P0004",
+                                                                                   "P0009"
+                                                                               ],
+                                               "designOnlyGameIds":  [
+                                                                         "P0003",
+                                                                         "P0005",
+                                                                         "P0007",
+                                                                         "P0008",
+                                                                         "P0101",
+                                                                         "P0102",
+                                                                         "P0103"
+                                                                     ],
+                                               "ranking":  [
+                                                               {
+                                                                   "rank":  1,
+                                                                   "rawEvidenceRank":  1,
+                                                                   "gameId":  "P0001",
+                                                                   "slug":  "survival",
+                                                                   "productionClass":  "RELEASE_CONFIRMED",
+                                                                   "gameplayFamily":  "SURVIVAL",
+                                                                   "evidenceScore":  914,
+                                                                   "developmentFocus":  9,
+                                                                   "artbookBaselineRank":  1,
+                                                                   "unityReady":  false,
+                                                                   "sourceReady":  true
+                                                               },
+                                                               {
+                                                                   "rank":  2,
+                                                                   "rawEvidenceRank":  2,
+                                                                   "gameId":  "P0006",
+                                                                   "slug":  "daechung-rpg",
+                                                                   "productionClass":  "RELEASE_CONFIRMED",
+                                                                   "gameplayFamily":  "RPG",
+                                                                   "evidenceScore":  815,
+                                                                   "developmentFocus":  8,
+                                                                   "artbookBaselineRank":  0.5,
+                                                                   "unityReady":  true,
+                                                                   "sourceReady":  true
+                                                               },
+                                                               {
+                                                                   "rank":  3,
+                                                                   "rawEvidenceRank":  3,
+                                                                   "gameId":  "P0002",
+                                                                   "slug":  "insect-survival",
+                                                                   "productionClass":  "DEVELOPMENT_CONFIRMED",
+                                                                   "gameplayFamily":  "SURVIVAL",
+                                                                   "evidenceScore":  814,
+                                                                   "developmentFocus":  8,
+                                                                   "artbookBaselineRank":  1,
+                                                                   "unityReady":  false,
+                                                                   "sourceReady":  true
+                                                               },
+                                                               {
+                                                                   "rank":  4,
+                                                                   "rawEvidenceRank":  4,
+                                                                   "gameId":  "P0004",
+                                                                   "slug":  "bug-defense",
+                                                                   "productionClass":  "DEVELOPMENT_CONFIRMED",
+                                                                   "gameplayFamily":  "DEFENSE",
+                                                                   "evidenceScore":  714,
+                                                                   "developmentFocus":  7,
+                                                                   "artbookBaselineRank":  1,
+                                                                   "unityReady":  false,
+                                                                   "sourceReady":  true
+                                                               },
+                                                               {
+                                                                   "rank":  5,
+                                                                   "rawEvidenceRank":  5,
+                                                                   "gameId":  "P0003",
+                                                                   "slug":  "crystal-defense",
+                                                                   "productionClass":  "DESIGN_ONLY",
+                                                                   "gameplayFamily":  "DEFENSE",
+                                                                   "evidenceScore":  614,
+                                                                   "developmentFocus":  6,
+                                                                   "artbookBaselineRank":  1,
+                                                                   "unityReady":  false,
+                                                                   "sourceReady":  true
+                                                               },
+                                                               {
+                                                                   "rank":  6,
+                                                                   "rawEvidenceRank":  6,
+                                                                   "gameId":  "P0009",
+                                                                   "slug":  "monster-adventure",
+                                                                   "productionClass":  "DEVELOPMENT_CONFIRMED",
+                                                                   "gameplayFamily":  "TURN_BASED",
+                                                                   "evidenceScore":  514,
+                                                                   "developmentFocus":  5,
+                                                                   "artbookBaselineRank":  1,
+                                                                   "unityReady":  false,
+                                                                   "sourceReady":  true
+                                                               },
+                                                               {
+                                                                   "rank":  7,
+                                                                   "rawEvidenceRank":  7,
+                                                                   "gameId":  "P0005",
+                                                                   "slug":  "human-go",
+                                                                   "productionClass":  "DESIGN_ONLY",
+                                                                   "gameplayFamily":  "COLLECTION",
+                                                                   "evidenceScore":  414,
+                                                                   "developmentFocus":  4,
+                                                                   "artbookBaselineRank":  1,
+                                                                   "unityReady":  false,
+                                                                   "sourceReady":  true
+                                                               },
+                                                               {
+                                                                   "rank":  8,
+                                                                   "rawEvidenceRank":  8,
+                                                                   "gameId":  "P0101",
+                                                                   "slug":  "chess-battle",
+                                                                   "productionClass":  "DESIGN_ONLY",
+                                                                   "gameplayFamily":  "STRATEGY",
+                                                                   "evidenceScore":  14,
+                                                                   "developmentFocus":  0,
+                                                                   "artbookBaselineRank":  1,
+                                                                   "unityReady":  false,
+                                                                   "sourceReady":  true
+                                                               },
+                                                               {
+                                                                   "rank":  9,
+                                                                   "rawEvidenceRank":  9,
+                                                                   "gameId":  "P0102",
+                                                                   "slug":  "survival2",
+                                                                   "productionClass":  "DESIGN_ONLY",
+                                                                   "gameplayFamily":  "SURVIVAL",
+                                                                   "evidenceScore":  14,
+                                                                   "developmentFocus":  0,
+                                                                   "artbookBaselineRank":  1,
+                                                                   "unityReady":  false,
+                                                                   "sourceReady":  true
+                                                               },
+                                                               {
+                                                                   "rank":  10,
+                                                                   "rawEvidenceRank":  10,
+                                                                   "gameId":  "P0103",
+                                                                   "slug":  "territory-war",
+                                                                   "productionClass":  "DESIGN_ONLY",
+                                                                   "gameplayFamily":  "STRATEGY",
+                                                                   "evidenceScore":  14,
+                                                                   "developmentFocus":  0,
+                                                                   "artbookBaselineRank":  1,
+                                                                   "unityReady":  false,
+                                                                   "sourceReady":  true
+                                                               }
+                                                           ],
+                                               "compatibilityAlias":  true,
+                                               "source":  [
+                                                              "autonomous-portfolio.json",
+                                                              "game-catalog.json",
+                                                              "game-artbooks.json",
+                                                              "tools/company-status-sync.mjs"
+                                                          ]
+                                           },
+                       "productionClasses":  {
+                                                 "membershipMode":  "SEMANTIC_EVIDENCE_DYNAMIC",
+                                                 "canonicalField":  "productionClass",
+                                                 "fixedGameIds":  false,
+                                                 "fixedCounts":  false,
+                                                 "countsDerivedFromMembership":  true,
+                                                 "numericTierAliasOnly":  true,
+                                                 "autoPromotionDemotion":  true,
+                                                 "diversity":  {
+                                                                   "enabled":  true,
+                                                                   "maxFocusScoreGap":  1,
+                                                                   "scope":  "DIAGNOSTIC_ONLY",
+                                                                   "source":  "CATALOG_GENRE",
+                                                                   "membershipInfluence":  false,
+                                                                   "adjusted":  false,
+                                                                   "distinctFamilies":  [
+                                                                                            "SURVIVAL",
+                                                                                            "DEFENSE",
+                                                                                            "RPG",
+                                                                                            "TURN_BASED"
+                                                                                        ]
+                                                               },
+                                                 "counts":  {
+                                                                "releaseConfirmed":  2,
+                                                                "developmentConfirmed":  3,
+                                                                "designOnly":  7
+                                                            },
+                                                 "releaseConfirmedGameIds":  [
+                                                                                 "P0001",
+                                                                                 "P0006"
+                                                                             ],
+                                                 "developmentConfirmedGameIds":  [
+                                                                                     "P0002",
+                                                                                     "P0004",
+                                                                                     "P0009"
+                                                                                 ],
+                                                 "designOnlyGameIds":  [
+                                                                           "P0003",
+                                                                           "P0005",
+                                                                           "P0007",
+                                                                           "P0008",
+                                                                           "P0101",
+                                                                           "P0102",
+                                                                           "P0103"
+                                                                       ],
+                                                 "ranking":  [
+                                                                 {
+                                                                     "rank":  1,
+                                                                     "rawEvidenceRank":  1,
+                                                                     "gameId":  "P0001",
+                                                                     "slug":  "survival",
+                                                                     "productionClass":  "RELEASE_CONFIRMED",
+                                                                     "gameplayFamily":  "SURVIVAL",
+                                                                     "evidenceScore":  914,
+                                                                     "developmentFocus":  9,
+                                                                     "artbookBaselineRank":  1,
+                                                                     "unityReady":  false,
+                                                                     "sourceReady":  true
+                                                                 },
+                                                                 {
+                                                                     "rank":  2,
+                                                                     "rawEvidenceRank":  2,
+                                                                     "gameId":  "P0006",
+                                                                     "slug":  "daechung-rpg",
+                                                                     "productionClass":  "RELEASE_CONFIRMED",
+                                                                     "gameplayFamily":  "RPG",
+                                                                     "evidenceScore":  815,
+                                                                     "developmentFocus":  8,
+                                                                     "artbookBaselineRank":  0.5,
+                                                                     "unityReady":  true,
+                                                                     "sourceReady":  true
+                                                                 },
+                                                                 {
+                                                                     "rank":  3,
+                                                                     "rawEvidenceRank":  3,
+                                                                     "gameId":  "P0002",
+                                                                     "slug":  "insect-survival",
+                                                                     "productionClass":  "DEVELOPMENT_CONFIRMED",
+                                                                     "gameplayFamily":  "SURVIVAL",
+                                                                     "evidenceScore":  814,
+                                                                     "developmentFocus":  8,
+                                                                     "artbookBaselineRank":  1,
+                                                                     "unityReady":  false,
+                                                                     "sourceReady":  true
+                                                                 },
+                                                                 {
+                                                                     "rank":  4,
+                                                                     "rawEvidenceRank":  4,
+                                                                     "gameId":  "P0004",
+                                                                     "slug":  "bug-defense",
+                                                                     "productionClass":  "DEVELOPMENT_CONFIRMED",
+                                                                     "gameplayFamily":  "DEFENSE",
+                                                                     "evidenceScore":  714,
+                                                                     "developmentFocus":  7,
+                                                                     "artbookBaselineRank":  1,
+                                                                     "unityReady":  false,
+                                                                     "sourceReady":  true
+                                                                 },
+                                                                 {
+                                                                     "rank":  5,
+                                                                     "rawEvidenceRank":  5,
+                                                                     "gameId":  "P0003",
+                                                                     "slug":  "crystal-defense",
+                                                                     "productionClass":  "DESIGN_ONLY",
+                                                                     "gameplayFamily":  "DEFENSE",
+                                                                     "evidenceScore":  614,
+                                                                     "developmentFocus":  6,
+                                                                     "artbookBaselineRank":  1,
+                                                                     "unityReady":  false,
+                                                                     "sourceReady":  true
+                                                                 },
+                                                                 {
+                                                                     "rank":  6,
+                                                                     "rawEvidenceRank":  6,
+                                                                     "gameId":  "P0009",
+                                                                     "slug":  "monster-adventure",
+                                                                     "productionClass":  "DEVELOPMENT_CONFIRMED",
+                                                                     "gameplayFamily":  "TURN_BASED",
+                                                                     "evidenceScore":  514,
+                                                                     "developmentFocus":  5,
+                                                                     "artbookBaselineRank":  1,
+                                                                     "unityReady":  false,
+                                                                     "sourceReady":  true
+                                                                 },
+                                                                 {
+                                                                     "rank":  7,
+                                                                     "rawEvidenceRank":  7,
+                                                                     "gameId":  "P0005",
+                                                                     "slug":  "human-go",
+                                                                     "productionClass":  "DESIGN_ONLY",
+                                                                     "gameplayFamily":  "COLLECTION",
+                                                                     "evidenceScore":  414,
+                                                                     "developmentFocus":  4,
+                                                                     "artbookBaselineRank":  1,
+                                                                     "unityReady":  false,
+                                                                     "sourceReady":  true
+                                                                 },
+                                                                 {
+                                                                     "rank":  8,
+                                                                     "rawEvidenceRank":  8,
+                                                                     "gameId":  "P0101",
+                                                                     "slug":  "chess-battle",
+                                                                     "productionClass":  "DESIGN_ONLY",
+                                                                     "gameplayFamily":  "STRATEGY",
+                                                                     "evidenceScore":  14,
+                                                                     "developmentFocus":  0,
+                                                                     "artbookBaselineRank":  1,
+                                                                     "unityReady":  false,
+                                                                     "sourceReady":  true
+                                                                 },
+                                                                 {
+                                                                     "rank":  9,
+                                                                     "rawEvidenceRank":  9,
+                                                                     "gameId":  "P0102",
+                                                                     "slug":  "survival2",
+                                                                     "productionClass":  "DESIGN_ONLY",
+                                                                     "gameplayFamily":  "SURVIVAL",
+                                                                     "evidenceScore":  14,
+                                                                     "developmentFocus":  0,
+                                                                     "artbookBaselineRank":  1,
+                                                                     "unityReady":  false,
+                                                                     "sourceReady":  true
+                                                                 },
+                                                                 {
+                                                                     "rank":  10,
+                                                                     "rawEvidenceRank":  10,
+                                                                     "gameId":  "P0103",
+                                                                     "slug":  "territory-war",
+                                                                     "productionClass":  "DESIGN_ONLY",
+                                                                     "gameplayFamily":  "STRATEGY",
+                                                                     "evidenceScore":  14,
+                                                                     "developmentFocus":  0,
+                                                                     "artbookBaselineRank":  1,
+                                                                     "unityReady":  false,
+                                                                     "sourceReady":  true
+                                                                 }
+                                                             ],
+                                                 "source":  [
+                                                                "autonomous-portfolio.json",
+                                                                "game-catalog.json",
+                                                                "game-artbooks.json",
+                                                                "tools/company-status-sync.mjs"
+                                                            ]
+                                             }
+                   },
+    "supervision":  {
+                        "source":  "director-supervision-status.json",
+                        "dateKst":  "2026-09-11",
+                        "runningLabelAloneCountsAsWork":  false,
+                        "counts":  {
+                                       "WORKING":  6,
+                                       "DONE":  2,
+                                       "IDLE_NO_TASK":  0,
+                                       "BLOCKED":  0,
+                                       "FAILED":  0,
+                                       "STALE":  0
+                                   },
+                        "liveStates":  {
+                                           "ACTIVE":  1,
+                                           "WAITING":  5,
+                                           "BLOCKED":  0,
+                                           "DONE":  2
+                                       },
+                        "activeDevelopmentRunId":  34525047019,
+                        "primaryFindings":  [
+                                                "NO_WORK_ORDER:artbook-work-orders/2026-09-11-daechung-rpg.json"
+                                            ],
+                        "staff":  {
+                                      "planning":  {
+                                                       "status":  "WORKING",
+                                                       "workState":  "WAITING",
+                                                       "task":  "autonomous development floor 34525047019",
+                                                       "source":  "autonomous-development",
+                                                       "reason":  "autonomous floor is active but this department job has not started yet",
+                                                       "jobEvidence":  null
+                                                   },
+                                      "development":  {
+                                                          "status":  "WORKING",
+                                                          "workState":  "WAITING",
+                                                          "task":  "autonomous development floor 34525047019",
+                                                          "source":  "autonomous-development",
+                                                          "reason":  "autonomous floor is active but this department job has not started yet",
+                                                          "jobEvidence":  null
+                                                      },
+                                      "qa":  {
+                                                 "status":  "WORKING",
+                                                 "workState":  "WAITING",
+                                                 "task":  "autonomous development floor 34525047019",
+                                                 "source":  "autonomous-development",
+                                                 "reason":  "autonomous floor is active but this department job has not started yet",
+                                                 "jobEvidence":  null
+                                             },
+                                      "graphics":  {
+                                                       "status":  "WORKING",
+                                                       "workState":  "WAITING",
+                                                       "task":  "autonomous development floor 34525047019",
+                                                       "source":  "autonomous-development",
+                                                       "reason":  "autonomous floor is active but this department job has not started yet",
+                                                       "jobEvidence":  null
+                                                   },
+                                      "balance":  {
+                                                      "status":  "WORKING",
+                                                      "workState":  "WAITING",
+                                                      "task":  "autonomous development floor 34525047019",
+                                                      "source":  "autonomous-development",
+                                                      "reason":  "autonomous floor is active but this department job has not started yet",
+                                                      "jobEvidence":  null
+                                                  },
+                                      "director":  {
+                                                       "status":  "WORKING",
+                                                       "workState":  "ACTIVE",
+                                                       "task":  "supervise staff execution, blockers, direct causes and verification",
+                                                       "source":  null,
+                                                       "reason":  "current supervisor check is executing from repository evidence",
+                                                       "jobEvidence":  null
+                                                   }
+                                  }
+                    },
+    "projects":  [
+                     {
+                         "gameId":  "daechung-rpg",
+                         "name":  "대충 RPG",
+                         "stage":  "full-development",
+                         "stageLabel":  "Unity 본개발 시작 · 핵심 시스템 재구축",
+                         "progress":  64,
+                         "target":  "unity-android",
+                         "source":  "web-games/daechung-rpg",
+                         "projectPath":  "unity-games/daechung-rpg",
+                         "ownerDecision":  "PASS",
+                         "internalScore":  76,
+                         "latestPostModificationReview":  {
+                                                              "requestId":  "daechung-rpg-cloud-license-20260908-002",
+                                                              "gameId":  "daechung-rpg",
+                                                              "status":  "completed",
+                                                              "decision":  "REVISE",
+                                                              "score":  75,
+                                                              "modificationCommit":  "04000f8ccefb048b8d261a8186e40e2331669862",
+                                                              "buildRunId":  34191899205,
+                                                              "buildConclusion":  "failure",
+                                                              "resultPath":  "company-revotes/daechung-rpg/daechung-rpg-cloud-license-20260908-002/director.json",
+                                                              "completedAt":  "2026-09-08T06:02:46.100951+00:00"
+                                                          }
+                     }
+                 ],
+    "approvals":  [
+                      {
+                          "id":  "daechung-rpg-unity-redevelopment",
+                          "gameId":  "daechung-rpg",
+                          "title":  "대충 RPG Unity 재개발 승인",
+                          "reason":  "5개 부서 내부평가 PASS. 기존 웹판의 전투·지역·퀘스트·전직·히든 콘텐츠는 보존하되 패치 누적 구조는 폐기하고 Unity 본체 구조로 재설계한다.",
+                          "decision":  "PASS",
+                          "internalScore":  76,
+                          "recommended":  true,
+                          "target":  "unity-android"
+                      }
+                  ],
+    "testBuilds":  [
+                       {
+                           "gameId":  "daechung-rpg",
+                           "requestId":  "daechung-rpg-verified-travel-exact-v3",
+                           "status":  "ready",
+                           "channel":  "test",
+                           "buildRoute":  "local-pc",
+                           "homepagePublished":  true,
+                           "sourceCommit":  "78c1d021656b2558a8366be8ff50039af69fe95e",
+                           "releaseTag":  "test-daechung-rpg-34579727325-1",
+                           "release":  "https://github.com/hans1177/jaewoon-games/releases/tag/test-daechung-rpg-34579727325-1",
+                           "download":  "https://github.com/hans1177/jaewoon-games/releases/download/test-daechung-rpg-34579727325-1/daechung-rpg-test.apk",
+                           "sha256":  "1e9a1cff0d28c72e36752a6831386ba37326599b6e97e4f68d092fece4027ec9",
+                           "bytes":  24401188,
+                           "builtAt":  "2026-09-11T08:41:55.8730558Z"
+                       }
+                   ],
+    "redevelopmentReview":  {
+                                "status":  "evidence-migrated",
+                                "scope":  "all-existing-web-games",
+                                "employees":  [
+                                                  "planning",
+                                                  "development",
+                                                  "qa",
+                                                  "graphics",
+                                                  "balance"
+                                              ],
+                                "directorAggregates":  true,
+                                "ownerFinalApproval":  true,
+                                "ownerApprovalScope":  "core-decisions-only",
+                                "directorOperationalAuthority":  true,
+                                "writeBackToWebGames":  false,
+                                "output":  "unity-redevelopment-candidate-report",
+                                "totalGames":  11,
+                                "completedGames":  1,
+                                "remainingGames":  10,
+                                "currentGameId":  "insect-survival",
+                                "currentGameName":  "곤충 생존기",
+                                "statusAuthority":  "director-supervision-status.json",
+                                "queue":  [
+                                              {
+                                                  "gameId":  "daechung-rpg",
+                                                  "name":  "대충 RPG",
+                                                  "status":  "development"
+                                              },
+                                              {
+                                                  "gameId":  "insect-survival",
+                                                  "name":  "곤충 생존기",
+                                                  "status":  "in-review"
+                                              },
+                                              {
+                                                  "gameId":  "crystal-defense",
+                                                  "name":  "수정 디펜스",
+                                                  "status":  "queued"
+                                              },
+                                              {
+                                                  "gameId":  "bug-defense",
+                                                  "name":  "곤충 디펜스",
+                                                  "status":  "queued"
+                                              },
+                                              {
+                                                  "gameId":  "human-go",
+                                                  "name":  "휴먼 GO",
+                                                  "status":  "queued"
+                                              },
+                                              {
+                                                  "gameId":  "egg-heist",
+                                                  "name":  "알 도둑 대작전",
+                                                  "status":  "queued"
+                                              },
+                                              {
+                                                  "gameId":  "chess-battle",
+                                                  "name":  "체스 배틀",
+                                                  "status":  "queued"
+                                              },
+                                              {
+                                                  "gameId":  "monster-adventure",
+                                                  "name":  "몬스터 어드벤처",
+                                                  "status":  "queued"
+                                              },
+                                              {
+                                                  "gameId":  "survival",
+                                                  "name":  "나의 생존기",
+                                                  "status":  "queued"
+                                              },
+                                              {
+                                                  "gameId":  "survival2",
+                                                  "name":  "숲의 생존자들",
+                                                  "status":  "queued"
+                                              },
+                                              {
+                                                  "gameId":  "territory-war",
+                                                  "name":  "영토전쟁",
+                                                  "status":  "queued"
+                                              }
+                                          ],
+                                "reviewResults":  {
+                                                      "daechung-rpg":  {
+                                                                           "gameId":  "daechung-rpg",
+                                                                           "name":  "대충 RPG",
+                                                                           "decision":  "PASS",
+                                                                           "overallScore":  76,
+                                                                           "recommendation":  "unity-redevelop",
+                                                                           "preserve":  [
+                                                                                            "탐험-전투-성장 핵심 루프",
+                                                                                            "지역/포탈 진행 구조",
+                                                                                            "촌장 메인 퀘스트와 히든 퀘스트",
+                                                                                            "전사·궁수·마법사 전직",
+                                                                                            "무기·갑옷·물약·보스 보상 구조"
+                                                                                        ],
+                                                                           "rebuild":  [
+                                                                                           "v15~v18 런타임 패치 누적 구조를 제거하고 Unity 시스템으로 통합",
+                                                                                           "지역/포탈/퀘스트 상태를 단일 데이터 모델로 재설계",
+                                                                                           "전투·몬스터·상점·세이브를 독립 시스템으로 분리",
+                                                                                           "모바일 조작/UI를 Unity 입력 시스템 기준으로 재구성"
+                                                                                       ],
+                                                                           "risks":  [
+                                                                                         "여러 패치가 전역 함수를 반복 래핑해 회귀 위험이 큼",
+                                                                                         "공동묘지 f9 포탈을 v17에서 제거하지만 core18이 다시 일반 포탈 배열에 추가해 충돌 가능성 존재",
+                                                                                         "히든 패시브의 체력 +30%, 공격 +50%, 이동속도 +50%는 후반 밸런스 검증 필요"
+                                                                                     ],
+                                                                           "departments":  {
+                                                                                               "planning":  {
+                                                                                                                "status":  "done",
+                                                                                                                "score":  92,
+                                                                                                                "decision":  "PASS",
+                                                                                                                "summary":  "지역 탐험, 퀘스트, 전직, 장비, 히든 콘텐츠가 연결돼 RPG 재개발 가치가 높다."
+                                                                                                            },
+                                                                                               "development":  {
+                                                                                                                   "status":  "done",
+                                                                                                                   "score":  62,
+                                                                                                                   "decision":  "PASS_WITH_REBUILD",
+                                                                                                                   "summary":  "기능량은 충분하지만 런타임 패치 체인이 길어 웹 코드를 직접 이식하지 말고 Unity에서 시스템별로 재구축해야 한다."
+                                                                                                               },
+                                                                                               "qa":  {
+                                                                                                          "status":  "done",
+                                                                                                          "score":  58,
+                                                                                                          "decision":  "PASS_WITH_FIXES",
+                                                                                                          "summary":  "패치 간 함수/포탈 상태 충돌 위험이 있어 Unity 이전 전 기능 목록과 진행 상태 회귀 테스트가 필요하다."
+                                                                                                      },
+                                                                                               "graphics":  {
+                                                                                                                "status":  "done",
+                                                                                                                "score":  78,
+                                                                                                                "decision":  "PASS",
+                                                                                                                "summary":  "Canvas 기반 지역과 몬스터 표현을 Unity 2D/3D로 확장했을 때 체감 개선 폭이 크다."
+                                                                                                            },
+                                                                                               "balance":  {
+                                                                                                               "status":  "done",
+                                                                                                               "score":  70,
+                                                                                                               "decision":  "PASS_WITH_TUNING",
+                                                                                                               "summary":  "지역별 레벨/장비/보상 기반은 유지 가치가 있으나 히든 패시브와 후반 수치 상승은 재조정이 필요하다."
+                                                                                                           },
+                                                                                               "director":  {
+                                                                                                                "status":  "done",
+                                                                                                                "score":  76,
+                                                                                                                "decision":  "PASS",
+                                                                                                                "summary":  "Unity Android 재개발 후보로 승인 추천. 기존 웹판 수정 없이 별도 Unity 프로젝트로 진행한다."
+                                                                                                            }
+                                                                                           }
+                                                                       }
+                                                  },
+                                "departmentTasks":  {
+                                                        "planning":  {
+                                                                         "status":  "working",
+                                                                         "task":  "autonomous development floor 34525047019",
+                                                                         "evidenceSource":  "director-supervision-status.json",
+                                                                         "workState":  "WAITING",
+                                                                         "reason":  "autonomous floor is active but this department job has not started yet"
+                                                                     },
+                                                        "development":  {
+                                                                            "status":  "working",
+                                                                            "task":  "autonomous development floor 34525047019",
+                                                                            "evidenceSource":  "director-supervision-status.json",
+                                                                            "workState":  "WAITING",
+                                                                            "reason":  "autonomous floor is active but this department job has not started yet"
+                                                                        },
+                                                        "qa":  {
+                                                                   "status":  "working",
+                                                                   "task":  "autonomous development floor 34525047019",
+                                                                   "evidenceSource":  "director-supervision-status.json",
+                                                                   "workState":  "WAITING",
+                                                                   "reason":  "autonomous floor is active but this department job has not started yet"
+                                                               },
+                                                        "graphics":  {
+                                                                         "status":  "working",
+                                                                         "task":  "autonomous development floor 34525047019",
+                                                                         "evidenceSource":  "director-supervision-status.json",
+                                                                         "workState":  "WAITING",
+                                                                         "reason":  "autonomous floor is active but this department job has not started yet"
+                                                                     },
+                                                        "balance":  {
+                                                                        "status":  "working",
+                                                                        "task":  "autonomous development floor 34525047019",
+                                                                        "evidenceSource":  "director-supervision-status.json",
+                                                                        "workState":  "WAITING",
+                                                                        "reason":  "autonomous floor is active but this department job has not started yet"
+                                                                    },
+                                                        "director":  {
+                                                                         "status":  "working",
+                                                                         "task":  "supervise staff execution, blockers, direct causes and verification",
+                                                                         "evidenceSource":  "director-supervision-status.json",
+                                                                         "workState":  "ACTIVE",
+                                                                         "reason":  "current supervisor check is executing from repository evidence"
+                                                                     }
+                                                    }
+                            },
+    "postModificationReviews":  [
+                                    {
+                                        "requestId":  "daechung-rpg-cloud-license-20260908-001",
+                                        "gameId":  "daechung-rpg",
+                                        "status":  "completed",
+                                        "decision":  "PASS",
+                                        "score":  88,
+                                        "modificationCommit":  "776f8099b6c44dec1ea1c75b2672eb8158ea45e6",
+                                        "buildRunId":  34191899205,
+                                        "buildConclusion":  "failure",
+                                        "resultPath":  "company-revotes/daechung-rpg/daechung-rpg-cloud-license-20260908-001/director.json",
+                                        "completedAt":  "2026-09-08T05:56:37.778974+00:00"
+                                    },
+                                    {
+                                        "requestId":  "daechung-rpg-cloud-license-20260908-002",
+                                        "gameId":  "daechung-rpg",
+                                        "status":  "completed",
+                                        "decision":  "REVISE",
+                                        "score":  75,
+                                        "modificationCommit":  "04000f8ccefb048b8d261a8186e40e2331669862",
+                                        "buildRunId":  34191899205,
+                                        "buildConclusion":  "failure",
+                                        "resultPath":  "company-revotes/daechung-rpg/daechung-rpg-cloud-license-20260908-002/director.json",
+                                        "completedAt":  "2026-09-08T06:02:46.100951+00:00"
+                                    }
+                                ]
 }
