@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "targetMarketScope": "GLOBAL",
+  "observedAt": "2026-09-11",
+  "role": "TARGET_DESIGN_REFERENCE",
+  "countrySpecificEvidenceRole": "SECONDARY_CONTEXT_ONLY",
+  "globalSources": [
+    {
+      "name": "Newzoo Global Games Market Report 2025",
+      "source": "https://newzoo.com/reports/global-games-market-report",
+      "observedAt": "2025-09-09",
+      "metrics": {
+        "globalPlayers2025Billion": 3.6,
+        "globalGamesRevenue2025UsdBillion": 188.8
+      }
+    },
+    {
+      "name": "Sensor Tower State of Gaming 2026",
+      "source": "https://sensortower.com/press/press-release-sensor-tower-state-of-gaming-gaming-drove-52-billion-downloads-82b-iap-revenue-on-mobile-and-12b-premium-revenue-on-steam",
+      "observedAt": "2026-02-26",
+      "metrics": {
+        "globalMobileGameIapRevenue2025UsdBillion": 82
+      }
+    },
+    {
+      "name": "GameAnalytics 2025 Mobile Gaming Benchmarks",
+      "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+      "observedAt": "2026-08-24",
+      "metrics": {
+        "globalMedianDailyPlaytimeMinutesApprox": 22,
+        "globalMedianSessionLengthMinutesLow": 5,
+        "globalMedianSessionLengthMinutesHigh": 6,
+        "globalMedianSessionsPerDayApprox": 4
+      }
+    },
+    {
+      "name": "Sensor Tower Worldwide Mobile Games December 2025",
+      "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+      "observedAt": "2025-12",
+      "metrics": {
+        "globalTopGrossing1": "Last War: Survival",
+        "globalTopGrossing2": "Whiteout Survival",
+        "globalTopGrossing3": "Royal Match",
+        "globalTopGrossing4": "MONOPOLY GO!",
+        "globalTopGrossing5": "Candy Crush Saga",
+        "globalTopDownload1": "Block Blast!",
+        "globalTopDownload2": "ROBLOX",
+        "globalTopDownload3": "Free Fire",
+        "globalTopDownload4": "Pizza Ready!",
+        "globalTopDownload5": "Subway Surfers",
+        "globalMobileGameDownloadsDecember2025Billion": 3.75
+      }
+    }
+  ],
+  "categories": {
+    "ACTION_SURVIVAL_ROGUELITE": {
+      "benchmarkCandidates": ["Vampire Survivors", "Brotato", "Survivor.io", "20 Minutes Till Dawn"],
+      "requiredConceptTerms": ["survive", "survival", "horde", "enemy", "combat", "upgrade", "build", "roguelite"],
+      "references": [
+        {"title":"Vampire Survivors","qualitative":"successful action-survival benchmark; learn abstract horde, auto-attack, upgrade-choice and build-combination patterns only"},
+        {"title":"Brotato","qualitative":"successful compact arena survival and build benchmark"},
+        {"title":"Survivor.io","qualitative":"successful mobile survival-roguelite benchmark"},
+        {"title":"Global mobile market scale","metrics":[{"metric":"globalMobileGameIapRevenue2025UsdBillion","value":82,"source":"https://sensortower.com/press/press-release-sensor-tower-state-of-gaming-gaming-drove-52-billion-downloads-82b-iap-revenue-on-mobile-and-12b-premium-revenue-on-steam","observedAt":"2026-02-26"}]},
+        {"title":"Global mobile engagement","metrics":[{"metric":"globalMedianSessionLengthMinutes","value":"5-6","source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2026-08-24"}]}
+      ]
+    },
+    "SINGLE_DEFENSE_STRATEGY": {
+      "benchmarkCandidates": ["Kingdom Rush", "Bloons TD 6", "Plants vs. Zombies 2", "The Battle Cats"],
+      "requiredConceptTerms": ["defend", "defense", "wave", "tower", "placement", "lane", "enemy", "strategy"],
+      "references": [
+        {"title":"Kingdom Rush","qualitative":"single-player tower-defense benchmark for wave pressure, placement and upgrades"},
+        {"title":"Bloons TD 6","qualitative":"successful defense strategy benchmark for tower synergy and upgrade paths"},
+        {"title":"Plants vs. Zombies 2","qualitative":"lane defense readability and counter-choice benchmark"},
+        {"title":"Global games audience","metrics":[{"metric":"globalPlayers2025Billion","value":3.6,"source":"https://newzoo.com/reports/global-games-market-report","observedAt":"2025-09-09"}]},
+        {"title":"Global mobile engagement","metrics":[{"metric":"globalMedianDailyPlaytimeMinutesApprox","value":22,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2026-08-24"}]}
+      ]
+    },
+    "PUZZLE": {
+      "benchmarkCandidates": ["Royal Match", "Candy Crush Saga", "Block Blast!", "Two Dots"],
+      "requiredConceptTerms": ["puzzle", "match", "solve", "board", "level", "combo", "goal"],
+      "references": [
+        {"title":"Royal Match","metrics":[{"metric":"globalTopGrossingDecember2025Rank","value":3,"source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12"}]},
+        {"title":"Candy Crush Saga","metrics":[{"metric":"globalTopGrossingDecember2025Rank","value":5,"source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12"}]},
+        {"title":"Block Blast!","metrics":[{"metric":"globalTopDownloadsDecember2025Rank","value":1,"source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12"}]},
+        {"title":"Global mobile engagement","metrics":[{"metric":"globalMedianSessionLengthMinutes","value":"5-6","source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2026-08-24"}]}
+      ]
+    },
+    "CASUAL": {
+      "benchmarkCandidates": ["Subway Surfers", "Crossy Road", "Angry Birds 2", "MONOPOLY GO!"],
+      "requiredConceptTerms": ["short", "retry", "score", "simple", "casual", "session", "reward"],
+      "references": [
+        {"title":"Subway Surfers","metrics":[{"metric":"globalTopDownloadsDecember2025Rank","value":5,"source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12"}]},
+        {"title":"Crossy Road","qualitative":"simple input, score chase and fast retry benchmark"},
+        {"title":"MONOPOLY GO!","metrics":[{"metric":"globalTopGrossingDecember2025Rank","value":4,"source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12"}]},
+        {"title":"Global mobile engagement","metrics":[{"metric":"globalMedianSessionsPerDayApprox","value":4,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2026-08-24"}]}
+      ]
+    },
+    "IDLE_GROWTH_RPG": {
+      "benchmarkCandidates": ["AFK Arena", "Legend of Slime", "Idle Heroes", "Tap Titans 2"],
+      "requiredConceptTerms": ["idle", "offline", "growth", "upgrade", "hero", "equipment", "progression", "rpg"],
+      "references": [
+        {"title":"AFK Arena","qualitative":"idle reward, roster growth and periodic active decision benchmark"},
+        {"title":"Legend of Slime","qualitative":"mobile idle growth and layered upgrade benchmark"},
+        {"title":"Idle Heroes","qualitative":"long-term idle roster and progression benchmark"},
+        {"title":"Global mobile market scale","metrics":[{"metric":"globalMobileGameIapRevenue2025UsdBillion","value":82,"source":"https://sensortower.com/press/press-release-sensor-tower-state-of-gaming-gaming-drove-52-billion-downloads-82b-iap-revenue-on-mobile-and-12b-premium-revenue-on-steam","observedAt":"2026-02-26"}]},
+        {"title":"Global games audience","metrics":[{"metric":"globalPlayers2025Billion","value":3.6,"source":"https://newzoo.com/reports/global-games-market-report","observedAt":"2025-09-09"}]}
+      ]
+    },
+    "STORY_COMPLETE_RPG": {
+      "benchmarkCandidates": ["Chrono Trigger", "FINAL FANTASY VI", "Battle Chasers: Nightwar", "DRAGON QUEST VIII"],
+      "requiredConceptTerms": ["story", "quest", "battle", "boss", "ending", "character", "explore", "rpg"],
+      "references": [
+        {"title":"Chrono Trigger","qualitative":"complete story arc, exploration, battles, boss progression and ending benchmark"},
+        {"title":"FINAL FANTASY VI","qualitative":"party growth, story progression and final resolution benchmark"},
+        {"title":"Battle Chasers: Nightwar","qualitative":"mobile-compatible complete RPG structure benchmark"},
+        {"title":"Global games audience","metrics":[{"metric":"globalPlayers2025Billion","value":3.6,"source":"https://newzoo.com/reports/global-games-market-report","observedAt":"2025-09-09"}]},
+        {"title":"Global mobile engagement","metrics":[{"metric":"globalMedianDailyPlaytimeMinutesApprox","value":22,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2026-08-24"}]}
+      ]
+    }
+  },
+  "unavailableGlobalFields": {
+    "globalAgeDistribution": "UNKNOWN"
+  }
+}

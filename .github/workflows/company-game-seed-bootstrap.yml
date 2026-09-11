@@ -9,9 +9,11 @@ on:
     paths:
       - 'COMPANY_FLOW.md'
       - 'company-directive.json'
+      - 'game-seed-market-evidence.json'
       - 'tools/game-seed-state.mjs'
       - 'tools/company-game-seed-contract.mjs'
       - 'tools/company-game-seed-bootstrap.mjs'
+      - 'tools/company-game-seed-quality-gate.mjs'
       - 'qa/company-game-seed-flow.test.mjs'
       - '.github/workflows/company-game-seed-bootstrap.yml'
       - '.github/workflows/company-seed-design-runtime.yml'
@@ -25,7 +27,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  GAME_SEED_LOCAL_MODEL: qwen3:0.6b
+  GAME_SEED_LOCAL_MODEL: gemma3:1b
   OLLAMA_VERSION: '0.33.3'
   COMPANY_RUNTIME_BRANCH: company-runtime
 
@@ -46,6 +48,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git config user.name 'jaewoon-company-runtime'
+          git config user.email 'company-runtime@users.noreply.github.com'
           git fetch origin main
           if git ls-remote --exit-code --heads origin "$COMPANY_RUNTIME_BRANCH" >/dev/null 2>&1; then
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
@@ -62,6 +66,7 @@ jobs:
           node --check tools/game-seed-state.mjs
           node --check tools/company-game-seed-contract.mjs
           node --check tools/company-game-seed-bootstrap.mjs
+          node --check tools/company-game-seed-quality-gate.mjs
           node --test qa/company-game-seed-flow.test.mjs
           node --test qa/autonomous-portfolio-continuation.test.mjs
 
@@ -109,6 +114,15 @@ jobs:
           node tools/company-game-seed-bootstrap.mjs | tee /tmp/game-seed-result.txt
           grep -q 'GAME_SEED_PAID_API=NO' /tmp/game-seed-result.txt
           grep -q 'GAME_SEED_MODEL_CALLS=1' /tmp/game-seed-result.txt
+          grep -q 'GAME_SEED_MARKET_SCOPE=GLOBAL' /tmp/game-seed-result.txt
+
+      - name: Reject category-mismatched generic or country-scoped GAME_SEED output
+        if: steps.need.outputs.model == 'true'
+        env:
+          GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
+        run: |
+          set -euo pipefail
+          node tools/company-game-seed-quality-gate.mjs
 
       - name: Stop with no growth when there is no vacancy
         if: steps.need.outputs.model != 'true'
@@ -158,12 +172,13 @@ jobs:
         if: always()
         run: |
           echo '### Company GAME_SEED Bootstrap' >> "$GITHUB_STEP_SUMMARY"
+          echo '- target market: GLOBAL; country-specific evidence is secondary context only' >> "$GITHUB_STEP_SUMMARY"
           echo '- initial generation: one atomic six-category batch' >> "$GITHUB_STEP_SUMMARY"
           echo '- local model calls: one batch call per generation run' >> "$GITHUB_STEP_SUMMARY"
+          echo '- semantic quality: category benchmark match + concrete identity/loop + sourced global market evidence required before persistence' >> "$GITHUB_STEP_SUMMARY"
           echo '- recurring schedule: vacancy check only; no vacancy = no new seed' >> "$GITHUB_STEP_SUMMARY"
           echo '- replenishment: one-for-one same category unless owner changes category' >> "$GITHUB_STEP_SUMMARY"
           echo '- runtime persistence: company-runtime branch; main stays unchanged' >> "$GITHUB_STEP_SUMMARY"
-          echo '- market evidence: target/audience/session/monetization reference only' >> "$GITHUB_STEP_SUMMARY"
           echo '- numeric market claims: source + observedAt required' >> "$GITHUB_STEP_SUMMARY"
           echo '- source code: own implementation only' >> "$GITHUB_STEP_SUMMARY"
           echo '- public game source write: NO' >> "$GITHUB_STEP_SUMMARY"

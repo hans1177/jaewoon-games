@@ -121,6 +121,9 @@ GAME_SEED:
 
   marketEvidence:
     role: TARGET_DESIGN_REFERENCE
+    targetMarketScope: GLOBAL
+    countrySpecificEvidenceRole: SECONDARY_CONTEXT_ONLY
+    defaultTargetMustNotBeCountrySpecific: true
     hardPassFailGate: false
     missingMarketDataDoesNotAutoRejectSeed: true
     marketDataAloneCannotDiscardGame: true
@@ -143,6 +146,8 @@ GAME_SEED:
       - PROGRESSION_PACING
       - UX_COMPLEXITY
     evidenceRules:
+      globalEvidencePreferred: true
+      countrySpecificEvidenceCannotDefineDefaultTargetAlone: true
       numericClaimRequiresSource: true
       numericClaimRequiresObservedAt: true
       unverifiableNumericClaimForbidden: true
