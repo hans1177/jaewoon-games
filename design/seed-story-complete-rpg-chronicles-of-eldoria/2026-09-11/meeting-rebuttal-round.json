@@ -1,0 +1,92 @@
+{
+  "version": 4,
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "Story Driven",
+        "Character Progression",
+        "Quest Completion"
+      ],
+      "challenge": [
+        "Character Progression",
+        "Quest Completion"
+      ],
+      "revision": [
+        "Character Progression",
+        "Quest Completion"
+      ],
+      "reason": "The core gameplay loop of Chronicles of Eldoria is reinterpreting the successful structural 1, which is a key element of the game's design."
+    },
+    "graphics": {
+      "accept": [
+        "Visual Style Consistency",
+        "Color Palette Selection",
+        "UI/UX Design"
+      ],
+      "challenge": [
+        "Visual Clutter"
+      ],
+      "revision": [
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1."
+      ],
+      "reason": "The 'Chronicles of Eldoria' is a successful mobile RPG. We need to ensure the visual style remains consistent with this established success.  Color palette selection is crucial for maintaining a cohesive aesthetic and avoiding visual clutter."
+    },
+    "development": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "reason": "Chronicles of Eldoria는 1.0의 구조를 재interpret 한 globally mobile single-player story complete RPG로 개발되었습니다."
+    },
+    "qa": {
+      "accept": [
+        "chronicles-of-eldoria"
+      ],
+      "challenge": [
+        "chronicles-of-eldoria"
+      ],
+      "revision": [
+        "chronicles-of-eldoria"
+      ],
+      "reason": "chronicles-of-eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1."
+    },
+    "balance": {
+      "accept": [
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1.",
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1."
+      ],
+      "challenge": [
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1.",
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1."
+      ],
+      "revision": [
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1.",
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1."
+      ],
+      "reason": "너는 balance 부서 Lead AI다. 다른 네 부서 대표 의견을 읽고 자기 책임범위에서 한 번만 수용/반박/수정한다."
+    }
+  }
+}

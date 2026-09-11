@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "representativeModel": "qwen3:0.6b",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "Story Driven"
+    ],
+    "fix": [
+      "Character Progression"
+    ],
+    "add": [
+      "Quest Completion"
+    ],
+    "risks": [
+      "battle centered"
+    ],
+    "evidence": [
+      "Global RPG/session signal"
+    ],
+    "questions": [
+      "What is the core gameplay loop of Chronicles of Eldoria?"
+    ]
+  }
+}

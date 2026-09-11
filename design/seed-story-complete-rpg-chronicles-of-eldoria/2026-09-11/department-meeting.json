@@ -1,0 +1,172 @@
+{
+  "version": 4,
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "llama3.2:1b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "Story Driven"
+      ],
+      "fix": [
+        "Character Progression"
+      ],
+      "add": [
+        "Quest Completion"
+      ],
+      "risks": [
+        "battle centered"
+      ],
+      "evidence": [
+        "Global RPG/session signal"
+      ],
+      "questions": [
+        "What is the core gameplay loop of Chronicles of Eldoria?"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "Visual Style Consistency"
+      ],
+      "fix": [
+        "Color Palette Selection"
+      ],
+      "add": [
+        "UI/UX Design"
+      ],
+      "risks": [
+        "Visual Clutter"
+      ],
+      "evidence": [
+        "Visual Assets"
+      ],
+      "questions": [
+        "Visual Style Consistency"
+      ]
+    },
+    "development": {
+      "keep": [
+        "Story Driven"
+      ],
+      "fix": [
+        "Character Progression"
+      ],
+      "add": [
+        "Quest Completion"
+      ],
+      "risks": [
+        "battle"
+      ],
+      "evidence": [
+        "Story Driven"
+      ],
+      "questions": [
+        "What is the core gameplay loop of Chronicles of Eldoria?"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "chronicles-of-eldoria"
+      ],
+      "fix": [
+        "chronicles-of-eldoria"
+      ],
+      "add": [
+        "chronicles-of-eldoria"
+      ],
+      "risks": [
+        "chronicles-of-eldoria"
+      ],
+      "evidence": [
+        "chronicles-of-eldoria"
+      ],
+      "questions": [
+        "chronicles-of-eldoria"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1.",
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1."
+      ],
+      "fix": [
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1.",
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1."
+      ],
+      "add": [
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1.",
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1."
+      ],
+      "risks": [
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1.",
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1."
+      ],
+      "evidence": [
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1.",
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1."
+      ],
+      "questions": [
+        "What is the core gameplay loop of Chronicles of Eldoria?\n\nChronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1.\n\nChronicles of Eldoria is an original global mobile single-player story",
+        "What is the core gameplay loop of Chronicles of Eldoria?\n\nChronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1.\n\nChronicles of Eldoria is an original global mobile single-player story"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "The 'Chronicles of Eldoria' is a successful mobile RPG. We need to ensure the visual style remains consistent with this established success. Color palette selection is crucial for maintaining a cohesive aesthetic and avoiding visual clutter.",
+      "departments": [
+        "graphics"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "Chronicles of Eldoria는 1.0의 구조를 재interpret 한 globally mobile single-player story complete RPG로 개발되었습니다.",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "chronicles-of-eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1.",
+      "departments": [
+        "qa"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "너는 balance 부서 Lead AI다. 다른 네 부서 대표 의견을 읽고 자기 책임범위에서 한 번만 수용/반박/수정한다.",
+      "departments": [
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 4,
+    "conflict": 0,
+    "hold": 0
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Visual Style Consistency"
+        ],
+        "fix": [
+          "Color Palette Selection"
+        ],
+        "add": [
+          "UI/UX Design"
+        ],
+        "risks": [
+          "Visual Clutter"
+        ],
+        "evidence": [
+          "Visual Assets"
+        ],
+        "questions": [
+          "Visual Style Consistency"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Story Driven"
+        ],
+        "fix": [
+          "Character Progression"
+        ],
+        "add": [
+          "Quest Completion"
+        ],
+        "risks": [
+          "battle"
+        ],
+        "evidence": [
+          "Story Driven"
+        ],
+        "questions": [
+          "What is the core gameplay loop of Chronicles of Eldoria?"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "chronicles-of-eldoria"
+        ],
+        "fix": [
+          "chronicles-of-eldoria"
+        ],
+        "add": [
+          "chronicles-of-eldoria"
+        ],
+        "risks": [
+          "chronicles-of-eldoria"
+        ],
+        "evidence": [
+          "chronicles-of-eldoria"
+        ],
+        "questions": [
+          "chronicles-of-eldoria"
+        ]
+      }
+    }
+  ]
+}

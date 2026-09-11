@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Story Driven"
+        ],
+        "fix": [
+          "Character Progression"
+        ],
+        "add": [
+          "Quest Completion"
+        ],
+        "risks": [
+          "battle 중심의 STORY_COMPLETE_RPG 핵심 플레이 패턴을 글로벌 모바일 환경에 맞게 재해석한다"
+        ],
+        "evidence": [
+          "Global RPG/session signal"
+        ],
+        "questions": [
+          "What is the core gameplay loop of Chronicles of Eldoria?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Core Gameplay Loop Analysis"
+        ],
+        "fix": [
+          "Visual Design Review"
+        ],
+        "add": [
+          "Market Research"
+        ],
+        "risks": [
+          "Gameplay Balance Check"
+        ],
+        "evidence": [
+          "Gameplay Data"
+        ],
+        "questions": [
+          "Core Mechanics"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural le"
+        ],
+        "fix": [
+          "Story Driven"
+        ],
+        "add": [
+          "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward."
+        ],
+        "risks": [
+          "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter."
+        ],
+        "evidence": [
+          "Story Driven"
+        ],
+        "questions": [
+          "What is the core gameplay loop of Chronicles of Eldoria?"
+        ]
+      }
+    }
+  ]
+}

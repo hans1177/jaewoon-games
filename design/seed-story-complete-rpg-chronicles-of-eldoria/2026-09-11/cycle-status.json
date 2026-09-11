@@ -1,0 +1,339 @@
+{
+  "version": 5,
+  "date": "2026-09-11",
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "gameName": "Chronicles of Eldoria",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "status": "COMPLETE",
+  "policyDocument": "COMPANY_FLOW.md",
+  "flow": "GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE",
+  "gameSeed": {
+    "seedId": "SEED-STORY_COMPLETE_RPG-001",
+    "category": "STORY_COMPLETE_RPG",
+    "source": "game-seed-state.json",
+    "complete": true
+  },
+  "designer": {
+    "role": "GAME_DESIGNER_AI",
+    "model": "smollm2:1.7b",
+    "singleAuthor": true,
+    "sameModelRevised": true
+  },
+  "departments": {
+    "count": 5,
+    "roles": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "balance"
+    ],
+    "leadModels": {
+      "planning": "qwen3:0.6b",
+      "graphics": "gemma3:1b",
+      "development": "llama3.2:1b",
+      "qa": "qwen2.5:1.5b",
+      "balance": "smollm2:1.7b"
+    },
+    "distinctLeadModels": [
+      "qwen3:0.6b",
+      "gemma3:1b",
+      "llama3.2:1b",
+      "qwen2.5:1.5b",
+      "smollm2:1.7b"
+    ],
+    "distinctLeadModelCount": 5,
+    "leadModelsDistinct": true,
+    "reviewModelCount": 3,
+    "modelAudit": {
+      "planning": {
+        "leadModel": "qwen3:0.6b",
+        "assistantModels": [
+          "gemma3:1b",
+          "llama3.2:1b"
+        ],
+        "models": [
+          "qwen3:0.6b",
+          "gemma3:1b",
+          "llama3.2:1b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "qwen3:0.6b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "qwen3:0.6b",
+        "rebuttalAuthoredByLead": true
+      },
+      "graphics": {
+        "leadModel": "gemma3:1b",
+        "assistantModels": [
+          "llama3.2:1b",
+          "qwen2.5:1.5b"
+        ],
+        "models": [
+          "gemma3:1b",
+          "llama3.2:1b",
+          "qwen2.5:1.5b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "gemma3:1b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "gemma3:1b",
+        "rebuttalAuthoredByLead": true
+      },
+      "development": {
+        "leadModel": "llama3.2:1b",
+        "assistantModels": [
+          "qwen2.5:1.5b",
+          "smollm2:1.7b"
+        ],
+        "models": [
+          "llama3.2:1b",
+          "qwen2.5:1.5b",
+          "smollm2:1.7b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "llama3.2:1b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "llama3.2:1b",
+        "rebuttalAuthoredByLead": true
+      },
+      "qa": {
+        "leadModel": "qwen2.5:1.5b",
+        "assistantModels": [
+          "smollm2:1.7b",
+          "qwen3:0.6b"
+        ],
+        "models": [
+          "qwen2.5:1.5b",
+          "smollm2:1.7b",
+          "qwen3:0.6b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "qwen2.5:1.5b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "qwen2.5:1.5b",
+        "rebuttalAuthoredByLead": true
+      },
+      "balance": {
+        "leadModel": "smollm2:1.7b",
+        "assistantModels": [
+          "qwen3:0.6b",
+          "gemma3:1b"
+        ],
+        "models": [
+          "smollm2:1.7b",
+          "qwen3:0.6b",
+          "gemma3:1b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "smollm2:1.7b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "smollm2:1.7b",
+        "rebuttalAuthoredByLead": true
+      }
+    },
+    "rebuttalRounds": 1,
+    "rebuttalAuthoredByDepartmentLeads": true,
+    "repeatedFatalReview": true
+  },
+  "meeting": {
+    "consensusCount": 4,
+    "conflictCount": 0,
+    "holdCount": 0,
+    "coordinatorModel": "llama3.2:1b"
+  },
+  "disposition": {
+    "version": 1,
+    "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+    "date": "2026-09-11",
+    "state": "REDESIGN",
+    "sameDesignerRevisionAttempted": true,
+    "repeatedFiveDepartmentReview": true,
+    "allFiveLeadModelsReviewed": true,
+    "discardVotes": 1,
+    "commonFatalCriteria": [],
+    "unanimousFatalDiscard": false,
+    "fatalReviews": {
+      "planning": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [],
+        "evidence": [
+          "The 'Chronicles of Eldoria' is a successful mobile RPG. We need to ensure the visual style remains consistent with this established success. Color palette selection is crucial for maintaining a cohesive aesthetic and avoiding visual clutter.",
+          "The 'Chronicles of Eldoria' is an original global mobile single-player story complete rpg that reinterprets the successful structural lessons of Chrono Trigger and FINAL FANTASY VI through a distinct setting, visual identity, progression mix, and touch-first. "
+        ],
+        "reason": "The 'Chronicles of Eldoria' is a successful mobile RPG. We need to ensure the visual style remains consistent with this established success. Color palette selection is crucial for maintaining a cohesive aesthetic and avoiding visual clutter."
+      },
+      "graphics": {
+        "recommendedState": "DISCARD",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "validationQuestions: [ "
+        ],
+        "reason": "The core gameplay loop of Chronicles of Eldoria is a story-driven RPG with quest completion and battle-based progression. The visual style should be consistent with this established success. Color palette selection is crucial for maintaining a cohesive aesthetic and avoiding visual clutter.  The core gameplay mechanics of Chronicles of Eldoria are well-defined.  The current design seems to be focused on a single, well-defined narrative and progression path.  The current design does not have a distinct identity.  The mobile-only nature of the game is a key element of its success.  The game is a single-player experience.  The game is a mobile game.  The game is a story-driven RPG.  The game is"
+      },
+      "development": {
+        "recommendedState": "REDESIGN",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "marketEvidenceSummary",
+          "REVISED_DESIGN"
+        ],
+        "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라."
+      },
+      "qa": {
+        "recommendedState": "REDESIGN",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural lessons of Chrono Trigger and FINAL FANTASY VI through a distinct setting, visual identity, progression mix, and touch-first present"
+        ],
+        "reason": "The current design does not meet the core gameplay loop requirement, which is essential for the success of the game. The redesign is necessary to ensure that the game's core gameplay loop remains intact and consistent with the established success of the original game."
+      },
+      "balance": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "CORE_FUN_TO_LEARN",
+          "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
+          "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion.",
+          "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward."
+        ],
+        "reason": "The 'Chronicles of Eldoria' is a successful mobile RPG. We need to ensure the visual style remains consistent with this established success. Color palette selection is crucial for maintaining a cohesive aesthetic and avoiding visual clutter."
+      }
+    },
+    "marketMetricAloneUsedForDiscard": false
+  },
+  "runtimeMetrics": {
+    "phaseMs": {
+      "designer_draft": 189040,
+      "independent_department_reviews": 230512,
+      "department_representatives": 53761,
+      "lead_rebuttals": 55424,
+      "cross_department_meeting": 19303,
+      "designer_revision": 192085,
+      "five_lead_fatal_review": 286108
+    },
+    "totalModelCalls": 23,
+    "totalModelCallMs": 1534694,
+    "modelPhaseConcurrency": 3,
+    "modelKeepAlive": "2m",
+    "independentReviewOutputs": 15,
+    "fullPoolReviewOutputs": 25
+  },
+  "artbook": {
+    "created": false,
+    "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
+  },
+  "vibe2Used": false,
+  "paidApi": false,
+  "baselineGate": {
+    "policyDocument": "COMPANY_FLOW.md",
+    "productionClass": "DESIGN_ONLY",
+    "tierAlias": 3,
+    "tier": 3,
+    "state": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "ready": false,
+    "blockers": [
+      "design-disposition:REDESIGN"
+    ],
+    "meeting": {
+      "conflictCount": 0,
+      "holdCount": 0,
+      "allResolved": true
+    },
+    "evidence": {
+      "gameSeed": {
+        "required": true,
+        "present": true,
+        "seedId": "SEED-STORY_COMPLETE_RPG-001",
+        "source": "game-seed-state.json"
+      },
+      "webSmoke": {
+        "supportingOnly": true,
+        "pass": false,
+        "source": null
+      },
+      "webGameplay": {
+        "required": false,
+        "pass": false,
+        "source": null
+      },
+      "unityProject": {
+        "required": false,
+        "present": false,
+        "path": null
+      },
+      "unityTechnical": {
+        "required": false,
+        "pass": false,
+        "source": null
+      },
+      "revalidation": {
+        "conditional": true,
+        "pass": false,
+        "source": null
+      }
+    },
+    "contracts": {
+      "aiMeetingCompletionDoesNotEqualBaselineApproval": true,
+      "gameSeedRequiredBeforeDesignBaseline": true,
+      "marketEvidenceIsTargetReferenceNotHardGate": true,
+      "meetingHoldBlocksDesignBaseline": true,
+      "meetingConflictBlocksDesignBaseline": true,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": true,
+      "designArtbookOnlyAfterBaselineReady": true,
+      "designOnlyVibe2Forbidden": true,
+      "webSmokeDoesNotEqualGameplayValidation": true,
+      "developmentConfirmedIsGatedDirect": true,
+      "developmentConfirmedResumesFromLatestEvidence": true,
+      "developmentConfirmedRequiresExplicitWebGameplayValidation": true,
+      "developmentConfirmedRequiresUnityTechnicalValidation": true,
+      "developmentArtbookOnlyAfterBaselineReady": true,
+      "releaseConfirmedBaselineOwnedByReleasePipeline": true,
+      "numericTierIsCompatibilityAliasOnly": true
+    },
+    "checkedAt": "2026-09-11T06:27:37.530Z"
+  },
+  "artbookUi": {
+    "status": "WAITING",
+    "label": "대기중",
+    "path": "artbook-submissions/seed-story-complete-rpg-chronicles-of-eldoria/status.json"
+  },
+  "artbookPublication": {
+    "published": false,
+    "path": null,
+    "baselineGateState": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "reason": "baseline-not-ready"
+  }
+}

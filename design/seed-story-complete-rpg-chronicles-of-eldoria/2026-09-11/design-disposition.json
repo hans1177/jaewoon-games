@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "date": "2026-09-11",
+  "state": "REDESIGN",
+  "sameDesignerRevisionAttempted": true,
+  "repeatedFiveDepartmentReview": true,
+  "allFiveLeadModelsReviewed": true,
+  "discardVotes": 1,
+  "commonFatalCriteria": [],
+  "unanimousFatalDiscard": false,
+  "fatalReviews": {
+    "planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "The 'Chronicles of Eldoria' is a successful mobile RPG. We need to ensure the visual style remains consistent with this established success. Color palette selection is crucial for maintaining a cohesive aesthetic and avoiding visual clutter.",
+        "The 'Chronicles of Eldoria' is an original global mobile single-player story complete rpg that reinterprets the successful structural lessons of Chrono Trigger and FINAL FANTASY VI through a distinct setting, visual identity, progression mix, and touch-first. "
+      ],
+      "reason": "The 'Chronicles of Eldoria' is a successful mobile RPG. We need to ensure the visual style remains consistent with this established success. Color palette selection is crucial for maintaining a cohesive aesthetic and avoiding visual clutter."
+    },
+    "graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "validationQuestions: [ "
+      ],
+      "reason": "The core gameplay loop of Chronicles of Eldoria is a story-driven RPG with quest completion and battle-based progression. The visual style should be consistent with this established success. Color palette selection is crucial for maintaining a cohesive aesthetic and avoiding visual clutter.  The core gameplay mechanics of Chronicles of Eldoria are well-defined.  The current design seems to be focused on a single, well-defined narrative and progression path.  The current design does not have a distinct identity.  The mobile-only nature of the game is a key element of its success.  The game is a single-player experience.  The game is a mobile game.  The game is a story-driven RPG.  The game is"
+    },
+    "development": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "marketEvidenceSummary",
+        "REVISED_DESIGN"
+      ],
+      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라."
+    },
+    "qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural lessons of Chrono Trigger and FINAL FANTASY VI through a distinct setting, visual identity, progression mix, and touch-first present"
+      ],
+      "reason": "The current design does not meet the core gameplay loop requirement, which is essential for the success of the game. The redesign is necessary to ensure that the game's core gameplay loop remains intact and consistent with the established success of the original game."
+    },
+    "balance": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "CORE_FUN_TO_LEARN",
+        "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
+        "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion.",
+        "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward."
+      ],
+      "reason": "The 'Chronicles of Eldoria' is a successful mobile RPG. We need to ensure the visual style remains consistent with this established success. Color palette selection is crucial for maintaining a cohesive aesthetic and avoiding visual clutter."
+    }
+  },
+  "marketMetricAloneUsedForDiscard": false
+}

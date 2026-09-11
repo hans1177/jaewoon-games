@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1."
+        ],
+        "fix": [
+          "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1."
+        ],
+        "add": [
+          "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1."
+        ],
+        "risks": [
+          "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1."
+        ],
+        "evidence": [
+          "Chronicles of Eldoria is an original global mobile single-player story complete rpg that reinterprets the successful structural 1."
+        ],
+        "questions": [
+          "What is the core gameplay loop of Chronicles of Eldoria?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Story Driven"
+        ],
+        "fix": [
+          "Character Progression"
+        ],
+        "add": [
+          "Quest Completion"
+        ],
+        "risks": [
+          "battle 중심의 STORY_COMPLETE_RPG 핵심 플레이 패턴을 글로벌 모바일 환경에 맞게 재해석한다"
+        ],
+        "evidence": [
+          "Global RPG/session signal"
+        ],
+        "questions": [
+          "What are the core gameplay mechanics of Chronicles of Eldoria?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Gameplay Difficulty"
+        ],
+        "fix": [
+          "Challenge Level Adjustment"
+        ],
+        "add": [
+          "Resource Management"
+        ],
+        "risks": [
+          "Gameplay Imbalance"
+        ],
+        "evidence": [
+          "Gameplay Data"
+        ],
+        "questions": [
+          "Challenge Level Adjustment"
+        ]
+      }
+    }
+  ]
+}
