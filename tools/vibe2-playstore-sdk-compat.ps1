@@ -56,18 +56,24 @@ function Set-AndroidJava {
   }
 }
 
-function Invoke-WithYes {
-  param([string]$Exe, [string[]]$Args)
+function Invoke-CmdWithYes {
+  param([string]$Exe, [string[]]$ArgumentList)
+  $quotedExe = '"' + $Exe.Replace('"','""') + '"'
+  $quotedArgs = @($ArgumentList | ForEach-Object { '"' + ([string]$_).Replace('"','""') + '"' }) -join ' '
+  $command = "(for /L %i in (1,1,500) do @echo y) | $quotedExe $quotedArgs"
   $old = $ErrorActionPreference
   try {
     $ErrorActionPreference = 'Continue'
-    $yes = 1..400 | ForEach-Object { 'y' }
-    $out = $yes | & $Exe @Args 2>&1
+    $output = & $env:ComSpec /d /s /c $command 2>&1
     $code = $LASTEXITCODE
   } finally {
     $ErrorActionPreference = $old
   }
-  [pscustomobject]@{ ExitCode = [int]$code; Output = @($out | ForEach-Object { [string]$_ }) }
+  [pscustomobject]@{
+    ExitCode = [int]$code
+    Output = @($output | ForEach-Object { [string]$_ })
+    Command = $command
+  }
 }
 
 $sdkRoot = Find-SdkRoot
@@ -79,9 +85,13 @@ $sdkManager = Find-SdkManager $sdkRoot
 Write-Host "ANDROID_SDK_ROOT=$sdkRoot"
 Write-Host "SDKMANAGER=$sdkManager"
 
-$installed = @(Get-ChildItem (Join-Path $sdkRoot 'system-images') -Directory -Recurse -ErrorAction SilentlyContinue | Where-Object {
-  $_.Name -eq 'x86_64' -and $_.Parent -and $_.Parent.Name -eq 'google_apis_playstore' -and $_.Parent.Parent -and $_.Parent.Parent.Name -match '^android-\d+$'
-})
+$systemImageRoot = Join-Path $sdkRoot 'system-images'
+$installed = @()
+if (Test-Path -LiteralPath $systemImageRoot) {
+  $installed = @(Get-ChildItem $systemImageRoot -Directory -Recurse -ErrorAction SilentlyContinue | Where-Object {
+    $_.Name -eq 'x86_64' -and $_.Parent -and $_.Parent.Name -eq 'google_apis_playstore' -and $_.Parent.Parent -and $_.Parent.Parent.Name -match '^android-\d+$'
+  })
+}
 if ($installed.Count -gt 0) {
   $bestInstalled = $installed | Sort-Object { [int]($_.Parent.Parent.Name -replace '^android-','') } -Descending | Select-Object -First 1
   Write-Host "PLAY_STORE_SYSTEM_IMAGE_ALREADY_INSTALLED=$($bestInstalled.Parent.Parent.Name)"
@@ -113,10 +123,18 @@ foreach ($row in @($listOutput)) {
 }
 if ($null -eq $best) { throw 'NO_GOOGLE_PLAY_X86_64_SYSTEM_IMAGE_IN_SDKMANAGER_LIST' }
 
+Write-Host 'ANDROID_SDK_LICENSE_ACCEPTANCE=START'
+$license = Invoke-CmdWithYes $sdkManager @('--licenses')
+if ($license.ExitCode -eq 0) {
+  Write-Host 'ANDROID_SDK_LICENSE_ACCEPTANCE=PASS'
+} else {
+  Write-Host 'ANDROID_SDK_LICENSE_ACCEPTANCE=DEFER_TO_INSTALL'
+}
+
 Write-Host "INSTALLING_PLAY_STORE_SYSTEM_IMAGE=$($best.Package)"
-$install = Invoke-WithYes $sdkManager @($best.Package)
+$install = Invoke-CmdWithYes $sdkManager @($best.Package)
 if ($install.ExitCode -ne 0) {
-  throw "PLAY_STORE_SYSTEM_IMAGE_INSTALL_FAILED:$(@($install.Output | Select-Object -Last 30) -join "`n")"
+  throw "PLAY_STORE_SYSTEM_IMAGE_INSTALL_FAILED:$(@($install.Output | Select-Object -Last 40) -join "`n")"
 }
 
 $expected = Join-Path $sdkRoot "system-images\android-$($best.Api)\google_apis_playstore\x86_64"
