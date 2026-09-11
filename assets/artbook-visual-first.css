@@ -1,0 +1,33 @@
+.shell{width:min(100%,1060px)}
+.book>.head p{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;overflow:hidden;max-width:760px}
+.book>.notice{margin:8px 12px;padding:7px 10px;font-size:9px;line-height:1.35}
+.pages{gap:10px!important;padding:0 8px 12px!important;scroll-padding-inline:8px}
+.pages>.page{flex:0 0 min(97%,900px)!important;min-width:min(97%,900px)!important;border-radius:18px}
+.designVisual{aspect-ratio:16/10!important;min-height:390px!important;padding:30px!important;justify-content:center!important}
+.visualHero{font-size:32px!important;line-height:1.05!important;max-width:96%!important}
+.visualSub{margin-top:10px!important;font-size:13px!important;line-height:1.35!important;max-width:94%!important;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.visualFlow,.visualGrid{gap:10px!important;margin-top:18px!important}
+.visualNode,.visualCard{padding:14px!important;border-radius:14px!important;font-size:12px!important;line-height:1.35!important;min-height:78px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.visualNode b,.visualCard b{font-size:10px!important;margin-bottom:5px!important}
+.page .info{padding:8px 14px 10px!important}
+.page .info h2{margin:5px 0 3px!important;font-size:17px!important}
+.page .info p{font-size:10px!important;line-height:1.35!important;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-height:2.8em}
+.pageTop{min-height:24px}
+.pageNav{padding:0 8px 12px!important}
+@media(max-width:760px){
+  .shell{padding-left:5px;padding-right:5px}
+  .pages{padding-left:4px!important;padding-right:4px!important;gap:7px!important}
+  .pages>.page{flex-basis:97%!important;min-width:97%!important}
+  .designVisual{min-height:340px!important;padding:20px!important;aspect-ratio:auto!important}
+  .visualHero{font-size:27px!important}
+  .visualSub{font-size:12px!important;-webkit-line-clamp:2}
+  .visualFlow{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important}
+  .visualGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+  .visualNode,.visualCard{padding:9px!important;font-size:10px!important;min-height:72px;-webkit-line-clamp:3}
+  .book>.head{padding:13px 14px}
+  .book>.head h1{font-size:23px}
+  .book>.notice{display:none}
+  .page .info{padding:7px 10px 9px!important}
+  .page .info h2{font-size:15px!important}
+  .page .info p{-webkit-line-clamp:2;font-size:9px!important}
+}
