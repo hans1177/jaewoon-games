@@ -72,9 +72,18 @@ jobs:
           set -euo pipefail
           SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
           [[ -n "$SDK" ]] || { echo 'Android SDK missing' >&2; exit 5; }
-          yes | sdkmanager --licenses >/dev/null || true
-          sdkmanager 'platform-tools' 'emulator' 'build-tools;36.0.0' 'system-images;android-36;google_apis;x86_64'
-          echo no | avdmanager create avd --force --name jaewoon-independent-qa --package 'system-images;android-36;google_apis;x86_64' --device 'pixel_6'
+          sdkmanager_bin="$(find "$SDK/cmdline-tools" -type f -name sdkmanager 2>/dev/null | sort -V | tail -n 1 || true)"
+          avdmanager_bin="$(find "$SDK/cmdline-tools" -type f -name avdmanager 2>/dev/null | sort -V | tail -n 1 || true)"
+          [[ -x "$sdkmanager_bin" ]] || { echo "sdkmanager missing under $SDK/cmdline-tools" >&2; find "$SDK" -maxdepth 4 -type f \( -name sdkmanager -o -name avdmanager \) -print || true; exit 6; }
+          [[ -x "$avdmanager_bin" ]] || { echo "avdmanager missing under $SDK/cmdline-tools" >&2; exit 7; }
+          cmdline_bin="$(dirname "$sdkmanager_bin")"
+          export PATH="$cmdline_bin:$SDK/platform-tools:$SDK/emulator:$PATH"
+          echo "$cmdline_bin" >> "$GITHUB_PATH"
+          echo "$SDK/platform-tools" >> "$GITHUB_PATH"
+          echo "$SDK/emulator" >> "$GITHUB_PATH"
+          yes | "$sdkmanager_bin" --licenses >/dev/null || true
+          "$sdkmanager_bin" 'platform-tools' 'emulator' 'build-tools;36.0.0' 'system-images;android-36;google_apis;x86_64'
+          echo no | "$avdmanager_bin" create avd --force --name jaewoon-independent-qa --package 'system-images;android-36;google_apis;x86_64' --device 'pixel_6'
           if [[ -e /dev/kvm ]]; then sudo chmod 666 /dev/kvm || true; fi
           nohup "$SDK/emulator/emulator" -avd jaewoon-independent-qa -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > /tmp/jaewoon-independent-emulator.log 2>&1 &
           adb wait-for-device
@@ -94,17 +103,15 @@ jobs:
           SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
           AAPT="$(find "$SDK/build-tools" -type f -name aapt | sort -V | tail -n 1)"
           package="$($AAPT dump badging "$APK" | sed -n "s/^package: name='\([^']*\)'.*/\1/p" | head -n1)"
-          [[ -n "$package" ]] || { echo 'could not resolve package id' >&2; exit 6; }
+          [[ -n "$package" ]] || { echo 'could not resolve package id' >&2; exit 8; }
 
           adb logcat -c
           adb install -r -t "$APK" >/tmp/independent-install.log
           adb shell monkey -p "$package" -c android.intent.category.LAUNCHER 1 >/tmp/independent-launch.log
           sleep 5
           pid="$(adb shell pidof "$package" | tr -d '\r' | awk '{print $1}')"
-          [[ -n "$pid" ]] || { echo 'process did not start' >&2; exit 7; }
+          [[ -n "$pid" ]] || { echo 'process did not start' >&2; exit 9; }
 
-          # Independent stress differs from the normal runtime smoke: rapid taps, swipes,
-          # background/foreground transition, then another burst of input.
           for xy in '540 1500' '540 1320' '300 1480' '780 1480' '540 1180' '540 1500'; do adb shell input tap $xy; sleep 0.15; done
           adb shell input swipe 820 1500 240 1500 220
           adb shell input keyevent 3
@@ -114,12 +121,12 @@ jobs:
           for xy in '540 1500' '540 1320' '540 1500' '540 1320'; do adb shell input tap $xy; sleep 0.15; done
 
           pid_after="$(adb shell pidof "$package" | tr -d '\r' | awk '{print $1}')"
-          [[ -n "$pid_after" ]] || { echo 'process died during independent QA' >&2; exit 8; }
+          [[ -n "$pid_after" ]] || { echo 'process died during independent QA' >&2; exit 10; }
           adb exec-out screencap -p > qa-artifacts/unity-independent-qa/screen.png
           adb logcat -d > qa-artifacts/unity-independent-qa/logcat.txt
           if grep -Eiq "FATAL EXCEPTION|ANR in ${package}|Fatal signal|Process ${package} .* has died" qa-artifacts/unity-independent-qa/logcat.txt; then
             echo 'fatal runtime signal found during independent QA' >&2
-            exit 9
+            exit 11
           fi
 
           python3 - <<'PY'
