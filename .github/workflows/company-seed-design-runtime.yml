@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: company-seed-design-runtime
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
@@ -95,7 +95,36 @@ jobs:
           test -f game-seed-state.json
           echo 'PUBLIC_MAIN_WRITE=NO'
 
+      - name: Revalidate current seed target
+        id: target
+        env:
+          TARGET_GAME_ID: ${{ matrix.target.game_id }}
+          TARGET_SEED_ID: ${{ matrix.target.seed_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const gameId=String(process.env.TARGET_GAME_ID||'').trim();
+          const seedId=String(process.env.TARGET_SEED_ID||'').trim();
+          const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));
+          const seed=(state.seeds||[]).find(item=>String(item?.gameId||'').trim()===gameId&&String(item?.status||'').toUpperCase()==='ACTIVE');
+          const sameSeed=Boolean(seed&&String(seed.seedId||'').trim()===seedId);
+          let baselineReady=false;
+          if(sameSeed){
+            const current=path.join('artbook-submissions',gameId,'current.json');
+            if(fs.existsSync(current)){
+              try{baselineReady=JSON.parse(fs.readFileSync(current,'utf8')).baselineGateState==='DESIGN_BASELINE_READY';}catch{}
+            }
+          }
+          const shouldRun=sameSeed&&!baselineReady;
+          console.log(`should_run=${shouldRun?'true':'false'}`);
+          console.error(`${shouldRun?'CURRENT_SEED_TARGET':'STALE_SEED_TARGET_SKIP'}=${gameId}:${seedId}`);
+          NODE
+
       - name: Install local Ollama
+        if: steps.target.outputs.should_run == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -110,6 +139,7 @@ jobs:
           curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
 
       - name: Pull configured free department models
+        if: steps.target.outputs.should_run == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -128,12 +158,14 @@ jobs:
           echo 'PAID_API=NO'
 
       - name: Run seed-backed DESIGN_ONLY pipeline
+        if: steps.target.outputs.should_run == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
         run: node tools/artbook-production-pipeline.mjs
 
       - name: Verify baseline-before-artbook contract
+        if: steps.target.outputs.should_run == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
@@ -163,6 +195,7 @@ jobs:
           NODE
 
       - name: Persist validated design evidence to company runtime branch
+        if: steps.target.outputs.should_run == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -179,6 +212,7 @@ jobs:
           echo 'PUBLIC_MAIN_WRITE=NO'
 
       - name: Replenish only if a discard created a vacancy
+        if: steps.target.outputs.should_run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
