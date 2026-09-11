@@ -7,12 +7,17 @@ on:
       - 'company-directive.json'
       - 'AGENTS.md'
       - 'tools/production-classification.mjs'
-      - 'tools/autonomous-work-planner.mjs'
-      - 'tools/autonomous-24h-work-planner.mjs'
-      - 'tools/development-baseline-evidence.mjs'
+      - 'tools/design-only-promotion-sync.mjs'
+      - 'tools/company-development-web-bootstrap.mjs'
+      - 'tools/company-development-web-gameplay-validation.mjs'
+      - 'tools/company-development-validation-cycle.mjs'
+      - 'tools/company-release-production-cycle.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
-      - 'qa/company-tier-execution-routing.test.mjs'
-      - 'qa/autonomous-production-tier-policy.test.mjs'
+      - 'qa/company-central-pipeline-only.test.mjs'
+      - '.github/workflows/company-seed-design-runtime.yml'
+      - '.github/workflows/company-design-promotion-sync.yml'
+      - '.github/workflows/company-development-confirmed-runtime.yml'
+      - '.github/workflows/director-supervisor.yml'
       - '.github/workflows/company-central-policy-contract-qa.yml'
   push:
     branches: [main]
@@ -21,12 +26,17 @@ on:
       - 'company-directive.json'
       - 'AGENTS.md'
       - 'tools/production-classification.mjs'
-      - 'tools/autonomous-work-planner.mjs'
-      - 'tools/autonomous-24h-work-planner.mjs'
-      - 'tools/development-baseline-evidence.mjs'
+      - 'tools/design-only-promotion-sync.mjs'
+      - 'tools/company-development-web-bootstrap.mjs'
+      - 'tools/company-development-web-gameplay-validation.mjs'
+      - 'tools/company-development-validation-cycle.mjs'
+      - 'tools/company-release-production-cycle.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
-      - 'qa/company-tier-execution-routing.test.mjs'
-      - 'qa/autonomous-production-tier-policy.test.mjs'
+      - 'qa/company-central-pipeline-only.test.mjs'
+      - '.github/workflows/company-seed-design-runtime.yml'
+      - '.github/workflows/company-design-promotion-sync.yml'
+      - '.github/workflows/company-development-confirmed-runtime.yml'
+      - '.github/workflows/director-supervisor.yml'
       - '.github/workflows/company-central-policy-contract-qa.yml'
   workflow_dispatch:
 
@@ -36,18 +46,20 @@ permissions:
 jobs:
   central-policy-contract:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 4
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify semantic production policy and runtime routing
+      - name: Verify central policy and production pipeline authority
         run: |
           node --check tools/production-classification.mjs
-          node --check tools/autonomous-work-planner.mjs
-          node --check tools/autonomous-24h-work-planner.mjs
+          node --check tools/design-only-promotion-sync.mjs
+          node --check tools/company-development-web-bootstrap.mjs
+          node --check tools/company-development-web-gameplay-validation.mjs
+          node --check tools/company-development-validation-cycle.mjs
+          node --check tools/company-release-production-cycle.mjs
           node --test \
             qa/company-central-policy-contract.test.mjs \
-            qa/company-tier-execution-routing.test.mjs \
-            qa/autonomous-production-tier-policy.test.mjs
+            qa/company-central-pipeline-only.test.mjs
