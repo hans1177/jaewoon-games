@@ -24,6 +24,8 @@ aapt_bin="$(find "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools" -type f -name 
 [[ -n "$aapt_bin" && -x "$aapt_bin" ]] || { echo '[JAEWOON_BUILD_ERROR:AAPT_MISSING] aapt not found.' >&2; exit 4; }
 package="$($aapt_bin dump badging "$apk" | sed -n "s/package: name='\([^']*\)'.*/\1/p" | head -n 1)"
 [[ -n "$package" ]] || { echo '[JAEWOON_BUILD_ERROR:APK_PACKAGE_UNRESOLVED] Could not resolve APK package id.' >&2; exit 5; }
+seed_technical=false
+if [[ "$package" == com.jaewoongames.seed* ]]; then seed_technical=true; fi
 
 adb shell getprop ro.build.version.sdk > "$out_dir/device-api.txt" || true
 adb shell getprop ro.product.cpu.abilist > "$out_dir/device-abis.txt" || true
@@ -53,16 +55,64 @@ set +e
 adb shell monkey -p "$package" -c android.intent.category.LAUNCHER 1 > "$out_dir/launch.log" 2>&1
 launch_status=$?
 set -e
-sleep 5
 
-# 실제 Android 입력 경로를 거치는 최소 모바일 스모크.
-adb shell input tap 540 900 || true
-adb shell input swipe 540 1500 540 700 350 || true
-adb shell input tap 270 1500 || true
-adb shell input tap 810 1500 || true
-sleep 3
+boot_observed=false
+action_observed=false
+save_observed=false
+metric_observed=false
 
-# 프로세스가 이미 종료됐어도 증거 수집이 끊기지 않게 한다.
+# DEVELOPMENT_CONFIRMED generated seed APKs must prove that the actual game runtime code booted.
+# Waiting for this signal also prevents input from being delivered while Unity is still starting.
+if [[ "$seed_technical" == "true" ]]; then
+  for _ in $(seq 1 20); do
+    if adb logcat -d 2>/dev/null | grep -q 'JAEWOON_TECH_BOOT'; then
+      boot_observed=true
+      break
+    fi
+    sleep 2
+  done
+else
+  sleep 5
+fi
+
+# Deliver input to the actual portrait gameplay buttons using device-relative coordinates.
+size="$(adb shell wm size 2>/dev/null | tr -d '\r' | tail -n 1 || true)"
+if [[ "$size" =~ ([0-9]+)x([0-9]+) ]]; then
+  screen_w="${BASH_REMATCH[1]}"
+  screen_h="${BASH_REMATCH[2]}"
+else
+  screen_w=1080
+  screen_h=1920
+fi
+center_x=$((screen_w / 2))
+primary_y=$((screen_h * 68 / 100))
+secondary_y=$((screen_h * 84 / 100))
+
+adb shell input tap "$center_x" "$primary_y" || true
+sleep 1
+adb shell input tap "$center_x" "$secondary_y" || true
+adb shell input swipe "$center_x" $((screen_h * 78 / 100)) "$center_x" $((screen_h * 38 / 100)) 350 || true
+adb shell input tap "$center_x" "$primary_y" || true
+sleep 1
+adb shell input tap "$center_x" "$secondary_y" || true
+
+if [[ "$seed_technical" == "true" ]]; then
+  for _ in $(seq 1 15); do
+    snapshot="$(adb logcat -d 2>/dev/null || true)"
+    grep -q 'JAEWOON_TECH_BOOT' <<<"$snapshot" && boot_observed=true || true
+    grep -q 'JAEWOON_TECH_ACTION' <<<"$snapshot" && action_observed=true || true
+    grep -q 'JAEWOON_TECH_SAVE' <<<"$snapshot" && save_observed=true || true
+    grep -q 'JAEWOON_TECH_METRIC' <<<"$snapshot" && metric_observed=true || true
+    if [[ "$boot_observed" == "true" && "$action_observed" == "true" && "$save_observed" == "true" && "$metric_observed" == "true" ]]; then
+      break
+    fi
+    sleep 2
+  done
+else
+  sleep 3
+fi
+
+# Process/runtime evidence is captured even when one of the later gates fails.
 pid="$(adb shell pidof "$package" 2>/dev/null | tr -d '\r' | head -n 1 || true)"
 adb shell dumpsys activity activities > "$out_dir/activity.txt" 2>&1 || true
 adb shell dumpsys package "$package" > "$out_dir/package.txt" 2>&1 || true
@@ -75,10 +125,17 @@ if grep -Eiq "FATAL EXCEPTION|ANR in ${package}|Fatal signal|Process ${package} 
 fi
 runtime_pass=false
 if [[ "$launch_status" -eq 0 && -n "$pid" && "$fatal" -eq 0 ]]; then runtime_pass=true; fi
+seed_signals_pass=true
+if [[ "$seed_technical" == "true" ]]; then
+  seed_signals_pass=false
+  if [[ "$boot_observed" == "true" && "$action_observed" == "true" && "$save_observed" == "true" && "$metric_observed" == "true" ]]; then
+    seed_signals_pass=true
+  fi
+fi
 
 # Verify the same signed APK can also update the installed copy.
 update_pass=false
-if [[ "$runtime_pass" == "true" ]]; then
+if [[ "$runtime_pass" == "true" && "$seed_signals_pass" == "true" ]]; then
   set +e
   adb install -r -t "$apk" > "$out_dir/update-install.log" 2>&1
   update_status=$?
@@ -88,30 +145,42 @@ if [[ "$runtime_pass" == "true" ]]; then
   fi
 fi
 
-python3 - "$out_dir/evidence.json" "$apk" "$package" "$pid" "$runtime_pass" "$fatal" "$update_pass" "$launch_status" <<'PY'
+python3 - "$out_dir/evidence.json" "$apk" "$package" "$pid" "$runtime_pass" "$fatal" "$update_pass" "$launch_status" "$seed_technical" "$boot_observed" "$action_observed" "$save_observed" "$metric_observed" <<'PY'
 import json,sys,datetime,pathlib
-out,apk,package,pid,runtime_pass,fatal,update_pass,launch_status=sys.argv[1:]
+(out,apk,package,pid,runtime_pass,fatal,update_pass,launch_status,
+ seed_technical,boot_observed,action_observed,save_observed,metric_observed)=sys.argv[1:]
+flag=lambda value:value.lower()=='true'
+seed_ok=(not flag(seed_technical)) or all(map(flag,[boot_observed,action_observed,save_observed,metric_observed]))
 data={
-  'version':3,
+  'version':4,
   'target':'unity-android',
-  'testMethod':'Android emulator black-box APK smoke: fresh install + launch + input + update',
+  'testMethod':'Android emulator black-box APK smoke: fresh install + runtime-ready wait + gameplay input + update',
   'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),
   'apk':apk,
   'package':package,
   'freshInstallPassed':True,
   'launcherCommandPassed':launch_status=='0',
-  'runtimeSmokePassed':runtime_pass.lower()=='true',
-  'updateInstallPassed':update_pass.lower()=='true',
-  'qaPassEligibleRuntimeEvidence':runtime_pass.lower()=='true' and update_pass.lower()=='true',
+  'runtimeSmokePassed':flag(runtime_pass),
+  'updateInstallPassed':flag(update_pass),
+  'qaPassEligibleRuntimeEvidence':flag(runtime_pass) and flag(update_pass) and seed_ok,
   'processAliveAfterInput':bool(pid.strip()),
   'fatalRuntimeErrorDetected':fatal=='1',
+  'developmentSeedRuntime':{
+    'required':flag(seed_technical),
+    'bootObserved':flag(boot_observed),
+    'actionObserved':flag(action_observed),
+    'saveObserved':flag(save_observed),
+    'metricObserved':flag(metric_observed),
+    'pass':seed_ok,
+  },
   'playTestEvidence':[
     f'fresh APK install passed package={package}',
     f'launcher command passed={launch_status=="0"}',
-    'Android tap/swipe/tap input sequence delivered',
+    f'development seed runtime signals pass={seed_ok}',
+    'Android device-relative gameplay input sequence delivered',
     f'process alive after input={bool(pid.strip())}',
     f'fatal runtime error detected={fatal=="1"}',
-    f'same-signed APK update install passed={update_pass.lower()=="true"}',
+    f'same-signed APK update install passed={flag(update_pass)}',
     'activity/package/logcat/screenshot evidence captured even on runtime failure'
   ],
   'artifacts':{
@@ -126,5 +195,10 @@ cat "$out_dir/evidence.json"
 [[ -n "$pid" ]] || { tail -n 250 "$out_dir/logcat.txt" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_PROCESS_EXITED] $package is not alive after launch/input" >&2; exit 11; }
 [[ "$fatal" -eq 0 ]] || { tail -n 250 "$out_dir/logcat.txt" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_FATAL_RUNTIME_ERROR] fatal runtime error detected for $package" >&2; exit 12; }
 [[ "$runtime_pass" == "true" ]] || { echo "[JAEWOON_BUILD_ERROR:APK_RUNTIME_SMOKE_FAILED] Unity APK runtime smoke failed for $package" >&2; exit 13; }
+if [[ "$seed_technical" == "true" && "$seed_signals_pass" != "true" ]]; then
+  grep -E 'JAEWOON_TECH_(BOOT|ACTION|SAVE|METRIC)' "$out_dir/logcat.txt" >&2 || true
+  echo "[JAEWOON_BUILD_ERROR:DEVELOPMENT_SEED_RUNTIME_SIGNALS_MISSING] boot=$boot_observed action=$action_observed save=$save_observed metric=$metric_observed package=$package" >&2
+  exit 15
+fi
 [[ "$update_pass" == "true" ]] || { cat "$out_dir/update-install.log" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_UPDATE_INSTALL_FAILED] Same APK could not update installed package $package" >&2; exit 14; }
-echo "UNITY_APK_RUNTIME_SMOKE=PASS package=$package pid=$pid fresh_install=true update_install=true"
+echo "UNITY_APK_RUNTIME_SMOKE=PASS package=$package pid=$pid fresh_install=true update_install=true seed_signals=$seed_signals_pass"
