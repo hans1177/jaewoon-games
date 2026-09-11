@@ -66,7 +66,7 @@ async function callModel(model,system,user,schema,{predict=900,temperature=0.2,c
     const retryRule=attempt===1?'':`\nPREVIOUS_VALIDATION_ERROR=${clean(lastError?.message).slice(0,240)}\n이전 응답은 잘리거나 유효하지 않았다. 판단 내용을 새로 발명하지 말고 같은 근거를 유지한 채 더 짧은 완전한 JSON으로 처음부터 다시 반환하라. 설명문/마크다운/코드펜스는 금지한다.`;
     const retryPredict=attempt===1?predict:Math.min(1800,predict+400);
     try{
-      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,format:schema,messages:[{role:'system',content:system},{role:'user',content:`${user}${compactRule}${retryRule}`}],options:{temperature:attempt===1?temperature:0,num_ctx:8192,num_predict:retryPredict}})});
+      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,format:schema,messages:[{role:'system',content:system},{role:'user',content:`${user}${compactRule}${retryRule}`}],options:{temperature:attempt===1?temperature:0,num_ctx:8192,num_predict:retryPredict}})});
       if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
       const body=await response.json();
       const text=clean(body?.message?.content);
