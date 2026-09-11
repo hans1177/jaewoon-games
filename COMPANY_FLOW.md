@@ -16,6 +16,20 @@ priority:
   - IMPLEMENTATION_TOOL_CONTRACTS
   - STATUS_AUDIT_BUILD_HEALTH_EVIDENCE
 
+pipelineExecution:
+  existingPipelineIsAuthoritative: true
+  reuseExistingPipelineRequired: true
+  newParallelPipelineForSameStageForbidden: true
+  adHocBypassChainForbidden: true
+  wrapperOrShadowChainForbidden: true
+  repairExistingPipelineAtFailurePoint: true
+  pushWorkForwardThroughExistingStages: true
+  followCanonicalStageOrder: true
+  duplicateTriggerPathForbidden: true
+  temporaryRecoveryMustRejoinCanonicalPipelineImmediately: true
+  cronOrIndependentLoopMustNotReplaceExistingEventChain: true
+  ownerDirectExceptionRequiredToCreateNewPipeline: true
+
 production:
   canonicalField: productionClass
   classes:
