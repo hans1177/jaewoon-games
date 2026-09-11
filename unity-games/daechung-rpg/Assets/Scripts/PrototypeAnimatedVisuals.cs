@@ -27,6 +27,7 @@ namespace JaewoonGames.DaechungRpg
         private bool _battleVisible;
         private string _loadError = string.Empty;
         private Coroutine _combatRoutine;
+        private Coroutine _travelRoutine;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void AutoCreate()
@@ -79,6 +80,7 @@ namespace JaewoonGames.DaechungRpg
             _battleVisible = false;
             if (!_ready) return;
 
+            StopTravelRoutine();
             if (_combatRoutine != null)
             {
                 StopCoroutine(_combatRoutine);
@@ -98,6 +100,7 @@ namespace JaewoonGames.DaechungRpg
             _battleVisible = true;
             if (!_ready) return;
 
+            StopTravelRoutine();
             if (_combatRoutine != null)
             {
                 StopCoroutine(_combatRoutine);
@@ -111,15 +114,26 @@ namespace JaewoonGames.DaechungRpg
         {
             _battleVisible = true;
             if (!_ready) return;
-            StartCoroutine(TravelRoutine());
+
+            StopTravelRoutine();
+            _travelRoutine = StartCoroutine(TravelRoutine());
         }
 
         public void PlayCombatExchange(bool enemyDefeated, bool playerDefeated)
         {
             if (!_ready || !_battleVisible) return;
 
+            StopTravelRoutine();
             if (_combatRoutine != null) StopCoroutine(_combatRoutine);
             _combatRoutine = StartCoroutine(CombatExchangeRoutine(enemyDefeated, playerDefeated));
+        }
+
+        private void StopTravelRoutine()
+        {
+            if (_travelRoutine == null) return;
+
+            StopCoroutine(_travelRoutine);
+            _travelRoutine = null;
         }
 
         private IEnumerator LoadAll()
@@ -294,6 +308,7 @@ namespace JaewoonGames.DaechungRpg
             }
 
             _player.Play("idle", true, true);
+            _travelRoutine = null;
         }
 
         private IEnumerator CombatExchangeRoutine(bool enemyDefeated, bool playerDefeated)
