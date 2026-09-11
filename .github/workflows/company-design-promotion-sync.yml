@@ -1,0 +1,120 @@
+name: Company DESIGN_ONLY Promotion Sync
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Company Seed DESIGN_ONLY Runtime
+    types: [completed]
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: company-design-promotion-runtime
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
+jobs:
+  promote:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout current engine source
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Overlay latest company runtime design evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "$COMPANY_RUNTIME_BRANCH"
+          for runtime_path in game-seed-state.json artbook-submissions autonomous-portfolio.json game-catalog.json development-queue.json; do
+            if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" 2>/dev/null; then
+              git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- "$runtime_path"
+            fi
+          done
+          git reset -- game-seed-state.json artbook-submissions autonomous-portfolio.json game-catalog.json development-queue.json >/dev/null 2>&1 || true
+          test -f game-seed-state.json
+          echo 'DESIGN_PROMOTION_RUNTIME_OVERLAY=YES'
+          echo 'PUBLIC_MAIN_WRITE=NO'
+
+      - name: Validate promotion contract
+        run: |
+          node --check tools/design-only-promotion-sync.mjs
+          node --test qa/design-only-promotion-sync.test.mjs
+
+      - name: Promote every DESIGN_BASELINE_READY seed and enqueue development
+        run: node tools/design-only-promotion-sync.mjs
+
+      - name: Verify ready-only promotion and ordered development handoff
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));
+          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
+          for(const item of queue.items||[]){
+            if(item.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`queue class mismatch: ${item.gameId}`);
+            if(!item.currentStep)throw new Error(`queue step missing: ${item.gameId}`);
+            const artbook=JSON.parse(fs.readFileSync(path.join('artbook-submissions',item.gameId,'current.json'),'utf8'));
+            if(artbook.baselineGateState!=='DESIGN_BASELINE_READY'||artbook.publication?.baselineReady!==true)throw new Error(`non-ready game promoted: ${item.gameId}`);
+            const seed=(state.seeds||[]).find(x=>x.gameId===item.gameId);
+            if(!seed||seed.status!=='ACTIVE')throw new Error(`normal promotion created seed vacancy: ${item.gameId}`);
+            const project=(portfolio.projects||[]).find(x=>x.slug===item.gameId);
+            if(project?.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`portfolio promotion missing: ${item.gameId}`);
+          }
+          console.log(`DEVELOPMENT_HANDOFF_COUNT=${(queue.items||[]).length}`);
+          console.log('DESIGN_ONLY_PROMOTION_CONTRACT=PASS');
+          NODE
+
+      - name: Preserve promoted runtime files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/design-promotion-runtime
+          cp game-seed-state.json autonomous-portfolio.json game-catalog.json development-queue.json /tmp/design-promotion-runtime/
+
+      - name: Persist promoted state to company runtime branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-design-promotion'
+          git config user.email 'design-promotion@users.noreply.github.com'
+          git fetch origin "$COMPANY_RUNTIME_BRANCH"
+          git checkout -B design-promotion-persist "origin/$COMPANY_RUNTIME_BRANCH"
+          cp /tmp/design-promotion-runtime/game-seed-state.json game-seed-state.json
+          cp /tmp/design-promotion-runtime/autonomous-portfolio.json autonomous-portfolio.json
+          cp /tmp/design-promotion-runtime/game-catalog.json game-catalog.json
+          cp /tmp/design-promotion-runtime/development-queue.json development-queue.json
+          git add -- game-seed-state.json autonomous-portfolio.json game-catalog.json development-queue.json
+          if git diff --cached --quiet; then
+            echo 'DESIGN_PROMOTION_RUNTIME_CHANGE=NO'
+          else
+            git commit -m 'runtime: promote DESIGN_BASELINE_READY seeds to development [skip ci]'
+            git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"
+            echo 'DESIGN_PROMOTION_RUNTIME_CHANGE=PERSISTED'
+          fi
+          echo 'PUBLIC_MAIN_WRITE=NO'
+
+      - name: Dispatch DEVELOPMENT_CONFIRMED runtime when available
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh workflow view company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'DEVELOPMENT_RUNTIME_DISPATCHED=YES'
+          else
+            echo 'DEVELOPMENT_RUNTIME_DISPATCHED=NO_WORKFLOW_YET'
+          fi
