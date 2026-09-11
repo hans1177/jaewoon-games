@@ -6,6 +6,8 @@ import {normalizeSeedState,markSeedDiscarded,unfilledVacancies,fillVacancy} from
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const bootstrap=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
 const seedWorkflow=fs.readFileSync('.github/workflows/company-game-seed-bootstrap.yml','utf8');
+const seedDesignWorkflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+const statusWorkflow=fs.readFileSync('.github/workflows/company-status-sync.yml','utf8');
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const gate=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
 const artbook=fs.readFileSync('tools/company-design-artbook.mjs','utf8');
@@ -44,6 +46,21 @@ test('bootstrap batches all requested seeds in one model call and mutates state 
   assert.match(seedWorkflow,/Verified free budget preflight/);
   assert.match(seedWorkflow,/--model-calls=1/);
   assert.ok(seedWorkflow.indexOf('Verified free budget preflight')<seedWorkflow.indexOf('uses: ./.github/actions/prepare-ollama'));
+});
+
+test('autonomous runtime does not depend on GitHub Actions PR creation permission',()=>{
+  for(const text of [seedWorkflow,seedDesignWorkflow,statusWorkflow]){
+    assert.match(text,/COMPANY_RUNTIME_BRANCH: company-runtime/);
+    assert.doesNotMatch(text,/gh pr create/);
+    assert.match(text,/PUBLIC_MAIN_WRITE=NO/);
+  }
+  assert.match(seedWorkflow,/git push origin "HEAD:refs\/heads\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(seedWorkflow,/gh workflow run company-seed-design-runtime\.yml --ref main/);
+  assert.match(seedDesignWorkflow,/game-seed-state\.json/);
+  assert.match(seedDesignWorkflow,/max-parallel: 1/);
+  assert.match(seedDesignWorkflow,/node tools\/artbook-production-pipeline\.mjs/);
+  assert.match(seedDesignWorkflow,/artbook exists before DESIGN_BASELINE_READY/);
+  assert.match(statusWorkflow,/COMPANY_STATUS_SYNC_COMMIT=RUNTIME_PERSISTED/);
 });
 
 test('seed vacancy state is one-for-one and discard is idempotent',()=>{
