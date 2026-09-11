@@ -523,6 +523,165 @@ developmentSafety:
   preferResponsibleSystemDirectEdit: true
   localDevelopmentConnectionHostPreferred: 127.0.0.1
 
+urgentCases:
+  BLOCK_BLAST_EXTERNAL_RUNTIME:
+    priority: EMERGENCY
+    ownerDirectiveRecordedAt: 2026-09-12
+    status: ACTIVE_BLOCKED
+    objective: VERIFIED_BLACK_BOX_RUNTIME_PLAYTEST
+    gameId: block-blast
+    packageId: com.block.juggle
+    executionScope: EXTERNAL_FREE_SERVER_ONLY
+    completionCondition:
+      - VERIFIED_RUNTIME_PASS_TRUE
+      - UNAVOIDABLE_OWNER_ACTION_REQUIRED
+    safety:
+      officialGooglePlayExportOnly: true
+      blackBoxObservationOnly: true
+      decompileForbidden: true
+      reverseEngineeringForbidden: true
+      sourceExtractionForbidden: true
+      assetExtractionForbidden: true
+      internalAlgorithmExtractionForbidden: true
+      apkCommitForbidden: true
+      binaryRedistributionForbidden: true
+      temporaryTransferUrlDocumentationForbidden: true
+      localPcExecutionForbiddenForThisCase: true
+      paidRunnerOrPaidCloudForbidden: true
+    evidenceGate:
+      installPassIsNotRuntimePass: true
+      splashVisibilityIsNotRuntimePass: true
+      processCreationIsNotRuntimePass: true
+      infrastructureReadyIsNotRuntimePass: true
+      runtimePassRequires:
+        - APP_LAUNCH
+        - FOREGROUND_OWNERSHIP
+        - PROCESS_SURVIVAL
+        - INPUT_EXERCISE
+        - NO_FATAL_EXCEPTION_OR_NATIVE_CRASH
+        - NO_ANR_IN_CAPTURED_WINDOW
+    experimentHistory:
+      - run: 1
+        route: INITIAL_ANDROID_EMULATOR_SERVER
+        result: FAIL
+        evidence: AVD_HOME_OR_PATH_HANDLING_ERROR_BEFORE_MEANINGFUL_RUNTIME
+      - run: 2
+        route: UBUNTU_ARM_RUNNER
+        result: FAIL
+        evidence: ANDROID_SDK_ROOT_OR_TOOLING_NOT_FOUND_AS_EXPECTED
+      - run: 3
+        route: EMULATOR_WITH_SDK_PATH_FIXED
+        result: FAIL
+        evidence: ADB_MISSING_FROM_PATH_BEFORE_RUNTIME_VALIDATION
+      - run: 4
+        route: X86_ANDROID_EMULATOR_WITH_ARM_TRANSLATION
+        result: INCONCLUSIVE
+        evidence: INSTALL_PATH_REACHED_BUT_RUNTIME_EVIDENCE_INSUFFICIENT
+      - run: 5
+        route: API35_X86_64_GOOGLE_APIS_ARM_TRANSLATION
+        result: FAIL
+        evidence: SPLASH_THEN_SIGABRT_IN_NATIVE_TRANSLATION_PATH
+      - run: 6
+        route: API34_X86_64_GOOGLE_APIS_ARM_TRANSLATION
+        result: FAIL
+        evidence: INSTALL_PASS_THEN_TRANSLATED_NATIVE_RUNTIME_CRASH
+      - run: 7
+        route: ARM64_GUEST_ON_X86_UBUNTU_HOST
+        result: FAIL
+        evidence: SOFTWARE_EMULATION_TOO_SLOW_AND_CANCELLED_BY_CONCURRENCY
+      - run: 8
+        route: API34_X86_PLAY_IMAGE
+        result: FAIL
+        evidence: ADB_AUTHORIZATION_BLOCKED_AUTOMATION
+      - run: 9
+        route: API34_X86_PLAY_IMAGE_RETRY
+        result: FAIL
+        evidence: SAME_ADB_AUTHORIZATION_BLOCKER_CONFIRMED
+      - run: 10
+        route: X86_EMULATOR_STORAGE_ADJUSTMENT
+        result: FAIL
+        evidence: USERDATA_STORAGE_INSUFFICIENT
+      - run: 11
+        route: X86_EMULATOR_DISK_RETRY
+        result: FAIL
+        evidence: HOSTED_RUNNER_DISK_REMAINED_INSUFFICIENT
+      - run: 12
+        route: API33_X86_64_AFTER_DISK_RECOVERY
+        result: FAIL
+        evidence: EMULATOR_BOOT_EXCEEDED_300_SECOND_LIMIT
+      - run: 13
+        route: API33_X86_64_BOOTED
+        result: FAIL
+        evidence: GUEST_ABI_X86_64_ONLY_WITHOUT_NATIVE_BRIDGE_ARM64_INSTALL_UNSUPPORTED
+      - run: 14
+        route: GITHUB_MACOS_ARM64_ANDROID_ARM64_EMULATOR
+        result: FAIL
+        evidence: NESTED_HVF_UNAVAILABLE_WITH_HV_UNSUPPORTED
+      - run: 15
+        route: API36_X86_64_GOOGLE_APIS_ARM_TRANSLATION
+        result: FAIL
+        evidence: ARM64_ABILIST_AND_NATIVE_BRIDGE_PRESENT_BUT_STREAMING_SPLIT_INSTALL_FINALIZATION_BROKEN_PIPE
+        artifactId: 10277466402
+      - run: 16
+        route: API36_X86_64_NO_STREAMING_INSTALL_AND_PACKAGE_RECOVERY
+        result: FAIL
+        evidence: INSTALL_COMPLETED_BUT_LAUNCH_HIT_GAME_FATAL_EXCEPTION_JAVA_ASSERTION_ERROR
+      - run: 17
+        route: API36_X86_64_TRANSLATION_STABILIZED
+        result: FAIL
+        evidence: UNKNOWN_X86_64_SA_RESTORER_IN_HOST_SIGACTION_CONFIRMED_TRANSLATION_LAYER_INCOMPATIBILITY
+      - run: 18
+        route: GITHUB_UBUNTU_24_04_ARM_NATIVE_REDROID
+        result: FAIL
+        evidence: DOCKER_PACKAGE_CONFLICT_CONTAINERD_IO_VS_CONTAINERD_BEFORE_ANDROID_RUNTIME
+      - run: 19
+        route: NATIVE_ARM64_REDROID_WITH_EXISTING_DOCKER
+        result: FAIL
+        evidence: HOST_AND_BINDER_READY_BUT_ANDROID_NOT_USABLE_THROUGH_ADB_WAIT_WITHIN_LIMIT
+      - run: 20
+        route: NATIVE_ARM64_REDROID_DIRECT_DOCKER_EXEC_ANDROID16_15_13_FALLBACK
+        result: FAIL
+        evidence: REDROID16_AND_15_NEVER_REACHED_BOOT_COMPLETED_AND_REDROID13_EXITED
+        workflowRunId: 34639996916
+        artifactId: 10279414322
+        finalError: REDROID_INTERNAL_BOOT_FAILED
+    provenFacts:
+      - GITHUB_UBUNTU_24_04_ARM_HOST_IS_NATIVE_AARCH64
+      - HOST_PAGE_SIZE_IS_4096
+      - BINDER_LINUX_CAN_LOAD_ON_CURRENT_ARM64_RUNNER
+      - BINDERFS_BINDER_HWBINDER_VNDBINDER_DEVICES_CAN_BE_CREATED
+      - X86_64_ARM_TRANSLATION_CAN_REACH_INSTALL_OR_LAUNCH_BUT_REPEATEDLY_FAILS_RUNTIME_COMPATIBILITY
+      - GITHUB_MACOS_ARM64_DOES_NOT_PROVIDE_REQUIRED_NESTED_HVF_FOR_ANDROID_ARM64_EMULATOR
+      - BINDER_READY_NATIVE_ARM64_HOST_DOES_NOT_GUARANTEE_REDROID_ANDROID_USERSPACE_BOOT
+      - NO_VERIFIED_RUNTIME_PASS_EXISTS_THROUGH_RUN_20
+    routeState:
+      x86ArmTranslation: EXHAUSTED_UNLESS_MATERIALLY_NEW_EVIDENCE
+      hostedMacArm64Emulator: BLOCKED_BY_NESTED_HVF
+      githubHostedArm64Redroid: BLOCKED_BY_ANDROID_USERSPACE_BOOT_AS_OF_RUN_20
+      randomAndroidApiCycling: FORBIDDEN_WITHOUT_NEW_HYPOTHESIS
+    nextExperimentRules:
+      - START_FROM_LATEST_EVIDENCE_NOT_STALE_RUN_IDS
+      - DO_NOT_REPEAT_EXHAUSTED_ROUTE_WITHOUT_MATERIALLY_NEW_CAPABILITY_OR_HYPOTHESIS
+      - PROBE_RUNTIME_CAPABILITY_BEFORE_DOWNLOADING_PROPRIETARY_APK_BYTES
+      - REMOVE_EPHEMERAL_APK_BYTES_AFTER_EACH_RUN
+      - PREFER_FREE_MANAGED_ANDROID_RUNTIME_IF_HOSTED_CONTAINER_OR_EMULATOR_ROUTE_REMAINS_BLOCKED
+      - REQUIRE_REAL_RUNTIME_EVIDENCE_BEFORE_GAMEPLAY_OR_UX_POSITIVE_DISTILLATION
+    learningUse:
+      negativeEvidenceAllowed: true
+      positiveGameplayDistillationAllowed: false
+      positiveGameplayDistillationUnlockCondition: VERIFIED_RUNTIME_PASS_TRUE
+      allowedNegativeTopics:
+        - HOSTED_ANDROID_ABI_COMPATIBILITY
+        - NATIVE_BRIDGE_LIMITATIONS
+        - NESTED_VIRTUALIZATION_CONSTRAINTS
+        - SPLIT_APK_INSTALL_FAILURE_RECOVERY
+        - BINDER_AND_ANDROID_CONTAINER_PREREQUISITES
+        - RUNTIME_EVIDENCE_GATING
+        - FAILURE_TO_NEXT_EXPERIMENT_DECISION_QUALITY
+    evidenceBindings:
+      privateHistory: hans1177/jaewoon-ai-company/server-playtest/block-blast-experiment-history.md
+      publicNegativeDistillation: company-learning/external-game-playtest/block-blast-runtime-distillation.json
+
 learning:
   aiDesignOpinionAloneIsNotSuccessEvidence: true
   validatedEvidenceSources:
