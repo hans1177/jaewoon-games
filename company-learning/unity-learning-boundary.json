@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "scope": "UNITY_CODING_ONLY",
+  "trainingWorkspace": "%USERPROFILE%\\jaewoon-vibe2-learning",
+  "gameProjectIsTrainingWorkspace": false,
+  "createDedicatedUnityTrainingProject": false,
+  "teacherAuthority": "ANALYSIS_ONLY",
+  "answerTarget": "VERIFIED_FINAL_DIFF_ONLY",
+  "allowedTrainingInputs": [
+    "GPT_AUTHORED_UNITY_TEACHER_MATERIALS",
+    "VERIFIED_UNITY_FINAL_PATCHES",
+    "BOUND_QA_CI_RUNTIME_EVIDENCE"
+  ],
+  "trainingOutputs": [
+    "DATASETS",
+    "UNITY_CODING_ADAPTERS",
+    "LEARNING_STATE"
+  ],
+  "gameProjectRules": {
+    "trainingMayWriteGameSource": false,
+    "trainingMayCreateScenesOrPrefabs": false,
+    "trainingMayChangeSaveMeaning": false,
+    "verifiedGameWorkMayBecomeTrainingEvidence": true
+  },
+  "adapterRules": {
+    "freshAdapterState": "UNVERIFIED",
+    "runtimePromotionAllowedBeforeGate": false,
+    "requiredGate": "FIXED_HOLDOUT_AB_AND_CANARY"
+  }
+}
