@@ -1,7 +1,8 @@
 {
   "version": 1,
-  "requestId": "daechung-rpg-travel-coroutine-verified-qa-retry-adb-timeout",
-  "retryReason": "bound-adb-device-and-boot-waits",
+  "requestId": "daechung-rpg-travel-coroutine-verified-qa-retry-bound-cancel",
+  "retryReason": "cancel-only-explicit-stale-runs-then-reverify",
+  "cancelRunIds": [34582867660, 34582869914, 34584324559, 34584326657],
   "upstreamBuildRunId": 34580761019,
   "sourceCommit": "78c1d021656b2558a8366be8ff50039af69fe95e",
   "sourceTreeSha": "155a304209d535e1cc775388844b680df4a32016",
