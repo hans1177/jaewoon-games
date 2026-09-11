@@ -133,7 +133,6 @@ jobs:
         id: source
         env:
           GAME_ID: ${{ matrix.item.gameId }}
-          GAME_NAME: ${{ matrix.item.gameName }}
           BRANCH: ${{ steps.context.outputs.branch }}
           PROJECT: ${{ steps.context.outputs.project }}
           REQUEST: ${{ steps.context.outputs.request }}
@@ -175,13 +174,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-local-pc-android.yml"
-          baseline="$(gh api "$api/runs?branch=$BRANCH&event=workflow_dispatch&per_page=10" --jq '[.workflow_runs[].id] | max // 0')"
-          jq -n --arg ref "$BRANCH" --arg request "$REQUEST" '{ref:$ref,inputs:{request_file:$request}}' | gh api --method POST "$api/dispatches" --input -
+          workflow='unity-local-pc-android.yml'
+          gh workflow run "$workflow" --ref "$BRANCH" -f request_file="$REQUEST"
           run_id=''
           for _ in $(seq 1 36); do
-            run_id="$(gh api "$api/runs?branch=$BRANCH&event=workflow_dispatch&per_page=10" --jq --argjson b "$baseline" '[.workflow_runs[] | select(.id > $b) | .id] | max // empty')"
-            [[ -n "$run_id" ]] && break
+            run_id="$(gh run list --workflow "$workflow" --branch "$BRANCH" --event workflow_dispatch --limit 5 --json databaseId --jq '.[0].databaseId // empty')"
+            [[ "$run_id" =~ ^[0-9]+$ ]] && break
             sleep 5
           done
           [[ "$run_id" =~ ^[0-9]+$ ]] || { echo 'local Unity build run was not created' >&2; exit 2; }
@@ -195,7 +193,7 @@ jobs:
         run: |
           set -euo pipefail
           for _ in $(seq 1 720); do
-            row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" --jq '[.status,.conclusion] | @tsv')"
+            row="$(gh run view "$RUN_ID" --json status,conclusion --jq '[.status,.conclusion] | @tsv')"
             status="${row%%$'\t'*}"; conclusion="${row#*$'\t'}"
             if [[ "$status" == 'completed' ]]; then
               [[ "$conclusion" == 'success' ]] || { echo "LOCAL_UNITY_BUILD_FAILED=$conclusion run=$RUN_ID" >&2; exit 3; }
@@ -214,16 +212,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          smoke_api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-runtime-smoke.yml"
-          qa_api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-independent-qa.yml"
-          smoke_base="$(gh api "$smoke_api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq '[.workflow_runs[].id] | max // 0')"
-          qa_base="$(gh api "$qa_api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq '[.workflow_runs[].id] | max // 0')"
-          jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$smoke_api/dispatches" --input -
-          jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$qa_api/dispatches" --input -
+          smoke_workflow='unity-android-runtime-smoke.yml'
+          qa_workflow='unity-android-independent-qa.yml'
+          smoke_base="$(gh run list --workflow "$smoke_workflow" --branch main --event workflow_dispatch --limit 20 --json databaseId --jq 'map(.databaseId) | max // 0')"
+          qa_base="$(gh run list --workflow "$qa_workflow" --branch main --event workflow_dispatch --limit 20 --json databaseId --jq 'map(.databaseId) | max // 0')"
+          gh workflow run "$smoke_workflow" --ref main -f run_id="$BUILD_RUN"
+          gh workflow run "$qa_workflow" --ref main -f run_id="$BUILD_RUN"
           smoke=''; independent=''
           for _ in $(seq 1 48); do
-            [[ -n "$smoke" ]] || smoke="$(gh api "$smoke_api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq --argjson b "$smoke_base" '[.workflow_runs[] | select(.id > $b) | .id] | max // empty')"
-            [[ -n "$independent" ]] || independent="$(gh api "$qa_api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq --argjson b "$qa_base" '[.workflow_runs[] | select(.id > $b) | .id] | max // empty')"
+            [[ -n "$smoke" ]] || smoke="$(gh run list --workflow "$smoke_workflow" --branch main --event workflow_dispatch --limit 20 --json databaseId --jq "map(select(.databaseId > $smoke_base) | .databaseId) | max // empty")"
+            [[ -n "$independent" ]] || independent="$(gh run list --workflow "$qa_workflow" --branch main --event workflow_dispatch --limit 20 --json databaseId --jq "map(select(.databaseId > $qa_base) | .databaseId) | max // empty")"
             [[ "$smoke" =~ ^[0-9]+$ && "$independent" =~ ^[0-9]+$ ]] && break
             sleep 5
           done
@@ -241,8 +239,8 @@ jobs:
         run: |
           set -euo pipefail
           for _ in $(seq 1 420); do
-            smoke="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SMOKE_RUN" --jq '[.status,.conclusion] | @tsv')"
-            indep="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$QA_RUN" --jq '[.status,.conclusion] | @tsv')"
+            smoke="$(gh run view "$SMOKE_RUN" --json status,conclusion --jq '[.status,.conclusion] | @tsv')"
+            indep="$(gh run view "$QA_RUN" --json status,conclusion --jq '[.status,.conclusion] | @tsv')"
             ss="${smoke%%$'\t'*}"; sc="${smoke#*$'\t'}"
             is="${indep%%$'\t'*}"; ic="${indep#*$'\t'}"
             if [[ "$ss" == completed && "$is" == completed ]]; then
@@ -267,7 +265,7 @@ jobs:
           gh run download "$BUILD_RUN" -D /tmp/unity-build
           gh run download "$SMOKE_RUN" -D /tmp/unity-smoke
           gh run download "$QA_RUN" -D /tmp/unity-independent
-          find /tmp/unity-build /tmp/unity-smoke /tmp/unity-independent -type f -maxdepth 8 -print
+          find /tmp/unity-build /tmp/unity-smoke /tmp/unity-independent -maxdepth 8 -type f -print
       - name: Bind real Android evidence into canonical Unity technical validation
         env:
           GAME_ID: ${{ matrix.item.gameId }}
@@ -411,7 +409,11 @@ jobs:
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
           const dir='/tmp/development-unity-runtime/runtime-persist/queue';
           const updates=fs.readdirSync(dir).filter(x=>x.endsWith('.json')).map(x=>JSON.parse(fs.readFileSync(path.join(dir,x),'utf8')));
-          for(const update of updates){const item=(queue.items||[]).find(x=>x.gameId===update.gameId);if(!item)throw new Error(`queue item missing: ${update.gameId}`);Object.assign(item,update);}
+          for(const update of updates){
+            const item=(queue.items||[]).find(x=>x.gameId===update.gameId);
+            if(!item)throw new Error(`queue item missing: ${update.gameId}`);
+            Object.assign(item,update);
+          }
           queue.updatedAt=new Date().toISOString();
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
           console.log(`DEVELOPMENT_UNITY_PERSIST_COUNT=${updates.length}`);
