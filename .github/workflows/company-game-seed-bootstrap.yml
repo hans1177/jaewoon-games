@@ -15,7 +15,12 @@ on:
       - 'tools/company-game-seed-bootstrap.mjs'
       - 'tools/company-game-seed-semantic-normalize.mjs'
       - 'tools/company-game-seed-quality-gate.mjs'
+      - 'tools/company-design-cycle.mjs'
+      - 'tools/artbook-production-pipeline.mjs'
+      - 'tools/company-baseline-gate.mjs'
+      - 'tools/company-design-artbook.mjs'
       - 'qa/company-game-seed-flow.test.mjs'
+      - 'qa/company-seed-design-runtime-stall.test.mjs'
       - '.github/workflows/company-game-seed-bootstrap.yml'
       - '.github/workflows/company-seed-design-runtime.yml'
 
@@ -164,8 +169,8 @@ jobs:
           echo 'PUBLIC_MAIN_WRITE=NO'
           echo 'PAID_API=NO'
 
-      - name: Continue persisted seeds into DESIGN_ONLY work
-        if: steps.persist.outputs.persisted == 'true'
+      - name: Continue validated seeds into DESIGN_ONLY work
+        if: steps.persist.outputs.persisted == 'true' || github.event_name == 'push'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -173,6 +178,7 @@ jobs:
           set -euo pipefail
           gh workflow run company-seed-design-runtime.yml --ref main
           echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=YES'
+          echo "GAME_SEED_DESIGN_DISPATCH_SOURCE=${GITHUB_EVENT_NAME}"
 
       - name: Summary
         if: always()
@@ -185,6 +191,7 @@ jobs:
           echo '- semantic quality: concrete category loop + sourced global age/revenue/playtime evidence required before persistence' >> "$GITHUB_STEP_SUMMARY"
           echo '- replenishment: one-for-one same category unless owner changes category' >> "$GITHUB_STEP_SUMMARY"
           echo '- runtime persistence: company-runtime branch; main stays unchanged' >> "$GITHUB_STEP_SUMMARY"
+          echo '- main push continuation: bootstrap is the single DESIGN_ONLY dispatcher after validation' >> "$GITHUB_STEP_SUMMARY"
           echo '- numeric market claims: source + observedAt required' >> "$GITHUB_STEP_SUMMARY"
           echo '- source code: own implementation only' >> "$GITHUB_STEP_SUMMARY"
           echo '- public game source write: NO' >> "$GITHUB_STEP_SUMMARY"
