@@ -1,0 +1,19 @@
+name: Unity Cloud Android Test Trigger
+
+on:
+  push:
+    branches:
+      - development/unity-tech-seed-single-defense-strat-celestial-bastion-34616834304
+    paths:
+      - '.github/workflows/unity-cloud-android-test-trigger.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  rerun:
+    uses: ./.github/workflows/unity-cloud-android-test.yml
+    with:
+      request_file: .build-requests/unity/seed-single-defense-strat-celestial-bastion-development.json
+    secrets: inherit
