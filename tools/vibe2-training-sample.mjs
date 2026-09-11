@@ -57,6 +57,20 @@ function buildOutput(evidence, patch) {
     .filter((line, index, rows) => line || (index > 0 && rows[index - 1])).join('\n').trim();
 }
 
+export function qaRequirementsForTask(taskType) {
+  const type = clean(taskType).toLowerCase();
+  return type === 'unity'
+    ? { independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', runtime: 'PASS', androidRuntimeRequired: true }
+    : { independentQa: 'PASS', browserQa: 'PASS', runtime: 'PASS', androidRuntimeRequired: false };
+}
+
+export function qaEvidencePasses({ taskType, independentQa, browserQa, runtime }) {
+  const required = qaRequirementsForTask(taskType);
+  if (upper(independentQa) !== 'PASS' || upper(runtime) !== 'PASS') return false;
+  if (required.browserQa === 'PASS' && upper(browserQa) !== 'PASS') return false;
+  return true;
+}
+
 export function validatePositiveTrace(trace, sourceRevision) {
   if (!trace || typeof trace !== 'object') throw new Error('완결 verificationTrace 필요');
   const state = upper(trace.state);
@@ -81,22 +95,27 @@ export function buildVerifiedTrainingSample({ evidence, patch, sourceRevision, i
   const verifiedPatch = String(patch ?? '').trim();
   if (!verifiedPatch) throw new Error('검증된 patch가 없어 학습 샘플을 만들 수 없음');
   if (Buffer.byteLength(verifiedPatch, 'utf8') > MAX_PATCH_BYTES) throw new Error(`patch가 학습 샘플 한도 ${MAX_PATCH_BYTES} bytes를 초과함`);
-  if (upper(independentQa) !== 'PASS') throw new Error('독립 QA PASS 필요');
-  if (upper(browserQa) !== 'PASS') throw new Error('브라우저 QA PASS 필요');
+  const resolvedTaskType = clean(taskType).toLowerCase() || inferTaskType(evidence);
+  if (!ALLOWED_TASK_TYPES.has(resolvedTaskType)) throw new Error(`지원하지 않는 taskType: ${resolvedTaskType}`);
   const revision = clean(sourceRevision);
   if (!revision) throw new Error('검증 sourceRevision 필요');
   const verificationTrace = validatePositiveTrace(evidence.verificationTrace, revision);
-  const resolvedTaskType = clean(taskType).toLowerCase() || inferTaskType(evidence);
-  if (!ALLOWED_TASK_TYPES.has(resolvedTaskType)) throw new Error(`지원하지 않는 taskType: ${resolvedTaskType}`);
+  const requirements = qaRequirementsForTask(resolvedTaskType);
+  if (!qaEvidencePasses({ taskType: resolvedTaskType, independentQa, browserQa, runtime: verificationTrace.runtime })) {
+    if (upper(independentQa) !== 'PASS') throw new Error('독립 QA PASS 필요');
+    if (requirements.browserQa === 'PASS' && upper(browserQa) !== 'PASS') throw new Error('브라우저 QA PASS 필요');
+    throw new Error('runtime PASS evidence 필요');
+  }
+  const normalizedBrowserQa = requirements.browserQa;
   const playerImpactScore = clamp01(Number(performance?.playerImpactScore ?? 0) / 5);
   return {
     version: TRAINING_SAMPLE_VERSION, instruction, input: buildInput(evidence), output: buildOutput(evidence, verifiedPatch),
     taskType: resolvedTaskType, difficulty: inferDifficulty(evidence, resolvedTaskType), lifecycle: 'active', sourceKind: 'vibe2',
     project: clean(evidence.gameId) || 'shared', gameId: clean(evidence.gameId) || null, candidateId: clean(evidence.candidateId) || null,
-    sourceCommit: revision, sourceRevision: revision, independentQa: 'PASS', browserQa: 'PASS',
+    sourceCommit: revision, sourceRevision: revision, independentQa: 'PASS', browserQa: normalizedBrowserQa,
     quality: { codeQuality: 1, noRegression: true, playImprovement: playerImpactScore, ruleCompliance: 1 },
     provenance: { sourceKind: 'vibe2', sourceRevision: revision, gameId: clean(evidence.gameId) || null, candidateId: clean(evidence.candidateId) || null, verificationTrace },
-    verification: { independentQa: 'PASS', browserQa: 'PASS', fullRegression: 'PASS', saveKeyValidation: clean(evidence.saveKeyValidation) || null,
+    verification: { independentQa: 'PASS', browserQa: normalizedBrowserQa, runtime: 'PASS', androidRuntimeRequired: requirements.androidRuntimeRequired, fullRegression: 'PASS', saveKeyValidation: clean(evidence.saveKeyValidation) || null,
       syntaxChecks: Array.isArray(evidence.syntaxChecks) ? evidence.syntaxChecks : [], proposedTests: Array.isArray(evidence.proposedTests) ? evidence.proposedTests : [], trace: verificationTrace },
   };
 }

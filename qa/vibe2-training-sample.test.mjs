@@ -1,7 +1,7 @@
 // 파일명: qa/vibe2-training-sample.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildVerifiedTrainingSample, MAX_PATCH_BYTES, TRAINING_SAMPLE_VERSION, validatePositiveTrace } from '../tools/vibe2-training-sample.mjs';
+import { buildVerifiedTrainingSample, MAX_PATCH_BYTES, TRAINING_SAMPLE_VERSION, validatePositiveTrace, qaEvidencePasses, qaRequirementsForTask } from '../tools/vibe2-training-sample.mjs';
 
 function trace(sourceRevision = 'abc123', overrides = {}) {
   return { state: 'PASS', sourceRevision, commitSha: sourceRevision, pullRequest: 123, ci: 'PASS', independentQa: 'PASS', runtime: 'PASS', stale: false, flaky: false, ...overrides };
@@ -25,12 +25,21 @@ test('role이 비어 있어도 실제 기능 구현 goal과 게임 코드 변경
   assert.equal(sample.taskType, 'coding'); assert.equal(sample.difficulty, 'simple');
 });
 
-test('Unity 게임 소스 변경은 unity 작업으로 우선 분류한다', () => {
-  const sample = buildVerifiedTrainingSample({ evidence: evidence({ sourcePath: 'unity-games/daechung-rpg', role: '', diagnosticFocus: null, goal: '플레이어 이동을 구현한다', verificationTrace: trace('unity123') }), patch: 'diff --git a/Assets/Move.cs b/Assets/Move.cs\n-old\n+new', sourceRevision: 'unity123' });
+test('Unity 게임 소스는 browser QA를 요구하지 않고 Android/runtime 검증을 요구한다', () => {
+  const source = evidence({ sourcePath: 'unity-games/P0002', role: '', diagnosticFocus: null, goal: '플레이어 이동을 구현한다', verificationTrace: trace('unity123') });
+  const sample = buildVerifiedTrainingSample({ evidence: source, patch: 'diff --git a/unity-games/P0002/Assets/Move.cs b/unity-games/P0002/Assets/Move.cs\n-old\n+new', sourceRevision: 'unity123', browserQa: 'NOT_APPLICABLE', taskType: 'unity' });
   assert.equal(sample.taskType, 'unity'); assert.equal(sample.difficulty, 'unity-build');
+  assert.equal(sample.browserQa, 'NOT_APPLICABLE'); assert.equal(sample.verification.runtime, 'PASS'); assert.equal(sample.verification.androidRuntimeRequired, true);
+  assert.deepEqual(qaRequirementsForTask('unity'), { independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', runtime: 'PASS', androidRuntimeRequired: true });
+  assert.equal(qaEvidencePasses({ taskType: 'unity', independentQa: 'PASS', browserQa: 'FAIL', runtime: 'PASS' }), true);
 });
 
-test('브라우저 QA 실패 샘플은 생성하지 않는다', () => {
+test('Unity runtime 실패나 불완전 trace는 학습 샘플로 승격하지 않는다', () => {
+  const source = evidence({ sourcePath: 'unity-games/P0002', verificationTrace: trace('unity123', { runtime: 'FAIL' }) });
+  assert.throws(() => buildVerifiedTrainingSample({ evidence: source, patch: 'diff --git a/unity-games/P0002/Assets/a.cs b/unity-games/P0002/Assets/a.cs\n-a\n+b', sourceRevision: 'unity123', browserQa: 'NOT_APPLICABLE', taskType: 'unity' }), /runtime PASS/);
+});
+
+test('Web 브라우저 QA 실패 샘플은 생성하지 않는다', () => {
   assert.throws(() => buildVerifiedTrainingSample({ evidence: evidence(), patch: 'diff --git a/a b/a\n-a\n+b', sourceRevision: 'abc123', independentQa: 'PASS', browserQa: 'FAIL' }), /브라우저 QA PASS/);
 });
 

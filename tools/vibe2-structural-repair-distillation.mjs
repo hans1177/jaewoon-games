@@ -2,8 +2,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { qaEvidencePasses } from './vibe2-training-sample.mjs';
 
-const REQUIRED_QA = Object.freeze({ independentQa: 'PASS', browserQa: 'PASS' });
 const ALLOWED_SOURCE_TASKS = new Set(['bugfix', 'coding', 'unity']);
 const REQUIRED_TEACHER_FIELDS = Object.freeze(['structuralRepair','rootCause','responsibilityBoundary','patchScope','whyNotSmallerPatch','regressionRisks','evidence']);
 const FORBIDDEN_TEACHER_KEYS = new Set(['patch','code','replacement','finalCode','sourceCode']);
@@ -20,12 +20,12 @@ function normalizedQa(record) { const qa = record?.qa && typeof record.qa === 'o
 export function isVerifiedStructuralSource(record) {
   if (!record || typeof record !== 'object') return false;
   const sample = sampleBody(record); const qa = normalizedQa(record);
-  if (qa.independentQa !== REQUIRED_QA.independentQa || qa.browserQa !== REQUIRED_QA.browserQa) return false;
   if (!clean(sample?.instruction) || !clean(sample?.output)) return false;
   const sourceRevision = clean(record?.provenance?.sourceRevision ?? record?.sourceRevision ?? record?.sourceCommit); if (!sourceRevision) return false;
   const taskType = clean(sample?.taskType ?? record?.taskType).toLowerCase(); if (!ALLOWED_SOURCE_TASKS.has(taskType)) return false;
   const trace = record?.verification?.trace ?? record?.provenance?.verificationTrace ?? null;
   if (!trace || upper(trace.state) !== 'PASS' || upper(trace.ci) !== 'PASS' || upper(trace.independentQa) !== 'PASS' || upper(trace.runtime) !== 'PASS') return false;
+  if (!qaEvidencePasses({ taskType, independentQa: qa.independentQa, browserQa: qa.browserQa, runtime: trace.runtime })) return false;
   const traceRevision = clean(trace.sourceRevision ?? trace.sha); if (!traceRevision || traceRevision !== sourceRevision || trace.stale === true || trace.flaky === true) return false;
   const quality = record?.quality; if (!quality || typeof quality !== 'object') return false;
   if (![quality.codeQuality, quality.playImprovement, quality.ruleCompliance].every((value) => Number.isFinite(Number(value)))) return false;
