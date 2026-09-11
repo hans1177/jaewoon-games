@@ -12,6 +12,12 @@ on:
       - 'qa/vibe2-training-sample.test.mjs'
       - 'qa/vibe2-distillation-status.test.mjs'
       - 'qa/vibe2-training-request.test.mjs'
+      - 'design/**/release-baseline.json'
+      - 'design/**/release-production-status.json'
+      - 'design/**/vibe2-release-implementation.json'
+      - 'design/**/unity-android-build.json'
+      - 'design/**/android-runtime-validation.json'
+      - 'design/**/independent-release-qa.json'
       - '.github/workflows/vibe2-distillation-ingest.yml'
       - '.github/workflows/vibe2-local-distillation-train.yml'
   workflow_run:
@@ -19,7 +25,7 @@ on:
     types: [completed]
   workflow_dispatch:
   schedule:
-    - cron: '17 */6 * * *'
+    - cron: '17 * * * *'
 
 permissions:
   contents: write
@@ -50,6 +56,7 @@ jobs:
         run: |
           set -euo pipefail
           git fetch origin \
+            '+refs/heads/main:refs/remotes/origin/main' \
             '+refs/heads/autonomous-dev:refs/remotes/origin/autonomous-dev' \
             '+refs/heads/autonomous/candidate-*:refs/remotes/origin/autonomous/candidate-*' \
             --prune
@@ -70,11 +77,14 @@ jobs:
 
       - name: Ingest verified diffs and refresh readiness
         id: ingest
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           node tools/vibe2-distillation-ingest.mjs \
             --dev-ref=origin/autonomous-dev \
+            --main-ref=origin/main \
             --out-dir=company-learning/training-samples | tee /tmp/vibe2-distillation-ingest.json
           node tools/vibe2-distillation-status.mjs \
             --evidence-dir=company-learning/evidence \
@@ -90,10 +100,20 @@ jobs:
           const request=JSON.parse(fs.readFileSync('/tmp/vibe2-distillation-request.json','utf8').trim().split(/\r?\n/).at(-1));
           console.log(`DISTILLATION_SAMPLES_WRITTEN=${ingest.written.length}`);
           console.log(`DISTILLATION_SAMPLES_REFRESHED=${ingest.refreshed?.length||0}`);
+          console.log(`UNITY_RELEASE_BASELINES_EXAMINED=${ingest.unityRelease?.examined||0}`);
+          console.log(`UNITY_RELEASE_SAMPLES_WRITTEN=${ingest.unityRelease?.written?.length||0}`);
           console.log(`DISTILLATION_READY_TASKS=${status.readyTasks.join(',')||'NONE'}`);
           console.log(`DISTILLATION_STATE=${status.state}`);
           console.log(`LOCAL_TRAINING_REQUEST_STATE=${request.state}`);
           NODE
+
+      - name: Upload verified samples for online Unity teacher
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-verified-training-samples
+          path: company-learning/training-samples
+          retention-days: 1
+          if-no-files-found: warn
 
       - name: Propose verified training samples and readiness through PR
         env:
@@ -116,13 +136,18 @@ jobs:
           git commit -m 'learning: refresh distillation samples and local training request [skip ci]'
           git push origin "HEAD:refs/heads/$branch"
 
-          pr_url="$(gh pr create \
+          if pr_url="$(gh pr create \
             --repo "$GITHUB_REPOSITORY" \
             --base main \
             --head "$branch" \
             --title 'learning: refresh distillation samples and local training request' \
-            --body "Verified Vibe2 distillation sample/status refresh.\n\n- workflow run: ${GITHUB_RUN_ID}\n- direct main write: NO\n- GitHub-hosted model training: NO\n- public game code write: NO")"
-          echo "DISTILLATION_MEMORY_PR=$pr_url"
+            --body "Verified Vibe2 distillation sample/status refresh.\n\n- workflow run: ${GITHUB_RUN_ID}\n- direct main write: NO\n- GitHub-hosted model training: NO\n- public game code write: NO")"; then
+            echo "DISTILLATION_MEMORY_PR=$pr_url"
+          else
+            echo 'DISTILLATION_MEMORY_PR=SKIPPED_ACTIONS_PR_PERMISSION'
+            git checkout main
+            git push origin --delete "$branch" || true
+          fi
           echo 'GITHUB_HOSTED_MODEL_TRAINING=NO'
           echo 'PUBLIC_GAME_CODE_WRITE=NO'
           echo 'PUBLIC_MAIN_WRITE=NO'
@@ -132,10 +157,14 @@ jobs:
         shell: bash
         run: |
           echo '### Vibe2 Distillation Sample Ingest' >> "$GITHUB_STEP_SUMMARY"
-          echo '- source: independent-QA + browser-QA verified autonomous promotions only' >> "$GITHUB_STEP_SUMMARY"
+          echo '- schedule: HOURLY_24H' >> "$GITHUB_STEP_SUMMARY"
+          echo '- web source: independent-QA + browser-QA verified autonomous promotions' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Unity source: RELEASE_READY + current source/build binding + Android runtime PASS + independent QA PASS + merged PR' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Unity browser QA: NOT_APPLICABLE; never synthesized as PASS' >> "$GITHUB_STEP_SUMMARY"
           echo '- answer target: exact verified source diff' >> "$GITHUB_STEP_SUMMARY"
+          echo '- online teacher handoff: short-lived verified-sample artifact' >> "$GITHUB_STEP_SUMMARY"
           echo '- paid API: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- GitHub-hosted model training: NO' >> "$GITHUB_STEP_SUMMARY"
-          echo '- ready work emits deterministic local training request' >> "$GITHUB_STEP_SUMMARY"
-          echo '- persistence: feature branch + PR; direct main write forbidden' >> "$GITHUB_STEP_SUMMARY"
+          echo '- ready work emits deterministic training request' >> "$GITHUB_STEP_SUMMARY"
+          echo '- persistence: PR when Actions PR creation is permitted; direct main write forbidden' >> "$GITHUB_STEP_SUMMARY"
           echo '- promotion: fixed holdout A/B then Canary' >> "$GITHUB_STEP_SUMMARY"

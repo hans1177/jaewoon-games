@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 27,
+  "revision": 28,
   "updatedAt": "2026-09-11",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
@@ -43,6 +43,11 @@
     },
     "marketEvidence": {
       "role": "TARGET_DESIGN_REFERENCE",
+      "targetMarketScope": "GLOBAL",
+      "countrySpecificEvidenceRole": "SECONDARY_CONTEXT_ONLY",
+      "defaultTargetMustNotBeCountrySpecific": true,
+      "globalEvidencePreferred": true,
+      "countrySpecificEvidenceCannotDefineDefaultTargetAlone": true,
       "hardPassFailGate": false,
       "missingDataDoesNotRejectSeed": true,
       "marketDataAloneCannotDiscard": true,
@@ -340,6 +345,8 @@
     "initial-six-game-seeds-created-in-one-bootstrap-batch",
     "famous-successful-games-are-benchmarked-through-homage-or-reinterpretation",
     "third-party-source-code-assets-expression-must-not-be-copied",
+    "game-seed-default-target-market-is-global",
+    "country-specific-market-evidence-is-secondary-context-only",
     "market-evidence-is-target-design-reference-not-hard-seed-gate",
     "numeric-market-claim-requires-source-and-observed-at",
     "seed-replenishment-is-one-for-one-vacancy-only",

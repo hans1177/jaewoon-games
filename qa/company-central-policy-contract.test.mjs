@@ -23,7 +23,7 @@ test('COMPANY_FLOW remains the single machine-oriented production policy source'
   assert.match(agents,/제작 정책 원본은 \*\*`COMPANY_FLOW\.md` 하나\*\*/);
 });
 
-test('GAME_SEED central policy owns bootstrap benchmark market evidence and replenishment',()=>{
+test('GAME_SEED central policy owns bootstrap benchmark global market evidence and replenishment',()=>{
   assert.equal(directive.gameSeed.enabled,true);
   assert.equal(directive.gameSeed.requiredBeforeDesignerDraft,true);
   assert.equal(directive.gameSeed.selectionMode,'FAMOUS_SUCCESSFUL_GAME_COPY_BENCHMARK');
@@ -32,6 +32,10 @@ test('GAME_SEED central policy owns bootstrap benchmark market evidence and repl
   assert.equal(directive.gameSeed.bootstrap.count,6);
   assert.equal(new Set(directive.gameSeed.bootstrap.categories).size,6);
   assert.equal(directive.gameSeed.marketEvidence.role,'TARGET_DESIGN_REFERENCE');
+  assert.equal(directive.gameSeed.marketEvidence.targetMarketScope,'GLOBAL');
+  assert.equal(directive.gameSeed.marketEvidence.countrySpecificEvidenceRole,'SECONDARY_CONTEXT_ONLY');
+  assert.equal(directive.gameSeed.marketEvidence.defaultTargetMustNotBeCountrySpecific,true);
+  assert.equal(directive.gameSeed.marketEvidence.globalEvidencePreferred,true);
   assert.equal(directive.gameSeed.marketEvidence.hardPassFailGate,false);
   assert.equal(directive.gameSeed.marketEvidence.numericClaimRequiresSource,true);
   assert.equal(directive.gameSeed.marketEvidence.numericClaimRequiresObservedAt,true);
@@ -40,6 +44,9 @@ test('GAME_SEED central policy owns bootstrap benchmark market evidence and repl
   assert.match(flow,/initialSeedBatchCount: 6/);
   assert.match(flow,/selectionMode: FAMOUS_SUCCESSFUL_GAME_COPY_BENCHMARK/);
   assert.match(flow,/sourceCodeRule: IMPLEMENT_EQUIVALENT_OR_INSPIRED_FUNCTIONALITY_WITH_OWN_CODE/);
+  assert.match(flow,/marketEvidence:[\s\S]*targetMarketScope: GLOBAL/);
+  assert.match(flow,/countrySpecificEvidenceRole: SECONDARY_CONTEXT_ONLY/);
+  assert.match(flow,/defaultTargetMustNotBeCountrySpecific: true/);
   assert.match(flow,/replenishment:[\s\S]*mode: ONE_FOR_ONE_ONLY/);
 });
 

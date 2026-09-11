@@ -7,8 +7,11 @@ on:
       - 'COMPANY_FLOW.md'
       - 'company-directive.json'
       - 'game-seed-state.json'
+      - 'game-seed-market-evidence.json'
       - 'tools/game-seed-state.mjs'
       - 'tools/company-game-seed-bootstrap.mjs'
+      - 'tools/company-game-seed-semantic-normalize.mjs'
+      - 'tools/company-game-seed-quality-gate.mjs'
       - 'tools/company-design-cycle.mjs'
       - 'tools/company-design-artbook.mjs'
       - 'tools/company-baseline-gate.mjs'
@@ -29,8 +32,11 @@ on:
       - 'COMPANY_FLOW.md'
       - 'company-directive.json'
       - 'game-seed-state.json'
+      - 'game-seed-market-evidence.json'
       - 'tools/game-seed-state.mjs'
       - 'tools/company-game-seed-bootstrap.mjs'
+      - 'tools/company-game-seed-semantic-normalize.mjs'
+      - 'tools/company-game-seed-quality-gate.mjs'
       - 'tools/company-design-cycle.mjs'
       - 'tools/company-design-artbook.mjs'
       - 'tools/company-baseline-gate.mjs'
@@ -63,9 +69,12 @@ jobs:
       - name: Static syntax checks
         run: |
           set -euo pipefail
+          node -e "const d=require('./company-directive.json'); if(d.gameSeed.marketEvidence.targetMarketScope!=='GLOBAL') process.exit(1); const e=require('./game-seed-market-evidence.json'); if(e.targetMarketScope!=='GLOBAL') process.exit(1)"
           for file in \
             tools/game-seed-state.mjs \
             tools/company-game-seed-bootstrap.mjs \
+            tools/company-game-seed-semantic-normalize.mjs \
+            tools/company-game-seed-quality-gate.mjs \
             tools/company-design-cycle.mjs \
             tools/company-design-artbook.mjs \
             tools/company-baseline-gate.mjs \
@@ -103,4 +112,6 @@ jobs:
           done
           echo 'OBSOLETE_FREE_CONCEPT_PATHS=REMOVED'
           echo 'DESIGN_ONLY_VIBE2=FORBIDDEN'
+          echo 'GAME_SEED_TARGET_MARKET=GLOBAL'
+          echo 'GAME_SEED_SEMANTIC_NORMALIZATION=REQUIRED'
           echo 'PAID_API=NO'

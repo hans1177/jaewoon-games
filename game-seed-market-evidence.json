@@ -1,0 +1,206 @@
+{
+  "version": 2,
+  "targetMarketScope": "GLOBAL",
+  "observedAt": "2026-09-11",
+  "role": "TARGET_DESIGN_REFERENCE",
+  "countrySpecificEvidenceRole": "SECONDARY_CONTEXT_ONLY",
+  "globalSources": [
+    {
+      "name": "ESA Power of Play 2025 Global Report",
+      "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+      "observedAt": "2025-10-08",
+      "metrics": {
+        "surveyedPlayersAge16Plus": 24216,
+        "surveyedCountries": 21,
+        "globalAveragePlayerAge": 41,
+        "globalMobilePlayerSharePercent": 55,
+        "actionAndPuzzleTopTwoGenresCountryCount": 20
+      }
+    },
+    {
+      "name": "Newzoo 2025 Full-Year Games Market Review",
+      "source": "https://newzoo.com/articles/global-games-market-2025",
+      "observedAt": "2026-06-18",
+      "metrics": {
+        "globalGamesRevenue2025UsdBillion": 201.6,
+        "globalMobileGamesRevenue2025UsdBillion": 113.3
+      }
+    },
+    {
+      "name": "Sensor Tower State of Gaming 2026",
+      "source": "https://sensortower.com/press/press-release-sensor-tower-state-of-gaming-gaming-drove-52-billion-downloads-82b-iap-revenue-on-mobile-and-12b-premium-revenue-on-steam",
+      "observedAt": "2026-02-26",
+      "metrics": {
+        "globalMobileGameIapRevenue2025UsdBillion": 82
+      }
+    },
+    {
+      "name": "GameAnalytics 2025 Mobile Gaming Benchmarks",
+      "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+      "observedAt": "2026-08-24",
+      "metrics": {
+        "globalMedianDailyPlaytimeMinutesApprox": 22,
+        "globalMedianSessionLengthMinutesLow": 5,
+        "globalMedianSessionLengthMinutesHigh": 6,
+        "globalMedianSessionsPerDayApprox": 4,
+        "actionSessionMinutesLate2024": 4.0,
+        "casualSessionMinutesLate2024": 4.0,
+        "puzzleSessionMinutesLate2024": 5.7,
+        "rolePlayingSessionMinutesLate2024": 4.7,
+        "strategySessionMinutesLate2024": 5.5
+      }
+    },
+    {
+      "name": "Sensor Tower Worldwide Mobile Games December 2025",
+      "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+      "observedAt": "2025-12",
+      "metrics": {
+        "globalTopGrossing1": "Last War: Survival",
+        "globalTopGrossing2": "Whiteout Survival",
+        "globalTopGrossing3": "Royal Match",
+        "globalTopGrossing4": "MONOPOLY GO!",
+        "globalTopGrossing5": "Candy Crush Saga",
+        "globalTopDownload1": "Block Blast!",
+        "globalTopDownload2": "ROBLOX",
+        "globalTopDownload3": "Free Fire",
+        "globalTopDownload4": "Pizza Ready!",
+        "globalTopDownload5": "Subway Surfers",
+        "globalMobileGameDownloadsDecember2025Billion": 3.75
+      }
+    }
+  ],
+  "categories": {
+    "ACTION_SURVIVAL_ROGUELITE": {
+      "benchmarkCandidates": ["Vampire Survivors", "Brotato", "Survivor.io", "20 Minutes Till Dawn"],
+      "requiredConceptTerms": ["horde", "upgrade", "survive", "combat", "build", "run"],
+      "requiredConceptGroups": [
+        ["horde", "swarm", "wave", "enemy"],
+        ["upgrade", "perk", "skill", "build"],
+        ["survive", "survival", "run"],
+        ["combat", "attack", "weapon", "damage"]
+      ],
+      "minimumRequiredConceptGroups": 4,
+      "minimumCoreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "references": [
+        {"title":"Vampire Survivors","qualitative":"action-survival benchmark for horde pressure, simple attacks, upgrade choices and build combinations"},
+        {"title":"Brotato","qualitative":"compact arena survival benchmark for short runs, item choices and build synergy"},
+        {"title":"Survivor.io","qualitative":"mobile survival-roguelite benchmark for touch readability, wave pressure and upgrade selection"},
+        {"title":"Global action/session signal","metrics":[{"metric":"actionSessionMinutesLate2024","value":4.0,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2026-08-24"},{"metric":"globalMobilePlayerSharePercent","value":55,"source":"https://www.theesa.com/resources/the-global-power-of-play-report/","observedAt":"2025-10-08"}]}
+      ]
+    },
+    "SINGLE_DEFENSE_STRATEGY": {
+      "benchmarkCandidates": ["Kingdom Rush", "Bloons TD 6", "Plants vs. Zombies 2", "The Battle Cats"],
+      "requiredConceptTerms": ["tower", "wave", "upgrade", "defend", "placement", "enemy"],
+      "requiredConceptGroups": [
+        ["tower", "placement", "lane", "defender"],
+        ["wave", "enemy", "rush"],
+        ["upgrade", "resource", "gold", "currency"],
+        ["defend", "defense", "base", "objective"]
+      ],
+      "minimumRequiredConceptGroups": 4,
+      "minimumCoreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "references": [
+        {"title":"Kingdom Rush","qualitative":"single-player tower-defense benchmark for wave pressure, placement, counters and upgrades"},
+        {"title":"Bloons TD 6","qualitative":"tower placement and upgrade-path synergy benchmark"},
+        {"title":"Plants vs. Zombies 2","qualitative":"lane-defense readability and counter-choice benchmark"},
+        {"title":"Global strategy/session signal","metrics":[{"metric":"strategySessionMinutesLate2024","value":5.5,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2026-08-24"},{"metric":"globalMobileGamesRevenue2025UsdBillion","value":113.3,"source":"https://newzoo.com/articles/global-games-market-2025","observedAt":"2026-06-18"}]}
+      ]
+    },
+    "PUZZLE": {
+      "benchmarkCandidates": ["Royal Match", "Candy Crush Saga", "Block Blast!", "Two Dots"],
+      "requiredConceptTerms": ["board", "match", "goal", "combo", "level", "solve"],
+      "requiredConceptGroups": [
+        ["board", "grid", "tile", "piece"],
+        ["match", "solve", "move", "combo"],
+        ["goal", "objective", "target"],
+        ["level", "stage", "obstacle", "moves"]
+      ],
+      "minimumRequiredConceptGroups": 4,
+      "minimumCoreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "references": [
+        {"title":"Royal Match","metrics":[{"metric":"globalTopGrossingDecember2025Rank","value":3,"source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12"}]},
+        {"title":"Candy Crush Saga","metrics":[{"metric":"globalTopGrossingDecember2025Rank","value":5,"source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12"}]},
+        {"title":"Block Blast!","metrics":[{"metric":"globalTopDownloadsDecember2025Rank","value":1,"source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12"}]},
+        {"title":"Global puzzle/session signal","metrics":[{"metric":"puzzleSessionMinutesLate2024","value":5.7,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2026-08-24"},{"metric":"actionAndPuzzleTopTwoGenresCountryCount","value":20,"source":"https://www.theesa.com/resources/the-global-power-of-play-report/","observedAt":"2025-10-08"}]}
+      ]
+    },
+    "CASUAL": {
+      "benchmarkCandidates": ["Subway Surfers", "Crossy Road", "Angry Birds 2", "MONOPOLY GO!"],
+      "requiredConceptTerms": ["simple", "short", "score", "retry", "reward", "input"],
+      "requiredConceptGroups": [
+        ["simple", "one-thumb", "one thumb", "tap", "swipe", "input"],
+        ["short", "quick", "retry", "run", "session"],
+        ["score", "goal", "target", "distance"],
+        ["reward", "unlock", "upgrade", "progress"]
+      ],
+      "minimumRequiredConceptGroups": 4,
+      "minimumCoreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "references": [
+        {"title":"Subway Surfers","metrics":[{"metric":"globalTopDownloadsDecember2025Rank","value":5,"source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12"}]},
+        {"title":"Crossy Road","qualitative":"simple one-thumb input, score chase and fast retry benchmark"},
+        {"title":"MONOPOLY GO!","metrics":[{"metric":"globalTopGrossingDecember2025Rank","value":4,"source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12"}]},
+        {"title":"Global casual/session signal","metrics":[{"metric":"casualSessionMinutesLate2024","value":4.0,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2026-08-24"},{"metric":"globalMedianSessionsPerDayApprox","value":4,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2026-08-24"}]}
+      ]
+    },
+    "IDLE_GROWTH_RPG": {
+      "benchmarkCandidates": ["AFK Arena", "Legend of Slime", "Idle Heroes", "Tap Titans 2"],
+      "requiredConceptTerms": ["idle", "upgrade", "hero", "offline", "equipment", "progression"],
+      "requiredConceptGroups": [
+        ["idle", "offline", "auto", "automatic"],
+        ["upgrade", "growth", "progression", "level"],
+        ["hero", "character", "party", "roster"],
+        ["equipment", "gear", "stat", "skill"]
+      ],
+      "minimumRequiredConceptGroups": 4,
+      "minimumCoreLoop": [
+        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
+        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
+        "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+      ],
+      "references": [
+        {"title":"AFK Arena","qualitative":"idle rewards, roster growth and periodic active decisions benchmark"},
+        {"title":"Legend of Slime","qualitative":"mobile idle growth and layered upgrade benchmark"},
+        {"title":"Idle Heroes","qualitative":"long-term idle roster and progression benchmark"},
+        {"title":"Global RPG/session signal","metrics":[{"metric":"rolePlayingSessionMinutesLate2024","value":4.7,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2026-08-24"},{"metric":"globalAveragePlayerAge","value":41,"source":"https://www.theesa.com/resources/the-global-power-of-play-report/","observedAt":"2025-10-08"}]}
+      ]
+    },
+    "STORY_COMPLETE_RPG": {
+      "benchmarkCandidates": ["Chrono Trigger", "FINAL FANTASY VI", "Battle Chasers: Nightwar", "DRAGON QUEST VIII"],
+      "requiredConceptTerms": ["story", "battle", "ending", "quest", "boss", "explore"],
+      "requiredConceptGroups": [
+        ["story", "quest", "narrative"],
+        ["battle", "combat", "fight"],
+        ["boss", "final boss", "major enemy"],
+        ["ending", "finale", "complete", "resolution"]
+      ],
+      "minimumRequiredConceptGroups": 4,
+      "minimumCoreLoop": [
+        "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+        "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
+        "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
+      ],
+      "references": [
+        {"title":"Chrono Trigger","qualitative":"complete story arc, exploration, battles, boss progression and ending benchmark"},
+        {"title":"FINAL FANTASY VI","qualitative":"party growth, story progression and final resolution benchmark"},
+        {"title":"Battle Chasers: Nightwar","qualitative":"mobile-compatible complete RPG structure benchmark"},
+        {"title":"Global RPG/session signal","metrics":[{"metric":"rolePlayingSessionMinutesLate2024","value":4.7,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2026-08-24"},{"metric":"globalMobilePlayerSharePercent","value":55,"source":"https://www.theesa.com/resources/the-global-power-of-play-report/","observedAt":"2025-10-08"}]}
+      ]
+    }
+  }
+}

@@ -9,22 +9,33 @@ on:
     paths:
       - 'COMPANY_FLOW.md'
       - 'company-directive.json'
+      - 'game-seed-market-evidence.json'
       - 'tools/game-seed-state.mjs'
       - 'tools/company-game-seed-contract.mjs'
       - 'tools/company-game-seed-bootstrap.mjs'
+      - 'tools/company-game-seed-semantic-normalize.mjs'
+      - 'tools/company-game-seed-quality-gate.mjs'
+      - 'tools/company-design-cycle.mjs'
+      - 'tools/artbook-production-pipeline.mjs'
+      - 'tools/company-baseline-gate.mjs'
+      - 'tools/company-design-artbook.mjs'
+      - 'qa/company-game-seed-flow.test.mjs'
+      - 'qa/company-seed-design-runtime-stall.test.mjs'
       - '.github/workflows/company-game-seed-bootstrap.yml'
+      - '.github/workflows/company-seed-design-runtime.yml'
 
 permissions:
   contents: write
-  pull-requests: write
+  actions: write
 
 concurrency:
   group: company-game-seed-bootstrap
   cancel-in-progress: false
 
 env:
-  GAME_SEED_LOCAL_MODEL: qwen3:0.6b
+  GAME_SEED_LOCAL_MODEL: gemma3:1b
   OLLAMA_VERSION: '0.33.3'
+  COMPANY_RUNTIME_BRANCH: company-runtime
 
 jobs:
   seed-bootstrap-or-replenish:
@@ -39,11 +50,30 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Prepare isolated company runtime branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-company-runtime'
+          git config user.email 'company-runtime@users.noreply.github.com'
+          git fetch origin main
+          if git ls-remote --exit-code --heads origin "$COMPANY_RUNTIME_BRANCH" >/dev/null 2>&1; then
+            git fetch origin "$COMPANY_RUNTIME_BRANCH"
+            git checkout -B "$COMPANY_RUNTIME_BRANCH" "origin/$COMPANY_RUNTIME_BRANCH"
+            git merge --no-edit origin/main
+          else
+            git checkout -B "$COMPANY_RUNTIME_BRANCH" origin/main
+          fi
+          echo "COMPANY_RUNTIME_BASE=$(git rev-parse HEAD)"
+          echo 'PUBLIC_MAIN_WRITE=NO'
+
       - name: Static GAME_SEED contract QA
         run: |
           node --check tools/game-seed-state.mjs
           node --check tools/company-game-seed-contract.mjs
           node --check tools/company-game-seed-bootstrap.mjs
+          node --check tools/company-game-seed-semantic-normalize.mjs
+          node --check tools/company-game-seed-quality-gate.mjs
           node --test qa/company-game-seed-flow.test.mjs
           node --test qa/autonomous-portfolio-continuation.test.mjs
 
@@ -57,7 +87,7 @@ jobs:
           const s=loadSeedState();
           const need=!s.bootstrapCompletedAt||unfilledVacancies(s).length>0;
           console.log(`model=${need?'true':'false'}`);
-          console.log(`reason=${!s.bootstrapCompletedAt?'INITIAL_SIX_SEED_BOOTSTRAP':need?'ONE_FOR_ONE_VACANCY':'NO_VACANCY'}`);
+          console.log(`reason=${!s.bootstrapCompletedAt?'INITIAL_SIX_SEED_BOOTSTRAP':need?'ONE_FOR_ONE_VACANCY':'NO_VACANCY_REVALIDATE_ACTIVE'}`);
           NODE
 
       - name: Verified free budget preflight
@@ -91,55 +121,77 @@ jobs:
           node tools/company-game-seed-bootstrap.mjs | tee /tmp/game-seed-result.txt
           grep -q 'GAME_SEED_PAID_API=NO' /tmp/game-seed-result.txt
           grep -q 'GAME_SEED_MODEL_CALLS=1' /tmp/game-seed-result.txt
+          grep -q 'GAME_SEED_MARKET_SCOPE=GLOBAL' /tmp/game-seed-result.txt
 
-      - name: Stop with no growth when there is no vacancy
+      - name: Normalize all active category semantics and global target evidence
+        env:
+          GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
+        run: |
+          set -euo pipefail
+          node tools/company-game-seed-semantic-normalize.mjs
+
+      - name: Reject category-mismatched generic or country-scoped GAME_SEED output
+        env:
+          GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
+        run: |
+          set -euo pipefail
+          node tools/company-game-seed-quality-gate.mjs
+
+      - name: Record no-growth revalidation when there is no vacancy
         if: steps.need.outputs.model != 'true'
         run: |
-          echo 'GAME_SEED_ACTION=NO_VACANCY'
+          echo 'GAME_SEED_ACTION=NO_VACANCY_REVALIDATED'
           echo 'GAME_SEED_CREATED_COUNT=0'
           echo 'AUTOMATIC_SEED_GROWTH=NO'
 
-      - name: Validate generated state
-        if: steps.need.outputs.model == 'true'
+      - name: Validate GAME_SEED state
         run: |
           node --test qa/company-game-seed-state-file.test.mjs
           git diff --check
 
-      - name: Persist GAME_SEED state through isolated PR only
-        if: steps.need.outputs.model == 'true'
+      - name: Persist validated GAME_SEED state to company runtime branch
+        id: persist
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-game-seed'
+          git config user.email 'game-seed@users.noreply.github.com'
+          git add game-seed-state.json
+          if git diff --cached --quiet; then
+            echo 'persisted=false' >> "$GITHUB_OUTPUT"
+            echo 'GAME_SEED_STATE_CHANGE=NO'
+            exit 0
+          fi
+          git commit -m "runtime: normalize or replenish GAME_SEED state"
+          git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"
+          echo 'persisted=true' >> "$GITHUB_OUTPUT"
+          echo "GAME_SEED_RUNTIME_BRANCH=$COMPANY_RUNTIME_BRANCH"
+          echo 'PUBLIC_MAIN_WRITE=NO'
+          echo 'PAID_API=NO'
+
+      - name: Continue validated seeds into DESIGN_ONLY work
+        if: steps.persist.outputs.persisted == 'true' || github.event_name == 'push'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet -- game-seed-state.json; then
-            echo 'GAME_SEED_STATE_CHANGE=NO'
-            exit 0
-          fi
-          branch="automation/game-seed-${GITHUB_RUN_ID}"
-          git config user.name 'jaewoon-game-seed'
-          git config user.email 'game-seed@users.noreply.github.com'
-          git checkout -b "$branch"
-          git add game-seed-state.json
-          git commit -m "seed: bootstrap or replenish GAME_SEED state"
-          git push origin "HEAD:$branch"
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "seed: bootstrap or replenish GAME_SEED" --body "Machine-generated GAME_SEED state only. Initial creation is one six-category batch; later generation is one-for-one vacancy replenishment. Market evidence is target-design reference, not a hard gate. No game source or public release write.")"
-          pr_number="${pr_url##*/}"
-          gh pr checks "$pr_number" --repo "$GITHUB_REPOSITORY" --watch --fail-fast
-          gh pr merge "$pr_number" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
-          echo "GAME_SEED_STATE_PR=$pr_number"
-          echo 'PUBLIC_GAME_SOURCE_WRITE=NO'
-          echo 'PAID_API=NO'
+          gh workflow run company-seed-design-runtime.yml --ref main
+          echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=YES'
+          echo "GAME_SEED_DESIGN_DISPATCH_SOURCE=${GITHUB_EVENT_NAME}"
 
       - name: Summary
         if: always()
         run: |
           echo '### Company GAME_SEED Bootstrap' >> "$GITHUB_STEP_SUMMARY"
+          echo '- target market: GLOBAL; country-specific evidence is secondary context only' >> "$GITHUB_STEP_SUMMARY"
           echo '- initial generation: one atomic six-category batch' >> "$GITHUB_STEP_SUMMARY"
-          echo '- local model calls: one batch call per generation run' >> "$GITHUB_STEP_SUMMARY"
-          echo '- recurring schedule: vacancy check only; no vacancy = no new seed' >> "$GITHUB_STEP_SUMMARY"
+          echo '- local model calls: one batch call only when bootstrap or vacancy requires creation' >> "$GITHUB_STEP_SUMMARY"
+          echo '- no-vacancy runs: re-normalize and revalidate existing active seeds without creating new seeds' >> "$GITHUB_STEP_SUMMARY"
+          echo '- semantic quality: concrete category loop + sourced global age/revenue/playtime evidence required before persistence' >> "$GITHUB_STEP_SUMMARY"
           echo '- replenishment: one-for-one same category unless owner changes category' >> "$GITHUB_STEP_SUMMARY"
-          echo '- market evidence: target/audience/session/monetization reference only' >> "$GITHUB_STEP_SUMMARY"
+          echo '- runtime persistence: company-runtime branch; main stays unchanged' >> "$GITHUB_STEP_SUMMARY"
+          echo '- main push continuation: bootstrap is the single DESIGN_ONLY dispatcher after validation' >> "$GITHUB_STEP_SUMMARY"
           echo '- numeric market claims: source + observedAt required' >> "$GITHUB_STEP_SUMMARY"
           echo '- source code: own implementation only' >> "$GITHUB_STEP_SUMMARY"
           echo '- public game source write: NO' >> "$GITHUB_STEP_SUMMARY"
