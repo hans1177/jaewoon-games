@@ -14,6 +14,10 @@ function Test-DirSafe([string]$Path) {
   try { return [System.IO.Directory]::Exists($Path) } catch { return $false }
 }
 
+function Test-RegistryPathSafe([string]$Path) {
+  try { return [bool](Test-Path -LiteralPath $Path -ErrorAction SilentlyContinue) } catch { return $false }
+}
+
 $paths = @(
   "$env:ProgramFiles\Google\Play Games",
   "${env:ProgramFiles(x86)}\Google\Play Games",
@@ -33,6 +37,12 @@ foreach ($root in $foundPaths) {
   } catch {}
 }
 $exeCandidates = @($exeCandidates | Sort-Object -Unique)
+
+# Google documents this HKLM key as the SDK-independent installation signal for
+# Google Play Games on PC. Keep generic uninstall/path probes only as secondary diagnostics.
+$officialServicesKey = 'HKLM:\SOFTWARE\Google\Play Games Services'
+$officialServicesKeyPresent = Test-RegistryPathSafe $officialServicesKey
+$uriSchemeRegistered = Test-RegistryPathSafe 'Registry::HKEY_CLASSES_ROOT\googleplaygames\shell\open\command'
 
 $registryNames = @()
 $uninstallRoots = @(
@@ -80,18 +90,34 @@ try {
   }
 } catch {}
 
-$consumerInstalled = ($foundPaths | Where-Object { $_ -match '(?i)Google\\Play Games$' }).Count -gt 0 -or $registryNames.Count -gt 0
+$consumerInstalled = $officialServicesKeyPresent -or (($foundPaths | Where-Object { $_ -match '(?i)Google\\Play Games$' }).Count -gt 0) -or $registryNames.Count -gt 0
 $developerEmulatorInstalled = ($foundPaths | Where-Object { $_ -match '(?i)Developer Emulator' }).Count -gt 0
 
-$playableFromRunner = $consumerInstalled -and -not $runnerIsServiceAccount -and $interactiveExplorer
-$status = if ($playableFromRunner) { 'READY_FOR_INTERACTIVE_GPG_PC_PROBE' } elseif ($consumerInstalled) { 'BLOCKED_GPG_PC_INSTALLED_BUT_RUNNER_SESSION_NOT_INTERACTIVE' } elseif ($developerEmulatorInstalled -or $adbDevice6520) { 'READY_DEVELOPER_EMULATOR_PRESENT' } else { 'BLOCKED_GPG_PC_NOT_INSTALLED' }
+$playableFromRunner = $consumerInstalled -and $uriSchemeRegistered -and -not $runnerIsServiceAccount -and $interactiveExplorer
+$status = if ($playableFromRunner) {
+  'READY_FOR_INTERACTIVE_GPG_PC_PROBE'
+} elseif ($consumerInstalled -and $runnerIsServiceAccount) {
+  'BLOCKED_GPG_PC_INSTALLED_BUT_RUNNER_IS_SERVICE_ACCOUNT'
+} elseif ($consumerInstalled -and -not $interactiveExplorer) {
+  'BLOCKED_GPG_PC_INSTALLED_BUT_NO_INTERACTIVE_DESKTOP'
+} elseif ($consumerInstalled -and -not $uriSchemeRegistered) {
+  'BLOCKED_GPG_PC_INSTALLED_BUT_LAUNCH_URI_NOT_REGISTERED'
+} elseif ($developerEmulatorInstalled -or $adbDevice6520) {
+  'READY_DEVELOPER_EMULATOR_PRESENT'
+} else {
+  'BLOCKED_GPG_PC_NOT_INSTALLED'
+}
 
 $payload = [ordered]@{
-  version = 1
+  version = 2
   authority = 'EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE'
   observedAt = (Get-Date).ToUniversalTime().ToString('o')
   status = $status
   googlePlayGamesPcInstalled = [bool]$consumerInstalled
+  officialServicesRegistryKeyPresent = [bool]$officialServicesKeyPresent
+  googlePlayGamesLaunchUriRegistered = [bool]$uriSchemeRegistered
+  supportedDirectLaunchUriTemplate = 'googleplaygames://launch/?pid=2&id={packageId}'
+  firstProbePackageId = 'com.block.juggle'
   developerEmulatorInstalled = [bool]$developerEmulatorInstalled
   developerEmulatorAdbOnline = [bool]$adbDevice6520
   runnerIsServiceAccount = [bool]$runnerIsServiceAccount
@@ -106,6 +132,7 @@ $payload = [ordered]@{
   accountInspection = $false
   autoSignIn = $false
   autoTermsAcceptance = $false
+  launchAttempted = $false
   runtimePromotionAllowed = $false
 }
 $payload | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $OutDir 'google-play-games-pc-diagnostic.json') -Encoding UTF8
