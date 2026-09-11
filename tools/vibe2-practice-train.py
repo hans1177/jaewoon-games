@@ -64,25 +64,28 @@ def practice_validate(args, manifest, train_rows, eval_rows):
         raise RuntimeError('manifest says licensed references exist but rows contain none')
 
 
-def find_output(argv):
+def find_paths(argv):
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument('--output', required=True)
+    parser.add_argument('--dataset-manifest', required=True)
     known, _ = parser.parse_known_args(argv)
-    return Path(known.output)
+    return Path(known.output), Path(known.dataset_manifest)
 
 
 def main():
-    output = find_output(sys.argv[1:])
+    output, dataset_manifest_path = find_paths(sys.argv[1:])
     trainer = load_base_trainer()
     trainer.validate_manifest = practice_validate
     trainer.main()
     metadata_file = output / 'training-metadata.json'
     metadata = json.loads(metadata_file.read_text(encoding='utf-8'))
-    dataset_manifest = metadata.get('datasetManifest') or {}
+    dataset_manifest = json.loads(dataset_manifest_path.read_text(encoding='utf-8'))
     metadata['practiceOnly'] = True
     metadata['trainingAuthority'] = 'PRACTICE_ONLY'
     metadata['syntheticOnly'] = bool(dataset_manifest.get('syntheticOnly', False))
     metadata['containsLicensedReference'] = bool(dataset_manifest.get('containsLicensedReference', False))
+    metadata['practiceSourceKinds'] = dataset_manifest.get('sourceKinds', [])
+    metadata['licensedReferenceSamples'] = int((dataset_manifest.get('stats') or {}).get('licensedReferenceTotal', 0))
     metadata['promotionState'] = 'UNVERIFIED'
     metadata['runtimePromotionAllowed'] = False
     metadata['requiredNextGate'] = 'VERIFIED_UNITY_HOLDOUT_AB_AND_CANARY'
@@ -93,6 +96,7 @@ def main():
         'promotionState': metadata['promotionState'],
         'runtimePromotionAllowed': metadata['runtimePromotionAllowed'],
         'containsLicensedReference': metadata['containsLicensedReference'],
+        'licensedReferenceSamples': metadata['licensedReferenceSamples'],
         'requiredNextGate': metadata['requiredNextGate'],
         'trainLoss': (metadata.get('trainMetrics') or {}).get('train_loss'),
         'evalLoss': (metadata.get('evalMetrics') or {}).get('eval_loss'),
