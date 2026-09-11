@@ -10,8 +10,6 @@ on:
       - 'tools/company-development-validation-cycle.mjs'
       - 'qa/company-development-unity-runtime.test.mjs'
   workflow_dispatch:
-  schedule:
-    - cron: '17 */2 * * *'
 
 permissions:
   contents: write

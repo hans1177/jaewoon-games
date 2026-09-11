@@ -7,6 +7,7 @@ const TRAINING_SAMPLE_VERSION = 3;
 const MAX_PATCH_BYTES = 120_000;
 const ALLOWED_TASK_TYPES = new Set(['coding', 'bugfix', 'unity', 'qa', 'planning', 'general']);
 const INVALID_TRACE_STATES = new Set(['FAIL', 'STALLED', 'NO_ACTIONABLE_WORK', 'INCOMPLETE_PROGRESS', 'FLAKY', 'STALE', 'SHA_MISMATCH']);
+const EXTERNAL_BLACK_BOX_QA_MARKER = 'BLACK_BOX_EVIDENCE_PASS';
 
 const clean = (value) => String(value ?? '').trim();
 const clamp01 = (value) => Math.max(0, Math.min(1, Number(value) || 0));
@@ -59,15 +60,26 @@ function buildOutput(evidence, patch) {
 
 export function qaRequirementsForTask(taskType) {
   const type = clean(taskType).toLowerCase();
-  return type === 'unity'
-    ? { independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', runtime: 'PASS', androidRuntimeRequired: true }
-    : { independentQa: 'PASS', browserQa: 'PASS', runtime: 'PASS', androidRuntimeRequired: false };
+  if (type === 'unity') return { independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', runtime: 'PASS', androidRuntimeRequired: true };
+  if (type === 'qa') return {
+    independentQa: `PASS_OR_${EXTERNAL_BLACK_BOX_QA_MARKER}`,
+    browserQa: 'PASS_OR_NOT_APPLICABLE_FOR_EXTERNAL_BLACK_BOX',
+    runtime: 'PASS',
+    androidRuntimeRequired: false,
+  };
+  return { independentQa: 'PASS', browserQa: 'PASS', runtime: 'PASS', androidRuntimeRequired: false };
 }
 
 export function qaEvidencePasses({ taskType, independentQa, browserQa, runtime }) {
-  const required = qaRequirementsForTask(taskType);
-  if (upper(independentQa) !== 'PASS' || upper(runtime) !== 'PASS') return false;
-  if (required.browserQa === 'PASS' && upper(browserQa) !== 'PASS') return false;
+  const type = clean(taskType).toLowerCase();
+  const independent = upper(independentQa);
+  const browser = upper(browserQa);
+  const runtimeState = upper(runtime);
+  if (runtimeState !== 'PASS') return false;
+  if (type === 'qa' && independent === EXTERNAL_BLACK_BOX_QA_MARKER && browser === 'NOT_APPLICABLE') return true;
+  const required = qaRequirementsForTask(type);
+  if (independent !== 'PASS') return false;
+  if (type !== 'unity' && browser !== 'PASS') return false;
   return true;
 }
 
@@ -103,10 +115,10 @@ export function buildVerifiedTrainingSample({ evidence, patch, sourceRevision, i
   const requirements = qaRequirementsForTask(resolvedTaskType);
   if (!qaEvidencePasses({ taskType: resolvedTaskType, independentQa, browserQa, runtime: verificationTrace.runtime })) {
     if (upper(independentQa) !== 'PASS') throw new Error('독립 QA PASS 필요');
-    if (requirements.browserQa === 'PASS' && upper(browserQa) !== 'PASS') throw new Error('브라우저 QA PASS 필요');
+    if (resolvedTaskType !== 'unity' && upper(browserQa) !== 'PASS') throw new Error('브라우저 QA PASS 필요');
     throw new Error('runtime PASS evidence 필요');
   }
-  const normalizedBrowserQa = requirements.browserQa;
+  const normalizedBrowserQa = resolvedTaskType === 'unity' ? 'NOT_APPLICABLE' : 'PASS';
   const playerImpactScore = clamp01(Number(performance?.playerImpactScore ?? 0) / 5);
   return {
     version: TRAINING_SAMPLE_VERSION, instruction, input: buildInput(evidence), output: buildOutput(evidence, verifiedPatch),
@@ -132,4 +144,4 @@ function main() {
 }
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMain) { try { main(); } catch (error) { console.error(error.message); process.exitCode = 1; } }
-export { TRAINING_SAMPLE_VERSION, MAX_PATCH_BYTES };
+export { TRAINING_SAMPLE_VERSION, MAX_PATCH_BYTES, EXTERNAL_BLACK_BOX_QA_MARKER };

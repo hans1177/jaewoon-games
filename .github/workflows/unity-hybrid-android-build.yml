@@ -18,7 +18,7 @@ permissions:
   pull-requests: write
 
 env:
-  JAEWOON_LOCAL_RUNNER_ENABLED: 'true'
+  JAEWOON_LOCAL_RUNNER_ENABLED: 'false'
 
 concurrency:
   group: unity-hybrid-android-build

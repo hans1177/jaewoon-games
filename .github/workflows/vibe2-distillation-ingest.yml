@@ -12,6 +12,7 @@ on:
       - 'qa/vibe2-training-sample.test.mjs'
       - 'qa/vibe2-distillation-status.test.mjs'
       - 'qa/vibe2-training-request.test.mjs'
+      - 'company-learning/external-game-playtest/**'
       - 'design/**/release-baseline.json'
       - 'design/**/release-production-status.json'
       - 'design/**/vibe2-release-implementation.json'
@@ -102,6 +103,9 @@ jobs:
           console.log(`DISTILLATION_SAMPLES_REFRESHED=${ingest.refreshed?.length||0}`);
           console.log(`UNITY_RELEASE_BASELINES_EXAMINED=${ingest.unityRelease?.examined||0}`);
           console.log(`UNITY_RELEASE_SAMPLES_WRITTEN=${ingest.unityRelease?.written?.length||0}`);
+          console.log(`EXTERNAL_BLACK_BOX_EXAMINED=${ingest.externalBlackBox?.examined||0}`);
+          console.log(`EXTERNAL_BLACK_BOX_SAMPLES_WRITTEN=${ingest.externalBlackBox?.written?.length||0}`);
+          console.log(`EXTERNAL_BLACK_BOX_SAMPLES_REFRESHED=${ingest.externalBlackBox?.refreshed?.length||0}`);
           console.log(`DISTILLATION_READY_TASKS=${status.readyTasks.join(',')||'NONE'}`);
           console.log(`DISTILLATION_STATE=${status.state}`);
           console.log(`LOCAL_TRAINING_REQUEST_STATE=${request.state}`);
@@ -160,8 +164,10 @@ jobs:
           echo '- schedule: HOURLY_24H' >> "$GITHUB_STEP_SUMMARY"
           echo '- web source: independent-QA + browser-QA verified autonomous promotions' >> "$GITHUB_STEP_SUMMARY"
           echo '- Unity source: RELEASE_READY + current source/build binding + Android runtime PASS + independent QA PASS + merged PR' >> "$GITHUB_STEP_SUMMARY"
+          echo '- external commercial source: verified black-box runtime/game-entry/input evidence only; no proprietary code/assets/internal algorithms' >> "$GITHUB_STEP_SUMMARY"
           echo '- Unity browser QA: NOT_APPLICABLE; never synthesized as PASS' >> "$GITHUB_STEP_SUMMARY"
-          echo '- answer target: exact verified source diff' >> "$GITHUB_STEP_SUMMARY"
+          echo '- external black-box browser QA: NOT_APPLICABLE; dedicated evidence marker required' >> "$GITHUB_STEP_SUMMARY"
+          echo '- answer target: exact verified source diff or bounded observable QA pattern' >> "$GITHUB_STEP_SUMMARY"
           echo '- online teacher handoff: short-lived verified-sample artifact' >> "$GITHUB_STEP_SUMMARY"
           echo '- paid API: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- GitHub-hosted model training: NO' >> "$GITHUB_STEP_SUMMARY"
