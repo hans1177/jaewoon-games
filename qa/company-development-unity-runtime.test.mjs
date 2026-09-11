@@ -6,6 +6,7 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 
 const generatorSource=process.env.UNITY_BOOTSTRAP_SOURCE||path.resolve('tools/company-development-unity-bootstrap.mjs');
+const workflowSource=fs.readFileSync(path.resolve('.github/workflows/company-development-unity-runtime.yml'),'utf8');
 const cases=[
   ['seed-action-survival-rogu-echoes-of-the-lost-star','Echoes of the Lost Star','SURVIVAL'],
   ['seed-single-defense-strat-celestial-bastion','Celestial Bastion','DEFENSE'],
@@ -53,4 +54,9 @@ test('refuses Unity prototype generation without real Web gameplay PASS',()=>{
   const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs','--game-id=seed-puzzle-chromatic-cascade','--game-name=Chromatic Cascade',`--baseline=${baseline}`,`--web-evidence=${web}`],{cwd:sandbox,encoding:'utf8'});
   assert.notEqual(run.status,0);
   assert.match(run.stderr,/REAL_WEB_GAMEPLAY_PASS_REQUIRED/);
+});
+
+test('discovers dispatched workflow runs with standalone jq instead of invalid gh --jq arguments',()=>{
+  assert.equal((workflowSource.match(/--jq --argjson/g)||[]).length,0);
+  assert.ok((workflowSource.match(/\| jq -r --argjson/g)||[]).length>=3);
 });
