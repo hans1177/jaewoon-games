@@ -14,6 +14,7 @@ on:
       - 'tools/company-release-production-cycle.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - 'qa/company-central-pipeline-only.test.mjs'
+      - 'qa/company-development-web-runtime.test.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
@@ -33,6 +34,7 @@ on:
       - 'tools/company-release-production-cycle.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - 'qa/company-central-pipeline-only.test.mjs'
+      - 'qa/company-development-web-runtime.test.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
@@ -62,4 +64,5 @@ jobs:
           node --check tools/company-release-production-cycle.mjs
           node --test \
             qa/company-central-policy-contract.test.mjs \
-            qa/company-central-pipeline-only.test.mjs
+            qa/company-central-pipeline-only.test.mjs \
+            qa/company-development-web-runtime.test.mjs
