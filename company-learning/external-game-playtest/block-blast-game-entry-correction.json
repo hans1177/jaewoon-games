@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "gameId": "block-blast",
+  "packageId": "com.block.juggle",
+  "recordedAt": "2026-09-12",
+  "priority": "EMERGENCY_OWNER_CORRECTION",
+  "authority": "OWNER_DIRECT_OBSERVATION",
+  "correction": "Block Blast reached the actual game during a prior server experiment. Earlier summaries must not describe every prior launch as splash-only or no game entry.",
+  "evidenceModel": {
+    "gameEntryObserved": true,
+    "exactRunCorrelationConfirmed": false,
+    "stableRuntimePassConfirmed": false,
+    "rule": "Preserve game-entry success and later crash/failure as separate evidence stages until the exact run artifact is correlated."
+  },
+  "distillationBinding": "company-learning/external-game-playtest/block-blast-runtime-distillation.json",
+  "privateHistoryBinding": "hans1177/jaewoon-ai-company/server-playtest/block-blast-experiment-history.md",
+  "promotionRule": "Owner-confirmed game entry may be used as partial runtime evidence. Full gameplay training promotion still requires stable input/process/crash-free evidence."
+}
