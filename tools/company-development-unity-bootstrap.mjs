@@ -257,7 +257,7 @@ public static class SeedAndroidBuild
     {
         EnsureScene();
         string projectRoot = Directory.GetParent(Application.dataPath).FullName;
-        string outputDir = Path.Combine(projectRoot, "build", "Android");
+        string outputDir = Path.GetFullPath(Path.Combine(projectRoot, "..", "..", "build", "Android"));
         string outputPath = Path.Combine(outputDir, "${csharp(gameId)}.apk");
         Directory.CreateDirectory(outputDir);
 
