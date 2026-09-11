@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
   "date": "2026-09-11",
   "productionClass": "DESIGN_ONLY",
@@ -15,20 +15,39 @@
   "vibe2Used": false,
   "localization": "ko-KR",
   "localizedFromRuntime": true,
+  "designCoreSource": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-11/design-revised.json",
+  "designCore": {
+    "identity": "엘도리아 연대기",
+    "coreFun": "탐험 · 퀘스트 · 전투 · 캐릭터 성장 · 완결된 메인 스토리를 하나의 흐름으로 이어가는 RPG.",
+    "playerFantasy": "지역을 탐험하고 인물과 사건을 만나며 캐릭터를 성장시켜 최종 보스와 실제 엔딩까지 완결된 모험을 경험한다.",
+    "coreLoop": [
+      "지역을 탐험하고 인물을 만나며 퀘스트를 수락하거나 진행해 메인 이야기를 앞으로 밀어간다.",
+      "적과 보스를 상대해 장비나 스킬을 얻고 그 성장으로 다음 이야기 지역이나 주요 전투에 도달한다.",
+      "완결된 메인 스토리를 최종 보스와 실제 엔딩까지 진행하며 후일담이나 후속작 떡밥은 기본 결말과 분리한다."
+    ],
+    "signatureSystems": [
+      {"name":"스토리 중심 진행","purpose":"탐험·퀘스트·전투가 메인 이야기의 진행과 직접 연결되게 한다.","playerChoice":"어떤 지역과 퀘스트를 먼저 진행하고 어떤 성장 준비를 할지 결정한다."},
+      {"name":"캐릭터 성장","purpose":"전투 보상과 장비·스킬 획득이 다음 이야기 구간 진입으로 이어지게 한다.","playerChoice":"장비와 스킬 성장 방향을 정해 다음 주요 전투에 대비한다."},
+      {"name":"퀘스트 완수","purpose":"인물과 사건을 통해 세계관과 메인 서사를 단계적으로 전개한다.","playerChoice":"진행할 퀘스트와 탐험 동선을 선택한다."},
+      {"name":"전투","purpose":"성장과 이야기 진행을 연결하는 핵심 플레이 구간이다.","playerChoice":"전투 준비와 성장 선택으로 보스와 주요 적을 돌파한다."}
+    ],
+    "progressionDirection": "이야기 진행과 캐릭터 성장이 함께 전진하고 메인 스토리가 실제 결말까지 완결되는 방향.",
+    "visualDirection": "스토리 장면, 지역 탐험, 전투가 모바일 화면에서도 구분되도록 장면별 시각적 역할을 명확하게 한다.",
+    "mobileUx": "스토리·탐험·전투 전환이 작은 화면에서도 명확하게 읽히고 주요 선택은 터치로 빠르게 접근하게 한다.",
+    "marketTargetDirection": "완결된 싱글 플레이 스토리 RPG를 원하는 글로벌 모바일 이용자를 기본 대상으로 한다.",
+    "steamExpansionDecision": "Steam 확장은 현재 권장하지 않음.",
+    "multiplayerExpansionDecision": "멀티플레이 확장은 현재 권장하지 않음.",
+    "technicalAssumptions": [
+      "스토리 진행, 캐릭터 성장, 퀘스트 완수, 전투가 하나의 핵심 플레이 흐름으로 연결된다.",
+      "기본 게임은 완결된 싱글 플레이 스토리를 우선한다.",
+      "후일담이나 후속작 연결은 기본 엔딩과 분리한다."
+    ]
+  },
   "content": {
     "identity": "Chronicles of Eldoria",
     "playerFantasy": "캐릭터와 세계를 탐험하고 퀘스트를 따라가며 완결된 메인 스토리와 최종 보스, 실제 엔딩까지 경험하는 글로벌 모바일 싱글 플레이 RPG.",
-    "coreLoop": [
-      "지역을 탐험하고 인물을 만나며 퀘스트를 수락하거나 진행해 메인 이야기를 앞으로 밀어간다.",
-      "전투와 캐릭터 성장을 통해 다음 지역과 이야기 구간을 열고 주요 사건과 선택을 경험한다.",
-      "완결된 메인 스토리를 최종 보스와 실제 엔딩까지 진행하며, 후일담이나 후속작 떡밥은 기본 결말과 분리한다."
-    ],
-    "signatureSystems": [
-      "스토리 중심 진행",
-      "캐릭터 성장",
-      "퀘스트 완수",
-      "전투"
-    ],
+    "coreLoop": ["지역을 탐험하고 인물을 만나며 퀘스트를 수락하거나 진행해 메인 이야기를 앞으로 밀어간다.","전투와 캐릭터 성장을 통해 다음 지역과 이야기 구간을 열고 주요 사건과 선택을 경험한다.","완결된 메인 스토리를 최종 보스와 실제 엔딩까지 진행하며, 후일담이나 후속작 떡밥은 기본 결말과 분리한다."],
+    "signatureSystems": ["스토리 중심 진행","캐릭터 성장","퀘스트 완수","전투"],
     "progressionDirection": "이야기 진행과 캐릭터 성장이 함께 전진하고, 메인 스토리가 실제 결말까지 완결되는 방향.",
     "visualDirection": "스토리 장면, 지역 탐험, 전투가 모바일 화면에서도 구분되도록 장면별 시각적 역할을 명확하게 한다."
   },
@@ -40,10 +59,5 @@
   "homepageVisible": true,
   "format": "core-strategy",
   "sourceFile": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-11/core-artbook.json",
-  "publication": {
-    "policyDocument": "COMPANY_FLOW.md",
-    "baselineGateState": "DESIGN_BASELINE_READY",
-    "baselineReady": true,
-    "publishedAt": "2026-09-11T07:10:15.247Z"
-  }
+  "publication": {"policyDocument":"COMPANY_FLOW.md","baselineGateState":"DESIGN_BASELINE_READY","baselineReady":true,"publishedAt":"2026-09-11T07:10:15.247Z"}
 }
