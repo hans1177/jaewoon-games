@@ -133,7 +133,7 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
   const deepSeek=model.startsWith('deepseek-r1');
   let lastError=null;
   for(let attempt=1;attempt<=2;attempt++){
-    const mode=deepSeek?(attempt===1?'json':'plain-json'):(attempt===1?'schema':'json');
+    const mode=deepSeek?'json':(attempt===1?'schema':'json');
     try{
       const schemaPrompt=(deepSeek||attempt>1)?`\nJSON_SCHEMA=${JSON.stringify(schema)}\n사고 과정이나 설명 없이 위 스키마를 만족하는 JSON 객체만 반환한다.`:'';
       const correction=attempt>1&&lastError?`\nPREVIOUS_VALIDATION_ERROR=${clean(lastError?.message)}\n이 오류를 정확히 수정하고 누락된 필수 구조를 모두 포함하라.`:'';
@@ -146,7 +146,7 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
       if(!text){if(clean(body?.message?.thinking))console.log(`MODEL_EMPTY_CONTENT_WITH_THINKING=${model}|attempt=${attempt}|mode=${mode}`);throw new Error(`empty model response (${mode})`);}
       const parsed=parseJsonObject(text);const repairs=[];const normalized=normalizeSchemaValue(parsed,schema,'root',repairs);if(repairs.length)console.log(`MODEL_SCHEMA_NORMALIZED=${model}|attempt=${attempt}|${repairs.join(',')}`);assertSchemaValue(normalized,schema);
       const elapsedMs=Date.now()-callStarted;modelCallStats.push({model,attempt,elapsedMs,predict,mode,schemaRepairs:repairs.length});console.log(`MODEL_CALL_MS=${model}|${elapsedMs}|attempt=${attempt}|predict=${predict}|mode=${mode}`);return normalized;
-    }catch(error){lastError=error;if(attempt<2){const nextMode=deepSeek?'plain-json':'json';console.log(`MODEL_CALL_FALLBACK=${model}|attempt=${attempt}|next=${nextMode}|reason=${clean(error?.message)}`);await new Promise(r=>setTimeout(r,800*attempt));}}
+    }catch(error){lastError=error;if(attempt<2){const nextMode='json';console.log(`MODEL_CALL_FALLBACK=${model}|attempt=${attempt}|next=${nextMode}|reason=${clean(error?.message)}`);await new Promise(r=>setTimeout(r,800*attempt));}}
   }
   throw new Error(`MODEL_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
 }
