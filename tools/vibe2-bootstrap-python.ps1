@@ -27,10 +27,6 @@ function Test-VibePython([string]$candidate) {
   return $true
 }
 
-function Test-TrainingModules([string]$candidate) {
-  return (Test-NativeCommand $candidate @('-c', 'import torch, transformers, peft, accelerate'))
-}
-
 $candidates = @()
 if ($toolCachePython) { $candidates += $toolCachePython }
 $candidates += $pythonExe
@@ -72,14 +68,11 @@ if (-not $resolved) {
   $resolved = $pythonExe
 }
 
-if (-not (Test-TrainingModules $resolved)) {
-  Write-Host 'PYTHON_ML_STACK=INSTALLING'
-  & $resolved -m pip install --disable-pip-version-check --no-warn-script-location --index-url 'https://download.pytorch.org/whl/cu121' 'torch==2.5.1+cu121'
-  if ($LASTEXITCODE -ne 0) { throw 'CUDA PyTorch installation failed' }
-  & $resolved -m pip install --disable-pip-version-check --no-warn-script-location 'transformers>=4.51,<5' 'peft>=0.14,<1' 'accelerate>=1,<2' sentencepiece
-  if ($LASTEXITCODE -ne 0) { throw 'Unity LoRA dependency installation failed' }
-  if (-not (Test-TrainingModules $resolved)) { throw 'Unity LoRA dependency validation failed' }
-}
+Write-Host 'PYTHON_ML_STACK=ENSURING'
+& $resolved -m pip install --disable-pip-version-check --no-warn-script-location --index-url 'https://download.pytorch.org/whl/cu121' 'torch==2.5.1+cu121'
+if ($LASTEXITCODE -ne 0) { throw 'CUDA PyTorch installation failed' }
+& $resolved -m pip install --disable-pip-version-check --no-warn-script-location 'transformers>=4.51,<5' 'peft>=0.14,<1' 'accelerate>=1,<2' sentencepiece
+if ($LASTEXITCODE -ne 0) { throw 'Unity LoRA dependency installation failed' }
 
 $pythonDir = Split-Path -Parent $resolved
 $scriptsDir = Join-Path $pythonDir 'Scripts'
