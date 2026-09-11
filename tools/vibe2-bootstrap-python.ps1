@@ -6,27 +6,29 @@ $pythonRoot = Join-Path $learningRoot 'python311-embedded'
 $pythonExe = Join-Path $pythonRoot 'python.exe'
 $toolCachePython = if ($env:RUNNER_TOOL_CACHE) { Join-Path $env:RUNNER_TOOL_CACHE 'Python\3.11.9\x64\python.exe' } else { $null }
 
-function Invoke-NativeProbe([string]$exe, [string[]]$args) {
+function Test-NativeCommand([string]$exe, [string[]]$args) {
   $previous = $ErrorActionPreference
+  $exitCode = 1
   try {
-    $ErrorActionPreference = 'SilentlyContinue'
-    & $exe @args 2>$null
-    return $LASTEXITCODE
+    $ErrorActionPreference = 'Continue'
+    & $exe @args 2>&1 | Out-Null
+    $exitCode = $LASTEXITCODE
   }
   finally {
     $ErrorActionPreference = $previous
   }
+  return ($exitCode -eq 0)
 }
 
 function Test-VibePython([string]$candidate) {
   if ([string]::IsNullOrWhiteSpace($candidate) -or -not (Test-Path $candidate)) { return $false }
-  if ((Invoke-NativeProbe $candidate @('-c', 'import sys; assert sys.version_info[:2] == (3, 11)')) -ne 0) { return $false }
-  if ((Invoke-NativeProbe $candidate @('-m', 'pip', '--version')) -ne 0) { return $false }
+  if (-not (Test-NativeCommand $candidate @('-c', 'import sys; assert sys.version_info[:2] == (3, 11)'))) { return $false }
+  if (-not (Test-NativeCommand $candidate @('-m', 'pip', '--version'))) { return $false }
   return $true
 }
 
 function Test-TrainingModules([string]$candidate) {
-  return (Invoke-NativeProbe $candidate @('-c', 'import torch, transformers, peft, accelerate')) -eq 0
+  return (Test-NativeCommand $candidate @('-c', 'import torch, transformers, peft, accelerate'))
 }
 
 $candidates = @()
