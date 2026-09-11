@@ -204,6 +204,8 @@ jobs:
           echo '- candidate tournament default: 5; allowed: 3-5' >> "$GITHUB_STEP_SUMMARY"
           echo '- bounded self repair: max 3 attempts' >> "$GITHUB_STEP_SUMMARY"
           echo '- external commercial source: black-box verified observations only; no proprietary code/assets/internal algorithms' >> "$GITHUB_STEP_SUMMARY"
+          echo '- external black-box browser QA: NOT_APPLICABLE; dedicated evidence marker required' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Unity browser QA: NOT_APPLICABLE; never synthesized as PASS' >> "$GITHUB_STEP_SUMMARY"
           echo '- failed Vibe3 candidates: comparison context only, never promoted as answer targets' >> "$GITHUB_STEP_SUMMARY"
           echo '- paid API: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- GitHub-hosted model training: NO' >> "$GITHUB_STEP_SUMMARY"
