@@ -18,8 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # main owns current governance/incubator state. autonomous-dev owns the
-          # non-public continuous-work attempt ledger and is read selectively below.
           ref: main
           fetch-depth: 0
       - uses: actions/setup-node@v4
@@ -41,6 +39,7 @@ jobs:
       - name: Validate continuation routing
         run: |
           node --check tools/autonomous-portfolio-continuation.mjs
+          node --check tools/game-seed-state.mjs
           node --test qa/autonomous-portfolio-continuation.test.mjs
           grep -q 'ref: main' .github/workflows/autonomous-portfolio-continuation.yml
           grep -q 'origin/autonomous-dev:.autonomous/queue-state.json' .github/workflows/autonomous-portfolio-continuation.yml
@@ -56,15 +55,16 @@ jobs:
           console.log(`action=${d.action}`);
           console.log(`reason=${d.reason}`);
           NODE
-      - name: Dispatch one bounded new-game concept when game queue is exhausted
-        if: steps.route.outputs.action == 'DISPATCH_INCUBATOR'
+      - name: Dispatch GAME_SEED bootstrap or vacancy replenishment only
+        if: steps.route.outputs.action == 'DISPATCH_GAME_SEED'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run autonomous-new-game-incubator.yml --ref main -f create_concept=true
-          echo 'PORTFOLIO_NEXT=NEW_GAME_INCUBATOR'
+          gh workflow run company-game-seed-bootstrap.yml --ref main
+          echo 'PORTFOLIO_NEXT=GAME_SEED'
+          echo 'FREE_CONCEPT_INCUBATOR=REMOVED'
           echo 'PAID_API=NO'
           echo 'PUBLIC_RELEASE=NO'
       - name: Summary
@@ -73,8 +73,9 @@ jobs:
           echo "### Autonomous Portfolio Continuation" >> "$GITHUB_STEP_SUMMARY"
           echo "- route: ${{ steps.route.outputs.action }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- reason: ${{ steps.route.outputs.reason }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- governance/incubator state: main" >> "$GITHUB_STEP_SUMMARY"
+          echo "- GAME_SEED bootstrap: one initial six-category batch" >> "$GITHUB_STEP_SUMMARY"
+          echo "- GAME_SEED replenishment: one-for-one vacancy only" >> "$GITHUB_STEP_SUMMARY"
+          echo "- free-concept incubator: REMOVED" >> "$GITHUB_STEP_SUMMARY"
           echo "- continuous attempt ledger: autonomous-dev (read-only)" >> "$GITHUB_STEP_SUMMARY"
           echo "- trigger route: explicit workflow_dispatch only" >> "$GITHUB_STEP_SUMMARY"
-          echo "- duplicate valid concept/day: blocked" >> "$GITHUB_STEP_SUMMARY"
           echo "- public release: NO" >> "$GITHUB_STEP_SUMMARY"
