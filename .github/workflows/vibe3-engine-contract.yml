@@ -14,6 +14,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate Vibe3 machine contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const c=JSON.parse(fs.readFileSync('company-learning/vibe3-engine-contract.json','utf8'));
+          if(c.version!==3||c.status!=='OWNER_DIRECT_LOCKED') throw new Error('Vibe3 contract version/status mismatch');
+          if(c.relationshipToVibe2!=='INTELLIGENCE_LAYER_UPGRADE_INSIDE_EXISTING_PIPELINE'||c.parallelPipeline!==false) throw new Error('Vibe3 must remain inside canonical pipeline');
+          if(c.execution?.defaultIndependentCandidates!==3||c.execution?.defaultMaxRepairAttempts!==3) throw new Error('Vibe3 default tournament/repair contract changed');
+          if(c.assetTransformation?.originalImmutable!==true||c.assetTransformation?.variantTournamentRequired!==true) throw new Error('Vibe3 asset transformation safety changed');
+          if(c.modelSelection?.route!=='LOCAL_SELF_HOSTED_ONLY'||c.modelSelection?.paidApiAllowed!==false||c.modelSelection?.githubHostedTrainingAllowed!==false) throw new Error('Vibe3 model route policy changed');
+          if(c.promotion?.freshAdapterState!=='TRAINED_UNVERIFIED') throw new Error('Vibe3 promotion gate changed');
+          console.log('PASS Vibe3 machine contract');
+          NODE
+
       - name: Check Vibe3 JavaScript syntax
         run: |
           node --input-type=module --check < assets/vibe-v3-engine.js
