@@ -4,10 +4,19 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '30 15 * * *' # 00:30 KST; no vacancy means no seed creation
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/company-game-seed-bootstrap.yml'
+      - '.github/workflows/company-seed-design-runtime.yml'
+      - 'tools/company-game-seed-bootstrap.mjs'
+      - 'tools/game-seed-state.mjs'
+      - 'company-directive.json'
+      - 'qa/company-game-seed-flow.test.mjs'
 
 permissions:
   contents: write
-  pull-requests: write
+  actions: write
 
 concurrency:
   group: company-game-seed-bootstrap
@@ -16,6 +25,7 @@ concurrency:
 env:
   GAME_SEED_LOCAL_MODEL: qwen3:0.6b
   OLLAMA_VERSION: '0.33.3'
+  COMPANY_RUNTIME_BRANCH: company-runtime
 
 jobs:
   seed-bootstrap-or-replenish:
@@ -29,6 +39,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Prepare isolated company runtime branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          if git ls-remote --exit-code --heads origin "$COMPANY_RUNTIME_BRANCH" >/dev/null 2>&1; then
+            git fetch origin "$COMPANY_RUNTIME_BRANCH"
+            git checkout -B "$COMPANY_RUNTIME_BRANCH" "origin/$COMPANY_RUNTIME_BRANCH"
+            git merge --no-edit origin/main
+          else
+            git checkout -B "$COMPANY_RUNTIME_BRANCH" origin/main
+          fi
+          echo "COMPANY_RUNTIME_BASE=$(git rev-parse HEAD)"
+          echo 'PUBLIC_MAIN_WRITE=NO'
 
       - name: Static GAME_SEED contract QA
         run: |
@@ -96,31 +121,36 @@ jobs:
           node --test qa/company-game-seed-state-file.test.mjs
           git diff --check
 
-      - name: Persist GAME_SEED state through isolated PR only
+      - name: Persist validated GAME_SEED state to company runtime branch
+        id: persist
         if: steps.need.outputs.model == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-game-seed'
+          git config user.email 'game-seed@users.noreply.github.com'
+          git add game-seed-state.json
+          if git diff --cached --quiet; then
+            echo 'persisted=false' >> "$GITHUB_OUTPUT"
+            echo 'GAME_SEED_STATE_CHANGE=NO'
+            exit 0
+          fi
+          git commit -m "runtime: bootstrap or replenish GAME_SEED state"
+          git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"
+          echo 'persisted=true' >> "$GITHUB_OUTPUT"
+          echo "GAME_SEED_RUNTIME_BRANCH=$COMPANY_RUNTIME_BRANCH"
+          echo 'PUBLIC_MAIN_WRITE=NO'
+          echo 'PAID_API=NO'
+
+      - name: Continue persisted seeds into DESIGN_ONLY work
+        if: steps.persist.outputs.persisted == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet -- game-seed-state.json; then
-            echo 'GAME_SEED_STATE_CHANGE=NO'
-            exit 0
-          fi
-          branch="automation/game-seed-${GITHUB_RUN_ID}"
-          git config user.name 'jaewoon-game-seed'
-          git config user.email 'game-seed@users.noreply.github.com'
-          git checkout -b "$branch"
-          git add game-seed-state.json
-          git commit -m "seed: bootstrap or replenish GAME_SEED state"
-          git push origin "HEAD:$branch"
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "seed: bootstrap or replenish GAME_SEED" --body "Machine-generated GAME_SEED state only. Initial creation is one six-category batch; later generation is one-for-one vacancy replenishment. Market evidence is target-design reference, not a hard gate. No game source or public release write.")"
-          pr_number="${pr_url##*/}"
-          gh pr checks "$pr_number" --repo "$GITHUB_REPOSITORY" --watch --fail-fast
-          gh pr merge "$pr_number" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
-          echo "GAME_SEED_STATE_PR=$pr_number"
-          echo 'PUBLIC_GAME_SOURCE_WRITE=NO'
-          echo 'PAID_API=NO'
+          gh workflow run company-seed-design-runtime.yml --ref main
+          echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=YES'
 
       - name: Summary
         if: always()
@@ -130,6 +160,7 @@ jobs:
           echo '- local model calls: one batch call per generation run' >> "$GITHUB_STEP_SUMMARY"
           echo '- recurring schedule: vacancy check only; no vacancy = no new seed' >> "$GITHUB_STEP_SUMMARY"
           echo '- replenishment: one-for-one same category unless owner changes category' >> "$GITHUB_STEP_SUMMARY"
+          echo '- runtime persistence: company-runtime branch; main stays unchanged' >> "$GITHUB_STEP_SUMMARY"
           echo '- market evidence: target/audience/session/monetization reference only' >> "$GITHUB_STEP_SUMMARY"
           echo '- numeric market claims: source + observedAt required' >> "$GITHUB_STEP_SUMMARY"
           echo '- source code: own implementation only' >> "$GITHUB_STEP_SUMMARY"
