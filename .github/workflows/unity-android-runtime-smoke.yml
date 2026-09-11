@@ -85,13 +85,19 @@ jobs:
           [[ -x "$sdkmanager_bin" ]] || { echo "[JAEWOON_BUILD_ERROR:SDKMANAGER_MISSING] sdkmanager not found under $SDK/cmdline-tools" >&2; find "$SDK" -maxdepth 4 -type f \( -name sdkmanager -o -name avdmanager \) -print || true; exit 9; }
           [[ -x "$avdmanager_bin" ]] || { echo "[JAEWOON_BUILD_ERROR:AVDMANAGER_MISSING] avdmanager not found under $SDK/cmdline-tools" >&2; exit 10; }
           cmdline_bin="$(dirname "$sdkmanager_bin")"
+          avd_home="$RUNNER_TEMP/android-avd-runtime"
+          mkdir -p "$avd_home"
+          export ANDROID_AVD_HOME="$avd_home"
           export PATH="$cmdline_bin:$SDK/platform-tools:$SDK/emulator:$PATH"
+          echo "ANDROID_AVD_HOME=$avd_home" >> "$GITHUB_ENV"
           echo "$cmdline_bin" >> "$GITHUB_PATH"
           echo "$SDK/platform-tools" >> "$GITHUB_PATH"
           echo "$SDK/emulator" >> "$GITHUB_PATH"
           yes | "$sdkmanager_bin" --licenses >/dev/null || true
           "$sdkmanager_bin" 'platform-tools' 'emulator' 'build-tools;36.0.0' 'system-images;android-36;google_apis;x86_64'
           echo no | "$avdmanager_bin" create avd --force --name jaewoon-qa --package 'system-images;android-36;google_apis;x86_64' --device 'pixel_6'
+          "$SDK/emulator/emulator" -list-avds | tee /tmp/jaewoon-avd-list.txt
+          grep -Fxq 'jaewoon-qa' /tmp/jaewoon-avd-list.txt || { echo '[JAEWOON_BUILD_ERROR:ANDROID_AVD_NOT_CREATED] jaewoon-qa missing from emulator AVD list.' >&2; exit 11; }
           if [[ -e /dev/kvm ]]; then sudo chmod 666 /dev/kvm || true; fi
           nohup "$SDK/emulator/emulator" -avd jaewoon-qa -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > /tmp/jaewoon-emulator.log 2>&1 &
           echo $! > /tmp/jaewoon-emulator.pid
@@ -139,5 +145,6 @@ jobs:
           path: |
             qa-artifacts/unity-runtime-smoke/
             /tmp/jaewoon-emulator.log
+            /tmp/jaewoon-avd-list.txt
           if-no-files-found: warn
           retention-days: 14
