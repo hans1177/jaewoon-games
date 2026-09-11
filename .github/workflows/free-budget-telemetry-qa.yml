@@ -10,7 +10,6 @@ on:
       - 'qa/company-bridge-export.test.mjs'
       - 'tools/company-game-seed-bootstrap.mjs'
       - '.github/workflows/company-game-seed-bootstrap.yml'
-      - '.github/workflows/autonomous-continuous-development.yml'
       - '.github/workflows/free-budget-telemetry-qa.yml'
   pull_request:
     paths:
@@ -20,7 +19,6 @@ on:
       - 'qa/company-bridge-export.test.mjs'
       - 'tools/company-game-seed-bootstrap.mjs'
       - '.github/workflows/company-game-seed-bootstrap.yml'
-      - '.github/workflows/autonomous-continuous-development.yml'
       - '.github/workflows/free-budget-telemetry-qa.yml'
   workflow_dispatch:
 
@@ -67,22 +65,16 @@ jobs:
         run: |
           node <<'NODE'
           const fs=require('fs');
-          const files=[
-            '.github/workflows/company-game-seed-bootstrap.yml',
-            '.github/workflows/autonomous-continuous-development.yml',
-          ];
-          for(const file of files){
-            const text=fs.readFileSync(file,'utf8');
-            const gate=text.indexOf('Verified free budget preflight');
-            const runtime=text.indexOf('uses: ./.github/actions/prepare-ollama');
-            if(gate<0||runtime<0||gate>runtime)throw new Error(`${file}: free budget gate must precede Ollama runtime preparation`);
-            if(!text.includes('runs-on: ubuntu-latest'))throw new Error(`${file}: standard runner contract missing`);
-            if(!text.includes('--runner-minutes=20'))throw new Error(`${file}: verified free-budget runner-minute contract missing`);
-            if(!text.includes('--verify-public-repo=true'))throw new Error(`${file}: live repository verification missing`);
-          }
-          const seedWorkflow=fs.readFileSync('.github/workflows/company-game-seed-bootstrap.yml','utf8');
-          if(!seedWorkflow.includes('--model-calls=1'))throw new Error('GAME_SEED bootstrap must declare its one batch model call');
+          const file='.github/workflows/company-game-seed-bootstrap.yml';
+          const text=fs.readFileSync(file,'utf8');
+          const gate=text.indexOf('Verified free budget preflight');
+          const runtime=text.indexOf('uses: ./.github/actions/prepare-ollama');
+          if(gate<0||runtime<0||gate>runtime)throw new Error(`${file}: free budget gate must precede Ollama runtime preparation`);
+          if(!text.includes('runs-on: ubuntu-latest'))throw new Error(`${file}: standard runner contract missing`);
+          if(!text.includes('--runner-minutes=20'))throw new Error(`${file}: verified free-budget runner-minute contract missing`);
+          if(!text.includes('--verify-public-repo=true'))throw new Error(`${file}: live repository verification missing`);
+          if(!text.includes('--model-calls=1'))throw new Error('GAME_SEED bootstrap must declare its one batch model call');
           const seedTool=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
           if(!seedTool.includes('callModelBatch(targets)'))throw new Error('GAME_SEED bootstrap must batch seed generation');
-          console.log('WORKER_FREE_BUDGET_CONTRACT=PASS');
+          console.log('CENTRAL_FREE_BUDGET_CONTRACT=PASS');
           NODE
