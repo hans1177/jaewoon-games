@@ -68,6 +68,7 @@ jobs:
           test -f company-learning/unity-teacher-materials/core-lessons.json
           test -f company-learning/unity-teacher-materials/graphics-motion-lessons.json
           test -f company-learning/unity-teacher-materials/gpt-practice-drills.json
+          grep -q 'actions/setup-python@v5' .github/workflows/vibe2-structural-repair-distillation.yml
           echo 'LEARNING_FOCUS=UNITY_CODING_ONLY'
           echo 'SPECIALIZATION=GRAPHICS_ANIMATION_MOTION_SMOOTHNESS'
           echo 'KNOWHOW_TRANSFER=REPLICATE_REARRANGE_VARY_RECOMBINE_VERIFIED_INTERNAL_PATTERNS'
@@ -176,15 +177,30 @@ jobs:
         with:
           ref: main
           fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: Download GPT Unity practice samples
         uses: actions/download-artifact@v4
         with:
           name: unity-gpt-practice-samples
           path: ${{ runner.temp }}/unity-gpt-practice-samples
+      - name: Ensure local ML training dependencies
+        run: |
+          $ErrorActionPreference = 'Stop'
+          python -c "import torch, transformers, peft, accelerate" 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            python -m pip install --disable-pip-version-check torch transformers peft accelerate sentencepiece
+            if ($LASTEXITCODE -ne 0) { throw 'ML dependency installation failed' }
+          }
+          python -c "import torch, transformers, peft, accelerate; print('PYTHON_ML_STACK=PASS'); print('TORCH=' + torch.__version__); print('TORCH_CUDA=' + str(torch.version.cuda))"
       - name: Preflight local GPU practice training stack
         run: |
           $ErrorActionPreference = 'Stop'
-          python -c "import torch, transformers, peft; assert torch.cuda.is_available(), 'CUDA GPU is required for practice adapter training'; print('PRACTICE_CUDA=' + torch.cuda.get_device_name(0))"
+          $nvidia = Get-Command nvidia-smi -ErrorAction SilentlyContinue
+          if ($null -eq $nvidia) { throw 'nvidia-smi not found on self-hosted Unity runner' }
+          nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader
+          python -c "import torch; assert torch.cuda.is_available(), 'CUDA GPU is required for practice adapter training'; print('PRACTICE_CUDA=' + torch.cuda.get_device_name(0)); print('PRACTICE_CUDA_MEMORY=' + str(torch.cuda.get_device_properties(0).total_memory))"
           $method = 'lora'
           python -c "import bitsandbytes" 2>$null
           if ($LASTEXITCODE -eq 0) { $method = 'qlora' }
@@ -245,15 +261,30 @@ jobs:
         with:
           ref: main
           fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: Download online Unity teacher samples
         uses: actions/download-artifact@v4
         with:
           name: unity-online-teacher-samples
           path: ${{ runner.temp }}/unity-online-teacher-samples
+      - name: Ensure local ML training dependencies
+        run: |
+          $ErrorActionPreference = 'Stop'
+          python -c "import torch, transformers, peft, accelerate" 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            python -m pip install --disable-pip-version-check torch transformers peft accelerate sentencepiece
+            if ($LASTEXITCODE -ne 0) { throw 'ML dependency installation failed' }
+          }
+          python -c "import torch, transformers, peft, accelerate; print('PYTHON_ML_STACK=PASS'); print('TORCH=' + torch.__version__); print('TORCH_CUDA=' + str(torch.version.cuda))"
       - name: Preflight local GPU training stack only
         run: |
           $ErrorActionPreference = 'Stop'
-          python -c "import torch, transformers, peft; assert torch.cuda.is_available(), 'CUDA GPU is required for adapter training'; print('cuda=' + torch.cuda.get_device_name(0))"
+          $nvidia = Get-Command nvidia-smi -ErrorAction SilentlyContinue
+          if ($null -eq $nvidia) { throw 'nvidia-smi not found on self-hosted Unity runner' }
+          nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader
+          python -c "import torch; assert torch.cuda.is_available(), 'CUDA GPU is required for adapter training'; print('cuda=' + torch.cuda.get_device_name(0))"
           $method = 'lora'
           python -c "import bitsandbytes" 2>$null
           if ($LASTEXITCODE -eq 0) { $method = 'qlora' }
