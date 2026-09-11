@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "observedAt": "2026-09-11",
+  "role": "TARGET_DESIGN_REFERENCE",
+  "globalSources": [
+    {"name":"ESA Power of Play 2025 - South Korea","source":"https://www.theesa.com/wp-content/uploads/2025/09/PoP-2025-v10-web-spreads.pdf","observedAt":"2025-09","facts":{"age16_24Percent":10,"age25_34Percent":19,"age35_44Percent":23,"age45_54Percent":23,"age55_64Percent":15,"age65PlusPercent":10,"mobileFavoriteDevicePercent":57,"puzzleRegularGenrePercent":48,"actionRegularGenrePercent":37}},
+    {"name":"GameAnalytics 2025 Mobile Gaming Benchmarks","source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2025-report-2024-data","facts":{"actionMedianSessionMinutes":4.0,"casualMedianSessionMinutes":4.0,"puzzleMedianSessionMinutes":5.7,"rolePlayingMedianSessionMinutes":4.7,"strategyMedianSessionMinutes":5.5}},
+    {"name":"Sensor Tower State of Gaming 2026","source":"https://sensortower.com/press/press-release-sensor-tower-state-of-gaming-gaming-drove-52-billion-downloads-82b-iap-revenue-on-mobile-and-12b-premium-revenue-on-steam","observedAt":"2026-02-26","facts":{"mobileIapRevenue2025UsdBillion":82}},
+    {"name":"Sensor Tower December 2025 top grossing","source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12","facts":{"rank1":"Last War: Survival","rank2":"Whiteout Survival","rank3":"Royal Match","rank4":"MONOPOLY GO!","rank5":"Candy Crush Saga"}}
+  ],
+  "categories": {
+    "ACTION_SURVIVAL_ROGUELITE": {
+      "benchmarkCandidates": ["Vampire Survivors", "Brotato", "Survivor.io", "20 Minutes Till Dawn"],
+      "requiredConceptTerms": ["survive", "survival", "horde", "enemy", "combat", "upgrade", "build", "roguelite"],
+      "references": [
+        {"title":"Vampire Survivors","qualitative":"successful action-survival benchmark; use only abstract loop/tempo/build lessons"},
+        {"title":"Brotato","qualitative":"successful compact arena survival/build benchmark"},
+        {"title":"Survivor.io","qualitative":"successful mobile survival-roguelite benchmark"},
+        {"title":"Action market signal","metrics":[{"metric":"actionRegularGenrePercentSouthKorea","value":37,"source":"https://www.theesa.com/wp-content/uploads/2025/09/PoP-2025-v10-web-spreads.pdf","observedAt":"2025-09"},{"metric":"medianSessionMinutes","value":4.0,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2025-report-2024-data"}]}
+      ]
+    },
+    "SINGLE_DEFENSE_STRATEGY": {
+      "benchmarkCandidates": ["Kingdom Rush", "Bloons TD 6", "Plants vs. Zombies 2", "The Battle Cats"],
+      "requiredConceptTerms": ["defend", "defense", "wave", "tower", "placement", "lane", "enemy", "strategy"],
+      "references": [
+        {"title":"Kingdom Rush","qualitative":"single-player tower-defense benchmark"},
+        {"title":"Bloons TD 6","qualitative":"tower placement, upgrade and wave-pressure benchmark"},
+        {"title":"Plants vs. Zombies 2","qualitative":"lane defense readability and counter-choice benchmark"},
+        {"title":"Strategy session signal","metrics":[{"metric":"medianSessionMinutes","value":5.5,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2025-report-2024-data"}]}
+      ]
+    },
+    "PUZZLE": {
+      "benchmarkCandidates": ["Royal Match", "Candy Crush Saga", "Monument Valley 2", "Two Dots"],
+      "requiredConceptTerms": ["puzzle", "match", "solve", "board", "level", "combo", "goal"],
+      "references": [
+        {"title":"Royal Match","metrics":[{"metric":"December2025TopGrossingRank","value":3,"source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12"}]},
+        {"title":"Candy Crush Saga","metrics":[{"metric":"December2025TopGrossingRank","value":5,"source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12"}]},
+        {"title":"Puzzle market signal","metrics":[{"metric":"puzzleRegularGenrePercentSouthKorea","value":48,"source":"https://www.theesa.com/wp-content/uploads/2025/09/PoP-2025-v10-web-spreads.pdf","observedAt":"2025-09"},{"metric":"medianSessionMinutes","value":5.7,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2025-report-2024-data"}]}
+      ]
+    },
+    "CASUAL": {
+      "benchmarkCandidates": ["Subway Surfers", "Crossy Road", "Angry Birds 2", "MONOPOLY GO!"],
+      "requiredConceptTerms": ["short", "retry", "score", "simple", "casual", "session", "reward"],
+      "references": [
+        {"title":"Subway Surfers","qualitative":"fast restart and readable one-thumb casual benchmark"},
+        {"title":"Crossy Road","qualitative":"simple input, score chase and short retry benchmark"},
+        {"title":"MONOPOLY GO!","metrics":[{"metric":"December2025TopGrossingRank","value":4,"source":"https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025","observedAt":"2025-12"}]},
+        {"title":"Casual session signal","metrics":[{"metric":"medianSessionMinutes","value":4.0,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2025-report-2024-data"}]}
+      ]
+    },
+    "IDLE_GROWTH_RPG": {
+      "benchmarkCandidates": ["AFK Arena", "Legend of Slime", "Idle Heroes", "Tap Titans 2"],
+      "requiredConceptTerms": ["idle", "offline", "growth", "upgrade", "hero", "equipment", "progression", "rpg"],
+      "references": [
+        {"title":"AFK Arena","qualitative":"idle reward, roster growth and periodic active decision benchmark"},
+        {"title":"Legend of Slime","qualitative":"mobile idle growth and layered upgrade benchmark"},
+        {"title":"RPG session signal","metrics":[{"metric":"medianSessionMinutes","value":4.7,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2025-report-2024-data"}]},
+        {"title":"South Korea age signal","metrics":[{"metric":"largestAgeBands","value":"35-44 23%; 45-54 23%","source":"https://www.theesa.com/wp-content/uploads/2025/09/PoP-2025-v10-web-spreads.pdf","observedAt":"2025-09"}]}
+      ]
+    },
+    "STORY_COMPLETE_RPG": {
+      "benchmarkCandidates": ["Chrono Trigger", "FINAL FANTASY VI", "Battle Chasers: Nightwar", "DRAGON QUEST VIII"],
+      "requiredConceptTerms": ["story", "quest", "battle", "boss", "ending", "character", "explore", "rpg"],
+      "references": [
+        {"title":"Chrono Trigger","qualitative":"complete story arc, exploration, battle and ending benchmark"},
+        {"title":"FINAL FANTASY VI","qualitative":"party growth, story progression and final resolution benchmark"},
+        {"title":"RPG session signal","metrics":[{"metric":"medianSessionMinutes","value":4.7,"source":"https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks","observedAt":"2025-report-2024-data"}]},
+        {"title":"South Korea mobile/age signal","metrics":[{"metric":"mobileFavoriteDevicePercent","value":57,"source":"https://www.theesa.com/wp-content/uploads/2025/09/PoP-2025-v10-web-spreads.pdf","observedAt":"2025-09"}]}
+      ]
+    }
+  }
+}
