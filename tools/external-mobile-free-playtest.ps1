@@ -29,13 +29,13 @@ function Write-BlockerEvidence {
 }
 
 function Invoke-AdbRaw {
-  param([string[]]$Args)
+  param([string[]]$AdbArgs)
   $previousErrorActionPreference = $ErrorActionPreference
   try {
     # Windows PowerShell 5.1 can turn native stderr into terminating ErrorRecord objects when
     # $ErrorActionPreference is Stop. adb writes harmless daemon startup notices to stderr.
     $ErrorActionPreference = 'Continue'
-    $output = & adb @Args 2>&1
+    $output = & adb @AdbArgs 2>&1
     $code = $LASTEXITCODE
   } finally {
     $ErrorActionPreference = $previousErrorActionPreference
@@ -47,9 +47,9 @@ function Invoke-AdbRaw {
 }
 
 function Invoke-Adb {
-  param([string]$Serial, [string[]]$Args, [switch]$AllowFailure)
-  $all = @('-s', $Serial) + $Args
-  $result = Invoke-AdbRaw -Args $all
+  param([string]$Serial, [string[]]$AdbArgs, [switch]$AllowFailure)
+  $all = @('-s', $Serial) + $AdbArgs
+  $result = Invoke-AdbRaw -AdbArgs $all
   if (-not $AllowFailure -and $result.ExitCode -ne 0) {
     throw "adb failed ($($result.ExitCode)): adb $($all -join ' ')`n$($result.Output -join "`n")"
   }
@@ -57,7 +57,7 @@ function Invoke-Adb {
 }
 
 function Get-ConnectedDevices {
-  $result = Invoke-AdbRaw -Args @('devices')
+  $result = Invoke-AdbRaw -AdbArgs @('devices')
   if ($result.ExitCode -ne 0) { throw "adb devices failed ($($result.ExitCode)): $($result.Output -join ' ')" }
   $devices = @()
   foreach ($line in $result.Output) {
@@ -68,7 +68,7 @@ function Get-ConnectedDevices {
 
 function Get-ScreenSize {
   param([string]$Serial)
-  $rows = Invoke-Adb -Serial $Serial -Args @('shell','wm','size')
+  $rows = Invoke-Adb -Serial $Serial -AdbArgs @('shell','wm','size')
   $text = $rows -join ' '
   if ($text -match '(\d+)x(\d+)') { return @{ Width=[int]$Matches[1]; Height=[int]$Matches[2] } }
   return @{ Width=1080; Height=1920 }
@@ -76,25 +76,25 @@ function Get-ScreenSize {
 
 function Test-PackageInstalled {
   param([string]$Serial, [string]$PackageId)
-  $rows = Invoke-Adb -Serial $Serial -Args @('shell','pm','path',$PackageId) -AllowFailure
+  $rows = Invoke-Adb -Serial $Serial -AdbArgs @('shell','pm','path',$PackageId) -AllowFailure
   return (($rows -join "`n") -match '^package:')
 }
 
 function Save-Screenshot {
   param([string]$Serial, [string]$Name, [string]$Directory)
   $remote = "/sdcard/${Name}.png"
-  Invoke-Adb -Serial $Serial -Args @('shell','screencap','-p',$remote) | Out-Null
-  Invoke-Adb -Serial $Serial -Args @('pull',$remote,(Join-Path $Directory "${Name}.png")) | Out-Null
-  Invoke-Adb -Serial $Serial -Args @('shell','rm','-f',$remote) -AllowFailure | Out-Null
+  Invoke-Adb -Serial $Serial -AdbArgs @('shell','screencap','-p',$remote) | Out-Null
+  Invoke-Adb -Serial $Serial -AdbArgs @('pull',$remote,(Join-Path $Directory "${Name}.png")) | Out-Null
+  Invoke-Adb -Serial $Serial -AdbArgs @('shell','rm','-f',$remote) -AllowFailure | Out-Null
   return (Join-Path $Directory "${Name}.png")
 }
 
 function Find-InstallButtonCenter {
   param([string]$Serial, [string]$Directory)
   $remote = '/sdcard/window.xml'
-  Invoke-Adb -Serial $Serial -Args @('shell','uiautomator','dump',$remote) -AllowFailure | Out-Null
+  Invoke-Adb -Serial $Serial -AdbArgs @('shell','uiautomator','dump',$remote) -AllowFailure | Out-Null
   $local = Join-Path $Directory 'window.xml'
-  Invoke-Adb -Serial $Serial -Args @('pull',$remote,$local) -AllowFailure | Out-Null
+  Invoke-Adb -Serial $Serial -AdbArgs @('pull',$remote,$local) -AllowFailure | Out-Null
   if (-not (Test-Path $local)) { return $null }
   try { [xml]$xml = Get-Content -Raw -Encoding UTF8 $local } catch { return $null }
 
@@ -134,11 +134,11 @@ function Install-FromPlayStore {
   if (Test-PackageInstalled -Serial $Serial -PackageId $PackageId) {
     return @{ Pass=$true; AlreadyInstalled=$true; Reason='ALREADY_INSTALLED' }
   }
-  $play = Invoke-Adb -Serial $Serial -Args @('shell','pm','path','com.android.vending') -AllowFailure
+  $play = Invoke-Adb -Serial $Serial -AdbArgs @('shell','pm','path','com.android.vending') -AllowFailure
   if (($play -join "`n") -notmatch '^package:') {
     return @{ Pass=$false; AlreadyInstalled=$false; Reason='PLAY_STORE_NOT_PRESENT' }
   }
-  Invoke-Adb -Serial $Serial -Args @('shell','am','start','-a','android.intent.action.VIEW','-d',"market://details?id=$PackageId",'-p','com.android.vending') -AllowFailure | Out-Null
+  Invoke-Adb -Serial $Serial -AdbArgs @('shell','am','start','-a','android.intent.action.VIEW','-d',"market://details?id=$PackageId",'-p','com.android.vending') -AllowFailure | Out-Null
   Start-Sleep -Seconds 6
   if (Test-PackageInstalled -Serial $Serial -PackageId $PackageId) {
     return @{ Pass=$true; AlreadyInstalled=$false; Reason='INSTALLED_AFTER_STORE_OPEN' }
@@ -150,7 +150,7 @@ function Install-FromPlayStore {
   if ($button.Blocked -eq $true) {
     return @{ Pass=$false; AlreadyInstalled=$false; Reason=$button.Reason }
   }
-  Invoke-Adb -Serial $Serial -Args @('shell','input','tap',[string]$button.X,[string]$button.Y) | Out-Null
+  Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[string]$button.X,[string]$button.Y) | Out-Null
   $deadline = (Get-Date).AddMinutes(15)
   do {
     Start-Sleep -Seconds 5
@@ -168,32 +168,32 @@ function Invoke-SafeInputProfile {
   $left=[int]($w*0.30); $right=[int]($w*0.70); $top=[int]($h*0.35); $bottom=[int]($h*0.75)
   switch ($Profile) {
     'RUNNER' {
-      Invoke-Adb -Serial $Serial -Args @('shell','input','swipe',$cx,$cy,$cx,$top,'250') | Out-Null
-      Invoke-Adb -Serial $Serial -Args @('shell','input','swipe',$cx,$cy,$left,$cy,'250') | Out-Null
-      Invoke-Adb -Serial $Serial -Args @('shell','input','swipe',$cx,$cy,$right,$cy,'250') | Out-Null
-      Invoke-Adb -Serial $Serial -Args @('shell','input','swipe',$cx,$cy,$cx,$bottom,'250') | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',$cx,$cy,$cx,$top,'250') | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',$cx,$cy,$left,$cy,'250') | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',$cx,$cy,$right,$cy,'250') | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',$cx,$cy,$cx,$bottom,'250') | Out-Null
     }
     'MATCH3' {
-      Invoke-Adb -Serial $Serial -Args @('shell','input','swipe',[int]($w*.38),[int]($h*.56),[int]($w*.52),[int]($h*.56),'300') | Out-Null
-      Invoke-Adb -Serial $Serial -Args @('shell','input','swipe',[int]($w*.52),[int]($h*.62),[int]($w*.52),[int]($h*.50),'300') | Out-Null
-      Invoke-Adb -Serial $Serial -Args @('shell','input','swipe',[int]($w*.60),[int]($h*.56),[int]($w*.46),[int]($h*.56),'300') | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',[int]($w*.38),[int]($h*.56),[int]($w*.52),[int]($h*.56),'300') | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',[int]($w*.52),[int]($h*.62),[int]($w*.52),[int]($h*.50),'300') | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',[int]($w*.60),[int]($h*.56),[int]($w*.46),[int]($h*.56),'300') | Out-Null
     }
     'BLOCK_PUZZLE' {
-      Invoke-Adb -Serial $Serial -Args @('shell','input','swipe',[int]($w*.25),[int]($h*.82),[int]($w*.38),[int]($h*.52),'500') | Out-Null
-      Invoke-Adb -Serial $Serial -Args @('shell','input','swipe',[int]($w*.50),[int]($h*.82),[int]($w*.55),[int]($h*.48),'500') | Out-Null
-      Invoke-Adb -Serial $Serial -Args @('shell','input','swipe',[int]($w*.75),[int]($h*.82),[int]($w*.68),[int]($h*.58),'500') | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',[int]($w*.25),[int]($h*.82),[int]($w*.38),[int]($h*.52),'500') | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',[int]($w*.50),[int]($h*.82),[int]($w*.55),[int]($h*.48),'500') | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',[int]($w*.75),[int]($h*.82),[int]($w*.68),[int]($h*.58),'500') | Out-Null
     }
     'SURVIVAL' {
-      Invoke-Adb -Serial $Serial -Args @('shell','input','swipe',$cx,$bottom,$left,$cy,'800') | Out-Null
-      Invoke-Adb -Serial $Serial -Args @('shell','input','swipe',$cx,$bottom,$right,$cy,'800') | Out-Null
-      Invoke-Adb -Serial $Serial -Args @('shell','input','swipe',$cx,$bottom,$cx,$top,'800') | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',$cx,$bottom,$left,$cy,'800') | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',$cx,$bottom,$right,$cy,'800') | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',$cx,$bottom,$cx,$top,'800') | Out-Null
     }
     'IDLE_RPG' {
-      Invoke-Adb -Serial $Serial -Args @('shell','input','tap',[int]($w*.45),[int]($h*.65)) | Out-Null
-      Invoke-Adb -Serial $Serial -Args @('shell','input','tap',[int]($w*.35),[int]($h*.72)) | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.45),[int]($h*.65)) | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.35),[int]($h*.72)) | Out-Null
     }
     default {
-      Invoke-Adb -Serial $Serial -Args @('shell','input','swipe',$cx,$cy,$right,$cy,'300') | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',$cx,$cy,$right,$cy,'300') | Out-Null
     }
   }
 }
@@ -211,7 +211,7 @@ function Invoke-ExternalMobilePlaytest {
 
   $serial = $null
   foreach ($candidate in $devices) {
-    $store = Invoke-Adb -Serial $candidate -Args @('shell','pm','path','com.android.vending') -AllowFailure
+    $store = Invoke-Adb -Serial $candidate -AdbArgs @('shell','pm','path','com.android.vending') -AllowFailure
     if (($store -join "`n") -match '^package:') { $serial = $candidate; break }
   }
   if (-not $serial) { throw 'BLOCKED_PLAY_STORE_NOT_PROVISIONED' }
@@ -240,19 +240,19 @@ function Invoke-ExternalMobilePlaytest {
       continue
     }
 
-    Invoke-Adb -Serial $serial -Args @('logcat','-c') -AllowFailure | Out-Null
-    $launch = Invoke-Adb -Serial $serial -Args @('shell','monkey','-p',$packageId,'-c','android.intent.category.LAUNCHER','1') -AllowFailure
+    Invoke-Adb -Serial $serial -AdbArgs @('logcat','-c') -AllowFailure | Out-Null
+    $launch = Invoke-Adb -Serial $serial -AdbArgs @('shell','monkey','-p',$packageId,'-c','android.intent.category.LAUNCHER','1') -AllowFailure
     Start-Sleep -Seconds 8
     $before = Save-Screenshot -Serial $serial -Name 'before' -Directory $gameDir
-    $focusBefore = (Invoke-Adb -Serial $serial -Args @('shell','dumpsys','window') -AllowFailure) -join "`n"
+    $focusBefore = (Invoke-Adb -Serial $serial -AdbArgs @('shell','dumpsys','window') -AllowFailure) -join "`n"
     $foregroundPass = $focusBefore -match [regex]::Escape($packageId)
     Invoke-SafeInputProfile -Serial $serial -Profile $game.inputProfile -Size $size
     Start-Sleep -Seconds 6
     $after = Save-Screenshot -Serial $serial -Name 'after' -Directory $gameDir
-    $focusAfter = (Invoke-Adb -Serial $serial -Args @('shell','dumpsys','window') -AllowFailure) -join "`n"
-    $pidAfter = ((Invoke-Adb -Serial $serial -Args @('shell','pidof',$packageId) -AllowFailure) -join '').Trim()
+    $focusAfter = (Invoke-Adb -Serial $serial -AdbArgs @('shell','dumpsys','window') -AllowFailure) -join "`n"
+    $pidAfter = ((Invoke-Adb -Serial $serial -AdbArgs @('shell','pidof',$packageId) -AllowFailure) -join '').Trim()
     $logPath = Join-Path $gameDir 'logcat.txt'
-    $logRows = Invoke-Adb -Serial $serial -Args @('logcat','-d','-v','threadtime') -AllowFailure
+    $logRows = Invoke-Adb -Serial $serial -AdbArgs @('logcat','-d','-v','threadtime') -AllowFailure
     $logRows | Set-Content $logPath -Encoding UTF8
     $logText = Get-Content -Raw -Encoding UTF8 $logPath
     $crashPattern = "FATAL EXCEPTION|ANR in $([regex]::Escape($packageId))|Process $([regex]::Escape($packageId)).*has died|Force finishing activity.*$([regex]::Escape($packageId))"
@@ -272,7 +272,7 @@ function Invoke-ExternalMobilePlaytest {
     }
     $result | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $gameDir 'result.json') -Encoding UTF8
     $summary += $result
-    Invoke-Adb -Serial $serial -Args @('shell','am','force-stop',$packageId) -AllowFailure | Out-Null
+    Invoke-Adb -Serial $serial -AdbArgs @('shell','am','force-stop',$packageId) -AllowFailure | Out-Null
   }
 
   $summaryPath = Join-Path $OutDir 'summary.json'
