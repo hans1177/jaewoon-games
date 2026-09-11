@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-idle-growth-rpg-crystal-bloom",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game_seed"
+        ],
+        "fix": [
+          "game_seed_market_evidence.json"
+        ],
+        "add": [
+          "visual_direction"
+        ],
+        "risks": [
+          "game_seed"
+        ],
+        "evidence": [
+          "game_seed_market_evidence.json"
+        ],
+        "questions": [
+          "visual_direction"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Idle Gameplay, Resource Management, Level Up"
+        ],
+        "fix": [
+          "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle/rein"
+        ],
+        "add": [
+          "Idle Gameplay, Resource Management, Level Up"
+        ],
+        "risks": [
+          "Resource Management"
+        ],
+        "evidence": [
+          "Idle Gameplay, Resource Management, Level Up"
+        ],
+        "questions": [
+          "Is the game designed to appeal to players of all ages? Is the game designed to provide an engaging and enjoyable experience? Is it"
+        ]
+      }
+    }
+  ]
+}

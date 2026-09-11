@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-idle-growth-rpg-crystal-bloom",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Idle Gameplay, Resource Management, Level Up"
+        ],
+        "fix": [
+          "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle/rein"
+        ],
+        "add": [
+          "Idle Gameplay, Resource Management, Level Up"
+        ],
+        "risks": [
+          "Idle Gameplay, Resource Management, Level Up"
+        ],
+        "evidence": [
+          "Idle Gameplay, Resource Management, Level Up"
+        ],
+        "questions": [
+          "Is the game designed to appeal to players of all ages? Is the game designed to provide an engaging and enjoyable experience? Is it"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENTS"
+        ],
+        "add": [
+          "development, qa, balance"
+        ],
+        "risks": [
+          "너는 독립 검토 모델이다."
+        ],
+        "evidence": [
+          "GAME_SEED"
+        ],
+        "questions": [
+          "Is the game designed to provide an engaging and enjoyable experience?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "The game features a distinct setting, visual identity, progression mix, and touch-first presentation."
+        ],
+        "fix": [
+          "The game is designed to appeal to players of all ages, with a focus on providing an engaging and enjoyable experience."
+        ],
+        "add": [
+          "The game uses sourced global mobile engagement and category-session evidence as a directional reference."
+        ],
+        "risks": [
+          "The game is designed for touch-first presentation, with a focus on ease of use and accessibility."
+        ],
+        "evidence": [
+          "The game is designed to appeal to players of all ages, with a focus on providing an engaging and enjoyable experience."
+        ],
+        "questions": [
+          "What is the game's unique selling proposition?"
+        ]
+      }
+    }
+  ]
+}

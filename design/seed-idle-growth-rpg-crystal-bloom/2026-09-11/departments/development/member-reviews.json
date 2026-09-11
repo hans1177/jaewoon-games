@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-idle-growth-rpg-crystal-bloom",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Idle Gameplay, Resource Management, Level Up"
+        ],
+        "fix": [
+          "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle/rein"
+        ],
+        "add": [
+          "Idle Gameplay, Resource Management, Level Up"
+        ],
+        "risks": [
+          "Idle Gameplay, Resource Management, Level Up"
+        ],
+        "evidence": [
+          "Idle Gameplay, Resource Management, Level Up"
+        ],
+        "questions": [
+          "Is the game designed to appeal to players of all ages? Is the game designed to provide an engaging and enjoyable experience? Is it"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENTS"
+        ],
+        "add": [
+          "development, qa, balance"
+        ],
+        "risks": [
+          "너는 독립 검토 모델이다."
+        ],
+        "evidence": [
+          "GAME_SEED"
+        ],
+        "questions": [
+          "Is the game designed to appeal to players of all ages?"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "seed-idle-growth-rpg-crystal-bloom",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "representativeModel": "smollm2:1.7b",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "GAME_SEED"
+    ],
+    "fix": [
+      "ASSIGNED_DEPARTMENTS"
+    ],
+    "add": [
+      "development, qa, balance"
+    ],
+    "risks": [
+      "너는 독립 검토 모델이다."
+    ],
+    "evidence": [
+      "GAME_SEED"
+    ],
+    "questions": [
+      "What is the game's unique selling proposition?"
+    ]
+  }
+}

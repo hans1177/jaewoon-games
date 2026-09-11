@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-idle-growth-rpg-crystal-bloom",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENTS"
+        ],
+        "add": [
+          "development, qa, balance"
+        ],
+        "risks": [
+          "너는 독립 검토 모델이다."
+        ],
+        "evidence": [
+          "GAME_SEED"
+        ],
+        "questions": [
+          "What is the game's unique selling proposition?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "The game features a distinct setting, visual identity, progression mix, and touch-first presentation."
+        ],
+        "fix": [
+          "The game is designed to appeal to players of all ages, with a focus on providing an engaging and enjoyable experience."
+        ],
+        "add": [
+          "The game uses sourced global mobile engagement and category-session evidence as a directional reference."
+        ],
+        "risks": [
+          "The game is designed for touch-first presentation, with a focus on ease of use and accessibility."
+        ],
+        "evidence": [
+          "The game is designed to appeal to players of all ages, with a focus on providing an engaging and enjoyable experience."
+        ],
+        "questions": [
+          "What is the game's unique selling proposition?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_seed"
+        ],
+        "fix": [
+          "game_seed_market_evidence.json"
+        ],
+        "add": [
+          "core_fun"
+        ],
+        "risks": [
+          "game_seed"
+        ],
+        "evidence": [
+          "game_seed_market_evidence.json"
+        ],
+        "questions": [
+          "core_fun"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,174 @@
+{
+  "version": 4,
+  "gameId": "seed-idle-growth-rpg-crystal-bloom",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen2.5:1.5b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "The game features a distinct setting, visual identity, progression mix, and touch-first presentation."
+      ],
+      "fix": [
+        "The game is designed to appeal to players of all ages, with a focus on providing an engaging and enjoyable experience."
+      ],
+      "add": [
+        "The game uses sourced global mobile engagement and category-session evidence as a directional reference."
+      ],
+      "risks": [
+        "The game is designed for touch-first presentation, with a focus on ease of use and accessibility."
+      ],
+      "evidence": [
+        "The game is designed to appeal to players of all ages, with a focus on providing an engaging and enjoyable experience."
+      ],
+      "questions": [
+        "What is the game's unique selling proposition?"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "game_seed"
+      ],
+      "fix": [],
+      "add": [],
+      "risks": [],
+      "evidence": [],
+      "questions": []
+    },
+    "development": {
+      "keep": [
+        "game-seed"
+      ],
+      "fix": [
+        "game-seed"
+      ],
+      "add": [
+        "game-seed"
+      ],
+      "risks": [
+        "game-seed"
+      ],
+      "evidence": [
+        "game-seed"
+      ],
+      "questions": [
+        "game-seed"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "Idle Gameplay, Resource Management, Level Up"
+      ],
+      "fix": [
+        "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle/rein"
+      ],
+      "add": [
+        "Idle Gameplay, Resource Management, Level Up"
+      ],
+      "risks": [
+        "Idle Gameplay, Resource Management, Level Up"
+      ],
+      "evidence": [
+        "Idle Gameplay, Resource Management, Level Up"
+      ],
+      "questions": [
+        "Is the game designed to provide an engaging and enjoyable experience?"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "GAME_SEED"
+      ],
+      "fix": [
+        "ASSIGNED_DEPARTMENTS"
+      ],
+      "add": [
+        "development, qa, balance"
+      ],
+      "risks": [
+        "너는 독립 검토 모델이다."
+      ],
+      "evidence": [
+        "GAME_SEED"
+      ],
+      "questions": [
+        "What is the game's unique selling proposition?"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "Planning",
+      "status": "CONSENSUS",
+      "reason": "The game's unique selling proposition is the combination of touch-first presentation, ease of use, and accessibility, as well as the source of global mobile engagement and category-session evidence.",
+      "departments": [
+        "planning",
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "Graphics",
+      "status": "CONSENSUS",
+      "reason": "The game features a distinct setting, visual identity, progression mix, and touch-first presentation.",
+      "departments": [
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "Development",
+      "status": "CONSENSUS",
+      "reason": "The game features a distinct setting, visual identity, progression mix, and touch-first presentation.",
+      "departments": [
+        "development",
+        "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "QA",
+      "status": "CONSENSUS",
+      "reason": "The game features a distinct setting, visual identity, progression mix, and touch-first presentation.",
+      "departments": [
+        "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "Balance",
+      "status": "CONSENSUS",
+      "reason": "The game features a distinct setting, visual identity, progression mix, and touch-first presentation.",
+      "departments": [
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 5,
+    "conflict": 0,
+    "hold": 0
+  }
+}

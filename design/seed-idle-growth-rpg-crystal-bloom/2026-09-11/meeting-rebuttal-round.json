@@ -1,0 +1,90 @@
+{
+  "version": 4,
+  "gameId": "seed-idle-growth-rpg-crystal-bloom",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "The game's unique selling proposition is the combination of touch-first presentation, ease of use, and accessibility, as well as the source of global mobile engagement and category-session evidence.",
+        "The game's unique selling proposition is the combination of touch-first presentation, ease of use, and accessibility, as well as the source of global mobile engagement and category-session evidence."
+      ],
+      "challenge": [
+        "The game's unique selling proposition is the combination of touch-first presentation, ease of use, and accessibility, as well as the source of global mobile engagement and category-session evidence."
+      ],
+      "revision": [
+        "The game's unique selling proposition is the combination of touch-first presentation, ease of use, and accessibility, as well as the source of global mobile engagement and category-session evidence."
+      ],
+      "reason": "The game's unique selling proposition is the combination of touch-first presentation, ease of use, and accessibility, as well as the source of global mobile engagement and category-session evidence."
+    },
+    "graphics": {
+      "accept": [
+        "The game features a distinct setting, visual identity, progression mix, and touch-first presentation."
+      ],
+      "challenge": [
+        "The game is designed to appeal to players of all ages, with a focus on providing an engaging and enjoyable experience."
+      ],
+      "revision": [
+        "The game uses sourced global mobile engagement and category-session evidence as a directional reference."
+      ],
+      "reason": "The game is designed for touch-first presentation, with a focus on ease of use and accessibility."
+    },
+    "development": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "own",
+        "others"
+      ],
+      "reason": "own"
+    },
+    "qa": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "OWN",
+        "OTHERS"
+      ],
+      "reason": "Your request is not clear and does not provide specific information about the changes you want to make. Please provide more details and specify which areas you want to keep, fix, or add, and which areas you want to challenge or revise."
+    },
+    "balance": {
+      "accept": [
+        "GAME_SEED",
+        "ASSIGNED_DEPARTMENTS",
+        "development, qa, balance"
+      ],
+      "challenge": [
+        "너는 독립 검토 모델이다."
+      ],
+      "revision": [
+        "The game features a distinct setting, visual identity, progression mix, and touch-first presentation."
+      ],
+      "reason": "The game is designed to appeal to players of all ages, with a focus on providing an engaging and enjoyable experience."
+    }
+  }
+}

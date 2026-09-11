@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-idle-growth-rpg-crystal-bloom",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "The game features a distinct setting, visual identity, progression mix, and touch-first presentation."
+        ],
+        "fix": [
+          "The game is designed to appeal to players of all ages, with a focus on providing an engaging and enjoyable experience."
+        ],
+        "add": [
+          "The game uses sourced global mobile engagement and category-session evidence as a directional reference."
+        ],
+        "risks": [
+          "The game is designed for touch-first presentation, with a focus on ease of use and accessibility."
+        ],
+        "evidence": [
+          "The game is designed to appeal to players of all ages, with a focus on providing an engaging and enjoyable experience."
+        ],
+        "questions": [
+          "What is the game's unique selling proposition?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_seed"
+        ],
+        "fix": [
+          "seed_id"
+        ],
+        "add": [
+          "game_name"
+        ],
+        "risks": [
+          "game_seed"
+        ],
+        "evidence": [
+          "game_seed_market_evidence.json"
+        ],
+        "questions": [
+          "validationQuestions"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    }
+  ]
+}

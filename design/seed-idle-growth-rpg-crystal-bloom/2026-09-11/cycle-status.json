@@ -1,0 +1,342 @@
+{
+  "version": 5,
+  "date": "2026-09-11",
+  "gameId": "seed-idle-growth-rpg-crystal-bloom",
+  "gameName": "Crystal Bloom",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "status": "COMPLETE",
+  "policyDocument": "COMPANY_FLOW.md",
+  "flow": "GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE",
+  "gameSeed": {
+    "seedId": "SEED-IDLE_GROWTH_RPG-001",
+    "category": "IDLE_GROWTH_RPG",
+    "source": "game-seed-state.json",
+    "complete": true
+  },
+  "designer": {
+    "role": "GAME_DESIGNER_AI",
+    "model": "qwen2.5:1.5b",
+    "singleAuthor": true,
+    "sameModelRevised": true
+  },
+  "departments": {
+    "count": 5,
+    "roles": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "balance"
+    ],
+    "leadModels": {
+      "planning": "qwen3:0.6b",
+      "graphics": "gemma3:1b",
+      "development": "llama3.2:1b",
+      "qa": "qwen2.5:1.5b",
+      "balance": "smollm2:1.7b"
+    },
+    "distinctLeadModels": [
+      "qwen3:0.6b",
+      "gemma3:1b",
+      "llama3.2:1b",
+      "qwen2.5:1.5b",
+      "smollm2:1.7b"
+    ],
+    "distinctLeadModelCount": 5,
+    "leadModelsDistinct": true,
+    "reviewModelCount": 3,
+    "modelAudit": {
+      "planning": {
+        "leadModel": "qwen3:0.6b",
+        "assistantModels": [
+          "gemma3:1b",
+          "llama3.2:1b"
+        ],
+        "models": [
+          "qwen3:0.6b",
+          "gemma3:1b",
+          "llama3.2:1b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "qwen3:0.6b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "qwen3:0.6b",
+        "rebuttalAuthoredByLead": true
+      },
+      "graphics": {
+        "leadModel": "gemma3:1b",
+        "assistantModels": [
+          "llama3.2:1b",
+          "qwen2.5:1.5b"
+        ],
+        "models": [
+          "gemma3:1b",
+          "llama3.2:1b",
+          "qwen2.5:1.5b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "gemma3:1b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "gemma3:1b",
+        "rebuttalAuthoredByLead": true
+      },
+      "development": {
+        "leadModel": "llama3.2:1b",
+        "assistantModels": [
+          "qwen2.5:1.5b",
+          "smollm2:1.7b"
+        ],
+        "models": [
+          "llama3.2:1b",
+          "qwen2.5:1.5b",
+          "smollm2:1.7b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "llama3.2:1b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "llama3.2:1b",
+        "rebuttalAuthoredByLead": true
+      },
+      "qa": {
+        "leadModel": "qwen2.5:1.5b",
+        "assistantModels": [
+          "smollm2:1.7b",
+          "qwen3:0.6b"
+        ],
+        "models": [
+          "qwen2.5:1.5b",
+          "smollm2:1.7b",
+          "qwen3:0.6b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "qwen2.5:1.5b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "qwen2.5:1.5b",
+        "rebuttalAuthoredByLead": true
+      },
+      "balance": {
+        "leadModel": "smollm2:1.7b",
+        "assistantModels": [
+          "qwen3:0.6b",
+          "gemma3:1b"
+        ],
+        "models": [
+          "smollm2:1.7b",
+          "qwen3:0.6b",
+          "gemma3:1b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "smollm2:1.7b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "smollm2:1.7b",
+        "rebuttalAuthoredByLead": true
+      }
+    },
+    "rebuttalRounds": 1,
+    "rebuttalAuthoredByDepartmentLeads": true,
+    "repeatedFatalReview": true
+  },
+  "meeting": {
+    "consensusCount": 5,
+    "conflictCount": 0,
+    "holdCount": 0,
+    "coordinatorModel": "qwen2.5:1.5b"
+  },
+  "disposition": {
+    "version": 1,
+    "gameId": "seed-idle-growth-rpg-crystal-bloom",
+    "date": "2026-09-11",
+    "state": "REDESIGN",
+    "sameDesignerRevisionAttempted": true,
+    "repeatedFiveDepartmentReview": true,
+    "allFiveLeadModelsReviewed": true,
+    "discardVotes": 1,
+    "commonFatalCriteria": [],
+    "unanimousFatalDiscard": false,
+    "fatalReviews": {
+      "planning": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [],
+        "evidence": [
+          "The game features a distinct setting, visual identity, progression mix, and touch-first presentation.",
+          "The game is designed to appeal to players of all ages, with a focus on providing an engaging and enjoyable experience."
+        ],
+        "reason": "The game's unique selling proposition is the combination of touch-first presentation, ease of use, and accessibility, as well as the source of global mobile engagement and category-session evidence."
+      },
+      "graphics": {
+        "recommendedState": "DISCARD",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "VALID_FATAL_CRITERIA",
+          "GAME_SEED",
+          "visualDirection",
+          "mobileUx"
+        ],
+        "reason": "The game's core loop, while seemingly engaging, relies heavily on a specific presentation style and a reinterpretation of established gameplay mechanics. While the core loop is designed for touch-first interaction, the reliance on a distinct setting and progression mix, combined with the potential for the game to exceed its core functionality, raises significant concerns about its long-term viability and potential for a fatal failure. The game's design risks becoming a derivative of existing titles, diminishing its unique identity. Further, the potential for the game to exceed its core functionality and become a 'game-killer' is a serious concern."
+      },
+      "development": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "AFK Arena",
+          "Legend of Slime",
+          "Idle Heroes",
+          "Tap Titans 2"
+        ],
+        "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라."
+      },
+      "qa": {
+        "recommendedState": "REDESIGN",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "AFK Arena",
+          "Legend of Slime",
+          "Idle Heroes",
+          "Tap Titans 2"
+        ],
+        "reason": "The current design does not meet the criteria for a successful game due to the inability to recover core fun, lack of distinct identity, inability to work as a product on mobile, and scope issues."
+      },
+      "balance": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "ANDROID_MOBILE_SINGLE_PLAYER_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [],
+        "reason": "The game's unique selling proposition is the combination of touch-first presentation, ease of use, and accessibility, as well as the source of global mobile engagement and category-session evidence."
+      }
+    },
+    "marketMetricAloneUsedForDiscard": false
+  },
+  "runtimeMetrics": {
+    "phaseMs": {
+      "designer_draft": 84725,
+      "independent_department_reviews": 291123,
+      "department_representatives": 40274,
+      "lead_rebuttals": 50283,
+      "cross_department_meeting": 25347,
+      "designer_revision": 76202,
+      "five_lead_fatal_review": 184117
+    },
+    "totalModelCalls": 23,
+    "totalModelCallMs": 1642768,
+    "modelPhaseConcurrency": 3,
+    "modelKeepAlive": "2m",
+    "independentReviewOutputs": 15,
+    "fullPoolReviewOutputs": 25
+  },
+  "artbook": {
+    "created": false,
+    "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
+  },
+  "vibe2Used": false,
+  "paidApi": false,
+  "baselineGate": {
+    "policyDocument": "COMPANY_FLOW.md",
+    "productionClass": "DESIGN_ONLY",
+    "tierAlias": 3,
+    "tier": 3,
+    "state": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "ready": false,
+    "blockers": [
+      "design-disposition:REDESIGN"
+    ],
+    "meeting": {
+      "conflictCount": 0,
+      "holdCount": 0,
+      "allResolved": true
+    },
+    "evidence": {
+      "gameSeed": {
+        "required": true,
+        "present": true,
+        "seedId": "SEED-IDLE_GROWTH_RPG-001",
+        "source": "game-seed-state.json"
+      },
+      "webSmoke": {
+        "supportingOnly": true,
+        "pass": false,
+        "source": null
+      },
+      "webGameplay": {
+        "required": false,
+        "pass": false,
+        "source": null
+      },
+      "unityProject": {
+        "required": false,
+        "present": false,
+        "path": null
+      },
+      "unityTechnical": {
+        "required": false,
+        "pass": false,
+        "source": null
+      },
+      "revalidation": {
+        "conditional": true,
+        "pass": false,
+        "source": null
+      }
+    },
+    "contracts": {
+      "aiMeetingCompletionDoesNotEqualBaselineApproval": true,
+      "gameSeedRequiredBeforeDesignBaseline": true,
+      "marketEvidenceIsTargetReferenceNotHardGate": true,
+      "meetingHoldBlocksDesignBaseline": true,
+      "meetingConflictBlocksDesignBaseline": true,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": true,
+      "designArtbookOnlyAfterBaselineReady": true,
+      "designOnlyVibe2Forbidden": true,
+      "webSmokeDoesNotEqualGameplayValidation": true,
+      "developmentConfirmedIsGatedDirect": true,
+      "developmentConfirmedResumesFromLatestEvidence": true,
+      "developmentConfirmedRequiresExplicitWebGameplayValidation": true,
+      "developmentConfirmedRequiresUnityTechnicalValidation": true,
+      "developmentArtbookOnlyAfterBaselineReady": true,
+      "releaseConfirmedBaselineOwnedByReleasePipeline": true,
+      "numericTierIsCompatibilityAliasOnly": true
+    },
+    "checkedAt": "2026-09-11T06:22:50.250Z"
+  },
+  "artbookUi": {
+    "status": "WAITING",
+    "label": "대기중",
+    "path": "artbook-submissions/seed-idle-growth-rpg-crystal-bloom/status.json"
+  },
+  "artbookPublication": {
+    "published": false,
+    "path": null,
+    "baselineGateState": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "reason": "baseline-not-ready"
+  }
+}
