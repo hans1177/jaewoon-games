@@ -48,6 +48,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git config user.name 'jaewoon-company-runtime'
+          git config user.email 'company-runtime@users.noreply.github.com'
           git fetch origin main
           if git ls-remote --exit-code --heads origin "$COMPANY_RUNTIME_BRANCH" >/dev/null 2>&1; then
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
