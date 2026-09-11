@@ -526,8 +526,10 @@ developmentSafety:
 urgentCases:
   BLOCK_BLAST_EXTERNAL_RUNTIME:
     priority: EMERGENCY
+    authority: OWNER_DIRECT_EMERGENCY_CASE
     ownerDirectiveRecordedAt: 2026-09-12
-    status: ACTIVE_BLOCKED
+    directAssistantReviewedAt: 2026-09-12
+    status: ACTIVE_BLOCKED_WITH_PARTIAL_GAME_ENTRY
     objective: VERIFIED_BLACK_BOX_RUNTIME_PLAYTEST
     gameId: block-blast
     packageId: com.block.juggle
@@ -535,6 +537,12 @@ urgentCases:
     completionCondition:
       - VERIFIED_RUNTIME_PASS_TRUE
       - UNAVOIDABLE_OWNER_ACTION_REQUIRED
+    ownerObservedGameEntry:
+      gameEntryObserved: true
+      evidenceAuthority: OWNER_DIRECT_OBSERVATION
+      exactRunCorrelationConfirmed: false
+      stableRuntimePassConfirmed: false
+      rule: PRESERVE_GAME_ENTRY_SUCCESS_AND_LATER_FAILURE_AS_SEPARATE_EVIDENCE_STAGES
     safety:
       officialGooglePlayExportOnly: true
       blackBoxObservationOnly: true
@@ -553,6 +561,15 @@ urgentCases:
       splashVisibilityIsNotRuntimePass: true
       processCreationIsNotRuntimePass: true
       infrastructureReadyIsNotRuntimePass: true
+      gameEntryIsMeaningfulPartialEvidence: true
+      gameEntryAloneIsNotRuntimePass: true
+      stagedEvidenceRequired:
+        - INSTALL
+        - LAUNCH
+        - GAME_ENTRY
+        - INPUT_EXERCISE
+        - STABILITY
+        - CRASH_OR_ANR
       runtimePassRequires:
         - APP_LAUNCH
         - FOREGROUND_OWNERSHIP
@@ -650,25 +667,30 @@ urgentCases:
       - HOST_PAGE_SIZE_IS_4096
       - BINDER_LINUX_CAN_LOAD_ON_CURRENT_ARM64_RUNNER
       - BINDERFS_BINDER_HWBINDER_VNDBINDER_DEVICES_CAN_BE_CREATED
-      - X86_64_ARM_TRANSLATION_CAN_REACH_INSTALL_OR_LAUNCH_BUT_REPEATEDLY_FAILS_RUNTIME_COMPATIBILITY
+      - ACTUAL_GAME_ENTRY_WAS_OBSERVED_IN_AT_LEAST_ONE_PRIOR_SERVER_EXPERIMENT
+      - EXACT_RUN_TO_GAME_ENTRY_CORRELATION_REMAINS_UNCONFIRMED
+      - X86_64_ARM_TRANSLATION_CAN_REACH_INSTALL_OR_LAUNCH_BUT_REPEATEDLY_FAILS_SUSTAINED_RUNTIME_COMPATIBILITY
       - GITHUB_MACOS_ARM64_DOES_NOT_PROVIDE_REQUIRED_NESTED_HVF_FOR_ANDROID_ARM64_EMULATOR
       - BINDER_READY_NATIVE_ARM64_HOST_DOES_NOT_GUARANTEE_REDROID_ANDROID_USERSPACE_BOOT
-      - NO_VERIFIED_RUNTIME_PASS_EXISTS_THROUGH_RUN_20
+      - NO_STABLE_VERIFIED_RUNTIME_PASS_EXISTS_THROUGH_RUN_20
     routeState:
-      x86ArmTranslation: EXHAUSTED_UNLESS_MATERIALLY_NEW_EVIDENCE
+      x86ArmTranslation: EXHAUSTED_FOR_STABLE_RUNTIME_UNLESS_MATERIALLY_NEW_EVIDENCE
       hostedMacArm64Emulator: BLOCKED_BY_NESTED_HVF
       githubHostedArm64Redroid: BLOCKED_BY_ANDROID_USERSPACE_BOOT_AS_OF_RUN_20
       randomAndroidApiCycling: FORBIDDEN_WITHOUT_NEW_HYPOTHESIS
     nextExperimentRules:
       - START_FROM_LATEST_EVIDENCE_NOT_STALE_RUN_IDS
+      - PRESERVE_PARTIAL_GAME_ENTRY_SUCCESS_IF_A_LATER_FAILURE_OCCURS
       - DO_NOT_REPEAT_EXHAUSTED_ROUTE_WITHOUT_MATERIALLY_NEW_CAPABILITY_OR_HYPOTHESIS
       - PROBE_RUNTIME_CAPABILITY_BEFORE_DOWNLOADING_PROPRIETARY_APK_BYTES
       - REMOVE_EPHEMERAL_APK_BYTES_AFTER_EACH_RUN
       - PREFER_FREE_MANAGED_ANDROID_RUNTIME_IF_HOSTED_CONTAINER_OR_EMULATOR_ROUTE_REMAINS_BLOCKED
-      - REQUIRE_REAL_RUNTIME_EVIDENCE_BEFORE_GAMEPLAY_OR_UX_POSITIVE_DISTILLATION
+      - REQUIRE_REAL_STABLE_RUNTIME_EVIDENCE_BEFORE_FULL_GAMEPLAY_OR_UX_POSITIVE_DISTILLATION
     learningUse:
       negativeEvidenceAllowed: true
+      partialObservableDistillationAllowed: true
       positiveGameplayDistillationAllowed: false
+      partialObservationBoundary: DIRECTLY_OBSERVED_GAME_ENTRY_AND_CAPTURED_RUNTIME_STAGES_ONLY
       positiveGameplayDistillationUnlockCondition: VERIFIED_RUNTIME_PASS_TRUE
       allowedNegativeTopics:
         - HOSTED_ANDROID_ABI_COMPATIBILITY
@@ -681,6 +703,7 @@ urgentCases:
     evidenceBindings:
       privateHistory: hans1177/jaewoon-ai-company/server-playtest/block-blast-experiment-history.md
       publicNegativeDistillation: company-learning/external-game-playtest/block-blast-runtime-distillation.json
+      ownerGameEntryCorrection: company-learning/external-game-playtest/block-blast-game-entry-correction.json
 
 learning:
   aiDesignOpinionAloneIsNotSuccessEvidence: true
