@@ -79,8 +79,10 @@ test('DEVELOPMENT Unity runtime is serial cloud-only and keeps homepage test pub
   assert.match(workflowSource,/sourceTreeSha=tree/);
 });
 
-test('keeps company runtime autonomous and manually recoverable',()=>{
-  assert.ok(workflowSource.includes("cron: '17 */2 * * *'"));
+test('keeps company runtime event-driven and manually recoverable without periodic scheduling',()=>{
+  assert.doesNotMatch(workflowSource,/^\s*schedule:/m);
+  assert.doesNotMatch(workflowSource,/cron:/);
+  assert.match(workflowSource,/push:/);
   assert.match(workflowSource,/workflow_dispatch:/);
   assert.match(workflowSource,/company-development-unity-runtime/);
 });
