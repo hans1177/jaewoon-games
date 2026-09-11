@@ -93,8 +93,8 @@ function baseGoal(project,book){
   return '현재 게임의 사용자 체감 문제 1개만 작은 수정 단위로 처리한다. 저장키와 핵심 규칙을 유지하고 전면 재작성은 하지 않는다.';
 }
 function diagnosticsFor(map,slug){return map?.[slug]||{issues:[],topIssue:null,counts:{}};}
-function actionableForStage(stage,{incident,diagnostic,book,artbookHandoffReady=false,tier1EntryReady=true}){
-  if(stage.id==='RELEASE_CONFIRMED')return tier1EntryReady&&Boolean(incident||diagnostic?.topIssue);
+function actionableForStage(stage,{incident,diagnostic,book,artbookHandoffReady=false,releaseEntryReady=true}){
+  if(stage.id==='RELEASE_CONFIRMED')return releaseEntryReady&&Boolean(incident||diagnostic?.topIssue);
   if(stage.id==='PLANNING_IDENTITY_REQUIRED'||stage.id==='DESIGN_ONLY'||stage.id==='HOLD')return false;
   return Boolean(artbookHandoffReady||incident||diagnostic?.topIssue||actionableImprovementHints(book).length);
 }
@@ -115,18 +115,18 @@ export function buildAutonomousWorkOrder({portfolio,artbooks,health,catalog={gam
     const stage=classifyProjectStage(project,catalog),entry=catalogEntry(catalog,project.slug)||{},incident=runtimeIncident(health,project.slug),rawDiagnostic=diagnosticsFor(diagnostics,project.slug),diagnostic=actionableDiagnostic(rawDiagnostic),book=latestArtbookFor(artbooks,project.slug);
     const priorityMatch=Boolean(requestedPriority&&(requestedPriority===project.slug||requestedPriority===project.id));
     const artbookHandoffReady=priorityMatch&&stage.id==='DEVELOPMENT_CONFIRMED'&&isCompletedDesignBaseline(book);
-    const isTier1=productionClassOf(project,entry)===PRODUCTION_CLASSES.RELEASE_CONFIRMED;
-    const developmentBaseline=isTier1?latestDevelopmentBaselineEvidence(project.slug,{repoRoot}):null;
-    const tier1EntryReady=!isTier1||developmentBaseline.ready===true;
-    return {project,stage,incident,diagnostic,rawDiagnostic,book,priorityMatch,artbookHandoffReady,isTier1,developmentBaseline,tier1EntryReady,actionable:actionableForStage(stage,{incident,diagnostic,book,artbookHandoffReady,tier1EntryReady})};
+    const isReleaseConfirmed=productionClassOf(project,entry)===PRODUCTION_CLASSES.RELEASE_CONFIRMED;
+    const developmentBaseline=isReleaseConfirmed?latestDevelopmentBaselineEvidence(project.slug,{repoRoot}):null;
+    const releaseEntryReady=!isReleaseConfirmed||developmentBaseline.ready===true;
+    return {project,stage,incident,diagnostic,rawDiagnostic,book,priorityMatch,artbookHandoffReady,isReleaseConfirmed,developmentBaseline,releaseEntryReady,actionable:actionableForStage(stage,{incident,diagnostic,book,artbookHandoffReady,releaseEntryReady})};
   });
   const actionable=rows.filter(row=>row.actionable&&row.stage.codeWork);
   if(!actionable.length){
-    const blockedTier1=rows.filter(row=>row.isTier1&&!row.tier1EntryReady);
+    const blockedReleaseConfirmed=rows.filter(row=>row.isReleaseConfirmed&&!row.releaseEntryReady);
     const planning=rows.find(row=>row.stage.id==='PLANNING_IDENTITY_REQUIRED'),designOnly=rows.find(row=>row.stage.id==='DESIGN_ONLY'),hasCodeStage=rows.some(row=>row.stage.codeWork);
-    const reason=blockedTier1.length?'DEVELOPMENT_BASELINE_REQUIRED':(planning?'PLANNING_IDENTITY_REQUIRED':(!hasCodeStage&&designOnly?'DESIGN_ONLY':'NO_ACTIONABLE_DIAGNOSTIC'));
+    const reason=blockedReleaseConfirmed.length?'DEVELOPMENT_BASELINE_REQUIRED':(planning?'PLANNING_IDENTITY_REQUIRED':(!hasCodeStage&&designOnly?'DESIGN_ONLY':'NO_ACTIONABLE_DIAGNOSTIC'));
     const planningTarget=planning||(!hasCodeStage?designOnly:null);
-    return {version:2,run:false,reason,date,paidApi:false,attemptsToday:attemptsToday.length,maxDaily,planningGameId:planningTarget?.project.id||null,priorityGameId:requestedPriority||null,blockedTier1GameIds:blockedTier1.map(row=>row.project.id)};
+    return {version:2,run:false,reason,date,paidApi:false,attemptsToday:attemptsToday.length,maxDaily,planningGameId:planningTarget?.project.id||null,priorityGameId:requestedPriority||null,blockedReleaseConfirmedGameIds:blockedReleaseConfirmed.map(row=>row.project.id)};
   }
 
   const releaseIncident=actionable.find(row=>row.stage.id==='RELEASE_CONFIRMED'&&row.incident),artbookHandoff=actionable.find(row=>row.artbookHandoffReady);
