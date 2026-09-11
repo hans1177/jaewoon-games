@@ -1,0 +1,47 @@
+{
+  "version": 3,
+  "gameId": "daechung-rpg",
+  "date": "2026-09-11",
+  "productionClass": "RELEASE_CONFIRMED",
+  "tierAlias": 1,
+  "tier": 1,
+  "policyDocument": "COMPANY_FLOW.md",
+  "flow": "RELEASE_CONFIRMED_GATED_DIRECT_RELEASE_PRODUCTION",
+  "executionMode": "GATED_DIRECT_RELEASE_PRODUCTION",
+  "status": "BLOCKED",
+  "state": "RELEASE_BLOCKED",
+  "vibe2PrimaryDeveloper": true,
+  "coreDesignLock": true,
+  "unityProjectPath": "unity-games/daechung-rpg",
+  "currentSourceTreeSha": "2ad2f304dbec0956d584ac7274ec3124cdfdf93b",
+  "developmentBaseline": null,
+  "evidence": {
+    "implementation": null,
+    "build": null,
+    "runtime": null,
+    "independentQa": null
+  },
+  "departments": null,
+  "blockers": [
+    "development-baseline-required"
+  ],
+  "nextAction": "2분류에서 DEVELOPMENT_BASELINE_READY를 먼저 만든다.",
+  "releaseBaseline": null,
+  "artbook": null,
+  "contracts": {
+    "gatedDirect": true,
+    "resumeFromLatestEvidence": true,
+    "vibe2PrimaryDeveloper": true,
+    "coreDesignLock": true,
+    "aiMayInventBuildPass": false,
+    "aiMayInventDeviceValidationPass": false,
+    "aiMayInventIndependentQaPass": false,
+    "currentSourceTreeBindingRequired": true,
+    "currentBuildEvidenceBindingRequired": true,
+    "sourceChangeInvalidatesOldBuildValidation": true,
+    "finalDepartmentRiskWatchUsesBuildRuntimeQaEvidence": true,
+    "finalArtbookOnlyAfterReleaseReady": true,
+    "numericTierIsCompatibilityAliasOnly": true
+  },
+  "updatedAt": "2026-09-11T08:13:02.113Z"
+}

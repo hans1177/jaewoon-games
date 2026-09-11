@@ -1,0 +1,722 @@
+{
+  "version": 3,
+  "gameId": "daechung-rpg",
+  "date": "2026-09-11",
+  "generatedBy": "deterministic-source-scan",
+  "paidApi": false,
+  "sourceMode": "UNITY_PLUS_WEB_ARCHIVE",
+  "sourceFiles": [
+    "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+    "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+    "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+    "web-games/daechung-rpg/index.html",
+    "web-games/daechung-rpg/patch-core18.js",
+    "web-games/daechung-rpg/patch-v15.js",
+    "web-games/daechung-rpg/patch-v16.js",
+    "web-games/daechung-rpg/patch-v17.js",
+    "web-games/daechung-rpg/patch-v18-reaper.js",
+    "web-games/daechung-rpg/patch-v18.js",
+    "web-games/daechung-rpg/rpg.html"
+  ],
+  "decodedSources": [],
+  "topics": {
+    "gameplayLoop": [
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 4,
+        "column": 14,
+        "text": "using System.Collections.Generic;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 25,
+        "column": 24,
+        "text": "public int baseAttack = 3;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 30,
+        "column": 24,
+        "text": "public int mainQuestStep;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 33,
+        "column": 44,
+        "text": "public List<string> completedHiddenQuests = new();"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 37,
+        "column": 25,
+        "text": "public sealed class EnemyDefinition"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 43,
+        "column": 20,
+        "text": "public int attack;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 56,
+        "column": 21,
+        "text": "public List<EnemyDefinition> enemies = new();"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 65,
+        "column": 20,
+        "text": "public int damage;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 66,
+        "column": 22,
+        "text": "public float attackCooldown;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 80,
+        "column": 25,
+        "text": "public sealed class QuestDefinition"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 100,
+        "column": 107,
+        "text": "e-sword\"] = new() { id = \"old-stone-sword\", displayName = \"낡은 돌검\", price = 100, damage = 5, attackCooldown = 0.35f },"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 100,
+        "column": 119,
+        "text": "new() { id = \"old-stone-sword\", displayName = \"낡은 돌검\", price = 100, damage = 5, attackCooldown = 0.35f },"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 101,
+        "column": 92,
+        "text": "[\"iron-axe\"] = new() { id = \"iron-axe\", displayName = \"철 도끼\", price = 500, damage = 40, attackCooldown = 0.5f },"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 101,
+        "column": 105,
+        "text": "xe\"] = new() { id = \"iron-axe\", displayName = \"철 도끼\", price = 500, damage = 40, attackCooldown = 0.5f },"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 102,
+        "column": 94,
+        "text": "[\"iron-dual\"] = new() { id = \"iron-dual\", displayName = \"철 쌍검\", price = 700, damage = 20, attackCooldown = 0.35f },"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 102,
+        "column": 107,
+        "text": "l\"] = new() { id = \"iron-dual\", displayName = \"철 쌍검\", price = 700, damage = 20, attackCooldown = 0.35f },"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 103,
+        "column": 98,
+        "text": "\"iron-hammer\"] = new() { id = \"iron-hammer\", displayName = \"철 망치\", price = 500, damage = 40, attackCooldown = 1f },"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 103,
+        "column": 111,
+        "text": "] = new() { id = \"iron-hammer\", displayName = \"철 망치\", price = 500, damage = 40, attackCooldown = 1f },"
+      }
+    ],
+    "input": [
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 80,
+        "column": 22,
+        "text": "GUI.skin.button.fontSize = Mathf.RoundToInt(17f * scale);"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 82,
+        "column": 22,
+        "text": "GUI.skin.button.fixedHeight = 46f * scale;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 124,
+        "column": 27,
+        "text": "if (GUILayout.Button(\"TOWN\")) MoveTo(\"town\");"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 125,
+        "column": 27,
+        "text": "if (GUILayout.Button(\"FIELD 1\")) MoveTo(\"field-1\");"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 130,
+        "column": 27,
+        "text": "if (GUILayout.Button(\"FIELD 2\")) MoveTo(\"field-2\");"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 132,
+        "column": 27,
+        "text": "if (GUILayout.Button(\"FIELD 3\")) MoveTo(\"field-3\");"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 138,
+        "column": 27,
+        "text": "if (GUILayout.Button(\"FIELD 4\")) MoveTo(\"field-4\");"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 140,
+        "column": 27,
+        "text": "if (GUILayout.Button(\"FIELD 5\")) MoveTo(\"field-5\");"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 146,
+        "column": 27,
+        "text": "if (GUILayout.Button(\"FIELD 6\")) MoveTo(\"field-6\");"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 148,
+        "column": 27,
+        "text": "if (GUILayout.Button(\"JUNGLE\")) MoveTo(\"jungle\");"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 164,
+        "column": 27,
+        "text": "if (GUILayout.Button(\"ATTACK\")) AttackEnemy();"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 165,
+        "column": 27,
+        "text": "if (GUILayout.Button(\"RETREAT\")) MoveTo(\"town\");"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 175,
+        "column": 27,
+        "text": "if (GUILayout.Button(\"FULL HEAL\"))"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 184,
+        "column": 27,
+        "text": "if (GUILayout.Button(ownsStarterWeapon ? \"STONE SWORD OWNED\" : \"BUY STONE SWORD · 100G\"))"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 198,
+        "column": 31,
+        "text": "if (GUILayout.Button(\"WARRIOR\")) TryChangeJob(JobType.Warrior);"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 199,
+        "column": 31,
+        "text": "if (GUILayout.Button(\"ARCHER\")) TryChangeJob(JobType.Archer);"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "line": 200,
+        "column": 31,
+        "text": "if (GUILayout.Button(\"MAGE\")) TryChangeJob(JobType.Mage);"
+      },
+      {
+        "source": "web-games/daechung-rpg/index.html",
+        "line": 1,
+        "column": 563,
+        "text": "16px;border-radius:12px;background:#111e;color:#ffd26c;font:900 14px system-ui;pointer-events:none}</style></head><body><div id=\"load\">RPG 최신판 로딩중...</div><iframe id=\"game\" src=\"./rpg.html?v=18e\" allow=\"autoplay\"></ifram"
+      }
+    ],
+    "combat": [
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 23,
+        "column": 27,
+        "text": "public int baseMaxHp = 100;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 24,
+        "column": 27,
+        "text": "public int currentHp = 100;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 25,
+        "column": 24,
+        "text": "public int baseAttack = 3;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 37,
+        "column": 25,
+        "text": "public sealed class EnemyDefinition"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 42,
+        "column": 23,
+        "text": "public int maxHp;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 43,
+        "column": 20,
+        "text": "public int attack;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 56,
+        "column": 21,
+        "text": "public List<EnemyDefinition> enemies = new();"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 65,
+        "column": 20,
+        "text": "public int damage;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 66,
+        "column": 22,
+        "text": "public float attackCooldown;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 66,
+        "column": 28,
+        "text": "public float attackCooldown;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 76,
+        "column": 25,
+        "text": "public int bonusHp;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 100,
+        "column": 107,
+        "text": "e-sword\"] = new() { id = \"old-stone-sword\", displayName = \"낡은 돌검\", price = 100, damage = 5, attackCooldown = 0.35f },"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 100,
+        "column": 119,
+        "text": "new() { id = \"old-stone-sword\", displayName = \"낡은 돌검\", price = 100, damage = 5, attackCooldown = 0.35f },"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 100,
+        "column": 125,
+        "text": "{ id = \"old-stone-sword\", displayName = \"낡은 돌검\", price = 100, damage = 5, attackCooldown = 0.35f },"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 101,
+        "column": 92,
+        "text": "[\"iron-axe\"] = new() { id = \"iron-axe\", displayName = \"철 도끼\", price = 500, damage = 40, attackCooldown = 0.5f },"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 101,
+        "column": 105,
+        "text": "xe\"] = new() { id = \"iron-axe\", displayName = \"철 도끼\", price = 500, damage = 40, attackCooldown = 0.5f },"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 101,
+        "column": 111,
+        "text": "new() { id = \"iron-axe\", displayName = \"철 도끼\", price = 500, damage = 40, attackCooldown = 0.5f },"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 102,
+        "column": 94,
+        "text": "[\"iron-dual\"] = new() { id = \"iron-dual\", displayName = \"철 쌍검\", price = 700, damage = 20, attackCooldown = 0.35f },"
+      }
+    ],
+    "progression": [
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 20,
+        "column": 20,
+        "text": "public int level = 1;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 21,
+        "column": 20,
+        "text": "public int gold;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 22,
+        "column": 21,
+        "text": "public int experience;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 41,
+        "column": 20,
+        "text": "public int level;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 45,
+        "column": 21,
+        "text": "public int experienceReward;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 45,
+        "column": 30,
+        "text": "public int experienceReward;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 46,
+        "column": 20,
+        "text": "public int goldReward;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 46,
+        "column": 24,
+        "text": "public int goldReward;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 54,
+        "column": 31,
+        "text": "public int recommendedLevelMin;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 55,
+        "column": 31,
+        "text": "public int recommendedLevelMax;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 64,
+        "column": 20,
+        "text": "public int price;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 75,
+        "column": 20,
+        "text": "public int price;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 85,
+        "column": 20,
+        "text": "public int goldReward;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 85,
+        "column": 24,
+        "text": "public int goldReward;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 100,
+        "column": 94,
+        "text": "[\"old-stone-sword\"] = new() { id = \"old-stone-sword\", displayName = \"낡은 돌검\", price = 100, damage = 5, attackCooldown = 0.35f },"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 101,
+        "column": 79,
+        "text": "[\"iron-axe\"] = new() { id = \"iron-axe\", displayName = \"철 도끼\", price = 500, damage = 40, attackCooldown = 0.5f },"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 102,
+        "column": 81,
+        "text": "[\"iron-dual\"] = new() { id = \"iron-dual\", displayName = \"철 쌍검\", price = 700, damage = 20, attackCooldown = 0.35f },"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 103,
+        "column": 85,
+        "text": "[\"iron-hammer\"] = new() { id = \"iron-hammer\", displayName = \"철 망치\", price = 500, damage = 40, attackCooldown = 1f },"
+      }
+    ],
+    "persistence": [
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 89,
+        "column": 29,
+        "text": "public sealed class GameSaveData"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 280,
+        "column": 32,
+        "text": "var data = new GameSaveData { player = Player };"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 295,
+        "column": 53,
+        "text": "var data = JsonUtility.FromJson<GameSaveData>(PlayerPrefs.GetString(SaveKey));"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "line": 167,
+        "column": 59,
+        "text": "var cacheDirectory = Path.Combine(Application.persistentDataPath, \"prototype-asset-cache\", \"ai-pixel-snapped\", actorId, action);"
+      }
+    ],
+    "uiArt": [
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 27,
+        "column": 25,
+        "text": "public string equippedWeaponId = \"bare-hands\";"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 28,
+        "column": 25,
+        "text": "public string equippedArmorId = \"none\";"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 119,
+        "column": 89,
+        "text": "public static readonly IReadOnlyDictionary<string, RegionDefinition> Regions = BuildRegions();"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 121,
+        "column": 71,
+        "text": "private static IReadOnlyDictionary<string, RegionDefinition> BuildRegions()"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 145,
+        "column": 20,
+        "text": "[\"ruined-village\"] = Region(\"ruined-village\", \"8번 폐허 마을\", 13, 15),"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 145,
+        "column": 47,
+        "text": "[\"ruined-village\"] = Region(\"ruined-village\", \"8번 폐허 마을\", 13, 15),"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 199,
+        "column": 65,
+        "text": "var bonus = GameCatalog.Armors.TryGetValue(Player.equippedArmorId, out var armor) ? armor.bonusHp : 0;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 210,
+        "column": 73,
+        "text": "var weaponDamage = GameCatalog.Weapons.TryGetValue(Player.equippedWeaponId, out var weapon) ? weapon.damage : 0;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 234,
+        "column": 22,
+        "text": "Player.equippedWeaponId = weaponId;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 250,
+        "column": 22,
+        "text": "Player.equippedArmorId = armorId;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 342,
+        "column": 51,
+        "text": "if (string.IsNullOrEmpty(Player.equippedWeaponId) ||"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 343,
+        "column": 31,
+        "text": "(Player.equippedWeaponId != \"bare-hands\" && !GameCatalog.Weapons.ContainsKey(Player.equippedWeaponId)))"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 343,
+        "column": 107,
+        "text": "r.equippedWeaponId != \"bare-hands\" && !GameCatalog.Weapons.ContainsKey(Player.equippedWeaponId)))"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 345,
+        "column": 30,
+        "text": "Player.equippedWeaponId = \"bare-hands\";"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 347,
+        "column": 51,
+        "text": "if (string.IsNullOrEmpty(Player.equippedArmorId) ||"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 348,
+        "column": 31,
+        "text": "(Player.equippedArmorId != \"none\" && !GameCatalog.Armors.ContainsKey(Player.equippedArmorId)))"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 348,
+        "column": 99,
+        "text": "(Player.equippedArmorId != \"none\" && !GameCatalog.Armors.ContainsKey(Player.equippedArmorId)))"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 350,
+        "column": 30,
+        "text": "Player.equippedArmorId = \"none\";"
+      }
+    ],
+    "risk": [
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 225,
+        "column": 26,
+        "text": "if (string.IsNullOrEmpty(weaponId) || !GameCatalog.Weapons.TryGetValue(weaponId, out var weapon) || weapon.hidden || Player.ownedWeapons.Contains(weaponId) || Player.gold < weapon.price)"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 241,
+        "column": 26,
+        "text": "if (string.IsNullOrEmpty(armorId) || !GameCatalog.Armors.TryGetValue(armorId, out var armor) || Player.ownedArmors.Contains(armorId) || Player.gold < armor.price)"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 270,
+        "column": 26,
+        "text": "if (string.IsNullOrEmpty(regionId) || !GameCatalog.Regions.ContainsKey(regionId))"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 326,
+        "column": 44,
+        "text": "if (Player.ownedWeapons == null)"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 330,
+        "column": 43,
+        "text": "if (Player.ownedArmors == null)"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 334,
+        "column": 53,
+        "text": "if (Player.completedHiddenQuests == null)"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 338,
+        "column": 30,
+        "text": "if (string.IsNullOrEmpty(Player.currentRegionId) || !GameCatalog.Regions.ContainsKey(Player.currentRegionId))"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 342,
+        "column": 30,
+        "text": "if (string.IsNullOrEmpty(Player.equippedWeaponId) ||"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 347,
+        "column": 30,
+        "text": "if (string.IsNullOrEmpty(Player.equippedArmorId) ||"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "line": 363,
+        "column": 13,
+        "text": "catch (Exception)"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "line": 22,
+        "column": 47,
+        "text": "public string StatusText => !string.IsNullOrEmpty(_loadError) ? $\"ERROR · {_loadError}\" : (_ready ? \"READY · VERIFIED ANIMATED ASSETS\" : \"LOADING · VERIFIED ANIMATED ASSETS\");"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "line": 22,
+        "column": 64,
+        "text": "public string StatusText => !string.IsNullOrEmpty(_loadError) ? $\"ERROR · {_loadError}\" : (_ready ? \"READY · VERIFIED ANIMATED ASSETS\" : \"LOADING · VERIFIED ANIMATED ASSETS\");"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "line": 22,
+        "column": 75,
+        "text": "public string StatusText => !string.IsNullOrEmpty(_loadError) ? $\"ERROR · {_loadError}\" : (_ready ? \"READY · VERIFIED ANIMATED ASSETS\" : \"LOADING · VERIFIED ANIMATED ASSETS\");"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "line": 22,
+        "column": 89,
+        "text": "public string StatusText => !string.IsNullOrEmpty(_loadError) ? $\"ERROR · {_loadError}\" : (_ready ? \"READY · VERIFIED ANIMATED ASSETS\" : \"LOADING · VERIFIED ANIMATED ASSETS\");"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "line": 28,
+        "column": 29,
+        "text": "private string _loadError = string.Empty;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "line": 40,
+        "column": 29,
+        "text": "if (Instance != null) return Instance;"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "line": 43,
+        "column": 29,
+        "text": "if (existing != null)"
+      },
+      {
+        "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "line": 54,
+        "column": 29,
+        "text": "if (Instance != null && Instance != this)"
+      }
+    ]
+  },
+  "missingEvidence": [],
+  "contracts": {
+    "factsAreEvidenceOnly": true,
+    "proposalsForbidden": true,
+    "numericChangesForbidden": true,
+    "approvedBaselineOverwriteForbidden": true,
+    "packedSourceDecodeBounded": true,
+    "packedSourceExecuted": false,
+    "packedLiteralMasked": true,
+    "persistenceRequiresStorageEvidence": true,
+    "multipleMatchesPerLine": true
+  }
+}
