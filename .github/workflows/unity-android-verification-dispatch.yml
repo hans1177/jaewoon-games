@@ -66,6 +66,11 @@ jobs:
           source = str(data.get('sourceCommit', '')).strip().lower()
           tree = str(data.get('sourceTreeSha', '')).strip().lower()
           apk = str(data.get('apkSha256', '')).strip().lower()
+          cancel_ids = data.get('cancelRunIds', [])
+          if not isinstance(cancel_ids, list) or any(not isinstance(v, int) or v <= 0 for v in cancel_ids):
+              raise SystemExit('cancelRunIds must be an array of positive integer run ids')
+          if len(cancel_ids) != len(set(cancel_ids)) or len(cancel_ids) > 8:
+              raise SystemExit('cancelRunIds must be unique and contain at most 8 ids')
           if not re.fullmatch(r'[0-9]+', run_id):
               raise SystemExit('upstreamBuildRunId must be numeric')
           if not re.fullmatch(r'[0-9a-f]{40}', source):
@@ -79,7 +84,28 @@ jobs:
               f.write(f'source_commit={source}\n')
               f.write(f'source_tree_sha={tree}\n')
               f.write(f'apk_sha256={apk}\n')
+              f.write('cancel_run_ids=' + ','.join(map(str, cancel_ids)) + '\n')
           PY
+
+      - name: Cancel explicitly bound stale QA runs
+        if: steps.request.outputs.cancel_run_ids != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANCEL_RUN_IDS: ${{ steps.request.outputs.cancel_run_ids }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          IFS=',' read -ra ids <<< "$CANCEL_RUN_IDS"
+          for id in "${ids[@]}"; do
+            [[ "$id" =~ ^[0-9]+$ ]] || { echo "invalid cancel run id: $id" >&2; exit 3; }
+            state="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id" --jq '.status' 2>/dev/null || true)"
+            if [[ "$state" == 'queued' || "$state" == 'pending' || "$state" == 'in_progress' || "$state" == 'waiting' || "$state" == 'requested' ]]; then
+              gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$id/cancel" >/dev/null || true
+              echo "STALE_QA_CANCEL_REQUESTED=$id status=$state"
+            else
+              echo "STALE_QA_CANCEL_SKIPPED=$id status=${state:-unknown}"
+            fi
+          done
 
       - name: Dispatch real Android runtime smoke
         env:
