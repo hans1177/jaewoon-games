@@ -102,24 +102,51 @@ function assertSchemaValue(value,schema,label='root'){
     if(Number.isFinite(schema.maxLength)&&value.length>schema.maxLength)throw new Error(`schema maxLength mismatch: ${label}`);
   }
 }
+function normalizeSchemaValue(value,schema,label='root',repairs=[]){
+  if(!schema||typeof schema!=='object')return value;
+  if(schema.type==='object'){
+    if(!value||Array.isArray(value)||typeof value!=='object')return value;
+    const normalized={};
+    for(const [key,child] of Object.entries(schema.properties||{})){
+      if(Object.prototype.hasOwnProperty.call(value,key))normalized[key]=normalizeSchemaValue(value[key],child,`${label}.${key}`,repairs);
+      else if((schema.required||[]).includes(key)&&child?.type==='array'&&(!Number.isFinite(child.minItems)||child.minItems===0)){
+        normalized[key]=[];
+        repairs.push(`fill-empty-array:${label}.${key}`);
+      }
+    }
+    if(schema.additionalProperties!==false)for(const [key,childValue] of Object.entries(value))if(!Object.prototype.hasOwnProperty.call(normalized,key))normalized[key]=childValue;
+    else for(const key of Object.keys(value))if(!Object.prototype.hasOwnProperty.call(schema.properties||{},key))repairs.push(`drop-extra:${label}.${key}`);
+    return normalized;
+  }
+  if(schema.type==='array'){
+    if(!Array.isArray(value))return value;
+    let normalized=value.map((item,index)=>normalizeSchemaValue(item,schema.items,`${label}[${index}]`,repairs));
+    if(Number.isFinite(schema.maxItems)&&normalized.length>schema.maxItems){repairs.push(`trim-array:${label}:${normalized.length}->${schema.maxItems}`);normalized=normalized.slice(0,schema.maxItems);}
+    return normalized;
+  }
+  if(schema.type==='string'&&typeof value==='string'&&Number.isFinite(schema.maxLength)&&value.length>schema.maxLength){repairs.push(`trim-string:${label}:${value.length}->${schema.maxLength}`);return value.slice(0,schema.maxLength);}
+  return value;
+}
 
 async function callModel(model,system,user,schema,{predict=1100,temperature=0.25}={}){
   const callStarted=Date.now();
+  const deepSeek=model.startsWith('deepseek-r1');
   let lastError=null;
-  for(let attempt=1;attempt<=3;attempt++){
-    const mode=attempt===1?'schema':attempt===2?'json':'plain-json';
+  for(let attempt=1;attempt<=2;attempt++){
+    const mode=deepSeek?(attempt===1?'json':'plain-json'):(attempt===1?'schema':'json');
     try{
-      const fallbackSchema=attempt===1?'':`\nJSON_SCHEMA=${JSON.stringify(schema)}\n사고 과정이나 설명 없이 위 스키마를 만족하는 JSON 객체만 반환한다.`;
-      const payload={model,stream:false,think:false,keep_alive:modelKeepAlive,messages:[{role:'system',content:system},{role:'user',content:user+'\n출력은 스키마에 맞는 JSON 객체만 반환한다.'+fallbackSchema}],options:{temperature:attempt===1?temperature:0,num_ctx:8192,num_predict:model.startsWith('deepseek-r1')&&attempt>1?4096:Math.min(4096,predict*attempt)}};
-      if(attempt===1)payload.format=schema;
-      else if(attempt===2)payload.format='json';
+      const schemaPrompt=(deepSeek||attempt>1)?`\nJSON_SCHEMA=${JSON.stringify(schema)}\n사고 과정이나 설명 없이 위 스키마를 만족하는 JSON 객체만 반환한다.`:'';
+      const correction=attempt>1&&lastError?`\nPREVIOUS_VALIDATION_ERROR=${clean(lastError?.message)}\n이 오류를 정확히 수정하고 누락된 필수 구조를 모두 포함하라.`:'';
+      const payload={model,stream:false,think:false,keep_alive:modelKeepAlive,messages:[{role:'system',content:system},{role:'user',content:user+'\n출력은 스키마에 맞는 JSON 객체만 반환한다.'+schemaPrompt+correction}],options:{temperature:attempt===1?temperature:0,num_ctx:8192,num_predict:deepSeek?4096:Math.min(4096,predict*attempt)}};
+      if(!deepSeek&&attempt===1)payload.format=schema;
+      else if(mode==='json')payload.format='json';
       const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
       if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
       const body=await response.json();const text=String(body?.message?.content??'').trim();
       if(!text){if(clean(body?.message?.thinking))console.log(`MODEL_EMPTY_CONTENT_WITH_THINKING=${model}|attempt=${attempt}|mode=${mode}`);throw new Error(`empty model response (${mode})`);}
-      const parsed=parseJsonObject(text);assertSchemaValue(parsed,schema);
-      const elapsedMs=Date.now()-callStarted;modelCallStats.push({model,attempt,elapsedMs,predict,mode});console.log(`MODEL_CALL_MS=${model}|${elapsedMs}|attempt=${attempt}|predict=${predict}|mode=${mode}`);return parsed;
-    }catch(error){lastError=error;if(attempt<3){console.log(`MODEL_CALL_FALLBACK=${model}|attempt=${attempt}|next=${attempt===1?'json':'plain-json'}|reason=${clean(error?.message)}`);await new Promise(r=>setTimeout(r,800*attempt));}}
+      const parsed=parseJsonObject(text);const repairs=[];const normalized=normalizeSchemaValue(parsed,schema,'root',repairs);if(repairs.length)console.log(`MODEL_SCHEMA_NORMALIZED=${model}|attempt=${attempt}|${repairs.join(',')}`);assertSchemaValue(normalized,schema);
+      const elapsedMs=Date.now()-callStarted;modelCallStats.push({model,attempt,elapsedMs,predict,mode,schemaRepairs:repairs.length});console.log(`MODEL_CALL_MS=${model}|${elapsedMs}|attempt=${attempt}|predict=${predict}|mode=${mode}`);return normalized;
+    }catch(error){lastError=error;if(attempt<2){const nextMode=deepSeek?'plain-json':'json';console.log(`MODEL_CALL_FALLBACK=${model}|attempt=${attempt}|next=${nextMode}|reason=${clean(error?.message)}`);await new Promise(r=>setTimeout(r,800*attempt));}}
   }
   throw new Error(`MODEL_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
 }
@@ -148,7 +175,7 @@ const rebuttals=await runPhase('lead_rebuttals',()=>parallelObject(ROLES,async r
 writeJson(path.join(base,'meeting-rebuttal-round.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',round:1,departmentLeadModels:leadModels,rebuttalAuthoredByDepartmentLeads:true,rebuttals});
 const meeting=await runPhase('cross_department_meeting',()=>callModel(coordinatorModel,'너는 5부서 회의 조정 AI다. 새 기능을 창작하지 않고 대표의견과 각 Lead의 1회 반박을 안건별 CONSENSUS/CONFLICT/HOLD로만 정리한다.',`CONSENSUS만 자동 수정에 사용한다.\nREPRESENTATIVES=${clip(representatives,12000)}\nREBUTTALS=${clip(rebuttals,11000)}`,MEETING,{predict:1100,temperature:0.15}));
 const consensus=meeting.decisions.filter(x=>x.status==='CONSENSUS');const conflicts=meeting.decisions.filter(x=>x.status==='CONFLICT');const holds=meeting.decisions.filter(x=>x.status==='HOLD');
-writeJson(path.join(base,'department-meeting.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',coordinatorModel,departmentLeadModels:leadModels,distinctLeadModelCount:distinctLeadModels.length,representatives,rebuttalRound:1,rebuttalAuthoredByDepartmentLeads:true,...meeting,counts:{consensus:consensus.length,conflict:conflicts.length,hold:holds.length}});
+writeJson(path.join(base,'department-meeting.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',coordinatorModel,departmentLeadModels:leadModels,distinctLeadModels,distinctLeadModelCount:distinctLeadModels.length,representatives,rebuttalRound:1,rebuttalAuthoredByDepartmentLeads:true,...meeting,counts:{consensus:consensus.length,conflict:conflicts.length,hold:holds.length}});
 
 const revisedDesign=await runPhase('designer_revision',()=>callModel(designerModel,'너는 초안을 작성한 동일 Game Designer AI다. CONSENSUS만 설계에 반영하고 CONFLICT/HOLD는 openQuestions에 남긴다. GAME_SEED의 정체성과 타겟 근거를 잃지 않는다.',`같은 설계자가 수정한다.\nGAME_SEED=${clip(seed,6500)}\nDRAFT=${clip(designDraft,12000)}\nCONSENSUS=${clip(consensus,6500)}\nCONFLICT=${clip(conflicts,3500)}\nHOLD=${clip(holds,3500)}`,DESIGN,{predict:1700,temperature:0.2}));
 writeJson(path.join(base,'design-revised.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,authorRole:'GAME_DESIGNER_AI',authorModel:designerModel,sameModelAsDraft:true,appliedConsensusCount:consensus.length,unresolvedConflictCount:conflicts.length,heldCount:holds.length,status:'DESIGN_BASELINE_CANDIDATE',content:revisedDesign});
