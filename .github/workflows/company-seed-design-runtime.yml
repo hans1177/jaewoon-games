@@ -72,7 +72,7 @@ jobs:
     if: needs.resolve-seed-targets.outputs.run == 'true'
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 3
       matrix:
         target: ${{ fromJSON(needs.resolve-seed-targets.outputs.targets) }}
     runs-on: ubuntu-latest
@@ -122,6 +122,15 @@ jobs:
           console.log(`should_run=${shouldRun?'true':'false'}`);
           console.error(`${shouldRun?'CURRENT_SEED_TARGET':'STALE_SEED_TARGET_SKIP'}=${gameId}:${seedId}`);
           NODE
+
+      - name: Restore Ollama model cache
+        if: steps.target.outputs.should_run == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/.ollama/models
+          key: ollama-seed-design-${{ runner.os }}-${{ hashFiles('company-directive.json') }}
+          restore-keys: |
+            ollama-seed-design-${{ runner.os }}-
 
       - name: Install local Ollama
         if: steps.target.outputs.should_run == 'true'
@@ -207,7 +216,20 @@ jobs:
             exit 0
           fi
           git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}"
-          git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"
+          pushed=0
+          for attempt in 1 2 3 4; do
+            git fetch origin "$COMPANY_RUNTIME_BRANCH"
+            if git rebase "origin/$COMPANY_RUNTIME_BRANCH"; then
+              if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
+                pushed=1
+                break
+              fi
+            else
+              git rebase --abort || true
+            fi
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
           echo 'SEED_DESIGN_RUNTIME_CHANGE=PERSISTED'
           echo 'PUBLIC_MAIN_WRITE=NO'
 
