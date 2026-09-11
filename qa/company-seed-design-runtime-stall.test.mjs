@@ -21,8 +21,8 @@ test('seed design runtime cancels stale runs and revalidates matrix targets befo
   assert.match(workflow,/if: steps\.target\.outputs\.should_run == 'true'/);
 });
 
-test('seed design runtime removes serial throughput and repeated Ollama setup bottlenecks without paid runners',()=>{
-  assert.match(workflow,/max-parallel: 3/);
+test('seed design runtime runs all six seed categories in parallel and avoids repeated Ollama setup without paid runners',()=>{
+  assert.match(workflow,/max-parallel: 6/);
   assert.match(workflow,/runs-on: ubuntu-latest/);
   assert.match(workflow,/uses: actions\/cache@v4/);
   assert.match(workflow,/path: ~\/\.ollama\/models/);
