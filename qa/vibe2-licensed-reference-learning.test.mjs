@@ -49,5 +49,14 @@ test('teacher and licensed references become a mixed non-promotable Unity datase
     assert.equal(row.runtimePromotionAllowed, false);
     assert.equal(row.qa.licenseCheck, 'PASS');
     assert.match(row.provenance.commit, /^[0-9a-f]{40}$/i);
+
+    const modelInput = JSON.parse(row.input);
+    assert.equal(modelInput.sourceCommit, undefined);
+    assert.equal(modelInput.sourceRepository, undefined);
+    assert.equal(modelInput.sourcePaths, undefined);
+    assert.equal(modelInput.sourceLicense, undefined);
+    assert.equal(row.verification.modelPromptProvenanceExcluded, true);
+    assert.ok(row.input.length < 900, `licensed model input unexpectedly large: ${row.input.length}`);
+    assert.ok(row.output.length > 40, 'licensed sample must retain a substantive answer');
   }
 });
