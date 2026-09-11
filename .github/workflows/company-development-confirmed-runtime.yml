@@ -16,6 +16,10 @@ permissions:
   contents: write
   actions: write
 
+concurrency:
+  group: company-development-confirmed-runtime
+  cancel-in-progress: false
+
 jobs:
   prepare:
     name: prepare DEVELOPMENT_CONFIRMED queue
@@ -116,7 +120,6 @@ jobs:
         id: context
         env:
           GAME_ID: ${{ matrix.item.gameId }}
-          GAME_NAME: ${{ matrix.item.gameName }}
           SOURCE_PATH: ${{ matrix.item.sourcePath }}
           DESIGN_SOURCE: ${{ matrix.item.designBaselineSource }}
           ARTBOOK_SOURCE: ${{ matrix.item.artbookSource }}
@@ -201,15 +204,7 @@ jobs:
         env:
           ARTBOOK_GAME_ID: ${{ matrix.item.gameId }}
           ARTBOOK_DATE: ${{ steps.context.outputs.date }}
-        run: |
-          node tools/company-development-validation-cycle.mjs
-          node - <<'NODE'
-          const fs=require('fs');
-          const base=process.env.BASE;
-          NODE
-        env:
-          ARTBOOK_GAME_ID: ${{ matrix.item.gameId }}
-          ARTBOOK_DATE: ${{ steps.context.outputs.date }}
+        run: node tools/company-development-validation-cycle.mjs
       - name: Verify canonical next state
         env:
           BASE: ${{ steps.context.outputs.base }}
@@ -283,7 +278,7 @@ jobs:
   persist-runtime:
     name: persist DEVELOPMENT_CONFIRMED evidence
     needs: [prepare, web-first-playable]
-    if: needs.prepare.outputs.run == 'true' && always() && needs.web-first-playable.result == 'success'
+    if: needs.prepare.outputs.run == 'true' && always()
     runs-on: ubuntu-latest
     timeout-minutes: 12
     concurrency:
@@ -294,13 +289,16 @@ jobs:
         with:
           ref: company-runtime
           fetch-depth: 0
-      - name: Download all six validated packages
+      - name: Download successful validated packages
+        id: packages
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           pattern: development-runtime-*-${{ github.run_id }}
           path: /tmp/development-runtime
           merge-multiple: true
-      - name: Merge validated evidence into company runtime
+      - name: Merge successful evidence into company runtime
+        if: steps.packages.outcome == 'success'
         shell: bash
         run: |
           set -euo pipefail
@@ -337,13 +335,20 @@ jobs:
               exit 0
             fi
             git fetch origin company-runtime
-            git rebase origin/company-runtime
+            if ! git rebase origin/company-runtime; then
+              git rebase --abort || true
+              echo 'company-runtime changed on overlapping evidence; leaving successful artifacts for targeted retry' >&2
+              exit 1
+            fi
             sleep $((attempt * 2))
           done
           exit 1
       - name: Runtime summary
+        if: always()
         run: |
           echo 'DEVELOPMENT_CONFIRMED_PARALLEL=6_MAX'
           echo 'WEB_GAMEPLAY_VALIDATION=REAL_INPUT_AND_STATE_CHANGE'
+          echo 'SUCCESSFUL_GAMES_PERSIST_INDEPENDENTLY=YES'
+          echo 'FAILED_GAMES_REMAIN_PENDING=YES'
           echo 'NEXT_GATE=UNITY_ANDROID_TECHNICAL_VALIDATION'
           echo 'PUBLIC_MAIN_WRITE=NO'
