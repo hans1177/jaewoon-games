@@ -1,0 +1,54 @@
+name: Vibe2 Learning Pipeline Contract
+
+on:
+  pull_request:
+    paths:
+      - 'COMPANY_FLOW.md'
+      - 'company-learning/canonical-learning-pipeline.json'
+      - 'company-learning/external-game-playtest/**'
+      - 'company-learning/training-samples/**'
+      - 'company-learning/distillation-status.json'
+      - 'company-learning/distillation-training-request.json'
+      - 'tools/vibe2-learning-pipeline-contract.mjs'
+      - 'tools/vibe2-distillation-ingest.mjs'
+      - 'tools/vibe2-distillation-status.mjs'
+      - 'tools/vibe2-training-request.mjs'
+      - 'tools/vibe2-weight-learning.mjs'
+      - 'tools/vibe2-train.py'
+      - '.github/workflows/vibe2-distillation-ingest.yml'
+      - '.github/workflows/vibe2-local-distillation-train.yml'
+      - '.github/workflows/vibe2-learning-pipeline-contract.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'COMPANY_FLOW.md'
+      - 'company-learning/canonical-learning-pipeline.json'
+      - 'company-learning/external-game-playtest/**'
+      - 'company-learning/training-samples/**'
+      - 'company-learning/distillation-status.json'
+      - 'company-learning/distillation-training-request.json'
+      - 'tools/vibe2-learning-pipeline-contract.mjs'
+      - 'tools/vibe2-distillation-ingest.mjs'
+      - 'tools/vibe2-distillation-status.mjs'
+      - 'tools/vibe2-training-request.mjs'
+      - 'tools/vibe2-weight-learning.mjs'
+      - 'tools/vibe2-train.py'
+      - '.github/workflows/vibe2-distillation-ingest.yml'
+      - '.github/workflows/vibe2-local-distillation-train.yml'
+      - '.github/workflows/vibe2-learning-pipeline-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate canonical learning chain and Block Blast success-learning method
+        run: node tools/vibe2-learning-pipeline-contract.mjs
