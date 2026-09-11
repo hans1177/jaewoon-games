@@ -10,6 +10,7 @@ on:
       - 'game-seed-market-evidence.json'
       - 'tools/game-seed-state.mjs'
       - 'tools/company-game-seed-bootstrap.mjs'
+      - 'tools/company-game-seed-semantic-normalize.mjs'
       - 'tools/company-game-seed-quality-gate.mjs'
       - 'tools/company-design-cycle.mjs'
       - 'tools/company-design-artbook.mjs'
@@ -34,6 +35,7 @@ on:
       - 'game-seed-market-evidence.json'
       - 'tools/game-seed-state.mjs'
       - 'tools/company-game-seed-bootstrap.mjs'
+      - 'tools/company-game-seed-semantic-normalize.mjs'
       - 'tools/company-game-seed-quality-gate.mjs'
       - 'tools/company-design-cycle.mjs'
       - 'tools/company-design-artbook.mjs'
@@ -71,6 +73,7 @@ jobs:
           for file in \
             tools/game-seed-state.mjs \
             tools/company-game-seed-bootstrap.mjs \
+            tools/company-game-seed-semantic-normalize.mjs \
             tools/company-game-seed-quality-gate.mjs \
             tools/company-design-cycle.mjs \
             tools/company-design-artbook.mjs \
@@ -110,4 +113,5 @@ jobs:
           echo 'OBSOLETE_FREE_CONCEPT_PATHS=REMOVED'
           echo 'DESIGN_ONLY_VIBE2=FORBIDDEN'
           echo 'GAME_SEED_TARGET_MARKET=GLOBAL'
+          echo 'GAME_SEED_SEMANTIC_NORMALIZATION=REQUIRED'
           echo 'PAID_API=NO'

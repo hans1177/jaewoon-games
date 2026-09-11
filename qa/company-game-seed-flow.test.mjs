@@ -5,6 +5,7 @@ import {normalizeSeedState,markSeedDiscarded,unfilledVacancies,fillVacancy} from
 
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const bootstrap=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
+const semanticNormalize=fs.readFileSync('tools/company-game-seed-semantic-normalize.mjs','utf8');
 const qualityGate=fs.readFileSync('tools/company-game-seed-quality-gate.mjs','utf8');
 const marketEvidence=JSON.parse(fs.readFileSync('game-seed-market-evidence.json','utf8'));
 const seedWorkflow=fs.readFileSync('.github/workflows/company-game-seed-bootstrap.yml','utf8');
@@ -35,8 +36,14 @@ test('directive encodes one atomic six-category global GAME_SEED bootstrap',()=>
   assert.equal(marketEvidence.targetMarketScope,'GLOBAL');
   assert.equal(Object.keys(marketEvidence.categories).length,6);
   for(const category of directive.gameSeed.bootstrap.categories){
-    assert.ok(Array.isArray(marketEvidence.categories[category].benchmarkCandidates));
-    assert.ok(marketEvidence.categories[category].benchmarkCandidates.length>=2);
+    const cfg=marketEvidence.categories[category];
+    assert.ok(Array.isArray(cfg.benchmarkCandidates));
+    assert.ok(cfg.benchmarkCandidates.length>=2);
+    assert.ok(Array.isArray(cfg.requiredConceptGroups));
+    assert.ok(cfg.requiredConceptGroups.length>=4);
+    assert.equal(cfg.minimumRequiredConceptGroups,4);
+    assert.ok(Array.isArray(cfg.minimumCoreLoop));
+    assert.ok(cfg.minimumCoreLoop.length>=3);
   }
 });
 
@@ -62,19 +69,35 @@ test('bootstrap batches all requested seeds in one model call and mutates state 
   assert.match(bootstrap,/if\(numericLike&&\(!source\|\|!observedAt\)\)value='UNKNOWN'/);
   assert.match(seedWorkflow,/Verified free budget preflight/);
   assert.match(seedWorkflow,/--model-calls=1/);
+  assert.match(seedWorkflow,/Normalize category semantics and global target evidence/);
   assert.match(seedWorkflow,/Reject category-mismatched generic or country-scoped GAME_SEED output/);
   assert.match(seedWorkflow,/GAME_SEED_MARKET_SCOPE=GLOBAL/);
   assert.ok(seedWorkflow.indexOf('Verified free budget preflight')<seedWorkflow.indexOf('uses: ./.github/actions/prepare-ollama'));
+  assert.ok(seedWorkflow.indexOf('Normalize category semantics and global target evidence')<seedWorkflow.indexOf('Reject category-mismatched generic or country-scoped GAME_SEED output'));
 });
 
-test('semantic quality gate rejects wrong category benchmarks, generic seeds and non-global target scope',()=>{
+test('semantic normalizer repairs category drift while keeping global market evidence sourced',()=>{
+  assert.match(semanticNormalize,/requiredConceptGroups/);
+  assert.match(semanticNormalize,/minimumCoreLoop/);
+  assert.match(semanticNormalize,/GAME_SEED_NORMALIZE_MINIMUM_LOOP_MISSING/);
+  assert.match(semanticNormalize,/targetMarketScope:'GLOBAL'/);
+  assert.match(semanticNormalize,/Global mobile players across age groups/);
+  assert.match(semanticNormalize,/globalAveragePlayerAge/);
+  assert.match(semanticNormalize,/assertGameSeed\(seed\)/);
+});
+
+test('semantic quality gate rejects wrong category benchmarks generic seeds incomplete concept groups and non-global target scope',()=>{
   assert.match(qualityGate,/GAME_SEED_QUALITY_EVIDENCE_SCOPE_NOT_GLOBAL/);
   assert.match(qualityGate,/reference-outside-category-pool/);
-  assert.match(qualityGate,/category-concept-match/);
+  assert.match(qualityGate,/category-concept-groups/);
+  assert.match(qualityGate,/minimumRequiredConceptGroups/);
   assert.match(qualityGate,/distinct-identity-too-generic/);
   assert.match(qualityGate,/market-scope-not-global/);
   assert.match(qualityGate,/country-specific-default-audience/);
-  assert.match(qualityGate,/no-sourced-market-metric/);
+  assert.match(qualityGate,/global-age-evidence-missing/);
+  assert.match(qualityGate,/global-revenue-evidence-missing/);
+  assert.match(qualityGate,/global-playtime-evidence-missing/);
+  assert.match(qualityGate,/core-loop-business-meta-language/);
 });
 
 test('autonomous runtime does not depend on GitHub Actions PR creation permission',()=>{
@@ -106,7 +129,7 @@ test('seed vacancy state is one-for-one and discard is idempotent',()=>{
   assert.equal(state.vacancies[0].replacementSeedId,'SEED-PUZZLE-002');
 });
 
-test('DESIGN_ONLY requires seed, same designer revision and repeated five-lead fatal review',()=>{
+test('DESIGN_ONLY requires seed same designer revision and repeated five-lead fatal review',()=>{
   assert.match(design,/GAME_SEED_REQUIRED/);
   assert.match(design,/sameModelAsDraft:true/);
   assert.match(design,/repeatedFiveDepartmentReview:true/);
@@ -116,7 +139,7 @@ test('DESIGN_ONLY requires seed, same designer revision and repeated five-lead f
   assert.doesNotMatch(design,/vibe2-validator|VIBE2_VALIDATION_LEARNING/);
 });
 
-test('DESIGN_ONLY order is design then baseline then artbook, never artbook before gate',()=>{
+test('DESIGN_ONLY order is design then baseline then artbook never artbook before gate',()=>{
   const designCall=pipeline.indexOf("await run('tools/company-design-cycle.mjs')");
   const gateCall=pipeline.indexOf("await run('tools/company-baseline-gate.mjs')",designCall);
   const artbookCall=pipeline.indexOf("await run('tools/company-design-artbook.mjs')",gateCall);
