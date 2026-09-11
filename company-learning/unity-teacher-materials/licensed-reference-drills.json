@@ -28,6 +28,16 @@
         "Packages/com.nickmaltbie.openkcc/OpenKCC/Character/KCCMovementEngine.cs",
         "Assets/Samples/MoleKCCSample/Scripts/MoleCharacter.cs"
       ]
+    },
+    {
+      "id": "unity-atoms-mit-20260912",
+      "repository": "unity-atoms/unity-atoms",
+      "commit": "c3ac88cb226f23bf237226c9a04932ef74c055f2",
+      "licenseSpdx": "MIT",
+      "sourcePaths": [
+        "Packages/Core/Runtime/Variables/AtomVariable.cs",
+        "Packages/Core/Runtime/VariableInstancers/AtomVariableInstancer.cs"
+      ]
     }
   ],
   "drills": [
@@ -118,6 +128,28 @@
       "answer": "상태머신은 상태 전이와 의도 선택을 담당하고, 공통 이동 계산·충돌·velocity ownership은 이동 엔진 책임으로 유지한다. 새 상태는 공통 경계를 우회하지 말고 필요한 modifier만 제공한다.",
       "avoid": ["상태 클래스마다 완전한 이동 코드 복제", "특수 상태만 transform 직접 이동"],
       "verify": ["걷기→점프→착지", "대시/넉백 조합", "새 상태 추가 후 기존 이동 회귀 없음"]
+    },
+    {
+      "id": "licensed-u-009",
+      "sourceId": "unity-atoms-mit-20260912",
+      "topic": "observable-typed-state-change",
+      "difficulty": "regression",
+      "evidenceSymbol": "AtomVariable.Value / Changed / _changedWithHistory",
+      "scenario": "게임 상태 값을 여러 시스템이 직접 쓰고 각자 콜백까지 따로 호출해서 같은 값 재할당에도 이벤트가 중복되거나 old/new 상태 추적이 깨진다.",
+      "answer": "상태 변경을 하나의 typed mutation boundary로 모은다. 실제 값이 달라졌을 때만 관찰자에게 통지하고, 디버깅·반응 로직에 이전 상태가 필요하면 old/new 전이를 명시적으로 보존한다. 이벤트는 상태 변경을 관찰하는 계약이며 게임 규칙의 소유자가 되지 않게 한다.",
+      "avoid": ["public field를 여러 시스템이 직접 쓰면서 별도 이벤트도 수동 호출", "이벤트 핸들러가 원래 상태 전이 규칙까지 몰래 소유"],
+      "verify": ["같은 값 재할당 시 중복 change 통지 0회", "실제 변경 시 new 값과 필요한 old/new history 일치", "Reset 시 명시적 initial value 복원", "수명주기 재진입 후 listener 중복 없음"]
+    },
+    {
+      "id": "licensed-u-010",
+      "sourceId": "unity-atoms-mit-20260912",
+      "topic": "shared-definition-runtime-state-separation",
+      "difficulty": "unity-build",
+      "evidenceSymbol": "AtomVariableInstancer.BaseVariable / InMemory / Value",
+      "scenario": "여러 적이나 캐릭터가 같은 ScriptableObject 정의를 참조하면서 런타임 HP·상태 값을 그 공유 asset에 직접 써서 개체 간 상태가 서로 샌다.",
+      "answer": "공유 정의·설정과 개체별 mutable runtime state를 분리한다. 소유 객체 수명에 맞춰 in-memory 상태 인스턴스를 만들고 읽기·쓰기는 그 인스턴스를 통과시키며, 비활성/종료 때 이벤트 관계도 정리한다.",
+      "avoid": ["공유 ScriptableObject 값을 엔티티별 mutable 상태로 직접 사용", "소유 객체가 끝난 뒤에도 runtime instance의 이벤트 구독 유지"],
+      "verify": ["같은 정의에서 생성된 두 개체 값이 서로 독립적으로 변화", "런타임 변경이 공유 정의를 덮어쓰지 않음", "Enable/Disable 시 초기화·정리 경계가 명확", "Destroy 후 stale event 관계 없음"]
     }
   ]
 }
