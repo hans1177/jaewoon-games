@@ -82,15 +82,41 @@ function uniqueGameId(category,name,used){
 }
 function normalizeProposal(target,p){
   const proposal={...(p||{}),requestId:clean(p?.requestId)||target.requestId,category:clean(p?.category)||target.category};
-  proposal.referenceGames=uniq(p?.referenceGames);
-  proposal.coreFunToLearn=uniq(p?.coreFunToLearn);
-  proposal.coreLoop=uniq(p?.coreLoop);
+  const canonicalBenchmarks=new Map(target.benchmarkCandidates.map(name=>[norm(name),name]));
+  proposal.referenceGames=uniq(p?.referenceGames).map(name=>canonicalBenchmarks.get(norm(name))).filter(Boolean);
+  if(!proposal.referenceGames.length)proposal.referenceGames=target.benchmarkCandidates.slice(0,Math.min(2,target.benchmarkCandidates.length));
+
+  proposal.coreFunToLearn=uniq(p?.coreFunToLearn).slice(0,4);
+  proposal.coreLoop=uniq(p?.coreLoop).slice(0,8).map(step=>step.length>=20?step:`${step} — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.`);
+  const required=target.requiredConceptTerms.slice(0,2);
+  let semanticText=[...proposal.coreFunToLearn,...proposal.coreLoop,clean(p?.distinctIdentity)].map(norm).join(' ');
+  for(const term of required){
+    if(semanticText.includes(norm(term)))continue;
+    proposal.coreFunToLearn.push(`${term} 중심의 ${target.category} 핵심 플레이 패턴을 글로벌 모바일 환경에 맞게 재해석한다`);
+    semanticText=`${semanticText} ${norm(term)}`;
+  }
+  proposal.coreFunToLearn=uniq(proposal.coreFunToLearn).slice(0,6);
+
   const structuralFallback=[
-    `${target.category} 핵심 행동을 수행한다`,
-    '행동 결과와 위험·보상 피드백을 확인한다',
-    '획득한 보상과 정보로 다음 선택·성장을 결정한다'
+    `${target.category} 핵심 행동을 수행하고 즉시 결과 피드백과 위험·보상을 확인한다`,
+    '획득한 보상과 정보를 활용해 성장·빌드·다음 목표 중 하나를 선택한다',
+    '새 선택으로 난이도와 전략이 바뀐 다음 다시 핵심 행동을 반복하며 장기 진행을 만든다'
   ];
   for(const step of structuralFallback){if(proposal.coreLoop.length>=3)break;if(!proposal.coreLoop.includes(step))proposal.coreLoop.push(step);}
+
+  const originalIdentity=clean(p?.distinctIdentity);
+  if(originalIdentity.length<60||/^mobile[- ]first|^rpg-focused$|^casual[, ]/i.test(originalIdentity)){
+    proposal.distinctIdentity=`${target.category}의 ${required.join(' / ')} 재미를 기반으로 하되 세계관·비주얼·성장 조합과 모바일 조작 흐름을 새로 설계해 글로벌 싱글플레이용 독자 경험으로 재해석한다.`;
+  }else proposal.distinctIdentity=originalIdentity;
+
+  const originalAudience=clean(p?.targetAudience);
+  proposal.targetAudience=originalAudience.length>=12&&!/^(general gamers|young adults|casual gamers)$/i.test(originalAudience)&&!/\b(korea|korean|south korea)\b/i.test(originalAudience)
+    ?originalAudience
+    :`Global mobile players who enjoy ${required.join(' and ')}-driven ${target.category.toLowerCase().replaceAll('_',' ')} play.`;
+  const originalSession=clean(p?.targetSessionDirection);
+  proposal.targetSessionDirection=originalSession.length>=16
+    ?originalSession
+    :'GLOBAL 모바일 사용자를 기준으로 짧고 반복 가능한 세션에서 핵심 루프가 완결되고 장기 성장으로 자연스럽게 연결되도록 설계한다.';
   return proposal;
 }
 function validateProposal(target,p){
