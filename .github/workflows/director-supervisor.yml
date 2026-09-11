@@ -3,267 +3,121 @@ name: Director Staff Supervisor
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 * * * *' # hourly fallback supervision
+    - cron: '17 * * * *'
   workflow_run:
     workflows:
-      - Free Artbook Department Bots
-      - Autonomous Continuous Development
+      - Company Seed DESIGN_ONLY Runtime
+      - Company DESIGN_ONLY Promotion Sync
+      - Company DEVELOPMENT_CONFIRMED Runtime
       - Homepage Manager
       - Public Game Health
       - Unity Hybrid Android Build
       - Unity Android Runtime Smoke
-    types: [requested, in_progress, completed]
+    types: [completed]
   push:
     branches: [main]
     paths:
+      - 'COMPANY_FLOW.md'
       - 'company-directive.json'
-      - 'company-status.json'
-      - 'company-department-audit.json'
-      - 'artbook-submission-queue.json'
-      - 'artbook-work-orders/**'
-      - 'artbook-submissions/**'
-      - 'homepage-manager-status.json'
-      - 'public-game-health.json'
-      - 'company-qa-runtime-evidence.json'
-      - 'tools/director-supervisor.mjs'
-      - 'tools/artbook-department-runner.mjs'
-      - 'tools/autonomous-department-cycle.mjs'
-      - 'tools/company-qa-public-web-evidence.mjs'
-      - 'tools/unity-apk-runtime-smoke.sh'
-      - '.github/agents/director.agent.md'
+      - 'development-queue.json'
+      - '.github/workflows/company-seed-design-runtime.yml'
+      - '.github/workflows/company-design-promotion-sync.yml'
+      - '.github/workflows/company-development-confirmed-runtime.yml'
       - '.github/workflows/director-supervisor.yml'
-      - '.github/workflows/artbook-free-department-bots.yml'
-      - '.github/workflows/artbook-initial-backfill-chain.yml'
-      - '.github/workflows/autonomous-continuous-development.yml'
-      - '.github/workflows/homepage-manager.yml'
-      - '.github/workflows/public-game-health.yml'
-      - '.github/workflows/unity-android-runtime-smoke.yml'
 
 permissions:
-  contents: write
+  contents: read
   actions: write
-  pull-requests: write
 
 concurrency:
-  group: director-staff-supervisor-main
+  group: director-central-company-supervisor
   cancel-in-progress: true
 
 jobs:
   supervise:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 8
     steps:
-      - name: Checkout latest main
+      - name: Checkout central policy source
         uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0
 
-      - name: Sync main
-        run: git pull --ff-only origin main
-
-      - name: Read actual workflow, department jobs and failed logs
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Verify central policy authority
+        shell: bash
         run: |
           set -euo pipefail
-          gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" > /tmp/actions-runs.json
-          test -s /tmp/actions-runs.json
-
-          node - <<'NODE' > /tmp/supervision-run-ids.env
+          node <<'NODE'
           const fs=require('fs');
-          const p=JSON.parse(fs.readFileSync('/tmp/actions-runs.json','utf8'));
-          const latest=name=>(p.workflow_runs||[]).filter(r=>r.name===name).sort((a,b)=>new Date(b.updated_at||b.created_at||0)-new Date(a.updated_at||a.created_at||0))[0];
-          console.log(`ARTBOOK_RUN_ID=${latest('Free Artbook Department Bots')?.id||''}`);
-          console.log(`AUTONOMOUS_RUN_ID=${latest('Autonomous Continuous Development')?.id||''}`);
-          NODE
-          source /tmp/supervision-run-ids.env
-
-          if [ -n "$ARTBOOK_RUN_ID" ]; then
-            gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${ARTBOOK_RUN_ID}/jobs?per_page=100" > /tmp/artbook-jobs.json
-          else
-            printf '{"jobs":[]}' > /tmp/artbook-jobs.json
-          fi
-          if [ -n "$AUTONOMOUS_RUN_ID" ]; then
-            gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${AUTONOMOUS_RUN_ID}/jobs?per_page=100" > /tmp/autonomous-jobs.json
-          else
-            printf '{"jobs":[]}' > /tmp/autonomous-jobs.json
-          fi
-          test -s /tmp/artbook-jobs.json
-          test -s /tmp/autonomous-jobs.json
-
-          : > /tmp/artbook-context.log
-          ARTBOOK_CONTEXT_SOURCE=''
-          if [ -n "$ARTBOOK_RUN_ID" ]; then
-            rm -rf /tmp/artbook-live-artifact
-            mkdir -p /tmp/artbook-live-artifact
-            if gh run download "$ARTBOOK_RUN_ID" --repo "$GITHUB_REPOSITORY" --name daily-work-order --dir /tmp/artbook-live-artifact > /tmp/artbook-artifact-download.log 2>&1; then
-              if [ -s /tmp/artbook-live-artifact/artbook-daily-context.json ]; then
-                node - <<'NODE' > /tmp/artbook-context.log
-          const fs=require('fs');
-          const c=JSON.parse(fs.readFileSync('/tmp/artbook-live-artifact/artbook-daily-context.json','utf8'));
-          console.log(`ARTBOOK_DAILY_TARGET=${c.gameId||''}`);
-          console.log(`ARTBOOK_WORK_ORDER=${c.workOrderPath||''}`);
-          console.log('ARTBOOK_CONTEXT_SOURCE=daily-work-order-artifact');
-          NODE
-                ARTBOOK_CONTEXT_SOURCE='artifact'
-              fi
-            fi
-
-            if [ "$ARTBOOK_CONTEXT_SOURCE" != 'artifact' ]; then
-              CONTEXT_JOB_ID="$(node - <<'NODE'
-          const fs=require('fs');
-          const p=JSON.parse(fs.readFileSync('/tmp/artbook-jobs.json','utf8'));
-          const job=(p.jobs||[]).find(j=>String(j.name||'').toLowerCase()==='context');
-          process.stdout.write(String(job?.id||''));
-          NODE
-          )"
-              if [ -n "$CONTEXT_JOB_ID" ]; then
-                gh run view "$ARTBOOK_RUN_ID" --repo "$GITHUB_REPOSITORY" --job "$CONTEXT_JOB_ID" --log > /tmp/artbook-context.log 2>&1 || true
-              fi
-            fi
-          fi
-
-          mkdir -p /tmp/director-failed-logs
-          node - <<'NODE' > /tmp/failed-round1-jobs.tsv
-          const fs=require('fs');
-          const p=JSON.parse(fs.readFileSync('/tmp/artbook-jobs.json','utf8'));
-          for(const job of p.jobs||[]){
-            const m=String(job.name||'').match(/^round1 \((planning|development|qa|graphics|balance)\)$/i);
-            if(m&&job.conclusion==='failure')console.log(`${m[1].toLowerCase()}\t${job.id}`);
-          }
-          NODE
-          while IFS=$'\t' read -r ROLE JOB_ID; do
-            [ -n "$ROLE" ] || continue
-            gh run view "$ARTBOOK_RUN_ID" --repo "$GITHUB_REPOSITORY" --job "$JOB_ID" --log > "/tmp/director-failed-logs/${ROLE}.log" 2>&1 || true
-          done < /tmp/failed-round1-jobs.tsv
-
-      - name: Run director staff supervision
-        run: node tools/director-supervisor.mjs /tmp/actions-runs.json /tmp/artbook-jobs.json /tmp/director-failed-logs /tmp/autonomous-jobs.json /tmp/artbook-context.log
-
-      - name: Validate supervisor contract
-        run: |
-          set -euo pipefail
-          node - <<'NODE'
-          const fs=require('fs');
-          const s=JSON.parse(fs.readFileSync('director-supervision-status.json','utf8'));
-          const company=JSON.parse(fs.readFileSync('company-status.json','utf8'));
-          const artbookJobs=JSON.parse(fs.readFileSync('/tmp/artbook-jobs.json','utf8')).jobs||[];
-          const hasArtbookDepartmentJobs=artbookJobs.some(j=>/^round1 \((planning|development|qa|graphics|balance)\)$/i.test(String(j.name||'')));
-          const required=['planning','development','qa','graphics','balance','homepage','release','director'];
-          for(const d of required){if(!s.staff?.[d])throw new Error(`missing staff check: ${d}`);}
-          if(s.checks?.staffChecked!=='8/8')throw new Error('staff check is not 8/8');
-          if(s.checks?.runningLabelAloneCountsAsWork!==false)throw new Error('running label can falsely count as work');
-          if(s.checks?.directorMayGhostwriteMissingDepartmentWork!==false)throw new Error('director ghostwriting protection missing');
-          if(s.checks?.homepageDiagnosticOnlyRecognized!==true)throw new Error('homepage diagnostic-only role is not recognized');
-          if(s.checks?.releaseArtifactEvidenceAdapterRegistered!==true)throw new Error('release artifact evidence adapter missing');
-          if(s.checks?.liveDepartmentStates!==true)throw new Error('live department state contract missing');
-          if(s.checks?.liveJobPrecedesPersistedSubmission!==true)throw new Error('live job evidence must precede persisted submission state');
-          if(s.workflowEvidence?.artbook&&hasArtbookDepartmentJobs&&!s.checks?.jobLevelEvidenceUsed)throw new Error('artbook department jobs exist but department job evidence was not used');
-          if(s.checks?.artbookLiveTargetResolved===true&&s.checks?.artbookTargetSource!=='artbook-context-log')throw new Error('resolved live artbook target must come from current artbook context evidence');
-          const auto=s.workflowEvidence?.autonomousDevelopment;
-          if(auto&&['queued','in_progress','completed'].includes(auto.status)&&!s.checks?.autonomousDepartmentJobEvidenceUsed){
-            const runActive=['queued','in_progress'].includes(auto.status);
-            if(!runActive)throw new Error('completed autonomous run exists but department job evidence was not used');
-          }
-          for(const d of ['planning','development','qa','graphics','balance']){
-            const item=s.staff?.[d];
-            if(!['ACTIVE','WAITING','BLOCKED','DONE'].includes(item?.workState))throw new Error(`${d}: invalid live work state`);
-            if(item?.source==='artbook'&&item?.jobEvidence?.conclusion==='failure'&&!item.directCause)throw new Error(`${d}: failed artbook job has no direct cause evidence`);
-            if(item?.source==='artbook'&&['queued','in_progress'].includes(String(item?.jobEvidence?.status||''))&&item?.workState==='DONE')throw new Error(`${d}: live artbook job cannot be DONE`);
-          }
-          const hp=company?.policy?.homepageOperations||{};
-          if(hp.diagnosticOnly===true&&hp.runtimeDataSync===true&&hp.autoMaintenance===false&&s.staff.homepage?.status==='STALE')throw new Error('diagnostic-only homepage must not be classified as stale standing work');
-          const builds=Array.isArray(company.testBuilds)?company.testBuilds:[];
-          const latest=[...builds].sort((a,b)=>new Date(b.builtAt||0)-new Date(a.builtAt||0))[0];
-          const verified=Boolean(latest&&['ready','released','done'].includes(String(latest.status||'').toLowerCase())&&latest.release&&latest.download&&/^[a-f0-9]{64}$/i.test(String(latest.sha256||''))&&Number(latest.bytes)>0&&latest.builtAt);
-          if(verified&&['BLOCKED','FAILED'].includes(s.staff.release?.status))throw new Error('verified test release artifact must not remain dependency-blocked');
-          console.log('DIRECTOR_SUPERVISION_QA=PASS');
-          console.log('AUTONOMOUS_LIVE_DEPARTMENT_STATES=PASS');
-          console.log(`ARTBOOK_LIVE_TARGET_QA=${s.checks?.artbookLiveTargetResolved?'PASS':'FALLBACK'}`);
+          const flow=fs.readFileSync('COMPANY_FLOW.md','utf8');
+          const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+          if(directive.policyDocument!=='COMPANY_FLOW.md')throw new Error('central policy source mismatch');
+          if(!/sourceOfTruth:\s*COMPANY_FLOW\.md/.test(flow))throw new Error('COMPANY_FLOW sourceOfTruth missing');
+          console.log('CENTRAL_POLICY_AUTHORITY=PASS');
           NODE
 
-      - name: Resolve low-risk operational bottlenecks by company priority
+      - name: Read central runtime state and workflow evidence
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          node - <<'NODE' > /tmp/director-recovery.env
+          git fetch origin company-runtime --quiet
+          if git cat-file -e origin/company-runtime:development-queue.json 2>/dev/null; then
+            git show origin/company-runtime:development-queue.json > /tmp/development-queue.json
+          else
+            printf '{"version":1,"items":[]}' > /tmp/development-queue.json
+          fi
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" > /tmp/actions-runs.json
+          node <<'NODE' > /tmp/director-central.env
           const fs=require('fs');
-          const read=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
-          const directive=read('company-directive.json',{});
-          const catalog=read('game-catalog.json',{games:[]});
-          const artbooks=read('game-artbooks.json',{dailySubmissions:[],artbooks:[]});
-          const actions=read('/tmp/actions-runs.json',{workflow_runs:[]});
-          if(String(directive.priority||'')!=='owner-immediate')throw new Error('owner-immediate priority contract missing');
-          const existing=(catalog.games||[]).filter(g=>g.hasWebArchive===true||String(g.unityProjectPath||'').trim()).map(g=>g.id);
-          const completed=new Set();
-          for(const x of artbooks.dailySubmissions||[]){
-            const initial=String(x.workMode||'').toUpperCase()==='INITIAL'||String(x.artbookId||'').includes('-initial');
-            if(initial&&x.status==='completed-artbook'&&x.postprocessComplete===true)completed.add(x.gameId);
-          }
-          for(const x of artbooks.artbooks||[]){
-            if(String(x.workMode||'').toUpperCase()==='INITIAL'&&x.status==='completed-artbook'&&x.postprocessComplete!==false)completed.add(x.gameId);
-          }
-          const backlog=existing.filter(id=>!completed.has(id));
+          const queue=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const actions=JSON.parse(fs.readFileSync('/tmp/actions-runs.json','utf8'));
           const runs=actions.workflow_runs||[];
           const active=name=>runs.some(r=>r.name===name&&['queued','in_progress'].includes(String(r.status||'')));
           const latest=name=>runs.filter(r=>r.name===name).sort((a,b)=>new Date(b.updated_at||b.created_at||0)-new Date(a.updated_at||a.created_at||0))[0]||null;
-          const latestAuto=latest('Autonomous Continuous Development');
-          const artbookActive=active('Free Artbook Department Bots');
-          const chainActive=active('Artbook Initial Backfill Chain');
-          const autonomousActive=active('Autonomous Continuous Development');
-          const artbookRecover=backlog.length>0&&!artbookActive&&!chainActive;
-          const autonomousRecover=!autonomousActive&&Boolean(latestAuto&&['failure','cancelled'].includes(String(latestAuto.conclusion||'')));
-          console.log(`ARTBOOK_RECOVER=${artbookRecover?'true':'false'}`);
-          console.log(`AUTONOMOUS_RECOVER=${autonomousRecover?'true':'false'}`);
-          console.log(`ARTBOOK_BACKLOG_COUNT=${backlog.length}`);
-          console.log(`ARTBOOK_BACKLOG_NEXT=${backlog[0]||''}`);
+          const pending=(queue.items||[]).filter(x=>String(x.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&String(x.status||'').toUpperCase()==='PENDING');
+          const devName='Company DEVELOPMENT_CONFIRMED Runtime';
+          const devActive=active(devName);
+          const latestDev=latest(devName);
+          console.log(`PENDING_DEVELOPMENT_COUNT=${pending.length}`);
+          console.log(`PENDING_DEVELOPMENT_IDS=${pending.map(x=>x.gameId).join(',')}`);
+          console.log(`DEVELOPMENT_RUNTIME_ACTIVE=${devActive?'true':'false'}`);
+          console.log(`DEVELOPMENT_RUNTIME_LAST_CONCLUSION=${latestDev?.conclusion||''}`);
+          console.log(`DEVELOPMENT_RECOVER=${pending.length>0&&!devActive?'true':'false'}`);
           NODE
-          source /tmp/director-recovery.env
-          ARTBOOK_DISPATCHED=false
-          AUTONOMOUS_DISPATCHED=false
-          if [ "$ARTBOOK_RECOVER" = 'true' ]; then
-            gh workflow run artbook-initial-backfill-chain.yml --ref main
-            ARTBOOK_DISPATCHED=true
-            echo "DIRECTOR_RECOVERY=ARTBOOK_BACKFILL:${ARTBOOK_BACKLOG_NEXT}"
-          fi
-          if [ "$AUTONOMOUS_RECOVER" = 'true' ]; then
-            gh workflow run autonomous-continuous-development.yml --ref main
-            AUTONOMOUS_DISPATCHED=true
-            echo 'DIRECTOR_RECOVERY=AUTONOMOUS_DEVELOPMENT'
-          fi
-          export ARTBOOK_DISPATCHED AUTONOMOUS_DISPATCHED ARTBOOK_BACKLOG_COUNT ARTBOOK_BACKLOG_NEXT
-          node - <<'NODE'
-          const fs=require('fs');
-          const file='director-supervision-status.json';
-          const s=JSON.parse(fs.readFileSync(file,'utf8'));
-          s.priorityAuthority={ownerImmediateFirst:true,source:'company-directive.json',operationalRecoveryMayPreemptIdleAutonomy:true,coreDecisionEscalationStillRequired:true};
-          s.bottleneckRecovery={enabled:true,artbookBacklogCount:Number(process.env.ARTBOOK_BACKLOG_COUNT||0),nextMissingInitialArtbook:process.env.ARTBOOK_BACKLOG_NEXT||null,artbookRecoveryDispatched:process.env.ARTBOOK_DISPATCHED==='true',autonomousRecoveryDispatched:process.env.AUTONOMOUS_DISPATCHED==='true',duplicateActiveWorkflowDispatchForbidden:true};
-          fs.writeFileSync(file,JSON.stringify(s,null,2)+'\n');
-          NODE
+          cat /tmp/director-central.env
 
-      - name: Open supervision state pull request when changed
+      - name: Recover pending central development queue
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-director-supervisor'
-          git config user.email 'actions@users.noreply.github.com'
-          git add director-supervision-status.json
-          if git diff --cached --quiet; then
-            echo 'DIRECTOR_SUPERVISION_COMMIT=NO_CHANGES'
-            exit 0
+          source /tmp/director-central.env
+          if [ "$DEVELOPMENT_RECOVER" = 'true' ]; then
+            gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'DIRECTOR_RECOVERY=COMPANY_DEVELOPMENT_CONFIRMED_RUNTIME'
+          else
+            echo 'DIRECTOR_RECOVERY=NOT_REQUIRED'
           fi
-          BRANCH="automation/director-supervision-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          git switch -c "$BRANCH"
-          git commit -m 'director: record staff supervision state [skip ci]'
-          git push origin "$BRANCH"
-          gh pr create \
-            --base main \
-            --head "$BRANCH" \
-            --title 'director: record staff supervision state' \
-            --body "Automated director supervision-state persistence from run ${GITHUB_RUN_ID}. Source workflow: Director Staff Supervisor."
-          echo 'DIRECTOR_SUPERVISION_PR=OPEN'
+          echo 'LEGACY_AUTONOMOUS_PIPELINE_DISPATCH=FORBIDDEN'
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '### Central company supervision'
+            echo '- policy authority: COMPANY_FLOW.md only'
+            echo '- design pipeline: Company Seed DESIGN_ONLY Runtime'
+            echo '- promotion pipeline: Company DESIGN_ONLY Promotion Sync'
+            echo '- development pipeline: Company DEVELOPMENT_CONFIRMED Runtime'
+            echo '- legacy autonomous top-level pipeline: removed'
+            if [ -f /tmp/director-central.env ]; then
+              source /tmp/director-central.env
+              echo "- pending development games: ${PENDING_DEVELOPMENT_COUNT:-0}"
+              echo "- central development runtime active: ${DEVELOPMENT_RUNTIME_ACTIVE:-false}"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
