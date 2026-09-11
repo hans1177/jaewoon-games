@@ -1,0 +1,241 @@
+name: Vibe2 External Mobile Cloud Playtest
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_games:
+        description: 'Maximum number of official Play Store reference games to test'
+        required: false
+        default: '1'
+      recipe_uuid:
+        description: 'Optional Genymotion custom ARM64 recipe UUID override'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: vibe2-external-mobile-cloud-playtest
+  cancel-in-progress: false
+
+env:
+  REFERENCE_AUTHORITY: EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE
+  RUNTIME_PROMOTION_ALLOWED: 'NO'
+  CODE_EXTRACTION_ALLOWED: 'NO'
+  BINARY_REDISTRIBUTION_ALLOWED: 'NO'
+  CLOUD_ANDROID_PROVIDER: GENYMOTION_SAAS
+
+jobs:
+  playtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      GENYMOTION_API_TOKEN: ${{ secrets.GENYMOTION_API_TOKEN }}
+      GENYMOTION_RECIPE_UUID: ${{ secrets.GENYMOTION_RECIPE_UUID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Resolve request and enforce reference policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          max='${{ inputs.max_games }}'
+          [[ "$max" =~ ^[0-9]+$ ]] || { echo 'max_games must be numeric'; exit 1; }
+          (( max >= 1 && max <= 6 )) || { echo 'max_games must be 1..6'; exit 1; }
+          recipe='${{ inputs.recipe_uuid }}'
+          if [[ -z "$recipe" ]]; then recipe="$GENYMOTION_RECIPE_UUID"; fi
+          [[ -n "$GENYMOTION_API_TOKEN" ]] || { echo 'BLOCKED_GENYMOTION_API_TOKEN_MISSING'; exit 1; }
+          [[ -n "$recipe" ]] || { echo 'BLOCKED_GENYMOTION_RECIPE_UUID_MISSING'; exit 1; }
+          echo "PLAYTEST_MAX_GAMES=$max" >> "$GITHUB_ENV"
+          echo "CLOUD_ANDROID_RECIPE_UUID=$recipe" >> "$GITHUB_ENV"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('company-learning/external-game-playtest/mobile-free-seed-games.json')
+          d = json.loads(p.read_text(encoding='utf-8'))
+          assert d['sourceSeed'] == 'game-seed-market-evidence.json'
+          assert d['authority'] == 'EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE'
+          assert d['practiceOnly'] is True
+          assert d['runtimePromotionAllowed'] is False
+          assert d['codeExtractionAllowed'] is False
+          assert d['binaryRedistributionAllowed'] is False
+          assert d['installPolicy'] == 'OFFICIAL_GOOGLE_PLAY_ONLY'
+          assert len(d.get('games', [])) >= 3
+          print(f"EXTERNAL_REFERENCE_GAMES={len(d['games'])}")
+          print('EXTERNAL_REFERENCE_INSTALL_POLICY=OFFICIAL_GOOGLE_PLAY_ONLY')
+          print('EXTERNAL_REFERENCE_CODE_EXTRACTION=NO')
+          print('EXTERNAL_REFERENCE_BINARY_REDISTRIBUTION=NO')
+          PY
+
+      - name: Prepare cloud runtime tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v adb >/dev/null
+          adb version
+          [[ -n "${ANDROID_SDK_ROOT:-}" ]] || { echo 'BLOCKED_ANDROID_SDK_ROOT_MISSING'; exit 1; }
+          python -m venv "$RUNNER_TEMP/gmsaas-venv"
+          "$RUNNER_TEMP/gmsaas-venv/bin/python" -m pip install --upgrade pip
+          "$RUNNER_TEMP/gmsaas-venv/bin/pip" install 'gmsaas>=1.16,<2'
+          echo "$RUNNER_TEMP/gmsaas-venv/bin" >> "$GITHUB_PATH"
+
+      - name: Prepare evidence directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/external-mobile-cloud-playtest-$GITHUB_RUN_ID"
+          mkdir -p "$out"
+          echo "EXTERNAL_PLAYTEST_OUT=$out" >> "$GITHUB_ENV"
+          echo "EXTERNAL_PLAYTEST_OUT=$out"
+
+      - name: Start ARM64 cloud Android instance and connect ADB
+        id: cloud_device
+        shell: bash
+        run: |
+          set -euo pipefail
+          gmsaas config set android-sdk-path "$ANDROID_SDK_ROOT"
+          gmsaas doctor
+          instance_name="vibe2-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          start_json="$(gmsaas --format json instances start "$CLOUD_ANDROID_RECIPE_UUID" "$instance_name" --max-run-duration 70)"
+          instance_uuid="$(printf '%s' "$start_json" | python -c 'import json,sys; print(json.load(sys.stdin)["instance"]["uuid"])')"
+          [[ -n "$instance_uuid" ]] || { echo 'BLOCKED_GENYMOTION_INSTANCE_UUID_MISSING'; exit 1; }
+          echo "CLOUD_ANDROID_INSTANCE_UUID=$instance_uuid" >> "$GITHUB_ENV"
+          gmsaas adb start
+          gmsaas instances adbconnect "$instance_uuid"
+          adb wait-for-device
+          serial="$(adb devices | awk 'NR>1 && $2=="device" {print $1; exit}')"
+          [[ -n "$serial" ]] || { echo 'BLOCKED_CLOUD_ANDROID_ADB_DEVICE_MISSING'; exit 1; }
+          abi="$(adb -s "$serial" shell getprop ro.product.cpu.abi | tr -d '\r')"
+          [[ "$abi" == *arm64* ]] || { echo "BLOCKED_CLOUD_ANDROID_NOT_ARM64 abi=$abi"; exit 1; }
+          play_store="$(adb -s "$serial" shell pm path com.android.vending 2>/dev/null || true)"
+          [[ "$play_store" == package:* ]] || { echo 'BLOCKED_CLOUD_ANDROID_PLAY_STORE_MISSING'; exit 1; }
+          echo "CLOUD_ANDROID_SERIAL=$serial" >> "$GITHUB_ENV"
+          echo "CLOUD_ANDROID_ABI=$abi" >> "$GITHUB_ENV"
+          CLOUD_ANDROID_SERIAL="$serial" CLOUD_ANDROID_ABI="$abi" python - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          out = Path(os.environ['EXTERNAL_PLAYTEST_OUT'])
+          payload = {
+              'version': 1,
+              'status': 'PASS',
+              'reason': 'GENYMOTION_SAAS_ARM64_PLAY_STORE_DEVICE_READY',
+              'authority': 'EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE',
+              'provider': 'GENYMOTION_SAAS',
+              'runner': 'GITHUB_HOSTED_UBUNTU',
+              'localRunnerUsed': False,
+              'serial': os.environ['CLOUD_ANDROID_SERIAL'],
+              'abi': os.environ['CLOUD_ANDROID_ABI'],
+              'officialPlayStorePresent': True,
+              'accountInspection': False,
+              'credentialInspection': False,
+              'autoSignIn': False,
+              'autoTermsAcceptance': False,
+              'codeExtractionAllowed': False,
+              'binaryRedistributionAllowed': False,
+              'runtimePromotionAllowed': False,
+              'observedAt': datetime.now(timezone.utc).isoformat(),
+          }
+          (out / 'device-provision.json').write_text(json.dumps(payload, indent=2) + '\n', encoding='utf-8')
+          PY
+          echo "CLOUD_ANDROID_DEVICE=READY"
+          echo "CLOUD_ANDROID_PROVIDER=GENYMOTION_SAAS"
+          echo "CLOUD_ANDROID_ABI=$abi"
+          echo 'LOCAL_RUNNER_USED=NO'
+
+      - name: Install and black-box playtest official Play Store reference game
+        id: playtest
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & ./tools/external-mobile-free-playtest.ps1 `
+            -ManifestPath 'company-learning/external-game-playtest/mobile-free-seed-games.json' `
+            -OutDir $env:EXTERNAL_PLAYTEST_OUT `
+            -MaxGames ([int]$env:PLAYTEST_MAX_GAMES)
+          if ($LASTEXITCODE -ne 0) { throw 'external mobile cloud playtest script failed' }
+          $summaryPath = Join-Path $env:EXTERNAL_PLAYTEST_OUT 'summary.json'
+          if (-not (Test-Path $summaryPath)) { throw 'runtime playtest summary missing' }
+          $summary = [System.IO.File]::ReadAllText($summaryPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+          $pass = @($summary.games | Where-Object { $_.installPass -and $_.launchPass -and $_.foregroundPass -and $_.processAliveAfter -and $_.noCrash }).Count
+          if ($pass -lt 1) { throw 'no valid runtime-observed commercial game' }
+          Write-Host "EXTERNAL_RUNTIME_VALID_GAMES=$pass"
+
+      - name: Distill runtime behavior into Unity implementation judgment
+        if: steps.playtest.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          samples="$RUNNER_TEMP/external-mobile-cloud-samples-$GITHUB_RUN_ID"
+          node tools/vibe2-external-gameplay-distill.mjs \
+            --manifest company-learning/external-game-playtest/mobile-free-seed-games.json \
+            --results "$EXTERNAL_PLAYTEST_OUT/summary.json" \
+            --out "$samples"
+          count="$(find "$samples" -maxdepth 1 -type f -name 'commercial-runtime-*.json' | wc -l | tr -d ' ')"
+          (( count >= 1 )) || { echo 'commercial runtime sample missing'; exit 1; }
+          echo "EXTERNAL_PLAYTEST_SAMPLES=$samples" >> "$GITHUB_ENV"
+          echo "COMMERCIAL_RUNTIME_REFERENCE_SAMPLES=$count"
+          echo 'COMMERCIAL_RUNTIME_REFERENCE_VERIFIED_PRODUCTION_POSITIVE=NO'
+          echo 'RUNTIME_PROMOTION_ALLOWED=NO'
+
+      - name: Upload ephemeral runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-mobile-cloud-gameplay-evidence
+          path: ${{ env.EXTERNAL_PLAYTEST_OUT }}
+          retention-days: 1
+          if-no-files-found: warn
+
+      - name: Upload distilled runtime reference samples
+        if: steps.playtest.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-mobile-cloud-gameplay-samples
+          path: ${{ env.EXTERNAL_PLAYTEST_SAMPLES }}
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Enforce real-playtest gate
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ '${{ steps.playtest.outcome }}' != 'success' ]]; then
+            [[ ! -f "$EXTERNAL_PLAYTEST_OUT/device-provision.json" ]] || cat "$EXTERNAL_PLAYTEST_OUT/device-provision.json"
+            [[ ! -f "$EXTERNAL_PLAYTEST_OUT/diagnostic.json" ]] || cat "$EXTERNAL_PLAYTEST_OUT/diagnostic.json"
+            echo 'EXTERNAL_MOBILE_CLOUD_PLAYTEST=BLOCKED_OR_FAILED'
+            exit 1
+          fi
+          echo 'EXTERNAL_MOBILE_CLOUD_PLAYTEST=PASS'
+          echo 'EXTERNAL_COMMERCIAL_REFERENCE_ONLY=YES'
+          echo 'LOCAL_RUNNER_USED=NO'
+          echo 'RUNTIME_PROMOTION_ALLOWED=NO'
+
+      - name: Stop cloud Android instance
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          if command -v gmsaas >/dev/null 2>&1; then
+            if [[ -n "${CLOUD_ANDROID_INSTANCE_UUID:-}" ]]; then
+              gmsaas instances adbdisconnect "$CLOUD_ANDROID_INSTANCE_UUID"
+              gmsaas instances stop "$CLOUD_ANDROID_INSTANCE_UUID"
+            fi
+            gmsaas adb stop
+            gmsaas auth reset
+          fi
+          exit 0
