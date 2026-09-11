@@ -36,7 +36,7 @@ test('creates one distinct cloud-build-ready Unity technical prototype per promo
     assert.equal(run.status,0,run.stderr||run.stdout);
     const project=path.join(sandbox,'unity-games',id);
     const meta=JSON.parse(fs.readFileSync(path.join(project,'prototype-source.json'),'utf8'));
-    const manifest=JSON.parse(fs.readFileSync(path.join(project,'Packages','manifest.json'),'utf8');
+    const manifest=JSON.parse(fs.readFileSync(path.join(project,'Packages','manifest.json'),'utf8'));
     const projectVersion=fs.readFileSync(path.join(project,'ProjectSettings','ProjectVersion.txt'),'utf8');
     const buildScript=fs.readFileSync(path.join(project,'Assets','Editor','SeedAndroidBuild.cs'),'utf8');
     const runtimeScript=fs.readFileSync(path.join(project,'Assets','Scripts','SeedTechnicalPrototype.cs'),'utf8');
