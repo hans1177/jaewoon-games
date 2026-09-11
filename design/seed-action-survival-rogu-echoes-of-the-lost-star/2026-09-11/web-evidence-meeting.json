@@ -1,0 +1,721 @@
+{
+  "version": 1,
+  "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+  "date": "2026-09-11",
+  "productionClass": "DEVELOPMENT_CONFIRMED",
+  "stage": "WEB",
+  "stageLabel": "Web Gameplay Validation",
+  "leadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "reviewModels": {
+    "planning": [
+      "qwen3:0.6b",
+      "gemma3:1b",
+      "llama3.2:1b"
+    ],
+    "graphics": [
+      "gemma3:1b",
+      "llama3.2:1b",
+      "qwen2.5:1.5b"
+    ],
+    "development": [
+      "llama3.2:1b",
+      "qwen2.5:1.5b",
+      "smollm2:1.7b"
+    ],
+    "qa": [
+      "qwen2.5:1.5b",
+      "smollm2:1.7b",
+      "qwen3:0.6b"
+    ],
+    "balance": [
+      "smollm2:1.7b",
+      "qwen3:0.6b",
+      "gemma3:1b"
+    ]
+  },
+  "memberReviews": {
+    "planning": [
+      {
+        "model": "qwen3:0.6b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "DESIGN",
+            "PLAYER",
+            "GRAPHICS",
+            "DEVELOPMENT",
+            "QA"
+          ],
+          "change": [
+            "BALANCE"
+          ],
+          "drop": [],
+          "hold": [],
+          "risks": [],
+          "evidence": [
+            "interactionCount=6",
+            "stateChanged=true",
+            "reloadVisible=true",
+            "mobileOverflow=true"
+          ],
+          "questions": [
+            "What is the core gameplay loop of the Echoes of the Lost Star?"
+          ]
+        }
+      },
+      {
+        "model": "gemma3:1b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [],
+          "change": [],
+          "drop": [],
+          "hold": [],
+          "risks": [],
+          "evidence": [],
+          "questions": [
+            "What is the core gameplay loop of the Echoes of the Lost Star?"
+          ]
+        }
+      },
+      {
+        "model": "llama3.2:1b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "DESIGN",
+            "progressionDirection",
+            "mobileUx"
+          ],
+          "change": [
+            "progressionDirection",
+            "visualDirection"
+          ],
+          "drop": [
+            "DESIGN",
+            "progressionDirection",
+            "visualDirection"
+          ],
+          "hold": [
+            "DESIGN",
+            "progressionDirection",
+            "mobileUx"
+          ],
+          "risks": [
+            "DESIGN",
+            "progressionDirection",
+            "mobileUx"
+          ],
+          "evidence": [
+            "DESIGN",
+            "progressionDirection",
+            "mobileUx"
+          ],
+          "questions": [
+            "DESIGN",
+            "progressionDirection",
+            "mobileUx"
+          ]
+        }
+      }
+    ],
+    "graphics": [
+      {
+        "model": "gemma3:1b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [],
+          "change": [],
+          "drop": [],
+          "hold": [],
+          "risks": [],
+          "evidence": [],
+          "questions": [
+            "How does the Echoes of the Lost Star align with global mobile engagement and session evidence?"
+          ]
+        }
+      },
+      {
+        "model": "llama3.2:1b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "DESIGN",
+            "progressionDirection",
+            "visualDirection"
+          ],
+          "change": [
+            "progressionDirection",
+            "visualDirection"
+          ],
+          "drop": [
+            "DESIGN",
+            "progressionDirection",
+            "visualDirection"
+          ],
+          "hold": [
+            "DESIGN",
+            "progressionDirection",
+            "mobileUx"
+          ],
+          "risks": [
+            "DESIGN",
+            "progressionDirection",
+            "visualDirection"
+          ],
+          "evidence": [
+            "DESIGN",
+            "progressionDirection",
+            "visualDirection"
+          ],
+          "questions": [
+            "DESIGN",
+            "progressionDirection",
+            "visualDirection"
+          ]
+        }
+      },
+      {
+        "model": "qwen2.5:1.5b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "The visual identity, progression mix, and touch-first presentation should be aligned with global mobile engagement."
+          ],
+          "change": [
+            "The gameplay interaction performed is not validated."
+          ],
+          "drop": [
+            "The core gameplay loop of the Echoes of the Lost Star is not validated."
+          ],
+          "hold": [
+            "The validation questions and open questions are relevant and should be addressed."
+          ],
+          "risks": [
+            "The gameplay interaction performed is not validated."
+          ],
+          "evidence": [
+            "The gameplay interaction performed is validated."
+          ],
+          "questions": [
+            "How does the Echoes of the Lost Star align with global mobile engagement and session evidence?"
+          ]
+        }
+      }
+    ],
+    "development": [
+      {
+        "model": "llama3.2:1b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "DESIGN",
+            "progressionDirection",
+            "mobileUx",
+            "steamExpansionDecision",
+            "multiplayerExpansionDecision"
+          ],
+          "change": [
+            "DESIGN",
+            "progressionDirection",
+            "steamExpansionDecision",
+            "multiplayerExpansionDecision"
+          ],
+          "drop": [
+            "DESIGN",
+            "progressionDirection",
+            "steamExpansionDecision",
+            "multiplayerExpansionDecision"
+          ],
+          "hold": [
+            "DESIGN",
+            "progressionDirection",
+            "steamExpansionDecision",
+            "multiplayerExpansionDecision"
+          ],
+          "risks": [
+            "DESIGN",
+            "progressionDirection",
+            "steamExpansionDecision",
+            "multiplayerExpansionDecision"
+          ],
+          "evidence": [
+            "DESIGN",
+            "progressionDirection",
+            "steamExpansionDecision",
+            "multiplayerExpansionDecision"
+          ],
+          "questions": [
+            "DESIGN",
+            "progressionDirection",
+            "steamExpansionDecision",
+            "multiplayerExpansionDecision"
+          ]
+        }
+      },
+      {
+        "model": "qwen2.5:1.5b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "The action survival roguelite core loop is preserved for short touch sessions."
+          ],
+          "change": [
+            "The visual identity, progression mix, and touch-first presentation should be aligned with global mobile engagement."
+          ],
+          "drop": [
+            "The core gameplay loop of the Echoes of the Lost Star is not validated."
+          ],
+          "hold": [
+            "The validation questions and open questions are relevant and should be addressed."
+          ],
+          "risks": [
+            "The gameplay interaction performed is not validated."
+          ],
+          "evidence": [
+            "The gameplay interaction performed is validated."
+          ],
+          "questions": [
+            "What is the core gameplay loop of the Echoes of the Lost Star?"
+          ]
+        }
+      },
+      {
+        "model": "smollm2:1.7b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [],
+          "change": [],
+          "drop": [],
+          "hold": [],
+          "risks": [],
+          "evidence": [
+            "interactionCount=6",
+            "stateChanged=true",
+            "mobileOverflow=true"
+          ],
+          "questions": [
+            "What is the core gameplay loop of the Echoes of the Lost Star?"
+          ]
+        }
+      }
+    ],
+    "qa": [
+      {
+        "model": "qwen2.5:1.5b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [
+            "The action survival roguelite core loop is preserved for short touch sessions."
+          ],
+          "change": [
+            "The visual identity, progression mix, and touch-first presentation should be aligned with global mobile engagement."
+          ],
+          "drop": [
+            "The core gameplay loop of the Echoes of the Lost Star is not validated."
+          ],
+          "hold": [
+            "The validation questions and open questions are relevant and should be addressed."
+          ],
+          "risks": [
+            "The gameplay interaction performed is not validated."
+          ],
+          "evidence": [
+            "The gameplay interaction performed is validated."
+          ],
+          "questions": [
+            "How does the Echoes of the Lost Star align with global mobile engagement and session evidence?"
+          ]
+        }
+      },
+      {
+        "model": "smollm2:1.7b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [],
+          "change": [],
+          "drop": [],
+          "hold": [],
+          "risks": [],
+          "evidence": [
+            "interactionCount=6",
+            "stateChanged=true",
+            "mobileOverflow=true"
+          ],
+          "questions": [
+            "What is the core gameplay loop of the Echoes of the Lost Star?"
+          ]
+        }
+      },
+      {
+        "model": "qwen3:0.6b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "session evidence",
+            "core gameplay loop"
+          ],
+          "change": [
+            "core loop"
+          ],
+          "drop": [],
+          "hold": [],
+          "risks": [],
+          "evidence": [
+            "interactionCount",
+            "stateChanged"
+          ],
+          "questions": [
+            "What is the core gameplay loop of the Echoes of the Lost Star?"
+          ]
+        }
+      }
+    ],
+    "balance": [
+      {
+        "model": "smollm2:1.7b",
+        "memberRole": "LEAD",
+        "review": {
+          "keep": [],
+          "change": [],
+          "drop": [],
+          "hold": [],
+          "risks": [],
+          "evidence": [
+            "interactionCount=6",
+            "stateChanged=true",
+            "mobileOverflow=true"
+          ],
+          "questions": [
+            "What is the core gameplay loop of the Echoes of the Lost Star?"
+          ]
+        }
+      },
+      {
+        "model": "qwen3:0.6b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [
+            "core gameplay loop",
+            "core loop"
+          ],
+          "change": [
+            "core loop"
+          ],
+          "drop": [],
+          "hold": [],
+          "risks": [],
+          "evidence": [
+            "interactionCount",
+            "stateChanged"
+          ],
+          "questions": [
+            "What is the core gameplay loop of the Echoes of the Lost Star?"
+          ]
+        }
+      },
+      {
+        "model": "gemma3:1b",
+        "memberRole": "ASSISTANT",
+        "review": {
+          "keep": [],
+          "change": [],
+          "drop": [],
+          "hold": [],
+          "risks": [],
+          "evidence": [],
+          "questions": [
+            "How does the Echoes of the Lost Star align with global mobile engagement and session evidence?"
+          ]
+        }
+      }
+    ]
+  },
+  "representatives": {
+    "planning": {
+      "keep": [
+        "DESIGN",
+        "progressionDirection",
+        "mobileUx"
+      ],
+      "change": [
+        "progressionDirection",
+        "visualDirection"
+      ],
+      "drop": [
+        "DESIGN",
+        "progressionDirection",
+        "mobileUx"
+      ],
+      "hold": [
+        "DESIGN",
+        "progressionDirection",
+        "mobileUx"
+      ],
+      "risks": [
+        "DESIGN",
+        "progressionDirection",
+        "mobileUx"
+      ],
+      "evidence": [
+        "DESIGN",
+        "progressionDirection",
+        "mobileUx"
+      ],
+      "questions": [
+        "DESIGN",
+        "progressionDirection",
+        "mobileUx"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "model",
+        "gemma3:1b",
+        "memberRole",
+        "LEAD",
+        "review",
+        "keep"
+      ],
+      "change": [
+        "model",
+        "llama3.2",
+        "memberRole",
+        "ASSISTANT",
+        "review",
+        "change"
+      ],
+      "drop": [
+        "model",
+        "llama3.2",
+        "memberRole",
+        "ASSISTANT",
+        "review",
+        "drop"
+      ],
+      "hold": [
+        "model",
+        "gemma3:1b",
+        "memberRole",
+        "LEAD",
+        "review",
+        "hold"
+      ],
+      "risks": [
+        "model",
+        "gemma3:1b",
+        "memberRole",
+        "LEAD",
+        "review",
+        "risks"
+      ],
+      "evidence": [
+        "model",
+        "gemma3:1b",
+        "memberRole",
+        "LEAD",
+        "review",
+        "evidence"
+      ],
+      "questions": [
+        "How does the Echoes of the Lost Star align with global mobile engagement and session evidence?"
+      ]
+    },
+    "development": {
+      "keep": [
+        "DESIGN",
+        "progressionDirection",
+        "mobileUx",
+        "steamExpansionDecision",
+        "multiplayerExpansionDecision"
+      ],
+      "change": [
+        "DESIGN",
+        "progressionDirection",
+        "steamExpansionDecision",
+        "multiplayerExpansionDecision"
+      ],
+      "drop": [
+        "DESIGN",
+        "progressionDirection",
+        "steamExpansionDecision",
+        "multiplayerExpansionDecision"
+      ],
+      "hold": [
+        "DESIGN",
+        "progressionDirection",
+        "steamExpansionDecision",
+        "multiplayerExpansionDecision"
+      ],
+      "risks": [
+        "DESIGN",
+        "progressionDirection",
+        "steamExpansionDecision",
+        "multiplayerExpansionDecision"
+      ],
+      "evidence": [
+        "DESIGN",
+        "progressionDirection",
+        "steamExpansionDecision",
+        "multiplayerExpansionDecision"
+      ],
+      "questions": [
+        "What is the core gameplay loop of the Echoes of the Lost Star?"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "The action survival roguelite core loop is preserved for short touch sessions."
+      ],
+      "change": [
+        "The visual identity, progression mix, and touch-first presentation should be aligned with global mobile engagement."
+      ],
+      "drop": [
+        "The core gameplay loop of the Echoes of the Lost Star is not validated."
+      ],
+      "hold": [
+        "The validation questions and open questions are relevant and should be addressed."
+      ],
+      "risks": [
+        "The gameplay interaction performed is not validated."
+      ],
+      "evidence": [
+        "The gameplay interaction performed is validated."
+      ],
+      "questions": [
+        "How does the Echoes of the Lost Star align with global mobile engagement and session evidence?"
+      ]
+    },
+    "balance": {
+      "keep": [],
+      "change": [],
+      "drop": [],
+      "hold": [],
+      "risks": [],
+      "evidence": [],
+      "questions": [
+        "What is the core gameplay loop of the Echoes of the Lost Star?"
+      ]
+    }
+  },
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keep",
+        "change",
+        "drop",
+        "hold",
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "challenge": [
+        "keep",
+        "change",
+        "drop",
+        "hold",
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "keep",
+        "change",
+        "drop",
+        "hold",
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "reason": "The planning perspective should refine terms like 'progressionDirection' to be more precise and ensure all elements are aligned with global mobile engagement and session validation. The 'questions' section should be clearer on how to validate the Echoes' core gameplay loop."
+    },
+    "graphics": {
+      "accept": [
+        "Planning"
+      ],
+      "challenge": [
+        "visualDirection"
+      ],
+      "revision": [
+        "mobileUx"
+      ],
+      "reason": "The visual direction is critical for the overall experience, and it needs to be carefully considered to ensure a seamless and engaging experience across all platforms."
+    },
+    "development": {
+      "accept": [
+        "keep",
+        "change",
+        "drop",
+        "hold",
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "challenge": [
+        "keep",
+        "change",
+        "drop",
+        "hold",
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "keep",
+        "change",
+        "drop",
+        "hold",
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "reason": "Web Gameplay Validation는 개발부서 Lead AI입니다. 다른 4개 부서 대표 의견을 읽고 자기 전문영역에서 한 번만 반박·수정합니다."
+    },
+    "qa": {
+      "accept": [
+        "The action survival roguelite core loop is preserved for short touch sessions."
+      ],
+      "challenge": [
+        "The visual identity, progression mix, and touch-first presentation should be aligned with global mobile engagement."
+      ],
+      "revision": [
+        "The core gameplay loop of the Echoes of the Lost Star is not validated."
+      ],
+      "reason": "The validation questions and open questions are relevant and should be addressed."
+    },
+    "balance": {
+      "accept": [
+        "The action survival roguelite core loop is preserved for short touch sessions.",
+        "The visual identity, progression mix, and touch-first presentation should be aligned with global mobile engagement.",
+        "The validation questions and open questions are relevant and should be addressed.",
+        "The gameplay interaction performed is not validated."
+      ],
+      "challenge": [
+        "The core gameplay loop of the Echoes of the Lost Star is not validated.",
+        "The validation questions and open questions are relevant and should be addressed.",
+        "The gameplay interaction performed is not validated."
+      ],
+      "revision": [
+        "The core gameplay loop of the Echoes of the Lost Star is not validated.",
+        "The validation questions and open questions are relevant and should be addressed.",
+        "The gameplay interaction performed is not validated."
+      ],
+      "reason": "The core gameplay loop of the Echoes of the Lost Star is not validated."
+    }
+  },
+  "coordinatorModel": "gemma3:1b",
+  "summary": "The planning team has reviewed the feedback and has reached the following conclusions regarding the KEEP/CHANGE/DROP/HOLD decisions for the Web Gameplay Validation domain. We have identified and addressed concerns related to the design, progression, and risk assessment aspects of the feature. The HOLD decisions are based on the current state of the design and the identified risks.",
+  "decisions": [],
+  "decisionCounts": {
+    "KEEP": 0,
+    "CHANGE": 0,
+    "DROP": 0,
+    "HOLD": 0
+  }
+}

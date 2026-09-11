@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+  "target": "web",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 6,
+  "stateChanged": true,
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "before": {
+    "text": "DEVELOPMENT_CONFIRMED · 생존 전투 Echoes of the Lost Star Combat, Upgrade, Run, and Horde-centered progression. 0 SCORE 100 HP 1 WAVE / LEVEL 0 RESOURCE 회피 공격 강화 STATUS: 회피 · TURN 0 · PROGRESS 0 검증 루프: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+    "visibleButtons": 3,
+    "canvases": [],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "0SCORE100HP1WAVE / LEVEL0RESOURCE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-0"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "0"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "after": {
+    "text": "DEVELOPMENT_CONFIRMED · 생존 전투 Echoes of the Lost Star Combat, Upgrade, Run, and Horde-centered progression. 53 SCORE 100 HP 2 WAVE / LEVEL 1 RESOURCE 회피 공격 강화 STATUS: 강화 · TURN 7 · PROGRESS 0 검증 루프: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+    "visibleButtons": 3,
+    "canvases": [],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "53SCORE100HP2WAVE / LEVEL1RESOURCE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-7"
+          ],
+          [
+            "data-score",
+            "53"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "1"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "interactionCount=6",
+    "stateChanged=true",
+    "reloadVisible=true",
+    "mobileOverflow=true"
+  ],
+  "checkedAt": "2026-09-11T09:46:39.272Z",
+  "sourcePath": "web-games/.autonomous-candidates/seed-action-survival-rogu-echoes-of-the-lost-star-34585400183",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/seed-action-survival-rogu-echoes-of-the-lost-star-34585400183/",
+  "screenshot": "qa-artifacts/development-web/seed-action-survival-rogu-echoes-of-the-lost-star.png"
+}
