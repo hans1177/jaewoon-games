@@ -28,22 +28,39 @@ function Write-BlockerEvidence {
   $payload | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $OutDir 'diagnostic.json') -Encoding UTF8
 }
 
+function Invoke-AdbRaw {
+  param([string[]]$Args)
+  $previousErrorActionPreference = $ErrorActionPreference
+  try {
+    # Windows PowerShell 5.1 can turn native stderr into terminating ErrorRecord objects when
+    # $ErrorActionPreference is Stop. adb writes harmless daemon startup notices to stderr.
+    $ErrorActionPreference = 'Continue'
+    $output = & adb @Args 2>&1
+    $code = $LASTEXITCODE
+  } finally {
+    $ErrorActionPreference = $previousErrorActionPreference
+  }
+  return [pscustomobject]@{
+    ExitCode = [int]$code
+    Output = @($output | ForEach-Object { [string]$_ })
+  }
+}
+
 function Invoke-Adb {
   param([string]$Serial, [string[]]$Args, [switch]$AllowFailure)
   $all = @('-s', $Serial) + $Args
-  $output = & adb @all 2>&1
-  $code = $LASTEXITCODE
-  if (-not $AllowFailure -and $code -ne 0) {
-    throw "adb failed ($code): adb $($all -join ' ')`n$($output -join "`n")"
+  $result = Invoke-AdbRaw -Args $all
+  if (-not $AllowFailure -and $result.ExitCode -ne 0) {
+    throw "adb failed ($($result.ExitCode)): adb $($all -join ' ')`n$($result.Output -join "`n")"
   }
-  return @($output)
+  return @($result.Output)
 }
 
 function Get-ConnectedDevices {
-  $rows = & adb devices 2>&1
-  if ($LASTEXITCODE -ne 0) { throw 'adb devices failed' }
+  $result = Invoke-AdbRaw -Args @('devices')
+  if ($result.ExitCode -ne 0) { throw "adb devices failed ($($result.ExitCode)): $($result.Output -join ' ')" }
   $devices = @()
-  foreach ($line in $rows) {
+  foreach ($line in $result.Output) {
     if ($line -match '^([^\s]+)\s+device$') { $devices += $Matches[1] }
   }
   return $devices
@@ -235,7 +252,8 @@ function Invoke-ExternalMobilePlaytest {
     $focusAfter = (Invoke-Adb -Serial $serial -Args @('shell','dumpsys','window') -AllowFailure) -join "`n"
     $pidAfter = ((Invoke-Adb -Serial $serial -Args @('shell','pidof',$packageId) -AllowFailure) -join '').Trim()
     $logPath = Join-Path $gameDir 'logcat.txt'
-    & adb -s $serial logcat -d -v threadtime | Set-Content $logPath -Encoding UTF8
+    $logRows = Invoke-Adb -Serial $serial -Args @('logcat','-d','-v','threadtime') -AllowFailure
+    $logRows | Set-Content $logPath -Encoding UTF8
     $logText = Get-Content -Raw -Encoding UTF8 $logPath
     $crashPattern = "FATAL EXCEPTION|ANR in $([regex]::Escape($packageId))|Process $([regex]::Escape($packageId)).*has died|Force finishing activity.*$([regex]::Escape($packageId))"
     $noCrash = $logText -notmatch $crashPattern
