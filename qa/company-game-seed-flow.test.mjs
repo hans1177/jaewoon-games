@@ -44,6 +44,7 @@ test('directive encodes one atomic six-category global GAME_SEED bootstrap',()=>
     assert.equal(cfg.minimumRequiredConceptGroups,4);
     assert.ok(Array.isArray(cfg.minimumCoreLoop));
     assert.ok(cfg.minimumCoreLoop.length>=3);
+    assert.ok(cfg.minimumCoreLoop.every(step=>step.length>=70));
   }
 });
 
@@ -69,35 +70,59 @@ test('bootstrap batches all requested seeds in one model call and mutates state 
   assert.match(bootstrap,/if\(numericLike&&\(!source\|\|!observedAt\)\)value='UNKNOWN'/);
   assert.match(seedWorkflow,/Verified free budget preflight/);
   assert.match(seedWorkflow,/--model-calls=1/);
-  assert.match(seedWorkflow,/Normalize category semantics and global target evidence/);
+  assert.match(seedWorkflow,/Normalize all active category semantics and global target evidence/);
   assert.match(seedWorkflow,/Reject category-mismatched generic or country-scoped GAME_SEED output/);
   assert.match(seedWorkflow,/GAME_SEED_MARKET_SCOPE=GLOBAL/);
+  assert.match(seedWorkflow,/NO_VACANCY_REVALIDATE_ACTIVE/);
   assert.ok(seedWorkflow.indexOf('Verified free budget preflight')<seedWorkflow.indexOf('uses: ./.github/actions/prepare-ollama'));
-  assert.ok(seedWorkflow.indexOf('Normalize category semantics and global target evidence')<seedWorkflow.indexOf('Reject category-mismatched generic or country-scoped GAME_SEED output'));
+  assert.ok(seedWorkflow.indexOf('Normalize all active category semantics and global target evidence')<seedWorkflow.indexOf('Reject category-mismatched generic or country-scoped GAME_SEED output'));
 });
 
-test('semantic normalizer repairs category drift while keeping global market evidence sourced',()=>{
+test('semantic normalizer always writes concrete category loops and repairs every active seed',()=>{
   assert.match(semanticNormalize,/requiredConceptGroups/);
   assert.match(semanticNormalize,/minimumCoreLoop/);
   assert.match(semanticNormalize,/GAME_SEED_NORMALIZE_MINIMUM_LOOP_MISSING/);
+  assert.match(semanticNormalize,/seed\.CORE_LOOP=minimumLoop\.slice\(0,8\)/);
+  assert.match(semanticNormalize,/filter\(seed=>clean\(seed\.status\)\.toUpperCase\(\)==='ACTIVE'\)/);
+  assert.match(semanticNormalize,/GAME_SEED_NORMALIZE_NO_ACTIVE_SEEDS/);
   assert.match(semanticNormalize,/targetMarketScope:'GLOBAL'/);
   assert.match(semanticNormalize,/Global mobile players across age groups/);
   assert.match(semanticNormalize,/globalAveragePlayerAge/);
+  assert.match(semanticNormalize,/original global mobile single-player/);
   assert.match(semanticNormalize,/assertGameSeed\(seed\)/);
 });
 
-test('semantic quality gate rejects wrong category benchmarks generic seeds incomplete concept groups and non-global target scope',()=>{
+test('semantic quality gate rejects vague loops wrong benchmarks and non-global target scope',()=>{
   assert.match(qualityGate,/GAME_SEED_QUALITY_EVIDENCE_SCOPE_NOT_GLOBAL/);
   assert.match(qualityGate,/reference-outside-category-pool/);
   assert.match(qualityGate,/category-concept-groups/);
   assert.match(qualityGate,/minimumRequiredConceptGroups/);
+  assert.match(qualityGate,/core-loop-concept-groups/);
+  assert.match(qualityGate,/loops\.some\(x=>x\.length<70\)/);
   assert.match(qualityGate,/distinct-identity-too-generic/);
+  assert.match(qualityGate,/distinct-identity-reinterpretation-missing/);
   assert.match(qualityGate,/market-scope-not-global/);
   assert.match(qualityGate,/country-specific-default-audience/);
   assert.match(qualityGate,/global-age-evidence-missing/);
   assert.match(qualityGate,/global-revenue-evidence-missing/);
   assert.match(qualityGate,/global-playtime-evidence-missing/);
   assert.match(qualityGate,/core-loop-business-meta-language/);
+});
+
+test('no-vacancy runs still normalize validate persist changes and never create extra seeds',()=>{
+  const normalizeIndex=seedWorkflow.indexOf('- name: Normalize all active category semantics and global target evidence');
+  const qualityIndex=seedWorkflow.indexOf('- name: Reject category-mismatched generic or country-scoped GAME_SEED output');
+  const noGrowthIndex=seedWorkflow.indexOf('- name: Record no-growth revalidation when there is no vacancy');
+  const validateIndex=seedWorkflow.indexOf('- name: Validate GAME_SEED state');
+  const persistIndex=seedWorkflow.indexOf('- name: Persist validated GAME_SEED state to company runtime branch');
+  assert.ok(normalizeIndex>0&&qualityIndex>normalizeIndex&&noGrowthIndex>qualityIndex&&validateIndex>noGrowthIndex&&persistIndex>validateIndex);
+  const normalizeBlock=seedWorkflow.slice(normalizeIndex,qualityIndex);
+  const qualityBlock=seedWorkflow.slice(qualityIndex,noGrowthIndex);
+  const validateBlock=seedWorkflow.slice(validateIndex,persistIndex);
+  assert.doesNotMatch(normalizeBlock,/if: steps\.need\.outputs\.model/);
+  assert.doesNotMatch(qualityBlock,/if: steps\.need\.outputs\.model/);
+  assert.doesNotMatch(validateBlock,/if: steps\.need\.outputs\.model/);
+  assert.match(noGrowthIndex>=0?seedWorkflow:'',/AUTOMATIC_SEED_GROWTH=NO/);
 });
 
 test('autonomous runtime does not depend on GitHub Actions PR creation permission',()=>{
