@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-casual-realm-weaver",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Realm Weaver"
+        ],
+        "fix": [
+          "GAME_SEED"
+        ],
+        "add": [
+          "GAME_SEED"
+        ],
+        "risks": [
+          "GAME_SEED"
+        ],
+        "evidence": [
+          "GAME_SEED"
+        ],
+        "questions": [
+          "GAME_SEED"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Game Seed: Realm Weaver"
+        ],
+        "fix": [
+          "Game Category: Casual"
+        ],
+        "add": [
+          "Core Fun: Simple Tap-to-Move"
+        ],
+        "risks": [
+          "Core Loop: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "evidence": [
+          "Market Evidence: Subway Surfers, Crossy Road"
+        ],
+        "questions": [
+          "Target Audience: Global"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Simple Tap-to-Move, Idle Progression, Idle Rewards, Short-Session Goal, Run, Score, Distance, Reward, Progression, Risk"
+        ],
+        "fix": [
+          "Core Loop - Single-player, short-session, touch-first, simple gameplay, reward system, progression, risk, "
+        ],
+        "add": [
+          "Game Category - Casual, Mobile Single-Player, Reinterpretation of Subway Surfers and Crossy Road, Distinct Setting, Visual Style, "
+        ],
+        "risks": [
+          "Not Recommended - Steam Expansion Decision"
+        ],
+        "evidence": [
+          "Subway Surfers, Crossy Road, MONOPOLY GO!, Global Casual/Session Signal, ESA Power of Play 2025 Global Report, Sensor Tower State "
+        ],
+        "questions": [
+          "What is the target audience for the game?"
+        ]
+      }
+    }
+  ]
+}

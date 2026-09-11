@@ -1,0 +1,184 @@
+{
+  "version": 4,
+  "gameId": "seed-casual-realm-weaver",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "smollm2:1.7b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "Game Seed: Realm Weaver",
+        "Core Fun: Simple Tap-to-Move"
+      ],
+      "fix": [
+        "Game Category: Casual",
+        "Core Loop: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "add": [
+        "Core Fun: Simple Tap-to-Move",
+        "Add: Core Fun - Simple Tap-to-Move, Idle Progression, Idle Rewards, Short-Session Goal, Run, Score, Distance, Reward, Progression, Risk"
+      ],
+      "risks": [
+        "Risk: Core Loop: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "evidence": [
+        "Market Evidence: Subway Surfers, Crossy Road",
+        "Market Evidence: MONOPOLY GO!, Global Casual/Session Signal, ESA Power of Play 2025 Global Report, Sensor Tower State"
+      ],
+      "questions": [
+        "Target Audience: Global"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "Simple Tap-to-Move, Idle Progression, Idle Rewards, Short-Session Goal, Run, Score, Distance, Reward, Progression, Risk"
+      ],
+      "fix": [
+        "Visual Style - Global, Touch-First, Mobile Ux - Touch-first"
+      ],
+      "add": [
+        "Game Category - Casual, Mobile Single-Player, Reinterpretation of Subway Surfers and Crossy Road, Distinct Setting, Visual Style, "
+      ],
+      "risks": [
+        "Not Recommended - Steam Expansion Decision"
+      ],
+      "evidence": [
+        "Subway Surfers, Crossy Road, MONOPOLY GO!, Global Casual/Session Signal, ESA Power of Play 2025 Global Report, Sensor Tower State "
+      ],
+      "questions": [
+        "What is the target audience for the game?"
+      ]
+    },
+    "development": {
+      "keep": [
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "fix": [
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "add": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "risks": [
+        "What is the target audience for the game?",
+        "What is the target session direction for the game?"
+      ],
+      "evidence": [
+        "What is the target session direction for the game?",
+        "What is the target audience for the game?"
+      ],
+      "questions": [
+        "What is the core fun of the game?",
+        "What is the purpose of the core loop? What is the purpose of the signature systems?"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "Simple Tap-to-Move"
+      ],
+      "fix": [
+        "Idle Progression"
+      ],
+      "add": [
+        "Idle Rewards"
+      ],
+      "risks": [
+        "shortcenteredCasualHakken"
+      ],
+      "evidence": [
+        "Subway Surfers, Crossy Road"
+      ],
+      "questions": [
+        "What is the core fun of the game? What is the purpose of the core loop? What is the purpose of the signature systems?"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "Realm Weaver"
+      ],
+      "fix": [
+        "GAME_SEED"
+      ],
+      "add": [
+        "GAME_SEED"
+      ],
+      "risks": [
+        "GAME_SEED"
+      ],
+      "evidence": [
+        "GAME_SEED"
+      ],
+      "questions": [
+        "GAME_SEED"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "새 기능을 창작하지 않고 대표의견과 각 Lead의 1회 반박을 안건별 CONSENSUS/CONFLICT/HOLD로만 정리한다.",
+  "decisions": [
+    {
+      "topic": "새 기능 창작",
+      "status": "CONSENSUS",
+      "reason": "새 기능을 창작하지 않고 대표의견과 각 Lead의 1회 반박을 안건별 CONSENSUS/CONFLICT/HOLD로만 정리한다.",
+      "departments": [
+        "planning"
+      ]
+    },
+    {
+      "topic": "새 기능 창작",
+      "status": "CONSENSUS",
+      "reason": "새 기능을 창작하지 않고 대표의견과 각 Lead의 1회 반박을 안건별 CONSENSUS/CONFLICT/HOLD로만 정리한다.",
+      "departments": [
+        "graphics"
+      ]
+    },
+    {
+      "topic": "새 기능 창작",
+      "status": "CONSENSUS",
+      "reason": "새 기능을 창작하지 않고 대표의견과 각 Lead의 1회 반박을 안건별 CONSENSUS/CONFLICT/HOLD로만 정리한다.",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "새 기능 창작",
+      "status": "CONSENSUS",
+      "reason": "새 기능을 창작하지 않고 대표의견과 각 Lead의 1회 반박을 안건별 CONSENSUS/CONFLICT/HOLD로만 정리한다.",
+      "departments": [
+        "qa"
+      ]
+    },
+    {
+      "topic": "새 기능 창작",
+      "status": "CONSENSUS",
+      "reason": "새 기능을 창작하지 않고 대표의견과 각 Lead의 1회 반박을 안건별 CONSENSUS/CONFLICT/HOLD로만 정리한다.",
+      "departments": [
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 5,
+    "conflict": 0,
+    "hold": 0
+  }
+}

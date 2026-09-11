@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-casual-realm-weaver",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Simple Tap-to-Move, Idle Progression, Idle Rewards, Short-Session Goal, Run, Score, Distance, Reward, Progression, Risk"
+        ],
+        "fix": [
+          "Visual Style - Global, Touch-First, Mobile Ux - Touch-first"
+        ],
+        "add": [
+          "Game Category - Casual, Mobile Single-Player, Reinterpretation of Subway Surfers and Crossy Road, Distinct Setting, Visual Style, "
+        ],
+        "risks": [
+          "Not Recommended - Steam Expansion Decision"
+        ],
+        "evidence": [
+          "Subway Surfers, Crossy Road, MONOPOLY GO!, Global Casual/Session Signal, ESA Power of Play 2025 Global Report, Sensor Tower State "
+        ],
+        "questions": [
+          "What is the target audience for the game?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "What is the target audience for the game?"
+        ],
+        "evidence": [
+          "What is the target session direction for the game?"
+        ],
+        "questions": [
+          "What is the core fun of the game?"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Simple Tap-to-Move"
+        ],
+        "fix": [
+          "Idle Progression"
+        ],
+        "add": [
+          "Idle Rewards"
+        ],
+        "risks": [
+          "shortcenteredCasualHakken"
+        ],
+        "evidence": [
+          "Subway Surfers, Crossy Road"
+        ],
+        "questions": [
+          "What is the target audience for the game? What is the target session direction for the game? What is the initial target platform? "
+        ]
+      }
+    }
+  ]
+}

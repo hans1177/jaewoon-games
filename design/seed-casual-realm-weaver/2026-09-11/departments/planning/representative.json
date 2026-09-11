@@ -1,0 +1,38 @@
+{
+  "version": 4,
+  "gameId": "seed-casual-realm-weaver",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "representativeModel": "qwen3:0.6b",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "Game Seed: Realm Weaver",
+      "Core Fun: Simple Tap-to-Move"
+    ],
+    "fix": [
+      "Game Category: Casual",
+      "Core Loop: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+    ],
+    "add": [
+      "Core Fun: Simple Tap-to-Move",
+      "Add: Core Fun - Simple Tap-to-Move, Idle Progression, Idle Rewards, Short-Session Goal, Run, Score, Distance, Reward, Progression, Risk"
+    ],
+    "risks": [
+      "Risk: Core Loop: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+    ],
+    "evidence": [
+      "Market Evidence: Subway Surfers, Crossy Road",
+      "Market Evidence: MONOPOLY GO!, Global Casual/Session Signal, ESA Power of Play 2025 Global Report, Sensor Tower State"
+    ],
+    "questions": [
+      "Target Audience: Global"
+    ]
+  }
+}

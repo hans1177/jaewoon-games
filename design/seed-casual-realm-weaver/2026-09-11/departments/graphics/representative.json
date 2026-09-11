@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "seed-casual-realm-weaver",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "representativeModel": "gemma3:1b",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "Simple Tap-to-Move, Idle Progression, Idle Rewards, Short-Session Goal, Run, Score, Distance, Reward, Progression, Risk"
+    ],
+    "fix": [
+      "Visual Style - Global, Touch-First, Mobile Ux - Touch-first"
+    ],
+    "add": [
+      "Game Category - Casual, Mobile Single-Player, Reinterpretation of Subway Surfers and Crossy Road, Distinct Setting, Visual Style, "
+    ],
+    "risks": [
+      "Not Recommended - Steam Expansion Decision"
+    ],
+    "evidence": [
+      "Subway Surfers, Crossy Road, MONOPOLY GO!, Global Casual/Session Signal, ESA Power of Play 2025 Global Report, Sensor Tower State "
+    ],
+    "questions": [
+      "What is the target audience for the game?"
+    ]
+  }
+}

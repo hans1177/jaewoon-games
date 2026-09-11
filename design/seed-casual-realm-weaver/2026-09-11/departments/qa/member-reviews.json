@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-casual-realm-weaver",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Simple Tap-to-Move"
+        ],
+        "fix": [
+          "Idle Progression"
+        ],
+        "add": [
+          "Idle Rewards"
+        ],
+        "risks": [
+          "shortcenteredCasualHakken"
+        ],
+        "evidence": [
+          "Subway Surfers, Crossy Road"
+        ],
+        "questions": [
+          "What is the core fun of the game? What is the purpose of the core loop? What is the purpose of the signature systems?"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Realm Weaver"
+        ],
+        "fix": [
+          "GAME_SEED"
+        ],
+        "add": [
+          "GAME_SEED"
+        ],
+        "risks": [
+          "GAME_SEED"
+        ],
+        "evidence": [
+          "GAME_SEED"
+        ],
+        "questions": [
+          "GAME_SEED"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Game Seed: Realm Weaver"
+        ],
+        "fix": [
+          "Game Category: Casual"
+        ],
+        "add": [
+          "Core Fun: Simple Tap-to-Move"
+        ],
+        "risks": [
+          "Core Loop: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "evidence": [
+          "Market Evidence: Subway Surfers, Crossy Road"
+        ],
+        "questions": [
+          "Target Audience: Global"
+        ]
+      }
+    }
+  ]
+}

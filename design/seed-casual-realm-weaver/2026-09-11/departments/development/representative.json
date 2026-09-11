@@ -1,0 +1,40 @@
+{
+  "version": 4,
+  "gameId": "seed-casual-realm-weaver",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "representativeModel": "llama3.2:1b",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+    ],
+    "fix": [
+      "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+      "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    ],
+    "add": [
+      "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+      "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+    ],
+    "risks": [
+      "What is the target audience for the game?",
+      "What is the target session direction for the game?"
+    ],
+    "evidence": [
+      "What is the target session direction for the game?",
+      "What is the target audience for the game?"
+    ],
+    "questions": [
+      "What is the core fun of the game?",
+      "What is the purpose of the core loop? What is the purpose of the signature systems?"
+    ]
+  }
+}

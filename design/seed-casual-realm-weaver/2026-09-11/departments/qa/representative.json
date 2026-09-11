@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "seed-casual-realm-weaver",
+  "date": "2026-09-11",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "representativeModel": "qwen2.5:1.5b",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "Simple Tap-to-Move"
+    ],
+    "fix": [
+      "Idle Progression"
+    ],
+    "add": [
+      "Idle Rewards"
+    ],
+    "risks": [
+      "shortcenteredCasualHakken"
+    ],
+    "evidence": [
+      "Subway Surfers, Crossy Road"
+    ],
+    "questions": [
+      "What is the core fun of the game? What is the purpose of the core loop? What is the purpose of the signature systems?"
+    ]
+  }
+}
