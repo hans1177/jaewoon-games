@@ -30,6 +30,7 @@ test('central policy owns the end-to-end production architecture without requiri
     'production:',
     'bootstrapGameSeeds:',
     'GAME_SEED:',
+    'ownerRequestedProjectOverride:',
     'platformStrategy:',
     'aiOrganization:',
     'meeting:',
@@ -43,8 +44,21 @@ test('central policy owns the end-to-end production architecture without requiri
   ]) assert.ok(flow.includes(token), `missing central policy token: ${token}`);
   assert.match(flow, /OWNER_LATEST_DIRECT_INSTRUCTION[\s\S]*COMPANY_FLOW[\s\S]*COMPANY_DIRECTIVE/);
   assert.match(flow, /DESIGN_ONLY:[\s\S]*GAME_SEED[\s\S]*GAME_DESIGNER_DRAFT/);
-  assert.match(flow, /DEVELOPMENT_CONFIRMED:[\s\S]*WEB_GAMEPLAY_VALIDATION[\s\S]*UNITY_ANDROID_TECHNICAL_VALIDATION/);
-  assert.match(flow, /RELEASE_CONFIRMED:[\s\S]*VIBE2_PRIMARY_DEVELOPMENT[\s\S]*ANDROID_RUNTIME_VALIDATION[\s\S]*INDEPENDENT_QA_AND_REGRESSION/);
+  assert.match(flow, /DEVELOPMENT_CONFIRMED:[\s\S]*TARGET_APPROPRIATE_GAMEPLAY_VALIDATION[\s\S]*TARGET_APPROPRIATE_TECHNICAL_VALIDATION/);
+  assert.match(flow, /RELEASE_CONFIRMED:[\s\S]*VIBE2_PRIMARY_DEVELOPMENT[\s\S]*TARGET_RUNTIME_VALIDATION[\s\S]*INDEPENDENT_QA_AND_REGRESSION/);
+});
+
+test('owner can explicitly choose a Web or Unity project without changing autonomous Android defaults', () => {
+  assert.match(flow, /ownerRequestedProjectOverride:[\s\S]*enabled: true/);
+  assert.match(flow, /scope: PER_PROJECT_ONLY/);
+  assert.match(flow, /- WEB_GAME[\s\S]*- UNITY_GAME/);
+  assert.match(flow, /ownerExplicitTargetOverridesAutonomousDefault: true/);
+  assert.match(flow, /autonomousGameSeedDefaultRemainsAndroidMobileSinglePlayer: true/);
+  assert.match(flow, /doesNotChangeSeedBatchCountOrReplenishmentRules: true/);
+  assert.match(flow, /WEB_GAME:[\s\S]*webMayBeFinalProduct: true[\s\S]*unityRequired: false/);
+  assert.match(flow, /UNITY_GAME:[\s\S]*unityIsEngineChoiceNotImplicitStoreOrDeviceChoice: true/);
+  assert.match(flow, /ownerRequestedTargetUsesTargetSpecificValidation: true/);
+  assert.match(flow, /ownerRequestedTargetMayUseDifferentReleaseGate: true/);
 });
 
 test('GAME_SEED policy encodes six-seed bootstrap, famous-success benchmark, target-market evidence, and one-for-one replenishment', () => {
@@ -83,9 +97,11 @@ test('discard policy separates DESIGN_ONLY design survival from DEVELOPMENT_CONF
   assert.match(flow, /SAME_GAME_DESIGNER_REVISION_ATTEMPTED/);
   assert.match(flow, /FIVE_DEPARTMENT_REVIEW_REPEATED/);
   assert.match(flow, /HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY/);
+  assert.match(flow, /DEFAULT_ANDROID_MOBILE_SINGLE_PLAYER_OR_OWNER_REQUESTED_TARGET_CANNOT_WORK_AS_PRODUCT/);
   assert.match(flow, /DEVELOPMENT_CONFIRMED:[\s\S]*question: CAN_THE_VALIDATED_DESIGN_SURVIVE_REAL_IMPLEMENTATION_AND_PLAY/);
   assert.match(flow, /TARGETED_REVALIDATION_PERFORMED/);
   assert.match(flow, /REAL_PLAY_CORE_FUN_REMAINS_UNACCEPTABLE_AFTER_FIX/);
+  assert.match(flow, /REQUESTED_TARGET_INPUT_OR_UX_IS_STRUCTURALLY_UNFIT/);
   assert.match(flow, /DEMOTE_TO_DESIGN_ONLY_IF_CORE_DESIGN_MUST_BE_REBUILT/);
 });
 
