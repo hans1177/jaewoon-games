@@ -1,0 +1,72 @@
+name: GAME_SEED Runtime QA
+
+on:
+  pull_request:
+    paths:
+      - 'company-directive.json'
+      - 'tools/game-seed-selector.mjs'
+      - 'tools/game-seed-bootstrap.mjs'
+      - 'tools/company-design-cycle.mjs'
+      - 'tools/company-design-baseline-gate.mjs'
+      - 'tools/company-design-artbook.mjs'
+      - 'tools/artbook-production-pipeline.mjs'
+      - 'qa/game-seed-bootstrap.test.mjs'
+      - 'qa/design-only-flow-contract.test.mjs'
+      - '.github/workflows/game-seed-bootstrap.yml'
+      - '.github/workflows/artbook-free-department-bots.yml'
+      - '.github/workflows/game-seed-runtime-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'company-directive.json'
+      - 'tools/game-seed-selector.mjs'
+      - 'tools/game-seed-bootstrap.mjs'
+      - 'tools/company-design-cycle.mjs'
+      - 'tools/company-design-baseline-gate.mjs'
+      - 'tools/company-design-artbook.mjs'
+      - 'tools/artbook-production-pipeline.mjs'
+      - 'qa/game-seed-bootstrap.test.mjs'
+      - 'qa/design-only-flow-contract.test.mjs'
+      - '.github/workflows/game-seed-bootstrap.yml'
+      - '.github/workflows/artbook-free-department-bots.yml'
+      - '.github/workflows/game-seed-runtime-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax
+        run: |
+          node --check tools/game-seed-selector.mjs
+          node --check tools/game-seed-bootstrap.mjs
+          node --check tools/company-design-cycle.mjs
+          node --check tools/company-design-baseline-gate.mjs
+          node --check tools/company-design-artbook.mjs
+          node --check tools/artbook-production-pipeline.mjs
+      - name: Contracts
+        run: |
+          node --test qa/game-seed-bootstrap.test.mjs qa/design-only-flow-contract.test.mjs
+      - name: No obsolete DESIGN_ONLY path
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in \
+            tools/autonomous-new-game-incubator.mjs \
+            .github/workflows/autonomous-new-game-incubator.yml \
+            autonomous-incubator.json \
+            qa/autonomous-new-game-incubator.test.mjs \
+            qa/autonomous-new-game-closed-loop.test.mjs \
+            .github/workflows/artbook-initial-backfill-chain.yml; do
+            test ! -e "$file"
+          done
+          echo 'OBSOLETE_DESIGN_ONLY_PATH=REMOVED'
+          echo 'DESIGN_ONLY_VIBE2=NO'
