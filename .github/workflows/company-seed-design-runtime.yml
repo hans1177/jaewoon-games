@@ -266,6 +266,9 @@ jobs:
           fi
           git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}"
           generated_commit="$(git rev-parse HEAD)"
+          if [ "$seed_changed" = 0 ]; then
+            rm -f game-seed-state.json
+          fi
           pushed=0
           for attempt in 1 2 3 4; do
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
@@ -289,6 +292,9 @@ jobs:
               break
             fi
             git reset --hard "$generated_commit"
+            if [ "$seed_changed" = 0 ]; then
+              rm -f game-seed-state.json
+            fi
             sleep $((attempt * 2))
           done
           test "$pushed" = 1
