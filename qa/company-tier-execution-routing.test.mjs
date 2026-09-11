@@ -83,9 +83,11 @@ test('machine policy exposes semantic ownership classes and numeric aliases sepa
   assert.equal(directive.policyDocument, 'COMPANY_FLOW.md');
   assert.equal(directive.classes.DESIGN_ONLY.sourceCodeAutoDevelopment, false);
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webPurpose, 'GAMEPLAY_VALIDATION_TESTBED');
-  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityPurpose, 'TECHNICAL_VALIDATION_PROTOTYPE');
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityPurpose, 'ANDROID_TECHNICAL_VALIDATION_PROTOTYPE');
   assert.equal(directive.classes.RELEASE_CONFIRMED.vibe2PrimaryDeveloper, true);
   assert.equal(directive.ai.departmentModeByClass.RELEASE_CONFIRMED, 'DISTINCT_LEAD_GATED_DIRECT_RELEASE_RISK_WATCH');
+  assert.equal(directive.ai.vibe2.startsAtClass, 'DEVELOPMENT_CONFIRMED');
+  assert.equal(directive.ai.vibe2.designOnlyRole, null);
   assert.equal(directive.production.numericLabelsAreAliasesOnly, true);
 });
 
