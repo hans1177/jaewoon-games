@@ -98,13 +98,13 @@ function Set-JavaForAndroidTools {
       }
     }
   } catch {}
-  foreach ($home in $candidates) {
+  foreach ($javaHomeCandidate in $candidates) {
     try {
-      $java = Join-Path $home 'bin\java.exe'
+      $java = Join-Path $javaHomeCandidate 'bin\java.exe'
       if ([System.IO.File]::Exists($java)) {
-        $env:JAVA_HOME = $home
-        $env:Path = "$(Join-Path $home 'bin');$env:Path"
-        Write-Host "JAVA_HOME=$home"
+        $env:JAVA_HOME = $javaHomeCandidate
+        $env:Path = "$(Join-Path $javaHomeCandidate 'bin');$env:Path"
+        Write-Host "JAVA_HOME=$javaHomeCandidate"
         return
       }
     } catch {}
