@@ -1,0 +1,136 @@
+name: Company GAME_SEED Bootstrap
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 15 * * *' # 00:30 KST; no vacancy means no seed creation
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: company-game-seed-bootstrap
+  cancel-in-progress: false
+
+env:
+  GAME_SEED_LOCAL_MODEL: qwen3:0.6b
+  OLLAMA_VERSION: '0.33.3'
+
+jobs:
+  seed-bootstrap-or-replenish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Static GAME_SEED contract QA
+        run: |
+          node --check tools/game-seed-state.mjs
+          node --check tools/company-game-seed-contract.mjs
+          node --check tools/company-game-seed-bootstrap.mjs
+          node --test qa/company-game-seed-flow.test.mjs
+          node --test qa/autonomous-portfolio-continuation.test.mjs
+
+      - name: Decide whether a model call is needed
+        id: need
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
+          import {loadSeedState,unfilledVacancies} from './tools/game-seed-state.mjs';
+          const s=loadSeedState();
+          const need=!s.bootstrapCompletedAt||unfilledVacancies(s).length>0;
+          console.log(`model=${need?'true':'false'}`);
+          console.log(`reason=${!s.bootstrapCompletedAt?'INITIAL_SIX_SEED_BOOTSTRAP':need?'ONE_FOR_ONE_VACANCY':'NO_VACANCY'}`);
+          NODE
+
+      - name: Verified free budget preflight
+        if: steps.need.outputs.model == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/free-budget-telemetry.mjs \
+            --verify-public-repo=true \
+            --runner=ubuntu-latest \
+            --model-calls=1 \
+            --runner-minutes=20 \
+            --output=.autonomous/free-budget-telemetry.json
+          node -e "const r=require('./.autonomous/free-budget-telemetry.json');if(r.allowed!==true)process.exit(1)"
+          echo 'GAME_SEED_FREE_BUDGET_PREFLIGHT=PASS'
+          echo 'GAME_SEED_MODEL_CALLS_MAX_THIS_RUN=1'
+
+      - name: Prepare free local GAME_SEED model
+        if: steps.need.outputs.model == 'true'
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: ${{ env.GAME_SEED_LOCAL_MODEL }}
+          version: ${{ env.OLLAMA_VERSION }}
+          pull-model: 'true'
+
+      - name: Generate initial six seeds or exact vacancy replacements
+        if: steps.need.outputs.model == 'true'
+        env:
+          GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
+        run: |
+          node tools/company-game-seed-bootstrap.mjs | tee /tmp/game-seed-result.txt
+          grep -q 'GAME_SEED_PAID_API=NO' /tmp/game-seed-result.txt
+          grep -q 'GAME_SEED_MODEL_CALLS=1' /tmp/game-seed-result.txt
+
+      - name: Stop with no growth when there is no vacancy
+        if: steps.need.outputs.model != 'true'
+        run: |
+          echo 'GAME_SEED_ACTION=NO_VACANCY'
+          echo 'GAME_SEED_CREATED_COUNT=0'
+          echo 'AUTOMATIC_SEED_GROWTH=NO'
+
+      - name: Validate generated state
+        if: steps.need.outputs.model == 'true'
+        run: |
+          node --test qa/company-game-seed-state-file.test.mjs
+          git diff --check
+
+      - name: Persist GAME_SEED state through isolated PR only
+        if: steps.need.outputs.model == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- game-seed-state.json; then
+            echo 'GAME_SEED_STATE_CHANGE=NO'
+            exit 0
+          fi
+          branch="automation/game-seed-${GITHUB_RUN_ID}"
+          git config user.name 'jaewoon-game-seed'
+          git config user.email 'game-seed@users.noreply.github.com'
+          git checkout -b "$branch"
+          git add game-seed-state.json
+          git commit -m "seed: bootstrap or replenish GAME_SEED state"
+          git push origin "HEAD:$branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "seed: bootstrap or replenish GAME_SEED" --body "Machine-generated GAME_SEED state only. Initial creation is one six-category batch; later generation is one-for-one vacancy replenishment. Market evidence is target-design reference, not a hard gate. No game source or public release write.")"
+          pr_number="${pr_url##*/}"
+          gh pr checks "$pr_number" --repo "$GITHUB_REPOSITORY" --watch --fail-fast
+          gh pr merge "$pr_number" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          echo "GAME_SEED_STATE_PR=$pr_number"
+          echo 'PUBLIC_GAME_SOURCE_WRITE=NO'
+          echo 'PAID_API=NO'
+
+      - name: Summary
+        if: always()
+        run: |
+          echo '### Company GAME_SEED Bootstrap' >> "$GITHUB_STEP_SUMMARY"
+          echo '- initial generation: one atomic six-category batch' >> "$GITHUB_STEP_SUMMARY"
+          echo '- local model calls: one batch call per generation run' >> "$GITHUB_STEP_SUMMARY"
+          echo '- recurring schedule: vacancy check only; no vacancy = no new seed' >> "$GITHUB_STEP_SUMMARY"
+          echo '- replenishment: one-for-one same category unless owner changes category' >> "$GITHUB_STEP_SUMMARY"
+          echo '- market evidence: target/audience/session/monetization reference only' >> "$GITHUB_STEP_SUMMARY"
+          echo '- numeric market claims: source + observedAt required' >> "$GITHUB_STEP_SUMMARY"
+          echo '- source code: own implementation only' >> "$GITHUB_STEP_SUMMARY"
+          echo '- public game source write: NO' >> "$GITHUB_STEP_SUMMARY"
