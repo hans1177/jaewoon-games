@@ -7,6 +7,7 @@ const REQUIRED_QA = Object.freeze({ independentQa: 'PASS', browserQa: 'PASS' });
 const ALLOWED_SOURCE_TASKS = new Set(['bugfix', 'coding', 'unity']);
 const REQUIRED_TEACHER_FIELDS = Object.freeze(['structuralRepair','rootCause','responsibilityBoundary','patchScope','whyNotSmallerPatch','regressionRisks','evidence']);
 const FORBIDDEN_TEACHER_KEYS = new Set(['patch','code','replacement','finalCode','sourceCode']);
+const DEFAULT_UNITY_RUBRIC = 'company-learning/unity-teacher-rubric.json';
 
 const clean = (value) => String(value ?? '').trim();
 const upper = (value) => clean(value).toUpperCase();
@@ -44,10 +45,48 @@ export function discoverStructuralCandidates(sampleDir, { maxCandidates = 24 } =
   return candidates.sort((a,b) => b.structuralHints - a.structuralHints || b.outputBytes - a.outputBytes || a.candidateId.localeCompare(b.candidateId)).slice(0, Math.max(1, Number(maxCandidates) || 24));
 }
 
-export function buildTeacherPrompt(record) {
+export function loadUnityTeacherRubric(rubricPath = DEFAULT_UNITY_RUBRIC) {
+  if (!rubricPath || !fs.existsSync(rubricPath)) return null;
+  const rubric = readJson(rubricPath);
+  if (rubric?.scope !== 'UNITY_CODING_ONLY' || rubric?.authority !== 'ANALYSIS_ONLY' || rubric?.answerTarget !== 'VERIFIED_FINAL_DIFF_ONLY') {
+    throw new Error('Unity teacher rubric contract mismatch');
+  }
+  if (!Array.isArray(rubric.principles) || rubric.principles.length < 8) throw new Error('Unity teacher rubric principles insufficient');
+  if (!Array.isArray(rubric.exemplars) || rubric.exemplars.length < 3) throw new Error('Unity teacher rubric exemplars insufficient');
+  return rubric;
+}
+
+export function buildTeacherPrompt(record, { rubric = null } = {}) {
   if (!isVerifiedStructuralSource(record)) throw new Error('teacher 분석 입력은 완결 PASS 검증 샘플이어야 함');
   const sample = sampleBody(record);
-  return ['너는 무료 로컬 코드 구조 분석 teacher다.','정답 코드를 생성하지 말고 이미 검증된 수정 사례에서 구조적 수리 판단만 추출하라.','절대 코드, diff, patch, replacement source를 출력하지 마라.','JSON 객체 하나만 출력하라.','필드: structuralRepair(boolean), rootCause(string), responsibilityBoundary(string), patchScope(string[]), whyNotSmallerPatch(string), regressionRisks(string[]), evidence(string[]).',`TASK_TYPE: ${clean(sample.taskType ?? record.taskType)}`,`PROJECT: ${clean(record.project ?? record.gameId ?? record?.provenance?.gameId) || 'shared'}`,`INSTRUCTION:\n${clean(sample.instruction)}`,`INPUT:\n${clean(sample.input)}`,`VERIFIED_RESULT_SUMMARY_AND_DIFF:\n${clean(sample.output)}`].join('\n\n');
+  const rubricBlock = rubric ? [
+    'UNITY_TEACHER_RUBRIC:',
+    `SCOPE: ${rubric.scope}`,
+    `AUTHORITY: ${rubric.authority}`,
+    `ANSWER_TARGET: ${rubric.answerTarget}`,
+    'PRINCIPLES:',
+    ...rubric.principles.map((item, index) => `${index + 1}. ${item}`),
+    'MASTERY_AREAS:',
+    ...(rubric.masteryAreas ?? []).map((item) => `- ${item}`),
+    'ANTI_PATTERNS:',
+    ...(rubric.antiPatterns ?? []).map((item) => `- ${item}`),
+    'EXEMPLARS:',
+    ...(rubric.exemplars ?? []).map((item) => JSON.stringify(item)),
+  ].join('\n') : '';
+  return [
+    '너는 Unity C# 게임 구현 구조를 가르치는 코드 분석 teacher다.',
+    '정답 코드를 생성하지 말고 이미 검증된 수정 사례에서 구조적 수리 판단만 추출하라.',
+    '절대 코드, diff, patch, replacement source를 출력하지 마라.',
+    '한 줄 수정이 보여도 주변 책임 경계와 Unity lifecycle이 정상인지 먼저 판단하라.',
+    'JSON 객체 하나만 출력하라.',
+    '필드: structuralRepair(boolean), rootCause(string), responsibilityBoundary(string), patchScope(string[]), whyNotSmallerPatch(string), regressionRisks(string[]), evidence(string[]).',
+    rubricBlock,
+    `TASK_TYPE: ${clean(sample.taskType ?? record.taskType)}`,
+    `PROJECT: ${clean(record.project ?? record.gameId ?? record?.provenance?.gameId) || 'shared'}`,
+    `INSTRUCTION:\n${clean(sample.instruction)}`,
+    `INPUT:\n${clean(sample.input)}`,
+    `VERIFIED_RESULT_SUMMARY_AND_DIFF:\n${clean(sample.output)}`,
+  ].filter(Boolean).join('\n\n');
 }
 
 function walkKeys(value, callback) { if (!value || typeof value !== 'object') return; if (Array.isArray(value)) { for (const item of value) walkKeys(item, callback); return; } for (const [key, child] of Object.entries(value)) { callback(key, child); walkKeys(child, callback); } }
@@ -73,7 +112,13 @@ function parseArgs(argv) { const [command,...rest]=argv; const args={command}; f
 function main() {
   const args=parseArgs(process.argv.slice(2));
   if(args.command==='discover'){const candidates=discoverStructuralCandidates(args['sample-dir']||'company-learning/training-samples',{maxCandidates:Number(args.max??24)}); const result={version:1,state:candidates.length?'CANDIDATES_AVAILABLE':'NO_CANDIDATES',candidates}; if(args.out)writeJson(args.out,result); console.log(JSON.stringify(result)); return;}
-  if(args.command==='prompt'){if(!args.sample)throw new Error('--sample 필요'); const prompt=buildTeacherPrompt(readJson(args.sample)); if(args.out){fs.mkdirSync(path.dirname(args.out),{recursive:true});fs.writeFileSync(args.out,prompt);}else process.stdout.write(prompt); return;}
+  if(args.command==='prompt'){
+    if(!args.sample)throw new Error('--sample 필요');
+    const rubricPath = args.rubric ?? (fs.existsSync(DEFAULT_UNITY_RUBRIC) ? DEFAULT_UNITY_RUBRIC : null);
+    const rubric = rubricPath ? loadUnityTeacherRubric(rubricPath) : null;
+    const prompt=buildTeacherPrompt(readJson(args.sample), { rubric });
+    if(args.out){fs.mkdirSync(path.dirname(args.out),{recursive:true});fs.writeFileSync(args.out,prompt);}else process.stdout.write(prompt); return;
+  }
   if(args.command==='enrich'){if(!args.sample||!args.teacher||!args.out)throw new Error('--sample --teacher --out 필요'); const source=readJson(args.sample); const rawTeacher=readJson(args.teacher); const teacher=typeof rawTeacher.response==='string'?JSON.parse(rawTeacher.response):rawTeacher; const enriched=buildDistilledStructuralSample(source,teacher,{teacherModel:args['teacher-model']}); if(!enriched){console.log(JSON.stringify({state:'NOT_STRUCTURAL_REPAIR',output:null}));return;} writeJson(args.out,enriched); console.log(JSON.stringify({state:'STRUCTURAL_SAMPLE_WRITTEN',output:args.out,specialization:enriched.specialization,answerTarget:enriched.teacherSupport.answerTarget})); return;}
   throw new Error('command는 discover|prompt|enrich 중 하나여야 함');
 }
