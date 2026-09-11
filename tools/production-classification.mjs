@@ -6,12 +6,6 @@ export const PRODUCTION_CLASSES=Object.freeze({
   RELEASE_CONFIRMED:'RELEASE_CONFIRMED',
 });
 
-export const DEFAULT_TIER_ALIAS_BY_CLASS=Object.freeze({
-  RELEASE_CONFIRMED:1,
-  DEVELOPMENT_CONFIRMED:2,
-  DESIGN_ONLY:3,
-});
-
 const VALID_CLASSES=new Set(Object.values(PRODUCTION_CLASSES));
 
 export function normalizeProductionClass(value){
@@ -27,31 +21,13 @@ export function productionClassFromHomepageCategory(value){
   return null;
 }
 
-export function productionClassFromLegacyTier(value,{numericLabels=DEFAULT_TIER_ALIAS_BY_CLASS}={}){
-  const tier=Number(value);
-  if(!Number.isFinite(tier))return null;
-  for(const [productionClass,alias] of Object.entries(numericLabels||{})){
-    if(Number(alias)===tier&&VALID_CLASSES.has(productionClass))return productionClass;
-  }
-  return null;
-}
-
-export function productionClassOf(project={},game={},options={}){
+export function productionClassOf(project={},game={}){
   const direct=[project?.productionClass,game?.productionClass,project?.profileStatus]
     .map(normalizeProductionClass)
     .find(Boolean);
   if(direct)return direct;
-  const category=productionClassFromHomepageCategory(game?.homepageCategory);
-  if(category)return category;
-  return productionClassFromLegacyTier(project?.productionTier??game?.productionTier,options)
+  return productionClassFromHomepageCategory(game?.homepageCategory)
     ||PRODUCTION_CLASSES.DESIGN_ONLY;
-}
-
-export function tierAliasForProductionClass(value,{numericLabels=DEFAULT_TIER_ALIAS_BY_CLASS}={}){
-  const productionClass=normalizeProductionClass(value);
-  if(!productionClass)return null;
-  const alias=Number(numericLabels?.[productionClass]);
-  return Number.isFinite(alias)?alias:null;
 }
 
 export function homepageCategoryForProductionClass(value){
