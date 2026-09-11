@@ -17,6 +17,9 @@ env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   OLLAMA_HOST: 127.0.0.1:11434
   OLLAMA_VERSION: '0.33.3'
+  OLLAMA_MAX_LOADED_MODELS: '3'
+  COMPANY_MODEL_PHASE_CONCURRENCY: '3'
+  COMPANY_MODEL_KEEP_ALIVE: '2m'
 
 jobs:
   resolve-seed-targets:
@@ -163,18 +166,33 @@ jobs:
           version: ${{ env.OLLAMA_VERSION }}
           pull-model: 'true'
 
-      - name: Pull remaining configured free department models
+      - name: Pull only missing configured free department models
         if: steps.target.outputs.should_run == 'true'
         env:
           PRIMARY_MODEL: ${{ steps.models.outputs.primary_model }}
         shell: bash
         run: |
           set -euo pipefail
+          ollama list | awk 'NR>1 {print $1}' > /tmp/ollama-present-models.txt
+          cache_hits=0
+          cache_misses=0
+          pulls=0
           while IFS= read -r model; do
             [ -z "$model" ] && continue
-            [ "$model" = "$PRIMARY_MODEL" ] && continue
+            if grep -Fxq "$model" /tmp/ollama-present-models.txt; then
+              cache_hits=$((cache_hits + 1))
+              echo "OLLAMA_MODEL_CACHE_HIT=$model"
+              continue
+            fi
+            cache_misses=$((cache_misses + 1))
+            echo "OLLAMA_MODEL_CACHE_MISS=$model"
             ollama pull "$model"
+            printf '%s\n' "$model" >> /tmp/ollama-present-models.txt
+            pulls=$((pulls + 1))
           done < /tmp/models.txt
+          echo "OLLAMA_MODEL_CACHE_HITS=$cache_hits"
+          echo "OLLAMA_MODEL_CACHE_MISSES=$cache_misses"
+          echo "OLLAMA_MODEL_PULL_COUNT=$pulls"
           echo 'PAID_API=NO'
 
       - name: Run seed-backed DESIGN_ONLY pipeline
