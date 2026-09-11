@@ -143,7 +143,8 @@ jobs:
             '--epochs', '0.25',
             '--max-length', '256',
             '--batch-size', '1',
-            '--grad-accum', '1'
+            '--grad-accum', '1',
+            '--final-eval-only'
           )
           & $env:PYTHON_EXE @trainArgs
           if ($LASTEXITCODE -ne 0) { throw 'CPU practice LoRA training failed' }
@@ -151,17 +152,19 @@ jobs:
           $metadata = [System.IO.File]::ReadAllText($metadataPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
           if ($metadata.practiceOnly -ne $true -or $metadata.promotionState -ne 'UNVERIFIED' -or $metadata.runtimePromotionAllowed -ne $false) { throw 'practice adapter safety gate failed' }
           if ($metadata.containsLicensedReference -ne $true -or $metadata.licensedReferenceSamples -lt 8) { throw 'adapter metadata lost licensed-reference provenance' }
+          if ($metadata.finalEvalOnly -ne $true) { throw 'single-final-eval optimization was not applied' }
           $weights = Get-ChildItem (Join-Path $adapterDir 'adapter') -Filter 'adapter_model*.safetensors' -File | Select-Object -First 1
           if ($null -eq $weights -or $weights.Length -le 0) { throw 'adapter weights were not created' }
           $sha = (Get-FileHash $weights.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
           $receipt = [ordered]@{
-            version = 2
+            version = 3
             adapterVersion = $adapterVersion
             method = 'lora'
             device = 'cpu'
             baseModel = $metadata.baseModel
             trainLoss = $metadata.trainMetrics.train_loss
             evalLoss = $metadata.evalMetrics.eval_loss
+            finalEvalOnly = $metadata.finalEvalOnly
             practiceSourceKinds = $metadata.practiceSourceKinds
             licensedReferenceSamples = $metadata.licensedReferenceSamples
             adapterWeightsBytes = $weights.Length
@@ -176,6 +179,7 @@ jobs:
           Write-Host 'PRACTICE_WEIGHT_LEARNING=PASS'
           Write-Host "PRACTICE_TRAIN_LOSS=$($metadata.trainMetrics.train_loss)"
           Write-Host "PRACTICE_EVAL_LOSS=$($metadata.evalMetrics.eval_loss)"
+          Write-Host 'PRACTICE_EVAL_PASSES=1'
           Write-Host "PRACTICE_LICENSED_REFERENCE_SAMPLES=$($metadata.licensedReferenceSamples)"
           Write-Host "PRACTICE_ADAPTER_WEIGHTS_BYTES=$($weights.Length)"
           Write-Host "PRACTICE_ADAPTER_WEIGHTS_SHA256=$sha"

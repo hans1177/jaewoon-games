@@ -24,6 +24,11 @@ def parse_args():
     parser.add_argument("--max-length", type=int, default=2048)
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--grad-accum", type=int, default=8)
+    parser.add_argument(
+        "--final-eval-only",
+        action="store_true",
+        help="Skip duplicate epoch evaluation/checkpointing and run one unchanged final evaluation.",
+    )
     return parser.parse_args()
 
 
@@ -187,6 +192,17 @@ def main():
         labels = list(encoded["input_ids"])
         masked = min(len(prompt_ids), len(encoded["input_ids"]))
         labels[:masked] = [-100] * masked
+        supervised_tokens = sum(1 for label in labels if label != -100)
+        if supervised_tokens == 0:
+            sample_id = (
+                (row.get("provenance") or {}).get("drillId")
+                or row.get("sampleId")
+                or row.get("id")
+                or "UNKNOWN"
+            )
+            raise RuntimeError(
+                f"answer tokens truncated completely before training: sample={sample_id}, max_length={args.max_length}"
+            )
         encoded["labels"] = labels
         return encoded
 
@@ -212,6 +228,9 @@ def main():
             )
             return batch
 
+    train_dataset = JsonlDataset(train_rows)
+    eval_dataset = JsonlDataset(eval_rows)
+
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
     training_args = TrainingArguments(
@@ -222,8 +241,8 @@ def main():
         per_device_eval_batch_size=args.batch_size,
         gradient_accumulation_steps=args.grad_accum,
         logging_steps=5,
-        eval_strategy="epoch",
-        save_strategy="epoch",
+        eval_strategy="no" if args.final_eval_only else "epoch",
+        save_strategy="no" if args.final_eval_only else "epoch",
         report_to=[],
         seed=args.seed,
         data_seed=args.seed,
@@ -234,8 +253,8 @@ def main():
     trainer = Trainer(
         model=model,
         args=training_args,
-        train_dataset=JsonlDataset(train_rows),
-        eval_dataset=JsonlDataset(eval_rows),
+        train_dataset=train_dataset,
+        eval_dataset=eval_dataset,
         data_collator=Collator(),
     )
     train_result = trainer.train()
@@ -261,6 +280,7 @@ def main():
         "datasetBatching": manifest.get("batching"),
         "contaminationRate": (manifest.get("contamination") or {}).get("contaminationRate"),
         "verifiedRealOnly": args.task_type == "unity",
+        "finalEvalOnly": args.final_eval_only,
         "trainMetrics": train_result.metrics,
         "evalMetrics": eval_result,
         "promotionState": "UNVERIFIED",
