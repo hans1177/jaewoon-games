@@ -1,9 +1,9 @@
 {
-  "version": 1,
+  "version": 2,
   "scope": "UNITY_CODING_ONLY",
   "specialization": "GRAPHICS_ANIMATION_MOTION_SMOOTHNESS",
   "authority": "ANALYSIS_ONLY",
-  "transferMode": "ABSTRACT_KNOWHOW_ONLY",
+  "transferMode": "ABSTRACT_KNOWHOW_PLUS_LICENSED_REUSE",
   "lessons": [
     {"id":"motion-01","topic":"movement responsiveness","rule":"부드러운 이동은 위치 보간 하나가 아니라 입력, 가속, 감속, 방향전환, 최대속도, 정지 규칙의 조합이다.","badPattern":"transform 위치를 직접 순간 변경한 뒤 시각 보간만 덧붙인다.","mastery":"기존 이동 권한을 유지하면서 가속·감속·회전 응답을 상태별로 설계한다."},
     {"id":"motion-02","topic":"velocity ownership","rule":"한 축의 최종 이동량과 속도는 한 시스템만 권한을 가진다.","badPattern":"컨트롤러, 넉백, 루트모션, 코루틴이 동시에 위치를 쓴다.","mastery":"이동·대시·넉백·루트모션을 기존 이동 권한 아래 우선순위 상태로 통합한다."},
@@ -22,6 +22,8 @@
     {"id":"transfer-02","topic":"verified pattern replication and rearrangement","rule":"검증된 내부 구현 패턴은 원리와 책임 단위로 복제한 뒤 현재 게임 구조에 맞게 재배치·변형·조합할 수 있다.","badPattern":"복제한 패턴의 옛 경로·상태 주인·씬 참조를 그대로 유지한다.","mastery":"복제 가능한 부분과 프로젝트 고유 부분을 분리하고 owner·lifecycle·data flow를 새 구조에 다시 바인딩한다."},
     {"id":"transfer-03","topic":"adaptive recombination","rule":"여러 검증 패턴은 하나를 고정 답으로 쓰지 말고 현재 제약에 맞는 부분만 조합한다.","badPattern":"카메라, 이동, 애니, 전투 패턴을 세트로 통째로 이식한다.","mastery":"입력 방식, 장르, 속도감, 성능 예산, 기존 시스템에 맞춰 필요한 원리만 선택·재조합한다."},
     {"id":"transfer-04","topic":"internal distillation loop","rule":"새로 검증된 성공 사례는 기존 원리를 강화하거나 예외 조건을 추가해 다음 판단을 더 빠르고 정확하게 만든다.","badPattern":"성공 patch를 단순 누적하고 기존 노하우와 연결하지 않는다.","mastery":"새 사례를 기존 판단 규칙과 비교해 일반화 가능한 원리·예외·회귀 위험을 갱신한다."},
-    {"id":"transfer-05","topic":"external benchmark boundary","rule":"외부 성공작에서는 추상적인 게임플레이·타이밍·피드백 원리만 학습하고 코드·에셋·고유 표현은 직접 복제하지 않는다.","badPattern":"외부 게임의 코드 구조, 에셋, 이름, 맵, UI 표현을 그대로 옮긴다.","mastery":"외부 사례는 행동 원리만 추출하고 내부 검증 패턴으로 새 구현을 만든다."}
+    {"id":"transfer-05","topic":"external benchmark boundary","rule":"외부 성공작에서는 게임플레이·타이밍·피드백·구조적 아이디어를 추출해 우리 코드로 독립 재구현한다. 타사 독점 코드를 복제 후 재배치하는 것은 오마주나 재해석으로 취급하지 않는다.","badPattern":"타사 소스코드를 가져와 변수명·순서·파일만 바꿔 자체 구현처럼 사용한다.","mastery":"외부 사례는 행동 원리와 기능 요구로 추상화하고 현재 프로젝트 책임 구조에서 새 코드를 작성한다."},
+    {"id":"transfer-06","topic":"licensed code reuse","rule":"명시적으로 허가된 오픈소스나 계약상 사용 가능한 코드는 해당 라이선스 조건 안에서 복제·수정·재배치할 수 있다.","badPattern":"공개 저장소라는 이유만으로 라이선스 확인 없이 코드를 복사하거나 고지·소스공개 등 조건을 무시한다.","mastery":"라이선스·저작권 고지·배포 의무·상업 이용 가능 여부를 확인한 뒤 허용 범위에서만 재사용하고, 이것을 오마주가 아니라 licensed reuse로 분류한다."},
+    {"id":"transfer-07","topic":"clean room reimplementation","rule":"외부 기능을 참고해야 할 때는 관찰 가능한 동작·문서·인터페이스를 요구사항으로 바꾸고 원본 코드 표현을 보지 않거나 의존하지 않은 채 새 구현을 만든다.","badPattern":"원본 코드를 본 뒤 문장 단위로 바꿔 쓰면서 독립 구현이라고 부른다.","mastery":"행동 명세→현재 구조 매핑→독립 구현→runtime QA 순서로 재현한다."}
   ]
 }
