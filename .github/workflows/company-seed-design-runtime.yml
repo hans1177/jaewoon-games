@@ -163,18 +163,31 @@ jobs:
           version: ${{ env.OLLAMA_VERSION }}
           pull-model: 'true'
 
-      - name: Pull remaining configured free department models
+      - name: Pull only missing configured free department models
         if: steps.target.outputs.should_run == 'true'
         env:
           PRIMARY_MODEL: ${{ steps.models.outputs.primary_model }}
         shell: bash
         run: |
           set -euo pipefail
+          ollama list | awk 'NR>1 {print $1}' > /tmp/local-models.txt
+          cached=0
+          pulled=0
           while IFS= read -r model; do
             [ -z "$model" ] && continue
             [ "$model" = "$PRIMARY_MODEL" ] && continue
+            if grep -Fxq "$model" /tmp/local-models.txt; then
+              cached=$((cached + 1))
+              echo "OLLAMA_MODEL_CACHE_HIT=$model"
+              continue
+            fi
+            echo "OLLAMA_MODEL_CACHE_MISS=$model"
             ollama pull "$model"
+            echo "$model" >> /tmp/local-models.txt
+            pulled=$((pulled + 1))
           done < /tmp/models.txt
+          echo "OLLAMA_MODEL_CACHE_HITS=$cached"
+          echo "OLLAMA_MODEL_PULLS=$pulled"
           echo 'PAID_API=NO'
 
       - name: Run seed-backed DESIGN_ONLY pipeline
