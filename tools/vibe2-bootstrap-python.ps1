@@ -6,12 +6,27 @@ $pythonRoot = Join-Path $learningRoot 'python311-embedded'
 $pythonExe = Join-Path $pythonRoot 'python.exe'
 $toolCachePython = if ($env:RUNNER_TOOL_CACHE) { Join-Path $env:RUNNER_TOOL_CACHE 'Python\3.11.9\x64\python.exe' } else { $null }
 
+function Invoke-NativeProbe([string]$exe, [string[]]$args) {
+  $previous = $ErrorActionPreference
+  try {
+    $ErrorActionPreference = 'SilentlyContinue'
+    & $exe @args 2>$null
+    return $LASTEXITCODE
+  }
+  finally {
+    $ErrorActionPreference = $previous
+  }
+}
+
 function Test-VibePython([string]$candidate) {
   if ([string]::IsNullOrWhiteSpace($candidate) -or -not (Test-Path $candidate)) { return $false }
-  & $candidate -c "import sys; assert sys.version_info[:2] == (3, 11); print(sys.executable)" *> $null
-  if ($LASTEXITCODE -ne 0) { return $false }
-  & $candidate -m pip --version *> $null
-  return $LASTEXITCODE -eq 0
+  if ((Invoke-NativeProbe $candidate @('-c', 'import sys; assert sys.version_info[:2] == (3, 11)')) -ne 0) { return $false }
+  if ((Invoke-NativeProbe $candidate @('-m', 'pip', '--version')) -ne 0) { return $false }
+  return $true
+}
+
+function Test-TrainingModules([string]$candidate) {
+  return (Invoke-NativeProbe $candidate @('-c', 'import torch, transformers, peft, accelerate')) -eq 0
 }
 
 $candidates = @()
@@ -55,6 +70,15 @@ if (-not $resolved) {
   $resolved = $pythonExe
 }
 
+if (-not (Test-TrainingModules $resolved)) {
+  Write-Host 'PYTHON_ML_STACK=INSTALLING'
+  & $resolved -m pip install --disable-pip-version-check --no-warn-script-location --index-url 'https://download.pytorch.org/whl/cu121' 'torch==2.5.1+cu121'
+  if ($LASTEXITCODE -ne 0) { throw 'CUDA PyTorch installation failed' }
+  & $resolved -m pip install --disable-pip-version-check --no-warn-script-location 'transformers>=4.51,<5' 'peft>=0.14,<1' 'accelerate>=1,<2' sentencepiece
+  if ($LASTEXITCODE -ne 0) { throw 'Unity LoRA dependency installation failed' }
+  if (-not (Test-TrainingModules $resolved)) { throw 'Unity LoRA dependency validation failed' }
+}
+
 $pythonDir = Split-Path -Parent $resolved
 $scriptsDir = Join-Path $pythonDir 'Scripts'
 "PYTHON_EXE=$resolved" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
@@ -63,6 +87,8 @@ if (Test-Path $scriptsDir) { $scriptsDir | Out-File -FilePath $env:GITHUB_PATH -
 
 & $resolved --version
 & $resolved -m pip --version
+& $resolved -c "import torch, transformers, peft, accelerate; print('PYTHON_ML_STACK=PASS'); print('TORCH=' + torch.__version__); print('TORCH_CUDA=' + str(torch.version.cuda))"
+if ($LASTEXITCODE -ne 0) { throw 'Unity LoRA runtime validation failed' }
 Write-Host 'PYTHON_RUNTIME=PASS'
 Write-Host 'PYTHON_BOOTSTRAP=REGISTRY_FREE_EMBEDDED'
 Write-Host "PYTHON_EXE=$resolved"
