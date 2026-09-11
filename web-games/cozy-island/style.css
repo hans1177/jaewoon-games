@@ -1,0 +1,71 @@
+/* 파일명: web-games/cozy-island/style.css */
+:root {
+  color-scheme: light;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans KR", sans-serif;
+  --glass: rgba(255, 255, 255, .86);
+  --ink: #25423a;
+  --green: #4b8d70;
+  --green-dark: #2f6b54;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #8fd0e2; color: var(--ink); }
+button { font: inherit; color: inherit; touch-action: manipulation; }
+#app { position: fixed; inset: 0; overflow: hidden; }
+#game { width: 100%; height: 100%; display: block; touch-action: none; }
+.hud { position: absolute; top: max(10px, env(safe-area-inset-top)); left: 10px; right: 10px; display: flex; justify-content: space-between; gap: 8px; pointer-events: none; }
+.hud-main { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 11px; border-radius: 16px; background: var(--glass); box-shadow: 0 4px 18px rgba(31,69,57,.12); backdrop-filter: blur(7px); font-size: 13px; white-space: nowrap; }
+.hud-main.right { pointer-events: auto; }
+.small-button { border: 0; border-radius: 10px; padding: 6px 9px; background: #dff4e8; font-weight: 800; }
+.hint { position: absolute; left: 50%; top: max(64px, calc(env(safe-area-inset-top) + 58px)); transform: translateX(-50%); max-width: calc(100% - 32px); padding: 8px 12px; border-radius: 14px; background: rgba(37,66,58,.75); color: white; font-size: 13px; text-align: center; pointer-events: none; }
+.toast { position: absolute; left: 50%; bottom: 150px; transform: translate(-50%, 12px); opacity: 0; transition: .18s ease; max-width: calc(100% - 40px); padding: 9px 13px; border-radius: 999px; background: rgba(30,51,45,.9); color: white; font-weight: 800; font-size: 13px; pointer-events: none; text-align: center; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.controls { position: absolute; left: 0; right: 0; bottom: max(12px, env(safe-area-inset-bottom)); display: flex; justify-content: space-between; align-items: end; padding: 0 16px; pointer-events: none; }
+.dpad { position: relative; width: 132px; height: 132px; pointer-events: auto; }
+.move { position: absolute; width: 48px; height: 48px; border: 0; border-radius: 16px; background: rgba(255,255,255,.82); box-shadow: 0 4px 12px rgba(28,67,56,.2); font-size: 19px; font-weight: 900; }
+.move:active, .move.active { transform: scale(.95); background: #d8f0e2; }
+.move.up { top: 0; left: 42px; }
+.move.left { top: 42px; left: 0; }
+.move.down { bottom: 0; left: 42px; }
+.move.right { top: 42px; right: 0; }
+.actions { display: flex; align-items: end; gap: 10px; pointer-events: auto; }
+.tool, .action { border: 0; box-shadow: 0 5px 15px rgba(28,67,56,.22); font-weight: 900; }
+.tool { width: 64px; height: 64px; border-radius: 20px; background: rgba(255,255,255,.9); font-size: 25px; }
+.tool small { display: block; margin-top: -2px; font-size: 10px; }
+.action { width: 82px; height: 82px; border-radius: 50%; background: #ffe194; color: #614c19; font-size: 17px; }
+.action:active, .tool:active { transform: scale(.96); }
+.panel { width: min(92vw, 430px); max-height: min(72vh, 600px); border: 0; border-radius: 22px; padding: 0; background: #fbfff9; box-shadow: 0 20px 60px rgba(24,52,44,.35); color: var(--ink); }
+.panel::backdrop { background: rgba(24,48,42,.35); backdrop-filter: blur(2px); }
+.panel-head { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 10px; background: #fbfff9; }
+.panel-head h2 { margin: 0; font-size: 20px; }
+.panel-head button { width: 36px; height: 36px; border: 0; border-radius: 12px; background: #eaf4ec; font-size: 24px; }
+.panel-body { padding: 4px 18px 20px; overflow: auto; }
+.inventory-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; }
+.item-card { padding: 12px; border-radius: 15px; background: #edf7ef; font-weight: 800; }
+.item-card span { display: block; margin-top: 4px; font-size: 20px; }
+.panel-note { line-height: 1.55; color: #567067; font-size: 13px; }
+.choice-grid { display: grid; gap: 9px; }
+.choice { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; border: 0; border-radius: 14px; padding: 12px 14px; background: #edf7ef; text-align: left; font-weight: 800; }
+.choice:disabled { opacity: .45; }
+.choice b { color: var(--green-dark); }
+.wide-button { width: 100%; border: 0; border-radius: 14px; padding: 13px 15px; background: var(--green); color: white; font-weight: 900; }
+.link-button { width: 100%; border: 0; padding: 12px; background: transparent; color: #648077; }
+.fishing-panel { padding: 20px; text-align: center; }
+.fishing-panel h2 { margin: 0 0 6px; }
+.fishing-panel p { margin: 0 0 18px; font-size: 13px; color: #60776f; }
+.fish-track { position: relative; height: 48px; margin: 8px 0 18px; border-radius: 18px; background: #b7dbe6; overflow: hidden; border: 4px solid #eaf8fb; }
+.fish-good { position: absolute; left: 42%; width: 20%; top: 0; bottom: 0; background: #8bd58f; }
+.fish-marker { position: absolute; left: 0; top: 50%; transform: translate(-50%,-50%); font-size: 24px; }
+@media (min-width: 700px) {
+  .controls { padding: 0 28px 12px; }
+  .dpad { width: 146px; height: 146px; }
+  .move { width: 52px; height: 52px; }
+  .move.up { left: 47px; }
+  .move.left { top: 47px; }
+  .move.down { left: 47px; }
+  .move.right { top: 47px; }
+}
+@media (max-height: 620px) {
+  .dpad { transform: scale(.82); transform-origin: left bottom; }
+  .actions { transform: scale(.86); transform-origin: right bottom; }
+  .toast { bottom: 112px; }
+}
