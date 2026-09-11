@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+const bootstrap=fs.readFileSync('.github/workflows/company-game-seed-bootstrap.yml','utf8');
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 
 test('seed design runtime cancels stale runs and revalidates matrix targets before model setup',()=>{
@@ -26,8 +27,12 @@ test('seed design runtime removes serial throughput bottleneck without paid runn
   assert.match(workflow,/ollama-seed-design-\$\{\{ runner\.os \}\}-\$\{\{ hashFiles\('company-directive\.json'\) \}\}/);
 });
 
-test('seed design runtime restarts when its main engine inputs change',()=>{
-  assert.match(workflow,/push:\s+branches:\s+- main\s+paths:/);
+test('main engine changes are serialized through bootstrap before one DESIGN_ONLY dispatch',()=>{
+  const triggerSection=workflow.slice(0,workflow.indexOf('\npermissions:'));
+  assert.doesNotMatch(triggerSection,/\n\s*push:/);
+  assert.match(triggerSection,/workflow_dispatch:/);
+  assert.match(triggerSection,/schedule:/);
+  assert.match(bootstrap,/push:\s+branches: \[main\]\s+paths:/);
   for(const path of [
     '.github/workflows/company-seed-design-runtime.yml',
     'tools/company-design-cycle.mjs',
@@ -35,7 +40,10 @@ test('seed design runtime restarts when its main engine inputs change',()=>{
     'tools/company-baseline-gate.mjs',
     'tools/company-design-artbook.mjs',
     'company-directive.json',
-  ]) assert.ok(workflow.includes(`- '${path}'`),`missing push path: ${path}`);
+  ]) assert.ok(bootstrap.includes(`- '${path}'`),`bootstrap missing design engine path: ${path}`);
+  assert.match(bootstrap,/if: steps\.persist\.outputs\.persisted == 'true' \|\| github\.event_name == 'push'/);
+  assert.match(bootstrap,/gh workflow run company-seed-design-runtime\.yml --ref main/);
+  assert.match(bootstrap,/GAME_SEED_DESIGN_DISPATCH_SOURCE=/);
 });
 
 test('parallel seed jobs synchronize company-runtime writes before push',()=>{
