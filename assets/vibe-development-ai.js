@@ -3,11 +3,12 @@
 // 규칙: 현재 ChatGPT 개발 환경에서는 GPT-5.6 Sol이 상위 개발 에이전트이며 외부 AI는 선택적 보조자다. 독립 실행 시 Groq → Mistral 무료 fallback만 허용한다.
 
 import { planCompanyDevelopmentTask, submitCompanyBidirectionalProposal } from './vibe-company-orchestration-bridge.js';
+import { createVibeV3ExecutionContract } from './vibe-v3-engine.js';
 
 const POLICY='AI_ASSISTED_DEVELOPMENT_ALLOWED_BUT_NON_AUTHORITATIVE';
 const ENGINE_ONLY=Object.freeze(['hp','damage','waves','spawnInterval','countPerSpawn','rewards','dropRates','drops','gameplayFlow','saveMeaning','inventory-write','save-write','progression','collision','cooldown','quest-completion','quest-reward','stat-growth','spawn-count','combat-result']);
 const ENGINE_KEY_ALIASES=Object.freeze({drops:'dropRates','drop-rates':'dropRates','spawn-count':'countPerSpawn','save-meaning':'saveMeaning','gameplay-flow':'gameplayFlow'});
-const DEVELOPMENT_PURPOSES=new Set(['code-generation','code-edit','code-review','diagnosis','source-repair','build-plan','design-generation','quality-priority','visual-analysis','animation-analysis','qa-summary','story-design','world-design','character-design']);
+const DEVELOPMENT_PURPOSES=new Set(['code-generation','code-edit','code-review','diagnosis','source-repair','build-plan','design-generation','quality-priority','visual-analysis','animation-analysis','qa-summary','story-design','world-design','character-design','candidate-generation','candidate-ranking','repair-loop']);
 const PROVIDERS=Object.freeze([
  Object.freeze({id:'groq',model:'openai/gpt-oss-120b',priority:1,roles:Object.freeze(['code-analysis','diagnosis','reasoning','code-edit-candidate']),freeOnly:true}),
  Object.freeze({id:'mistral',model:'mistral-small-latest',priority:2,roles:Object.freeze(['story','worldbuilding','character','creative-concept']),freeOnly:true,fallbackOn:Object.freeze(['quota','rate-limit','429'])})
@@ -26,7 +27,7 @@ function findProtectedCandidateKeys(value,path='',seen=new Set(),found=new Set()
 }
 export function createVibeDevelopmentAIContract({environment='standalone',purpose='diagnosis'}={}){
  const env=clean(environment)||'standalone',p=clean(purpose),chatgpt=env==='chatgpt'||env==='chatgpt-connected';
- return Object.freeze({version:2,policy:POLICY,environment:env,purpose:p,allowed:DEVELOPMENT_PURPOSES.has(p),authoritative:false,orchestrator:chatgpt?'gpt-5.6-sol':'vibe-maker',externalAIRequired:false,externalAIUsage:chatgpt?'optional-assistant':'free-fallback-assistant',providers:PROVIDERS,paidFallback:false,geminiExcluded:true,engineAuthoritative:true,mustNotDecide:ENGINE_ONLY,protectedAliases:ENGINE_KEY_ALIASES,recursiveProtection:true,stopWhen:Object.freeze(['both-free-providers-unavailable','paid-provider-required','protected-change-needs-user-authorization','verification-impossible'])});
+ return Object.freeze({version:3,generation:'V3',policy:POLICY,environment:env,purpose:p,allowed:DEVELOPMENT_PURPOSES.has(p),authoritative:false,orchestrator:chatgpt?'gpt-5.6-sol':'vibe-maker',externalAIRequired:false,externalAIUsage:chatgpt?'optional-assistant':'free-fallback-assistant',providers:PROVIDERS,paidFallback:false,geminiExcluded:true,engineAuthoritative:true,mustNotDecide:ENGINE_ONLY,protectedAliases:ENGINE_KEY_ALIASES,recursiveProtection:true,multiCandidateRequired:true,selfRepairBounded:true,trajectoryLearning:true,stopWhen:Object.freeze(['both-free-providers-unavailable','paid-provider-required','protected-change-needs-user-authorization','verification-impossible'])});
 }
 export function selectVibeDevelopmentAI({environment='standalone',purpose='diagnosis',groq={available:true},mistral={available:true},preferExternal=false}={}){
  const contract=createVibeDevelopmentAIContract({environment,purpose});
@@ -69,21 +70,28 @@ export function createVibeDevelopmentPipeline({
  maxRevisionRounds=2,
  departmentReviews=[],
  ownerDecision='PENDING',
- ownerNotes=''
+ ownerNotes='',
+ candidateCount=3,
+ maxRepairAttempts=3,
+ minWinnerScore=0.78
 }={}){
  const chatgpt=clean(environment).startsWith('chatgpt');
  const companyPlan=String(request||'').trim()?planCompanyDevelopmentTask({request,target,gameId,file,responsibleFiles,knownBroken,stageId,revisionRoundsUsed,maxRevisionRounds,departmentReviews,ownerDecision,ownerNotes}):null;
  const companySteps=companyPlan
   ? ['company-request-routing',...(companyPlan.routing.predevelopmentGateRequired?['company-predevelopment-gate']:[]),...(companyPlan.routing.majorOwnerApprovalRequired&&!companyPlan.routing.predevelopmentGateRequired?['company-major-change-owner-gate']:[]),'department-assignment']
   : [];
+ const v3=createVibeV3ExecutionContract({candidateCount,maxRepairAttempts,minWinnerScore});
+ const intelligenceSteps=['build-source-dependency-graph','rank-responsible-source','recall-verified-success-and-failure-patterns','generate-independent-candidates','isolated-candidate-execution','deterministic-candidate-tournament','bounded-failure-repair-loop'];
  const executionSteps=chatgpt
-  ? ['gpt-5.6-sol-analysis','vibe-maker-protection','optional-external-ai-candidates','deterministic-validation','checkpoint','source-apply','runtime-observation','run-qa','regression-check','exact-revision-evidence']
-  : ['vibe-maker-analysis','groq-free-if-useful','mistral-free-on-groq-limit','deterministic-validation','checkpoint','source-apply','runtime-observation','run-qa','regression-check','exact-revision-evidence'];
+  ? ['gpt-5.6-sol-analysis','vibe-maker-protection','optional-external-ai-candidates',...intelligenceSteps,'deterministic-validation','checkpoint','winner-source-apply','runtime-observation','run-qa','regression-check','exact-revision-evidence','persist-success-and-failure-trajectory']
+  : ['vibe-maker-analysis','groq-free-if-useful','mistral-free-on-groq-limit',...intelligenceSteps,'deterministic-validation','checkpoint','winner-source-apply','runtime-observation','run-qa','regression-check','exact-revision-evidence','persist-success-and-failure-trajectory'];
  return Object.freeze({
-  version:3,
+  version:4,
+  generation:'V3',
   environment,
   steps:Object.freeze(['user-direction',...companySteps,...executionSteps]),
   companyPlan,
+  v3,
   executionAllowed:companyPlan?companyPlan.routing.mayExecute:null,
   externalAIRequired:false,
   finalAuthority:'deterministic-vibe-engine',
