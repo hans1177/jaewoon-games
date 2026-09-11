@@ -96,7 +96,11 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-design-promotion'
           git config user.email 'design-promotion@users.noreply.github.com'
-          git fetch origin "$COMPANY_RUNTIME_BRANCH"
+          git fetch origin main "$COMPANY_RUNTIME_BRANCH"
+          # Runtime evidence was overlaid into the main worktree for evaluation.
+          # Drop that temporary overlay before switching branches; promoted state is safe in /tmp.
+          git reset --hard origin/main
+          git clean -fd
           git checkout -B design-promotion-persist "origin/$COMPANY_RUNTIME_BRANCH"
           cp /tmp/design-promotion-runtime/game-seed-state.json game-seed-state.json
           cp /tmp/design-promotion-runtime/autonomous-portfolio.json autonomous-portfolio.json
