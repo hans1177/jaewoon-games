@@ -18,6 +18,20 @@ test('bootstrap contract rejects external network and persistent storage',()=>{
   assert.ok(result.blockers.includes('NETWORK_API_FORBIDDEN'));
 });
 
+test('bootstrap contract rejects malformed inline JavaScript before browser runtime',()=>{
+  const malformed=playable.replace('});</script>','});if(true){</script>');
+  const result=validateBootstrapHtml(malformed);
+  assert.equal(result.pass,false);
+  assert.ok(result.blockers.includes('INLINE_SCRIPT_SYNTAX_INVALID'));
+});
+
+test('bootstrap contract requires a real mobile viewport',()=>{
+  const noViewport=playable.replace('<meta name="viewport" content="width=device-width,initial-scale=1">','');
+  const result=validateBootstrapHtml(noViewport);
+  assert.equal(result.pass,false);
+  assert.ok(result.blockers.includes('MOBILE_VIEWPORT_REQUIRED'));
+});
+
 test('contract recovery infers the locked GAME_SEED genre instead of inventing a new class',()=>{
   const cases={
     ACTION_SURVIVAL_ROGUELITE:'SEED-ACTION_SURVIVAL_ROGUELITE-001',

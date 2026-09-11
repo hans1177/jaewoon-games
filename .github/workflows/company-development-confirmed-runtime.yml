@@ -7,7 +7,9 @@ on:
       - '.github/workflows/company-development-confirmed-runtime.yml'
       - 'tools/company-development-web-bootstrap.mjs'
       - 'tools/company-development-web-gameplay-validation.mjs'
+      - 'tools/company-development-validation-cycle.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
+      - 'qa/company-development-validation-json-retry.test.mjs'
   workflow_dispatch:
   schedule:
     - cron: '37 * * * *'
@@ -18,7 +20,7 @@ permissions:
 
 concurrency:
   group: company-development-confirmed-runtime
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
   prepare:
@@ -44,7 +46,9 @@ jobs:
         run: |
           node --check tools/company-development-web-bootstrap.mjs
           node --check tools/company-development-web-gameplay-validation.mjs
+          node --check tools/company-development-validation-cycle.mjs
           node --test qa/company-development-web-runtime.test.mjs
+          node --test qa/company-development-validation-json-retry.test.mjs
       - name: Sync current main into autonomous development line
         id: sync
         shell: bash

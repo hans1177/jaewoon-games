@@ -1,0 +1,129 @@
+name: Vibe2 External Mobile Free Game Playtest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/external-mobile-free-game-playtest.yml'
+      - 'company-learning/external-game-playtest/**'
+      - 'tools/external-mobile-free-playtest.ps1'
+      - 'tools/vibe2-external-gameplay-distill.mjs'
+      - '.playtest-requests/mobile-free.json'
+  workflow_dispatch:
+    inputs:
+      max_games:
+        description: 'Maximum number of free mobile reference games to test'
+        required: false
+        default: '1'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: vibe2-external-mobile-free-playtest
+  cancel-in-progress: false
+
+env:
+  REFERENCE_AUTHORITY: EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE
+  RUNTIME_PROMOTION_ALLOWED: 'NO'
+  CODE_EXTRACTION_ALLOWED: 'NO'
+
+jobs:
+  playtest:
+    runs-on: [self-hosted, Windows, X64, jaewoon-unity]
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Resolve requested game count
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $max = '${{ github.event.inputs.max_games }}'
+          if ([string]::IsNullOrWhiteSpace($max)) { $max = '1' }
+          if ($max -notmatch '^\d+$' -or [int]$max -lt 1 -or [int]$max -gt 6) { throw 'max_games must be 1..6' }
+          "PLAYTEST_MAX_GAMES=$max" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Verify seed-derived commercial reference policy
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $manifestPath = 'company-learning/external-game-playtest/mobile-free-seed-games.json'
+          $manifest = [System.IO.File]::ReadAllText($manifestPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+          if ($manifest.sourceSeed -ne 'game-seed-market-evidence.json') { throw 'playtest manifest is not bound to 3-category seed market evidence' }
+          if ($manifest.authority -ne 'EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE' -or $manifest.practiceOnly -ne $true -or $manifest.runtimePromotionAllowed -ne $false) { throw 'unsafe external reference authority' }
+          if ($manifest.codeExtractionAllowed -ne $false -or $manifest.binaryRedistributionAllowed -ne $false -or $manifest.installPolicy -ne 'OFFICIAL_GOOGLE_PLAY_ONLY') { throw 'external commercial reference policy violation' }
+          if (@($manifest.games).Count -lt 3) { throw 'mobile reference catalog too small' }
+          Write-Host "EXTERNAL_REFERENCE_GAMES=$(@($manifest.games).Count)"
+          Write-Host 'EXTERNAL_REFERENCE_INSTALL_POLICY=OFFICIAL_GOOGLE_PLAY_ONLY'
+          Write-Host 'EXTERNAL_REFERENCE_CODE_EXTRACTION=NO'
+
+      - name: Install and black-box playtest free mobile reference game
+        id: playtest
+        continue-on-error: true
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $out = Join-Path $env:RUNNER_TEMP "external-mobile-playtest-$env:GITHUB_RUN_ID"
+          .\tools\external-mobile-free-playtest.ps1 `
+            -ManifestPath 'company-learning/external-game-playtest/mobile-free-seed-games.json' `
+            -OutDir $out `
+            -MaxGames ([int]$env:PLAYTEST_MAX_GAMES)
+          if ($LASTEXITCODE -ne 0) { throw 'external mobile playtest script failed' }
+          "EXTERNAL_PLAYTEST_OUT=$out" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $summary = [System.IO.File]::ReadAllText((Join-Path $out 'summary.json'), [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+          $pass = @($summary.games | Where-Object { $_.installPass -and $_.launchPass -and $_.foregroundPass -and $_.processAliveAfter -and $_.noCrash }).Count
+          if ($pass -lt 1) { throw 'no valid runtime-observed commercial game' }
+          Write-Host "EXTERNAL_RUNTIME_VALID_GAMES=$pass"
+
+      - name: Distill runtime behavior into Unity implementation judgment
+        if: steps.playtest.outcome == 'success'
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $samples = Join-Path $env:RUNNER_TEMP "external-mobile-playtest-samples-$env:GITHUB_RUN_ID"
+          node tools/vibe2-external-gameplay-distill.mjs `
+            --manifest company-learning/external-game-playtest/mobile-free-seed-games.json `
+            --results (Join-Path $env:EXTERNAL_PLAYTEST_OUT 'summary.json') `
+            --out $samples
+          if ($LASTEXITCODE -ne 0) { throw 'commercial runtime distillation failed' }
+          "EXTERNAL_PLAYTEST_SAMPLES=$samples" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $count = @(Get-ChildItem $samples -Filter 'commercial-runtime-*.json' -File).Count
+          if ($count -lt 1) { throw 'commercial runtime sample missing' }
+          Write-Host "COMMERCIAL_RUNTIME_REFERENCE_SAMPLES=$count"
+          Write-Host 'COMMERCIAL_RUNTIME_REFERENCE_VERIFIED_PRODUCTION_POSITIVE=NO'
+
+      - name: Upload ephemeral runtime evidence
+        if: always() && env.EXTERNAL_PLAYTEST_OUT != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-mobile-gameplay-evidence
+          path: ${{ env.EXTERNAL_PLAYTEST_OUT }}
+          retention-days: 1
+          if-no-files-found: warn
+
+      - name: Upload distilled runtime reference samples
+        if: steps.playtest.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-mobile-gameplay-samples
+          path: ${{ env.EXTERNAL_PLAYTEST_SAMPLES }}
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Enforce real-playtest gate
+        if: always()
+        run: |
+          if ('${{ steps.playtest.outcome }}' -ne 'success') {
+            throw 'EXTERNAL_MOBILE_PLAYTEST=BLOCKED_OR_FAILED; no sample is accepted until an official Play Store install and real runtime test pass'
+          }
+          Write-Host 'EXTERNAL_MOBILE_PLAYTEST=PASS'
+          Write-Host 'EXTERNAL_COMMERCIAL_REFERENCE_ONLY=YES'
+          Write-Host 'RUNTIME_PROMOTION_ALLOWED=NO'
