@@ -3,10 +3,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { buildVerifiedTrainingSample, qaEvidencePasses, TRAINING_SAMPLE_VERSION } from './vibe2-training-sample.mjs';
+import { buildVerifiedTrainingSample, qaEvidencePasses, TRAINING_SAMPLE_VERSION, EXTERNAL_BLACK_BOX_QA_MARKER } from './vibe2-training-sample.mjs';
 
 const SAFE_ID = /^[A-Za-z0-9._-]+$/;
 const SHA = /^[0-9a-f]{7,40}$/i;
+const SHA256_DIGEST = /^sha256:[0-9a-f]{64}$/i;
+const EXTERNAL_DISTILLATION_PATH = /^company-learning\/external-game-playtest\/[A-Za-z0-9._-]+-runtime-distillation\.json$/;
 
 function git(args, { allowFailure = false } = {}) {
   const result = spawnSync('git', args, { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
@@ -47,6 +49,14 @@ export function listUnityReleaseBaselinePaths(mainRef = 'origin/main') {
     .split(/\r?\n/)
     .map((value) => value.trim())
     .filter((value) => /^design\/[^/]+\/\d{4}-\d{2}-\d{2}\/release-baseline\.json$/.test(value))
+    .sort();
+}
+
+export function listExternalBlackBoxDistillationPaths(mainRef = 'origin/main') {
+  return gitText(['ls-tree', '-r', '--name-only', mainRef, '--', 'company-learning/external-game-playtest'], { allowFailure: true })
+    .split(/\r?\n/)
+    .map((value) => value.trim())
+    .filter((value) => EXTERNAL_DISTILLATION_PATH.test(value))
     .sort();
 }
 
@@ -166,9 +176,116 @@ export function ingestVerifiedUnityReleases({ mainRef = 'origin/main', outDir = 
   return result;
 }
 
+function externalBlackBoxRecord(mainRef, distillationPath) {
+  const record = readJsonAt(mainRef, distillationPath);
+  const gameId = clean(record?.gameId);
+  const source = record?.sourceEvidence ?? {};
+  const runId = Number(source.latestCompletedRun ?? 0);
+  const runNumber = Number(source.latestRunNumber ?? 0);
+  const artifactId = Number(source.latestArtifactId ?? 0);
+  const artifactDigest = clean(source.latestArtifactDigest);
+  const facts = Array.isArray(record?.verifiedObservedFacts) ? record.verifiedObservedFacts : [];
+  const factIds = new Set(facts.map((fact) => clean(fact?.id)));
+  if (!record || !gameId || !SAFE_ID.test(gameId)) return { pass: false, reason: 'INVALID_EXTERNAL_GAME_ID', distillationPath };
+  if (upper(record.authority) !== 'PRACTICE_ONLY_MIXED_EVIDENCE') return { pass: false, reason: 'EXTERNAL_AUTHORITY_NOT_PRACTICE_ONLY', gameId, distillationPath };
+  if (record.runtimePromotionAllowed !== true || record.gameplayBehaviorPromotionAllowed !== true || record.positiveTrainingSample !== true) return { pass: false, reason: 'POSITIVE_PROMOTION_GATE_NOT_PASS', gameId, distillationPath };
+  if (record.verifiedRuntimePass !== true || record.stablePlaytestVerified !== true) return { pass: false, reason: 'VERIFIED_RUNTIME_GATE_NOT_PASS', gameId, distillationPath };
+  if (record.codeExtractionAllowed !== false || record.binaryRedistributionAllowed !== false) return { pass: false, reason: 'PROPRIETARY_BOUNDARY_NOT_ENFORCED', gameId, distillationPath };
+  if (upper(source.latestResult) !== 'PASS' || !Number.isInteger(runId) || runId <= 0 || !Number.isInteger(runNumber) || runNumber <= 0 || !Number.isInteger(artifactId) || artifactId <= 0 || !SHA256_DIGEST.test(artifactDigest)) return { pass: false, reason: 'SOURCE_EVIDENCE_IDENTITY_INVALID', gameId, distillationPath };
+  for (const requiredFact of ['actual-game-entry-correlated', 'drag-input-changed-board-state', 'runtime-survived-observed-input']) {
+    if (!factIds.has(requiredFact)) return { pass: false, reason: `REQUIRED_OBSERVED_FACT_MISSING:${requiredFact}`, gameId, distillationPath };
+  }
+  const candidateId = `external-black-box-${gameId}-run-${runNumber}`;
+  const instruction = '외부 상용 Android 게임을 black-box로 검증할 때 실행, 실제 게임 진입, 입력 반응, 프로세스 생존, 크래시 부재를 단계별 증거로 결속해 판정하고 코드·에셋·내부 알고리즘은 추출하거나 추론하지 않는다.';
+  const input = JSON.stringify({
+    evidenceMode: 'EXTERNAL_BLACK_BOX',
+    stages: ['APP_LAUNCH', 'GAME_ENTRY', 'INPUT_EXERCISE', 'VISUAL_STATE_CHANGE', 'PROCESS_SURVIVAL', 'NO_FATAL_CRASH_OR_ANR'],
+    stableBoundary: clean(record.stablePlaytestBoundary),
+    runId,
+    runNumber,
+    artifactId,
+    artifactDigest,
+  }, null, 2);
+  const output = [
+    '검증된 관찰 원칙:',
+    '- 프로세스 실행과 실제 게임 진입을 같은 것으로 취급하지 않는다.',
+    '- 입력 주입만으로 성공 처리하지 않고 입력 전후의 의미 있는 화면 변화와 대상 프로세스 생존을 함께 확인한다.',
+    '- 시스템 오버레이·동의 화면·게임 진입·입력 반응을 서로 다른 증거 단계로 보존한다.',
+    '- 성공 범위는 캡처된 검증 구간으로 제한하고 장시간 안정성이나 숨은 규칙을 추정하지 않는다.',
+    '- 부분 성공 뒤 실패가 생기면 성공 경계와 실패 경계를 모두 기록한다.',
+    '- 상용 게임의 소스 코드, 에셋, 고유 UI 표현, 내부 알고리즘, 숨은 점수·경제 규칙은 학습 데이터로 추출하거나 복제하지 않는다.',
+  ].join('\n');
+  const sample = {
+    version: TRAINING_SAMPLE_VERSION,
+    instruction,
+    input,
+    output,
+    taskType: 'qa',
+    difficulty: 'regression',
+    lifecycle: 'active',
+    sourceKind: 'external-black-box',
+    project: gameId,
+    gameId,
+    candidateId,
+    sourceCommit: null,
+    sourceRevision: artifactDigest,
+    independentQa: EXTERNAL_BLACK_BOX_QA_MARKER,
+    browserQa: 'NOT_APPLICABLE',
+    quality: { codeQuality: 1, noRegression: true, playImprovement: 0, ruleCompliance: 1, evidenceQuality: 1 },
+    provenance: {
+      sourceKind: 'external-black-box',
+      sourceRevision: artifactDigest,
+      gameId,
+      candidateId,
+      evidencePath: distillationPath,
+      authority: record.authority,
+      runId,
+      runNumber,
+      artifactId,
+      artifactDigest,
+    },
+    verification: {
+      independentQa: EXTERNAL_BLACK_BOX_QA_MARKER,
+      browserQa: 'NOT_APPLICABLE',
+      runtime: 'PASS',
+      blackBoxEvidence: 'PASS',
+      gameEntry: 'PASS',
+      inputResponse: 'PASS',
+      processSurvival: 'PASS',
+      noFatalCrashOrAnr: 'PASS',
+      proprietaryExtraction: false,
+      stableBoundary: clean(record.stablePlaytestBoundary),
+    },
+  };
+  if (!qaEvidencePasses({ taskType: sample.taskType, independentQa: sample.independentQa, browserQa: sample.browserQa, runtime: sample.verification.runtime })) return { pass: false, reason: 'EXTERNAL_QA_GATE_REJECTED', gameId, distillationPath };
+  return { pass: true, gameId, distillationPath, sourceRevision: artifactDigest, sample };
+}
+
+export function ingestVerifiedExternalBlackBox({ mainRef = 'origin/main', outDir = 'company-learning/training-samples' } = {}) {
+  fs.mkdirSync(outDir, { recursive: true });
+  const result = { examined: 0, written: [], refreshed: [], skipped: [] };
+  for (const distillationPath of listExternalBlackBoxDistillationPaths(mainRef)) {
+    result.examined += 1;
+    const external = externalBlackBoxRecord(mainRef, distillationPath);
+    if (!external.pass) { result.skipped.push({ distillationPath, gameId: external.gameId ?? null, reason: external.reason }); continue; }
+    const outFile = path.join(outDir, `${external.sample.candidateId}.json`);
+    const existing = fs.existsSync(outFile) ? readJsonFile(outFile) : null;
+    const currentEnough = existing
+      && Number(existing.version ?? 0) >= TRAINING_SAMPLE_VERSION
+      && existing.provenance?.sourceKind === 'external-black-box'
+      && existing.provenance?.sourceRevision === external.sourceRevision
+      && qaEvidencePasses({ taskType: existing.taskType, independentQa: existing.independentQa, browserQa: existing.browserQa, runtime: existing.verification?.runtime });
+    if (currentEnough) { result.skipped.push({ distillationPath, gameId: external.gameId, reason: 'ALREADY_CURRENT' }); continue; }
+    fs.writeFileSync(outFile, `${JSON.stringify(external.sample, null, 2)}\n`);
+    const written = { candidateId: external.sample.candidateId, gameId: external.gameId, taskType: 'qa', sourceRevision: external.sourceRevision, outFile };
+    if (existing) result.refreshed.push(written); else result.written.push(written);
+  }
+  return result;
+}
+
 export function ingestVerifiedHistories({ devRef = 'origin/autonomous-dev', mainRef = 'origin/main', outDir = 'company-learning/training-samples' } = {}) {
   fs.mkdirSync(outDir, { recursive: true });
-  const result = { version: 3, trainingSampleVersion: TRAINING_SAMPLE_VERSION, devRef, mainRef, written: [], refreshed: [], skipped: [], examined: 0, unityRelease: null };
+  const result = { version: 4, trainingSampleVersion: TRAINING_SAMPLE_VERSION, devRef, mainRef, written: [], refreshed: [], skipped: [], examined: 0, unityRelease: null, externalBlackBox: null };
 
   for (const historyPath of listDevHistoryPaths(devRef)) {
     result.examined += 1;
@@ -195,8 +312,8 @@ export function ingestVerifiedHistories({ devRef = 'origin/autonomous-dev', main
       sample.provenance.candidateCommit = candidateCommit;
       sample.provenance.promotionCommit = promotionCommit;
       fs.writeFileSync(outFile, `${JSON.stringify(sample, null, 2)}\n`);
-      const record = { candidateId, gameId: sample.gameId, taskType: sample.taskType, promotionCommit, outFile };
-      if (existing) result.refreshed.push(record); else result.written.push(record);
+      const written = { candidateId, gameId: sample.gameId, taskType: sample.taskType, promotionCommit, outFile };
+      if (existing) result.refreshed.push(written); else result.written.push(written);
     } catch (error) { result.skipped.push({ candidateId, reason: 'SAMPLE_REJECTED', detail: String(error?.message ?? error).slice(0, 300) }); }
   }
   result.unityRelease = ingestVerifiedUnityReleases({ mainRef, outDir });
@@ -204,6 +321,12 @@ export function ingestVerifiedHistories({ devRef = 'origin/autonomous-dev', main
   result.written.push(...result.unityRelease.written);
   result.refreshed.push(...result.unityRelease.refreshed);
   result.skipped.push(...result.unityRelease.skipped);
+
+  result.externalBlackBox = ingestVerifiedExternalBlackBox({ mainRef, outDir });
+  result.examined += result.externalBlackBox.examined;
+  result.written.push(...result.externalBlackBox.written);
+  result.refreshed.push(...result.externalBlackBox.refreshed);
+  result.skipped.push(...result.externalBlackBox.skipped);
   return result;
 }
 

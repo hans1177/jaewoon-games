@@ -87,3 +87,36 @@ test('브라우저 QA가 빠진 텍스트 샘플은 진짜 학습 데이터로 �
   assert.equal(status.tasks.bugfix.ready, false);
   assert.equal(status.tasks.bugfix.skippedUnverified, 1);
 });
+
+test('검증된 외부 Android black-box QA 샘플은 브라우저 QA를 위조하지 않고 학습 데이터로 인정한다', () => {
+  const record = {
+    version: 3,
+    instruction: '외부 Android 런타임을 단계별 black-box 증거로 검증한다',
+    input: 'APP_LAUNCH -> GAME_ENTRY -> INPUT_EXERCISE -> PROCESS_SURVIVAL',
+    output: '관찰된 범위만 학습하고 proprietary code/assets/internal algorithm은 추출하지 않는다',
+    taskType: 'qa',
+    difficulty: 'regression',
+    lifecycle: 'active',
+    sourceKind: 'external-black-box',
+    project: 'external-game',
+    gameId: 'external-game',
+    sourceRevision: 'sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+    independentQa: 'BLACK_BOX_EVIDENCE_PASS',
+    browserQa: 'NOT_APPLICABLE',
+    quality: { codeQuality: 1, noRegression: true, playImprovement: 0, ruleCompliance: 1 },
+    provenance: { sourceKind: 'external-black-box', sourceRevision: 'sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' },
+    verification: { runtime: 'PASS', blackBoxEvidence: 'PASS', proprietaryExtraction: false },
+  };
+  const status = buildDistillationStatus([entry(record, 0)], {
+    minTrainSamples: 1,
+    minFreshTrainSamples: 0,
+    minDistinctProjects: 1,
+    maxProjectShare: 1,
+    taskPlanMinSamples: 1,
+    taskPlanMinProjects: 1,
+  });
+  assert.equal(status.diagnostics.textSamples, 1);
+  assert.equal(status.diagnostics.fullyVerifiedTextSamples, 1);
+  assert.equal(status.tasks.qa.accepted, 1);
+  assert.equal(status.tasks.qa.skippedUnverified, 0);
+});
