@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "policySource": "COMPANY_FLOW.md",
+  "ownerApprovedAt": "2026-09-12",
+  "primaryPlatform": "ROBLOX",
+  "switchMode": "PRIMARY_PLATFORM_POINTER",
+  "rebuildCompanyStructureOnSwitch": false,
+  "projects": {
+    "ROBLOX": {
+      "status": "ACTIVE_PRIMARY",
+      "sourceRoot": "roblox-games/<slug>",
+      "language": "Luau",
+      "runtime": "ROBLOX_EXPERIENCE",
+      "validation": [
+        "ACTUAL_EXPERIENCE_ENTRY",
+        "MEANINGFUL_INPUT",
+        "CORE_LOOP_STATE_CHANGE",
+        "SERVER_CLIENT_HEALTH",
+        "REMOTE_EVENT_VALIDATION",
+        "DATASTORE_WHEN_USED",
+        "MOBILE_TOUCH",
+        "MULTIPLAYER_WHEN_USED",
+        "PERFORMANCE",
+        "QA",
+        "REGRESSION",
+        "EXACT_REVISION"
+      ]
+    },
+    "UNITY_ANDROID": {
+      "status": "ACTIVE_AVAILABLE",
+      "sourceRoot": "EXISTING_UNITY_PROJECT_ROOTS",
+      "language": "C#",
+      "runtime": "ANDROID",
+      "preserveExistingFlow": true
+    },
+    "FORTNITE_UEFN": {
+      "status": "ACTIVE_AVAILABLE",
+      "sourceRoot": "fortnite-uefn/<slug>",
+      "language": "Verse",
+      "runtime": "FORTNITE_UEFN",
+      "validation": [
+        "PROJECT_OPENS_IN_UEFN",
+        "SESSION_LAUNCH",
+        "MEANINGFUL_INPUT",
+        "CORE_LOOP_STATE_CHANGE",
+        "VERSE_RUNTIME_HEALTH",
+        "MULTIPLAYER_SESSION_WHEN_USED",
+        "PERFORMANCE",
+        "QA",
+        "REGRESSION",
+        "EXACT_REVISION"
+      ]
+    }
+  },
+  "sharedLearning": {
+    "distillationRequired": true,
+    "canonicalDistillationOnly": true,
+    "newPlatformSpecificDistillationChainForbidden": true,
+    "newPlatformSpecificCronForbidden": true,
+    "newLearningStageForbidden": true,
+    "verifiedEvidenceOnly": true,
+    "existingVerifiedInputsOnly": true,
+    "failureAttemptsAreWarningEvidenceOnly": true
+  },
+  "locks": {
+    "vibeLearningStructureImmutable": true,
+    "vibeLearningCodePathsImmutable": true,
+    "buildWorkflowImmutable": true,
+    "parentChildBuildTopologyImmutable": true,
+    "triggerAndArtifactFlowImmutable": true,
+    "noWrapperShadowBypass": true
+  },
+  "switchingRule": "Change primaryPlatform/project selection only; do not rebuild or fork the company core, Vibe learning chain, or existing build workflows."
+}
