@@ -44,6 +44,7 @@
     "PWA AI 채팅, 작업지시, 첨부, 게임선택, 기기등록, Gemini 연결, 설치형 PWA",
     "기존 authoritative pipeline과 no-wrapper/no-shadow/no-bypass 원칙",
     "기존 게임 규칙, 저장 의미, Web 안정판",
+    "기존 6개 관리 포트폴리오 밖 게임의 소스, Web판, 저장 의미, APK/릴리스 및 홈페이지 링크",
     "Vibe 자체의 기본 스토리/인트로/오디오 기획 기능"
   ],
   "doNotChangeInThisTask": [
@@ -52,6 +53,7 @@
     "현재 작동하지 않는 seed trigger를 별도 우회 파이프로 대체하지 않는다",
     "유료 AI/API/runner fallback을 추가하지 않는다",
     "홈페이지 대문을 새 UI로 교체하지 않는다",
+    "관리 포트폴리오 밖 기존 게임을 자동 삭제/폐기/재빌드하지 않는다",
     "main에 검증 전 직접 쓰지 않는다"
   ],
   "plannedPolicy": {
@@ -63,14 +65,34 @@
         "ACTIVE": 2,
         "MAINTENANCE_VALIDATION": 2,
         "INCUBATION_HOLD": 1
+      },
+      "legacyArchivePool": {
+        "enabled": true,
+        "appliesToExistingGamesOutsideManagedSix": true,
+        "productionClassUnchanged": true,
+        "portfolioManaged": false,
+        "portfolioRole": "LEGACY_ARCHIVE",
+        "automaticDeletionForbidden": true,
+        "automaticDiscardForbidden": true,
+        "automaticRebuildForbidden": true,
+        "routineHighIntensityDevelopment": false,
+        "preserveWebAndReleaseAssets": true,
+        "preserveSaveMeaning": true,
+        "preserveHomepageLinksByDefault": true,
+        "criticalMaintenanceAllowed": true,
+        "ownerDirectReactivationAllowed": true,
+        "vacancyPromotionAllowed": true,
+        "promotionRule": "OWNER_REQUEST_OR_CRITICAL_MAINTENANCE_OR_MANAGED_PORTFOLIO_VACANCY_THEN_EVIDENCE_BASED_SELECTION",
+        "doesNotModifyBuildSystem": true,
+        "doesNotModifyVibeLearningSystem": true
       }
     },
     "developmentExperience": [
       "V3_IMPLEMENTATION_SCOUT",
       "REAL_DEVELOPMENT_MISSION",
-      "EXPERIENCE_HARVEST",
+      "EXPERIENCE_EVIDENCE_COLLECTION_OUTSIDE_LOCKED_LEARNING_CHAIN",
       "CROSS_PROJECT_ROTATION",
-      "POST_RELEASE_LEARNING"
+      "POST_RELEASE_OPERATIONAL_EVIDENCE"
     ],
     "qualityAndReuse": [
       "MISSION_PRIORITY_ENGINE",
@@ -142,10 +164,11 @@
     "Created resumable work checkpoint",
     "Opened draft PR #346 as persistent work anchor",
     "Recorded owner lock forbidding Vibe learning structure/chain/code-path changes except recovery or verified error fixes",
-    "Recorded owner lock forbidding all build-method and build-related code/workflow modifications in this task"
+    "Recorded owner lock forbidding all build-method and build-related code/workflow modifications in this task",
+    "Recorded LEGACY_ARCHIVE_POOL policy for existing games outside the managed six"
   ],
   "nextSteps": [
-    "Update COMPANY_FLOW.md first with approved portfolio, experience, creative-AI, homepage/PWA sync, work-continuity, Vibe-learning immutable lock and build-system immutable lock",
+    "Update COMPANY_FLOW.md first with approved managed-six portfolio, legacy archive preservation, experience operations, creative-AI, homepage/PWA sync, work-continuity, Vibe-learning immutable lock and build-system immutable lock",
     "Add/update machine-readable company flow contract and validation tests without changing current Vibe learning engine or any build code/workflow",
     "Implement homepage/PWA latest-runtime state read with safe main fallback while preserving the existing front door",
     "Wire company missions and creative story/audio work around the existing Vibe execution surface without modifying Vibe learning structure/chain/code paths",
@@ -160,6 +183,7 @@
     "Read company-work-state.json",
     "Honor vibeLearningImmutableLock before touching any Vibe learning-related file",
     "Honor buildSystemImmutableLock before touching any build-related file, workflow, trigger or build linkage",
+    "Preserve LEGACY_ARCHIVE_POOL games unless a newer owner instruction explicitly changes their status",
     "Inspect workingBranch and PR #346 before changing files",
     "Compare workingBranch with current main and reconcile divergence before continuing",
     "Resume from the first incomplete nextSteps item",
@@ -173,9 +197,10 @@
     "continuityCheckpointPersisted": true,
     "draftPullRequestOpen": true,
     "vibeLearningImmutableLockPersisted": true,
-    "buildSystemImmutableLockPersisted": true
+    "buildSystemImmutableLockPersisted": true,
+    "legacyArchivePolicyPersisted": true
   },
   "blockers": [],
-  "lastCompletedMilestone": "OWNER_BUILD_SYSTEM_IMMUTABLE_LOCK_RECORDED",
+  "lastCompletedMilestone": "OWNER_LEGACY_ARCHIVE_POLICY_RECORDED",
   "nextMilestone": "CENTRAL_POLICY_UPDATE"
 }
