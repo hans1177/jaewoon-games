@@ -122,7 +122,9 @@
     "homepage enhancement layer refreshes public state on a short interval",
     "Company Status Sync persists validated runtime status to company-runtime and intentionally does not write public main",
     "COMPANY_FLOW.md records managed-six portfolio, LEGACY_ARCHIVE_POOL preservation, work continuity, Vibe learning immutable lock, build immutable lock, creative AI policy and homepage/PWA synchronization policy",
-    "Owner approved demo-first evaluation for all six managed games before final portfolio role assignment"
+    "All six managed games require playable demo plus real QA/fix/revalidation before final portfolio role assignment",
+    "Existing Unity DEVELOPMENT workflow remains dynamic parent-child parallel; no build workflow change was made",
+    "The stale serial max-parallel QA assertion was corrected to match the already-existing dynamic parallel implementation"
   ],
   "completedSteps": [
     "Read current COMPANY_FLOW.md and HQ governance before redesign proposal",
@@ -136,17 +138,20 @@
     "Recorded owner lock forbidding Vibe learning structure/chain/code-path changes except recovery or verified error fixes",
     "Recorded owner lock forbidding all build-method and build-related code/workflow modifications in this task",
     "Recorded LEGACY_ARCHIVE_POOL policy for existing games outside the managed six",
-    "Updated COMPANY_FLOW.md with the approved operationsModernization policy including managed six, legacy preservation, continuity, immutable locks, creative AI and homepage/PWA sync",
-    "Recorded owner-approved demo-first policy: all six managed games reach playable demo plus real QA/fix/revalidation before final PRIMARY/ACTIVE/MAINTENANCE/HOLD assignment"
+    "Updated COMPANY_FLOW.md with approved operationsModernization policy",
+    "Added demo-first policy to COMPANY_FLOW.md: all six managed games must reach playable demo plus real validation before final role assignment",
+    "Encoded demo-first policy and immutable locks in company-directive.json revision 31",
+    "Added central policy regression test for managed-six demo-first contract",
+    "Recovered stale central pipeline QA assertion from obsolete serial max-parallel=1 expectation to the existing dynamic parallel contract without touching build workflows",
+    "Validated demo-first policy with Company Central Policy Contract QA, Company GAME_SEED Production QA, Vibe Integrated Regression, Vibe QA, Vibe3 Engine Contract and Vibe2 Learning Pipeline Contract all passing"
   ],
   "nextSteps": [
-    "Add demo-first managed-six rule to COMPANY_FLOW.md operationsModernization.managedPortfolio without touching locked learning/build systems",
-    "Add/update machine-readable company flow contract and validation tests without changing current Vibe learning engine or any build code/workflow",
-    "Implement homepage/PWA latest-runtime state read with safe main fallback while preserving the existing front door",
+    "Implement homepage/PWA latest-runtime state read with safe main fallback while preserving the existing front door and PWA features",
     "Wire company missions and creative story/audio work around the existing Vibe execution surface without modifying Vibe learning structure/chain/code paths",
     "Optimize company flow speed only outside the locked build system",
     "Synchronize private HQ governance documents",
     "Run existing contract, regression, PWA bridge and end-to-end validation using the unchanged build system",
+    "Reconcile current main divergence before merge",
     "Update this checkpoint after each milestone, maintain PR #346, and merge only after validation"
   ],
   "resumeProtocol": [
@@ -173,10 +178,27 @@
     "buildSystemImmutableLockPersisted": true,
     "legacyArchivePolicyPersisted": true,
     "centralPolicyUpdated": true,
-    "centralPolicyCommit": "84d29d266696a4c49be8be8a95a55fc41611972a",
-    "demoFirstPolicyCheckpointPersisted": true
+    "centralOperationsPolicyCommit": "84d29d266696a4c49be8be8a95a55fc41611972a",
+    "demoFirstCentralPolicyCommit": "13a8f6b4420527741a3dd739acc69703c23660ee",
+    "demoFirstDirectiveCommit": "bfdd98dbe7e08c78042bcd0cfa29eaf4fa0a803e",
+    "demoFirstTestCommit": "927e7ba8c7fbd5a5b2062632e42f207bb73e15cd",
+    "staleParallelQaRecoveryCommit": "8567bce3036447a97ef74b39b82f9b616da25c32",
+    "centralPolicyQaRunId": 34666697991,
+    "centralPolicyQaConclusion": "success",
+    "gameSeedQaRunId": 34666698001,
+    "gameSeedQaConclusion": "success",
+    "vibeIntegratedRegressionRunId": 34666698003,
+    "vibeIntegratedRegressionConclusion": "success",
+    "vibeQaRunId": 34666697953,
+    "vibeQaConclusion": "success",
+    "vibe3ContractRunId": 34666697982,
+    "vibe3ContractConclusion": "success",
+    "vibe2LearningContractRunId": 34666697958,
+    "vibe2LearningContractConclusion": "success",
+    "buildWorkflowModified": false,
+    "vibeLearningCodeModified": false
   },
   "blockers": [],
-  "lastCompletedMilestone": "OWNER_DEMO_FIRST_POLICY_RECORDED",
-  "nextMilestone": "CENTRAL_DEMO_POLICY_UPDATE"
+  "lastCompletedMilestone": "MANAGED_SIX_DEMO_FIRST_POLICY_VALIDATED",
+  "nextMilestone": "HOMEPAGE_PWA_RUNTIME_STATE_SYNC"
 }
