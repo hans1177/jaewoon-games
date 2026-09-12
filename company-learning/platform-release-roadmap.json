@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "status": "OWNER_DIRECT_LOCKED",
+  "recordedAt": "2026-09-12",
+  "priority": [
+    "ROBLOX",
+    "UNITY",
+    "FORTNITE_UEFN"
+  ],
+  "currentPhase": "ROBLOX_FAST_RELEASE_STABILIZATION",
+  "pipelineRelationship": "INSIDE_EXISTING_COMPANY_VIBE2_VIBE3_PIPELINE",
+  "parallelLearningPipelineAllowed": false,
+  "phases": [
+    {
+      "id": 1,
+      "name": "ROBLOX_FAST_RELEASE_STABILIZATION",
+      "activePlatforms": ["ROBLOX"],
+      "objective": "ACCUMULATE_REAL_RELEASE_AND_STABILIZATION_EXPERIENCE_QUICKLY",
+      "prototypeOnlyIsCompletion": false,
+      "requiresPlatformPlaybook": true,
+      "requiresRuntimeAdapter": true,
+      "requiresIndependentQa": true,
+      "requiresPublishingPath": true,
+      "exitRequiresVerifiedReleaseAndStabilizationExperience": true
+    },
+    {
+      "id": 2,
+      "name": "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE",
+      "activePlatforms": ["ROBLOX", "UNITY"],
+      "entryRequiresPhase1VerifiedExperience": true,
+      "unityExistingPathPreserved": true,
+      "unityDeletedOrReplacedByRoblox": false,
+      "objective": "ACCUMULATE_CONCURRENT_ROBLOX_AND_UNITY_RELEASE_EXPERIENCE"
+    },
+    {
+      "id": 3,
+      "name": "FORTNITE_UEFN_EXPANSION",
+      "activePlatforms": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
+      "entryRequiresPhase1AndPhase2VerifiedExperience": true,
+      "objective": "ADD_FORTNITE_UEFN_WITHOUT_REPLACING_EXISTING_PLATFORM_TRACKS"
+    }
+  ],
+  "positiveExperienceRequires": [
+    "VERIFIED_WINNER",
+    "RUNTIME_PASS",
+    "INDEPENDENT_QA_PASS",
+    "REGRESSION_PASS",
+    "PROTECTED_STATE_PRESERVED",
+    "EXACT_REVISION"
+  ],
+  "experienceSharing": {
+    "portableVerifiedPatternsSharedThroughV3Memory": true,
+    "platformSpecificImplementationRemainsScoped": true,
+    "sharedCategories": [
+      "RESPONSIBLE_SOURCE_DIAGNOSIS",
+      "BUG_AND_FAILURE_CLASSIFICATION",
+      "QA_AND_REGRESSION_DISCIPLINE",
+      "PORTABLE_PERFORMANCE_PATTERNS",
+      "RELEASE_STABILIZATION",
+      "CHECKPOINT_AND_ROLLBACK",
+      "EXACT_REVISION_EVIDENCE"
+    ],
+    "platformSpecificCategories": {
+      "ROBLOX": ["LUAU", "STUDIO_RUNTIME", "SERVER_CLIENT", "DATASTORE", "REMOTEEVENT_SECURITY", "ROBLOX_PUBLISHING_QA"],
+      "UNITY": ["CSHARP", "UNITY_RUNTIME_BUILD", "ANDROID_MOBILE_PERFORMANCE", "UNITY_RELEASE_QA"],
+      "FORTNITE_UEFN": ["VERSE_UEFN", "UEFN_RUNTIME", "FORTNITE_PUBLISHING_QA"]
+    }
+  },
+  "canonicalLearningChain": [
+    "VALIDATED_EVIDENCE",
+    "DISTILLATION_INGEST",
+    "VERIFIED_TRAINING_SAMPLE",
+    "DISTILLATION_STATUS",
+    "DETERMINISTIC_TRAINING_REQUEST",
+    "LOCAL_SELF_HOSTED_DATASET_BUILD",
+    "LOCAL_LORA_OR_QLORA_TRAINING",
+    "TRAINED_UNVERIFIED",
+    "FIXED_HOLDOUT_AB",
+    "CANARY",
+    "PROMOTE_OR_ROLLBACK"
+  ],
+  "forbidden": [
+    "PLATFORM_SPECIFIC_DISTILLATION_CRON",
+    "DUPLICATE_DISTILLATION_TRIGGER",
+    "SHADOW_DATASET_OR_TRAINER",
+    "RUNTIME_QA_REGRESSION_EXACT_REVISION_BYPASS",
+    "PROTOTYPE_BUILD_LAUNCH_OR_PUBLISH_ATTEMPT_COUNTED_AS_VERIFIED_RELEASE_EXPERIENCE"
+  ],
+  "privateCanonicalProtocol": "company/protocols/PLATFORM_RELEASE_ROADMAP.md",
+  "publicHumanReadableSpec": "company-learning/PLATFORM_RELEASE_ROADMAP.md"
+}
