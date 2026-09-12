@@ -35,7 +35,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -50,7 +51,7 @@ jobs:
           node --test qa/company-selected-platform-router.test.mjs
 
       - name: Fetch current company runtime
-        run: git fetch origin company-runtime
+        run: git fetch --no-tags --depth=1 origin company-runtime
 
       - name: Change detection, cheap precheck and one routing decision point
         id: route
@@ -80,18 +81,21 @@ jobs:
             const game=(catalog.games||[]).find(x=>x.id===item.gameId)||{};
             const platform=resolveSelectedPlatform(item,game);
             const adapter=adapterForPlatform(platform);
-            const sourcePath=item.targetSourcePath||item.sourcePath||(adapter?`${adapter.sourceRoot}${item.gameId}`:'');
+            const oldTarget=String(item.targetSourcePath||'').replaceAll('\\','/');
+            const canonicalTarget=adapter?`${adapter.sourceRoot}${item.gameId}`:'';
+            const targetSourcePath=adapter&&oldTarget.startsWith(adapter.sourceRoot)?oldTarget:canonicalTarget;
+            const sourcePath=String(item.sourcePath||targetSourcePath).replaceAll('\\','/');
             const baseline=String(item.designBaselineSource||'');
             const baselineRevision=baseline?crypto.createHash('sha256').update(baseline).digest('hex'):'';
-            const precheck=cheapPrecheck({selectedPlatform:platform,sourceRevision:baselineRevision,sourcePath});
+            const precheck=cheapPrecheck({selectedPlatform:platform,sourceRevision:baselineRevision,sourcePath:targetSourcePath});
             const blockers=[...precheck.errors];
             if(adapter&&adapter.existingExecutionPath==null)blockers.push('platform-runtime-executor-not-configured');
             if(blockers.length){
-              updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',platformAdapter:adapter?.adapterPath||null,sourcePath,targetSourcePath:sourcePath,routingBlockers:blockers,updatedAt:new Date().toISOString()});
+              updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',platformAdapter:adapter?.adapterPath||null,sourcePath,targetSourcePath,routingBlockers:blockers,updatedAt:new Date().toISOString()});
               continue;
             }
             platforms.add(platform);
-            updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:canonicalTargetStep(),canonicalState:canonicalTargetWaitingState(),platformAdapter:adapter.adapterPath,sourcePath,targetSourcePath:sourcePath,routingBlockers:[],routeRevision:baselineRevision,updatedAt:new Date().toISOString()});
+            updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:canonicalTargetStep(),canonicalState:canonicalTargetWaitingState(),platformAdapter:adapter.adapterPath,sourcePath,targetSourcePath,routingBlockers:[],routeRevision:baselineRevision,updatedAt:new Date().toISOString()});
           }
           fs.mkdirSync('/tmp/development-route',{recursive:true});
           fs.writeFileSync('/tmp/development-route/updates.json',JSON.stringify(updates,null,2)+'\n');
@@ -135,7 +139,7 @@ jobs:
             git commit -m 'runtime: route DEVELOPMENT_CONFIRMED by selected platform [skip ci]'
             for attempt in 1 2 3; do
               if git push origin HEAD:company-runtime; then break; fi
-              git fetch origin company-runtime
+              git fetch --no-tags --depth=1 origin company-runtime
               git rebase origin/company-runtime || { git rebase --abort || true; exit 1; }
               sleep $((attempt * 2))
             done
