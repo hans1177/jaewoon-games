@@ -607,8 +607,8 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "release-confirmed",
-      "status": "running",
-      "retries": 0,
+      "status": "queued",
+      "retries": 1,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -622,9 +622,11 @@
         "actual-release-state:release-confirmed",
         "source-root:unity-games/daechung-rpg",
         "owner-auto-deploy-authorization",
-        "verified-qa-required"
+        "verified-qa-required",
+        "actions-run:34718800502",
+        "variant:primary"
       ],
-      "lastOutcome": null,
+      "lastOutcome": "FAIL",
       "companyContext": {
         "stageId": "owner-immediate",
         "role": "director",
