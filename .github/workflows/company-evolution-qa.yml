@@ -219,14 +219,16 @@ jobs:
       - name: Validate homepage manager contract
         run: |
           set -euo pipefail
-          grep -Fq '홈페이지를 수정하지 않고 현재 홈 구조와 게임 데이터만 진단한다.' tools/homepage-manager.mjs
-          grep -Fq 'automaticLayoutInjectionAbsent' tools/homepage-manager.mjs
-          grep -Fq 'homepageEnhancementLoaded' tools/homepage-manager.mjs
-          grep -Fq 'HOMEPAGE_AUTO_LAYOUT_WRITE=DISABLED' tools/homepage-manager.mjs
+          grep -Fq 'activeRuntimeLayoutManager' tools/homepage-manager.mjs
+          grep -Fq 'HOMEPAGE_LAYOUT_MANAGEMENT=ENABLED' tools/homepage-manager.mjs
+          grep -Fq 'HOMEPAGE_MANAGER_COUNT=1' tools/homepage-manager.mjs
+          grep -Fq 'HOMEPAGE_POST_WORK_SUPERVISOR_COUNT=1' tools/homepage-manager.mjs
+          grep -Fq 'push:' .github/workflows/homepage-manager.yml
+          grep -Fq 'pull_request:' .github/workflows/homepage-manager.yml
           grep -Fq 'workflow_dispatch:' .github/workflows/homepage-manager.yml
           grep -Fq 'contents: read' .github/workflows/homepage-manager.yml
           if grep -Eq '^[[:space:]]+schedule:|contents: write' .github/workflows/homepage-manager.yml; then
-            echo 'homepage manager must stay manual/read-only' >&2
+            echo 'homepage manager must remain event-driven/read-only with one manager and one supervisor' >&2
             exit 1
           fi
           node tools/homepage-manager.mjs
