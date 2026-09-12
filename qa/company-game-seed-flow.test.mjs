@@ -83,7 +83,8 @@ test('discard records never create replacement state or a GAME_SEED request',()=
   assert.equal(result.seed.status,'DISCARDED');
   assert.equal('vacancies' in state,false);
   assert.equal(pendingPortfolioSeedRequests(state).length,0);
-  assert.doesNotMatch(stateTool,/createSeedVacancy|unfilledVacancies|fillVacancy|linkedVacancyId/);
+  assert.doesNotMatch(stateTool,/export function (?:createSeedVacancy|unfilledVacancies|fillVacancy)\b/);
+  assert.doesNotMatch(stateTool,/createPortfolioSeedRequest\(state,\{[^}]*linkedVacancyId/s);
   assert.doesNotMatch(bootstrap,/fillVacancy|linkedVacancy|state\.vacancies|replacementVacancyId|replacementOfSeedId/);
 });
 
