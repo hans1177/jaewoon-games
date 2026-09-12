@@ -16,7 +16,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: unity-android-independent-qa
+  group: unity-android-independent-qa-${{ inputs.run_id || github.event.workflow_run.id }}
   cancel-in-progress: false
 
 jobs:
