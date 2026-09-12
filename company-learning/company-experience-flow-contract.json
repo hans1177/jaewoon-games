@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "generation": "V3-PUMP-EXPERIENCE-DRIVEN-COMPANY",
   "status": "OWNER_DIRECT_LOCKED",
   "authority": "COMPANY_FLOW.md",
@@ -38,12 +38,26 @@
   },
   "creativeOutsourcing": {
     "enabled": true,
+    "mode": "OPTIONAL_FREE_AI_AUGMENTATION",
+    "vibeBaselineCapabilityRequired": true,
+    "externalAiNeverRequired": true,
     "freeOnly": true,
     "paidFallback": false,
     "internalDevelopmentFocus": true,
     "existingFreeProviderPoolOnly": true,
     "preferredTextContractors": ["mistral", "groq"],
-    "outsourceWhenCapabilityAvailable": [
+    "augmentWhenCapabilityAvailable": [
+      "STORY_DRAFT",
+      "INTRO_STORYBOARD",
+      "DIALOGUE_DRAFT",
+      "QUEST_NARRATIVE_DRAFT",
+      "BGM_CUE_SHEET",
+      "SFX_CUE_SHEET",
+      "MUSIC_DIRECTION_PROMPT",
+      "ART_DIRECTION_BRIEF",
+      "LOCALIZATION_DRAFT"
+    ],
+    "internalBaselineAlwaysAvailableFor": [
       "STORY_DRAFT",
       "INTRO_STORYBOARD",
       "DIALOGUE_DRAFT",
@@ -64,12 +78,13 @@
       "REGRESSION",
       "RELEASE_APPROVAL"
     ],
+    "candidateRule": "VIBE_BASELINE_PLUS_ZERO_TO_TWO_FREE_EXTERNAL_CANDIDATES",
     "deliveryFormat": "STRUCTURED_MANIFEST_OR_CANDIDATE_ONLY",
     "directSourceWriteForbidden": true,
     "completionAuthority": false,
     "rightsAndLicenseEvidenceRequired": true,
-    "actualBinaryAssetRule": "IF_NO_VERIFIED_FREE_ASSET_GENERATION_OR_LICENSED_ASSET_PROVIDER_THEN_ASSET_PENDING",
-    "freeProviderUnavailableFallback": "INTERNAL_V3_OR_ASSET_PENDING"
+    "actualBinaryAssetRule": "IF_NO_VERIFIED_FREE_ASSET_GENERATION_OR_LICENSED_ASSET_PROVIDER_THEN_VIBE_STILL_PRODUCES_CUE_MANIFEST_AND_BINARY_ASSET_REMAINS_PENDING",
+    "freeProviderUnavailableFallback": "VIBE_BASELINE_CONTINUES_WITHOUT_BLOCKING"
   },
   "validation": {
     "impactBased": true,
@@ -130,7 +145,8 @@
     "required": true,
     "newDepartmentCreated": false,
     "owners": ["graphics", "development", "qa"],
-    "creativeDraftOutsourcedToFreeAiWhenAvailable": true,
+    "vibeBaselineCreativeCapability": true,
+    "freeExternalAiMayAugment": true,
     "dataDrivenManifestPreferred": true,
     "minimumEventSet": [
       "BGM",
@@ -150,7 +166,8 @@
     "required": true,
     "newDepartmentCreated": false,
     "owners": ["planning", "graphics", "development", "qa"],
-    "creativeDraftOutsourcedToFreeAiWhenAvailable": true,
+    "vibeBaselineCreativeCapability": true,
+    "freeExternalAiMayAugment": true,
     "dataDrivenManifestPreferred": true,
     "allGamesRequire": ["INTRO_OR_TITLE_SEQUENCE", "PLAYER_CONTEXT", "TUTORIAL_CONTEXT", "ENDING_OR_SESSION_CLOSE"],
     "storyDrivenAdditional": ["OPENING_CUTSCENE", "DIALOGUE", "QUEST_STORY", "SCENE_TRANSITIONS", "ENDING_HOOK"],
