@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "state": "ACTIVE",
+  "taskId": "company-flow-ops-20260912",
+  "updatedAtKst": "2026-09-12",
+  "sourceOfTruth": "COMPANY_FLOW.md",
+  "workingBranch": "chatgpt/company-flow-ops-20260912",
+  "baseMainSha": "9e1bfbaa861f15e02f7af899abdf6b2b0c5db13c",
+  "ownerIntent": "기존 게임개발 구조를 유지하면서 회사 플로우, V3 실전경험 수확, 포트폴리오 운영, 빌드/검증 속도, PWA/홈페이지 동기화, 스토리/오디오 AI 활용을 중앙문서 기준으로 순차 개편한다.",
+  "preserve": [
+    "기존 홈페이지 대문 UI와 링크 구조",
+    "PWA AI 채팅, 작업지시, 첨부, 게임선택, 기기등록, Gemini 연결, 설치형 PWA",
+    "부모 workflow -> 게임별 병렬 -> cloud build -> runtime/independent QA 자식 workflow 병렬 구조",
+    "기존 authoritative pipeline과 no-wrapper/no-shadow/no-bypass 원칙",
+    "기존 게임 규칙, 저장 의미, Web 안정판",
+    "Vibe 자체의 기본 스토리/인트로/오디오 기획 기능"
+  ],
+  "doNotChangeInThisTask": [
+    "현재 작동하지 않는 seed trigger를 별도 우회 파이프로 대체하지 않는다",
+    "유료 AI/API/runner fallback을 추가하지 않는다",
+    "홈페이지 대문을 새 UI로 교체하지 않는다",
+    "부모-자식 병렬 빌드 구조를 직렬화하지 않는다",
+    "main에 검증 전 직접 쓰지 않는다"
+  ],
+  "plannedPolicy": {
+    "portfolio": {
+      "maxMaintainedGames": 6,
+      "maxHeavyDevelopmentWip": 3,
+      "roles": {
+        "PRIMARY": 1,
+        "ACTIVE": 2,
+        "MAINTENANCE_VALIDATION": 2,
+        "INCUBATION_HOLD": 1
+      }
+    },
+    "developmentExperience": [
+      "V3_IMPLEMENTATION_SCOUT",
+      "REAL_DEVELOPMENT_MISSION",
+      "EXPERIENCE_HARVEST",
+      "CROSS_PROJECT_ROTATION",
+      "POST_RELEASE_LEARNING"
+    ],
+    "qualityAndReuse": [
+      "MISSION_PRIORITY_ENGINE",
+      "COMPANY_WIDE_FAILURE_TAXONOMY",
+      "RECURRING_FAILURE_TO_PERMANENT_TEST",
+      "GOLDEN_COMPONENT_LIBRARY",
+      "DEVICE_MATRIX",
+      "PLAYABILITY_SCORECARD",
+      "EVIDENCE_AGE_AND_PARTIAL_INVALIDATION",
+      "EXPERIENCE_QUALITY_SCORE",
+      "PROJECT_PATTERN_VS_COMPANY_PATTERN",
+      "STYLE_DNA",
+      "STOP_LOSS"
+    ],
+    "buildAndValidation": [
+      "PARENT_CHILD_PARALLEL_KEEP",
+      "SAME_SHA_SAME_CONFIG_DUPLICATE_BUILD_BLOCK",
+      "EXACT_BUILD_ARTIFACT_FANOUT_TO_QA",
+      "IMPACT_BASED_VALIDATION",
+      "FAST_STANDARD_FULL_VALIDATION_CLASS",
+      "BUILD_ONCE_VALIDATE_MANY"
+    ],
+    "creativeProduction": {
+      "vibeBaselineCapabilityRequired": true,
+      "freeExternalAiOptional": true,
+      "paidExternalAiForbiddenWithoutOwnerOverride": true,
+      "externalAiRole": "NON_AUTHORITATIVE_CREATIVE_CANDIDATE",
+      "outsourceCandidates": [
+        "story draft",
+        "dialogue",
+        "intro/cutscene storyboard",
+        "BGM cue sheet",
+        "SFX list",
+        "art/direction brief",
+        "localization draft"
+      ],
+      "internalVibeOwns": [
+        "requirements",
+        "game rules",
+        "code",
+        "integration",
+        "build",
+        "QA",
+        "final acceptance"
+      ]
+    },
+    "homepagePwaSync": {
+      "homepageFrontDoorPreserved": true,
+      "aiChatRequired": true,
+      "workDirectiveRequired": true,
+      "developmentProgressAlwaysSynchronized": true,
+      "runtimeBranch": "company-runtime",
+      "currentMismatchObserved": "Company Status Sync persists newest state to company-runtime while homepage/PWA currently read main-deployed company-status.json",
+      "plannedFix": "read latest company-runtime state first and retain current main JSON as fallback without changing homepage front-door layout"
+    }
+  },
+  "verifiedCurrentFacts": [
+    "PWA Command Bridge scheduled workflow is active and latest inspected run succeeded",
+    "PWA bridge syncs Vibe2 queue task states back to PWA chat",
+    "command.html refreshes chat every 7 seconds while visible",
+    "homepage enhancement layer refreshes public state on a short interval",
+    "Company Status Sync persists validated runtime status to company-runtime and intentionally does not write public main"
+  ],
+  "completedSteps": [
+    "Read current COMPANY_FLOW.md and HQ governance before redesign proposal",
+    "Confirmed current parent-child parallel Unity build topology must be preserved",
+    "Confirmed current PWA AI chat/work-directive bridge exists",
+    "Confirmed homepage front-door must remain unchanged",
+    "Identified main-vs-company-runtime state source mismatch affecting always-current homepage/PWA development status",
+    "Created persistent working branch chatgpt/company-flow-ops-20260912",
+    "Created this resumable work checkpoint"
+  ],
+  "nextSteps": [
+    "Update COMPANY_FLOW.md first with the approved portfolio, experience, build, creative-AI, homepage/PWA sync and work-continuity policies",
+    "Add/update machine-readable company flow contract and validation tests",
+    "Implement homepage/PWA latest-runtime state read with safe main fallback while preserving the existing front door",
+    "Wire V3 mission/experience harvest and creative story/audio contracts into existing authoritative development flow",
+    "Apply impact-based validation and exact-build artifact reuse without changing parent-child parallel topology",
+    "Synchronize private HQ governance documents",
+    "Run contract, regression, PWA bridge and end-to-end validation",
+    "Update this checkpoint after each milestone, then open/maintain PR and merge only after validation"
+  ],
+  "resumeProtocol": [
+    "Read the user's latest direct instruction first",
+    "Read COMPANY_FLOW.md",
+    "Read company-work-state.json",
+    "Inspect workingBranch and any open PR before changing files",
+    "Compare workingBranch with current main and reconcile divergence before continuing",
+    "Resume from the first incomplete nextSteps item",
+    "After every material milestone update completedSteps, nextSteps, verification and blockers",
+    "Never store secrets, credentials or private chain-of-thought in the checkpoint",
+    "Checkpoint is work-state evidence only and cannot override COMPANY_FLOW.md or a newer owner instruction"
+  ],
+  "verification": {
+    "pwaCommandBridgeRunId": 34665170611,
+    "pwaCommandBridgeConclusion": "success",
+    "continuityCheckpointPersisted": true
+  },
+  "blockers": [],
+  "lastCompletedMilestone": "RESUMABLE_CHECKPOINT_BOOTSTRAP",
+  "nextMilestone": "CENTRAL_POLICY_UPDATE"
+}
