@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "authority": "COMPANY_FLOW.md#operationsModernization",
+  "version": 3,
+  "authority": "COMPANY_FLOW.md",
   "policySource": "COMPANY_FLOW.md",
   "isPolicySource": false,
   "ownerApprovedAt": "2026-09-12",
@@ -11,29 +11,55 @@
     "buildSystemImmutable": true,
     "newParallelPipelineForbidden": true
   },
-  "managedPortfolio": {
-    "maxMaintainedGames": 6,
-    "maxHeavyDevelopmentWip": 3,
+  "portfolioGovernance": {
+    "mode": "FIVE_DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO",
+    "hardMinGames": null,
+    "hardMaxGames": null,
+    "hardMinDevelopmentWip": null,
+    "hardMaxDevelopmentWip": null,
+    "fixedPortfolioSlots": false,
+    "oneForOneReplacement": false,
+    "automaticGrowthCap": null,
+    "automaticShrinkCap": null,
+    "departments": ["planning", "graphics", "development", "qa", "balance"],
+    "scoreRange": [0, 100],
+    "weights": {
+      "planning": 0.2,
+      "graphics": 0.2,
+      "development": 0.2,
+      "qa": 0.2,
+      "balance": 0.2
+    },
+    "decisionBands": {
+      "EXPAND": [80, 100],
+      "MAINTAIN": [60, 79],
+      "REVISE_OR_HOLD": [40, 59],
+      "REDUCE_REVIEW": [0, 39]
+    },
+    "bandImposesNumericGameCount": false,
+    "singleDepartmentScoreAutoRejects": false,
+    "aggregateScoreAutoRejects": false,
+    "discardStillUsesCanonicalEvidencePolicy": true,
+    "ownerOverrideAllowed": true,
     "demoFirst": true,
     "demoMinimumEvidence": ["PLAYABLE_DEMO", "REAL_PLAY_OR_RUNTIME_EVIDENCE", "QA", "FIX_IF_REQUIRED", "REVALIDATION"],
-    "roles": {
-      "PRIMARY": 1,
-      "ACTIVE": 2,
-      "MAINTENANCE_VALIDATION": 2,
-      "INCUBATION_HOLD": 1
-    },
     "productionClassRemainsCanonical": true
   },
+  "platformProjects": {
+    "primaryPlatform": "ROBLOX",
+    "priority": ["ROBLOX", "UNITY_ANDROID", "FORTNITE_UEFN"],
+    "priorityIsDefaultFocusOnly": true,
+    "phaseEntryLocksForbidden": true,
+    "allPlatformsDevelopmentAlwaysAllowed": true,
+    "ROBLOX": {"developmentAllowed": true},
+    "UNITY_ANDROID": {"developmentAllowed": true, "existingPathPreserved": true, "extensionRequired": true},
+    "FORTNITE_UEFN": {"developmentAllowed": true},
+    "switchingRebuildsCompanyCore": false
+  },
   "legacyGamePreservation": {
-    "pool": "LEGACY_ARCHIVE_POOL",
-    "appliesToExistingGamesOutsideManagedSix": true,
-    "productionClassUnchanged": true,
-    "portfolioManaged": false,
-    "portfolioRole": "LEGACY_ARCHIVE",
     "automaticDeletionForbidden": true,
     "automaticDiscardForbidden": true,
     "automaticRebuildForbidden": true,
-    "routineHighIntensityDevelopment": false,
     "preserveSource": true,
     "preserveExistingWebVersion": true,
     "preserveSaveMeaning": true,
@@ -41,8 +67,8 @@
     "preserveHomepageLinksByDefault": true,
     "criticalMaintenanceAllowed": true,
     "ownerDirectReactivationAllowed": true,
-    "managedPortfolioVacancyPromotionAllowed": true,
-    "ageAloneNeverDeletesOrDiscardsGame": true
+    "ageAloneNeverDeletesOrDiscardsGame": true,
+    "legacyStatusDoesNotExcludeFutureDevelopment": true
   },
   "workContinuity": {
     "required": true,
@@ -143,6 +169,6 @@
   },
   "speedOptimization": {
     "buildOptimizationForbiddenByOwnerLock": true,
-    "allowedAreas": ["MISSION_PRIORITY", "WORK_IN_PROGRESS_LIMIT", "AFFECTED_DEPARTMENT_ONLY_REVIEW_WHEN_POLICY_ALLOWS", "NON_BUILD_IMPACT_ROUTING", "STATUS_SYNC_LATENCY", "UNNECESSARY_WAIT_REDUCTION", "EVIDENCE_REUSE_WHERE_VALID"]
+    "allowedAreas": ["MISSION_PRIORITY", "DEPARTMENT_SCORE_PORTFOLIO_ROUTING", "AFFECTED_DEPARTMENT_ONLY_REVIEW_WHEN_POLICY_ALLOWS", "NON_BUILD_IMPACT_ROUTING", "STATUS_SYNC_LATENCY", "UNNECESSARY_WAIT_REDUCTION", "EVIDENCE_REUSE_WHERE_VALID"]
   }
 }
