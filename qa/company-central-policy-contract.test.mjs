@@ -1,3 +1,4 @@
+// 파일명: qa/company-central-policy-contract.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -118,19 +119,25 @@ test('five departments keep distinct lead models and one Game Designer',()=>{
   assert.doesNotMatch(multimodelWorkflow,/productionClassFromLegacyTier|NUMERIC_TIER_POLICY/);
 });
 
-test('development and release use the selected target platform while Web stays optional',()=>{
+test('development requires Web gameplay and music before selected target platform validation',()=>{
   const development=directive.classes.DEVELOPMENT_CONFIRMED;
   const release=directive.classes.RELEASE_CONFIRMED;
   assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED,'VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT');
   assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_DEVELOPMENT_ENGINE');
   assert.equal(development.executionMode,'GATED_DIRECT');
-  assert.equal(development.webPurpose,'OPTIONAL_GAMEPLAY_VALIDATION_TESTBED');
+  assert.equal(development.webPurpose,'REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION');
   assert.equal(development.targetPlatformPurpose,'TECHNICAL_AND_GAMEPLAY_VALIDATION');
-  assert.equal(development.webBeforeTargetPlatformByDefault,false);
-  assert.equal(development.targetPlatformMayRunImmediately,true);
-  assert.ok(development.requiredFlow.includes('TARGET_PLATFORM_SOURCE_BIND'));
-  assert.ok(development.requiredFlow.includes('TARGET_PLATFORM_GAMEPLAY_VALIDATION'));
-  assert.ok(development.requiredFlow.includes('TARGET_PLATFORM_TECHNICAL_VALIDATION'));
+  assert.equal(development.webBeforeTargetPlatformByDefault,true);
+  assert.equal(development.targetPlatformMayRunImmediately,false);
+  assert.equal(development.webGameplayValidationRequired,true);
+  assert.equal(development.musicValidationRequired,true);
+  assert.equal(development.webCandidateMustPassBeforeTargetPlatformDispatch,true);
+  for(const token of ['WEB_PLAYABLE_QUEUE','WEB_PLAYABLE_BOOTSTRAP','MUSIC_RUNTIME_BIND','WEB_GAMEPLAY_AND_MUSIC_VALIDATION','TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_GAMEPLAY_VALIDATION','TARGET_PLATFORM_TECHNICAL_VALIDATION'])assert.ok(development.requiredFlow.includes(token),token);
+  for(const token of ['REAL_WEB_GAMEPLAY_PASS','MUSIC_RUNTIME_PASS','REAL_TARGET_PLATFORM_GAMEPLAY_PASS','REAL_TARGET_PLATFORM_TECHNICAL_PASS'])assert.ok(development.baselineReadyRequires.includes(token),token);
+  assert.equal(development.developmentMusic.firstUserGestureUnlockRequired,true);
+  assert.equal(development.developmentMusic.muteControlRequired,true);
+  assert.equal(development.developmentMusic.volumeControlRequired,true);
+  assert.equal(development.developmentMusic.musicFailureBlocksTargetPlatformDispatch,true);
   assert.equal(release.executionMode,'GATED_DIRECT_RELEASE_PRODUCTION');
   assert.equal(release.target,'PROJECT_SELECTED_PLATFORM');
   assert.equal(release.targetPlatformProjectRequired,true);
@@ -139,8 +146,10 @@ test('development and release use the selected target platform while Web stays o
   assert.ok(release.requiredFlow.includes('BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE'));
   assert.ok(release.requiredFlow.includes('TARGET_PLATFORM_BUILD_OR_PACKAGE'));
   assert.ok(release.requiredFlow.includes('TARGET_PLATFORM_RUNTIME_VALIDATION'));
-  assert.match(flow,/webPurpose: OPTIONAL_GAMEPLAY_VALIDATION_TESTBED/);
-  assert.match(flow,/targetPlatformPurpose: TECHNICAL_AND_GAMEPLAY_VALIDATION/);
+  assert.match(flow,/webPurpose: REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION/);
+  assert.match(flow,/webGameplayValidationRequired: true/);
+  assert.match(flow,/musicValidationRequired: true/);
+  assert.match(flow,/musicFailureBlocksTargetPlatformDispatch: true/);
   assert.match(flow,/target: PROJECT_SELECTED_PLATFORM/);
 });
 

@@ -1,3 +1,4 @@
+// 파일명: qa/company-central-pipeline-only.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -28,20 +29,32 @@ test('legacy autonomous top-level workflow namespace is removed',()=>{
   assert.deepEqual(legacy,[]);
 });
 
-test('central production runtime preserves existing providers without making Web or Unity the global platform policy',()=>{
+test('central production runtime keeps one Web-first selected-platform chain and existing platform executors',()=>{
   for(const file of centralWorkflows)assert.equal(exists(file),true,`${file} must exist`);
   const directive=JSON.parse(read('company-directive.json'));
   const promotion=read('.github/workflows/company-design-promotion-sync.yml');
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
   const unity=read('.github/workflows/company-development-unity-runtime.yml');
-  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webBeforeTargetPlatformByDefault,false);
-  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.targetPlatformMayRunImmediately,true);
-  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webPurpose,'OPTIONAL_GAMEPLAY_VALIDATION_TESTBED');
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webBeforeTargetPlatformByDefault,true);
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.targetPlatformMayRunImmediately,false);
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webPurpose,'REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION');
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webGameplayValidationRequired,true);
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.musicValidationRequired,true);
   assert.equal(directive.classes.RELEASE_CONFIRMED.target,'PROJECT_SELECTED_PLATFORM');
   assert.match(promotion,/DESIGN_BASELINE_READY/);
   assert.match(promotion,/company-development-confirmed-runtime\.yml/);
+  assert.match(development,/company-development-web-bootstrap\.mjs/);
   assert.match(development,/company-development-web-gameplay-validation\.mjs/);
-  assert.match(development,/company-development-validation-cycle\.mjs/);
+  assert.match(development,/WEB_GAMEPLAY_MUSIC_GATE=REQUIRED/);
+  assert.match(development,/webValidationPassedAt/);
+  assert.match(development,/musicValidationPassed===true/);
+  assert.match(development,/company-selected-platform-router\.mjs/);
+  assert.match(development,/DEVELOPMENT_PIPELINE=ONE_CANONICAL_PIPELINE/);
+  assert.match(development,/CRON_ROLE=WATCHDOG_AND_RECOVERY_ONLY/);
+  assert.match(development,/company-development-unity-runtime\.yml/);
+  assert.match(development,/vibe2-24h-runner\.yml/);
+  assert.doesNotMatch(development,/WEB_GAMEPLAY_TESTBED=OPTIONAL/);
+  assert.doesNotMatch(development,/NEXT_GATE=UNITY_ANDROID_TECHNICAL_VALIDATION/);
   assert.match(unity,/fromJSON\(needs\.prepare\.outputs\.parallel\)/);
   assert.match(unity,/company-development-unity-bootstrap\.mjs/);
   assert.match(unity,/company-development-unity-evidence\.mjs/);
@@ -50,9 +63,12 @@ test('central production runtime preserves existing providers without making Web
   assert.doesNotMatch(unity,/unity-hybrid-android-build\.yml/);
   assert.match(unity,/unity-android-runtime-smoke\.yml/);
   assert.match(unity,/unity-android-independent-qa\.yml/);
-  assert.match(unity,/HOMEPAGE_TEST_APK_PUBLISH=YES/);
-  assert.match(unity,/Run canonical Unity evidence meeting and same-designer revision/);
-  assert.match(unity,/PAID_RUNNER_FOR_UNITY_BUILD=NO/);
+  assert.match(unity,/unity-android-regression\.yml/);
+  assert.match(unity,/BUILD_ONCE_PER_SOURCE_FINGERPRINT=ENABLED/);
+  assert.match(unity,/IMMUTABLE_ARTIFACT_REUSE=ENABLED/);
+  assert.match(unity,/RESUME_EXACT_FAILURE_POINT=ENABLED/);
+  assert.match(unity,/QUALITY_GATE_WEAKENING=NO/);
+  assert.doesNotMatch(unity,/HOMEPAGE_TEST_APK_PUBLISH=YES/);
 });
 
 test('director recovery can only restart the central DEVELOPMENT_CONFIRMED runtime',()=>{
