@@ -3,12 +3,10 @@
   "updatedAt": "2026-09-11",
   "policy": {
     "webGames": "existing-maintenance-allowed",
-    "webGameDevelopment": true,
     "existingWebMaintenance": true,
     "newWebGameProduction": false,
     "webGamesRemainPlayable": true,
-    "futurePrimaryTarget": "unity-android",
-    "policyAuthority": "company-directive.json",
+    "policyAuthority": "COMPANY_FLOW.md",
     "aiDirector": {
       "mode": "rotating-local",
       "providers": [
@@ -53,7 +51,27 @@
       "workflow": ".github/workflows/homepage-manager.yml",
       "runtimeGameHealthBadgeVisible": false,
       "gameCardsRequireUniqueTitleImages": true
-    }
+    },
+    "sourceOfTruth": "COMPANY_FLOW.md",
+    "primaryPlatform": "ROBLOX",
+    "allowedTargetPlatforms": [
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN"
+    ],
+    "platformPriority": [
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN"
+    ],
+    "priorityMeaning": "DEFAULT_FOCUS_AND_EXPERIENCE_ACCUMULATION_ORDER_ONLY",
+    "primaryPlatformIsDefaultNotLock": true,
+    "allThreePlatformsMayBeDevelopedConcurrently": true,
+    "platformRoadmapPhaseEntryGatesForbidden": true,
+    "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
+    "webGameplayValidationTestbedAllowed": true,
+    "webBeforeTargetPlatformByDefault": false,
+    "targetPlatformMayRunImmediately": true
   },
   "summary": {
     "webArchiveCount": 11,
@@ -451,11 +469,12 @@
       "androidVerificationApi": 36,
       "signatureVerified": true,
       "installAndLaunchVerified": false,
-      "runtimeVerification": "android-16-avd-api-36-pending",
+      "runtimeVerification": "android-16-avd-api-36-failed",
       "runtimeVerificationSource": "github-actions",
       "runtimeInstallLaunchVerified": false,
-      "testBuildStatus": "ready",
-      "builtAt": "2026-09-12T09:07:59.873555+00:00"
+      "testBuildStatus": "runtime-failed",
+      "builtAt": "2026-09-12T09:07:59.873555+00:00",
+      "runtimeVerificationUpdatedAt": "2026-09-12T09:12:10.902698+00:00"
     },
     {
       "gameId": "seed-puzzle-chromatic-cascade",
@@ -477,11 +496,12 @@
       "androidVerificationApi": 36,
       "signatureVerified": true,
       "installAndLaunchVerified": false,
-      "runtimeVerification": "android-16-avd-api-36-pending",
+      "runtimeVerification": "android-16-avd-api-36-failed",
       "runtimeVerificationSource": "github-actions",
       "runtimeInstallLaunchVerified": false,
-      "testBuildStatus": "ready",
-      "builtAt": "2026-09-12T09:08:58.172443+00:00"
+      "testBuildStatus": "runtime-failed",
+      "builtAt": "2026-09-12T09:08:58.172443+00:00",
+      "runtimeVerificationUpdatedAt": "2026-09-12T09:13:17.548933+00:00"
     },
     {
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -503,11 +523,12 @@
       "androidVerificationApi": 36,
       "signatureVerified": true,
       "installAndLaunchVerified": false,
-      "runtimeVerification": "android-16-avd-api-36-pending",
+      "runtimeVerification": "android-16-avd-api-36-failed",
       "runtimeVerificationSource": "github-actions",
       "runtimeInstallLaunchVerified": false,
-      "testBuildStatus": "ready",
-      "builtAt": "2026-09-12T09:09:11.546489+00:00"
+      "testBuildStatus": "runtime-failed",
+      "builtAt": "2026-09-12T09:09:11.546489+00:00",
+      "runtimeVerificationUpdatedAt": "2026-09-12T09:13:29.672915+00:00"
     },
     {
       "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -529,11 +550,12 @@
       "androidVerificationApi": 36,
       "signatureVerified": true,
       "installAndLaunchVerified": false,
-      "runtimeVerification": "android-16-avd-api-36-pending",
+      "runtimeVerification": "android-16-avd-api-36-failed",
       "runtimeVerificationSource": "github-actions",
       "runtimeInstallLaunchVerified": false,
-      "testBuildStatus": "ready",
-      "builtAt": "2026-09-12T09:09:22.107280+00:00"
+      "testBuildStatus": "runtime-failed",
+      "builtAt": "2026-09-12T09:09:22.107280+00:00",
+      "runtimeVerificationUpdatedAt": "2026-09-12T09:13:33.911367+00:00"
     },
     {
       "gameId": "seed-casual-realm-weaver",
@@ -555,11 +577,12 @@
       "androidVerificationApi": 36,
       "signatureVerified": true,
       "installAndLaunchVerified": false,
-      "runtimeVerification": "android-16-avd-api-36-pending",
+      "runtimeVerification": "android-16-avd-api-36-failed",
       "runtimeVerificationSource": "github-actions",
       "runtimeInstallLaunchVerified": false,
-      "testBuildStatus": "ready",
-      "builtAt": "2026-09-12T09:09:28.236514+00:00"
+      "testBuildStatus": "runtime-failed",
+      "builtAt": "2026-09-12T09:09:28.236514+00:00",
+      "runtimeVerificationUpdatedAt": "2026-09-12T09:13:51.777649+00:00"
     }
   ],
   "redevelopmentReview": {
