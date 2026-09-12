@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "status": "ACTIVE",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
@@ -17,14 +17,17 @@
     "quotaRebalanceForbidden": true,
     "classes": {
       "RELEASE_CONFIRMED": {
-        "engine": "UNITY_ANDROID",
+        "engine": "PROJECT_SELECTED_PLATFORM",
         "deepFocusSlots": 1,
         "featureDevelopmentOnWeb": false,
         "webArchiveMaintenance": "FAST_RUNTIME_INCIDENT_ONLY"
       },
       "DEVELOPMENT_CONFIRMED": {
-        "engine": "WEB",
-        "scope": "FIRST_PLAYABLE_IMPLEMENTATION",
+        "engine": "PROJECT_SELECTED_PLATFORM",
+        "scope": "TARGET_PLATFORM_TECHNICAL_AND_GAMEPLAY_VALIDATION",
+        "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
+        "webBeforeTargetPlatformByDefault": false,
+        "targetPlatformMayRunImmediately": true,
         "fullArtbookReproductionRequired": false
       },
       "DESIGN_ONLY": {
@@ -64,10 +67,16 @@
     "axisMax": 2,
     "focusThreshold": 0,
     "nextDevelopmentThreshold": 0,
-    "selection": "AUTO_RELEASE_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT",
+    "selection": "AUTO_SELECTED_PLATFORM_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT",
     "releaseConfirmedExcludedFromFocus": false,
     "releaseConfirmedOnlyForDeepFocus": true,
-    "developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus": true,
+    "optionalWebGameplayTestbedAllowedAlongsideReleaseFocus": true,
+    "platformPriority": [
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN"
+    ],
+    "priorityMeaning": "DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE",
     "fastLane": {
       "enabled": true,
       "trigger": "RUNTIME_INCIDENT",
@@ -132,8 +141,10 @@
       "productionClass": "RELEASE_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "RELEASE_CONFIRMED",
+      "selectedPlatform": "UNITY",
       "mode": "UNITY_NEXT",
       "targetEngine": "unity-android",
+      "targetPlatformReady": false,
       "unityProjectReady": false,
       "developmentFocus": {
         "scores": {
@@ -162,8 +173,10 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "WEB_FIRST_IMPLEMENTATION",
-      "targetEngine": "web",
+      "mode": "OPTIONAL_WEB_GAMEPLAY_TESTBED",
+      "targetEngine": "platform-selection-required",
+      "targetPlatformReady": false,
+      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -173,7 +186,7 @@
           "lowBlockage": 1
         },
         "total": 8,
-        "evidenceNote": "곤충 생태 차별성과 확장성이 높아 Web 1차 플레이어블 구현으로 핵심 루프를 검증하기 적합"
+        "evidenceNote": "곤충 생태 차별성과 확장성이 높아 Web 테스트베드로 핵심 루프를 검증할 수 있으나 실제 기술·게임플레이 검증은 선택 플랫폼 기준으로 진행한다"
       },
       "protectedValues": [
         "save-meaning",
@@ -204,7 +217,8 @@
       "protectedValues": [
         "save-meaning",
         "core-loop"
-      ]
+      ],
+      "targetPlatformReady": false
     },
     {
       "id": "P0004",
@@ -214,8 +228,10 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "WEB_FIRST_IMPLEMENTATION",
-      "targetEngine": "web",
+      "mode": "OPTIONAL_WEB_GAMEPLAY_TESTBED",
+      "targetEngine": "platform-selection-required",
+      "targetPlatformReady": false,
+      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -225,7 +241,7 @@
           "lowBlockage": 1
         },
         "total": 7,
-        "evidenceNote": "현상금 위험 선택을 중심으로 Web 1차 구현을 만들고 전체 아트북 기능 재현은 후속 판단으로 남김"
+        "evidenceNote": "현상금 위험 선택을 Web 테스트베드에서 검증할 수 있으나 선택 플랫폼 확정과 실제 플랫폼 검증을 대체하지 않는다"
       },
       "protectedValues": [
         "save-meaning",
@@ -256,7 +272,8 @@
       "protectedValues": [
         "save-meaning",
         "core-loop"
-      ]
+      ],
+      "targetPlatformReady": false
     },
     {
       "id": "P0006",
@@ -267,8 +284,10 @@
       "productionClass": "RELEASE_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "RELEASE_CONFIRMED",
+      "selectedPlatform": "UNITY",
       "mode": "UNITY_DEVELOP",
       "targetEngine": "unity-android",
+      "targetPlatformReady": true,
       "dedicatedDevelopmentLane": "UNITY_PRIMARY",
       "unityProjectReady": true,
       "developmentFocus": {
@@ -280,7 +299,7 @@
           "lowBlockage": 1
         },
         "total": 8,
-        "evidenceNote": "실제 Unity 본개발 프로젝트와 테스트 빌드 근거가 있어 Unity 집중개발 준비도가 높음"
+        "evidenceNote": "선택 플랫폼은 Unity이며 실제 Unity 본개발 프로젝트와 테스트 빌드 근거를 보존한다"
       },
       "protectedValues": [
         "save-meaning",
@@ -299,7 +318,8 @@
       "profileStatus": "HOLD_MISSING_SOURCE",
       "mode": "HOLD",
       "targetEngine": "design-only",
-      "protectedValues": []
+      "protectedValues": [],
+      "targetPlatformReady": false
     },
     {
       "id": "P0008",
@@ -311,7 +331,8 @@
       "profileStatus": "HOLD_REDIRECT_ONLY",
       "mode": "HOLD",
       "targetEngine": "design-only",
-      "protectedValues": []
+      "protectedValues": [],
+      "targetPlatformReady": false
     },
     {
       "id": "P0009",
@@ -321,8 +342,10 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "WEB_FIRST_IMPLEMENTATION",
-      "targetEngine": "web",
+      "mode": "OPTIONAL_WEB_GAMEPLAY_TESTBED",
+      "targetEngine": "platform-selection-required",
+      "targetPlatformReady": false,
+      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -332,7 +355,7 @@
           "lowBlockage": 0
         },
         "total": 5,
-        "evidenceNote": "4마리 릴레이 전투 정체성과 콘텐츠 구조를 아트북에서 먼저 보완"
+        "evidenceNote": "4마리 릴레이 전투와 몬스터 성장 흐름은 Web에서 선택적으로 검증하되 선택 플랫폼 검증을 대체하지 않는다"
       },
       "protectedValues": [
         "save-meaning",
@@ -357,7 +380,8 @@
         "save-meaning",
         "core-loop",
         "public-stable"
-      ]
+      ],
+      "targetPlatformReady": false
     },
     {
       "id": "P0102",
@@ -374,7 +398,8 @@
         "save-meaning",
         "core-loop",
         "public-stable"
-      ]
+      ],
+      "targetPlatformReady": false
     },
     {
       "id": "P0103",
@@ -391,7 +416,8 @@
         "save-meaning",
         "core-loop",
         "public-stable"
-      ]
+      ],
+      "targetPlatformReady": false
     }
   ],
   "productionClassState": {
@@ -449,7 +475,8 @@
         "evidenceScore": 909,
         "developmentFocus": 9,
         "artbookBaselineRank": 0.5,
-        "unityReady": false,
+        "targetPlatform": "UNITY",
+        "targetPlatformReady": false,
         "sourceReady": true
       },
       {
@@ -462,7 +489,8 @@
         "evidenceScore": 815,
         "developmentFocus": 8,
         "artbookBaselineRank": 0.5,
-        "unityReady": true,
+        "targetPlatform": "UNITY",
+        "targetPlatformReady": true,
         "sourceReady": true
       },
       {
@@ -475,7 +503,8 @@
         "evidenceScore": 809,
         "developmentFocus": 8,
         "artbookBaselineRank": 0.5,
-        "unityReady": false,
+        "targetPlatform": null,
+        "targetPlatformReady": false,
         "sourceReady": true
       },
       {
@@ -488,7 +517,8 @@
         "evidenceScore": 709,
         "developmentFocus": 7,
         "artbookBaselineRank": 0.5,
-        "unityReady": false,
+        "targetPlatform": null,
+        "targetPlatformReady": false,
         "sourceReady": true
       },
       {
@@ -501,7 +531,8 @@
         "evidenceScore": 509,
         "developmentFocus": 5,
         "artbookBaselineRank": 0.5,
-        "unityReady": false,
+        "targetPlatform": null,
+        "targetPlatformReady": false,
         "sourceReady": true
       }
     ]
