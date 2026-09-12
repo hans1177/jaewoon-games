@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and"
+        ],
+        "fix": [
+          "The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and"
+        ],
+        "add": [
+          "The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and"
+        ],
+        "risks": [
+          "The game may not be balanced or fair, leading to a negative experience for players."
+        ],
+        "evidence": [
+          "The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and"
+        ],
+        "questions": [
+          "Is the game designed to be played on mobile devices? Is the game designed to be played with a focus on low-friction social play? "
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "GAME_SEED"
+        ],
+        "add": [
+          "GAME_SEED"
+        ],
+        "risks": [
+          "GAME_SEED"
+        ],
+        "evidence": [
+          "GAME_SEED"
+        ],
+        "questions": [
+          "GAME_SEED"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "What are the main features of the core loop that contribute to the game's competitive edge?"
+        ],
+        "fix": [
+          "How can the game balance between challenge and accessibility for all players?"
+        ],
+        "add": [
+          "What are the visual and mobile design considerations that make the game stand out?"
+        ],
+        "risks": [
+          "What are the potential issues with the game's design for casual players?"
+        ],
+        "evidence": [
+          "The game is designed to be played on mobile devices with a user-friendly interface."
+        ],
+        "questions": [
+          "How can the game be designed to provide a more immersive and engaging combat experience?"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "llama3.2:1b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "Ensure that the core loop is designed to challenge players with a variety of combat styles and opponent customization options."
+      ],
+      "fix": [
+        "Improve the visual design to make the game world more immersive and visually engaging."
+      ],
+      "add": [
+        "Enhance the progression system to provide clear feedback and rewards for skill mastery."
+      ],
+      "risks": [
+        "Minimize the risk of the game being too complex for casual players."
+      ],
+      "evidence": [
+        "The game is designed to be played on mobile devices with a user-friendly interface."
+      ],
+      "questions": [
+        "How can the game be designed to provide a more immersive and engaging combat experience?"
+      ]
+    },
+    "graphics": {
+      "keep": [],
+      "fix": [],
+      "add": [],
+      "risks": [],
+      "evidence": [],
+      "questions": []
+    },
+    "development": {
+      "keep": [
+        "game-seed"
+      ],
+      "fix": [
+        "game-seed"
+      ],
+      "add": [
+        "game-seed"
+      ],
+      "risks": [
+        "game-seed"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json"
+      ],
+      "questions": [
+        "game-seed-market-evidence.json"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and"
+      ],
+      "fix": [
+        "The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and"
+      ],
+      "add": [
+        "The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and"
+      ],
+      "risks": [
+        "The game may not be balanced or fair, leading to a negative experience for players."
+      ],
+      "evidence": [
+        "The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and"
+      ],
+      "questions": [
+        "Is the game designed to be played on mobile devices? Is the game designed to be played with a focus on low-friction social play?"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "GAME_SEED"
+      ],
+      "fix": [
+        "GAME_SEED"
+      ],
+      "add": [
+        "GAME_SEED"
+      ],
+      "risks": [
+        "GAME_SEED"
+      ],
+      "evidence": [
+        "GAME_SEED"
+      ],
+      "questions": [
+        "GAME_SEED"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "REPRESENTATIVES",
+      "status": "CONSENSUS",
+      "reason": "REPRESENTATIVES",
+      "departments": [
+        "planning",
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "REBUTTALS",
+      "status": "CONSENSUS",
+      "reason": "REBUTTALS",
+      "departments": [
+        "planning",
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 2,
+    "conflict": 0,
+    "hold": 0
+  }
+}

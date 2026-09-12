@@ -1,0 +1,70 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "SEED-ROBLOX-BATTLEGROUND_FIGHTING_SHOOTER-001",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "qwen2.5:1.5b",
+  "sameModelAsDraft": true,
+  "appliedConsensusCount": 2,
+  "unresolvedConflictCount": 0,
+  "heldCount": 0,
+  "status": "DESIGN_BASELINE_CANDIDATE",
+  "content": {
+    "identity": "DESIGN_ONLY",
+    "playerFantasy": "ROBLOX",
+    "coreFun": "combat, opponent, skill, cooldown",
+    "coreLoop": [
+      "Enter a short competitive encounter, read opponent movement, and use movement, attacks, aim, abilities, or combos to create an advantage.",
+      "Damage or eliminate opponents, receive clear hit and score feedback, then reposition around cooldowns, cover, objectives, or team pressure.",
+      "Complete the round or score target, receive progression or loadout rewards, and re-enter a new match with a changed tactical choice or mastery goal."
+    ],
+    "signatureSystems": [
+      {
+        "name": "Combat",
+        "purpose": "Create an engaging and immersive combat experience that challenges players to outmaneuver their opponents and use their skills to gain an advantage.",
+        "playerChoice": "Players can choose to engage in a variety of combat styles, such as melee, ranged, or close-quarters combat, to suit their preferred playstyle and enhance their chances of success."
+      },
+      {
+        "name": "Opponent",
+        "purpose": "Create a dynamic and unpredictable opponent system that challenges players to adapt to their opponents' strategies and tactics.",
+        "playerChoice": "Opponents can be customized with unique abilities, skills, and movement patterns to provide a constantly evolving and challenging experience."
+      },
+      {
+        "name": "Skill",
+        "purpose": "Create a system that rewards players for mastering specific skills, such as dodging, evading, or using specific abilities, to enhance their overall performance.",
+        "playerChoice": "Players can unlock and unlock skills that improve their abilities to defeat opponents and progress in the game."
+      },
+      {
+        "name": "Cooldown",
+        "purpose": "Create a system that limits players' ability to use certain abilities or move around the map, providing a sense of urgency and challenge.",
+        "playerChoice": "Players can strategically use their cooldowns to avoid being caught off guard or to take advantage of their opponents' mistakes."
+      }
+    ],
+    "progressionDirection": "Progression is based on the player's performance in the core loop, with rewards and loadouts that enhance their skills and abilities.",
+    "visualDirection": "The game features a visually rich and immersive world with a unique art style that enhances the combat and opponent experience.",
+    "mobileUx": "The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and engage with the game.",
+    "marketTargetDirection": "The game is designed to appeal to a broad audience, including casual gamers and competitive players, with a focus on low-friction social play and a competitive PvP experience.",
+    "steamExpansionDecision": "The game is not recommended for expansion on Steam.",
+    "multiplayerExpansionDecision": "The game is not recommended for expansion on multiplayer platforms.",
+    "technicalAssumptions": [
+      "The game will be developed using the Roblox platform, which provides a sandbox environment for creating and testing gameplay mechanics.",
+      "The game will be designed with a focus on balance and fairness, ensuring that all players have an equal chance to succeed and fail.",
+      "The game will be designed with a focus on accessibility, ensuring that players of all skill levels can enjoy the game and have a positive experience."
+    ],
+    "validationQuestions": [
+      "Is the game designed to be played on mobile devices?",
+      "Is the game designed to be played with a focus on low-friction social play?",
+      "Is the game designed to be played with a focus on a competitive PvP experience?",
+      "Is the game designed to be monetizable on its selected platform?"
+    ],
+    "openQuestions": [
+      "How can the game be designed to provide a more immersive and engaging combat experience?",
+      "How can the game be designed to provide a more balanced and fair gameplay experience?",
+      "How can the game be designed to provide a more accessible and enjoyable gameplay experience?"
+    ]
+  }
+}

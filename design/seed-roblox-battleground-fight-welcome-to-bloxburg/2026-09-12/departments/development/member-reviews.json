@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "game-seed-market-evidence.json"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and"
+        ],
+        "fix": [
+          "The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and"
+        ],
+        "add": [
+          "The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and"
+        ],
+        "risks": [
+          "The game may not be balanced or fair, leading to a negative experience for players."
+        ],
+        "evidence": [
+          "The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and"
+        ],
+        "questions": [
+          "Is the game designed to be played on mobile devices? Is the game designed to be played with a focus on low-friction social play? "
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "GAME_SEED"
+        ],
+        "add": [
+          "GAME_SEED"
+        ],
+        "risks": [
+          "GAME_SEED"
+        ],
+        "evidence": [
+          "GAME_SEED"
+        ],
+        "questions": [
+          "GAME_SEED"
+        ]
+      }
+    }
+  ]
+}

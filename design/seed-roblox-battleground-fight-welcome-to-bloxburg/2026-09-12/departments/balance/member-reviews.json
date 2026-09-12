@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "GAME_SEED"
+        ],
+        "add": [
+          "GAME_SEED"
+        ],
+        "risks": [
+          "GAME_SEED"
+        ],
+        "evidence": [
+          "GAME_SEED"
+        ],
+        "questions": [
+          "GAME_SEED"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Ensure that the game's progression and skill systems are balanced and fair."
+        ],
+        "fix": [
+          "Improve the cooldown system to provide a sense of urgency and challenge."
+        ],
+        "add": [
+          "Enhance the visual and mobile design to make the game more accessible and enjoyable."
+        ],
+        "risks": [
+          "What are the potential issues with the game's design for casual players?"
+        ],
+        "evidence": [
+          "The game is designed to be played on mobile devices with a user-friendly interface."
+        ],
+        "questions": [
+          "How can the game be designed to provide a more immersive and engaging combat experience?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_seed_player_engagement_metrics"
+        ],
+        "fix": [
+          "game_seed_player_progression_path"
+        ],
+        "add": [
+          "game_seed_player_reward_structure"
+        ],
+        "risks": [
+          "game_seed_player_engagement_failure"
+        ],
+        "evidence": [
+          "game_seed_player_stats"
+        ],
+        "questions": [
+          "game_seed_player_satisfaction"
+        ]
+      }
+    }
+  ]
+}

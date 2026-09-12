@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game_seed_visual_style"
+        ],
+        "fix": [
+          "game_seed_color_palette"
+        ],
+        "add": [
+          "game_seed_art_style"
+        ],
+        "risks": [
+          "game_seed_visual_consistency"
+        ],
+        "evidence": [
+          "game_seed_visual_assets"
+        ],
+        "questions": [
+          "game_seed_visual_quality"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed-platform-profiles.json"
+        ],
+        "questions": [
+          "game-seed-platform-profiles.json"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Enter a short competitive encounter, read opponent movement, and use movement, attacks, aim, abilities, or combos to create an"
+        ],
+        "fix": [
+          "Damage or eliminate opponents, receive clear hit and score feedback, then reposition around cooldowns, cover, objectives, or team"
+        ],
+        "add": [
+          "complete the round or score target, receive progression or loadout rewards, and re-enter a new match with a changed tactical"
+        ],
+        "risks": [
+          "The game may not be balanced or fair, leading to a negative experience for players."
+        ],
+        "evidence": [
+          "The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and"
+        ],
+        "questions": [
+          "Is the game designed to be played on mobile devices? Is the game designed to be played with a focus on low-friction social play? "
+        ]
+      }
+    }
+  ]
+}

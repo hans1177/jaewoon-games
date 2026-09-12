@@ -1,0 +1,353 @@
+{
+  "version": 5,
+  "date": "2026-09-12",
+  "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+  "gameName": "Vector Clash",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "status": "COMPLETE",
+  "policyDocument": "COMPANY_FLOW.md",
+  "flow": "GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE",
+  "gameSeed": {
+    "seedId": "SEED-ROBLOX-BATTLEGROUND_FIGHTING_SHOOTER-001",
+    "category": "BATTLEGROUND_FIGHTING_SHOOTER",
+    "source": "game-seed-state.json",
+    "complete": true
+  },
+  "designer": {
+    "role": "GAME_DESIGNER_AI",
+    "model": "qwen2.5:1.5b",
+    "singleAuthor": true,
+    "sameModelRevised": true
+  },
+  "departments": {
+    "count": 5,
+    "roles": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "balance"
+    ],
+    "leadModels": {
+      "planning": "qwen3:0.6b",
+      "graphics": "gemma3:1b",
+      "development": "llama3.2:1b",
+      "qa": "qwen2.5:1.5b",
+      "balance": "smollm2:1.7b"
+    },
+    "distinctLeadModels": [
+      "qwen3:0.6b",
+      "gemma3:1b",
+      "llama3.2:1b",
+      "qwen2.5:1.5b",
+      "smollm2:1.7b"
+    ],
+    "distinctLeadModelCount": 5,
+    "leadModelsDistinct": true,
+    "reviewModelCount": 3,
+    "modelAudit": {
+      "planning": {
+        "leadModel": "qwen3:0.6b",
+        "assistantModels": [
+          "gemma3:1b",
+          "llama3.2:1b"
+        ],
+        "models": [
+          "qwen3:0.6b",
+          "gemma3:1b",
+          "llama3.2:1b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "qwen3:0.6b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "qwen3:0.6b",
+        "rebuttalAuthoredByLead": true
+      },
+      "graphics": {
+        "leadModel": "gemma3:1b",
+        "assistantModels": [
+          "llama3.2:1b",
+          "qwen2.5:1.5b"
+        ],
+        "models": [
+          "gemma3:1b",
+          "llama3.2:1b",
+          "qwen2.5:1.5b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "gemma3:1b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "gemma3:1b",
+        "rebuttalAuthoredByLead": true
+      },
+      "development": {
+        "leadModel": "llama3.2:1b",
+        "assistantModels": [
+          "qwen2.5:1.5b",
+          "smollm2:1.7b"
+        ],
+        "models": [
+          "llama3.2:1b",
+          "qwen2.5:1.5b",
+          "smollm2:1.7b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "llama3.2:1b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "llama3.2:1b",
+        "rebuttalAuthoredByLead": true
+      },
+      "qa": {
+        "leadModel": "qwen2.5:1.5b",
+        "assistantModels": [
+          "smollm2:1.7b",
+          "qwen3:0.6b"
+        ],
+        "models": [
+          "qwen2.5:1.5b",
+          "smollm2:1.7b",
+          "qwen3:0.6b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "qwen2.5:1.5b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "qwen2.5:1.5b",
+        "rebuttalAuthoredByLead": true
+      },
+      "balance": {
+        "leadModel": "smollm2:1.7b",
+        "assistantModels": [
+          "qwen3:0.6b",
+          "gemma3:1b"
+        ],
+        "models": [
+          "smollm2:1.7b",
+          "qwen3:0.6b",
+          "gemma3:1b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "smollm2:1.7b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "smollm2:1.7b",
+        "rebuttalAuthoredByLead": true
+      }
+    },
+    "rebuttalRounds": 1,
+    "rebuttalAuthoredByDepartmentLeads": true,
+    "repeatedFatalReview": true
+  },
+  "meeting": {
+    "consensusCount": 2,
+    "conflictCount": 0,
+    "holdCount": 0,
+    "coordinatorModel": "llama3.2:1b"
+  },
+  "disposition": {
+    "version": 1,
+    "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+    "date": "2026-09-12",
+    "state": "REDESIGN",
+    "sameDesignerRevisionAttempted": true,
+    "repeatedFiveDepartmentReview": true,
+    "allFiveLeadModelsReviewed": true,
+    "discardVotes": 1,
+    "commonFatalCriteria": [],
+    "unanimousFatalDiscard": false,
+    "fatalReviews": {
+      "planning": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [],
+        "evidence": [
+          "The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and engage with the game.",
+          "The game is designed to appeal to a broad audience, including casual gamers and competitive players, with a focus on low-friction social play and a competitive PvP experience.",
+          "The game is not recommended for expansion on Steam."
+        ],
+        "reason": "The game has a clear and viable design that aligns with current market trends and player expectations, making it a strong candidate for active development."
+      },
+      "graphics": {
+        "recommendedState": "DISCARD",
+        "fatalCriteria": [
+          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+          "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY"
+        ],
+        "evidence": [],
+        "reason": "The game design exhibits several significant issues that warrant a DISCARD decision. The core loop is overly reliant on a specific, potentially limiting, gameplay style (combat, opponent, skill, cooldown), which is not adaptable to a broader audience. The design prioritizes a single, somewhat narrow gameplay experience (Vector Clash) over potential for expansion and diversification. The core loop is not designed to be balanced or fair, and the design lacks a clear path for progression and monetization. The game's design is not designed to be a competitive PvP experience, and the visual direction is not optimized for mobile devices. The design is not designed to be accessible to a broad range"
+      },
+      "development": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "The Strongest Battlegrounds",
+          "RIVALS",
+          "Arsenal",
+          "ESA Power of Play 2025 Global Report"
+        ],
+        "reason": "The game's design is sound and does not have any fatal issues that would prevent it from being released. However, the game's design does not provide any clear indication of how it will be monetized, which could be a concern for players. Additionally, the game's design does not provide any clear indication of how it will be balanced and fair, which could be a concern for players who are concerned about the game's competitiveness."
+      },
+      "qa": {
+        "recommendedState": "REDESIGN",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "The Strongest Battlegrounds",
+          "RIVALS",
+          "Arsenal",
+          "ESA Power of Play 2025 Global Report"
+        ],
+        "reason": "The current design does not meet the criteria of the game's market evidence, as it lacks distinct identity and fails to provide a competitive and engaging experience."
+      },
+      "balance": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "The Strongest Battlegrounds",
+          "RIVALS"
+        ],
+        "reason": "REASON_FOR_ACTIVE_STATE_RECOGNITION_AND_REASON_FOR_ACTIVE_STATE_REJECTION_OF_DISCARD_REASON_FOR_ACTIVE_STATE_REJECTION_OF_DISCARD_REASON_FOR_ACTIVE_STATE_REJECTION_OF_DISCARD_REASON_FOR_ACTIVE_STATE_REJECTION_OF_DISCARD_REASON_FOR_ACTIVE_STATE_REJECTION_OF_DISCARD_REASON_FOR_ACTIVE_STATE_REJECTION_OF_DISCARD_REASON_FOR_ACTIVE_STATE_REJECTION_OF_DISCARD_REASON_FOR_ACTIVE_STATE_REJECTION_OF_DISCARD_REASON_FOR_ACTIVE_STATE_REJECTION_OF_DISCARD_REASON_FOR_ACTIVE_STATE_REJECTION_OF_DISCARD_REASON_FOR_ACTIVE_STATE_REJECTION_OF_DISCARD_REASON_FOR_ACTIVE_STATE_REJECTION_OF_DISCARD_REASON_FOR_ACTIVE_STATE_REJECTION_OF_DISCARD_REASON_FOR_ACTIVE_STATE_REJECTION_OF_DISCARD_REASON_FOR_ACTIVE_STATE_REJECT"
+      }
+    },
+    "marketMetricAloneUsedForDiscard": false
+  },
+  "runtimeMetrics": {
+    "phaseMs": {
+      "designer_draft": 115608,
+      "independent_department_reviews": 403761,
+      "department_representatives": 59682,
+      "lead_rebuttals": 136307,
+      "cross_department_meeting": 23809,
+      "designer_revision": 99519,
+      "five_lead_fatal_review": 392854
+    },
+    "totalModelCalls": 23,
+    "totalModelCallMs": 2358838,
+    "modelPhaseConcurrency": 3,
+    "modelKeepAlive": "2m",
+    "independentReviewOutputs": 15,
+    "fullPoolReviewOutputs": 25
+  },
+  "artbook": {
+    "singleEditor": true,
+    "editorModel": "llama3.2:1b",
+    "sourceDesign": "design/seed-roblox-battleground-fight-welcome-to-bloxburg/2026-09-12/design-revised.json",
+    "createdAfterBaselineReady": true,
+    "vibe2Used": false,
+    "path": "design/seed-roblox-battleground-fight-welcome-to-bloxburg/2026-09-12/core-artbook.json"
+  },
+  "vibe2Used": false,
+  "paidApi": false,
+  "baselineGate": {
+    "policyDocument": "COMPANY_FLOW.md",
+    "productionClass": "DESIGN_ONLY",
+    "tierAlias": 3,
+    "tier": 3,
+    "state": "DESIGN_BASELINE_READY",
+    "ready": true,
+    "blockers": [],
+    "advisoryDisposition": "REDESIGN",
+    "unanimousFatalDiscard": false,
+    "meeting": {
+      "conflictCount": 0,
+      "holdCount": 0,
+      "allResolved": true
+    },
+    "evidence": {
+      "gameSeed": {
+        "required": true,
+        "present": true,
+        "seedId": "SEED-ROBLOX-BATTLEGROUND_FIGHTING_SHOOTER-001",
+        "source": "game-seed-state.json"
+      },
+      "webSmoke": {
+        "supportingOnly": true,
+        "pass": false,
+        "source": null
+      },
+      "webGameplay": {
+        "required": false,
+        "pass": false,
+        "approvedScopeFullyImplemented": false,
+        "approvedScopeCount": 0,
+        "source": null
+      },
+      "targetPlatformProject": {
+        "required": false,
+        "platform": "ROBLOX",
+        "present": false,
+        "path": null,
+        "projectField": "robloxProjectPath"
+      },
+      "targetPlatformTechnical": {
+        "required": false,
+        "platform": "ROBLOX",
+        "pass": false,
+        "source": null,
+        "evidenceFile": "roblox-technical-validation.json"
+      },
+      "revalidation": {
+        "conditional": true,
+        "pass": false,
+        "source": null
+      }
+    },
+    "contracts": {
+      "aiMeetingCompletionDoesNotEqualBaselineApproval": true,
+      "gameSeedRequiredBeforeDesignBaseline": true,
+      "marketEvidenceIsTargetReferenceNotHardGate": true,
+      "meetingHoldBlocksDesignBaseline": true,
+      "meetingConflictBlocksDesignBaseline": true,
+      "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
+      "unanimousFatalDiscardRequiredToDiscard": true,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": true,
+      "designArtbookOnlyAfterBaselineReady": true,
+      "designOnlyVibe2Forbidden": true,
+      "webSmokeDoesNotEqualGameplayValidation": true,
+      "developmentConfirmedIsGatedDirect": true,
+      "developmentConfirmedResumesFromLatestEvidence": true,
+      "developmentConfirmedRequiresExplicitWebGameplayValidation": true,
+      "developmentConfirmedRequiresFullApprovedWebScope": true,
+      "developmentConfirmedRequiresSelectedPlatformTechnicalValidation": true,
+      "developmentArtbookOnlyAfterBaselineReady": true,
+      "releaseConfirmedBaselineOwnedByReleasePipeline": true,
+      "numericTierIsCompatibilityAliasOnly": true
+    },
+    "checkedAt": "2026-09-12T23:56:08.052Z"
+  },
+  "artbookUi": {
+    "status": "COMPLETE",
+    "label": "완료",
+    "path": "artbook-submissions/seed-roblox-battleground-fight-welcome-to-bloxburg/status.json"
+  },
+  "artbookPublication": {
+    "published": true,
+    "path": "artbook-submissions/seed-roblox-battleground-fight-welcome-to-bloxburg/current.json",
+    "baselineGateState": "DESIGN_BASELINE_READY"
+  }
+}

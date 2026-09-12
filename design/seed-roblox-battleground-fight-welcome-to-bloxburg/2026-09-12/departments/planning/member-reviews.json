@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Ensure that the core loop is designed to challenge players with a variety of combat styles and opponent customization options."
+        ],
+        "fix": [
+          "Improve the visual design to make the game world more immersive and visually engaging."
+        ],
+        "add": [
+          "Enhance the progression system to provide clear feedback and rewards for skill mastery."
+        ],
+        "risks": [
+          "Minimize the risk of the game being too complex for casual players."
+        ],
+        "evidence": [
+          "The game is designed to be played on mobile devices with a user-friendly interface."
+        ],
+        "questions": [
+          "How can the game be designed to provide a more immersive and engaging combat experience?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_seed_version"
+        ],
+        "fix": [
+          "game_seed_name"
+        ],
+        "add": [
+          "game_seed_description"
+        ],
+        "risks": [
+          "game_seed_complexity"
+        ],
+        "evidence": [
+          "game_seed_data"
+        ],
+        "questions": [
+          "game_seed_validation"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "game-seed-market-evidence.json"
+        ]
+      }
+    }
+  ]
+}
