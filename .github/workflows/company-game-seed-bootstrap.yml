@@ -3,14 +3,16 @@ name: Company GAME_SEED Bootstrap
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 15 * * *' # 00:30 KST; without a score-approved expansion request no seed is created
+    - cron: '30 15 * * *' # 00:30 KST; fills required platform representatives first, then score-approved expansion
   push:
     branches: [main]
     paths:
       - 'COMPANY_FLOW.md'
       - 'company-directive.json'
       - 'game-seed-market-evidence.json'
+      - 'game-seed-platform-profiles.json'
       - 'tools/game-seed-state.mjs'
+      - 'tools/game-seed-platform-profile.mjs'
       - 'tools/company-game-seed-contract.mjs'
       - 'tools/company-game-seed-bootstrap.mjs'
       - 'tools/company-game-seed-semantic-normalize.mjs'
@@ -20,6 +22,8 @@ on:
       - 'tools/company-baseline-gate.mjs'
       - 'tools/company-design-artbook.mjs'
       - 'qa/company-game-seed-flow.test.mjs'
+      - 'qa/autonomous-portfolio-continuation.test.mjs'
+      - 'qa/roblox-portfolio-expansion-policy.test.mjs'
       - 'qa/company-game-seed-state-file.test.mjs'
       - 'qa/company-seed-design-runtime-stall.test.mjs'
       - '.github/workflows/company-game-seed-bootstrap.yml'
@@ -73,12 +77,14 @@ jobs:
       - name: Static GAME_SEED contract QA
         run: |
           node --check tools/game-seed-state.mjs
+          node --check tools/game-seed-platform-profile.mjs
           node --check tools/company-game-seed-contract.mjs
           node --check tools/company-game-seed-bootstrap.mjs
           node --check tools/company-game-seed-semantic-normalize.mjs
           node --check tools/company-game-seed-quality-gate.mjs
           node --test qa/company-game-seed-flow.test.mjs
           node --test qa/autonomous-portfolio-continuation.test.mjs
+          node --test qa/roblox-portfolio-expansion-policy.test.mjs
 
       - name: Decide whether a model call is needed
         id: need
@@ -86,14 +92,30 @@ jobs:
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
-          import {loadSeedState,pendingPortfolioSeedRequests} from './tools/game-seed-state.mjs';
+          import fs from 'node:fs';
+          import {loadSeedState,pendingPortfolioSeedRequests,platformRepresentativeGaps} from './tools/game-seed-state.mjs';
+          import {loadPlatformProfiles,normalizeSeedPlatform,representativeCategoriesForPlatform} from './tools/game-seed-platform-profile.mjs';
+          const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const state=loadSeedState();
           const initial=!state.bootstrapCompletedAt;
-          const pending=initial?[]:pendingPortfolioSeedRequests(state);
-          const need=initial||pending.length>0;
+          const primaryPlatform=normalizeSeedPlatform(directive.platformStrategy?.primaryPlatform||directive.gameSeed?.initialTargetPlatform||'ROBLOX')||'ROBLOX';
+          const categories=representativeCategoriesForPlatform(directive,primaryPlatform,loadPlatformProfiles());
+          const gaps=initial?[]:platformRepresentativeGaps(state,primaryPlatform,categories);
+          const pending=initial||gaps.length?[]:pendingPortfolioSeedRequests(state);
+          const need=initial||gaps.length>0||pending.length>0;
+          const requestCount=initial?Number(directive.gameSeed?.bootstrap?.count||6):gaps.length||pending.length;
+          const reason=initial
+            ?'HISTORICAL_INITIAL_SIX_SEED_BOOTSTRAP'
+            :gaps.length
+              ?'PLATFORM_REPRESENTATIVE_SET_FILL'
+              :pending.length
+                ?'DEPARTMENT_SCORE_GUIDED_PORTFOLIO_EXPANSION'
+                :'NO_CREATION_REQUIRED';
           console.log(`model=${need?'true':'false'}`);
-          console.log(`request_count=${initial?6:pending.length}`);
-          console.log(`reason=${initial?'HISTORICAL_INITIAL_SIX_SEED_BOOTSTRAP':need?'DEPARTMENT_SCORE_GUIDED_PORTFOLIO_EXPANSION':'NO_PORTFOLIO_EXPANSION_DECISION'}`);
+          console.log(`request_count=${requestCount}`);
+          console.log(`reason=${reason}`);
+          console.log(`primary_platform=${primaryPlatform}`);
+          console.log(`representative_gap_count=${gaps.length}`);
           NODE
 
       - name: Verified free budget preflight
@@ -119,7 +141,7 @@ jobs:
           version: ${{ env.OLLAMA_VERSION }}
           pull-model: 'true'
 
-      - name: Generate historical bootstrap seeds or score-approved portfolio expansions
+      - name: Generate historical bootstrap, platform representatives, or score-approved expansion
         if: steps.need.outputs.model == 'true'
         env:
           GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
@@ -143,11 +165,12 @@ jobs:
           set -euo pipefail
           node tools/company-game-seed-quality-gate.mjs
 
-      - name: Record no-expansion decision when there is no score-approved request
+      - name: Record no-creation decision
         if: steps.need.outputs.model != 'true'
         run: |
-          echo 'GAME_SEED_ACTION=NO_PORTFOLIO_EXPANSION_DECISION'
+          echo 'GAME_SEED_ACTION=NO_CREATION_REQUIRED'
           echo 'GAME_SEED_CREATED_COUNT=0'
+          echo 'PLATFORM_REPRESENTATIVE_SET=COMPLETE'
           echo 'PORTFOLIO_EXPANSION_DECISION=NONE'
 
       - name: Validate GAME_SEED state
@@ -217,11 +240,13 @@ jobs:
         run: |
           echo '### Company GAME_SEED Bootstrap' >> "$GITHUB_STEP_SUMMARY"
           echo '- policy source: COMPANY_FLOW.md' >> "$GITHUB_STEP_SUMMARY"
-          echo '- historical initial generation: one six-category batch only; it is not a portfolio quota' >> "$GITHUB_STEP_SUMMARY"
-          echo '- ongoing creation: only score-approved five-department portfolio EXPAND requests or owner override' >> "$GITHUB_STEP_SUMMARY"
+          echo '- historical initial generation: one Unity six-category batch only; it is not a portfolio quota' >> "$GITHUB_STEP_SUMMARY"
+          echo '- current primary representative set: missing Roblox categories are filled before optional portfolio expansion' >> "$GITHUB_STEP_SUMMARY"
+          echo '- ongoing expansion beyond the representative set: score-approved five-department EXPAND requests or owner override' >> "$GITHUB_STEP_SUMMARY"
+          echo '- six representative categories: development set and release candidates, not a total game cap or forced six-of-six release' >> "$GITHUB_STEP_SUMMARY"
           echo '- portfolio size: dynamic; no fixed slots, hard minimum, or hard maximum' >> "$GITHUB_STEP_SUMMARY"
           echo '- market evidence: directional reference only; missing market metrics do not reject a seed by themselves' >> "$GITHUB_STEP_SUMMARY"
-          echo '- target platform: Roblox default, not a lock; Roblox/Unity/Fortnite UEFN may be selected per project' >> "$GITHUB_STEP_SUMMARY"
+          echo '- target platforms: Roblox/Unity/Fortnite UEFN; representative set requests remain platform-scoped' >> "$GITHUB_STEP_SUMMARY"
           echo '- runtime persistence: company-runtime branch; main stays unchanged' >> "$GITHUB_STEP_SUMMARY"
           echo '- source code: own implementation only' >> "$GITHUB_STEP_SUMMARY"
           echo '- public game source write: NO' >> "$GITHUB_STEP_SUMMARY"
