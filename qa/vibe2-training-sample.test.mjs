@@ -30,8 +30,26 @@ test('Unity 게임 소스는 browser QA를 요구하지 않고 Android/runtime �
   const sample = buildVerifiedTrainingSample({ evidence: source, patch: 'diff --git a/unity-games/P0002/Assets/Move.cs b/unity-games/P0002/Assets/Move.cs\n-old\n+new', sourceRevision: 'unity123', browserQa: 'NOT_APPLICABLE', taskType: 'unity' });
   assert.equal(sample.taskType, 'unity'); assert.equal(sample.difficulty, 'unity-build');
   assert.equal(sample.browserQa, 'NOT_APPLICABLE'); assert.equal(sample.verification.runtime, 'PASS'); assert.equal(sample.verification.androidRuntimeRequired, true);
-  assert.deepEqual(qaRequirementsForTask('unity'), { independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', runtime: 'PASS', androidRuntimeRequired: true });
+  assert.deepEqual(qaRequirementsForTask('unity'), { independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', runtime: 'PASS', androidRuntimeRequired: true, robloxRuntimeRequired: false, uefnRuntimeRequired: false });
   assert.equal(qaEvidencePasses({ taskType: 'unity', independentQa: 'PASS', browserQa: 'FAIL', runtime: 'PASS' }), true);
+});
+
+test('Roblox와 Fortnite UEFN은 각 native runtime gate에 묶인다', () => {
+  const roblox = buildVerifiedTrainingSample({
+    evidence: evidence({ sourcePath: 'roblox-games/P0100', role: '', diagnosticFocus: null, goal: 'Roblox Luau 이동을 구현한다', verificationTrace: trace('roblox123') }),
+    patch: 'diff --git a/roblox-games/P0100/main.luau b/roblox-games/P0100/main.luau\n-old\n+new', sourceRevision: 'roblox123', browserQa: 'NOT_APPLICABLE', taskType: 'roblox',
+  });
+  assert.equal(roblox.taskType, 'roblox'); assert.equal(roblox.difficulty, 'roblox-release'); assert.equal(roblox.verification.robloxRuntimeRequired, true); assert.equal(roblox.verification.androidRuntimeRequired, false);
+
+  const uefn = buildVerifiedTrainingSample({
+    evidence: evidence({ sourcePath: 'fortnite-uefn-games/P0200', role: '', diagnosticFocus: null, goal: 'UEFN Verse 장치를 구현한다', verificationTrace: trace('uefn123') }),
+    patch: 'diff --git a/fortnite-uefn-games/P0200/main.verse b/fortnite-uefn-games/P0200/main.verse\n-old\n+new', sourceRevision: 'uefn123', browserQa: 'NOT_APPLICABLE', taskType: 'fortnite_uefn',
+  });
+  assert.equal(uefn.taskType, 'fortnite_uefn'); assert.equal(uefn.difficulty, 'uefn-release'); assert.equal(uefn.verification.uefnRuntimeRequired, true); assert.equal(uefn.verification.robloxRuntimeRequired, false);
+  assert.deepEqual(qaRequirementsForTask('roblox'), { independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', runtime: 'PASS', androidRuntimeRequired: false, robloxRuntimeRequired: true, uefnRuntimeRequired: false });
+  assert.deepEqual(qaRequirementsForTask('fortnite_uefn'), { independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', runtime: 'PASS', androidRuntimeRequired: false, robloxRuntimeRequired: false, uefnRuntimeRequired: true });
+  assert.equal(qaEvidencePasses({ taskType: 'roblox', independentQa: 'PASS', browserQa: 'FAIL', runtime: 'PASS' }), true);
+  assert.equal(qaEvidencePasses({ taskType: 'fortnite_uefn', independentQa: 'PASS', browserQa: 'FAIL', runtime: 'PASS' }), true);
 });
 
 test('Unity runtime 실패나 불완전 trace는 학습 샘플로 승격하지 않는다', () => {
