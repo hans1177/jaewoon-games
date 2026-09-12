@@ -19,11 +19,20 @@ function assertOrdered(text, tokens, label) {
   }
 }
 
+function centralReleaseFlow(text) {
+  const start = text.indexOf('\n  RELEASE_CONFIRMED:\n    executionMode: GATED_DIRECT_RELEASE_PRODUCTION');
+  assert.ok(start >= 0, 'COMPANY_FLOW: selected-platform RELEASE_CONFIRMED flow missing');
+  const end = text.indexOf('\npromotion:', start);
+  assert.ok(end > start, 'COMPANY_FLOW: RELEASE_CONFIRMED flow boundary missing');
+  return text.slice(start, end);
+}
+
 test('central RELEASE_CONFIRMED policy keeps the selected-platform gated direct release order', () => {
-  assertOrdered(flow, [
+  const releaseFlow = centralReleaseFlow(flow);
+  assertOrdered(releaseFlow, [
     'RELEASE_CONFIRMED:',
-    'target: PROJECT_SELECTED_PLATFORM',
     'executionMode: GATED_DIRECT_RELEASE_PRODUCTION',
+    'target: PROJECT_SELECTED_PLATFORM',
     '- LOAD_DEVELOPMENT_BASELINE',
     '- CORE_DESIGN_LOCK',
     '- VIBE2_PRIMARY_DEVELOPMENT',
@@ -50,7 +59,7 @@ test('central RELEASE_CONFIRMED policy keeps the selected-platform gated direct 
     'aiMayInventBuildPass: false',
     'aiMayInventDeviceValidationPass: false',
     'aiMayInventIndependentQaPass: false',
-  ]) assert.ok(flow.includes(token), `central release contract missing: ${token}`);
+  ]) assert.ok(releaseFlow.includes(token), `central release contract missing: ${token}`);
 });
 
 test('current Unity provider binds implementation/build evidence to current Unity source', () => {
