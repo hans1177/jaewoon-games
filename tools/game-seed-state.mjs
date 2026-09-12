@@ -21,6 +21,14 @@ export function normalizeSeedState(raw={}){
   state.policyDocument='COMPANY_FLOW.md';
   if(!Array.isArray(state.categories)||!state.categories.length)state.categories=[...DEFAULT_SEED_CATEGORIES];
   if(!Array.isArray(state.seeds))state.seeds=[];
+  else state.seeds=state.seeds.map(seed=>{
+    const normalized=seed&&typeof seed==='object'&&!Array.isArray(seed)?{...seed}:seed;
+    if(normalized&&typeof normalized==='object'){
+      delete normalized.replacementOfSeedId;
+      delete normalized.replacementVacancyId;
+    }
+    return normalized;
+  });
   if(!Array.isArray(state.portfolioSeedRequests))state.portfolioSeedRequests=[];
   else state.portfolioSeedRequests=state.portfolioSeedRequests.map(request=>{
     const normalized=request&&typeof request==='object'&&!Array.isArray(request)?{...request}:request;
