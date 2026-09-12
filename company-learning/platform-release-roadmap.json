@@ -1,10 +1,11 @@
 {
   "version": 3,
-  "status": "EXECUTION_CONTRACT_ONLY",
+  "status": "OWNER_DIRECT_LOCKED",
   "policySource": "COMPANY_FLOW.md",
   "recordedAt": "2026-09-12",
   "priority": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
   "primaryPlatform": "ROBLOX",
+  "currentPhase": "ROBLOX_FAST_RELEASE_STABILIZATION",
   "priorityMeaning": "DEFAULT_FOCUS_ONLY",
   "developmentAccess": {
     "ROBLOX": "ALWAYS_ALLOWED",
@@ -13,7 +14,34 @@
   },
   "crossPlatformDevelopmentLockedByPhase": false,
   "platformEntryGateAllowed": false,
+  "platformDevelopmentMayStartWithoutPriorPlatformCompletion": true,
+  "platformReleaseMayProceedWhenOwnEvidencePasses": true,
   "parallelLearningPipelineAllowed": false,
+  "runtimeContractCannotCreatePolicy": true,
+  "phases": [
+    {
+      "id": "ROBLOX_FAST_RELEASE_STABILIZATION",
+      "priority": 1,
+      "entryGate": false,
+      "objective": "FAST_REAL_RELEASE_AND_STABILIZATION_EXPERIENCE",
+      "blocksUnityDevelopment": false,
+      "blocksFortniteDevelopment": false
+    },
+    {
+      "id": "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE",
+      "priority": 2,
+      "entryGate": false,
+      "objective": "CONCURRENT_ROBLOX_AND_UNITY_RELEASE_EXPERIENCE",
+      "unityExistingPathPreserved": true,
+      "unityDeletedOrReplacedByRoblox": false
+    },
+    {
+      "id": "FORTNITE_UEFN_EXPANSION",
+      "priority": 3,
+      "entryGate": false,
+      "objective": "ADD_UEFN_RELEASE_EXPERIENCE_WITHOUT_REPLACING_OTHER_TRACKS"
+    }
+  ],
   "roblox": {
     "taskType": "roblox",
     "sourceRoot": "roblox-games/",
