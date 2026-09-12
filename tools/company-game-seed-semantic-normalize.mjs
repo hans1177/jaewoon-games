@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import {assertGameSeed,GAME_SEED_POLICY} from './company-game-seed-contract.mjs';
+import {normalizeSeedState} from './game-seed-state.mjs';
 
 const stateFile=process.env.GAME_SEED_STATE_FILE||'game-seed-state.json';
 const evidenceFile=process.env.GAME_SEED_MARKET_EVIDENCE_FILE||'game-seed-market-evidence.json';
@@ -9,7 +10,7 @@ const uniq=v=>[...new Set((Array.isArray(v)?v:[]).map(clean).filter(Boolean))];
 const readJson=(file,fallback={})=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 
 if(!fs.existsSync(stateFile))throw new Error('GAME_SEED_NORMALIZE_STATE_MISSING');
-const state=readJson(stateFile,{seeds:[]});
+const state=normalizeSeedState(readJson(stateFile,{seeds:[]}));
 const evidence=readJson(evidenceFile,{targetMarketScope:'GLOBAL',categories:{},globalSources:[]});
 const evidenceScope=clean(evidence.targetMarketScope||'GLOBAL').toUpperCase();
 if(evidenceScope!=='GLOBAL')throw new Error(`GAME_SEED_NORMALIZE_EVIDENCE_SCOPE_MUST_BE_GLOBAL ${evidenceScope}`);
@@ -119,5 +120,6 @@ for(const seed of candidates)normalizeSeed(seed);
 fs.writeFileSync(stateFile,`${JSON.stringify(state,null,2)}\n`);
 console.log('GAME_SEED_SEMANTIC_NORMALIZE=PASS');
 console.log(`GAME_SEED_SEMANTIC_NORMALIZED_COUNT=${candidates.length}`);
+console.log('GAME_SEED_STATE_NORMALIZATION_PERSISTED=YES');
 console.log('GAME_SEED_MARKET_EVIDENCE_ROLE=REFERENCE_ONLY');
 console.log('GAME_SEED_PLATFORM_SELECTION=PROJECT_DEFINED_WITH_ROBLOX_DEFAULT');
