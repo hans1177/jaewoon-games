@@ -142,6 +142,19 @@ portfolioGovernance:
     - balance
     - music
     - intro
+  blockingDepartments:
+    - planning
+    - graphics
+    - development
+    - qa
+    - balance
+  advisoryDepartments:
+    - music
+    - intro
+  allSevenDepartmentsParticipateInReviewScoreAndLearning: true
+  advisoryDepartmentPassRequiredForProgression: false
+  advisoryDepartmentFailureAloneCannotBlockBaselinePromotionOrRelease: true
+  independentSafetyRightsRuntimePolicyMayStillBlock: true
   scoreScale:
     min: 0
     max: 100
@@ -612,7 +625,9 @@ assetPolicy:
       - LOCAL_LICENSED_AUDIO
     externalTrackRequiresLicenseLedger: true
     runtimeNetworkAudioDependencyForbidden: true
-    musicFailureBlocksCanonicalWebGameReadyState: true
+    musicFailureBlocksCanonicalWebGameReadyState: false
+    musicDepartmentPassRequiredForProgression: false
+    independentAudioSafetyRightsViolationsMayStillBlockThroughQaOrAssetPolicy: true
   sizeGuidance:
     ordinaryAssetPreferredMaxMb: 1
     perGameAdditionalAssetsPreferredRangeMb: 20_TO_50
@@ -716,6 +731,17 @@ departmentStandards:
     extractedEvidenceMustBindSourceRuntimeOrArtifact: true
     modelInventedEvidenceForbidden: true
     directorAggregatesSevenDepartmentResultsAndEvidenceGates: true
+    blockingDepartments:
+      - planning
+      - graphics
+      - development
+      - qa
+      - balance
+    advisoryDepartments:
+      - music
+      - intro
+    allSevenDepartmentReviewsRequired: true
+    advisoryDepartmentPassRequiredForProgression: false
   planning:
     responsibilities:
       - CORE_FUN
@@ -809,6 +835,7 @@ departmentStandards:
       noImpactRequiresExplicitChangeScopeEvidence: true
       codeQualityAloneDoesNotPass: true
   music:
+    blockingForProgression: false
     responsibilities:
       - BGM_AND_EVENT_AUDIO_DIRECTION
       - FIRST_USER_GESTURE_AUDIO_UNLOCK
@@ -821,6 +848,7 @@ departmentStandards:
       runtimeAudioEvidenceAbsentForbidsPass: true
       externalAudioRequiresLicenseEvidence: true
   intro:
+    blockingForProgression: false
     departmentMeaning: DIRECTION_AND_CINEMATIC
     cinematicContentRequired: false
     responsibilities:
@@ -843,10 +871,21 @@ departmentStandards:
     mustAggregateCrossDepartmentBlockers: true
     mustSetNextRevisionPriority: true
     cannotInventMissingDepartmentEvidence: true
+    blockingDepartments:
+      - planning
+      - graphics
+      - development
+      - qa
+      - balance
+    advisoryDepartments:
+      - music
+      - intro
+    allSevenMustSubmitReview: true
+    advisoryFailureRecordedButDoesNotForceReviseOrDrop: true
     reviewVerdict:
-      anyDrop: DROP
-      noDropAnyReviseOrEvidenceGateFailure: REVISE
-      allSevenPassAndAllEvidenceGatesPass: PASS
+      anyBlockingDrop: DROP
+      noBlockingDropAnyBlockingReviseOrBlockingEvidenceGateFailure: REVISE
+      allFiveBlockingDepartmentsPassAndAllBlockingEvidenceGatesPass: PASS
     reviewDropDoesNotBypassDiscardPolicy: true
   postModificationFlow:
     - DEVELOPMENT_CHANGE
@@ -860,7 +899,7 @@ departmentStandards:
     - MUSIC_REVIEW
     - INTRO_REVIEW
     - SEVEN_DEPARTMENT_EVIDENCE_GATES
-    - DIRECTOR_AGGREGATION
+    - DIRECTOR_FIVE_BLOCKING_PLUS_TWO_ADVISORY_AGGREGATION
     - VERIFIED_DEPARTMENT_EVIDENCE_TO_VIBE3_LEARNING
     - PASS_REVISE_OR_DROP
   defectRecoveryFlow:
@@ -963,6 +1002,7 @@ flows:
       - PER_DEPARTMENT_MULTIMODEL_REVIEW_PASS
       - CANONICAL_WEB_GAME_EXISTS
       - CANONICAL_WEB_GAME_QA_PASS
+      - FIVE_BLOCKING_DEPARTMENT_PASS
       - NO_HIDDEN_FATAL_CONFLICT
     readyState: DESIGN_BASELINE_READY
   DEVELOPMENT_CONFIRMED:
@@ -976,7 +1016,10 @@ flows:
     targetPlatformPurpose: TECHNICAL_AND_GAMEPLAY_VALIDATION
     targetPlatformMayRunWhenDesignBaselineAndCanonicalWebGameReady: true
     musicValidationRequiredThroughGeneralQa: true
+    musicDepartmentPassRequiredForProgression: false
     introDepartmentReviewRequired: true
+    introDepartmentPassRequiredForProgression: false
+    advisoryDepartmentFailureBlocksBaseline: false
     cinematicContentRequired: false
     aiMayInventValidationPass: false
     requiredFlow:
@@ -996,8 +1039,9 @@ flows:
       - CORE_LOOP_PLAYABLE
       - MOBILE_INPUT_SUPPORTED
       - NO_FATAL_RUNTIME_ERROR
-      - MUSIC_RUNTIME_AND_CONTROL_EVIDENCE
-      - CINEMATIC_OR_DIRECT_GAMEPLAY_HANDOFF_EVIDENCE
+    advisoryCanonicalWebGameChecks:
+      - MUSIC_RUNTIME_AND_CONTROL_EVIDENCE_WHEN_AVAILABLE
+      - CINEMATIC_OR_DIRECT_GAMEPLAY_HANDOFF_EVIDENCE_WHEN_APPLICABLE
     targetPlatformValidationMustCover:
       - CORE_LOOP
       - TEMPO
@@ -1028,6 +1072,7 @@ flows:
       - DESIGN_BASELINE_EXISTS
       - CANONICAL_WEB_GAME_EXISTS
       - CANONICAL_WEB_GAME_GENERAL_QA_PASS
+      - FIVE_BLOCKING_DEPARTMENT_PASS
       - REAL_TARGET_PLATFORM_GAMEPLAY_PASS
       - REAL_TARGET_PLATFORM_TECHNICAL_PASS
       - REQUIRED_FIXES_APPLIED
@@ -1070,6 +1115,7 @@ flows:
     buildPreflightIsNotFinalApproval: true
     finalReviewMustReadSameCurrentBuildRuntimeQaEvidence: true
     independentQaSeparatedFromVibe2SelfCheck: true
+    musicAndIntroReviewNonBlockingForRelease: true
     waitingStates:
       - BUILDING
       - WAITING_BUILD
@@ -1085,7 +1131,7 @@ flows:
       - BUILD_PREFLIGHT_NO_RELEASE_BLOCKER
       - CURRENT_TARGET_PLATFORM_RUNTIME_PASS
       - CURRENT_BUILD_INDEPENDENT_QA_REGRESSION_PASS
-      - FINAL_REVIEW_SAME_BUILD_RUNTIME_QA_NO_UNRESOLVED_BLOCKER
+      - FIVE_BLOCKING_DEPARTMENT_FINAL_REVIEW_NO_UNRESOLVED_BLOCKER
       - CORE_DESIGN_LOCK_NOT_VIOLATED
     finalArtbookOnlyAfterReleaseReady: true
 
