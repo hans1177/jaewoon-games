@@ -38,8 +38,15 @@ test('성공 근거만 있고 학습 텍스트가 없으면 학습 준비로 보
   }, index));
 
   const status = buildDistillationStatus(records);
+  assert.equal(status.version, 2);
   assert.equal(status.state, 'WAITING_FOR_VERIFIED_SAMPLES');
   assert.equal(status.readyTasks.length, 0);
+  assert.equal(status.policy.trainingRoute, 'CANONICAL_SELF_HOSTED');
+  assert.equal(status.policy.preferredTrainingBackend, 'SERVER_SELF_HOSTED');
+  assert.deepEqual(status.policy.allowedTrainingBackends, ['SERVER_SELF_HOSTED', 'LOCAL_SELF_HOSTED']);
+  assert.equal(status.policy.localTrainingPreserved, true);
+  assert.equal(status.policy.continuousMode, '24H');
+  assert.equal(status.policy.refreshCadence, 'HOURLY');
   assert.equal(status.diagnostics.evidenceOnlyRecords, 20);
   assert.equal(status.diagnostics.fullyVerifiedTextSamples, 0);
 });
@@ -62,7 +69,7 @@ test('두 프로젝트의 충분한 검증 샘플이 쌓이면 해당 작업 어
   });
 
   assert.equal(status.tasks.bugfix.ready, true);
-  assert.equal(status.tasks.bugfix.state, 'READY_FOR_LOCAL_TRAINING');
+  assert.equal(status.tasks.bugfix.state, 'READY_FOR_SELF_HOSTED_TRAINING');
   assert.equal(status.tasks.bugfix.distinctProjects, 2);
   assert.equal(status.tasks.coding.ready, false);
   assert.ok(status.readyTasks.includes('bugfix'));
