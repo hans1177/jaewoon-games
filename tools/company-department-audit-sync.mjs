@@ -1,6 +1,11 @@
 // 비-Vibe 부서 감사 상태를 실제 Actions 증거로 동기화한다.
 import fs from 'node:fs';
-import {COMPANY_DEPARTMENT_ROLES,getDepartmentStandard} from '../assets/company-department-standards.js';
+import {
+  COMPANY_DEPARTMENT_ROLES,
+  COMPANY_BLOCKING_DEPARTMENT_ROLES,
+  COMPANY_ADVISORY_DEPARTMENT_ROLES,
+  getDepartmentStandard
+} from '../assets/company-department-standards.js';
 
 const auditPath='company-department-audit.json';
 const audit=JSON.parse(fs.readFileSync(auditPath,'utf8'));
@@ -14,29 +19,38 @@ const success=name=>list(name).find(r=>r.status==='completed'&&r.conclusion==='s
 const brief=r=>r?{runId:Number(r.id),status:r.status||null,conclusion:r.conclusion||null,headSha:r.head_sha||null,updatedAt:r.updated_at||r.created_at||null}:null;
 
 const roles=[...COMPANY_DEPARTMENT_ROLES];
+const blockingRoles=[...COMPANY_BLOCKING_DEPARTMENT_ROLES];
+const advisoryRoles=[...COMPANY_ADVISORY_DEPARTMENT_ROLES];
 audit.policy||={};
 audit.policy.canonicalDepartmentCount=roles.length;
 audit.policy.canonicalDepartments=roles;
+audit.policy.blockingDepartments=blockingRoles;
+audit.policy.advisoryDepartments=advisoryRoles;
 audit.policy.missingDepartmentEvidenceCountsAsPass=false;
+audit.policy.advisoryDepartmentFailureBlocksProgression=false;
 audit.departments||={};
 for(const role of roles){
   if(audit.departments[role])continue;
   const standard=getDepartmentStandard(role);
   audit.departments[role]={
     status:standard.runtimeRequired?'PENDING_RUNTIME_EVIDENCE':'PENDING_DEPARTMENT_EVIDENCE',
+    blockingForProgression:blockingRoles.includes(role),
     passGate:`${standard.minSpecificEvidence}+ ${role}-domain evidence item${standard.minSpecificEvidence===1?'':'s'}${standard.buildRequired?' plus successful build':''}${standard.runtimeRequired?' plus runtime/play evidence':''}`,
     checks:[...standard.requiredChecks],
     previousWeakness:'Department was added after the previous audit snapshot and has no verified audit evidence yet.',
     currentProtection:standard.runtimeRequired?'RUNTIME_DOMAIN_EVIDENCE_REQUIRED + DOMAIN_SPECIFIC_EVIDENCE_REQUIRED':'DOMAIN_SPECIFIC_EVIDENCE_REQUIRED'
   };
 }
+for(const role of roles)audit.departments[role].blockingForProgression=blockingRoles.includes(role);
 
 audit.departments.director||={};
-audit.departments.director.passGate=`All ${roles.length} votes submitted and every department evidence gate passed`;
-audit.departments.director.aggregation='DROP if any DROP; REVISE if any REVISE or evidence gate failure; otherwise PASS';
+audit.departments.director.passGate=`All ${roles.length} reviews tracked; all ${blockingRoles.length} blocking departments must pass. Music and intro are advisory.`;
+audit.departments.director.aggregation='DROP/REVISE/evidence failure from planning, graphics, development, qa, balance controls progression; music and intro are advisory.';
 audit.departments.director.currentProtection='Director cannot invent or replace missing department evidence.';
 audit.departments.director.canonicalDepartmentCount=roles.length;
 audit.departments.director.canonicalDepartments=roles;
+audit.departments.director.blockingDepartments=blockingRoles;
+audit.departments.director.advisoryDepartments=advisoryRoles;
 
 const standards=latest('Company Department Standards QA'), standardsOk=success('Company Department Standards QA');
 const build=latest('Unity Hybrid Android Build'), buildOk=success('Unity Hybrid Android Build');
@@ -77,9 +91,13 @@ const missingCanonicalEvidence=roles.filter(role=>{
   const status=String(audit.departments?.[role]?.status||'').toUpperCase();
   return !status||status.startsWith('PENDING_')||status.startsWith('VERIFYING_');
 });
-if(missingCanonicalEvidence.length){
+const missingBlockingEvidence=missingCanonicalEvidence.filter(role=>blockingRoles.includes(role));
+const missingAdvisoryEvidence=missingCanonicalEvidence.filter(role=>advisoryRoles.includes(role));
+if(missingBlockingEvidence.length){
   audit.overall='ATTENTION_REQUIRED';
-  audit.reason=`Canonical department audit evidence is incomplete: ${missingCanonicalEvidence.join(', ')}.`;
+  audit.reason=`Blocking department audit evidence is incomplete: ${missingBlockingEvidence.join(', ')}.`;
+}else if(missingAdvisoryEvidence.length&&audit.overall==='STRENGTHENED'){
+  audit.reason=`Blocking department evidence is complete; advisory evidence remains pending: ${missingAdvisoryEvidence.join(', ')}.`;
 }
 
 const testBuild=Array.isArray(company?.testBuilds)?[...company.testBuilds].sort((a,b)=>new Date(b.builtAt||0)-new Date(a.builtAt||0))[0]||null:null;
@@ -89,13 +107,14 @@ audit.verification={
   unityRuntimeSmoke:{workflow:'.github/workflows/unity-android-runtime-smoke.yml',contractVerified,latestRun:brief(runtime),latestSuccessfulRun:brief(runtimeOk),successfulRuntimeEvidenceObserved:runtimeVerified},
   webRuntimeHealth:{latestRun:brief(web),latestSuccessfulRun:brief(webOk),formalBridge:'tools/company-qa-public-web-evidence.mjs'},
   directorSupervision:supervision?{dateKst:supervision.dateKst||null,attentionRequired:Boolean(supervision.attentionRequired),counts:{...(supervision.counts||{})},primaryFindings:[...(supervision.primaryFindings||[])]}:null,
-  canonicalDepartments:{roles,count:roles.length,missingEvidence:missingCanonicalEvidence,complete:missingCanonicalEvidence.length===0}
+  canonicalDepartments:{roles,count:roles.length,blockingRoles,advisoryRoles,missingEvidence:missingCanonicalEvidence,missingBlockingEvidence,missingAdvisoryEvidence,blockingComplete:missingBlockingEvidence.length===0,advisoryComplete:missingAdvisoryEvidence.length===0}
 };
 audit.updatedAt=company?.updatedAt||supervision?.dateKst||new Date().toISOString().slice(0,10);
-audit.nextPriority=missingCanonicalEvidence.length?`Collect real department evidence for: ${missingCanonicalEvidence.join(', ')}.`:runtimeVerified&&!latestRuntimeFailed?'Keep Unity runtime smoke mandatory and treat later failures as regressions.':'Require a successful Unity Android emulator runtime-smoke run before marking Unity QA VERIFIED.';
+audit.nextPriority=missingBlockingEvidence.length?`Collect real blocking department evidence for: ${missingBlockingEvidence.join(', ')}.`:missingAdvisoryEvidence.length?`Progression is not blocked; collect advisory evidence when practical for: ${missingAdvisoryEvidence.join(', ')}.`:runtimeVerified&&!latestRuntimeFailed?'Keep Unity runtime smoke mandatory and treat later failures as regressions.':'Require a successful Unity Android emulator runtime-smoke run before marking Unity QA VERIFIED.';
 fs.writeFileSync(auditPath,JSON.stringify(audit,null,2)+'\n');
 console.log('COMPANY_DEPARTMENT_AUDIT_SYNC=PASS');
 console.log(`CANONICAL_DEPARTMENT_AUDIT=${roles.length-missingCanonicalEvidence.length}/${roles.length}`);
-console.log(`CANONICAL_DEPARTMENT_EVIDENCE_MISSING=${missingCanonicalEvidence.join(',')||'none'}`);
+console.log(`BLOCKING_DEPARTMENT_EVIDENCE_MISSING=${missingBlockingEvidence.join(',')||'none'}`);
+console.log(`ADVISORY_DEPARTMENT_EVIDENCE_MISSING=${missingAdvisoryEvidence.join(',')||'none'}`);
 console.log(`UNITY_RUNTIME_SUCCESS_EVIDENCE=${runtimeVerified?'YES':'NO'}`);
 console.log(`DEPARTMENT_AUDIT_OVERALL=${audit.overall}`);
