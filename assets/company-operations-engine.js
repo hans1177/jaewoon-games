@@ -11,6 +11,10 @@ export const COMPANY_FAILURE_TYPES=freeze([
   'ASSET','BUILD','QA_FALSE_POSITIVE','REGRESSION','BALANCE','UNKNOWN'
 ]);
 
+export const COMPANY_DEPARTMENTS=freeze(['planning','graphics','development','qa','balance']);
+export const COMPANY_PLATFORMS=freeze(['ROBLOX','UNITY_ANDROID','FORTNITE_UEFN']);
+export const COMPANY_PRIMARY_PLATFORM='ROBLOX';
+
 export const COMPANY_DEVICE_MATRIX=freeze([
   freeze({id:'LOW',purpose:'LOW_END_ANDROID'}),
   freeze({id:'MID',purpose:'MID_RANGE_ANDROID'}),
@@ -47,6 +51,14 @@ const PRIORITY_WEIGHTS=freeze({
   vibeLearningValue:0.10
 });
 
+const DEPARTMENT_WEIGHTS=freeze({
+  planning:0.20,
+  graphics:0.20,
+  development:0.20,
+  qa:0.20,
+  balance:0.20
+});
+
 export function scoreCompanyMission(input={}){
   const parts={
     userImpact:clamp(input.userImpact),
@@ -59,6 +71,80 @@ export function scoreCompanyMission(input={}){
   const critical=parts.releaseRisk>=85||parts.userImpact>=90;
   const tier=critical?'P0':score>=75?'P1':score>=50?'P2':score>=25?'P3':'P4';
   return freeze({score,tier,critical,parts:freeze(parts),weights:PRIORITY_WEIGHTS,authority:'operational-priority-only'});
+}
+
+export function scoreDepartmentPortfolio(input={}){
+  const source=input.departments||input.scores||input;
+  const scores={};
+  const missing=[];
+  for(const department of COMPANY_DEPARTMENTS){
+    const raw=source?.[department];
+    if(raw===undefined||raw===null||raw==='')missing.push(department);
+    const value=typeof raw==='object'&&raw!==null?raw.score:raw;
+    scores[department]=clamp(value);
+  }
+  const complete=missing.length===0;
+  const score=Math.round(COMPANY_DEPARTMENTS.reduce((sum,key)=>sum+scores[key]*DEPARTMENT_WEIGHTS[key],0));
+  const decision=!complete?'INSUFFICIENT_SCORES':score>=80?'EXPAND':score>=60?'MAINTAIN':score>=40?'REVISE_OR_HOLD':'REDUCE_REVIEW';
+  return freeze({
+    score,
+    decision,
+    complete,
+    missing:freeze(missing),
+    departments:freeze(scores),
+    weights:DEPARTMENT_WEIGHTS,
+    numericGameCountLimit:null,
+    numericWipLimit:null,
+    automaticProjectDiscard:false,
+    automaticProjectDelete:false,
+    authority:'department-score-guidance-only'
+  });
+}
+
+export function evaluatePortfolioProjects(projects=[]){
+  const evaluated=(projects||[]).map((project,index)=>{
+    const result=scoreDepartmentPortfolio(project?.departmentScores||project?.scores||{});
+    return freeze({
+      id:text(project?.id||project?.gameId)||`project-${index+1}`,
+      score:result.score,
+      decision:result.decision,
+      complete:result.complete,
+      departmentScores:result.departments,
+      automaticDiscard:false,
+      automaticDelete:false
+    });
+  });
+  evaluated.sort((a,b)=>b.score-a.score||a.id.localeCompare(b.id));
+  return freeze({
+    projects:freeze(evaluated),
+    hardMinGames:null,
+    hardMaxGames:null,
+    hardMinDevelopmentWip:null,
+    hardMaxDevelopmentWip:null,
+    fixedSlots:false,
+    oneForOneReplacement:false,
+    decisionBasis:'FIVE_DEPARTMENT_SCORE_PLUS_CANONICAL_EVIDENCE',
+    countChangeIsAdvisoryNotCapped:true
+  });
+}
+
+export function resolveCompanyPlatform(input={}){
+  const requested=upper(input.platform||input.primaryPlatform||input.targetPlatform||COMPANY_PRIMARY_PLATFORM);
+  const platform=COMPANY_PLATFORMS.includes(requested)?requested:COMPANY_PRIMARY_PLATFORM;
+  const priorityRank=COMPANY_PLATFORMS.indexOf(platform)+1;
+  return freeze({
+    platform,
+    requested:requested||COMPANY_PRIMARY_PLATFORM,
+    primary:platform===COMPANY_PRIMARY_PLATFORM,
+    defaultPrimary:COMPANY_PRIMARY_PLATFORM,
+    priorityRank,
+    developmentAllowed:true,
+    entryGate:false,
+    priorPlatformCompletionRequired:false,
+    switchingRebuildsCompanyCore:false,
+    preserveExistingUnity:platform==='UNITY_ANDROID',
+    policy:'PRIMARY_IS_DEFAULT_FOCUS_NOT_PLATFORM_LOCK'
+  });
 }
 
 export function classifyCompanyFailure(input={}){
@@ -215,13 +301,15 @@ export function createOperationalMission(input={}){
   const priority=scoreCompanyMission(input.priority||input);
   const failure=classifyCompanyFailure(input.failure||input);
   const departments=[...new Set((input.departments||[]).map(text).filter(Boolean))];
+  const platform=resolveCompanyPlatform(input.platform||input.targetPlatform?{platform:input.platform||input.targetPlatform}:{});
   return freeze({
-    version:1,
+    version:2,
     id:text(input.id),
     gameId:text(input.gameId),
     title:text(input.title||input.request),
     priority,
     failure,
+    platform,
     departments:freeze(departments),
     responsibleStage:text(input.responsibleStage)||null,
     mustUseExistingResponsibleStage:true,
@@ -232,6 +320,9 @@ export function createOperationalMission(input={}){
 
 if(typeof window!=='undefined')Object.assign(window,{
   scoreJaewoonCompanyMission:scoreCompanyMission,
+  scoreJaewoonDepartmentPortfolio:scoreDepartmentPortfolio,
+  evaluateJaewoonPortfolioProjects:evaluatePortfolioProjects,
+  resolveJaewoonCompanyPlatform:resolveCompanyPlatform,
   classifyJaewoonCompanyFailure:classifyCompanyFailure,
   createJaewoonOperationalMission:createOperationalMission,
   createJaewoonCreativeProductionManifest:createCreativeProductionManifest
