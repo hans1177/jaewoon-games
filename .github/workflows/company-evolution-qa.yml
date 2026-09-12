@@ -185,7 +185,7 @@ jobs:
           import fs from 'node:fs';
           const gate=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
           const cycle=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
-          for(const token of ['web-gameplay-validation.json','unity-technical-validation.json','development-revalidation.json','unity-project-required-for-technical-validation','False DEVELOPMENT_BASELINE_READY'])if(!gate.includes(token))throw new Error(`development gate missing: ${token}`);
+          for(const token of ['web-gameplay-validation.json','targetEvidenceFile','development-revalidation.json','selected-platform-required-for-technical-validation','False DEVELOPMENT_BASELINE_READY'])if(!gate.includes(token))throw new Error(`development gate missing: ${token}`);
           for(const token of ['aiMayInventValidationPass:false','web-gameplay-validation-failed','technical-validation-failed','revalidation-required:','artbookOnlyAfterBaselineReady:true'])if(!cycle.includes(token))throw new Error(`development cycle contract missing: ${token}`);
           console.log('DEVELOPMENT_BASELINE_EVIDENCE_CONTRACT=PASS');
           NODE
