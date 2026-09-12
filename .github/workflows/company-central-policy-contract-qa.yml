@@ -21,6 +21,7 @@ on:
       - 'tools/company-release-production-cycle.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - 'qa/company-central-pipeline-only.test.mjs'
+      - 'qa/company-platform-speed-policy.test.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/design-only-promotion-sync.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
@@ -53,6 +54,7 @@ on:
       - 'tools/company-release-production-cycle.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - 'qa/company-central-pipeline-only.test.mjs'
+      - 'qa/company-platform-speed-policy.test.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/design-only-promotion-sync.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
@@ -95,6 +97,7 @@ jobs:
           node --test \
             qa/company-central-policy-contract.test.mjs \
             qa/company-central-pipeline-only.test.mjs \
+            qa/company-platform-speed-policy.test.mjs \
             qa/company-selected-platform-router.test.mjs \
             qa/design-only-promotion-sync.test.mjs \
             qa/company-development-web-runtime.test.mjs \
