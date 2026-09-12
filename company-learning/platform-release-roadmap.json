@@ -1,8 +1,13 @@
 {
-  "version": 3,
+  "version": 4,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "COMPANY_FLOW.md",
   "recordedAt": "2026-09-12",
+  "documentationSynchronization": {
+    "centralPolicyFirst": true,
+    "syncRelevantWorkDocumentsOnEveryPolicyChange": true,
+    "runtimeContractCannotCreatePolicy": true
+  },
   "priority": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
   "primaryPlatform": "ROBLOX",
   "currentPhase": "ROBLOX_FAST_RELEASE_STABILIZATION",
@@ -18,6 +23,61 @@
   "platformReleaseMayProceedWhenOwnEvidencePasses": true,
   "parallelLearningPipelineAllowed": false,
   "runtimeContractCannotCreatePolicy": true,
+  "platformPortfolioSets": {
+    "mode": "PLATFORM_SCOPED_CATEGORY_DIVERSITY_SETS",
+    "categorySlotsSharedAcrossPlatforms": false,
+    "defaultRepresentativeCategoryCountPerPlatform": 6,
+    "sixCategoriesAreDevelopmentSetNotPortfolioCap": true,
+    "representativeGamePerCategoryIsDefaultNotMaximum": true,
+    "allSetMembersAreDevelopmentTargets": true,
+    "allSetMembersAreReleaseCandidates": true,
+    "forcedReleaseOfAllSetMembers": false,
+    "releaseDecisionIsPerGameEvidenceBased": true,
+    "preferredConcurrentImplementationProjects": "2_TO_3",
+    "lowScoreHandlingOrder": ["REVISE", "REEVALUATE", "HOLD_IF_NEEDED", "REVALIDATE", "EXCLUDE_ONLY_AFTER_STRUCTURAL_FAILURE_EVIDENCE"],
+    "unity": {
+      "preserveExistingSet": true,
+      "representativeCategoryCount": 6,
+      "categories": [
+        "ACTION_SURVIVAL_ROGUELITE",
+        "SINGLE_DEFENSE_STRATEGY",
+        "PUZZLE",
+        "CASUAL",
+        "IDLE_GROWTH_RPG",
+        "STORY_COMPLETE_RPG"
+      ]
+    },
+    "roblox": {
+      "primaryCurrentDevelopmentSet": true,
+      "representativeCategoryCount": 6,
+      "categories": [
+        "ROLEPLAY_LIFE_AVATAR",
+        "SIMULATOR_TYCOON_INCREMENTAL",
+        "BATTLEGROUND_FIGHTING_SHOOTER",
+        "SURVIVAL_HORROR_ESCAPE",
+        "OBBY_PARTY_MINIGAME",
+        "STORY_RPG_ADVENTURE_RPG"
+      ],
+      "requiredCategories": ["STORY_RPG_ADVENTURE_RPG"],
+      "requiredCategoryContinuity": {
+        "STORY_RPG_ADVENTURE_RPG": "REVISE_OR_RESEED_WITHIN_CATEGORY_IF_CANDIDATE_IS_EXCLUDED"
+      },
+      "sixRepresentativesAreReleaseCandidatesNotGuaranteedReleases": true,
+      "technicalCoverageTargets": [
+        "DATASTORE_OR_PERSISTENCE",
+        "MULTIPLAYER_SERVER_CLIENT_BOUNDARY",
+        "PVP_OR_COMPETITIVE_PLAY",
+        "NPC_OR_QUEST_FLOW",
+        "ROUND_OR_PROCEDURAL_SESSION_STRUCTURE",
+        "MOBILE_CONTROL_AND_UI"
+      ]
+    },
+    "fortniteUefn": {
+      "representativeCategoryCount": 6,
+      "platformNativeCategorySetRequired": true,
+      "exactCategoriesPendingOwnerDefinition": true
+    }
+  },
   "phases": [
     {
       "id": "ROBLOX_FAST_RELEASE_STABILIZATION",
@@ -52,16 +112,26 @@
     "ciContract": ".github/workflows/vibe3-engine-contract.yml",
     "publishModeDefault": "DRY_RUN",
     "livePublishRequiresExplicitExecute": true,
-    "cookieAuthAllowed": false
+    "cookieAuthAllowed": false,
+    "portfolioSet": "ROBLOX_PLATFORM_SIX_CATEGORY_SET",
+    "representativeCategoryCount": 6,
+    "storyRpgCategoryRequired": true,
+    "allRepresentativesAreDevelopmentTargets": true,
+    "allRepresentativesAreReleaseCandidates": true,
+    "forcedSixOfSixRelease": false,
+    "releaseRequiresOwnEvidenceGate": true
   },
   "unity": {
     "existingPathPreserved": true,
     "developmentAlwaysAllowed": true,
-    "robloxDoesNotReplaceUnity": true
+    "robloxDoesNotReplaceUnity": true,
+    "representativeCategoryCount": 6
   },
   "fortniteUefn": {
     "developmentAlwaysAllowed": true,
-    "existingPlatformsRemainActive": true
+    "existingPlatformsRemainActive": true,
+    "representativeCategoryCount": 6,
+    "exactCategoriesPendingOwnerDefinition": true
   },
   "canonicalLearningChain": [
     "VALIDATED_EVIDENCE",
@@ -81,6 +151,9 @@
     "DUPLICATE_DISTILLATION_TRIGGER",
     "SHADOW_DATASET_OR_TRAINER",
     "PLATFORM_DEVELOPMENT_LOCK_BASED_ON_PRIORITY",
-    "RUNTIME_QA_REGRESSION_EXACT_REVISION_BYPASS"
+    "RUNTIME_QA_REGRESSION_EXACT_REVISION_BYPASS",
+    "SHARED_CATEGORY_SLOT_ACROSS_PLATFORMS",
+    "FORCED_SIX_OF_SIX_RELEASE",
+    "SCORE_ONLY_RELEASE_OR_DISCARD"
   ]
 }

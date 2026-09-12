@@ -33,6 +33,14 @@ pipelineExecution:
   cronOrIndependentLoopMustNotReplaceExistingEventChain: true
   ownerDirectExceptionRequiredToCreateNewPipeline: true
 
+documentationSynchronization:
+  centralPolicyFirst: true
+  workDocumentsMustMirrorCurrentCentralPolicy: true
+  syncRelevantWorkDocumentsOnEveryPolicyChange: true
+  implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized: true
+  workDocumentsCannotOverrideCentralPolicy: true
+  runtimeContractsMayMirrorPolicyButCannotCreatePolicy: true
+
 production:
   canonicalField: productionClass
   classes:
@@ -137,6 +145,87 @@ bootstrapGameSeeds:
     automaticGrowthBeyondVacanciesForbidden: false
     expansionOrReductionUsesDepartmentScoresAndEvidence: true
 
+platformPortfolioSets:
+  mode: PLATFORM_SCOPED_CATEGORY_DIVERSITY_SETS
+  platformSetsIndependent: true
+  categorySlotsSharedAcrossPlatforms: false
+  defaultRepresentativeCategoryCountPerPlatform: 6
+  sixCategoriesAreDevelopmentSetNotPortfolioCap: true
+  representativeGamePerCategoryIsDefaultNotMaximum: true
+  categoryMayExpandBeyondOneActiveGameWhenEvidenceSupportsIt: true
+  allSetMembersAreDevelopmentTargets: true
+  allSetMembersAreReleaseCandidates: true
+  forcedReleaseOfAllSetMembers: false
+  releaseDecisionIsPerGameEvidenceBased: true
+  scoreAloneCannotReleaseGame: true
+  scoreAloneCannotDiscardGame: true
+  lowScoreHandlingOrder:
+    - REVISE
+    - REEVALUATE
+    - HOLD_IF_NEEDED
+    - REVALIDATE
+    - EXCLUDE_ONLY_AFTER_STRUCTURAL_FAILURE_EVIDENCE
+  mandatoryOneForOneReplacement: false
+  developmentConcurrency:
+    seedAndDesignMayRunAcrossWholeSet: true
+    preferredConcurrentImplementationProjects: 2_TO_3
+    preferredConcurrentImplementationProjectsIsWipGuidanceNotPortfolioCap: true
+    sameSourceRootConcurrentDirectWritesForbidden: true
+  diversityRules:
+    materiallyDuplicateCoreLoopsAcrossActiveCandidatesForbidden: true
+    distinctIdentityRequiredPerGame: true
+    robloxTechnicalCoverageTargets:
+      - DATASTORE_OR_PERSISTENCE
+      - MULTIPLAYER_SERVER_CLIENT_BOUNDARY
+      - PVP_OR_COMPETITIVE_PLAY
+      - NPC_OR_QUEST_FLOW
+      - ROUND_OR_PROCEDURAL_SESSION_STRUCTURE
+      - MOBILE_CONTROL_AND_UI
+    technicalCoverageTargetsArePortfolioLearningGoalsNotPerGameMandatoryChecklist: true
+  setCompletion:
+    developmentSetEvaluationCompleteWhenEveryRepresentativeHasOutcome: true
+    acceptedDevelopmentOutcomes:
+      - DEVELOPMENT_CONFIRMED
+      - RECORDED_HOLD
+      - EVIDENCE_BACKED_EXCLUSION
+    releaseSetCompletionSeparateFromDevelopmentSetEvaluation: true
+  platformSets:
+    UNITY:
+      preserveExistingSet: true
+      representativeCategoryCount: 6
+      categories:
+        - ACTION_SURVIVAL_ROGUELITE
+        - SINGLE_DEFENSE_STRATEGY
+        - PUZZLE
+        - CASUAL
+        - IDLE_GROWTH_RPG
+        - STORY_COMPLETE_RPG
+      robloxPriorityDoesNotDeleteReplaceOrConsumeUnitySet: true
+    ROBLOX:
+      primaryCurrentDevelopmentSet: true
+      representativeCategoryCount: 6
+      categories:
+        - ROLEPLAY_LIFE_AVATAR
+        - SIMULATOR_TYCOON_INCREMENTAL
+        - BATTLEGROUND_FIGHTING_SHOOTER
+        - SURVIVAL_HORROR_ESCAPE
+        - OBBY_PARTY_MINIGAME
+        - STORY_RPG_ADVENTURE_RPG
+      requiredCategories:
+        - STORY_RPG_ADVENTURE_RPG
+      requiredCategoryContinuity:
+        STORY_RPG_ADVENTURE_RPG: REVISE_OR_RESEED_WITHIN_CATEGORY_IF_CANDIDATE_IS_EXCLUDED
+      sixRepresentativesAreReleaseCandidatesNotGuaranteedReleases: true
+    FORTNITE_UEFN:
+      representativeCategoryCount: 6
+      platformNativeCategorySetRequired: true
+      exactCategoriesPendingOwnerDefinition: true
+  expansion:
+    sixRepresentativeCategoriesDoNotImposeGameCountMaximum: true
+    departmentScoreAndEvidenceMayExpandPortfolioBeyondRepresentativeSet: true
+    expansionMayAddAnotherGameInsideStrongCategory: true
+    expansionMayAddNewOwnerApprovedCategory: true
+
 GAME_SEED:
   stage: BEFORE_GAME_DESIGNER_DRAFT
   purpose: DEFINE_WHAT_GAME_TO_BUILD
@@ -145,6 +234,9 @@ GAME_SEED:
     - HOMAGE
     - REINTERPRETATION
   primaryIntent: SELECT_SUCCESSFUL_REFERENCE_AND_REBUILD_CORE_SUCCESS_PATTERN
+  platformCategorySetSelectedByTargetPlatform: true
+  categorySetMustNotBeBorrowedFromAnotherPlatformByDefault: true
+  representativeSetDoesNotCreateGameCountCap: true
   referenceStrategy:
     mode: FAMOUS_SUCCESSFUL_RELEASED_GAME_BENCHMARK
     sourcesAllowed:
@@ -335,6 +427,13 @@ platformStrategy:
     taskType: roblox
     runtimeAndPublishAdapter: tools/vibe3-roblox-platform.mjs
     mobileFirst: true
+    portfolioSet: ROBLOX_PLATFORM_SIX_CATEGORY_SET
+    representativeCategoryCount: 6
+    storyRpgCategoryRequired: true
+    allRepresentativesAreDevelopmentTargets: true
+    allRepresentativesAreReleaseCandidates: true
+    forcedSixOfSixReleaseForbidden: true
+    releaseRequiresOwnEvidenceGate: true
     requiredQa:
       - LUAU_OR_SOURCE_VALIDATION
       - ACTUAL_RUNTIME_PASS

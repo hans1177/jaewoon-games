@@ -1,10 +1,17 @@
 {
   "version": 1,
-  "revision": 32,
+  "revision": 33,
   "updatedAt": "2026-09-12",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
   "instruction": "Use COMPANY_FLOW.md as the machine-oriented production policy source of truth. This file mirrors executable values and invariant flags only and cannot create policy.",
+  "documentationSynchronization": {
+    "centralPolicyFirst": true,
+    "workDocumentsMustMirrorCurrentCentralPolicy": true,
+    "syncRelevantWorkDocumentsOnEveryPolicyChange": true,
+    "implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized": true,
+    "workDocumentsCannotOverrideCentralPolicy": true
+  },
   "production": {
     "classificationMode": "SEMANTIC_EVIDENCE_DYNAMIC_MEMBERSHIP",
     "canonicalField": "productionClass",
@@ -31,6 +38,69 @@
     "defaultWeightPerDepartment": 0.2,
     "ownerMayOverridePortfolioDecision": true
   },
+  "platformPortfolioSets": {
+    "mode": "PLATFORM_SCOPED_CATEGORY_DIVERSITY_SETS",
+    "platformSetsIndependent": true,
+    "categorySlotsSharedAcrossPlatforms": false,
+    "defaultRepresentativeCategoryCountPerPlatform": 6,
+    "sixCategoriesAreDevelopmentSetNotPortfolioCap": true,
+    "representativeGamePerCategoryIsDefaultNotMaximum": true,
+    "categoryMayExpandBeyondOneActiveGameWhenEvidenceSupportsIt": true,
+    "allSetMembersAreDevelopmentTargets": true,
+    "allSetMembersAreReleaseCandidates": true,
+    "forcedReleaseOfAllSetMembers": false,
+    "releaseDecisionIsPerGameEvidenceBased": true,
+    "scoreAloneCannotReleaseGame": true,
+    "scoreAloneCannotDiscardGame": true,
+    "lowScoreHandlingOrder": ["REVISE", "REEVALUATE", "HOLD_IF_NEEDED", "REVALIDATE", "EXCLUDE_ONLY_AFTER_STRUCTURAL_FAILURE_EVIDENCE"],
+    "mandatoryOneForOneReplacement": false,
+    "preferredConcurrentImplementationProjects": "2_TO_3",
+    "preferredConcurrentImplementationProjectsIsWipGuidanceNotPortfolioCap": true,
+    "platformSets": {
+      "UNITY": {
+        "preserveExistingSet": true,
+        "representativeCategoryCount": 6,
+        "categories": [
+          "ACTION_SURVIVAL_ROGUELITE",
+          "SINGLE_DEFENSE_STRATEGY",
+          "PUZZLE",
+          "CASUAL",
+          "IDLE_GROWTH_RPG",
+          "STORY_COMPLETE_RPG"
+        ]
+      },
+      "ROBLOX": {
+        "primaryCurrentDevelopmentSet": true,
+        "representativeCategoryCount": 6,
+        "categories": [
+          "ROLEPLAY_LIFE_AVATAR",
+          "SIMULATOR_TYCOON_INCREMENTAL",
+          "BATTLEGROUND_FIGHTING_SHOOTER",
+          "SURVIVAL_HORROR_ESCAPE",
+          "OBBY_PARTY_MINIGAME",
+          "STORY_RPG_ADVENTURE_RPG"
+        ],
+        "requiredCategories": ["STORY_RPG_ADVENTURE_RPG"],
+        "requiredCategoryContinuity": {
+          "STORY_RPG_ADVENTURE_RPG": "REVISE_OR_RESEED_WITHIN_CATEGORY_IF_CANDIDATE_IS_EXCLUDED"
+        },
+        "sixRepresentativesAreReleaseCandidatesNotGuaranteedReleases": true,
+        "technicalCoverageTargets": [
+          "DATASTORE_OR_PERSISTENCE",
+          "MULTIPLAYER_SERVER_CLIENT_BOUNDARY",
+          "PVP_OR_COMPETITIVE_PLAY",
+          "NPC_OR_QUEST_FLOW",
+          "ROUND_OR_PROCEDURAL_SESSION_STRUCTURE",
+          "MOBILE_CONTROL_AND_UI"
+        ]
+      },
+      "FORTNITE_UEFN": {
+        "representativeCategoryCount": 6,
+        "platformNativeCategorySetRequired": true,
+        "exactCategoriesPendingOwnerDefinition": true
+      }
+    }
+  },
   "gameSeed": {
     "enabled": true,
     "stage": "BEFORE_GAME_DESIGNER_DRAFT",
@@ -38,6 +108,9 @@
     "selectionMode": "FAMOUS_SUCCESSFUL_GAME_COPY_BENCHMARK",
     "transformationModes": ["HOMAGE", "REINTERPRETATION"],
     "sourceCodeRule": "IMPLEMENT_EQUIVALENT_OR_INSPIRED_FUNCTIONALITY_WITH_OWN_CODE",
+    "platformCategorySetSelectedByTargetPlatform": true,
+    "categorySetMustNotBeBorrowedFromAnotherPlatformByDefault": true,
+    "representativeSetDoesNotCreateGameCountCap": true,
     "bootstrap": {
       "mode": "HISTORICAL_SINGLE_BOOTSTRAP_BATCH",
       "count": 6,
@@ -355,7 +428,14 @@
       "sourceRoot": "roblox-games/",
       "taskType": "roblox",
       "runtimeAndPublishAdapter": "tools/vibe3-roblox-platform.mjs",
-      "mobileFirst": true
+      "mobileFirst": true,
+      "portfolioSet": "ROBLOX_PLATFORM_SIX_CATEGORY_SET",
+      "representativeCategoryCount": 6,
+      "storyRpgCategoryRequired": true,
+      "allRepresentativesAreDevelopmentTargets": true,
+      "allRepresentativesAreReleaseCandidates": true,
+      "forcedSixOfSixRelease": false,
+      "releaseRequiresOwnEvidenceGate": true
     },
     "UNITY": {
       "role": "FULL_SUPPORTED_PLATFORM",
@@ -363,7 +443,8 @@
       "existingPathPreserved": true,
       "robloxDoesNotReplaceUnity": true,
       "existingUnityAndroidSourceBuildRuntimeQaReleaseKnowledgePreserved": true,
-      "legacyAndroidTrackStillValidWhenTargetIsUnity": true
+      "legacyAndroidTrackStillValidWhenTargetIsUnity": true,
+      "representativeCategoryCount": 6
     },
     "FORTNITE_UEFN": {
       "role": "FULL_SUPPORTED_PLATFORM",
@@ -371,7 +452,9 @@
       "robloxOrUnityCompletionNotRequiredToDevelop": true,
       "platformSpecificPlaybookRequired": true,
       "verseUefnRuntimeQaRequiredForVerifiedSuccess": true,
-      "publishingEvidenceRequiredForReleaseClaim": true
+      "publishingEvidenceRequiredForReleaseClaim": true,
+      "representativeCategoryCount": 6,
+      "exactCategoriesPendingOwnerDefinition": true
     },
     "focusMilestones": {
       "ROBLOX_FAST_RELEASE_STABILIZATION": {
@@ -397,10 +480,16 @@
   "rules": [
     "new-owner-instruction-overrides-autonomous-plan",
     "company-flow-is-machine-policy-source",
+    "relevant-work-docs-sync-on-every-policy-change",
     "semantic-production-class-is-canonical",
     "production-class-counts-are-not-fixed-quotas",
+    "platform-category-sets-are-independent-and-do-not-share-slots",
+    "six-category-set-is-development-diversity-baseline-not-game-count-cap",
+    "all-six-representatives-are-release-candidates-but-six-of-six-release-is-not-forced",
+    "roblox-story-rpg-adventure-rpg-category-is-required",
     "game-seed-precedes-game-designer-draft",
     "game-seed-default-platform-is-roblox-but-project-may-select-any-allowed-platform",
+    "game-seed-category-set-follows-selected-platform",
     "third-party-source-code-assets-expression-must-not-be-copied",
     "market-evidence-is-target-design-reference-not-hard-seed-gate",
     "design-baseline-requires-target-platform-ux-platform-selection-and-five-department-scores",
