@@ -5,10 +5,17 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/company-development-confirmed-runtime.yml'
+      - '.github/workflows/company-development-unity-runtime.yml'
+      - '.github/workflows/unity-android-regression.yml'
       - 'tools/company-selected-platform-router.mjs'
+      - 'tools/company-development-unity-platform.mjs'
+      - 'tools/company-development-unity-bootstrap.mjs'
+      - 'tools/company-development-unity-evidence.mjs'
       - 'tools/company-development-validation-cycle.mjs'
       - 'tools/design-only-promotion-sync.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
+      - 'qa/company-development-unity-runtime.test.mjs'
+      - 'qa/company-speed-sequence-workflow.test.mjs'
   workflow_dispatch:
   schedule:
     - cron: '37 * * * *'
@@ -173,8 +180,19 @@ jobs:
         run: |
           set -euo pipefail
           if [[ "$DISPATCH_UNITY" == 'true' ]]; then
-            gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
-            echo 'IMMEDIATE_NEXT_STAGE_DISPATCH=UNITY'
+            existing=''
+            for attempt in 1 2 3; do
+              existing="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-unity-runtime.yml/runs?per_page=30" | jq -r --arg sha "$GITHUB_SHA" '[.workflow_runs[] | select(.head_sha==$sha and (.status=="queued" or .status=="pending" or .status=="in_progress" or .status=="waiting" or .status=="requested")) | .id] | max // empty')"
+              [[ "$existing" =~ ^[0-9]+$ ]] && break
+              [[ '${{ github.event_name }}' != 'push' ]] && break
+              sleep 2
+            done
+            if [[ "$existing" =~ ^[0-9]+$ ]]; then
+              echo "UNITY_EXECUTOR_DISPATCH=DEDUPED_EXISTING_RUN:$existing"
+            else
+              gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+              echo 'IMMEDIATE_NEXT_STAGE_DISPATCH=UNITY'
+            fi
           fi
           if [[ "$DISPATCH_ROBLOX" == 'true' ]]; then
             gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
