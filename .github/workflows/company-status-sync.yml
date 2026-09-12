@@ -84,7 +84,7 @@ jobs:
           const classes=['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED','DESIGN_ONLY'];
           const valid=new Set(classes);
           const allowedPlatforms=new Set(['ROBLOX','UNITY','FORTNITE_UEFN']);
-          const requiredWebPurpose='REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION';
+          const requiredWebPurpose='FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE';
           const normalize=value=>{
             const raw=String(value??'').trim().toUpperCase().replaceAll('-','_');
             if(raw==='ROBLOX')return 'ROBLOX';
@@ -107,10 +107,13 @@ jobs:
           for(const project of development){
             const platform=normalize(project.selectedPlatform);
             if(project.webPurpose!==requiredWebPurpose)throw new Error(`development Web purpose mismatch: ${project.id}`);
+            if(project.webCompanionRequired!==true)throw new Error(`development Web companion requirement missing: ${project.id}`);
+            if(project.approvedDesignScopeMustBeFullyImplemented!==true)throw new Error(`development approved-scope requirement missing: ${project.id}`);
+            if(project.webEvidenceMayReplaceNativePlatformEvidence!==false)throw new Error(`development native-evidence boundary missing: ${project.id}`);
             if(project.webGameplayValidationRequired!==true||project.musicValidationRequired!==true)throw new Error(`development Web/music requirement missing: ${project.id}`);
             if(platform){
-              if(!allowedPlatforms.has(platform)||project.targetEngine!==targetEngine(platform)||project.mode!=='WEB_VALIDATION_THEN_TARGET_PLATFORM_DEVELOPMENT')throw new Error(`development selected-platform mismatch: ${project.id}`);
-            }else if(project.targetEngine!=='platform-selection-required'||project.mode!=='WEB_VALIDATION_TARGET_PLATFORM_SELECTION_REQUIRED'){
+              if(!allowedPlatforms.has(platform)||project.targetEngine!==targetEngine(platform)||project.mode!=='FULL_WEB_COMPANION_THEN_TARGET_PLATFORM_DEVELOPMENT')throw new Error(`development selected-platform mismatch: ${project.id}`);
+            }else if(project.targetEngine!=='platform-selection-required'||project.mode!=='FULL_WEB_COMPANION_TARGET_PLATFORM_SELECTION_REQUIRED'){
               throw new Error(`development platform-selection state mismatch: ${project.id}`);
             }
           }
@@ -118,10 +121,23 @@ jobs:
           const releasePolicy=portfolio.productionClassPolicy?.classes?.RELEASE_CONFIRMED||{};
           const developmentPolicy=portfolio.productionClassPolicy?.classes?.DEVELOPMENT_CONFIRMED||{};
           if(releasePolicy.engine!=='PROJECT_SELECTED_PLATFORM')throw new Error('release engine policy must be selected-platform');
-          if(developmentPolicy.engine!=='PROJECT_SELECTED_PLATFORM'||developmentPolicy.webPurpose!==requiredWebPurpose||developmentPolicy.webGameplayValidationRequired!==true||developmentPolicy.musicValidationRequired!==true||developmentPolicy.webBeforeTargetPlatformByDefault!==true||developmentPolicy.targetPlatformMayRunImmediately!==false)throw new Error('development Web-first selected-platform policy mismatch');
-          if(portfolio.developmentFocusPolicy?.requiredWebGameplayAndMusicValidationBeforeTargetPlatform!==true)throw new Error('required Web/music focus policy missing');
-          if(Object.hasOwn(portfolio.developmentFocusPolicy||{},'optionalWebGameplayTestbedAllowedAlongsideReleaseFocus'))throw new Error('legacy optional Web focus policy remains');
-          if(Object.hasOwn(portfolio.developmentFocusPolicy||{},'developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus'))throw new Error('legacy Web prototype focus policy remains');
+          if(
+            developmentPolicy.engine!=='PROJECT_SELECTED_PLATFORM'||
+            developmentPolicy.webPurpose!==requiredWebPurpose||
+            developmentPolicy.webCompanionRequired!==true||
+            developmentPolicy.approvedDesignScopeMustBeFullyImplemented!==true||
+            developmentPolicy.webEvidenceMayReplaceNativePlatformEvidence!==false||
+            developmentPolicy.webGameplayValidationRequired!==true||
+            developmentPolicy.musicValidationRequired!==true||
+            developmentPolicy.webBeforeTargetPlatformByDefault!==true||
+            developmentPolicy.targetPlatformMayRunImmediately!==false
+          )throw new Error('development full-Web selected-platform policy mismatch');
+          const focusPolicy=portfolio.developmentFocusPolicy||{};
+          if(focusPolicy.requiredFullApprovedWebCompanionBeforeTargetPlatform!==true)throw new Error('full approved-scope Web companion focus policy missing');
+          if(focusPolicy.nativePlatformEvidenceStillRequired!==true)throw new Error('native platform evidence focus policy missing');
+          if(Object.hasOwn(focusPolicy,'requiredWebGameplayAndMusicValidationBeforeTargetPlatform'))throw new Error('legacy first-playable Web focus policy remains');
+          if(Object.hasOwn(focusPolicy,'optionalWebGameplayTestbedAllowedAlongsideReleaseFocus'))throw new Error('legacy optional Web focus policy remains');
+          if(Object.hasOwn(focusPolicy,'developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus'))throw new Error('legacy Web prototype focus policy remains');
           const categoryByClass={RELEASE_CONFIRMED:'release-confirmed',DEVELOPMENT_CONFIRMED:'development-confirmed',DESIGN_ONLY:'design-only'};
           for(const g of catalog.games||[]){
             if(!valid.has(g.productionClass))throw new Error(`invalid catalog class: ${g.id}`);
@@ -137,7 +153,6 @@ jobs:
           if(company.operations?.productionTiers)throw new Error('legacy company production tier state remains');
           if(!company.operations?.productionClasses)throw new Error('semantic company production class state missing');
           const focus=company.operations?.autonomousFocus;
-          const focusPolicy=portfolio.developmentFocusPolicy||{};
           const expectedTargetSlots=Math.max(0,Number(focusPolicy.targetFocusedGames??focusPolicy.maxFocusedGames??0)||0);
           const maxFocusedGames=Math.max(expectedTargetSlots,Number(focusPolicy.maxFocusedGames??expectedTargetSlots)||0);
           if(!focus||focus.targetSlots!==expectedTargetSlots||focus.focusedGameIds?.length>maxFocusedGames)throw new Error('autonomous focus contract failed');
@@ -146,7 +161,7 @@ jobs:
           console.log('COMPANY_STATUS_SYNC_QA=PASS');
           console.log(`PRODUCTION_CLASS_COUNTS_QA=${release.length}/${development.length}/${design.length}`);
           console.log(`AUTONOMOUS_FOCUS_QA=${focus.focusedGameIds?.length||0}/${expectedTargetSlots} MAX=${maxFocusedGames}`);
-          console.log('WEB_GAMEPLAY_MUSIC_POLICY_SYNC_QA=PASS');
+          console.log('FULL_WEB_COMPANION_POLICY_SYNC_QA=PASS');
           console.log('SELECTED_PLATFORM_RUNTIME_SYNC_QA=PASS');
           NODE
 
