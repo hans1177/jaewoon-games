@@ -24,6 +24,7 @@ on:
       - 'qa/company-platform-speed-policy.test.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/design-only-promotion-sync.test.mjs'
+      - 'qa/company-development-validation-selected-platform.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
       - 'qa/company-development-unity-runtime.test.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
@@ -57,6 +58,7 @@ on:
       - 'qa/company-platform-speed-policy.test.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/design-only-promotion-sync.test.mjs'
+      - 'qa/company-development-validation-selected-platform.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
       - 'qa/company-development-unity-runtime.test.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
@@ -100,5 +102,6 @@ jobs:
             qa/company-platform-speed-policy.test.mjs \
             qa/company-selected-platform-router.test.mjs \
             qa/design-only-promotion-sync.test.mjs \
+            qa/company-development-validation-selected-platform.test.mjs \
             qa/company-development-web-runtime.test.mjs \
             qa/company-development-unity-runtime.test.mjs
