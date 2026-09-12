@@ -75,12 +75,19 @@ export function buildTrainingRequest(status) {
   );
 
   return {
-    version: 1,
+    version: 2,
     requestId,
     sourceStatusState: status.state ?? 'UNKNOWN',
-    state: requests.length ? 'READY_FOR_LOCAL_TRAINING' : 'WAITING_FOR_VERIFIED_SAMPLES',
+    state: requests.length ? 'READY_FOR_SELF_HOSTED_TRAINING' : 'WAITING_FOR_VERIFIED_SAMPLES',
     execution: {
-      route: 'LOCAL_SELF_HOSTED_ONLY',
+      route: 'CANONICAL_SELF_HOSTED',
+      preferredBackend: 'SERVER_SELF_HOSTED',
+      allowedBackends: ['SERVER_SELF_HOSTED', 'LOCAL_SELF_HOSTED'],
+      localBackendPreserved: true,
+      sameCanonicalRequestRequired: true,
+      duplicateConcurrentRequestTrainingForbidden: true,
+      continuousMode: '24H',
+      refreshCadence: 'HOURLY',
       githubHostedTrainingAllowed: false,
       paidApiAllowed: false,
       requiresCudaForQlora: true,
@@ -89,7 +96,7 @@ export function buildTrainingRequest(status) {
     requests,
     blockedTasks,
     nextAction: requests.length
-      ? 'RUN_READY_TASKS_ON_LOCAL_SELF_HOSTED_MACHINE'
+      ? 'RUN_READY_TASKS_ON_SERVER_SELF_HOSTED_BACKEND_LOCAL_REMAINS_AVAILABLE'
       : 'COLLECT_MORE_INDEPENDENT_AND_BROWSER_QA_VERIFIED_SAMPLES_ACROSS_PROJECTS',
   };
 }
