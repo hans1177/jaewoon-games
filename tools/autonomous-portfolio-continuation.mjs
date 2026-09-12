@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import {loadSeedState,unfilledVacancies} from './game-seed-state.mjs';
+import {loadSeedState,pendingPortfolioSeedRequests} from './game-seed-state.mjs';
 
 function kstDate(value=new Date()){
   const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(value));
@@ -20,12 +20,28 @@ export function decidePortfolioContinuation({portfolio={},queueState={},seedStat
   if(!seeds.bootstrapCompletedAt){
     return{action:'DISPATCH_GAME_SEED',reason:'INITIAL_SIX_SEED_BOOTSTRAP_REQUIRED',date,attempts:attempts.length,maxDaily,seedMode:'INITIAL_BOOTSTRAP'};
   }
-  const vacancies=unfilledVacancies(seeds);
-  if(vacancies.length){
-    return{action:'DISPATCH_GAME_SEED',reason:'GAME_SEED_VACANCY_REPLENISHMENT_REQUIRED',date,attempts:attempts.length,maxDaily,seedMode:'ONE_FOR_ONE_REPLENISHMENT',vacancies:vacancies.map(v=>({id:v.id,category:v.category,reason:v.reason}))};
+
+  const expansionRequests=pendingPortfolioSeedRequests(seeds);
+  if(expansionRequests.length){
+    return{
+      action:'DISPATCH_GAME_SEED',
+      reason:'DEPARTMENT_SCORE_GUIDED_PORTFOLIO_EXPANSION_REQUIRED',
+      date,
+      attempts:attempts.length,
+      maxDaily,
+      seedMode:'DYNAMIC_PORTFOLIO_EXPANSION',
+      portfolioSeedRequests:expansionRequests.map(request=>({
+        id:request.id,
+        category:request.category,
+        aggregateScore:request.aggregateScore,
+        decisionBand:request.decisionBand,
+        ownerOverride:request.ownerOverride===true,
+      })),
+    };
   }
+
   if(attempts.length>=maxDaily)return{action:'STOP',reason:'DAILY_AUTONOMOUS_CAP_REACHED',date,attempts:attempts.length,maxDaily};
-  return{action:'STOP',reason:'NO_GAME_SEED_VACANCY',date,attempts:attempts.length,maxDaily};
+  return{action:'STOP',reason:'NO_SCORE_APPROVED_PORTFOLIO_EXPANSION',date,attempts:attempts.length,maxDaily};
 }
 
 if(import.meta.url===`file://${process.argv[1]}`){
