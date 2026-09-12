@@ -152,6 +152,21 @@ test('runtime smoke never sends gameplay input before the generated seed runtime
   assert.ok(firstTap>readyGate,'gameplay input must be gated behind runtime-ready evidence');
 });
 
+test('runtime smoke launches the exact APK activity and fails fast on missing or exited process',()=>{
+  assert.match(runtimeSmokeSource,/launchable-activity: name=/);
+  assert.match(runtimeSmokeSource,/adb shell am start -W -n "\$launch_component"/);
+  assert.doesNotMatch(runtimeSmokeSource,/adb shell monkey/);
+  assert.match(runtimeSmokeSource,/process_observed_after_launch=false/);
+  assert.match(runtimeSmokeSource,/launch_process_missing=true/);
+  assert.match(runtimeSmokeSource,/process_exited_before_runtime_ready=true/);
+  assert.match(runtimeSmokeSource,/APK_LAUNCH_PROCESS_MISSING/);
+  assert.match(runtimeSmokeSource,/APK_PROCESS_EXITED_BEFORE_RUNTIME_READY/);
+  assert.match(runtimeSmokeSource,/JAEWOON_TECH_BOOT/);
+  assert.match(runtimeSmokeSource,/JAEWOON_TECH_ACTION/);
+  assert.match(runtimeSmokeSource,/JAEWOON_TECH_SAVE/);
+  assert.match(runtimeSmokeSource,/JAEWOON_TECH_METRIC/);
+});
+
 test('exact artifact regression binds upstream APK SHA and source revision',()=>{
   assert.match(regressionSource,/Download exact upstream build artifact/);
   assert.match(regressionSource,/actual.*expected/s);
