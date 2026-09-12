@@ -204,7 +204,14 @@ export class IslandRenderer {
   }
 
   drawUnits(ctx, game) {
-    for (const unit of game.allies || []) this.drawUnit(ctx, unit);
+    const t = performance.now() / 1000;
+    for (const unit of game.allies || []) {
+      if (game.raidActive) this.drawUnit(ctx, unit);
+      else {
+        const phase = t * .65 + unit.id * 1.37;
+        this.drawUnit(ctx, { ...unit, x: unit.x + Math.cos(phase) * 85, y: unit.y + Math.sin(phase * .8) * 55 });
+      }
+    }
     for (const unit of game.enemies || []) this.drawUnit(ctx, unit);
   }
 
