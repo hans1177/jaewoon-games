@@ -1,44 +1,19 @@
 {
-  "version": 3,
+  "version": 4,
   "policySource": "COMPANY_FLOW.md",
+  "isPolicySource": false,
   "ownerApprovedAt": "2026-09-12",
   "primaryPlatform": "ROBLOX",
   "platformPriority": ["ROBLOX", "UNITY_ANDROID", "FORTNITE_UEFN"],
-  "rolloutStrategy": {
-    "phase1": {
-      "platforms": ["ROBLOX"],
-      "objective": "FAST_RELEASE_AND_STABILIZATION",
-      "exitRequires": [
-        "REPEATED_RELEASE_SUCCESS",
-        "RUNTIME_STABILITY",
-        "QA_REGRESSION_PASS",
-        "VERIFIED_EXPERIENCE_ACCUMULATION"
-      ]
-    },
-    "phase2": {
-      "platforms": ["ROBLOX", "UNITY_ANDROID"],
-      "objective": "DUAL_PLATFORM_RELEASE_EXPERIENCE_ACCUMULATION",
-      "unityRule": "PRESERVE_EXISTING_UNITY_AND_IMPLEMENT_EXTENDED_VERSION",
-      "exitRequires": [
-        "ROBLOX_RELEASE_PATH_STABLE",
-        "UNITY_EXTENDED_RELEASE_PATH_VALIDATED",
-        "DUAL_PLATFORM_RELEASE_EXPERIENCE_VERIFIED"
-      ]
-    },
-    "phase3": {
-      "platforms": ["FORTNITE_UEFN"],
-      "objective": "FORTNITE_RELEASE_AFTER_ROBLOX_AND_UNITY_EXPERIENCE",
-      "entryRequires": [
-        "PHASE1_STABLE",
-        "PHASE2_VERIFIED_EXPERIENCE_ACCUMULATED"
-      ]
-    }
-  },
+  "priorityMeaning": "DEFAULT_FOCUS_ONLY",
+  "allPlatformsDevelopmentAlwaysAllowed": true,
+  "platformEntryGateAllowed": false,
   "switchMode": "PRIMARY_PLATFORM_POINTER",
   "rebuildCompanyStructureOnSwitch": false,
   "projects": {
     "ROBLOX": {
-      "status": "ACTIVE_PRIMARY_PHASE1",
+      "status": "ACTIVE_FIRST_CLASS_PRIMARY_DEFAULT",
+      "developmentAllowed": true,
       "sourceRoot": "roblox-games/<slug>",
       "language": "Luau",
       "runtime": "ROBLOX_EXPERIENCE",
@@ -58,7 +33,8 @@
       ]
     },
     "UNITY_ANDROID": {
-      "status": "ACTIVE_FIRST_CLASS_EXTENDED_PHASE2",
+      "status": "ACTIVE_FIRST_CLASS_EXTENDED",
+      "developmentAllowed": true,
       "sourceRoot": "EXISTING_UNITY_PROJECT_ROOTS",
       "language": "C#",
       "runtime": "ANDROID",
@@ -69,14 +45,15 @@
       "extensionRequired": true,
       "extensionMode": "ADD_CAPABILITY_AROUND_EXISTING_RESPONSIBLE_SYSTEMS",
       "replacementOrRebuildForbidden": true,
-      "regressionRequiredAfterSharedArchitectureChange": true,
-      "releaseModeAfterPhase1": "DUAL_RELEASE_WITH_ROBLOX"
+      "regressionRequiredAfterSharedArchitectureChange": true
     },
     "FORTNITE_UEFN": {
-      "status": "ACTIVE_AVAILABLE_PHASE3",
+      "status": "ACTIVE_FIRST_CLASS_AVAILABLE",
+      "developmentAllowed": true,
       "sourceRoot": "fortnite-uefn/<slug>",
       "language": "Verse",
       "runtime": "FORTNITE_UEFN",
+      "priorPlatformCompletionRequired": false,
       "validation": [
         "PROJECT_OPENS_IN_UEFN",
         "SESSION_LAUNCH",
@@ -91,6 +68,23 @@
       ]
     }
   },
+  "focusMilestones": [
+    {
+      "id": "ROBLOX_FAST_RELEASE_STABILIZATION",
+      "priorityRank": 1,
+      "blocksOtherPlatforms": false
+    },
+    {
+      "id": "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE",
+      "priorityRank": 2,
+      "entryGate": false
+    },
+    {
+      "id": "FORTNITE_UEFN_RELEASE_EXPERIENCE",
+      "priorityRank": 3,
+      "entryGate": false
+    }
+  ],
   "sharedLearning": {
     "distillationRequired": true,
     "canonicalDistillationOnly": true,
@@ -100,7 +94,7 @@
     "verifiedEvidenceOnly": true,
     "existingVerifiedInputsOnly": true,
     "failureAttemptsAreWarningEvidenceOnly": true,
-    "phaseExperienceMustAccumulateBeforeNextPlatformExpansion": true
+    "platformPriorityDoesNotGateDevelopment": true
   },
   "locks": {
     "vibeLearningStructureImmutable": true,
@@ -110,5 +104,5 @@
     "triggerAndArtifactFlowImmutable": true,
     "noWrapperShadowBypass": true
   },
-  "switchingRule": "Change primaryPlatform/project selection only; do not rebuild or fork the company core, Vibe learning chain, existing Unity project, or existing build workflows."
+  "switchingRule": "Change primaryPlatform/project selection only; all three platform projects remain developable. Do not rebuild or fork the company core, Vibe learning chain, existing Unity project, or existing build workflows."
 }
