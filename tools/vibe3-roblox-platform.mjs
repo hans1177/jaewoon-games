@@ -46,7 +46,7 @@ export function createRobloxPlatformContract(){
     ...ROBLOX_PLATFORM_POLICY,
     qualityGateWeakeningAllowed:false,
     commonEvidenceSchema:true,
-    qa:Object.freeze({browserQa:'NOT_APPLICABLE',runtime:'PASS',independentQa:'PASS',saveRejoinCheck:'WHEN_APPLICABLE',mobileUiCheck:'WHEN_APPLICABLE',serverClientBoundaryCheck:true,remoteSecurityCheck:true}),
+    qa:Object.freeze({browserQa:'NOT_APPLICABLE',runtime:'PASS',independentQa:'PASS',saveRejoinCheck:'WHEN_APPLICABLE',mobileUiCheck:'PASS',serverClientBoundaryCheck:true,multiplayerQa:'WHEN_APPLICABLE'}),
     publishing:Object.freeze({method:'POST',endpointTemplate:'https://apis.roblox.com/universes/v1/{universeId}/places/{placeId}/versions?versionType=Published',apiKeyHeader:'x-api-key',secretPersisted:false,secretPrinted:false,liveExecutionRequiresExplicitFlag:true,placeFileMustRemainUnderSourceRoot:true}),
     learning:Object.freeze({separateCron:false,separateDataset:false,separateTrainer:false,useExistingCanonicalDistillation:true}),
     authority:'roblox-platform-adapter-contract',
@@ -70,7 +70,14 @@ export function validateRobloxReleaseEvidence(evidence={},sourceRevision=''){
   const revision=clean(sourceRevision||evidence.sourceRevision);
   if(!SHA.test(revision))blocked.push('source-revision-invalid');
   if(clean(evidence.sourceRevision)!==revision)blocked.push('exact-source-revision-mismatch');
+  if(evidence.buildOrPackagePassed!==true)blocked.push('build-or-package-not-passed');
+  if(!clean(evidence.artifactIdentity))blocked.push('artifact-identity-missing');
+  if(evidence.luauOrSourceValidationPassed!==true)blocked.push('luau-or-source-validation-not-passed');
   if(evidence.runtimePassed!==true&&upper(evidence.runtime)!=='PASS')blocked.push('runtime-not-passed');
+  if(evidence.serverClientBoundaryPassed!==true)blocked.push('server-client-boundary-not-passed');
+  if(evidence.saveExists===true&&evidence.datastoreRejoinPassed!==true)blocked.push('datastore-rejoin-not-passed');
+  if(evidence.mobileControlUiPassed!==true)blocked.push('mobile-control-ui-not-passed');
+  if(evidence.multiplayerApplicable===true&&evidence.multiplayerQaPassed!==true)blocked.push('multiplayer-qa-not-passed');
   if(evidence.independentQaPassed!==true&&upper(evidence.independentQa)!=='PASS')blocked.push('independent-qa-not-passed');
   if(evidence.regressionPassed!==true)blocked.push('regression-not-passed');
   if(evidence.protectedStatePreserved!==true)blocked.push('protected-state-unproven');
