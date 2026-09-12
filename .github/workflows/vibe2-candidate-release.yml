@@ -82,7 +82,8 @@ jobs:
           const state=productionClass==='RELEASE_CONFIRMED'?'release-confirmed':productionClass==='DEVELOPMENT_CONFIRMED'?'development-confirmed':legacyState;
           let decision='reject', reason='unknown';
           if(!task||!game||!base) reason='manifest-required-field-missing';
-          else if(!['web','unity'].includes(target)) reason='target-auto-release-not-configured';
+          else if(!['roblox','web','unity'].includes(target)) reason='target-auto-release-not-configured';
+          else if(target==='roblox' && root!==`roblox-games/${game}`) reason='roblox-source-root-mismatch';
           else if(target==='web' && root!==`web-games/${game}`) reason='web-source-root-mismatch';
           else if(target==='unity' && root!==`unity-games/${game}`) reason='unity-source-root-mismatch';
           else if(!['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClass)) reason='current-production-class-not-auto-deployable';
@@ -108,6 +109,12 @@ jobs:
           for file in "${changed[@]}"; do
             case "$file" in "$source_root"/*|.vibe2/candidates/*) ;; *) reject candidate-path-outside-boundary ;; esac
           done
+
+          if [ "$decision" = 'roblox' ]; then
+            test -f "$source_root/roblox-technical-validation.json" || reject roblox-technical-validation-missing
+            mapfile -t place_files < <(find "$source_root" -type f \( -name '*.rbxl' -o -name '*.rbxlx' \) | sort)
+            [ "${#place_files[@]}" -eq 1 ] || reject roblox-place-package-count-invalid
+          fi
 
           if [ "$decision" = 'unity' ] && [ "$production_class" = 'RELEASE_CONFIRMED' ]; then
             GAME_ID="$game_id" node <<'NODE' || reject development-baseline-required
@@ -215,10 +222,7 @@ jobs:
           if [ "$QA_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
           if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
             if [ "$result" = PASS ]; then
-              gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main \
-                -f released_game_id="$GAME_ID" \
-                -f release_task_id="$TASK_ID" \
-                -f release_origin="$CANDIDATE_ORIGIN"
+              gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main -f released_game_id="$GAME_ID" -f release_task_id="$TASK_ID" -f release_origin="$CANDIDATE_ORIGIN"
               echo 'AUTONOMOUS_POST_RELEASE_HEALTH=DISPATCHED'
               echo 'AUTONOMOUS_NEXT_FLOOR=WAITING_FOR_PUBLIC_HEALTH'
             else
@@ -302,6 +306,157 @@ jobs:
           git push origin HEAD:vibe2-unreal-core
           gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
           exit 1
+
+  roblox-release:
+    needs: inspect
+    if: needs.inspect.outputs.decision == 'roblox'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.inspect.outputs.candidate_branch }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Checkout trusted V3 control plane
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: .vibe3-control
+          fetch-depth: 1
+
+      - name: Validate exact Roblox release evidence
+        id: validate
+        continue-on-error: true
+        env:
+          SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
+          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$SOURCE_ROOT/roblox-technical-validation.json"
+          test -f "$evidence"
+          mapfile -t place_files < <(find "$SOURCE_ROOT" -type f \( -name '*.rbxl' -o -name '*.rbxlx' \) | sort)
+          [ "${#place_files[@]}" -eq 1 ]
+          place_file="${place_files[0]}"
+          node .vibe3-control/tools/vibe3-roblox-platform.mjs --place-file "$place_file" --evidence "$evidence" --source-revision "$CANDIDATE_SHA" | tee /tmp/roblox-release-plan.log
+          grep -q '^ROBLOX_V3_STATE=READY$' /tmp/roblox-release-plan.log
+          echo "place_file=$place_file" >> "$GITHUB_OUTPUT"
+          echo "evidence_file=$evidence" >> "$GITHUB_OUTPUT"
+          echo 'ROBLOX_EXACT_RELEASE_EVIDENCE=PASS'
+
+      - name: Promote verified Roblox source root through reviewed PR
+        id: promote
+        if: steps.validate.outcome == 'success'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
+          BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
+          TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --quiet
+          [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" ] || { echo 'main source changed; replan required' >&2; exit 1; }
+          rm -rf /tmp/vibe2-roblox-promote
+          git worktree prune
+          safe_task="$(printf '%s' "$TASK_ID" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-60)"
+          release_branch="automation/vibe2-roblox-release-${safe_task}-${GITHUB_RUN_ID}"
+          git worktree add -b "$release_branch" /tmp/vibe2-roblox-promote origin/main >/dev/null
+          cd /tmp/vibe2-roblox-promote
+          git config user.name 'jaewoon-vibe2-release'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          git checkout "$CANDIDATE_SHA" -- "$SOURCE_ROOT"
+          git diff --check
+          git add "$SOURCE_ROOT"
+          git diff --cached --quiet && { echo 'nothing to promote' >&2; exit 1; }
+          git commit -m "vibe2: promote Roblox ${TASK_ID}"
+          release_commit="$(git rev-parse HEAD)"
+          git push origin "HEAD:$release_branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$release_branch" --title "vibe2: promote Roblox ${TASK_ID}" --body "Verified Roblox candidate. Direct main write: NO. Open Cloud publish runs only after this PR CI passes and source-root merge is verified.")"
+          sleep 5
+          gh pr checks "$pr_url" --watch --fail-fast --interval 10
+          git fetch origin main --quiet
+          [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" ] || { echo 'main source changed before merge; replan required' >&2; exit 1; }
+          gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          git fetch origin main --quiet
+          git diff --quiet "$release_commit" origin/main -- "$SOURCE_ROOT"
+          echo "ROBLOX_MAIN_PROMOTION_SHA=$(git rev-parse origin/main)"
+          echo "ROBLOX_RELEASE_PR=$pr_url"
+          echo 'DIRECT_MAIN_WRITE=NO'
+
+      - name: Publish exact verified package through Roblox Open Cloud
+        id: publish
+        if: steps.validate.outcome == 'success' && steps.promote.outcome == 'success'
+        continue-on-error: true
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_UNIVERSE_ID: ${{ secrets.ROBLOX_UNIVERSE_ID }}
+          ROBLOX_PLACE_ID: ${{ secrets.ROBLOX_PLACE_ID }}
+          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+          PLACE_FILE: ${{ steps.validate.outputs.place_file }}
+          EVIDENCE_FILE: ${{ steps.validate.outputs.evidence_file }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
+          test -n "$ROBLOX_UNIVERSE_ID"
+          test -n "$ROBLOX_PLACE_ID"
+          node .vibe3-control/tools/vibe3-roblox-platform.mjs --place-file "$PLACE_FILE" --evidence "$EVIDENCE_FILE" --source-revision "$CANDIDATE_SHA" --execute | tee /tmp/roblox-publish.log
+          grep -q '^ROBLOX_V3_STATE=PUBLISHED$' /tmp/roblox-publish.log
+          echo 'ROBLOX_OPEN_CLOUD_PUBLISH=PASS'
+
+      - name: Settle Roblox result and continue canonical queue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          VALIDATE_OUTCOME: ${{ steps.validate.outcome }}
+          PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
+          PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+          CANDIDATE_ORIGIN: ${{ needs.inspect.outputs.origin }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$VALIDATE_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ] && [ "$PUBLISH_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
+          if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
+            if [ "$result" = PASS ]; then
+              gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main
+            else
+              gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main
+            fi
+            echo "AUTONOMOUS_ROBLOX_RELEASE_RESULT=$result"
+            [ "$result" = PASS ]
+            exit
+          fi
+          rm -rf /tmp/vibe2-control
+          git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
+          cd /tmp/vibe2-control
+          git config user.name 'jaewoon-vibe2-release'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          if [ "$result" = PASS ]; then
+            node tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="roblox-exact-evidence-pass,main-pr-merged,roblox-open-cloud-published,actions-run-${GITHUB_RUN_ID}"
+          else
+            node tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=roblox-release-or-evidence-failed --evidence="roblox-validate-${VALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},publish-${PUBLISH_OUTCOME},actions-run-${GITHUB_RUN_ID}"
+          fi
+          git add .vibe2/queue.json
+          git commit -m "vibe2: settle Roblox task ${TASK_ID} ${result} [skip ci]"
+          for attempt in 1 2 3; do
+            git pull --rebase origin vibe2-unreal-core
+            git push origin HEAD:vibe2-unreal-core && break
+            test "$attempt" -lt 3
+            sleep $((attempt * 2))
+          done
+          if [ "$result" = PASS ]; then gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main; fi
+          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo "VIBE2_ROBLOX_AUTO_DEPLOY=$result"
+          [ "$result" = PASS ]
 
   reject:
     needs: inspect
