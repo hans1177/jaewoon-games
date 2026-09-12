@@ -4,14 +4,22 @@ on:
   push:
     branches: [main]
     paths:
+      - 'assets/vibe-v3-engine.js'
+      - 'assets/vibe-development-ai.js'
       - 'tools/vibe2-training-sample.mjs'
       - 'tools/vibe2-distillation-ingest.mjs'
       - 'tools/vibe2-distillation-status.mjs'
       - 'tools/vibe2-training-request.mjs'
       - 'tools/vibe2-weight-learning.mjs'
+      - 'tools/vibe3-trajectory-ingest.mjs'
+      - 'tools/vibe3-model-selection.mjs'
+      - 'tools/vibe3-pump-index.mjs'
       - 'qa/vibe2-training-sample.test.mjs'
       - 'qa/vibe2-distillation-status.test.mjs'
       - 'qa/vibe2-training-request.test.mjs'
+      - 'qa/vibe3-trajectory-ingest.test.mjs'
+      - 'qa/vibe3-pump-index.test.mjs'
+      - 'company-learning/vibe3-trajectories/**'
       - 'company-learning/external-game-playtest/**'
       - 'design/**/release-baseline.json'
       - 'design/**/release-production-status.json'
@@ -30,7 +38,9 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
+
+env:
+  VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime
 
 concurrency:
   group: vibe2-distillation-ingest-pr
@@ -62,7 +72,19 @@ jobs:
             '+refs/heads/autonomous/candidate-*:refs/remotes/origin/autonomous/candidate-*' \
             --prune
 
-      - name: Validate distillation tooling
+      - name: Restore durable verified training samples
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --heads origin "$VIBE2_LEARNING_RUNTIME_BRANCH" >/dev/null 2>&1; then
+            git fetch origin "+refs/heads/$VIBE2_LEARNING_RUNTIME_BRANCH:refs/remotes/origin/$VIBE2_LEARNING_RUNTIME_BRANCH"
+            git checkout "origin/$VIBE2_LEARNING_RUNTIME_BRANCH" -- company-learning/training-samples
+            echo "VIBE2_LEARNING_STATE_RESTORED=YES"
+          else
+            echo "VIBE2_LEARNING_STATE_RESTORED=BOOTSTRAP_MAIN"
+          fi
+
+      - name: Validate distillation and Pump tooling
         shell: bash
         run: |
           set -euo pipefail
@@ -71,15 +93,18 @@ jobs:
           node --check tools/vibe2-distillation-status.mjs
           node --check tools/vibe2-training-request.mjs
           node --check tools/vibe2-weight-learning.mjs
+          node --check tools/vibe3-trajectory-ingest.mjs
+          node --check tools/vibe3-model-selection.mjs
+          node --check tools/vibe3-pump-index.mjs
           node --test qa/vibe2-training-sample.test.mjs
           node --test qa/vibe2-distillation-status.test.mjs
           node --test qa/vibe2-training-request.test.mjs
           node --test qa/vibe2-weight-learning.test.mjs
+          node qa/vibe3-trajectory-ingest.test.mjs
+          node qa/vibe3-pump-index.test.mjs
 
-      - name: Ingest verified diffs and refresh readiness
+      - name: Ingest verified diffs trajectories and refresh readiness
         id: ingest
-        env:
-          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -87,6 +112,9 @@ jobs:
             --dev-ref=origin/autonomous-dev \
             --main-ref=origin/main \
             --out-dir=company-learning/training-samples | tee /tmp/vibe2-distillation-ingest.json
+          node tools/vibe3-trajectory-ingest.mjs \
+            --trajectory-dir=company-learning/vibe3-trajectories \
+            --out-dir=company-learning/training-samples | tee /tmp/vibe3-trajectory-ingest.json
           node tools/vibe2-distillation-status.mjs \
             --evidence-dir=company-learning/evidence \
             --sample-dir=company-learning/training-samples \
@@ -94,65 +122,86 @@ jobs:
           node tools/vibe2-training-request.mjs \
             --status=company-learning/distillation-status.json \
             --out=company-learning/distillation-training-request.json | tee /tmp/vibe2-distillation-request.json
+          node tools/vibe3-pump-index.mjs \
+            --sample-dir=company-learning/training-samples \
+            --trajectory-dir=company-learning/vibe3-trajectories \
+            --memory-out=company-learning/vibe3-memory-index.json \
+            --playbooks-out=company-learning/vibe3-task-playbooks.json \
+            --benchmark-out=company-learning/vibe3-benchmark-queue.json | tee /tmp/vibe3-pump.json
           node - <<'NODE'
           const fs=require('fs');
-          const ingest=JSON.parse(fs.readFileSync('/tmp/vibe2-distillation-ingest.json','utf8').trim().split(/\r?\n/).at(-1));
-          const status=JSON.parse(fs.readFileSync('/tmp/vibe2-distillation-status.json','utf8').trim().split(/\r?\n/).at(-1));
-          const request=JSON.parse(fs.readFileSync('/tmp/vibe2-distillation-request.json','utf8').trim().split(/\r?\n/).at(-1));
+          const read=file=>JSON.parse(fs.readFileSync(file,'utf8').trim().split(/\r?\n/).at(-1));
+          const ingest=read('/tmp/vibe2-distillation-ingest.json');
+          const trajectory=read('/tmp/vibe3-trajectory-ingest.json');
+          const status=read('/tmp/vibe2-distillation-status.json');
+          const request=read('/tmp/vibe2-distillation-request.json');
+          const pump=read('/tmp/vibe3-pump.json');
           console.log(`DISTILLATION_SAMPLES_WRITTEN=${ingest.written.length}`);
           console.log(`DISTILLATION_SAMPLES_REFRESHED=${ingest.refreshed?.length||0}`);
           console.log(`UNITY_RELEASE_BASELINES_EXAMINED=${ingest.unityRelease?.examined||0}`);
-          console.log(`UNITY_RELEASE_SAMPLES_WRITTEN=${ingest.unityRelease?.written?.length||0}`);
           console.log(`EXTERNAL_BLACK_BOX_EXAMINED=${ingest.externalBlackBox?.examined||0}`);
-          console.log(`EXTERNAL_BLACK_BOX_SAMPLES_WRITTEN=${ingest.externalBlackBox?.written?.length||0}`);
-          console.log(`EXTERNAL_BLACK_BOX_SAMPLES_REFRESHED=${ingest.externalBlackBox?.refreshed?.length||0}`);
+          console.log(`VIBE3_TRAJECTORIES_EXAMINED=${trajectory.examined||0}`);
+          console.log(`VIBE3_TRAJECTORY_SAMPLES_WRITTEN=${trajectory.written?.length||0}`);
+          console.log(`VIBE3_PUMP_POSITIVE_MEMORY=${pump.verifiedPositiveMemory||0}`);
+          console.log(`VIBE3_PUMP_FAILURE_WARNINGS=${pump.failureWarnings||0}`);
+          console.log(`VIBE3_PUMP_PLAYBOOKS=${pump.playbooks||0}`);
+          console.log(`VIBE3_PUMP_BENCHMARKS=${pump.benchmarks||0}`);
           console.log(`DISTILLATION_READY_TASKS=${status.readyTasks.join(',')||'NONE'}`);
           console.log(`DISTILLATION_STATE=${status.state}`);
           console.log(`LOCAL_TRAINING_REQUEST_STATE=${request.state}`);
           NODE
 
-      - name: Upload verified samples for online Unity teacher
+      - name: Upload verified samples and Pump memory artifact
         uses: actions/upload-artifact@v4
         with:
-          name: vibe2-verified-training-samples
-          path: company-learning/training-samples
+          name: vibe2-vibe3-verified-learning-memory
+          path: |
+            company-learning/training-samples
+            company-learning/vibe3-memory-index.json
+            company-learning/vibe3-task-playbooks.json
+            company-learning/vibe3-benchmark-queue.json
           retention-days: 1
           if-no-files-found: warn
 
-      - name: Propose verified training samples and readiness through PR
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Persist validated learning state without main write
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-vibe2-learning'
           git config user.email 'actions@users.noreply.github.com'
 
-          if [ -d company-learning/training-samples ]; then git add company-learning/training-samples; fi
-          git add company-learning/distillation-status.json company-learning/distillation-training-request.json
-          if git diff --cached --quiet; then
-            echo 'DISTILLATION_MEMORY_PR=NO_CHANGES'
-            exit 0
+          state_paths=(
+            company-learning/training-samples
+            company-learning/distillation-status.json
+            company-learning/distillation-training-request.json
+            company-learning/vibe3-memory-index.json
+            company-learning/vibe3-task-playbooks.json
+            company-learning/vibe3-benchmark-queue.json
+          )
+
+          git add -A -- "${state_paths[@]}"
+          if ! git diff --cached --quiet; then
+            git commit -m 'learning: refresh canonical samples and Vibe3 Pump memory [skip ci]'
           fi
+          generated_commit="$(git rev-parse HEAD)"
 
-          branch="automation/vibe2-distillation-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          git checkout -b "$branch"
-          git commit -m 'learning: refresh distillation samples and local training request [skip ci]'
-          git push origin "HEAD:refs/heads/$branch"
-
-          if pr_url="$(gh pr create \
-            --repo "$GITHUB_REPOSITORY" \
-            --base main \
-            --head "$branch" \
-            --title 'learning: refresh distillation samples and local training request' \
-            --body "Verified Vibe2 distillation sample/status refresh.\n\n- workflow run: ${GITHUB_RUN_ID}\n- direct main write: NO\n- GitHub-hosted model training: NO\n- public game code write: NO")"; then
-            echo "DISTILLATION_MEMORY_PR=$pr_url"
+          remote_ref="refs/heads/$VIBE2_LEARNING_RUNTIME_BRANCH"
+          if git ls-remote --exit-code --heads origin "$VIBE2_LEARNING_RUNTIME_BRANCH" >/dev/null 2>&1; then
+            git fetch origin "+$remote_ref:refs/remotes/origin/$VIBE2_LEARNING_RUNTIME_BRANCH"
+            expected="$(git rev-parse "origin/$VIBE2_LEARNING_RUNTIME_BRANCH")"
+            git push --force-with-lease="$remote_ref:$expected" origin "$generated_commit:$remote_ref"
+            echo 'VIBE2_LEARNING_RUNTIME_UPDATE=LEASED_REFRESH'
           else
-            echo 'DISTILLATION_MEMORY_PR=SKIPPED_ACTIONS_PR_PERMISSION'
-            git checkout main
-            git push origin --delete "$branch" || true
+            git push origin "$generated_commit:$remote_ref"
+            echo 'VIBE2_LEARNING_RUNTIME_UPDATE=BOOTSTRAP_CREATED'
           fi
+
+          persisted="$(git ls-remote origin "$remote_ref" | awk '{print $1}')"
+          test "$persisted" = "$generated_commit"
+          echo "VIBE2_LEARNING_RUNTIME_SHA=$persisted"
+          echo "VIBE2_LEARNING_RUNTIME_BRANCH=$VIBE2_LEARNING_RUNTIME_BRANCH"
           echo 'GITHUB_HOSTED_MODEL_TRAINING=NO'
+          echo 'BENCHMARK_COUNTS_AS_TRAINING_SAMPLE=NO'
           echo 'PUBLIC_GAME_CODE_WRITE=NO'
           echo 'PUBLIC_MAIN_WRITE=NO'
 
@@ -160,17 +209,22 @@ jobs:
         if: always()
         shell: bash
         run: |
-          echo '### Vibe2 Distillation Sample Ingest' >> "$GITHUB_STEP_SUMMARY"
+          echo '### Vibe2/Vibe3 Canonical Distillation + Pump' >> "$GITHUB_STEP_SUMMARY"
           echo '- schedule: HOURLY_24H' >> "$GITHUB_STEP_SUMMARY"
-          echo '- web source: independent-QA + browser-QA verified autonomous promotions' >> "$GITHUB_STEP_SUMMARY"
-          echo '- Unity source: RELEASE_READY + current source/build binding + Android runtime PASS + independent QA PASS + merged PR' >> "$GITHUB_STEP_SUMMARY"
-          echo '- external commercial source: verified black-box runtime/game-entry/input evidence only; no proprietary code/assets/internal algorithms' >> "$GITHUB_STEP_SUMMARY"
-          echo '- Unity browser QA: NOT_APPLICABLE; never synthesized as PASS' >> "$GITHUB_STEP_SUMMARY"
+          echo '- V3 Pump Mode: ON' >> "$GITHUB_STEP_SUMMARY"
+          echo '- durable state: vibe2-learning-runtime branch; direct main write: NO' >> "$GITHUB_STEP_SUMMARY"
+          echo '- verified RAG memory: verified positive evidence only' >> "$GITHUB_STEP_SUMMARY"
+          echo '- failure memory: warning/avoidance context only' >> "$GITHUB_STEP_SUMMARY"
+          echo '- task playbooks: coding/bugfix/qa/unity/graphics/planning/general' >> "$GITHUB_STEP_SUMMARY"
+          echo '- benchmark accumulation: ON; counts as training sample: NO' >> "$GITHUB_STEP_SUMMARY"
+          echo '- candidate tournament default: 5; allowed: 3-5' >> "$GITHUB_STEP_SUMMARY"
+          echo '- bounded self repair: max 3 attempts' >> "$GITHUB_STEP_SUMMARY"
+          echo '- external commercial source: black-box verified observations only; no proprietary code/assets/internal algorithms' >> "$GITHUB_STEP_SUMMARY"
           echo '- external black-box browser QA: NOT_APPLICABLE; dedicated evidence marker required' >> "$GITHUB_STEP_SUMMARY"
-          echo '- answer target: exact verified source diff or bounded observable QA pattern' >> "$GITHUB_STEP_SUMMARY"
-          echo '- online teacher handoff: short-lived verified-sample artifact' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Unity browser QA: NOT_APPLICABLE; never synthesized as PASS' >> "$GITHUB_STEP_SUMMARY"
+          echo '- failed Vibe3 candidates: comparison context only, never promoted as answer targets' >> "$GITHUB_STEP_SUMMARY"
           echo '- paid API: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- GitHub-hosted model training: NO' >> "$GITHUB_STEP_SUMMARY"
-          echo '- ready work emits deterministic training request' >> "$GITHUB_STEP_SUMMARY"
-          echo '- persistence: PR when Actions PR creation is permitted; direct main write forbidden' >> "$GITHUB_STEP_SUMMARY"
+          echo '- local weight training required for Pump: NO' >> "$GITHUB_STEP_SUMMARY"
+          echo '- actual weight training: deferred until local capability and canonical readiness' >> "$GITHUB_STEP_SUMMARY"
           echo '- promotion: fixed holdout A/B then Canary' >> "$GITHUB_STEP_SUMMARY"

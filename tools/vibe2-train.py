@@ -6,6 +6,9 @@ import os
 import random
 from pathlib import Path
 
+EXTERNAL_BLACK_BOX_QA_MARKER = "BLACK_BOX_EVIDENCE_PASS"
+EXTERNAL_BLACK_BOX_SOURCE_KIND = "external-black-box"
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Vibe2 Qwen LoRA/QLoRA trainer")
@@ -43,6 +46,18 @@ def stable_row(row):
 
 def dataset_hash(rows):
     return hashlib.sha256("\n".join(stable_row(row) for row in rows).encode("utf-8")).hexdigest()
+
+
+def is_external_black_box_qa(row, qa):
+    provenance = row.get("provenance") or {}
+    source_kind = str(provenance.get("sourceKind") or row.get("sourceKind") or "").lower()
+    return (
+        str(row.get("taskType") or "").lower() == "qa"
+        and source_kind == EXTERNAL_BLACK_BOX_SOURCE_KIND
+        and qa.get("independentQa") == EXTERNAL_BLACK_BOX_QA_MARKER
+        and qa.get("browserQa") == "NOT_APPLICABLE"
+        and qa.get("runtime") == "PASS"
+    )
 
 
 def validate_manifest(args, manifest, train_rows, eval_rows):
@@ -93,8 +108,9 @@ def validate_manifest(args, manifest, train_rows, eval_rows):
     for row in train_rows + eval_rows:
         qa = row.get("qa") or {}
         row_task_type = str(row.get("taskType") or "").lower()
-        if qa.get("independentQa") != "PASS":
-            raise RuntimeError("independent QA PASS is required")
+        external_black_box = is_external_black_box_qa(row, qa)
+        if qa.get("independentQa") != "PASS" and not external_black_box:
+            raise RuntimeError("independent QA PASS or verified external black-box QA evidence is required")
         if row_task_type == "unity":
             if qa.get("runtime") != "PASS":
                 raise RuntimeError("Unity Android/runtime PASS is required")
@@ -108,6 +124,9 @@ def validate_manifest(args, manifest, train_rows, eval_rows):
             provenance = row.get("provenance") or {}
             if str(provenance.get("sourceKind") or "").lower() != "vibe2":
                 raise RuntimeError("Unity production training requires verified Vibe2 source evidence")
+        elif external_black_box:
+            if row_task_type != "qa":
+                raise RuntimeError("external black-box evidence is only accepted for QA task samples")
         elif qa.get("browserQa") != "PASS":
             raise RuntimeError("browser QA PASS is required for non-Unity samples")
         if row.get("lifecycle") != "active":
@@ -183,14 +202,10 @@ def main():
         user_text = instruction if not user_input else f"{instruction}\n\n입력:\n{user_input}"
         if getattr(tokenizer, "chat_template", None):
             prompt = tokenizer.apply_chat_template(
-                [{"role": "user", "content": user_text}],
-                tokenize=False,
-                add_generation_prompt=True,
+                [{"role": "user", "content": user_text}], tokenize=False, add_generation_prompt=True,
             )
             full = tokenizer.apply_chat_template(
-                [{"role": "user", "content": user_text}, {"role": "assistant", "content": answer}],
-                tokenize=False,
-                add_generation_prompt=False,
+                [{"role": "user", "content": user_text}, {"role": "assistant", "content": answer}], tokenize=False, add_generation_prompt=False,
             )
         else:
             prompt = f"### 지시\n{user_text}\n\n### 답변\n"
@@ -200,29 +215,16 @@ def main():
         labels = list(encoded["input_ids"])
         masked = min(len(prompt_ids), len(encoded["input_ids"]))
         labels[:masked] = [-100] * masked
-        supervised_tokens = sum(1 for label in labels if label != -100)
-        if supervised_tokens == 0:
-            sample_id = (
-                (row.get("provenance") or {}).get("drillId")
-                or row.get("sampleId")
-                or row.get("id")
-                or "UNKNOWN"
-            )
-            raise RuntimeError(
-                f"answer tokens truncated completely before training: sample={sample_id}, max_length={args.max_length}"
-            )
+        if sum(1 for label in labels if label != -100) == 0:
+            sample_id = (row.get("provenance") or {}).get("drillId") or row.get("sampleId") or row.get("id") or "UNKNOWN"
+            raise RuntimeError(f"answer tokens truncated completely before training: sample={sample_id}, max_length={args.max_length}")
         encoded["labels"] = labels
         return encoded
 
     class JsonlDataset(torch.utils.data.Dataset):
-        def __init__(self, rows):
-            self.rows = [encode(row) for row in rows]
-
-        def __len__(self):
-            return len(self.rows)
-
-        def __getitem__(self, index):
-            return self.rows[index]
+        def __init__(self, rows): self.rows = [encode(row) for row in rows]
+        def __len__(self): return len(self.rows)
+        def __getitem__(self, index): return self.rows[index]
 
     class Collator:
         def __call__(self, features):
@@ -230,41 +232,22 @@ def main():
             labels = [item.pop("labels") for item in features]
             batch = tokenizer.pad(features, padding=True, return_tensors="pt")
             max_len = batch["input_ids"].shape[1]
-            batch["labels"] = torch.tensor(
-                [label + [-100] * (max_len - len(label)) for label in labels],
-                dtype=torch.long,
-            )
+            batch["labels"] = torch.tensor([label + [-100] * (max_len - len(label)) for label in labels], dtype=torch.long)
             return batch
 
     train_dataset = JsonlDataset(train_rows)
     eval_dataset = JsonlDataset(eval_rows)
-
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
     training_args = TrainingArguments(
-        output_dir=str(output / "checkpoints"),
-        num_train_epochs=args.epochs,
-        learning_rate=args.learning_rate,
-        per_device_train_batch_size=args.batch_size,
-        per_device_eval_batch_size=args.batch_size,
-        gradient_accumulation_steps=args.grad_accum,
-        logging_steps=5,
-        eval_strategy="no" if args.final_eval_only else "epoch",
-        save_strategy="no" if args.final_eval_only else "epoch",
-        report_to=[],
-        seed=args.seed,
-        data_seed=args.seed,
-        bf16=use_cuda and torch.cuda.is_bf16_supported(),
-        fp16=use_cuda and not torch.cuda.is_bf16_supported(),
-        remove_unused_columns=False,
+        output_dir=str(output / "checkpoints"), num_train_epochs=args.epochs, learning_rate=args.learning_rate,
+        per_device_train_batch_size=args.batch_size, per_device_eval_batch_size=args.batch_size,
+        gradient_accumulation_steps=args.grad_accum, logging_steps=5,
+        eval_strategy="no" if args.final_eval_only else "epoch", save_strategy="no" if args.final_eval_only else "epoch",
+        report_to=[], seed=args.seed, data_seed=args.seed,
+        bf16=use_cuda and torch.cuda.is_bf16_supported(), fp16=use_cuda and not torch.cuda.is_bf16_supported(), remove_unused_columns=False,
     )
-    trainer = Trainer(
-        model=model,
-        args=training_args,
-        train_dataset=train_dataset,
-        eval_dataset=eval_dataset,
-        data_collator=Collator(),
-    )
+    trainer = Trainer(model=model, args=training_args, train_dataset=train_dataset, eval_dataset=eval_dataset, data_collator=Collator())
     train_result = trainer.train()
     eval_result = trainer.evaluate()
     losses = [float(train_result.metrics.get("train_loss", 0)), float(eval_result.get("eval_loss", 0))]
@@ -273,7 +256,7 @@ def main():
     model.save_pretrained(output / "adapter")
     tokenizer.save_pretrained(output / "adapter")
     metadata = {
-        "version": 3,
+        "version": 4,
         "adapterVersion": args.adapter_version,
         "taskType": args.task_type,
         "baseModel": args.base_model,
@@ -288,6 +271,7 @@ def main():
         "datasetBatching": manifest.get("batching"),
         "contaminationRate": (manifest.get("contamination") or {}).get("contaminationRate"),
         "verifiedRealOnly": args.task_type == "unity",
+        "verifiedExternalBlackBoxQaAllowed": args.task_type == "qa",
         "finalEvalOnly": args.final_eval_only,
         "gradientCheckpointing": not cpu_practice_no_recompute,
         "trainMetrics": train_result.metrics,
@@ -296,10 +280,7 @@ def main():
         "runtimePromotionAllowed": False,
         "requiredNextGate": "FIXED_HOLDOUT_AB_AND_CANARY",
     }
-    (output / "training-metadata.json").write_text(
-        json.dumps(metadata, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    (output / "training-metadata.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(metadata, ensure_ascii=False))
 
 

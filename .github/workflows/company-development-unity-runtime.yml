@@ -27,6 +27,7 @@ jobs:
     outputs:
       run: ${{ steps.queue.outputs.run }}
       matrix: ${{ steps.queue.outputs.matrix }}
+      parallel: ${{ steps.queue.outputs.parallel }}
       main_sha: ${{ steps.main.outputs.sha }}
     steps:
       - uses: actions/checkout@v4
@@ -63,9 +64,12 @@ jobs:
             String(x.currentStep||'').toUpperCase()==='UNITY_ANDROID_TECHNICAL_VALIDATION' &&
             String(x.canonicalState||'').toUpperCase()==='WAITING_UNITY_VALIDATION'
           ).map(x=>({gameId:x.gameId,gameName:x.gameName,designBaselineSource:x.designBaselineSource,sourcePath:x.sourcePath}));
+          const parallel=Math.max(1,rows.length);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`run=${rows.length?'true':'false'}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify(rows)}\n`);
-          console.log(`UNITY_TECH_PENDING_COUNT=${rows.length}`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`parallel=${parallel}\n`);
+          console.log(`UNITY_TECH_TARGET_N=${rows.length}`);
+          console.log(`UNITY_TECH_ACTIVE_PARENT_WINDOW=${parallel}`);
           console.log(`UNITY_TECH_PENDING_IDS=${rows.map(x=>x.gameId).join(',')}`);
           NODE
 
@@ -75,7 +79,7 @@ jobs:
     if: needs.prepare.outputs.run == 'true'
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: ${{ fromJSON(needs.prepare.outputs.parallel) }}
       matrix:
         item: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     runs-on: ubuntu-latest
@@ -178,7 +182,7 @@ jobs:
           echo "UNITY_TECH_SOURCE_COMMIT=$source_commit"
           echo "UNITY_TECH_REQUEST_COMMIT=$request_commit"
           echo 'PUBLIC_MAIN_SOURCE_WRITE=NO'
-      - name: Dispatch serial Unity cloud Android build
+      - name: Dispatch isolated Unity cloud Android build
         id: build
         env:
           GH_TOKEN: ${{ github.token }}
@@ -228,14 +232,16 @@ jobs:
           set -euo pipefail
           smoke_api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-runtime-smoke.yml"
           qa_api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-independent-qa.yml"
+          smoke_title="Unity Android Runtime Smoke $BUILD_RUN"
+          qa_title="Unity Android Independent QA $BUILD_RUN"
           smoke_base="$(gh api "$smoke_api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq '[.workflow_runs[].id] | max // 0')"
           qa_base="$(gh api "$qa_api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq '[.workflow_runs[].id] | max // 0')"
           jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$smoke_api/dispatches" --input -
           jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$qa_api/dispatches" --input -
           smoke=''; independent=''
           for _ in $(seq 1 48); do
-            [[ -n "$smoke" ]] || smoke="$(gh api "$smoke_api/runs?branch=main&event=workflow_dispatch&per_page=20" | jq -r --argjson b "$smoke_base" '[.workflow_runs[] | select(.id > $b) | .id] | max // empty')"
-            [[ -n "$independent" ]] || independent="$(gh api "$qa_api/runs?branch=main&event=workflow_dispatch&per_page=20" | jq -r --argjson b "$qa_base" '[.workflow_runs[] | select(.id > $b) | .id] | max // empty')"
+            [[ -n "$smoke" ]] || smoke="$(gh api "$smoke_api/runs?branch=main&event=workflow_dispatch&per_page=20" | jq -r --argjson b "$smoke_base" --arg title "$smoke_title" '[.workflow_runs[] | select(.id > $b and .display_title == $title) | .id] | max // empty')"
+            [[ -n "$independent" ]] || independent="$(gh api "$qa_api/runs?branch=main&event=workflow_dispatch&per_page=20" | jq -r --argjson b "$qa_base" --arg title "$qa_title" '[.workflow_runs[] | select(.id > $b and .display_title == $title) | .id] | max // empty')"
             [[ "$smoke" =~ ^[0-9]+$ && "$independent" =~ ^[0-9]+$ ]] && break
             sleep 5
           done
@@ -463,8 +469,10 @@ jobs:
       - name: Unity runtime summary
         if: always()
         run: |
-          echo 'UNITY_BUILD_ROUTE=GITHUB_CLOUD_SERIAL'
-          echo 'UNITY_GAME_PARALLELISM=1'
+          echo 'UNITY_BUILD_ROUTE=GITHUB_CLOUD_DYNAMIC_N'
+          echo 'UNITY_TARGET_MATRIX=DYNAMIC_N'
+          echo 'UNITY_ACTIVE_PARENT_WINDOW=${{ needs.prepare.outputs.parallel }}'
+          echo 'UNITY_CHILD_REQUESTS=DYNAMIC_N'
           echo 'PAID_RUNNER_FOR_UNITY_BUILD=NO'
           echo 'REAL_APK_REQUIRED=YES'
           echo 'ANDROID_RUNTIME_SMOKE_REQUIRED=YES'

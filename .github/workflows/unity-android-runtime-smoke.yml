@@ -1,4 +1,5 @@
 name: Unity Android Runtime Smoke
+run-name: Unity Android Runtime Smoke ${{ inputs.run_id || github.event.workflow_run.id }}
 
 on:
   workflow_run:
@@ -16,7 +17,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: unity-android-runtime-smoke
+  group: unity-android-runtime-smoke-${{ inputs.run_id || github.event.workflow_run.id }}
   cancel-in-progress: false
 
 jobs:

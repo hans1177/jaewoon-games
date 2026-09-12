@@ -1,0 +1,71 @@
+name: Vibe3 Engine Contract
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Vibe3 machine contract
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const c=JSON.parse(fs.readFileSync('company-learning/vibe3-engine-contract.json','utf8'));
+          if(c.version!==3||c.status!=='OWNER_DIRECT_LOCKED') throw new Error('Vibe3 contract version/status mismatch');
+          if(c.relationshipToVibe2!=='INTELLIGENCE_LAYER_UPGRADE_INSIDE_EXISTING_PIPELINE'||c.parallelPipeline!==false) throw new Error('Vibe3 must remain inside canonical pipeline');
+          if(c.execution?.minIndependentCandidates!==3||c.execution?.maxIndependentCandidates!==5||c.execution?.defaultIndependentCandidates!==5||c.execution?.defaultMaxRepairAttempts!==3) throw new Error('Vibe3 Pump tournament/repair contract changed');
+          if(c.pumpMode?.enabled!==true||c.pumpMode?.localWeightsRequired!==false||c.pumpMode?.hourlyRefresh!==true) throw new Error('Vibe3 Pump mode disabled');
+          if(c.pumpMode?.benchmarkCountsAsTrainingSample!==false||c.pumpMode?.githubHostedModelTrainingAllowed!==false||c.pumpMode?.paidTeacherFallbackAllowed!==false) throw new Error('Vibe3 Pump safety contract changed');
+          if(c.pumpMode?.maxFreeTeacherCandidates!==2||c.pumpMode?.teacherCandidateAuthority!=='NON_AUTHORITATIVE') throw new Error('teacher candidate authority changed');
+          if(c.verifiedRag?.positiveMemoryRequiresVerifiedEvidence!==true||c.verifiedRag?.failureMemoryIsWarningOnly!==true) throw new Error('verified RAG boundary changed');
+          if(c.assetTransformation?.originalImmutable!==true||c.assetTransformation?.variantTournamentRequired!==true) throw new Error('Vibe3 asset transformation safety changed');
+          if(c.modelSelection?.route!=='LOCAL_SELF_HOSTED_ONLY'||c.modelSelection?.paidApiAllowed!==false||c.modelSelection?.githubHostedTrainingAllowed!==false) throw new Error('Vibe3 model route policy changed');
+          if(c.promotion?.freshAdapterState!=='TRAINED_UNVERIFIED') throw new Error('Vibe3 promotion gate changed');
+          console.log('PASS Vibe3 Pump machine contract');
+          NODE
+
+      - name: Check Vibe3 syntax
+        run: |
+          node --input-type=module --check < assets/vibe-v3-engine.js
+          node --input-type=module --check < assets/vibe-development-ai.js
+          node --input-type=module --check < assets/vibe-art-pipeline.js
+          node --input-type=module --check < tools/vibe3-trajectory-ingest.mjs
+          node --input-type=module --check < tools/vibe3-model-selection.mjs
+          node --input-type=module --check < tools/vibe3-pump-index.mjs
+
+      - name: Run Vibe3 engine contract tests
+        run: node qa/vibe3-engine.test.mjs
+
+      - name: Run Vibe3 Pump tests
+        run: node qa/vibe3-pump-index.test.mjs
+
+      - name: Run Vibe3 trajectory and model-selection tests
+        run: node qa/vibe3-trajectory-ingest.test.mjs
+
+      - name: Check trainer syntax
+        run: python -m py_compile tools/vibe2-train.py qa/vibe3-trainer-black-box.test.py
+
+      - name: Verify external black-box trainer contract
+        run: python qa/vibe3-trainer-black-box.test.py
+
+      - name: Verify no parallel bypass contract
+        run: |
+          node --input-type=module <<'NODE'
+          import { createVibeV3ExecutionContract, createVibePumpModeContract } from './assets/vibe-v3-engine.js';
+          const c=createVibeV3ExecutionContract(),p=createVibePumpModeContract();
+          if(c.integration.parallelPipeline!==false||p.integration.parallelPipeline!==false) throw new Error('parallel V3 pipeline forbidden');
+          if(c.integration.reuseExistingCheckpoint!==true) throw new Error('existing checkpoint must be reused');
+          if(c.integration.reuseExistingQaAndRegression!==true) throw new Error('existing QA/regression must be reused');
+          if(c.integration.reuseExistingDistillationWorkflow!==true) throw new Error('canonical distillation workflow must be reused');
+          if(c.policy.originalSourceOverwriteBeforeWinnerForbidden!==true) throw new Error('candidate source overwrite before winner is forbidden');
+          if(p.experiencePump.benchmarkCountsAsTrainingSample!==false) throw new Error('benchmark cannot auto-enter training');
+          console.log('PASS Vibe3 Pump canonical integration contract');
+          NODE

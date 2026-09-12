@@ -51,6 +51,13 @@ test('creates one distinct cloud-build-ready Unity technical prototype per promo
     assert.match(buildScript,/Path\.GetFullPath\(Path\.Combine\(projectRoot, "\.\.", "\.\.", "build", "Android"\)\)/);
     assert.match(buildScript,/targetArchitectures = AndroidArchitecture\.ARM64;/);
     assert.doesNotMatch(buildScript,/AndroidArchitecture\.X86_64/);
+    assert.match(buildScript,/PrototypeRootName/);
+    assert.match(buildScript,/GetComponent<SeedTechnicalPrototype>\(\)/);
+    assert.match(buildScript,/AddComponent<SeedTechnicalPrototype>\(\)/);
+    assert.match(buildScript,/EditorSceneManager\.SaveScene\(scene, ScenePath\)/);
+    assert.match(runtimeScript,/JAEWOON_TECH_BOOT/);
+    assert.match(runtimeScript,/JAEWOON_TECH_ACTION/);
+    assert.match(runtimeScript,/JAEWOON_TECH_SAVE/);
     assert.match(runtimeScript,/JAEWOON_TECH_METRIC/);
     assert.match(runtimeScript,/PlayerPrefs/);
     assert.equal(projectVersion.trim(),`m_EditorVersion: ${expectedUnityEditorVersion}\nm_EditorVersionWithRevision: ${expectedUnityEditorVersion} (${expectedUnityEditorRevision})`);
@@ -68,11 +75,21 @@ test('refuses Unity prototype generation without real Web gameplay PASS',()=>{
   assert.match(run.stderr,/REAL_WEB_GAMEPLAY_PASS_REQUIRED/);
 });
 
-test('DEVELOPMENT Unity runtime is serial cloud-only and keeps homepage test publication enabled',()=>{
-  assert.match(workflowSource,/max-parallel:\s*1/);
+test('DEVELOPMENT Unity runtime keeps a full dynamic N parent and child validation window',()=>{
+  assert.match(workflowSource,/const parallel=Math\.max\(1,rows\.length\);/);
+  assert.doesNotMatch(workflowSource,/Math\.min\(2,Math\.max\(1,rows\.length\)\)/);
+  assert.match(workflowSource,/UNITY_TECH_TARGET_N=\$\{rows\.length\}/);
+  assert.match(workflowSource,/UNITY_TECH_ACTIVE_PARENT_WINDOW=\$\{parallel\}/);
+  assert.match(workflowSource,/parallel=\$\{parallel\}/);
+  assert.match(workflowSource,/max-parallel:\s*\$\{\{\s*fromJSON\(needs\.prepare\.outputs\.parallel\)\s*\}\}/);
+  assert.match(workflowSource,/matrix:\s*\n\s*item:\s*\$\{\{\s*fromJSON\(needs\.prepare\.outputs\.matrix\)\s*\}\}/);
+  assert.doesNotMatch(workflowSource,/max-parallel:\s*1(?:\s|$)/);
   assert.match(workflowSource,/unity-cloud-android-test\.yml/);
   assert.doesNotMatch(workflowSource,/unity-local-pc-android\.yml/);
   assert.match(workflowSource,/CLOUD_UNITY_BUILD_RUN_ID/);
+  assert.match(workflowSource,/UNITY_TARGET_MATRIX=DYNAMIC_N/);
+  assert.match(workflowSource,/UNITY_ACTIVE_PARENT_WINDOW=\$\{\{ needs\.prepare\.outputs\.parallel \}\}/);
+  assert.match(workflowSource,/UNITY_CHILD_REQUESTS=DYNAMIC_N/);
   assert.match(workflowSource,/homepagePublicationApproved=true/);
   assert.match(workflowSource,/publishTestBuildWhenReady=true/);
   assert.match(workflowSource,/HOMEPAGE_TEST_APK_PUBLISH=YES/);

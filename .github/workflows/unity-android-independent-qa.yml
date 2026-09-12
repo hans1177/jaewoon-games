@@ -1,4 +1,5 @@
 name: Unity Android Independent QA
+run-name: Unity Android Independent QA ${{ inputs.run_id || github.event.workflow_run.id }}
 
 on:
   workflow_run:
@@ -16,7 +17,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: unity-android-independent-qa
+  group: unity-android-independent-qa-${{ inputs.run_id || github.event.workflow_run.id }}
   cancel-in-progress: false
 
 jobs:

@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: vibe2-learning-runtime
           fetch-depth: 1
 
       - uses: actions/setup-node@v4
@@ -73,10 +73,10 @@ jobs:
         shell: powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
 
     steps:
-      - name: Checkout ready request
+      - name: Checkout ready persisted request
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: vibe2-learning-runtime
           fetch-depth: 1
 
       - name: Resolve request and local output root
@@ -99,20 +99,39 @@ jobs:
           "REQUEST_ID=$($request.requestId)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "[PASS] request=$($request.requestId) tasks=$(@($request.requests).Count)"
 
-      - name: Preflight Python and CUDA training stack
+      - name: Preflight Python CUDA and Vibe3 model capability
         id: preflight
         run: |
           $ErrorActionPreference = 'Stop'
           $python = Get-Command python -ErrorAction SilentlyContinue
           if (-not $python) { throw 'Python is not installed on the local training runner.' }
           python -c "import sys; print(sys.version)"
-          python -c "import torch, transformers, peft; print('torch=' + torch.__version__); print('transformers=' + transformers.__version__); print('peft=' + peft.__version__); assert torch.cuda.is_available(), 'CUDA GPU is required for local Vibe2 training'; print('cuda=' + torch.cuda.get_device_name(0))"
+          python -c "import torch, transformers, peft; print('torch=' + torch.__version__); print('transformers=' + transformers.__version__); print('peft=' + peft.__version__); assert torch.cuda.is_available(), 'CUDA GPU is required for local Vibe2/Vibe3 training'; print('cuda=' + torch.cuda.get_device_name(0))"
 
           $method = 'lora'
           python -c "import bitsandbytes" 2>$null
           if ($LASTEXITCODE -eq 0) { $method = 'qlora' }
           "TRAINING_METHOD=$method" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Write-Host "[PASS] local CUDA training stack ready; method=$method"
+
+          $vramGiB = [int](python -c "import torch; print(int(torch.cuda.get_device_properties(0).total_memory // (1024**3)))")
+          $driveName = [System.IO.Path]::GetPathRoot($env:USERPROFILE).Substring(0,1)
+          $drive = Get-PSDrive -Name $driveName
+          $diskGiB = [int]($drive.Free / 1GB)
+          "CUDA_VRAM_GIB=$vramGiB" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "TRAINING_DISK_GIB=$diskGiB" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+          $policyRoot = Join-Path $env:USERPROFILE '.jaewoon'
+          $enableMarker = Join-Path $policyRoot 'vibe3-coder-upgrade.enabled'
+          $compatMarker = Join-Path $policyRoot 'vibe3-coder-30b.compatible'
+          $hfCache = if ($env:HF_HOME) { $env:HF_HOME } else { Join-Path $env:USERPROFILE '.cache\huggingface' }
+          $coderCache = Join-Path $hfCache 'hub\models--Qwen--Qwen3-Coder-30B-A3B-Instruct'
+          $enabled = (Test-Path $enableMarker) -or ($env:VIBE3_ENABLE_CODER_UPGRADE -eq '1')
+          $compatible = Test-Path $compatMarker
+          $cached = Test-Path $coderCache
+          "VIBE3_CODER_ENABLE=$($enabled.ToString().ToLower())" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE3_CODER_COMPATIBLE=$($compatible.ToString().ToLower())" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE3_CODER_CACHED=$($cached.ToString().ToLower())" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "[PASS] local CUDA training stack ready; method=$method vramGiB=$vramGiB diskGiB=$diskGiB coderEnabled=$enabled coderCompatible=$compatible coderCached=$cached"
 
       - name: Build task datasets and train adapters locally
         run: |
@@ -162,6 +181,21 @@ jobs:
               Write-Host 'UNITY_SYNTHETIC_TRAINING=NO'
             }
 
+            $selectionJson = node tools/vibe3-model-selection.mjs `
+              --task-type $taskType `
+              --method $env:TRAINING_METHOD `
+              --cuda true `
+              --vram-gib $env:CUDA_VRAM_GIB `
+              --disk-gib $env:TRAINING_DISK_GIB `
+              --enable $env:VIBE3_CODER_ENABLE `
+              --compatible $env:VIBE3_CODER_COMPATIBLE `
+              --cached $env:VIBE3_CODER_CACHED
+            if ($LASTEXITCODE -ne 0) { throw "Vibe3 model selection failed for $taskType" }
+            $selection = $selectionJson | ConvertFrom-Json
+            $baseModel = [string]$selection.model
+            Write-Host "VIBE3_MODEL_TIER=$($selection.tier) TASK=$taskType MODEL=$baseModel"
+            if ($selection.upgraded -eq $true) { Write-Host 'VIBE3_CODER_UPGRADE=YES' } else { Write-Host "VIBE3_CODER_UPGRADE=NO reasons=$($selection.reasons -join ',')" }
+
             $adapterDir = Join-Path $env:LOCAL_TRAINING_ROOT ("adapters\$taskType\$adapterVersion")
             if (Test-Path $adapterDir) { Remove-Item $adapterDir -Recurse -Force }
             New-Item -ItemType Directory -Path $adapterDir -Force | Out-Null
@@ -173,7 +207,8 @@ jobs:
               --output $adapterDir `
               --adapter-version $adapterVersion `
               --task-type $taskType `
-              --method $env:TRAINING_METHOD
+              --method $env:TRAINING_METHOD `
+              --base-model $baseModel
             if ($LASTEXITCODE -ne 0) { throw "adapter training failed for $taskType" }
 
             $metadataPath = Join-Path $adapterDir 'training-metadata.json'
@@ -189,6 +224,8 @@ jobs:
               taskType = $taskType
               adapterVersion = $adapterVersion
               method = $env:TRAINING_METHOD
+              baseModel = $baseModel
+              modelTier = [string]$selection.tier
               localAdapterPath = $adapterDir
               datasetManifest = $manifestPath
               promotionState = 'UNVERIFIED'
@@ -198,7 +235,7 @@ jobs:
           }
 
           $runtime = [ordered]@{
-            version = 1
+            version = 2
             requestId = $env:REQUEST_ID
             state = 'TRAINED_UNVERIFIED'
             trainedAt = (Get-Date).ToUniversalTime().ToString('o')
@@ -206,6 +243,7 @@ jobs:
             items = $runtimeItems
             hostedTraining = $false
             paidApi = $false
+            vibe3CapabilityGatedModelSelection = $true
             nextGate = 'FIXED_HOLDOUT_AB_AND_CANARY'
           }
           $runtimePath = Join-Path $env:LOCAL_TRAINING_ROOT 'latest-training-runtime.json'
@@ -218,5 +256,6 @@ jobs:
           Write-Host "REQUEST_ID=$env:REQUEST_ID"
           Write-Host "GITHUB_HOSTED_MODEL_TRAINING=NO"
           Write-Host "PAID_API=NO"
+          Write-Host "VIBE3_CAPABILITY_GATED_MODEL_SELECTION=YES"
           Write-Host "AUTO_PROMOTION=NO"
           Write-Host "NEXT_GATE=FIXED_HOLDOUT_AB_AND_CANARY"
