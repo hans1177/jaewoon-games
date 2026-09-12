@@ -35,6 +35,30 @@ Files:
 
 A benchmark case is **not** a training sample. It can enter the canonical learning chain only after execution through the existing Vibe development path and independently verified runtime/QA/regression/exact-revision evidence.
 
+## Automatic external web-game distillation
+
+The existing hourly canonical ingest may automatically collect code changes from an explicit allowlist of permissively licensed public web games. This is an input source to the same canonical distillation chain, not a new learning pipeline or second cron.
+
+Implementation files:
+- `company-learning/external-web-sources.json` — explicit source allowlist, license metadata and browser interaction probes;
+- `tools/vibe3-external-web-distill.mjs` — license/revision/code-diff/browser-runtime verifier and sample builder;
+- `qa/vibe3-external-web-distill.test.mjs` — policy/manifest contract test.
+
+Admission rules:
+- only explicitly allowlisted sources with an approved permissive license are examined;
+- the declared license file and license text must match before a source or commit can be accepted;
+- every training sample is bound to the exact upstream source commit and retains repository/license provenance;
+- upstream Node, npm, package, shell or project scripts are never executed by the collector;
+- the web game is served as static content and exercised in a headless browser with service workers blocked and all non-local browser network requests aborted;
+- an actual browser runtime PASS plus a meaningful input/state-change probe is required;
+- only code diffs enter the training output; raw assets, binaries and arbitrary downloaded files do not become model-training targets;
+- a failed source, syntax check, browser runtime or interaction probe cannot create a positive sample;
+- accepted external web samples enter the existing `company-learning/training-samples` root and pass the unchanged status/diversity/readiness gates;
+- external web evidence remains portable context only across platforms and cannot certify Roblox, Unity or Fortnite/UEFN runtime/publishing PASS;
+- readiness thresholds are not lowered to accelerate training.
+
+The initial allowlist contains independently licensed projects rather than multiple commits from one project only, so project-diversity accounting can improve without fabricating diversity. Adding a new source requires updating the allowlist with its repository, fixed ref, license file, code paths and a deterministic browser interaction probe.
+
 ## Verified RAG, web portability and failure memory
 
 Positive retrieval memory accepts only active, revision-bound evidence that passes the task-specific canonical QA rules. Unity requires independent QA PASS + Android runtime PASS + browser N/A. Roblox requires independent QA PASS + Roblox runtime PASS + browser N/A. Fortnite/UEFN requires its own platform runtime and independent QA evidence. External commercial black-box QA requires the dedicated `BLACK_BOX_EVIDENCE_PASS` marker, browser N/A and runtime PASS. Ordinary non-platform-specific samples keep browser QA PASS where applicable.
@@ -109,7 +133,7 @@ No Roblox-specific distillation cron, shadow dataset, duplicate trigger or train
 
 ## Unity implementation preservation
 
-Unity remains a full supported platform. Existing Unity/Android project, C#, build, runtime, mobile performance, QA, save compatibility and release knowledge must not be deleted or downgraded merely because Roblox is the primary default focus. Unity-specific verified experience remains scoped to the Unity playbook while portable verified patterns may feed shared V3 memory.
+Unity remains a full supported platform. Existing Unity/Android project, C#, build, runtime, QA, save compatibility and release knowledge must not be deleted or downgraded merely because Roblox is the primary default focus. Unity-specific verified experience remains scoped to the Unity playbook while portable verified patterns may feed shared V3 memory.
 
 ## Fortnite / UEFN implementation extension
 
@@ -137,6 +161,9 @@ When canonical readiness becomes true, verified trajectories/samples continue th
 - no threshold lowering, duplicated or fabricated samples;
 - no benchmark counted as training before verification;
 - no failed candidate promoted as a positive target;
+- no unlicensed or unverified external web source promoted as a positive target;
+- no execution of upstream external project Node/npm/shell scripts during external-web collection;
+- no raw external assets or binaries used as code-training targets;
 - no cross-platform PASS evidence transfer;
 - no platform development lock inferred from default focus order;
 - no unverified external asset derivative or original asset destruction;
