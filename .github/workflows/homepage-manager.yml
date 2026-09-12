@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
     paths:
+      - 'COMPANY_FLOW.md'
+      - 'company-directive.json'
+      - 'HOMEPAGE_OPERATIONS.md'
+      - 'REMOTE_AUTOMATION.md'
+      - '.github/agents/homepage.agent.md'
+      - '.github/agents/director.agent.md'
       - 'index.html'
       - 'company.html'
       - 'game-catalog.json'
@@ -11,6 +17,35 @@ on:
       - 'public-release-baselines.json'
       - 'game-artbooks.json'
       - 'assets/**'
+      - 'manifest.webmanifest'
+      - 'install.html'
+      - 'sw.js'
+      - 'offline.html'
+      - 'command.html'
+      - '_headers'
+      - 'tools/homepage-manager.mjs'
+      - '.github/workflows/homepage-manager.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'COMPANY_FLOW.md'
+      - 'company-directive.json'
+      - 'HOMEPAGE_OPERATIONS.md'
+      - 'REMOTE_AUTOMATION.md'
+      - '.github/agents/homepage.agent.md'
+      - '.github/agents/director.agent.md'
+      - 'index.html'
+      - 'company.html'
+      - 'game-catalog.json'
+      - 'company-status.json'
+      - 'public-release-baselines.json'
+      - 'game-artbooks.json'
+      - 'assets/**'
+      - 'manifest.webmanifest'
+      - 'install.html'
+      - 'sw.js'
+      - 'offline.html'
+      - 'command.html'
       - '_headers'
       - 'tools/homepage-manager.mjs'
       - '.github/workflows/homepage-manager.yml'
@@ -20,38 +55,84 @@ permissions:
   contents: read
 
 concurrency:
-  group: homepage-manager-live
+  group: homepage-manager-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  diagnose:
+  manage-and-self-qa:
+    name: Homepage Manager Self-QA
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout main
+      - name: Checkout tested revision
         uses: actions/checkout@v4
         with:
-          ref: main
           fetch-depth: 1
 
-      - name: Run homepage diagnostics
+      - name: Run homepage manager contract
         run: node tools/homepage-manager.mjs
 
       - name: Validate homepage live files
         run: |
           set -euo pipefail
-          test -f index.html
-          test -f game-catalog.json
-          test -f company-status.json
-          test -f public-release-baselines.json
-          test -f game-artbooks.json
-          test -f assets/homepage-enhancements.js
-          test -f _headers
-          node -e "for (const file of ['game-catalog.json','company-status.json','public-release-baselines.json','game-artbooks.json']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
+          for file in \
+            index.html company.html game-catalog.json company-status.json \
+            public-release-baselines.json game-artbooks.json \
+            assets/homepage-enhancements.js manifest.webmanifest install.html sw.js offline.html command.html \
+            COMPANY_FLOW.md company-directive.json HOMEPAGE_OPERATIONS.md REMOTE_AUTOMATION.md _headers; do
+            test -f "$file"
+          done
+          node -e "for (const file of ['game-catalog.json','company-status.json','public-release-baselines.json','game-artbooks.json','company-directive.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
           node --check assets/homepage-enhancements.js
+          node --check tools/homepage-manager.mjs
           grep -Fq '/assets/homepage-enhancements.js' index.html
           grep -Fq 'const SYNC_INTERVAL_MS=5000;' assets/homepage-enhancements.js
           grep -Fq "const RAW_MAIN_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/main';" assets/homepage-enhancements.js
+          grep -Fq 'homepageOperations:' COMPANY_FLOW.md
+          grep -Fq 'SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR' COMPANY_FLOW.md
+          grep -Fq 'PWA_COMMAND_CHAT_WINDOW' COMPANY_FLOW.md
+          grep -Fq '홈페이지 단일 사후 감독' .github/agents/director.agent.md
           grep -Fxq '/*.json' _headers
           grep -Fxq '/assets/*' _headers
           echo 'HOMEPAGE_LIVE_SYNC=PASS'
+          echo 'HOMEPAGE_MANAGER_SELF_QA=PASS'
+
+  director-supervision:
+    name: Director Single Post-Work Supervision
+    needs: manage-and-self-qa
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout tested revision
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Verify single manager and supervisor policy
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+          const h=d.homepageOperations;
+          if(!h) throw new Error('homepageOperations missing');
+          if(h.manager!=='HOMEPAGE'||h.supervisor!=='DIRECTOR') throw new Error('homepage roles mismatch');
+          if(h.managerCount!==1||h.supervisorCount!==1) throw new Error('homepage role count mismatch');
+          if(h.secondHomepageManagerForbidden!==true||h.secondHomepageSupervisorForbidden!==true) throw new Error('duplicate manager/supervisor not forbidden');
+          if(h.fixedFunctionProtection?.ownerLocked!==true) throw new Error('fixed-function owner lock missing');
+          NODE
+
+      - name: Recheck owner-fixed PWA and chat contract
+        run: |
+          set -euo pipefail
+          node tools/homepage-manager.mjs
+          grep -Fq '"id": "/command.html"' manifest.webmanifest
+          grep -Fq '"start_url": "/command.html"' manifest.webmanifest
+          grep -Fq "navigator.serviceWorker.register('/sw.js'" install.html
+          grep -Fq "navigator.serviceWorker.register('/sw.js')" command.html
+          grep -Fq "'/offline.html'" sw.js
+          grep -Fq 'id="attachBtn"' command.html
+          grep -Fq 'id="sendBtn"' command.html
+          grep -Fq 'id="claimBtn"' command.html
+          echo 'DIRECTOR_HOMEPAGE_SUPERVISION=PASS'
+          echo 'OWNER_FIXED_PWA_CHAT_REGRESSION=PASS'
