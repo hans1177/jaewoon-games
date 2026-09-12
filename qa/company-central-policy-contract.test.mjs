@@ -14,6 +14,7 @@ const directive=readJson('company-directive.json');
 const multimodelWorkflow=readText('.github/workflows/artbook-free-department-bots.yml');
 const designCycle=readText('tools/company-design-cycle.mjs');
 const pipeline=readText('tools/artbook-production-pipeline.mjs');
+const nativeDatasetGate=readText('tools/vibe2-real-platform-dataset-gate.mjs');
 
 test('COMPANY_FLOW remains the single machine-oriented production policy source',()=>{
   assert.equal(directive.policyDocument,'COMPANY_FLOW.md');
@@ -65,7 +66,7 @@ test('DESIGN_ONLY is seed-backed design review revision baseline then artbook wi
     'CROSS_DEPARTMENT_LEAD_MEETING','ONE_LEAD_REBUTTAL_ROUND','GAME_DESIGNER_REVISION',
     'DESIGN_BASELINE_GATE','ARTBOOK_EDITOR_CORE_STRATEGY'
   ]);
-  for(const token of ['TARGET_PLATFORM_UX_DIRECTION_DEFINED','PLATFORM_SELECTION_RECORDED','FIVE_DEPARTMENT_SCORES_RECORDED'])assert.ok(design.baselineReadyRequires.includes(token));
+  for(const token of ['TARGET_PLATFORM_UX_DIRECTION_DEFINED','PLATFORM_SELECTION_RECORDED','MANDATORY_WEB_COMPANION_REQUIREMENT_RECORDED','APPROVED_SCOPE_INVENTORY_RECORDED','FIVE_DEPARTMENT_SCORES_RECORDED'])assert.ok(design.baselineReadyRequires.includes(token));
   assert.equal(design.readyState,'DESIGN_BASELINE_READY');
   assert.equal(design.sourceCodeAutoDevelopment,false);
   assert.equal(directive.ai.vibe2.startsAtClass,'DEVELOPMENT_CONFIRMED');
@@ -119,21 +120,28 @@ test('five departments keep distinct lead models and one Game Designer',()=>{
   assert.doesNotMatch(multimodelWorkflow,/productionClassFromLegacyTier|NUMERIC_TIER_POLICY/);
 });
 
-test('development requires Web gameplay and music before selected target platform validation',()=>{
+test('every game requires a full approved-scope Web companion before selected target platform validation',()=>{
   const development=directive.classes.DEVELOPMENT_CONFIRMED;
   const release=directive.classes.RELEASE_CONFIRMED;
+  assert.equal(directive.production.webCompanion.requiredForEveryGame,true);
+  assert.equal(directive.production.webCompanion.appliesToAllTargetPlatforms,true);
+  assert.equal(directive.production.webCompanion.silentFeatureOmissionForbidden,true);
+  assert.equal(directive.production.approvedScopeCompletion.approvedDesignBaselineMustBeFullyImplemented,true);
+  assert.equal(directive.production.approvedScopeCompletion.prototypeCannotSatisfyCompletionOrReleaseCandidateGate,true);
   assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED,'VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT');
   assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_DEVELOPMENT_ENGINE');
   assert.equal(development.executionMode,'GATED_DIRECT');
-  assert.equal(development.webPurpose,'REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION');
+  assert.equal(development.webPurpose,'MANDATORY_FULL_APPROVED_SCOPE_WEB_COMPANION_AND_MUSIC_VALIDATION');
   assert.equal(development.targetPlatformPurpose,'TECHNICAL_AND_GAMEPLAY_VALIDATION');
   assert.equal(development.webBeforeTargetPlatformByDefault,true);
   assert.equal(development.targetPlatformMayRunImmediately,false);
   assert.equal(development.webGameplayValidationRequired,true);
+  assert.equal(development.webCompanionValidationRequired,true);
+  assert.equal(development.approvedScopeCompletionRequired,true);
   assert.equal(development.musicValidationRequired,true);
   assert.equal(development.webCandidateMustPassBeforeTargetPlatformDispatch,true);
-  for(const token of ['WEB_PLAYABLE_QUEUE','WEB_PLAYABLE_BOOTSTRAP','MUSIC_RUNTIME_BIND','WEB_GAMEPLAY_AND_MUSIC_VALIDATION','TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_GAMEPLAY_VALIDATION','TARGET_PLATFORM_TECHNICAL_VALIDATION'])assert.ok(development.requiredFlow.includes(token),token);
-  for(const token of ['REAL_WEB_GAMEPLAY_PASS','MUSIC_RUNTIME_PASS','REAL_TARGET_PLATFORM_GAMEPLAY_PASS','REAL_TARGET_PLATFORM_TECHNICAL_PASS'])assert.ok(development.baselineReadyRequires.includes(token),token);
+  for(const token of ['FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP','MUSIC_RUNTIME_BIND','WEB_GAMEPLAY_MUSIC_AND_APPROVED_SCOPE_VALIDATION','TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_GAMEPLAY_VALIDATION','TARGET_PLATFORM_TECHNICAL_VALIDATION'])assert.ok(development.requiredFlow.includes(token),token);
+  for(const token of ['REAL_WEB_GAMEPLAY_PASS','APPROVED_SCOPE_FULLY_IMPLEMENTED','MUSIC_RUNTIME_PASS','REAL_TARGET_PLATFORM_GAMEPLAY_PASS','REAL_TARGET_PLATFORM_TECHNICAL_PASS'])assert.ok(development.baselineReadyRequires.includes(token),token);
   assert.equal(development.developmentMusic.firstUserGestureUnlockRequired,true);
   assert.equal(development.developmentMusic.muteControlRequired,true);
   assert.equal(development.developmentMusic.volumeControlRequired,true);
@@ -141,16 +149,36 @@ test('development requires Web gameplay and music before selected target platfor
   assert.equal(release.executionMode,'GATED_DIRECT_RELEASE_PRODUCTION');
   assert.equal(release.target,'PROJECT_SELECTED_PLATFORM');
   assert.equal(release.targetPlatformProjectRequired,true);
+  assert.equal(release.webCompanionRequired,true);
+  assert.equal(release.approvedScopeCompletionRequired,true);
   assert.equal(release.vibe2PrimaryDeveloper,true);
   assert.equal(release.coreDesignLock,true);
+  assert.ok(release.requiredFlow.includes('BIND_CURRENT_WEB_COMPANION_SOURCE_TREE'));
+  assert.ok(release.requiredFlow.includes('WEB_COMPANION_RUNTIME_VALIDATION'));
   assert.ok(release.requiredFlow.includes('BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE'));
   assert.ok(release.requiredFlow.includes('TARGET_PLATFORM_BUILD_OR_PACKAGE'));
   assert.ok(release.requiredFlow.includes('TARGET_PLATFORM_RUNTIME_VALIDATION'));
-  assert.match(flow,/webPurpose: REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION/);
-  assert.match(flow,/webGameplayValidationRequired: true/);
-  assert.match(flow,/musicValidationRequired: true/);
+  assert.match(flow,/webCompanion:[\s\S]*requiredForEveryGame: true/);
+  assert.match(flow,/approvedScopeCompletion:[\s\S]*approvedDesignBaselineMustBeFullyImplemented: true/);
+  assert.match(flow,/webPurpose: MANDATORY_FULL_APPROVED_SCOPE_WEB_COMPANION_AND_MUSIC_VALIDATION/);
+  assert.match(flow,/approvedScopeCompletionRequired: true/);
+  assert.match(flow,/APPROVED_SCOPE_FULLY_IMPLEMENTED/);
   assert.match(flow,/musicFailureBlocksTargetPlatformDispatch: true/);
   assert.match(flow,/target: PROJECT_SELECTED_PLATFORM/);
+});
+
+test('Web learning evidence is auxiliary and cannot replace native platform evidence',()=>{
+  assert.equal(directive.learning.webGameEvidence.role,'AUXILIARY_PORTABLE_LEARNING_EVIDENCE');
+  assert.equal(directive.learning.webGameEvidence.cannotClaimNativePlatformSuccess,true);
+  assert.equal(directive.learning.webGameEvidence.cannotSatisfyNativePlatformRuntimeGate,true);
+  assert.equal(directive.learning.webGameEvidence.cannotEnterRobloxUnityUefnVerifiedLaneWithoutMatchingNativeEvidence,true);
+  assert.equal(directive.learning.webGameEvidence.useExistingCanonicalDistillationOnly,true);
+  assert.equal(directive.learning.webGameEvidence.newTrainerOrCronForbidden,true);
+  assert.match(flow,/role: AUXILIARY_PORTABLE_LEARNING_EVIDENCE/);
+  assert.match(flow,/cannotSatisfyNativePlatformRuntimeGate: true/);
+  assert.match(nativeDatasetGate,/browser QA must be NOT_APPLICABLE/);
+  assert.match(nativeDatasetGate,/runtime PASS required/);
+  assert.match(nativeDatasetGate,/real verified/);
 });
 
 test('platform priority is default focus only and creates no development entry gate',()=>{
