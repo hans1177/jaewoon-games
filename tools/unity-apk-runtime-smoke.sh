@@ -60,22 +60,28 @@ boot_observed=false
 action_observed=false
 save_observed=false
 metric_observed=false
+runtime_ready_timeout=false
+gameplay_input_delivered=false
 
 # DEVELOPMENT_CONFIRMED generated seed APKs must prove that the actual game runtime code booted.
-# Waiting for this signal also prevents input from being delivered while Unity is still starting.
+# Never deliver gameplay taps while Unity is still in startup or a platform-level compatibility dialog.
 if [[ "$seed_technical" == "true" ]]; then
   for _ in $(seq 1 20); do
-    if adb logcat -d 2>/dev/null | grep -q 'JAEWOON_TECH_BOOT'; then
+    snapshot="$(adb logcat -d 2>/dev/null || true)"
+    if grep -q 'JAEWOON_TECH_BOOT' <<<"$snapshot"; then
       boot_observed=true
       break
     fi
     sleep 2
   done
+  if [[ "$boot_observed" != "true" ]]; then
+    runtime_ready_timeout=true
+  fi
 else
   sleep 5
 fi
 
-# Deliver input to the actual portrait gameplay buttons using device-relative coordinates.
+# Deliver input only after the generated seed runtime proves it reached game code.
 size="$(adb shell wm size 2>/dev/null | tr -d '\r' | tail -n 1 || true)"
 if [[ "$size" =~ ([0-9]+)x([0-9]+) ]]; then
   screen_w="${BASH_REMATCH[1]}"
@@ -88,15 +94,18 @@ center_x=$((screen_w / 2))
 primary_y=$((screen_h * 68 / 100))
 secondary_y=$((screen_h * 84 / 100))
 
-adb shell input tap "$center_x" "$primary_y" || true
-sleep 1
-adb shell input tap "$center_x" "$secondary_y" || true
-adb shell input swipe "$center_x" $((screen_h * 78 / 100)) "$center_x" $((screen_h * 38 / 100)) 350 || true
-adb shell input tap "$center_x" "$primary_y" || true
-sleep 1
-adb shell input tap "$center_x" "$secondary_y" || true
+if [[ "$boot_observed" == "true" || "$seed_technical" != "true" ]]; then
+  gameplay_input_delivered=true
+  adb shell input tap "$center_x" "$primary_y" || true
+  sleep 1
+  adb shell input tap "$center_x" "$secondary_y" || true
+  adb shell input swipe "$center_x" $((screen_h * 78 / 100)) "$center_x" $((screen_h * 38 / 100)) 350 || true
+  adb shell input tap "$center_x" "$primary_y" || true
+  sleep 1
+  adb shell input tap "$center_x" "$secondary_y" || true
+fi
 
-if [[ "$seed_technical" == "true" ]]; then
+if [[ "$seed_technical" == "true" && "$gameplay_input_delivered" == "true" ]]; then
   for _ in $(seq 1 15); do
     snapshot="$(adb logcat -d 2>/dev/null || true)"
     grep -q 'JAEWOON_TECH_BOOT' <<<"$snapshot" && boot_observed=true || true
@@ -109,7 +118,7 @@ if [[ "$seed_technical" == "true" ]]; then
     sleep 2
   done
 else
-  sleep 3
+  [[ "$seed_technical" == "true" ]] || sleep 3
 fi
 
 # Process/runtime evidence is captured even when one of the later gates fails.
@@ -145,16 +154,17 @@ if [[ "$runtime_pass" == "true" && "$seed_signals_pass" == "true" ]]; then
   fi
 fi
 
-python3 - "$out_dir/evidence.json" "$apk" "$package" "$pid" "$runtime_pass" "$fatal" "$update_pass" "$launch_status" "$seed_technical" "$boot_observed" "$action_observed" "$save_observed" "$metric_observed" <<'PY'
+python3 - "$out_dir/evidence.json" "$apk" "$package" "$pid" "$runtime_pass" "$fatal" "$update_pass" "$launch_status" "$seed_technical" "$boot_observed" "$action_observed" "$save_observed" "$metric_observed" "$runtime_ready_timeout" "$gameplay_input_delivered" <<'PY'
 import json,sys,datetime,pathlib
 (out,apk,package,pid,runtime_pass,fatal,update_pass,launch_status,
- seed_technical,boot_observed,action_observed,save_observed,metric_observed)=sys.argv[1:]
+ seed_technical,boot_observed,action_observed,save_observed,metric_observed,
+ runtime_ready_timeout,gameplay_input_delivered)=sys.argv[1:]
 flag=lambda value:value.lower()=='true'
 seed_ok=(not flag(seed_technical)) or all(map(flag,[boot_observed,action_observed,save_observed,metric_observed]))
 data={
   'version':4,
   'target':'unity-android',
-  'testMethod':'Android emulator black-box APK smoke: fresh install + runtime-ready wait + gameplay input + update',
+  'testMethod':'Android emulator black-box APK smoke: fresh install + runtime-ready gate + gameplay input + update',
   'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),
   'apk':apk,
   'package':package,
@@ -165,6 +175,8 @@ data={
   'qaPassEligibleRuntimeEvidence':flag(runtime_pass) and flag(update_pass) and seed_ok,
   'processAliveAfterInput':bool(pid.strip()),
   'fatalRuntimeErrorDetected':fatal=='1',
+  'runtimeReadyTimeout':flag(runtime_ready_timeout),
+  'gameplayInputDelivered':flag(gameplay_input_delivered),
   'developmentSeedRuntime':{
     'required':flag(seed_technical),
     'bootObserved':flag(boot_observed),
@@ -176,9 +188,10 @@ data={
   'playTestEvidence':[
     f'fresh APK install passed package={package}',
     f'launcher command passed={launch_status=="0"}',
+    f'runtime-ready timeout={flag(runtime_ready_timeout)}',
+    f'gameplay input delivered={flag(gameplay_input_delivered)}',
     f'development seed runtime signals pass={seed_ok}',
-    'Android device-relative gameplay input sequence delivered',
-    f'process alive after input={bool(pid.strip())}',
+    f'process alive after runtime gate/input={bool(pid.strip())}',
     f'fatal runtime error detected={fatal=="1"}',
     f'same-signed APK update install passed={flag(update_pass)}',
     'activity/package/logcat/screenshot evidence captured even on runtime failure'
@@ -192,9 +205,14 @@ PY
 
 cat "$out_dir/evidence.json"
 [[ "$launch_status" -eq 0 ]] || { cat "$out_dir/launch.log" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_LAUNCH_COMMAND_FAILED] launcher command failed for $package status=$launch_status" >&2; exit 10; }
-[[ -n "$pid" ]] || { tail -n 250 "$out_dir/logcat.txt" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_PROCESS_EXITED] $package is not alive after launch/input" >&2; exit 11; }
+[[ -n "$pid" ]] || { tail -n 250 "$out_dir/logcat.txt" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_PROCESS_EXITED] $package is not alive after launch/runtime gate" >&2; exit 11; }
 [[ "$fatal" -eq 0 ]] || { tail -n 250 "$out_dir/logcat.txt" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_FATAL_RUNTIME_ERROR] fatal runtime error detected for $package" >&2; exit 12; }
 [[ "$runtime_pass" == "true" ]] || { echo "[JAEWOON_BUILD_ERROR:APK_RUNTIME_SMOKE_FAILED] Unity APK runtime smoke failed for $package" >&2; exit 13; }
+if [[ "$seed_technical" == "true" && "$runtime_ready_timeout" == "true" ]]; then
+  grep -E 'JAEWOON_TECH_(BOOT|ACTION|SAVE|METRIC)' "$out_dir/logcat.txt" >&2 || true
+  echo "[JAEWOON_BUILD_ERROR:DEVELOPMENT_SEED_BOOT_TIMEOUT] no JAEWOON_TECH_BOOT observed; gameplay input withheld package=$package" >&2
+  exit 16
+fi
 if [[ "$seed_technical" == "true" && "$seed_signals_pass" != "true" ]]; then
   grep -E 'JAEWOON_TECH_(BOOT|ACTION|SAVE|METRIC)' "$out_dir/logcat.txt" >&2 || true
   echo "[JAEWOON_BUILD_ERROR:DEVELOPMENT_SEED_RUNTIME_SIGNALS_MISSING] boot=$boot_observed action=$action_observed save=$save_observed metric=$metric_observed package=$package" >&2

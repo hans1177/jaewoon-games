@@ -241,6 +241,7 @@ using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 public static class SeedAndroidBuild
@@ -263,6 +264,11 @@ public static class SeedAndroidBuild
         PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
         PlayerSettings.Android.forceInternetPermission = false;
         PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
+        PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android, false);
+        PlayerSettings.SetGraphicsAPIs(BuildTarget.Android, new[] { GraphicsDeviceType.OpenGLES3 });
+        PlayerSettings.openGLRequireES31 = false;
+        PlayerSettings.openGLRequireES31AEP = false;
+        PlayerSettings.openGLRequireES32 = false;
 
         BuildPlayerOptions options = new BuildPlayerOptions
         {
@@ -310,11 +316,12 @@ public static class SeedAndroidBuild
 
 fs.writeFileSync(path.join(output,'Assets/Scripts/SeedTechnicalPrototype.cs'),runtime);
 fs.writeFileSync(path.join(output,'Assets/Editor/SeedAndroidBuild.cs'),build);
-fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — DEVELOPMENT_CONFIRMED Unity technical prototype\n\n- gameId: \`${gameId}\`\n- mode: \`${category}\`\n- Unity editor: \`${UNITY_EDITOR_VERSION}\` (${UNITY_EDITOR_REVISION})\n- source design: \`${baselinePath}\`\n- optional source web evidence: \`${webEvidencePath||'NONE'}\`\n- build method: \`SeedAndroidBuild.Build\`\n- purpose: \`TARGET_PLATFORM_TECHNICAL_VALIDATION\`\n- public/release authority: **NO**\n\nThis project is generated directly from the locked design baseline. Web gameplay evidence is optional; when supplied it must be a real PASS.\nIt is a one-game-one-Unity-project technical prototype, not a RELEASE_CONFIRMED production build.\n`);
+fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — DEVELOPMENT_CONFIRMED Unity technical prototype\n\n- gameId: \`${gameId}\`\n- mode: \`${category}\`\n- Unity editor: \`${UNITY_EDITOR_VERSION}\` (${UNITY_EDITOR_REVISION})\n- source design: \`${baselinePath}\`\n- optional source web evidence: \`${webEvidencePath||'NONE'}\`\n- build method: \`SeedAndroidBuild.Build\`\n- Android graphics profile: \`OpenGLES3 with ES 3.0 minimum compatibility\`\n- purpose: \`TARGET_PLATFORM_TECHNICAL_VALIDATION\`\n- public/release authority: **NO**\n\nThis project is generated directly from the locked design baseline. Web gameplay evidence is optional; when supplied it must be a real PASS.\nIt is a one-game-one-Unity-project technical prototype, not a RELEASE_CONFIRMED production build.\n`);
 fs.writeFileSync(path.join(output,'prototype-source.json'),JSON.stringify({
-  version:2,gameId,gameName,category,identity,coreLoop,
+  version:3,gameId,gameName,category,identity,coreLoop,
   selectedPlatform:'UNITY',
   unityEditorVersion:UNITY_EDITOR_VERSION,unityEditorRevision:UNITY_EDITOR_REVISION,
+  androidGraphicsCompatibilityProfile:'OPEN_GLES3_ES30_MINIMUM',
   designBaseline:baselinePath,webEvidence:webEvidencePath||null,
   webEvidenceBound,webEvidenceOptional:true,productionClass:'DEVELOPMENT_CONFIRMED',
   purpose:'TARGET_PLATFORM_TECHNICAL_VALIDATION',releaseAuthority:false,
@@ -325,6 +332,7 @@ console.log(`UNITY_EDITOR_VERSION=${UNITY_EDITOR_VERSION}`);
 console.log(`UNITY_EDITOR_REVISION=${UNITY_EDITOR_REVISION}`);
 console.log(`UNITY_TECH_MODE=${category}`);
 console.log('UNITY_TECH_BUILD_METHOD=SeedAndroidBuild.Build');
+console.log('ANDROID_GRAPHICS_COMPATIBILITY_PROFILE=OPEN_GLES3_ES30_MINIMUM');
 console.log(`WEB_EVIDENCE_BOUND=${webEvidenceBound?'YES':'NO'}`);
 console.log('WEB_EVIDENCE_OPTIONAL=YES');
 console.log('RELEASE_AUTHORITY=NO');
