@@ -10,7 +10,7 @@ policy:
   evidenceFilesCannotCreatePolicy: true
   separatePolicyDocumentsForbidden: true
   machineContractsMayMirrorPolicyButCannotCreatePolicy: true
-  latestOwnerDirectiveRecordedAt: 2026-09-12
+  latestOwnerDirectiveRecordedAt: 2026-09-13
 
 priority:
   - OWNER_LATEST_DIRECT_INSTRUCTION
@@ -535,8 +535,12 @@ platformStrategy:
       arm64ApkRequiresArm64Runtime: true
       architectureTranslationDoesNotCountAsRuntimePass: true
       configuredAndroidApiMustMatchRuntimeApi: true
-      existingArm64CloudRuntimeMayBeReused: true
-      canonicalArm64CloudProviderWhenConfigured: GENYMOTION_SAAS
+      canonicalDevelopmentRuntime: REDROID_NATIVE_ARM64_ANDROID_16
+      canonicalRunnerArchitecture: ARM64
+      canonicalAndroidApi: 36
+      paidRuntimeRequired: false
+      legacyBuildChildRuntimeGateDoesNotCreateCanonicalRuntimeEvidence: true
+      sameImmutableApkRequiredAcrossRuntimeIndependentQaRegression: true
       existingRuntimeGateMustBeRepairedNotDuplicated: true
       runtimeSmokeContractMustRemainSame: true
     projectStrategy:
