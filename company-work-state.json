@@ -1,57 +1,63 @@
 {
-  "version": 4,
+  "version": 5,
   "state": "ACTIVE",
   "taskId": "company-flow-ops-20260912",
   "updatedAtKst": "2026-09-12",
   "sourceOfTruth": "COMPANY_FLOW.md",
   "workingBranch": "chatgpt/company-flow-ops-20260912",
   "pullRequest": 346,
-  "ownerIntent": "기존 회사 확장은 COMPANY_FLOW.md와 PR #346 인계 순서대로 먼저 완료한다. 플랫폼 우선순위는 ROBLOX > UNITY_ANDROID > FORTNITE_UEFN이다. 1단계는 Roblox를 메인으로 빠르게 실제 출시하고 반복 안정화하여 검증 경험치를 축적한다. 2단계는 기존 Unity를 절대 유지하면서 확장 버전을 구현하고 Roblox와 Unity를 동시 출시 대상으로 운영하여 교차 플랫폼 출시 경험치를 누적한다. 3단계는 Roblox 안정화와 Roblox+Unity 동시 출시 경험이 검증된 뒤 Fortnite/UEFN 출시로 확장한다. 세 플랫폼의 검증된 성공 경험은 모두 기존 canonical distillation 학습에 반드시 합류한다. Vibe 학습 구조/체인/코드 경로와 기존 빌드 방식/workflow/부모-자식 구조는 변경하지 않는다. 각 실질 마일스톤마다 중앙문서·체크포인트·PR 인계를 동기화한다.",
+  "ownerIntent": "COMPANY_FLOW.md 하나만 회사 생산정책 중앙문서로 사용한다. 게임 개발 수량에는 고정 상한/하한/WIP 숫자 제한을 두지 않고 기획·그래픽·개발·QA·밸런스 5개 부서 평점과 실제 검증 근거로 확대/유지/수정·보류/축소검토 방향을 정한다. ROBLOX가 기본 메인/우선순위 1위지만 UNITY_ANDROID와 FORTNITE_UEFN 개발을 잠그지 않는다. 세 플랫폼은 항상 개발 가능하며 각 플랫폼의 자체 검증 게이트만 통과하면 된다. 기존 Unity 구조·소스·Web→Unity·Android build/runtime/QA/release 경로는 절대 보존하고 확장한다. 세 플랫폼의 검증된 성공 경험은 모두 기존 canonical distillation 체인에만 합류한다. Vibe 학습 구조/체인/코드 경로와 기존 빌드 방식/workflow/부모-자식 구조는 변경하지 않는다.",
+  "policyCentralization": {
+    "solePolicyDocument": "COMPANY_FLOW.md",
+    "separatePlatformPolicyDocumentsForbidden": true,
+    "machineContractsMayMirrorButCannotCreatePolicy": true,
+    "checkpointIsEvidenceNotPolicy": true
+  },
+  "portfolioGovernance": {
+    "mode": "FIVE_DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO",
+    "hardMinGames": null,
+    "hardMaxGames": null,
+    "hardMinDevelopmentWip": null,
+    "hardMaxDevelopmentWip": null,
+    "fixedSlots": false,
+    "oneForOneReplacement": false,
+    "departments": ["planning", "graphics", "development", "qa", "balance"],
+    "scoreRange": [0, 100],
+    "decisionBands": ["EXPAND", "MAINTAIN", "REVISE_OR_HOLD", "REDUCE_REVIEW"],
+    "decisionBandsDoNotImposeNumericGameCount": true,
+    "scoreAloneCannotAutoDiscard": true
+  },
   "authoritativePlatformArchitecture": {
     "primaryPlatformField": "PRIMARY_PLATFORM",
     "primaryPlatform": "ROBLOX",
     "platformPriority": ["ROBLOX", "UNITY_ANDROID", "FORTNITE_UEFN"],
-    "rollout": {
-      "phase1": {
-        "platforms": ["ROBLOX"],
-        "objective": "FAST_RELEASE_AND_STABILIZATION",
-        "advanceOnlyAfterVerifiedReleaseExperience": true
-      },
-      "phase2": {
-        "platforms": ["ROBLOX", "UNITY_ANDROID"],
-        "objective": "DUAL_PLATFORM_RELEASE_EXPERIENCE_ACCUMULATION",
-        "unityExistingMustRemain": true,
-        "unityExtendedVersionRequired": true
-      },
-      "phase3": {
-        "platforms": ["FORTNITE_UEFN"],
-        "objective": "FORTNITE_RELEASE_AFTER_PRIOR_PHASE_EXPERIENCE",
-        "requiresRobloxStable": true,
-        "requiresVerifiedRobloxUnityReleaseExperience": true
-      }
-    },
+    "priorityMeaning": "DEFAULT_FOCUS_ONLY",
+    "allPlatformsDevelopmentAlwaysAllowed": true,
+    "platformEntryGateAllowed": false,
     "allowedPrimaryPlatforms": ["ROBLOX", "UNITY_ANDROID", "FORTNITE_UEFN"],
     "registry": "company-platform-projects.json",
-    "architectureDocument": "docs/COMPANY_MULTI_PLATFORM_ARCHITECTURE.md",
     "switchRebuildsCompanyCore": false,
     "projects": {
       "ROBLOX": {
-        "role": "FIRST_CLASS_ACTIVE_PRIMARY_PHASE1",
+        "role": "FIRST_CLASS_PRIMARY_DEFAULT",
+        "developmentAllowed": true,
         "sourceRoot": "roblox-games/<slug>",
         "language": "Luau"
       },
       "UNITY_ANDROID": {
-        "role": "FIRST_CLASS_ACTIVE_EXTENDED_PHASE2",
+        "role": "FIRST_CLASS_EXTENDED",
+        "developmentAllowed": true,
         "preserveExistingProjectStructure": true,
         "preserveExistingSourceAndBehavior": true,
         "preserveExistingWebToUnityFlow": true,
         "preserveExistingAndroidBuildWorkflow": true,
         "extensionRequired": true,
-        "replacementOrRebuildForbidden": true,
-        "releaseModeAfterRobloxStabilization": "DUAL_RELEASE_WITH_ROBLOX"
+        "replacementOrRebuildForbidden": true
       },
       "FORTNITE_UEFN": {
-        "role": "FIRST_CLASS_ACTIVE_AVAILABLE_PHASE3",
+        "role": "FIRST_CLASS_AVAILABLE",
+        "developmentAllowed": true,
+        "priorPlatformCompletionRequired": false,
         "sourceRoot": "fortnite-uefn/<slug>",
         "language": "Verse"
       }
@@ -87,40 +93,35 @@
   "preserve": [
     "현재 구현된 Vibe 학습 구조/체인/단계/코드 경로/승격 규칙",
     "현재 구현된 빌드 방식/workflow/부모-자식 병렬/trigger/artifact/runtime-QA 연결",
-    "기존 홈페이지 대문 UI와 링크",
-    "PWA AI 채팅/작업지시/첨부/게임선택/기기등록/Gemini/PWA 설치",
+    "기존 홈페이지 대문 UI와 링크 및 PWA 핵심기능",
     "기존 authoritative pipeline과 no-wrapper/no-shadow/no-bypass 원칙",
     "기존 게임 규칙과 저장 의미",
     "기존 Unity 프로젝트 구조와 소스 및 동작",
     "기존 Web→Unity 검증 흐름",
     "기존 Unity Android 빌드/런타임/QA/출시 경로",
-    "기존 6개 관리 포트폴리오 밖 게임의 소스/Web/저장/APK/릴리스/홈페이지 링크"
+    "기존 게임의 소스/Web/저장/APK/릴리스/홈페이지 링크"
   ],
   "implementationDeltaCommits": {
     "companyOperationsContractV2": "f36cada1afbe9c652169371d4709a766f18d003b",
-    "companyOperationsEngine": "8b130ff9dc0e81169c277c5b972bdcbf2ea286ce",
-    "oldRobloxCentralPolicySuperseded": "6cf5893cffddf8541481245a4ce4eb6e91c8ccd7",
-    "platformRegistryInitial": "55c899628addb747c58f05551fd8e2f6df12deb5",
-    "multiPlatformArchitectureDocument": "52c911973b4b9610a0b09c2d72473543208232dc",
-    "platformRegistryUnityExtensionLock": "d12cb2c364fc0af69b9e03cbc6b4261d88300316",
-    "threePlatformCentralPolicy": "936b3a64ac1a010547e3ced692abe3e1d3849db1",
-    "stagedPlatformPriorityRegistry": "670788bd49e84084bf3bf03c95eb0dea590f82a7",
-    "stagedPlatformRolloutArchitecture": "adaac9ed51331a415cb95d0e670e5caa4a7f30b1"
+    "companyOperationsEngineInitial": "8b130ff9dc0e81169c277c5b972bdcbf2ea286ce",
+    "scoreDrivenOperationsContractV3": "b0cc6bcad922b7fbbf16799aa390cfaa6f0178c1",
+    "departmentScoreAndPlatformRoutingEngine": "abd1775f2ae23b14f014904ca07bf80806eb7492",
+    "unlockedThreePlatformRegistry": "f820ad77a04b8cc9e31ab7b74b077904436b417d",
+    "duplicateArchitectureDocumentRemoved": "02d99b95b5d9b0c65102f575490e347ec6904fe9",
+    "centralPolicySynchronized": "afb9be28fefa2f708c0f4155b5af8dbe517e3788"
   },
   "completedSteps": [
     "Read latest owner instructions before resuming PR #346",
-    "Read COMPANY_FLOW.md, prior company-work-state.json and PR #346 resume comments",
-    "Recovered prior company operations commits f36cada and 8b130ff",
-    "Preserved immutable Vibe learning and build-system locks",
-    "Registered company-platform-projects.json with ROBLOX, UNITY_ANDROID and FORTNITE_UEFN",
-    "Recorded Unity as FIRST_CLASS_ACTIVE_EXTENDED and locked preservation of existing Unity source/behavior/Web→Unity/build flow",
-    "Added docs/COMPANY_MULTI_PLATFORM_ARCHITECTURE.md as a non-authoritative implementation architecture companion",
-    "Updated COMPANY_FLOW.md with authoritative three-project architecture, PRIMARY_PLATFORM=ROBLOX, Unity preservation+extension, Fortnite UEFN, and mandatory canonical distillation for verified platform experience",
-    "Verified the COMPANY_FLOW multiPlatformDevelopment block exists",
-    "Locked platform priority as ROBLOX > UNITY_ANDROID > FORTNITE_UEFN",
-    "Locked Phase 1 Roblox fast release and stabilization before expansion",
-    "Locked Phase 2 Roblox+Unity simultaneous release experience accumulation with Unity preservation and extension",
-    "Locked Phase 3 Fortnite release after verified Roblox stabilization and Roblox+Unity release experience"
+    "Reconfirmed PR #346 and branch chatgpt/company-flow-ops-20260912",
+    "Centralized production policy authority in COMPANY_FLOW.md",
+    "Removed fixed maintained-game and heavy-development WIP caps from the operations contract",
+    "Added five-department portfolio scoring and dynamic portfolio decisions",
+    "Added operational engine functions for five-department scoring and portfolio evaluation",
+    "Registered ROBLOX, UNITY_ANDROID and FORTNITE_UEFN as always-developable first-class projects",
+    "Kept ROBLOX as default PRIMARY_PLATFORM without locking other platforms",
+    "Preserved Unity source/behavior/Web→Unity/build/runtime/QA/release path and extension requirement",
+    "Removed duplicate multi-platform architecture policy document",
+    "Preserved immutable Vibe learning and build-system locks"
   ],
   "workOrder": [
     "HOMEPAGE_PWA_RUNTIME_STATE_SYNC",
@@ -128,11 +129,10 @@
     "NON_BUILD_FLOW_SPEED_OPTIMIZATION",
     "PRIVATE_HQ_GOVERNANCE_SYNC_FOR_EXISTING_MODERNIZATION",
     "EXISTING_MODERNIZATION_REGRESSION_AND_E2E",
-    "THREE_PLATFORM_SELECTION_AND_ROUTING_LAYER",
-    "PHASE1_ROBLOX_SOURCE_RUNTIME_QA_AND_FAST_RELEASE_STABILIZATION",
+    "THREE_PLATFORM_SELECTION_AND_ROUTING_LAYER_VALIDATION",
+    "ROBLOX_SOURCE_RUNTIME_QA_AND_FAST_RELEASE_STABILIZATION_FOCUS",
     "UNITY_EXISTING_PRESERVATION_AND_EXTENSION",
-    "PHASE2_ROBLOX_UNITY_DUAL_RELEASE_EXPERIENCE",
-    "PHASE3_FORTNITE_UEFN_SOURCE_RUNTIME_QA_AND_RELEASE",
+    "FORTNITE_UEFN_SOURCE_RUNTIME_QA_SUPPORT",
     "VERIFIED_PLATFORM_EVIDENCE_TO_EXISTING_CANONICAL_DISTILLATION",
     "FULL_PLATFORM_AND_EXISTING_REGRESSION",
     "PRIVATE_HQ_FINAL_SYNC_AND_MAIN_RECONCILIATION",
@@ -141,11 +141,10 @@
   "nextSteps": [
     "Implement homepage/PWA latest company-runtime state read with safe main fallback while preserving the front door and all PWA features",
     "Continue the pre-existing company modernization exactly in COMPANY_FLOW/PR #346 order",
-    "After existing modernization validation, implement PRIMARY_PLATFORM routing",
-    "Phase 1: implement Roblox source/runtime/QA support and drive fast repeated release stabilization",
+    "Validate department-score portfolio engine and all-platform routing",
+    "Drive Roblox as default fast-release/stabilization focus without blocking Unity or Fortnite development",
     "Preserve and extend the existing Unity project without modifying the locked build workflow",
-    "Phase 2: operate Roblox and Unity as simultaneous release targets and accumulate verified cross-platform release experience",
-    "Phase 3: implement Fortnite UEFN release only after Phase 1 and Phase 2 evidence gates are satisfied",
+    "Implement Fortnite/UEFN source/runtime/QA support inside the existing company/V3 execution path",
     "Require verified successful experience from all three projects to enter only the existing canonical distillation inputs",
     "Run platform-specific validation and full existing regression",
     "Synchronize private HQ and reconcile current main before merge"
@@ -162,33 +161,20 @@
     "Never store secrets or private chain-of-thought in this checkpoint"
   ],
   "verification": {
-    "centralPolicyCommit": "936b3a64ac1a010547e3ced692abe3e1d3849db1",
-    "centralPolicyMultiPlatformBlockObserved": true,
+    "centralPolicyBranchCommit": "afb9be28fefa2f708c0f4155b5af8dbe517e3788",
+    "policyCentralized": true,
+    "fixedGameCountCapsRemoved": true,
+    "departmentScoreGovernanceImplemented": true,
     "platformRegistryPresent": true,
-    "architectureDocumentPresent": true,
+    "allThreePlatformsDevelopmentAllowed": true,
+    "platformEntryGatesRemoved": true,
     "unityPreservationAndExtensionLocked": true,
     "primaryPlatform": "ROBLOX",
-    "platformPriority": "ROBLOX>UNITY_ANDROID>FORTNITE_UEFN",
-    "phase1RobloxFastReleaseStabilization": true,
-    "phase2RobloxUnityDualRelease": true,
-    "phase3FortniteAfterExperience": true,
     "canonicalDistillationRequired": true,
     "buildWorkflowModified": false,
-    "vibeLearningCodeModified": false,
-    "previousCentralPolicyQaRunId": 34666697991,
-    "previousCentralPolicyQaConclusion": "success",
-    "previousGameSeedQaRunId": 34666698001,
-    "previousGameSeedQaConclusion": "success",
-    "previousVibeIntegratedRegressionRunId": 34666698003,
-    "previousVibeIntegratedRegressionConclusion": "success",
-    "previousVibeQaRunId": 34666697953,
-    "previousVibeQaConclusion": "success",
-    "previousVibe3ContractRunId": 34666697982,
-    "previousVibe3ContractQaConclusion": "success",
-    "previousVibe2LearningContractRunId": 34666697958,
-    "previousVibe2LearningContractConclusion": "success"
+    "vibeLearningCodeModified": false
   },
   "blockers": [],
-  "lastCompletedMilestone": "STAGED_PLATFORM_ROLLOUT_PRIORITY_SYNCHRONIZED",
+  "lastCompletedMilestone": "CENTRALIZED_SCORE_DRIVEN_THREE_PLATFORM_POLICY_AND_RUNTIME_CONTRACTS",
   "nextMilestone": "HOMEPAGE_PWA_RUNTIME_STATE_SYNC"
 }
