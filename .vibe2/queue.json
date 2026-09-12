@@ -607,8 +607,8 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "release-confirmed",
-      "status": "running",
-      "retries": 1,
+      "status": "queued",
+      "retries": 2,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -624,7 +624,8 @@
         "owner-auto-deploy-authorization",
         "verified-qa-required",
         "actions-run:34718800502",
-        "variant:primary"
+        "variant:primary",
+        "actions-run:34718842995"
       ],
       "lastOutcome": "FAIL",
       "companyContext": {
