@@ -71,6 +71,8 @@ jobs:
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const status=String(item.status||'').toUpperCase();
             const step=String(item.currentStep||'').toUpperCase();
+            const state=String(item.canonicalState||'').toUpperCase();
+            if(state==='WAITING_REVALIDATION'||step==='TARGETED_REVALIDATION')continue;
             const legacyActive=status==='ACTIVE'&&step==='UNITY_ANDROID_TECHNICAL_VALIDATION';
             const pending=status==='PENDING';
             const waiting=status==='ACTIVE'&&step==='TARGET_PLATFORM_TECHNICAL_VALIDATION';
@@ -82,8 +84,10 @@ jobs:
             const baseline=String(item.designBaselineSource||'');
             const baselineRevision=baseline?crypto.createHash('sha256').update(baseline).digest('hex'):'';
             const precheck=cheapPrecheck({selectedPlatform:platform,sourceRevision:baselineRevision,sourcePath});
-            if(!precheck.pass){
-              updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',platformAdapter:adapter?.adapterPath||null,sourcePath,targetSourcePath:sourcePath,routingBlockers:precheck.errors,updatedAt:new Date().toISOString()});
+            const blockers=[...precheck.errors];
+            if(adapter&&adapter.existingExecutionPath==null)blockers.push('platform-runtime-executor-not-configured');
+            if(blockers.length){
+              updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',platformAdapter:adapter?.adapterPath||null,sourcePath,targetSourcePath:sourcePath,routingBlockers:blockers,updatedAt:new Date().toISOString()});
               continue;
             }
             platforms.add(platform);
@@ -173,6 +177,7 @@ jobs:
             echo 'IMMEDIATE_NEXT_STAGE_DISPATCH=ROBLOX_V3_PUMP'
           fi
           if [[ "$DISPATCH_UEFN" == 'true' ]]; then
-            echo 'IMMEDIATE_NEXT_STAGE_DISPATCH=FORTNITE_UEFN_ADAPTER_WAITING_FOR_PLATFORM_RUNTIME'
+            echo 'UNEXPECTED_UEFN_DISPATCH_WITHOUT_CONFIGURED_EXECUTOR' >&2
+            exit 2
           fi
           echo 'ROUTER_DISPATCH_COMPLETE=YES'
