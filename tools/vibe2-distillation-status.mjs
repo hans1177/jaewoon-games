@@ -92,7 +92,7 @@ export function buildDistillationStatus(recordsWithSource, options = {}) {
     const taskPlan = dataset.taskTrainingPlan?.[taskType] ?? { ready: false, samples: 0, distinctProjects: 0, syntheticShare: 0 };
     const ready = dataset.readyForTraining && taskPlan.ready;
     tasks[taskType] = {
-      state: ready ? 'READY_FOR_LOCAL_TRAINING' : 'WAITING_FOR_VERIFIED_SAMPLES',
+      state: ready ? 'READY_FOR_SELF_HOSTED_TRAINING' : 'WAITING_FOR_VERIFIED_SAMPLES',
       ready,
       train: dataset.stats.train,
       freshTrain: dataset.stats.freshTrain,
@@ -117,7 +117,7 @@ export function buildDistillationStatus(recordsWithSource, options = {}) {
 
   const readyTasks = TASK_TYPES.filter((taskType) => tasks[taskType].ready);
   return {
-    version: 1,
+    version: 2,
     policy: {
       minTrainSamples,
       minFreshTrainSamples,
@@ -125,7 +125,12 @@ export function buildDistillationStatus(recordsWithSource, options = {}) {
       maxProjectShare,
       syntheticRatioCap,
       teacherOnlyDifficult: true,
-      trainingRoute: 'LOCAL_SELF_HOSTED_ONLY',
+      trainingRoute: 'CANONICAL_SELF_HOSTED',
+      preferredTrainingBackend: 'SERVER_SELF_HOSTED',
+      allowedTrainingBackends: ['SERVER_SELF_HOSTED', 'LOCAL_SELF_HOSTED'],
+      localTrainingPreserved: true,
+      continuousMode: '24H',
+      refreshCadence: 'HOURLY',
       promotionRoute: 'FIXED_HOLDOUT_AB_THEN_CANARY',
     },
     diagnostics,
