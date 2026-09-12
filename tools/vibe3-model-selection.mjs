@@ -37,7 +37,7 @@ export function selectVibe3BaseModel({
   modelCachedOrDownloadApproved=false,
 }={}){
   const reasons=[];
-  const codingTask=['coding','bugfix','unity'].includes(String(taskType).toLowerCase());
+  const codingTask=['coding','bugfix','unity','roblox','fortnite_uefn'].includes(String(taskType).toLowerCase());
   if(!codingTask)reasons.push('task-not-code-heavy');
   if(!bool(enableCoderUpgrade))reasons.push('coder-upgrade-not-explicitly-enabled');
   if(!bool(cudaAvailable))reasons.push('cuda-unavailable');

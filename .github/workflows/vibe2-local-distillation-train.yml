@@ -139,16 +139,18 @@ jobs:
           $requestFile = Join-Path $env:GITHUB_WORKSPACE 'company-learning\distillation-training-request.json'
           $request = [System.IO.File]::ReadAllText($requestFile, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
           $runtimeItems = @()
+          $platformTasks = @('unity', 'roblox', 'fortnite_uefn')
 
           foreach ($item in @($request.requests)) {
             $taskType = [string]$item.taskType
             $adapterVersion = [string]$item.adapterVersion
-            if ($taskType -notmatch '^(coding|bugfix|unity|qa|planning|general)$') { throw "invalid task type: $taskType" }
+            if ($taskType -notmatch '^(coding|bugfix|unity|roblox|fortnite_uefn|qa|planning|general)$') { throw "invalid task type: $taskType" }
             if ($adapterVersion -notmatch '^[A-Za-z0-9._-]+$') { throw "invalid adapter version: $adapterVersion" }
+            $isPlatformTask = $platformTasks -contains $taskType
 
             $datasetDir = Join-Path $env:GITHUB_WORKSPACE ("vibe2-learning\datasets\$taskType\$env:REQUEST_ID")
             if (Test-Path $datasetDir) { Remove-Item $datasetDir -Recurse -Force }
-            $syntheticRatioCap = if ($taskType -eq 'unity') { '0' } else { '0.5' }
+            $syntheticRatioCap = if ($isPlatformTask) { '0' } else { '0.5' }
 
             node tools/vibe2-weight-learning.mjs dataset `
               --input company-learning/training-samples `
@@ -169,16 +171,17 @@ jobs:
             if ($manifest.readyForTraining -ne $true) { throw "manifest is not training-ready for $taskType" }
             if ($manifest.targetTaskType -ne $taskType) { throw "manifest task mismatch for $taskType" }
 
-            if ($taskType -eq 'unity') {
-              node tools/vibe2-real-unity-dataset-gate.mjs `
+            if ($isPlatformTask) {
+              node tools/vibe2-real-platform-dataset-gate.mjs `
+                --task-type $taskType `
                 --manifest $manifestPath `
                 --train $trainPath `
                 --eval $evalPath `
                 --holdout $holdoutPath `
                 --samples-root (Join-Path $env:GITHUB_WORKSPACE 'company-learning\training-samples')
-              if ($LASTEXITCODE -ne 0) { throw 'real verified Unity dataset gate failed' }
-              Write-Host 'UNITY_TRAINING_AUTHORITY=VERIFIED_PRODUCTION_EVIDENCE_ONLY'
-              Write-Host 'UNITY_SYNTHETIC_TRAINING=NO'
+              if ($LASTEXITCODE -ne 0) { throw "real verified platform dataset gate failed for $taskType" }
+              Write-Host "PLATFORM_TRAINING_AUTHORITY=$taskType:VERIFIED_PRODUCTION_EVIDENCE_ONLY"
+              Write-Host "PLATFORM_SYNTHETIC_TRAINING=$taskType:NO"
             }
 
             $selectionJson = node tools/vibe3-model-selection.mjs `
@@ -217,8 +220,8 @@ jobs:
             if ($metadata.promotionState -ne 'UNVERIFIED' -or $metadata.runtimePromotionAllowed -ne $false) {
               throw "fresh adapter must remain unverified for $taskType"
             }
-            if ($taskType -eq 'unity' -and $metadata.verifiedRealOnly -ne $true) {
-              throw 'Unity adapter must be marked verified-real-only'
+            if ($isPlatformTask -and $metadata.verifiedRealOnly -ne $true) {
+              throw "$taskType adapter must be marked verified-real-only"
             }
             $runtimeItems += [pscustomobject]@{
               taskType = $taskType

@@ -14,6 +14,7 @@ import {
   routeAdapter,
   shouldAbortTraining,
   summarizeDiversity,
+  TASK_TYPES,
 } from '../tools/vibe2-weight-learning.mjs';
 
 function verified(overrides = {}) {
@@ -132,6 +133,30 @@ test('작업유형별 adapter 학습계획은 샘플수와 프로젝트 다양�
   const plan = buildTaskTrainingPlan(samples, { minSamplesPerTask: 8, minProjectsPerTask: 2 });
   assert.equal(plan.bugfix.ready, true);
   assert.equal(plan.unity.ready, false);
+  assert.equal(plan.roblox.ready, false);
+  assert.equal(plan.fortnite_uefn.ready, false);
+});
+
+test('3개 플랫폼은 공통 학습기 안에서 독립 task lane과 adapter route를 가진다', () => {
+  assert.ok(TASK_TYPES.includes('unity'));
+  assert.ok(TASK_TYPES.includes('roblox'));
+  assert.ok(TASK_TYPES.includes('fortnite_uefn'));
+
+  const robloxRows = [
+    ...rows(24, 'R0001', 'roblox').map((entry) => ({ ...entry, record: { ...entry.record, browserQa: 'NOT_APPLICABLE', runtime: 'PASS' } })),
+    ...rows(24, 'R0002', 'roblox').map((entry) => ({ ...entry, record: { ...entry.record, browserQa: 'NOT_APPLICABLE', runtime: 'PASS' } })),
+  ];
+  const robloxDataset = buildDataset(robloxRows, {
+    seed: 12, evalRatio: 0.2, holdoutRatio: 0.2, minTrainSamples: 8, minFreshTrainSamples: 8,
+    minDistinctProjects: 2, minDistinctTaskTypes: 1, maxProjectShare: 0.75, targetTaskType: 'roblox', syntheticRatioCap: 0,
+  });
+  assert.equal(robloxDataset.readyForTraining, true);
+  assert.equal(robloxDataset.train.every((row) => row.taskType === 'roblox'), true);
+
+  const robloxRoute = routeAdapter({ taskType: 'roblox', goal: 'Roblox Luau release fix' }, { roblox: { status: 'PROMOTED', path: 'adapters/roblox-v2' } });
+  const uefnRoute = routeAdapter({ taskType: 'fortnite_uefn', goal: 'UEFN Verse device fix' }, { fortnite_uefn: { status: 'CANARY', path: 'adapters/uefn-v2' } });
+  assert.equal(robloxRoute.taskType, 'roblox'); assert.equal(robloxRoute.adapter, 'adapters/roblox-v2');
+  assert.equal(uefnRoute.taskType, 'fortnite_uefn'); assert.equal(uefnRoute.adapter, 'adapters/uefn-v2');
 });
 
 test('adapter router는 신뢰도가 낮으면 baseline으로 fallback한다', () => {

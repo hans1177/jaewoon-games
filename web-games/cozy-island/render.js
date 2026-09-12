@@ -35,11 +35,12 @@ export class IslandRenderer {
     this.drawSea(ctx, game);
     this.drawIsland(ctx, game);
     this.drawWorldObjects(ctx, game);
+    this.drawUnits(ctx, game);
     this.drawPlayer(ctx, game.player);
     ctx.restore();
 
     this.drawLight(ctx, game);
-    if (game.weather === '비') this.drawRain(ctx, game);
+    if (game.weather === '비') this.drawRain(ctx);
   }
 
   drawSea(ctx, game) {
@@ -99,6 +100,7 @@ export class IslandRenderer {
   drawWorldObjects(ctx, game) {
     this.drawHouse(ctx, game);
     this.drawFarm(ctx, game);
+    this.drawBarracks(ctx, game);
 
     for (const node of game.nodes) {
       if (node.lockedByExpansion && !game.state.expanded) continue;
@@ -124,6 +126,12 @@ export class IslandRenderer {
     if (!game.state.expanded) {
       ctx.font = '34px system-ui';
       ctx.fillText('🔐', 1320, 600);
+    }
+
+    if (game.raidActive) {
+      ctx.fillStyle = '#8f3131';
+      ctx.font = '800 18px system-ui';
+      ctx.fillText('⚠ 습격 중', 1350, 520);
     }
   }
 
@@ -160,6 +168,72 @@ export class IslandRenderer {
     ctx.fillStyle = '#315748';
     ctx.font = '700 13px system-ui';
     ctx.fillText('작은 텃밭', 995, 340);
+  }
+
+  drawBarracks(ctx, game) {
+    const { x, y } = game.barracks;
+    if (!game.state.barracksBuilt) {
+      ctx.save();
+      ctx.setLineDash([8,7]);
+      ctx.strokeStyle = '#6d725d';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x - 58, y - 46, 116, 92);
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#315748';
+      ctx.font = '700 13px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText('병영 건설터', x, y + 65);
+      ctx.font = '24px system-ui';
+      ctx.fillText('🏗️', x, y + 8);
+      ctx.restore();
+      return;
+    }
+
+    ctx.fillStyle = '#8c6d49';
+    ctx.fillRect(x - 58, y - 30, 116, 76);
+    ctx.fillStyle = '#646348';
+    ctx.beginPath();
+    ctx.moveTo(x - 72, y - 30); ctx.lineTo(x, y - 82); ctx.lineTo(x + 72, y - 30); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#433b31';
+    ctx.fillRect(x - 16, y + 8, 32, 38);
+    ctx.fillStyle = '#fff';
+    ctx.font = '700 13px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('병영', x, y - 92);
+    ctx.textAlign = 'start';
+  }
+
+  drawUnits(ctx, game) {
+    const t = performance.now() / 1000;
+    for (const unit of game.allies || []) {
+      if (game.raidActive) this.drawUnit(ctx, unit);
+      else {
+        const phase = t * .65 + unit.id * 1.37;
+        this.drawUnit(ctx, { ...unit, x: unit.x + Math.cos(phase) * 85, y: unit.y + Math.sin(phase * .8) * 55 });
+      }
+    }
+    for (const unit of game.enemies || []) this.drawUnit(ctx, unit);
+  }
+
+  drawUnit(ctx, unit) {
+    if (unit.hp <= 0) return;
+    const icon = unit.boss ? '👹' : unit.kind === 'archer' ? '🏹' : '⚔️';
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.font = unit.boss ? '42px system-ui' : '29px system-ui';
+    ctx.fillText(icon, unit.x, unit.y + 10);
+
+    const w = unit.boss ? 58 : 42;
+    const pct = Math.max(0, unit.hp / unit.maxHp);
+    ctx.fillStyle = 'rgba(0,0,0,.35)';
+    ctx.fillRect(unit.x - w/2, unit.y - 30, w, 5);
+    ctx.fillStyle = unit.enemy ? '#c14f4f' : '#4f9a5d';
+    ctx.fillRect(unit.x - w/2, unit.y - 30, w * pct, 5);
+
+    ctx.font = '700 10px system-ui';
+    ctx.fillStyle = unit.enemy ? '#7d2222' : '#244d2d';
+    ctx.fillText(unit.enemy ? (unit.boss ? '보스' : '적') : (unit.kind === 'archer' ? '궁수' : '병사'), unit.x, unit.y + 29);
+    ctx.restore();
   }
 
   drawTree(ctx, node, now) {

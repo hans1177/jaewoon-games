@@ -97,6 +97,7 @@ jobs:
             'RELEASE_CONFIRMED:',
             'executionMode: GATED_DIRECT',
             'executionMode: GATED_DIRECT_RELEASE_PRODUCTION',
+            'target: PROJECT_SELECTED_PLATFORM',
             'buildPreflightIsNotFinalApproval: true',
             'finalReviewMustReadSameCurrentBuildRuntimeQaEvidence: true',
             'independentQaSeparatedFromVibe2SelfCheck: true',
@@ -110,19 +111,20 @@ jobs:
           if(directive.production?.fixedClassCounts!==false)throw new Error('production class counts must remain dynamic');
           if(directive.production?.numericLabelsAreAliasesOnly!==true||directive.production?.numericLabelsOwnerRemappable!==true)throw new Error('numeric labels must remain remappable aliases only');
           const dev=directive.classes?.DEVELOPMENT_CONFIRMED||{};
-          if(dev.executionMode!=='GATED_DIRECT'||dev.resumeFromLatestEvidence!==true||dev.aiMayInventValidationPass!==false||dev.artbookOnlyAfterBaselineReady!==true)throw new Error('DEVELOPMENT_CONFIRMED gated direct settings missing');
+          if(dev.executionMode!=='GATED_DIRECT'||dev.resumeFromLatestEvidence!==true||dev.aiMayInventValidationPass!==false||dev.webPurpose!=='OPTIONAL_GAMEPLAY_VALIDATION_TESTBED'||dev.targetPlatformPurpose!=='TECHNICAL_AND_GAMEPLAY_VALIDATION'||dev.webBeforeTargetPlatformByDefault!==false||dev.targetPlatformMayRunImmediately!==true||dev.platformSpecificValidationRequired!==true||dev.materialChangeRequiresTargetedRevalidation!==true||dev.artbookRevisionOnlyAfterBaselineReady!==true)throw new Error('DEVELOPMENT_CONFIRMED selected-platform gated direct settings missing');
           const release=directive.classes?.RELEASE_CONFIRMED||{};
-          if(release.executionMode!=='GATED_DIRECT_RELEASE_PRODUCTION'||release.resumeFromLatestEvidence!==true||release.vibe2PrimaryDeveloper!==true||release.coreDesignLock!==true)throw new Error('RELEASE_CONFIRMED gated direct settings missing');
+          if(release.executionMode!=='GATED_DIRECT_RELEASE_PRODUCTION'||release.resumeFromLatestEvidence!==true||release.target!=='PROJECT_SELECTED_PLATFORM'||release.targetPlatformProjectRequired!==true||release.vibe2PrimaryDeveloper!==true||release.coreDesignLock!==true)throw new Error('RELEASE_CONFIRMED selected-platform gated direct settings missing');
           if(release.aiMayInventBuildPass!==false||release.aiMayInventDeviceValidationPass!==false||release.aiMayInventIndependentQaPass!==false)throw new Error('release anti-fake evidence settings missing');
-          if(release.currentSourceTreeBindingRequired!==true||release.currentBuildEvidenceBindingRequired!==true||release.revalidationRequiredAfterSourceChange!==true||release.finalArtbookOnlyAfterReleaseReady!==true)throw new Error('release source/build binding or artbook gate missing');
-          if(release.buildPreflightRiskWatchRequired!==true||release.finalDepartmentRiskWatchRequiresCurrentBuildRuntimeQa!==true)throw new Error('release two-stage department risk review settings missing');
+          if(release.sourceTreeBindingRequired!==true||release.currentBuildEvidenceBindingRequired!==true||release.sourceChangeInvalidatesOldBuildValidation!==true||release.buildPreflightIsNotFinalApproval!==true||release.finalReviewMustReadSameCurrentBuildRuntimeQaEvidence!==true||release.independentQaSeparatedFromVibe2SelfCheck!==true||release.finalArtbookOnlyAfterReleaseReady!==true)throw new Error('release target-platform source/build/runtime/QA binding or artbook gate missing');
           const releaseFlow=release.requiredFlow||[];
-          const preflight=releaseFlow.indexOf('FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT_RISK_WATCH');
-          const runtime=releaseFlow.indexOf('ANDROID_RUNTIME_VALIDATION');
+          const sourceBind=releaseFlow.indexOf('BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE');
+          const build=releaseFlow.indexOf('TARGET_PLATFORM_BUILD_OR_PACKAGE');
+          const preflight=releaseFlow.indexOf('FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT');
+          const runtime=releaseFlow.indexOf('TARGET_PLATFORM_RUNTIME_VALIDATION');
           const independentQa=releaseFlow.indexOf('INDEPENDENT_QA_AND_REGRESSION');
           const finalReview=releaseFlow.indexOf('FIVE_DISTINCT_LEAD_FINAL_RELEASE_REVIEW');
-          if(!(preflight>=0&&runtime>preflight&&independentQa>runtime&&finalReview>independentQa))throw new Error('release two-stage review order invalid');
-          for(const state of ['BUILDING','WAITING_BUILD','WAITING_DEVICE_VALIDATION'])if(!(release.waitingStates||[]).includes(state))throw new Error(`release waiting state missing: ${state}`);
+          if(!(sourceBind>=0&&build>sourceBind&&preflight>build&&runtime>preflight&&independentQa>runtime&&finalReview>independentQa))throw new Error('selected-platform release review order invalid');
+          for(const state of ['BUILDING','WAITING_BUILD','WAITING_RUNTIME_VALIDATION'])if(!(release.waitingStates||[]).includes(state))throw new Error(`release waiting state missing: ${state}`);
           for(const state of ['FIX_AND_REVERIFY','RELEASE_BLOCKED','RELEASE_READY'])if(!(release.releaseStates||[]).includes(state))throw new Error(`release state missing: ${state}`);
           for(const file of ['ARTBOOK_POLICY.md','ARTBOOK_LIFECYCLE.md','ARTBOOK_DESIGN_CONTRACT.md','ARTBOOK_OPERATIONS.md','ARTBOOK_PRODUCTION_CAPACITY.md','ARTBOOK_SUBMISSION_CONTRACT.md','VIBE2_ARTBOOK_DRAFT_POLICY.md']){
             const text=fs.readFileSync(file,'utf8');
@@ -132,7 +134,7 @@ jobs:
           console.log(`DISTINCT_DEPARTMENT_LEADS=${distinctLeads.length}`);
           console.log('DEVELOPMENT_GATED_DIRECT_POLICY=PASS');
           console.log('RELEASE_GATED_DIRECT_POLICY=PASS');
-          console.log('RELEASE_TWO_STAGE_RISK_REVIEW_POLICY=PASS');
+          console.log('RELEASE_SELECTED_PLATFORM_REVIEW_POLICY=PASS');
           NODE
 
       - name: Validate production pipeline contracts
@@ -208,8 +210,7 @@ jobs:
           if(!vibeRunner.includes("'unity-games/**'"))throw new Error('Vibe2 runner must resume after Unity source changes');
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const release=directive.classes?.RELEASE_CONFIRMED||{};
-          if(release.developmentBaselineRequired!==true||release.currentSourceTreeBindingRequired!==true||release.currentBuildEvidenceBindingRequired!==true||release.revalidationRequiredAfterSourceChange!==true)throw new Error('release directive evidence gate incomplete');
-          if(release.buildPreflightRiskWatchRequired!==true||release.finalDepartmentRiskWatchRequiresCurrentBuildRuntimeQa!==true)throw new Error('release two-stage risk review directive incomplete');
+          if(release.developmentBaselineRequired!==true||release.target!=='PROJECT_SELECTED_PLATFORM'||release.targetPlatformProjectRequired!==true||release.sourceTreeBindingRequired!==true||release.currentBuildEvidenceBindingRequired!==true||release.sourceChangeInvalidatesOldBuildValidation!==true||release.buildPreflightIsNotFinalApproval!==true||release.finalReviewMustReadSameCurrentBuildRuntimeQaEvidence!==true||release.independentQaSeparatedFromVibe2SelfCheck!==true)throw new Error('release directive selected-platform evidence gate incomplete');
           console.log('RELEASE_BASELINE_EVIDENCE_CONTRACT=PASS');
           console.log('RELEASE_FINAL_DEPARTMENT_REVIEW_BINDING=PASS');
           console.log('VIBE2_RELEASE_HANDOFF_CONTRACT=PASS');

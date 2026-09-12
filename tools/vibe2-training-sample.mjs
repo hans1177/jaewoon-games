@@ -5,13 +5,15 @@ import { fileURLToPath } from 'node:url';
 
 const TRAINING_SAMPLE_VERSION = 3;
 const MAX_PATCH_BYTES = 120_000;
-const ALLOWED_TASK_TYPES = new Set(['coding', 'bugfix', 'unity', 'roblox', 'qa', 'planning', 'general']);
+const PLATFORM_TASK_TYPES = new Set(['unity', 'roblox', 'fortnite_uefn']);
+const ALLOWED_TASK_TYPES = new Set(['coding', 'bugfix', ...PLATFORM_TASK_TYPES, 'qa', 'planning', 'general']);
 const INVALID_TRACE_STATES = new Set(['FAIL', 'STALLED', 'NO_ACTIONABLE_WORK', 'INCOMPLETE_PROGRESS', 'FLAKY', 'STALE', 'SHA_MISMATCH']);
 const EXTERNAL_BLACK_BOX_QA_MARKER = 'BLACK_BOX_EVIDENCE_PASS';
 
 const clean = (value) => String(value ?? '').trim();
 const clamp01 = (value) => Math.max(0, Math.min(1, Number(value) || 0));
 const upper = (value) => clean(value).toUpperCase();
+const isPlatformTask = (taskType) => PLATFORM_TASK_TYPES.has(clean(taskType).toLowerCase());
 
 function readJson(file) { return JSON.parse(fs.readFileSync(file, 'utf8')); }
 
@@ -25,6 +27,8 @@ function inferTaskType(evidence) {
   const allQaFiles = changedFiles.length > 0 && changedFiles.every((file) => /(^|\/)(qa|tests?|test)(\/|$)|\.(test|spec)\./.test(file));
   if (sourcePath.startsWith('unity-games/')) return 'unity';
   if (sourcePath.startsWith('roblox-games/')) return 'roblox';
+  if (sourcePath.startsWith('fortnite-uefn-games/') || sourcePath.startsWith('uefn-games/')) return 'fortnite_uefn';
+  if (/\b(uefn|fortnite|verse)\b/.test(`${goal} ${summary}`)) return 'fortnite_uefn';
   if (allQaFiles || role === 'qa') return 'qa';
   if (diagnostic?.type || diagnostic?.file || diagnostic?.needle) return 'bugfix';
   if (/\[(bugfix|repair|regression)\]|\bbug\b|\bfix\b|\brepair\b|버그|오류|회귀|크래시/.test(goal)) return 'bugfix';
@@ -39,6 +43,7 @@ function inferTaskType(evidence) {
 function inferDifficulty(evidence, taskType) {
   if (taskType === 'unity') return 'unity-build';
   if (taskType === 'roblox') return 'roblox-release';
+  if (taskType === 'fortnite_uefn') return 'uefn-release';
   if (taskType === 'qa') return 'regression';
   if (taskType === 'bugfix' || evidence?.diagnosticFocus?.type) return 'bug';
   return 'simple';
@@ -62,16 +67,18 @@ function buildOutput(evidence, patch) {
 
 export function qaRequirementsForTask(taskType) {
   const type = clean(taskType).toLowerCase();
-  if (type === 'unity') return { independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', runtime: 'PASS', androidRuntimeRequired: true, robloxRuntimeRequired: false };
-  if (type === 'roblox') return { independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', runtime: 'PASS', androidRuntimeRequired: false, robloxRuntimeRequired: true };
+  if (type === 'unity') return { independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', runtime: 'PASS', androidRuntimeRequired: true, robloxRuntimeRequired: false, uefnRuntimeRequired: false };
+  if (type === 'roblox') return { independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', runtime: 'PASS', androidRuntimeRequired: false, robloxRuntimeRequired: true, uefnRuntimeRequired: false };
+  if (type === 'fortnite_uefn') return { independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', runtime: 'PASS', androidRuntimeRequired: false, robloxRuntimeRequired: false, uefnRuntimeRequired: true };
   if (type === 'qa') return {
     independentQa: `PASS_OR_${EXTERNAL_BLACK_BOX_QA_MARKER}`,
     browserQa: 'PASS_OR_NOT_APPLICABLE_FOR_EXTERNAL_BLACK_BOX',
     runtime: 'PASS',
     androidRuntimeRequired: false,
     robloxRuntimeRequired: false,
+    uefnRuntimeRequired: false,
   };
-  return { independentQa: 'PASS', browserQa: 'PASS', runtime: 'PASS', androidRuntimeRequired: false, robloxRuntimeRequired: false };
+  return { independentQa: 'PASS', browserQa: 'PASS', runtime: 'PASS', androidRuntimeRequired: false, robloxRuntimeRequired: false, uefnRuntimeRequired: false };
 }
 
 export function qaEvidencePasses({ taskType, independentQa, browserQa, runtime }) {
@@ -82,7 +89,7 @@ export function qaEvidencePasses({ taskType, independentQa, browserQa, runtime }
   if (runtimeState !== 'PASS') return false;
   if (type === 'qa' && independent === EXTERNAL_BLACK_BOX_QA_MARKER && browser === 'NOT_APPLICABLE') return true;
   if (independent !== 'PASS') return false;
-  if (type !== 'unity' && type !== 'roblox' && browser !== 'PASS') return false;
+  if (!isPlatformTask(type) && browser !== 'PASS') return false;
   return true;
 }
 
@@ -118,10 +125,10 @@ export function buildVerifiedTrainingSample({ evidence, patch, sourceRevision, i
   const requirements = qaRequirementsForTask(resolvedTaskType);
   if (!qaEvidencePasses({ taskType: resolvedTaskType, independentQa, browserQa, runtime: verificationTrace.runtime })) {
     if (upper(independentQa) !== 'PASS') throw new Error('독립 QA PASS 필요');
-    if (resolvedTaskType !== 'unity' && resolvedTaskType !== 'roblox' && upper(browserQa) !== 'PASS') throw new Error('브라우저 QA PASS 필요');
+    if (!isPlatformTask(resolvedTaskType) && upper(browserQa) !== 'PASS') throw new Error('브라우저 QA PASS 필요');
     throw new Error('runtime PASS evidence 필요');
   }
-  const normalizedBrowserQa = (resolvedTaskType === 'unity' || resolvedTaskType === 'roblox') ? 'NOT_APPLICABLE' : 'PASS';
+  const normalizedBrowserQa = isPlatformTask(resolvedTaskType) ? 'NOT_APPLICABLE' : 'PASS';
   const playerImpactScore = clamp01(Number(performance?.playerImpactScore ?? 0) / 5);
   return {
     version: TRAINING_SAMPLE_VERSION, instruction, input: buildInput(evidence), output: buildOutput(evidence, verifiedPatch),
@@ -130,7 +137,7 @@ export function buildVerifiedTrainingSample({ evidence, patch, sourceRevision, i
     sourceCommit: revision, sourceRevision: revision, independentQa: 'PASS', browserQa: normalizedBrowserQa,
     quality: { codeQuality: 1, noRegression: true, playImprovement: playerImpactScore, ruleCompliance: 1 },
     provenance: { sourceKind: 'vibe2', sourceRevision: revision, gameId: clean(evidence.gameId) || null, candidateId: clean(evidence.candidateId) || null, verificationTrace },
-    verification: { independentQa: 'PASS', browserQa: normalizedBrowserQa, runtime: 'PASS', androidRuntimeRequired: requirements.androidRuntimeRequired, robloxRuntimeRequired: requirements.robloxRuntimeRequired, fullRegression: 'PASS', saveKeyValidation: clean(evidence.saveKeyValidation) || null,
+    verification: { independentQa: 'PASS', browserQa: normalizedBrowserQa, runtime: 'PASS', androidRuntimeRequired: requirements.androidRuntimeRequired, robloxRuntimeRequired: requirements.robloxRuntimeRequired, uefnRuntimeRequired: requirements.uefnRuntimeRequired, fullRegression: 'PASS', saveKeyValidation: clean(evidence.saveKeyValidation) || null,
       syntaxChecks: Array.isArray(evidence.syntaxChecks) ? evidence.syntaxChecks : [], proposedTests: Array.isArray(evidence.proposedTests) ? evidence.proposedTests : [], trace: verificationTrace },
   };
 }
@@ -147,4 +154,4 @@ function main() {
 }
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMain) { try { main(); } catch (error) { console.error(error.message); process.exitCode = 1; } }
-export { TRAINING_SAMPLE_VERSION, MAX_PATCH_BYTES, EXTERNAL_BLACK_BOX_QA_MARKER };
+export { TRAINING_SAMPLE_VERSION, MAX_PATCH_BYTES, EXTERNAL_BLACK_BOX_QA_MARKER, PLATFORM_TASK_TYPES };

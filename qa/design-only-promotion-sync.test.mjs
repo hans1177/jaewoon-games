@@ -37,18 +37,26 @@ test('DESIGN_BASELINE_READY promotes to development once and carries the selecte
   assert.equal(read(root,'development-queue.json').items.length,1,'promotion sync must be idempotent');
 });
 
-test('unsupported or missing seed platform falls back to current primary default without changing old execution compatibility fields',()=>{
+test('legacy Android seed intent is preserved as Unity instead of falling through to the Roblox default',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'design-promotion-platform-'));
   write(root,'game-seed-state.json',{version:1,seeds:[{seedId:'S3',gameId:'g3',gameName:'Game Three',status:'ACTIVE',GAME_CATEGORY:'CASUAL',INITIAL_TARGET_PLATFORM:'ANDROID_MOBILE'}]});
   write(root,'autonomous-portfolio.json',{version:1,projects:[]});
   write(root,'game-catalog.json',{version:1,games:[]});
   write(root,'artbook-submissions/g3/current.json',{baselineGateState:'DESIGN_BASELINE_READY',publication:{baselineReady:true},published:true,vibe2Used:false,sourceDesign:'design/g3/2026-09-12/design-revised.json'});
   promoteReadyDesignSeeds({root});
+  const seed=read(root,'game-seed-state.json').seeds[0];
   const project=read(root,'autonomous-portfolio.json').projects[0];
+  const game=read(root,'game-catalog.json').games[0];
   const queue=read(root,'development-queue.json').items[0];
-  assert.equal(project.selectedPlatform,'ROBLOX');
-  assert.equal(queue.targetPlatform,'ROBLOX');
-  assert.equal(project.mode,'WEB_FIRST_IMPLEMENTATION','legacy planner compatibility must remain until that chain is migrated atomically');
+  assert.equal(seed.selectedPlatform,'UNITY');
+  assert.equal(seed.promotion.selectedPlatform,'UNITY');
+  assert.equal(project.selectedPlatform,'UNITY');
+  assert.equal(project.targetPlatform,'UNITY');
+  assert.equal(game.selectedPlatform,'UNITY');
+  assert.equal(game.targetPlatform,'UNITY');
+  assert.equal(queue.selectedPlatform,'UNITY');
+  assert.equal(queue.targetPlatform,'UNITY');
+  assert.equal(project.mode,'WEB_FIRST_IMPLEMENTATION','legacy planner compatibility fields remain separate from selected platform');
   assert.equal(project.targetEngine,'web');
 });
 

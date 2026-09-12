@@ -11,12 +11,15 @@ on:
       - 'tools/vibe2-distillation-status.mjs'
       - 'tools/vibe2-training-request.mjs'
       - 'tools/vibe2-weight-learning.mjs'
+      - 'tools/vibe2-real-platform-dataset-gate.mjs'
+      - 'tools/vibe2-train.py'
       - 'tools/vibe3-trajectory-ingest.mjs'
       - 'tools/vibe3-model-selection.mjs'
       - 'tools/vibe3-pump-index.mjs'
       - 'qa/vibe2-training-sample.test.mjs'
       - 'qa/vibe2-distillation-status.test.mjs'
       - 'qa/vibe2-training-request.test.mjs'
+      - 'qa/vibe2-weight-learning.test.mjs'
       - 'qa/vibe3-trajectory-ingest.test.mjs'
       - 'qa/vibe3-pump-index.test.mjs'
       - 'company-learning/vibe3-trajectories/**'
@@ -93,9 +96,11 @@ jobs:
           node --check tools/vibe2-distillation-status.mjs
           node --check tools/vibe2-training-request.mjs
           node --check tools/vibe2-weight-learning.mjs
+          node --check tools/vibe2-real-platform-dataset-gate.mjs
           node --check tools/vibe3-trajectory-ingest.mjs
           node --check tools/vibe3-model-selection.mjs
           node --check tools/vibe3-pump-index.mjs
+          python -m py_compile tools/vibe2-train.py
           node --test qa/vibe2-training-sample.test.mjs
           node --test qa/vibe2-distillation-status.test.mjs
           node --test qa/vibe2-training-request.test.mjs
@@ -215,13 +220,14 @@ jobs:
           echo '- durable state: vibe2-learning-runtime branch; direct main write: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- verified RAG memory: verified positive evidence only' >> "$GITHUB_STEP_SUMMARY"
           echo '- failure memory: warning/avoidance context only' >> "$GITHUB_STEP_SUMMARY"
-          echo '- task playbooks: coding/bugfix/qa/unity/graphics/planning/general' >> "$GITHUB_STEP_SUMMARY"
+          echo '- task playbooks: coding/bugfix/qa/unity/roblox/fortnite_uefn/graphics/planning/general' >> "$GITHUB_STEP_SUMMARY"
+          echo '- platform training lanes: one canonical trainer; isolated Unity/Roblox/Fortnite UEFN evidence, datasets, adapters, and runtime gates' >> "$GITHUB_STEP_SUMMARY"
           echo '- benchmark accumulation: ON; counts as training sample: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- candidate tournament default: 5; allowed: 3-5' >> "$GITHUB_STEP_SUMMARY"
           echo '- bounded self repair: max 3 attempts' >> "$GITHUB_STEP_SUMMARY"
           echo '- external commercial source: black-box verified observations only; no proprietary code/assets/internal algorithms' >> "$GITHUB_STEP_SUMMARY"
           echo '- external black-box browser QA: NOT_APPLICABLE; dedicated evidence marker required' >> "$GITHUB_STEP_SUMMARY"
-          echo '- Unity browser QA: NOT_APPLICABLE; never synthesized as PASS' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Unity/Roblox/Fortnite UEFN browser QA: NOT_APPLICABLE; verified native runtime evidence required' >> "$GITHUB_STEP_SUMMARY"
           echo '- failed Vibe3 candidates: comparison context only, never promoted as answer targets' >> "$GITHUB_STEP_SUMMARY"
           echo '- paid API: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- GitHub-hosted model training: NO' >> "$GITHUB_STEP_SUMMARY"
