@@ -29,18 +29,26 @@ test('legacy autonomous top-level workflow namespace is removed',()=>{
   assert.deepEqual(legacy,[]);
 });
 
-test('central production runtime keeps one Web-first selected-platform chain and existing platform executors',()=>{
+test('central production runtime keeps one full-scope Web-first selected-platform chain and existing platform executors',()=>{
   for(const file of centralWorkflows)assert.equal(exists(file),true,`${file} must exist`);
   const directive=JSON.parse(read('company-directive.json'));
   const promotion=read('.github/workflows/company-design-promotion-sync.yml');
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
   const unity=read('.github/workflows/company-development-unity-runtime.yml');
+  const webBootstrap=read('tools/company-development-web-bootstrap.mjs');
+  const webValidation=read('tools/company-development-web-gameplay-validation.mjs');
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webBeforeTargetPlatformByDefault,true);
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.targetPlatformMayRunImmediately,false);
-  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webPurpose,'REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION');
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webPurpose,'MANDATORY_FULL_APPROVED_SCOPE_WEB_COMPANION_AND_MUSIC_VALIDATION');
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webGameplayValidationRequired,true);
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webCompanionValidationRequired,true);
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.approvedScopeCompletionRequired,true);
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.musicValidationRequired,true);
+  assert.equal(directive.production.webCompanion.requiredForEveryGame,true);
+  assert.equal(directive.production.approvedScopeCompletion.approvedDesignBaselineMustBeFullyImplemented,true);
   assert.equal(directive.classes.RELEASE_CONFIRMED.target,'PROJECT_SELECTED_PLATFORM');
+  assert.equal(directive.classes.RELEASE_CONFIRMED.webCompanionRequired,true);
+  assert.equal(directive.classes.RELEASE_CONFIRMED.approvedScopeCompletionRequired,true);
   assert.match(promotion,/DESIGN_BASELINE_READY/);
   assert.match(promotion,/company-development-confirmed-runtime\.yml/);
   assert.match(development,/company-development-web-bootstrap\.mjs/);
@@ -53,6 +61,10 @@ test('central production runtime keeps one Web-first selected-platform chain and
   assert.match(development,/CRON_ROLE=WATCHDOG_AND_RECOVERY_ONLY/);
   assert.match(development,/company-development-unity-runtime\.yml/);
   assert.match(development,/vibe2-24h-runner\.yml/);
+  assert.match(webBootstrap,/FULL_APPROVED_SCOPE_REQUIRED=YES/);
+  assert.match(webBootstrap,/deriveApprovedScopeInventory/);
+  assert.match(webValidation,/approvedScopeFullyImplemented/);
+  assert.match(webValidation,/runtimeApprovedScopeCoverage/);
   assert.doesNotMatch(development,/WEB_GAMEPLAY_TESTBED=OPTIONAL/);
   assert.doesNotMatch(development,/NEXT_GATE=UNITY_ANDROID_TECHNICAL_VALIDATION/);
   assert.match(unity,/fromJSON\(needs\.prepare\.outputs\.parallel\)/);
