@@ -31,6 +31,7 @@ jobs:
       request_file: ${{ steps.request.outputs.request_file }}
       game_id: ${{ steps.request.outputs.game_id }}
       request_id: ${{ steps.request.outputs.request_id }}
+      roles: ${{ steps.request.outputs.roles }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -72,8 +73,12 @@ jobs:
           if not re.fullmatch(r'[a-z0-9][a-z0-9-]{1,48}',game): raise SystemExit('invalid gameId')
           if not re.fullmatch(r'[A-Za-z0-9._-]{3,96}',rid): raise SystemExit('invalid requestId')
           if not pathlib.Path(f'unity-games/{game}').is_dir(): raise SystemExit('Unity project missing')
+          directive=json.loads(pathlib.Path('company-directive.json').read_text(encoding='utf-8'))
+          roles=[str(x).strip() for x in directive.get('ai',{}).get('departments',[]) if str(x).strip()]
+          if len(roles)!=7 or len(set(roles))!=len(roles): raise SystemExit(f'canonical department roles invalid: {roles}')
           with open(out,'a',encoding='utf-8') as f:
             f.write(f'request_file={file}\n'); f.write(f'game_id={game}\n'); f.write(f'request_id={rid}\n')
+            f.write('roles='+json.dumps(roles,separators=(',',':'))+'\n')
           PY
 
   departments:
@@ -81,7 +86,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        role: [planning, development, qa, graphics, balance]
+        role: ${{ fromJSON(needs.context.outputs.roles) }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -120,18 +125,25 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - name: Restore five independent department votes
+      - name: Restore canonical department votes
         uses: actions/download-artifact@v4
         with:
           pattern: post-modification-*
           path: .company-revote-output
           merge-multiple: true
-      - name: Verify 5 department votes
+      - name: Verify all canonical department votes
+        env:
+          DEPARTMENT_ROLES_JSON: ${{ needs.context.outputs.roles }}
         shell: bash
         run: |
           set -euo pipefail
-          for role in planning development qa graphics balance; do test -s ".company-revote-output/$role.json"; done
-          echo 'DEPARTMENT_REVOTES=5/5'
+          python3 - <<'PY'
+          import json,os,pathlib
+          roles=json.loads(os.environ['DEPARTMENT_ROLES_JSON'])
+          missing=[role for role in roles if not pathlib.Path(f'.company-revote-output/{role}.json').is_file() or pathlib.Path(f'.company-revote-output/{role}.json').stat().st_size==0]
+          if missing: raise SystemExit('missing department votes: '+','.join(missing))
+          print(f'DEPARTMENT_REVOTES={len(roles)}/{len(roles)}')
+          PY
       - name: Install local Ollama
         shell: bash
         run: |
@@ -180,10 +192,17 @@ jobs:
           REQUEST_FILE: ${{ needs.context.outputs.request_file }}
           GAME_ID: ${{ needs.context.outputs.game_id }}
           REQUEST_ID: ${{ needs.context.outputs.request_id }}
+          DEPARTMENT_ROLES_JSON: ${{ needs.context.outputs.roles }}
         shell: bash
         run: |
           set -euo pipefail
-          for role in planning development qa graphics balance director; do test -s ".company-revote-output/$role.json"; done
+          python3 - <<'PY'
+          import json,os,pathlib
+          roles=json.loads(os.environ['DEPARTMENT_ROLES_JSON'])
+          for role in [*roles,'director']:
+            p=pathlib.Path(f'.company-revote-output/{role}.json')
+            if not p.is_file() or p.stat().st_size==0: raise SystemExit(f'missing vote: {role}')
+          PY
           dest="company-revotes/$GAME_ID/$REQUEST_ID"
           mkdir -p "$dest"
           cp .company-revote-output/*.json "$dest/"
@@ -205,11 +224,17 @@ jobs:
           data['updatedAt']=datetime.datetime.now(datetime.timezone.utc).date().isoformat()
           p.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           PY
-          echo 'POST_MODIFICATION_REVOTE=5_DEPARTMENTS_PLUS_DIRECTOR'
+          count="$(python3 - <<'PY'
+          import json,os
+          print(len(json.loads(os.environ['DEPARTMENT_ROLES_JSON'])))
+          PY
+          )"
+          echo "POST_MODIFICATION_REVOTE=${count}_DEPARTMENTS_PLUS_DIRECTOR"
       - name: Commit verified revote to PR branch
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          DEPARTMENT_ROLES_JSON: ${{ needs.context.outputs.roles }}
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-company-revote'
@@ -221,6 +246,11 @@ jobs:
           fi
           safe_request="$(printf '%s' '${{ needs.context.outputs.request_id }}' | tr -cs 'A-Za-z0-9._-' '-')"
           branch="automation/post-modification-revote-${safe_request}-${GITHUB_RUN_ID}"
+          count="$(python3 - <<'PY'
+          import json,os
+          print(len(json.loads(os.environ['DEPARTMENT_ROLES_JSON'])))
+          PY
+          )"
           git switch -c "$branch"
           git commit -m "company: record ${{ needs.context.outputs.game_id }} post-modification revote"
           git push origin "HEAD:$branch"
@@ -228,4 +258,4 @@ jobs:
             --base main \
             --head "$branch" \
             --title "company: record ${{ needs.context.outputs.game_id }} post-modification revote" \
-            --body "Verified five-department + director revote evidence from workflow run ${GITHUB_RUN_ID}."
+            --body "Verified ${count}-department + director revote evidence from workflow run ${GITHUB_RUN_ID}."
