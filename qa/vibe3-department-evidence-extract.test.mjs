@@ -51,7 +51,8 @@ assert.equal(missingIntroRuntime.passed, false);
 assert.ok(missingIntroRuntime.blockerCodes.includes('RUNTIME_DOMAIN_EVIDENCE_REQUIRED'));
 
 const ungrounded = extractGroundedDepartmentEvidence({ request: { musicEvidence: ['looks great'], introEvidence: ['nice intro'] } });
-assert.equal(ungrounded.evidence.music.length, 2); // field is runtime-bound by field name, but still not domain-specific praise
+assert.equal(ungrounded.evidence.music.length, 1);
+assert.equal(ungrounded.evidence.intro.length, 1);
 assert.equal(evaluateDepartmentEvidence({ role: 'music', evidence: ungrounded.evidence.music, request: {} }).passed, false);
 assert.equal(evaluateDepartmentEvidence({ role: 'intro', evidence: ungrounded.evidence.intro, request: {} }).passed, false);
 
