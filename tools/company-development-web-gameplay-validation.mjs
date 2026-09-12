@@ -1,5 +1,5 @@
 // 파일명: tools/company-development-web-gameplay-validation.mjs
-// DEVELOPMENT_CONFIRMED Web 실제 플레이 + 음악 + 첫 진입 인트로 런타임 검증기.
+// DEVELOPMENT_CONFIRMED Web 실제 플레이 + 음악 + 연출/시네마틱 런타임 검증기.
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
@@ -43,7 +43,9 @@ async function snapshot(page){
     const introState=(document.body?.getAttribute('data-intro-state')||'').toLowerCase();
     const introHandoff=(document.body?.getAttribute('data-intro-handoff')||'').toLowerCase();
     const introControls=[...document.querySelectorAll('[data-intro-control="continue"],[data-intro-control="skip"]')].filter(el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return r.width>0&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden'}).length;
-    return {text,visibleButtons,canvases,dataState,audioState,muteControls,volumeControls,introVisible,introState,introHandoff,introControls,scrollWidth:document.documentElement.scrollWidth,viewportWidth:innerWidth};
+    const cinematicFlag=(document.body?.getAttribute('data-cinematic-applicable')||'').toLowerCase();
+    const cinematicApplicable=cinematicFlag==='true'||Boolean(introNode);
+    return {text,visibleButtons,canvases,dataState,audioState,muteControls,volumeControls,cinematicApplicable,cinematicFlag,introVisible,introState,introHandoff,introControls,scrollWidth:document.documentElement.scrollWidth,viewportWidth:innerWidth};
   });
 }
 export function evaluateGameplayEvidence({before,afterIntro=null,after,interactionCount=0,introInteractionCount=0,consoleErrors=[],pageErrors=[],failedRequests=[],badResponses=[],reloadVisible=false}={}){
@@ -52,15 +54,18 @@ export function evaluateGameplayEvidence({before,afterIntro=null,after,interacti
   const audioBefore=clean(before?.audioState).toLowerCase();
   const audioAfter=clean(after?.audioState).toLowerCase();
   const startsAfterGesture=!['running','playing'].includes(audioBefore)&&['running','playing','muted'].includes(audioAfter);
-  const introFirstEntry=before?.introVisible===true&&clean(before?.introState).toLowerCase()==='visible'&&Number(before?.introControls||0)>=1;
-  const introDismissed=Boolean(afterIntro)&&afterIntro?.introVisible===false&&['continued','skipped'].includes(clean(afterIntro?.introState).toLowerCase())&&clean(afterIntro?.introHandoff).toLowerCase()==='ready';
-  const introHandoff=clean(after?.introHandoff).toLowerCase()==='gameplay-input';
+  const cinematicApplicable=before?.cinematicApplicable===true||clean(before?.cinematicFlag).toLowerCase()==='true';
+  const cinematicFirstEntry=cinematicApplicable&&before?.introVisible===true&&clean(before?.introState).toLowerCase()==='visible'&&Number(before?.introControls||0)>=1;
+  const cinematicDismissed=cinematicApplicable&&Boolean(afterIntro)&&afterIntro?.introVisible===false&&['continued','skipped'].includes(clean(afterIntro?.introState).toLowerCase())&&clean(afterIntro?.introHandoff).toLowerCase()==='ready';
+  const firstMeaningfulInputHandoff=cinematicApplicable?clean(after?.introHandoff).toLowerCase()==='gameplay-input':interactionCount>0&&stateChanged;
   if(Number(before?.visibleButtons||0)<1)blockers.push('VISIBLE_GAMEPLAY_CONTROL_REQUIRED');
-  if(!introFirstEntry)blockers.push('INTRO_FIRST_ENTRY_STATE_REQUIRED');
-  if(introInteractionCount<1)blockers.push('INTRO_SKIP_OR_CONTINUE_CONTROL_REQUIRED');
-  if(!introDismissed)blockers.push('INTRO_DISMISS_STATE_REQUIRED');
+  if(cinematicApplicable){
+    if(!cinematicFirstEntry)blockers.push('CINEMATIC_FIRST_ENTRY_STATE_REQUIRED');
+    if(introInteractionCount<1)blockers.push('CINEMATIC_SKIP_OR_CONTINUE_CONTROL_REQUIRED');
+    if(!cinematicDismissed)blockers.push('CINEMATIC_DISMISS_STATE_REQUIRED');
+  }
   if(interactionCount<1)blockers.push('NO_GAMEPLAY_INTERACTION_DELIVERED');
-  if(!introHandoff)blockers.push('INTRO_FIRST_MEANINGFUL_INPUT_HANDOFF_REQUIRED');
+  if(!firstMeaningfulInputHandoff)blockers.push('CINEMATIC_FIRST_MEANINGFUL_INPUT_HANDOFF_REQUIRED');
   if(!stateChanged)blockers.push('NO_OBSERVABLE_GAME_STATE_CHANGE');
   if(Number(after?.scrollWidth||0)>Number(after?.viewportWidth||0)+2)blockers.push('MOBILE_HORIZONTAL_OVERFLOW');
   if(!reloadVisible)blockers.push('RELOAD_VISIBILITY_FAILED');
@@ -74,8 +79,8 @@ export function evaluateGameplayEvidence({before,afterIntro=null,after,interacti
   for(const item of badResponses)blockers.push(`RESPONSE:${item}`);
   const unique=[...new Set(blockers)];
   const musicRuntime={required:true,startsAfterUserGesture:startsAfterGesture,muteControl:Number(before?.muteControls||0)>0,volumeControl:Number(before?.volumeControls||0)>0,beforeState:audioBefore||null,afterState:audioAfter||null,pass:unique.every(x=>!x.startsWith('MUSIC_'))};
-  const introRuntime={required:true,firstEntryVisible:introFirstEntry,continueOrSkipUsed:introInteractionCount>0,dismissedToGameplayReady:introDismissed,firstMeaningfulInputHandoff:introHandoff,beforeState:clean(before?.introState).toLowerCase()||null,afterDismissState:clean(afterIntro?.introState).toLowerCase()||null,afterGameplayHandoff:clean(after?.introHandoff).toLowerCase()||null,pass:unique.every(x=>!x.startsWith('INTRO_'))};
-  return {pass:unique.length===0,blockers:unique,stateChanged,musicRuntime,introRuntime};
+  const cinematicRuntime={departmentReviewRequired:true,contentRequired:false,applicable:cinematicApplicable,notApplicable:!cinematicApplicable,firstEntryVisible:cinematicApplicable?cinematicFirstEntry:null,continueOrSkipUsed:cinematicApplicable?introInteractionCount>0:null,dismissedToGameplayReady:cinematicApplicable?cinematicDismissed:null,firstMeaningfulInputHandoff,beforeState:clean(before?.introState).toLowerCase()||null,afterDismissState:clean(afterIntro?.introState).toLowerCase()||null,afterGameplayHandoff:clean(after?.introHandoff).toLowerCase()||null,pass:unique.every(x=>!x.startsWith('CINEMATIC_'))};
+  return {pass:unique.length===0,blockers:unique,stateChanged,musicRuntime,cinematicRuntime,introRuntime:cinematicRuntime};
 }
 
 export async function runGameplayValidation({gameId,sourcePath,port=4181,output='',screenshot=''}={}){
@@ -123,12 +128,12 @@ export async function runGameplayValidation({gameId,sourcePath,port=4181,output=
     const reloadVisible=await page.evaluate(()=>Boolean(document.body&&document.body.getBoundingClientRect().width>0&&document.body.getBoundingClientRect().height>0));
     const verdict=evaluateGameplayEvidence({before,afterIntro,after,interactionCount,introInteractionCount,consoleErrors,pageErrors,failedRequests,badResponses,reloadVisible});
     const report={
-      version:3,gameId,target:'web',status:verdict.pass?'PASS':'FAIL',pass:verdict.pass,validated:verdict.pass,
-      realEvidenceExists:true,gameplayInteractionPerformed:interactionCount>0,interactionCount,introInteractionCount,stateChanged:verdict.stateChanged,musicRuntime:verdict.musicRuntime,introRuntime:verdict.introRuntime,
+      version:4,gameId,target:'web',status:verdict.pass?'PASS':'FAIL',pass:verdict.pass,validated:verdict.pass,
+      realEvidenceExists:true,gameplayInteractionPerformed:interactionCount>0,interactionCount,introInteractionCount,stateChanged:verdict.stateChanged,musicRuntime:verdict.musicRuntime,cinematicRuntime:verdict.cinematicRuntime,introRuntime:verdict.introRuntime,
       runtimeSmokePassed:consoleErrors.length===0&&pageErrors.length===0&&failedRequests.length===0&&badResponses.length===0&&reloadVisible,
       mobileViewport:{width:390,height:844,touch:true},before,afterIntro,after,reloadVisible,
       blockers:verdict.blockers,consoleErrors,pageErrors,failedRequests,badResponses,
-      evidence:[`interactionCount=${interactionCount}`,`stateChanged=${verdict.stateChanged}`,`reloadVisible=${reloadVisible}`,`mobileOverflow=${Number(after.scrollWidth||0)<=Number(after.viewportWidth||0)+2}`,`musicRuntime=${verdict.musicRuntime.pass}`,`musicAfterGesture=${verdict.musicRuntime.startsAfterUserGesture}`,`introRuntime=${verdict.introRuntime.pass}`,`introFirstEntry=${verdict.introRuntime.firstEntryVisible}`,`introHandoff=${verdict.introRuntime.firstMeaningfulInputHandoff}`],
+      evidence:[`interactionCount=${interactionCount}`,`stateChanged=${verdict.stateChanged}`,`reloadVisible=${reloadVisible}`,`mobileOverflow=${Number(after.scrollWidth||0)<=Number(after.viewportWidth||0)+2}`,`musicRuntime=${verdict.musicRuntime.pass}`,`musicAfterGesture=${verdict.musicRuntime.startsAfterUserGesture}`,`cinematicApplicable=${verdict.cinematicRuntime.applicable}`,`cinematicRuntime=${verdict.cinematicRuntime.pass}`,`firstMeaningfulInputHandoff=${verdict.cinematicRuntime.firstMeaningfulInputHandoff}`],
       checkedAt:new Date().toISOString(),sourcePath:source,url
     };
     if(screenshot){fs.mkdirSync(path.dirname(screenshot),{recursive:true});await page.screenshot({path:screenshot,fullPage:true});report.screenshot=screenshot;}
