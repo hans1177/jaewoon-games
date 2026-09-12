@@ -7,8 +7,11 @@ const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)
 const nowIso=()=>new Date().toISOString();
 const ALLOWED_TARGET_PLATFORMS=new Set(['ROBLOX','UNITY','FORTNITE_UEFN']);
 const selectedPlatformOf=seed=>{
-  const value=String(seed?.INITIAL_TARGET_PLATFORM||'ROBLOX').trim().toUpperCase();
-  return ALLOWED_TARGET_PLATFORMS.has(value)?value:'ROBLOX';
+  const raw=String(seed?.INITIAL_TARGET_PLATFORM||'').trim().toUpperCase().replaceAll('-','_');
+  if(raw==='ANDROID_MOBILE'||raw==='UNITY_ANDROID')return 'UNITY';
+  if(raw==='UEFN'||raw==='FORTNITE')return 'FORTNITE_UEFN';
+  if(ALLOWED_TARGET_PLATFORMS.has(raw))return raw;
+  return 'ROBLOX';
 };
 
 export function promoteReadyDesignSeeds({root='.'}={}){
