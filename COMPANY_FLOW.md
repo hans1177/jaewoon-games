@@ -654,6 +654,34 @@ learning:
     - FIXED_HOLDOUT_AB
     - CANARY
     - PROMOTE_OR_ROLLBACK
+  platformTrainingArchitecture:
+    mode: SHARED_CANONICAL_TRAINER_WITH_PLATFORM_ISOLATED_LANES
+    canonicalTrainerCount: 1
+    platformTaskTypes:
+      - roblox
+      - unity
+      - fortnite_uefn
+    laneIsolation:
+      verifiedEvidence: true
+      dataset: true
+      adapter: true
+      runtimeGate: true
+    platformLanesAreNotParallelPipelines: true
+    readinessEvaluatedPerTaskType: true
+    blockedLaneCannotBorrowCopyOrFabricateSamples: true
+    realVerifiedPlatformEvidenceRequired: true
+    syntheticPlatformTrainingForbidden: true
+    commonRealDatasetGate: tools/vibe2-real-platform-dataset-gate.mjs
+    commonLocalTrainer: tools/vibe2-train.py
+    canonicalStatusBuilder: tools/vibe2-distillation-status.mjs
+    deterministicRequestBuilder: tools/vibe2-training-request.mjs
+    hourlyRefreshWorkflow: Vibe2 Distillation Sample Ingest
+    secondCronOrShadowRefreshForbidden: true
+    localSelfHostedWeightTrainingOnly: true
+    freshAdapterState: TRAINED_UNVERIFIED
+    promotionRequires:
+      - FIXED_HOLDOUT_AB
+      - CANARY
   platformSpecificParallelDistillationForbidden: true
   duplicateDistillationTriggerForbidden: true
   shadowDatasetOrTrainerForbidden: true
