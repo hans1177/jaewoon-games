@@ -114,8 +114,16 @@ export function sourceFingerprint({platform,sourceRevision='',dependencyFingerpr
 }
 
 export function failureSignature({stage='',code='',message=''}={}){
-  const normalizedMessage=clean(message).replace(/[0-9a-f]{7,40}/gi,'<REV>').replace(/\d+/g,'<N>').slice(0,500);
-  return crypto.createHash('sha256').update(JSON.stringify({stage:upper(stage),code:upper(code),message:normalizedMessage})).digest('hex');
+  const normalizedStage=upper(stage);
+  const normalizedCode=upper(code);
+  const normalizedMessage=normalizedCode==='STAGE_NOT_PASSED'
+    ? 'COMMON_STAGE_NOT_PASSED'
+    : clean(message)
+      .replace(/[0-9a-f]{7,40}/gi,'<REV>')
+      .replace(/\d+/g,'<N>')
+      .replace(/[a-z0-9]+(?:-[a-z0-9]+){2,}/gi,'<ID>')
+      .slice(0,500);
+  return crypto.createHash('sha256').update(JSON.stringify({stage:normalizedStage,code:normalizedCode,message:normalizedMessage})).digest('hex');
 }
 
 export function normalizeCommonEvidence(evidence={},defaults={}){
