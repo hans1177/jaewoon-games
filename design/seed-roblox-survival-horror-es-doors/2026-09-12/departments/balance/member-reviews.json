@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-survival-horror-es-doors",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "keep-1"
+        ],
+        "fix": [
+          "fix-1"
+        ],
+        "add": [
+          "add-1"
+        ],
+        "risks": [
+          "risk-1"
+        ],
+        "evidence": [
+          "evidence-1"
+        ],
+        "questions": [
+          "question-1"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "The game will gradually introduce new challenges and content, encouraging players to explore and adapt to the evolving threat."
+        ],
+        "fix": [
+          "The game will evolve its difficulty based on player performance."
+        ],
+        "add": [
+          "The game will introduce branching paths and rewards that reward players for taking risks and experimenting with different strategy"
+        ],
+        "risks": [
+          "The game will introduce branching paths and rewards that reward players for taking risks and experimenting with different strategy"
+        ],
+        "evidence": [
+          "The game will introduce branching paths and rewards that reward players for taking risks and experimenting with different strategy"
+        ],
+        "questions": [
+          "The game will introduce branching paths and rewards that reward players for taking risks and experimenting with different strategy"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "A focus on creating a believable and immersive world."
+        ],
+        "fix": [
+          "A system of branching paths and rewards will reward players for taking risks."
+        ],
+        "add": [
+          "Game state, level progress, and system parameters."
+        ],
+        "risks": [
+          "GAME_SYSTEM_DATA_SYSTEM"
+        ],
+        "evidence": [
+          "GAME_DATA_MARKER"
+        ],
+        "questions": [
+          "GAME_CATEGORY"
+        ]
+      }
+    }
+  ]
+}

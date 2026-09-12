@@ -1,0 +1,67 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-survival-horror-es-doors",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "SEED-ROBLOX-SURVIVAL_HORROR_ESCAPE-001",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "gemma3:1b",
+  "sameModelAsDraft": true,
+  "appliedConsensusCount": 4,
+  "unresolvedConflictCount": 0,
+  "heldCount": 0,
+  "status": "DESIGN_BASELINE_CANDIDATE",
+  "content": {
+    "identity": "Last Lantern",
+    "playerFantasy": "A lone survivor in a decaying, claustrophobic world, haunted by a forgotten past and battling relentless threats.",
+    "coreFun": "Survive and Threat while utilizing its own world, visual identity, progression, economy, content, and interaction design.",
+    "coreLoop": [
+      "Enter a dangerous area with limited information, identify the current threat, and search for a route, key item, resource, or safe checkpoint.",
+      "Avoid, outplay, or temporarily resist the threat while managing resources and cooperating with nearby players when teamwork is available.",
+      "Reach a checkpoint or escape condition, convert survival progress into unlocks or knowledge, and attempt a harder segment with new threat patterns."
+    ],
+    "signatureSystems": [
+      {
+        "name": "ROBLOX_SURVIVAL_HORROR_ESCAPE",
+        "purpose": "Define the core gameplay loop and player experience.",
+        "playerChoice": "Dynamic level design and threat progression.  Player choices directly impact the environment.  A focus on emergent gameplay and player agency.  A sense of mystery and discovery.  A growing sense of dread and isolation.  A system of rewards that are based on player actions and risk."
+      },
+      {
+        "name": "GAME_DATA_MARKER",
+        "purpose": "Provide information about the game world and its elements.",
+        "playerChoice": "Access to lore, quests, and events.  A detailed world map and environmental data.  A system of clues and hints.  A way to track player progress and objectives.  A system of data points that can be used to create a dynamic story."
+      },
+      {
+        "name": "PLAYER_FEEDBACK_SYSTEM",
+        "purpose": "Gather feedback from players and use it to improve the game.",
+        "playerChoice": "In-game feedback forms, surveys, and community forums.  A system of rewards for providing feedback.  A way to track player engagement and satisfaction.  A system of reporting issues and bugs.  A system of positive reinforcement for good player behavior."
+      },
+      {
+        "name": "DATA_STREAM_SYSTEM",
+        "purpose": "Track player actions and data.",
+        "playerChoice": "Tracking player actions (e.g., resource gathering, combat, exploration).  Tracking player progress and achievements.  Tracking player behavior and preferences.  A system of data storage and retrieval.  A system of data security.  A system of data privacy.  A system of data access control."
+      },
+      {
+        "name": "USER_DATA_SYSTEM",
+        "purpose": "Store player information and preferences.",
+        "playerChoice": "User profile, preferences, and settings.  A system of data storage and retrieval.  A system of data security.  A system of data privacy.  A system of data access control."
+      },
+      {
+        "name": "GAME_SYSTEM_DATA_SYSTEM",
+        "purpose": "Manage the game's core systems.",
+        "playerChoice": "Game state, level progress, and system parameters.  A system of data validation and integrity checks.  A system of data backup and recovery.  A system of data versioning.  A system of data monitoring.  A system of data auditability."
+      }
+    ],
+    "progressionDirection": "The game will gradually introduce new challenges and content, encouraging players to explore and adapt to the evolving threat.  A system of branching paths and rewards will reward players for taking risks and experimenting with different strategies.  The game will evolve its difficulty based on player performance.",
+    "visualDirection": "A stylized, slightly unsettling aesthetic.  Dark, muted colors, atmospheric lighting, and detailed environmental design.  Emphasis on visual storytelling and creating a sense of dread.  A focus on creating a believable and immersive world.",
+    "mobileUx": "The game will be designed with mobile play in mind, with a focus on touch-screen controls and responsive gameplay.  The game will be playable on a wide range of mobile devices.  The game will be optimized for a variety of screen sizes.  The game will be optimized for a variety of mobile devices.  The game will be playable on a variety of mobile devices.",
+    "marketTargetDirection": "Global, with a focus on younger audiences (16-24 years old) who enjoy survival horror and escape games.",
+    "steamExpansionDecision": "NO",
+    "multiplayerExpansionDecision": "NO",
+    "technicalAssumptions": [],
+    "validationQuestions": [],
+    "openQuestions": []
+  }
+}

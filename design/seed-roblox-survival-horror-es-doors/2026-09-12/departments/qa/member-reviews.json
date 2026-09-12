@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-survival-horror-es-doors",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "qa"
+        ],
+        "fix": [
+          "qa"
+        ],
+        "add": [
+          "qa"
+        ],
+        "risks": [
+          "qa"
+        ],
+        "evidence": [
+          "qa"
+        ],
+        "questions": [
+          "qa"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "keep-1"
+        ],
+        "fix": [
+          "fix-1"
+        ],
+        "add": [
+          "add-1"
+        ],
+        "risks": [
+          "risk-1"
+        ],
+        "evidence": [
+          "evidence-1"
+        ],
+        "questions": [
+          "question-1"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "What are the specific details of the game world and its elements?"
+        ],
+        "fix": [
+          "What are the specific details of the game world and its elements?"
+        ],
+        "add": [
+          "What are the specific details of the game world and its elements?"
+        ],
+        "risks": [
+          "What are the specific details of the game world and its elements?"
+        ],
+        "evidence": [
+          "What are the specific details of the game world and its elements?"
+        ],
+        "questions": [
+          "What are the specific details of the game world and its elements?"
+        ]
+      }
+    }
+  ]
+}

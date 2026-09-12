@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "gameId": "seed-roblox-survival-horror-es-doors",
+  "date": "2026-09-12",
+  "state": "REDESIGN",
+  "sameDesignerRevisionAttempted": true,
+  "repeatedFiveDepartmentReview": true,
+  "allFiveLeadModelsReviewed": true,
+  "discardVotes": 1,
+  "commonFatalCriteria": [],
+  "unanimousFatalDiscard": false,
+  "fatalReviews": {
+    "planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "The game world and elements should be well-documented and accessible, with specific details provided.",
+        "The game's structure and content should encourage exploration and adaptation, ensuring a balance between difficulty and player engagement.",
+        "The visual and narrative elements should be stylized and unsettling, while the development process should focus on maintaining a balance between creativity and practical execution."
+      ],
+      "reason": "The game development plan is in CONSENSUS state, with the core gameplay loop and player experience defined, the game world and elements well-documented and accessible, new challenges and content encouraging exploration and adaptation, and a balance between difficulty and player engagement. The graphics are stylized and unsettling, while the development process maintains a balance between creativity and practical execution. The QA process is open and inclusive, with a focus on providing evidence and specific details."
+    },
+    "graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "GAME_SEED",
+        "VALID_FATAL_CRITERIA",
+        "PLAYER_FEEDBACK_SYSTEM",
+        "DATA_STREAM_SYSTEM"
+      ],
+      "reason": "The game design is overly ambitious and lacks a clear, focused core loop. The visual direction is unsettling, but the gameplay is not well-defined. The game is designed for a specific target audience (younger players) and lacks a strong sense of progression and challenge. The game's core loop is too broad and doesn't offer a unique or compelling experience. The game is not designed to be a successful product. The game is not well-suited for the target platform. The game is not well-suited for the game's core gameplay loop. The game's design is not well-suited for the target audience. The game's design is not well-suited for the game's core gameplay loop. The game's design is not well-suited."
+    },
+    "development": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json",
+        "game-seed-platform-profiles.json"
+      ],
+      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. VALID_FATAL_CRITERIA=["
+    },
+    "qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "VALID_FATAL_CRITERIA",
+        "GAME_SEED",
+        "REVISED_DESIGN"
+      ],
+      "reason": "The current design does not meet the criteria for active gameplay due to the presence of fatal design blockers. The proposed redesign addresses these issues and ensures the game's core fun and distinct identity can be recovered."
+    },
+    "balance": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [],
+      "reason": "The game world and elements should be well-documented and accessible, with specific details provided. The game's structure and content should encourage exploration and adaptation, ensuring a balance between difficulty and player engagement. The visual and narrative elements should be stylized and unsettling, while the development process should focus on maintaining a balance between creativity and practical execution."
+    }
+  },
+  "marketMetricAloneUsedForDiscard": false
+}

@@ -1,0 +1,83 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-survival-horror-es-doors",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks"
+      ],
+      "revision": [
+        "evidence",
+        "questions"
+      ],
+      "reason": "The game world and its elements should be well-documented and accessible, with specific details provided. The game's structure and content should encourage exploration and adaptation, ensuring a balance between difficulty and player engagement. The visual and narrative elements should be stylized and unsettling, while the development process should focus on maintaining a balance between creativity and practical execution."
+    },
+    "graphics": {
+      "accept": [
+        "Keep the dark, muted colors, atmospheric lighting, detailed environmental design"
+      ],
+      "challenge": [
+        "Stylized, slightly unsettling aesthetic"
+      ],
+      "revision": [
+        "Visual storytelling and creating a sense of dread"
+      ],
+      "reason": "Risks: VISUAL_DIRECTION"
+    },
+    "development": {
+      "accept": [
+        " OWN ",
+        " OTHERS "
+      ],
+      "challenge": [
+        " OWN ",
+        " OTHERS "
+      ],
+      "revision": [
+        " OWN ",
+        " OTHERS "
+      ],
+      "reason": " OWN "
+    },
+    "qa": {
+      "accept": [
+        "qa"
+      ],
+      "challenge": [
+        "qa"
+      ],
+      "revision": [
+        "qa"
+      ],
+      "reason": "qa 부서의 의견을 수용하여 게임 세계와 요소에 대한 자세한 정보를 제공하고, 이를 통해 게임의 재미와 참여성을 높일 수 있습니다."
+    },
+    "balance": {
+      "accept": [
+        "keep-1"
+      ],
+      "challenge": [
+        "fix-1"
+      ],
+      "revision": [
+        "add-1"
+      ],
+      "reason": "]]},{"
+    }
+  }
+}

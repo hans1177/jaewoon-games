@@ -1,0 +1,169 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-survival-horror-es-doors",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen3:0.6b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "Define the core gameplay loop and player experience."
+      ],
+      "fix": [
+        "Ensure that the game world and its elements are well-documented and accessible."
+      ],
+      "add": [
+        "Introduce new challenges and content that encourage exploration and adaptation."
+      ],
+      "risks": [
+        "Balance the difficulty to maintain player engagement and risk-taking."
+      ],
+      "evidence": [
+        "Provide evidence that the game world and its elements are well-documented and accessible."
+      ],
+      "questions": [
+        "What are the specific details of the game world and its elements?"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "Dark, muted colors, atmospheric lighting, detailed environmental design."
+      ],
+      "fix": [
+        "Stylized, slightly unsettling aesthetic."
+      ],
+      "add": [
+        "Visual storytelling and creating a sense of dread."
+      ],
+      "risks": [
+        "VISUAL_DIRECTION"
+      ],
+      "evidence": [
+        "DOORS"
+      ],
+      "questions": [
+        "GAME_CATEGORY"
+      ]
+    },
+    "development": {
+      "keep": [
+        "game-seed"
+      ],
+      "fix": [
+        "game-seed"
+      ],
+      "add": [
+        "game-seed"
+      ],
+      "risks": [
+        "game-seed"
+      ],
+      "evidence": [
+        "game-seed"
+      ],
+      "questions": [
+        "game-seed"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "qa"
+      ],
+      "fix": [
+        "qa"
+      ],
+      "add": [
+        "qa"
+      ],
+      "risks": [
+        "qa"
+      ],
+      "evidence": [
+        "qa"
+      ],
+      "questions": [
+        "qa"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "keep-1"
+      ],
+      "fix": [
+        "fix-1"
+      ],
+      "add": [
+        "add-1"
+      ],
+      "risks": [
+        "risk-1"
+      ],
+      "evidence": [
+        "evidence-1"
+      ],
+      "questions": [
+        "question-1"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "The game development plan is in CONSENSUS state, with the core gameplay loop and player experience defined, the game world and elements well-documented and accessible, new challenges and content encouraging exploration and adaptation, and a balance between difficulty and player engagement. The graphics are stylized and unsettling, while the development process maintains a balance between creativity and practical execution. The QA process is open and inclusive, with a focus on providing evidence and specific details.",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "The game world and elements should be well-documented and accessible, with specific details provided. The game's structure and content should encourage exploration and adaptation, ensuring a balance between difficulty and player engagement. The visual and narrative elements should be stylized and unsettling, while the development process should focus on maintaining a balance between creativity and practical execution.",
+      "departments": [
+        "planning",
+        "graphics",
+        "development",
+        "qa"
+      ]
+    },
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "Risks: VISUAL_DIRECTION",
+      "departments": [
+        "graphics"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": " OWN ",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "qa 부서의 의견을 수용하여 게임 세계와 요소에 대한 자세한 정보를 제공하고, 이를 통해 게임의 재미와 참여성을 높일 수 있습니다.",
+      "departments": [
+        "qa"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 4,
+    "conflict": 0,
+    "hold": 0
+  }
+}

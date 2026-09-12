@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-survival-horror-es-doors",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Dark, muted colors, atmospheric lighting, detailed environmental design."
+        ],
+        "fix": [
+          "Stylized, slightly unsettling aesthetic."
+        ],
+        "add": [
+          "Visual storytelling and creating a sense of dread."
+        ],
+        "risks": [
+          "VISUAL_DIRECTION"
+        ],
+        "evidence": [
+          "DOORS"
+        ],
+        "questions": [
+          "GAME_CATEGORY"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "graphics"
+        ],
+        "fix": [
+          "graphics"
+        ],
+        "add": [
+          "graphics"
+        ],
+        "risks": [
+          "graphics"
+        ],
+        "evidence": [
+          "graphics"
+        ],
+        "questions": [
+          "graphics"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-survival-horror-es-doors",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Define the core gameplay loop and player experience."
+        ],
+        "fix": [
+          "Ensure that the game world and its elements are well-documented and accessible."
+        ],
+        "add": [
+          "Introduce new challenges and content that encourage exploration and adaptation."
+        ],
+        "risks": [
+          "Balance the difficulty to maintain player engagement and risk-taking."
+        ],
+        "evidence": [
+          "Provide evidence that the game world and its elements are well-documented and accessible."
+        ],
+        "questions": [
+          "What are the specific details of the game world and its elements?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ROBLOX Survival Horror Escape"
+        ],
+        "fix": [
+          "SURVIVE AND THREAT"
+        ],
+        "add": [
+          "GAME_SEED"
+        ],
+        "risks": [
+          "TARGET_DESIGN_REFERENCE"
+        ],
+        "evidence": [
+          "DOORS"
+        ],
+        "questions": [
+          "GAME_CATEGORY"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    }
+  ]
+}
