@@ -34,14 +34,15 @@ test('central RELEASE_CONFIRMED policy keeps the selected-platform gated direct 
     'executionMode: GATED_DIRECT_RELEASE_PRODUCTION',
     'target: PROJECT_SELECTED_PLATFORM',
     '- LOAD_DEVELOPMENT_BASELINE',
+    '- LOAD_CANONICAL_WEB_GAME',
     '- CORE_DESIGN_LOCK',
     '- VIBE2_PRIMARY_DEVELOPMENT',
     '- BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE',
     '- TARGET_PLATFORM_BUILD_OR_PACKAGE',
-    '- FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT',
+    '- SEVEN_DISTINCT_LEAD_BUILD_PREFLIGHT',
     '- TARGET_PLATFORM_RUNTIME_VALIDATION',
     '- INDEPENDENT_QA_AND_REGRESSION',
-    '- FIVE_DISTINCT_LEAD_FINAL_RELEASE_REVIEW',
+    '- SEVEN_DISTINCT_LEAD_FINAL_RELEASE_REVIEW',
     '- VIBE2_FIX_AND_REBUILD_LOOP_IF_REQUIRED',
     '- RELEASE_GATE',
     '- RELEASE_BASELINE',
@@ -56,17 +57,29 @@ test('central RELEASE_CONFIRMED policy keeps the selected-platform gated direct 
     'finalReviewMustReadSameCurrentBuildRuntimeQaEvidence: true',
     'independentQaSeparatedFromVibe2SelfCheck: true',
     'sourceChangeInvalidatesOldBuildValidation: true',
+    'musicAndIntroReviewNonBlockingForRelease: true',
     'aiMayInventBuildPass: false',
     'aiMayInventDeviceValidationPass: false',
     'aiMayInventIndependentQaPass: false',
   ]) assert.ok(releaseFlow.includes(token), `central release contract missing: ${token}`);
 });
 
+test('release runner executes seven reviews and counts blockers only from five core departments', () => {
+  assert.match(runner, /COMPANY_DEPARTMENT_ROLES/);
+  assert.match(runner, /COMPANY_BLOCKING_DEPARTMENT_ROLES/);
+  assert.match(runner, /COMPANY_ADVISORY_DEPARTMENT_ROLES/);
+  assert.match(runner, /const ROLES=\[\.\.\.COMPANY_DEPARTMENT_ROLES\]/);
+  assert.match(runner, /const BLOCKING_ROLES=\[\.\.\.COMPANY_BLOCKING_DEPARTMENT_ROLES\]/);
+  assert.match(runner, /const ADVISORY_ROLES=\[\.\.\.COMPANY_ADVISORY_DEPARTMENT_ROLES\]/);
+  assert.match(runner, /if\(blockingForProgression\)releaseBlockerCount\+=representative\.blockers\.length/);
+  assert.match(runner, /advisoryDepartmentFailureBlocksRelease:false/);
+  assert.doesNotMatch(runner, /const ROLES=\['planning','graphics','development','qa','balance'\]/);
+});
+
 test('current Unity provider binds implementation/build evidence to current Unity source', () => {
   assert.match(runner, /productionClass!==PRODUCTION_CLASSES\.RELEASE_CONFIRMED/);
   assert.doesNotMatch(runner, /productionTier\s*===?\s*1/);
   assert.doesNotMatch(runner, /Number\([^\n]*productionTier[^\n]*\)\s*===?\s*1/);
-
   for (const token of [
     'currentUnitySourceTreeSha()',
     "git',['rev-parse',`HEAD:${unityProjectPath}`]",
@@ -85,7 +98,6 @@ test('build preflight cannot replace same-build runtime, independent QA, or fina
     "latestFile('independent-release-qa.json')",
     "phase:'FINAL_RELEASE_REVIEW'",
   ], 'release evidence sequence');
-
   assert.match(runner, /FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_RUNTIME_PASS/);
   assert.match(runner, /FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_INDEPENDENT_QA_PASS/);
   assert.match(runner, /runtime\?\.state!==['"]PASS['"]\|\|runtime\?\.bound!==true/);
@@ -94,23 +106,19 @@ test('build preflight cannot replace same-build runtime, independent QA, or fina
   assert.match(runner, /finalDepartmentRiskWatchUsesBuildRuntimeQaEvidence:true/);
 });
 
-test('release baseline and final artbook are reachable only after current-build evidence and final review', () => {
+test('release baseline and final artbook are reachable only after current-build evidence and blocking review', () => {
   const runtimeIndex = runner.indexOf("latestFile('android-runtime-validation.json')");
   const qaIndex = runner.indexOf("latestFile('independent-release-qa.json')");
   const finalReviewIndex = runner.indexOf("phase:'FINAL_RELEASE_REVIEW'");
   const releaseBaselineIndex = runner.indexOf("const releaseBaselinePath=path.join(base,'release-baseline.json')");
   const artbookEditorIndex = runner.indexOf("release-artbook-editor");
   const readyIndex = runner.indexOf("writeState('RELEASE_READY'");
-
-  for (const [name, index] of Object.entries({runtimeIndex, qaIndex, finalReviewIndex, releaseBaselineIndex, artbookEditorIndex, readyIndex})) {
-    assert.ok(index >= 0, `missing ${name}`);
-  }
+  for (const [name, index] of Object.entries({runtimeIndex, qaIndex, finalReviewIndex, releaseBaselineIndex, artbookEditorIndex, readyIndex})) assert.ok(index >= 0, `missing ${name}`);
   assert.ok(runtimeIndex < qaIndex);
   assert.ok(qaIndex < finalReviewIndex);
   assert.ok(finalReviewIndex < releaseBaselineIndex);
   assert.ok(releaseBaselineIndex < artbookEditorIndex);
   assert.ok(artbookEditorIndex < readyIndex);
-
   assert.match(runner, /finalDepartmentReviewEvidenceBound:true/);
   assert.match(runner, /finalArtbookOnlyAfterReleaseReady:true/);
   assert.match(runner, /departmentPageAuthorship:false/);
