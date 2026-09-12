@@ -49,11 +49,10 @@ function normalizeGroundedItem(item, fallbackBinding = {}) {
 
 function addFieldEvidence(out, role, field, value, request) {
   const values = Array.isArray(value) ? value : value == null ? [] : [value];
-  const fallback = {
-    artifact: request.buildRunId || request.workflowRunId || request.artifactId,
-    source: request.sourceRevision ? `revision:${request.sourceRevision}` : '',
-    runtime: field
-  };
+  const fallback = {};
+  const runIdentity = clean(request.buildRunId || request.workflowRunId || request.artifactId);
+  if (runIdentity) fallback.artifact = runIdentity;
+  else if (clean(request.sourceRevision)) fallback.source = `revision:${clean(request.sourceRevision)}`;
   for (const item of values) {
     const normalized = normalizeGroundedItem(item, fallback);
     if (normalized) out[role].push(normalized);
@@ -97,8 +96,11 @@ export function extractGroundedDepartmentEvidence({ request = {}, sourceEvidence
     for (const role of rolesForSourceItem(item)) roles[role].push(`${tag} ${text}`);
   }
 
-  if (request.buildConclusion) roles.development.push(`[artifact:${clean(request.buildRunId || request.workflowRunId || 'build')}] buildConclusion=${clean(request.buildConclusion)}`);
-  if (request.buildConclusion) roles.qa.push(`[artifact:${clean(request.buildRunId || request.workflowRunId || 'build')}] buildConclusion=${clean(request.buildConclusion)}`);
+  const buildIdentity = clean(request.buildRunId || request.workflowRunId || request.artifactId);
+  if (request.buildConclusion && buildIdentity) {
+    roles.development.push(`[artifact:${buildIdentity}] buildConclusion=${clean(request.buildConclusion)}`);
+    roles.qa.push(`[artifact:${buildIdentity}] buildConclusion=${clean(request.buildConclusion)}`);
+  }
 
   addRuntimeBoolean(roles, 'qa', request, 'runtimeSmokePassed');
   addRuntimeConclusion(roles, 'qa', request, 'runtimeTestConclusion');
@@ -109,7 +111,10 @@ export function extractGroundedDepartmentEvidence({ request = {}, sourceEvidence
   addRuntimeBoolean(roles, 'music', request, 'musicMuteControlPassed');
   addRuntimeBoolean(roles, 'music', request, 'musicVolumeControlPassed');
   addRuntimeConclusion(roles, 'music', request, 'musicRuntimeConclusion');
-  if (request.audioLicenseVerified === true) roles.music.push('[artifact:audio-license] audioLicenseVerified=true');
+  if (request.audioLicenseVerified === true && clean(request.audioLicenseArtifact || request.audioLicenseSource)) {
+    const binding = request.audioLicenseArtifact ? `[artifact:${clean(request.audioLicenseArtifact)}]` : `[source:${clean(request.audioLicenseSource)}]`;
+    roles.music.push(`${binding} audioLicenseVerified=true`);
+  }
   if (request.runtimeNetworkAudioDependency === false) roles.music.push('[runtime:runtimeNetworkAudioDependency] runtimeNetworkAudioDependency=false');
 
   addRuntimeBoolean(roles, 'intro', request, 'introVisible');
@@ -122,11 +127,12 @@ export function extractGroundedDepartmentEvidence({ request = {}, sourceEvidence
   const normalized = Object.fromEntries(COMPANY_DEPARTMENT_ROLES.map((role) => [role, normalizeDepartmentEvidence(roles[role], 24)]));
   const counts = Object.fromEntries(COMPANY_DEPARTMENT_ROLES.map((role) => [role, normalized[role].length]));
   return Object.freeze({
-    version: 1,
+    version: 2,
     departments: COMPANY_DEPARTMENT_ROLES,
     evidence: Object.freeze(normalized),
     counts: Object.freeze(counts),
     groundedOnly: true,
+    unboundEvidenceDropped: true,
     modelInventedEvidenceAllowed: false,
     authority: 'vibe3-grounded-department-evidence-extractor'
   });
