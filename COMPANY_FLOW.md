@@ -384,6 +384,284 @@ aiOrganization:
   paidAiAllowed: false
   paidRunnerAllowed: false
 
+assetPolicy:
+  centralSourceOnly: true
+  visibleGameElementsRequireRealAssets: true
+  visibleElementScope:
+    - BACKGROUND
+    - TERRAIN
+    - FLOOR
+    - CHARACTER
+    - NPC
+    - ENEMY
+    - BOSS
+    - ENVIRONMENT_OBJECT
+    - RESOURCE
+    - BUILDING
+    - WEAPON
+    - ARMOR
+    - ITEM
+    - PROJECTILE
+    - UI_ICON
+    - VFX
+  finalPlaceholderVisualsForbidden:
+    - PRIMITIVE_SHAPE
+    - SOLID_COLOR_OBJECT
+    - EMOJI
+    - TEXT_CHARACTER_AS_ACTOR
+  assetReplacementMustNotChangeGameplayOrSaveMeaningWithoutOwnerDecision: true
+  missingRequiredAssetCannotBeReportedAsComplete: true
+  actorAnimation:
+    appliesTo:
+      - CHARACTER
+      - MONSTER
+      - BOSS
+    verifiedAnimationRequired: true
+    staticActorForbidden: true
+    staticImageSlidingAsAnimationForbidden: true
+    spriteSheetOrFrameEvidenceRequired: true
+    runtimePreviewOrDocumentedAnimationEvidenceRequired: true
+    movementAnimationRequired: true
+    acceptedMovementExamples:
+      - MOVE
+      - WALK
+      - RUN
+      - JUMP
+      - FLY
+      - SWIM
+      - CRAWL
+    selectorValidation: assets/asset-selector.js
+    manifestVerifiedAnimationRequired: true
+  catalog:
+    verifiedAnimatedAssetCatalog: assets/animated-assets.json
+    sharedAnimatedAssetRoot: assets/animated/
+    actorCandidateRequiresVerifiedAndActorUsable: true
+    downloadedFalseMeansSourceVerifiedOnly: true
+    localUseRequiresDownloadedTrueAndRecordedPath: true
+  preferredFormats:
+    image: WEBP
+    transparentSprite: PNG_ALLOWED
+    audio: OGG_PREFERRED_MP3_WAV_ALLOWED
+    font: WOFF2
+  sizeGuidance:
+    ordinaryAssetPreferredMaxMb: 1
+    perGameAdditionalAssetsPreferredRangeMb: 20_TO_50
+    ordinaryGitSingleFileHardAvoidAtOrAboveMb: 100
+    sourceMasterFilesShouldNotBeCommittedWhenOptimizedRuntimeAssetIsSufficient: true
+  storage:
+    sharedAssets: assets/
+    sharedAnimatedAssets: assets/animated/
+    animatedCatalog: assets/animated-assets.json
+    platformSpecificAssetsFollowProjectSourceRoot: true
+  licensing:
+    commercialUseRequired: true
+    cc0Preferred: true
+    permissiveCodeLicensesPreferred:
+      - MIT
+      - BSD
+      - APACHE_2_0
+    ccByAllowedWhenAttributionIsPossible: true
+    nonCommercialForbidden: true
+    unknownSourceForbidden: true
+    unknownRedistributionTermsForbidden: true
+    externalAssetRecord: LICENSES.md
+    verifyLicenseBeforeDownloadOrUse: true
+    sameQualityPriority:
+      - CC0
+      - COMMERCIAL_ATTRIBUTION_NOT_REQUIRED
+      - CC_BY
+  sourceSelection:
+    reuseExistingRepositoryAssetFirst: true
+    checkVerifiedCatalogWhenApplicable: true
+    validateAnimationBeforeActorSelection: true
+    removeStaticOrPrimitiveActorCandidates: true
+    inventoryVisibleObjectsAndMissingAssets: true
+    preferredExternalSources:
+      firstTier:
+        - KENNEY
+        - POLY_HAVEN
+        - AMBIENTCG
+      conditionalTier:
+        - PIXABAY
+        - MIXKIT
+        - OPENGAMEART
+        - FREESOUND
+        - ITCH_IO_GAME_ASSETS
+        - FREE_MUSIC_ARCHIVE
+        - QUATERNIUS
+        - KAYKIT
+        - CRAFTPIX_FREEBIES
+        - GAME_ICONS_NET
+        - OPENMOJI
+        - GOOGLE_FONTS
+        - FONT_AWESOME_FREE
+    licenseAndCommercialUseCheckRequiredBeforeUse: true
+    recordSourceAuthorLicenseObservedDate: true
+    addOnlyRequiredOptimizedFiles: true
+    validateMissingBrokenLoadingAndPerformanceOnSelectedPlatform: true
+    removeUnusedCandidateTemporaryAndTestFiles: true
+  prohibited:
+    - STATIC_ACTOR
+    - PRIMITIVE_ACTOR
+    - STATIC_IMAGE_POSITION_SLIDE_AS_ANIMATION
+    - NONCOMMERCIAL_ASSET
+    - UNKNOWN_LICENSE_ASSET
+    - SEARCH_RESULT_THUMBNAIL_AS_SOURCE_ASSET
+    - UNAUTHORIZED_BRAND_OR_SITE_RENDER
+    - LICENSE_CONFLICT_IGNORED
+    - STYLE_MISMATCH_ASSET_SPAM
+    - PLACEHOLDER_GRAPHICS_WHEN_REAL_ASSET_EXISTS
+    - COMPLETION_CLAIM_WITH_REQUIRED_ASSETS_MISSING
+  naming:
+    preferLowercaseEnglishHyphenatedNames: true
+  health:
+    presetUseClasses:
+      - PROTO
+      - TEST
+      - SHIP
+    actorEvidenceMustRetainLicenseSourceAnimationAndMotionProof: true
+    healthChecker: tools/asset-health-check.mjs
+    unreachableSourceOrUnclearLicenseStopsNewUse: true
+    existingUseRequiresImpactAndReplacementPlanBeforeRemoval: true
+
+departmentStandards:
+  centralSourceOnly: true
+  machineImplementation:
+    evidenceRules: assets/company-department-standards.js
+    postModificationReview: tools/company-post-modification-review.mjs
+    regressionTest: qa/company-department-standards.test.mjs
+    standardsWorkflow: .github/workflows/department-standards-qa.yml
+    revoteWorkflow: .github/workflows/post-modification-revote.yml
+  common:
+    eachDepartmentEvaluatesOwnDomainOnly: true
+    verifiableFileBuildTestRuntimeEvidenceRequired: true
+    domainSpecificConcreteEvidenceRequired: true
+    vaguePraiseIsNotEvidence: true
+    insufficientEvidenceForcesRevise: true
+    oneDepartmentMustNotAuthorAnotherDepartmentDecision: true
+    modificationRequiresSameScopeRegressionRecheck: true
+    directorAggregatesFiveDepartmentResultsAndEvidenceGates: true
+  planning:
+    responsibilities:
+      - CORE_FUN
+      - CORE_LOOP
+      - STORY_QUEST_REGION_PROGRESSION_CONNECTION
+      - GAME_IDENTITY_IMPACT
+    passMinimum:
+      concreteEvidenceCount: 2
+      domainEvidenceCount: 2
+      beforeAfterCoreLoopImpactCheckRequired: true
+      outOfScopeDesignInventionForbidden: true
+  development:
+    responsibilities:
+      - IMPLEMENTATION_FILES_AND_CHANGE_SCOPE
+      - CODE_STRUCTURE_AND_DEPENDENCIES
+      - SAVE_AND_DATA_COMPATIBILITY
+      - COMPILE_AND_BUILDABILITY
+      - EXTENSIBILITY_AND_REGRESSION_RISK
+    passMinimum:
+      concreteEvidenceCount: 2
+      domainEvidenceCount: 2
+      successfulCompileOrBuildRequired: true
+      failedTargetBuildForbidsPass: true
+  qa:
+    role: ACTUAL_GAME_TESTER
+    responsibilities:
+      - GAME_RUNTIME
+      - PLAY_SMOKE_TEST
+      - ERROR_DETECTION
+      - PROGRESSION_BLOCK_DETECTION
+      - REGRESSION_TEST
+      - REPRODUCTION_RECORD
+      - POST_FIX_REVALIDATION
+    playSequenceWhenApplicable:
+      - GAME_START
+      - BASIC_MOVEMENT_OR_CONTROL
+      - ATTACK_SKILL_OR_CORE_ACTION
+      - CHANGED_FUNCTION
+      - COMBAT_OR_PROGRESSION
+      - SAVE_LOAD_OR_STATE_RETENTION
+      - DEATH_RESTART_OR_REENTRY
+      - UI_AND_INPUT
+    notApplicableStepRequiresReason: true
+    mobileAdditionalChecks:
+      - TOUCH_INPUT
+      - TOUCH_TARGET_SIZE
+      - UI_OVERLAP
+      - OFFSCREEN_UI
+      - ASPECT_RATIO
+      - SMALL_SCREEN_READABILITY
+      - RAPID_OR_REPEATED_INPUT
+      - LOW_END_PERFORMANCE_SIGNALS
+    bugRecordRequiredFields:
+      - LOCATION
+      - REPRO_STEPS
+      - EXPECTED_RESULT
+      - ACTUAL_RESULT
+      - SEVERITY
+      - BUILD_OR_COMMIT
+      - POST_FIX_REPRO_RESULT
+    passMinimum:
+      concreteQaEvidenceCount: 2
+      domainEvidenceCount: 2
+      successfulCompileOrBuildRequired: true
+      actualRuntimeOrPlaySmokeEvidenceCount: 1
+      runtimeOrPlayEvidenceAbsentForbidsPass: true
+      buildSuccessAloneDoesNotPass: true
+  graphics:
+    responsibilities:
+      - READABILITY
+      - UI_COMPOSITION
+      - ARTBOOK_AND_GAME_IDENTITY_ALIGNMENT
+      - CHARACTER_MONSTER_VFX_MOTION_IMPACT
+      - ASSET_LICENSE_AND_PLATFORM_PERFORMANCE_IMPACT
+    passMinimum:
+      domainEvidenceCount: 1
+      noImpactRequiresExplicitChangeScopeEvidence: true
+      codeQualityAloneDoesNotPass: true
+  balance:
+    responsibilities:
+      - COMBAT_DIFFICULTY
+      - DAMAGE_AND_HEALTH_VALUES
+      - GROWTH_SPEED
+      - REWARDS
+      - ECONOMY_AND_RESOURCE_FLOW
+    passMinimum:
+      domainEvidenceCount: 1
+      beforeAfterValueComparisonRequiredWhenBalanceValuesChange: true
+      noImpactRequiresExplicitChangeScopeEvidence: true
+      codeQualityAloneDoesNotPass: true
+  director:
+    mustReadAllFiveDepartmentResults: true
+    mustReadAllEvidenceGates: true
+    mustAggregateCrossDepartmentBlockers: true
+    mustSetNextRevisionPriority: true
+    cannotInventMissingDepartmentEvidence: true
+    reviewVerdict:
+      anyDrop: DROP
+      noDropAnyReviseOrEvidenceGateFailure: REVISE
+      allFivePassAndAllEvidenceGatesPass: PASS
+    reviewDropDoesNotBypassDiscardPolicy: true
+  postModificationFlow:
+    - DEVELOPMENT_CHANGE
+    - COMPILE_OR_BUILD
+    - QA_ACTUAL_RUNTIME_OR_PLAY
+    - PLANNING_REVIEW
+    - DEVELOPMENT_REVIEW
+    - GRAPHICS_REVIEW
+    - BALANCE_REVIEW
+    - FIVE_DEPARTMENT_EVIDENCE_GATES
+    - DIRECTOR_AGGREGATION
+    - PASS_REVISE_OR_DROP
+  defectRecoveryFlow:
+    - QA_DETECT_ERROR
+    - RECORD_REPRODUCTION
+    - DEVELOPMENT_FIX
+    - NEW_BUILD
+    - QA_REVALIDATE_SAME_PROCEDURE
+    - RELATED_DEPARTMENT_REVIEW
+    - DIRECTOR_VERDICT
+
 meeting:
   departmentInternalReview:
     leadIndependentReview: true
