@@ -9,11 +9,13 @@ const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 
 test('persisted GAME_SEED state follows current COMPANY_FLOW dynamic portfolio contract',t=>{
   if(!fs.existsSync(stateFile)){t.skip('GAME_SEED bootstrap has not persisted state yet');return;}
-  const state=normalizeSeedState(JSON.parse(fs.readFileSync(stateFile,'utf8')));
+  const raw=JSON.parse(fs.readFileSync(stateFile,'utf8'));
+  const state=normalizeSeedState(raw);
   assert.equal(state.policyDocument,'COMPANY_FLOW.md');
   assert.ok(Array.isArray(state.seeds));
-  assert.ok(Array.isArray(state.vacancies));
+  assert.equal('vacancies' in state,false,'legacy vacancy state must be removed by normalization');
   assert.ok(Array.isArray(state.portfolioSeedRequests));
+  assert.ok(state.portfolioSeedRequests.every(request=>!('linkedVacancyId' in request)),'portfolio expansion requests must not carry legacy vacancy links');
 
   if(state.bootstrapCompletedAt){
     const initial=state.seeds.filter(seed=>seed.generation==='INITIAL_BOOTSTRAP');
