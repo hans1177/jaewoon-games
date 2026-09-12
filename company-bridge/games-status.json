@@ -1,8 +1,8 @@
 {
   "version": 1,
   "sourceRepository": "hans1177/jaewoon-games",
-  "sourceRevision": "a4bb93c65cd4f034b1b107746e8ce9fc35e2dfef",
-  "generatedAt": "2026-09-10T19:57:16.187Z",
+  "sourceRevision": "f946ec80c11ae0e6b4ea264efc0a8f7a4907ee1c",
+  "generatedAt": "2026-09-12T08:57:03.242Z",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
   "continuousDevelopmentBranch": "autonomous-dev",
@@ -45,7 +45,7 @@
       "slug": "insect-survival",
       "name": "곤충 생존기",
       "sourcePath": "web-games/insect-survival",
-      "mode": "WEB_FIRST_IMPLEMENTATION",
+      "mode": "OPTIONAL_WEB_GAMEPLAY_TESTBED",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "health": {
         "status": "healthy",
@@ -75,7 +75,7 @@
       "slug": "bug-defense",
       "name": "곤충 디펜스",
       "sourcePath": "web-games/bug-defense",
-      "mode": "WEB_FIRST_IMPLEMENTATION",
+      "mode": "OPTIONAL_WEB_GAMEPLAY_TESTBED",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "health": {
         "status": "healthy",
@@ -146,7 +146,7 @@
       "slug": "monster-adventure",
       "name": "몬스터 어드벤처",
       "sourcePath": "web-games/monster-adventure",
-      "mode": "WEB_FIRST_IMPLEMENTATION",
+      "mode": "OPTIONAL_WEB_GAMEPLAY_TESTBED",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "health": {
         "status": "healthy",
@@ -207,13 +207,14 @@
       "key": "VIBE2:autonomous-candidate-safe-promotion",
       "type": "VIBE2",
       "patternId": "autonomous-candidate-safe-promotion",
-      "stage": "GAME_VERIFIED",
+      "stage": "EXPERIMENTING",
       "summary": {
-        "successEvidence": 11,
+        "successEvidence": 0,
+        "incompletePositiveEvidence": 11,
         "failureEvidence": 0,
-        "distinctGames": 1,
+        "distinctGames": 0,
         "distinctGenres": 0,
-        "distinctConditions": 1,
+        "distinctConditions": 0,
         "averageDelta": 0,
         "criticalFailures": 0,
         "multiGameEligible": false,
@@ -229,6 +230,7 @@
       "stage": "GAME_VERIFIED",
       "summary": {
         "successEvidence": 11,
+        "incompletePositiveEvidence": 0,
         "failureEvidence": 0,
         "distinctGames": 1,
         "distinctGenres": 0,
@@ -244,20 +246,6 @@
   ],
   "latestArtbooks": [
     {
-      "id": "daechung-rpg-2026-09-08-initial",
-      "gameId": "daechung-rpg",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "createdAt": "2026-09-08"
-    },
-    {
-      "id": "daechung-rpg-2026-09-08-second",
-      "gameId": "daechung-rpg",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "createdAt": "2026-09-08"
-    },
-    {
       "id": "daechung-rpg-2026-09-09-initial",
       "gameId": "daechung-rpg",
       "status": "completed-artbook",
@@ -272,36 +260,8 @@
       "createdAt": "2026-09-09"
     },
     {
-      "id": "crystal-defense-2026-09-09-initial",
-      "gameId": "crystal-defense",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "createdAt": "2026-09-09"
-    },
-    {
       "id": "bug-defense-2026-09-09-initial",
       "gameId": "bug-defense",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "createdAt": "2026-09-09"
-    },
-    {
-      "id": "human-go-2026-09-09-initial",
-      "gameId": "human-go",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "createdAt": "2026-09-09"
-    },
-    {
-      "id": "egg-heist-2026-09-09-initial",
-      "gameId": "egg-heist",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "createdAt": "2026-09-09"
-    },
-    {
-      "id": "chess-battle-2026-09-09-initial",
-      "gameId": "chess-battle",
       "status": "completed-artbook",
       "productionApproval": false,
       "createdAt": "2026-09-09"
@@ -321,18 +281,46 @@
       "createdAt": "2026-09-10"
     },
     {
-      "id": "survival2-2026-09-10-initial",
-      "gameId": "survival2",
+      "id": "seed-action-survival-rogu-echoes-of-the-lost-star-2026-09-11-core",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
       "status": "completed-artbook",
       "productionApproval": false,
-      "createdAt": "2026-09-10"
+      "createdAt": "2026-09-11"
     },
     {
-      "id": "territory-war-2026-09-10-initial",
-      "gameId": "territory-war",
+      "id": "seed-single-defense-strat-celestial-bastion-2026-09-11-core",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
       "status": "completed-artbook",
       "productionApproval": false,
-      "createdAt": "2026-09-10"
+      "createdAt": "2026-09-11"
+    },
+    {
+      "id": "seed-puzzle-chromatic-cascade-2026-09-11-core",
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "status": "completed-artbook",
+      "productionApproval": false,
+      "createdAt": "2026-09-11"
+    },
+    {
+      "id": "seed-casual-realm-weaver-2026-09-11-core",
+      "gameId": "seed-casual-realm-weaver",
+      "status": "completed-artbook",
+      "productionApproval": false,
+      "createdAt": "2026-09-11"
+    },
+    {
+      "id": "seed-idle-growth-rpg-crystal-bloom-2026-09-11-core",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "status": "completed-artbook",
+      "productionApproval": false,
+      "createdAt": "2026-09-11"
+    },
+    {
+      "id": "seed-story-complete-rpg-chronicles-of-eldoria-2026-09-11-core",
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "status": "completed-artbook",
+      "productionApproval": false,
+      "createdAt": "2026-09-11"
     }
   ],
   "safety": {
