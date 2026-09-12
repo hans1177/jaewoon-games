@@ -6,7 +6,6 @@ import {
   saveSeedState,
   pendingPortfolioSeedRequests,
   fulfillPortfolioSeedRequest,
-  fillVacancy,
 } from './game-seed-state.mjs';
 import {assertGameSeed} from './company-game-seed-contract.mjs';
 
@@ -167,7 +166,7 @@ function validateProposal(target,p){
 }
 async function callModelBatch(targets){
   const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),MODEL_TIMEOUT_MS);
-  const requestPayload=targets.map(t=>({requestId:t.requestId,category:t.category,generation:t.generation,portfolioDecision:t.portfolioRequest?{requestId:t.portfolioRequest.id,aggregateScore:t.portfolioRequest.aggregateScore,decisionBand:t.portfolioRequest.decisionBand,evidenceRefs:t.portfolioRequest.evidenceRefs}:null,linkedVacancy:t.vacancy?{vacancyId:t.vacancy.id,sourceSeedId:t.vacancy.sourceSeedId}:null,targetMarketScope:'GLOBAL',defaultTargetPlatform,allowedTargetPlatforms,benchmarkCandidates:t.benchmarkCandidates,requiredConceptTerms:t.requiredConceptTerms,marketEvidence:t.marketEvidence.available?t.marketEvidence.references:'UNKNOWN'}));
+  const requestPayload=targets.map(t=>({requestId:t.requestId,category:t.category,generation:t.generation,portfolioDecision:t.portfolioRequest?{requestId:t.portfolioRequest.id,aggregateScore:t.portfolioRequest.aggregateScore,decisionBand:t.portfolioRequest.decisionBand,evidenceRefs:t.portfolioRequest.evidenceRefs}:null,targetMarketScope:'GLOBAL',defaultTargetPlatform,allowedTargetPlatforms,benchmarkCandidates:t.benchmarkCandidates,requiredConceptTerms:t.requiredConceptTerms,marketEvidence:t.marketEvidence.available?t.marketEvidence.references:'UNKNOWN'}));
   const prompt=`다음 GAME_SEED 요청을 한 번의 배치로 모두 작성하라. 요청 수와 requestId/category를 정확히 보존한다. 기본 타겟 시장은 특정 국가가 아니라 전세계(GLOBAL)다. targetAudience와 세션/상품 방향도 글로벌 출시를 전제로 작성하고 특정 한 국가를 기본 타겟으로 잡지 않는다. benchmarkCandidates가 제공되면 그 안에서 성공작을 우선 선택하고, 비어 있으면 해당 장르에서 이미 출시되어 상업성 또는 인기가 검증된 게임을 referenceGames로 선택한다. coreFunToLearn과 coreLoop는 실제 플레이 행동 → 결과/피드백 → 다음 선택/보상 흐름이 보이도록 작성한다. 검증된 성공작의 핵심 재미·루프·성장·경제·UX 구조를 학습하되 새 게임은 HOMAGE 또는 REINTERPRETATION으로 독자 정체성을 만든다. 원작 이름/캐릭터/스토리/맵/아트/음악/UI 아트/소스코드를 복제하지 않는다. 소스코드는 반드시 자체 구현한다. 초기 타겟 플랫폼 기본값은 ${defaultTargetPlatform}이지만 잠금이 아니다. 프로젝트 적합성에 따라 allowedTargetPlatforms=${JSON.stringify(allowedTargetPlatforms)} 중 하나를 initialTargetPlatform으로 선택한다. initialPlayMode는 프로젝트에 맞게 정하고, crossPlatformExpansionValue에는 다른 허용 플랫폼으로 확장할 가치와 이유를 기록한다. 초기 게임은 선택한 플랫폼에서 판매 또는 수익화 가능한 제품이어야 한다. 시장근거는 방향 참고용이며 통과/탈락 단독 게이트가 아니다. 제공되지 않은 숫자는 추정하지 말고 UNKNOWN 취급한다. REQUESTS=${JSON.stringify(requestPayload)}. JSON 스키마만 출력하라.`;
   try{
     const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,keep_alive:'0s',format:batchSchema(targets.length),messages:[{role:'system',content:'너는 재운컴퍼니 GAME_SEED 선택 AI다. COMPANY_FLOW 정책을 따른다. 기본 시장은 GLOBAL이고 시장자료는 참고자료다. 성공 구조는 오마주/재해석하지만 보호되는 표현과 소스코드는 복제하지 않는다. ROBLOX는 기본 우선순위일 뿐 잠금이 아니며 UNITY와 FORTNITE_UEFN도 프로젝트별로 선택할 수 있다. 여러 요청을 반드시 한 응답에서 완성한다.'},{role:'user',content:prompt}],options:{temperature:0.2,num_ctx:16384,num_predict:6000}}),signal:controller.signal});
@@ -187,7 +186,7 @@ function buildSeed(target,p,{serial,gameId,timestamp}){
     STEAM_EXPANSION_POSSIBLE:p.steamExpansionPossible,MULTIPLAYER_EXPANSION_POSSIBLE:p.multiplayerExpansionPossible,MULTIPLAYER_EXPANSION_VALUE:p.multiplayerExpansionValue,
     TRANSFORMATION_MODE:p.transformationMode,SOURCE_CODE_RULE:'OWN_IMPLEMENTATION_ONLY',COMMERCIAL_RULE:'INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_FOR_ITS_SELECTED_PLATFORM',
     portfolioSeedRequestId:target.portfolioRequest?.id||null,portfolioDecision:target.portfolioRequest?{aggregateScore:target.portfolioRequest.aggregateScore,decisionBand:target.portfolioRequest.decisionBand,evidenceRefs:uniq(target.portfolioRequest.evidenceRefs),ownerOverride:target.portfolioRequest.ownerOverride===true}:null,
-    replacementOfSeedId:target.vacancy?.sourceSeedId||null,replacementVacancyId:target.vacancy?.id||null,createdAt:timestamp,updatedAt:timestamp,
+    createdAt:timestamp,updatedAt:timestamp,
   };
   assertGameSeed(seed);return seed;
 }
@@ -196,20 +195,13 @@ export async function runGameSeedBootstrap({timestamp=new Date().toISOString(),p
   if(config.enabled===false)return{action:'DISABLED',created:[],modelCalls:0};
   const initial=!state.bootstrapCompletedAt;
   const targets=[];
-  const makeTarget=(requestId,category,generation,{portfolioRequest=null,vacancy=null}={})=>{const profile=categoryProfile(category);return{requestId,category,generation,portfolioRequest,vacancy,marketEvidence:sanitizeMarketEvidence(category),benchmarkCandidates:profile.benchmarkCandidates,requiredConceptTerms:profile.requiredConceptTerms};};
+  const makeTarget=(requestId,category,generation,{portfolioRequest=null}={})=>{const profile=categoryProfile(category);return{requestId,category,generation,portfolioRequest,marketEvidence:sanitizeMarketEvidence(category),benchmarkCandidates:profile.benchmarkCandidates,requiredConceptTerms:profile.requiredConceptTerms};};
   if(initial){
     if(categories.length!==Number(config.bootstrap?.count||6))throw new Error(`GAME_SEED_BOOTSTRAP_CATEGORY_COUNT_MISMATCH ${categories.length}/${config.bootstrap?.count||6}`);
     if((state.seeds||[]).some(s=>s.generation==='INITIAL_BOOTSTRAP'))throw new Error('PARTIAL_INITIAL_BOOTSTRAP_STATE_FORBIDDEN');
     for(const [index,category] of categories.entries())targets.push(makeTarget(`INITIAL-${index+1}-${category}`,category,'INITIAL_BOOTSTRAP'));
   }else{
-    for(const request of pendingPortfolioSeedRequests(state)){
-      let vacancy=null;
-      if(clean(request.linkedVacancyId)){
-        vacancy=(state.vacancies||[]).find(row=>row.id===request.linkedVacancyId&&!row.filledAt&&!row.replacementSeedId)||null;
-        if(!vacancy)throw new Error(`PORTFOLIO_SEED_REQUEST_LINKED_VACANCY_NOT_AVAILABLE ${request.id}: ${request.linkedVacancyId}`);
-      }
-      targets.push(makeTarget(`PORTFOLIO-${request.id}`,request.category,'DEPARTMENT_SCORE_GUIDED_EXPANSION',{portfolioRequest:request,vacancy}));
-    }
+    for(const request of pendingPortfolioSeedRequests(state))targets.push(makeTarget(`PORTFOLIO-${request.id}`,request.category,'DEPARTMENT_SCORE_GUIDED_EXPANSION',{portfolioRequest:request}));
   }
   if(!targets.length){
     state.lastRunAt=timestamp;state.lastAction='NO_PORTFOLIO_EXPANSION_DECISION';saveSeedState(state);
@@ -219,7 +211,7 @@ export async function runGameSeedBootstrap({timestamp=new Date().toISOString(),p
   let proposals;
   if(proposalProvider){
     proposals=[];
-    for(const target of targets)proposals.push(await proposalProvider({category:target.category,marketEvidence:target.marketEvidence,benchmarkCandidates:target.benchmarkCandidates,requiredConceptTerms:target.requiredConceptTerms,generation:target.generation,portfolioRequest:target.portfolioRequest,vacancy:target.vacancy,requestId:target.requestId,targetMarketScope:'GLOBAL',defaultTargetPlatform,allowedTargetPlatforms}));
+    for(const target of targets)proposals.push(await proposalProvider({category:target.category,marketEvidence:target.marketEvidence,benchmarkCandidates:target.benchmarkCandidates,requiredConceptTerms:target.requiredConceptTerms,generation:target.generation,portfolioRequest:target.portfolioRequest,requestId:target.requestId,targetMarketScope:'GLOBAL',defaultTargetPlatform,allowedTargetPlatforms}));
   }else proposals=await callModelBatch(targets);
   if(proposals.length!==targets.length)throw new Error(`GAME_SEED_BATCH_COUNT_MISMATCH ${proposals.length}/${targets.length}`);
 
@@ -230,14 +222,13 @@ export async function runGameSeedBootstrap({timestamp=new Date().toISOString(),p
     validateProposal(target,proposal);
     const serial=(serials.get(target.category)||0)+1;serials.set(target.category,serial);
     const gameId=uniqueGameId(target.category,proposal.gameName,usedGameIds);
-    pending.push({seed:buildSeed(target,proposal,{serial,gameId,timestamp}),portfolioRequest:target.portfolioRequest,vacancy:target.vacancy});
+    pending.push({seed:buildSeed(target,proposal,{serial,gameId,timestamp}),portfolioRequest:target.portfolioRequest});
   }
 
   const created=[];
   for(const item of pending){
     state.seeds.push(item.seed);
     if(item.portfolioRequest)fulfillPortfolioSeedRequest(item.portfolioRequest,item.seed,timestamp);
-    if(item.vacancy)fillVacancy(item.vacancy,item.seed,timestamp);
     created.push(item.seed);
   }
   if(initial){state.bootstrapCompletedAt=timestamp;state.initialBatchCount=created.length;state.initialBatchCategories=[...categories];}
