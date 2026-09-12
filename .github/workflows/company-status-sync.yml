@@ -12,6 +12,8 @@ on:
   push:
     branches: [main]
     paths:
+      - 'COMPANY_FLOW.md'
+      - 'assets/company-department-standards.js'
       - 'tools/company-status-sync.mjs'
       - 'tools/production-classification.mjs'
       - 'tools/autonomous-24h-work-planner.mjs'
@@ -74,13 +76,21 @@ jobs:
       - name: Validate synchronized state
         run: |
           set -euo pipefail
-          node - <<'NODE'
-          const fs=require('fs');
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          import {COMPANY_DEPARTMENT_ROLES} from './assets/company-department-standards.js';
           const company=JSON.parse(fs.readFileSync('company-status.json','utf8'));
           const supervision=JSON.parse(fs.readFileSync('director-supervision-status.json','utf8'));
           const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
           const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+          const roles=[...COMPANY_DEPARTMENT_ROLES];
+          if(JSON.stringify(roles)!==JSON.stringify(directive.ai?.departments||[]))throw new Error('canonical department role drift');
+          if(roles.length!==7)throw new Error(`canonical department count mismatch: ${roles.length}`);
           if(company.supervision?.dateKst!==supervision.dateKst)throw new Error('supervision date not synchronized');
+          if(company.supervision?.canonicalDepartmentCount!==roles.length||JSON.stringify(company.supervision?.canonicalDepartments)!==JSON.stringify(roles))throw new Error('company supervision seven-department contract failed');
+          for(const role of roles)if(!Object.hasOwn(company.supervision?.staff||{},role))throw new Error(`company supervision role missing: ${role}`);
+          if(company.policy?.webPurpose!=='REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION'||company.policy?.webBeforeTargetPlatformByDefault!==true||company.policy?.targetPlatformMayRunImmediately!==false||company.policy?.webGameplayValidationRequired!==true||company.policy?.musicValidationRequired!==true)throw new Error('company current Web-first validation policy mismatch');
           const classes=['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED','DESIGN_ONLY'];
           const valid=new Set(classes);
           const allowedPlatforms=new Set(['ROBLOX','UNITY','FORTNITE_UEFN']);
@@ -105,26 +115,25 @@ jobs:
           }
           for(const project of development){
             const platform=normalize(project.selectedPlatform);
-            if(project.webPurpose!=='OPTIONAL_GAMEPLAY_VALIDATION_TESTBED')throw new Error(`development Web purpose mismatch: ${project.id}`);
+            if(project.webPurpose!=='REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION'||project.webBeforeTargetPlatformByDefault!==true||project.targetPlatformMayRunImmediately!==false||project.webGameplayValidationRequired!==true||project.musicValidationRequired!==true)throw new Error(`development Web-first policy mismatch: ${project.id}`);
             if(platform){
-              if(!allowedPlatforms.has(platform)||project.targetEngine!==targetEngine(platform)||project.mode!=='TARGET_PLATFORM_DEVELOPMENT')throw new Error(`development selected-platform mismatch: ${project.id}`);
-            }else if(project.targetEngine!=='platform-selection-required'||project.mode!=='OPTIONAL_WEB_GAMEPLAY_TESTBED'){
-              throw new Error(`development platform-selection state mismatch: ${project.id}`);
+              if(!allowedPlatforms.has(platform)||project.targetEngine!==targetEngine(platform)||project.mode!=='TARGET_PLATFORM_DEVELOPMENT')throw new Error(`development selected-platform metadata mismatch: ${project.id}`);
+            }else if(project.targetEngine!=='platform-selection-required'||project.mode!=='WEB_FIRST_PLAYABLE_VALIDATION'){
+              throw new Error(`development Web-first platform-selection state mismatch: ${project.id}`);
             }
           }
           if(design.some(p=>p.mode!=='HOLD'&&p.targetEngine!=='design-only'))throw new Error('design target mismatch');
           const releasePolicy=portfolio.productionClassPolicy?.classes?.RELEASE_CONFIRMED||{};
           const developmentPolicy=portfolio.productionClassPolicy?.classes?.DEVELOPMENT_CONFIRMED||{};
           if(releasePolicy.engine!=='PROJECT_SELECTED_PLATFORM')throw new Error('release engine policy must be selected-platform');
-          if(developmentPolicy.engine!=='PROJECT_SELECTED_PLATFORM'||developmentPolicy.webPurpose!=='OPTIONAL_GAMEPLAY_VALIDATION_TESTBED'||developmentPolicy.webBeforeTargetPlatformByDefault!==false||developmentPolicy.targetPlatformMayRunImmediately!==true)throw new Error('development selected-platform policy mismatch');
-          if(portfolio.developmentFocusPolicy?.optionalWebGameplayTestbedAllowedAlongsideReleaseFocus!==true)throw new Error('optional Web testbed focus policy missing');
-          if(Object.hasOwn(portfolio.developmentFocusPolicy||{},'developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus'))throw new Error('legacy Web-first focus policy remains');
+          if(developmentPolicy.engine!=='PROJECT_SELECTED_PLATFORM'||developmentPolicy.webPurpose!=='REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION'||developmentPolicy.webBeforeTargetPlatformByDefault!==true||developmentPolicy.targetPlatformMayRunImmediately!==false||developmentPolicy.webGameplayValidationRequired!==true||developmentPolicy.musicValidationRequired!==true)throw new Error('development Web-first policy mismatch');
+          if(portfolio.developmentFocusPolicy?.optionalWebGameplayTestbedAllowedAlongsideReleaseFocus!==false)throw new Error('legacy optional Web testbed must be disabled');
+          if(Object.hasOwn(portfolio.developmentFocusPolicy||{},'developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus'))throw new Error('legacy Web prototype focus policy remains');
           const categoryByClass={RELEASE_CONFIRMED:'release-confirmed',DEVELOPMENT_CONFIRMED:'development-confirmed',DESIGN_ONLY:'design-only'};
           for(const g of catalog.games||[]){
             if(!valid.has(g.productionClass))throw new Error(`invalid catalog class: ${g.id}`);
             if(Object.hasOwn(g,'productionTier')||Object.hasOwn(g,'productionTierSource'))throw new Error(`legacy catalog production tier remains: ${g.id}`);
             if(g.homepageCategory!==categoryByClass[g.productionClass])throw new Error(`catalog category mismatch: ${g.id}`);
-            if(g.productionClass!=='DESIGN_ONLY'&&g.productionTarget==='web-first-playable')throw new Error(`legacy Web-first target remains: ${g.id}`);
           }
           const state=portfolio.productionClassState||{};
           const expected={releaseConfirmed:release.length,developmentConfirmed:development.length,designOnly:design.length};
@@ -141,9 +150,10 @@ jobs:
           if((focus.games||[]).some(game=>game.lane!=='selected-platform'||Object.hasOwn(game,'unityReady')))throw new Error('autonomous focus still uses Unity-only lane');
           if(JSON.stringify(focus.platformPriority)!==JSON.stringify(['ROBLOX','UNITY','FORTNITE_UEFN'])||focus.priorityMeaning!=='DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE')throw new Error('platform focus priority contract failed');
           console.log('COMPANY_STATUS_SYNC_QA=PASS');
+          console.log(`CANONICAL_DEPARTMENTS_QA=${roles.length}/${roles.length}`);
           console.log(`PRODUCTION_CLASS_COUNTS_QA=${release.length}/${development.length}/${design.length}`);
           console.log(`AUTONOMOUS_FOCUS_QA=${focus.focusedGameIds?.length||0}/${expectedTargetSlots} MAX=${maxFocusedGames}`);
-          console.log('SELECTED_PLATFORM_RUNTIME_SYNC_QA=PASS');
+          console.log('CURRENT_WEB_FIRST_VALIDATION_POLICY_QA=PASS');
           NODE
 
       - name: Persist validated runtime status without main write
@@ -155,7 +165,7 @@ jobs:
           runtime_paths=(company-status.json autonomous-portfolio.json game-catalog.json)
           git add -- "${runtime_paths[@]}"
           if ! git diff --cached --quiet; then
-            git commit -m 'runtime: generate selected-platform production status [skip ci]'
+            git commit -m 'runtime: generate current production status [skip ci]'
           fi
           generated_commit="$(git rev-parse HEAD)"
           persisted=0
@@ -176,7 +186,7 @@ jobs:
               break
             fi
             changed=1
-            git commit -m 'runtime: sync selected-platform production classes and focus [skip ci]'
+            git commit -m 'runtime: sync current production classes and focus [skip ci]'
             if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
               persisted=1
               echo 'COMPANY_STATUS_SYNC_COMMIT=RUNTIME_PERSISTED'
