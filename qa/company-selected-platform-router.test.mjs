@@ -7,6 +7,7 @@ import {
   resolveSelectedPlatform,
   cheapPrecheck,
   sourceFingerprint,
+  failureSignature,
   createSelectedPlatformExecutionPlan,
   normalizeCommonEvidence,
   recordExecutionStage,
@@ -27,7 +28,7 @@ test('one router recognizes all selected platforms and aliases',()=>{
   assert.equal(canonicalTargetWaitingState(),'WAITING_TARGET_PLATFORM_VALIDATION');
 });
 
-test('all three platforms have one common adapter registry entry',()=>{
+test('all three platforms have one common adapter registry entry without inventing UEFN runtime success',()=>{
   for(const platform of SELECTED_PLATFORMS){
     const adapter=PLATFORM_EXECUTION_ADAPTERS[platform];
     assert.equal(adapter.platform,platform);
@@ -37,12 +38,15 @@ test('all three platforms have one common adapter registry entry',()=>{
   }
   assert.equal(createRobloxPlatformContract().parallelPipeline,false);
   assert.equal(createUnityDevelopmentPlatformContract().parallelPipeline,false);
-  assert.equal(createUefnDevelopmentPlatformContract().parallelPipeline,false);
+  const uefn=createUefnDevelopmentPlatformContract();
+  assert.equal(uefn.parallelPipeline,false);
+  assert.equal(uefn.runtimeExecutionConfigured,false);
+  assert.equal(PLATFORM_EXECUTION_ADAPTERS.FORTNITE_UEFN.existingExecutionPath,null);
 });
 
-test('cheap precheck rejects missing selected platform and accepts existing Unity web bootstrap source',()=>{
+test('cheap precheck rejects missing selected platform and accepts selected-platform source',()=>{
   assert.equal(cheapPrecheck({selectedPlatform:'',sourceRevision:'abc',sourcePath:'web-games/a'}).pass,false);
-  const ok=cheapPrecheck({selectedPlatform:'UNITY',sourceRevision:'abc123',sourcePath:'web-games/a'});
+  const ok=cheapPrecheck({selectedPlatform:'UNITY',sourceRevision:'abc123',sourcePath:'unity-games/a'});
   assert.equal(ok.pass,true);
   assert.equal(ok.platform,'UNITY');
 });
@@ -87,11 +91,14 @@ test('source change invalidates old build evidence without weakening later gates
   assert.equal(plan.qualityGateWeakeningAllowed,false);
 });
 
-test('canary is required only for shared execution changes or common failure and selection is deterministic',()=>{
+test('canary is deterministic and common stage failures dedupe across game ids',()=>{
   const normal=createSelectedPlatformExecutionPlan({selectedPlatform:'UNITY',sourceRevision:'abc',sourcePath:'unity-games/a'});
   const changed=createSelectedPlatformExecutionPlan({selectedPlatform:'UNITY',sourceRevision:'abc',sourcePath:'unity-games/a',sharedExecutionContractChanged:true});
   assert.equal(normal.canaryRequired,false);
   assert.equal(changed.canaryRequired,true);
+  const sigA=failureSignature({stage:'TARGET_PLATFORM_RUNTIME',code:'STAGE_NOT_PASSED',message:'seed-game-a:TARGET_PLATFORM_RUNTIME'});
+  const sigB=failureSignature({stage:'TARGET_PLATFORM_RUNTIME',code:'STAGE_NOT_PASSED',message:'seed-game-b:TARGET_PLATFORM_RUNTIME'});
+  assert.equal(sigA,sigB);
   const canary=selectRepresentativeCanary([
     {gameId:'b',selectedPlatform:'UNITY',failureCount:0},
     {gameId:'a',selectedPlatform:'UNITY',failureCount:2},
