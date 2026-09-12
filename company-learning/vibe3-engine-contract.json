@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "status": "OWNER_DIRECT_LOCKED",
   "recordedAt": "2026-09-12",
   "relationshipToVibe2": "INTELLIGENCE_LAYER_UPGRADE_INSIDE_EXISTING_PIPELINE",
@@ -31,15 +31,7 @@
     "defaultIndependentCandidates": 5,
     "isolatedCandidateExecutionRequired": true,
     "defaultMaxRepairAttempts": 3,
-    "winnerRequires": [
-      "RESPONSIBLE_SOURCE",
-      "CHECKPOINT_AND_ROLLBACK",
-      "SYNTAX_AND_TESTS",
-      "RUNTIME_PASS",
-      "REGRESSION_PASS",
-      "PROTECTED_STATE_PRESERVED",
-      "EXACT_REVISION"
-    ],
+    "winnerRequires": ["RESPONSIBLE_SOURCE","CHECKPOINT_AND_ROLLBACK","SYNTAX_AND_TESTS","RUNTIME_PASS","REGRESSION_PASS","PROTECTED_STATE_PRESERVED","EXACT_REVISION"],
     "sourceOverwriteBeforeWinnerForbidden": true,
     "deterministicTournament": true,
     "failedCandidatesPersistAsComparisonEvidence": true
@@ -53,7 +45,25 @@
     "failureMemoryIsWarningOnly": true,
     "portableContextMayCrossPlatforms": true,
     "platformPassEvidenceMayNotTransfer": true,
-    "supportedPlaybooks": ["coding", "bugfix", "qa", "unity", "roblox", "fortnite_uefn", "graphics", "planning", "general"]
+    "supportedPlaybooks": ["coding","bugfix","qa","unity","roblox","fortnite_uefn","graphics","planning","general"]
+  },
+  "departmentEvidenceLearning": {
+    "enabled": true,
+    "departments": ["planning","graphics","development","qa","balance","music","intro"],
+    "roleSource": "company-directive.json#ai.departments",
+    "extractor": "tools/vibe3-department-evidence-extract.mjs",
+    "extractorTest": "qa/vibe3-department-evidence-extract.test.mjs",
+    "standardsModule": "assets/company-department-standards.js",
+    "sourceRuntimeOrArtifactBindingRequired": true,
+    "modelGeneratedEvidenceWithoutBindingAllowed": false,
+    "musicRuntimeEvidenceRequired": true,
+    "introRuntimeEvidenceRequired": true,
+    "graphicsScreenshotOrFrameEvidenceSupported": true,
+    "positiveMemoryRequiresDepartmentGatePass": true,
+    "failedOrReviseEvidenceIsWarningOnly": true,
+    "feedsExistingCanonicalDistillation": true,
+    "separateDepartmentCronAllowed": false,
+    "separateDepartmentDatasetOrTrainerAllowed": false
   },
   "externalOpenSourceWebDistillation": {
     "enabled": true,
@@ -79,15 +89,7 @@
   },
   "portableWebLearning": {
     "enabled": true,
-    "portablePatterns": [
-      "TOUCH_INPUT",
-      "MOBILE_UI",
-      "SAVE_LOAD_AND_RESUME",
-      "PERFORMANCE",
-      "RESPONSIVE_LAYOUT",
-      "REGRESSION_AVOIDANCE",
-      "CORE_LOOP_IMPLEMENTATION"
-    ],
+    "portablePatterns": ["TOUCH_INPUT","MOBILE_UI","SAVE_LOAD_AND_RESUME","PERFORMANCE","RESPONSIVE_LAYOUT","REGRESSION_AVOIDANCE","CORE_LOOP_IMPLEMENTATION"],
     "robloxMayRetrieveAsContext": true,
     "webPassCountsAsRobloxPass": false,
     "webEvidenceMaySatisfyRobloxDatasetGate": false,
@@ -98,7 +100,7 @@
     "root": "company-learning/vibe3-trajectories",
     "ingestTool": "tools/vibe3-trajectory-ingest.mjs",
     "positivePromotionRequiresVerifiedWinner": true,
-    "runtimeBooleanAliases": ["runtimePass", "runtimePassed"],
+    "runtimeBooleanAliases": ["runtimePass","runtimePassed"],
     "hiddenReasoningPersisted": false,
     "observableActionsPatchesFailuresAndEvidenceOnly": true,
     "feedsCanonicalTrainingSamples": true,
@@ -113,13 +115,8 @@
     "derivedPathRequired": true,
     "defaultVariants": 3,
     "variantTournamentRequired": true,
-    "selectionSignals": [
-      "STYLE_CONSISTENCY",
-      "SILHOUETTE_READABILITY",
-      "VISUAL_QUALITY",
-      "ANIMATION_READINESS",
-      "MOBILE_PERFORMANCE"
-    ],
+    "selectionSignals": ["STYLE_CONSISTENCY","SILHOUETTE_READABILITY","VISUAL_QUALITY","ANIMATION_READINESS","MOBILE_PERFORMANCE"],
+    "groundedVisualMetricsRequiredForAutomaticJudgment": true,
     "provenanceRequired": true,
     "attributionAndShareAlikePreserved": true
   },
@@ -127,7 +124,7 @@
     "responsibleTool": "tools/vibe3-model-selection.mjs",
     "route": "CANONICAL_SELF_HOSTED",
     "preferredBackend": "SERVER_SELF_HOSTED",
-    "allowedBackends": ["SERVER_SELF_HOSTED", "LOCAL_SELF_HOSTED"],
+    "allowedBackends": ["SERVER_SELF_HOSTED","LOCAL_SELF_HOSTED"],
     "localBackendPreserved": true,
     "automaticLocalFallbackAllowed": false,
     "baselineModel": "Qwen/Qwen3-1.7B",
@@ -166,32 +163,15 @@
     "enabled": true,
     "contract": "company-learning/platform-release-roadmap.json",
     "humanReadableSpec": "company-learning/PLATFORM_RELEASE_ROADMAP.md",
-    "priority": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
+    "priority": ["ROBLOX","UNITY","FORTNITE_UEFN"],
     "currentPhase": "ROBLOX_FAST_RELEASE_STABILIZATION",
     "unityExistingPathPreserved": true,
     "platformSpecificEvidenceRequired": true,
     "portableVerifiedExperienceSharedThroughV3Memory": true,
     "crossPlatformPassEvidenceTransferAllowed": false,
     "separatePlatformLearningPipelineAllowed": false,
-    "phase1Implementation": {
-      "taskType": "roblox",
-      "adapter": "tools/vibe3-roblox-platform.mjs",
-      "test": "qa/vibe3-roblox-platform.test.mjs",
-      "sourceRoot": "roblox-games/",
-      "livePublishDefault": false,
-      "publishRequiresExplicitExecute": true,
-      "authSecretEnv": "ROBLOX_OPEN_CLOUD_API_KEY",
-      "universeIdEnv": "ROBLOX_UNIVERSE_ID",
-      "placeIdEnv": "ROBLOX_PLACE_ID",
-      "cookieAuthAllowed": false,
-      "browserQa": "NOT_APPLICABLE",
-      "runtime": "PASS",
-      "independentQa": "PASS"
-    }
+    "phase1Implementation": {"taskType":"roblox","adapter":"tools/vibe3-roblox-platform.mjs","test":"qa/vibe3-roblox-platform.test.mjs","sourceRoot":"roblox-games/","livePublishDefault":false,"publishRequiresExplicitExecute":true,"authSecretEnv":"ROBLOX_OPEN_CLOUD_API_KEY","universeIdEnv":"ROBLOX_UNIVERSE_ID","placeIdEnv":"ROBLOX_PLACE_ID","cookieAuthAllowed":false,"browserQa":"NOT_APPLICABLE","runtime":"PASS","independentQa":"PASS"}
   },
   "canonicalLearningChainUnchanged": true,
-  "promotion": {
-    "freshAdapterState": "TRAINED_UNVERIFIED",
-    "requiredNext": ["FIXED_HOLDOUT_AB", "CANARY", "PROMOTE_OR_ROLLBACK"]
-  }
+  "promotion": {"freshAdapterState":"TRAINED_UNVERIFIED","requiredNext":["FIXED_HOLDOUT_AB","CANARY","PROMOTE_OR_ROLLBACK"]}
 }
