@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "status": "ACTIVE",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
@@ -17,14 +17,17 @@
     "quotaRebalanceForbidden": true,
     "classes": {
       "RELEASE_CONFIRMED": {
-        "engine": "UNITY_ANDROID",
+        "engine": "PROJECT_SELECTED_PLATFORM",
         "deepFocusSlots": 1,
         "featureDevelopmentOnWeb": false,
         "webArchiveMaintenance": "FAST_RUNTIME_INCIDENT_ONLY"
       },
       "DEVELOPMENT_CONFIRMED": {
-        "engine": "WEB",
-        "scope": "FIRST_PLAYABLE_IMPLEMENTATION",
+        "engine": "PROJECT_SELECTED_PLATFORM",
+        "scope": "TARGET_PLATFORM_TECHNICAL_AND_GAMEPLAY_VALIDATION",
+        "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
+        "webBeforeTargetPlatformByDefault": false,
+        "targetPlatformMayRunImmediately": true,
         "fullArtbookReproductionRequired": false
       },
       "DESIGN_ONLY": {
@@ -50,10 +53,12 @@
     "axisMax": 2,
     "focusThreshold": 0,
     "nextDevelopmentThreshold": 0,
-    "selection": "AUTO_RELEASE_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT",
+    "selection": "AUTO_SELECTED_PLATFORM_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT",
     "releaseConfirmedExcludedFromFocus": false,
     "releaseConfirmedOnlyForDeepFocus": true,
-    "developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus": true,
+    "optionalWebGameplayTestbedAllowedAlongsideReleaseFocus": true,
+    "platformPriority": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
+    "priorityMeaning": "DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE",
     "fastLane": {
       "enabled": true,
       "trigger": "RUNTIME_INCIDENT",
@@ -90,8 +95,10 @@
       "productionClass": "RELEASE_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "RELEASE_CONFIRMED",
+      "selectedPlatform": "UNITY",
       "mode": "UNITY_NEXT",
       "targetEngine": "unity-android",
+      "targetPlatformReady": false,
       "unityProjectReady": false,
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 2, "developmentEfficiency": 2, "scalability": 2, "lowBlockage": 1},
@@ -108,12 +115,14 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "WEB_FIRST_IMPLEMENTATION",
-      "targetEngine": "web",
+      "mode": "OPTIONAL_WEB_GAMEPLAY_TESTBED",
+      "targetEngine": "platform-selection-required",
+      "targetPlatformReady": false,
+      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 2, "developmentEfficiency": 1, "scalability": 2, "lowBlockage": 1},
         "total": 8,
-        "evidenceNote": "곤충 생태 차별성과 확장성이 높아 Web 1차 플레이어블 구현으로 핵심 루프를 검증하기 적합"
+        "evidenceNote": "곤충 생태 차별성과 확장성이 높아 Web 테스트베드로 핵심 루프를 검증할 수 있으나 실제 기술·게임플레이 검증은 선택 플랫폼 기준으로 진행한다"
       },
       "protectedValues": ["save-meaning", "core-loop"]
     },
@@ -142,12 +151,14 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "WEB_FIRST_IMPLEMENTATION",
-      "targetEngine": "web",
+      "mode": "OPTIONAL_WEB_GAMEPLAY_TESTBED",
+      "targetEngine": "platform-selection-required",
+      "targetPlatformReady": false,
+      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 1, "developmentEfficiency": 1, "scalability": 2, "lowBlockage": 1},
         "total": 7,
-        "evidenceNote": "현상금 위험 선택을 중심으로 Web 1차 구현을 만들고 전체 아트북 기능 재현은 후속 판단으로 남김"
+        "evidenceNote": "현상금 위험 선택을 Web 테스트베드에서 검증할 수 있으나 선택 플랫폼 확정과 실제 플랫폼 검증을 대체하지 않는다"
       },
       "protectedValues": ["save-meaning", "core-loop"]
     },
@@ -177,14 +188,16 @@
       "productionClass": "RELEASE_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "RELEASE_CONFIRMED",
+      "selectedPlatform": "UNITY",
       "mode": "UNITY_DEVELOP",
       "targetEngine": "unity-android",
+      "targetPlatformReady": true,
       "dedicatedDevelopmentLane": "UNITY_PRIMARY",
       "unityProjectReady": true,
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 2, "developmentEfficiency": 1, "scalability": 2, "lowBlockage": 1},
         "total": 8,
-        "evidenceNote": "실제 Unity 본개발 프로젝트와 테스트 빌드 근거가 있어 Unity 집중개발 준비도가 높음"
+        "evidenceNote": "선택 플랫폼은 Unity이며 실제 Unity 본개발 프로젝트와 테스트 빌드 근거를 보존한다"
       },
       "protectedValues": ["save-meaning", "core-loop", "unity-primary", "public-web-archive"]
     },
@@ -220,12 +233,14 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "WEB_FIRST_IMPLEMENTATION",
-      "targetEngine": "web",
+      "mode": "OPTIONAL_WEB_GAMEPLAY_TESTBED",
+      "targetEngine": "platform-selection-required",
+      "targetPlatformReady": false,
+      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
         "scores": {"playability": 2, "distinctiveness": 1, "developmentEfficiency": 1, "scalability": 1, "lowBlockage": 0},
         "total": 5,
-        "evidenceNote": "4마리 릴레이 전투 정체성과 콘텐츠 구조를 아트북에서 먼저 보완"
+        "evidenceNote": "4마리 릴레이 전투와 몬스터 성장 흐름은 Web에서 선택적으로 검증하되 선택 플랫폼 검증을 대체하지 않는다"
       },
       "protectedValues": ["save-meaning", "monster-party", "capture", "battle", "dex"]
     },
@@ -290,16 +305,16 @@
     "developmentConfirmedGameIds": ["P0002", "P0004", "P0009"],
     "designOnlyGameIds": ["P0003", "P0005", "P0007", "P0008", "P0101", "P0102", "P0103"],
     "ranking": [
-      {"rank": 1, "rawEvidenceRank": 1, "gameId": "P0001", "slug": "survival", "productionClass": "RELEASE_CONFIRMED", "gameplayFamily": "SURVIVAL", "evidenceScore": 914, "developmentFocus": 9, "artbookBaselineRank": 1, "unityReady": false, "sourceReady": true},
-      {"rank": 2, "rawEvidenceRank": 2, "gameId": "P0006", "slug": "daechung-rpg", "productionClass": "RELEASE_CONFIRMED", "gameplayFamily": "RPG", "evidenceScore": 815, "developmentFocus": 8, "artbookBaselineRank": 0.5, "unityReady": true, "sourceReady": true},
-      {"rank": 3, "rawEvidenceRank": 3, "gameId": "P0002", "slug": "insect-survival", "productionClass": "DEVELOPMENT_CONFIRMED", "gameplayFamily": "SURVIVAL", "evidenceScore": 814, "developmentFocus": 8, "artbookBaselineRank": 1, "unityReady": false, "sourceReady": true},
-      {"rank": 4, "rawEvidenceRank": 4, "gameId": "P0004", "slug": "bug-defense", "productionClass": "DEVELOPMENT_CONFIRMED", "gameplayFamily": "DEFENSE", "evidenceScore": 714, "developmentFocus": 7, "artbookBaselineRank": 1, "unityReady": false, "sourceReady": true},
-      {"rank": 5, "rawEvidenceRank": 5, "gameId": "P0003", "slug": "crystal-defense", "productionClass": "DESIGN_ONLY", "gameplayFamily": "DEFENSE", "evidenceScore": 614, "developmentFocus": 6, "artbookBaselineRank": 1, "unityReady": false, "sourceReady": true},
-      {"rank": 6, "rawEvidenceRank": 6, "gameId": "P0009", "slug": "monster-adventure", "productionClass": "DEVELOPMENT_CONFIRMED", "gameplayFamily": "TURN_BASED", "evidenceScore": 514, "developmentFocus": 5, "artbookBaselineRank": 1, "unityReady": false, "sourceReady": true},
-      {"rank": 7, "rawEvidenceRank": 7, "gameId": "P0005", "slug": "human-go", "productionClass": "DESIGN_ONLY", "gameplayFamily": "COLLECTION", "evidenceScore": 414, "developmentFocus": 4, "artbookBaselineRank": 1, "unityReady": false, "sourceReady": true},
-      {"rank": 8, "rawEvidenceRank": 8, "gameId": "P0101", "slug": "chess-battle", "productionClass": "DESIGN_ONLY", "gameplayFamily": "STRATEGY", "evidenceScore": 14, "developmentFocus": 0, "artbookBaselineRank": 1, "unityReady": false, "sourceReady": true},
-      {"rank": 9, "rawEvidenceRank": 9, "gameId": "P0102", "slug": "survival2", "productionClass": "DESIGN_ONLY", "gameplayFamily": "SURVIVAL", "evidenceScore": 14, "developmentFocus": 0, "artbookBaselineRank": 1, "unityReady": false, "sourceReady": true},
-      {"rank": 10, "rawEvidenceRank": 10, "gameId": "P0103", "slug": "territory-war", "productionClass": "DESIGN_ONLY", "gameplayFamily": "STRATEGY", "evidenceScore": 14, "developmentFocus": 0, "artbookBaselineRank": 1, "unityReady": false, "sourceReady": true}
+      {"rank": 1, "rawEvidenceRank": 1, "gameId": "P0001", "slug": "survival", "productionClass": "RELEASE_CONFIRMED", "gameplayFamily": "SURVIVAL", "evidenceScore": 914, "developmentFocus": 9, "artbookBaselineRank": 1, "targetPlatform": "UNITY", "targetPlatformReady": false, "sourceReady": true},
+      {"rank": 2, "rawEvidenceRank": 2, "gameId": "P0006", "slug": "daechung-rpg", "productionClass": "RELEASE_CONFIRMED", "gameplayFamily": "RPG", "evidenceScore": 815, "developmentFocus": 8, "artbookBaselineRank": 0.5, "targetPlatform": "UNITY", "targetPlatformReady": true, "sourceReady": true},
+      {"rank": 3, "rawEvidenceRank": 3, "gameId": "P0002", "slug": "insect-survival", "productionClass": "DEVELOPMENT_CONFIRMED", "gameplayFamily": "SURVIVAL", "evidenceScore": 814, "developmentFocus": 8, "artbookBaselineRank": 1, "targetPlatform": null, "targetPlatformReady": false, "sourceReady": true},
+      {"rank": 4, "rawEvidenceRank": 4, "gameId": "P0004", "slug": "bug-defense", "productionClass": "DEVELOPMENT_CONFIRMED", "gameplayFamily": "DEFENSE", "evidenceScore": 714, "developmentFocus": 7, "artbookBaselineRank": 1, "targetPlatform": null, "targetPlatformReady": false, "sourceReady": true},
+      {"rank": 5, "rawEvidenceRank": 5, "gameId": "P0003", "slug": "crystal-defense", "productionClass": "DESIGN_ONLY", "gameplayFamily": "DEFENSE", "evidenceScore": 614, "developmentFocus": 6, "artbookBaselineRank": 1, "targetPlatform": null, "targetPlatformReady": false, "sourceReady": true},
+      {"rank": 6, "rawEvidenceRank": 6, "gameId": "P0009", "slug": "monster-adventure", "productionClass": "DEVELOPMENT_CONFIRMED", "gameplayFamily": "TURN_BASED", "evidenceScore": 514, "developmentFocus": 5, "artbookBaselineRank": 1, "targetPlatform": null, "targetPlatformReady": false, "sourceReady": true},
+      {"rank": 7, "rawEvidenceRank": 7, "gameId": "P0005", "slug": "human-go", "productionClass": "DESIGN_ONLY", "gameplayFamily": "COLLECTION", "evidenceScore": 414, "developmentFocus": 4, "artbookBaselineRank": 1, "targetPlatform": null, "targetPlatformReady": false, "sourceReady": true},
+      {"rank": 8, "rawEvidenceRank": 8, "gameId": "P0101", "slug": "chess-battle", "productionClass": "DESIGN_ONLY", "gameplayFamily": "STRATEGY", "evidenceScore": 14, "developmentFocus": 0, "artbookBaselineRank": 1, "targetPlatform": null, "targetPlatformReady": false, "sourceReady": true},
+      {"rank": 9, "rawEvidenceRank": 9, "gameId": "P0102", "slug": "survival2", "productionClass": "DESIGN_ONLY", "gameplayFamily": "SURVIVAL", "evidenceScore": 14, "developmentFocus": 0, "artbookBaselineRank": 1, "targetPlatform": null, "targetPlatformReady": false, "sourceReady": true},
+      {"rank": 10, "rawEvidenceRank": 10, "gameId": "P0103", "slug": "territory-war", "productionClass": "DESIGN_ONLY", "gameplayFamily": "STRATEGY", "evidenceScore": 14, "developmentFocus": 0, "artbookBaselineRank": 1, "targetPlatform": null, "targetPlatformReady": false, "sourceReady": true}
     ]
   }
 }
