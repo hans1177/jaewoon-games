@@ -698,6 +698,52 @@ operationsModernization:
       - STATUS_SYNC_LATENCY
       - UNNECESSARY_WAIT_REDUCTION
       - EVIDENCE_REUSE_WHERE_VALID
+  robloxExpansion:
+    ownerApprovedAt: 2026-09-12
+    status: APPROVED_AFTER_EXISTING_COMPANY_FLOW_MODERNIZATION
+    purpose: FIRST_ADDITIONAL_OPEN_PLATFORM_DEVELOPMENT_PATH
+    existingCompanyModernizationMustFinishFirst: true
+    existingCompanyModernizationMustFollowCompanyFlowExactly: true
+    existingUnityAndroidDefaultPreserved: true
+    existingWebUnityFlowsMustNotBeRewritten: true
+    sourceRoot: roblox-games/<slug>
+    implementation:
+      language: LUAU
+      platform: ROBLOX
+      serverAuthorityRequired: true
+      serverClientBoundaryRequired: true
+      remoteEventValidationRequired: true
+      dataStorePersistenceValidationRequiredWhenUsed: true
+      mobileTouchValidationRequired: true
+      multiplayerValidationRequiredWhenUsed: true
+      performanceValidationRequired: true
+      actualExperienceRuntimeRequired: true
+    evidenceGate:
+      codeOrSyntaxPassAloneNotSuccess: true
+      studioOpenAloneNotSuccess: true
+      actualExperienceEntryRequired: true
+      meaningfulInputRequired: true
+      coreLoopStateChangeRequired: true
+      serverClientHealthRequired: true
+      persistenceRejoinRequiredWhenApplicable: true
+      runtimeQaRegressionRequired: true
+      exactRevisionRequired: true
+    learningIntegration:
+      currentVibeLearningLockRespected: true
+      newLearningTaskTypeForbiddenInThisTask: true
+      newLearningStageOrCronForbidden: true
+      existingVerifiedInputsOnly: true
+      verifiedRobloxEvidenceMayFeedExistingCodingBugfixQaGeneralInputs: true
+    buildIntegration:
+      existingBuildSystemImmutable: true
+      existingBuildWorkflowsMustNotBeModified: true
+      robloxSpecificSourceRuntimeQaAdapterMayExistOutsideExistingBuildChain: true
+      mustNotCreateShadowOrReplacementBuildChain: true
+    continuity:
+      checkpointRequiredAfterEachMaterialMilestone: true
+      checkpointFile: company-work-state.json
+      pullRequest: 346
+      nextSessionMustReadCompanyFlowCheckpointAndPr: true
 
 urgentCases:
   BLOCK_BLAST_EXTERNAL_RUNTIME:
