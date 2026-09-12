@@ -12,7 +12,11 @@ const selectedPlatformOf=seed=>resolveSelectedPlatform(seed?.INITIAL_TARGET_PLAT
 const targetSourcePathOf=(gameId,platform)=>`${adapterForPlatform(platform)?.sourceRoot||''}${gameId}`;
 const webSourcePathOf=gameId=>`web-games/${gameId}`;
 const webEntryPathOf=(root,gameId)=>path.join(root,'web-games',gameId,'index.html');
-const canonicalWebQaPass=artbook=>artbook?.canonicalWebGameQaPass===true||artbook?.publication?.canonicalWebGameQaPass===true;
+function canonicalWebQaPass(root,gameId){
+  const runtime=readJson(path.join(root,'company-qa-runtime-evidence.json'),{games:[]});
+  const row=(runtime.games||[]).find(x=>x.gameId===gameId&&String(x.target||'').toLowerCase()==='web');
+  return Boolean(row?.runtimeSmokePassed===true&&row?.qaPassEligible===true&&(!Array.isArray(row?.blockers)||row.blockers.length===0));
+}
 
 export function promoteReadyDesignSeeds({root='.'}={}){
   const p=(...parts)=>path.join(root,...parts);
@@ -44,7 +48,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       && artbook?.vibe2Used!==true;
     if(!ready){skipped.push({gameId,reason:'DESIGN_BASELINE_NOT_READY'});continue;}
     if(!fs.existsSync(webEntryPathOf(root,gameId))){skipped.push({gameId,reason:'CANONICAL_WEB_GAME_MISSING'});continue;}
-    if(!canonicalWebQaPass(artbook)){skipped.push({gameId,reason:'CANONICAL_WEB_GAME_QA_REQUIRED'});continue;}
+    if(!canonicalWebQaPass(root,gameId)){skipped.push({gameId,reason:'CANONICAL_WEB_GAME_QA_REQUIRED'});continue;}
 
     const selectedPlatform=selectedPlatformOf(seed);
     const targetSourcePath=targetSourcePathOf(gameId,selectedPlatform);
