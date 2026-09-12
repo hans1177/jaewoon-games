@@ -112,7 +112,7 @@ production:
   preserveSaveMeaning: true
 
 portfolioGovernance:
-  mode: FIVE_DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO
+  mode: SEVEN_DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO
   gameDevelopmentCountHardMin: null
   gameDevelopmentCountHardMax: null
   fixedGameSlots: false
@@ -126,10 +126,12 @@ portfolioGovernance:
     - development
     - qa
     - balance
+    - music
+    - intro
   scoreScale:
     min: 0
     max: 100
-  defaultWeightPerDepartment: 0.2
+  defaultWeightPerDepartment: 0.142857142857
   scoreDimensions:
     planning:
       - PRODUCT_DIRECTION
@@ -156,6 +158,16 @@ portfolioGovernance:
       - ECONOMY
       - DIFFICULTY
       - RETENTION_LOOP
+    music:
+      - MUSIC_DIRECTION
+      - RUNTIME_AUDIO_RELIABILITY
+      - MIX_AND_FEEDBACK
+      - LICENSE_AND_PLATFORM_FIT
+    intro:
+      - FIRST_SESSION_CLARITY
+      - GAME_IDENTITY_OPENING
+      - CORE_LOOP_HANDOFF
+      - SKIP_AND_INPUT_READINESS
   decisionBands:
     EXPAND:
       score: 80_TO_100
@@ -303,7 +315,7 @@ discardPolicy:
     requiredBeforeDiscard:
       - FATAL_ISSUE_RECORDED_WITH_EVIDENCE
       - SAME_GAME_DESIGNER_REVISION_ATTEMPTED
-      - FIVE_DEPARTMENT_REVIEW_REPEATED
+      - SEVEN_DEPARTMENT_REVIEW_REPEATED
       - SAME_FATAL_OR_EQUIVALENT_STRUCTURAL_BLOCKER_REMAINS
     fatalCriteria:
       - CORE_FUN_CANNOT_BE_RECOVERED
@@ -371,6 +383,61 @@ platformStrategy:
   noParallelLearningPipeline: true
   runtimeContractMirror: company-learning/platform-release-roadmap.json
   runtimeContractCannotCreatePolicy: true
+  commonExecutionContract:
+    router: tools/company-selected-platform-router.mjs
+    singleRoutingDecisionPoint: true
+    commonAdapterContractRequired: true
+    commonEvidenceSchemaRequired: true
+    allowedPlatforms:
+      - ROBLOX
+      - UNITY
+      - FORTNITE_UEFN
+    commonEvidenceFields:
+      - PLATFORM
+      - SOURCE_REVISION
+      - BUILD_OR_PACKAGE_PASSED
+      - ARTIFACT_IDENTITY
+      - RUNTIME_PASSED
+      - INDEPENDENT_QA_PASSED
+      - REGRESSION_PASSED
+      - EXACT_REVISION
+      - LAST_SUCCESSFUL_STAGE
+      - FAILURE_STAGE
+      - FAILURE_SIGNATURE
+    adapters:
+      ROBLOX: tools/vibe3-roblox-platform.mjs
+      UNITY: tools/company-development-unity-platform.mjs
+      FORTNITE_UEFN: tools/company-development-uefn-platform.mjs
+  developmentSpeedExecution:
+    scope: EXECUTION_SPEED_ONLY
+    qualityOrEvidenceGateWeakeningForbidden: true
+    canonicalSequence:
+      - CHANGE_DETECTION
+      - CHEAP_PRECHECK
+      - REPRESENTATIVE_CANARY
+      - SINGLE_BUILD_OR_PACKAGE
+      - IMMUTABLE_ARTIFACT_BIND
+      - TARGET_PLATFORM_RUNTIME
+      - INDEPENDENT_QA
+      - REGRESSION
+      - IMMEDIATE_NEXT_STAGE_DISPATCH
+      - RESUME_EXACT_FAILURE_POINT
+    changeDetectionRequiredBeforeExpensiveWork: true
+    cheapPrecheckRequiredBeforeCanary: true
+    representativeCanaryRequiredWhenSharedExecutionContractChangedOrCommonFailureDetected: true
+    canaryPassAllowsRemainingEligibleWorkToProceed: true
+    buildOncePerSourceFingerprint: true
+    sameArtifactRequiredAcrossRuntimeIndependentQaAndRegression: true
+    immutableArtifactIdentityRequired: true
+    successfulStageEvidenceReusableWhenSourceFingerprintStillMatches: true
+    sourceOrRelevantDependencyChangeInvalidatesAffectedEvidenceOnly: true
+    failureMustRecordExactStageAndSignature: true
+    retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches: true
+    successfulStepMustNotBeRepeatedWithoutInvalidatingChange: true
+    nextCanonicalStageDispatchImmediatelyAfterSuccess: true
+    cronRole: WATCHDOG_AND_RECOVERY_ONLY
+    cronMustNotBePrimaryProgressionEngine: true
+    existingEventChainPreferred: true
   focusMilestones:
     ROBLOX_FAST_RELEASE_STABILIZATION:
       defaultPriority: 1
@@ -446,8 +513,10 @@ aiOrganization:
     - development
     - qa
     - balance
+    - music
+    - intro
   departmentMultimodelStartsAt: DESIGN_ONLY
-  fiveDistinctLeadModelIdsRequiredPerCycle: true
+  sevenDistinctLeadModelIdsRequiredPerCycle: true
   minDistinctModelsPerDepartment: 3
   structurePerDepartment:
     leadCount: 1
@@ -615,8 +684,10 @@ departmentStandards:
   centralSourceOnly: true
   machineImplementation:
     evidenceRules: assets/company-department-standards.js
+    evidenceExtractor: tools/vibe3-department-evidence-extract.mjs
     postModificationReview: tools/company-post-modification-review.mjs
     regressionTest: qa/company-department-standards.test.mjs
+    evidenceExtractorTest: qa/vibe3-department-evidence-extract.test.mjs
     standardsWorkflow: .github/workflows/department-standards-qa.yml
     revoteWorkflow: .github/workflows/post-modification-revote.yml
   common:
@@ -627,7 +698,10 @@ departmentStandards:
     insufficientEvidenceForcesRevise: true
     oneDepartmentMustNotAuthorAnotherDepartmentDecision: true
     modificationRequiresSameScopeRegressionRecheck: true
-    directorAggregatesFiveDepartmentResultsAndEvidenceGates: true
+    automaticGroundedEvidenceExtractionRequired: true
+    extractedEvidenceMustBindSourceRuntimeOrArtifact: true
+    modelInventedEvidenceForbidden: true
+    directorAggregatesSevenDepartmentResultsAndEvidenceGates: true
   planning:
     responsibilities:
       - CORE_FUN
@@ -702,6 +776,7 @@ departmentStandards:
       - ARTBOOK_AND_GAME_IDENTITY_ALIGNMENT
       - CHARACTER_MONSTER_VFX_MOTION_IMPACT
       - ASSET_LICENSE_AND_PLATFORM_PERFORMANCE_IMPACT
+      - SCREENSHOT_AND_FRAME_METRIC_EVIDENCE
     passMinimum:
       domainEvidenceCount: 1
       noImpactRequiresExplicitChangeScopeEvidence: true
@@ -718,8 +793,32 @@ departmentStandards:
       beforeAfterValueComparisonRequiredWhenBalanceValuesChange: true
       noImpactRequiresExplicitChangeScopeEvidence: true
       codeQualityAloneDoesNotPass: true
+  music:
+    responsibilities:
+      - BGM_AND_EVENT_AUDIO_DIRECTION
+      - FIRST_USER_GESTURE_AUDIO_UNLOCK
+      - MUTE_AND_VOLUME_CONTROL
+      - MIX_AND_FEEDBACK_READABILITY
+      - AUDIO_LICENSE_AND_NETWORK_DEPENDENCY
+    passMinimum:
+      domainEvidenceCount: 1
+      actualRuntimeAudioEvidenceCount: 1
+      runtimeAudioEvidenceAbsentForbidsPass: true
+      externalAudioRequiresLicenseEvidence: true
+  intro:
+    responsibilities:
+      - FIRST_ENTRY_PRESENTATION
+      - GAME_IDENTITY_COMMUNICATION
+      - SKIP_OR_CONTINUE_FLOW
+      - FIRST_MEANINGFUL_INPUT_READINESS
+      - INTRO_TO_CORE_LOOP_HANDOFF
+    passMinimum:
+      domainEvidenceCount: 1
+      actualRuntimeIntroEvidenceCount: 1
+      runtimeIntroEvidenceAbsentForbidsPass: true
+      blockingIntroRequiresSkipOrBoundedDurationEvidence: true
   director:
-    mustReadAllFiveDepartmentResults: true
+    mustReadAllSevenDepartmentResults: true
     mustReadAllEvidenceGates: true
     mustAggregateCrossDepartmentBlockers: true
     mustSetNextRevisionPriority: true
@@ -727,18 +826,22 @@ departmentStandards:
     reviewVerdict:
       anyDrop: DROP
       noDropAnyReviseOrEvidenceGateFailure: REVISE
-      allFivePassAndAllEvidenceGatesPass: PASS
+      allSevenPassAndAllEvidenceGatesPass: PASS
     reviewDropDoesNotBypassDiscardPolicy: true
   postModificationFlow:
     - DEVELOPMENT_CHANGE
     - COMPILE_OR_BUILD
     - QA_ACTUAL_RUNTIME_OR_PLAY
+    - AUTOMATIC_GROUNDED_EVIDENCE_EXTRACTION
     - PLANNING_REVIEW
     - DEVELOPMENT_REVIEW
     - GRAPHICS_REVIEW
     - BALANCE_REVIEW
-    - FIVE_DEPARTMENT_EVIDENCE_GATES
+    - MUSIC_REVIEW
+    - INTRO_REVIEW
+    - SEVEN_DEPARTMENT_EVIDENCE_GATES
     - DIRECTOR_AGGREGATION
+    - VERIFIED_DEPARTMENT_EVIDENCE_TO_VIBE3_LEARNING
     - PASS_REVISE_OR_DROP
   defectRecoveryFlow:
     - QA_DETECT_ERROR
@@ -763,8 +866,8 @@ meeting:
       - MODEL_IDS
       - DEPARTMENT_SCORE
   crossDepartment:
-    participants: FIVE_DEPARTMENT_LEADS
-    eachLeadReadsOtherFourRepresentatives: true
+    participants: SEVEN_DEPARTMENT_LEADS
+    eachLeadReadsOtherSixRepresentatives: true
     rebuttalRounds: 1
     rebuttalAuthor: SAME_DEPARTMENT_LEAD
     issueStates:
@@ -814,7 +917,7 @@ flows:
     requiredFlow:
       - GAME_SEED
       - GAME_DESIGNER_DRAFT
-      - FIVE_DISTINCT_DEPARTMENT_LEADS
+      - SEVEN_DISTINCT_DEPARTMENT_LEADS
       - DEPARTMENT_LEAD_PLUS_ASSISTANT_MULTIMODEL_REVIEW
       - DEPARTMENT_LEAD_INTERNAL_CONSENSUS
       - CROSS_DEPARTMENT_LEAD_MEETING
@@ -830,8 +933,8 @@ flows:
       - MARKET_TARGET_DIRECTION_RECORDED
       - TARGET_PLATFORM_UX_DIRECTION_DEFINED
       - PLATFORM_SELECTION_RECORDED
-      - FIVE_DISTINCT_LEAD_MODELS
-      - FIVE_DEPARTMENT_SCORES_RECORDED
+      - SEVEN_DISTINCT_LEAD_MODELS
+      - SEVEN_DEPARTMENT_SCORES_RECORDED
       - PER_DEPARTMENT_MULTIMODEL_REVIEW_PASS
       - NO_HIDDEN_FATAL_CONFLICT
     readyState: DESIGN_BASELINE_READY
@@ -844,6 +947,7 @@ flows:
     targetPlatformMayRunImmediately: false
     webGameplayValidationRequired: true
     musicValidationRequired: true
+    introDepartmentReviewRequired: true
     webCandidateMustPassBeforeTargetPlatformDispatch: true
     webCandidatePublicPromotionRequiresValidationPass: true
     aiMayInventValidationPass: false
@@ -854,6 +958,7 @@ flows:
       - WEB_PLAYABLE_BOOTSTRAP
       - MUSIC_RUNTIME_BIND
       - WEB_GAMEPLAY_AND_MUSIC_VALIDATION
+      - AUTOMATIC_GROUNDED_DEPARTMENT_EVIDENCE
       - WEB_EVIDENCE_DEPARTMENT_MEETING
       - GAME_DESIGNER_WEB_REVISION
       - TARGET_PLATFORM_SOURCE_BIND
@@ -875,6 +980,9 @@ flows:
       - MUSIC_MUTE_CONTROL
       - MUSIC_VOLUME_CONTROL
       - MUSIC_RUNTIME_STATE
+      - INTRO_FIRST_ENTRY_STATE
+      - INTRO_SKIP_OR_CONTINUE_STATE
+      - INTRO_FIRST_MEANINGFUL_INPUT_HANDOFF
     targetPlatformValidationMustCover:
       - CORE_LOOP
       - TEMPO
@@ -936,10 +1044,10 @@ flows:
       - VIBE2_PRIMARY_DEVELOPMENT
       - BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE
       - TARGET_PLATFORM_BUILD_OR_PACKAGE
-      - FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT
+      - SEVEN_DISTINCT_LEAD_BUILD_PREFLIGHT
       - TARGET_PLATFORM_RUNTIME_VALIDATION
       - INDEPENDENT_QA_AND_REGRESSION
-      - FIVE_DISTINCT_LEAD_FINAL_RELEASE_REVIEW
+      - SEVEN_DISTINCT_LEAD_FINAL_RELEASE_REVIEW
       - VIBE2_FIX_AND_REBUILD_LOOP_IF_REQUIRED
       - RELEASE_GATE
       - RELEASE_BASELINE
@@ -1043,9 +1151,27 @@ learning:
     - FORTNITE_UEFN_PUBLISHING_QA
     - INDEPENDENT_QA
     - RELEASE_RESULT
+    - GROUNDED_DEPARTMENT_EVIDENCE
   labelSuccessAndFailureCauses: true
   onlyValidatedPatternsFeedVibe2Learning: true
   canonicalDistillationRequired: true
+  departmentEvidenceLearning:
+    enabled: true
+    departments:
+      - planning
+      - graphics
+      - development
+      - qa
+      - balance
+      - music
+      - intro
+    automaticExtractor: tools/vibe3-department-evidence-extract.mjs
+    sourceRuntimeOrArtifactBindingRequired: true
+    modelOpinionWithoutGroundingRejected: true
+    positiveMemoryRequiresDepartmentGatePass: true
+    failureAndReviseEvidenceFeedsWarningMemoryOnly: true
+    verifiedDepartmentEvidenceFeedsExistingCanonicalDistillation: true
+    separateDepartmentLearningPipelineForbidden: true
   canonicalLearningChain:
     - VALIDATED_EVIDENCE
     - DISTILLATION_INGEST
