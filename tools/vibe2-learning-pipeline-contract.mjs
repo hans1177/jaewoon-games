@@ -1,3 +1,4 @@
+// 파일명: tools/vibe2-learning-pipeline-contract.mjs
 import fs from 'node:fs';
 
 const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -23,7 +24,7 @@ const expectedChain = [
   'PROMOTE_OR_ROLLBACK',
 ];
 
-eq(contract.version, 2, 'contract.version');
+eq(contract.version, 3, 'contract.version');
 eq(contract.status, 'LOCKED', 'contract.status');
 eq(JSON.stringify(contract.canonicalChain), JSON.stringify(expectedChain), 'canonicalChain');
 eq(contract.pipelineLock.existingPipelineIsAuthoritative, true, 'existingPipelineIsAuthoritative');
@@ -49,6 +50,22 @@ eq(contract.portableWebLearning?.robloxMayRetrievePortableWebPatternsAsContext, 
 eq(contract.portableWebLearning?.webEvidenceCountsAsRobloxVerifiedEvidence, false, 'web evidence must not become Roblox evidence');
 eq(contract.portableWebLearning?.webEvidenceMaySatisfyRobloxDatasetGate, false, 'web evidence must not satisfy Roblox dataset gate');
 
+const external = contract.externalOpenSourceWebDistillation;
+eq(external?.enabled, true, 'external web auto-distill enabled');
+eq(external?.execution, 'EXISTING_CANONICAL_HOURLY_INGEST_ONLY', 'external web execution route');
+eq(external?.separateCronOrPipelineForbidden, true, 'external web parallel pipeline');
+eq(external?.sourceMode, 'ALLOWLISTED_PERMISSIVE_OPEN_SOURCE_ONLY', 'external source mode');
+eq(external?.licenseFileAndTextVerificationRequired, true, 'external license verification');
+eq(external?.sourceCommitBindingRequired, true, 'external source commit binding');
+eq(external?.upstreamNodeOrShellExecutionForbidden, true, 'external upstream script execution');
+eq(external?.externalBrowserNetworkBlocked, true, 'external browser network');
+eq(external?.browserRuntimePassRequired, true, 'external browser runtime pass');
+eq(external?.meaningfulInteractionProbeRequired, true, 'external interaction probe');
+eq(external?.rawBinaryOrAssetTrainingForbidden, true, 'external raw asset training');
+eq(external?.failedSourceCannotCreatePositiveSample, true, 'external failed source promotion');
+eq(external?.crossPlatformPassEvidenceTransferForbidden, true, 'external cross-platform pass transfer');
+eq(external?.thresholdLoweringForbidden, true, 'external threshold lowering');
+
 const companyFlow = readText('COMPANY_FLOW.md');
 includesAll(companyFlow, [
   'existingPipelineIsAuthoritative: true',
@@ -58,20 +75,40 @@ includesAll(companyFlow, [
   'primaryBackend: SERVER_SELF_HOSTED',
   'preservedBackend: LOCAL_SELF_HOSTED',
   'mode: CONTINUOUS_24H',
+  'externalOpenSourceWebDistillation:',
+  'execution: EXISTING_CANONICAL_HOURLY_INGEST_ONLY',
+  'sourceMode: ALLOWLISTED_PERMISSIVE_OPEN_SOURCE_ONLY',
+  'upstreamNodeOrShellExecutionForbidden: true',
+  'browserRuntimePassRequired: true',
+  'failedSourceCannotCreatePositiveSample: true',
   'robloxMayRetrievePortableWebPatternsAsContext: true',
   'webEvidenceCountsAsRobloxVerifiedEvidence: false',
 ], 'COMPANY_FLOW');
 
+const sourceManifest = readJson(contract.implementationBindings.externalWebSourceManifest);
+eq(sourceManifest.version, 1, 'external source manifest version');
+eq(sourceManifest.policy?.mode, 'ALLOWLISTED_PERMISSIVE_OPEN_SOURCE_ONLY', 'external manifest mode');
+eq(sourceManifest.policy?.requireLicenseFileMatch, true, 'external manifest license verification');
+eq(sourceManifest.policy?.requireBrowserRuntimePass, true, 'external manifest runtime verification');
+eq(sourceManifest.policy?.requireInteractionProbe, true, 'external manifest interaction verification');
+eq(sourceManifest.policy?.upstreamNodeOrShellExecutionForbidden, true, 'external manifest script execution');
+eq(sourceManifest.policy?.externalNetworkFromBrowserBlocked, true, 'external manifest browser network');
+if (!Array.isArray(sourceManifest.sources) || sourceManifest.sources.length < 2) fail('external source manifest requires multiple project sources');
+
 const ingestWorkflow = readText(contract.implementationBindings.ingestWorkflow);
 includesAll(ingestWorkflow, [
+  'tools/vibe3-external-web-distill.mjs',
+  'company-learning/external-web-sources.json',
   'tools/vibe2-distillation-ingest.mjs',
   'tools/vibe2-distillation-status.mjs',
   'tools/vibe2-training-request.mjs',
   'tools/vibe3-trajectory-ingest.mjs',
   'tools/vibe3-pump-index.mjs',
+  'EXTERNAL_WEB_OPEN_SOURCE_AUTO_DISTILL=YES',
   'external black-box browser QA: NOT_APPLICABLE',
 ], 'distillation ingest workflow');
 const ingestOrder = [
+  'node tools/vibe3-external-web-distill.mjs',
   'node tools/vibe2-distillation-ingest.mjs',
   'node tools/vibe3-trajectory-ingest.mjs',
   'node tools/vibe2-distillation-status.mjs',
@@ -79,7 +116,7 @@ const ingestOrder = [
   'node tools/vibe3-pump-index.mjs',
 ].map((token) => ingestWorkflow.indexOf(token));
 for (const [index, value] of ingestOrder.entries()) if (value < 0) fail(`ingest stage missing at ${index}`);
-for (let index = 1; index < ingestOrder.length; index += 1) if (ingestOrder[index - 1] >= ingestOrder[index]) fail('ingest/trajectory/status/request/pump order drifted');
+for (let index = 1; index < ingestOrder.length; index += 1) if (ingestOrder[index - 1] >= ingestOrder[index]) fail('external/ingest/trajectory/status/request/pump order drifted');
 
 const trainWorkflow = readText(contract.implementationBindings.trainingWorkflow);
 includesAll(trainWorkflow, [
@@ -127,6 +164,8 @@ eq(request.execution?.githubHostedTrainingAllowed, false, 'training request host
 eq(request.execution?.paidApiAllowed, false, 'training request paid API policy');
 
 console.log('VIBE2_LEARNING_PIPELINE_CONTRACT=PASS');
+console.log('EXTERNAL_WEB_AUTO_DISTILLATION=LOCKED_TO_CANONICAL_HOURLY_INGEST');
+console.log(`EXTERNAL_WEB_ALLOWLISTED_SOURCES=${sourceManifest.sources.length}`);
 console.log('BLOCK_BLAST_SUCCESS_LEARNING_METHOD=LOCKED_RUN30');
 console.log(`BLOCK_BLAST_QA_ACCEPTED=${status.tasks.qa.accepted}`);
 console.log(`BLOCK_BLAST_QA_TRAIN=${status.tasks.qa.train}`);
