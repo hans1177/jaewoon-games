@@ -23,6 +23,7 @@ on:
       - 'qa/company-central-pipeline-only.test.mjs'
       - 'qa/company-platform-speed-policy.test.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
+      - 'qa/company-speed-sequence-workflow.test.mjs'
       - 'qa/design-only-promotion-sync.test.mjs'
       - 'qa/company-development-validation-selected-platform.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
@@ -57,6 +58,7 @@ on:
       - 'qa/company-central-pipeline-only.test.mjs'
       - 'qa/company-platform-speed-policy.test.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
+      - 'qa/company-speed-sequence-workflow.test.mjs'
       - 'qa/design-only-promotion-sync.test.mjs'
       - 'qa/company-development-validation-selected-platform.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
@@ -101,6 +103,7 @@ jobs:
             qa/company-central-pipeline-only.test.mjs \
             qa/company-platform-speed-policy.test.mjs \
             qa/company-selected-platform-router.test.mjs \
+            qa/company-speed-sequence-workflow.test.mjs \
             qa/design-only-promotion-sync.test.mjs \
             qa/company-development-validation-selected-platform.test.mjs \
             qa/company-development-web-runtime.test.mjs \
