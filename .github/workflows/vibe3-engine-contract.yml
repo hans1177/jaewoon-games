@@ -19,7 +19,7 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const c=JSON.parse(fs.readFileSync('company-learning/vibe3-engine-contract.json','utf8'));
-          if(c.version!==4||c.status!=='OWNER_DIRECT_LOCKED') throw new Error('Vibe3 contract version/status mismatch');
+          if(c.version!==5||c.status!=='OWNER_DIRECT_LOCKED') throw new Error('Vibe3 contract version/status mismatch');
           if(c.relationshipToVibe2!=='INTELLIGENCE_LAYER_UPGRADE_INSIDE_EXISTING_PIPELINE'||c.parallelPipeline!==false) throw new Error('Vibe3 must remain inside canonical pipeline');
           if(c.execution?.minIndependentCandidates!==3||c.execution?.maxIndependentCandidates!==5||c.execution?.defaultIndependentCandidates!==5||c.execution?.defaultMaxRepairAttempts!==3) throw new Error('Vibe3 Pump tournament/repair contract changed');
           if(c.pumpMode?.enabled!==true||c.pumpMode?.weightTrainingRequiredForPump!==false||c.pumpMode?.hourlyRefresh!==true||c.pumpMode?.continuousMode!=='24H') throw new Error('Vibe3 Pump mode disabled');
@@ -28,6 +28,11 @@ jobs:
           if(c.verifiedRag?.positiveMemoryRequiresVerifiedEvidence!==true||c.verifiedRag?.failureMemoryIsWarningOnly!==true) throw new Error('verified RAG boundary changed');
           if(c.verifiedRag?.portableContextMayCrossPlatforms!==true||c.verifiedRag?.platformPassEvidenceMayNotTransfer!==true) throw new Error('portable context evidence boundary changed');
           if(!c.verifiedRag?.supportedPlaybooks?.includes('roblox')||!c.verifiedRag?.supportedPlaybooks?.includes('fortnite_uefn')) throw new Error('platform playbook missing');
+          const ext=c.externalOpenSourceWebDistillation;
+          if(ext?.enabled!==true||ext?.execution!=='EXISTING_CANONICAL_HOURLY_INGEST_ONLY'||ext?.sourceMode!=='ALLOWLISTED_PERMISSIVE_OPEN_SOURCE_ONLY') throw new Error('external web auto-distillation route changed');
+          if(ext?.licenseFileAndTextVerificationRequired!==true||ext?.sourceCommitBindingRequired!==true||ext?.upstreamNodeOrShellExecutionAllowed!==false) throw new Error('external web source safety changed');
+          if(ext?.browserExecutionSandboxed!==true||ext?.externalBrowserNetworkAllowed!==false||ext?.browserRuntimePassRequired!==true||ext?.meaningfulInteractionProbeRequired!==true) throw new Error('external web runtime verification changed');
+          if(ext?.rawBinaryOrAssetTrainingAllowed!==false||ext?.failedSourceMayCreatePositiveSample!==false||ext?.separateCronOrPipelineAllowed!==false||ext?.crossPlatformPassEvidenceTransferAllowed!==false||ext?.thresholdLoweringAllowed!==false) throw new Error('external web promotion boundary changed');
           if(c.portableWebLearning?.robloxMayRetrieveAsContext!==true||c.portableWebLearning?.webPassCountsAsRobloxPass!==false||c.portableWebLearning?.webEvidenceMaySatisfyRobloxDatasetGate!==false) throw new Error('web to Roblox isolation contract changed');
           if(c.assetTransformation?.originalImmutable!==true||c.assetTransformation?.variantTournamentRequired!==true) throw new Error('Vibe3 asset transformation safety changed');
           if(c.modelSelection?.route!=='CANONICAL_SELF_HOSTED'||c.modelSelection?.preferredBackend!=='SERVER_SELF_HOSTED'||c.modelSelection?.localBackendPreserved!==true||c.modelSelection?.paidApiAllowed!==false||c.modelSelection?.githubHostedTrainingAllowed!==false) throw new Error('Vibe3 model route policy changed');
@@ -37,7 +42,7 @@ jobs:
           if(roadmap?.currentPhase!=='ROBLOX_FAST_RELEASE_STABILIZATION'||roadmap?.unityExistingPathPreserved!==true||roadmap?.separatePlatformLearningPipelineAllowed!==false||roadmap?.crossPlatformPassEvidenceTransferAllowed!==false) throw new Error('platform roadmap phase/preservation changed');
           if(roadmap?.phase1Implementation?.taskType!=='roblox'||roadmap?.phase1Implementation?.adapter!=='tools/vibe3-roblox-platform.mjs'||roadmap?.phase1Implementation?.publishRequiresExplicitExecute!==true||roadmap?.phase1Implementation?.cookieAuthAllowed!==false) throw new Error('Roblox Phase 1 implementation contract changed');
           if(c.promotion?.freshAdapterState!=='TRAINED_UNVERIFIED') throw new Error('Vibe3 promotion gate changed');
-          console.log('PASS Vibe3 Pump server-primary portable-web machine contract');
+          console.log('PASS Vibe3 Pump server-primary external-web portable-web machine contract');
           NODE
 
       - name: Validate platform roadmap machine contract
@@ -61,6 +66,7 @@ jobs:
           node --input-type=module --check < tools/vibe3-trajectory-ingest.mjs
           node --input-type=module --check < tools/vibe3-model-selection.mjs
           node --input-type=module --check < tools/vibe3-pump-index.mjs
+          node --input-type=module --check < tools/vibe3-external-web-distill.mjs
           node --input-type=module --check < tools/vibe3-roblox-platform.mjs
 
       - name: Run Vibe3 engine contract tests
@@ -71,6 +77,9 @@ jobs:
 
       - name: Run Vibe3 trajectory and model-selection tests
         run: node qa/vibe3-trajectory-ingest.test.mjs
+
+      - name: Run external web distillation contract tests
+        run: node qa/vibe3-external-web-distill.test.mjs
 
       - name: Run Roblox Phase 1 adapter tests
         run: node qa/vibe3-roblox-platform.test.mjs
