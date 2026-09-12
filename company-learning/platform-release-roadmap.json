@@ -21,7 +21,25 @@
       "requiresRuntimeAdapter": true,
       "requiresIndependentQa": true,
       "requiresPublishingPath": true,
-      "exitRequiresVerifiedReleaseAndStabilizationExperience": true
+      "exitRequiresVerifiedReleaseAndStabilizationExperience": true,
+      "implementation": {
+        "taskType": "roblox",
+        "sourceRoot": "roblox-games/",
+        "platformAdapter": "tools/vibe3-roblox-platform.mjs",
+        "trajectoryIngest": "tools/vibe3-trajectory-ingest.mjs",
+        "canonicalSampleGate": "tools/vibe2-training-sample.mjs",
+        "pumpPlaybookBuilder": "tools/vibe3-pump-index.mjs",
+        "contractTest": "qa/vibe3-roblox-platform.test.mjs",
+        "ciContract": ".github/workflows/vibe3-engine-contract.yml",
+        "publishModeDefault": "DRY_RUN",
+        "livePublishRequiresExplicitExecute": true,
+        "requiredEnvironment": [
+          "ROBLOX_OPEN_CLOUD_API_KEY",
+          "ROBLOX_UNIVERSE_ID",
+          "ROBLOX_PLACE_ID"
+        ],
+        "cookieAuthAllowed": false
+      }
     },
     {
       "id": 2,
