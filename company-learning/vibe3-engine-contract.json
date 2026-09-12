@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "status": "OWNER_DIRECT_LOCKED",
   "recordedAt": "2026-09-12",
   "relationshipToVibe2": "INTELLIGENCE_LAYER_UPGRADE_INSIDE_EXISTING_PIPELINE",
@@ -54,6 +54,28 @@
     "portableContextMayCrossPlatforms": true,
     "platformPassEvidenceMayNotTransfer": true,
     "supportedPlaybooks": ["coding", "bugfix", "qa", "unity", "roblox", "fortnite_uefn", "graphics", "planning", "general"]
+  },
+  "externalOpenSourceWebDistillation": {
+    "enabled": true,
+    "execution": "EXISTING_CANONICAL_HOURLY_INGEST_ONLY",
+    "sourceManifest": "company-learning/external-web-sources.json",
+    "distillationTool": "tools/vibe3-external-web-distill.mjs",
+    "contractTest": "qa/vibe3-external-web-distill.test.mjs",
+    "sourceMode": "ALLOWLISTED_PERMISSIVE_OPEN_SOURCE_ONLY",
+    "licenseFileAndTextVerificationRequired": true,
+    "sourceCommitBindingRequired": true,
+    "upstreamNodeOrShellExecutionAllowed": false,
+    "browserExecutionSandboxed": true,
+    "externalBrowserNetworkAllowed": false,
+    "browserRuntimePassRequired": true,
+    "meaningfulInteractionProbeRequired": true,
+    "codeDiffOnly": true,
+    "rawBinaryOrAssetTrainingAllowed": false,
+    "failedSourceMayCreatePositiveSample": false,
+    "feedsExistingTrainingSampleRoot": true,
+    "separateCronOrPipelineAllowed": false,
+    "crossPlatformPassEvidenceTransferAllowed": false,
+    "thresholdLoweringAllowed": false
   },
   "portableWebLearning": {
     "enabled": true,
