@@ -181,13 +181,14 @@ jobs:
           node --input-type=module <<'NODE' > /tmp/models.txt
           import fs from 'node:fs';
           const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-          const roles=['planning','graphics','development','qa','balance'];
+          const roles=(d.ai?.departments||[]).map(String).map(x=>x.trim()).filter(Boolean);
+          if(roles.length!==7||new Set(roles).size!==roles.length)throw new Error(`canonical department roles invalid: ${roles.join(',')}`);
           const pool=[...new Set((d.ai?.modelPool||[]).map(String).map(x=>x.trim()).filter(Boolean))];
           const reviewCount=Math.max(Number(d.ai?.minDistinctModelsPerDepartment||3),Number(d.ai?.departmentReviewModelCount||3));
           const leads=roles.map(role=>String(d.ai?.departmentLeadModels?.[role]||'').trim());
           if(pool.length<reviewCount)throw new Error(`model pool too small: ${pool.length}/${reviewCount}`);
           if(leads.some(x=>!x))throw new Error('department lead model missing');
-          if(new Set(leads).size<Number(d.ai?.minDistinctLeadModelsAcrossDepartments||roles.length))throw new Error('five distinct department lead gate failed');
+          if(new Set(leads).size<Number(d.ai?.minDistinctLeadModelsAcrossDepartments||roles.length))throw new Error(`${roles.length} distinct department lead gate failed`);
           for(const lead of leads)if(!pool.includes(lead))throw new Error(`lead model not in pool: ${lead}`);
           for(const model of pool)console.log(model);
           NODE
@@ -218,7 +219,8 @@ jobs:
           import path from 'node:path';
           import {PRODUCTION_CLASSES,normalizeProductionClass} from './tools/production-classification.mjs';
           const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-          const roles=['planning','graphics','development','qa','balance'];
+          const roles=(d.ai?.departments||[]).map(String).map(x=>x.trim()).filter(Boolean);
+          if(roles.length!==7||new Set(roles).size!==roles.length)throw new Error(`canonical department roles invalid: ${roles.join(',')}`);
           const leads=roles.map(role=>String(d.ai?.departmentLeadModels?.[role]||'').trim());
           if(new Set(leads).size<roles.length)throw new Error('configured lead models are not distinct');
           const gameId=process.env.ARTBOOK_GAME_ID;
@@ -253,10 +255,14 @@ jobs:
           }else if(actualClass===PRODUCTION_CLASSES.DESIGN_ONLY){
             if(!s.baselineGate||s.baselineGate.policyDocument!=='COMPANY_FLOW.md')throw new Error('design baseline gate missing');
             if(s.status!=='COMPLETE')throw new Error('design cycle incomplete');
-            if(s.departments?.leadModelsDistinct!==true||s.departments?.count!==5)throw new Error('design lead contract failed');
+            if(s.departments?.leadModelsDistinct!==true||s.departments?.count!==roles.length)throw new Error('design lead contract failed');
             for(const role of roles){const a=s.departments?.modelAudit?.[role];if(!a?.pass||a.representativeAuthoredByLead!==true||a.rebuttalAuthoredByLead!==true)throw new Error(`${role} lead review contract failed`);}
+            if(s.departments?.scoreComplete!==true||Number(s.departments?.scoreCount||0)!==roles.length||(s.departments?.missingScoreRoles||[]).length!==0)throw new Error('seven-department score contract failed');
+            if(s.baselineGate?.departmentScoreContract?.state!=='COMPLETE'||Number(s.baselineGate?.departmentScoreContract?.scoreCount||0)!==roles.length)throw new Error('baseline department score aggregation incomplete');
             if(s.baselineGate.state!=='DESIGN_BASELINE_READY'||s.baselineGate.ready!==true)throw new Error(`DESIGN_ONLY baseline not ready: ${s.baselineGate.state}`);
             if(s.artbook?.createdAfterBaselineReady!==true||s.artbook?.vibe2Used!==false)throw new Error('DESIGN_ONLY artbook was not created after baseline gate');
+            console.log(`DEPARTMENT_SCORE_COUNT=${s.departments.scoreCount}/${roles.length}`);
+            console.log(`NORMALIZED_PORTFOLIO_SCORE=${s.departments.normalizedPortfolioScore}`);
             console.log(`DIRECT_RESULT=${s.baselineGate.state}`);
           }else if(actualClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
             const allowed=new Set([...(d.classes?.RELEASE_CONFIRMED?.waitingStates||[]),...(d.classes?.RELEASE_CONFIRMED?.releaseStates||[])]);
