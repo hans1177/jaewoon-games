@@ -558,6 +558,19 @@ assetPolicy:
     transparentSprite: PNG_ALLOWED
     audio: OGG_PREFERRED_MP3_WAV_ALLOWED
     font: WOFF2
+  developmentMusic:
+    requiredInWebValidation: true
+    firstUserGestureUnlockRequired: true
+    autoplayBeforeUserGestureForbidden: true
+    muteControlRequired: true
+    volumeControlRequired: true
+    runtimeStateEvidenceRequired: true
+    allowedImplementationModes:
+      - WEB_AUDIO_SYNTH
+      - LOCAL_LICENSED_AUDIO
+    externalTrackRequiresLicenseLedger: true
+    runtimeNetworkAudioDependencyForbidden: true
+    musicFailureBlocksTargetPlatformDispatch: true
   sizeGuidance:
     ordinaryAssetPreferredMaxMb: 1
     perGameAdditionalAssetsPreferredRangeMb: 20_TO_50
@@ -866,14 +879,24 @@ flows:
   DEVELOPMENT_CONFIRMED:
     executionMode: GATED_DIRECT
     resumeFromLatestEvidence: true
-    webPurpose: OPTIONAL_GAMEPLAY_VALIDATION_TESTBED
+    webPurpose: REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION
     targetPlatformPurpose: TECHNICAL_AND_GAMEPLAY_VALIDATION
-    webBeforeTargetPlatformByDefault: false
-    targetPlatformMayRunImmediately: true
+    webBeforeTargetPlatformByDefault: true
+    targetPlatformMayRunImmediately: false
+    webGameplayValidationRequired: true
+    musicValidationRequired: true
+    webCandidateMustPassBeforeTargetPlatformDispatch: true
+    webCandidatePublicPromotionRequiresValidationPass: true
     aiMayInventValidationPass: false
     webSmokeCountsAsGameplayValidation: false
     requiredFlow:
       - LOAD_DESIGN_BASELINE
+      - WEB_PLAYABLE_QUEUE
+      - WEB_PLAYABLE_BOOTSTRAP
+      - MUSIC_RUNTIME_BIND
+      - WEB_GAMEPLAY_AND_MUSIC_VALIDATION
+      - WEB_EVIDENCE_DEPARTMENT_MEETING
+      - GAME_DESIGNER_WEB_REVISION
       - TARGET_PLATFORM_SOURCE_BIND
       - TARGET_PLATFORM_GAMEPLAY_VALIDATION
       - TARGET_PLATFORM_TECHNICAL_VALIDATION
@@ -882,6 +905,17 @@ flows:
       - TARGETED_REVALIDATION
       - DEVELOPMENT_BASELINE_GATE
       - ARTBOOK_EDITOR_REVISION
+    webValidationMustCover:
+      - CORE_LOOP
+      - MOBILE_TOUCH_INPUT
+      - OBSERVABLE_STATE_CHANGE
+      - MOBILE_HORIZONTAL_OVERFLOW
+      - RUNTIME_ERRORS
+      - RELOAD_VISIBILITY
+      - MUSIC_STARTS_ONLY_AFTER_USER_GESTURE
+      - MUSIC_MUTE_CONTROL
+      - MUSIC_VOLUME_CONTROL
+      - MUSIC_RUNTIME_STATE
     targetPlatformValidationMustCover:
       - CORE_LOOP
       - TEMPO
@@ -901,6 +935,9 @@ flows:
       - DROP
       - HOLD
     waitingStates:
+      - WAITING_WEB_PLAYABLE
+      - WAITING_WEB_GAMEPLAY_VALIDATION
+      - WAITING_WEB_GAMEPLAY_REVALIDATION
       - WAITING_TARGET_PLATFORM_VALIDATION
       - WAITING_TARGET_PLATFORM_REVALIDATION
       - WAITING_REVALIDATION
@@ -909,6 +946,8 @@ flows:
       - DEVELOPMENT_BLOCKED
     baselineReadyRequires:
       - DESIGN_BASELINE_EXISTS
+      - REAL_WEB_GAMEPLAY_PASS
+      - MUSIC_RUNTIME_PASS
       - REAL_TARGET_PLATFORM_GAMEPLAY_PASS
       - REAL_TARGET_PLATFORM_TECHNICAL_PASS
       - REQUIRED_FIXES_APPLIED
