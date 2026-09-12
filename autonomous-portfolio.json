@@ -25,11 +25,13 @@
       },
       "DEVELOPMENT_CONFIRMED": {
         "engine": "PROJECT_SELECTED_PLATFORM",
-        "scope": "TARGET_PLATFORM_TECHNICAL_AND_GAMEPLAY_VALIDATION",
-        "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
-        "webBeforeTargetPlatformByDefault": false,
-        "targetPlatformMayRunImmediately": true,
-        "fullArtbookReproductionRequired": false
+        "scope": "WEB_GAMEPLAY_AND_MUSIC_THEN_TARGET_PLATFORM_TECHNICAL_AND_GAMEPLAY_VALIDATION",
+        "webPurpose": "REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION",
+        "webBeforeTargetPlatformByDefault": true,
+        "targetPlatformMayRunImmediately": false,
+        "fullArtbookReproductionRequired": false,
+        "webGameplayValidationRequired": true,
+        "musicValidationRequired": true
       },
       "DESIGN_ONLY": {
         "codeWork": false,
@@ -72,7 +74,6 @@
     "selection": "AUTO_SELECTED_PLATFORM_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT",
     "releaseConfirmedExcludedFromFocus": false,
     "releaseConfirmedOnlyForDeepFocus": true,
-    "optionalWebGameplayTestbedAllowedAlongsideReleaseFocus": true,
     "platformPriority": [
       "ROBLOX",
       "UNITY",
@@ -98,7 +99,8 @@
       "BLOCKED_BY_STRUCTURE_OR_DEPENDENCY",
       "EVIDENCE_BASED_CLASS_REVIEW",
       "RELEASE_READY"
-    ]
+    ],
+    "requiredWebGameplayAndMusicValidationBeforeTargetPlatform": true
   },
   "departmentDevelopmentCycle": [
     "planning",
@@ -175,10 +177,10 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "OPTIONAL_WEB_GAMEPLAY_TESTBED",
+      "mode": "WEB_VALIDATION_TARGET_PLATFORM_SELECTION_REQUIRED",
       "targetEngine": "platform-selection-required",
       "targetPlatformReady": false,
-      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
+      "webPurpose": "REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -193,7 +195,9 @@
       "protectedValues": [
         "save-meaning",
         "core-loop"
-      ]
+      ],
+      "webGameplayValidationRequired": true,
+      "musicValidationRequired": true
     },
     {
       "id": "P0003",
@@ -230,10 +234,10 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "OPTIONAL_WEB_GAMEPLAY_TESTBED",
+      "mode": "WEB_VALIDATION_TARGET_PLATFORM_SELECTION_REQUIRED",
       "targetEngine": "platform-selection-required",
       "targetPlatformReady": false,
-      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
+      "webPurpose": "REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -248,7 +252,9 @@
       "protectedValues": [
         "save-meaning",
         "core-loop"
-      ]
+      ],
+      "webGameplayValidationRequired": true,
+      "musicValidationRequired": true
     },
     {
       "id": "P0005",
@@ -344,10 +350,10 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "OPTIONAL_WEB_GAMEPLAY_TESTBED",
+      "mode": "WEB_VALIDATION_TARGET_PLATFORM_SELECTION_REQUIRED",
       "targetEngine": "platform-selection-required",
       "targetPlatformReady": false,
-      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
+      "webPurpose": "REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -365,7 +371,9 @@
         "capture",
         "battle",
         "dex"
-      ]
+      ],
+      "webGameplayValidationRequired": true,
+      "musicValidationRequired": true
     },
     {
       "id": "P0101",

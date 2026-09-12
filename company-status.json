@@ -2,7 +2,7 @@
   "version": 1,
   "updatedAt": "2026-09-11",
   "policy": {
-    "webGames": "existing-maintenance-allowed",
+    "webGames": "existing-maintenance-and-required-development-validation",
     "existingWebMaintenance": true,
     "newWebGameProduction": false,
     "webGamesRemainPlayable": true,
@@ -68,10 +68,12 @@
     "primaryPlatformIsDefaultNotLock": true,
     "allThreePlatformsMayBeDevelopedConcurrently": true,
     "platformRoadmapPhaseEntryGatesForbidden": true,
-    "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
+    "webPurpose": "REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION",
     "webGameplayValidationTestbedAllowed": true,
-    "webBeforeTargetPlatformByDefault": false,
-    "targetPlatformMayRunImmediately": true
+    "webGameplayValidationRequired": true,
+    "musicValidationRequired": true,
+    "webBeforeTargetPlatformByDefault": true,
+    "targetPlatformMayRunImmediately": false
   },
   "summary": {
     "webArchiveCount": 11,
