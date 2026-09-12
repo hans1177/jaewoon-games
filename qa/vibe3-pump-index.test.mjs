@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { buildVibeVerifiedMemoryIndex, retrieveVibeVerifiedPatterns, createVibeTaskPlaybook, createVibePumpModeContract } from '../assets/vibe-v3-engine.js';
 import { createVibePumpCandidatePlan } from '../assets/vibe-development-ai.js';
 import { buildPumpArtifacts } from '../tools/vibe3-pump-index.mjs';
@@ -42,4 +43,11 @@ assert.equal(Object.keys(artifacts.playbooks.taskTypes).length,7);
 assert(artifacts.benchmark.cases.length>0);
 assert(artifacts.benchmark.cases.every(x=>x.countsAsTrainingSample===false));
 assert(artifacts.benchmark.cases.every(x=>x.candidateCount===5&&x.maxRepairAttempts===3));
+
+const ingestWorkflow=fs.readFileSync('.github/workflows/vibe2-distillation-ingest.yml','utf8');
+const localTrainingWorkflow=fs.readFileSync('.github/workflows/vibe2-local-distillation-train.yml','utf8');
+assert.match(ingestWorkflow,/VIBE2_LEARNING_RUNTIME_BRANCH:\s*vibe2-learning-runtime/);
+assert.match(ingestWorkflow,/git push --force-with-lease=/);
+assert(!ingestWorkflow.includes('gh pr create'));
+assert((localTrainingWorkflow.match(/ref:\s*vibe2-learning-runtime/g)||[]).length>=2);
 console.log('PASS Vibe3 Pump verified RAG/playbook/benchmark contract');
