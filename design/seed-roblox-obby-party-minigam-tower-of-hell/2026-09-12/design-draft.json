@@ -1,0 +1,60 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "SEED-ROBLOX-OBBY_PARTY_MINIGAME-001",
+  "gameSeedSource": "game-seed-state.json",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "smollm2:1.7b",
+  "singleAuthor": true,
+  "content": {
+    "identity": "seed-roblox-obby-party-minigam-tower-of-hell",
+    "playerFantasy": "Skyline Sprint",
+    "coreFun": "obstacle, round, checkpoint, timing",
+    "coreLoop": [
+      "Start a short timed round with a clear obstacle, movement, survival, or party objective that is readable within seconds on mobile controls.",
+      "Jump, dodge, race, collect, or react through hazards while checkpoints, score, position, or remaining-time feedback shows immediate progress.",
+      "Finish or fail the round, receive score or cosmetic progression, then retry quickly or rotate into a different minigame pattern with minimal downtime."
+    ],
+    "signatureSystems": [
+      {
+        "name": "obstacle",
+        "purpose": "obstacle",
+        "playerChoice": "obstacle"
+      },
+      {
+        "name": "round",
+        "purpose": "round",
+        "playerChoice": "round"
+      },
+      {
+        "name": "checkpoint",
+        "purpose": "checkpoint",
+        "playerChoice": "checkpoint"
+      },
+      {
+        "name": "timing",
+        "purpose": "timing",
+        "playerChoice": "timing"
+      }
+    ],
+    "progressionDirection": "ascending",
+    "visualDirection": "ascending",
+    "mobileUx": "mobile",
+    "marketTargetDirection": "ascending",
+    "steamExpansionDecision": "not_recommended",
+    "multiplayerExpansionDecision": "not_recommended",
+    "technicalAssumptions": [
+      "ROBLOX"
+    ],
+    "validationQuestions": [
+      "Is the game's core loop clear and engaging for players?"
+    ],
+    "openQuestions": [
+      "Is the game's core loop clear and engaging for players?"
+    ]
+  }
+}

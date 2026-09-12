@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Core loop must be clear and engaging for players"
+        ],
+        "fix": [
+          "Start a short timed round with a clear obstacle, movement, survival, or party objective that is readable within seconds on mobile"
+        ],
+        "add": [
+          "Jump, dodge, race, collect, or react through hazards while checkpoints, score, position, or remaining-time feedback shows"
+        ],
+        "risks": [
+          "Finish or fail the round, receive score or cosmetic progression, then retry quickly or rotate into a different minigame pattern"
+        ],
+        "evidence": [
+          "Tower of Hell, Epic Minigames, Natural Disaster Survival"
+        ],
+        "questions": [
+          "Is the game's core loop clear and engaging for players?"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "development"
+        ],
+        "fix": [
+          "development"
+        ],
+        "add": [
+          "development"
+        ],
+        "risks": [
+          "development"
+        ],
+        "evidence": [
+          "development"
+        ],
+        "questions": [
+          "development"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "obstacle"
+        ],
+        "fix": [
+          "round"
+        ],
+        "add": [
+          "checkpoint"
+        ],
+        "risks": [
+          "timing"
+        ],
+        "evidence": [
+          "ROBLOX"
+        ],
+        "questions": [
+          "Is the game's core loop clear and engaging for players?"
+        ]
+      }
+    }
+  ]
+}

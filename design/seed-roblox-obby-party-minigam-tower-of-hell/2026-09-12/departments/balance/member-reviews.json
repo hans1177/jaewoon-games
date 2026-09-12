@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "obstacle"
+        ],
+        "fix": [
+          "round"
+        ],
+        "add": [
+          "checkpoint"
+        ],
+        "risks": [
+          "timing"
+        ],
+        "evidence": [
+          "ROBLOX"
+        ],
+        "questions": [
+          "Is the game's core loop clear and engaging for players?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Ensure the core loop is clear and engaging for players."
+        ],
+        "fix": [
+          "Integrate the core fun elements like obstacle, round, checkpoint, and timing."
+        ],
+        "add": [
+          "Integrate the core fun elements like obstacle, round, checkpoint, and timing."
+        ],
+        "risks": [
+          "Avoid overcomplicating the core loop for players."
+        ],
+        "evidence": [
+          "Skyline Sprint is an original ROBLOX obby party minigame experience built around obstacle and round while using its own world, vis"
+        ],
+        "questions": [
+          "Is the game's core loop clear and engaging for players?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed-platform-profiles.json"
+        ],
+        "fix": [
+          "game-seed-market-evidence.json"
+        ],
+        "add": [
+          "game-seed-market-evidence.json"
+        ],
+        "risks": [
+          "market_data_alone_cannot_discard"
+        ],
+        "evidence": [
+          "Natural Disaster Survival"
+        ],
+        "questions": [
+          "Is the game's core loop clear and engaging for players?"
+        ]
+      }
+    }
+  ]
+}

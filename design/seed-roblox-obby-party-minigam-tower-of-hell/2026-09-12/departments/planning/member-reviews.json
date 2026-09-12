@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Define the core mechanics and objectives for the game's core loop."
+        ],
+        "fix": [
+          "Ensure the core loop is clear and engaging for players."
+        ],
+        "add": [
+          "Integrate the core fun elements like obstacle, round, checkpoint, and timing."
+        ],
+        "risks": [
+          "Avoid overcomplicating the core loop for players."
+        ],
+        "evidence": [
+          "Skyline Sprint is an original ROBLOX obby party minigame experience built around obstacle and round while using its own world, vis"
+        ],
+        "questions": [
+          "Is the game's core loop clear and engaging for players?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_seed_market_evidence.json"
+        ],
+        "fix": [
+          "game-seed-platform-profiles.json"
+        ],
+        "add": [
+          "game-seed-market-evidence.json"
+        ],
+        "risks": [
+          "market_data_alone_cannot_discard"
+        ],
+        "evidence": [
+          "Tower of Hell"
+        ],
+        "questions": [
+          "Is the game's core loop clear and engaging for players?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Core loop must be clear and engaging for players"
+        ],
+        "fix": [
+          "Start a short timed round with a clear obstacle, movement, survival, or party objective that is readable within seconds on mobile"
+        ],
+        "add": [
+          "Jump, dodge, race, collect, or react through hazards while checkpoints, score, position, or remaining-time feedback shows"
+        ],
+        "risks": [
+          "Finish or fail the round, receive score or cosmetic progression, then retry quickly or rotate into a different minigame pattern"
+        ],
+        "evidence": [
+          "Tower of Hell, Epic Minigames, Natural Disaster Survival"
+        ],
+        "questions": [
+          "Is the game's core loop clear and engaging for players?"
+        ]
+      }
+    }
+  ]
+}

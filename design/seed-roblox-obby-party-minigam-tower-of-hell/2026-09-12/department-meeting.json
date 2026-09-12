@@ -1,0 +1,146 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "smollm2:1.7b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "Define the core mechanics and objectives for the game's core loop."
+      ],
+      "fix": [
+        "Ensure the core loop is clear and engaging for players."
+      ],
+      "add": [
+        "Integrate the core fun elements like obstacle, round, checkpoint, and timing."
+      ],
+      "risks": [
+        "Avoid overcomplicating the core loop for players."
+      ],
+      "evidence": [
+        "Skyline Sprint is an original ROBLOX obby party minigame experience built around obstacle and round while using its own world."
+      ],
+      "questions": [
+        "Is the game's core loop clear and engaging for players?"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "graphics"
+      ],
+      "fix": [
+        "graphics"
+      ],
+      "add": [
+        "graphics"
+      ],
+      "risks": [
+        "graphics"
+      ],
+      "evidence": [
+        "Visual identity must be unique and recognizable"
+      ],
+      "questions": [
+        "Is the game's core loop clear and engaging for players?"
+      ]
+    },
+    "development": {
+      "keep": [
+        "Core loop must be clear and engaging for players"
+      ],
+      "fix": [
+        "Start a short timed round with a clear obstacle, movement, survival, or party objective that is readable within seconds on mobile"
+      ],
+      "add": [
+        "Jump, dodge, race, collect, or react through hazards while checkpoints, score, position, or remaining-time feedback shows"
+      ],
+      "risks": [
+        "Finish or fail the round, receive score or cosmetic progression, then retry quickly or rotate into a different minigame pattern"
+      ],
+      "evidence": [
+        "Tower of Hell, Epic Minigames, Natural Disaster Survival"
+      ],
+      "questions": [
+        "Is the game's core loop clear and engaging for players?"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "qa"
+      ],
+      "fix": [
+        "qa"
+      ],
+      "add": [
+        "qa"
+      ],
+      "risks": [
+        "qa"
+      ],
+      "evidence": [
+        "qa"
+      ],
+      "questions": [
+        "qa"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "obstacle"
+      ],
+      "fix": [
+        "round"
+      ],
+      "add": [
+        "checkpoint"
+      ],
+      "risks": [
+        "timing"
+      ],
+      "evidence": [
+        "ROBLOX"
+      ],
+      "questions": [
+        "Is the game's core loop clear and engaging for players?"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "새 기능을 창작하지 않고 대표의견을 정리한다.",
+  "decisions": [
+    {
+      "topic": "새 기능을 창작하지 않고 대표의견을 정리한다.",
+      "status": "CONSENSUS",
+      "reason": "새 기능을 창작하지 않고 대표의견을 정리한다.",
+      "departments": [
+        "planning",
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 1,
+    "conflict": 0,
+    "hold": 0
+  }
+}

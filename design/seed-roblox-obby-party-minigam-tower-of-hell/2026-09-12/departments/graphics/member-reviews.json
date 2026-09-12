@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game-seed-platform-profiles.json"
+        ],
+        "fix": [
+          "game-seed-market-evidence.json"
+        ],
+        "add": [
+          "game-seed-market-evidence.json"
+        ],
+        "risks": [
+          "market_data_alone_cannot_discard"
+        ],
+        "evidence": [
+          "Epic Minigames"
+        ],
+        "questions": [
+          "Is the game's core loop clear and engaging for players?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Visual identity must be unique and recognizable"
+        ],
+        "fix": [
+          "Use a unique visual identity for the game"
+        ],
+        "add": [
+          "Use a unique visual identity for the game"
+        ],
+        "risks": [
+          "Use a unique visual identity for the game"
+        ],
+        "evidence": [
+          "Tower of Hell, Epic Minigames, Natural Disaster Survival"
+        ],
+        "questions": [
+          "Is the game's visual identity unique and recognizable?"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "graphics"
+        ],
+        "fix": [
+          "graphics"
+        ],
+        "add": [
+          "graphics"
+        ],
+        "risks": [
+          "graphics"
+        ],
+        "evidence": [
+          "graphics"
+        ],
+        "questions": [
+          "graphics"
+        ]
+      }
+    }
+  ]
+}

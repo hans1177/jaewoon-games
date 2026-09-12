@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "representativeModel": "qwen3:0.6b",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "Define the core mechanics and objectives for the game's core loop."
+    ],
+    "fix": [
+      "Ensure the core loop is clear and engaging for players."
+    ],
+    "add": [
+      "Integrate the core fun elements like obstacle, round, checkpoint, and timing."
+    ],
+    "risks": [
+      "Avoid overcomplicating the core loop for players."
+    ],
+    "evidence": [
+      "Skyline Sprint is an original ROBLOX obby party minigame experience built around obstacle and round while using its own world."
+    ],
+    "questions": [
+      "Is the game's core loop clear and engaging for players?"
+    ]
+  }
+}

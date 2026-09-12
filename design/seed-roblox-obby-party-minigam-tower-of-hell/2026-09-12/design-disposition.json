@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+  "date": "2026-09-12",
+  "state": "REDESIGN",
+  "sameDesignerRevisionAttempted": true,
+  "repeatedFiveDepartmentReview": true,
+  "allFiveLeadModelsReviewed": true,
+  "discardVotes": 2,
+  "commonFatalCriteria": [],
+  "unanimousFatalDiscard": false,
+  "fatalReviews": {
+    "planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "Market evidence shows that Skyline Sprint is a global, scalable game with strong potential for growth, as supported by references to global players and revenue data.",
+        "The game's core loop is clear and engaging, with a focus on obstacle and round mechanics that are mobile-friendly and visually distinct.",
+        "The game's progression direction is ascending, and it has a positive visual and mobile UX design."
+      ],
+      "reason": "The game is well-aligned with the market and has a clear, engaging core loop that supports player progression. It has a positive UX on mobile platforms and shows strong potential for expansion."
+    },
+    "graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
+      ],
+      "evidence": [
+        "VALID_FATAL_CRITERIA"
+      ],
+      "reason": "The game's core loop is overly complex and lacks a clear, engaging experience. The design is not aligned with the core gameplay of the game. The game is not designed to be a successful product. The design is not a viable option for the game."
+    },
+    "development": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "새 기능을 창작하지 않고 대표의견을 정리한다.",
+        "새로운 게임의 특징과 목표를 정리한다."
+      ],
+      "reason": "새로운 게임의 특징과 목표를 정리한다."
+    },
+    "qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "Tower of Hell",
+        "Epic Minigames",
+        "Natural Disaster Survival",
+        "ESA Power of Play 2025 Global Report"
+      ],
+      "reason": "The current design does not meet the criteria for active or redesign, as it lacks distinct identity and fails to produce a unique experience. The validation questions and open questions indicate that the game's core loop is not clear and engaging for players, and the technical assumptions are not sufficient to support the game's design."
+    },
+    "balance": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [],
+      "reason": "새 기능을 창작하지 않고 대표의견을 정리한다."
+    }
+  },
+  "marketMetricAloneUsedForDiscard": false
+}

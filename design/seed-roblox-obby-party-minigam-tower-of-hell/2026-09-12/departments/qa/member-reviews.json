@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "qa"
+        ],
+        "fix": [
+          "qa"
+        ],
+        "add": [
+          "qa"
+        ],
+        "risks": [
+          "qa"
+        ],
+        "evidence": [
+          "qa"
+        ],
+        "questions": [
+          "qa"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "obstacle"
+        ],
+        "fix": [
+          "round"
+        ],
+        "add": [
+          "checkpoint"
+        ],
+        "risks": [
+          "timing"
+        ],
+        "evidence": [
+          "ROBLOX"
+        ],
+        "questions": [
+          "Is the game's core loop clear and engaging for players?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "What are the core mechanics of the game's core loop?"
+        ],
+        "fix": [
+          "Ensure the core loop is clear and engaging for players."
+        ],
+        "add": [
+          "Integrate the core fun elements like obstacle, round, checkpoint, and timing."
+        ],
+        "risks": [
+          "Avoid overcomplicating the core loop for players."
+        ],
+        "evidence": [
+          "Skyline Sprint is an original ROBLOX obby party minigame experience built around obstacle and round while using its own world, vis"
+        ],
+        "questions": [
+          "Is the game's core loop clear and engaging for players?"
+        ]
+      }
+    }
+  ]
+}
