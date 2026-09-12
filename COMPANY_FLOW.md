@@ -537,6 +537,148 @@ developmentSafety:
   preferResponsibleSystemDirectEdit: true
   localDevelopmentConnectionHostPreferred: 127.0.0.1
 
+operationsModernization:
+  ownerApprovedAt: 2026-09-12
+  scope: COMPANY_OPERATIONS_AROUND_EXISTING_AUTHORITATIVE_PIPELINE
+  mustNotCreateParallelPipeline: true
+  managedPortfolio:
+    maxMaintainedGames: 6
+    maxHeavyDevelopmentWip: 3
+    roles:
+      PRIMARY: 1
+      ACTIVE: 2
+      MAINTENANCE_VALIDATION: 2
+      INCUBATION_HOLD: 1
+    roleMetadataDoesNotReplaceProductionClass: true
+    productionClassRemainsCanonical: true
+  legacyGamePreservation:
+    pool: LEGACY_ARCHIVE_POOL
+    appliesToExistingGamesOutsideManagedSix: true
+    productionClassUnchanged: true
+    metadata:
+      portfolioManaged: false
+      portfolioRole: LEGACY_ARCHIVE
+    automaticDeletionForbidden: true
+    automaticDiscardForbidden: true
+    automaticRebuildForbidden: true
+    routineHighIntensityDevelopment: false
+    preserveSource: true
+    preserveExistingWebVersion: true
+    preserveSaveMeaning: true
+    preserveExistingReleaseAndApkReferences: true
+    preserveHomepageLinksByDefault: true
+    criticalMaintenanceAllowed: true
+    ownerDirectReactivationAllowed: true
+    managedPortfolioVacancyPromotionAllowed: true
+    promotionRule:
+      - OWNER_REQUEST
+      - CRITICAL_MAINTENANCE
+      - MANAGED_PORTFOLIO_VACANCY_WITH_EVIDENCE_BASED_SELECTION
+    ageAloneNeverDeletesOrDiscardsGame: true
+    doesNotChangeBuildSystem: true
+    doesNotChangeVibeLearningSystem: true
+  workContinuity:
+    required: true
+    checkpointFile: company-work-state.json
+    checkpointIsEvidenceNotPolicy: true
+    resumeMustReadLatestOwnerInstructionFirst: true
+    resumeMustReadCompanyFlow: true
+    resumeMustReadCheckpoint: true
+    resumeMustInspectWorkingBranchAndOpenPr: true
+    resumeMustReconcileCurrentMainBeforeContinuing: true
+    hiddenReasoningStorageForbidden: true
+    secretsStorageForbidden: true
+  vibeLearningImmutableLock:
+    ownerLocked: true
+    scope: CURRENT_IMPLEMENTED_VIBE_LEARNING_SYSTEM
+    structureChangeForbidden: true
+    chainChangeForbidden: true
+    newLearningStageForbidden: true
+    newLearningChainForbidden: true
+    learningCodePathModificationForbidden: true
+    rewireForbidden: true
+    thresholdOrPromotionRuleChangeForbidden: true
+    allowedExceptions:
+      - RECOVERY
+      - VERIFIED_ERROR_FIX
+    exceptionMustBeMinimalAtResponsibleStage: true
+    exceptionMustRejoinExistingChainImmediately: true
+    operationalEvidenceMayUseExistingInputsOnly: true
+    companyOperationsMustRemainOutsideLearningChain: true
+  buildSystemImmutableLock:
+    ownerLocked: true
+    scope: CURRENT_IMPLEMENTED_BUILD_SYSTEM
+    buildMethodChangeForbidden: true
+    buildWorkflowModificationForbidden: true
+    parentChildTopologyChangeForbidden: true
+    triggerChangeForbidden: true
+    artifactTransferChangeForbidden: true
+    runtimeQaBuildLinkChangeForbidden: true
+    cacheOrDedupeBuildLogicChangeForbidden: true
+    newBuildChainForbidden: true
+    buildRewireForbidden: true
+    optimizationImplementationInsideBuildForbidden: true
+  developmentOperations:
+    vibeImplementationScoutAllowedBeforeHeavyImplementation: true
+    realDevelopmentMissionAllowedInsideExistingDevelopmentFlow: true
+    missionMustUseExistingResponsibleStage: true
+    missionPriorityAllowed: true
+    affectedDepartmentReviewAllowedForNonMaterialChanges: true
+    fullFiveDepartmentReviewStillRequiredWhenExistingPolicyRequiresIt: true
+    impactBasedNonBuildValidationAllowed: true
+    existingEvidenceReuseAllowedOnlyWhenNotInvalidatedByCurrentPolicy: true
+    repeatedFailureMayBecomeRegressionCoverageWithoutChangingBuildSystem: true
+    companyFailureTaxonomyAllowed: true
+    goldenComponentReuseAllowed: true
+    playabilityScorecardAllowed: true
+    deviceEvidenceMayBeRecordedThroughExistingValidationPaths: true
+    styleDnaMetadataAllowed: true
+    stopLossEscalationAllowed: true
+    crossProjectOperationalRotationAllowed: true
+    evidenceCollectionMustNotAddLearningStage: true
+  creativeProduction:
+    vibeBaselineCapabilityRequired: true
+    vibeMustRemainAbleToProduceBasicStoryIntroAndAudioPlansWithoutExternalProvider: true
+    freeExternalAiOptional: true
+    paidAiAutomaticFallbackForbidden: true
+    externalAiRole: NON_AUTHORITATIVE_CREATIVE_CANDIDATE
+    externalAiMayAssist:
+      - STORY_DRAFT
+      - DIALOGUE
+      - INTRO_CUTSCENE_STORYBOARD
+      - BGM_CUE_SHEET
+      - SFX_LIST
+      - ART_DIRECTION_BRIEF
+      - LOCALIZATION_DRAFT
+    externalAiAbsenceMustNotBlockDevelopment: true
+    finalAuthorityRemainsInternalVibeAndExistingQa: true
+    externalResultRequiresRightsAndLicenseEvidenceWhenAssetsAreDelivered: true
+    actualAudioAssetMissingMustRemainAssetPending: true
+    noFakeAssetCompletion: true
+    preferredIntegrationStyle: DATA_MANIFEST_PLUS_SHARED_RUNTIME_INSTEAD_OF_GAME_SPECIFIC_CODE_GROWTH
+  homepagePwaSync:
+    existingHomepageFrontDoorMustRemainUnchanged: true
+    existingHomepageLinksMustRemainAvailable: true
+    pwaAiChatMustRemainAvailable: true
+    pwaWorkDirectiveMustRemainAvailable: true
+    pwaAttachmentsGameSelectionDeviceRegistrationGeminiAndInstallMustRemainAvailable: true
+    developmentProgressMustStaySynchronized: true
+    validatedRuntimeStateBranch: company-runtime
+    runtimeStatePreferredOverStaleMainSnapshot: true
+    currentMainSnapshotRemainsFallback: true
+    uiRedesignNotRequiredForSyncFix: true
+    statusFreshnessRepairMustNotChangeBuildOrLearningSystems: true
+  speedOptimization:
+    buildOptimizationForbiddenByOwnerLock: true
+    allowedAreas:
+      - MISSION_PRIORITY
+      - WORK_IN_PROGRESS_LIMIT
+      - AFFECTED_DEPARTMENT_ONLY_REVIEW_WHEN_POLICY_ALLOWS
+      - NON_BUILD_IMPACT_ROUTING
+      - STATUS_SYNC_LATENCY
+      - UNNECESSARY_WAIT_REDUCTION
+      - EVIDENCE_REUSE_WHERE_VALID
+
 urgentCases:
   BLOCK_BLAST_EXTERNAL_RUNTIME:
     priority: EMERGENCY
