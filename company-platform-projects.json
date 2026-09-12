@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "policySource": "COMPANY_FLOW.md",
   "ownerApprovedAt": "2026-09-12",
   "primaryPlatform": "ROBLOX",
@@ -27,11 +27,18 @@
       ]
     },
     "UNITY_ANDROID": {
-      "status": "ACTIVE_AVAILABLE",
+      "status": "ACTIVE_FIRST_CLASS_EXTENDED",
       "sourceRoot": "EXISTING_UNITY_PROJECT_ROOTS",
       "language": "C#",
       "runtime": "ANDROID",
-      "preserveExistingFlow": true
+      "preserveExistingFlow": true,
+      "preserveExistingSourceAndBehavior": true,
+      "preserveExistingWebToUnityValidation": true,
+      "preserveExistingBuildWorkflow": true,
+      "extensionRequired": true,
+      "extensionMode": "ADD_CAPABILITY_AROUND_EXISTING_RESPONSIBLE_SYSTEMS",
+      "replacementOrRebuildForbidden": true,
+      "regressionRequiredAfterSharedArchitectureChange": true
     },
     "FORTNITE_UEFN": {
       "status": "ACTIVE_AVAILABLE",
@@ -70,5 +77,5 @@
     "triggerAndArtifactFlowImmutable": true,
     "noWrapperShadowBypass": true
   },
-  "switchingRule": "Change primaryPlatform/project selection only; do not rebuild or fork the company core, Vibe learning chain, or existing build workflows."
+  "switchingRule": "Change primaryPlatform/project selection only; do not rebuild or fork the company core, Vibe learning chain, existing Unity project, or existing build workflows."
 }
