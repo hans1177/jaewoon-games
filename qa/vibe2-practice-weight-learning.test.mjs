@@ -52,3 +52,15 @@ test('practice trainer and workflow keep learned adapter unverified and require 
   assert.match(workflow, /vibe2-practice-train\.py/);
   assert.match(workflow, /PRACTICE_WEIGHT_LEARNING=PASS/);
 });
+
+test('canonical structural workflow falls back to CPU LoRA instead of failing when CUDA is unavailable', () => {
+  const workflow = fs.readFileSync('.github/workflows/vibe2-structural-repair-distillation.yml', 'utf8');
+  assert.match(workflow, /PRACTICE_CPU_FALLBACK=YES/);
+  assert.match(workflow, /VERIFIED_TRAINING_CPU_FALLBACK=YES/);
+  assert.match(workflow, /PRACTICE_TRAINING_DEVICE=\$device/);
+  assert.match(workflow, /TRAINING_DEVICE=\$device/);
+  assert.match(workflow, /--final-eval-only/);
+  assert.doesNotMatch(workflow, /throw 'nvidia-smi not found on self-hosted Unity runner'/);
+  assert.doesNotMatch(workflow, /CUDA GPU is required for practice adapter training/);
+  assert.doesNotMatch(workflow, /CUDA GPU is required for adapter training/);
+});
