@@ -16,7 +16,18 @@ const supervisionPath='director-supervision-status.json';
 const portfolioPath='autonomous-portfolio.json';
 const catalogPath='game-catalog.json';
 const artbooksPath='game-artbooks.json';
+const centralPolicyPath='COMPANY_FLOW.md';
 const PLATFORM_PRIORITY=['ROBLOX','UNITY','FORTNITE_UEFN'];
+const CENTRAL_POLICY_REQUIRED_TOKENS=[
+  'sourceOfTruth: COMPANY_FLOW.md',
+  'primaryPlatform: ROBLOX',
+  'allThreePlatformsMayBeDevelopedConcurrently: true',
+  'priorityDoesNotCreatePlatformLock: true',
+  'webPurpose: OPTIONAL_GAMEPLAY_VALIDATION_TESTBED',
+  'webBeforeTargetPlatformByDefault: false',
+  'targetPlatformMayRunImmediately: true',
+  'target: PROJECT_SELECTED_PLATFORM',
+];
 
 const statusMap={WORKING:'working',DONE:'done',IDLE_NO_TASK:'idle',BLOCKED:'blocked',FAILED:'failed',STALE:'stale'};
 const roles=['planning','development','qa','graphics','balance','director'];
@@ -64,6 +75,37 @@ export function platformTargetEngine(platform){
   if(platform==='UNITY')return 'unity-android';
   if(platform==='FORTNITE_UEFN')return 'fortnite-uefn';
   return 'platform-selection-required';
+}
+
+export function synchronizeCompanyStatusPolicy(company,{filesystem=fs}={}){
+  if(filesystem?.existsSync?.(centralPolicyPath)){
+    const flow=filesystem.readFileSync(centralPolicyPath,'utf8');
+    for(const token of CENTRAL_POLICY_REQUIRED_TOKENS){
+      if(!flow.includes(token))throw new Error(`COMPANY_FLOW central policy token missing: ${token}`);
+    }
+  }
+  company.policy ||= {};
+  const policy=company.policy;
+  policy.sourceOfTruth='COMPANY_FLOW.md';
+  policy.policyAuthority='COMPANY_FLOW.md';
+  policy.primaryPlatform='ROBLOX';
+  policy.allowedTargetPlatforms=[...PLATFORM_PRIORITY];
+  policy.platformPriority=[...PLATFORM_PRIORITY];
+  policy.priorityMeaning='DEFAULT_FOCUS_AND_EXPERIENCE_ACCUMULATION_ORDER_ONLY';
+  policy.primaryPlatformIsDefaultNotLock=true;
+  policy.allThreePlatformsMayBeDevelopedConcurrently=true;
+  policy.platformRoadmapPhaseEntryGatesForbidden=true;
+  policy.webGames='existing-maintenance-allowed';
+  policy.existingWebMaintenance=true;
+  policy.webGamesRemainPlayable=true;
+  policy.newWebGameProduction=false;
+  policy.webPurpose='OPTIONAL_GAMEPLAY_VALIDATION_TESTBED';
+  policy.webGameplayValidationTestbedAllowed=true;
+  policy.webBeforeTargetPlatformByDefault=false;
+  policy.targetPlatformMayRunImmediately=true;
+  delete policy.futurePrimaryTarget;
+  delete policy.webGameDevelopment;
+  return policy;
 }
 
 const platformLabel=platform=>platform==='ROBLOX'?'Roblox':platform==='UNITY'?'Unity Android':platform==='FORTNITE_UEFN'?'Fortnite UEFN':'플랫폼 선택 필요';
@@ -267,6 +309,7 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   const catalog=JSON.parse(filesystem.readFileSync(catalogPath,'utf8'));
   const artbooks=JSON.parse(filesystem.readFileSync(artbooksPath,'utf8'));
 
+  synchronizeCompanyStatusPolicy(company,{filesystem});
   const classResult=syncProductionClasses({portfolio,catalog,artbooks,filesystem});
   company.updatedAt=supervision.dateKst||company.updatedAt;
   company.supervision={
@@ -336,6 +379,8 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   filesystem.writeFileSync(catalogPath,JSON.stringify(catalog,null,2)+'\n');
   filesystem.writeFileSync(companyPath,JSON.stringify(company,null,2)+'\n');
   console.log('COMPANY_STATUS_SYNC=PASS');
+  console.log(`COMPANY_POLICY_SOURCE=${company.policy?.sourceOfTruth||'unknown'}`);
+  console.log(`COMPANY_PRIMARY_PLATFORM=${company.policy?.primaryPlatform||'unknown'}`);
   console.log(`PRODUCTION_CLASS_RELEASE_CONFIRMED=${classResult.state.releaseConfirmedGameIds.join(',')||'none'}`);
   console.log(`PRODUCTION_CLASS_DEVELOPMENT_CONFIRMED=${classResult.state.developmentConfirmedGameIds.join(',')||'none'}`);
   console.log(`PRODUCTION_CLASS_DESIGN_ONLY=${classResult.state.designOnlyGameIds.join(',')||'none'}`);
