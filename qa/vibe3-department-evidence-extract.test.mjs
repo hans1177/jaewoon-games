@@ -19,6 +19,7 @@ const request = {
   musicVolumeControlPassed: true,
   musicRuntimeConclusion: 'PASS',
   audioLicenseVerified: true,
+  audioLicenseSource: 'LICENSES.md',
   runtimeNetworkAudioDependency: false,
   introEvidence: [{ text: 'intro first entry presents game identity before play', artifact: 'intro-run-3' }],
   introVisible: true,
@@ -32,7 +33,9 @@ const request = {
 };
 
 const result = extractGroundedDepartmentEvidence({ request });
+assert.equal(result.version, 2);
 assert.equal(result.groundedOnly, true);
+assert.equal(result.unboundEvidenceDropped, true);
 assert.equal(result.modelInventedEvidenceAllowed, false);
 for (const role of COMPANY_DEPARTMENT_ROLES) assert.ok(result.evidence[role].length > 0, `${role} evidence missing`);
 assert.ok(result.evidence.music.every((x) => /\[(?:source|runtime|artifact):/.test(x)));
@@ -51,9 +54,9 @@ assert.equal(missingIntroRuntime.passed, false);
 assert.ok(missingIntroRuntime.blockerCodes.includes('RUNTIME_DOMAIN_EVIDENCE_REQUIRED'));
 
 const ungrounded = extractGroundedDepartmentEvidence({ request: { musicEvidence: ['looks great'], introEvidence: ['nice intro'] } });
-assert.equal(ungrounded.evidence.music.length, 1);
-assert.equal(ungrounded.evidence.intro.length, 1);
+assert.equal(ungrounded.evidence.music.length, 0);
+assert.equal(ungrounded.evidence.intro.length, 0);
 assert.equal(evaluateDepartmentEvidence({ role: 'music', evidence: ungrounded.evidence.music, request: {} }).passed, false);
 assert.equal(evaluateDepartmentEvidence({ role: 'intro', evidence: ungrounded.evidence.intro, request: {} }).passed, false);
 
-console.log(JSON.stringify({ pass: true, departments: COMPANY_DEPARTMENT_ROLES.length, musicRuntimeRequired: true, introRuntimeRequired: true }));
+console.log(JSON.stringify({ pass: true, departments: COMPANY_DEPARTMENT_ROLES.length, unboundEvidenceDropped: true, musicRuntimeRequired: true, introRuntimeRequired: true }));
