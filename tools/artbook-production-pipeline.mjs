@@ -5,11 +5,14 @@ import path from 'node:path';
 import {spawn} from 'node:child_process';
 import {PRODUCTION_CLASSES,productionClassOf} from './production-classification.mjs';
 import {loadSeedState,activeSeedForGame} from './game-seed-state.mjs';
+import {COMPANY_DEPARTMENT_ROLES} from '../assets/company-department-standards.js';
 
 const gameId=String(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||'').trim();
 const date=String(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||'').trim();
 if(!gameId)throw new Error('ARTBOOK_GAME_ID or GAME_ID is required');
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+const configuredDepartments=Array.isArray(directive.ai?.departments)?directive.ai.departments.map(String).map(x=>x.trim()).filter(Boolean):[];
+if(JSON.stringify(configuredDepartments)!==JSON.stringify(COMPANY_DEPARTMENT_ROLES))throw new Error(`DEPARTMENT_ROLE_SYNC_GATE: directive=${configuredDepartments.join(',')} standards=${COMPANY_DEPARTMENT_ROLES.join(',')}`);
 const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
 const game=(catalog.games||[]).find(x=>x.id===gameId)||null;
 const seed=activeSeedForGame(loadSeedState(),gameId);
@@ -50,4 +53,4 @@ if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
   else console.log(`DESIGN_ONLY_ARTBOOK_SKIPPED=${status?.baselineGate?.state||'BASELINE_NOT_READY'}`);
   console.log('DESIGN_ONLY_VIBE2_USED=NO');
 }
-console.log('ARTBOOK_PIPELINE_COMPLETE=YES');console.log('DEPARTMENT_MODE=FIVE_DISTINCT_LEADS_PLUS_MULTIMODEL_ASSISTANTS');console.log('DEPARTMENT_REPRESENTATIVE_OWNER=DEPARTMENT_LEAD_MODEL');console.log('DEPARTMENT_REBUTTAL_OWNER=DEPARTMENT_LEAD_MODEL');console.log('ARTBOOK_AUTHOR=ONE_ARTBOOK_EDITOR_AI');console.log('DEPARTMENT_ARTBOOK_AUTHORSHIP=NO');console.log('BASELINE_APPROVAL=REAL_EVIDENCE_GATE_SEPARATE_FROM_AI_REVIEW');console.log('PAID_API=NO');
+console.log('ARTBOOK_PIPELINE_COMPLETE=YES');console.log(`DEPARTMENT_MODE=${COMPANY_DEPARTMENT_ROLES.length}_DISTINCT_LEADS_PLUS_MULTIMODEL_ASSISTANTS`);console.log('DEPARTMENT_REPRESENTATIVE_OWNER=DEPARTMENT_LEAD_MODEL');console.log('DEPARTMENT_REBUTTAL_OWNER=DEPARTMENT_LEAD_MODEL');console.log('ARTBOOK_AUTHOR=ONE_ARTBOOK_EDITOR_AI');console.log('DEPARTMENT_ARTBOOK_AUTHORSHIP=NO');console.log('BASELINE_APPROVAL=REAL_EVIDENCE_GATE_SEPARATE_FROM_AI_REVIEW');console.log('PAID_API=NO');
