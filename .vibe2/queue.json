@@ -1,7 +1,7 @@
 {
   "version": 4,
   "mode": "hierarchical-dag-sharded-work-stealing-queue",
-  "maxConcurrentTasks": 4,
+  "maxConcurrentTasks": 1,
   "ownerDirectivePreemptsAutonomy": true,
   "releaseStatePriority": [
     "release-confirmed",
@@ -595,6 +595,48 @@
       "speculativeEligible": false,
       "estimatedRisk": "medium",
       "shard": "web"
+    },
+    {
+      "id": "pwa-51f0002c-60a6-469c-9a1c-5ff95dd5c70a",
+      "gameId": "daechung-rpg",
+      "target": "unity",
+      "department": "development",
+      "type": "implementation",
+      "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 대충 RPG\n사용자 직접 지시: 대충 RPG Unity Android 스토어 출시 및 정산 연동 준비 작업 진행\n\n추가 지시:\n- 언제 수정돼?\n- 지금?\n- 지금 모두가 뭐야\n- 좋아\n- 안녕\n- 뭐해\n- 그래서\n- ㅗㅎㅎㅎ\n- ㅕㅕ\n- ㅓ엉\n- 여ㅗ여\n- 젛아\n- 지금모드 뭐야\n- 기본모드야?\n- 그래\n- ㅎㅎ\n- ㅕㅛㅏㅏ\n- 좋아\n- 야 여기에 게임 올릴수 잇어? 만들어서\n- 홈페이지에 웹게임 이 아니라 웹테스트가 잇어\n- 아니 웹디임이 올라와야 정산아니야?\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
+      "responsibleFiles": [],
+      "dependencies": [],
+      "priority": "owner-immediate",
+      "releaseState": "release-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": true,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "evidence": [
+        "pwa-task:51f0002c-60a6-469c-9a1c-5ff95dd5c70a",
+        "pwa-kind:directive",
+        "pwa-priority:normal",
+        "actual-release-state:release-confirmed",
+        "source-root:unity-games/daechung-rpg",
+        "owner-auto-deploy-authorization",
+        "verified-qa-required"
+      ],
+      "companyContext": {
+        "stageId": "owner-immediate",
+        "role": "director",
+        "assignmentAuthority": "owner-directive",
+        "sourceRef": "pwa-task:51f0002c-60a6-469c-9a1c-5ff95dd5c70a",
+        "reviewRequired": true
+      }
     }
-  ]
+  ],
+  "ingest": {
+    "added": true,
+    "taskId": "pwa-51f0002c-60a6-469c-9a1c-5ff95dd5c70a",
+    "gameId": "daechung-rpg",
+    "target": "unity",
+    "reason": "OWNER_IMMEDIATE_PWA"
+  }
 }
