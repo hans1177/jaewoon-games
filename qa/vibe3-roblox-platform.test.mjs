@@ -3,6 +3,7 @@ import {
   ROBLOX_PLATFORM_POLICY,
   createRobloxPlatformContract,
   validateRobloxSourcePath,
+  assembleRobloxTechnicalEvidence,
   validateRobloxReleaseEvidence,
   createRobloxPlacePublishPlan,
   publishRobloxPlace,
@@ -43,6 +44,67 @@ const evidence={
 const gate=validateRobloxReleaseEvidence(evidence,'abcdef1234567890');
 assert.equal(gate.pass,true);
 assert.equal(gate.browserQa,'NOT_APPLICABLE');
+
+const assembled=assembleRobloxTechnicalEvidence({
+  build:{
+    state:'PASS',
+    sourceRevision:'abcdef1234567890',
+    sourceFingerprint:'source-fingerprint',
+    artifactIdentity:'sha256:test-place-artifact',
+    luauOrSourceValidationPassed:true,
+  },
+  runtime:{
+    state:'PASS',
+    sourceRevision:'abcdef1234567890',
+    artifactIdentity:'sha256:test-place-artifact',
+    runtimePassed:true,
+    serverClientBoundaryPassed:true,
+    saveExists:false,
+    mobileControlUiPassed:true,
+    multiplayerApplicable:false,
+  },
+  independent:{
+    state:'PASS',
+    sourceRevision:'abcdef1234567890',
+    artifactIdentity:'sha256:test-place-artifact',
+    independentQaPassed:true,
+  },
+  regression:{
+    state:'PASS',
+    sourceRevision:'abcdef1234567890',
+    artifactIdentity:'sha256:test-place-artifact',
+    regressionPassed:true,
+    protectedStatePreserved:true,
+    exactRevision:true,
+  },
+});
+assert.equal(assembled.state,'PASS');
+assert.equal(assembled.pass,true);
+assert.equal(assembled.validated,true);
+assert.equal(assembled.sameRevision,true);
+assert.equal(assembled.sameArtifact,true);
+assert.deepEqual(assembled.blockedReasons,[]);
+assert.equal(validateRobloxReleaseEvidence(assembled,'abcdef1234567890').pass,true);
+
+const artifactMismatch=assembleRobloxTechnicalEvidence({
+  build:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',luauOrSourceValidationPassed:true},
+  runtime:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-b',runtimePassed:true,serverClientBoundaryPassed:true,mobileControlUiPassed:true},
+  independent:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',independentQaPassed:true},
+  regression:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',regressionPassed:true,protectedStatePreserved:true,exactRevision:true},
+});
+assert.equal(artifactMismatch.state,'FAIL');
+assert.equal(artifactMismatch.sameArtifact,false);
+assert(artifactMismatch.blockedReasons.includes('exact-revision-unproven'));
+
+const revisionMismatch=assembleRobloxTechnicalEvidence({
+  build:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',luauOrSourceValidationPassed:true},
+  runtime:{state:'PASS',sourceRevision:'deadbeef12345678',artifactIdentity:'artifact-a',runtimePassed:true,serverClientBoundaryPassed:true,mobileControlUiPassed:true},
+  independent:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',independentQaPassed:true},
+  regression:{state:'PASS',sourceRevision:'abcdef1234567890',artifactIdentity:'artifact-a',regressionPassed:true,protectedStatePreserved:true,exactRevision:true},
+});
+assert.equal(revisionMismatch.state,'FAIL');
+assert.equal(revisionMismatch.sameRevision,false);
+assert(revisionMismatch.blockedReasons.includes('exact-revision-unproven'));
 
 const saveEvidence={...evidence,saveExists:true,datastoreRejoinPassed:true};
 assert.equal(validateRobloxReleaseEvidence(saveEvidence,'abcdef1234567890').pass,true);
@@ -125,4 +187,4 @@ await assert.rejects(
   error=>error instanceof Error&&error.message.includes('[REDACTED]')&&!error.message.includes(reflectedSecret),
 );
 
-console.log('PASS Roblox V3 platform adapter, canonical runtime evidence gate, root guard and secret-safe publishing plan');
+console.log('PASS Roblox V3 platform adapter, technical evidence assembly, canonical runtime gate, root guard and secret-safe publishing plan');
