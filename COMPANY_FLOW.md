@@ -10,7 +10,7 @@ policy:
   evidenceFilesCannotCreatePolicy: true
   separatePolicyDocumentsForbidden: true
   machineContractsMayMirrorPolicyButCannotCreatePolicy: true
-  latestOwnerDirectiveRecordedAt: 2026-09-12
+  latestOwnerDirectiveRecordedAt: 2026-09-13
 
 priority:
   - OWNER_LATEST_DIRECT_INSTRUCTION
@@ -110,6 +110,20 @@ production:
   fixedPortfolioSize: false
   preserveExistingWebArchives: true
   preserveSaveMeaning: true
+  canonicalWebGame:
+    requiredForAllActiveGames: true
+    canonicalRoot: web-games/
+    canonicalPathPattern: web-games/<gameId>/
+    canonicalEntryFile: index.html
+    implementationOwner: VIBE3
+    designAuthorityRemainsGameDesigner: true
+    productArtifactNotTestbed: true
+    separateWebTestGameForbidden: true
+    separateWebTestCandidatePipelineForbidden: true
+    autonomousWebCandidateRootForbidden: true
+    qaTargetsCanonicalWebGameDirectly: true
+    missingCanonicalWebGameBlocksReadyOrPromotion: true
+    existingCanonicalWebGameMustNotBeReplacedByTestSlice: true
 
 portfolioGovernance:
   mode: SEVEN_DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO
@@ -164,10 +178,10 @@ portfolioGovernance:
       - MIX_AND_FEEDBACK
       - LICENSE_AND_PLATFORM_FIT
     intro:
-      - FIRST_SESSION_CLARITY
-      - GAME_IDENTITY_OPENING
-      - CORE_LOOP_HANDOFF
-      - SKIP_AND_INPUT_READINESS
+      - FIRST_SESSION_OR_DIRECT_ENTRY_CLARITY
+      - GAME_IDENTITY_PRESENTATION
+      - CINEMATIC_OR_DIRECT_CORE_LOOP_HANDOFF
+      - SKIP_WHEN_APPLICABLE_AND_INPUT_READINESS
   decisionBands:
     EXPAND:
       score: 80_TO_100
@@ -454,7 +468,7 @@ platformStrategy:
       objective: ADD_UEFN_RELEASE_EXPERIENCE_WITHOUT_REPLACING_OTHER_TRACKS
   experienceSharing:
     portableVerifiedPatternsUseExistingV3MemoryAndCanonicalDistillation: true
-    verifiedWebGameplayMayFeedSharedV3PortableContext: true
+    verifiedCanonicalWebGameQaMayFeedSharedV3PortableContext: true
     portableWebPatterns:
       - TOUCH_INPUT
       - MOBILE_UI
@@ -587,7 +601,7 @@ assetPolicy:
     audio: OGG_PREFERRED_MP3_WAV_ALLOWED
     font: WOFF2
   developmentMusic:
-    requiredInWebValidation: true
+    requiredInCanonicalWebGame: true
     firstUserGestureUnlockRequired: true
     autoplayBeforeUserGestureForbidden: true
     muteControlRequired: true
@@ -598,7 +612,7 @@ assetPolicy:
       - LOCAL_LICENSED_AUDIO
     externalTrackRequiresLicenseLedger: true
     runtimeNetworkAudioDependencyForbidden: true
-    musicFailureBlocksTargetPlatformDispatch: true
+    musicFailureBlocksCanonicalWebGameReadyState: true
   sizeGuidance:
     ordinaryAssetPreferredMaxMb: 1
     perGameAdditionalAssetsPreferredRangeMb: 20_TO_50
@@ -729,7 +743,8 @@ departmentStandards:
     role: ACTUAL_GAME_TESTER
     responsibilities:
       - GAME_RUNTIME
-      - PLAY_SMOKE_TEST
+      - ACTUAL_CANONICAL_WEB_GAME_PLAY
+      - TARGET_PLATFORM_PLAY
       - ERROR_DETECTION
       - PROGRESSION_BLOCK_DETECTION
       - REGRESSION_TEST
@@ -766,7 +781,7 @@ departmentStandards:
       concreteQaEvidenceCount: 2
       domainEvidenceCount: 2
       successfulCompileOrBuildRequired: true
-      actualRuntimeOrPlaySmokeEvidenceCount: 1
+      actualRuntimeOrPlayEvidenceCount: 1
       runtimeOrPlayEvidenceAbsentForbidsPass: true
       buildSuccessAloneDoesNotPass: true
   graphics:
@@ -806,17 +821,22 @@ departmentStandards:
       runtimeAudioEvidenceAbsentForbidsPass: true
       externalAudioRequiresLicenseEvidence: true
   intro:
+    departmentMeaning: DIRECTION_AND_CINEMATIC
+    cinematicContentRequired: false
     responsibilities:
-      - FIRST_ENTRY_PRESENTATION
-      - GAME_IDENTITY_COMMUNICATION
-      - SKIP_OR_CONTINUE_FLOW
+      - FIRST_ENTRY_AND_SCENE_DIRECTION
+      - CUTSCENE_AND_DIALOGUE_PRESENTATION_WHEN_APPLICABLE
+      - CAMERA_AND_TRANSITION_FLOW_WHEN_APPLICABLE
+      - SKIP_OR_CONTINUE_WHEN_APPLICABLE
       - FIRST_MEANINGFUL_INPUT_READINESS
-      - INTRO_TO_CORE_LOOP_HANDOFF
+      - CINEMATIC_TO_CORE_LOOP_HANDOFF_WHEN_APPLICABLE
+      - DIRECT_TO_GAMEPLAY_HANDOFF_WHEN_NO_CINEMATIC
     passMinimum:
       domainEvidenceCount: 1
-      actualRuntimeIntroEvidenceCount: 1
-      runtimeIntroEvidenceAbsentForbidsPass: true
-      blockingIntroRequiresSkipOrBoundedDurationEvidence: true
+      runtimeCinematicEvidenceRequiredWhenApplicable: true
+      notApplicableAllowedWhenNoCinematic: true
+      directGameplayHandoffEvidenceRequiredWhenNoCinematic: true
+      blockingCinematicRequiresSkipOrBoundedDurationEvidence: true
   director:
     mustReadAllSevenDepartmentResults: true
     mustReadAllEvidenceGates: true
@@ -914,6 +934,9 @@ Vibe2:
 flows:
   DESIGN_ONLY:
     directResultMode: true
+    canonicalWebGameDevelopmentRequired: true
+    canonicalWebGamePath: web-games/<gameId>/
+    separateWebTestGameForbidden: true
     requiredFlow:
       - GAME_SEED
       - GAME_DESIGNER_DRAFT
@@ -923,6 +946,8 @@ flows:
       - CROSS_DEPARTMENT_LEAD_MEETING
       - ONE_LEAD_REBUTTAL_ROUND
       - GAME_DESIGNER_REVISION
+      - CANONICAL_WEB_GAME_BUILD_OR_UPDATE
+      - QA_ACTUAL_RUNTIME_OR_PLAY
       - DESIGN_BASELINE_GATE
       - ARTBOOK_EDITOR_CORE_STRATEGY
     baselineReadyRequires:
@@ -936,31 +961,29 @@ flows:
       - SEVEN_DISTINCT_LEAD_MODELS
       - SEVEN_DEPARTMENT_SCORES_RECORDED
       - PER_DEPARTMENT_MULTIMODEL_REVIEW_PASS
+      - CANONICAL_WEB_GAME_EXISTS
+      - CANONICAL_WEB_GAME_QA_PASS
       - NO_HIDDEN_FATAL_CONFLICT
     readyState: DESIGN_BASELINE_READY
   DEVELOPMENT_CONFIRMED:
     executionMode: GATED_DIRECT
     resumeFromLatestEvidence: true
-    webPurpose: REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION
+    canonicalWebGameRequired: true
+    canonicalWebGamePath: web-games/<gameId>/
+    canonicalWebGameIsProductArtifact: true
+    separateWebTestStageForbidden: true
+    separateWebTestCandidateForbidden: true
     targetPlatformPurpose: TECHNICAL_AND_GAMEPLAY_VALIDATION
-    webBeforeTargetPlatformByDefault: true
-    targetPlatformMayRunImmediately: false
-    webGameplayValidationRequired: true
-    musicValidationRequired: true
+    targetPlatformMayRunWhenDesignBaselineAndCanonicalWebGameReady: true
+    musicValidationRequiredThroughGeneralQa: true
     introDepartmentReviewRequired: true
-    webCandidateMustPassBeforeTargetPlatformDispatch: true
-    webCandidatePublicPromotionRequiresValidationPass: true
+    cinematicContentRequired: false
     aiMayInventValidationPass: false
-    webSmokeCountsAsGameplayValidation: false
     requiredFlow:
       - LOAD_DESIGN_BASELINE
-      - WEB_PLAYABLE_QUEUE
-      - WEB_PLAYABLE_BOOTSTRAP
-      - MUSIC_RUNTIME_BIND
-      - WEB_GAMEPLAY_AND_MUSIC_VALIDATION
+      - LOAD_CANONICAL_WEB_GAME
       - AUTOMATIC_GROUNDED_DEPARTMENT_EVIDENCE
-      - WEB_EVIDENCE_DEPARTMENT_MEETING
-      - GAME_DESIGNER_WEB_REVISION
+      - SEVEN_DEPARTMENT_CANONICAL_WEB_GAME_REVIEW
       - TARGET_PLATFORM_SOURCE_BIND
       - TARGET_PLATFORM_GAMEPLAY_VALIDATION
       - TARGET_PLATFORM_TECHNICAL_VALIDATION
@@ -969,20 +992,12 @@ flows:
       - TARGETED_REVALIDATION
       - DEVELOPMENT_BASELINE_GATE
       - ARTBOOK_EDITOR_REVISION
-    webValidationMustCover:
-      - CORE_LOOP
-      - MOBILE_TOUCH_INPUT
-      - OBSERVABLE_STATE_CHANGE
-      - MOBILE_HORIZONTAL_OVERFLOW
-      - RUNTIME_ERRORS
-      - RELOAD_VISIBILITY
-      - MUSIC_STARTS_ONLY_AFTER_USER_GESTURE
-      - MUSIC_MUTE_CONTROL
-      - MUSIC_VOLUME_CONTROL
-      - MUSIC_RUNTIME_STATE
-      - INTRO_FIRST_ENTRY_STATE
-      - INTRO_SKIP_OR_CONTINUE_STATE
-      - INTRO_FIRST_MEANINGFUL_INPUT_HANDOFF
+    canonicalWebGameRequirements:
+      - CORE_LOOP_PLAYABLE
+      - MOBILE_INPUT_SUPPORTED
+      - NO_FATAL_RUNTIME_ERROR
+      - MUSIC_RUNTIME_AND_CONTROL_EVIDENCE
+      - CINEMATIC_OR_DIRECT_GAMEPLAY_HANDOFF_EVIDENCE
     targetPlatformValidationMustCover:
       - CORE_LOOP
       - TEMPO
@@ -1002,9 +1017,7 @@ flows:
       - DROP
       - HOLD
     waitingStates:
-      - WAITING_WEB_PLAYABLE
-      - WAITING_WEB_GAMEPLAY_VALIDATION
-      - WAITING_WEB_GAMEPLAY_REVALIDATION
+      - WAITING_CANONICAL_WEB_GAME
       - WAITING_TARGET_PLATFORM_VALIDATION
       - WAITING_TARGET_PLATFORM_REVALIDATION
       - WAITING_REVALIDATION
@@ -1013,8 +1026,8 @@ flows:
       - DEVELOPMENT_BLOCKED
     baselineReadyRequires:
       - DESIGN_BASELINE_EXISTS
-      - REAL_WEB_GAMEPLAY_PASS
-      - MUSIC_RUNTIME_PASS
+      - CANONICAL_WEB_GAME_EXISTS
+      - CANONICAL_WEB_GAME_GENERAL_QA_PASS
       - REAL_TARGET_PLATFORM_GAMEPLAY_PASS
       - REAL_TARGET_PLATFORM_TECHNICAL_PASS
       - REQUIRED_FIXES_APPLIED
@@ -1027,6 +1040,7 @@ flows:
     target: PROJECT_SELECTED_PLATFORM
     resumeFromLatestEvidence: true
     developmentBaselineRequired: true
+    canonicalWebGameRequired: true
     targetPlatformProjectRequired: true
     coreDesignLock: true
     vibe2PrimaryDeveloper: true
@@ -1040,6 +1054,7 @@ flows:
     sourceChangeInvalidatesOldBuildValidation: true
     requiredFlow:
       - LOAD_DEVELOPMENT_BASELINE
+      - LOAD_CANONICAL_WEB_GAME
       - CORE_DESIGN_LOCK
       - VIBE2_PRIMARY_DEVELOPMENT
       - BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE
@@ -1065,6 +1080,7 @@ flows:
       - RELEASE_READY
     releaseReadyRequires:
       - DEVELOPMENT_BASELINE_CONFIRMED
+      - CANONICAL_WEB_GAME_EXISTS
       - CURRENT_TARGET_PLATFORM_BUILD_OR_PACKAGE_SUCCESS
       - BUILD_PREFLIGHT_NO_RELEASE_BLOCKER
       - CURRENT_TARGET_PLATFORM_RUNTIME_PASS
@@ -1075,10 +1091,13 @@ flows:
 
 promotion:
   DESIGN_ONLY_TO_DEVELOPMENT_CONFIRMED:
-    requires: DESIGN_BASELINE_READY
+    requires:
+      - DESIGN_BASELINE_READY
+      - CANONICAL_WEB_GAME_READY
   DEVELOPMENT_CONFIRMED_TO_RELEASE_CONFIRMED:
     requires:
       - DEVELOPMENT_BASELINE_READY
+      - CANONICAL_WEB_GAME_EXISTS
       - REAL_PLAY_EVIDENCE
       - REAL_SELECTED_PLATFORM_EVIDENCE
   classMovementNeverUsedToSatisfyCountQuota: true
@@ -1142,7 +1161,7 @@ learning:
   aiDesignOpinionAloneIsNotSuccessEvidence: true
   validatedEvidenceSources:
     - REAL_PLAY
-    - WEB_GAMEPLAY_VALIDATION
+    - CANONICAL_WEB_GAME_QA
     - ROBLOX_RUNTIME
     - ROBLOX_PUBLISHING_QA
     - UNITY_TECHNICAL_VALIDATION
@@ -1227,7 +1246,7 @@ learning:
     crossPlatformPassEvidenceTransferForbidden: true
     thresholdLoweringForbidden: true
   portableWebLearning:
-    verifiedWebGameplayMayFeedSharedV3Memory: true
+    verifiedCanonicalWebGameQaMayFeedSharedV3Memory: true
     allowedPortablePatterns:
       - TOUCH_INPUT
       - MOBILE_UI
