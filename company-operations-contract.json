@@ -1,12 +1,21 @@
 {
-  "version": 1,
+  "version": 2,
   "authority": "COMPANY_FLOW.md#operationsModernization",
   "policySource": "COMPANY_FLOW.md",
   "isPolicySource": false,
   "ownerApprovedAt": "2026-09-12",
+  "scope": "COMPANY_OPERATIONS_OUTSIDE_LOCKED_VIBE_LEARNING_AND_BUILD_SYSTEMS",
+  "ownerLocks": {
+    "vibeLearningStructureImmutable": true,
+    "vibeLearningCodePathImmutable": true,
+    "buildSystemImmutable": true,
+    "newParallelPipelineForbidden": true
+  },
   "managedPortfolio": {
     "maxMaintainedGames": 6,
     "maxHeavyDevelopmentWip": 3,
+    "demoFirst": true,
+    "demoMinimumEvidence": ["PLAYABLE_DEMO", "REAL_PLAY_OR_RUNTIME_EVIDENCE", "QA", "FIX_IF_REQUIRED", "REVALIDATION"],
     "roles": {
       "PRIMARY": 1,
       "ACTIVE": 2,
@@ -33,62 +42,76 @@
     "criticalMaintenanceAllowed": true,
     "ownerDirectReactivationAllowed": true,
     "managedPortfolioVacancyPromotionAllowed": true,
-    "ageAloneNeverDeletesOrDiscardsGame": true,
-    "doesNotChangeBuildSystem": true,
-    "doesNotChangeVibeLearningSystem": true
+    "ageAloneNeverDeletesOrDiscardsGame": true
   },
   "workContinuity": {
     "required": true,
     "checkpointFile": "company-work-state.json",
     "checkpointIsEvidenceNotPolicy": true,
-    "resumeOrder": [
-      "LATEST_OWNER_INSTRUCTION",
-      "COMPANY_FLOW",
-      "COMPANY_WORK_STATE",
-      "WORKING_BRANCH_AND_OPEN_PR",
-      "RECONCILE_CURRENT_MAIN",
-      "FIRST_INCOMPLETE_STEP"
-    ],
+    "resumeOrder": ["LATEST_OWNER_INSTRUCTION", "COMPANY_FLOW", "COMPANY_WORK_STATE", "WORKING_BRANCH_AND_OPEN_PR", "RECONCILE_CURRENT_MAIN", "FIRST_INCOMPLETE_STEP"],
     "hiddenReasoningStorageForbidden": true,
     "secretsStorageForbidden": true
   },
-  "vibeLearningImmutableLock": {
-    "ownerLocked": true,
-    "structureChangeForbidden": true,
-    "chainChangeForbidden": true,
-    "newLearningStageForbidden": true,
-    "newLearningChainForbidden": true,
-    "learningCodePathModificationForbidden": true,
-    "rewireForbidden": true,
-    "thresholdOrPromotionRuleChangeForbidden": true,
-    "allowedExceptions": ["RECOVERY", "VERIFIED_ERROR_FIX"],
-    "exceptionMustBeMinimalAtResponsibleStage": true,
-    "exceptionMustRejoinExistingChainImmediately": true
+  "missionPriority": {
+    "weights": {
+      "userImpact": 0.30,
+      "reproducibility": 0.20,
+      "releaseRisk": 0.25,
+      "crossProjectReuse": 0.15,
+      "vibeLearningValue": 0.10
+    },
+    "range": [0, 100],
+    "learningValueCannotOverrideUserOrReleaseRisk": true
   },
-  "buildSystemImmutableLock": {
-    "ownerLocked": true,
-    "buildMethodChangeForbidden": true,
-    "buildWorkflowModificationForbidden": true,
-    "parentChildTopologyChangeForbidden": true,
-    "triggerChangeForbidden": true,
-    "artifactTransferChangeForbidden": true,
-    "runtimeQaBuildLinkChangeForbidden": true,
-    "cacheOrDedupeBuildLogicChangeForbidden": true,
-    "newBuildChainForbidden": true,
-    "buildRewireForbidden": true,
-    "optimizationImplementationInsideBuildForbidden": true,
-    "allowedExceptions": []
+  "failureTaxonomy": ["SOURCE_WRONG", "LOGIC_BUG", "RUNTIME", "PERFORMANCE", "MOBILE_UX", "SAVE_COMPAT", "ASSET", "BUILD", "QA_FALSE_POSITIVE", "REGRESSION", "BALANCE", "UNKNOWN"],
+  "recurringFailure": {
+    "minimumOccurrencesForPermanentGuard": 2,
+    "promotionTarget": "EXISTING_QA_OR_REGRESSION_COVERAGE",
+    "newPipelineOrLearningStage": false
+  },
+  "goldenComponents": ["MOBILE_INPUT", "SAVE_LOAD", "AUDIO_ROUTER", "OBJECT_POOLING", "HEALTH_DAMAGE", "INVENTORY", "SCENE_LOADING", "PAUSE_RESUME", "ANDROID_LIFECYCLE"],
+  "deviceMatrix": [
+    {"id":"LOW","purpose":"LOW_END_ANDROID"},
+    {"id":"MID","purpose":"MID_RANGE_ANDROID"},
+    {"id":"REFERENCE","purpose":"REFERENCE_ANDROID"}
+  ],
+  "playabilityScorecard": ["CORE_FUN", "INPUT_FEEL", "CLARITY", "DIFFICULTY", "PROGRESSION", "PERFORMANCE", "CRASH_FREE", "SESSION_COMPLETION"],
+  "evidenceFreshness": {
+    "exactRevisionBuildEvidenceReusableAcrossSourceChange": false,
+    "unaffectedSubsystemEvidenceMayRemainValidWithDependencyProof": true,
+    "releaseFullChainStillRequired": true
+  },
+  "experienceQuality": {
+    "signals": ["REAL_USER_OR_RUNTIME_PROBLEM", "CROSS_PROJECT_REUSE", "COMPLETE_VERIFICATION", "CLEAR_CAUSE", "FOCUSED_DIFF"],
+    "range": [0, 100],
+    "existingLearningInputsOnly": true,
+    "newLearningStage": false
+  },
+  "generalization": {
+    "companyPatternRequiresDistinctProjects": 2,
+    "singleProjectPattern": "PROJECT_PATTERN",
+    "multiProjectPattern": "COMPANY_PATTERN"
+  },
+  "styleDnaFields": ["COLOR", "SILHOUETTE", "PROPORTION", "UI_DENSITY", "VFX", "MATERIAL", "LIGHTING"],
+  "stopLoss": {
+    "levels": ["LOCAL_FIX", "ARCHITECTURE_REVIEW", "DESIGN_REDUCE", "HOLD"],
+    "neverFabricatePass": true
+  },
+  "postRelease": {
+    "signals": ["CRASH", "ANR", "SAVE_FAILURE", "DEVICE_COMPATIBILITY", "UX_FRICTION", "BALANCE_OUTLIER", "PERFORMANCE_REGRESSION", "UPDATE_REGRESSION"],
+    "privacyMinimizedAggregatesOnly": true,
+    "signalsBecomeMissionCandidates": true
   },
   "developmentOperations": {
-    "vibeImplementationScoutAllowed": true,
-    "realDevelopmentMissionAllowedInsideExistingDevelopmentFlow": true,
+    "implementationScout": true,
+    "realDevelopmentMission": true,
     "missionMustUseExistingResponsibleStage": true,
-    "affectedDepartmentReviewAllowedForNonMaterialChanges": true,
-    "fullFiveDepartmentReviewStillRequiredWhenExistingPolicyRequiresIt": true,
-    "impactBasedNonBuildValidationAllowed": true,
-    "existingEvidenceReuseAllowedOnlyWhenNotInvalidatedByCurrentPolicy": true,
-    "crossProjectOperationalRotationAllowed": true,
-    "evidenceCollectionMustNotAddLearningStage": true
+    "operationalEvidenceHarvestOutsideLearningChain": true,
+    "crossProjectRotation": true,
+    "affectedDepartmentReviewForNonMaterialChanges": true,
+    "fullFiveDepartmentReviewWhenExistingPolicyRequires": true,
+    "impactBasedNonBuildValidation": true,
+    "existingEvidenceReuseOnlyWhenNotInvalidated": true
   },
   "creativeProduction": {
     "vibeBaselineCapabilityRequired": true,
@@ -96,15 +119,7 @@
     "freeExternalAiOptional": true,
     "paidAiAutomaticFallbackForbidden": true,
     "externalAiRole": "NON_AUTHORITATIVE_CREATIVE_CANDIDATE",
-    "externalAiMayAssist": [
-      "STORY_DRAFT",
-      "DIALOGUE",
-      "INTRO_CUTSCENE_STORYBOARD",
-      "BGM_CUE_SHEET",
-      "SFX_LIST",
-      "ART_DIRECTION_BRIEF",
-      "LOCALIZATION_DRAFT"
-    ],
+    "externalAiMayAssist": ["STORY_DRAFT", "DIALOGUE", "INTRO_CUTSCENE_STORYBOARD", "BGM_CUE_SHEET", "SFX_LIST", "ART_DIRECTION_BRIEF", "LOCALIZATION_DRAFT"],
     "externalAiAbsenceMustNotBlockDevelopment": true,
     "finalAuthority": "INTERNAL_VIBE_AND_EXISTING_QA",
     "rightsAndLicenseEvidenceRequiredForDeliveredAssets": true,
@@ -122,19 +137,12 @@
     "validatedRuntimeStateBranch": "company-runtime",
     "runtimeStatePreferredOverStaleMainSnapshot": true,
     "currentMainSnapshotRemainsFallback": true,
-    "uiRedesignNotRequiredForSyncFix": true,
-    "statusFreshnessRepairMustNotChangeBuildOrLearningSystems": true
+    "runtimePaths": ["game-catalog.json", "company-status.json"],
+    "cacheMode": "NO_STORE",
+    "uiRedesignNotRequiredForSyncFix": true
   },
   "speedOptimization": {
     "buildOptimizationForbiddenByOwnerLock": true,
-    "allowedAreas": [
-      "MISSION_PRIORITY",
-      "WORK_IN_PROGRESS_LIMIT",
-      "AFFECTED_DEPARTMENT_ONLY_REVIEW_WHEN_POLICY_ALLOWS",
-      "NON_BUILD_IMPACT_ROUTING",
-      "STATUS_SYNC_LATENCY",
-      "UNNECESSARY_WAIT_REDUCTION",
-      "EVIDENCE_REUSE_WHERE_VALID"
-    ]
+    "allowedAreas": ["MISSION_PRIORITY", "WORK_IN_PROGRESS_LIMIT", "AFFECTED_DEPARTMENT_ONLY_REVIEW_WHEN_POLICY_ALLOWS", "NON_BUILD_IMPACT_ROUTING", "STATUS_SYNC_LATENCY", "UNNECESSARY_WAIT_REDUCTION", "EVIDENCE_REUSE_WHERE_VALID"]
   }
 }
