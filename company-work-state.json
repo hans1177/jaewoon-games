@@ -7,7 +7,7 @@
   "workingBranch": "chatgpt/company-flow-ops-20260912",
   "pullRequest": 346,
   "baseMainSha": "9e1bfbaa861f15e02f7af899abdf6b2b0c5db13c",
-  "ownerIntent": "기존 게임개발 구조를 유지하면서 회사 플로우, V3 실전경험 수확, 포트폴리오 운영, PWA/홈페이지 동기화, 스토리/오디오 AI 활용을 중앙문서 기준으로 순차 개편한다. 현재 구현된 Vibe 학습 구조와 빌드 방식은 잠금 상태로 유지한다.",
+  "ownerIntent": "기존 게임개발 구조를 유지하면서 회사 플로우, V3 실전경험 수확, 포트폴리오 운영, PWA/홈페이지 동기화, 스토리/오디오 AI 활용을 중앙문서 기준으로 순차 개편한다. 관리 6개 게임은 모두 플레이 가능한 데모와 실제 QA/수정/재검증까지 거친 뒤 역할을 배정한다. 현재 구현된 Vibe 학습 구조와 빌드 방식은 잠금 상태로 유지한다.",
   "vibeLearningImmutableLock": {
     "ownerLocked": true,
     "scope": "CURRENT_IMPLEMENTED_VIBE_LEARNING_SYSTEM",
@@ -60,6 +60,18 @@
     "portfolio": {
       "maxMaintainedGames": 6,
       "maxHeavyDevelopmentWip": 3,
+      "demoFirstEvaluation": {
+        "requiredForAllManagedGames": true,
+        "managedGameCount": 6,
+        "goal": "PLAYABLE_DEMO_WITH_REAL_VALIDATION",
+        "minimumEvidence": ["PLAYABLE_DEMO", "REAL_PLAY_OR_RUNTIME_EVIDENCE", "QA", "FIX_IF_REQUIRED", "REVALIDATION"],
+        "roleAssignmentAfterDemoEvaluation": true,
+        "postDemoRoles": {"PRIMARY": 1, "ACTIVE": 2, "MAINTENANCE_VALIDATION": 2, "INCUBATION_HOLD": 1},
+        "demoIsNotAutomaticLearningSample": true,
+        "validatedDevelopmentEvidenceMayFeedExistingLearningInputs": true,
+        "mustNotChangeVibeLearningChain": true,
+        "mustNotChangeBuildSystem": true
+      },
       "roles": {"PRIMARY": 1, "ACTIVE": 2, "MAINTENANCE_VALIDATION": 2, "INCUBATION_HOLD": 1},
       "legacyArchivePool": {
         "enabled": true,
@@ -109,7 +121,8 @@
     "command.html refreshes chat every 7 seconds while visible",
     "homepage enhancement layer refreshes public state on a short interval",
     "Company Status Sync persists validated runtime status to company-runtime and intentionally does not write public main",
-    "COMPANY_FLOW.md now records managed-six portfolio, LEGACY_ARCHIVE_POOL preservation, work continuity, Vibe learning immutable lock, build immutable lock, creative AI policy and homepage/PWA synchronization policy"
+    "COMPANY_FLOW.md records managed-six portfolio, LEGACY_ARCHIVE_POOL preservation, work continuity, Vibe learning immutable lock, build immutable lock, creative AI policy and homepage/PWA synchronization policy",
+    "Owner approved demo-first evaluation for all six managed games before final portfolio role assignment"
   ],
   "completedSteps": [
     "Read current COMPANY_FLOW.md and HQ governance before redesign proposal",
@@ -123,9 +136,11 @@
     "Recorded owner lock forbidding Vibe learning structure/chain/code-path changes except recovery or verified error fixes",
     "Recorded owner lock forbidding all build-method and build-related code/workflow modifications in this task",
     "Recorded LEGACY_ARCHIVE_POOL policy for existing games outside the managed six",
-    "Updated COMPANY_FLOW.md with the approved operationsModernization policy including managed six, legacy preservation, continuity, immutable locks, creative AI and homepage/PWA sync"
+    "Updated COMPANY_FLOW.md with the approved operationsModernization policy including managed six, legacy preservation, continuity, immutable locks, creative AI and homepage/PWA sync",
+    "Recorded owner-approved demo-first policy: all six managed games reach playable demo plus real QA/fix/revalidation before final PRIMARY/ACTIVE/MAINTENANCE/HOLD assignment"
   ],
   "nextSteps": [
+    "Add demo-first managed-six rule to COMPANY_FLOW.md operationsModernization.managedPortfolio without touching locked learning/build systems",
     "Add/update machine-readable company flow contract and validation tests without changing current Vibe learning engine or any build code/workflow",
     "Implement homepage/PWA latest-runtime state read with safe main fallback while preserving the existing front door",
     "Wire company missions and creative story/audio work around the existing Vibe execution surface without modifying Vibe learning structure/chain/code paths",
@@ -140,6 +155,7 @@
     "Read company-work-state.json",
     "Honor vibeLearningImmutableLock before touching any Vibe learning-related file",
     "Honor buildSystemImmutableLock before touching any build-related file, workflow, trigger or build linkage",
+    "Require demo-first evaluation for all six managed games before final portfolio role assignment unless a newer owner instruction overrides it",
     "Preserve LEGACY_ARCHIVE_POOL games unless a newer owner instruction explicitly changes their status",
     "Inspect workingBranch and PR #346 before changing files",
     "Compare workingBranch with current main and reconcile divergence before continuing",
@@ -157,9 +173,10 @@
     "buildSystemImmutableLockPersisted": true,
     "legacyArchivePolicyPersisted": true,
     "centralPolicyUpdated": true,
-    "centralPolicyCommit": "84d29d266696a4c49be8be8a95a55fc41611972a"
+    "centralPolicyCommit": "84d29d266696a4c49be8be8a95a55fc41611972a",
+    "demoFirstPolicyCheckpointPersisted": true
   },
   "blockers": [],
-  "lastCompletedMilestone": "CENTRAL_POLICY_UPDATE",
-  "nextMilestone": "MACHINE_CONTRACT_AND_TESTS"
+  "lastCompletedMilestone": "OWNER_DEMO_FIRST_POLICY_RECORDED",
+  "nextMilestone": "CENTRAL_DEMO_POLICY_UPDATE"
 }
