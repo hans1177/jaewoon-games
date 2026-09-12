@@ -21,12 +21,13 @@ const MODEL_MAX_PREDICT = Math.max(256, Math.min(2048, Number(process.env.VIBE2_
 const DEFAULT_MODEL = process.env.VIBE2_LOCAL_MODEL || 'qwen3:1.7b';
 
 const TARGET_EXTENSIONS = Object.freeze({
+  roblox: new Set(['.luau', '.lua', '.json']),
   web: new Set(['.html', '.htm', '.css', '.js', '.mjs', '.cjs', '.json', '.svg']),
   unity: new Set(['.cs', '.asmdef', '.json', '.uxml', '.uss', '.unity', '.prefab', '.asset']),
   unreal: new Set(['.h', '.hpp', '.cpp', '.cc', '.cxx', '.cs', '.ini', '.uproject', '.uplugin', '.json']),
   godot: new Set(['.gd', '.tscn', '.tres', '.godot', '.cfg', '.json'])
 });
-const BINARY_EXTENSIONS = new Set(['.uasset', '.umap', '.controller', '.anim', '.avatar', '.fbx', '.blend', '.png', '.jpg', '.jpeg', '.webp', '.wav', '.mp3', '.ogg']);
+const BINARY_EXTENSIONS = new Set(['.rbxl', '.rbxlx', '.uasset', '.umap', '.controller', '.anim', '.avatar', '.fbx', '.blend', '.png', '.jpg', '.jpeg', '.webp', '.wav', '.mp3', '.ogg']);
 const PLACEHOLDER_PATHS = new Set(['relative/to/source/root', 'relative/path', 'path/to/file', 'relative/to/file']);
 
 function readJson(file, fallback = null) {
@@ -54,6 +55,7 @@ function targetExtensions(target) {
   return extensions;
 }
 function sourcePrefix(target) {
+  if (target === 'roblox') return 'roblox-games/';
   if (target === 'web') return 'web-games/';
   if (target === 'unity') return 'unity-games/';
   if (target === 'unreal') return 'unreal-games/';
@@ -90,9 +92,7 @@ function normalizeModelPath(value, { target, responsibleFiles = [], sourceRootRe
     normalized = responsibleFiles[0];
   }
   normalized = assertRelativeSourcePath(normalized, target);
-  if (responsibleFiles.length && !responsibleFiles.includes(normalized)) {
-    throw new Error(`책임 파일 범위 밖 수정 금지: ${normalized}`);
-  }
+  if (responsibleFiles.length && !responsibleFiles.includes(normalized)) throw new Error(`책임 파일 범위 밖 수정 금지: ${normalized}`);
   return normalized;
 }
 function listContextFiles(root, target, ignored = []) {
@@ -117,9 +117,7 @@ function listContextFiles(root, target, ignored = []) {
   return rows;
 }
 function readContext(root, target, responsibleFiles = [], ignored = []) {
-  const rows = responsibleFiles.length
-    ? responsibleFiles.map((relative) => ({ full: path.join(root, relative), relative }))
-    : listContextFiles(root, target, ignored);
+  const rows = responsibleFiles.length ? responsibleFiles.map((relative) => ({ full: path.join(root, relative), relative })) : listContextFiles(root, target, ignored);
   const files = [];
   let total = 0;
   for (const row of rows.slice(0, MAX_CONTEXT_FILES)) {
@@ -180,13 +178,7 @@ function normalizeCandidate(raw, { target, responsibleFiles, sourceRootRelative 
   if (newFiles.length > MAX_NEW_FILES) throw new Error(`새 파일은 최대 ${MAX_NEW_FILES}개`);
   const touched = new Set([...edits.map((item) => item.path), ...newFiles.map((item) => item.path)]);
   if (!touched.size || touched.size > MAX_CHANGED_FILES) throw new Error(`변경 파일 수는 1~${MAX_CHANGED_FILES}개여야 함`);
-  return {
-    summary: clean(parsed.summary) || 'Vibe2 source candidate',
-    expectedEffect: clean(parsed.expectedEffect),
-    edits,
-    newFiles,
-    tests: (Array.isArray(parsed.tests) ? parsed.tests : []).map(clean).filter(Boolean).slice(0, 8)
-  };
+  return { summary: clean(parsed.summary) || 'Vibe2 source candidate', expectedEffect: clean(parsed.expectedEffect), edits, newFiles, tests: (Array.isArray(parsed.tests) ? parsed.tests : []).map(clean).filter(Boolean).slice(0, 8) };
 }
 function buildPrompt(order, context, responsibleFiles) {
   const sourceText = context.files.map((file) => `\n=== FILE ${file.path}${file.truncated ? ' [TRUNCATED]' : ''} ===\n${file.content}`).join('\n');
@@ -204,6 +196,7 @@ function buildPrompt(order, context, responsibleFiles) {
     'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
     'Do not output binary assets. Do not use wrapper/monkey patches. Prefer direct edits to responsible existing source files.',
     'For web target, maintain only the existing game root; do not create a new web game or change homepage/company files.',
+    'For Roblox target, edit Luau/Lua/JSON source only; never directly text-edit .rbxl/.rbxlx place packages.',
     'JSON schema: {"summary":"...","expectedEffect":"...","edits":[{"path":"exact allowed path","find":"exact unique old text","replace":"new text"}],"newFiles":[],"tests":["..."]}',
     `Required QA: ${(order.qa || []).join(', ')}`,
     sourceText
@@ -215,11 +208,7 @@ async function requestLocalModel(prompt, { model = DEFAULT_MODEL, responseFile =
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), MODEL_TIMEOUT_MS);
   try {
-    const response = await fetch('http://127.0.0.1:11434/api/generate', {
-      method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ model, prompt, stream: false, options: { num_predict: MODEL_MAX_PREDICT, temperature: 0.05 } }),
-      signal: controller.signal
-    });
+    const response = await fetch('http://127.0.0.1:11434/api/generate', { method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({ model, prompt, stream:false, options:{ num_predict:MODEL_MAX_PREDICT, temperature:0.05 } }), signal:controller.signal });
     if (!response.ok) throw new Error(`Ollama HTTP ${response.status}`);
     const payload = await response.json();
     if (!clean(payload?.response)) throw new Error('Ollama 응답 비어 있음');
@@ -227,7 +216,7 @@ async function requestLocalModel(prompt, { model = DEFAULT_MODEL, responseFile =
   } finally { clearTimeout(timer); }
 }
 function currentBranch(cwd) {
-  try { return clean(execFileSync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], { cwd, encoding: 'utf8' })); } catch { return ''; }
+  try { return clean(execFileSync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], { cwd, encoding:'utf8' })); } catch { return ''; }
 }
 function assertCandidateBranch(cwd) {
   const branch = currentBranch(cwd);
@@ -239,7 +228,7 @@ function applyNewFiles(root, newFiles) {
   for (const file of newFiles) {
     const target = path.join(root, file.path);
     if (fs.existsSync(target)) throw new Error(`newFiles 대상이 이미 존재함: ${file.path}`);
-    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.mkdirSync(path.dirname(target), { recursive:true });
     fs.writeFileSync(target, file.content, 'utf8');
     changed.push(file.path);
   }
@@ -254,13 +243,13 @@ function createCandidateSnapshot(sourceRoot, candidateRoot, candidate) {
     const first = before.indexOf(edit.find);
     if (first < 0 || before.indexOf(edit.find, first + edit.find.length) >= 0) throw new Error(`edit find 고유 일치 실패: ${edit.path}`);
     const after = before.slice(0, first) + edit.replace + before.slice(first + edit.find.length);
-    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.mkdirSync(path.dirname(target), { recursive:true });
     fs.writeFileSync(target, after, 'utf8');
     changed.push(edit.path);
   }
   for (const file of candidate.newFiles) {
     const target = path.join(candidateRoot, 'files', file.path);
-    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.mkdirSync(path.dirname(target), { recursive:true });
     fs.writeFileSync(target, file.content, 'utf8');
     changed.push(file.path);
   }
@@ -282,8 +271,8 @@ export async function runVibe2SourceWorker({ cwd = process.cwd(), workOrderFile 
   const candidate = normalizeCandidate(raw, { target, responsibleFiles, sourceRootRelative });
   const taskId = safeId(order.taskId);
   const candidateRoot = path.resolve(cwd, outputRoot, taskId);
-  fs.rmSync(candidateRoot, { recursive: true, force: true });
-  fs.mkdirSync(candidateRoot, { recursive: true });
+  fs.rmSync(candidateRoot, { recursive:true, force:true });
+  fs.mkdirSync(candidateRoot, { recursive:true });
   let changedFiles;
   let branch = null;
   if (applySource) {
@@ -292,27 +281,12 @@ export async function runVibe2SourceWorker({ cwd = process.cwd(), workOrderFile 
   } else changedFiles = createCandidateSnapshot(sourceRoot, candidateRoot, candidate);
 
   const manifest = {
-    version: 2,
-    taskId: order.taskId,
-    gameId: order.gameId || null,
-    target,
-    sourceRoot: sourceRootRelative,
-    releaseState: clean(order.releaseState) || 'other',
-    priority: clean(order.priority) || 'normal',
-    baseMainSha: clean(process.env.VIBE2_BASE_MAIN_SHA) || null,
-    goal: order.goal,
-    generatedAt: new Date().toISOString(),
-    mode: applySource ? 'isolated-candidate-branch-source-write' : 'candidate-snapshot-only',
-    branch,
-    model,
-    changedFiles,
-    summary: candidate.summary,
-    expectedEffect: candidate.expectedEffect,
-    tests: candidate.tests,
-    protectedGameplayMutationAutomatic: false,
-    binaryAssetsDirectTextEditForbidden: true,
-    directMainWrite: false,
-    verifiedBeforePromotion: false
+    version:2, taskId:order.taskId, gameId:order.gameId || null, target, sourceRoot:sourceRootRelative,
+    releaseState:clean(order.releaseState) || 'other', priority:clean(order.priority) || 'normal',
+    baseMainSha:clean(process.env.VIBE2_BASE_MAIN_SHA) || null, goal:order.goal, generatedAt:new Date().toISOString(),
+    mode:applySource ? 'isolated-candidate-branch-source-write' : 'candidate-snapshot-only', branch, model, changedFiles,
+    summary:candidate.summary, expectedEffect:candidate.expectedEffect, tests:candidate.tests,
+    protectedGameplayMutationAutomatic:false, binaryAssetsDirectTextEditForbidden:true, directMainWrite:false, verifiedBeforePromotion:false
   };
   writeJson(path.join(candidateRoot, 'manifest.json'), manifest);
   writeJson(path.join(candidateRoot, 'candidate.json'), candidate);
@@ -321,13 +295,7 @@ export async function runVibe2SourceWorker({ cwd = process.cwd(), workOrderFile 
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const args = parseArgs();
-  const result = await runVibe2SourceWorker({
-    workOrderFile: clean(args.order) || '.vibe2/work-order.json',
-    outputRoot: clean(args.output) || '.vibe2/candidates',
-    model: clean(args.model) || DEFAULT_MODEL,
-    responseFile: clean(args.response),
-    applySource: String(args['apply-source'] || '').toLowerCase() === 'true'
-  });
+  const result = await runVibe2SourceWorker({ workOrderFile:clean(args.order) || '.vibe2/work-order.json', outputRoot:clean(args.output) || '.vibe2/candidates', model:clean(args.model) || DEFAULT_MODEL, responseFile:clean(args.response), applySource:String(args['apply-source'] || '').toLowerCase() === 'true' });
   console.log('VIBE2_SOURCE_WORKER=PASS');
   console.log(`VIBE2_TASK_ID=${result.taskId}`);
   console.log(`VIBE2_TARGET=${result.target}`);
