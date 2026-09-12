@@ -14,13 +14,38 @@
       "enqueuedAt": "2026-09-11T08:20:07.333Z",
       "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "candidateBranch": "autonomous/candidate-seed-action-survival-rogu-echoes-of-the-lost-star-34585400183",
-      "updatedAt": "2026-09-12T13:13:26.622Z",
+      "updatedAt": "2026-09-12T13:19:49.402Z",
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "targetSourcePath": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star",
       "routingBlockers": [],
-      "routeRevision": "16d69abbbdd6d775a8cfa9b3459bbac99b0677da98a058ec040117821e46d013"
+      "routeRevision": "16d69abbbdd6d775a8cfa9b3459bbac99b0677da98a058ec040117821e46d013",
+      "unityProjectPath": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+      "unityCandidateBranch": "development/unity-tech-seed-action-survival-rogu-echoes-of-the-lost-star-34694008000",
+      "unitySourceCommit": "2190be24be5a4ca35c8e89b0a83dd6bd0f1bedf1",
+      "unityBuildRunId": 34695394330,
+      "unityRuntimeSmokeRunId": null,
+      "unityIndependentQaRunId": null,
+      "unityRegressionRunId": null,
+      "executionEvidence": {
+        "version": 1,
+        "platform": "UNITY",
+        "sourceRevision": "2190be24be5a4ca35c8e89b0a83dd6bd0f1bedf1",
+        "sourceFingerprint": "6ffd10bf760c3ae62fe28f3c0a2def76685d9a718b9b91a7d74a10e93c0aceff",
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:b514ea86defba76c8cd8d127f3f3453534b81052cd697c5307349ffeb1edac40",
+        "runtimePassed": false,
+        "independentQaPassed": false,
+        "regressionPassed": false,
+        "exactRevision": true,
+        "lastSuccessfulStage": "IMMUTABLE_ARTIFACT_BIND",
+        "failureStage": "TARGET_PLATFORM_RUNTIME",
+        "failureSignature": "121c30201e00f91a81c62501b4c7336c69d5da448424d4227edc60f33ee6bf7e"
+      },
+      "resumeStage": "TARGET_PLATFORM_RUNTIME",
+      "failureCount": 1,
+      "contractCanaryPassed": false
     },
     {
       "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -128,8 +153,9 @@
       "routeRevision": "e94e9e728369b1e192d0df3aae0f0e882110059d0b79307741f36a4dd1955f40"
     }
   ],
-  "updatedAt": "2026-09-12T13:13:26.721Z",
+  "updatedAt": "2026-09-12T13:20:01.669Z",
   "routerContractVersion": 1,
   "routerPolicy": "COMPANY_FLOW.md",
-  "cronRole": "WATCHDOG_AND_RECOVERY_ONLY"
+  "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
+  "executionContract": "CHANGE_DETECTION>CHEAP_PRECHECK>REPRESENTATIVE_CANARY>SINGLE_BUILD_OR_PACKAGE>IMMUTABLE_ARTIFACT_BIND>TARGET_PLATFORM_RUNTIME>INDEPENDENT_QA>REGRESSION>IMMEDIATE_NEXT_STAGE_DISPATCH>RESUME_EXACT_FAILURE_POINT"
 }
