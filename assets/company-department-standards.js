@@ -47,9 +47,9 @@ export const COMPANY_DEPARTMENT_STANDARDS = Object.freeze({
     requiredChecks: freezeList(['첫 사용자 제스처 뒤에만 음악이 시작되는지 실제 실행으로 확인','뮤트와 볼륨 제어가 실제 런타임에서 동작하는지 확인','전투/UI 피드백을 가리지 않는 믹스인지 확인','외부 오디오는 라이선스 근거와 런타임 네트워크 비의존성을 확인'])
   }),
   intro: Object.freeze({
-    name: '인트로', minEvidence: 1, minSpecificEvidence: 1, buildRequired: false, runtimeRequired: true,
-    domainKeywords: freezeList(['intro','opening','first entry','first session','skip','continue','first input','handoff','core loop','onboarding','인트로','오프닝','첫 진입','첫 세션','스킵','계속','첫 입력','코어 루프','온보딩']),
-    requiredChecks: freezeList(['첫 진입에서 인트로/오프닝 상태가 실제로 표시되는지 확인','스킵 또는 계속 진행이 막힘 없이 동작하는지 확인','첫 의미 있는 입력이 가능한 시점을 확인','인트로 종료 후 코어 루프로 실제 연결되는지 확인'])
+    name: '연출/시네마틱', minEvidence: 1, minSpecificEvidence: 1, buildRequired: false, runtimeRequired: true,
+    domainKeywords: freezeList(['intro','opening','first entry','first session','skip','continue','first input','handoff','core loop','onboarding','cinematic','cutscene','scene transition','camera sequence','dialogue','story beat','presentation','intro not applicable','cutscene not applicable','인트로','오프닝','첫 진입','첫 세션','스킵','계속','첫 입력','코어 루프','온보딩','시네마틱','컷신','장면 전환','카메라 연출','대사 연출','스토리 연출','연출 없음']),
+    requiredChecks: freezeList(['첫 진입에서 플레이어가 무엇을 해야 하는지 이해할 수 있고 첫 의미 있는 입력까지 막힘 없이 연결되는지 실제 실행으로 확인','인트로/오프닝/튜토리얼 진입이 존재하면 계속·스킵·종료 후 코어 루프 handoff가 정상인지 확인','컷신/시네마틱/대사/카메라/장면 전환이 존재하면 타이밍·가독성·입력 잠금·스킵·복귀가 실제 런타임에서 정상인지 확인','해당 게임에 컷신/시네마틱이 없으면 새 연출을 강제 생성하지 않고 실제 소스/런타임 근거로 NOT_APPLICABLE을 기록'])
   }),
   director: Object.freeze({
     name: '총괄', minEvidence: 0, minSpecificEvidence: 0, buildRequired: false, runtimeRequired: false,
@@ -115,13 +115,25 @@ export function extractDepartmentRuntimeEvidence(role = '', request = {}) {
     return normalizeDepartmentEvidence(evidence);
   }
   if (key === 'intro') {
-    const evidence = [...normalizeDepartmentEvidence(request.introEvidence), ...normalizeDepartmentEvidence(request.introRuntimeEvidence)];
+    const evidence = [
+      ...normalizeDepartmentEvidence(request.introEvidence),
+      ...normalizeDepartmentEvidence(request.introRuntimeEvidence),
+      ...normalizeDepartmentEvidence(request.cinematicEvidence),
+      ...normalizeDepartmentEvidence(request.cutsceneEvidence),
+    ];
     if (request.introVisible === true) evidence.push('introVisible=true');
     if (request.introSkipPassed === true) evidence.push('introSkipPassed=true');
     if (request.introContinuePassed === true) evidence.push('introContinuePassed=true');
     if (request.firstMeaningfulInputPassed === true) evidence.push('firstMeaningfulInputPassed=true');
     if (request.introCoreLoopHandoffPassed === true) evidence.push('introCoreLoopHandoffPassed=true');
+    if (request.cutscenePlaybackPassed === true) evidence.push('cutscenePlaybackPassed=true');
+    if (request.cutsceneSkipPassed === true) evidence.push('cutsceneSkipPassed=true');
+    if (request.sceneTransitionPassed === true) evidence.push('sceneTransitionPassed=true');
+    if (request.dialogueAdvancePassed === true) evidence.push('dialogueAdvancePassed=true');
+    if (request.cameraSequencePassed === true) evidence.push('cameraSequencePassed=true');
+    if (request.cinematicApplicable === false) evidence.push('cutsceneNotApplicable=true');
     addPassingConclusion(evidence, 'introRuntimeConclusion', request.introRuntimeConclusion);
+    addPassingConclusion(evidence, 'cinematicRuntimeConclusion', request.cinematicRuntimeConclusion);
     return normalizeDepartmentEvidence(evidence);
   }
   return extractRuntimeEvidence(request);
