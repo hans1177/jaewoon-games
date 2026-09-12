@@ -6,18 +6,21 @@ on:
       - 'COMPANY_FLOW.md'
       - 'company-directive.json'
       - 'AGENTS.md'
+      - 'assets/company-department-standards.js'
       - 'tools/production-classification.mjs'
       - 'tools/design-only-promotion-sync.mjs'
-      - 'tools/company-development-web-bootstrap.mjs'
-      - 'tools/company-development-web-gameplay-validation.mjs'
-      - 'tools/company-development-unity-bootstrap.mjs'
-      - 'tools/company-development-unity-evidence.mjs'
+      - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-development-validation-cycle.mjs'
       - 'tools/company-release-production-cycle.mjs'
+      - 'tools/company-post-modification-review.mjs'
+      - 'tools/vibe3-department-evidence-extract.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - 'qa/company-central-pipeline-only.test.mjs'
-      - 'qa/company-development-web-runtime.test.mjs'
+      - 'qa/company-department-standards.test.mjs'
+      - 'qa/vibe3-department-evidence-extract.test.mjs'
+      - 'qa/design-only-promotion-sync.test.mjs'
       - 'qa/company-development-unity-runtime.test.mjs'
+      - 'qa/company-speed-sequence-workflow.test.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
@@ -30,18 +33,21 @@ on:
       - 'COMPANY_FLOW.md'
       - 'company-directive.json'
       - 'AGENTS.md'
+      - 'assets/company-department-standards.js'
       - 'tools/production-classification.mjs'
       - 'tools/design-only-promotion-sync.mjs'
-      - 'tools/company-development-web-bootstrap.mjs'
-      - 'tools/company-development-web-gameplay-validation.mjs'
-      - 'tools/company-development-unity-bootstrap.mjs'
-      - 'tools/company-development-unity-evidence.mjs'
+      - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-development-validation-cycle.mjs'
       - 'tools/company-release-production-cycle.mjs'
+      - 'tools/company-post-modification-review.mjs'
+      - 'tools/vibe3-department-evidence-extract.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - 'qa/company-central-pipeline-only.test.mjs'
-      - 'qa/company-development-web-runtime.test.mjs'
+      - 'qa/company-department-standards.test.mjs'
+      - 'qa/vibe3-department-evidence-extract.test.mjs'
+      - 'qa/design-only-promotion-sync.test.mjs'
       - 'qa/company-development-unity-runtime.test.mjs'
+      - 'qa/company-speed-sequence-workflow.test.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
@@ -56,7 +62,7 @@ permissions:
 jobs:
   central-policy-contract:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -66,14 +72,17 @@ jobs:
         run: |
           node --check tools/production-classification.mjs
           node --check tools/design-only-promotion-sync.mjs
-          node --check tools/company-development-web-bootstrap.mjs
-          node --check tools/company-development-web-gameplay-validation.mjs
-          node --check tools/company-development-unity-bootstrap.mjs
-          node --check tools/company-development-unity-evidence.mjs
+          node --check tools/company-selected-platform-router.mjs
           node --check tools/company-development-validation-cycle.mjs
           node --check tools/company-release-production-cycle.mjs
+          node --check tools/company-post-modification-review.mjs
+          node --check tools/vibe3-department-evidence-extract.mjs
+          node --check assets/company-department-standards.js
           node --test \
             qa/company-central-policy-contract.test.mjs \
             qa/company-central-pipeline-only.test.mjs \
-            qa/company-development-web-runtime.test.mjs \
-            qa/company-development-unity-runtime.test.mjs
+            qa/company-department-standards.test.mjs \
+            qa/vibe3-department-evidence-extract.test.mjs \
+            qa/design-only-promotion-sync.test.mjs \
+            qa/company-development-unity-runtime.test.mjs \
+            qa/company-speed-sequence-workflow.test.mjs
