@@ -4,6 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {
   COMPANY_DEPARTMENT_ROLES,
+  COMPANY_BLOCKING_DEPARTMENT_ROLES,
+  COMPANY_ADVISORY_DEPARTMENT_ROLES,
   evaluateDepartmentEvidence,
   extractDepartmentRuntimeEvidence,
   getDepartmentStandard
@@ -11,7 +13,9 @@ import {
 import { extractGroundedDepartmentEvidence } from './vibe3-department-evidence-extract.mjs';
 
 const ROLES=[...COMPANY_DEPARTMENT_ROLES];
-const NAMES={planning:'기획',graphics:'그래픽',development:'개발',qa:'QA',balance:'밸런스',music:'음악',intro:'인트로',director:'총괄'};
+const BLOCKING_ROLES=[...COMPANY_BLOCKING_DEPARTMENT_ROLES];
+const ADVISORY_ROLES=[...COMPANY_ADVISORY_DEPARTMENT_ROLES];
+const NAMES={planning:'기획',graphics:'그래픽',development:'개발',qa:'QA',balance:'밸런스',music:'음악',intro:'연출/시네마틱',director:'총괄'};
 const clean=v=>String(v??'').trim();
 const readText=(f,max=120000)=>{try{const b=fs.readFileSync(f);return b.subarray(0,Math.min(max,b.length)).toString('utf8');}catch{return'';}};
 const readJson=(f,d=null)=>{try{return JSON.parse(fs.readFileSync(f,'utf8'));}catch{return d;}};
@@ -64,8 +68,8 @@ if(role!=='director'){
     development:'실제 수정 파일, 빌드 구조, 재현성, 의존성, 저장/데이터 호환성과 구현 위험을 평가한다. 성공한 컴파일/빌드 근거 없이는 PASS하지 않는다.',
     qa:'코드 리뷰가 아니라 게임 테스터 관점으로 평가한다. 실제 실행/플레이 스모크 증거, 재현 조건, 회귀 범위, 수정 후 재검증을 확인한다. 실행 증거 없이는 PASS하지 않는다.',
     balance:'전투 난이도·성장·보상 수치에 이번 수정이 영향을 주는지 실제 수정 범위와 값을 기준으로 평가한다. 영향이 있으면 이전 값과 변경 값을 비교한다.',
-    music:'실제 런타임 오디오 증거만 사용해 첫 사용자 제스처 재생, 뮤트/볼륨, 믹스/피드백, 라이선스와 네트워크 의존성을 평가한다. 실행 증거 없이는 PASS하지 않는다.',
-    intro:'실제 첫 진입 런타임 증거만 사용해 오프닝 전달, 스킵/계속, 첫 의미 있는 입력 가능 시점, 코어 루프 인계를 평가한다. 실행 증거 없이는 PASS하지 않는다.'
+    music:'실제 런타임 오디오 증거만 사용해 첫 사용자 제스처 재생, 뮤트/볼륨, 믹스/피드백, 라이선스와 네트워크 의존성을 평가한다. 증거 부족 시 자체 판정은 REVISE하되 전체 진행 차단 권한은 없다.',
+    intro:'연출/시네마틱 부서다. 실제 첫 진입·컷신·대사·카메라·장면 전환·첫 의미 있는 입력·코어 루프 인계를 평가한다. 컷신이 없는 게임은 새 연출을 강제하지 않고 NOT_APPLICABLE 및 직접 플레이 handoff 근거를 본다. 자체 판정은 전체 진행을 단독 차단하지 않는다.'
   };
   const checks=standard.requiredChecks.join(' / ');
   const system=`/no_think\n너는 재운컴퍼니 ${NAMES[role]} 부서의 독립 수정후 재평가자다. ${guides[role]} 필수 점검: ${checks}. groundedEvidence에 없는 사실을 evidence로 만들지 않는다. 다른 부서 판단을 대신하지 않는다. 결론은 PASS|REVISE|DROP, score는 0~100이다. JSON 객체만 반환하고 키는 decision, score, summary, evidence, blockers, recommendations다.`;
@@ -104,7 +108,8 @@ if(role!=='director'){
   }
 
   const out={
-    version:3,requestId,gameId,role,department:NAMES[role],decision,score,
+    version:4,requestId,gameId,role,department:NAMES[role],decision,score,
+    blockingForProgression:BLOCKING_ROLES.includes(role),advisoryForProgression:ADVISORY_ROLES.includes(role),
     summary:clean(candidate.summary).slice(0,800),
     evidence:groundedEvidence,
     modelObservations:modelEvidence,
@@ -118,31 +123,38 @@ if(role!=='director'){
   writeJson(`${outputRoot}/${role}.json`,out);
   console.log(`POST_MODIFICATION_REVIEW=${role}:${out.decision}:${out.score}`);
   console.log(`DEPARTMENT_EVIDENCE_GATE=${role}:${out.evidenceGate.passed?'PASS':'FAIL'}`);
+  console.log(`DEPARTMENT_PROGRESSION_MODE=${role}:${out.blockingForProgression?'BLOCKING':'ADVISORY'}`);
   console.log(`GROUNDED_EVIDENCE_COUNT=${role}:${out.evidence.length}`);
   process.exit(0);
 }
 
 const reviews=ROLES.map(r=>readJson(`${outputRoot}/${r}.json`,null));
 if(reviews.some(x=>!x))throw new Error(`director requires all ${ROLES.length} department reviews`);
-const system=`/no_think\n너는 재운컴퍼니 총괄 AI다. 제출된 ${ROLES.length}개 부서 재평가만 종합한다. 없는 근거를 만들거나 부서 내용을 대신 작성하지 않는다. 각 부서 decision과 evidenceGate를 그대로 존중하고 최종 요약/최우선 조치만 제시한다. JSON 객체만 반환하고 키는 summary, nextAction다.`;
+const system=`/no_think\n너는 재운컴퍼니 총괄 AI다. 제출된 ${ROLES.length}개 부서 재평가만 종합한다. 없는 근거를 만들거나 부서 내용을 대신 작성하지 않는다. 기획·그래픽·개발·QA·밸런스 5개만 진행 차단 판정에 사용하고 음악·연출은 비차단 자문으로 기록한다. JSON 객체만 반환하고 키는 summary, nextAction다.`;
 let candidate={summary:'',nextAction:''};
-try{candidate=await callModel(system,JSON.stringify({request:req,reviews}),2601);}catch{}
-const decisions=reviews.map(x=>x.decision);
-const evidenceGateFailures=reviews.filter(x=>x.evidenceGate?.passed!==true).map(x=>x.role);
-const finalDecision=decisions.includes('DROP')?'DROP':(decisions.includes('REVISE')||evidenceGateFailures.length)?'REVISE':'PASS';
+try{candidate=await callModel(system,JSON.stringify({request:req,reviews,blockingDepartments:BLOCKING_ROLES,advisoryDepartments:ADVISORY_ROLES}),2601);}catch{}
+const blockingReviews=reviews.filter(x=>BLOCKING_ROLES.includes(x.role));
+const advisoryReviews=reviews.filter(x=>ADVISORY_ROLES.includes(x.role));
+const blockingEvidenceGateFailures=blockingReviews.filter(x=>x.evidenceGate?.passed!==true).map(x=>x.role);
+const advisoryEvidenceGateFailures=advisoryReviews.filter(x=>x.evidenceGate?.passed!==true).map(x=>x.role);
+const blockingDecisions=blockingReviews.map(x=>x.decision);
+const finalDecision=blockingDecisions.includes('DROP')?'DROP':(blockingDecisions.includes('REVISE')||blockingEvidenceGateFailures.length)?'REVISE':'PASS';
 const avg=Math.round(reviews.reduce((s,x)=>s+Number(x.score||0),0)/reviews.length);
-const blockers=unique([...reviews.flatMap(x=>x.blockers||[]),...evidenceGateFailures.map(r=>`${NAMES[r]||r} 부서 증거 게이트 미통과`)],24);
+const blockers=unique([...blockingReviews.flatMap(x=>x.blockers||[]),...blockingEvidenceGateFailures.map(r=>`${NAMES[r]||r} 부서 증거 게이트 미통과`)],24);
+const advisoryFindings=unique([...advisoryReviews.flatMap(x=>x.blockers||[]),...advisoryEvidenceGateFailures.map(r=>`${NAMES[r]||r} 자문 부서 증거 게이트 미통과`)],24);
 const out={
-  version:3,requestId,gameId,role:'director',department:'총괄',decision:finalDecision,score:avg,
+  version:4,requestId,gameId,role:'director',department:'총괄',decision:finalDecision,score:avg,
   summary:clean(candidate.summary||`${ROLES.length}개 부서 재평가 종합: ${finalDecision}`).slice(0,1000),
-  nextAction:clean(candidate.nextAction||blockers[0]||'검증된 다음 단계 진행').slice(0,800),
-  departments:ROLES,
-  departmentVotes:Object.fromEntries(reviews.map(x=>[x.role,{decision:x.decision,score:x.score,summary:x.summary,evidenceGatePassed:x.evidenceGate?.passed===true}])),
+  nextAction:clean(candidate.nextAction||blockers[0]||advisoryFindings[0]||'검증된 다음 단계 진행').slice(0,800),
+  departments:ROLES,blockingDepartments:BLOCKING_ROLES,advisoryDepartments:ADVISORY_ROLES,
+  departmentVotes:Object.fromEntries(reviews.map(x=>[x.role,{decision:x.decision,score:x.score,summary:x.summary,evidenceGatePassed:x.evidenceGate?.passed===true,blockingForProgression:BLOCKING_ROLES.includes(x.role)}])),
   departmentEvidenceGates:Object.fromEntries(reviews.map(x=>[x.role,x.evidenceGate||null])),
-  blockers,modificationCommit:req.modificationCommit||'',buildRunId:req.buildRunId||null,buildConclusion:req.buildConclusion||'unknown',
-  aggregationRule:'DROP if any DROP; REVISE if any REVISE or any evidence gate fails; otherwise PASS',
+  blockingEvidenceGateFailures,advisoryEvidenceGateFailures,blockers,advisoryFindings,
+  modificationCommit:req.modificationCommit||'',buildRunId:req.buildRunId||null,buildConclusion:req.buildConclusion||'unknown',
+  aggregationRule:'All 7 submit; DROP/REVISE/evidence failure from planning, graphics, development, qa, balance controls progression; music and intro are advisory and non-blocking',
   inventedDepartmentContent:false,groundedEvidenceRequired:true,generatedBy:`local-${model}`
 };
 writeJson(`${outputRoot}/director.json`,out);
 console.log(`POST_MODIFICATION_DIRECTOR_VOTE=${out.decision}:${out.score}`);
-console.log(`DEPARTMENT_EVIDENCE_GATES=${evidenceGateFailures.length?'FAIL:'+evidenceGateFailures.join(','):'PASS'}`);
+console.log(`BLOCKING_DEPARTMENT_EVIDENCE_GATES=${blockingEvidenceGateFailures.length?'FAIL:'+blockingEvidenceGateFailures.join(','):'PASS'}`);
+console.log(`ADVISORY_DEPARTMENT_EVIDENCE_GATES=${advisoryEvidenceGateFailures.length?'WARN:'+advisoryEvidenceGateFailures.join(','):'PASS'}`);
