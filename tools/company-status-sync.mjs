@@ -1,6 +1,6 @@
 // 파일명: tools/company-status-sync.mjs
 // 역할: 총괄 감독 상태와 의미 기반 제작 분류/선택 플랫폼 상태를 최신 상태로 동기화한다.
-// 원칙: productionClass가 유일한 정식 제작 분류이며 DEVELOPMENT_CONFIRMED는 Web 플레이/음악 검증 후 선택 플랫폼으로 진행한다.
+// 원칙: productionClass가 유일한 정식 제작 분류이며 DEVELOPMENT_CONFIRMED는 승인된 설계 전체 분량의 Web 동반 게임 검증 후 선택 플랫폼으로 진행한다.
 import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { selectContinuousTarget } from './autonomous-24h-work-planner.mjs';
@@ -23,11 +23,11 @@ const CENTRAL_POLICY_REQUIRED_TOKENS=[
   'primaryPlatform: ROBLOX',
   'allThreePlatformsMayBeDevelopedConcurrently: true',
   'priorityDoesNotCreatePlatformLock: true',
-  'webPurpose: REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION',
-  'webGameplayValidationRequired: true',
-  'musicValidationRequired: true',
-  'webBeforeTargetPlatformByDefault: true',
-  'targetPlatformMayRunImmediately: false',
+  'requiredForEveryGame: true',
+  'approvedDesignBaselineMustBeFullyImplemented: true',
+  'silentScopeReductionForbidden: true',
+  'webBuildIsNotNativePlatformSubstitute: true',
+  'nativePlatformReleaseStillRequiresNativeEvidence: true',
   'target: PROJECT_SELECTED_PLATFORM',
 ];
 
@@ -97,11 +97,15 @@ export function synchronizeCompanyStatusPolicy(company,{filesystem=fs}={}){
   policy.primaryPlatformIsDefaultNotLock=true;
   policy.allThreePlatformsMayBeDevelopedConcurrently=true;
   policy.platformRoadmapPhaseEntryGatesForbidden=true;
-  policy.webGames='existing-maintenance-and-required-development-validation';
+  policy.webGames='mandatory-full-approved-scope-companion';
   policy.existingWebMaintenance=true;
   policy.webGamesRemainPlayable=true;
-  policy.newWebGameProduction=false;
-  policy.webPurpose='REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION';
+  policy.newWebGameProduction=true;
+  policy.webPurpose='FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE';
+  policy.webCompanionRequiredForEveryGame=true;
+  policy.approvedDesignScopeMustBeFullyImplemented=true;
+  policy.silentScopeReductionForbidden=true;
+  policy.webEvidenceMayReplaceNativePlatformEvidence=false;
   policy.webGameplayValidationTestbedAllowed=true;
   policy.webGameplayValidationRequired=true;
   policy.musicValidationRequired=true;
@@ -177,8 +181,11 @@ function synchronizePlatformPolicy(portfolio){
   release.featureDevelopmentOnWeb=false;
   release.webArchiveMaintenance='FAST_RUNTIME_INCIDENT_ONLY';
   development.engine='PROJECT_SELECTED_PLATFORM';
-  development.scope='WEB_GAMEPLAY_AND_MUSIC_THEN_TARGET_PLATFORM_TECHNICAL_AND_GAMEPLAY_VALIDATION';
-  development.webPurpose='REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION';
+  development.scope='FULL_APPROVED_WEB_COMPANION_THEN_TARGET_PLATFORM_TECHNICAL_AND_GAMEPLAY_VALIDATION';
+  development.webPurpose='FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE';
+  development.webCompanionRequired=true;
+  development.approvedDesignScopeMustBeFullyImplemented=true;
+  development.webEvidenceMayReplaceNativePlatformEvidence=false;
   development.webGameplayValidationRequired=true;
   development.musicValidationRequired=true;
   development.webBeforeTargetPlatformByDefault=true;
@@ -187,7 +194,9 @@ function synchronizePlatformPolicy(portfolio){
   portfolio.developmentFocusPolicy.selection='AUTO_SELECTED_PLATFORM_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT';
   portfolio.developmentFocusPolicy.platformPriority=[...PLATFORM_PRIORITY];
   portfolio.developmentFocusPolicy.priorityMeaning='DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE';
-  portfolio.developmentFocusPolicy.requiredWebGameplayAndMusicValidationBeforeTargetPlatform=true;
+  portfolio.developmentFocusPolicy.requiredFullApprovedWebCompanionBeforeTargetPlatform=true;
+  portfolio.developmentFocusPolicy.nativePlatformEvidenceStillRequired=true;
+  delete portfolio.developmentFocusPolicy.requiredWebGameplayAndMusicValidationBeforeTargetPlatform;
   delete portfolio.developmentFocusPolicy.optionalWebGameplayTestbedAllowedAlongsideReleaseFocus;
   delete portfolio.developmentFocusPolicy.developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus;
 }
@@ -244,14 +253,17 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
       }
     }else if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
       project.profileStatus='DEVELOPMENT_CONFIRMED';
-      project.webPurpose='REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION';
+      project.webPurpose='FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE';
+      project.webCompanionRequired=true;
+      project.approvedDesignScopeMustBeFullyImplemented=true;
+      project.webEvidenceMayReplaceNativePlatformEvidence=false;
       project.webGameplayValidationRequired=true;
       project.musicValidationRequired=true;
       if(targetPlatform){
-        project.mode='WEB_VALIDATION_THEN_TARGET_PLATFORM_DEVELOPMENT';
+        project.mode='FULL_WEB_COMPANION_THEN_TARGET_PLATFORM_DEVELOPMENT';
         project.targetEngine=platformTargetEngine(targetPlatform);
       }else{
-        project.mode='WEB_VALIDATION_TARGET_PLATFORM_SELECTION_REQUIRED';
+        project.mode='FULL_WEB_COMPANION_TARGET_PLATFORM_SELECTION_REQUIRED';
         project.targetEngine='platform-selection-required';
       }
     }else{
@@ -277,7 +289,7 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
       game.homepageStage=targetPlatform?`출시확정 · ${platformLabel(targetPlatform)}`:'출시확정 · 플랫폼 선택 필요';
     }else if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
       game.productionTarget=targetPlatform?platformTargetEngine(targetPlatform):'platform-selection-required';
-      game.homepageStage=targetPlatform?`개발확정 · Web 플레이/음악 검증 → ${platformLabel(targetPlatform)}`:'개발확정 · Web 플레이/음악 검증 → 플랫폼 선택 필요';
+      game.homepageStage=targetPlatform?`개발확정 · Web 전체분량 검증 → ${platformLabel(targetPlatform)}`:'개발확정 · Web 전체분량 검증 → 플랫폼 선택 필요';
     }else{
       game.productionTarget='design-only';
       if(!isHold(project))game.homepageStage='기획 · 아트북/컨셉/설계 최적화';
