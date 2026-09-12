@@ -156,6 +156,14 @@ jobs:
           console.log(`LOCAL_TRAINING_REQUEST_STATE=${request.state}`);
           NODE
 
+      - name: Upload verified samples for online Unity teacher
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-verified-training-samples
+          path: company-learning/training-samples
+          retention-days: 1
+          if-no-files-found: warn
+
       - name: Upload verified samples and Pump memory artifact
         uses: actions/upload-artifact@v4
         with:
