@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "status": "ACTIVE",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
@@ -18,7 +18,8 @@
     "classes": {
       "RELEASE_CONFIRMED": {
         "engine": "PROJECT_SELECTED_PLATFORM",
-        "deepFocusSlots": 1,
+        "deepFocusSlots": 3,
+        "deepFocusSlotsAreWipGuidanceNotPortfolioCap": true,
         "featureDevelopmentOnWeb": false,
         "webArchiveMaintenance": "FAST_RUNTIME_INCIDENT_ONLY"
       },
@@ -52,8 +53,9 @@
     "livingArtbookForAllClasses": true
   },
   "developmentFocusPolicy": {
-    "maxFocusedGames": 1,
-    "targetFocusedGames": 1,
+    "maxFocusedGames": 3,
+    "targetFocusedGames": 2,
+    "focusedGameCountIsWipGuidanceNotPortfolioCap": true,
     "focusStage": "RELEASE_CONFIRMED",
     "fillVacantFocusedSlots": true,
     "scoreAxes": [
