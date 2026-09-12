@@ -44,9 +44,12 @@ async function snapshot(page){
     return {text,visibleButtons,canvases,dataState,audioState,muteControls,volumeControls,approvedScopeCount,visibleScopeIds,scrollWidth:document.documentElement.scrollWidth,viewportWidth:innerWidth};
   });
 }
+function stateSignature(view){return JSON.stringify({text:view?.text,canvases:view?.canvases,dataState:view?.dataState});}
+export function scopeInteractionChanged(before,after){return stateSignature(before)!==stateSignature(after);}
+
 export function evaluateGameplayEvidence({before,after,interactionCount=0,consoleErrors=[],pageErrors=[],failedRequests=[],badResponses=[],reloadVisible=false,scopeCoverage=null}={}){
   const blockers=[];
-  const stateChanged=JSON.stringify({text:before?.text,canvases:before?.canvases,dataState:before?.dataState})!==JSON.stringify({text:after?.text,canvases:after?.canvases,dataState:after?.dataState});
+  const stateChanged=scopeInteractionChanged(before,after);
   const audioBefore=clean(before?.audioState).toLowerCase();
   const audioAfter=clean(after?.audioState).toLowerCase();
   const startsAfterGesture=!['running','playing'].includes(audioBefore)&&['running','playing','muted'].includes(audioAfter);
@@ -91,12 +94,19 @@ export async function runGameplayValidation({gameId,sourcePath,port=4181,output=
     const before=await snapshot(page);
     let interactionCount=0;
     const interactedScopeIds=[];
+    const scopeInteractionResults=[];
     const scopeControls=page.locator('[data-scope-id]:visible');
     const scopeCount=Math.min(await scopeControls.count(),80);
     for(let index=0;index<scopeCount;index++){
       const target=scopeControls.nth(index);
       const scopeId=clean(await target.getAttribute('data-scope-id'));
-      try{await target.click({timeout:3000});interactionCount++;if(scopeId)interactedScopeIds.push(scopeId);await page.waitForTimeout(120);}catch{}
+      const scopeBefore=await snapshot(page);
+      let clicked=false;
+      try{await target.click({timeout:3000});clicked=true;interactionCount++;await page.waitForTimeout(120);}catch{}
+      const scopeAfter=await snapshot(page);
+      const changed=clicked&&scopeInteractionChanged(scopeBefore,scopeAfter);
+      if(scopeId&&changed)interactedScopeIds.push(scopeId);
+      scopeInteractionResults.push({scopeId:scopeId||null,clicked,stateChanged:changed});
     }
     const gameplayButtons=page.locator('button:visible:not([data-audio-control]):not([data-scope-id]),[role="button"]:visible:not([data-audio-control]):not([data-scope-id])');
     const buttonCount=Math.min(await gameplayButtons.count(),4);
@@ -115,13 +125,13 @@ export async function runGameplayValidation({gameId,sourcePath,port=4181,output=
     const reloadVisible=await page.evaluate(()=>Boolean(document.body&&document.body.getBoundingClientRect().width>0&&document.body.getBoundingClientRect().height>0));
     const verdict=evaluateGameplayEvidence({before,after,interactionCount,consoleErrors,pageErrors,failedRequests,badResponses,reloadVisible,scopeCoverage});
     const report={
-      version:3,gameId,target:'web',status:verdict.pass?'PASS':'FAIL',pass:verdict.pass,validated:verdict.pass,
+      version:4,gameId,target:'web',status:verdict.pass?'PASS':'FAIL',pass:verdict.pass,validated:verdict.pass,
       realEvidenceExists:true,gameplayInteractionPerformed:interactionCount>0,interactionCount,stateChanged:verdict.stateChanged,musicRuntime:verdict.musicRuntime,
-      approvedScopeFullyImplemented:scopeCoverage.pass,scopeCoverage,
+      approvedScopeFullyImplemented:scopeCoverage.pass,scopeCoverage,scopeInteractionResults,
       runtimeSmokePassed:consoleErrors.length===0&&pageErrors.length===0&&failedRequests.length===0&&badResponses.length===0&&reloadVisible,
       mobileViewport:{width:390,height:844,touch:true},before,after,reloadVisible,
       blockers:verdict.blockers,consoleErrors,pageErrors,failedRequests,badResponses,
-      evidence:[`interactionCount=${interactionCount}`,`stateChanged=${verdict.stateChanged}`,`reloadVisible=${reloadVisible}`,`mobileOverflow=${Number(after.scrollWidth||0)<=Number(after.viewportWidth||0)+2}`,`musicRuntime=${verdict.musicRuntime.pass}`,`musicAfterGesture=${verdict.musicRuntime.startsAfterUserGesture}`,`approvedScope=${scopeCoverage.pass}`,`approvedScopeCount=${scopeCoverage.declaredCount}`],
+      evidence:[`interactionCount=${interactionCount}`,`stateChanged=${verdict.stateChanged}`,`reloadVisible=${reloadVisible}`,`mobileOverflow=${Number(after.scrollWidth||0)<=Number(after.viewportWidth||0)+2}`,`musicRuntime=${verdict.musicRuntime.pass}`,`musicAfterGesture=${verdict.musicRuntime.startsAfterUserGesture}`,`approvedScope=${scopeCoverage.pass}`,`approvedScopeCount=${scopeCoverage.declaredCount}`,`scopeStateChanged=${interactedScopeIds.length}/${before.visibleScopeIds.length}`],
       checkedAt:new Date().toISOString(),sourcePath:source,url
     };
     if(screenshot){fs.mkdirSync(path.dirname(screenshot),{recursive:true});await page.screenshot({path:screenshot,fullPage:true});report.screenshot=screenshot;}
