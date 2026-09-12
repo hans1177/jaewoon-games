@@ -35,6 +35,7 @@ function applyFarmRules(runtime, progress) {
   const now = Date.now();
   const manualWater = now - manualWaterSignalAt < 500;
   const totalGameMinutes = (Number(progress.day || 1) - 1) * 1440 + Number(progress.minutes || 0);
+  let consumedManualWater = false;
 
   progress.plots.forEach((plot, index) => {
     const before = previous.plots?.[index] || {};
@@ -51,6 +52,7 @@ function applyFarmRules(runtime, progress) {
         plot.wateredAt = now;
         plot.plantedAt = totalGameMinutes - 40;
         plot.ready = false;
+        consumedManualWater = true;
       } else {
         plot.watered = false;
         plot.wateredAt = 0;
@@ -68,6 +70,7 @@ function applyFarmRules(runtime, progress) {
     }
   });
 
+  if (consumedManualWater) manualWaterSignalAt = 0;
   snapshots.set(runtime, snapshot(progress));
 }
 
@@ -85,28 +88,41 @@ function snapshot(progress) {
   };
 }
 
-window.addEventListener('pointerdown', event => {
-  const action = event.target?.closest?.('#actionButton');
-  if (!action) return;
+function markManualWater() {
   const toolText = document.querySelector('#toolButton')?.textContent || '';
   if (toolText.includes('물뿌리개')) manualWaterSignalAt = Date.now();
+}
+
+window.addEventListener('pointerdown', event => {
+  if (event.target?.closest?.('#actionButton')) markManualWater();
+}, { capture: true });
+window.addEventListener('keydown', event => {
+  if (event.code === 'Space') markManualWater();
 }, { capture: true });
 
-const observer = new MutationObserver(() => {
-  const hint = document.querySelector('#hint');
-  if (hint) {
-    hint.textContent = hint.textContent
-      .replace('수확하기 · 식량 +5', '수확하기 · 식량 +10')
-      .replace('비가 텃밭에 물을 주고 있어', '물뿌리개로 직접 물을 줘')
-      .replace('작물이 자라는 중이야', '물을 준 뒤 20초 동안 자라는 중이야');
-  }
+function replaceText(element, replacements) {
+  if (!element) return;
+  let next = element.textContent;
+  for (const [from, to] of replacements) next = next.replace(from, to);
+  if (next !== element.textContent) element.textContent = next;
+}
 
-  const toast = document.querySelector('#toast');
-  if (toast) toast.textContent = toast.textContent.replace('식량 +5', '식량 +10');
+const observer = new MutationObserver(() => {
+  replaceText(document.querySelector('#hint'), [
+    ['수확하기 · 식량 +5', '수확하기 · 식량 +10'],
+    ['비가 텃밭에 물을 주고 있어', '물뿌리개로 직접 물을 줘'],
+    ['작물이 자라는 중이야', '물을 준 뒤 20초 동안 자라는 중이야']
+  ]);
+  replaceText(document.querySelector('#toast'), [['식량 +5', '식량 +10']]);
 
   const panel = document.querySelector('#panelBody');
   if (panel) {
-    panel.innerHTML = panel.innerHTML.replace('비 오는 날엔 텃밭에 물을 따로 안 줘도 돼.', '농작물은 직접 물을 주고 20초 기다리면 식량을 얻을 수 있어.');
+    const current = panel.innerHTML;
+    const next = current.replace(
+      '비 오는 날엔 텃밭에 물을 따로 안 줘도 돼.',
+      '농작물은 직접 물을 주고 20초 기다리면 식량을 얻을 수 있어.'
+    );
+    if (next !== current) panel.innerHTML = next;
   }
 });
 observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
