@@ -1,0 +1,171 @@
+{
+  "version": 7,
+  "state": "PAUSED_FOR_NEW_SESSION",
+  "taskId": "company-flow-ops-20260912",
+  "updatedAtKst": "2026-09-12",
+  "sourceOfTruth": "COMPANY_FLOW.md",
+  "workingBranch": "chatgpt/company-flow-ops-20260912",
+  "pullRequest": 346,
+  "ownerIntent": "COMPANY_FLOW.md 하나만 회사 생산정책 중앙문서로 사용한다. 게임 개발 수량에는 고정 상한/하한/WIP 숫자 제한을 두지 않고 기획·그래픽·개발·QA·밸런스 5개 부서 평점과 실제 검증 근거로 확대/유지/수정·보류/축소검토 방향을 정한다. ROBLOX가 기본 메인/우선순위 1위지만 UNITY_ANDROID와 FORTNITE_UEFN 개발을 잠그지 않는다. 세 플랫폼은 항상 개발 가능하다. 기존 Unity 구조·소스·Web→Unity·Android build/runtime/QA/release 경로는 절대 보존하고 확장한다. 세 플랫폼의 검증된 성공 경험은 모두 기존 canonical distillation 체인에만 합류한다. Vibe 학습 구조/체인/코드 경로와 기존 빌드 방식/workflow/부모-자식 구조는 변경하지 않는다.",
+  "policyCentralization": {
+    "solePolicyDocument": "COMPANY_FLOW.md",
+    "separatePlatformPolicyDocumentsForbidden": true,
+    "machineContractsMayMirrorButCannotCreatePolicy": true,
+    "checkpointIsEvidenceNotPolicy": true
+  },
+  "portfolioGovernance": {
+    "mode": "FIVE_DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO",
+    "hardMinGames": null,
+    "hardMaxGames": null,
+    "hardMinDevelopmentWip": null,
+    "hardMaxDevelopmentWip": null,
+    "fixedSlots": false,
+    "oneForOneReplacement": false,
+    "departments": ["planning", "graphics", "development", "qa", "balance"],
+    "scoreRange": [0, 100],
+    "decisionBands": ["EXPAND", "MAINTAIN", "REVISE_OR_HOLD", "REDUCE_REVIEW"],
+    "decisionBandsDoNotImposeNumericGameCount": true,
+    "scoreAloneCannotAutoDiscard": true
+  },
+  "authoritativePlatformArchitecture": {
+    "primaryPlatformField": "PRIMARY_PLATFORM",
+    "primaryPlatform": "ROBLOX",
+    "platformPriority": ["ROBLOX", "UNITY_ANDROID", "FORTNITE_UEFN"],
+    "priorityMeaning": "DEFAULT_FOCUS_ONLY",
+    "allPlatformsDevelopmentAlwaysAllowed": true,
+    "platformEntryGateAllowed": false,
+    "allowedPrimaryPlatforms": ["ROBLOX", "UNITY_ANDROID", "FORTNITE_UEFN"],
+    "registry": "company-platform-projects.json",
+    "switchRebuildsCompanyCore": false,
+    "projects": {
+      "ROBLOX": {"role":"FIRST_CLASS_PRIMARY_DEFAULT","developmentAllowed":true,"sourceRoot":"roblox-games/<slug>","language":"Luau"},
+      "UNITY_ANDROID": {"role":"FIRST_CLASS_EXTENDED","developmentAllowed":true,"preserveExistingProjectStructure":true,"preserveExistingSourceAndBehavior":true,"preserveExistingWebToUnityFlow":true,"preserveExistingAndroidBuildWorkflow":true,"extensionRequired":true,"replacementOrRebuildForbidden":true},
+      "FORTNITE_UEFN": {"role":"FIRST_CLASS_AVAILABLE","developmentAllowed":true,"priorPlatformCompletionRequired":false,"sourceRoot":"fortnite-uefn/<slug>","language":"Verse"}
+    }
+  },
+  "homepagePlatformClassification": {
+    "status": "PENDING_IMPLEMENTATION",
+    "foldingUiPreserved": true,
+    "categories": [
+      {"order": 1, "id": "MOBILE", "label": "모바일"},
+      {"order": 2, "id": "ROBLOX", "label": "로블록스"},
+      {"order": 3, "id": "FORTNITE_UEFN", "label": "포트나이트"}
+    ],
+    "gameProductionStatusRemainsSeparateCardBadge": true,
+    "gamesAppearInMatchingPlatformCategory": true,
+    "multiPlatformGameMayAppearInMultipleCategories": true,
+    "existingGameMustNotBeArbitrarilyReclassifiedOrPorted": true,
+    "currentCatalogWithoutExplicitRobloxOrFortniteTargetDefaultsToExistingMobileClassification": true
+  },
+  "robloxResumeDirective": {
+    "developmentPriority": 1,
+    "resumeRobloxDevelopmentAfterHomepagePlatformFold": true,
+    "doNotArbitrarilyChooseExistingGameForPort": true,
+    "firstGoal": "BUILD_ROBLOX_DEVELOPMENT_CAPABILITY_BEFORE_SELECTING_OR_PORTING_A_SPECIFIC_EXISTING_GAME",
+    "requiredImplementationSurfaces": [
+      "ROBLOX_TARGET_ROUTING",
+      "ROBLOX_SOURCE_ROOT_AND_LUAU_STRUCTURE",
+      "ROBLOX_TASK_PLAYBOOK_OR_EXISTING_PIPELINE_PLATFORM_BINDING_AS_ALLOWED_BY_CENTRAL_POLICY",
+      "ROBLOX_RUNTIME_VALIDATION",
+      "ROBLOX_INDEPENDENT_QA",
+      "ROBLOX_REGRESSION_AND_EXACT_REVISION",
+      "VERIFIED_ROBLOX_EVIDENCE_TO_EXISTING_CANONICAL_DISTILLATION_INPUT_ONLY"
+    ],
+    "unityAndFortniteRemainDevelopable": true
+  },
+  "vibeLearningImmutableLock": {
+    "ownerLocked": true,
+    "structureChangeForbidden": true,
+    "chainChangeForbidden": true,
+    "learningCodePathModificationForbidden": true,
+    "thresholdOrPromotionRuleChangeForbidden": true,
+    "newPlatformSpecificCronForbidden": true,
+    "newPlatformSpecificDistillationChainForbidden": true,
+    "distillationRequiredForVerifiedPlatformExperience": true,
+    "canonicalDistillationOnly": true,
+    "failedAttemptsRemainFailureWarningEvidenceOnly": true,
+    "allowedExceptions": ["RECOVERY", "VERIFIED_ERROR_FIX"]
+  },
+  "buildSystemImmutableLock": {
+    "ownerLocked": true,
+    "buildMethodChangeForbidden": true,
+    "buildWorkflowModificationForbidden": true,
+    "parentChildTopologyChangeForbidden": true,
+    "triggerChangeForbidden": true,
+    "artifactTransferChangeForbidden": true,
+    "runtimeQaBuildLinkChangeForbidden": true,
+    "cacheOrDedupeBuildLogicChangeForbidden": true,
+    "newBuildChainForbidden": true,
+    "buildRewireForbidden": true
+  },
+  "implementationDeltaCommits": {
+    "companyOperationsContractV2": "f36cada1afbe9c652169371d4709a766f18d003b",
+    "companyOperationsEngineInitial": "8b130ff9dc0e81169c277c5b972bdcbf2ea286ce",
+    "scoreDrivenOperationsContractV3": "b0cc6bcad922b7fbbf16799aa390cfaa6f0178c1",
+    "departmentScoreAndPlatformRoutingEngine": "abd1775f2ae23b14f014904ca07bf80806eb7492",
+    "unlockedThreePlatformRegistry": "f820ad77a04b8cc9e31ab7b74b077904436b417d",
+    "duplicateArchitectureDocumentRemoved": "02d99b95b5d9b0c65102f575490e347ec6904fe9",
+    "centralPolicySynchronized": "afb9be28fefa2f708c0f4155b5af8dbe517e3788",
+    "homepageRuntimeStatePreferred": "3f4ce9625cf76443d466cc621520ab44f10b6eb3",
+    "homepageRuntimeCheckpoint": "4bc722cdb1f58245f4a4de84356ca10a9b28cb8b"
+  },
+  "completedSteps": [
+    "Centralized production policy authority in COMPANY_FLOW.md",
+    "Removed fixed maintained-game and development-WIP caps",
+    "Added five-department score-guided dynamic portfolio governance",
+    "Registered ROBLOX, UNITY_ANDROID and FORTNITE_UEFN as always-developable first-class projects",
+    "Kept ROBLOX as default PRIMARY_PLATFORM without locking Unity or Fortnite",
+    "Preserved Unity source/behavior/Web-to-Unity/build/runtime/QA/release path and extension requirement",
+    "Removed duplicate multi-platform architecture policy document",
+    "Preserved immutable Vibe learning and build-system locks",
+    "Completed HOMEPAGE_PWA_RUNTIME_STATE_SYNC: game-catalog.json and company-status.json prefer company-runtime, then main, then local while preserving 5-second refresh and PWA surface",
+    "Verified Vibe QA and Vibe Integrated Regression PASS after homepage runtime-state sync"
+  ],
+  "knownIncomplete": [
+    "Homepage folding categories are still old production-state categories and must be changed to 1 Mobile / 2 Roblox / 3 Fortnite",
+    "Roblox project/source/runtime/QA development capability on this branch is not complete",
+    "V3 task playbook on this branch does not yet contain a complete Roblox platform path",
+    "Stale policy contract tests still encode superseded fixed-game-count, Unity-only, or platform-phase-gate rules"
+  ],
+  "resumeOrder": [
+    "READ_LATEST_OWNER_INSTRUCTION",
+    "READ_COMPANY_FLOW_MD",
+    "READ_COMPANY_WORK_STATE_JSON",
+    "READ_PR_346_LATEST_CHECKPOINT",
+    "APPLY_HOMEPAGE_1_MOBILE_2_ROBLOX_3_FORTNITE_FOLDING_CLASSIFICATION",
+    "SYNC_CHECKPOINT_AFTER_HOMEPAGE_CHANGE",
+    "RESUME_ROBLOX_FIRST_DEVELOPMENT_CAPABILITY_WITHOUT_ARBITRARY_EXISTING_GAME_PORT",
+    "VALIDATE_ROBLOX_TARGET_ROUTING_SOURCE_RUNTIME_QA_REGRESSION",
+    "CONNECT_ONLY_VERIFIED_ROBLOX_SUCCESS_TO_EXISTING_CANONICAL_DISTILLATION_INPUTS",
+    "PRESERVE_AND_EXTEND_UNITY_WITHOUT_BUILD_WORKFLOW_CHANGE",
+    "KEEP_FORTNITE_UEFN_DEVELOPMENT_AVAILABLE",
+    "REPAIR_STALE_POLICY_TESTS_TO_CURRENT_COMPANY_FLOW_WITHOUT_ROLLING_POLICY_BACK",
+    "RUN_FULL_REGRESSION_AND_E2E",
+    "RECONCILE_CURRENT_MAIN_AND_MERGE_ONLY_AFTER_VALIDATION"
+  ],
+  "verification": {
+    "policyCentralized": true,
+    "fixedGameCountCapsRemoved": true,
+    "departmentScoreGovernanceImplemented": true,
+    "platformRegistryPresent": true,
+    "allThreePlatformsDevelopmentAllowed": true,
+    "platformEntryGatesRemoved": true,
+    "unityPreservationAndExtensionLocked": true,
+    "primaryPlatform": "ROBLOX",
+    "canonicalDistillationRequired": true,
+    "homepageRuntimeStateBranchPreferred": true,
+    "homepageMainAndLocalFallbackPreserved": true,
+    "homepageSyncIntervalMs": 5000,
+    "vibeQaRunId": 34679754877,
+    "vibeQaConclusion": "success",
+    "integratedRegressionRunId": 34679754926,
+    "integratedRegressionConclusion": "success",
+    "homepagePlatformFoldsImplemented": false,
+    "robloxDevelopmentCapabilityComplete": false,
+    "buildWorkflowModified": false,
+    "vibeLearningCodeModified": false
+  },
+  "blockers": ["STALE_POLICY_CONTRACT_TESTS_EXPECT_SUPERSEDED_FIXED_GAME_COUNT_UNITY_ONLY_OR_PLATFORM_PHASE_GATE_RULES"],
+  "lastCompletedMilestone": "HOMEPAGE_PWA_RUNTIME_STATE_SYNC",
+  "nextMilestone": "HOMEPAGE_PLATFORM_FOLD_CLASSIFICATION_1_MOBILE_2_ROBLOX_3_FORTNITE_THEN_ROBLOX_FIRST_DEVELOPMENT"
+}

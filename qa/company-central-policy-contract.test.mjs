@@ -123,6 +123,35 @@ test('development and release retain gated execution while Vibe2 begins at devel
   assert.match(flow,/unityPurpose: ANDROID_TECHNICAL_VALIDATION_PROTOTYPE/);
 });
 
+test('managed six require demo validation before final portfolio role assignment without changing learning or build systems',()=>{
+  const ops=directive.operationsModernization;
+  const portfolio=ops.managedPortfolio;
+  const demo=portfolio.demoFirstEvaluation;
+  assert.equal(portfolio.maxMaintainedGames,6);
+  assert.equal(portfolio.maxHeavyDevelopmentWip,3);
+  assert.equal(demo.requiredForAllManagedGames,true);
+  assert.equal(demo.managedGameCount,6);
+  assert.equal(demo.goal,'PLAYABLE_DEMO_WITH_REAL_VALIDATION');
+  assert.deepEqual(demo.minimumEvidence,['PLAYABLE_DEMO','REAL_PLAY_OR_RUNTIME_EVIDENCE','QA','FIX_IF_REQUIRED','REVALIDATION']);
+  assert.equal(demo.roleAssignmentAfterDemoEvaluation,true);
+  assert.deepEqual(demo.postDemoRoleTargets,{PRIMARY:1,ACTIVE:2,MAINTENANCE_VALIDATION:2,INCUBATION_HOLD:1});
+  assert.equal(demo.demoIsNotAutomaticLearningSample,true);
+  assert.equal(demo.validatedDevelopmentEvidenceMayFeedExistingLearningInputs,true);
+  assert.equal(demo.mustNotChangeVibeLearningChain,true);
+  assert.equal(demo.mustNotChangeBuildSystem,true);
+  assert.equal(ops.vibeLearningImmutableLock.structureChangeForbidden,true);
+  assert.equal(ops.vibeLearningImmutableLock.chainChangeForbidden,true);
+  assert.equal(ops.buildSystemImmutableLock.buildMethodChangeForbidden,true);
+  assert.equal(ops.buildSystemImmutableLock.buildWorkflowModificationForbidden,true);
+  assert.match(flow,/demoFirstEvaluation:[\s\S]*requiredForAllManagedGames: true/);
+  assert.match(flow,/goal: PLAYABLE_DEMO_WITH_REAL_VALIDATION/);
+  assert.match(flow,/roleAssignmentAfterDemoEvaluation: true/);
+  assert.match(flow,/demoIsNotAutomaticLearningSample: true/);
+  assert.match(flow,/validatedDevelopmentEvidenceMayFeedExistingLearningInputs: true/);
+  assert.match(flow,/mustNotChangeVibeLearningChain: true/);
+  assert.match(flow,/mustNotChangeBuildSystem: true/);
+});
+
 test('paid execution remains forbidden',()=>{
   assert.equal(directive.ai.paidAiAllowed,false);
   assert.equal(directive.ai.paidRunnerAllowed,false);

@@ -1,20 +1,27 @@
 // 파일명: assets/homepage-enhancements.js
-// 역할: 승인된 재운게임즈 홈페이지 레이아웃을 구성하고 최신 main 공개 상태를 5초 주기로 자동 동기화한다.
+// 역할: 승인된 재운게임즈 홈페이지 레이아웃을 구성하고 검증된 company-runtime 상태를 우선해 5초 주기로 자동 동기화한다.
 // 공개 Web 안정판과 기존 게임 데이터는 보존하고 홈 표시 구조만 재배치한다.
 const SYNC_INTERVAL_MS=5000;
+const RAW_RUNTIME_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/company-runtime';
 const RAW_MAIN_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/main';
 const focusMode='active';
 let refreshInFlight=false;
 let lastDataSignature='';
-const getJson=async path=>{
+const getJson=async(path,{runtimePreferred=false}={})=>{
   const stamp=Date.now();
-  for(const url of [`${RAW_MAIN_BASE}${path}`,path]){
+  const urls=runtimePreferred
+    ? [`${RAW_RUNTIME_BASE}${path}`,`${RAW_MAIN_BASE}${path}`,path]
+    : [`${RAW_MAIN_BASE}${path}`,path];
+  for(const url of urls){
     try{
       const r=await fetch(`${url}${url.includes('?')?'&':'?'}ts=${stamp}`,{cache:'no-store'});
-      if(r.ok)return await r.json();
+      if(r.ok)return {
+        data:await r.json(),
+        source:url.startsWith(RAW_RUNTIME_BASE)?'company-runtime':url.startsWith(RAW_MAIN_BASE)?'github-main':'local'
+      };
     }catch{}
   }
-  return null;
+  return {data:null,source:'offline'};
 };
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const formatDate=value=>{if(!value)return'정보 없음';const d=new Date(value);if(Number.isNaN(d.getTime()))return String(value).replaceAll('-','.');return new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}).format(d).replace(/\. /g,'.').replace(/\.$/,'');};
@@ -303,12 +310,16 @@ async function refreshHomepageData(){
   if(refreshInFlight)return;
   refreshInFlight=true;
   try{
-    const [catalog,status,baselines,artbooks]=await Promise.all([
-      getJson('/game-catalog.json'),
-      getJson('/company-status.json'),
+    const [catalogResult,statusResult,baselinesResult,artbooksResult]=await Promise.all([
+      getJson('/game-catalog.json',{runtimePreferred:true}),
+      getJson('/company-status.json',{runtimePreferred:true}),
       getJson('/public-release-baselines.json'),
       getJson('/game-artbooks.json')
     ]);
+    const catalog=catalogResult.data;
+    const status=statusResult.data;
+    const baselines=baselinesResult.data;
+    const artbooks=artbooksResult.data;
     if(catalog){
       const signature=JSON.stringify([catalog,status||{},baselines||{},artbooks||{}]);
       if(signature!==lastDataSignature){
@@ -316,7 +327,8 @@ async function refreshHomepageData(){
         buildGameCenter(catalog,status||{},baselines||{},artbooks||{});
         lastDataSignature=signature;
       }
-      document.documentElement.dataset.homeSyncSource='github-main';
+      const sources=[catalogResult.source,statusResult.source];
+      document.documentElement.dataset.homeSyncSource=sources.includes('company-runtime')?'company-runtime':sources.includes('github-main')?'github-main':'local';
     }else{
       document.documentElement.dataset.homeSyncSource='offline';
     }

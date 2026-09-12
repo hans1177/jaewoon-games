@@ -1,0 +1,108 @@
+{
+  "version": 4,
+  "policySource": "COMPANY_FLOW.md",
+  "isPolicySource": false,
+  "ownerApprovedAt": "2026-09-12",
+  "primaryPlatform": "ROBLOX",
+  "platformPriority": ["ROBLOX", "UNITY_ANDROID", "FORTNITE_UEFN"],
+  "priorityMeaning": "DEFAULT_FOCUS_ONLY",
+  "allPlatformsDevelopmentAlwaysAllowed": true,
+  "platformEntryGateAllowed": false,
+  "switchMode": "PRIMARY_PLATFORM_POINTER",
+  "rebuildCompanyStructureOnSwitch": false,
+  "projects": {
+    "ROBLOX": {
+      "status": "ACTIVE_FIRST_CLASS_PRIMARY_DEFAULT",
+      "developmentAllowed": true,
+      "sourceRoot": "roblox-games/<slug>",
+      "language": "Luau",
+      "runtime": "ROBLOX_EXPERIENCE",
+      "validation": [
+        "ACTUAL_EXPERIENCE_ENTRY",
+        "MEANINGFUL_INPUT",
+        "CORE_LOOP_STATE_CHANGE",
+        "SERVER_CLIENT_HEALTH",
+        "REMOTE_EVENT_VALIDATION",
+        "DATASTORE_WHEN_USED",
+        "MOBILE_TOUCH",
+        "MULTIPLAYER_WHEN_USED",
+        "PERFORMANCE",
+        "QA",
+        "REGRESSION",
+        "EXACT_REVISION"
+      ]
+    },
+    "UNITY_ANDROID": {
+      "status": "ACTIVE_FIRST_CLASS_EXTENDED",
+      "developmentAllowed": true,
+      "sourceRoot": "EXISTING_UNITY_PROJECT_ROOTS",
+      "language": "C#",
+      "runtime": "ANDROID",
+      "preserveExistingFlow": true,
+      "preserveExistingSourceAndBehavior": true,
+      "preserveExistingWebToUnityValidation": true,
+      "preserveExistingBuildWorkflow": true,
+      "extensionRequired": true,
+      "extensionMode": "ADD_CAPABILITY_AROUND_EXISTING_RESPONSIBLE_SYSTEMS",
+      "replacementOrRebuildForbidden": true,
+      "regressionRequiredAfterSharedArchitectureChange": true
+    },
+    "FORTNITE_UEFN": {
+      "status": "ACTIVE_FIRST_CLASS_AVAILABLE",
+      "developmentAllowed": true,
+      "sourceRoot": "fortnite-uefn/<slug>",
+      "language": "Verse",
+      "runtime": "FORTNITE_UEFN",
+      "priorPlatformCompletionRequired": false,
+      "validation": [
+        "PROJECT_OPENS_IN_UEFN",
+        "SESSION_LAUNCH",
+        "MEANINGFUL_INPUT",
+        "CORE_LOOP_STATE_CHANGE",
+        "VERSE_RUNTIME_HEALTH",
+        "MULTIPLAYER_SESSION_WHEN_USED",
+        "PERFORMANCE",
+        "QA",
+        "REGRESSION",
+        "EXACT_REVISION"
+      ]
+    }
+  },
+  "focusMilestones": [
+    {
+      "id": "ROBLOX_FAST_RELEASE_STABILIZATION",
+      "priorityRank": 1,
+      "blocksOtherPlatforms": false
+    },
+    {
+      "id": "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE",
+      "priorityRank": 2,
+      "entryGate": false
+    },
+    {
+      "id": "FORTNITE_UEFN_RELEASE_EXPERIENCE",
+      "priorityRank": 3,
+      "entryGate": false
+    }
+  ],
+  "sharedLearning": {
+    "distillationRequired": true,
+    "canonicalDistillationOnly": true,
+    "newPlatformSpecificDistillationChainForbidden": true,
+    "newPlatformSpecificCronForbidden": true,
+    "newLearningStageForbidden": true,
+    "verifiedEvidenceOnly": true,
+    "existingVerifiedInputsOnly": true,
+    "failureAttemptsAreWarningEvidenceOnly": true,
+    "platformPriorityDoesNotGateDevelopment": true
+  },
+  "locks": {
+    "vibeLearningStructureImmutable": true,
+    "vibeLearningCodePathsImmutable": true,
+    "buildWorkflowImmutable": true,
+    "parentChildBuildTopologyImmutable": true,
+    "triggerAndArtifactFlowImmutable": true,
+    "noWrapperShadowBypass": true
+  },
+  "switchingRule": "Change primaryPlatform/project selection only; all three platform projects remain developable. Do not rebuild or fork the company core, Vibe learning chain, existing Unity project, or existing build workflows."
+}
