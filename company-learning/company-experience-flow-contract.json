@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "generation": "V3-PUMP-EXPERIENCE-DRIVEN-COMPANY",
   "status": "OWNER_DIRECT_LOCKED",
   "authority": "COMPANY_FLOW.md",
@@ -35,6 +35,41 @@
     ],
     "affectedDepartmentsOnlyByDefault": true,
     "fullFiveDepartmentReviewFor": ["BASELINE", "MATERIAL_DIRECTION_CHANGE", "RELEASE"]
+  },
+  "creativeOutsourcing": {
+    "enabled": true,
+    "freeOnly": true,
+    "paidFallback": false,
+    "internalDevelopmentFocus": true,
+    "existingFreeProviderPoolOnly": true,
+    "preferredTextContractors": ["mistral", "groq"],
+    "outsourceWhenCapabilityAvailable": [
+      "STORY_DRAFT",
+      "INTRO_STORYBOARD",
+      "DIALOGUE_DRAFT",
+      "QUEST_NARRATIVE_DRAFT",
+      "BGM_CUE_SHEET",
+      "SFX_CUE_SHEET",
+      "MUSIC_DIRECTION_PROMPT",
+      "ART_DIRECTION_BRIEF",
+      "LOCALIZATION_DRAFT"
+    ],
+    "mustRemainInternal": [
+      "GAME_RULE_AUTHORITY",
+      "PROTECTED_BALANCE_VALUES",
+      "SOURCE_WRITE",
+      "BUILD",
+      "RUNTIME_INTEGRATION",
+      "QA",
+      "REGRESSION",
+      "RELEASE_APPROVAL"
+    ],
+    "deliveryFormat": "STRUCTURED_MANIFEST_OR_CANDIDATE_ONLY",
+    "directSourceWriteForbidden": true,
+    "completionAuthority": false,
+    "rightsAndLicenseEvidenceRequired": true,
+    "actualBinaryAssetRule": "IF_NO_VERIFIED_FREE_ASSET_GENERATION_OR_LICENSED_ASSET_PROVIDER_THEN_ASSET_PENDING",
+    "freeProviderUnavailableFallback": "INTERNAL_V3_OR_ASSET_PENDING"
   },
   "validation": {
     "impactBased": true,
@@ -95,6 +130,8 @@
     "required": true,
     "newDepartmentCreated": false,
     "owners": ["graphics", "development", "qa"],
+    "creativeDraftOutsourcedToFreeAiWhenAvailable": true,
+    "dataDrivenManifestPreferred": true,
     "minimumEventSet": [
       "BGM",
       "ATTACK_IMPACT",
@@ -113,6 +150,8 @@
     "required": true,
     "newDepartmentCreated": false,
     "owners": ["planning", "graphics", "development", "qa"],
+    "creativeDraftOutsourcedToFreeAiWhenAvailable": true,
+    "dataDrivenManifestPreferred": true,
     "allGamesRequire": ["INTRO_OR_TITLE_SEQUENCE", "PLAYER_CONTEXT", "TUTORIAL_CONTEXT", "ENDING_OR_SESSION_CLOSE"],
     "storyDrivenAdditional": ["OPENING_CUTSCENE", "DIALOGUE", "QUEST_STORY", "SCENE_TRANSITIONS", "ENDING_HOOK"],
     "runtimeBindingRequired": true,
