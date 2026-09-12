@@ -14,6 +14,7 @@ assert.equal(contract.roadmapPhase,'ROBLOX_FAST_RELEASE_STABILIZATION');
 assert.equal(contract.parallelPipeline,false);
 assert.equal(contract.learning.useExistingCanonicalDistillation,true);
 assert.equal(contract.publishing.liveExecutionRequiresExplicitFlag,true);
+assert.equal(contract.publishing.placeFileMustRemainUnderSourceRoot,true);
 assert.equal(contract.cookieAuthAllowed,false);
 assert.deepEqual([...ROBLOX_PLATFORM_POLICY.positiveExperienceRequires],['VERIFIED_WINNER','RUNTIME_PASS','INDEPENDENT_QA_PASS','REGRESSION_PASS','PROTECTED_STATE_PRESERVED','EXACT_REVISION']);
 
@@ -50,6 +51,10 @@ const binaryPlan=createRobloxPlacePublishPlan({placeFile:'roblox-games/pilot/pla
 assert.equal(binaryPlan.executionReady,true);
 assert.equal(binaryPlan.contentType,'application/octet-stream');
 
+const outsideRoot=createRobloxPlacePublishPlan({placeFile:'tmp/place.rbxlx',universeId:'123456',placeId:'654321',sourceRevision:'abcdef1234567890',evidence});
+assert.equal(outsideRoot.executionReady,false);
+assert(outsideRoot.blockedReasons.includes('place-file-outside-roblox-root'));
+
 const badEvidence={...evidence,runtimePassed:false};
 const blocked=createRobloxPlacePublishPlan({placeFile:'roblox-games/pilot/place.rbxlx',universeId:'123456',placeId:'654321',sourceRevision:'abcdef1234567890',evidence:badEvidence});
 assert.equal(blocked.executionReady,false);
@@ -74,4 +79,15 @@ assert.equal(observedRequest.options.headers['x-api-key'],'test-secret-never-per
 assert(!JSON.stringify(xmlPlan).includes('test-secret-never-persist'));
 assert(!JSON.stringify(result).includes('test-secret-never-persist'));
 
-console.log('PASS Roblox V3 platform adapter, evidence gate and guarded publishing plan');
+const reflectedSecret='server-echo-secret';
+await assert.rejects(
+  ()=>publishRobloxPlace({
+    plan:xmlPlan,
+    apiKey:reflectedSecret,
+    readFile:()=>Buffer.from('<roblox/>'),
+    fetchImpl:async()=>({ok:false,status:403,text:async()=>JSON.stringify({error:`denied ${reflectedSecret}`})}),
+  }),
+  error=>error instanceof Error&&error.message.includes('[REDACTED]')&&!error.message.includes(reflectedSecret),
+);
+
+console.log('PASS Roblox V3 platform adapter, evidence gate, root guard and secret-safe publishing plan');
