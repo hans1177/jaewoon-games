@@ -39,7 +39,7 @@ export function createRobloxPlatformContract(){
   return Object.freeze({
     ...ROBLOX_PLATFORM_POLICY,
     qa:Object.freeze({browserQa:'NOT_APPLICABLE',runtime:'PASS',independentQa:'PASS',saveRejoinCheck:'WHEN_APPLICABLE',mobileUiCheck:'WHEN_APPLICABLE',serverClientBoundaryCheck:true,remoteSecurityCheck:true}),
-    publishing:Object.freeze({method:'POST',endpointTemplate:'https://apis.roblox.com/universes/v1/{universeId}/places/{placeId}/versions?versionType=Published',apiKeyHeader:'x-api-key',secretPersisted:false,secretPrinted:false,liveExecutionRequiresExplicitFlag:true}),
+    publishing:Object.freeze({method:'POST',endpointTemplate:'https://apis.roblox.com/universes/v1/{universeId}/places/{placeId}/versions?versionType=Published',apiKeyHeader:'x-api-key',secretPersisted:false,secretPrinted:false,liveExecutionRequiresExplicitFlag:true,placeFileMustRemainUnderSourceRoot:true}),
     learning:Object.freeze({separateCron:false,separateDataset:false,separateTrainer:false,useExistingCanonicalDistillation:true}),
     authority:'roblox-platform-adapter-contract',
   });
@@ -73,9 +73,17 @@ function contentTypeForPlaceFile(placeFile=''){
   return null;
 }
 
+function redactSecret(value,secret=''){
+  const text=String(value??'');
+  const token=clean(secret);
+  return token?text.split(token).join('[REDACTED]'):text;
+}
+
 export function createRobloxPlacePublishPlan({placeFile='',universeId='',placeId='',sourceRevision='',evidence={}}={}){
-  const file=clean(placeFile),universe=clean(universeId),place=clean(placeId),contentType=contentTypeForPlaceFile(file),blocked=[];
+  const file=clean(placeFile).replaceAll('\\','/'),universe=clean(universeId),place=clean(placeId),contentType=contentTypeForPlaceFile(file),blocked=[];
+  const sourcePath=validateRobloxSourcePath(file);
   if(!file)blocked.push('place-file-missing');
+  if(file&&!sourcePath.underRoot)blocked.push('place-file-outside-roblox-root');
   if(!contentType)blocked.push('place-file-extension-unsupported');
   if(!DIGITS.test(universe))blocked.push('universe-id-invalid');
   if(!DIGITS.test(place))blocked.push('place-id-invalid');
@@ -93,6 +101,7 @@ export function createRobloxPlacePublishPlan({placeFile='',universeId='',placeId
     endpoint,
     placeFile:file||null,
     contentType,
+    sourceRoot:ROBLOX_PLATFORM_POLICY.sourceRoot,
     sourceRevision:evidenceGate.sourceRevision||null,
     auth:Object.freeze({type:'API_KEY',header:'x-api-key',valueSource:'ENV:ROBLOX_OPEN_CLOUD_API_KEY',secretIncluded:false}),
     requiredApiPermission:ROBLOX_PLATFORM_POLICY.requiredApiPermission,
@@ -116,7 +125,10 @@ export async function publishRobloxPlace({plan,apiKey=process.env.ROBLOX_OPEN_CL
   const text=await response.text();
   let payload=null;
   try{payload=text?JSON.parse(text):null;}catch{payload={raw:text.slice(0,1000)};}
-  if(!response.ok)throw new Error(`Roblox publish failed HTTP ${response.status}: ${JSON.stringify(payload)}`);
+  if(!response.ok){
+    const safePayload=redactSecret(JSON.stringify(payload),secret);
+    throw new Error(`Roblox publish failed HTTP ${response.status}: ${safePayload}`);
+  }
   const versionNumber=Number(payload?.versionNumber);
   if(!Number.isInteger(versionNumber)||versionNumber<=0)throw new Error('Roblox publish response missing versionNumber');
   return Object.freeze({version:1,state:'PUBLISHED',platform:'ROBLOX',versionNumber,sourceRevision:plan.sourceRevision,placeFile:plan.placeFile,endpoint:plan.endpoint,credentialPersisted:false,authority:'roblox-place-publish-result'});
