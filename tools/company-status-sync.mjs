@@ -1,6 +1,6 @@
 // 파일명: tools/company-status-sync.mjs
 // 역할: 총괄 감독 상태와 의미 기반 제작 분류를 최신 상태로 동기화한다.
-// 원칙: productionClass가 유일한 정식 제작 분류이며 개수는 현재 멤버십에서 계산한다.
+// 원칙: productionClass가 유일한 정식 제작 분류이며 플랫폼은 프로젝트 선택값, 없으면 Roblox 기본값을 따른다.
 import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { selectContinuousTarget } from './autonomous-24h-work-planner.mjs';
@@ -20,6 +20,20 @@ const artbooksPath='game-artbooks.json';
 const statusMap={WORKING:'working',DONE:'done',IDLE_NO_TASK:'idle',BLOCKED:'blocked',FAILED:'failed',STALE:'stale'};
 const roles=['planning','development','qa','graphics','balance','director'];
 const clean=value=>String(value??'').trim();
+const PLATFORM_DEFAULT='ROBLOX';
+const PLATFORM_CONFIG={
+  ROBLOX:{targetEngine:'roblox',sourceRoot:'roblox-games',developMode:'ROBLOX_DEVELOP',nextMode:'ROBLOX_NEXT',homepageLabel:'Roblox'},
+  UNITY:{targetEngine:'unity-android',sourceRoot:'unity-games',developMode:'UNITY_DEVELOP',nextMode:'UNITY_NEXT',homepageLabel:'Unity Android'},
+  FORTNITE_UEFN:{targetEngine:'fortnite-uefn',sourceRoot:'uefn-games',developMode:'FORTNITE_UEFN_DEVELOP',nextMode:'FORTNITE_UEFN_NEXT',homepageLabel:'Fortnite UEFN'},
+};
+const normalizePlatform=value=>{
+  const raw=clean(value).toUpperCase().replace(/[\s-]+/g,'_');
+  if(!raw||raw==='WEB'||raw==='DESIGN_ONLY')return null;
+  if(raw==='ROBLOX')return 'ROBLOX';
+  if(['UNITY','UNITY_ANDROID','ANDROID_MOBILE','ANDROID'].includes(raw))return 'UNITY';
+  if(['FORTNITE','FORTNITE_UEFN','UEFN'].includes(raw))return 'FORTNITE_UEFN';
+  return null;
+};
 const focusScore=project=>{
   const explicit=Number(project?.developmentFocus?.total);
   if(Number.isFinite(explicit))return explicit;
@@ -40,10 +54,36 @@ const baselineRank=book=>{
   if(state==='DESIGN_BASELINE')return 1;
   return book?0.5:0;
 };
-const actualUnityReady=(project,game,filesystem)=>{
-  const paths=[project?.productionSourcePath,game?.unityProjectPath,`unity-games/${project?.slug||''}`].map(clean).filter(Boolean);
-  return project?.unityProjectReady===true||paths.some(candidate=>filesystem?.existsSync?.(candidate)===true);
+const selectedPlatformOf=(project,game)=>{
+  const explicit=[project?.selectedPlatform,project?.targetPlatform,game?.selectedPlatform,game?.targetPlatform]
+    .map(normalizePlatform).find(Boolean);
+  if(explicit)return explicit;
+  const legacy=normalizePlatform(project?.targetEngine);
+  if(legacy)return legacy;
+  const paths=[project?.productionSourcePath,game?.robloxProjectPath,game?.unityProjectPath,game?.uefnProjectPath].map(clean).filter(Boolean);
+  if(paths.some(value=>value.startsWith('unity-games/')))return 'UNITY';
+  if(paths.some(value=>value.startsWith('uefn-games/')))return 'FORTNITE_UEFN';
+  if(paths.some(value=>value.startsWith('roblox-games/')))return 'ROBLOX';
+  if(clean(project?.dedicatedDevelopmentLane).toUpperCase().includes('UNITY'))return 'UNITY';
+  if(clean(project?.dedicatedDevelopmentLane).toUpperCase().includes('FORTNITE'))return 'FORTNITE_UEFN';
+  if(clean(project?.dedicatedDevelopmentLane).toUpperCase().includes('ROBLOX'))return 'ROBLOX';
+  return PLATFORM_DEFAULT;
 };
+const platformSourceCandidates=(project,game,platform)=>{
+  const config=PLATFORM_CONFIG[platform]||PLATFORM_CONFIG[PLATFORM_DEFAULT];
+  const slug=clean(project?.slug||game?.id);
+  const specific=platform==='ROBLOX'?game?.robloxProjectPath:platform==='UNITY'?game?.unityProjectPath:game?.uefnProjectPath;
+  const production=clean(project?.productionSourcePath);
+  return [production&&production.startsWith(`${config.sourceRoot}/`)?production:null,specific,slug?`${config.sourceRoot}/${slug}`:null]
+    .map(clean).filter(Boolean);
+};
+const platformReadiness=(project,game,filesystem,platform=selectedPlatformOf(project,game))=>{
+  const paths=platformSourceCandidates(project,game,platform);
+  const sourcePath=paths.find(candidate=>filesystem?.existsSync?.(candidate)===true)||null;
+  const explicitReady=platform==='UNITY'&&project?.unityProjectReady===true;
+  return {platform,ready:explicitReady||Boolean(sourcePath),sourcePath};
+};
+const actualUnityReady=(project,game,filesystem)=>platformReadiness(project,game,filesystem,'UNITY').ready;
 const normalizeGenre=value=>clean(value).toLowerCase().replace(/\s+/g,' ');
 
 export function gameplayFamily(game){
@@ -93,58 +133,68 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
     const hold=isHold(project)||!sourceReady;
     const book=latestBook(artbooks,project.slug);
     const baseline=baselineRank(book);
+    const selectedPlatform=selectedPlatformOf(project,game);
+    const selectedPlatformState=platformReadiness(project,game,filesystem,selectedPlatform);
     const unityReady=actualUnityReady(project,game,filesystem);
     const playable=game?.homepageWebPlayable===true;
     const score=focusScore(project);
     const family=gameplayFamily(game);
     const productionClass=productionClassOf(project,game);
-    const evidenceScore=hold?Number.NEGATIVE_INFINITY:(score*100)+(baseline*10)+(unityReady?6:0)+(playable?3:0)+(game?.hasWebArchive===true?1:0);
-    return {project,game,score,baseline,unityReady,sourceReady,hold,evidenceScore,gameplayFamily:family,productionClass};
+    const evidenceScore=hold?Number.NEGATIVE_INFINITY:(score*100)+(baseline*10)+(selectedPlatformState.ready?6:0)+(playable?3:0)+(game?.hasWebArchive===true?1:0);
+    return {project,game,score,baseline,selectedPlatform,selectedPlatformReady:selectedPlatformState.ready,selectedPlatformSourcePath:selectedPlatformState.sourcePath,unityReady,sourceReady,hold,evidenceScore,gameplayFamily:family,productionClass};
   });
 
-  // 근거 순위는 진단/우선순위 정보일 뿐, 상위 N개를 잘라 분류를 강제하지 않는다.
-  const ranked=rows.filter(row=>!row.hold).sort((a,b)=>b.evidenceScore-a.evidenceScore||b.score-a.score||Number(b.unityReady)-Number(a.unityReady)||a.project.id.localeCompare(b.project.id));
+  const ranked=rows.filter(row=>!row.hold).sort((a,b)=>b.evidenceScore-a.evidenceScore||b.score-a.score||Number(b.selectedPlatformReady)-Number(a.selectedPlatformReady)||a.project.id.localeCompare(b.project.id));
   const rawRankById=new Map(ranked.map((row,index)=>[row.project.id,index+1]));
 
+  portfolio.productionClassPolicy ||= {};
+  portfolio.productionClassPolicy.classes ||= {};
+  portfolio.productionClassPolicy.classes.RELEASE_CONFIRMED={
+    target:'PROJECT_SELECTED_PLATFORM',
+    defaultPlatform:PLATFORM_DEFAULT,
+    deepFocusSlots:Number(portfolio.productionClassPolicy.classes.RELEASE_CONFIRMED?.deepFocusSlots??1),
+    featureDevelopmentOnWeb:false,
+    webArchiveMaintenance:'FAST_RUNTIME_INCIDENT_ONLY',
+  };
+  portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED={
+    target:'PROJECT_SELECTED_PLATFORM',
+    defaultPlatform:PLATFORM_DEFAULT,
+    scope:'TARGET_PLATFORM_VALIDATION',
+    webPurpose:'OPTIONAL_GAMEPLAY_VALIDATION_TESTBED',
+    webBeforeTargetPlatformByDefault:false,
+  };
+
   for(const row of rows){
-    const {project,productionClass}=row;
+    const {project,game,productionClass,selectedPlatform,selectedPlatformReady,selectedPlatformSourcePath}=row;
     project.productionClass=productionClass;
     project.productionClassSource=project.productionClassSource||'CURRENT_EVIDENCE_STATE';
     delete project.productionTier;
     delete project.productionTierSource;
     if(isHold(project))continue;
-    if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
-      project.profileStatus='RELEASE_CONFIRMED';
-      project.mode=row.unityReady?'UNITY_DEVELOP':'UNITY_NEXT';
-      project.targetEngine='unity-android';
-      project.unityProjectReady=row.unityReady;
-      if(row.unityReady&&!clean(project.productionSourcePath))project.productionSourcePath=clean(row.game?.unityProjectPath)||`unity-games/${project.slug}`;
-    }else if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
-      project.profileStatus='DEVELOPMENT_CONFIRMED';
-      project.mode='WEB_FIRST_IMPLEMENTATION';
-      project.targetEngine='web';
+    if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED||productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
+      const platform=PLATFORM_CONFIG[selectedPlatform]||PLATFORM_CONFIG[PLATFORM_DEFAULT];
+      project.profileStatus=productionClass;
+      project.selectedPlatform=selectedPlatform;
+      project.targetEngine=platform.targetEngine;
+      project.mode=selectedPlatformReady?platform.developMode:platform.nextMode;
+      if(selectedPlatformSourcePath)project.productionSourcePath=selectedPlatformSourcePath;
+      if(selectedPlatform==='UNITY')project.unityProjectReady=selectedPlatformReady;
     }else{
       project.profileStatus='DESIGN_ONLY';
       project.mode='REDESIGN';
       project.targetEngine='design-only';
     }
-  }
 
-  for(const game of catalog.games){
-    const project=portfolio.projects.find(row=>row.slug===game.id);
-    if(!project)continue;
-    const productionClass=productionClassOf(project,game);
     game.productionClass=productionClass;
     game.productionClassSource=game.productionClassSource||project.productionClassSource||'CURRENT_EVIDENCE_STATE';
     delete game.productionTier;
     delete game.productionTierSource;
     game.homepageCategory=homepageCategoryForProductionClass(productionClass)||game.homepageCategory;
-    if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
-      game.productionTarget='unity-android';
-      game.homepageStage='1분류 출시확정 · Unity Android';
-    }else if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
-      game.productionTarget='web-first-playable';
-      game.homepageStage='2분류 개발확정 · Web 1차 구현';
+    if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED||productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
+      const platform=PLATFORM_CONFIG[selectedPlatform]||PLATFORM_CONFIG[PLATFORM_DEFAULT];
+      game.selectedPlatform=selectedPlatform;
+      game.productionTarget=platform.targetEngine;
+      game.homepageStage=`${productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED?'1분류 출시확정':'2분류 개발확정'} · ${platform.homepageLabel}`;
     }else{
       game.productionTarget='design-only';
       if(!isHold(project))game.homepageStage='3분류 · 아트북/컨셉/설계 최적화';
@@ -164,12 +214,13 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
     fixedCounts:false,
     countsDerivedFromMembership:true,
     autoPromotionDemotion:true,
+    defaultPlatform:PLATFORM_DEFAULT,
     diversity:{enabled:diversityPolicy?.enabled!==false,maxFocusScoreGap:Number(diversityPolicy?.maxFocusScoreGap??1),scope:'DIAGNOSTIC_ONLY',source:'CATALOG_GENRE',membershipInfluence:false,adjusted:false,distinctFamilies},
     counts,
     releaseConfirmedGameIds:releaseIds,
     developmentConfirmedGameIds:developmentIds,
     designOnlyGameIds:designIds,
-    ranking:ranked.map((row,index)=>({rank:index+1,rawEvidenceRank:rawRankById.get(row.project.id),gameId:row.project.id,slug:row.project.slug,productionClass:row.productionClass,gameplayFamily:row.gameplayFamily,evidenceScore:row.evidenceScore,developmentFocus:row.score,artbookBaselineRank:row.baseline,unityReady:row.unityReady,sourceReady:row.sourceReady})),
+    ranking:ranked.map((row,index)=>({rank:index+1,rawEvidenceRank:rawRankById.get(row.project.id),gameId:row.project.id,slug:row.project.slug,productionClass:row.productionClass,gameplayFamily:row.gameplayFamily,evidenceScore:row.evidenceScore,developmentFocus:row.score,artbookBaselineRank:row.baseline,selectedPlatform:row.selectedPlatform,selectedPlatformReady:row.selectedPlatformReady,unityReady:row.unityReady,sourceReady:row.sourceReady})),
   };
   delete portfolio.productionTierState;
   delete portfolio.productionTierPolicy;
@@ -185,6 +236,10 @@ export function runCompanyStatusSync({filesystem=fs}={}){
 
   const classResult=syncProductionClasses({portfolio,catalog,artbooks,filesystem});
   company.updatedAt=supervision.dateKst||company.updatedAt;
+  company.policy ||= {};
+  company.policy.primaryPlatform='roblox';
+  company.policy.futurePrimaryTarget='roblox';
+  company.policy.platformPriority=['roblox','unity','fortnite-uefn'];
   company.supervision={
     source:supervisionPath,
     dateKst:supervision.dateKst||null,
@@ -222,8 +277,10 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   const focusedGames=focusedGameIds.map((id,index)=>{
     const project=projectById.get(id);if(!project)return null;
     const publicGame=catalogBySlug.get(project.slug)||{};
+    const selectedPlatform=selectedPlatformOf(project,publicGame);
+    const selectedState=platformReadiness(project,publicGame,filesystem,selectedPlatform);
     const unityReady=actualUnityReady(project,publicGame,filesystem);
-    return {slot:index+1,gameId:project.id,slug:project.slug,name:project.name||publicGame.name||project.slug,score:focusScore(project),slotRole:'auto-ranked',lane:'unity-primary',unityReady,homepageCategory:publicGame.homepageCategory||null,webPath:publicGame.webPath||null};
+    return {slot:index+1,gameId:project.id,slug:project.slug,name:project.name||publicGame.name||project.slug,score:focusScore(project),slotRole:'auto-ranked',lane:`${selectedPlatform.toLowerCase().replace('_','-')}-primary`,selectedPlatform,platformReady:selectedState.ready,unityReady,homepageCategory:publicGame.homepageCategory||null,webPath:publicGame.webPath||null};
   }).filter(Boolean);
   const targetSlots=Math.max(0,Number(focusPolicy?.targetFocusedGames??focusPolicy?.maxFocusedGames??focusedGames.length)||0);
   company.operations.autonomousFocus={
