@@ -1,0 +1,79 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [],
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [],
+        "questions": []
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "version: 1"
+        ],
+        "fix": [
+          "development: graphics, development, qa"
+        ],
+        "add": [
+          "development: graphics, development, qa"
+        ],
+        "risks": [
+          "development: graphics, development, qa"
+        ],
+        "evidence": [
+          "development: graphics, development, qa"
+        ],
+        "questions": [
+          "development: graphics, development, qa"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Roblox action RPG benchmark for persistent leveling, exploration, combat abilities and boss progression"
+        ],
+        "fix": [
+          "Roblox RPG benchmark for quests, worlds, classes, dungeons and persistent character progression"
+        ],
+        "add": [
+          "Roblox RPG benchmark for repeatable dungeons, loot, builds and boss encounters"
+        ],
+        "risks": [
+          "Shardbound Odyssey is an original ROBLOX story rpg adventure rpg experience built around quest and explore while using its own web"
+        ],
+        "evidence": [
+          "Blox Fruits, World // Zero, Dungeon Quest!"
+        ],
+        "questions": [
+          "What is the core fun of the game?"
+        ]
+      }
+    }
+  ]
+}

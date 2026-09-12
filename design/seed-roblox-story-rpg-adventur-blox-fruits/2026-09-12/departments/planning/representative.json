@@ -1,0 +1,32 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "representativeModel": "qwen3:0.6b",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "gameName: Shardbound Odyssey, status: ACTIVE, generation: PLATFORM_SET_FILL, gameCategory: STORY_RPG_ADVENTURE_RPG,REFERENCE_GAMES"
+    ],
+    "fix": [
+      "gameId: seed-roblox-story-rpg-adventur-blox-fruits"
+    ],
+    "add": [
+      "DISTINCT_IDENTITY: Shardbound Odyssey is an original ROBLOX story rpg adventure rpg experience built around quest and explore"
+    ],
+    "risks": [
+      "MARKET_EVIDENCE_SUMMARY: game-seed-market-evidence.json, game-seed-platform-profiles.json"
+    ],
+    "evidence": [
+      "game-seed-market-evidence.json, game-seed-platform-profiles.json"
+    ],
+    "questions": []
+  }
+}

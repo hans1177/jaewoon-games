@@ -1,0 +1,79 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "gameName: Shardbound Odyssey, status: ACTIVE, generation: PLATFORM_SET_FILL, gameCategory: STORY_RPG_ADVENTURE_RPG,REFERENCE_GAMES"
+        ],
+        "fix": [
+          "gameId: seed-roblox-story-rpg-adventur-blox-fruits, gameName: Shardbound Odyssey, status: ACTIVE, generation: PLATFORM_SET_FILL, "
+        ],
+        "add": [
+          "DISTINCT_IDENTITY: Shardbound Odyssey is an original ROBLOX story rpg adventure rpg experience built around quest and explore"
+        ],
+        "risks": [
+          "MARKET_EVIDENCE_SUMMARY: game-seed-market-evidence.json, game-seed-platform-profiles.json"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json, game-seed-platform-profiles.json"
+        ],
+        "questions": [
+          "game-seed-market-evidence.json, game-seed-platform-profiles.json"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_seed_market_evidence.json"
+        ],
+        "fix": [
+          "game_seed_market_evidence.json"
+        ],
+        "add": [
+          "game_seed_platform_profiles.json"
+        ],
+        "risks": [
+          "game_seed_market_evidence.json"
+        ],
+        "evidence": [
+          "game_seed_market_evidence.json"
+        ],
+        "questions": [
+          "What is the core fun of the game?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [],
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [],
+        "questions": []
+      }
+    }
+  ]
+}

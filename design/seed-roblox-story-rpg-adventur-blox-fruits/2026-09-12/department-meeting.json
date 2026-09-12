@@ -1,0 +1,152 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "llama3.2:1b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "gameName: Shardbound Odyssey, status: ACTIVE, generation: PLATFORM_SET_FILL, gameCategory: STORY_RPG_ADVENTURE_RPG,REFERENCE_GAMES"
+      ],
+      "fix": [
+        "gameId: seed-roblox-story-rpg-adventur-blox-fruits"
+      ],
+      "add": [
+        "DISTINCT_IDENTITY: Shardbound Odyssey is an original ROBLOX story rpg adventure rpg experience built around quest and explore"
+      ],
+      "risks": [
+        "MARKET_EVIDENCE_SUMMARY: game-seed-market-evidence.json, game-seed-platform-profiles.json"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json, game-seed-platform-profiles.json"
+      ],
+      "questions": []
+    },
+    "graphics": {
+      "keep": [
+        "gemma3:1b"
+      ],
+      "fix": [
+        "gemma3:1b"
+      ],
+      "add": [
+        "gemma3:1b"
+      ],
+      "risks": [
+        "gemma3:1b"
+      ],
+      "evidence": [
+        "gemma3:1b"
+      ],
+      "questions": [
+        "What is the core fun of the game?"
+      ]
+    },
+    "development": {
+      "keep": [],
+      "fix": [],
+      "add": [],
+      "risks": [],
+      "evidence": [],
+      "questions": []
+    },
+    "qa": {
+      "keep": [
+        "version: 1"
+      ],
+      "fix": [
+        "qa: graphics, development, qa"
+      ],
+      "add": [
+        "qa: graphics, development, qa"
+      ],
+      "risks": [
+        "qa: graphics, development, qa"
+      ],
+      "evidence": [
+        "qa: graphics, development, qa"
+      ],
+      "questions": [
+        "qa: graphics, development, qa"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "Roblox action RPG benchmark for persistent leveling, exploration, combat abilities and boss progression"
+      ],
+      "fix": [
+        "Roblox RPG benchmark for quests, worlds, classes, dungeons and persistent character progression"
+      ],
+      "add": [
+        "Roblox RPG benchmark for repeatable dungeons, loot, builds and boss encounters"
+      ],
+      "risks": [
+        "Shardbound Odyssey is an original ROBLOX story rpg adventure rpg experience built around quest and explore while using its own web"
+      ],
+      "evidence": [
+        "Blox Fruits, World // Zero, Dungeon Quest!"
+      ],
+      "questions": [
+        "What is the core fun of the game?"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "The Gemma 3B model is a foundational component for the game's core functionality. Its strengths align with the game's design goals, particularly in its role as a base for exploration and questing. Maintaining its core functionality is crucial for the initial development phase.",
+      "departments": [
+        "graphics"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "이러한 부서의 대표 의견은 개발 부서 Lead AI가 가지고 있는 책임 범위에서 한 번만 수용/반박/수정한다.",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "The provided 'qa' section aligns with the responsibilities of the QA department, ensuring the game meets quality standards and addresses potential issues. The 'OTHERS' section includes detailed information on the game's development, graphics, and balance, which is relevant to the QA process. The 'planning' section provides market evidence and references, which is useful for planning and development. The 'graphics' section focuses on the game's graphics, which is essential for the visual quality. The 'development' section is empty, indicating no",
+      "departments": [
+        "qa"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "Roblox RPG benchmark for quests, worlds, classes, dungeons and persistent character progression",
+      "departments": [
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 4,
+    "conflict": 0,
+    "hold": 0
+  }
+}

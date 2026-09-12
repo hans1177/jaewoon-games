@@ -1,0 +1,79 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game_seed_platform_profiles.json"
+        ],
+        "fix": [
+          "game_seed_platform_profiles.json"
+        ],
+        "add": [
+          "game_seed_platform_profiles.json"
+        ],
+        "risks": [
+          "game_seed_market_evidence.json"
+        ],
+        "evidence": [
+          "game_seed_platform_profiles.json"
+        ],
+        "questions": [
+          "What is the core fun of the game?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [],
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [],
+        "questions": []
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "version: 1"
+        ],
+        "fix": [
+          "graphics: graphics, development, qa"
+        ],
+        "add": [
+          "graphics: graphics, development, qa"
+        ],
+        "risks": [
+          "graphics: graphics, development, qa"
+        ],
+        "evidence": [
+          "graphics: graphics, development, qa"
+        ],
+        "questions": [
+          "graphics: graphics, development, qa"
+        ]
+      }
+    }
+  ]
+}

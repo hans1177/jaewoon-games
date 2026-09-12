@@ -1,0 +1,67 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "SEED-ROBLOX-STORY_RPG_ADVENTURE_RPG-001",
+  "gameSeedSource": "game-seed-state.json",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "llama3.2:1b",
+  "singleAuthor": true,
+  "content": {
+    "identity": "Shardbound Odyssey",
+    "playerFantasy": "story-rpg-adventure-rpg",
+    "coreFun": "quest,explore,combat,boss",
+    "coreLoop": [
+      "Accept a quest or story objective, travel through a Roblox world area, and discover enemies, NPCs, resources, or events that advance the current adventure goal.",
+      "Fight enemies or bosses using readable skills and equipment, gain experience and loot, and make a progression choice that changes the next combat approach.",
+      "Complete the quest or major encounter, unlock a new area or story beat, and continue toward a larger adventure milestone while preserving persistent character growth."
+    ],
+    "signatureSystems": [
+      {
+        "name": "quest",
+        "purpose": "quest",
+        "playerChoice": "quest"
+      },
+      {
+        "name": "explore",
+        "purpose": "explore",
+        "playerChoice": "explore"
+      },
+      {
+        "name": "combat",
+        "purpose": "combat",
+        "playerChoice": "combat"
+      },
+      {
+        "name": "boss",
+        "purpose": "boss",
+        "playerChoice": "boss"
+      }
+    ],
+    "progressionDirection": "asciicase",
+    "visualDirection": "asciicase",
+    "mobileUx": "asciicase",
+    "marketTargetDirection": "asciicase",
+    "steamExpansionDecision": "notRecommended",
+    "multiplayerExpansionDecision": "notRecommended",
+    "technicalAssumptions": [
+      "Roblox",
+      "Unity",
+      "C#",
+      "JavaScript"
+    ],
+    "validationQuestions": [
+      "Is the game a story-rpg-adventure-rpg?",
+      "Is the game a simulation?",
+      "Is the game a multiplayer game?"
+    ],
+    "openQuestions": [
+      "What is the core fun of the game?",
+      "What is the core loop of the game?",
+      "What are the progression directions of the game?"
+    ]
+  }
+}

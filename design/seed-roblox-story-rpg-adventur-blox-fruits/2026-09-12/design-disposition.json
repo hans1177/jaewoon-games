@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+  "date": "2026-09-12",
+  "state": "REDESIGN",
+  "sameDesignerRevisionAttempted": true,
+  "repeatedFiveDepartmentReview": true,
+  "allFiveLeadModelsReviewed": true,
+  "discardVotes": 1,
+  "commonFatalCriteria": [],
+  "unanimousFatalDiscard": false,
+  "fatalReviews": {
+    "planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "The Gemma 3B model is a foundational component for the game's core functionality. Its strengths align with the game's design goals, particularly in its role as a base for exploration and questing.",
+        "The provided 'qa' section aligns with the responsibilities of the QA department, ensuring the game meets quality standards and addresses potential issues. The 'OTHERS' section includes detailed information on the game's development, graphics, and balance, and ",
+        "The 'planning' section provides market evidence and references, which is useful for planning and development.",
+        "The 'graphics' section focuses on the game's graphics, which is essential for the visual quality."
+      ],
+      "reason": "The Gemma 3B model is a foundational component for the game's core functionality. Its strengths align with the game's design goals, particularly in its role as a base for exploration and questing. Maintaining its core functionality is crucial for the initial development phase."
+    },
+    "graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION",
+        "CORE_FUN_CANNOT_BE_RECOVERED"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json",
+        "game-seed-platform-profiles.json",
+        "sensor-tower-state-of-gaming-2026",
+        "gameanalytics-2025-mobile-gaming-benchmarks"
+      ],
+      "reason": "The game's design incorporates elements that deviate significantly from established Roblox game principles. The core loop, while potentially engaging, leans heavily on a specific, somewhat limited, Roblox experience. The inclusion of a 'graphics' section, while important, doesn't address the core design challenges. The 'qa' section is overly detailed and doesn't directly impact the core design decisions. The 'planning' section is not relevant to the core design. The 'balance' section is not relevant to the core design. The 'core_loop' section is not relevant to the core design. The 'core_fun' section is not relevant to the core design. The 'graphics' section is not relevant to the core game."
+    },
+    "development": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json",
+        "game-seed-platform-profiles.json"
+      ],
+      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. VALID_FATAL_CRITERIA=["
+    },
+    "qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "Blox Fruits",
+        "World // Zero",
+        "Dungeon Quest!",
+        "ESA Power of Play 2025 Global Report"
+      ],
+      "reason": "The provided 'qa' section aligns with the responsibilities of the QA department, ensuring the game meets quality standards and addresses potential issues. The 'OTHERS' section includes detailed information on the game's development, graphics, and balance, which is relevant to the QA process. The 'planning' section provides market evidence and references, which is useful for planning and development. The 'graphics' section focuses on the game's graphics, which is essential for the visual quality. The 'development' section is empty, indicating no significant issues related to the development process."
+    },
+    "balance": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "Blox Fruits",
+        "World // Zero",
+        "Dungeon Quest!"
+      ],
+      "reason": "The game is a story-rpg-adventure-rpg. It is a Roblox game. It is a game that is built around quest and explore while using its own world, visual identity, progression, economy, content, and interaction design. It is a game that is built around quest and explore while using its own world, visual identity, progression, economy, content, and interaction design. It is a game that is built around quest and explore while using its own world, visual identity, progression, economy, content, and interaction design. It is a game that is built around quest and explore while using its own world, visual identity, progression, economy, content, and interaction design. It is a game that is built around a "
+    }
+  },
+  "marketMetricAloneUsedForDiscard": false
+}
