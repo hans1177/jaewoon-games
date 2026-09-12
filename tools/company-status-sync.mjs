@@ -1,10 +1,13 @@
 // 파일명: tools/company-status-sync.mjs
-// 역할: 총괄 감독 상태와 의미 기반 제작 분류/선택 플랫폼 상태를 최신 상태로 동기화한다.
-// 원칙: productionClass가 유일한 정식 제작 분류이며 플랫폼 우선순위는 기본 집중 순서일 뿐 진입 게이트가 아니다.
+// 역할: 총괄 감독 상태와 의미 기반 제작 분류/선택 플랫폼 상태를 최신 중앙정책으로 동기화한다.
 import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { selectContinuousTarget } from './autonomous-24h-work-planner.mjs';
-import {COMPANY_DEPARTMENT_ROLES} from '../assets/company-department-standards.js';
+import {
+  COMPANY_DEPARTMENT_ROLES,
+  COMPANY_BLOCKING_DEPARTMENT_ROLES,
+  COMPANY_ADVISORY_DEPARTMENT_ROLES
+} from '../assets/company-department-standards.js';
 import {
   PRODUCTION_CLASSES,
   homepageCategoryForProductionClass,
@@ -24,16 +27,18 @@ const CENTRAL_POLICY_REQUIRED_TOKENS=[
   'primaryPlatform: ROBLOX',
   'allThreePlatformsMayBeDevelopedConcurrently: true',
   'priorityDoesNotCreatePlatformLock: true',
-  'webPurpose: REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION',
-  'webBeforeTargetPlatformByDefault: true',
-  'targetPlatformMayRunImmediately: false',
-  'webGameplayValidationRequired: true',
-  'musicValidationRequired: true',
+  'requiredForAllActiveGames: true',
+  'canonicalPathPattern: web-games/<gameId>/',
+  'separateWebTestGameForbidden: true',
+  'qaTargetsCanonicalWebGameDirectly: true',
+  'advisoryDepartmentPassRequiredForProgression: false',
   'target: PROJECT_SELECTED_PLATFORM',
 ];
 
 const statusMap={WORKING:'working',DONE:'done',IDLE_NO_TASK:'idle',BLOCKED:'blocked',FAILED:'failed',STALE:'stale'};
 const departmentRoles=[...COMPANY_DEPARTMENT_ROLES];
+const blockingDepartmentRoles=[...COMPANY_BLOCKING_DEPARTMENT_ROLES];
+const advisoryDepartmentRoles=[...COMPANY_ADVISORY_DEPARTMENT_ROLES];
 const roles=[...departmentRoles,'director'];
 const clean=value=>String(value??'').trim();
 const focusScore=project=>{
@@ -57,6 +62,9 @@ const baselineRank=book=>{
   return book?0.5:0;
 };
 const normalizeGenre=value=>clean(value).toLowerCase().replace(/\s+/g,' ');
+const canonicalWebEntry=(slug)=>`web-games/${slug}/index.html`;
+const canonicalWebDir=(slug)=>`web-games/${slug}`;
+const canonicalWebPublicPath=(slug)=>`/web-games/${slug}/`;
 
 export function normalizeSelectedPlatform(value){
   const raw=clean(value).toUpperCase().replaceAll('-','_');
@@ -101,16 +109,26 @@ export function synchronizeCompanyStatusPolicy(company,{filesystem=fs}={}){
   policy.platformRoadmapPhaseEntryGatesForbidden=true;
   policy.canonicalDepartments=[...departmentRoles];
   policy.canonicalDepartmentCount=departmentRoles.length;
-  policy.webGames='existing-maintenance-allowed';
-  policy.existingWebMaintenance=true;
+  policy.blockingDepartments=[...blockingDepartmentRoles];
+  policy.advisoryDepartments=[...advisoryDepartmentRoles];
+  policy.advisoryDepartmentPassRequiredForProgression=false;
+  policy.canonicalWebGameRequiredForAllActiveGames=true;
+  policy.canonicalWebGameRoot='web-games/';
+  policy.canonicalWebGameEntry='web-games/<gameId>/index.html';
+  policy.newCanonicalWebGameProduction=true;
+  policy.generalQaTargetsCanonicalWebGame=true;
+  policy.separateWebTestGameForbidden=true;
+  policy.separateWebTestCandidatePipelineForbidden=true;
   policy.webGamesRemainPlayable=true;
-  policy.newWebGameProduction=false;
-  policy.webPurpose='REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION';
-  policy.webGameplayValidationRequired=true;
-  policy.musicValidationRequired=true;
-  policy.webGameplayValidationTestbedAllowed=true;
-  policy.webBeforeTargetPlatformByDefault=true;
-  policy.targetPlatformMayRunImmediately=false;
+  delete policy.webGames;
+  delete policy.existingWebMaintenance;
+  delete policy.newWebGameProduction;
+  delete policy.webPurpose;
+  delete policy.webGameplayValidationRequired;
+  delete policy.musicValidationRequired;
+  delete policy.webGameplayValidationTestbedAllowed;
+  delete policy.webBeforeTargetPlatformByDefault;
+  delete policy.targetPlatformMayRunImmediately;
   delete policy.futurePrimaryTarget;
   delete policy.webGameDevelopment;
   return policy;
@@ -177,21 +195,30 @@ function synchronizePlatformPolicy(portfolio){
   portfolio.productionClassPolicy.classes ||= {};
   const release=portfolio.productionClassPolicy.classes.RELEASE_CONFIRMED ||= {};
   const development=portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED ||= {};
+  const design=portfolio.productionClassPolicy.classes.DESIGN_ONLY ||= {};
+  for(const row of [design,development,release]){
+    row.canonicalWebGameRequired=true;
+    row.canonicalWebGamePath='web-games/<gameId>/';
+    row.generalQaTargetsCanonicalWebGame=true;
+    row.separateWebTestGameForbidden=true;
+  }
   release.engine='PROJECT_SELECTED_PLATFORM';
   release.featureDevelopmentOnWeb=false;
-  release.webArchiveMaintenance='FAST_RUNTIME_INCIDENT_ONLY';
   development.engine='PROJECT_SELECTED_PLATFORM';
-  development.scope='WEB_FIRST_PLAYABLE_THEN_TARGET_PLATFORM_TECHNICAL_AND_GAMEPLAY_VALIDATION';
-  development.webPurpose='REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION';
-  development.webGameplayValidationRequired=true;
-  development.musicValidationRequired=true;
-  development.webBeforeTargetPlatformByDefault=true;
-  development.targetPlatformMayRunImmediately=false;
+  development.scope='CANONICAL_WEB_GAME_AND_TARGET_PLATFORM_VALIDATION';
+  development.advisoryDepartmentPassRequiredForProgression=false;
   portfolio.developmentFocusPolicy ||= {};
   portfolio.developmentFocusPolicy.selection='AUTO_SELECTED_PLATFORM_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT';
   portfolio.developmentFocusPolicy.platformPriority=[...PLATFORM_PRIORITY];
   portfolio.developmentFocusPolicy.priorityMeaning='DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE';
-  portfolio.developmentFocusPolicy.optionalWebGameplayTestbedAllowedAlongsideReleaseFocus=false;
+  portfolio.developmentFocusPolicy.separateWebTestGameForbidden=true;
+  delete release.webArchiveMaintenance;
+  delete development.webPurpose;
+  delete development.webGameplayValidationRequired;
+  delete development.musicValidationRequired;
+  delete development.webBeforeTargetPlatformByDefault;
+  delete development.targetPlatformMayRunImmediately;
+  delete portfolio.developmentFocusPolicy.optionalWebGameplayTestbedAllowedAlongsideReleaseFocus;
   delete portfolio.developmentFocusPolicy.developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus;
 }
 
@@ -203,20 +230,20 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
   const rows=portfolio.projects.map(project=>{
     const game=bySlug.get(project.slug)||{};
     const sourceReady=Boolean(clean(project.sourcePath)&&filesystem?.existsSync?.(project.sourcePath));
-    const hold=isHold(project)||!sourceReady;
+    const canonicalWebReady=filesystem?.existsSync?.(canonicalWebEntry(project.slug))===true;
+    const hold=isHold(project)||!sourceReady||!canonicalWebReady;
     const book=latestBook(artbooks,project.slug);
     const baseline=baselineRank(book);
     const targetPlatform=selectedPlatformOf(project,game);
     const platformReady=targetPlatformReady(project,game,targetPlatform,filesystem);
-    const playable=game?.homepageWebPlayable===true;
+    const playable=canonicalWebReady&&game?.homepageWebPlayable===true;
     const score=focusScore(project);
     const family=gameplayFamily(game);
     const productionClass=productionClassOf(project,game);
-    const evidenceScore=hold?Number.NEGATIVE_INFINITY:(score*100)+(baseline*10)+(platformReady?6:0)+(playable?3:0)+(game?.hasWebArchive===true?1:0);
-    return {project,game,score,baseline,targetPlatform,targetPlatformReady:platformReady,sourceReady,hold,evidenceScore,gameplayFamily:family,productionClass};
+    const evidenceScore=hold?Number.NEGATIVE_INFINITY:(score*100)+(baseline*10)+(platformReady?6:0)+(playable?3:0)+1;
+    return {project,game,score,baseline,targetPlatform,targetPlatformReady:platformReady,sourceReady,canonicalWebReady,hold,evidenceScore,gameplayFamily:family,productionClass};
   });
 
-  // 플랫폼 우선순위는 준비된 후보의 기본 집중 순서에만 쓰며 제작 등급 멤버십이나 플랫폼 진입을 제한하지 않는다.
   const ranked=rows.filter(row=>!row.hold).sort((a,b)=>b.evidenceScore-a.evidenceScore||Number(b.targetPlatformReady)-Number(a.targetPlatformReady)||platformPriorityRank(a.targetPlatform)-platformPriorityRank(b.targetPlatform)||b.score-a.score||a.project.id.localeCompare(b.project.id));
   const rawRankById=new Map(ranked.map((row,index)=>[row.project.id,index+1]));
 
@@ -226,6 +253,9 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
     project.productionClassSource=project.productionClassSource||'CURRENT_EVIDENCE_STATE';
     delete project.productionTier;
     delete project.productionTierSource;
+    project.canonicalWebGameRequired=true;
+    project.canonicalWebGamePath=canonicalWebDir(project.slug);
+    project.canonicalWebGameReady=row.canonicalWebReady;
     if(targetPlatform)project.selectedPlatform=targetPlatform;
     project.targetPlatformReady=row.targetPlatformReady;
     if(isHold(project))continue;
@@ -236,9 +266,7 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
         if(targetPlatform==='UNITY'){
           project.mode=row.targetPlatformReady?'UNITY_DEVELOP':'UNITY_NEXT';
           project.unityProjectReady=row.targetPlatformReady;
-        }else{
-          project.mode=row.targetPlatformReady?'TARGET_PLATFORM_DEVELOP':'TARGET_PLATFORM_NEXT';
-        }
+        }else project.mode=row.targetPlatformReady?'TARGET_PLATFORM_DEVELOP':'TARGET_PLATFORM_NEXT';
         const source=targetSourcePath(project,game,targetPlatform,filesystem);
         if(source)project.productionSourcePath=source;
       }else{
@@ -247,21 +275,15 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
       }
     }else if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
       project.profileStatus='DEVELOPMENT_CONFIRMED';
-      project.webPurpose='REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION';
-      project.webGameplayValidationRequired=true;
-      project.musicValidationRequired=true;
-      project.webBeforeTargetPlatformByDefault=true;
-      project.targetPlatformMayRunImmediately=false;
-      if(targetPlatform){
-        project.mode='TARGET_PLATFORM_DEVELOPMENT';
-        project.targetEngine=platformTargetEngine(targetPlatform);
-      }else{
-        project.mode='WEB_FIRST_PLAYABLE_VALIDATION';
-        project.targetEngine='platform-selection-required';
-      }
+      project.mode=targetPlatform?'TARGET_PLATFORM_DEVELOPMENT':'TARGET_PLATFORM_SELECTION_REQUIRED';
+      project.targetEngine=targetPlatform?platformTargetEngine(targetPlatform):'platform-selection-required';
+      project.generalQaTargetsCanonicalWebGame=true;
+      project.separateWebTestGameForbidden=true;
+      project.advisoryDepartmentPassRequiredForProgression=false;
+      for(const key of ['webPurpose','webGameplayValidationRequired','musicValidationRequired','webBeforeTargetPlatformByDefault','targetPlatformMayRunImmediately'])delete project[key];
     }else{
       project.profileStatus='DESIGN_ONLY';
-      project.mode='REDESIGN';
+      project.mode=row.canonicalWebReady?'REDESIGN':'CANONICAL_WEB_GAME_REQUIRED';
       project.targetEngine='design-only';
     }
   }
@@ -271,22 +293,26 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
     if(!project)continue;
     const productionClass=productionClassOf(project,game);
     const targetPlatform=selectedPlatformOf(project,game);
+    const webReady=filesystem?.existsSync?.(canonicalWebEntry(project.slug))===true;
     game.productionClass=productionClass;
     game.productionClassSource=game.productionClassSource||project.productionClassSource||'CURRENT_EVIDENCE_STATE';
     delete game.productionTier;
     delete game.productionTierSource;
     game.homepageCategory=homepageCategoryForProductionClass(productionClass)||game.homepageCategory;
+    game.canonicalWebGameRequired=true;
+    game.canonicalWebGameReady=webReady;
+    game.homepageWebPlayable=webReady;
+    game.hasWebArchive=webReady;
+    if(webReady)game.webPath=canonicalWebPublicPath(project.slug);
+    else delete game.webPath;
     if(targetPlatform)game.selectedPlatform=targetPlatform;
     if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
       game.productionTarget=targetPlatform?platformTargetEngine(targetPlatform):'platform-selection-required';
-      game.homepageStage=targetPlatform?`출시확정 · ${platformLabel(targetPlatform)}`:'출시확정 · 플랫폼 선택 필요';
+      game.homepageStage=targetPlatform?`출시확정 · Web 게임 + ${platformLabel(targetPlatform)}`:'출시확정 · Web 게임 · 플랫폼 선택 필요';
     }else if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
       game.productionTarget=targetPlatform?platformTargetEngine(targetPlatform):'platform-selection-required';
-      game.homepageStage=targetPlatform?`개발확정 · Web 선검증 → ${platformLabel(targetPlatform)}`:'개발확정 · Web 게임플레이/음악 선검증 · 플랫폼 선택 필요';
-    }else{
-      game.productionTarget='design-only';
-      if(!isHold(project))game.homepageStage='기획 · 아트북/컨셉/설계 최적화';
-    }
+      game.homepageStage=targetPlatform?`개발확정 · Web 게임 + ${platformLabel(targetPlatform)}`:'개발확정 · Web 게임 · 플랫폼 선택 필요';
+    }else game.productionTarget='design-only';
   }
 
   const releaseIds=rows.filter(row=>row.productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED).map(row=>row.project.id).sort();
@@ -296,18 +322,10 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
   const distinctFamilies=[...new Set(rows.filter(row=>row.productionClass!==PRODUCTION_CLASSES.DESIGN_ONLY).map(row=>row.gameplayFamily).filter(family=>family!=='UNCLASSIFIED'))];
   const diversityPolicy=portfolio?.productionClassPolicy?.portfolioDiversity||{};
   portfolio.productionClassState={
-    membershipMode:'SEMANTIC_EVIDENCE_DYNAMIC',
-    canonicalField:'productionClass',
-    fixedGameIds:false,
-    fixedCounts:false,
-    countsDerivedFromMembership:true,
-    autoPromotionDemotion:true,
+    membershipMode:'SEMANTIC_EVIDENCE_DYNAMIC',canonicalField:'productionClass',fixedGameIds:false,fixedCounts:false,countsDerivedFromMembership:true,autoPromotionDemotion:true,
     diversity:{enabled:diversityPolicy?.enabled!==false,maxFocusScoreGap:Number(diversityPolicy?.maxFocusScoreGap??1),scope:'DIAGNOSTIC_ONLY',source:'CATALOG_GENRE',membershipInfluence:false,adjusted:false,distinctFamilies},
-    counts,
-    releaseConfirmedGameIds:releaseIds,
-    developmentConfirmedGameIds:developmentIds,
-    designOnlyGameIds:designIds,
-    ranking:ranked.map((row,index)=>({rank:index+1,rawEvidenceRank:rawRankById.get(row.project.id),gameId:row.project.id,slug:row.project.slug,productionClass:row.productionClass,gameplayFamily:row.gameplayFamily,evidenceScore:row.evidenceScore,developmentFocus:row.score,artbookBaselineRank:row.baseline,targetPlatform:row.targetPlatform||null,targetPlatformReady:row.targetPlatformReady,sourceReady:row.sourceReady})),
+    counts,releaseConfirmedGameIds:releaseIds,developmentConfirmedGameIds:developmentIds,designOnlyGameIds:designIds,
+    ranking:ranked.map((row,index)=>({rank:index+1,rawEvidenceRank:rawRankById.get(row.project.id),gameId:row.project.id,slug:row.project.slug,productionClass:row.productionClass,gameplayFamily:row.gameplayFamily,evidenceScore:row.evidenceScore,developmentFocus:row.score,artbookBaselineRank:row.baseline,targetPlatform:row.targetPlatform||null,targetPlatformReady:row.targetPlatformReady,canonicalWebReady:row.canonicalWebReady,sourceReady:row.sourceReady})),
   };
   delete portfolio.productionTierState;
   delete portfolio.productionTierPolicy;
@@ -325,19 +343,11 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   const classResult=syncProductionClasses({portfolio,catalog,artbooks,filesystem});
   company.updatedAt=supervision.dateKst||company.updatedAt;
   company.supervision={
-    source:supervisionPath,
-    dateKst:supervision.dateKst||null,
-    runningLabelAloneCountsAsWork:supervision?.checks?.runningLabelAloneCountsAsWork===true,
-    counts:{...(supervision.counts||{})},
-    liveStates:{...(supervision.liveStates||{})},
-    activeDevelopmentRunId:supervision.activeDevelopmentRunId||null,
-    primaryFindings:[...(supervision.primaryFindings||[])],
-    canonicalDepartments:[...departmentRoles],
-    canonicalDepartmentCount:departmentRoles.length,
-    staff:Object.fromEntries(roles.map(role=>{
-      const live=supervision?.staff?.[role];
-      return [role,live?{status:live.status||null,workState:live.workState||null,task:live.task||null,source:live.source||null,reason:live.reason||null,jobEvidence:live.jobEvidence||null}:null];
-    }))
+    source:supervisionPath,dateKst:supervision.dateKst||null,runningLabelAloneCountsAsWork:supervision?.checks?.runningLabelAloneCountsAsWork===true,
+    counts:{...(supervision.counts||{})},liveStates:{...(supervision.liveStates||{})},activeDevelopmentRunId:supervision.activeDevelopmentRunId||null,
+    primaryFindings:[...(supervision.primaryFindings||[])],canonicalDepartments:[...departmentRoles],canonicalDepartmentCount:departmentRoles.length,
+    blockingDepartments:[...blockingDepartmentRoles],advisoryDepartments:[...advisoryDepartmentRoles],
+    staff:Object.fromEntries(roles.map(role=>{const live=supervision?.staff?.[role];return [role,live?{status:live.status||null,workState:live.workState||null,task:live.task||null,source:live.source||null,reason:live.reason||null,jobEvidence:live.jobEvidence||null}:null];}))
   };
 
   company.operations ||= {};
@@ -368,11 +378,7 @@ export function runCompanyStatusSync({filesystem=fs}={}){
     return {slot:index+1,gameId:project.id,slug:project.slug,name:project.name||publicGame.name||project.slug,score:focusScore(project),slotRole:'auto-ranked',lane:'selected-platform',selectedPlatform:platform||null,targetPlatformReady:ready,homepageCategory:publicGame.homepageCategory||null,webPath:publicGame.webPath||null};
   }).filter(Boolean);
   const targetSlots=Math.max(0,Number(focusPolicy?.targetFocusedGames??focusPolicy?.maxFocusedGames??focusedGames.length)||0);
-  company.operations.autonomousFocus={
-    enabled:Boolean(focusPolicy),targetSlots,filledSlots:focusedGames.length,preferredGameIds:[],focusedGameIds,games:focusedGames,nextFocusGameIds,nextDevelopmentGameIds,
-    selection:focusPolicy?.selection||null,platformPriority:[...PLATFORM_PRIORITY],priorityMeaning:'DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE',activeDevelopmentRunId:supervision.activeDevelopmentRunId||null,syncIntervalMs:30000,updatedAtKst:supervision.dateKst||company.updatedAt||null,
-    source:[portfolioPath,artbooksPath,catalogPath,'tools/autonomous-24h-work-planner.mjs'],
-  };
+  company.operations.autonomousFocus={enabled:Boolean(focusPolicy),targetSlots,filledSlots:focusedGames.length,preferredGameIds:[],focusedGameIds,games:focusedGames,nextFocusGameIds,nextDevelopmentGameIds,selection:focusPolicy?.selection||null,platformPriority:[...PLATFORM_PRIORITY],priorityMeaning:'DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE',activeDevelopmentRunId:supervision.activeDevelopmentRunId||null,syncIntervalMs:30000,updatedAtKst:supervision.dateKst||company.updatedAt||null,source:[portfolioPath,artbooksPath,catalogPath,'tools/autonomous-24h-work-planner.mjs']};
   company.operations.productionClasses={...classResult.state,source:[portfolioPath,catalogPath,artbooksPath,'tools/company-status-sync.mjs']};
   delete company.operations.productionTiers;
 
@@ -396,6 +402,8 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   console.log(`COMPANY_POLICY_SOURCE=${company.policy?.sourceOfTruth||'unknown'}`);
   console.log(`COMPANY_PRIMARY_PLATFORM=${company.policy?.primaryPlatform||'unknown'}`);
   console.log(`CANONICAL_DEPARTMENT_COUNT=${departmentRoles.length}`);
+  console.log(`BLOCKING_DEPARTMENT_COUNT=${blockingDepartmentRoles.length}`);
+  console.log(`ADVISORY_DEPARTMENT_COUNT=${advisoryDepartmentRoles.length}`);
   console.log(`PRODUCTION_CLASS_RELEASE_CONFIRMED=${classResult.state.releaseConfirmedGameIds.join(',')||'none'}`);
   console.log(`PRODUCTION_CLASS_DEVELOPMENT_CONFIRMED=${classResult.state.developmentConfirmedGameIds.join(',')||'none'}`);
   console.log(`PRODUCTION_CLASS_DESIGN_ONLY=${classResult.state.designOnlyGameIds.join(',')||'none'}`);
