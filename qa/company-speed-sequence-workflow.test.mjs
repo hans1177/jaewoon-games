@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const unity=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');
+const router=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
 const stages=[
   'Change detection and exact-source reuse',
   'Cheap precheck and checkpoint resume plan',
@@ -34,4 +35,16 @@ test('same exact build run feeds runtime QA and regression workflows',()=>{
   assert.match(unity,/unity-android-runtime-smoke\.yml/);
   assert.match(unity,/unity-android-independent-qa\.yml/);
   assert.match(unity,/unity-android-regression\.yml/);
+});
+
+test('selected-platform router repairs legacy Web target paths to the platform source root',()=>{
+  assert.match(router,/canonicalTarget=adapter\?`\$\{adapter\.sourceRoot\}\$\{item\.gameId\}`:''/);
+  assert.match(router,/oldTarget\.startsWith\(adapter\.sourceRoot\)/);
+  assert.match(router,/sourcePath:targetSourcePath/);
+  assert.doesNotMatch(router,/fetch-depth:\s*0/);
+});
+
+test('Unity source reuse avoids the nested heredoc path that failed in the real canary run',()=>{
+  assert.match(unity,/bind_catalog\(\)/);
+  assert.doesNotMatch(unity,/node - "\$PROJECT" <<'NODE'[\s\S]{0,900}CHANGE_DETECTION=UNCHANGED_SOURCE_REUSED/);
 });
