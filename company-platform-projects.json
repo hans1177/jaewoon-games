@@ -1,13 +1,44 @@
 {
-  "version": 2,
+  "version": 3,
   "policySource": "COMPANY_FLOW.md",
   "ownerApprovedAt": "2026-09-12",
   "primaryPlatform": "ROBLOX",
+  "platformPriority": ["ROBLOX", "UNITY_ANDROID", "FORTNITE_UEFN"],
+  "rolloutStrategy": {
+    "phase1": {
+      "platforms": ["ROBLOX"],
+      "objective": "FAST_RELEASE_AND_STABILIZATION",
+      "exitRequires": [
+        "REPEATED_RELEASE_SUCCESS",
+        "RUNTIME_STABILITY",
+        "QA_REGRESSION_PASS",
+        "VERIFIED_EXPERIENCE_ACCUMULATION"
+      ]
+    },
+    "phase2": {
+      "platforms": ["ROBLOX", "UNITY_ANDROID"],
+      "objective": "DUAL_PLATFORM_RELEASE_EXPERIENCE_ACCUMULATION",
+      "unityRule": "PRESERVE_EXISTING_UNITY_AND_IMPLEMENT_EXTENDED_VERSION",
+      "exitRequires": [
+        "ROBLOX_RELEASE_PATH_STABLE",
+        "UNITY_EXTENDED_RELEASE_PATH_VALIDATED",
+        "DUAL_PLATFORM_RELEASE_EXPERIENCE_VERIFIED"
+      ]
+    },
+    "phase3": {
+      "platforms": ["FORTNITE_UEFN"],
+      "objective": "FORTNITE_RELEASE_AFTER_ROBLOX_AND_UNITY_EXPERIENCE",
+      "entryRequires": [
+        "PHASE1_STABLE",
+        "PHASE2_VERIFIED_EXPERIENCE_ACCUMULATED"
+      ]
+    }
+  },
   "switchMode": "PRIMARY_PLATFORM_POINTER",
   "rebuildCompanyStructureOnSwitch": false,
   "projects": {
     "ROBLOX": {
-      "status": "ACTIVE_PRIMARY",
+      "status": "ACTIVE_PRIMARY_PHASE1",
       "sourceRoot": "roblox-games/<slug>",
       "language": "Luau",
       "runtime": "ROBLOX_EXPERIENCE",
@@ -27,7 +58,7 @@
       ]
     },
     "UNITY_ANDROID": {
-      "status": "ACTIVE_FIRST_CLASS_EXTENDED",
+      "status": "ACTIVE_FIRST_CLASS_EXTENDED_PHASE2",
       "sourceRoot": "EXISTING_UNITY_PROJECT_ROOTS",
       "language": "C#",
       "runtime": "ANDROID",
@@ -38,10 +69,11 @@
       "extensionRequired": true,
       "extensionMode": "ADD_CAPABILITY_AROUND_EXISTING_RESPONSIBLE_SYSTEMS",
       "replacementOrRebuildForbidden": true,
-      "regressionRequiredAfterSharedArchitectureChange": true
+      "regressionRequiredAfterSharedArchitectureChange": true,
+      "releaseModeAfterPhase1": "DUAL_RELEASE_WITH_ROBLOX"
     },
     "FORTNITE_UEFN": {
-      "status": "ACTIVE_AVAILABLE",
+      "status": "ACTIVE_AVAILABLE_PHASE3",
       "sourceRoot": "fortnite-uefn/<slug>",
       "language": "Verse",
       "runtime": "FORTNITE_UEFN",
@@ -67,7 +99,8 @@
     "newLearningStageForbidden": true,
     "verifiedEvidenceOnly": true,
     "existingVerifiedInputsOnly": true,
-    "failureAttemptsAreWarningEvidenceOnly": true
+    "failureAttemptsAreWarningEvidenceOnly": true,
+    "phaseExperienceMustAccumulateBeforeNextPlatformExpansion": true
   },
   "locks": {
     "vibeLearningStructureImmutable": true,
