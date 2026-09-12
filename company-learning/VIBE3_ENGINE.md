@@ -25,15 +25,16 @@ The existing `Vibe2 Distillation Sample Ingest` hourly schedule is the sole 24-h
 
 Files:
 - `company-learning/vibe3-memory-index.json` — verified positive memory plus separated failure warnings;
-- `company-learning/vibe3-task-playbooks.json` — coding/bugfix/qa/unity/graphics/planning/general playbooks;
+- `company-learning/vibe3-task-playbooks.json` — coding/bugfix/qa/unity/roblox/graphics/planning/general playbooks;
 - `company-learning/vibe3-benchmark-queue.json` — deterministic practice cases;
-- `tools/vibe3-pump-index.mjs` — canonical refresh tool invoked by the existing hourly ingest workflow.
+- `tools/vibe3-pump-index.mjs` — canonical refresh tool invoked by the existing hourly ingest workflow;
+- `tools/vibe3-roblox-platform.mjs` — Roblox Phase 1 source/runtime/publishing adapter inside V3 Pump.
 
 A benchmark case is **not** a training sample. It can enter the canonical learning chain only after execution through the existing Vibe development path and independently verified runtime/QA/regression/exact-revision evidence.
 
 ## Verified RAG and failure memory
 
-Positive retrieval memory accepts only active, revision-bound evidence that passes the task-specific canonical QA rules. Unity requires independent QA PASS + Android runtime PASS + browser N/A. External commercial black-box QA requires the dedicated `BLACK_BOX_EVIDENCE_PASS` marker, browser N/A and runtime PASS. Ordinary non-Unity samples keep browser QA PASS.
+Positive retrieval memory accepts only active, revision-bound evidence that passes the task-specific canonical QA rules. Unity requires independent QA PASS + Android runtime PASS + browser N/A. Roblox requires independent QA PASS + Roblox runtime PASS + browser N/A. External commercial black-box QA requires the dedicated `BLACK_BOX_EVIDENCE_PASS` marker, browser N/A and runtime PASS. Ordinary non-Unity/non-Roblox samples keep browser QA PASS.
 
 Failures are stored separately as warning memory. They can influence `avoid` guidance and repair selection but cannot be converted into positive training targets merely by being present in memory.
 
@@ -56,6 +57,8 @@ Platform release/experience sequencing is locked to:
 `ROBLOX → UNITY → FORTNITE_UEFN`
 
 - Phase 1: Roblox is the current primary platform for rapid real releases, fix/re-release cycles and stabilization experience.
+- Phase 1 implementation is connected now: `roblox` task playbook, `roblox-games/` source scope, canonical trajectory/sample gates, guarded Open Cloud publish adapter, regression tests and V3 contract CI.
+- Roblox live publish is not considered verified release experience by itself. It remains explicitly opt-in and requires exact-revision-bound runtime PASS, independent QA PASS, regression PASS and protected-state preservation before publish eligibility.
 - Phase 2: after verified Roblox release/stabilization experience, keep Roblox active and add Unity so Roblox + Unity release experience accumulates concurrently where product scope makes sense.
 - Existing Unity/Android source, build, runtime, QA and release knowledge is preserved and extended. Roblox-first does not delete, replace or downgrade the Unity path.
 - Phase 3: add Fortnite/UEFN only after verified Roblox-first and Roblox+Unity experience has accumulated; preserve both earlier platform tracks.
@@ -64,6 +67,26 @@ Platform release/experience sequencing is locked to:
 
 Human-readable roadmap: `company-learning/PLATFORM_RELEASE_ROADMAP.md`.
 Machine-readable roadmap: `company-learning/platform-release-roadmap.json`.
+
+## Roblox Phase 1 implementation
+
+Roblox support is an adapter inside the existing V3 Pump chain, not a new pipeline.
+
+- source root: `roblox-games/`;
+- task type: `roblox`;
+- playbook refresh: existing `tools/vibe3-pump-index.mjs`;
+- verified trajectory promotion: existing `tools/vibe3-trajectory-ingest.mjs`;
+- canonical sample gate: existing `tools/vibe2-training-sample.mjs`;
+- guarded publish adapter: `tools/vibe3-roblox-platform.mjs`;
+- contract test: `qa/vibe3-roblox-platform.test.mjs`;
+- CI: existing `.github/workflows/vibe3-engine-contract.yml`;
+- publish default: dry-run;
+- live publish requires explicit `--execute` plus `ROBLOX_OPEN_CLOUD_API_KEY`, `ROBLOX_UNIVERSE_ID`, `ROBLOX_PLACE_ID`;
+- credentials remain environment-only, are not serialized into plans/results, and are redacted from publish-error output;
+- place publishing files must be `.rbxl` or `.rbxlx` under `roblox-games/`;
+- cookie authentication is disabled by contract.
+
+No Roblox-specific distillation cron, shadow dataset, duplicate trigger or trainer exists or is authorized.
 
 ## Owner-directed platform extensions
 
