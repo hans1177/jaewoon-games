@@ -56,6 +56,28 @@
     "promotionGate": "FIXED_HOLDOUT_AB_THEN_CANARY",
     "canaryFailureAction": "ROLLBACK_TO_BASELINE"
   },
+  "portableWebLearning": {
+    "enabled": true,
+    "sourceRequirement": "VERIFIED_CANONICAL_WEB_GAME_QA_ONLY",
+    "portablePatterns": [
+      "TOUCH_INPUT",
+      "MOBILE_UI",
+      "SAVE_LOAD_AND_RESUME",
+      "PERFORMANCE",
+      "RESPONSIVE_LAYOUT",
+      "REGRESSION_AVOIDANCE",
+      "CORE_LOOP_IMPLEMENTATION"
+    ],
+    "feedsExistingCanonicalTrainingSamples": true,
+    "feedsSharedV3Memory": true,
+    "robloxMayRetrieveAsContext": true,
+    "webEvidenceCountsAsRobloxVerifiedEvidence": false,
+    "webEvidenceMaySatisfyRobloxDatasetGate": false,
+    "webEvidenceMaySatisfyRobloxRuntimeOrPublishingGate": false,
+    "robloxSpecificLearningStillRequiresRealVerifiedRobloxEvidence": true,
+    "separateCronOrPipelineAllowed": false,
+    "thresholdLoweringAllowed": false
+  },
   "externalCommercialBlackBoxPolicy": {
     "allowed": true,
     "browserQa": "NOT_APPLICABLE",

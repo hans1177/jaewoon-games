@@ -44,16 +44,40 @@ assert.deepEqual(qaRequirementsForTask('fortnite_uefn'),{independentQa:'PASS',br
 assert.equal(qaEvidencePasses({taskType:'fortnite_uefn',independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS'}),true);
 assert.equal(qaEvidencePasses({taskType:'fortnite_uefn',independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'FAIL'}),false);
 
+const webTrajectory=structuredClone(trajectory);
+webTrajectory.trajectoryId='traj_web_portable_001';
+webTrajectory.request='웹게임의 touch 모바일 UI save load resume responsive regression core loop을 브라우저에서 검증한다';
+webTrajectory.metadata.taskType='qa';
+webTrajectory.metadata.project='web-portable-pilot';
+webTrajectory.metadata.gameId='web-portable-pilot';
+webTrajectory.metadata.sourceRevision='1234567abcdef890';
+webTrajectory.metadata.sourcePaths=['web-games/web-portable-pilot/index.html','web-games/web-portable-pilot/game.js'];
+webTrajectory.metadata.winnerOutput='diff --git a/web-games/web-portable-pilot/game.js b/web-games/web-portable-pilot/game.js\n+verified touch mobile save responsive regression core loop';
+webTrajectory.finalEvidence.browserQa='PASS';
+webTrajectory.finalEvidence.runtimePass=true;
+delete webTrajectory.finalEvidence.runtimePassed;
+const webValidation=validateVibe3Trajectory(webTrajectory);
+assert.equal(webValidation.pass,true);
+assert(webValidation.tags.includes('webgame'));
+assert(webValidation.tags.includes('touch-input'));
+assert(webValidation.tags.includes('mobile-ui'));
+assert(webValidation.tags.includes('save-load'));
+assert(webValidation.tags.includes('responsive'));
+assert(webValidation.tags.includes('regression'));
+assert(webValidation.tags.includes('core-loop'));
+
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe3-trajectory-'));
 const trajectoryDir=path.join(root,'trajectories');
 const outDir=path.join(root,'samples');
 fs.mkdirSync(trajectoryDir,{recursive:true});
 fs.writeFileSync(path.join(trajectoryDir,'verified.json'),JSON.stringify(trajectory,null,2));
 fs.writeFileSync(path.join(trajectoryDir,'roblox.json'),JSON.stringify(robloxTrajectory,null,2));
+fs.writeFileSync(path.join(trajectoryDir,'web.json'),JSON.stringify(webTrajectory,null,2));
 const result=ingestVibe3Trajectories({trajectoryDir,outDir});
-assert.equal(result.written.length,2);
+assert.equal(result.written.length,3);
 const ordinaryResult=result.written.find(item=>item.trajectoryId==='traj_verified_001');
 const robloxResult=result.written.find(item=>item.trajectoryId==='traj_roblox_verified_001');
+const webResult=result.written.find(item=>item.trajectoryId==='traj_web_portable_001');
 const sample=JSON.parse(fs.readFileSync(ordinaryResult.outFile,'utf8'));
 assert.equal(sample.sourceKind,'vibe3-trajectory');
 assert.equal(sample.taskType,'bugfix');
@@ -65,6 +89,14 @@ assert.equal(robloxSample.browserQa,'NOT_APPLICABLE');
 assert.equal(robloxSample.verification.requirements.robloxRuntimeRequired,true);
 assert.equal(robloxSample.verification.requirements.uefnRuntimeRequired,false);
 assert.equal(robloxSample.difficulty,'roblox-release');
+const webSample=JSON.parse(fs.readFileSync(webResult.outFile,'utf8'));
+assert.equal(webSample.taskType,'qa');
+assert.equal(webSample.browserQa,'PASS');
+assert.deepEqual(webSample.sourcePaths,webTrajectory.metadata.sourcePaths);
+for(const tag of ['webgame','touch-input','mobile-ui','save-load','responsive','regression','core-loop'])assert(webSample.tags.includes(tag),`missing portable tag ${tag}`);
+assert.equal(webSample.provenance.portableContextMayCrossPlatforms,true);
+assert.equal(webSample.provenance.platformPassEvidenceTransferAllowed,false);
+assert.equal(webSample.verification.requirements.robloxRuntimeRequired,false);
 
 const baseline=selectVibe3BaseModel({taskType:'coding',method:'qlora',cudaAvailable:true,cudaVramGiB:64,diskFreeGiB:100,enableCoderUpgrade:false,compatibilityProbePass:true,modelCachedOrDownloadApproved:true});
 assert.equal(baseline.upgraded,false);
@@ -75,4 +107,4 @@ const blocked=selectVibe3BaseModel({taskType:'coding',method:'qlora',cudaAvailab
 assert.equal(blocked.upgraded,false);
 assert(blocked.reasons.includes('insufficient-vram'));
 
-console.log('PASS Vibe3 trajectory ingest including Roblox, UEFN QA requirements, and capability-gated coder model selection');
+console.log('PASS Vibe3 trajectory ingest including Web portable context boundary and native Roblox isolation');

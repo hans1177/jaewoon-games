@@ -50,7 +50,29 @@
     "builder": "tools/vibe3-pump-index.mjs",
     "positiveMemoryRequiresVerifiedEvidence": true,
     "failureMemoryIsWarningOnly": true,
+    "portableContextMayCrossPlatforms": true,
+    "platformPassEvidenceMayNotTransfer": true,
     "supportedPlaybooks": ["coding", "bugfix", "qa", "unity", "roblox", "graphics", "planning", "general"]
+  },
+  "portableWebLearning": {
+    "enabled": true,
+    "verifiedCanonicalWebGameQaMayFeedSharedV3Memory": true,
+    "portablePatterns": [
+      "TOUCH_INPUT",
+      "MOBILE_UI",
+      "SAVE_LOAD_AND_RESUME",
+      "PERFORMANCE",
+      "RESPONSIVE_LAYOUT",
+      "REGRESSION_AVOIDANCE",
+      "CORE_LOOP_IMPLEMENTATION"
+    ],
+    "robloxMayRetrieveAsContext": true,
+    "webPassCountsAsRobloxPass": false,
+    "webEvidenceMaySatisfyRobloxDatasetGate": false,
+    "webEvidenceMaySatisfyRobloxRuntimeOrPublishingGate": false,
+    "robloxLaneRequiresRealVerifiedRobloxEvidence": true,
+    "useExistingCanonicalDistillationOnly": true,
+    "separateCronOrPipelineAllowed": false
   },
   "trajectoryLearning": {
     "root": "company-learning/vibe3-trajectories",
