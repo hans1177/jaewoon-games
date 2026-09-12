@@ -8,6 +8,12 @@ from pathlib import Path
 
 EXTERNAL_BLACK_BOX_QA_MARKER = "BLACK_BOX_EVIDENCE_PASS"
 EXTERNAL_BLACK_BOX_SOURCE_KIND = "external-black-box"
+PLATFORM_TASK_TYPES = {"unity", "roblox", "fortnite_uefn"}
+PLATFORM_RUNTIME_REQUIREMENTS = {
+    "unity": ("androidRuntimeRequired", "Unity Android/runtime"),
+    "roblox": ("robloxRuntimeRequired", "Roblox runtime"),
+    "fortnite_uefn": ("uefnRuntimeRequired", "Fortnite UEFN runtime"),
+}
 
 
 def parse_args():
@@ -20,7 +26,7 @@ def parse_args():
     parser.add_argument("--seed", type=int, default=20260910)
     parser.add_argument("--adapter-version", required=True)
     parser.add_argument("--dataset-manifest", required=True)
-    parser.add_argument("--task-type", choices=("coding", "bugfix", "unity", "qa", "planning", "general"), default="general")
+    parser.add_argument("--task-type", choices=("coding", "bugfix", "unity", "roblox", "fortnite_uefn", "qa", "planning", "general"), default="general")
     parser.add_argument("--parent-adapter", default="")
     parser.add_argument("--epochs", type=float, default=1.0)
     parser.add_argument("--learning-rate", type=float, default=2e-4)
@@ -111,24 +117,25 @@ def validate_manifest(args, manifest, train_rows, eval_rows):
         external_black_box = is_external_black_box_qa(row, qa)
         if qa.get("independentQa") != "PASS" and not external_black_box:
             raise RuntimeError("independent QA PASS or verified external black-box QA evidence is required")
-        if row_task_type == "unity":
+        if row_task_type in PLATFORM_TASK_TYPES:
+            requirement_key, runtime_label = PLATFORM_RUNTIME_REQUIREMENTS[row_task_type]
             if qa.get("runtime") != "PASS":
-                raise RuntimeError("Unity Android/runtime PASS is required")
+                raise RuntimeError(f"{runtime_label} PASS is required")
             if qa.get("browserQa") != "NOT_APPLICABLE":
-                raise RuntimeError("Unity browser QA must be NOT_APPLICABLE")
+                raise RuntimeError(f"{row_task_type} browser QA must be NOT_APPLICABLE")
             requirements = qa.get("requirements") or {}
-            if requirements.get("androidRuntimeRequired") is not True:
-                raise RuntimeError("Unity Android runtime requirement is missing")
+            if requirements.get(requirement_key) is not True:
+                raise RuntimeError(f"{runtime_label} binding is missing")
             if row.get("synthetic") is not False:
-                raise RuntimeError("Unity production training forbids synthetic rows")
+                raise RuntimeError(f"{row_task_type} production training forbids synthetic rows")
             provenance = row.get("provenance") or {}
             if str(provenance.get("sourceKind") or "").lower() != "vibe2":
-                raise RuntimeError("Unity production training requires verified Vibe2 source evidence")
+                raise RuntimeError(f"{row_task_type} production training requires verified Vibe2 source evidence")
         elif external_black_box:
             if row_task_type != "qa":
                 raise RuntimeError("external black-box evidence is only accepted for QA task samples")
         elif qa.get("browserQa") != "PASS":
-            raise RuntimeError("browser QA PASS is required for non-Unity samples")
+            raise RuntimeError("browser QA PASS is required for non-platform samples")
         if row.get("lifecycle") != "active":
             raise RuntimeError("inactive sample reached trainer")
         if float(row.get("qualityScore", 0)) < 0.75:
@@ -270,7 +277,7 @@ def main():
         "datasetDiversity": manifest.get("diversity"),
         "datasetBatching": manifest.get("batching"),
         "contaminationRate": (manifest.get("contamination") or {}).get("contaminationRate"),
-        "verifiedRealOnly": args.task_type == "unity",
+        "verifiedRealOnly": args.task_type in PLATFORM_TASK_TYPES,
         "verifiedExternalBlackBoxQaAllowed": args.task_type == "qa",
         "finalEvalOnly": args.final_eval_only,
         "gradientCheckpointing": not cpu_practice_no_recompute,
