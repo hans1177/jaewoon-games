@@ -110,6 +110,26 @@ production:
   fixedPortfolioSize: false
   preserveExistingWebArchives: true
   preserveSaveMeaning: true
+  webCompanion:
+    requiredForEveryGame: true
+    appliesToAllTargetPlatforms: true
+    purpose:
+      - PLAYABLE_WEB_COMPANION
+      - FAST_BROWSER_QA
+      - PORTABLE_GAMEPLAY_VALIDATION
+      - AUXILIARY_LEARNING_EVIDENCE
+    featureParity: APPROVED_GAMEPLAY_SCOPE_EQUIVALENT_OR_DOCUMENTED_PLATFORM_ADAPTATION
+    silentFeatureOmissionForbidden: true
+    webBuildIsNotNativePlatformSubstitute: true
+    nativePlatformReleaseStillRequiresNativeEvidence: true
+  approvedScopeCompletion:
+    mode: FULL_APPROVED_DESIGN_SCOPE_REQUIRED
+    approvedDesignBaselineMustBeFullyImplemented: true
+    silentScopeReductionForbidden: true
+    prototypeMayBeIntermediateOnly: true
+    prototypeCannotSatisfyCompletionOrReleaseCandidateGate: true
+    infeasibleScopeRequiresDesignRevisionBeforeBaselineApprovalOrExplicitOwnerDecision: true
+    missingApprovedContentBlocksCompletion: true
 
 portfolioGovernance:
   mode: FIVE_DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO
@@ -278,6 +298,9 @@ GAME_SEED:
     - INITIAL_TARGET_PLATFORM
     - INITIAL_PLAY_MODE
     - CROSS_PLATFORM_EXPANSION_VALUE
+  derivedProductionRequirements:
+    - MANDATORY_WEB_GAME_COMPANION
+    - FULL_APPROVED_SCOPE_IMPLEMENTATION
   initialTargetPlatform: ROBLOX
   allowedTargetPlatforms:
     - ROBLOX
@@ -389,6 +412,16 @@ platformStrategy:
     portableVerifiedPatternsUseExistingV3MemoryAndCanonicalDistillation: true
     platformSpecificImplementationRemainsPlatformScoped: true
     successEvidenceDoesNotTransferAcrossPlatforms: true
+  webCompanionStrategy:
+    requiredAcross:
+      - ROBLOX
+      - UNITY
+      - FORTNITE_UEFN
+    nativeProjectRemainsCanonicalForPlatformRelease: true
+    webCompanionMaySharePortableCoreLogicWherePractical: true
+    platformSpecificRuntimeAndUxRemainPlatformScoped: true
+    documentedPlatformAdaptationAllowed: true
+    silentApprovedGameplayFeatureOmissionForbidden: true
   ROBLOX:
     role: PRIMARY_DEFAULT_PLATFORM
     sourceRoot: roblox-games/
@@ -803,6 +836,8 @@ flows:
       - MARKET_TARGET_DIRECTION_RECORDED
       - TARGET_PLATFORM_UX_DIRECTION_DEFINED
       - PLATFORM_SELECTION_RECORDED
+      - MANDATORY_WEB_COMPANION_REQUIREMENT_RECORDED
+      - APPROVED_SCOPE_INVENTORY_RECORDED
       - FIVE_DISTINCT_LEAD_MODELS
       - FIVE_DEPARTMENT_SCORES_RECORDED
       - PER_DEPARTMENT_MULTIMODEL_REVIEW_PASS
@@ -811,7 +846,7 @@ flows:
   DEVELOPMENT_CONFIRMED:
     executionMode: GATED_DIRECT
     resumeFromLatestEvidence: true
-    webPurpose: OPTIONAL_GAMEPLAY_VALIDATION_TESTBED
+    webPurpose: MANDATORY_GAMEPLAY_COMPANION_AND_VALIDATION
     targetPlatformPurpose: TECHNICAL_AND_GAMEPLAY_VALIDATION
     webBeforeTargetPlatformByDefault: false
     targetPlatformMayRunImmediately: true
@@ -819,6 +854,8 @@ flows:
     webSmokeCountsAsGameplayValidation: false
     requiredFlow:
       - LOAD_DESIGN_BASELINE
+      - WEB_COMPANION_SOURCE_BIND
+      - WEB_COMPANION_GAMEPLAY_VALIDATION
       - TARGET_PLATFORM_SOURCE_BIND
       - TARGET_PLATFORM_GAMEPLAY_VALIDATION
       - TARGET_PLATFORM_TECHNICAL_VALIDATION
@@ -840,12 +877,15 @@ flows:
       - IMPLEMENTATION_COMPLEXITY
       - ASSET_AND_QA_COST
     platformSpecificValidationRequired: true
+    webCompanionValidationRequired: true
+    approvedScopeCompletionRequired: true
     decisionStates:
       - KEEP
       - CHANGE
       - DROP
       - HOLD
     waitingStates:
+      - WAITING_WEB_COMPANION_VALIDATION
       - WAITING_TARGET_PLATFORM_VALIDATION
       - WAITING_TARGET_PLATFORM_REVALIDATION
       - WAITING_REVALIDATION
@@ -854,6 +894,8 @@ flows:
       - DEVELOPMENT_BLOCKED
     baselineReadyRequires:
       - DESIGN_BASELINE_EXISTS
+      - WEB_COMPANION_RUNTIME_PASS
+      - APPROVED_SCOPE_FULLY_IMPLEMENTED
       - REAL_TARGET_PLATFORM_GAMEPLAY_PASS
       - REAL_TARGET_PLATFORM_TECHNICAL_PASS
       - REQUIRED_FIXES_APPLIED
@@ -867,6 +909,8 @@ flows:
     resumeFromLatestEvidence: true
     developmentBaselineRequired: true
     targetPlatformProjectRequired: true
+    webCompanionRequired: true
+    approvedScopeCompletionRequired: true
     coreDesignLock: true
     vibe2PrimaryDeveloper: true
     departmentDefaultRole: ERROR_AND_RELEASE_RISK_REVIEW
@@ -881,6 +925,9 @@ flows:
       - LOAD_DEVELOPMENT_BASELINE
       - CORE_DESIGN_LOCK
       - VIBE2_PRIMARY_DEVELOPMENT
+      - BIND_CURRENT_WEB_COMPANION_SOURCE_TREE
+      - WEB_COMPANION_BUILD_OR_PACKAGE
+      - WEB_COMPANION_RUNTIME_VALIDATION
       - BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE
       - TARGET_PLATFORM_BUILD_OR_PACKAGE
       - FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT
@@ -896,6 +943,7 @@ flows:
     independentQaSeparatedFromVibe2SelfCheck: true
     waitingStates:
       - BUILDING
+      - WAITING_WEB_COMPANION_VALIDATION
       - WAITING_BUILD
       - WAITING_RUNTIME_VALIDATION
     releaseStates:
@@ -904,6 +952,8 @@ flows:
       - RELEASE_READY
     releaseReadyRequires:
       - DEVELOPMENT_BASELINE_CONFIRMED
+      - CURRENT_WEB_COMPANION_RUNTIME_PASS
+      - APPROVED_SCOPE_FULLY_IMPLEMENTED
       - CURRENT_TARGET_PLATFORM_BUILD_OR_PACKAGE_SUCCESS
       - BUILD_PREFLIGHT_NO_RELEASE_BLOCKER
       - CURRENT_TARGET_PLATFORM_RUNTIME_PASS
@@ -1005,6 +1055,20 @@ learning:
     - FIXED_HOLDOUT_AB
     - CANARY
     - PROMOTE_OR_ROLLBACK
+  webGameEvidence:
+    role: AUXILIARY_PORTABLE_LEARNING_EVIDENCE
+    maySupport:
+      - CORE_GAMEPLAY_IMPLEMENTATION
+      - GAME_LOOP
+      - UI_FLOW
+      - STATE_MANAGEMENT
+      - BUGFIX
+      - BROWSER_QA_PATTERNS
+    cannotClaimNativePlatformSuccess: true
+    cannotSatisfyNativePlatformRuntimeGate: true
+    cannotEnterRobloxUnityUefnVerifiedLaneWithoutMatchingNativeEvidence: true
+    useExistingCanonicalDistillationOnly: true
+    newTrainerOrCronForbidden: true
   platformTrainingArchitecture:
     mode: SHARED_CANONICAL_TRAINER_WITH_PLATFORM_ISOLATED_LANES
     canonicalTrainerCount: 1
