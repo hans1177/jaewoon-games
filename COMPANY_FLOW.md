@@ -423,6 +423,19 @@ ArtbookEditor:
   departmentsDoNotAuthorPages: true
   preserveRevisionHistoryByDefault: true
 
+artbookDocumentConsolidation:
+  copiedSourceDocument: ARTBOOK_SUBMISSION_CONTRACT.md
+  copiedSourceWasLatestArtbookDocumentAtConsolidation: true
+  copiedAt: 2026-09-12
+  originalContent: |-
+    # 아트북 제출 호환 문서
+
+    재운컴퍼니의 설계·아트북·부서회의 정책 원본은 **`COMPANY_FLOW.md` 하나뿐**이다.
+
+    이 파일은 과거 도구와 링크의 호환 경로다. 부서가 아트북 파트를 공동 집필한다는 예전 계약이나 별도 제출 정책을 여기서 유지하지 않는다.
+
+    현재 출력 형식과 검증 스키마는 실행 코드가 담당하며, 그 의미와 역할 분리는 항상 `COMPANY_FLOW.md`를 따른다.
+
 Vibe2:
   startsAt: DEVELOPMENT_CONFIRMED
   DEVELOPMENT_CONFIRMED: VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT
