@@ -60,12 +60,7 @@
     "portfolio": {
       "maxMaintainedGames": 6,
       "maxHeavyDevelopmentWip": 3,
-      "roles": {
-        "PRIMARY": 1,
-        "ACTIVE": 2,
-        "MAINTENANCE_VALIDATION": 2,
-        "INCUBATION_HOLD": 1
-      },
+      "roles": {"PRIMARY": 1, "ACTIVE": 2, "MAINTENANCE_VALIDATION": 2, "INCUBATION_HOLD": 1},
       "legacyArchivePool": {
         "enabled": true,
         "appliesToExistingGamesOutsideManagedSix": true,
@@ -87,55 +82,16 @@
         "doesNotModifyVibeLearningSystem": true
       }
     },
-    "developmentExperience": [
-      "V3_IMPLEMENTATION_SCOUT",
-      "REAL_DEVELOPMENT_MISSION",
-      "EXPERIENCE_EVIDENCE_COLLECTION_OUTSIDE_LOCKED_LEARNING_CHAIN",
-      "CROSS_PROJECT_ROTATION",
-      "POST_RELEASE_OPERATIONAL_EVIDENCE"
-    ],
-    "qualityAndReuse": [
-      "MISSION_PRIORITY_ENGINE",
-      "COMPANY_WIDE_FAILURE_TAXONOMY",
-      "RECURRING_FAILURE_TO_PERMANENT_TEST",
-      "GOLDEN_COMPONENT_LIBRARY",
-      "DEVICE_MATRIX",
-      "PLAYABILITY_SCORECARD",
-      "EVIDENCE_AGE_AND_PARTIAL_INVALIDATION",
-      "EXPERIENCE_QUALITY_SCORE",
-      "PROJECT_PATTERN_VS_COMPANY_PATTERN",
-      "STYLE_DNA",
-      "STOP_LOSS"
-    ],
-    "flowSpeedOptimizationOutsideBuild": [
-      "MISSION_PRIORITY",
-      "AFFECTED_DEPARTMENT_ONLY_REVIEW_FOR_NON_MATERIAL_CHANGES",
-      "IMPACT_BASED_NON_BUILD_VALIDATION",
-      "EVIDENCE_REUSE_WHERE_POLICY_ALLOWS",
-      "PWA_HOMEPAGE_STATE_SYNC"
-    ],
+    "developmentExperience": ["V3_IMPLEMENTATION_SCOUT", "REAL_DEVELOPMENT_MISSION", "EXPERIENCE_EVIDENCE_COLLECTION_OUTSIDE_LOCKED_LEARNING_CHAIN", "CROSS_PROJECT_ROTATION", "POST_RELEASE_OPERATIONAL_EVIDENCE"],
+    "qualityAndReuse": ["MISSION_PRIORITY_ENGINE", "COMPANY_WIDE_FAILURE_TAXONOMY", "RECURRING_FAILURE_TO_PERMANENT_TEST", "GOLDEN_COMPONENT_LIBRARY", "DEVICE_MATRIX", "PLAYABILITY_SCORECARD", "EVIDENCE_AGE_AND_PARTIAL_INVALIDATION", "EXPERIENCE_QUALITY_SCORE", "PROJECT_PATTERN_VS_COMPANY_PATTERN", "STYLE_DNA", "STOP_LOSS"],
+    "flowSpeedOptimizationOutsideBuild": ["MISSION_PRIORITY", "AFFECTED_DEPARTMENT_ONLY_REVIEW_FOR_NON_MATERIAL_CHANGES", "IMPACT_BASED_NON_BUILD_VALIDATION", "EVIDENCE_REUSE_WHERE_POLICY_ALLOWS", "PWA_HOMEPAGE_STATE_SYNC"],
     "creativeProduction": {
       "vibeBaselineCapabilityRequired": true,
       "freeExternalAiOptional": true,
       "paidExternalAiForbiddenWithoutOwnerOverride": true,
       "externalAiRole": "NON_AUTHORITATIVE_CREATIVE_CANDIDATE",
-      "outsourceCandidates": [
-        "story draft",
-        "dialogue",
-        "intro/cutscene storyboard",
-        "BGM cue sheet",
-        "SFX list",
-        "art/direction brief",
-        "localization draft"
-      ],
-      "internalVibeOwns": [
-        "requirements",
-        "game rules",
-        "code",
-        "integration",
-        "QA",
-        "final acceptance"
-      ]
+      "outsourceCandidates": ["story draft", "dialogue", "intro/cutscene storyboard", "BGM cue sheet", "SFX list", "art/direction brief", "localization draft"],
+      "internalVibeOwns": ["requirements", "game rules", "code", "integration", "QA", "final acceptance"]
     },
     "homepagePwaSync": {
       "homepageFrontDoorPreserved": true,
@@ -152,7 +108,8 @@
     "PWA bridge syncs Vibe2 queue task states back to PWA chat",
     "command.html refreshes chat every 7 seconds while visible",
     "homepage enhancement layer refreshes public state on a short interval",
-    "Company Status Sync persists validated runtime status to company-runtime and intentionally does not write public main"
+    "Company Status Sync persists validated runtime status to company-runtime and intentionally does not write public main",
+    "COMPANY_FLOW.md now records managed-six portfolio, LEGACY_ARCHIVE_POOL preservation, work continuity, Vibe learning immutable lock, build immutable lock, creative AI policy and homepage/PWA synchronization policy"
   ],
   "completedSteps": [
     "Read current COMPANY_FLOW.md and HQ governance before redesign proposal",
@@ -165,10 +122,10 @@
     "Opened draft PR #346 as persistent work anchor",
     "Recorded owner lock forbidding Vibe learning structure/chain/code-path changes except recovery or verified error fixes",
     "Recorded owner lock forbidding all build-method and build-related code/workflow modifications in this task",
-    "Recorded LEGACY_ARCHIVE_POOL policy for existing games outside the managed six"
+    "Recorded LEGACY_ARCHIVE_POOL policy for existing games outside the managed six",
+    "Updated COMPANY_FLOW.md with the approved operationsModernization policy including managed six, legacy preservation, continuity, immutable locks, creative AI and homepage/PWA sync"
   ],
   "nextSteps": [
-    "Update COMPANY_FLOW.md first with approved managed-six portfolio, legacy archive preservation, experience operations, creative-AI, homepage/PWA sync, work-continuity, Vibe-learning immutable lock and build-system immutable lock",
     "Add/update machine-readable company flow contract and validation tests without changing current Vibe learning engine or any build code/workflow",
     "Implement homepage/PWA latest-runtime state read with safe main fallback while preserving the existing front door",
     "Wire company missions and creative story/audio work around the existing Vibe execution surface without modifying Vibe learning structure/chain/code paths",
@@ -198,9 +155,11 @@
     "draftPullRequestOpen": true,
     "vibeLearningImmutableLockPersisted": true,
     "buildSystemImmutableLockPersisted": true,
-    "legacyArchivePolicyPersisted": true
+    "legacyArchivePolicyPersisted": true,
+    "centralPolicyUpdated": true,
+    "centralPolicyCommit": "84d29d266696a4c49be8be8a95a55fc41611972a"
   },
   "blockers": [],
-  "lastCompletedMilestone": "OWNER_LEGACY_ARCHIVE_POLICY_RECORDED",
-  "nextMilestone": "CENTRAL_POLICY_UPDATE"
+  "lastCompletedMilestone": "CENTRAL_POLICY_UPDATE",
+  "nextMilestone": "MACHINE_CONTRACT_AND_TESTS"
 }
