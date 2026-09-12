@@ -7,6 +7,18 @@ import {normalizeSeedState,validatePortfolioSeedRequest,pendingPortfolioSeedRequ
 const stateFile='game-seed-state.json';
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 
+test('GAME_SEED normalization removes all legacy vacancy replacement state',()=>{
+  const state=normalizeSeedState({
+    vacancies:[{id:'VAC-LEGACY'}],
+    seeds:[{seedId:'S1',gameId:'G1',replacementOfSeedId:'S0',replacementVacancyId:'VAC-LEGACY'}],
+    portfolioSeedRequests:[{id:'R1',linkedVacancyId:'VAC-LEGACY'}],
+  });
+  assert.equal('vacancies' in state,false);
+  assert.equal('replacementOfSeedId' in state.seeds[0],false);
+  assert.equal('replacementVacancyId' in state.seeds[0],false);
+  assert.equal('linkedVacancyId' in state.portfolioSeedRequests[0],false);
+});
+
 test('persisted GAME_SEED state follows current COMPANY_FLOW dynamic portfolio contract',t=>{
   if(!fs.existsSync(stateFile)){t.skip('GAME_SEED bootstrap has not persisted state yet');return;}
   const raw=JSON.parse(fs.readFileSync(stateFile,'utf8'));
@@ -14,6 +26,7 @@ test('persisted GAME_SEED state follows current COMPANY_FLOW dynamic portfolio c
   assert.equal(state.policyDocument,'COMPANY_FLOW.md');
   assert.ok(Array.isArray(state.seeds));
   assert.equal('vacancies' in state,false,'legacy vacancy state must be removed by normalization');
+  assert.ok(state.seeds.every(seed=>!('replacementOfSeedId' in seed)&&!('replacementVacancyId' in seed)),'seeds must not carry legacy vacancy replacement links');
   assert.ok(Array.isArray(state.portfolioSeedRequests));
   assert.ok(state.portfolioSeedRequests.every(request=>!('linkedVacancyId' in request)),'portfolio expansion requests must not carry legacy vacancy links');
 
