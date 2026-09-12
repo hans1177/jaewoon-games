@@ -13,6 +13,10 @@ on:
         required: true
       UNITY_PASSWORD:
         required: true
+      GENYMOTION_API_TOKEN:
+        required: false
+      GENYMOTION_RECIPE_UUID:
+        required: false
   workflow_dispatch:
     inputs:
       request_file:
@@ -68,7 +72,7 @@ jobs:
               raise SystemExit('[JAEWOON_BUILD_ERROR:REQUEST_MISSING] Unity build request file is missing')
           data = json.loads(path.read_text(encoding='utf-8'))
           if data.get('version') != 1:
-              raise SystemExit('[JAEWOON_BUILD_ERROR:REQUEST_VERSION_UNSUPPORTED] unsupported build request version')
+              raise SystemExit('[JAEWOON_BUILD_ERROR:REQUEST_VERSION_UNSUPPORTED] unsupported Unity build request version')
           game_id = str(data.get('gameId',''))
           project = str(data.get('projectPath','')).replace('\\','/').strip('/')
           method = str(data.get('buildMethod','')).strip()
@@ -337,7 +341,7 @@ jobs:
               'signatureVerified': True,
               'installAndLaunchVerified': False,
               'verificationStatus': 'pending',
-              'runtimeVerification': 'android-16-avd-api-36-pending',
+              'runtimeVerification': 'android-16-arm64-cloud-pending',
               'runtimeInstallLaunchVerified': False,
               'testBuildStatus': 'ready',
               'homepagePublicationApproved': approved.lower() == 'true',
@@ -367,7 +371,7 @@ jobs:
           body: |
             Automated Jaewoon Company Android TEST build.
             Static signature/package/ABI verification: PASS
-            Android 16 install + launch gate: PENDING
+            ARM64 Android runtime gate: PENDING
             This APK is synchronized immediately for owner device testing and is not production/stable verified yet.
             Package: ${{ steps.apk_verify.outputs.application_id }}
             Architectures: arm64-v8a
@@ -424,8 +428,8 @@ jobs:
               'androidVerificationApi': 36,
               'signatureVerified': True,
               'installAndLaunchVerified': False,
-              'runtimeVerification': 'android-16-avd-api-36-pending',
-              'runtimeVerificationSource': 'github-actions',
+              'runtimeVerification': 'android-16-arm64-cloud-pending',
+              'runtimeVerificationSource': 'github-actions-genymotion-arm64',
               'runtimeInstallLaunchVerified': False,
               'testBuildStatus': 'ready',
               'builtAt': now
@@ -456,6 +460,9 @@ jobs:
     permissions:
       contents: read
       actions: read
+    env:
+      GENYMOTION_API_TOKEN: ${{ secrets.GENYMOTION_API_TOKEN }}
+      GENYMOTION_RECIPE_UUID: ${{ secrets.GENYMOTION_RECIPE_UUID }}
     steps:
       - name: Checkout runtime QA tools
         uses: actions/checkout@v4
@@ -473,37 +480,61 @@ jobs:
           set -euo pipefail
           apk="$(find gate-input -type f -name '*.apk' -size +0c | head -n 1 || true)"
           [[ -n "$apk" && -s "$apk" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[INSTALL_GATE_APK_MISSING]::Install gate could not find the built APK.'; exit 51; }
+          unzip -Z1 "$apk" | grep -q '^lib/arm64-v8a/' || { echo '::error title=JAEWOON_BUILD_ERROR[INSTALL_GATE_ARM64_MISSING]::Runtime gate requires the ARM64 APK payload verified by the build job.'; exit 51; }
           echo "path=$apk" >> "$GITHUB_OUTPUT"
 
-      - name: Prepare Android 16 emulator
+      - name: Prepare matching ARM64 Android 16 cloud runtime
         shell: bash
         run: |
           set -euo pipefail
-          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
-          [[ -n "$SDK" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[ANDROID_SDK_MISSING]::Android SDK path is unavailable.'; exit 52; }
-          sdkmanager_bin="$(find "$SDK/cmdline-tools" -type f -name sdkmanager 2>/dev/null | sort -V | tail -n 1 || true)"
-          avdmanager_bin="$(find "$SDK/cmdline-tools" -type f -name avdmanager 2>/dev/null | sort -V | tail -n 1 || true)"
-          [[ -x "$sdkmanager_bin" ]] || { echo "::error title=JAEWOON_BUILD_ERROR[SDKMANAGER_MISSING]::sdkmanager not found under $SDK/cmdline-tools"; exit 52; }
-          [[ -x "$avdmanager_bin" ]] || { echo "::error title=JAEWOON_BUILD_ERROR[AVDMANAGER_MISSING]::avdmanager not found under $SDK/cmdline-tools"; exit 52; }
-          cmdline_bin="$(dirname "$sdkmanager_bin")"
-          avd_home="$RUNNER_TEMP/android-avd-install-gate"
-          mkdir -p "$avd_home"
-          export ANDROID_AVD_HOME="$avd_home"
-          export PATH="$cmdline_bin:$SDK/platform-tools:$SDK/emulator:$PATH"
-          echo "ANDROID_AVD_HOME=$avd_home" >> "$GITHUB_ENV"
-          echo "$cmdline_bin" >> "$GITHUB_PATH"
-          echo "$SDK/platform-tools" >> "$GITHUB_PATH"
-          echo "$SDK/emulator" >> "$GITHUB_PATH"
-          yes | "$sdkmanager_bin" --licenses >/dev/null || true
-          "$sdkmanager_bin" 'platform-tools' 'emulator' 'build-tools;36.0.0' 'system-images;android-36;google_apis;x86_64'
-          echo no | "$avdmanager_bin" create avd --force --name jaewoon-install-gate --package 'system-images;android-36;google_apis;x86_64' --device 'pixel_6'
-          "$SDK/emulator/emulator" -list-avds | tee /tmp/jaewoon-install-avd-list.txt
-          grep -Fxq 'jaewoon-install-gate' /tmp/jaewoon-install-avd-list.txt || { echo '::error title=JAEWOON_BUILD_ERROR[ANDROID_AVD_NOT_CREATED]::jaewoon-install-gate missing from emulator AVD list.'; exit 52; }
-          if [[ -e /dev/kvm ]]; then sudo chmod 666 /dev/kvm || true; fi
-          nohup "$SDK/emulator/emulator" -avd jaewoon-install-gate -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > /tmp/jaewoon-install-emulator.log 2>&1 &
-          echo $! > /tmp/jaewoon-install-emulator.pid
+          [[ -n "$GENYMOTION_API_TOKEN" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[GENYMOTION_API_TOKEN_MISSING]::GENYMOTION_API_TOKEN is required for ARM64 runtime verification.'; exit 52; }
+          [[ -n "$GENYMOTION_RECIPE_UUID" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[GENYMOTION_RECIPE_UUID_MISSING]::GENYMOTION_RECIPE_UUID is required for ARM64 runtime verification.'; exit 52; }
+          command -v adb >/dev/null || { echo '::error title=JAEWOON_BUILD_ERROR[ADB_MISSING]::adb is unavailable on the GitHub runner.'; exit 52; }
+          [[ -n "${ANDROID_SDK_ROOT:-}" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[ANDROID_SDK_MISSING]::ANDROID_SDK_ROOT is unavailable.'; exit 52; }
+          python3 -m venv "$RUNNER_TEMP/gmsaas-venv"
+          "$RUNNER_TEMP/gmsaas-venv/bin/python" -m pip install --upgrade pip
+          "$RUNNER_TEMP/gmsaas-venv/bin/pip" install 'gmsaas>=1.16,<2'
+          echo "$RUNNER_TEMP/gmsaas-venv/bin" >> "$GITHUB_PATH"
+          export PATH="$RUNNER_TEMP/gmsaas-venv/bin:$PATH"
+          gmsaas config set android-sdk-path "$ANDROID_SDK_ROOT"
+          gmsaas doctor | tee /tmp/jaewoon-arm64-gmsaas-doctor.log
+          instance_name="unity-arm64-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          start_json="$(gmsaas --format json instances start "$GENYMOTION_RECIPE_UUID" "$instance_name" --max-run-duration 35)"
+          instance_uuid="$(printf '%s' "$start_json" | python3 -c 'import json,sys; print(json.load(sys.stdin)["instance"]["uuid"])')"
+          [[ -n "$instance_uuid" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[GENYMOTION_INSTANCE_UUID_MISSING]::ARM64 cloud instance did not return an instance UUID.'; exit 52; }
+          echo "CLOUD_ANDROID_INSTANCE_UUID=$instance_uuid" >> "$GITHUB_ENV"
+          gmsaas adb start
+          gmsaas instances adbconnect "$instance_uuid"
+          adb wait-for-device
+          serial="$(adb devices | awk 'NR>1 && $2=="device" {print $1; exit}')"
+          [[ -n "$serial" ]] || { echo '::error title=JAEWOON_BUILD_ERROR[ARM64_ADB_DEVICE_MISSING]::No connected ARM64 cloud Android device was found.'; exit 52; }
+          abi="$(adb -s "$serial" shell getprop ro.product.cpu.abi | tr -d '\r')"
+          sdk="$(adb -s "$serial" shell getprop ro.build.version.sdk | tr -d '\r')"
+          release="$(adb -s "$serial" shell getprop ro.build.version.release | tr -d '\r')"
+          [[ "$abi" == *arm64* ]] || { echo "::error title=JAEWOON_BUILD_ERROR[ARM64_RUNTIME_ABI_MISMATCH]::Expected ARM64 runtime, got abi=$abi"; exit 52; }
+          [[ "$sdk" == "$JAEWOON_ANDROID_VERIFY_API" ]] || { echo "::error title=JAEWOON_BUILD_ERROR[ANDROID_RUNTIME_API_MISMATCH]::Expected Android API $JAEWOON_ANDROID_VERIFY_API, got sdk=$sdk release=$release"; exit 52; }
+          echo "ANDROID_SERIAL=$serial" >> "$GITHUB_ENV"
+          mkdir -p qa-artifacts/android16-install-gate
+          CLOUD_ANDROID_SERIAL="$serial" CLOUD_ANDROID_ABI="$abi" CLOUD_ANDROID_SDK="$sdk" CLOUD_ANDROID_RELEASE="$release" python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          payload = {
+              'version': 1,
+              'status': 'PASS',
+              'provider': 'GENYMOTION_SAAS',
+              'runtimeClass': 'ARM64_MATCHING_APK_ABI',
+              'serial': os.environ['CLOUD_ANDROID_SERIAL'],
+              'abi': os.environ['CLOUD_ANDROID_ABI'],
+              'sdk': int(os.environ['CLOUD_ANDROID_SDK']),
+              'release': os.environ['CLOUD_ANDROID_RELEASE'],
+              'observedAt': datetime.now(timezone.utc).isoformat(),
+          }
+          Path('qa-artifacts/android16-install-gate/device-provision.json').write_text(json.dumps(payload, indent=2) + '\n', encoding='utf-8')
+          PY
+          echo "[PASS] Matching ARM64 Android runtime ready serial=$serial abi=$abi sdk=$sdk release=$release"
 
-      - name: Install and launch exact APK on Android 16
+      - name: Install and launch exact APK on matching ARM64 runtime
         shell: bash
         run: |
           set +e
@@ -511,10 +542,10 @@ jobs:
           status=$?
           set -e
           if [[ "$status" -ne 0 ]]; then
-            echo "::error title=JAEWOON_BUILD_ERROR[APK_ANDROID16_INSTALL_OR_LAUNCH_FAILED]::The exact APK failed Android 16 install/runtime smoke; smoke exit=$status."
+            echo "::error title=JAEWOON_BUILD_ERROR[APK_ANDROID16_INSTALL_OR_LAUNCH_FAILED]::The exact ARM64 APK failed Android 16 ARM64 runtime smoke; smoke exit=$status."
             exit 53
           fi
-          echo '[PASS] Exact APK installed and launched on Android 16 emulator.'
+          echo '[PASS] Exact ARM64 APK installed and launched on matching Android 16 ARM64 runtime.'
 
       - name: Upload install gate evidence
         if: always()
@@ -523,10 +554,25 @@ jobs:
           name: android16-install-gate-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             qa-artifacts/android16-install-gate/
-            /tmp/jaewoon-install-emulator.log
-            /tmp/jaewoon-install-avd-list.txt
+            /tmp/jaewoon-arm64-gmsaas-doctor.log
           if-no-files-found: warn
           retention-days: 14
+
+      - name: Stop ARM64 cloud Android instance
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          export PATH="$RUNNER_TEMP/gmsaas-venv/bin:$PATH"
+          if command -v gmsaas >/dev/null 2>&1; then
+            if [[ -n "${CLOUD_ANDROID_INSTANCE_UUID:-}" ]]; then
+              gmsaas instances adbdisconnect "$CLOUD_ANDROID_INSTANCE_UUID"
+              gmsaas instances stop "$CLOUD_ANDROID_INSTANCE_UUID"
+            fi
+            gmsaas adb stop
+            gmsaas auth reset
+          fi
+          exit 0
 
   publish:
     needs: [build, android16-install-gate]
@@ -558,7 +604,7 @@ jobs:
           data = json.loads(path.read_text(encoding='utf-8'))
           data['installAndLaunchVerified'] = True
           data['verificationStatus'] = 'verified'
-          data['runtimeVerification'] = 'android-16-avd-api-36-passed'
+          data['runtimeVerification'] = 'android-16-arm64-cloud-passed'
           data['runtimeInstallLaunchVerified'] = True
           data['testBuildStatus'] = 'verified'
           data['installVerifiedAt'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -578,7 +624,7 @@ jobs:
           make_latest: false
           body: |
             Automated Jaewoon Company Android test build.
-            Android 16 install + launch gate: PASS
+            Android 16 ARM64 runtime gate: PASS
             Package: ${{ needs.build.outputs.application_id }}
             Architectures: arm64-v8a
             Source: ${{ github.sha }}
@@ -633,8 +679,8 @@ jobs:
               'androidVerificationApi': 36,
               'signatureVerified': True,
               'installAndLaunchVerified': True,
-              'runtimeVerification': 'android-16-avd-api-36-passed',
-              'runtimeVerificationSource': 'github-actions',
+              'runtimeVerification': 'android-16-arm64-cloud-passed',
+              'runtimeVerificationSource': 'github-actions-genymotion-arm64',
               'runtimeInstallLaunchVerified': True,
               'testBuildStatus': 'verified',
               'builtAt': now
@@ -697,8 +743,8 @@ jobs:
               raise SystemExit(f'latest synchronized test build not found for {game} tag={tag}')
           target['status'] = 'ready'
           target['installAndLaunchVerified'] = False
-          target['runtimeVerification'] = 'android-16-avd-api-36-failed'
-          target['runtimeVerificationSource'] = 'github-actions'
+          target['runtimeVerification'] = 'android-16-arm64-cloud-failed'
+          target['runtimeVerificationSource'] = 'github-actions-genymotion-arm64'
           target['runtimeInstallLaunchVerified'] = False
           target['testBuildStatus'] = 'runtime-failed'
           target['runtimeVerificationUpdatedAt'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
