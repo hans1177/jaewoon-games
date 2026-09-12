@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "COMPANY_FLOW.md",
   "recordedAt": "2026-09-12",
@@ -18,6 +18,38 @@
   "platformReleaseMayProceedWhenOwnEvidencePasses": true,
   "parallelLearningPipelineAllowed": false,
   "runtimeContractCannotCreatePolicy": true,
+  "webCompanion": {
+    "requiredForEveryGame": true,
+    "requiredAcross": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
+    "approvedScopeMustBeFullyImplemented": true,
+    "featureParity": "FULL_APPROVED_GAMEPLAY_SCOPE_EQUIVALENT_OR_DOCUMENTED_PLATFORM_ADAPTATION",
+    "silentFeatureOmissionForbidden": true,
+    "prototypeDoesNotSatisfyCompletion": true,
+    "webRuntimePassRequiredForDevelopmentBaseline": true,
+    "webRuntimePassRequiredForReleaseBaseline": true,
+    "cannotReplaceNativeRuntimeEvidence": true,
+    "learningRole": "AUXILIARY_PORTABLE_LEARNING_EVIDENCE",
+    "canonicalDistillationOnly": true,
+    "newTrainerOrCronForbidden": true
+  },
+  "platformRepresentativeSets": {
+    "representativeSetSizePerPlatform": 6,
+    "globalPortfolioCap": false,
+    "forcedReleaseCount": false,
+    "implementationWipTarget": 2,
+    "implementationWipMax": 3,
+    "unityHistoricalSixPreserved": true,
+    "robloxCategories": [
+      "ROLEPLAY_LIFE_AVATAR",
+      "SIMULATOR_TYCOON_INCREMENTAL",
+      "BATTLEGROUND_FIGHTING_SHOOTER",
+      "SURVIVAL_HORROR_ESCAPE",
+      "OBBY_PARTY_MINIGAME",
+      "STORY_RPG_ADVENTURE_RPG"
+    ],
+    "robloxMandatoryContinuityCategory": "STORY_RPG_ADVENTURE_RPG",
+    "fortniteUefnIndependentSixRequired": true
+  },
   "commonExecutionContract": {
     "router": "tools/company-selected-platform-router.mjs",
     "singleRoutingDecisionPoint": true,
@@ -141,6 +173,9 @@
     "DUPLICATE_DISTILLATION_TRIGGER",
     "SHADOW_DATASET_OR_TRAINER",
     "PLATFORM_DEVELOPMENT_LOCK_BASED_ON_PRIORITY",
-    "RUNTIME_QA_REGRESSION_EXACT_REVISION_BYPASS"
+    "RUNTIME_QA_REGRESSION_EXACT_REVISION_BYPASS",
+    "WEB_EVIDENCE_AS_NATIVE_RUNTIME_SUBSTITUTE",
+    "PROTOTYPE_AS_COMPLETION_EVIDENCE",
+    "SILENT_APPROVED_SCOPE_REDUCTION"
   ]
 }
