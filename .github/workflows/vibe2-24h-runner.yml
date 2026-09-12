@@ -9,6 +9,7 @@ on:
       - 'design/**/design-development-baseline.json'
       - 'design/**/release-production-request.json'
       - 'unity-games/**'
+      - 'roblox-games/**'
   schedule:
     - cron: '11 * * * *'
   workflow_dispatch:
