@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {COMPANY_DEPARTMENT_ROLES} from '../assets/company-department-standards.js';
 
 const repoRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const readText=relative=>fs.readFileSync(path.join(repoRoot,relative),'utf8');
@@ -12,8 +13,12 @@ const flow=readText('COMPANY_FLOW.md');
 const agents=readText('AGENTS.md');
 const directive=readJson('company-directive.json');
 const multimodelWorkflow=readText('.github/workflows/artbook-free-department-bots.yml');
+const revoteWorkflow=readText('.github/workflows/post-modification-revote.yml');
 const designCycle=readText('tools/company-design-cycle.mjs');
+const baselineGate=readText('tools/company-baseline-gate.mjs');
 const pipeline=readText('tools/artbook-production-pipeline.mjs');
+
+const canonicalDepartments=['planning','graphics','development','qa','balance','music','intro'];
 
 test('COMPANY_FLOW remains the single machine-oriented production policy source',()=>{
   assert.equal(directive.policyDocument,'COMPANY_FLOW.md');
@@ -57,15 +62,15 @@ test('GAME_SEED mirrors the current historical-bootstrap dynamic-portfolio and s
   assert.match(flow,/projectMaySelectAnyAllowedPlatform: true/);
 });
 
-test('DESIGN_ONLY is seed-backed design review revision baseline then artbook with no Vibe2',()=>{
+test('DESIGN_ONLY is seed-backed seven-department design review revision baseline then artbook with no Vibe2',()=>{
   const design=directive.classes.DESIGN_ONLY;
   assert.deepEqual(design.requiredFlow,[
-    'GAME_SEED','GAME_DESIGNER_DRAFT','FIVE_DISTINCT_DEPARTMENT_LEADS',
+    'GAME_SEED','GAME_DESIGNER_DRAFT','SEVEN_DISTINCT_DEPARTMENT_LEADS',
     'DEPARTMENT_LEAD_PLUS_ASSISTANT_MULTIMODEL_REVIEW','DEPARTMENT_LEAD_INTERNAL_CONSENSUS',
     'CROSS_DEPARTMENT_LEAD_MEETING','ONE_LEAD_REBUTTAL_ROUND','GAME_DESIGNER_REVISION',
     'DESIGN_BASELINE_GATE','ARTBOOK_EDITOR_CORE_STRATEGY'
   ]);
-  for(const token of ['TARGET_PLATFORM_UX_DIRECTION_DEFINED','PLATFORM_SELECTION_RECORDED','FIVE_DEPARTMENT_SCORES_RECORDED'])assert.ok(design.baselineReadyRequires.includes(token));
+  for(const token of ['TARGET_PLATFORM_UX_DIRECTION_DEFINED','PLATFORM_SELECTION_RECORDED','SEVEN_DEPARTMENT_SCORES_RECORDED'])assert.ok(design.baselineReadyRequires.includes(token));
   assert.equal(design.readyState,'DESIGN_BASELINE_READY');
   assert.equal(design.sourceCodeAutoDevelopment,false);
   assert.equal(directive.ai.vibe2.startsAtClass,'DEVELOPMENT_CONFIRMED');
@@ -73,9 +78,36 @@ test('DESIGN_ONLY is seed-backed design review revision baseline then artbook wi
   assert.equal(Object.hasOwn(directive.ai.vibe2.roleByClass,'DESIGN_ONLY'),false);
   assert.match(designCycle,/GAME_SEED_REQUIRED/);
   assert.match(designCycle,/sameModelAsDraft:true/);
-  assert.match(designCycle,/repeatedFiveDepartmentReview:true/);
+  assert.match(designCycle,/repeatedSevenDepartmentReview/);
   assert.doesNotMatch(designCycle,/VIBE2_VALIDATION_LEARNING|vibe2-validator/);
   assert.match(pipeline,/DESIGN_ONLY_VIBE2_USED=NO/);
+});
+
+test('seven-department score contract requires complete normalized scores and never converts missing departments to zero',()=>{
+  assert.deepEqual(COMPANY_DEPARTMENT_ROLES,canonicalDepartments);
+  assert.deepEqual(directive.ai.departments,canonicalDepartments);
+  assert.deepEqual(directive.portfolioGovernance.departments,canonicalDepartments);
+  assert.equal(directive.portfolioGovernance.departmentScoresRequiredForPortfolioDecision,true);
+  assert.equal(directive.portfolioGovernance.scoreMin,0);
+  assert.equal(directive.portfolioGovernance.scoreMax,100);
+  assert.ok(Math.abs(directive.portfolioGovernance.defaultWeightPerDepartment-(1/canonicalDepartments.length))<1e-12);
+  assert.match(designCycle,/departmentScore/);
+  assert.match(designCycle,/department-score-aggregation\.json/);
+  assert.match(designCycle,/NORMALIZED_EQUAL_WEIGHT/);
+  assert.match(designCycle,/missingDepartmentDoesNotCountAsZero:true/);
+  assert.match(designCycle,/historicalIncompleteDepartmentSetsRequireReevaluation:true/);
+  assert.match(baselineGate,/seven-department-score-reevaluation-required/);
+  assert.match(baselineGate,/allConfiguredDepartmentScoresRequiredForBaseline:true/);
+  assert.match(baselineGate,/missingDepartmentDoesNotCountAsZeroScore:true/);
+  assert.match(baselineGate,/historicalIncompleteDepartmentSetsRequireReevaluation:true/);
+});
+
+test('seven-department workflows do not retain the old five-department execution gate',()=>{
+  assert.match(revoteWorkflow,/fromJSON\(needs\.context\.outputs\.roles\)/);
+  assert.doesNotMatch(revoteWorkflow,/role:\s*\[planning,\s*development,\s*qa,\s*graphics,\s*balance\]/);
+  assert.doesNotMatch(revoteWorkflow,/DEPARTMENT_REVOTES=5\/5/);
+  assert.match(multimodelWorkflow,/const roles=\(d\.ai\?\.departments\|\|\[\]\)/);
+  assert.doesNotMatch(multimodelWorkflow,/departments\?\.count!==5/);
 });
 
 test('discard policy requires redesign or real implementation evidence instead of one failure',()=>{
@@ -84,7 +116,7 @@ test('discard policy requires redesign or real implementation evidence instead o
   assert.equal(directive.discardPolicy.general.marketMetricAloneCannotDiscard,true);
   assert.equal(directive.discardPolicy.general.departmentScoreAloneCannotDiscard,true);
   assert.equal(directive.discardPolicy.DESIGN_ONLY.discardRequiresSameDesignerRevision,true);
-  assert.equal(directive.discardPolicy.DESIGN_ONLY.discardRequiresRepeatedFiveDepartmentReview,true);
+  assert.equal(directive.discardPolicy.DESIGN_ONLY.discardRequiresRepeatedSevenDepartmentReview,true);
   assert.equal(directive.discardPolicy.DEVELOPMENT_CONFIRMED.discardRequiresRealEvidence,true);
   assert.equal(directive.discardPolicy.DEVELOPMENT_CONFIRMED.discardRequiresTargetedFixWhenPractical,true);
   assert.equal(directive.discardPolicy.DEVELOPMENT_CONFIRMED.discardRequiresTargetedRevalidation,true);
@@ -107,11 +139,12 @@ test('semantic production classes are canonical and fixed numeric quotas are not
   assert.match(flow,/fixedPortfolioSize: false/);
 });
 
-test('five departments keep distinct lead models and one Game Designer',()=>{
+test('seven departments keep distinct lead models and one Game Designer',()=>{
   assert.equal(directive.ai.minDistinctModelsPerDepartment,3);
-  assert.equal(directive.ai.minDistinctLeadModelsAcrossDepartments,5);
+  assert.equal(directive.ai.minDistinctLeadModelsAcrossDepartments,canonicalDepartments.length);
   assert.equal(directive.ai.departmentLeadModelsMustBeDistinct,true);
-  assert.equal(new Set(Object.values(directive.ai.departmentLeadModels)).size,5);
+  assert.deepEqual(Object.keys(directive.ai.departmentLeadModels),canonicalDepartments);
+  assert.equal(new Set(Object.values(directive.ai.departmentLeadModels)).size,canonicalDepartments.length);
   assert.equal(directive.ai.gameDesigner.authorsInitialDetailedDesign,true);
   assert.equal(directive.ai.gameDesigner.singleAuthorPerRevisionCycle,true);
   assert.equal(directive.ai.gameDesigner.sameModelRevisesAfterMeeting,true);
