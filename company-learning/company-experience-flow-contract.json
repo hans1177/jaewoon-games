@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "generation": "V3-PUMP-EXPERIENCE-DRIVEN-COMPANY",
+  "status": "OWNER_DIRECT_LOCKED",
+  "authority": "COMPANY_FLOW.md",
+  "pipeline": {
+    "reuseExistingCanonicalPipeline": true,
+    "newParallelPipeline": false,
+    "seedTriggerRepairIncluded": false,
+    "vibeGeneration": "V3-PUMP"
+  },
+  "portfolio": {
+    "maintainedGameSlots": 6,
+    "historicalProjectsMayExceedSlots": true,
+    "maxHeavyDevelopmentWip": 3,
+    "slots": {
+      "PRIMARY": 1,
+      "ACTIVE": 2,
+      "MAINTENANCE_VALIDATION": 2,
+      "INCUBATION_HOLD": 1
+    },
+    "noAutomaticDeletionWhenOverCapacity": true,
+    "overCapacityAction": "DEFER_NEW_HEAVY_WORK_AND_REBALANCE_WITH_OWNER_POLICY"
+  },
+  "mission": {
+    "implementationScoutInDesignOnly": true,
+    "scoutMayWriteProductionSource": false,
+    "realDevelopmentMissionRequiredForMaterialWork": true,
+    "priorityFactors": [
+      "USER_IMPACT",
+      "REPRODUCIBILITY",
+      "RELEASE_RISK",
+      "CROSS_PROJECT_REUSE",
+      "VIBE_LEARNING_VALUE"
+    ],
+    "affectedDepartmentsOnlyByDefault": true,
+    "fullFiveDepartmentReviewFor": ["BASELINE", "MATERIAL_DIRECTION_CHANGE", "RELEASE"]
+  },
+  "validation": {
+    "impactBased": true,
+    "classes": ["FAST", "STANDARD", "FULL"],
+    "fullRequiredFor": [
+      "BASELINE",
+      "RELEASE",
+      "CORE_ARCHITECTURE",
+      "SAVE_FORMAT",
+      "BUILD_SYSTEM",
+      "ANDROID_LIFECYCLE"
+    ],
+    "partialEvidenceInvalidation": true,
+    "evidenceAgeTracked": true,
+    "unaffectedVerifiedEvidenceMayBeReused": true
+  },
+  "build": {
+    "parentChildParallelismPreserved": true,
+    "maxHeavyParentGames": 3,
+    "sameRevisionSameConfigurationBuildOnce": true,
+    "artifactFanoutToRuntimeQaPerformance": true,
+    "exactArtifactDigestBindingRequired": true,
+    "duplicateBuildBlockedWhenReusableArtifactExists": true,
+    "cleanBuildDefault": false,
+    "cacheInvalidationBeforeCleanBuild": true
+  },
+  "experience": {
+    "harvestRequiredAfterVerifiedMaterialMission": true,
+    "hiddenReasoningStored": false,
+    "observableEvidenceOnly": true,
+    "qualityScoreRequired": true,
+    "crossProjectCompanyPatternMinDistinctProjects": 2,
+    "repeatedFailureToPermanentRegressionThreshold": 3,
+    "failureTaxonomy": [
+      "SOURCE_WRONG",
+      "LOGIC_BUG",
+      "RUNTIME",
+      "PERFORMANCE",
+      "MOBILE_UX",
+      "SAVE_COMPAT",
+      "ASSET",
+      "AUDIO",
+      "NARRATIVE",
+      "BUILD",
+      "QA_FALSE_POSITIVE",
+      "REGRESSION"
+    ],
+    "pumpUsesExistingHourlyRefreshOnly": true,
+    "benchmarkDoesNotCountAsTraining": true
+  },
+  "reuse": {
+    "goldenComponentLibrary": true,
+    "companyPatternRequiresCrossProjectVerification": true,
+    "projectPatternAllowed": true,
+    "styleDnaRequiredForGraphicsCandidates": true
+  },
+  "audioProduction": {
+    "required": true,
+    "newDepartmentCreated": false,
+    "owners": ["graphics", "development", "qa"],
+    "minimumEventSet": [
+      "BGM",
+      "ATTACK_IMPACT",
+      "PLAYER_HIT",
+      "DEATH",
+      "UI_CLICK",
+      "REWARD_OR_LEVEL_UP"
+    ],
+    "environmentAudioWhenDesignRequires": true,
+    "rightsAndLicenseGateRequired": true,
+    "eventBindingRequired": true,
+    "mixerAndClippingQaRequired": true,
+    "externalAudioCopyForbidden": true
+  },
+  "narrativeProduction": {
+    "required": true,
+    "newDepartmentCreated": false,
+    "owners": ["planning", "graphics", "development", "qa"],
+    "allGamesRequire": ["INTRO_OR_TITLE_SEQUENCE", "PLAYER_CONTEXT", "TUTORIAL_CONTEXT", "ENDING_OR_SESSION_CLOSE"],
+    "storyDrivenAdditional": ["OPENING_CUTSCENE", "DIALOGUE", "QUEST_STORY", "SCENE_TRANSITIONS", "ENDING_HOOK"],
+    "runtimeBindingRequired": true,
+    "skipAndResumeSafetyRequired": true,
+    "textReadabilityQaRequired": true,
+    "audioTimelineIntegrationRequired": true
+  },
+  "postRelease": {
+    "flow": ["RELEASE", "LIVE_OBSERVATION", "MAINTENANCE", "POST_RELEASE_EXPERIENCE_HARVEST"],
+    "objectiveSignalsOnly": true,
+    "privacyMinimizationRequired": true,
+    "observedIssueCreatesMissionCandidate": true
+  },
+  "stopLoss": {
+    "maxVibeRepairAttempts": 3,
+    "escalation": ["LOCAL_FIX", "ARCHITECTURE_REVIEW", "DESIGN_REDUCE", "HOLD"]
+  }
+}
