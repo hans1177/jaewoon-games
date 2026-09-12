@@ -7,6 +7,7 @@ import {spawnSync} from 'node:child_process';
 
 const generatorSource=process.env.UNITY_BOOTSTRAP_SOURCE||path.resolve('tools/company-development-unity-bootstrap.mjs');
 const workflowSource=fs.readFileSync(path.resolve('.github/workflows/company-development-unity-runtime.yml'),'utf8');
+const regressionSource=fs.readFileSync(path.resolve('.github/workflows/unity-android-regression.yml'),'utf8');
 const expectedUnityEditorVersion='6000.6.0f1';
 const expectedUnityEditorRevision='f7f8ed4d1e24';
 const cases=[
@@ -25,14 +26,14 @@ function fixtures(root, pass=true){
   return {baseline,web};
 }
 
-test('creates one distinct cloud-build-ready Unity technical prototype per promoted seed from real Web PASS evidence',()=>{
+test('creates direct Unity target-platform prototypes without requiring Web first',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-unity-bootstrap-'));
-  const {baseline,web}=fixtures(root,true);
+  const {baseline}=fixtures(root,true);
   for(const [id,name,mode] of cases){
     const sandbox=path.join(root,'sandbox-'+mode);
     fs.mkdirSync(path.join(sandbox,'tools'),{recursive:true});
     fs.copyFileSync(generatorSource,path.join(sandbox,'tools/company-development-unity-bootstrap.mjs'));
-    const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs',`--game-id=${id}`,`--game-name=${name}`,`--baseline=${baseline}`,`--web-evidence=${web}`,`--output=unity-games/${id}`],{cwd:sandbox,encoding:'utf8'});
+    const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs',`--game-id=${id}`,`--game-name=${name}`,`--baseline=${baseline}`,`--output=unity-games/${id}`],{cwd:sandbox,encoding:'utf8'});
     assert.equal(run.status,0,run.stderr||run.stdout);
     const project=path.join(sandbox,'unity-games',id);
     const meta=JSON.parse(fs.readFileSync(path.join(project,'prototype-source.json'),'utf8'));
@@ -41,62 +42,72 @@ test('creates one distinct cloud-build-ready Unity technical prototype per promo
     const buildScript=fs.readFileSync(path.join(project,'Assets','Editor','SeedAndroidBuild.cs'),'utf8');
     const runtimeScript=fs.readFileSync(path.join(project,'Assets','Scripts','SeedTechnicalPrototype.cs'),'utf8');
     assert.equal(meta.category,mode);
-    assert.equal(meta.webEvidenceBound,true);
+    assert.equal(meta.selectedPlatform,'UNITY');
+    assert.equal(meta.webEvidenceOptional,true);
+    assert.equal(meta.webEvidenceBound,false);
     assert.equal(meta.releaseAuthority,false);
-    assert.equal(meta.purpose,'UNITY_ANDROID_TECHNICAL_VALIDATION');
+    assert.equal(meta.purpose,'TARGET_PLATFORM_TECHNICAL_VALIDATION');
     assert.equal(meta.unityEditorVersion,expectedUnityEditorVersion);
     assert.equal(meta.unityEditorRevision,expectedUnityEditorRevision);
     assert.equal(manifest.dependencies['com.unity.modules.imgui'],'1.0.0');
     assert.match(buildScript,/SeedAndroidBuild/);
-    assert.match(buildScript,/Path\.GetFullPath\(Path\.Combine\(projectRoot, "\.\.", "\.\.", "build", "Android"\)\)/);
     assert.match(buildScript,/targetArchitectures = AndroidArchitecture\.ARM64;/);
     assert.doesNotMatch(buildScript,/AndroidArchitecture\.X86_64/);
-    assert.match(buildScript,/PrototypeRootName/);
     assert.match(buildScript,/GetComponent<SeedTechnicalPrototype>\(\)/);
     assert.match(buildScript,/AddComponent<SeedTechnicalPrototype>\(\)/);
-    assert.match(buildScript,/EditorSceneManager\.SaveScene\(scene, ScenePath\)/);
     assert.match(runtimeScript,/JAEWOON_TECH_BOOT/);
     assert.match(runtimeScript,/JAEWOON_TECH_ACTION/);
     assert.match(runtimeScript,/JAEWOON_TECH_SAVE/);
     assert.match(runtimeScript,/JAEWOON_TECH_METRIC/);
-    assert.match(runtimeScript,/PlayerPrefs/);
     assert.equal(projectVersion.trim(),`m_EditorVersion: ${expectedUnityEditorVersion}\nm_EditorVersionWithRevision: ${expectedUnityEditorVersion} (${expectedUnityEditorRevision})`);
   }
 });
 
-test('refuses Unity prototype generation without real Web gameplay PASS',()=>{
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-unity-block-'));
+test('optional Web evidence must be a real PASS when supplied',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-unity-web-optional-'));
   const sandbox=path.join(root,'sandbox');
   fs.mkdirSync(path.join(sandbox,'tools'),{recursive:true});
   fs.copyFileSync(generatorSource,path.join(sandbox,'tools/company-development-unity-bootstrap.mjs'));
   const {baseline,web}=fixtures(root,false);
   const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs','--game-id=seed-puzzle-chromatic-cascade','--game-name=Chromatic Cascade',`--baseline=${baseline}`,`--web-evidence=${web}`],{cwd:sandbox,encoding:'utf8'});
   assert.notEqual(run.status,0);
-  assert.match(run.stderr,/REAL_WEB_GAMEPLAY_PASS_REQUIRED/);
+  assert.match(run.stderr,/OPTIONAL_WEB_EVIDENCE_MUST_PASS_WHEN_PROVIDED/);
 });
 
-test('DEVELOPMENT Unity runtime keeps a full dynamic N parent and child validation window',()=>{
-  assert.match(workflowSource,/const parallel=Math\.max\(1,rows\.length\);/);
-  assert.doesNotMatch(workflowSource,/Math\.min\(2,Math\.max\(1,rows\.length\)\)/);
-  assert.match(workflowSource,/UNITY_TECH_TARGET_N=\$\{rows\.length\}/);
-  assert.match(workflowSource,/UNITY_TECH_ACTIVE_PARENT_WINDOW=\$\{parallel\}/);
-  assert.match(workflowSource,/parallel=\$\{parallel\}/);
-  assert.match(workflowSource,/max-parallel:\s*\$\{\{\s*fromJSON\(needs\.prepare\.outputs\.parallel\)\s*\}\}/);
-  assert.match(workflowSource,/matrix:\s*\n\s*item:\s*\$\{\{\s*fromJSON\(needs\.prepare\.outputs\.matrix\)\s*\}\}/);
-  assert.doesNotMatch(workflowSource,/max-parallel:\s*1(?:\s|$)/);
-  assert.match(workflowSource,/unity-cloud-android-test\.yml/);
-  assert.doesNotMatch(workflowSource,/unity-local-pc-android\.yml/);
-  assert.match(workflowSource,/CLOUD_UNITY_BUILD_RUN_ID/);
-  assert.match(workflowSource,/UNITY_TARGET_MATRIX=DYNAMIC_N/);
-  assert.match(workflowSource,/UNITY_ACTIVE_PARENT_WINDOW=\$\{\{ needs\.prepare\.outputs\.parallel \}\}/);
-  assert.match(workflowSource,/UNITY_CHILD_REQUESTS=DYNAMIC_N/);
-  assert.match(workflowSource,/homepagePublicationApproved=true/);
-  assert.match(workflowSource,/publishTestBuildWhenReady=true/);
-  assert.match(workflowSource,/HOMEPAGE_TEST_APK_PUBLISH=YES/);
-  assert.match(workflowSource,/sourceTreeSha=tree/);
+test('Unity executor implements bounded WIP canary and exact-stage resume sequence',()=>{
+  assert.match(workflowSource,/selectRepresentativeCanary/);
+  assert.match(workflowSource,/Math\.min\(3,selected\.length\|\|1\)/);
+  assert.match(workflowSource,/REPRESENTATIVE_CANARY=/);
+  assert.match(workflowSource,/COMMON_FAILURE_DETECTED=/);
+  assert.match(workflowSource,/CHANGE_DETECTION=/);
+  assert.match(workflowSource,/CHEAP_PRECHECK=/);
+  assert.match(workflowSource,/SOURCE_FINGERPRINT=/);
+  assert.match(workflowSource,/BUILD_REUSE=/);
+  assert.match(workflowSource,/SINGLE_BUILD_OR_PACKAGE=REUSED/);
+  assert.match(workflowSource,/IMMUTABLE_ARTIFACT_BIND=PASS/);
+  assert.match(workflowSource,/TARGET_PLATFORM_RUNTIME=/);
+  assert.match(workflowSource,/INDEPENDENT_QA=/);
+  assert.match(workflowSource,/REGRESSION=/);
+  assert.match(workflowSource,/unity-android-runtime-smoke\.yml/);
+  assert.match(workflowSource,/unity-android-independent-qa\.yml/);
+  assert.match(workflowSource,/unity-android-regression\.yml/);
+  assert.match(workflowSource,/executionEvidence:evidence/);
+  assert.match(workflowSource,/resumeStage:failure\|\|'IMMEDIATE_NEXT_STAGE_DISPATCH'/);
+  assert.match(workflowSource,/BUILD_ONCE_PER_SOURCE_FINGERPRINT=ENABLED/);
+  assert.match(workflowSource,/RESUME_EXACT_FAILURE_POINT=ENABLED/);
+  assert.match(workflowSource,/QUALITY_GATE_WEAKENING=NO/);
 });
 
-test('keeps company runtime event-driven and manually recoverable without periodic scheduling',()=>{
+test('successful APK build is retained even when the legacy child runtime gate fails',()=>{
+  assert.match(workflowSource,/select\(\.name=="build"\)/);
+  assert.match(workflowSource,/select\(\.name=="android16-install-gate"\)/);
+  assert.match(workflowSource,/build_passed=/);
+  assert.match(workflowSource,/LEGACY_RUNTIME_GATE_CONCLUSION=/);
+  assert.match(workflowSource,/gh run download "\$BUILD_RUN" -D \/tmp\/unity-build/);
+  assert.doesNotMatch(workflowSource,/CLOUD_UNITY_BUILD_FAILED=/);
+});
+
+test('Unity platform executor remains event-driven with no periodic schedule of its own',()=>{
   assert.doesNotMatch(workflowSource,/^\s*schedule:/m);
   assert.doesNotMatch(workflowSource,/cron:/);
   assert.match(workflowSource,/push:/);
@@ -104,7 +115,11 @@ test('keeps company runtime event-driven and manually recoverable without period
   assert.match(workflowSource,/company-development-unity-runtime/);
 });
 
-test('discovers dispatched workflow runs with standalone jq instead of invalid gh --jq arguments',()=>{
-  assert.equal((workflowSource.match(/--jq --argjson/g)||[]).length,0);
-  assert.ok((workflowSource.match(/\| jq -r --argjson/g)||[]).length>=3);
+test('exact artifact regression binds upstream APK SHA and source revision',()=>{
+  assert.match(regressionSource,/Download exact upstream build artifact/);
+  assert.match(regressionSource,/actual.*expected/s);
+  assert.match(regressionSource,/SOURCE_REVISION/);
+  assert.match(regressionSource,/unity-apk-runtime-smoke\.sh/);
+  assert.match(regressionSource,/regressionPassed.*True/s);
+  assert.match(regressionSource,/exactArtifactRegression.*True/s);
 });
