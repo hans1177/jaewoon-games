@@ -12,9 +12,7 @@ export const GAME_SEED_REQUIRED_FIELDS = Object.freeze([
   'TARGET_SESSION_DIRECTION',
   'INITIAL_TARGET_PLATFORM',
   'INITIAL_PLAY_MODE',
-  'STEAM_EXPANSION_POSSIBLE',
-  'MULTIPLAYER_EXPANSION_POSSIBLE',
-  'MULTIPLAYER_EXPANSION_VALUE'
+  'CROSS_PLATFORM_EXPANSION_VALUE'
 ]);
 
 export const GAME_SEED_POLICY = Object.freeze({
@@ -22,11 +20,11 @@ export const GAME_SEED_POLICY = Object.freeze({
   stage: 'BEFORE_GAME_DESIGNER_DRAFT',
   selectionMode: 'FAMOUS_SUCCESSFUL_GAME_COPY_BENCHMARK',
   transformationModes: Object.freeze(['HOMAGE', 'REINTERPRETATION']),
-  initialTargetPlatform: 'ANDROID_MOBILE',
-  initialPlayMode: 'SINGLE_PLAYER',
-  steamDecisionValues: Object.freeze(['POSSIBLE', 'NOT_RECOMMENDED']),
-  multiplayerDecisionValues: Object.freeze(['POSSIBLE', 'NOT_RECOMMENDED']),
-  multiplayerExpansionValueValues: Object.freeze(['LOW', 'MEDIUM', 'HIGH']),
+  initialTargetPlatform: 'ROBLOX',
+  allowedTargetPlatforms: Object.freeze(['ROBLOX', 'UNITY', 'FORTNITE_UEFN']),
+  projectMaySelectAnyAllowedPlatform: true,
+  primaryPlatformIsDefaultNotLock: true,
+  initialPlayMode: 'PROJECT_DEFINED',
   numericMarketClaimRequiresSource: true,
   numericMarketClaimRequiresObservedAt: true,
   marketEvidenceHardPassFailGate: false
@@ -76,20 +74,15 @@ export function validateGameSeed(seed) {
     errors.push('REFERENCE_GAMES must contain at least one released successful reference game');
   }
 
-  if (seed.INITIAL_TARGET_PLATFORM !== undefined && seed.INITIAL_TARGET_PLATFORM !== GAME_SEED_POLICY.initialTargetPlatform) {
-    errors.push(`INITIAL_TARGET_PLATFORM must be ${GAME_SEED_POLICY.initialTargetPlatform}`);
+  if (seed.INITIAL_TARGET_PLATFORM !== undefined) {
+    const platform = String(seed.INITIAL_TARGET_PLATFORM).trim().toUpperCase();
+    if (!GAME_SEED_POLICY.allowedTargetPlatforms.includes(platform)) {
+      errors.push(`INITIAL_TARGET_PLATFORM must be one of ${GAME_SEED_POLICY.allowedTargetPlatforms.join(', ')}`);
+    }
   }
-  if (seed.INITIAL_PLAY_MODE !== undefined && seed.INITIAL_PLAY_MODE !== GAME_SEED_POLICY.initialPlayMode) {
-    errors.push(`INITIAL_PLAY_MODE must be ${GAME_SEED_POLICY.initialPlayMode}`);
-  }
-  if (seed.STEAM_EXPANSION_POSSIBLE !== undefined && !GAME_SEED_POLICY.steamDecisionValues.includes(seed.STEAM_EXPANSION_POSSIBLE)) {
-    errors.push(`STEAM_EXPANSION_POSSIBLE must be one of ${GAME_SEED_POLICY.steamDecisionValues.join(', ')}`);
-  }
-  if (seed.MULTIPLAYER_EXPANSION_POSSIBLE !== undefined && !GAME_SEED_POLICY.multiplayerDecisionValues.includes(seed.MULTIPLAYER_EXPANSION_POSSIBLE)) {
-    errors.push(`MULTIPLAYER_EXPANSION_POSSIBLE must be one of ${GAME_SEED_POLICY.multiplayerDecisionValues.join(', ')}`);
-  }
-  if (seed.MULTIPLAYER_EXPANSION_VALUE !== undefined && !GAME_SEED_POLICY.multiplayerExpansionValueValues.includes(seed.MULTIPLAYER_EXPANSION_VALUE)) {
-    errors.push(`MULTIPLAYER_EXPANSION_VALUE must be one of ${GAME_SEED_POLICY.multiplayerExpansionValueValues.join(', ')}`);
+
+  if (seed.INITIAL_PLAY_MODE !== undefined && !isNonEmptyString(seed.INITIAL_PLAY_MODE)) {
+    errors.push('INITIAL_PLAY_MODE must be project-defined and non-empty');
   }
 
   validateMarketNumericClaims(seed.MARKET_EVIDENCE_SUMMARY, errors);
