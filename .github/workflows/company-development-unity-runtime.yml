@@ -108,8 +108,9 @@ jobs:
           mkdir -p "$base"
           git show "origin/company-runtime:$DESIGN_SOURCE" > "$DESIGN_SOURCE"
           git show "origin/company-runtime:$base/cycle-status.json" > "$base/cycle-status.json"
-          git show "origin/company-runtime:$base/web-gameplay-validation.json" > "$base/web-gameplay-validation.json"
+          git show origin/company-runtime:company-qa-runtime-evidence.json > company-qa-runtime-evidence.json
           git show origin/company-runtime:game-catalog.json > game-catalog.json
+          test -f "web-games/${GAME_ID}/index.html"
           branch="development/unity-tech-${GAME_ID}-${GITHUB_RUN_ID}"
           project="unity-games/${GAME_ID}"
           request=".build-requests/unity/${GAME_ID}-development.json"
@@ -120,6 +121,8 @@ jobs:
             echo "project=$project"
             echo "request=$request"
           } >> "$GITHUB_OUTPUT"
+          echo "CANONICAL_WEB_GAME=web-games/${GAME_ID}/index.html"
+          echo 'CANONICAL_WEB_QA_EVIDENCE=company-qa-runtime-evidence.json'
       - name: Generate one-game Unity Android technical prototype
         env:
           GAME_ID: ${{ matrix.item.gameId }}
@@ -129,7 +132,8 @@ jobs:
             --game-id="$GAME_ID" \
             --game-name="$GAME_NAME" \
             --baseline="${{ matrix.item.designBaselineSource }}" \
-            --web-evidence="${{ steps.context.outputs.base }}/web-gameplay-validation.json" \
+            --web-game="web-games/${GAME_ID}/index.html" \
+            --qa-evidence="company-qa-runtime-evidence.json" \
             --output="${{ steps.context.outputs.project }}"
       - name: Create isolated Unity technical source branch
         id: source
@@ -338,7 +342,7 @@ jobs:
         run: |
           set -euo pipefail
           mapfile -t models < <(node -e "const d=require('./company-directive.json');for(const m of [...new Set(d.ai?.modelPool||[])])console.log(m)")
-          test "${#models[@]}" -ge 5
+          test "${#models[@]}" -ge 7
           have="$(ollama list | awk 'NR>1{print $1}')"
           for model in "${models[@]}"; do
             if grep -Fxq "$model" <<<"$have"; then echo "DEPARTMENT_MODEL_READY=$model:CACHED"; else ollama pull "$model"; echo "DEPARTMENT_MODEL_READY=$model:PULLED"; fi
