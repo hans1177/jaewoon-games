@@ -18,30 +18,35 @@
   "platformReleaseMayProceedWhenOwnEvidencePasses": true,
   "parallelLearningPipelineAllowed": false,
   "runtimeContractCannotCreatePolicy": true,
-  "selectedPlatformExecution": {
+  "commonExecutionContract": {
     "router": "tools/company-selected-platform-router.mjs",
     "singleRoutingDecisionPoint": true,
     "commonAdapterContractRequired": true,
     "commonEvidenceSchemaRequired": true,
+    "allowedPlatforms": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
+    "commonEvidenceFields": [
+      "PLATFORM",
+      "SOURCE_REVISION",
+      "BUILD_OR_PACKAGE_PASSED",
+      "ARTIFACT_IDENTITY",
+      "RUNTIME_PASSED",
+      "INDEPENDENT_QA_PASSED",
+      "REGRESSION_PASSED",
+      "EXACT_REVISION",
+      "LAST_SUCCESSFUL_STAGE",
+      "FAILURE_STAGE",
+      "FAILURE_SIGNATURE"
+    ],
     "adapters": {
       "ROBLOX": "tools/vibe3-roblox-platform.mjs",
       "UNITY": "tools/company-development-unity-platform.mjs",
       "FORTNITE_UEFN": "tools/company-development-uefn-platform.mjs"
-    },
-    "commonEvidenceFields": [
-      "platform",
-      "sourceRevision",
-      "buildOrPackagePassed",
-      "artifactIdentity",
-      "runtimePassed",
-      "independentQaPassed",
-      "regressionPassed",
-      "exactRevision",
-      "lastSuccessfulStage",
-      "failureStage",
-      "failureSignature"
-    ],
-    "speedSequence": [
+    }
+  },
+  "developmentSpeedExecution": {
+    "scope": "EXECUTION_SPEED_ONLY",
+    "qualityOrEvidenceGateWeakeningForbidden": true,
+    "canonicalSequence": [
       "CHANGE_DETECTION",
       "CHEAP_PRECHECK",
       "REPRESENTATIVE_CANARY",
@@ -53,11 +58,22 @@
       "IMMEDIATE_NEXT_STAGE_DISPATCH",
       "RESUME_EXACT_FAILURE_POINT"
     ],
-    "qualityGateWeakeningAllowed": false,
+    "changeDetectionRequiredBeforeExpensiveWork": true,
+    "cheapPrecheckRequiredBeforeCanary": true,
+    "representativeCanaryRequiredWhenSharedExecutionContractChangedOrCommonFailureDetected": true,
+    "canaryPassAllowsRemainingEligibleWorkToProceed": true,
     "buildOncePerSourceFingerprint": true,
-    "sameArtifactAcrossRuntimeQaRegression": true,
-    "resumeExactFailedStage": true,
-    "cronRole": "WATCHDOG_AND_RECOVERY_ONLY"
+    "sameArtifactRequiredAcrossRuntimeIndependentQaAndRegression": true,
+    "immutableArtifactIdentityRequired": true,
+    "successfulStageEvidenceReusableWhenSourceFingerprintStillMatches": true,
+    "sourceOrRelevantDependencyChangeInvalidatesAffectedEvidenceOnly": true,
+    "failureMustRecordExactStageAndSignature": true,
+    "retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches": true,
+    "successfulStepMustNotBeRepeatedWithoutInvalidatingChange": true,
+    "nextCanonicalStageDispatchImmediatelyAfterSuccess": true,
+    "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
+    "cronMustNotBePrimaryProgressionEngine": true,
+    "existingEventChainPreferred": true
   },
   "phases": [
     {
@@ -104,7 +120,8 @@
   "fortniteUefn": {
     "platformAdapter": "tools/company-development-uefn-platform.mjs",
     "developmentAlwaysAllowed": true,
-    "existingPlatformsRemainActive": true
+    "existingPlatformsRemainActive": true,
+    "runtimeExecutionConfigured": false
   },
   "canonicalLearningChain": [
     "VALIDATED_EVIDENCE",
