@@ -44,15 +44,29 @@ export function deriveApprovedScopeInventory(baseline={}){
   return items.slice(0,80);
 }
 
+function escapeRegex(value){return String(value).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+function scopeControlTag(text,id){
+  const escaped=escapeRegex(id);
+  const matcher=new RegExp(`<([a-z0-9-]+)\\b([^>]*\\bdata-scope-id=["']${escaped}["'][^>]*)>`,'i');
+  const match=String(text??'').match(matcher);
+  return match?{tag:match[1].toLowerCase(),attrs:match[2]}:null;
+}
+function interactiveScopeControl(control){
+  if(!control)return false;
+  if(['button','input','select','textarea'].includes(control.tag))return true;
+  return /\brole=["']button["']/i.test(control.attrs)||/\btabindex=["']?0["']?/i.test(control.attrs);
+}
+
 export function staticApprovedScopeCoverage(html,inventory=[]){
   const text=String(html??'');
   const blockers=[];
   const declared=Number(text.match(/data-approved-scope-count=["'](\d+)["']/i)?.[1]??-1);
   if(declared!==inventory.length)blockers.push(`APPROVED_SCOPE_COUNT_MISMATCH:${declared}:${inventory.length}`);
   for(const item of inventory){
-    const escaped=item.id.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    const marker=new RegExp(`data-scope-id=["']${escaped}["']`,'i');
-    if(!marker.test(text))blockers.push(`APPROVED_SCOPE_ITEM_MISSING:${item.id}`);
+    const control=scopeControlTag(text,item.id);
+    if(!control){blockers.push(`APPROVED_SCOPE_ITEM_MISSING:${item.id}`);continue;}
+    if(!interactiveScopeControl(control))blockers.push(`APPROVED_SCOPE_CONTROL_NOT_INTERACTIVE:${item.id}`);
+    if(/\bdata-action\s*=/i.test(control.attrs))blockers.push(`GENERIC_SCOPE_PROXY_FORBIDDEN:${item.id}`);
   }
   return {pass:blockers.length===0,requiredCount:inventory.length,blockers};
 }
