@@ -8,6 +8,7 @@ import {spawnSync} from 'node:child_process';
 const generatorSource=process.env.UNITY_BOOTSTRAP_SOURCE||path.resolve('tools/company-development-unity-bootstrap.mjs');
 const workflowSource=fs.readFileSync(path.resolve('.github/workflows/company-development-unity-runtime.yml'),'utf8');
 const regressionSource=fs.readFileSync(path.resolve('.github/workflows/unity-android-regression.yml'),'utf8');
+const runtimeSmokeSource=fs.readFileSync(path.resolve('tools/unity-apk-runtime-smoke.sh'),'utf8');
 const expectedUnityEditorVersion='6000.6.0f1';
 const expectedUnityEditorRevision='f7f8ed4d1e24';
 const cases=[
@@ -41,6 +42,7 @@ test('creates direct Unity target-platform prototypes without requiring Web firs
     const projectVersion=fs.readFileSync(path.join(project,'ProjectSettings','ProjectVersion.txt'),'utf8');
     const buildScript=fs.readFileSync(path.join(project,'Assets','Editor','SeedAndroidBuild.cs'),'utf8');
     const runtimeScript=fs.readFileSync(path.join(project,'Assets','Scripts','SeedTechnicalPrototype.cs'),'utf8');
+    assert.equal(meta.version,3);
     assert.equal(meta.category,mode);
     assert.equal(meta.selectedPlatform,'UNITY');
     assert.equal(meta.webEvidenceOptional,true);
@@ -49,10 +51,16 @@ test('creates direct Unity target-platform prototypes without requiring Web firs
     assert.equal(meta.purpose,'TARGET_PLATFORM_TECHNICAL_VALIDATION');
     assert.equal(meta.unityEditorVersion,expectedUnityEditorVersion);
     assert.equal(meta.unityEditorRevision,expectedUnityEditorRevision);
+    assert.equal(meta.androidGraphicsCompatibilityProfile,'OPEN_GLES3_ES30_MINIMUM');
     assert.equal(manifest.dependencies['com.unity.modules.imgui'],'1.0.0');
     assert.match(buildScript,/SeedAndroidBuild/);
     assert.match(buildScript,/targetArchitectures = AndroidArchitecture\.ARM64;/);
     assert.doesNotMatch(buildScript,/AndroidArchitecture\.X86_64/);
+    assert.match(buildScript,/SetUseDefaultGraphicsAPIs\(BuildTarget\.Android, false\)/);
+    assert.match(buildScript,/SetGraphicsAPIs\(BuildTarget\.Android, new\[\] \{ GraphicsDeviceType\.OpenGLES3 \}\)/);
+    assert.match(buildScript,/openGLRequireES31 = false/);
+    assert.match(buildScript,/openGLRequireES31AEP = false/);
+    assert.match(buildScript,/openGLRequireES32 = false/);
     assert.match(buildScript,/GetComponent<SeedTechnicalPrototype>\(\)/);
     assert.match(buildScript,/AddComponent<SeedTechnicalPrototype>\(\)/);
     assert.match(runtimeScript,/JAEWOON_TECH_BOOT/);
@@ -132,6 +140,16 @@ test('Unity platform executor remains event-driven with no periodic schedule of 
   assert.match(workflowSource,/push:/);
   assert.match(workflowSource,/workflow_dispatch:/);
   assert.match(workflowSource,/company-development-unity-runtime/);
+});
+
+test('runtime smoke never sends gameplay input before the generated seed runtime is ready',()=>{
+  assert.match(runtimeSmokeSource,/runtime_ready_timeout=false/);
+  assert.match(runtimeSmokeSource,/gameplay_input_delivered=false/);
+  assert.match(runtimeSmokeSource,/DEVELOPMENT_SEED_BOOT_TIMEOUT/);
+  const readyGate=runtimeSmokeSource.indexOf('if [[ "$boot_observed" == "true" || "$seed_technical" != "true" ]]');
+  const firstTap=runtimeSmokeSource.indexOf('adb shell input tap "$center_x" "$primary_y"');
+  assert.ok(readyGate>=0,'runtime-ready input gate missing');
+  assert.ok(firstTap>readyGate,'gameplay input must be gated behind runtime-ready evidence');
 });
 
 test('exact artifact regression binds upstream APK SHA and source revision',()=>{
