@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 30,
+  "revision": 31,
   "updatedAt": "2026-09-12",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
@@ -13,6 +13,8 @@
     "countsDerivedFromMembership": true,
     "fixedClassCounts": false,
     "gameIdsPinned": false,
+    "numericLabelsAreAliasesOnly": true,
+    "numericLabelsOwnerRemappable": true,
     "preserveExistingWebArchives": true,
     "preserveSaveMeaning": true
   },
@@ -303,10 +305,47 @@
     }
   },
   "platformStrategy": {
-    "initialActualProduct": "ANDROID_MOBILE_SINGLE_PLAYER",
-    "initialReleaseTarget": "UNITY_ANDROID",
-    "steamNotBuiltInitially": true,
-    "multiplayerNotBuiltInitially": true
+    "ownerDirectiveRecordedAt": "2026-09-12",
+    "releaseExperiencePriority": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
+    "currentExperiencePhase": "ROBLOX_FAST_RELEASE_STABILIZATION",
+    "currentPrimaryExperiencePlatform": "ROBLOX",
+    "roadmapContract": "company-learning/platform-release-roadmap.json",
+    "roadmapSpec": "company-learning/PLATFORM_RELEASE_ROADMAP.md",
+    "parallelLearningPipelineAllowed": false,
+    "phase1": {
+      "platform": "ROBLOX",
+      "objective": "FAST_REAL_RELEASE_AND_STABILIZATION_EXPERIENCE",
+      "taskType": "roblox",
+      "sourceRoot": "roblox-games/",
+      "adapter": "tools/vibe3-roblox-platform.mjs",
+      "prototypeOnlyIsCompletion": false,
+      "verifiedReleaseEvidenceRequired": true,
+      "livePublishDefault": false
+    },
+    "phase2": {
+      "platforms": ["ROBLOX", "UNITY"],
+      "objective": "CONCURRENT_ROBLOX_AND_UNITY_RELEASE_EXPERIENCE",
+      "entryRequiresVerifiedRobloxReleaseAndStabilizationExperience": true,
+      "existingUnityAndroidPathPreserved": true,
+      "robloxDoesNotReplaceUnity": true
+    },
+    "phase3": {
+      "platforms": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
+      "objective": "FORTNITE_UEFN_EXPANSION_AFTER_CROSS_PLATFORM_EXPERIENCE",
+      "entryRequiresVerifiedRobloxAndUnityExperience": true,
+      "preserveExistingPlatformTracks": true
+    },
+    "experienceSharing": {
+      "portableVerifiedPatternsUseExistingV3MemoryAndCanonicalDistillation": true,
+      "platformSpecificImplementationRemainsPlatformScoped": true,
+      "successEvidenceDoesNotTransferAcrossPlatforms": true
+    },
+    "legacyUnityAndroidTrack": {
+      "initialActualProduct": "ANDROID_MOBILE_SINGLE_PLAYER",
+      "initialReleaseTarget": "UNITY_ANDROID",
+      "steamNotBuiltInitially": true,
+      "multiplayerNotBuiltInitially": true
+    }
   },
   "rules": [
     "new-owner-instruction-overrides-autonomous-plan",
@@ -315,6 +354,7 @@
     "semantic-production-class-is-canonical",
     "production-class-counts-derived-from-current-membership",
     "production-class-counts-are-not-fixed-quotas",
+    "production-numeric-labels-are-remappable-aliases-only",
     "production-game-ids-must-not-be-pinned",
     "production-class-membership-promotes-and-demotes-from-current-evidence",
     "status-sync-must-not-reclassify-games-to-satisfy-a-count-quota",
@@ -373,6 +413,10 @@
     "release-confirmed-source-change-invalidates-old-build-validation",
     "release-must-pass-independent-qa-and-runtime-verification",
     "release-artbook-final-revision-only-after-release-ready",
+    "platform-release-experience-priority-is-roblox-then-unity-then-fortnite-uefn",
+    "roblox-first-does-not-delete-or-replace-existing-unity-android-track",
+    "portable-verified-platform-lessons-use-existing-v3-memory-and-canonical-distillation",
+    "platform-specific-parallel-learning-pipeline-is-forbidden",
     "existing-public-web-builds-survive-class-movement",
     "core-production-decisions-still-require-owner-decision",
     "paid-ai-paid-overage-and-paid-runners-remain-forbidden",
