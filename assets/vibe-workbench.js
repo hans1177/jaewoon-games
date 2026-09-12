@@ -11,6 +11,7 @@ import {
 import { createVibeEngineAdapter } from './vibe-engine-adapter.js';
 
 const TARGET_WORDS={
+  roblox:['roblox','로블록스','luau','.luau','.rbxl','.rbxlx','rojo'],
   unreal:['unreal','언리얼','ue5','ue 5','uproject','blueprint','블루프린트','animation blueprint','anim blueprint','control rig','ik retargeter'],
   unity:['unity','유니티','c#','cs','urp','apk','aab','android build','안드로이드 빌드'],
   godot:['godot','고도','씬','project.godot','gdscript','.gd'],
@@ -42,24 +43,15 @@ const has=(v,words)=>{const s=clean(v).toLowerCase();return words.some(w=>s.incl
 const unique=v=>[...new Set(v.filter(Boolean))];
 
 function targetOf(request,target='auto'){
-  if(['unreal','unity','godot','web'].includes(target))return target;
+  if(['roblox','unreal','unity','godot','web'].includes(target))return target;
+  if(has(request,TARGET_WORDS.roblox))return'roblox';
   if(has(request,TARGET_WORDS.unreal))return'unreal';
   if(has(request,TARGET_WORDS.unity))return'unity';
   if(has(request,TARGET_WORDS.godot))return'godot';
   return'web';
 }
-function modeOf(request){
-  if(has(request,TASK_WORDS.repair))return'repair';
-  if(has(request,TASK_WORDS.feature))return'feature';
-  if(has(request,TASK_WORDS.change))return'change';
-  return'inspect';
-}
-function priorityOf(request){
-  if(has(request,['크래시','게임이 안 돼','멈춰','진행이 막힘','앱이 꺼져']))return'critical';
-  if(has(request,TASK_WORDS.repair))return'high';
-  if(has(request,['느려','불편','깨짐','구려','못생']))return'medium';
-  return'normal';
-}
+function modeOf(request){if(has(request,TASK_WORDS.repair))return'repair';if(has(request,TASK_WORDS.feature))return'feature';if(has(request,TASK_WORDS.change))return'change';return'inspect';}
+function priorityOf(request){if(has(request,['크래시','게임이 안 돼','멈춰','진행이 막힘','앱이 꺼져']))return'critical';if(has(request,TASK_WORDS.repair))return'high';if(has(request,['느려','불편','깨짐','구려','못생']))return'medium';return'normal';}
 function detectSystems(request){
   const a=[];
   if(has(request,['공격','피해','데미지','투사체','원거리','근접','넉백','기절','슬로우']))a.push('전투');
@@ -77,6 +69,10 @@ function detectSystems(request){
 function detectQuality(request){return Object.entries(QUALITY).filter(([,words])=>has(request,words)).map(([k])=>k);}
 function candidateFiles(target,systems,quality){
   const a=[];
+  if(target==='roblox'){
+    a.push('roblox-games/<slug>/**/*.luau','roblox-games/<slug>/**/*.lua','roblox-games/<slug>/**/*.json','roblox-games/<slug>/*.rbxlx','roblox-games/<slug>/*.rbxl');
+    return unique(a);
+  }
   if(target==='unreal'){
     a.push('unreal-games/<slug>/*.uproject','unreal-games/<slug>/Content/**','unreal-games/<slug>/Config/**','unreal-games/<slug>/Source/**');
     if(quality.some(k=>['visual','animation','vfx'].includes(k)))a.push('unreal-games/<slug>/Content/Characters/**','unreal-games/<slug>/Content/Animations/**','unreal-games/<slug>/Content/VFX/**');
@@ -124,7 +120,8 @@ function editDirectives(request,target,systems,quality){
   if(quality.includes('performance'))a.push('기존 업데이트/스폰/렌더 루프에서 중복 작업과 불필요한 할당을 줄이고 동작 결과는 유지');
   if(quality.includes('gameplay'))a.push('게임성 문제의 원인을 먼저 진단하고 명시되지 않은 체력·공격력·웨이브·보상·드랍률은 변경하지 않음');
   if(quality.includes('multiplayer'))a.push('기존 플레이어/AI 책임 흐름에 협동 동작을 연결하고 싱글플레이 진행과 저장 호환성을 유지');
-  if(target==='unreal')a.push('Unreal .uproject/Content/Config/Source의 실제 책임 파일을 직접 수정하고 Binaries/DerivedDataCache/Intermediate/Saved는 소스 변경 대상으로 사용하지 않음');
+  if(target==='roblox')a.push('Roblox Luau/Lua/JSON 책임 소스를 직접 수정하고 .rbxl/.rbxlx place package는 텍스트 worker가 직접 편집하지 않음');
+  else if(target==='unreal')a.push('Unreal .uproject/Content/Config/Source의 실제 책임 파일을 직접 수정하고 Binaries/DerivedDataCache/Intermediate/Saved는 소스 변경 대상으로 사용하지 않음');
   else if(target==='unity')a.push('Unity Assets/Packages/ProjectSettings의 실제 책임 파일을 직접 수정하고 임시 MonoBehaviour override/중복 패치 컴포넌트를 추가하지 않음');
   else if(target==='godot')a.push('main.gd/main.tscn 및 실제 책임 스크립트를 우선 수정하고 임시 override 노드를 추가하지 않음');
   else a.push('web-games는 보관용 원본이므로 읽기/분석만 하고 소스 수정하지 않음');
@@ -143,7 +140,7 @@ function majorCategoryOf(request){
   if(has(request,['전투 방식','자동전투','턴제','실시간 전투']))return'combat-model';
   if(has(request,['성장 구조','레벨업 구조','성장 방식']))return'progression-model';
   if(has(request,['플랫폼','안드로이드','ios','pc','모바일 전용']))return'platform';
-  if(has(request,['unity','유니티','unreal','언리얼','ue5','godot','고도','엔진']))return'engine';
+  if(has(request,['roblox','로블록스','unity','유니티','unreal','언리얼','ue5','godot','고도','엔진']))return'engine';
   if(has(request,['저장 호환성 깨','세이브 호환성 깨']))return'save-breaking-change';
   if(has(request,['전면 개편','전체 리메이크','대규모 변경']))return'large-scope-change';
   if(has(request,['과금','광고','인앱결제','수익화']))return'monetization';
@@ -168,14 +165,7 @@ function companyDevelopmentContext({request,gameId,mode,artbook=null,artbookStat
     evidence:artbookLock.locked&&artbookLock.ref?[artbookLock.ref]:[],impact:newGame?'high':'medium',estimatedCost:'unknown',artbookLocked:artbookLock.locked
   });
   const approval=classifyCompanyProposalApproval(proposal);
-  return Object.freeze({
-    required:newGame,conceptPlanningRequired,artbookLock,
-    mode:artbookLock.locked?'locked-artbook-implementation':newGame?'predevelopment-gated':'maintenance-or-iteration',
-    flow:createCompanyFlow({gameId:gameId||'',maxRevisionRounds:2,artbookStatus:artbookLock.status,artbookCutCount:artbookLock.cutCount,artbookPostprocessComplete:artbookLock.postprocessComplete,artbookRef:artbookLock.ref}),
-    proposal,proposalApproval:approval,ownerGateRequired:newGame||approval.requiresOwnerApproval,
-    executionBeforeGateAllowed:!newGame&&mode!=='inspect'&&!approval.changeRequestRequired,
-    rule:artbookLock.locked?'locked-artbook-skips-redesign-and-enters-technical-validation':newGame?'brief-to-owner-gate-before-full-development':'existing-workbench-policy'
-  });
+  return Object.freeze({required:newGame,conceptPlanningRequired,artbookLock,mode:artbookLock.locked?'locked-artbook-implementation':newGame?'predevelopment-gated':'maintenance-or-iteration',flow:createCompanyFlow({gameId:gameId||'',maxRevisionRounds:2,artbookStatus:artbookLock.status,artbookCutCount:artbookLock.cutCount,artbookPostprocessComplete:artbookLock.postprocessComplete,artbookRef:artbookLock.ref}),proposal,proposalApproval:approval,ownerGateRequired:newGame||approval.requiresOwnerApproval,executionBeforeGateAllowed:!newGame&&mode!=='inspect'&&!approval.changeRequestRequired,rule:artbookLock.locked?'locked-artbook-skips-redesign-and-enters-technical-validation':newGame?'brief-to-owner-gate-before-full-development':'existing-workbench-policy'});
 }
 
 export function createVibeEditBrief({request='',target='auto',gameId=null,files=[]}={}){
@@ -183,13 +173,8 @@ export function createVibeEditBrief({request='',target='auto',gameId=null,files=
   if(!prompt)throw new Error('edit brief request required');
   const resolvedTarget=targetOf(prompt,target),systems=detectSystems(prompt),quality=detectQuality(prompt),paths=unique(files.map(f=>clean(typeof f==='string'?f:f?.path)));
   const engineAdapter=createVibeEngineAdapter({request:prompt,target:resolvedTarget,gameSlug:gameId||''});
-  const engineChecks=resolvedTarget==='unreal'?['Unreal C++ 컴파일','Blueprint/Animation Blueprint 참조','Map/Level 로드','Montage/State Machine/IK Rig/Retargeter/Control Rig','패키징/런타임 확인']:resolvedTarget==='unity'?['Unity 컴파일/씬 참조/Android 빌드 확인']:resolvedTarget==='godot'?['Godot 씬/스크립트 참조 확인']:['web-games 읽기 전용 확인'];
-  return Object.freeze({
-    version:3,request:prompt,target:resolvedTarget,gameId:gameId?clean(gameId):null,responsibleFiles:Object.freeze(paths),engineAdapter,
-    directives:Object.freeze(editDirectives(prompt,resolvedTarget,systems,quality)),protectedTargets:Object.freeze(PROTECTED.filter(x=>!prompt.includes(x))),
-    requiredChecks:Object.freeze(unique(['변경 전 원본 일치','변경 diff 확인','보호 대상 값/키 변경 검사','문법/구조 QA','실행 회귀 QA','모바일 UI QA',...engineChecks,...engineAdapter.qa])),
-    outputContract:Object.freeze({returnCompleteFiles:true,noWrapperPatch:true,noOverridePatch:true,checkpointBeforeWrite:true,atomicApply:true,rollbackOnFailure:true,sourceWriteAllowed:engineAdapter.mayWriteSource})
-  });
+  const engineChecks=resolvedTarget==='roblox'?['Luau 소스/프로젝트 구조 확인','place package 확인','Roblox 런타임','독립 QA','회귀','exact revision 확인']:resolvedTarget==='unreal'?['Unreal C++ 컴파일','Blueprint/Animation Blueprint 참조','Map/Level 로드','Montage/State Machine/IK Rig/Retargeter/Control Rig','패키징/런타임 확인']:resolvedTarget==='unity'?['Unity 컴파일/씬 참조/Android 빌드 확인']:resolvedTarget==='godot'?['Godot 씬/스크립트 참조 확인']:['web-games 읽기 전용 확인'];
+  return Object.freeze({version:3,request:prompt,target:resolvedTarget,gameId:gameId?clean(gameId):null,responsibleFiles:Object.freeze(paths),engineAdapter,directives:Object.freeze(editDirectives(prompt,resolvedTarget,systems,quality)),protectedTargets:Object.freeze(PROTECTED.filter(x=>!prompt.includes(x))),requiredChecks:Object.freeze(unique(['변경 전 원본 일치','변경 diff 확인','보호 대상 값/키 변경 검사','문법/구조 QA','실행 회귀 QA','모바일 UI QA',...engineChecks,...engineAdapter.qa])),outputContract:Object.freeze({returnCompleteFiles:true,noWrapperPatch:true,noOverridePatch:true,checkpointBeforeWrite:true,atomicApply:true,rollbackOnFailure:true,sourceWriteAllowed:engineAdapter.mayWriteSource})});
 }
 
 export function planVibeWorkbenchTask({request='',target='auto',gameId=null,file=null,knownBroken=false,artbook=null,artbookStatus='',artbookCutCount=0,artbookPostprocessComplete=null,artbookRef=''}={}){
@@ -198,22 +183,19 @@ export function planVibeWorkbenchTask({request='',target='auto',gameId=null,file
   const resolvedTarget=targetOf(prompt,target),mode=modeOf(prompt),priority=priorityOf(prompt),systems=detectSystems(prompt),quality=detectQuality(prompt),protectedTargets=PROTECTED.filter(x=>prompt.includes(x));
   const engineAdapter=createVibeEngineAdapter({request:prompt,target:resolvedTarget,gameSlug:gameId||''});
   const candidates=unique([...candidateFiles(resolvedTarget,systems,quality),...engineAdapter.source.candidateFiles]);
-  const structureStep=resolvedTarget==='unreal'?'.uproject/Content/Config/Source 구조와 Animation Blueprint/Montage/State Machine 확인':resolvedTarget==='unity'?'Unity Assets/Packages/ProjectSettings 구조 확인':resolvedTarget==='godot'?'Godot project.godot와 씬/스크립트 구조 확인':'web-games 보관 원본을 읽기 전용으로 분석';
+  const structureStep=resolvedTarget==='roblox'?'roblox-games Luau/Lua/JSON 소스와 place package 구조 확인':resolvedTarget==='unreal'?'.uproject/Content/Config/Source 구조와 Animation Blueprint/Montage/State Machine 확인':resolvedTarget==='unity'?'Unity Assets/Packages/ProjectSettings 구조 확인':resolvedTarget==='godot'?'Godot project.godot와 씬/스크립트 구조 확인':'web-games 보관 원본을 읽기 전용으로 분석';
   const steps=['현재 main 기준 대상 게임/파일 확인',structureStep,'현재 게임 규칙·밸런스·저장 구조 확인'];
   const company=companyDevelopmentContext({request:prompt,gameId,mode,artbook,artbookStatus,artbookCutCount,artbookPostprocessComplete,artbookRef});
-  if(company.artbookLock.locked){
-    steps.push('완료 아트북 잠금 확인 → 한줄 정의/핵심 재미/세계관/콘티/시스템 재기획 건너뜀','잠긴 아트북 → 기술 구조 → 기술 스파이크 → 플레이어블 초안 → 내부 평가 → 사용자 승인 → 본개발','아트북과 충돌하는 변경 필요 시 구현 중단 → ARTBOOK_CHANGE_REQUEST');
-  }else if(company.conceptPlanningRequired){
-    steps.push('재운컴퍼니 사전 플로우 시작: 한줄 정의 → 핵심 재미 → 세계관/스토리 → 콘티 → 시스템 설계 → 기술 구조 → 기술 스파이크 → 플레이어블 초안 → 내부 평가 → 사용자 승인');
-  }
+  if(company.artbookLock.locked)steps.push('완료 아트북 잠금 확인 → 한줄 정의/핵심 재미/세계관/콘티/시스템 재기획 건너뜀','잠긴 아트북 → 기술 구조 → 기술 스파이크 → 플레이어블 초안 → 내부 평가 → 사용자 승인 → 본개발','아트북과 충돌하는 변경 필요 시 구현 중단 → ARTBOOK_CHANGE_REQUEST');
+  else if(company.conceptPlanningRequired)steps.push('재운컴퍼니 사전 플로우 시작: 한줄 정의 → 핵심 재미 → 세계관/스토리 → 콘티 → 시스템 설계 → 기술 구조 → 기술 스파이크 → 플레이어블 초안 → 내부 평가 → 사용자 승인');
   if(mode==='repair'||knownBroken)steps.push('오류 재현 조건과 실제 실패 지점 확인');
   if(systems.length)steps.push(`영향 시스템 확인: ${systems.join(', ')}`);
   steps.push(...qualitySteps(quality),'검증된 이전 경험 검색 후 재사용 가능 패턴 확인','현재 실행 결과/캡처/로그와 계획 대조');
-  if(engineAdapter.mayWriteSource)steps.push('변경 범위를 최소화해 원본 책임 파일 직접 수정');
-  else steps.push('읽기 전용 소스이므로 변경 후보와 이식 계획만 생성');
+  if(engineAdapter.mayWriteSource)steps.push('변경 범위를 최소화해 원본 책임 파일 직접 수정');else steps.push('읽기 전용 소스이므로 변경 후보와 이식 계획만 생성');
   if(mode==='repair')steps.push('원인 수정 후 동일 오류 재검사');
   steps.push('전용 기능 테스트','로딩/시작','진행 막힘','터치/버튼','저장/불러오기','일시정지/재시작','런타임 오류','모바일 화면','최종 회귀 QA','변경 전후 비교','사용자 피드백 반영 확인');
   if(company.artbookLock.locked)steps.push('완료 아트북 10장 대비 컨셉 드리프트 검사');
+  if(resolvedTarget==='roblox')steps.push('Roblox place package/런타임/독립 QA/회귀/exact revision 증거 확인 후 Open Cloud 게시 게이트로 전달');
   if(resolvedTarget==='unreal')steps.push('Unreal C++ 컴파일/Blueprint 참조/Map 로드/Animation Blueprint·Montage·Blend Space·IK Rig/Retargeter/Control Rig/패키징/런타임 회귀 확인');
   if(resolvedTarget==='unity')steps.push('Unity 컴파일/씬 참조/MCP 연결/Android APK 또는 AAB 빌드 회귀 확인');
   if(resolvedTarget==='godot')steps.push('Godot 씬/스크립트 참조 및 세이브 회귀 확인');
@@ -226,18 +208,13 @@ export function planVibeWorkbenchTask({request='',target='auto',gameId=null,file
   if(company.artbookLock.locked)warnings.push(`완료 아트북 컨셉 잠금: ${company.artbookLock.ref||'completed-artbook'} — Vibe2 재기획 금지`,'컨셉 변경이 필요하면 ARTBOOK_CHANGE_REQUEST 없이 자동 실행 금지');
   if(mode==='repair')warnings.push('증상만 가리는 우회 패치 금지');
   if(resolvedTarget==='web')warnings.push('web-games는 archive/read-only이며 자동 수정 금지');
+  if(resolvedTarget==='roblox')warnings.push('Roblox .rbxl/.rbxlx 패키지는 텍스트 worker 직접 편집 금지','실제 게시 전 runtime/independent QA/regression/exact revision 증거 필수');
   if(resolvedTarget==='godot')warnings.push('Godot 바이너리 실행 검증 가능 여부 별도 확인');
   if(resolvedTarget==='unity')warnings.push('Unity 프로젝트는 Library/Temp/Logs/APK/AAB를 소스에 커밋하지 않음');
   if(resolvedTarget==='unreal')warnings.push('Unreal 프로젝트는 Binaries/DerivedDataCache/Intermediate/Saved 및 패키징 산출물을 소스에 커밋하지 않음');
   if(quality.includes('visual'))warnings.push('기존 에셋 재사용/라이선스를 먼저 확인');
   if(quality.includes('audio'))warnings.push('오디오 라이선스와 모바일 용량을 확인');
-  return Object.freeze({
-    version:6,request:prompt,target:resolvedTarget,mode,priority,gameId:gameId?clean(gameId):null,file:file?clean(file):null,knownBroken:Boolean(knownBroken),
-    affectedSystems:Object.freeze(systems),qualityKeys:Object.freeze(quality),qualitySystems:Object.freeze(quality.map(k=>QUALITY_LABEL[k])),candidateFiles:Object.freeze(candidates),protectedTargets:Object.freeze(protectedTargets),engineAdapter,
-    mobileDefaults:Object.freeze({touchFirst:true,virtualJoystick:true,safeArea:true,responsiveOrientation:true,keyboardDefault:false}),companyDevelopment:company,
-    steps:Object.freeze(unique(steps)),warnings:Object.freeze(unique(warnings)),editBrief:createVibeEditBrief({request:prompt,target:resolvedTarget,gameId,files:file?[file]:[]}),
-    applyPolicy:Object.freeze({existingGameAutoApply:false,directSourceEditPreferred:true,saveMigrationRequiredForBreakingChange:true,reviewBeforeCommit:true,checkpointBeforeQualityRebuild:quality.length>0,atomicApply:true,rollbackOnFailure:true,completedArtbookConceptLocked:company.artbookLock.locked,artbookChangeRequestRequired:company.artbookLock.locked,fullDevelopmentBlockedUntilCompanyGate:company.required,sourceWriteAllowed:engineAdapter.mayWriteSource,webArchiveReadOnly:engineAdapter.webArchiveReadOnly,motionRuntimeEvidenceRequired:engineAdapter.requiresMotionRuntimeEvidence})
-  });
+  return Object.freeze({version:6,request:prompt,target:resolvedTarget,mode,priority,gameId:gameId?clean(gameId):null,file:file?clean(file):null,knownBroken:Boolean(knownBroken),affectedSystems:Object.freeze(systems),qualityKeys:Object.freeze(quality),qualitySystems:Object.freeze(quality.map(k=>QUALITY_LABEL[k])),candidateFiles:Object.freeze(candidates),protectedTargets:Object.freeze(protectedTargets),engineAdapter,mobileDefaults:Object.freeze({touchFirst:true,virtualJoystick:true,safeArea:true,responsiveOrientation:true,keyboardDefault:false}),companyDevelopment:company,steps:Object.freeze(unique(steps)),warnings:Object.freeze(unique(warnings)),editBrief:createVibeEditBrief({request:prompt,target:resolvedTarget,gameId,files:file?[file]:[]}),applyPolicy:Object.freeze({existingGameAutoApply:false,directSourceEditPreferred:true,saveMigrationRequiredForBreakingChange:true,reviewBeforeCommit:true,checkpointBeforeQualityRebuild:quality.length>0,atomicApply:true,rollbackOnFailure:true,completedArtbookConceptLocked:company.artbookLock.locked,artbookChangeRequestRequired:company.artbookLock.locked,fullDevelopmentBlockedUntilCompanyGate:company.required,sourceWriteAllowed:engineAdapter.mayWriteSource,webArchiveReadOnly:engineAdapter.webArchiveReadOnly,motionRuntimeEvidenceRequired:engineAdapter.requiresMotionRuntimeEvidence})});
 }
 
 export const inspectVibeWorkbenchRequest=planVibeWorkbenchTask;
