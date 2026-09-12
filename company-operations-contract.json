@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "authority": "COMPANY_FLOW.md#operationsModernization",
+  "policySource": "COMPANY_FLOW.md",
+  "isPolicySource": false,
+  "ownerApprovedAt": "2026-09-12",
+  "managedPortfolio": {
+    "maxMaintainedGames": 6,
+    "maxHeavyDevelopmentWip": 3,
+    "roles": {
+      "PRIMARY": 1,
+      "ACTIVE": 2,
+      "MAINTENANCE_VALIDATION": 2,
+      "INCUBATION_HOLD": 1
+    },
+    "productionClassRemainsCanonical": true
+  },
+  "legacyGamePreservation": {
+    "pool": "LEGACY_ARCHIVE_POOL",
+    "appliesToExistingGamesOutsideManagedSix": true,
+    "productionClassUnchanged": true,
+    "portfolioManaged": false,
+    "portfolioRole": "LEGACY_ARCHIVE",
+    "automaticDeletionForbidden": true,
+    "automaticDiscardForbidden": true,
+    "automaticRebuildForbidden": true,
+    "routineHighIntensityDevelopment": false,
+    "preserveSource": true,
+    "preserveExistingWebVersion": true,
+    "preserveSaveMeaning": true,
+    "preserveExistingReleaseAndApkReferences": true,
+    "preserveHomepageLinksByDefault": true,
+    "criticalMaintenanceAllowed": true,
+    "ownerDirectReactivationAllowed": true,
+    "managedPortfolioVacancyPromotionAllowed": true,
+    "ageAloneNeverDeletesOrDiscardsGame": true,
+    "doesNotChangeBuildSystem": true,
+    "doesNotChangeVibeLearningSystem": true
+  },
+  "workContinuity": {
+    "required": true,
+    "checkpointFile": "company-work-state.json",
+    "checkpointIsEvidenceNotPolicy": true,
+    "resumeOrder": [
+      "LATEST_OWNER_INSTRUCTION",
+      "COMPANY_FLOW",
+      "COMPANY_WORK_STATE",
+      "WORKING_BRANCH_AND_OPEN_PR",
+      "RECONCILE_CURRENT_MAIN",
+      "FIRST_INCOMPLETE_STEP"
+    ],
+    "hiddenReasoningStorageForbidden": true,
+    "secretsStorageForbidden": true
+  },
+  "vibeLearningImmutableLock": {
+    "ownerLocked": true,
+    "structureChangeForbidden": true,
+    "chainChangeForbidden": true,
+    "newLearningStageForbidden": true,
+    "newLearningChainForbidden": true,
+    "learningCodePathModificationForbidden": true,
+    "rewireForbidden": true,
+    "thresholdOrPromotionRuleChangeForbidden": true,
+    "allowedExceptions": ["RECOVERY", "VERIFIED_ERROR_FIX"],
+    "exceptionMustBeMinimalAtResponsibleStage": true,
+    "exceptionMustRejoinExistingChainImmediately": true
+  },
+  "buildSystemImmutableLock": {
+    "ownerLocked": true,
+    "buildMethodChangeForbidden": true,
+    "buildWorkflowModificationForbidden": true,
+    "parentChildTopologyChangeForbidden": true,
+    "triggerChangeForbidden": true,
+    "artifactTransferChangeForbidden": true,
+    "runtimeQaBuildLinkChangeForbidden": true,
+    "cacheOrDedupeBuildLogicChangeForbidden": true,
+    "newBuildChainForbidden": true,
+    "buildRewireForbidden": true,
+    "optimizationImplementationInsideBuildForbidden": true,
+    "allowedExceptions": []
+  },
+  "developmentOperations": {
+    "vibeImplementationScoutAllowed": true,
+    "realDevelopmentMissionAllowedInsideExistingDevelopmentFlow": true,
+    "missionMustUseExistingResponsibleStage": true,
+    "affectedDepartmentReviewAllowedForNonMaterialChanges": true,
+    "fullFiveDepartmentReviewStillRequiredWhenExistingPolicyRequiresIt": true,
+    "impactBasedNonBuildValidationAllowed": true,
+    "existingEvidenceReuseAllowedOnlyWhenNotInvalidatedByCurrentPolicy": true,
+    "crossProjectOperationalRotationAllowed": true,
+    "evidenceCollectionMustNotAddLearningStage": true
+  },
+  "creativeProduction": {
+    "vibeBaselineCapabilityRequired": true,
+    "vibeMustWorkWithoutExternalProvider": true,
+    "freeExternalAiOptional": true,
+    "paidAiAutomaticFallbackForbidden": true,
+    "externalAiRole": "NON_AUTHORITATIVE_CREATIVE_CANDIDATE",
+    "externalAiMayAssist": [
+      "STORY_DRAFT",
+      "DIALOGUE",
+      "INTRO_CUTSCENE_STORYBOARD",
+      "BGM_CUE_SHEET",
+      "SFX_LIST",
+      "ART_DIRECTION_BRIEF",
+      "LOCALIZATION_DRAFT"
+    ],
+    "externalAiAbsenceMustNotBlockDevelopment": true,
+    "finalAuthority": "INTERNAL_VIBE_AND_EXISTING_QA",
+    "rightsAndLicenseEvidenceRequiredForDeliveredAssets": true,
+    "missingAudioAssetState": "ASSET_PENDING",
+    "fakeAssetCompletionForbidden": true,
+    "preferredIntegrationStyle": "DATA_MANIFEST_PLUS_SHARED_RUNTIME"
+  },
+  "homepagePwaSync": {
+    "existingHomepageFrontDoorMustRemainUnchanged": true,
+    "existingHomepageLinksMustRemainAvailable": true,
+    "pwaAiChatMustRemainAvailable": true,
+    "pwaWorkDirectiveMustRemainAvailable": true,
+    "pwaAttachmentsGameSelectionDeviceRegistrationGeminiAndInstallMustRemainAvailable": true,
+    "developmentProgressMustStaySynchronized": true,
+    "validatedRuntimeStateBranch": "company-runtime",
+    "runtimeStatePreferredOverStaleMainSnapshot": true,
+    "currentMainSnapshotRemainsFallback": true,
+    "uiRedesignNotRequiredForSyncFix": true,
+    "statusFreshnessRepairMustNotChangeBuildOrLearningSystems": true
+  },
+  "speedOptimization": {
+    "buildOptimizationForbiddenByOwnerLock": true,
+    "allowedAreas": [
+      "MISSION_PRIORITY",
+      "WORK_IN_PROGRESS_LIMIT",
+      "AFFECTED_DEPARTMENT_ONLY_REVIEW_WHEN_POLICY_ALLOWS",
+      "NON_BUILD_IMPACT_ROUTING",
+      "STATUS_SYNC_LATENCY",
+      "UNNECESSARY_WAIT_REDUCTION",
+      "EVIDENCE_REUSE_WHERE_VALID"
+    ]
+  }
+}
