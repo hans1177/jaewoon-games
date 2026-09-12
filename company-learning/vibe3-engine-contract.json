@@ -103,6 +103,17 @@
     "requiredRuntime": "PASS",
     "normalNonUnityBrowserQaRequirementWeakened": false
   },
+  "platformRoadmap": {
+    "enabled": true,
+    "contract": "company-learning/platform-release-roadmap.json",
+    "humanReadableSpec": "company-learning/PLATFORM_RELEASE_ROADMAP.md",
+    "priority": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
+    "currentPhase": "ROBLOX_FAST_RELEASE_STABILIZATION",
+    "unityExistingPathPreserved": true,
+    "platformSpecificEvidenceRequired": true,
+    "portableVerifiedExperienceSharedThroughV3Memory": true,
+    "separatePlatformLearningPipelineAllowed": false
+  },
   "canonicalLearningChainUnchanged": true,
   "promotion": {
     "freshAdapterState": "TRAINED_UNVERIFIED",
