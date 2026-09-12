@@ -59,3 +59,33 @@ test('GAME_SEED contract accepts Roblox and rejects stale Android-mobile platfor
   assert.equal(stale.pass,false);
   assert.ok(stale.errors.some(error=>error.includes('INITIAL_TARGET_PLATFORM must be one of')));
 });
+
+test('every Roblox representative category has an original working title outside the platform benchmark pool',()=>{
+  const categories=profiles.platforms.ROBLOX.categories;
+  const platformBenchmarkTitles=new Set(Object.values(categories).flatMap(profile=>profile.benchmarkCandidates||[]).map(title=>String(title).trim().toLowerCase()));
+  const workingTitles=[];
+  for(const category of expected){
+    const profile=categories[category];
+    assert.ok(profile.originalWorkingTitle,`${category} missing originalWorkingTitle`);
+    assert.equal(platformBenchmarkTitles.has(profile.originalWorkingTitle.trim().toLowerCase()),false,`${category} working title copies a benchmark`);
+    assert.ok(Array.isArray(profile.minimumCoreLoop)&&profile.minimumCoreLoop.length>=3,`${category} missing minimumCoreLoop`);
+    assert.ok(Array.isArray(profile.requiredConceptGroups)&&profile.requiredConceptGroups.length>=profile.minimumRequiredConceptGroups,`${category} missing semantic concept groups`);
+    workingTitles.push(profile.originalWorkingTitle.trim().toLowerCase());
+  }
+  assert.equal(new Set(workingTitles).size,expected.length);
+});
+
+test('GAME_SEED generator and quality gate enforce title originality and platform semantic minima',()=>{
+  const generator=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
+  const normalizer=fs.readFileSync('tools/company-game-seed-semantic-normalize.mjs','utf8');
+  const gate=fs.readFileSync('tools/company-game-seed-quality-gate.mjs','utf8');
+  for(const source of [generator,normalizer,gate]){
+    assert.match(source,/requiredConceptGroups/);
+    assert.match(source,/minimumRequiredConceptGroups/);
+  }
+  assert.match(generator,/forbiddenProductTitles/);
+  assert.match(generator,/gameNameCopiesBenchmarkTitle/);
+  assert.match(normalizer,/PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR/);
+  assert.match(gate,/game-name-copies-platform-benchmark-title/);
+  assert.match(gate,/distinct-identity-copies-benchmark-expression/);
+});

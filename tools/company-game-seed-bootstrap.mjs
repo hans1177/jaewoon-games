@@ -66,6 +66,28 @@ const batchSchema=count=>({type:'object',required:['proposals'],properties:{prop
 function profileFor(platform,category){
   return categorySeedProfile({platform,category,marketEvidence:marketInput,platformProfiles})||{};
 }
+function platformBenchmarkTitles(platform){
+  const normalizedPlatform=normalizeSeedPlatform(platform);
+  const categories=platformProfiles?.platforms?.[normalizedPlatform]?.categories||{};
+  const names=[];
+  for(const profile of Object.values(categories)){
+    names.push(...uniq(profile?.benchmarkCandidates));
+    for(const ref of Array.isArray(profile?.references)?profile.references:[]){
+      names.push(typeof ref==='string'?ref:clean(ref?.title||ref?.name||ref?.game));
+    }
+  }
+  return uniq(names);
+}
+function conceptGroupCoverage(text,groups){
+  const haystack=norm(text);
+  return (Array.isArray(groups)?groups:[]).filter(group=>uniq(group).some(term=>haystack.includes(norm(term)))).length;
+}
+function fallbackWorkingTitle(target){
+  const configured=clean(target.originalWorkingTitle);
+  if(configured)return configured;
+  const words=clean(target.category).split('_').filter(Boolean).slice(0,3).map(word=>word.charAt(0)+word.slice(1).toLowerCase()).join(' ');
+  return `${words||'Original Game'} Project`;
+}
 function sanitizeMetric(metric){
   if(!metric||typeof metric!=='object'||Array.isArray(metric))return null;
   const name=clean(metric.metric||metric.name||metric.type);if(!name)return null;
@@ -102,6 +124,13 @@ function uniqueGameId(platform,category,name,used){
 }
 function normalizeProposal(target,p){
   const proposal={...(p||{}),requestId:target.requestId,category:target.category};
+  const forbiddenTitles=new Set(target.forbiddenProductTitles.map(norm));
+  const existingTitles=new Set((state.seeds||[]).map(seed=>norm(seed.gameName)).filter(Boolean));
+  const proposedName=clean(p?.gameName);
+  let safeName=proposedName&& !forbiddenTitles.has(norm(proposedName))&&!existingTitles.has(norm(proposedName))?proposedName:fallbackWorkingTitle(target);
+  if(existingTitles.has(norm(safeName)))safeName=`${safeName} ${initialSerialCount(target.platform,target.category)+1}`;
+  proposal.gameName=safeName;
+
   const canonicalBenchmarks=new Map(target.benchmarkCandidates.map(name=>[norm(name),name]));
   if(canonicalBenchmarks.size){
     const matched=uniq(p?.referenceGames).map(name=>canonicalBenchmarks.get(norm(name))).filter(Boolean);
@@ -109,7 +138,12 @@ function normalizeProposal(target,p){
   }else proposal.referenceGames=uniq(p?.referenceGames).slice(0,4);
 
   proposal.coreFunToLearn=uniq(p?.coreFunToLearn).slice(0,4);
-  proposal.coreLoop=uniq(p?.coreLoop).slice(0,8).map(step=>step.length>=20?step:`${step} — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.`);
+  const rawLoop=uniq(p?.coreLoop).slice(0,8);
+  const loopText=rawLoop.join(' ');
+  const loopCoverage=conceptGroupCoverage(loopText,target.requiredConceptGroups);
+  const weakLoop=rawLoop.length<3||rawLoop.some(step=>step.length<20)||loopCoverage<target.minimumRequiredConceptGroups;
+  proposal.coreLoop=weakLoop&&target.minimumCoreLoop.length>=3?target.minimumCoreLoop.slice(0,8):rawLoop;
+
   const required=target.requiredConceptTerms.slice(0,2);
   let semanticText=[...proposal.coreFunToLearn,...proposal.coreLoop,clean(p?.distinctIdentity)].map(norm).join(' ');
   for(const term of required){
@@ -127,9 +161,11 @@ function normalizeProposal(target,p){
   for(const step of structuralFallback){if(proposal.coreLoop.length>=3)break;if(!proposal.coreLoop.includes(step))proposal.coreLoop.push(step);}
 
   const originalIdentity=clean(p?.distinctIdentity);
-  proposal.distinctIdentity=originalIdentity.length>=60
+  const identityNorm=norm(originalIdentity);
+  const copiedIdentity=target.forbiddenProductTitles.some(title=>identityNorm.includes(norm(title)))||/\bbenchmark\b/i.test(originalIdentity);
+  proposal.distinctIdentity=originalIdentity.length>=60&&!copiedIdentity
     ?originalIdentity
-    :`${target.platform}에서 ${target.category}의 ${required.join(' / ')} 재미를 살리되 세계관·비주얼·진행 구조·시스템 조합을 새로 설계한 독자 경험으로 재해석한다.`;
+    :`${proposal.gameName} is an original ${target.platform} ${target.category.toLowerCase().replaceAll('_',' ')} experience built around ${required.join(' and ')} while using its own world, visual identity, progression, economy, content, and interaction design.`;
   const originalAudience=clean(p?.targetAudience);
   proposal.targetAudience=originalAudience.length>=12&&!/\b(korea|korean|south korea)\b/i.test(originalAudience)
     ?originalAudience
@@ -151,6 +187,8 @@ function validateProposal(target,p){
   if(clean(p?.requestId)!==target.requestId)missing.push('requestId');
   if(clean(p?.category)!==target.category)missing.push('category');
   if(!clean(p?.gameName))missing.push('gameName');
+  const forbiddenTitles=new Set(target.forbiddenProductTitles.map(norm));
+  if(forbiddenTitles.has(norm(p?.gameName)))missing.push('gameNameCopiesBenchmarkTitle');
   const refs=uniq(p?.referenceGames);
   if(!refs.length)missing.push('referenceGames');
   const allowed=new Set(target.benchmarkCandidates.map(norm));
@@ -159,8 +197,17 @@ function validateProposal(target,p){
     if(invalidRefs.length)missing.push(`referenceGamesOutsideProvidedBenchmarkPool:${invalidRefs.join('|')}`);
   }
   if(!uniq(p?.coreFunToLearn).length)missing.push('coreFunToLearn');
-  if(uniq(p?.coreLoop).length<3)missing.push('coreLoop>=3');
-  if(!clean(p?.distinctIdentity))missing.push('distinctIdentity');
+  const loops=uniq(p?.coreLoop);
+  if(loops.length<3)missing.push('coreLoop>=3');
+  if(loops.some(step=>step.length<20))missing.push('coreLoopStepsMustBeConcrete');
+  if(target.requiredConceptGroups.length){
+    const coverage=conceptGroupCoverage(loops.join(' '),target.requiredConceptGroups);
+    if(coverage<target.minimumRequiredConceptGroups)missing.push(`coreLoopConceptCoverage:${coverage}/${target.minimumRequiredConceptGroups}`);
+  }
+  const identity=clean(p?.distinctIdentity);
+  if(!identity)missing.push('distinctIdentity');
+  const identityNorm=norm(identity);
+  if(/\bbenchmark\b/i.test(identity)||target.forbiddenProductTitles.some(title=>identityNorm.includes(norm(title))))missing.push('distinctIdentityCopiesBenchmarkExpression');
   if(!clean(p?.targetAudience))missing.push('targetAudience');
   if(!clean(p?.targetSessionDirection))missing.push('targetSessionDirection');
   if(/\b(korea|korean|south korea)\b/i.test(clean(p?.targetAudience)))missing.push('targetAudienceMustBeGlobalNotKoreaSpecific');
@@ -187,12 +234,15 @@ async function callModelBatch(targets){
     defaultTargetPlatform,
     allowedTargetPlatforms,
     benchmarkCandidates:target.benchmarkCandidates,
+    forbiddenProductTitles:target.forbiddenProductTitles,
     requiredConceptTerms:target.requiredConceptTerms,
+    requiredConceptGroups:target.requiredConceptGroups,
+    minimumCoreLoop:target.minimumCoreLoop,
     marketEvidence:target.marketEvidence.available?target.marketEvidence.references:'UNKNOWN'
   }));
-  const prompt=`다음 GAME_SEED 요청을 한 번의 배치로 모두 작성하라. 요청 수와 requestId/category를 정확히 보존한다. platformLocked=true인 요청은 INITIAL_TARGET_PLATFORM을 REQUESTS의 platform과 정확히 같게 작성한다. platformLocked=false인 요청은 allowedTargetPlatforms=${JSON.stringify(allowedTargetPlatforms)} 중 프로젝트 적합성에 맞는 플랫폼을 선택할 수 있다. Roblox 요청은 Roblox 네이티브 멀티플레이·소셜·모바일 조작 가능성을 열어 두고 Android 싱글플레이를 강제하지 않는다. 기본 타겟 시장은 GLOBAL이다. benchmarkCandidates가 제공되면 그 안에서만 referenceGames를 선택한다. 성공작의 핵심 재미·루프·성장·경제·UX 구조는 학습하되 세계관·비주얼·캐릭터·스토리·맵·UI 아트·소스코드는 복제하지 않는다. 소스코드는 자체 구현한다. coreLoop는 실제 플레이 행동 → 결과/피드백 → 다음 선택/보상 흐름이 드러나는 3단계 이상으로 작성한다. 초기 게임은 선택 플랫폼에서 판매 또는 수익화 가능한 제품이어야 한다. 제공되지 않은 숫자는 추정하지 않는다. REQUESTS=${JSON.stringify(requestPayload)}. JSON 스키마만 출력하라.`;
+  const prompt=`다음 GAME_SEED 요청을 한 번의 배치로 모두 작성하라. 요청 수와 requestId/category를 정확히 보존한다. gameName은 반드시 신규 독자 제목이어야 하며 forbiddenProductTitles의 어떤 제목과도 같으면 안 된다. platformLocked=true인 요청은 INITIAL_TARGET_PLATFORM을 REQUESTS의 platform과 정확히 같게 작성한다. platformLocked=false인 요청은 allowedTargetPlatforms=${JSON.stringify(allowedTargetPlatforms)} 중 프로젝트 적합성에 맞는 플랫폼을 선택할 수 있다. Roblox 요청은 Roblox 네이티브 멀티플레이·소셜·모바일 조작 가능성을 열어 두고 Android 싱글플레이를 강제하지 않는다. 기본 타겟 시장은 GLOBAL이다. benchmarkCandidates가 제공되면 그 안에서만 referenceGames를 선택한다. 성공작의 핵심 재미·루프·성장·경제·UX 구조는 학습하되 제목·세계관·비주얼·캐릭터·스토리·맵·UI 아트·소스코드는 복제하지 않는다. 소스코드는 자체 구현한다. coreLoop는 실제 플레이 행동 → 결과/피드백 → 다음 선택/보상 흐름이 드러나는 3단계 이상으로 작성하고 requiredConceptGroups를 충족한다. 초기 게임은 선택 플랫폼에서 판매 또는 수익화 가능한 제품이어야 한다. 제공되지 않은 숫자는 추정하지 않는다. REQUESTS=${JSON.stringify(requestPayload)}. JSON 스키마만 출력하라.`;
   try{
-    const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,keep_alive:'0s',format:batchSchema(targets.length),messages:[{role:'system',content:'너는 재운컴퍼니 GAME_SEED 선택 AI다. COMPANY_FLOW과 요청별 플랫폼/category를 따른다. 성공 구조는 오마주/재해석하지만 보호되는 표현과 소스코드는 복제하지 않는다. 여러 요청을 반드시 한 응답에서 완성한다.'},{role:'user',content:prompt}],options:{temperature:0.2,num_ctx:16384,num_predict:6000}}),signal:controller.signal});
+    const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,keep_alive:'0s',format:batchSchema(targets.length),messages:[{role:'system',content:'너는 재운컴퍼니 GAME_SEED 선택 AI다. COMPANY_FLOW과 요청별 플랫폼/category를 따른다. 성공 구조는 오마주/재해석하지만 기존 제품 제목, 보호되는 표현과 소스코드는 복제하지 않는다. 여러 요청을 반드시 한 응답에서 완성한다.'},{role:'user',content:prompt}],options:{temperature:0.2,num_ctx:16384,num_predict:6000}}),signal:controller.signal});
     if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
     const body=await response.json();const text=clean(body?.message?.content);if(!text)throw new Error('empty model response');
     const parsed=JSON.parse(text);if(!Array.isArray(parsed.proposals)||parsed.proposals.length!==targets.length)throw new Error(`GAME_SEED_BATCH_COUNT_MISMATCH ${parsed.proposals?.length||0}/${targets.length}`);
@@ -227,7 +277,18 @@ export async function runGameSeedBootstrap({timestamp=new Date().toISOString(),p
   const makeTarget=(requestId,platform,category,generation,{portfolioRequest=null,lockedPlatform=false}={})=>{
     const normalizedPlatform=normalizeSeedPlatform(platform)||defaultTargetPlatform;
     const profile=profileFor(normalizedPlatform,category);
-    return{requestId,platform:normalizedPlatform,category,generation,portfolioRequest,lockedPlatform,marketEvidence:sanitizeMarketEvidence(normalizedPlatform,category),benchmarkCandidates:uniq(profile.benchmarkCandidates),requiredConceptTerms:uniq(profile.requiredConceptTerms)};
+    const requiredConceptGroups=Array.isArray(profile.requiredConceptGroups)?profile.requiredConceptGroups.map(group=>uniq(group)).filter(group=>group.length):[];
+    return{
+      requestId,platform:normalizedPlatform,category,generation,portfolioRequest,lockedPlatform,
+      marketEvidence:sanitizeMarketEvidence(normalizedPlatform,category),
+      benchmarkCandidates:uniq(profile.benchmarkCandidates),
+      forbiddenProductTitles:platformBenchmarkTitles(normalizedPlatform),
+      requiredConceptTerms:uniq(profile.requiredConceptTerms),
+      requiredConceptGroups,
+      minimumRequiredConceptGroups:Math.max(0,Number(profile.minimumRequiredConceptGroups||0)),
+      minimumCoreLoop:uniq(profile.minimumCoreLoop),
+      originalWorkingTitle:clean(profile.originalWorkingTitle),
+    };
   };
   const addTarget=target=>{const key=`${target.platform}:${target.category}:${target.generation}:${target.portfolioRequest?.id||''}`;if(!keys.has(key)){keys.add(key);targets.push(target);}};
 
@@ -261,7 +322,7 @@ export async function runGameSeedBootstrap({timestamp=new Date().toISOString(),p
   let proposals;
   if(proposalProvider){
     proposals=[];
-    for(const target of targets)proposals.push(await proposalProvider({platform:target.platform,lockedPlatform:target.lockedPlatform,category:target.category,marketEvidence:target.marketEvidence,benchmarkCandidates:target.benchmarkCandidates,requiredConceptTerms:target.requiredConceptTerms,generation:target.generation,portfolioRequest:target.portfolioRequest,requestId:target.requestId,targetMarketScope:'GLOBAL',defaultTargetPlatform,allowedTargetPlatforms}));
+    for(const target of targets)proposals.push(await proposalProvider({platform:target.platform,lockedPlatform:target.lockedPlatform,category:target.category,marketEvidence:target.marketEvidence,benchmarkCandidates:target.benchmarkCandidates,forbiddenProductTitles:target.forbiddenProductTitles,requiredConceptTerms:target.requiredConceptTerms,requiredConceptGroups:target.requiredConceptGroups,minimumCoreLoop:target.minimumCoreLoop,generation:target.generation,portfolioRequest:target.portfolioRequest,requestId:target.requestId,targetMarketScope:'GLOBAL',defaultTargetPlatform,allowedTargetPlatforms}));
   }else proposals=await callModelBatch(targets);
   if(proposals.length!==targets.length)throw new Error(`GAME_SEED_BATCH_COUNT_MISMATCH ${proposals.length}/${targets.length}`);
 
