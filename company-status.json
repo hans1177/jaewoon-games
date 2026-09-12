@@ -60,7 +60,7 @@
     "existingWebGamesMaintenanceAllowed": true,
     "activeUnityProjects": 1,
     "pendingApprovals": 0,
-    "testBuilds": 6
+    "testBuilds": 7
   },
   "operations": {
     "homepage": {
@@ -769,6 +769,32 @@
       "testBuildStatus": "runtime-failed",
       "builtAt": "2026-09-11T23:56:02.407712+00:00",
       "runtimeVerificationUpdatedAt": "2026-09-12T00:00:12.390898+00:00"
+    },
+    {
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "requestId": "development-unity-seed-story-complete-rpg-chronicles-of-eldoria-34659489455",
+      "status": "ready",
+      "channel": "test",
+      "buildRoute": "github-cloud-host-personal",
+      "mobileReady": true,
+      "homepagePublished": true,
+      "homepagePublishedAt": "2026-09-12T00:12:47.573982+00:00",
+      "deviceCompatibility": "android-10+",
+      "sourceCommit": "7e74ff12f94ad432647f9a537b65cc086eb27469",
+      "releaseTag": "test-seed-story-complete-rpg-chronicles-of-eldoria-34659587734-1",
+      "release": "https://github.com/hans1177/jaewoon-games/releases/tag/test-seed-story-complete-rpg-chronicles-of-eldoria-34659587734-1",
+      "download": "https://github.com/hans1177/jaewoon-games/releases/download/test-seed-story-complete-rpg-chronicles-of-eldoria-34659587734-1/seed-story-complete-rpg-chronicles-of-eldoria-test.apk",
+      "applicationId": "com.jaewoongames.seedstorycompleterpgchroniclesofeldoria",
+      "sha256": "491d145c9088b4d0d969591ab191cbcd07761a2a6ec5bfeb4d12c291a2686478",
+      "bytes": 21088296,
+      "androidVerificationApi": 36,
+      "signatureVerified": true,
+      "installAndLaunchVerified": false,
+      "runtimeVerification": "android-16-avd-api-36-pending",
+      "runtimeVerificationSource": "github-actions",
+      "runtimeInstallLaunchVerified": false,
+      "testBuildStatus": "ready",
+      "builtAt": "2026-09-12T00:12:47.573982+00:00"
     }
   ],
   "redevelopmentReview": {
