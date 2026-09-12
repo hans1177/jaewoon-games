@@ -544,6 +544,26 @@ operationsModernization:
   managedPortfolio:
     maxMaintainedGames: 6
     maxHeavyDevelopmentWip: 3
+    demoFirstEvaluation:
+      requiredForAllManagedGames: true
+      managedGameCount: 6
+      goal: PLAYABLE_DEMO_WITH_REAL_VALIDATION
+      minimumEvidence:
+        - PLAYABLE_DEMO
+        - REAL_PLAY_OR_RUNTIME_EVIDENCE
+        - QA
+        - FIX_IF_REQUIRED
+        - REVALIDATION
+      roleAssignmentAfterDemoEvaluation: true
+      postDemoRoleTargets:
+        PRIMARY: 1
+        ACTIVE: 2
+        MAINTENANCE_VALIDATION: 2
+        INCUBATION_HOLD: 1
+      demoIsNotAutomaticLearningSample: true
+      validatedDevelopmentEvidenceMayFeedExistingLearningInputs: true
+      mustNotChangeVibeLearningChain: true
+      mustNotChangeBuildSystem: true
     roles:
       PRIMARY: 1
       ACTIVE: 2
