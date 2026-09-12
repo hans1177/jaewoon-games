@@ -75,7 +75,7 @@ function isVerifiedMemoryPositive(record={}){
   if(lower(record.lifecycle||'active')!=='active')return false;
   const qa=normalizedQa(record),task=lower(record.taskType),source=sourceKind(record),revision=clean(record.provenance?.sourceRevision??record.sourceRevision??record.sourceCommit);
   if(!revision||qa.runtime!=='PASS')return false;
-  if(task==='unity')return qa.independentQa==='PASS'&&qa.browserQa==='NOT_APPLICABLE';
+  if(task==='unity'||task==='roblox')return qa.independentQa==='PASS'&&qa.browserQa==='NOT_APPLICABLE';
   if(task==='qa'&&source==='external-black-box')return qa.independentQa==='BLACK_BOX_EVIDENCE_PASS'&&qa.browserQa==='NOT_APPLICABLE';
   return qa.independentQa==='PASS'&&qa.browserQa==='PASS';
 }
@@ -125,6 +125,7 @@ const PLAYBOOK_BASE=Object.freeze({
   bugfix:Object.freeze(['reproduce-or-bind-failure-evidence','trace-failure-to-responsible-source','repair-smallest-surface','rerun-original-failure-and-regression']),
   qa:Object.freeze(['bind-exact-revision','separate-launch-from-real-success','preserve-positive-and-negative-boundaries','require-observed-runtime-evidence']),
   unity:Object.freeze(['bind-current-source-tree-and-build','require-android-runtime-pass','require-independent-qa','preserve-save-and-core-design-lock']),
+  roblox:Object.freeze(['bind-roblox-source-and-place','separate-server-client-authority','validate-remotes-and-datastore-boundaries','run-real-roblox-runtime-and-independent-qa','verify-save-rejoin-and-mobile-ui-when-applicable','publish-only-after-exact-revision-pass']),
   graphics:Object.freeze(['rights-gate-before-derivative','never-overwrite-original','generate-3-to-5-derived-variants','score-style-silhouette-quality-animation-mobile-performance']),
   planning:Object.freeze(['retrieve-verified-project-patterns','preserve-owner-and-design-locks','compare-alternatives','separate-evidence-from-inference']),
   general:Object.freeze(['retrieve-verified-success-and-failure-memory','rank-responsible-context','compare-candidates','require-verifiable-completion']),

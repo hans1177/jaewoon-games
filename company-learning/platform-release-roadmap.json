@@ -1,0 +1,58 @@
+{
+  "version": 3,
+  "status": "EXECUTION_CONTRACT_ONLY",
+  "policySource": "COMPANY_FLOW.md",
+  "recordedAt": "2026-09-12",
+  "priority": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
+  "primaryPlatform": "ROBLOX",
+  "priorityMeaning": "DEFAULT_FOCUS_ONLY",
+  "developmentAccess": {
+    "ROBLOX": "ALWAYS_ALLOWED",
+    "UNITY": "ALWAYS_ALLOWED",
+    "FORTNITE_UEFN": "ALWAYS_ALLOWED"
+  },
+  "crossPlatformDevelopmentLockedByPhase": false,
+  "platformEntryGateAllowed": false,
+  "parallelLearningPipelineAllowed": false,
+  "roblox": {
+    "taskType": "roblox",
+    "sourceRoot": "roblox-games/",
+    "platformAdapter": "tools/vibe3-roblox-platform.mjs",
+    "trajectoryIngest": "tools/vibe3-trajectory-ingest.mjs",
+    "canonicalSampleGate": "tools/vibe2-training-sample.mjs",
+    "contractTest": "qa/vibe3-roblox-platform.test.mjs",
+    "ciContract": ".github/workflows/vibe3-engine-contract.yml",
+    "publishModeDefault": "DRY_RUN",
+    "livePublishRequiresExplicitExecute": true,
+    "cookieAuthAllowed": false
+  },
+  "unity": {
+    "existingPathPreserved": true,
+    "developmentAlwaysAllowed": true,
+    "robloxDoesNotReplaceUnity": true
+  },
+  "fortniteUefn": {
+    "developmentAlwaysAllowed": true,
+    "existingPlatformsRemainActive": true
+  },
+  "canonicalLearningChain": [
+    "VALIDATED_EVIDENCE",
+    "DISTILLATION_INGEST",
+    "VERIFIED_TRAINING_SAMPLE",
+    "DISTILLATION_STATUS",
+    "DETERMINISTIC_TRAINING_REQUEST",
+    "LOCAL_SELF_HOSTED_DATASET_BUILD",
+    "LOCAL_LORA_OR_QLORA_TRAINING",
+    "TRAINED_UNVERIFIED",
+    "FIXED_HOLDOUT_AB",
+    "CANARY",
+    "PROMOTE_OR_ROLLBACK"
+  ],
+  "forbidden": [
+    "PLATFORM_SPECIFIC_DISTILLATION_CRON",
+    "DUPLICATE_DISTILLATION_TRIGGER",
+    "SHADOW_DATASET_OR_TRAINER",
+    "PLATFORM_DEVELOPMENT_LOCK_BASED_ON_PRIORITY",
+    "RUNTIME_QA_REGRESSION_EXACT_REVISION_BYPASS"
+  ]
+}

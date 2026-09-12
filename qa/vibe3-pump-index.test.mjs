@@ -6,13 +6,15 @@ import { buildPumpArtifacts } from '../tools/vibe3-pump-index.mjs';
 
 const ordinary={sampleId:'s-code',instruction:'fix inventory save bug',output:'verified patch',taskType:'bugfix',lifecycle:'active',project:'game-a',sourceRevision:'abc1234',provenance:{sourceKind:'vibe2',sourceRevision:'abc1234'},qa:{independentQa:'PASS',browserQa:'PASS',runtime:'PASS'}};
 const unity={sampleId:'s-unity',instruction:'fix Android build',output:'verified unity patch',taskType:'unity',lifecycle:'active',project:'game-b',sourceRevision:'def5678',provenance:{sourceKind:'vibe2',sourceRevision:'def5678'},qa:{independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS'}};
+const roblox={sampleId:'s-roblox',instruction:'fix Roblox save and rejoin',output:'verified roblox patch',taskType:'roblox',lifecycle:'active',project:'game-r',sourceRevision:'abc9876',provenance:{sourceKind:'vibe2',sourceRevision:'abc9876'},qa:{independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS'}};
 const external={sampleId:'s-blackbox',instruction:'verify black box input',output:'bounded observation',taskType:'qa',lifecycle:'active',project:'block-blast',sourceRevision:'sha256:abc',provenance:{sourceKind:'external-black-box',sourceRevision:'sha256:abc'},qa:{independentQa:'BLACK_BOX_EVIDENCE_PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS'}};
 const unverified={sampleId:'bad',instruction:'guess',output:'bad',taskType:'coding',lifecycle:'active',project:'x',sourceRevision:'z',provenance:{sourceKind:'vibe2',sourceRevision:'z'},qa:{independentQa:'PASS',browserQa:'FAIL',runtime:'PASS'}};
 const trajectory={trajectoryId:'traj-ok',request:'repair inventory save runtime',outcome:'VERIFIED_WINNER',metadata:{taskType:'bugfix',project:'game-a'},finalEvidence:{runtimePass:true,qaPassed:true,regressionPassed:true,exactRevision:true,protectedStatePreserved:true,sourceRevision:'fff1111'},candidates:[{id:'c1',eligible:false,failure:'runtime crash'},{id:'c2',eligible:true,score:.9}]};
 
-const index=buildVibeVerifiedMemoryIndex({trainingSamples:[ordinary,unity,external,unverified],trajectories:[trajectory]});
-assert.equal(index.positive.length,4);
+const index=buildVibeVerifiedMemoryIndex({trainingSamples:[ordinary,unity,roblox,external,unverified],trajectories:[trajectory]});
+assert.equal(index.positive.length,5);
 assert(!index.positive.some(x=>x.id==='bad'));
+assert(index.positive.some(x=>x.id==='s-roblox'));
 assert(index.failureWarnings.some(x=>x.id==='c1'));
 assert(index.failureWarnings.every(x=>x.positiveTrainingAllowed===false));
 const retrieval=retrieveVibeVerifiedPatterns({index,request:'inventory save bug repair',taskType:'bugfix',project:'game-a'});
@@ -21,6 +23,11 @@ assert.equal(retrieval.successes[0].entry.taskType,'bugfix');
 const playbook=createVibeTaskPlaybook({taskType:'bugfix',retrieval});
 assert(playbook.checklist.includes('reproduce-or-bind-failure-evidence'));
 assert(playbook.reuse.length>0);
+const robloxRetrieval=retrieveVibeVerifiedPatterns({index,request:'Roblox save rejoin release',taskType:'roblox',project:'game-r'});
+const robloxPlaybook=createVibeTaskPlaybook({taskType:'roblox',retrieval:robloxRetrieval});
+assert.equal(robloxPlaybook.taskType,'roblox');
+assert(robloxPlaybook.checklist.includes('separate-server-client-authority'));
+assert(robloxPlaybook.checklist.includes('publish-only-after-exact-revision-pass'));
 
 const pump=createVibePumpModeContract();
 assert.equal(pump.enabled,true);
@@ -38,8 +45,9 @@ assert.equal(candidatePlan.teachers.length,2);
 assert(candidatePlan.teachers.every(x=>x.authoritative===false&&x.completionAuthority===false));
 assert.equal(candidatePlan.paidFallback,false);
 
-const artifacts=buildPumpArtifacts({trainingSamples:[ordinary,unity,external,unverified],trajectories:[trajectory]});
-assert.equal(Object.keys(artifacts.playbooks.taskTypes).length,7);
+const artifacts=buildPumpArtifacts({trainingSamples:[ordinary,unity,roblox,external,unverified],trajectories:[trajectory]});
+assert.equal(Object.keys(artifacts.playbooks.taskTypes).length,8);
+assert.equal(artifacts.playbooks.taskTypes.roblox.taskType,'roblox');
 assert(artifacts.benchmark.cases.length>0);
 assert(artifacts.benchmark.cases.every(x=>x.countsAsTrainingSample===false));
 assert(artifacts.benchmark.cases.every(x=>x.candidateCount===5&&x.maxRepairAttempts===3));
@@ -50,4 +58,4 @@ assert.match(ingestWorkflow,/VIBE2_LEARNING_RUNTIME_BRANCH:\s*vibe2-learning-run
 assert.match(ingestWorkflow,/git push --force-with-lease=/);
 assert(!ingestWorkflow.includes('gh pr create'));
 assert((localTrainingWorkflow.match(/ref:\s*vibe2-learning-runtime/g)||[]).length>=2);
-console.log('PASS Vibe3 Pump verified RAG/playbook/benchmark contract');
+console.log('PASS Vibe3 Pump verified RAG/playbook/benchmark contract including Roblox');

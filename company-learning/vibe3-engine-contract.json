@@ -50,7 +50,7 @@
     "builder": "tools/vibe3-pump-index.mjs",
     "positiveMemoryRequiresVerifiedEvidence": true,
     "failureMemoryIsWarningOnly": true,
-    "supportedPlaybooks": ["coding", "bugfix", "qa", "unity", "graphics", "planning", "general"]
+    "supportedPlaybooks": ["coding", "bugfix", "qa", "unity", "roblox", "graphics", "planning", "general"]
   },
   "trajectoryLearning": {
     "root": "company-learning/vibe3-trajectories",
@@ -102,6 +102,32 @@
     "requiredBrowserQa": "NOT_APPLICABLE",
     "requiredRuntime": "PASS",
     "normalNonUnityBrowserQaRequirementWeakened": false
+  },
+  "platformRoadmap": {
+    "enabled": true,
+    "contract": "company-learning/platform-release-roadmap.json",
+    "humanReadableSpec": "company-learning/PLATFORM_RELEASE_ROADMAP.md",
+    "priority": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
+    "currentPhase": "ROBLOX_FAST_RELEASE_STABILIZATION",
+    "unityExistingPathPreserved": true,
+    "platformSpecificEvidenceRequired": true,
+    "portableVerifiedExperienceSharedThroughV3Memory": true,
+    "separatePlatformLearningPipelineAllowed": false,
+    "phase1Implementation": {
+      "taskType": "roblox",
+      "adapter": "tools/vibe3-roblox-platform.mjs",
+      "test": "qa/vibe3-roblox-platform.test.mjs",
+      "sourceRoot": "roblox-games/",
+      "livePublishDefault": false,
+      "publishRequiresExplicitExecute": true,
+      "authSecretEnv": "ROBLOX_OPEN_CLOUD_API_KEY",
+      "universeIdEnv": "ROBLOX_UNIVERSE_ID",
+      "placeIdEnv": "ROBLOX_PLACE_ID",
+      "cookieAuthAllowed": false,
+      "browserQa": "NOT_APPLICABLE",
+      "runtime": "PASS",
+      "independentQa": "PASS"
+    }
   },
   "canonicalLearningChainUnchanged": true,
   "promotion": {
