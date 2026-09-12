@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 public static class SeedAndroidBuild
@@ -27,6 +28,11 @@ public static class SeedAndroidBuild
         PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
         PlayerSettings.Android.forceInternetPermission = false;
         PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
+        PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android, false);
+        PlayerSettings.SetGraphicsAPIs(BuildTarget.Android, new[] { GraphicsDeviceType.OpenGLES3 });
+        PlayerSettings.openGLRequireES31 = false;
+        PlayerSettings.openGLRequireES31AEP = false;
+        PlayerSettings.openGLRequireES32 = false;
 
         BuildPlayerOptions options = new BuildPlayerOptions
         {
