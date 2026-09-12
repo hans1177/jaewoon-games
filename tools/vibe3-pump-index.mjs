@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { buildVibeVerifiedMemoryIndex, retrieveVibeVerifiedPatterns, createVibeTaskPlaybook } from '../assets/vibe-v3-engine.js';
 
 const TASK_TYPES=Object.freeze(['coding','bugfix','qa','unity','roblox','graphics','planning','general']);
+const PORTABLE_WEB_QUERY='webgame touch input mobile ui save load resume performance responsive regression core loop';
 const clean=v=>String(v??'').trim();
 function readJson(file){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return null;}}
 function listJson(dir){if(!fs.existsSync(dir))return[];return fs.readdirSync(dir).filter(name=>name.endsWith('.json')).sort().map(name=>({file:path.join(dir,name),record:readJson(path.join(dir,name))})).filter(item=>item.record);}
@@ -22,9 +23,10 @@ export function buildPumpArtifacts({trainingSamples=[],trajectories=[],maxBenchm
     for(const attempt of trajectory?.repairAttempts||[]){if(!attempt?.pass)failures.push({...attempt,request:trajectory.request,taskType:trajectory.metadata?.taskType,project:trajectory.metadata?.project});}
   }
   const index=buildVibeVerifiedMemoryIndex({trainingSamples,trajectories,failures});
-  const playbooks={version:1,generation:'V3-PUMP',generatedFrom:'VERIFIED_MEMORY_ONLY',taskTypes:{},policy:{localWeightTrainingRequired:false,paidApiRequired:false,benchmarkCountsAsTrainingSample:false}};
+  const playbooks={version:1,generation:'V3-PUMP',generatedFrom:'VERIFIED_MEMORY_ONLY',taskTypes:{},policy:{localWeightTrainingRequired:false,paidApiRequired:false,benchmarkCountsAsTrainingSample:false,portableWebContextForRoblox:true,platformEvidenceTransferAllowed:false}};
   for(const taskType of TASK_TYPES){
-    const retrieval=retrieveVibeVerifiedPatterns({index,request:`${taskType} verified implementation repair QA patterns`,taskType,topKSuccess:8,topKFailure:6});
+    const query=`${taskType} verified implementation repair QA patterns${taskType==='roblox'?` ${PORTABLE_WEB_QUERY}`:''}`;
+    const retrieval=retrieveVibeVerifiedPatterns({index,request:query,taskType,topKSuccess:8,topKFailure:6});
     playbooks.taskTypes[taskType]=createVibeTaskPlaybook({taskType,retrieval});
   }
   const benchmarkSeeds=[];
