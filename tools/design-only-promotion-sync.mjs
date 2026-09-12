@@ -1,18 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
+import {resolveSelectedPlatform,adapterForPlatform,canonicalTargetStep,canonicalTargetWaitingState} from './company-selected-platform-router.mjs';
 
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');
 const nowIso=()=>new Date().toISOString();
-const ALLOWED_TARGET_PLATFORMS=new Set(['ROBLOX','UNITY','FORTNITE_UEFN']);
-const selectedPlatformOf=seed=>{
-  const raw=String(seed?.INITIAL_TARGET_PLATFORM||'').trim().toUpperCase().replaceAll('-','_');
-  if(raw==='ANDROID_MOBILE'||raw==='UNITY_ANDROID')return 'UNITY';
-  if(raw==='UEFN'||raw==='FORTNITE')return 'FORTNITE_UEFN';
-  if(ALLOWED_TARGET_PLATFORMS.has(raw))return raw;
-  return 'ROBLOX';
-};
+const selectedPlatformOf=seed=>resolveSelectedPlatform(seed?.INITIAL_TARGET_PLATFORM||'',seed)||'ROBLOX';
+const targetSourcePathOf=(gameId,platform)=>`${adapterForPlatform(platform)?.sourceRoot||''}${gameId}`;
 
 export function promoteReadyDesignSeeds({root='.'}={}){
   const p=(...parts)=>path.join(root,...parts);
@@ -44,6 +39,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       && artbook?.vibe2Used!==true;
     if(!ready){skipped.push({gameId,reason:'DESIGN_BASELINE_NOT_READY'});continue;}
     const selectedPlatform=selectedPlatformOf(seed);
+    const targetSourcePath=targetSourcePathOf(gameId,selectedPlatform);
 
     seed.productionClass='DEVELOPMENT_CONFIRMED';
     seed.productionTier=2;
@@ -54,6 +50,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       from:'DESIGN_ONLY',to:'DEVELOPMENT_CONFIRMED',
       reason:'DESIGN_BASELINE_READY',
       selectedPlatform,
+      targetSourcePath,
       designBaselineSource:artbook.sourceDesign||null,
       artbookSource:`artbook-submissions/${gameId}/current.json`,
       promotedAt:seed?.promotion?.promotedAt||stamp,
@@ -65,7 +62,8 @@ export function promoteReadyDesignSeeds({root='.'}={}){
         id:`SEED-${seed.seedId||gameId}`,
         slug:gameId,
         name:seed.gameName||gameId,
-        sourcePath:`web-games/${gameId}`,
+        sourcePath:targetSourcePath,
+        webArchivePath:`web-games/${gameId}`,
         protectedValues:['core-loop','design-baseline','save-meaning'],
         developmentFocus:{scores:{playability:0,distinctiveness:0,developmentEfficiency:0,scalability:0,lowBlockage:0},total:0,evidenceNote:'승격 직후. 선택 플랫폼 실검증 근거 수집 전.'},
       };
@@ -75,13 +73,14 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       productionClass:'DEVELOPMENT_CONFIRMED',
       productionClassSource:'DESIGN_BASELINE_READY',
       profileStatus:'DEVELOPMENT_CONFIRMED',
-      // Keep the legacy mode/targetEngine fields until the existing status/planner chain is migrated atomically.
-      mode:'WEB_FIRST_IMPLEMENTATION',
+      mode:'SELECTED_PLATFORM_IMPLEMENTATION',
       productionTier:2,
       productionTierSource:'DISPLAY_ALIAS_FROM_PRODUCTION_CLASS',
-      targetEngine:'web',
+      targetEngine:selectedPlatform,
       selectedPlatform,
       targetPlatform:selectedPlatform,
+      sourcePath:targetSourcePath,
+      webArchivePath:project.webArchivePath||`web-games/${gameId}`,
       designBaselineSource:artbook.sourceDesign||null,
       designArtbookSource:`artbook-submissions/${gameId}/current.json`,
     });
@@ -107,10 +106,11 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       productionTierSource:'DISPLAY_ALIAS_FROM_PRODUCTION_CLASS',
       selectedPlatform,
       targetPlatform:selectedPlatform,
-      productionTarget:'web-first-playable',
+      targetSourcePath,
+      productionTarget:selectedPlatform,
       homepageStage:`2분류 개발확정 · ${selectedPlatform} 검증 준비`,
       homepageRecentWork:`DESIGN_BASELINE_READY 통과. 선택 플랫폼 ${selectedPlatform} 실제 검증 대기. Web은 선택적 테스트베드.`,
-      homepageWebPlayable:false,
+      homepageWebPlayable:Boolean(game.hasWebArchive),
       homepageArtbookPath:game.homepageArtbookPath||`/artbook-viewer.html?game=${encodeURIComponent(gameId)}`,
     });
 
@@ -119,8 +119,10 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       item={
         gameId,seedId:seed.seedId||null,gameName:seed.gameName||gameId,
         productionClass:'DEVELOPMENT_CONFIRMED',status:'PENDING',currentStep:'LOAD_DESIGN_BASELINE',
+        canonicalState:'PENDING_SELECTED_PLATFORM_BIND',
         selectedPlatform,targetPlatform:selectedPlatform,
-        sourcePath:`web-games/${gameId}`,
+        sourcePath:targetSourcePath,targetSourcePath,
+        optionalWebSourcePath:`web-games/${gameId}`,
         designBaselineSource:artbook.sourceDesign||null,
         artbookSource:`artbook-submissions/${gameId}/current.json`,
         enqueuedAt:stamp,
@@ -130,10 +132,17 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       item.productionClass='DEVELOPMENT_CONFIRMED';
       item.selectedPlatform=selectedPlatform;
       item.targetPlatform=selectedPlatform;
+      item.targetSourcePath=targetSourcePath;
+      item.optionalWebSourcePath=item.optionalWebSourcePath||`web-games/${gameId}`;
+      item.sourcePath=targetSourcePath;
       item.designBaselineSource=artbook.sourceDesign||item.designBaselineSource||null;
       item.artbookSource=`artbook-submissions/${gameId}/current.json`;
       if(!item.currentStep)item.currentStep='LOAD_DESIGN_BASELINE';
       if(!item.status)item.status='PENDING';
+      if(String(item.status).toUpperCase()==='ACTIVE'&&String(item.currentStep).toUpperCase()==='UNITY_ANDROID_TECHNICAL_VALIDATION'){
+        item.currentStep=canonicalTargetStep();
+        item.canonicalState=canonicalTargetWaitingState();
+      }
     }
     promoted.push(gameId);
   }

@@ -12,17 +12,20 @@ const webEvidencePath=String(args['web-evidence']||'').trim();
 const output=String(args.output||`unity-games/${gameId}`).trim().replaceAll('\\','/');
 if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error(`invalid game id: ${gameId}`);
 if(!baselinePath||!fs.existsSync(baselinePath))throw new Error(`design baseline missing: ${baselinePath}`);
-if(!webEvidencePath||!fs.existsSync(webEvidencePath))throw new Error(`web evidence missing: ${webEvidencePath}`);
+if(webEvidencePath&&!fs.existsSync(webEvidencePath))throw new Error(`web evidence missing: ${webEvidencePath}`);
 if(!/^unity-games\/[A-Za-z0-9._-]+$/.test(output)||output.includes('..'))throw new Error(`invalid Unity output: ${output}`);
 
 const UNITY_EDITOR_VERSION='6000.6.0f1';
 const UNITY_EDITOR_REVISION='f7f8ed4d1e24';
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const baseline=readJson(baselinePath);
-const web=readJson(webEvidencePath);
-const webState=String(web.state||web.status||'').toUpperCase();
-if(!(web.pass===true||web.validated===true||webState==='PASS'||webState==='PASSED'||webState==='VALIDATED')) {
-  throw new Error('REAL_WEB_GAMEPLAY_PASS_REQUIRED');
+let web=null;
+let webEvidenceBound=false;
+if(webEvidencePath){
+  web=readJson(webEvidencePath);
+  const webState=String(web.state||web.status||'').toUpperCase();
+  webEvidenceBound=Boolean(web.pass===true||web.validated===true||webState==='PASS'||webState==='PASSED'||webState==='VALIDATED');
+  if(!webEvidenceBound)throw new Error('OPTIONAL_WEB_EVIDENCE_MUST_PASS_WHEN_PROVIDED');
 }
 const design=baseline.content||baseline;
 const coreLoop=Array.isArray(design.coreLoop)?design.coreLoop.map(v=>String(v).trim()).filter(Boolean).slice(0,5):[];
@@ -307,13 +310,14 @@ public static class SeedAndroidBuild
 
 fs.writeFileSync(path.join(output,'Assets/Scripts/SeedTechnicalPrototype.cs'),runtime);
 fs.writeFileSync(path.join(output,'Assets/Editor/SeedAndroidBuild.cs'),build);
-fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — DEVELOPMENT_CONFIRMED Unity technical prototype\n\n- gameId: \`${gameId}\`\n- mode: \`${category}\`\n- Unity editor: \`${UNITY_EDITOR_VERSION}\` (${UNITY_EDITOR_REVISION})\n- source design: \`${baselinePath}\`\n- source web evidence: \`${webEvidencePath}\`\n- build method: \`SeedAndroidBuild.Build\`\n- purpose: \`UNITY_ANDROID_TECHNICAL_VALIDATION\`\n- public/release authority: **NO**\n\nThis project is generated from the locked design baseline only after real Web gameplay validation PASS.\nIt is a one-game-one-Unity-project technical prototype, not a RELEASE_CONFIRMED production build.\n`);
+fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — DEVELOPMENT_CONFIRMED Unity technical prototype\n\n- gameId: \`${gameId}\`\n- mode: \`${category}\`\n- Unity editor: \`${UNITY_EDITOR_VERSION}\` (${UNITY_EDITOR_REVISION})\n- source design: \`${baselinePath}\`\n- optional source web evidence: \`${webEvidencePath||'NONE'}\`\n- build method: \`SeedAndroidBuild.Build\`\n- purpose: \`TARGET_PLATFORM_TECHNICAL_VALIDATION\`\n- public/release authority: **NO**\n\nThis project is generated directly from the locked design baseline. Web gameplay evidence is optional; when supplied it must be a real PASS.\nIt is a one-game-one-Unity-project technical prototype, not a RELEASE_CONFIRMED production build.\n`);
 fs.writeFileSync(path.join(output,'prototype-source.json'),JSON.stringify({
-  version:1,gameId,gameName,category,identity,coreLoop,
+  version:2,gameId,gameName,category,identity,coreLoop,
+  selectedPlatform:'UNITY',
   unityEditorVersion:UNITY_EDITOR_VERSION,unityEditorRevision:UNITY_EDITOR_REVISION,
-  designBaseline:baselinePath,webEvidence:webEvidencePath,
-  webEvidenceBound:true,productionClass:'DEVELOPMENT_CONFIRMED',
-  purpose:'UNITY_ANDROID_TECHNICAL_VALIDATION',releaseAuthority:false,
+  designBaseline:baselinePath,webEvidence:webEvidencePath||null,
+  webEvidenceBound,webEvidenceOptional:true,productionClass:'DEVELOPMENT_CONFIRMED',
+  purpose:'TARGET_PLATFORM_TECHNICAL_VALIDATION',releaseAuthority:false,
   generatedAt:new Date().toISOString()
 },null,2)+'\n');
 console.log(`UNITY_TECH_PROJECT=${output}`);
@@ -321,5 +325,6 @@ console.log(`UNITY_EDITOR_VERSION=${UNITY_EDITOR_VERSION}`);
 console.log(`UNITY_EDITOR_REVISION=${UNITY_EDITOR_REVISION}`);
 console.log(`UNITY_TECH_MODE=${category}`);
 console.log('UNITY_TECH_BUILD_METHOD=SeedAndroidBuild.Build');
-console.log('WEB_EVIDENCE_BOUND=YES');
+console.log(`WEB_EVIDENCE_BOUND=${webEvidenceBound?'YES':'NO'}`);
+console.log('WEB_EVIDENCE_OPTIONAL=YES');
 console.log('RELEASE_AUTHORITY=NO');

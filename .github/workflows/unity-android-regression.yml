@@ -1,0 +1,126 @@
+name: Unity Android Exact Artifact Regression
+run-name: Unity Android Regression ${{ inputs.run_id }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Unity cloud build run id whose exact APK must be regression tested'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: unity-android-regression-${{ inputs.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout regression tools
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Validate upstream run id
+        id: upstream
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_id='${{ inputs.run_id }}'
+          [[ "$run_id" =~ ^[0-9]+$ ]] || { echo '[JAEWOON_BUILD_ERROR:REGRESSION_RUN_ID_INVALID] invalid upstream run id' >&2; exit 2; }
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+
+      - name: Download exact upstream build artifact
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ steps.upstream.outputs.run_id }}
+          path: upstream-artifacts
+
+      - name: Bind exact artifact identity
+        id: apk
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="$(find upstream-artifacts -type f -name '*.apk' -size +0c | head -n 1 || true)"
+          info="$(find upstream-artifacts -type f -name build-info.json -size +0c | head -n 1 || true)"
+          [[ -n "$apk" && -s "$apk" && -n "$info" && -s "$info" ]] || { echo '[JAEWOON_BUILD_ERROR:REGRESSION_ARTIFACT_MISSING] exact build artifact missing' >&2; exit 3; }
+          expected="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8-sig"))["sha256"])' "$info")"
+          source_commit="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8-sig"))["sourceCommit"])' "$info")"
+          actual="$(sha256sum "$apk" | awk '{print $1}')"
+          [[ "$expected" =~ ^[0-9a-f]{64}$ && "$actual" == "$expected" ]] || { echo '[JAEWOON_BUILD_ERROR:REGRESSION_ARTIFACT_MISMATCH] APK SHA mismatch' >&2; exit 4; }
+          [[ "$source_commit" =~ ^[0-9a-f]{40}$ ]] || { echo '[JAEWOON_BUILD_ERROR:REGRESSION_SOURCE_INVALID] invalid source revision' >&2; exit 5; }
+          echo "path=$apk" >> "$GITHUB_OUTPUT"
+          echo "sha256=$actual" >> "$GITHUB_OUTPUT"
+          echo "source_commit=$source_commit" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare Android 16 regression emulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
+          [[ -n "$SDK" ]] || { echo '[JAEWOON_BUILD_ERROR:ANDROID_SDK_MISSING] Android SDK path missing' >&2; exit 6; }
+          sdkmanager_bin="$(find "$SDK/cmdline-tools" -type f -name sdkmanager 2>/dev/null | sort -V | tail -n 1 || true)"
+          avdmanager_bin="$(find "$SDK/cmdline-tools" -type f -name avdmanager 2>/dev/null | sort -V | tail -n 1 || true)"
+          [[ -x "$sdkmanager_bin" && -x "$avdmanager_bin" ]] || { echo '[JAEWOON_BUILD_ERROR:REGRESSION_ANDROID_TOOLS_MISSING] Android command line tools missing' >&2; exit 7; }
+          cmdline_bin="$(dirname "$sdkmanager_bin")"
+          avd_home="$RUNNER_TEMP/android-avd-regression"
+          mkdir -p "$avd_home"
+          export ANDROID_AVD_HOME="$avd_home"
+          export PATH="$cmdline_bin:$SDK/platform-tools:$SDK/emulator:$PATH"
+          echo "ANDROID_AVD_HOME=$avd_home" >> "$GITHUB_ENV"
+          echo "$cmdline_bin" >> "$GITHUB_PATH"
+          echo "$SDK/platform-tools" >> "$GITHUB_PATH"
+          echo "$SDK/emulator" >> "$GITHUB_PATH"
+          yes | "$sdkmanager_bin" --licenses >/dev/null || true
+          "$sdkmanager_bin" 'platform-tools' 'emulator' 'build-tools;36.0.0' 'system-images;android-36;google_apis;x86_64'
+          echo no | "$avdmanager_bin" create avd --force --name jaewoon-regression --package 'system-images;android-36;google_apis;x86_64' --device 'pixel_6'
+          if [[ -e /dev/kvm ]]; then sudo chmod 666 /dev/kvm || true; fi
+          nohup "$SDK/emulator/emulator" -avd jaewoon-regression -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > /tmp/jaewoon-regression-emulator.log 2>&1 &
+
+      - name: Run exact-artifact regression smoke
+        env:
+          APK: ${{ steps.apk.outputs.path }}
+          BUILD_ID: ${{ steps.apk.outputs.sha256 }}
+          SOURCE_REVISION: ${{ steps.apk.outputs.source_commit }}
+          UPSTREAM_RUN: ${{ steps.upstream.outputs.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash tools/unity-apk-runtime-smoke.sh "$APK" qa-artifacts/unity-regression
+          python3 - <<'PY'
+          import json, os, pathlib
+          path=pathlib.Path('qa-artifacts/unity-regression/evidence.json')
+          data=json.loads(path.read_text(encoding='utf-8'))
+          if data.get('qaPassEligibleRuntimeEvidence') is not True:
+              raise SystemExit('regression runtime evidence is not pass eligible')
+          data.update({
+              'state':'PASS',
+              'regression':'PASS',
+              'regressionPassed':True,
+              'upstreamBuildRunId':int(os.environ['UPSTREAM_RUN']),
+              'buildId':os.environ['BUILD_ID'],
+              'apkSha256':os.environ['BUILD_ID'],
+              'buildSourceCommit':os.environ['SOURCE_REVISION'],
+              'exactArtifactRegression':True
+          })
+          path.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          PY
+          echo 'UNITY_EXACT_ARTIFACT_REGRESSION=PASS'
+
+      - name: Upload exact-artifact regression evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-regression-${{ steps.upstream.outputs.run_id }}
+          path: |
+            qa-artifacts/unity-regression/
+            /tmp/jaewoon-regression-emulator.log
+          if-no-files-found: warn
+          retention-days: 14
