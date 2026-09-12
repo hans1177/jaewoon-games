@@ -38,7 +38,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -62,7 +63,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin company-runtime
+          git fetch --no-tags --depth=1 origin company-runtime
           git show origin/company-runtime:development-queue.json > /tmp/development-queue.json
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -125,12 +126,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.prepare.outputs.main_sha }}
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Fetch company runtime and source refs
-        run: git fetch origin company-runtime '+refs/heads/development/*:refs/remotes/origin/development/*' || git fetch origin company-runtime
+      - name: Fetch only current company runtime state
+        run: git fetch --no-tags --depth=1 origin company-runtime
 
       - name: Materialize locked design and runtime catalog
         id: context
@@ -159,6 +161,7 @@ jobs:
       - name: Change detection and exact-source reuse
         id: source
         env:
+          GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ matrix.item.gameId }}
           GAME_NAME: ${{ matrix.item.gameName }}
           EXISTING_BRANCH: ${{ matrix.item.unityCandidateBranch }}
@@ -169,20 +172,38 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "$EXISTING_SOURCE" =~ ^[0-9a-f]{40}$ ]] && git fetch origin "$EXISTING_SOURCE" >/dev/null 2>&1 && git cat-file -e "${EXISTING_SOURCE}^{commit}"; then
-            git checkout "$EXISTING_SOURCE" -- "$PROJECT" 2>/dev/null || true
-            if [[ -f "$PROJECT/ProjectSettings/ProjectVersion.txt" ]]; then
-              node - "$PROJECT" <<'NODE'
-              const fs=require('fs');
-              const [project]=process.argv.slice(2);
-              const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
-              const game=(catalog.games||[]).find(x=>x.id===process.env.GAME_ID);
-              if(!game)throw new Error(`runtime catalog game missing: ${process.env.GAME_ID}`);
-              game.selectedPlatform='UNITY';game.targetPlatform='UNITY';game.unityProjectPath=project;game.productionClass='DEVELOPMENT_CONFIRMED';
-              fs.writeFileSync('game-catalog.json',JSON.stringify(catalog,null,2)+'\n');
-              NODE
-              echo "source_revision=$EXISTING_SOURCE" >> "$GITHUB_OUTPUT"
-              echo "branch=$EXISTING_BRANCH" >> "$GITHUB_OUTPUT"
+          bind_catalog() {
+            node -e 'const fs=require("fs");const project=process.argv[1];const catalog=JSON.parse(fs.readFileSync("game-catalog.json","utf8"));const game=(catalog.games||[]).find(x=>x.id===process.env.GAME_ID);if(!game)throw new Error(`runtime catalog game missing: ${process.env.GAME_ID}`);game.selectedPlatform="UNITY";game.targetPlatform="UNITY";game.unityProjectPath=project;game.productionClass="DEVELOPMENT_CONFIRMED";game.homepagePublicationApproved=false;game.publishTestBuildWhenReady=false;fs.writeFileSync("game-catalog.json",JSON.stringify(catalog,null,2)+"\n");' "$PROJECT"
+          }
+
+          reuse_branch=''
+          reuse_source=''
+          if [[ -n "$EXISTING_BRANCH" ]]; then
+            if git fetch --no-tags --depth=1 origin "$EXISTING_BRANCH:refs/remotes/origin/unity-reuse" >/dev/null 2>&1; then
+              candidate="$(git rev-parse refs/remotes/origin/unity-reuse)"
+              if [[ ! "$EXISTING_SOURCE" =~ ^[0-9a-f]{40}$ || "$candidate" == "$EXISTING_SOURCE" ]]; then
+                reuse_branch="$EXISTING_BRANCH"
+                reuse_source="$candidate"
+              fi
+            fi
+          fi
+
+          if [[ -z "$reuse_source" ]]; then
+            prefix="development/unity-tech-${GAME_ID}-"
+            latest_branch="$(gh api --paginate "repos/$GITHUB_REPOSITORY/git/matching-refs/heads/$prefix" --jq '.[].ref' 2>/dev/null | sed 's#^refs/heads/##' | awk -F- '{print $NF "\t" $0}' | sort -n | tail -n1 | cut -f2- || true)"
+            if [[ -n "$latest_branch" ]] && git fetch --no-tags --depth=1 origin "$latest_branch:refs/remotes/origin/unity-history" >/dev/null 2>&1; then
+              reuse_branch="$latest_branch"
+              reuse_source="$(git rev-parse refs/remotes/origin/unity-history)"
+              echo "UNITY_SOURCE_MIGRATION_BRANCH=$reuse_branch"
+            fi
+          fi
+
+          if [[ "$reuse_source" =~ ^[0-9a-f]{40}$ ]]; then
+            git checkout "$reuse_source" -- "$PROJECT" "$REQUEST" 2>/dev/null || true
+            if [[ -f "$PROJECT/ProjectSettings/ProjectVersion.txt" && -f "$REQUEST" ]]; then
+              bind_catalog
+              echo "source_revision=$reuse_source" >> "$GITHUB_OUTPUT"
+              echo "branch=$reuse_branch" >> "$GITHUB_OUTPUT"
               echo 'source_reused=true' >> "$GITHUB_OUTPUT"
               echo 'CHANGE_DETECTION=UNCHANGED_SOURCE_REUSED'
               exit 0
@@ -194,16 +215,7 @@ jobs:
             --game-name="$GAME_NAME" \
             --baseline="$DESIGN_SOURCE" \
             --output="$PROJECT"
-          node - "$PROJECT" <<'NODE'
-          const fs=require('fs');
-          const [project]=process.argv.slice(2);
-          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
-          const game=(catalog.games||[]).find(x=>x.id===process.env.GAME_ID);
-          if(!game)throw new Error(`runtime catalog game missing: ${process.env.GAME_ID}`);
-          game.selectedPlatform='UNITY';game.targetPlatform='UNITY';game.unityProjectPath=project;game.productionClass='DEVELOPMENT_CONFIRMED';
-          game.homepagePublicationApproved=false;game.publishTestBuildWhenReady=false;
-          fs.writeFileSync('game-catalog.json',JSON.stringify(catalog,null,2)+'\n');
-          NODE
+          bind_catalog
           branch="development/unity-tech-${GAME_ID}-${GITHUB_RUN_ID}"
           git config user.name 'jaewoon-development-unity-runtime'
           git config user.email 'actions@users.noreply.github.com'
@@ -339,7 +351,7 @@ jobs:
           source="$(node -e "const b=require(process.argv[1]);process.stdout.write(String(b.sourceCommit||''))" "$info")"
           actual="$(sha256sum "$apk" | awk '{print $1}')"
           [[ "$actual" == "$expected" && "$source" == "$SOURCE_REVISION" ]] || { echo 'immutable artifact/source mismatch' >&2; exit 4; }
-          git fetch origin "$source" >/dev/null 2>&1 || true
+          git fetch --no-tags --depth=1 origin "$source" >/dev/null 2>&1 || true
           source_tree="$(git rev-parse "${source}^{tree}")"
           node - "$info" "$source_tree" <<'NODE'
           const fs=require('fs');const [file,tree]=process.argv.slice(2);const b=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));b.sourceTreeSha=tree;fs.writeFileSync(file,JSON.stringify(b,null,2)+'\n');
@@ -599,7 +611,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: company-runtime
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false
       - name: Download all checkpoint packages including failed-stage jobs
         id: packages
         continue-on-error: true
@@ -616,13 +629,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin company-runtime
+          git fetch --no-tags --depth=1 origin company-runtime
           git reset --hard origin/company-runtime
-          if [[ -d /tmp/development-unity-runtime/runtime-persist/design ]]; then cp -R /tmp/development-unity-runtime/runtime-persist/design/. design/; fi
+          checkpoint_root=''
+          if [[ -d /tmp/development-unity-runtime/runtime-persist/queue ]]; then
+            checkpoint_root=/tmp/development-unity-runtime/runtime-persist
+          elif [[ -d /tmp/development-unity-runtime/queue ]]; then
+            checkpoint_root=/tmp/development-unity-runtime
+          fi
+          [[ -n "$checkpoint_root" ]] || { echo 'checkpoint queue directory missing after artifact extraction' >&2; find /tmp/development-unity-runtime -maxdepth 3 -type d -print; exit 15; }
+          export CHECKPOINT_ROOT="$checkpoint_root"
+          if [[ -d "$checkpoint_root/design" ]]; then cp -R "$checkpoint_root/design/." design/; fi
           node <<'NODE'
           const fs=require('fs'),path=require('path');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
-          const dir='/tmp/development-unity-runtime/runtime-persist/queue';
+          const dir=path.join(process.env.CHECKPOINT_ROOT,'queue');
           const updates=fs.readdirSync(dir).filter(x=>x.endsWith('.json')&&!x.endsWith('.evidence.json')).map(x=>JSON.parse(fs.readFileSync(path.join(dir,x),'utf8')));
           let anyPassed=false,anyFailed=false;
           for(const update of updates){const item=(queue.items||[]).find(x=>x.gameId===update.gameId);if(!item)throw new Error(`queue item missing: ${update.gameId}`);Object.assign(item,update);if(update.contractCanaryPassed)queue.executionContractVersion=1;if(update.executionEvidence?.failureStage)anyFailed=true;else anyPassed=true;}
@@ -638,7 +659,7 @@ jobs:
           git diff --cached --check
           if ! git diff --cached --quiet; then
             git commit -m 'runtime: persist Unity exact-stage checkpoints [skip ci]'
-            for attempt in 1 2 3;do if git push origin HEAD:company-runtime;then break;fi;git fetch origin company-runtime;git rebase origin/company-runtime||{ git rebase --abort||true;exit 1;};sleep $((attempt*2));done
+            for attempt in 1 2 3;do if git push origin HEAD:company-runtime;then break;fi;git fetch --no-tags origin company-runtime;git rebase origin/company-runtime||{ git rebase --abort||true;exit 1;};sleep $((attempt*2));done
           fi
           anyPassed="$(node -e "process.stdout.write(String(require('/tmp/persist-result.json').anyPassed))")"
           anyFailed="$(node -e "process.stdout.write(String(require('/tmp/persist-result.json').anyFailed))")"
