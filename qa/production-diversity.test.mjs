@@ -19,6 +19,7 @@ function fixture(){
   return {
     portfolio:{
       productionClassPolicy:{fixedCounts:false,countsDerivedFromMembership:true,portfolioDiversity:{enabled:true,maxFocusScoreGap:1}},
+      developmentFocusPolicy:{maxFocusedGames:1},
       projects:assignments.map(([id,slug,total,productionClass])=>project(id,slug,total,productionClass)),
     },
     catalog:{games:assignments.map(([,slug,,productionClass,genre])=>game(slug,genre,productionClass))},
@@ -49,6 +50,40 @@ test('status sync preserves semantic memberships without numeric tier state or f
   assert.equal(portfolio.projects.find(row=>row.id==='P6').productionClass,'DESIGN_ONLY');
   assert.equal(catalog.games.find(row=>row.id==='monster-a').homepageCategory,'design-only');
   assert.equal(Object.hasOwn(catalog.games.find(row=>row.id==='monster-a'),'productionTier'),false);
+});
+
+test('selected platform drives runtime target while Web remains optional validation only',()=>{
+  const portfolio={
+    productionClassPolicy:{fixedCounts:false,countsDerivedFromMembership:true,portfolioDiversity:{enabled:true,maxFocusScoreGap:1}},
+    developmentFocusPolicy:{maxFocusedGames:1},
+    projects:[
+      {id:'R',slug:'r',sourcePath:'web-games/r',productionSourcePath:'roblox-games/r',productionClass:'RELEASE_CONFIRMED',selectedPlatform:'ROBLOX',developmentFocus:{total:8}},
+      {id:'U',slug:'u',sourcePath:'web-games/u',productionSourcePath:'unity-games/u',productionClass:'RELEASE_CONFIRMED',selectedPlatform:'UNITY',unityProjectReady:true,developmentFocus:{total:9}},
+      {id:'F',slug:'f',sourcePath:'web-games/f',productionSourcePath:'uefn-games/f',productionClass:'RELEASE_CONFIRMED',selectedPlatform:'FORTNITE_UEFN',developmentFocus:{total:7}},
+      {id:'D',slug:'d',sourcePath:'web-games/d',productionClass:'DEVELOPMENT_CONFIRMED',developmentFocus:{total:6}},
+    ],
+  };
+  const catalog={games:[
+    {id:'r',productionClass:'RELEASE_CONFIRMED',selectedPlatform:'ROBLOX',homepageWebPlayable:true},
+    {id:'u',productionClass:'RELEASE_CONFIRMED',selectedPlatform:'UNITY',homepageWebPlayable:true},
+    {id:'f',productionClass:'RELEASE_CONFIRMED',selectedPlatform:'FORTNITE_UEFN',homepageWebPlayable:true},
+    {id:'d',productionClass:'DEVELOPMENT_CONFIRMED',homepageWebPlayable:true},
+  ]};
+  const result=syncProductionClasses({portfolio,catalog,artbooks:{artbooks:[]},filesystem:fsStub});
+  assert.equal(portfolio.projects.find(row=>row.id==='R').targetEngine,'roblox');
+  assert.equal(portfolio.projects.find(row=>row.id==='U').targetEngine,'unity-android');
+  assert.equal(portfolio.projects.find(row=>row.id==='F').targetEngine,'fortnite-uefn');
+  const dev=portfolio.projects.find(row=>row.id==='D');
+  assert.equal(dev.targetEngine,'platform-selection-required');
+  assert.equal(dev.mode,'OPTIONAL_WEB_GAMEPLAY_TESTBED');
+  assert.equal(dev.webPurpose,'OPTIONAL_GAMEPLAY_VALIDATION_TESTBED');
+  assert.equal(portfolio.productionClassPolicy.classes.RELEASE_CONFIRMED.engine,'PROJECT_SELECTED_PLATFORM');
+  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.engine,'PROJECT_SELECTED_PLATFORM');
+  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.webBeforeTargetPlatformByDefault,false);
+  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.targetPlatformMayRunImmediately,true);
+  assert.equal(Object.hasOwn(portfolio.developmentFocusPolicy,'developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus'),false);
+  assert.equal(portfolio.developmentFocusPolicy.optionalWebGameplayTestbedAllowedAlongsideReleaseFocus,true);
+  assert.equal((result.state.ranking||[]).some(row=>Object.hasOwn(row,'unityReady')),false);
 });
 
 test('diversity selector remains diagnostic-only and does not control membership',()=>{
