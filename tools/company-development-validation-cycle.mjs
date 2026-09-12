@@ -1,8 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {PRODUCTION_CLASSES,productionClassOf,tierAliasForProductionClass} from './production-classification.mjs';
+import {COMPANY_DEPARTMENT_ROLES} from '../assets/company-department-standards.js';
 
-const ROLES=['planning','graphics','development','qa','balance'];
+const ROLES=[...COMPANY_DEPARTMENT_ROLES];
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
@@ -14,6 +15,8 @@ function hash(value){let h=2166136261;for(const ch of String(value)){h^=ch.codeP
 const directive=readJson('company-directive.json',{});
 const ai=directive.ai||{};
 const numericLabels=directive.production?.numericLabels||{};
+const configuredRoles=Array.isArray(ai.departments)?ai.departments.map(clean).filter(Boolean):[];
+if(JSON.stringify(configuredRoles)!==JSON.stringify(ROLES))throw new Error(`DEPARTMENT_ROLE_SYNC_GATE: directive=${configuredRoles.join(',')} standards=${ROLES.join(',')}`);
 const pool=uniq(clean(process.env.COMPANY_MODEL_POOL).split(',').filter(Boolean).length?clean(process.env.COMPANY_MODEL_POOL).split(','):(ai.modelPool||[]));
 const minModels=Number(ai.minDistinctModelsPerDepartment||3);
 const reviewModelCount=Math.max(minModels,Number(ai.departmentReviewModelCount||minModels));
@@ -54,7 +57,7 @@ const MEMBER_REVIEW=reviewSchema(1,120);
 const REVIEW=reviewSchema(2,160);
 const REVIEWS={type:'object',required:ROLES,properties:Object.fromEntries(ROLES.map(r=>[r,MEMBER_REVIEW])),additionalProperties:false};
 const REBUTTAL={type:'object',required:['accept','challenge','revision','reason'],properties:{accept:shortList(2,140),challenge:shortList(2,140),revision:shortList(2,140),reason:shortString(220)},additionalProperties:false};
-const MEETING={type:'object',required:['summary','decisions'],properties:{summary:shortString(320),decisions:{type:'array',maxItems:8,items:{type:'object',required:['topic','decision','reason','departments','validationImpact'],properties:{topic:shortString(120),decision:{type:'string',enum:['KEEP','CHANGE','DROP','HOLD']},reason:shortString(220),departments:{type:'array',items:{type:'string',enum:ROLES},maxItems:ROLES.length},validationImpact:{type:'string',enum:['WEB','UNITY','BOTH','NONE']}},additionalProperties:false}}},additionalProperties:false};
+const MEETING={type:'object',required:['summary','decisions'],properties:{summary:shortString(320),decisions:{type:'array',maxItems:12,items:{type:'object',required:['topic','decision','reason','departments','validationImpact'],properties:{topic:shortString(120),decision:{type:'string',enum:['KEEP','CHANGE','DROP','HOLD']},reason:shortString(220),departments:{type:'array',items:{type:'string',enum:ROLES},maxItems:ROLES.length},validationImpact:{type:'string',enum:['WEB','UNITY','BOTH','NONE']}},additionalProperties:false}}},additionalProperties:false};
 const DESIGN={type:'object',required:['identity','playerFantasy','coreLoop','signatureSystems','progressionDirection','visualDirection','mobileUx','technicalAssumptions','validationQuestions','openQuestions'],properties:{identity:{type:'string'},playerFantasy:{type:'string'},coreLoop:{type:'array',items:{type:'string'}},signatureSystems:{type:'array',items:{type:'object',required:['name','purpose','playerChoice'],properties:{name:{type:'string'},purpose:{type:'string'},playerChoice:{type:'string'}},additionalProperties:false}},progressionDirection:{type:'string'},visualDirection:{type:'string'},mobileUx:{type:'string'},technicalAssumptions:{type:'array',items:{type:'string'}},validationQuestions:{type:'array',items:{type:'string'}},openQuestions:{type:'array',items:{type:'string'}}},additionalProperties:false};
 const ARTBOOK={type:'object',required:['identity','playerFantasy','coreLoop','signatureSystems','progressionDirection','visualDirection','implementationDirection'],properties:{identity:{type:'string'},playerFantasy:{type:'string'},coreLoop:{type:'array',items:{type:'string'}},signatureSystems:{type:'array',items:{type:'string'}},progressionDirection:{type:'string'},visualDirection:{type:'string'},implementationDirection:{type:'array',items:{type:'string'}}},additionalProperties:false};
 const VERIFY={type:'object',required:['supported','unsupportedClaims'],properties:{supported:{type:'boolean'},unsupportedClaims:{type:'array',items:{type:'string'}}},additionalProperties:false};
@@ -118,20 +121,22 @@ function latestDesignBaseline(){
 }
 function writeState(state,{sourceDesign=null,web=null,unity=null,revalidation=null,webMeeting=null,unityMeeting=null,finalDesign=null,artbook=null,blockers=[],nextAction=null}={}){
   const status={
-    version:1,gameId,date,productionClass,tierAlias,tier:tierAlias,policyDocument:'COMPANY_FLOW.md',
+    version:2,gameId,date,productionClass,tierAlias,tier:tierAlias,policyDocument:'COMPANY_FLOW.md',
     flow:'DEVELOPMENT_CONFIRMED_GATED_DIRECT',
     status:state==='DEVELOPMENT_BASELINE_READY'?'COMPLETE':state==='DEVELOPMENT_BLOCKED'?'BLOCKED':'WAITING',
     state,sourceDesign:sourceDesign?{path:sourceDesign.path,date:sourceDesign.date,authorModel:sourceDesign.authorModel}:null,
-    evidence:{web:web?{state:web.state,path:web.path}:null,unity:unity?{state:unity.state,path:unity.path}:null,revalidation:revalidation?{state:revalidation.state,path:revalidation.path}:null},
+    evidence:{web:web?{state:web.state,path:web.path,musicRuntimePass:web.data?.musicRuntime?.pass===true,introRuntimePass:web.data?.introRuntime?.pass===true}:null,unity:unity?{state:unity.state,path:unity.path}:null,revalidation:revalidation?{state:revalidation.state,path:revalidation.path}:null},
+    departments:{count:ROLES.length,roles:ROLES,leadModels,distinctLeadModelCount:distinctLeadModels.length,reviewModelCount},
     meetings:{web:webMeeting?{path:webMeeting.path,decisionCounts:webMeeting.decisionCounts}:null,unity:unityMeeting?{path:unityMeeting.path,decisionCounts:unityMeeting.decisionCounts}:null},
     finalDesign:finalDesign?.path||null,artbook:artbook?.path||null,blockers,nextAction,
-    contracts:{gatedDirect:true,resumeFromLatestEvidence:true,aiMayInventValidationPass:false,webSmokeDoesNotEqualGameplayValidation:true,artbookOnlyAfterBaselineReady:true},
+    contracts:{gatedDirect:true,resumeFromLatestEvidence:true,aiMayInventValidationPass:false,webSmokeDoesNotEqualGameplayValidation:true,sevenDepartmentsRequired:true,musicRuntimePassRequired:true,introRuntimePassRequired:true,artbookOnlyAfterBaselineReady:true},
     updatedAt:new Date().toISOString()
   };
   writeJson(path.join(base,'development-validation-status.json'),status);
   writeJson(path.join(base,'cycle-status.json'),status);
-  writeJson(path.join(base,'development-validation-request.json'),{version:1,gameId,date,state,nextAction,blockers,requiredEvidence:state.includes('WEB')?'web-gameplay-validation.json':state.includes('UNITY')?'unity-technical-validation.json':state==='WAITING_REVALIDATION'?'development-revalidation.json':null,policyDocument:'COMPANY_FLOW.md'});
+  writeJson(path.join(base,'development-validation-request.json'),{version:2,gameId,date,state,nextAction,blockers,departmentCount:ROLES.length,requiredEvidence:state.includes('WEB')?'web-gameplay-validation.json':state.includes('TARGET_PLATFORM')?'unity-technical-validation.json':state==='WAITING_REVALIDATION'?'development-revalidation.json':null,policyDocument:'COMPANY_FLOW.md'});
   console.log(`DEVELOPMENT_DIRECT_STATE=${state}`);
+  console.log(`DEPARTMENT_COUNT=${ROLES.length}`);
   if(nextAction)console.log(`NEXT_ACTION=${nextAction}`);
   return status;
 }
@@ -140,7 +145,7 @@ async function runMeeting(stage,sourceDesign,evidence){
   const stageLabel=stage==='WEB'?'Web Gameplay Validation':'Unity Technical Validation';
   const independent={};
   for(const model of pool){
-    independent[model]=await callModel(model,'너는 독립 검토 AI다. 같은 실제 검증 근거를 5개 전문부서 관점으로 분리해서 검토한다. 근거에 없는 결과를 만들지 않는다.',`${stageLabel} 실제 근거와 현재 설계를 planning/graphics/development/qa/balance 관점으로 각각 검토하라. KEEP/CHANGE/DROP/HOLD를 구분하고 근거를 적어라.\nDESIGN=${clip(sourceDesign,13000)}\nEVIDENCE=${clip(evidence,12000)}`,REVIEWS,{predict:1500,compact:true});
+    independent[model]=await callModel(model,`너는 독립 검토 AI다. 같은 실제 검증 근거를 ${ROLES.length}개 전문부서 관점으로 분리해서 검토한다. 근거에 없는 결과를 만들지 않는다.`,` ${stageLabel} 실제 근거와 현재 설계를 ${ROLES.join('/')} 관점으로 각각 검토하라. KEEP/CHANGE/DROP/HOLD를 구분하고 근거를 적어라.\nDESIGN=${clip(sourceDesign,13000)}\nEVIDENCE=${clip(evidence,12000)}`,REVIEWS,{predict:1800,compact:true});
   }
   const representatives={};
   const memberReviews={};
@@ -152,13 +157,13 @@ async function runMeeting(stage,sourceDesign,evidence){
   }
   const rebuttals={};
   for(const role of ROLES){
-    rebuttals[role]=await callModel(leadModels[role],`너는 ${role} 부서 Lead AI다. 다른 4개 부서 대표 의견을 읽고 자기 전문영역에서 한 번만 반박·수정한다.`,`${stageLabel} 대표 의견 전체를 읽고 ${role} 관점 반박을 작성하라.\nREPRESENTATIVES=${clip(representatives,13000)}`,REBUTTAL,{predict:500,compact:true});
+    rebuttals[role]=await callModel(leadModels[role],`너는 ${role} 부서 Lead AI다. 다른 ${ROLES.length-1}개 부서 대표 의견을 읽고 자기 전문영역에서 한 번만 반박·수정한다.`,`${stageLabel} 대표 의견 전체를 읽고 ${role} 관점 반박을 작성하라.\nREPRESENTATIVES=${clip(representatives,15000)}`,REBUTTAL,{predict:500,compact:true});
   }
   const coordinatorModel=pool[(hash(`${gameId}:${stage}:coordinator`))%pool.length];
-  const meeting=await callModel(coordinatorModel,'너는 재운컴퍼니 검증회의 조정 AI다. 새 기능을 창작하지 말고 실제 근거와 5부서 의견을 바탕으로 KEEP/CHANGE/DROP/HOLD를 판정한다. 변경이 재검증을 필요로 하는 영역도 WEB/UNITY/BOTH/NONE으로 표시한다.',`${stageLabel} 부서 대표 의견과 반박을 정리하라. 실제 근거가 없는 항목은 HOLD로 둔다.\nREPRESENTATIVES=${clip(representatives,11000)}\nREBUTTALS=${clip(rebuttals,9000)}\nEVIDENCE=${clip(evidence,8000)}`,MEETING,{predict:1000,compact:true});
+  const meeting=await callModel(coordinatorModel,`너는 재운컴퍼니 검증회의 조정 AI다. 새 기능을 창작하지 말고 실제 근거와 ${ROLES.length}부서 의견을 바탕으로 KEEP/CHANGE/DROP/HOLD를 판정한다. 변경이 재검증을 필요로 하는 영역도 WEB/UNITY/BOTH/NONE으로 표시한다.`,`${stageLabel} 부서 대표 의견과 반박을 정리하라. 실제 근거가 없는 항목은 HOLD로 둔다.\nREPRESENTATIVES=${clip(representatives,14000)}\nREBUTTALS=${clip(rebuttals,11000)}\nEVIDENCE=${clip(evidence,9000)}`,MEETING,{predict:1200,compact:true});
   const counts=Object.fromEntries(['KEEP','CHANGE','DROP','HOLD'].map(x=>[x,meeting.decisions.filter(d=>d.decision===x).length]));
   const file=path.join(base,stage==='WEB'?'web-evidence-meeting.json':'unity-evidence-meeting.json');
-  writeJson(file,{version:1,gameId,date,productionClass,stage,stageLabel,leadModels,reviewModels,memberReviews,representatives,rebuttals,coordinatorModel,...meeting,decisionCounts:counts});
+  writeJson(file,{version:2,gameId,date,productionClass,stage,stageLabel,departmentCount:ROLES.length,roles:ROLES,leadModels,reviewModels,memberReviews,representatives,rebuttals,coordinatorModel,...meeting,decisionCounts:counts});
   return {path:file.replaceAll('\\','/'),meeting,decisionCounts:counts};
 }
 async function reviseDesign(stage,designerModel,sourceDesign,meetingResult){
@@ -191,13 +196,18 @@ if(!pool.includes(designerModel)){
 
 const web=latestFile('web-gameplay-validation.json');
 if(web.state==='MISSING'){
-  writeState('WAITING_WEB_VALIDATION',{sourceDesign:sourceBaseline,web,nextAction:'검증용 Web 플레이 결과를 web-gameplay-validation.json으로 기록한다.'});
+  writeState('WAITING_WEB_GAMEPLAY_VALIDATION',{sourceDesign:sourceBaseline,web,nextAction:'검증용 Web 플레이 결과를 web-gameplay-validation.json으로 기록한다.'});
   process.exit(0);
 }
+const webMusicPass=web.data?.musicRuntime?.pass===true;
+const webIntroPass=web.data?.introRuntime?.pass===true;
 const webMeeting=await runMeeting('WEB',sourceBaseline.content,web.data);
 const afterWeb=await reviseDesign('WEB',designerModel,sourceBaseline.content,webMeeting);
-if(web.state==='FAIL'){
-  writeState('WAITING_WEB_REVALIDATION',{sourceDesign:sourceBaseline,web,webMeeting,finalDesign:afterWeb,blockers:['web-gameplay-validation-failed'],nextAction:'Web 수정안을 실제 플레이로 재검증하고 새 web-gameplay-validation.json 근거를 기록한다.'});
+if(web.state==='FAIL'||!webMusicPass||!webIntroPass){
+  const blockers=['web-gameplay-validation-failed'];
+  if(!webMusicPass)blockers.push('music-runtime-validation-required');
+  if(!webIntroPass)blockers.push('intro-runtime-validation-required');
+  writeState('WAITING_WEB_GAMEPLAY_REVALIDATION',{sourceDesign:sourceBaseline,web,webMeeting,finalDesign:afterWeb,blockers,nextAction:'Web 게임플레이·음악·인트로 수정안을 실제 플레이로 재검증하고 새 web-gameplay-validation.json 근거를 기록한다.'});
   process.exit(0);
 }
 
@@ -207,13 +217,13 @@ if(!unityProjectPresent||unity.state==='MISSING'){
   const blockers=[];
   if(!unityProjectPresent)blockers.push('unity-project-required-for-technical-validation');
   if(unity.state==='MISSING')blockers.push('unity-technical-validation-required');
-  writeState('WAITING_UNITY_VALIDATION',{sourceDesign:sourceBaseline,web,unity,webMeeting,finalDesign:afterWeb,blockers,nextAction:'Unity 기술 프로토타입을 실제 실행하고 unity-technical-validation.json 근거를 기록한다.'});
+  writeState('WAITING_TARGET_PLATFORM_VALIDATION',{sourceDesign:sourceBaseline,web,unity,webMeeting,finalDesign:afterWeb,blockers,nextAction:'선택 플랫폼 기술 프로토타입을 실제 실행하고 기술 검증 근거를 기록한다.'});
   process.exit(0);
 }
 const unityMeeting=await runMeeting('UNITY',afterWeb.content,unity.data);
 const afterUnity=await reviseDesign('UNITY',designerModel,afterWeb.content,unityMeeting);
 if(unity.state==='FAIL'){
-  writeState('WAITING_UNITY_REVALIDATION',{sourceDesign:sourceBaseline,web,unity,webMeeting,unityMeeting,finalDesign:afterUnity,blockers:['unity-technical-validation-failed'],nextAction:'Unity 기술 수정안을 실제 빌드/기기에서 재검증하고 새 unity-technical-validation.json 근거를 기록한다.'});
+  writeState('WAITING_TARGET_PLATFORM_REVALIDATION',{sourceDesign:sourceBaseline,web,unity,webMeeting,unityMeeting,finalDesign:afterUnity,blockers:['unity-technical-validation-failed'],nextAction:'선택 플랫폼 기술 수정안을 실제 빌드/기기에서 재검증하고 새 기술 검증 근거를 기록한다.'});
   process.exit(0);
 }
 
@@ -228,15 +238,18 @@ if(targets.length>0&&(revalidation.state!=='PASS'||!targetsCovered)){
 
 const editorModel=pool[(hash(`${gameId}:artbook-editor`))%pool.length];
 const verifierModel=pool[(hash(`${gameId}:artbook-verifier`)+1)%pool.length];
-let artbook=await callModel(editorModel,'너는 단일 Artbook Editor AI다. Development Baseline을 통과한 상세 설계와 검증 결과에서 살아남은 핵심 전략만 압축한다. 새 설정·수치·시스템을 만들지 않는다.',`2분류 검증을 통과한 최종 상세 설계를 핵심 전략 아트북으로 갱신하라. 구현 방향은 검증으로 살아남은 것만 포함한다.\nFINAL_DESIGN=${clip(afterUnity.content,13000)}\nWEB=${clip(web.data,5000)}\nUNITY=${clip(unity.data,5000)}\nREVALIDATION=${clip(revalidation.data,3000)}`,ARTBOOK,{predict:800});
+let artbook=await callModel(editorModel,'너는 단일 Artbook Editor AI다. Development Baseline을 통과한 상세 설계와 검증 결과에서 살아남은 핵심 전략만 압축한다. 새 설정·수치·시스템을 만들지 않는다.',`DEVELOPMENT_CONFIRMED 검증을 통과한 최종 상세 설계를 핵심 전략 아트북으로 갱신하라. 구현 방향은 검증으로 살아남은 것만 포함한다.\nFINAL_DESIGN=${clip(afterUnity.content,13000)}\nWEB=${clip(web.data,5000)}\nUNITY=${clip(unity.data,5000)}\nREVALIDATION=${clip(revalidation.data,3000)}`,ARTBOOK,{predict:800});
 let verification=await callModel(verifierModel,'너는 Vibe2 검증 역할이다. 아트북 작성자가 아니다. 아트북의 모든 주장이 최종 상세 설계와 실제 검증 근거에 있는지 확인한다.',`FINAL_DESIGN=${clip(afterUnity.content,11000)}\nARTBOOK=${clip(artbook,7000)}`,VERIFY,{predict:320,temperature:0});
 if(!verification.supported)throw new Error(`DEVELOPMENT_ARTBOOK_PROVENANCE_GATE: ${verification.unsupportedClaims.join(' | ')}`);
 const artbookPath=path.join(base,'core-artbook.json');
-writeJson(artbookPath,{version:4,gameId,date,productionClass,tierAlias,tier:tierAlias,editorRole:'ARTBOOK_EDITOR_AI',editorModel,singleEditor:true,sourceDesign:afterUnity.path,developmentBaseline:true,departmentPageAuthorship:false,newClaimsAdded:false,verification,content:artbook});
+writeJson(artbookPath,{version:5,gameId,date,productionClass,tierAlias,tier:tierAlias,editorRole:'ARTBOOK_EDITOR_AI',editorModel,singleEditor:true,sourceDesign:afterUnity.path,developmentBaseline:true,departmentCount:ROLES.length,departmentPageAuthorship:false,newClaimsAdded:false,verification,content:artbook});
 const finalDesignPath=path.join(base,'design-development-baseline.json');
-writeJson(finalDesignPath,{version:1,gameId,date,productionClass,authorRole:'GAME_DESIGNER_AI',authorModel:designerModel,source:afterUnity.path,status:'DEVELOPMENT_BASELINE_READY',content:afterUnity.content});
+writeJson(finalDesignPath,{version:2,gameId,date,productionClass,authorRole:'GAME_DESIGNER_AI',authorModel:designerModel,source:afterUnity.path,status:'DEVELOPMENT_BASELINE_READY',departmentCount:ROLES.length,musicRuntimePass:webMusicPass,introRuntimePass:webIntroPass,content:afterUnity.content});
 writeState('DEVELOPMENT_BASELINE_READY',{sourceDesign:sourceBaseline,web,unity,revalidation,webMeeting,unityMeeting,finalDesign:{path:finalDesignPath.replaceAll('\\','/')},artbook:{path:artbookPath.replaceAll('\\','/')}});
 console.log('DEVELOPMENT_BASELINE_GATE=READY');
 console.log(`DISTINCT_DEPARTMENT_LEADS=${distinctLeadModels.length}`);
+console.log(`DEPARTMENT_COUNT=${ROLES.length}`);
+console.log('MUSIC_RUNTIME_PASS=YES');
+console.log('INTRO_RUNTIME_PASS=YES');
 console.log('ARTBOOK_REVISION=CREATED_AFTER_BASELINE_READY');
 console.log('PAID_API=NO');
