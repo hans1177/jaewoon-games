@@ -6,6 +6,7 @@ import {normalizeSeedState,validatePortfolioSeedRequest,pendingPortfolioSeedRequ
 
 const stateFile='game-seed-state.json';
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+const semanticNormalize=fs.readFileSync('tools/company-game-seed-semantic-normalize.mjs','utf8');
 
 test('GAME_SEED normalization removes all legacy vacancy replacement state',()=>{
   const state=normalizeSeedState({
@@ -17,6 +18,12 @@ test('GAME_SEED normalization removes all legacy vacancy replacement state',()=>
   assert.equal('replacementOfSeedId' in state.seeds[0],false);
   assert.equal('replacementVacancyId' in state.seeds[0],false);
   assert.equal('linkedVacancyId' in state.portfolioSeedRequests[0],false);
+});
+
+test('semantic normalizer persists state through central GAME_SEED normalization',()=>{
+  assert.match(semanticNormalize,/import \{normalizeSeedState\} from '\.\/game-seed-state\.mjs'/);
+  assert.match(semanticNormalize,/const state=normalizeSeedState\(readJson\(stateFile,\{seeds:\[\]\}\)\)/);
+  assert.match(semanticNormalize,/GAME_SEED_STATE_NORMALIZATION_PERSISTED=YES/);
 });
 
 test('persisted GAME_SEED state follows current COMPANY_FLOW dynamic portfolio contract',t=>{
