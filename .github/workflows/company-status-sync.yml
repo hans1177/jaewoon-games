@@ -84,6 +84,7 @@ jobs:
           const classes=['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED','DESIGN_ONLY'];
           const valid=new Set(classes);
           const allowedPlatforms=new Set(['ROBLOX','UNITY','FORTNITE_UEFN']);
+          const requiredWebPurpose='REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION';
           const normalize=value=>{
             const raw=String(value??'').trim().toUpperCase().replaceAll('-','_');
             if(raw==='ROBLOX')return 'ROBLOX';
@@ -105,10 +106,11 @@ jobs:
           }
           for(const project of development){
             const platform=normalize(project.selectedPlatform);
-            if(project.webPurpose!=='OPTIONAL_GAMEPLAY_VALIDATION_TESTBED')throw new Error(`development Web purpose mismatch: ${project.id}`);
+            if(project.webPurpose!==requiredWebPurpose)throw new Error(`development Web purpose mismatch: ${project.id}`);
+            if(project.webGameplayValidationRequired!==true||project.musicValidationRequired!==true)throw new Error(`development Web/music requirement missing: ${project.id}`);
             if(platform){
-              if(!allowedPlatforms.has(platform)||project.targetEngine!==targetEngine(platform)||project.mode!=='TARGET_PLATFORM_DEVELOPMENT')throw new Error(`development selected-platform mismatch: ${project.id}`);
-            }else if(project.targetEngine!=='platform-selection-required'||project.mode!=='OPTIONAL_WEB_GAMEPLAY_TESTBED'){
+              if(!allowedPlatforms.has(platform)||project.targetEngine!==targetEngine(platform)||project.mode!=='WEB_VALIDATION_THEN_TARGET_PLATFORM_DEVELOPMENT')throw new Error(`development selected-platform mismatch: ${project.id}`);
+            }else if(project.targetEngine!=='platform-selection-required'||project.mode!=='WEB_VALIDATION_TARGET_PLATFORM_SELECTION_REQUIRED'){
               throw new Error(`development platform-selection state mismatch: ${project.id}`);
             }
           }
@@ -116,9 +118,10 @@ jobs:
           const releasePolicy=portfolio.productionClassPolicy?.classes?.RELEASE_CONFIRMED||{};
           const developmentPolicy=portfolio.productionClassPolicy?.classes?.DEVELOPMENT_CONFIRMED||{};
           if(releasePolicy.engine!=='PROJECT_SELECTED_PLATFORM')throw new Error('release engine policy must be selected-platform');
-          if(developmentPolicy.engine!=='PROJECT_SELECTED_PLATFORM'||developmentPolicy.webPurpose!=='OPTIONAL_GAMEPLAY_VALIDATION_TESTBED'||developmentPolicy.webBeforeTargetPlatformByDefault!==false||developmentPolicy.targetPlatformMayRunImmediately!==true)throw new Error('development selected-platform policy mismatch');
-          if(portfolio.developmentFocusPolicy?.optionalWebGameplayTestbedAllowedAlongsideReleaseFocus!==true)throw new Error('optional Web testbed focus policy missing');
-          if(Object.hasOwn(portfolio.developmentFocusPolicy||{},'developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus'))throw new Error('legacy Web-first focus policy remains');
+          if(developmentPolicy.engine!=='PROJECT_SELECTED_PLATFORM'||developmentPolicy.webPurpose!==requiredWebPurpose||developmentPolicy.webGameplayValidationRequired!==true||developmentPolicy.musicValidationRequired!==true||developmentPolicy.webBeforeTargetPlatformByDefault!==true||developmentPolicy.targetPlatformMayRunImmediately!==false)throw new Error('development Web-first selected-platform policy mismatch');
+          if(portfolio.developmentFocusPolicy?.requiredWebGameplayAndMusicValidationBeforeTargetPlatform!==true)throw new Error('required Web/music focus policy missing');
+          if(Object.hasOwn(portfolio.developmentFocusPolicy||{},'optionalWebGameplayTestbedAllowedAlongsideReleaseFocus'))throw new Error('legacy optional Web focus policy remains');
+          if(Object.hasOwn(portfolio.developmentFocusPolicy||{},'developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus'))throw new Error('legacy Web prototype focus policy remains');
           const categoryByClass={RELEASE_CONFIRMED:'release-confirmed',DEVELOPMENT_CONFIRMED:'development-confirmed',DESIGN_ONLY:'design-only'};
           for(const g of catalog.games||[]){
             if(!valid.has(g.productionClass))throw new Error(`invalid catalog class: ${g.id}`);
@@ -143,6 +146,7 @@ jobs:
           console.log('COMPANY_STATUS_SYNC_QA=PASS');
           console.log(`PRODUCTION_CLASS_COUNTS_QA=${release.length}/${development.length}/${design.length}`);
           console.log(`AUTONOMOUS_FOCUS_QA=${focus.focusedGameIds?.length||0}/${expectedTargetSlots} MAX=${maxFocusedGames}`);
+          console.log('WEB_GAMEPLAY_MUSIC_POLICY_SYNC_QA=PASS');
           console.log('SELECTED_PLATFORM_RUNTIME_SYNC_QA=PASS');
           NODE
 
