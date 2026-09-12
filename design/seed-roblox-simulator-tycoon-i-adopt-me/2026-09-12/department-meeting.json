@@ -1,0 +1,177 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "smollm2:1.7b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "Pocket Foundry is an original ROBLOX simulator tycoon incremental experience built around collect and upgrade while using its own"
+      ],
+      "fix": [
+        "Pocket Foundry is an original ROBLOX simulator tycoon incremental experience built around collect and upgrade while using its own"
+      ],
+      "add": [
+        "Pocket Foundry is an original ROBLOX simulator tycoon incremental experience built around collect and upgrade while using its own"
+      ],
+      "risks": [
+        "Pocket Foundry is an original ROBLOX simulator tycoon incremental experience built around collect and upgrade while using its own"
+      ],
+      "evidence": [
+        "Pocket Foundry is an original ROBLOX simulator tycoon incremental experience built around collect and upgrade while using its own"
+      ],
+      "questions": [
+        "Pocket Foundry is an original ROBLOX simulator tycoon incremental experience built around collect and upgrade while using its own"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "Visual Design Guidelines"
+      ],
+      "fix": [
+        "Color Palette Selection"
+      ],
+      "add": [
+        "Asset Style Consistency"
+      ],
+      "risks": [
+        "Visual Style Consistency"
+      ],
+      "evidence": [
+        "Market Data (Color Palette)"
+      ],
+      "questions": [
+        "None"
+      ]
+    },
+    "development": {
+      "keep": [
+        "game-seed"
+      ],
+      "fix": [
+        "game-seed"
+      ],
+      "add": [
+        "game-seed"
+      ],
+      "risks": [
+        "game-seed"
+      ],
+      "evidence": [
+        "game-seed"
+      ],
+      "questions": [
+        "game-seed"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "QA Design"
+      ],
+      "fix": [
+        "QA Design"
+      ],
+      "add": [
+        "QA Design"
+      ],
+      "risks": [
+        "QA Design"
+      ],
+      "evidence": [
+        "QA Design"
+      ],
+      "questions": [
+        "QA Design"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "Pocket Foundry"
+      ],
+      "fix": [
+        "Pocket Foundry"
+      ],
+      "add": [
+        "Pocket Foundry"
+      ],
+      "risks": [
+        "Pocket Foundry"
+      ],
+      "evidence": [
+        "Pocket Foundry"
+      ],
+      "questions": [
+        "Pocket Foundry"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS: Accept",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "The original content is already in the correct format. No changes are needed.",
+      "departments": [
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "The original content is already in the correct format. No changes are needed.",
+      "departments": [
+        "graphics"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "The original content is already in the correct format. No changes are needed.",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "The original content is already in the correct format. No changes are needed.",
+      "departments": [
+        "qa"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "The original content is already in the correct format. No changes are needed.",
+      "departments": [
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 5,
+    "conflict": 0,
+    "hold": 0
+  }
+}

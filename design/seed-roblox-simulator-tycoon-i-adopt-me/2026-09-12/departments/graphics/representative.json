@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "representativeModel": "gemma3:1b",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "Visual Design Guidelines"
+    ],
+    "fix": [
+      "Color Palette Selection"
+    ],
+    "add": [
+      "Asset Style Consistency"
+    ],
+    "risks": [
+      "Visual Style Consistency"
+    ],
+    "evidence": [
+      "Market Data (Color Palette)"
+    ],
+    "questions": [
+      "None"
+    ]
+  }
+}

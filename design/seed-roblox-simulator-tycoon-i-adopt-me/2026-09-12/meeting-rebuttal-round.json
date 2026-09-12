@@ -1,0 +1,90 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "reason": "The original content is already in the correct format. No changes are needed."
+    },
+    "graphics": {
+      "accept": [
+        "Color Palette Selection"
+      ],
+      "challenge": [
+        "Visual Style Consistency"
+      ],
+      "revision": [
+        "Asset Style Consistency"
+      ],
+      "reason": "Market Data (Color Palette) suggests a shift in color palette is needed to align with current trends and user preferences.  We need to ensure the asset style remains consistent across all platforms and iterations.  This will improve user experience and brand recognition.']} 1.  **Color Palette Selection:**  The data indicates a need to review and potentially adjust the color palette.  This is a critical step to ensure consistency and brand alignment.  We will prioritize a thorough assessment of the current palette and suggest adjustments based,"
+    },
+    "development": {
+      "accept": [
+        "OWN",
+        "OTHERS"
+      ],
+      "challenge": [
+        "OWN",
+        "OTHERS"
+      ],
+      "revision": [
+        "OWN",
+        "OTHERS"
+      ],
+      "reason": "own"
+    },
+    "qa": {
+      "accept": [
+        "QA Design"
+      ],
+      "challenge": [
+        "QA Design"
+      ],
+      "revision": [
+        "QA Design"
+      ],
+      "reason": "QA Design의 요구사항을 충족시키기 위한 변경사항입니다."
+    },
+    "balance": {
+      "accept": [
+        "Pocket Foundry is an original ROBLOX simulator tycoon incremental experience built around collect and upgrade while using its own",
+        "Visual Design Guidelines",
+        "Asset Style Consistency"
+      ],
+      "challenge": [
+        "Pocket Foundry is an original ROBLOX simulator tycoon incremental experience built around collect and upgrade while using its own",
+        "Visual Style Consistency"
+      ],
+      "revision": [
+        "Pocket Foundry is an original ROBLOX simulator tycoon incremental experience built around collect and upgrade while using its own",
+        "Visual Style Consistency"
+      ],
+      "reason": "Pocket Foundry is an original ROBLOX simulator tycoon incremental experience built around collect and upgrade while using its own"
+    }
+  }
+}

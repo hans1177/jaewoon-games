@@ -1,0 +1,42 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "SEED-ROBLOX-SIMULATOR_TYCOON_INCREMENTAL-001",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "qwen3:0.6b",
+  "sameModelAsDraft": true,
+  "appliedConsensusCount": 5,
+  "unresolvedConflictCount": 0,
+  "heldCount": 0,
+  "status": "DESIGN_BASELINE_CANDIDATE",
+  "content": {
+    "identity": "Pocket Foundry",
+    "playerFantasy": "Roblox",
+    "coreFun": "collect, upgrade, income, unlock",
+    "coreLoop": [
+      "Perform a simple repeatable action to collect resources or income and immediately see production, inventory, or power increase.",
+      "Spend earned resources on upgrades, automation, helpers, or new production nodes that make the next earning cycle faster or strategically different.",
+      "Unlock a new area, tier, collection target, or prestige layer, then repeat the earning loop with a larger goal and visible long-term progression."
+    ],
+    "signatureSystems": [
+      {
+        "name": "Pocket Foundry",
+        "purpose": "An original ROBLOX simulator tycoon incremental experience built around collect and upgrade while using its own world, visual identity, progression, economy, content, and interaction design.",
+        "playerChoice": "Collect and upgrade while using its own world, visual identity, progression, economy, content, and interaction design."
+      }
+    ],
+    "progressionDirection": "Persistent progression system",
+    "visualDirection": "Visual identity",
+    "mobileUx": "None",
+    "marketTargetDirection": "Global, with a focus on low-friction social play and a persistent progression system.",
+    "steamExpansionDecision": "Not recommended for Steam.",
+    "multiplayerExpansionDecision": "Low.",
+    "technicalAssumptions": [],
+    "validationQuestions": [],
+    "openQuestions": []
+  }
+}

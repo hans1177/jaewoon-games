@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
+  "date": "2026-09-12",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Visual Design Guidelines"
+        ],
+        "fix": [
+          "Color Palette Selection"
+        ],
+        "add": [
+          "Asset Style Consistency"
+        ],
+        "risks": [
+          "Visual Style Consistency"
+        ],
+        "evidence": [
+          "Market Data (Color Palette)"
+        ],
+        "questions": [
+          "None"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Graphics Design"
+        ],
+        "fix": [
+          "Graphics Design"
+        ],
+        "add": [
+          "Graphics Design"
+        ],
+        "risks": [
+          "Graphics Design"
+        ],
+        "evidence": [
+          "Graphics Design"
+        ],
+        "questions": [
+          "Graphics Design"
+        ]
+      }
+    }
+  ]
+}
