@@ -387,6 +387,20 @@ platformStrategy:
       objective: ADD_UEFN_RELEASE_EXPERIENCE_WITHOUT_REPLACING_OTHER_TRACKS
   experienceSharing:
     portableVerifiedPatternsUseExistingV3MemoryAndCanonicalDistillation: true
+    verifiedWebGameplayMayFeedSharedV3PortableContext: true
+    portableWebPatterns:
+      - TOUCH_INPUT
+      - MOBILE_UI
+      - SAVE_LOAD_AND_RESUME
+      - PERFORMANCE
+      - RESPONSIVE_LAYOUT
+      - REGRESSION_AVOIDANCE
+      - CORE_LOOP_IMPLEMENTATION
+    robloxMayUseVerifiedWebPortablePatternsAsContext: true
+    webEvidenceCountsAsRobloxVerifiedEvidence: false
+    webEvidenceMaySatisfyRobloxDatasetGate: false
+    webEvidenceMaySatisfyRobloxRuntimeOrPublishingGate: false
+    robloxSpecificTrainingStillRequiresRealVerifiedRobloxEvidence: true
     platformSpecificImplementationRemainsPlatformScoped: true
     successEvidenceDoesNotTransferAcrossPlatforms: true
   ROBLOX:
@@ -999,12 +1013,42 @@ learning:
     - VERIFIED_TRAINING_SAMPLE
     - DISTILLATION_STATUS
     - DETERMINISTIC_TRAINING_REQUEST
-    - LOCAL_SELF_HOSTED_DATASET_BUILD
-    - LOCAL_LORA_OR_QLORA_TRAINING
+    - SELF_HOSTED_DATASET_BUILD
+    - SELF_HOSTED_LORA_OR_QLORA_TRAINING
     - TRAINED_UNVERIFIED
     - FIXED_HOLDOUT_AB
     - CANARY
     - PROMOTE_OR_ROLLBACK
+  trainingExecution:
+    mode: CONTINUOUS_24H
+    canonicalRefreshCadence: HOURLY
+    primaryBackend: SERVER_SELF_HOSTED
+    preservedBackend: LOCAL_SELF_HOSTED
+    localBackendPreserved: true
+    automaticLocalFallbackAllowed: false
+    bothBackendsConsumeSameCanonicalTrainingRequest: true
+    sameDatasetAndTrainerContractAcrossBackends: true
+    separateDatasetOrTrainerPerBackendForbidden: true
+    duplicateConcurrentTrainingSameRequestForbidden: true
+    serverBackendRequiresExplicitRegisteredCapability: true
+    githubHostedModelTrainingForbidden: true
+    paidTrainingForbidden: true
+  portableWebLearning:
+    verifiedWebGameplayMayFeedSharedV3Memory: true
+    allowedPortablePatterns:
+      - TOUCH_INPUT
+      - MOBILE_UI
+      - SAVE_LOAD_AND_RESUME
+      - PERFORMANCE
+      - RESPONSIVE_LAYOUT
+      - REGRESSION_AVOIDANCE
+      - CORE_LOOP_IMPLEMENTATION
+    robloxMayRetrievePortableWebPatternsAsContext: true
+    webEvidenceCountsAsRobloxVerifiedEvidence: false
+    webEvidenceMaySatisfyRobloxDatasetOrAdapterGate: false
+    webEvidenceMaySatisfyRobloxRuntimeOrPublishingGate: false
+    robloxTrainingStillRequiresRealVerifiedRobloxEvidence: true
+    crossPlatformPassEvidenceTransferForbidden: true
   platformTrainingArchitecture:
     mode: SHARED_CANONICAL_TRAINER_WITH_PLATFORM_ISOLATED_LANES
     canonicalTrainerCount: 1
@@ -1023,12 +1067,14 @@ learning:
     realVerifiedPlatformEvidenceRequired: true
     syntheticPlatformTrainingForbidden: true
     commonRealDatasetGate: tools/vibe2-real-platform-dataset-gate.mjs
-    commonLocalTrainer: tools/vibe2-train.py
+    commonTrainer: tools/vibe2-train.py
     canonicalStatusBuilder: tools/vibe2-distillation-status.mjs
     deterministicRequestBuilder: tools/vibe2-training-request.mjs
     hourlyRefreshWorkflow: Vibe2 Distillation Sample Ingest
     secondCronOrShadowRefreshForbidden: true
-    localSelfHostedWeightTrainingOnly: true
+    selfHostedWeightTrainingOnly: true
+    serverSelfHostedPrimary: true
+    localSelfHostedPreserved: true
     freshAdapterState: TRAINED_UNVERIFIED
     promotionRequires:
       - FIXED_HOLDOUT_AB
