@@ -1,5 +1,5 @@
 // 파일명: tools/company-development-web-gameplay-validation.mjs
-// DEVELOPMENT_CONFIRMED Web 실제 플레이 + 음악 런타임 검증기.
+// DEVELOPMENT_CONFIRMED Web 실제 플레이 + 음악 + 첫 진입 인트로 런타임 검증기.
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
@@ -36,17 +36,31 @@ async function snapshot(page){
     const audioState=(audioNode?.getAttribute('data-audio-state')||'').toLowerCase();
     const muteControls=[...document.querySelectorAll('[data-audio-control="mute"]')].filter(el=>{const r=el.getBoundingClientRect();return r.width>0&&r.height>0;}).length;
     const volumeControls=[...document.querySelectorAll('[data-audio-control="volume"]')].filter(el=>{const r=el.getBoundingClientRect();return r.width>0&&r.height>0;}).length;
-    return {text,visibleButtons,canvases,dataState,audioState,muteControls,volumeControls,scrollWidth:document.documentElement.scrollWidth,viewportWidth:innerWidth};
+    const introNode=document.querySelector('[data-intro-screen]');
+    const introStyle=introNode?getComputedStyle(introNode):null;
+    const introRect=introNode?.getBoundingClientRect();
+    const introVisible=Boolean(introNode&&!introNode.hidden&&introRect&&introRect.width>0&&introRect.height>0&&introStyle?.display!=='none'&&introStyle?.visibility!=='hidden');
+    const introState=(document.body?.getAttribute('data-intro-state')||'').toLowerCase();
+    const introHandoff=(document.body?.getAttribute('data-intro-handoff')||'').toLowerCase();
+    const introControls=[...document.querySelectorAll('[data-intro-control="continue"],[data-intro-control="skip"]')].filter(el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return r.width>0&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden'}).length;
+    return {text,visibleButtons,canvases,dataState,audioState,muteControls,volumeControls,introVisible,introState,introHandoff,introControls,scrollWidth:document.documentElement.scrollWidth,viewportWidth:innerWidth};
   });
 }
-export function evaluateGameplayEvidence({before,after,interactionCount=0,consoleErrors=[],pageErrors=[],failedRequests=[],badResponses=[],reloadVisible=false}={}){
+export function evaluateGameplayEvidence({before,afterIntro=null,after,interactionCount=0,introInteractionCount=0,consoleErrors=[],pageErrors=[],failedRequests=[],badResponses=[],reloadVisible=false}={}){
   const blockers=[];
   const stateChanged=JSON.stringify({text:before?.text,canvases:before?.canvases,dataState:before?.dataState})!==JSON.stringify({text:after?.text,canvases:after?.canvases,dataState:after?.dataState});
   const audioBefore=clean(before?.audioState).toLowerCase();
   const audioAfter=clean(after?.audioState).toLowerCase();
   const startsAfterGesture=!['running','playing'].includes(audioBefore)&&['running','playing','muted'].includes(audioAfter);
+  const introFirstEntry=before?.introVisible===true&&clean(before?.introState).toLowerCase()==='visible'&&Number(before?.introControls||0)>=1;
+  const introDismissed=Boolean(afterIntro)&&afterIntro?.introVisible===false&&['continued','skipped'].includes(clean(afterIntro?.introState).toLowerCase())&&clean(afterIntro?.introHandoff).toLowerCase()==='ready';
+  const introHandoff=clean(after?.introHandoff).toLowerCase()==='gameplay-input';
   if(Number(before?.visibleButtons||0)<1)blockers.push('VISIBLE_GAMEPLAY_CONTROL_REQUIRED');
+  if(!introFirstEntry)blockers.push('INTRO_FIRST_ENTRY_STATE_REQUIRED');
+  if(introInteractionCount<1)blockers.push('INTRO_SKIP_OR_CONTINUE_CONTROL_REQUIRED');
+  if(!introDismissed)blockers.push('INTRO_DISMISS_STATE_REQUIRED');
   if(interactionCount<1)blockers.push('NO_GAMEPLAY_INTERACTION_DELIVERED');
+  if(!introHandoff)blockers.push('INTRO_FIRST_MEANINGFUL_INPUT_HANDOFF_REQUIRED');
   if(!stateChanged)blockers.push('NO_OBSERVABLE_GAME_STATE_CHANGE');
   if(Number(after?.scrollWidth||0)>Number(after?.viewportWidth||0)+2)blockers.push('MOBILE_HORIZONTAL_OVERFLOW');
   if(!reloadVisible)blockers.push('RELOAD_VISIBILITY_FAILED');
@@ -60,7 +74,8 @@ export function evaluateGameplayEvidence({before,after,interactionCount=0,consol
   for(const item of badResponses)blockers.push(`RESPONSE:${item}`);
   const unique=[...new Set(blockers)];
   const musicRuntime={required:true,startsAfterUserGesture:startsAfterGesture,muteControl:Number(before?.muteControls||0)>0,volumeControl:Number(before?.volumeControls||0)>0,beforeState:audioBefore||null,afterState:audioAfter||null,pass:unique.every(x=>!x.startsWith('MUSIC_'))};
-  return {pass:unique.length===0,blockers:unique,stateChanged,musicRuntime};
+  const introRuntime={required:true,firstEntryVisible:introFirstEntry,continueOrSkipUsed:introInteractionCount>0,dismissedToGameplayReady:introDismissed,firstMeaningfulInputHandoff:introHandoff,beforeState:clean(before?.introState).toLowerCase()||null,afterDismissState:clean(afterIntro?.introState).toLowerCase()||null,afterGameplayHandoff:clean(after?.introHandoff).toLowerCase()||null,pass:unique.every(x=>!x.startsWith('INTRO_'))};
+  return {pass:unique.length===0,blockers:unique,stateChanged,musicRuntime,introRuntime};
 }
 
 export async function runGameplayValidation({gameId,sourcePath,port=4181,output='',screenshot=''}={}){
@@ -82,8 +97,14 @@ export async function runGameplayValidation({gameId,sourcePath,port=4181,output=
     await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
     await page.waitForTimeout(800);
     const before=await snapshot(page);
+    let introInteractionCount=0;
+    const introControl=page.locator('[data-intro-control="continue"]:visible,[data-intro-control="skip"]:visible').first();
+    if(await introControl.count()){
+      try{await introControl.click({timeout:3000});introInteractionCount=1;await page.waitForTimeout(180);}catch{}
+    }
+    const afterIntro=await snapshot(page);
     let interactionCount=0;
-    const gameplayButtons=page.locator('button:visible:not([data-audio-control]),[role="button"]:visible:not([data-audio-control])');
+    const gameplayButtons=page.locator('button:visible:not([data-audio-control]):not([data-intro-control]),[role="button"]:visible:not([data-audio-control]):not([data-intro-control])');
     const buttonCount=Math.min(await gameplayButtons.count(),4);
     for(let round=0;round<3;round++){
       if(buttonCount>0){
@@ -100,14 +121,14 @@ export async function runGameplayValidation({gameId,sourcePath,port=4181,output=
     await page.reload({waitUntil:'domcontentloaded',timeout:30000});
     await page.waitForTimeout(500);
     const reloadVisible=await page.evaluate(()=>Boolean(document.body&&document.body.getBoundingClientRect().width>0&&document.body.getBoundingClientRect().height>0));
-    const verdict=evaluateGameplayEvidence({before,after,interactionCount,consoleErrors,pageErrors,failedRequests,badResponses,reloadVisible});
+    const verdict=evaluateGameplayEvidence({before,afterIntro,after,interactionCount,introInteractionCount,consoleErrors,pageErrors,failedRequests,badResponses,reloadVisible});
     const report={
-      version:2,gameId,target:'web',status:verdict.pass?'PASS':'FAIL',pass:verdict.pass,validated:verdict.pass,
-      realEvidenceExists:true,gameplayInteractionPerformed:interactionCount>0,interactionCount,stateChanged:verdict.stateChanged,musicRuntime:verdict.musicRuntime,
+      version:3,gameId,target:'web',status:verdict.pass?'PASS':'FAIL',pass:verdict.pass,validated:verdict.pass,
+      realEvidenceExists:true,gameplayInteractionPerformed:interactionCount>0,interactionCount,introInteractionCount,stateChanged:verdict.stateChanged,musicRuntime:verdict.musicRuntime,introRuntime:verdict.introRuntime,
       runtimeSmokePassed:consoleErrors.length===0&&pageErrors.length===0&&failedRequests.length===0&&badResponses.length===0&&reloadVisible,
-      mobileViewport:{width:390,height:844,touch:true},before,after,reloadVisible,
+      mobileViewport:{width:390,height:844,touch:true},before,afterIntro,after,reloadVisible,
       blockers:verdict.blockers,consoleErrors,pageErrors,failedRequests,badResponses,
-      evidence:[`interactionCount=${interactionCount}`,`stateChanged=${verdict.stateChanged}`,`reloadVisible=${reloadVisible}`,`mobileOverflow=${Number(after.scrollWidth||0)<=Number(after.viewportWidth||0)+2}`,`musicRuntime=${verdict.musicRuntime.pass}`,`musicAfterGesture=${verdict.musicRuntime.startsAfterUserGesture}`],
+      evidence:[`interactionCount=${interactionCount}`,`stateChanged=${verdict.stateChanged}`,`reloadVisible=${reloadVisible}`,`mobileOverflow=${Number(after.scrollWidth||0)<=Number(after.viewportWidth||0)+2}`,`musicRuntime=${verdict.musicRuntime.pass}`,`musicAfterGesture=${verdict.musicRuntime.startsAfterUserGesture}`,`introRuntime=${verdict.introRuntime.pass}`,`introFirstEntry=${verdict.introRuntime.firstEntryVisible}`,`introHandoff=${verdict.introRuntime.firstMeaningfulInputHandoff}`],
       checkedAt:new Date().toISOString(),sourcePath:source,url
     };
     if(screenshot){fs.mkdirSync(path.dirname(screenshot),{recursive:true});await page.screenshot({path:screenshot,fullPage:true});report.screenshot=screenshot;}
