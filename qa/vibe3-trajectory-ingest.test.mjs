@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { ingestVibe3Trajectories, validateVibe3Trajectory } from '../tools/vibe3-trajectory-ingest.mjs';
+import { qaRequirementsForTask, qaEvidencePasses } from '../tools/vibe2-training-sample.mjs';
 import { selectVibe3BaseModel } from '../tools/vibe3-model-selection.mjs';
 
 const trajectory={
@@ -26,18 +27,40 @@ assert.equal(validateVibe3Trajectory(trajectory).pass,true);
 const bad=structuredClone(trajectory);bad.finalEvidence.runtimePassed=false;
 assert.equal(validateVibe3Trajectory(bad).pass,false);
 
+const robloxTrajectory=structuredClone(trajectory);
+robloxTrajectory.trajectoryId='traj_roblox_verified_001';
+robloxTrajectory.request='Roblox 저장/재접속 동작을 수정하고 실제 런타임과 독립 QA로 검증한다';
+robloxTrajectory.metadata.taskType='roblox';
+robloxTrajectory.metadata.project='roblox-pilot';
+robloxTrajectory.metadata.gameId='roblox-pilot';
+robloxTrajectory.metadata.winnerOutput='diff --git a/roblox-games/pilot/main.luau b/roblox-games/pilot/main.luau\n+verified roblox fix';
+robloxTrajectory.finalEvidence.browserQa='NOT_APPLICABLE';
+assert.equal(validateVibe3Trajectory(robloxTrajectory).pass,true);
+assert.deepEqual(qaRequirementsForTask('roblox'),{independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS',androidRuntimeRequired:false,robloxRuntimeRequired:true});
+assert.equal(qaEvidencePasses({taskType:'roblox',independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS'}),true);
+assert.equal(qaEvidencePasses({taskType:'roblox',independentQa:'FAIL',browserQa:'NOT_APPLICABLE',runtime:'PASS'}),false);
+assert.equal(qaEvidencePasses({taskType:'roblox',independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'FAIL'}),false);
+
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe3-trajectory-'));
 const trajectoryDir=path.join(root,'trajectories');
 const outDir=path.join(root,'samples');
 fs.mkdirSync(trajectoryDir,{recursive:true});
 fs.writeFileSync(path.join(trajectoryDir,'verified.json'),JSON.stringify(trajectory,null,2));
+fs.writeFileSync(path.join(trajectoryDir,'roblox.json'),JSON.stringify(robloxTrajectory,null,2));
 const result=ingestVibe3Trajectories({trajectoryDir,outDir});
-assert.equal(result.written.length,1);
-const sample=JSON.parse(fs.readFileSync(result.written[0].outFile,'utf8'));
+assert.equal(result.written.length,2);
+const ordinaryResult=result.written.find(item=>item.trajectoryId==='traj_verified_001');
+const robloxResult=result.written.find(item=>item.trajectoryId==='traj_roblox_verified_001');
+const sample=JSON.parse(fs.readFileSync(ordinaryResult.outFile,'utf8'));
 assert.equal(sample.sourceKind,'vibe3-trajectory');
 assert.equal(sample.taskType,'bugfix');
 assert(sample.input.includes('runtime-failed'));
 assert(sample.output.includes('verified fix'));
+const robloxSample=JSON.parse(fs.readFileSync(robloxResult.outFile,'utf8'));
+assert.equal(robloxSample.taskType,'roblox');
+assert.equal(robloxSample.browserQa,'NOT_APPLICABLE');
+assert.equal(robloxSample.verification.requirements.robloxRuntimeRequired,true);
+assert.equal(robloxSample.difficulty,'roblox-release');
 
 const baseline=selectVibe3BaseModel({taskType:'coding',method:'qlora',cudaAvailable:true,cudaVramGiB:64,diskFreeGiB:100,enableCoderUpgrade:false,compatibilityProbePass:true,modelCachedOrDownloadApproved:true});
 assert.equal(baseline.upgraded,false);
@@ -48,4 +71,4 @@ const blocked=selectVibe3BaseModel({taskType:'coding',method:'qlora',cudaAvailab
 assert.equal(blocked.upgraded,false);
 assert(blocked.reasons.includes('insufficient-vram'));
 
-console.log('PASS Vibe3 trajectory ingest and capability-gated coder model selection');
+console.log('PASS Vibe3 trajectory ingest including Roblox and capability-gated coder model selection');
