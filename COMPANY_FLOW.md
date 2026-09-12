@@ -530,6 +530,15 @@ platformStrategy:
     existingUnityAndroidSourceBuildRuntimeQaReleaseKnowledgePreserved: true
     expansionVersionRequired: true
     legacyAndroidTrackStillValidWhenTargetIsUnity: true
+    runtimeValidation:
+      apkAbiMustMatchRuntimeAbi: true
+      arm64ApkRequiresArm64Runtime: true
+      architectureTranslationDoesNotCountAsRuntimePass: true
+      configuredAndroidApiMustMatchRuntimeApi: true
+      existingArm64CloudRuntimeMayBeReused: true
+      canonicalArm64CloudProviderWhenConfigured: GENYMOTION_SAAS
+      existingRuntimeGateMustBeRepairedNotDuplicated: true
+      runtimeSmokeContractMustRemainSame: true
     projectStrategy:
       oneGameOneUnityProject: true
       coreGameplayPlatformIndependentWherePractical: true
