@@ -149,8 +149,8 @@ body{
   </section>
 
   <section class="card">
-    <div class="head"><h2>AI 작업현황</h2><span>현재 상태 · 실제 업무</span></div>
-    <div class="aiWork" id="aiWork"><div class="empty">AI 작업현황 불러오는 중</div></div>
+    <div class="head"><h2>부서</h2><span>기획·스토리 · 개발 · QA · 그래픽 · 밸런스 · 배포</span></div>
+    <div class="aiWork" id="aiWork"><div class="empty">부서 정보 불러오는 중</div></div>
   </section>
 
   <div class="foot" id="updated" style="text-align:center;color:#64849c;font-size:9px;padding:7px">상태 불러오는 중</div>
@@ -258,22 +258,22 @@ function renderBuilds(s){
 function quotaMarkup(){
   return `<div class="aiQuota"><div class="aiQuotaHead"><span>무료사용량 · 남은 한도</span><b>측정 대기</b></div><div class="aiQuotaBar"><i></i></div><small>실시간 provider 한도 연결 후 남은 요청/토큰·리셋 시점 표시</small></div>`;
 }
-function renderAi(s){
+function renderDepartments(s){
   const tasks=s.redevelopmentReview?.departmentTasks||{}, home=s.operations?.homepage||{};
   const rows=[
-    ['LOOP',tasks.planning],
-    ['CORE',tasks.development],
-    ['CHECK',tasks.qa],
-    ['PIXEL',tasks.graphics],
-    ['SCALE',tasks.balance],
-    ['HOLMES',home]
+    ['기획·스토리부 · LOOP',tasks.planning,'기획 · 스토리 · 핵심 재미 설계'],
+    ['개발부 · CORE',tasks.development,'Web/Unity · 저장 · 성능 개발'],
+    ['QA부 · CHECK',tasks.qa,'QA · 모바일 · 회귀검증'],
+    ['그래픽부 · PIXEL',tasks.graphics,'그래픽 · UI · VFX'],
+    ['밸런스부 · SCALE',tasks.balance,'난이도 · 성장 · 밸런스'],
+    ['배포·홈페이지부 · HOLMES',home,'홈페이지 · APK · 배포']
   ];
-  aiWork.innerHTML=rows.map(([name,t])=>{
+  aiWork.innerHTML=rows.map(([name,t,fallback])=>{
     t=t||{};
     const st=statusText(t.status);
     const cls=st==='현재 작업중'?'working':st==='완료'?'done':'waiting';
-    const task=t.task||'현재 배정된 별도 작업 없음';
-    return `<div class="ai"><div class="aiTop"><b>${name}</b><span class="${cls}">${st}</span></div><p>${esc(task)}</p>${quotaMarkup()}</div>`;
+    const task=t.task||fallback;
+    return `<div class="ai"><div class="aiTop"><b>${esc(name)}</b><span class="${cls}">${st}</span></div><p>${esc(task)}</p>${quotaMarkup()}</div>`;
   }).join('');
 }
 Promise.all([
@@ -290,7 +290,7 @@ Promise.all([
   renderUnity(s);
   renderDecisions(s);
   renderBuilds(s);
-  renderAi(s);
+  renderDepartments(s);
   updated.textContent='상태 기준 · '+(s.updatedAt||'업데이트 정보 없음')+' · 카탈로그 '+(c.updatedAt||'업데이트 정보 없음');
 }).catch(err=>{
   pipelineList.innerHTML=qaGrid.innerHTML=unityList.innerHTML=decisionList.innerHTML=buildList.innerHTML=aiWork.innerHTML='<div class="empty">상태 데이터를 불러오지 못했습니다.</div>';
