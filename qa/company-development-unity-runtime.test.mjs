@@ -17,22 +17,29 @@ const cases=[
   ['seed-idle-growth-rpg-crystal-bloom','Crystal Bloom','IDLE_RPG'],
   ['seed-story-complete-rpg-chronicles-of-eldoria','Chronicles of Eldoria','STORY_RPG'],
 ];
-function fixtures(root, pass=true){
+function fixtures(root, gameId, pass=true){
   const baseline=path.join(root,'baseline.json');
-  const web=path.join(root,'web.json');
+  const web=path.join(root,'web-games',gameId,'index.html');
+  const qa=path.join(root,'company-qa-runtime-evidence.json');
+  fs.mkdirSync(path.dirname(web),{recursive:true});
   fs.writeFileSync(baseline,JSON.stringify({content:{identity:'Distinct test identity',coreLoop:['act','feedback','choice','reward']}}));
-  fs.writeFileSync(web,JSON.stringify({gameId:'fixture',pass,validated:pass,state:pass?'PASS':'FAIL',realEvidenceExists:pass}));
-  return {baseline,web};
+  fs.writeFileSync(web,'<!doctype html><title>canonical game</title>');
+  fs.writeFileSync(qa,JSON.stringify({games:[{gameId,target:'web',runtimeSmokePassed:pass,qaPassEligible:pass,blockers:pass?[]:['fixture failure']}]}));
+  return {baseline,web,qa};
 }
 
-test('creates one distinct cloud-build-ready Unity technical prototype per promoted seed from real Web PASS evidence',()=>{
+test('creates one distinct cloud-build-ready Unity technical prototype from canonical Web game plus general QA',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-unity-bootstrap-'));
-  const {baseline,web}=fixtures(root,true);
   for(const [id,name,mode] of cases){
+    const {baseline,web,qa}=fixtures(root,id,true);
     const sandbox=path.join(root,'sandbox-'+mode);
     fs.mkdirSync(path.join(sandbox,'tools'),{recursive:true});
     fs.copyFileSync(generatorSource,path.join(sandbox,'tools/company-development-unity-bootstrap.mjs'));
-    const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs',`--game-id=${id}`,`--game-name=${name}`,`--baseline=${baseline}`,`--web-evidence=${web}`,`--output=unity-games/${id}`],{cwd:sandbox,encoding:'utf8'});
+    const relativeWeb=`web-games/${id}/index.html`;
+    fs.mkdirSync(path.join(sandbox,'web-games',id),{recursive:true});
+    fs.copyFileSync(web,path.join(sandbox,relativeWeb));
+    fs.copyFileSync(qa,path.join(sandbox,'company-qa-runtime-evidence.json'));
+    const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs',`--game-id=${id}`,`--game-name=${name}`,`--baseline=${baseline}`,`--web-game=${relativeWeb}`,'--qa-evidence=company-qa-runtime-evidence.json',`--output=unity-games/${id}`],{cwd:sandbox,encoding:'utf8'});
     assert.equal(run.status,0,run.stderr||run.stdout);
     const project=path.join(sandbox,'unity-games',id);
     const meta=JSON.parse(fs.readFileSync(path.join(project,'prototype-source.json'),'utf8'));
@@ -41,7 +48,9 @@ test('creates one distinct cloud-build-ready Unity technical prototype per promo
     const buildScript=fs.readFileSync(path.join(project,'Assets','Editor','SeedAndroidBuild.cs'),'utf8');
     const runtimeScript=fs.readFileSync(path.join(project,'Assets','Scripts','SeedTechnicalPrototype.cs'),'utf8');
     assert.equal(meta.category,mode);
-    assert.equal(meta.webEvidenceBound,true);
+    assert.equal(meta.canonicalWebGameBound,true);
+    assert.equal(meta.canonicalWebQaPass,true);
+    assert.equal(meta.canonicalWebGamePath,relativeWeb);
     assert.equal(meta.releaseAuthority,false);
     assert.equal(meta.purpose,'UNITY_ANDROID_TECHNICAL_VALIDATION');
     assert.equal(meta.unityEditorVersion,expectedUnityEditorVersion);
@@ -64,15 +73,29 @@ test('creates one distinct cloud-build-ready Unity technical prototype per promo
   }
 });
 
-test('refuses Unity prototype generation without real Web gameplay PASS',()=>{
+test('refuses Unity prototype generation when canonical Web general QA did not pass',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-unity-block-'));
   const sandbox=path.join(root,'sandbox');
   fs.mkdirSync(path.join(sandbox,'tools'),{recursive:true});
   fs.copyFileSync(generatorSource,path.join(sandbox,'tools/company-development-unity-bootstrap.mjs'));
-  const {baseline,web}=fixtures(root,false);
-  const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs','--game-id=seed-puzzle-chromatic-cascade','--game-name=Chromatic Cascade',`--baseline=${baseline}`,`--web-evidence=${web}`],{cwd:sandbox,encoding:'utf8'});
+  const id='seed-puzzle-chromatic-cascade';
+  const {baseline,web,qa}=fixtures(root,id,false);
+  const relativeWeb=`web-games/${id}/index.html`;
+  fs.mkdirSync(path.join(sandbox,'web-games',id),{recursive:true});
+  fs.copyFileSync(web,path.join(sandbox,relativeWeb));
+  fs.copyFileSync(qa,path.join(sandbox,'company-qa-runtime-evidence.json'));
+  const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs',`--game-id=${id}`,'--game-name=Chromatic Cascade',`--baseline=${baseline}`,`--web-game=${relativeWeb}`,'--qa-evidence=company-qa-runtime-evidence.json'],{cwd:sandbox,encoding:'utf8'});
   assert.notEqual(run.status,0);
-  assert.match(run.stderr,/REAL_WEB_GAMEPLAY_PASS_REQUIRED/);
+  assert.match(run.stderr,/CANONICAL_WEB_GAME_QA_PASS_REQUIRED/);
+});
+
+test('Unity runtime workflow consumes canonical Web game and general QA, not removed Web-test artifacts',()=>{
+  assert.match(workflowSource,/company-qa-runtime-evidence\.json/);
+  assert.match(workflowSource,/web-games\/\$\{GAME_ID\}\/index\.html/);
+  assert.match(workflowSource,/--web-game=/);
+  assert.match(workflowSource,/--qa-evidence=/);
+  assert.doesNotMatch(workflowSource,/web-gameplay-validation\.json/);
+  assert.doesNotMatch(workflowSource,/--web-evidence=/);
 });
 
 test('DEVELOPMENT Unity runtime keeps a full dynamic N parent and child validation window',()=>{
