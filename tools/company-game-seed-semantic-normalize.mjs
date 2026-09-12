@@ -80,6 +80,13 @@ function normalizeSeed(seed){
   seed.TARGET_AUDIENCE=`Global mobile players across age groups who are interested in ${categoryLabel(category)} gameplay.${ageReference}`;
   seed.TARGET_SESSION_DIRECTION=`Use sourced global mobile engagement and category-session evidence as a directional reference, while keeping the ${categoryLabel(category)} core loop readable in short touch sessions and preserving longer-term progression between sessions.`;
 
+  // Preserve old Android-mobile seed intent as the existing Unity/Android track.
+  // Only genuinely unset platform values adopt the current Roblox default.
+  const legacyPlatform=clean(seed.INITIAL_TARGET_PLATFORM).toUpperCase();
+  if(legacyPlatform==='ANDROID_MOBILE'||legacyPlatform==='UNITY_ANDROID')seed.INITIAL_TARGET_PLATFORM='UNITY';
+  else if(!legacyPlatform)seed.INITIAL_TARGET_PLATFORM='ROBLOX';
+  if(!clean(seed.CROSS_PLATFORM_EXPANSION_VALUE))seed.CROSS_PLATFORM_EXPANSION_VALUE='UNKNOWN_UNTIL_PLATFORM_EXPANSION_REVIEW';
+
   assertGameSeed(seed);
   return seed;
 }

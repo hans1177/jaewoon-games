@@ -19,17 +19,18 @@ function assertOrdered(text, tokens, label) {
   }
 }
 
-test('central RELEASE_CONFIRMED policy keeps the gated direct release order', () => {
+test('central RELEASE_CONFIRMED policy keeps the selected-platform gated direct release order', () => {
   assertOrdered(flow, [
     'RELEASE_CONFIRMED:',
+    'target: PROJECT_SELECTED_PLATFORM',
     'executionMode: GATED_DIRECT_RELEASE_PRODUCTION',
     '- LOAD_DEVELOPMENT_BASELINE',
     '- CORE_DESIGN_LOCK',
     '- VIBE2_PRIMARY_DEVELOPMENT',
-    '- BIND_CURRENT_UNITY_SOURCE_TREE',
-    '- UNITY_ANDROID_BUILD',
+    '- BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE',
+    '- TARGET_PLATFORM_BUILD_OR_PACKAGE',
     '- FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT',
-    '- ANDROID_RUNTIME_VALIDATION',
+    '- TARGET_PLATFORM_RUNTIME_VALIDATION',
     '- INDEPENDENT_QA_AND_REGRESSION',
     '- FIVE_DISTINCT_LEAD_FINAL_RELEASE_REVIEW',
     '- VIBE2_FIX_AND_REBUILD_LOOP_IF_REQUIRED',
@@ -39,6 +40,9 @@ test('central RELEASE_CONFIRMED policy keeps the gated direct release order', ()
   ], 'COMPANY_FLOW RELEASE_CONFIRMED');
 
   for (const token of [
+    'targetPlatformProjectRequired: true',
+    'sourceTreeBindingRequired: true',
+    'currentBuildEvidenceBindingRequired: true',
     'buildPreflightIsNotFinalApproval: true',
     'finalReviewMustReadSameCurrentBuildRuntimeQaEvidence: true',
     'independentQaSeparatedFromVibe2SelfCheck: true',
@@ -49,7 +53,7 @@ test('central RELEASE_CONFIRMED policy keeps the gated direct release order', ()
   ]) assert.ok(flow.includes(token), `central release contract missing: ${token}`);
 });
 
-test('release runner routes by semantic class and binds implementation/build to current Unity source', () => {
+test('current Unity provider binds implementation/build evidence to current Unity source', () => {
   assert.match(runner, /productionClass!==PRODUCTION_CLASSES\.RELEASE_CONFIRMED/);
   assert.doesNotMatch(runner, /productionTier\s*===?\s*1/);
   assert.doesNotMatch(runner, /Number\([^\n]*productionTier[^\n]*\)\s*===?\s*1/);
