@@ -23,8 +23,8 @@ concurrency:
 jobs:
   independent-qa:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 45
     steps:
       - name: Checkout QA tools
         uses: actions/checkout@v4
@@ -71,45 +71,60 @@ jobs:
           echo "source_commit=$source_commit" >> "$GITHUB_OUTPUT"
           echo "source_tree=$source_tree" >> "$GITHUB_OUTPUT"
 
-      - name: Prepare independent Android 16 emulator
+      - name: Prepare independent native ARM64 Android 16 runtime
         shell: bash
         run: |
           set -euo pipefail
-          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
-          [[ -n "$SDK" ]] || { echo 'Android SDK missing' >&2; exit 7; }
-          sdkmanager_bin="$(find "$SDK/cmdline-tools" -type f -name sdkmanager 2>/dev/null | sort -V | tail -n 1 || true)"
-          avdmanager_bin="$(find "$SDK/cmdline-tools" -type f -name avdmanager 2>/dev/null | sort -V | tail -n 1 || true)"
-          [[ -x "$sdkmanager_bin" ]] || { echo "sdkmanager missing under $SDK/cmdline-tools" >&2; find "$SDK" -maxdepth 4 -type f \( -name sdkmanager -o -name avdmanager \) -print || true; exit 8; }
-          [[ -x "$avdmanager_bin" ]] || { echo "avdmanager missing under $SDK/cmdline-tools" >&2; exit 9; }
-          cmdline_bin="$(dirname "$sdkmanager_bin")"
-          avd_home="$RUNNER_TEMP/android-avd-independent"
-          mkdir -p "$avd_home"
-          export ANDROID_AVD_HOME="$avd_home"
-          export PATH="$cmdline_bin:$SDK/platform-tools:$SDK/emulator:$PATH"
-          echo "ANDROID_AVD_HOME=$avd_home" >> "$GITHUB_ENV"
-          echo "$cmdline_bin" >> "$GITHUB_PATH"
-          echo "$SDK/platform-tools" >> "$GITHUB_PATH"
-          echo "$SDK/emulator" >> "$GITHUB_PATH"
-          yes | "$sdkmanager_bin" --licenses >/dev/null || true
-          "$sdkmanager_bin" 'platform-tools' 'emulator' 'build-tools;36.0.0' 'system-images;android-36;google_apis;x86_64'
-          echo no | "$avdmanager_bin" create avd --force --name jaewoon-independent-qa --package 'system-images;android-36;google_apis;x86_64' --device 'pixel_6'
-          "$SDK/emulator/emulator" -list-avds | tee /tmp/jaewoon-independent-avd-list.txt
-          grep -Fxq 'jaewoon-independent-qa' /tmp/jaewoon-independent-avd-list.txt || { echo '[JAEWOON_BUILD_ERROR:INDEPENDENT_AVD_NOT_CREATED] jaewoon-independent-qa missing from emulator AVD list.' >&2; exit 10; }
-          if [[ -e /dev/kvm ]]; then sudo chmod 666 /dev/kvm || true; fi
-          adb start-server >/dev/null 2>&1 || true
-          nohup "$SDK/emulator/emulator" -avd jaewoon-independent-qa -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > /tmp/jaewoon-independent-emulator.log 2>&1 &
-          if ! timeout 150 adb wait-for-device; then
-            echo '[JAEWOON_BUILD_ERROR:INDEPENDENT_ADB_DEVICE_TIMEOUT] adb did not discover the independent emulator within 150 seconds.' >&2
-            adb devices -l >&2 || true
-            cat /tmp/jaewoon-independent-emulator.log >&2 || true
-            exit 11
-          fi
-          if ! timeout 150 bash -c 'until [[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" == "1" ]]; do sleep 3; done'; then
-            echo '[JAEWOON_BUILD_ERROR:INDEPENDENT_EMULATOR_BOOT_TIMEOUT] independent Android emulator did not finish booting within 150 seconds.' >&2
-            adb devices -l >&2 || true
-            cat /tmp/jaewoon-independent-emulator.log >&2 || true
-            exit 12
-          fi
+          [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]] || { echo '[JAEWOON_BUILD_ERROR:INDEPENDENT_ARM64_RUNNER_REQUIRED] independent Unity QA requires ARM64 host.' >&2; exit 7; }
+          [[ "$(getconf PAGESIZE)" == "4096" ]] || { echo '[JAEWOON_BUILD_ERROR:INDEPENDENT_ARM64_PAGE_SIZE] verified Redroid path requires 4K page size.' >&2; exit 7; }
+          sudo apt-get update -y
+          sudo apt-get install -y adb aapt
+          sudo apt-get install -y "linux-modules-extra-$(uname -r)" || true
+          sudo systemctl start docker || sudo service docker start || true
+          docker version >/tmp/jaewoon-independent-redroid-docker.txt 2>&1 || { cat /tmp/jaewoon-independent-redroid-docker.txt >&2; exit 8; }
+          sudo modprobe binder_linux devices="binder,hwbinder,vndbinder" || { echo '[JAEWOON_BUILD_ERROR:INDEPENDENT_BINDER_MODULE_UNAVAILABLE] binder_linux unavailable.' >&2; exit 9; }
+          sudo mkdir -p /dev/binderfs
+          if ! mountpoint -q /dev/binderfs; then sudo mount -t binder binder /dev/binderfs; fi
+          for device in binder hwbinder vndbinder; do [[ -e "/dev/binderfs/$device" ]] || { echo "binder device missing: $device" >&2; exit 9; }; done
+
+          image='redroid/redroid:16.0.0_64only-latest'
+          docker pull "$image"
+          docker rm -f jaewoon-independent-redroid >/dev/null 2>&1 || true
+          data="$RUNNER_TEMP/jaewoon-independent-redroid-data"
+          mkdir -p "$data"
+          docker run -d --privileged --name jaewoon-independent-redroid \
+            -p 5555:5555 \
+            -v "$data:/data" \
+            "$image" \
+            androidboot.use_memfd=true \
+            androidboot.redroid_width=1080 \
+            androidboot.redroid_height=2400 \
+            androidboot.redroid_dpi=420 \
+            androidboot.redroid_gpu_mode=guest > /tmp/jaewoon-independent-redroid-container.txt
+
+          deadline=$((SECONDS+240))
+          until [[ "$(timeout --kill-after=5s 20s docker exec jaewoon-independent-redroid getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)" == "1" ]]; do
+            if (( SECONDS >= deadline )); then
+              docker logs jaewoon-independent-redroid > /tmp/jaewoon-independent-redroid.log 2>&1 || true
+              tail -n 200 /tmp/jaewoon-independent-redroid.log >&2 || true
+              exit 10
+            fi
+            sleep 5
+          done
+          docker logs jaewoon-independent-redroid > /tmp/jaewoon-independent-redroid.log 2>&1 || true
+          adb start-server >/dev/null
+          connected=false
+          for _ in $(seq 1 30); do
+            adb connect 127.0.0.1:5555 >/tmp/jaewoon-independent-redroid-adb-connect.txt 2>&1 || true
+            if adb devices | awk '$1=="127.0.0.1:5555" && $2=="device" {ok=1} END{exit ok?0:1}'; then connected=true; break; fi
+            sleep 2
+          done
+          [[ "$connected" == "true" ]] || { adb devices -l >&2 || true; exit 11; }
+          api="$(adb shell getprop ro.build.version.sdk | tr -d '\r')"
+          abis="$(adb shell getprop ro.product.cpu.abilist | tr -d '\r')"
+          [[ "$api" == "36" ]] || { echo "independent runtime API mismatch: $api" >&2; exit 12; }
+          grep -q 'arm64-v8a' <<<"$abis" || { echo "independent runtime is not ARM64: $abis" >&2; exit 12; }
+          printf 'HOST_ARCH=%s\nANDROID_API=%s\nANDROID_ABIS=%s\nIMAGE=%s\n' "$(uname -m)" "$api" "$abis" "$image" > /tmp/jaewoon-independent-redroid-device.txt
 
       - name: Independently install, stress, background and resume APK
         id: qa
@@ -123,10 +138,13 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p qa-artifacts/unity-independent-qa
-          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
-          AAPT="$(find "$SDK/build-tools" -type f -name aapt | sort -V | tail -n 1)"
+          AAPT="$(command -v aapt 2>/dev/null || true)"
+          [[ -n "$AAPT" && -x "$AAPT" ]] || { echo 'aapt unavailable for independent QA' >&2; exit 13; }
           package="$($AAPT dump badging "$APK" | sed -n "s/^package: name='\([^']*\)'.*/\1/p" | head -n1)"
           [[ -n "$package" ]] || { echo 'could not resolve package id' >&2; exit 13; }
+          device_abis="$(adb shell getprop ro.product.cpu.abilist | tr -d '\r')"
+          unzip -Z1 "$APK" | grep -q '^lib/arm64-v8a/' || { echo 'APK ARM64 payload missing' >&2; exit 13; }
+          grep -q 'arm64-v8a' <<<"$device_abis" || { echo "independent runtime ABI mismatch: $device_abis" >&2; exit 13; }
 
           adb logcat -c
           adb install -r -t "$APK" >/tmp/independent-install.log
@@ -155,16 +173,18 @@ jobs:
           python3 - <<'PY'
           import json, os
           evidence = {
-              'version': 1,
+              'version': 2,
               'state': 'PASS',
               'independentQa': 'PASS',
               'independent': True,
+              'runtimeProvider': 'REDROID_NATIVE_ARM64_ANDROID_16',
               'upstreamBuildRunId': int(os.environ['UPSTREAM_RUN']),
               'buildId': os.environ['BUILD_SHA'],
               'apkSha256': os.environ['BUILD_SHA'],
               'buildSourceCommit': os.environ['BUILD_SOURCE_COMMIT'],
               'sourceTreeSha': os.environ.get('BUILD_SOURCE_TREE') or None,
               'checks': {
+                  'architectureCompatibleRuntime': 'PASS',
                   'freshInstall': 'PASS',
                   'processLaunch': 'PASS',
                   'rapidInputStress': 'PASS',
@@ -190,7 +210,9 @@ jobs:
           name: unity-independent-qa-${{ steps.upstream.outputs.run_id }}
           path: |
             qa-artifacts/unity-independent-qa/
-            /tmp/jaewoon-independent-emulator.log
-            /tmp/jaewoon-independent-avd-list.txt
+            /tmp/jaewoon-independent-redroid.log
+            /tmp/jaewoon-independent-redroid-device.txt
+            /tmp/jaewoon-independent-redroid-docker.txt
+            /tmp/jaewoon-independent-redroid-adb-connect.txt
           if-no-files-found: warn
           retention-days: 14
