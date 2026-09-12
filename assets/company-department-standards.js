@@ -9,6 +9,22 @@ export const COMPANY_DEPARTMENT_ROLES = Object.freeze([
   'planning', 'graphics', 'development', 'qa', 'balance', 'music', 'intro'
 ]);
 
+export const COMPANY_BLOCKING_DEPARTMENT_ROLES = Object.freeze([
+  'planning', 'graphics', 'development', 'qa', 'balance'
+]);
+
+export const COMPANY_ADVISORY_DEPARTMENT_ROLES = Object.freeze([
+  'music', 'intro'
+]);
+
+export function isBlockingDepartment(role = '') {
+  return COMPANY_BLOCKING_DEPARTMENT_ROLES.includes(clean(role).toLowerCase());
+}
+
+export function isAdvisoryDepartment(role = '') {
+  return COMPANY_ADVISORY_DEPARTMENT_ROLES.includes(clean(role).toLowerCase());
+}
+
 const COMMON_GENERIC_PRAISE = Object.freeze([
   'well-structured', 'well structured', 'solid foundation', 'no major issues',
   'no clear issues', 'good structure', 'properly designed', 'efficient',
@@ -54,7 +70,7 @@ export const COMPANY_DEPARTMENT_STANDARDS = Object.freeze({
   director: Object.freeze({
     name: '총괄', minEvidence: 0, minSpecificEvidence: 0, buildRequired: false, runtimeRequired: false,
     domainKeywords: freezeList([]),
-    requiredChecks: freezeList(['7개 부서 결과가 모두 제출됐는지 확인','각 부서의 증거 게이트 통과 여부 확인','하나라도 DROP이면 DROP, 하나라도 REVISE면 REVISE 적용'])
+    requiredChecks: freezeList(['7개 부서 결과가 모두 제출됐는지 확인','핵심 5개 부서의 증거 게이트와 판정을 확인','음악/연출 결과는 기록·학습하되 단독 실패로 전체 진행을 차단하지 않음'])
   })
 });
 
@@ -140,10 +156,11 @@ export function extractDepartmentRuntimeEvidence(role = '', request = {}) {
 }
 
 export function evaluateDepartmentEvidence({ role = '', evidence = [], request = {} } = {}) {
-  const standard = getDepartmentStandard(role);
+  const key = clean(role).toLowerCase();
+  const standard = getDepartmentStandard(key);
   const normalizedEvidence = normalizeDepartmentEvidence(evidence);
-  const specificEvidence = normalizedEvidence.filter((item) => isDomainSpecificEvidence(role, item));
-  const runtimeEvidence = extractDepartmentRuntimeEvidence(role, request);
+  const specificEvidence = normalizedEvidence.filter((item) => isDomainSpecificEvidence(key, item));
+  const runtimeEvidence = extractDepartmentRuntimeEvidence(key, request);
   const buildConclusion = clean(request.buildConclusion).toLowerCase();
   const buildPassed = ['pass','passed','success','successful'].includes(buildConclusion);
   const blockers = [];
@@ -163,14 +180,25 @@ export function evaluateDepartmentEvidence({ role = '', evidence = [], request =
   }
   if (standard.runtimeRequired && runtimeEvidence.length === 0) {
     blockerCodes.push('RUNTIME_DOMAIN_EVIDENCE_REQUIRED');
-    blockers.push(`${standard.name} PASS에는 실제 ${clean(role).toLowerCase()} 런타임 증거가 최소 1개 필요함`);
+    blockers.push(`${standard.name} PASS에는 실제 ${key} 런타임 증거가 최소 1개 필요함`);
   }
 
   return Object.freeze({
-    role: clean(role).toLowerCase(), passed: blockers.length === 0,
-    evidenceCount: normalizedEvidence.length, minEvidence: standard.minEvidence,
-    specificEvidence: freezeList(specificEvidence), specificEvidenceCount: specificEvidence.length, minSpecificEvidence: standard.minSpecificEvidence,
-    buildRequired: standard.buildRequired, buildPassed, runtimeRequired: standard.runtimeRequired, runtimeEvidence,
-    blockerCodes: freezeList(blockerCodes), blockers: freezeList(blockers), requiredChecks: standard.requiredChecks
+    role: key,
+    passed: blockers.length === 0,
+    blockingForProgression: isBlockingDepartment(key),
+    advisoryForProgression: isAdvisoryDepartment(key),
+    evidenceCount: normalizedEvidence.length,
+    minEvidence: standard.minEvidence,
+    specificEvidence: freezeList(specificEvidence),
+    specificEvidenceCount: specificEvidence.length,
+    minSpecificEvidence: standard.minSpecificEvidence,
+    buildRequired: standard.buildRequired,
+    buildPassed,
+    runtimeRequired: standard.runtimeRequired,
+    runtimeEvidence,
+    blockerCodes: freezeList(blockerCodes),
+    blockers: freezeList(blockers),
+    requiredChecks: standard.requiredChecks
   });
 }
