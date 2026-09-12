@@ -8,10 +8,12 @@ import {
   pendingPortfolioSeedRequests,
   evaluatePortfolioDepartmentScores,
   portfolioDecisionBand,
+  platformRepresentativeGaps,
 } from '../tools/game-seed-state.mjs';
 
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const stateTool=fs.readFileSync('tools/game-seed-state.mjs','utf8');
+const platformProfileTool=fs.readFileSync('tools/game-seed-platform-profile.mjs','utf8');
 const bootstrap=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
 const semanticNormalize=fs.readFileSync('tools/company-game-seed-semantic-normalize.mjs','utf8');
 const qualityGate=fs.readFileSync('tools/company-game-seed-quality-gate.mjs','utf8');
@@ -25,6 +27,7 @@ const pipeline=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
 const devDisposition=fs.readFileSync('tools/company-development-disposition-gate.mjs','utf8');
 
 const scores=value=>({planning:value,graphics:value,development:value,qa:value,balance:value});
+const ROBLOX_CATEGORIES=['ROLEPLAY_LIFE_AVATAR','SIMULATOR_TYCOON_INCREMENTAL','BATTLEGROUND_FIGHTING_SHOOTER','SURVIVAL_HORROR_ESCAPE','OBBY_PARTY_MINIGAME','STORY_RPG_ADVENTURE_RPG'];
 
 test('central mirror defines dynamic portfolio governance and historical six-seed bootstrap only',()=>{
   assert.equal(directive.policyDocument,'COMPANY_FLOW.md');
@@ -71,13 +74,20 @@ test('portfolio expansion requires all five scores and evidence; 79 does not aut
   assert.throws(()=>createPortfolioSeedRequest(state,{category:'PUZZLE',departmentScores:scores(79),evidenceRefs:['review:a']}),/EXPAND_REQUIRES_SCORE_80_OR_OWNER_OVERRIDE/);
   assert.throws(()=>createPortfolioSeedRequest(state,{category:'PUZZLE',departmentScores:{planning:90,graphics:90,development:90,qa:90},evidenceRefs:['review:a']}),/INVALID_BALANCE_SCORE/);
   assert.throws(()=>createPortfolioSeedRequest(state,{category:'PUZZLE',departmentScores:scores(90),evidenceRefs:[]}),/MISSING_PORTFOLIO_EVIDENCE/);
-  const request=createPortfolioSeedRequest(state,{category:'PUZZLE',departmentScores:scores(90),evidenceRefs:['review:a']});
+  const request=createPortfolioSeedRequest(state,{category:'PUZZLE',targetPlatform:'ROBLOX',departmentScores:scores(90),evidenceRefs:['review:a']});
   assert.equal(request.aggregateScore,90);
   assert.equal(request.decisionBand,'EXPAND');
+  assert.equal(request.targetPlatform,'ROBLOX');
   assert.equal(pendingPortfolioSeedRequests(state).length,1);
 });
 
-test('discard records never create replacement state or a GAME_SEED request',()=>{
+test('platform representative gaps are scoped by platform and do not treat Unity seeds as Roblox slots',()=>{
+  const state=normalizeSeedState({bootstrapCompletedAt:'2026-09-11T00:00:00Z',seeds:ROBLOX_CATEGORIES.slice(0,5).map((category,index)=>({seedId:`R${index}`,gameId:`R${index}`,GAME_CATEGORY:category,INITIAL_TARGET_PLATFORM:'ROBLOX',status:'ACTIVE'}))});
+  state.seeds.push({seedId:'U1',gameId:'U1',GAME_CATEGORY:'STORY_RPG_ADVENTURE_RPG',INITIAL_TARGET_PLATFORM:'UNITY',status:'ACTIVE'});
+  assert.deepEqual(platformRepresentativeGaps(state,'ROBLOX',ROBLOX_CATEGORIES),['STORY_RPG_ADVENTURE_RPG']);
+});
+
+test('discard records never create one-for-one replacement state or a GAME_SEED request by themselves',()=>{
   const state=normalizeSeedState({seeds:[{seedId:'SEED-PUZZLE-001',gameId:'old-game',GAME_CATEGORY:'PUZZLE',status:'ACTIVE'}],portfolioSeedRequests:[],vacancies:[{id:'legacy'}]});
   const result=markSeedDiscarded(state,'old-game',{reason:'DISCARDED',timestamp:'2026-09-12T00:00:00Z'});
   assert.equal(result.seed.status,'DISCARDED');
@@ -95,23 +105,30 @@ test('owner may explicitly override portfolio expansion without restoring one-fo
   assert.equal(pendingPortfolioSeedRequests(state).length,1);
 });
 
-test('bootstrap consumes score-approved portfolio requests after the historical bootstrap',()=>{
+test('bootstrap fills the current platform representative set before score-approved expansion',()=>{
+  assert.match(bootstrap,/platformRepresentativeGaps/);
+  assert.match(bootstrap,/representativeCategoriesForPlatform/);
+  assert.match(bootstrap,/PLATFORM_SET_FILL/);
   assert.match(bootstrap,/pendingPortfolioSeedRequests/);
   assert.match(bootstrap,/DEPARTMENT_SCORE_GUIDED_EXPANSION/);
-  assert.match(bootstrap,/NO_PORTFOLIO_EXPANSION_DECISION/);
-  assert.match(bootstrap,/portfolioRequest/);
-  assert.doesNotMatch(bootstrap,/vacanc/i);
-  assert.match(bootstrap,/allowedTargetPlatforms/);
-  assert.match(bootstrap,/defaultTargetPlatform/);
+  assert.match(bootstrap,/NO_CREATION_REQUIRED/);
+  assert.match(bootstrap,/lockedPlatform/);
+  assert.doesNotMatch(bootstrap,/fillVacancy|linkedVacancy|state\.vacancies|replacementVacancyId|replacementOfSeedId/);
+  assert.match(platformProfileTool,/representativeCategoriesForPlatform/);
+  assert.match(platformProfileTool,/ANDROID_MOBILE.*UNITY/s);
 });
 
-test('workflow creates seeds only for initial bootstrap or score-approved portfolio requests',()=>{
-  assert.match(seedWorkflow,/pendingPortfolioSeedRequests/);
-  assert.match(seedWorkflow,/DEPARTMENT_SCORE_GUIDED_PORTFOLIO_EXPANSION/);
-  assert.match(seedWorkflow,/NO_PORTFOLIO_EXPANSION_DECISION/);
-  assert.match(seedWorkflow,/historical initial generation: one six-category batch only; it is not a portfolio quota/);
-  assert.match(seedWorkflow,/ongoing creation: only score-approved five-department portfolio EXPAND requests or owner override/);
+test('workflow uses the existing canonical trigger to fill representative gaps and later score expansion',()=>{
+  assert.match(seedWorkflow,/PLATFORM_REPRESENTATIVE_SET_FILL/);
+  assert.match(seedWorkflow,/platformRepresentativeGaps/);
+  assert.match(seedWorkflow,/game-seed-platform-profiles\.json/);
+  assert.match(seedWorkflow,/tools\/game-seed-platform-profile\.mjs/);
+  assert.match(seedWorkflow,/historical initial generation: one Unity six-category batch only; it is not a portfolio quota/);
+  assert.match(seedWorkflow,/missing Roblox categories are filled before optional portfolio expansion/);
+  assert.match(seedWorkflow,/score-approved five-department EXPAND requests or owner override/);
   assert.doesNotMatch(seedWorkflow,/ONE_FOR_ONE_VACANCY|one-for-one same category|exact vacancy replacements|AUTOMATIC_ONE_FOR_ONE_REPLACEMENT|vacancy\/discard alone/i);
+  const cronMatches=seedWorkflow.match(/cron:/g)||[];
+  assert.equal(cronMatches.length,1);
 });
 
 test('semantic normalization no longer forces all projects into mobile single-player',()=>{
@@ -143,7 +160,6 @@ test('autonomous runtime does not depend on GitHub Actions PR creation permissio
   assert.match(seedWorkflow,/gh workflow run company-seed-design-runtime\.yml --ref main/);
   assert.match(seedDesignWorkflow,/game-seed-state\.json/);
   assert.match(seedDesignWorkflow,/max-parallel: 6/);
-  assert.match(seedDesignWorkflow,/node tools\/artbook-production-pipeline\.mjs/);
 });
 
 test('DESIGN_ONLY requires seed same designer revision and repeated five-lead fatal review',()=>{

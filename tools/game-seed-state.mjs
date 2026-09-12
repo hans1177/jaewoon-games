@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {normalizeSeedPlatform} from './game-seed-platform-profile.mjs';
 
 export const GAME_SEED_STATE_FILE='game-seed-state.json';
 export const DEFAULT_SEED_CATEGORIES=[
@@ -29,6 +30,7 @@ export function normalizeSeedState(raw={}){
     }
     return normalized;
   });
+  if(!state.platformSets||typeof state.platformSets!=='object'||Array.isArray(state.platformSets))state.platformSets={};
   if(!Array.isArray(state.portfolioSeedRequests))state.portfolioSeedRequests=[];
   else state.portfolioSeedRequests=state.portfolioSeedRequests.map(request=>{
     const normalized=request&&typeof request==='object'&&!Array.isArray(request)?{...request}:request;
@@ -40,9 +42,30 @@ export function normalizeSeedState(raw={}){
 }
 export function loadSeedState(file=GAME_SEED_STATE_FILE){return normalizeSeedState(readJson(file,{}));}
 export function saveSeedState(state,file=GAME_SEED_STATE_FILE){writeJson(file,normalizeSeedState(state));}
+export function seedPlatform(seed){return normalizeSeedPlatform(seed?.selectedPlatform||seed?.INITIAL_TARGET_PLATFORM||seed?.targetPlatform);}
 export function activeSeedForGame(state,gameId){return(state.seeds||[]).find(seed=>seed.gameId===gameId&&!['DISCARDED','REMOVED'].includes(clean(seed.status).toUpperCase()))||null;}
 export function seedForGame(state,gameId){return(state.seeds||[]).find(seed=>seed.gameId===gameId)||null;}
 export function activeSeedsForCategory(state,category){return(state.seeds||[]).filter(seed=>seed.GAME_CATEGORY===category&&!['DISCARDED','REMOVED'].includes(clean(seed.status).toUpperCase()));}
+export function activeSeedsForPlatform(state,platform){
+  const p=normalizeSeedPlatform(platform);
+  return(state.seeds||[]).filter(seed=>seedPlatform(seed)===p&&!['DISCARDED','REMOVED'].includes(clean(seed.status).toUpperCase()));
+}
+export function activeSeedsForPlatformCategory(state,platform,category){
+  const c=clean(category);
+  return activeSeedsForPlatform(state,platform).filter(seed=>clean(seed.GAME_CATEGORY)===c);
+}
+export function platformRepresentativeGaps(state,platform,categories=[]){
+  const p=normalizeSeedPlatform(platform);
+  return uniq(categories).filter(category=>activeSeedsForPlatformCategory(state,p,category).length===0);
+}
+export function recordPlatformSetState(state,{platform,categories=[],timestamp=new Date().toISOString()}={}){
+  const p=normalizeSeedPlatform(platform);if(!p)return null;
+  state.platformSets??={};
+  const normalizedCategories=uniq(categories);
+  const gaps=platformRepresentativeGaps(state,p,normalizedCategories);
+  const row={platform:p,categories:normalizedCategories,gaps,complete:gaps.length===0,activeRepresentativeCount:normalizedCategories.length-gaps.length,updatedAt:timestamp};
+  state.platformSets[p]=row;return row;
+}
 export function markSeedDiscarded(state,gameId,{reason='DISCARDED',timestamp=new Date().toISOString()}={}){
   const seed=seedForGame(state,gameId);if(!seed)return null;
   if(clean(seed.status).toUpperCase()==='DISCARDED')return {seed};
@@ -86,7 +109,8 @@ export function validatePortfolioSeedRequest(request={}){
   if(!evidenceRefs.length)errors.push('MISSING_PORTFOLIO_EVIDENCE');
   const ownerOverride=request.ownerOverride===true;
   if(scoreResult.aggregateScore!=null&&scoreResult.aggregateScore<80&&!ownerOverride)errors.push('EXPAND_REQUIRES_SCORE_80_OR_OWNER_OVERRIDE');
-  return {...scoreResult,pass:errors.length===0,errors,category,action,evidenceRefs,ownerOverride};
+  const targetPlatform=normalizeSeedPlatform(request.targetPlatform||'');
+  return {...scoreResult,pass:errors.length===0,errors,category,action,evidenceRefs,ownerOverride,targetPlatform:targetPlatform||null};
 }
 export function pendingPortfolioSeedRequests(state){
   const requests=(state?.portfolioSeedRequests||[]).filter(request=>!request.fulfilledAt&&!request.cancelledAt&&clean(request.status||'PENDING').toUpperCase()==='PENDING');
@@ -96,10 +120,11 @@ export function pendingPortfolioSeedRequests(state){
     return request;
   });
 }
-export function createPortfolioSeedRequest(state,{category,departmentScores,evidenceRefs,ownerOverride=false,timestamp=new Date().toISOString(),requestId=null}={}){
+export function createPortfolioSeedRequest(state,{category,targetPlatform=null,departmentScores,evidenceRefs,ownerOverride=false,timestamp=new Date().toISOString(),requestId=null}={}){
   state.portfolioSeedRequests??=[];
   const id=clean(requestId)||`PSR-${String(state.portfolioSeedRequests.length+1).padStart(5,'0')}`;
-  const request={id,action:'EXPAND',category:clean(category),departmentScores:{...(departmentScores||{})},evidenceRefs:uniq(evidenceRefs),ownerOverride:ownerOverride===true,status:'PENDING',createdAt:timestamp,fulfilledAt:null,seedId:null,gameId:null};
+  const normalizedTargetPlatform=normalizeSeedPlatform(targetPlatform||'');
+  const request={id,action:'EXPAND',category:clean(category),targetPlatform:normalizedTargetPlatform||null,departmentScores:{...(departmentScores||{})},evidenceRefs:uniq(evidenceRefs),ownerOverride:ownerOverride===true,status:'PENDING',createdAt:timestamp,fulfilledAt:null,seedId:null,gameId:null};
   const result=validatePortfolioSeedRequest(request);
   if(!result.pass)throw new Error(`INVALID_PORTFOLIO_SEED_REQUEST ${id}: ${result.errors.join(',')}`);
   if(state.portfolioSeedRequests.some(row=>clean(row.id)===id))throw new Error(`DUPLICATE_PORTFOLIO_SEED_REQUEST ${id}`);
