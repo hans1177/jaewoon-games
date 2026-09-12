@@ -8,6 +8,8 @@ import {spawnSync} from 'node:child_process';
 const generatorSource=process.env.UNITY_BOOTSTRAP_SOURCE||path.resolve('tools/company-development-unity-bootstrap.mjs');
 const workflowSource=fs.readFileSync(path.resolve('.github/workflows/company-development-unity-runtime.yml'),'utf8');
 const cloudBuildSource=fs.readFileSync(path.resolve('.github/workflows/unity-cloud-android-test.yml'),'utf8');
+const runtimeWorkflowSource=fs.readFileSync(path.resolve('.github/workflows/unity-android-runtime-smoke.yml'),'utf8');
+const independentQaSource=fs.readFileSync(path.resolve('.github/workflows/unity-android-independent-qa.yml'),'utf8');
 const regressionSource=fs.readFileSync(path.resolve('.github/workflows/unity-android-regression.yml'),'utf8');
 const runtimeSmokeSource=fs.readFileSync(path.resolve('tools/unity-apk-runtime-smoke.sh'),'utf8');
 const expectedUnityEditorVersion='6000.6.0f1';
@@ -116,17 +118,20 @@ test('successful APK build is retained even when the legacy child runtime gate f
   assert.doesNotMatch(workflowSource,/CLOUD_UNITY_BUILD_FAILED=/);
 });
 
-test('Unity ARM64 APK runtime gate uses a matching ARM64 cloud device instead of x86_64 AVD translation',()=>{
+test('canonical Unity runtime QA and regression use native ARM64 Android 16 instead of x86_64 translation',()=>{
   assert.match(cloudBuildSource,/architectures': \['arm64-v8a'\]/);
-  assert.match(cloudBuildSource,/GENYMOTION_API_TOKEN/);
-  assert.match(cloudBuildSource,/GENYMOTION_RECIPE_UUID/);
-  assert.match(cloudBuildSource,/gmsaas --format json instances start/);
-  assert.match(cloudBuildSource,/ro\.product\.cpu\.abi/);
-  assert.match(cloudBuildSource,/ARM64_RUNTIME_ABI_MISMATCH/);
-  assert.match(cloudBuildSource,/ANDROID_RUNTIME_API_MISMATCH/);
-  assert.match(cloudBuildSource,/unity-apk-runtime-smoke\.sh/);
-  assert.doesNotMatch(cloudBuildSource,/system-images;android-36;google_apis;x86_64/);
-  assert.doesNotMatch(cloudBuildSource,/swiftshader_indirect/);
+  for(const source of [runtimeWorkflowSource, independentQaSource, regressionSource]){
+    assert.match(source,/runs-on: ubuntu-24\.04-arm/);
+    assert.match(source,/redroid\/redroid:16\.0\.0_64only-latest/);
+    assert.match(source,/ro\.product\.cpu\.abilist/);
+    assert.match(source,/arm64-v8a/);
+    assert.doesNotMatch(source,/system-images;android-36;google_apis;x86_64/);
+    assert.doesNotMatch(source,/swiftshader_indirect/);
+  }
+  assert.match(runtimeWorkflowSource,/unity-apk-runtime-smoke\.sh/);
+  assert.match(regressionSource,/unity-apk-runtime-smoke\.sh/);
+  assert.match(runtimeSmokeSource,/APK_DEVICE_ABI_MISMATCH/);
+  assert.match(runtimeSmokeSource,/runtimeAbiCompatible/);
 });
 
 test('Unity executor fetches only required refs and migrates one historical source instead of all development refs',()=>{
