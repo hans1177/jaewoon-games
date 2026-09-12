@@ -9,7 +9,7 @@ import { qaEvidencePasses, qaRequirementsForTask } from './vibe2-training-sample
 
 const SAFE_ID=/^[A-Za-z0-9._-]+$/;
 const SHA=/^[0-9a-f]{7,40}$/i;
-const TASK_TYPES=new Set(['coding','bugfix','unity','qa','planning','general']);
+const TASK_TYPES=new Set(['coding','bugfix','unity','roblox','qa','planning','general']);
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
 const clamp01=value=>Math.max(0,Math.min(1,Number(value)||0));
@@ -28,7 +28,7 @@ export function validateVibe3Trajectory(record={}){
   const selected=clean(record.selectedCandidateId);
   const winner=(record.candidates||[]).find(item=>clean(item?.id)===selected);
   const independentQa=upper(finalEvidence.independentQa||'PASS');
-  const browserQa=upper(finalEvidence.browserQa||(taskType==='unity'?'NOT_APPLICABLE':'PASS'));
+  const browserQa=upper(finalEvidence.browserQa||((taskType==='unity'||taskType==='roblox')?'NOT_APPLICABLE':'PASS'));
   const runtime=upper(finalEvidence.runtime||'PASS');
   if(Number(record.version)!==1)blocked.push('trajectory-version');
   if(clean(record.authority)!=='verified-development-trajectory')blocked.push('trajectory-authority');
@@ -64,7 +64,7 @@ function sampleFromTrajectory(record,validation,sourceFile){
     input,
     output:validation.winnerOutput,
     taskType:validation.taskType,
-    difficulty:validation.taskType==='bugfix'?'bug':validation.taskType==='unity'?'unity-build':'regression',
+    difficulty:validation.taskType==='bugfix'?'bug':validation.taskType==='unity'?'unity-build':validation.taskType==='roblox'?'roblox-release':'regression',
     lifecycle:'active',
     sourceKind:'vibe3-trajectory',
     project:validation.project,
