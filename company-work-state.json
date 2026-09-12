@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "state": "ACTIVE",
   "taskId": "company-flow-ops-20260912",
   "updatedAtKst": "2026-09-12",
@@ -38,29 +38,9 @@
     "registry": "company-platform-projects.json",
     "switchRebuildsCompanyCore": false,
     "projects": {
-      "ROBLOX": {
-        "role": "FIRST_CLASS_PRIMARY_DEFAULT",
-        "developmentAllowed": true,
-        "sourceRoot": "roblox-games/<slug>",
-        "language": "Luau"
-      },
-      "UNITY_ANDROID": {
-        "role": "FIRST_CLASS_EXTENDED",
-        "developmentAllowed": true,
-        "preserveExistingProjectStructure": true,
-        "preserveExistingSourceAndBehavior": true,
-        "preserveExistingWebToUnityFlow": true,
-        "preserveExistingAndroidBuildWorkflow": true,
-        "extensionRequired": true,
-        "replacementOrRebuildForbidden": true
-      },
-      "FORTNITE_UEFN": {
-        "role": "FIRST_CLASS_AVAILABLE",
-        "developmentAllowed": true,
-        "priorPlatformCompletionRequired": false,
-        "sourceRoot": "fortnite-uefn/<slug>",
-        "language": "Verse"
-      }
+      "ROBLOX": {"role":"FIRST_CLASS_PRIMARY_DEFAULT","developmentAllowed":true,"sourceRoot":"roblox-games/<slug>","language":"Luau"},
+      "UNITY_ANDROID": {"role":"FIRST_CLASS_EXTENDED","developmentAllowed":true,"preserveExistingProjectStructure":true,"preserveExistingSourceAndBehavior":true,"preserveExistingWebToUnityFlow":true,"preserveExistingAndroidBuildWorkflow":true,"extensionRequired":true,"replacementOrRebuildForbidden":true},
+      "FORTNITE_UEFN": {"role":"FIRST_CLASS_AVAILABLE","developmentAllowed":true,"priorPlatformCompletionRequired":false,"sourceRoot":"fortnite-uefn/<slug>","language":"Verse"}
     }
   },
   "vibeLearningImmutableLock": {
@@ -108,7 +88,8 @@
     "departmentScoreAndPlatformRoutingEngine": "abd1775f2ae23b14f014904ca07bf80806eb7492",
     "unlockedThreePlatformRegistry": "f820ad77a04b8cc9e31ab7b74b077904436b417d",
     "duplicateArchitectureDocumentRemoved": "02d99b95b5d9b0c65102f575490e347ec6904fe9",
-    "centralPolicySynchronized": "afb9be28fefa2f708c0f4155b5af8dbe517e3788"
+    "centralPolicySynchronized": "afb9be28fefa2f708c0f4155b5af8dbe517e3788",
+    "homepageRuntimeStatePreferred": "3f4ce9625cf76443d466cc621520ab44f10b6eb3"
   },
   "completedSteps": [
     "Read latest owner instructions before resuming PR #346",
@@ -121,7 +102,9 @@
     "Kept ROBLOX as default PRIMARY_PLATFORM without locking other platforms",
     "Preserved Unity source/behavior/Web→Unity/build/runtime/QA/release path and extension requirement",
     "Removed duplicate multi-platform architecture policy document",
-    "Preserved immutable Vibe learning and build-system locks"
+    "Preserved immutable Vibe learning and build-system locks",
+    "Completed HOMEPAGE_PWA_RUNTIME_STATE_SYNC: game-catalog.json and company-status.json now prefer company-runtime, fall back to main, then local while keeping the 5-second refresh and existing homepage/PWA surface",
+    "Verified Vibe QA and Vibe Integrated Regression PASS after homepage runtime-state sync"
   ],
   "workOrder": [
     "HOMEPAGE_PWA_RUNTIME_STATE_SYNC",
@@ -139,8 +122,8 @@
     "MERGE_ONLY_AFTER_VALIDATION"
   ],
   "nextSteps": [
-    "Implement homepage/PWA latest company-runtime state read with safe main fallback while preserving the front door and all PWA features",
-    "Continue the pre-existing company modernization exactly in COMPANY_FLOW/PR #346 order",
+    "Continue COMPANY_MISSION_AND_CREATIVE_INTEGRATION around the existing Vibe execution surface without changing the learning chain",
+    "Repair stale QA contracts that still encode superseded fixed-game-count, Unity-only, or platform-phase-gate policy; tests must validate current COMPANY_FLOW rather than roll policy back",
     "Validate department-score portfolio engine and all-platform routing",
     "Drive Roblox as default fast-release/stabilization focus without blocking Unity or Fortnite development",
     "Preserve and extend the existing Unity project without modifying the locked build workflow",
@@ -171,10 +154,19 @@
     "unityPreservationAndExtensionLocked": true,
     "primaryPlatform": "ROBLOX",
     "canonicalDistillationRequired": true,
+    "homepageRuntimeStateBranchPreferred": true,
+    "homepageMainAndLocalFallbackPreserved": true,
+    "homepageSyncIntervalMs": 5000,
+    "homepageSyncCommit": "3f4ce9625cf76443d466cc621520ab44f10b6eb3",
+    "vibeQaRunId": 34679754877,
+    "vibeQaConclusion": "success",
+    "integratedRegressionRunId": 34679754926,
+    "integratedRegressionConclusion": "success",
+    "stalePolicyContractTestsRemain": true,
     "buildWorkflowModified": false,
     "vibeLearningCodeModified": false
   },
-  "blockers": [],
-  "lastCompletedMilestone": "CENTRALIZED_SCORE_DRIVEN_THREE_PLATFORM_POLICY_AND_RUNTIME_CONTRACTS",
-  "nextMilestone": "HOMEPAGE_PWA_RUNTIME_STATE_SYNC"
+  "blockers": ["STALE_POLICY_CONTRACT_TESTS_EXPECT_SUPERSEDED_FIXED_GAME_COUNT_UNITY_ONLY_OR_PLATFORM_PHASE_GATE_RULES"],
+  "lastCompletedMilestone": "HOMEPAGE_PWA_RUNTIME_STATE_SYNC",
+  "nextMilestone": "COMPANY_MISSION_AND_CREATIVE_INTEGRATION"
 }
