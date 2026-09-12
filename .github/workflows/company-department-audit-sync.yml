@@ -14,7 +14,9 @@ on:
   push:
     branches: [main]
     paths:
+      - 'assets/company-department-standards.js'
       - 'tools/company-department-audit-sync.mjs'
+      - 'company-department-audit.json'
       - '.github/workflows/company-department-audit-sync.yml'
 
 permissions:
@@ -64,12 +66,27 @@ jobs:
       - name: Synchronize department audit
         run: node tools/company-department-audit-sync.mjs /tmp/company-actions-runs.json
 
-      - name: Validate evidence gate
+      - name: Validate evidence and seven-department gate
         run: |
           set -euo pipefail
-          node - <<'NODE'
-          const fs=require('fs');
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          import {COMPANY_DEPARTMENT_ROLES} from './assets/company-department-standards.js';
           const a=JSON.parse(fs.readFileSync('company-department-audit.json','utf8'));
+          const roles=[...COMPANY_DEPARTMENT_ROLES];
+          if(roles.length!==7)throw new Error(`canonical department count mismatch: ${roles.length}`);
+          if(a.policy?.canonicalDepartmentCount!==roles.length||JSON.stringify(a.policy?.canonicalDepartments)!==JSON.stringify(roles))throw new Error('audit canonical department policy mismatch');
+          for(const role of roles){
+            if(!a.departments?.[role])throw new Error(`canonical audit department missing: ${role}`);
+          }
+          const canonical=a.verification?.canonicalDepartments;
+          if(canonical?.count!==roles.length||JSON.stringify(canonical?.roles)!==JSON.stringify(roles))throw new Error('audit verification canonical department mismatch');
+          if(a.departments?.director?.canonicalDepartmentCount!==roles.length||JSON.stringify(a.departments?.director?.canonicalDepartments)!==JSON.stringify(roles))throw new Error('director canonical department gate mismatch');
+          if(!String(a.departments?.director?.passGate||'').includes(`All ${roles.length} votes`))throw new Error('director vote count gate is stale');
+          for(const role of canonical?.missingEvidence||[]){
+            const status=String(a.departments?.[role]?.status||'').toUpperCase();
+            if(!status.startsWith('PENDING_')&&!status.startsWith('VERIFYING_'))throw new Error(`missing evidence was not represented as pending: ${role}`);
+          }
           const u=a.verification?.unityRuntimeSmoke;
           const standards=a.verification?.departmentStandardsWorkflow;
           if(standards?.latestSuccessfulRun?.runId===34305065242&&standards?.unitySmokeContractVerified!==true)throw new Error('known successful Unity smoke contract run was not recognized');
@@ -78,6 +95,8 @@ jobs:
           }
           if(u?.successfulRuntimeEvidenceObserved!==true&&a.departments?.qa?.status==='VERIFIED_UNITY_RUNTIME')throw new Error('build-only QA verification forbidden');
           if(JSON.stringify(a.verification||{}).toLowerCase().includes('vibe'))throw new Error('Vibe evidence must not be part of non-Vibe company audit sync');
+          console.log(`CANONICAL_DEPARTMENT_AUDIT_QA=${roles.length}/${roles.length}`);
+          console.log(`CANONICAL_DEPARTMENT_EVIDENCE_PENDING=${(canonical?.missingEvidence||[]).join(',')||'none'}`);
           console.log('COMPANY_DEPARTMENT_AUDIT_SYNC_QA=PASS');
           NODE
 
@@ -104,6 +123,6 @@ jobs:
             --base main \
             --head "$branch" \
             --title 'company: sync department audit evidence' \
-            --body "Automated department audit evidence refresh.\n\n- workflow run: ${GITHUB_RUN_ID}\n- direct main write: NO")"
+            --body "Automated seven-department audit evidence refresh. Missing department evidence remains PENDING; no synthetic PASS is created.\n\n- workflow run: ${GITHUB_RUN_ID}\n- direct main write: NO")"
           echo "COMPANY_DEPARTMENT_AUDIT_PR=$pr_url"
           echo 'PUBLIC_MAIN_WRITE=NO'
