@@ -107,6 +107,25 @@ test('successful APK build is retained even when the legacy child runtime gate f
   assert.doesNotMatch(workflowSource,/CLOUD_UNITY_BUILD_FAILED=/);
 });
 
+test('Unity executor fetches only required refs and migrates one historical source instead of all development refs',()=>{
+  assert.doesNotMatch(workflowSource,/fetch-depth:\s*0/);
+  assert.doesNotMatch(workflowSource,/refs\/heads\/development\/\*/);
+  assert.match(workflowSource,/fetch-depth:\s*1/);
+  assert.match(workflowSource,/fetch-tags:\s*false/);
+  assert.match(workflowSource,/git\/matching-refs\/heads\/\$prefix/);
+  assert.match(workflowSource,/UNITY_SOURCE_MIGRATION_BRANCH=/);
+  assert.match(workflowSource,/unity-reuse/);
+  assert.match(workflowSource,/unity-history/);
+  assert.match(workflowSource,/CHANGE_DETECTION=UNCHANGED_SOURCE_REUSED/);
+});
+
+test('checkpoint persistence accepts the actual upload-artifact extraction root',()=>{
+  assert.match(workflowSource,/runtime-persist\/queue/);
+  assert.match(workflowSource,/development-unity-runtime\/queue/);
+  assert.match(workflowSource,/CHECKPOINT_ROOT/);
+  assert.match(workflowSource,/checkpoint queue directory missing after artifact extraction/);
+});
+
 test('Unity platform executor remains event-driven with no periodic schedule of its own',()=>{
   assert.doesNotMatch(workflowSource,/^\s*schedule:/m);
   assert.doesNotMatch(workflowSource,/cron:/);
