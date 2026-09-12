@@ -1,3 +1,4 @@
+// 파일명: tools/company-development-validation-cycle.mjs
 import fs from 'node:fs';
 import path from 'node:path';
 import {PRODUCTION_CLASSES,productionClassOf,tierAliasForProductionClass} from './production-classification.mjs';
@@ -122,24 +123,24 @@ function latestDesignBaseline(){
   return null;
 }
 function writeState(state,{sourceDesign=null,web=null,targetPlatform=null,revalidation=null,webMeeting=null,targetMeeting=null,finalDesign=null,artbook=null,blockers=[],nextAction=null}={}){
-  const evidence={web:web?{state:web.state,path:web.path}:null,targetPlatform:targetPlatform?{platform:selectedPlatform,state:targetPlatform.state,path:targetPlatform.path}:null,revalidation:revalidation?{state:revalidation.state,path:revalidation.path}:null};
+  const evidence={web:web?{state:web.state,path:web.path,musicRuntimePass:web.data?.musicRuntime?.pass===true}:null,targetPlatform:targetPlatform?{platform:selectedPlatform,state:targetPlatform.state,path:targetPlatform.path}:null,revalidation:revalidation?{state:revalidation.state,path:revalidation.path}:null};
   if(selectedPlatform==='UNITY')evidence.unity=evidence.targetPlatform;
   const meetings={web:webMeeting?{path:webMeeting.path,decisionCounts:webMeeting.decisionCounts}:null,targetPlatform:targetMeeting?{platform:selectedPlatform,path:targetMeeting.path,decisionCounts:targetMeeting.decisionCounts}:null};
   if(selectedPlatform==='UNITY')meetings.unity=meetings.targetPlatform;
   const status={
-    version:2,gameId,date,productionClass,tierAlias,tier:tierAlias,policyDocument:'COMPANY_FLOW.md',
+    version:3,gameId,date,productionClass,tierAlias,tier:tierAlias,policyDocument:'COMPANY_FLOW.md',
     flow:'DEVELOPMENT_CONFIRMED_GATED_DIRECT',selectedPlatform,platformAdapter:platformAdapter.adapterPath,
     status:state==='DEVELOPMENT_BASELINE_READY'?'COMPLETE':state==='DEVELOPMENT_BLOCKED'?'BLOCKED':'WAITING',
     state,sourceDesign:sourceDesign?{path:sourceDesign.path,date:sourceDesign.date,authorModel:sourceDesign.authorModel}:null,
     evidence,meetings,
     finalDesign:finalDesign?.path||null,artbook:artbook?.path||null,blockers,nextAction,
-    contracts:{gatedDirect:true,resumeFromLatestEvidence:true,singlePlatformRouter:true,aiMayInventValidationPass:false,webSmokeDoesNotEqualGameplayValidation:true,webValidationOptional:true,artbookOnlyAfterBaselineReady:true},
+    contracts:{gatedDirect:true,resumeFromLatestEvidence:true,singlePlatformRouter:true,aiMayInventValidationPass:false,webSmokeDoesNotEqualGameplayValidation:true,webValidationRequired:true,musicValidationRequired:true,webValidationOptional:false,artbookOnlyAfterBaselineReady:true},
     updatedAt:new Date().toISOString()
   };
   writeJson(path.join(base,'development-validation-status.json'),status);
   writeJson(path.join(base,'cycle-status.json'),status);
   const requiredEvidence=state.includes('WEB')?'web-gameplay-validation.json':state.includes('TARGET_PLATFORM')?platformAdapter.evidenceFile:state==='WAITING_REVALIDATION'?'development-revalidation.json':null;
-  writeJson(path.join(base,'development-validation-request.json'),{version:2,gameId,date,state,selectedPlatform,platformAdapter:platformAdapter.adapterPath,nextAction,blockers,requiredEvidence,policyDocument:'COMPANY_FLOW.md'});
+  writeJson(path.join(base,'development-validation-request.json'),{version:3,gameId,date,state,selectedPlatform,platformAdapter:platformAdapter.adapterPath,nextAction,blockers,requiredEvidence,policyDocument:'COMPANY_FLOW.md'});
   console.log(`DEVELOPMENT_DIRECT_STATE=${state}`);
   console.log(`SELECTED_PLATFORM=${selectedPlatform}`);
   if(nextAction)console.log(`NEXT_ACTION=${nextAction}`);
@@ -147,7 +148,7 @@ function writeState(state,{sourceDesign=null,web=null,targetPlatform=null,revali
 }
 
 async function runMeeting(stage,sourceDesign,evidence){
-  const stageLabel=stage==='WEB'?'Web Gameplay Validation':`${platformLabel} Target Platform Validation`;
+  const stageLabel=stage==='WEB'?'Web Gameplay + Music Validation':`${platformLabel} Target Platform Validation`;
   const independent={};
   for(const model of pool){
     independent[model]=await callModel(model,'너는 독립 검토 AI다. 같은 실제 검증 근거를 5개 전문부서 관점으로 분리해서 검토한다. 근거에 없는 결과를 만들지 않는다.',`${stageLabel} 실제 근거와 현재 설계를 planning/graphics/development/qa/balance 관점으로 각각 검토하라. KEEP/CHANGE/DROP/HOLD를 구분하고 근거를 적어라.\nDESIGN=${clip(sourceDesign,13000)}\nEVIDENCE=${clip(evidence,12000)}`,REVIEWS,{predict:1500,compact:true});
@@ -200,12 +201,19 @@ if(!pool.includes(designerModel)){
 }
 
 const web=latestFile('web-gameplay-validation.json');
-let webMeeting=null;
-let afterWeb={path:sourceBaseline.path,content:sourceBaseline.content,authorModel:designerModel};
-if(web.state!=='MISSING'){
-  webMeeting=await runMeeting('WEB',sourceBaseline.content,web.data);
-  afterWeb=await reviseDesign('WEB',designerModel,sourceBaseline.content,webMeeting);
+const webGameplayPass=web.state==='PASS';
+const musicRuntimePass=web.data?.musicRuntime?.pass===true;
+if(!webGameplayPass||!musicRuntimePass){
+  const blockers=[];
+  if(web.state==='MISSING')blockers.push('web-gameplay-validation-required');
+  else if(web.state==='FAIL')blockers.push('web-gameplay-validation-failed');
+  if(!musicRuntimePass)blockers.push('music-runtime-validation-required');
+  const waitState=web.state==='MISSING'?'WAITING_WEB_GAMEPLAY_VALIDATION':'WAITING_WEB_GAMEPLAY_REVALIDATION';
+  writeState(waitState,{sourceDesign:sourceBaseline,web,blockers,nextAction:'Web 실제 플레이와 음악 런타임을 같은 후보에서 검증하고 web-gameplay-validation.json PASS 근거를 기록한다.'});
+  process.exit(0);
 }
+const webMeeting=await runMeeting('WEB',sourceBaseline.content,web.data);
+const afterWeb=await reviseDesign('WEB',designerModel,sourceBaseline.content,webMeeting);
 
 const targetPlatform=latestFile(platformAdapter.evidenceFile);
 const projectPath=clean(game[platformAdapter.projectField]||'');
