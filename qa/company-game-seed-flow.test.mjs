@@ -17,14 +17,18 @@ const artbook=fs.readFileSync('tools/company-design-artbook.mjs','utf8');
 const pipeline=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
 const devDisposition=fs.readFileSync('tools/company-development-disposition-gate.mjs','utf8');
 
-test('directive encodes one atomic six-category global GAME_SEED bootstrap',()=>{
+test('directive records the historical atomic six-category seed bootstrap without turning it into a portfolio quota',()=>{
   assert.equal(directive.gameSeed.enabled,true);
-  assert.equal(directive.gameSeed.bootstrap.mode,'SINGLE_BOOTSTRAP_BATCH');
+  assert.equal(directive.gameSeed.bootstrap.mode,'HISTORICAL_SINGLE_BOOTSTRAP_BATCH');
   assert.equal(directive.gameSeed.bootstrap.count,6);
-  assert.equal(directive.gameSeed.bootstrap.createAllCategoriesAtOnce,true);
+  assert.equal(directive.gameSeed.bootstrap.historicalInitialSeedBatchOnly,true);
+  assert.equal(directive.gameSeed.bootstrap.productionQuota,false);
+  assert.equal(directive.gameSeed.bootstrap.categoriesAreReferenceSetNotSlotQuota,true);
   assert.equal(new Set(directive.gameSeed.bootstrap.categories).size,6);
-  assert.equal(directive.gameSeed.replenishment.mode,'ONE_FOR_ONE_ONLY');
-  assert.equal(directive.gameSeed.replenishment.normalPromotionDoesNotTrigger,true);
+  assert.equal(directive.gameSeed.replenishment.mode,'DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO');
+  assert.equal(directive.gameSeed.replenishment.oneForOneOnly,false);
+  assert.equal(directive.gameSeed.replenishment.automaticGrowthBeyondVacanciesForbidden,false);
+  assert.equal(directive.gameSeed.replenishment.expansionOrReductionUsesDepartmentScoresAndEvidence,true);
   assert.equal(directive.gameSeed.marketEvidence.role,'TARGET_DESIGN_REFERENCE');
   assert.equal(directive.gameSeed.marketEvidence.targetMarketScope,'GLOBAL');
   assert.equal(directive.gameSeed.marketEvidence.countrySpecificEvidenceRole,'SECONDARY_CONTEXT_ONLY');
@@ -32,7 +36,10 @@ test('directive encodes one atomic six-category global GAME_SEED bootstrap',()=>
   assert.equal(directive.gameSeed.marketEvidence.hardPassFailGate,false);
   assert.equal(directive.gameSeed.marketEvidence.numericClaimRequiresSource,true);
   assert.equal(directive.gameSeed.marketEvidence.numericClaimRequiresObservedAt,true);
-  assert.equal(directive.gameSeed.sourceCodeRule,'OWN_IMPLEMENTATION_ONLY');
+  assert.equal(directive.gameSeed.sourceCodeRule,'IMPLEMENT_EQUIVALENT_OR_INSPIRED_FUNCTIONALITY_WITH_OWN_CODE');
+  assert.equal(directive.gameSeed.initialTargetPlatform,'ROBLOX');
+  assert.deepEqual(directive.gameSeed.allowedTargetPlatforms,['ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.equal(directive.gameSeed.projectMaySelectAnyAllowedPlatform,true);
   assert.equal(marketEvidence.targetMarketScope,'GLOBAL');
   assert.equal(Object.keys(marketEvidence.categories).length,6);
   for(const category of directive.gameSeed.bootstrap.categories){
@@ -109,7 +116,7 @@ test('semantic quality gate rejects vague loops wrong benchmarks and non-global 
   assert.match(qualityGate,/core-loop-business-meta-language/);
 });
 
-test('no-vacancy runs still normalize validate persist changes and never create extra seeds',()=>{
+test('no-vacancy runs still normalize validate persist changes and never create extra seeds on their own',()=>{
   const normalizeIndex=seedWorkflow.indexOf('- name: Normalize all active category semantics and global target evidence');
   const qualityIndex=seedWorkflow.indexOf('- name: Reject category-mismatched generic or country-scoped GAME_SEED output');
   const noGrowthIndex=seedWorkflow.indexOf('- name: Record no-growth revalidation when there is no vacancy');
@@ -140,7 +147,7 @@ test('autonomous runtime does not depend on GitHub Actions PR creation permissio
   assert.match(statusWorkflow,/COMPANY_STATUS_SYNC_COMMIT=RUNTIME_PERSISTED/);
 });
 
-test('seed vacancy state is one-for-one and discard is idempotent',()=>{
+test('vacancy replacement state remains idempotent as a runtime mechanism',()=>{
   const state=normalizeSeedState({seeds:[{seedId:'SEED-PUZZLE-001',gameId:'g1',GAME_CATEGORY:'PUZZLE',status:'ACTIVE'}],vacancies:[]});
   const first=markSeedDiscarded(state,'g1',{reason:'fatal',timestamp:'2026-09-11T00:00:00Z'});
   const second=markSeedDiscarded(state,'g1',{reason:'fatal',timestamp:'2026-09-11T00:01:00Z'});
@@ -176,7 +183,7 @@ test('DESIGN_ONLY order is design then baseline then artbook never artbook befor
   assert.match(artbook,/vibe2Used:false/);
 });
 
-test('development discard or demotion requires real evidence fix revalidation and five-lead agreement',()=>{
+test('development discard or demotion requires real evidence fix revalidation and five-lead agreement in the implementation',()=>{
   assert.match(devDisposition,/realEvidenceExists:data\.realEvidenceExists===true/);
   assert.match(devDisposition,/targetedFixAttempted/);
   assert.match(devDisposition,/targetedRevalidationPerformed/);

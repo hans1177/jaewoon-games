@@ -28,21 +28,21 @@ test('legacy autonomous top-level workflow namespace is removed',()=>{
   assert.deepEqual(legacy,[]);
 });
 
-test('central production pipeline exists and follows design promotion web then serial cloud Unity handoff',()=>{
+test('central production runtime preserves existing providers without making Web or Unity the global platform policy',()=>{
   for(const file of centralWorkflows)assert.equal(exists(file),true,`${file} must exist`);
+  const directive=JSON.parse(read('company-directive.json'));
   const promotion=read('.github/workflows/company-design-promotion-sync.yml');
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
   const unity=read('.github/workflows/company-development-unity-runtime.yml');
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webBeforeTargetPlatformByDefault,false);
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.targetPlatformMayRunImmediately,true);
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.webPurpose,'OPTIONAL_GAMEPLAY_VALIDATION_TESTBED');
+  assert.equal(directive.classes.RELEASE_CONFIRMED.target,'PROJECT_SELECTED_PLATFORM');
   assert.match(promotion,/DESIGN_BASELINE_READY/);
   assert.match(promotion,/company-development-confirmed-runtime\.yml/);
-  assert.match(development,/max-parallel:\s*6/);
-  assert.match(development,/Execute actual mobile gameplay validation/);
   assert.match(development,/company-development-web-gameplay-validation\.mjs/);
   assert.match(development,/company-development-validation-cycle\.mjs/);
-  assert.match(development,/WAITING_UNITY_VALIDATION\|DEVELOPMENT_BASELINE_READY/);
-  assert.match(unity,/currentStep\|\|''\)\.toUpperCase\(\)==='UNITY_ANDROID_TECHNICAL_VALIDATION'/);
-  assert.match(unity,/canonicalState\|\|''\)\.toUpperCase\(\)==='WAITING_UNITY_VALIDATION'/);
-  assert.match(unity,/max-parallel:\s*1/);
+  assert.match(unity,/fromJSON\(needs\.prepare\.outputs\.parallel\)/);
   assert.match(unity,/company-development-unity-bootstrap\.mjs/);
   assert.match(unity,/company-development-unity-evidence\.mjs/);
   assert.match(unity,/unity-cloud-android-test\.yml/);
