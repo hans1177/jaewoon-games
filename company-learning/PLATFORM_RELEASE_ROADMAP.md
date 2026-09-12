@@ -15,8 +15,11 @@ Goal: fast real releases and stabilization.
 
 - Roblox is the current primary platform for new platform-experience accumulation.
 - Do not stop at prototype or Studio launch; complete actual playable release cycles.
-- Build Roblox-specific playbook/runtime/QA/publishing support inside V3 Pump.
+- Roblox-specific V3 support is implemented through the `roblox` task playbook, verified-memory rules, trajectory/sample promotion gates, `tools/vibe3-roblox-platform.mjs`, contract tests and the existing V3 CI workflow.
+- Source scope is `roblox-games/`. Publishable Place files are `.rbxl`/`.rbxlx` under that root.
+- Open Cloud publishing is dry-run by default. Live execution requires explicit execution plus `ROBLOX_OPEN_CLOUD_API_KEY`, `ROBLOX_UNIVERSE_ID` and `ROBLOX_PLACE_ID`; credentials remain outside the repository and publish errors redact reflected secrets.
 - Positive experience requires verified winner + runtime PASS + independent QA PASS + regression PASS + protected-state preservation + exact revision.
+- Publish success alone is not positive release experience.
 - Repeat release/fix/re-release cycles until the Roblox path is operationally stable.
 
 ## Phase 2 — Roblox + Unity
