@@ -4,6 +4,7 @@
 import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { selectContinuousTarget } from './autonomous-24h-work-planner.mjs';
+import {COMPANY_DEPARTMENT_ROLES} from '../assets/company-department-standards.js';
 import {
   PRODUCTION_CLASSES,
   homepageCategoryForProductionClass,
@@ -23,14 +24,17 @@ const CENTRAL_POLICY_REQUIRED_TOKENS=[
   'primaryPlatform: ROBLOX',
   'allThreePlatformsMayBeDevelopedConcurrently: true',
   'priorityDoesNotCreatePlatformLock: true',
-  'webPurpose: OPTIONAL_GAMEPLAY_VALIDATION_TESTBED',
-  'webBeforeTargetPlatformByDefault: false',
-  'targetPlatformMayRunImmediately: true',
+  'webPurpose: REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION',
+  'webBeforeTargetPlatformByDefault: true',
+  'targetPlatformMayRunImmediately: false',
+  'webGameplayValidationRequired: true',
+  'musicValidationRequired: true',
   'target: PROJECT_SELECTED_PLATFORM',
 ];
 
 const statusMap={WORKING:'working',DONE:'done',IDLE_NO_TASK:'idle',BLOCKED:'blocked',FAILED:'failed',STALE:'stale'};
-const roles=['planning','development','qa','graphics','balance','director'];
+const departmentRoles=[...COMPANY_DEPARTMENT_ROLES];
+const roles=[...departmentRoles,'director'];
 const clean=value=>String(value??'').trim();
 const focusScore=project=>{
   const explicit=Number(project?.developmentFocus?.total);
@@ -95,14 +99,18 @@ export function synchronizeCompanyStatusPolicy(company,{filesystem=fs}={}){
   policy.primaryPlatformIsDefaultNotLock=true;
   policy.allThreePlatformsMayBeDevelopedConcurrently=true;
   policy.platformRoadmapPhaseEntryGatesForbidden=true;
+  policy.canonicalDepartments=[...departmentRoles];
+  policy.canonicalDepartmentCount=departmentRoles.length;
   policy.webGames='existing-maintenance-allowed';
   policy.existingWebMaintenance=true;
   policy.webGamesRemainPlayable=true;
   policy.newWebGameProduction=false;
-  policy.webPurpose='OPTIONAL_GAMEPLAY_VALIDATION_TESTBED';
+  policy.webPurpose='REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION';
+  policy.webGameplayValidationRequired=true;
+  policy.musicValidationRequired=true;
   policy.webGameplayValidationTestbedAllowed=true;
-  policy.webBeforeTargetPlatformByDefault=false;
-  policy.targetPlatformMayRunImmediately=true;
+  policy.webBeforeTargetPlatformByDefault=true;
+  policy.targetPlatformMayRunImmediately=false;
   delete policy.futurePrimaryTarget;
   delete policy.webGameDevelopment;
   return policy;
@@ -173,17 +181,17 @@ function synchronizePlatformPolicy(portfolio){
   release.featureDevelopmentOnWeb=false;
   release.webArchiveMaintenance='FAST_RUNTIME_INCIDENT_ONLY';
   development.engine='PROJECT_SELECTED_PLATFORM';
-  development.scope='TARGET_PLATFORM_TECHNICAL_AND_GAMEPLAY_VALIDATION';
-  development.webPurpose='OPTIONAL_GAMEPLAY_VALIDATION_TESTBED';
-  development.webBeforeTargetPlatformByDefault=false;
-  development.targetPlatformMayRunImmediately=true;
+  development.scope='WEB_FIRST_PLAYABLE_THEN_TARGET_PLATFORM_TECHNICAL_AND_GAMEPLAY_VALIDATION';
+  development.webPurpose='REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION';
+  development.webGameplayValidationRequired=true;
+  development.musicValidationRequired=true;
+  development.webBeforeTargetPlatformByDefault=true;
+  development.targetPlatformMayRunImmediately=false;
   portfolio.developmentFocusPolicy ||= {};
   portfolio.developmentFocusPolicy.selection='AUTO_SELECTED_PLATFORM_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT';
   portfolio.developmentFocusPolicy.platformPriority=[...PLATFORM_PRIORITY];
   portfolio.developmentFocusPolicy.priorityMeaning='DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE';
-  if(portfolio.developmentFocusPolicy.optionalWebGameplayTestbedAllowedAlongsideReleaseFocus!==false){
-    portfolio.developmentFocusPolicy.optionalWebGameplayTestbedAllowedAlongsideReleaseFocus=true;
-  }
+  portfolio.developmentFocusPolicy.optionalWebGameplayTestbedAllowedAlongsideReleaseFocus=false;
   delete portfolio.developmentFocusPolicy.developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus;
 }
 
@@ -239,12 +247,16 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
       }
     }else if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
       project.profileStatus='DEVELOPMENT_CONFIRMED';
-      project.webPurpose='OPTIONAL_GAMEPLAY_VALIDATION_TESTBED';
+      project.webPurpose='REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION';
+      project.webGameplayValidationRequired=true;
+      project.musicValidationRequired=true;
+      project.webBeforeTargetPlatformByDefault=true;
+      project.targetPlatformMayRunImmediately=false;
       if(targetPlatform){
         project.mode='TARGET_PLATFORM_DEVELOPMENT';
         project.targetEngine=platformTargetEngine(targetPlatform);
       }else{
-        project.mode='OPTIONAL_WEB_GAMEPLAY_TESTBED';
+        project.mode='WEB_FIRST_PLAYABLE_VALIDATION';
         project.targetEngine='platform-selection-required';
       }
     }else{
@@ -270,7 +282,7 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
       game.homepageStage=targetPlatform?`출시확정 · ${platformLabel(targetPlatform)}`:'출시확정 · 플랫폼 선택 필요';
     }else if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
       game.productionTarget=targetPlatform?platformTargetEngine(targetPlatform):'platform-selection-required';
-      game.homepageStage=targetPlatform?`개발확정 · ${platformLabel(targetPlatform)}`:'개발확정 · 플랫폼 선택 필요 / Web 테스트베드 선택사항';
+      game.homepageStage=targetPlatform?`개발확정 · Web 선검증 → ${platformLabel(targetPlatform)}`:'개발확정 · Web 게임플레이/음악 선검증 · 플랫폼 선택 필요';
     }else{
       game.productionTarget='design-only';
       if(!isHold(project))game.homepageStage='기획 · 아트북/컨셉/설계 최적화';
@@ -320,6 +332,8 @@ export function runCompanyStatusSync({filesystem=fs}={}){
     liveStates:{...(supervision.liveStates||{})},
     activeDevelopmentRunId:supervision.activeDevelopmentRunId||null,
     primaryFindings:[...(supervision.primaryFindings||[])],
+    canonicalDepartments:[...departmentRoles],
+    canonicalDepartmentCount:departmentRoles.length,
     staff:Object.fromEntries(roles.map(role=>{
       const live=supervision?.staff?.[role];
       return [role,live?{status:live.status||null,workState:live.workState||null,task:live.task||null,source:live.source||null,reason:live.reason||null,jobEvidence:live.jobEvidence||null}:null];
@@ -381,6 +395,7 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   console.log('COMPANY_STATUS_SYNC=PASS');
   console.log(`COMPANY_POLICY_SOURCE=${company.policy?.sourceOfTruth||'unknown'}`);
   console.log(`COMPANY_PRIMARY_PLATFORM=${company.policy?.primaryPlatform||'unknown'}`);
+  console.log(`CANONICAL_DEPARTMENT_COUNT=${departmentRoles.length}`);
   console.log(`PRODUCTION_CLASS_RELEASE_CONFIRMED=${classResult.state.releaseConfirmedGameIds.join(',')||'none'}`);
   console.log(`PRODUCTION_CLASS_DEVELOPMENT_CONFIRMED=${classResult.state.developmentConfirmedGameIds.join(',')||'none'}`);
   console.log(`PRODUCTION_CLASS_DESIGN_ONLY=${classResult.state.designOnlyGameIds.join(',')||'none'}`);
