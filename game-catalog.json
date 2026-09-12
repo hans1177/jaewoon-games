@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 9,
   "updatedAt": "2026-09-12",
   "classificationPolicy": {
     "canonicalField": "productionClass",
@@ -16,7 +16,11 @@
       "id": "insect-survival",
       "name": "곤충 생존기",
       "description": "작은 세계에서 살아남는 생존 게임",
-      "genre": ["생존", "제작", "탐험"],
+      "genre": [
+        "생존",
+        "제작",
+        "탐험"
+      ],
       "image": "assets/insect-main-v3.webp",
       "webPath": "/web-games/insect-survival/",
       "hasWebArchive": true,
@@ -24,12 +28,11 @@
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "productionTarget": "platform-selection-required",
-      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
+      "productionTarget": "web-first-playable",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_EXISTING_GAME_SEPARATE",
       "designBaselineMigration": "DO_NOT_REGENERATE_THROUGH_DESIGN_ONLY",
-      "homepageStage": "개발확정 · 플랫폼 선택 필요 / Web 테스트베드 선택사항",
+      "homepageStage": "2분류 개발확정 · Web 1차 구현",
       "homepageRecentWork": "곤충 먹이사슬과 세력 생태를 중심으로 핵심 생존 루프를 플레이할 수 있게 다듬었습니다.",
       "homepageWebPlayable": true
     },
@@ -37,7 +40,11 @@
       "id": "bug-defense",
       "name": "곤충 디펜스",
       "description": "30웨이브 곤충 디펜스",
-      "genre": ["웨이브", "전략", "곤충"],
+      "genre": [
+        "웨이브",
+        "전략",
+        "곤충"
+      ],
       "image": "assets/insect-war-v2.webp",
       "webPath": "/web-games/bug-defense/",
       "hasWebArchive": true,
@@ -45,12 +52,11 @@
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "productionTarget": "platform-selection-required",
-      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
+      "productionTarget": "web-first-playable",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_EXISTING_GAME_SEPARATE",
       "designBaselineMigration": "DO_NOT_REGENERATE_THROUGH_DESIGN_ONLY",
-      "homepageStage": "개발확정 · 플랫폼 선택 필요 / Web 테스트베드 선택사항",
+      "homepageStage": "2분류 개발확정 · Web 1차 구현",
       "homepageRecentWork": "웨이브 전투와 위험 선택을 중심으로 짧게 반복 플레이할 수 있는 전투 흐름을 개선했습니다.",
       "homepageWebPlayable": true
     },
@@ -58,7 +64,11 @@
       "id": "daechung-rpg",
       "name": "대충 RPG",
       "description": "탐험과 전투가 이어지는 RPG · Unity Android 확장 개발 중",
-      "genre": ["RPG", "탐험", "전투"],
+      "genre": [
+        "RPG",
+        "탐험",
+        "전투"
+      ],
       "image": "assets/fantasy-rpg-v2.webp",
       "webPath": "/web-games/daechung-rpg/",
       "hasWebArchive": true,
@@ -72,7 +82,7 @@
       "productionClass": "RELEASE_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "productionTarget": "unity-android",
-      "homepageStage": "출시확정 · Unity Android / Web 플레이 가능",
+      "homepageStage": "1분류 출시확정 · Unity Android",
       "homepageRecentWork": "Web 플레이 버전을 유지하면서 기존 Unity Android 확장 개발 경로를 그대로 보존합니다.",
       "homepageWebPlayable": true,
       "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg"
@@ -81,7 +91,11 @@
       "id": "monster-adventure",
       "name": "몬스터 어드벤처",
       "description": "몬스터 포획과 성장 모험",
-      "genre": ["몬스터", "턴제", "모험"],
+      "genre": [
+        "몬스터",
+        "턴제",
+        "모험"
+      ],
       "image": "assets/title-monster-adventure.svg",
       "webPath": "/web-games/monster-adventure/",
       "hasWebArchive": true,
@@ -89,12 +103,11 @@
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "productionTarget": "platform-selection-required",
-      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
+      "productionTarget": "web-first-playable",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_EXISTING_GAME_SEPARATE",
       "designBaselineMigration": "DO_NOT_REGENERATE_THROUGH_DESIGN_ONLY",
-      "homepageStage": "개발확정 · 플랫폼 선택 필요 / Web 테스트베드 선택사항",
+      "homepageStage": "2분류 개발확정 · Web 1차 구현",
       "homepageRecentWork": "4마리 릴레이 전투와 몬스터 성장 흐름을 중심으로 플레이 경험을 보완하고 있습니다.",
       "homepageWebPlayable": true
     },
@@ -102,7 +115,10 @@
       "id": "survival",
       "name": "나의 생존기",
       "description": "채집과 제작 중심 생존 게임",
-      "genre": ["생존", "채집"],
+      "genre": [
+        "생존",
+        "채집"
+      ],
       "image": "assets/title-survival.svg",
       "webPath": "/web-games/survival/",
       "hasWebArchive": true,
@@ -112,7 +128,7 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "selectedPlatform": "UNITY",
       "productionTarget": "unity-android",
-      "homepageStage": "출시확정 · Unity Android / Web 플레이 가능",
+      "homepageStage": "1분류 출시확정 · Unity Android",
       "homepageRecentWork": "현재 Web 버전을 유지하면서 기존 Unity 선택 플랫폼 준비 상태를 보존합니다.",
       "homepageWebPlayable": true
     },
@@ -120,7 +136,11 @@
       "id": "cozy-island",
       "name": "포근섬",
       "description": "섬에서 채집과 낚시를 즐기는 힐링 생활 게임",
-      "genre": ["힐링", "생활", "낚시"],
+      "genre": [
+        "힐링",
+        "생활",
+        "낚시"
+      ],
       "image": "assets/title-cozy-island.svg",
       "webPath": "/web-games/cozy-island/",
       "hasWebArchive": true,
@@ -140,7 +160,10 @@
       "id": "seed-action-survival-rogu-echoes-of-the-lost-star",
       "name": "잃어버린 별의 메아리",
       "description": "액션 생존 로그라이트 기획과 아트북",
-      "genre": ["액션", "생존 로그라이트"],
+      "genre": [
+        "액션",
+        "생존 로그라이트"
+      ],
       "image": "assets/homepage-covers/lost-star.svg",
       "webPath": "/artbook-viewer.html?game=seed-action-survival-rogu-echoes-of-the-lost-star",
       "hasWebArchive": true,
@@ -158,7 +181,10 @@
       "id": "seed-single-defense-strat-celestial-bastion",
       "name": "천상의 보루",
       "description": "싱글 디펜스 전략 기획과 아트북",
-      "genre": ["디펜스", "전략"],
+      "genre": [
+        "디펜스",
+        "전략"
+      ],
       "image": "assets/crystal-v2.webp",
       "webPath": "/artbook-viewer.html?game=seed-single-defense-strat-celestial-bastion",
       "hasWebArchive": true,
@@ -176,7 +202,10 @@
       "id": "seed-puzzle-chromatic-cascade",
       "name": "색채의 연쇄",
       "description": "모바일 연쇄 퍼즐 기획과 아트북",
-      "genre": ["퍼즐", "모바일"],
+      "genre": [
+        "퍼즐",
+        "모바일"
+      ],
       "image": "assets/homepage-covers/chromatic-cascade.svg",
       "webPath": "/artbook-viewer.html?game=seed-puzzle-chromatic-cascade",
       "hasWebArchive": true,
@@ -194,7 +223,10 @@
       "id": "seed-casual-realm-weaver",
       "name": "세계의 직조자",
       "description": "캐주얼 세계 창조 게임 기획과 아트북",
-      "genre": ["캐주얼", "모바일"],
+      "genre": [
+        "캐주얼",
+        "모바일"
+      ],
       "image": "assets/homepage-covers/realm-weaver.svg",
       "webPath": "/artbook-viewer.html?game=seed-casual-realm-weaver",
       "hasWebArchive": true,
@@ -212,7 +244,10 @@
       "id": "seed-idle-growth-rpg-crystal-bloom",
       "name": "수정의 개화",
       "description": "방치 성장 RPG 기획과 아트북",
-      "genre": ["방치형", "RPG"],
+      "genre": [
+        "방치형",
+        "RPG"
+      ],
       "image": "assets/card-rpg-v2.webp",
       "webPath": "/artbook-viewer.html?game=seed-idle-growth-rpg-crystal-bloom",
       "hasWebArchive": true,
@@ -230,19 +265,24 @@
       "id": "seed-story-complete-rpg-chronicles-of-eldoria",
       "name": "엘도리아 연대기",
       "description": "스토리 완결 RPG 기획과 아트북",
-      "genre": ["스토리", "RPG"],
+      "genre": [
+        "스토리",
+        "RPG"
+      ],
       "image": "assets/homepage-covers/eldoria.svg",
       "webPath": "/artbook-viewer.html?game=seed-story-complete-rpg-chronicles-of-eldoria",
       "hasWebArchive": true,
       "featured": false,
-      "homepageCategory": "design-only",
+      "homepageCategory": "development-confirmed",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "productionTarget": "design-baseline",
-      "homepageStage": "기획 · 아트북 공개",
+      "homepageStage": "2분류 개발확정 · Unity Android 기술검증",
       "homepageRecentWork": "완결형 스토리와 성장 구조를 중심으로 RPG 아트북을 정리했습니다.",
       "homepageWebPlayable": false,
-      "homepageArtbookPath": "/artbook-viewer.html?game=seed-story-complete-rpg-chronicles-of-eldoria"
+      "homepageArtbookPath": "/artbook-viewer.html?game=seed-story-complete-rpg-chronicles-of-eldoria",
+      "homepagePublicationApproved": true,
+      "publishTestBuildWhenReady": true
     }
   ]
 }
