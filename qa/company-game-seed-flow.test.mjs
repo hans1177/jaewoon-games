@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {
   normalizeSeedState,
-  createSeedVacancy,
+  markSeedDiscarded,
   createPortfolioSeedRequest,
   pendingPortfolioSeedRequests,
   evaluatePortfolioDepartmentScores,
@@ -11,6 +11,7 @@ import {
 } from '../tools/game-seed-state.mjs';
 
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+const stateTool=fs.readFileSync('tools/game-seed-state.mjs','utf8');
 const bootstrap=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
 const semanticNormalize=fs.readFileSync('tools/company-game-seed-semantic-normalize.mjs','utf8');
 const qualityGate=fs.readFileSync('tools/company-game-seed-quality-gate.mjs','utf8');
@@ -66,7 +67,7 @@ test('five department scores drive expansion bands exactly as central policy def
 });
 
 test('portfolio expansion requires all five scores and evidence; 79 does not auto-expand',()=>{
-  const state=normalizeSeedState({seeds:[],vacancies:[],portfolioSeedRequests:[]});
+  const state=normalizeSeedState({seeds:[],portfolioSeedRequests:[]});
   assert.throws(()=>createPortfolioSeedRequest(state,{category:'PUZZLE',departmentScores:scores(79),evidenceRefs:['review:a']}),/EXPAND_REQUIRES_SCORE_80_OR_OWNER_OVERRIDE/);
   assert.throws(()=>createPortfolioSeedRequest(state,{category:'PUZZLE',departmentScores:{planning:90,graphics:90,development:90,qa:90},evidenceRefs:['review:a']}),/INVALID_BALANCE_SCORE/);
   assert.throws(()=>createPortfolioSeedRequest(state,{category:'PUZZLE',departmentScores:scores(90),evidenceRefs:[]}),/MISSING_PORTFOLIO_EVIDENCE/);
@@ -76,15 +77,19 @@ test('portfolio expansion requires all five scores and evidence; 79 does not aut
   assert.equal(pendingPortfolioSeedRequests(state).length,1);
 });
 
-test('a vacancy by itself never becomes a GAME_SEED creation request',()=>{
-  const state=normalizeSeedState({seeds:[],vacancies:[],portfolioSeedRequests:[]});
-  createSeedVacancy(state,{category:'PUZZLE',reason:'DISCARDED',sourceSeedId:'old-seed',sourceGameId:'old-game'});
-  assert.equal(state.vacancies.length,1);
+test('discard records never create replacement state or a GAME_SEED request',()=>{
+  const state=normalizeSeedState({seeds:[{seedId:'SEED-PUZZLE-001',gameId:'old-game',GAME_CATEGORY:'PUZZLE',status:'ACTIVE'}],portfolioSeedRequests:[],vacancies:[{id:'legacy'}]});
+  const result=markSeedDiscarded(state,'old-game',{reason:'DISCARDED',timestamp:'2026-09-12T00:00:00Z'});
+  assert.equal(result.seed.status,'DISCARDED');
+  assert.equal('vacancies' in state,false);
   assert.equal(pendingPortfolioSeedRequests(state).length,0);
+  assert.doesNotMatch(stateTool,/export function (?:createSeedVacancy|unfilledVacancies|fillVacancy)\b/);
+  assert.doesNotMatch(stateTool,/createPortfolioSeedRequest\(state,\{[^}]*linkedVacancyId/s);
+  assert.doesNotMatch(bootstrap,/fillVacancy|linkedVacancy|state\.vacancies|replacementVacancyId|replacementOfSeedId/);
 });
 
 test('owner may explicitly override portfolio expansion without restoring one-for-one replacement',()=>{
-  const state=normalizeSeedState({seeds:[],vacancies:[],portfolioSeedRequests:[]});
+  const state=normalizeSeedState({seeds:[],portfolioSeedRequests:[]});
   const request=createPortfolioSeedRequest(state,{category:'CASUAL',departmentScores:scores(20),evidenceRefs:['owner:2026-09-12'],ownerOverride:true});
   assert.equal(request.decisionBand,'OWNER_OVERRIDE_EXPAND');
   assert.equal(pendingPortfolioSeedRequests(state).length,1);
@@ -95,8 +100,7 @@ test('bootstrap consumes score-approved portfolio requests after the historical 
   assert.match(bootstrap,/DEPARTMENT_SCORE_GUIDED_EXPANSION/);
   assert.match(bootstrap,/NO_PORTFOLIO_EXPANSION_DECISION/);
   assert.match(bootstrap,/portfolioRequest/);
-  assert.doesNotMatch(bootstrap,/unfilledVacancies\(state\)/);
-  assert.doesNotMatch(bootstrap,/ONE_FOR_ONE_VACANCY/);
+  assert.doesNotMatch(bootstrap,/vacanc/i);
   assert.match(bootstrap,/allowedTargetPlatforms/);
   assert.match(bootstrap,/defaultTargetPlatform/);
 });
@@ -105,12 +109,9 @@ test('workflow creates seeds only for initial bootstrap or score-approved portfo
   assert.match(seedWorkflow,/pendingPortfolioSeedRequests/);
   assert.match(seedWorkflow,/DEPARTMENT_SCORE_GUIDED_PORTFOLIO_EXPANSION/);
   assert.match(seedWorkflow,/NO_PORTFOLIO_EXPANSION_DECISION/);
-  assert.match(seedWorkflow,/AUTOMATIC_ONE_FOR_ONE_REPLACEMENT=NO/);
   assert.match(seedWorkflow,/historical initial generation: one six-category batch only; it is not a portfolio quota/);
-  assert.match(seedWorkflow,/vacancy\/discard alone: never creates a mandatory replacement/);
-  assert.doesNotMatch(seedWorkflow,/ONE_FOR_ONE_VACANCY/);
-  assert.doesNotMatch(seedWorkflow,/one-for-one same category/);
-  assert.doesNotMatch(seedWorkflow,/exact vacancy replacements/);
+  assert.match(seedWorkflow,/ongoing creation: only score-approved five-department portfolio EXPAND requests or owner override/);
+  assert.doesNotMatch(seedWorkflow,/ONE_FOR_ONE_VACANCY|one-for-one same category|exact vacancy replacements|AUTOMATIC_ONE_FOR_ONE_REPLACEMENT|vacancy\/discard alone/i);
 });
 
 test('semantic normalization no longer forces all projects into mobile single-player',()=>{

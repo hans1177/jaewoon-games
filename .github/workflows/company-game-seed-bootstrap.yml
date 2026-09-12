@@ -148,7 +148,7 @@ jobs:
         run: |
           echo 'GAME_SEED_ACTION=NO_PORTFOLIO_EXPANSION_DECISION'
           echo 'GAME_SEED_CREATED_COUNT=0'
-          echo 'AUTOMATIC_ONE_FOR_ONE_REPLACEMENT=NO'
+          echo 'PORTFOLIO_EXPANSION_DECISION=NONE'
 
       - name: Validate GAME_SEED state
         run: |
@@ -219,8 +219,7 @@ jobs:
           echo '- policy source: COMPANY_FLOW.md' >> "$GITHUB_STEP_SUMMARY"
           echo '- historical initial generation: one six-category batch only; it is not a portfolio quota' >> "$GITHUB_STEP_SUMMARY"
           echo '- ongoing creation: only score-approved five-department portfolio EXPAND requests or owner override' >> "$GITHUB_STEP_SUMMARY"
-          echo '- vacancy/discard alone: never creates a mandatory replacement' >> "$GITHUB_STEP_SUMMARY"
-          echo '- portfolio size: no fixed slots, hard minimum, hard maximum, or one-for-one replenishment rule' >> "$GITHUB_STEP_SUMMARY"
+          echo '- portfolio size: dynamic; no fixed slots, hard minimum, or hard maximum' >> "$GITHUB_STEP_SUMMARY"
           echo '- market evidence: directional reference only; missing market metrics do not reject a seed by themselves' >> "$GITHUB_STEP_SUMMARY"
           echo '- target platform: Roblox default, not a lock; Roblox/Unity/Fortnite UEFN may be selected per project' >> "$GITHUB_STEP_SUMMARY"
           echo '- runtime persistence: company-runtime branch; main stays unchanged' >> "$GITHUB_STEP_SUMMARY"

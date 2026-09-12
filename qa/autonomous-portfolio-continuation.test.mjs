@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {decidePortfolioContinuation} from '../tools/autonomous-portfolio-continuation.mjs';
-import {createPortfolioSeedRequest,normalizeSeedState} from '../tools/game-seed-state.mjs';
+import {createPortfolioSeedRequest,normalizeSeedState,markSeedDiscarded} from '../tools/game-seed-state.mjs';
 
 const fsAll={existsSync:()=>true};
 const portfolio={status:'ACTIVE',paidApi:false,maxAutonomousWorkItemsPerDay:8,projects:[{id:'P0001',sourcePath:'web-games/a',mode:'IMPROVE'},{id:'P0002',sourcePath:'web-games/b',mode:'EXPERIMENT_ONLY'},{id:'P0007',sourcePath:'web-games/hold',mode:'HOLD'}]};
 const attempts=ids=>({attempts:ids.map(gameId=>({date:'2026-09-11',gameId}))});
-const seeded=patch=>normalizeSeedState({version:1,bootstrapCompletedAt:'2026-09-11T00:00:00Z',categories:['A'],seeds:[],vacancies:[],portfolioSeedRequests:[],...patch});
+const seeded=patch=>normalizeSeedState({version:1,bootstrapCompletedAt:'2026-09-11T00:00:00Z',categories:['A'],seeds:[],portfolioSeedRequests:[],...patch});
 const scores=value=>({planning:value,graphics:value,development:value,qa:value,balance:value});
 
 test('remaining game work keeps portfolio in game queue',()=>{
@@ -16,17 +16,19 @@ test('remaining game work keeps portfolio in game queue',()=>{
 });
 
 test('missing initial bootstrap dispatches the historical GAME_SEED bootstrap',()=>{
-  const d=decidePortfolioContinuation({portfolio,queueState:attempts(['P0001','P0002']),seedState:normalizeSeedState({version:1,seeds:[],vacancies:[],portfolioSeedRequests:[]}),date:'2026-09-11',filesystem:fsAll});
+  const d=decidePortfolioContinuation({portfolio,queueState:attempts(['P0001','P0002']),seedState:normalizeSeedState({version:1,seeds:[],portfolioSeedRequests:[]}),date:'2026-09-11',filesystem:fsAll});
   assert.equal(d.action,'DISPATCH_GAME_SEED');
   assert.equal(d.reason,'INITIAL_SIX_SEED_BOOTSTRAP_REQUIRED');
   assert.equal(d.seedMode,'INITIAL_BOOTSTRAP');
 });
 
-test('a discard vacancy alone does not dispatch GAME_SEED replenishment',()=>{
-  const state=seeded({vacancies:[{id:'VAC-00001',category:'PUZZLE',reason:'DISCARDED',filledAt:null,replacementSeedId:null}]});
+test('discarded seed alone does not dispatch GAME_SEED expansion',()=>{
+  const state=seeded({seeds:[{seedId:'S1',gameId:'G1',GAME_CATEGORY:'PUZZLE',status:'ACTIVE'}]});
+  markSeedDiscarded(state,'G1',{timestamp:'2026-09-12T00:00:00Z'});
   const d=decidePortfolioContinuation({portfolio,queueState:attempts(['P0001','P0002']),seedState:state,date:'2026-09-11',filesystem:fsAll});
   assert.equal(d.action,'STOP');
   assert.equal(d.reason,'NO_SCORE_APPROVED_PORTFOLIO_EXPANSION');
+  assert.equal('vacancies' in state,false);
 });
 
 test('score-approved five-department expansion dispatches GAME_SEED',()=>{
