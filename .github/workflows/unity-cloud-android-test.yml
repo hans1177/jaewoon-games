@@ -27,7 +27,7 @@ env:
   JAEWOON_ANDROID_VERIFY_API: '36'
 
 concurrency:
-  group: unity-cloud-android-test
+  group: unity-cloud-android-test-${{ inputs.request_file }}
   cancel-in-progress: false
 
 jobs:
