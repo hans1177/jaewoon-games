@@ -16,8 +16,8 @@
     "maxConcurrentGameTasks": 4,
     "unityReleaseFocusSlots": 1,
     "priorityOrder": ["owner-directive", "release-confirmed", "development-confirmed", "reviewing", "other"],
-    "sameTierEngineOrder": ["existing-unity", "existing-web", "new-unity", "other-engine"],
-    "shards": ["unity", "web", "verification", "support"],
+    "sameTierEngineOrder": ["existing-roblox", "existing-unity", "existing-web", "new-unity", "other-engine"],
+    "shards": ["roblox", "unity", "web", "verification", "support"],
     "workStealing": true,
     "dynamicBackpressure": true,
     "speculativeParallelism": {
@@ -73,6 +73,12 @@
     "learningMayOverrideFixedRules": false
   },
   "engineEditors": {
+    "roblox": {
+      "authoringWorkerConfigured": false,
+      "editorRuntime": "roblox-studio-or-cloud-runtime",
+      "workflow": null,
+      "runnerLabel": null
+    },
     "unity": {
       "authoringWorkerConfigured": false,
       "editorRuntime": "unity-editor",
@@ -100,7 +106,7 @@
   "safety": {
     "existingWebMaintenanceAllowed": true,
     "newWebGameAutomatic": false,
-    "allowedWritableTargets": ["web", "unity", "unreal", "godot"],
+    "allowedWritableTargets": ["web", "unity", "unreal", "godot", "roblox"],
     "paidAIAllowed": false,
     "paidRunnerAllowed": false,
     "coreDecisionRequiresOwner": true,
