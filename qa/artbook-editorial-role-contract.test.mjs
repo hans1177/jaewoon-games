@@ -103,15 +103,17 @@ test('Vibe2 starts at DEVELOPMENT_CONFIRMED and remains primary in RELEASE_CONFI
   assert.match(flow,/Vibe2:\n  startsAt: DEVELOPMENT_CONFIRMED/);
 });
 
-test('DEVELOPMENT_CONFIRMED requires Web gameplay and music before selected-platform validation',()=>{
+test('DEVELOPMENT_CONFIRMED requires full approved-scope Web companion gameplay and music before selected-platform validation',()=>{
   const dev=directive.classes.DEVELOPMENT_CONFIRMED;
   assert.equal(dev.executionMode,'GATED_DIRECT');
   assert.equal(dev.resumeFromLatestEvidence,true);
-  assert.equal(dev.webPurpose,'REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION');
+  assert.equal(dev.webPurpose,'MANDATORY_FULL_APPROVED_SCOPE_WEB_COMPANION_AND_MUSIC_VALIDATION');
   assert.equal(dev.targetPlatformPurpose,'TECHNICAL_AND_GAMEPLAY_VALIDATION');
   assert.equal(dev.webBeforeTargetPlatformByDefault,true);
   assert.equal(dev.targetPlatformMayRunImmediately,false);
   assert.equal(dev.webGameplayValidationRequired,true);
+  assert.equal(dev.webCompanionValidationRequired,true);
+  assert.equal(dev.approvedScopeCompletionRequired,true);
   assert.equal(dev.musicValidationRequired,true);
   assert.equal(dev.webCandidateMustPassBeforeTargetPlatformDispatch,true);
   assert.equal(dev.webCandidatePublicPromotionRequiresValidationPass,true);
@@ -119,11 +121,11 @@ test('DEVELOPMENT_CONFIRMED requires Web gameplay and music before selected-plat
   assert.equal(dev.materialChangeRequiresTargetedRevalidation,true);
   assert.equal(dev.artbookRevisionOnlyAfterBaselineReady,true);
   assert.deepEqual(dev.waitingStates,['WAITING_WEB_PLAYABLE','WAITING_WEB_GAMEPLAY_VALIDATION','WAITING_WEB_GAMEPLAY_REVALIDATION','WAITING_TARGET_PLATFORM_VALIDATION','WAITING_TARGET_PLATFORM_REVALIDATION','WAITING_REVALIDATION']);
-  for(const token of ['WEB_PLAYABLE_QUEUE','WEB_PLAYABLE_BOOTSTRAP','MUSIC_RUNTIME_BIND','WEB_GAMEPLAY_AND_MUSIC_VALIDATION','WEB_EVIDENCE_DEPARTMENT_MEETING','TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_GAMEPLAY_VALIDATION','TARGET_PLATFORM_TECHNICAL_VALIDATION','TARGET_PLATFORM_EVIDENCE_DEPARTMENT_MEETING'])assert.ok(dev.requiredFlow.includes(token));
-  assert.match(flow,/webPurpose: REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION/);
+  for(const token of ['WEB_PLAYABLE_QUEUE','FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP','MUSIC_RUNTIME_BIND','WEB_GAMEPLAY_MUSIC_AND_APPROVED_SCOPE_VALIDATION','WEB_EVIDENCE_DEPARTMENT_MEETING','TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_GAMEPLAY_VALIDATION','TARGET_PLATFORM_TECHNICAL_VALIDATION','TARGET_PLATFORM_EVIDENCE_DEPARTMENT_MEETING'])assert.ok(dev.requiredFlow.includes(token));
+  assert.match(flow,/webPurpose: MANDATORY_FULL_APPROVED_SCOPE_WEB_COMPANION_AND_MUSIC_VALIDATION/);
   assert.match(flow,/targetPlatformPurpose: TECHNICAL_AND_GAMEPLAY_VALIDATION/);
   assert.doesNotMatch(JSON.stringify(dev),/ANDROID_TECHNICAL_VALIDATION_PROTOTYPE/);
-  assert.match(JSON.stringify(dev),/WEB_GAMEPLAY_AND_MUSIC_VALIDATION/);
+  assert.match(JSON.stringify(dev),/WEB_GAMEPLAY_MUSIC_AND_APPROVED_SCOPE_VALIDATION/);
   assert.match(devCycle,/DEVELOPMENT_DIRECT_STATE=/);
   assert.match(pipeline,/DEVELOPMENT_EXECUTION_MODE=GATED_DIRECT/);
 });
@@ -137,7 +139,7 @@ test('RELEASE_CONFIRMED targets the project selected platform',()=>{
   assert.equal(release.buildPreflightIsNotFinalApproval,true);
   assert.equal(release.finalReviewMustReadSameCurrentBuildRuntimeQaEvidence,true);
   assert.equal(release.independentQaSeparatedFromVibe2SelfCheck,true);
-  assert.deepEqual(release.waitingStates,['BUILDING','WAITING_BUILD','WAITING_RUNTIME_VALIDATION']);
+  assert.deepEqual(release.waitingStates,['BUILDING','WAITING_WEB_COMPANION_VALIDATION','WAITING_BUILD','WAITING_RUNTIME_VALIDATION']);
   for(const token of ['BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE','TARGET_PLATFORM_BUILD_OR_PACKAGE','TARGET_PLATFORM_RUNTIME_VALIDATION','INDEPENDENT_QA_AND_REGRESSION'])assert.ok(release.requiredFlow.includes(token));
   assert.doesNotMatch(JSON.stringify(release),/UNITY_ANDROID/);
   assert.doesNotMatch(JSON.stringify(release),/BIND_CURRENT_UNITY_SOURCE_TREE/);
