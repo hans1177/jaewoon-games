@@ -128,14 +128,19 @@ test('detailed design keeps one game designer role for revision',()=>{
   assert.match(devCycle,/authorRole:'GAME_DESIGNER_AI'/);
 });
 
-test('design only runs directly through artbook',()=>{
+test('design only reaches artbook only after the design baseline gate',()=>{
+  const requiredFlow=directive.classes.DESIGN_ONLY.requiredFlow||[];
+  const gateIndex=requiredFlow.indexOf('DESIGN_BASELINE_GATE');
+  const artbookIndex=requiredFlow.indexOf('ARTBOOK_EDITOR_CORE_STRATEGY');
   assert.equal(directive.classes.DESIGN_ONLY.directResultMode,true);
-  assert.ok(directive.classes.DESIGN_ONLY.requiredFlow.includes('ARTBOOK_EDITOR_CORE_STRATEGY'));
-  assert.equal(directive.classes.DESIGN_ONLY.requiredFlow.includes('VIBE2_VALIDATION_LEARNING'),false);
+  assert.ok(gateIndex>=0&&artbookIndex>gateIndex);
+  assert.equal(requiredFlow.includes('VIBE2_VALIDATION_LEARNING'),false);
   assert.match(flow,/DESIGN_ONLY:[\s\S]*?directResultMode: true/);
-  assert.match(flow,/ARTBOOK_EDITOR_CORE_STRATEGY/);
-  assert.match(cycle,/DESIGN_ONLY_ARTBOOK_DIRECT=YES/);
-  assert.match(pipeline,/DESIGN_ONLY_ARTBOOK_DIRECT=YES/);
+  assert.match(flow,/DESIGN_BASELINE_GATE[\s\S]*?ARTBOOK_EDITOR_CORE_STRATEGY/);
+  assert.match(cycle,/DESIGN_ONLY_ARTBOOK_CREATED=NO/);
+  assert.match(cycle,/DESIGN_BASELINE_GATE_MUST_RUN_FIRST/);
+  assert.match(pipeline,/baselineGate\?\.state==='DESIGN_BASELINE_READY'/);
+  assert.match(pipeline,/DESIGN_ONLY_ARTBOOK_AFTER_BASELINE=YES/);
 });
 
 test('Vibe2 starts at DEVELOPMENT_CONFIRMED and is inactive in DESIGN_ONLY',()=>{
