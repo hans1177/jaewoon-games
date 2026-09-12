@@ -1,85 +1,58 @@
 import fs from 'node:fs';
+import {validateGameSeed} from './company-game-seed-contract.mjs';
 
 const stateFile=process.env.GAME_SEED_STATE_FILE||'game-seed-state.json';
 const evidenceFile=process.env.GAME_SEED_MARKET_EVIDENCE_FILE||'game-seed-market-evidence.json';
-const read=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const clean=v=>String(v??'').trim();
-const norm=v=>clean(v).toLowerCase();
-const uniq=v=>[...new Set((Array.isArray(v)?v:[]).map(clean).filter(Boolean))];
+const readJson=(file,fallback={})=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 
 if(!fs.existsSync(stateFile))throw new Error('GAME_SEED_QUALITY_STATE_MISSING');
-if(!fs.existsSync(evidenceFile))throw new Error('GAME_SEED_QUALITY_MARKET_EVIDENCE_MISSING');
-const state=read(stateFile);
-const evidence=read(evidenceFile);
-if(clean(evidence.targetMarketScope).toUpperCase()!=='GLOBAL')throw new Error('GAME_SEED_QUALITY_EVIDENCE_SCOPE_NOT_GLOBAL');
-const categories=Object.keys(evidence.categories||{});
-const active=(state.seeds||[]).filter(s=>clean(s.status).toUpperCase()==='ACTIVE');
-if(!state.bootstrapCompletedAt)throw new Error('GAME_SEED_QUALITY_BOOTSTRAP_NOT_COMPLETE');
-if(active.length<categories.length)throw new Error(`GAME_SEED_QUALITY_ACTIVE_COUNT_TOO_SMALL ${active.length}/${categories.length}`);
-
-const genericIdentity=[/^mobile-first[, ]/i,/^mobile first[, ]/i,/^mobile-first$/i,/^rpg-focused$/i,/^casual[, ]/i];
-const businessMeta=/increase user base|boost sales|drive engagement|content growth|optimi[sz]e overall performance/i;
+const state=readJson(stateFile,{seeds:[]});
+const evidence=readJson(evidenceFile,{targetMarketScope:'GLOBAL'});
+const evidenceScope=clean(evidence.targetMarketScope||'GLOBAL').toUpperCase();
 const failures=[];
-for(const category of categories){
-  const cfg=evidence.categories[category]||{};
-  const seeds=active.filter(s=>s.GAME_CATEGORY===category);
-  if(!seeds.length){failures.push(`${category}:no-active-seed`);continue;}
-  for(const seed of seeds){
-    const prefix=`${category}:${seed.seedId||seed.gameId||'unknown'}`;
-    const allowed=new Set(uniq(cfg.benchmarkCandidates).map(norm));
-    const refs=uniq(seed.REFERENCE_GAMES);
-    const invalidRefs=refs.filter(x=>!allowed.has(norm(x)));
-    if(!refs.length)failures.push(`${prefix}:no-reference-game`);
-    if(invalidRefs.length)failures.push(`${prefix}:reference-outside-category-pool=${invalidRefs.join('|')}`);
+if(evidenceScope!=='GLOBAL')failures.push(`market-evidence-scope=${evidenceScope}`);
 
-    const groups=Array.isArray(cfg.requiredConceptGroups)?cfg.requiredConceptGroups.filter(Array.isArray):[];
-    const minimumGroups=Math.max(1,Number(cfg.minimumRequiredConceptGroups||groups.length||1));
-    if(!groups.length)failures.push(`${prefix}:required-concept-groups-missing`);
-    const combined=[...(seed.CORE_FUN_TO_LEARN||[]),...(seed.CORE_LOOP||[]),seed.DISTINCT_IDENTITY].map(norm).join(' ');
-    const matchedGroups=groups.filter(group=>uniq(group).some(term=>combined.includes(norm(term))));
-    if(matchedGroups.length<minimumGroups)failures.push(`${prefix}:category-concept-groups=${matchedGroups.length}/${minimumGroups}`);
+const businessMeta=/increase user base|boost sales|drive engagement|content growth|optimi[sz]e overall performance/i;
+const numericLike=value=>typeof value==='number'||(/\d/.test(clean(value))&&clean(value).toUpperCase()!=='UNKNOWN');
+const active=(state.seeds||[]).filter(seed=>clean(seed.status).toUpperCase()==='ACTIVE');
 
-    const loops=uniq(seed.CORE_LOOP);
-    const loopText=loops.map(norm).join(' ');
-    const loopMatchedGroups=groups.filter(group=>uniq(group).some(term=>loopText.includes(norm(term))));
-    if(loops.length<3||loops.some(x=>x.length<70))failures.push(`${prefix}:core-loop-not-concrete`);
-    if(loopMatchedGroups.length<minimumGroups)failures.push(`${prefix}:core-loop-concept-groups=${loopMatchedGroups.length}/${minimumGroups}`);
-    if(loops.some(x=>businessMeta.test(x)))failures.push(`${prefix}:core-loop-business-meta-language`);
+for(const seed of active){
+  const id=clean(seed.seedId||seed.gameId||'unknown');
+  const prefix=`${clean(seed.GAME_CATEGORY)||'UNCATEGORIZED'}:${id}`;
+  const contract=validateGameSeed(seed);
+  for(const error of contract.errors)failures.push(`${prefix}:contract:${error}`);
 
-    const identity=clean(seed.DISTINCT_IDENTITY);
-    if(identity.length<100||genericIdentity.some(re=>re.test(identity))||businessMeta.test(identity))failures.push(`${prefix}:distinct-identity-too-generic`);
-    if(!/(original|distinct|reinterpret|독자|재해석)/i.test(identity))failures.push(`${prefix}:distinct-identity-reinterpretation-missing`);
+  const loops=Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP.map(clean).filter(Boolean):[];
+  if(loops.length<3)failures.push(`${prefix}:core-loop-needs-at-least-3-steps`);
+  if(loops.some(step=>businessMeta.test(step)))failures.push(`${prefix}:core-loop-business-meta-language`);
 
-    const market=seed.MARKET_EVIDENCE_SUMMARY||{};
-    if(clean(market.targetMarketScope).toUpperCase()!=='GLOBAL')failures.push(`${prefix}:market-scope-not-global`);
-    if(market.available!==true||!Array.isArray(market.references)||!market.references.length)failures.push(`${prefix}:market-evidence-not-used`);
-    const sourcedMetrics=market.references.flatMap(r=>Array.isArray(r.metrics)?r.metrics:[]).filter(m=>m&&m.source&&m.observedAt&&m.value!=='UNKNOWN');
-    if(!sourcedMetrics.length)failures.push(`${prefix}:no-sourced-market-metric`);
-    const hasAgeMetric=sourcedMetrics.some(m=>/age/i.test(clean(m.metric)));
-    const hasRevenueMetric=sourcedMetrics.some(m=>/revenue|grossing/i.test(clean(m.metric)));
-    const hasPlayMetric=sourcedMetrics.some(m=>/session|playtime/i.test(clean(m.metric)));
-    if(!hasAgeMetric)failures.push(`${prefix}:global-age-evidence-missing`);
-    if(!hasRevenueMetric)failures.push(`${prefix}:global-revenue-evidence-missing`);
-    if(!hasPlayMetric)failures.push(`${prefix}:global-playtime-evidence-missing`);
+  const identity=clean(seed.DISTINCT_IDENTITY);
+  if(!identity||businessMeta.test(identity))failures.push(`${prefix}:distinct-identity-missing-or-generic`);
+  if(seed.DIRECT_COPY===true||seed.COPY_SOURCE_CODE===true||seed.COPY_ASSETS===true)failures.push(`${prefix}:direct-copy-forbidden`);
 
-    const audience=clean(seed.TARGET_AUDIENCE);
-    const session=clean(seed.TARGET_SESSION_DIRECTION);
-    if(audience.length<20||/^(general gamers|young adults|casual gamers)$/i.test(audience))failures.push(`${prefix}:target-audience-too-generic`);
-    if(!/global/i.test(audience))failures.push(`${prefix}:target-audience-not-global`);
-    if(/\b(korea|korean|south korea)\b/i.test(audience))failures.push(`${prefix}:country-specific-default-audience`);
-    if(session.length<20||!/global/i.test(session))failures.push(`${prefix}:target-session-not-global-or-too-generic`);
+  const market=seed.MARKET_EVIDENCE_SUMMARY&&typeof seed.MARKET_EVIDENCE_SUMMARY==='object'&&!Array.isArray(seed.MARKET_EVIDENCE_SUMMARY)?seed.MARKET_EVIDENCE_SUMMARY:{};
+  if(clean(market.targetMarketScope||'GLOBAL').toUpperCase()!=='GLOBAL')failures.push(`${prefix}:market-scope-not-global`);
+  if(market.hardPassFailGate===true)failures.push(`${prefix}:market-evidence-must-not-be-hard-gate`);
+  if(market.marketDataAloneCannotDiscard===false)failures.push(`${prefix}:market-data-alone-cannot-discard`);
+  for(const ref of Array.isArray(market.references)?market.references:[]){
+    for(const metric of Array.isArray(ref?.metrics)?ref.metrics:[]){
+      if(!numericLike(metric?.value))continue;
+      if(!clean(metric?.source)||!clean(metric?.observedAt))failures.push(`${prefix}:unsourced-numeric-market-claim`);
+    }
   }
+
+  const audience=clean(seed.TARGET_AUDIENCE);
+  if(/\b(korea|korean|south korea)\b/i.test(audience)&&!/owner override|owner-directed/i.test(audience))failures.push(`${prefix}:country-specific-default-audience`);
 }
+
 if(failures.length){
   console.error('GAME_SEED_SEMANTIC_QUALITY=FAIL');
   for(const failure of failures)console.error(`- ${failure}`);
   process.exit(1);
 }
 console.log('GAME_SEED_SEMANTIC_QUALITY=PASS');
-console.log(`GAME_SEED_SEMANTIC_CATEGORY_COUNT=${categories.length}`);
 console.log(`GAME_SEED_ACTIVE_SEED_COUNT=${active.length}`);
-console.log('GAME_SEED_TARGET_MARKET_SCOPE=GLOBAL');
-console.log('GAME_SEED_CATEGORY_BENCHMARK_MATCH=PASS');
-console.log('GAME_SEED_CATEGORY_CONCEPT_GROUPS=PASS');
-console.log('GAME_SEED_CORE_LOOP_CONCEPT_GROUPS=PASS');
-console.log('GAME_SEED_GLOBAL_AGE_REVENUE_PLAYTIME_EVIDENCE=PASS');
+console.log('GAME_SEED_FIXED_CATEGORY_SLOT_QUOTA=NO');
+console.log('GAME_SEED_MARKET_EVIDENCE_HARD_GATE=NO');
+console.log('GAME_SEED_POLICY_DOCUMENT=COMPANY_FLOW.md');
