@@ -8,21 +8,24 @@ const args = Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--
 const gameId=String(args['game-id']||'').trim();
 const gameName=String(args['game-name']||gameId).trim();
 const baselinePath=String(args.baseline||'').trim();
-const webEvidencePath=String(args['web-evidence']||'').trim();
+const canonicalWebGamePath=String(args['web-game']||`web-games/${gameId}/index.html`).trim().replaceAll('\\','/');
+const qaEvidencePath=String(args['qa-evidence']||'company-qa-runtime-evidence.json').trim();
 const output=String(args.output||`unity-games/${gameId}`).trim().replaceAll('\\','/');
 if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error(`invalid game id: ${gameId}`);
 if(!baselinePath||!fs.existsSync(baselinePath))throw new Error(`design baseline missing: ${baselinePath}`);
-if(!webEvidencePath||!fs.existsSync(webEvidencePath))throw new Error(`web evidence missing: ${webEvidencePath}`);
+if(!canonicalWebGamePath||!fs.existsSync(canonicalWebGamePath))throw new Error(`canonical Web game missing: ${canonicalWebGamePath}`);
+if(!qaEvidencePath||!fs.existsSync(qaEvidencePath))throw new Error(`canonical Web QA evidence missing: ${qaEvidencePath}`);
+if(!/^web-games\/[A-Za-z0-9._-]+\/index\.html$/.test(canonicalWebGamePath)||canonicalWebGamePath.includes('..'))throw new Error(`invalid canonical Web game path: ${canonicalWebGamePath}`);
 if(!/^unity-games\/[A-Za-z0-9._-]+$/.test(output)||output.includes('..'))throw new Error(`invalid Unity output: ${output}`);
 
 const UNITY_EDITOR_VERSION='6000.6.0f1';
 const UNITY_EDITOR_REVISION='f7f8ed4d1e24';
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const baseline=readJson(baselinePath);
-const web=readJson(webEvidencePath);
-const webState=String(web.state||web.status||'').toUpperCase();
-if(!(web.pass===true||web.validated===true||webState==='PASS'||webState==='PASSED'||webState==='VALIDATED')) {
-  throw new Error('REAL_WEB_GAMEPLAY_PASS_REQUIRED');
+const qa=readJson(qaEvidencePath);
+const webQa=(qa.games||[]).find(row=>String(row?.gameId||'')===gameId&&String(row?.target||'').toLowerCase()==='web');
+if(!(webQa?.runtimeSmokePassed===true&&webQa?.qaPassEligible===true&&(!Array.isArray(webQa?.blockers)||webQa.blockers.length===0))){
+  throw new Error('CANONICAL_WEB_GAME_QA_PASS_REQUIRED');
 }
 const design=baseline.content||baseline;
 const coreLoop=Array.isArray(design.coreLoop)?design.coreLoop.map(v=>String(v).trim()).filter(Boolean).slice(0,5):[];
@@ -82,14 +85,12 @@ public sealed class SeedTechnicalPrototype : MonoBehaviour
         metricTimer += dt;
         fpsTime += dt;
         fpsFrames++;
-
         if (Mode == "IDLE_RPG" && elapsed >= 1f)
         {
             elapsed -= 1f;
             resource += Mathf.Max(1, level);
             progress += level;
         }
-
         if (metricTimer >= 2f)
         {
             float fps = fpsTime > 0.001f ? fpsFrames / fpsTime : 0f;
@@ -111,7 +112,6 @@ public sealed class SeedTechnicalPrototype : MonoBehaviour
         GUI.skin.label.fontSize = Mathf.RoundToInt(17f * scale);
         GUI.skin.button.fontSize = Mathf.RoundToInt(20f * scale);
         GUI.skin.box.fontSize = Mathf.RoundToInt(16f * scale);
-
         GUI.Box(new Rect(w * 0.04f, h * 0.04f, w * 0.92f, h * 0.88f), "");
         GUI.Label(new Rect(w * 0.08f, h * 0.07f, w * 0.84f, h * 0.06f), GameName + " · Unity Android 기술 프로토타입");
         GUI.Label(new Rect(w * 0.08f, h * 0.14f, w * 0.84f, h * 0.10f), Identity);
@@ -119,18 +119,14 @@ public sealed class SeedTechnicalPrototype : MonoBehaviour
         GUI.Label(new Rect(w * 0.08f, h * 0.36f, w * 0.84f, h * 0.08f),
             "MODE " + Mode + "   행동 " + actionCount + "   진행 " + progress + "   자원 " + resource + "   Lv." + level);
         GUI.Label(new Rect(w * 0.08f, h * 0.45f, w * 0.84f, h * 0.06f), "최근 입력: " + lastAction);
-
         for (int i = 0; i < 7; i++)
         {
             float x = w * (0.10f + i * 0.12f);
             float y = h * (0.53f + 0.018f * Mathf.Sin(Time.unscaledTime * (1.2f + i * 0.08f) + i));
             GUI.Box(new Rect(x, y, w * 0.075f, w * 0.075f), ((progress + i) % 9).ToString());
         }
-
-        if (GUI.Button(new Rect(w * 0.10f, h * 0.62f, w * 0.80f, h * 0.12f), PrimaryLabel()))
-            PrimaryAction();
-        if (GUI.Button(new Rect(w * 0.10f, h * 0.78f, w * 0.80f, h * 0.12f), SecondaryLabel()))
-            SecondaryAction();
+        if (GUI.Button(new Rect(w * 0.10f, h * 0.62f, w * 0.80f, h * 0.12f), PrimaryLabel())) PrimaryAction();
+        if (GUI.Button(new Rect(w * 0.10f, h * 0.78f, w * 0.80f, h * 0.12f), SecondaryLabel())) SecondaryAction();
     }
 
     private string PrimaryLabel()
@@ -253,14 +249,12 @@ public static class SeedAndroidBuild
         string outputDir = Path.GetFullPath(Path.Combine(projectRoot, "..", "..", "build", "Android"));
         string outputPath = Path.Combine(outputDir, "${csharp(gameId)}.apk");
         Directory.CreateDirectory(outputDir);
-
         PlayerSettings.productName = "${csharp(gameName)}";
         PlayerSettings.companyName = "Jaewoon Games";
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, "${packageId}");
         PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
         PlayerSettings.Android.forceInternetPermission = false;
         PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
-
         BuildPlayerOptions options = new BuildPlayerOptions
         {
             scenes = new[] { ScenePath },
@@ -269,31 +263,21 @@ public static class SeedAndroidBuild
             options = BuildOptions.Development
         };
         BuildReport report = BuildPipeline.BuildPlayer(options);
-        if (report.summary.result != BuildResult.Succeeded)
-            throw new Exception("Android build failed: " + report.summary.result);
-        if (!File.Exists(outputPath) || new FileInfo(outputPath).Length <= 0)
-            throw new Exception("APK missing or empty: " + outputPath);
+        if (report.summary.result != BuildResult.Succeeded) throw new Exception("Android build failed: " + report.summary.result);
+        if (!File.Exists(outputPath) || new FileInfo(outputPath).Length <= 0) throw new Exception("APK missing or empty: " + outputPath);
         Debug.Log("JAEWOON_DEVELOPMENT_APK_READY=" + outputPath + " SIZE=" + new FileInfo(outputPath).Length);
     }
 
     private static void EnsureScene()
     {
-        if (!AssetDatabase.IsValidFolder(SceneFolder))
-            AssetDatabase.CreateFolder("Assets", "Scenes");
-
+        if (!AssetDatabase.IsValidFolder(SceneFolder)) AssetDatabase.CreateFolder("Assets", "Scenes");
         Scene scene;
         SceneAsset sceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath);
-        if (sceneAsset == null)
-            scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-        else
-            scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
-
+        if (sceneAsset == null) scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        else scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
         GameObject root = GameObject.Find(PrototypeRootName);
-        if (root == null)
-            root = new GameObject(PrototypeRootName);
-        if (root.GetComponent<SeedTechnicalPrototype>() == null)
-            root.AddComponent<SeedTechnicalPrototype>();
-
+        if (root == null) root = new GameObject(PrototypeRootName);
+        if (root.GetComponent<SeedTechnicalPrototype>() == null) root.AddComponent<SeedTechnicalPrototype>();
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene, ScenePath);
         AssetDatabase.SaveAssets();
@@ -307,12 +291,12 @@ public static class SeedAndroidBuild
 
 fs.writeFileSync(path.join(output,'Assets/Scripts/SeedTechnicalPrototype.cs'),runtime);
 fs.writeFileSync(path.join(output,'Assets/Editor/SeedAndroidBuild.cs'),build);
-fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — DEVELOPMENT_CONFIRMED Unity technical prototype\n\n- gameId: \`${gameId}\`\n- mode: \`${category}\`\n- Unity editor: \`${UNITY_EDITOR_VERSION}\` (${UNITY_EDITOR_REVISION})\n- source design: \`${baselinePath}\`\n- source web evidence: \`${webEvidencePath}\`\n- build method: \`SeedAndroidBuild.Build\`\n- purpose: \`UNITY_ANDROID_TECHNICAL_VALIDATION\`\n- public/release authority: **NO**\n\nThis project is generated from the locked design baseline only after real Web gameplay validation PASS.\nIt is a one-game-one-Unity-project technical prototype, not a RELEASE_CONFIRMED production build.\n`);
+fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — DEVELOPMENT_CONFIRMED Unity technical prototype\n\n- gameId: \`${gameId}\`\n- mode: \`${category}\`\n- Unity editor: \`${UNITY_EDITOR_VERSION}\` (${UNITY_EDITOR_REVISION})\n- source design: \`${baselinePath}\`\n- canonical Web game: \`${canonicalWebGamePath}\`\n- canonical Web QA evidence: \`${qaEvidencePath}\`\n- build method: \`SeedAndroidBuild.Build\`\n- purpose: \`UNITY_ANDROID_TECHNICAL_VALIDATION\`\n- public/release authority: **NO**\n\nThis project is generated from the locked design baseline only after the canonical Web game exists and general QA has verified it.\nIt is a one-game-one-Unity-project technical prototype, not a RELEASE_CONFIRMED production build.\n`);
 fs.writeFileSync(path.join(output,'prototype-source.json'),JSON.stringify({
-  version:1,gameId,gameName,category,identity,coreLoop,
+  version:2,gameId,gameName,category,identity,coreLoop,
   unityEditorVersion:UNITY_EDITOR_VERSION,unityEditorRevision:UNITY_EDITOR_REVISION,
-  designBaseline:baselinePath,webEvidence:webEvidencePath,
-  webEvidenceBound:true,productionClass:'DEVELOPMENT_CONFIRMED',
+  designBaseline:baselinePath,canonicalWebGamePath,canonicalWebQaEvidence:qaEvidencePath,
+  canonicalWebGameBound:true,canonicalWebQaPass:true,productionClass:'DEVELOPMENT_CONFIRMED',
   purpose:'UNITY_ANDROID_TECHNICAL_VALIDATION',releaseAuthority:false,
   generatedAt:new Date().toISOString()
 },null,2)+'\n');
@@ -321,5 +305,6 @@ console.log(`UNITY_EDITOR_VERSION=${UNITY_EDITOR_VERSION}`);
 console.log(`UNITY_EDITOR_REVISION=${UNITY_EDITOR_REVISION}`);
 console.log(`UNITY_TECH_MODE=${category}`);
 console.log('UNITY_TECH_BUILD_METHOD=SeedAndroidBuild.Build');
-console.log('WEB_EVIDENCE_BOUND=YES');
+console.log('CANONICAL_WEB_GAME_BOUND=YES');
+console.log('CANONICAL_WEB_GAME_QA_BOUND=YES');
 console.log('RELEASE_AUTHORITY=NO');
