@@ -3,7 +3,7 @@ name: Company GAME_SEED Bootstrap
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 15 * * *' # 00:30 KST; no vacancy means no seed creation
+    - cron: '30 15 * * *' # 00:30 KST; without a score-approved expansion request no seed is created
   push:
     branches: [main]
     paths:
@@ -20,6 +20,7 @@ on:
       - 'tools/company-baseline-gate.mjs'
       - 'tools/company-design-artbook.mjs'
       - 'qa/company-game-seed-flow.test.mjs'
+      - 'qa/company-game-seed-state-file.test.mjs'
       - 'qa/company-seed-design-runtime-stall.test.mjs'
       - '.github/workflows/company-game-seed-bootstrap.yml'
       - '.github/workflows/company-seed-design-runtime.yml'
@@ -38,7 +39,7 @@ env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
 jobs:
-  seed-bootstrap-or-replenish:
+  seed-bootstrap-or-portfolio-expansion:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
@@ -85,11 +86,14 @@ jobs:
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
-          import {loadSeedState,unfilledVacancies} from './tools/game-seed-state.mjs';
-          const s=loadSeedState();
-          const need=!s.bootstrapCompletedAt||unfilledVacancies(s).length>0;
+          import {loadSeedState,pendingPortfolioSeedRequests} from './tools/game-seed-state.mjs';
+          const state=loadSeedState();
+          const initial=!state.bootstrapCompletedAt;
+          const pending=initial?[]:pendingPortfolioSeedRequests(state);
+          const need=initial||pending.length>0;
           console.log(`model=${need?'true':'false'}`);
-          console.log(`reason=${!s.bootstrapCompletedAt?'INITIAL_SIX_SEED_BOOTSTRAP':need?'ONE_FOR_ONE_VACANCY':'NO_VACANCY_REVALIDATE_ACTIVE'}`);
+          console.log(`request_count=${initial?6:pending.length}`);
+          console.log(`reason=${initial?'HISTORICAL_INITIAL_SIX_SEED_BOOTSTRAP':need?'DEPARTMENT_SCORE_GUIDED_PORTFOLIO_EXPANSION':'NO_PORTFOLIO_EXPANSION_DECISION'}`);
           NODE
 
       - name: Verified free budget preflight
@@ -115,7 +119,7 @@ jobs:
           version: ${{ env.OLLAMA_VERSION }}
           pull-model: 'true'
 
-      - name: Generate initial six seeds or exact vacancy replacements
+      - name: Generate historical bootstrap seeds or score-approved portfolio expansions
         if: steps.need.outputs.model == 'true'
         env:
           GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
@@ -125,26 +129,26 @@ jobs:
           grep -q 'GAME_SEED_MODEL_CALLS=1' /tmp/game-seed-result.txt
           grep -q 'GAME_SEED_MARKET_SCOPE=GLOBAL' /tmp/game-seed-result.txt
 
-      - name: Normalize all active category semantics and global target evidence
+      - name: Normalize active GAME_SEED semantics to current central policy
         env:
           GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
         run: |
           set -euo pipefail
           node tools/company-game-seed-semantic-normalize.mjs
 
-      - name: Reject category-mismatched generic or country-scoped GAME_SEED output
+      - name: Enforce central GAME_SEED contract and semantic quality
         env:
           GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
         run: |
           set -euo pipefail
           node tools/company-game-seed-quality-gate.mjs
 
-      - name: Record no-growth revalidation when there is no vacancy
+      - name: Record no-expansion decision when there is no score-approved request
         if: steps.need.outputs.model != 'true'
         run: |
-          echo 'GAME_SEED_ACTION=NO_VACANCY_REVALIDATED'
+          echo 'GAME_SEED_ACTION=NO_PORTFOLIO_EXPANSION_DECISION'
           echo 'GAME_SEED_CREATED_COUNT=0'
-          echo 'AUTOMATIC_SEED_GROWTH=NO'
+          echo 'PORTFOLIO_EXPANSION_DECISION=NONE'
 
       - name: Validate GAME_SEED state
         run: |
@@ -164,7 +168,7 @@ jobs:
             exit 0
           fi
           git add -- game-seed-state.json
-          git commit -m "runtime: normalize or replenish GAME_SEED state"
+          git commit -m "runtime: apply central GAME_SEED portfolio state"
           generated_commit="$(git rev-parse HEAD)"
           pushed=0
           persisted=false
@@ -182,7 +186,7 @@ jobs:
               echo 'GAME_SEED_STATE_CHANGE=ALREADY_PERSISTED'
               break
             fi
-            git commit -m "runtime: normalize or replenish GAME_SEED state"
+            git commit -m "runtime: apply central GAME_SEED portfolio state"
             if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
               pushed=1
               persisted=true
@@ -212,14 +216,12 @@ jobs:
         if: always()
         run: |
           echo '### Company GAME_SEED Bootstrap' >> "$GITHUB_STEP_SUMMARY"
-          echo '- target market: GLOBAL; country-specific evidence is secondary context only' >> "$GITHUB_STEP_SUMMARY"
-          echo '- initial generation: one atomic six-category batch' >> "$GITHUB_STEP_SUMMARY"
-          echo '- local model calls: one batch call only when bootstrap or vacancy requires creation' >> "$GITHUB_STEP_SUMMARY"
-          echo '- no-vacancy runs: re-normalize and revalidate existing active seeds without creating new seeds' >> "$GITHUB_STEP_SUMMARY"
-          echo '- semantic quality: concrete category loop + sourced global age/revenue/playtime evidence required before persistence' >> "$GITHUB_STEP_SUMMARY"
-          echo '- replenishment: one-for-one same category unless owner changes category' >> "$GITHUB_STEP_SUMMARY"
+          echo '- policy source: COMPANY_FLOW.md' >> "$GITHUB_STEP_SUMMARY"
+          echo '- historical initial generation: one six-category batch only; it is not a portfolio quota' >> "$GITHUB_STEP_SUMMARY"
+          echo '- ongoing creation: only score-approved five-department portfolio EXPAND requests or owner override' >> "$GITHUB_STEP_SUMMARY"
+          echo '- portfolio size: dynamic; no fixed slots, hard minimum, or hard maximum' >> "$GITHUB_STEP_SUMMARY"
+          echo '- market evidence: directional reference only; missing market metrics do not reject a seed by themselves' >> "$GITHUB_STEP_SUMMARY"
+          echo '- target platform: Roblox default, not a lock; Roblox/Unity/Fortnite UEFN may be selected per project' >> "$GITHUB_STEP_SUMMARY"
           echo '- runtime persistence: company-runtime branch; main stays unchanged' >> "$GITHUB_STEP_SUMMARY"
-          echo '- main push continuation: bootstrap is the single DESIGN_ONLY dispatcher after validation' >> "$GITHUB_STEP_SUMMARY"
-          echo '- numeric market claims: source + observedAt required' >> "$GITHUB_STEP_SUMMARY"
           echo '- source code: own implementation only' >> "$GITHUB_STEP_SUMMARY"
           echo '- public game source write: NO' >> "$GITHUB_STEP_SUMMARY"

@@ -1,6 +1,12 @@
 import fs from 'node:fs';
 import {pathToFileURL} from 'node:url';
-import {DEFAULT_SEED_CATEGORIES,loadSeedState,saveSeedState,unfilledVacancies,fillVacancy} from './game-seed-state.mjs';
+import {
+  DEFAULT_SEED_CATEGORIES,
+  loadSeedState,
+  saveSeedState,
+  pendingPortfolioSeedRequests,
+  fulfillPortfolioSeedRequest,
+} from './game-seed-state.mjs';
 import {assertGameSeed} from './company-game-seed-contract.mjs';
 
 const clean=v=>String(v??'').trim();
@@ -11,11 +17,14 @@ const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file
 const directive=readJson('company-directive.json',{});
 const config=directive.gameSeed||{};
 const categories=uniq(config.bootstrap?.categories||DEFAULT_SEED_CATEGORIES);
+const allowedTargetPlatforms=uniq(config.allowedTargetPlatforms||['ROBLOX','UNITY','FORTNITE_UEFN']).map(value=>value.toUpperCase());
+const defaultTargetPlatform=allowedTargetPlatforms.includes(clean(config.initialTargetPlatform).toUpperCase())?clean(config.initialTargetPlatform).toUpperCase():'ROBLOX';
+const defaultPlayMode=clean(config.initialPlayMode)||'PROJECT_DEFINED';
 const state=loadSeedState();
 state.categories=categories;
 const evidenceFile=clean(process.env.GAME_SEED_MARKET_EVIDENCE_FILE)||'game-seed-market-evidence.json';
 const marketInput=readJson(evidenceFile,{categories:{}})||{categories:{}};
-const targetMarketScope=clean(config.marketEvidence?.targetMarketScope||marketInput.targetMarketScope||'GLOBAL').toUpperCase();
+const targetMarketScope=clean(config.marketEvidence?.targetMarketScope||'GLOBAL').toUpperCase();
 if(targetMarketScope!=='GLOBAL')throw new Error(`GAME_SEED_TARGET_MARKET_SCOPE_MUST_BE_GLOBAL ${targetMarketScope}`);
 const model=clean(process.env.GAME_SEED_LOCAL_MODEL)||clean(directive.ai?.modelPool?.[0])||'qwen3:0.6b';
 const MODEL_TIMEOUT_MS=Math.max(30000,Number(process.env.GAME_SEED_MODEL_TIMEOUT_MS||240000));
@@ -31,12 +40,15 @@ const PROPOSAL_PROPERTIES={
   distinctIdentity:TEXT,
   targetAudience:{type:'string',maxLength:600},
   targetSessionDirection:{type:'string',maxLength:500},
+  initialTargetPlatform:{type:'string',enum:allowedTargetPlatforms},
+  initialPlayMode:{type:'string',minLength:1,maxLength:120},
+  crossPlatformExpansionValue:{type:'string',minLength:1,maxLength:500},
   steamExpansionPossible:{type:'string',enum:['POSSIBLE','NOT_RECOMMENDED']},
   multiplayerExpansionPossible:{type:'string',enum:['POSSIBLE','NOT_RECOMMENDED']},
   multiplayerExpansionValue:{type:'string',enum:['LOW','MEDIUM','HIGH']},
   transformationMode:{type:'string',enum:['HOMAGE','REINTERPRETATION']},
 };
-const REQUIRED_PROPOSAL=['requestId','category','gameName','referenceGames','coreFunToLearn','coreLoop','distinctIdentity','targetAudience','targetSessionDirection','steamExpansionPossible','multiplayerExpansionPossible','multiplayerExpansionValue','transformationMode'];
+const REQUIRED_PROPOSAL=['requestId','category','gameName','referenceGames','coreFunToLearn','coreLoop','distinctIdentity','targetAudience','targetSessionDirection','initialTargetPlatform','initialPlayMode','crossPlatformExpansionValue','steamExpansionPossible','multiplayerExpansionPossible','multiplayerExpansionValue','transformationMode'];
 const batchSchema=count=>({type:'object',required:['proposals'],properties:{proposals:{type:'array',minItems:count,maxItems:count,items:{type:'object',required:REQUIRED_PROPOSAL,properties:PROPOSAL_PROPERTIES,additionalProperties:false}}},additionalProperties:false});
 
 function rawCategoryEvidence(category){
@@ -81,11 +93,12 @@ function uniqueGameId(category,name,used){
   while(used.has(id)){id=`seed-${categorySlug}-${nameSlug}-${n++}`.slice(0,63);}used.add(id);return id;
 }
 function normalizeProposal(target,p){
-  // requestId/category are orchestration keys chosen by the company runtime, never model-authored decisions.
   const proposal={...(p||{}),requestId:target.requestId,category:target.category};
   const canonicalBenchmarks=new Map(target.benchmarkCandidates.map(name=>[norm(name),name]));
-  proposal.referenceGames=uniq(p?.referenceGames).map(name=>canonicalBenchmarks.get(norm(name))).filter(Boolean);
-  if(!proposal.referenceGames.length)proposal.referenceGames=target.benchmarkCandidates.slice(0,Math.min(2,target.benchmarkCandidates.length));
+  if(canonicalBenchmarks.size){
+    const matched=uniq(p?.referenceGames).map(name=>canonicalBenchmarks.get(norm(name))).filter(Boolean);
+    proposal.referenceGames=matched.length?matched:target.benchmarkCandidates.slice(0,Math.min(2,target.benchmarkCandidates.length));
+  }else proposal.referenceGames=uniq(p?.referenceGames).slice(0,4);
 
   proposal.coreFunToLearn=uniq(p?.coreFunToLearn).slice(0,4);
   proposal.coreLoop=uniq(p?.coreLoop).slice(0,8).map(step=>step.length>=20?step:`${step} — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.`);
@@ -93,7 +106,7 @@ function normalizeProposal(target,p){
   let semanticText=[...proposal.coreFunToLearn,...proposal.coreLoop,clean(p?.distinctIdentity)].map(norm).join(' ');
   for(const term of required){
     if(semanticText.includes(norm(term)))continue;
-    proposal.coreFunToLearn.push(`${term} 중심의 ${target.category} 핵심 플레이 패턴을 글로벌 모바일 환경에 맞게 재해석한다`);
+    proposal.coreFunToLearn.push(`${term} 중심의 ${target.category} 핵심 플레이 패턴을 선택 플랫폼 환경에 맞게 재해석한다`);
     semanticText=`${semanticText} ${norm(term)}`;
   }
   proposal.coreFunToLearn=uniq(proposal.coreFunToLearn).slice(0,6);
@@ -107,17 +120,21 @@ function normalizeProposal(target,p){
 
   const originalIdentity=clean(p?.distinctIdentity);
   if(originalIdentity.length<60||/^mobile[- ]first|^rpg-focused$|^casual[, ]/i.test(originalIdentity)){
-    proposal.distinctIdentity=`${target.category}의 ${required.join(' / ')} 재미를 기반으로 하되 세계관·비주얼·성장 조합과 모바일 조작 흐름을 새로 설계해 글로벌 싱글플레이용 독자 경험으로 재해석한다.`;
+    proposal.distinctIdentity=`${target.category}의 ${required.join(' / ')} 재미를 기반으로 하되 세계관·비주얼·성장 조합과 선택 플랫폼의 상호작용 흐름을 새로 설계해 독자 경험으로 재해석한다.`;
   }else proposal.distinctIdentity=originalIdentity;
 
   const originalAudience=clean(p?.targetAudience);
   proposal.targetAudience=originalAudience.length>=12&&!/^(general gamers|young adults|casual gamers)$/i.test(originalAudience)&&!/\b(korea|korean|south korea)\b/i.test(originalAudience)
     ?originalAudience
-    :`Global mobile players who enjoy ${required.join(' and ')}-driven ${target.category.toLowerCase().replaceAll('_',' ')} play.`;
+    :`Global players who enjoy ${required.join(' and ')}-driven ${target.category.toLowerCase().replaceAll('_',' ')} play.`;
   const originalSession=clean(p?.targetSessionDirection);
   proposal.targetSessionDirection=originalSession.length>=16
     ?originalSession
-    :'GLOBAL 모바일 사용자를 기준으로 짧고 반복 가능한 세션에서 핵심 루프가 완결되고 장기 성장으로 자연스럽게 연결되도록 설계한다.';
+    :'GLOBAL 사용자를 기준으로 선택 플랫폼과 프로젝트 플레이 모드에 맞는 세션 구조를 설계한다.';
+  const requestedPlatform=clean(p?.initialTargetPlatform).toUpperCase().replaceAll('-','_');
+  proposal.initialTargetPlatform=allowedTargetPlatforms.includes(requestedPlatform)?requestedPlatform:defaultTargetPlatform;
+  proposal.initialPlayMode=clean(p?.initialPlayMode)||defaultPlayMode;
+  proposal.crossPlatformExpansionValue=clean(p?.crossPlatformExpansionValue)||'UNKNOWN_UNTIL_PLATFORM_EXPANSION_REVIEW';
   return proposal;
 }
 function validateProposal(target,p){
@@ -128,15 +145,19 @@ function validateProposal(target,p){
   const refs=uniq(p?.referenceGames);
   if(!refs.length)missing.push('referenceGames');
   const allowed=new Set(target.benchmarkCandidates.map(norm));
-  if(!allowed.size)missing.push('benchmarkCandidates');
-  const invalidRefs=refs.filter(ref=>!allowed.has(norm(ref)));
-  if(invalidRefs.length)missing.push(`referenceGamesOutsideCategoryPool:${invalidRefs.join('|')}`);
+  if(allowed.size){
+    const invalidRefs=refs.filter(ref=>!allowed.has(norm(ref)));
+    if(invalidRefs.length)missing.push(`referenceGamesOutsideProvidedBenchmarkPool:${invalidRefs.join('|')}`);
+  }
   if(!uniq(p?.coreFunToLearn).length)missing.push('coreFunToLearn');
   if(uniq(p?.coreLoop).length<3)missing.push('coreLoop>=3');
   if(!clean(p?.distinctIdentity))missing.push('distinctIdentity');
   if(!clean(p?.targetAudience))missing.push('targetAudience');
   if(!clean(p?.targetSessionDirection))missing.push('targetSessionDirection');
   if(/\b(korea|korean|south korea)\b/i.test(clean(p?.targetAudience)))missing.push('targetAudienceMustBeGlobalNotKoreaSpecific');
+  if(!allowedTargetPlatforms.includes(clean(p?.initialTargetPlatform).toUpperCase()))missing.push('initialTargetPlatform');
+  if(!clean(p?.initialPlayMode))missing.push('initialPlayMode');
+  if(!clean(p?.crossPlatformExpansionValue))missing.push('crossPlatformExpansionValue');
   if(!['POSSIBLE','NOT_RECOMMENDED'].includes(p?.steamExpansionPossible))missing.push('steamExpansionPossible');
   if(!['POSSIBLE','NOT_RECOMMENDED'].includes(p?.multiplayerExpansionPossible))missing.push('multiplayerExpansionPossible');
   if(!['LOW','MEDIUM','HIGH'].includes(p?.multiplayerExpansionValue))missing.push('multiplayerExpansionValue');
@@ -145,10 +166,10 @@ function validateProposal(target,p){
 }
 async function callModelBatch(targets){
   const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),MODEL_TIMEOUT_MS);
-  const requestPayload=targets.map(t=>({requestId:t.requestId,category:t.category,generation:t.generation,replacement:t.vacancy?{vacancyId:t.vacancy.id,sourceSeedId:t.vacancy.sourceSeedId}:null,targetMarketScope:'GLOBAL',benchmarkCandidates:t.benchmarkCandidates,requiredConceptTerms:t.requiredConceptTerms,marketEvidence:t.marketEvidence.available?t.marketEvidence.references:'UNKNOWN'}));
-  const prompt=`다음 GAME_SEED 요청을 한 번의 배치로 모두 작성하라. 요청 수와 requestId/category를 정확히 보존한다. 기본 타겟 시장은 특정 국가가 아니라 전세계(GLOBAL)다. targetAudience와 세션/상품 방향도 글로벌 출시를 전제로 작성하고 특정 한 국가를 기본 타겟으로 잡지 않는다. 각 category의 referenceGames는 REQUESTS 안 benchmarkCandidates에서만 1~4개 선택한다. 다른 장르의 유명 게임을 임의로 넣지 않는다. coreFunToLearn, coreLoop, distinctIdentity에는 requiredConceptTerms의 의미가 최소 2개 이상 구체적으로 드러나야 한다. coreLoop는 서로 다른 3개 이상의 단계로 작성하며 실제 플레이 행동 → 결과/피드백 → 다음 선택/보상 흐름이 보여야 한다. 각 분류에서 검증된 성공작의 핵심 재미·루프·성장·경제·UX 구조를 학습하되 새 게임은 HOMAGE 또는 REINTERPRETATION으로 독자 정체성을 만든다. 원작 이름/캐릭터/스토리/맵/아트/음악/UI 아트/소스코드를 복제하지 않는다. 소스코드는 반드시 자체 구현한다. 초기 제품은 Android 모바일 싱글플레이다. 멀티 없이도 상품성이 있어야 한다. 시장근거는 글로벌 타겟 연령·세션·콘텐츠량·수익모델 방향 참고용이며 통과/탈락 단독 게이트가 아니다. 제공되지 않은 매출·연령·플레이시간 숫자는 절대 추정하지 말고 UNKNOWN 취급한다. REQUESTS=${JSON.stringify(requestPayload)}. JSON 스키마만 출력하라.`;
+  const requestPayload=targets.map(t=>({requestId:t.requestId,category:t.category,generation:t.generation,portfolioDecision:t.portfolioRequest?{requestId:t.portfolioRequest.id,aggregateScore:t.portfolioRequest.aggregateScore,decisionBand:t.portfolioRequest.decisionBand,evidenceRefs:t.portfolioRequest.evidenceRefs}:null,targetMarketScope:'GLOBAL',defaultTargetPlatform,allowedTargetPlatforms,benchmarkCandidates:t.benchmarkCandidates,requiredConceptTerms:t.requiredConceptTerms,marketEvidence:t.marketEvidence.available?t.marketEvidence.references:'UNKNOWN'}));
+  const prompt=`다음 GAME_SEED 요청을 한 번의 배치로 모두 작성하라. 요청 수와 requestId/category를 정확히 보존한다. 기본 타겟 시장은 특정 국가가 아니라 전세계(GLOBAL)다. targetAudience와 세션/상품 방향도 글로벌 출시를 전제로 작성하고 특정 한 국가를 기본 타겟으로 잡지 않는다. benchmarkCandidates가 제공되면 그 안에서 성공작을 우선 선택하고, 비어 있으면 해당 장르에서 이미 출시되어 상업성 또는 인기가 검증된 게임을 referenceGames로 선택한다. coreFunToLearn과 coreLoop는 실제 플레이 행동 → 결과/피드백 → 다음 선택/보상 흐름이 보이도록 작성한다. 검증된 성공작의 핵심 재미·루프·성장·경제·UX 구조를 학습하되 새 게임은 HOMAGE 또는 REINTERPRETATION으로 독자 정체성을 만든다. 원작 이름/캐릭터/스토리/맵/아트/음악/UI 아트/소스코드를 복제하지 않는다. 소스코드는 반드시 자체 구현한다. 초기 타겟 플랫폼 기본값은 ${defaultTargetPlatform}이지만 잠금이 아니다. 프로젝트 적합성에 따라 allowedTargetPlatforms=${JSON.stringify(allowedTargetPlatforms)} 중 하나를 initialTargetPlatform으로 선택한다. initialPlayMode는 프로젝트에 맞게 정하고, crossPlatformExpansionValue에는 다른 허용 플랫폼으로 확장할 가치와 이유를 기록한다. 초기 게임은 선택한 플랫폼에서 판매 또는 수익화 가능한 제품이어야 한다. 시장근거는 방향 참고용이며 통과/탈락 단독 게이트가 아니다. 제공되지 않은 숫자는 추정하지 말고 UNKNOWN 취급한다. REQUESTS=${JSON.stringify(requestPayload)}. JSON 스키마만 출력하라.`;
   try{
-    const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,keep_alive:'0s',format:batchSchema(targets.length),messages:[{role:'system',content:'너는 재운컴퍼니 GAME_SEED 선택 AI다. 기본 시장은 GLOBAL이다. 각 분류의 허용된 benchmarkCandidates 안에서만 성공작을 고른다. 성공 구조는 오마주/재해석하지만 보호되는 표현과 소스코드는 복제하지 않는다. 여러 요청을 반드시 한 응답에서 완성하고, 각 coreLoop는 중복 없는 최소 3단계로 작성한다.'},{role:'user',content:prompt}],options:{temperature:0.2,num_ctx:16384,num_predict:6000}}),signal:controller.signal});
+    const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,keep_alive:'0s',format:batchSchema(targets.length),messages:[{role:'system',content:'너는 재운컴퍼니 GAME_SEED 선택 AI다. COMPANY_FLOW 정책을 따른다. 기본 시장은 GLOBAL이고 시장자료는 참고자료다. 성공 구조는 오마주/재해석하지만 보호되는 표현과 소스코드는 복제하지 않는다. ROBLOX는 기본 우선순위일 뿐 잠금이 아니며 UNITY와 FORTNITE_UEFN도 프로젝트별로 선택할 수 있다. 여러 요청을 반드시 한 응답에서 완성한다.'},{role:'user',content:prompt}],options:{temperature:0.2,num_ctx:16384,num_predict:6000}}),signal:controller.signal});
     if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
     const body=await response.json();const text=clean(body?.message?.content);if(!text)throw new Error('empty model response');
     const parsed=JSON.parse(text);if(!Array.isArray(parsed.proposals)||parsed.proposals.length!==targets.length)throw new Error(`GAME_SEED_BATCH_COUNT_MISMATCH ${parsed.proposals?.length||0}/${targets.length}`);
@@ -157,7 +178,16 @@ async function callModelBatch(targets){
 }
 function buildSeed(target,p,{serial,gameId,timestamp}){
   validateProposal(target,p);
-  const seed={version:1,seedId:`SEED-${target.category}-${String(serial).padStart(3,'0')}`,gameId,gameName:clean(p.gameName),status:'ACTIVE',generation:target.generation,GAME_CATEGORY:target.category,REFERENCE_GAMES:uniq(p.referenceGames),CORE_FUN_TO_LEARN:uniq(p.coreFunToLearn),CORE_LOOP:uniq(p.coreLoop),DISTINCT_IDENTITY:clean(p.distinctIdentity),MARKET_EVIDENCE_SUMMARY:target.marketEvidence,TARGET_AUDIENCE:clean(p.targetAudience),TARGET_SESSION_DIRECTION:clean(p.targetSessionDirection),INITIAL_TARGET_PLATFORM:'ANDROID_MOBILE',INITIAL_PLAY_MODE:'SINGLE_PLAYER',STEAM_EXPANSION_POSSIBLE:p.steamExpansionPossible,MULTIPLAYER_EXPANSION_POSSIBLE:p.multiplayerExpansionPossible,MULTIPLAYER_EXPANSION_VALUE:p.multiplayerExpansionValue,TRANSFORMATION_MODE:p.transformationMode,SOURCE_CODE_RULE:'OWN_IMPLEMENTATION_ONLY',COMMERCIAL_RULE:'MUST_WORK_WITHOUT_MULTIPLAYER',replacementOfSeedId:target.vacancy?.sourceSeedId||null,replacementVacancyId:target.vacancy?.id||null,createdAt:timestamp,updatedAt:timestamp};
+  const seed={
+    version:1,seedId:`SEED-${target.category}-${String(serial).padStart(3,'0')}`,gameId,gameName:clean(p.gameName),status:'ACTIVE',generation:target.generation,
+    GAME_CATEGORY:target.category,REFERENCE_GAMES:uniq(p.referenceGames),CORE_FUN_TO_LEARN:uniq(p.coreFunToLearn),CORE_LOOP:uniq(p.coreLoop),DISTINCT_IDENTITY:clean(p.distinctIdentity),
+    MARKET_EVIDENCE_SUMMARY:target.marketEvidence,TARGET_AUDIENCE:clean(p.targetAudience),TARGET_SESSION_DIRECTION:clean(p.targetSessionDirection),
+    INITIAL_TARGET_PLATFORM:p.initialTargetPlatform,INITIAL_PLAY_MODE:p.initialPlayMode,CROSS_PLATFORM_EXPANSION_VALUE:p.crossPlatformExpansionValue,
+    STEAM_EXPANSION_POSSIBLE:p.steamExpansionPossible,MULTIPLAYER_EXPANSION_POSSIBLE:p.multiplayerExpansionPossible,MULTIPLAYER_EXPANSION_VALUE:p.multiplayerExpansionValue,
+    TRANSFORMATION_MODE:p.transformationMode,SOURCE_CODE_RULE:'OWN_IMPLEMENTATION_ONLY',COMMERCIAL_RULE:'INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_FOR_ITS_SELECTED_PLATFORM',
+    portfolioSeedRequestId:target.portfolioRequest?.id||null,portfolioDecision:target.portfolioRequest?{aggregateScore:target.portfolioRequest.aggregateScore,decisionBand:target.portfolioRequest.decisionBand,evidenceRefs:uniq(target.portfolioRequest.evidenceRefs),ownerOverride:target.portfolioRequest.ownerOverride===true}:null,
+    createdAt:timestamp,updatedAt:timestamp,
+  };
   assertGameSeed(seed);return seed;
 }
 
@@ -165,37 +195,45 @@ export async function runGameSeedBootstrap({timestamp=new Date().toISOString(),p
   if(config.enabled===false)return{action:'DISABLED',created:[],modelCalls:0};
   const initial=!state.bootstrapCompletedAt;
   const targets=[];
-  const makeTarget=(requestId,category,generation,vacancy)=>{const profile=categoryProfile(category);return{requestId,category,generation,vacancy,marketEvidence:sanitizeMarketEvidence(category),benchmarkCandidates:profile.benchmarkCandidates,requiredConceptTerms:profile.requiredConceptTerms};};
+  const makeTarget=(requestId,category,generation,{portfolioRequest=null}={})=>{const profile=categoryProfile(category);return{requestId,category,generation,portfolioRequest,marketEvidence:sanitizeMarketEvidence(category),benchmarkCandidates:profile.benchmarkCandidates,requiredConceptTerms:profile.requiredConceptTerms};};
   if(initial){
     if(categories.length!==Number(config.bootstrap?.count||6))throw new Error(`GAME_SEED_BOOTSTRAP_CATEGORY_COUNT_MISMATCH ${categories.length}/${config.bootstrap?.count||6}`);
     if((state.seeds||[]).some(s=>s.generation==='INITIAL_BOOTSTRAP'))throw new Error('PARTIAL_INITIAL_BOOTSTRAP_STATE_FORBIDDEN');
-    for(const [index,category] of categories.entries())targets.push(makeTarget(`INITIAL-${index+1}-${category}`,category,'INITIAL_BOOTSTRAP',null));
+    for(const [index,category] of categories.entries())targets.push(makeTarget(`INITIAL-${index+1}-${category}`,category,'INITIAL_BOOTSTRAP'));
   }else{
-    for(const vacancy of unfilledVacancies(state)){const category=clean(vacancy.category);if(category)targets.push(makeTarget(`VACANCY-${vacancy.id}`,category,'REPLENISHMENT',vacancy));}
+    for(const request of pendingPortfolioSeedRequests(state))targets.push(makeTarget(`PORTFOLIO-${request.id}`,request.category,'DEPARTMENT_SCORE_GUIDED_EXPANSION',{portfolioRequest:request}));
   }
-  if(!targets.length){state.lastRunAt=timestamp;state.lastAction='NO_VACANCY';saveSeedState(state);return{action:'NO_VACANCY',created:[],modelCalls:0,marketEvidenceFile:fs.existsSync(evidenceFile)?evidenceFile:null,paidApi:false,targetMarketScope:'GLOBAL'};}
-  for(const target of targets){if(!target.benchmarkCandidates.length)throw new Error(`GAME_SEED_BENCHMARK_POOL_MISSING ${target.category}`);if(!target.marketEvidence.available)throw new Error(`GAME_SEED_GLOBAL_MARKET_EVIDENCE_MISSING ${target.category}`);}
+  if(!targets.length){
+    state.lastRunAt=timestamp;state.lastAction='NO_PORTFOLIO_EXPANSION_DECISION';saveSeedState(state);
+    return{action:'NO_PORTFOLIO_EXPANSION_DECISION',created:[],modelCalls:0,marketEvidenceFile:fs.existsSync(evidenceFile)?evidenceFile:null,paidApi:false,targetMarketScope:'GLOBAL'};
+  }
 
   let proposals;
-  if(proposalProvider){proposals=[];for(const target of targets)proposals.push(await proposalProvider({category:target.category,marketEvidence:target.marketEvidence,benchmarkCandidates:target.benchmarkCandidates,requiredConceptTerms:target.requiredConceptTerms,generation:target.generation,vacancy:target.vacancy,requestId:target.requestId,targetMarketScope:'GLOBAL'}));}
-  else proposals=await callModelBatch(targets);
+  if(proposalProvider){
+    proposals=[];
+    for(const target of targets)proposals.push(await proposalProvider({category:target.category,marketEvidence:target.marketEvidence,benchmarkCandidates:target.benchmarkCandidates,requiredConceptTerms:target.requiredConceptTerms,generation:target.generation,portfolioRequest:target.portfolioRequest,requestId:target.requestId,targetMarketScope:'GLOBAL',defaultTargetPlatform,allowedTargetPlatforms}));
+  }else proposals=await callModelBatch(targets);
   if(proposals.length!==targets.length)throw new Error(`GAME_SEED_BATCH_COUNT_MISMATCH ${proposals.length}/${targets.length}`);
 
-  const pending=[];const serials=new Map(categories.map(category=>[category,initialSerialCount(category)]));const usedGameIds=new Set((state.seeds||[]).map(s=>s.gameId));
+  const allCategories=[...new Set([...categories,...targets.map(target=>target.category)])];
+  const pending=[];const serials=new Map(allCategories.map(category=>[category,initialSerialCount(category)]));const usedGameIds=new Set((state.seeds||[]).map(s=>s.gameId));
   for(let i=0;i<targets.length;i++){
     const target=targets[i];const proposal=normalizeProposal(target,proposals[i]);
     validateProposal(target,proposal);
     const serial=(serials.get(target.category)||0)+1;serials.set(target.category,serial);
     const gameId=uniqueGameId(target.category,proposal.gameName,usedGameIds);
-    pending.push({seed:buildSeed(target,proposal,{serial,gameId,timestamp}),vacancy:target.vacancy});
+    pending.push({seed:buildSeed(target,proposal,{serial,gameId,timestamp}),portfolioRequest:target.portfolioRequest});
   }
 
-  // Atomic state mutation: no initial or replenishment seed is persisted until every proposal validates.
   const created=[];
-  for(const item of pending){state.seeds.push(item.seed);if(item.vacancy)fillVacancy(item.vacancy,item.seed,timestamp);created.push(item.seed);}
+  for(const item of pending){
+    state.seeds.push(item.seed);
+    if(item.portfolioRequest)fulfillPortfolioSeedRequest(item.portfolioRequest,item.seed,timestamp);
+    created.push(item.seed);
+  }
   if(initial){state.bootstrapCompletedAt=timestamp;state.initialBatchCount=created.length;state.initialBatchCategories=[...categories];}
-  state.lastRunAt=timestamp;state.lastAction=initial?'INITIAL_BOOTSTRAP':'REPLENISHMENT';saveSeedState(state);
-  return{action:initial?'INITIAL_BOOTSTRAP_CREATED':'VACANCIES_REPLENISHED',created:created.map(s=>({seedId:s.seedId,gameId:s.gameId,category:s.GAME_CATEGORY})),modelCalls:proposalProvider?0:1,marketEvidenceFile:fs.existsSync(evidenceFile)?evidenceFile:null,paidApi:false,targetMarketScope:'GLOBAL'};
+  state.lastRunAt=timestamp;state.lastAction=initial?'INITIAL_BOOTSTRAP':'DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO_EXPANSION';saveSeedState(state);
+  return{action:initial?'INITIAL_BOOTSTRAP_CREATED':'PORTFOLIO_EXPANSION_CREATED',created:created.map(s=>({seedId:s.seedId,gameId:s.gameId,category:s.GAME_CATEGORY,initialTargetPlatform:s.INITIAL_TARGET_PLATFORM,portfolioSeedRequestId:s.portfolioSeedRequestId||null})),modelCalls:proposalProvider?0:1,marketEvidenceFile:fs.existsSync(evidenceFile)?evidenceFile:null,paidApi:false,targetMarketScope:'GLOBAL'};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){runGameSeedBootstrap().then(result=>{console.log(JSON.stringify(result,null,2));console.log(`GAME_SEED_CREATED_COUNT=${result.created.length}`);console.log(`GAME_SEED_MODEL_CALLS=${result.modelCalls}`);console.log('GAME_SEED_MARKET_SCOPE=GLOBAL');console.log('GAME_SEED_MARKET_ROLE=TARGET_DESIGN_REFERENCE');console.log('GAME_SEED_PAID_API=NO');}).catch(error=>{console.error(error.stack||error.message);process.exitCode=1;});}

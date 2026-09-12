@@ -1,25 +1,65 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {GAME_SEED_POLICY,validateGameSeed} from '../tools/company-game-seed-contract.mjs';
+import {normalizeSeedState,validatePortfolioSeedRequest,pendingPortfolioSeedRequests} from '../tools/game-seed-state.mjs';
 
 const stateFile='game-seed-state.json';
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+const semanticNormalize=fs.readFileSync('tools/company-game-seed-semantic-normalize.mjs','utf8');
 
-test('persisted GAME_SEED state is either absent before bootstrap or policy-valid',t=>{
+test('GAME_SEED normalization removes all legacy vacancy replacement state',()=>{
+  const state=normalizeSeedState({
+    vacancies:[{id:'VAC-LEGACY'}],
+    seeds:[{seedId:'S1',gameId:'G1',replacementOfSeedId:'S0',replacementVacancyId:'VAC-LEGACY'}],
+    portfolioSeedRequests:[{id:'R1',linkedVacancyId:'VAC-LEGACY'}],
+  });
+  assert.equal('vacancies' in state,false);
+  assert.equal('replacementOfSeedId' in state.seeds[0],false);
+  assert.equal('replacementVacancyId' in state.seeds[0],false);
+  assert.equal('linkedVacancyId' in state.portfolioSeedRequests[0],false);
+});
+
+test('semantic normalizer persists state through central GAME_SEED normalization',()=>{
+  assert.match(semanticNormalize,/import \{normalizeSeedState\} from '\.\/game-seed-state\.mjs'/);
+  assert.match(semanticNormalize,/const state=normalizeSeedState\(readJson\(stateFile,\{seeds:\[\]\}\)\)/);
+  assert.match(semanticNormalize,/GAME_SEED_STATE_NORMALIZATION_PERSISTED=YES/);
+});
+
+test('persisted GAME_SEED state follows current COMPANY_FLOW dynamic portfolio contract',t=>{
   if(!fs.existsSync(stateFile)){t.skip('GAME_SEED bootstrap has not persisted state yet');return;}
-  const state=JSON.parse(fs.readFileSync(stateFile,'utf8'));
+  const raw=JSON.parse(fs.readFileSync(stateFile,'utf8'));
+  const state=normalizeSeedState(raw);
   assert.equal(state.policyDocument,'COMPANY_FLOW.md');
   assert.ok(Array.isArray(state.seeds));
-  assert.ok(Array.isArray(state.vacancies));
+  assert.equal('vacancies' in state,false,'legacy vacancy state must be removed by normalization');
+  assert.ok(state.seeds.every(seed=>!('replacementOfSeedId' in seed)&&!('replacementVacancyId' in seed)),'seeds must not carry legacy vacancy replacement links');
+  assert.ok(Array.isArray(state.portfolioSeedRequests));
+  assert.ok(state.portfolioSeedRequests.every(request=>!('linkedVacancyId' in request)),'portfolio expansion requests must not carry legacy vacancy links');
+
   if(state.bootstrapCompletedAt){
-    const initial=state.seeds.filter(s=>s.generation==='INITIAL_BOOTSTRAP');
-    assert.equal(initial.length,directive.gameSeed.bootstrap.count);
-    assert.deepEqual(new Set(initial.map(s=>s.GAME_CATEGORY)),new Set(directive.gameSeed.bootstrap.categories));
-    assert.ok(initial.every(s=>s.INITIAL_TARGET_PLATFORM==='ANDROID_MOBILE'));
-    assert.ok(initial.every(s=>s.INITIAL_PLAY_MODE==='SINGLE_PLAYER'));
-    assert.ok(initial.every(s=>s.SOURCE_CODE_RULE==='OWN_IMPLEMENTATION_ONLY'));
+    const initial=state.seeds.filter(seed=>seed.generation==='INITIAL_BOOTSTRAP');
+    assert.equal(initial.length,directive.gameSeed.bootstrap.count,'historical initial batch remains six records');
+    assert.deepEqual(new Set(initial.map(seed=>seed.GAME_CATEGORY)),new Set(directive.gameSeed.bootstrap.categories));
+    assert.ok(initial.every(seed=>GAME_SEED_POLICY.allowedTargetPlatforms.includes(String(seed.INITIAL_TARGET_PLATFORM||'').trim().toUpperCase())));
+    assert.ok(initial.every(seed=>typeof seed.INITIAL_PLAY_MODE==='string'&&seed.INITIAL_PLAY_MODE.trim().length>0));
+    assert.ok(initial.every(seed=>typeof seed.CROSS_PLATFORM_EXPANSION_VALUE==='string'&&seed.CROSS_PLATFORM_EXPANSION_VALUE.trim().length>0));
+    assert.ok(initial.every(seed=>seed.SOURCE_CODE_RULE==='OWN_IMPLEMENTATION_ONLY'));
   }
-  for(const vacancy of state.vacancies){
-    if(vacancy.replacementSeedId)assert.ok(vacancy.filledAt,'filled vacancy needs filledAt');
+
+  for(const seed of state.seeds.filter(seed=>String(seed?.status||'').toUpperCase()==='ACTIVE')){
+    const result=validateGameSeed(seed);
+    assert.equal(result.pass,true,`active GAME_SEED must satisfy current COMPANY_FLOW contract: ${seed.seedId||seed.gameId||'unknown'}\n${result.errors.join('\n')}`);
   }
+
+  for(const request of state.portfolioSeedRequests){
+    if(request.status==='PENDING'&&!request.fulfilledAt&&!request.cancelledAt){
+      const result=validatePortfolioSeedRequest(request);
+      assert.equal(result.pass,true,`pending portfolio request must be score/evidence valid: ${request.id}\n${result.errors.join('\n')}`);
+    }
+  }
+
+  assert.doesNotThrow(()=>pendingPortfolioSeedRequests(state));
+  assert.equal(directive.gameSeed.replenishment.oneForOneOnly,false);
+  assert.equal(directive.gameSeed.bootstrap.categoriesAreReferenceSetNotSlotQuota,true);
 });

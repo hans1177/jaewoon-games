@@ -28,11 +28,9 @@
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <section class="controls" aria-label="조작 버튼">
-      <div class="dpad" aria-label="이동">
-        <button class="move up" data-dir="up" type="button" aria-label="위로 이동">▲</button>
-        <button class="move left" data-dir="left" type="button" aria-label="왼쪽으로 이동">◀</button>
-        <button class="move down" data-dir="down" type="button" aria-label="아래로 이동">▼</button>
-        <button class="move right" data-dir="right" type="button" aria-label="오른쪽으로 이동">▶</button>
+      <div id="joystick" class="joystick" aria-label="이동 조이스틱">
+        <div class="joystick-ring"></div>
+        <div id="joystickKnob" class="joystick-knob"></div>
       </div>
       <div class="actions">
         <button id="toolButton" class="tool" type="button">🤲<small>손</small></button>
@@ -60,6 +58,8 @@
     </dialog>
   </main>
 
+  <script src="./joystick.js"></script>
+  <script type="module" src="./farming-rules.js"></script>
   <script type="module" src="./game.js"></script>
 </body>
 </html>
