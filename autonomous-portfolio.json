@@ -25,11 +25,14 @@
       },
       "DEVELOPMENT_CONFIRMED": {
         "engine": "PROJECT_SELECTED_PLATFORM",
-        "scope": "WEB_GAMEPLAY_AND_MUSIC_THEN_TARGET_PLATFORM_TECHNICAL_AND_GAMEPLAY_VALIDATION",
-        "webPurpose": "REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION",
+        "scope": "FULL_APPROVED_WEB_COMPANION_THEN_TARGET_PLATFORM_TECHNICAL_AND_GAMEPLAY_VALIDATION",
+        "webPurpose": "FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE",
         "webBeforeTargetPlatformByDefault": true,
         "targetPlatformMayRunImmediately": false,
         "fullArtbookReproductionRequired": false,
+        "webCompanionRequired": true,
+        "approvedDesignScopeMustBeFullyImplemented": true,
+        "webEvidenceMayReplaceNativePlatformEvidence": false,
         "webGameplayValidationRequired": true,
         "musicValidationRequired": true
       },
@@ -100,7 +103,8 @@
       "EVIDENCE_BASED_CLASS_REVIEW",
       "RELEASE_READY"
     ],
-    "requiredWebGameplayAndMusicValidationBeforeTargetPlatform": true
+    "requiredFullApprovedWebCompanionBeforeTargetPlatform": true,
+    "nativePlatformEvidenceStillRequired": true
   },
   "departmentDevelopmentCycle": [
     "planning",
@@ -177,10 +181,10 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "WEB_VALIDATION_TARGET_PLATFORM_SELECTION_REQUIRED",
+      "mode": "FULL_WEB_COMPANION_TARGET_PLATFORM_SELECTION_REQUIRED",
       "targetEngine": "platform-selection-required",
       "targetPlatformReady": false,
-      "webPurpose": "REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION",
+      "webPurpose": "FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -196,6 +200,9 @@
         "save-meaning",
         "core-loop"
       ],
+      "webCompanionRequired": true,
+      "approvedDesignScopeMustBeFullyImplemented": true,
+      "webEvidenceMayReplaceNativePlatformEvidence": false,
       "webGameplayValidationRequired": true,
       "musicValidationRequired": true
     },
@@ -234,10 +241,10 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "WEB_VALIDATION_TARGET_PLATFORM_SELECTION_REQUIRED",
+      "mode": "FULL_WEB_COMPANION_TARGET_PLATFORM_SELECTION_REQUIRED",
       "targetEngine": "platform-selection-required",
       "targetPlatformReady": false,
-      "webPurpose": "REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION",
+      "webPurpose": "FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -253,6 +260,9 @@
         "save-meaning",
         "core-loop"
       ],
+      "webCompanionRequired": true,
+      "approvedDesignScopeMustBeFullyImplemented": true,
+      "webEvidenceMayReplaceNativePlatformEvidence": false,
       "webGameplayValidationRequired": true,
       "musicValidationRequired": true
     },
@@ -350,10 +360,10 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "WEB_VALIDATION_TARGET_PLATFORM_SELECTION_REQUIRED",
+      "mode": "FULL_WEB_COMPANION_TARGET_PLATFORM_SELECTION_REQUIRED",
       "targetEngine": "platform-selection-required",
       "targetPlatformReady": false,
-      "webPurpose": "REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION",
+      "webPurpose": "FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -372,6 +382,9 @@
         "battle",
         "dex"
       ],
+      "webCompanionRequired": true,
+      "approvedDesignScopeMustBeFullyImplemented": true,
+      "webEvidenceMayReplaceNativePlatformEvidence": false,
       "webGameplayValidationRequired": true,
       "musicValidationRequired": true
     },
