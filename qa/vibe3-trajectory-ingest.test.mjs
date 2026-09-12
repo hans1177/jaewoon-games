@@ -36,10 +36,13 @@ robloxTrajectory.metadata.gameId='roblox-pilot';
 robloxTrajectory.metadata.winnerOutput='diff --git a/roblox-games/pilot/main.luau b/roblox-games/pilot/main.luau\n+verified roblox fix';
 robloxTrajectory.finalEvidence.browserQa='NOT_APPLICABLE';
 assert.equal(validateVibe3Trajectory(robloxTrajectory).pass,true);
-assert.deepEqual(qaRequirementsForTask('roblox'),{independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS',androidRuntimeRequired:false,robloxRuntimeRequired:true});
+assert.deepEqual(qaRequirementsForTask('roblox'),{independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS',androidRuntimeRequired:false,robloxRuntimeRequired:true,uefnRuntimeRequired:false});
 assert.equal(qaEvidencePasses({taskType:'roblox',independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS'}),true);
 assert.equal(qaEvidencePasses({taskType:'roblox',independentQa:'FAIL',browserQa:'NOT_APPLICABLE',runtime:'PASS'}),false);
 assert.equal(qaEvidencePasses({taskType:'roblox',independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'FAIL'}),false);
+assert.deepEqual(qaRequirementsForTask('fortnite_uefn'),{independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS',androidRuntimeRequired:false,robloxRuntimeRequired:false,uefnRuntimeRequired:true});
+assert.equal(qaEvidencePasses({taskType:'fortnite_uefn',independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS'}),true);
+assert.equal(qaEvidencePasses({taskType:'fortnite_uefn',independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'FAIL'}),false);
 
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe3-trajectory-'));
 const trajectoryDir=path.join(root,'trajectories');
@@ -60,6 +63,7 @@ const robloxSample=JSON.parse(fs.readFileSync(robloxResult.outFile,'utf8'));
 assert.equal(robloxSample.taskType,'roblox');
 assert.equal(robloxSample.browserQa,'NOT_APPLICABLE');
 assert.equal(robloxSample.verification.requirements.robloxRuntimeRequired,true);
+assert.equal(robloxSample.verification.requirements.uefnRuntimeRequired,false);
 assert.equal(robloxSample.difficulty,'roblox-release');
 
 const baseline=selectVibe3BaseModel({taskType:'coding',method:'qlora',cudaAvailable:true,cudaVramGiB:64,diskFreeGiB:100,enableCoderUpgrade:false,compatibilityProbePass:true,modelCachedOrDownloadApproved:true});
@@ -71,4 +75,4 @@ const blocked=selectVibe3BaseModel({taskType:'coding',method:'qlora',cudaAvailab
 assert.equal(blocked.upgraded,false);
 assert(blocked.reasons.includes('insufficient-vram'));
 
-console.log('PASS Vibe3 trajectory ingest including Roblox and capability-gated coder model selection');
+console.log('PASS Vibe3 trajectory ingest including Roblox, UEFN QA requirements, and capability-gated coder model selection');
