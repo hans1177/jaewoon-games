@@ -110,6 +110,26 @@ production:
   fixedPortfolioSize: false
   preserveExistingWebArchives: true
   preserveSaveMeaning: true
+  webCompanion:
+    requiredForEveryGame: true
+    appliesToAllTargetPlatforms: true
+    purpose:
+      - PLAYABLE_WEB_COMPANION
+      - FULL_APPROVED_SCOPE_IMPLEMENTATION
+      - BROWSER_QA
+      - AUXILIARY_LEARNING_EVIDENCE
+    featureParity: FULL_APPROVED_GAMEPLAY_SCOPE_EQUIVALENT_OR_DOCUMENTED_PLATFORM_ADAPTATION
+    silentFeatureOmissionForbidden: true
+    webBuildIsNotNativePlatformSubstitute: true
+    nativePlatformReleaseStillRequiresNativeEvidence: true
+  approvedScopeCompletion:
+    mode: FULL_APPROVED_DESIGN_SCOPE_REQUIRED
+    approvedDesignBaselineMustBeFullyImplemented: true
+    silentScopeReductionForbidden: true
+    prototypeMayBeIntermediateOnly: true
+    prototypeCannotSatisfyCompletionOrReleaseCandidateGate: true
+    infeasibleScopeRequiresDesignRevisionBeforeBaselineApprovalOrExplicitOwnerDecision: true
+    missingApprovedContentBlocksCompletion: true
 
 portfolioGovernance:
   mode: FIVE_DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO
@@ -120,6 +140,35 @@ portfolioGovernance:
   automaticGrowthCap: null
   automaticShrinkCap: null
   departmentScoresRequiredForPortfolioDecision: true
+  platformScopedRepresentativeSets:
+    enabled: true
+    sixMeansPerPlatformRepresentativeSetNotGlobalPortfolioCap: true
+    representativeSetSizePerPlatform: 6
+    representativeSetCompletionIsNotReleaseCount: true
+    allRepresentativesAreDevelopmentTargetsAndReleaseCandidates: true
+    forcedSixOfSixReleaseForbidden: true
+    expansionBeyondRepresentativeSetAllowedWithFiveDepartmentScoreAndEvidence: true
+    implementationWip:
+      target: 2
+      max: 3
+    UNITY:
+      preserveExistingHistoricalSix: true
+      robloxSetMustNotConsumeOrRewriteUnitySet: true
+    ROBLOX:
+      currentMainFocus: true
+      categories:
+        - ROLEPLAY_LIFE_AVATAR
+        - SIMULATOR_TYCOON_INCREMENTAL
+        - BATTLEGROUND_FIGHTING_SHOOTER
+        - SURVIVAL_HORROR_ESCAPE
+        - OBBY_PARTY_MINIGAME
+        - STORY_RPG_ADVENTURE_RPG
+      mandatoryContinuityCategory: STORY_RPG_ADVENTURE_RPG
+      discardedMandatoryRepresentativeReopensCategoryGap: true
+      historicalUnitySeedsDoNotSatisfyRobloxSlots: true
+    FORTNITE_UEFN:
+      independentSixCategorySetRequired: true
+      mayNotConsumeUnityOrRobloxRepresentativeSlots: true
   departments:
     - planning
     - graphics
@@ -278,6 +327,9 @@ GAME_SEED:
     - INITIAL_TARGET_PLATFORM
     - INITIAL_PLAY_MODE
     - CROSS_PLATFORM_EXPANSION_VALUE
+  derivedProductionRequirements:
+    - MANDATORY_WEB_GAME_COMPANION
+    - FULL_APPROVED_SCOPE_IMPLEMENTATION
   initialTargetPlatform: ROBLOX
   allowedTargetPlatforms:
     - ROBLOX
@@ -371,6 +423,16 @@ platformStrategy:
   noParallelLearningPipeline: true
   runtimeContractMirror: company-learning/platform-release-roadmap.json
   runtimeContractCannotCreatePolicy: true
+  webCompanionStrategy:
+    requiredAcross:
+      - ROBLOX
+      - UNITY
+      - FORTNITE_UEFN
+    nativeProjectRemainsCanonicalForPlatformRelease: true
+    webCompanionMaySharePortableCoreLogicWherePractical: true
+    platformSpecificRuntimeAndUxRemainPlatformScoped: true
+    documentedPlatformAdaptationAllowed: true
+    silentApprovedGameplayFeatureOmissionForbidden: true
   commonExecutionContract:
     router: tools/company-selected-platform-router.mjs
     singleRoutingDecisionPoint: true
@@ -871,6 +933,8 @@ flows:
       - MARKET_TARGET_DIRECTION_RECORDED
       - TARGET_PLATFORM_UX_DIRECTION_DEFINED
       - PLATFORM_SELECTION_RECORDED
+      - MANDATORY_WEB_COMPANION_REQUIREMENT_RECORDED
+      - APPROVED_SCOPE_INVENTORY_RECORDED
       - FIVE_DISTINCT_LEAD_MODELS
       - FIVE_DEPARTMENT_SCORES_RECORDED
       - PER_DEPARTMENT_MULTIMODEL_REVIEW_PASS
@@ -879,11 +943,13 @@ flows:
   DEVELOPMENT_CONFIRMED:
     executionMode: GATED_DIRECT
     resumeFromLatestEvidence: true
-    webPurpose: REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION
+    webPurpose: MANDATORY_FULL_APPROVED_SCOPE_WEB_COMPANION_AND_MUSIC_VALIDATION
     targetPlatformPurpose: TECHNICAL_AND_GAMEPLAY_VALIDATION
     webBeforeTargetPlatformByDefault: true
     targetPlatformMayRunImmediately: false
     webGameplayValidationRequired: true
+    webCompanionValidationRequired: true
+    approvedScopeCompletionRequired: true
     musicValidationRequired: true
     webCandidateMustPassBeforeTargetPlatformDispatch: true
     webCandidatePublicPromotionRequiresValidationPass: true
@@ -892,9 +958,9 @@ flows:
     requiredFlow:
       - LOAD_DESIGN_BASELINE
       - WEB_PLAYABLE_QUEUE
-      - WEB_PLAYABLE_BOOTSTRAP
+      - FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP
       - MUSIC_RUNTIME_BIND
-      - WEB_GAMEPLAY_AND_MUSIC_VALIDATION
+      - WEB_GAMEPLAY_MUSIC_AND_APPROVED_SCOPE_VALIDATION
       - WEB_EVIDENCE_DEPARTMENT_MEETING
       - GAME_DESIGNER_WEB_REVISION
       - TARGET_PLATFORM_SOURCE_BIND
@@ -906,6 +972,8 @@ flows:
       - DEVELOPMENT_BASELINE_GATE
       - ARTBOOK_EDITOR_REVISION
     webValidationMustCover:
+      - FULL_APPROVED_SCOPE_IMPLEMENTATION
+      - PLATFORM_EXCLUSIVE_WEB_EQUIVALENT_ADAPTATION
       - CORE_LOOP
       - MOBILE_TOUCH_INPUT
       - OBSERVABLE_STATE_CHANGE
@@ -947,6 +1015,7 @@ flows:
     baselineReadyRequires:
       - DESIGN_BASELINE_EXISTS
       - REAL_WEB_GAMEPLAY_PASS
+      - APPROVED_SCOPE_FULLY_IMPLEMENTED
       - MUSIC_RUNTIME_PASS
       - REAL_TARGET_PLATFORM_GAMEPLAY_PASS
       - REAL_TARGET_PLATFORM_TECHNICAL_PASS
@@ -961,6 +1030,8 @@ flows:
     resumeFromLatestEvidence: true
     developmentBaselineRequired: true
     targetPlatformProjectRequired: true
+    webCompanionRequired: true
+    approvedScopeCompletionRequired: true
     coreDesignLock: true
     vibe2PrimaryDeveloper: true
     departmentDefaultRole: ERROR_AND_RELEASE_RISK_REVIEW
@@ -975,6 +1046,8 @@ flows:
       - LOAD_DEVELOPMENT_BASELINE
       - CORE_DESIGN_LOCK
       - VIBE2_PRIMARY_DEVELOPMENT
+      - BIND_CURRENT_WEB_COMPANION_SOURCE_TREE
+      - WEB_COMPANION_RUNTIME_VALIDATION
       - BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE
       - TARGET_PLATFORM_BUILD_OR_PACKAGE
       - FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT
@@ -990,6 +1063,7 @@ flows:
     independentQaSeparatedFromVibe2SelfCheck: true
     waitingStates:
       - BUILDING
+      - WAITING_WEB_COMPANION_VALIDATION
       - WAITING_BUILD
       - WAITING_RUNTIME_VALIDATION
     releaseStates:
@@ -998,6 +1072,8 @@ flows:
       - RELEASE_READY
     releaseReadyRequires:
       - DEVELOPMENT_BASELINE_CONFIRMED
+      - CURRENT_WEB_COMPANION_RUNTIME_PASS
+      - APPROVED_SCOPE_FULLY_IMPLEMENTED
       - CURRENT_TARGET_PLATFORM_BUILD_OR_PACKAGE_SUCCESS
       - BUILD_PREFLIGHT_NO_RELEASE_BLOCKER
       - CURRENT_TARGET_PLATFORM_RUNTIME_PASS
@@ -1014,6 +1090,8 @@ promotion:
       - DEVELOPMENT_BASELINE_READY
       - REAL_PLAY_EVIDENCE
       - REAL_SELECTED_PLATFORM_EVIDENCE
+      - CURRENT_WEB_COMPANION_RUNTIME_PASS
+      - APPROVED_SCOPE_FULLY_IMPLEMENTED
   classMovementNeverUsedToSatisfyCountQuota: true
   countQuotaDoesNotExist: true
   demotionRequiresRecordedReasonAndEvidence: true
@@ -1072,6 +1150,20 @@ urgentCases:
       ownerGameEntryCorrection: company-learning/external-game-playtest/block-blast-game-entry-correction.json
 
 learning:
+  webGameEvidence:
+    role: AUXILIARY_PORTABLE_LEARNING_EVIDENCE
+    maySupport:
+      - CORE_GAMEPLAY
+      - CORE_LOOP
+      - UI_AND_INPUT
+      - OBSERVABLE_STATE
+      - BUGFIX
+      - BROWSER_QA_PATTERNS
+    cannotClaimNativePlatformSuccess: true
+    cannotSatisfyNativePlatformRuntimeGate: true
+    cannotEnterRobloxUnityUefnVerifiedLaneWithoutMatchingNativeEvidence: true
+    useExistingCanonicalDistillationOnly: true
+    newTrainerOrCronForbidden: true
   aiDesignOpinionAloneIsNotSuccessEvidence: true
   validatedEvidenceSources:
     - REAL_PLAY
