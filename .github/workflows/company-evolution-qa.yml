@@ -126,7 +126,7 @@ jobs:
           if(!(sourceBind>=0&&build>sourceBind&&preflight>build&&runtime>preflight&&independentQa>runtime&&finalReview>independentQa))throw new Error('selected-platform release review order invalid');
           for(const state of ['BUILDING','WAITING_BUILD','WAITING_RUNTIME_VALIDATION'])if(!(release.waitingStates||[]).includes(state))throw new Error(`release waiting state missing: ${state}`);
           for(const state of ['FIX_AND_REVERIFY','RELEASE_BLOCKED','RELEASE_READY'])if(!(release.releaseStates||[]).includes(state))throw new Error(`release state missing: ${state}`);
-          for(const file of ['ARTBOOK_POLICY.md','ARTBOOK_LIFECYCLE.md','ARTBOOK_DESIGN_CONTRACT.md','ARTBOOK_OPERATIONS.md','ARTBOOK_PRODUCTION_CAPACITY.md','ARTBOOK_SUBMISSION_CONTRACT.md','VIBE2_ARTBOOK_DRAFT_POLICY.md']){
+          for(const file of ['AGENTS.md','HOMEPAGE_OPERATIONS.md']){
             const text=fs.readFileSync(file,'utf8');
             if(!text.includes('COMPANY_FLOW.md'))throw new Error(`${file} must point to COMPANY_FLOW.md`);
           }
