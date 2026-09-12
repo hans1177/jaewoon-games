@@ -88,7 +88,7 @@ export function validatePortfolioSeedRequest(request={}){
   if(!evidenceRefs.length)errors.push('MISSING_PORTFOLIO_EVIDENCE');
   const ownerOverride=request.ownerOverride===true;
   if(scoreResult.aggregateScore!=null&&scoreResult.aggregateScore<80&&!ownerOverride)errors.push('EXPAND_REQUIRES_SCORE_80_OR_OWNER_OVERRIDE');
-  return {pass:errors.length===0,errors,category,action,evidenceRefs,ownerOverride,...scoreResult};
+  return {...scoreResult,pass:errors.length===0,errors,category,action,evidenceRefs,ownerOverride};
 }
 export function pendingPortfolioSeedRequests(state){
   const requests=(state?.portfolioSeedRequests||[]).filter(request=>!request.fulfilledAt&&!request.cancelledAt&&clean(request.status||'PENDING').toUpperCase()==='PENDING');
