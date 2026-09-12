@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-09-10T19:05:41.162Z",
+  "updatedAt": "2026-09-12T04:35:05.472Z",
   "policy": {
     "scope": "homepage-published-games",
     "scoreRange": [
@@ -12,6 +12,7 @@
     "healthyAtLeast": 75,
     "forcedWarningOnConsoleOrSameOriginFailure": true,
     "forcedCriticalOnNavigationPageErrorOrNoContentSignal": true,
+    "forcedCriticalOnInvalidDocumentOrNoPlayableSurface": true,
     "webArchiveMutation": "forbidden",
     "autoRollbackDisplay": true,
     "rollbackRequiresVerifiedHealthyBaseline": true
@@ -20,14 +21,14 @@
     {
       "gameId": "insect-survival",
       "name": "곤충 생존기",
-      "status": "healthy",
-      "score": 100,
-      "calculatedScore": 100,
-      "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
+      "status": "critical",
+      "score": 54,
+      "calculatedScore": 85,
+      "healthReason": "no-playable-surface",
+      "checkedAt": "2026-09-12T04:35:05.472Z",
       "url": "http://127.0.0.1:4173/web-games/insect-survival/",
       "dimensions": {
-        "runtime": 25,
+        "runtime": 10,
         "errors": 25,
         "mobile": 15,
         "interaction": 15,
@@ -37,7 +38,9 @@
       },
       "signals": {
         "loadOk": true,
-        "contentSignal": true,
+        "contentSignal": false,
+        "documentShapeOk": true,
+        "playableSurfaceSignal": false,
         "renderedTextLength": 0,
         "canvasCount": 0,
         "interactiveCount": 0,
@@ -47,48 +50,11 @@
       },
       "trend": {
         "previousScore": 100,
-        "scoreDelta": 0
+        "scoreDelta": -46
       },
       "issues": [],
       "failedRequestCount": 0,
       "screenshot": "qa-artifacts/public-game-health/insect-survival.png",
-      "buildHealth": null
-    },
-    {
-      "gameId": "crystal-defense",
-      "name": "수정 디펜스",
-      "status": "healthy",
-      "score": 100,
-      "calculatedScore": 100,
-      "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
-      "url": "http://127.0.0.1:4173/web-games/crystal-defense/",
-      "dimensions": {
-        "runtime": 25,
-        "errors": 25,
-        "mobile": 15,
-        "interaction": 15,
-        "assets": 10,
-        "reload": 10,
-        "storage": "not-detected"
-      },
-      "signals": {
-        "loadOk": true,
-        "contentSignal": true,
-        "renderedTextLength": 62,
-        "canvasCount": 1,
-        "interactiveCount": 12,
-        "inputDelivered": true,
-        "reloadOk": true,
-        "overflowOk": true
-      },
-      "trend": {
-        "previousScore": 100,
-        "scoreDelta": 0
-      },
-      "issues": [],
-      "failedRequestCount": 0,
-      "screenshot": "qa-artifacts/public-game-health/crystal-defense.png",
       "buildHealth": null
     },
     {
@@ -98,7 +64,7 @@
       "score": 100,
       "calculatedScore": 100,
       "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
+      "checkedAt": "2026-09-12T04:35:05.472Z",
       "url": "http://127.0.0.1:4173/web-games/bug-defense/",
       "dimensions": {
         "runtime": 25,
@@ -112,9 +78,11 @@
       "signals": {
         "loadOk": true,
         "contentSignal": true,
-        "renderedTextLength": 31,
-        "canvasCount": 0,
-        "interactiveCount": 0,
+        "documentShapeOk": true,
+        "playableSurfaceSignal": true,
+        "renderedTextLength": 151,
+        "canvasCount": 1,
+        "interactiveCount": 26,
         "inputDelivered": true,
         "reloadOk": true,
         "overflowOk": true
@@ -135,7 +103,7 @@
       "score": 100,
       "calculatedScore": 100,
       "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
+      "checkedAt": "2026-09-12T04:35:05.472Z",
       "url": "http://127.0.0.1:4173/web-games/daechung-rpg/",
       "dimensions": {
         "runtime": 25,
@@ -149,9 +117,11 @@
       "signals": {
         "loadOk": true,
         "contentSignal": true,
-        "renderedTextLength": 14,
-        "canvasCount": 0,
-        "interactiveCount": 0,
+        "documentShapeOk": true,
+        "playableSurfaceSignal": true,
+        "renderedTextLength": 161,
+        "canvasCount": 1,
+        "interactiveCount": 14,
         "inputDelivered": true,
         "reloadOk": true,
         "overflowOk": true
@@ -170,132 +140,16 @@
       }
     },
     {
-      "gameId": "human-go",
-      "name": "휴먼 GO",
-      "status": "warning",
-      "score": 74,
-      "calculatedScore": 95,
-      "healthReason": "console-error",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
-      "url": "http://127.0.0.1:4173/web-games/human-go/",
-      "dimensions": {
-        "runtime": 25,
-        "errors": 20,
-        "mobile": 15,
-        "interaction": 15,
-        "assets": 10,
-        "reload": 10,
-        "storage": "not-detected"
-      },
-      "signals": {
-        "loadOk": true,
-        "contentSignal": true,
-        "renderedTextLength": 93,
-        "canvasCount": 0,
-        "interactiveCount": 22,
-        "inputDelivered": true,
-        "reloadOk": true,
-        "overflowOk": true
-      },
-      "trend": {
-        "previousScore": 74,
-        "scoreDelta": 0
-      },
-      "issues": [
-        {
-          "type": "console",
-          "message": "Failed to load resource: net::ERR_INVALID_URL"
-        }
-      ],
-      "failedRequestCount": 0,
-      "screenshot": "qa-artifacts/public-game-health/human-go.png",
-      "buildHealth": null
-    },
-    {
-      "gameId": "egg-heist",
-      "name": "알 도둑 대작전",
-      "status": "healthy",
-      "score": 100,
-      "calculatedScore": 100,
-      "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
-      "url": "http://127.0.0.1:4173/web-games/egg-heist/",
-      "dimensions": {
-        "runtime": 25,
-        "errors": 25,
-        "mobile": 15,
-        "interaction": 15,
-        "assets": 10,
-        "reload": 10,
-        "storage": "not-detected"
-      },
-      "signals": {
-        "loadOk": true,
-        "contentSignal": true,
-        "renderedTextLength": 440,
-        "canvasCount": 0,
-        "interactiveCount": 48,
-        "inputDelivered": true,
-        "reloadOk": true,
-        "overflowOk": true
-      },
-      "trend": {
-        "previousScore": 100,
-        "scoreDelta": 0
-      },
-      "issues": [],
-      "failedRequestCount": 0,
-      "screenshot": "qa-artifacts/public-game-health/egg-heist.png",
-      "buildHealth": null
-    },
-    {
-      "gameId": "chess-battle",
-      "name": "체스 배틀",
-      "status": "healthy",
-      "score": 100,
-      "calculatedScore": 100,
-      "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
-      "url": "http://127.0.0.1:4173/web-games/chess-battle/",
-      "dimensions": {
-        "runtime": 25,
-        "errors": 25,
-        "mobile": 15,
-        "interaction": 15,
-        "assets": 10,
-        "reload": 10,
-        "storage": "not-detected"
-      },
-      "signals": {
-        "loadOk": true,
-        "contentSignal": true,
-        "renderedTextLength": 179,
-        "canvasCount": 0,
-        "interactiveCount": 65,
-        "inputDelivered": true,
-        "reloadOk": true,
-        "overflowOk": true
-      },
-      "trend": {
-        "previousScore": 100,
-        "scoreDelta": 0
-      },
-      "issues": [],
-      "failedRequestCount": 0,
-      "screenshot": "qa-artifacts/public-game-health/chess-battle.png",
-      "buildHealth": null
-    },
-    {
       "gameId": "monster-adventure",
       "name": "몬스터 어드벤처",
-      "status": "healthy",
-      "score": 100,
-      "calculatedScore": 100,
-      "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
+      "status": "critical",
+      "score": 54,
+      "calculatedScore": 85,
+      "healthReason": "invalid-html-document",
+      "checkedAt": "2026-09-12T04:35:05.472Z",
       "url": "http://127.0.0.1:4173/web-games/monster-adventure/",
       "dimensions": {
-        "runtime": 25,
+        "runtime": 10,
         "errors": 25,
         "mobile": 15,
         "interaction": 15,
@@ -305,7 +159,9 @@
       },
       "signals": {
         "loadOk": true,
-        "contentSignal": true,
+        "contentSignal": false,
+        "documentShapeOk": false,
+        "playableSurfaceSignal": false,
         "renderedTextLength": 577,
         "canvasCount": 0,
         "interactiveCount": 0,
@@ -315,7 +171,7 @@
       },
       "trend": {
         "previousScore": 100,
-        "scoreDelta": 0
+        "scoreDelta": -46
       },
       "issues": [],
       "failedRequestCount": 0,
@@ -329,7 +185,7 @@
       "score": 100,
       "calculatedScore": 100,
       "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
+      "checkedAt": "2026-09-12T04:35:05.472Z",
       "url": "http://127.0.0.1:4173/web-games/survival/",
       "dimensions": {
         "runtime": 25,
@@ -343,6 +199,8 @@
       "signals": {
         "loadOk": true,
         "contentSignal": true,
+        "documentShapeOk": true,
+        "playableSurfaceSignal": true,
         "renderedTextLength": 125,
         "canvasCount": 1,
         "interactiveCount": 10,
@@ -360,54 +218,17 @@
       "buildHealth": null
     },
     {
-      "gameId": "survival2",
-      "name": "숲의 생존자들",
-      "status": "healthy",
-      "score": 100,
-      "calculatedScore": 100,
-      "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
-      "url": "http://127.0.0.1:4173/web-games/survival2/",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "name": "잃어버린 별의 메아리",
+      "status": "warning",
+      "score": 74,
+      "calculatedScore": 95,
+      "healthReason": "console-error",
+      "checkedAt": "2026-09-12T04:35:05.472Z",
+      "url": "http://127.0.0.1:4173/artbook-viewer.html?game=seed-action-survival-rogu-echoes-of-the-lost-star",
       "dimensions": {
         "runtime": 25,
-        "errors": 25,
-        "mobile": 15,
-        "interaction": 15,
-        "assets": 10,
-        "reload": 10,
-        "storage": "persisted"
-      },
-      "signals": {
-        "loadOk": true,
-        "contentSignal": true,
-        "renderedTextLength": 78,
-        "canvasCount": 1,
-        "interactiveCount": 13,
-        "inputDelivered": true,
-        "reloadOk": true,
-        "overflowOk": true
-      },
-      "trend": {
-        "previousScore": 100,
-        "scoreDelta": 0
-      },
-      "issues": [],
-      "failedRequestCount": 0,
-      "screenshot": "qa-artifacts/public-game-health/survival2.png",
-      "buildHealth": null
-    },
-    {
-      "gameId": "territory-war",
-      "name": "영토전쟁",
-      "status": "healthy",
-      "score": 100,
-      "calculatedScore": 100,
-      "healthReason": "no-blocking-smoke-errors",
-      "checkedAt": "2026-09-10T19:05:41.162Z",
-      "url": "http://127.0.0.1:4173/web-games/territory-war/",
-      "dimensions": {
-        "runtime": 25,
-        "errors": 25,
+        "errors": 20,
         "mobile": 15,
         "interaction": 15,
         "assets": 10,
@@ -417,20 +238,247 @@
       "signals": {
         "loadOk": true,
         "contentSignal": true,
-        "renderedTextLength": 115,
+        "documentShapeOk": true,
+        "playableSurfaceSignal": true,
+        "renderedTextLength": 97,
         "canvasCount": 0,
-        "interactiveCount": 5,
+        "interactiveCount": 2,
         "inputDelivered": true,
         "reloadOk": true,
         "overflowOk": true
       },
       "trend": {
-        "previousScore": 100,
-        "scoreDelta": 0
+        "previousScore": null,
+        "scoreDelta": null
       },
-      "issues": [],
+      "issues": [
+        {
+          "type": "console",
+          "message": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
       "failedRequestCount": 0,
-      "screenshot": "qa-artifacts/public-game-health/territory-war.png",
+      "screenshot": "qa-artifacts/public-game-health/seed-action-survival-rogu-echoes-of-the-lost-star.png",
+      "buildHealth": null
+    },
+    {
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "name": "천상의 보루",
+      "status": "warning",
+      "score": 74,
+      "calculatedScore": 95,
+      "healthReason": "console-error",
+      "checkedAt": "2026-09-12T04:35:05.472Z",
+      "url": "http://127.0.0.1:4173/artbook-viewer.html?game=seed-single-defense-strat-celestial-bastion",
+      "dimensions": {
+        "runtime": 25,
+        "errors": 20,
+        "mobile": 15,
+        "interaction": 15,
+        "assets": 10,
+        "reload": 10,
+        "storage": "not-detected"
+      },
+      "signals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "documentShapeOk": true,
+        "playableSurfaceSignal": true,
+        "renderedTextLength": 97,
+        "canvasCount": 0,
+        "interactiveCount": 2,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "trend": {
+        "previousScore": null,
+        "scoreDelta": null
+      },
+      "issues": [
+        {
+          "type": "console",
+          "message": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failedRequestCount": 0,
+      "screenshot": "qa-artifacts/public-game-health/seed-single-defense-strat-celestial-bastion.png",
+      "buildHealth": null
+    },
+    {
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "name": "색채의 연쇄",
+      "status": "warning",
+      "score": 74,
+      "calculatedScore": 95,
+      "healthReason": "console-error",
+      "checkedAt": "2026-09-12T04:35:05.472Z",
+      "url": "http://127.0.0.1:4173/artbook-viewer.html?game=seed-puzzle-chromatic-cascade",
+      "dimensions": {
+        "runtime": 25,
+        "errors": 20,
+        "mobile": 15,
+        "interaction": 15,
+        "assets": 10,
+        "reload": 10,
+        "storage": "not-detected"
+      },
+      "signals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "documentShapeOk": true,
+        "playableSurfaceSignal": true,
+        "renderedTextLength": 2188,
+        "canvasCount": 0,
+        "interactiveCount": 4,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "trend": {
+        "previousScore": null,
+        "scoreDelta": null
+      },
+      "issues": [
+        {
+          "type": "console",
+          "message": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failedRequestCount": 0,
+      "screenshot": "qa-artifacts/public-game-health/seed-puzzle-chromatic-cascade.png",
+      "buildHealth": null
+    },
+    {
+      "gameId": "seed-casual-realm-weaver",
+      "name": "세계의 직조자",
+      "status": "warning",
+      "score": 74,
+      "calculatedScore": 95,
+      "healthReason": "console-error",
+      "checkedAt": "2026-09-12T04:35:05.472Z",
+      "url": "http://127.0.0.1:4173/artbook-viewer.html?game=seed-casual-realm-weaver",
+      "dimensions": {
+        "runtime": 25,
+        "errors": 20,
+        "mobile": 15,
+        "interaction": 15,
+        "assets": 10,
+        "reload": 10,
+        "storage": "not-detected"
+      },
+      "signals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "documentShapeOk": true,
+        "playableSurfaceSignal": true,
+        "renderedTextLength": 97,
+        "canvasCount": 0,
+        "interactiveCount": 2,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "trend": {
+        "previousScore": null,
+        "scoreDelta": null
+      },
+      "issues": [
+        {
+          "type": "console",
+          "message": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failedRequestCount": 0,
+      "screenshot": "qa-artifacts/public-game-health/seed-casual-realm-weaver.png",
+      "buildHealth": null
+    },
+    {
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "name": "수정의 개화",
+      "status": "warning",
+      "score": 74,
+      "calculatedScore": 95,
+      "healthReason": "console-error",
+      "checkedAt": "2026-09-12T04:35:05.472Z",
+      "url": "http://127.0.0.1:4173/artbook-viewer.html?game=seed-idle-growth-rpg-crystal-bloom",
+      "dimensions": {
+        "runtime": 25,
+        "errors": 20,
+        "mobile": 15,
+        "interaction": 15,
+        "assets": 10,
+        "reload": 10,
+        "storage": "not-detected"
+      },
+      "signals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "documentShapeOk": true,
+        "playableSurfaceSignal": true,
+        "renderedTextLength": 97,
+        "canvasCount": 0,
+        "interactiveCount": 2,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "trend": {
+        "previousScore": null,
+        "scoreDelta": null
+      },
+      "issues": [
+        {
+          "type": "console",
+          "message": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failedRequestCount": 0,
+      "screenshot": "qa-artifacts/public-game-health/seed-idle-growth-rpg-crystal-bloom.png",
+      "buildHealth": null
+    },
+    {
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "name": "엘도리아 연대기",
+      "status": "warning",
+      "score": 74,
+      "calculatedScore": 95,
+      "healthReason": "console-error",
+      "checkedAt": "2026-09-12T04:35:05.472Z",
+      "url": "http://127.0.0.1:4173/artbook-viewer.html?game=seed-story-complete-rpg-chronicles-of-eldoria",
+      "dimensions": {
+        "runtime": 25,
+        "errors": 20,
+        "mobile": 15,
+        "interaction": 15,
+        "assets": 10,
+        "reload": 10,
+        "storage": "not-detected"
+      },
+      "signals": {
+        "loadOk": true,
+        "contentSignal": true,
+        "documentShapeOk": true,
+        "playableSurfaceSignal": true,
+        "renderedTextLength": 2641,
+        "canvasCount": 0,
+        "interactiveCount": 4,
+        "inputDelivered": true,
+        "reloadOk": true,
+        "overflowOk": true
+      },
+      "trend": {
+        "previousScore": null,
+        "scoreDelta": null
+      },
+      "issues": [
+        {
+          "type": "console",
+          "message": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failedRequestCount": 0,
+      "screenshot": "qa-artifacts/public-game-health/seed-story-complete-rpg-chronicles-of-eldoria.png",
       "buildHealth": null
     }
   ]
