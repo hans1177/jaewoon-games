@@ -26,15 +26,20 @@ jobs:
           if(c.pumpMode?.benchmarkCountsAsTrainingSample!==false||c.pumpMode?.githubHostedModelTrainingAllowed!==false||c.pumpMode?.paidTeacherFallbackAllowed!==false) throw new Error('Vibe3 Pump safety contract changed');
           if(c.pumpMode?.maxFreeTeacherCandidates!==2||c.pumpMode?.teacherCandidateAuthority!=='NON_AUTHORITATIVE') throw new Error('teacher candidate authority changed');
           if(c.verifiedRag?.positiveMemoryRequiresVerifiedEvidence!==true||c.verifiedRag?.failureMemoryIsWarningOnly!==true) throw new Error('verified RAG boundary changed');
+          if(c.verifiedRag?.portableContextMayCrossPlatforms!==true||c.verifiedRag?.platformPassEvidenceMayNotTransfer!==true) throw new Error('portable context evidence boundary changed');
           if(!c.verifiedRag?.supportedPlaybooks?.includes('roblox')) throw new Error('Roblox playbook missing');
-          if(c.assetTransformation?.originalImmutable!==true||c.assetTransformation?.variantTournamentRequired!==true) throw new Error('Vibe3 asset transformation safety changed');
+          const web=c.portableWebLearning;
+          if(web?.enabled!==true||web?.verifiedCanonicalWebGameQaMayFeedSharedV3Memory!==true||web?.robloxMayRetrieveAsContext!==true) throw new Error('portable Web learning route missing');
+          if(web?.webPassCountsAsRobloxPass!==false||web?.webEvidenceMaySatisfyRobloxDatasetGate!==false||web?.webEvidenceMaySatisfyRobloxRuntimeOrPublishingGate!==false||web?.robloxLaneRequiresRealVerifiedRobloxEvidence!==true) throw new Error('Web evidence must not become Roblox evidence');
+          if(web?.useExistingCanonicalDistillationOnly!==true||web?.separateCronOrPipelineAllowed!==false) throw new Error('portable Web learning must reuse canonical distillation');
+          if(c.assetTransformation?.originalImmutable!==true||c.assetTransformation?.variantTournamentRequired!==true) throw new Error('Vibe3 asset transformation safety contract changed');
           if(c.modelSelection?.route!=='LOCAL_SELF_HOSTED_ONLY'||c.modelSelection?.paidApiAllowed!==false||c.modelSelection?.githubHostedTrainingAllowed!==false) throw new Error('Vibe3 model route policy changed');
           const roadmap=c.platformRoadmap;
           if(roadmap?.enabled!==true||JSON.stringify(roadmap.priority)!==JSON.stringify(['ROBLOX','UNITY','FORTNITE_UEFN'])) throw new Error('platform roadmap priority changed');
           if(roadmap?.currentPhase!=='ROBLOX_FAST_RELEASE_STABILIZATION'||roadmap?.unityExistingPathPreserved!==true||roadmap?.separatePlatformLearningPipelineAllowed!==false) throw new Error('platform roadmap phase/preservation changed');
           if(roadmap?.phase1Implementation?.taskType!=='roblox'||roadmap?.phase1Implementation?.adapter!=='tools/vibe3-roblox-platform.mjs'||roadmap?.phase1Implementation?.publishRequiresExplicitExecute!==true||roadmap?.phase1Implementation?.cookieAuthAllowed!==false) throw new Error('Roblox Phase 1 implementation contract changed');
           if(c.promotion?.freshAdapterState!=='TRAINED_UNVERIFIED') throw new Error('Vibe3 promotion gate changed');
-          console.log('PASS Vibe3 Pump machine contract with Roblox Phase 1');
+          console.log('PASS Vibe3 Pump machine contract with portable Web context and native Roblox isolation');
           NODE
 
       - name: Validate platform roadmap machine contract
