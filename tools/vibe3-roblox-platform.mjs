@@ -65,6 +65,73 @@ export function validateRobloxSourcePath(sourcePath=''){
   return Object.freeze({pass:Boolean(normalized)&&underRoot&&extensionAllowed,path:normalized,extension:ext,underRoot,extensionAllowed,allowedExtensions:ROBLOX_SOURCE_EXTENSIONS});
 }
 
+function passed(value,field=''){
+  if(field&&value?.[field]===true)return true;
+  return value?.pass===true||value?.validated===true||upper(value?.state)==='PASS';
+}
+
+export function assembleRobloxTechnicalEvidence({build={},runtime={},independent={},regression={}}={}){
+  const sourceRevision=clean(build.sourceRevision||build.sourceCommit||build.revision);
+  const sourceFingerprint=clean(build.sourceFingerprint);
+  const artifactIdentity=clean(build.artifactIdentity||build.placeSha256||build.sha256||build.buildId);
+  const bindings=[runtime,independent,regression];
+  const sameRevision=Boolean(sourceRevision)&&bindings.every(row=>!clean(row.sourceRevision||row.sourceCommit||row.buildSourceCommit)||clean(row.sourceRevision||row.sourceCommit||row.buildSourceCommit)===sourceRevision);
+  const sameArtifact=Boolean(artifactIdentity)&&bindings.every(row=>!clean(row.artifactIdentity||row.placeSha256||row.sha256||row.buildId)||clean(row.artifactIdentity||row.placeSha256||row.sha256||row.buildId)===artifactIdentity);
+  const buildOrPackagePassed=passed(build,'buildOrPackagePassed');
+  const luauOrSourceValidationPassed=build.luauOrSourceValidationPassed===true||upper(build.sourceValidation)==='PASS';
+  const runtimePassed=runtime.runtimePassed===true||upper(runtime.runtime)==='PASS';
+  const serverClientBoundaryPassed=runtime.serverClientBoundaryPassed===true;
+  const saveExists=runtime.saveExists===true;
+  const datastoreRejoinPassed=runtime.datastoreRejoinPassed===true;
+  const mobileControlUiPassed=runtime.mobileControlUiPassed===true;
+  const multiplayerApplicable=runtime.multiplayerApplicable===true;
+  const multiplayerQaPassed=runtime.multiplayerQaPassed===true;
+  const independentQaPassed=independent.independentQaPassed===true||upper(independent.independentQa)==='PASS';
+  const regressionPassed=regression.regressionPassed===true||upper(regression.regression)==='PASS';
+  const protectedStatePreserved=regression.protectedStatePreserved===true;
+  const exactRevision=regression.exactRevision===true&&sameRevision&&sameArtifact;
+  const evidence={
+    version:1,
+    platform:'ROBLOX',
+    target:'ROBLOX_TECHNICAL_VALIDATION',
+    checkedAt:new Date().toISOString(),
+    sourceRevision,
+    sourceFingerprint:sourceFingerprint||null,
+    buildOrPackagePassed,
+    artifactIdentity:artifactIdentity||null,
+    luauOrSourceValidationPassed,
+    runtimePassed,
+    runtime:runtimePassed?'PASS':'FAIL',
+    serverClientBoundaryPassed,
+    saveExists,
+    datastoreRejoinPassed,
+    mobileControlUiPassed,
+    multiplayerApplicable,
+    multiplayerQaPassed,
+    independentQaPassed,
+    independentQa:independentQaPassed?'PASS':'FAIL',
+    regressionPassed,
+    protectedStatePreserved,
+    exactRevision,
+    sameRevision,
+    sameArtifact,
+    browserQa:'NOT_APPLICABLE',
+    provenance:{
+      build:clean(build.provenance||build.evidencePath)||null,
+      runtime:clean(runtime.provenance||runtime.evidencePath)||null,
+      independent:clean(independent.provenance||independent.evidencePath)||null,
+      regression:clean(regression.provenance||regression.evidencePath)||null,
+    },
+  };
+  const gate=validateRobloxReleaseEvidence(evidence,sourceRevision);
+  evidence.pass=gate.pass;
+  evidence.validated=gate.pass;
+  evidence.state=gate.pass?'PASS':'FAIL';
+  evidence.blockedReasons=[...gate.blockedReasons];
+  evidence.authority='roblox-technical-validation-evidence';
+  return Object.freeze(evidence);
+}
+
 export function validateRobloxReleaseEvidence(evidence={},sourceRevision=''){
   const blocked=[];
   const revision=clean(sourceRevision||evidence.sourceRevision);
@@ -153,10 +220,27 @@ export async function publishRobloxPlace({plan,apiKey=process.env.ROBLOX_OPEN_CL
   return Object.freeze({version:1,state:'PUBLISHED',platform:'ROBLOX',versionNumber,sourceRevision:plan.sourceRevision,placeFile:plan.placeFile,endpoint:plan.endpoint,credentialPersisted:false,authority:'roblox-place-publish-result'});
 }
 
-function parseArgs(argv){const args={};for(let i=0;i<argv.length;i+=1){const arg=argv[i];if(!arg.startsWith('--'))continue;const [key,inline]=arg.slice(2).split('=',2);if(key==='execute'){args.execute=true;continue;}args[key]=inline??argv[++i];}return args;}
-function readJson(file){return JSON.parse(fs.readFileSync(file,'utf8'));}
+function parseArgs(argv){const args={};for(let i=0;i<argv.length;i+=1){const arg=argv[i];if(!arg.startsWith('--'))continue;const [key,inline]=arg.slice(2).split('=',2);if(key==='execute'||key==='assemble-evidence'){args[key]=true;continue;}args[key]=inline??argv[++i];}return args;}
+function readJson(file){return JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));}
+function requireJson(args,key){const file=clean(args[key]);if(!file||!fs.existsSync(file))throw new Error(`${key} evidence missing: ${file}`);const value=readJson(file);return {...value,evidencePath:file};}
 async function main(){
   const args=parseArgs(process.argv.slice(2));
+  if(args['assemble-evidence']===true){
+    const output=clean(args.output);
+    if(!output)throw new Error('output required for --assemble-evidence');
+    const evidence=assembleRobloxTechnicalEvidence({
+      build:requireJson(args,'build-info'),
+      runtime:requireJson(args,'runtime'),
+      independent:requireJson(args,'independent'),
+      regression:requireJson(args,'regression'),
+    });
+    fs.mkdirSync(path.dirname(output),{recursive:true});
+    fs.writeFileSync(output,`${JSON.stringify(evidence,null,2)}\n`);
+    console.log(`ROBLOX_TECHNICAL_VALIDATION=${evidence.state}`);
+    console.log(`ROBLOX_BINDING_MATCH=${evidence.sameRevision&&evidence.sameArtifact}`);
+    if(!evidence.pass)process.exitCode=2;
+    return;
+  }
   const evidence=args.evidence?readJson(args.evidence):{};
   const plan=createRobloxPlacePublishPlan({
     placeFile:args['place-file'],
