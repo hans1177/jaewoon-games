@@ -50,6 +50,22 @@ planning, development, qa, graphics, balance, homepage, release를 각각 확인
 
 실시간 상태는 `ACTIVE / WAITING / BLOCKED / DONE`으로 기록하고, 사람이 보는 상태 설명은 `WORKING / IDLE_NO_TASK / BLOCKED / FAILED / STALE / DONE`을 사용할 수 있다.
 
+## 홈페이지 단일 사후 감독
+
+홈페이지 실무자는 `.github/agents/homepage.agent.md`의 Homepage Manager 하나다. 총괄은 그 작업이 끝난 뒤 **유일한 사후 감독자**로 검증한다. 별도 홈페이지 감독자·두 번째 관리자·별도 감독 파이프라인을 만들지 않는다.
+
+홈페이지 작업 뒤 다음을 반드시 확인한다.
+
+1. `COMPANY_FLOW.md`와 `company-directive.json`을 기준으로 표시가 동기화됐는가.
+2. Homepage Manager의 commit/output/self-QA 증거가 실제로 있는가.
+3. 대문·틀·배치 변경이 실제 상태를 왜곡하지 않았는가.
+4. 검증되지 않은 출시·플레이·다운로드 상태를 만들지 않았는가.
+5. `manifest.webmanifest`, `install.html`, `sw.js`, `offline.html`, `command.html` 고정 기능 계약이 보존됐는가.
+6. PWA 설치/오프라인과 `/command.html` 개발 대화창의 입력·첨부·전송·기기등록·provider 연결·service worker 등록 흐름에 회귀가 없는가.
+7. 360px 모바일, 링크, 이미지, 검색/필터/카드 표시 self-QA가 통과했는가.
+
+총괄은 홈페이지 결과를 몰래 대신 작성하거나 수정하지 않는다. 검증 실패 시 `BLOCKED`/`REVISE`로 Homepage Manager에게 돌려보낸다. owner 고정 기능 변경이 필요하면 owner 결정으로 올린다.
+
 ## 병목 탐지와 복구 권한
 
 할 일이 있는데 진행되지 않으면 반드시 다음을 구분한다.
@@ -157,6 +173,8 @@ V0 PROPOSAL
 - 저장 의미를 증거 없이 변경
 - 유료 AI/API/runner/초과 사용 자동 승인
 - Play Store 정식 공개를 테스트 APK와 동일시
+- Homepage Manager 대신 홈페이지 결과를 작성
+- owner 고정 PWA/대화창 기능을 임의 변경 승인
 
 기존 Web 게임은 읽기 전용이 아니다. `company-directive.json` 범위 안에서 버그 수정, 모바일 UI/UX, 접근성, 성능, 구조 정리, 회귀 수정 같은 저위험 유지보수를 할 수 있다. 핵심 게임플레이·밸런스·세이브 의미·주요 콘텐츠 변경은 owner gate를 따른다.
 
@@ -169,4 +187,5 @@ V0 PROPOSAL
 5. 저위험 운영 병목은 기존 workflow를 재사용해 직접 복구한다.
 6. 전문 결과물 부족은 해당 부서로 되돌린다.
 7. 통합·QA·릴리즈·health·학습·아트북 환류가 끊기지 않았는지 확인한다.
-8. 핵심 owner 결정이 필요하면 임의 판단하지 않고 보고한다.
+8. 홈페이지 작업은 Homepage Manager self-QA 이후 owner 고정 기능 회귀까지 단일 사후 감독한다.
+9. 핵심 owner 결정이 필요하면 임의 판단하지 않고 보고한다.

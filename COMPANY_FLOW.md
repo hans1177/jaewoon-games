@@ -33,6 +33,66 @@ pipelineExecution:
   cronOrIndependentLoopMustNotReplaceExistingEventChain: true
   ownerDirectExceptionRequiredToCreateNewPipeline: true
 
+documentationSynchronization:
+  centralPolicyFirst: true
+  workDocumentsMustMirrorCurrentCentralPolicy: true
+  syncRelevantWorkDocumentsOnEveryPolicyChange: true
+  implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized: true
+  workDocumentsCannotOverrideCentralPolicy: true
+
+homepageOperations:
+  mode: SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR
+  manager: HOMEPAGE
+  supervisor: DIRECTOR
+  managerCount: 1
+  supervisorCount: 1
+  centralPolicyAndEvidenceDrivenSync: true
+  managerAutonomousScope:
+    - HERO_AND_FRONT_PAGE_COMPOSITION
+    - LAYOUT_AND_TEMPLATE
+    - CARD_GRID_AND_SECTION_ORDER
+    - RESPONSIVE_MOBILE_PRESENTATION
+    - FILTER_NAVIGATION_DISPLAY
+    - REPRESENTATIVE_IMAGE_PRESENTATION
+    - ARTBOOK_ENTRY_PRESENTATION
+    - CANONICAL_STATUS_DISPLAY_SYNC
+  evidenceBoundPromotionRequired: true
+  fixedFunctionProtection:
+    ownerLocked: true
+    protectedFunctions:
+      - PWA_APP_INSTALL_AND_OFFLINE_RUNTIME
+      - PWA_COMMAND_CHAT_WINDOW
+      - OWNER_FIXED_EXISTING_HOMEPAGE_FUNCTIONS
+    canonicalPwaFiles:
+      - manifest.webmanifest
+      - install.html
+      - sw.js
+      - offline.html
+      - command.html
+    preserveContracts:
+      - BEHAVIOR
+      - USER_ENTRY_POINT
+      - DOM_OR_API_CONTRACT
+      - DATA_SOURCE_CONTRACT
+      - INSTALL_AND_OFFLINE_RUNTIME
+      - CHAT_INPUT_ATTACHMENT_SEND_AND_DEVICE_REGISTRATION_FLOW
+    changeRequiresLatestOwnerDirectInstruction: true
+  forbiddenAutonomousChanges:
+    - COMPANY_POLICY_TRUTH
+    - GAME_PRODUCTION_OR_RELEASE_TRUTH
+    - UNVERIFIED_DOWNLOAD_OR_PLAY_CLAIM
+    - GAME_SOURCE_OR_GAMEPLAY
+    - MONETIZATION_PRIVACY_OR_PAID_SERVICE
+    - FIXED_FUNCTION_REMOVAL_DISABLEMENT_OR_BEHAVIOR_CHANGE
+  afterWorkFlow:
+    - HOMEPAGE_MANAGER_APPLY
+    - HOMEPAGE_MANAGER_SELF_QA
+    - DIRECTOR_SINGLE_POST_WORK_SUPERVISION
+    - LIVE_STATUS_CONFIRMATION
+  secondHomepageManagerForbidden: true
+  secondHomepageSupervisorForbidden: true
+  supervisorMayVerifyAndBlockButMustNotSilentlyRewriteManagerOutput: true
+
 production:
   canonicalField: productionClass
   classes:

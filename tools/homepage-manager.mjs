@@ -1,19 +1,28 @@
 // 파일명: tools/homepage-manager.mjs
-// 역할: 홈페이지를 수정하지 않고 현재 홈 구조와 게임 데이터만 진단한다.
-// 원칙: 자동 배치 변경 금지. index.html, company-status.json 등 운영 파일에 쓰지 않는다.
-// 현재 game-catalog만 활성 멤버십으로 보고 과거 artbook queue 항목은 이력으로 보존한다.
+// 역할: 홈페이지 관리 실행계약과 실제 공개 데이터/PWA 고정기능을 self-QA 한다.
+// 레이아웃 실행부는 assets/homepage-enhancements.js가 최신 main 데이터를 읽어 DOM을 동적으로 관리한다.
+// 이 도구는 정책/출시 사실을 만들지 않고, manager 실행계약과 owner 고정기능 회귀를 차단한다.
 import fs from 'node:fs';
 
 const readJson=path=>JSON.parse(fs.readFileSync(path,'utf8'));
 const readText=path=>fs.readFileSync(path,'utf8');
 const exists=path=>fs.existsSync(path);
+const includesAll=(text,parts)=>parts.every(part=>text.includes(part));
 const roles=['planning','graphics','development','qa','balance'];
 
 const catalog=readJson('game-catalog.json');
 const queue=readJson('artbook-submission-queue.json');
 const status=readJson('company-status.json');
 const books=readJson('game-artbooks.json');
+const directive=readJson('company-directive.json');
 const index=readText('index.html');
+const enhancement=readText('assets/homepage-enhancements.js');
+const central=readText('COMPANY_FLOW.md');
+const manifest=readJson('manifest.webmanifest');
+const install=readText('install.html');
+const serviceWorker=readText('sw.js');
+const command=readText('command.html');
+const offline=readText('offline.html');
 
 const games=catalog.games||[];
 const catalogIds=new Set(games.map(g=>g.id));
@@ -47,10 +56,17 @@ const placeholderGameImages=games.filter(game=>{
   return false;
 }).map(game=>game.id);
 
+const homepagePolicy=directive.homepageOperations||{};
+const pwaFiles=['manifest.webmanifest','install.html','sw.js','offline.html','command.html'];
+
 const checks={
+  centralHomepagePolicyExists:central.includes('homepageOperations:')&&central.includes('SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR'),
+  documentationSyncPolicyExists:central.includes('documentationSynchronization:')&&central.includes('implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized: true'),
+  directiveHomepagePolicyMirrorsCentral:homepagePolicy.mode==='SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR'&&homepagePolicy.manager==='HOMEPAGE'&&homepagePolicy.supervisor==='DIRECTOR'&&homepagePolicy.managerCount===1&&homepagePolicy.supervisorCount===1,
+  secondHomepageManagerForbidden:homepagePolicy.secondHomepageManagerForbidden===true&&homepagePolicy.secondHomepageSupervisorForbidden===true,
   indexExists:exists('index.html'),
   homepageEnhancementLoaded:index.includes('/assets/homepage-enhancements.js')||index.includes('assets/homepage-enhancements.js'),
-  automaticLayoutInjectionAbsent:!index.includes('/assets/homepage-layout-v2.css')&&!index.includes('/assets/homepage-layout-v2.js'),
+  activeRuntimeLayoutManager:includesAll(enhancement,['const SYNC_INTERVAL_MS=5000;','const RAW_MAIN_BASE=', 'function buildFocus(', 'function buildGameCenter(', 'function buildTeam(', 'async function refreshHomepageData(', 'installRealtimeSync()']),
   activeCatalogNonEmpty:games.length>0,
   publishedBooksReferenceCatalogGames:brokenBookRefs.length===0,
   requiredArtbookRolesIntact:JSON.stringify(queue.requiredRoles||[])===JSON.stringify(roles),
@@ -58,13 +74,21 @@ const checks={
   activeCatalogUsesSemanticProductionClasses:games.every(game=>['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(String(game.productionClass||''))),
   allGameImagesPresent:brokenGameImages.length===0,
   allGameImagesUnique:duplicateGameImages.length===0,
-  noPlaceholderGameImages:placeholderGameImages.length===0
+  noPlaceholderGameImages:placeholderGameImages.length===0,
+  fixedPwaFilesExist:pwaFiles.every(exists),
+  pwaManifestCommandEntry:manifest.id==='/command.html'&&manifest.start_url==='/command.html'&&manifest.scope==='/'&&manifest.display==='standalone',
+  pwaManifestIconsPreserved:Array.isArray(manifest.icons)&&manifest.icons.some(x=>x.src==='/assets/pwa-icon-192.png')&&manifest.icons.some(x=>x.src==='/assets/pwa-icon-512.png'),
+  installPwaContractPreserved:includesAll(install,['rel="manifest" href="/manifest.webmanifest"','id="installBtn"','beforeinstallprompt',"navigator.serviceWorker.register('/sw.js',{scope:'/'})",'appinstalled']),
+  serviceWorkerPwaContractPreserved:includesAll(serviceWorker,["'/command.html'","'/install.html'","'/offline.html'","'/manifest.webmanifest'","self.addEventListener('install'","self.addEventListener('activate'","self.addEventListener('fetch'",'serveCommand(request)']),
+  commandChatContractPreserved:includesAll(command,['id="chat"','id="attachBtn"','id="body"','id="sendBtn"','id="claimBtn"','async function send()','async function claim()','function registerPwa()',"navigator.serviceWorker.register('/sw.js')",'attachmentIds:ids']),
+  offlineFallbackPresent:offline.length>0,
+  ownerFixedFunctionPolicyBound:homepagePolicy?.fixedFunctionProtection?.ownerLocked===true&&homepagePolicy?.fixedFunctionProtection?.changeRequiresLatestOwnerDirectInstruction===true
 };
 
 const failures=Object.entries(checks).filter(([,ok])=>!ok).map(([name])=>name);
 
-console.log(`HOMEPAGE_DIAGNOSTICS=${failures.length?'ATTENTION':'PASS'}`);
-console.log(`HOMEPAGE_CHECKS=${Object.keys(checks).length-failures.length}/${Object.keys(checks).length}`);
+console.log(`HOMEPAGE_MANAGEMENT=${failures.length?'ATTENTION':'PASS'}`);
+console.log(`HOMEPAGE_SELF_QA=${Object.keys(checks).length-failures.length}/${Object.keys(checks).length}`);
 console.log(`HOMEPAGE_CATALOG=${games.length}`);
 console.log(`HOMEPAGE_VISIBLE_ARTBOOKS=${visibleBooks.length}`);
 console.log(`HOMEPAGE_LEGACY_QUEUE_ENTRIES=${legacyQueueEntries.length}`);
@@ -73,7 +97,10 @@ console.log(`HOMEPAGE_DUPLICATE_GAME_IMAGES=${duplicateGameImages.length}`);
 console.log(`HOMEPAGE_PLACEHOLDER_GAME_IMAGES=${placeholderGameImages.length}`);
 console.log('HOMEPAGE_CATALOG_COUNT_POLICY=DYNAMIC');
 console.log('HOMEPAGE_LEGACY_QUEUE_POLICY=HISTORY_ONLY');
-console.log(`HOMEPAGE_AUTO_LAYOUT_WRITE=DISABLED`);
+console.log('HOMEPAGE_LAYOUT_MANAGEMENT=ENABLED');
+console.log('HOMEPAGE_MANAGER_COUNT=1');
+console.log('HOMEPAGE_POST_WORK_SUPERVISOR_COUNT=1');
+console.log(`HOMEPAGE_FIXED_PWA_CHAT_CONTRACT=${checks.fixedPwaFilesExist&&checks.pwaManifestCommandEntry&&checks.installPwaContractPreserved&&checks.serviceWorkerPwaContractPreserved&&checks.commandChatContractPreserved?'PASS':'FAIL'}`);
 if(failures.length){
   console.error(`HOMEPAGE_FAILURES=${failures.join(',')}`);
   process.exitCode=1;

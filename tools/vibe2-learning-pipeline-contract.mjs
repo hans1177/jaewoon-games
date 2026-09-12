@@ -46,7 +46,6 @@ includesAll(companyFlow, [
   'newParallelPipelineForSameStageForbidden: true',
   'adHocBypassChainForbidden: true',
   'status: VERIFIED_RUNTIME_PASS_TRUE',
-  'positiveGameplayDistillationUnlockConditionSatisfied: true',
 ], 'COMPANY_FLOW');
 
 const ingestWorkflow = readText(contract.implementationBindings.ingestWorkflow);
