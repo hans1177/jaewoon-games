@@ -1,10 +1,20 @@
 {
-  "version": 1,
+  "version": 2,
   "requestId": "distill-0d43847b019e1402",
   "sourceStatusState": "WAITING_FOR_VERIFIED_SAMPLES",
   "state": "WAITING_FOR_VERIFIED_SAMPLES",
   "execution": {
-    "route": "LOCAL_SELF_HOSTED_ONLY",
+    "route": "CANONICAL_SELF_HOSTED",
+    "preferredBackend": "SERVER_SELF_HOSTED",
+    "allowedBackends": [
+      "SERVER_SELF_HOSTED",
+      "LOCAL_SELF_HOSTED"
+    ],
+    "localBackendPreserved": true,
+    "sameCanonicalRequestRequired": true,
+    "duplicateConcurrentRequestTrainingForbidden": true,
+    "continuousMode": "24H",
+    "refreshCadence": "HOURLY",
     "githubHostedTrainingAllowed": false,
     "paidApiAllowed": false,
     "requiresCudaForQlora": true,
@@ -40,6 +50,30 @@
       "distinctProjects": 0
     },
     "unity": {
+      "blockers": [
+        "INSUFFICIENT_BATCH",
+        "INSUFFICIENT_PROJECT_DIVERSITY",
+        "TASK_PLAN_NOT_READY",
+        "EVAL_SPLIT_EMPTY",
+        "HOLDOUT_SPLIT_EMPTY"
+      ],
+      "accepted": 0,
+      "train": 0,
+      "distinctProjects": 0
+    },
+    "roblox": {
+      "blockers": [
+        "INSUFFICIENT_BATCH",
+        "INSUFFICIENT_PROJECT_DIVERSITY",
+        "TASK_PLAN_NOT_READY",
+        "EVAL_SPLIT_EMPTY",
+        "HOLDOUT_SPLIT_EMPTY"
+      ],
+      "accepted": 0,
+      "train": 0,
+      "distinctProjects": 0
+    },
+    "fortnite_uefn": {
       "blockers": [
         "INSUFFICIENT_BATCH",
         "INSUFFICIENT_PROJECT_DIVERSITY",
