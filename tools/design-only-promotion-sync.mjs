@@ -5,6 +5,11 @@ import {pathToFileURL} from 'node:url';
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');
 const nowIso=()=>new Date().toISOString();
+const ALLOWED_TARGET_PLATFORMS=new Set(['ROBLOX','UNITY','FORTNITE_UEFN']);
+const selectedPlatformOf=seed=>{
+  const value=String(seed?.INITIAL_TARGET_PLATFORM||'ROBLOX').trim().toUpperCase();
+  return ALLOWED_TARGET_PLATFORMS.has(value)?value:'ROBLOX';
+};
 
 export function promoteReadyDesignSeeds({root='.'}={}){
   const p=(...parts)=>path.join(root,...parts);
@@ -35,14 +40,17 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       && artbook?.published===true
       && artbook?.vibe2Used!==true;
     if(!ready){skipped.push({gameId,reason:'DESIGN_BASELINE_NOT_READY'});continue;}
+    const selectedPlatform=selectedPlatformOf(seed);
 
     seed.productionClass='DEVELOPMENT_CONFIRMED';
     seed.productionTier=2;
     seed.productionClassSource='DESIGN_BASELINE_READY';
     seed.lifecycleState='DEVELOPMENT_CONFIRMED';
+    seed.selectedPlatform=selectedPlatform;
     seed.promotion={
       from:'DESIGN_ONLY',to:'DEVELOPMENT_CONFIRMED',
       reason:'DESIGN_BASELINE_READY',
+      selectedPlatform,
       designBaselineSource:artbook.sourceDesign||null,
       artbookSource:`artbook-submissions/${gameId}/current.json`,
       promotedAt:seed?.promotion?.promotedAt||stamp,
@@ -56,7 +64,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
         name:seed.gameName||gameId,
         sourcePath:`web-games/${gameId}`,
         protectedValues:['core-loop','design-baseline','save-meaning'],
-        developmentFocus:{scores:{playability:0,distinctiveness:0,developmentEfficiency:0,scalability:0,lowBlockage:0},total:0,evidenceNote:'승격 직후. 2분류 실제 Web/Unity 근거 수집 전.'},
+        developmentFocus:{scores:{playability:0,distinctiveness:0,developmentEfficiency:0,scalability:0,lowBlockage:0},total:0,evidenceNote:'승격 직후. 선택 플랫폼 실검증 근거 수집 전.'},
       };
       portfolio.projects.push(project);
     }
@@ -64,10 +72,13 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       productionClass:'DEVELOPMENT_CONFIRMED',
       productionClassSource:'DESIGN_BASELINE_READY',
       profileStatus:'DEVELOPMENT_CONFIRMED',
+      // Keep the legacy mode/targetEngine fields until the existing status/planner chain is migrated atomically.
       mode:'WEB_FIRST_IMPLEMENTATION',
       productionTier:2,
       productionTierSource:'DISPLAY_ALIAS_FROM_PRODUCTION_CLASS',
       targetEngine:'web',
+      selectedPlatform,
+      targetPlatform:selectedPlatform,
       designBaselineSource:artbook.sourceDesign||null,
       designArtbookSource:`artbook-submissions/${gameId}/current.json`,
     });
@@ -91,9 +102,11 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       productionClassSource:'DESIGN_BASELINE_READY',
       productionTier:2,
       productionTierSource:'DISPLAY_ALIAS_FROM_PRODUCTION_CLASS',
+      selectedPlatform,
+      targetPlatform:selectedPlatform,
       productionTarget:'web-first-playable',
-      homepageStage:'2분류 개발확정 · Web 검증 준비',
-      homepageRecentWork:'DESIGN_BASELINE_READY 통과. 2분류 실제 Web 플레이 검증 대기.',
+      homepageStage:`2분류 개발확정 · ${selectedPlatform} 검증 준비`,
+      homepageRecentWork:`DESIGN_BASELINE_READY 통과. 선택 플랫폼 ${selectedPlatform} 실제 검증 대기. Web은 선택적 테스트베드.`,
       homepageWebPlayable:false,
       homepageArtbookPath:game.homepageArtbookPath||`/artbook-viewer.html?game=${encodeURIComponent(gameId)}`,
     });
@@ -103,6 +116,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       item={
         gameId,seedId:seed.seedId||null,gameName:seed.gameName||gameId,
         productionClass:'DEVELOPMENT_CONFIRMED',status:'PENDING',currentStep:'LOAD_DESIGN_BASELINE',
+        selectedPlatform,targetPlatform:selectedPlatform,
         sourcePath:`web-games/${gameId}`,
         designBaselineSource:artbook.sourceDesign||null,
         artbookSource:`artbook-submissions/${gameId}/current.json`,
@@ -111,6 +125,8 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       queue.items.push(item);
     }else{
       item.productionClass='DEVELOPMENT_CONFIRMED';
+      item.selectedPlatform=selectedPlatform;
+      item.targetPlatform=selectedPlatform;
       item.designBaselineSource=artbook.sourceDesign||item.designBaselineSource||null;
       item.artbookSource=`artbook-submissions/${gameId}/current.json`;
       if(!item.currentStep)item.currentStep='LOAD_DESIGN_BASELINE';

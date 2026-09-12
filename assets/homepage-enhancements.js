@@ -18,10 +18,18 @@ const getJson=async path=>{
 };
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const formatDate=value=>{if(!value)return'정보 없음';const d=new Date(value);if(Number.isNaN(d.getTime()))return String(value).replaceAll('-','.');return new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}).format(d).replace(/\. /g,'.').replace(/\.$/,'');};
+const normalizePlatform=value=>String(value??'').trim().toUpperCase().replace(/[\s-]+/g,'_');
+const platformLabel=value=>{
+  const platform=normalizePlatform(value);
+  if(platform==='ROBLOX')return'Roblox';
+  if(['UNITY','UNITY_ANDROID'].includes(platform))return'Unity Android';
+  if(['FORTNITE','FORTNITE_UEFN','UEFN'].includes(platform))return'Fortnite UEFN';
+  return'선택 플랫폼';
+};
 
 const CATEGORY_META={
-  'release-confirmed':{order:1,title:'출시확정',note:'Unity Android 본개발',className:'release'},
-  'development-confirmed':{order:2,title:'개발확정',note:'Web 1차 플레이어블 구현',className:'development'},
+  'release-confirmed':{order:1,title:'출시확정',note:'선택 플랫폼 출시 본개발',className:'release'},
+  'development-confirmed':{order:2,title:'개발확정',note:'선택 플랫폼 검증 · Web 선택 지원',className:'development'},
   'design-only':{order:3,title:'3분류',note:'아트북 · 컨셉 · 설계 최적화',className:'design'}
 };
 
@@ -77,7 +85,7 @@ function installStyles(){
 .foldBadge.design{background:#f0e9ff;color:#6743a8}
 .foldGameBody p{margin:7px 0;font-size:11px;line-height:1.5;color:#536f82;font-weight:700}
 .foldGameMeta{font-size:9px;line-height:1.6;color:#6d8799;font-weight:800}
-.foldGameActions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.foldGameActions{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:6px;margin-top:10px}
 .foldGameBtn{display:flex;align-items:center;justify-content:center;min-height:38px;padding:0 6px;border-radius:10px;text-decoration:none;text-align:center;font-size:9px;font-weight:900;background:#2488df;color:#fff;border:1px solid #2488df}
 .foldGameBtn.secondary{background:#eef8ff;color:#1767a9;border-color:#afd7ef}
 .foldGameBtn.off{background:#e8eef2;color:#7c8c96;border-color:#dce5eb;pointer-events:none}
@@ -108,8 +116,7 @@ function installStyles(){
 @media(max-width:700px){
   .foldGameGrid{grid-template-columns:1fr}
   .aiTeamGrid{grid-template-columns:repeat(2,1fr)}
-  .foldGameActions{grid-template-columns:1fr 1fr}
-  .foldGameActions>*:last-child{grid-column:1/-1}
+  .foldGameActions{grid-template-columns:repeat(2,minmax(0,1fr))}
   .homeFocusInner h1{font-size:27px}
   .teamOwner{grid-template-columns:92px 1fr}
 }
@@ -161,8 +168,9 @@ function buildFocus(catalog,status,artbooks){
   const build=getGameBuild(status,game.id);
   const artbook=getLatestArtbook(artbooks,game.id);
   const progress=Number.isFinite(project?.progress)?`${project.progress}%`:'진행 중';
-  const unityFocus=focusRow?.lane==='unity-primary'||project?.target==='unity-android';
-  const focusLabel=unityFocus?'집중개발 · Unity 본개발':'집중개발';
+  const selectedPlatform=game.selectedPlatform||focusRow?.selectedPlatform||project?.selectedPlatform||project?.target||game.productionTarget;
+  const selectedPlatformLabel=platformLabel(selectedPlatform);
+  const focusLabel=`집중개발 · ${selectedPlatformLabel}`;
   hero.className='panel hero homeFocus';
   hero.style.setProperty('--focus-bg',`url('${String(game.image||'assets/fantasy-rpg-v2.webp').replaceAll("'",'%27')}')`);
   hero.innerHTML=`<div class="homeFocusInner">
@@ -170,9 +178,9 @@ function buildFocus(catalog,status,artbooks){
     <h1>${esc(game.name)} · ${esc(game.homepageStage||project?.stageLabel||'개발 중')}</h1>
     <p>${esc(game.homepageRecentWork||project?.stageLabel||game.description)}</p>
     <div class="homeFocusMeta">
-      <span>${esc(unityFocus?'Unity Android':'개발판')}</span>
+      <span>${esc(selectedPlatformLabel)}</span>
       <span>진행 ${esc(progress)}</span>
-      <span>${build?'테스트 APK 있음':'테스트 빌드 준비중'}</span>
+      <span>${build?'테스트 APK 있음':'플랫폼 빌드/게시 검증 전'}</span>
       <span>${artbook?`아트북 ${esc(formatDate(artbook.createdAt||artbooks?.updatedAt))}`:'아트북 준비중'}</span>
     </div>
     <a class="homeFocusBtn" href="#gameHub">게임 보러가기</a>
@@ -190,9 +198,16 @@ function buildGameCard(game,catalog,status,baselines,artbooks){
   const releaseDate=getReleaseDate(game,baseline,build);
   const releaseText=releaseDate?`출시 ${formatDate(releaseDate)}`:(game.homepageCategory==='release-confirmed'?'출시일 정보 없음':'출시 전');
   const webPlayable=game.homepageWebPlayable!==false&&Boolean(game.webPath);
+  const selectedPlatform=game.selectedPlatform||game.productionTarget;
+  const selectedPlatformName=platformLabel(selectedPlatform);
   const unityUrl=baseline?.rollbackActive&&baseline?.fallbackDownload?baseline.fallbackDownload:build?.download;
   const unityLabel=baseline?.rollbackActive&&baseline?.fallbackDownload?'안정판 APK':build?'Unity 테스트':'Unity 준비중';
   const unityClass=unityUrl?'foldGameBtn secondary':'foldGameBtn off';
+  const robloxUrl=game.robloxUrl||game.robloxPlaceUrl||game.robloxExperienceUrl||'';
+  const robloxSelected=normalizePlatform(selectedPlatform)==='ROBLOX';
+  const robloxButton=(robloxSelected||robloxUrl)
+    ?(robloxUrl?`<a class="foldGameBtn secondary" href="${esc(robloxUrl)}">Roblox 플레이</a>`:`<span class="foldGameBtn off">Roblox 준비중</span>`)
+    :'';
   const artbookUrl=game.homepageArtbookPath||(artbook?`/artbook-viewer.html?game=${encodeURIComponent(game.id)}`:'');
   const artbookClass=artbookUrl?'foldGameBtn secondary':'foldGameBtn off';
   const artbookLabel=artbook?`아트북 ${formatDate(artbook.createdAt||artbooks?.updatedAt)}`:'아트북 준비중';
@@ -210,9 +225,10 @@ function buildGameCard(game,catalog,status,baselines,artbooks){
         <span class="foldBadge">${esc(game.homepageStage||game.description)}</span>
       </div>
       <p><b>최근 작업</b> ${esc(game.homepageRecentWork||'현재 공개판 유지.')}</p>
-      <div class="foldGameMeta">Web 수정 ${esc(webDate)} · Unity 테스트 ${esc(buildDate)} · 아트북 ${esc(artbookDate)}<br>${esc(releaseText)}</div>
+      <div class="foldGameMeta">Web 수정 ${esc(webDate)} · 선택 플랫폼 ${esc(selectedPlatformName)} · Unity 테스트 ${esc(buildDate)} · 아트북 ${esc(artbookDate)}<br>${esc(releaseText)}</div>
       <div class="foldGameActions">
         ${webButton}
+        ${robloxButton}
         ${unityUrl?`<a class="${unityClass}" href="${esc(unityUrl)}">${unityLabel}</a>`:`<span class="${unityClass}">${unityLabel}</span>`}
         ${artbookUrl?`<a class="${artbookClass}" href="${esc(artbookUrl)}">${esc(artbookLabel)}</a>`:`<span class="${artbookClass}">${esc(artbookLabel)}</span>`}
       </div>
