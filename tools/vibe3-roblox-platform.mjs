@@ -158,8 +158,14 @@ async function main(){
     sourceRevision:args['source-revision'],
     evidence,
   });
-  if(args.execute!==true){console.log(JSON.stringify(plan,null,2));if(!plan.executionReady)process.exitCode=2;return;}
+  if(args.execute!==true){
+    console.log(`ROBLOX_V3_STATE=${plan.executionReady?'READY':'BLOCKED'}`);
+    console.log(JSON.stringify(plan,null,2));
+    if(!plan.executionReady)process.exitCode=2;
+    return;
+  }
   const result=await publishRobloxPlace({plan});
+  console.log('ROBLOX_V3_STATE=PUBLISHED');
   console.log(JSON.stringify(result,null,2));
 }
 
