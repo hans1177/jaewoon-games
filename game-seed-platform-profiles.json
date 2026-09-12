@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "policyDocument": "COMPANY_FLOW.md",
+  "role": "PLATFORM_SEED_IMPLEMENTATION_PROFILE",
+  "platforms": {
+    "ROBLOX": {
+      "categories": {
+        "ROLEPLAY_LIFE_AVATAR": {
+          "benchmarkCandidates": ["Brookhaven RP", "Adopt Me!", "Welcome to Bloxburg", "Berry Avenue"],
+          "requiredConceptTerms": ["roleplay", "avatar", "home", "social", "identity", "activity"],
+          "requiredConceptGroups": [
+            ["roleplay", "role-play", "social"],
+            ["avatar", "identity", "customization", "outfit"],
+            ["home", "house", "space", "neighborhood"],
+            ["activity", "job", "routine", "interaction"]
+          ],
+          "minimumRequiredConceptGroups": 4,
+          "minimumCoreLoop": [
+            "Enter a shared social space, choose an avatar identity or role, and pick a short activity, location, or interaction goal with other players.",
+            "Perform roleplay activities, jobs, collection, customization, or social interactions that produce visible rewards and identity feedback.",
+            "Use rewards to expand avatar, home, vehicle, or social expression options, then choose a new roleplay goal or group activity in the same persistent world."
+          ],
+          "references": [
+            {"title":"Brookhaven RP","qualitative":"Roblox roleplay benchmark for low-friction social play, homes, vehicles and self-directed sessions"},
+            {"title":"Adopt Me!","qualitative":"Roblox social collection and identity benchmark with persistent progression and trading-oriented interaction"},
+            {"title":"Welcome to Bloxburg","qualitative":"Roblox life-simulation benchmark for jobs, homes, building and routine-driven progression"}
+          ]
+        },
+        "SIMULATOR_TYCOON_INCREMENTAL": {
+          "benchmarkCandidates": ["Grow a Garden", "Pet Simulator 99!", "Restaurant Tycoon 2", "Theme Park Tycoon 2"],
+          "requiredConceptTerms": ["collect", "upgrade", "income", "unlock", "automation", "prestige"],
+          "requiredConceptGroups": [
+            ["collect", "harvest", "earn", "income"],
+            ["upgrade", "improve", "level", "power"],
+            ["unlock", "expand", "area", "tier"],
+            ["automation", "idle", "prestige", "rebirth"]
+          ],
+          "minimumRequiredConceptGroups": 4,
+          "minimumCoreLoop": [
+            "Perform a simple repeatable action to collect resources or income and immediately see production, inventory, or power increase.",
+            "Spend earned resources on upgrades, automation, helpers, or new production nodes that make the next earning cycle faster or strategically different.",
+            "Unlock a new area, tier, collection target, or prestige layer, then repeat the earning loop with a larger goal and visible long-term progression."
+          ],
+          "references": [
+            {"title":"Grow a Garden","qualitative":"Roblox incremental benchmark for simple collection, persistent growth and repeated return sessions"},
+            {"title":"Pet Simulator 99!","qualitative":"Roblox simulator benchmark for collection, power growth, area unlocks and layered progression"},
+            {"title":"Restaurant Tycoon 2","qualitative":"Roblox tycoon benchmark for build-expand-upgrade loops and visible business growth"}
+          ]
+        },
+        "BATTLEGROUND_FIGHTING_SHOOTER": {
+          "benchmarkCandidates": ["The Strongest Battlegrounds", "RIVALS", "Arsenal", "BedWars"],
+          "requiredConceptTerms": ["combat", "opponent", "skill", "cooldown", "score", "respawn"],
+          "requiredConceptGroups": [
+            ["combat", "fight", "shoot", "attack"],
+            ["opponent", "enemy", "player", "team"],
+            ["skill", "aim", "combo", "cooldown"],
+            ["score", "round", "win", "respawn"]
+          ],
+          "minimumRequiredConceptGroups": 4,
+          "minimumCoreLoop": [
+            "Enter a short competitive encounter, read opponent movement, and use movement, attacks, aim, abilities, or combos to create an advantage.",
+            "Damage or eliminate opponents, receive clear hit and score feedback, then reposition around cooldowns, cover, objectives, or team pressure.",
+            "Complete the round or score target, receive progression or loadout rewards, and re-enter a new match with a changed tactical choice or mastery goal."
+          ],
+          "references": [
+            {"title":"The Strongest Battlegrounds","qualitative":"Roblox battleground benchmark for readable abilities, combos, cooldowns and repeated PvP encounters"},
+            {"title":"RIVALS","qualitative":"Roblox competitive shooter benchmark for short rounds, aim, loadouts and direct opponent mastery"},
+            {"title":"Arsenal","qualitative":"Roblox shooter benchmark for fast respawn, weapon variety and score-driven rounds"}
+          ]
+        },
+        "SURVIVAL_HORROR_ESCAPE": {
+          "benchmarkCandidates": ["DOORS", "99 Nights in the Forest", "Dead Rails", "Piggy"],
+          "requiredConceptTerms": ["survive", "threat", "escape", "resource", "cooperate", "checkpoint"],
+          "requiredConceptGroups": [
+            ["survive", "survival", "danger", "threat"],
+            ["escape", "exit", "route", "checkpoint"],
+            ["resource", "item", "tool", "supplies"],
+            ["cooperate", "team", "revive", "group"]
+          ],
+          "minimumRequiredConceptGroups": 4,
+          "minimumCoreLoop": [
+            "Enter a dangerous area with limited information, identify the current threat, and search for a route, key item, resource, or safe checkpoint.",
+            "Avoid, outplay, or temporarily resist the threat while managing resources and cooperating with nearby players when teamwork is available.",
+            "Reach a checkpoint or escape condition, convert survival progress into unlocks or knowledge, and attempt a harder segment with new threat patterns."
+          ],
+          "references": [
+            {"title":"DOORS","qualitative":"Roblox horror benchmark for room progression, threat pattern learning, cooperative tension and checkpoint-like milestones"},
+            {"title":"99 Nights in the Forest","qualitative":"Roblox survival benchmark for cooperative resource pressure, repeated nights and escalating danger"},
+            {"title":"Dead Rails","qualitative":"Roblox survival-adventure benchmark for team travel, resource management and emergent danger"}
+          ]
+        },
+        "OBBY_PARTY_MINIGAME": {
+          "benchmarkCandidates": ["Tower of Hell", "Epic Minigames", "Natural Disaster Survival", "Mega Easy Obby"],
+          "requiredConceptTerms": ["obstacle", "round", "checkpoint", "timing", "score", "retry"],
+          "requiredConceptGroups": [
+            ["obstacle", "obby", "platform", "hazard"],
+            ["round", "minigame", "session", "timer"],
+            ["checkpoint", "finish", "goal", "score"],
+            ["timing", "jump", "dodge", "retry"]
+          ],
+          "minimumRequiredConceptGroups": 4,
+          "minimumCoreLoop": [
+            "Start a short timed round with a clear obstacle, movement, survival, or party objective that is readable within seconds on mobile controls.",
+            "Jump, dodge, race, collect, or react through hazards while checkpoints, score, position, or remaining-time feedback shows immediate progress.",
+            "Finish or fail the round, receive score or cosmetic progression, then retry quickly or rotate into a different minigame pattern with minimal downtime."
+          ],
+          "references": [
+            {"title":"Tower of Hell","qualitative":"Roblox obby benchmark for skill-based movement, fast retries and escalating obstacle pressure"},
+            {"title":"Epic Minigames","qualitative":"Roblox party benchmark for rapid rule changes, short rounds and varied competitive objectives"},
+            {"title":"Natural Disaster Survival","qualitative":"Roblox round survival benchmark for readable hazards, social play and repeated sessions"}
+          ]
+        },
+        "STORY_RPG_ADVENTURE_RPG": {
+          "benchmarkCandidates": ["Blox Fruits", "World // Zero", "Dungeon Quest!", "Arcane Odyssey"],
+          "requiredConceptTerms": ["quest", "explore", "combat", "boss", "progression", "story"],
+          "requiredConceptGroups": [
+            ["quest", "story", "narrative", "objective"],
+            ["explore", "world", "area", "island"],
+            ["combat", "skill", "weapon", "battle"],
+            ["boss", "dungeon", "progression", "level"]
+          ],
+          "minimumRequiredConceptGroups": 4,
+          "minimumCoreLoop": [
+            "Accept a quest or story objective, travel through a Roblox world area, and discover enemies, NPCs, resources, or events that advance the current adventure goal.",
+            "Fight enemies or bosses using readable skills and equipment, gain experience and loot, and make a progression choice that changes the next combat approach.",
+            "Complete the quest or major encounter, unlock a new area or story beat, and continue toward a larger adventure milestone while preserving persistent character growth."
+          ],
+          "references": [
+            {"title":"Blox Fruits","qualitative":"Roblox action RPG benchmark for persistent leveling, exploration, combat abilities and boss progression"},
+            {"title":"World // Zero","qualitative":"Roblox RPG benchmark for quests, worlds, classes, dungeons and persistent character progression"},
+            {"title":"Dungeon Quest!","qualitative":"Roblox RPG benchmark for repeatable dungeons, loot, builds and boss encounters"}
+          ]
+        }
+      }
+    }
+  }
+}
