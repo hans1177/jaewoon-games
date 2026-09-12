@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 30,
+  "revision": 31,
   "updatedAt": "2026-09-12",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
@@ -308,6 +308,51 @@
     "steamNotBuiltInitially": true,
     "multiplayerNotBuiltInitially": true
   },
+  "operationsModernization": {
+    "managedPortfolio": {
+      "maxMaintainedGames": 6,
+      "maxHeavyDevelopmentWip": 3,
+      "demoFirstEvaluation": {
+        "requiredForAllManagedGames": true,
+        "managedGameCount": 6,
+        "goal": "PLAYABLE_DEMO_WITH_REAL_VALIDATION",
+        "minimumEvidence": ["PLAYABLE_DEMO", "REAL_PLAY_OR_RUNTIME_EVIDENCE", "QA", "FIX_IF_REQUIRED", "REVALIDATION"],
+        "roleAssignmentAfterDemoEvaluation": true,
+        "postDemoRoleTargets": {"PRIMARY": 1, "ACTIVE": 2, "MAINTENANCE_VALIDATION": 2, "INCUBATION_HOLD": 1},
+        "demoIsNotAutomaticLearningSample": true,
+        "validatedDevelopmentEvidenceMayFeedExistingLearningInputs": true,
+        "mustNotChangeVibeLearningChain": true,
+        "mustNotChangeBuildSystem": true
+      },
+      "roles": {"PRIMARY": 1, "ACTIVE": 2, "MAINTENANCE_VALIDATION": 2, "INCUBATION_HOLD": 1},
+      "roleMetadataDoesNotReplaceProductionClass": true
+    },
+    "legacyArchivePool": {
+      "enabled": true,
+      "portfolioRole": "LEGACY_ARCHIVE",
+      "automaticDeletionForbidden": true,
+      "automaticDiscardForbidden": true,
+      "automaticRebuildForbidden": true
+    },
+    "vibeLearningImmutableLock": {
+      "ownerLocked": true,
+      "structureChangeForbidden": true,
+      "chainChangeForbidden": true,
+      "learningCodePathModificationForbidden": true,
+      "allowedExceptions": ["RECOVERY", "VERIFIED_ERROR_FIX"]
+    },
+    "buildSystemImmutableLock": {
+      "ownerLocked": true,
+      "buildMethodChangeForbidden": true,
+      "buildWorkflowModificationForbidden": true,
+      "parentChildTopologyChangeForbidden": true,
+      "triggerChangeForbidden": true,
+      "artifactTransferChangeForbidden": true,
+      "runtimeQaBuildLinkChangeForbidden": true,
+      "cacheOrDedupeBuildLogicChangeForbidden": true,
+      "newBuildChainForbidden": true
+    }
+  },
   "rules": [
     "new-owner-instruction-overrides-autonomous-plan",
     "company-flow-is-machine-policy-source",
@@ -374,6 +419,9 @@
     "release-must-pass-independent-qa-and-runtime-verification",
     "release-artbook-final-revision-only-after-release-ready",
     "existing-public-web-builds-survive-class-movement",
+    "managed-six-all-require-playable-demo-real-qa-and-revalidation-before-final-role-assignment",
+    "managed-six-demo-evidence-may-feed-only-existing-vibe-learning-inputs",
+    "managed-six-demo-policy-must-not-change-vibe-learning-chain-or-build-system",
     "core-production-decisions-still-require-owner-decision",
     "paid-ai-paid-overage-and-paid-runners-remain-forbidden",
     "deepseek-r1-1.5b-banned-from-company-ai-workforce"
