@@ -281,7 +281,8 @@
             ],
             "qualitative": null
           }
-        ]
+        ],
+        "platformProfileFile": "game-seed-platform-profiles.json"
       },
       "TARGET_AUDIENCE": "Global mobile players across age groups who are interested in action survival roguelite gameplay. Global evidence records an average player age of 41 as context, not as an age restriction.",
       "TARGET_SESSION_DIRECTION": "Use sourced global mobile engagement and category-session evidence as a directional reference, while keeping the action survival roguelite core loop readable in short touch sessions and preserving longer-term progression between sessions.",
@@ -581,7 +582,8 @@
             ],
             "qualitative": null
           }
-        ]
+        ],
+        "platformProfileFile": "game-seed-platform-profiles.json"
       },
       "TARGET_AUDIENCE": "Global mobile players across age groups who are interested in single defense strategy gameplay. Global evidence records an average player age of 41 as context, not as an age restriction.",
       "TARGET_SESSION_DIRECTION": "Use sourced global mobile engagement and category-session evidence as a directional reference, while keeping the single defense strategy core loop readable in short touch sessions and preserving longer-term progression between sessions.",
@@ -909,7 +911,8 @@
             ],
             "qualitative": null
           }
-        ]
+        ],
+        "platformProfileFile": "game-seed-platform-profiles.json"
       },
       "TARGET_AUDIENCE": "Global mobile players across age groups who are interested in puzzle gameplay. Global evidence records an average player age of 41 as context, not as an age restriction.",
       "TARGET_SESSION_DIRECTION": "Use sourced global mobile engagement and category-session evidence as a directional reference, while keeping the puzzle core loop readable in short touch sessions and preserving longer-term progression between sessions.",
@@ -1226,7 +1229,8 @@
             ],
             "qualitative": null
           }
-        ]
+        ],
+        "platformProfileFile": "game-seed-platform-profiles.json"
       },
       "TARGET_AUDIENCE": "Global mobile players across age groups who are interested in casual gameplay. Global evidence records an average player age of 41 as context, not as an age restriction.",
       "TARGET_SESSION_DIRECTION": "Use sourced global mobile engagement and category-session evidence as a directional reference, while keeping the casual core loop readable in short touch sessions and preserving longer-term progression between sessions.",
@@ -1526,7 +1530,8 @@
             ],
             "qualitative": null
           }
-        ]
+        ],
+        "platformProfileFile": "game-seed-platform-profiles.json"
       },
       "TARGET_AUDIENCE": "Global mobile players across age groups who are interested in idle growth rpg gameplay. Global evidence records an average player age of 41 as context, not as an age restriction.",
       "TARGET_SESSION_DIRECTION": "Use sourced global mobile engagement and category-session evidence as a directional reference, while keeping the idle growth rpg core loop readable in short touch sessions and preserving longer-term progression between sessions.",
@@ -1827,7 +1832,8 @@
             ],
             "qualitative": null
           }
-        ]
+        ],
+        "platformProfileFile": "game-seed-platform-profiles.json"
       },
       "TARGET_AUDIENCE": "Global mobile players across age groups who are interested in story complete rpg gameplay. Global evidence records an average player age of 41 as context, not as an age restriction.",
       "TARGET_SESSION_DIRECTION": "Use sourced global mobile engagement and category-session evidence as a directional reference, while keeping the story complete rpg core loop readable in short touch sessions and preserving longer-term progression between sessions.",
@@ -1861,7 +1867,7 @@
       "version": 1,
       "seedId": "SEED-ROBLOX-ROLEPLAY_LIFE_AVATAR-001",
       "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
-      "gameName": "Brookhaven RP",
+      "gameName": "Harbor Days",
       "status": "ACTIVE",
       "generation": "PLATFORM_SET_FILL",
       "GAME_CATEGORY": "ROLEPLAY_LIFE_AVATAR",
@@ -1876,16 +1882,11 @@
         "social"
       ],
       "CORE_LOOP": [
-        "initial_target_platform",
-        "platform_set_fill — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "portfolioDecision — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "targetMarketScope — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "defaultTargetPlatform",
-        "allowedTargetPlatforms",
-        "benchmarkCandidates — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "requiredConceptTerms"
+        "Enter a shared social space, choose an avatar identity or role, and pick a short activity, location, or interaction goal with other players.",
+        "Perform roleplay activities, jobs, collection, customization, or social interactions that produce visible rewards and identity feedback.",
+        "Use rewards to expand avatar, home, vehicle, or social expression options, then choose a new roleplay goal or group activity in the same persistent world."
       ],
-      "DISTINCT_IDENTITY": "Brookhaven RP, a low-friction social simulation game for Roblox, where players can roleplay as avatars in a realistic suburban setting. The game focuses on simple collection, persistent growth, and repeated return sessions. It offers a variety of activities, including building, vehicles, and self-directed sessions. The game will be available for sale or revenue generation through Roblox.",
+      "DISTINCT_IDENTITY": "Harbor Days is an original ROBLOX roleplay life avatar experience built around roleplay and avatar while using its own world, visual identity, progression, economy, content, and interaction design.",
       "MARKET_EVIDENCE_SUMMARY": {
         "role": "TARGET_DESIGN_REFERENCE",
         "targetMarketScope": "GLOBAL",
@@ -2182,13 +2183,19 @@
       "portfolioSeedRequestId": null,
       "portfolioDecision": null,
       "createdAt": "2026-09-12T11:41:23.351Z",
-      "updatedAt": "2026-09-12T11:41:23.351Z"
+      "updatedAt": "2026-09-12T11:41:23.351Z",
+      "semanticNormalization": {
+        "repaired": true,
+        "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
+        "previousGameName": "Brookhaven RP",
+        "profileFile": "game-seed-platform-profiles.json"
+      }
     },
     {
       "version": 1,
       "seedId": "SEED-ROBLOX-SIMULATOR_TYCOON_INCREMENTAL-001",
       "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
-      "gameName": "Adopt Me!",
+      "gameName": "Pocket Foundry",
       "status": "ACTIVE",
       "generation": "PLATFORM_SET_FILL",
       "GAME_CATEGORY": "SIMULATOR_TYCOON_INCREMENTAL",
@@ -2203,14 +2210,11 @@
         "unlock"
       ],
       "CORE_LOOP": [
-        "collect — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "upgrade — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "income — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "unlock — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "automation — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "prestige — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다."
+        "Perform a simple repeatable action to collect resources or income and immediately see production, inventory, or power increase.",
+        "Spend earned resources on upgrades, automation, helpers, or new production nodes that make the next earning cycle faster or strategically different.",
+        "Unlock a new area, tier, collection target, or prestige layer, then repeat the earning loop with a larger goal and visible long-term progression."
       ],
-      "DISTINCT_IDENTITY": "Adopt Me! is a Roblox incremental benchmark for simple collection, persistent growth, and repeated return sessions. It offers a variety of activities, including building, vehicles, and self-directed sessions. The game will be available for sale or revenue generation through Roblox.",
+      "DISTINCT_IDENTITY": "Pocket Foundry is an original ROBLOX simulator tycoon incremental experience built around collect and upgrade while using its own world, visual identity, progression, economy, content, and interaction design.",
       "MARKET_EVIDENCE_SUMMARY": {
         "role": "TARGET_DESIGN_REFERENCE",
         "targetMarketScope": "GLOBAL",
@@ -2507,13 +2511,19 @@
       "portfolioSeedRequestId": null,
       "portfolioDecision": null,
       "createdAt": "2026-09-12T11:41:23.351Z",
-      "updatedAt": "2026-09-12T11:41:23.351Z"
+      "updatedAt": "2026-09-12T11:41:23.351Z",
+      "semanticNormalization": {
+        "repaired": true,
+        "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
+        "previousGameName": "Adopt Me!",
+        "profileFile": "game-seed-platform-profiles.json"
+      }
     },
     {
       "version": 1,
       "seedId": "SEED-ROBLOX-BATTLEGROUND_FIGHTING_SHOOTER-001",
       "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
-      "gameName": "Welcome to Bloxburg",
+      "gameName": "Vector Clash",
       "status": "ACTIVE",
       "generation": "PLATFORM_SET_FILL",
       "GAME_CATEGORY": "BATTLEGROUND_FIGHTING_SHOOTER",
@@ -2528,14 +2538,11 @@
         "cooldown"
       ],
       "CORE_LOOP": [
-        "combat — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "opponent — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "skill — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "cooldown — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "score — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "respawn — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다."
+        "Enter a short competitive encounter, read opponent movement, and use movement, attacks, aim, abilities, or combos to create an advantage.",
+        "Damage or eliminate opponents, receive clear hit and score feedback, then reposition around cooldowns, cover, objectives, or team pressure.",
+        "Complete the round or score target, receive progression or loadout rewards, and re-enter a new match with a changed tactical choice or mastery goal."
       ],
-      "DISTINCT_IDENTITY": "Welcome to Bloxburg is a Roblox battleground benchmark for readable abilities, combos, cooldowns and repeated PvP encounters. It offers a variety of activities, including room progression, weapon variety, and boss encounters. The game will be available for sale or revenue generation through Roblox.",
+      "DISTINCT_IDENTITY": "Vector Clash is an original ROBLOX battleground fighting shooter experience built around combat and opponent while using its own world, visual identity, progression, economy, content, and interaction design.",
       "MARKET_EVIDENCE_SUMMARY": {
         "role": "TARGET_DESIGN_REFERENCE",
         "targetMarketScope": "GLOBAL",
@@ -2832,13 +2839,19 @@
       "portfolioSeedRequestId": null,
       "portfolioDecision": null,
       "createdAt": "2026-09-12T11:41:23.351Z",
-      "updatedAt": "2026-09-12T11:41:23.351Z"
+      "updatedAt": "2026-09-12T11:41:23.351Z",
+      "semanticNormalization": {
+        "repaired": true,
+        "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
+        "previousGameName": "Welcome to Bloxburg",
+        "profileFile": "game-seed-platform-profiles.json"
+      }
     },
     {
       "version": 1,
       "seedId": "SEED-ROBLOX-SURVIVAL_HORROR_ESCAPE-001",
       "gameId": "seed-roblox-survival-horror-es-doors",
-      "gameName": "DOORS",
+      "gameName": "Last Lantern",
       "status": "ACTIVE",
       "generation": "PLATFORM_SET_FILL",
       "GAME_CATEGORY": "SURVIVAL_HORROR_ESCAPE",
@@ -2855,14 +2868,11 @@
         "resource"
       ],
       "CORE_LOOP": [
-        "survive — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "threat — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "escape — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "resource — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "cooperate — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "checkpoint — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다."
+        "Enter a dangerous area with limited information, identify the current threat, and search for a route, key item, resource, or safe checkpoint.",
+        "Avoid, outplay, or temporarily resist the threat while managing resources and cooperating with nearby players when teamwork is available.",
+        "Reach a checkpoint or escape condition, convert survival progress into unlocks or knowledge, and attempt a harder segment with new threat patterns."
       ],
-      "DISTINCT_IDENTITY": "DOORS is a Roblox survival-adventure benchmark for room progression, threat pattern learning, cooperative resource pressure and checkpoint-like milestones. It offers a variety of activities, including room progression, loot, builds, and boss encounters. The game will be available for sale or revenue generation through Roblox.",
+      "DISTINCT_IDENTITY": "Last Lantern is an original ROBLOX survival horror escape experience built around survive and threat while using its own world, visual identity, progression, economy, content, and interaction design.",
       "MARKET_EVIDENCE_SUMMARY": {
         "role": "TARGET_DESIGN_REFERENCE",
         "targetMarketScope": "GLOBAL",
@@ -3159,13 +3169,19 @@
       "portfolioSeedRequestId": null,
       "portfolioDecision": null,
       "createdAt": "2026-09-12T11:41:23.351Z",
-      "updatedAt": "2026-09-12T11:41:23.351Z"
+      "updatedAt": "2026-09-12T11:41:23.351Z",
+      "semanticNormalization": {
+        "repaired": true,
+        "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
+        "previousGameName": "DOORS",
+        "profileFile": "game-seed-platform-profiles.json"
+      }
     },
     {
       "version": 1,
       "seedId": "SEED-ROBLOX-OBBY_PARTY_MINIGAME-001",
       "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
-      "gameName": "Tower of Hell",
+      "gameName": "Skyline Sprint",
       "status": "ACTIVE",
       "generation": "PLATFORM_SET_FILL",
       "GAME_CATEGORY": "OBBY_PARTY_MINIGAME",
@@ -3180,14 +3196,11 @@
         "timing"
       ],
       "CORE_LOOP": [
-        "obstacle — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "round — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "checkpoint — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "timing — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "score — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "retry — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다."
+        "Start a short timed round with a clear obstacle, movement, survival, or party objective that is readable within seconds on mobile controls.",
+        "Jump, dodge, race, collect, or react through hazards while checkpoints, score, position, or remaining-time feedback shows immediate progress.",
+        "Finish or fail the round, receive score or cosmetic progression, then retry quickly or rotate into a different minigame pattern with minimal downtime."
       ],
-      "DISTINCT_IDENTITY": "Tower of Hell is a Roblox obby benchmark for skill-based movement, fast retries and escalating obstacle pressure. It offers a variety of activities, including room progression, loot, builds, and boss encounters. The game will be available for sale or revenue generation through Roblox.",
+      "DISTINCT_IDENTITY": "Skyline Sprint is an original ROBLOX obby party minigame experience built around obstacle and round while using its own world, visual identity, progression, economy, content, and interaction design.",
       "MARKET_EVIDENCE_SUMMARY": {
         "role": "TARGET_DESIGN_REFERENCE",
         "targetMarketScope": "GLOBAL",
@@ -3484,13 +3497,19 @@
       "portfolioSeedRequestId": null,
       "portfolioDecision": null,
       "createdAt": "2026-09-12T11:41:23.351Z",
-      "updatedAt": "2026-09-12T11:41:23.351Z"
+      "updatedAt": "2026-09-12T11:41:23.351Z",
+      "semanticNormalization": {
+        "repaired": true,
+        "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
+        "previousGameName": "Tower of Hell",
+        "profileFile": "game-seed-platform-profiles.json"
+      }
     },
     {
       "version": 1,
       "seedId": "SEED-ROBLOX-STORY_RPG_ADVENTURE_RPG-001",
       "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
-      "gameName": "Blox Fruits",
+      "gameName": "Shardbound Odyssey",
       "status": "ACTIVE",
       "generation": "PLATFORM_SET_FILL",
       "GAME_CATEGORY": "STORY_RPG_ADVENTURE_RPG",
@@ -3506,14 +3525,11 @@
         "boss"
       ],
       "CORE_LOOP": [
-        "quest — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "explore — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "combat — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "boss — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "progression — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다.",
-        "story — 결과 피드백을 확인하고 다음 선택이나 보상으로 이어진다."
+        "Accept a quest or story objective, travel through a Roblox world area, and discover enemies, NPCs, resources, or events that advance the current adventure goal.",
+        "Fight enemies or bosses using readable skills and equipment, gain experience and loot, and make a progression choice that changes the next combat approach.",
+        "Complete the quest or major encounter, unlock a new area or story beat, and continue toward a larger adventure milestone while preserving persistent character growth."
       ],
-      "DISTINCT_IDENTITY": "Blox Fruits is a Roblox adventure RPG benchmark for repeatable dungeons, loot, builds, and boss encounters. It offers a variety of activities, including quest progression, exploration, combat, and boss encounters. The game will be available for sale or revenue generation through Roblox.",
+      "DISTINCT_IDENTITY": "Shardbound Odyssey is an original ROBLOX story rpg adventure rpg experience built around quest and explore while using its own world, visual identity, progression, economy, content, and interaction design.",
       "MARKET_EVIDENCE_SUMMARY": {
         "role": "TARGET_DESIGN_REFERENCE",
         "targetMarketScope": "GLOBAL",
@@ -3810,7 +3826,13 @@
       "portfolioSeedRequestId": null,
       "portfolioDecision": null,
       "createdAt": "2026-09-12T11:41:23.351Z",
-      "updatedAt": "2026-09-12T11:41:23.351Z"
+      "updatedAt": "2026-09-12T11:41:23.351Z",
+      "semanticNormalization": {
+        "repaired": true,
+        "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
+        "previousGameName": "Blox Fruits",
+        "profileFile": "game-seed-platform-profiles.json"
+      }
     }
   ],
   "bootstrapCompletedAt": "2026-09-11T03:06:54.661Z",
