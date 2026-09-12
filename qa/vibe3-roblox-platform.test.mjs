@@ -25,7 +25,16 @@ assert.equal(validateRobloxSourcePath('roblox-games/pilot/readme.md').pass,false
 
 const evidence={
   sourceRevision:'abcdef1234567890',
+  buildOrPackagePassed:true,
+  artifactIdentity:'sha256:test-place-artifact',
+  luauOrSourceValidationPassed:true,
   runtimePassed:true,
+  serverClientBoundaryPassed:true,
+  saveExists:false,
+  datastoreRejoinPassed:false,
+  mobileControlUiPassed:true,
+  multiplayerApplicable:false,
+  multiplayerQaPassed:false,
   independentQaPassed:true,
   regressionPassed:true,
   protectedStatePreserved:true,
@@ -34,6 +43,32 @@ const evidence={
 const gate=validateRobloxReleaseEvidence(evidence,'abcdef1234567890');
 assert.equal(gate.pass,true);
 assert.equal(gate.browserQa,'NOT_APPLICABLE');
+
+const saveEvidence={...evidence,saveExists:true,datastoreRejoinPassed:true};
+assert.equal(validateRobloxReleaseEvidence(saveEvidence,'abcdef1234567890').pass,true);
+const missingSaveRejoin={...saveEvidence,datastoreRejoinPassed:false};
+assert(validateRobloxReleaseEvidence(missingSaveRejoin,'abcdef1234567890').blockedReasons.includes('datastore-rejoin-not-passed'));
+
+const multiplayerEvidence={...evidence,multiplayerApplicable:true,multiplayerQaPassed:true};
+assert.equal(validateRobloxReleaseEvidence(multiplayerEvidence,'abcdef1234567890').pass,true);
+const missingMultiplayerQa={...multiplayerEvidence,multiplayerQaPassed:false};
+assert(validateRobloxReleaseEvidence(missingMultiplayerQa,'abcdef1234567890').blockedReasons.includes('multiplayer-qa-not-passed'));
+
+for(const [field,reason] of [
+  ['buildOrPackagePassed','build-or-package-not-passed'],
+  ['luauOrSourceValidationPassed','luau-or-source-validation-not-passed'],
+  ['runtimePassed','runtime-not-passed'],
+  ['serverClientBoundaryPassed','server-client-boundary-not-passed'],
+  ['mobileControlUiPassed','mobile-control-ui-not-passed'],
+  ['independentQaPassed','independent-qa-not-passed'],
+  ['regressionPassed','regression-not-passed'],
+  ['protectedStatePreserved','protected-state-unproven'],
+  ['exactRevision','exact-revision-unproven'],
+]){
+  const bad={...evidence,[field]:false};
+  assert(validateRobloxReleaseEvidence(bad,'abcdef1234567890').blockedReasons.includes(reason));
+}
+assert(validateRobloxReleaseEvidence({...evidence,artifactIdentity:''},'abcdef1234567890').blockedReasons.includes('artifact-identity-missing'));
 
 const xmlPlan=createRobloxPlacePublishPlan({placeFile:'roblox-games/pilot/place.rbxlx',universeId:'123456',placeId:'654321',sourceRevision:'abcdef1234567890',evidence});
 assert.equal(xmlPlan.executionReady,true);
@@ -90,4 +125,4 @@ await assert.rejects(
   error=>error instanceof Error&&error.message.includes('[REDACTED]')&&!error.message.includes(reflectedSecret),
 );
 
-console.log('PASS Roblox V3 platform adapter, evidence gate, root guard and secret-safe publishing plan');
+console.log('PASS Roblox V3 platform adapter, canonical runtime evidence gate, root guard and secret-safe publishing plan');
