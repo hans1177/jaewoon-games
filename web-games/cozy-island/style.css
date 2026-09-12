@@ -16,7 +16,8 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .hud-main { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 11px; border-radius: 16px; background: var(--glass); box-shadow: 0 4px 18px rgba(31,69,57,.12); backdrop-filter: blur(7px); font-size: 13px; white-space: nowrap; }
 .hud-main.right { pointer-events: auto; }
 .small-button { border: 0; border-radius: 10px; padding: 6px 9px; background: #dff4e8; font-weight: 800; }
-.hint { position: absolute; left: 50%; top: max(64px, calc(env(safe-area-inset-top) + 58px)); transform: translateX(-50%); max-width: calc(100% - 32px); padding: 8px 12px; border-radius: 14px; background: rgba(37,66,58,.75); color: white; font-size: 13px; text-align: center; pointer-events: none; }
+.raid-status { position: absolute; left: 10px; top: max(58px, calc(env(safe-area-inset-top) + 48px)); padding: 7px 10px; border-radius: 12px; background: rgba(255,255,255,.9); box-shadow: 0 4px 14px rgba(31,69,57,.12); font-size: 12px; font-weight: 900; pointer-events: none; }
+.hint { position: absolute; left: 50%; top: max(96px, calc(env(safe-area-inset-top) + 88px)); transform: translateX(-50%); max-width: calc(100% - 32px); padding: 8px 12px; border-radius: 14px; background: rgba(37,66,58,.75); color: white; font-size: 13px; text-align: center; pointer-events: none; }
 .toast { position: absolute; left: 50%; bottom: 150px; transform: translate(-50%, 12px); opacity: 0; transition: .18s ease; max-width: calc(100% - 40px); padding: 9px 13px; border-radius: 999px; background: rgba(30,51,45,.9); color: white; font-weight: 800; font-size: 13px; pointer-events: none; text-align: center; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 .controls { position: absolute; left: 0; right: 0; bottom: max(12px, env(safe-area-inset-bottom)); display: flex; justify-content: space-between; align-items: end; padding: 0 16px; pointer-events: none; }
@@ -63,6 +64,10 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
   .move.left { top: 47px; }
   .move.down { left: 47px; }
   .move.right { top: 47px; }
+}
+@media (max-width: 420px) {
+  .hud-main { gap: 5px; padding: 7px 8px; font-size: 11px; }
+  .small-button { padding: 6px 7px; }
 }
 @media (max-height: 620px) {
   .dpad { transform: scale(.82); transform-origin: left bottom; }
