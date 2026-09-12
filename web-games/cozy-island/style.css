@@ -21,13 +21,10 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .toast { position: absolute; left: 50%; bottom: 150px; transform: translate(-50%, 12px); opacity: 0; transition: .18s ease; max-width: calc(100% - 40px); padding: 9px 13px; border-radius: 999px; background: rgba(30,51,45,.9); color: white; font-weight: 800; font-size: 13px; pointer-events: none; text-align: center; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 .controls { position: absolute; left: 0; right: 0; bottom: max(12px, env(safe-area-inset-bottom)); display: flex; justify-content: space-between; align-items: end; padding: 0 16px; pointer-events: none; }
-.dpad { position: relative; width: 132px; height: 132px; pointer-events: auto; }
-.move { position: absolute; width: 48px; height: 48px; border: 0; border-radius: 16px; background: rgba(255,255,255,.82); box-shadow: 0 4px 12px rgba(28,67,56,.2); font-size: 19px; font-weight: 900; }
-.move:active, .move.active { transform: scale(.95); background: #d8f0e2; }
-.move.up { top: 0; left: 42px; }
-.move.left { top: 42px; left: 0; }
-.move.down { bottom: 0; left: 42px; }
-.move.right { top: 42px; right: 0; }
+.joystick { position: relative; width: 132px; height: 132px; border-radius: 50%; pointer-events: auto; touch-action: none; user-select: none; }
+.joystick-ring { position: absolute; inset: 0; border-radius: 50%; background: rgba(255,255,255,.46); border: 3px solid rgba(255,255,255,.72); box-shadow: inset 0 0 0 12px rgba(37,66,58,.05), 0 6px 18px rgba(28,67,56,.2); backdrop-filter: blur(5px); }
+.joystick-knob { position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; border-radius: 50%; transform: translate(-50%, -50%); background: rgba(255,255,255,.94); border: 3px solid #d8f0e2; box-shadow: 0 5px 14px rgba(28,67,56,.28); pointer-events: none; transition: transform .04s linear; }
+.joystick-knob::after { content: ''; position: absolute; inset: 19px; border-radius: 50%; background: #72aa8d; opacity: .8; }
 .actions { display: flex; align-items: end; gap: 10px; pointer-events: auto; }
 .tool, .action { border: 0; box-shadow: 0 5px 15px rgba(28,67,56,.22); font-weight: 900; }
 .tool { width: 64px; height: 64px; border-radius: 20px; background: rgba(255,255,255,.9); font-size: 25px; }
@@ -58,19 +55,15 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .fish-marker { position: absolute; left: 0; top: 50%; transform: translate(-50%,-50%); font-size: 24px; }
 @media (min-width: 700px) {
   .controls { padding: 0 28px 12px; }
-  .dpad { width: 146px; height: 146px; }
-  .move { width: 52px; height: 52px; }
-  .move.up { left: 47px; }
-  .move.left { top: 47px; }
-  .move.down { left: 47px; }
-  .move.right { top: 47px; }
+  .joystick { width: 146px; height: 146px; }
+  .joystick-knob { width: 70px; height: 70px; }
 }
 @media (max-width: 420px) {
   .hud-main { gap: 5px; padding: 7px 8px; font-size: 11px; }
   .small-button { padding: 6px 7px; }
 }
 @media (max-height: 620px) {
-  .dpad { transform: scale(.82); transform-origin: left bottom; }
+  .joystick { transform: scale(.82); transform-origin: left bottom; }
   .actions { transform: scale(.86); transform-origin: right bottom; }
   .toast { bottom: 112px; }
 }
