@@ -269,27 +269,65 @@ discardPolicy:
       - DISCARDED
 
 platformStrategy:
-  initialActualProduct: ANDROID_MOBILE_SINGLE_PLAYER
-  initialReleaseTarget: UNITY_ANDROID
-  steamNotBuiltInitially: true
-  multiplayerNotBuiltInitially: true
-  futureExpansionMustNotRequireSeparateGameCoreByDefault: true
-  unityProjectStrategy:
-    oneGameOneUnityProject: true
-    separatePcProjectByDefault: false
-    coreGameplayPlatformIndependentWherePractical: true
-    inputUiPlatformAdaptersAllowed: true
-  developmentConfirmed:
-    actualImplementationFocus: MOBILE_ANDROID
-    requireSteamApiNow: false
-    requirePcInputNow: false
-    requireNetworkServerNow: false
-    requireMultiplayerGameplayNow: false
-    architectureMustAvoidUnnecessaryMobileOnlyCoupling: true
-  releaseConfirmed:
-    currentReleaseGateTarget: UNITY_ANDROID
-    steamReleaseGateDeferredUntilOwnerRequestsSteamRelease: true
-    multiplayerReleaseGateDeferredUntilOwnerRequestsMultiplayer: true
+  ownerDirectiveRecordedAt: 2026-09-12
+  releaseExperiencePriority:
+    - ROBLOX
+    - UNITY
+    - FORTNITE_UEFN
+  currentExperiencePhase: ROBLOX_FAST_RELEASE_STABILIZATION
+  currentPrimaryExperiencePlatform: ROBLOX
+  canonicalRoadmapContract: company-learning/platform-release-roadmap.json
+  canonicalRoadmapSpec: company-learning/PLATFORM_RELEASE_ROADMAP.md
+  noParallelLearningPipeline: true
+  phase1:
+    platform: ROBLOX
+    objective: FAST_REAL_RELEASE_AND_STABILIZATION_EXPERIENCE
+    prototypeOnlyIsCompletion: false
+    verifiedReleaseEvidenceRequired: true
+  phase2:
+    platforms:
+      - ROBLOX
+      - UNITY
+    objective: CONCURRENT_ROBLOX_AND_UNITY_RELEASE_EXPERIENCE
+    entryRequiresVerifiedRobloxReleaseAndStabilizationExperience: true
+    existingUnityAndroidPathPreserved: true
+    robloxDoesNotReplaceUnity: true
+  phase3:
+    platforms:
+      - ROBLOX
+      - UNITY
+      - FORTNITE_UEFN
+    objective: FORTNITE_UEFN_EXPANSION_AFTER_CROSS_PLATFORM_EXPERIENCE
+    entryRequiresVerifiedRobloxAndUnityExperience: true
+    preserveExistingPlatformTracks: true
+  experienceSharing:
+    portableVerifiedPatternsUseExistingV3MemoryAndCanonicalDistillation: true
+    platformSpecificImplementationRemainsPlatformScoped: true
+    successEvidenceDoesNotTransferAcrossPlatforms: true
+  existingUnitySpecificFlowSectionsApplyWhenUnityTrackActive: true
+  roadmapDoesNotInvalidateExistingUnityFlow: true
+  legacyUnityAndroidTrack:
+    initialActualProduct: ANDROID_MOBILE_SINGLE_PLAYER
+    releaseTarget: UNITY_ANDROID
+    steamNotBuiltInitially: true
+    multiplayerNotBuiltInitially: true
+    futureExpansionMustNotRequireSeparateGameCoreByDefault: true
+    unityProjectStrategy:
+      oneGameOneUnityProject: true
+      separatePcProjectByDefault: false
+      coreGameplayPlatformIndependentWherePractical: true
+      inputUiPlatformAdaptersAllowed: true
+    developmentConfirmed:
+      actualImplementationFocus: MOBILE_ANDROID
+      requireSteamApiNow: false
+      requirePcInputNow: false
+      requireNetworkServerNow: false
+      requireMultiplayerGameplayNow: false
+      architectureMustAvoidUnnecessaryMobileOnlyCoupling: true
+    releaseConfirmed:
+      releaseGateTarget: UNITY_ANDROID
+      steamReleaseGateDeferredUntilOwnerRequestsSteamRelease: true
+      multiplayerReleaseGateDeferredUntilOwnerRequestsMultiplayer: true
 
 aiOrganization:
   departments:
