@@ -49,15 +49,31 @@ V3 builds a source graph from files, symbols, imports/calls, tests and asset ref
 
 Verified V3 trajectories live under `company-learning/vibe3-trajectories/`. `tools/vibe3-trajectory-ingest.mjs` accepts only a verified winner bound to runtime PASS, QA PASS, regression PASS, protected-state preservation and exact source revision. The existing distillation-status, deterministic training-request, local self-hosted training, fixed holdout A/B, canary and rollback stages remain authoritative.
 
+## Platform release roadmap
+
+Platform release/experience sequencing is locked to:
+
+`ROBLOX → UNITY → FORTNITE_UEFN`
+
+- Phase 1: Roblox is the current primary platform for rapid real releases, fix/re-release cycles and stabilization experience.
+- Phase 2: after verified Roblox release/stabilization experience, keep Roblox active and add Unity so Roblox + Unity release experience accumulates concurrently where product scope makes sense.
+- Existing Unity/Android source, build, runtime, QA and release knowledge is preserved and extended. Roblox-first does not delete, replace or downgrade the Unity path.
+- Phase 3: add Fortnite/UEFN only after verified Roblox-first and Roblox+Unity experience has accumulated; preserve both earlier platform tracks.
+- Portable verified lessons can be shared through V3 memory/RAG/playbooks, while platform-specific implementation remains scoped to its own playbook/runtime adapter/QA contract.
+- Success evidence is not transferable between platforms: each platform requires its own runtime and independent QA evidence.
+
+Human-readable roadmap: `company-learning/PLATFORM_RELEASE_ROADMAP.md`.
+Machine-readable roadmap: `company-learning/platform-release-roadmap.json`.
+
 ## Owner-directed platform extensions
 
-Owner-directed platform extensions, including Roblox/Luau, are adapters inside the existing company/V3 execution path. They do not replace or reorder `COMPANY_FLOW.md`, do not change the current Unity/Android default release target, and do not create a parallel learning pipeline.
+Owner-directed platform extensions, including Roblox/Luau and Fortnite/UEFN, are adapters inside the existing company/V3 execution path. They do not replace or reorder `COMPANY_FLOW.md` production gates and do not create a parallel learning pipeline. The platform roadmap changes which platform is operationally first while preserving the existing Unity/Android path for its roadmap phase.
 
 A platform extension may add platform-specific task-playbook guidance, source/runtime handling and a dedicated QA evidence contract. Verified results can enter canonical distillation only after the same positive-trajectory gates pass: verified winner, runtime PASS, independent QA PASS, regression PASS, protected-state preservation and exact source revision. Studio launch, successful build, process survival or injected input alone is not sufficient evidence.
 
-Roblox/Luau failed candidates remain failure-warning/comparison memory. Verified Roblox/Luau results use the existing canonical Vibe2 route only: `VALIDATED_EVIDENCE → DISTILLATION_INGEST → VERIFIED_TRAINING_SAMPLE → DISTILLATION_STATUS → DETERMINISTIC_TRAINING_REQUEST → LOCAL_SELF_HOSTED_DATASET_BUILD → LOCAL_LORA_OR_QLORA_TRAINING → TRAINED_UNVERIFIED → FIXED_HOLDOUT_AB → CANARY → PROMOTE_OR_ROLLBACK`.
+Roblox/Luau or Fortnite/UEFN failed candidates remain failure-warning/comparison memory. Verified platform-extension results use the existing canonical Vibe2 route only: `VALIDATED_EVIDENCE → DISTILLATION_INGEST → VERIFIED_TRAINING_SAMPLE → DISTILLATION_STATUS → DETERMINISTIC_TRAINING_REQUEST → LOCAL_SELF_HOSTED_DATASET_BUILD → LOCAL_LORA_OR_QLORA_TRAINING → TRAINED_UNVERIFIED → FIXED_HOLDOUT_AB → CANARY → PROMOTE_OR_ROLLBACK`.
 
-No Roblox-specific distillation cron, shadow dataset, duplicate trigger or separate trainer is permitted.
+No platform-specific distillation cron, shadow dataset, duplicate trigger or separate trainer is permitted.
 
 ## Existing-asset self transformation
 
