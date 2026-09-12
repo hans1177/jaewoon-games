@@ -371,6 +371,61 @@ platformStrategy:
   noParallelLearningPipeline: true
   runtimeContractMirror: company-learning/platform-release-roadmap.json
   runtimeContractCannotCreatePolicy: true
+  commonExecutionContract:
+    router: tools/company-selected-platform-router.mjs
+    singleRoutingDecisionPoint: true
+    commonAdapterContractRequired: true
+    commonEvidenceSchemaRequired: true
+    allowedPlatforms:
+      - ROBLOX
+      - UNITY
+      - FORTNITE_UEFN
+    commonEvidenceFields:
+      - PLATFORM
+      - SOURCE_REVISION
+      - BUILD_OR_PACKAGE_PASSED
+      - ARTIFACT_IDENTITY
+      - RUNTIME_PASSED
+      - INDEPENDENT_QA_PASSED
+      - REGRESSION_PASSED
+      - EXACT_REVISION
+      - LAST_SUCCESSFUL_STAGE
+      - FAILURE_STAGE
+      - FAILURE_SIGNATURE
+    adapters:
+      ROBLOX: tools/vibe3-roblox-platform.mjs
+      UNITY: tools/company-development-unity-platform.mjs
+      FORTNITE_UEFN: tools/company-development-uefn-platform.mjs
+  developmentSpeedExecution:
+    scope: EXECUTION_SPEED_ONLY
+    qualityOrEvidenceGateWeakeningForbidden: true
+    canonicalSequence:
+      - CHANGE_DETECTION
+      - CHEAP_PRECHECK
+      - REPRESENTATIVE_CANARY
+      - SINGLE_BUILD_OR_PACKAGE
+      - IMMUTABLE_ARTIFACT_BIND
+      - TARGET_PLATFORM_RUNTIME
+      - INDEPENDENT_QA
+      - REGRESSION
+      - IMMEDIATE_NEXT_STAGE_DISPATCH
+      - RESUME_EXACT_FAILURE_POINT
+    changeDetectionRequiredBeforeExpensiveWork: true
+    cheapPrecheckRequiredBeforeCanary: true
+    representativeCanaryRequiredWhenSharedExecutionContractChangedOrCommonFailureDetected: true
+    canaryPassAllowsRemainingEligibleWorkToProceed: true
+    buildOncePerSourceFingerprint: true
+    sameArtifactRequiredAcrossRuntimeIndependentQaAndRegression: true
+    immutableArtifactIdentityRequired: true
+    successfulStageEvidenceReusableWhenSourceFingerprintStillMatches: true
+    sourceOrRelevantDependencyChangeInvalidatesAffectedEvidenceOnly: true
+    failureMustRecordExactStageAndSignature: true
+    retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches: true
+    successfulStepMustNotBeRepeatedWithoutInvalidatingChange: true
+    nextCanonicalStageDispatchImmediatelyAfterSuccess: true
+    cronRole: WATCHDOG_AND_RECOVERY_ONLY
+    cronMustNotBePrimaryProgressionEngine: true
+    existingEventChainPreferred: true
   focusMilestones:
     ROBLOX_FAST_RELEASE_STABILIZATION:
       defaultPriority: 1
