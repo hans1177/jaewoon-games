@@ -1,7 +1,7 @@
 {
   "version": 4,
   "mode": "hierarchical-dag-sharded-work-stealing-queue",
-  "maxConcurrentTasks": 1,
+  "maxConcurrentTasks": 4,
   "ownerDirectivePreemptsAutonomy": true,
   "releaseStatePriority": [
     "release-confirmed",
@@ -614,6 +614,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
+      "blocker": null,
       "evidence": [
         "pwa-task:51f0002c-60a6-469c-9a1c-5ff95dd5c70a",
         "pwa-kind:directive",
@@ -623,20 +624,23 @@
         "owner-auto-deploy-authorization",
         "verified-qa-required"
       ],
+      "lastOutcome": null,
       "companyContext": {
         "stageId": "owner-immediate",
         "role": "director",
         "assignmentAuthority": "owner-directive",
         "sourceRef": "pwa-task:51f0002c-60a6-469c-9a1c-5ff95dd5c70a",
+        "artbookLocked": false,
+        "artbookRef": null,
+        "artbookStatus": null,
+        "artbookCutCount": 0,
+        "artbookPostprocessComplete": false,
         "reviewRequired": true
-      }
+      },
+      "sourceRoot": "unity-games/daechung-rpg",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "shard": "unity"
     }
-  ],
-  "ingest": {
-    "added": true,
-    "taskId": "pwa-51f0002c-60a6-469c-9a1c-5ff95dd5c70a",
-    "gameId": "daechung-rpg",
-    "target": "unity",
-    "reason": "OWNER_IMMEDIATE_PWA"
-  }
+  ]
 }
