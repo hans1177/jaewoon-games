@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 33,
+  "revision": 34,
   "updatedAt": "2026-09-12",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
@@ -77,7 +77,24 @@
     "numericLabelsAreAliasesOnly": true,
     "numericLabelsOwnerRemappable": true,
     "preserveExistingWebArchives": true,
-    "preserveSaveMeaning": true
+    "preserveSaveMeaning": true,
+    "webCompanion": {
+      "requiredForEveryGame": true,
+      "appliesToAllTargetPlatforms": true,
+      "featureParity": "APPROVED_GAMEPLAY_SCOPE_EQUIVALENT_OR_DOCUMENTED_PLATFORM_ADAPTATION",
+      "silentFeatureOmissionForbidden": true,
+      "webBuildIsNotNativePlatformSubstitute": true,
+      "nativePlatformReleaseStillRequiresNativeEvidence": true
+    },
+    "approvedScopeCompletion": {
+      "mode": "FULL_APPROVED_DESIGN_SCOPE_REQUIRED",
+      "approvedDesignBaselineMustBeFullyImplemented": true,
+      "silentScopeReductionForbidden": true,
+      "prototypeMayBeIntermediateOnly": true,
+      "prototypeCannotSatisfyCompletionOrReleaseCandidateGate": true,
+      "infeasibleScopeRequiresDesignRevisionBeforeBaselineApprovalOrExplicitOwnerDecision": true,
+      "missingApprovedContentBlocksCompletion": true
+    }
   },
   "portfolioGovernance": {
     "mode": "FIVE_DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO",
@@ -156,6 +173,10 @@
       "INITIAL_TARGET_PLATFORM",
       "INITIAL_PLAY_MODE",
       "CROSS_PLATFORM_EXPANSION_VALUE"
+    ],
+    "derivedProductionRequirements": [
+      "MANDATORY_WEB_GAME_COMPANION",
+      "FULL_APPROVED_SCOPE_IMPLEMENTATION"
     ]
   },
   "discardPolicy": {
@@ -286,6 +307,8 @@
         "MARKET_TARGET_DIRECTION_RECORDED",
         "TARGET_PLATFORM_UX_DIRECTION_DEFINED",
         "PLATFORM_SELECTION_RECORDED",
+        "MANDATORY_WEB_COMPANION_REQUIREMENT_RECORDED",
+        "APPROVED_SCOPE_INVENTORY_RECORDED",
         "FIVE_DISTINCT_LEAD_MODELS",
         "FIVE_DEPARTMENT_SCORES_RECORDED",
         "PER_DEPARTMENT_MULTIMODEL_REVIEW_PASS",
@@ -297,20 +320,24 @@
       "baseline": "DEVELOPMENT_BASELINE",
       "executionMode": "GATED_DIRECT",
       "resumeFromLatestEvidence": true,
-      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
+      "webPurpose": "MANDATORY_GAMEPLAY_COMPANION_AND_VALIDATION",
       "targetPlatformPurpose": "TECHNICAL_AND_GAMEPLAY_VALIDATION",
       "webBeforeTargetPlatformByDefault": false,
       "targetPlatformMayRunImmediately": true,
       "aiMayInventValidationPass": false,
       "webSmokeCountsAsGameplayValidation": false,
       "platformSpecificValidationRequired": true,
+      "webCompanionValidationRequired": true,
+      "approvedScopeCompletionRequired": true,
       "materialChangeRequiresTargetedRevalidation": true,
       "artbookRevisionOnlyAfterBaselineReady": true,
       "decisionStates": ["KEEP", "CHANGE", "DROP", "HOLD"],
-      "waitingStates": ["WAITING_TARGET_PLATFORM_VALIDATION", "WAITING_TARGET_PLATFORM_REVALIDATION", "WAITING_REVALIDATION"],
+      "waitingStates": ["WAITING_WEB_COMPANION_VALIDATION", "WAITING_TARGET_PLATFORM_VALIDATION", "WAITING_TARGET_PLATFORM_REVALIDATION", "WAITING_REVALIDATION"],
       "terminalStates": ["DEVELOPMENT_BASELINE_READY", "DEVELOPMENT_BLOCKED"],
       "requiredFlow": [
         "LOAD_DESIGN_BASELINE",
+        "WEB_COMPANION_SOURCE_BIND",
+        "WEB_COMPANION_GAMEPLAY_VALIDATION",
         "TARGET_PLATFORM_SOURCE_BIND",
         "TARGET_PLATFORM_GAMEPLAY_VALIDATION",
         "TARGET_PLATFORM_TECHNICAL_VALIDATION",
@@ -335,6 +362,8 @@
       ],
       "baselineReadyRequires": [
         "DESIGN_BASELINE_EXISTS",
+        "WEB_COMPANION_RUNTIME_PASS",
+        "APPROVED_SCOPE_FULLY_IMPLEMENTED",
         "REAL_TARGET_PLATFORM_GAMEPLAY_PASS",
         "REAL_TARGET_PLATFORM_TECHNICAL_PASS",
         "REQUIRED_FIXES_APPLIED",
@@ -349,6 +378,8 @@
       "resumeFromLatestEvidence": true,
       "developmentBaselineRequired": true,
       "targetPlatformProjectRequired": true,
+      "webCompanionRequired": true,
+      "approvedScopeCompletionRequired": true,
       "vibe2PrimaryDeveloper": true,
       "departmentDefaultRole": "ERROR_AND_RELEASE_RISK_REVIEW",
       "coreDesignLock": true,
@@ -363,12 +394,15 @@
       "finalReviewMustReadSameCurrentBuildRuntimeQaEvidence": true,
       "independentQaSeparatedFromVibe2SelfCheck": true,
       "finalArtbookOnlyAfterReleaseReady": true,
-      "waitingStates": ["BUILDING", "WAITING_BUILD", "WAITING_RUNTIME_VALIDATION"],
+      "waitingStates": ["BUILDING", "WAITING_WEB_COMPANION_VALIDATION", "WAITING_BUILD", "WAITING_RUNTIME_VALIDATION"],
       "releaseStates": ["FIX_AND_REVERIFY", "RELEASE_BLOCKED", "RELEASE_READY"],
       "requiredFlow": [
         "LOAD_DEVELOPMENT_BASELINE",
         "CORE_DESIGN_LOCK",
         "VIBE2_PRIMARY_DEVELOPMENT",
+        "BIND_CURRENT_WEB_COMPANION_SOURCE_TREE",
+        "WEB_COMPANION_BUILD_OR_PACKAGE",
+        "WEB_COMPANION_RUNTIME_VALIDATION",
         "BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE",
         "TARGET_PLATFORM_BUILD_OR_PACKAGE",
         "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
@@ -382,6 +416,8 @@
       ],
       "releaseReadyRequires": [
         "DEVELOPMENT_BASELINE_CONFIRMED",
+        "CURRENT_WEB_COMPANION_RUNTIME_PASS",
+        "APPROVED_SCOPE_FULLY_IMPLEMENTED",
         "CURRENT_TARGET_PLATFORM_BUILD_OR_PACKAGE_SUCCESS",
         "BUILD_PREFLIGHT_NO_RELEASE_BLOCKER",
         "CURRENT_TARGET_PLATFORM_RUNTIME_PASS",
@@ -411,6 +447,14 @@
     "roadmapContract": "company-learning/platform-release-roadmap.json",
     "roadmapSpec": "company-learning/PLATFORM_RELEASE_ROADMAP.md",
     "parallelLearningPipelineAllowed": false,
+    "webCompanionStrategy": {
+      "requiredAcross": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
+      "nativeProjectRemainsCanonicalForPlatformRelease": true,
+      "webCompanionMaySharePortableCoreLogicWherePractical": true,
+      "platformSpecificRuntimeAndUxRemainPlatformScoped": true,
+      "documentedPlatformAdaptationAllowed": true,
+      "silentApprovedGameplayFeatureOmissionForbidden": true
+    },
     "ROBLOX": {
       "role": "PRIMARY_DEFAULT_PLATFORM",
       "sourceRoot": "roblox-games/",
@@ -437,6 +481,8 @@
     "focusMilestones": {
       "ROBLOX_FAST_RELEASE_STABILIZATION": {
         "defaultPriority": 1,
+        "entryGate": false,
+        "objective": "FAST_REAL_RELEASE_AND_STABILIZATION_EXPERIENCE",
         "blocksUnityDevelopment": false,
         "blocksFortniteDevelopment": false
       },
@@ -455,6 +501,16 @@
       "successEvidenceDoesNotTransferAcrossPlatforms": true
     }
   },
+  "learning": {
+    "webGameEvidence": {
+      "role": "AUXILIARY_PORTABLE_LEARNING_EVIDENCE",
+      "cannotClaimNativePlatformSuccess": true,
+      "cannotSatisfyNativePlatformRuntimeGate": true,
+      "cannotEnterRobloxUnityUefnVerifiedLaneWithoutMatchingNativeEvidence": true,
+      "useExistingCanonicalDistillationOnly": true,
+      "newTrainerOrCronForbidden": true
+    }
+  },
   "rules": [
     "new-owner-instruction-overrides-autonomous-plan",
     "company-flow-is-machine-policy-source",
@@ -467,13 +523,17 @@
     "production-class-counts-are-not-fixed-quotas",
     "game-seed-precedes-game-designer-draft",
     "game-seed-default-platform-is-roblox-but-project-may-select-any-allowed-platform",
+    "every-game-requires-a-web-companion",
+    "approved-design-scope-must-be-fully-implemented",
+    "prototype-does-not-satisfy-completion-or-release",
+    "web-evidence-is-auxiliary-and-does-not-replace-native-platform-evidence",
     "third-party-source-code-assets-expression-must-not-be-copied",
     "market-evidence-is-target-design-reference-not-hard-seed-gate",
     "design-baseline-requires-target-platform-ux-platform-selection-and-five-department-scores",
-    "development-confirmed-target-platform-validation-is-required-and-web-is-optional",
+    "development-confirmed-requires-web-companion-and-target-platform-validation",
     "development-confirmed-material-change-requires-targeted-revalidation",
     "release-confirmed-target-is-project-selected-platform",
-    "release-confirmed-current-target-platform-source-build-runtime-and-independent-qa-must-bind",
+    "release-confirmed-current-web-and-target-platform-source-build-runtime-and-independent-qa-must-bind",
     "platform-priority-does-not-create-development-or-release-entry-gates",
     "roblox-first-does-not-delete-or-replace-existing-unity-android-track",
     "portable-verified-platform-lessons-use-existing-v3-memory-and-canonical-distillation",
