@@ -8,20 +8,29 @@ mkdir -p "$out_dir"
 
 adb start-server >/dev/null 2>&1 || true
 if ! timeout 150 adb wait-for-device; then
-  echo '[JAEWOON_BUILD_ERROR:ANDROID_ADB_DEVICE_TIMEOUT] adb did not discover the Android emulator within 150 seconds.' >&2
+  echo '[JAEWOON_BUILD_ERROR:ANDROID_ADB_DEVICE_TIMEOUT] adb did not discover the Android runtime within 150 seconds.' >&2
   adb devices -l >&2 || true
+  cat /tmp/jaewoon-redroid.log >&2 2>/dev/null || true
   cat /tmp/jaewoon-emulator.log >&2 2>/dev/null || true
   exit 3
 fi
 if ! timeout 150 bash -c 'until [[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\r")" == "1" ]]; do sleep 3; done'; then
-  echo '[JAEWOON_BUILD_ERROR:ANDROID_EMULATOR_BOOT_TIMEOUT] Android emulator did not finish booting within 150 seconds.' >&2
+  echo '[JAEWOON_BUILD_ERROR:ANDROID_RUNTIME_BOOT_TIMEOUT] Android runtime did not finish booting within 150 seconds.' >&2
   adb devices -l >&2 || true
+  cat /tmp/jaewoon-redroid.log >&2 2>/dev/null || true
   cat /tmp/jaewoon-emulator.log >&2 2>/dev/null || true
   exit 3
 fi
 
-aapt_bin="$(find "${ANDROID_HOME:-$ANDROID_SDK_ROOT}/build-tools" -type f -name aapt 2>/dev/null | sort -V | tail -n 1)"
-[[ -n "$aapt_bin" && -x "$aapt_bin" ]] || { echo '[JAEWOON_BUILD_ERROR:AAPT_MISSING] aapt not found.' >&2; exit 4; }
+sdk_root="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
+aapt_bin=''
+if [[ -n "$sdk_root" && -d "$sdk_root/build-tools" ]]; then
+  aapt_bin="$(find "$sdk_root/build-tools" -type f -name aapt 2>/dev/null | sort -V | tail -n 1 || true)"
+fi
+if [[ -z "$aapt_bin" ]]; then
+  aapt_bin="$(command -v aapt 2>/dev/null || true)"
+fi
+[[ -n "$aapt_bin" && -x "$aapt_bin" ]] || { echo '[JAEWOON_BUILD_ERROR:AAPT_MISSING] aapt not found in Android SDK or PATH.' >&2; exit 4; }
 package="$($aapt_bin dump badging "$apk" | sed -n "s/package: name='\([^']*\)'.*/\1/p" | head -n 1)"
 [[ -n "$package" ]] || { echo '[JAEWOON_BUILD_ERROR:APK_PACKAGE_UNRESOLVED] Could not resolve APK package id.' >&2; exit 5; }
 launch_activity="$($aapt_bin dump badging "$apk" | sed -n "s/launchable-activity: name='\([^']*\)'.*/\1/p" | head -n 1)"
@@ -30,10 +39,23 @@ launch_component="${package}/${launch_activity}"
 seed_technical=false
 if [[ "$package" == com.jaewoongames.seed* ]]; then seed_technical=true; fi
 
-adb shell getprop ro.build.version.sdk > "$out_dir/device-api.txt" || true
-adb shell getprop ro.product.cpu.abilist > "$out_dir/device-abis.txt" || true
+device_api="$(adb shell getprop ro.build.version.sdk 2>/dev/null | tr -d '\r' | head -n 1 || true)"
+device_abis="$(adb shell getprop ro.product.cpu.abilist 2>/dev/null | tr -d '\r' | head -n 1 || true)"
+printf '%s\n' "$device_api" > "$out_dir/device-api.txt"
+printf '%s\n' "$device_abis" > "$out_dir/device-abis.txt"
 "$aapt_bin" dump badging "$apk" > "$out_dir/apk-badging.txt" || true
 printf '%s\n' "$launch_component" > "$out_dir/launch-component.txt"
+
+runtime_abi_compatible=true
+if unzip -Z1 "$apk" 2>/dev/null | grep -q '^lib/arm64-v8a/'; then
+  if ! grep -q 'arm64-v8a' <<<"$device_abis"; then
+    runtime_abi_compatible=false
+  fi
+fi
+if [[ "$runtime_abi_compatible" != "true" ]]; then
+  echo "[JAEWOON_BUILD_ERROR:ANDROID_RUNTIME_ABI_MISMATCH] APK requires arm64-v8a but runtime abilist=$device_abis" >&2
+  exit 19
+fi
 
 adb uninstall "$package" >/dev/null 2>&1 || true
 set +e
@@ -179,28 +201,32 @@ if [[ "$runtime_pass" == "true" && "$seed_signals_pass" == "true" ]]; then
   fi
 fi
 
-python3 - "$out_dir/evidence.json" "$apk" "$package" "$pid" "$runtime_pass" "$fatal" "$update_pass" "$launch_command_pass" "$seed_technical" "$boot_observed" "$action_observed" "$save_observed" "$metric_observed" "$runtime_ready_timeout" "$gameplay_input_delivered" "$launch_activity" "$launch_component" "$process_observed_after_launch" "$process_exited_before_runtime_ready" "$launch_process_missing" <<'PY'
+python3 - "$out_dir/evidence.json" "$apk" "$package" "$pid" "$runtime_pass" "$fatal" "$update_pass" "$launch_command_pass" "$seed_technical" "$boot_observed" "$action_observed" "$save_observed" "$metric_observed" "$runtime_ready_timeout" "$gameplay_input_delivered" "$launch_activity" "$launch_component" "$process_observed_after_launch" "$process_exited_before_runtime_ready" "$launch_process_missing" "$runtime_abi_compatible" "$device_api" "$device_abis" <<'PY'
 import json,sys,datetime,pathlib
 (out,apk,package,pid,runtime_pass,fatal,update_pass,launch_command_pass,
  seed_technical,boot_observed,action_observed,save_observed,metric_observed,
  runtime_ready_timeout,gameplay_input_delivered,launch_activity,launch_component,
- process_observed_after_launch,process_exited_before_runtime_ready,launch_process_missing)=sys.argv[1:]
+ process_observed_after_launch,process_exited_before_runtime_ready,launch_process_missing,
+ runtime_abi_compatible,device_api,device_abis)=sys.argv[1:]
 flag=lambda value:value.lower()=='true'
 seed_ok=(not flag(seed_technical)) or all(map(flag,[boot_observed,action_observed,save_observed,metric_observed]))
 data={
-  'version':4,
+  'version':5,
   'target':'unity-android',
-  'testMethod':'Android emulator black-box APK smoke: fresh install + exact launcher activity + runtime-ready gate + gameplay input + update',
+  'testMethod':'Android black-box APK smoke on an architecture-compatible runtime: fresh install + exact launcher activity + runtime-ready gate + gameplay input + update',
   'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),
   'apk':apk,
   'package':package,
   'launchActivity':launch_activity,
   'launchComponent':launch_component,
+  'deviceApi':device_api,
+  'deviceAbis':device_abis,
+  'runtimeAbiCompatible':flag(runtime_abi_compatible),
   'freshInstallPassed':True,
   'launcherCommandPassed':flag(launch_command_pass),
   'runtimeSmokePassed':flag(runtime_pass),
   'updateInstallPassed':flag(update_pass),
-  'qaPassEligibleRuntimeEvidence':flag(runtime_pass) and flag(update_pass) and seed_ok,
+  'qaPassEligibleRuntimeEvidence':flag(runtime_pass) and flag(update_pass) and seed_ok and flag(runtime_abi_compatible),
   'processObservedAfterLaunch':flag(process_observed_after_launch),
   'processAliveAfterInput':bool(pid.strip()),
   'processExitedBeforeRuntimeReady':flag(process_exited_before_runtime_ready),
@@ -217,6 +243,7 @@ data={
     'pass':seed_ok,
   },
   'playTestEvidence':[
+    f'architecture-compatible Android runtime={flag(runtime_abi_compatible)} deviceAbis={device_abis}',
     f'fresh APK install passed package={package}',
     f'exact launcher activity={launch_component}',
     f'launcher command passed={flag(launch_command_pass)}',
@@ -264,4 +291,4 @@ if [[ "$seed_technical" == "true" && "$seed_signals_pass" != "true" ]]; then
   exit 15
 fi
 [[ "$update_pass" == "true" ]] || { cat "$out_dir/update-install.log" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_UPDATE_INSTALL_FAILED] Same APK could not update installed package $package" >&2; exit 14; }
-echo "UNITY_APK_RUNTIME_SMOKE=PASS package=$package pid=$pid fresh_install=true update_install=true seed_signals=$seed_signals_pass"
+echo "UNITY_APK_RUNTIME_SMOKE=PASS package=$package pid=$pid fresh_install=true update_install=true seed_signals=$seed_signals_pass runtime_abi_compatible=$runtime_abi_compatible"
