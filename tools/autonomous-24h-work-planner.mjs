@@ -154,7 +154,7 @@ function scopeRuntimeEntryFallback(order,filesystem=fs){
 export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},queueState={version:2,attempts:[]},impactHistory={version:1,entries:[]},date=kstDate(),priorityGameId='',filesystem=fs,now=new Date(),isSourceReleased=()=>false}={}){
   const attempts=attemptsForDate(queueState,date),counts=new Map();
   for(const row of attempts)counts.set(row.gameId,(counts.get(row.gameId)||0)+1);
-  const policy=focusPolicy(portfolio),releaseFocus=focusStage(policy)==='RELEASE_CONFIRMED';
+  const policy=focusPolicy(portfolio),releaseFocus=Boolean(policy)&&focusStage(policy)==='RELEASE_CONFIRMED';
   const allEligible=(portfolio?.projects??[]).filter(project=>!isHold(project)&&!isRelease(project,catalog)&&clean(project.sourcePath)&&filesystem.existsSync(project.sourcePath)&&isCompletedDesignBaselineFor(artbooks,project.slug));
   const eligible=policy?preparedFocusCandidates({portfolio,catalog,artbooks,filesystem,minScore:0}):allEligible;
   const rankedFocus=policy?rankDevelopmentFocus({portfolio,catalog,artbooks,filesystem}):eligible;
@@ -179,7 +179,7 @@ export function selectContinuousTarget({portfolio,artbooks,catalog={games:[]},qu
   const tracked=[...new Map([...focused,...runnable].map(project=>[project.id,project])).values()];
   const impactPriorityPenalties=Object.fromEntries(tracked.map(project=>[project.id,{penalty:priorityPenaltyForGame(impactHistory,project.id),lowImpactStreak:lowImpactStreak(impactHistory,project.id)}]));
   const focusedPlatforms=Object.fromEntries(focused.map(project=>[project.id,selectedPlatform(project,catalog)||null]));
-  const meta={focusedGameIds:[...focusedIds],focusedPlatforms,nextFocusGameIds:nextFocus,nextDevelopmentGameIds:nextIds,activeGameIds:[...activeGameIds],activeSourcePaths:[...activeSourcePaths],focusPolicyEnabled:Boolean(policy),focusStage:focusStage(policy),impactPriorityPenalties};
+  const meta={focusedGameIds:[...focusedIds],focusedPlatforms,nextFocusGameIds:nextFocus,nextDevelopmentGameIds:nextIds,activeGameIds:[...activeGameIds],activeSourcePaths:[...activeSourcePaths],focusPolicyEnabled:Boolean(policy),focusStage:policy?focusStage(policy):null,impactPriorityPenalties};
   if(requested){
     const releaseProject=(portfolio?.projects??[]).find(project=>(project.id===requested||project.slug===requested)&&isRelease(project,catalog));
     if(releaseFocus&&releaseProject&&focusedIds.has(releaseProject.id)&&targetPlatformReady(releaseProject,catalog,filesystem))return {project:null,dedicatedFocus:true,selectedPlatform:selectedPlatform(releaseProject,catalog),explicitPriority:true,requestedGameId:releaseProject.id,...meta};
