@@ -13,7 +13,7 @@ const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/');
 const freeze = (value) => Object.freeze(value);
 const freezeList = (values = []) => freeze([...new Set((values || []).map(clean).filter(Boolean))]);
-const EDITOR_BINARY_EXTENSIONS = new Set(['.uasset', '.umap', '.controller', '.anim', '.avatar']);
+const EDITOR_BINARY_EXTENSIONS = new Set(['.rbxl', '.rbxlx', '.uasset', '.umap', '.controller', '.anim', '.avatar']);
 const AUTO_DEPLOY_STATES = new Set(['release-confirmed', 'development-confirmed']);
 
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
@@ -30,7 +30,7 @@ function parseArgs(argv = process.argv.slice(2)) {
   return args;
 }
 function writableTargetAllowed(runtime, target) {
-  const allowed = Array.isArray(runtime?.safety?.allowedWritableTargets) ? runtime.safety.allowedWritableTargets.map((value) => clean(value).toLowerCase()) : ['web', 'unity', 'unreal', 'godot'];
+  const allowed = Array.isArray(runtime?.safety?.allowedWritableTargets) ? runtime.safety.allowedWritableTargets.map((value) => clean(value).toLowerCase()) : ['roblox', 'web', 'unity', 'unreal', 'godot'];
   const resolved = clean(target).toLowerCase();
   if (resolved === 'web' && runtime?.safety?.existingWebMaintenanceAllowed !== true) return false;
   return allowed.includes(resolved);
@@ -42,6 +42,7 @@ function normalizeResponsibleFile(task) {
 }
 function requestMentionsEditorOnlyCapability(target, request) {
   const text = clean(request).toLowerCase();
+  if (target === 'roblox') return ['studio place','place package','.rbxl','.rbxlx','terrain editor','ro블록스 스튜디오','로블록스 스튜디오'].some((word) => text.includes(word));
   if (target === 'unreal') return ['blueprint','블루프린트','animation blueprint','anim blueprint','애님 블루프린트','montage','몽타주','blend space','블렌드 스페이스','control rig','컨트롤 릭','ik retargeter','리타게터','ik rig'].some((word) => text.includes(word));
   if (target === 'unity') return ['animator controller','애니메이터 컨트롤러','animationclip asset','animation clip asset','애니메이션 클립 에셋','avatar asset'].some((word) => text.includes(word));
   return false;
@@ -135,7 +136,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const maxWorkMinutes = Math.max(1, Math.min(60, Math.floor(Number(runtime?.continuous?.maxWorkMinutes) || 20)));
   const editorConfig = runtime?.engineEditors?.[plan.target] || {};
   const releaseState = clean(task.releaseState) || 'other';
-  const automaticDeploymentEligible = AUTO_DEPLOY_STATES.has(releaseState) && ['web','unity'].includes(plan.target) && task.requiresOwnerDecision !== true && task.protectedChange !== true;
+  const automaticDeploymentEligible = AUTO_DEPLOY_STATES.has(releaseState) && ['roblox','web','unity'].includes(plan.target) && task.requiresOwnerDecision !== true && task.protectedChange !== true;
   const learningGuidance = buildLearningGuidance(plan.learning);
   const executionGoal = learningGuidance ? `${task.goal}\n\n${learningGuidance}` : task.goal;
   const responsibleFiles = freezeList(task.responsibleFiles || []);
@@ -152,7 +153,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     }),
     qa:freezeList(plan.qa || []), incrementalQa:incrementalQaPlan(task, plan.target, responsibleFiles),
     learning:plan.learning, learningAppliedToWorkerGoal:Boolean(learningGuidance), motion:plan.motion, executionGate:plan.executionGate,
-    deployment:freeze({ automaticEligible:automaticDeploymentEligible, requiresVerifiedQA:true, requiresBuild:plan.target==='unity', promoteSourceRootOnly:true, mainDirectWriteByWorker:false, publicStoreReleaseAutomatic:false }),
+    deployment:freeze({ automaticEligible:automaticDeploymentEligible, requiresVerifiedQA:true, requiresBuild:['roblox','unity'].includes(plan.target), promoteSourceRootOnly:true, mainDirectWriteByWorker:false, publicStoreReleaseAutomatic:false }),
     editor:freeze({ required:route.requiresEditor, runtime:route.editorRuntime || adapter?.execution?.editorRuntime || null, dispatchConfigured:route.route!=='engine-editor' || Boolean(clean(editorConfig.workflow)||clean(editorConfig.runnerLabel)), workflow:clean(editorConfig.workflow)||null, runnerLabel:clean(editorConfig.runnerLabel)||null }),
     workerPolicy:freeze({
       isolatedCandidateBranch:true, directMainWrite:false, verifiedCommitRequired:true, retryLimit:task.maxRetries,
