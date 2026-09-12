@@ -3,6 +3,8 @@
 Status: OWNER-DIRECT V3 IMPLEMENTATION — PUMP MODE LOCKED
 Recorded: 2026-09-12
 
+`COMPANY_FLOW.md` is the sole policy source of truth. This file documents V3 implementation behavior only and must not create independent company, platform, portfolio-size, or release-order policy.
+
 Vibe3 is an intelligence-layer upgrade inside the existing Vibe2/company development and learning pipelines. It is not a parallel pipeline. It reuses the existing checkpoint, source-apply, runtime observation, QA, regression, distillation, local-training, holdout, canary and rollback gates.
 
 ## V3 Pump execution chain
@@ -28,13 +30,14 @@ Files:
 - `company-learning/vibe3-task-playbooks.json` — coding/bugfix/qa/unity/roblox/graphics/planning/general playbooks;
 - `company-learning/vibe3-benchmark-queue.json` — deterministic practice cases;
 - `tools/vibe3-pump-index.mjs` — canonical refresh tool invoked by the existing hourly ingest workflow;
-- `tools/vibe3-roblox-platform.mjs` — Roblox Phase 1 source/runtime/publishing adapter inside V3 Pump.
+- `tools/vibe3-roblox-platform.mjs` — Roblox source/runtime/publishing adapter inside V3 Pump;
+- `company-learning/platform-release-roadmap.json` — execution contract mirror only; policy authority remains `COMPANY_FLOW.md`.
 
 A benchmark case is **not** a training sample. It can enter the canonical learning chain only after execution through the existing Vibe development path and independently verified runtime/QA/regression/exact-revision evidence.
 
 ## Verified RAG and failure memory
 
-Positive retrieval memory accepts only active, revision-bound evidence that passes the task-specific canonical QA rules. Unity requires independent QA PASS + Android runtime PASS + browser N/A. Roblox requires independent QA PASS + Roblox runtime PASS + browser N/A. External commercial black-box QA requires the dedicated `BLACK_BOX_EVIDENCE_PASS` marker, browser N/A and runtime PASS. Ordinary non-Unity/non-Roblox samples keep browser QA PASS.
+Positive retrieval memory accepts only active, revision-bound evidence that passes the task-specific canonical QA rules. Unity requires independent QA PASS + Android runtime PASS + browser N/A. Roblox requires independent QA PASS + Roblox runtime PASS + browser N/A. Fortnite/UEFN requires its own platform runtime and independent QA evidence once its adapter/playbook is active. External commercial black-box QA requires the dedicated `BLACK_BOX_EVIDENCE_PASS` marker, browser N/A and runtime PASS. Ordinary non-platform-specific samples keep browser QA PASS where applicable.
 
 Failures are stored separately as warning memory. They can influence `avoid` guidance and repair selection but cannot be converted into positive training targets merely by being present in memory.
 
@@ -50,25 +53,23 @@ V3 builds a source graph from files, symbols, imports/calls, tests and asset ref
 
 Verified V3 trajectories live under `company-learning/vibe3-trajectories/`. `tools/vibe3-trajectory-ingest.mjs` accepts only a verified winner bound to runtime PASS, QA PASS, regression PASS, protected-state preservation and exact source revision. The existing distillation-status, deterministic training-request, local self-hosted training, fixed holdout A/B, canary and rollback stages remain authoritative.
 
-## Platform release roadmap
+## Platform implementation bindings
 
-Platform release/experience sequencing is locked to:
+Platform policy is defined only in `COMPANY_FLOW.md`.
 
-`ROBLOX → UNITY → FORTNITE_UEFN`
+Implementation invariants:
+- Roblox, Unity, and Fortnite/UEFN may all be developed whenever a project targets them; V3 must not create a platform-entry lock from focus order.
+- Roblox is the default primary focus because `COMPANY_FLOW.md` says so; this is routing priority, not permission gating.
+- existing Unity/Android source, build, runtime, QA and release knowledge remains preserved and extendable;
+- Fortnite/UEFN implementation may be added without waiting for Roblox or Unity completion;
+- success evidence is platform-local: one platform's PASS cannot certify another platform;
+- portable verified lessons may be shared through V3 memory/RAG/playbooks;
+- platform-specific source/runtime/publishing details remain scoped to the relevant playbook/adapter;
+- every qualifying result joins the same canonical Vibe2 distillation chain.
 
-- Phase 1: Roblox is the current primary platform for rapid real releases, fix/re-release cycles and stabilization experience.
-- Phase 1 implementation is connected now: `roblox` task playbook, `roblox-games/` source scope, canonical trajectory/sample gates, guarded Open Cloud publish adapter, regression tests and V3 contract CI.
-- Roblox live publish is not considered verified release experience by itself. It remains explicitly opt-in and requires exact-revision-bound runtime PASS, independent QA PASS, regression PASS and protected-state preservation before publish eligibility.
-- Phase 2: after verified Roblox release/stabilization experience, keep Roblox active and add Unity so Roblox + Unity release experience accumulates concurrently where product scope makes sense.
-- Existing Unity/Android source, build, runtime, QA and release knowledge is preserved and extended. Roblox-first does not delete, replace or downgrade the Unity path.
-- Phase 3: add Fortnite/UEFN only after verified Roblox-first and Roblox+Unity experience has accumulated; preserve both earlier platform tracks.
-- Portable verified lessons can be shared through V3 memory/RAG/playbooks, while platform-specific implementation remains scoped to its own playbook/runtime adapter/QA contract.
-- Success evidence is not transferable between platforms: each platform requires its own runtime and independent QA evidence.
+Machine execution mirror: `company-learning/platform-release-roadmap.json`.
 
-Human-readable roadmap: `company-learning/PLATFORM_RELEASE_ROADMAP.md`.
-Machine-readable roadmap: `company-learning/platform-release-roadmap.json`.
-
-## Roblox Phase 1 implementation
+## Roblox implementation
 
 Roblox support is an adapter inside the existing V3 Pump chain, not a new pipeline.
 
@@ -88,15 +89,13 @@ Roblox support is an adapter inside the existing V3 Pump chain, not a new pipeli
 
 No Roblox-specific distillation cron, shadow dataset, duplicate trigger or trainer exists or is authorized.
 
-## Owner-directed platform extensions
+## Unity implementation preservation
 
-Owner-directed platform extensions, including Roblox/Luau and Fortnite/UEFN, are adapters inside the existing company/V3 execution path. They do not replace or reorder `COMPANY_FLOW.md` production gates and do not create a parallel learning pipeline. The platform roadmap changes which platform is operationally first while preserving the existing Unity/Android path for its roadmap phase.
+Unity remains a full supported platform. Existing Unity/Android project, C#, build, runtime, mobile performance, QA, save compatibility and release knowledge must not be deleted or downgraded merely because Roblox is the primary default focus. Unity-specific verified experience remains scoped to the Unity playbook while portable verified patterns may feed shared V3 memory.
 
-A platform extension may add platform-specific task-playbook guidance, source/runtime handling and a dedicated QA evidence contract. Verified results can enter canonical distillation only after the same positive-trajectory gates pass: verified winner, runtime PASS, independent QA PASS, regression PASS, protected-state preservation and exact source revision. Studio launch, successful build, process survival or injected input alone is not sufficient evidence.
+## Fortnite / UEFN implementation extension
 
-Roblox/Luau or Fortnite/UEFN failed candidates remain failure-warning/comparison memory. Verified platform-extension results use the existing canonical Vibe2 route only: `VALIDATED_EVIDENCE → DISTILLATION_INGEST → VERIFIED_TRAINING_SAMPLE → DISTILLATION_STATUS → DETERMINISTIC_TRAINING_REQUEST → LOCAL_SELF_HOSTED_DATASET_BUILD → LOCAL_LORA_OR_QLORA_TRAINING → TRAINED_UNVERIFIED → FIXED_HOLDOUT_AB → CANARY → PROMOTE_OR_ROLLBACK`.
-
-No platform-specific distillation cron, shadow dataset, duplicate trigger or separate trainer is permitted.
+Fortnite/UEFN is a full supported target under `COMPANY_FLOW.md`, not a locked future-only platform. Its Verse/UEFN playbook, runtime adapter, publishing evidence and platform QA contract may be implemented whenever work is routed to Fortnite/UEFN. It must join the same V3 tournament, verification, trajectory, memory and canonical distillation chain rather than creating a parallel system.
 
 ## Existing-asset self transformation
 
@@ -120,6 +119,7 @@ When local capability becomes available, the accumulated verified trajectories/s
 - no threshold lowering, duplicated or fabricated samples;
 - no benchmark counted as training before verification;
 - no failed candidate promoted as a positive target;
+- no platform development lock inferred from default focus order;
 - no unverified external asset derivative or original asset destruction;
 - no proprietary source/assets/internal algorithm extraction from external commercial games;
 - no paid API or GitHub-hosted model training;
