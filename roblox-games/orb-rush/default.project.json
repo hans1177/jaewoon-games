@@ -1,0 +1,23 @@
+{
+  "name": "OrbRush",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "OrbRushShared": {
+        "$path": "shared"
+      }
+    },
+    "ServerScriptService": {
+      "OrbRush": {
+        "$path": "server"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "OrbRush": {
+          "$path": "client"
+        }
+      }
+    }
+  }
+}
