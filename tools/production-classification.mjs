@@ -30,6 +30,17 @@ export function productionClassOf(project={},game={}){
     ||PRODUCTION_CLASSES.DESIGN_ONLY;
 }
 
+export function tierAliasForProductionClass(value,{numericLabels={}}={}){
+  const productionClass=normalizeProductionClass(value);
+  if(!productionClass)return null;
+  const configured=Number(numericLabels?.[productionClass]);
+  if(Number.isFinite(configured)&&configured>0)return configured;
+  if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED)return 1;
+  if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED)return 2;
+  if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY)return 3;
+  return null;
+}
+
 export function homepageCategoryForProductionClass(value){
   switch(normalizeProductionClass(value)){
     case PRODUCTION_CLASSES.RELEASE_CONFIRMED:return 'release-confirmed';
