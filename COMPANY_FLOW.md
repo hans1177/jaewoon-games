@@ -698,52 +698,99 @@ operationsModernization:
       - STATUS_SYNC_LATENCY
       - UNNECESSARY_WAIT_REDUCTION
       - EVIDENCE_REUSE_WHERE_VALID
-  robloxExpansion:
+  multiPlatformDevelopment:
     ownerApprovedAt: 2026-09-12
-    status: APPROVED_AFTER_EXISTING_COMPANY_FLOW_MODERNIZATION
-    purpose: FIRST_ADDITIONAL_OPEN_PLATFORM_DEVELOPMENT_PATH
+    status: THREE_FIRST_CLASS_DEVELOPMENT_PROJECTS
+    purpose: SWITCHABLE_PLATFORM_PROJECTS_WITH_SHARED_COMPANY_INTELLIGENCE
     existingCompanyModernizationMustFinishFirst: true
     existingCompanyModernizationMustFollowCompanyFlowExactly: true
-    existingUnityAndroidDefaultPreserved: true
-    existingWebUnityFlowsMustNotBeRewritten: true
-    sourceRoot: roblox-games/<slug>
-    implementation:
-      language: LUAU
-      platform: ROBLOX
-      serverAuthorityRequired: true
-      serverClientBoundaryRequired: true
-      remoteEventValidationRequired: true
-      dataStorePersistenceValidationRequiredWhenUsed: true
-      mobileTouchValidationRequired: true
-      multiplayerValidationRequiredWhenUsed: true
-      performanceValidationRequired: true
-      actualExperienceRuntimeRequired: true
-    evidenceGate:
-      codeOrSyntaxPassAloneNotSuccess: true
-      studioOpenAloneNotSuccess: true
-      actualExperienceEntryRequired: true
-      meaningfulInputRequired: true
-      coreLoopStateChangeRequired: true
-      serverClientHealthRequired: true
-      persistenceRejoinRequiredWhenApplicable: true
-      runtimeQaRegressionRequired: true
-      exactRevisionRequired: true
+    primaryPlatformField: PRIMARY_PLATFORM
+    primaryPlatform: ROBLOX
+    allowedPrimaryPlatforms:
+      - ROBLOX
+      - UNITY_ANDROID
+      - FORTNITE_UEFN
+    platformRegistry: company-platform-projects.json
+    architectureDocument: docs/COMPANY_MULTI_PLATFORM_ARCHITECTURE.md
+    switchChangesProjectSelectionOnly: true
+    companyCoreRebuildOnSwitchForbidden: true
+    vibeCoreRebuildOnSwitchForbidden: true
+    legacyUnityPlatformStrategyPreservedForUnityProject: true
+    latestOwnerPrimaryPlatformOverridesLegacyGlobalUnityDefault: true
+    projects:
+      ROBLOX:
+        role: FIRST_CLASS_ACTIVE_PRIMARY
+        sourceRoot: roblox-games/<slug>
+        language: LUAU
+        runtime: ROBLOX_EXPERIENCE
+        validationRequired:
+          - ACTUAL_EXPERIENCE_ENTRY
+          - MEANINGFUL_INPUT
+          - CORE_LOOP_STATE_CHANGE
+          - SERVER_CLIENT_HEALTH
+          - REMOTE_EVENT_VALIDATION
+          - DATASTORE_WHEN_USED
+          - MOBILE_TOUCH
+          - MULTIPLAYER_WHEN_USED
+          - PERFORMANCE
+          - QA
+          - REGRESSION
+          - EXACT_REVISION
+      UNITY_ANDROID:
+        role: FIRST_CLASS_ACTIVE_EXTENDED
+        language: CSHARP
+        runtime: ANDROID
+        preserveExistingProjectStructure: true
+        preserveExistingSourceAndBehavior: true
+        preserveExistingWebToUnityFlow: true
+        preserveExistingAndroidBuildWorkflow: true
+        preserveExistingRuntimeQaBuildLink: true
+        extensionRequired: true
+        extensionMode: ADD_CAPABILITY_AROUND_EXISTING_RESPONSIBLE_SYSTEMS
+        replacementOrRebuildForbidden: true
+        regressionRequiredAfterSharedArchitectureChange: true
+      FORTNITE_UEFN:
+        role: FIRST_CLASS_ACTIVE_AVAILABLE
+        sourceRoot: fortnite-uefn/<slug>
+        language: VERSE
+        runtime: FORTNITE_UEFN
+        validationRequired:
+          - PROJECT_OPENS_IN_UEFN
+          - SESSION_LAUNCH
+          - MEANINGFUL_INPUT
+          - CORE_LOOP_STATE_CHANGE
+          - VERSE_RUNTIME_HEALTH
+          - MULTIPLAYER_SESSION_WHEN_USED
+          - PERFORMANCE
+          - QA
+          - REGRESSION
+          - EXACT_REVISION
     learningIntegration:
+      distillationRequiredForVerifiedPlatformExperience: true
+      canonicalDistillationOnly: true
       currentVibeLearningLockRespected: true
-      newLearningTaskTypeForbiddenInThisTask: true
-      newLearningStageOrCronForbidden: true
+      currentLearningStructureAndCodePathsImmutable: true
+      newPlatformSpecificLearningTaskTypeForbiddenInThisTask: true
+      newPlatformSpecificLearningStageForbidden: true
+      newPlatformSpecificCronForbidden: true
+      newPlatformSpecificDistillationChainForbidden: true
       existingVerifiedInputsOnly: true
-      verifiedRobloxEvidenceMayFeedExistingCodingBugfixQaGeneralInputs: true
+      successRequiresResponsibleRuntimeQaRegressionAndExactRevisionEvidence: true
+      failedAttemptsRemainFailureWarningEvidenceOnly: true
+      verifiedGeneralPatternsMayBeSharedAcrossProjects: true
+      platformSpecificPatternsRemainPlatformScopedWhenRequired: true
     buildIntegration:
       existingBuildSystemImmutable: true
       existingBuildWorkflowsMustNotBeModified: true
-      robloxSpecificSourceRuntimeQaAdapterMayExistOutsideExistingBuildChain: true
+      parentChildTopologyMustNotBeModified: true
+      triggerAndArtifactFlowMustNotBeModified: true
+      platformSourceRuntimeQaAdaptersMustRemainOutsideLockedBuildChain: true
       mustNotCreateShadowOrReplacementBuildChain: true
     continuity:
       checkpointRequiredAfterEachMaterialMilestone: true
       checkpointFile: company-work-state.json
       pullRequest: 346
-      nextSessionMustReadCompanyFlowCheckpointAndPr: true
+      nextSessionMustReadLatestOwnerInstructionCompanyFlowCheckpointAndPr: true
 
 urgentCases:
   BLOCK_BLAST_EXTERNAL_RUNTIME:
