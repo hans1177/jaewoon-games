@@ -1,14 +1,17 @@
 // 파일명: assets/homepage-enhancements.js
-// 역할: 승인된 재운게임즈 홈페이지 레이아웃을 구성하고 최신 main 공개 상태를 5초 주기로 자동 동기화한다.
+// 역할: 승인된 재운게임즈 홈페이지 레이아웃을 구성하고 최신 company-runtime 상태와 main 공개 자산을 5초 주기로 자동 동기화한다.
 // 공개 Web 안정판과 기존 게임 데이터는 보존하고 홈 표시 구조만 재배치한다.
 const SYNC_INTERVAL_MS=5000;
 const RAW_MAIN_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/main';
+const RAW_RUNTIME_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/company-runtime';
 const focusMode='active';
 let refreshInFlight=false;
 let lastDataSignature='';
-const getJson=async path=>{
+const getJson=async(path,{runtime=false}={})=>{
   const stamp=Date.now();
-  for(const url of [`${RAW_MAIN_BASE}${path}`,path]){
+  const bases=runtime?[RAW_RUNTIME_BASE,RAW_MAIN_BASE]:[RAW_MAIN_BASE];
+  const urls=[...bases.map(base=>`${base}${path}`),path];
+  for(const url of urls){
     try{
       const r=await fetch(`${url}${url.includes('?')?'&':'?'}ts=${stamp}`,{cache:'no-store'});
       if(r.ok)return await r.json();
@@ -29,7 +32,7 @@ const platformLabel=value=>{
 
 const CATEGORY_META={
   'release-confirmed':{order:1,title:'출시확정',note:'선택 플랫폼 출시 본개발',className:'release'},
-  'development-confirmed':{order:2,title:'개발확정',note:'선택 플랫폼 검증 · Web 선택 지원',className:'development'},
+  'development-confirmed':{order:2,title:'개발확정',note:'Web 전체 승인 범위 · 선택 플랫폼 검증',className:'development'},
   'design-only':{order:3,title:'3분류',note:'아트북 · 컨셉 · 설계 최적화',className:'design'}
 };
 
@@ -197,7 +200,7 @@ function buildGameCard(game,catalog,status,baselines,artbooks){
   const artbookDate=artbook?formatDate(artbook.createdAt||artbooks?.updatedAt):'없음';
   const releaseDate=getReleaseDate(game,baseline,build);
   const releaseText=releaseDate?`출시 ${formatDate(releaseDate)}`:(game.homepageCategory==='release-confirmed'?'출시일 정보 없음':'출시 전');
-  const webPlayable=game.homepageWebPlayable!==false&&Boolean(game.webPath);
+  const webPlayable=game.homepageWebPlayable===true&&Boolean(game.webPath);
   const selectedPlatform=game.selectedPlatform||game.productionTarget;
   const selectedPlatformName=platformLabel(selectedPlatform);
   const unityUrl=baseline?.rollbackActive&&baseline?.fallbackDownload?baseline.fallbackDownload:build?.download;
@@ -320,8 +323,8 @@ async function refreshHomepageData(){
   refreshInFlight=true;
   try{
     const [catalog,status,baselines,artbooks]=await Promise.all([
-      getJson('/game-catalog.json'),
-      getJson('/company-status.json'),
+      getJson('/game-catalog.json',{runtime:true}),
+      getJson('/company-status.json',{runtime:true}),
       getJson('/public-release-baselines.json'),
       getJson('/game-artbooks.json')
     ]);
@@ -332,7 +335,7 @@ async function refreshHomepageData(){
         buildGameCenter(catalog,status||{},baselines||{},artbooks||{});
         lastDataSignature=signature;
       }
-      document.documentElement.dataset.homeSyncSource='github-main';
+      document.documentElement.dataset.homeSyncSource='github-company-runtime+main';
     }else{
       document.documentElement.dataset.homeSyncSource='offline';
     }

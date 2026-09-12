@@ -1,6 +1,10 @@
 name: Homepage Manager
 
 on:
+  workflow_run:
+    workflows:
+      - Company Status Sync
+    types: [completed]
   push:
     branches: [main]
     paths:
@@ -16,6 +20,7 @@ on:
       - 'company-status.json'
       - 'public-release-baselines.json'
       - 'game-artbooks.json'
+      - 'web-games/**'
       - 'assets/**'
       - 'manifest.webmanifest'
       - 'install.html'
@@ -40,6 +45,7 @@ on:
       - 'company-status.json'
       - 'public-release-baselines.json'
       - 'game-artbooks.json'
+      - 'web-games/**'
       - 'assets/**'
       - 'manifest.webmanifest'
       - 'install.html'
@@ -69,10 +75,32 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Bind synchronized server runtime snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
+            echo "HOMEPAGE_CATALOG_PATH=game-catalog.json" >> "$GITHUB_ENV"
+            echo "HOMEPAGE_STATUS_PATH=company-status.json" >> "$GITHUB_ENV"
+            echo 'HOMEPAGE_RUNTIME_SOURCE=PR_REVISION'
+          elif git fetch --no-tags --depth=1 origin company-runtime; then
+            mkdir -p /tmp/homepage-runtime
+            git show origin/company-runtime:game-catalog.json > /tmp/homepage-runtime/game-catalog.json
+            git show origin/company-runtime:company-status.json > /tmp/homepage-runtime/company-status.json
+            node -e "JSON.parse(require('fs').readFileSync('/tmp/homepage-runtime/game-catalog.json','utf8'));JSON.parse(require('fs').readFileSync('/tmp/homepage-runtime/company-status.json','utf8'))"
+            echo "HOMEPAGE_CATALOG_PATH=/tmp/homepage-runtime/game-catalog.json" >> "$GITHUB_ENV"
+            echo "HOMEPAGE_STATUS_PATH=/tmp/homepage-runtime/company-status.json" >> "$GITHUB_ENV"
+            echo 'HOMEPAGE_RUNTIME_SOURCE=COMPANY_RUNTIME'
+          else
+            echo "HOMEPAGE_CATALOG_PATH=game-catalog.json" >> "$GITHUB_ENV"
+            echo "HOMEPAGE_STATUS_PATH=company-status.json" >> "$GITHUB_ENV"
+            echo 'HOMEPAGE_RUNTIME_SOURCE=MAIN_FALLBACK'
+          fi
+
       - name: Run homepage manager contract
         run: node tools/homepage-manager.mjs
 
-      - name: Validate homepage live files
+      - name: Validate homepage live files and every playable Web route
         run: |
           set -euo pipefail
           for file in \
@@ -88,12 +116,28 @@ jobs:
           grep -Fq '/assets/homepage-enhancements.js' index.html
           grep -Fq 'const SYNC_INTERVAL_MS=5000;' assets/homepage-enhancements.js
           grep -Fq "const RAW_MAIN_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/main';" assets/homepage-enhancements.js
+          grep -Fq "const RAW_RUNTIME_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/company-runtime';" assets/homepage-enhancements.js
+          node <<'NODE'
+          const fs=require('fs');
+          const catalog=JSON.parse(fs.readFileSync(process.env.HOMEPAGE_CATALOG_PATH||'game-catalog.json','utf8'));
+          const failures=[];
+          for(const game of catalog.games||[]){
+            if(game.homepageWebPlayable!==true)continue;
+            const webPath=String(game.webPath||'').replace(/^\/+|\/+$/g,'');
+            const expected=`web-games/${game.id}`;
+            const index=webPath?`${webPath}/index.html`:'';
+            if(webPath!==expected||!index||!fs.existsSync(index)||fs.statSync(index).size<512)failures.push(game.id);
+          }
+          if(failures.length)throw new Error(`homepage Web route failures: ${failures.join(',')}`);
+          console.log(`HOMEPAGE_WEB_ROUTE_QA=PASS COUNT=${(catalog.games||[]).filter(g=>g.homepageWebPlayable===true).length}`);
+          NODE
           grep -Fq 'homepageOperations:' COMPANY_FLOW.md
           grep -Fq 'SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR' COMPANY_FLOW.md
           grep -Fq 'PWA_COMMAND_CHAT_WINDOW' COMPANY_FLOW.md
           grep -Fq '홈페이지 단일 사후 감독' .github/agents/director.agent.md
           grep -Fxq '/*.json' _headers
           grep -Fxq '/assets/*' _headers
+          echo 'HOMEPAGE_RUNTIME_DATA_SYNC=PASS'
           echo 'HOMEPAGE_LIVE_SYNC=PASS'
           echo 'HOMEPAGE_MANAGER_SELF_QA=PASS'
 
