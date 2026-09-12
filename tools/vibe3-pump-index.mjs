@@ -5,7 +5,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildVibeVerifiedMemoryIndex, retrieveVibeVerifiedPatterns, createVibeTaskPlaybook } from '../assets/vibe-v3-engine.js';
 
-const TASK_TYPES=Object.freeze(['coding','bugfix','qa','unity','roblox','graphics','planning','general']);
+const TASK_TYPES=Object.freeze(['coding','bugfix','qa','unity','roblox','fortnite_uefn','graphics','planning','general']);
+const PORTABLE_QUERY=Object.freeze({
+  roblox:'portable mobile touch input ui save load rejoin performance regression responsive core-loop webgame',
+  unity:'portable mobile touch input ui save load performance regression responsive core-loop webgame',
+  fortnite_uefn:'portable ui save performance regression core-loop',
+});
 const clean=v=>String(v??'').trim();
 function readJson(file){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return null;}}
 function listJson(dir){if(!fs.existsSync(dir))return[];return fs.readdirSync(dir).filter(name=>name.endsWith('.json')).sort().map(name=>({file:path.join(dir,name),record:readJson(path.join(dir,name))})).filter(item=>item.record);}
@@ -17,14 +22,15 @@ export function buildPumpArtifacts({trainingSamples=[],trajectories=[],maxBenchm
   const failures=[];
   for(const trajectory of trajectories){
     for(const candidate of trajectory?.candidates||[]){
-      if(candidate?.eligible!==true||candidate?.failure)failures.push({...candidate,request:trajectory.request,taskType:trajectory.metadata?.taskType,project:trajectory.metadata?.project});
+      if(candidate?.eligible!==true||candidate?.failure)failures.push({...candidate,request:trajectory.request,taskType:trajectory.metadata?.taskType,project:trajectory.metadata?.project,sourcePaths:trajectory.metadata?.sourcePaths,tags:trajectory.metadata?.tags});
     }
-    for(const attempt of trajectory?.repairAttempts||[]){if(!attempt?.pass)failures.push({...attempt,request:trajectory.request,taskType:trajectory.metadata?.taskType,project:trajectory.metadata?.project});}
+    for(const attempt of trajectory?.repairAttempts||[]){if(!attempt?.pass)failures.push({...attempt,request:trajectory.request,taskType:trajectory.metadata?.taskType,project:trajectory.metadata?.project,sourcePaths:trajectory.metadata?.sourcePaths,tags:trajectory.metadata?.tags});}
   }
   const index=buildVibeVerifiedMemoryIndex({trainingSamples,trajectories,failures});
-  const playbooks={version:1,generation:'V3-PUMP',generatedFrom:'VERIFIED_MEMORY_ONLY',taskTypes:{},policy:{localWeightTrainingRequired:false,paidApiRequired:false,benchmarkCountsAsTrainingSample:false}};
+  const playbooks={version:2,generation:'V3-PUMP',generatedFrom:'VERIFIED_MEMORY_ONLY',taskTypes:{},policy:{localWeightTrainingRequired:false,preferredTrainingBackend:'SERVER_SELF_HOSTED',localTrainingBackendPreserved:true,paidApiRequired:false,benchmarkCountsAsTrainingSample:false,portableContextMayCrossPlatforms:true,platformEvidenceMayNotTransfer:true}};
   for(const taskType of TASK_TYPES){
-    const retrieval=retrieveVibeVerifiedPatterns({index,request:`${taskType} verified implementation repair QA patterns`,taskType,topKSuccess:8,topKFailure:6});
+    const portable=PORTABLE_QUERY[taskType]||'';
+    const retrieval=retrieveVibeVerifiedPatterns({index,request:`${taskType} verified implementation repair QA patterns ${portable}`.trim(),taskType,topKSuccess:8,topKFailure:6});
     playbooks.taskTypes[taskType]=createVibeTaskPlaybook({taskType,retrieval});
   }
   const benchmarkSeeds=[];
@@ -36,15 +42,15 @@ export function buildPumpArtifacts({trainingSamples=[],trajectories=[],maxBenchm
   }
   const dedup=new Map();for(const item of benchmarkSeeds)if(!dedup.has(item.id))dedup.set(item.id,item);
   const cases=[...dedup.values()].sort((a,b)=>a.id.localeCompare(b.id)).slice(0,Math.max(1,Math.floor(Number(maxBenchmarks)||64))).map(item=>({...item,state:'READY_FOR_CANDIDATE_EXECUTION',candidateCount:5,maxRepairAttempts:3,countsAsTrainingSample:false,requiredVerification:['RESPONSIBLE_SOURCE','CHECKPOINT','SYNTAX','TESTS','RUNTIME','INDEPENDENT_QA','REGRESSION','EXACT_REVISION'],promotionRule:'ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION'}));
-  const benchmark={version:1,generation:'V3-PUMP',state:'READY',hourlyRefresh:true,executionAuthority:'EXISTING_VIBE_DEVELOPMENT_PIPELINE_ONLY',localWeightTrainingRequired:false,countsAsTrainingSample:false,cases,policy:{noAutoSuccess:true,noFabricatedEvidence:true,noParallelPipeline:true,noPaidApi:true,noGitHubHostedModelTraining:true}};
+  const benchmark={version:2,generation:'V3-PUMP',state:'READY',hourlyRefresh:true,continuousMode:'24H',executionAuthority:'EXISTING_VIBE_DEVELOPMENT_PIPELINE_ONLY',localWeightTrainingRequired:false,preferredTrainingBackend:'SERVER_SELF_HOSTED',localTrainingBackendPreserved:true,countsAsTrainingSample:false,cases,policy:{noAutoSuccess:true,noFabricatedEvidence:true,noParallelPipeline:true,noPaidApi:true,noGitHubHostedModelTraining:true,portableContextMayCrossPlatforms:true,platformEvidenceMayNotTransfer:true}};
   return {index,playbooks,benchmark};
 }
 
 export function refreshPumpFiles({sampleDir='company-learning/training-samples',trajectoryDir='company-learning/vibe3-trajectories',memoryOut='company-learning/vibe3-memory-index.json',playbooksOut='company-learning/vibe3-task-playbooks.json',benchmarkOut='company-learning/vibe3-benchmark-queue.json',maxBenchmarks=64}={}){
   const sampleItems=listJson(sampleDir),trajectoryItems=listJson(trajectoryDir),artifacts=buildPumpArtifacts({trainingSamples:sampleItems.map(item=>item.record),trajectories:trajectoryItems.map(item=>item.record),maxBenchmarks});
-  const memory={...artifacts.index,sourceFiles:{trainingSamples:sampleItems.map(item=>item.file),trajectories:trajectoryItems.map(item=>item.file)},refresh:{mode:'HOURLY_24H',workflow:'Vibe2 Distillation Sample Ingest',localWeightTrainingRequired:false}};
+  const memory={...artifacts.index,sourceFiles:{trainingSamples:sampleItems.map(item=>item.file),trajectories:trajectoryItems.map(item=>item.file)},refresh:{mode:'HOURLY_24H',workflow:'Vibe2 Distillation Sample Ingest',preferredTrainingBackend:'SERVER_SELF_HOSTED',localTrainingBackendPreserved:true,localWeightTrainingRequired:false}};
   writeJson(memoryOut,memory);writeJson(playbooksOut,artifacts.playbooks);writeJson(benchmarkOut,artifacts.benchmark);
-  return {version:1,state:'PASS',trainingSamplesExamined:sampleItems.length,trajectoriesExamined:trajectoryItems.length,verifiedPositiveMemory:memory.positive.length,failureWarnings:memory.failureWarnings.length,playbooks:Object.keys(artifacts.playbooks.taskTypes).length,benchmarks:artifacts.benchmark.cases.length,outputs:{memoryOut,playbooksOut,benchmarkOut}};
+  return {version:2,state:'PASS',trainingSamplesExamined:sampleItems.length,trajectoriesExamined:trajectoryItems.length,verifiedPositiveMemory:memory.positive.length,failureWarnings:memory.failureWarnings.length,playbooks:Object.keys(artifacts.playbooks.taskTypes).length,benchmarks:artifacts.benchmark.cases.length,outputs:{memoryOut,playbooksOut,benchmarkOut}};
 }
 
 function main(){const a=parseArgs(process.argv.slice(2));const result=refreshPumpFiles({sampleDir:a['sample-dir'],trajectoryDir:a['trajectory-dir'],memoryOut:a['memory-out'],playbooksOut:a['playbooks-out'],benchmarkOut:a['benchmark-out'],maxBenchmarks:a['max-benchmarks']});console.log(JSON.stringify(result));}
