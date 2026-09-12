@@ -48,3 +48,14 @@ test('Unity source reuse avoids the nested heredoc path that failed in the real 
   assert.match(unity,/bind_catalog\(\)/);
   assert.doesNotMatch(unity,/node - "\$PROJECT" <<'NODE'[\s\S]{0,900}CHANGE_DETECTION=UNCHANGED_SOURCE_REUSED/);
 });
+
+test('canonical router dedupes an already queued or running Unity executor for the same main revision',()=>{
+  assert.match(router,/company-development-unity-runtime\.yml\/runs\?per_page=30/);
+  assert.match(router,/\.head_sha==\$sha/);
+  assert.match(router,/\.status=="queued"/);
+  assert.match(router,/\.status=="pending"/);
+  assert.match(router,/\.status=="in_progress"/);
+  assert.match(router,/UNITY_EXECUTOR_DISPATCH=DEDUPED_EXISTING_RUN/);
+  assert.match(router,/gh workflow run company-development-unity-runtime\.yml/);
+  assert.match(router,/\.github\/workflows\/company-development-unity-runtime\.yml/);
+});
