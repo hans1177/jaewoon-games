@@ -53,7 +53,7 @@ test('status sync preserves semantic memberships without numeric tier state or f
   assert.equal(Object.hasOwn(catalog.games.find(row=>row.id==='monster-a'),'productionTier'),false);
 });
 
-test('selected platform remains final runtime target while Web gameplay and music validation is required first',()=>{
+test('selected platform remains final runtime target after mandatory full approved-scope Web companion validation',()=>{
   const portfolio={
     productionClassPolicy:{fixedCounts:false,countsDerivedFromMembership:true,portfolioDiversity:{enabled:true,maxFocusScoreGap:1}},
     developmentFocusPolicy:{maxFocusedGames:1},
@@ -76,19 +76,27 @@ test('selected platform remains final runtime target while Web gameplay and musi
   assert.equal(portfolio.projects.find(row=>row.id==='F').targetEngine,'fortnite-uefn');
   const dev=portfolio.projects.find(row=>row.id==='D');
   assert.equal(dev.targetEngine,'platform-selection-required');
-  assert.equal(dev.mode,'WEB_VALIDATION_TARGET_PLATFORM_SELECTION_REQUIRED');
-  assert.equal(dev.webPurpose,'REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION');
+  assert.equal(dev.mode,'FULL_WEB_COMPANION_TARGET_PLATFORM_SELECTION_REQUIRED');
+  assert.equal(dev.webPurpose,'FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE');
+  assert.equal(dev.webCompanionRequired,true);
+  assert.equal(dev.approvedDesignScopeMustBeFullyImplemented,true);
+  assert.equal(dev.webEvidenceMayReplaceNativePlatformEvidence,false);
   assert.equal(dev.webGameplayValidationRequired,true);
   assert.equal(dev.musicValidationRequired,true);
   assert.equal(portfolio.productionClassPolicy.classes.RELEASE_CONFIRMED.engine,'PROJECT_SELECTED_PLATFORM');
   assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.engine,'PROJECT_SELECTED_PLATFORM');
   assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.webBeforeTargetPlatformByDefault,true);
   assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.targetPlatformMayRunImmediately,false);
+  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.webCompanionRequired,true);
+  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.approvedDesignScopeMustBeFullyImplemented,true);
+  assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.webEvidenceMayReplaceNativePlatformEvidence,false);
   assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.webGameplayValidationRequired,true);
   assert.equal(portfolio.productionClassPolicy.classes.DEVELOPMENT_CONFIRMED.musicValidationRequired,true);
   assert.equal(Object.hasOwn(portfolio.developmentFocusPolicy,'developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus'),false);
   assert.equal(Object.hasOwn(portfolio.developmentFocusPolicy,'optionalWebGameplayTestbedAllowedAlongsideReleaseFocus'),false);
-  assert.equal(portfolio.developmentFocusPolicy.requiredWebGameplayAndMusicValidationBeforeTargetPlatform,true);
+  assert.equal(Object.hasOwn(portfolio.developmentFocusPolicy,'requiredWebGameplayAndMusicValidationBeforeTargetPlatform'),false);
+  assert.equal(portfolio.developmentFocusPolicy.requiredFullApprovedWebCompanionBeforeTargetPlatform,true);
+  assert.equal(portfolio.developmentFocusPolicy.nativePlatformEvidenceStillRequired,true);
   assert.equal((result.state.ranking||[]).some(row=>Object.hasOwn(row,'unityReady')),false);
 });
 
