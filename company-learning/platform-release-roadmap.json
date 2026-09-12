@@ -18,62 +18,13 @@
   "platformReleaseMayProceedWhenOwnEvidencePasses": true,
   "parallelLearningPipelineAllowed": false,
   "runtimeContractCannotCreatePolicy": true,
-  "commonExecutionContract": {
-    "router": "tools/company-selected-platform-router.mjs",
-    "singleRoutingDecisionPoint": true,
-    "commonAdapterContractRequired": true,
-    "commonEvidenceSchemaRequired": true,
-    "allowedPlatforms": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
-    "commonEvidenceFields": [
-      "PLATFORM",
-      "SOURCE_REVISION",
-      "BUILD_OR_PACKAGE_PASSED",
-      "ARTIFACT_IDENTITY",
-      "RUNTIME_PASSED",
-      "INDEPENDENT_QA_PASSED",
-      "REGRESSION_PASSED",
-      "EXACT_REVISION",
-      "LAST_SUCCESSFUL_STAGE",
-      "FAILURE_STAGE",
-      "FAILURE_SIGNATURE"
-    ],
-    "adapters": {
-      "ROBLOX": "tools/vibe3-roblox-platform.mjs",
-      "UNITY": "tools/company-development-unity-platform.mjs",
-      "FORTNITE_UEFN": "tools/company-development-uefn-platform.mjs"
-    }
-  },
-  "developmentSpeedExecution": {
-    "scope": "EXECUTION_SPEED_ONLY",
-    "qualityOrEvidenceGateWeakeningForbidden": true,
-    "canonicalSequence": [
-      "CHANGE_DETECTION",
-      "CHEAP_PRECHECK",
-      "REPRESENTATIVE_CANARY",
-      "SINGLE_BUILD_OR_PACKAGE",
-      "IMMUTABLE_ARTIFACT_BIND",
-      "TARGET_PLATFORM_RUNTIME",
-      "INDEPENDENT_QA",
-      "REGRESSION",
-      "IMMEDIATE_NEXT_STAGE_DISPATCH",
-      "RESUME_EXACT_FAILURE_POINT"
-    ],
-    "changeDetectionRequiredBeforeExpensiveWork": true,
-    "cheapPrecheckRequiredBeforeCanary": true,
-    "representativeCanaryRequiredWhenSharedExecutionContractChangedOrCommonFailureDetected": true,
-    "canaryPassAllowsRemainingEligibleWorkToProceed": true,
-    "buildOncePerSourceFingerprint": true,
-    "sameArtifactRequiredAcrossRuntimeIndependentQaAndRegression": true,
-    "immutableArtifactIdentityRequired": true,
-    "successfulStageEvidenceReusableWhenSourceFingerprintStillMatches": true,
-    "sourceOrRelevantDependencyChangeInvalidatesAffectedEvidenceOnly": true,
-    "failureMustRecordExactStageAndSignature": true,
-    "retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches": true,
-    "successfulStepMustNotBeRepeatedWithoutInvalidatingChange": true,
-    "nextCanonicalStageDispatchImmediatelyAfterSuccess": true,
-    "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
-    "cronMustNotBePrimaryProgressionEngine": true,
-    "existingEventChainPreferred": true
+  "portableExperienceSharing": {
+    "verifiedWebGameplayMayFeedSharedVibe3Context": true,
+    "robloxMayRetrievePortableWebPatternsAsContext": true,
+    "portablePatterns": ["TOUCH_INPUT", "MOBILE_UI", "SAVE_LOAD_AND_RESUME", "PERFORMANCE", "RESPONSIVE_LAYOUT", "REGRESSION_AVOIDANCE", "CORE_LOOP_IMPLEMENTATION"],
+    "crossPlatformPassEvidenceTransferAllowed": false,
+    "webEvidenceMaySatisfyRobloxDatasetGate": false,
+    "webEvidenceMaySatisfyRobloxRuntimeOrPublishingGate": false
   },
   "phases": [
     {
@@ -109,19 +60,17 @@
     "ciContract": ".github/workflows/vibe3-engine-contract.yml",
     "publishModeDefault": "DRY_RUN",
     "livePublishRequiresExplicitExecute": true,
-    "cookieAuthAllowed": false
+    "cookieAuthAllowed": false,
+    "verifiedRobloxEvidenceRequiredForRobloxTraining": true
   },
   "unity": {
-    "platformAdapter": "tools/company-development-unity-platform.mjs",
     "existingPathPreserved": true,
     "developmentAlwaysAllowed": true,
     "robloxDoesNotReplaceUnity": true
   },
   "fortniteUefn": {
-    "platformAdapter": "tools/company-development-uefn-platform.mjs",
     "developmentAlwaysAllowed": true,
-    "existingPlatformsRemainActive": true,
-    "runtimeExecutionConfigured": false
+    "existingPlatformsRemainActive": true
   },
   "canonicalLearningChain": [
     "VALIDATED_EVIDENCE",
@@ -129,18 +78,26 @@
     "VERIFIED_TRAINING_SAMPLE",
     "DISTILLATION_STATUS",
     "DETERMINISTIC_TRAINING_REQUEST",
-    "LOCAL_SELF_HOSTED_DATASET_BUILD",
-    "LOCAL_LORA_OR_QLORA_TRAINING",
+    "SELF_HOSTED_DATASET_BUILD",
+    "SELF_HOSTED_LORA_OR_QLORA_TRAINING",
     "TRAINED_UNVERIFIED",
     "FIXED_HOLDOUT_AB",
     "CANARY",
     "PROMOTE_OR_ROLLBACK"
   ],
+  "trainingBackends": {
+    "primary": "SERVER_SELF_HOSTED",
+    "preserved": "LOCAL_SELF_HOSTED",
+    "sameCanonicalRequest": true,
+    "automaticLocalFallbackAllowed": false,
+    "githubHostedModelTrainingAllowed": false
+  },
   "forbidden": [
     "PLATFORM_SPECIFIC_DISTILLATION_CRON",
     "DUPLICATE_DISTILLATION_TRIGGER",
     "SHADOW_DATASET_OR_TRAINER",
     "PLATFORM_DEVELOPMENT_LOCK_BASED_ON_PRIORITY",
+    "CROSS_PLATFORM_PASS_EVIDENCE_TRANSFER",
     "RUNTIME_QA_REGRESSION_EXACT_REVISION_BYPASS"
   ]
 }

@@ -26,6 +26,8 @@ export const VIBE3_POLICY=Object.freeze({
   defaultCandidateCount:5,
   defaultMaxRepairAttempts:3,
   trajectoryLearningRequired:true,
+  portableCrossPlatformContextRequired:true,
+  platformEvidenceTransferForbidden:true,
   isolatedCandidateExecutionRequired:true,
   originalSourceOverwriteBeforeWinnerForbidden:true,
   existingEvidenceGateRequired:true,
@@ -75,22 +77,37 @@ function isVerifiedMemoryPositive(record={}){
   if(lower(record.lifecycle||'active')!=='active')return false;
   const qa=normalizedQa(record),task=lower(record.taskType),source=sourceKind(record),revision=clean(record.provenance?.sourceRevision??record.sourceRevision??record.sourceCommit);
   if(!revision||qa.runtime!=='PASS')return false;
-  if(task==='unity'||task==='roblox')return qa.independentQa==='PASS'&&qa.browserQa==='NOT_APPLICABLE';
+  if(task==='unity'||task==='roblox'||task==='fortnite_uefn')return qa.independentQa==='PASS'&&qa.browserQa==='NOT_APPLICABLE';
   if(task==='qa'&&source==='external-black-box')return qa.independentQa==='BLACK_BOX_EVIDENCE_PASS'&&qa.browserQa==='NOT_APPLICABLE';
   return qa.independentQa==='PASS'&&qa.browserQa==='PASS';
 }
-function fullTrajectoryPass(record={}){const e=record.finalEvidence||{};return upper(record.outcome)==='VERIFIED_WINNER'&&e.runtimePass===true&&e.qaPassed===true&&e.regressionPassed===true&&e.exactRevision===true&&e.protectedStatePreserved!==false;}
+function fullTrajectoryPass(record={}){const e=record.finalEvidence||{},runtimePass=e.runtimePass===true||e.runtimePassed===true;return upper(record.outcome)==='VERIFIED_WINNER'&&runtimePass&&e.qaPassed===true&&e.regressionPassed===true&&e.exactRevision===true&&e.protectedStatePreserved!==false;}
 function memoryCorpus(entry={}){return [entry.taskType,entry.project,entry.request,entry.instruction,entry.input,entry.output,...(entry.sourcePaths||[]),...(entry.tags||[])].join(' ');}
+function inferPortableTags(record={},sourcePaths=[]){
+  const corpus=lower([record.request,record.instruction,record.goal,record.input,record.output,record.metadata?.winnerOutput,...sourcePaths].join(' '));
+  const tags=[];
+  if(sourcePaths.some(path=>lower(path).startsWith('web-games/'))||/\bwebgame\b|web game|browser|html|javascript|canvas|dom/.test(corpus))tags.push('webgame');
+  if(/touch|pointer|tap|swipe|drag|조이스틱|터치/.test(corpus))tags.push('touch-input');
+  if(/mobile|small screen|safe area|viewport|모바일/.test(corpus))tags.push('mobile-ui');
+  if(/canvas/.test(corpus))tags.push('canvas');
+  if(/localstorage|save|load|rejoin|resume|세이브|저장|불러오기/.test(corpus))tags.push('save-load');
+  if(/performance|fps|memory|frame|성능|렉/.test(corpus))tags.push('performance');
+  if(/responsive|aspect ratio|viewport|가로|세로/.test(corpus))tags.push('responsive');
+  if(/regression|회귀/.test(corpus))tags.push('regression');
+  if(/core loop|core-loop|핵심루프/.test(corpus))tags.push('core-loop');
+  return unique(tags);
+}
 function normalizeMemoryEntry(record={},kind='sample',index=0){
   const taskType=lower(record.taskType||record.metadata?.taskType||'general'),project=clean(record.project||record.gameId||record.metadata?.project||'shared');
-  const request=clean(record.request||record.instruction||record.goal),sourcePaths=unique([record.sourcePath,...(record.sourcePaths||[]),...(record.metadata?.sourcePaths||[])]);
+  const request=clean(record.request||record.instruction||record.goal),sourcePaths=unique([record.sourcePath,...(record.sourcePaths||[]),record.metadata?.sourcePath,...(record.metadata?.sourcePaths||[])]);
   const revision=clean(record.provenance?.sourceRevision??record.sourceRevision??record.sourceCommit??record.finalEvidence?.sourceRevision);
   const id=clean(record.sampleId||record.trajectoryId||record.candidateId)||`${kind}_${stableHash(`${kind}|${index}|${revision}|${request}`)}`;
-  return Object.freeze({id,kind,taskType,project,request,instruction:clean(record.instruction),input:clean(record.input),output:clean(record.output),sourcePaths:Object.freeze(sourcePaths),sourceRevision:revision||null,tags:Object.freeze(unique(record.tags||[])),authority:'verified-memory-entry'});
+  const tags=unique([...(record.tags||[]),...(record.metadata?.tags||[]),...inferPortableTags(record,sourcePaths)]);
+  return Object.freeze({id,kind,taskType,project,request,instruction:clean(record.instruction),input:clean(record.input),output:clean(record.output||record.metadata?.winnerOutput),sourcePaths:Object.freeze(sourcePaths),sourceRevision:revision||null,tags:Object.freeze(tags),authority:'verified-memory-entry'});
 }
 function normalizeFailureEntry(record={},index=0){
-  const failure=clean(record.failure||record.error||record.reason||record.message||record.state||'unknown-failure');
-  return Object.freeze({id:clean(record.id||record.candidateId)||`failure_${stableHash(`${index}|${failure}|${record.sourcePath||''}`)}`,kind:'failure-warning',taskType:lower(record.taskType||'general'),project:clean(record.project||record.gameId||'shared'),request:clean(record.request||record.goal),failure,failureClass:clean(record.failureClass)||classifyVibeRepairFailure(failure),sourcePaths:Object.freeze(unique([record.sourcePath,...(record.sourcePaths||[])])),authority:'warning-memory-only',positiveTrainingAllowed:false});
+  const failure=clean(record.failure||record.error||record.reason||record.message||record.state||'unknown-failure'),sourcePaths=unique([record.sourcePath,...(record.sourcePaths||[])]),tags=inferPortableTags(record,sourcePaths);
+  return Object.freeze({id:clean(record.id||record.candidateId)||`failure_${stableHash(`${index}|${failure}|${record.sourcePath||''}`)}`,kind:'failure-warning',taskType:lower(record.taskType||'general'),project:clean(record.project||record.gameId||'shared'),request:clean(record.request||record.goal),failure,failureClass:clean(record.failureClass)||classifyVibeRepairFailure(failure),sourcePaths:Object.freeze(sourcePaths),tags:Object.freeze(tags),authority:'warning-memory-only',positiveTrainingAllowed:false});
 }
 
 export function buildVibeVerifiedMemoryIndex({trainingSamples=[],trajectories=[],failures=[]}={}){
@@ -100,9 +117,9 @@ export function buildVibeVerifiedMemoryIndex({trainingSamples=[],trajectories=[]
   const positiveById=new Map();for(const item of positives)positiveById.set(item.id,item);
   const warnings=[];
   failures.forEach((record,index)=>warnings.push(normalizeFailureEntry(record,index)));
-  trajectories.forEach((record,index)=>{for(const [candidateIndex,candidate] of (record.candidates||[]).entries())if(candidate.eligible!==true||candidate.failure)warnings.push(normalizeFailureEntry({...candidate,request:record.request,taskType:record.metadata?.taskType,project:record.metadata?.project},index*100+candidateIndex));});
+  trajectories.forEach((record,index)=>{for(const [candidateIndex,candidate] of (record.candidates||[]).entries())if(candidate.eligible!==true||candidate.failure)warnings.push(normalizeFailureEntry({...candidate,request:record.request,taskType:record.metadata?.taskType,project:record.metadata?.project,sourcePaths:record.metadata?.sourcePaths,tags:record.metadata?.tags},index*100+candidateIndex));});
   const warningById=new Map();for(const item of warnings)warningById.set(item.id,item);
-  return Object.freeze({version:1,generation:'V3-PUMP',positive:Object.freeze([...positiveById.values()].sort((a,b)=>a.id.localeCompare(b.id))),failureWarnings:Object.freeze([...warningById.values()].sort((a,b)=>a.id.localeCompare(b.id))),policy:Object.freeze({verifiedPositiveOnly:true,failuresNeverPromotedAsPositive:true,benchmarkCountsAsTrainingSample:false}),authority:'verified-rag-memory-index'});
+  return Object.freeze({version:2,generation:'V3-PUMP',positive:Object.freeze([...positiveById.values()].sort((a,b)=>a.id.localeCompare(b.id))),failureWarnings:Object.freeze([...warningById.values()].sort((a,b)=>a.id.localeCompare(b.id))),policy:Object.freeze({verifiedPositiveOnly:true,failuresNeverPromotedAsPositive:true,benchmarkCountsAsTrainingSample:false,portableContextMayCrossPlatforms:true,platformEvidenceMayNotTransfer:true}),authority:'verified-rag-memory-index'});
 }
 
 function rankMemory(query,entry,{taskType='',project='',sourcePaths=[]}={}){
@@ -117,7 +134,7 @@ export function retrieveVibeVerifiedPatterns({index,request='',taskType='',proje
   if(index?.authority!=='verified-rag-memory-index')throw new Error('verified memory index required');
   const query=clean(request);
   const rank=(rows,limit)=>rows.map(entry=>Object.freeze({entry,score:rankMemory(query,entry,{taskType,project,sourcePaths})})).filter(item=>item.score>0).sort((a,b)=>b.score-a.score||a.entry.id.localeCompare(b.entry.id)).slice(0,Math.max(0,Math.floor(finite(limit,0))));
-  return Object.freeze({version:1,query,successes:Object.freeze(rank(index.positive,topKSuccess)),failureWarnings:Object.freeze(rank(index.failureWarnings,topKFailure)),useRule:'reuse-verified-patterns-and-avoid-observed-failures',authority:'retrieval-context-only'});
+  return Object.freeze({version:1,query,successes:Object.freeze(rank(index.positive,topKSuccess)),failureWarnings:Object.freeze(rank(index.failureWarnings,topKFailure)),useRule:'reuse-verified-patterns-and-avoid-observed-failures-without-transferring-platform-pass-evidence',authority:'retrieval-context-only'});
 }
 
 const PLAYBOOK_BASE=Object.freeze({
@@ -125,7 +142,8 @@ const PLAYBOOK_BASE=Object.freeze({
   bugfix:Object.freeze(['reproduce-or-bind-failure-evidence','trace-failure-to-responsible-source','repair-smallest-surface','rerun-original-failure-and-regression']),
   qa:Object.freeze(['bind-exact-revision','separate-launch-from-real-success','preserve-positive-and-negative-boundaries','require-observed-runtime-evidence']),
   unity:Object.freeze(['bind-current-source-tree-and-build','require-android-runtime-pass','require-independent-qa','preserve-save-and-core-design-lock']),
-  roblox:Object.freeze(['bind-roblox-source-and-place','separate-server-client-authority','validate-remotes-and-datastore-boundaries','run-real-roblox-runtime-and-independent-qa','verify-save-rejoin-and-mobile-ui-when-applicable','publish-only-after-exact-revision-pass']),
+  roblox:Object.freeze(['reuse-portable-web-mobile-save-regression-patterns-as-context-only','bind-roblox-source-and-place','separate-server-client-authority','validate-remotes-and-datastore-boundaries','run-real-roblox-runtime-and-independent-qa','verify-save-rejoin-and-mobile-ui-when-applicable','publish-only-after-exact-revision-pass']),
+  fortnite_uefn:Object.freeze(['reuse-portable-shared-patterns-as-context-only','bind-uefn-source-and-project','validate-verse-and-uefn-runtime','require-independent-qa-and-publishing-evidence','publish-only-after-exact-revision-pass']),
   graphics:Object.freeze(['rights-gate-before-derivative','never-overwrite-original','generate-3-to-5-derived-variants','score-style-silhouette-quality-animation-mobile-performance']),
   planning:Object.freeze(['retrieve-verified-project-patterns','preserve-owner-and-design-locks','compare-alternatives','separate-evidence-from-inference']),
   general:Object.freeze(['retrieve-verified-success-and-failure-memory','rank-responsible-context','compare-candidates','require-verifiable-completion']),
@@ -133,7 +151,7 @@ const PLAYBOOK_BASE=Object.freeze({
 
 export function createVibeTaskPlaybook({taskType='general',retrieval=null,sourceRanking=null}={}){
   const type=Object.prototype.hasOwnProperty.call(PLAYBOOK_BASE,lower(taskType))?lower(taskType):'general';
-  return Object.freeze({version:1,taskType:type,checklist:PLAYBOOK_BASE[type],reuse:Object.freeze((retrieval?.successes||[]).map(item=>({id:item.entry.id,score:item.score,project:item.entry.project,sourceRevision:item.entry.sourceRevision}))),avoid:Object.freeze((retrieval?.failureWarnings||[]).map(item=>({id:item.entry.id,score:item.score,failureClass:item.entry.failureClass,failure:item.entry.failure}))),responsibleSources:Object.freeze((sourceRanking?.candidates||[]).map(item=>({path:item.path,score:item.score}))),authority:'verified-task-playbook'});
+  return Object.freeze({version:2,taskType:type,checklist:PLAYBOOK_BASE[type],reuse:Object.freeze((retrieval?.successes||[]).map(item=>({id:item.entry.id,score:item.score,project:item.entry.project,sourceRevision:item.entry.sourceRevision,sourceTaskType:item.entry.taskType,tags:item.entry.tags,portableContextOnly:item.entry.taskType!==type}))),avoid:Object.freeze((retrieval?.failureWarnings||[]).map(item=>({id:item.entry.id,score:item.score,failureClass:item.entry.failureClass,failure:item.entry.failure,sourceTaskType:item.entry.taskType,tags:item.entry.tags,portableContextOnly:item.entry.taskType!==type}))),responsibleSources:Object.freeze((sourceRanking?.candidates||[]).map(item=>({path:item.path,score:item.score}))),platformEvidenceTransferAllowed:false,authority:'verified-task-playbook'});
 }
 
 function evidenceOf(candidate={}){const e=candidate.evidence||{};return Object.freeze({syntaxPass:e.syntaxPass===true,testsPass:e.testsPass===true,runtimePass:e.runtimePass===true,regressionPass:e.regressionPass===true,protectedStatePreserved:e.protectedStatePreserved===true,exactRevision:e.exactRevision===true,responsibleSource:e.responsibleSource===true,checkpoint:e.checkpoint===true,rollbackReady:e.rollbackReady===true,performanceScore:unit(e.performanceScore??0.5),qualityScore:unit(e.qualityScore??0.5)});}
@@ -162,17 +180,17 @@ export function createVibeRepairLoop({attempts=[],maxAttempts=VIBE3_POLICY.defau
 }
 
 export function createVibeTrajectoryRecord({request='',sourceGraph=null,tournament=null,repairLoop=null,finalEvidence={},metadata={}}={}){
-  const record={version:1,trajectoryId:`traj_${stableHash(`${request}|${sourceGraph?.digest||''}|${JSON.stringify(tournament?.evaluations||[])}|${JSON.stringify(repairLoop?.attempts||[])}`)}`,request:clean(request),sourceGraphDigest:clean(sourceGraph?.digest)||null,candidates:(tournament?.evaluations||[]).map(item=>({id:item.id,eligible:item.eligible,score:item.score,blockedReasons:[...item.blockedReasons],failure:item.failure||null,patchRef:item.patchRef||null})),selectedCandidateId:tournament?.winner?.id||null,repairAttempts:(repairLoop?.attempts||[]).map(item=>({...item})),outcome:tournament?.ready?'VERIFIED_WINNER':repairLoop?.state||'UNRESOLVED',finalEvidence:Object.freeze({...finalEvidence}),metadata:Object.freeze({...metadata}),learningUse:Object.freeze({positiveWinnerAllowed:tournament?.ready===true,failedCandidatesPreserved:true,hiddenReasoningRequired:false,observableActionsAndEvidenceOnly:true}),authority:'verified-development-trajectory'};
+  const record={version:1,trajectoryId:`traj_${stableHash(`${request}|${sourceGraph?.digest||''}|${JSON.stringify(tournament?.evaluations||[])}|${JSON.stringify(repairLoop?.attempts||[])}`)}`,request:clean(request),sourceGraphDigest:clean(sourceGraph?.digest)||null,candidates:(tournament?.evaluations||[]).map(item=>({id:item.id,eligible:item.eligible,score:item.score,blockedReasons:[...item.blockedReasons],failure:item.failure||null,patchRef:item.patchRef||null})),selectedCandidateId:tournament?.winner?.id||null,repairAttempts:(repairLoop?.attempts||[]).map(item=>({...item})),outcome:tournament?.ready?'VERIFIED_WINNER':repairLoop?.state||'UNRESOLVED',finalEvidence:Object.freeze({...finalEvidence}),metadata:Object.freeze({...metadata}),learningUse:Object.freeze({positiveWinnerAllowed:tournament?.ready===true,failedCandidatesPreserved:true,hiddenReasoningRequired:false,observableActionsAndEvidenceOnly:true,portableContextMayCrossPlatforms:true,platformPassEvidenceMayNotTransfer:true}),authority:'verified-development-trajectory'};
   return Object.freeze(record);
 }
 
 export function createVibePumpModeContract({candidateCount=5,maxRepairAttempts=3,teacherCandidateMax=2,hourlyRefresh=true}={}){
-  return Object.freeze({version:1,generation:'V3-PUMP',enabled:true,verifiedRag:Object.freeze({required:true,verifiedPositiveOnly:true,includeFailureWarnings:true,taskPlaybookRequired:true}),candidateTournament:Object.freeze({min:3,max:5,default:clampCandidateCount(candidateCount),isolated:true}),repairLoop:Object.freeze({enabled:true,maxAttempts:Math.max(1,Math.min(3,Math.floor(finite(maxRepairAttempts,3))))}),teacherCandidates:Object.freeze({enabled:true,max:Math.max(0,Math.min(2,Math.floor(finite(teacherCandidateMax,2)))),freeOnly:true,nonAuthoritative:true,paidFallback:false}),experiencePump:Object.freeze({hourlyRefresh:Boolean(hourlyRefresh),bindToExistingDistillationWorkflow:true,benchmarkAccumulation:true,benchmarkCountsAsTrainingSample:false}),weights:Object.freeze({localWeightsRequiredForPump:false,githubHostedModelTrainingAllowed:false,actualWeightTrainingDeferredUntilLocalCapability:true}),graphics:Object.freeze({existingAssetVariants:true,rightsGateRequired:true,originalImmutable:true,candidateTournament:true}),integration:Object.freeze({parallelPipeline:false,canonicalLearningChainUnchanged:true}),authority:'vibe3-pump-mode-contract'});
+  return Object.freeze({version:2,generation:'V3-PUMP',enabled:true,verifiedRag:Object.freeze({required:true,verifiedPositiveOnly:true,includeFailureWarnings:true,taskPlaybookRequired:true,portableCrossPlatformContext:true,platformPassEvidenceTransfer:false}),candidateTournament:Object.freeze({min:3,max:5,default:clampCandidateCount(candidateCount),isolated:true}),repairLoop:Object.freeze({enabled:true,maxAttempts:Math.max(1,Math.min(3,Math.floor(finite(maxRepairAttempts,3))))}),teacherCandidates:Object.freeze({enabled:true,max:Math.max(0,Math.min(2,Math.floor(finite(teacherCandidateMax,2)))),freeOnly:true,nonAuthoritative:true,paidFallback:false}),experiencePump:Object.freeze({hourlyRefresh:Boolean(hourlyRefresh),continuousMode:'24H',bindToExistingDistillationWorkflow:true,benchmarkAccumulation:true,benchmarkCountsAsTrainingSample:false}),weights:Object.freeze({localWeightsRequiredForPump:false,preferredTrainingBackend:'SERVER_SELF_HOSTED',localTrainingBackendPreserved:true,githubHostedModelTrainingAllowed:false,actualWeightTrainingDeferredUntilCanonicalReadiness:true}),graphics:Object.freeze({existingAssetVariants:true,rightsGateRequired:true,originalImmutable:true,candidateTournament:true}),integration:Object.freeze({parallelPipeline:false,canonicalLearningChainUnchanged:true}),authority:'vibe3-pump-mode-contract'});
 }
 
 export function createVibeV3ExecutionContract({candidateCount=VIBE3_POLICY.defaultCandidateCount,maxRepairAttempts=VIBE3_POLICY.defaultMaxRepairAttempts,minWinnerScore=0.78}={}){
   const count=clampCandidateCount(candidateCount),repairs=Math.max(1,Math.min(3,Math.floor(finite(maxRepairAttempts,3))));
-  return Object.freeze({version:3,policy:VIBE3_POLICY,pumpMode:createVibePumpModeContract({candidateCount:count,maxRepairAttempts:repairs}),sourceDiscovery:Object.freeze({buildDependencyGraph:true,rankResponsibleFiles:true,inspectSymbolsImportsCallersTestsAssets:true}),verifiedContext:Object.freeze({retrieveBeforeGeneration:true,successMemory:true,failureWarnings:true,taskPlaybook:true}),candidateTournament:Object.freeze({required:true,count,isolatedExecution:true,minWinnerScore:unit(minWinnerScore),winnerRequiresSyntaxTestsRuntimeRegressionProtectedStateExactRevision:true}),repairLoop:Object.freeze({enabled:true,maxAttempts:repairs,failureEvidenceFeedsNextAttempt:true,stopOnVerifiedPass:true}),trajectory:Object.freeze({persistSuccess:true,persistFailure:true,persistCandidateComparisons:true,feedVerifiedLearningPipeline:true}),integration:Object.freeze({parallelPipeline:false,reuseExistingCheckpoint:true,reuseExistingRuntimeObservation:true,reuseExistingQaAndRegression:true,reuseExistingPromotionGate:true,reuseExistingDistillationWorkflow:true}),authority:'vibe3-existing-pipeline-upgrade'});
+  return Object.freeze({version:3,policy:VIBE3_POLICY,pumpMode:createVibePumpModeContract({candidateCount:count,maxRepairAttempts:repairs}),sourceDiscovery:Object.freeze({buildDependencyGraph:true,rankResponsibleFiles:true,inspectSymbolsImportsCallersTestsAssets:true}),verifiedContext:Object.freeze({retrieveBeforeGeneration:true,successMemory:true,failureWarnings:true,taskPlaybook:true,portableCrossPlatformContext:true,platformPassEvidenceTransfer:false}),candidateTournament:Object.freeze({required:true,count,isolatedExecution:true,minWinnerScore:unit(minWinnerScore),winnerRequiresSyntaxTestsRuntimeRegressionProtectedStateExactRevision:true}),repairLoop:Object.freeze({enabled:true,maxAttempts:repairs,failureEvidenceFeedsNextAttempt:true,stopOnVerifiedPass:true}),trajectory:Object.freeze({persistSuccess:true,persistFailure:true,persistCandidateComparisons:true,feedVerifiedLearningPipeline:true}),integration:Object.freeze({parallelPipeline:false,reuseExistingCheckpoint:true,reuseExistingRuntimeObservation:true,reuseExistingQaAndRegression:true,reuseExistingPromotionGate:true,reuseExistingDistillationWorkflow:true}),authority:'vibe3-existing-pipeline-upgrade'});
 }
 
 if(typeof window!=='undefined')Object.assign(window,{createJaewoonVibeSourceGraph:createVibeSourceGraph,rankJaewoonVibeResponsibleSources:rankVibeResponsibleSources,buildJaewoonVibeVerifiedMemoryIndex:buildVibeVerifiedMemoryIndex,retrieveJaewoonVibeVerifiedPatterns:retrieveVibeVerifiedPatterns,createJaewoonVibeTaskPlaybook:createVibeTaskPlaybook,runJaewoonVibeCandidateTournament:runVibeCandidateTournament,createJaewoonVibeRepairLoop:createVibeRepairLoop,createJaewoonVibeTrajectoryRecord:createVibeTrajectoryRecord,createJaewoonVibePumpModeContract:createVibePumpModeContract,createJaewoonVibeV3ExecutionContract:createVibeV3ExecutionContract});

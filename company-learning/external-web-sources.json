@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "policy": {
+    "mode": "ALLOWLISTED_PERMISSIVE_OPEN_SOURCE_ONLY",
+    "allowedLicenses": ["MIT", "BSD-2-Clause", "BSD-3-Clause", "Apache-2.0", "ISC", "CC0-1.0", "Unlicense"],
+    "requireLicenseFileMatch": true,
+    "requireBrowserRuntimePass": true,
+    "requireInteractionProbe": true,
+    "upstreamNodeOrShellExecutionForbidden": true,
+    "externalNetworkFromBrowserBlocked": true,
+    "maxNewSamplesPerSourcePerRun": 4,
+    "historyDepth": 48,
+    "rawBinaryOrAssetTrainingForbidden": true,
+    "canonicalTrainingSampleOutputOnly": true
+  },
+  "sources": [
+    {
+      "id": "gabrielecirulli-2048",
+      "repository": "https://github.com/gabrielecirulli/2048.git",
+      "ref": "master",
+      "license": "MIT",
+      "licenseFile": "LICENSE.txt",
+      "entry": "index.html",
+      "codePaths": ["index.html", "js", "style"],
+      "probe": {
+        "readySelector": ".game-container",
+        "stateSelector": ".tile-container",
+        "interaction": "ARROW_KEYS_UNTIL_STATE_CHANGE"
+      }
+    },
+    {
+      "id": "iamkun-tower-game",
+      "repository": "https://github.com/iamkun/tower_game.git",
+      "ref": "master",
+      "license": "MIT",
+      "licenseFile": "LICENSE",
+      "entry": "index.html",
+      "codePaths": ["index.html", "index.js", "src", "dist"],
+      "probe": {
+        "readySelector": "#start",
+        "interaction": "CLICK_SELECTOR",
+        "interactionSelector": "#start",
+        "expectGlobalTrue": "gameStart",
+        "expectVisible": "#canvas"
+      }
+    },
+    {
+      "id": "jakesgordon-javascript-racer",
+      "repository": "https://github.com/jakesgordon/javascript-racer.git",
+      "ref": "master",
+      "license": "MIT",
+      "licenseFile": "LICENSE",
+      "entry": "v4.final.html",
+      "codePaths": ["v4.final.html", "common.js", "stats.js", "common.css"],
+      "probe": {
+        "readySelector": "#canvas",
+        "stateSelector": "#speed_value",
+        "interaction": "KEY_HOLD",
+        "key": "ArrowUp",
+        "holdMs": 900
+      }
+    }
+  ]
+}

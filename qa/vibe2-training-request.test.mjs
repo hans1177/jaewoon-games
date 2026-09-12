@@ -33,16 +33,23 @@ function status(overrides = {}) {
   };
 }
 
-test('학습 준비 전에는 로컬 학습 요청을 만들지 않는다', () => {
+test('학습 준비 전에는 self-hosted 학습 요청을 만들지 않는다', () => {
   const request = buildTrainingRequest(status());
+  assert.equal(request.version, 2);
   assert.equal(request.state, 'WAITING_FOR_VERIFIED_SAMPLES');
   assert.equal(request.requests.length, 0);
+  assert.equal(request.execution.route, 'CANONICAL_SELF_HOSTED');
+  assert.equal(request.execution.preferredBackend, 'SERVER_SELF_HOSTED');
+  assert.deepEqual(request.execution.allowedBackends, ['SERVER_SELF_HOSTED', 'LOCAL_SELF_HOSTED']);
+  assert.equal(request.execution.localBackendPreserved, true);
+  assert.equal(request.execution.continuousMode, '24H');
+  assert.equal(request.execution.refreshCadence, 'HOURLY');
   assert.equal(request.execution.githubHostedTrainingAllowed, false);
   assert.equal(request.execution.paidApiAllowed, false);
   assert.ok(request.blockedTasks.coding.blockers.includes('INSUFFICIENT_PROJECT_DIVERSITY'));
 });
 
-test('준비된 작업만 task 전용 dataset/trainer 요청으로 만든다', () => {
+test('준비된 작업만 서버 우선 canonical dataset/trainer 요청으로 만든다', () => {
   const readyCoding = {
     ready: true,
     accepted: 40,
@@ -60,7 +67,9 @@ test('준비된 작업만 task 전용 dataset/trainer 요청으로 만든다', (
     state: 'READY_TASKS_AVAILABLE',
     tasks: { coding: readyCoding },
   }));
-  assert.equal(request.state, 'READY_FOR_LOCAL_TRAINING');
+  assert.equal(request.state, 'READY_FOR_SELF_HOSTED_TRAINING');
+  assert.equal(request.execution.preferredBackend, 'SERVER_SELF_HOSTED');
+  assert.equal(request.execution.localBackendPreserved, true);
   assert.equal(request.requests.length, 1);
   assert.equal(request.requests[0].taskType, 'coding');
   assert.ok(request.requests[0].datasetCommand.includes('--task-type'));

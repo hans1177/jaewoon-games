@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 34,
+  "revision": 35,
   "updatedAt": "2026-09-12",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
@@ -194,7 +194,50 @@
     "UNITY": {"role":"FULL_SUPPORTED_PLATFORM","developmentAlwaysAllowed":true,"existingPathPreserved":true,"robloxDoesNotReplaceUnity":true,"existingUnityAndroidSourceBuildRuntimeQaReleaseKnowledgePreserved":true,"legacyAndroidTrackStillValidWhenTargetIsUnity":true},
     "FORTNITE_UEFN": {"role":"FULL_SUPPORTED_PLATFORM","developmentAlwaysAllowed":true,"robloxOrUnityCompletionNotRequiredToDevelop":true,"platformSpecificPlaybookRequired":true,"verseUefnRuntimeQaRequiredForVerifiedSuccess":true,"publishingEvidenceRequiredForReleaseClaim":true},
     "focusMilestones": {"ROBLOX_FAST_RELEASE_STABILIZATION":{"defaultPriority":1,"blocksUnityDevelopment":false,"blocksFortniteDevelopment":false},"ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE":{"defaultPriority":2,"entryGate":false},"FORTNITE_UEFN_EXPANSION":{"defaultPriority":3,"entryGate":false}},
-    "experienceSharing": {"portableVerifiedPatternsUseExistingV3MemoryAndCanonicalDistillation":true,"platformSpecificImplementationRemainsPlatformScoped":true,"successEvidenceDoesNotTransferAcrossPlatforms":true}
+    "experienceSharing": {
+      "portableVerifiedPatternsUseExistingV3MemoryAndCanonicalDistillation": true,
+      "verifiedWebGameplayMayFeedSharedV3PortableContext": true,
+      "portableWebPatterns": ["TOUCH_INPUT","MOBILE_UI","SAVE_LOAD_AND_RESUME","PERFORMANCE","RESPONSIVE_LAYOUT","REGRESSION_AVOIDANCE","CORE_LOOP_IMPLEMENTATION"],
+      "robloxMayUseVerifiedWebPortablePatternsAsContext": true,
+      "webEvidenceCountsAsRobloxVerifiedEvidence": false,
+      "webEvidenceMaySatisfyRobloxDatasetGate": false,
+      "webEvidenceMaySatisfyRobloxRuntimeOrPublishingGate": false,
+      "platformSpecificImplementationRemainsPlatformScoped": true,
+      "successEvidenceDoesNotTransferAcrossPlatforms": true
+    }
+  },
+  "learning": {
+    "canonical": true,
+    "continuousMode": "24H",
+    "refreshCadence": "HOURLY",
+    "trainingRoute": "CANONICAL_SELF_HOSTED",
+    "primaryBackend": "SERVER_SELF_HOSTED",
+    "preservedBackend": "LOCAL_SELF_HOSTED",
+    "localBackendPreserved": true,
+    "automaticLocalFallbackAllowed": false,
+    "bothBackendsConsumeSameCanonicalTrainingRequest": true,
+    "duplicateConcurrentTrainingSameRequestForbidden": true,
+    "serverBackendRequiresExplicitRegisteredCapability": true,
+    "githubHostedModelTrainingForbidden": true,
+    "paidTrainingForbidden": true,
+    "freshAdapterState": "TRAINED_UNVERIFIED",
+    "promotionRequires": ["FIXED_HOLDOUT_AB","CANARY"],
+    "externalOpenSourceWebDistillation": {
+      "enabled": true,
+      "execution": "EXISTING_CANONICAL_HOURLY_INGEST_ONLY",
+      "sourceMode": "ALLOWLISTED_PERMISSIVE_OPEN_SOURCE_ONLY",
+      "licenseFileAndTextVerificationRequired": true,
+      "sourceCommitBindingRequired": true,
+      "upstreamNodeOrShellExecutionForbidden": true,
+      "browserExecutionSandboxed": true,
+      "externalBrowserNetworkBlocked": true,
+      "browserRuntimePassRequired": true,
+      "meaningfulInteractionProbeRequired": true,
+      "codeDiffOnly": true,
+      "rawBinaryOrAssetTrainingForbidden": true,
+      "failedSourceCannotCreatePositiveSample": true,
+      "thresholdLoweringForbidden": true
+    }
   },
   "rules": [
     "new-owner-instruction-overrides-autonomous-plan",
@@ -217,8 +260,11 @@
     "release-confirmed-current-target-platform-source-build-runtime-and-independent-qa-must-bind",
     "platform-priority-does-not-create-development-or-release-entry-gates",
     "roblox-first-does-not-delete-or-replace-existing-unity-android-track",
-    "portable-verified-platform-lessons-use-existing-v3-memory-and-canonical-distillation",
+    "portable-verified-web-and-platform-lessons-use-existing-v3-memory-and-canonical-distillation-as-context-only",
+    "cross-platform-pass-evidence-transfer-is-forbidden",
+    "external-open-source-web-learning-requires-license-runtime-and-interaction-verification",
     "platform-specific-parallel-learning-pipeline-is-forbidden",
+    "server-self-hosted-training-is-primary-and-existing-local-self-hosted-training-is-preserved",
     "existing-public-web-builds-survive-class-movement",
     "paid-ai-paid-overage-and-paid-runners-remain-forbidden"
   ]

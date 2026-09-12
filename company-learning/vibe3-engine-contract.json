@@ -1,16 +1,17 @@
 {
-  "version": 3,
+  "version": 5,
   "status": "OWNER_DIRECT_LOCKED",
   "recordedAt": "2026-09-12",
   "relationshipToVibe2": "INTELLIGENCE_LAYER_UPGRADE_INSIDE_EXISTING_PIPELINE",
   "parallelPipeline": false,
   "pumpMode": {
     "enabled": true,
-    "localWeightsRequired": false,
+    "weightTrainingRequiredForPump": false,
     "verifiedRagRequired": true,
     "successMemoryRequired": true,
     "failureWarningMemoryRequired": true,
     "taskPlaybooksRequired": true,
+    "continuousMode": "24H",
     "hourlyRefresh": true,
     "refreshWorkflow": "Vibe2 Distillation Sample Ingest",
     "benchmarkAccumulation": true,
@@ -50,12 +51,54 @@
     "builder": "tools/vibe3-pump-index.mjs",
     "positiveMemoryRequiresVerifiedEvidence": true,
     "failureMemoryIsWarningOnly": true,
-    "supportedPlaybooks": ["coding", "bugfix", "qa", "unity", "roblox", "graphics", "planning", "general"]
+    "portableContextMayCrossPlatforms": true,
+    "platformPassEvidenceMayNotTransfer": true,
+    "supportedPlaybooks": ["coding", "bugfix", "qa", "unity", "roblox", "fortnite_uefn", "graphics", "planning", "general"]
+  },
+  "externalOpenSourceWebDistillation": {
+    "enabled": true,
+    "execution": "EXISTING_CANONICAL_HOURLY_INGEST_ONLY",
+    "sourceManifest": "company-learning/external-web-sources.json",
+    "distillationTool": "tools/vibe3-external-web-distill.mjs",
+    "contractTest": "qa/vibe3-external-web-distill.test.mjs",
+    "sourceMode": "ALLOWLISTED_PERMISSIVE_OPEN_SOURCE_ONLY",
+    "licenseFileAndTextVerificationRequired": true,
+    "sourceCommitBindingRequired": true,
+    "upstreamNodeOrShellExecutionAllowed": false,
+    "browserExecutionSandboxed": true,
+    "externalBrowserNetworkAllowed": false,
+    "browserRuntimePassRequired": true,
+    "meaningfulInteractionProbeRequired": true,
+    "codeDiffOnly": true,
+    "rawBinaryOrAssetTrainingAllowed": false,
+    "failedSourceMayCreatePositiveSample": false,
+    "feedsExistingTrainingSampleRoot": true,
+    "separateCronOrPipelineAllowed": false,
+    "crossPlatformPassEvidenceTransferAllowed": false,
+    "thresholdLoweringAllowed": false
+  },
+  "portableWebLearning": {
+    "enabled": true,
+    "portablePatterns": [
+      "TOUCH_INPUT",
+      "MOBILE_UI",
+      "SAVE_LOAD_AND_RESUME",
+      "PERFORMANCE",
+      "RESPONSIVE_LAYOUT",
+      "REGRESSION_AVOIDANCE",
+      "CORE_LOOP_IMPLEMENTATION"
+    ],
+    "robloxMayRetrieveAsContext": true,
+    "webPassCountsAsRobloxPass": false,
+    "webEvidenceMaySatisfyRobloxDatasetGate": false,
+    "webEvidenceMaySatisfyRobloxRuntimeOrPublishingGate": false,
+    "robloxLaneRequiresRealVerifiedRobloxEvidence": true
   },
   "trajectoryLearning": {
     "root": "company-learning/vibe3-trajectories",
     "ingestTool": "tools/vibe3-trajectory-ingest.mjs",
     "positivePromotionRequiresVerifiedWinner": true,
+    "runtimeBooleanAliases": ["runtimePass", "runtimePassed"],
     "hiddenReasoningPersisted": false,
     "observableActionsPatchesFailuresAndEvidenceOnly": true,
     "feedsCanonicalTrainingSamples": true,
@@ -82,7 +125,11 @@
   },
   "modelSelection": {
     "responsibleTool": "tools/vibe3-model-selection.mjs",
-    "route": "LOCAL_SELF_HOSTED_ONLY",
+    "route": "CANONICAL_SELF_HOSTED",
+    "preferredBackend": "SERVER_SELF_HOSTED",
+    "allowedBackends": ["SERVER_SELF_HOSTED", "LOCAL_SELF_HOSTED"],
+    "localBackendPreserved": true,
+    "automaticLocalFallbackAllowed": false,
     "baselineModel": "Qwen/Qwen3-1.7B",
     "coderUpgradeCandidate": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
     "forcedLargeModelDownload": false,
@@ -93,7 +140,19 @@
     "fallbackToBaseline": true,
     "githubHostedTrainingAllowed": false,
     "paidApiAllowed": false,
-    "weightTrainingDeferredWithoutLocalCapability": true
+    "weightTrainingDeferredWithoutSelfHostedCapability": true
+  },
+  "selfHostedTraining": {
+    "singleCanonicalStage": true,
+    "primaryBackend": "SERVER_SELF_HOSTED",
+    "preservedBackend": "LOCAL_SELF_HOSTED",
+    "sameCanonicalRequest": true,
+    "sameDatasetAndTrainerContract": true,
+    "duplicateConcurrentTrainingSameRequestForbidden": true,
+    "serverRunnerRegistrationRequired": true,
+    "githubHostedModelTrainingAllowed": false,
+    "paidApiAllowed": false,
+    "freshAdapterState": "TRAINED_UNVERIFIED"
   },
   "trainerConsistency": {
     "externalBlackBoxQaSupported": true,
@@ -101,7 +160,7 @@
     "requiredIndependentQa": "BLACK_BOX_EVIDENCE_PASS",
     "requiredBrowserQa": "NOT_APPLICABLE",
     "requiredRuntime": "PASS",
-    "normalNonUnityBrowserQaRequirementWeakened": false
+    "normalNonPlatformBrowserQaRequirementWeakened": false
   },
   "platformRoadmap": {
     "enabled": true,
@@ -112,6 +171,7 @@
     "unityExistingPathPreserved": true,
     "platformSpecificEvidenceRequired": true,
     "portableVerifiedExperienceSharedThroughV3Memory": true,
+    "crossPlatformPassEvidenceTransferAllowed": false,
     "separatePlatformLearningPipelineAllowed": false,
     "phase1Implementation": {
       "taskType": "roblox",

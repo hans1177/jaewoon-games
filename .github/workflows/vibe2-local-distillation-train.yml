@@ -1,17 +1,30 @@
-name: Vibe2 Local Distillation Training
+name: Vibe2 Self-Hosted Distillation Training
 
 on:
   workflow_run:
     workflows: ['Vibe2 Distillation Sample Ingest']
     types: [completed]
   workflow_dispatch:
+    inputs:
+      backend:
+        description: 'Self-hosted training backend'
+        required: true
+        default: server
+        type: choice
+        options:
+          - server
+          - local
 
 permissions:
   contents: read
 
 concurrency:
-  group: vibe2-local-distillation-training
+  group: vibe2-self-hosted-distillation-training
   cancel-in-progress: false
+
+env:
+  VIBE2_SERVER_RUNNER_LABELS_JSON: ${{ vars.VIBE2_SERVER_RUNNER_LABELS_JSON }}
+  VIBE2_SERVER_TRAINING_ROOT: ${{ vars.VIBE2_SERVER_TRAINING_ROOT }}
 
 jobs:
   gate:
@@ -20,8 +33,12 @@ jobs:
     timeout-minutes: 3
     outputs:
       ready: ${{ steps.request.outputs.ready }}
+      request_ready: ${{ steps.request.outputs.request_ready }}
       request_id: ${{ steps.request.outputs.request_id }}
       task_types: ${{ steps.request.outputs.task_types }}
+      backend: ${{ steps.request.outputs.backend }}
+      runner_labels: ${{ steps.request.outputs.runner_labels }}
+      backend_state: ${{ steps.request.outputs.backend_state }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,7 +49,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Validate training handoff
+      - name: Validate canonical self-hosted training handoff
         id: request
         shell: bash
         run: |
@@ -42,35 +59,66 @@ jobs:
           const file = 'company-learning/distillation-training-request.json';
           if (!fs.existsSync(file)) throw new Error(`missing ${file}`);
           const request = JSON.parse(fs.readFileSync(file, 'utf8'));
-          if (request.version !== 1) throw new Error('unsupported training request version');
-          if (request.execution?.route !== 'LOCAL_SELF_HOSTED_ONLY') throw new Error('local-only training route required');
-          if (request.execution?.githubHostedTrainingAllowed !== false) throw new Error('GitHub-hosted training must stay disabled');
+          if (request.version !== 2) throw new Error('unsupported training request version');
+          if (request.execution?.route !== 'CANONICAL_SELF_HOSTED') throw new Error('canonical self-hosted training route required');
+          if (request.execution?.preferredBackend !== 'SERVER_SELF_HOSTED') throw new Error('server self-hosted must remain preferred');
+          if (!Array.isArray(request.execution?.allowedBackends) || !request.execution.allowedBackends.includes('SERVER_SELF_HOSTED') || !request.execution.allowedBackends.includes('LOCAL_SELF_HOSTED')) throw new Error('server/local backend contract missing');
+          if (request.execution?.localBackendPreserved !== true) throw new Error('existing local backend must remain preserved');
+          if (request.execution?.continuousMode !== '24H' || request.execution?.refreshCadence !== 'HOURLY') throw new Error('24H hourly canonical contract required');
+          if (request.execution?.githubHostedTrainingAllowed !== false) throw new Error('GitHub-hosted model training must stay disabled');
           if (request.execution?.paidApiAllowed !== false) throw new Error('paid API must stay disabled');
-          const ready = request.state === 'READY_FOR_LOCAL_TRAINING' && Array.isArray(request.requests) && request.requests.length > 0;
-          const taskTypes = ready ? request.requests.map((item) => item.taskType).join(',') : '';
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, `ready=${ready}\nrequest_id=${request.requestId || ''}\ntask_types=${taskTypes}\n`);
-          console.log(`LOCAL_TRAINING_READY=${ready}`);
+
+          const requestReady = request.state === 'READY_FOR_SELF_HOSTED_TRAINING' && Array.isArray(request.requests) && request.requests.length > 0;
+          const requested = process.env.GITHUB_EVENT_NAME === 'workflow_dispatch' ? String(process.env.REQUESTED_BACKEND || 'server') : 'server';
+          const backend = requested === 'local' ? 'LOCAL_SELF_HOSTED' : 'SERVER_SELF_HOSTED';
+          const serverLabels = String(process.env.VIBE2_SERVER_RUNNER_LABELS_JSON || '').trim();
+          let runnerLabels = '["self-hosted"]';
+          let backendReady = true;
+          let backendState = 'READY';
+          if (backend === 'LOCAL_SELF_HOSTED') {
+            runnerLabels = '["self-hosted","Windows","X64","jaewoon-unity"]';
+          } else if (!serverLabels) {
+            backendReady = false;
+            backendState = 'SERVER_RUNNER_LABELS_NOT_CONFIGURED';
+          } else {
+            try {
+              const parsed = JSON.parse(serverLabels);
+              if (!Array.isArray(parsed) || parsed.length < 1 || !parsed.every((value) => typeof value === 'string' && value.trim())) throw new Error('labels');
+              runnerLabels = JSON.stringify(parsed);
+            } catch {
+              backendReady = false;
+              backendState = 'SERVER_RUNNER_LABELS_INVALID';
+            }
+          }
+          const ready = requestReady && backendReady;
+          const taskTypes = requestReady ? request.requests.map((item) => item.taskType).join(',') : '';
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `ready=${ready}\nrequest_ready=${requestReady}\nrequest_id=${request.requestId || ''}\ntask_types=${taskTypes}\nbackend=${backend}\nrunner_labels=${runnerLabels}\nbackend_state=${backendState}\n`);
+          console.log(`SELF_HOSTED_TRAINING_READY=${ready}`);
+          console.log(`CANONICAL_REQUEST_READY=${requestReady}`);
+          console.log(`TRAINING_BACKEND=${backend}`);
+          console.log(`BACKEND_STATE=${backendState}`);
           console.log(`REQUEST_ID=${request.requestId || 'NONE'}`);
           console.log(`TASK_TYPES=${taskTypes || 'NONE'}`);
-          if (!ready) console.log(`NEXT_ACTION=${request.nextAction || 'COLLECT_MORE_VERIFIED_SAMPLES'}`);
+          if (!requestReady) console.log(`NEXT_ACTION=${request.nextAction || 'COLLECT_MORE_VERIFIED_SAMPLES'}`);
           NODE
+        env:
+          REQUESTED_BACKEND: ${{ inputs.backend || 'server' }}
 
-      - name: Confirm hosted runner does not train
+      - name: Confirm hosted runner only performs orchestration
         shell: bash
         run: |
           echo 'GITHUB_HOSTED_MODEL_TRAINING=NO'
+          echo 'SERVER_SELF_HOSTED_PRIMARY=YES'
+          echo 'LOCAL_SELF_HOSTED_PRESERVED=YES'
           echo 'PAID_API=NO'
 
-  train-local:
+  train-self-hosted:
     needs: gate
     if: needs.gate.outputs.ready == 'true'
-    runs-on: [self-hosted, Windows, X64, jaewoon-unity]
+    runs-on: ${{ fromJSON(needs.gate.outputs.runner_labels) }}
     timeout-minutes: 180
     permissions:
       contents: read
-    defaults:
-      run:
-        shell: powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ". '{0}'"
 
     steps:
       - name: Checkout ready persisted request
@@ -79,47 +127,141 @@ jobs:
           ref: vibe2-learning-runtime
           fetch-depth: 1
 
-      - name: Resolve request and local output root
-        id: request
+      - name: Resolve server request and output root
+        if: needs.gate.outputs.backend == 'SERVER_SELF_HOSTED'
+        shell: bash
+        run: |
+          set -euo pipefail
+          request_file="$GITHUB_WORKSPACE/company-learning/distillation-training-request.json"
+          test -f "$request_file"
+          node - <<'NODE'
+          const fs=require('fs');
+          const request=JSON.parse(fs.readFileSync('company-learning/distillation-training-request.json','utf8'));
+          if(request.version!==2)throw new Error('unsupported training request version');
+          if(request.state!=='READY_FOR_SELF_HOSTED_TRAINING')throw new Error('training request is no longer ready');
+          if(request.execution?.route!=='CANONICAL_SELF_HOSTED')throw new Error('canonical self-hosted route required');
+          if(request.execution?.githubHostedTrainingAllowed!==false)throw new Error('hosted training policy violation');
+          if(request.execution?.paidApiAllowed!==false)throw new Error('paid API policy violation');
+          if(!request.requests?.length)throw new Error('no ready task requests');
+          NODE
+          root="${VIBE2_SERVER_TRAINING_ROOT:-$HOME/jaewoon-vibe2-learning}"
+          mkdir -p "$root"
+          echo "SELF_HOSTED_TRAINING_ROOT=$root" >> "$GITHUB_ENV"
+          echo "REQUEST_ID=${{ needs.gate.outputs.request_id }}" >> "$GITHUB_ENV"
+          echo 'TRAINING_BACKEND=SERVER_SELF_HOSTED' >> "$GITHUB_ENV"
+          echo "[PASS] server self-hosted request=${{ needs.gate.outputs.request_id }} tasks=${{ needs.gate.outputs.task_types }}"
+
+      - name: Preflight server Python CUDA and Vibe3 model capability
+        if: needs.gate.outputs.backend == 'SERVER_SELF_HOSTED'
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v python >/dev/null 2>&1 || { echo 'Python is not installed on the server training runner.' >&2; exit 1; }
+          python -c "import sys; print(sys.version)"
+          python -c "import torch, transformers, peft; print('torch=' + torch.__version__); print('transformers=' + transformers.__version__); print('peft=' + peft.__version__); assert torch.cuda.is_available(), 'CUDA GPU is required for server Vibe2/Vibe3 training'; print('cuda=' + torch.cuda.get_device_name(0))"
+          method='lora'
+          if python -c 'import bitsandbytes' >/dev/null 2>&1; then method='qlora'; fi
+          echo "TRAINING_METHOD=$method" >> "$GITHUB_ENV"
+          vram_gib="$(python -c "import torch; print(int(torch.cuda.get_device_properties(0).total_memory // (1024**3)))")"
+          disk_gib="$(df -Pk "${SELF_HOSTED_TRAINING_ROOT:-$HOME}" | awk 'NR==2 {print int($4/1024/1024)}')"
+          echo "CUDA_VRAM_GIB=$vram_gib" >> "$GITHUB_ENV"
+          echo "TRAINING_DISK_GIB=$disk_gib" >> "$GITHUB_ENV"
+          policy_root="$HOME/.jaewoon"
+          enable=false; compatible=false; cached=false
+          [[ -f "$policy_root/vibe3-coder-upgrade.enabled" || "${VIBE3_ENABLE_CODER_UPGRADE:-0}" == '1' ]] && enable=true
+          [[ -f "$policy_root/vibe3-coder-30b.compatible" ]] && compatible=true
+          hf_cache="${HF_HOME:-$HOME/.cache/huggingface}"
+          [[ -d "$hf_cache/hub/models--Qwen--Qwen3-Coder-30B-A3B-Instruct" ]] && cached=true
+          echo "VIBE3_CODER_ENABLE=$enable" >> "$GITHUB_ENV"
+          echo "VIBE3_CODER_COMPATIBLE=$compatible" >> "$GITHUB_ENV"
+          echo "VIBE3_CODER_CACHED=$cached" >> "$GITHUB_ENV"
+          echo "[PASS] server CUDA training stack ready; method=$method vramGiB=$vram_gib diskGiB=$disk_gib coderEnabled=$enable coderCompatible=$compatible coderCached=$cached"
+
+      - name: Build task datasets and train adapters on server
+        if: needs.gate.outputs.backend == 'SERVER_SELF_HOSTED'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import { spawnSync } from 'node:child_process';
+          const request=JSON.parse(fs.readFileSync('company-learning/distillation-training-request.json','utf8'));
+          const platformTasks=new Set(['unity','roblox','fortnite_uefn']);
+          const runtimeItems=[];
+          const run=(cmd,args)=>{const r=spawnSync(cmd,args,{stdio:'inherit',shell:false});if(r.status!==0)throw new Error(`${cmd} failed (${r.status})`);};
+          const capture=(cmd,args)=>{const r=spawnSync(cmd,args,{encoding:'utf8',shell:false});if(r.status!==0)throw new Error(`${cmd} failed: ${r.stderr||r.stdout}`);return String(r.stdout||'').trim();};
+          for(const item of request.requests){
+            const taskType=String(item.taskType),adapterVersion=String(item.adapterVersion);
+            if(!/^(coding|bugfix|unity|roblox|fortnite_uefn|qa|planning|general)$/.test(taskType))throw new Error(`invalid task type: ${taskType}`);
+            if(!/^[A-Za-z0-9._-]+$/.test(adapterVersion))throw new Error(`invalid adapter version: ${adapterVersion}`);
+            const isPlatform=platformTasks.has(taskType);
+            const datasetDir=path.join(process.cwd(),'vibe2-learning','datasets',taskType,process.env.REQUEST_ID);
+            fs.rmSync(datasetDir,{recursive:true,force:true});
+            run('node',['tools/vibe2-weight-learning.mjs','dataset','--input','company-learning/training-samples','--out',datasetDir,'--task-type',taskType,'--min-train-samples','24','--min-fresh-train-samples','12','--min-distinct-projects','2','--max-project-share','0.75','--synthetic-ratio-cap',isPlatform?'0':'0.5']);
+            const manifestPath=path.join(datasetDir,'manifest.json'),trainPath=path.join(datasetDir,'train.jsonl'),evalPath=path.join(datasetDir,'eval.jsonl'),holdoutPath=path.join(datasetDir,'holdout.jsonl');
+            const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
+            if(manifest.readyForTraining!==true||manifest.targetTaskType!==taskType)throw new Error(`manifest is not training-ready for ${taskType}`);
+            if(isPlatform){
+              run('node',['tools/vibe2-real-platform-dataset-gate.mjs','--task-type',taskType,'--manifest',manifestPath,'--train',trainPath,'--eval',evalPath,'--holdout',holdoutPath,'--samples-root',path.join(process.cwd(),'company-learning','training-samples')]);
+              console.log(`PLATFORM_TRAINING_AUTHORITY=${taskType}:VERIFIED_PRODUCTION_EVIDENCE_ONLY`);
+              console.log(`PLATFORM_SYNTHETIC_TRAINING=${taskType}:NO`);
+            }
+            const selection=JSON.parse(capture('node',['tools/vibe3-model-selection.mjs','--task-type',taskType,'--method',process.env.TRAINING_METHOD,'--cuda','true','--vram-gib',process.env.CUDA_VRAM_GIB,'--disk-gib',process.env.TRAINING_DISK_GIB,'--enable',process.env.VIBE3_CODER_ENABLE,'--compatible',process.env.VIBE3_CODER_COMPATIBLE,'--cached',process.env.VIBE3_CODER_CACHED]));
+            const adapterDir=path.join(process.env.SELF_HOSTED_TRAINING_ROOT,'adapters',taskType,adapterVersion);
+            fs.rmSync(adapterDir,{recursive:true,force:true});fs.mkdirSync(adapterDir,{recursive:true});
+            run('python',['tools/vibe2-train.py','--train',trainPath,'--eval',evalPath,'--dataset-manifest',manifestPath,'--output',adapterDir,'--adapter-version',adapterVersion,'--task-type',taskType,'--method',process.env.TRAINING_METHOD,'--base-model',selection.model]);
+            const metadata=JSON.parse(fs.readFileSync(path.join(adapterDir,'training-metadata.json'),'utf8'));
+            if(metadata.promotionState!=='UNVERIFIED'||metadata.runtimePromotionAllowed!==false)throw new Error(`fresh adapter must remain unverified for ${taskType}`);
+            if(isPlatform&&metadata.verifiedRealOnly!==true)throw new Error(`${taskType} adapter must be marked verified-real-only`);
+            runtimeItems.push({taskType,adapterVersion,method:process.env.TRAINING_METHOD,baseModel:selection.model,modelTier:selection.tier,selfHostedAdapterPath:adapterDir,datasetManifest:manifestPath,promotionState:'UNVERIFIED',runtimePromotionAllowed:false,requiredNextGate:'FIXED_HOLDOUT_AB_AND_CANARY'});
+          }
+          const runtime={version:3,requestId:process.env.REQUEST_ID,state:'TRAINED_UNVERIFIED',trainedAt:new Date().toISOString(),runner:process.env.RUNNER_NAME,backend:'SERVER_SELF_HOSTED',items:runtimeItems,githubHostedTraining:false,paidApi:false,vibe3CapabilityGatedModelSelection:true,nextGate:'FIXED_HOLDOUT_AB_AND_CANARY'};
+          fs.writeFileSync(path.join(process.env.SELF_HOSTED_TRAINING_ROOT,'latest-training-runtime.json'),JSON.stringify(runtime,null,2)+'\n');
+          console.log('[PASS] server-trained adapters remain UNVERIFIED');
+          NODE
+
+      - name: Resolve local request and output root
+        if: needs.gate.outputs.backend == 'LOCAL_SELF_HOSTED'
+        shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
           $requestFile = Join-Path $env:GITHUB_WORKSPACE 'company-learning\distillation-training-request.json'
           if (-not (Test-Path $requestFile)) { throw 'distillation training request missing' }
           $request = [System.IO.File]::ReadAllText($requestFile, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
-          if ($request.version -ne 1) { throw 'unsupported training request version' }
-          if ($request.state -ne 'READY_FOR_LOCAL_TRAINING') { throw 'training request is no longer ready' }
-          if ($request.execution.route -ne 'LOCAL_SELF_HOSTED_ONLY') { throw 'local-only training route required' }
+          if ($request.version -ne 2) { throw 'unsupported training request version' }
+          if ($request.state -ne 'READY_FOR_SELF_HOSTED_TRAINING') { throw 'training request is no longer ready' }
+          if ($request.execution.route -ne 'CANONICAL_SELF_HOSTED') { throw 'canonical self-hosted training route required' }
+          if ($request.execution.localBackendPreserved -ne $true) { throw 'local backend preservation contract missing' }
           if ($request.execution.githubHostedTrainingAllowed -ne $false) { throw 'hosted training policy violation' }
           if ($request.execution.paidApiAllowed -ne $false) { throw 'paid API policy violation' }
           if (-not $request.requests -or @($request.requests).Count -lt 1) { throw 'no ready task requests' }
-
           $root = Join-Path $env:USERPROFILE 'jaewoon-vibe2-learning'
           New-Item -ItemType Directory -Path $root -Force | Out-Null
-          "LOCAL_TRAINING_ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "REQUEST_ID=$($request.requestId)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Write-Host "[PASS] request=$($request.requestId) tasks=$(@($request.requests).Count)"
+          "SELF_HOSTED_TRAINING_ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "REQUEST_ID=${{ needs.gate.outputs.request_id }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "TRAINING_BACKEND=LOCAL_SELF_HOSTED" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "[PASS] preserved local request=${{ needs.gate.outputs.request_id }} tasks=${{ needs.gate.outputs.task_types }}"
 
-      - name: Preflight Python CUDA and Vibe3 model capability
-        id: preflight
+      - name: Preflight local Python CUDA and Vibe3 model capability
+        if: needs.gate.outputs.backend == 'LOCAL_SELF_HOSTED'
+        shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
           $python = Get-Command python -ErrorAction SilentlyContinue
           if (-not $python) { throw 'Python is not installed on the local training runner.' }
           python -c "import sys; print(sys.version)"
           python -c "import torch, transformers, peft; print('torch=' + torch.__version__); print('transformers=' + transformers.__version__); print('peft=' + peft.__version__); assert torch.cuda.is_available(), 'CUDA GPU is required for local Vibe2/Vibe3 training'; print('cuda=' + torch.cuda.get_device_name(0))"
-
           $method = 'lora'
           python -c "import bitsandbytes" 2>$null
           if ($LASTEXITCODE -eq 0) { $method = 'qlora' }
           "TRAINING_METHOD=$method" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
           $vramGiB = [int](python -c "import torch; print(int(torch.cuda.get_device_properties(0).total_memory // (1024**3)))")
           $driveName = [System.IO.Path]::GetPathRoot($env:USERPROFILE).Substring(0,1)
           $drive = Get-PSDrive -Name $driveName
           $diskGiB = [int]($drive.Free / 1GB)
           "CUDA_VRAM_GIB=$vramGiB" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "TRAINING_DISK_GIB=$diskGiB" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
           $policyRoot = Join-Path $env:USERPROFILE '.jaewoon'
           $enableMarker = Join-Path $policyRoot 'vibe3-coder-upgrade.enabled'
           $compatMarker = Join-Path $policyRoot 'vibe3-coder-30b.compatible'
@@ -134,24 +276,23 @@ jobs:
           Write-Host "[PASS] local CUDA training stack ready; method=$method vramGiB=$vramGiB diskGiB=$diskGiB coderEnabled=$enabled coderCompatible=$compatible coderCached=$cached"
 
       - name: Build task datasets and train adapters locally
+        if: needs.gate.outputs.backend == 'LOCAL_SELF_HOSTED'
+        shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
           $requestFile = Join-Path $env:GITHUB_WORKSPACE 'company-learning\distillation-training-request.json'
           $request = [System.IO.File]::ReadAllText($requestFile, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
           $runtimeItems = @()
           $platformTasks = @('unity', 'roblox', 'fortnite_uefn')
-
           foreach ($item in @($request.requests)) {
             $taskType = [string]$item.taskType
             $adapterVersion = [string]$item.adapterVersion
             if ($taskType -notmatch '^(coding|bugfix|unity|roblox|fortnite_uefn|qa|planning|general)$') { throw "invalid task type: $taskType" }
             if ($adapterVersion -notmatch '^[A-Za-z0-9._-]+$') { throw "invalid adapter version: $adapterVersion" }
             $isPlatformTask = $platformTasks -contains $taskType
-
             $datasetDir = Join-Path $env:GITHUB_WORKSPACE ("vibe2-learning\datasets\$taskType\$env:REQUEST_ID")
             if (Test-Path $datasetDir) { Remove-Item $datasetDir -Recurse -Force }
             $syntheticRatioCap = if ($isPlatformTask) { '0' } else { '0.5' }
-
             node tools/vibe2-weight-learning.mjs dataset `
               --input company-learning/training-samples `
               --out $datasetDir `
@@ -162,7 +303,6 @@ jobs:
               --max-project-share 0.75 `
               --synthetic-ratio-cap $syntheticRatioCap
             if ($LASTEXITCODE -ne 0) { throw "dataset gate failed for $taskType" }
-
             $manifestPath = Join-Path $datasetDir 'manifest.json'
             $trainPath = Join-Path $datasetDir 'train.jsonl'
             $evalPath = Join-Path $datasetDir 'eval.jsonl'
@@ -170,7 +310,6 @@ jobs:
             $manifest = [System.IO.File]::ReadAllText($manifestPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
             if ($manifest.readyForTraining -ne $true) { throw "manifest is not training-ready for $taskType" }
             if ($manifest.targetTaskType -ne $taskType) { throw "manifest task mismatch for $taskType" }
-
             if ($isPlatformTask) {
               node tools/vibe2-real-platform-dataset-gate.mjs `
                 --task-type $taskType `
@@ -183,7 +322,6 @@ jobs:
               Write-Host "PLATFORM_TRAINING_AUTHORITY=$taskType:VERIFIED_PRODUCTION_EVIDENCE_ONLY"
               Write-Host "PLATFORM_SYNTHETIC_TRAINING=$taskType:NO"
             }
-
             $selectionJson = node tools/vibe3-model-selection.mjs `
               --task-type $taskType `
               --method $env:TRAINING_METHOD `
@@ -197,12 +335,9 @@ jobs:
             $selection = $selectionJson | ConvertFrom-Json
             $baseModel = [string]$selection.model
             Write-Host "VIBE3_MODEL_TIER=$($selection.tier) TASK=$taskType MODEL=$baseModel"
-            if ($selection.upgraded -eq $true) { Write-Host 'VIBE3_CODER_UPGRADE=YES' } else { Write-Host "VIBE3_CODER_UPGRADE=NO reasons=$($selection.reasons -join ',')" }
-
-            $adapterDir = Join-Path $env:LOCAL_TRAINING_ROOT ("adapters\$taskType\$adapterVersion")
+            $adapterDir = Join-Path $env:SELF_HOSTED_TRAINING_ROOT ("adapters\$taskType\$adapterVersion")
             if (Test-Path $adapterDir) { Remove-Item $adapterDir -Recurse -Force }
             New-Item -ItemType Directory -Path $adapterDir -Force | Out-Null
-
             python tools/vibe2-train.py `
               --train $trainPath `
               --eval $evalPath `
@@ -213,52 +348,45 @@ jobs:
               --method $env:TRAINING_METHOD `
               --base-model $baseModel
             if ($LASTEXITCODE -ne 0) { throw "adapter training failed for $taskType" }
-
             $metadataPath = Join-Path $adapterDir 'training-metadata.json'
             if (-not (Test-Path $metadataPath)) { throw "training metadata missing for $taskType" }
             $metadata = [System.IO.File]::ReadAllText($metadataPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
-            if ($metadata.promotionState -ne 'UNVERIFIED' -or $metadata.runtimePromotionAllowed -ne $false) {
-              throw "fresh adapter must remain unverified for $taskType"
-            }
-            if ($isPlatformTask -and $metadata.verifiedRealOnly -ne $true) {
-              throw "$taskType adapter must be marked verified-real-only"
-            }
-            $runtimeItems += [pscustomobject]@{
-              taskType = $taskType
-              adapterVersion = $adapterVersion
-              method = $env:TRAINING_METHOD
-              baseModel = $baseModel
-              modelTier = [string]$selection.tier
-              localAdapterPath = $adapterDir
-              datasetManifest = $manifestPath
-              promotionState = 'UNVERIFIED'
-              runtimePromotionAllowed = $false
-              requiredNextGate = 'FIXED_HOLDOUT_AB_AND_CANARY'
-            }
+            if ($metadata.promotionState -ne 'UNVERIFIED' -or $metadata.runtimePromotionAllowed -ne $false) { throw "fresh adapter must remain unverified for $taskType" }
+            if ($isPlatformTask -and $metadata.verifiedRealOnly -ne $true) { throw "$taskType adapter must be marked verified-real-only" }
+            $runtimeItems += [pscustomobject]@{ taskType=$taskType; adapterVersion=$adapterVersion; method=$env:TRAINING_METHOD; baseModel=$baseModel; modelTier=[string]$selection.tier; selfHostedAdapterPath=$adapterDir; datasetManifest=$manifestPath; promotionState='UNVERIFIED'; runtimePromotionAllowed=$false; requiredNextGate='FIXED_HOLDOUT_AB_AND_CANARY' }
           }
-
-          $runtime = [ordered]@{
-            version = 2
-            requestId = $env:REQUEST_ID
-            state = 'TRAINED_UNVERIFIED'
-            trainedAt = (Get-Date).ToUniversalTime().ToString('o')
-            runner = $env:RUNNER_NAME
-            items = $runtimeItems
-            hostedTraining = $false
-            paidApi = $false
-            vibe3CapabilityGatedModelSelection = $true
-            nextGate = 'FIXED_HOLDOUT_AB_AND_CANARY'
-          }
-          $runtimePath = Join-Path $env:LOCAL_TRAINING_ROOT 'latest-training-runtime.json'
+          $runtime = [ordered]@{ version=3; requestId=$env:REQUEST_ID; state='TRAINED_UNVERIFIED'; trainedAt=(Get-Date).ToUniversalTime().ToString('o'); runner=$env:RUNNER_NAME; backend='LOCAL_SELF_HOSTED'; items=$runtimeItems; githubHostedTraining=$false; paidApi=$false; vibe3CapabilityGatedModelSelection=$true; nextGate='FIXED_HOLDOUT_AB_AND_CANARY' }
+          $runtimePath = Join-Path $env:SELF_HOSTED_TRAINING_ROOT 'latest-training-runtime.json'
           $runtime | ConvertTo-Json -Depth 12 | Set-Content $runtimePath -Encoding utf8
-          Write-Host "[PASS] trained adapters remain UNVERIFIED: $runtimePath"
+          Write-Host "[PASS] locally trained adapters remain UNVERIFIED: $runtimePath"
 
       - name: Training summary
         if: always()
+        shell: bash
         run: |
-          Write-Host "REQUEST_ID=$env:REQUEST_ID"
-          Write-Host "GITHUB_HOSTED_MODEL_TRAINING=NO"
-          Write-Host "PAID_API=NO"
-          Write-Host "VIBE3_CAPABILITY_GATED_MODEL_SELECTION=YES"
-          Write-Host "AUTO_PROMOTION=NO"
-          Write-Host "NEXT_GATE=FIXED_HOLDOUT_AB_AND_CANARY"
+          echo "REQUEST_ID=${{ needs.gate.outputs.request_id }}"
+          echo "TRAINING_BACKEND=${{ needs.gate.outputs.backend }}"
+          echo 'SERVER_SELF_HOSTED_PRIMARY=YES'
+          echo 'LOCAL_SELF_HOSTED_PRESERVED=YES'
+          echo 'GITHUB_HOSTED_MODEL_TRAINING=NO'
+          echo 'PAID_API=NO'
+          echo 'VIBE3_CAPABILITY_GATED_MODEL_SELECTION=YES'
+          echo 'AUTO_PROMOTION=NO'
+          echo 'NEXT_GATE=FIXED_HOLDOUT_AB_AND_CANARY'
+
+  waiting:
+    needs: gate
+    if: always() && needs.gate.outputs.ready != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Report why self-hosted training did not start
+        shell: bash
+        run: |
+          echo "CANONICAL_REQUEST_READY=${{ needs.gate.outputs.request_ready }}"
+          echo "TRAINING_BACKEND=${{ needs.gate.outputs.backend }}"
+          echo "BACKEND_STATE=${{ needs.gate.outputs.backend_state }}"
+          echo "REQUEST_ID=${{ needs.gate.outputs.request_id }}"
+          echo "TASK_TYPES=${{ needs.gate.outputs.task_types }}"
+          echo 'MODEL_TRAINING_STARTED=NO'
+          echo 'QUALITY_THRESHOLDS_LOWERED=NO'

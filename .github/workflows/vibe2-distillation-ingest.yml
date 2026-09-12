@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'COMPANY_FLOW.md'
       - 'assets/vibe-v3-engine.js'
       - 'assets/vibe-development-ai.js'
       - 'tools/vibe2-training-sample.mjs'
@@ -16,12 +17,18 @@ on:
       - 'tools/vibe3-trajectory-ingest.mjs'
       - 'tools/vibe3-model-selection.mjs'
       - 'tools/vibe3-pump-index.mjs'
+      - 'tools/vibe3-external-web-distill.mjs'
       - 'qa/vibe2-training-sample.test.mjs'
       - 'qa/vibe2-distillation-status.test.mjs'
       - 'qa/vibe2-training-request.test.mjs'
       - 'qa/vibe2-weight-learning.test.mjs'
       - 'qa/vibe3-trajectory-ingest.test.mjs'
       - 'qa/vibe3-pump-index.test.mjs'
+      - 'qa/vibe3-external-web-distill.test.mjs'
+      - 'company-learning/canonical-learning-pipeline.json'
+      - 'company-learning/VIBE3_ENGINE.md'
+      - 'company-learning/vibe3-engine-contract.json'
+      - 'company-learning/external-web-sources.json'
       - 'company-learning/vibe3-trajectories/**'
       - 'company-learning/external-game-playtest/**'
       - 'design/**/release-baseline.json'
@@ -53,7 +60,7 @@ jobs:
   ingest:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 20
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
@@ -100,6 +107,7 @@ jobs:
           node --check tools/vibe3-trajectory-ingest.mjs
           node --check tools/vibe3-model-selection.mjs
           node --check tools/vibe3-pump-index.mjs
+          node --check tools/vibe3-external-web-distill.mjs
           python -m py_compile tools/vibe2-train.py
           node --test qa/vibe2-training-sample.test.mjs
           node --test qa/vibe2-distillation-status.test.mjs
@@ -107,12 +115,33 @@ jobs:
           node --test qa/vibe2-weight-learning.test.mjs
           node qa/vibe3-trajectory-ingest.test.mjs
           node qa/vibe3-pump-index.test.mjs
+          node qa/vibe3-external-web-distill.test.mjs
 
-      - name: Ingest verified diffs trajectories and refresh readiness
+      - name: Prepare sandboxed browser probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Ingest verified external web diffs histories trajectories and refresh readiness
         id: ingest
         shell: bash
         run: |
           set -euo pipefail
+          set +e
+          node tools/vibe3-external-web-distill.mjs \
+            --manifest=company-learning/external-web-sources.json \
+            --out-dir=company-learning/training-samples | tee /tmp/vibe3-external-web-distill.json
+          external_status=${PIPESTATUS[0]}
+          set -e
+          if [ ! -s /tmp/vibe3-external-web-distill.json ]; then
+            echo 'EXTERNAL_WEB_DISTILL_FATAL=NO_RESULT'
+            exit 1
+          fi
+          if [ "$external_status" -ne 0 ]; then
+            echo "EXTERNAL_WEB_DISTILL_PARTIAL_FAILURE=YES status=$external_status"
+          fi
           node tools/vibe2-distillation-ingest.mjs \
             --dev-ref=origin/autonomous-dev \
             --main-ref=origin/main \
@@ -136,11 +165,16 @@ jobs:
           node - <<'NODE'
           const fs=require('fs');
           const read=file=>JSON.parse(fs.readFileSync(file,'utf8').trim().split(/\r?\n/).at(-1));
+          const external=read('/tmp/vibe3-external-web-distill.json');
           const ingest=read('/tmp/vibe2-distillation-ingest.json');
           const trajectory=read('/tmp/vibe3-trajectory-ingest.json');
           const status=read('/tmp/vibe2-distillation-status.json');
           const request=read('/tmp/vibe2-distillation-request.json');
           const pump=read('/tmp/vibe3-pump.json');
+          console.log(`EXTERNAL_WEB_SOURCES_EXAMINED=${external.examinedSources||0}`);
+          console.log(`EXTERNAL_WEB_COMMITS_EXAMINED=${external.examinedCommits||0}`);
+          console.log(`EXTERNAL_WEB_SAMPLES_WRITTEN=${external.written?.length||0}`);
+          console.log(`EXTERNAL_WEB_SOURCE_FAILURES=${external.failed?.length||0}`);
           console.log(`DISTILLATION_SAMPLES_WRITTEN=${ingest.written.length}`);
           console.log(`DISTILLATION_SAMPLES_REFRESHED=${ingest.refreshed?.length||0}`);
           console.log(`UNITY_RELEASE_BASELINES_EXAMINED=${ingest.unityRelease?.examined||0}`);
@@ -153,7 +187,9 @@ jobs:
           console.log(`VIBE3_PUMP_BENCHMARKS=${pump.benchmarks||0}`);
           console.log(`DISTILLATION_READY_TASKS=${status.readyTasks.join(',')||'NONE'}`);
           console.log(`DISTILLATION_STATE=${status.state}`);
-          console.log(`LOCAL_TRAINING_REQUEST_STATE=${request.state}`);
+          console.log(`SELF_HOSTED_TRAINING_REQUEST_STATE=${request.state}`);
+          console.log(`TRAINING_PRIMARY_BACKEND=${request.execution?.preferredBackend||'NONE'}`);
+          console.log(`LOCAL_TRAINING_BACKEND_PRESERVED=${request.execution?.localBackendPreserved===true?'YES':'NO'}`);
           NODE
 
       - name: Upload verified samples and Pump memory artifact
@@ -174,7 +210,6 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-vibe2-learning'
           git config user.email 'actions@users.noreply.github.com'
-
           state_paths=(
             company-learning/training-samples
             company-learning/distillation-status.json
@@ -183,13 +218,11 @@ jobs:
             company-learning/vibe3-task-playbooks.json
             company-learning/vibe3-benchmark-queue.json
           )
-
           git add -A -- "${state_paths[@]}"
           if ! git diff --cached --quiet; then
             git commit -m 'learning: refresh canonical samples and Vibe3 Pump memory [skip ci]'
           fi
           generated_commit="$(git rev-parse HEAD)"
-
           remote_ref="refs/heads/$VIBE2_LEARNING_RUNTIME_BRANCH"
           if git ls-remote --exit-code --heads origin "$VIBE2_LEARNING_RUNTIME_BRANCH" >/dev/null 2>&1; then
             git fetch origin "+$remote_ref:refs/remotes/origin/$VIBE2_LEARNING_RUNTIME_BRANCH"
@@ -200,12 +233,14 @@ jobs:
             git push origin "$generated_commit:$remote_ref"
             echo 'VIBE2_LEARNING_RUNTIME_UPDATE=BOOTSTRAP_CREATED'
           fi
-
           persisted="$(git ls-remote origin "$remote_ref" | awk '{print $1}')"
           test "$persisted" = "$generated_commit"
           echo "VIBE2_LEARNING_RUNTIME_SHA=$persisted"
           echo "VIBE2_LEARNING_RUNTIME_BRANCH=$VIBE2_LEARNING_RUNTIME_BRANCH"
           echo 'GITHUB_HOSTED_MODEL_TRAINING=NO'
+          echo 'SERVER_SELF_HOSTED_PRIMARY=YES'
+          echo 'LOCAL_SELF_HOSTED_PRESERVED=YES'
+          echo 'EXTERNAL_WEB_OPEN_SOURCE_AUTO_DISTILL=YES'
           echo 'BENCHMARK_COUNTS_AS_TRAINING_SAMPLE=NO'
           echo 'PUBLIC_GAME_CODE_WRITE=NO'
           echo 'PUBLIC_MAIN_WRITE=NO'
@@ -218,10 +253,16 @@ jobs:
           echo '- schedule: HOURLY_24H' >> "$GITHUB_STEP_SUMMARY"
           echo '- V3 Pump Mode: ON' >> "$GITHUB_STEP_SUMMARY"
           echo '- durable state: vibe2-learning-runtime branch; direct main write: NO' >> "$GITHUB_STEP_SUMMARY"
+          echo '- external web open-source: allowlisted permissive-license source -> sandboxed browser runtime/input QA -> canonical training sample' >> "$GITHUB_STEP_SUMMARY"
+          echo '- external source code executes only inside the network-blocked browser probe; upstream Node/shell scripts are not executed' >> "$GITHUB_STEP_SUMMARY"
+          echo '- external source failure does not fabricate PASS and does not count as a training sample' >> "$GITHUB_STEP_SUMMARY"
           echo '- verified RAG memory: verified positive evidence only' >> "$GITHUB_STEP_SUMMARY"
           echo '- failure memory: warning/avoidance context only' >> "$GITHUB_STEP_SUMMARY"
+          echo '- web portable context: touch/mobile UI/save-load/performance/responsive/regression/core-loop may guide Roblox; platform PASS transfer: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- task playbooks: coding/bugfix/qa/unity/roblox/fortnite_uefn/graphics/planning/general' >> "$GITHUB_STEP_SUMMARY"
           echo '- platform training lanes: one canonical trainer; isolated Unity/Roblox/Fortnite UEFN evidence, datasets, adapters, and runtime gates' >> "$GITHUB_STEP_SUMMARY"
+          echo '- training execution: server self-hosted PRIMARY; existing local self-hosted PRESERVED' >> "$GITHUB_STEP_SUMMARY"
+          echo '- automatic server-to-local fallback: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- benchmark accumulation: ON; counts as training sample: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- candidate tournament default: 5; allowed: 3-5' >> "$GITHUB_STEP_SUMMARY"
           echo '- bounded self repair: max 3 attempts' >> "$GITHUB_STEP_SUMMARY"
@@ -231,6 +272,5 @@ jobs:
           echo '- failed Vibe3 candidates: comparison context only, never promoted as answer targets' >> "$GITHUB_STEP_SUMMARY"
           echo '- paid API: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- GitHub-hosted model training: NO' >> "$GITHUB_STEP_SUMMARY"
-          echo '- local weight training required for Pump: NO' >> "$GITHUB_STEP_SUMMARY"
-          echo '- actual weight training: deferred until local capability and canonical readiness' >> "$GITHUB_STEP_SUMMARY"
+          echo '- weight training starts only after canonical sample/diversity readiness and selected self-hosted capability pass' >> "$GITHUB_STEP_SUMMARY"
           echo '- promotion: fixed holdout A/B then Canary' >> "$GITHUB_STEP_SUMMARY"

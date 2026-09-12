@@ -9,13 +9,31 @@ import { qaEvidencePasses, qaRequirementsForTask } from './vibe2-training-sample
 
 const SAFE_ID=/^[A-Za-z0-9._-]+$/;
 const SHA=/^[0-9a-f]{7,40}$/i;
-const TASK_TYPES=new Set(['coding','bugfix','unity','roblox','qa','planning','general']);
+const TASK_TYPES=new Set(['coding','bugfix','unity','roblox','fortnite_uefn','qa','planning','general']);
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
+const lower=value=>clean(value).toLowerCase();
 const clamp01=value=>Math.max(0,Math.min(1,Number(value)||0));
+const unique=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 
 function readJson(file){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return null;}}
 function listFiles(root){if(!fs.existsSync(root))return[];return fs.readdirSync(root).filter(name=>name.endsWith('.json')).map(name=>path.join(root,name)).sort();}
+function inferPortableTags(record={}){
+  const metadata=record.metadata||{};
+  const sourcePaths=unique([metadata.sourcePath,...(metadata.sourcePaths||[])]);
+  const corpus=lower([record.request,metadata.winnerOutput,...sourcePaths].join(' '));
+  const tags=[...(metadata.tags||[])];
+  if(sourcePaths.some(value=>lower(value).startsWith('web-games/'))||/\bwebgame\b|web game|browser|html|javascript|canvas|dom/.test(corpus))tags.push('webgame');
+  if(/touch|pointer|tap|swipe|drag|조이스틱|터치/.test(corpus))tags.push('touch-input');
+  if(/mobile|small screen|safe area|viewport|모바일/.test(corpus))tags.push('mobile-ui');
+  if(/canvas/.test(corpus))tags.push('canvas');
+  if(/localstorage|save|load|rejoin|resume|세이브|저장|불러오기/.test(corpus))tags.push('save-load');
+  if(/performance|fps|memory|frame|성능|렉/.test(corpus))tags.push('performance');
+  if(/responsive|aspect ratio|viewport|가로|세로/.test(corpus))tags.push('responsive');
+  if(/regression|회귀/.test(corpus))tags.push('regression');
+  if(/core loop|core-loop|핵심루프/.test(corpus))tags.push('core-loop');
+  return unique(tags);
+}
 
 export function validateVibe3Trajectory(record={}){
   const blocked=[];
@@ -28,8 +46,9 @@ export function validateVibe3Trajectory(record={}){
   const selected=clean(record.selectedCandidateId);
   const winner=(record.candidates||[]).find(item=>clean(item?.id)===selected);
   const independentQa=upper(finalEvidence.independentQa||'PASS');
-  const browserQa=upper(finalEvidence.browserQa||((taskType==='unity'||taskType==='roblox')?'NOT_APPLICABLE':'PASS'));
+  const browserQa=upper(finalEvidence.browserQa||((taskType==='unity'||taskType==='roblox'||taskType==='fortnite_uefn')?'NOT_APPLICABLE':'PASS'));
   const runtime=upper(finalEvidence.runtime||'PASS');
+  const runtimePassed=finalEvidence.runtimePassed===true||finalEvidence.runtimePass===true;
   if(Number(record.version)!==1)blocked.push('trajectory-version');
   if(clean(record.authority)!=='verified-development-trajectory')blocked.push('trajectory-authority');
   if(clean(record.outcome)!=='VERIFIED_WINNER')blocked.push('winner-not-verified');
@@ -40,23 +59,27 @@ export function validateVibe3Trajectory(record={}){
   if(!project)blocked.push('project-missing');
   if(!SHA.test(sourceRevision))blocked.push('source-revision-invalid');
   if(!winnerOutput)blocked.push('winner-output-missing');
-  if(finalEvidence.runtimePassed!==true)blocked.push('runtime-not-passed');
+  if(!runtimePassed)blocked.push('runtime-not-passed');
   if(finalEvidence.qaPassed!==true)blocked.push('qa-not-passed');
   if(finalEvidence.regressionPassed!==true)blocked.push('regression-not-passed');
   if(finalEvidence.exactRevision!==true)blocked.push('exact-revision-unproven');
   if(finalEvidence.protectedStatePreserved!==true)blocked.push('protected-state-unproven');
   if(!qaEvidencePasses({taskType,independentQa,browserQa,runtime}))blocked.push('canonical-qa-gate-rejected');
-  return Object.freeze({pass:blocked.length===0,blockedReasons:Object.freeze(blocked),taskType,project,sourceRevision,winnerOutput,independentQa,browserQa,runtime,winner});
+  return Object.freeze({pass:blocked.length===0,blockedReasons:Object.freeze(blocked),taskType,project,sourceRevision,winnerOutput,independentQa,browserQa,runtime,winner,tags:Object.freeze(inferPortableTags(record))});
 }
 
 function sampleFromTrajectory(record,validation,sourceFile){
   const failed=(record.candidates||[]).filter(item=>item.eligible!==true).map(item=>({id:clean(item.id),blockedReasons:Array.isArray(item.blockedReasons)?item.blockedReasons:[],failure:clean(item.failure)||null}));
+  const sourcePaths=unique([record.metadata?.sourcePath,...(record.metadata?.sourcePaths||[])]);
   const input=JSON.stringify({
     sourceGraphDigest:record.sourceGraphDigest||null,
     selectedCandidateId:record.selectedCandidateId,
     failedCandidates:failed,
     repairAttempts:Array.isArray(record.repairAttempts)?record.repairAttempts:[],
+    sourcePaths,
+    portableTags:[...validation.tags],
     evidenceBoundary:'OBSERVABLE_ACTIONS_AND_VERIFICATION_ONLY',
+    platformEvidenceTransferAllowed:false,
   },null,2);
   return {
     version:3,
@@ -64,7 +87,7 @@ function sampleFromTrajectory(record,validation,sourceFile){
     input,
     output:validation.winnerOutput,
     taskType:validation.taskType,
-    difficulty:validation.taskType==='bugfix'?'bug':validation.taskType==='unity'?'unity-build':validation.taskType==='roblox'?'roblox-release':'regression',
+    difficulty:validation.taskType==='bugfix'?'bug':validation.taskType==='unity'?'unity-build':validation.taskType==='roblox'?'roblox-release':validation.taskType==='fortnite_uefn'?'uefn-release':'regression',
     lifecycle:'active',
     sourceKind:'vibe3-trajectory',
     project:validation.project,
@@ -72,17 +95,19 @@ function sampleFromTrajectory(record,validation,sourceFile){
     candidateId:clean(record.selectedCandidateId),
     sourceCommit:validation.sourceRevision,
     sourceRevision:validation.sourceRevision,
+    sourcePaths,
+    tags:[...validation.tags],
     independentQa:validation.independentQa,
     browserQa:validation.browserQa,
     quality:{codeQuality:1,noRegression:true,playImprovement:clamp01(record.metadata?.playerImpactScore??1),ruleCompliance:1,trajectoryEvidence:1},
-    provenance:{sourceKind:'vibe3-trajectory',sourceRevision:validation.sourceRevision,gameId:clean(record.metadata?.gameId)||null,candidateId:clean(record.selectedCandidateId),trajectoryId:clean(record.trajectoryId),trajectoryFile:sourceFile},
+    provenance:{sourceKind:'vibe3-trajectory',sourceRevision:validation.sourceRevision,gameId:clean(record.metadata?.gameId)||null,candidateId:clean(record.selectedCandidateId),trajectoryId:clean(record.trajectoryId),trajectoryFile:sourceFile,portableContextMayCrossPlatforms:true,platformPassEvidenceTransferAllowed:false},
     verification:{independentQa:validation.independentQa,browserQa:validation.browserQa,runtime:validation.runtime,fullRegression:'PASS',exactRevision:'PASS',protectedState:'PASS',requirements:qaRequirementsForTask(validation.taskType)},
   };
 }
 
 export function ingestVibe3Trajectories({trajectoryDir='company-learning/vibe3-trajectories',outDir='company-learning/training-samples'}={}){
   fs.mkdirSync(outDir,{recursive:true});
-  const result={version:1,examined:0,written:[],refreshed:[],skipped:[]};
+  const result={version:2,examined:0,written:[],refreshed:[],skipped:[]};
   for(const file of listFiles(trajectoryDir)){
     result.examined+=1;
     const record=readJson(file);
@@ -96,7 +121,7 @@ export function ingestVibe3Trajectories({trajectoryDir='company-learning/vibe3-t
     if(existing?.provenance?.sourceRevision===validation.sourceRevision&&existing?.provenance?.trajectoryId===trajectoryId){result.skipped.push({file,reason:'ALREADY_CURRENT'});continue;}
     const sample=sampleFromTrajectory(record,validation,file.replaceAll('\\','/'));
     fs.writeFileSync(outFile,`${JSON.stringify(sample,null,2)}\n`);
-    const item={trajectoryId,taskType:sample.taskType,project:sample.project,sourceRevision:sample.sourceRevision,outFile};
+    const item={trajectoryId,taskType:sample.taskType,project:sample.project,sourceRevision:sample.sourceRevision,tags:sample.tags,outFile};
     if(existing)result.refreshed.push(item);else result.written.push(item);
   }
   return result;

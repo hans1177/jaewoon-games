@@ -1,13 +1,16 @@
 // 파일명: tools/vibe3-model-selection.mjs
-// 역할: 로컬 학습 장비가 충분하고 호환성 증거가 있을 때만 코드 특화 상위 모델을 선택한다.
-// 원칙: 대형 모델 다운로드를 자동 강제하지 않고, 기준 미달이면 검증된 소형 baseline으로 복귀한다.
+// 역할: 승인된 self-hosted 학습 장비가 충분하고 호환성 증거가 있을 때만 코드 특화 상위 모델을 선택한다.
+// 원칙: 서버 self-hosted를 우선하고 기존 로컬 self-hosted를 보존하며, 대형 모델 다운로드를 자동 강제하지 않는다.
 
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 export const VIBE3_MODEL_POLICY=Object.freeze({
-  version:1,
-  route:'LOCAL_SELF_HOSTED_ONLY',
+  version:2,
+  route:'CANONICAL_SELF_HOSTED',
+  preferredBackend:'SERVER_SELF_HOSTED',
+  allowedBackends:Object.freeze(['SERVER_SELF_HOSTED','LOCAL_SELF_HOSTED']),
+  localBackendPreserved:true,
   baselineModel:'Qwen/Qwen3-1.7B',
   coderUpgradeModel:'Qwen/Qwen3-Coder-30B-A3B-Instruct',
   coderUpgrade:Object.freeze({
@@ -48,13 +51,13 @@ export function selectVibe3BaseModel({
   if(!bool(modelCachedOrDownloadApproved))reasons.push('large-model-cache-or-download-approval-missing');
   const upgrade=codingTask&&reasons.length===0;
   return Object.freeze({
-    version:1,
+    version:2,
     model:upgrade?VIBE3_MODEL_POLICY.coderUpgradeModel:VIBE3_MODEL_POLICY.baselineModel,
     tier:upgrade?'CODER_UPGRADE':'BASELINE',
     upgraded:upgrade,
     reasons:Object.freeze(reasons),
     policy:VIBE3_MODEL_POLICY,
-    authority:'local-capability-gated-model-selection',
+    authority:'self-hosted-capability-gated-model-selection',
   });
 }
 

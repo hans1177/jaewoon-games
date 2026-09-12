@@ -371,61 +371,6 @@ platformStrategy:
   noParallelLearningPipeline: true
   runtimeContractMirror: company-learning/platform-release-roadmap.json
   runtimeContractCannotCreatePolicy: true
-  commonExecutionContract:
-    router: tools/company-selected-platform-router.mjs
-    singleRoutingDecisionPoint: true
-    commonAdapterContractRequired: true
-    commonEvidenceSchemaRequired: true
-    allowedPlatforms:
-      - ROBLOX
-      - UNITY
-      - FORTNITE_UEFN
-    commonEvidenceFields:
-      - PLATFORM
-      - SOURCE_REVISION
-      - BUILD_OR_PACKAGE_PASSED
-      - ARTIFACT_IDENTITY
-      - RUNTIME_PASSED
-      - INDEPENDENT_QA_PASSED
-      - REGRESSION_PASSED
-      - EXACT_REVISION
-      - LAST_SUCCESSFUL_STAGE
-      - FAILURE_STAGE
-      - FAILURE_SIGNATURE
-    adapters:
-      ROBLOX: tools/vibe3-roblox-platform.mjs
-      UNITY: tools/company-development-unity-platform.mjs
-      FORTNITE_UEFN: tools/company-development-uefn-platform.mjs
-  developmentSpeedExecution:
-    scope: EXECUTION_SPEED_ONLY
-    qualityOrEvidenceGateWeakeningForbidden: true
-    canonicalSequence:
-      - CHANGE_DETECTION
-      - CHEAP_PRECHECK
-      - REPRESENTATIVE_CANARY
-      - SINGLE_BUILD_OR_PACKAGE
-      - IMMUTABLE_ARTIFACT_BIND
-      - TARGET_PLATFORM_RUNTIME
-      - INDEPENDENT_QA
-      - REGRESSION
-      - IMMEDIATE_NEXT_STAGE_DISPATCH
-      - RESUME_EXACT_FAILURE_POINT
-    changeDetectionRequiredBeforeExpensiveWork: true
-    cheapPrecheckRequiredBeforeCanary: true
-    representativeCanaryRequiredWhenSharedExecutionContractChangedOrCommonFailureDetected: true
-    canaryPassAllowsRemainingEligibleWorkToProceed: true
-    buildOncePerSourceFingerprint: true
-    sameArtifactRequiredAcrossRuntimeIndependentQaAndRegression: true
-    immutableArtifactIdentityRequired: true
-    successfulStageEvidenceReusableWhenSourceFingerprintStillMatches: true
-    sourceOrRelevantDependencyChangeInvalidatesAffectedEvidenceOnly: true
-    failureMustRecordExactStageAndSignature: true
-    retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches: true
-    successfulStepMustNotBeRepeatedWithoutInvalidatingChange: true
-    nextCanonicalStageDispatchImmediatelyAfterSuccess: true
-    cronRole: WATCHDOG_AND_RECOVERY_ONLY
-    cronMustNotBePrimaryProgressionEngine: true
-    existingEventChainPreferred: true
   focusMilestones:
     ROBLOX_FAST_RELEASE_STABILIZATION:
       defaultPriority: 1
@@ -442,6 +387,20 @@ platformStrategy:
       objective: ADD_UEFN_RELEASE_EXPERIENCE_WITHOUT_REPLACING_OTHER_TRACKS
   experienceSharing:
     portableVerifiedPatternsUseExistingV3MemoryAndCanonicalDistillation: true
+    verifiedWebGameplayMayFeedSharedV3PortableContext: true
+    portableWebPatterns:
+      - TOUCH_INPUT
+      - MOBILE_UI
+      - SAVE_LOAD_AND_RESUME
+      - PERFORMANCE
+      - RESPONSIVE_LAYOUT
+      - REGRESSION_AVOIDANCE
+      - CORE_LOOP_IMPLEMENTATION
+    robloxMayUseVerifiedWebPortablePatternsAsContext: true
+    webEvidenceCountsAsRobloxVerifiedEvidence: false
+    webEvidenceMaySatisfyRobloxDatasetGate: false
+    webEvidenceMaySatisfyRobloxRuntimeOrPublishingGate: false
+    robloxSpecificTrainingStillRequiresRealVerifiedRobloxEvidence: true
     platformSpecificImplementationRemainsPlatformScoped: true
     successEvidenceDoesNotTransferAcrossPlatforms: true
   ROBLOX:
@@ -1093,12 +1052,70 @@ learning:
     - VERIFIED_TRAINING_SAMPLE
     - DISTILLATION_STATUS
     - DETERMINISTIC_TRAINING_REQUEST
-    - LOCAL_SELF_HOSTED_DATASET_BUILD
-    - LOCAL_LORA_OR_QLORA_TRAINING
+    - SELF_HOSTED_DATASET_BUILD
+    - SELF_HOSTED_LORA_OR_QLORA_TRAINING
     - TRAINED_UNVERIFIED
     - FIXED_HOLDOUT_AB
     - CANARY
     - PROMOTE_OR_ROLLBACK
+  trainingExecution:
+    mode: CONTINUOUS_24H
+    canonicalRefreshCadence: HOURLY
+    primaryBackend: SERVER_SELF_HOSTED
+    preservedBackend: LOCAL_SELF_HOSTED
+    localBackendPreserved: true
+    automaticLocalFallbackAllowed: false
+    bothBackendsConsumeSameCanonicalTrainingRequest: true
+    sameDatasetAndTrainerContractAcrossBackends: true
+    separateDatasetOrTrainerPerBackendForbidden: true
+    duplicateConcurrentTrainingSameRequestForbidden: true
+    serverBackendRequiresExplicitRegisteredCapability: true
+    githubHostedModelTrainingForbidden: true
+    paidTrainingForbidden: true
+  externalOpenSourceWebDistillation:
+    enabled: true
+    execution: EXISTING_CANONICAL_HOURLY_INGEST_ONLY
+    separateCronOrPipelineForbidden: true
+    sourceMode: ALLOWLISTED_PERMISSIVE_OPEN_SOURCE_ONLY
+    allowedLicenses:
+      - MIT
+      - BSD-2-Clause
+      - BSD-3-Clause
+      - Apache-2.0
+      - ISC
+      - CC0-1.0
+      - Unlicense
+    licenseFileAndTextVerificationRequired: true
+    sourceCommitBindingRequired: true
+    upstreamNodeOrShellExecutionForbidden: true
+    browserExecutionSandboxed: true
+    externalBrowserNetworkBlocked: true
+    browserRuntimePassRequired: true
+    meaningfulInteractionProbeRequired: true
+    codeDiffOnly: true
+    rawBinaryOrAssetTrainingForbidden: true
+    failedSourceCannotCreatePositiveSample: true
+    provenanceAndLicenseRetentionRequired: true
+    outputFeedsExistingTrainingSamples: true
+    portableContextOnlyAcrossPlatforms: true
+    crossPlatformPassEvidenceTransferForbidden: true
+    thresholdLoweringForbidden: true
+  portableWebLearning:
+    verifiedWebGameplayMayFeedSharedV3Memory: true
+    allowedPortablePatterns:
+      - TOUCH_INPUT
+      - MOBILE_UI
+      - SAVE_LOAD_AND_RESUME
+      - PERFORMANCE
+      - RESPONSIVE_LAYOUT
+      - REGRESSION_AVOIDANCE
+      - CORE_LOOP_IMPLEMENTATION
+    robloxMayRetrievePortableWebPatternsAsContext: true
+    webEvidenceCountsAsRobloxVerifiedEvidence: false
+    webEvidenceMaySatisfyRobloxDatasetOrAdapterGate: false
+    webEvidenceMaySatisfyRobloxRuntimeOrPublishingGate: false
+    robloxTrainingStillRequiresRealVerifiedRobloxEvidence: true
+    crossPlatformPassEvidenceTransferForbidden: true
   platformTrainingArchitecture:
     mode: SHARED_CANONICAL_TRAINER_WITH_PLATFORM_ISOLATED_LANES
     canonicalTrainerCount: 1
@@ -1117,12 +1134,14 @@ learning:
     realVerifiedPlatformEvidenceRequired: true
     syntheticPlatformTrainingForbidden: true
     commonRealDatasetGate: tools/vibe2-real-platform-dataset-gate.mjs
-    commonLocalTrainer: tools/vibe2-train.py
+    commonTrainer: tools/vibe2-train.py
     canonicalStatusBuilder: tools/vibe2-distillation-status.mjs
     deterministicRequestBuilder: tools/vibe2-training-request.mjs
     hourlyRefreshWorkflow: Vibe2 Distillation Sample Ingest
     secondCronOrShadowRefreshForbidden: true
-    localSelfHostedWeightTrainingOnly: true
+    selfHostedWeightTrainingOnly: true
+    serverSelfHostedPrimary: true
+    localSelfHostedPreserved: true
     freshAdapterState: TRAINED_UNVERIFIED
     promotionRequires:
       - FIXED_HOLDOUT_AB

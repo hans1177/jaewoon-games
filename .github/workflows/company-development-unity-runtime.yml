@@ -5,14 +5,10 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/company-development-unity-runtime.yml'
-      - '.github/workflows/unity-android-regression.yml'
-      - 'tools/company-selected-platform-router.mjs'
-      - 'tools/company-development-unity-platform.mjs'
       - 'tools/company-development-unity-bootstrap.mjs'
       - 'tools/company-development-unity-evidence.mjs'
       - 'tools/company-development-validation-cycle.mjs'
       - 'qa/company-development-unity-runtime.test.mjs'
-      - 'qa/company-selected-platform-router.test.mjs'
   workflow_dispatch:
 
 permissions:
@@ -21,97 +17,64 @@ permissions:
 
 concurrency:
   group: company-development-unity-runtime
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
   prepare:
-    name: prepare selected-platform Unity queue
+    name: prepare Unity technical-validation queue
     runs-on: ubuntu-latest
     timeout-minutes: 12
     outputs:
       run: ${{ steps.queue.outputs.run }}
       matrix: ${{ steps.queue.outputs.matrix }}
       parallel: ${{ steps.queue.outputs.parallel }}
-      canary: ${{ steps.queue.outputs.canary }}
       main_sha: ${{ steps.main.outputs.sha }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 1
-          fetch-tags: false
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Verify Unity selected-platform execution contracts
+      - name: Unity central contract tests
         run: |
-          node --check tools/company-selected-platform-router.mjs
-          node --check tools/company-development-unity-platform.mjs
           node --check tools/company-development-unity-bootstrap.mjs
           node --check tools/company-development-unity-evidence.mjs
-          node --check tools/company-development-validation-cycle.mjs
-          node --test qa/company-selected-platform-router.test.mjs
           node --test qa/company-development-unity-runtime.test.mjs
-
       - name: Bind current main
         id: main
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-
-      - name: Resolve Unity work with representative canary and common-failure dedupe
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Resolve ACTIVE games waiting for Unity technical validation
         id: queue
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags --depth=1 origin company-runtime
+          git fetch origin company-runtime
           git show origin/company-runtime:development-queue.json > /tmp/development-queue.json
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import {resolveSelectedPlatform,selectRepresentativeCanary} from './tools/company-selected-platform-router.mjs';
+          node <<'NODE'
+          const fs=require('fs');
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
-          const rows=(q.items||[]).filter(item=>{
-            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
-            if(String(item.status||'').toUpperCase()!=='ACTIVE')return false;
-            if(resolveSelectedPlatform(item)!=='UNITY')return false;
-            const step=String(item.currentStep||'').toUpperCase();
-            const state=String(item.canonicalState||'').toUpperCase();
-            return step==='TARGET_PLATFORM_TECHNICAL_VALIDATION'||step==='UNITY_ANDROID_TECHNICAL_VALIDATION'||
-              state==='WAITING_TARGET_PLATFORM_VALIDATION'||state==='WAITING_TARGET_PLATFORM_REVALIDATION'||state==='WAITING_UNITY_VALIDATION'||state==='WAITING_UNITY_REVALIDATION'||
-              Boolean(item.executionEvidence?.failureStage);
-          }).map(item=>({
-            gameId:item.gameId,gameName:item.gameName,designBaselineSource:item.designBaselineSource,
-            sourcePath:item.targetSourcePath||item.sourcePath,
-            selectedPlatform:'UNITY',
-            unityCandidateBranch:item.unityCandidateBranch||null,
-            unitySourceCommit:item.unitySourceCommit||null,
-            unityBuildRunId:Number(item.unityBuildRunId||0)||null,
-            unityRuntimeSmokeRunId:Number(item.unityRuntimeSmokeRunId||0)||null,
-            unityIndependentQaRunId:Number(item.unityIndependentQaRunId||0)||null,
-            unityRegressionRunId:Number(item.unityRegressionRunId||0)||null,
-            executionEvidence:item.executionEvidence||null,
-            failureCount:Number(item.failureCount||0),
-          }));
-          const counts=new Map();
-          for(const row of rows){const sig=row.executionEvidence?.failureSignature;if(sig)counts.set(sig,(counts.get(sig)||0)+1);}
-          const repeated=[...counts.entries()].some(([,n])=>n>=2);
-          const migrationCanary=Number(q.executionContractVersion||0)<1;
-          const canaryRequired=rows.length>0&&(migrationCanary||repeated);
-          const canary=canaryRequired?selectRepresentativeCanary(rows):null;
-          const selected=canary?[canary]:rows.slice(0,3);
-          const parallel=Math.max(1,Math.min(3,selected.length||1));
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run=${selected.length?'true':'false'}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify(selected)}\n`);
+          const rows=(q.items||[]).filter(x=>
+            String(x.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED' &&
+            String(x.status||'').toUpperCase()==='ACTIVE' &&
+            String(x.currentStep||'').toUpperCase()==='UNITY_ANDROID_TECHNICAL_VALIDATION' &&
+            String(x.canonicalState||'').toUpperCase()==='WAITING_UNITY_VALIDATION'
+          ).map(x=>({gameId:x.gameId,gameName:x.gameName,designBaselineSource:x.designBaselineSource,sourcePath:x.sourcePath}));
+          const parallel=Math.max(1,rows.length);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run=${rows.length?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify(rows)}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`parallel=${parallel}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`canary=${canary?'true':'false'}\n`);
-          console.log(`UNITY_TARGET_N=${rows.length}`);
-          console.log(`UNITY_SELECTED_N=${selected.length}`);
-          console.log(`REPRESENTATIVE_CANARY=${canary?.gameId||'NONE'}`);
-          console.log(`COMMON_FAILURE_DETECTED=${repeated?'YES':'NO'}`);
-          console.log(`UNITY_ACTIVE_PARENT_WINDOW=${parallel}`);
+          console.log(`UNITY_TECH_TARGET_N=${rows.length}`);
+          console.log(`UNITY_TECH_ACTIVE_PARENT_WINDOW=${parallel}`);
+          console.log(`UNITY_TECH_PENDING_IDS=${rows.map(x=>x.gameId).join(',')}`);
           NODE
 
   unity-technical-validation:
-    name: Unity staged validation (${{ matrix.item.gameName }})
+    name: Unity technical validation (${{ matrix.item.gameName }})
     needs: prepare
     if: needs.prepare.outputs.run == 'true'
     strategy:
@@ -120,21 +83,19 @@ jobs:
       matrix:
         item: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 160
+    timeout-minutes: 140
     steps:
-      - name: Checkout current canonical implementation
+      - name: Checkout central implementation
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.prepare.outputs.main_sha }}
-          fetch-depth: 1
-          fetch-tags: false
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Fetch only current company runtime state
-        run: git fetch --no-tags --depth=1 origin company-runtime
-
-      - name: Materialize locked design and runtime catalog
+      - name: Fetch company runtime evidence
+        run: git fetch origin company-runtime
+      - name: Materialize locked DEVELOPMENT evidence
         id: context
         env:
           GAME_ID: ${{ matrix.item.gameId }}
@@ -144,439 +105,306 @@ jobs:
           set -euo pipefail
           base="$(dirname "$DESIGN_SOURCE")"
           date="$(basename "$base")"
-          project="unity-games/$GAME_ID"
-          request=".build-requests/unity/${GAME_ID}-development.json"
           mkdir -p "$base"
           git show "origin/company-runtime:$DESIGN_SOURCE" > "$DESIGN_SOURCE"
+          git show "origin/company-runtime:$base/cycle-status.json" > "$base/cycle-status.json"
+          git show "origin/company-runtime:$base/web-gameplay-validation.json" > "$base/web-gameplay-validation.json"
           git show origin/company-runtime:game-catalog.json > game-catalog.json
-          if git cat-file -e "origin/company-runtime:$base/cycle-status.json" 2>/dev/null; then git show "origin/company-runtime:$base/cycle-status.json" > "$base/cycle-status.json"; fi
-          if git cat-file -e "origin/company-runtime:$base/web-gameplay-validation.json" 2>/dev/null; then git show "origin/company-runtime:$base/web-gameplay-validation.json" > "$base/web-gameplay-validation.json"; fi
+          branch="development/unity-tech-${GAME_ID}-${GITHUB_RUN_ID}"
+          project="unity-games/${GAME_ID}"
+          request=".build-requests/unity/${GAME_ID}-development.json"
           {
             echo "base=$base"
             echo "date=$date"
+            echo "branch=$branch"
             echo "project=$project"
             echo "request=$request"
           } >> "$GITHUB_OUTPUT"
-
-      - name: Change detection and exact-source reuse
-        id: source
+      - name: Generate one-game Unity Android technical prototype
         env:
-          GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ matrix.item.gameId }}
           GAME_NAME: ${{ matrix.item.gameName }}
-          EXISTING_BRANCH: ${{ matrix.item.unityCandidateBranch }}
-          EXISTING_SOURCE: ${{ matrix.item.unitySourceCommit }}
-          PROJECT: ${{ steps.context.outputs.project }}
-          REQUEST: ${{ steps.context.outputs.request }}
-          DESIGN_SOURCE: ${{ matrix.item.designBaselineSource }}
-        shell: bash
         run: |
-          set -euo pipefail
-          bind_catalog() {
-            node -e 'const fs=require("fs");const project=process.argv[1];const catalog=JSON.parse(fs.readFileSync("game-catalog.json","utf8"));const game=(catalog.games||[]).find(x=>x.id===process.env.GAME_ID);if(!game)throw new Error(`runtime catalog game missing: ${process.env.GAME_ID}`);game.selectedPlatform="UNITY";game.targetPlatform="UNITY";game.unityProjectPath=project;game.productionClass="DEVELOPMENT_CONFIRMED";game.homepagePublicationApproved=false;game.publishTestBuildWhenReady=false;fs.writeFileSync("game-catalog.json",JSON.stringify(catalog,null,2)+"\n");' "$PROJECT"
-          }
-
-          reuse_branch=''
-          reuse_source=''
-          if [[ -n "$EXISTING_BRANCH" ]]; then
-            if git fetch --no-tags --depth=1 origin "$EXISTING_BRANCH:refs/remotes/origin/unity-reuse" >/dev/null 2>&1; then
-              candidate="$(git rev-parse refs/remotes/origin/unity-reuse)"
-              if [[ ! "$EXISTING_SOURCE" =~ ^[0-9a-f]{40}$ || "$candidate" == "$EXISTING_SOURCE" ]]; then
-                reuse_branch="$EXISTING_BRANCH"
-                reuse_source="$candidate"
-              fi
-            fi
-          fi
-
-          if [[ -z "$reuse_source" ]]; then
-            prefix="development/unity-tech-${GAME_ID}-"
-            latest_branch="$(gh api --paginate "repos/$GITHUB_REPOSITORY/git/matching-refs/heads/$prefix" --jq '.[].ref' 2>/dev/null | sed 's#^refs/heads/##' | awk -F- '{print $NF "\t" $0}' | sort -n | tail -n1 | cut -f2- || true)"
-            if [[ -n "$latest_branch" ]] && git fetch --no-tags --depth=1 origin "$latest_branch:refs/remotes/origin/unity-history" >/dev/null 2>&1; then
-              reuse_branch="$latest_branch"
-              reuse_source="$(git rev-parse refs/remotes/origin/unity-history)"
-              echo "UNITY_SOURCE_MIGRATION_BRANCH=$reuse_branch"
-            fi
-          fi
-
-          if [[ "$reuse_source" =~ ^[0-9a-f]{40}$ ]]; then
-            git checkout "$reuse_source" -- "$PROJECT" "$REQUEST" 2>/dev/null || true
-            if [[ -f "$PROJECT/ProjectSettings/ProjectVersion.txt" && -f "$REQUEST" ]]; then
-              bind_catalog
-              echo "source_revision=$reuse_source" >> "$GITHUB_OUTPUT"
-              echo "branch=$reuse_branch" >> "$GITHUB_OUTPUT"
-              echo 'source_reused=true' >> "$GITHUB_OUTPUT"
-              echo 'CHANGE_DETECTION=UNCHANGED_SOURCE_REUSED'
-              exit 0
-            fi
-          fi
-
           node tools/company-development-unity-bootstrap.mjs \
             --game-id="$GAME_ID" \
             --game-name="$GAME_NAME" \
-            --baseline="$DESIGN_SOURCE" \
-            --output="$PROJECT"
-          bind_catalog
-          branch="development/unity-tech-${GAME_ID}-${GITHUB_RUN_ID}"
-          git config user.name 'jaewoon-development-unity-runtime'
-          git config user.email 'actions@users.noreply.github.com'
-          git checkout -b "$branch"
-          git add "$PROJECT" game-catalog.json
-          git diff --cached --check
-          git commit -m "dev: bind $GAME_ID selected-platform Unity source [skip ci]"
-          mkdir -p "$(dirname "$REQUEST")"
-          source_commit="$(git rev-parse HEAD)"
-          node - "$REQUEST" "$GAME_ID" "$PROJECT" "$source_commit" "$GITHUB_RUN_ID" <<'NODE'
-          const fs=require('fs');
-          const [file,gameId,projectPath,sourceCommit,runId]=process.argv.slice(2);
-          fs.writeFileSync(file,JSON.stringify({version:1,requestId:`development-unity-${gameId}-${runId}`,gameId,projectPath,buildMethod:'SeedAndroidBuild.Build',sourceCommit,productionClass:'DEVELOPMENT_CONFIRMED',purpose:'TARGET_PLATFORM_TECHNICAL_VALIDATION',homepagePublicationApproved:false,publishTestBuildWhenReady:false,releaseAuthority:false},null,2)+'\n');
-          NODE
-          git add "$REQUEST"
-          git commit -m "ci: request $GAME_ID selected-platform Unity build [skip ci]"
-          request_commit="$(git rev-parse HEAD)"
-          git push origin HEAD:"$branch"
-          echo "source_revision=$request_commit" >> "$GITHUB_OUTPUT"
-          echo "branch=$branch" >> "$GITHUB_OUTPUT"
-          echo 'source_reused=false' >> "$GITHUB_OUTPUT"
-          echo 'CHANGE_DETECTION=SOURCE_CHANGED_OR_MISSING'
-
-      - name: Cheap precheck and checkpoint resume plan
-        id: plan
+            --baseline="${{ matrix.item.designBaselineSource }}" \
+            --web-evidence="${{ steps.context.outputs.base }}/web-gameplay-validation.json" \
+            --output="${{ steps.context.outputs.project }}"
+      - name: Create isolated Unity technical source branch
+        id: source
         env:
-          PREVIOUS_EVIDENCE: ${{ toJSON(matrix.item.executionEvidence) }}
-          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
-          SOURCE_PATH: ${{ steps.context.outputs.project }}
-          EXISTING_BUILD_RUN: ${{ matrix.item.unityBuildRunId }}
+          GAME_ID: ${{ matrix.item.gameId }}
+          BRANCH: ${{ steps.context.outputs.branch }}
+          PROJECT: ${{ steps.context.outputs.project }}
+          REQUEST: ${{ steps.context.outputs.request }}
         shell: bash
         run: |
           set -euo pipefail
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import {createSelectedPlatformExecutionPlan} from './tools/company-selected-platform-router.mjs';
-          let previous={};try{previous=JSON.parse(process.env.PREVIOUS_EVIDENCE||'null')||{};}catch{}
-          const plan=createSelectedPlatformExecutionPlan({selectedPlatform:'UNITY',sourceRevision:process.env.SOURCE_REVISION,sourcePath:process.env.SOURCE_PATH,buildConfigFingerprint:'unity-android-development-v2',previousEvidence:previous});
-          const reusable=plan.artifactReusable&&/^\d+$/.test(process.env.EXISTING_BUILD_RUN||'');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`fingerprint=${plan.sourceFingerprint}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`reuse_build=${reusable?'true':'false'}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`resume_stage=${plan.resumeStage}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`previous_runtime=${plan.sameFingerprint&&previous.runtimePassed===true?'true':'false'}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`previous_qa=${plan.sameFingerprint&&previous.independentQaPassed===true?'true':'false'}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`previous_regression=${plan.sameFingerprint&&previous.regressionPassed===true?'true':'false'}\n`);
-          if(!plan.precheck.pass)process.exitCode=2;
-          console.log(`CHEAP_PRECHECK=${plan.precheck.pass?'PASS':'FAIL'}`);
-          console.log(`SOURCE_FINGERPRINT=${plan.sourceFingerprint}`);
-          console.log(`RESUME_STAGE=${plan.resumeStage}`);
-          console.log(`BUILD_REUSE=${reusable?'YES':'NO'}`);
+          git restore --worktree --staged "${{ steps.context.outputs.base }}" 2>/dev/null || true
+          node <<'NODE'
+          const fs=require('fs');
+          const gameId=process.env.GAME_ID;
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const game=(catalog.games||[]).find(x=>x.id===gameId);
+          if(!game) throw new Error(`runtime catalog game missing: ${gameId}`);
+          game.homepagePublicationApproved=true;
+          game.publishTestBuildWhenReady=true;
+          game.homepageCategory='development-confirmed';
+          game.homepageStage='2분류 개발확정 · Unity Android 기술검증';
+          fs.writeFileSync('game-catalog.json',JSON.stringify(catalog,null,2)+'\n');
           NODE
-
-      - name: Dispatch one Unity cloud build for this source fingerprint
+          git config user.name 'jaewoon-development-unity-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git checkout -b "$BRANCH"
+          git add "$PROJECT" game-catalog.json
+          git diff --cached --check
+          git commit -m "dev: bootstrap $GAME_ID Unity technical prototype [skip ci]"
+          source_commit="$(git rev-parse HEAD)"
+          mkdir -p "$(dirname "$REQUEST")"
+          node - "$REQUEST" "$GAME_ID" "$PROJECT" "$source_commit" "$GITHUB_RUN_ID" <<'NODE'
+          const fs=require('fs');
+          const [file,gameId,projectPath,sourceCommit,runId]=process.argv.slice(2);
+          fs.writeFileSync(file,JSON.stringify({
+            version:1,
+            requestId:`development-unity-${gameId}-${runId}`,
+            gameId,projectPath,buildMethod:'SeedAndroidBuild.Build',sourceCommit,
+            productionClass:'DEVELOPMENT_CONFIRMED',purpose:'UNITY_ANDROID_TECHNICAL_VALIDATION',
+            homepagePublicationApproved:true,publishTestBuildWhenReady:true,releaseAuthority:false
+          },null,2)+'\n');
+          NODE
+          git add "$REQUEST"
+          git commit -m "ci: request $GAME_ID cloud Unity technical build [skip ci]"
+          request_commit="$(git rev-parse HEAD)"
+          git push origin HEAD:"$BRANCH"
+          echo "source_commit=$source_commit" >> "$GITHUB_OUTPUT"
+          echo "request_commit=$request_commit" >> "$GITHUB_OUTPUT"
+          echo "UNITY_TECH_SOURCE_COMMIT=$source_commit"
+          echo "UNITY_TECH_REQUEST_COMMIT=$request_commit"
+          echo 'PUBLIC_MAIN_SOURCE_WRITE=NO'
+      - name: Dispatch isolated Unity cloud Android build
         id: build
-        if: steps.plan.outputs.reuse_build != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          BRANCH: ${{ steps.source.outputs.branch }}
+          BRANCH: ${{ steps.context.outputs.branch }}
           REQUEST: ${{ steps.context.outputs.request }}
         shell: bash
         run: |
           set -euo pipefail
           api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-cloud-android-test.yml"
-          baseline="$(gh api "$api/runs?branch=$BRANCH&event=workflow_dispatch&per_page=20" --jq '[.workflow_runs[].id] | max // 0')"
+          baseline="$(gh api "$api/runs?branch=$BRANCH&event=workflow_dispatch&per_page=10" --jq '[.workflow_runs[].id] | max // 0')"
           jq -n --arg ref "$BRANCH" --arg request "$REQUEST" '{ref:$ref,inputs:{request_file:$request}}' | gh api --method POST "$api/dispatches" --input -
           run_id=''
-          for _ in $(seq 1 60); do
-            run_id="$(gh api "$api/runs?branch=$BRANCH&event=workflow_dispatch&per_page=20" | jq -r --argjson b "$baseline" '[.workflow_runs[] | select(.id > $b) | .id] | max // empty')"
-            [[ "$run_id" =~ ^[0-9]+$ ]] && break
-            sleep 4
+          for _ in $(seq 1 48); do
+            run_id="$(gh api "$api/runs?branch=$BRANCH&event=workflow_dispatch&per_page=10" | jq -r --argjson b "$baseline" '[.workflow_runs[] | select(.id > $b) | .id] | max // empty')"
+            [[ -n "$run_id" ]] && break
+            sleep 5
           done
           [[ "$run_id" =~ ^[0-9]+$ ]] || { echo 'Unity cloud build run was not created' >&2; exit 2; }
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
           echo "CLOUD_UNITY_BUILD_RUN_ID=$run_id"
-
-      - name: Resolve immutable build run reference
-        id: buildref
-        env:
-          REUSE: ${{ steps.plan.outputs.reuse_build }}
-          EXISTING: ${{ matrix.item.unityBuildRunId }}
-          CREATED: ${{ steps.build.outputs.run_id }}
-        run: |
-          if [[ "$REUSE" == 'true' ]]; then run="$EXISTING"; else run="$CREATED"; fi
-          [[ "$run" =~ ^[0-9]+$ ]] || exit 3
-          echo "run_id=$run" >> "$GITHUB_OUTPUT"
-
-      - name: Inspect build and legacy install-gate outcome without discarding successful APK
-        id: buildstate
+      - name: Wait for real cloud Unity APK build and Android install gate
         env:
           GH_TOKEN: ${{ github.token }}
-          RUN_ID: ${{ steps.buildref.outputs.run_id }}
-          REUSE: ${{ steps.plan.outputs.reuse_build }}
-          PREVIOUS_RUNTIME: ${{ steps.plan.outputs.previous_runtime }}
+          RUN_ID: ${{ steps.build.outputs.run_id }}
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "$REUSE" == 'true' ]]; then
-            echo 'build_passed=true' >> "$GITHUB_OUTPUT"
-            echo "runtime_passed=$PREVIOUS_RUNTIME" >> "$GITHUB_OUTPUT"
-            echo 'SINGLE_BUILD_OR_PACKAGE=REUSED'
-            exit 0
-          fi
           for _ in $(seq 1 1320); do
-            status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" --jq '.status')"
-            [[ "$status" == completed ]] && break
+            row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" --jq '[.status,.conclusion] | @tsv')"
+            status="${row%%$'\t'*}"; conclusion="${row#*$'\t'}"
+            if [[ "$status" == 'completed' ]]; then
+              [[ "$conclusion" == 'success' ]] || { echo "CLOUD_UNITY_BUILD_FAILED=$conclusion run=$RUN_ID" >&2; exit 3; }
+              echo "CLOUD_UNITY_BUILD=PASS run=$RUN_ID"
+              exit 0
+            fi
             sleep 5
           done
-          jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/jobs?per_page=100")"
-          build="$(jq -r '[.jobs[]|select(.name=="build")|.conclusion][0]//"missing"' <<<"$jobs")"
-          runtime="$(jq -r '[.jobs[]|select(.name=="android16-install-gate")|.conclusion][0]//"missing"' <<<"$jobs")"
-          echo "build_passed=$([[ "$build" == success ]]&&echo true||echo false)" >> "$GITHUB_OUTPUT"
-          echo "runtime_passed=$([[ "$runtime" == success ]]&&echo true||echo false)" >> "$GITHUB_OUTPUT"
-          echo "BUILD_JOB_CONCLUSION=$build"
-          echo "LEGACY_RUNTIME_GATE_CONCLUSION=$runtime"
-
-      - name: Bind immutable APK artifact identity
-        id: artifact
-        if: steps.buildstate.outputs.build_passed == 'true'
+          echo "CLOUD_UNITY_BUILD_TIMEOUT=$RUN_ID" >&2
+          exit 4
+      - name: Dispatch bound Android runtime smoke and independent QA
+        id: qa
         env:
           GH_TOKEN: ${{ github.token }}
-          BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
-          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
-          SOURCE_FINGERPRINT: ${{ steps.plan.outputs.fingerprint }}
+          BUILD_RUN: ${{ steps.build.outputs.run_id }}
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf /tmp/unity-build && mkdir -p /tmp/unity-build
-          gh run download "$BUILD_RUN" -D /tmp/unity-build
-          info="$(find /tmp/unity-build -type f -name build-info.json -size +0c | head -n1)"
-          apk="$(find /tmp/unity-build -type f -name '*.apk' -size +0c | head -n1)"
-          test -n "$info" -a -n "$apk"
-          expected="$(node -e "const b=require(process.argv[1]);process.stdout.write(String(b.sha256||''))" "$info")"
-          source="$(node -e "const b=require(process.argv[1]);process.stdout.write(String(b.sourceCommit||''))" "$info")"
-          actual="$(sha256sum "$apk" | awk '{print $1}')"
-          [[ "$actual" == "$expected" && "$source" == "$SOURCE_REVISION" ]] || { echo 'immutable artifact/source mismatch' >&2; exit 4; }
-          git fetch --no-tags --depth=1 origin "$source" >/dev/null 2>&1 || true
-          source_tree="$(git rev-parse "${source}^{tree}")"
-          node - "$info" "$source_tree" <<'NODE'
-          const fs=require('fs');const [file,tree]=process.argv.slice(2);const b=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));b.sourceTreeSha=tree;fs.writeFileSync(file,JSON.stringify(b,null,2)+'\n');
-          NODE
-          echo "identity=sha256:$actual" >> "$GITHUB_OUTPUT"
-          echo "source_revision=$source" >> "$GITHUB_OUTPUT"
-          echo "source_tree=$source_tree" >> "$GITHUB_OUTPUT"
-          echo "source_fingerprint=$SOURCE_FINGERPRINT" >> "$GITHUB_OUTPUT"
-          echo 'IMMUTABLE_ARTIFACT_BIND=PASS'
-
-      - name: Resume target-platform runtime only from its failed checkpoint
-        id: runtime
-        if: steps.buildstate.outputs.build_passed == 'true' && steps.buildstate.outputs.runtime_passed != 'true' && steps.plan.outputs.reuse_build == 'true'
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-          BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-runtime-smoke.yml"
-          title="Unity Android Runtime Smoke $BUILD_RUN"
-          baseline="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq '[.workflow_runs[].id] | max // 0')"
-          jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$api/dispatches" --input -
-          child=''
-          for _ in $(seq 1 60); do
-            child="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=20" | jq -r --argjson b "$baseline" --arg title "$title" '[.workflow_runs[]|select(.id>$b and .display_title==$title)|.id]|max//empty')"
-            [[ "$child" =~ ^[0-9]+$ ]] && break
-            sleep 4
+          smoke_api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-runtime-smoke.yml"
+          qa_api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-independent-qa.yml"
+          smoke_title="Unity Android Runtime Smoke $BUILD_RUN"
+          qa_title="Unity Android Independent QA $BUILD_RUN"
+          smoke_base="$(gh api "$smoke_api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq '[.workflow_runs[].id] | max // 0')"
+          qa_base="$(gh api "$qa_api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq '[.workflow_runs[].id] | max // 0')"
+          jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$smoke_api/dispatches" --input -
+          jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$qa_api/dispatches" --input -
+          smoke=''; independent=''
+          for _ in $(seq 1 48); do
+            [[ -n "$smoke" ]] || smoke="$(gh api "$smoke_api/runs?branch=main&event=workflow_dispatch&per_page=20" | jq -r --argjson b "$smoke_base" --arg title "$smoke_title" '[.workflow_runs[] | select(.id > $b and .display_title == $title) | .id] | max // empty')"
+            [[ -n "$independent" ]] || independent="$(gh api "$qa_api/runs?branch=main&event=workflow_dispatch&per_page=20" | jq -r --argjson b "$qa_base" --arg title "$qa_title" '[.workflow_runs[] | select(.id > $b and .display_title == $title) | .id] | max // empty')"
+            [[ "$smoke" =~ ^[0-9]+$ && "$independent" =~ ^[0-9]+$ ]] && break
+            sleep 5
           done
-          [[ "$child" =~ ^[0-9]+$ ]] || exit 5
-          echo "run_id=$child" >> "$GITHUB_OUTPUT"
+          [[ "$smoke" =~ ^[0-9]+$ && "$independent" =~ ^[0-9]+$ ]] || { echo 'bound Android QA runs were not created' >&2; exit 5; }
+          echo "smoke_run=$smoke" >> "$GITHUB_OUTPUT"
+          echo "independent_run=$independent" >> "$GITHUB_OUTPUT"
+          echo "UNITY_RUNTIME_SMOKE_RUN_ID=$smoke"
+          echo "UNITY_INDEPENDENT_QA_RUN_ID=$independent"
+      - name: Wait for runtime smoke and independent QA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SMOKE_RUN: ${{ steps.qa.outputs.smoke_run }}
+          QA_RUN: ${{ steps.qa.outputs.independent_run }}
+        shell: bash
+        run: |
+          set -euo pipefail
           for _ in $(seq 1 420); do
-            row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$child" --jq '[.status,.conclusion]|@tsv')"; status="${row%%$'\t'*}"; conclusion="${row#*$'\t'}"
-            if [[ "$status" == completed ]]; then [[ "$conclusion" == success ]] && exit 0 || exit 6; fi
+            smoke="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SMOKE_RUN" --jq '[.status,.conclusion] | @tsv')"
+            indep="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$QA_RUN" --jq '[.status,.conclusion] | @tsv')"
+            ss="${smoke%%$'\t'*}"; sc="${smoke#*$'\t'}"
+            is="${indep%%$'\t'*}"; ic="${indep#*$'\t'}"
+            if [[ "$ss" == completed && "$is" == completed ]]; then
+              [[ "$sc" == success && "$ic" == success ]] || { echo "UNITY_ANDROID_QA_FAILED smoke=$sc independent=$ic" >&2; exit 6; }
+              echo 'UNITY_ANDROID_QA=PASS'
+              exit 0
+            fi
             sleep 5
           done
+          echo 'UNITY_ANDROID_QA_TIMEOUT' >&2
           exit 7
-
-      - name: Resolve runtime checkpoint result
-        id: runtimestate
-        env:
-          PREVIOUS: ${{ steps.plan.outputs.previous_runtime }}
-          LEGACY: ${{ steps.buildstate.outputs.runtime_passed }}
-          RESUME_OUTCOME: ${{ steps.runtime.outcome }}
-        run: |
-          if [[ "$PREVIOUS" == true || "$LEGACY" == true || "$RESUME_OUTCOME" == success ]]; then pass=true; else pass=false; fi
-          echo "passed=$pass" >> "$GITHUB_OUTPUT"
-          echo "TARGET_PLATFORM_RUNTIME=$pass"
-
-      - name: Run independent QA only after runtime PASS
-        id: independent
-        if: steps.runtimestate.outputs.passed == 'true' && steps.plan.outputs.previous_qa != 'true'
-        continue-on-error: true
+      - name: Download exact cloud build and QA evidence
         env:
           GH_TOKEN: ${{ github.token }}
-          BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
+          BUILD_RUN: ${{ steps.build.outputs.run_id }}
+          SMOKE_RUN: ${{ steps.qa.outputs.smoke_run }}
+          QA_RUN: ${{ steps.qa.outputs.independent_run }}
         shell: bash
         run: |
           set -euo pipefail
-          api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-independent-qa.yml"; title="Unity Android Independent QA $BUILD_RUN"
-          baseline="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq '[.workflow_runs[].id] | max // 0')"
-          jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$api/dispatches" --input -
-          child=''; for _ in $(seq 1 60); do child="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=20" | jq -r --argjson b "$baseline" --arg title "$title" '[.workflow_runs[]|select(.id>$b and .display_title==$title)|.id]|max//empty')"; [[ "$child" =~ ^[0-9]+$ ]]&&break; sleep 4; done
-          [[ "$child" =~ ^[0-9]+$ ]]||exit 8; echo "run_id=$child" >> "$GITHUB_OUTPUT"
-          for _ in $(seq 1 420); do row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$child" --jq '[.status,.conclusion]|@tsv')"; s="${row%%$'\t'*}"; c="${row#*$'\t'}"; if [[ "$s" == completed ]];then [[ "$c" == success ]]&&exit 0||exit 9;fi;sleep 5;done;exit 10
-
-      - name: Resolve independent QA checkpoint result
-        id: independentstate
-        env:
-          PREVIOUS: ${{ steps.plan.outputs.previous_qa }}
-          OUTCOME: ${{ steps.independent.outcome }}
-        run: |
-          if [[ "$PREVIOUS" == true || "$OUTCOME" == success ]]; then pass=true; else pass=false; fi
-          echo "passed=$pass" >> "$GITHUB_OUTPUT"
-          echo "INDEPENDENT_QA=$pass"
-
-      - name: Run regression on the same immutable APK
-        id: regression
-        if: steps.independentstate.outputs.passed == 'true' && steps.plan.outputs.previous_regression != 'true'
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-          BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
+          mkdir -p /tmp/unity-build /tmp/unity-smoke /tmp/unity-independent
+          gh run download "$BUILD_RUN" -D /tmp/unity-build
+          gh run download "$SMOKE_RUN" -D /tmp/unity-smoke
+          gh run download "$QA_RUN" -D /tmp/unity-independent
+          find /tmp/unity-build /tmp/unity-smoke /tmp/unity-independent -type f -maxdepth 8 -print
+      - name: Bind cloud source tree into build evidence
         shell: bash
         run: |
           set -euo pipefail
-          api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-regression.yml"; title="Unity Android Regression $BUILD_RUN"
-          baseline="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq '[.workflow_runs[].id] | max // 0')"
-          jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$api/dispatches" --input -
-          child=''; for _ in $(seq 1 60); do child="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=20" | jq -r --argjson b "$baseline" --arg title "$title" '[.workflow_runs[]|select(.id>$b and .display_title==$title)|.id]|max//empty')"; [[ "$child" =~ ^[0-9]+$ ]]&&break; sleep 4; done
-          [[ "$child" =~ ^[0-9]+$ ]]||exit 11; echo "run_id=$child" >> "$GITHUB_OUTPUT"
-          for _ in $(seq 1 420); do row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$child" --jq '[.status,.conclusion]|@tsv')"; s="${row%%$'\t'*}"; c="${row#*$'\t'}"; if [[ "$s" == completed ]];then [[ "$c" == success ]]&&exit 0||exit 12;fi;sleep 5;done;exit 13
-
-      - name: Resolve regression checkpoint result
-        id: regressionstate
-        env:
-          PREVIOUS: ${{ steps.plan.outputs.previous_regression }}
-          OUTCOME: ${{ steps.regression.outcome }}
-        run: |
-          if [[ "$PREVIOUS" == true || "$OUTCOME" == success ]]; then pass=true; else pass=false; fi
-          echo "passed=$pass" >> "$GITHUB_OUTPUT"
-          echo "REGRESSION=$pass"
-
-      - name: Bind passed stages into canonical DEVELOPMENT evidence
-        id: canonical
-        if: steps.regressionstate.outputs.passed == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GAME_ID: ${{ matrix.item.gameId }}
-          BASE: ${{ steps.context.outputs.base }}
-          PROJECT: ${{ steps.context.outputs.project }}
-          BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
-          RUNTIME_RUN_NEW: ${{ steps.runtime.outputs.run_id }}
-          RUNTIME_RUN_OLD: ${{ matrix.item.unityRuntimeSmokeRunId }}
-          QA_RUN_NEW: ${{ steps.independent.outputs.run_id }}
-          QA_RUN_OLD: ${{ matrix.item.unityIndependentQaRunId }}
-          REGRESSION_RUN_NEW: ${{ steps.regression.outputs.run_id }}
-          REGRESSION_RUN_OLD: ${{ matrix.item.unityRegressionRunId }}
-          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          runtime_run="${RUNTIME_RUN_NEW:-$RUNTIME_RUN_OLD}"; qa_run="${QA_RUN_NEW:-$QA_RUN_OLD}"; regression_run="${REGRESSION_RUN_NEW:-$REGRESSION_RUN_OLD}"
-          rm -rf /tmp/unity-runtime /tmp/unity-independent /tmp/unity-regression
-          mkdir -p /tmp/unity-runtime /tmp/unity-independent /tmp/unity-regression
-          if [[ "$runtime_run" =~ ^[0-9]+$ ]]; then gh run download "$runtime_run" -D /tmp/unity-runtime; else cp -R /tmp/unity-build/. /tmp/unity-runtime/; fi
-          [[ "$qa_run" =~ ^[0-9]+$ ]] && gh run download "$qa_run" -D /tmp/unity-independent
-          [[ "$regression_run" =~ ^[0-9]+$ ]] && gh run download "$regression_run" -D /tmp/unity-regression
           build_info="$(find /tmp/unity-build -type f -name build-info.json | head -n1)"
-          runtime_json="$(find /tmp/unity-runtime -type f -name evidence.json | head -n1)"
+          test -n "$build_info"
+          source_commit="$(node -e "const b=require(process.argv[1]);process.stdout.write(String(b.sourceCommit||''))" "$build_info")"
+          [[ "$source_commit" =~ ^[0-9a-f]{40}$ ]] || { echo "invalid cloud build source commit: $source_commit" >&2; exit 8; }
+          git cat-file -e "${source_commit}^{commit}" 2>/dev/null || git fetch origin "$source_commit"
+          source_tree="$(git rev-parse "${source_commit}^{tree}")"
+          [[ "$source_tree" =~ ^[0-9a-f]{40}$ ]] || { echo 'cloud source tree binding failed' >&2; exit 9; }
+          node - "$build_info" "$source_tree" <<'NODE'
+          const fs=require('fs');
+          const [file,tree]=process.argv.slice(2);
+          const b=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
+          b.sourceTreeSha=tree;
+          fs.writeFileSync(file,JSON.stringify(b,null,2)+'\n');
+          NODE
+          echo "CLOUD_SOURCE_TREE_SHA=$source_tree"
+      - name: Bind real Android evidence into canonical Unity technical validation
+        env:
+          GAME_ID: ${{ matrix.item.gameId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          build_info="$(find /tmp/unity-build -type f -name build-info.json | head -n1)"
+          runtime_json="$(find /tmp/unity-smoke -type f -name evidence.json | head -n1)"
           independent_json="$(find /tmp/unity-independent -type f -name evidence.json | head -n1)"
-          runtime_log="$(find /tmp/unity-runtime -type f -name logcat.txt | head -n1 || true)"
+          runtime_log="$(find /tmp/unity-smoke -type f -name logcat.txt | head -n1 || true)"
           independent_log="$(find /tmp/unity-independent -type f -name logcat.txt | head -n1 || true)"
           test -n "$build_info" -a -n "$runtime_json" -a -n "$independent_json"
-          node tools/company-development-unity-evidence.mjs --game-id="$GAME_ID" --build-info="$build_info" --runtime="$runtime_json" --independent="$independent_json" --runtime-log="$runtime_log" --independent-log="$independent_log" --project="$PROJECT" --output="$BASE/unity-technical-validation.json"
-          regression_json="$(find /tmp/unity-regression -type f -name evidence.json | head -n1 || true)"; [[ -n "$regression_json" ]] && cp "$regression_json" "$BASE/unity-regression-validation.json"
-          echo "runtime_run=$runtime_run" >> "$GITHUB_OUTPUT"; echo "qa_run=$qa_run" >> "$GITHUB_OUTPUT"; echo "regression_run=$regression_run" >> "$GITHUB_OUTPUT"
-
-      - name: Prepare free models only after technical stages pass
-        if: steps.regressionstate.outputs.passed == 'true'
+          node tools/company-development-unity-evidence.mjs \
+            --game-id="$GAME_ID" \
+            --build-info="$build_info" \
+            --runtime="$runtime_json" \
+            --independent="$independent_json" \
+            --runtime-log="$runtime_log" \
+            --independent-log="$independent_log" \
+            --project="${{ steps.context.outputs.project }}" \
+            --output="${{ steps.context.outputs.base }}/unity-technical-validation.json"
+      - name: Prepare free department models for Unity evidence meeting
         uses: ./.github/actions/prepare-ollama
         with:
           model: 'llama3.2:1b'
           version: '0.33.3'
           pull-model: 'true'
           department-role: development
-
-      - name: Ensure configured department models only for evidence meeting
-        if: steps.regressionstate.outputs.passed == 'true'
+      - name: Ensure all configured free department models
         shell: bash
         run: |
           set -euo pipefail
           mapfile -t models < <(node -e "const d=require('./company-directive.json');for(const m of [...new Set(d.ai?.modelPool||[])])console.log(m)")
-          have="$(ollama list | awk 'NR>1{print $1}')"; for model in "${models[@]}";do grep -Fxq "$model"<<<"$have"||ollama pull "$model";done
-
-      - name: Run canonical selected-platform evidence meeting
-        id: meeting
-        if: steps.regressionstate.outputs.passed == 'true'
+          test "${#models[@]}" -ge 5
+          have="$(ollama list | awk 'NR>1{print $1}')"
+          for model in "${models[@]}"; do
+            if grep -Fxq "$model" <<<"$have"; then echo "DEPARTMENT_MODEL_READY=$model:CACHED"; else ollama pull "$model"; echo "DEPARTMENT_MODEL_READY=$model:PULLED"; fi
+          done
+          echo 'PAID_API=NO'
+      - name: Run canonical Unity evidence meeting and same-designer revision
         env:
           ARTBOOK_GAME_ID: ${{ matrix.item.gameId }}
           ARTBOOK_DATE: ${{ steps.context.outputs.date }}
-          SELECTED_PLATFORM: UNITY
+          PROJECT: ${{ steps.context.outputs.project }}
         shell: bash
         run: |
           set -euo pipefail
+          node - "$PROJECT" <<'NODE'
+          const fs=require('fs');
+          const project=process.argv[2];
+          const gameId=process.env.ARTBOOK_GAME_ID;
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const game=(catalog.games||[]).find(x=>x.id===gameId);
+          if(!game)throw new Error(`runtime catalog game missing: ${gameId}`);
+          game.unityProjectPath=project;
+          game.productionClass='DEVELOPMENT_CONFIRMED';
+          game.productionTier=2;
+          fs.writeFileSync('game-catalog.json',JSON.stringify(catalog,null,2)+'\n');
+          NODE
           node tools/company-development-validation-cycle.mjs
-          state="$(node -e "const s=require('./${{ steps.context.outputs.base }}/cycle-status.json');process.stdout.write(String(s.state||''))")"
+      - name: Verify canonical post-Unity state
+        id: canonical
+        env:
+          BASE: ${{ steps.context.outputs.base }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          state="$(node -e "const s=require('./${BASE}/cycle-status.json');process.stdout.write(String(s.state||''))")"
+          case "$state" in
+            WAITING_REVALIDATION|WAITING_UNITY_REVALIDATION|DEVELOPMENT_BASELINE_READY) ;;
+            *) echo "unexpected post-Unity state: $state" >&2; exit 10;;
+          esac
           echo "state=$state" >> "$GITHUB_OUTPUT"
-          case "$state" in WAITING_REVALIDATION|WAITING_TARGET_PLATFORM_REVALIDATION|DEVELOPMENT_BASELINE_READY) ;; *) echo "unexpected canonical state: $state" >&2; exit 14;; esac
-
-      - name: Persist exact checkpoint package even when a later stage fails
-        id: checkpoint
-        if: always()
+          echo "DEVELOPMENT_POST_UNITY_STATE=$state"
+      - name: Preserve central DEVELOPMENT Unity evidence package
         env:
           GAME_ID: ${{ matrix.item.gameId }}
           BASE: ${{ steps.context.outputs.base }}
+          BRANCH: ${{ steps.context.outputs.branch }}
           PROJECT: ${{ steps.context.outputs.project }}
-          BRANCH: ${{ steps.source.outputs.branch }}
-          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
-          SOURCE_FINGERPRINT: ${{ steps.plan.outputs.fingerprint }}
-          BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
-          ARTIFACT_ID: ${{ steps.artifact.outputs.identity }}
-          BUILD_PASS: ${{ steps.buildstate.outputs.build_passed }}
-          RUNTIME_PASS: ${{ steps.runtimestate.outputs.passed }}
-          QA_PASS: ${{ steps.independentstate.outputs.passed }}
-          REGRESSION_PASS: ${{ steps.regressionstate.outputs.passed }}
-          RUNTIME_RUN_NEW: ${{ steps.runtime.outputs.run_id }}
-          RUNTIME_RUN_OLD: ${{ matrix.item.unityRuntimeSmokeRunId }}
-          QA_RUN_NEW: ${{ steps.independent.outputs.run_id }}
-          QA_RUN_OLD: ${{ matrix.item.unityIndependentQaRunId }}
-          REGRESSION_RUN_NEW: ${{ steps.regression.outputs.run_id }}
-          REGRESSION_RUN_OLD: ${{ matrix.item.unityRegressionRunId }}
-          MEETING_STATE: ${{ steps.meeting.outputs.state }}
-          IS_CANARY: ${{ needs.prepare.outputs.canary }}
+          SOURCE_COMMIT: ${{ steps.source.outputs.request_commit }}
+          BUILD_RUN: ${{ steps.build.outputs.run_id }}
+          SMOKE_RUN: ${{ steps.qa.outputs.smoke_run }}
+          QA_RUN: ${{ steps.qa.outputs.independent_run }}
+          STATE: ${{ steps.canonical.outputs.state }}
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p runtime-persist/"$(dirname "$BASE")" runtime-persist/queue
-          [[ -d "$BASE" ]] && cp -R "$BASE" runtime-persist/"$(dirname "$BASE")"/
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import {failureSignature} from './tools/company-selected-platform-router.mjs';
-          const yes=v=>String(v).toLowerCase()==='true';
-          const build=yes(process.env.BUILD_PASS),runtime=yes(process.env.RUNTIME_PASS),qa=yes(process.env.QA_PASS),regression=yes(process.env.REGRESSION_PASS);
-          let last='CHEAP_PRECHECK',failure=null;
-          if(build)last='SINGLE_BUILD_OR_PACKAGE';else failure='SINGLE_BUILD_OR_PACKAGE';
-          if(build&&process.env.ARTIFACT_ID)last='IMMUTABLE_ARTIFACT_BIND';
-          if(build&&!runtime)failure='TARGET_PLATFORM_RUNTIME';else if(runtime)last='TARGET_PLATFORM_RUNTIME';
-          if(runtime&&!qa)failure='INDEPENDENT_QA';else if(qa)last='INDEPENDENT_QA';
-          if(qa&&!regression)failure='REGRESSION';else if(regression)last='REGRESSION';
-          const canonical=process.env.MEETING_STATE||'WAITING_TARGET_PLATFORM_VALIDATION';
-          const complete=regression&&canonical==='DEVELOPMENT_BASELINE_READY';
-          const runtimeRun=Number(process.env.RUNTIME_RUN_NEW||process.env.RUNTIME_RUN_OLD||0)||null;
-          const qaRun=Number(process.env.QA_RUN_NEW||process.env.QA_RUN_OLD||0)||null;
-          const regressionRun=Number(process.env.REGRESSION_RUN_NEW||process.env.REGRESSION_RUN_OLD||0)||null;
-          const evidence={version:1,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION||null,sourceFingerprint:process.env.SOURCE_FINGERPRINT||null,buildOrPackagePassed:build,artifactIdentity:process.env.ARTIFACT_ID||null,runtimePassed:runtime,independentQaPassed:qa,regressionPassed:regression,exactRevision:Boolean(process.env.ARTIFACT_ID&&process.env.SOURCE_REVISION),lastSuccessfulStage:last,failureStage:failure,failureSignature:failure?failureSignature({stage:failure,code:'STAGE_NOT_PASSED',message:`${process.env.GAME_ID}:${failure}`}):null};
-          const row={gameId:process.env.GAME_ID,status:'ACTIVE',selectedPlatform:'UNITY',targetPlatform:'UNITY',currentStep:complete?'DEVELOPMENT_BASELINE_GATE':'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:canonical,platformAdapter:'tools/company-development-unity-platform.mjs',unityProjectPath:process.env.PROJECT,unityCandidateBranch:process.env.BRANCH||null,unitySourceCommit:process.env.SOURCE_REVISION||null,unityBuildRunId:Number(process.env.BUILD_RUN||0)||null,unityRuntimeSmokeRunId:runtimeRun,unityIndependentQaRunId:qaRun,unityRegressionRunId:regressionRun,executionEvidence:evidence,resumeStage:failure||'IMMEDIATE_NEXT_STAGE_DISPATCH',failureCount:failure?1:0,contractCanaryPassed:String(process.env.IS_CANARY).toLowerCase()==='true'&&regression,updatedAt:new Date().toISOString()};
+          cp -R "$BASE" runtime-persist/"$(dirname "$BASE")"/
+          node <<'NODE'
+          const fs=require('fs');
+          const s=process.env.STATE;
+          const step=s==='DEVELOPMENT_BASELINE_READY'?'DEVELOPMENT_BASELINE_GATE':s==='WAITING_REVALIDATION'?'TARGETED_REVALIDATION':'UNITY_ANDROID_TECHNICAL_VALIDATION';
+          const row={gameId:process.env.GAME_ID,status:'ACTIVE',currentStep:step,canonicalState:s,
+            unityProjectPath:process.env.PROJECT,unityCandidateBranch:process.env.BRANCH,unitySourceCommit:process.env.SOURCE_COMMIT,
+            unityBuildRunId:Number(process.env.BUILD_RUN),unityRuntimeSmokeRunId:Number(process.env.SMOKE_RUN),unityIndependentQaRunId:Number(process.env.QA_RUN),updatedAt:new Date().toISOString()};
           fs.writeFileSync(`runtime-persist/queue/${process.env.GAME_ID}.json`,JSON.stringify(row,null,2)+'\n');
-          fs.writeFileSync(`runtime-persist/queue/${process.env.GAME_ID}.evidence.json`,JSON.stringify(evidence,null,2)+'\n');
-          console.log(`CHECKPOINT_LAST_SUCCESS=${last}`);console.log(`CHECKPOINT_FAILURE_STAGE=${failure||'NONE'}`);
           NODE
-
-      - name: Upload checkpoint for company-runtime persistence
-        if: always()
+      - name: Upload validated Unity technical evidence
         uses: actions/upload-artifact@v4
         with:
           name: development-unity-runtime-${{ matrix.item.gameId }}-${{ github.run_id }}
@@ -584,22 +412,8 @@ jobs:
           retention-days: 14
           if-no-files-found: error
 
-      - name: Enforce stage result after checkpoint is safely captured
-        if: always()
-        env:
-          BUILD_PASS: ${{ steps.buildstate.outputs.build_passed }}
-          RUNTIME_PASS: ${{ steps.runtimestate.outputs.passed }}
-          QA_PASS: ${{ steps.independentstate.outputs.passed }}
-          REGRESSION_PASS: ${{ steps.regressionstate.outputs.passed }}
-        run: |
-          [[ "$BUILD_PASS" == true ]] || { echo 'FAILED_STAGE=SINGLE_BUILD_OR_PACKAGE' >&2; exit 21; }
-          [[ "$RUNTIME_PASS" == true ]] || { echo 'FAILED_STAGE=TARGET_PLATFORM_RUNTIME' >&2; exit 22; }
-          [[ "$QA_PASS" == true ]] || { echo 'FAILED_STAGE=INDEPENDENT_QA' >&2; exit 23; }
-          [[ "$REGRESSION_PASS" == true ]] || { echo 'FAILED_STAGE=REGRESSION' >&2; exit 24; }
-          echo 'UNITY_SPEED_SEQUENCE=PASS'
-
   persist-runtime:
-    name: persist Unity exact checkpoints
+    name: persist DEVELOPMENT Unity evidence
     needs: [prepare, unity-technical-validation]
     if: needs.prepare.outputs.run == 'true' && always()
     runs-on: ubuntu-latest
@@ -611,9 +425,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: company-runtime
-          fetch-depth: 1
-          fetch-tags: false
-      - name: Download all checkpoint packages including failed-stage jobs
+          fetch-depth: 0
+      - name: Download successful Unity validation packages
         id: packages
         continue-on-error: true
         uses: actions/download-artifact@v4
@@ -621,69 +434,48 @@ jobs:
           pattern: development-unity-runtime-*-${{ github.run_id }}
           path: /tmp/development-unity-runtime
           merge-multiple: true
-      - name: Merge checkpoint evidence into company runtime
-        id: persist
+      - name: Merge successful Unity evidence into company runtime
         if: steps.packages.outcome == 'success'
-        env:
-          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags --depth=1 origin company-runtime
+          git fetch origin company-runtime
           git reset --hard origin/company-runtime
-          checkpoint_root=''
-          if [[ -d /tmp/development-unity-runtime/runtime-persist/queue ]]; then
-            checkpoint_root=/tmp/development-unity-runtime/runtime-persist
-          elif [[ -d /tmp/development-unity-runtime/queue ]]; then
-            checkpoint_root=/tmp/development-unity-runtime
-          fi
-          [[ -n "$checkpoint_root" ]] || { echo 'checkpoint queue directory missing after artifact extraction' >&2; find /tmp/development-unity-runtime -maxdepth 3 -type d -print; exit 15; }
-          export CHECKPOINT_ROOT="$checkpoint_root"
-          if [[ -d "$checkpoint_root/design" ]]; then cp -R "$checkpoint_root/design/." design/; fi
+          test -d /tmp/development-unity-runtime/runtime-persist/design
+          cp -R /tmp/development-unity-runtime/runtime-persist/design/. design/
           node <<'NODE'
           const fs=require('fs'),path=require('path');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
-          const dir=path.join(process.env.CHECKPOINT_ROOT,'queue');
-          const updates=fs.readdirSync(dir).filter(x=>x.endsWith('.json')&&!x.endsWith('.evidence.json')).map(x=>JSON.parse(fs.readFileSync(path.join(dir,x),'utf8')));
-          let anyPassed=false,anyFailed=false;
-          for(const update of updates){const item=(queue.items||[]).find(x=>x.gameId===update.gameId);if(!item)throw new Error(`queue item missing: ${update.gameId}`);Object.assign(item,update);if(update.contractCanaryPassed)queue.executionContractVersion=1;if(update.executionEvidence?.failureStage)anyFailed=true;else anyPassed=true;}
-          queue.executionContract='CHANGE_DETECTION>CHEAP_PRECHECK>REPRESENTATIVE_CANARY>SINGLE_BUILD_OR_PACKAGE>IMMUTABLE_ARTIFACT_BIND>TARGET_PLATFORM_RUNTIME>INDEPENDENT_QA>REGRESSION>IMMEDIATE_NEXT_STAGE_DISPATCH>RESUME_EXACT_FAILURE_POINT';
+          const dir='/tmp/development-unity-runtime/runtime-persist/queue';
+          const updates=fs.readdirSync(dir).filter(x=>x.endsWith('.json')).map(x=>JSON.parse(fs.readFileSync(path.join(dir,x),'utf8')));
+          for(const update of updates){const item=(queue.items||[]).find(x=>x.gameId===update.gameId);if(!item)throw new Error(`queue item missing: ${update.gameId}`);Object.assign(item,update);}
           queue.updatedAt=new Date().toISOString();
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
-          fs.writeFileSync('/tmp/persist-result.json',JSON.stringify({count:updates.length,anyPassed,anyFailed}));
           console.log(`DEVELOPMENT_UNITY_PERSIST_COUNT=${updates.length}`);
           NODE
           git config user.name 'jaewoon-development-unity-runtime'
           git config user.email 'actions@users.noreply.github.com'
           git add design development-queue.json
           git diff --cached --check
-          if ! git diff --cached --quiet; then
-            git commit -m 'runtime: persist Unity exact-stage checkpoints [skip ci]'
-            for attempt in 1 2 3;do if git push origin HEAD:company-runtime;then break;fi;git fetch --no-tags origin company-runtime;git rebase origin/company-runtime||{ git rebase --abort||true;exit 1;};sleep $((attempt*2));done
-          fi
-          anyPassed="$(node -e "process.stdout.write(String(require('/tmp/persist-result.json').anyPassed))")"
-          anyFailed="$(node -e "process.stdout.write(String(require('/tmp/persist-result.json').anyFailed))")"
-          echo "any_passed=$anyPassed" >> "$GITHUB_OUTPUT"
-          echo "any_failed=$anyFailed" >> "$GITHUB_OUTPUT"
-          echo 'COMPANY_RUNTIME_UNITY_PERSIST=PASS'
-
-      - name: Immediately continue only successful canonical progress
-        if: steps.persist.outputs.any_passed == 'true' && steps.persist.outputs.any_failed != 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo 'IMMEDIATE_NEXT_STAGE_DISPATCH=YES'
-
+          if git diff --cached --quiet; then echo 'COMPANY_RUNTIME_UNITY_PERSIST=NO_CHANGE'; exit 0; fi
+          git commit -m "runtime: persist DEVELOPMENT Unity technical validation [skip ci]"
+          for attempt in 1 2 3; do
+            if git push origin HEAD:company-runtime; then echo 'COMPANY_RUNTIME_UNITY_PERSIST=PASS'; exit 0; fi
+            git fetch origin company-runtime
+            if ! git rebase origin/company-runtime; then git rebase --abort || true; exit 1; fi
+            sleep $((attempt * 2))
+          done
+          exit 1
       - name: Unity runtime summary
         if: always()
         run: |
-          echo 'CHANGE_DETECTION=ENABLED'
-          echo 'CHEAP_PRECHECK=ENABLED'
-          echo 'REPRESENTATIVE_CANARY=ENABLED'
-          echo 'BUILD_ONCE_PER_SOURCE_FINGERPRINT=ENABLED'
-          echo 'IMMUTABLE_ARTIFACT_REUSE=ENABLED'
-          echo 'RUNTIME_THEN_INDEPENDENT_QA_THEN_REGRESSION=ENABLED'
-          echo 'RESUME_EXACT_FAILURE_POINT=ENABLED'
-          echo 'QUALITY_GATE_WEAKENING=NO'
+          echo 'UNITY_BUILD_ROUTE=GITHUB_CLOUD_DYNAMIC_N'
+          echo 'UNITY_TARGET_MATRIX=DYNAMIC_N'
+          echo 'UNITY_ACTIVE_PARENT_WINDOW=${{ needs.prepare.outputs.parallel }}'
+          echo 'UNITY_CHILD_REQUESTS=DYNAMIC_N'
+          echo 'PAID_RUNNER_FOR_UNITY_BUILD=NO'
+          echo 'REAL_APK_REQUIRED=YES'
+          echo 'ANDROID_RUNTIME_SMOKE_REQUIRED=YES'
+          echo 'INDEPENDENT_QA_REQUIRED=YES'
+          echo 'HOMEPAGE_TEST_APK_PUBLISH=YES'
           echo 'PUBLIC_MAIN_SOURCE_WRITE=NO'

@@ -1,3 +1,4 @@
+// 파일명: tools/vibe2-learning-pipeline-contract.mjs
 import fs from 'node:fs';
 
 const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -15,15 +16,15 @@ const expectedChain = [
   'VERIFIED_TRAINING_SAMPLE',
   'DISTILLATION_STATUS',
   'DETERMINISTIC_TRAINING_REQUEST',
-  'LOCAL_SELF_HOSTED_DATASET_BUILD',
-  'LOCAL_LORA_OR_QLORA_TRAINING',
+  'SELF_HOSTED_DATASET_BUILD',
+  'SELF_HOSTED_LORA_OR_QLORA_TRAINING',
   'TRAINED_UNVERIFIED',
   'FIXED_HOLDOUT_AB',
   'CANARY',
   'PROMOTE_OR_ROLLBACK',
 ];
 
-eq(contract.version, 1, 'contract.version');
+eq(contract.version, 3, 'contract.version');
 eq(contract.status, 'LOCKED', 'contract.status');
 eq(JSON.stringify(contract.canonicalChain), JSON.stringify(expectedChain), 'canonicalChain');
 eq(contract.pipelineLock.existingPipelineIsAuthoritative, true, 'existingPipelineIsAuthoritative');
@@ -31,7 +32,13 @@ eq(contract.pipelineLock.parallelLearningPipelineForbidden, true, 'parallelLearn
 eq(contract.pipelineLock.directStageBypassForbidden, true, 'directStageBypassForbidden');
 eq(contract.pipelineLock.thresholdLoweringToForceTrainingForbidden, true, 'thresholdLoweringToForceTrainingForbidden');
 eq(contract.pipelineLock.duplicateOrFabricatedSamplesForbidden, true, 'duplicateOrFabricatedSamplesForbidden');
-eq(contract.trainingPolicy.route, 'LOCAL_SELF_HOSTED_ONLY', 'training route');
+eq(contract.pipelineLock.sameCanonicalRequestForAllBackends, true, 'sameCanonicalRequestForAllBackends');
+eq(contract.trainingPolicy.route, 'CANONICAL_SELF_HOSTED', 'training route');
+eq(contract.trainingPolicy.primaryBackend, 'SERVER_SELF_HOSTED', 'primary backend');
+eq(contract.trainingPolicy.preservedBackend, 'LOCAL_SELF_HOSTED', 'preserved backend');
+eq(contract.trainingPolicy.localBackendPreserved, true, 'local backend preservation');
+eq(contract.trainingPolicy.continuousMode, '24H', 'continuous mode');
+eq(contract.trainingPolicy.canonicalRefreshCadence, 'HOURLY', 'refresh cadence');
 eq(contract.trainingPolicy.githubHostedModelTrainingAllowed, false, 'hosted training');
 eq(contract.trainingPolicy.paidApiAllowed, false, 'paid API');
 eq(contract.trainingPolicy.minTrainSamples, 24, 'minTrainSamples');
@@ -39,6 +46,25 @@ eq(contract.trainingPolicy.minFreshTrainSamples, 12, 'minFreshTrainSamples');
 eq(contract.trainingPolicy.minDistinctProjects, 2, 'minDistinctProjects');
 eq(contract.trainingPolicy.maxProjectShare, 0.75, 'maxProjectShare');
 eq(contract.trainingPolicy.promotionGate, 'FIXED_HOLDOUT_AB_THEN_CANARY', 'promotionGate');
+eq(contract.portableWebLearning?.robloxMayRetrievePortableWebPatternsAsContext, true, 'web to Roblox portable context');
+eq(contract.portableWebLearning?.webEvidenceCountsAsRobloxVerifiedEvidence, false, 'web evidence must not become Roblox evidence');
+eq(contract.portableWebLearning?.webEvidenceMaySatisfyRobloxDatasetGate, false, 'web evidence must not satisfy Roblox dataset gate');
+
+const external = contract.externalOpenSourceWebDistillation;
+eq(external?.enabled, true, 'external web auto-distill enabled');
+eq(external?.execution, 'EXISTING_CANONICAL_HOURLY_INGEST_ONLY', 'external web execution route');
+eq(external?.separateCronOrPipelineForbidden, true, 'external web parallel pipeline');
+eq(external?.sourceMode, 'ALLOWLISTED_PERMISSIVE_OPEN_SOURCE_ONLY', 'external source mode');
+eq(external?.licenseFileAndTextVerificationRequired, true, 'external license verification');
+eq(external?.sourceCommitBindingRequired, true, 'external source commit binding');
+eq(external?.upstreamNodeOrShellExecutionForbidden, true, 'external upstream script execution');
+eq(external?.externalBrowserNetworkBlocked, true, 'external browser network');
+eq(external?.browserRuntimePassRequired, true, 'external browser runtime pass');
+eq(external?.meaningfulInteractionProbeRequired, true, 'external interaction probe');
+eq(external?.rawBinaryOrAssetTrainingForbidden, true, 'external raw asset training');
+eq(external?.failedSourceCannotCreatePositiveSample, true, 'external failed source promotion');
+eq(external?.crossPlatformPassEvidenceTransferForbidden, true, 'external cross-platform pass transfer');
+eq(external?.thresholdLoweringForbidden, true, 'external threshold lowering');
 
 const companyFlow = readText('COMPANY_FLOW.md');
 includesAll(companyFlow, [
@@ -46,30 +72,63 @@ includesAll(companyFlow, [
   'newParallelPipelineForSameStageForbidden: true',
   'adHocBypassChainForbidden: true',
   'status: VERIFIED_RUNTIME_PASS_TRUE',
+  'primaryBackend: SERVER_SELF_HOSTED',
+  'preservedBackend: LOCAL_SELF_HOSTED',
+  'mode: CONTINUOUS_24H',
+  'externalOpenSourceWebDistillation:',
+  'execution: EXISTING_CANONICAL_HOURLY_INGEST_ONLY',
+  'sourceMode: ALLOWLISTED_PERMISSIVE_OPEN_SOURCE_ONLY',
+  'upstreamNodeOrShellExecutionForbidden: true',
+  'browserRuntimePassRequired: true',
+  'failedSourceCannotCreatePositiveSample: true',
+  'robloxMayRetrievePortableWebPatternsAsContext: true',
+  'webEvidenceCountsAsRobloxVerifiedEvidence: false',
 ], 'COMPANY_FLOW');
+
+const sourceManifest = readJson(contract.implementationBindings.externalWebSourceManifest);
+eq(sourceManifest.version, 1, 'external source manifest version');
+eq(sourceManifest.policy?.mode, 'ALLOWLISTED_PERMISSIVE_OPEN_SOURCE_ONLY', 'external manifest mode');
+eq(sourceManifest.policy?.requireLicenseFileMatch, true, 'external manifest license verification');
+eq(sourceManifest.policy?.requireBrowserRuntimePass, true, 'external manifest runtime verification');
+eq(sourceManifest.policy?.requireInteractionProbe, true, 'external manifest interaction verification');
+eq(sourceManifest.policy?.upstreamNodeOrShellExecutionForbidden, true, 'external manifest script execution');
+eq(sourceManifest.policy?.externalNetworkFromBrowserBlocked, true, 'external manifest browser network');
+if (!Array.isArray(sourceManifest.sources) || sourceManifest.sources.length < 2) fail('external source manifest requires multiple project sources');
 
 const ingestWorkflow = readText(contract.implementationBindings.ingestWorkflow);
 includesAll(ingestWorkflow, [
+  'tools/vibe3-external-web-distill.mjs',
+  'company-learning/external-web-sources.json',
   'tools/vibe2-distillation-ingest.mjs',
   'tools/vibe2-distillation-status.mjs',
   'tools/vibe2-training-request.mjs',
+  'tools/vibe3-trajectory-ingest.mjs',
+  'tools/vibe3-pump-index.mjs',
+  'EXTERNAL_WEB_OPEN_SOURCE_AUTO_DISTILL=YES',
   'external black-box browser QA: NOT_APPLICABLE',
 ], 'distillation ingest workflow');
 const ingestOrder = [
+  'node tools/vibe3-external-web-distill.mjs',
   'node tools/vibe2-distillation-ingest.mjs',
+  'node tools/vibe3-trajectory-ingest.mjs',
   'node tools/vibe2-distillation-status.mjs',
   'node tools/vibe2-training-request.mjs',
+  'node tools/vibe3-pump-index.mjs',
 ].map((token) => ingestWorkflow.indexOf(token));
-if (!(ingestOrder[0] >= 0 && ingestOrder[0] < ingestOrder[1] && ingestOrder[1] < ingestOrder[2])) fail('ingest/status/request order drifted');
+for (const [index, value] of ingestOrder.entries()) if (value < 0) fail(`ingest stage missing at ${index}`);
+for (let index = 1; index < ingestOrder.length; index += 1) if (ingestOrder[index - 1] >= ingestOrder[index]) fail('external/ingest/trajectory/status/request/pump order drifted');
 
-const trainWorkflow = readText(contract.implementationBindings.localTrainingWorkflow);
+const trainWorkflow = readText(contract.implementationBindings.trainingWorkflow);
 includesAll(trainWorkflow, [
-  "LOCAL_SELF_HOSTED_ONLY",
+  'CANONICAL_SELF_HOSTED',
+  'SERVER_SELF_HOSTED',
+  'LOCAL_SELF_HOSTED',
   'node tools/vibe2-weight-learning.mjs dataset',
   'python tools/vibe2-train.py',
   'TRAINED_UNVERIFIED',
   'FIXED_HOLDOUT_AB_AND_CANARY',
-], 'local training workflow');
+  'VIBE2_SERVER_RUNNER_LABELS_JSON',
+], 'self-hosted training workflow');
 
 const block = contract.blockBlastSuccessLearningMethod;
 const source = readJson(block.sourceEvidence);
@@ -97,12 +156,18 @@ eq(sample.verification?.noFatalCrashOrAnr, 'PASS', 'Block Blast sample crash/ANR
 eq(sample.verification?.proprietaryExtraction, false, 'Block Blast proprietary extraction');
 if (!status.sourceFiles?.includes(block.promotedSample)) fail('Block Blast promoted sample missing from distillation status');
 if ((status.tasks?.qa?.accepted ?? 0) < 1 || (status.tasks?.qa?.train ?? 0) < 1) fail('Block Blast QA sample is not counted by distillation status');
-eq(request.execution?.route, 'LOCAL_SELF_HOSTED_ONLY', 'training request route');
+eq(request.version, 2, 'training request version');
+eq(request.execution?.route, 'CANONICAL_SELF_HOSTED', 'training request route');
+eq(request.execution?.preferredBackend, 'SERVER_SELF_HOSTED', 'training request preferred backend');
+eq(request.execution?.localBackendPreserved, true, 'training request local preservation');
 eq(request.execution?.githubHostedTrainingAllowed, false, 'training request hosted policy');
 eq(request.execution?.paidApiAllowed, false, 'training request paid API policy');
 
 console.log('VIBE2_LEARNING_PIPELINE_CONTRACT=PASS');
+console.log('EXTERNAL_WEB_AUTO_DISTILLATION=LOCKED_TO_CANONICAL_HOURLY_INGEST');
+console.log(`EXTERNAL_WEB_ALLOWLISTED_SOURCES=${sourceManifest.sources.length}`);
 console.log('BLOCK_BLAST_SUCCESS_LEARNING_METHOD=LOCKED_RUN30');
 console.log(`BLOCK_BLAST_QA_ACCEPTED=${status.tasks.qa.accepted}`);
 console.log(`BLOCK_BLAST_QA_TRAIN=${status.tasks.qa.train}`);
 console.log(`TRAINING_REQUEST_STATE=${request.state}`);
+console.log(`TRAINING_PRIMARY_BACKEND=${request.execution.preferredBackend}`);

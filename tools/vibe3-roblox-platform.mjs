@@ -5,7 +5,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import {normalizeCommonEvidence} from './company-selected-platform-router.mjs';
 
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
@@ -32,11 +31,6 @@ export const ROBLOX_PLATFORM_POLICY=Object.freeze({
   sourceExtensions:ROBLOX_SOURCE_EXTENSIONS,
   publishingLimitations:PUBLISH_LIMITED_INSTANCE_TYPES,
   dryRunDefault:true,
-  buildOncePerSourceFingerprint:true,
-  immutableArtifactRequired:true,
-  sameArtifactAcrossRuntimeQaRegression:true,
-  resumeExactFailurePoint:true,
-  cronRole:'WATCHDOG_AND_RECOVERY_ONLY',
   positiveExperienceRequires:Object.freeze(['VERIFIED_WINNER','RUNTIME_PASS','INDEPENDENT_QA_PASS','REGRESSION_PASS','PROTECTED_STATE_PRESERVED','EXACT_REVISION']),
   canonicalDistillationOnly:true,
 });
@@ -44,17 +38,11 @@ export const ROBLOX_PLATFORM_POLICY=Object.freeze({
 export function createRobloxPlatformContract(){
   return Object.freeze({
     ...ROBLOX_PLATFORM_POLICY,
-    qualityGateWeakeningAllowed:false,
-    commonEvidenceSchema:true,
     qa:Object.freeze({browserQa:'NOT_APPLICABLE',runtime:'PASS',independentQa:'PASS',saveRejoinCheck:'WHEN_APPLICABLE',mobileUiCheck:'WHEN_APPLICABLE',serverClientBoundaryCheck:true,remoteSecurityCheck:true}),
     publishing:Object.freeze({method:'POST',endpointTemplate:'https://apis.roblox.com/universes/v1/{universeId}/places/{placeId}/versions?versionType=Published',apiKeyHeader:'x-api-key',secretPersisted:false,secretPrinted:false,liveExecutionRequiresExplicitFlag:true,placeFileMustRemainUnderSourceRoot:true}),
     learning:Object.freeze({separateCron:false,separateDataset:false,separateTrainer:false,useExistingCanonicalDistillation:true}),
     authority:'roblox-platform-adapter-contract',
   });
-}
-
-export function normalizeRobloxDevelopmentEvidence(evidence={},defaults={}){
-  return normalizeCommonEvidence({...evidence,platform:'ROBLOX'},{...defaults,platform:'ROBLOX'});
 }
 
 export function validateRobloxSourcePath(sourcePath=''){

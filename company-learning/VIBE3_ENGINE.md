@@ -3,9 +3,9 @@
 Status: OWNER-DIRECT V3 IMPLEMENTATION — PUMP MODE LOCKED
 Recorded: 2026-09-12
 
-`COMPANY_FLOW.md` is the sole policy source of truth. This file documents V3 implementation behavior only and must not create independent company, platform, portfolio-size, or release-order policy.
+`COMPANY_FLOW.md` is the sole policy source of truth. This file documents V3 implementation behavior only and must not create independent company, platform, portfolio-size, release-order, or learning policy.
 
-Vibe3 is an intelligence-layer upgrade inside the existing Vibe2/company development and learning pipelines. It is not a parallel pipeline. It reuses the existing checkpoint, source-apply, runtime observation, QA, regression, distillation, local-training, holdout, canary and rollback gates.
+Vibe3 is an intelligence-layer upgrade inside the existing Vibe2/company development and learning pipelines. It is not a parallel pipeline. It reuses the existing checkpoint, source-apply, runtime observation, QA, regression, distillation, self-hosted training, holdout, canary and rollback gates.
 
 ## V3 Pump execution chain
 
@@ -19,15 +19,15 @@ Rules:
 - failed candidates remain failure-warning/comparison memory and never become positive targets by themselves;
 - hidden chain-of-thought is never required or persisted; only observable actions, patches, failures and verification evidence are stored.
 
-## Pump Mode without local weight training
+## Pump Mode and 24-hour refresh
 
-Pump Mode does not require local model-weight training. It improves each development attempt by retrieving verified prior evidence, injecting task-specific playbooks, generating multiple independent candidates, executing them in isolation, repairing failures up to three times, and persisting verified trajectories.
+Pump Mode does not require model-weight training in order to operate. It improves each development attempt by retrieving verified prior evidence, injecting task-specific playbooks, generating multiple independent candidates, executing them in isolation, repairing failures up to three times, and persisting verified trajectories.
 
 The existing `Vibe2 Distillation Sample Ingest` hourly schedule is the sole 24-hour refresh route. Every hour it refreshes canonical samples/status/request and the V3 verified-memory index, task playbooks and benchmark queue. No second cron or shadow learning loop is permitted.
 
 Files:
 - `company-learning/vibe3-memory-index.json` — verified positive memory plus separated failure warnings;
-- `company-learning/vibe3-task-playbooks.json` — coding/bugfix/qa/unity/roblox/graphics/planning/general playbooks;
+- `company-learning/vibe3-task-playbooks.json` — coding/bugfix/qa/unity/roblox/fortnite_uefn/graphics/planning/general playbooks;
 - `company-learning/vibe3-benchmark-queue.json` — deterministic practice cases;
 - `tools/vibe3-pump-index.mjs` — canonical refresh tool invoked by the existing hourly ingest workflow;
 - `tools/vibe3-roblox-platform.mjs` — Roblox source/runtime/publishing adapter inside V3 Pump;
@@ -35,9 +35,35 @@ Files:
 
 A benchmark case is **not** a training sample. It can enter the canonical learning chain only after execution through the existing Vibe development path and independently verified runtime/QA/regression/exact-revision evidence.
 
-## Verified RAG and failure memory
+## Automatic external web-game distillation
 
-Positive retrieval memory accepts only active, revision-bound evidence that passes the task-specific canonical QA rules. Unity requires independent QA PASS + Android runtime PASS + browser N/A. Roblox requires independent QA PASS + Roblox runtime PASS + browser N/A. Fortnite/UEFN requires its own platform runtime and independent QA evidence once its adapter/playbook is active. External commercial black-box QA requires the dedicated `BLACK_BOX_EVIDENCE_PASS` marker, browser N/A and runtime PASS. Ordinary non-platform-specific samples keep browser QA PASS where applicable.
+The existing hourly canonical ingest may automatically collect code changes from an explicit allowlist of permissively licensed public web games. This is an input source to the same canonical distillation chain, not a new learning pipeline or second cron.
+
+Implementation files:
+- `company-learning/external-web-sources.json` — explicit source allowlist, license metadata and browser interaction probes;
+- `tools/vibe3-external-web-distill.mjs` — license/revision/code-diff/browser-runtime verifier and sample builder;
+- `qa/vibe3-external-web-distill.test.mjs` — policy/manifest contract test.
+
+Admission rules:
+- only explicitly allowlisted sources with an approved permissive license are examined;
+- the declared license file and license text must match before a source or commit can be accepted;
+- every training sample is bound to the exact upstream source commit and retains repository/license provenance;
+- upstream Node, npm, package, shell or project scripts are never executed by the collector;
+- the web game is served as static content and exercised in a headless browser with service workers blocked and all non-local browser network requests aborted;
+- an actual browser runtime PASS plus a meaningful input/state-change probe is required;
+- only code diffs enter the training output; raw assets, binaries and arbitrary downloaded files do not become model-training targets;
+- a failed source, syntax check, browser runtime or interaction probe cannot create a positive sample;
+- accepted external web samples enter the existing `company-learning/training-samples` root and pass the unchanged status/diversity/readiness gates;
+- external web evidence remains portable context only across platforms and cannot certify Roblox, Unity or Fortnite/UEFN runtime/publishing PASS;
+- readiness thresholds are not lowered to accelerate training.
+
+The initial allowlist contains independently licensed projects rather than multiple commits from one project only, so project-diversity accounting can improve without fabricating diversity. Adding a new source requires updating the allowlist with its repository, fixed ref, license file, code paths and a deterministic browser interaction probe.
+
+## Verified RAG, web portability and failure memory
+
+Positive retrieval memory accepts only active, revision-bound evidence that passes the task-specific canonical QA rules. Unity requires independent QA PASS + Android runtime PASS + browser N/A. Roblox requires independent QA PASS + Roblox runtime PASS + browser N/A. Fortnite/UEFN requires its own platform runtime and independent QA evidence. External commercial black-box QA requires the dedicated `BLACK_BOX_EVIDENCE_PASS` marker, browser N/A and runtime PASS. Ordinary non-platform-specific samples keep browser QA PASS where applicable.
+
+Verified webgame results may add portable V3 memory tags for touch input, mobile UI, save/load and resume behavior, performance, responsive layout, regression avoidance, canvas/browser behavior and core-loop implementation. Roblox may retrieve those patterns as context. Web evidence never counts as Roblox verified runtime/publishing/training-lane evidence and cannot satisfy the Roblox platform dataset gate.
 
 Failures are stored separately as warning memory. They can influence `avoid` guidance and repair selection but cannot be converted into positive training targets merely by being present in memory.
 
@@ -51,7 +77,22 @@ V3 builds a source graph from files, symbols, imports/calls, tests and asset ref
 
 ## Trajectory learning
 
-Verified V3 trajectories live under `company-learning/vibe3-trajectories/`. `tools/vibe3-trajectory-ingest.mjs` accepts only a verified winner bound to runtime PASS, QA PASS, regression PASS, protected-state preservation and exact source revision. The existing distillation-status, deterministic training-request, local self-hosted training, fixed holdout A/B, canary and rollback stages remain authoritative.
+Verified V3 trajectories live under `company-learning/vibe3-trajectories/`. `tools/vibe3-trajectory-ingest.mjs` accepts only a verified winner bound to runtime PASS, QA PASS, regression PASS, protected-state preservation and exact source revision. `runtimePass` and the older `runtimePassed` are treated as equivalent verified runtime booleans so valid trajectories are not silently lost.
+
+The existing distillation-status, deterministic training-request, self-hosted training, fixed holdout A/B, canary and rollback stages remain authoritative.
+
+## Self-hosted training backends
+
+There is one canonical training stage with two execution backends, not two learning pipelines.
+
+- primary backend: `SERVER_SELF_HOSTED`;
+- preserved backend: `LOCAL_SELF_HOSTED`;
+- existing local training remains available for later/manual bidirectional use;
+- automatic fallback from server to local is disabled;
+- both backends consume the same canonical request, dataset gates and `tools/vibe2-train.py` trainer contract;
+- concurrent training of the same canonical request on both backends is forbidden;
+- server execution requires an explicitly registered/capability-verified self-hosted runner;
+- GitHub-hosted model training and paid model-training API remain forbidden.
 
 ## Platform implementation bindings
 
@@ -63,7 +104,7 @@ Implementation invariants:
 - existing Unity/Android source, build, runtime, QA and release knowledge remains preserved and extendable;
 - Fortnite/UEFN implementation may be added without waiting for Roblox or Unity completion;
 - success evidence is platform-local: one platform's PASS cannot certify another platform;
-- portable verified lessons may be shared through V3 memory/RAG/playbooks;
+- portable verified lessons may be shared through V3 memory/RAG/playbooks as context only;
 - platform-specific source/runtime/publishing details remain scoped to the relevant playbook/adapter;
 - every qualifying result joins the same canonical Vibe2 distillation chain.
 
@@ -85,13 +126,14 @@ Roblox support is an adapter inside the existing V3 Pump chain, not a new pipeli
 - live publish requires explicit `--execute` plus `ROBLOX_OPEN_CLOUD_API_KEY`, `ROBLOX_UNIVERSE_ID`, `ROBLOX_PLACE_ID`;
 - credentials remain environment-only, are not serialized into plans/results, and are redacted from publish-error output;
 - place publishing files must be `.rbxl` or `.rbxlx` under `roblox-games/`;
-- cookie authentication is disabled by contract.
+- cookie authentication is disabled by contract;
+- portable web patterns may guide implementation but cannot count as Roblox PASS evidence.
 
 No Roblox-specific distillation cron, shadow dataset, duplicate trigger or trainer exists or is authorized.
 
 ## Unity implementation preservation
 
-Unity remains a full supported platform. Existing Unity/Android project, C#, build, runtime, mobile performance, QA, save compatibility and release knowledge must not be deleted or downgraded merely because Roblox is the primary default focus. Unity-specific verified experience remains scoped to the Unity playbook while portable verified patterns may feed shared V3 memory.
+Unity remains a full supported platform. Existing Unity/Android project, C#, build, runtime, QA, save compatibility and release knowledge must not be deleted or downgraded merely because Roblox is the primary default focus. Unity-specific verified experience remains scoped to the Unity playbook while portable verified patterns may feed shared V3 memory.
 
 ## Fortnite / UEFN implementation extension
 
@@ -105,11 +147,11 @@ The original asset is immutable. V3 produces independent variants in a separate 
 
 Eligible variants compete on style consistency, silhouette readability, visual quality, animation readiness and mobile performance. Copyright/permission failure blocks transformation rather than being worked around.
 
-## Weight training later
+## Weight training
 
-Actual LoRA/QLoRA model-weight training remains `LOCAL_SELF_HOSTED_ONLY`. The verified baseline remains `Qwen/Qwen3-1.7B`; larger coder-model selection remains capability-gated with baseline fallback and no forced download. Lack of a suitable local machine disables weight training only; it does **not** disable Pump Mode.
+Actual LoRA/QLoRA model-weight training is self-hosted only. The server self-hosted backend is primary and the existing local self-hosted backend is preserved. The verified baseline remains `Qwen/Qwen3-1.7B`; larger coder-model selection remains capability-gated with baseline fallback and no forced download. Lack of a suitable self-hosted machine disables weight training only; it does **not** disable Pump Mode.
 
-When local capability becomes available, the accumulated verified trajectories/samples continue through the existing thresholds and canonical chain. Fresh adapters remain `TRAINED_UNVERIFIED` until fixed holdout A/B and canary pass.
+When canonical readiness becomes true, verified trajectories/samples continue through the existing thresholds and same deterministic request. Fresh adapters remain `TRAINED_UNVERIFIED` until fixed holdout A/B and canary pass.
 
 ## Hard prohibitions
 
@@ -119,6 +161,10 @@ When local capability becomes available, the accumulated verified trajectories/s
 - no threshold lowering, duplicated or fabricated samples;
 - no benchmark counted as training before verification;
 - no failed candidate promoted as a positive target;
+- no unlicensed or unverified external web source promoted as a positive target;
+- no execution of upstream external project Node/npm/shell scripts during external-web collection;
+- no raw external assets or binaries used as code-training targets;
+- no cross-platform PASS evidence transfer;
 - no platform development lock inferred from default focus order;
 - no unverified external asset derivative or original asset destruction;
 - no proprietary source/assets/internal algorithm extraction from external commercial games;
