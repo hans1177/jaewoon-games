@@ -5,6 +5,7 @@
   "updatedAtKst": "2026-09-12",
   "sourceOfTruth": "COMPANY_FLOW.md",
   "workingBranch": "chatgpt/company-flow-ops-20260912",
+  "pullRequest": 346,
   "baseMainSha": "9e1bfbaa861f15e02f7af899abdf6b2b0c5db13c",
   "ownerIntent": "기존 게임개발 구조를 유지하면서 회사 플로우, V3 실전경험 수확, 포트폴리오 운영, 빌드/검증 속도, PWA/홈페이지 동기화, 스토리/오디오 AI 활용을 중앙문서 기준으로 순차 개편한다.",
   "preserve": [
@@ -109,7 +110,8 @@
     "Confirmed homepage front-door must remain unchanged",
     "Identified main-vs-company-runtime state source mismatch affecting always-current homepage/PWA development status",
     "Created persistent working branch chatgpt/company-flow-ops-20260912",
-    "Created this resumable work checkpoint"
+    "Created resumable work checkpoint",
+    "Opened draft PR #346 as persistent work anchor"
   ],
   "nextSteps": [
     "Update COMPANY_FLOW.md first with the approved portfolio, experience, build, creative-AI, homepage/PWA sync and work-continuity policies",
@@ -119,13 +121,13 @@
     "Apply impact-based validation and exact-build artifact reuse without changing parent-child parallel topology",
     "Synchronize private HQ governance documents",
     "Run contract, regression, PWA bridge and end-to-end validation",
-    "Update this checkpoint after each milestone, then open/maintain PR and merge only after validation"
+    "Update this checkpoint after each milestone, maintain PR #346, and merge only after validation"
   ],
   "resumeProtocol": [
     "Read the user's latest direct instruction first",
     "Read COMPANY_FLOW.md",
     "Read company-work-state.json",
-    "Inspect workingBranch and any open PR before changing files",
+    "Inspect workingBranch and PR #346 before changing files",
     "Compare workingBranch with current main and reconcile divergence before continuing",
     "Resume from the first incomplete nextSteps item",
     "After every material milestone update completedSteps, nextSteps, verification and blockers",
@@ -135,9 +137,10 @@
   "verification": {
     "pwaCommandBridgeRunId": 34665170611,
     "pwaCommandBridgeConclusion": "success",
-    "continuityCheckpointPersisted": true
+    "continuityCheckpointPersisted": true,
+    "draftPullRequestOpen": true
   },
   "blockers": [],
-  "lastCompletedMilestone": "RESUMABLE_CHECKPOINT_BOOTSTRAP",
+  "lastCompletedMilestone": "RESUMABLE_CHECKPOINT_AND_DRAFT_PR",
   "nextMilestone": "CENTRAL_POLICY_UPDATE"
 }
