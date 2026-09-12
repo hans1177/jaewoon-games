@@ -1033,6 +1033,34 @@ learning:
     serverBackendRequiresExplicitRegisteredCapability: true
     githubHostedModelTrainingForbidden: true
     paidTrainingForbidden: true
+  externalOpenSourceWebDistillation:
+    enabled: true
+    execution: EXISTING_CANONICAL_HOURLY_INGEST_ONLY
+    separateCronOrPipelineForbidden: true
+    sourceMode: ALLOWLISTED_PERMISSIVE_OPEN_SOURCE_ONLY
+    allowedLicenses:
+      - MIT
+      - BSD-2-Clause
+      - BSD-3-Clause
+      - Apache-2.0
+      - ISC
+      - CC0-1.0
+      - Unlicense
+    licenseFileAndTextVerificationRequired: true
+    sourceCommitBindingRequired: true
+    upstreamNodeOrShellExecutionForbidden: true
+    browserExecutionSandboxed: true
+    externalBrowserNetworkBlocked: true
+    browserRuntimePassRequired: true
+    meaningfulInteractionProbeRequired: true
+    codeDiffOnly: true
+    rawBinaryOrAssetTrainingForbidden: true
+    failedSourceCannotCreatePositiveSample: true
+    provenanceAndLicenseRetentionRequired: true
+    outputFeedsExistingTrainingSamples: true
+    portableContextOnlyAcrossPlatforms: true
+    crossPlatformPassEvidenceTransferForbidden: true
+    thresholdLoweringForbidden: true
   portableWebLearning:
     verifiedWebGameplayMayFeedSharedV3Memory: true
     allowedPortablePatterns:
