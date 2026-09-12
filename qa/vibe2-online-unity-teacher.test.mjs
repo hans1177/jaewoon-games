@@ -98,12 +98,15 @@ test('GPT practice drill은 실제 verified positive와 분리되어 생성된�
   assert.equal(first.verification.productionEvidence, false);
 });
 
-test('ingest에서 검증 샘플을 artifact로 넘기고 Actions PR 권한 실패가 학습을 막지 않는다', () => {
+test('ingest는 Unity teacher 전용 artifact를 넘기고 durable runtime branch에 검증 상태를 영속화한다', () => {
   const ingest = fs.readFileSync('.github/workflows/vibe2-distillation-ingest.yml', 'utf8');
   assert.match(ingest, /name: vibe2-verified-training-samples/);
+  assert.match(ingest, /name: vibe2-vibe3-verified-learning-memory/);
   assert.match(ingest, /retention-days: 1/);
-  assert.match(ingest, /DISTILLATION_MEMORY_PR=SKIPPED_ACTIONS_PR_PERMISSION/);
-  assert.match(ingest, /git push origin --delete/);
+  assert.match(ingest, /VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime/);
+  assert.match(ingest, /git push --force-with-lease/);
+  assert.match(ingest, /VIBE2_LEARNING_RUNTIME_UPDATE=LEASED_REFRESH/);
+  assert.match(ingest, /PUBLIC_MAIN_WRITE=NO/);
 });
 
 test('24시간 Unity teacher는 ingest artifact를 우선 소비하고 없으면 main 샘플로 안전하게 fallback한다', () => {
