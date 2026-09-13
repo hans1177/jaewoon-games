@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+const parentWorkflow=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
 
 test('Roblox promotion is per-game while technical evidence remains required',()=>{
   assert.ok(workflow.includes('ROBLOX_PER_GAME_PROMOTION=YES'));
@@ -33,4 +34,11 @@ test('five distinct leads remain a per-game evidence stage, not a game-count quo
   assert.ok(workflow.includes("robloxFailureStage:'FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT'"));
   assert.ok(workflow.includes('robloxBuildSourceRevision:result.sourceRevision'));
   assert.ok(workflow.includes("routingBlockers:['roblox-build-preflight-pending']"));
+});
+
+test('merged Roblox source re-enters the existing canonical selected-platform router',()=>{
+  assert.ok(parentWorkflow.includes("- 'roblox-games/**'"));
+  assert.ok(parentWorkflow.includes('PLATFORM_ROUTER=tools/company-selected-platform-router.mjs'));
+  assert.ok(parentWorkflow.includes('gh workflow run company-development-roblox-runtime.yml'));
+  assert.ok(!workflow.includes("on:\n  push:"));
 });
