@@ -497,9 +497,11 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:51:39.065Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-runtime-pending"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:42:47.766Z",
-      "updatedAt": "2026-09-13T07:08:53.009Z",
+      "updatedAt": "2026-09-13T07:34:10.071Z",
       "webValidationEvidencePath": "design/seed-roblox-survival-horror-es-doors/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -513,16 +515,86 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": true,
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassed": true,
       "robloxIndependentQaPassed": false,
       "robloxRegressionPassed": false,
       "robloxFinalReviewPassed": false,
-      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING",
       "robloxBuildSourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
       "robloxBuildArtifactIdentity": "sha256:db36cbe655261718e105e90b87533121727a13016e25fcaf547c2535b4b74633",
       "robloxBuildPassedAt": "2026-09-13T05:54:37.273Z",
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE"
+      "robloxLastSuccessfulStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxBuildPreflightPassedAt": "2026-09-13T07:34:10.071Z",
+      "robloxBuildPreflightFailedAt": null,
+      "robloxBuildPreflightEvidence": {
+        "version": 1,
+        "gameId": "seed-roblox-survival-horror-es-doors",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-09-13T07:33:49.023Z",
+        "sourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
+        "artifactIdentity": "sha256:db36cbe655261718e105e90b87533121727a13016e25fcaf547c2535b4b74633",
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "qwen3:0.6b",
+            "graphics": "gemma3:1b",
+            "development": "llama3.2:1b",
+            "qa": "qwen2.5:1.5b",
+            "balance": "smollm2:1.7b"
+          },
+          "distinctLeadCount": 5,
+          "build": {
+            "sourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
+            "artifactIdentity": "sha256:db36cbe655261718e105e90b87533121727a13016e25fcaf547c2535b4b74633",
+            "webValidationPassed": true,
+            "musicValidationPassed": true,
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "planning",
+            "model": "qwen3:0.6b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blocker is present."
+          },
+          {
+            "role": "graphics",
+            "model": "gemma3:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": ""
+          },
+          {
+            "role": "development",
+            "model": "llama3.2:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blocker found in BUILD_EVIDENCE"
+          },
+          {
+            "role": "qa",
+            "model": "qwen2.5:1.5b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "All deterministic policy checks passed before this review."
+          },
+          {
+            "role": "balance",
+            "model": "smollm2:1.7b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": ""
+          }
+        ],
+        "blockers": [],
+        "authority": "roblox-five-distinct-lead-build-preflight"
+      }
     },
     {
       "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
@@ -545,9 +617,11 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:52:23.160Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-runtime-pending"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:44:40.788Z",
-      "updatedAt": "2026-09-13T07:08:53.009Z",
+      "updatedAt": "2026-09-13T07:34:10.071Z",
       "webValidationEvidencePath": "design/seed-roblox-obby-party-minigam-tower-of-hell/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -561,16 +635,86 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": true,
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassed": true,
       "robloxIndependentQaPassed": false,
       "robloxRegressionPassed": false,
       "robloxFinalReviewPassed": false,
-      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING",
       "robloxBuildSourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
       "robloxBuildArtifactIdentity": "sha256:2e9e1992e4ade0f9ed3accb210671610b786c6a324f59ae29dbcf7b4370a698d",
       "robloxBuildPassedAt": "2026-09-13T05:54:37.273Z",
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE"
+      "robloxLastSuccessfulStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxBuildPreflightPassedAt": "2026-09-13T07:34:10.071Z",
+      "robloxBuildPreflightFailedAt": null,
+      "robloxBuildPreflightEvidence": {
+        "version": 1,
+        "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-09-13T07:34:00.085Z",
+        "sourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
+        "artifactIdentity": "sha256:2e9e1992e4ade0f9ed3accb210671610b786c6a324f59ae29dbcf7b4370a698d",
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "qwen3:0.6b",
+            "graphics": "gemma3:1b",
+            "development": "llama3.2:1b",
+            "qa": "qwen2.5:1.5b",
+            "balance": "smollm2:1.7b"
+          },
+          "distinctLeadCount": 5,
+          "build": {
+            "sourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
+            "artifactIdentity": "sha256:2e9e1992e4ade0f9ed3accb210671610b786c6a324f59ae29dbcf7b4370a698d",
+            "webValidationPassed": true,
+            "musicValidationPassed": true,
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "planning",
+            "model": "qwen3:0.6b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blocker is present"
+          },
+          {
+            "role": "graphics",
+            "model": "gemma3:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": ""
+          },
+          {
+            "role": "development",
+            "model": "llama3.2:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blocker found in BUILD_EVIDENCE"
+          },
+          {
+            "role": "qa",
+            "model": "qwen2.5:1.5b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "All deterministic policy checks passed before this review."
+          },
+          {
+            "role": "balance",
+            "model": "smollm2:1.7b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": ""
+          }
+        ],
+        "blockers": [],
+        "authority": "roblox-five-distinct-lead-build-preflight"
+      }
     },
     {
       "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
@@ -724,7 +868,7 @@
       "routeRevision": "c22be990056ccde9069fb09f732ddd91c416b29abd1a23022897630738762ded"
     }
   ],
-  "updatedAt": "2026-09-13T07:32:33.465Z",
+  "updatedAt": "2026-09-13T07:34:10.071Z",
   "routerContractVersion": 2,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
