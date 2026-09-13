@@ -454,9 +454,9 @@
       "webValidationEvidencePath": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-09-13/web-gameplay-validation.json",
       "webValidationSourceRevision": "be9e5bbf86498d269c15f179776ee0573123f4c0",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-preflight-pending"
       ],
-      "updatedAt": "2026-09-13T06:40:18.879Z",
+      "updatedAt": "2026-09-13T06:40:52.107Z",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
       "routeRevision": "e7ce5305dff6ef0fffdb16fb70d413bb76de4cbd162fb82c58e42490836647cc",
       "robloxSourceCandidateBranch": null,
@@ -465,7 +465,19 @@
       "robloxRuntimePassed": false,
       "robloxProjectPath": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp",
       "robloxSourceCommit": "f70c7513c9dcd1135fe2e929afb676dd8b4b3c0d",
-      "robloxSourceBootstrapPassedAt": "2026-09-13T06:40:18.879Z"
+      "robloxSourceBootstrapPassedAt": "2026-09-13T06:40:18.879Z",
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildSourceRevision": "f70c7513c9dcd1135fe2e929afb676dd8b4b3c0d",
+      "robloxBuildArtifactIdentity": "sha256:0a5312ce4b171ca4849727e9dacc47191a3388a4d4b40eb5e80ad8e4afd29493",
+      "robloxBuildPassedAt": "2026-09-13T06:40:52.107Z",
+      "robloxBuildFailedAt": null,
+      "robloxBuildPreflightPassed": false,
+      "robloxIndependentQaPassed": false,
+      "robloxRegressionPassed": false,
+      "robloxFinalReviewPassed": false,
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
     },
     {
       "gameId": "bug-defense",
@@ -524,7 +536,7 @@
       "routeRevision": "c22be990056ccde9069fb09f732ddd91c416b29abd1a23022897630738762ded"
     }
   ],
-  "updatedAt": "2026-09-13T06:40:18.879Z",
+  "updatedAt": "2026-09-13T06:40:52.107Z",
   "routerContractVersion": 2,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
