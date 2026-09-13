@@ -32,6 +32,7 @@ on:
       - 'qa/company-development-web-runtime.test.mjs'
       - 'qa/company-development-unity-runtime.test.mjs'
       - 'qa/company-homepage-top30-contract.test.mjs'
+      - 'qa/homepage-manager-publication-order.test.mjs'
       - 'qa/company-native-learning-real-evidence-contract.test.mjs'
       - 'qa/company-native-score-not-web-score-contract.test.mjs'
       - 'qa/company-platform-score-learning-contract.test.mjs'
@@ -46,6 +47,7 @@ on:
       - '.github/workflows/company-development-unity-runtime.yml'
       - '.github/workflows/unity-android-regression.yml'
       - '.github/workflows/director-supervisor.yml'
+      - '.github/workflows/homepage-manager.yml'
       - '.github/workflows/company-central-policy-contract-qa.yml'
   push:
     branches: [main]
@@ -79,6 +81,7 @@ on:
       - 'qa/company-development-web-runtime.test.mjs'
       - 'qa/company-development-unity-runtime.test.mjs'
       - 'qa/company-homepage-top30-contract.test.mjs'
+      - 'qa/homepage-manager-publication-order.test.mjs'
       - 'qa/company-native-learning-real-evidence-contract.test.mjs'
       - 'qa/company-native-score-not-web-score-contract.test.mjs'
       - 'qa/company-platform-score-learning-contract.test.mjs'
@@ -93,6 +96,7 @@ on:
       - '.github/workflows/company-development-unity-runtime.yml'
       - '.github/workflows/unity-android-regression.yml'
       - '.github/workflows/director-supervisor.yml'
+      - '.github/workflows/homepage-manager.yml'
       - '.github/workflows/company-central-policy-contract-qa.yml'
   workflow_dispatch:
 
@@ -136,6 +140,7 @@ jobs:
             qa/company-development-web-runtime.test.mjs \
             qa/company-development-unity-runtime.test.mjs \
             qa/company-homepage-top30-contract.test.mjs \
+            qa/homepage-manager-publication-order.test.mjs \
             qa/company-native-learning-real-evidence-contract.test.mjs \
             qa/company-native-score-not-web-score-contract.test.mjs \
             qa/company-platform-score-learning-contract.test.mjs \
