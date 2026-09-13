@@ -56,13 +56,15 @@ eq(portableWeb?.thresholdLoweringAllowed, false, 'portable Web threshold lowerin
 const companyFlow = readText('COMPANY_FLOW.md');
 includesAll(companyFlow, [
   'existingPipelineIsAuthoritative: true',
-  'newParallelPipelineForSameStageForbidden: true',
   'adHocBypassChainForbidden: true',
+  'wrapperOrShadowChainForbidden: true',
+  'duplicateTriggerPathForbidden: true',
   'status: VERIFIED_RUNTIME_PASS_TRUE',
   'role: AUXILIARY_PORTABLE_LEARNING_EVIDENCE',
   'cannotSatisfyNativePlatformRuntimeGate: true',
   'useExistingCanonicalDistillationOnly: true',
   'newTrainerOrCronForbidden: true',
+  'newParallelTrainerForbidden: true',
 ], 'COMPANY_FLOW');
 
 const ingestWorkflow = readText(contract.implementationBindings.ingestWorkflow);
