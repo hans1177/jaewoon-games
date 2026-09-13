@@ -455,9 +455,11 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:51:39.065Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-runtime:roblox-studio-runtime-failed"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:42:47.766Z",
-      "updatedAt": "2026-09-13T09:58:28.073Z",
+      "updatedAt": "2026-09-13T10:04:24.329Z",
       "webValidationEvidencePath": "design/seed-roblox-survival-horror-es-doors/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -476,7 +478,7 @@
       "robloxRegressionPassed": false,
       "robloxFinalReviewPassed": false,
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_RESULT_MISSING",
+      "robloxFailureSignature": "roblox-studio-runtime-failed",
       "robloxBuildSourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
       "robloxBuildArtifactIdentity": "sha256:db36cbe655261718e105e90b87533121727a13016e25fcaf547c2535b4b74633",
       "robloxBuildPassedAt": "2026-09-13T05:54:37.273Z",
@@ -551,9 +553,30 @@
         "blockers": [],
         "authority": "roblox-five-distinct-lead-build-preflight"
       },
-      "robloxRuntimeFailedAt": "2026-09-13T09:50:22.175Z",
-      "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 1
+      "robloxRuntimeFailedAt": "2026-09-13T10:04:24.329Z",
+      "robloxRuntimeEvidence": {
+        "version": 1,
+        "gameId": "seed-roblox-survival-horror-es-doors",
+        "platform": "ROBLOX",
+        "checkedAt": "2026-09-13T10:04:05.5804088Z",
+        "sourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
+        "artifactIdentity": "sha256:db36cbe655261718e105e90b87533121727a13016e25fcaf547c2535b4b74633",
+        "artifactRunId": 34741421968,
+        "runtimePassed": false,
+        "actualStudioRuntime": false,
+        "serverClientBoundaryPassed": false,
+        "playerCharacterPassed": false,
+        "saveExists": false,
+        "datastoreRejoinPassed": true,
+        "mobileControlUiPassed": false,
+        "multiplayerApplicable": false,
+        "multiplayerQaPassed": false,
+        "studioPackageIdentifier": "Roblox.RobloxStudio",
+        "studioInstallerSha256": "sha256:653b5ff08c0c890e103e31f53fcf6b9cfbbf462fc4481a62ffc84cf4f0c562dd",
+        "failure": "roblox-studio-runtime-failed",
+        "authority": "roblox-actual-studio-runtime-evidence"
+      },
+      "robloxRuntimeRetryCount": 0
     },
     {
       "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
@@ -576,9 +599,11 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:52:23.160Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-runtime:roblox-studio-runtime-failed"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:44:40.788Z",
-      "updatedAt": "2026-09-13T09:58:28.073Z",
+      "updatedAt": "2026-09-13T10:04:24.329Z",
       "webValidationEvidencePath": "design/seed-roblox-obby-party-minigam-tower-of-hell/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -597,7 +622,7 @@
       "robloxRegressionPassed": false,
       "robloxFinalReviewPassed": false,
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_RESULT_MISSING",
+      "robloxFailureSignature": "roblox-studio-runtime-failed",
       "robloxBuildSourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
       "robloxBuildArtifactIdentity": "sha256:2e9e1992e4ade0f9ed3accb210671610b786c6a324f59ae29dbcf7b4370a698d",
       "robloxBuildPassedAt": "2026-09-13T05:54:37.273Z",
@@ -672,9 +697,30 @@
         "blockers": [],
         "authority": "roblox-five-distinct-lead-build-preflight"
       },
-      "robloxRuntimeFailedAt": "2026-09-13T09:50:22.175Z",
-      "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 1
+      "robloxRuntimeFailedAt": "2026-09-13T10:04:24.329Z",
+      "robloxRuntimeEvidence": {
+        "version": 1,
+        "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+        "platform": "ROBLOX",
+        "checkedAt": "2026-09-13T10:04:07.6480311Z",
+        "sourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
+        "artifactIdentity": "sha256:2e9e1992e4ade0f9ed3accb210671610b786c6a324f59ae29dbcf7b4370a698d",
+        "artifactRunId": 34741421968,
+        "runtimePassed": false,
+        "actualStudioRuntime": false,
+        "serverClientBoundaryPassed": false,
+        "playerCharacterPassed": false,
+        "saveExists": false,
+        "datastoreRejoinPassed": true,
+        "mobileControlUiPassed": false,
+        "multiplayerApplicable": false,
+        "multiplayerQaPassed": false,
+        "studioPackageIdentifier": "Roblox.RobloxStudio",
+        "studioInstallerSha256": "sha256:14e3e506d5cccc03eeb3ae006f2d55611fb0af64ac8d176dd23d8a3966099b74",
+        "failure": "roblox-studio-runtime-failed",
+        "authority": "roblox-actual-studio-runtime-evidence"
+      },
+      "robloxRuntimeRetryCount": 0
     },
     {
       "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
@@ -972,7 +1018,7 @@
       "routeRevision": "c22be990056ccde9069fb09f732ddd91c416b29abd1a23022897630738762ded"
     }
   ],
-  "updatedAt": "2026-09-13T09:58:28.212Z",
+  "updatedAt": "2026-09-13T10:04:24.329Z",
   "routerContractVersion": 2,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
