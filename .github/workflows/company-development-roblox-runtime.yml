@@ -17,15 +17,20 @@ env:
   ROBLOX_DEV_MODEL: qwen3:1.7b
 
 jobs:
-  source-bootstrap:
+  source-plan:
+    name: resolve Roblox source work
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 8
+    outputs:
+      count: ${{ steps.targets.outputs.count }}
+      matrix: ${{ steps.targets.outputs.matrix }}
+      targets_json: ${{ steps.targets.outputs.targets_json }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
-
+          fetch-depth: 1
+          fetch-tags: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -38,7 +43,7 @@ jobs:
           node --test qa/company-development-roblox-runtime.test.mjs qa/company-selected-platform-router.test.mjs
 
       - name: Fetch current company runtime
-        run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+        run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
 
       - name: Resolve up to two Web-validated Roblox source targets
         id: targets
@@ -56,7 +61,8 @@ jobs:
             const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
             if(platform!=='ROBLOX')continue;
             if(!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
-            if(String(item.canonicalState||'').toUpperCase()==='DEVELOPMENT_BLOCKED')continue;
+            const state=String(item.canonicalState||'').toUpperCase();
+            if(state==='DEVELOPMENT_BLOCKED'||state==='WAITING_TARGET_PLATFORM_REVALIDATION')continue;
             const target=`roblox-games/${item.gameId}`;
             if(fs.existsSync(target))continue;
             rows.push({
@@ -67,14 +73,37 @@ jobs:
               target,
             });
           }
-          fs.writeFileSync('/tmp/roblox-targets.json',JSON.stringify(rows,null,2)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`ROBLOX_SOURCE_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_SOURCE_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
+          console.log('ROBLOX_PARALLEL_ACTIVE_MAX=2');
           NODE
 
+  source-worker:
+    name: Roblox source ${{ matrix.gameId }}
+    needs: source-plan
+    if: needs.source-plan.outputs.count != '0'
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix: ${{ fromJSON(needs.source-plan.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Fetch current company runtime
+        run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+
       - name: Prepare free local Roblox generation model
-        if: steps.targets.outputs.count != '0'
         shell: bash
         run: |
           set -euo pipefail
@@ -94,127 +123,229 @@ jobs:
           echo 'ROBLOX_PAID_AI=NO'
           echo 'ROBLOX_PAID_RUNNER=NO'
 
-      - name: Generate isolated Roblox source candidates and merge validated source
-        if: steps.targets.outputs.count != '0'
+      - name: Generate isolated Roblox source candidate
+        id: generate
+        continue-on-error: true
         env:
-          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.gameId }}
+          GAME_NAME: ${{ matrix.gameName }}
+          BASELINE_SOURCE: ${{ matrix.baseline }}
+          ARTBOOK_SOURCE: ${{ matrix.artbook }}
+          TARGET_SOURCE: ${{ matrix.target }}
         shell: bash
         run: |
           set -euo pipefail
+          safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-60)"
+          root="/tmp/roblox-input/$safe"
+          mkdir -p "$root" /tmp/roblox-worker/results
+          baseline="$root/baseline.json"
+          artbook="$root/artbook.json"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:$BASELINE_SOURCE" > "$baseline"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:$ARTBOOK_SOURCE" > "$artbook"
+          branch="development/roblox-${safe}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          evidence="/tmp/roblox-source-bootstrap-${safe}.json"
           git config user.name 'jaewoon-roblox-development'
           git config user.email 'actions@users.noreply.github.com'
-          echo '[]' > /tmp/roblox-results.json
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import {execFileSync} from 'node:child_process';
-          import path from 'node:path';
-          const rows=JSON.parse(fs.readFileSync('/tmp/roblox-targets.json','utf8'));
-          const show=(file)=>execFileSync('git',['show',`origin/${process.env.COMPANY_RUNTIME_BRANCH}:${file}`],{maxBuffer:32*1024*1024});
-          for(const item of rows){
-            const root=path.join('/tmp/roblox-input',item.gameId);
-            fs.mkdirSync(root,{recursive:true});
-            const baseline=path.join(root,'baseline.json');
-            const artbook=path.join(root,'artbook.json');
-            fs.writeFileSync(baseline,show(item.baseline));
-            fs.writeFileSync(artbook,show(item.artbook));
-            item.localBaseline=baseline;
-            item.localArtbook=artbook;
-          }
-          fs.writeFileSync('/tmp/roblox-targets.json',JSON.stringify(rows,null,2)+'\n');
-          NODE
+          git checkout -b "$branch"
+          timeout 10m node tools/company-development-roblox-bootstrap.mjs \
+            --game-id="$GAME_ID" \
+            --game-name="$GAME_NAME" \
+            --baseline="$baseline" \
+            --artbook="$artbook" \
+            --output-root="$TARGET_SOURCE" \
+            --model="$ROBLOX_DEV_MODEL" \
+            --evidence="$evidence"
+          node --test qa/company-development-roblox-runtime.test.mjs
+          git diff --check
+          git add "$TARGET_SOURCE"
+          git diff --cached --quiet && { echo "no Roblox source change: $GAME_ID" >&2; exit 1; }
+          git commit -m "development: bootstrap Roblox ${GAME_ID}"
+          git push origin "HEAD:$branch"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          echo "safe=$safe" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_SOURCE_CANDIDATE=PASS:$GAME_ID"
 
-          count="$(jq 'length' /tmp/roblox-targets.json)"
-          for index in $(seq 0 $((count-1))); do
-            game_id="$(jq -r ".[$index].gameId" /tmp/roblox-targets.json)"
-            game_name="$(jq -r ".[$index].gameName" /tmp/roblox-targets.json)"
-            baseline="$(jq -r ".[$index].localBaseline" /tmp/roblox-targets.json)"
-            artbook="$(jq -r ".[$index].localArtbook" /tmp/roblox-targets.json)"
-            target="$(jq -r ".[$index].target" /tmp/roblox-targets.json)"
-            safe="$(printf '%s' "$game_id" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-60)"
-            branch="development/roblox-${safe}-${GITHUB_RUN_ID}"
-            work="/tmp/roblox-${safe}-${GITHUB_RUN_ID}"
-            evidence="/tmp/roblox-source-bootstrap-${safe}.json"
-            git fetch origin main --quiet
-            git worktree add -b "$branch" "$work" origin/main >/dev/null
-            (
-              cd "$work"
-              node "$GITHUB_WORKSPACE/tools/company-development-roblox-bootstrap.mjs" \
-                --game-id="$game_id" \
-                --game-name="$game_name" \
-                --baseline="$baseline" \
-                --artbook="$artbook" \
-                --output-root="$target" \
-                --model="$ROBLOX_DEV_MODEL" \
-                --evidence="$evidence"
-              node --test "$GITHUB_WORKSPACE/qa/company-development-roblox-runtime.test.mjs"
-              git diff --check
-              git add "$target"
-              git diff --cached --quiet && { echo "no Roblox source change: $game_id" >&2; exit 1; }
-              git commit -m "development: bootstrap Roblox ${game_id}"
-              git push origin "HEAD:$branch"
-            )
-            pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "development: bootstrap Roblox ${game_id}" --body "DEVELOPMENT_CONFIRMED Roblox source candidate. Static source contract: PASS. Roblox runtime/independent QA/regression: NOT YET CLAIMED. Policy: COMPANY_FLOW.md.")"
-            gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
-            git fetch origin main --quiet
-            jq --arg id "$game_id" --arg source "$target" --arg pr "$pr_url" '. + [{gameId:$id,sourcePath:$source,pr:$pr}]' /tmp/roblox-results.json > /tmp/roblox-results.next.json
-            mv /tmp/roblox-results.next.json /tmp/roblox-results.json
-            git worktree remove "$work" --force 2>/dev/null || true
-            echo "ROBLOX_SOURCE_MERGED=$game_id"
-          done
-
-      - name: Persist Roblox source-bind state to company runtime
-        if: steps.targets.outputs.count != '0'
+      - name: Merge validated Roblox source candidate through PR
+        id: merge
+        if: steps.generate.outcome == 'success'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.gameId }}
+          TARGET_SOURCE: ${{ matrix.target }}
+          SOURCE_BRANCH: ${{ steps.generate.outputs.branch }}
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$SOURCE_BRANCH" --title "development: bootstrap Roblox ${GAME_ID}" --body "DEVELOPMENT_CONFIRMED Roblox source candidate. Static source contract: PASS. Roblox runtime/independent QA/regression: NOT YET CLAIMED. Policy: COMPANY_FLOW.md.")"
+          gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_SOURCE_MERGED=$GAME_ID"
+
+      - name: Record isolated Roblox worker result
+        if: always()
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          TARGET_SOURCE: ${{ matrix.target }}
+          GENERATE_OUTCOME: ${{ steps.generate.outcome }}
+          MERGE_OUTCOME: ${{ steps.merge.outcome }}
+          PR_URL: ${{ steps.merge.outputs.pr_url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/roblox-worker/results
+          node <<'NODE'
+          const fs=require('fs');
+          const path=require('path');
+          const id=process.env.GAME_ID;
+          const safe=String(id).replace(/[^a-zA-Z0-9._-]+/g,'-');
+          const pass=process.env.GENERATE_OUTCOME==='success'&&process.env.MERGE_OUTCOME==='success';
+          const failure=process.env.GENERATE_OUTCOME!=='success'?'source-generation-failed':process.env.MERGE_OUTCOME!=='success'?'source-pr-merge-failed':null;
+          const result={gameId:id,pass,sourcePath:process.env.TARGET_SOURCE,pr:process.env.PR_URL||null,failure};
+          fs.writeFileSync(path.join('/tmp/roblox-worker/results',`${safe}.json`),JSON.stringify(result,null,2)+'\n');
+          console.log(`ROBLOX_WORKER_RESULT=${id}:${pass?'PASS':'FAIL'}`);
+          NODE
+
+      - name: Upload isolated Roblox worker result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: development-roblox-result-${{ matrix.gameId }}
+          path: /tmp/roblox-worker
+          if-no-files-found: error
+          retention-days: 1
+
+  source-bootstrap:
+    name: persist Roblox source-bind results
+    needs: [source-plan, source-worker]
+    if: always() && needs.source-plan.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Download parallel Roblox worker results
+        if: needs.source-plan.outputs.count != '0'
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: development-roblox-result-*
+          path: /tmp/roblox-batch
+          merge-multiple: true
+
+      - name: Fetch current company runtime
+        run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+
+      - name: Persist Roblox source-bind state to company runtime
+        if: needs.source-plan.outputs.count != '0'
+        env:
+          EXPECTED_TARGETS_JSON: ${{ needs.source-plan.outputs.targets_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
           git checkout -B roblox-runtime-persist "origin/$COMPANY_RUNTIME_BRANCH"
           node <<'NODE'
           const fs=require('fs');
+          const path=require('path');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
-          const results=JSON.parse(fs.readFileSync('/tmp/roblox-results.json','utf8'));
+          const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
+          const resultDir='/tmp/roblox-batch/results';
+          const results=[];
+          if(fs.existsSync(resultDir)){
+            for(const name of fs.readdirSync(resultDir).filter(x=>x.endsWith('.json')).sort()){
+              results.push(JSON.parse(fs.readFileSync(path.join(resultDir,name),'utf8')));
+            }
+          }
+          const byId=new Map(results.map(x=>[x.gameId,x]));
+          for(const target of expected){
+            if(!byId.has(target.gameId))results.push({gameId:target.gameId,pass:false,sourcePath:target.target,failure:'worker-result-missing'});
+          }
           const stamp=new Date().toISOString();
+          let passCount=0,failCount=0;
           for(const result of results){
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
             if(!item)throw new Error(`queue item missing: ${result.gameId}`);
-            Object.assign(item,{
-              status:'ACTIVE',
-              currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',
-              canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
-              selectedPlatform:'ROBLOX',
-              targetPlatform:'ROBLOX',
-              sourcePath:result.sourcePath,
-              targetSourcePath:result.sourcePath,
-              robloxProjectPath:result.sourcePath,
-              robloxSourceBootstrapPassedAt:stamp,
-              robloxRuntimePassed:false,
-              routingBlockers:['roblox-runtime-evidence-pending'],
-              updatedAt:stamp,
-            });
+            if(result.pass===true){
+              Object.assign(item,{
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
+                selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',sourcePath:result.sourcePath,targetSourcePath:result.sourcePath,
+                robloxProjectPath:result.sourcePath,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
+                robloxRuntimePassed:false,routingBlockers:['roblox-runtime-evidence-pending'],updatedAt:stamp,
+              });
+              passCount++;
+            }else{
+              Object.assign(item,{
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_REVALIDATION',
+                selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxSourceBootstrapFailedAt:stamp,
+                robloxRuntimePassed:false,routingBlockers:[`roblox-source-bootstrap:${result.failure||'unknown-failure'}`],updatedAt:stamp,
+              });
+              failCount++;
+            }
           }
+          queue.robloxSourceParallelism=2;
           queue.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          console.log(`ROBLOX_SOURCE_PASS_COUNT=${passCount}`);
+          console.log(`ROBLOX_SOURCE_FAIL_COUNT=${failCount}`);
+          console.log('ROBLOX_PARALLEL_ACTIVE_MAX=2');
           NODE
           git config user.name 'jaewoon-roblox-development'
           git config user.email 'actions@users.noreply.github.com'
           git add development-queue.json
           git diff --cached --check
           if ! git diff --cached --quiet; then
-            git commit -m 'runtime: bind Roblox DEVELOPMENT source [skip ci]'
-            pushed=0
-            for attempt in 1 2 3; do
-              if git pull --rebase origin "$COMPANY_RUNTIME_BRANCH" && git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
-              git rebase --abort 2>/dev/null || true
-              git fetch origin "$COMPANY_RUNTIME_BRANCH" --quiet
-              git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
-              sleep $((attempt * 2))
-            done
-            test "$pushed" = 1
+            git commit -m 'runtime: bind parallel Roblox DEVELOPMENT source [skip ci]'
+            git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
           fi
           echo 'ROBLOX_SOURCE_BIND_PERSIST=PASS'
           echo 'ROBLOX_RUNTIME_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
 
+      - name: Dispatch next Roblox source batch when other eligible work remains
+        if: needs.source-plan.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CURRENT_TARGETS_JSON: ${{ needs.source-plan.outputs.targets_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-next-queue.json
+          remaining="$(node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {execFileSync} from 'node:child_process';
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-next-queue.json','utf8'));
+          const current=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').map(x=>x.gameId));
+          let count=0;
+          for(const item of q.items||[]){
+            if(current.has(item.gameId))continue;
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+            if(!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
+            const state=String(item.canonicalState||'').toUpperCase();
+            if(state==='DEVELOPMENT_BLOCKED'||state==='WAITING_TARGET_PLATFORM_REVALIDATION')continue;
+            try{execFileSync('git',['cat-file','-e',`origin/main:roblox-games/${item.gameId}`],{stdio:'ignore'});continue;}catch{}
+            count++;
+          }
+          process.stdout.write(String(count));
+          NODE
+          )"
+          echo "ROBLOX_REMAINING_OTHER_TARGETS=$remaining"
+          if [[ "$remaining" =~ ^[1-9][0-9]*$ ]]; then
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'ROBLOX_NEXT_BATCH_DISPATCH=YES'
+          else
+            echo 'ROBLOX_NEXT_BATCH_DISPATCH=NO'
+          fi
+
       - name: Empty queue summary
-        if: steps.targets.outputs.count == '0'
-        run: echo 'ROBLOX_SOURCE_TARGETS=NONE'
+        if: needs.source-plan.outputs.count == '0'
+        run: |
+          echo 'ROBLOX_SOURCE_TARGETS=NONE'
+          echo 'ROBLOX_PARALLEL_ACTIVE_MAX=2'
+          echo 'ROBLOX_RUNTIME_PASS=NO'
+          echo 'ROBLOX_RELEASE_CLAIM=NO'
