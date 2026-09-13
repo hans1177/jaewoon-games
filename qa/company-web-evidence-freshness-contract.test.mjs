@@ -15,11 +15,21 @@ test('current Web validation evidence is schema 11, real-game-substance and sour
   assert.match(validator,/GAMEPLAY_MILESTONE_DEPTH/);
 });
 
-test('native routing cannot accept stale or single-run Web 90 evidence',()=>{
-  assert.match(cycle,/WEB_VALIDATION_SCHEMA_VERSION=10/);
+test('native routing cannot accept schema10 harness, stale, non-substance or single-run Web 90 evidence',()=>{
+  assert.match(cycle,/WEB_VALIDATION_SCHEMA_VERSION=11/);
+  assert.match(cycle,/substancePass/);
+  assert.match(cycle,/implementationClass==='DEDICATED'/);
+  assert.match(cycle,/session\.validationMode==='GAMEPLAY_MILESTONE_DEPTH'/);
+  assert.match(cycle,/row\.trigger==='GAMEPLAY_MILESTONE'/);
+  assert.match(cycle,/row\.directStageClick===false/);
   assert.match(cycle,/webContract\.fresh/);
   assert.match(cycle,/webContract\.platformEligible/);
-  assert.match(cycle,/promotionRevalidation\?\.pass===true/);
+  assert.match(cycle,/promotion\.independentRun===true/);
+  assert.match(cycle,/promotion\.sourceHashMatch===true/);
+  assert.match(cycle,/promotion\.baselineHashMatch===true/);
+  assert.match(cycle,/promotion\.secondSessionPass===true/);
+  assert.match(cycle,/promotion\.secondSubstancePass===true/);
+  assert.match(cycle,/promotion\.secondTerminalReached===true/);
   assert.match(cycle,/formalImplementationPassed===true/);
 });
 

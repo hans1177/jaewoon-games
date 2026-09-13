@@ -5,14 +5,19 @@ import fs from 'node:fs';
 
 const source=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
 
-test('DEVELOPMENT_CONFIRMED requires fresh Web 30-minute evidence and independent 90-point promotion revalidation',()=>{
+test('DEVELOPMENT_CONFIRMED requires fresh schema11 real-game 30-minute evidence and independent 90-point promotion revalidation',()=>{
   assert.match(source,/web-gameplay-validation\.json/);
-  assert.match(source,/WEB_VALIDATION_SCHEMA_VERSION=10/);
+  assert.match(source,/WEB_VALIDATION_SCHEMA_VERSION=11/);
   assert.match(source,/structuredWebEvidence/);
+  assert.match(source,/substancePass/);
+  assert.match(source,/implementationClass==='DEDICATED'/);
+  assert.match(source,/session\.validationMode==='GAMEPLAY_MILESTONE_DEPTH'/);
   assert.match(source,/session\.stageGameplayPassed===true/);
+  assert.match(source,/row\.trigger==='GAMEPLAY_MILESTONE'/);
   assert.match(source,/sourceIndexSha256/);
   assert.match(source,/designBaselineSha256/);
-  assert.match(source,/promotionRevalidation\?\.pass===true/);
+  assert.match(source,/promotion\.pass===true/);
+  assert.match(source,/promotion\.secondSubstancePass===true/);
   assert.match(source,/formalImplementationPassed===true/);
   assert.match(source,/WEB_HOMEPAGE_MINIMUM=80/);
   assert.match(source,/WEB_PLATFORM_PROMOTION_MINIMUM=90/);
@@ -22,6 +27,7 @@ test('DEVELOPMENT_CONFIRMED requires fresh Web 30-minute evidence and independen
   assert.match(source,/webValidationRequired:true/);
   assert.match(source,/musicValidationRequired:true/);
   assert.match(source,/webValidationOptional:false/);
+  assert.match(source,/realPlayableWebGameRequired:true/);
 });
 
 test('Web score and target-platform implementation score are stored separately',()=>{
