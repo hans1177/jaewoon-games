@@ -1,9 +1,6 @@
 name: Company DEVELOPMENT_CONFIRMED Roblox Runtime Continuation
 
 on:
-  workflow_run:
-    workflows: [Company DEVELOPMENT_CONFIRMED Roblox Runtime]
-    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -266,8 +263,9 @@ jobs:
             if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
             const retryBudgetAvailable=Number(item.robloxRuntimeRetryCount||0)<maxRetryableFailures;
             const retryableInstallFailure=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed';
+            const retryableRuntimeFailure=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&['roblox-studio-runtime-failed','roblox-studio-runtime-timeout'].includes(item.robloxRuntimeEvidence?.failure);
             const retryableMissingEvidence=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
-            if(item.robloxBuildPreflightPassed!==true||item.robloxRuntimePassed===true||(item.robloxRuntimeFailedAt&&!retryableInstallFailure&&!retryableMissingEvidence))continue;
+            if(item.robloxBuildPreflightPassed!==true||item.robloxRuntimePassed===true||(item.robloxRuntimeFailedAt&&!retryableInstallFailure&&!retryableRuntimeFailure&&!retryableMissingEvidence))continue;
             const revision=String(item.robloxSourceCommit||'').trim();
             const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
             if(item.robloxBuildSourceRevision!==revision||!artifact.startsWith('sha256:'))continue;
@@ -393,9 +391,15 @@ jobs:
           $out = Join-Path $env:RUNNER_TEMP 'roblox-runtime-output.log'
           $stdout = Join-Path $env:RUNNER_TEMP 'roblox-studio-stdout.log'
           $stderr = Join-Path $env:RUNNER_TEMP 'roblox-studio-stderr.log'
+          $timeoutFlag = Join-Path $env:RUNNER_TEMP 'roblox-runtime-timeout.flag'
+          Remove-Item -Force $timeoutFlag -ErrorAction SilentlyContinue
           $argLine = "--task RunScript --localPlaceFile `"$env:PLACE_FILE`" --runScriptFile `"$script`" --outputFile `"$out`" --quitAfterExecution"
           $p = Start-Process -FilePath $env:STUDIO_EXE -ArgumentList $argLine -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
-          if (-not $p.WaitForExit(720000)) { Stop-Process -Id $p.Id -Force; throw 'Roblox Studio runtime timeout' }
+          if (-not $p.WaitForExit(180000)) {
+            Set-Content -Path $timeoutFlag -Value 'ROBLOX_STUDIO_RUNTIME_TIMEOUT'
+            Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+            throw 'Roblox Studio runtime timeout'
+          }
           $combined = ''
           if (Test-Path $out) { $combined += (Get-Content $out -Raw) }
           if (Test-Path $stdout) { $combined += "`n" + (Get-Content $stdout -Raw) }
@@ -429,9 +433,10 @@ jobs:
             $saveRequired = ($build.saveRequired -eq $true)
           }
           $passed = $env:PACKAGE_OUTCOME -eq 'success' -and $env:STUDIO_OUTCOME -eq 'success' -and $env:RUNTIME_OUTCOME -eq 'success'
-          $failure = if ($passed) { $null } elseif ($env:PACKAGE_OUTCOME -ne 'success') { 'immutable-package-unavailable' } elseif ($env:STUDIO_OUTCOME -ne 'success') { 'roblox-studio-install-failed' } else { 'roblox-studio-runtime-failed' }
+          $timedOut = Test-Path (Join-Path $env:RUNNER_TEMP 'roblox-runtime-timeout.flag')
+          $failure = if ($passed) { $null } elseif ($env:PACKAGE_OUTCOME -ne 'success') { 'immutable-package-unavailable' } elseif ($env:STUDIO_OUTCOME -ne 'success') { 'roblox-studio-install-failed' } elseif ($timedOut) { 'roblox-studio-runtime-timeout' } else { 'roblox-studio-runtime-failed' }
           $evidence = [ordered]@{
-            version=1; gameId=$env:GAME_ID; platform='ROBLOX'; checkedAt=(Get-Date).ToUniversalTime().ToString('o');
+            version=2; gameId=$env:GAME_ID; platform='ROBLOX'; checkedAt=(Get-Date).ToUniversalTime().ToString('o');
             sourceRevision=$env:SOURCE_REVISION; artifactIdentity=$env:ARTIFACT_IDENTITY; artifactRunId=([int64]($env:ARTIFACT_RUN ?? '0'));
             runtimePassed=$passed; actualStudioRuntime=$passed; serverClientBoundaryPassed=$passed; playerCharacterPassed=$passed;
             saveExists=$saveRequired; datastoreRejoinPassed=(-not $saveRequired); mobileControlUiPassed=$false; multiplayerApplicable=$false; multiplayerQaPassed=$false;
@@ -444,6 +449,7 @@ jobs:
           $log = Join-Path $env:RUNNER_TEMP 'roblox-runtime-combined.log'
           if (Test-Path $log) { Copy-Item $log (Join-Path $root "$safe.studio.log") }
           Write-Host "ROBLOX_RUNTIME_PASS=$(if($passed){'YES'}else{'NO'})"
+          Write-Host "ROBLOX_RUNTIME_FAILURE=$(if($failure){$failure}else{'NONE'})"
           Write-Host "ROBLOX_DATASTORE_REJOIN_PASS=$(if(-not $saveRequired){'NOT_APPLICABLE'}else{'NO'})"
           Write-Host 'ROBLOX_INDEPENDENT_QA_PASS=NO'
           Write-Host 'ROBLOX_REGRESSION_PASS=NO'
@@ -517,7 +523,7 @@ jobs:
                 robloxLastSuccessfulStage:'TARGET_PLATFORM_RUNTIME',robloxFailureStage:'INDEPENDENT_QA',robloxFailureSignature:'ROBLOX_INDEPENDENT_QA_PENDING',routingBlockers:['roblox-independent-qa-pending'],updatedAt:stamp});pass++;
             }else{
               const failure=r?.failure||'ROBLOX_RUNTIME_RESULT_MISSING';
-              const retryableFailure=failure==='roblox-studio-install-failed'||failure==='ROBLOX_RUNTIME_RESULT_MISSING';
+              const retryableFailure=failure==='roblox-studio-install-failed'||failure==='roblox-studio-runtime-failed'||failure==='roblox-studio-runtime-timeout'||failure==='ROBLOX_RUNTIME_RESULT_MISSING';
               const retryCount=retryableFailure?Number(item.robloxRuntimeRetryCount||0)+1:0;
               Object.assign(item,{robloxRuntimePassed:false,robloxRuntimeFailedAt:stamp,robloxRuntimeEvidence:r||null,robloxRuntimeRetryCount:retryCount,
                 robloxFailureStage:'TARGET_PLATFORM_RUNTIME',robloxFailureSignature:failure,routingBlockers:[`roblox-runtime:${r?.failure||'result-missing'}`],updatedAt:stamp});fail++;
@@ -556,8 +562,9 @@ jobs:
             const preflightPending=exact&&item.robloxBuildPreflightPassed!==true&&!item.robloxBuildPreflightFailedAt;
             const retryBudgetAvailable=Number(item.robloxRuntimeRetryCount||0)<maxRetryableFailures;
             const retryableInstallFailure=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed';
+            const retryableRuntimeFailure=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&['roblox-studio-runtime-failed','roblox-studio-runtime-timeout'].includes(item.robloxRuntimeEvidence?.failure);
             const retryableMissingEvidence=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
-            const runtimePending=exact&&item.robloxBuildPreflightPassed===true&&item.robloxRuntimePassed!==true&&(!item.robloxRuntimeFailedAt||retryableInstallFailure||retryableMissingEvidence);
+            const runtimePending=exact&&item.robloxBuildPreflightPassed===true&&item.robloxRuntimePassed!==true&&(!item.robloxRuntimeFailedAt||retryableInstallFailure||retryableRuntimeFailure||retryableMissingEvidence);
             if(preflightPending||runtimePending)n++;}
           process.stdout.write(String(n));
           NODE

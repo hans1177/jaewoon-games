@@ -8,9 +8,8 @@ const parentWorkflow=fs.readFileSync(new URL('../.github/workflows/company-devel
 const smoke=fs.readFileSync(new URL('../tools/company-development-roblox-runtime-smoke.luau',import.meta.url),'utf8');
 const directive=JSON.parse(fs.readFileSync(new URL('../company-directive.json',import.meta.url),'utf8'));
 
-test('continuation is a direct post-package edge, not a second source/package pipeline',()=>{
-  assert.ok(workflow.includes('workflow_run:'));
-  assert.ok(workflow.includes('workflows: [Company DEVELOPMENT_CONFIRMED Roblox Runtime]'));
+test('continuation is a single explicit post-package edge, not a second source/package pipeline',()=>{
+  assert.ok(!workflow.includes('workflow_run:'));
   assert.ok(workflow.includes('workflow_dispatch:'));
   assert.ok(!workflow.includes('push:'));
   assert.ok(!workflow.includes('company-development-roblox-bootstrap.mjs'));
@@ -56,11 +55,15 @@ test('runtime uses the original package identity and an actual Roblox Studio mul
   assert.ok(workflow.includes('ROBLOX_STUDIO_EXE='));
   assert.ok(!workflow.includes('RobloxStudioLauncherBeta.exe'));
   assert.ok(workflow.includes("item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed'"));
+  assert.ok(workflow.includes("'roblox-studio-runtime-failed','roblox-studio-runtime-timeout'"));
   assert.ok(workflow.includes("item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING'"));
+  assert.ok(workflow.includes('$p.WaitForExit(180000)'));
+  assert.ok(workflow.includes("'roblox-studio-runtime-timeout'"));
   assert.ok(workflow.includes('--task RunScript'));
   assert.ok(workflow.includes('--localPlaceFile'));
   assert.ok(workflow.includes('ROBLOX_ACTUAL_STUDIO_RUNTIME=PASS'));
   assert.ok(smoke.includes('StudioTestService:ExecuteMultiplayerTestAsync(1'));
+  assert.ok(smoke.includes('task.delay(90'));
   assert.ok(smoke.includes('RemoteEvent'));
   assert.ok(smoke.includes('ROBLOX_SERVER_CLIENT_BOUNDARY_PASS=YES'));
 });
