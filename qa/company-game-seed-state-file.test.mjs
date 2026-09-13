@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {GAME_SEED_POLICY,validateGameSeed} from '../tools/company-game-seed-contract.mjs';
-import {normalizeSeedState,validatePortfolioSeedRequest,pendingPortfolioSeedRequests} from '../tools/game-seed-state.mjs';
+import {normalizeSeedState,validatePortfolioSeedRequest,pendingPortfolioSeedRequests,ensureSeedMaterialPool} from '../tools/game-seed-state.mjs';
 
 const stateFile='game-seed-state.json';
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
@@ -20,10 +20,21 @@ test('GAME_SEED normalization removes all legacy vacancy replacement state',()=>
   assert.equal('linkedVacancyId' in state.portfolioSeedRequests[0],false);
 });
 
-test('semantic normalizer persists state through central GAME_SEED normalization',()=>{
-  assert.match(semanticNormalize,/import \{normalizeSeedState\} from '\.\/game-seed-state\.mjs'/);
+test('semantic normalizer persists state through central GAME_SEED normalization and maintains seed materials',()=>{
+  assert.match(semanticNormalize,/import \{normalizeSeedState,ensureSeedMaterialPool\} from '\.\/game-seed-state\.mjs'/);
   assert.match(semanticNormalize,/const state=normalizeSeedState\(readJson\(stateFile,\{seeds:\[\]\}\)\)/);
+  assert.match(semanticNormalize,/ensureSeedMaterialPool\(state\)/);
+  assert.match(semanticNormalize,/SEED_MATERIAL_POOL_TARGET=/);
+  assert.match(semanticNormalize,/TARGET_SESSION_MINUTES=30/);
+  assert.match(semanticNormalize,/MULTIPLAYER_DECISION_STAGE=DESIGN/);
   assert.match(semanticNormalize,/GAME_SEED_STATE_NORMALIZATION_PERSISTED=YES/);
+});
+
+test('seed material pool normalizes to 100 materials',()=>{
+  const state=normalizeSeedState({seeds:[]});
+  ensureSeedMaterialPool(state,{timestamp:'2026-09-13T00:00:00Z'});
+  assert.equal(state.seedMaterialPolicy.targetCount,100);
+  assert.equal(state.seedMaterials.length,100);
 });
 
 test('persisted GAME_SEED state follows current COMPANY_FLOW dynamic portfolio contract',t=>{
@@ -38,7 +49,7 @@ test('persisted GAME_SEED state follows current COMPANY_FLOW dynamic portfolio c
   assert.ok(state.portfolioSeedRequests.every(request=>!('linkedVacancyId' in request)),'portfolio expansion requests must not carry legacy vacancy links');
 
   if(state.bootstrapCompletedAt){
-    const initial=state.seeds.filter(seed=>seed.generation==='INITIAL_BOOTSTRAP');
+    const initial=state.seeds.filter(seed=>['INITIAL_BOOTSTRAP','HISTORICAL_INITIAL_BOOTSTRAP'].includes(seed.generation));
     assert.equal(initial.length,directive.gameSeed.bootstrap.count,'historical initial batch remains six records');
     assert.deepEqual(new Set(initial.map(seed=>seed.GAME_CATEGORY)),new Set(directive.gameSeed.bootstrap.categories));
     assert.ok(initial.every(seed=>GAME_SEED_POLICY.allowedTargetPlatforms.includes(String(seed.INITIAL_TARGET_PLATFORM||'').trim().toUpperCase())));
