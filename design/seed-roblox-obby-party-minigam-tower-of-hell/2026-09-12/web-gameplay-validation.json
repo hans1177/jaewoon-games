@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 8,
   "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
   "target": "web",
   "status": "PASS",
@@ -7,7 +7,7 @@
   "validated": true,
   "realEvidenceExists": true,
   "gameplayInteractionPerformed": true,
-  "interactionCount": 8,
+  "interactionCount": 12,
   "stateChanged": true,
   "musicRuntime": {
     "required": true,
@@ -71,9 +71,41 @@
     "height": 844,
     "touch": true
   },
+  "sessionDepthMinutes": 30,
+  "sessionContract": {
+    "pass": true,
+    "minutes": 30,
+    "stageCount": 4,
+    "completedStages": 4,
+    "windows": [
+      [
+        0,
+        5
+      ],
+      [
+        5,
+        15
+      ],
+      [
+        15,
+        25
+      ],
+      [
+        25,
+        30
+      ]
+    ],
+    "shapePass": true,
+    "depthPass": true,
+    "interactionPass": true
+  },
+  "multiplayer": {
+    "participants": 0,
+    "meaningfulLoopPassed": false
+  },
   "before": {
-    "text": "DEVELOPMENT_CONFIRMED · FULL APPROVED WEB COMPANION · 오비 미니게임 seed-roblox-obby-party-minigam-tower-of-hell obstacle, round, checkpoint, timing 0 SCORE 100 HP 1 WAVE 0 RESOURCE 1 LEVEL 100 ENEMY HP 0 POSITION 0 COOLDOWN 승인 분량 전체 구현 1 obstacle, round, checkpoint, timing OBJECTIVE 2 Start a short timed round with a clear obstacle, movement, survival, or party objective that is readable within seconds on mobile controls. MOVEMENT 3 Jump, dodge, race, collect, or react through hazards while checkpoints, score, position, or remaining-time feedback shows immediate progress. MOVEMENT 4 Finish or fail the round, receive score or cosmetic progression, then retry quickly or rotate into a different minigame pattern with minimal downtime. PROGRESSION 5 mobile MOBILE 음악 켜짐 볼륨 STATUS: ready · TURN 0 · OBJECTIVE 0 · ENERGY 100",
-    "visibleButtons": 6,
+    "text": "DEVELOPMENT_CONFIRMED · FULL APPROVED WEB COMPANION · 오비 미니게임 seed-roblox-obby-party-minigam-tower-of-hell obstacle, round, checkpoint, timing 30분 플레이 구조 0–5분 도입 · 조작과 첫 목표 Start a short timed round with a clear obstacle, movement, survival, or party objective that is readable within seconds on mobile controls. 5–15분 핵심 루프 · 반복과 성장 Jump, dodge, race, collect, or react through hazards while checkpoints, score, position, or remaining-time feedback shows immediate progress. 15–25분 난도 상승 · 변형과 압박 Finish or fail the round, receive score or cosmetic progression, then retry quickly or rotate into a different minigame pattern with minimal downtime. 25–30분 마무리 · 클라이맥스와 보상 누적된 성장과 학습을 사용해 마지막 목표를 해결하고 명확한 보상과 다음 목표를 연다. 0 SCORE 100 HP 1 WAVE 0 RESOURCE 1 LEVEL 100 ENEMY HP 0 POSITION 0 COOLDOWN 승인 분량 전체 구현 1 obstacle, round, checkpoint, timing OBJECTIVE 2 Start a short timed round with a clear obstacle, movement, survival, or party objective that is readable within seconds on mobile controls. MOVEMENT 3 Jump, dodge, race, collect, or react through hazards while checkpoints, score, position, or remaining-time feedback shows immediate progress. MOVEMENT 4 Finish or fail the round, receive score or cosmetic progression, then retry quickly or rotate into a different minigame pattern with minimal downtime. PROGRESSION 5 mobile MOBILE 음악 켜짐 볼륨 STATUS: ready · TURN 0 · OBJECTIVE 0 · ENERGY 100 · SESSION 30m",
+    "visibleButtons": 10,
     "canvases": [],
     "dataState": [
       {
@@ -114,25 +146,62 @@
       "scope-coreloop-2-c23e57ccd6",
       "scope-mobileux-d4b46ab266"
     ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": false,
+        "text": "0–5분도입 · 조작과 첫 목표Start a short timed round with a clear obstacle, movement, survival, or party objective that is readable within seconds on mobile controls."
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": false,
+        "text": "5–15분핵심 루프 · 반복과 성장Jump, dodge, race, collect, or react through hazards while checkpoints, score, position, or remaining-time feedback shows immediate progress."
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": false,
+        "text": "15–25분난도 상승 · 변형과 압박Finish or fail the round, receive score or cosmetic progression, then retry quickly or rotate into a different minigame pattern with minimal downtime."
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": false,
+        "text": "25–30분마무리 · 클라이맥스와 보상누적된 성장과 학습을 사용해 마지막 목표를 해결하고 명확한 보상과 다음 목표를 연다."
+      }
+    ],
+    "sessionCurrentStage": 0,
+    "sessionCompletedStages": 0,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
     "scrollWidth": 390,
     "viewportWidth": 390
   },
   "after": {
-    "text": "DEVELOPMENT_CONFIRMED · FULL APPROVED WEB COMPANION · 오비 미니게임 seed-roblox-obby-party-minigam-tower-of-hell obstacle, round, checkpoint, timing 55 SCORE 100 HP 1 WAVE 8 RESOURCE 2 LEVEL 100 ENEMY HP 6 POSITION 0 COOLDOWN 승인 분량 전체 구현 1 obstacle, round, checkpoint, timing OBJECTIVE 2 Start a short timed round with a clear obstacle, movement, survival, or party objective that is readable within seconds on mobile controls. MOVEMENT 3 Jump, dodge, race, collect, or react through hazards while checkpoints, score, position, or remaining-time feedback shows immediate progress. MOVEMENT 4 Finish or fail the round, receive score or cosmetic progression, then retry quickly or rotate into a different minigame pattern with minimal downtime. PROGRESSION 5 mobile MOBILE 음악 켜짐 볼륨 STATUS: scope-mobileux-d4b46ab266 · TURN 9 · OBJECTIVE 2 · ENERGY 98",
-    "visibleButtons": 6,
+    "text": "DEVELOPMENT_CONFIRMED · FULL APPROVED WEB COMPANION · 오비 미니게임 seed-roblox-obby-party-minigam-tower-of-hell obstacle, round, checkpoint, timing 30분 플레이 구조 0–5분 도입 · 조작과 첫 목표 Start a short timed round with a clear obstacle, movement, survival, or party objective that is readable within seconds on mobile controls. 5–15분 핵심 루프 · 반복과 성장 Jump, dodge, race, collect, or react through hazards while checkpoints, score, position, or remaining-time feedback shows immediate progress. 15–25분 난도 상승 · 변형과 압박 Finish or fail the round, receive score or cosmetic progression, then retry quickly or rotate into a different minigame pattern with minimal downtime. 25–30분 마무리 · 클라이맥스와 보상 누적된 성장과 학습을 사용해 마지막 목표를 해결하고 명확한 보상과 다음 목표를 연다. 84 SCORE 100 HP 2 WAVE 10 RESOURCE 3 LEVEL 100 ENEMY HP 3 POSITION 0 COOLDOWN 승인 분량 전체 구현 1 obstacle, round, checkpoint, timing OBJECTIVE 2 Start a short timed round with a clear obstacle, movement, survival, or party objective that is readable within seconds on mobile controls. MOVEMENT 3 Jump, dodge, race, collect, or react through hazards while checkpoints, score, position, or remaining-time feedback shows immediate progress. MOVEMENT 4 Finish or fail the round, receive score or cosmetic progression, then retry quickly or rotate into a different minigame pattern with minimal downtime. PROGRESSION 5 mobile MOBILE 음악 켜짐 볼륨 STATUS: session-stage-4 · TURN 13 · OBJECTIVE 2 · ENERGY 99 · SESSION 30m",
+    "visibleButtons": 10,
     "canvases": [],
     "dataState": [
       {
         "tag": "SECTION",
-        "text": "55SCORE100HP1WAVE8RESOURCE2LEVEL100ENEMY HP6POSITION0COOLDOWN",
+        "text": "84SCORE100HP2WAVE10RESOURCE3LEVEL100ENEMY HP3POSITION0COOLDOWN",
         "attrs": [
           [
             "data-state",
-            "turn-9"
+            "turn-13"
           ],
           [
             "data-score",
-            "55"
+            "84"
           ],
           [
             "data-health",
@@ -140,11 +209,11 @@
           ],
           [
             "data-resource",
-            "8"
+            "10"
           ],
           [
             "data-progress",
-            "75"
+            "16"
           ]
         ]
       }
@@ -160,6 +229,43 @@
       "scope-coreloop-2-c23e57ccd6",
       "scope-mobileux-d4b46ab266"
     ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": true,
+        "text": "0–5분도입 · 조작과 첫 목표Start a short timed round with a clear obstacle, movement, survival, or party objective that is readable within seconds on mobile controls."
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": true,
+        "text": "5–15분핵심 루프 · 반복과 성장Jump, dodge, race, collect, or react through hazards while checkpoints, score, position, or remaining-time feedback shows immediate progress."
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": true,
+        "text": "15–25분난도 상승 · 변형과 압박Finish or fail the round, receive score or cosmetic progression, then retry quickly or rotate into a different minigame pattern with minimal downtime."
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": true,
+        "text": "25–30분마무리 · 클라이맥스와 보상누적된 성장과 학습을 사용해 마지막 목표를 해결하고 명확한 보상과 다음 목표를 연다."
+      }
+    ],
+    "sessionCurrentStage": 4,
+    "sessionCompletedStages": 4,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
     "scrollWidth": 390,
     "viewportWidth": 390
   },
@@ -170,21 +276,35 @@
   "failedRequests": [],
   "badResponses": [],
   "evidence": [
-    "interactionCount=8",
+    "interactionCount=12",
     "stateChanged=true",
     "reloadVisible=true",
     "mobileOverflow=true",
     "musicRuntime=true",
-    "musicAfterGesture=true",
     "approvedScope=true",
-    "approvedScopeCount=5",
-    "scopeStateChanged=5/5"
+    "sessionDepthMinutes=30",
+    "sessionStages=4",
+    "sessionStagesCompleted=4",
+    "multiplayerParticipants=0"
   ],
-  "checkedAt": "2026-09-13T02:52:27.602Z",
+  "checkedAt": "2026-09-13T16:05:42.766Z",
   "sourcePath": "web-games/seed-roblox-obby-party-minigam-tower-of-hell",
-  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-obby-party-minigam-tower-of-hell-34733924193-1/",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-obby-party-minigam-tower-of-hell-34767331143-1/",
   "screenshot": "/tmp/web-work/seed-roblox-obby-party-minigam-tower-of-hell/web-gameplay.png",
-  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-obby-party-minigam-tower-of-hell-34733924193-1",
+  "strictReviewPath": "/tmp/web-work/seed-roblox-obby-party-minigam-tower-of-hell/strict-implementation-review.json",
+  "strictReview": {
+    "verdict": "PASS",
+    "totalScore": 100,
+    "hardFailures": [],
+    "reviewedAt": "2026-09-13T16:05:42.919Z",
+    "formalPassThreshold": 90,
+    "homepageTestThreshold": 80
+  },
+  "homepageTestEligible": true,
+  "homepageTestVerdict": "PASS",
+  "formalImplementationPassed": true,
+  "formalImplementationVerdict": "PASS",
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-obby-party-minigam-tower-of-hell-34767331143-1",
   "policyDocument": "COMPANY_FLOW.md",
   "requiredBeforeTargetPlatform": true
 }

@@ -1,0 +1,59 @@
+{
+  "version": 2,
+  "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+  "reviewStage": "IMPLEMENTATION_STRICT_REVIEW",
+  "scoreScale": 100,
+  "passThreshold": 90,
+  "excellentThreshold": 90,
+  "excellent": false,
+  "totalScore": 100,
+  "scores": {
+    "ideaDistinctness": 15,
+    "categoryFit": 10,
+    "platformFit": 10,
+    "designFidelity": 15,
+    "session30Quality": 15,
+    "implementationCompleteness": 15,
+    "storyCausality": 10,
+    "progressionBalance": 5,
+    "artDirectionFidelity": 5
+  },
+  "weights": {
+    "ideaDistinctness": 15,
+    "categoryFit": 10,
+    "platformFit": 10,
+    "designFidelity": 15,
+    "session30Quality": 15,
+    "implementationCompleteness": 15,
+    "storyCausality": 10,
+    "progressionBalance": 5,
+    "artDirectionFidelity": 5
+  },
+  "hardFailures": [],
+  "verdict": "PASS",
+  "evidence": {
+    "source": "web-games/.autonomous-candidates/development-web-seed-roblox-roleplay-life-avat-brookhaven-rp-34767331143-1",
+    "evidenceFile": "/tmp/web-work/seed-roblox-roleplay-life-avat-brookhaven-rp/web-gameplay-validation.json",
+    "runtimePass": true,
+    "designTokenCoverage": 1,
+    "multiplayerDesignMode": "UNKNOWN",
+    "multiplayerEvidence": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "sessionDepthMinutes": 30,
+    "reviewContextSource": "FROZEN_DESIGN_BASELINE",
+    "reviewContextBaselinePath": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-09-13/design-revised.json",
+    "reviewContextCyclePath": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-09-13/cycle-status.json"
+  },
+  "policyDocument": "COMPANY_FLOW.md",
+  "rules": {
+    "scoreCannotOverrideHardGate": true,
+    "correctableRejectAction": "FIX_AND_REVALIDATE",
+    "structuralRejectAction": "REBUILD_CANDIDATE",
+    "officialCardBeforePassForbidden": true,
+    "testShelfBeforePassOnly": true,
+    "learningRecordRequired": true
+  },
+  "reviewedAt": "2026-09-13T16:06:18.713Z"
+}

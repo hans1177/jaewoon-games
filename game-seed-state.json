@@ -4174,5 +4174,32 @@
     "STORY_COMPLETE_RPG"
   ],
   "lastRunAt": "2026-09-13T15:12:01.506Z",
-  "lastAction": "HISTORICAL_INITIAL_BOOTSTRAP"
+  "lastAction": "HISTORICAL_INITIAL_BOOTSTRAP",
+  "seedMaterialLearning": {
+    "events": [
+      {
+        "gameId": "bug-defense",
+        "seedId": "OWNER-RESET-BUG-DEFENSE-20260913",
+        "reviewStage": "IMPLEMENTATION_STRICT_REVIEW",
+        "verdict": "PASS",
+        "totalScore": 100,
+        "hardFailures": [],
+        "materialFamilies": [],
+        "validatedRealEvidence": true,
+        "reviewContextSource": "FROZEN_DESIGN_BASELINE",
+        "recordedAt": "2026-09-13T16:06:56.350Z"
+      }
+    ],
+    "causeCounts": {},
+    "preferSeedMaterialFamilies": [],
+    "avoidSeedMaterialFamilies": [],
+    "rules": {
+      "designOpinionDoesNotBecomeTrainingSuccess": true,
+      "validatedRuntimeRequiredForPreferenceSignals": true,
+      "failuresAndFixesRetained": true,
+      "copyOriginalExpressionForbidden": true,
+      "signalsGuideSelectionButDoNotForceCopy": true
+    },
+    "updatedAt": "2026-09-13T16:06:56.351Z"
+  }
 }
