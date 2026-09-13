@@ -27,11 +27,11 @@ body{min-height:100dvh;padding:max(18px,env(safe-area-inset-top)) 14px max(24px,
       <div class="version">PWA v19</div>
     </div>
   </div>
-  <p>재운컴퍼니 개발 채팅을 휴대폰 홈 화면에 앱처럼 설치해서 사용할 수 있어. 별도 APK를 받는 방식이 아니라 웹앱(PWA) 설치 방식이야.</p>
+  <p>재운컴퍼니 개발 채팅을 휴대폰 홈 화면에 앱처럼 설치해서 사용할 수 있어. Android에서는 삼성 인터넷을 우선 사용해 설치해.</p>
 
   <div class="actions">
     <button class="btn primary" id="installBtn" type="button" hidden>재운컴퍼니 앱 설치</button>
-    <a class="btn primary" id="chromeBtn" href="intent://jaewoon-games.pages.dev/install.html?browser=chrome#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Fjaewoon-games.pages.dev%2Finstall.html%3Fbrowser%3Dchrome;end">Chrome으로 열고 설치</a>
+    <a class="btn primary" id="samsungBtn" href="intent://jaewoon-games.pages.dev/install.html?browser=samsung#Intent;scheme=https;package=com.sec.android.app.sbrowser;S.browser_fallback_url=https%3A%2F%2Fjaewoon-games.pages.dev%2Finstall.html%3Fsamsung_fallback%3D1;end">삼성 인터넷으로 열고 설치</a>
     <button class="btn" id="copyBtn" type="button">설치 링크 복사</button>
     <a class="btn" href="/command.html">재운컴퍼니 앱 열기</a>
     <a class="btn" href="/">재운게임즈 홈페이지</a>
@@ -39,18 +39,18 @@ body{min-height:100dvh;padding:max(18px,env(safe-area-inset-top)) 14px max(24px,
 
   <section class="section">
     <h2>설치 링크</h2>
-    <p>아래 주소를 Chrome 또는 Safari에서 열면 돼.</p>
+    <p>Android에서는 삼성 인터넷, iPhone에서는 Safari에서 열면 돼.</p>
     <div class="urlbox" id="installUrl">https://jaewoon-games.pages.dev/install.html</div>
   </section>
 
   <section class="section">
-    <h2>Android · Chrome 설치 방법</h2>
+    <h2>Android · 삼성 인터넷 설치 방법</h2>
     <ol class="steps">
-      <li>위 <strong>Chrome으로 열고 설치</strong>를 눌러.</li>
+      <li>설치 페이지를 열면 <strong>삼성 인터넷으로 자동 전환</strong>을 시도해.</li>
       <li><strong>재운컴퍼니 앱 설치</strong> 버튼이 나타나면 눌러.</li>
-      <li>버튼이 안 뜨면 Chrome 오른쪽 위 <strong>⋮</strong>을 눌러.</li>
-      <li><strong>앱 설치</strong> 또는 <strong>홈 화면에 추가</strong>를 선택해.</li>
-      <li>설치가 끝나면 홈 화면의 <strong>재운컴퍼니</strong> 아이콘으로 실행하면 돼.</li>
+      <li>버튼이 안 뜨면 삼성 인터넷 주소창의 <strong>설치 아이콘</strong>을 눌러.</li>
+      <li>설치 확인창에서 <strong>설치</strong>를 선택해.</li>
+      <li>설치가 끝나면 앱 화면의 <strong>재운컴퍼니</strong> 아이콘으로 실행하면 돼.</li>
     </ol>
   </section>
 
@@ -64,17 +64,20 @@ body{min-height:100dvh;padding:max(18px,env(safe-area-inset-top)) 14px max(24px,
     </ol>
   </section>
 
-  <div class="note" id="state"><strong>설치 안내.</strong> Android에서는 Chrome 설치를 권장해. 설치 버튼이 바로 안 나오면 메뉴에서 “앱 설치” 또는 “홈 화면에 추가”를 선택하면 돼.</div>
+  <div class="note" id="state"><strong>설치 안내.</strong> Android에서는 삼성 인터넷으로 자동 전환을 시도해. 전환이 막히면 위 “삼성 인터넷으로 열고 설치”를 한 번 눌러.</div>
 </main>
 <script>
 let deferredPrompt=null;
 const installBtn=document.getElementById('installBtn');
-const chromeBtn=document.getElementById('chromeBtn');
+const samsungBtn=document.getElementById('samsungBtn');
 const copyBtn=document.getElementById('copyBtn');
 const state=document.getElementById('state');
 const installUrl='https://jaewoon-games.pages.dev/install.html';
+const samsungIntent='intent://jaewoon-games.pages.dev/install.html?browser=samsung#Intent;scheme=https;package=com.sec.android.app.sbrowser;S.browser_fallback_url=https%3A%2F%2Fjaewoon-games.pages.dev%2Finstall.html%3Fsamsung_fallback%3D1;end';
 const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 const isAndroid=/Android/i.test(navigator.userAgent);
+const isSamsung=/SamsungBrowser/i.test(navigator.userAgent);
+const params=new URLSearchParams(location.search);
 
 async function registerPwa(){
   if(!('serviceWorker' in navigator))return;
@@ -87,26 +90,40 @@ async function registerPwa(){
 }
 
 function showManual(){
-  if(isAndroid)state.innerHTML='<strong>수동 설치.</strong> Chrome 오른쪽 위 ⋮ → “앱 설치” 또는 “홈 화면에 추가”를 눌러.';
+  if(isAndroid&&isSamsung)state.innerHTML='<strong>수동 설치.</strong> 삼성 인터넷 주소창의 설치 아이콘을 눌러 설치해.';
+  else if(isAndroid)state.innerHTML='<strong>삼성 인터넷 전환 필요.</strong> 위 “삼성 인터넷으로 열고 설치”를 눌러.';
   else state.innerHTML='<strong>수동 설치.</strong> Safari 공유 버튼 → “홈 화면에 추가” → “추가”를 눌러.';
+}
+
+function tryOpenSamsungInternet(){
+  if(!isAndroid||isSamsung||standalone||params.get('samsung_fallback')==='1')return;
+  if(sessionStorage.getItem('jaewoonSamsungHandoff')==='1')return;
+  sessionStorage.setItem('jaewoonSamsungHandoff','1');
+  state.innerHTML='<strong>삼성 인터넷으로 전환 중.</strong> 자동 전환이 막히면 위 버튼을 눌러.';
+  setTimeout(()=>{location.href=samsungIntent;},250);
 }
 
 if(standalone){
   installBtn.hidden=true;
-  chromeBtn.hidden=true;
+  samsungBtn.hidden=true;
   state.textContent='이미 재운컴퍼니 앱으로 실행 중이야.';
 }else if(!isAndroid){
-  chromeBtn.hidden=true;
+  samsungBtn.hidden=true;
   showManual();
-}else if(new URLSearchParams(location.search).get('browser')==='chrome'){
-  state.innerHTML='<strong>Chrome으로 열렸어.</strong> 설치 버튼이 나타나면 눌러. 안 뜨면 오른쪽 위 ⋮ → “앱 설치”를 선택해.';
+}else if(isSamsung){
+  samsungBtn.hidden=true;
+  state.innerHTML='<strong>삼성 인터넷으로 열렸어.</strong> 설치 버튼이 나타나면 눌러. 안 뜨면 주소창의 설치 아이콘을 눌러.';
+}else if(params.get('samsung_fallback')==='1'){
+  state.innerHTML='<strong>자동 전환이 막혔어.</strong> 위 “삼성 인터넷으로 열고 설치”를 눌러.';
+}else{
+  tryOpenSamsungInternet();
 }
 
 window.addEventListener('beforeinstallprompt',event=>{
   event.preventDefault();
   deferredPrompt=event;
   installBtn.hidden=false;
-  chromeBtn.hidden=true;
+  samsungBtn.hidden=true;
   state.innerHTML='<strong>설치 준비 완료.</strong> 위 “재운컴퍼니 앱 설치” 버튼을 눌러.';
 });
 
@@ -130,7 +147,7 @@ copyBtn.addEventListener('click',async()=>{
 
 window.addEventListener('appinstalled',()=>{
   installBtn.hidden=true;
-  chromeBtn.hidden=true;
+  samsungBtn.hidden=true;
   state.textContent='재운컴퍼니 앱 설치 완료.';
 });
 
