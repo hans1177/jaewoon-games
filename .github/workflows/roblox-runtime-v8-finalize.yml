@@ -2,6 +2,11 @@ name: Finalize Roblox Runtime Harness V8
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - fix/roblox-runtime-v8-finalize-20260914
+    paths:
+      - '.github/workflows/roblox-runtime-v8-finalize.yml'
 
 permissions:
   contents: write
