@@ -1,8 +1,8 @@
 {
   "version": 1,
   "policyDocument": "COMPANY_FLOW.md",
-  "ownerDirective": "For games missing the Web game output: run design first, create the artbook from that design, then build the Web game through the existing canonical production pipeline. Reuse already valid stages and do not create a separate runner or parallel pipeline.",
-  "requestedAt": "2026-09-13T00:30:00Z",
+  "ownerDirective": "For games that are not yet attached to the canonical production flow: preserve any valid existing Web archive, run design first, create the artbook from that design, validate or rebuild the Web companion through the existing canonical production pipeline, then revalidate, reclassify and hand the game to its selected platform development pipeline. Reuse already valid stages and do not create a separate runner or parallel pipeline.",
+  "requestedAt": "2026-09-13T04:00:00Z",
   "requests": [
     {
       "revision": "OWNER-RESET-20260913-1",
@@ -95,6 +95,39 @@
         "productionClass": "DESIGN_ONLY",
         "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
         "lifecycleState": "DESIGN_ONLY"
+      }
+    },
+    {
+      "revision": "OWNER-ENROLL-COZY-ISLAND-20260913-2",
+      "gameId": "cozy-island",
+      "gameName": "포근섬",
+      "status": "ACTIVE",
+      "seed": {
+        "version": 1,
+        "seedId": "OWNER-ENROLL-COZY-ISLAND-20260913",
+        "gameId": "cozy-island",
+        "gameName": "포근섬",
+        "status": "ACTIVE",
+        "generation": "OWNER_PIPELINE_ENROLLMENT",
+        "ownerResetRevision": "OWNER-ENROLL-COZY-ISLAND-20260913-2",
+        "GAME_CATEGORY": "CASUAL",
+        "REFERENCE_GAMES": ["Animal Crossing: New Horizons", "Stardew Valley", "Dinkum"],
+        "CORE_FUN_TO_LEARN": ["relaxing daily activity loop", "collection and fishing progression", "small-island personalization"],
+        "CORE_LOOP": ["Choose a calm island activity such as gathering, fishing or tending the living space.", "Turn the result into a useful collection, upgrade or island improvement.", "Use the improvement to unlock a new activity, location or collection goal while preserving a low-pressure session rhythm."],
+        "DISTINCT_IDENTITY": "작은 포근한 섬에서 낚시·채집·생활 흔적이 섬의 모습과 다음 활동을 바꾸는 재운게임즈 고유의 힐링 생활 게임으로 설계를 정식화한다.",
+        "MARKET_EVIDENCE_SUMMARY": {"role":"TARGET_DESIGN_REFERENCE","targetMarketScope":"GLOBAL","hardPassFailGate":false,"available":false,"note":"Existing playable Web archive is preserved as implementation evidence; the canonical design cycle must establish the approved design baseline before development promotion."},
+        "TARGET_AUDIENCE": "낚시·채집·꾸미기를 짧고 부담 없이 반복하는 힐링 생활 플레이를 선호하는 글로벌 플레이어",
+        "TARGET_SESSION_DIRECTION": "짧게 접속해 한 가지 생활 목표를 완료하고 다음 섬 변화가 남는 구조를 검토한다.",
+        "INITIAL_TARGET_PLATFORM": "ROBLOX",
+        "INITIAL_PLAY_MODE": "SINGLE_PLAYER_OR_SOCIAL_EXPANSION_REVIEW",
+        "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
+        "TRANSFORMATION_MODE": "REINTERPRETATION",
+        "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
+        "productionClass": "DESIGN_ONLY",
+        "productionClassSource": "OWNER_PIPELINE_ENROLLMENT_2026-09-13",
+        "lifecycleState": "DESIGN_ONLY",
+        "preserveExistingWebArchive": true,
+        "existingWebSourcePath": "web-games/cozy-island"
       }
     }
   ]
