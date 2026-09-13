@@ -49,6 +49,7 @@ proto.draw = function optimizedDraw(game) {
 
   // 예전 저장에 기사 4명 이상이 남아 있어도 새 최대치 3명을 강제한다.
   let knightCount = 0;
+  let trimmed = false;
   for (let i = 0; i < (game.allies || []).length; i++) {
     const unit = game.allies[i];
     if (unit?.kind !== 'knight' || unit.hp <= 0) continue;
@@ -56,9 +57,13 @@ proto.draw = function optimizedDraw(game) {
     if (knightCount <= 3) continue;
     game.allies.splice(i, 1);
     i--;
+    trimmed = true;
   }
   const livingKnights = (game.allies || []).filter(unit => unit?.kind === 'knight' && unit.hp > 0).length;
   if (game.state.knightCount !== livingKnights) game.state.knightCount = livingKnights;
+  if (trimmed && Array.isArray(game.state.army)) {
+    game.state.army = (game.allies || []).filter(unit => unit?.hp > 0).map(unit => ({ kind: unit.kind }));
+  }
 
   return originalDraw.call(this, game);
 };
