@@ -1,7 +1,7 @@
 // 파일명: sw.js
 // 역할: 재운컴퍼니 PWA 앱 셸과 비상 AI를 캐시하고 연결 차단 시에도 개발 대화를 이어간다.
 
-const CACHE_NAME='jaewoon-pwa-v15';
+const CACHE_NAME='jaewoon-pwa-v16';
 const APP_SHELL=['/command.html','/emergency-ai.js','/install.html','/offline.html','/manifest.webmanifest','/assets/pwa-icon-192.png','/assets/pwa-icon-512.png'];
 const NETWORK_ONLY=/\/(?:game-catalog|company-status|public-game-health|game-artbooks|public-release-baselines)\.json(?:\?|$)/;
 
