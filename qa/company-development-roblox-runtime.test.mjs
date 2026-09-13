@@ -172,7 +172,8 @@ test('bot-dispatched Roblox package flow directly wakes continuation only after 
   assert.ok(workflow.includes("github.actor == 'github-actions[bot]'"));
   assert.ok(workflow.includes('ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION'));
   assert.ok(workflow.includes('ROBLOX_PREFLIGHT_READY_COUNT'));
-  assert.ok(workflow.includes("if [[ \"$package_pending\" == '0' && \"$preflight_ready\" =~ ^[1-9][0-9]*$ ]]"));
+  assert.ok(workflow.includes('ROBLOX_RUNTIME_READY_COUNT'));
+  assert.ok(workflow.includes("if [[ \"$package_pending\" == '0' && ( \"$preflight_ready\" =~ ^[1-9][0-9]*$ || \"$runtime_ready\" =~ ^[1-9][0-9]*$ ) ]]"));
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'));
 });
