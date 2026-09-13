@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "policy": "INVALIDATE_LEGACY_GENERATED_VERSIONS_ONLY",
+  "defaultInvalidBefore": "2026-09-13T20:50:00.000Z",
+  "preserveOriginalEvidence": true,
+  "allowFutureRevisions": true,
+  "notes": "Do not blacklist whole game identities. Only learning records from the flawed pre-reset generated pipeline are excluded. New evidence after the cutoff is eligible again when it passes the current gates.",
+  "entries": [
+    {
+      "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
+      "label": "Pocket Foundry",
+      "lane": "ROBLOX",
+      "invalidBefore": "2026-09-13T20:50:00.000Z",
+      "sourceRevisions": [
+        "1ce32ac40c5d3fcecee11979c5ba531b12e99c49",
+        "d7c806dc30e498c1d6138a4a29d6f3c6d2ebd552"
+      ],
+      "invalidateIfTimestampMissing": true,
+      "reason": "legacy Roblox implementation passed weak gameplay gates"
+    },
+    {
+      "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+      "label": "Vector Clash",
+      "lane": "ROBLOX",
+      "invalidBefore": "2026-09-13T20:50:00.000Z",
+      "sourceRevisions": [
+        "1ce32ac40c5d3fcecee11979c5ba531b12e99c49",
+        "d7c806dc30e498c1d6138a4a29d6f3c6d2ebd552"
+      ],
+      "invalidateIfTimestampMissing": true,
+      "reason": "legacy Roblox implementation passed weak gameplay gates"
+    },
+    {
+      "gameId": "seed-roblox-survival-horror-es-doors",
+      "label": "Last Lantern",
+      "lane": "ROBLOX",
+      "invalidBefore": "2026-09-13T20:50:00.000Z",
+      "sourceRevisions": [
+        "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
+        "d7c806dc30e498c1d6138a4a29d6f3c6d2ebd552"
+      ],
+      "invalidateIfTimestampMissing": true,
+      "reason": "legacy Roblox implementation passed weak gameplay gates"
+    },
+    {
+      "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+      "label": "Skyline Sprint",
+      "lane": "ROBLOX",
+      "invalidBefore": "2026-09-13T20:50:00.000Z",
+      "sourceRevisions": [
+        "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
+        "d7c806dc30e498c1d6138a4a29d6f3c6d2ebd552"
+      ],
+      "invalidateIfTimestampMissing": true,
+      "reason": "legacy Roblox implementation passed weak gameplay gates"
+    },
+    {
+      "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+      "label": "Shardbound Odyssey",
+      "lane": "ROBLOX",
+      "invalidBefore": "2026-09-13T20:50:00.000Z",
+      "sourceRevisions": [
+        "1413a7775d56902e1350909ba30cea49456b6a88",
+        "d7c806dc30e498c1d6138a4a29d6f3c6d2ebd552"
+      ],
+      "invalidateIfTimestampMissing": true,
+      "reason": "legacy Roblox implementation passed weak gameplay gates"
+    },
+    {
+      "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+      "label": "Harbor Days",
+      "lane": "ROBLOX",
+      "invalidBefore": "2026-09-13T20:50:00.000Z",
+      "sourceRevisions": [
+        "f70c7513c9dcd1135fe2e929afb676dd8b4b3c0d",
+        "d7c806dc30e498c1d6138a4a29d6f3c6d2ebd552"
+      ],
+      "invalidateIfTimestampMissing": true,
+      "reason": "legacy Roblox implementation passed weak gameplay gates"
+    },
+    {
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "label": "Echoes of the Lost Star",
+      "lane": "HOMEPAGE_TO_UNITY",
+      "invalidBefore": "2026-09-13T20:50:00.000Z",
+      "sourceRevisions": [
+        "70ba0a61ec01f751fbe2374c2fb8769765aaa179",
+        "77ac29bd1e3b4f6f999dcb1bc0977c1468806603"
+      ],
+      "invalidateIfTimestampMissing": true,
+      "reason": "legacy generated homepage/platform candidate before flow reset"
+    },
+    {
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "label": "Celestial Bastion",
+      "lane": "HOMEPAGE_TO_UNITY",
+      "invalidBefore": "2026-09-13T20:50:00.000Z",
+      "sourceRevisions": [
+        "77ac29bd1e3b4f6f999dcb1bc0977c1468806603"
+      ],
+      "invalidateIfTimestampMissing": true,
+      "reason": "legacy generated homepage/platform candidate before flow reset"
+    },
+    {
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "label": "Chromatic Cascade",
+      "lane": "HOMEPAGE_TO_UNITY",
+      "invalidBefore": "2026-09-13T20:50:00.000Z",
+      "sourceRevisions": [
+        "77ac29bd1e3b4f6f999dcb1bc0977c1468806603"
+      ],
+      "invalidateIfTimestampMissing": true,
+      "reason": "legacy generated homepage/platform candidate before flow reset"
+    },
+    {
+      "gameId": "seed-casual-realm-weaver",
+      "label": "Realm Weaver",
+      "lane": "HOMEPAGE_TO_UNITY",
+      "invalidBefore": "2026-09-13T20:50:00.000Z",
+      "sourceRevisions": [
+        "77ac29bd1e3b4f6f999dcb1bc0977c1468806603"
+      ],
+      "invalidateIfTimestampMissing": true,
+      "reason": "legacy generated homepage/platform candidate before flow reset"
+    },
+    {
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "label": "Crystal Bloom",
+      "lane": "HOMEPAGE_TO_UNITY",
+      "invalidBefore": "2026-09-13T20:50:00.000Z",
+      "sourceRevisions": [
+        "77ac29bd1e3b4f6f999dcb1bc0977c1468806603"
+      ],
+      "invalidateIfTimestampMissing": true,
+      "reason": "legacy generated homepage/platform candidate before flow reset"
+    },
+    {
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "label": "Chronicles of Eldoria",
+      "lane": "HOMEPAGE_TO_UNITY",
+      "invalidBefore": "2026-09-13T20:50:00.000Z",
+      "sourceRevisions": [
+        "77ac29bd1e3b4f6f999dcb1bc0977c1468806603"
+      ],
+      "invalidateIfTimestampMissing": true,
+      "reason": "legacy generated homepage/platform candidate before flow reset"
+    }
+  ]
+}
