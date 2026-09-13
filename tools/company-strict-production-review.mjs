@@ -32,9 +32,9 @@ function frozenImplementationContext(){
   const cyclePath=path.join(path.dirname(baselinePath),'cycle-status.json');
   const cycle=readJson(cyclePath,null);
   if(!cycle||clean(cycle.gameId)!==gameId)throw new Error(`STRICT_REVIEW_FROZEN_CONTEXT_CYCLE_MISMATCH ${gameId}`);
-  const cycleSeedId=clean(cycle.gameSeed?.seedId);
+  const cycleSeedId=clean(cycle.gameSeed?.seedId||cycle.baselineGate?.evidence?.gameSeed?.seedId);
   const category=clean(cycle.gameSeed?.category);
-  const platform=clean(cycle.selectedPlatform);
+  const platform=clean(cycle.selectedPlatform||cycle.baselineGate?.evidence?.targetPlatformProject?.platform||cycle.baselineGate?.evidence?.targetPlatformTechnical?.platform);
   if(!cycleSeedId||cycleSeedId!==seedId||!category||!platform)throw new Error(`STRICT_REVIEW_FROZEN_CONTEXT_SEED_MISMATCH ${gameId}`);
   return {seed:{seedId,CORE_LOOP:loops,DISTINCT_IDENTITY:identity,GAME_CATEGORY:category,INITIAL_TARGET_PLATFORM:platform,SEED_MATERIAL_IDS:[],generation:'FROZEN_DESIGN_CONTEXT',MULTIPLAYER_DESIGN_MODE:''},source:'FROZEN_DESIGN_BASELINE',baselinePath,cyclePath};
 }
