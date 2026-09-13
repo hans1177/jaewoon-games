@@ -24,7 +24,9 @@ test('COMPANY_FLOW remains the single machine-oriented production policy source'
   assert.match(flow,/ownerInstructionOverridesPolicy: true/);
   assert.match(flow,/passMinimum: 80/);
   assert.match(flow,/implementationPassMinimum: 90/);
-  assert.match(flow,/designOnlyArtbookBeforePromotionForbidden: true/);
+  assert.match(flow,/designOnlyArtbookForbidden: true/);
+  assert.match(flow,/preWebArtbookForbidden: true/);
+  assert.match(flow,/createOnlyAfterWebStrictReview: true/);
   assert.match(flow,/blockingBudgetMinutes: 10/);
   assert.match(agents,/제작 정책 원본은 \*\*`COMPANY_FLOW\.md` 하나\*\*/);
 });
