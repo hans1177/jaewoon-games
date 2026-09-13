@@ -14,7 +14,7 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
-  ROBLOX_RUNTIME_HARNESS_VERSION: '7'
+  ROBLOX_RUNTIME_HARNESS_VERSION: '8'
 
 jobs:
   source-plan:
@@ -768,7 +768,7 @@ jobs:
             if(exactBuild){
               if(item.robloxBuildPreflightPassed!==true&&!item.robloxBuildPreflightFailedAt){
                 preflightReady++;
-              }else if(item.robloxBuildPreflightPassed===true&&item.robloxRuntimePassed!==true){
+              }else if(item.robloxBuildPreflightPassed===true&&(item.robloxRuntimePassed!==true||String(item.robloxRuntimeHarnessVersion||'')!==harnessVersion)){
                 const sameHarness=String(item.robloxRuntimeHarnessVersion||'')===harnessVersion;
                 const retryCount=sameHarness?Number(item.robloxRuntimeRetryCount||0):0;
                 const retryBudgetAvailable=retryCount<maxRetryableFailures;

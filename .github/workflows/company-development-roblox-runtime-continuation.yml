@@ -13,7 +13,7 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
-  ROBLOX_RUNTIME_HARNESS_VERSION: '7'
+  ROBLOX_RUNTIME_HARNESS_VERSION: '8'
 
 jobs:
   preflight-plan:
@@ -38,6 +38,7 @@ jobs:
           set -euo pipefail
           node --check tools/company-development-roblox-build-preflight.mjs
           node --check tools/vibe3-roblox-platform.mjs
+          node --check tools/company-development-roblox-runtime-persist.mjs
           node --test qa/company-development-roblox-runtime-continuation.test.mjs
       - name: Fetch canonical runtime queue
         run: |
@@ -270,7 +271,7 @@ jobs:
             const retryableRuntimeFailure=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&['roblox-studio-runtime-failed','roblox-studio-runtime-timeout'].includes(item.robloxRuntimeEvidence?.failure);
             const retryableMissingEvidence=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
             const retryableAuthMigration=!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-authentication-required';
-            if(item.robloxBuildPreflightPassed!==true||item.robloxRuntimePassed===true||(item.robloxRuntimeFailedAt&&!retryableInstallFailure&&!retryableRuntimeFailure&&!retryableMissingEvidence&&!retryableAuthMigration))continue;
+            if(item.robloxBuildPreflightPassed!==true||(item.robloxRuntimePassed===true&&sameHarness)||(item.robloxRuntimeFailedAt&&!retryableInstallFailure&&!retryableRuntimeFailure&&!retryableMissingEvidence&&!retryableAuthMigration))continue;
             const revision=String(item.robloxSourceCommit||'').trim();
             const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
             if(item.robloxBuildSourceRevision!==revision||!artifact.startsWith('sha256:'))continue;
@@ -416,8 +417,9 @@ jobs:
           Set-Content -Path (Join-Path $env:RUNNER_TEMP 'roblox-runtime-combined.log') -Value $combined
           Write-Host $combined
           if ($p.ExitCode -ne 0) { throw "Roblox Studio exited $($p.ExitCode)" }
-          if ($combined -notmatch 'ROBLOX_RUNTIME_SMOKE=PASS') { throw 'Runtime PASS sentinel missing' }
-          if ($combined -notmatch 'ROBLOX_SERVER_CLIENT_BOUNDARY_PASS=YES') { throw 'Server/client boundary sentinel missing' }
+          if ($combined -notmatch '(?m)^ROBLOX_RUNTIME_RESULT=PASS:PLAYER_CHARACTER_CLIENT_SERVER_ROUNDTRIP\r?$') { throw 'Runtime roundtrip PASS result missing' }
+          if ($combined -notmatch '(?m)^ROBLOX_RUNTIME_SMOKE=PASS\r?$') { throw 'Runtime PASS sentinel missing' }
+          if ($combined -notmatch '(?m)^ROBLOX_SERVER_CLIENT_BOUNDARY_PASS=YES\r?$') { throw 'Server/client boundary sentinel missing' }
           Write-Host 'ROBLOX_ACTUAL_STUDIO_RUNTIME=PASS'
       - name: Record exact runtime evidence
         if: always()
@@ -542,54 +544,32 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-          git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
-          node <<'NODE'
-          const fs=require('fs'),path=require('path');
-          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
-          const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
-          const root='/tmp/roblox-runtime-batch';
-          const resultFiles=[];
-          const walk=dir=>{for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const full=path.join(dir,entry.name);if(entry.isDirectory())walk(full);else if(entry.isFile()&&entry.name.endsWith('.runtime.json'))resultFiles.push(full);}};
-          if(fs.existsSync(root))walk(root);
-          const results=resultFiles.sort().map(file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'')));
-          console.log(`ROBLOX_RUNTIME_CHECKPOINT_FILES=${resultFiles.length}`);
-          const byId=new Map(results.map(x=>[x.gameId,x]));const stamp=new Date().toISOString();let pass=0,fail=0;
-          for(const target of expected){
-            const item=(queue.items||[]).find(x=>x.gameId===target.gameId);if(!item)throw new Error(`queue item missing: ${target.gameId}`);
-            const r=byId.get(target.gameId);const exact=r?.sourceRevision===item.robloxSourceCommit&&r?.artifactIdentity===item.robloxBuildArtifactIdentity;
-            const harnessVersion=String(r?.runtimeHarnessVersion||target.runtimeHarnessVersion||'');
-            if(r?.runtimePassed===true&&r?.actualStudioRuntime===true&&r?.serverClientBoundaryPassed===true&&exact){
-              Object.assign(item,{robloxRuntimePassed:true,robloxRuntimePassedAt:stamp,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:r,robloxRuntimeRetryCount:0,robloxRuntimeHarnessVersion:harnessVersion,
-                robloxServerClientBoundaryPassed:true,robloxDatastoreRejoinPassed:r.datastoreRejoinPassed===true,robloxMobileControlUiPassed:r.mobileControlUiPassed===true,
-                robloxLastSuccessfulStage:'TARGET_PLATFORM_RUNTIME',robloxFailureStage:'INDEPENDENT_QA',robloxFailureSignature:'ROBLOX_INDEPENDENT_QA_PENDING',routingBlockers:['roblox-independent-qa-pending'],updatedAt:stamp});pass++;
-            }else{
-              const failure=r?.failure||'ROBLOX_RUNTIME_RESULT_MISSING';
-              const retryableFailure=failure==='roblox-studio-install-failed'||failure==='roblox-studio-runtime-failed'||failure==='roblox-studio-runtime-timeout'||failure==='ROBLOX_RUNTIME_RESULT_MISSING';
-              const sameHarness=String(item.robloxRuntimeHarnessVersion||'')===harnessVersion;
-              const baseRetryCount=sameHarness?Number(item.robloxRuntimeRetryCount||0):0;
-              const retryCount=retryableFailure?baseRetryCount+1:0;
-              Object.assign(item,{robloxRuntimePassed:false,robloxRuntimeFailedAt:stamp,robloxRuntimeEvidence:r||null,robloxRuntimeRetryCount:retryCount,robloxRuntimeHarnessVersion:harnessVersion,
-                robloxFailureStage:'TARGET_PLATFORM_RUNTIME',robloxFailureSignature:failure,routingBlockers:[`roblox-runtime:${r?.failure||'result-missing'}`],updatedAt:stamp});fail++;
-            }
-          }
-          queue.updatedAt=stamp;fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
-          console.log(`ROBLOX_ACTUAL_RUNTIME_PASS_COUNT=${pass}`);console.log(`ROBLOX_ACTUAL_RUNTIME_FAIL_COUNT=${fail}`);
-          console.log('ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO');console.log('ROBLOX_INDEPENDENT_QA_PASS=NO');console.log('ROBLOX_RELEASE_CLAIM=NO');
-          NODE
           git config user.name 'jaewoon-roblox-runtime'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          git diff --cached --check
-          if ! git diff --cached --quiet; then
+          persisted=0
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            node tools/company-development-roblox-runtime-persist.mjs development-queue.json /tmp/roblox-runtime-batch
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              persisted=1
+              break
+            fi
             git commit -m 'runtime: persist actual Roblox Studio checkpoint [skip ci]'
-            for attempt in 1 2 3; do
-              if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then break; fi
-              git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-              git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
-              sleep $((attempt*2))
-            done
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              persisted=1
+              break
+            fi
+            echo "ROBLOX_RUNTIME_PERSIST_RETRY=$attempt"
+            sleep $((attempt*2))
+          done
+          if [[ "$persisted" != '1' ]]; then
+            echo 'ROBLOX_RUNTIME_PERSIST=FAIL'
+            exit 1
           fi
+          echo 'ROBLOX_RUNTIME_PERSIST=PASS'
       - name: Dispatch next continuation slice when eligible work remains
         if: needs.runtime-plan.outputs.count != '0'
         env:
@@ -611,7 +591,7 @@ jobs:
             const retryableRuntimeFailure=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&['roblox-studio-runtime-failed','roblox-studio-runtime-timeout'].includes(item.robloxRuntimeEvidence?.failure);
             const retryableMissingEvidence=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
             const retryableAuthMigration=!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-authentication-required';
-            const runtimePending=exact&&item.robloxBuildPreflightPassed===true&&item.robloxRuntimePassed!==true&&(!item.robloxRuntimeFailedAt||retryableInstallFailure||retryableRuntimeFailure||retryableMissingEvidence||retryableAuthMigration);
+            const runtimePending=exact&&item.robloxBuildPreflightPassed===true&&(item.robloxRuntimePassed!==true||!sameHarness)&&(!item.robloxRuntimeFailedAt||retryableInstallFailure||retryableRuntimeFailure||retryableMissingEvidence||retryableAuthMigration);
             if(preflightPending||runtimePending)n++;}
           process.stdout.write(String(n));
           NODE

@@ -6,6 +6,7 @@ import {inspectRobloxBuildPreflight} from '../tools/company-development-roblox-b
 const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
 const parentWorkflow=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
 const smoke=fs.readFileSync(new URL('../tools/company-development-roblox-runtime-smoke.luau',import.meta.url),'utf8');
+const persistHelper=fs.readFileSync(new URL('../tools/company-development-roblox-runtime-persist.mjs',import.meta.url),'utf8');
 const directive=JSON.parse(fs.readFileSync(new URL('../company-directive.json',import.meta.url),'utf8'));
 
 test('continuation is a single explicit post-package edge, not a second source/package pipeline',()=>{
@@ -44,7 +45,7 @@ test('five-lead preflight requires an exact immutable build before runtime',()=>
 });
 
 test('runtime uses authenticated self-hosted Windows and the original package identity for an actual Roblox Studio multiplayer session',()=>{
-  assert.ok(workflow.includes("ROBLOX_RUNTIME_HARNESS_VERSION: '7'"));
+  assert.ok(workflow.includes("ROBLOX_RUNTIME_HARNESS_VERSION: '8'"));
   assert.ok(workflow.includes('runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]'));
   assert.ok(!workflow.includes('runs-on: windows-latest'));
   assert.ok(workflow.includes('ROBLOX_RUNTIME_LOCAL_WIP_MAX=1'));
@@ -81,7 +82,12 @@ test('runtime uses authenticated self-hosted Windows and the original package id
   assert.ok(smoke.includes('StudioTestService:ExecuteMultiplayerTestAsync(1'));
   assert.ok(smoke.includes('task.delay(90'));
   assert.ok(smoke.includes('RemoteEvent'));
-  assert.ok(smoke.includes('ROBLOX_SERVER_CLIENT_BOUNDARY_PASS=YES'));
+  assert.ok(smoke.includes('ROBLOX_SERVER_CLIENT_BOUNDARY_PASS" .. "=YES'));
+  assert.ok(smoke.includes('PASS:PLAYER_CHARACTER_CLIENT_SERVER_ROUNDTRIP'));
+  assert.ok(!smoke.includes('print("ROBLOX_RUNTIME_SMOKE=PASS")'));
+  assert.ok(workflow.includes("(item.robloxRuntimePassed===true&&sameHarness)"));
+  assert.ok(workflow.includes("(item.robloxRuntimePassed!==true||!sameHarness)"));
+  assert.ok(workflow.includes('company-development-roblox-runtime-persist.mjs'));
 });
 
 test('continuation self-dispatch does not duplicate an active sibling run',()=>{
@@ -91,18 +97,20 @@ test('continuation self-dispatch does not duplicate an active sibling run',()=>{
 });
 
 test('runtime checkpoint persistence survives merged artifact directory layouts',()=>{
-  assert.ok(workflow.includes("const root='/tmp/roblox-runtime-batch'"));
-  assert.ok(workflow.includes("entry.name.endsWith('.runtime.json')"));
-  assert.ok(workflow.includes('ROBLOX_RUNTIME_CHECKPOINT_FILES='));
-  assert.ok(!workflow.includes("const dir='/tmp/roblox-runtime-batch/results';const results=[];"));
+  assert.ok(workflow.includes('company-development-roblox-runtime-persist.mjs'));
+  assert.ok(persistHelper.includes("const root=process.argv[3]||'/tmp/roblox-runtime-batch'"));
+  assert.ok(persistHelper.includes("entry.name.endsWith('.runtime.json')"));
+  assert.ok(persistHelper.includes('walk(full)'));
+  assert.ok(persistHelper.includes('ROBLOX_RUNTIME_CHECKPOINT_FILES='));
+  assert.ok(!persistHelper.includes("const dir='/tmp/roblox-runtime-batch/results';const results=[];"));
 });
 
 test('runtime success does not invent later QA, datastore, regression, final review, or release evidence',()=>{
-  assert.ok(workflow.includes("robloxLastSuccessfulStage:'TARGET_PLATFORM_RUNTIME'"));
-  assert.ok(workflow.includes("robloxFailureStage:'INDEPENDENT_QA'"));
-  assert.ok(workflow.includes('ROBLOX_INDEPENDENT_QA_PASS=NO'));
-  assert.ok(workflow.includes('ROBLOX_REGRESSION_PASS=NO'));
-  assert.ok(workflow.includes('ROBLOX_FINAL_REVIEW_PASS=NO'));
-  assert.ok(workflow.includes('ROBLOX_RELEASE_CLAIM=NO'));
-  assert.ok(workflow.includes("datastoreRejoinPassed=(-not $saveRequired)"));
+  assert.ok(persistHelper.includes("robloxLastSuccessfulStage:'TARGET_PLATFORM_RUNTIME'"));
+  assert.ok(persistHelper.includes("robloxFailureStage:'INDEPENDENT_QA'"));
+  assert.ok(persistHelper.includes('ROBLOX_INDEPENDENT_QA_PASS=NO'));
+  assert.ok(persistHelper.includes('ROBLOX_REGRESSION_PASS=NO'));
+  assert.ok(persistHelper.includes('ROBLOX_FINAL_REVIEW_PASS=NO'));
+  assert.ok(persistHelper.includes('ROBLOX_RELEASE_CLAIM=NO'));
+  assert.ok(persistHelper.includes('robloxDatastoreRejoinPassed:r.datastoreRejoinPassed===true'));
 });
