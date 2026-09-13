@@ -511,9 +511,11 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:51:39.065Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-runtime:roblox-studio-runtime-timeout"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:42:47.766Z",
-      "updatedAt": "2026-09-13T11:57:33.322Z",
+      "updatedAt": "2026-09-13T11:58:59.855Z",
       "webValidationEvidencePath": "design/seed-roblox-survival-horror-es-doors/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -607,12 +609,12 @@
         "blockers": [],
         "authority": "roblox-five-distinct-lead-build-preflight"
       },
-      "robloxRuntimeFailedAt": "2026-09-13T11:52:04.669Z",
+      "robloxRuntimeFailedAt": "2026-09-13T11:58:59.855Z",
       "robloxRuntimeEvidence": {
         "version": 3,
         "gameId": "seed-roblox-survival-horror-es-doors",
         "platform": "ROBLOX",
-        "checkedAt": "2026-09-13T11:51:52.7934241Z",
+        "checkedAt": "2026-09-13T11:58:46.9508060Z",
         "sourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
         "artifactIdentity": "sha256:db36cbe655261718e105e90b87533121727a13016e25fcaf547c2535b4b74633",
         "artifactRunId": 34741421968,
@@ -636,7 +638,7 @@
         "failure": "roblox-studio-runtime-timeout",
         "authority": "roblox-actual-studio-runtime-evidence"
       },
-      "robloxRuntimeRetryCount": 2,
+      "robloxRuntimeRetryCount": 3,
       "robloxRuntimeHarnessVersion": "4"
     },
     {
@@ -660,9 +662,11 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:52:23.160Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-runtime:roblox-studio-runtime-timeout"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:44:40.788Z",
-      "updatedAt": "2026-09-13T11:57:33.322Z",
+      "updatedAt": "2026-09-13T11:58:59.855Z",
       "webValidationEvidencePath": "design/seed-roblox-obby-party-minigam-tower-of-hell/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -756,12 +760,12 @@
         "blockers": [],
         "authority": "roblox-five-distinct-lead-build-preflight"
       },
-      "robloxRuntimeFailedAt": "2026-09-13T11:52:04.669Z",
+      "robloxRuntimeFailedAt": "2026-09-13T11:58:59.855Z",
       "robloxRuntimeEvidence": {
         "version": 3,
         "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
         "platform": "ROBLOX",
-        "checkedAt": "2026-09-13T11:51:43.5874532Z",
+        "checkedAt": "2026-09-13T11:57:32.9804177Z",
         "sourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
         "artifactIdentity": "sha256:2e9e1992e4ade0f9ed3accb210671610b786c6a324f59ae29dbcf7b4370a698d",
         "artifactRunId": 34741421968,
@@ -776,16 +780,16 @@
         "multiplayerApplicable": false,
         "multiplayerQaPassed": false,
         "studioPackageIdentifier": "Roblox.RobloxStudio",
-        "studioInstallerSha256": "sha256:14e3e506d5cccc03eeb3ae006f2d55611fb0af64ac8d176dd23d8a3966099b74",
+        "studioInstallerSha256": "sha256:653b5ff08c0c890e103e31f53fcf6b9cfbbf462fc4481a62ffc84cf4f0c562dd",
         "studioFileVersion": "0, 738, 0, 7381393",
         "runtimeOutputFileExists": false,
         "runtimeStdoutBytes": 0,
         "runtimeStderrBytes": 0,
-        "nativeStudioLogCount": 4,
+        "nativeStudioLogCount": 3,
         "failure": "roblox-studio-runtime-timeout",
         "authority": "roblox-actual-studio-runtime-evidence"
       },
-      "robloxRuntimeRetryCount": 2,
+      "robloxRuntimeRetryCount": 3,
       "robloxRuntimeHarnessVersion": "4"
     },
     {
@@ -1128,7 +1132,7 @@
       "routeRevision": "c22be990056ccde9069fb09f732ddd91c416b29abd1a23022897630738762ded"
     }
   ],
-  "updatedAt": "2026-09-13T11:57:33.453Z",
+  "updatedAt": "2026-09-13T11:58:59.855Z",
   "routerContractVersion": 2,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
