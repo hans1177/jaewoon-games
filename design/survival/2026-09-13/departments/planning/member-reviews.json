@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "survival"
+          "gameName: 나의 생존기, status: ACTIVE, generation: OWNER_REDESIGN_RESET, ownerResetRevision: OWNER-RESET-20260913-1, GAME_CATEGORY: ACT"
         ],
         "fix": [
-          "survival"
+          "keep"
         ],
         "add": [
-          "survival"
+          "gameId: survival, gameName: 나의 생존기, status: ACTIVE, generation: OWNER_REDESIGN_RESET"
         ],
         "risks": [
-          "survival"
+          "keep"
         ],
         "evidence": [
-          "survival"
+          "keep"
         ],
         "questions": [
-          "survival"
+          "keep"
         ]
       }
     },
@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "game-seed-market-evidence.json"
+          "game_seed_version=1"
         ],
         "fix": [
-          "game-seed-platform-profiles.json"
+          "seed_id=OWNER-RESET-SURVIVAL-20260913"
         ],
         "add": [
-          "game-seed-market-evidence.json"
+          "game_name=나의 생존기"
         ],
         "risks": [
-          "missingDataDoesNotRejectSeed"
+          "action_survival_roguelite"
         ],
         "evidence": [
           "Vampire Survivors"
         ],
         "questions": [
-          "Survival"
+          "What is the main goal of the game?"
         ]
       }
     },

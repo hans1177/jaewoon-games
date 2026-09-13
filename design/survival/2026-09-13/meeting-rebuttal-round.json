@@ -15,38 +15,47 @@
   "rebuttals": {
     "planning": {
       "accept": [
-        "survival"
+        "keep"
       ],
       "challenge": [
-        "survival"
+        "keep"
       ],
       "revision": [
-        "survival"
+        "keep"
       ],
-      "reason": "survival"
+      "reason": "The main points are kept as they are. The key elements are preserved for clarity and completeness."
     },
     "graphics": {
       "accept": [
-        "gemma3:1b",
-        "llama3.2:1b"
+        "fix",
+        "add",
+        "risks"
       ],
       "challenge": [
-        "survival"
+        "evidence",
+        "questions"
       ],
       "revision": [
-        "survival"
+        "keep",
+        "game-seed",
+        "survival Mechanics"
       ],
-      "reason": "gemma3:1b의 성능이 현재 요구사항에 부합하며, llama3.2:1b의 성능 개선 필요성도 확인됨. 따라서 Gemma3:1b를 우선적으로 개선하고, llama3.2:1b의 성능을 유지하여 균형을 맞추는 것을 권장합니다."
+      "reason": "Survival Mechanics"
     },
     "development": {
       "accept": [
-        "own"
+        "keep",
+        "fix",
+        "add"
       ],
       "challenge": [
-        "own"
+        "risks",
+        "evidence",
+        "questions"
       ],
       "revision": [
-        "own"
+        "OTHERS",
+        "OWN"
       ],
       "reason": "own"
     },
@@ -57,22 +66,20 @@
       "challenge": [
         "qa"
       ],
-      "revision": [
-        "qa"
-      ],
-      "reason": "qa 부서의 요구사항을 충족시키기 위한 수용입니다."
+      "revision": [],
+      "reason": "qa 부서는 모든 요청에 대해 적절한 답변을 제공하고, 다른 네 부서의 의견을 수용하고 수정하는 데 적합하다."
     },
     "balance": {
       "accept": [
-        "Survival"
+        "Survival Mechanics"
       ],
       "challenge": [
-        "Survival"
+        "Survival Mechanics"
       ],
       "revision": [
-        "Survival"
+        "Survival Mechanics"
       ],
-      "reason": "Survival"
+      "reason": "Survival Mechanics"
     }
   }
 }

@@ -12,7 +12,7 @@
   "singleAuthor": true,
   "content": {
     "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다",
-    "playerFantasy": "True",
+    "playerFantasy": "NA",
     "coreFun": "readable survival needs",
     "coreLoop": [
       "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
@@ -21,25 +21,39 @@
     ],
     "signatureSystems": [
       {
-        "name": "Survival",
-        "purpose": "Survival",
-        "playerChoice": "PlayerChoice"
+        "name": "Survival Mechanics",
+        "purpose": "Survival Mechanics",
+        "playerChoice": "Survival Mechanics"
+      },
+      {
+        "name": "Item Management",
+        "purpose": "Item Management",
+        "playerChoice": "Item Management"
+      },
+      {
+        "name": "Combat Mechanics",
+        "purpose": "Combat Mechanics",
+        "playerChoice": "Combat Mechanics"
       }
     ],
-    "progressionDirection": "Survival",
-    "visualDirection": "Survival",
-    "mobileUx": "Survival",
-    "marketTargetDirection": "Survival",
-    "steamExpansionDecision": "ReviewInDesignCycle",
-    "multiplayerExpansionDecision": "ReviewInDesignCycle",
+    "progressionDirection": "ascend",
+    "visualDirection": "ascend",
+    "mobileUx": "mobile",
+    "marketTargetDirection": " ascend",
+    "steamExpansionDecision": "review_in_design_cycle",
+    "multiplayerExpansionDecision": "review_in_design_cycle",
     "technicalAssumptions": [
-      "Survival"
+      "Survival Mechanics"
     ],
     "validationQuestions": [
-      "Survival"
+      "What is the primary goal of the game?",
+      "How does the game's survival mechanics work?",
+      "What are the key features of the game's progression direction?"
     ],
     "openQuestions": [
-      "Survival"
+      "What are the player's choices in the game?",
+      "How does the game's combat mechanics work?",
+      "What are the game's key features and mechanics?"
     ]
   }
 }

@@ -22,45 +22,42 @@
   "representatives": {
     "planning": {
       "keep": [
-        "survival"
+        "gameName: 나의 생존기, status: ACTIVE, generation: OWNER_REDESIGN_RESET, ownerResetRevision: OWNER-RESET-20260913-1, GAME_CATEGORY: ACT"
       ],
       "fix": [
-        "survival"
+        "keep"
       ],
       "add": [
-        "survival"
+        "gameId: survival, gameName: 나의 생존기, status: ACTIVE, generation: OWNER_REDESIGN_RESET"
       ],
       "risks": [
-        "survival"
+        "keep"
       ],
       "evidence": [
-        "survival"
+        "keep"
       ],
       "questions": [
-        "survival"
+        "keep"
       ]
     },
     "graphics": {
       "keep": [
-        "gemma3:1b",
-        "llama3.2:1b"
+        "visual_style=readable survival needs"
       ],
       "fix": [
-        "gemma3:1b",
-        "llama3.2:1b"
+        "resource_to_crafting decisions"
       ],
       "add": [
-        "gemma3:1b",
-        "llama3.2:1b"
+        "exploration risk and recovery"
       ],
       "risks": [
-        "missingDataDoesNotRejectSeed"
+        "exploration risk and recovery"
       ],
       "evidence": [
-        "Vampire Survivors"
+        "Survivor.io"
       ],
       "questions": [
-        "survival"
+        "How does the game's exploration work?"
       ]
     },
     "development": {
@@ -105,22 +102,22 @@
     },
     "balance": {
       "keep": [
-        "Survival"
+        "Survival Mechanics"
       ],
       "fix": [
-        "Survival"
+        "Survival Mechanics"
       ],
       "add": [
-        "Survival"
+        "Survival Mechanics"
       ],
       "risks": [
-        "Survival"
+        "Survival Mechanics"
       ],
       "evidence": [
-        "Survival"
+        "Survival Mechanics"
       ],
       "questions": [
-        "Survival"
+        "Survival Mechanics"
       ]
     }
   },
@@ -131,46 +128,41 @@
     {
       "topic": "planning",
       "status": "CONSENSUS",
-      "reason": "survival",
+      "reason": "The main points are kept as they are. The key elements are preserved for clarity and completeness.",
       "departments": [
-        "survival"
+        "planning",
+        "graphics",
+        "development",
+        "qa"
       ]
     },
     {
       "topic": "graphics",
       "status": "CONSENSUS",
-      "reason": "survival",
+      "reason": "Survival Mechanics",
       "departments": [
-        "survival"
+        "graphics"
       ]
     },
     {
       "topic": "development",
       "status": "CONSENSUS",
-      "reason": "survival",
+      "reason": "Survival Mechanics",
       "departments": [
-        "survival"
+        "development"
       ]
     },
     {
       "topic": "qa",
       "status": "CONSENSUS",
-      "reason": "survival",
+      "reason": "qa 부서는 모든 요청에 대해 적절한 답변을 제공하고, 다른 네 부서의 의견을 수용하고 수정하는 데 적합하다.",
       "departments": [
-        "survival"
-      ]
-    },
-    {
-      "topic": "balance",
-      "status": "CONSENSUS",
-      "reason": "survival",
-      "departments": [
-        "survival"
+        "qa"
       ]
     }
   ],
   "counts": {
-    "consensus": 5,
+    "consensus": 4,
     "conflict": 0,
     "hold": 0
   }
