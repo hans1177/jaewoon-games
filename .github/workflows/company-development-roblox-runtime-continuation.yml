@@ -264,7 +264,8 @@ jobs:
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
             const retryableInstallFailure=item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed';
-            if(item.robloxBuildPreflightPassed!==true||item.robloxRuntimePassed===true||(item.robloxRuntimeFailedAt&&!retryableInstallFailure))continue;
+            const retryableMissingEvidence=item.robloxRuntimePassed!==true&&Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
+            if(item.robloxBuildPreflightPassed!==true||item.robloxRuntimePassed===true||(item.robloxRuntimeFailedAt&&!retryableInstallFailure&&!retryableMissingEvidence))continue;
             const revision=String(item.robloxSourceCommit||'').trim();
             const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
             if(item.robloxBuildSourceRevision!==revision||!artifact.startsWith('sha256:'))continue;
@@ -344,7 +345,20 @@ jobs:
           $deadline = (Get-Date).AddMinutes(8)
           $studio = $null
           while ((Get-Date) -lt $deadline) {
-            $studio = Get-ChildItem -Path "$env:LOCALAPPDATA\Roblox\Versions" -Recurse -File -Filter RobloxStudioBeta.exe -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+            $runningStudio = Get-Process -Name RobloxStudioBeta -ErrorAction SilentlyContinue | Where-Object { $_.Path -and (Test-Path $_.Path) } | Sort-Object StartTime -Descending | Select-Object -First 1
+            if ($runningStudio) {
+              $studio = Get-Item $runningStudio.Path
+              break
+            }
+            $roots = @(
+              "$env:LOCALAPPDATA\Roblox\Versions",
+              "$env:PROGRAMFILES\Roblox\Versions",
+              "${env:ProgramFiles(x86)}\Roblox\Versions"
+            ) | Where-Object { $_ -and (Test-Path $_) }
+            foreach ($root in $roots) {
+              $studio = Get-ChildItem -Path $root -Recurse -File -Filter RobloxStudioBeta.exe -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+              if ($studio) { break }
+            }
             if ($studio) { break }
             if ($p.HasExited -and $p.ExitCode -ne 0) { throw "Roblox Studio installer exited $($p.ExitCode) before Studio was installed" }
             Start-Sleep -Seconds 5
@@ -353,11 +367,15 @@ jobs:
             if (-not $p.HasExited) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }
             throw 'RobloxStudioBeta.exe not found before installation deadline'
           }
+          Get-Process -Name RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+          $installerExitDeadline = (Get-Date).AddSeconds(30)
+          while (-not $p.HasExited -and (Get-Date) -lt $installerExitDeadline) { Start-Sleep -Seconds 1 }
           if (-not $p.HasExited) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }
           "studio_exe=$($studio.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           "installer_sha256=$installerSha" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           Write-Host 'ROBLOX_STUDIO_INSTALL=PASS'
           Write-Host "ROBLOX_STUDIO_PACKAGE_ID=$packageId"
+          Write-Host "ROBLOX_STUDIO_EXE=$($studio.FullName)"
           Write-Host "ROBLOX_STUDIO_INSTALLER_SHA256=$installerSha"
       - name: Run actual one-server one-client Studio session
         id: runtime
@@ -481,8 +499,12 @@ jobs:
           const fs=require('fs'),path=require('path');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
           const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
-          const dir='/tmp/roblox-runtime-batch/results';const results=[];
-          if(fs.existsSync(dir))for(const name of fs.readdirSync(dir).filter(x=>x.endsWith('.runtime.json')).sort())results.push(JSON.parse(fs.readFileSync(path.join(dir,name),'utf8').replace(/^\uFEFF/,'')));
+          const root='/tmp/roblox-runtime-batch';
+          const resultFiles=[];
+          const walk=dir=>{for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const full=path.join(dir,entry.name);if(entry.isDirectory())walk(full);else if(entry.isFile()&&entry.name.endsWith('.runtime.json'))resultFiles.push(full);}};
+          if(fs.existsSync(root))walk(root);
+          const results=resultFiles.sort().map(file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'')));
+          console.log(`ROBLOX_RUNTIME_CHECKPOINT_FILES=${resultFiles.length}`);
           const byId=new Map(results.map(x=>[x.gameId,x]));const stamp=new Date().toISOString();let pass=0,fail=0;
           for(const target of expected){
             const item=(queue.items||[]).find(x=>x.gameId===target.gameId);if(!item)throw new Error(`queue item missing: ${target.gameId}`);
@@ -528,7 +550,9 @@ jobs:
           for(const item of q.items||[]){if(current.has(item.gameId))continue;if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
             const rev=String(item.robloxSourceCommit||'');const exact=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===rev&&String(item.robloxBuildArtifactIdentity||'').startsWith('sha256:');
             const preflightPending=exact&&item.robloxBuildPreflightPassed!==true&&!item.robloxBuildPreflightFailedAt;
-            const runtimePending=exact&&item.robloxBuildPreflightPassed===true&&item.robloxRuntimePassed!==true&&!item.robloxRuntimeFailedAt;
+            const retryableInstallFailure=item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed';
+            const retryableMissingEvidence=item.robloxRuntimePassed!==true&&Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
+            const runtimePending=exact&&item.robloxBuildPreflightPassed===true&&item.robloxRuntimePassed!==true&&(!item.robloxRuntimeFailedAt||retryableInstallFailure||retryableMissingEvidence);
             if(preflightPending||runtimePending)n++;}
           process.stdout.write(String(n));
           NODE
