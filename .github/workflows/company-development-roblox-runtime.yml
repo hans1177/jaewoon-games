@@ -24,6 +24,8 @@ jobs:
       count: ${{ steps.targets.outputs.count }}
       matrix: ${{ steps.targets.outputs.matrix }}
       targets_json: ${{ steps.targets.outputs.targets_json }}
+      reconciliation_count: ${{ steps.reconcile.outputs.count }}
+      reconciliation_json: ${{ steps.reconcile.outputs.results_json }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,18 +40,35 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/company-development-roblox-bootstrap.mjs
+          node --check tools/company-development-roblox-source-reconcile.mjs
           node --check tools/vibe3-roblox-platform.mjs
-          node --test qa/company-development-roblox-runtime.test.mjs qa/company-selected-platform-router.test.mjs
+          node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-selected-platform-router.test.mjs
 
       - name: Fetch current company runtime
-        run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
+
+      - name: Revalidate exact-main Roblox source already merged
+        id: reconcile
+        env:
+          SOURCE_REVISION: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-development-roblox-source-reconcile.mjs \
+            --queue=/tmp/development-queue.json \
+            --runtime-ref="origin/$COMPANY_RUNTIME_BRANCH" \
+            --repo-root=. \
+            --source-revision="$SOURCE_REVISION" \
+            --results=/tmp/roblox-source-reconciliation.json
 
       - name: Resolve up to two Web-validated Roblox source targets
         id: targets
         shell: bash
         run: |
           set -euo pipefail
-          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
@@ -132,7 +151,7 @@ jobs:
             --artbook="$artbook" \
             --output-root="$TARGET_SOURCE" \
             --evidence="$evidence"
-          node --test qa/company-development-roblox-runtime.test.mjs
+          node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs
           git diff --check
           git add "$TARGET_SOURCE"
           git diff --cached --quiet && { echo "no Roblox source change: $GAME_ID" >&2; exit 1; }
@@ -218,9 +237,10 @@ jobs:
         run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
 
       - name: Persist Roblox source-bind state to company runtime
-        if: needs.source-plan.outputs.count != '0'
+        if: needs.source-plan.outputs.count != '0' || needs.source-plan.outputs.reconciliation_count != '0'
         env:
           EXPECTED_TARGETS_JSON: ${{ needs.source-plan.outputs.targets_json }}
+          RECONCILIATION_RESULTS_JSON: ${{ needs.source-plan.outputs.reconciliation_json }}
         shell: bash
         run: |
           set -euo pipefail
@@ -230,6 +250,7 @@ jobs:
           const path=require('path');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
           const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
+          const reconciliation=JSON.parse(process.env.RECONCILIATION_RESULTS_JSON||'[]');
           const resultDir='/tmp/roblox-batch/results';
           const results=[];
           if(fs.existsSync(resultDir)){
@@ -242,6 +263,28 @@ jobs:
             if(!byId.has(target.gameId))results.push({gameId:target.gameId,pass:false,sourcePath:target.target,failure:'worker-result-missing'});
           }
           const stamp=new Date().toISOString();
+          let reconciliationPass=0,reconciliationFail=0;
+          for(const result of reconciliation){
+            const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
+            if(!item)throw new Error(`queue item missing during reconciliation: ${result.gameId}`);
+            if(result.pass===true){
+              Object.assign(item,{
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
+                selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',sourcePath:result.sourcePath,targetSourcePath:result.sourcePath,
+                robloxProjectPath:result.sourcePath,robloxSourceCommit:result.sourceRevision,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
+                robloxRuntimePassed:false,routingBlockers:['roblox-runtime-evidence-pending'],updatedAt:stamp,
+              });
+              reconciliationPass++;
+            }else{
+              const detail=Array.isArray(result.blockers)&&result.blockers.length?`:${result.blockers.join('|')}`:'';
+              Object.assign(item,{
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_REVALIDATION',
+                selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxSourceBootstrapFailedAt:stamp,
+                robloxRuntimePassed:false,routingBlockers:[`roblox-source-bootstrap:${result.failure||'existing-source-revalidation-failed'}${detail}`],updatedAt:stamp,
+              });
+              reconciliationFail++;
+            }
+          }
           let passCount=0,failCount=0;
           for(const result of results){
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
@@ -266,6 +309,8 @@ jobs:
           queue.robloxSourceParallelism=2;
           queue.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          console.log(`ROBLOX_SOURCE_RECONCILIATION_PASS=${reconciliationPass}`);
+          console.log(`ROBLOX_SOURCE_RECONCILIATION_FAIL=${reconciliationFail}`);
           console.log(`ROBLOX_SOURCE_PASS_COUNT=${passCount}`);
           console.log(`ROBLOX_SOURCE_FAIL_COUNT=${failCount}`);
           console.log('ROBLOX_PARALLEL_ACTIVE_MAX=2');
@@ -275,7 +320,7 @@ jobs:
           git add development-queue.json
           git diff --cached --check
           if ! git diff --cached --quiet; then
-            git commit -m 'runtime: bind parallel Roblox DEVELOPMENT source [skip ci]'
+            git commit -m 'runtime: reconcile and bind Roblox DEVELOPMENT source [skip ci]'
             git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
           fi
           echo 'ROBLOX_SOURCE_BIND_PERSIST=PASS'
@@ -328,8 +373,11 @@ jobs:
 
       - name: Empty queue summary
         if: needs.source-plan.outputs.count == '0'
+        env:
+          RECONCILIATION_COUNT: ${{ needs.source-plan.outputs.reconciliation_count }}
         run: |
           echo 'ROBLOX_SOURCE_TARGETS=NONE'
+          echo "ROBLOX_SOURCE_RECONCILIATION_COUNT=$RECONCILIATION_COUNT"
           echo 'ROBLOX_PARALLEL_ACTIVE_MAX=2'
           echo 'ROBLOX_RUNTIME_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
