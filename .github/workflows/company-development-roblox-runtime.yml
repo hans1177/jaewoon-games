@@ -104,7 +104,6 @@ jobs:
 
       - name: Compile isolated Roblox source candidate
         id: generate
-        continue-on-error: true
         env:
           GAME_ID: ${{ matrix.gameId }}
           GAME_NAME: ${{ matrix.gameName }}
@@ -147,7 +146,6 @@ jobs:
       - name: Merge validated Roblox source candidate through PR
         id: merge
         if: steps.generate.outcome == 'success'
-        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ matrix.gameId }}
@@ -284,8 +282,15 @@ jobs:
           echo 'ROBLOX_RUNTIME_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
 
+      - name: Stop batch chaining when current Roblox source work failed
+        if: needs.source-plan.outputs.count != '0' && needs.source-worker.result != 'success'
+        run: |
+          echo 'ROBLOX_NEXT_BATCH_DISPATCH=NO'
+          echo 'ROBLOX_NEXT_BATCH_BLOCKER=CURRENT_SOURCE_BATCH_FAILED'
+          echo 'ROBLOX_RECURSIVE_RETRY_LOOP=BLOCKED'
+
       - name: Dispatch next Roblox source batch when other eligible work remains
-        if: needs.source-plan.outputs.count != '0'
+        if: needs.source-plan.outputs.count != '0' && needs.source-worker.result == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           CURRENT_TARGETS_JSON: ${{ needs.source-plan.outputs.targets_json }}
