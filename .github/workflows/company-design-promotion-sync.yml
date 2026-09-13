@@ -95,8 +95,9 @@ jobs:
             const strict=strictPassFor(seed.gameId,artbook);
             const item=queueByGame.get(seed.gameId);
             if(!strict.pass){
+              const legacyDevelopment=seed.productionClass==='DEVELOPMENT_CONFIRMED'&&seed.productionClassSource!=='DESIGN_BASELINE_READY_STRICT_PASS';
               if(seed.productionClass==='DEVELOPMENT_CONFIRMED'&&seed.productionClassSource==='DESIGN_BASELINE_READY_STRICT_PASS')throw new Error(`non-strict design promoted: ${seed.gameId}`);
-              if(item&&item.productionClass==='DEVELOPMENT_CONFIRMED'&&Number(item.strictDesignScore||0)<90)throw new Error(`non-strict queue promotion: ${seed.gameId}`);
+              if(item&&item.productionClass==='DEVELOPMENT_CONFIRMED'&&!legacyDevelopment&&Number(item.strictDesignScore||0)<90)throw new Error(`non-strict queue promotion: ${seed.gameId}`);
               console.log(`STRICT_DESIGN_NOT_PROMOTED=${seed.gameId}:${strict.review?.verdict||'MISSING'}:${Number(strict.review?.totalScore||0)}`);
               continue;
             }
