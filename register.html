@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#242424">
+<title>재운컴퍼니 · 기기 등록</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;min-height:100%;background:#242424;color:#deddd8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",system-ui,sans-serif}body{min-height:100dvh;display:grid;place-items:center;padding:22px}.card{width:min(100%,520px);padding:22px;border:1px solid #484846;border-radius:20px;background:#2d2d2c;box-shadow:0 14px 40px #0005}.eyebrow{font-size:12px;font-weight:800;color:#aaa9a4}.card h1{margin:6px 0 8px;font-size:23px}.card p{margin:0;color:#aaa9a4;font-size:15px;line-height:1.6}.state{margin-top:18px;padding:14px;border-radius:14px;background:#242424;font-size:15px;line-height:1.55}.state.ok{color:#b8e8c8}.state.bad{color:#f2beb8}.btn{display:none;width:100%;min-height:50px;margin-top:12px;border:0;border-radius:14px;background:#e4e3df;color:#171717;font:700 15px inherit}.btn.show{display:block}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="eyebrow">JAEWOON COMPANY</div>
+  <h1>기기 등록</h1>
+  <p>이 페이지에서 기기를 등록한 뒤 재운컴퍼니 채팅으로 자동 이동해.</p>
+  <div id="state" class="state">등록 준비 중…</div>
+  <button id="retry" class="btn" type="button">다시 등록</button>
+</main>
+<script>
+const API='https://njpexgqvituaxrjpnqsi.supabase.co/functions/v1/company-command';
+const API_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
+const TOKEN_KEY='jaewoon_command_device_v1';
+const state=document.getElementById('state'),retry=document.getElementById('retry');
+function codeFromHash(){const raw=location.hash.startsWith('#')?location.hash.slice(1):location.hash;const p=new URLSearchParams(raw);return (p.get('code')||'').trim();}
+const bootstrapCode=codeFromHash();
+if(location.hash)history.replaceState(null,'',location.pathname+location.search);
+function setState(text,type=''){state.textContent=text;state.className='state'+(type?' '+type:'');}
+async function register(){
+  retry.classList.remove('show');
+  if(localStorage.getItem(TOKEN_KEY)){setState('이미 등록된 기기야. 채팅으로 이동 중…','ok');setTimeout(()=>location.replace('/command.html'),250);return;}
+  if(!bootstrapCode){setState('등록코드가 링크에 없어. 새 등록 링크를 사용해.','bad');return;}
+  setState('기기 등록 중…');
+  try{
+    const response=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json','apikey':API_KEY},body:JSON.stringify({action:'claim',code:bootstrapCode,label:navigator.userAgent.slice(0,60)}),cache:'no-store'});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok||!data.token)throw new Error(data.error||`HTTP_${response.status}`);
+    localStorage.setItem(TOKEN_KEY,data.token);
+    setState('등록 완료. 채팅으로 이동 중…','ok');
+    setTimeout(()=>location.replace('/command.html'),350);
+  }catch(error){setState(`등록 실패: ${error.message}`,'bad');retry.classList.add('show');}
+}
+retry.addEventListener('click',register);
+register();
+</script>
+</body>
+</html>
