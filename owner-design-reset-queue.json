@@ -1,7 +1,7 @@
 {
   "version": 1,
   "policyDocument": "COMPANY_FLOW.md",
-  "ownerDirective": "Remove existing artbook and Web game outputs, then rebuild design -> artbook -> Web through the existing canonical production pipeline.",
+  "ownerDirective": "For games missing the Web game output: run design first, create the artbook from that design, then build the Web game through the existing canonical production pipeline. Reuse already valid stages and do not create a separate runner or parallel pipeline.",
   "requestedAt": "2026-09-13T00:30:00Z",
   "requests": [
     {
