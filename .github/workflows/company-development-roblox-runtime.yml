@@ -755,7 +755,7 @@ jobs:
           state="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-dispatch-queue.json','utf8'));
-          let packagePending=0,preflightReady=0;
+          let packagePending=0,preflightReady=0,runtimeReady=0;
           for(const item of q.items||[]){
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
@@ -763,7 +763,13 @@ jobs:
             const revision=String(item.robloxSourceCommit||'').trim();
             const exactBuild=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&String(item.robloxBuildArtifactIdentity||'').startsWith('sha256:');
             if(exactBuild){
-              if(item.robloxBuildPreflightPassed!==true&&!item.robloxBuildPreflightFailedAt)preflightReady++;
+              if(item.robloxBuildPreflightPassed!==true&&!item.robloxBuildPreflightFailedAt){
+                preflightReady++;
+              }else if(item.robloxBuildPreflightPassed===true&&item.robloxRuntimePassed!==true){
+                const retryableInstallFailure=item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed';
+                const retryableMissingEvidence=Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
+                if(!item.robloxRuntimeFailedAt||retryableInstallFailure||retryableMissingEvidence)runtimeReady++;
+              }
               continue;
             }
             if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
@@ -772,13 +778,14 @@ jobs:
             if(Boolean(item.robloxBuildFailedAt)&&!orchestrationMissing)continue;
             packagePending++;
           }
-          process.stdout.write(`${packagePending} ${preflightReady}`);
+          process.stdout.write(`${packagePending} ${preflightReady} ${runtimeReady}`);
           NODE
           )"
-          read -r package_pending preflight_ready <<<"$state"
+          read -r package_pending preflight_ready runtime_ready <<<"$state"
           echo "ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION=$package_pending"
           echo "ROBLOX_PREFLIGHT_READY_COUNT=$preflight_ready"
-          if [[ "$package_pending" == '0' && "$preflight_ready" =~ ^[1-9][0-9]*$ ]]; then
+          echo "ROBLOX_RUNTIME_READY_COUNT=$runtime_ready"
+          if [[ "$package_pending" == '0' && ( "$preflight_ready" =~ ^[1-9][0-9]*$ || "$runtime_ready" =~ ^[1-9][0-9]*$ ) ]]; then
             gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main
             echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'
           else
