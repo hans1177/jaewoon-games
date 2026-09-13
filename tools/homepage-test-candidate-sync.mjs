@@ -12,9 +12,11 @@ const showText=file=>execFileSync('git',['show',`${runtimeRef}:${file}`],{encodi
 const showJson=(file,fallback=null)=>{try{return JSON.parse(showText(file));}catch{return fallback;}};
 const existsRuntime=file=>{try{execFileSync('git',['cat-file','-e',`${runtimeRef}:${file}`],{stdio:'ignore'});return true;}catch{return false;}};
 const checkoutRuntime=file=>execFileSync('git',['checkout',runtimeRef,'--',file],{stdio:'inherit'});
-const scoreOf=evidence=>Number(evidence?.strictReview?.totalScore);
+const scoreOf=evidence=>Number(evidence?.webStrictScore??evidence?.strictReview?.totalScore);
 const homepagePass=evidence=>evidence?.homepageTestEligible===true&&Number.isFinite(scoreOf(evidence))&&scoreOf(evidence)>=minimumScore&&Array.isArray(evidence?.strictReview?.hardFailures)&&evidence.strictReview.hardFailures.length===0;
 
+const previousManifest=readJson(manifestFile,{candidates:[]});
+const previousRank=new Map((previousManifest.candidates||[]).map((row,index)=>[clean(row.gameId||row.id),index]));
 const queue=showJson('development-queue.json',{items:[]});
 const runtimeCatalog=showJson('game-catalog.json',{games:[]});
 const catalogById=new Map((runtimeCatalog.games||[]).map(game=>[clean(game.id),game]));
@@ -34,6 +36,7 @@ for(const item of queue.items||[]){
     gameId,
     name:clean(game.name||item.gameName||gameId),
     score:scoreOf(evidence),
+    webStrictScore:scoreOf(evidence),
     strictScore:scoreOf(evidence),
     reviewScore:scoreOf(evidence),
     homepageReviewState:'TEST',
@@ -46,6 +49,10 @@ for(const item of queue.items||[]){
     artbookPath:`/artbook-viewer.html?game=${encodeURIComponent(gameId)}`,
     artbookSource,
     evidencePath,
+    validationSchemaVersion:Number(evidence?.validationSchemaVersion||evidence?.version||0)||null,
+    sourceIndexSha256:clean(evidence?.sourceIndexSha256)||null,
+    designBaselineSha256:clean(evidence?.designBaselineSha256)||null,
+    promotionRevalidationPassed:evidence?.promotionRevalidation?.pass===true,
     strictReviewVerdict:clean(evidence?.strictReview?.verdict||''),
     homepageTestVerdict:'PASS',
     formalImplementationPassed:evidence?.formalImplementationPassed===true,
@@ -53,8 +60,19 @@ for(const item of queue.items||[]){
     validatedAt:evidence.checkedAt||item.webValidationPassedAt,
   });
 }
-candidates.sort((a,b)=>b.score-a.score||String(b.validatedAt||'').localeCompare(String(a.validatedAt||''))||a.id.localeCompare(b.id));
+
+// 점수 우선. 동점에서는 기존 Top30을 먼저 유지해 같은 점수 신규 후보가 30위 자리를 불필요하게 흔들지 않는다.
+candidates.sort((a,b)=>{
+  if(b.score!==a.score)return b.score-a.score;
+  const ar=previousRank.has(a.gameId)?previousRank.get(a.gameId):Number.POSITIVE_INFINITY;
+  const br=previousRank.has(b.gameId)?previousRank.get(b.gameId):Number.POSITIVE_INFINITY;
+  if(ar!==br)return ar-br;
+  if(a.promotionRevalidationPassed!==b.promotionRevalidationPassed)return Number(b.promotionRevalidationPassed)-Number(a.promotionRevalidationPassed);
+  const time=String(b.validatedAt||'').localeCompare(String(a.validatedAt||''));
+  return time||a.id.localeCompare(b.id);
+});
 const selected=candidates.slice(0,limit);
+const cutlineScore=selected.length===limit?Number(selected[selected.length-1].score):null;
 
 for(const candidate of selected){
   const webDir=clean(candidate.webPath).replace(/^\/+|\/+$/g,'');
@@ -76,8 +94,11 @@ registry.updatedAt=new Date().toISOString();
 fs.writeFileSync('game-artbooks.json',JSON.stringify(registry,null,2)+'\n');
 
 const manifest={
-  version:4,updatedAt:new Date().toISOString(),policyDocument:'COMPANY_FLOW.md',officialCardRegistrationRequiresPromotionPass:true,
-  homepageTestShelf:{limit,minimumScore,order:'STRICT_IMPLEMENTATION_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresArtbook:true,hardGatesRequired:true,officialCard:false,promotionRequiredForOfficialCard:true},
+  version:5,updatedAt:new Date().toISOString(),policyDocument:'COMPANY_FLOW.md',officialCardRegistrationRequiresPromotionPass:true,
+  homepageTestShelf:{
+    limit,minimumScore,order:'STRICT_IMPLEMENTATION_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresArtbook:true,hardGatesRequired:true,officialCard:false,promotionRequiredForOfficialCard:true,
+    cutlineScore,replacementPolicy:'STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE;TIE_PRESERVES_VALID_INCUMBENT',tieBreak:['EXISTING_TOP30_RANK','PROMOTION_REVALIDATION_PASS','LATEST_VALIDATION','GAME_ID'],
+  },
   candidates:selected,
 };
 fs.writeFileSync(manifestFile,JSON.stringify(manifest,null,2)+'\n');
@@ -85,5 +106,7 @@ console.log(`HOMEPAGE_TEST_CANDIDATE_COUNT=${selected.length}`);
 console.log(`HOMEPAGE_TEST_CANDIDATE_IDS=${selected.map(x=>x.gameId).join(',')}`);
 console.log('HOMEPAGE_TEST_CANDIDATE_LIMIT=30');
 console.log('HOMEPAGE_TEST_MINIMUM_SCORE=80');
+console.log(`HOMEPAGE_TEST_CUTLINE_SCORE=${cutlineScore??'OPEN'}`);
+console.log('HOMEPAGE_TEST_REPLACEMENT=STRICTLY_HIGHER_SCORE;TIE_PRESERVES_INCUMBENT');
 console.log('HOMEPAGE_TEST_ORDER=STRICT_IMPLEMENTATION_SCORE_DESC');
 console.log('HOMEPAGE_TEST_REQUIRES=WEB+POST_WEB_ARTBOOK+80_SCORE+NO_HARD_FAILURE');
