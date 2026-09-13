@@ -1,128 +1,33 @@
 {
-  "version": 15,
-  "updatedAt": "2026-09-11",
+  "version": 16,
+  "updatedAt": "2026-09-13",
   "policy": {
     "purpose": "현재 유지 중인 게임 아트북의 공개 인덱스. 실제 본문은 artbook-submissions 원본을 읽는다.",
     "sourceOfTruth": "artbook-submissions/<gameId>/<date>/artbook.json",
     "legacyInlineCopiesRemoved": true,
     "keepHistory": true,
-    "homepageVisibilityIsProductionApproval": false
+    "homepageVisibilityIsProductionApproval": false,
+    "ownerResetRemovedGames": ["bug-defense", "insect-survival", "survival"]
   },
   "dailySubmissions": [
-    {
-      "date": "2026-09-08",
-      "gameId": "daechung-rpg",
-      "artbookId": "daechung-rpg-2026-09-08-second",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "postprocessComplete": true
-    },
-    {
-      "date": "2026-09-09",
-      "gameId": "daechung-rpg",
-      "artbookId": "daechung-rpg-2026-09-09-initial",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "postprocessComplete": true
-    },
-    {
-      "date": "2026-09-09",
-      "gameId": "insect-survival",
-      "artbookId": "insect-survival-2026-09-09-initial",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "postprocessComplete": true
-    },
-    {
-      "date": "2026-09-09",
-      "gameId": "bug-defense",
-      "artbookId": "bug-defense-2026-09-09-initial",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "postprocessComplete": true
-    },
-    {
-      "date": "2026-09-09",
-      "gameId": "monster-adventure",
-      "artbookId": "monster-adventure-2026-09-09-initial",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "postprocessComplete": true
-    },
-    {
-      "date": "2026-09-10",
-      "gameId": "survival",
-      "artbookId": "survival-2026-09-10-initial",
-      "status": "completed-artbook",
-      "productionApproval": false,
-      "postprocessComplete": true
-    }
+    {"date":"2026-09-08","gameId":"daechung-rpg","artbookId":"daechung-rpg-2026-09-08-second","status":"completed-artbook","productionApproval":false,"postprocessComplete":true},
+    {"date":"2026-09-09","gameId":"daechung-rpg","artbookId":"daechung-rpg-2026-09-09-initial","status":"completed-artbook","productionApproval":false,"postprocessComplete":true},
+    {"date":"2026-09-09","gameId":"monster-adventure","artbookId":"monster-adventure-2026-09-09-initial","status":"completed-artbook","productionApproval":false,"postprocessComplete":true},
+    {"date":"2026-09-11","gameId":"seed-action-survival-rogu-echoes-of-the-lost-star","artbookId":"seed-action-survival-rogu-echoes-of-the-lost-star-2026-09-11-core","status":"completed-artbook","productionApproval":false,"postprocessComplete":true},
+    {"date":"2026-09-11","gameId":"seed-single-defense-strat-celestial-bastion","artbookId":"seed-single-defense-strat-celestial-bastion-2026-09-11-core","status":"completed-artbook","productionApproval":false,"postprocessComplete":true},
+    {"date":"2026-09-11","gameId":"seed-puzzle-chromatic-cascade","artbookId":"seed-puzzle-chromatic-cascade-2026-09-11-core","status":"completed-artbook","productionApproval":false,"postprocessComplete":true},
+    {"date":"2026-09-11","gameId":"seed-casual-realm-weaver","artbookId":"seed-casual-realm-weaver-2026-09-11-core","status":"completed-artbook","productionApproval":false,"postprocessComplete":true},
+    {"date":"2026-09-11","gameId":"seed-idle-growth-rpg-crystal-bloom","artbookId":"seed-idle-growth-rpg-crystal-bloom-2026-09-11-core","status":"completed-artbook","productionApproval":false,"postprocessComplete":true},
+    {"date":"2026-09-11","gameId":"seed-story-complete-rpg-chronicles-of-eldoria","artbookId":"seed-story-complete-rpg-chronicles-of-eldoria-2026-09-11-core","status":"completed-artbook","productionApproval":false,"postprocessComplete":true}
   ],
   "artbooks": [
-    {
-      "id": "daechung-rpg-2026-09-09-initial",
-      "gameId": "daechung-rpg",
-      "gameName": "대충 RPG",
-      "edition": 2,
-      "status": "completed-artbook",
-      "published": true,
-      "homepageVisible": true,
-      "productionApproval": false,
-      "createdAt": "2026-09-09",
-      "cutCount": 12,
-      "sourceFile": "artbook-submissions/daechung-rpg/2026-09-09/artbook.json"
-    },
-    {
-      "id": "insect-survival-2026-09-09-initial",
-      "gameId": "insect-survival",
-      "gameName": "곤충 생존기",
-      "edition": 1,
-      "status": "completed-artbook",
-      "published": true,
-      "homepageVisible": true,
-      "productionApproval": false,
-      "createdAt": "2026-09-09",
-      "cutCount": 18,
-      "sourceFile": "artbook-submissions/insect-survival/2026-09-09/artbook.json"
-    },
-    {
-      "id": "bug-defense-2026-09-09-initial",
-      "gameId": "bug-defense",
-      "gameName": "곤충 디펜스",
-      "edition": 1,
-      "status": "completed-artbook",
-      "published": true,
-      "homepageVisible": true,
-      "productionApproval": false,
-      "createdAt": "2026-09-09",
-      "cutCount": 18,
-      "sourceFile": "artbook-submissions/bug-defense/2026-09-09/artbook.json"
-    },
-    {
-      "id": "monster-adventure-2026-09-09-initial",
-      "gameId": "monster-adventure",
-      "gameName": "몬스터 어드벤처",
-      "edition": 1,
-      "status": "completed-artbook",
-      "published": true,
-      "homepageVisible": true,
-      "productionApproval": false,
-      "createdAt": "2026-09-09",
-      "cutCount": 18,
-      "sourceFile": "artbook-submissions/monster-adventure/2026-09-09/artbook.json"
-    },
-    {
-      "id": "survival-2026-09-10-initial",
-      "gameId": "survival",
-      "gameName": "나의 생존기",
-      "edition": 1,
-      "status": "completed-artbook",
-      "published": true,
-      "homepageVisible": true,
-      "productionApproval": false,
-      "createdAt": "2026-09-10",
-      "cutCount": 18,
-      "sourceFile": "artbook-submissions/survival/2026-09-10/artbook.json"
-    }
+    {"id":"daechung-rpg-2026-09-09-initial","gameId":"daechung-rpg","gameName":"대충 RPG","edition":2,"status":"completed-artbook","published":true,"homepageVisible":true,"productionApproval":false,"createdAt":"2026-09-09","cutCount":12,"sourceFile":"artbook-submissions/daechung-rpg/2026-09-09/artbook.json"},
+    {"id":"monster-adventure-2026-09-09-initial","gameId":"monster-adventure","gameName":"몬스터 어드벤처","edition":1,"status":"completed-artbook","published":false,"homepageVisible":false,"productionApproval":false,"createdAt":"2026-09-09","cutCount":18,"sourceFile":"artbook-submissions/monster-adventure/2026-09-09/artbook.json"},
+    {"id":"seed-action-survival-rogu-echoes-of-the-lost-star-2026-09-11-core","gameId":"seed-action-survival-rogu-echoes-of-the-lost-star","gameName":"잃어버린 별의 메아리","edition":1,"status":"completed-artbook","published":true,"homepageVisible":true,"productionApproval":false,"createdAt":"2026-09-11","format":"core-strategy","sourceFile":"artbook-submissions/seed-action-survival-rogu-echoes-of-the-lost-star/current.json"},
+    {"id":"seed-single-defense-strat-celestial-bastion-2026-09-11-core","gameId":"seed-single-defense-strat-celestial-bastion","gameName":"천상의 보루","edition":1,"status":"completed-artbook","published":true,"homepageVisible":true,"productionApproval":false,"createdAt":"2026-09-11","format":"core-strategy","sourceFile":"artbook-submissions/seed-single-defense-strat-celestial-bastion/current.json"},
+    {"id":"seed-puzzle-chromatic-cascade-2026-09-11-core","gameId":"seed-puzzle-chromatic-cascade","gameName":"색채의 연쇄","edition":1,"status":"completed-artbook","published":true,"homepageVisible":true,"productionApproval":false,"createdAt":"2026-09-11","format":"core-strategy","sourceFile":"artbook-submissions/seed-puzzle-chromatic-cascade/current.json"},
+    {"id":"seed-casual-realm-weaver-2026-09-11-core","gameId":"seed-casual-realm-weaver","gameName":"세계의 직조자","edition":1,"status":"completed-artbook","published":true,"homepageVisible":true,"productionApproval":false,"createdAt":"2026-09-11","format":"core-strategy","sourceFile":"artbook-submissions/seed-casual-realm-weaver/current.json"},
+    {"id":"seed-idle-growth-rpg-crystal-bloom-2026-09-11-core","gameId":"seed-idle-growth-rpg-crystal-bloom","gameName":"수정의 개화","edition":1,"status":"completed-artbook","published":true,"homepageVisible":true,"productionApproval":false,"createdAt":"2026-09-11","format":"core-strategy","sourceFile":"artbook-submissions/seed-idle-growth-rpg-crystal-bloom/current.json"},
+    {"id":"seed-story-complete-rpg-chronicles-of-eldoria-2026-09-11-core","gameId":"seed-story-complete-rpg-chronicles-of-eldoria","gameName":"엘도리아 연대기","edition":1,"status":"completed-artbook","published":true,"homepageVisible":true,"productionApproval":false,"createdAt":"2026-09-11","format":"core-strategy","sourceFile":"artbook-submissions/seed-story-complete-rpg-chronicles-of-eldoria/current.json"}
   ]
 }
