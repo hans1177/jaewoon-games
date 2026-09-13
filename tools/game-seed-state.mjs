@@ -24,9 +24,17 @@ export const SEED_MATERIAL_SOURCE_FAMILIES=Object.freeze([
   'FREE_ORIGINAL_IDEA'
 ]);
 export const PORTFOLIO_DEPARTMENTS=Object.freeze(['planning','graphics','development','qa','balance']);
+export const SEED_MATERIAL_DYNAMIC_SIGNALS=Object.freeze([
+  'TARGET_PLATFORM_FIT',
+  'CATEGORY_OR_GENRE_FIT',
+  'MATERIAL_COMPLEMENTARITY',
+  'VALIDATED_LEARNING_OUTCOME',
+  'TOP30_DIFFERENTIATION'
+]);
 
 const clean=v=>String(v??'').trim();
 const uniq=v=>[...new Set((Array.isArray(v)?v:[]).map(clean).filter(Boolean))];
+const norm=v=>clean(v).toLowerCase();
 export function readJson(file,fallback=null){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}}
 export function writeJson(file,value){fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');}
 function materialId(index){return `MAT-${String(index+1).padStart(3,'0')}`;}
@@ -81,6 +89,9 @@ export function normalizeSeedState(raw={}){
     materialIsGame:false,
     combineMin:2,
     combineMax:4,
+    compositionMode:'DYNAMIC_CONTEXTUAL_2_TO_4',
+    fixedCompositionCount:false,
+    dynamicSignals:[...SEED_MATERIAL_DYNAMIC_SIGNALS],
     sourceFamilies:[...SEED_MATERIAL_SOURCE_FAMILIES],
     actualGameCountUnlimited:true,
     ...state.seedMaterialPolicy,
@@ -113,16 +124,83 @@ export function ensureSeedMaterialPool(state,{timestamp=new Date().toISOString()
   return state.seedMaterials;
 }
 export function availableSeedMaterials(state){return normalizeSeedState(state).seedMaterials.filter(x=>x.status==='AVAILABLE');}
-export function composeSeedMaterials(state,{count=3,timestamp=new Date().toISOString(),learningSignals={}}={}){
+
+function activeSeed(seed){return seed&&!['DISCARDED','REMOVED'].includes(clean(seed.status).toUpperCase());}
+function materialFamilyById(state){return new Map((state.seedMaterials||[]).map(row=>[clean(row.materialId),clean(row.sourceFamily)]).filter(([id,family])=>id&&family));}
+function familyUsageForSeeds(state,seeds=[]){
+  const familyById=materialFamilyById(state);const counts=new Map();let total=0;
+  for(const seed of seeds){
+    for(const id of Array.isArray(seed?.SEED_MATERIAL_IDS)?seed.SEED_MATERIAL_IDS:[]){
+      const family=familyById.get(clean(id));if(!family)continue;
+      counts.set(family,(counts.get(family)||0)+1);total++;
+    }
+  }
+  return {counts,total};
+}
+function top30Seeds(state,top30GameIds=[]){const ids=new Set(uniq(top30GameIds));return(state.seeds||[]).filter(seed=>activeSeed(seed)&&ids.has(clean(seed.gameId)));}
+function materialTokens(row){return new Set(norm(`${row?.concept||''} ${row?.mechanic||''} ${row?.setting||''}`).split(/[^a-z0-9가-힣]+/).filter(token=>token.length>2));}
+function learningFamilies(learningSignals,key){return uniq(learningSignals?.[key]);}
+
+export function resolveSeedMaterialCompositionCount(state,{platform='',category='',top30GameIds=[],learningSignals={}}={}){
+  ensureSeedMaterialPool(state);
+  const p=normalizeSeedPlatform(platform);const c=clean(category);
+  const available=(state.seedMaterials||[]).filter(row=>row.status==='AVAILABLE');
+  const preferred=new Set(learningFamilies(learningSignals,'preferFamilies'));
+  const avoided=new Set(learningFamilies(learningSignals,'avoidFamilies'));
+  const preferredAvailableFamilies=new Set(available.filter(row=>preferred.has(row.sourceFamily)&&!avoided.has(row.sourceFamily)).map(row=>row.sourceFamily));
+  const categoryAlignedFamilies=new Set(available.filter(row=>(!c||clean(row.categoryHint)===c)&&!avoided.has(row.sourceFamily)).map(row=>row.sourceFamily));
+  const topSeeds=top30Seeds(state,top30GameIds);
+  const sameCategoryTop30=c?topSeeds.filter(seed=>clean(seed.GAME_CATEGORY)===c).length:0;
+  const samePlatformTop30=p?topSeeds.filter(seed=>seedPlatform(seed)===p).length:0;
+  const usage=familyUsageForSeeds(state,topSeeds);let maxFamilyUsage=0;
+  for(const count of usage.counts.values())maxFamilyUsage=Math.max(maxFamilyUsage,count);
+  const familyConcentration=usage.total?maxFamilyUsage/usage.total:0;
+  if(sameCategoryTop30>=3||familyConcentration>=0.34||(samePlatformTop30>=8&&categoryAlignedFamilies.size<3))return 4;
+  if(preferredAvailableFamilies.size>=2&&categoryAlignedFamilies.size>=2&&sameCategoryTop30===0&&samePlatformTop30<=4)return 2;
+  return 3;
+}
+
+export function composeSeedMaterials(state,{count=null,timestamp=new Date().toISOString(),learningSignals={},platform='',category='',top30GameIds=[]}={}){
   ensureSeedMaterialPool(state,{timestamp});
-  const n=Math.max(2,Math.min(4,Number(count)||3));
+  const explicit=Number(count);
+  const n=Number.isFinite(explicit)&&explicit>=2&&explicit<=4?Math.trunc(explicit):resolveSeedMaterialCompositionCount(state,{platform,category,top30GameIds,learningSignals});
   const available=state.seedMaterials.filter(x=>x.status==='AVAILABLE');
   if(available.length<n)throw new Error(`SEED_MATERIAL_POOL_EXHAUSTED ${available.length}/${n}`);
-  const preferred=uniq(learningSignals?.preferFamilies);
-  const avoided=uniq(learningSignals?.avoidFamilies);
-  const score=row=>preferred.includes(row.sourceFamily)?2:avoided.includes(row.sourceFamily)?-2:0;
-  const selected=[...available].sort((a,b)=>score(b)-score(a)||a.materialId.localeCompare(b.materialId)).slice(0,n);
+  const preferred=new Set(learningFamilies(learningSignals,'preferFamilies'));
+  const avoided=new Set(learningFamilies(learningSignals,'avoidFamilies'));
+  const p=normalizeSeedPlatform(platform);const c=clean(category);
+  const topSeeds=top30Seeds(state,top30GameIds);
+  const topUsage=familyUsageForSeeds(state,topSeeds);
+  const platformUsage=familyUsageForSeeds(state,(state.seeds||[]).filter(seed=>activeSeed(seed)&&(!p||seedPlatform(seed)===p)));
+  const selected=[];const selectedFamilies=new Set();const selectedTokens=new Set();
+  const baseScore=row=>{
+    let score=0;
+    if(preferred.has(row.sourceFamily))score+=4;
+    if(avoided.has(row.sourceFamily))score-=7;
+    if(c&&clean(row.categoryHint)===c)score+=3;
+    score-=(topUsage.counts.get(row.sourceFamily)||0)*1.25;
+    score-=(platformUsage.counts.get(row.sourceFamily)||0)*0.15;
+    if(clean(row.learningPreference))score+=1;
+    if(clean(row.learningAvoid))score-=1;
+    return score;
+  };
+  while(selected.length<n){
+    let best=null,bestScore=-Infinity;
+    for(const row of available){
+      if(selected.includes(row))continue;
+      const tokens=materialTokens(row);let novel=0;
+      for(const token of tokens)if(!selectedTokens.has(token))novel++;
+      const novelty=tokens.size?novel/tokens.size:0;
+      const complementarity=selectedFamilies.has(row.sourceFamily)?-2.5:2.5;
+      const score=baseScore(row)+complementarity+novelty*1.5;
+      if(score>bestScore||(score===bestScore&&clean(row.materialId)<clean(best?.materialId))){best=row;bestScore=score;}
+    }
+    if(!best)break;
+    selected.push(best);selectedFamilies.add(best.sourceFamily);for(const token of materialTokens(best))selectedTokens.add(token);
+  }
+  if(selected.length!==n)throw new Error(`SEED_MATERIAL_COMPOSITION_FAILED ${selected.length}/${n}`);
   for(const row of selected){row.status='RESERVED';row.updatedAt=timestamp;}
+  state.seedMaterialPolicy.lastComposition={count:n,platform:p||null,category:c||null,top30ReferenceCount:topSeeds.length,signals:[...SEED_MATERIAL_DYNAMIC_SIGNALS],selectedMaterialIds:selected.map(row=>row.materialId),selectedFamilies:[...selectedFamilies],updatedAt:timestamp};
   return selected;
 }
 export function consumeSeedMaterials(state,materials,{seedId,timestamp=new Date().toISOString()}={}){

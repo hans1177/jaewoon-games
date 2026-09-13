@@ -22,6 +22,7 @@ on:
       - '.github/workflows/company-game-seed-qa.yml'
       - 'qa/company-game-seed-flow.test.mjs'
       - 'qa/company-game-seed-state-file.test.mjs'
+      - 'qa/seed-material-dynamic-composition.test.mjs'
       - 'qa/autonomous-portfolio-continuation.test.mjs'
       - 'qa/artbook-production-pipeline.test.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
@@ -46,6 +47,7 @@ on:
       - '.github/workflows/company-game-seed-qa.yml'
       - 'qa/company-game-seed-flow.test.mjs'
       - 'qa/company-game-seed-state-file.test.mjs'
+      - 'qa/seed-material-dynamic-composition.test.mjs'
       - 'qa/autonomous-portfolio-continuation.test.mjs'
       - 'qa/artbook-production-pipeline.test.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
@@ -87,6 +89,7 @@ jobs:
           set -euo pipefail
           node --test qa/company-game-seed-flow.test.mjs
           node --test qa/company-game-seed-state-file.test.mjs
+          node --test qa/seed-material-dynamic-composition.test.mjs
           node --test qa/autonomous-portfolio-continuation.test.mjs
           node --test qa/artbook-production-pipeline.test.mjs
           node --test qa/company-central-policy-contract.test.mjs
