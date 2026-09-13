@@ -781,9 +781,11 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:53:06.341Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-runtime-pending"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:48:20.438Z",
-      "updatedAt": "2026-09-13T07:08:53.009Z",
+      "updatedAt": "2026-09-13T07:46:43.587Z",
       "webValidationEvidencePath": "design/seed-roblox-story-rpg-adventur-blox-fruits/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -798,15 +800,85 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "1413a7775d56902e1350909ba30cea49456b6a88",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassed": true,
       "robloxIndependentQaPassed": false,
       "robloxRegressionPassed": false,
       "robloxFinalReviewPassed": false,
-      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING",
       "robloxBuildArtifactIdentity": "sha256:cca890c53511757fda2ac9781de4c96b4b9a971ae6531a178c1c269237f509e9",
       "robloxBuildPassedAt": "2026-09-13T05:55:34.650Z",
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE"
+      "robloxLastSuccessfulStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxBuildPreflightPassedAt": "2026-09-13T07:46:43.587Z",
+      "robloxBuildPreflightFailedAt": null,
+      "robloxBuildPreflightEvidence": {
+        "version": 1,
+        "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-09-13T07:46:13.749Z",
+        "sourceRevision": "1413a7775d56902e1350909ba30cea49456b6a88",
+        "artifactIdentity": "sha256:cca890c53511757fda2ac9781de4c96b4b9a971ae6531a178c1c269237f509e9",
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "qwen3:0.6b",
+            "graphics": "gemma3:1b",
+            "development": "llama3.2:1b",
+            "qa": "qwen2.5:1.5b",
+            "balance": "smollm2:1.7b"
+          },
+          "distinctLeadCount": 5,
+          "build": {
+            "sourceRevision": "1413a7775d56902e1350909ba30cea49456b6a88",
+            "artifactIdentity": "sha256:cca890c53511757fda2ac9781de4c96b4b9a971ae6531a178c1c269237f509e9",
+            "webValidationPassed": true,
+            "musicValidationPassed": true,
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "planning",
+            "model": "qwen3:0.6b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blocker is present"
+          },
+          {
+            "role": "graphics",
+            "model": "gemma3:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": ""
+          },
+          {
+            "role": "development",
+            "model": "llama3.2:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blocker found in BUILD_EVIDENCE"
+          },
+          {
+            "role": "qa",
+            "model": "qwen2.5:1.5b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "All deterministic policy checks passed before this review."
+          },
+          {
+            "role": "balance",
+            "model": "smollm2:1.7b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "All deterministic policy checks passed before this review. Return PASS when no concrete build-stage blocker is present."
+          }
+        ],
+        "blockers": [],
+        "authority": "roblox-five-distinct-lead-build-preflight"
+      }
     },
     {
       "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
@@ -831,8 +903,10 @@
       "musicValidationPassed": true,
       "webValidationEvidencePath": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-09-13/web-gameplay-validation.json",
       "webValidationSourceRevision": "be9e5bbf86498d269c15f179776ee0573123f4c0",
-      "routingBlockers": [],
-      "updatedAt": "2026-09-13T07:08:53.009Z",
+      "routingBlockers": [
+        "roblox-runtime-pending"
+      ],
+      "updatedAt": "2026-09-13T07:46:43.587Z",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
       "routeRevision": "e7ce5305dff6ef0fffdb16fb70d413bb76de4cbd162fb82c58e42490836647cc",
       "robloxSourceCandidateBranch": null,
@@ -847,13 +921,83 @@
       "robloxBuildArtifactIdentity": "sha256:0a5312ce4b171ca4849727e9dacc47191a3388a4d4b40eb5e80ad8e4afd29493",
       "robloxBuildPassedAt": "2026-09-13T06:40:52.107Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassed": true,
       "robloxIndependentQaPassed": false,
       "robloxRegressionPassed": false,
       "robloxFinalReviewPassed": false,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING"
+      "robloxLastSuccessfulStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING",
+      "robloxBuildPreflightPassedAt": "2026-09-13T07:46:43.587Z",
+      "robloxBuildPreflightFailedAt": null,
+      "robloxBuildPreflightEvidence": {
+        "version": 1,
+        "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-09-13T07:46:29.632Z",
+        "sourceRevision": "f70c7513c9dcd1135fe2e929afb676dd8b4b3c0d",
+        "artifactIdentity": "sha256:0a5312ce4b171ca4849727e9dacc47191a3388a4d4b40eb5e80ad8e4afd29493",
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "qwen3:0.6b",
+            "graphics": "gemma3:1b",
+            "development": "llama3.2:1b",
+            "qa": "qwen2.5:1.5b",
+            "balance": "smollm2:1.7b"
+          },
+          "distinctLeadCount": 5,
+          "build": {
+            "sourceRevision": "f70c7513c9dcd1135fe2e929afb676dd8b4b3c0d",
+            "artifactIdentity": "sha256:0a5312ce4b171ca4849727e9dacc47191a3388a4d4b40eb5e80ad8e4afd29493",
+            "webValidationPassed": true,
+            "musicValidationPassed": true,
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "planning",
+            "model": "qwen3:0.6b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blocker is present."
+          },
+          {
+            "role": "graphics",
+            "model": "gemma3:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": ""
+          },
+          {
+            "role": "development",
+            "model": "llama3.2:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blockers found in BUILD_EVIDENCE"
+          },
+          {
+            "role": "qa",
+            "model": "qwen2.5:1.5b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "All deterministic policy checks passed before this review."
+          },
+          {
+            "role": "balance",
+            "model": "smollm2:1.7b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "All deterministic policy checks passed before this review. Return PASS when no concrete build-stage blocker is present."
+          }
+        ],
+        "blockers": [],
+        "authority": "roblox-five-distinct-lead-build-preflight"
+      }
     },
     {
       "gameId": "bug-defense",
@@ -912,7 +1056,7 @@
       "routeRevision": "c22be990056ccde9069fb09f732ddd91c416b29abd1a23022897630738762ded"
     }
   ],
-  "updatedAt": "2026-09-13T07:44:59.746Z",
+  "updatedAt": "2026-09-13T07:46:43.587Z",
   "routerContractVersion": 2,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
