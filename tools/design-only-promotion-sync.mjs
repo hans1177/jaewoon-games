@@ -43,7 +43,7 @@ function strictDesignPass(design){
   return {pass,review,file:design?.strictSource||null};
 }
 
-function bindRequiredWebStage(item,{gameId,targetSourcePath,stamp}){
+function bindRequiredWebStage(item,{gameId,targetSourcePath,stamp,artbookExists}){
   const webSourcePath=webSourcePathOf(gameId);
   item.webSourcePath=webSourcePath;
   item.webValidationRequired=true;
@@ -51,6 +51,15 @@ function bindRequiredWebStage(item,{gameId,targetSourcePath,stamp}){
   item.homepageTestCandidate=false;
   item.homepageTestScore=null;
   item.homepageTestVerdict='WAITING_WEB_STRICT_REVIEW';
+  item.status='ACTIVE';
+  item.sourcePath=webSourcePath;
+  if(!artbookExists){
+    item.currentStep='POST_PROMOTION_ARTBOOK_THEN_WEB_PLAYABLE_BOOTSTRAP';
+    item.canonicalState='WAITING_POST_PROMOTION_ARTBOOK';
+    item.homepageTestVerdict='WAITING_POST_PROMOTION_ARTBOOK';
+    return;
+  }
+  item.postPromotionArtbookGeneratedAt=item.postPromotionArtbookGeneratedAt||stamp;
   if(item.webValidationPassedAt&&item.musicValidationPassed===true&&item.strictImplementationVerdict==='PASS'&&Number(item.strictImplementationScore)>=WEB_PASS_THRESHOLD){
     item.sourcePath=targetSourcePath;
     item.homepageTestCandidate=true;
@@ -58,10 +67,8 @@ function bindRequiredWebStage(item,{gameId,targetSourcePath,stamp}){
     item.homepageTestVerdict='PASS';
     return;
   }
-  item.status='ACTIVE';
-  item.currentStep='POST_PROMOTION_ARTBOOK_THEN_WEB_PLAYABLE_BOOTSTRAP';
-  item.canonicalState='WAITING_POST_PROMOTION_ARTBOOK';
-  item.sourcePath=webSourcePath;
+  item.currentStep='WEB_PLAYABLE_BOOTSTRAP';
+  item.canonicalState='WAITING_WEB_GAMEPLAY_VALIDATION';
   item.webValidationQueuedAt=item.webValidationQueuedAt||stamp;
 }
 
@@ -100,6 +107,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     const targetSourcePath=targetSourcePathOf(gameId,selectedPlatform);
     const webSourcePath=webSourcePathOf(gameId);
     const artbookSource=`artbook-submissions/${gameId}/current.json`;
+    const artbookExists=fs.existsSync(p(artbookSource));
 
     seed.productionClass='DEVELOPMENT_CONFIRMED';
     seed.productionTier=2;
@@ -120,6 +128,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       strictDesignScore:Number(strict.review.totalScore),
       excellentDesign:Number(strict.review.totalScore)>=EXCELLENT_THRESHOLD,
       promotedAt:seed?.promotion?.promotedAt||stamp,
+      ...(artbookExists?{artbookGeneratedAt:seed?.promotion?.artbookGeneratedAt||stamp}:{}),
     };
 
     let project=portfolio.projects.find(row=>row?.slug===gameId);
@@ -131,7 +140,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'DESIGN_BASELINE_READY_STRICT_PASS',profileStatus:'DEVELOPMENT_CONFIRMED',
       mode:'POST_PROMOTION_ARTBOOK_THEN_WEB_VALIDATION_THEN_SELECTED_PLATFORM_IMPLEMENTATION',productionTier:2,productionTierSource:'DISPLAY_ALIAS_FROM_PRODUCTION_CLASS',
       targetEngine:selectedPlatform,selectedPlatform,targetPlatform:selectedPlatform,targetSourcePath,
-      sourcePath:project.webValidationPassedAt?targetSourcePath:webSourcePath,
+      sourcePath:project.webValidationPassedAt&&artbookExists?targetSourcePath:webSourcePath,
       webArchivePath:project.webArchivePath||webSourcePath,webValidationRequired:true,musicValidationRequired:true,
       strictDesignScore:Number(strict.review.totalScore),designBaselineSource:design.designSource,designArtbookSource:artbookSource,artbookTiming:'AFTER_PROMOTION',
     });
@@ -144,8 +153,9 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     Object.assign(game,{
       homepageCategory:'development-confirmed',productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'DESIGN_BASELINE_READY_STRICT_PASS',
       productionTier:2,productionTierSource:'DISPLAY_ALIAS_FROM_PRODUCTION_CLASS',selectedPlatform,targetPlatform:selectedPlatform,targetSourcePath,productionTarget:selectedPlatform,
-      strictDesignScore:Number(strict.review.totalScore),excellentDesign:Number(strict.review.totalScore)>=EXCELLENT_THRESHOLD,homepageOfficialCard:false,homepageTestCandidate:false,homepageTestScore:null,homepageReviewState:'WAITING_POST_PROMOTION_ARTBOOK',
-      homepageStage:'개발확정 · 승격 후 아트북 준비',homepageRecentWork:`Strict Design ${Number(strict.review.totalScore)}점 PASS. 승격 후 아트북 생성 뒤 Web 실제 플레이 강심사로 이동한다.`,homepageWebPlayable:false,
+      strictDesignScore:Number(strict.review.totalScore),excellentDesign:Number(strict.review.totalScore)>=EXCELLENT_THRESHOLD,homepageOfficialCard:false,homepageTestCandidate:false,homepageTestScore:null,homepageReviewState:artbookExists?'WAITING_WEB_STRICT_REVIEW':'WAITING_POST_PROMOTION_ARTBOOK',
+      homepageStage:artbookExists?'개발확정 · Web 강심사 준비':'개발확정 · 승격 후 아트북 준비',homepageRecentWork:artbookExists?`Strict Design ${Number(strict.review.totalScore)}점 PASS · 승격 후 아트북 완료 · Web 제작 대기`:`Strict Design ${Number(strict.review.totalScore)}점 PASS. 승격 후 아트북 생성 뒤 Web 실제 플레이 강심사로 이동한다.`,homepageWebPlayable:false,
+      ...(artbookExists?{homepageArtbookPath:`/artbook-viewer.html?game=${encodeURIComponent(gameId)}`}:{})
     });
 
     let item=queue.items.find(row=>row?.gameId===gameId);
@@ -155,7 +165,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     }else{
       item.productionClass='DEVELOPMENT_CONFIRMED';item.selectedPlatform=selectedPlatform;item.targetPlatform=selectedPlatform;item.targetSourcePath=targetSourcePath;item.webSourcePath=item.webSourcePath||webSourcePath;item.designBaselineSource=design.designSource;item.designDate=design.date;item.artbookSource=artbookSource;item.artbookTiming='AFTER_PROMOTION';item.postPromotionArtbookRequired=true;item.strictDesignScore=Number(strict.review.totalScore);
     }
-    bindRequiredWebStage(item,{gameId,targetSourcePath,stamp});
+    bindRequiredWebStage(item,{gameId,targetSourcePath,stamp,artbookExists});
     promoted.push(gameId);
   }
 
