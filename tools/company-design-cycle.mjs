@@ -26,6 +26,7 @@ const modelReviewRoles=Object.fromEntries(pool.map(model=>[model,ROLES.filter(ro
 const activeReviewModels=pool.filter(model=>modelReviewRoles[model].length>0);
 const modelPhaseConcurrency=Math.max(1,Math.min(3,Number(process.env.COMPANY_MODEL_PHASE_CONCURRENCY||3)));
 const modelKeepAlive=clean(process.env.COMPANY_MODEL_KEEP_ALIVE||'2m');
+const modelCallTimeoutMs=Math.max(15000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||75000));
 
 const gameId=clean(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
 const date=clean(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||kstDate());
@@ -142,7 +143,7 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
       const payload={model,stream:false,think:false,keep_alive:modelKeepAlive,messages:[{role:'system',content:system},{role:'user',content:user+'\n출력은 스키마에 맞는 JSON 객체만 반환한다.'+schemaPrompt+correction}],options:{temperature:attempt===1?temperature:0,num_ctx:8192,num_predict:deepSeek?4096:Math.min(4096,predict*attempt)}};
       if(!deepSeek&&attempt===1)payload.format=schema;
       else if(mode==='json')payload.format='json';
-      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
+      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),signal:AbortSignal.timeout(modelCallTimeoutMs)});
       if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
       const body=await response.json();const text=String(body?.message?.content??'').trim();
       if(!text){if(clean(body?.message?.thinking))console.log(`MODEL_EMPTY_CONTENT_WITH_THINKING=${model}|attempt=${attempt}|mode=${mode}`);throw new Error(`empty model response (${mode})`);}

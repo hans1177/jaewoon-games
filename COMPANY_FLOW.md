@@ -76,7 +76,9 @@ ownerCurrentProductionContract:
     paddingByHealthIdleWaitOrPureRepetitionForbidden: true
   strictReview:
     scoreScale: 100
-    passMinimum: 90
+    passMinimum: 80
+    implementationPassMinimum: 90
+    excellentDesignMinimum: 90
     scoreCannotOverrideHardGate: true
     weights:
       IDEA_AND_DISTINCTNESS: 15
@@ -103,13 +105,21 @@ ownerCurrentProductionContract:
       - FATAL_RUNTIME_BUG
       - QA_EVIDENCE_MISSING
     scoreBands:
-      PASS: 90_TO_100_AND_ALL_HARD_GATES_PASS
-      REVISE: 65_TO_89_OR_CORRECTABLE_HARD_GATE
-      REBUILD: 0_TO_64_OR_STRUCTURAL_FAILURE
+      DESIGN_PASS: 80_TO_100_AND_ALL_HARD_GATES_PASS
+      DESIGN_EXCELLENT: 90_TO_100_AND_ALL_HARD_GATES_PASS
+      DESIGN_REVISE: 60_TO_79_OR_CORRECTABLE_HARD_GATE
+      DESIGN_REBUILD: 0_TO_59_OR_STRUCTURAL_FAILURE
+      IMPLEMENTATION_PASS: 90_TO_100_AND_ALL_HARD_GATES_PASS
     rejectHandling:
       correctable: FIX_EXISTING_CANDIDATE_AND_REVALIDATE
       structural: REMOVE_TEST_CANDIDATE_AND_REBUILD_FROM_APPROVED_DESIGN
       automaticDropOnFirstFailureForbidden: true
+  artbookLifecycle:
+    designOnlyArtbookBeforePromotionForbidden: true
+    createOnlyAfterDesignPromotion: true
+    requiredStage: DEVELOPMENT_CONFIRMED_PRE_WEB
+    postPromotionArtbookMustBindApprovedDesignBaseline: true
+    artbookFailureBlocksWebDevelopmentButMustNotUndoDesignPromotion: true
   homepageTesting:
     ownerMayTestBeforeFinalPromotion: true
     prePromotionDisplay: COMPACT_TEST_GAME_SHELF_ONLY
@@ -130,6 +140,16 @@ ownerCurrentProductionContract:
       cronRole: WATCHDOG_ONLY
       eventChainRemainsPrimaryProgression: true
     qualityGateWeakeningForThroughputForbidden: true
+    optimizationBudget:
+      blockingBudgetMinutes: 10
+      maxAttemptsPerOptimizationPass: 2
+      timeoutAction: DEFER_NON_BLOCKING_OPTIMIZATION_AND_CONTINUE_FROM_LAST_VALIDATED_STATE
+      correctnessSafetyOrHardGateFailureStillBlocks: true
+      repeatedOptimizationMustNotStarveOtherGames: true
+    modelExecutionBudget:
+      designWorkflowTimeoutMinutes: 45
+      singleModelCallTimeoutSeconds: 75
+      designSchemaAttemptsMax: 2
   learningFeedback:
     continueLearning: true
     recordPassReviseRebuildCauses: true

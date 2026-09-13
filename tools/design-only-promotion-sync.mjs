@@ -6,7 +6,8 @@ import {pathToFileURL} from 'node:url';
 import {resolveSelectedPlatform,adapterForPlatform} from './company-selected-platform-router.mjs';
 import {materializeOwnerDesignResetSeeds} from './owner-design-reset.mjs';
 
-const PASS_THRESHOLD=80;
+const DESIGN_PASS_THRESHOLD=80;
+const WEB_PASS_THRESHOLD=90;
 const EXCELLENT_THRESHOLD=90;
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');
@@ -38,7 +39,7 @@ function latestReadyDesign(root,gameId){
 }
 function strictDesignPass(design){
   const review=design?.review;
-  const pass=review?.verdict==='PASS'&&Number(review?.totalScore)>=PASS_THRESHOLD&&Array.isArray(review?.hardFailures)&&review.hardFailures.length===0;
+  const pass=review?.verdict==='PASS'&&Number(review?.totalScore)>=DESIGN_PASS_THRESHOLD&&Array.isArray(review?.hardFailures)&&review.hardFailures.length===0;
   return {pass,review,file:design?.strictSource||null};
 }
 
@@ -50,7 +51,7 @@ function bindRequiredWebStage(item,{gameId,targetSourcePath,stamp}){
   item.homepageTestCandidate=false;
   item.homepageTestScore=null;
   item.homepageTestVerdict='WAITING_WEB_STRICT_REVIEW';
-  if(item.webValidationPassedAt&&item.musicValidationPassed===true&&item.strictImplementationVerdict==='PASS'&&Number(item.strictImplementationScore)>=PASS_THRESHOLD){
+  if(item.webValidationPassedAt&&item.musicValidationPassed===true&&item.strictImplementationVerdict==='PASS'&&Number(item.strictImplementationScore)>=WEB_PASS_THRESHOLD){
     item.sourcePath=targetSourcePath;
     item.homepageTestCandidate=true;
     item.homepageTestScore=Number(item.strictImplementationScore);
@@ -90,7 +91,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     if(!design){skipped.push({gameId,reason:'DESIGN_BASELINE_NOT_READY'});continue;}
     const strict=strictDesignPass(design);
     if(!strict.pass){
-      seed.strictDesignReview={verdict:strict.review?.verdict||'MISSING',totalScore:Number(strict.review?.totalScore||0),hardFailures:Array.isArray(strict.review?.hardFailures)?strict.review.hardFailures:[],evidencePath:strict.file,passThreshold:PASS_THRESHOLD};
+      seed.strictDesignReview={verdict:strict.review?.verdict||'MISSING',totalScore:Number(strict.review?.totalScore||0),hardFailures:Array.isArray(strict.review?.hardFailures)?strict.review.hardFailures:[],evidencePath:strict.file,passThreshold:DESIGN_PASS_THRESHOLD};
       seed.lifecycleState=String(strict.review?.verdict||'REVISE').toUpperCase()==='REBUILD'?'DESIGN_REBUILD_REQUIRED':'DESIGN_REVISION_REQUIRED';
       skipped.push({gameId,reason:'STRICT_DESIGN_REVIEW_NOT_PASS',verdict:seed.strictDesignReview.verdict,totalScore:seed.strictDesignReview.totalScore});
       continue;
@@ -105,7 +106,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     seed.productionClassSource='DESIGN_BASELINE_READY_STRICT_PASS';
     seed.lifecycleState='DEVELOPMENT_CONFIRMED';
     seed.selectedPlatform=selectedPlatform;
-    seed.strictDesignReview={verdict:'PASS',totalScore:Number(strict.review.totalScore),hardFailures:[],evidencePath:strict.file,passThreshold:PASS_THRESHOLD,excellent:Number(strict.review.totalScore)>=EXCELLENT_THRESHOLD};
+    seed.strictDesignReview={verdict:'PASS',totalScore:Number(strict.review.totalScore),hardFailures:[],evidencePath:strict.file,passThreshold:DESIGN_PASS_THRESHOLD,excellent:Number(strict.review.totalScore)>=EXCELLENT_THRESHOLD};
     seed.promotion={
       from:'DESIGN_ONLY',to:'DEVELOPMENT_CONFIRMED',reason:'DESIGN_BASELINE_READY_STRICT_PASS',
       selectedPlatform,targetSourcePath,webSourcePath,
