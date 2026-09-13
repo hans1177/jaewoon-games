@@ -36,7 +36,7 @@ test('five-lead preflight requires an exact immutable build before runtime',()=>
 
 test('runtime uses the original package identity and an actual Roblox Studio multiplayer session',()=>{
   assert.ok(workflow.includes('runs-on: windows-latest'));
-  assert.ok(workflow.includes('development-roblox-package-${{ matrix.gameId }}'));
+  assert.ok(workflow.includes('development-roblox-package-$env:GAME_ID'));
   assert.ok(workflow.includes('No retained package matches'));
   assert.ok(workflow.includes('RobloxStudioBeta.exe'));
   assert.ok(workflow.includes('--task RunScript'));
