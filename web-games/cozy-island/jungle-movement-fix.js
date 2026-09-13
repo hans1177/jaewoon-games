@@ -6,162 +6,135 @@ const KEY_TO_DIR = {
   ArrowLeft: 'left', KeyA: 'left',
   ArrowRight: 'right', KeyD: 'right'
 };
-const DIR_TO_CODE = { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight' };
-const BOAR_POINTS = [
-  { x: 1650, y: 1530 }, { x: 2050, y: 1870 },
-  { x: 2420, y: 1490 }, { x: 2690, y: 1810 }
-];
 
 let currentGame = null;
 let paused = false;
-let ownsEasternMovement = false;
 let lastFrame = performance.now();
-let lastTap = { time: 0, x: 0, y: 0 };
 const held = new Set();
 
 const rendererProto = IslandRendererV3.prototype;
 const originalDraw = rendererProto.draw;
-rendererProto.draw = function drawWithJungleMovementFix(game) {
+rendererProto.draw = function drawWithUnifiedMovement(game) {
   currentGame = game;
   originalDraw.call(this, game);
 };
-
-function isBridgeEvent(event) {
-  return Boolean(event.__cozyMovementBridge);
-}
-
-function bridgeEvent(type, code) {
-  const event = new KeyboardEvent(type, { code, key: code, bubbles: true });
-  try { Object.defineProperty(event, '__cozyMovementBridge', { value: true }); } catch {}
-  window.dispatchEvent(event);
-}
-
-function clearDownstreamDirectionState() {
-  for (const code of Object.values(DIR_TO_CODE)) bridgeEvent('keyup', code);
-}
-
-function handBackToCore() {
-  ownsEasternMovement = false;
-  for (const dir of held) bridgeEvent('keydown', DIR_TO_CODE[dir]);
-}
-
-function shouldOwnMovement() {
-  return Boolean(currentGame?.state?.expanded && currentGame?.player && currentGame.player.x >= 1360);
-}
-
-window.addEventListener('keydown', event => {
-  if (isBridgeEvent(event)) return;
-  const dir = KEY_TO_DIR[event.code];
-  if (!dir) return;
-  held.add(dir);
-  if (!shouldOwnMovement() && !ownsEasternMovement) return;
-  if (!ownsEasternMovement) {
-    ownsEasternMovement = true;
-    clearDownstreamDirectionState();
-  }
-  event.preventDefault();
-  event.stopImmediatePropagation();
-}, true);
-
-window.addEventListener('keyup', event => {
-  if (isBridgeEvent(event)) return;
-  const dir = KEY_TO_DIR[event.code];
-  if (!dir) return;
-  held.delete(dir);
-  if (!ownsEasternMovement) return;
-  event.preventDefault();
-  event.stopImmediatePropagation();
-  if (held.size === 0 && currentGame?.player?.x < 1360) ownsEasternMovement = false;
-}, true);
-
-window.addEventListener('blur', () => {
-  held.clear();
-  ownsEasternMovement = false;
-});
-window.addEventListener('jaewoon:pause', event => { paused = Boolean(event.detail?.paused); });
 
 function jungleUnlocked() {
   return Boolean(currentGame?.state?.southernJungle?.unlocked);
 }
 
-function canMoveEast(x, y) {
-  if (x < 1300 || x > 2820 || y < 160) return false;
-  if (y <= 1025) return true;
-  if (!jungleUnlocked()) return false;
-  return x >= 1435 && x <= 2820 && y <= 2025;
+function eastUnlocked() {
+  return Boolean(currentGame?.state?.expanded);
 }
+
+function blockedOnMainIsland(x, y) {
+  if (y > 1025) return false;
+  const pond = Math.pow((x - 390) / 150, 2) + Math.pow((y - 370) / 112, 2) < 1;
+  if (pond) return true;
+  return x > 635 && x < 900 && y > 170 && y < 415;
+}
+
+function inMainVillage(x, y) {
+  if (x < 120 || x > 1360 || y < 160 || y > 1155) return false;
+  return !blockedOnMainIsland(x, y);
+}
+
+function inEast(x, y) {
+  return eastUnlocked() && x >= 1300 && x <= 2820 && y >= 160 && y <= 1025;
+}
+
+function inJungle(x, y) {
+  return jungleUnlocked() && x >= 1435 && x <= 2820 && y >= 980 && y <= 2025;
+}
+
+function canStandAt(x, y) {
+  return inMainVillage(x, y) || inEast(x, y) || inJungle(x, y);
+}
+
+function baseCandidate(x, y) {
+  let px = Math.max(120, Math.min(1360, x));
+  let py = Math.max(160, Math.min(1155, y));
+  if (blockedOnMainIsland(px, py)) {
+    if (px > 635 && px < 900 && py > 170 && py < 415) py = 430;
+    else py = Math.max(500, py);
+  }
+  return { x: px, y: py };
+}
+
+function eastCandidate(x, y) {
+  return { x: Math.max(1300, Math.min(2820, x)), y: Math.max(160, Math.min(1025, y)) };
+}
+
+function jungleCandidate(x, y) {
+  return { x: Math.max(1435, Math.min(2820, x)), y: Math.max(980, Math.min(2025, y)) };
+}
+
+function recoverInvalidPosition(player) {
+  if (canStandAt(player.x, player.y)) return;
+  const candidates = [baseCandidate(player.x, player.y)];
+  if (eastUnlocked()) candidates.push(eastCandidate(player.x, player.y));
+  if (jungleUnlocked()) candidates.push(jungleCandidate(player.x, player.y));
+
+  let best = candidates[0];
+  let bestDistance = Infinity;
+  for (const point of candidates) {
+    if (!canStandAt(point.x, point.y)) continue;
+    const d = Math.hypot(point.x - player.x, point.y - player.y);
+    if (d < bestDistance) {
+      best = point;
+      bestDistance = d;
+    }
+  }
+  player.x = best.x;
+  player.y = best.y;
+}
+
+window.addEventListener('keydown', event => {
+  const dir = KEY_TO_DIR[event.code];
+  if (!dir) return;
+  held.add(dir);
+  event.preventDefault();
+  event.stopImmediatePropagation();
+}, true);
+
+window.addEventListener('keyup', event => {
+  const dir = KEY_TO_DIR[event.code];
+  if (!dir) return;
+  held.delete(dir);
+  event.preventDefault();
+  event.stopImmediatePropagation();
+}, true);
+
+window.addEventListener('blur', () => held.clear());
+window.addEventListener('jaewoon:pause', event => {
+  paused = Boolean(event.detail?.paused);
+  if (paused) held.clear();
+});
 
 function movementFrame(now) {
   const dt = Math.min(.05, Math.max(0, (now - lastFrame) / 1000));
   lastFrame = now;
 
-  if (currentGame && !paused && !document.hidden && !document.querySelector('dialog[open]')) {
-    if (shouldOwnMovement() && !ownsEasternMovement && held.size > 0) {
-      ownsEasternMovement = true;
-      clearDownstreamDirectionState();
-    }
+  if (currentGame && held.size && !paused && !document.hidden && !document.querySelector('dialog[open]')) {
+    const player = currentGame.player;
+    recoverInvalidPosition(player);
 
-    if (ownsEasternMovement && held.size > 0) {
-      const player = currentGame.player;
-      let dx = (held.has('right') ? 1 : 0) - (held.has('left') ? 1 : 0);
-      let dy = (held.has('down') ? 1 : 0) - (held.has('up') ? 1 : 0);
-      if (dx || dy) {
-        const mag = Math.hypot(dx, dy) || 1;
-        dx /= mag; dy /= mag;
-        const speed = Number(player.speed) || 185;
-        const nx = player.x + dx * speed * dt;
-        const ny = player.y + dy * speed * dt;
-        if (canMoveEast(nx, player.y)) player.x = nx;
-        if (canMoveEast(player.x, ny)) player.y = ny;
-      }
+    let dx = (held.has('right') ? 1 : 0) - (held.has('left') ? 1 : 0);
+    let dy = (held.has('down') ? 1 : 0) - (held.has('up') ? 1 : 0);
+    if (dx || dy) {
+      const mag = Math.hypot(dx, dy) || 1;
+      dx /= mag;
+      dy /= mag;
+      const speed = Number(player.speed) || 185;
 
-      // 동쪽에서 마을로 돌아올 때 기본 이동 시스템에 키 상태를 정상 인계한다.
-      if (player.x < 1350 && player.y <= 1025) handBackToCore();
+      const nextX = player.x + dx * speed * dt;
+      if (canStandAt(nextX, player.y)) player.x = nextX;
+
+      const nextY = player.y + dy * speed * dt;
+      if (canStandAt(player.x, nextY)) player.y = nextY;
     }
   }
 
   requestAnimationFrame(movementFrame);
 }
 requestAnimationFrame(movementFrame);
-
-function livingTroopCount() {
-  return (currentGame?.allies || []).filter(unit => unit?.hp > 0 && ['soldier', 'archer', 'knight'].includes(unit.kind)).length;
-}
-
-function screenToWorld(sx, sy) {
-  if (!currentGame?.player) return null;
-  return {
-    x: sx + currentGame.player.x - window.innerWidth / 2,
-    y: sy + currentGame.player.y - window.innerHeight / 2
-  };
-}
-
-function blockEmptyArmyBoarCommand(sx, sy) {
-  if (!currentGame?.state?.southernJungle?.unlocked || livingTroopCount() > 0) return false;
-  const point = screenToWorld(sx, sy);
-  if (!point) return false;
-  const hit = BOAR_POINTS.some(boar => Math.hypot(point.x - boar.x, point.y - boar.y) <= 58);
-  if (!hit) return false;
-  const toast = document.querySelector('#toast');
-  if (toast) {
-    toast.textContent = '🐗 출동할 병력이 없어';
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 1800);
-  }
-  return true;
-}
-
-const canvas = document.querySelector('#game');
-canvas?.addEventListener('dblclick', event => {
-  if (!blockEmptyArmyBoarCommand(event.clientX, event.clientY)) return;
-  event.preventDefault();
-  event.stopImmediatePropagation();
-}, true);
-canvas?.addEventListener('pointerup', event => {
-  const now = performance.now();
-  const isDouble = now - lastTap.time < 360 && Math.hypot(event.clientX - lastTap.x, event.clientY - lastTap.y) < 38;
-  lastTap = { time: now, x: event.clientX, y: event.clientY };
-  if (!isDouble || !blockEmptyArmyBoarCommand(event.clientX, event.clientY)) return;
-  event.preventDefault();
-  event.stopImmediatePropagation();
-}, true);
