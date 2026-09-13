@@ -1,0 +1,89 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "development"
+        ],
+        "fix": [
+          "development"
+        ],
+        "add": [
+          "development"
+        ],
+        "risks": [
+          "development"
+        ],
+        "evidence": [
+          "development"
+        ],
+        "questions": [
+          "development"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "development"
+        ],
+        "fix": [
+          "qa"
+        ],
+        "add": [
+          "balance"
+        ],
+        "risks": [
+          "GAME_SEED"
+        ],
+        "evidence": [],
+        "questions": [
+          "What is the core fun of the game?"
+        ]
+      }
+    }
+  ]
+}

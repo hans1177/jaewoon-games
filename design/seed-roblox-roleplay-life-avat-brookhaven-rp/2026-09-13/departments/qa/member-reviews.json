@@ -1,0 +1,89 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "qa"
+        ],
+        "fix": [
+          "qa"
+        ],
+        "add": [
+          "qa"
+        ],
+        "risks": [
+          "qa"
+        ],
+        "evidence": [
+          "qa"
+        ],
+        "questions": [
+          "qa"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "development"
+        ],
+        "fix": [
+          "qa"
+        ],
+        "add": [
+          "balance"
+        ],
+        "risks": [
+          "GAME_SEED"
+        ],
+        "evidence": [],
+        "questions": [
+          "What is the core fun of the game?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "What is the core fun of the game? How does the game handle progression?"
+        ],
+        "fix": [
+          "Clarify the core fun and progression mechanics to ensure they align with the design."
+        ],
+        "add": [
+          "Ensure the design is accessible and meets the target audience."
+        ],
+        "risks": [
+          "Avoid overcomplicating the design for platform-specific features."
+        ],
+        "evidence": [
+          "The design is built around the core fun elements and progression."
+        ],
+        "questions": [
+          "What is the core fun of the game? How does the game handle progression?"
+        ]
+      }
+    }
+  ]
+}

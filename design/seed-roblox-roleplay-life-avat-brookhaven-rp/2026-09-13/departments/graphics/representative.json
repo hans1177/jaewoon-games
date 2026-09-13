@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "representativeModel": "gemma3:1b",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "gemma3:1b"
+    ],
+    "fix": [
+      "Harbor Days' visual identity should be a realistic suburban setting with a focus on a cozy and inviting atmosphere.  \n\n\n"
+    ],
+    "add": [
+      "game-seed_platform_profiles.json"
+    ],
+    "risks": [
+      "game-seed_market_evidence.json"
+    ],
+    "evidence": [
+      "game-seed_platform_profiles.json"
+    ],
+    "questions": [
+      "What is the target platform?"
+    ]
+  }
+}

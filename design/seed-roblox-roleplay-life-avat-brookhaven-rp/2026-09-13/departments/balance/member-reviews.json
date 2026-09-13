@@ -1,0 +1,89 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "development"
+        ],
+        "fix": [
+          "qa"
+        ],
+        "add": [
+          "balance"
+        ],
+        "risks": [
+          "GAME_SEED"
+        ],
+        "evidence": [],
+        "questions": [
+          "What is the core fun of the game?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Ensure the design is balanced and promotes positive player engagement."
+        ],
+        "fix": [
+          "Address any potential issues with progression or rewards."
+        ],
+        "add": [
+          "Integrate the core fun elements like roleplay, avatar, home, and social."
+        ],
+        "risks": [
+          "Avoid overcomplicating the design for platform-specific features."
+        ],
+        "evidence": [
+          "The design is built around the core fun elements and progression."
+        ],
+        "questions": [
+          "What is the core fun of the game? How does the game handle progression?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_seed_platform_profiles.json"
+        ],
+        "fix": [
+          "Harbor Days' balance should be carefully considered.  \n\n\n"
+        ],
+        "add": [
+          "game_seed_platform_profiles.json"
+        ],
+        "risks": [
+          "game_seed_market_evidence.json"
+        ],
+        "evidence": [
+          "game_seed_platform_profiles.json"
+        ],
+        "questions": [
+          "What is the game's design philosophy?"
+        ]
+      }
+    }
+  ]
+}

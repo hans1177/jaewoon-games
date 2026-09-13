@@ -1,0 +1,32 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "representativeModel": "smollm2:1.7b",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "development"
+    ],
+    "fix": [
+      "qa"
+    ],
+    "add": [
+      "balance"
+    ],
+    "risks": [
+      "GAME_SEED"
+    ],
+    "evidence": [],
+    "questions": [
+      "What is the core fun of the game?"
+    ]
+  }
+}

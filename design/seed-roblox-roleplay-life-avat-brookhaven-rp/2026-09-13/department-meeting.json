@@ -1,0 +1,131 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "gemma3:1b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "Ensure that the design is user-friendly and intuitive for new players and existing players."
+      ],
+      "fix": [
+        "Address any potential usability issues, such as difficulty in choosing an avatar or role."
+      ],
+      "add": [
+        "Integrate the core fun elements like roleplay, avatar, home, and social into the design."
+      ],
+      "risks": [
+        "Avoid overcomplicating the design for platform-specific features."
+      ],
+      "evidence": [
+        "The design is built around the core fun elements and progression."
+      ],
+      "questions": [
+        "What is the core fun of the game? How does the game handle progression?"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "gemma3:1b"
+      ],
+      "fix": [
+        "Harbor Days' visual identity should be a realistic suburban setting with a focus on a cozy and inviting atmosphere.  \n\n\n"
+      ],
+      "add": [
+        "game-seed_platform_profiles.json"
+      ],
+      "risks": [
+        "game-seed_market_evidence.json"
+      ],
+      "evidence": [
+        "game-seed_platform_profiles.json"
+      ],
+      "questions": [
+        "What is the target platform?"
+      ]
+    },
+    "development": {
+      "keep": [
+        "game-seed"
+      ],
+      "fix": [
+        "game-seed"
+      ],
+      "add": [
+        "game-seed"
+      ],
+      "risks": [
+        "game-seed"
+      ],
+      "evidence": [
+        "game-seed"
+      ],
+      "questions": [
+        "game-seed"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "qa"
+      ],
+      "fix": [
+        "qa"
+      ],
+      "add": [
+        "qa"
+      ],
+      "risks": [
+        "qa"
+      ],
+      "evidence": [
+        "qa"
+      ],
+      "questions": [
+        "qa"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "development"
+      ],
+      "fix": [
+        "qa"
+      ],
+      "add": [
+        "balance"
+      ],
+      "risks": [
+        "GAME_SEED"
+      ],
+      "evidence": [],
+      "questions": [
+        "What is the core fun of the game?"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "5부서 회의 조정 AI가 새 기능 창작 없이 대표의견과 각 Lead의 1회 반박을 안건별 CONSENSUS/CONFLICT/HOLD로만 정리했습니다.",
+  "decisions": [],
+  "counts": {
+    "consensus": 0,
+    "conflict": 0,
+    "hold": 0
+  }
+}

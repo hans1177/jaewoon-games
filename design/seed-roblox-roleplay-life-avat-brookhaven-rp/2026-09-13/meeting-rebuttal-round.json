@@ -1,0 +1,81 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "Ensure that the design is user-friendly and intuitive for new players and existing players.",
+        "Address any potential usability issues, such as difficulty in choosing an avatar or role.",
+        "Integrate the core fun elements like roleplay, avatar, home, and social into the design."
+      ],
+      "challenge": [
+        "Avoid overcomplicating the design for platform-specific features.",
+        "What is the core fun of the game? How does the game handle progression?"
+      ],
+      "revision": [
+        "Harbor Days' visual identity should be a realistic suburban setting with a focus on a cozy and inviting atmosphere.",
+        "What is the target platform?"
+      ],
+      "reason": "The design is built around the core fun elements and progression."
+    },
+    "graphics": {
+      "accept": [
+        "gemma3:1b"
+      ],
+      "challenge": [
+        "Harbor Days' visual identity should be a realistic suburban setting with a focus on a cozy and inviting atmosphere."
+      ],
+      "revision": [
+        "Ensure that the design is user-friendly and intuitive for new players and existing players."
+      ],
+      "reason": "The design should be user-friendly and intuitive for new players and existing players."
+    },
+    "development": {
+      "accept": [
+        "keep"
+      ],
+      "challenge": [
+        "fix"
+      ],
+      "revision": [
+        "add"
+      ],
+      "reason": "risks"
+    },
+    "qa": {
+      "accept": [
+        "qa"
+      ],
+      "challenge": [
+        "qa"
+      ],
+      "revision": [
+        "qa"
+      ],
+      "reason": "QA 부서는 모든 요청에 대한 책임을 지고 있으며, 다른 부서의 의견을 수용/반박/수정할 수 있습니다."
+    },
+    "balance": {
+      "accept": [
+        "balance"
+      ],
+      "challenge": [
+        "add"
+      ],
+      "revision": [
+        "keep"
+      ],
+      "reason": "GAME_SEED"
+    }
+  }
+}
