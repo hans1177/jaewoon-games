@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import {inspectRobloxBuildPreflight} from '../tools/company-development-roblox-build-preflight.mjs';
 
 const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
+const parentWorkflow=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
 const smoke=fs.readFileSync(new URL('../tools/company-development-roblox-runtime-smoke.luau',import.meta.url),'utf8');
 const directive=JSON.parse(fs.readFileSync(new URL('../company-directive.json',import.meta.url),'utf8'));
 
@@ -17,6 +18,15 @@ test('continuation is a direct post-package edge, not a second source/package pi
   assert.ok(workflow.includes('ROBLOX_EXECUTION_WIP_MAX=2'));
   assert.ok(workflow.includes('ROBLOX_PER_GAME_PROMOTION=YES'));
   assert.ok(workflow.includes('ROBLOX_PROMOTION_COUNT_GATE=NONE'));
+});
+
+test('Roblox continuation changes re-enter the canonical parent runtime',()=>{
+  for(const path of [
+    ".github/workflows/company-development-roblox-runtime-continuation.yml",
+    'tools/company-development-roblox-build-preflight.mjs',
+    'tools/company-development-roblox-runtime-smoke.luau',
+    'qa/company-development-roblox-runtime-continuation.test.mjs',
+  ]) assert.ok(parentWorkflow.includes(`- '${path}'`),`missing parent push path: ${path}`);
 });
 
 test('five-lead preflight requires an exact immutable build before runtime',()=>{
