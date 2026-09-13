@@ -1,0 +1,60 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "OWNER-RESET-BUG-DEFENSE-20260913",
+  "gameSeedSource": "game-seed-state.json",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "llama3.2:1b",
+  "singleAuthor": true,
+  "content": {
+    "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 처음부터 다시 설계한다.",
+    "playerFantasy": "전략 디펜스와 곤충 테마의 명확한 상성 플레이를 선호하는 글로벌 플레이어",
+    "coreFun": "read the incoming insect wave and its threat pattern.",
+    "coreLoop": [
+      "place or adjust defenders and spend limited resources on the highest-value counter.",
+      "survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.",
+      "place or adjust defenders and spend limited resources on the highest-value counter."
+    ],
+    "signatureSystems": [
+      {
+        "name": "readability",
+        "purpose": "wave defense readability",
+        "playerChoice": "place or adjust defenders and spend limited resources on the highest-value counter."
+      },
+      {
+        "name": "meaningful placement choices",
+        "purpose": "meaningful placement choices",
+        "playerChoice": "place or adjust defenders and spend limited resources on the highest-value counter."
+      },
+      {
+        "name": "enemy-type counterplay",
+        "purpose": "enemy-type counterplay",
+        "playerChoice": "place or adjust defenders and spend limited resources on the highest-value counter."
+      }
+    ],
+    "progressionDirection": "short-wave",
+    "visualDirection": "short-wave",
+    "mobileUx": "short-wave",
+    "marketTargetDirection": "global",
+    "steamExpansionDecision": "review_in_design_cycle",
+    "multiplayerExpansionDecision": "review_in_design_cycle",
+    "technicalAssumptions": [
+      "unity",
+      "csharp"
+    ],
+    "validationQuestions": [
+      "what is the main idea of the game?",
+      "what is the target audience of the game?",
+      "what is the core gameplay mechanic of the game?"
+    ],
+    "openQuestions": [
+      "what is the main idea of the game?",
+      "what is the target audience of the game?",
+      "what is the core gameplay mechanic of the game?"
+    ]
+  }
+}
