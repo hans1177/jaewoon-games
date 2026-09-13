@@ -13,7 +13,7 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
-  ROBLOX_RUNTIME_HARNESS_VERSION: '4'
+  ROBLOX_RUNTIME_HARNESS_VERSION: '5'
 
 jobs:
   preflight-plan:
@@ -394,12 +394,31 @@ jobs:
           $stdout = Join-Path $env:RUNNER_TEMP 'roblox-studio-stdout.log'
           $stderr = Join-Path $env:RUNNER_TEMP 'roblox-studio-stderr.log'
           $timeoutFlag = Join-Path $env:RUNNER_TEMP 'roblox-runtime-timeout.flag'
+          $authFlag = Join-Path $env:RUNNER_TEMP 'roblox-runtime-auth-required.flag'
           $startStamp = Join-Path $env:RUNNER_TEMP 'roblox-runtime-start.utc'
-          Remove-Item -Force $timeoutFlag -ErrorAction SilentlyContinue
-          (Get-Date).ToUniversalTime().ToString('o') | Set-Content -Encoding ascii $startStamp
+          Remove-Item -Force $timeoutFlag,$authFlag -ErrorAction SilentlyContinue
+          $runtimeStarted = (Get-Date).ToUniversalTime()
+          $runtimeStarted.ToString('o') | Set-Content -Encoding ascii $startStamp
           $argLine = "--task RunScript --localPlaceFile `"$env:PLACE_FILE`" --runScriptFile `"$script`" --outputFile `"$out`" --quitAfterExecution"
           $p = Start-Process -FilePath $env:STUDIO_EXE -ArgumentList $argLine -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
-          if (-not $p.WaitForExit(180000)) {
+          $nativeSource = Join-Path $env:LOCALAPPDATA 'Roblox\logs'
+          $authDeadline = (Get-Date).AddSeconds(15)
+          while (-not $p.HasExited -and (Get-Date) -lt $authDeadline) {
+            Start-Sleep -Seconds 2
+            if (-not (Test-Path $nativeSource)) { continue }
+            $recentLogs = @(Get-ChildItem -Path $nativeSource -File -Filter '*Studio*_last.log' -ErrorAction SilentlyContinue | Where-Object { $_.LastWriteTimeUtc -ge $runtimeStarted.AddSeconds(-2) } | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 4)
+            if ($recentLogs.Count -eq 0) { continue }
+            $nativeText = ($recentLogs | ForEach-Object { Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue }) -join "`n"
+            $unauthenticated = $nativeText -match 'Authenticated\s*:\s*NO'
+            $loginBlocked = $nativeText -match 'Cookie list not found|https://www\.roblox\.com/login|LoginDialog'
+            if ($unauthenticated -and $loginBlocked) {
+              Set-Content -Path $authFlag -Value 'ROBLOX_STUDIO_AUTHENTICATION_REQUIRED'
+              Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+              Start-Sleep -Seconds 2
+              throw 'Roblox Studio authentication required before RunScript can execute'
+            }
+          }
+          if (-not $p.HasExited -and -not $p.WaitForExit(165000)) {
             Set-Content -Path $timeoutFlag -Value 'ROBLOX_STUDIO_RUNTIME_TIMEOUT'
             Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
             Start-Sleep -Seconds 2
@@ -440,8 +459,9 @@ jobs:
             $saveRequired = ($build.saveRequired -eq $true)
           }
           $passed = $env:PACKAGE_OUTCOME -eq 'success' -and $env:STUDIO_OUTCOME -eq 'success' -and $env:RUNTIME_OUTCOME -eq 'success'
+          $authRequired = Test-Path (Join-Path $env:RUNNER_TEMP 'roblox-runtime-auth-required.flag')
           $timedOut = Test-Path (Join-Path $env:RUNNER_TEMP 'roblox-runtime-timeout.flag')
-          $failure = if ($passed) { $null } elseif ($env:PACKAGE_OUTCOME -ne 'success') { 'immutable-package-unavailable' } elseif ($env:STUDIO_OUTCOME -ne 'success') { 'roblox-studio-install-failed' } elseif ($timedOut) { 'roblox-studio-runtime-timeout' } else { 'roblox-studio-runtime-failed' }
+          $failure = if ($passed) { $null } elseif ($env:PACKAGE_OUTCOME -ne 'success') { 'immutable-package-unavailable' } elseif ($env:STUDIO_OUTCOME -ne 'success') { 'roblox-studio-install-failed' } elseif ($authRequired) { 'roblox-studio-authentication-required' } elseif ($timedOut) { 'roblox-studio-runtime-timeout' } else { 'roblox-studio-runtime-failed' }
           $runtimeOut = Join-Path $env:RUNNER_TEMP 'roblox-runtime-output.log'
           $runtimeStdout = Join-Path $env:RUNNER_TEMP 'roblox-studio-stdout.log'
           $runtimeStderr = Join-Path $env:RUNNER_TEMP 'roblox-studio-stderr.log'
@@ -465,7 +485,7 @@ jobs:
             sourceRevision=$env:SOURCE_REVISION; artifactIdentity=$env:ARTIFACT_IDENTITY; artifactRunId=([int64]($env:ARTIFACT_RUN ?? '0'));
             runtimeHarnessVersion=$env:RUNTIME_HARNESS_VERSION; runtimePassed=$passed; actualStudioRuntime=$passed; serverClientBoundaryPassed=$passed; playerCharacterPassed=$passed;
             saveExists=$saveRequired; datastoreRejoinPassed=(-not $saveRequired); mobileControlUiPassed=$false; multiplayerApplicable=$false; multiplayerQaPassed=$false;
-            studioPackageIdentifier='Roblox.RobloxStudio'; studioInstallerSha256=if($env:INSTALLER_SHA){"sha256:$env:INSTALLER_SHA"}else{$null}; studioFileVersion=$studioFileVersion;
+            studioPackageIdentifier='Roblox.RobloxStudio'; studioInstallerSha256=if($env:INSTALLER_SHA){"sha256:$env:INSTALLER_SHA"}else{$null}; studioFileVersion=$studioFileVersion; studioAuthenticationRequired=$authRequired;
             runtimeOutputFileExists=$outputExists; runtimeStdoutBytes=$stdoutBytes; runtimeStderrBytes=$stderrBytes; nativeStudioLogCount=$nativeLogCount; failure=$failure;
             authority='roblox-actual-studio-runtime-evidence'
           }
@@ -474,13 +494,14 @@ jobs:
           $evidence | ConvertTo-Json -Depth 8 | Set-Content -Encoding utf8 $file
           $log = Join-Path $env:RUNNER_TEMP 'roblox-runtime-combined.log'
           if (Test-Path $log) { Copy-Item $log (Join-Path $root "$safe.studio.log") }
-          foreach ($rawName in @('roblox-runtime-output.log','roblox-studio-stdout.log','roblox-studio-stderr.log','roblox-runtime-timeout.flag','roblox-runtime-start.utc')) {
+          foreach ($rawName in @('roblox-runtime-output.log','roblox-studio-stdout.log','roblox-studio-stderr.log','roblox-runtime-timeout.flag','roblox-runtime-auth-required.flag','roblox-runtime-start.utc')) {
             $raw = Join-Path $env:RUNNER_TEMP $rawName
             if (Test-Path $raw) { Copy-Item $raw (Join-Path $root $rawName) }
           }
           Write-Host "ROBLOX_RUNTIME_PASS=$(if($passed){'YES'}else{'NO'})"
           Write-Host "ROBLOX_RUNTIME_FAILURE=$(if($failure){$failure}else{'NONE'})"
           Write-Host "ROBLOX_RUNTIME_HARNESS_VERSION=$env:RUNTIME_HARNESS_VERSION"
+          Write-Host "ROBLOX_STUDIO_AUTHENTICATION_REQUIRED=$(if($authRequired){'YES'}else{'NO'})"
           Write-Host "ROBLOX_NATIVE_STUDIO_LOG_COUNT=$nativeLogCount"
           Write-Host "ROBLOX_RUNTIME_OUTPUT_FILE_EXISTS=$outputExists"
           Write-Host "ROBLOX_RUNTIME_STDOUT_BYTES=$stdoutBytes"
@@ -610,9 +631,13 @@ jobs:
           NODE
           )"
           echo "ROBLOX_REMAINING_CONTINUATION_TARGETS=$remaining"
-          if [[ "$remaining" =~ ^[1-9][0-9]*$ ]]; then
+          active_other="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime-continuation.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),current=Number(process.env.GITHUB_RUN_ID);const n=(j.workflow_runs||[]).filter(r=>r.id!==current&&['queued','in_progress','pending'].includes(r.status)).length;process.stdout.write(String(n));})")"
+          echo "ROBLOX_ACTIVE_OTHER_CONTINUATIONS=$active_other"
+          if [[ "$remaining" =~ ^[1-9][0-9]*$ && "$active_other" == '0' ]]; then
             gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main
             echo 'ROBLOX_NEXT_CONTINUATION_DISPATCH=YES'
+          elif [[ "$remaining" =~ ^[1-9][0-9]*$ ]]; then
+            echo 'ROBLOX_NEXT_CONTINUATION_DISPATCH=SKIP_ACTIVE_SIBLING'
           else
             echo 'ROBLOX_NEXT_CONTINUATION_DISPATCH=NO'
           fi
