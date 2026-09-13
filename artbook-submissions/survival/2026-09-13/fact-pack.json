@@ -4,64 +4,26 @@
   "date": "2026-09-13",
   "generatedBy": "deterministic-source-scan",
   "paidApi": false,
-  "sourceMode": "WEB_ARCHIVE_READ_ONLY",
-  "sourceFiles": [
-    "web-games/survival/index.html"
-  ],
+  "sourceMode": "METADATA_ONLY",
+  "sourceFiles": [],
   "decodedSources": [],
   "topics": {
-    "gameplayLoop": [
-      {
-        "source": "web-games/survival/index.html",
-        "line": 1,
-        "column": 344,
-        "text": ",name:'나의 생존기',mode:'survival',hp:100,desc:'숲에서 나무와 식량을 모으고 도구를 강화해 12일을 버티는 채집·제작 생존 게임.'}</script><script src=\"/web-games/_shared/vibe2-final.js\"></script></body></html>"
-      }
-    ],
+    "gameplayLoop": [],
     "input": [],
-    "combat": [
-      {
-        "source": "web-games/survival/index.html",
-        "line": 1,
-        "column": 295,
-        "text": "d><body><script>window.GAME_CONFIG={id:'survival',name:'나의 생존기',mode:'survival',hp:100,desc:'숲에서 나무와 식량을 모으고 도구를 강화해 12일을 버티는 채집·제작 생존 게임.'}</script><script src=\"/web-games/_shared/vibe2-final.js\"></script></body></html>"
-      }
-    ],
-    "progression": [
-      {
-        "source": "web-games/survival/index.html",
-        "line": 1,
-        "column": 328,
-        "text": "G={id:'survival',name:'나의 생존기',mode:'survival',hp:100,desc:'숲에서 나무와 식량을 모으고 도구를 강화해 12일을 버티는 채집·제작 생존 게임.'}</script><script src=\"/web-games/_shared/vibe2-final.js\"></script></body></html>"
-      }
-    ],
+    "combat": [],
+    "progression": [],
     "persistence": [],
-    "uiArt": [
-      {
-        "source": "web-games/survival/index.html",
-        "line": 1,
-        "column": 164,
-        "text": "ntent=\"width=device-width,initial-scale=1,viewport-fit=cover\"><meta name=\"theme-color\" content=\"#08111b\"><title>나의 생존기</title></head><body><script>window.GAME_CONFIG={id:'survival',name:'나의 생존기',mode:'survival',hp:100,de"
-      }
-    ],
-    "risk": [
-      {
-        "source": "web-games/survival/index.html",
-        "line": 1,
-        "column": 72,
-        "text": "<!doctype html><html lang=\"ko\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\"><meta name=\"theme-color\" content=\"#08111b\"><title>나의 생존기</title></head><bod"
-      },
-      {
-        "source": "web-games/survival/index.html",
-        "line": 1,
-        "column": 126,
-        "text": "arset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\"><meta name=\"theme-color\" content=\"#08111b\"><title>나의 생존기</title></head><body><script>window.GAME_CONFIG={id:'survival',n"
-      }
-    ]
+    "uiArt": [],
+    "risk": []
   },
   "missingEvidence": [
+    "gameplayLoop",
     "input",
-    "persistence"
+    "combat",
+    "progression",
+    "persistence",
+    "uiArt",
+    "risk"
   ],
   "contracts": {
     "factsAreEvidenceOnly": true,

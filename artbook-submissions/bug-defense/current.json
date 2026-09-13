@@ -15,15 +15,18 @@
   "vibe2Used": false,
   "content": {
     "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 처음부터 다시 설계한다.",
-    "playerFantasy": "Yes",
+    "playerFantasy": "전략 디펜스와 곤충 테마의 명확한 상성 플레이를 선호하는 글로벌 플레이어",
     "coreLoop": [
-      "Read the incoming insect wave and its threat pattern.",
-      "Place or adjust defenders and spend limited resources on the highest-value counter.",
-      "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+      "place or adjust defenders and spend limited resources on the highest-value counter.",
+      "survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
     ],
-    "signatureSystems": [],
-    "progressionDirection": "progression",
-    "visualDirection": "visual"
+    "signatureSystems": [
+      "readability",
+      "meaningful placement choices",
+      "enemy-type counterplay"
+    ],
+    "progressionDirection": "short-wave",
+    "visualDirection": "short-wave"
   },
   "gameName": "곤충 디펜스",
   "createdAt": "2026-09-13",
@@ -37,6 +40,6 @@
     "policyDocument": "COMPANY_FLOW.md",
     "baselineGateState": "DESIGN_BASELINE_READY",
     "baselineReady": true,
-    "publishedAt": "2026-09-13T13:03:28.950Z"
+    "publishedAt": "2026-09-13T00:55:44.576Z"
   }
 }
