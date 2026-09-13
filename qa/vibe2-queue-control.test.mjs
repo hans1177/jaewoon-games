@@ -9,7 +9,8 @@ import {
   reserveVibeTaskBatch,
   markVibeTaskAwaiting,
   settleVibeTask,
-  applyVibeFanInResults
+  applyVibeFanInResults,
+  recoverFixedFullWebTransportFailures
 } from '../tools/vibe2-queue-control.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
 
@@ -116,6 +117,30 @@ test('retryable failure clears blocker and remains selectable until retry limit'
   reserved=reserveNextVibeTask(failed.queue);
   failed=settleVibeTask(reserved.queue,{taskId:'retry',outcome:'FAIL',evidence:['fail-2'],blocker:'source-candidate-generation-failed'});
   assert.equal(failed.queue.tasks[0].status,'failed');
+});
+
+test('transport repair requeues only capped owner full-web rebuild failures once', () => {
+  const queue=createVibeContinuousQueue({tasks:[
+    {
+      id:'full-web',gameId:'web',target:'web',sourceRoot:'web-games/web',goal:'FULL_WEB_GAME_REBUILD actual game',
+      ownerDirective:true,status:'failed',retries:3,maxRetries:2,blocker:'source-candidate-generation-failed',evidence:['old-failure']
+    },
+    {
+      id:'normal-web',gameId:'normal',target:'web',sourceRoot:'web-games/normal',goal:'normal maintenance',
+      ownerDirective:true,status:'failed',retries:3,maxRetries:2,blocker:'source-candidate-generation-failed',evidence:['old-failure']
+    }
+  ]});
+  const first=recoverFixedFullWebTransportFailures(queue);
+  assert.equal(first.recovered,1);
+  const repaired=first.queue.tasks.find(t=>t.id==='full-web');
+  assert.equal(repaired.status,'queued');
+  assert.equal(repaired.retries,0);
+  assert.equal(repaired.blocker,null);
+  assert.equal(repaired.lastOutcome,'RETRY_AFTER_INFRA_REPAIR');
+  assert.ok(repaired.evidence.includes('repair-retry:vibe2-full-web-stream-http-v1'));
+  assert.equal(first.queue.tasks.find(t=>t.id==='normal-web').status,'failed');
+  const second=recoverFixedFullWebTransportFailures(first.queue);
+  assert.equal(second.recovered,0);
 });
 
 test('protected or paid autonomous work remains ineligible', () => {
