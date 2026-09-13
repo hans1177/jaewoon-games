@@ -8,15 +8,19 @@ on:
       - '.github/workflows/company-development-unity-runtime.yml'
       - '.github/workflows/unity-android-regression.yml'
       - 'tools/company-selected-platform-router.mjs'
+      - 'tools/company-development-web-bootstrap.mjs'
+      - 'tools/company-development-web-gameplay-validation.mjs'
       - 'tools/company-development-unity-platform.mjs'
       - 'tools/company-development-unity-bootstrap.mjs'
       - 'tools/company-development-unity-evidence.mjs'
       - 'tools/company-development-validation-cycle.mjs'
       - 'tools/design-only-promotion-sync.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
+      - 'qa/company-development-web-runtime.test.mjs'
       - 'qa/company-development-unity-runtime.test.mjs'
       - 'qa/design-only-promotion-sync.test.mjs'
       - 'qa/company-speed-sequence-workflow.test.mjs'
+      - 'web-games/**'
   workflow_dispatch:
   schedule:
     - cron: '37 * * * *'
@@ -24,6 +28,7 @@ on:
 permissions:
   contents: write
   actions: write
+  pull-requests: write
 
 concurrency:
   group: company-development-confirmed-runtime
@@ -31,10 +36,298 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
+  WEB_COMPLETION_CONTRACT_VERSION: '2'
 
 jobs:
+  prepare:
+    name: prepare mandatory full Web companions
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    outputs:
+      web_run: ${{ steps.web.outputs.web_run }}
+      web_matrix: ${{ steps.web.outputs.web_matrix }}
+      web_refresh_count: ${{ steps.web.outputs.web_refresh_count }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify canonical Web and selected-platform contracts
+        run: |
+          set -euo pipefail
+          node --check tools/company-development-web-bootstrap.mjs
+          node --check tools/company-development-web-gameplay-validation.mjs
+          node --check tools/company-selected-platform-router.mjs
+          node --check tools/company-development-validation-cycle.mjs
+          node --check tools/company-development-unity-platform.mjs
+          node --check tools/company-development-uefn-platform.mjs
+          node --check tools/vibe3-roblox-platform.mjs
+          node --test qa/company-development-web-runtime.test.mjs
+          node --test qa/company-selected-platform-router.test.mjs
+          echo 'FULL_WEB_COMPANION_STATIC_GATE=PASS'
+
+      - name: Fetch current company runtime
+        run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+
+      - name: Detect stale or missing full Web companions
+        id: web
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
+          node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const version=Number(process.env.WEB_COMPLETION_CONTRACT_VERSION||2);
+          const rows=[];
+          for(const item of q.items||[]){
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            const status=String(item.status||'').toUpperCase();
+            if(!['ACTIVE','PENDING'].includes(status))continue;
+            const webSourcePath=String(item.webSourcePath||`web-games/${item.gameId}`).replace(/\/$/,'');
+            const metaPath=`${webSourcePath}/web-completion.json`;
+            let meta=null;
+            try{meta=JSON.parse(fs.readFileSync(metaPath,'utf8'));}catch{}
+            const ready=Boolean(
+              meta&&
+              Number(meta.contractVersion)===version&&
+              meta.gameId===item.gameId&&
+              meta.completionEligible===true&&
+              meta.generationMode==='MODEL_GENERATED_FULL_SCOPE'&&
+              meta.browserGameplayPassed===true&&
+              meta.musicRuntimePassed===true&&
+              meta.designBaselineSource===item.designBaselineSource
+            );
+            if(!ready){
+              rows.push({
+                gameId:item.gameId,
+                gameName:item.gameName||item.gameId,
+                webSourcePath,
+                designBaselineSource:item.designBaselineSource,
+                artbookSource:item.artbookSource
+              });
+            }
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`web_run=${rows.length?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`web_matrix=${JSON.stringify(rows)}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`web_refresh_count=${rows.length}\n`);
+          console.log(`FULL_WEB_REFRESH_COUNT=${rows.length}`);
+          console.log(`FULL_WEB_REFRESH_IDS=${rows.map(x=>x.gameId).join(',')}`);
+          NODE
+
+  web-refresh:
+    name: full Web companion (${{ matrix.item.gameName }})
+    needs: prepare
+    if: needs.prepare.outputs.web_run == 'true'
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        item: ${{ fromJSON(needs.prepare.outputs.web_matrix) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout canonical main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fetch immutable runtime design and artbook
+        run: git fetch origin "$COMPANY_RUNTIME_BRANCH"
+
+      - name: Resolve configured development lead model
+        id: model
+        shell: bash
+        run: |
+          set -euo pipefail
+          model="$(node -e "const d=require('./company-directive.json');process.stdout.write(String(d.ai?.departmentLeadModels?.development||'llama3.2:1b'))")"
+          test -n "$model"
+          echo "model=$model" >> "$GITHUB_OUTPUT"
+          echo "DEVELOPMENT_LEAD_MODEL=$model"
+
+      - name: Prepare free local development model
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: ${{ steps.model.outputs.model }}
+          version: '0.33.3'
+          pull-model: 'true'
+          department-role: development
+
+      - name: Materialize locked sources
+        id: context
+        env:
+          GAME_ID: ${{ matrix.item.gameId }}
+          WEB_SOURCE: ${{ matrix.item.webSourcePath }}
+          DESIGN_SOURCE: ${{ matrix.item.designBaselineSource }}
+          ARTBOOK_SOURCE: ${{ matrix.item.artbookSource }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$GAME_ID" && test -n "$WEB_SOURCE" && test -n "$DESIGN_SOURCE" && test -n "$ARTBOOK_SOURCE"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:$DESIGN_SOURCE" > /tmp/design-baseline.json
+          git show "origin/$COMPANY_RUNTIME_BRANCH:$ARTBOOK_SOURCE" > /tmp/current-artbook.json
+          candidate_id="${GAME_ID}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          candidate_path="web-games/.autonomous-candidates/$candidate_id"
+          branch="autonomous/web-refresh-${GAME_ID}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          evidence=".autonomous/evidence/$candidate_id.json"
+          mkdir -p "$(dirname "$evidence")"
+          {
+            echo "candidate_id=$candidate_id"
+            echo "candidate_path=$candidate_path"
+            echo "branch=$branch"
+            echo "evidence=$evidence"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Generate full approved-scope Web companion
+        env:
+          GAME_ID: ${{ matrix.item.gameId }}
+          GAME_NAME: ${{ matrix.item.gameName }}
+          WEB_SOURCE: ${{ matrix.item.webSourcePath }}
+          MODEL: ${{ steps.model.outputs.model }}
+        run: |
+          node tools/company-development-web-bootstrap.mjs \
+            --game-id="$GAME_ID" \
+            --game-name="$GAME_NAME" \
+            --baseline=/tmp/design-baseline.json \
+            --artbook=/tmp/current-artbook.json \
+            --source-path="$WEB_SOURCE" \
+            --candidate-id="${{ steps.context.outputs.candidate_id }}" \
+            --candidate-path="${{ steps.context.outputs.candidate_path }}" \
+            --source-commit="$GITHUB_SHA" \
+            --model="$MODEL" \
+            --evidence="${{ steps.context.outputs.evidence }}"
+
+      - name: Reject generic deterministic preview as completion
+        env:
+          EVIDENCE: ${{ steps.context.outputs.evidence }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const e=JSON.parse(fs.readFileSync(process.env.EVIDENCE,'utf8'));
+          if(e.generationMode!=='MODEL_GENERATED_FULL_SCOPE'){
+            console.error(`FULL_WEB_COMPLETION_BLOCKED=${e.generationMode||'UNKNOWN'}`);
+            console.error('GENERIC_WEB_RECOVERY_NOT_COMPLETION_EVIDENCE');
+            process.exit(3);
+          }
+          if(e.bootstrapContract?.pass!==true)throw new Error('bootstrap contract did not pass');
+          console.log('MODEL_GENERATED_FULL_SCOPE_GATE=PASS');
+          NODE
+
+      - name: Install real mobile browser validation runtime
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Execute actual mobile gameplay validation
+        env:
+          GAME_ID: ${{ matrix.item.gameId }}
+        run: |
+          mkdir -p qa-artifacts/development-web
+          node tools/company-development-web-gameplay-validation.mjs \
+            --game-id="$GAME_ID" \
+            --source="${{ steps.context.outputs.candidate_path }}" \
+            --port=4181 \
+            --output=/tmp/web-gameplay-validation.json \
+            --screenshot="qa-artifacts/development-web/$GAME_ID.png"
+
+      - name: Stage validated public Web replacement and completion evidence
+        env:
+          GAME_ID: ${{ matrix.item.gameId }}
+          WEB_SOURCE: ${{ matrix.item.webSourcePath }}
+          DESIGN_SOURCE: ${{ matrix.item.designBaselineSource }}
+          ARTBOOK_SOURCE: ${{ matrix.item.artbookSource }}
+          EVIDENCE: ${{ steps.context.outputs.evidence }}
+          CANDIDATE_PATH: ${{ steps.context.outputs.candidate_path }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$WEB_SOURCE"
+          cp "$CANDIDATE_PATH/index.html" "$WEB_SOURCE/index.html"
+          node <<'NODE'
+          const fs=require('fs');
+          const bootstrap=JSON.parse(fs.readFileSync(process.env.EVIDENCE,'utf8'));
+          const gameplay=JSON.parse(fs.readFileSync('/tmp/web-gameplay-validation.json','utf8'));
+          if(gameplay.pass!==true||gameplay.runtimeSmokePassed!==true)throw new Error('browser gameplay evidence failed');
+          const meta={
+            version:2,
+            contractVersion:Number(process.env.WEB_COMPLETION_CONTRACT_VERSION||2),
+            contract:'FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE',
+            gameId:process.env.GAME_ID,
+            completionEligible:true,
+            generationMode:bootstrap.generationMode,
+            approvedScopeRequiredCount:Number(bootstrap.approvedScopeRequiredCount||0),
+            bootstrapContractPassed:bootstrap.bootstrapContract?.pass===true,
+            browserGameplayPassed:gameplay.pass===true,
+            browserRuntimeSmokePassed:gameplay.runtimeSmokePassed===true,
+            gameplayInteractionPerformed:gameplay.gameplayInteractionPerformed===true,
+            musicRuntimePassed:true,
+            mobileViewport:gameplay.mobileViewport,
+            designBaselineSource:process.env.DESIGN_SOURCE,
+            artbookSource:process.env.ARTBOOK_SOURCE,
+            validatedAt:new Date().toISOString(),
+            sourceRunId:process.env.GITHUB_RUN_ID,
+            sourceRunAttempt:process.env.GITHUB_RUN_ATTEMPT
+          };
+          if(meta.generationMode!=='MODEL_GENERATED_FULL_SCOPE')throw new Error('non-model Web cannot be completion eligible');
+          fs.writeFileSync(`${process.env.WEB_SOURCE}/web-completion.json`,JSON.stringify(meta,null,2)+'\n');
+          console.log('FULL_WEB_BROWSER_GATE=PASS');
+          NODE
+
+      - name: Push isolated Web replacement branch and open PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.context.outputs.branch }}
+          GAME_ID: ${{ matrix.item.gameId }}
+          GAME_NAME: ${{ matrix.item.gameName }}
+          WEB_SOURCE: ${{ matrix.item.webSourcePath }}
+          EVIDENCE: ${{ steps.context.outputs.evidence }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-development-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git checkout -B "$BRANCH"
+          git add "$WEB_SOURCE/index.html" "$WEB_SOURCE/web-completion.json" "$EVIDENCE"
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git diff --cached --name-only | while read -r file; do
+            [[ "$file" == "$WEB_SOURCE/index.html" || "$file" == "$WEB_SOURCE/web-completion.json" || "$file" == "$EVIDENCE" ]] || { echo "unauthorized Web refresh path: $file" >&2; exit 1; }
+          done
+          git commit -m "web: refresh $GAME_ID full companion [skip ci]"
+          git push --force-with-lease origin HEAD:"$BRANCH"
+          pr="$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$BRANCH" --state open --json number --jq '.[0].number // empty')"
+          if [[ -z "$pr" ]]; then
+            gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$BRANCH" \
+              --title "web: refresh $GAME_NAME full companion" \
+              --body "Canonical DEVELOPMENT_CONFIRMED Web refresh. Requires MODEL_GENERATED_FULL_SCOPE + real 390x844 browser interaction/runtime validation. Generic deterministic recovery is not completion evidence."
+          else
+            echo "WEB_REFRESH_PR=EXISTING:$pr"
+          fi
+          echo 'PUBLIC_MAIN_WRITE=NO'
+
+      - name: Upload browser QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-web-${{ matrix.item.gameId }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: qa-artifacts/development-web/
+          retention-days: 7
+          if-no-files-found: ignore
+
   route:
-    name: route DEVELOPMENT_CONFIRMED selected platforms
+    name: gate Web then route DEVELOPMENT_CONFIRMED selected platforms
+    needs: [prepare, web-refresh]
+    if: always() && needs.prepare.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     outputs:
@@ -51,20 +344,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Verify selected-platform router contract
-        run: |
-          node --check tools/company-selected-platform-router.mjs
-          node --check tools/company-development-validation-cycle.mjs
-          node --check tools/company-development-unity-platform.mjs
-          node --check tools/company-development-uefn-platform.mjs
-          node --check tools/vibe3-roblox-platform.mjs
-          node --test qa/company-selected-platform-router.test.mjs
-
       - name: Fetch current company runtime
         run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
 
-      - name: Change detection and one routing decision point
+      - name: Enforce full Web companion before selected-platform routing
         id: route
         shell: bash
         run: |
@@ -77,18 +360,24 @@ jobs:
           import {resolveSelectedPlatform,adapterForPlatform,cheapPrecheck,canonicalTargetStep,canonicalTargetWaitingState} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const catalog=JSON.parse(fs.readFileSync('/tmp/game-catalog.json','utf8'));
+          const version=Number(process.env.WEB_COMPLETION_CONTRACT_VERSION||2);
           const updates=[];
           const platforms=new Set();
           for(const item of q.items||[]){
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const status=String(item.status||'').toUpperCase();
-            const step=String(item.currentStep||'').toUpperCase();
+            if(!['ACTIVE','PENDING'].includes(status))continue;
             const state=String(item.canonicalState||'').toUpperCase();
+            const step=String(item.currentStep||'').toUpperCase();
             if(state==='WAITING_REVALIDATION'||step==='TARGETED_REVALIDATION')continue;
-            const legacyActive=status==='ACTIVE'&&step==='UNITY_ANDROID_TECHNICAL_VALIDATION';
-            const pending=status==='PENDING';
-            const waiting=status==='ACTIVE'&&step==='TARGET_PLATFORM_TECHNICAL_VALIDATION';
-            if(!pending&&!legacyActive&&!waiting)continue;
+            const webSourcePath=String(item.webSourcePath||`web-games/${item.gameId}`).replace(/\/$/,'');
+            let meta=null;
+            try{meta=JSON.parse(fs.readFileSync(`${webSourcePath}/web-completion.json`,'utf8'));}catch{}
+            const webReady=Boolean(meta&&Number(meta.contractVersion)===version&&meta.gameId===item.gameId&&meta.completionEligible===true&&meta.generationMode==='MODEL_GENERATED_FULL_SCOPE'&&meta.browserGameplayPassed===true&&meta.musicRuntimePassed===true&&meta.designBaselineSource===item.designBaselineSource);
+            if(!webReady){
+              updates.push({gameId:item.gameId,status:'ACTIVE',webSourcePath,webValidationRequired:true,musicValidationRequired:true,webCompletionContractVersion:version,webCompletionEligible:false,currentStep:'WEB_PLAYABLE_BOOTSTRAP',canonicalState:'WAITING_WEB_COMPANION_COMPLETION',routingBlockers:['full-web-companion-v2-required'],updatedAt:new Date().toISOString()});
+              continue;
+            }
             const game=(catalog.games||[]).find(x=>x.id===item.gameId)||{};
             const platform=resolveSelectedPlatform(item,game);
             const adapter=adapterForPlatform(platform);
@@ -100,27 +389,26 @@ jobs:
             const precheck=cheapPrecheck({selectedPlatform:platform,sourceRevision:baselineRevision,sourcePath:targetSourcePath});
             const blockers=[...precheck.errors];
             if(adapter&&adapter.existingExecutionPath==null)blockers.push('platform-runtime-executor-not-configured');
+            const webFields={webSourcePath,webValidationRequired:true,musicValidationRequired:true,webCompletionContractVersion:version,webCompletionEligible:true,webGenerationMode:meta.generationMode,webValidationPassedAt:meta.validatedAt,webValidationEvidencePath:`${webSourcePath}/web-completion.json`};
             if(blockers.length){
-              updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',platformAdapter:adapter?.adapterPath||null,sourcePath:targetSourcePath,targetSourcePath,routingBlockers:blockers,updatedAt:new Date().toISOString()});
+              updates.push({gameId:item.gameId,status:'ACTIVE',...webFields,selectedPlatform:platform,targetPlatform:platform,currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',platformAdapter:adapter?.adapterPath||null,sourcePath:targetSourcePath,targetSourcePath,routingBlockers:blockers,updatedAt:new Date().toISOString()});
               continue;
             }
             platforms.add(platform);
-            updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:canonicalTargetStep(),canonicalState:canonicalTargetWaitingState(),platformAdapter:adapter.adapterPath,sourcePath:targetSourcePath,targetSourcePath,routingBlockers:[],routeRevision:baselineRevision,updatedAt:new Date().toISOString()});
+            updates.push({gameId:item.gameId,status:'ACTIVE',...webFields,selectedPlatform:platform,targetPlatform:platform,currentStep:canonicalTargetStep(),canonicalState:canonicalTargetWaitingState(),platformAdapter:adapter.adapterPath,sourcePath:targetSourcePath,targetSourcePath,routingBlockers:[],routeRevision:baselineRevision,updatedAt:new Date().toISOString()});
           }
           fs.mkdirSync('/tmp/development-route',{recursive:true});
           fs.writeFileSync('/tmp/development-route/updates.json',JSON.stringify(updates,null,2)+'\n');
-          const output=process.env.GITHUB_OUTPUT;
-          fs.appendFileSync(output,`routed_count=${updates.length}\n`);
-          fs.appendFileSync(output,`dispatch_unity=${platforms.has('UNITY')?'true':'false'}\n`);
-          fs.appendFileSync(output,`dispatch_roblox=${platforms.has('ROBLOX')?'true':'false'}\n`);
-          fs.appendFileSync(output,`dispatch_uefn=${platforms.has('FORTNITE_UEFN')?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`routed_count=${updates.length}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`dispatch_unity=${platforms.has('UNITY')?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`dispatch_roblox=${platforms.has('ROBLOX')?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`dispatch_uefn=${platforms.has('FORTNITE_UEFN')?'true':'false'}\n`);
           console.log(`DEVELOPMENT_ROUTE_COUNT=${updates.length}`);
           console.log(`DEVELOPMENT_ROUTE_PLATFORMS=${[...platforms].join(',')}`);
-          console.log('CHANGE_DETECTION=PASS');
-          console.log('CHEAP_PRECHECK=PASS_OR_BLOCK_RECORDED');
+          console.log('FULL_WEB_COMPANION_GATE=ENFORCED');
           NODE
 
-      - name: Persist canonical routed queue state
+      - name: Persist canonical gated queue state
         if: steps.route.outputs.routed_count != '0'
         shell: bash
         run: |
@@ -137,9 +425,11 @@ jobs:
             if(!item)throw new Error(`queue item missing: ${update.gameId}`);
             Object.assign(item,update);
           }
-          queue.routerContractVersion=2;
+          queue.routerContractVersion=3;
           queue.routerPolicy='COMPANY_FLOW.md';
-          queue.webGateRequired=false;
+          queue.webValidationPolicy='FULL_APPROVED_SCOPE_REQUIRED_BEFORE_TARGET_PLATFORM';
+          queue.webValidationContractVersion=2;
+          queue.webGateRequired=true;
           queue.cronRole='WATCHDOG_AND_RECOVERY_ONLY';
           queue.updatedAt=new Date().toISOString();
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
@@ -147,8 +437,13 @@ jobs:
           git add development-queue.json
           git diff --cached --check
           if ! git diff --cached --quiet; then
-            git commit -m 'runtime: route DEVELOPMENT_CONFIRMED by selected platform [skip ci]'
-            git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
+            git commit -m 'runtime: enforce full Web companion before platform route [skip ci]'
+            for attempt in 1 2 3; do
+              if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then break; fi
+              git fetch origin "$COMPANY_RUNTIME_BRANCH"
+              git rebase "origin/$COMPANY_RUNTIME_BRANCH"
+              sleep $((attempt * 2))
+            done
           fi
           echo 'DEVELOPMENT_ROUTER_PERSIST=PASS'
 
@@ -156,14 +451,16 @@ jobs:
         if: always()
         run: |
           echo 'DEVELOPMENT_PIPELINE=ONE_CANONICAL_PIPELINE'
-          echo 'WEB_GAMEPLAY_MUSIC_GATE=REMOVED_BY_OWNER'
+          echo 'FULL_WEB_COMPANION_GATE=REQUIRED_BEFORE_TARGET_PLATFORM'
+          echo 'GENERIC_DETERMINISTIC_WEB_COMPLETION=FORBIDDEN'
+          echo 'WEB_BROWSER_QA=REAL_INPUT_AND_STATE_CHANGE'
           echo 'PLATFORM_ROUTER=tools/company-selected-platform-router.mjs'
           echo 'CRON_ROLE=WATCHDOG_AND_RECOVERY_ONLY'
           echo 'QUALITY_GATE_WEAKENING=NO'
           echo 'PUBLIC_MAIN_WRITE=NO'
 
   dispatch:
-    name: immediate selected-platform handoff
+    name: immediate selected-platform handoff after Web gate
     needs: route
     if: always() && needs.route.result == 'success'
     runs-on: ubuntu-latest
