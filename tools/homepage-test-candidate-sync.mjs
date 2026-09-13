@@ -17,6 +17,20 @@ const checkoutRuntime=file=>execFileSync('git',['checkout',runtimeRef,'--',file]
 const sha256Text=value=>crypto.createHash('sha256').update(String(value??'')).digest('hex');
 const scoreOf=evidence=>Number(evidence?.webStrictScore??evidence?.strictReview?.totalScore);
 const homepagePass=evidence=>evidence?.homepageTestEligible===true&&Number.isFinite(scoreOf(evidence))&&scoreOf(evidence)>=minimumScore&&Array.isArray(evidence?.strictReview?.hardFailures)&&evidence.strictReview.hardFailures.length===0;
+const semanticJson=value=>{
+  const copy=JSON.parse(JSON.stringify(value??{}));
+  delete copy.updatedAt;
+  return JSON.stringify(copy);
+};
+const writeJsonIfSemanticChanged=(file,previous,next)=>{
+  if(semanticJson(previous)===semanticJson(next)){
+    console.log(`HOMEPAGE_TEST_SYNC_NOOP=${file}`);
+    return false;
+  }
+  const output={...next,updatedAt:new Date().toISOString()};
+  fs.writeFileSync(file,JSON.stringify(output,null,2)+'\n');
+  return true;
+};
 const structured30MinutePass=evidence=>{
   const session=evidence?.sessionContract||{};
   const windows=Array.isArray(session.windows)?session.windows:[];
@@ -96,8 +110,11 @@ for(const candidate of selected){
   checkoutRuntime(candidate.artbookSource);
 }
 
-const registry=readJson('game-artbooks.json',{version:1,artbooks:[],dailySubmissions:[]});
-registry.artbooks=Array.isArray(registry.artbooks)?registry.artbooks.filter(row=>row?.homepageTestCandidate!==true):[];
+const previousRegistry=readJson('game-artbooks.json',{version:1,artbooks:[],dailySubmissions:[]});
+const registry={
+  ...previousRegistry,
+  artbooks:Array.isArray(previousRegistry.artbooks)?previousRegistry.artbooks.filter(row=>row?.homepageTestCandidate!==true):[],
+};
 for(const candidate of selected){
   const artbook=readJson(candidate.artbookSource,{});
   registry.artbooks.push({
@@ -106,18 +123,18 @@ for(const candidate of selected){
     createdAt:clean(artbook.createdAt||artbook.date||candidate.validatedAt).slice(0,10),format:clean(artbook.format||'core-strategy'),sourceFile:candidate.artbookSource,
   });
 }
-registry.updatedAt=new Date().toISOString();
-fs.writeFileSync('game-artbooks.json',JSON.stringify(registry,null,2)+'\n');
+const registryChanged=writeJsonIfSemanticChanged('game-artbooks.json',previousRegistry,registry);
 
 const manifest={
-  version:5,updatedAt:new Date().toISOString(),policyDocument:'COMPANY_FLOW.md',officialCardRegistrationRequiresPromotionPass:true,
+  version:5,policyDocument:'COMPANY_FLOW.md',officialCardRegistrationRequiresPromotionPass:true,
   homepageTestShelf:{
     limit,minimumScore,minimumValidationSchema,order:'STRICT_IMPLEMENTATION_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresArtbook:true,requiresFreshSourceHash:true,requiresFreshDesignBaselineHash:true,requiresStructured30MinuteEvidence:true,hardGatesRequired:true,officialCard:false,promotionRequiredForOfficialCard:true,
     cutlineScore,replacementPolicy:'STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE;TIE_PRESERVES_VALID_INCUMBENT',tieBreak:['EXISTING_TOP30_RANK','PROMOTION_REVALIDATION_PASS','LATEST_VALIDATION','GAME_ID'],
   },
   candidates:selected,
 };
-fs.writeFileSync(manifestFile,JSON.stringify(manifest,null,2)+'\n');
+const manifestChanged=writeJsonIfSemanticChanged(manifestFile,previousManifest,manifest);
+const semanticChanged=registryChanged||manifestChanged;
 console.log(`HOMEPAGE_TEST_CANDIDATE_COUNT=${selected.length}`);
 console.log(`HOMEPAGE_TEST_CANDIDATE_IDS=${selected.map(x=>x.gameId).join(',')}`);
 console.log(`HOMEPAGE_TEST_STALE_EVIDENCE_REJECTED=${staleEvidenceCount}`);
@@ -128,3 +145,4 @@ console.log(`HOMEPAGE_TEST_CUTLINE_SCORE=${cutlineScore??'OPEN'}`);
 console.log('HOMEPAGE_TEST_REPLACEMENT=STRICTLY_HIGHER_SCORE;TIE_PRESERVES_INCUMBENT');
 console.log('HOMEPAGE_TEST_ORDER=STRICT_IMPLEMENTATION_SCORE_DESC');
 console.log('HOMEPAGE_TEST_REQUIRES=WEB+POST_WEB_ARTBOOK+80_SCORE+NO_HARD_FAILURE+FRESH_HASHES+STRUCTURED_30MIN');
+console.log(`HOMEPAGE_TEST_SYNC_CHANGED=${semanticChanged?'YES':'NO'}`);
