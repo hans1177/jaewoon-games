@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "game_seed_generation"
+          "game_seed_platform_profiles.json"
         ],
         "fix": [
-          "game_seed_generation"
+          "game_seed_market_evidence.json"
         ],
         "add": [
-          "game_seed_style"
+          "game_seed_platform_profiles.json"
         ],
         "risks": [
-          "game_seed_risk"
+          "game_seed_market_evidence.json"
         ],
         "evidence": [
-          "game_seed_evidence"
+          "game_seed_market_evidence.json"
         ],
         "questions": [
-          "game_seed_question"
+          "game_seed_market_evidence.json"
         ]
       }
     },
@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "gameId"
+          "game-seed-platform-profiles.json"
         ],
         "fix": [
-          "gameId"
+          "game-seed-game-category.json"
         ],
         "add": [
-          "gameId"
+          "game-seed-core-loop.json"
         ],
         "risks": [
-          "gameId"
+          "game-seed-core-loop.json"
         ],
         "evidence": [
-          "gameId"
+          "game-seed-market-evidence.json"
         ],
         "questions": [
-          "gameId"
+          "game-seed-market-evidence.json"
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "playerFantasy"
+          "version: 1"
         ],
         "fix": [
-          "coreFun"
+          "seedId: OWNER-RESET-BUG-DEFENSE-20260913"
         ],
         "add": [
-          "signatureSystems"
+          "gameId: bug-defense"
         ],
         "risks": [
-          "validationQuestions"
+          "GAME_SEED"
         ],
         "evidence": [
-          "MARKET_EVIDENCE_SUMMARY"
+          "GAME_SEED"
         ],
         "questions": [
-          "progressionDirection"
+          "ASSIGNED_DEPARTMENTS"
         ]
       }
     }

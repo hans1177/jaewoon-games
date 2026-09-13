@@ -9755,10 +9755,23 @@
         "materialFamilies": [],
         "validatedRealEvidence": false,
         "recordedAt": "2026-09-13T12:21:10.492Z"
+      },
+      {
+        "gameId": "bug-defense",
+        "seedId": "OWNER-RESET-BUG-DEFENSE-20260913",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "verdict": "REVISE",
+        "totalScore": 91,
+        "hardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "recordedAt": "2026-09-13T12:37:36.554Z"
       }
     ],
     "causeCounts": {
-      "CORE_FUN_WEAK": 2
+      "CORE_FUN_WEAK": 3
     },
     "preferSeedMaterialFamilies": [],
     "avoidSeedMaterialFamilies": [],
@@ -9769,6 +9782,6 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-13T12:21:10.493Z"
+    "updatedAt": "2026-09-13T12:37:36.555Z"
   }
 }

@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "playerFantasy"
+          "version: 1"
         ],
         "fix": [
-          "coreFun"
+          "seedId: OWNER-RESET-BUG-DEFENSE-20260913"
         ],
         "add": [
-          "signatureSystems"
+          "gameId: bug-defense"
         ],
         "risks": [
-          "validationQuestions"
+          "GAME_SEED"
         ],
         "evidence": [
-          "MARKET_EVIDENCE_SUMMARY"
+          "GAME_SEED"
         ],
         "questions": [
-          "progressionDirection"
+          "ASSIGNED_DEPARTMENTS"
         ]
       }
     },
@@ -43,24 +43,12 @@
       "model": "smollm2:1.7b",
       "memberRole": "ASSISTANT",
       "review": {
-        "keep": [
-          "place or adjust defenders and spend limited resources on the highest-value counter."
-        ],
-        "fix": [
-          "place or adjust defenders and spend limited resources on the highest-value counter."
-        ],
-        "add": [
-          "place or adjust defenders and spend limited resources on the highest-value counter."
-        ],
-        "risks": [
-          "survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
-        ],
-        "evidence": [
-          "place or adjust defenders and spend limited resources on the highest-value counter."
-        ],
-        "questions": [
-          "what is the target audience of the game?"
-        ]
+        "keep": [],
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [],
+        "questions": []
       }
     },
     {
@@ -68,22 +56,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "the main idea of the game"
+          "game-design-identity-1"
         ],
         "fix": [
-          "the target audience of the game"
+          "game-design-identity-2"
         ],
         "add": [
-          "the core gameplay mechanic of the game"
+          "game-design-identity-3"
         ],
         "risks": [
-          "the main idea of the game"
+          "game-design-identity-4"
         ],
         "evidence": [
-          "the target audience of the game"
+          "game-design-identity-5"
         ],
         "questions": [
-          "the main idea of the game"
+          "game-design-identity-6"
         ]
       }
     }

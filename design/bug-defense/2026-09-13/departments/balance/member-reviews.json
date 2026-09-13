@@ -19,24 +19,12 @@
       "model": "smollm2:1.7b",
       "memberRole": "LEAD",
       "review": {
-        "keep": [
-          "place or adjust defenders and spend limited resources on the highest-value counter."
-        ],
-        "fix": [
-          "place or adjust defenders and spend limited resources on the highest-value counter."
-        ],
-        "add": [
-          "place or adjust defenders and spend limited resources on the highest-value counter."
-        ],
-        "risks": [
-          "survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
-        ],
-        "evidence": [
-          "place or adjust defenders and spend limited resources on the highest-value counter."
-        ],
-        "questions": [
-          "what is the core gameplay mechanic of the game?"
-        ]
+        "keep": [],
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [],
+        "questions": []
       }
     },
     {
@@ -44,22 +32,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "the main idea of the game"
+          "game-design-identity-1"
         ],
         "fix": [
-          "the target audience of the game"
+          "game-design-identity-2"
         ],
         "add": [
-          "the core gameplay mechanic of the game"
+          "game-design-identity-3"
         ],
         "risks": [
-          "the main idea of the game"
+          "game-design-identity-4"
         ],
         "evidence": [
-          "the target audience of the game"
+          "game-design-identity-5"
         ],
         "questions": [
-          "the main idea of the game"
+          "game-design-identity-6"
         ]
       }
     },
@@ -68,22 +56,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "game_seed_balance"
+          "game_seed_platform_profiles.json"
         ],
         "fix": [
-          "game_seed_balance"
+          "game_seed_market_evidence.json"
         ],
         "add": [
-          "game_seed_core_loop"
+          "game_seed_platform_profiles.json"
         ],
         "risks": [
-          "game_seed_risk"
+          "game_seed_market_evidence.json"
         ],
         "evidence": [
-          "game_seed_evidence"
+          "game_seed_market_evidence.json"
         ],
         "questions": [
-          "game_seed_question"
+          "game_seed_market_evidence.json"
         ]
       }
     }

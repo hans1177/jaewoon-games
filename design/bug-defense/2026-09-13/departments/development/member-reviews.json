@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "gameId"
+          "game-seed-core-loop.json"
         ],
         "fix": [
-          "gameId"
+          "game-seed-unique-id.json"
         ],
         "add": [
-          "gameId"
+          "game-seed-game-category.json"
         ],
         "risks": [
-          "gameId"
+          "game-seed-core-loop.json"
         ],
         "evidence": [
-          "gameId"
+          "game-seed-market-evidence.json"
         ],
         "questions": [
-          "gameId"
+          "game-seed-market-evidence.json"
         ]
       }
     },
@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "playerFantasy"
+          "version: 1"
         ],
         "fix": [
-          "coreFun"
+          "seedId: OWNER-RESET-BUG-DEFENSE-20260913"
         ],
         "add": [
-          "signatureSystems"
+          "gameId: bug-defense"
         ],
         "risks": [
-          "validationQuestions"
+          "GAME_SEED"
         ],
         "evidence": [
-          "MARKET_EVIDENCE_SUMMARY"
+          "GAME_SEED"
         ],
         "questions": [
-          "progressionDirection"
+          "ASSIGNED_DEPARTMENTS"
         ]
       }
     },
@@ -68,23 +68,13 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "read the incoming insect wave and its threat pattern."
+          "wave defense readability"
         ],
-        "fix": [
-          "place or adjust defenders and spend limited resources on the highest-value counter."
-        ],
-        "add": [
-          "place or adjust defenders and spend limited resources on the highest-value counter."
-        ],
-        "risks": [
-          "survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
-        ],
-        "evidence": [
-          "place or adjust defenders and spend limited resources on the highest-value counter."
-        ],
-        "questions": [
-          "what is the main idea of the game?"
-        ]
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [],
+        "questions": []
       }
     }
   ]
