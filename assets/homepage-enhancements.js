@@ -31,9 +31,9 @@ const platformLabel=value=>{
 };
 
 const CATEGORY_META={
-  'release-confirmed':{order:1,title:'출시확정',note:'선택 플랫폼 출시 본개발',className:'release'},
-  'development-confirmed':{order:2,title:'개발확정',note:'Web 전체 승인 범위 · 선택 플랫폼 검증',className:'development'},
-  'design-only':{order:3,title:'3분류',note:'아트북 · 컨셉 · 설계 최적화',className:'design'}
+  'release-confirmed':{order:1,title:'로블록스',note:'Roblox 개발 게임',className:'release'},
+  'development-confirmed':{order:2,title:'유니티',note:'Unity 개발 게임',className:'development'},
+  'design-only':{order:3,title:'포트나이트',note:'Fortnite UEFN 개발 게임',className:'design'}
 };
 
 function installStyles(){
@@ -153,6 +153,27 @@ function getReleaseDate(game,baseline,build){
   return game?.releaseDate||game?.releasedAt||game?.publishedAt||baseline?.releaseDate||baseline?.releasedAt||baseline?.publishedAt||build?.releasedAt||null;
 }
 
+function getHomepagePlatform(game,status){
+  const focus=status?.operations?.autonomousFocus?.games?.find(row=>row.slug===game.id||row.gameId===game.id);
+  const project=status?.projects?.find(row=>row.gameId===game.id||row.name===game.name);
+  const ranking=status?.operations?.productionClasses?.ranking?.find(row=>row.slug===game.id||row.gameId===game.id);
+  const candidates=[game.selectedPlatform,focus?.selectedPlatform,project?.selectedPlatform,project?.target,ranking?.targetPlatform,game.productionTarget,status?.policy?.primaryPlatform,'ROBLOX'];
+  for(const value of candidates){
+    const platform=normalizePlatform(value);
+    if(platform==='ROBLOX')return'ROBLOX';
+    if(['UNITY','UNITY_ANDROID'].includes(platform))return'UNITY';
+    if(['FORTNITE','FORTNITE_UEFN','UEFN'].includes(platform))return'FORTNITE_UEFN';
+  }
+  return'ROBLOX';
+}
+
+function getHomepagePlatformCategory(game,status){
+  const platform=getHomepagePlatform(game,status);
+  if(platform==='UNITY')return'development-confirmed';
+  if(platform==='FORTNITE_UEFN')return'design-only';
+  return'release-confirmed';
+}
+
 function buildFocus(catalog,status,artbooks){
   const hero=document.getElementById('hero');
   if(!hero)return;
@@ -191,7 +212,7 @@ function buildFocus(catalog,status,artbooks){
 }
 
 function buildGameCard(game,catalog,status,baselines,artbooks){
-  const category=CATEGORY_META[game.homepageCategory]||CATEGORY_META['design-only'];
+  const category=CATEGORY_META[getHomepagePlatformCategory(game,status)];
   const build=getGameBuild(status,game.id);
   const baseline=getGameBaseline(baselines,game.id);
   const artbook=getLatestArtbook(artbooks,game.id);
@@ -201,7 +222,7 @@ function buildGameCard(game,catalog,status,baselines,artbooks){
   const releaseDate=getReleaseDate(game,baseline,build);
   const releaseText=releaseDate?`출시 ${formatDate(releaseDate)}`:(game.homepageCategory==='release-confirmed'?'출시일 정보 없음':'출시 전');
   const webPlayable=game.homepageWebPlayable===true&&Boolean(game.webPath);
-  const selectedPlatform=game.selectedPlatform||game.productionTarget;
+  const selectedPlatform=getHomepagePlatform(game,status);
   const selectedPlatformName=platformLabel(selectedPlatform);
   const unityUrl=baseline?.rollbackActive&&baseline?.fallbackDownload?baseline.fallbackDownload:build?.download;
   const unityLabel=baseline?.rollbackActive&&baseline?.fallbackDownload?'안정판 APK':build?'Unity 테스트':'Unity 준비중';
@@ -254,8 +275,7 @@ function buildGameCenter(catalog,status,baselines,artbooks){
   const games=catalog?.games||[];
   const grouped=new Map(Object.keys(CATEGORY_META).map(key=>[key,[]]));
   for(const game of games){
-    const key=grouped.has(game.homepageCategory)?game.homepageCategory:'design-only';
-    grouped.get(key).push(game);
+    grouped.get(getHomepagePlatformCategory(game,status)).push(game);
   }
   const wrapper=document.createElement('div');
   wrapper.id='homeFoldedGameCenter';
