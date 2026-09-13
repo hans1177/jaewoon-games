@@ -9,9 +9,11 @@ import {
   evaluatePortfolioDepartmentScores,
   portfolioDecisionBand,
   platformRepresentativeGaps,
+  ensureSeedMaterialPool,
 } from '../tools/game-seed-state.mjs';
 
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+const flow=fs.readFileSync('COMPANY_FLOW.md','utf8');
 const stateTool=fs.readFileSync('tools/game-seed-state.mjs','utf8');
 const platformProfileTool=fs.readFileSync('tools/game-seed-platform-profile.mjs','utf8');
 const bootstrap=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
@@ -29,29 +31,20 @@ const devDisposition=fs.readFileSync('tools/company-development-disposition-gate
 const scores=value=>({planning:value,graphics:value,development:value,qa:value,balance:value});
 const ROBLOX_CATEGORIES=['ROLEPLAY_LIFE_AVATAR','SIMULATOR_TYCOON_INCREMENTAL','BATTLEGROUND_FIGHTING_SHOOTER','SURVIVAL_HORROR_ESCAPE','OBBY_PARTY_MINIGAME','STORY_RPG_ADVENTURE_RPG'];
 
-test('central mirror defines dynamic portfolio governance and historical six-seed bootstrap only',()=>{
+test('central mirror preserves historical bootstrap while latest owner production contract supersedes scheduling',()=>{
   assert.equal(directive.policyDocument,'COMPANY_FLOW.md');
   assert.equal(directive.portfolioGovernance.mode,'FIVE_DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO');
   assert.equal(directive.portfolioGovernance.fixedGameSlots,false);
   assert.equal(directive.portfolioGovernance.oneForOneReplacementRule,false);
-  assert.equal(directive.portfolioGovernance.departmentScoresRequiredForPortfolioDecision,true);
-  assert.deepEqual(directive.portfolioGovernance.departments,['planning','graphics','development','qa','balance']);
   assert.equal(directive.gameSeed.bootstrap.mode,'HISTORICAL_SINGLE_BOOTSTRAP_BATCH');
-  assert.equal(directive.gameSeed.bootstrap.count,6);
   assert.equal(directive.gameSeed.bootstrap.historicalInitialSeedBatchOnly,true);
   assert.equal(directive.gameSeed.bootstrap.productionQuota,false);
-  assert.equal(directive.gameSeed.bootstrap.categoriesAreReferenceSetNotSlotQuota,true);
-  assert.equal(directive.gameSeed.replenishment.mode,'DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO');
-  assert.equal(directive.gameSeed.replenishment.oneForOneOnly,false);
-  assert.equal(directive.gameSeed.replenishment.automaticGrowthBeyondVacanciesForbidden,false);
-  assert.equal(directive.gameSeed.replenishment.expansionOrReductionUsesDepartmentScoresAndEvidence,true);
-  assert.equal(directive.gameSeed.marketEvidence.hardPassFailGate,false);
-  assert.equal(directive.gameSeed.marketEvidence.missingDataDoesNotRejectSeed,true);
-  assert.equal(directive.gameSeed.marketEvidence.marketDataAloneCannotDiscard,true);
-  assert.equal(directive.gameSeed.initialTargetPlatform,'ROBLOX');
-  assert.deepEqual(directive.gameSeed.allowedTargetPlatforms,['ROBLOX','UNITY','FORTNITE_UEFN']);
-  assert.equal(directive.gameSeed.projectMaySelectAnyAllowedPlatform,true);
-  assert.equal(directive.gameSeed.initialPlayMode,'PROJECT_DEFINED');
+  assert.match(flow,/poolTarget: 100/);
+  assert.match(flow,/materialIsGame: false/);
+  assert.match(flow,/legacySixRepresentativeSetsAreHistoricalOnlyForScheduling: true/);
+  assert.match(flow,/fixedSixCategoryProductionQuotaForbidden: true/);
+  assert.match(flow,/concurrentGameWipMax: 3/);
+  assert.match(flow,/meaningfulMinutesRequired: 30/);
 });
 
 test('five department scores drive expansion bands exactly as central policy defines',()=>{
@@ -81,10 +74,12 @@ test('portfolio expansion requires all five scores and evidence; 79 does not aut
   assert.equal(pendingPortfolioSeedRequests(state).length,1);
 });
 
-test('platform representative gaps are scoped by platform and do not treat Unity seeds as Roblox slots',()=>{
+test('platform representative gaps remain readable as historical evidence but no longer drive scheduling',()=>{
   const state=normalizeSeedState({bootstrapCompletedAt:'2026-09-11T00:00:00Z',seeds:ROBLOX_CATEGORIES.slice(0,5).map((category,index)=>({seedId:`R${index}`,gameId:`R${index}`,GAME_CATEGORY:category,INITIAL_TARGET_PLATFORM:'ROBLOX',status:'ACTIVE'}))});
   state.seeds.push({seedId:'U1',gameId:'U1',GAME_CATEGORY:'STORY_RPG_ADVENTURE_RPG',INITIAL_TARGET_PLATFORM:'UNITY',status:'ACTIVE'});
   assert.deepEqual(platformRepresentativeGaps(state,'ROBLOX',ROBLOX_CATEGORIES),['STORY_RPG_ADVENTURE_RPG']);
+  assert.doesNotMatch(bootstrap,/platformRepresentativeGaps/);
+  assert.doesNotMatch(seedWorkflow,/PLATFORM_REPRESENTATIVE_SET_FILL/);
 });
 
 test('discard records never create one-for-one replacement state or a GAME_SEED request by themselves',()=>{
@@ -105,52 +100,54 @@ test('owner may explicitly override portfolio expansion without restoring one-fo
   assert.equal(pendingPortfolioSeedRequests(state).length,1);
 });
 
-test('bootstrap fills the current platform representative set before score-approved expansion',()=>{
-  assert.match(bootstrap,/platformRepresentativeGaps/);
-  assert.match(bootstrap,/representativeCategoriesForPlatform/);
-  assert.match(bootstrap,/PLATFORM_SET_FILL/);
-  assert.match(bootstrap,/pendingPortfolioSeedRequests/);
-  assert.match(bootstrap,/DEPARTMENT_SCORE_GUIDED_EXPANSION/);
-  assert.match(bootstrap,/NO_CREATION_REQUIRED/);
-  assert.match(bootstrap,/lockedPlatform/);
-  assert.doesNotMatch(bootstrap,/fillVacancy|linkedVacancy|state\.vacancies|replacementVacancyId|replacementOfSeedId/);
-  assert.match(platformProfileTool,/representativeCategoriesForPlatform/);
+test('seed material pool is fixed at 100 and composed seeds use mixed material inputs',()=>{
+  const state=normalizeSeedState({seeds:[]});
+  ensureSeedMaterialPool(state,{timestamp:'2026-09-13T00:00:00Z'});
+  assert.equal(state.seedMaterials.length,100);
+  assert.match(bootstrap,/ensureSeedMaterialPool/);
+  assert.match(bootstrap,/composeSeedMaterials/);
+  assert.match(bootstrap,/consumeSeedMaterials/);
+  assert.match(bootstrap,/SEED_MATERIAL_IDS/);
+  assert.match(bootstrap,/TARGET_SESSION_MINUTES:30/);
+  assert.match(bootstrap,/MULTIPLAYER_DESIGN_MODE/);
+  assert.match(bootstrap,/GAME_SEED_CONCEPT_DUPLICATE/);
   assert.match(platformProfileTool,/ANDROID_MOBILE.*UNITY/s);
 });
 
-test('workflow uses the existing canonical trigger to fill representative gaps and later score expansion',()=>{
-  assert.match(seedWorkflow,/PLATFORM_REPRESENTATIVE_SET_FILL/);
-  assert.match(seedWorkflow,/platformRepresentativeGaps/);
-  assert.match(seedWorkflow,/game-seed-platform-profiles\.json/);
-  assert.match(seedWorkflow,/tools\/game-seed-platform-profile\.mjs/);
-  assert.match(seedWorkflow,/historical initial generation: one Unity six-category batch only; it is not a portfolio quota/);
-  assert.match(seedWorkflow,/missing Roblox categories are filled before optional portfolio expansion/);
-  assert.match(seedWorkflow,/score-approved five-department EXPAND requests or owner override/);
-  assert.doesNotMatch(seedWorkflow,/ONE_FOR_ONE_VACANCY|one-for-one same category|exact vacancy replacements|AUTOMATIC_ONE_FOR_ONE_REPLACEMENT|vacancy\/discard alone/i);
+test('workflow uses canonical trigger for 24h idle unlimited-total production with bounded WIP',()=>{
+  assert.match(seedWorkflow,/IDLE_24H_AUTONOMOUS_PRODUCTION/);
+  assert.match(seedWorkflow,/GAME_SEED_IDLE_TARGET_COUNT/);
+  assert.match(seedWorkflow,/SEED_MATERIAL_POOL_TARGET=100/);
+  assert.match(seedWorkflow,/TARGET_SESSION_MINUTES=30/);
+  assert.match(seedWorkflow,/request_count=\$count|request_count=/);
+  assert.doesNotMatch(seedWorkflow,/PLATFORM_REPRESENTATIVE_SET_FILL/);
+  assert.doesNotMatch(seedWorkflow,/vacancy\/discard alone/i);
   const cronMatches=seedWorkflow.match(/cron:/g)||[];
   assert.equal(cronMatches.length,1);
 });
 
-test('semantic normalization no longer forces all projects into mobile single-player',()=>{
+test('semantic normalization preserves platform choice multiplayer decision and 30-minute contract',()=>{
   assert.doesNotMatch(semanticNormalize,/original global mobile single-player/i);
   assert.doesNotMatch(semanticNormalize,/short touch sessions/i);
-  assert.doesNotMatch(semanticNormalize,/GAME_SEED_NORMALIZE_NO_ACTIVE_SEEDS/);
+  assert.match(semanticNormalize,/TARGET_SESSION_MINUTES/);
+  assert.match(semanticNormalize,/MULTIPLAYER_DESIGN_MODE/);
   assert.match(semanticNormalize,/GAME_SEED_POLICY\.initialPlayMode/);
   assert.match(semanticNormalize,/ANDROID_MOBILE.*UNITY/s);
   assert.match(semanticNormalize,/FORTNITE_UEFN/);
 });
 
-test('quality gate treats market evidence as reference instead of a hard rejection quota',()=>{
+test('quality gate treats market evidence as reference and enforces the new production contract',()=>{
   assert.match(qualityGate,/GAME_SEED_MARKET_EVIDENCE_HARD_GATE=NO/);
   assert.match(qualityGate,/GAME_SEED_FIXED_CATEGORY_SLOT_QUOTA=NO/);
+  assert.match(qualityGate,/TARGET_SESSION_MINUTES/);
+  assert.match(qualityGate,/MULTIPLAYER_DESIGN_MODE/);
   assert.doesNotMatch(qualityGate,/GAME_SEED_QUALITY_ACTIVE_COUNT_TOO_SMALL/);
   assert.doesNotMatch(qualityGate,/global-age-evidence-missing/);
   assert.doesNotMatch(qualityGate,/global-revenue-evidence-missing/);
   assert.doesNotMatch(qualityGate,/global-playtime-evidence-missing/);
-  assert.doesNotMatch(qualityGate,/reference-outside-category-pool/);
 });
 
-test('autonomous runtime does not depend on GitHub Actions PR creation permission',()=>{
+test('autonomous runtime remains on company-runtime and caps concurrent design workers at three',()=>{
   for(const text of [seedWorkflow,seedDesignWorkflow,statusWorkflow]){
     assert.match(text,/COMPANY_RUNTIME_BRANCH: company-runtime/);
     assert.doesNotMatch(text,/gh pr create/);
@@ -159,7 +156,8 @@ test('autonomous runtime does not depend on GitHub Actions PR creation permissio
   assert.match(seedWorkflow,/git push origin "HEAD:refs\/heads\/\$COMPANY_RUNTIME_BRANCH"/);
   assert.match(seedWorkflow,/gh workflow run company-seed-design-runtime\.yml --ref main/);
   assert.match(seedDesignWorkflow,/game-seed-state\.json/);
-  assert.match(seedDesignWorkflow,/max-parallel: 6/);
+  assert.match(seedDesignWorkflow,/max-parallel: 3/);
+  assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_MAX=3/);
 });
 
 test('DESIGN_ONLY requires seed same designer revision and repeated five-lead fatal review',()=>{

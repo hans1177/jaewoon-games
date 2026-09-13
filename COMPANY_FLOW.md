@@ -19,6 +19,129 @@ priority:
   - IMPLEMENTATION_TOOL_CONTRACTS
   - STATUS_AUDIT_BUILD_HEALTH_EVIDENCE
 
+ownerCurrentProductionContract:
+  recordedAt: 2026-09-13
+  authority: OWNER_LATEST_DIRECT_INSTRUCTION
+  supersedesConflictingLegacySchedulingAndSeedRulesBelow: true
+  seedMaterials:
+    poolTarget: 100
+    materialIsGame: false
+    gameReferenceIsOptionalMaterialType: true
+    allowedSourceFamilies:
+      - SUCCESSFUL_GAME_STRUCTURE
+      - STORY_OR_NARRATIVE_STRUCTURE
+      - REAL_JOB_INDUSTRY_LIFE
+      - NATURE_ECOLOGY_SCIENCE
+      - SPORT_BOARD_PLAY_RULE
+      - SOCIAL_COOP_COMPETITION
+      - SURVIVAL_ESCAPE_RISK
+      - SPACE_BUILDING_OPERATION
+      - SYSTEM_MECHANIC_EXPERIMENT
+      - FREE_ORIGINAL_IDEA
+    combinePerGameSeed:
+      min: 2
+      max: 4
+    sameCategoryOrSameReferenceMayRepeat: true
+    finalConceptMaterialDuplicateForbidden: true
+    replenishment: KEEP_100_AVAILABLE_OR_RESERVED_MATERIALS
+  gameSeedMeaning:
+    seedMaterialIsNotGameProject: true
+    gameSeedBeginsOnlyAfterMaterialComposition: true
+    gameProjectBeginsAfterDesignGate: true
+    actualGameCountCap: null
+  categoryAndPlatform:
+    legacySixRepresentativeSetsAreHistoricalOnlyForScheduling: true
+    fixedSixCategoryProductionQuotaForbidden: true
+    categorySelectionMayRoundRobin: true
+    selectedPlatformMustDriveImplementationAndScoring: true
+    webIsNotNativeDevelopmentSubstitute: true
+  multiplayer:
+    decisionStage: GAME_DESIGN
+    allowedModes:
+      - SINGLE
+      - COOP
+      - COMPETITIVE
+      - HYBRID
+    lateUnplannedMultiplayerAttachmentForbidden: true
+    multiplayerDesignMustDefineParticipantsSessionJoinRulesRewardsExitReconnectAndCoreInteraction: true
+    multiplayerQaRequiresTwoOrMoreRealParticipantsWhenApplicable: true
+    meaningfulLoopRequired: MEET_TO_COOPERATE_OR_COMPETE_TO_RESULT_TO_REWARD_OR_PROGRESSION
+  firstSession:
+    meaningfulMinutesRequired: 30
+    phases:
+      - MINUTE_0_TO_5_CONTROL_OBJECTIVE_WORLD_ENTRY
+      - MINUTE_5_TO_15_CORE_LOOP_REPETITION_AND_FIRST_PROGRESSION_OR_CHOICE
+      - MINUTE_15_TO_25_VARIATION_ESCALATION_STORY_OR_STRATEGY_CHANGE
+      - MINUTE_25_TO_30_MID_GOAL_REWARD_AND_NEXT_PLAY_MOTIVATION
+    paddingByHealthIdleWaitOrPureRepetitionForbidden: true
+  strictReview:
+    scoreScale: 100
+    passMinimum: 90
+    scoreCannotOverrideHardGate: true
+    weights:
+      IDEA_AND_DISTINCTNESS: 15
+      CATEGORY_FIT: 10
+      PLATFORM_FIT: 10
+      DESIGN_FIDELITY: 15
+      THIRTY_MINUTE_SESSION_QUALITY: 15
+      IMPLEMENTATION_COMPLETENESS: 15
+      STORY_AND_CAUSALITY: 10
+      PROGRESSION_ECONOMY_BALANCE: 5
+      ART_AND_DIRECTION_FIDELITY: 5
+    hardRejectCodes:
+      - DESIGN_MISMATCH
+      - STORY_INCOHERENT
+      - CORE_FUN_WEAK
+      - 30MIN_CONTENT_FAIL
+      - MULTIPLAYER_MISSING
+      - CATEGORY_MISMATCH
+      - IMPLEMENTATION_INCOMPLETE
+      - ARTBOOK_MISMATCH
+      - REPETITIVE_CONTENT
+      - GENERIC_TEMPLATE
+      - TARGET_PLATFORM_UX_FAIL
+      - FATAL_RUNTIME_BUG
+      - QA_EVIDENCE_MISSING
+    scoreBands:
+      PASS: 90_TO_100_AND_ALL_HARD_GATES_PASS
+      REVISE: 65_TO_89_OR_CORRECTABLE_HARD_GATE
+      REBUILD: 0_TO_64_OR_STRUCTURAL_FAILURE
+    rejectHandling:
+      correctable: FIX_EXISTING_CANDIDATE_AND_REVALIDATE
+      structural: REMOVE_TEST_CANDIDATE_AND_REBUILD_FROM_APPROVED_DESIGN
+      automaticDropOnFirstFailureForbidden: true
+  homepageTesting:
+    ownerMayTestBeforeFinalPromotion: true
+    prePromotionDisplay: COMPACT_TEST_GAME_SHELF_ONLY
+    prePromotionOfficialGameCardForbidden: true
+    testCandidateMustBeClearlyMarkedNotPass: true
+    officialCardRegistrationRequiresStrictPassAndPromotion: true
+    reviseCandidateReturnsToSameCompactTestShelfAfterFix: true
+  productionThroughput:
+    totalWebTestCandidateCountCap: null
+    totalGameProductionCountCap: null
+    concurrentGameWipMax: 3
+    idleAutonomousProduction:
+      enabled: true
+      requiresNoHigherPriorityWorkForHours: 24
+      seedMaterialPoolMustRemainAtTarget: true
+      continueWhileIdleAndFreeCapacityExists: true
+      totalProductionCountUnlimited: true
+      cronRole: WATCHDOG_ONLY
+      eventChainRemainsPrimaryProgression: true
+    qualityGateWeakeningForThroughputForbidden: true
+  learningFeedback:
+    continueLearning: true
+    recordPassReviseRebuildCauses: true
+    recordFixAndRevalidationOutcome: true
+    recordMaterialFamiliesAndCombinations: true
+    nextMaterialSelectionMayUsePreferAvoidSignals: true
+    designOpinionAloneCannotBecomeValidatedTrainingSuccess: true
+    validatedRuntimeEvidenceRequiredForPositiveTrainingSignal: true
+    originalNamesStoryCharactersWorldMapsArtOrCodeMustNotBeCopiedThroughLearning: true
+    existingCanonicalDistillationAndTrainerOnly: true
+    newParallelTrainerForbidden: true
+
 pipelineExecution:
   existingPipelineIsAuthoritative: true
   reuseExistingPipelineRequired: true
