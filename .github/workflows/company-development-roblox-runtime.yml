@@ -387,6 +387,7 @@ jobs:
             const state=String(item.canonicalState||'').toUpperCase();
             if(state==='DEVELOPMENT_BLOCKED')continue;
             if(Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim())continue;
+            if(Boolean(item.robloxSourceBootstrapFailedAt))continue;
             try{execFileSync('git',['cat-file','-e',`origin/main:roblox-games/${item.gameId}`],{stdio:'ignore'});continue;}catch{}
             count++;
           }
@@ -444,7 +445,8 @@ jobs:
           import fs from 'node:fs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const rows=[];
-          const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxBuildFailedAt))-Number(Boolean(b.robloxBuildFailedAt)));
+          const isOrchestrationMissing=item=>String(item.robloxFailureSignature||'')==='roblox-package-result-missing';
+          const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxBuildFailedAt)&&!isOrchestrationMissing(a))-Number(Boolean(b.robloxBuildFailedAt)&&!isOrchestrationMissing(b)));
           for(const item of candidates){
             if(rows.length>=2)break;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
@@ -472,7 +474,7 @@ jobs:
   technical-worker:
     name: Roblox package ${{ matrix.gameId }}
     needs: technical-plan
-    if: needs.technical-plan.outputs.count != '0'
+    if: always() && needs.technical-plan.result == 'success' && needs.technical-plan.outputs.count != '0'
     strategy:
       fail-fast: false
       max-parallel: 2
@@ -714,7 +716,10 @@ jobs:
             if(String(item.canonicalState||'').toUpperCase()!=='WAITING_TARGET_PLATFORM_VALIDATION')continue;
             const revision=String(item.robloxSourceCommit||'').trim();
             const exactBuild=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&String(item.robloxBuildArtifactIdentity||'').startsWith('sha256:');
-            if(!exactBuild)count++;
+            if(exactBuild)continue;
+            const orchestrationMissing=String(item.robloxFailureSignature||'')==='roblox-package-result-missing';
+            if(Boolean(item.robloxBuildFailedAt)&&!orchestrationMissing)continue;
+            count++;
           }
           process.stdout.write(String(count));
           NODE
