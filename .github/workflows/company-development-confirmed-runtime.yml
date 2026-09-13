@@ -37,7 +37,6 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
-  AUTONOMOUS_LOCAL_MODEL: qwen3:1.7b
 
 jobs:
   web-plan:
@@ -51,7 +50,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           fetch-depth: 1
           fetch-tags: false
       - uses: actions/setup-node@v4
@@ -110,11 +109,11 @@ jobs:
       max-parallel: 2
       matrix: ${{ fromJSON(needs.web-plan.outputs.matrix) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 22
+    timeout-minutes: 16
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           fetch-depth: 1
           fetch-tags: false
       - uses: actions/setup-node@v4
@@ -124,23 +123,11 @@ jobs:
       - name: Fetch current company runtime
         run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
 
-      - name: Prepare free local Web generation model
-        shell: bash
+      - name: Confirm deterministic Web compiler path
         run: |
           set -euo pipefail
-          installed=0
-          for attempt in 1 2 3; do
-            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
-            sleep $((attempt * 4))
-          done
-          test "$installed" = 1
-          nohup ollama serve >/tmp/ollama-development-web.log 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
-            if [ "$i" = 30 ]; then cat /tmp/ollama-development-web.log || true; exit 1; fi
-            sleep 2
-          done
-          ollama pull "$AUTONOMOUS_LOCAL_MODEL"
+          grep -q "MODEL_USED=NO" tools/company-development-web-bootstrap.mjs
+          echo 'WEB_MODEL_SETUP=SKIPPED_UNUSED'
           echo 'WEB_PAID_AI=NO'
           echo 'WEB_PAID_RUNNER=NO'
 
@@ -255,7 +242,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           fetch-depth: 1
           fetch-tags: false
 
@@ -351,7 +338,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           fetch-depth: 1
           fetch-tags: false
       - uses: actions/setup-node@v4
