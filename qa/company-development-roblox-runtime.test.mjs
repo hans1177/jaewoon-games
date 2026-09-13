@@ -157,8 +157,11 @@ test('Roblox source workflow keeps compiled candidates pending when Actions cann
 });
 
 test('Roblox package completion has one canonical continuation into preflight and actual Studio runtime',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const continuation=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
-  assert.ok(continuation.includes('workflows: [Company DEVELOPMENT_CONFIRMED Roblox Runtime]'));
+  assert.ok(continuation.includes('workflow_dispatch:'));
+  assert.ok(!continuation.includes('workflow_run:'));
+  assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert.ok(continuation.includes('Roblox five-lead preflight'));
   assert.ok(continuation.includes('Roblox Studio runtime'));
   assert.ok(continuation.includes('ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES'));
