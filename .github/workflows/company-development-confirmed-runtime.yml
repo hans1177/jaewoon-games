@@ -8,15 +8,28 @@ on:
       - '.github/workflows/company-development-roblox-runtime.yml'
       - '.github/workflows/company-development-roblox-runtime-continuation.yml'
       - '.github/workflows/company-development-unity-runtime.yml'
+      - '.github/workflows/unity-android-regression.yml'
       - '.github/actions/prepare-ollama/action.yml'
+      - 'roblox-games/**'
+      - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-development-web-bootstrap.mjs'
       - 'tools/company-development-web-gameplay-validation.mjs'
       - 'tools/company-design-artbook.mjs'
-      - 'tools/company-selected-platform-router.mjs'
+      - 'tools/company-development-roblox-bootstrap.mjs'
+      - 'tools/company-development-roblox-build-preflight.mjs'
+      - 'tools/company-development-roblox-runtime-smoke.luau'
+      - 'tools/company-development-unity-platform.mjs'
+      - 'tools/company-development-unity-bootstrap.mjs'
+      - 'tools/company-development-unity-evidence.mjs'
       - 'tools/company-development-validation-cycle.mjs'
       - 'tools/design-only-promotion-sync.mjs'
+      - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
+      - 'qa/company-development-roblox-runtime.test.mjs'
+      - 'qa/company-development-roblox-runtime-continuation.test.mjs'
+      - 'qa/company-development-unity-runtime.test.mjs'
       - 'qa/design-only-promotion-sync.test.mjs'
+      - 'qa/company-speed-sequence-workflow.test.mjs'
       - 'COMPANY_FLOW.md'
       - 'company-directive.json'
   workflow_dispatch:
@@ -87,8 +100,8 @@ jobs:
             designBaselineSource:item.designBaselineSource,
             designDate:item.designDate||'',
             selectedPlatform:item.selectedPlatform||item.targetPlatform||'ROBLOX',
-            targetSourcePath:item.targetSourcePath||'',
-            webSourcePath:item.webSourcePath||`web-games/${item.gameId}`,
+            targetSourcePath:item.targetSourcePath||item.sourcePath||'',
+            webSourcePath:item.webSourcePath||item.optionalWebSourcePath||`web-games/${item.gameId}`,
           }));
           const matrix={include:rows};
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`target_count=${rows.length}\n`);
@@ -99,6 +112,7 @@ jobs:
           console.log('WEB_HOMEPAGE_THRESHOLD=80');
           console.log('WEB_FORMAL_IMPLEMENTATION_THRESHOLD=90');
           console.log('WEB_PARALLEL_TARGET=2');
+          console.log('WEB_PARALLEL_MAX=2');
           NODE
 
   web-worker:
@@ -154,13 +168,25 @@ jobs:
           import fs from 'node:fs';
           import path from 'node:path';
           import {execFileSync} from 'node:child_process';
-          const item={gameId:process.env.GAME_ID,gameName:process.env.GAME_NAME,designBaselineSource:process.env.DESIGN_BASELINE_SOURCE,designDate:process.env.DESIGN_DATE,targetSourcePath:process.env.TARGET_SOURCE_PATH,webSourcePath:process.env.WEB_SOURCE_PATH};
+          const item={
+            gameId:process.env.GAME_ID,
+            gameName:process.env.GAME_NAME,
+            designBaselineSource:process.env.DESIGN_BASELINE_SOURCE,
+            designDate:process.env.DESIGN_DATE,
+            targetSourcePath:process.env.TARGET_SOURCE_PATH,
+            webSourcePath:process.env.WEB_SOURCE_PATH,
+          };
           const safe=String(item.gameId).replace(/[^a-zA-Z0-9._-]+/g,'-');
-          const root='/tmp/web-worker',persistRoot=path.join(root,'persist'),resultsRoot=path.join(root,'results');
-          fs.rmSync(root,{recursive:true,force:true});fs.mkdirSync(persistRoot,{recursive:true});fs.mkdirSync(resultsRoot,{recursive:true});
+          const root='/tmp/web-worker';
+          const persistRoot=path.join(root,'persist');
+          const resultsRoot=path.join(root,'results');
+          fs.rmSync(root,{recursive:true,force:true});
+          fs.mkdirSync(persistRoot,{recursive:true});
+          fs.mkdirSync(resultsRoot,{recursive:true});
           const show=file=>execFileSync('git',['show',`origin/${process.env.COMPANY_RUNTIME_BRANCH}:${file}`],{maxBuffer:32*1024*1024});
           const materialize=file=>{const out=path.resolve(file);fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,show(file));};
-          const stamp=new Date().toISOString();let result;
+          const stamp=new Date().toISOString();
+          let result;
           try{
             if(!item.designBaselineSource)throw new Error('DESIGN_BASELINE_SOURCE_MISSING');
             materialize(item.designBaselineSource);
@@ -168,26 +194,70 @@ jobs:
             try{materialize(statusSource);}catch{}
             const candidateId=`development-web-${item.gameId}-${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT}`;
             const candidatePath=`web-games/.autonomous-candidates/${candidateId}`;
-            const workDir=path.join('/tmp/web-work',safe),bootstrapEvidence=path.join(workDir,'web-bootstrap-evidence.json'),gameplayEvidence=path.join(workDir,'web-gameplay-validation.json'),screenshot=path.join(workDir,'web-gameplay.png');
+            const workDir=path.join('/tmp/web-work',safe);
+            const bootstrapEvidence=path.join(workDir,'web-bootstrap-evidence.json');
+            const gameplayEvidence=path.join(workDir,'web-gameplay-validation.json');
+            const screenshot=path.join(workDir,'web-gameplay.png');
             fs.mkdirSync(workDir,{recursive:true});
-            execFileSync(process.execPath,['tools/company-development-web-bootstrap.mjs',`--game-id=${item.gameId}`,`--game-name=${item.gameName}`,`--baseline=${item.designBaselineSource}`,`--source-path=${item.webSourcePath}`,`--candidate-id=${candidateId}`,`--candidate-path=${candidatePath}`,`--source-commit=${process.env.GITHUB_SHA}`,`--evidence=${bootstrapEvidence}`],{stdio:'inherit',timeout:9*60*1000});
-            execFileSync(process.execPath,['tools/company-development-web-gameplay-validation.mjs',`--game-id=${item.gameId}`,`--source=${candidatePath}`,`--port=4181`,`--output=${gameplayEvidence}`,`--screenshot=${screenshot}`],{stdio:'inherit',timeout:4*60*1000});
+            execFileSync(process.execPath,['tools/company-development-web-bootstrap.mjs',
+              `--game-id=${item.gameId}`,`--game-name=${item.gameName}`,
+              `--baseline=${item.designBaselineSource}`,
+              `--source-path=${item.webSourcePath}`,`--candidate-id=${candidateId}`,
+              `--candidate-path=${candidatePath}`,`--source-commit=${process.env.GITHUB_SHA}`,
+              `--evidence=${bootstrapEvidence}`],{stdio:'inherit',timeout:9*60*1000});
+            execFileSync(process.execPath,['tools/company-development-web-gameplay-validation.mjs',
+              `--game-id=${item.gameId}`,`--source=${candidatePath}`,`--port=4181`,
+              `--output=${gameplayEvidence}`,`--screenshot=${screenshot}`],{stdio:'inherit',timeout:4*60*1000});
             const report=JSON.parse(fs.readFileSync(gameplayEvidence,'utf8'));
-            if(report.pass!==true||report.musicRuntime?.pass!==true||report.homepageTestEligible!==true)throw new Error('WEB_RUNTIME_OR_80_POINT_GATE_NOT_PASS');
-            const strictScore=Number(report.strictReview?.totalScore),hardFailures=Array.isArray(report.strictReview?.hardFailures)?report.strictReview.hardFailures:[];
-            if(!Number.isFinite(strictScore)||strictScore<80||hardFailures.length)throw new Error('WEB_STRICT_80_NO_HARD_GATE_REQUIRED');
+            const strictScore=Number(report.strictReview?.totalScore);
+            const hardFailures=Array.isArray(report.strictReview?.hardFailures)?report.strictReview.hardFailures:[];
+            if(report.pass!==true||report.musicRuntime?.pass!==true||report.homepageTestEligible!==true||!Number.isFinite(strictScore)||strictScore<80||hardFailures.length)throw new Error('WEB_RUNTIME_OR_80_POINT_GATE_NOT_PASS');
+            const formalPass=report.formalImplementationPassed===true&&strictScore>=90&&hardFailures.length===0;
             const stableSource=`web-games/${item.gameId}`;
-            report.candidateSourcePath=candidatePath;report.sourcePath=stableSource;report.policyDocument='COMPANY_FLOW.md';report.requiredBeforeTargetPlatform=true;
+            report.candidateSourcePath=candidatePath;
+            report.sourcePath=stableSource;
+            report.policyDocument='COMPANY_FLOW.md';
+            report.requiredBeforeTargetPlatform=true;
             fs.writeFileSync(gameplayEvidence,JSON.stringify(report,null,2)+'\n');
-            const webOut=path.join(persistRoot,stableSource);fs.mkdirSync(webOut,{recursive:true});fs.copyFileSync(path.join(candidatePath,'index.html'),path.join(webOut,'index.html'));
-            const evidenceRelative=item.designBaselineSource.replace(/[^/]+$/,'web-gameplay-validation.json');const evidenceOut=path.join(persistRoot,evidenceRelative);fs.mkdirSync(path.dirname(evidenceOut),{recursive:true});fs.copyFileSync(gameplayEvidence,evidenceOut);
-            const strictRelative=item.designBaselineSource.replace(/[^/]+$/,'strict-implementation-review.json');if(fs.existsSync(path.join(workDir,'strict-implementation-review.json'))){const strictOut=path.join(persistRoot,strictRelative);fs.mkdirSync(path.dirname(strictOut),{recursive:true});fs.copyFileSync(path.join(workDir,'strict-implementation-review.json'),strictOut);}
-            const formalPass=report.formalImplementationPassed===true&&strictScore>=90;
-            result={gameId:item.gameId,pass:true,update:{status:'ACTIVE',currentStep:'POST_WEB_ARTBOOK',canonicalState:'WAITING_POST_WEB_ARTBOOK',sourcePath:stableSource,webSourcePath:stableSource,webValidationRequired:true,musicValidationRequired:true,webValidationPassedAt:stamp,musicValidationPassed:true,webValidationEvidencePath:evidenceRelative,strictImplementationReviewPath:strictRelative,strictImplementationScore:strictScore,strictImplementationVerdict:String(report.strictReview?.verdict||''),strictImplementationHardFailures:hardFailures,homepageTestEligible:true,homepageTestCandidate:false,homepageTestScore:strictScore,homepageTestVerdict:'WAITING_ARTBOOK',formalImplementationPassed:formalPass,formalImplementationVerdict:formalPass?'PASS':'REVISE',webValidationSourceRevision:process.env.GITHUB_SHA,routingBlockers:formalPass?[]:['web-strict-score-below-formal-90'],updatedAt:stamp}};
-            console.log(`WEB_GAMEPLAY_MUSIC_80_PASS=${item.gameId}:${strictScore}`);console.log(`FORMAL_IMPLEMENTATION_PASS=${formalPass?'YES':'NO'}`);
+            const webOut=path.join(persistRoot,stableSource);
+            fs.mkdirSync(webOut,{recursive:true});
+            fs.copyFileSync(path.join(candidatePath,'index.html'),path.join(webOut,'index.html'));
+            const evidenceRelative=item.designBaselineSource.replace(/[^/]+$/,'web-gameplay-validation.json');
+            const evidenceOut=path.join(persistRoot,evidenceRelative);
+            fs.mkdirSync(path.dirname(evidenceOut),{recursive:true});
+            fs.copyFileSync(gameplayEvidence,evidenceOut);
+            const strictRelative=item.designBaselineSource.replace(/[^/]+$/,'strict-implementation-review.json');
+            const strictLocal=path.join(workDir,'strict-implementation-review.json');
+            if(fs.existsSync(strictLocal)){
+              const strictOut=path.join(persistRoot,strictRelative);
+              fs.mkdirSync(path.dirname(strictOut),{recursive:true});
+              fs.copyFileSync(strictLocal,strictOut);
+            }
+            result={gameId:item.gameId,pass:true,update:{
+              status:formalPass?'PENDING':'ACTIVE',
+              currentStep:formalPass?'TARGET_PLATFORM_SOURCE_BIND':'WEB_STRICT_IMPROVEMENT',
+              canonicalState:formalPass?'PENDING_SELECTED_PLATFORM_BIND':'WAITING_WEB_STRICT_IMPROVEMENT',
+              sourcePath:formalPass?item.targetSourcePath:stableSource,
+              webSourcePath:stableSource,webValidationRequired:true,musicValidationRequired:true,
+              webValidationPassedAt:stamp,musicValidationPassed:true,webValidationEvidencePath:evidenceRelative,
+              strictImplementationReviewPath:strictRelative,strictImplementationScore:strictScore,
+              strictImplementationVerdict:String(report.strictReview?.verdict||''),strictImplementationHardFailures:hardFailures,
+              homepageTestEligible:true,homepageTestCandidate:false,homepageTestScore:strictScore,homepageTestVerdict:'WAITING_ARTBOOK',
+              formalImplementationPassed:formalPass,formalImplementationVerdict:formalPass?'PASS':'REVISE',
+              postPromotionArtbookRequired:false,postWebArtbookRequired:true,artbookTiming:'AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER',
+              webValidationSourceRevision:process.env.GITHUB_SHA,
+              routingBlockers:formalPass?[]:['web-strict-score-below-formal-90'],updatedAt:stamp,
+            }};
+            console.log(`WEB_GAMEPLAY_MUSIC_80_PASS=${item.gameId}:${strictScore}`);
+            console.log(`FORMAL_IMPLEMENTATION_PASS=${formalPass?'YES':'NO'}`);
           }catch(error){
             const signature=String(error?.message||error).replace(/\s+/g,' ').slice(0,240);
-            result={gameId:item.gameId,pass:false,update:{status:'ACTIVE',currentStep:'WEB_GAMEPLAY_AND_MUSIC_VALIDATION',canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION',sourcePath:item.webSourcePath,webSourcePath:item.webSourcePath,webValidationRequired:true,musicValidationRequired:true,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,routingBlockers:[`web-gameplay-music:${signature}`],webValidationLastAttemptAt:stamp,updatedAt:stamp}};
+            result={gameId:item.gameId,pass:false,update:{
+              status:'ACTIVE',currentStep:'WEB_GAMEPLAY_AND_MUSIC_VALIDATION',canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION',
+              sourcePath:item.webSourcePath,webSourcePath:item.webSourcePath,webValidationRequired:true,musicValidationRequired:true,
+              webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,
+              routingBlockers:[`web-gameplay-music:${signature}`],webValidationLastAttemptAt:stamp,updatedAt:stamp,
+            }};
             console.log(`WEB_GAMEPLAY_MUSIC_FAIL=${item.gameId}:${signature}`);
           }
           fs.writeFileSync(path.join(resultsRoot,`${safe}.json`),JSON.stringify(result,null,2)+'\n');
@@ -214,6 +284,7 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 1
           fetch-tags: false
+
       - name: Download parallel Web worker results
         if: needs.web-plan.outputs.target_count != '0'
         continue-on-error: true
@@ -222,30 +293,60 @@ jobs:
           pattern: development-web-result-*
           path: /tmp/web-batch
           merge-multiple: true
+
       - name: Fetch current company runtime
         run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
-      - name: Persist Web evidence and queue state
+
+      - name: Persist parallel Web evidence and queue state
         if: needs.web-plan.outputs.target_count != '0'
         env:
           EXPECTED_TARGETS_JSON: ${{ needs.web-plan.outputs.targets_json }}
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-development-web-runtime';git config user.email 'actions@users.noreply.github.com';git checkout -B development-web-persist "origin/$COMPANY_RUNTIME_BRANCH";cp -R /tmp/web-batch/persist/. . 2>/dev/null || true
+          git config user.name 'jaewoon-development-web-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git checkout -B development-web-persist "origin/$COMPANY_RUNTIME_BRANCH"
+          cp -R /tmp/web-batch/persist/. . 2>/dev/null || true
           node <<'NODE'
-          const fs=require('fs'),path=require('path');const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');const resultDir='/tmp/web-batch/results';const results=[];
+          const fs=require('fs');
+          const path=require('path');
+          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
+          const resultDir='/tmp/web-batch/results';
+          const results=[];
           if(fs.existsSync(resultDir))for(const name of fs.readdirSync(resultDir).filter(x=>x.endsWith('.json')).sort())results.push(JSON.parse(fs.readFileSync(path.join(resultDir,name),'utf8')));
-          const byId=new Map(results.map(x=>[x.gameId,x]));for(const target of expected){if(byId.has(target.gameId))continue;const stamp=new Date().toISOString();results.push({gameId:target.gameId,pass:false,update:{status:'ACTIVE',currentStep:'WEB_GAMEPLAY_AND_MUSIC_VALIDATION',canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION',sourcePath:target.webSourcePath,webSourcePath:target.webSourcePath,webValidationRequired:true,musicValidationRequired:true,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,routingBlockers:['web-gameplay-music:web-worker-result-missing'],webValidationLastAttemptAt:stamp,updatedAt:stamp}});}
-          let passCount=0,failCount=0;for(const result of results){const item=(queue.items||[]).find(x=>x.gameId===result.gameId);if(!item)throw new Error(`queue item missing: ${result.gameId}`);Object.assign(item,result.update);if(result.pass===true)passCount++;else failCount++;}
-          queue.webValidationPolicy='WEB_80_FOR_HOMEPAGE_90_FOR_FORMAL_IMPLEMENTATION';queue.webValidationContractVersion=3;queue.webValidationParallelism=2;queue.updatedAt=new Date().toISOString();fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');console.log(`WEB_GAMEPLAY_MUSIC_PASS_COUNT=${passCount}`);console.log(`WEB_GAMEPLAY_MUSIC_FAIL_COUNT=${failCount}`);
+          const byId=new Map(results.map(x=>[x.gameId,x]));
+          for(const target of expected){
+            if(byId.has(target.gameId))continue;
+            const stamp=new Date().toISOString();
+            results.push({gameId:target.gameId,pass:false,update:{status:'ACTIVE',currentStep:'WEB_GAMEPLAY_AND_MUSIC_VALIDATION',canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION',sourcePath:target.webSourcePath,webSourcePath:target.webSourcePath,webValidationRequired:true,musicValidationRequired:true,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,routingBlockers:['web-gameplay-music:web-worker-result-missing'],webValidationLastAttemptAt:stamp,updatedAt:stamp}});
+          }
+          let passCount=0,failCount=0;
+          for(const result of results){const item=(queue.items||[]).find(x=>x.gameId===result.gameId);if(!item)throw new Error(`queue item missing: ${result.gameId}`);Object.assign(item,result.update);if(result.pass===true)passCount++;else failCount++;}
+          queue.webValidationPolicy='WEB_80_FOR_HOMEPAGE_90_FOR_FORMAL_IMPLEMENTATION';
+          queue.webValidationContractVersion=3;
+          queue.webValidationParallelism=2;
+          queue.updatedAt=new Date().toISOString();
+          fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          console.log(`WEB_GAMEPLAY_MUSIC_PASS_COUNT=${passCount}`);
+          console.log(`WEB_GAMEPLAY_MUSIC_FAIL_COUNT=${failCount}`);
+          console.log('WEB_PARALLEL_ACTIVE_MAX=2');
           NODE
           git add development-queue.json web-games/ design/ game-seed-state.json 2>/dev/null || git add development-queue.json web-games/ design/
           git diff --cached --check
-          if ! git diff --cached --quiet; then git commit -m 'runtime: persist Web 80-point validation evidence [skip ci]';git push origin HEAD:"$COMPANY_RUNTIME_BRANCH";fi
-          echo 'WEB_RUNTIME_PERSIST=PASS';echo 'PUBLIC_MAIN_WRITE=NO'
+          if ! git diff --cached --quiet; then
+            git commit -m 'runtime: persist Web 80-point validation evidence [skip ci]'
+            git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
+          fi
+          echo 'WEB_RUNTIME_PERSIST=PASS'
+          echo 'PUBLIC_MAIN_WRITE=NO'
+
       - name: Empty Web queue summary
         if: needs.web-plan.outputs.target_count == '0'
-        run: echo 'WEB_REQUIRED_QUEUE=EMPTY'
+        run: |
+          echo 'WEB_REQUIRED_QUEUE=EMPTY'
+          echo 'WEB_PARALLEL_ACTIVE_MAX=2'
 
   post-web-artbook:
     name: post-Web artbook and homepage eligibility
@@ -257,32 +358,51 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Fetch runtime and resolve 80+ post-Web artbook targets
+
+      - name: Fetch current company runtime and resolve post-Web artbook targets
         id: artbook-targets
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin "$COMPANY_RUNTIME_BRANCH"
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
           node --input-type=module <<'NODE'
-          import fs from 'node:fs';import {execFileSync} from 'node:child_process';
-          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));const targets=[];
+          import fs from 'node:fs';
+          import {execFileSync} from 'node:child_process';
+          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const exists=file=>{try{execFileSync('git',['cat-file','-e',`origin/${process.env.COMPANY_RUNTIME_BRANCH}:${file}`],{stdio:'ignore'});return true;}catch{return false;}};
-          for(const item of q.items||[]){const score=Number(item.strictImplementationScore);const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED'||item.webValidationPassedAt==null||item.musicValidationPassed!==true||item.homepageTestEligible!==true||!Number.isFinite(score)||score<80||hard.length)continue;const artbookSource=item.artbookSource||`artbook-submissions/${item.gameId}/current.json`;let fresh=false;if(exists(artbookSource)){try{const raw=execFileSync('git',['show',`origin/${process.env.COMPANY_RUNTIME_BRANCH}:${artbookSource}`],{encoding:'utf8'});const a=JSON.parse(raw);fresh=a.postWebStrictReview===true&&Number(a.webStrictScore)===score&&String(a.webValidationEvidencePath||'')===String(item.webValidationEvidencePath||'');}catch{}}if(!fresh)targets.push({gameId:item.gameId,gameName:item.gameName||item.gameId,designDate:item.designDate,designBaselineSource:item.designBaselineSource,webValidationEvidencePath:item.webValidationEvidencePath,score,formalImplementationPassed:item.formalImplementationPassed===true,artbookSource});}
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`target_count=${targets.length}\n`);fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets=${JSON.stringify(targets)}\n`);console.log(`POST_WEB_ARTBOOK_TARGET_COUNT=${targets.length}`);
+          const showJson=file=>{try{return JSON.parse(execFileSync('git',['show',`origin/${process.env.COMPANY_RUNTIME_BRANCH}:${file}`],{encoding:'utf8'}));}catch{return null;}};
+          const targets=[];
+          for(const item of q.items||[]){
+            const score=Number(item.strictImplementationScore);
+            const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED'||!item.webValidationPassedAt||item.musicValidationPassed!==true||item.homepageTestEligible!==true||!Number.isFinite(score)||score<80||hard.length)continue;
+            const artbookSource=item.artbookSource||`artbook-submissions/${item.gameId}/current.json`;
+            const artbook=exists(artbookSource)?showJson(artbookSource):null;
+            const fresh=artbook?.postWebStrictReview===true&&Number(artbook.webStrictScore)===score&&String(artbook.webValidationEvidencePath||'')===String(item.webValidationEvidencePath||'');
+            if(!fresh)targets.push({gameId:item.gameId,gameName:item.gameName||item.gameId,designDate:item.designDate||'',designBaselineSource:item.designBaselineSource,webValidationEvidencePath:item.webValidationEvidencePath,score,artbookSource});
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`target_count=${targets.length}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets=${JSON.stringify(targets)}\n`);
+          console.log(`POST_WEB_ARTBOOK_TARGET_COUNT=${targets.length}`);
           NODE
+
       - name: Prepare small local artbook model
         if: steps.artbook-targets.outputs.target_count != '0'
+        continue-on-error: true
         uses: ./.github/actions/prepare-ollama
         with:
           model: qwen3:0.6b
           pull-model: 'true'
-      - name: Generate post-Web artbooks without blocking Web or native pass
+
+      - name: Generate post-Web artbooks with bounded time
         if: steps.artbook-targets.outputs.target_count != '0'
+        continue-on-error: true
         env:
           TARGETS_JSON: ${{ steps.artbook-targets.outputs.targets }}
           ARTBOOK_EDITOR_MODEL: qwen3:0.6b
@@ -293,33 +413,58 @@ jobs:
           git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- game-seed-state.json game-catalog.json development-queue.json design || true
           mkdir -p /tmp/postweb-artbook
           node --input-type=module <<'NODE'
-          import fs from 'node:fs';import {execFileSync} from 'node:child_process';import path from 'node:path';
+          import fs from 'node:fs';import path from 'node:path';import {execFileSync} from 'node:child_process';
           const targets=JSON.parse(process.env.TARGETS_JSON||'[]');const results=[];
           const materialize=file=>{if(!file)return;try{const raw=execFileSync('git',['show',`origin/${process.env.COMPANY_RUNTIME_BRANCH}:${file}`]);const out=path.resolve(file);fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,raw);}catch{}};
-          for(const t of targets){materialize(t.designBaselineSource);materialize(t.webValidationEvidencePath);const status=t.designBaselineSource?.replace(/design-revised\.json$/,'cycle-status.json');materialize(status);let success=false,error='';try{execFileSync('timeout',['150s',process.execPath,'tools/company-design-artbook.mjs',`--game=${t.gameId}`],{stdio:'inherit',env:{...process.env,ARTBOOK_GAME_ID:t.gameId,ARTBOOK_DATE:t.designDate||'',WEB_VALIDATION_EVIDENCE_PATH:t.webValidationEvidencePath,ARTBOOK_EDITOR_MODEL:process.env.ARTBOOK_EDITOR_MODEL,ARTBOOK_MODEL_CALL_TIMEOUT_MS:process.env.ARTBOOK_MODEL_CALL_TIMEOUT_MS}});success=true;}catch(e){error=String(e?.message||e).replace(/\s+/g,' ').slice(0,300);console.log(`POST_WEB_ARTBOOK_DEFERRED=${t.gameId}:${error}`);}results.push({...t,success,error});}
+          for(const t of targets){
+            materialize(t.designBaselineSource);materialize(t.webValidationEvidencePath);materialize(t.designBaselineSource?.replace(/design-revised\.json$/,'cycle-status.json'));
+            let success=false,error='';
+            try{execFileSync('timeout',['150s',process.execPath,'tools/company-design-artbook.mjs',`--game=${t.gameId}`],{stdio:'inherit',env:{...process.env,ARTBOOK_GAME_ID:t.gameId,ARTBOOK_DATE:t.designDate||'',WEB_VALIDATION_EVIDENCE_PATH:t.webValidationEvidencePath,ARTBOOK_EDITOR_MODEL:process.env.ARTBOOK_EDITOR_MODEL,ARTBOOK_MODEL_CALL_TIMEOUT_MS:process.env.ARTBOOK_MODEL_CALL_TIMEOUT_MS}});success=true;}catch(e){error=String(e?.message||e).replace(/\s+/g,' ').slice(0,300);console.log(`POST_WEB_ARTBOOK_DEFERRED=${t.gameId}:${error}`);}
+            results.push({...t,success,error});
+          }
           fs.writeFileSync('/tmp/postweb-artbook/results.json',JSON.stringify(results,null,2)+'\n');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));const stamp=new Date().toISOString();
-          for(const r of results){const item=(queue.items||[]).find(x=>x.gameId===r.gameId);const game=(catalog.games||[]).find(x=>x.id===r.gameId);if(!item)continue;item.artbookTiming='AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER';item.postPromotionArtbookRequired=false;item.postWebArtbookRequired=true;item.homepageTestCandidate=r.success;item.homepageTestScore=r.score;item.homepageTestVerdict=r.success?'PASS':'WAITING_ARTBOOK';item.postWebArtbookPassed=r.success;item.artbookLastAttemptAt=stamp;if(r.success){item.postWebArtbookGeneratedAt=stamp;item.artbookFailure=null;}else item.artbookFailure=r.error||'ARTBOOK_GENERATION_DEFERRED';const formal=item.formalImplementationPassed===true&&Number(item.strictImplementationScore)>=90&&(item.strictImplementationHardFailures||[]).length===0;if(formal){item.status='PENDING';item.currentStep='TARGET_PLATFORM_SOURCE_BIND';item.canonicalState='PENDING_SELECTED_PLATFORM_BIND';item.sourcePath=item.targetSourcePath;item.routingBlockers=[];}else{item.status='ACTIVE';item.currentStep='WEB_STRICT_IMPROVEMENT';item.canonicalState='WAITING_WEB_STRICT_IMPROVEMENT';item.sourcePath=item.webSourcePath;item.routingBlockers=['web-strict-score-below-formal-90'];}item.updatedAt=stamp;if(game){game.homepageOfficialCard=false;game.homepageTestCandidate=r.success;game.homepageTestScore=r.score;game.homepageReviewState=r.success?'TEST':'WAITING_POST_WEB_ARTBOOK';game.homepageWebPlayable=true;game.webPath=`/${String(item.webSourcePath||`web-games/${r.gameId}`).replace(/^\/+|\/+$/g,'')}/`;if(r.success)game.homepageArtbookPath=`/artbook-viewer.html?game=${encodeURIComponent(r.gameId)}`;game.homepageStage=formal?'Web 90+ PASS · 플랫폼 개발 준비':'Web 80+ 테스트 · 90점 개선 대기';game.homepageRecentWork=`Web 강심사 ${r.score}점 · ${r.success?'아트북 완료':'아트북 대기'} · ${formal?'플랫폼 진행':'홈피 테스트/개선'}`;}}
+          for(const r of results){
+            const item=(queue.items||[]).find(x=>x.gameId===r.gameId);const game=(catalog.games||[]).find(x=>x.id===r.gameId);if(!item)continue;
+            item.artbookTiming='AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER';item.postPromotionArtbookRequired=false;item.postWebArtbookRequired=true;item.homepageTestCandidate=r.success;item.homepageTestScore=r.score;item.homepageTestVerdict=r.success?'PASS':'WAITING_ARTBOOK';item.postWebArtbookPassed=r.success;item.artbookLastAttemptAt=stamp;
+            if(r.success){item.postWebArtbookGeneratedAt=stamp;item.artbookFailure=null;}else item.artbookFailure=r.error||'ARTBOOK_GENERATION_DEFERRED';
+            if(game){game.homepageOfficialCard=false;game.homepageTestCandidate=r.success;game.homepageTestScore=r.score;game.homepageReviewState=r.success?'TEST':'WAITING_POST_WEB_ARTBOOK';game.homepageWebPlayable=true;game.webPath=`/${String(item.webSourcePath||`web-games/${r.gameId}`).replace(/^\/+|\/+$/g,'')}/`;if(r.success)game.homepageArtbookPath=`/artbook-viewer.html?game=${encodeURIComponent(r.gameId)}`;game.homepageStage=Number(item.strictImplementationScore)>=90?'Web 90+ PASS · 플랫폼 개발 진행':'Web 80+ 테스트 · 90점 개선 대기';game.homepageRecentWork=`Web 강심사 ${r.score}점 · ${r.success?'아트북 완료':'아트북 대기'}`;}
+            item.updatedAt=stamp;
+          }
           queue.updatedAt=stamp;fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');fs.writeFileSync('game-catalog.json',JSON.stringify(catalog,null,2)+'\n');
           NODE
           mkdir -p /tmp/postweb-output
           cp development-queue.json game-catalog.json /tmp/postweb-output/
           cp -R design /tmp/postweb-output/design
           if [[ -d artbook-submissions ]]; then cp -R artbook-submissions /tmp/postweb-output/artbook-submissions; fi
-      - name: Persist post-Web artbook state
+
+      - name: Persist post-Web artbook state when generated
         if: steps.artbook-targets.outputs.target_count != '0'
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-post-web-artbook';git config user.email 'post-web-artbook@users.noreply.github.com';git reset --hard;git clean -fd;git checkout -B post-web-artbook-persist "origin/$COMPANY_RUNTIME_BRANCH";cp /tmp/postweb-output/development-queue.json development-queue.json;cp /tmp/postweb-output/game-catalog.json game-catalog.json;cp -R /tmp/postweb-output/design/. design/;if [[ -d /tmp/postweb-output/artbook-submissions ]]; then mkdir -p artbook-submissions;cp -R /tmp/postweb-output/artbook-submissions/. artbook-submissions/;fi;git add development-queue.json game-catalog.json design artbook-submissions 2>/dev/null || git add development-queue.json game-catalog.json design;git diff --cached --check;if ! git diff --cached --quiet;then git commit -m 'runtime: bind post-Web artbooks and homepage test eligibility [skip ci]';git push origin HEAD:"$COMPANY_RUNTIME_BRANCH";fi;echo 'POST_WEB_ARTBOOK_RUNTIME_PERSIST=PASS';echo 'ARTBOOK_FAILURE_ONLY_BLOCKS_HOMEPAGE=YES'
-      - name: No post-Web artbook work summary
-        if: steps.artbook-targets.outputs.target_count == '0'
-        run: echo 'POST_WEB_ARTBOOK_QUEUE=EMPTY'
+          [[ -d /tmp/postweb-output ]] || { echo 'POST_WEB_ARTBOOK_OUTPUT=DEFERRED'; exit 0; }
+          git config user.name 'jaewoon-post-web-artbook';git config user.email 'post-web-artbook@users.noreply.github.com'
+          git reset --hard;git clean -fd;git checkout -B post-web-artbook-persist "origin/$COMPANY_RUNTIME_BRANCH"
+          cp /tmp/postweb-output/development-queue.json development-queue.json;cp /tmp/postweb-output/game-catalog.json game-catalog.json;cp -R /tmp/postweb-output/design/. design/
+          if [[ -d /tmp/postweb-output/artbook-submissions ]]; then mkdir -p artbook-submissions;cp -R /tmp/postweb-output/artbook-submissions/. artbook-submissions/;fi
+          git add development-queue.json game-catalog.json design artbook-submissions 2>/dev/null || git add development-queue.json game-catalog.json design
+          git diff --cached --check
+          if ! git diff --cached --quiet;then git commit -m 'runtime: bind post-Web artbooks and homepage test eligibility [skip ci]';git push origin HEAD:"$COMPANY_RUNTIME_BRANCH";fi
+          echo 'POST_WEB_ARTBOOK_RUNTIME_PERSIST=PASS'
+          echo 'ARTBOOK_FAILURE_ONLY_BLOCKS_HOMEPAGE=YES'
+
+      - name: Post-Web artbook summary
+        if: always()
+        run: |
+          echo 'POST_WEB_ARTBOOK_MINIMUM_SCORE=80'
+          echo 'POST_WEB_ARTBOOK_FAILURE_NATIVE_BLOCK=NO'
 
   route:
     name: route formal 90-point DEVELOPMENT_CONFIRMED selected platforms
-    needs: post-web-artbook
-    if: always() && needs.post-web-artbook.result == 'success'
+    needs: [web-gate, post-web-artbook]
+    if: always() && needs.web-gate.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     outputs:
@@ -336,14 +481,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
       - name: Verify selected-platform router contract
         run: |
           node --check tools/company-selected-platform-router.mjs
           node --check tools/company-development-validation-cycle.mjs
+          node --check tools/company-development-unity-platform.mjs
+          node --check tools/company-development-uefn-platform.mjs
+          node --check tools/vibe3-roblox-platform.mjs
           node --test qa/company-selected-platform-router.test.mjs
+
       - name: Fetch current company runtime
         run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
-      - name: Change detection, formal 90 gate and one routing decision point
+
+      - name: Change detection, formal 90 gate enforcement and one routing decision point
         id: route
         shell: bash
         run: |
@@ -351,38 +502,106 @@ jobs:
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
           git show "origin/$COMPANY_RUNTIME_BRANCH:game-catalog.json" > /tmp/game-catalog.json
           node --input-type=module <<'NODE'
-          import fs from 'node:fs';import crypto from 'node:crypto';import {resolveSelectedPlatform,adapterForPlatform,cheapPrecheck,canonicalTargetStep,canonicalTargetWaitingState} from './tools/company-selected-platform-router.mjs';
-          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8')),catalog=JSON.parse(fs.readFileSync('/tmp/game-catalog.json','utf8')),updates=[],platforms=new Set();
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          import {resolveSelectedPlatform,adapterForPlatform,cheapPrecheck,canonicalTargetStep,canonicalTargetWaitingState} from './tools/company-selected-platform-router.mjs';
+          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const catalog=JSON.parse(fs.readFileSync('/tmp/game-catalog.json','utf8'));
+          const updates=[];
+          const platforms=new Set();
           for(const item of q.items||[]){
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
-            const formal=item.formalImplementationPassed===true&&String(item.formalImplementationVerdict||'').toUpperCase()==='PASS'&&Number(item.strictImplementationScore)>=90&&hard.length===0;
-            if(!formal||!item.webValidationPassedAt||item.musicValidationPassed!==true)continue;
-            const status=String(item.status||'').toUpperCase(),step=String(item.currentStep||'').toUpperCase(),state=String(item.canonicalState||'').toUpperCase();
+            const formalPass=item.formalImplementationPassed===true&&String(item.formalImplementationVerdict||'').toUpperCase()==='PASS'&&Number(item.strictImplementationScore)>=90&&hard.length===0;
+            if(!formalPass||!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
+            const status=String(item.status||'').toUpperCase();
+            const step=String(item.currentStep||'').toUpperCase();
+            const state=String(item.canonicalState||'').toUpperCase();
             if(state==='WAITING_REVALIDATION'||step==='TARGETED_REVALIDATION')continue;
-            const pending=status==='PENDING',waiting=status==='ACTIVE'&&step==='TARGET_PLATFORM_TECHNICAL_VALIDATION',retry=status==='ACTIVE'&&step==='TARGET_PLATFORM_SOURCE_BIND'&&state==='WAITING_TARGET_PLATFORM_REVALIDATION';if(!pending&&!waiting&&!retry)continue;
-            const game=(catalog.games||[]).find(x=>x.id===item.gameId)||{},platform=resolveSelectedPlatform(item,game),adapter=adapterForPlatform(platform),oldTarget=String(item.targetSourcePath||'').replaceAll('\\','/'),canonicalTarget=adapter?`${adapter.sourceRoot}${item.gameId}`:'',targetSourcePath=adapter&&oldTarget.startsWith(adapter.sourceRoot)?oldTarget:canonicalTarget,baseline=String(item.designBaselineSource||''),baselineRevision=baseline?crypto.createHash('sha256').update(baseline).digest('hex'):'',precheck=cheapPrecheck({selectedPlatform:platform,sourceRevision:baselineRevision,sourcePath:targetSourcePath}),blockers=[...precheck.errors];
-            if(adapter&&adapter.existingExecutionPath==null)blockers.push('platform-runtime-executor-not-configured');if(blockers.length){updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',platformAdapter:adapter?.adapterPath||null,sourcePath:targetSourcePath,targetSourcePath,routingBlockers:blockers,updatedAt:new Date().toISOString()});continue;}platforms.add(platform);if(retry)continue;updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:canonicalTargetStep(),canonicalState:canonicalTargetWaitingState(),platformAdapter:adapter.adapterPath,sourcePath:targetSourcePath,targetSourcePath,routingBlockers:[],routeRevision:baselineRevision,updatedAt:new Date().toISOString()});
+            const legacyActive=status==='ACTIVE'&&step==='UNITY_ANDROID_TECHNICAL_VALIDATION';
+            const pending=status==='PENDING';
+            const waiting=status==='ACTIVE'&&step==='TARGET_PLATFORM_TECHNICAL_VALIDATION';
+            const retrySourceBind=status==='ACTIVE'&&step==='TARGET_PLATFORM_SOURCE_BIND'&&state==='WAITING_TARGET_PLATFORM_REVALIDATION';
+            if(!pending&&!legacyActive&&!waiting&&!retrySourceBind)continue;
+            const game=(catalog.games||[]).find(x=>x.id===item.gameId)||{};
+            const platform=resolveSelectedPlatform(item,game);
+            const adapter=adapterForPlatform(platform);
+            const oldTarget=String(item.targetSourcePath||'').replaceAll('\\','/');
+            const canonicalTarget=adapter?`${adapter.sourceRoot}${item.gameId}`:'';
+            const targetSourcePath=adapter&&oldTarget.startsWith(adapter.sourceRoot)?oldTarget:canonicalTarget;
+            const baseline=String(item.designBaselineSource||'');
+            const baselineRevision=baseline?crypto.createHash('sha256').update(baseline).digest('hex'):'';
+            const precheck=cheapPrecheck({selectedPlatform:platform,sourceRevision:baselineRevision,sourcePath:targetSourcePath});
+            const blockers=[...precheck.errors];
+            if(adapter&&adapter.existingExecutionPath==null)blockers.push('platform-runtime-executor-not-configured');
+            if(blockers.length){
+              updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',platformAdapter:adapter?.adapterPath||null,sourcePath:targetSourcePath,targetSourcePath,routingBlockers:blockers,updatedAt:new Date().toISOString()});
+              continue;
+            }
+            platforms.add(platform);
+            if(retrySourceBind){
+              console.log(`DEVELOPMENT_ROUTE_RESUME_SOURCE_BIND=${item.gameId}:${platform}`);
+              continue;
+            }
+            updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:canonicalTargetStep(),canonicalState:canonicalTargetWaitingState(),platformAdapter:adapter.adapterPath,sourcePath:targetSourcePath,targetSourcePath,routingBlockers:[],routeRevision:baselineRevision,updatedAt:new Date().toISOString()});
           }
-          fs.mkdirSync('/tmp/development-route',{recursive:true});fs.writeFileSync('/tmp/development-route/updates.json',JSON.stringify(updates,null,2)+'\n');const output=process.env.GITHUB_OUTPUT;fs.appendFileSync(output,`routed_count=${updates.length}\n`);fs.appendFileSync(output,`dispatch_unity=${platforms.has('UNITY')?'true':'false'}\n`);fs.appendFileSync(output,`dispatch_roblox=${platforms.has('ROBLOX')?'true':'false'}\n`);fs.appendFileSync(output,`dispatch_uefn=${platforms.has('FORTNITE_UEFN')?'true':'false'}\n`);console.log(`DEVELOPMENT_ROUTE_COUNT=${updates.length}`);console.log('FORMAL_IMPLEMENTATION_GATE=90');
+          fs.mkdirSync('/tmp/development-route',{recursive:true});
+          fs.writeFileSync('/tmp/development-route/updates.json',JSON.stringify(updates,null,2)+'\n');
+          const output=process.env.GITHUB_OUTPUT;
+          fs.appendFileSync(output,`routed_count=${updates.length}\n`);
+          fs.appendFileSync(output,`dispatch_unity=${platforms.has('UNITY')?'true':'false'}\n`);
+          fs.appendFileSync(output,`dispatch_roblox=${platforms.has('ROBLOX')?'true':'false'}\n`);
+          fs.appendFileSync(output,`dispatch_uefn=${platforms.has('FORTNITE_UEFN')?'true':'false'}\n`);
+          console.log(`DEVELOPMENT_ROUTE_COUNT=${updates.length}`);
+          console.log(`DEVELOPMENT_ROUTE_PLATFORMS=${[...platforms].join(',')}`);
+          console.log('WEB_GAMEPLAY_MUSIC_GATE=ENFORCED');
+          console.log('FORMAL_IMPLEMENTATION_GATE=90');
+          console.log('CHANGE_DETECTION=PASS');
+          console.log('CHEAP_PRECHECK=PASS_OR_BLOCK_RECORDED');
           NODE
+
       - name: Persist canonical routed queue state
         if: steps.route.outputs.routed_count != '0'
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-development-router';git config user.email 'actions@users.noreply.github.com';git checkout -B development-router-persist "origin/$COMPANY_RUNTIME_BRANCH";node <<'NODE'
-          const fs=require('fs');const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));const updates=JSON.parse(fs.readFileSync('/tmp/development-route/updates.json','utf8'));for(const update of updates){const item=(queue.items||[]).find(x=>x.gameId===update.gameId);if(!item)throw new Error(`queue item missing: ${update.gameId}`);Object.assign(item,update);}queue.routerContractVersion=3;queue.routerPolicy='COMPANY_FLOW.md';queue.webGateRequired=true;queue.formalImplementationMinimum=90;queue.cronRole='WATCHDOG_AND_RECOVERY_ONLY';queue.updatedAt=new Date().toISOString();fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          git config user.name 'jaewoon-development-router'
+          git config user.email 'actions@users.noreply.github.com'
+          git checkout -B development-router-persist "origin/$COMPANY_RUNTIME_BRANCH"
+          node <<'NODE'
+          const fs=require('fs');
+          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const updates=JSON.parse(fs.readFileSync('/tmp/development-route/updates.json','utf8'));
+          for(const update of updates){const item=(queue.items||[]).find(x=>x.gameId===update.gameId);if(!item)throw new Error(`queue item missing: ${update.gameId}`);Object.assign(item,update);}
+          queue.routerContractVersion=3;
+          queue.routerPolicy='COMPANY_FLOW.md';
+          queue.webGateRequired=true;
+          queue.homepageTestMinimum=80;
+          queue.formalImplementationMinimum=90;
+          queue.cronRole='WATCHDOG_AND_RECOVERY_ONLY';
+          queue.updatedAt=new Date().toISOString();
+          fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
           NODE
-          git add development-queue.json;git diff --cached --check;if ! git diff --cached --quiet;then git commit -m 'runtime: route formal 90-point Web passes by selected platform [skip ci]';git push origin HEAD:"$COMPANY_RUNTIME_BRANCH";fi
+          git add development-queue.json
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'runtime: route formal 90-point Web passes by selected platform [skip ci]'
+            git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
+          fi
+          echo 'DEVELOPMENT_ROUTER_PERSIST=PASS'
+
       - name: Router summary
         if: always()
         run: |
           echo 'DEVELOPMENT_PIPELINE=ONE_CANONICAL_PIPELINE'
+          echo 'WEB_GAMEPLAY_MUSIC_GATE=REQUIRED'
           echo 'HOMEPAGE_TEST_GATE=80'
           echo 'FORMAL_IMPLEMENTATION_GATE=90'
           echo 'POST_WEB_ARTBOOK=YES'
+          echo 'WEB_PARALLEL_ACTIVE_MAX=2'
+          echo 'PLATFORM_ROUTER=tools/company-selected-platform-router.mjs'
           echo 'CRON_ROLE=WATCHDOG_AND_RECOVERY_ONLY'
+          echo 'QUALITY_GATE_WEAKENING=NO'
           echo 'PUBLIC_MAIN_WRITE=NO'
 
   dispatch:
@@ -401,7 +620,38 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "$DISPATCH_UNITY" == 'true' ]]; then gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main;echo 'IMMEDIATE_NEXT_STAGE_DISPATCH=UNITY';fi
-          if [[ "$DISPATCH_ROBLOX" == 'true' ]]; then gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main;echo 'IMMEDIATE_NEXT_STAGE_DISPATCH=ROBLOX_DEVELOPMENT_RUNTIME';fi
-          if [[ "$DISPATCH_UEFN" == 'true' ]]; then echo 'UNEXPECTED_UEFN_DISPATCH_WITHOUT_CONFIGURED_EXECUTOR' >&2;exit 2;fi
+          if [[ "$DISPATCH_UNITY" == 'true' ]]; then
+            existing=''
+            for attempt in 1 2 3; do
+              existing="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-unity-runtime.yml/runs?per_page=30" | jq -r --arg sha "$GITHUB_SHA" '[.workflow_runs[] | select(.head_sha==$sha and (.status=="queued" or .status=="pending" or .status=="in_progress" or .status=="waiting" or .status=="requested")) | .id] | max // empty')"
+              [[ "$existing" =~ ^[0-9]+$ ]] && break
+              [[ '${{ github.event_name }}' != 'push' ]] && break
+              sleep 2
+            done
+            if [[ "$existing" =~ ^[0-9]+$ ]]; then
+              echo "UNITY_EXECUTOR_DISPATCH=DEDUPED_EXISTING_RUN:$existing"
+            else
+              gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+              echo 'IMMEDIATE_NEXT_STAGE_DISPATCH=UNITY'
+            fi
+          fi
+          if [[ "$DISPATCH_ROBLOX" == 'true' ]]; then
+            existing=''
+            for attempt in 1 2 3; do
+              existing="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=30" | jq -r --arg sha "$GITHUB_SHA" '[.workflow_runs[] | select(.head_sha==$sha and (.status=="queued" or .status=="pending" or .status=="in_progress" or .status=="waiting" or .status=="requested")) | .id] | max // empty')"
+              [[ "$existing" =~ ^[0-9]+$ ]] && break
+              [[ '${{ github.event_name }}' != 'push' ]] && break
+              sleep 2
+            done
+            if [[ "$existing" =~ ^[0-9]+$ ]]; then
+              echo "ROBLOX_EXECUTOR_DISPATCH=DEDUPED_EXISTING_RUN:$existing"
+            else
+              gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+              echo 'IMMEDIATE_NEXT_STAGE_DISPATCH=ROBLOX_DEVELOPMENT_RUNTIME'
+            fi
+          fi
+          if [[ "$DISPATCH_UEFN" == 'true' ]]; then
+            echo 'UNEXPECTED_UEFN_DISPATCH_WITHOUT_CONFIGURED_EXECUTOR' >&2
+            exit 2
+          fi
           echo 'ROUTER_DISPATCH_COMPLETE=YES'
