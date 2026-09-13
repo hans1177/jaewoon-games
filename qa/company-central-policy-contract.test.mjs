@@ -22,6 +22,10 @@ test('COMPANY_FLOW remains the single machine-oriented production policy source'
   assert.match(flow,/format: MACHINE_ORIENTED_POLICY_SPEC/);
   assert.match(flow,/humanReadableNarrativeRequired: false/);
   assert.match(flow,/ownerInstructionOverridesPolicy: true/);
+  assert.match(flow,/passMinimum: 80/);
+  assert.match(flow,/implementationPassMinimum: 90/);
+  assert.match(flow,/designOnlyArtbookBeforePromotionForbidden: true/);
+  assert.match(flow,/blockingBudgetMinutes: 10/);
   assert.match(agents,/제작 정책 원본은 \*\*`COMPANY_FLOW\.md` 하나\*\*/);
 });
 
@@ -58,24 +62,35 @@ test('GAME_SEED mirrors the current historical-bootstrap dynamic-portfolio and s
   assert.match(flow,/projectMaySelectAnyAllowedPlatform: true/);
 });
 
-test('DESIGN_ONLY is seed-backed design review revision baseline then artbook with no Vibe2',()=>{
+test('DESIGN_ONLY stops at strict design baseline; artbook begins only after 80-point promotion',()=>{
   const design=directive.classes.DESIGN_ONLY;
   assert.deepEqual(design.requiredFlow,[
     'GAME_SEED','GAME_DESIGNER_DRAFT','FIVE_DISTINCT_DEPARTMENT_LEADS',
     'DEPARTMENT_LEAD_PLUS_ASSISTANT_MULTIMODEL_REVIEW','DEPARTMENT_LEAD_INTERNAL_CONSENSUS',
     'CROSS_DEPARTMENT_LEAD_MEETING','ONE_LEAD_REBUTTAL_ROUND','GAME_DESIGNER_REVISION',
-    'DESIGN_BASELINE_GATE','ARTBOOK_EDITOR_CORE_STRATEGY'
+    'DESIGN_BASELINE_GATE'
   ]);
   for(const token of ['TARGET_PLATFORM_UX_DIRECTION_DEFINED','PLATFORM_SELECTION_RECORDED','MANDATORY_WEB_COMPANION_REQUIREMENT_RECORDED','APPROVED_SCOPE_INVENTORY_RECORDED','FIVE_DEPARTMENT_SCORES_RECORDED'])assert.ok(design.baselineReadyRequires.includes(token));
   assert.equal(design.readyState,'DESIGN_BASELINE_READY');
   assert.equal(design.sourceCodeAutoDevelopment,false);
+  assert.equal(design.artbookBeforePromotionForbidden,true);
+  assert.equal(directive.strictReview.designPassMinimum,80);
+  assert.equal(directive.strictReview.implementationPassMinimum,90);
+  assert.equal(directive.strictReview.excellentDesignMinimum,90);
+  assert.equal(directive.ai.artbookEditor.startsAfterDesignPromotion,true);
+  assert.equal(directive.ai.artbookEditor.startsAtClass,'DEVELOPMENT_CONFIRMED');
+  assert.ok(directive.classes.DEVELOPMENT_CONFIRMED.requiredFlow.includes('POST_PROMOTION_ARTBOOK'));
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.postPromotionArtbookRequiredBeforeWeb,true);
   assert.equal(directive.ai.vibe2.startsAtClass,'DEVELOPMENT_CONFIRMED');
   assert.equal(directive.ai.vibe2.designOnlyActive,false);
   assert.equal(Object.hasOwn(directive.ai.vibe2.roleByClass,'DESIGN_ONLY'),false);
   assert.match(designCycle,/GAME_SEED_REQUIRED/);
   assert.match(designCycle,/sameModelAsDraft:true/);
   assert.match(designCycle,/repeatedFiveDepartmentReview:true/);
+  assert.match(designCycle,/AbortSignal\.timeout\(modelCallTimeoutMs\)/);
   assert.doesNotMatch(designCycle,/VIBE2_VALIDATION_LEARNING|vibe2-validator/);
+  assert.match(pipeline,/DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO/);
+  assert.doesNotMatch(pipeline,/await run\('tools\/company-design-artbook\.mjs'\)/);
   assert.match(pipeline,/DESIGN_ONLY_VIBE2_USED=NO/);
 });
 
