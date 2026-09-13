@@ -448,6 +448,10 @@ jobs:
           $evidence | ConvertTo-Json -Depth 8 | Set-Content -Encoding utf8 $file
           $log = Join-Path $env:RUNNER_TEMP 'roblox-runtime-combined.log'
           if (Test-Path $log) { Copy-Item $log (Join-Path $root "$safe.studio.log") }
+          foreach ($rawName in @('roblox-runtime-output.log','roblox-studio-stdout.log','roblox-studio-stderr.log','roblox-runtime-timeout.flag')) {
+            $raw = Join-Path $env:RUNNER_TEMP $rawName
+            if (Test-Path $raw) { Copy-Item $raw (Join-Path $root $rawName) }
+          }
           Write-Host "ROBLOX_RUNTIME_PASS=$(if($passed){'YES'}else{'NO'})"
           Write-Host "ROBLOX_RUNTIME_FAILURE=$(if($failure){$failure}else{'NONE'})"
           Write-Host "ROBLOX_DATASTORE_REJOIN_PASS=$(if(-not $saveRequired){'NOT_APPLICABLE'}else{'NO'})"
