@@ -41,9 +41,8 @@ jobs:
           set -euo pipefail
           node --check tools/company-development-roblox-bootstrap.mjs
           node --check tools/company-development-roblox-source-reconcile.mjs
-          node --check tools/company-development-roblox-package.mjs
           node --check tools/vibe3-roblox-platform.mjs
-          node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs qa/company-selected-platform-router.test.mjs
+          node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-selected-platform-router.test.mjs
 
       - name: Fetch current company runtime
         run: |
@@ -65,7 +64,7 @@ jobs:
             --source-revision="$SOURCE_REVISION" \
             --results=/tmp/roblox-source-reconciliation.json
 
-      - name: Resolve next Roblox source execution slice
+      - name: Resolve up to two Web-validated Roblox source targets
         id: targets
         shell: bash
         run: |
@@ -74,8 +73,7 @@ jobs:
           import fs from 'node:fs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const rows=[];
-          const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxSourceBootstrapFailedAt))-Number(Boolean(b.robloxSourceBootstrapFailedAt)));
-          for(const item of candidates){
+          for(const item of q.items||[]){
             if(rows.length>=2)break;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
@@ -99,9 +97,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`ROBLOX_SOURCE_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_SOURCE_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
-          console.log('ROBLOX_PER_GAME_PROMOTION=YES');
-          console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
-          console.log('ROBLOX_EXECUTION_WIP_MAX=2');
+          console.log('ROBLOX_PARALLEL_ACTIVE_MAX=2');
           NODE
 
   source-worker:
@@ -156,7 +152,7 @@ jobs:
             --artbook="$artbook" \
             --output-root="$TARGET_SOURCE" \
             --evidence="$evidence"
-          node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs
+          node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs
           git diff --check
           git add "$TARGET_SOURCE"
           git diff --cached --quiet && { echo "no Roblox source change: $GAME_ID" >&2; exit 1; }
@@ -341,8 +337,7 @@ jobs:
           console.log(`ROBLOX_SOURCE_PASS_COUNT=${passCount}`);
           console.log(`ROBLOX_SOURCE_PROMOTION_PENDING_COUNT=${candidateCount}`);
           console.log(`ROBLOX_SOURCE_FAIL_COUNT=${failCount}`);
-          console.log('ROBLOX_PER_GAME_PROMOTION=YES');
-          console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
+          console.log('ROBLOX_PARALLEL_ACTIVE_MAX=2');
           NODE
           git config user.name 'jaewoon-roblox-development'
           git config user.email 'actions@users.noreply.github.com'
@@ -356,15 +351,15 @@ jobs:
           echo 'ROBLOX_RUNTIME_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
 
-      - name: Record isolated source failures without blocking other games
+      - name: Stop batch chaining when current Roblox source work failed
         if: needs.source-plan.outputs.count != '0' && needs.source-worker.result != 'success'
         run: |
-          echo 'ROBLOX_SOURCE_FAILURE_ISOLATED=YES'
-          echo 'ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO'
-          echo 'ROBLOX_RECURSIVE_RETRY_LOOP=AVOIDED_BY_FAILURE_DEPRIORITIZATION'
+          echo 'ROBLOX_NEXT_BATCH_DISPATCH=NO'
+          echo 'ROBLOX_NEXT_BATCH_BLOCKER=CURRENT_SOURCE_BATCH_FAILED'
+          echo 'ROBLOX_RECURSIVE_RETRY_LOOP=BLOCKED'
 
-      - name: Dispatch next Roblox source execution slice when other eligible work remains
-        if: needs.source-plan.outputs.count != '0'
+      - name: Dispatch next Roblox source batch when other eligible work remains
+        if: needs.source-plan.outputs.count != '0' && needs.source-worker.result == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           CURRENT_TARGETS_JSON: ${{ needs.source-plan.outputs.targets_json }}
@@ -387,7 +382,6 @@ jobs:
             const state=String(item.canonicalState||'').toUpperCase();
             if(state==='DEVELOPMENT_BLOCKED')continue;
             if(Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim())continue;
-            if(Boolean(item.robloxSourceBootstrapFailedAt))continue;
             try{execFileSync('git',['cat-file','-e',`origin/main:roblox-games/${item.gameId}`],{stdio:'ignore'});continue;}catch{}
             count++;
           }
@@ -409,337 +403,6 @@ jobs:
         run: |
           echo 'ROBLOX_SOURCE_TARGETS=NONE'
           echo "ROBLOX_SOURCE_RECONCILIATION_COUNT=$RECONCILIATION_COUNT"
-          echo 'ROBLOX_EXECUTION_WIP_MAX=2'
-          echo 'ROBLOX_PER_GAME_PROMOTION=YES'
-          echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
+          echo 'ROBLOX_PARALLEL_ACTIVE_MAX=2'
           echo 'ROBLOX_RUNTIME_PASS=NO'
-          echo 'ROBLOX_RELEASE_CLAIM=NO'
-
-  technical-plan:
-    name: resolve Roblox technical package work
-    needs: source-bootstrap
-    if: always() && needs.source-bootstrap.result == 'success'
-    runs-on: ubuntu-latest
-    timeout-minutes: 8
-    outputs:
-      count: ${{ steps.targets.outputs.count }}
-      matrix: ${{ steps.targets.outputs.matrix }}
-      targets_json: ${{ steps.targets.outputs.targets_json }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha }}
-          fetch-depth: 1
-          fetch-tags: false
-      - name: Fetch current company runtime
-        run: |
-          set -euo pipefail
-          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
-          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
-      - name: Resolve next exact-source Roblox technical execution slice
-        id: targets
-        shell: bash
-        run: |
-          set -euo pipefail
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
-          const rows=[];
-          const isOrchestrationMissing=item=>String(item.robloxFailureSignature||'')==='roblox-package-result-missing';
-          const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxBuildFailedAt)&&!isOrchestrationMissing(a))-Number(Boolean(b.robloxBuildFailedAt)&&!isOrchestrationMissing(b)));
-          for(const item of candidates){
-            if(rows.length>=2)break;
-            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
-            if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
-            if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
-            if(String(item.canonicalState||'').toUpperCase()!=='WAITING_TARGET_PLATFORM_VALIDATION')continue;
-            const sourcePath=String(item.robloxProjectPath||item.targetSourcePath||item.sourcePath||`roblox-games/${item.gameId}`).trim();
-            const sourceRevision=String(item.robloxSourceCommit||'').trim();
-            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
-            const exactBuild=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===sourceRevision&&artifactIdentity.startsWith('sha256:');
-            if(exactBuild)continue;
-            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,baseline:item.designBaselineSource,sourcePath,sourceRevision});
-          }
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
-          console.log(`ROBLOX_TECHNICAL_TARGET_COUNT=${rows.length}`);
-          console.log(`ROBLOX_TECHNICAL_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
-          console.log('ROBLOX_PER_GAME_PROMOTION=YES');
-          console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
-          console.log('ROBLOX_EXECUTION_WIP_MAX=2');
-          NODE
-
-  technical-worker:
-    name: Roblox package ${{ matrix.gameId }}
-    needs: technical-plan
-    if: always() && needs.technical-plan.result == 'success' && needs.technical-plan.outputs.count != '0'
-    strategy:
-      fail-fast: false
-      max-parallel: 2
-      matrix: ${{ fromJSON(needs.technical-plan.outputs.matrix) }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 12
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha }}
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Fetch exact source and current company runtime
-        run: |
-          set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-          git fetch --no-tags origin "${{ matrix.sourceRevision }}"
-      - name: Install pinned Rojo package tool
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/rojo-bin
-          curl -fsSL --retry 3 --retry-delay 2 \
-            -o /tmp/rojo.zip \
-            https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
-          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
-          unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
-          test -f /tmp/rojo-bin/rojo
-          chmod +x /tmp/rojo-bin/rojo
-          /tmp/rojo-bin/rojo --version
-      - name: Build exact-revision Roblox package
-        id: package
-        continue-on-error: true
-        env:
-          GAME_ID: ${{ matrix.gameId }}
-          BASELINE_SOURCE: ${{ matrix.baseline }}
-          SOURCE_PATH: ${{ matrix.sourcePath }}
-          SOURCE_REVISION: ${{ matrix.sourceRevision }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-80)"
-          mkdir -p "/tmp/roblox-technical/results" "/tmp/roblox-technical/packages" "/tmp/roblox-technical/input/$safe"
-          baseline="/tmp/roblox-technical/input/$safe/baseline.json"
-          evidence="/tmp/roblox-technical/results/${safe}.build.json"
-          git show "origin/$COMPANY_RUNTIME_BRANCH:$BASELINE_SOURCE" > "$baseline"
-          node tools/company-development-roblox-package.mjs \
-            --repo-root=. \
-            --game-id="$GAME_ID" \
-            --source-path="$SOURCE_PATH" \
-            --source-revision="$SOURCE_REVISION" \
-            --baseline="$baseline" \
-            --rojo=/tmp/rojo-bin/rojo \
-            --output-dir=/tmp/roblox-technical/packages \
-            --evidence="$evidence"
-          identity="$(node -e "const e=require(process.argv[1]);process.stdout.write(e.artifactIdentity)" "$evidence")"
-          echo "artifact_identity=$identity" >> "$GITHUB_OUTPUT"
-          echo "build_evidence=$evidence" >> "$GITHUB_OUTPUT"
-      - name: Record Roblox technical package result
-        if: always()
-        env:
-          GAME_ID: ${{ matrix.gameId }}
-          SOURCE_PATH: ${{ matrix.sourcePath }}
-          SOURCE_REVISION: ${{ matrix.sourceRevision }}
-          PACKAGE_OUTCOME: ${{ steps.package.outcome }}
-          BUILD_EVIDENCE: ${{ steps.package.outputs.build_evidence }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/roblox-technical/results
-          node <<'NODE'
-          const fs=require('fs');
-          const path=require('path');
-          const id=process.env.GAME_ID;
-          const safe=String(id).replace(/[^a-zA-Z0-9._-]+/g,'-');
-          const passed=process.env.PACKAGE_OUTCOME==='success';
-          let evidence=null;
-          if(passed&&process.env.BUILD_EVIDENCE&&fs.existsSync(process.env.BUILD_EVIDENCE))evidence=JSON.parse(fs.readFileSync(process.env.BUILD_EVIDENCE,'utf8'));
-          const result={
-            gameId:id,
-            pass:passed&&evidence?.buildOrPackagePassed===true,
-            sourcePath:process.env.SOURCE_PATH,
-            sourceRevision:process.env.SOURCE_REVISION,
-            artifactIdentity:evidence?.artifactIdentity||null,
-            saveRequired:evidence?.saveRequired===true,
-            failure:passed?null:'roblox-build-package-failed',
-          };
-          fs.writeFileSync(path.join('/tmp/roblox-technical/results',`${safe}.result.json`),JSON.stringify(result,null,2)+'\n');
-          console.log(`ROBLOX_TECHNICAL_PACKAGE_RESULT=${id}:${result.pass?'PASS':'FAIL'}`);
-          console.log('ROBLOX_BUILD_PREFLIGHT_PASS=NO');
-          console.log('ROBLOX_RUNTIME_PASS=NO');
-          console.log('ROBLOX_INDEPENDENT_QA_PASS=NO');
-          console.log('ROBLOX_REGRESSION_PASS=NO');
-          console.log('ROBLOX_FINAL_REVIEW_PASS=NO');
-          NODE
-      - name: Upload immutable Roblox package checkpoint
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: development-roblox-package-${{ matrix.gameId }}
-          path: /tmp/roblox-technical
-          if-no-files-found: error
-          retention-days: 3
-      - name: Enforce package result after checkpoint capture
-        if: always()
-        env:
-          PACKAGE_OUTCOME: ${{ steps.package.outcome }}
-        run: |
-          if [ "$PACKAGE_OUTCOME" != 'success' ]; then
-            echo 'ROBLOX_BUILD_PACKAGE=FAIL'
-            exit 1
-          fi
-          echo 'ROBLOX_BUILD_PACKAGE=PASS'
-          echo 'ROBLOX_BUILD_PREFLIGHT_PASS=NO'
-          echo 'ROBLOX_RUNTIME_PASS=NO'
-          echo 'ROBLOX_RELEASE_CLAIM=NO'
-
-  technical-persist:
-    name: persist Roblox package checkpoints
-    needs: [technical-plan, technical-worker]
-    if: always() && needs.technical-plan.result == 'success'
-    runs-on: ubuntu-latest
-    timeout-minutes: 12
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha }}
-          fetch-depth: 1
-          fetch-tags: false
-      - name: Download Roblox package checkpoints
-        if: needs.technical-plan.outputs.count != '0'
-        continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          pattern: development-roblox-package-*
-          path: /tmp/roblox-technical-batch
-          merge-multiple: true
-      - name: Fetch current company runtime
-        run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-      - name: Persist exact Roblox build package evidence
-        if: needs.technical-plan.outputs.count != '0'
-        env:
-          EXPECTED_TARGETS_JSON: ${{ needs.technical-plan.outputs.targets_json }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          git checkout -B roblox-technical-persist "origin/$COMPANY_RUNTIME_BRANCH"
-          node <<'NODE'
-          const fs=require('fs');
-          const path=require('path');
-          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
-          const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
-          const root='/tmp/roblox-technical-batch/results';
-          const results=[];
-          if(fs.existsSync(root)){
-            for(const name of fs.readdirSync(root).filter(x=>x.endsWith('.result.json')).sort())results.push(JSON.parse(fs.readFileSync(path.join(root,name),'utf8')));
-          }
-          const byId=new Map(results.map(x=>[x.gameId,x]));
-          for(const target of expected){
-            if(!byId.has(target.gameId))results.push({gameId:target.gameId,pass:false,sourcePath:target.sourcePath,sourceRevision:target.sourceRevision,failure:'roblox-package-result-missing'});
-          }
-          const stamp=new Date().toISOString();
-          let passCount=0,failCount=0;
-          for(const result of results){
-            const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
-            if(!item)throw new Error(`queue item missing during Roblox package persist: ${result.gameId}`);
-            if(result.pass===true&&String(result.artifactIdentity||'').startsWith('sha256:')){
-              Object.assign(item,{
-                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
-                robloxBuildOrPackagePassed:true,robloxBuildSourceRevision:result.sourceRevision,robloxBuildArtifactIdentity:result.artifactIdentity,
-                robloxBuildPassedAt:stamp,robloxBuildFailedAt:null,robloxBuildPreflightPassed:false,
-                robloxRuntimePassed:false,robloxIndependentQaPassed:false,robloxRegressionPassed:false,robloxFinalReviewPassed:false,
-                robloxLastSuccessfulStage:'TARGET_PLATFORM_BUILD_OR_PACKAGE',robloxFailureStage:'FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT',
-                robloxFailureSignature:'ROBLOX_BUILD_PREFLIGHT_PENDING',routingBlockers:['roblox-build-preflight-pending'],updatedAt:stamp,
-              });
-              passCount++;
-            }else{
-              Object.assign(item,{
-                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
-                robloxBuildOrPackagePassed:false,robloxBuildSourceRevision:result.sourceRevision,robloxBuildFailedAt:stamp,robloxBuildPreflightPassed:false,
-                robloxRuntimePassed:false,robloxIndependentQaPassed:false,robloxRegressionPassed:false,robloxFinalReviewPassed:false,
-                robloxFailureStage:'TARGET_PLATFORM_BUILD_OR_PACKAGE',robloxFailureSignature:result.failure||'ROBLOX_BUILD_PACKAGE_FAILED',
-                routingBlockers:[`roblox-build-package:${result.failure||'ROBLOX_BUILD_PACKAGE_FAILED'}`],updatedAt:stamp,
-              });
-              failCount++;
-            }
-          }
-          queue.robloxTechnicalParallelism=2;
-          queue.updatedAt=stamp;
-          fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
-          console.log(`ROBLOX_BUILD_PACKAGE_PASS_COUNT=${passCount}`);
-          console.log(`ROBLOX_BUILD_PACKAGE_FAIL_COUNT=${failCount}`);
-          console.log('ROBLOX_PER_GAME_PROMOTION=YES');
-          console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
-          console.log('ROBLOX_BUILD_PREFLIGHT_PASS=NO');
-          console.log('ROBLOX_RUNTIME_PASS=NO');
-          console.log('ROBLOX_INDEPENDENT_QA_PASS=NO');
-          console.log('ROBLOX_REGRESSION_PASS=NO');
-          console.log('ROBLOX_FINAL_REVIEW_PASS=NO');
-          console.log('ROBLOX_RELEASE_CLAIM=NO');
-          NODE
-          git config user.name 'jaewoon-roblox-development'
-          git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          git diff --cached --check
-          if ! git diff --cached --quiet; then
-            git commit -m 'runtime: persist Roblox package checkpoint [skip ci]'
-            git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
-          fi
-      - name: Record isolated package failures without blocking other games
-        if: needs.technical-plan.outputs.count != '0' && needs.technical-worker.result != 'success'
-        run: |
-          echo 'ROBLOX_PACKAGE_FAILURE_ISOLATED=YES'
-          echo 'ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO'
-          echo 'ROBLOX_TECHNICAL_RETRY_LOOP=AVOIDED_BY_FAILURE_DEPRIORITIZATION'
-      - name: Dispatch next Roblox technical execution slice when other exact-source work remains
-        if: needs.technical-plan.outputs.count != '0'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          CURRENT_TARGETS_JSON: ${{ needs.technical-plan.outputs.targets_json }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-next-technical-queue.json
-          remaining="$(node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const q=JSON.parse(fs.readFileSync('/tmp/roblox-next-technical-queue.json','utf8'));
-          const current=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').map(x=>x.gameId));
-          let count=0;
-          for(const item of q.items||[]){
-            if(current.has(item.gameId))continue;
-            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
-            if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
-            if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
-            if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
-            if(String(item.canonicalState||'').toUpperCase()!=='WAITING_TARGET_PLATFORM_VALIDATION')continue;
-            const revision=String(item.robloxSourceCommit||'').trim();
-            const exactBuild=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&String(item.robloxBuildArtifactIdentity||'').startsWith('sha256:');
-            if(exactBuild)continue;
-            const orchestrationMissing=String(item.robloxFailureSignature||'')==='roblox-package-result-missing';
-            if(Boolean(item.robloxBuildFailedAt)&&!orchestrationMissing)continue;
-            count++;
-          }
-          process.stdout.write(String(count));
-          NODE
-          )"
-          echo "ROBLOX_REMAINING_TECHNICAL_TARGETS=$remaining"
-          if [[ "$remaining" =~ ^[1-9][0-9]*$ ]]; then
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
-            echo 'ROBLOX_NEXT_TECHNICAL_BATCH_DISPATCH=YES'
-          else
-            echo 'ROBLOX_NEXT_TECHNICAL_BATCH_DISPATCH=NO'
-          fi
-      - name: Technical queue summary
-        if: needs.technical-plan.outputs.count == '0'
-        run: |
-          echo 'ROBLOX_TECHNICAL_TARGETS=NONE'
-          echo 'ROBLOX_PER_GAME_PROMOTION=YES'
-          echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
-          echo 'ROBLOX_BUILD_PREFLIGHT_PASS=NO'
-          echo 'ROBLOX_RUNTIME_PASS=NO'
-          echo 'ROBLOX_INDEPENDENT_QA_PASS=NO'
-          echo 'ROBLOX_REGRESSION_PASS=NO'
-          echo 'ROBLOX_FINAL_REVIEW_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'

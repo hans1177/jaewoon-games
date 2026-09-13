@@ -4,21 +4,19 @@ import fs from 'node:fs';
 
 const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
 
-test('Roblox promotion is per-game and has no game-count promotion gate',()=>{
-  assert.ok(workflow.includes("ROBLOX_PER_GAME_PROMOTION=YES"));
-  assert.ok(workflow.includes("ROBLOX_PROMOTION_COUNT_GATE=NONE"));
-  assert.ok(workflow.includes("ROBLOX_EXECUTION_WIP_MAX=2"));
-  assert.ok(workflow.includes("const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxSourceBootstrapFailedAt))-Number(Boolean(b.robloxSourceBootstrapFailedAt)))"));
-  assert.ok(workflow.includes("const isOrchestrationMissing=item=>String(item.robloxFailureSignature||'')==='roblox-package-result-missing'"));
-  assert.ok(workflow.includes("const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxBuildFailedAt)&&!isOrchestrationMissing(a))-Number(Boolean(b.robloxBuildFailedAt)&&!isOrchestrationMissing(b)))"));
-  assert.match(workflow,/Dispatch next Roblox source execution slice when other eligible work remains[\s\S]*if: needs\.source-plan\.outputs\.count != '0'/);
-  assert.match(workflow,/Dispatch next Roblox technical execution slice when other exact-source work remains[\s\S]*if: needs\.technical-plan\.outputs\.count != '0'/);
-  assert.ok(!workflow.includes("ROBLOX_NEXT_BATCH_BLOCKER=CURRENT_SOURCE_BATCH_FAILED"));
-  assert.ok(!workflow.includes("ROBLOX_NEXT_TECHNICAL_BATCH_BLOCKER=CURRENT_PACKAGE_BATCH_FAILED"));
-  assert.ok(workflow.includes("ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO"));
+test('Roblox classification promotion has no package checkpoint',()=>{
+  assert.ok(!workflow.includes('technical-plan:'));
+  assert.ok(!workflow.includes('company-development-roblox-package.mjs'));
+  assert.ok(!workflow.includes('qa/company-development-roblox-package.test.mjs'));
+  assert.ok(!workflow.includes('robloxBuildOrPackagePassed'));
+  assert.ok(!workflow.includes('roblox-package-result-missing'));
+  assert.ok(!workflow.includes('TARGET_PLATFORM_BUILD_OR_PACKAGE'));
 });
 
-test('five distinct leads remain a per-game evidence stage, not a game-count quota',()=>{
-  assert.ok(workflow.includes("robloxFailureStage:'FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT'"));
-  assert.ok(workflow.includes("robloxBuildSourceRevision:result.sourceRevision"));
+test('Roblox source promotion remains item-scoped after classification',()=>{
+  assert.ok(workflow.includes("if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;"));
+  assert.ok(workflow.includes("if(platform!=='ROBLOX')continue;"));
+  assert.ok(workflow.includes('rows.push({'));
+  assert.ok(workflow.includes("status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION'"));
+  assert.ok(workflow.includes('ROBLOX_SOURCE_PROMOTION_PENDING_COUNT'));
 });
