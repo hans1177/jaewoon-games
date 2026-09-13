@@ -1,6 +1,6 @@
 name: Finalize Roblox Runtime Harness V8
 
-# migration revision: 3
+# migration revision: 4
 on:
   workflow_dispatch:
   push:
@@ -41,6 +41,18 @@ jobs:
           grep -Fq "ROBLOX_RUNTIME_HARNESS_VERSION: '8'" .github/workflows/company-development-roblox-runtime.yml
           grep -Fq "ROBLOX_RUNTIME_HARNESS_VERSION: '8'" .github/workflows/company-development-roblox-runtime-continuation.yml
           echo 'ROBLOX_RUNTIME_V8_FINALIZE_TEST=PASS'
+      - name: Export verified v8 files
+        uses: actions/upload-artifact@v4
+        with:
+          name: roblox-runtime-v8-verified
+          if-no-files-found: error
+          retention-days: 1
+          path: |
+            .github/workflows/company-development-roblox-runtime.yml
+            .github/workflows/company-development-roblox-runtime-continuation.yml
+            qa/company-development-roblox-runtime.test.mjs
+            qa/company-development-roblox-runtime-continuation.test.mjs
+            tools/company-development-roblox-runtime-persist.mjs
       - name: Commit canonical v8 runtime
         shell: bash
         run: |
