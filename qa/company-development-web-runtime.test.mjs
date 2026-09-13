@@ -5,7 +5,9 @@ import {validateBootstrapHtml,buildContractSafePlayable,inferDevelopmentGenre,cl
 import {evaluateGameplayEvidence,scopeInteractionChanged} from '../tools/company-development-web-gameplay-validation.mjs';
 import {deriveApprovedScopeInventory,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
 
-const playable=`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-audio-state="locked" data-approved-scope-count="1"><h1>Test</h1><p id="status">score 0</p><button id="act" data-scope-id="scope-test">Act</button><button data-audio-control="mute">Mute</button><input data-audio-control="volume" type="range"><script>let score=0,ctx=null;async function audio(){const AC=window.AudioContext||window.webkitAudioContext;ctx=ctx||new AC();if(ctx.state==='suspended')await ctx.resume();document.body.dataset.audioState='running'}document.querySelector('#act').addEventListener('click',async()=>{await audio();score++;document.querySelector('#status').textContent='score '+score;});</script>${'x'.repeat(1600)}</body></html>`;
+const sessionStages=[{id:'INTRO',start:0,end:10},{id:'CORE',start:10,end:30},{id:'VARIATION',start:30,end:50},{id:'MILESTONE',start:50,end:60}];
+const sessionHtml=sessionStages.map(stage=>`<article data-session-stage="${stage.id}" data-session-start="${stage.start}" data-session-end="${stage.end}">${stage.start}-${stage.end}</article>`).join('');
+const playable=`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-audio-state="locked" data-approved-scope-count="1" data-session-minutes="60" data-session-stage-count="4"><h1>Test</h1>${sessionHtml}<p id="status">score 0</p><button id="act" data-scope-id="scope-test">Act</button><button data-audio-control="mute">Mute</button><input data-audio-control="volume" type="range"><script>let score=0,ctx=null;async function audio(){const AC=window.AudioContext||window.webkitAudioContext;ctx=ctx||new AC();if(ctx.state==='suspended')await ctx.resume();document.body.dataset.audioState='running'}document.querySelector('#act').addEventListener('click',async()=>{await audio();score++;document.querySelector('#status').textContent='score '+score;});</script>${'x'.repeat(1600)}</body></html>`;
 
 test('bootstrap base contract accepts self-contained gameplay plus user-gesture music runtime',()=>{
   const result=validateBootstrapHtml(playable);
@@ -134,14 +136,15 @@ test('deterministic compiler implements every approved scope without generic pro
   }
 });
 
-test('gameplay evidence requires interaction, state change, music and full approved scope runtime coverage',()=>{
-  const before={text:'score 0',visibleButtons:3,canvases:[],dataState:[],audioState:'locked',muteControls:1,volumeControls:1,approvedScopeCount:2,visibleScopeIds:['scope-a','scope-b'],scrollWidth:390,viewportWidth:390};
+test('gameplay evidence requires interaction, state change, music, 60 minute session and full approved scope runtime coverage',()=>{
+  const before={text:'score 0',visibleButtons:3,canvases:[],dataState:[],audioState:'locked',muteControls:1,volumeControls:1,approvedScopeCount:2,visibleScopeIds:['scope-a','scope-b'],sessionDepthMinutes:60,sessionStages,scrollWidth:390,viewportWidth:390};
   const after={...before,text:'score 3',audioState:'running'};
   const scopeCoverage=runtimeApprovedScopeCoverage({declaredCount:2,visibleScopeIds:['scope-a','scope-b'],interactedScopeIds:['scope-a','scope-b']});
   const pass=evaluateGameplayEvidence({before,after,interactionCount:3,reloadVisible:true,scopeCoverage});
   assert.equal(pass.pass,true,pass.blockers.join(','));
   assert.equal(pass.musicRuntime.pass,true);
   assert.equal(pass.scopeCoverage.pass,true);
+  assert.equal(pass.sessionStructure.pass,true);
   const partial=runtimeApprovedScopeCoverage({declaredCount:2,visibleScopeIds:['scope-a','scope-b'],interactedScopeIds:['scope-a']});
   const fail=evaluateGameplayEvidence({before,after,interactionCount:3,reloadVisible:true,scopeCoverage:partial});
   assert.equal(fail.pass,false);

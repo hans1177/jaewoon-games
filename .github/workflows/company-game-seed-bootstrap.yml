@@ -163,7 +163,7 @@ jobs:
           node tools/company-game-seed-bootstrap.mjs | tee /tmp/game-seed-result.txt
           grep -q 'GAME_SEED_PAID_API=NO' /tmp/game-seed-result.txt
           grep -q 'SEED_MATERIAL_POOL_TARGET=100' /tmp/game-seed-result.txt
-          grep -q 'TARGET_SESSION_MINUTES=30' /tmp/game-seed-result.txt
+          grep -q 'TARGET_SESSION_MINUTES=60' /tmp/game-seed-result.txt
 
       - name: Normalize active GAME_SEED semantics
         env:
@@ -213,6 +213,6 @@ jobs:
           echo '- actual game count: no total cap' >> "$GITHUB_STEP_SUMMARY"
           echo '- autonomous idle activation: after 24h with no higher-priority development work' >> "$GITHUB_STEP_SUMMARY"
           echo '- WIP: max 3 concurrent game design/production workers' >> "$GITHUB_STEP_SUMMARY"
-          echo '- target first session: 30 meaningful minutes' >> "$GITHUB_STEP_SUMMARY"
+          echo '- target first session: 60 meaningful minutes' >> "$GITHUB_STEP_SUMMARY"
           echo '- multiplayer mode: decided during design' >> "$GITHUB_STEP_SUMMARY"
           echo '- public main game source write: NO' >> "$GITHUB_STEP_SUMMARY"

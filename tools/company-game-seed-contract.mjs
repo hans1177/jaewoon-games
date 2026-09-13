@@ -32,7 +32,7 @@ export const GAME_SEED_POLICY = Object.freeze({
   primaryPlatformIsDefaultNotLock: true,
   initialPlayMode: 'PROJECT_DEFINED',
   multiplayerModes: Object.freeze(['SINGLE','COOP','COMPETITIVE','HYBRID']),
-  targetSessionMinutes: 30,
+  targetSessionMinutes: 60,
   numericMarketClaimRequiresSource: true,
   numericMarketClaimRequiresObservedAt: true,
   marketEvidenceHardPassFailGate: false
@@ -54,7 +54,7 @@ function normalizeCompatibility(seed){
     const games=Array.isArray(seed.REFERENCE_GAMES)?seed.REFERENCE_GAMES.filter(Boolean):[];
     seed.REFERENCE_INPUTS=games.length?games.map(value=>({type:'GAME_REFERENCE',value:String(value)})):[{type:'ORIGINAL_MATERIAL',value:'legacy seed material'}];
   }
-  if(!Number.isFinite(Number(seed.TARGET_SESSION_MINUTES)))seed.TARGET_SESSION_MINUTES=30;
+  if(!Number.isFinite(Number(seed.TARGET_SESSION_MINUTES)))seed.TARGET_SESSION_MINUTES=60;
   if(!isNonEmptyString(seed.MULTIPLAYER_DESIGN_MODE)){
     const mode=String(seed.INITIAL_PLAY_MODE||'').toUpperCase();
     seed.MULTIPLAYER_DESIGN_MODE=mode.includes('MULTI')?'HYBRID':'SINGLE';
@@ -88,7 +88,7 @@ export function validateGameSeed(input) {
   if(seed.SEED_MATERIAL_IDS!==undefined){
     if(!Array.isArray(seed.SEED_MATERIAL_IDS)||seed.SEED_MATERIAL_IDS.length<2||seed.SEED_MATERIAL_IDS.length>4)errors.push('SEED_MATERIAL_IDS must contain 2 to 4 material ids');
   }
-  if(Number(seed.TARGET_SESSION_MINUTES)!==30)errors.push('TARGET_SESSION_MINUTES must be exactly 30');
+  if(Number(seed.TARGET_SESSION_MINUTES)!==60)errors.push('TARGET_SESSION_MINUTES must be exactly 60');
   if(!GAME_SEED_POLICY.multiplayerModes.includes(String(seed.MULTIPLAYER_DESIGN_MODE||'').toUpperCase()))errors.push(`MULTIPLAYER_DESIGN_MODE must be one of ${GAME_SEED_POLICY.multiplayerModes.join(', ')}`);
 
   if (seed.INITIAL_TARGET_PLATFORM !== undefined) {
