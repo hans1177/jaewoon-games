@@ -85,3 +85,10 @@ test('canonical DEVELOPMENT router hands Roblox SOURCE_BIND and technical valida
   assert.match(router,/gh workflow run company-development-roblox-runtime\.yml/);
   assert.match(router,/ROBLOX_EXECUTOR_DISPATCH=DEDUPED_EXISTING_RUN/);
 });
+
+test('Web gate persistence survives merged artifact directory layouts',()=>{
+  assert.match(router,/const root='\/tmp\/web-batch'/);
+  assert.match(router,/WEB_WORKER_RESULT_FILES=/);
+  assert.match(router,/find \/tmp\/web-batch -type d -name persist -print0/);
+  assert.doesNotMatch(router,/const resultDir='\/tmp\/web-batch\/results'/);
+});
