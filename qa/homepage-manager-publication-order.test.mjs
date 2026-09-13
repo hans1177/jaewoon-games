@@ -4,6 +4,7 @@ import fs from 'node:fs';
 
 const workflow=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
 const operations=fs.readFileSync('HOMEPAGE_OPERATIONS.md','utf8');
+const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
 
 const section=(from,to)=>{
   const start=workflow.indexOf(from);
@@ -52,6 +53,15 @@ test('verified runtime status/catalog join the same supervised publication candi
   assert.ok(manage.includes("== 'Company Status Sync'"));
   assert.ok(manage.includes('HOMEPAGE_PUBLIC_STATUS_SYNC=YES'));
   assert.ok(manage.includes('Prepare verified runtime status/catalog candidate'));
+});
+
+test('Top30 test artbooks remain valid before catalog promotion',()=>{
+  const manage=section('  manage-and-self-qa:','  director-supervision:');
+  assert.ok(manager.includes('const testCandidateIds=new Set('));
+  assert.ok(manager.includes('b.homepageTestCandidate===true&&testCandidateIds.has('));
+  assert.ok(manage.includes("const tests=JSON.parse(fs.readFileSync('test-game-candidates.json','utf8'));"));
+  assert.ok(manage.includes('const testGameIds=new Set('));
+  assert.ok(manage.includes('book.homepageTestCandidate===true&&testGameIds.has('));
 });
 
 test('workflow implements documented self-QA -> Director -> PR order',()=>{
