@@ -112,9 +112,10 @@ function choosePocketAction(view){
   if(zone<3)return needCoins(35)||'#unlockZone';
   return '#mineOre';
 }
-async function clickTarget(page,selector){
-  const target=page.locator(selector).first();
-  if(!(await target.count()))return {clicked:false,scopeId:null,mechanicId:null,before:null,after:null};
+async function clickTarget(page,selector,index=0){
+  const targets=page.locator(selector),count=await targets.count();
+  if(!count)return {clicked:false,scopeId:null,mechanicId:null,before:null,after:null};
+  const target=targets.nth(Math.abs(Number(index)||0)%count);
   const before=await snapshot(page),scopeId=clean(await target.getAttribute('data-scope-id')),mechanicId=clean(await target.getAttribute('data-mechanic-id'));
   try{await target.click({timeout:3000});await page.waitForTimeout(55);}catch{return {clicked:false,scopeId,mechanicId,before,after:await snapshot(page)}}
   const after=await snapshot(page);return {clicked:true,scopeId,mechanicId,before,after};
@@ -161,8 +162,9 @@ export async function runGameplayValidation({gameId,sourcePath,port=4181,output=
     const url=`http://127.0.0.1:${port}/${source}/`;await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});await page.waitForTimeout(400);const before=await snapshot(page);let interactionCount=0;const interactedScopeIds=[],scopeInteractionResults=[],stageResults=[];let previousStages=new Map((before.sessionStages||[]).map(x=>[x.stage,x.complete]));
     for(let step=0;step<120;step++){
       const current=await snapshot(page);if(['victory','defeat'].includes(current.runResult))break;
-      const selector=await page.locator('#mineOre').count()?choosePocketAction(current):`[data-gameplay-action]:not([disabled])`;
-      const result=await clickTarget(page,selector);if(!result.clicked)break;interactionCount++;
+      const pocketFoundry=Boolean(await page.locator('#mineOre').count());
+      const selector=pocketFoundry?choosePocketAction(current):`[data-gameplay-action]:not([disabled])`;
+      const result=await clickTarget(page,selector,pocketFoundry?0:step);if(!result.clicked)break;interactionCount++;
       const changed=gameplayStateChanged(result.before,result.after);if(result.scopeId&&changed&&!interactedScopeIds.includes(result.scopeId)){interactedScopeIds.push(result.scopeId);scopeInteractionResults.push({scopeId:result.scopeId,mechanicId:result.mechanicId,clicked:true,stateChanged:true});}
       for(const row of result.after.sessionStages||[]){if(row.complete&&!previousStages.get(row.stage)&&!stageResults.some(x=>x.stage===row.stage)){stageResults.push({stage:row.stage,start:row.start,end:row.end,clicked:true,completed:true,trigger:'GAMEPLAY_MILESTONE',triggeredByGameplay:true,directStageClick:false,gameStateChanged:changed,interactionIndex:interactionCount,mechanicId:result.mechanicId||null});}previousStages.set(row.stage,row.complete)}
     }

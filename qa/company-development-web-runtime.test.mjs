@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {validateBootstrapHtml,buildContractSafePlayable,inferDevelopmentGenre,classifyApprovedScope} from '../tools/company-development-web-bootstrap.mjs';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {validateBootstrapHtml,validatePreservedSourceHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope} from '../tools/company-development-web-bootstrap.mjs';
 import {deriveApprovedScopeInventory,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
 
 const basePlayable='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-audio-state="locked"><button id="act">Act</button><button data-audio-control="mute">Mute</button><input data-audio-control="volume" type="range"><script>let score=0;const AC=window.AudioContext||window.webkitAudioContext;document.querySelector("#act").addEventListener("click",()=>{score++});</script></body></html>';
@@ -71,6 +74,30 @@ test('Pocket Foundry compiler emits a real factory loop, footprint and non-click
   assert.match(compiled.html,/state\.ingot/);
   assert.match(compiled.html,/state\.drones/);
   assert.match(compiled.html,/state\.zone/);
+});
+
+test('existing shared real game is preserved, inlined and rebound to approved scope before compiler fallback',async()=>{
+  const baseline={gameSeedId:'SEED-SINGLE_DEFENSE_STRATEGY-001',content:{identity:'Celestial Bastion',coreFun:'defend the celestial core with tower placement and wave adaptation',coreLoop:['place towers against the threatened route','earn resources and upgrade the defense','adapt to enemy waves and clear the final threat'],mobileUx:'touch-first tower defense controls'}};
+  const inventory=deriveApprovedScopeInventory(baseline);
+  assert.equal(inventory.length,5);
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'web-preserve-'));
+  const candidate=path.join(temp,'candidate');
+  try{
+    const built=await buildFirstPlayable({gameId:'seed-single-defense-strat-celestial-bastion',gameName:'Celestial Bastion',baseline,sourcePath:'web-games/seed-single-defense-strat-celestial-bastion',candidatePath:candidate,candidateId:'preserve-test',sourceCommit:'test',model:'none'});
+    const html=fs.readFileSync(path.join(candidate,'index.html'),'utf8');
+    assert.equal(built.generation.sourcePreserved,true);
+    assert.equal(built.result.generationMode,'SOURCE_PRESERVED_REAL_GAME');
+    assert.equal(built.review.pass,true,built.review.blockers.join(','));
+    assert.equal(validatePreservedSourceHtml(html,{scopeInventory:inventory}).pass,true);
+    assert.ok(Buffer.byteLength(html,'utf8')>=12000);
+    assert.match(html,/localStorage/);
+    assert.match(html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
+    assert.match(html,/data-audio-control="mute"/);
+    assert.match(html,/data-audio-control="volume"/);
+    assert.doesNotMatch(html,/src="\/web-games\/_shared\/vibe2-final\.js"/);
+    assert.doesNotMatch(html,/scope-control-/);
+    for(const scope of inventory)assert.match(html,new RegExp(`data-scope-id="${scope.id}"`));
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
 
 test('unfinished genres fail closed instead of receiving the old generic game shell',()=>{
