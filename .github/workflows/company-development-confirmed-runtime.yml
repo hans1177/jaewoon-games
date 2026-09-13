@@ -33,21 +33,21 @@ permissions:
 
 concurrency:
   group: company-development-confirmed-runtime
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   AUTONOMOUS_LOCAL_MODEL: qwen3:1.7b
 
 jobs:
-  web-gate:
-    name: required Web gameplay and music gate
+  web-plan:
+    name: resolve required Web gameplay and music work
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 8
     outputs:
       target_count: ${{ steps.targets.outputs.target_count }}
-      pass_count: ${{ steps.validate.outputs.pass_count }}
-      fail_count: ${{ steps.validate.outputs.fail_count }}
+      matrix: ${{ steps.targets.outputs.matrix }}
+      targets_json: ${{ steps.targets.outputs.targets_json }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -91,14 +91,40 @@ jobs:
             targetSourcePath:item.targetSourcePath||item.sourcePath||'',
             webSourcePath:item.webSourcePath||item.optionalWebSourcePath||`web-games/${item.gameId}`,
           }));
-          fs.writeFileSync('/tmp/web-targets.json',JSON.stringify(rows,null,2)+'\n');
+          const matrix={include:rows};
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`target_count=${rows.length}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify(matrix)}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`WEB_REQUIRED_QUEUE_COUNT=${rows.length}`);
           console.log(`WEB_REQUIRED_GAME_IDS=${rows.map(x=>x.gameId).join(',')}`);
+          console.log('WEB_PARALLEL_TARGET=2');
+          console.log('WEB_PARALLEL_MAX=2');
           NODE
 
+  web-worker:
+    name: Web gate ${{ matrix.gameId }}
+    needs: web-plan
+    if: needs.web-plan.outputs.target_count != '0'
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix: ${{ fromJSON(needs.web-plan.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Fetch current company runtime
+        run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+
       - name: Prepare free local Web generation model
-        if: steps.targets.outputs.target_count != '0'
         shell: bash
         run: |
           set -euo pipefail
@@ -118,15 +144,19 @@ jobs:
           echo 'WEB_PAID_AI=NO'
           echo 'WEB_PAID_RUNNER=NO'
 
-      - name: Install browser runtime only when Web validation is required
-        if: steps.targets.outputs.target_count != '0'
+      - name: Install isolated browser runtime
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
-      - name: Build and validate required Web slices serially
-        id: validate
-        if: steps.targets.outputs.target_count != '0'
+      - name: Build and validate one required Web companion
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          GAME_NAME: ${{ matrix.gameName }}
+          DESIGN_BASELINE_SOURCE: ${{ matrix.designBaselineSource }}
+          ARTBOOK_SOURCE: ${{ matrix.artbookSource }}
+          TARGET_SOURCE_PATH: ${{ matrix.targetSourcePath }}
+          WEB_SOURCE_PATH: ${{ matrix.webSourcePath }}
         shell: bash
         run: |
           set -euo pipefail
@@ -134,117 +164,178 @@ jobs:
           import fs from 'node:fs';
           import path from 'node:path';
           import {execFileSync} from 'node:child_process';
-          const rows=JSON.parse(fs.readFileSync('/tmp/web-targets.json','utf8'));
-          const results=[];
-          const persistRoot='/tmp/web-persist';
-          fs.rmSync(persistRoot,{recursive:true,force:true});
+          const item={
+            gameId:process.env.GAME_ID,
+            gameName:process.env.GAME_NAME,
+            designBaselineSource:process.env.DESIGN_BASELINE_SOURCE,
+            artbookSource:process.env.ARTBOOK_SOURCE,
+            targetSourcePath:process.env.TARGET_SOURCE_PATH,
+            webSourcePath:process.env.WEB_SOURCE_PATH,
+          };
+          const safe=String(item.gameId).replace(/[^a-zA-Z0-9._-]+/g,'-');
+          const root='/tmp/web-worker';
+          const persistRoot=path.join(root,'persist');
+          const resultsRoot=path.join(root,'results');
+          fs.rmSync(root,{recursive:true,force:true});
           fs.mkdirSync(persistRoot,{recursive:true});
-          const show=(ref,file)=>execFileSync('git',['show',`${ref}:${file}`],{maxBuffer:32*1024*1024});
-          const materialize=(ref,file)=>{const out=path.resolve(file);fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,show(ref,file));};
-          let passCount=0,failCount=0;
-          for(let i=0;i<rows.length;i++){
-            const item=rows[i];
-            const stamp=new Date().toISOString();
-            const candidateId=`development-web-${item.gameId}-${process.env.GITHUB_RUN_ID}`;
+          fs.mkdirSync(resultsRoot,{recursive:true});
+          const show=(file)=>execFileSync('git',['show',`origin/${process.env.COMPANY_RUNTIME_BRANCH}:${file}`],{maxBuffer:32*1024*1024});
+          const materialize=file=>{const out=path.resolve(file);fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,show(file));};
+          const stamp=new Date().toISOString();
+          let result;
+          try{
+            if(!item.designBaselineSource)throw new Error('DESIGN_BASELINE_SOURCE_MISSING');
+            materialize(item.designBaselineSource);
+            materialize(item.artbookSource);
+            const candidateId=`development-web-${item.gameId}-${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT}`;
             const candidatePath=`web-games/.autonomous-candidates/${candidateId}`;
-            const workDir=path.join('/tmp/web-work',item.gameId);
+            const workDir=path.join('/tmp/web-work',safe);
             const bootstrapEvidence=path.join(workDir,'web-bootstrap-evidence.json');
             const gameplayEvidence=path.join(workDir,'web-gameplay-validation.json');
             const screenshot=path.join(workDir,'web-gameplay.png');
             fs.mkdirSync(workDir,{recursive:true});
-            try{
-              if(!item.designBaselineSource)throw new Error('DESIGN_BASELINE_SOURCE_MISSING');
-              materialize(`origin/${process.env.COMPANY_RUNTIME_BRANCH}`,item.designBaselineSource);
-              materialize(`origin/${process.env.COMPANY_RUNTIME_BRANCH}`,item.artbookSource);
-              execFileSync(process.execPath,['tools/company-development-web-bootstrap.mjs',
-                `--game-id=${item.gameId}`,`--game-name=${item.gameName}`,
-                `--baseline=${item.designBaselineSource}`,`--artbook=${item.artbookSource}`,
-                `--source-path=${item.webSourcePath}`,`--candidate-id=${candidateId}`,
-                `--candidate-path=${candidatePath}`,`--source-commit=${process.env.GITHUB_SHA}`,
-                `--evidence=${bootstrapEvidence}`],{stdio:'inherit'});
-              execFileSync(process.execPath,['tools/company-development-web-gameplay-validation.mjs',
-                `--game-id=${item.gameId}`,`--source=${candidatePath}`,`--port=${4181+i}`,
-                `--output=${gameplayEvidence}`,`--screenshot=${screenshot}`],{stdio:'inherit'});
-              const report=JSON.parse(fs.readFileSync(gameplayEvidence,'utf8'));
-              if(report.pass!==true||report.musicRuntime?.pass!==true)throw new Error('WEB_OR_MUSIC_EVIDENCE_NOT_PASS');
-              const stableSource=`web-games/${item.gameId}`;
-              report.candidateSourcePath=candidatePath;
-              report.sourcePath=stableSource;
-              report.policyDocument='COMPANY_FLOW.md';
-              report.requiredBeforeTargetPlatform=true;
-              fs.writeFileSync(gameplayEvidence,JSON.stringify(report,null,2)+'\n');
-              const webOut=path.join(persistRoot,stableSource);
-              fs.mkdirSync(webOut,{recursive:true});
-              fs.copyFileSync(path.join(candidatePath,'index.html'),path.join(webOut,'index.html'));
-              const evidenceOut=path.join(persistRoot,item.designBaselineSource.replace(/[^/]+$/,'web-gameplay-validation.json'));
-              fs.mkdirSync(path.dirname(evidenceOut),{recursive:true});
-              fs.copyFileSync(gameplayEvidence,evidenceOut);
-              results.push({gameId:item.gameId,pass:true,update:{
-                status:'PENDING',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'PENDING_SELECTED_PLATFORM_BIND',
-                sourcePath:item.targetSourcePath,webSourcePath:stableSource,webValidationRequired:true,musicValidationRequired:true,
-                webValidationPassedAt:stamp,musicValidationPassed:true,webValidationEvidencePath:item.designBaselineSource.replace(/[^/]+$/,'web-gameplay-validation.json'),
-                webValidationSourceRevision:process.env.GITHUB_SHA,routingBlockers:[],updatedAt:stamp,
-              }});
-              passCount++;
-              console.log(`WEB_GAMEPLAY_MUSIC_PASS=${item.gameId}`);
-            }catch(error){
-              const signature=String(error?.message||error).replace(/\s+/g,' ').slice(0,240);
-              results.push({gameId:item.gameId,pass:false,update:{
-                status:'ACTIVE',currentStep:'WEB_GAMEPLAY_AND_MUSIC_VALIDATION',canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION',
-                sourcePath:item.webSourcePath,webSourcePath:item.webSourcePath,webValidationRequired:true,musicValidationRequired:true,
-                webValidationPassedAt:null,musicValidationPassed:false,routingBlockers:[`web-gameplay-music:${signature}`],webValidationLastAttemptAt:stamp,updatedAt:stamp,
-              }});
-              failCount++;
-              console.log(`WEB_GAMEPLAY_MUSIC_FAIL=${item.gameId}:${signature}`);
-            }
+            execFileSync(process.execPath,['tools/company-development-web-bootstrap.mjs',
+              `--game-id=${item.gameId}`,`--game-name=${item.gameName}`,
+              `--baseline=${item.designBaselineSource}`,`--artbook=${item.artbookSource}`,
+              `--source-path=${item.webSourcePath}`,`--candidate-id=${candidateId}`,
+              `--candidate-path=${candidatePath}`,`--source-commit=${process.env.GITHUB_SHA}`,
+              `--evidence=${bootstrapEvidence}`],{stdio:'inherit',timeout:9*60*1000});
+            execFileSync(process.execPath,['tools/company-development-web-gameplay-validation.mjs',
+              `--game-id=${item.gameId}`,`--source=${candidatePath}`,`--port=4181`,
+              `--output=${gameplayEvidence}`,`--screenshot=${screenshot}`],{stdio:'inherit',timeout:4*60*1000});
+            const report=JSON.parse(fs.readFileSync(gameplayEvidence,'utf8'));
+            if(report.pass!==true||report.musicRuntime?.pass!==true)throw new Error('WEB_OR_MUSIC_EVIDENCE_NOT_PASS');
+            const stableSource=`web-games/${item.gameId}`;
+            report.candidateSourcePath=candidatePath;
+            report.sourcePath=stableSource;
+            report.policyDocument='COMPANY_FLOW.md';
+            report.requiredBeforeTargetPlatform=true;
+            fs.writeFileSync(gameplayEvidence,JSON.stringify(report,null,2)+'\n');
+            const webOut=path.join(persistRoot,stableSource);
+            fs.mkdirSync(webOut,{recursive:true});
+            fs.copyFileSync(path.join(candidatePath,'index.html'),path.join(webOut,'index.html'));
+            const evidenceRelative=item.designBaselineSource.replace(/[^/]+$/,'web-gameplay-validation.json');
+            const evidenceOut=path.join(persistRoot,evidenceRelative);
+            fs.mkdirSync(path.dirname(evidenceOut),{recursive:true});
+            fs.copyFileSync(gameplayEvidence,evidenceOut);
+            result={gameId:item.gameId,pass:true,update:{
+              status:'PENDING',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'PENDING_SELECTED_PLATFORM_BIND',
+              sourcePath:item.targetSourcePath,webSourcePath:stableSource,webValidationRequired:true,musicValidationRequired:true,
+              webValidationPassedAt:stamp,musicValidationPassed:true,webValidationEvidencePath:evidenceRelative,
+              webValidationSourceRevision:process.env.GITHUB_SHA,routingBlockers:[],updatedAt:stamp,
+            }};
+            console.log(`WEB_GAMEPLAY_MUSIC_PASS=${item.gameId}`);
+          }catch(error){
+            const signature=String(error?.message||error).replace(/\s+/g,' ').slice(0,240);
+            result={gameId:item.gameId,pass:false,update:{
+              status:'ACTIVE',currentStep:'WEB_GAMEPLAY_AND_MUSIC_VALIDATION',canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION',
+              sourcePath:item.webSourcePath,webSourcePath:item.webSourcePath,webValidationRequired:true,musicValidationRequired:true,
+              webValidationPassedAt:null,musicValidationPassed:false,routingBlockers:[`web-gameplay-music:${signature}`],webValidationLastAttemptAt:stamp,updatedAt:stamp,
+            }};
+            console.log(`WEB_GAMEPLAY_MUSIC_FAIL=${item.gameId}:${signature}`);
           }
-          fs.writeFileSync('/tmp/web-results.json',JSON.stringify(results,null,2)+'\n');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`pass_count=${passCount}\nfail_count=${failCount}\n`);
-          console.log(`WEB_GAMEPLAY_MUSIC_PASS_COUNT=${passCount}`);
-          console.log(`WEB_GAMEPLAY_MUSIC_FAIL_COUNT=${failCount}`);
+          fs.writeFileSync(path.join(resultsRoot,`${safe}.json`),JSON.stringify(result,null,2)+'\n');
           NODE
 
-      - name: Emit empty validation counters
-        id: empty
-        if: steps.targets.outputs.target_count == '0'
-        run: |
-          echo 'pass_count=0' >> "$GITHUB_OUTPUT"
-          echo 'fail_count=0' >> "$GITHUB_OUTPUT"
-          echo 'WEB_REQUIRED_QUEUE=EMPTY'
+      - name: Upload isolated Web worker result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: development-web-result-${{ matrix.gameId }}
+          path: /tmp/web-worker
+          if-no-files-found: error
+          retention-days: 1
 
-      - name: Persist Web evidence and queue state to company runtime
-        if: steps.targets.outputs.target_count != '0'
+  web-gate:
+    name: required Web gameplay and music gate
+    needs: [web-plan, web-worker]
+    if: always() && needs.web-plan.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Download parallel Web worker results
+        if: needs.web-plan.outputs.target_count != '0'
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: development-web-result-*
+          path: /tmp/web-batch
+          merge-multiple: true
+
+      - name: Fetch current company runtime
+        run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+
+      - name: Persist parallel Web evidence and queue state
+        if: needs.web-plan.outputs.target_count != '0'
+        env:
+          EXPECTED_TARGETS_JSON: ${{ needs.web-plan.outputs.targets_json }}
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-development-web-runtime'
           git config user.email 'actions@users.noreply.github.com'
-          git reset --hard origin/main
-          git clean -fd
           git checkout -B development-web-persist "origin/$COMPANY_RUNTIME_BRANCH"
-          cp -R /tmp/web-persist/. . 2>/dev/null || true
+          cp -R /tmp/web-batch/persist/. . 2>/dev/null || true
           node <<'NODE'
           const fs=require('fs');
+          const path=require('path');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
-          const results=JSON.parse(fs.readFileSync('/tmp/web-results.json','utf8'));
+          const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
+          const resultDir='/tmp/web-batch/results';
+          const results=[];
+          if(fs.existsSync(resultDir)){
+            for(const name of fs.readdirSync(resultDir).filter(x=>x.endsWith('.json')).sort()){
+              results.push(JSON.parse(fs.readFileSync(path.join(resultDir,name),'utf8')));
+            }
+          }
+          const byId=new Map(results.map(x=>[x.gameId,x]));
+          for(const target of expected){
+            if(byId.has(target.gameId))continue;
+            const stamp=new Date().toISOString();
+            const missing={gameId:target.gameId,pass:false,update:{
+              status:'ACTIVE',currentStep:'WEB_GAMEPLAY_AND_MUSIC_VALIDATION',canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION',
+              sourcePath:target.webSourcePath,webSourcePath:target.webSourcePath,webValidationRequired:true,musicValidationRequired:true,
+              webValidationPassedAt:null,musicValidationPassed:false,routingBlockers:['web-gameplay-music:web-worker-result-missing'],
+              webValidationLastAttemptAt:stamp,updatedAt:stamp,
+            }};
+            results.push(missing);
+          }
+          let passCount=0,failCount=0;
           for(const result of results){
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
             if(!item)throw new Error(`queue item missing: ${result.gameId}`);
             Object.assign(item,result.update);
+            if(result.pass===true)passCount++;else failCount++;
           }
           queue.webValidationPolicy='REQUIRED_BEFORE_TARGET_PLATFORM';
-          queue.webValidationContractVersion=1;
+          queue.webValidationContractVersion=2;
+          queue.webValidationParallelism=2;
           queue.updatedAt=new Date().toISOString();
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          console.log(`WEB_GAMEPLAY_MUSIC_PASS_COUNT=${passCount}`);
+          console.log(`WEB_GAMEPLAY_MUSIC_FAIL_COUNT=${failCount}`);
+          console.log('WEB_PARALLEL_ACTIVE_MAX=2');
           NODE
           git add development-queue.json web-games/ design/
           git diff --cached --check
           if ! git diff --cached --quiet; then
-            git commit -m 'runtime: validate DEVELOPMENT_CONFIRMED Web gameplay and music [skip ci]'
+            git commit -m 'runtime: persist parallel DEVELOPMENT_CONFIRMED Web validation [skip ci]'
             git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
           fi
           echo 'WEB_RUNTIME_PERSIST=PASS'
           echo 'PUBLIC_MAIN_WRITE=NO'
+
+      - name: Empty Web queue summary
+        if: needs.web-plan.outputs.target_count == '0'
+        run: |
+          echo 'WEB_REQUIRED_QUEUE=EMPTY'
+          echo 'WEB_PARALLEL_ACTIVE_MAX=2'
 
   route:
     name: route Web-validated DEVELOPMENT_CONFIRMED selected platforms
@@ -374,6 +465,7 @@ jobs:
         run: |
           echo 'DEVELOPMENT_PIPELINE=ONE_CANONICAL_PIPELINE'
           echo 'WEB_GAMEPLAY_MUSIC_GATE=REQUIRED'
+          echo 'WEB_PARALLEL_ACTIVE_MAX=2'
           echo 'PLATFORM_ROUTER=tools/company-selected-platform-router.mjs'
           echo 'CRON_ROLE=WATCHDOG_AND_RECOVERY_ONLY'
           echo 'QUALITY_GATE_WEAKENING=NO'
