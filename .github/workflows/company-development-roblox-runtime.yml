@@ -81,6 +81,7 @@ jobs:
             if(!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
             const state=String(item.canonicalState||'').toUpperCase();
             if(state==='DEVELOPMENT_BLOCKED')continue;
+            if(Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim())continue;
             const target=`roblox-games/${item.gameId}`;
             if(fs.existsSync(target))continue;
             rows.push({
@@ -162,9 +163,10 @@ jobs:
           echo "ROBLOX_SOURCE_CANDIDATE=PASS:$GAME_ID"
           echo 'ROBLOX_SOURCE_MODEL_USED=NO'
 
-      - name: Merge validated Roblox source candidate through PR
+      - name: Attempt validated Roblox source promotion through PR
         id: merge
         if: steps.generate.outcome == 'success'
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ matrix.gameId }}
@@ -183,6 +185,7 @@ jobs:
         env:
           GAME_ID: ${{ matrix.gameId }}
           TARGET_SOURCE: ${{ matrix.target }}
+          SOURCE_BRANCH: ${{ steps.generate.outputs.branch }}
           GENERATE_OUTCOME: ${{ steps.generate.outcome }}
           MERGE_OUTCOME: ${{ steps.merge.outcome }}
           PR_URL: ${{ steps.merge.outputs.pr_url }}
@@ -195,11 +198,21 @@ jobs:
           const path=require('path');
           const id=process.env.GAME_ID;
           const safe=String(id).replace(/[^a-zA-Z0-9._-]+/g,'-');
-          const pass=process.env.GENERATE_OUTCOME==='success'&&process.env.MERGE_OUTCOME==='success';
-          const failure=process.env.GENERATE_OUTCOME!=='success'?'source-generation-failed':process.env.MERGE_OUTCOME!=='success'?'source-pr-merge-failed':null;
-          const result={gameId:id,pass,sourcePath:process.env.TARGET_SOURCE,pr:process.env.PR_URL||null,failure};
+          const generated=process.env.GENERATE_OUTCOME==='success';
+          const promoted=generated&&process.env.MERGE_OUTCOME==='success';
+          const candidateReady=generated&&Boolean(String(process.env.SOURCE_BRANCH||'').trim());
+          const failure=!generated?'source-generation-failed':!promoted?'source-promotion-pending':null;
+          const result={
+            gameId:id,
+            pass:promoted,
+            candidateReady,
+            candidateBranch:process.env.SOURCE_BRANCH||null,
+            sourcePath:process.env.TARGET_SOURCE,
+            pr:process.env.PR_URL||null,
+            failure,
+          };
           fs.writeFileSync(path.join('/tmp/roblox-worker/results',`${safe}.json`),JSON.stringify(result,null,2)+'\n');
-          console.log(`ROBLOX_WORKER_RESULT=${id}:${pass?'PASS':'FAIL'}`);
+          console.log(`ROBLOX_WORKER_RESULT=${id}:${promoted?'MERGED':candidateReady?'PROMOTION_PENDING':'FAIL'}`);
           NODE
 
       - name: Upload isolated Roblox worker result
@@ -260,7 +273,7 @@ jobs:
           }
           const byId=new Map(results.map(x=>[x.gameId,x]));
           for(const target of expected){
-            if(!byId.has(target.gameId))results.push({gameId:target.gameId,pass:false,sourcePath:target.target,failure:'worker-result-missing'});
+            if(!byId.has(target.gameId))results.push({gameId:target.gameId,pass:false,candidateReady:false,sourcePath:target.target,failure:'worker-result-missing'});
           }
           const stamp=new Date().toISOString();
           let reconciliationPass=0,reconciliationFail=0;
@@ -272,6 +285,7 @@ jobs:
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
                 selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',sourcePath:result.sourcePath,targetSourcePath:result.sourcePath,
                 robloxProjectPath:result.sourcePath,robloxSourceCommit:result.sourceRevision,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
+                robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
                 robloxRuntimePassed:false,routingBlockers:['roblox-runtime-evidence-pending'],updatedAt:stamp,
               });
               reconciliationPass++;
@@ -285,7 +299,7 @@ jobs:
               reconciliationFail++;
             }
           }
-          let passCount=0,failCount=0;
+          let passCount=0,candidateCount=0,failCount=0;
           for(const result of results){
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
             if(!item)throw new Error(`queue item missing: ${result.gameId}`);
@@ -294,9 +308,18 @@ jobs:
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
                 selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',sourcePath:result.sourcePath,targetSourcePath:result.sourcePath,
                 robloxProjectPath:result.sourcePath,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
+                robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
                 robloxRuntimePassed:false,routingBlockers:['roblox-runtime-evidence-pending'],updatedAt:stamp,
               });
               passCount++;
+            }else if(result.candidateReady===true&&String(result.candidateBranch||'').trim()){
+              Object.assign(item,{
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_REVALIDATION',
+                selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',
+                robloxSourceCandidateBranch:result.candidateBranch,robloxSourceCandidateReadyAt:stamp,robloxSourceBootstrapFailedAt:null,
+                robloxRuntimePassed:false,routingBlockers:['roblox-source-promotion-pending'],updatedAt:stamp,
+              });
+              candidateCount++;
             }else{
               Object.assign(item,{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_REVALIDATION',
@@ -312,6 +335,7 @@ jobs:
           console.log(`ROBLOX_SOURCE_RECONCILIATION_PASS=${reconciliationPass}`);
           console.log(`ROBLOX_SOURCE_RECONCILIATION_FAIL=${reconciliationFail}`);
           console.log(`ROBLOX_SOURCE_PASS_COUNT=${passCount}`);
+          console.log(`ROBLOX_SOURCE_PROMOTION_PENDING_COUNT=${candidateCount}`);
           console.log(`ROBLOX_SOURCE_FAIL_COUNT=${failCount}`);
           console.log('ROBLOX_PARALLEL_ACTIVE_MAX=2');
           NODE
@@ -357,6 +381,7 @@ jobs:
             if(!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
             const state=String(item.canonicalState||'').toUpperCase();
             if(state==='DEVELOPMENT_BLOCKED')continue;
+            if(Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim())continue;
             try{execFileSync('git',['cat-file','-e',`origin/main:roblox-games/${item.gameId}`],{stdio:'ignore'});continue;}catch{}
             count++;
           }
