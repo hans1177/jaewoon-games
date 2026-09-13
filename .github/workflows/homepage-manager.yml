@@ -72,9 +72,11 @@ permissions:
   contents: write
   pull-requests: write
 
+# A self-QA candidate must reach Director supervision/publication once captured.
+# Failed upstream workflow_run events are isolated so they cannot interrupt a valid run.
 concurrency:
-  group: homepage-manager-${{ github.ref }}
-  cancel-in-progress: true
+  group: homepage-manager-${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'success' && github.run_id || github.ref }}
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
