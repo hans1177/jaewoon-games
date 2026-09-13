@@ -8,6 +8,27 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local StarterPlayer = game:GetService("StarterPlayer")
 
 local PROBE = "__JaewoonCompanyRuntimeProbe"
+local completed = false
+
+local function closeStudio()
+    task.wait(0.5)
+    game:Shutdown()
+end
+
+-- Never let a broken StudioTestService teardown occupy the continuation queue
+-- until the outer workflow timeout. RunScript has command-bar permissions, so
+-- the edit DataModel can close Studio directly after recording a deterministic
+-- failure sentinel.
+task.delay(90, function()
+    if completed then
+        return
+    end
+    completed = true
+    print("ROBLOX_RUNTIME_SMOKE=FAIL")
+    print("ROBLOX_RUNTIME_ERROR=EDIT_MODEL_WATCHDOG_TIMEOUT")
+    closeStudio()
+end)
+
 for _, container in ipairs({ReplicatedStorage, ServerScriptService, StarterPlayer.StarterPlayerScripts}) do
     local old = container:FindFirstChild(PROBE)
     if old then
@@ -125,8 +146,13 @@ end
 clientProbe.Parent = StarterPlayer.StarterPlayerScripts
 
 local ok, result = pcall(function()
-    return StudioTestService:ExecuteMultiplayerTestAsync(1, "JAEWOON_COMPANY_RUNTIME_SMOKE_V2")
+    return StudioTestService:ExecuteMultiplayerTestAsync(1, "JAEWOON_COMPANY_RUNTIME_SMOKE_V3")
 end)
+
+if completed then
+    return
+end
+completed = true
 
 serverProbe:Destroy()
 clientProbe:Destroy()
@@ -135,14 +161,17 @@ remote:Destroy()
 if not ok then
     print("ROBLOX_RUNTIME_SMOKE=FAIL")
     print("ROBLOX_RUNTIME_ERROR=" .. tostring(result))
-    error(result)
+    closeStudio()
+    return
 end
 
 local text = tostring(result)
 print("ROBLOX_RUNTIME_RESULT=" .. text)
 if string.sub(text, 1, 5) ~= "PASS:" then
     print("ROBLOX_RUNTIME_SMOKE=FAIL")
-    error("runtime smoke failed: " .. text)
+    print("ROBLOX_RUNTIME_ERROR=runtime smoke failed: " .. text)
+    closeStudio()
+    return
 end
 
 print("ROBLOX_RUNTIME_REAL_STUDIO=YES")
@@ -150,3 +179,4 @@ print("ROBLOX_RUNTIME_MULTIPLAYER_CLIENTS=1")
 print("ROBLOX_SERVER_CLIENT_BOUNDARY_PASS=YES")
 print("ROBLOX_PLAYER_CHARACTER_PASS=YES")
 print("ROBLOX_RUNTIME_SMOKE=PASS")
+closeStudio()
