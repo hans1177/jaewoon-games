@@ -64,6 +64,15 @@ test('Top30 test artbooks remain valid before catalog promotion',()=>{
   assert.ok(manage.includes('book.homepageTestCandidate===true&&testGameIds.has('));
 });
 
+test('failed upstream events cannot cancel an in-flight supervised homepage candidate',()=>{
+  const concurrency=section('concurrency:','env:');
+  assert.ok(concurrency.includes("github.event_name == 'workflow_run'"));
+  assert.ok(concurrency.includes("github.event.workflow_run.conclusion != 'success'"));
+  assert.ok(concurrency.includes('github.run_id || github.ref'));
+  assert.ok(concurrency.includes('cancel-in-progress: false'));
+  assert.ok(!concurrency.includes('group: homepage-manager-${{ github.ref }}'));
+});
+
 test('workflow implements documented self-QA -> Director -> PR order',()=>{
   const selfQa=operations.indexOf('Homepage Manager self-QA');
   const director=operations.indexOf('기존 Director 1개가 사후 감독');
