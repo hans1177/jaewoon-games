@@ -1,8 +1,11 @@
 // 파일명: qa/company-development-web-runtime.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {validateBootstrapHtml,buildContractSafePlayable,inferDevelopmentGenre,classifyApprovedScope} from '../tools/company-development-web-bootstrap.mjs';
-import {evaluateGameplayEvidence,scopeInteractionChanged} from '../tools/company-development-web-gameplay-validation.mjs';
+import {evaluateGameplayEvidence,scopeInteractionChanged,ensure30MinuteSessionContract} from '../tools/company-development-web-gameplay-validation.mjs';
 import {deriveApprovedScopeInventory,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
 
 const playable=`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-audio-state="locked" data-approved-scope-count="1"><h1>Test</h1><p id="status">score 0</p><button id="act" data-scope-id="scope-test">Act</button><button data-audio-control="mute">Mute</button><input data-audio-control="volume" type="range"><script>let score=0,ctx=null;async function audio(){const AC=window.AudioContext||window.webkitAudioContext;ctx=ctx||new AC();if(ctx.state==='suspended')await ctx.resume();document.body.dataset.audioState='running'}document.querySelector('#act').addEventListener('click',async()=>{await audio();score++;document.querySelector('#status').textContent='score '+score;});</script>${'x'.repeat(1600)}</body></html>`;
@@ -80,9 +83,9 @@ test('runtime scope coverage requires every visible approved item to be interact
 });
 
 test('per-scope runtime interaction only counts when observable game state changes',()=>{
-  const before={text:'score 0',canvases:[],dataState:[{tag:'DIV',text:'0',attrs:[['data-score','0']]}]};
-  const unchanged={text:'score 0',canvases:[],dataState:[{tag:'DIV',text:'0',attrs:[['data-score','0']]}]};
-  const changed={text:'score 1',canvases:[],dataState:[{tag:'DIV',text:'1',attrs:[['data-score','1']]}]};
+  const before={text:'score 0',canvases:[],dataState:[{tag:'DIV',text:'0',attrs:[['data-score','0']]}],sessionCurrentStage:0,sessionCompletedStages:0,sessionStages:[]};
+  const unchanged={...before};
+  const changed={...before,text:'score 1',dataState:[{tag:'DIV',text:'1',attrs:[['data-score','1']]}]};
   assert.equal(scopeInteractionChanged(before,unchanged),false);
   assert.equal(scopeInteractionChanged(before,changed),true);
 });
@@ -134,16 +137,42 @@ test('deterministic compiler implements every approved scope without generic pro
   }
 });
 
-test('gameplay evidence requires interaction, state change, music and full approved scope runtime coverage',()=>{
-  const before={text:'score 0',visibleButtons:3,canvases:[],dataState:[],audioState:'locked',muteControls:1,volumeControls:1,approvedScopeCount:2,visibleScopeIds:['scope-a','scope-b'],scrollWidth:390,viewportWidth:390};
-  const after={...before,text:'score 3',audioState:'running'};
+test('30-minute session contract injects four distinct interactive stages totaling 30 minutes',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-web-session-'));
+  try{
+    const source=path.join(root,'web-games','candidate');fs.mkdirSync(source,{recursive:true});
+    fs.writeFileSync(path.join(source,'index.html'),playable,'utf8');
+    const baseline=path.join(root,'design.json');
+    fs.writeFileSync(baseline,JSON.stringify({content:{coreFun:'defend the bastion',coreLoop:['read the wave and place defense','earn resources and upgrade','adapt to enemy composition'],progressionDirection:'wave-by-wave mastery'}},null,2));
+    const result=ensure30MinuteSessionContract({sourcePath:source,baselinePath:baseline});
+    assert.equal(result.minutes,30);assert.equal(result.stages,4);
+    const html=fs.readFileSync(path.join(source,'index.html'),'utf8');
+    assert.match(html,/data-session-minutes="30"/);
+    assert.equal((html.match(/data-session-stage="\d"/g)||[]).length,4);
+    assert.match(html,/data-session-start="0" data-session-end="5"/);
+    assert.match(html,/data-session-start="5" data-session-end="15"/);
+    assert.match(html,/data-session-start="15" data-session-end="25"/);
+    assert.match(html,/data-session-start="25" data-session-end="30"/);
+    assert.match(html,/도입 · 조작과 목표 확인/);
+    assert.match(html,/마무리 · 고난도 목표/);
+  } finally {fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('gameplay evidence requires interaction, state change, music, approved scope and completed 30-minute stage contract',()=>{
+  const before={text:'score 0',visibleButtons:7,canvases:[],dataState:[],audioState:'locked',muteControls:1,volumeControls:1,approvedScopeCount:2,visibleScopeIds:['scope-a','scope-b'],sessionDepthMinutes:30,sessionStages:[{stage:1,start:0,end:5,complete:false,text:'intro stage'},{stage:2,start:5,end:15,complete:false,text:'core loop stage'},{stage:3,start:15,end:25,complete:false,text:'progression stage'},{stage:4,start:25,end:30,complete:false,text:'final challenge stage'}],sessionCurrentStage:0,sessionCompletedStages:0,scrollWidth:390,viewportWidth:390};
+  const after={...before,text:'score 3',audioState:'running',sessionCurrentStage:4,sessionCompletedStages:4,sessionStages:before.sessionStages.map(x=>({...x,complete:true}))};
   const scopeCoverage=runtimeApprovedScopeCoverage({declaredCount:2,visibleScopeIds:['scope-a','scope-b'],interactedScopeIds:['scope-a','scope-b']});
-  const pass=evaluateGameplayEvidence({before,after,interactionCount:3,reloadVisible:true,scopeCoverage});
+  const sessionContract={pass:true,minutes:30,stageCount:4,completedStages:4};
+  const pass=evaluateGameplayEvidence({before,after,interactionCount:7,reloadVisible:true,scopeCoverage,sessionContract});
   assert.equal(pass.pass,true,pass.blockers.join(','));
   assert.equal(pass.musicRuntime.pass,true);
   assert.equal(pass.scopeCoverage.pass,true);
+  assert.equal(pass.sessionContract.pass,true);
   const partial=runtimeApprovedScopeCoverage({declaredCount:2,visibleScopeIds:['scope-a','scope-b'],interactedScopeIds:['scope-a']});
-  const fail=evaluateGameplayEvidence({before,after,interactionCount:3,reloadVisible:true,scopeCoverage:partial});
+  const fail=evaluateGameplayEvidence({before,after,interactionCount:7,reloadVisible:true,scopeCoverage:partial,sessionContract});
   assert.equal(fail.pass,false);
   assert.ok(fail.blockers.some(x=>x.startsWith('SCOPE:APPROVED_SCOPE_NOT_INTERACTED:')));
+  const sessionFail=evaluateGameplayEvidence({before,after,interactionCount:7,reloadVisible:true,scopeCoverage,sessionContract:{pass:false}});
+  assert.equal(sessionFail.pass,false);
+  assert.ok(sessionFail.blockers.includes('SESSION:MEANINGFUL_30_MIN_CONTRACT_REQUIRED'));
 });
