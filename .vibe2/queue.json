@@ -659,14 +659,14 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 2,
+      "status": "failed",
+      "retries": 3,
       "maxRetries": 2,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "source-candidate-generation-failed",
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
@@ -677,7 +677,8 @@
         "diagnostic-primary-file:web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html",
         "actions-run:34741963295",
         "variant:primary",
-        "actions-run:34742007788"
+        "actions-run:34742007788",
+        "actions-run:34742042069"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
