@@ -1,7 +1,7 @@
 {
   "version": 4,
   "mode": "hierarchical-dag-sharded-work-stealing-queue",
-  "maxConcurrentTasks": 4,
+  "maxConcurrentTasks": 1,
   "ownerDirectivePreemptsAutonomy": true,
   "releaseStatePriority": [
     "release-confirmed",
@@ -976,6 +976,48 @@
       "speculativeEligible": false,
       "estimatedRisk": "low",
       "shard": "unity"
+    },
+    {
+      "id": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "target": "web",
+      "department": "development",
+      "type": "implementation",
+      "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 잃어버린 별의 메아리\n사용자 직접 지시: 잃어버린 별의 메아리(일별) 게임 난이도 조정: 적 스폰 개수 감소 및 레벨업 시 60% 확률로 특수 스킬(회전 칼날: 50 데미지, 기관총: 5초마다 0.1초 간격 3초간 2배 데미지) 획득 로직 구현 및 적용\n\n추가 지시:\n- 홈피에 게임중에 설계 하고 아트북 왜 옶냐?\n- 잃어버린 별의 메아리는 일별이라 부를게\n- 이 게임 너무 어려워 나오는 거 개수 줄이고 레벨업하면60퍼 확률로 ㅈ좋은 스킬이 나와 1.회전 칼날 플레이어 근처를 빙빙도는 칼날이야 닿은적은 50데미지 2.기관총 5초마다 0.1초 간격으로3초동안 2배데미지의 총알을 발사해\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
+      "responsibleFiles": [],
+      "dependencies": [],
+      "priority": "owner-immediate",
+      "releaseState": "development-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": true,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "evidence": [
+        "pwa-task:77b3080a-599e-4077-9efa-109475f5ce9e",
+        "pwa-kind:directive",
+        "pwa-priority:normal",
+        "actual-release-state:development-confirmed",
+        "source-root:web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+        "owner-auto-deploy-authorization",
+        "verified-qa-required"
+      ],
+      "companyContext": {
+        "stageId": "owner-immediate",
+        "role": "director",
+        "assignmentAuthority": "owner-directive",
+        "sourceRef": "pwa-task:77b3080a-599e-4077-9efa-109475f5ce9e",
+        "reviewRequired": true
+      }
     }
-  ]
+  ],
+  "ingest": {
+    "added": true,
+    "taskId": "pwa-77b3080a-599e-4077-9efa-109475f5ce9e",
+    "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+    "target": "web",
+    "reason": "OWNER_IMMEDIATE_PWA"
+  }
 }
