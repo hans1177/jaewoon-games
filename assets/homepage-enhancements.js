@@ -30,6 +30,55 @@ const platformLabel=value=>{
   return'선택 플랫폼';
 };
 
+let homepageInstallPrompt=null;
+function installHomepageAppFlow(){
+  const button=document.getElementById('appInstallBtn');
+  const state=document.getElementById('appInstallState');
+  if(!button)return;
+  const ua=navigator.userAgent||'';
+  const android=/Android/i.test(ua);
+  const samsung=/SamsungBrowser/i.test(ua);
+  const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+  const setState=text=>{if(state)state.textContent=text;};
+  const markInstalled=()=>{button.disabled=true;button.textContent='설치됨';setState('재운컴퍼니 앱이 설치돼 있어.');};
+  if(standalone){markInstalled();return;}
+  window.addEventListener('beforeinstallprompt',event=>{
+    event.preventDefault();
+    homepageInstallPrompt=event;
+    button.disabled=false;
+    button.textContent='재운컴퍼니 앱 설치';
+    setState('설치 준비 완료. 버튼을 누르면 설치창이 떠.');
+  });
+  window.addEventListener('appinstalled',()=>{homepageInstallPrompt=null;markInstalled();});
+  button.addEventListener('click',async event=>{
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    if(!samsung&&android){
+      const target='https://jaewoon-games.pages.dev/?install=1';
+      const intent='intent://jaewoon-games.pages.dev/?install=1#Intent;scheme=https;package=com.sec.android.app.sbrowser;S.browser_fallback_url='+encodeURIComponent(target)+';end';
+      setState('삼성 인터넷으로 여는 중이야.');
+      window.location.href=intent;
+      return;
+    }
+    if(homepageInstallPrompt){
+      const prompt=homepageInstallPrompt;
+      homepageInstallPrompt=null;
+      await prompt.prompt();
+      const choice=await prompt.userChoice;
+      if(choice.outcome==='accepted')setState('설치를 진행 중이야.');
+      else setState('설치를 취소했어. 다시 누르면 돼.');
+      return;
+    }
+    if(samsung){
+      setState('삼성 인터넷 메뉴에서 앱 설치 또는 홈 화면에 추가를 눌러. 설치 가능해지면 이 버튼이 바로 설치창을 띄워.');
+      return;
+    }
+    setState('안드로이드에서는 삼성 인터넷으로 열어서 설치해.');
+  },true);
+  if(android&&!samsung){button.textContent='삼성 인터넷에서 설치';setState('누르면 삼성 인터넷으로 바로 열어.');}
+  else if(samsung){button.textContent='재운컴퍼니 앱 설치';setState('삼성 인터넷에서 설치 준비 중이야.');}
+}
+
 const CATEGORY_META={
   'release-confirmed':{order:1,title:'로블록스',note:'Roblox 개발 게임',className:'release'},
   'development-confirmed':{order:2,title:'유니티',note:'Unity 개발 게임',className:'development'},
@@ -136,248 +185,45 @@ function installStyles(){
   document.head.appendChild(style);
 }
 
-function getGameBuild(status,gameId){
-  return status?.testBuilds?.find(b=>b.gameId===gameId&&b.status==='ready')||null;
-}
-
-function getGameBaseline(baselines,gameId){
-  return baselines?.games?.find(g=>g.gameId===gameId)||null;
-}
-
-function getLatestArtbook(artbooks,gameId){
-  const rows=(artbooks?.artbooks||[]).filter(a=>a.gameId===gameId&&(a.published||a.homepageVisible));
-  return rows.sort((a,b)=>String(b.createdAt||b.updatedAt||'').localeCompare(String(a.createdAt||a.updatedAt||''))||Number(b.edition||0)-Number(a.edition||0))[0]||null;
-}
-
-function getReleaseDate(game,baseline,build){
-  return game?.releaseDate||game?.releasedAt||game?.publishedAt||baseline?.releaseDate||baseline?.releasedAt||baseline?.publishedAt||build?.releasedAt||null;
-}
-
-function getHomepagePlatform(game,status){
-  const focus=status?.operations?.autonomousFocus?.games?.find(row=>row.slug===game.id||row.gameId===game.id);
-  const project=status?.projects?.find(row=>row.gameId===game.id||row.name===game.name);
-  const ranking=status?.operations?.productionClasses?.ranking?.find(row=>row.slug===game.id||row.gameId===game.id);
-  const candidates=[game.selectedPlatform,focus?.selectedPlatform,project?.selectedPlatform,project?.target,ranking?.targetPlatform,game.productionTarget,status?.policy?.primaryPlatform,'ROBLOX'];
-  for(const value of candidates){
-    const platform=normalizePlatform(value);
-    if(platform==='ROBLOX')return'ROBLOX';
-    if(['UNITY','UNITY_ANDROID'].includes(platform))return'UNITY';
-    if(['FORTNITE','FORTNITE_UEFN','UEFN'].includes(platform))return'FORTNITE_UEFN';
-  }
-  return'ROBLOX';
-}
-
-function getHomepagePlatformCategory(game,status){
-  const platform=getHomepagePlatform(game,status);
-  if(platform==='UNITY')return'development-confirmed';
-  if(platform==='FORTNITE_UEFN')return'design-only';
-  return'release-confirmed';
-}
+function getGameBuild(status,gameId){return status?.testBuilds?.find(b=>b.gameId===gameId&&b.status==='ready')||null;}
+function getGameBaseline(baselines,gameId){return baselines?.games?.find(g=>g.gameId===gameId)||null;}
+function getLatestArtbook(artbooks,gameId){const rows=(artbooks?.artbooks||[]).filter(a=>a.gameId===gameId&&(a.published||a.homepageVisible));return rows.sort((a,b)=>String(b.createdAt||b.updatedAt||'').localeCompare(String(a.createdAt||a.updatedAt||''))||Number(b.edition||0)-Number(a.edition||0))[0]||null;}
+function getReleaseDate(game,baseline,build){return game?.releaseDate||game?.releasedAt||game?.publishedAt||baseline?.releaseDate||baseline?.releasedAt||baseline?.publishedAt||build?.releasedAt||null;}
+function getHomepagePlatform(game,status){const focus=status?.operations?.autonomousFocus?.games?.find(row=>row.slug===game.id||row.gameId===game.id);const project=status?.projects?.find(row=>row.gameId===game.id||row.name===game.name);const ranking=status?.operations?.productionClasses?.ranking?.find(row=>row.slug===game.id||row.gameId===game.id);const candidates=[game.selectedPlatform,focus?.selectedPlatform,project?.selectedPlatform,project?.target,ranking?.targetPlatform,game.productionTarget,status?.policy?.primaryPlatform,'ROBLOX'];for(const value of candidates){const platform=normalizePlatform(value);if(platform==='ROBLOX')return'ROBLOX';if(['UNITY','UNITY_ANDROID'].includes(platform))return'UNITY';if(['FORTNITE','FORTNITE_UEFN','UEFN'].includes(platform))return'FORTNITE_UEFN';}return'ROBLOX';}
+function getHomepagePlatformCategory(game,status){const platform=getHomepagePlatform(game,status);if(platform==='UNITY')return'development-confirmed';if(platform==='FORTNITE_UEFN')return'design-only';return'release-confirmed';}
 
 function buildFocus(catalog,status,artbooks){
-  const hero=document.getElementById('hero');
-  if(!hero)return;
-  const games=catalog?.games||[];
-  const focus=status?.operations?.autonomousFocus;
-  const focusRow=Array.isArray(focus?.games)?focus.games[0]:null;
-  const project=status?.projects?.find(p=>p.gameId===focusRow?.slug||p.gameId===focusRow?.gameId)
-    ||status?.projects?.find(p=>p.stage==='full-development')
-    ||status?.projects?.[0]
-    ||null;
-  const game=games.find(g=>g.id===focusRow?.slug)
-    ||games.find(g=>g.id===project?.gameId)
-    ||games.find(g=>g.homepageCategory==='release-confirmed')
-    ||games[0];
-  if(!game)return;
-  const build=getGameBuild(status,game.id);
-  const artbook=getLatestArtbook(artbooks,game.id);
-  const progress=Number.isFinite(project?.progress)?`${project.progress}%`:'진행 중';
-  const selectedPlatform=game.selectedPlatform||focusRow?.selectedPlatform||project?.selectedPlatform||project?.target||game.productionTarget;
-  const selectedPlatformLabel=platformLabel(selectedPlatform);
-  const focusLabel=`집중개발 · ${selectedPlatformLabel}`;
-  hero.className='panel hero homeFocus';
-  hero.style.setProperty('--focus-bg',`url('${String(game.image||'assets/fantasy-rpg-v2.webp').replaceAll("'",'%27')}')`);
-  hero.innerHTML=`<div class="homeFocusInner">
-    <small class="gameFocusBar" data-focus-mode="${focusMode}">${esc(focusLabel)} · 최신자료 자동동기화</small>
-    <h1>${esc(game.name)} · ${esc(game.homepageStage||project?.stageLabel||'개발 중')}</h1>
-    <p>${esc(game.homepageRecentWork||project?.stageLabel||game.description)}</p>
-    <div class="homeFocusMeta">
-      <span>${esc(selectedPlatformLabel)}</span>
-      <span>진행 ${esc(progress)}</span>
-      <span>${build?'테스트 APK 있음':'플랫폼 빌드/게시 검증 전'}</span>
-      <span>${artbook?`아트북 ${esc(formatDate(artbook.createdAt||artbooks?.updatedAt))}`:'아트북 준비중'}</span>
-    </div>
-    <a class="homeFocusBtn" href="#gameHub">게임 보러가기</a>
-  </div>`;
+  const hero=document.getElementById('hero');if(!hero)return;
+  const games=catalog?.games||[];const focus=status?.operations?.autonomousFocus;const focusRow=Array.isArray(focus?.games)?focus.games[0]:null;
+  const project=status?.projects?.find(p=>p.gameId===focusRow?.slug||p.gameId===focusRow?.gameId)||status?.projects?.find(p=>p.stage==='full-development')||status?.projects?.[0]||null;
+  const game=games.find(g=>g.id===focusRow?.slug)||games.find(g=>g.id===project?.gameId)||games.find(g=>g.homepageCategory==='release-confirmed')||games[0];if(!game)return;
+  const build=getGameBuild(status,game.id);const artbook=getLatestArtbook(artbooks,game.id);const progress=Number.isFinite(project?.progress)?`${project.progress}%`:'진행 중';
+  const selectedPlatform=game.selectedPlatform||focusRow?.selectedPlatform||project?.selectedPlatform||project?.target||game.productionTarget;const selectedPlatformLabel=platformLabel(selectedPlatform);const focusLabel=`집중개발 · ${selectedPlatformLabel}`;
+  hero.className='panel hero homeFocus';hero.style.setProperty('--focus-bg',`url('${String(game.image||'assets/fantasy-rpg-v2.webp').replaceAll("'",'%27')}')`);
+  hero.innerHTML=`<div class="homeFocusInner"><small class="gameFocusBar" data-focus-mode="${focusMode}">${esc(focusLabel)} · 최신자료 자동동기화</small><h1>${esc(game.name)} · ${esc(game.homepageStage||project?.stageLabel||'개발 중')}</h1><p>${esc(game.homepageRecentWork||project?.stageLabel||game.description)}</p><div class="homeFocusMeta"><span>${esc(selectedPlatformLabel)}</span><span>진행 ${esc(progress)}</span><span>${build?'테스트 APK 있음':'플랫폼 빌드/게시 검증 전'}</span><span>${artbook?`아트북 ${esc(formatDate(artbook.createdAt||artbooks?.updatedAt))}`:'아트북 준비중'}</span></div><a class="homeFocusBtn" href="#gameHub">게임 보러가기</a></div>`;
 }
 
 function buildGameCard(game,catalog,status,baselines,artbooks){
-  const category=CATEGORY_META[getHomepagePlatformCategory(game,status)];
-  const build=getGameBuild(status,game.id);
-  const baseline=getGameBaseline(baselines,game.id);
-  const artbook=getLatestArtbook(artbooks,game.id);
-  const webDate=formatDate(game.webUpdatedAt||catalog?.updatedAt);
-  const buildDate=build?.builtAt?formatDate(build.builtAt):'없음';
-  const artbookDate=artbook?formatDate(artbook.createdAt||artbooks?.updatedAt):'없음';
-  const releaseDate=getReleaseDate(game,baseline,build);
-  const releaseText=releaseDate?`출시 ${formatDate(releaseDate)}`:(game.homepageCategory==='release-confirmed'?'출시일 정보 없음':'출시 전');
-  const webPlayable=game.homepageWebPlayable===true&&Boolean(game.webPath);
-  const selectedPlatform=getHomepagePlatform(game,status);
-  const selectedPlatformName=platformLabel(selectedPlatform);
-  const unityUrl=baseline?.rollbackActive&&baseline?.fallbackDownload?baseline.fallbackDownload:build?.download;
-  const unityLabel=baseline?.rollbackActive&&baseline?.fallbackDownload?'안정판 APK':build?'Unity 테스트':'Unity 준비중';
-  const unityClass=unityUrl?'foldGameBtn secondary':'foldGameBtn off';
-  const robloxUrl=game.robloxUrl||game.robloxPlaceUrl||game.robloxExperienceUrl||'';
-  const robloxSelected=normalizePlatform(selectedPlatform)==='ROBLOX';
-  const robloxButton=(robloxSelected||robloxUrl)
-    ?(robloxUrl?`<a class="foldGameBtn secondary" href="${esc(robloxUrl)}">Roblox 플레이</a>`:`<span class="foldGameBtn off">Roblox 준비중</span>`)
-    :'';
-  const artbookUrl=game.homepageArtbookPath||(artbook?`/artbook-viewer.html?game=${encodeURIComponent(game.id)}`:'');
-  const artbookClass=artbookUrl?'foldGameBtn secondary':'foldGameBtn off';
-  const artbookLabel=artbook?`아트북 ${formatDate(artbook.createdAt||artbooks?.updatedAt)}`:'아트북 준비중';
-  const webButton=webPlayable
-    ?`<a class="foldGameBtn" href="${esc(game.webPath)}">웹게임 플레이</a>`
-    :`<span class="foldGameBtn alert">Web 확인중</span>`;
-  return `<article class="foldGameCard" data-game-id="${esc(game.id)}">
-    <div class="foldGameArt">
-      <img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy">
-      <div class="foldGameTitle"><b>${esc(game.name)}</b><small>${esc((game.genre||[]).join(' · '))}</small></div>
-    </div>
-    <div class="foldGameBody">
-      <div class="foldBadges">
-        <span class="foldBadge ${category.className}">${category.title}</span>
-        <span class="foldBadge">${esc(game.homepageStage||game.description)}</span>
-      </div>
-      <p><b>최근 작업</b> ${esc(game.homepageRecentWork||'현재 공개판 유지.')}</p>
-      <div class="foldGameMeta">Web 수정 ${esc(webDate)} · 선택 플랫폼 ${esc(selectedPlatformName)} · Unity 테스트 ${esc(buildDate)} · 아트북 ${esc(artbookDate)}<br>${esc(releaseText)}</div>
-      <div class="foldGameActions">
-        ${webButton}
-        ${robloxButton}
-        ${unityUrl?`<a class="${unityClass}" href="${esc(unityUrl)}">${unityLabel}</a>`:`<span class="${unityClass}">${unityLabel}</span>`}
-        ${artbookUrl?`<a class="${artbookClass}" href="${esc(artbookUrl)}">${esc(artbookLabel)}</a>`:`<span class="${artbookClass}">${esc(artbookLabel)}</span>`}
-      </div>
-    </div>
-  </article>`;
+  const category=CATEGORY_META[getHomepagePlatformCategory(game,status)];const build=getGameBuild(status,game.id);const baseline=getGameBaseline(baselines,game.id);const artbook=getLatestArtbook(artbooks,game.id);
+  const webDate=formatDate(game.webUpdatedAt||catalog?.updatedAt);const buildDate=build?.builtAt?formatDate(build.builtAt):'없음';const artbookDate=artbook?formatDate(artbook.createdAt||artbooks?.updatedAt):'없음';const releaseDate=getReleaseDate(game,baseline,build);const releaseText=releaseDate?`출시 ${formatDate(releaseDate)}`:(game.homepageCategory==='release-confirmed'?'출시일 정보 없음':'출시 전');const webPlayable=game.homepageWebPlayable===true&&Boolean(game.webPath);const selectedPlatform=getHomepagePlatform(game,status);const selectedPlatformName=platformLabel(selectedPlatform);const unityUrl=baseline?.rollbackActive&&baseline?.fallbackDownload?baseline.fallbackDownload:build?.download;const unityLabel=baseline?.rollbackActive&&baseline?.fallbackDownload?'안정판 APK':build?'Unity 테스트':'Unity 준비중';const unityClass=unityUrl?'foldGameBtn secondary':'foldGameBtn off';const robloxUrl=game.robloxUrl||game.robloxPlaceUrl||game.robloxExperienceUrl||'';const robloxSelected=normalizePlatform(selectedPlatform)==='ROBLOX';const robloxButton=(robloxSelected||robloxUrl)?(robloxUrl?`<a class="foldGameBtn secondary" href="${esc(robloxUrl)}">Roblox 플레이</a>`:`<span class="foldGameBtn off">Roblox 준비중</span>`):'';const artbookUrl=game.homepageArtbookPath||(artbook?`/artbook-viewer.html?game=${encodeURIComponent(game.id)}`:'');const artbookClass=artbookUrl?'foldGameBtn secondary':'foldGameBtn off';const artbookLabel=artbook?`아트북 ${formatDate(artbook.createdAt||artbooks?.updatedAt)}`:'아트북 준비중';const webButton=webPlayable?`<a class="foldGameBtn" href="${esc(game.webPath)}">웹게임 플레이</a>`:`<span class="foldGameBtn alert">Web 확인중</span>`;
+  return `<article class="foldGameCard" data-game-id="${esc(game.id)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"><div class="foldGameTitle"><b>${esc(game.name)}</b><small>${esc((game.genre||[]).join(' · '))}</small></div></div><div class="foldGameBody"><div class="foldBadges"><span class="foldBadge ${category.className}">${category.title}</span><span class="foldBadge">${esc(game.homepageStage||game.description)}</span></div><p><b>최근 작업</b> ${esc(game.homepageRecentWork||'현재 공개판 유지.')}</p><div class="foldGameMeta">Web 수정 ${esc(webDate)} · 선택 플랫폼 ${esc(selectedPlatformName)} · Unity 테스트 ${esc(buildDate)} · 아트북 ${esc(artbookDate)}<br>${esc(releaseText)}</div><div class="foldGameActions">${webButton}${robloxButton}${unityUrl?`<a class="${unityClass}" href="${esc(unityUrl)}">${unityLabel}</a>`:`<span class="${unityClass}">${unityLabel}</span>`}${artbookUrl?`<a class="${artbookClass}" href="${esc(artbookUrl)}">${esc(artbookLabel)}</a>`:`<span class="${artbookClass}">${esc(artbookLabel)}</span>`}</div></div></article>`;
 }
 
 function buildGameCenter(catalog,status,baselines,artbooks){
-  const hub=document.getElementById('gameHub');
-  if(!hub)return;
-  hub.querySelector('.sectionHead')?.remove();
-  hub.querySelector('.catalogIntro')?.remove();
-  hub.querySelector('.tools')?.remove();
-  hub.querySelector('.filters')?.remove();
-  hub.querySelector('.sortRow')?.remove();
-  const old=document.getElementById('homeFoldedGameCenter');
-  const openState=new Map();
-  old?.querySelectorAll('.gameFold').forEach(node=>openState.set(node.dataset.category,node.open));
-  old?.remove();
-  const games=catalog?.games||[];
-  const grouped=new Map(Object.keys(CATEGORY_META).map(key=>[key,[]]));
-  for(const game of games){
-    grouped.get(getHomepagePlatformCategory(game,status)).push(game);
-  }
-  const wrapper=document.createElement('div');
-  wrapper.id='homeFoldedGameCenter';
-  const ordered=Object.entries(CATEGORY_META).sort((a,b)=>a[1].order-b[1].order);
-  wrapper.innerHTML=`<div class="homeCategoryChips">${ordered.map(([key,meta])=>`<span class="homeCategoryChip">${meta.order}. ${meta.title}<b>${grouped.get(key)?.length||0}</b></span>`).join('')}</div>`+
-    ordered.map(([key,meta])=>{
-      const items=grouped.get(key)||[];
-      const isOpen=openState.has(key)?openState.get(key):true;
-      return `<details class="gameFold"${isOpen?' open':''} data-category="${key}">
-        <summary><strong>${meta.order}. ${meta.title}</strong><span>${meta.note}</span><i>⌃</i></summary>
-        <div class="foldGameGrid">${items.map(game=>buildGameCard(game,catalog,status,baselines,artbooks)).join('')}</div>
-      </details>`;
-    }).join('');
-  const grid=document.getElementById('gameGrid');
-  hub.insertBefore(wrapper,grid||null);
+  const hub=document.getElementById('gameHub');if(!hub)return;hub.querySelector('.sectionHead')?.remove();hub.querySelector('.catalogIntro')?.remove();hub.querySelector('.tools')?.remove();hub.querySelector('.filters')?.remove();hub.querySelector('.sortRow')?.remove();
+  const old=document.getElementById('homeFoldedGameCenter');const openState=new Map();old?.querySelectorAll('.gameFold').forEach(node=>openState.set(node.dataset.category,node.open));old?.remove();
+  const games=catalog?.games||[];const grouped=new Map(Object.keys(CATEGORY_META).map(key=>[key,[]]));for(const game of games)grouped.get(getHomepagePlatformCategory(game,status)).push(game);
+  const wrapper=document.createElement('div');wrapper.id='homeFoldedGameCenter';const ordered=Object.entries(CATEGORY_META).sort((a,b)=>a[1].order-b[1].order);
+  wrapper.innerHTML=`<div class="homeCategoryChips">${ordered.map(([key,meta])=>`<span class="homeCategoryChip">${meta.order}. ${meta.title}<b>${grouped.get(key)?.length||0}</b></span>`).join('')}</div>`+ordered.map(([key,meta])=>{const items=grouped.get(key)||[];const isOpen=openState.has(key)?openState.get(key):true;return `<details class="gameFold"${isOpen?' open':''} data-category="${key}"><summary><strong>${meta.order}. ${meta.title}</strong><span>${meta.note}</span><i>⌃</i></summary><div class="foldGameGrid">${items.map(game=>buildGameCard(game,catalog,status,baselines,artbooks)).join('')}</div></details>`;}).join('');
+  const grid=document.getElementById('gameGrid');hub.insertBefore(wrapper,grid||null);
 }
 
-function avatar(role,label,description){
-  return `<div class="aiTeamCard"><svg class="aiTeamPhoto" viewBox="0 0 96 96" aria-label="${esc(label)}"><use href="/assets/ai-team-avatars.svg#${role}"></use></svg><b>${esc(label)}</b><span>${esc(description)}</span></div>`;
-}
-
+function avatar(role,label,description){return `<div class="aiTeamCard"><svg class="aiTeamPhoto" viewBox="0 0 96 96" aria-label="${esc(label)}"><use href="/assets/ai-team-avatars.svg#${role}"></use></svg><b>${esc(label)}</b><span>${esc(description)}</span></div>`;}
 function buildTeam(){
-  const company=document.querySelector('.panel.company');
-  if(!company)return;
-  company.className='panel teamPanel';
-  company.innerHTML=`
-    <div class="sectionHead"><h2 aria-hidden="true"></h2><span>Developer 한재운 + AI 개발진</span></div>
-    <div class="teamWrap">
-      <div class="teamOwner">
-        <img src="assets/developer-original.jpg" alt="개발자 한재운" loading="lazy">
-        <div>
-          <h3>Developer 한재운</h3>
-          <p>재운게임즈의 게임 방향과 핵심 결정을 담당하고 AI 개발진과 함께 제작.</p>
-          <div class="teamSocials" aria-label="소셜 채널">
-            <span class="teamSocial instagram" data-social="instagram"><svg class="teamSocialIcon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.3" fill="currentColor"/></svg><span>인스타그램</span></span>
-            <span class="teamSocial kakao" data-social="kakao"><svg class="teamSocialIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4C6.48 4 2 7.36 2 11.5c0 2.67 1.86 5.02 4.66 6.35L5.5 21l4.09-2.19c.78.13 1.58.19 2.41.19 5.52 0 10-3.36 10-7.5S17.52 4 12 4Z" fill="currentColor"/></svg><span>카카오톡</span></span>
-          </div>
-        </div>
-      </div>
-      <div class="aiTeamGrid">
-        ${avatar('loop','LOOP','기획 · 스토리 · 핵심 재미')}
-        ${avatar('core','CORE','Web/Unity · 저장 · 성능')}
-        ${avatar('check','CHECK','QA · 모바일 · 회귀검증')}
-        ${avatar('pixel','PIXEL','그래픽 · UI · VFX')}
-        ${avatar('scale','SCALE','난이도 · 성장 · 밸런스')}
-        ${avatar('holmes','HOLMES','홈페이지 · APK · 배포')}
-        ${avatar('jay','JAY','우선순위 · 승격 · 조정')}
-        ${avatar('team','공동 개발','중요 기능 공동 검토')}
-      </div>
-      <div class="teamActions"><a href="/company.html">개발연구소</a><a href="#gameHub">게임 목록으로</a></div>
-    </div>`;
-  document.querySelector('.profile')?.remove();
-  document.querySelector('.music')?.remove();
+  const company=document.querySelector('.panel.company');if(!company)return;company.className='panel teamPanel';company.innerHTML=`<div class="sectionHead"><h2 aria-hidden="true"></h2><span>Developer 한재운 + AI 개발진</span></div><div class="teamWrap"><div class="teamOwner"><img src="assets/developer-original.jpg" alt="개발자 한재운" loading="lazy"><div><h3>Developer 한재운</h3><p>재운게임즈의 게임 방향과 핵심 결정을 담당하고 AI 개발진과 함께 제작.</p><div class="teamSocials" aria-label="소셜 채널"><span class="teamSocial instagram" data-social="instagram"><svg class="teamSocialIcon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.3" fill="currentColor"/></svg><span>인스타그램</span></span><span class="teamSocial kakao" data-social="kakao"><svg class="teamSocialIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4C6.48 4 2 7.36 2 11.5c0 2.67 1.86 5.02 4.66 6.35L5.5 21l4.09-2.19c.78.13 1.58.19 2.41.19 5.52 0 10-3.36 10-7.5S17.52 4 12 4Z" fill="currentColor"/></svg><span>카카오톡</span></span></div></div></div><div class="aiTeamGrid">${avatar('loop','LOOP','기획 · 스토리 · 핵심 재미')}${avatar('core','CORE','Web/Unity · 저장 · 성능')}${avatar('check','CHECK','QA · 모바일 · 회귀검증')}${avatar('pixel','PIXEL','그래픽 · UI · VFX')}${avatar('scale','SCALE','난이도 · 성장 · 밸런스')}${avatar('holmes','HOLMES','홈페이지 · APK · 배포')}${avatar('jay','JAY','우선순위 · 승격 · 조정')}${avatar('team','공동 개발','중요 기능 공동 검토')}</div><div class="teamActions"><a href="/company.html">개발연구소</a><a href="#gameHub">게임 목록으로</a></div></div>`;document.querySelector('.profile')?.remove();document.querySelector('.music')?.remove();
 }
-
-function simplifyPage(){
-  document.querySelector('.opsBar')?.remove();
-  document.querySelector('.catalogIntro')?.remove();
-  document.querySelector('.reviews')?.remove();
-  document.getElementById('autonomousFocusStrip')?.remove();
-}
-
-async function refreshHomepageData(){
-  if(refreshInFlight)return;
-  refreshInFlight=true;
-  try{
-    const [catalog,status,baselines,artbooks]=await Promise.all([
-      getJson('/game-catalog.json',{runtime:true}),
-      getJson('/company-status.json',{runtime:true}),
-      getJson('/public-release-baselines.json'),
-      getJson('/game-artbooks.json')
-    ]);
-    if(catalog){
-      const signature=JSON.stringify([catalog,status||{},baselines||{},artbooks||{}]);
-      if(signature!==lastDataSignature){
-        buildFocus(catalog,status||{},artbooks||{});
-        buildGameCenter(catalog,status||{},baselines||{},artbooks||{});
-        lastDataSignature=signature;
-      }
-      document.documentElement.dataset.homeSyncSource='github-company-runtime+main';
-    }else{
-      document.documentElement.dataset.homeSyncSource='offline';
-    }
-    document.documentElement.dataset.homeSyncAt=new Date().toISOString();
-  }finally{
-    refreshInFlight=false;
-  }
-}
-
-function installRealtimeSync(){
-  window.setInterval(()=>{if(!document.hidden)refreshHomepageData();},SYNC_INTERVAL_MS);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshHomepageData();});
-  window.addEventListener('focus',()=>refreshHomepageData());
-  window.addEventListener('online',()=>refreshHomepageData());
-}
-
-async function main(){
-  installStyles();
-  simplifyPage();
-  buildTeam();
-  await refreshHomepageData();
-  installRealtimeSync();
-}
-
+function simplifyPage(){document.querySelector('.opsBar')?.remove();document.querySelector('.catalogIntro')?.remove();document.querySelector('.reviews')?.remove();document.getElementById('autonomousFocusStrip')?.remove();}
+async function refreshHomepageData(){if(refreshInFlight)return;refreshInFlight=true;try{const [catalog,status,baselines,artbooks]=await Promise.all([getJson('/game-catalog.json',{runtime:true}),getJson('/company-status.json',{runtime:true}),getJson('/public-release-baselines.json'),getJson('/game-artbooks.json')]);if(catalog){const signature=JSON.stringify([catalog,status||{},baselines||{},artbooks||{}]);if(signature!==lastDataSignature){buildFocus(catalog,status||{},artbooks||{});buildGameCenter(catalog,status||{},baselines||{},artbooks||{});lastDataSignature=signature;}document.documentElement.dataset.homeSyncSource='github-company-runtime+main';}else document.documentElement.dataset.homeSyncSource='offline';document.documentElement.dataset.homeSyncAt=new Date().toISOString();}finally{refreshInFlight=false;}}
+function installRealtimeSync(){window.setInterval(()=>{if(!document.hidden)refreshHomepageData();},SYNC_INTERVAL_MS);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshHomepageData();});window.addEventListener('focus',()=>refreshHomepageData());window.addEventListener('online',()=>refreshHomepageData());}
+async function main(){installStyles();installHomepageAppFlow();simplifyPage();buildTeam();await refreshHomepageData();installRealtimeSync();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',main,{once:true});else main();
