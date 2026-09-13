@@ -92,8 +92,11 @@ jobs:
           sudo modprobe binder_linux devices="binder,hwbinder,vndbinder" || { echo '[JAEWOON_BUILD_ERROR:BINDER_MODULE_UNAVAILABLE] binder_linux could not be loaded.' >&2; exit 10; }
           sudo mkdir -p /dev/binderfs
           if ! mountpoint -q /dev/binderfs; then sudo mount -t binder binder /dev/binderfs; fi
+          binder_devices=()
           for device in binder hwbinder vndbinder; do
-            [[ -e "/dev/binderfs/$device" ]] || { echo "[JAEWOON_BUILD_ERROR:BINDER_DEVICE_MISSING] $device missing" >&2; exit 10; }
+            host_device="/dev/binderfs/$device"
+            [[ -c "$host_device" ]] || { echo "[JAEWOON_BUILD_ERROR:BINDER_DEVICE_MISSING] $device missing" >&2; exit 10; }
+            binder_devices+=(--device "$host_device:/dev/$device")
           done
 
           image='redroid/redroid:16.0.0_64only-latest'
@@ -102,7 +105,8 @@ jobs:
           data="$RUNNER_TEMP/jaewoon-unity-redroid-data"
           mkdir -p "$data"
           docker run -d --privileged --name jaewoon-unity-redroid \
-            -p 5555:5555 \
+            -p 127.0.0.1:5555:5555 \
+            "${binder_devices[@]}" \
             -v "$data:/data" \
             "$image" \
             androidboot.use_memfd=true \
@@ -115,6 +119,8 @@ jobs:
           until [[ "$(timeout --kill-after=5s 20s docker exec jaewoon-unity-redroid getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)" == "1" ]]; do
             if (( SECONDS >= deadline )); then
               docker logs jaewoon-unity-redroid > /tmp/jaewoon-redroid.log 2>&1 || true
+              docker inspect jaewoon-unity-redroid > /tmp/jaewoon-redroid-inspect.json 2>&1 || true
+              docker ps -a --filter name=jaewoon-unity-redroid >&2 || true
               tail -n 200 /tmp/jaewoon-redroid.log >&2 || true
               echo '[JAEWOON_BUILD_ERROR:REDROID_BOOT_TIMEOUT] ARM64 Android 16 runtime did not boot.' >&2
               exit 11
@@ -122,6 +128,7 @@ jobs:
             sleep 5
           done
           docker logs jaewoon-unity-redroid > /tmp/jaewoon-redroid.log 2>&1 || true
+          docker inspect jaewoon-unity-redroid > /tmp/jaewoon-redroid-inspect.json 2>&1 || true
 
           adb start-server >/dev/null
           connected=false
@@ -189,5 +196,6 @@ jobs:
             /tmp/jaewoon-redroid-device.txt
             /tmp/jaewoon-redroid-docker.txt
             /tmp/jaewoon-redroid-adb-connect.txt
+            /tmp/jaewoon-redroid-inspect.json
           if-no-files-found: warn
           retention-days: 14
