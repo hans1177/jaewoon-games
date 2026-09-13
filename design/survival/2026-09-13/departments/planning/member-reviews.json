@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "survival",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "지정된 담당 부서만 검토하라."
+        ],
+        "fix": [
+          "지정된 담당 부서만 검토하라."
+        ],
+        "add": [
+          "지정된 담당 부서만 검토하라."
+        ],
+        "risks": [
+          "지정된 담당 부서만 검토하라."
+        ],
+        "evidence": [
+          "지정된 담당 부서만 검토하라."
+        ],
+        "questions": [
+          "지정된 담당 부서만 검토하라."
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "identity"
+        ],
+        "fix": [
+          "coreFun"
+        ],
+        "add": [
+          "coreLoop"
+        ],
+        "risks": [
+          "Survival"
+        ],
+        "evidence": [
+          "Survival"
+        ],
+        "questions": [
+          "Survival"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Survival"
+        ],
+        "fix": [
+          "Survival"
+        ],
+        "add": [
+          "Survival"
+        ],
+        "risks": [
+          "Survival"
+        ],
+        "evidence": [
+          "Survival"
+        ],
+        "questions": [
+          "Survival"
+        ]
+      }
+    }
+  ]
+}
