@@ -6,38 +6,73 @@
 <meta name="theme-color" content="#79d6ff">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/assets/pwa-icon.svg" type="image/svg+xml">
-<title>재운컴퍼니 설치</title>
+<title>재운컴퍼니 앱 설치</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;min-height:100%;background:#07111c;color:#eef7ff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
 body{min-height:100dvh;padding:max(18px,env(safe-area-inset-top)) 14px max(24px,env(safe-area-inset-bottom));display:grid;place-items:center}
-.card{width:min(100%,520px);padding:20px;border:1px solid #284963;border-radius:20px;background:linear-gradient(180deg,#0e2132,#0a1a29);box-shadow:0 18px 40px #0005}
-.icon{width:88px;height:88px;border-radius:22px;display:block;margin-bottom:14px}small{color:#72c8f5;font-weight:900;letter-spacing:.12em}h1{margin:4px 0 7px;font-size:28px}p{margin:0 0 16px;color:#9cb9cd;font-size:13px;line-height:1.6}
-.actions{display:grid;gap:8px}.btn{min-height:48px;border:1px solid #31587a;border-radius:12px;background:#16334c;color:#eef7ff;font:inherit;font-size:13px;font-weight:900;text-decoration:none;display:flex;align-items:center;justify-content:center;text-align:center}.btn.primary{background:#216da8;border-color:#2c7db8}.btn[hidden]{display:none}
-.note{margin-top:13px;padding:10px;border-radius:11px;background:#10283a;color:#8fb3ce;font-size:11px;line-height:1.55}.note strong{color:#d8efff}
+.card{width:min(100%,560px);padding:20px;border:1px solid #284963;border-radius:20px;background:linear-gradient(180deg,#0e2132,#0a1a29);box-shadow:0 18px 40px #0005}
+.header{display:flex;gap:14px;align-items:center;margin-bottom:14px}.icon{width:82px;height:82px;border-radius:20px;display:block}.meta{min-width:0}small{color:#72c8f5;font-weight:900;letter-spacing:.1em}h1{margin:4px 0 4px;font-size:27px}.version{color:#79d6ff;font-size:12px;font-weight:800}p{margin:0;color:#9cb9cd;font-size:13px;line-height:1.65}
+.actions{display:grid;gap:8px;margin-top:15px}.btn{min-height:48px;border:1px solid #31587a;border-radius:12px;background:#16334c;color:#eef7ff;font:inherit;font-size:13px;font-weight:900;text-decoration:none;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px}.btn.primary{background:#216da8;border-color:#2c7db8}.btn[hidden]{display:none}
+.section{margin-top:14px;padding:13px;border:1px solid #23445d;border-radius:14px;background:#0c1f2e}.section h2{font-size:14px;margin:0 0 9px}.steps{margin:0;padding-left:20px;color:#b8cedd;font-size:12px;line-height:1.75}.steps strong{color:#eef7ff}.urlbox{margin-top:9px;padding:10px;border-radius:10px;background:#06131f;border:1px solid #24455e;word-break:break-all;font-size:12px;color:#79d6ff}.note{margin-top:13px;padding:10px;border-radius:11px;background:#10283a;color:#8fb3ce;font-size:11px;line-height:1.55}.note strong{color:#d8efff}
 </style>
 </head>
 <body>
 <main class="card">
-  <img class="icon" src="/assets/pwa-icon.svg" alt="">
-  <small>JAEWOON COMPANY PWA</small>
-  <h1>홈 화면에 설치</h1>
-  <p>기존 재운게임즈 홈페이지는 그대로 두고 재운컴퍼니 개발 채팅을 앱처럼 실행해.</p>
-  <div class="actions">
-    <button class="btn primary" id="installBtn" type="button" hidden>홈 화면에 설치</button>
-    <a class="btn primary" id="chromeBtn" href="intent://jaewoon-games.pages.dev/install.html?browser=chrome#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Fjaewoon-games.pages.dev%2Finstall.html%3Fbrowser%3Dchrome;end">Chrome으로 열고 설치</a>
-    <button class="btn" id="manualBtn" type="button">설치 방법 보기</button>
-    <a class="btn" href="/command.html">게임 개발 채팅</a>
-    <a class="btn" href="/">기존 홈페이지</a>
+  <div class="header">
+    <img class="icon" src="/assets/pwa-icon.svg" alt="재운컴퍼니 앱 아이콘">
+    <div class="meta">
+      <small>JAEWOON COMPANY PWA</small>
+      <h1>재운컴퍼니 앱 설치</h1>
+      <div class="version">PWA v19</div>
+    </div>
   </div>
-  <div class="note" id="state"><strong>1단계.</strong> “Chrome으로 열고 설치”를 눌러 정식 Chrome으로 이동해.</div>
+  <p>재운컴퍼니 개발 채팅을 휴대폰 홈 화면에 앱처럼 설치해서 사용할 수 있어. 별도 APK를 받는 방식이 아니라 웹앱(PWA) 설치 방식이야.</p>
+
+  <div class="actions">
+    <button class="btn primary" id="installBtn" type="button" hidden>재운컴퍼니 앱 설치</button>
+    <a class="btn primary" id="chromeBtn" href="intent://jaewoon-games.pages.dev/install.html?browser=chrome#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=https%3A%2F%2Fjaewoon-games.pages.dev%2Finstall.html%3Fbrowser%3Dchrome;end">Chrome으로 열고 설치</a>
+    <button class="btn" id="copyBtn" type="button">설치 링크 복사</button>
+    <a class="btn" href="/command.html">재운컴퍼니 앱 열기</a>
+    <a class="btn" href="/">재운게임즈 홈페이지</a>
+  </div>
+
+  <section class="section">
+    <h2>설치 링크</h2>
+    <p>아래 주소를 Chrome 또는 Safari에서 열면 돼.</p>
+    <div class="urlbox" id="installUrl">https://jaewoon-games.pages.dev/install.html</div>
+  </section>
+
+  <section class="section">
+    <h2>Android · Chrome 설치 방법</h2>
+    <ol class="steps">
+      <li>위 <strong>Chrome으로 열고 설치</strong>를 눌러.</li>
+      <li><strong>재운컴퍼니 앱 설치</strong> 버튼이 나타나면 눌러.</li>
+      <li>버튼이 안 뜨면 Chrome 오른쪽 위 <strong>⋮</strong>을 눌러.</li>
+      <li><strong>앱 설치</strong> 또는 <strong>홈 화면에 추가</strong>를 선택해.</li>
+      <li>설치가 끝나면 홈 화면의 <strong>재운컴퍼니</strong> 아이콘으로 실행하면 돼.</li>
+    </ol>
+  </section>
+
+  <section class="section">
+    <h2>iPhone · Safari 설치 방법</h2>
+    <ol class="steps">
+      <li>설치 링크를 <strong>Safari</strong>에서 열어.</li>
+      <li>하단 또는 상단의 <strong>공유 버튼</strong>을 눌러.</li>
+      <li><strong>홈 화면에 추가</strong>를 선택해.</li>
+      <li>오른쪽 위 <strong>추가</strong>를 누르면 설치돼.</li>
+    </ol>
+  </section>
+
+  <div class="note" id="state"><strong>설치 안내.</strong> Android에서는 Chrome 설치를 권장해. 설치 버튼이 바로 안 나오면 메뉴에서 “앱 설치” 또는 “홈 화면에 추가”를 선택하면 돼.</div>
 </main>
 <script>
 let deferredPrompt=null;
 const installBtn=document.getElementById('installBtn');
 const chromeBtn=document.getElementById('chromeBtn');
-const manualBtn=document.getElementById('manualBtn');
+const copyBtn=document.getElementById('copyBtn');
 const state=document.getElementById('state');
+const installUrl='https://jaewoon-games.pages.dev/install.html';
 const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 const isAndroid=/Android/i.test(navigator.userAgent);
 
@@ -52,19 +87,19 @@ async function registerPwa(){
 }
 
 function showManual(){
-  state.innerHTML='<strong>Chrome에서</strong> 오른쪽 위 ⋮ → “앱 설치” 또는 “홈 화면에 추가”를 눌러.';
+  if(isAndroid)state.innerHTML='<strong>수동 설치.</strong> Chrome 오른쪽 위 ⋮ → “앱 설치” 또는 “홈 화면에 추가”를 눌러.';
+  else state.innerHTML='<strong>수동 설치.</strong> Safari 공유 버튼 → “홈 화면에 추가” → “추가”를 눌러.';
 }
 
 if(standalone){
   installBtn.hidden=true;
   chromeBtn.hidden=true;
-  manualBtn.hidden=true;
-  state.textContent='이미 홈 화면 앱으로 실행 중이야.';
+  state.textContent='이미 재운컴퍼니 앱으로 실행 중이야.';
 }else if(!isAndroid){
   chromeBtn.hidden=true;
   showManual();
 }else if(new URLSearchParams(location.search).get('browser')==='chrome'){
-  state.innerHTML='<strong>Chrome으로 열렸어.</strong> 설치 버튼이 준비되면 바로 눌러. 안 뜨면 “설치 방법 보기”를 눌러.';
+  state.innerHTML='<strong>Chrome으로 열렸어.</strong> 설치 버튼이 나타나면 눌러. 안 뜨면 오른쪽 위 ⋮ → “앱 설치”를 선택해.';
 }
 
 window.addEventListener('beforeinstallprompt',event=>{
@@ -72,7 +107,7 @@ window.addEventListener('beforeinstallprompt',event=>{
   deferredPrompt=event;
   installBtn.hidden=false;
   chromeBtn.hidden=true;
-  state.innerHTML='<strong>설치 준비 완료.</strong> 위 “홈 화면에 설치” 버튼을 눌러.';
+  state.innerHTML='<strong>설치 준비 완료.</strong> 위 “재운컴퍼니 앱 설치” 버튼을 눌러.';
 });
 
 installBtn.addEventListener('click',async()=>{
@@ -80,21 +115,23 @@ installBtn.addEventListener('click',async()=>{
   await deferredPrompt.prompt();
   const choice=await deferredPrompt.userChoice;
   deferredPrompt=null;
-  if(choice.outcome==='accepted'){
-    state.textContent='설치를 처리 중이야.';
-  }else{
-    installBtn.hidden=true;
-    showManual();
-  }
+  if(choice.outcome==='accepted')state.textContent='재운컴퍼니 앱 설치를 처리 중이야.';
+  else{installBtn.hidden=true;showManual();}
 });
 
-manualBtn.addEventListener('click',showManual);
+copyBtn.addEventListener('click',async()=>{
+  try{
+    await navigator.clipboard.writeText(installUrl);
+    state.innerHTML='<strong>복사 완료.</strong> 설치 링크를 복사했어.';
+  }catch{
+    state.innerHTML='<strong>설치 링크:</strong> '+installUrl;
+  }
+});
 
 window.addEventListener('appinstalled',()=>{
   installBtn.hidden=true;
   chromeBtn.hidden=true;
-  manualBtn.hidden=true;
-  state.textContent='홈 화면 설치 완료.';
+  state.textContent='재운컴퍼니 앱 설치 완료.';
 });
 
 registerPwa();
