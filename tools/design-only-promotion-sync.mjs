@@ -1,9 +1,10 @@
 // 파일명: tools/design-only-promotion-sync.mjs
-// DESIGN_BASELINE_READY 게임을 DEVELOPMENT_CONFIRMED로 승격하고 필수 Web 플레이/음악 검증 큐에 연결한다.
+// DESIGN_BASELINE_READY 게임을 DEVELOPMENT_CONFIRMED로 승격하고 필수 Web 플레이 검증 큐에 연결한다.
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {resolveSelectedPlatform,adapterForPlatform} from './company-selected-platform-router.mjs';
+import {materializeOwnerDesignResetSeeds} from './owner-design-reset.mjs';
 
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');
@@ -35,6 +36,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   const catalogPath=p('game-catalog.json');
   const queuePath=p('development-queue.json');
   const state=readJson(seedPath,{version:1,seeds:[]});
+  const resetResult=materializeOwnerDesignResetSeeds(state,{file:p('owner-design-reset-queue.json')});
   const portfolio=readJson(portfolioPath,{version:1,projects:[]});
   const catalog=readJson(catalogPath,{version:1,games:[]});
   const queue=readJson(queuePath,{version:1,items:[]});
@@ -69,7 +71,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     seed.promotion={
       from:'DESIGN_ONLY',to:'DEVELOPMENT_CONFIRMED',reason:'DESIGN_BASELINE_READY',
       selectedPlatform,targetSourcePath,webSourcePath,
-      requiredFirstValidation:'WEB_GAMEPLAY_AND_MUSIC',
+      requiredFirstValidation:'WEB_GAMEPLAY',
       designBaselineSource:artbook.sourceDesign||null,
       artbookSource:`artbook-submissions/${gameId}/current.json`,
       promotedAt:seed?.promotion?.promotedAt||stamp,
@@ -81,7 +83,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
         id:`SEED-${seed.seedId||gameId}`,slug:gameId,name:seed.gameName||gameId,
         sourcePath:webSourcePath,webArchivePath:webSourcePath,
         protectedValues:['core-loop','design-baseline','save-meaning'],
-        developmentFocus:{scores:{playability:0,distinctiveness:0,developmentEfficiency:0,scalability:0,lowBlockage:0},total:0,evidenceNote:'승격 직후. Web 플레이/음악 검증 및 선택 플랫폼 실검증 근거 수집 전.'},
+        developmentFocus:{scores:{playability:0,distinctiveness:0,developmentEfficiency:0,scalability:0,lowBlockage:0},total:0,evidenceNote:'승격 직후. Web 플레이 및 선택 플랫폼 실검증 근거 수집 전.'},
       };
       portfolio.projects.push(project);
     }
@@ -91,7 +93,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       targetEngine:selectedPlatform,selectedPlatform,targetPlatform:selectedPlatform,targetSourcePath,
       sourcePath:project.webValidationPassedAt?targetSourcePath:webSourcePath,
       webArchivePath:project.webArchivePath||webSourcePath,
-      webValidationRequired:true,musicValidationRequired:true,
+      webValidationRequired:true,musicValidationRequired:false,
       designBaselineSource:artbook.sourceDesign||null,designArtbookSource:`artbook-submissions/${gameId}/current.json`,
     });
 
@@ -103,8 +105,8 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     Object.assign(game,{
       homepageCategory:'development-confirmed',productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'DESIGN_BASELINE_READY',
       productionTier:2,productionTierSource:'DISPLAY_ALIAS_FROM_PRODUCTION_CLASS',selectedPlatform,targetPlatform:selectedPlatform,targetSourcePath,productionTarget:selectedPlatform,
-      homepageStage:'2분류 개발확정 · Web 플레이/음악 검증 준비',
-      homepageRecentWork:`DESIGN_BASELINE_READY 통과. Web 실제 플레이와 음악 런타임 검증 후 ${selectedPlatform} 검증으로 진행.`,
+      homepageStage:'2분류 개발확정 · Web 플레이 검증 준비',
+      homepageRecentWork:`DESIGN_BASELINE_READY 통과. Web 실제 플레이 검증 후 ${selectedPlatform} 검증으로 진행.`,
       homepageWebPlayable:Boolean(game.hasWebArchive),homepageArtbookPath:game.homepageArtbookPath||`/artbook-viewer.html?game=${encodeURIComponent(gameId)}`,
     });
 
@@ -136,7 +138,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   writeJson(portfolioPath,portfolio);
   writeJson(catalogPath,catalog);
   writeJson(queuePath,queue);
-  return {promoted,skipped,queueCount:queue.items.length};
+  return {promoted,skipped,queueCount:queue.items.length,ownerResetSeedsMaterialized:resetResult.changed};
 }
 
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
@@ -144,5 +146,6 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`DESIGN_PROMOTION_COUNT=${result.promoted.length}`);
   console.log(`DESIGN_PROMOTED_GAME_IDS=${result.promoted.join(',')}`);
   console.log(`DEVELOPMENT_QUEUE_COUNT=${result.queueCount}`);
+  console.log(`OWNER_RESET_SEEDS_MATERIALIZED=${result.ownerResetSeedsMaterialized.join(',')}`);
   if(result.skipped.length)console.log(`DESIGN_PROMOTION_SKIPPED=${JSON.stringify(result.skipped)}`);
 }
