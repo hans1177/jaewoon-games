@@ -14,7 +14,6 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
-  ROBLOX_DEV_MODEL: qwen3:1.7b
 
 jobs:
   source-plan:
@@ -28,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           fetch-depth: 1
           fetch-tags: false
       - uses: actions/setup-node@v4
@@ -90,11 +89,11 @@ jobs:
       max-parallel: 2
       matrix: ${{ fromJSON(needs.source-plan.outputs.matrix) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 24
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -103,27 +102,7 @@ jobs:
       - name: Fetch current company runtime
         run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
 
-      - name: Prepare free local Roblox generation model
-        shell: bash
-        run: |
-          set -euo pipefail
-          installed=0
-          for attempt in 1 2 3; do
-            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
-            sleep $((attempt * 4))
-          done
-          test "$installed" = 1
-          nohup ollama serve >/tmp/ollama-roblox-development.log 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
-            if [ "$i" = 30 ]; then cat /tmp/ollama-roblox-development.log || true; exit 1; fi
-            sleep 2
-          done
-          ollama pull "$ROBLOX_DEV_MODEL"
-          echo 'ROBLOX_PAID_AI=NO'
-          echo 'ROBLOX_PAID_RUNNER=NO'
-
-      - name: Generate isolated Roblox source candidate
+      - name: Compile isolated Roblox source candidate
         id: generate
         continue-on-error: true
         env:
@@ -147,13 +126,12 @@ jobs:
           git config user.name 'jaewoon-roblox-development'
           git config user.email 'actions@users.noreply.github.com'
           git checkout -b "$branch"
-          timeout 10m node tools/company-development-roblox-bootstrap.mjs \
+          timeout 2m node tools/company-development-roblox-bootstrap.mjs \
             --game-id="$GAME_ID" \
             --game-name="$GAME_NAME" \
             --baseline="$baseline" \
             --artbook="$artbook" \
             --output-root="$TARGET_SOURCE" \
-            --model="$ROBLOX_DEV_MODEL" \
             --evidence="$evidence"
           node --test qa/company-development-roblox-runtime.test.mjs
           git diff --check
@@ -164,6 +142,7 @@ jobs:
           echo "branch=$branch" >> "$GITHUB_OUTPUT"
           echo "safe=$safe" >> "$GITHUB_OUTPUT"
           echo "ROBLOX_SOURCE_CANDIDATE=PASS:$GAME_ID"
+          echo 'ROBLOX_SOURCE_MODEL_USED=NO'
 
       - name: Merge validated Roblox source candidate through PR
         id: merge
@@ -224,7 +203,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           fetch-depth: 1
           fetch-tags: false
 
