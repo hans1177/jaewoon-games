@@ -1,0 +1,540 @@
+name: Company DEVELOPMENT_CONFIRMED Roblox Runtime Continuation
+
+on:
+  workflow_run:
+    workflows: [Company DEVELOPMENT_CONFIRMED Roblox Runtime]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: company-development-roblox-runtime-continuation
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
+jobs:
+  preflight-plan:
+    name: resolve Roblox five-lead preflight work
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    outputs:
+      count: ${{ steps.targets.outputs.count }}
+      matrix: ${{ steps.targets.outputs.matrix }}
+      targets_json: ${{ steps.targets.outputs.targets_json }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify continuation contracts
+        run: |
+          set -euo pipefail
+          node --check tools/company-development-roblox-build-preflight.mjs
+          node --check tools/vibe3-roblox-platform.mjs
+          node --test qa/company-development-roblox-runtime-continuation.test.mjs
+      - name: Fetch canonical runtime queue
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
+      - name: Resolve exact-build preflight slice
+        id: targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const rows=[];
+          for(const item of q.items||[]){
+            if(rows.length>=2)break;
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+            if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
+            const revision=String(item.robloxSourceCommit||'').trim();
+            const exactBuild=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&String(item.robloxBuildArtifactIdentity||'').startsWith('sha256:');
+            if(!exactBuild||item.robloxBuildPreflightPassed===true)continue;
+            if(item.robloxBuildPreflightFailedAt)continue;
+            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,sourceRevision:revision,artifactIdentity:item.robloxBuildArtifactIdentity});
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
+          console.log(`ROBLOX_PREFLIGHT_TARGET_COUNT=${rows.length}`);
+          console.log(`ROBLOX_PREFLIGHT_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
+          console.log('ROBLOX_EXECUTION_WIP_MAX=2');
+          console.log('ROBLOX_PER_GAME_PROMOTION=YES');
+          console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
+          NODE
+
+  preflight-worker:
+    name: Roblox five-lead preflight ${{ matrix.gameId }}
+    needs: preflight-plan
+    if: needs.preflight-plan.outputs.count != '0'
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix: ${{ fromJSON(needs.preflight-plan.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fetch exact canonical runtime queue
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
+      - name: Prepare free local lead models
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: 'llama3.2:1b'
+          version: '0.33.3'
+          pull-model: 'true'
+          department-role: development
+      - name: Ensure all five configured lead models are local
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t models < <(node -e "const d=require('./company-directive.json');for(const role of ['planning','graphics','development','qa','balance'])console.log(d.ai.departmentLeadModels[role])")
+          have="$(ollama list | awk 'NR>1{print $1}')"
+          for model in "${models[@]}"; do
+            grep -Fxq "$model" <<<"$have" || ollama pull "$model"
+          done
+      - name: Run five distinct lead build preflight
+        id: review
+        continue-on-error: true
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-')"
+          mkdir -p /tmp/roblox-preflight/results
+          node tools/company-development-roblox-build-preflight.mjs \
+            --game-id="$GAME_ID" \
+            --queue=/tmp/development-queue.json \
+            --directive=company-directive.json \
+            --output="/tmp/roblox-preflight/results/${safe}.preflight.json"
+      - name: Upload per-game preflight evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: development-roblox-preflight-${{ matrix.gameId }}
+          path: /tmp/roblox-preflight
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Enforce preflight result after evidence capture
+        if: always()
+        env:
+          OUTCOME: ${{ steps.review.outcome }}
+        run: |
+          if [[ "$OUTCOME" != success ]]; then
+            echo 'ROBLOX_BUILD_PREFLIGHT_PASS=NO'
+            exit 1
+          fi
+          echo 'ROBLOX_BUILD_PREFLIGHT_PASS=YES'
+          echo 'ROBLOX_RUNTIME_PASS=NO'
+          echo 'ROBLOX_RELEASE_CLAIM=NO'
+
+  preflight-persist:
+    name: persist Roblox five-lead preflight checkpoints
+    needs: [preflight-plan, preflight-worker]
+    if: always() && needs.preflight-plan.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    outputs:
+      pass_count: ${{ steps.persist.outputs.pass_count }}
+    concurrency:
+      group: company-runtime-writer
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          fetch-depth: 1
+          fetch-tags: false
+      - name: Download preflight checkpoints
+        if: needs.preflight-plan.outputs.count != '0'
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: development-roblox-preflight-*
+          path: /tmp/roblox-preflight-batch
+          merge-multiple: true
+      - name: Persist per-game preflight state
+        id: persist
+        if: needs.preflight-plan.outputs.count != '0'
+        env:
+          EXPECTED_TARGETS_JSON: ${{ needs.preflight-plan.outputs.targets_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
+          const dir='/tmp/roblox-preflight-batch/results';
+          const results=[];
+          if(fs.existsSync(dir))for(const name of fs.readdirSync(dir).filter(x=>x.endsWith('.preflight.json')).sort())results.push(JSON.parse(fs.readFileSync(path.join(dir,name),'utf8')));
+          const byId=new Map(results.map(x=>[x.gameId,x]));
+          const stamp=new Date().toISOString();let pass=0,fail=0;
+          for(const target of expected){
+            const item=(queue.items||[]).find(x=>x.gameId===target.gameId);if(!item)throw new Error(`queue item missing: ${target.gameId}`);
+            const result=byId.get(target.gameId);
+            const exact=result?.sourceRevision===item.robloxSourceCommit&&result?.artifactIdentity===item.robloxBuildArtifactIdentity;
+            if(result?.pass===true&&exact){
+              Object.assign(item,{robloxBuildPreflightPassed:true,robloxBuildPreflightPassedAt:stamp,robloxBuildPreflightFailedAt:null,robloxBuildPreflightEvidence:result,
+                robloxLastSuccessfulStage:'FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT',robloxFailureStage:'TARGET_PLATFORM_RUNTIME',robloxFailureSignature:'ROBLOX_RUNTIME_PENDING',routingBlockers:['roblox-runtime-pending'],updatedAt:stamp});
+              pass++;
+            }else{
+              Object.assign(item,{robloxBuildPreflightPassed:false,robloxBuildPreflightFailedAt:stamp,robloxBuildPreflightEvidence:result||null,
+                robloxFailureStage:'FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT',robloxFailureSignature:result?'ROBLOX_BUILD_PREFLIGHT_BLOCKED':'ROBLOX_BUILD_PREFLIGHT_RESULT_MISSING',routingBlockers:['roblox-build-preflight-blocked'],updatedAt:stamp});
+              fail++;
+            }
+          }
+          queue.updatedAt=stamp;fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`pass_count=${pass}\n`);
+          console.log(`ROBLOX_BUILD_PREFLIGHT_PASS_COUNT=${pass}`);console.log(`ROBLOX_BUILD_PREFLIGHT_FAIL_COUNT=${fail}`);
+          console.log('ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO');
+          NODE
+          git config user.name 'jaewoon-roblox-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'runtime: persist Roblox five-lead preflight checkpoint [skip ci]'
+            for attempt in 1 2 3; do
+              if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then break; fi
+              git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+              git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
+              sleep $((attempt*2))
+            done
+          fi
+
+  runtime-plan:
+    name: resolve actual Roblox Studio runtime work
+    needs: preflight-persist
+    if: always() && needs.preflight-persist.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    outputs:
+      count: ${{ steps.targets.outputs.count }}
+      matrix: ${{ steps.targets.outputs.matrix }}
+      targets_json: ${{ steps.targets.outputs.targets_json }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+      - name: Fetch canonical runtime queue
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
+      - name: Resolve runtime slice
+        id: targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const rows=[];
+          for(const item of q.items||[]){
+            if(rows.length>=2)break;
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+            if(item.robloxBuildPreflightPassed!==true||item.robloxRuntimePassed===true||item.robloxRuntimeFailedAt)continue;
+            const revision=String(item.robloxSourceCommit||'').trim();
+            const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
+            if(item.robloxBuildSourceRevision!==revision||!artifact.startsWith('sha256:'))continue;
+            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,sourceRevision:revision,artifactIdentity:artifact});
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
+          console.log(`ROBLOX_RUNTIME_TARGET_COUNT=${rows.length}`);console.log(`ROBLOX_RUNTIME_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
+          console.log('ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES');
+          NODE
+
+  runtime-worker:
+    name: Roblox Studio runtime ${{ matrix.gameId }}
+    needs: runtime-plan
+    if: needs.runtime-plan.outputs.count != '0'
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix: ${{ fromJSON(needs.runtime-plan.outputs.matrix) }}
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+      - name: Resolve original immutable Roblox package by SHA256
+        id: package
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.gameId }}
+          EXPECTED_ARTIFACT: ${{ matrix.artifactIdentity }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $name = "development-roblox-package-$env:GAME_ID"
+          $response = gh api "repos/$env:GITHUB_REPOSITORY/actions/artifacts?name=$name&per_page=100" | ConvertFrom-Json
+          $candidates = @($response.artifacts | Where-Object { -not $_.expired } | Sort-Object created_at -Descending)
+          if ($candidates.Count -eq 0) { throw "No retained package artifact: $name" }
+          $matched = $null
+          foreach ($artifact in $candidates) {
+            $root = Join-Path $env:RUNNER_TEMP "roblox-package-$($artifact.id)"
+            Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue
+            New-Item -ItemType Directory -Force -Path $root | Out-Null
+            gh run download "$($artifact.workflow_run.id)" -n $name -D $root
+            $place = Get-ChildItem -Path $root -Recurse -File -Filter *.rbxlx | Select-Object -First 1
+            if (-not $place) { continue }
+            $hash = (Get-FileHash -Algorithm SHA256 $place.FullName).Hash.ToLowerInvariant()
+            if ("sha256:$hash" -eq $env:EXPECTED_ARTIFACT.ToLowerInvariant()) {
+              $matched = [PSCustomObject]@{ place=$place.FullName; root=$root; run=$artifact.workflow_run.id; id=$artifact.id }
+              break
+            }
+          }
+          if (-not $matched) { throw "No retained package matches $env:EXPECTED_ARTIFACT" }
+          $buildEvidence = Get-ChildItem -Path $matched.root -Recurse -File -Filter *.build.json | Select-Object -First 1
+          "place_file=$($matched.place)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "artifact_run=$($matched.run)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "build_evidence=$($buildEvidence.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host "ROBLOX_IMMUTABLE_ARTIFACT_BIND=PASS"
+          Write-Host "ROBLOX_PACKAGE_ARTIFACT_RUN=$($matched.run)"
+      - name: Install current official Roblox Studio
+        id: studio
+        if: steps.package.outcome == 'success'
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $installer = Join-Path $env:RUNNER_TEMP 'RobloxStudioLauncherBeta.exe'
+          Invoke-WebRequest -Uri 'https://setup.rbxcdn.com/RobloxStudioLauncherBeta.exe' -OutFile $installer
+          $installerSha = (Get-FileHash -Algorithm SHA256 $installer).Hash.ToLowerInvariant()
+          $p = Start-Process -FilePath $installer -PassThru
+          if (-not $p.WaitForExit(600000)) { Stop-Process -Id $p.Id -Force; throw 'Roblox Studio installer timeout' }
+          $studio = Get-ChildItem -Path "$env:LOCALAPPDATA\Roblox\Versions" -Recurse -File -Filter RobloxStudioBeta.exe | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found after installation' }
+          "studio_exe=$($studio.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "installer_sha256=$installerSha" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host "ROBLOX_STUDIO_INSTALL=PASS"
+          Write-Host "ROBLOX_STUDIO_INSTALLER_SHA256=$installerSha"
+      - name: Run actual one-server one-client Studio session
+        id: runtime
+        if: steps.package.outcome == 'success' && steps.studio.outcome == 'success'
+        continue-on-error: true
+        env:
+          STUDIO_EXE: ${{ steps.studio.outputs.studio_exe }}
+          PLACE_FILE: ${{ steps.package.outputs.place_file }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $script = (Resolve-Path 'tools/company-development-roblox-runtime-smoke.luau').Path
+          $out = Join-Path $env:RUNNER_TEMP 'roblox-runtime-output.log'
+          $stdout = Join-Path $env:RUNNER_TEMP 'roblox-studio-stdout.log'
+          $stderr = Join-Path $env:RUNNER_TEMP 'roblox-studio-stderr.log'
+          $argLine = "--task RunScript --localPlaceFile `"$env:PLACE_FILE`" --runScriptFile `"$script`" --outputFile `"$out`" --quitAfterExecution"
+          $p = Start-Process -FilePath $env:STUDIO_EXE -ArgumentList $argLine -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          if (-not $p.WaitForExit(720000)) { Stop-Process -Id $p.Id -Force; throw 'Roblox Studio runtime timeout' }
+          $combined = ''
+          if (Test-Path $out) { $combined += (Get-Content $out -Raw) }
+          if (Test-Path $stdout) { $combined += "`n" + (Get-Content $stdout -Raw) }
+          if (Test-Path $stderr) { $combined += "`n" + (Get-Content $stderr -Raw) }
+          Set-Content -Path (Join-Path $env:RUNNER_TEMP 'roblox-runtime-combined.log') -Value $combined
+          Write-Host $combined
+          if ($p.ExitCode -ne 0) { throw "Roblox Studio exited $($p.ExitCode)" }
+          if ($combined -notmatch 'ROBLOX_RUNTIME_SMOKE=PASS') { throw 'Runtime PASS sentinel missing' }
+          if ($combined -notmatch 'ROBLOX_SERVER_CLIENT_BOUNDARY_PASS=YES') { throw 'Server/client boundary sentinel missing' }
+          Write-Host 'ROBLOX_ACTUAL_STUDIO_RUNTIME=PASS'
+      - name: Record exact runtime evidence
+        if: always()
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+          ARTIFACT_IDENTITY: ${{ matrix.artifactIdentity }}
+          PACKAGE_OUTCOME: ${{ steps.package.outcome }}
+          STUDIO_OUTCOME: ${{ steps.studio.outcome }}
+          RUNTIME_OUTCOME: ${{ steps.runtime.outcome }}
+          ARTIFACT_RUN: ${{ steps.package.outputs.artifact_run }}
+          BUILD_EVIDENCE: ${{ steps.package.outputs.build_evidence }}
+          INSTALLER_SHA: ${{ steps.studio.outputs.installer_sha256 }}
+        shell: pwsh
+        run: |
+          $root = Join-Path $env:RUNNER_TEMP 'roblox-runtime-evidence'
+          $results = Join-Path $root 'results'
+          New-Item -ItemType Directory -Force -Path $results | Out-Null
+          $saveRequired = $false
+          if ($env:BUILD_EVIDENCE -and (Test-Path $env:BUILD_EVIDENCE)) {
+            $build = Get-Content $env:BUILD_EVIDENCE -Raw | ConvertFrom-Json
+            $saveRequired = ($build.saveRequired -eq $true)
+          }
+          $passed = $env:PACKAGE_OUTCOME -eq 'success' -and $env:STUDIO_OUTCOME -eq 'success' -and $env:RUNTIME_OUTCOME -eq 'success'
+          $failure = if ($passed) { $null } elseif ($env:PACKAGE_OUTCOME -ne 'success') { 'immutable-package-unavailable' } elseif ($env:STUDIO_OUTCOME -ne 'success') { 'roblox-studio-install-failed' } else { 'roblox-studio-runtime-failed' }
+          $evidence = [ordered]@{
+            version=1; gameId=$env:GAME_ID; platform='ROBLOX'; checkedAt=(Get-Date).ToUniversalTime().ToString('o');
+            sourceRevision=$env:SOURCE_REVISION; artifactIdentity=$env:ARTIFACT_IDENTITY; artifactRunId=([int64]($env:ARTIFACT_RUN ?? '0'));
+            runtimePassed=$passed; actualStudioRuntime=$passed; serverClientBoundaryPassed=$passed; playerCharacterPassed=$passed;
+            saveExists=$saveRequired; datastoreRejoinPassed=(-not $saveRequired); mobileControlUiPassed=$false; multiplayerApplicable=$false; multiplayerQaPassed=$false;
+            studioInstallerSha256=if($env:INSTALLER_SHA){"sha256:$env:INSTALLER_SHA"}else{$null}; failure=$failure;
+            authority='roblox-actual-studio-runtime-evidence'
+          }
+          $safe = $env:GAME_ID -replace '[^a-zA-Z0-9._-]+','-'
+          $file = Join-Path $results "$safe.runtime.json"
+          $evidence | ConvertTo-Json -Depth 8 | Set-Content -Encoding utf8 $file
+          $log = Join-Path $env:RUNNER_TEMP 'roblox-runtime-combined.log'
+          if (Test-Path $log) { Copy-Item $log (Join-Path $root "$safe.studio.log") }
+          Write-Host "ROBLOX_RUNTIME_PASS=$(if($passed){'YES'}else{'NO'})"
+          Write-Host "ROBLOX_DATASTORE_REJOIN_PASS=$(if(-not $saveRequired){'NOT_APPLICABLE'}else{'NO'})"
+          Write-Host 'ROBLOX_INDEPENDENT_QA_PASS=NO'
+          Write-Host 'ROBLOX_REGRESSION_PASS=NO'
+          Write-Host 'ROBLOX_RELEASE_CLAIM=NO'
+      - name: Upload actual Studio runtime checkpoint
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: development-roblox-runtime-${{ matrix.gameId }}
+          path: ${{ runner.temp }}/roblox-runtime-evidence
+          retention-days: 14
+          if-no-files-found: error
+      - name: Enforce real runtime result after checkpoint capture
+        if: always()
+        env:
+          OUTCOME: ${{ steps.runtime.outcome }}
+        shell: pwsh
+        run: |
+          if ($env:OUTCOME -ne 'success') { Write-Host 'ROBLOX_RUNTIME_PASS=NO'; exit 1 }
+          Write-Host 'ROBLOX_RUNTIME_PASS=YES'
+
+  runtime-persist:
+    name: persist actual Roblox Studio runtime checkpoints
+    needs: [runtime-plan, runtime-worker]
+    if: always() && needs.runtime-plan.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    concurrency:
+      group: company-runtime-writer
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          fetch-depth: 1
+          fetch-tags: false
+      - name: Download runtime checkpoints
+        if: needs.runtime-plan.outputs.count != '0'
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: development-roblox-runtime-*
+          path: /tmp/roblox-runtime-batch
+          merge-multiple: true
+      - name: Persist exact actual-runtime state
+        if: needs.runtime-plan.outputs.count != '0'
+        env:
+          EXPECTED_TARGETS_JSON: ${{ needs.runtime-plan.outputs.targets_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
+          const dir='/tmp/roblox-runtime-batch/results';const results=[];
+          if(fs.existsSync(dir))for(const name of fs.readdirSync(dir).filter(x=>x.endsWith('.runtime.json')).sort())results.push(JSON.parse(fs.readFileSync(path.join(dir,name),'utf8').replace(/^\uFEFF/,'')));
+          const byId=new Map(results.map(x=>[x.gameId,x]));const stamp=new Date().toISOString();let pass=0,fail=0;
+          for(const target of expected){
+            const item=(queue.items||[]).find(x=>x.gameId===target.gameId);if(!item)throw new Error(`queue item missing: ${target.gameId}`);
+            const r=byId.get(target.gameId);const exact=r?.sourceRevision===item.robloxSourceCommit&&r?.artifactIdentity===item.robloxBuildArtifactIdentity;
+            if(r?.runtimePassed===true&&r?.actualStudioRuntime===true&&r?.serverClientBoundaryPassed===true&&exact){
+              Object.assign(item,{robloxRuntimePassed:true,robloxRuntimePassedAt:stamp,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:r,
+                robloxServerClientBoundaryPassed:true,robloxDatastoreRejoinPassed:r.datastoreRejoinPassed===true,robloxMobileControlUiPassed:r.mobileControlUiPassed===true,
+                robloxLastSuccessfulStage:'TARGET_PLATFORM_RUNTIME',robloxFailureStage:'INDEPENDENT_QA',robloxFailureSignature:'ROBLOX_INDEPENDENT_QA_PENDING',routingBlockers:['roblox-independent-qa-pending'],updatedAt:stamp});pass++;
+            }else{
+              Object.assign(item,{robloxRuntimePassed:false,robloxRuntimeFailedAt:stamp,robloxRuntimeEvidence:r||null,
+                robloxFailureStage:'TARGET_PLATFORM_RUNTIME',robloxFailureSignature:r?.failure||'ROBLOX_RUNTIME_RESULT_MISSING',routingBlockers:[`roblox-runtime:${r?.failure||'result-missing'}`],updatedAt:stamp});fail++;
+            }
+          }
+          queue.updatedAt=stamp;fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          console.log(`ROBLOX_ACTUAL_RUNTIME_PASS_COUNT=${pass}`);console.log(`ROBLOX_ACTUAL_RUNTIME_FAIL_COUNT=${fail}`);
+          console.log('ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO');console.log('ROBLOX_INDEPENDENT_QA_PASS=NO');console.log('ROBLOX_RELEASE_CLAIM=NO');
+          NODE
+          git config user.name 'jaewoon-roblox-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'runtime: persist actual Roblox Studio checkpoint [skip ci]'
+            for attempt in 1 2 3; do
+              if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then break; fi
+              git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+              git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
+              sleep $((attempt*2))
+            done
+          fi
+      - name: Dispatch next continuation slice only when unrelated eligible work remains
+        if: needs.runtime-plan.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CURRENT_TARGETS_JSON: ${{ needs.runtime-plan.outputs.targets_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-continuation-next.json
+          remaining="$(node --input-type=module <<'NODE'
+          import fs from 'node:fs';const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-next.json','utf8'));const current=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').map(x=>x.gameId));let n=0;
+          for(const item of q.items||[]){if(current.has(item.gameId))continue;if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+            const rev=String(item.robloxSourceCommit||'');const exact=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===rev&&String(item.robloxBuildArtifactIdentity||'').startsWith('sha256:');
+            const preflightPending=exact&&item.robloxBuildPreflightPassed!==true&&!item.robloxBuildPreflightFailedAt;
+            const runtimePending=exact&&item.robloxBuildPreflightPassed===true&&item.robloxRuntimePassed!==true&&!item.robloxRuntimeFailedAt;
+            if(preflightPending||runtimePending)n++;}
+          process.stdout.write(String(n));
+          NODE
+          )"
+          echo "ROBLOX_REMAINING_CONTINUATION_TARGETS=$remaining"
+          if [[ "$remaining" =~ ^[1-9][0-9]*$ ]]; then
+            gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'ROBLOX_NEXT_CONTINUATION_DISPATCH=YES'
+          else
+            echo 'ROBLOX_NEXT_CONTINUATION_DISPATCH=NO'
+          fi
+      - name: Continuation summary
+        if: always()
+        run: |
+          echo 'ROBLOX_PER_GAME_PROMOTION=YES'
+          echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
+          echo 'ROBLOX_EXECUTION_WIP_MAX=2'
+          echo 'ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES'
+          echo 'ROBLOX_FAKE_RUNTIME_PASS=FORBIDDEN'
+          echo 'ROBLOX_INDEPENDENT_QA_PASS=NO'
+          echo 'ROBLOX_REGRESSION_PASS=NO'
+          echo 'ROBLOX_FINAL_REVIEW_PASS=NO'
+          echo 'ROBLOX_RELEASE_CLAIM=NO'
