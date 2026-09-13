@@ -1,0 +1,155 @@
+name: Owner Pass80 Post-Promotion Artbook Migration
+
+on:
+  push:
+    branches: [owner/design-pass80-fast-optimization-20260913]
+    paths:
+      - '.github/workflows/owner-pass80-post-artbook-migration.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: owner/design-pass80-fast-optimization-20260913
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply central policy and executable owner contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          import json
+
+          def replace_once(path, old, new):
+              p=Path(path); text=p.read_text()
+              if old not in text:
+                  raise SystemExit(f'PATCH_TARGET_MISSING:{path}:{old[:80]!r}')
+              p.write_text(text.replace(old,new,1))
+
+          # Central policy first: design entry is 80, implementation remains 90.
+          replace_once('COMPANY_FLOW.md',
+              '    passMinimum: 90\n    scoreCannotOverrideHardGate: true',
+              '    passMinimum: 80\n    implementationPassMinimum: 90\n    excellentDesignMinimum: 90\n    scoreCannotOverrideHardGate: true')
+          replace_once('COMPANY_FLOW.md',
+              '    scoreBands:\n      PASS: 90_TO_100_AND_ALL_HARD_GATES_PASS\n      REVISE: 65_TO_89_OR_CORRECTABLE_HARD_GATE\n      REBUILD: 0_TO_64_OR_STRUCTURAL_FAILURE',
+              '    scoreBands:\n      DESIGN_PASS: 80_TO_100_AND_ALL_HARD_GATES_PASS\n      DESIGN_EXCELLENT: 90_TO_100_AND_ALL_HARD_GATES_PASS\n      DESIGN_REVISE: 60_TO_79_OR_CORRECTABLE_HARD_GATE\n      DESIGN_REBUILD: 0_TO_59_OR_STRUCTURAL_FAILURE\n      IMPLEMENTATION_PASS: 90_TO_100_AND_ALL_HARD_GATES_PASS')
+          replace_once('COMPANY_FLOW.md',
+              '      automaticDropOnFirstFailureForbidden: true\n  homepageTesting:',
+              '      automaticDropOnFirstFailureForbidden: true\n  artbookLifecycle:\n    designOnlyArtbookBeforePromotionForbidden: true\n    createOnlyAfterDesignPromotion: true\n    requiredStage: DEVELOPMENT_CONFIRMED_PRE_WEB\n    postPromotionArtbookMustBindApprovedDesignBaseline: true\n    artbookFailureBlocksWebDevelopmentButMustNotUndoDesignPromotion: true\n  homepageTesting:')
+          replace_once('COMPANY_FLOW.md',
+              '    qualityGateWeakeningForThroughputForbidden: true\n  learningFeedback:',
+              '    qualityGateWeakeningForThroughputForbidden: true\n    optimizationBudget:\n      blockingBudgetMinutes: 10\n      maxAttemptsPerOptimizationPass: 2\n      timeoutAction: DEFER_NON_BLOCKING_OPTIMIZATION_AND_CONTINUE_FROM_LAST_VALIDATED_STATE\n      correctnessSafetyOrHardGateFailureStillBlocks: true\n      repeatedOptimizationMustNotStarveOtherGames: true\n    modelExecutionBudget:\n      designWorkflowTimeoutMinutes: 45\n      singleModelCallTimeoutSeconds: 75\n      designSchemaAttemptsMax: 2\n  learningFeedback:')
+
+          # Directive mirrors the central policy; it does not create policy.
+          dp=Path('company-directive.json'); d=json.loads(dp.read_text())
+          d['revision']=max(int(d.get('revision',0))+1,36)
+          d['updatedAt']='2026-09-13'
+          d['strictReview']={
+              'scoreScale':100,'designPassMinimum':80,'implementationPassMinimum':90,
+              'excellentDesignMinimum':90,'scoreCannotOverrideHardGate':True,
+              'designReviseMin':60,'designRebuildMax':59
+          }
+          d['productionThroughput']={
+              'optimizationBudget':{
+                  'blockingBudgetMinutes':10,'maxAttemptsPerOptimizationPass':2,
+                  'timeoutAction':'DEFER_NON_BLOCKING_OPTIMIZATION_AND_CONTINUE_FROM_LAST_VALIDATED_STATE',
+                  'correctnessSafetyOrHardGateFailureStillBlocks':True,
+                  'repeatedOptimizationMustNotStarveOtherGames':True
+              },
+              'modelExecutionBudget':{'designWorkflowTimeoutMinutes':45,'singleModelCallTimeoutSeconds':75,'designSchemaAttemptsMax':2}
+          }
+          design=d['classes']['DESIGN_ONLY']
+          design['requiredFlow']=[x for x in design.get('requiredFlow',[]) if x!='ARTBOOK_EDITOR_CORE_STRATEGY']
+          design['artbookBeforePromotionForbidden']=True
+          dev=d['classes']['DEVELOPMENT_CONFIRMED']
+          flow=dev.get('requiredFlow',[])
+          if 'POST_PROMOTION_ARTBOOK' not in flow:
+              idx=flow.index('LOAD_DESIGN_BASELINE')+1 if 'LOAD_DESIGN_BASELINE' in flow else 0
+              flow.insert(idx,'POST_PROMOTION_ARTBOOK')
+          dev['requiredFlow']=flow
+          dev['postPromotionArtbookRequiredBeforeWeb']=True
+          if 'WAITING_POST_PROMOTION_ARTBOOK' not in dev.get('waitingStates',[]):
+              dev.setdefault('waitingStates',[]).insert(0,'WAITING_POST_PROMOTION_ARTBOOK')
+          d['ai']['artbookEditor']['startsAfterDesignPromotion']=True
+          d['ai']['artbookEditor']['startsAtClass']='DEVELOPMENT_CONFIRMED'
+          dp.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+
+          # Design score threshold is 80; implementation/Web remains 90.
+          p=Path('tools/company-strict-production-review.mjs'); t=p.read_text()
+          old="const PASS_THRESHOLD=80;\nconst EXCELLENT_THRESHOLD=90;"
+          new="const DESIGN_PASS_THRESHOLD=80;\nconst IMPLEMENTATION_PASS_THRESHOLD=90;\nconst EXCELLENT_THRESHOLD=90;"
+          if old not in t: raise SystemExit('PATCH_TARGET_MISSING:strict-threshold-constants')
+          t=t.replace(old,new,1)
+          old="function finalResult({scores,hardFailures,evidence,reviewStage}){const total=Object.values(scores).reduce((a,b)=>a+b,0);let verdict='PASS';if(hardFailures.length||total<PASS_THRESHOLD)verdict=total<70?'REBUILD':'REVISE';return{version:2,gameId,reviewStage,scoreScale:100,passThreshold:PASS_THRESHOLD,excellentThreshold:EXCELLENT_THRESHOLD,excellent:total>=EXCELLENT_THRESHOLD&&hardFailures.length===0,totalScore:total,scores,weights,hardFailures:[...new Set(hardFailures)],verdict,evidence,policyDocument:'COMPANY_FLOW.md',rules:{scoreCannotOverrideHardGate:true,correctableRejectAction:'FIX_AND_REVALIDATE',structuralRejectAction:'REBUILD_CANDIDATE',officialCardBeforePassForbidden:true,testShelfBeforePassOnly:true,learningRecordRequired:true},reviewedAt:new Date().toISOString()};}"
+          new="function finalResult({scores,hardFailures,evidence,reviewStage,passThreshold,rebuildBelow}){const total=Object.values(scores).reduce((a,b)=>a+b,0);let verdict='PASS';if(hardFailures.length||total<passThreshold)verdict=total<rebuildBelow?'REBUILD':'REVISE';return{version:2,gameId,reviewStage,scoreScale:100,passThreshold,excellentThreshold:EXCELLENT_THRESHOLD,excellent:reviewStage==='DESIGN_STRICT_REVIEW'&&total>=EXCELLENT_THRESHOLD&&hardFailures.length===0,totalScore:total,scores,weights,hardFailures:[...new Set(hardFailures)],verdict,evidence,policyDocument:'COMPANY_FLOW.md',rules:{scoreCannotOverrideHardGate:true,correctableRejectAction:'FIX_AND_REVALIDATE',structuralRejectAction:'REBUILD_CANDIDATE',officialCardBeforePassForbidden:true,testShelfBeforePassOnly:true,learningRecordRequired:true},reviewedAt:new Date().toISOString()};}"
+          if old not in t: raise SystemExit('PATCH_TARGET_MISSING:strict-final-result')
+          t=t.replace(old,new,1)
+          t=t.replace("return finalResult({scores,hardFailures:hard,evidence:{seedId:seed.seedId,seedGeneration:seed.generation||null,materialContractApplied:materialComposed,materialIds:materials,designPath:designPath||null,multiplayerDesignMode:seed.MULTIPLAYER_DESIGN_MODE,targetSessionMinutes:seed.TARGET_SESSION_MINUTES},reviewStage:'DESIGN_STRICT_REVIEW'});",
+                      "return finalResult({scores,hardFailures:hard,evidence:{seedId:seed.seedId,seedGeneration:seed.generation||null,materialContractApplied:materialComposed,materialIds:materials,designPath:designPath||null,multiplayerDesignMode:seed.MULTIPLAYER_DESIGN_MODE,targetSessionMinutes:seed.TARGET_SESSION_MINUTES},reviewStage:'DESIGN_STRICT_REVIEW',passThreshold:DESIGN_PASS_THRESHOLD,rebuildBelow:60});",1)
+          t=t.replace("return finalResult({scores,hardFailures:hard,evidence:{source,evidenceFile,runtimePass:runtime?.pass===true,designTokenCoverage:fidelity,multiplayerDesignMode:multiMode,multiplayerEvidence:runtime?.multiplayer||null,sessionDepthMinutes:runtime?.sessionDepthMinutes||null},reviewStage:'IMPLEMENTATION_STRICT_REVIEW'});",
+                      "return finalResult({scores,hardFailures:hard,evidence:{source,evidenceFile,runtimePass:runtime?.pass===true,designTokenCoverage:fidelity,multiplayerDesignMode:multiMode,multiplayerEvidence:runtime?.multiplayer||null,sessionDepthMinutes:runtime?.sessionDepthMinutes||null},reviewStage:'IMPLEMENTATION_STRICT_REVIEW',passThreshold:IMPLEMENTATION_PASS_THRESHOLD,rebuildBelow:65});",1)
+          t=t.replace("console.log(`STRICT_REVIEW_PASS_THRESHOLD=${PASS_THRESHOLD}`);","console.log(`STRICT_REVIEW_PASS_THRESHOLD=${result.passThreshold}`);",1)
+          p.write_text(t)
+
+          # Promotion: design gate 80, Web implementation gate stays 90.
+          p=Path('tools/design-only-promotion-sync.mjs'); t=p.read_text()
+          t=t.replace('const PASS_THRESHOLD=80;\nconst EXCELLENT_THRESHOLD=90;','const DESIGN_PASS_THRESHOLD=80;\nconst WEB_PASS_THRESHOLD=90;\nconst EXCELLENT_THRESHOLD=90;',1)
+          t=t.replace('Number(review?.totalScore)>=PASS_THRESHOLD','Number(review?.totalScore)>=DESIGN_PASS_THRESHOLD',1)
+          t=t.replace('Number(item.strictImplementationScore)>=PASS_THRESHOLD','Number(item.strictImplementationScore)>=WEB_PASS_THRESHOLD',1)
+          t=t.replace('passThreshold:PASS_THRESHOLD','passThreshold:DESIGN_PASS_THRESHOLD')
+          p.write_text(t)
+
+          # Model calls must not hang indefinitely.
+          p=Path('tools/company-design-cycle.mjs'); t=p.read_text()
+          marker="const modelKeepAlive=clean(process.env.COMPANY_MODEL_KEEP_ALIVE||'2m');"
+          if marker not in t: raise SystemExit('PATCH_TARGET_MISSING:design-model-keepalive')
+          t=t.replace(marker,marker+"\nconst modelCallTimeoutMs=Math.max(15000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||75000));",1)
+          old="const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});"
+          if old not in t: raise SystemExit('PATCH_TARGET_MISSING:design-model-fetch')
+          t=t.replace(old,"const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),signal:AbortSignal.timeout(modelCallTimeoutMs)});",1)
+          p.write_text(t)
+
+          # Post-promotion artbook uses one explicitly prepared small editor model and a bounded call.
+          p=Path('tools/company-design-artbook.mjs'); t=p.read_text()
+          old="const editorModel=pool[hash(`${gameId}:design-artbook-editor`)%pool.length];"
+          if old not in t: raise SystemExit('PATCH_TARGET_MISSING:artbook-editor-model')
+          t=t.replace(old,"const requestedEditorModel=clean(process.env.ARTBOOK_EDITOR_MODEL);const editorModel=requestedEditorModel&&pool.includes(requestedEditorModel)?requestedEditorModel:pool[hash(`${gameId}:design-artbook-editor`)%pool.length];const artbookCallTimeoutMs=Math.max(15000,Number(process.env.ARTBOOK_MODEL_CALL_TIMEOUT_MS||60000));",1)
+          old="const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});"
+          if old not in t: raise SystemExit('PATCH_TARGET_MISSING:artbook-model-fetch')
+          t=t.replace(old,"const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),signal:AbortSignal.timeout(artbookCallTimeoutMs)});",1)
+          t=t.replace("const artbookPath=path.join(base,'core-artbook.json');const output={version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,editorRole:'ARTBOOK_EDITOR_AI'",
+                      "const artbookPath=path.join(base,'core-artbook.json');const promotedClass=clean(seedForGame(loadSeedState(),gameId)?.productionClass)||'DEVELOPMENT_CONFIRMED';const output={version:6,gameId,date,productionClass:promotedClass,tierAlias:2,tier:2,postPromotion:true,editorRole:'ARTBOOK_EDITOR_AI'",1)
+          t=t.replace("const publicPath=path.join('artbook-submissions',gameId,'current.json');writeJson(publicPath,{...output,gameName,createdAt:date,status:'completed-artbook',lifecycleState:'DESIGN_BASELINE'",
+                      "const publicPath=path.join('artbook-submissions',gameId,'current.json');writeJson(publicPath,{...output,gameName,createdAt:date,status:'completed-artbook',lifecycleState:'DEVELOPMENT_CONFIRMED'",1)
+          t=t.replace("const publicStatusPath=path.join('artbook-submissions',gameId,'status.json');writeJson(publicStatusPath,{version:3,gameId,gameName,date,productionClass:'DESIGN_ONLY'",
+                      "const publicStatusPath=path.join('artbook-submissions',gameId,'status.json');writeJson(publicStatusPath,{version:4,gameId,gameName,date,productionClass:promotedClass",1)
+          p.write_text(t)
+          PY
+
+          node --check tools/company-strict-production-review.mjs
+          node --check tools/design-only-promotion-sync.mjs
+          node --check tools/company-design-cycle.mjs
+          node --check tools/company-design-artbook.mjs
+          node -e "JSON.parse(require('fs').readFileSync('company-directive.json','utf8'))"
+
+      - name: Commit migrated policy and remove one-time workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'owner-policy-migration'
+          git config user.email 'owner-policy-migration@users.noreply.github.com'
+          git rm .github/workflows/owner-pass80-post-artbook-migration.yml
+          git add COMPANY_FLOW.md company-directive.json tools/company-strict-production-review.mjs tools/design-only-promotion-sync.mjs tools/company-design-cycle.mjs tools/company-design-artbook.mjs
+          git diff --cached --check
+          git commit -m 'policy: design pass 80 and move artbook after promotion'
+          git push origin HEAD:owner/design-pass80-fast-optimization-20260913
