@@ -546,11 +546,14 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-roblox-runtime'
           git config user.email 'actions@users.noreply.github.com'
+          git fetch --no-tags --depth=1 origin main
+          git show FETCH_HEAD:tools/company-development-roblox-runtime-persist.mjs > /tmp/company-development-roblox-runtime-persist.mjs
+          node --check /tmp/company-development-roblox-runtime-persist.mjs
           persisted=0
           for attempt in 1 2 3 4 5; do
             git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
             git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
-            node tools/company-development-roblox-runtime-persist.mjs development-queue.json /tmp/roblox-runtime-batch
+            node /tmp/company-development-roblox-runtime-persist.mjs development-queue.json /tmp/roblox-runtime-batch
             git add development-queue.json
             git diff --cached --check
             if git diff --cached --quiet; then
