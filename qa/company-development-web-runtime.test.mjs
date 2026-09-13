@@ -1,7 +1,7 @@
 // 파일명: qa/company-development-web-runtime.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {validateBootstrapHtml,buildContractSafePlayable,inferDevelopmentGenre,buildApprovedScopeGenerationPrompt} from '../tools/company-development-web-bootstrap.mjs';
+import {validateBootstrapHtml,buildContractSafePlayable,inferDevelopmentGenre,classifyApprovedScope} from '../tools/company-development-web-bootstrap.mjs';
 import {evaluateGameplayEvidence,scopeInteractionChanged} from '../tools/company-development-web-gameplay-validation.mjs';
 import {deriveApprovedScopeInventory,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
 
@@ -87,33 +87,50 @@ test('per-scope runtime interaction only counts when observable game state chang
   assert.equal(scopeInteractionChanged(before,changed),true);
 });
 
-test('contract recovery infers the locked GAME_SEED genre instead of inventing a new class',()=>{
-  const cases={ACTION_SURVIVAL_ROGUELITE:'SEED-ACTION_SURVIVAL_ROGUELITE-001',SINGLE_DEFENSE_STRATEGY:'SEED-SINGLE_DEFENSE_STRATEGY-001',PUZZLE:'SEED-PUZZLE-001',CASUAL:'SEED-CASUAL-001',IDLE_GROWTH_RPG:'SEED-IDLE_GROWTH_RPG-001',STORY_COMPLETE_RPG:'SEED-STORY_COMPLETE_RPG-001'};
+test('compiler infers locked GAME_SEED genre including Roblox categories',()=>{
+  const cases={
+    ACTION_SURVIVAL_ROGUELITE:'SEED-ACTION_SURVIVAL_ROGUELITE-001',
+    STORY_COMPLETE_RPG:'SEED-STORY_COMPLETE_RPG-001',
+    BATTLEGROUND_FIGHTING_SHOOTER:'SEED-ROBLOX-BATTLEGROUND_FIGHTING_SHOOTER-001',
+    SIMULATOR_TYCOON_INCREMENTAL:'SEED-ROBLOX-SIMULATOR_TYCOON_INCREMENTAL-001',
+    SURVIVAL_HORROR_ESCAPE:'SEED-ROBLOX-SURVIVAL_HORROR_ESCAPE-001',
+    OBBY_PARTY_MINIGAME:'SEED-ROBLOX-OBBY_PARTY_MINIGAME-001',
+    STORY_RPG_ADVENTURE_RPG:'SEED-ROBLOX-STORY_RPG_ADVENTURE_RPG-001',
+    ROLEPLAY_LIFE_AVATAR:'SEED-ROBLOX-ROLEPLAY_LIFE_AVATAR-001'
+  };
   for(const [genre,gameSeedId] of Object.entries(cases))assert.equal(inferDevelopmentGenre({baseline:{gameSeedId}}),genre);
 });
 
-test('deterministic recovery remains diagnostic only and cannot satisfy full approved-scope completion',()=>{
-  const cases=[['ACTION_SURVIVAL_ROGUELITE','생존 전투'],['SINGLE_DEFENSE_STRATEGY','방어 전략'],['PUZZLE','퍼즐'],['CASUAL','캐주얼'],['IDLE_GROWTH_RPG','성장 RPG'],['STORY_COMPLETE_RPG','스토리 RPG']];
-  for(const [genre,label] of cases){
-    const baseline={gameSeedId:`SEED-${genre}-001`,content:{identity:`${genre} Test`,coreFun:`${label} 핵심 재미`,coreLoop:[`${label} 탐색`,`${label} 실행`,`${label} 보상`],systems:['진행 시스템','보상 시스템']}};
-    const inventory=deriveApprovedScopeInventory(baseline);
-    const recovered=buildContractSafePlayable({gameId:`seed-${genre.toLowerCase()}`,gameName:`${genre} Test`,baseline});
-    const contract=validateBootstrapHtml(recovered.html,{scopeInventory:inventory});
-    assert.equal(recovered.generationMode,'DETERMINISTIC_FULL_SCOPE_RECOVERY');
-    assert.equal(contract.pass,false,`${genre}: deterministic proxy must not satisfy completion`);
-    assert.ok(contract.blockers.some(x=>x.startsWith('GENERIC_SCOPE_PROXY_FORBIDDEN:')));
-  }
+test('approved scope classifier maps gameplay meaning to distinct runtime modes',()=>{
+  assert.equal(classifyApprovedScope({path:'combat',label:'attack opponent'},0),'COMBAT');
+  assert.equal(classifyApprovedScope({path:'coreLoop[0]',label:'explore and reposition'},0),'MOVEMENT');
+  assert.equal(classifyApprovedScope({path:'progression',label:'upgrade loadout'},0),'PROGRESSION');
+  assert.equal(classifyApprovedScope({path:'economy',label:'collect resource'},0),'ECONOMY');
+  assert.equal(classifyApprovedScope({path:'objectives',label:'complete round goal'},0),'OBJECTIVE');
+  assert.equal(classifyApprovedScope({path:'mobileUx',label:'touch controls'},0),'MOBILE');
 });
 
-test('model generation prompt explicitly forbids generic scope proxy and assigns dedicated handlers',()=>{
-  const baseline={content:{coreFun:'combat',coreLoop:['engage','reposition'],mobileUx:'touch controls'}};
-  const inventory=deriveApprovedScopeInventory(baseline);
-  const prompt=buildApprovedScopeGenerationPrompt({gameId:'seed-test',gameName:'Test',baseline,artbook:{},inventory});
-  assert.ok(prompt.includes('data-action 속성을 절대 사용하지 마라'));
-  assert.ok(prompt.includes('GENERIC_SCOPE_PROXY_FORBIDDEN'));
-  for(let i=0;i<inventory.length;i++){
-    assert.ok(prompt.includes(inventory[i].id));
-    assert.ok(prompt.includes(`scopeHandler${i+1}`));
+test('deterministic compiler implements every approved scope without generic proxy',()=>{
+  const cases=[
+    ['BATTLEGROUND_FIGHTING_SHOOTER','combat, opponent, skill, cooldown'],
+    ['SIMULATOR_TYCOON_INCREMENTAL','collect resources and upgrade production'],
+    ['SURVIVAL_HORROR_ESCAPE','survive threats and escape'],
+    ['OBBY_PARTY_MINIGAME','move through checkpoints'],
+    ['STORY_RPG_ADVENTURE_RPG','explore fight and progress']
+  ];
+  for(const [genre,coreFun] of cases){
+    const baseline={gameSeedId:`SEED-ROBLOX-${genre}-001`,content:{identity:`${genre} Test`,coreFun,coreLoop:['explore or reposition','fight or execute challenge','receive reward and progress'],mobileUx:'touch controls'}};
+    const inventory=deriveApprovedScopeInventory(baseline);
+    const compiled=buildContractSafePlayable({gameId:`seed-${genre.toLowerCase()}`,gameName:`${genre} Test`,baseline});
+    const contract=validateBootstrapHtml(compiled.html,{scopeInventory:inventory});
+    assert.equal(compiled.generationMode,'DETERMINISTIC_FULL_SCOPE_IMPLEMENTATION');
+    assert.equal(contract.pass,true,`${genre}: ${contract.blockers.join(',')}`);
+    assert.doesNotMatch(compiled.html,/\bdata-action\s*=/i);
+    for(let i=0;i<inventory.length;i++){
+      assert.match(compiled.html,new RegExp(`data-scope-id=["']${inventory[i].id}["']`));
+      assert.ok(compiled.html.includes(`scopeHandler${i+1}`));
+      assert.ok(compiled.html.includes(`addEventListener('click',scopeHandler${i+1})`));
+    }
   }
 });
 
