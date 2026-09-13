@@ -743,3 +743,44 @@ jobs:
           echo 'ROBLOX_REGRESSION_PASS=NO'
           echo 'ROBLOX_FINAL_REVIEW_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
+      - name: Dispatch Roblox five-lead preflight and actual Studio continuation
+        if: always() && github.actor == 'github-actions[bot]'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-continuation-dispatch-queue.json
+          state="$(node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-dispatch-queue.json','utf8'));
+          let packagePending=0,preflightReady=0;
+          for(const item of q.items||[]){
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+            if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
+            const revision=String(item.robloxSourceCommit||'').trim();
+            const exactBuild=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&String(item.robloxBuildArtifactIdentity||'').startsWith('sha256:');
+            if(exactBuild){
+              if(item.robloxBuildPreflightPassed!==true&&!item.robloxBuildPreflightFailedAt)preflightReady++;
+              continue;
+            }
+            if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
+            if(String(item.canonicalState||'').toUpperCase()!=='WAITING_TARGET_PLATFORM_VALIDATION')continue;
+            const orchestrationMissing=String(item.robloxFailureSignature||'')==='roblox-package-result-missing';
+            if(Boolean(item.robloxBuildFailedAt)&&!orchestrationMissing)continue;
+            packagePending++;
+          }
+          process.stdout.write(`${packagePending} ${preflightReady}`);
+          NODE
+          )"
+          read -r package_pending preflight_ready <<<"$state"
+          echo "ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION=$package_pending"
+          echo "ROBLOX_PREFLIGHT_READY_COUNT=$preflight_ready"
+          if [[ "$package_pending" == '0' && "$preflight_ready" =~ ^[1-9][0-9]*$ ]]; then
+            gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'
+          else
+            echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=NO'
+          fi
