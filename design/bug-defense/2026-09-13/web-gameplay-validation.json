@@ -1,0 +1,190 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "target": "web",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 8,
+  "stateChanged": true,
+  "musicRuntime": {
+    "required": true,
+    "startsAfterUserGesture": true,
+    "muteControl": true,
+    "volumeControl": true,
+    "beforeState": "locked",
+    "afterState": "running",
+    "pass": true
+  },
+  "approvedScopeFullyImplemented": true,
+  "scopeCoverage": {
+    "pass": true,
+    "declaredCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-ba491306ea",
+      "scope-coreloop-0-014b29657d",
+      "scope-coreloop-1-0f6e4d9878",
+      "scope-coreloop-2-0c72abc1a2",
+      "scope-mobileux-7ca5754748"
+    ],
+    "interactedScopeIds": [
+      "scope-corefun-ba491306ea",
+      "scope-coreloop-0-014b29657d",
+      "scope-coreloop-1-0f6e4d9878",
+      "scope-coreloop-2-0c72abc1a2",
+      "scope-mobileux-7ca5754748"
+    ],
+    "blockers": []
+  },
+  "scopeInteractionResults": [
+    {
+      "scopeId": "scope-corefun-ba491306ea",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-0-014b29657d",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-1-0f6e4d9878",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-2-0c72abc1a2",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-mobileux-7ca5754748",
+      "clicked": true,
+      "stateChanged": true
+    }
+  ],
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "before": {
+    "text": "DEVELOPMENT_CONFIRMED · FULL APPROVED WEB COMPANION · 캐주얼 곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 처음부터 다시 설계한다. read the incoming insect wave and its threat pattern. 0 SCORE 100 HP 1 WAVE 0 RESOURCE 1 LEVEL 100 ENEMY HP 0 POSITION 0 COOLDOWN 승인 분량 전체 구현 1 read the incoming insect wave and its threat pattern. SURVIVAL 2 place or adjust defenders and spend limited resources on the highest-value counter. ECONOMY 3 survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision. PROGRESSION 4 place or adjust defenders and spend limited resources on the highest-value counter. ECONOMY 5 short-wave MOBILE 음악 켜짐 볼륨 STATUS: ready · TURN 0 · OBJECTIVE 0 · ENERGY 100",
+    "visibleButtons": 6,
+    "canvases": [],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "0SCORE100HP1WAVE0RESOURCE1LEVEL100ENEMY HP0POSITION0COOLDOWN",
+        "attrs": [
+          [
+            "data-state",
+            "turn-0"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "0"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "audioState": "locked",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-ba491306ea",
+      "scope-coreloop-0-014b29657d",
+      "scope-coreloop-1-0f6e4d9878",
+      "scope-coreloop-2-0c72abc1a2",
+      "scope-mobileux-7ca5754748"
+    ],
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "after": {
+    "text": "DEVELOPMENT_CONFIRMED · FULL APPROVED WEB COMPANION · 캐주얼 곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 처음부터 다시 설계한다. read the incoming insect wave and its threat pattern. 57 SCORE 100 HP 1 WAVE 40 RESOURCE 3 LEVEL 100 ENEMY HP 2 POSITION 0 COOLDOWN 승인 분량 전체 구현 1 read the incoming insect wave and its threat pattern. SURVIVAL 2 place or adjust defenders and spend limited resources on the highest-value counter. ECONOMY 3 survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision. PROGRESSION 4 place or adjust defenders and spend limited resources on the highest-value counter. ECONOMY 5 short-wave MOBILE 음악 켜짐 볼륨 STATUS: scope-mobileux-7ca5754748 · TURN 9 · OBJECTIVE 0 · ENERGY 100",
+    "visibleButtons": 6,
+    "canvases": [],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "57SCORE100HP1WAVE40RESOURCE3LEVEL100ENEMY HP2POSITION0COOLDOWN",
+        "attrs": [
+          [
+            "data-state",
+            "turn-9"
+          ],
+          [
+            "data-score",
+            "57"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "40"
+          ],
+          [
+            "data-progress",
+            "68"
+          ]
+        ]
+      }
+    ],
+    "audioState": "running",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-ba491306ea",
+      "scope-coreloop-0-014b29657d",
+      "scope-coreloop-1-0f6e4d9878",
+      "scope-coreloop-2-0c72abc1a2",
+      "scope-mobileux-7ca5754748"
+    ],
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "interactionCount=8",
+    "stateChanged=true",
+    "reloadVisible=true",
+    "mobileOverflow=true",
+    "musicRuntime=true",
+    "musicAfterGesture=true",
+    "approvedScope=true",
+    "approvedScopeCount=5",
+    "scopeStateChanged=5/5"
+  ],
+  "checkedAt": "2026-09-13T04:31:40.756Z",
+  "sourcePath": "web-games/bug-defense",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-bug-defense-34738062054-1/",
+  "screenshot": "/tmp/web-work/bug-defense/web-gameplay.png",
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-bug-defense-34738062054-1",
+  "policyDocument": "COMPANY_FLOW.md",
+  "requiredBeforeTargetPlatform": true
+}

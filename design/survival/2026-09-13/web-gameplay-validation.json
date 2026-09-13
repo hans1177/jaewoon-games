@@ -1,0 +1,226 @@
+{
+  "version": 4,
+  "gameId": "survival",
+  "target": "web",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 12,
+  "stateChanged": true,
+  "musicRuntime": {
+    "required": true,
+    "startsAfterUserGesture": true,
+    "muteControl": true,
+    "volumeControl": true,
+    "beforeState": "locked",
+    "afterState": "running",
+    "pass": true
+  },
+  "approvedScopeFullyImplemented": true,
+  "scopeCoverage": {
+    "pass": true,
+    "declaredCount": 9,
+    "visibleScopeIds": [
+      "scope-corefun-21c103795f",
+      "scope-coreloop-0-9387e3355a",
+      "scope-coreloop-1-bad0597bea",
+      "scope-coreloop-2-12c71ab202",
+      "scope-coreloop-3-09934ba1ba",
+      "scope-coreloop-4-b56d703351",
+      "scope-coreloop-5-8f6856a31d",
+      "scope-coreloop-6-8d58d36fc6",
+      "scope-mobileux-14b2f27a39"
+    ],
+    "interactedScopeIds": [
+      "scope-corefun-21c103795f",
+      "scope-coreloop-0-9387e3355a",
+      "scope-coreloop-1-bad0597bea",
+      "scope-coreloop-2-12c71ab202",
+      "scope-coreloop-3-09934ba1ba",
+      "scope-coreloop-4-b56d703351",
+      "scope-coreloop-5-8f6856a31d",
+      "scope-coreloop-6-8d58d36fc6",
+      "scope-mobileux-14b2f27a39"
+    ],
+    "blockers": []
+  },
+  "scopeInteractionResults": [
+    {
+      "scopeId": "scope-corefun-21c103795f",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-0-9387e3355a",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-1-bad0597bea",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-2-12c71ab202",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-3-09934ba1ba",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-4-b56d703351",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-5-8f6856a31d",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-6-8d58d36fc6",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-mobileux-14b2f27a39",
+      "clicked": true,
+      "stateChanged": true
+    }
+  ],
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "before": {
+    "text": "DEVELOPMENT_CONFIRMED · FULL APPROVED WEB COMPANION · 생존 탈출 개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다. Explore for resources while reading immediate survival risks. 0 SCORE 100 HP 1 WAVE 1 RESOURCE 1 LEVEL 100 ENEMY HP 0 POSITION 0 COOLDOWN 승인 분량 전체 구현 1 Explore for resources while reading immediate survival risks. MOVEMENT 2 Explore for resources while reading immediate survival risks. MOVEMENT 3 Choose what to gather, craft or conserve before conditions worsen. ECONOMY 4 Use the crafted advantage to reach a new area or survive a stronger threat, then repeat with new constraints. ECONOMY 5 exploreForResourcesWhileReadingImmediateSurvivalRisks MOVEMENT 6 gatherCraftConserveBeforeConditionsWorsen ECONOMY 7 craftedAdvantageToReachANewAreaOrSurviveStrongerThreat ECONOMY 8 repeatWithNewConstraints COMBAT 9 Survival MOBILE 음악 켜짐 볼륨 STATUS: ready · TURN 0 · OBJECTIVE 0 · ENERGY 100",
+    "visibleButtons": 10,
+    "canvases": [],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "0SCORE100HP1WAVE1RESOURCE1LEVEL100ENEMY HP0POSITION0COOLDOWN",
+        "attrs": [
+          [
+            "data-state",
+            "turn-0"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "1"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "audioState": "locked",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 9,
+    "visibleScopeIds": [
+      "scope-corefun-21c103795f",
+      "scope-coreloop-0-9387e3355a",
+      "scope-coreloop-1-bad0597bea",
+      "scope-coreloop-2-12c71ab202",
+      "scope-coreloop-3-09934ba1ba",
+      "scope-coreloop-4-b56d703351",
+      "scope-coreloop-5-8f6856a31d",
+      "scope-coreloop-6-8d58d36fc6",
+      "scope-mobileux-14b2f27a39"
+    ],
+    "scrollWidth": 409,
+    "viewportWidth": 409
+  },
+  "after": {
+    "text": "DEVELOPMENT_CONFIRMED · FULL APPROVED WEB COMPANION · 생존 탈출 개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다. Explore for resources while reading immediate survival risks. 97 SCORE 100 HP 2 WAVE 56 RESOURCE 2 LEVEL 82 ENEMY HP 2 POSITION 1 COOLDOWN 승인 분량 전체 구현 1 Explore for resources while reading immediate survival risks. MOVEMENT 2 Explore for resources while reading immediate survival risks. MOVEMENT 3 Choose what to gather, craft or conserve before conditions worsen. ECONOMY 4 Use the crafted advantage to reach a new area or survive a stronger threat, then repeat with new constraints. ECONOMY 5 exploreForResourcesWhileReadingImmediateSurvivalRisks MOVEMENT 6 gatherCraftConserveBeforeConditionsWorsen ECONOMY 7 craftedAdvantageToReachANewAreaOrSurviveStrongerThreat ECONOMY 8 repeatWithNewConstraints COMBAT 9 Survival MOBILE 음악 켜짐 볼륨 STATUS: scope-mobileux-14b2f27a39 · TURN 13 · OBJECTIVE 0 · ENERGY 100",
+    "visibleButtons": 10,
+    "canvases": [],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "97SCORE100HP2WAVE56RESOURCE2LEVEL82ENEMY HP2POSITION1COOLDOWN",
+        "attrs": [
+          [
+            "data-state",
+            "turn-13"
+          ],
+          [
+            "data-score",
+            "97"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "56"
+          ],
+          [
+            "data-progress",
+            "15"
+          ]
+        ]
+      }
+    ],
+    "audioState": "running",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 9,
+    "visibleScopeIds": [
+      "scope-corefun-21c103795f",
+      "scope-coreloop-0-9387e3355a",
+      "scope-coreloop-1-bad0597bea",
+      "scope-coreloop-2-12c71ab202",
+      "scope-coreloop-3-09934ba1ba",
+      "scope-coreloop-4-b56d703351",
+      "scope-coreloop-5-8f6856a31d",
+      "scope-coreloop-6-8d58d36fc6",
+      "scope-mobileux-14b2f27a39"
+    ],
+    "scrollWidth": 409,
+    "viewportWidth": 409
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "interactionCount=12",
+    "stateChanged=true",
+    "reloadVisible=true",
+    "mobileOverflow=true",
+    "musicRuntime=true",
+    "musicAfterGesture=true",
+    "approvedScope=true",
+    "approvedScopeCount=9",
+    "scopeStateChanged=9/9"
+  ],
+  "checkedAt": "2026-09-13T04:32:17.763Z",
+  "sourcePath": "web-games/survival",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-survival-34738062054-1/",
+  "screenshot": "/tmp/web-work/survival/web-gameplay.png",
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-survival-34738062054-1",
+  "policyDocument": "COMPANY_FLOW.md",
+  "requiredBeforeTargetPlatform": true
+}
