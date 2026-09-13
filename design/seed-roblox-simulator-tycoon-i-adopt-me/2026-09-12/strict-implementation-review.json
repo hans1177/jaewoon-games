@@ -33,21 +33,19 @@
   "hardFailures": [],
   "verdict": "PASS",
   "evidence": {
-    "source": "web-games/.autonomous-candidates/development-web-seed-roblox-simulator-tycoon-i-adopt-me-34782177769-2",
+    "source": "web-games/.autonomous-candidates/development-web-seed-roblox-simulator-tycoon-i-adopt-me-34783825931-1",
     "evidenceFile": "/tmp/web-work/seed-roblox-simulator-tycoon-i-adopt-me/web-promotion-revalidation.json",
     "runtimePass": true,
     "runtimeTarget": "web",
     "designTokenCoverage": 1,
     "multiplayerDesignMode": "UNKNOWN",
-    "multiplayerEvidence": {
-      "participants": 0,
-      "meaningfulLoopPassed": false
-    },
+    "multiplayerEvidence": null,
     "sessionDepthMinutes": 30,
     "structuredWebSessionRequired": true,
     "structuredWebSessionPassed": true,
     "sessionContract": {
       "pass": true,
+      "validationMode": "GAMEPLAY_MILESTONE_DEPTH",
       "minutes": 30,
       "validatedMinutes": 30,
       "stageCount": 4,
@@ -70,9 +68,10 @@
           30
         ]
       ],
+      "proofMode": "PROGRESSION_MILESTONES",
+      "directStageClick": false,
       "shapePass": true,
-      "depthPass": true,
-      "interactionPass": true,
+      "progressionProofPass": true,
       "stageGameplayPassed": true,
       "stageResults": [
         {
@@ -81,7 +80,12 @@
           "end": 5,
           "clicked": true,
           "completed": true,
-          "gameStateChanged": true
+          "trigger": "GAMEPLAY_MILESTONE",
+          "triggeredByGameplay": true,
+          "directStageClick": false,
+          "gameStateChanged": true,
+          "interactionIndex": 3,
+          "mechanicId": "ore-smelting"
         },
         {
           "stage": 2,
@@ -89,7 +93,12 @@
           "end": 15,
           "clicked": true,
           "completed": true,
-          "gameStateChanged": true
+          "trigger": "GAMEPLAY_MILESTONE",
+          "triggeredByGameplay": true,
+          "directStageClick": false,
+          "gameStateChanged": true,
+          "interactionIndex": 5,
+          "mechanicId": "factory-upgrade"
         },
         {
           "stage": 3,
@@ -97,7 +106,12 @@
           "end": 25,
           "clicked": true,
           "completed": true,
-          "gameStateChanged": true
+          "trigger": "GAMEPLAY_MILESTONE",
+          "triggeredByGameplay": true,
+          "directStageClick": false,
+          "gameStateChanged": true,
+          "interactionIndex": 16,
+          "mechanicId": "zone-unlock"
         },
         {
           "stage": 4,
@@ -105,7 +119,12 @@
           "end": 30,
           "clicked": true,
           "completed": true,
-          "gameStateChanged": true
+          "trigger": "GAMEPLAY_MILESTONE",
+          "triggeredByGameplay": true,
+          "directStageClick": false,
+          "gameStateChanged": true,
+          "interactionIndex": 29,
+          "mechanicId": "zone-unlock"
         }
       ]
     },
@@ -123,5 +142,5 @@
     "learningRecordRequired": true,
     "improvementPriority": "TOP_3_SCORE_GAPS"
   },
-  "reviewedAt": "2026-09-13T20:59:57.630Z"
+  "reviewedAt": "2026-09-13T21:28:45.692Z"
 }

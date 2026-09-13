@@ -1,6 +1,6 @@
 {
-  "version": 10,
-  "validationSchemaVersion": 10,
+  "version": 11,
+  "validationSchemaVersion": 11,
   "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
   "target": "web",
   "status": "PASS",
@@ -8,7 +8,7 @@
   "validated": true,
   "realEvidenceExists": true,
   "gameplayInteractionPerformed": true,
-  "interactionCount": 13,
+  "interactionCount": 29,
   "stateChanged": true,
   "musicRuntime": {
     "required": true,
@@ -37,31 +37,43 @@
       "scope-coreloop-2-4cc22b4bf7",
       "scope-mobileux-daeb36567f"
     ],
+    "mechanicBindings": [
+      "ore-extraction",
+      "ore-smelting",
+      "market-sale",
+      "factory-upgrade",
+      "automation-drone"
+    ],
     "blockers": []
   },
   "scopeInteractionResults": [
     {
       "scopeId": "scope-corefun-b56c774462",
+      "mechanicId": "ore-extraction",
       "clicked": true,
       "stateChanged": true
     },
     {
       "scopeId": "scope-coreloop-0-3574de4c31",
+      "mechanicId": "ore-smelting",
       "clicked": true,
       "stateChanged": true
     },
     {
       "scopeId": "scope-coreloop-1-886c0687be",
+      "mechanicId": "market-sale",
       "clicked": true,
       "stateChanged": true
     },
     {
       "scopeId": "scope-coreloop-2-4cc22b4bf7",
+      "mechanicId": "factory-upgrade",
       "clicked": true,
       "stateChanged": true
     },
     {
       "scopeId": "scope-mobileux-daeb36567f",
+      "mechanicId": "automation-drone",
       "clicked": true,
       "stateChanged": true
     }
@@ -72,9 +84,41 @@
     "height": 844,
     "touch": true
   },
+  "sourceFootprint": {
+    "pass": true,
+    "implementationClass": "DEDICATED",
+    "totalBytes": 13898,
+    "scriptBytes": 6507,
+    "mechanicIds": [
+      "ore-extraction",
+      "ore-smelting",
+      "market-sale",
+      "factory-upgrade",
+      "automation-drone",
+      "zone-unlock",
+      "heat-management"
+    ],
+    "mechanicCount": 7,
+    "systemCount": 7,
+    "proofMode": "PROGRESSION_MILESTONES",
+    "directStageControl": "false",
+    "stageButtons": false,
+    "proxyMarkers": 0,
+    "blockers": []
+  },
+  "substanceGate": {
+    "pass": true,
+    "implementationClass": "DEDICATED",
+    "totalBytes": 13898,
+    "executableBytes": 6507,
+    "mechanicCount": 7,
+    "directSessionControls": 0,
+    "proxyMarkers": 0
+  },
   "sessionDepthMinutes": 30,
   "sessionContract": {
     "pass": true,
+    "validationMode": "GAMEPLAY_MILESTONE_DEPTH",
     "minutes": 30,
     "validatedMinutes": 30,
     "stageCount": 4,
@@ -97,9 +141,10 @@
         30
       ]
     ],
+    "proofMode": "PROGRESSION_MILESTONES",
+    "directStageClick": false,
     "shapePass": true,
-    "depthPass": true,
-    "interactionPass": true,
+    "progressionProofPass": true,
     "stageGameplayPassed": true,
     "stageResults": [
       {
@@ -108,7 +153,12 @@
         "end": 5,
         "clicked": true,
         "completed": true,
-        "gameStateChanged": true
+        "trigger": "GAMEPLAY_MILESTONE",
+        "triggeredByGameplay": true,
+        "directStageClick": false,
+        "gameStateChanged": true,
+        "interactionIndex": 3,
+        "mechanicId": "ore-smelting"
       },
       {
         "stage": 2,
@@ -116,7 +166,12 @@
         "end": 15,
         "clicked": true,
         "completed": true,
-        "gameStateChanged": true
+        "trigger": "GAMEPLAY_MILESTONE",
+        "triggeredByGameplay": true,
+        "directStageClick": false,
+        "gameStateChanged": true,
+        "interactionIndex": 5,
+        "mechanicId": "factory-upgrade"
       },
       {
         "stage": 3,
@@ -124,7 +179,12 @@
         "end": 25,
         "clicked": true,
         "completed": true,
-        "gameStateChanged": true
+        "trigger": "GAMEPLAY_MILESTONE",
+        "triggeredByGameplay": true,
+        "directStageClick": false,
+        "gameStateChanged": true,
+        "interactionIndex": 16,
+        "mechanicId": "zone-unlock"
       },
       {
         "stage": 4,
@@ -132,40 +192,42 @@
         "end": 30,
         "clicked": true,
         "completed": true,
-        "gameStateChanged": true
+        "trigger": "GAMEPLAY_MILESTONE",
+        "triggeredByGameplay": true,
+        "directStageClick": false,
+        "gameStateChanged": true,
+        "interactionIndex": 29,
+        "mechanicId": "zone-unlock"
       }
     ]
   },
-  "multiplayer": {
-    "participants": 0,
-    "meaningfulLoopPassed": false
+  "terminalOutcome": {
+    "required": true,
+    "reached": true,
+    "result": "victory"
   },
+  "multiplayer": null,
   "before": {
-    "text": "성장 시뮬레이터 · 실제 플레이 Web 게임 Pocket Foundry collect, upgrade, income, unlock 0 SCORE 100 HP 1 WAVE 12 RESOURCE 1 LEVEL 100 ENEMY 0 POSITION 0 OBJECTIVE 목표: 레벨 12 collect, upgrade, income, unlock PROGRESSION · 도입 Perform a simple repeatable action to collect re ECONOMY · 핵심 루프 Spend earned resources on upgrades, automation, PROGRESSION · 난도 상승 Unlock a new area, tier, collection target, or p PROGRESSION · 결전 None MOBILE 음악 켜짐 볼륨 게임 시작 · 레벨 12 · 진행 1/12",
-    "visibleButtons": 6,
+    "text": "성장 시뮬레이터 · 공장 운영 Pocket Foundry collect, upgrade, income, unlock 0 ORE 0 INGOT 8 COINS 1 FACTORY 0 DRONES 1 ZONE 0 HEAT 0 SCORE 최종 목표: 공장 Lv.3 + 드론 1기 + 구역 3 광맥 채굴 광석을 직접 채굴한다. 제련로 가동 광석 4개를 주괴로 만든다. 주괴 판매 주괴를 코인으로 바꾼다. 설비 업그레이드 채굴과 제련 효율을 높인다. 자동화 드론 행동마다 생산을 보조한다. 새 구역 해금 광맥과 생산 보너스를 확장한다. 냉각 시스템 열을 낮춰 가동 중단을 피한다. 0–5분 · 첫 생산 채굴과 제련을 실제 완료. 5–15분 · 경제 루프 판매와 설비 업그레이드 연결. 15–25분 · 자동화 드론과 두 번째 구역 확보. 25–30분 · 최종 확장 공장 Lv.3, 드론, 구역 3 달성. 음악 켜짐 볼륨 공장 가동 준비",
     "canvases": [
-      "560x260:AosHIxjNzlE6vnQMwe01vADHp8iHjHAUdYARzp98kCcQhMPxcf/Jol+AR2k8zZwfJTwcHxKCw0YGkz7/Eoba+BkXMBpcwSOXpZ0XRttgU5BuJ5kKeDg+ZTycH2U8nB9lPPqKH/W4Jt3zL+OdcEnS8XF8NH0lPtTLocSP/wcAAP//NxgI2wAAAAZJREFUAwAdbEQuHR9RpgAAAABJRU5ErkJggg=="
+      "620x290:80AsKSncfDB3+IDDWm55Tan79c8BWy6M9nnEGkfa9T/ph8Od49XYCSJ/u8t8OA0sGtVmfVgfWQuZw0APZWhfL44XEfPJOhALbQMeOXzgK5aPXusng/DzJzjMRX38fwAAAP//SekQDAAAAAZJREFUAwDXsAuKJianqwAAAABJRU5ErkJggg=="
     ],
     "dataState": [
       {
         "tag": "SECTION",
-        "text": "0SCORE100HP1WAVE12RESOURCE1LEVEL100ENEMY0POSITION0OBJECTIVE",
+        "text": "0ORE0INGOT8COINS1FACTORY0DRONES1ZONE0HEAT0SCORE",
         "attrs": [
           [
             "data-state",
-            "turn-0"
+            "running"
           ],
           [
             "data-score",
             "0"
           ],
           [
-            "data-health",
-            "100"
-          ],
-          [
             "data-resource",
-            "12"
+            "8"
           ],
           [
             "data-progress",
@@ -174,6 +236,7 @@
         ]
       }
     ],
+    "visibleButtons": 8,
     "audioState": "locked",
     "muteControls": 1,
     "volumeControls": 1,
@@ -185,80 +248,96 @@
       "scope-coreloop-2-4cc22b4bf7",
       "scope-mobileux-daeb36567f"
     ],
+    "mechanicBindings": [
+      "ore-extraction",
+      "ore-smelting",
+      "market-sale",
+      "factory-upgrade",
+      "automation-drone"
+    ],
     "sessionDepthMinutes": 30,
+    "sessionProofMode": "PROGRESSION_MILESTONES",
+    "sessionDirectControl": "false",
     "sessionStages": [
       {
         "stage": 1,
         "start": 0,
         "end": 5,
         "complete": false,
-        "text": "collect, upgrade, income, unlockPROGRESSION · 도입"
+        "tag": "DIV",
+        "text": "0–5분 · 첫 생산채굴과 제련을 실제 완료."
       },
       {
         "stage": 2,
         "start": 5,
         "end": 15,
         "complete": false,
-        "text": "Perform a simple repeatable action to collect reECONOMY · 핵심 루프"
+        "tag": "DIV",
+        "text": "5–15분 · 경제 루프판매와 설비 업그레이드 연결."
       },
       {
         "stage": 3,
         "start": 15,
         "end": 25,
         "complete": false,
-        "text": "Spend earned resources on upgrades, automation, PROGRESSION · 난도 상승"
+        "tag": "DIV",
+        "text": "15–25분 · 자동화드론과 두 번째 구역 확보."
       },
       {
         "stage": 4,
         "start": 25,
         "end": 30,
         "complete": false,
-        "text": "Unlock a new area, tier, collection target, or pPROGRESSION · 결전"
+        "tag": "DIV",
+        "text": "25–30분 · 최종 확장공장 Lv.3, 드론, 구역 3 달성."
       }
     ],
     "sessionCurrentStage": 0,
     "sessionCompletedStages": 0,
-    "multiplayer": {
-      "participants": 0,
-      "meaningfulLoopPassed": false
+    "runResult": "running",
+    "values": {
+      "ore": 0,
+      "ingot": 0,
+      "coins": 8,
+      "factory": 1,
+      "drones": 0,
+      "zone": 1,
+      "heat": 0,
+      "score": 0
     },
     "scrollWidth": 390,
     "viewportWidth": 390
   },
   "after": {
-    "text": "성장 시뮬레이터 · 실제 플레이 Web 게임 Pocket Foundry collect, upgrade, income, unlock 104 SCORE 56 HP 1 WAVE 11 RESOURCE 11 LEVEL 100 ENEMY 2 POSITION 0 OBJECTIVE 목표: 레벨 12 collect, upgrade, income, unlock PROGRESSION · 도입 Perform a simple repeatable action to collect re ECONOMY · 핵심 루프 Spend earned resources on upgrades, automation, PROGRESSION · 난도 상승 Unlock a new area, tier, collection target, or p PROGRESSION · 결전 None MOBILE 음악 켜짐 볼륨 Spend earned resources on upgrades, automation, · 레벨 12 · 진행 11/12",
-    "visibleButtons": 6,
+    "text": "성장 시뮬레이터 · 공장 운영 Pocket Foundry collect, upgrade, income, unlock 4 ORE 1 INGOT 3 COINS 3 FACTORY 1 DRONES 3 ZONE 55 HEAT 363 SCORE 최종 목표: 공장 Lv.3 + 드론 1기 + 구역 3 광맥 채굴 광석을 직접 채굴한다. 제련로 가동 광석 4개를 주괴로 만든다. 주괴 판매 주괴를 코인으로 바꾼다. 설비 업그레이드 채굴과 제련 효율을 높인다. 자동화 드론 행동마다 생산을 보조한다. 새 구역 해금 광맥과 생산 보너스를 확장한다. 냉각 시스템 열을 낮춰 가동 중단을 피한다. 0–5분 · 첫 생산 채굴과 제련을 실제 완료. 5–15분 · 경제 루프 판매와 설비 업그레이드 연결. 15–25분 · 자동화 드론과 두 번째 구역 확보. 25–30분 · 최종 확장 공장 Lv.3, 드론, 구역 3 달성. 음악 켜짐 볼륨 목표 달성 · VICTORY",
     "canvases": [
-      "560x260:NQJvDyYwmY2j8/ihYwieX+MFOJ+iHjLiKPoAE1w/eSdPEMThfDx+shgX4FLqTzPXR4mH86Eg2G1kMOvvX2Ko9Z9xAKPOFVxyW5p5YbJ1NgXr+RRTgYfzKfNwfZR5uD7KPPpKH/Vck+/ll3knLsk6H+ej11fSQ70dSvr4fwAAAP//Z8L11wAAAAZJREFUAwAcp0QuOFlPYgAAAABJRU5ErkJggg=="
+      "620x290:GlxQbuNIg7PxoI80uKDcxpEGZ+NBH2lwQbmNIw3OxoM+0uCCchtHGpyNB32kwQXlNo40OBsP+kiDC8ptHGlwNh70kQYXlNs40uBsPOgjDS4ot3Gkwdl40EcaXIP8PwAAAP//499+6wAAAAZJREFUAwDZKPZVgodpZQAAAABJRU5ErkJggg=="
     ],
     "dataState": [
       {
         "tag": "SECTION",
-        "text": "104SCORE56HP1WAVE11RESOURCE11LEVEL100ENEMY2POSITION0OBJECTIVE",
+        "text": "4ORE1INGOT3COINS3FACTORY1DRONES3ZONE55HEAT363SCORE",
         "attrs": [
           [
             "data-state",
-            "turn-13"
+            "victory"
           ],
           [
             "data-score",
-            "104"
-          ],
-          [
-            "data-health",
-            "56"
+            "363"
           ],
           [
             "data-resource",
-            "11"
+            "3"
           ],
           [
             "data-progress",
-            "19"
+            "100"
           ]
         ]
       }
     ],
+    "visibleButtons": 8,
     "audioState": "running",
     "muteControls": 1,
     "volumeControls": 1,
@@ -270,42 +349,62 @@
       "scope-coreloop-2-4cc22b4bf7",
       "scope-mobileux-daeb36567f"
     ],
+    "mechanicBindings": [
+      "ore-extraction",
+      "ore-smelting",
+      "market-sale",
+      "factory-upgrade",
+      "automation-drone"
+    ],
     "sessionDepthMinutes": 30,
+    "sessionProofMode": "PROGRESSION_MILESTONES",
+    "sessionDirectControl": "false",
     "sessionStages": [
       {
         "stage": 1,
         "start": 0,
         "end": 5,
         "complete": true,
-        "text": "collect, upgrade, income, unlockPROGRESSION · 도입"
+        "tag": "DIV",
+        "text": "0–5분 · 첫 생산채굴과 제련을 실제 완료."
       },
       {
         "stage": 2,
         "start": 5,
         "end": 15,
         "complete": true,
-        "text": "Perform a simple repeatable action to collect reECONOMY · 핵심 루프"
+        "tag": "DIV",
+        "text": "5–15분 · 경제 루프판매와 설비 업그레이드 연결."
       },
       {
         "stage": 3,
         "start": 15,
         "end": 25,
         "complete": true,
-        "text": "Spend earned resources on upgrades, automation, PROGRESSION · 난도 상승"
+        "tag": "DIV",
+        "text": "15–25분 · 자동화드론과 두 번째 구역 확보."
       },
       {
         "stage": 4,
         "start": 25,
         "end": 30,
         "complete": true,
-        "text": "Unlock a new area, tier, collection target, or pPROGRESSION · 결전"
+        "tag": "DIV",
+        "text": "25–30분 · 최종 확장공장 Lv.3, 드론, 구역 3 달성."
       }
     ],
-    "sessionCurrentStage": 3,
+    "sessionCurrentStage": 4,
     "sessionCompletedStages": 4,
-    "multiplayer": {
-      "participants": 0,
-      "meaningfulLoopPassed": false
+    "runResult": "victory",
+    "values": {
+      "ore": 4,
+      "ingot": 1,
+      "coins": 3,
+      "factory": 3,
+      "drones": 1,
+      "zone": 3,
+      "heat": 55,
+      "score": 363
     },
     "scrollWidth": 390,
     "viewportWidth": 390
@@ -317,24 +416,21 @@
   "failedRequests": [],
   "badResponses": [],
   "evidence": [
-    "interactionCount=13",
-    "stateChanged=true",
-    "reloadVisible=true",
-    "mobileOverflow=true",
-    "musicRuntime=true",
+    "interactionCount=29",
+    "mechanics=7",
+    "sourceBytes=13898",
+    "scriptBytes=6507",
     "approvedScope=true",
+    "sessionProofMode=PROGRESSION_MILESTONES",
     "sessionDepthMinutes=30",
-    "sessionStages=4",
-    "sessionStagesCompleted=4",
-    "sessionStageGameplay=true",
-    "multiplayerParticipants=0"
+    "terminalOutcome=victory"
   ],
-  "checkedAt": "2026-09-13T20:59:53.928Z",
+  "checkedAt": "2026-09-13T21:28:42.123Z",
   "sourcePath": "web-games/seed-roblox-simulator-tycoon-i-adopt-me",
-  "sourceIndexSha256": "591866f4e4ab6233f225d3d55ae8729586c97dd47e5ecc632cfff83fb6bfaef1",
-  "sourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
+  "sourceIndexSha256": "57a20cf8e60ad5817e0811fec38b498c54a5cc20be8c50377b4e0854734a12a7",
+  "sourceRevision": "4145eff6a3b7d92ee1e84137e0736cc479b1a9cc",
   "designBaselineSha256": "181ca99542231b3546e2943c8c1a5d722829434eceb2ad1f3164b84056112d7e",
-  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-simulator-tycoon-i-adopt-me-34782177769-2/",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-simulator-tycoon-i-adopt-me-34783825931-1/",
   "screenshot": "/tmp/web-work/seed-roblox-simulator-tycoon-i-adopt-me/web-gameplay.png",
   "strictReviewPath": "/tmp/web-work/seed-roblox-simulator-tycoon-i-adopt-me/strict-implementation-review.json",
   "strictReview": {
@@ -342,7 +438,7 @@
     "totalScore": 100,
     "hardFailures": [],
     "improvementTargets": [],
-    "reviewedAt": "2026-09-13T20:59:54.034Z",
+    "reviewedAt": "2026-09-13T21:28:42.251Z",
     "formalPassThreshold": 90,
     "homepageTestThreshold": 80
   },
@@ -362,11 +458,14 @@
     "secondScore": 100,
     "sourceHashMatch": true,
     "baselineHashMatch": true,
-    "secondCheckedAt": "2026-09-13T20:59:57.592Z",
+    "secondCheckedAt": "2026-09-13T21:28:45.658Z",
     "secondSessionPass": true,
+    "secondFootprintPass": true,
+    "secondSubstancePass": true,
+    "secondTerminalReached": true,
     "error": null
   },
-  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-simulator-tycoon-i-adopt-me-34782177769-2",
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-simulator-tycoon-i-adopt-me-34783825931-1",
   "policyDocument": "COMPANY_FLOW.md",
   "requiredBeforeTargetPlatform": true
 }
