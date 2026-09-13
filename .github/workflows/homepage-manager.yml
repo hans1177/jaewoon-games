@@ -106,17 +106,18 @@ jobs:
           for file in \
             index.html company.html game-catalog.json company-status.json \
             public-release-baselines.json game-artbooks.json \
-            assets/homepage-enhancements.js manifest.webmanifest install.html sw.js offline.html command.html \
+            assets/homepage-enhancements.js assets/homepage-enhancements-core.js manifest.webmanifest install.html sw.js offline.html command.html \
             COMPANY_FLOW.md company-directive.json HOMEPAGE_OPERATIONS.md REMOTE_AUTOMATION.md _headers; do
             test -f "$file"
           done
           node -e "for (const file of ['game-catalog.json','company-status.json','public-release-baselines.json','game-artbooks.json','company-directive.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
           node --check assets/homepage-enhancements.js
+          node --check assets/homepage-enhancements-core.js
           node --check tools/homepage-manager.mjs
           grep -Fq '/assets/homepage-enhancements.js' index.html
-          grep -Fq 'const SYNC_INTERVAL_MS=5000;' assets/homepage-enhancements.js
-          grep -Fq "const RAW_MAIN_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/main';" assets/homepage-enhancements.js
-          grep -Fq "const RAW_RUNTIME_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/company-runtime';" assets/homepage-enhancements.js
+          grep -Fq 'const SYNC_INTERVAL_MS=5000;' assets/homepage-enhancements-core.js
+          grep -Fq "const RAW_MAIN_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/main';" assets/homepage-enhancements-core.js
+          grep -Fq "const RAW_RUNTIME_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/company-runtime';" assets/homepage-enhancements-core.js
           node <<'NODE'
           const fs=require('fs');
           const catalog=JSON.parse(fs.readFileSync(process.env.HOMEPAGE_CATALOG_PATH||'game-catalog.json','utf8'));
