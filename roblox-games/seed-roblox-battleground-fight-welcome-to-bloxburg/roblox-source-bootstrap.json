@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+  "gameName": "Vector Clash",
+  "platform": "ROBLOX",
+  "policyDocument": "COMPANY_FLOW.md",
+  "stage": "TARGET_PLATFORM_SOURCE_BIND",
+  "sourcePath": "roblox-games/seed-roblox-battleground-fight-welcome-to-bloxburg",
+  "sourceValidationPassed": true,
+  "runtimePassed": false,
+  "independentQaPassed": false,
+  "regressionPassed": false,
+  "releaseClaim": false,
+  "saveRequired": false,
+  "approvedScopeCount": 5,
+  "generatedFiles": [
+    "shared/GameConfig.luau",
+    "server/Game.server.luau",
+    "client/Game.client.luau",
+    "default.project.json"
+  ],
+  "generationMode": "DETERMINISTIC_FULL_SCOPE_IMPLEMENTATION",
+  "model": "none",
+  "modelUsed": false,
+  "modelAttempts": 0,
+  "modelContractFailures": [],
+  "implementationNotes": [
+    "approved scope count=5",
+    "each approved scope is compiled to a dedicated server-authoritative handler",
+    "one validated RemoteEvent transports scope ids across the client/server boundary",
+    "mobile-first ScreenGui exposes every approved scope action",
+    "no DataStore added because locked baseline does not require persistence",
+    "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
+  ],
+  "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
+  "createdAt": "2026-09-13T03:16:40.934Z"
+}
