@@ -77,3 +77,11 @@ test('canonical router dedupes an already queued or running Unity executor for t
   assert.match(router,/gh workflow run company-development-unity-runtime\.yml/);
   assert.match(router,/\.github\/workflows\/company-development-unity-runtime\.yml/);
 });
+
+test('canonical DEVELOPMENT router hands Roblox SOURCE_BIND and technical validation to the existing Roblox executor',()=>{
+  assert.match(router,/const retrySourceBind=status==='ACTIVE'&&step==='TARGET_PLATFORM_SOURCE_BIND'/);
+  assert.match(router,/const waiting=status==='ACTIVE'&&step==='TARGET_PLATFORM_TECHNICAL_VALIDATION'/);
+  assert.match(router,/dispatch_roblox=\$\{platforms\.has\('ROBLOX'\)\?'true':'false'\}/);
+  assert.match(router,/gh workflow run company-development-roblox-runtime\.yml/);
+  assert.match(router,/ROBLOX_EXECUTOR_DISPATCH=DEDUPED_EXISTING_RUN/);
+});
