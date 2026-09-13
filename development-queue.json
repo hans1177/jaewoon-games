@@ -209,19 +209,23 @@
       "webValidationRequired": true,
       "musicValidationRequired": true,
       "status": "ACTIVE",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "WAITING_TARGET_PLATFORM_REVALIDATION",
       "sourcePath": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me",
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:50:13.790Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-source-bootstrap:source-generation-failed"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:38:48.968Z",
-      "updatedAt": "2026-09-13T02:54:30.580Z",
+      "updatedAt": "2026-09-13T03:03:21.738Z",
       "webValidationEvidencePath": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
-      "routeRevision": "c712b8f9264a04caedc39b73c229686496626f034307a0a9f4deddacda33e971"
+      "routeRevision": "c712b8f9264a04caedc39b73c229686496626f034307a0a9f4deddacda33e971",
+      "robloxSourceBootstrapFailedAt": "2026-09-13T03:03:21.738Z",
+      "robloxRuntimePassed": false
     },
     {
       "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
@@ -238,19 +242,23 @@
       "webValidationRequired": true,
       "musicValidationRequired": true,
       "status": "ACTIVE",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "WAITING_TARGET_PLATFORM_REVALIDATION",
       "sourcePath": "roblox-games/seed-roblox-battleground-fight-welcome-to-bloxburg",
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:50:27.545Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-source-bootstrap:source-generation-failed"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:37:05.981Z",
-      "updatedAt": "2026-09-13T02:54:30.580Z",
+      "updatedAt": "2026-09-13T03:03:21.738Z",
       "webValidationEvidencePath": "design/seed-roblox-battleground-fight-welcome-to-bloxburg/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
-      "routeRevision": "71b64882ecb3c53b3bc53dbd830136a0950df02d52914d5e28042199e84737c6"
+      "routeRevision": "71b64882ecb3c53b3bc53dbd830136a0950df02d52914d5e28042199e84737c6",
+      "robloxSourceBootstrapFailedAt": "2026-09-13T03:03:21.738Z",
+      "robloxRuntimePassed": false
     },
     {
       "gameId": "seed-roblox-survival-horror-es-doors",
@@ -340,7 +348,7 @@
       "routeRevision": "b5eede6996b22447479459d3fe6ca6eda9fad20ba0c4827910704c05a7627745"
     }
   ],
-  "updatedAt": "2026-09-13T03:00:37.830Z",
+  "updatedAt": "2026-09-13T03:03:21.738Z",
   "routerContractVersion": 2,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -348,5 +356,6 @@
   "webValidationPolicy": "REQUIRED_BEFORE_TARGET_PLATFORM",
   "webValidationContractVersion": 2,
   "webGateRequired": true,
-  "webValidationParallelism": 2
+  "webValidationParallelism": 2,
+  "robloxSourceParallelism": 2
 }
