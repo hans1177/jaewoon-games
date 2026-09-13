@@ -1,19 +1,30 @@
 {
-  "version": 4,
-  "updatedAt": "2026-09-13",
+  "version": 5,
+  "updatedAt": "2026-09-13T18:22:17.849Z",
   "policyDocument": "COMPANY_FLOW.md",
   "officialCardRegistrationRequiresPromotionPass": true,
   "homepageTestShelf": {
     "limit": 30,
-    "order": "STRICT_IMPLEMENTATION_SCORE_DESC",
     "minimumScore": 80,
+    "minimumValidationSchema": 10,
+    "order": "STRICT_IMPLEMENTATION_SCORE_DESC",
     "requiresScore": true,
     "requiresWebGame": true,
     "requiresArtbook": true,
+    "requiresFreshSourceHash": true,
+    "requiresFreshDesignBaselineHash": true,
+    "requiresStructured30MinuteEvidence": true,
     "hardGatesRequired": true,
-    "requiresFormalImplementationPass": false,
     "officialCard": false,
-    "promotionRequiredForOfficialCard": true
+    "promotionRequiredForOfficialCard": true,
+    "cutlineScore": null,
+    "replacementPolicy": "STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE;TIE_PRESERVES_VALID_INCUMBENT",
+    "tieBreak": [
+      "EXISTING_TOP30_RANK",
+      "PROMOTION_REVALIDATION_PASS",
+      "LATEST_VALIDATION",
+      "GAME_ID"
+    ]
   },
   "candidates": []
 }
