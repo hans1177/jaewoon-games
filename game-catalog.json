@@ -1,13 +1,9 @@
 {
-  "version": 17,
+  "version": 18,
   "updatedAt": "2026-09-13",
   "classificationPolicy": {
     "canonicalField": "productionClass",
-    "canonicalClasses": [
-      "DESIGN_ONLY",
-      "DEVELOPMENT_CONFIRMED",
-      "RELEASE_CONFIRMED"
-    ],
+    "canonicalClasses": ["DESIGN_ONLY", "DEVELOPMENT_CONFIRMED", "RELEASE_CONFIRMED"],
     "membership": "DYNAMIC_EVIDENCE",
     "counts": "DERIVED_FROM_CURRENT_MEMBERSHIP"
   },
@@ -18,7 +14,8 @@
       "description": "작은 세계에서 살아남는 생존 게임",
       "genre": ["생존", "제작", "탐험"],
       "image": "assets/insect-main-v3.webp",
-      "hasWebArchive": false,
+      "webPath": "/web-games/insect-survival/",
+      "hasWebArchive": true,
       "featured": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
@@ -27,9 +24,9 @@
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "디자인 전용 · Web 원본 없음",
-      "homepageRecentWork": "Web 원본이 삭제되어 홈페이지 플레이 링크를 제거했습니다.",
-      "homepageWebPlayable": false
+      "homepageStage": "디자인 전용 · Web 플레이 가능",
+      "homepageRecentWork": "Owner 지시에 따라 정식 Web 생존 버전을 다시 제작해 홈페이지에 연결했습니다.",
+      "homepageWebPlayable": true
     },
     {
       "id": "bug-defense",
@@ -37,7 +34,8 @@
       "description": "30웨이브 곤충 디펜스",
       "genre": ["웨이브", "전략", "곤충"],
       "image": "assets/insect-war-v2.webp",
-      "hasWebArchive": false,
+      "webPath": "/web-games/bug-defense/",
+      "hasWebArchive": true,
       "featured": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
@@ -46,9 +44,9 @@
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "디자인 전용 · Web 원본 없음",
-      "homepageRecentWork": "Web 원본이 삭제되어 홈페이지 플레이 링크를 제거했습니다.",
-      "homepageWebPlayable": false
+      "homepageStage": "디자인 전용 · Web 플레이 가능",
+      "homepageRecentWork": "Owner 지시에 따라 30웨이브 정식 Web 디펜스를 다시 제작해 홈페이지에 연결했습니다.",
+      "homepageWebPlayable": true
     },
     {
       "id": "daechung-rpg",
@@ -79,15 +77,16 @@
       "description": "채집과 제작 중심 생존 게임",
       "genre": ["생존", "채집"],
       "image": "assets/title-survival.svg",
-      "hasWebArchive": false,
+      "webPath": "/web-games/survival/",
+      "hasWebArchive": true,
       "featured": false,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-baseline",
-      "homepageStage": "디자인 전용 · Web 원본 없음",
-      "homepageRecentWork": "Web 원본이 삭제되어 홈페이지 플레이 링크를 제거했습니다.",
-      "homepageWebPlayable": false,
+      "homepageStage": "디자인 전용 · Web 플레이 가능",
+      "homepageRecentWork": "Owner 지시에 따라 채집·제작 정식 Web 생존 버전을 다시 제작해 홈페이지에 연결했습니다.",
+      "homepageWebPlayable": true,
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY"
@@ -147,11 +146,11 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "selectedPlatform": "UNITY",
       "productionTarget": "unity-android",
-      "webPurpose": "REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION",
-      "homepageStage": "개발확정 · 실제 Web 게임 재구축 중",
-      "homepageRecentWork": "검증용 프로토타입은 공개 플레이에서 제외하고 Vibe2 정식 게임 생성·QA를 진행합니다.",
-      "homepageWebPlayable": false,
-      "webUpdatedAt": "2026-09-12T13:33:46.725Z",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageStage": "개발확정 · Unity 검증 중 · Web 플레이 가능",
+      "homepageRecentWork": "검증용 공용 셸을 15웨이브 정식 Web 전략 디펜스로 교체했습니다.",
+      "homepageWebPlayable": true,
+      "webUpdatedAt": "2026-09-13T10:10:00Z",
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-single-defense-strat-celestial-bastion"
     },
     {
@@ -168,11 +167,11 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "selectedPlatform": "UNITY",
       "productionTarget": "unity-android",
-      "webPurpose": "REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION",
-      "homepageStage": "개발확정 · 실제 Web 게임 재구축 중",
-      "homepageRecentWork": "검증용 프로토타입은 공개 플레이에서 제외하고 Vibe2 정식 게임 생성·QA를 진행합니다.",
-      "homepageWebPlayable": false,
-      "webUpdatedAt": "2026-09-12T13:33:49.894Z",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageStage": "개발확정 · Unity 검증 중 · Web 플레이 가능",
+      "homepageRecentWork": "검증용 공용 셸을 실제 색 연결·연쇄 점수 퍼즐로 교체했습니다.",
+      "homepageWebPlayable": true,
+      "webUpdatedAt": "2026-09-13T10:10:00Z",
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-puzzle-chromatic-cascade"
     },
     {
@@ -189,11 +188,11 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "selectedPlatform": "UNITY",
       "productionTarget": "unity-android",
-      "webPurpose": "REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION",
-      "homepageStage": "개발확정 · 실제 Web 게임 재구축 중",
-      "homepageRecentWork": "검증용 프로토타입은 공개 플레이에서 제외하고 Vibe2 정식 게임 생성·QA를 진행합니다.",
-      "homepageWebPlayable": false,
-      "webUpdatedAt": "2026-09-12T13:33:53.207Z",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageStage": "개발확정 · Unity 검증 중 · Web 플레이 가능",
+      "homepageRecentWork": "검증용 공용 셸을 숲·물길·마을을 만드는 실제 세계 창조 게임으로 교체했습니다.",
+      "homepageWebPlayable": true,
+      "webUpdatedAt": "2026-09-13T10:10:00Z",
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-casual-realm-weaver"
     },
     {
@@ -210,11 +209,11 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "selectedPlatform": "UNITY",
       "productionTarget": "unity-android",
-      "webPurpose": "REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION",
-      "homepageStage": "개발확정 · 실제 Web 게임 재구축 중",
-      "homepageRecentWork": "검증용 프로토타입은 공개 플레이에서 제외하고 Vibe2 정식 게임 생성·QA를 진행합니다.",
-      "homepageWebPlayable": false,
-      "webUpdatedAt": "2026-09-12T13:33:56.409Z",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageStage": "개발확정 · Unity 검증 중 · Web 플레이 가능",
+      "homepageRecentWork": "검증용 공용 셸을 전투·회복·강화·자동전투가 있는 10단계 성장 RPG로 교체했습니다.",
+      "homepageWebPlayable": true,
+      "webUpdatedAt": "2026-09-13T10:10:00Z",
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-idle-growth-rpg-crystal-bloom"
     },
     {
@@ -231,11 +230,11 @@
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
       "selectedPlatform": "UNITY",
       "productionTarget": "unity-android",
-      "webPurpose": "REQUIRED_FIRST_PLAYABLE_GAMEPLAY_AND_MUSIC_VALIDATION",
-      "homepageStage": "개발확정 · 실제 Web 게임 재구축 중",
-      "homepageRecentWork": "검증용 프로토타입은 공개 플레이에서 제외하고 Vibe2 정식 게임 생성·QA를 진행합니다.",
-      "homepageWebPlayable": false,
-      "webUpdatedAt": "2026-09-12T13:33:59.811Z",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageStage": "개발확정 · Unity 검증 중 · Web 플레이 가능",
+      "homepageRecentWork": "검증용 공용 셸을 탐색·전투·휴식·강화와 5장 결말이 있는 정식 Web RPG로 교체했습니다.",
+      "homepageWebPlayable": true,
+      "webUpdatedAt": "2026-09-13T10:10:00Z",
       "homepageArtbookPath": "/artbook-viewer.html?game=seed-story-complete-rpg-chronicles-of-eldoria"
     }
   ]
