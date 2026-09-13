@@ -36,6 +36,16 @@ test('five distinct leads remain a per-game evidence stage, not a game-count quo
   assert.ok(workflow.includes("routingBlockers:['roblox-build-preflight-pending']"));
 });
 
+test('already-preflighted retryable runtime work dispatches the existing continuation',()=>{
+  assert.ok(workflow.includes('let packagePending=0,preflightReady=0,runtimeReady=0;'));
+  assert.ok(workflow.includes("item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed'"));
+  assert.ok(workflow.includes("item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING'"));
+  assert.ok(workflow.includes('ROBLOX_RUNTIME_READY_COUNT=$runtime_ready'));
+  assert.match(workflow,/package_pending.*preflight_ready.*runtime_ready/);
+  assert.match(workflow,/\$runtime_ready.*\^\[1-9\]\[0-9\]\*\$/);
+  assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml'));
+});
+
 test('merged Roblox source re-enters the existing canonical selected-platform router',()=>{
   assert.ok(parentWorkflow.includes("- 'roblox-games/**'"));
   assert.ok(parentWorkflow.includes('PLATFORM_ROUTER=tools/company-selected-platform-router.mjs'));
