@@ -48,8 +48,9 @@ test('central mirror preserves historical bootstrap while latest owner productio
   assert.match(flow,/passMinimum: 80/);
   assert.match(flow,/implementationPassMinimum: 90/);
   assert.match(flow,/excellentDesignMinimum: 90/);
-  assert.match(flow,/designOnlyArtbookBeforePromotionForbidden: true/);
-  assert.match(flow,/createOnlyAfterDesignPromotion: true/);
+  assert.match(flow,/designOnlyArtbookForbidden: true/);
+  assert.match(flow,/preWebArtbookForbidden: true/);
+  assert.match(flow,/createOnlyAfterWebStrictReview: true/);
   assert.match(flow,/blockingBudgetMinutes: 10/);
   assert.equal(directive.strictReview.designPassMinimum,80);
   assert.equal(directive.strictReview.implementationPassMinimum,90);
@@ -184,7 +185,7 @@ test('DESIGN_ONLY requires seed same designer revision and repeated five-lead fa
   assert.doesNotMatch(design,/vibe2-validator|VIBE2_VALIDATION_LEARNING/);
 });
 
-test('DESIGN_ONLY stops at design baseline; artbook is post-promotion only',()=>{
+test('DESIGN_ONLY stops at design baseline; artbook is post-Web strict review only',()=>{
   const designCall=pipeline.search(/await run(?:WithRetry)?\('tools\/company-design-cycle\.mjs'/);
   const gateCall=pipeline.indexOf("await run('tools/company-baseline-gate.mjs')",designCall);
   const artbookCall=pipeline.indexOf("await run('tools/company-design-artbook.mjs')",gateCall);
@@ -194,7 +195,8 @@ test('DESIGN_ONLY stops at design baseline; artbook is post-promotion only',()=>
   assert.match(pipeline,/DESIGN_ONLY_ARTBOOK_SKIPPED=WAIT_FOR_PROMOTION/);
   assert.match(pipeline,/DESIGN_ONLY_VIBE2_USED=NO/);
   assert.match(gate,/designOnlyVibe2Forbidden:true/);
-  assert.match(artbook,/postPromotion:true/);
+  assert.match(artbook,/postWebStrictReview:true/);
+  assert.match(artbook,/POST_WEB_ARTBOOK_REQUIRES_WEB_STRICT_80_NO_HARD_FAILURE/);
   assert.match(artbook,/ARTBOOK_MODEL_CALL_TIMEOUT_MS/);
 });
 
