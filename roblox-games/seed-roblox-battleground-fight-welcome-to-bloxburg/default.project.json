@@ -1,0 +1,23 @@
+{
+  "name": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Shared": {
+        "$path": "shared"
+      }
+    },
+    "ServerScriptService": {
+      "GameServer": {
+        "$path": "server"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "GameClient": {
+          "$path": "client"
+        }
+      }
+    }
+  }
+}
