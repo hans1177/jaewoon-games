@@ -155,3 +155,8 @@ test('Roblox source workflow keeps compiled candidates pending when Actions cann
   assert.ok(workflow.includes("item.robloxSourceCandidateBranch"));
   assert.ok(workflow.includes('ROBLOX_SOURCE_PROMOTION_PENDING_COUNT'));
 });
+
+test('Roblox executor verifies the independent per-game promotion contract before queue work',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.ok(workflow.includes('qa/company-development-roblox-independent-promotion.test.mjs'));
+});
