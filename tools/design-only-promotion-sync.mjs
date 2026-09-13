@@ -1,5 +1,5 @@
 // 파일명: tools/design-only-promotion-sync.mjs
-// DESIGN_BASELINE_READY 게임을 DEVELOPMENT_CONFIRMED로 승격하고 필수 Web 플레이/음악 검증 큐에 연결한다.
+// DESIGN_BASELINE_READY + strict design PASS 게임만 DEVELOPMENT_CONFIRMED로 승격하고 필수 Web 플레이/음악 검증 큐에 연결한다.
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
@@ -12,14 +12,32 @@ const nowIso=()=>new Date().toISOString();
 const selectedPlatformOf=seed=>resolveSelectedPlatform(seed?.INITIAL_TARGET_PLATFORM||'',seed)||'ROBLOX';
 const targetSourcePathOf=(gameId,platform)=>`${adapterForPlatform(platform)?.sourceRoot||''}${gameId}`;
 const webSourcePathOf=gameId=>`web-games/${gameId}`;
+const strictDesignReviewPath=(root,artbook,gameId)=>{
+  const source=String(artbook?.sourceDesign||'').trim();
+  if(source)return path.join(root,path.dirname(source),'strict-design-review.json');
+  const date=String(artbook?.date||artbook?.createdAt||'').slice(0,10);
+  return date?path.join(root,'design',gameId,date,'strict-design-review.json'):'';
+};
+const strictDesignPass=(root,artbook,gameId)=>{
+  const file=strictDesignReviewPath(root,artbook,gameId);
+  const review=file?readJson(file,null):null;
+  const pass=review?.verdict==='PASS'&&Number(review?.totalScore)>=90&&Array.isArray(review?.hardFailures)&&review.hardFailures.length===0;
+  return {pass,file:file||null,review};
+};
 
 function bindRequiredWebStage(item,{gameId,targetSourcePath,stamp}){
   const webSourcePath=webSourcePathOf(gameId);
   item.webSourcePath=webSourcePath;
   item.webValidationRequired=true;
   item.musicValidationRequired=true;
-  if(item.webValidationPassedAt&&item.musicValidationPassed===true){
+  item.homepageTestCandidate=false;
+  item.homepageTestScore=null;
+  item.homepageTestVerdict='WAITING_WEB_STRICT_REVIEW';
+  if(item.webValidationPassedAt&&item.musicValidationPassed===true&&item.strictImplementationVerdict==='PASS'&&Number(item.strictImplementationScore)>=90){
     item.sourcePath=targetSourcePath;
+    item.homepageTestCandidate=true;
+    item.homepageTestScore=Number(item.strictImplementationScore);
+    item.homepageTestVerdict='PASS';
     return;
   }
   item.status='ACTIVE';
@@ -59,21 +77,31 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       && artbook?.published===true
       && artbook?.vibe2Used!==true;
     if(!ready){skipped.push({gameId,reason:'DESIGN_BASELINE_NOT_READY'});continue;}
+    const strict=strictDesignPass(root,artbook,gameId);
+    if(!strict.pass){
+      seed.strictDesignReview={verdict:strict.review?.verdict||'MISSING',totalScore:Number(strict.review?.totalScore||0),hardFailures:Array.isArray(strict.review?.hardFailures)?strict.review.hardFailures:[],evidencePath:strict.file};
+      seed.lifecycleState=String(strict.review?.verdict||'REVISE').toUpperCase()==='REBUILD'?'DESIGN_REBUILD_REQUIRED':'DESIGN_REVISION_REQUIRED';
+      skipped.push({gameId,reason:'STRICT_DESIGN_REVIEW_NOT_PASS',verdict:seed.strictDesignReview.verdict,totalScore:seed.strictDesignReview.totalScore});
+      continue;
+    }
     const selectedPlatform=selectedPlatformOf(seed);
     const targetSourcePath=targetSourcePathOf(gameId,selectedPlatform);
     const webSourcePath=webSourcePathOf(gameId);
 
     seed.productionClass='DEVELOPMENT_CONFIRMED';
     seed.productionTier=2;
-    seed.productionClassSource='DESIGN_BASELINE_READY';
+    seed.productionClassSource='DESIGN_BASELINE_READY_STRICT_PASS';
     seed.lifecycleState='DEVELOPMENT_CONFIRMED';
     seed.selectedPlatform=selectedPlatform;
+    seed.strictDesignReview={verdict:'PASS',totalScore:Number(strict.review.totalScore),hardFailures:[],evidencePath:strict.file};
     seed.promotion={
-      from:'DESIGN_ONLY',to:'DEVELOPMENT_CONFIRMED',reason:'DESIGN_BASELINE_READY',
+      from:'DESIGN_ONLY',to:'DEVELOPMENT_CONFIRMED',reason:'DESIGN_BASELINE_READY_STRICT_PASS',
       selectedPlatform,targetSourcePath,webSourcePath,
-      requiredFirstValidation:'WEB_GAMEPLAY_AND_MUSIC',
+      requiredFirstValidation:'WEB_GAMEPLAY_AND_MUSIC_STRICT_REVIEW',
       designBaselineSource:artbook.sourceDesign||null,
       artbookSource:`artbook-submissions/${gameId}/current.json`,
+      strictDesignReviewSource:strict.file,
+      strictDesignScore:Number(strict.review.totalScore),
       promotedAt:seed?.promotion?.promotedAt||stamp,
     };
 
@@ -83,31 +111,33 @@ export function promoteReadyDesignSeeds({root='.'}={}){
         id:`SEED-${seed.seedId||gameId}`,slug:gameId,name:seed.gameName||gameId,
         sourcePath:webSourcePath,webArchivePath:webSourcePath,
         protectedValues:['core-loop','design-baseline','save-meaning'],
-        developmentFocus:{scores:{playability:0,distinctiveness:0,developmentEfficiency:0,scalability:0,lowBlockage:0},total:0,evidenceNote:'승격 직후. Web 플레이/음악 검증 및 선택 플랫폼 실검증 근거 수집 전.'},
+        developmentFocus:{scores:{playability:0,distinctiveness:0,developmentEfficiency:0,scalability:0,lowBlockage:0},total:0,evidenceNote:'승격 직후. Web 플레이/음악/강심사 및 선택 플랫폼 실검증 근거 수집 전.'},
       };
       portfolio.projects.push(project);
     }
     Object.assign(project,{
-      productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'DESIGN_BASELINE_READY',profileStatus:'DEVELOPMENT_CONFIRMED',
+      productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'DESIGN_BASELINE_READY_STRICT_PASS',profileStatus:'DEVELOPMENT_CONFIRMED',
       mode:'WEB_VALIDATION_THEN_SELECTED_PLATFORM_IMPLEMENTATION',productionTier:2,productionTierSource:'DISPLAY_ALIAS_FROM_PRODUCTION_CLASS',
       targetEngine:selectedPlatform,selectedPlatform,targetPlatform:selectedPlatform,targetSourcePath,
       sourcePath:project.webValidationPassedAt?targetSourcePath:webSourcePath,
       webArchivePath:project.webArchivePath||webSourcePath,
       webValidationRequired:true,musicValidationRequired:true,
+      strictDesignScore:Number(strict.review.totalScore),
       designBaselineSource:artbook.sourceDesign||null,designArtbookSource:`artbook-submissions/${gameId}/current.json`,
     });
 
     let game=catalog.games.find(row=>row?.id===gameId);
     if(!game){
-      game={id:gameId,name:seed.gameName||gameId,description:'2분류 개발확정 · DESIGN_BASELINE_READY 승격',genre:['2분류',String(seed.GAME_CATEGORY||'').replaceAll('_',' ')],image:'assets/page-bg-v4.webp',webPath:`/${webSourcePath}/`,hasWebArchive:false,featured:false,homepageArtbookPath:`/artbook-viewer.html?game=${encodeURIComponent(gameId)}`};
+      game={id:gameId,name:seed.gameName||gameId,description:'개발확정 · Strict Design PASS',genre:[String(seed.GAME_CATEGORY||'').replaceAll('_',' ')],image:'',webPath:`/${webSourcePath}/`,hasWebArchive:false,featured:false,homepageArtbookPath:`/artbook-viewer.html?game=${encodeURIComponent(gameId)}`};
       catalog.games.push(game);
     }
     Object.assign(game,{
-      homepageCategory:'development-confirmed',productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'DESIGN_BASELINE_READY',
+      homepageCategory:'development-confirmed',productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'DESIGN_BASELINE_READY_STRICT_PASS',
       productionTier:2,productionTierSource:'DISPLAY_ALIAS_FROM_PRODUCTION_CLASS',selectedPlatform,targetPlatform:selectedPlatform,targetSourcePath,productionTarget:selectedPlatform,
-      homepageStage:'2분류 개발확정 · Web 플레이/음악 검증 준비',
-      homepageRecentWork:`DESIGN_BASELINE_READY 통과. Web 실제 플레이와 음악 런타임 검증 후 ${selectedPlatform} 검증으로 진행.`,
-      homepageWebPlayable:Boolean(game.hasWebArchive),homepageArtbookPath:game.homepageArtbookPath||`/artbook-viewer.html?game=${encodeURIComponent(gameId)}`,
+      strictDesignScore:Number(strict.review.totalScore),homepageOfficialCard:false,homepageTestCandidate:false,homepageTestScore:null,homepageReviewState:'WAITING_WEB_STRICT_REVIEW',
+      homepageStage:'개발확정 · Web 강심사 준비',
+      homepageRecentWork:`Strict Design ${Number(strict.review.totalScore)}점 PASS. Web 실제 플레이·음악·구현 강심사 후 테스트 선반 후보가 된다.`,
+      homepageWebPlayable:false,homepageArtbookPath:game.homepageArtbookPath||`/artbook-viewer.html?game=${encodeURIComponent(gameId)}`,
     });
 
     let item=queue.items.find(row=>row?.gameId===gameId);
@@ -115,7 +145,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       item={
         gameId,seedId:seed.seedId||null,gameName:seed.gameName||gameId,productionClass:'DEVELOPMENT_CONFIRMED',
         selectedPlatform,targetPlatform:selectedPlatform,targetSourcePath,webSourcePath,
-        designBaselineSource:artbook.sourceDesign||null,artbookSource:`artbook-submissions/${gameId}/current.json`,enqueuedAt:stamp,
+        designBaselineSource:artbook.sourceDesign||null,artbookSource:`artbook-submissions/${gameId}/current.json`,strictDesignScore:Number(strict.review.totalScore),enqueuedAt:stamp,
       };
       queue.items.push(item);
     }else{
@@ -126,6 +156,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       item.webSourcePath=item.webSourcePath||webSourcePath;
       item.designBaselineSource=artbook.sourceDesign||item.designBaselineSource||null;
       item.artbookSource=`artbook-submissions/${gameId}/current.json`;
+      item.strictDesignScore=Number(strict.review.totalScore);
     }
     bindRequiredWebStage(item,{gameId,targetSourcePath,stamp});
     promoted.push(gameId);
