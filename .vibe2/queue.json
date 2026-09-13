@@ -645,6 +645,43 @@
       "speculativeEligible": false,
       "estimatedRisk": "low",
       "shard": "unity"
+    },
+    {
+      "id": "seed-action-survival-rogu-echoes-of-the-lost-star-diagnostic-DOM-NULL-EVENT-BIND-index-html",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "target": "web",
+      "department": "development",
+      "type": "implementation",
+      "goal": "index.html의 DOM 이벤트 연결 1곳에 존재 확인을 추가한다.",
+      "responsibleFiles": [
+        "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "releaseState": "development-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": false,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "blocker": null,
+      "evidence": [
+        "vibe2-auto-planner:game-catalog",
+        "release-state:development-confirmed",
+        "source-root:web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+        "diagnostic:DOM_NULL_EVENT_BIND",
+        "diagnostic-severity:medium",
+        "repair-mode:MODEL",
+        "diagnostic-primary-file:web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
+      ],
+      "lastOutcome": null,
+      "companyContext": null,
+      "sourceRoot": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+      "speculativeEligible": false,
+      "estimatedRisk": "medium",
+      "shard": "web"
     }
   ]
 }
