@@ -15,10 +15,13 @@ on:
       - 'tools/vibe3-roblox-platform.mjs'
       - 'tools/company-development-web-bootstrap.mjs'
       - 'tools/company-development-web-gameplay-validation.mjs'
+      - 'tools/company-web-validation-evidence-contract.mjs'
+      - 'tools/company-strict-production-review.mjs'
       - 'tools/company-development-unity-bootstrap.mjs'
       - 'tools/company-development-unity-evidence.mjs'
       - 'tools/company-development-validation-cycle.mjs'
       - 'tools/company-release-production-cycle.mjs'
+      - 'tools/homepage-test-candidate-sync.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - 'qa/company-central-pipeline-only.test.mjs'
       - 'qa/company-platform-speed-policy.test.mjs'
@@ -28,6 +31,15 @@ on:
       - 'qa/company-development-validation-selected-platform.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
       - 'qa/company-development-unity-runtime.test.mjs'
+      - 'qa/company-homepage-top30-contract.test.mjs'
+      - 'qa/company-native-learning-real-evidence-contract.test.mjs'
+      - 'qa/company-native-score-not-web-score-contract.test.mjs'
+      - 'qa/company-platform-score-learning-contract.test.mjs'
+      - 'qa/company-strict-learning-delta-contract.test.mjs'
+      - 'qa/company-top30-platform-promotion-learning.test.mjs'
+      - 'qa/company-web-evidence-freshness-contract.test.mjs'
+      - 'qa/company-web-independent-promotion-contract.test.mjs'
+      - 'qa/company-web-validation-evidence-contract.test.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
@@ -50,10 +62,13 @@ on:
       - 'tools/vibe3-roblox-platform.mjs'
       - 'tools/company-development-web-bootstrap.mjs'
       - 'tools/company-development-web-gameplay-validation.mjs'
+      - 'tools/company-web-validation-evidence-contract.mjs'
+      - 'tools/company-strict-production-review.mjs'
       - 'tools/company-development-unity-bootstrap.mjs'
       - 'tools/company-development-unity-evidence.mjs'
       - 'tools/company-development-validation-cycle.mjs'
       - 'tools/company-release-production-cycle.mjs'
+      - 'tools/homepage-test-candidate-sync.mjs'
       - 'qa/company-central-policy-contract.test.mjs'
       - 'qa/company-central-pipeline-only.test.mjs'
       - 'qa/company-platform-speed-policy.test.mjs'
@@ -63,6 +78,15 @@ on:
       - 'qa/company-development-validation-selected-platform.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
       - 'qa/company-development-unity-runtime.test.mjs'
+      - 'qa/company-homepage-top30-contract.test.mjs'
+      - 'qa/company-native-learning-real-evidence-contract.test.mjs'
+      - 'qa/company-native-score-not-web-score-contract.test.mjs'
+      - 'qa/company-platform-score-learning-contract.test.mjs'
+      - 'qa/company-strict-learning-delta-contract.test.mjs'
+      - 'qa/company-top30-platform-promotion-learning.test.mjs'
+      - 'qa/company-web-evidence-freshness-contract.test.mjs'
+      - 'qa/company-web-independent-promotion-contract.test.mjs'
+      - 'qa/company-web-validation-evidence-contract.test.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
@@ -94,10 +118,13 @@ jobs:
           node --check tools/vibe3-roblox-platform.mjs
           node --check tools/company-development-web-bootstrap.mjs
           node --check tools/company-development-web-gameplay-validation.mjs
+          node --check tools/company-web-validation-evidence-contract.mjs
+          node --check tools/company-strict-production-review.mjs
           node --check tools/company-development-unity-bootstrap.mjs
           node --check tools/company-development-unity-evidence.mjs
           node --check tools/company-development-validation-cycle.mjs
           node --check tools/company-release-production-cycle.mjs
+          node --check tools/homepage-test-candidate-sync.mjs
           node --test \
             qa/company-central-policy-contract.test.mjs \
             qa/company-central-pipeline-only.test.mjs \
@@ -107,4 +134,13 @@ jobs:
             qa/design-only-promotion-sync.test.mjs \
             qa/company-development-validation-selected-platform.test.mjs \
             qa/company-development-web-runtime.test.mjs \
-            qa/company-development-unity-runtime.test.mjs
+            qa/company-development-unity-runtime.test.mjs \
+            qa/company-homepage-top30-contract.test.mjs \
+            qa/company-native-learning-real-evidence-contract.test.mjs \
+            qa/company-native-score-not-web-score-contract.test.mjs \
+            qa/company-platform-score-learning-contract.test.mjs \
+            qa/company-strict-learning-delta-contract.test.mjs \
+            qa/company-top30-platform-promotion-learning.test.mjs \
+            qa/company-web-evidence-freshness-contract.test.mjs \
+            qa/company-web-independent-promotion-contract.test.mjs \
+            qa/company-web-validation-evidence-contract.test.mjs
