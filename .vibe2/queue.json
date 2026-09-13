@@ -796,14 +796,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 2,
+      "status": "failed",
+      "retries": 3,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "source-candidate-generation-failed",
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
@@ -821,7 +821,8 @@
         "actions-run:34751539027",
         "repair-retry:vibe2-full-web-output-budget-v2",
         "actions-run:34751773707",
-        "actions-run:34752497993"
+        "actions-run:34752497993",
+        "actions-run:34752682086"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
@@ -927,14 +928,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "release-confirmed",
-      "status": "running",
-      "retries": 2,
+      "status": "failed",
+      "retries": 3,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "source-candidate-generation-failed",
       "evidence": [
         "pwa-task:e38bd84e-4286-4f3c-bc6f-1cef11c8991e",
         "pwa-kind:directive",
@@ -945,7 +946,8 @@
         "verified-qa-required",
         "actions-run:34751773707",
         "variant:primary",
-        "actions-run:34752497993"
+        "actions-run:34752497993",
+        "actions-run:34752682086"
       ],
       "lastOutcome": "FAIL",
       "companyContext": {
