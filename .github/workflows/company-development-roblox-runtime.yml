@@ -43,7 +43,7 @@ jobs:
           node --check tools/company-development-roblox-source-reconcile.mjs
           node --check tools/company-development-roblox-package.mjs
           node --check tools/vibe3-roblox-platform.mjs
-          node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-selected-platform-router.test.mjs
+          node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs qa/company-selected-platform-router.test.mjs
 
       - name: Fetch current company runtime
         run: |
@@ -65,7 +65,7 @@ jobs:
             --source-revision="$SOURCE_REVISION" \
             --results=/tmp/roblox-source-reconciliation.json
 
-      - name: Resolve up to two Web-validated Roblox source targets
+      - name: Resolve next Roblox source execution slice
         id: targets
         shell: bash
         run: |
@@ -74,7 +74,8 @@ jobs:
           import fs from 'node:fs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const rows=[];
-          for(const item of q.items||[]){
+          const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxSourceBootstrapFailedAt))-Number(Boolean(b.robloxSourceBootstrapFailedAt)));
+          for(const item of candidates){
             if(rows.length>=2)break;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
@@ -98,7 +99,9 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`ROBLOX_SOURCE_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_SOURCE_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
-          console.log('ROBLOX_PARALLEL_ACTIVE_MAX=2');
+          console.log('ROBLOX_PER_GAME_PROMOTION=YES');
+          console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
+          console.log('ROBLOX_EXECUTION_WIP_MAX=2');
           NODE
 
   source-worker:
@@ -153,7 +156,7 @@ jobs:
             --artbook="$artbook" \
             --output-root="$TARGET_SOURCE" \
             --evidence="$evidence"
-          node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs
+          node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs
           git diff --check
           git add "$TARGET_SOURCE"
           git diff --cached --quiet && { echo "no Roblox source change: $GAME_ID" >&2; exit 1; }
@@ -338,7 +341,8 @@ jobs:
           console.log(`ROBLOX_SOURCE_PASS_COUNT=${passCount}`);
           console.log(`ROBLOX_SOURCE_PROMOTION_PENDING_COUNT=${candidateCount}`);
           console.log(`ROBLOX_SOURCE_FAIL_COUNT=${failCount}`);
-          console.log('ROBLOX_PARALLEL_ACTIVE_MAX=2');
+          console.log('ROBLOX_PER_GAME_PROMOTION=YES');
+          console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
           NODE
           git config user.name 'jaewoon-roblox-development'
           git config user.email 'actions@users.noreply.github.com'
@@ -352,15 +356,15 @@ jobs:
           echo 'ROBLOX_RUNTIME_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
 
-      - name: Stop batch chaining when current Roblox source work failed
+      - name: Record isolated source failures without blocking other games
         if: needs.source-plan.outputs.count != '0' && needs.source-worker.result != 'success'
         run: |
-          echo 'ROBLOX_NEXT_BATCH_DISPATCH=NO'
-          echo 'ROBLOX_NEXT_BATCH_BLOCKER=CURRENT_SOURCE_BATCH_FAILED'
-          echo 'ROBLOX_RECURSIVE_RETRY_LOOP=BLOCKED'
+          echo 'ROBLOX_SOURCE_FAILURE_ISOLATED=YES'
+          echo 'ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO'
+          echo 'ROBLOX_RECURSIVE_RETRY_LOOP=AVOIDED_BY_FAILURE_DEPRIORITIZATION'
 
-      - name: Dispatch next Roblox source batch when other eligible work remains
-        if: needs.source-plan.outputs.count != '0' && needs.source-worker.result == 'success'
+      - name: Dispatch next Roblox source execution slice when other eligible work remains
+        if: needs.source-plan.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
           CURRENT_TARGETS_JSON: ${{ needs.source-plan.outputs.targets_json }}
@@ -404,7 +408,9 @@ jobs:
         run: |
           echo 'ROBLOX_SOURCE_TARGETS=NONE'
           echo "ROBLOX_SOURCE_RECONCILIATION_COUNT=$RECONCILIATION_COUNT"
-          echo 'ROBLOX_PARALLEL_ACTIVE_MAX=2'
+          echo 'ROBLOX_EXECUTION_WIP_MAX=2'
+          echo 'ROBLOX_PER_GAME_PROMOTION=YES'
+          echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
           echo 'ROBLOX_RUNTIME_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
 
@@ -429,7 +435,7 @@ jobs:
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
-      - name: Resolve up to two exact-source Roblox technical package targets
+      - name: Resolve next exact-source Roblox technical execution slice
         id: targets
         shell: bash
         run: |
@@ -438,7 +444,8 @@ jobs:
           import fs from 'node:fs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const rows=[];
-          for(const item of q.items||[]){
+          const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxBuildFailedAt))-Number(Boolean(b.robloxBuildFailedAt)));
+          for(const item of candidates){
             if(rows.length>=2)break;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
@@ -457,7 +464,9 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`ROBLOX_TECHNICAL_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_TECHNICAL_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
-          console.log('ROBLOX_TECHNICAL_PARALLEL_ACTIVE_MAX=2');
+          console.log('ROBLOX_PER_GAME_PROMOTION=YES');
+          console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
+          console.log('ROBLOX_EXECUTION_WIP_MAX=2');
           NODE
 
   technical-worker:
@@ -645,7 +654,7 @@ jobs:
             }else{
               Object.assign(item,{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
-                robloxBuildOrPackagePassed:false,robloxBuildFailedAt:stamp,robloxBuildPreflightPassed:false,
+                robloxBuildOrPackagePassed:false,robloxBuildSourceRevision:result.sourceRevision,robloxBuildFailedAt:stamp,robloxBuildPreflightPassed:false,
                 robloxRuntimePassed:false,robloxIndependentQaPassed:false,robloxRegressionPassed:false,robloxFinalReviewPassed:false,
                 robloxFailureStage:'TARGET_PLATFORM_BUILD_OR_PACKAGE',robloxFailureSignature:result.failure||'ROBLOX_BUILD_PACKAGE_FAILED',
                 routingBlockers:[`roblox-build-package:${result.failure||'ROBLOX_BUILD_PACKAGE_FAILED'}`],updatedAt:stamp,
@@ -658,6 +667,8 @@ jobs:
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
           console.log(`ROBLOX_BUILD_PACKAGE_PASS_COUNT=${passCount}`);
           console.log(`ROBLOX_BUILD_PACKAGE_FAIL_COUNT=${failCount}`);
+          console.log('ROBLOX_PER_GAME_PROMOTION=YES');
+          console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
           console.log('ROBLOX_BUILD_PREFLIGHT_PASS=NO');
           console.log('ROBLOX_RUNTIME_PASS=NO');
           console.log('ROBLOX_INDEPENDENT_QA_PASS=NO');
@@ -673,14 +684,14 @@ jobs:
             git commit -m 'runtime: persist Roblox package checkpoint [skip ci]'
             git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
           fi
-      - name: Stop technical batch chaining when package work failed
+      - name: Record isolated package failures without blocking other games
         if: needs.technical-plan.outputs.count != '0' && needs.technical-worker.result != 'success'
         run: |
-          echo 'ROBLOX_NEXT_TECHNICAL_BATCH_DISPATCH=NO'
-          echo 'ROBLOX_NEXT_TECHNICAL_BATCH_BLOCKER=CURRENT_PACKAGE_BATCH_FAILED'
-          echo 'ROBLOX_TECHNICAL_RETRY_LOOP=BLOCKED'
-      - name: Dispatch next Roblox package batch when other exact-source work remains
-        if: needs.technical-plan.outputs.count != '0' && needs.technical-worker.result == 'success'
+          echo 'ROBLOX_PACKAGE_FAILURE_ISOLATED=YES'
+          echo 'ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO'
+          echo 'ROBLOX_TECHNICAL_RETRY_LOOP=AVOIDED_BY_FAILURE_DEPRIORITIZATION'
+      - name: Dispatch next Roblox technical execution slice when other exact-source work remains
+        if: needs.technical-plan.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
           CURRENT_TARGETS_JSON: ${{ needs.technical-plan.outputs.targets_json }}
@@ -719,6 +730,8 @@ jobs:
         if: needs.technical-plan.outputs.count == '0'
         run: |
           echo 'ROBLOX_TECHNICAL_TARGETS=NONE'
+          echo 'ROBLOX_PER_GAME_PROMOTION=YES'
+          echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
           echo 'ROBLOX_BUILD_PREFLIGHT_PASS=NO'
           echo 'ROBLOX_RUNTIME_PASS=NO'
           echo 'ROBLOX_INDEPENDENT_QA_PASS=NO'
