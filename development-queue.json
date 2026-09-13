@@ -218,8 +218,8 @@
       "routingBlockers": [
         "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-bootstrap.mjs --game-id=seed-roblox-simulator-tycoon-i-adopt-me --game-name=Pocket Foundry --baseline=design/seed-roblox-simulator-tycoon-i-adopt-m"
       ],
-      "webValidationLastAttemptAt": "2026-09-13T01:46:42.004Z",
-      "updatedAt": "2026-09-13T01:46:42.004Z"
+      "webValidationLastAttemptAt": "2026-09-13T02:27:54.970Z",
+      "updatedAt": "2026-09-13T02:27:54.970Z"
     },
     {
       "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
@@ -245,8 +245,8 @@
       "routingBlockers": [
         "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-bootstrap.mjs --game-id=seed-roblox-battleground-fight-welcome-to-bloxburg --game-name=Vector Clash --baseline=design/seed-roblox-battleground-figh"
       ],
-      "webValidationLastAttemptAt": "2026-09-13T01:46:42.079Z",
-      "updatedAt": "2026-09-13T01:46:42.079Z"
+      "webValidationLastAttemptAt": "2026-09-13T02:27:55.210Z",
+      "updatedAt": "2026-09-13T02:27:55.210Z"
     },
     {
       "gameId": "seed-roblox-survival-horror-es-doors",
@@ -272,8 +272,8 @@
       "routingBlockers": [
         "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-bootstrap.mjs --game-id=seed-roblox-survival-horror-es-doors --game-name=Last Lantern --baseline=design/seed-roblox-survival-horror-es-doors/2026-0"
       ],
-      "webValidationLastAttemptAt": "2026-09-13T01:46:42.152Z",
-      "updatedAt": "2026-09-13T01:46:42.152Z"
+      "webValidationLastAttemptAt": "2026-09-13T02:30:13.345Z",
+      "updatedAt": "2026-09-13T02:30:13.345Z"
     },
     {
       "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
@@ -299,8 +299,8 @@
       "routingBlockers": [
         "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-bootstrap.mjs --game-id=seed-roblox-obby-party-minigam-tower-of-hell --game-name=Skyline Sprint --baseline=design/seed-roblox-obby-party-minigam-to"
       ],
-      "webValidationLastAttemptAt": "2026-09-13T01:46:42.254Z",
-      "updatedAt": "2026-09-13T01:46:42.254Z"
+      "webValidationLastAttemptAt": "2026-09-13T02:32:19.596Z",
+      "updatedAt": "2026-09-13T02:32:19.596Z"
     },
     {
       "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
@@ -324,18 +324,19 @@
       "webValidationPassedAt": null,
       "musicValidationPassed": false,
       "routingBlockers": [
-        "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-bootstrap.mjs --game-id=seed-roblox-story-rpg-adventur-blox-fruits --game-name=Shardbound Odyssey --baseline=design/seed-roblox-story-rpg-adventur-"
+        "web-gameplay-music:web-worker-result-missing"
       ],
-      "webValidationLastAttemptAt": "2026-09-13T01:46:42.326Z",
-      "updatedAt": "2026-09-13T01:46:42.326Z"
+      "webValidationLastAttemptAt": "2026-09-13T02:34:58.354Z",
+      "updatedAt": "2026-09-13T02:34:58.354Z"
     }
   ],
-  "updatedAt": "2026-09-13T02:12:52.350Z",
+  "updatedAt": "2026-09-13T02:34:58.359Z",
   "routerContractVersion": 2,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
   "executionContract": "CHANGE_DETECTION>CHEAP_PRECHECK>REPRESENTATIVE_CANARY>SINGLE_BUILD_OR_PACKAGE>IMMUTABLE_ARTIFACT_BIND>TARGET_PLATFORM_RUNTIME>INDEPENDENT_QA>REGRESSION>IMMEDIATE_NEXT_STAGE_DISPATCH>RESUME_EXACT_FAILURE_POINT",
   "webValidationPolicy": "REQUIRED_BEFORE_TARGET_PLATFORM",
-  "webValidationContractVersion": 1,
-  "webGateRequired": true
+  "webValidationContractVersion": 2,
+  "webGateRequired": true,
+  "webValidationParallelism": 2
 }
