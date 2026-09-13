@@ -1,19 +1,29 @@
 // 단일 Homepage Manager가 company-runtime의 검증된 Web 후보 중 80점 이상 상위 30개만 main 테스트 선반 자산으로 동기화한다.
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 
 const runtimeRef=String(process.env.COMPANY_RUNTIME_REF||'origin/company-runtime').trim();
 const manifestFile=String(process.env.HOMEPAGE_TEST_CANDIDATE_OUTPUT||'test-game-candidates.json').trim();
 const limit=30;
 const minimumScore=80;
+const minimumValidationSchema=10;
 const clean=v=>String(v??'').trim();
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const showText=file=>execFileSync('git',['show',`${runtimeRef}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});
 const showJson=(file,fallback=null)=>{try{return JSON.parse(showText(file));}catch{return fallback;}};
 const existsRuntime=file=>{try{execFileSync('git',['cat-file','-e',`${runtimeRef}:${file}`],{stdio:'ignore'});return true;}catch{return false;}};
 const checkoutRuntime=file=>execFileSync('git',['checkout',runtimeRef,'--',file],{stdio:'inherit'});
+const sha256Text=value=>crypto.createHash('sha256').update(String(value??'')).digest('hex');
 const scoreOf=evidence=>Number(evidence?.webStrictScore??evidence?.strictReview?.totalScore);
 const homepagePass=evidence=>evidence?.homepageTestEligible===true&&Number.isFinite(scoreOf(evidence))&&scoreOf(evidence)>=minimumScore&&Array.isArray(evidence?.strictReview?.hardFailures)&&evidence.strictReview.hardFailures.length===0;
+const structured30MinutePass=evidence=>{
+  const session=evidence?.sessionContract||{};
+  const windows=Array.isArray(session.windows)?session.windows:[];
+  const expected=[[0,5],[5,15],[15,25],[25,30]];
+  const stages=Array.isArray(session.stageResults)?session.stageResults:[];
+  return Number(evidence?.validationSchemaVersion||evidence?.version||0)>=minimumValidationSchema&&Number(evidence?.sessionDepthMinutes)>=30&&session.pass===true&&session.stageGameplayPassed===true&&Number(session.stageCount)===4&&Number(session.completedStages)===4&&windows.length===4&&windows.every((row,index)=>Array.isArray(row)&&Number(row[0])===expected[index][0]&&Number(row[1])===expected[index][1])&&stages.length===4&&stages.every((row,index)=>Number(row.stage)===index+1&&row.clicked===true&&row.completed===true&&row.gameStateChanged===true);
+};
 
 const previousManifest=readJson(manifestFile,{candidates:[]});
 const previousRank=new Map((previousManifest.candidates||[]).map((row,index)=>[clean(row.gameId||row.id),index]));
@@ -21,6 +31,7 @@ const queue=showJson('development-queue.json',{items:[]});
 const runtimeCatalog=showJson('game-catalog.json',{games:[]});
 const catalogById=new Map((runtimeCatalog.games||[]).map(game=>[clean(game.id),game]));
 const candidates=[];
+let staleEvidenceCount=0;
 for(const item of queue.items||[]){
   const gameId=clean(item.gameId);if(!gameId)continue;
   if(clean(item.productionClass).toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
@@ -28,8 +39,13 @@ for(const item of queue.items||[]){
   const webSourcePath=clean(item.webSourcePath||`web-games/${gameId}`);
   const artbookSource=clean(item.artbookSource||`artbook-submissions/${gameId}/current.json`);
   const evidencePath=clean(item.webValidationEvidencePath);
-  if(!evidencePath||!existsRuntime(evidencePath)||!existsRuntime(`${webSourcePath}/index.html`)||!existsRuntime(artbookSource))continue;
+  const baselineSource=clean(item.designBaselineSource);
+  if(!evidencePath||!baselineSource||!existsRuntime(evidencePath)||!existsRuntime(`${webSourcePath}/index.html`)||!existsRuntime(baselineSource)||!existsRuntime(artbookSource))continue;
   const evidence=showJson(evidencePath,null);if(!homepagePass(evidence))continue;
+  const currentWebHash=sha256Text(showText(`${webSourcePath}/index.html`));
+  const currentBaselineHash=sha256Text(showText(baselineSource));
+  const freshnessPass=structured30MinutePass(evidence)&&clean(evidence?.sourceIndexSha256)===currentWebHash&&clean(evidence?.designBaselineSha256)===currentBaselineHash;
+  if(!freshnessPass){staleEvidenceCount++;continue;}
   const game=catalogById.get(gameId)||{};
   candidates.push({
     id:gameId,
@@ -96,7 +112,7 @@ fs.writeFileSync('game-artbooks.json',JSON.stringify(registry,null,2)+'\n');
 const manifest={
   version:5,updatedAt:new Date().toISOString(),policyDocument:'COMPANY_FLOW.md',officialCardRegistrationRequiresPromotionPass:true,
   homepageTestShelf:{
-    limit,minimumScore,order:'STRICT_IMPLEMENTATION_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresArtbook:true,hardGatesRequired:true,officialCard:false,promotionRequiredForOfficialCard:true,
+    limit,minimumScore,minimumValidationSchema,order:'STRICT_IMPLEMENTATION_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresArtbook:true,requiresFreshSourceHash:true,requiresFreshDesignBaselineHash:true,requiresStructured30MinuteEvidence:true,hardGatesRequired:true,officialCard:false,promotionRequiredForOfficialCard:true,
     cutlineScore,replacementPolicy:'STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE;TIE_PRESERVES_VALID_INCUMBENT',tieBreak:['EXISTING_TOP30_RANK','PROMOTION_REVALIDATION_PASS','LATEST_VALIDATION','GAME_ID'],
   },
   candidates:selected,
@@ -104,9 +120,11 @@ const manifest={
 fs.writeFileSync(manifestFile,JSON.stringify(manifest,null,2)+'\n');
 console.log(`HOMEPAGE_TEST_CANDIDATE_COUNT=${selected.length}`);
 console.log(`HOMEPAGE_TEST_CANDIDATE_IDS=${selected.map(x=>x.gameId).join(',')}`);
+console.log(`HOMEPAGE_TEST_STALE_EVIDENCE_REJECTED=${staleEvidenceCount}`);
 console.log('HOMEPAGE_TEST_CANDIDATE_LIMIT=30');
 console.log('HOMEPAGE_TEST_MINIMUM_SCORE=80');
+console.log(`HOMEPAGE_TEST_MINIMUM_VALIDATION_SCHEMA=${minimumValidationSchema}`);
 console.log(`HOMEPAGE_TEST_CUTLINE_SCORE=${cutlineScore??'OPEN'}`);
 console.log('HOMEPAGE_TEST_REPLACEMENT=STRICTLY_HIGHER_SCORE;TIE_PRESERVES_INCUMBENT');
 console.log('HOMEPAGE_TEST_ORDER=STRICT_IMPLEMENTATION_SCORE_DESC');
-console.log('HOMEPAGE_TEST_REQUIRES=WEB+POST_WEB_ARTBOOK+80_SCORE+NO_HARD_FAILURE');
+console.log('HOMEPAGE_TEST_REQUIRES=WEB+POST_WEB_ARTBOOK+80_SCORE+NO_HARD_FAILURE+FRESH_HASHES+STRUCTURED_30MIN');
