@@ -17,6 +17,7 @@ import {
 } from '../assets/vibe-continuous-queue.js';
 
 const clean = (value) => String(value ?? '').trim();
+const FULL_WEB_TRANSPORT_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-stream-http-v1';
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
 function parseArgs(argv = process.argv.slice(2)) {
@@ -36,6 +37,39 @@ function priority(value, ownerDirective) { if (ownerDirective) return 'owner-imm
 function bool(value) { return value === true || ['1','true','yes','y'].includes(clean(value).toLowerCase()); }
 function list(value) { return clean(value).split(',').map(clean).filter(Boolean); }
 function maxConcurrent(value) { return Math.max(1, Math.min(8, Math.floor(Number(value) || DEFAULT_MAX_CONCURRENT_TASKS))); }
+
+function isRecoverableFullWebTransportFailure(task = {}) {
+  const evidence = Array.isArray(task.evidence) ? task.evidence : [];
+  const blocker = clean(task.blocker);
+  return task.ownerDirective === true
+    && clean(task.target).toLowerCase() === 'web'
+    && /FULL_WEB_GAME_REBUILD/.test(clean(task.goal))
+    && task.status === 'failed'
+    && Number(task.retries || 0) > Number(task.maxRetries ?? 2)
+    && ['source-candidate-generation-failed','parallel-candidate-generation-failed'].includes(blocker)
+    && !evidence.includes(FULL_WEB_TRANSPORT_REPAIR_EVIDENCE);
+}
+
+export function recoverFixedFullWebTransportFailures(queueInput) {
+  const queue = createVibeContinuousQueue(queueInput);
+  let recovered = 0;
+  const tasks = queue.tasks.map((task) => {
+    if (!isRecoverableFullWebTransportFailure(task)) return task;
+    recovered += 1;
+    return {
+      ...task,
+      status: 'queued',
+      retries: 0,
+      blocker: null,
+      lastOutcome: 'RETRY_AFTER_INFRA_REPAIR',
+      evidence: [...new Set([...(task.evidence || []), FULL_WEB_TRANSPORT_REPAIR_EVIDENCE])]
+    };
+  });
+  return {
+    recovered,
+    queue: recovered ? createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks }) : queue
+  };
+}
 
 export function enqueueVibeTask(queueInput, taskInput = {}) {
   const queue = createVibeContinuousQueue(queueInput);
@@ -72,22 +106,25 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
 }
 
 export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null } = {}) {
-  const queue = createVibeContinuousQueue(queueInput);
+  const recovered = recoverFixedFullWebTransportFailures(queueInput);
+  const queue = recovered.queue;
   const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks: maxConcurrentTasks || queue.maxConcurrentTasks });
   const selected = selection.selected[0];
-  if (!selected) return { reserved: false, queue, selection };
+  if (!selected) return { reserved: false, queue, selection, recovered: recovered.recovered };
   const started = beginVibeQueueTask(queue, selected.id, { maxConcurrentTasks: maxConcurrentTasks || queue.maxConcurrentTasks });
-  return { reserved: started.started, task: started.task || null, queue: started.queue, selection };
+  return { reserved: started.started, task: started.task || null, queue: started.queue, selection, recovered: recovered.recovered };
 }
 
 export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null } = {}) {
-  const queue = createVibeContinuousQueue(queueInput);
+  const recovered = recoverFixedFullWebTransportFailures(queueInput);
+  const queue = recovered.queue;
   const started = beginVibeQueueBatch(queue, { maxConcurrentTasks: maxConcurrentTasks || queue.maxConcurrentTasks });
   return {
     reserved: started.started,
     tasks: started.tasks || [],
     queue: started.queue,
     selection: started.selection,
+    recovered: recovered.recovered,
     matrix: (started.tasks || []).map((task) => ({
       taskId: task.id,
       shard: task.shard,
@@ -176,11 +213,11 @@ export function runQueueCommand(args = {}) {
     result = { command, updated: true, taskId: clean(args.id), summary: summarizeVibeContinuousQueue(queue) };
   } else if (command === 'reserve') {
     const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: maxConcurrent(args.max) });
-    if (reserved.reserved) writeJson(file, reserved.queue);
+    if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
     result = { command, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'reserve-batch') {
     const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: maxConcurrent(args.max) });
-    if (reserved.reserved) writeJson(file, reserved.queue);
+    if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
     if (clean(args.output)) writeJson(clean(args.output), { version:1, createdAt:new Date().toISOString(), matrix:reserved.matrix });
     result = { command, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'await') {
@@ -213,6 +250,7 @@ export function runQueueCommand(args = {}) {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const result = runQueueCommand(parseArgs());
   console.log(`VIBE2_QUEUE_COMMAND=${result.command}`);
+  console.log(`VIBE2_QUEUE_RECOVERED=${result.recovered ?? 0}`);
   console.log(`VIBE2_QUEUE_NEXT=${result.summary?.nextTaskId || 'NONE'}`);
   console.log(`VIBE2_QUEUE_NEXT_BATCH=${(result.summary?.nextTaskIds || []).join(',') || 'NONE'}`);
   console.log(`VIBE2_QUEUE_RUNNING=${(result.summary?.runningTaskIds || []).join(',') || 'NONE'}`);
