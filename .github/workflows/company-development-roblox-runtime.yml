@@ -14,6 +14,7 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
+  ROBLOX_RUNTIME_HARNESS_VERSION: '5'
 
 jobs:
   source-plan:
@@ -755,6 +756,8 @@ jobs:
           state="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-dispatch-queue.json','utf8'));
+          const maxRetryableFailures=3;
+          const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');
           let packagePending=0,preflightReady=0,runtimeReady=0;
           for(const item of q.items||[]){
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
@@ -766,9 +769,13 @@ jobs:
               if(item.robloxBuildPreflightPassed!==true&&!item.robloxBuildPreflightFailedAt){
                 preflightReady++;
               }else if(item.robloxBuildPreflightPassed===true&&item.robloxRuntimePassed!==true){
-                const retryableInstallFailure=item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed';
-                const retryableMissingEvidence=Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
-                if(!item.robloxRuntimeFailedAt||retryableInstallFailure||retryableMissingEvidence)runtimeReady++;
+                const sameHarness=String(item.robloxRuntimeHarnessVersion||'')===harnessVersion;
+                const retryCount=sameHarness?Number(item.robloxRuntimeRetryCount||0):0;
+                const retryBudgetAvailable=retryCount<maxRetryableFailures;
+                const retryableInstallFailure=retryBudgetAvailable&&item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed';
+                const retryableRuntimeFailure=retryBudgetAvailable&&['roblox-studio-runtime-failed','roblox-studio-runtime-timeout'].includes(item.robloxRuntimeEvidence?.failure);
+                const retryableMissingEvidence=retryBudgetAvailable&&Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
+                if(!item.robloxRuntimeFailedAt||retryableInstallFailure||retryableRuntimeFailure||retryableMissingEvidence)runtimeReady++;
               }
               continue;
             }
@@ -785,9 +792,13 @@ jobs:
           echo "ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION=$package_pending"
           echo "ROBLOX_PREFLIGHT_READY_COUNT=$preflight_ready"
           echo "ROBLOX_RUNTIME_READY_COUNT=$runtime_ready"
-          if [[ "$package_pending" == '0' && ( "$preflight_ready" =~ ^[1-9][0-9]*$ || "$runtime_ready" =~ ^[1-9][0-9]*$ ) ]]; then
+          active_continuations="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime-continuation.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);const n=(j.workflow_runs||[]).filter(r=>['queued','in_progress','pending'].includes(r.status)).length;process.stdout.write(String(n));})")"
+          echo "ROBLOX_ACTIVE_CONTINUATIONS=$active_continuations"
+          if [[ "$package_pending" == '0' && ( "$preflight_ready" =~ ^[1-9][0-9]*$ || "$runtime_ready" =~ ^[1-9][0-9]*$ ) && "$active_continuations" == '0' ]]; then
             gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main
             echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'
+          elif [[ "$package_pending" == '0' && ( "$preflight_ready" =~ ^[1-9][0-9]*$ || "$runtime_ready" =~ ^[1-9][0-9]*$ ) ]]; then
+            echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=SKIP_ACTIVE'
           else
             echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=NO'
           fi
