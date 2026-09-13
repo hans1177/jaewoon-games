@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 36,
+  "revision": 37,
   "updatedAt": "2026-09-13",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
@@ -324,6 +324,8 @@
       "mayInventNewClaims": false,
       "departmentPageAuthorship": false,
       "startsAfterDesignPromotion": true,
+      "startsAfterWebStrictReview": true,
+      "minimumWebStrictScore": 80,
       "startsAtClass": "DEVELOPMENT_CONFIRMED"
     },
     "vibe2": {
@@ -385,6 +387,11 @@
       "approvedScopeCompletionRequired": true,
       "musicValidationRequired": true,
       "webCandidateMustPassBeforeTargetPlatformDispatch": true,
+      "webCandidateFormalImplementationPassRequiredBeforeTargetPlatformDispatch": true,
+      "webStrictHomepageMinimum": 80,
+      "formalImplementationMinimumForTargetPlatformDispatch": 90,
+      "artbookAfterWebStrictReview": true,
+      "artbookFailureBlocksHomepageRegistrationOnly": true,
       "webCandidatePublicPromotionRequiresValidationPass": true,
       "developmentMusic": {
         "firstUserGestureUnlockRequired": true,
@@ -412,10 +419,11 @@
         "HOLD"
       ],
       "waitingStates": [
-        "WAITING_POST_PROMOTION_ARTBOOK",
         "WAITING_WEB_PLAYABLE",
         "WAITING_WEB_GAMEPLAY_VALIDATION",
         "WAITING_WEB_GAMEPLAY_REVALIDATION",
+        "WAITING_POST_WEB_ARTBOOK",
+        "WAITING_WEB_STRICT_IMPROVEMENT",
         "WAITING_TARGET_PLATFORM_VALIDATION",
         "WAITING_TARGET_PLATFORM_REVALIDATION",
         "WAITING_REVALIDATION"
@@ -426,13 +434,16 @@
       ],
       "requiredFlow": [
         "LOAD_DESIGN_BASELINE",
-        "POST_PROMOTION_ARTBOOK",
         "WEB_PLAYABLE_QUEUE",
         "FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP",
         "MUSIC_RUNTIME_BIND",
         "WEB_GAMEPLAY_MUSIC_AND_APPROVED_SCOPE_VALIDATION",
+        "WEB_STRICT_REVIEW",
+        "POST_WEB_ARTBOOK_IF_SCORE_80_OR_HIGHER",
+        "HOMEPAGE_TEST_CANDIDATE_IF_ARTBOOK_READY",
         "WEB_EVIDENCE_DEPARTMENT_MEETING",
         "GAME_DESIGNER_WEB_REVISION",
+        "TARGET_PLATFORM_90_POINT_GATE",
         "TARGET_PLATFORM_SOURCE_BIND",
         "TARGET_PLATFORM_GAMEPLAY_VALIDATION",
         "TARGET_PLATFORM_TECHNICAL_VALIDATION",
@@ -480,7 +491,8 @@
         "REQUIRED_REVALIDATION_PASS",
         "NO_FATAL_UNRESOLVED_VALIDATION_BLOCKER"
       ],
-      "postPromotionArtbookRequiredBeforeWeb": true
+      "preWebArtbookForbidden": true,
+      "postWebArtbookRequiredForHomepage": true
     },
     "RELEASE_CONFIRMED": {
       "baseline": "RELEASE_BASELINE",
@@ -492,7 +504,7 @@
       "webCompanionRequired": true,
       "approvedScopeCompletionRequired": true,
       "vibe2PrimaryDeveloper": true,
-      "departmentDefaultRole": "ERROR_AND_RELEASE_RISK_REVIEW",
+      "departmentDefaultRole": "ERROR_AND_RELEASE_RISK_WATCH",
       "coreDesignLock": true,
       "exceptionMeetingForReleaseBlockingIssues": true,
       "sourceTreeBindingRequired": true,
@@ -655,7 +667,8 @@
     "third-party-source-code-assets-expression-must-not-be-copied",
     "market-evidence-is-target-design-reference-not-hard-seed-gate",
     "design-baseline-requires-target-platform-ux-platform-selection-and-five-department-scores",
-    "development-confirmed-full-web-companion-gameplay-music-pass-before-target-platform-dispatch",
+    "development-confirmed-web-80-plus-hard-gate-pass-can-enter-homepage-test-after-post-web-artbook",
+    "development-confirmed-web-90-plus-hard-gate-pass-before-target-platform-dispatch",
     "development-confirmed-material-change-requires-targeted-revalidation",
     "release-confirmed-target-is-project-selected-platform",
     "release-confirmed-current-web-and-target-platform-source-build-runtime-and-independent-qa-must-bind",
@@ -669,11 +682,20 @@
   "strictReview": {
     "scoreScale": 100,
     "designPassMinimum": 80,
+    "homepageTestMinimum": 80,
     "implementationPassMinimum": 90,
     "excellentDesignMinimum": 90,
     "scoreCannotOverrideHardGate": true,
     "designReviseMin": 60,
     "designRebuildMax": 59
+  },
+  "homepageTesting": {
+    "minimumWebStrictScore": 80,
+    "hardGatesMustPass": true,
+    "maxVisibleTestCandidates": 30,
+    "ranking": "STRICT_IMPLEMENTATION_SCORE_DESC",
+    "artbookRequiredForHomepageRegistration": true,
+    "officialCardRequiresPromotion": true
   },
   "productionThroughput": {
     "optimizationBudget": {
