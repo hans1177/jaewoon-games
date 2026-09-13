@@ -42,14 +42,24 @@ test('runtime uses the original package identity and an actual Roblox Studio mul
   assert.ok(workflow.includes("$packageId = 'Roblox.RobloxStudio'"));
   assert.ok(workflow.includes('RobloxStudioInstaller.exe'));
   assert.ok(workflow.includes("$deadline = (Get-Date).AddMinutes(8)"));
+  assert.ok(workflow.includes('Get-Process -Name RobloxStudioBeta'));
+  assert.ok(workflow.includes('ROBLOX_STUDIO_EXE='));
   assert.ok(!workflow.includes('RobloxStudioLauncherBeta.exe'));
   assert.ok(workflow.includes("item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed'"));
+  assert.ok(workflow.includes("item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING'"));
   assert.ok(workflow.includes('--task RunScript'));
   assert.ok(workflow.includes('--localPlaceFile'));
   assert.ok(workflow.includes('ROBLOX_ACTUAL_STUDIO_RUNTIME=PASS'));
   assert.ok(smoke.includes('StudioTestService:ExecuteMultiplayerTestAsync(1'));
   assert.ok(smoke.includes('RemoteEvent'));
   assert.ok(smoke.includes('ROBLOX_SERVER_CLIENT_BOUNDARY_PASS=YES'));
+});
+
+test('runtime checkpoint persistence survives merged artifact directory layouts',()=>{
+  assert.ok(workflow.includes("const root='/tmp/roblox-runtime-batch'"));
+  assert.ok(workflow.includes("entry.name.endsWith('.runtime.json')"));
+  assert.ok(workflow.includes('ROBLOX_RUNTIME_CHECKPOINT_FILES='));
+  assert.ok(!workflow.includes("const dir='/tmp/roblox-runtime-batch/results';const results=[];"));
 });
 
 test('runtime success does not invent later QA, datastore, regression, final review, or release evidence',()=>{
