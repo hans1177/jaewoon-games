@@ -12,43 +12,22 @@
   "singleAuthor": true,
   "content": {
     "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다",
-    "playerFantasy": "Survival",
+    "playerFantasy": "true",
     "coreFun": "readable survival needs",
     "coreLoop": [
-      "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure",
-      "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build",
-      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice"
+      "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     ],
-    "signatureSystems": [
-      {
-        "name": "Survival",
-        "purpose": "Survival game",
-        "playerChoice": "Survival"
-      }
-    ],
-    "progressionDirection": "Ascending",
-    "visualDirection": "Ascending",
-    "mobileUx": "Ascending",
-    "marketTargetDirection": "Ascending",
-    "steamExpansionDecision": "Ascending",
-    "multiplayerExpansionDecision": "Ascending",
-    "technicalAssumptions": [
-      "Survival game",
-      "Real-time survival run",
-      "Enemy pressure",
-      "Upgrade, perk, weapon, skill",
-      "Survive harder waves or a boss",
-      "Convert run result into next progression choice"
-    ],
-    "validationQuestions": [
-      "What is the main goal of the game?",
-      "What is the purpose of the survival game?",
-      "What is the player's choice in the survival game?"
-    ],
-    "openQuestions": [
-      "What is the current build in the survival game?",
-      "What are the upgrades, perks, weapons, or skills that change the current build?",
-      "What is the conversion result of the run result into the next progression choice?"
-    ]
+    "signatureSystems": [],
+    "progressionDirection": "survival",
+    "visualDirection": "survival",
+    "mobileUx": "1",
+    "marketTargetDirection": "survival",
+    "steamExpansionDecision": "review_in_design_cycle",
+    "multiplayerExpansionDecision": "review_in_design_cycle",
+    "technicalAssumptions": [],
+    "validationQuestions": [],
+    "openQuestions": []
   }
 }
