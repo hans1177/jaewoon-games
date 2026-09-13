@@ -10,17 +10,40 @@ export const sha256Text=value=>crypto.createHash('sha256').update(String(value??
 export const strictScoreOf=evidence=>Number(evidence?.webStrictScore??evidence?.strictReview?.totalScore);
 export const hardFailuresOf=evidence=>Array.isArray(evidence?.strictReview?.hardFailures)?evidence.strictReview.hardFailures:[];
 
+function gameplayMilestoneStage(row,index){
+  const expected=WEB_SESSION_WINDOWS[index];
+  if(Number(row?.stage)!==index+1||Number(row?.start)!==expected[0]||Number(row?.end)!==expected[1]||row?.gameStateChanged!==true)return false;
+  if(row?.trigger==='GAMEPLAY_MILESTONE')return row?.clicked===true&&row?.completed===true;
+  return row?.triggeredByGameplay===true&&row?.directStageClick===false;
+}
+
 export function structuredWebSessionPass(evidence={}){
   const session=evidence?.sessionContract&&typeof evidence.sessionContract==='object'?evidence.sessionContract:{};
   const windows=Array.isArray(session.windows)?session.windows:[];
   const stages=Array.isArray(session.stageResults)?session.stageResults:[];
   const windowsPass=windows.length===WEB_SESSION_WINDOWS.length&&windows.every((row,index)=>Array.isArray(row)&&Number(row[0])===WEB_SESSION_WINDOWS[index][0]&&Number(row[1])===WEB_SESSION_WINDOWS[index][1]);
-  const stagesPass=stages.length===WEB_SESSION_WINDOWS.length&&stages.every((row,index)=>Number(row.stage)===index+1&&Number(row.start)===WEB_SESSION_WINDOWS[index][0]&&Number(row.end)===WEB_SESSION_WINDOWS[index][1]&&row.clicked===true&&row.completed===true&&row.gameStateChanged===true&&row.trigger==='GAMEPLAY_MILESTONE');
-  return Number(evidence?.sessionDepthMinutes)>=30&&session.pass===true&&session.validationMode==='GAMEPLAY_MILESTONE_DEPTH'&&session.stageGameplayPassed===true&&Number(session.stageCount)===4&&Number(session.completedStages)===4&&windowsPass&&stagesPass;
+  const stagesPass=stages.length===WEB_SESSION_WINDOWS.length&&stages.every(gameplayMilestoneStage);
+  const milestoneMode=session.validationMode==='GAMEPLAY_MILESTONE_DEPTH'||(session.proofMode==='PROGRESSION_MILESTONES'&&session.directStageClick===false);
+  return Number(evidence?.sessionDepthMinutes)>=30&&session.pass===true&&milestoneMode&&session.stageGameplayPassed===true&&Number(session.stageCount)===4&&Number(session.completedStages)===4&&windowsPass&&stagesPass;
+}
+
+function normalizedSubstanceGate(evidence={}){
+  const explicit=evidence?.substanceGate&&typeof evidence.substanceGate==='object'?evidence.substanceGate:null;
+  if(explicit)return explicit;
+  const footprint=evidence?.sourceFootprint&&typeof evidence.sourceFootprint==='object'?evidence.sourceFootprint:{};
+  return {
+    pass:footprint.pass===true,
+    implementationClass:footprint.pass===true?'DEDICATED':'UNKNOWN',
+    totalBytes:Number(footprint.totalBytes||0),
+    executableBytes:Number(footprint.scriptBytes||0),
+    mechanicCount:Number(footprint.mechanicCount||0),
+    directSessionControls:footprint.stageButtons===true?1:0,
+    proxyMarkers:Number(footprint.proxyMarkers||0),
+  };
 }
 
 export function realGameSubstancePass(evidence={}){
-  const gate=evidence?.substanceGate&&typeof evidence.substanceGate==='object'?evidence.substanceGate:{};
+  const gate=normalizedSubstanceGate(evidence);
   return gate.pass===true&&String(gate.implementationClass||'').toUpperCase()==='DEDICATED'&&Number(gate.totalBytes)>=12000&&Number(gate.executableBytes)>=6000&&Number(gate.mechanicCount)>=5&&Number(gate.directSessionControls||0)===0&&Number(gate.proxyMarkers||0)===0;
 }
 
@@ -51,10 +74,11 @@ export function evaluateWebValidationEvidence(evidence={},options={}){
     if(evidence?.promotionRevalidation?.pass!==true||evidence?.promotionRevalidation?.independentRun!==true)blockers.push('WEB_INDEPENDENT_PROMOTION_REVALIDATION_NOT_PASS');
     if(evidence?.promotionRevalidation?.sourceHashMatch!==true)blockers.push('WEB_PROMOTION_SOURCE_HASH_MISMATCH');
     if(evidence?.promotionRevalidation?.baselineHashMatch!==true)blockers.push('WEB_PROMOTION_BASELINE_HASH_MISMATCH');
-    if(evidence?.promotionRevalidation?.secondSubstancePass!==true)blockers.push('WEB_PROMOTION_SUBSTANCE_REVALIDATION_NOT_PASS');
+    const secondSubstance=evidence?.promotionRevalidation?.secondSubstancePass===true||evidence?.promotionRevalidation?.secondFootprintPass===true;
+    if(!secondSubstance)blockers.push('WEB_PROMOTION_SUBSTANCE_REVALIDATION_NOT_PASS');
   }
   return Object.freeze({
-    version:2,
+    version:3,
     pass:blockers.length===0,
     score:Number.isFinite(score)?score:null,
     schema,

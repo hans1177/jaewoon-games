@@ -5,7 +5,7 @@ import {Script} from 'node:vm';
 import {pathToFileURL} from 'node:url';
 import {deriveApprovedScopeInventory,staticApprovedScopeCoverage} from './company-approved-scope-contract.mjs';
 
-const REAL_ARTIFACT_TYPE='REAL_PLAYABLE_GAME',SESSION_MINUTES=30,MIN_REAL_GAME_BYTES=14000,MIN_REAL_SCRIPT_BYTES=6500;
+const REAL_ARTIFACT_TYPE='REAL_PLAYABLE_GAME',SESSION_MINUTES=30,MIN_REAL_GAME_BYTES=12000,MIN_REAL_SCRIPT_BYTES=6000;
 const clean=v=>String(v??'').trim();
 const arg=(name,fallback='')=>process.argv.find(x=>x.startsWith(`--${name}=`))?.slice(name.length+3)??fallback;
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));

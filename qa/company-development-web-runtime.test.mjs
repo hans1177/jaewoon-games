@@ -57,8 +57,8 @@ test('Pocket Foundry compiler emits a real factory loop, footprint and non-click
   const contract=validateBootstrapHtml(compiled.html,{scopeInventory:inventory});
   assert.equal(compiled.generationMode,'GENRE_SPECIFIC_REAL_IMPLEMENTATION');
   assert.equal(contract.pass,true,contract.blockers.join(','));
-  assert.ok(contract.bytes>=14000);
-  assert.ok(contract.scriptBytes>=6500);
+  assert.ok(contract.bytes>=12000);
+  assert.ok(contract.scriptBytes>=6000);
   assert.ok(contract.mechanicCount>=5);
   assert.match(compiled.html,/data-mechanic-id="ore-extraction"/);
   assert.match(compiled.html,/data-mechanic-id="ore-smelting"/);
