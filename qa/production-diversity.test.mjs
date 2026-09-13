@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { gameplayFamily, selectDiverseTopRows, syncProductionClasses } from '../tools/company-status-sync.mjs';
+import { productionClassOf } from '../tools/production-classification.mjs';
 
 const fsStub={existsSync:()=>true};
 const project=(id,slug,total,productionClass)=>({id,slug,name:slug,sourcePath:`web-games/${slug}`,productionClass,profileStatus:productionClass,mode:productionClass==='DESIGN_ONLY'?'REDESIGN':'IMPROVE',developmentFocus:{total}});
@@ -51,6 +52,28 @@ test('status sync preserves semantic memberships without numeric tier state or f
   assert.equal(portfolio.projects.find(row=>row.id==='P6').productionClass,'DESIGN_ONLY');
   assert.equal(catalog.games.find(row=>row.id==='monster-a').homepageCategory,'design-only');
   assert.equal(Object.hasOwn(catalog.games.find(row=>row.id==='monster-a'),'productionTier'),false);
+});
+
+test('owner redesign reset outranks stale runtime project class until canonical promotion replaces the reset source',()=>{
+  const staleProject={productionClass:'RELEASE_CONFIRMED',profileStatus:'RELEASE_CONFIRMED'};
+  const resetGame={productionClass:'DESIGN_ONLY',productionClassSource:'OWNER_REDESIGN_RESET_2026-09-13',homepageCategory:'design-only'};
+  assert.equal(productionClassOf(staleProject,resetGame),'DESIGN_ONLY');
+
+  const portfolio={
+    productionClassPolicy:{fixedCounts:false,countsDerivedFromMembership:true,portfolioDiversity:{enabled:true,maxFocusScoreGap:1}},
+    developmentFocusPolicy:{maxFocusedGames:1},
+    projects:[{id:'OLD',slug:'reset-me',name:'reset-me',sourcePath:'web-games/reset-me',productionClass:'RELEASE_CONFIRMED',profileStatus:'RELEASE_CONFIRMED',selectedPlatform:'UNITY',developmentFocus:{total:9}}],
+  };
+  const catalog={games:[{id:'reset-me',name:'reset-me',genre:['생존'],productionClass:'DESIGN_ONLY',productionClassSource:'OWNER_REDESIGN_RESET_2026-09-13',homepageCategory:'design-only',homepageWebPlayable:false,hasWebArchive:false}]};
+  const result=syncProductionClasses({portfolio,catalog,artbooks:{artbooks:[]},filesystem:fsStub});
+  assert.deepEqual(result.state.designOnlyGameIds,['OLD']);
+  assert.equal(portfolio.projects[0].productionClass,'DESIGN_ONLY');
+  assert.equal(portfolio.projects[0].targetEngine,'design-only');
+  assert.equal(catalog.games[0].productionClass,'DESIGN_ONLY');
+  assert.equal(catalog.games[0].homepageCategory,'design-only');
+
+  const promotedGame={...resetGame,productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'DESIGN_BASELINE_READY',homepageCategory:'development-confirmed'};
+  assert.equal(productionClassOf({productionClass:'DEVELOPMENT_CONFIRMED'},promotedGame),'DEVELOPMENT_CONFIRMED');
 });
 
 test('selected platform remains final runtime target after mandatory full approved-scope Web companion validation',()=>{
