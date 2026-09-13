@@ -739,9 +739,11 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:53:06.341Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-runtime:roblox-studio-runtime-failed"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:48:20.438Z",
-      "updatedAt": "2026-09-13T10:13:43.651Z",
+      "updatedAt": "2026-09-13T10:18:20.848Z",
       "webValidationEvidencePath": "design/seed-roblox-story-rpg-adventur-blox-fruits/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -761,7 +763,7 @@
       "robloxRegressionPassed": false,
       "robloxFinalReviewPassed": false,
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_RESULT_MISSING",
+      "robloxFailureSignature": "roblox-studio-runtime-failed",
       "robloxBuildArtifactIdentity": "sha256:cca890c53511757fda2ac9781de4c96b4b9a971ae6531a178c1c269237f509e9",
       "robloxBuildPassedAt": "2026-09-13T05:55:34.650Z",
       "robloxLastSuccessfulStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
@@ -835,8 +837,30 @@
         "blockers": [],
         "authority": "roblox-five-distinct-lead-build-preflight"
       },
-      "robloxRuntimeFailedAt": "2026-09-13T07:58:50.539Z",
-      "robloxRuntimeEvidence": null
+      "robloxRuntimeFailedAt": "2026-09-13T10:18:20.848Z",
+      "robloxRuntimeEvidence": {
+        "version": 1,
+        "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+        "platform": "ROBLOX",
+        "checkedAt": "2026-09-13T10:18:05.9898714Z",
+        "sourceRevision": "1413a7775d56902e1350909ba30cea49456b6a88",
+        "artifactIdentity": "sha256:cca890c53511757fda2ac9781de4c96b4b9a971ae6531a178c1c269237f509e9",
+        "artifactRunId": 34741455260,
+        "runtimePassed": false,
+        "actualStudioRuntime": false,
+        "serverClientBoundaryPassed": false,
+        "playerCharacterPassed": false,
+        "saveExists": true,
+        "datastoreRejoinPassed": false,
+        "mobileControlUiPassed": false,
+        "multiplayerApplicable": false,
+        "multiplayerQaPassed": false,
+        "studioPackageIdentifier": "Roblox.RobloxStudio",
+        "studioInstallerSha256": "sha256:14e3e506d5cccc03eeb3ae006f2d55611fb0af64ac8d176dd23d8a3966099b74",
+        "failure": "roblox-studio-runtime-failed",
+        "authority": "roblox-actual-studio-runtime-evidence"
+      },
+      "robloxRuntimeRetryCount": 0
     },
     {
       "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
@@ -861,8 +885,10 @@
       "musicValidationPassed": true,
       "webValidationEvidencePath": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-09-13/web-gameplay-validation.json",
       "webValidationSourceRevision": "be9e5bbf86498d269c15f179776ee0573123f4c0",
-      "routingBlockers": [],
-      "updatedAt": "2026-09-13T10:13:43.651Z",
+      "routingBlockers": [
+        "roblox-runtime:roblox-studio-runtime-failed"
+      ],
+      "updatedAt": "2026-09-13T10:18:20.848Z",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
       "routeRevision": "e7ce5305dff6ef0fffdb16fb70d413bb76de4cbd162fb82c58e42490836647cc",
       "robloxSourceCandidateBranch": null,
@@ -883,7 +909,7 @@
       "robloxFinalReviewPassed": false,
       "robloxLastSuccessfulStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_RESULT_MISSING",
+      "robloxFailureSignature": "roblox-studio-runtime-failed",
       "robloxBuildPreflightPassedAt": "2026-09-13T07:46:43.587Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
@@ -954,8 +980,30 @@
         "blockers": [],
         "authority": "roblox-five-distinct-lead-build-preflight"
       },
-      "robloxRuntimeFailedAt": "2026-09-13T07:58:50.539Z",
-      "robloxRuntimeEvidence": null
+      "robloxRuntimeFailedAt": "2026-09-13T10:18:20.848Z",
+      "robloxRuntimeEvidence": {
+        "version": 1,
+        "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+        "platform": "ROBLOX",
+        "checkedAt": "2026-09-13T10:18:07.6950695Z",
+        "sourceRevision": "f70c7513c9dcd1135fe2e929afb676dd8b4b3c0d",
+        "artifactIdentity": "sha256:0a5312ce4b171ca4849727e9dacc47191a3388a4d4b40eb5e80ad8e4afd29493",
+        "artifactRunId": 34743301063,
+        "runtimePassed": false,
+        "actualStudioRuntime": false,
+        "serverClientBoundaryPassed": false,
+        "playerCharacterPassed": false,
+        "saveExists": true,
+        "datastoreRejoinPassed": false,
+        "mobileControlUiPassed": false,
+        "multiplayerApplicable": false,
+        "multiplayerQaPassed": false,
+        "studioPackageIdentifier": "Roblox.RobloxStudio",
+        "studioInstallerSha256": "sha256:14e3e506d5cccc03eeb3ae006f2d55611fb0af64ac8d176dd23d8a3966099b74",
+        "failure": "roblox-studio-runtime-failed",
+        "authority": "roblox-actual-studio-runtime-evidence"
+      },
+      "robloxRuntimeRetryCount": 0
     },
     {
       "gameId": "bug-defense",
@@ -1014,7 +1062,7 @@
       "routeRevision": "c22be990056ccde9069fb09f732ddd91c416b29abd1a23022897630738762ded"
     }
   ],
-  "updatedAt": "2026-09-13T10:14:57.225Z",
+  "updatedAt": "2026-09-13T10:18:20.848Z",
   "routerContractVersion": 2,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
