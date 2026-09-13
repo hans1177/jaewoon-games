@@ -4,6 +4,7 @@ on:
   workflow_run:
     workflows:
       - Company Status Sync
+      - Company DEVELOPMENT_CONFIRMED Runtime
     types: [completed]
   push:
     branches: [main]
@@ -18,6 +19,7 @@ on:
       - 'company.html'
       - 'game-catalog.json'
       - 'company-status.json'
+      - 'test-game-candidates.json'
       - 'public-release-baselines.json'
       - 'game-artbooks.json'
       - 'artbook-viewer.html'
@@ -31,6 +33,7 @@ on:
       - 'command.html'
       - '_headers'
       - 'tools/homepage-manager.mjs'
+      - 'tools/homepage-test-candidate-sync.mjs'
       - '.github/workflows/homepage-manager.yml'
   pull_request:
     branches: [main]
@@ -45,6 +48,7 @@ on:
       - 'company.html'
       - 'game-catalog.json'
       - 'company-status.json'
+      - 'test-game-candidates.json'
       - 'public-release-baselines.json'
       - 'game-artbooks.json'
       - 'artbook-viewer.html'
@@ -58,26 +62,31 @@ on:
       - 'command.html'
       - '_headers'
       - 'tools/homepage-manager.mjs'
+      - 'tools/homepage-test-candidate-sync.mjs'
       - '.github/workflows/homepage-manager.yml'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: homepage-manager-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
 jobs:
   manage-and-self-qa:
     name: Homepage Manager Self-QA
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout tested revision
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
+          fetch-depth: 0
 
       - name: Bind synchronized server runtime snapshot
         shell: bash
@@ -87,10 +96,10 @@ jobs:
             echo "HOMEPAGE_CATALOG_PATH=game-catalog.json" >> "$GITHUB_ENV"
             echo "HOMEPAGE_STATUS_PATH=company-status.json" >> "$GITHUB_ENV"
             echo 'HOMEPAGE_RUNTIME_SOURCE=PR_REVISION'
-          elif git fetch --no-tags --depth=1 origin company-runtime; then
+          elif git fetch origin "$COMPANY_RUNTIME_BRANCH"; then
             mkdir -p /tmp/homepage-runtime
-            git show origin/company-runtime:game-catalog.json > /tmp/homepage-runtime/game-catalog.json
-            git show origin/company-runtime:company-status.json > /tmp/homepage-runtime/company-status.json
+            git show "origin/$COMPANY_RUNTIME_BRANCH:game-catalog.json" > /tmp/homepage-runtime/game-catalog.json
+            git show "origin/$COMPANY_RUNTIME_BRANCH:company-status.json" > /tmp/homepage-runtime/company-status.json
             node -e "JSON.parse(require('fs').readFileSync('/tmp/homepage-runtime/game-catalog.json','utf8'));JSON.parse(require('fs').readFileSync('/tmp/homepage-runtime/company-status.json','utf8'))"
             echo "HOMEPAGE_CATALOG_PATH=/tmp/homepage-runtime/game-catalog.json" >> "$GITHUB_ENV"
             echo "HOMEPAGE_STATUS_PATH=/tmp/homepage-runtime/company-status.json" >> "$GITHUB_ENV"
@@ -101,24 +110,37 @@ jobs:
             echo 'HOMEPAGE_RUNTIME_SOURCE=MAIN_FALLBACK'
           fi
 
+      - name: Sync top rated validated test candidates
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git show-ref --verify --quiet "refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"; then
+            node --check tools/homepage-test-candidate-sync.mjs
+            COMPANY_RUNTIME_REF="origin/$COMPANY_RUNTIME_BRANCH" node tools/homepage-test-candidate-sync.mjs
+          else
+            echo 'HOMEPAGE_TEST_SYNC=NO_RUNTIME_BRANCH'
+          fi
+
       - name: Run homepage manager contract
         run: node tools/homepage-manager.mjs
 
-      - name: Validate homepage live files and every playable Web route
+      - name: Validate homepage live files, official routes and top20 test shelf
         run: |
           set -euo pipefail
           for file in \
-            index.html company.html game-catalog.json company-status.json \
+            index.html company.html game-catalog.json company-status.json test-game-candidates.json \
             public-release-baselines.json game-artbooks.json artbook-viewer.html \
             assets/homepage-enhancements.js assets/homepage-enhancements-core.js assets/artbook-viewer.js manifest.webmanifest install.html sw.js offline.html command.html \
             COMPANY_FLOW.md company-directive.json HOMEPAGE_OPERATIONS.md REMOTE_AUTOMATION.md _headers; do
             test -f "$file"
           done
-          node -e "for (const file of ['game-catalog.json','company-status.json','public-release-baselines.json','game-artbooks.json','company-directive.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
+          node -e "for (const file of ['game-catalog.json','company-status.json','test-game-candidates.json','public-release-baselines.json','game-artbooks.json','company-directive.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
           node --check assets/homepage-enhancements.js
           node --check assets/homepage-enhancements-core.js
           node --check assets/artbook-viewer.js
           node --check tools/homepage-manager.mjs
+          node --check tools/homepage-test-candidate-sync.mjs
           grep -Fq '/assets/homepage-enhancements.js' index.html
           grep -Fq 'const SYNC_INTERVAL_MS=5000;' assets/homepage-enhancements-core.js
           grep -Fq "const RAW_MAIN_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/main';" assets/homepage-enhancements-core.js
@@ -126,16 +148,29 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const catalog=JSON.parse(fs.readFileSync(process.env.HOMEPAGE_CATALOG_PATH||'game-catalog.json','utf8'));
+          const tests=JSON.parse(fs.readFileSync('test-game-candidates.json','utf8'));
           const failures=[];
           for(const game of catalog.games||[]){
-            if(game.homepageWebPlayable!==true)continue;
+            const official=game.homepageOfficialCard===true||String(game.productionClass||'').toUpperCase()==='RELEASE_CONFIRMED';
+            if(!official||game.homepageWebPlayable!==true)continue;
             const webPath=String(game.webPath||'').replace(/^\/+|\/+$/g,'');
             const expected=`web-games/${game.id}`;
             const index=webPath?`${webPath}/index.html`:'';
-            if(webPath!==expected||!index||!fs.existsSync(index)||fs.statSync(index).size<512)failures.push(game.id);
+            if(webPath!==expected||!index||!fs.existsSync(index)||fs.statSync(index).size<512)failures.push(`official:${game.id}`);
           }
-          if(failures.length)throw new Error(`homepage Web route failures: ${failures.join(',')}`);
-          console.log(`HOMEPAGE_WEB_ROUTE_QA=PASS COUNT=${(catalog.games||[]).filter(g=>g.homepageWebPlayable===true).length}`);
+          const rows=tests.candidates||[];
+          if(rows.length>20)failures.push(`test-overflow:${rows.length}`);
+          for(let i=0;i<rows.length;i++){
+            const row=rows[i],score=Number(row.strictScore??row.reviewScore??row.totalScore??row.score);
+            if(row.homepageTestCandidate!==true||row.homepageOfficialCard!==false||row.strictReviewVerdict!=='PASS'||!Number.isFinite(score)||score<90)failures.push(`test-contract:${row.gameId||row.id}`);
+            if(i&&score>Number(rows[i-1].strictScore??rows[i-1].score))failures.push('test-score-order');
+            const web=String(row.webPath||row.testUrl||'').replace(/^\/+|\/+$/g,'');
+            if(!web||!fs.existsSync(`${web}/index.html`)||fs.statSync(`${web}/index.html`).size<512)failures.push(`test-web:${row.gameId||row.id}`);
+            if(!row.artbookSource||!fs.existsSync(row.artbookSource))failures.push(`test-artbook:${row.gameId||row.id}`);
+          }
+          if(failures.length)throw new Error(`homepage route/test failures: ${failures.join(',')}`);
+          console.log(`HOMEPAGE_TEST_SHELF_QA=PASS COUNT=${rows.length}/20`);
+          console.log('HOMEPAGE_OFFICIAL_CARD_BOUNDARY=PASS');
           NODE
           node <<'NODE'
           const fs=require('fs');
@@ -148,13 +183,13 @@ jobs:
             if(!games.has(book.gameId)){failures.push(`${book.id}:catalog`);continue;}
             const source=String(book.sourceFile||'').replace(/^\/+/, '');
             if(!source||!fs.existsSync(source)){failures.push(`${book.id}:source`);continue;}
-            if(source.endsWith('.json')){
-              try{JSON.parse(fs.readFileSync(source,'utf8'));}catch{failures.push(`${book.id}:json`);}
-            }
+            if(source.endsWith('.json')){try{JSON.parse(fs.readFileSync(source,'utf8'));}catch{failures.push(`${book.id}:json`);}}
           }
           const core=fs.readFileSync('assets/homepage-enhancements-core.js','utf8');
+          const entry=fs.readFileSync('assets/homepage-enhancements.js','utf8');
           const viewer=fs.readFileSync('assets/artbook-viewer.js','utf8');
           if(!core.includes('getLatestArtbook(')||!core.includes('/artbook-viewer.html?game='))failures.push('homepage:artbook-link-contract');
+          if(!entry.includes('TEST_SHELF_LIMIT=20')||!entry.includes('enforceOfficialCardVisibility'))failures.push('homepage:test-shelf-contract');
           if(!viewer.includes("loadJson('/game-artbooks.json'"))failures.push('viewer:registry-contract');
           if(failures.length)throw new Error(`homepage artbook failures: ${failures.join(',')}`);
           console.log(`HOMEPAGE_ARTBOOK_QA=PASS COUNT=${visible.length}`);
@@ -169,15 +204,34 @@ jobs:
           echo 'HOMEPAGE_LIVE_SYNC=PASS'
           echo 'HOMEPAGE_MANAGER_SELF_QA=PASS'
 
+      - name: Publish validated test shelf assets to main
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-homepage-manager'
+          git config user.email 'homepage-manager@users.noreply.github.com'
+          git add -- test-game-candidates.json game-artbooks.json web-games artbook-submissions
+          if git diff --cached --quiet; then
+            echo 'HOMEPAGE_TEST_PUBLICATION=NO_CHANGES'
+            exit 0
+          fi
+          git commit -m 'homepage: publish validated top20 test shelf [skip ci]'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
+          echo 'HOMEPAGE_TEST_PUBLICATION=MAIN_SYNCED_AFTER_STRICT_PASS'
+
   director-supervision:
     name: Director Single Post-Work Supervision
     needs: manage-and-self-qa
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout tested revision
+      - name: Checkout supervised revision
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
           fetch-depth: 1
 
       - name: Verify single manager and supervisor policy
@@ -192,6 +246,10 @@ jobs:
           if(h.managerCount!==1||h.supervisorCount!==1) throw new Error('homepage role count mismatch');
           if(h.secondHomepageManagerForbidden!==true||h.secondHomepageSupervisorForbidden!==true) throw new Error('duplicate manager/supervisor not forbidden');
           if(h.fixedFunctionProtection?.ownerLocked!==true) throw new Error('fixed-function owner lock missing');
+          const tests=JSON.parse(fs.readFileSync('test-game-candidates.json','utf8'));
+          const rows=tests.candidates||[];
+          if(rows.length>20)throw new Error('DIRECTOR_TEST_SHELF_OVER_20');
+          if(rows.some(x=>x.homepageOfficialCard!==false||x.homepageTestCandidate!==true||x.strictReviewVerdict!=='PASS'||Number(x.strictScore??x.score)<90))throw new Error('DIRECTOR_INVALID_TEST_CANDIDATE');
           NODE
 
       - name: Recheck owner-fixed PWA and chat contract
@@ -207,4 +265,5 @@ jobs:
           grep -Fq 'id="sendBtn"' command.html
           grep -Fq 'id="claimBtn"' command.html
           echo 'DIRECTOR_HOMEPAGE_SUPERVISION=PASS'
+          echo 'DIRECTOR_TEST_SHELF_SUPERVISION=PASS'
           echo 'OWNER_FIXED_PWA_CHAT_REGRESSION=PASS'
