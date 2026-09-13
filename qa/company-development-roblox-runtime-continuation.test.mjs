@@ -44,7 +44,7 @@ test('five-lead preflight requires an exact immutable build before runtime',()=>
 });
 
 test('runtime uses authenticated self-hosted Windows and the original package identity for an actual Roblox Studio multiplayer session',()=>{
-  assert.ok(workflow.includes("ROBLOX_RUNTIME_HARNESS_VERSION: '6'"));
+  assert.ok(workflow.includes("ROBLOX_RUNTIME_HARNESS_VERSION: '7'"));
   assert.ok(workflow.includes('runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]'));
   assert.ok(!workflow.includes('runs-on: windows-latest'));
   assert.ok(workflow.includes('ROBLOX_RUNTIME_LOCAL_WIP_MAX=1'));
@@ -52,10 +52,16 @@ test('runtime uses authenticated self-hosted Windows and the original package id
   assert.ok(workflow.includes("const retryableAuthMigration=!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-authentication-required'"));
   assert.ok(workflow.includes('development-roblox-package-$env:GAME_ID'));
   assert.ok(workflow.includes('No retained package matches'));
+  assert.ok(workflow.includes('Resolve authenticated local Roblox Studio'));
   assert.ok(workflow.includes('RobloxStudioBeta.exe'));
-  assert.ok(workflow.includes("$packageId = 'Roblox.RobloxStudio'"));
-  assert.ok(workflow.includes('RobloxStudioInstaller.exe'));
-  assert.ok(workflow.includes("$deadline = (Get-Date).AddMinutes(8)"));
+  assert.ok(workflow.includes('ROBLOX_STUDIO_LOCAL_PROFILE=PASS'));
+  assert.ok(workflow.includes('ROBLOX_STUDIO_INSTALL=SKIPPED_EXISTING_AUTHENTICATED_PROFILE'));
+  assert.ok(workflow.includes('studio_source=authenticated-local-profile'));
+  assert.ok(workflow.includes("'roblox-studio-local-profile-unavailable'"));
+  assert.ok(!workflow.includes('RobloxStudioInstaller.exe'));
+  assert.ok(!workflow.includes("Invoke-WebRequest -Uri 'https://setup.rbxcdn.com/RobloxStudioInstaller.exe'"));
+  assert.ok(!workflow.includes("$deadline = (Get-Date).AddMinutes(8)"));
+  assert.ok(!workflow.includes("$packageId = 'Roblox.RobloxStudio'"));
   assert.ok(workflow.includes('Get-Process -Name RobloxStudioBeta'));
   assert.ok(workflow.includes('ROBLOX_STUDIO_EXE='));
   assert.ok(!workflow.includes('RobloxStudioLauncherBeta.exe'));
