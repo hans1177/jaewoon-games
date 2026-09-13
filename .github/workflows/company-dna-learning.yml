@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'tools/company-dna-learning.mjs'
+      - 'tools/company-learning-sanitize.mjs'
       - 'tools/department-learning-memory.mjs'
       - 'tools/evolution-evidence-recorder.mjs'
       - 'tools/vibe2-weight-learning.mjs'
@@ -18,6 +19,7 @@ on:
   pull_request:
     paths:
       - 'tools/company-dna-learning.mjs'
+      - 'tools/company-learning-sanitize.mjs'
       - 'tools/department-learning-memory.mjs'
       - 'tools/evolution-evidence-recorder.mjs'
       - 'tools/autonomous-department-cycle.mjs'
@@ -27,6 +29,7 @@ on:
       - 'qa/department-learning-memory.test.mjs'
       - 'qa/vibe2-weight-learning.test.mjs'
       - 'qa/vibe2-distillation-status.test.mjs'
+      - 'company-learning/invalidated-learning-sources.json'
       - '.github/workflows/company-dna-learning.yml'
   workflow_run:
     workflows: ['Autonomous Candidate Promotion']
@@ -56,6 +59,7 @@ jobs:
         with:
           node-version: '22'
       - run: node --check tools/company-dna-learning.mjs
+      - run: node --check tools/company-learning-sanitize.mjs
       - run: node --check tools/department-learning-memory.mjs
       - run: node --check tools/evolution-evidence-recorder.mjs
       - run: node --check tools/autonomous-department-cycle.mjs
@@ -65,6 +69,17 @@ jobs:
       - run: node --test qa/department-learning-memory.test.mjs
       - run: node --test qa/vibe2-weight-learning.test.mjs
       - run: node --test qa/vibe2-distillation-status.test.mjs
+      - name: Invalidate only legacy generated learning revisions
+        run: |
+          node tools/company-learning-sanitize.mjs \
+            --policy=company-learning/invalidated-learning-sources.json \
+            --evidence-dir=company-learning/evidence \
+            --sample-dir=company-learning/training-samples \
+            --dna=company-learning/company-dna.json \
+            --ledger=department-experience.json
+          echo 'LEGACY_GAME_FILES_DELETED=NO'
+          echo 'FUTURE_REVISIONS_ALLOWED=YES'
+          echo 'OWNER_EXISTING_GAMES_BLANKET_BLOCKED=NO'
       - name: Deterministic evidence ingestion
         run: node tools/company-dna-learning.mjs
       - name: Ingest independent-QA verified department outcomes
@@ -80,9 +95,11 @@ jobs:
           grep -Fq "structured learning must not mutate XP/history authority" tools/department-learning-memory.mjs
           grep -Fq "LOCAL_SELF_HOSTED_ONLY" tools/vibe2-distillation-status.mjs
           grep -Fq "FIXED_HOLDOUT_AB_THEN_CANARY" tools/vibe2-distillation-status.mjs
+          test -f company-learning/invalidated-learning-sources.json
           echo 'DNA_SELF_PROMOTION=NO'
           echo 'DEPARTMENT_LEARNING_EXPANDS_AUTHORITY=NO'
           echo 'DISTILLATION_AUTO_PROMOTION=NO'
+          echo 'LEGACY_INVALIDATION_POLICY=ENFORCED'
       - name: Publish refreshed memory as verified branch
         if: github.event_name != 'pull_request'
         shell: bash
