@@ -22,7 +22,6 @@ priority:
 pipelineExecution:
   existingPipelineIsAuthoritative: true
   reuseExistingPipelineRequired: true
-  newParallelPipelineForSameStageForbidden: true
   adHocBypassChainForbidden: true
   wrapperOrShadowChainForbidden: true
   repairExistingPipelineAtFailurePoint: true
@@ -31,7 +30,6 @@ pipelineExecution:
   duplicateTriggerPathForbidden: true
   temporaryRecoveryMustRejoinCanonicalPipelineImmediately: true
   cronOrIndependentLoopMustNotReplaceExistingEventChain: true
-  ownerDirectExceptionRequiredToCreateNewPipeline: true
 
 documentationSynchronization:
   centralPolicyFirst: true
