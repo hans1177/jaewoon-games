@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: roblox-runtime-v8-local-finalize
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   finalize:
@@ -26,9 +26,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
       - name: Verify local GitHub CLI authentication
         shell: pwsh
         run: |
@@ -38,6 +35,8 @@ jobs:
       - name: Apply and verify canonical v8 migration
         shell: pwsh
         run: |
+          python --version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tools/company-finalize-roblox-runtime-v8.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node --check tools/company-development-roblox-runtime-persist.mjs
