@@ -283,7 +283,7 @@ jobs:
   runtime-worker:
     name: Roblox Studio runtime ${{ matrix.gameId }}
     needs: runtime-plan
-    if: needs.runtime-plan.outputs.count != '0'
+    if: always() && needs.runtime-plan.result == 'success' && needs.runtime-plan.outputs.count != '0'
     strategy:
       fail-fast: false
       max-parallel: 2
