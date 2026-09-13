@@ -8,12 +8,15 @@ on:
       - '.github/workflows/company-development-unity-runtime.yml'
       - '.github/workflows/unity-android-regression.yml'
       - 'tools/company-selected-platform-router.mjs'
+      - 'tools/company-development-web-bootstrap.mjs'
+      - 'tools/company-development-web-gameplay-validation.mjs'
       - 'tools/company-development-unity-platform.mjs'
       - 'tools/company-development-unity-bootstrap.mjs'
       - 'tools/company-development-unity-evidence.mjs'
       - 'tools/company-development-validation-cycle.mjs'
       - 'tools/design-only-promotion-sync.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
+      - 'qa/company-development-web-runtime.test.mjs'
       - 'qa/company-development-unity-runtime.test.mjs'
       - 'qa/design-only-promotion-sync.test.mjs'
       - 'qa/company-speed-sequence-workflow.test.mjs'
@@ -33,8 +36,195 @@ env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
 jobs:
+  web-gate:
+    name: required Web gameplay and music gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      target_count: ${{ steps.targets.outputs.target_count }}
+      pass_count: ${{ steps.validate.outputs.pass_count }}
+      fail_count: ${{ steps.validate.outputs.fail_count }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify Web and promotion contracts
+        run: |
+          node --check tools/company-development-web-bootstrap.mjs
+          node --check tools/company-development-web-gameplay-validation.mjs
+          node --check tools/design-only-promotion-sync.mjs
+          node --test qa/company-development-web-runtime.test.mjs qa/design-only-promotion-sync.test.mjs
+
+      - name: Fetch current company runtime
+        run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+
+      - name: Resolve every DEVELOPMENT_CONFIRMED game missing Web or music evidence
+        id: targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const rows=(q.items||[]).filter(item=>{
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
+            const state=String(item.canonicalState||'').toUpperCase();
+            if(state==='DEVELOPMENT_BLOCKED')return false;
+            return !(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true);
+          }).map(item=>({
+            gameId:item.gameId,
+            gameName:item.gameName||item.gameId,
+            designBaselineSource:item.designBaselineSource,
+            artbookSource:item.artbookSource||`artbook-submissions/${item.gameId}/current.json`,
+            selectedPlatform:item.selectedPlatform||item.targetPlatform||'ROBLOX',
+            targetSourcePath:item.targetSourcePath||item.sourcePath||'',
+            webSourcePath:item.webSourcePath||item.optionalWebSourcePath||`web-games/${item.gameId}`,
+          }));
+          fs.writeFileSync('/tmp/web-targets.json',JSON.stringify(rows,null,2)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`target_count=${rows.length}\n`);
+          console.log(`WEB_REQUIRED_QUEUE_COUNT=${rows.length}`);
+          console.log(`WEB_REQUIRED_GAME_IDS=${rows.map(x=>x.gameId).join(',')}`);
+          NODE
+
+      - name: Install browser runtime only when Web validation is required
+        if: steps.targets.outputs.target_count != '0'
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Build and validate required Web slices serially
+        id: validate
+        if: steps.targets.outputs.target_count != '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import {execFileSync} from 'node:child_process';
+          const rows=JSON.parse(fs.readFileSync('/tmp/web-targets.json','utf8'));
+          const results=[];
+          const persistRoot='/tmp/web-persist';
+          fs.rmSync(persistRoot,{recursive:true,force:true});
+          fs.mkdirSync(persistRoot,{recursive:true});
+          const show=(ref,file)=>execFileSync('git',['show',`${ref}:${file}`],{maxBuffer:32*1024*1024});
+          const materialize=(ref,file)=>{const out=path.resolve(file);fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,show(ref,file));};
+          let passCount=0,failCount=0;
+          for(let i=0;i<rows.length;i++){
+            const item=rows[i];
+            const stamp=new Date().toISOString();
+            const candidateId=`development-web-${item.gameId}-${process.env.GITHUB_RUN_ID}`;
+            const candidatePath=`web-games/.autonomous-candidates/${candidateId}`;
+            const workDir=path.join('/tmp/web-work',item.gameId);
+            const bootstrapEvidence=path.join(workDir,'web-bootstrap-evidence.json');
+            const gameplayEvidence=path.join(workDir,'web-gameplay-validation.json');
+            const screenshot=path.join(workDir,'web-gameplay.png');
+            fs.mkdirSync(workDir,{recursive:true});
+            try{
+              if(!item.designBaselineSource)throw new Error('DESIGN_BASELINE_SOURCE_MISSING');
+              materialize(`origin/${process.env.COMPANY_RUNTIME_BRANCH}`,item.designBaselineSource);
+              materialize(`origin/${process.env.COMPANY_RUNTIME_BRANCH}`,item.artbookSource);
+              execFileSync(process.execPath,['tools/company-development-web-bootstrap.mjs',
+                `--game-id=${item.gameId}`,`--game-name=${item.gameName}`,
+                `--baseline=${item.designBaselineSource}`,`--artbook=${item.artbookSource}`,
+                `--source-path=${item.webSourcePath}`,`--candidate-id=${candidateId}`,
+                `--candidate-path=${candidatePath}`,`--source-commit=${process.env.GITHUB_SHA}`,
+                `--evidence=${bootstrapEvidence}`],{stdio:'inherit'});
+              execFileSync(process.execPath,['tools/company-development-web-gameplay-validation.mjs',
+                `--game-id=${item.gameId}`,`--source=${candidatePath}`,`--port=${4181+i}`,
+                `--output=${gameplayEvidence}`,`--screenshot=${screenshot}`],{stdio:'inherit'});
+              const report=JSON.parse(fs.readFileSync(gameplayEvidence,'utf8'));
+              if(report.pass!==true||report.musicRuntime?.pass!==true)throw new Error('WEB_OR_MUSIC_EVIDENCE_NOT_PASS');
+              const stableSource=`web-games/${item.gameId}`;
+              report.candidateSourcePath=candidatePath;
+              report.sourcePath=stableSource;
+              report.policyDocument='COMPANY_FLOW.md';
+              report.requiredBeforeTargetPlatform=true;
+              fs.writeFileSync(gameplayEvidence,JSON.stringify(report,null,2)+'\n');
+              const webOut=path.join(persistRoot,stableSource);
+              fs.mkdirSync(webOut,{recursive:true});
+              fs.copyFileSync(path.join(candidatePath,'index.html'),path.join(webOut,'index.html'));
+              const evidenceOut=path.join(persistRoot,item.designBaselineSource.replace(/[^/]+$/,'web-gameplay-validation.json'));
+              fs.mkdirSync(path.dirname(evidenceOut),{recursive:true});
+              fs.copyFileSync(gameplayEvidence,evidenceOut);
+              results.push({gameId:item.gameId,pass:true,update:{
+                status:'PENDING',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'PENDING_SELECTED_PLATFORM_BIND',
+                sourcePath:item.targetSourcePath,webSourcePath:stableSource,webValidationRequired:true,musicValidationRequired:true,
+                webValidationPassedAt:stamp,musicValidationPassed:true,webValidationEvidencePath:item.designBaselineSource.replace(/[^/]+$/,'web-gameplay-validation.json'),
+                webValidationSourceRevision:process.env.GITHUB_SHA,routingBlockers:[],updatedAt:stamp,
+              }});
+              passCount++;
+              console.log(`WEB_GAMEPLAY_MUSIC_PASS=${item.gameId}`);
+            }catch(error){
+              const signature=String(error?.message||error).replace(/\s+/g,' ').slice(0,240);
+              results.push({gameId:item.gameId,pass:false,update:{
+                status:'ACTIVE',currentStep:'WEB_GAMEPLAY_AND_MUSIC_VALIDATION',canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION',
+                sourcePath:item.webSourcePath,webSourcePath:item.webSourcePath,webValidationRequired:true,musicValidationRequired:true,
+                webValidationPassedAt:null,musicValidationPassed:false,routingBlockers:[`web-gameplay-music:${signature}`],webValidationLastAttemptAt:stamp,updatedAt:stamp,
+              }});
+              failCount++;
+              console.log(`WEB_GAMEPLAY_MUSIC_FAIL=${item.gameId}:${signature}`);
+            }
+          }
+          fs.writeFileSync('/tmp/web-results.json',JSON.stringify(results,null,2)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`pass_count=${passCount}\nfail_count=${failCount}\n`);
+          console.log(`WEB_GAMEPLAY_MUSIC_PASS_COUNT=${passCount}`);
+          console.log(`WEB_GAMEPLAY_MUSIC_FAIL_COUNT=${failCount}`);
+          NODE
+
+      - name: Emit empty validation counters
+        id: empty
+        if: steps.targets.outputs.target_count == '0'
+        run: |
+          echo 'pass_count=0' >> "$GITHUB_OUTPUT"
+          echo 'fail_count=0' >> "$GITHUB_OUTPUT"
+          echo 'WEB_REQUIRED_QUEUE=EMPTY'
+
+      - name: Persist Web evidence and queue state to company runtime
+        if: steps.targets.outputs.target_count != '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-development-web-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git reset --hard origin/main
+          git clean -fd
+          git checkout -B development-web-persist "origin/$COMPANY_RUNTIME_BRANCH"
+          cp -R /tmp/web-persist/. . 2>/dev/null || true
+          node <<'NODE'
+          const fs=require('fs');
+          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const results=JSON.parse(fs.readFileSync('/tmp/web-results.json','utf8'));
+          for(const result of results){
+            const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
+            if(!item)throw new Error(`queue item missing: ${result.gameId}`);
+            Object.assign(item,result.update);
+          }
+          queue.webValidationPolicy='REQUIRED_BEFORE_TARGET_PLATFORM';
+          queue.webValidationContractVersion=1;
+          queue.updatedAt=new Date().toISOString();
+          fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          NODE
+          git add development-queue.json web-games/ design/
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'runtime: validate DEVELOPMENT_CONFIRMED Web gameplay and music [skip ci]'
+            git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
+          fi
+          echo 'WEB_RUNTIME_PERSIST=PASS'
+          echo 'PUBLIC_MAIN_WRITE=NO'
+
   route:
-    name: route DEVELOPMENT_CONFIRMED selected platforms
+    name: route Web-validated DEVELOPMENT_CONFIRMED selected platforms
+    needs: web-gate
+    if: always() && needs.web-gate.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     outputs:
@@ -64,7 +254,7 @@ jobs:
       - name: Fetch current company runtime
         run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
 
-      - name: Change detection and one routing decision point
+      - name: Change detection, Web gate enforcement and one routing decision point
         id: route
         shell: bash
         run: |
@@ -81,6 +271,7 @@ jobs:
           const platforms=new Set();
           for(const item of q.items||[]){
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            if(!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
             const status=String(item.status||'').toUpperCase();
             const step=String(item.currentStep||'').toUpperCase();
             const state=String(item.canonicalState||'').toUpperCase();
@@ -116,6 +307,7 @@ jobs:
           fs.appendFileSync(output,`dispatch_uefn=${platforms.has('FORTNITE_UEFN')?'true':'false'}\n`);
           console.log(`DEVELOPMENT_ROUTE_COUNT=${updates.length}`);
           console.log(`DEVELOPMENT_ROUTE_PLATFORMS=${[...platforms].join(',')}`);
+          console.log('WEB_GAMEPLAY_MUSIC_GATE=ENFORCED');
           console.log('CHANGE_DETECTION=PASS');
           console.log('CHEAP_PRECHECK=PASS_OR_BLOCK_RECORDED');
           NODE
@@ -139,7 +331,7 @@ jobs:
           }
           queue.routerContractVersion=2;
           queue.routerPolicy='COMPANY_FLOW.md';
-          queue.webGateRequired=false;
+          queue.webGateRequired=true;
           queue.cronRole='WATCHDOG_AND_RECOVERY_ONLY';
           queue.updatedAt=new Date().toISOString();
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
@@ -147,7 +339,7 @@ jobs:
           git add development-queue.json
           git diff --cached --check
           if ! git diff --cached --quiet; then
-            git commit -m 'runtime: route DEVELOPMENT_CONFIRMED by selected platform [skip ci]'
+            git commit -m 'runtime: route Web-validated DEVELOPMENT_CONFIRMED by selected platform [skip ci]'
             git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
           fi
           echo 'DEVELOPMENT_ROUTER_PERSIST=PASS'
@@ -156,7 +348,7 @@ jobs:
         if: always()
         run: |
           echo 'DEVELOPMENT_PIPELINE=ONE_CANONICAL_PIPELINE'
-          echo 'WEB_GAMEPLAY_MUSIC_GATE=REMOVED_BY_OWNER'
+          echo 'WEB_GAMEPLAY_MUSIC_GATE=REQUIRED'
           echo 'PLATFORM_ROUTER=tools/company-selected-platform-router.mjs'
           echo 'CRON_ROLE=WATCHDOG_AND_RECOVERY_ONLY'
           echo 'QUALITY_GATE_WEAKENING=NO'
