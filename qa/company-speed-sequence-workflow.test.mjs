@@ -4,6 +4,7 @@ import fs from 'node:fs';
 
 const unity=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');
 const router=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+const roblox=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
 const stages=[
   'Change detection and exact-source reuse',
   'Cheap precheck and checkpoint resume plan',
@@ -50,6 +51,13 @@ test('Web runtime pins the source revision and does not prepare an unused local 
   assert.doesNotMatch(router,/Prepare free local Web generation model/);
   assert.doesNotMatch(router,/AUTONOMOUS_LOCAL_MODEL/);
   assert.match(router,/WEB_MODEL_SETUP=SKIPPED_UNUSED/);
+});
+
+test('Roblox DEVELOPMENT source work pins every source-stage checkout to the triggering revision',()=>{
+  const exactRefs=roblox.match(/ref:\s*\$\{\{\s*github\.sha\s*\}\}/g)||[];
+  assert.equal(exactRefs.length,3,`expected source-plan, source-worker and source-bootstrap exact revision checkouts, got ${exactRefs.length}`);
+  assert.match(roblox,/max-parallel:\s*2/);
+  assert.match(roblox,/ROBLOX_PARALLEL_ACTIVE_MAX=2/);
 });
 
 test('Unity source reuse avoids the nested heredoc path that failed in the real canary run',()=>{
