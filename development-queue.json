@@ -311,9 +311,11 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:51:39.065Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-build-package:roblox-package-result-missing"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:42:47.766Z",
-      "updatedAt": "2026-09-13T04:32:43.089Z",
+      "updatedAt": "2026-09-13T04:35:55.816Z",
       "webValidationEvidencePath": "design/seed-roblox-survival-horror-es-doors/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -324,7 +326,15 @@
       "robloxSourceCommit": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
       "robloxSourceBootstrapPassedAt": "2026-09-13T03:59:31.128Z",
       "robloxSourceCandidateBranch": null,
-      "robloxSourceCandidateReadyAt": null
+      "robloxSourceCandidateReadyAt": null,
+      "robloxBuildOrPackagePassed": false,
+      "robloxBuildFailedAt": "2026-09-13T04:35:55.816Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxIndependentQaPassed": false,
+      "robloxRegressionPassed": false,
+      "robloxFinalReviewPassed": false,
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "roblox-package-result-missing"
     },
     {
       "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
@@ -347,9 +357,11 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:52:23.160Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-build-package:roblox-package-result-missing"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:44:40.788Z",
-      "updatedAt": "2026-09-13T04:32:43.089Z",
+      "updatedAt": "2026-09-13T04:35:55.816Z",
       "webValidationEvidencePath": "design/seed-roblox-obby-party-minigam-tower-of-hell/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -360,7 +372,15 @@
       "robloxSourceCommit": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
       "robloxSourceBootstrapPassedAt": "2026-09-13T03:59:31.128Z",
       "robloxSourceCandidateBranch": null,
-      "robloxSourceCandidateReadyAt": null
+      "robloxSourceCandidateReadyAt": null,
+      "robloxBuildOrPackagePassed": false,
+      "robloxBuildFailedAt": "2026-09-13T04:35:55.816Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxIndependentQaPassed": false,
+      "robloxRegressionPassed": false,
+      "robloxFinalReviewPassed": false,
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "roblox-package-result-missing"
     },
     {
       "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
@@ -489,7 +509,7 @@
       "routeRevision": "c22be990056ccde9069fb09f732ddd91c416b29abd1a23022897630738762ded"
     }
   ],
-  "updatedAt": "2026-09-13T04:34:54.614Z",
+  "updatedAt": "2026-09-13T04:35:55.816Z",
   "routerContractVersion": 2,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
