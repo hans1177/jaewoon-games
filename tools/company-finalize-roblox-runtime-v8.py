@@ -134,15 +134,16 @@ cont = replace_one(
     'persist helper contract check',
 )
 
+new_test_assertions = """  assert.ok(smoke.includes('ROBLOX_SERVER_CLIENT_BOUNDARY_PASS" .. "=YES'));
+  assert.ok(smoke.includes('PASS:PLAYER_CHARACTER_CLIENT_SERVER_ROUNDTRIP'));
+  assert.ok(!smoke.includes('print("ROBLOX_RUNTIME_SMOKE=PASS")'));
+  assert.ok(workflow.includes("(item.robloxRuntimePassed===true&&sameHarness)"));
+  assert.ok(workflow.includes("(item.robloxRuntimePassed!==true||!sameHarness)"));
+  assert.ok(workflow.includes('company-development-roblox-runtime-persist.mjs'));"""
 cont_test = replace_one(
     cont_test,
     "  assert.ok(smoke.includes('ROBLOX_SERVER_CLIENT_BOUNDARY_PASS=YES'));",
-    "  assert.ok(smoke.includes('ROBLOX_SERVER_CLIENT_BOUNDARY_PASS\\\" .. \\\"=YES'));\n"
-    "  assert.ok(smoke.includes('PASS:PLAYER_CHARACTER_CLIENT_SERVER_ROUNDTRIP'));\n"
-    "  assert.ok(!smoke.includes('print(\\\"ROBLOX_RUNTIME_SMOKE=PASS\\\")'));\n"
-    "  assert.ok(workflow.includes(\\\"(item.robloxRuntimePassed===true&&sameHarness)\\\"));\n"
-    "  assert.ok(workflow.includes(\\\"(item.robloxRuntimePassed!==true||!sameHarness)\\\"));\n"
-    "  assert.ok(workflow.includes('company-development-roblox-runtime-persist.mjs'));",
+    new_test_assertions,
     'smoke fail-closed test',
 )
 
