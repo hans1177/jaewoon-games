@@ -72,6 +72,52 @@ test('existing web game text maintenance is allowed', async () => {
   assert.deepEqual(result.changedFiles, ['index.html']);
 });
 
+test('full web rebuild accepts raw full-file envelope without JSON escaping', async () => {
+  const cwd = tempRoot();
+  const responseFile = path.join(cwd, 'model.txt');
+  const source = '<!doctype html><html><body>old prototype</body></html>\n';
+  const replacement = `<!doctype html><html><body><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(120)}</script></body></html>`;
+  const workOrder = order({ target: 'web', root: 'web-games/demo', responsibleFiles: ['web-games/demo/index.html'], taskId: 'web-full-rebuild' });
+  workOrder.goal = 'FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
+  workOrder.workerPolicy.fullFileRewriteAllowed = true;
+  write(path.join(cwd, 'web-games/demo/index.html'), source);
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
+  write(responseFile, [
+    'VIBE2_FULL_FILE',
+    'PATH:index.html',
+    'SUMMARY:실제 플레이 가능한 웹게임 전체 교체',
+    'EXPECTED_EFFECT:직접 입력과 런타임 게임 루프 제공',
+    'TEST:mobile gameplay',
+    'TEST:restart',
+    '---VIBE2_FILE_CONTENT---',
+    replacement,
+    '---VIBE2_FILE_END---'
+  ].join('\n'));
+  const result = await runVibe2SourceWorker({ cwd, responseFile });
+  assert.equal(result.fullFileRewriteAllowed, true);
+  assert.deepEqual(result.changedFiles, ['index.html']);
+  assert.equal(fs.readFileSync(path.join(cwd, '.vibe2/candidates/web-full-rebuild/files/index.html'), 'utf8').trim(), replacement);
+});
+
+test('full web rebuild rejects truncated raw full-file envelope', async () => {
+  const cwd = tempRoot();
+  const responseFile = path.join(cwd, 'model.txt');
+  const workOrder = order({ target: 'web', root: 'web-games/demo', responsibleFiles: ['web-games/demo/index.html'], taskId: 'web-full-truncated' });
+  workOrder.goal = 'FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
+  workOrder.workerPolicy.fullFileRewriteAllowed = true;
+  write(path.join(cwd, 'web-games/demo/index.html'), '<!doctype html><html><body>prototype</body></html>\n');
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
+  write(responseFile, 'VIBE2_FULL_FILE\nPATH:index.html\n---VIBE2_FILE_CONTENT---\n<!doctype html><html><body>잘린 출력');
+  await assert.rejects(runVibe2SourceWorker({ cwd, responseFile }), /잘렸거나 종료 마커가 없음/);
+});
+
+test('Ollama transport uses streaming instead of one giant non-streaming response', () => {
+  const workerSource = fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs', import.meta.url), 'utf8');
+  assert.match(workerSource, /stream:true/);
+  assert.doesNotMatch(workerSource, /stream:false/);
+  assert.match(workerSource, /node:http/);
+});
+
 test('Unreal C++ text source is allowed', async () => {
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.json');
