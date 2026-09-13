@@ -1,6 +1,5 @@
 {
-  "version": 5,
-  "updatedAt": "2026-09-13T18:56:18.397Z",
+  "version": 6,
   "policyDocument": "COMPANY_FLOW.md",
   "officialCardRegistrationRequiresPromotionPass": true,
   "homepageTestShelf": {
@@ -10,6 +9,8 @@
     "order": "STRICT_IMPLEMENTATION_SCORE_DESC",
     "requiresScore": true,
     "requiresWebGame": true,
+    "requiresRealPlayableGame": true,
+    "requiredWebArtifactType": "REAL_PLAYABLE_GAME",
     "requiresArtbook": true,
     "requiresFreshSourceHash": true,
     "requiresFreshDesignBaselineHash": true,
@@ -39,6 +40,8 @@
       "homepageTestCandidate": true,
       "homepageOfficialCard": false,
       "productionClass": "DEVELOPMENT_CONFIRMED",
+      "webArtifactType": "REAL_PLAYABLE_GAME",
+      "realPlayableWebGame": true,
       "testUrl": "/web-games/survival/",
       "webPath": "/web-games/survival/",
       "artbookUrl": "/artbook-viewer.html?game=survival",
@@ -46,14 +49,14 @@
       "artbookSource": "artbook-submissions/survival/current.json",
       "evidencePath": "design/survival/2026-09-13/web-gameplay-validation.json",
       "validationSchemaVersion": 10,
-      "sourceIndexSha256": "2280d78ca594d7e22fd8eaa3a3a69ce6e459b6f524806817f4bcde0217e00b83",
+      "sourceIndexSha256": "7b248ebcfdaa834182e09afdd3318eae0bc6a7121613a1a7df55783f584051bb",
       "designBaselineSha256": "6de813c362f4472e2b1298c98dcafa2cfc2f01945233fb67088e0de694359099",
       "promotionRevalidationPassed": true,
       "strictReviewVerdict": "PASS",
       "homepageTestVerdict": "PASS",
       "formalImplementationPassed": true,
       "strictReviewHardFailures": [],
-      "validatedAt": "2026-09-13T18:27:43.250Z"
+      "validatedAt": "2026-09-13T21:02:08.998Z"
     },
     {
       "id": "bug-defense",
@@ -67,6 +70,8 @@
       "homepageTestCandidate": true,
       "homepageOfficialCard": false,
       "productionClass": "DEVELOPMENT_CONFIRMED",
+      "webArtifactType": "REAL_PLAYABLE_GAME",
+      "realPlayableWebGame": true,
       "testUrl": "/web-games/bug-defense/",
       "webPath": "/web-games/bug-defense/",
       "artbookUrl": "/artbook-viewer.html?game=bug-defense",
@@ -74,14 +79,14 @@
       "artbookSource": "artbook-submissions/bug-defense/current.json",
       "evidencePath": "design/bug-defense/2026-09-13/web-gameplay-validation.json",
       "validationSchemaVersion": 10,
-      "sourceIndexSha256": "b9d200738484d8ffcd19fe56fd7f91a08c812c24eca4f4194de19f3f2236a779",
+      "sourceIndexSha256": "76ba49e178ded646c927980bb5bcb59dbd339e3cfd2f91f901ac00759aa64490",
       "designBaselineSha256": "05f512584821d4771ffff8d25a75618cb18997cfbe8997f6e4aaa568b9f2156a",
       "promotionRevalidationPassed": true,
       "strictReviewVerdict": "PASS",
       "homepageTestVerdict": "PASS",
       "formalImplementationPassed": true,
       "strictReviewHardFailures": [],
-      "validatedAt": "2026-09-13T18:27:20.491Z"
+      "validatedAt": "2026-09-13T21:01:52.639Z"
     },
     {
       "id": "seed-roblox-story-rpg-adventur-blox-fruits",
@@ -95,6 +100,8 @@
       "homepageTestCandidate": true,
       "homepageOfficialCard": false,
       "productionClass": "DEVELOPMENT_CONFIRMED",
+      "webArtifactType": "REAL_PLAYABLE_GAME",
+      "realPlayableWebGame": true,
       "testUrl": "/web-games/seed-roblox-story-rpg-adventur-blox-fruits/",
       "webPath": "/web-games/seed-roblox-story-rpg-adventur-blox-fruits/",
       "artbookUrl": "/artbook-viewer.html?game=seed-roblox-story-rpg-adventur-blox-fruits",
@@ -102,14 +109,14 @@
       "artbookSource": "artbook-submissions/seed-roblox-story-rpg-adventur-blox-fruits/current.json",
       "evidencePath": "design/seed-roblox-story-rpg-adventur-blox-fruits/2026-09-12/web-gameplay-validation.json",
       "validationSchemaVersion": 10,
-      "sourceIndexSha256": "52ea4223f0217b421385b64adffbe45e3f3c1c90d3c64098ef1c65fd9df623b9",
+      "sourceIndexSha256": "a1c232ff22d777c1f3c24fc4484c776705a40a8f85101391a6ff0fb7c9c30bc1",
       "designBaselineSha256": "552c81d042dda3a3ce93ffe8147822267e60a0a66c8209122b3e6746f0e40ccc",
       "promotionRevalidationPassed": true,
       "strictReviewVerdict": "PASS",
       "homepageTestVerdict": "PASS",
       "formalImplementationPassed": true,
       "strictReviewHardFailures": [],
-      "validatedAt": "2026-09-13T18:26:52.742Z"
+      "validatedAt": "2026-09-13T21:01:18.280Z"
     },
     {
       "id": "seed-roblox-roleplay-life-avat-brookhaven-rp",
@@ -123,6 +130,8 @@
       "homepageTestCandidate": true,
       "homepageOfficialCard": false,
       "productionClass": "DEVELOPMENT_CONFIRMED",
+      "webArtifactType": "REAL_PLAYABLE_GAME",
+      "realPlayableWebGame": true,
       "testUrl": "/web-games/seed-roblox-roleplay-life-avat-brookhaven-rp/",
       "webPath": "/web-games/seed-roblox-roleplay-life-avat-brookhaven-rp/",
       "artbookUrl": "/artbook-viewer.html?game=seed-roblox-roleplay-life-avat-brookhaven-rp",
@@ -130,14 +139,14 @@
       "artbookSource": "artbook-submissions/seed-roblox-roleplay-life-avat-brookhaven-rp/current.json",
       "evidencePath": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-09-13/web-gameplay-validation.json",
       "validationSchemaVersion": 10,
-      "sourceIndexSha256": "fb2de3c2af36f39dbb085b6fb3339835225b495695b0bedcf28d0632754fc9e0",
+      "sourceIndexSha256": "dcd0b12719186c6effa58137d16e80c0d08a34a0a5758aed8717ee8414b0f136",
       "designBaselineSha256": "d04d8e07ab364e3b2510aaa4694cbd8b82bc26437245afc6fc28e8da62976356",
       "promotionRevalidationPassed": true,
       "strictReviewVerdict": "PASS",
       "homepageTestVerdict": "PASS",
       "formalImplementationPassed": true,
       "strictReviewHardFailures": [],
-      "validatedAt": "2026-09-13T18:26:39.151Z"
+      "validatedAt": "2026-09-13T21:01:16.428Z"
     },
     {
       "id": "seed-roblox-obby-party-minigam-tower-of-hell",
@@ -151,6 +160,8 @@
       "homepageTestCandidate": true,
       "homepageOfficialCard": false,
       "productionClass": "DEVELOPMENT_CONFIRMED",
+      "webArtifactType": "REAL_PLAYABLE_GAME",
+      "realPlayableWebGame": true,
       "testUrl": "/web-games/seed-roblox-obby-party-minigam-tower-of-hell/",
       "webPath": "/web-games/seed-roblox-obby-party-minigam-tower-of-hell/",
       "artbookUrl": "/artbook-viewer.html?game=seed-roblox-obby-party-minigam-tower-of-hell",
@@ -158,14 +169,14 @@
       "artbookSource": "artbook-submissions/seed-roblox-obby-party-minigam-tower-of-hell/current.json",
       "evidencePath": "design/seed-roblox-obby-party-minigam-tower-of-hell/2026-09-12/web-gameplay-validation.json",
       "validationSchemaVersion": 10,
-      "sourceIndexSha256": "abfcdb3c719f020cd375fea3fa10a01315252277cd7b482ca50cf2bb324cc416",
+      "sourceIndexSha256": "dc808a8e904a48fe0d733ddd27f70a49ce8b06973039d00084074875a9d3cad0",
       "designBaselineSha256": "70272c2e93d029d02e42a8334c4dbbd18f851e9fcc80d0a1c5b28c5f2f40512a",
       "promotionRevalidationPassed": true,
       "strictReviewVerdict": "PASS",
       "homepageTestVerdict": "PASS",
       "formalImplementationPassed": true,
       "strictReviewHardFailures": [],
-      "validatedAt": "2026-09-13T18:25:57.983Z"
+      "validatedAt": "2026-09-13T21:00:35.555Z"
     },
     {
       "id": "seed-roblox-survival-horror-es-doors",
@@ -179,6 +190,8 @@
       "homepageTestCandidate": true,
       "homepageOfficialCard": false,
       "productionClass": "DEVELOPMENT_CONFIRMED",
+      "webArtifactType": "REAL_PLAYABLE_GAME",
+      "realPlayableWebGame": true,
       "testUrl": "/web-games/seed-roblox-survival-horror-es-doors/",
       "webPath": "/web-games/seed-roblox-survival-horror-es-doors/",
       "artbookUrl": "/artbook-viewer.html?game=seed-roblox-survival-horror-es-doors",
@@ -186,14 +199,14 @@
       "artbookSource": "artbook-submissions/seed-roblox-survival-horror-es-doors/current.json",
       "evidencePath": "design/seed-roblox-survival-horror-es-doors/2026-09-12/web-gameplay-validation.json",
       "validationSchemaVersion": 10,
-      "sourceIndexSha256": "9f19f8b1b494b43895c964ac97e74da89a677aa9ba95c2149ca706eb3bb05e26",
+      "sourceIndexSha256": "362f3c369d4729bfe4e6e083b96242db0a56b042b1f99c2b82cc6069612b2d2d",
       "designBaselineSha256": "8a063076804339906dbcc16c71436d52104b8c93ac15984c101f55b47c0fb747",
       "promotionRevalidationPassed": true,
       "strictReviewVerdict": "PASS",
       "homepageTestVerdict": "PASS",
       "formalImplementationPassed": true,
       "strictReviewHardFailures": [],
-      "validatedAt": "2026-09-13T18:25:20.698Z"
+      "validatedAt": "2026-09-13T21:00:36.904Z"
     },
     {
       "id": "seed-roblox-battleground-fight-welcome-to-bloxburg",
@@ -207,6 +220,8 @@
       "homepageTestCandidate": true,
       "homepageOfficialCard": false,
       "productionClass": "DEVELOPMENT_CONFIRMED",
+      "webArtifactType": "REAL_PLAYABLE_GAME",
+      "realPlayableWebGame": true,
       "testUrl": "/web-games/seed-roblox-battleground-fight-welcome-to-bloxburg/",
       "webPath": "/web-games/seed-roblox-battleground-fight-welcome-to-bloxburg/",
       "artbookUrl": "/artbook-viewer.html?game=seed-roblox-battleground-fight-welcome-to-bloxburg",
@@ -214,14 +229,14 @@
       "artbookSource": "artbook-submissions/seed-roblox-battleground-fight-welcome-to-bloxburg/current.json",
       "evidencePath": "design/seed-roblox-battleground-fight-welcome-to-bloxburg/2026-09-12/web-gameplay-validation.json",
       "validationSchemaVersion": 10,
-      "sourceIndexSha256": "2da0ba0696f4b89df54e11aa89543fb93162651dad83f7886a78769487af3d01",
+      "sourceIndexSha256": "83aab57e4b5346d1335b0e80e0229defc0cc53df451e8aac5789d5161c401dea",
       "designBaselineSha256": "c8e723359e4fd5f1775ddd1b6205374bdf62eb2650376e380521c5f89ae61493",
       "promotionRevalidationPassed": true,
       "strictReviewVerdict": "PASS",
       "homepageTestVerdict": "PASS",
       "formalImplementationPassed": true,
       "strictReviewHardFailures": [],
-      "validatedAt": "2026-09-13T18:25:17.720Z"
+      "validatedAt": "2026-09-13T20:59:55.666Z"
     },
     {
       "id": "seed-roblox-simulator-tycoon-i-adopt-me",
@@ -235,6 +250,8 @@
       "homepageTestCandidate": true,
       "homepageOfficialCard": false,
       "productionClass": "DEVELOPMENT_CONFIRMED",
+      "webArtifactType": "REAL_PLAYABLE_GAME",
+      "realPlayableWebGame": true,
       "testUrl": "/web-games/seed-roblox-simulator-tycoon-i-adopt-me/",
       "webPath": "/web-games/seed-roblox-simulator-tycoon-i-adopt-me/",
       "artbookUrl": "/artbook-viewer.html?game=seed-roblox-simulator-tycoon-i-adopt-me",
@@ -242,14 +259,15 @@
       "artbookSource": "artbook-submissions/seed-roblox-simulator-tycoon-i-adopt-me/current.json",
       "evidencePath": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-09-12/web-gameplay-validation.json",
       "validationSchemaVersion": 10,
-      "sourceIndexSha256": "aaf8d88938cd0da0fa39c5cb494ecffd39fa36085870505d127c1fbc1a8cd223",
+      "sourceIndexSha256": "591866f4e4ab6233f225d3d55ae8729586c97dd47e5ecc632cfff83fb6bfaef1",
       "designBaselineSha256": "181ca99542231b3546e2943c8c1a5d722829434eceb2ad1f3164b84056112d7e",
       "promotionRevalidationPassed": true,
       "strictReviewVerdict": "PASS",
       "homepageTestVerdict": "PASS",
       "formalImplementationPassed": true,
       "strictReviewHardFailures": [],
-      "validatedAt": "2026-09-13T18:24:39.567Z"
+      "validatedAt": "2026-09-13T20:59:53.928Z"
     }
-  ]
+  ],
+  "updatedAt": "2026-09-13T21:08:52.264Z"
 }
