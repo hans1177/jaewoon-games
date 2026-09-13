@@ -307,9 +307,11 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:51:39.065Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-build-preflight-pending"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:42:47.766Z",
-      "updatedAt": "2026-09-13T05:53:21.656Z",
+      "updatedAt": "2026-09-13T05:54:37.273Z",
       "webValidationEvidencePath": "design/seed-roblox-survival-horror-es-doors/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -321,15 +323,18 @@
       "robloxSourceBootstrapPassedAt": "2026-09-13T03:59:31.128Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": false,
-      "robloxBuildFailedAt": "2026-09-13T05:18:21.838Z",
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxIndependentQaPassed": false,
       "robloxRegressionPassed": false,
       "robloxFinalReviewPassed": false,
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "roblox-package-result-missing",
-      "robloxBuildSourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1"
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING",
+      "robloxBuildSourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
+      "robloxBuildArtifactIdentity": "sha256:db36cbe655261718e105e90b87533121727a13016e25fcaf547c2535b4b74633",
+      "robloxBuildPassedAt": "2026-09-13T05:54:37.273Z",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE"
     },
     {
       "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
@@ -352,9 +357,11 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:52:23.160Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-build-preflight-pending"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:44:40.788Z",
-      "updatedAt": "2026-09-13T05:53:21.656Z",
+      "updatedAt": "2026-09-13T05:54:37.273Z",
       "webValidationEvidencePath": "design/seed-roblox-obby-party-minigam-tower-of-hell/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -366,15 +373,18 @@
       "robloxSourceBootstrapPassedAt": "2026-09-13T03:59:31.128Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": false,
-      "robloxBuildFailedAt": "2026-09-13T05:18:21.838Z",
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxIndependentQaPassed": false,
       "robloxRegressionPassed": false,
       "robloxFinalReviewPassed": false,
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "roblox-package-result-missing",
-      "robloxBuildSourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1"
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING",
+      "robloxBuildSourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
+      "robloxBuildArtifactIdentity": "sha256:2e9e1992e4ade0f9ed3accb210671610b786c6a324f59ae29dbcf7b4370a698d",
+      "robloxBuildPassedAt": "2026-09-13T05:54:37.273Z",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE"
     },
     {
       "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
@@ -512,7 +522,7 @@
       "routeRevision": "c22be990056ccde9069fb09f732ddd91c416b29abd1a23022897630738762ded"
     }
   ],
-  "updatedAt": "2026-09-13T05:53:21.783Z",
+  "updatedAt": "2026-09-13T05:54:37.273Z",
   "routerContractVersion": 2,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
