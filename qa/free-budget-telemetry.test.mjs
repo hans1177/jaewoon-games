@@ -44,11 +44,28 @@ test('model-call and runner-minute caps are enforced before work',()=>{
   assert.ok(runner.failures.includes('RUNNER_MINUTE_CAP_EXCEEDED'));
 });
 
-test('repository visibility fetch maps public/private and fails closed on errors',async()=>{
-  const publicFetch=async()=>({ok:true,json:async()=>({visibility:'public',private:false})});
+test('repository visibility fetch authenticates, retries transient failures and maps public/private',async()=>{
+  const seen=[];
+  let transientCalls=0;
+  const transientFetch=async(_url,options)=>{
+    transientCalls+=1;
+    seen.push(options?.headers||{});
+    if(transientCalls<3)return {ok:false,status:403,json:async()=>({})};
+    return {ok:true,json:async()=>({visibility:'public',private:false})};
+  };
+  const visibility=await fetchRepositoryVisibility('hans1177/jaewoon-games',{fetchImpl:transientFetch,token:'test-token',attempts:3,retryDelayMs:0});
+  assert.equal(visibility,'public');
+  assert.equal(transientCalls,3);
+  assert.equal(seen[0].Authorization,'Bearer test-token');
+  assert.equal(seen[0]['User-Agent'],'jaewoon-vibe2-free-budget-telemetry');
+
   const privateFetch=async()=>({ok:true,json:async()=>({visibility:'private',private:true})});
-  const failedFetch=async()=>({ok:false,json:async()=>({})});
-  assert.equal(await fetchRepositoryVisibility('hans1177/jaewoon-games',{fetchImpl:publicFetch}),'public');
-  assert.equal(await fetchRepositoryVisibility('hans1177/jaewoon-games',{fetchImpl:privateFetch}),'private');
-  assert.equal(await fetchRepositoryVisibility('hans1177/jaewoon-games',{fetchImpl:failedFetch}),'unknown');
+  assert.equal(await fetchRepositoryVisibility('hans1177/jaewoon-games',{fetchImpl:privateFetch,attempts:1,retryDelayMs:0}),'private');
+});
+
+test('repository visibility fetch still fails closed after all retries',async()=>{
+  let calls=0;
+  const failedFetch=async()=>{calls+=1;return {ok:false,status:500,json:async()=>({})};};
+  assert.equal(await fetchRepositoryVisibility('hans1177/jaewoon-games',{fetchImpl:failedFetch,attempts:3,retryDelayMs:0}),'unknown');
+  assert.equal(calls,3);
 });
