@@ -25,6 +25,24 @@ if(!game&&!seed)throw new Error(`Unknown game or active GAME_SEED: ${gameId}`);
 const productionClass=game?productionClassOf({},game,{numericLabels:directive.production?.numericLabels||{}}):PRODUCTION_CLASSES.DESIGN_ONLY;
 
 function run(script){return new Promise((resolve,reject)=>{const child=spawn(process.execPath,[script],{stdio:'inherit',env:{...process.env,ARTBOOK_GAME_ID:gameId,GAME_ID:gameId,...(date?{ARTBOOK_DATE:date,DESIGN_DATE:date}:{})}});child.on('error',reject);child.on('close',code=>code===0?resolve():reject(new Error(`${script} exited ${code}`)));});}
+async function runWithRetry(script,{attempts=3,label='PIPELINE_STAGE'}={}){
+  let lastError=null;
+  for(let attempt=1;attempt<=attempts;attempt++){
+    try{
+      await run(script);
+      if(attempt>1)console.log(`${label}_RECOVERED=YES|attempt=${attempt}/${attempts}`);
+      return;
+    }catch(error){
+      lastError=error;
+      console.log(`${label}_ATTEMPT_FAILED=${attempt}/${attempts}|reason=${String(error?.message||error).replace(/\s+/g,' ').trim()}`);
+      if(attempt<attempts){
+        console.log(`${label}_RETRY=YES|next_attempt=${attempt+1}/${attempts}`);
+        await new Promise(resolve=>setTimeout(resolve,attempt*2000));
+      }
+    }
+  }
+  throw lastError;
+}
 function kstDate(){const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const g=t=>p.find(x=>x.type===t)?.value||'';return`${g('year')}-${g('month')}-${g('day')}`;}
 function readCycleStatus(){const d=date||kstDate();try{return JSON.parse(fs.readFileSync(path.join('design',gameId,d,'cycle-status.json'),'utf8'));}catch{return null;}}
 function canReuseCompletedDesign(status){
@@ -51,7 +69,7 @@ if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
 }else{
   const existingStatus=readCycleStatus();
   if(canReuseCompletedDesign(existingStatus))console.log('DESIGN_CYCLE_REUSED=YES');
-  else{await run('tools/company-design-cycle.mjs');console.log('DESIGN_CYCLE_REUSED=NO');}
+  else{await runWithRetry('tools/company-design-cycle.mjs',{attempts:3,label:'DESIGN_MODEL_SCHEMA'});console.log('DESIGN_CYCLE_REUSED=NO');}
   await run('tools/company-baseline-gate.mjs');
   const status=readCycleStatus();
   if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true){await run('tools/company-design-artbook.mjs');console.log('DESIGN_ONLY_ARTBOOK_AFTER_BASELINE=YES');}
