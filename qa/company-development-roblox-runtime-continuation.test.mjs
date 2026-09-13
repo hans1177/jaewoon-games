@@ -57,7 +57,12 @@ test('runtime uses the original package identity and an actual Roblox Studio mul
   assert.ok(workflow.includes("item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed'"));
   assert.ok(workflow.includes("'roblox-studio-runtime-failed','roblox-studio-runtime-timeout'"));
   assert.ok(workflow.includes("item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING'"));
-  assert.ok(workflow.includes('$p.WaitForExit(180000)'));
+  assert.ok(workflow.includes("$authDeadline = (Get-Date).AddSeconds(15)"));
+  assert.ok(workflow.includes('$p.WaitForExit(165000)'));
+  assert.ok(workflow.includes("'roblox-studio-authentication-required'"));
+  assert.ok(workflow.includes('ROBLOX_STUDIO_AUTHENTICATION_REQUIRED'));
+  assert.ok(workflow.includes("$unauthenticated = $nativeText -match 'Authenticated\\s*:\\s*NO'"));
+  assert.ok(workflow.includes("$loginBlocked = $nativeText -match 'Cookie list not found|https://www\\.roblox\\.com/login|LoginDialog'"));
   assert.ok(workflow.includes("'roblox-studio-runtime-timeout'"));
   assert.ok(workflow.includes('--task RunScript'));
   assert.ok(workflow.includes('--localPlaceFile'));
@@ -66,6 +71,12 @@ test('runtime uses the original package identity and an actual Roblox Studio mul
   assert.ok(smoke.includes('task.delay(90'));
   assert.ok(smoke.includes('RemoteEvent'));
   assert.ok(smoke.includes('ROBLOX_SERVER_CLIENT_BOUNDARY_PASS=YES'));
+});
+
+test('continuation self-dispatch does not duplicate an active sibling run',()=>{
+  assert.ok(workflow.includes('ROBLOX_ACTIVE_OTHER_CONTINUATIONS='));
+  assert.ok(workflow.includes("['queued','in_progress','pending'].includes(r.status)"));
+  assert.ok(workflow.includes("ROBLOX_NEXT_CONTINUATION_DISPATCH=SKIP_ACTIVE_SIBLING"));
 });
 
 test('runtime checkpoint persistence survives merged artifact directory layouts',()=>{
