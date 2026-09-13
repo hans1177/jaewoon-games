@@ -13,7 +13,7 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
-  ROBLOX_RUNTIME_HARNESS_VERSION: '3'
+  ROBLOX_RUNTIME_HARNESS_VERSION: '4'
 
 jobs:
   preflight-plan:
@@ -346,42 +346,39 @@ jobs:
           $installer = Join-Path $env:RUNNER_TEMP 'RobloxStudioInstaller.exe'
           Invoke-WebRequest -Uri 'https://setup.rbxcdn.com/RobloxStudioInstaller.exe' -OutFile $installer
           $installerSha = (Get-FileHash -Algorithm SHA256 $installer).Hash.ToLowerInvariant()
+          $installStarted = Get-Date
           $p = Start-Process -FilePath $installer -PassThru
           $deadline = (Get-Date).AddMinutes(8)
-          $studio = $null
-          while ((Get-Date) -lt $deadline) {
-            $runningStudio = Get-Process -Name RobloxStudioBeta -ErrorAction SilentlyContinue | Where-Object { $_.Path -and (Test-Path $_.Path) } | Sort-Object StartTime -Descending | Select-Object -First 1
-            if ($runningStudio) {
-              $studio = Get-Item $runningStudio.Path
-              break
-            }
-            $roots = @(
-              "$env:LOCALAPPDATA\Roblox\Versions",
-              "$env:PROGRAMFILES\Roblox\Versions",
-              "${env:ProgramFiles(x86)}\Roblox\Versions"
-            ) | Where-Object { $_ -and (Test-Path $_) }
-            foreach ($root in $roots) {
-              $studio = Get-ChildItem -Path $root -Recurse -File -Filter RobloxStudioBeta.exe -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-              if ($studio) { break }
-            }
-            if ($studio) { break }
-            if ($p.HasExited -and $p.ExitCode -ne 0) { throw "Roblox Studio installer exited $($p.ExitCode) before Studio was installed" }
-            Start-Sleep -Seconds 5
+          while (-not $p.HasExited -and (Get-Date) -lt $deadline) { Start-Sleep -Seconds 5 }
+          if (-not $p.HasExited) {
+            Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+            throw 'Roblox Studio installer timeout before completion'
           }
-          if (-not $studio) {
-            if (-not $p.HasExited) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }
-            throw 'RobloxStudioBeta.exe not found before installation deadline'
-          }
+          if ($p.ExitCode -ne 0) { throw "Roblox Studio installer exited $($p.ExitCode)" }
           Get-Process -Name RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
-          $installerExitDeadline = (Get-Date).AddSeconds(30)
-          while (-not $p.HasExited -and (Get-Date) -lt $installerExitDeadline) { Start-Sleep -Seconds 1 }
-          if (-not $p.HasExited) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }
+          Start-Sleep -Seconds 2
+          $studio = $null
+          $roots = @(
+            "$env:LOCALAPPDATA\Roblox\Versions",
+            "$env:PROGRAMFILES\Roblox\Versions",
+            "${env:ProgramFiles(x86)}\Roblox\Versions"
+          ) | Where-Object { $_ -and (Test-Path $_) }
+          foreach ($root in $roots) {
+            $candidate = Get-ChildItem -Path $root -Recurse -File -Filter RobloxStudioBeta.exe -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+            if ($candidate) { $studio = $candidate; break }
+          }
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found after installer completed successfully' }
+          $installedBytes = (Get-ChildItem -Path $studio.Directory.FullName -Recurse -File -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum
+          if ([int64]$installedBytes -lt 100MB) { throw "Roblox Studio installation incomplete: only $installedBytes bytes materialized" }
+          $elapsed = [int]((Get-Date) - $installStarted).TotalSeconds
           "studio_exe=$($studio.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           "installer_sha256=$installerSha" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           Write-Host 'ROBLOX_STUDIO_INSTALL=PASS'
           Write-Host "ROBLOX_STUDIO_PACKAGE_ID=$packageId"
           Write-Host "ROBLOX_STUDIO_EXE=$($studio.FullName)"
           Write-Host "ROBLOX_STUDIO_INSTALLER_SHA256=$installerSha"
+          Write-Host "ROBLOX_STUDIO_INSTALL_SECONDS=$elapsed"
+          Write-Host "ROBLOX_STUDIO_INSTALL_BYTES=$installedBytes"
       - name: Run actual one-server one-client Studio session
         id: runtime
         if: steps.package.outcome == 'success' && steps.studio.outcome == 'success'
