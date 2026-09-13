@@ -207,11 +207,15 @@ jobs:
           const fs=require('fs');
           const catalog=JSON.parse(fs.readFileSync(process.env.HOMEPAGE_CATALOG_PATH||'game-catalog.json','utf8'));
           const registry=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
-          const games=new Set((catalog.games||[]).map(game=>game.id));
+          const tests=JSON.parse(fs.readFileSync('test-game-candidates.json','utf8'));
+          const games=new Set((catalog.games||[]).map(game=>String(game.id||'').trim()).filter(Boolean));
+          const testGameIds=new Set((tests.candidates||[]).filter(row=>row.homepageTestCandidate===true).map(row=>String(row.gameId||row.id||'').trim()).filter(Boolean));
           const visible=(registry.artbooks||[]).filter(book=>book.published===true||book.homepageVisible===true);
           const failures=[];
           for(const book of visible){
-            if(!games.has(book.gameId)){failures.push(`${book.id}:catalog`);continue;}
+            const gameId=String(book.gameId||'').trim();
+            const currentTestArtbook=book.homepageTestCandidate===true&&testGameIds.has(gameId);
+            if(!games.has(gameId)&&!currentTestArtbook){failures.push(`${book.id}:catalog`);continue;}
             const source=String(book.sourceFile||'').replace(/^\/+/, '');
             if(!source||!fs.existsSync(source)){failures.push(`${book.id}:source`);continue;}
             if(source.endsWith('.json')){try{JSON.parse(fs.readFileSync(source,'utf8'));}catch{failures.push(`${book.id}:json`);}}
