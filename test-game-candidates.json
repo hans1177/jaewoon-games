@@ -1,14 +1,17 @@
 {
-  "version": 2,
+  "version": 4,
   "updatedAt": "2026-09-13",
   "policyDocument": "COMPANY_FLOW.md",
   "officialCardRegistrationRequiresPromotionPass": true,
   "homepageTestShelf": {
-    "limit": 20,
-    "order": "STRICT_REVIEW_SCORE_DESC",
+    "limit": 30,
+    "order": "STRICT_IMPLEMENTATION_SCORE_DESC",
+    "minimumScore": 80,
     "requiresScore": true,
     "requiresWebGame": true,
     "requiresArtbook": true,
+    "hardGatesRequired": true,
+    "requiresFormalImplementationPass": false,
     "officialCard": false,
     "promotionRequiredForOfficialCard": true
   },
