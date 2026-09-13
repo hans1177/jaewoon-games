@@ -43,8 +43,13 @@ test('five-lead preflight requires an exact immutable build before runtime',()=>
   assert.ok(workflow.includes("robloxFailureStage:'TARGET_PLATFORM_RUNTIME'"));
 });
 
-test('runtime uses the original package identity and an actual Roblox Studio multiplayer session',()=>{
-  assert.ok(workflow.includes('runs-on: windows-latest'));
+test('runtime uses authenticated self-hosted Windows and the original package identity for an actual Roblox Studio multiplayer session',()=>{
+  assert.ok(workflow.includes("ROBLOX_RUNTIME_HARNESS_VERSION: '6'"));
+  assert.ok(workflow.includes('runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]'));
+  assert.ok(!workflow.includes('runs-on: windows-latest'));
+  assert.ok(workflow.includes('ROBLOX_RUNTIME_LOCAL_WIP_MAX=1'));
+  assert.ok(workflow.includes('max-parallel: 1'));
+  assert.ok(workflow.includes("const retryableAuthMigration=!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-authentication-required'"));
   assert.ok(workflow.includes('development-roblox-package-$env:GAME_ID'));
   assert.ok(workflow.includes('No retained package matches'));
   assert.ok(workflow.includes('RobloxStudioBeta.exe'));
