@@ -382,7 +382,8 @@ jobs:
             const legacyActive=status==='ACTIVE'&&step==='UNITY_ANDROID_TECHNICAL_VALIDATION';
             const pending=status==='PENDING';
             const waiting=status==='ACTIVE'&&step==='TARGET_PLATFORM_TECHNICAL_VALIDATION';
-            if(!pending&&!legacyActive&&!waiting)continue;
+            const retrySourceBind=status==='ACTIVE'&&step==='TARGET_PLATFORM_SOURCE_BIND'&&state==='WAITING_TARGET_PLATFORM_REVALIDATION';
+            if(!pending&&!legacyActive&&!waiting&&!retrySourceBind)continue;
             const game=(catalog.games||[]).find(x=>x.id===item.gameId)||{};
             const platform=resolveSelectedPlatform(item,game);
             const adapter=adapterForPlatform(platform);
@@ -399,6 +400,10 @@ jobs:
               continue;
             }
             platforms.add(platform);
+            if(retrySourceBind){
+              console.log(`DEVELOPMENT_ROUTE_RESUME_SOURCE_BIND=${item.gameId}:${platform}`);
+              continue;
+            }
             updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:canonicalTargetStep(),canonicalState:canonicalTargetWaitingState(),platformAdapter:adapter.adapterPath,sourcePath:targetSourcePath,targetSourcePath,routingBlockers:[],routeRevision:baselineRevision,updatedAt:new Date().toISOString()});
           }
           fs.mkdirSync('/tmp/development-route',{recursive:true});
