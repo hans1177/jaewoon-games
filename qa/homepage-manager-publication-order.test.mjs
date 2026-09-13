@@ -5,6 +5,7 @@ import fs from 'node:fs';
 const workflow=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
 const operations=fs.readFileSync('HOMEPAGE_OPERATIONS.md','utf8');
 const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
+const testSync=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
 
 const section=(from,to)=>{
   const start=workflow.indexOf(from);
@@ -62,6 +63,19 @@ test('Top30 test artbooks remain valid before catalog promotion',()=>{
   assert.ok(manage.includes("const tests=JSON.parse(fs.readFileSync('test-game-candidates.json','utf8'));"));
   assert.ok(manage.includes('const testGameIds=new Set('));
   assert.ok(manage.includes('book.homepageTestCandidate===true&&testGameIds.has('));
+});
+
+test('Top30 mirror sync is semantic-idempotent and does not create timestamp-only churn',()=>{
+  assert.ok(testSync.includes('const semanticJson=value=>'));
+  assert.ok(testSync.includes('delete copy.updatedAt;'));
+  assert.ok(testSync.includes('const writeJsonIfSemanticChanged='));
+  assert.ok(testSync.includes('HOMEPAGE_TEST_SYNC_NOOP='));
+  assert.ok(testSync.includes('HOMEPAGE_TEST_SYNC_CHANGED='));
+  assert.ok(!testSync.includes('registry.updatedAt=new Date().toISOString()'));
+  assert.ok(!testSync.includes('version:5,updatedAt:new Date().toISOString()'));
+  assert.ok(operations.includes('기존 `updatedAt`을 보존한다'));
+  assert.ok(operations.includes('timestamp-only diff'));
+  assert.ok(operations.includes('timestamp-only churn'));
 });
 
 test('failed upstream events cannot cancel an in-flight supervised homepage candidate',()=>{
