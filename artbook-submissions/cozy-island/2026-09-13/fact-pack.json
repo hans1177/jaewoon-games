@@ -1,0 +1,764 @@
+{
+  "version": 3,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "generatedBy": "deterministic-source-scan",
+  "paidApi": false,
+  "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+  "sourceFiles": [
+    "web-games/cozy-island/balance-reset.js",
+    "web-games/cozy-island/combat-expansion.js",
+    "web-games/cozy-island/farming-rules.js",
+    "web-games/cozy-island/game-v3.js",
+    "web-games/cozy-island/game.js",
+    "web-games/cozy-island/index.html",
+    "web-games/cozy-island/joystick.js",
+    "web-games/cozy-island/production-buildings.js",
+    "web-games/cozy-island/render-v3.js",
+    "web-games/cozy-island/render.js",
+    "web-games/cozy-island/style.css"
+  ],
+  "decodedSources": [],
+  "topics": {
+    "gameplayLoop": [
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 33,
+        "column": 41,
+        "text": "id: patchUnitId++, kind: 'soldier', enemy: false, boss: false,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 33,
+        "column": 55,
+        "text": "id: patchUnitId++, kind: 'soldier', enemy: false, boss: false,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 34,
+        "column": 26,
+        "text": "hp: 100, maxHp: 100, attack: 10, range: 55, speed: 76,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 65,
+        "column": 14,
+        "text": "function makeEnemy(kind, index = 0, overrides = {}) {"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 68,
+        "column": 30,
+        "text": "id: patchUnitId++, kind, enemy: true, boss: false,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 68,
+        "column": 43,
+        "text": "id: patchUnitId++, kind, enemy: true, boss: false,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 70,
+        "column": 5,
+        "text": "attack: archer ? 18 : 10, range: archer ? 220 : 55,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 87,
+        "column": 47,
+        "text": "for (let i = 0; i < 3; i++) next.push(makeEnemy('soldier', i));"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 89,
+        "column": 47,
+        "text": "for (let i = 0; i < 3; i++) next.push(makeEnemy('soldier', i));"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 90,
+        "column": 19,
+        "text": "next.push(makeEnemy('archer', 3, { attack: 18 }));"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 90,
+        "column": 40,
+        "text": "next.push(makeEnemy('archer', 3, { attack: 18 }));"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 93,
+        "column": 19,
+        "text": "next.push(makeEnemy('soldier', 0, {"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 94,
+        "column": 7,
+        "text": "boss: true, hp: 600, maxHp: 600, attack: 22, speed: 70,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 94,
+        "column": 40,
+        "text": "boss: true, hp: 600, maxHp: 600, attack: 22, speed: 70,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 97,
+        "column": 28,
+        "text": "showToast('👹 3번째 습격 · 보스 체력/공격력 완화');"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 97,
+        "column": 34,
+        "text": "showToast('👹 3번째 습격 · 보스 체력/공격력 완화');"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 99,
+        "column": 19,
+        "text": "next.push(makeEnemy('cavalry', 0, {"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 100,
+        "column": 28,
+        "text": "hp: 600, maxHp: 600, attack: 30, range: 55, speed: 105,"
+      }
+    ],
+    "input": [
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 54,
+        "column": 27,
+        "text": "function fixSoldierRecruitButton(game) {"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 57,
+        "column": 9,
+        "text": "const button = document.querySelector('#panelBody [data-rec=\"soldier\"]');"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 58,
+        "column": 8,
+        "text": "if (!button) return;"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 60,
+        "column": 3,
+        "text": "button.disabled = count >= SOLDIER_MAX;"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 61,
+        "column": 17,
+        "text": "const label = button.querySelector('span');"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 110,
+        "column": 18,
+        "text": "function addResetButton() {"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 115,
+        "column": 9,
+        "text": "const button = document.createElement('button');"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 115,
+        "column": 42,
+        "text": "const button = document.createElement('button');"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 116,
+        "column": 3,
+        "text": "button.className = 'choice';"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 117,
+        "column": 3,
+        "text": "button.dataset.resetGame = '1';"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 118,
+        "column": 3,
+        "text": "button.style.marginTop = '12px';"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 119,
+        "column": 3,
+        "text": "button.innerHTML = '<span>🔄 처음부터 다시하기</span><b>저장 초기화</b>';"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 120,
+        "column": 3,
+        "text": "button.addEventListener('click', () => {"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 125,
+        "column": 20,
+        "text": "body.appendChild(button);"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 129,
+        "column": 9,
+        "text": "const button = event.target.closest?.('[data-rec=\"soldier\"]');"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 130,
+        "column": 8,
+        "text": "if (!button || !currentGame) return;"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 150,
+        "column": 11,
+        "text": "addResetButton();"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 151,
+        "column": 37,
+        "text": "if (currentGame) fixSoldierRecruitButton(currentGame);"
+      }
+    ],
+    "combat": [
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 10,
+        "column": 28,
+        "text": "const params = new URLSearchParams(location.search);"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 28,
+        "column": 78,
+        "text": "return (game?.allies || []).filter(unit => unit.kind === 'soldier' && unit.hp > 0);"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 33,
+        "column": 41,
+        "text": "id: patchUnitId++, kind: 'soldier', enemy: false, boss: false,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 33,
+        "column": 55,
+        "text": "id: patchUnitId++, kind: 'soldier', enemy: false, boss: false,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 34,
+        "column": 5,
+        "text": "hp: 100, maxHp: 100, attack: 10, range: 55, speed: 76,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 34,
+        "column": 17,
+        "text": "hp: 100, maxHp: 100, attack: 10, range: 55, speed: 76,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 34,
+        "column": 26,
+        "text": "hp: 100, maxHp: 100, attack: 10, range: 55, speed: 76,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 43,
+        "column": 61,
+        "text": "game.state.army = (game.allies || []).filter(unit => unit.hp > 0).map(unit => ({ kind: unit.kind }));"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 44,
+        "column": 94,
+        "text": "knightCount = (game.allies || []).filter(unit => unit.kind === 'knight' && unit.hp > 0).length;"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 65,
+        "column": 14,
+        "text": "function makeEnemy(kind, index = 0, overrides = {}) {"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 68,
+        "column": 30,
+        "text": "id: patchUnitId++, kind, enemy: true, boss: false,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 68,
+        "column": 43,
+        "text": "id: patchUnitId++, kind, enemy: true, boss: false,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 69,
+        "column": 5,
+        "text": "hp: archer ? 55 : 100, maxHp: archer ? 55 : 100,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 69,
+        "column": 31,
+        "text": "hp: archer ? 55 : 100, maxHp: archer ? 55 : 100,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 70,
+        "column": 5,
+        "text": "attack: archer ? 18 : 10, range: archer ? 220 : 55,"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 87,
+        "column": 47,
+        "text": "for (let i = 0; i < 3; i++) next.push(makeEnemy('soldier', i));"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 89,
+        "column": 47,
+        "text": "for (let i = 0; i < 3; i++) next.push(makeEnemy('soldier', i));"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 90,
+        "column": 19,
+        "text": "next.push(makeEnemy('archer', 3, { attack: 18 }));"
+      }
+    ],
+    "progression": [
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 24,
+        "column": 71,
+        "text": "JaewoonVibeRuntime.prototype.loadProgress = function loadProgressWithExpansion(fallback = {}) {"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 33,
+        "column": 76,
+        "text": "JaewoonVibeRuntime.prototype.queueSaveProgress = function saveProgressWithExpansion(progress, delay) {"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 88,
+        "column": 20,
+        "text": "if (!game.state.expanded || game.wolves.some(wolf => wolf.id === BOSS_ID)) return;"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 220,
+        "column": 40,
+        "text": "rendererProto.draw = function drawWithExpansion(game) {"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 249,
+        "column": 40,
+        "text": "rendererProto.drawUnit = function drawExpansionUnit(ctx, unit) {"
+      },
+      {
+        "source": "web-games/cozy-island/farming-rules.js",
+        "line": 5,
+        "column": 14,
+        "text": "const WORKER_PRICE = 50;"
+      },
+      {
+        "source": "web-games/cozy-island/farming-rules.js",
+        "line": 275,
+        "column": 85,
+        "text": "<button class=\"choice\" data-buy-worker><span>🧑‍🌾 노비 1명 구매</span><b>${WORKER_PRICE}골드</b></button>"
+      },
+      {
+        "source": "web-games/cozy-island/farming-rules.js",
+        "line": 275,
+        "column": 91,
+        "text": "ton class=\"choice\" data-buy-worker><span>🧑‍🌾 노비 1명 구매</span><b>${WORKER_PRICE}골드</b></button>"
+      },
+      {
+        "source": "web-games/cozy-island/farming-rules.js",
+        "line": 282,
+        "column": 46,
+        "text": "if ((Number(progress.coins) || 0) < WORKER_PRICE) {"
+      },
+      {
+        "source": "web-games/cozy-island/farming-rules.js",
+        "line": 283,
+        "column": 16,
+        "text": "showToast(`골드가 부족해 · ${WORKER_PRICE} 필요`);"
+      },
+      {
+        "source": "web-games/cozy-island/farming-rules.js",
+        "line": 283,
+        "column": 35,
+        "text": "showToast(`골드가 부족해 · ${WORKER_PRICE} 필요`);"
+      },
+      {
+        "source": "web-games/cozy-island/farming-rules.js",
+        "line": 286,
+        "column": 28,
+        "text": "progress.coins -= WORKER_PRICE;"
+      },
+      {
+        "source": "web-games/cozy-island/game-v3.js",
+        "line": 7,
+        "column": 14,
+        "text": "const WORKER_PRICE=50, WORKER_MAX=3, WORK_TICK=10, DELIVERY_INTERVAL=60, FEED_INTERVAL=180, FEED_COST=10;"
+      },
+      {
+        "source": "web-games/cozy-island/game-v3.js",
+        "line": 16,
+        "column": 54,
+        "text": "version:3,day:1,minutes:480,coins:40,weather:'맑음',expanded:false,decor:[],barracksBuilt:false,army:[],raidTimer:0,raidNumber:0,"
+      },
+      {
+        "source": "web-games/cozy-island/game-v3.js",
+        "line": 36,
+        "column": 229,
+        "text": "0,650]].map((p,i)=>({id:`tree${i}`,kind:'tree',x:p[0],y:p[1],readyAt:0,lockedByExpansion:i>7})),"
+      },
+      {
+        "source": "web-games/cozy-island/game-v3.js",
+        "line": 37,
+        "column": 198,
+        "text": ":`flower${i}`,kind:'flower',x:p[0],y:p[1],readyAt:0,icon:i%2?'🌷':'🌼',lockedByExpansion:i>5})),"
+      },
+      {
+        "source": "web-games/cozy-island/game-v3.js",
+        "line": 38,
+        "column": 166,
+        "text": "0,920]].map((p,i)=>({id:`rock${i}`,kind:'rock',x:p[0],y:p[1],readyAt:0,lockedByExpansion:i>3}))"
+      },
+      {
+        "source": "web-games/cozy-island/game-v3.js",
+        "line": 88,
+        "column": 78,
+        "text": "function nearestInteraction(){const c=[];for(const n of nodes){if(n.lockedByExpansion&&!state.expanded)continue;c.push({type:'node',item:n,d:dist(n.x,n.y)})}npcs.forEach(n=>c.push({type:'npc',item:n,d:dist(n.x,n.y)}));st"
+      }
+    ],
+    "persistence": [
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 12,
+        "column": 9,
+        "text": "try { localStorage.removeItem(STORAGE_KEY); } catch {}"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 41,
+        "column": 10,
+        "text": "function persistGame(game) {"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 47,
+        "column": 32,
+        "text": "const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 50,
+        "column": 5,
+        "text": "localStorage.setItem(STORAGE_KEY, JSON.stringify(current));"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 50,
+        "column": 39,
+        "text": "localStorage.setItem(STORAGE_KEY, JSON.stringify(current));"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 119,
+        "column": 51,
+        "text": "button.innerHTML = '<span>🔄 처음부터 다시하기</span><b>저장 초기화</b>';"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 121,
+        "column": 23,
+        "text": "if (!confirm('포근섬 저장을 전부 지우고 처음부터 다시 할까?')) return;"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 122,
+        "column": 11,
+        "text": "try { localStorage.removeItem(STORAGE_KEY); } catch {}"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 144,
+        "column": 3,
+        "text": "persistGame(currentGame);"
+      },
+      {
+        "source": "web-games/cozy-island/game.js",
+        "line": 2,
+        "column": 21,
+        "text": "// 역할: 포근섬 게임 로직·입력·저장·병영·습격"
+      },
+      {
+        "source": "web-games/cozy-island/game.js",
+        "line": 358,
+        "column": 56,
+        "text": "}).join('')}</div><p class=\"panel-note\">꾸미기는 최대 3개까지 저장돼.</p>`;"
+      }
+    ],
+    "uiArt": [
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 54,
+        "column": 24,
+        "text": "function fixSoldierRecruitButton(game) {"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 151,
+        "column": 34,
+        "text": "if (currentGame) fixSoldierRecruitButton(currentGame);"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 160,
+        "column": 17,
+        "text": "fixSoldierRecruitButton(game);"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 162,
+        "column": 150,
+        "text": "nsform:translateX(-50%);z-index:8;border:0;border-radius:14px;padding:10px 14px;background:rgba(255,255,255,.94);box-shadow:0 4px 14px rgba(31,69,57,.2);font-weight:900;color:#25423a;display:none;';"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 162,
+        "column": 239,
+        "text": "d:rgba(255,255,255,.94);box-shadow:0 4px 14px rgba(31,69,57,.2);font-weight:900;color:#25423a;display:none;';"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 181,
+        "column": 26,
+        "text": "function injectKnightRecruit() {"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 185,
+        "column": 75,
+        "text": "if (!body || title?.textContent !== '병영' || !currentGame.state.barracksBuilt) return;"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 186,
+        "column": 44,
+        "text": "if (body.querySelector('[data-knight-recruit]')) return;"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 191,
+        "column": 28,
+        "text": "button.dataset.knightRecruit = '1';"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 211,
+        "column": 60,
+        "text": "const panelObserver = new MutationObserver(injectKnightRecruit);"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 230,
+        "column": 19,
+        "text": "injectKnightRecruit();"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 242,
+        "column": 31,
+        "text": "ctx.font = '700 12px system-ui';"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 257,
+        "column": 53,
+        "text": "ctx.font = unit.kind === 'cavalry' ? '36px system-ui' : '31px system-ui';"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 257,
+        "column": 72,
+        "text": "ctx.font = unit.kind === 'cavalry' ? '36px system-ui' : '31px system-ui';"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 264,
+        "column": 31,
+        "text": "ctx.font = '700 10px system-ui';"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 274,
+        "column": 27,
+        "text": "ctx.font = '22px system-ui';"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 276,
+        "column": 27,
+        "text": "ctx.font = '48px system-ui';"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 283,
+        "column": 31,
+        "text": "ctx.font = '800 12px system-ui';"
+      }
+    ],
+    "risk": [
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 6,
+        "column": 19,
+        "text": "let currentGame = null;"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 12,
+        "column": 49,
+        "text": "try { localStorage.removeItem(STORAGE_KEY); } catch {}"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 15,
+        "column": 24,
+        "text": "history.replaceState(null, '', clean);"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 24,
+        "column": 21,
+        "text": "showToast.timer = setTimeout(() => toast.classList.remove('show'), 2200);"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 51,
+        "column": 5,
+        "text": "} catch {}"
+      },
+      {
+        "source": "web-games/cozy-island/balance-reset.js",
+        "line": 122,
+        "column": 51,
+        "text": "try { localStorage.removeItem(STORAGE_KEY); } catch {}"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 14,
+        "column": 19,
+        "text": "let currentGame = null;"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 17,
+        "column": 20,
+        "text": "let lastBossCool = null;"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 75,
+        "column": 21,
+        "text": "showToast.timer = setTimeout(() => toast.classList.remove('show'), 2200);"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 108,
+        "column": 14,
+        "text": "let best = null;"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 121,
+        "column": 34,
+        "text": "lastBossCool = boss?.cool ?? null;"
+      },
+      {
+        "source": "web-games/cozy-island/combat-expansion.js",
+        "line": 125,
+        "column": 23,
+        "text": "if (lastBossCool != null && boss.cool > lastBossCool + .45 && boss.cool > .7) {"
+      },
+      {
+        "source": "web-games/cozy-island/farming-rules.js",
+        "line": 10,
+        "column": 21,
+        "text": "let activeRuntime = null;"
+      },
+      {
+        "source": "web-games/cozy-island/farming-rules.js",
+        "line": 11,
+        "column": 22,
+        "text": "let activeProgress = null;"
+      },
+      {
+        "source": "web-games/cozy-island/farming-rules.js",
+        "line": 219,
+        "column": 3,
+        "text": "setTimeout(() => toast.classList.remove('show'), 2200);"
+      },
+      {
+        "source": "web-games/cozy-island/farming-rules.js",
+        "line": 322,
+        "column": 1,
+        "text": "setInterval(tickWorkers, 500);"
+      },
+      {
+        "source": "web-games/cozy-island/farming-rules.js",
+        "line": 323,
+        "column": 1,
+        "text": "setInterval(() => {"
+      },
+      {
+        "source": "web-games/cozy-island/game-v3.js",
+        "line": 23,
+        "column": 80,
+        "text": "const runtime=new JaewoonVibeRuntime({gameId:GAME_ID,autosaveDelay:350}).boot({errorReporter:e=>console.error('[포근섬 오류]',e)});"
+      }
+    ]
+  },
+  "missingEvidence": [],
+  "contracts": {
+    "factsAreEvidenceOnly": true,
+    "proposalsForbidden": true,
+    "numericChangesForbidden": true,
+    "approvedBaselineOverwriteForbidden": true,
+    "packedSourceDecodeBounded": true,
+    "packedSourceExecuted": false,
+    "packedLiteralMasked": true,
+    "persistenceRequiresStorageEvidence": true,
+    "multipleMatchesPerLine": true
+  }
+}

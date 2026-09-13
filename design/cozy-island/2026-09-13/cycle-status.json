@@ -1,0 +1,356 @@
+{
+  "version": 5,
+  "date": "2026-09-13",
+  "gameId": "cozy-island",
+  "gameName": "포근섬",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "status": "COMPLETE",
+  "policyDocument": "COMPANY_FLOW.md",
+  "flow": "GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE",
+  "gameSeed": {
+    "seedId": "OWNER-ENROLL-COZY-ISLAND-20260913",
+    "category": "CASUAL",
+    "source": "game-seed-state.json",
+    "complete": true
+  },
+  "designer": {
+    "role": "GAME_DESIGNER_AI",
+    "model": "gemma3:1b",
+    "singleAuthor": true,
+    "sameModelRevised": true
+  },
+  "departments": {
+    "count": 5,
+    "roles": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "balance"
+    ],
+    "leadModels": {
+      "planning": "qwen3:0.6b",
+      "graphics": "gemma3:1b",
+      "development": "llama3.2:1b",
+      "qa": "qwen2.5:1.5b",
+      "balance": "smollm2:1.7b"
+    },
+    "distinctLeadModels": [
+      "qwen3:0.6b",
+      "gemma3:1b",
+      "llama3.2:1b",
+      "qwen2.5:1.5b",
+      "smollm2:1.7b"
+    ],
+    "distinctLeadModelCount": 5,
+    "leadModelsDistinct": true,
+    "reviewModelCount": 3,
+    "modelAudit": {
+      "planning": {
+        "leadModel": "qwen3:0.6b",
+        "assistantModels": [
+          "gemma3:1b",
+          "llama3.2:1b"
+        ],
+        "models": [
+          "qwen3:0.6b",
+          "gemma3:1b",
+          "llama3.2:1b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "qwen3:0.6b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "qwen3:0.6b",
+        "rebuttalAuthoredByLead": true
+      },
+      "graphics": {
+        "leadModel": "gemma3:1b",
+        "assistantModels": [
+          "llama3.2:1b",
+          "qwen2.5:1.5b"
+        ],
+        "models": [
+          "gemma3:1b",
+          "llama3.2:1b",
+          "qwen2.5:1.5b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "gemma3:1b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "gemma3:1b",
+        "rebuttalAuthoredByLead": true
+      },
+      "development": {
+        "leadModel": "llama3.2:1b",
+        "assistantModels": [
+          "qwen2.5:1.5b",
+          "smollm2:1.7b"
+        ],
+        "models": [
+          "llama3.2:1b",
+          "qwen2.5:1.5b",
+          "smollm2:1.7b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "llama3.2:1b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "llama3.2:1b",
+        "rebuttalAuthoredByLead": true
+      },
+      "qa": {
+        "leadModel": "qwen2.5:1.5b",
+        "assistantModels": [
+          "smollm2:1.7b",
+          "qwen3:0.6b"
+        ],
+        "models": [
+          "qwen2.5:1.5b",
+          "smollm2:1.7b",
+          "qwen3:0.6b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "qwen2.5:1.5b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "qwen2.5:1.5b",
+        "rebuttalAuthoredByLead": true
+      },
+      "balance": {
+        "leadModel": "smollm2:1.7b",
+        "assistantModels": [
+          "qwen3:0.6b",
+          "gemma3:1b"
+        ],
+        "models": [
+          "smollm2:1.7b",
+          "qwen3:0.6b",
+          "gemma3:1b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "smollm2:1.7b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "smollm2:1.7b",
+        "rebuttalAuthoredByLead": true
+      }
+    },
+    "rebuttalRounds": 1,
+    "rebuttalAuthoredByDepartmentLeads": true,
+    "repeatedFatalReview": true
+  },
+  "meeting": {
+    "consensusCount": 5,
+    "conflictCount": 0,
+    "holdCount": 0,
+    "coordinatorModel": "qwen3:0.6b"
+  },
+  "disposition": {
+    "version": 1,
+    "gameId": "cozy-island",
+    "date": "2026-09-13",
+    "state": "REDESIGN",
+    "sameDesignerRevisionAttempted": true,
+    "repeatedFiveDepartmentReview": true,
+    "allFiveLeadModelsReviewed": true,
+    "discardVotes": 2,
+    "commonFatalCriteria": [],
+    "unanimousFatalDiscard": false,
+    "fatalReviews": {
+      "planning": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [],
+        "evidence": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "reason": "The original design is already in a coherent format, and the content aligns with the requirements. No changes are needed."
+      },
+      "graphics": {
+        "recommendedState": "DISCARD",
+        "fatalCriteria": [
+          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+          "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
+        ],
+        "evidence": [
+          "VALID_FATAL_CRITERIA"
+        ],
+        "reason": "The proposed design has several critical flaws that warrant DISCARD. The design is fundamentally flawed, and the changes proposed are not sufficient to address the issues. The changes are not aligned with the core design goals and do not offer a significant improvement. The design is not a viable path forward and requires significant rework."
+      },
+      "development": {
+        "recommendedState": "REDESIGN",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "CORE_FUN_TO_LEARN",
+          "CORE_LOOP",
+          "DISTINCT_IDENTITY",
+          "MARKET_EVIDENCE_SUMMARY"
+        ],
+        "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. VALID_FATAL_CRITERIA=["
+      },
+      "qa": {
+        "recommendedState": "REDESIGN",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "VALID_FATAL_CRITERIA",
+          "VALID_FATAL_CRITERIA",
+          "VALID_FATAL_CRITERIA",
+          "VALID_FATAL_CRITERIA"
+        ],
+        "reason": "The revised design does not address the fatal criteria and the current design is not salvageable."
+      },
+      "balance": {
+        "recommendedState": "DISCARD",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+          "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
+        ],
+        "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라."
+      }
+    },
+    "marketMetricAloneUsedForDiscard": false
+  },
+  "runtimeMetrics": {
+    "phaseMs": {
+      "designer_draft": 110483,
+      "independent_department_reviews": 218799,
+      "department_representatives": 55554,
+      "lead_rebuttals": 48102,
+      "cross_department_meeting": 12052,
+      "designer_revision": 24771,
+      "five_lead_fatal_review": 194395
+    },
+    "totalModelCalls": 23,
+    "totalModelCallMs": 1134096,
+    "modelPhaseConcurrency": 3,
+    "modelKeepAlive": "2m",
+    "independentReviewOutputs": 15,
+    "fullPoolReviewOutputs": 25
+  },
+  "artbook": {
+    "singleEditor": true,
+    "editorModel": "qwen2.5:1.5b",
+    "sourceDesign": "design/cozy-island/2026-09-13/design-revised.json",
+    "createdAfterBaselineReady": true,
+    "vibe2Used": false,
+    "path": "design/cozy-island/2026-09-13/core-artbook.json"
+  },
+  "vibe2Used": false,
+  "paidApi": false,
+  "baselineGate": {
+    "policyDocument": "COMPANY_FLOW.md",
+    "productionClass": "DESIGN_ONLY",
+    "tierAlias": 3,
+    "tier": 3,
+    "state": "DESIGN_BASELINE_READY",
+    "ready": true,
+    "blockers": [],
+    "advisoryDisposition": "REDESIGN",
+    "unanimousFatalDiscard": false,
+    "meeting": {
+      "conflictCount": 0,
+      "holdCount": 0,
+      "allResolved": true
+    },
+    "evidence": {
+      "gameSeed": {
+        "required": true,
+        "present": true,
+        "seedId": "OWNER-ENROLL-COZY-ISLAND-20260913",
+        "source": "game-seed-state.json"
+      },
+      "webSmoke": {
+        "supportingOnly": true,
+        "pass": false,
+        "source": null
+      },
+      "webGameplay": {
+        "required": false,
+        "pass": false,
+        "approvedScopeFullyImplemented": false,
+        "approvedScopeCount": 0,
+        "source": null
+      },
+      "targetPlatformProject": {
+        "required": false,
+        "platform": "ROBLOX",
+        "present": false,
+        "path": null,
+        "projectField": "robloxProjectPath"
+      },
+      "targetPlatformTechnical": {
+        "required": false,
+        "platform": "ROBLOX",
+        "pass": false,
+        "source": null,
+        "evidenceFile": "roblox-technical-validation.json"
+      },
+      "revalidation": {
+        "conditional": true,
+        "pass": false,
+        "source": null
+      }
+    },
+    "contracts": {
+      "aiMeetingCompletionDoesNotEqualBaselineApproval": true,
+      "gameSeedRequiredBeforeDesignBaseline": true,
+      "marketEvidenceIsTargetReferenceNotHardGate": true,
+      "meetingHoldBlocksDesignBaseline": true,
+      "meetingConflictBlocksDesignBaseline": true,
+      "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
+      "unanimousFatalDiscardRequiredToDiscard": true,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": true,
+      "designArtbookOnlyAfterBaselineReady": true,
+      "designOnlyVibe2Forbidden": true,
+      "webSmokeDoesNotEqualGameplayValidation": true,
+      "developmentConfirmedIsGatedDirect": true,
+      "developmentConfirmedResumesFromLatestEvidence": true,
+      "developmentConfirmedRequiresExplicitWebGameplayValidation": true,
+      "developmentConfirmedRequiresFullApprovedWebScope": true,
+      "developmentConfirmedRequiresSelectedPlatformTechnicalValidation": true,
+      "developmentArtbookOnlyAfterBaselineReady": true,
+      "releaseConfirmedBaselineOwnedByReleasePipeline": true,
+      "numericTierIsCompatibilityAliasOnly": true
+    },
+    "checkedAt": "2026-09-13T06:03:17.622Z"
+  },
+  "artbookUi": {
+    "status": "COMPLETE",
+    "label": "완료",
+    "path": "artbook-submissions/cozy-island/status.json"
+  },
+  "artbookPublication": {
+    "published": true,
+    "path": "artbook-submissions/cozy-island/current.json",
+    "baselineGateState": "DESIGN_BASELINE_READY"
+  }
+}

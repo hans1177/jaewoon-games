@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "gameId"
+        ],
+        "fix": [
+          "gameId"
+        ],
+        "add": [
+          "gameId"
+        ],
+        "risks": [
+          "gameId"
+        ],
+        "evidence": [
+          "gameId"
+        ],
+        "questions": [
+          "gameId"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "coreLoop"
+        ],
+        "fix": [
+          "playerFantasy"
+        ],
+        "add": [
+          "coreFun"
+        ],
+        "risks": [
+          "coreLoop"
+        ],
+        "evidence": [
+          "MARKET_EVIDENCE_SUMMARY"
+        ],
+        "questions": [
+          "validationQuestions"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Choose a calm island activity such as gathering, fishing or tending the living space. Turn the result into a useful collection, 1."
+        ],
+        "fix": [
+          "Turn the result into a useful collection, upgrade or island improvement. Use the improvement to unlock a new activity, location or"
+        ],
+        "add": [
+          "Use the improvement to unlock a new activity, location or collection goal while preserving a low-pressure session rhythm."
+        ],
+        "risks": [
+          "Use the improvement to unlock a new activity, location or collection goal while preserving a low-pressure session rhythm."
+        ],
+        "evidence": [
+          "Use the improvement to unlock a new activity, location or collection goal while preserving a low-pressure session rhythm."
+        ],
+        "questions": [
+          "Use the improvement to unlock a new activity, location or collection goal while preserving a low-pressure session rhythm."
+        ]
+      }
+    }
+  ]
+}

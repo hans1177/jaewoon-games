@@ -1,0 +1,96 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "reason": "The original structure is already in a coherent format. The content is well-organized and aligns with the requirements. No changes are needed."
+    },
+    "graphics": {
+      "accept": [
+        "fix",
+        "add",
+        "risks"
+      ],
+      "challenge": [
+        "validationQuestions"
+      ],
+      "revision": [
+        "coreFun",
+        "designCycleEstablished",
+        "targetAudience:global"
+      ],
+      "reason": "playerFantasy"
+    },
+    "development": {
+      "accept": [
+        "own"
+      ],
+      "challenge": [
+        "own"
+      ],
+      "revision": [
+        "own"
+      ],
+      "reason": "own"
+    },
+    "qa": {
+      "accept": [
+        "OWN",
+        "OTHERS"
+      ],
+      "challenge": [
+        "OWN",
+        "OTHERS"
+      ],
+      "revision": [
+        "OWN",
+        "OTHERS"
+      ],
+      "reason": "Both OWN and OTHERS have similar suggestions, and there is no clear preference for one over the other. Therefore, the decision is to accept both suggestions."
+    },
+    "balance": {
+      "accept": [
+        "keep",
+        "add",
+        "fix"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "planning",
+        "graphics",
+        "development"
+      ],
+      "reason": "스키마에 맞는 JSON 객체만 반환한다."
+    }
+  }
+}

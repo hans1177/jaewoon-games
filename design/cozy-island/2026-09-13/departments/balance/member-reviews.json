@@ -1,0 +1,87 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Choose a calm island activity such as gathering, fishing or tending the living space. Turn the result into a useful collection, 1."
+        ],
+        "fix": [
+          "Turn the result into a useful collection, upgrade or island improvement. Use the improvement to unlock a new activity, location or"
+        ],
+        "add": [
+          "Use the improvement to unlock a new activity, location or collection goal while preserving a low-pressure session rhythm."
+        ],
+        "risks": [
+          "Use the improvement to unlock a new activity, location or collection goal while preserving a low-pressure session rhythm."
+        ],
+        "evidence": [
+          "Use the improvement to unlock a new activity, location or collection goal while preserving a low-pressure session rhythm."
+        ],
+        "questions": [
+          "Use the improvement to unlock a new activity, location or collection goal while preserving a low-pressure session rhythm."
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "original web archive preserved"
+        ],
+        "fix": [
+          "design cycle established"
+        ],
+        "add": [
+          "new activity, location, or collection goal"
+        ],
+        "risks": [
+          "low-pressure session rhythm"
+        ],
+        "evidence": [
+          "reference games: Animal Crossing: New Horizons, Stardew Valley, Dinkum"
+        ],
+        "questions": [
+          "target audience: global, relaxing daily activities"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "identity"
+        ],
+        "fix": [
+          "coreFun"
+        ],
+        "add": [
+          "design"
+        ],
+        "risks": [],
+        "evidence": [
+          "DESIGN"
+        ],
+        "questions": []
+      }
+    }
+  ]
+}

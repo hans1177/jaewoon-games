@@ -1,0 +1,172 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen3:0.6b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "original web archive preserved"
+      ],
+      "fix": [
+        "design cycle established"
+      ],
+      "add": [
+        "new activity, location, or collection goal"
+      ],
+      "risks": [
+        "low-pressure session rhythm"
+      ],
+      "evidence": [
+        "reference games: Animal Crossing: New Horizons, Stardew Valley, Dinkum"
+      ],
+      "questions": [
+        "target audience: global, relaxing daily activities"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "identity"
+      ],
+      "fix": [
+        "playerFantasy"
+      ],
+      "add": [
+        "coreFun"
+      ],
+      "risks": [
+        "coreLoop"
+      ],
+      "evidence": [
+        "DESIGN"
+      ],
+      "questions": []
+    },
+    "development": {
+      "keep": [
+        "gameId"
+      ],
+      "fix": [
+        "playerFantasy"
+      ],
+      "add": [
+        "coreFun"
+      ],
+      "risks": [
+        "coreLoop"
+      ],
+      "evidence": [
+        "MARKET_EVIDENCE_SUMMARY"
+      ],
+      "questions": [
+        "validationQuestions"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "coreLoop"
+      ],
+      "fix": [
+        "playerFantasy"
+      ],
+      "add": [
+        "coreFun"
+      ],
+      "risks": [
+        "coreLoop"
+      ],
+      "evidence": [
+        "MARKET_EVIDENCE_SUMMARY"
+      ],
+      "questions": [
+        "validationQuestions"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "original web archive preserved"
+      ],
+      "fix": [
+        "design cycle established"
+      ],
+      "add": [
+        "new activity, location, or collection goal"
+      ],
+      "risks": [
+        "low-pressure session rhythm"
+      ],
+      "evidence": [
+        "reference games: Animal Crossing: New Horizons, Stardew Valley, Dinkum"
+      ],
+      "questions": [
+        "target audience: global, relaxing daily activities"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "The original structure is already in a coherent format. The content is well-organized and aligns with the requirements. No changes are needed.",
+      "departments": [
+        "planning"
+      ]
+    },
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "playerFantasy",
+      "departments": [
+        "graphics"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "own",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "OWN",
+      "departments": [
+        "qa"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "planning",
+      "departments": [
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 5,
+    "conflict": 0,
+    "hold": 0
+  }
+}

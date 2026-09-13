@@ -1,0 +1,87 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "original web archive preserved"
+        ],
+        "fix": [
+          "design cycle established"
+        ],
+        "add": [
+          "new activity, location, or collection goal"
+        ],
+        "risks": [
+          "low-pressure session rhythm"
+        ],
+        "evidence": [
+          "reference games: Animal Crossing: New Horizons, Stardew Valley, Dinkum"
+        ],
+        "questions": [
+          "target audience: global, relaxing daily activities"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "identity"
+        ],
+        "fix": [
+          "playerFantasy"
+        ],
+        "add": [
+          "coreFun"
+        ],
+        "risks": [],
+        "evidence": [
+          "DESIGN"
+        ],
+        "questions": []
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "gameId"
+        ],
+        "fix": [
+          "gameId"
+        ],
+        "add": [
+          "gameId"
+        ],
+        "risks": [
+          "gameId"
+        ],
+        "evidence": [
+          "gameId"
+        ],
+        "questions": [
+          "gameId"
+        ]
+      }
+    }
+  ]
+}
