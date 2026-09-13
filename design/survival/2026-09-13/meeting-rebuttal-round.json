@@ -1,0 +1,89 @@
+{
+  "version": 4,
+  "gameId": "survival",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keep: '지정된 담당 부서만 검토하라.'",
+        "fix: 'llama3.2:1b'",
+        "add: 'llama3.2:1b'"
+      ],
+      "challenge": [
+        "risks: 'llama3.2:1b'",
+        "evidence: 'llama3.2:1b'"
+      ],
+      "revision": [
+        "questions: 'llama3.2:1b'"
+      ],
+      "reason": "지정된 담당 부서만 검토하라."
+    },
+    "graphics": {
+      "accept": [
+        "llama3.2:1b",
+        "add: 'Survival' - 'Survival' is required for this review."
+      ],
+      "challenge": [
+        "llama3.2:1b",
+        "risks: 'Survival' - 'Survival' is required for this review."
+      ],
+      "revision": [
+        "llama3.2:1b",
+        "evidence: 'Survival' - 'Survival' is required for this review."
+      ],
+      "reason": "The 'Survival' feature is critical for the functionality of the llama3.2 model.  It is essential to prioritize this feature in the review process."
+    },
+    "development": {
+      "accept": [
+        "keep",
+        "add",
+        "questions"
+      ],
+      "challenge": [
+        "keep",
+        "add",
+        "risks"
+      ],
+      "revision": [
+        "keep",
+        "add",
+        "questions"
+      ],
+      "reason": "Survival"
+    },
+    "qa": {
+      "accept": [
+        "qa"
+      ],
+      "challenge": [
+        "qa"
+      ],
+      "revision": [
+        "qa"
+      ],
+      "reason": "qa 부서의 의견을 수용합니다."
+    },
+    "balance": {
+      "accept": [
+        "Survival"
+      ],
+      "challenge": [
+        "Survival"
+      ],
+      "revision": [
+        "Survival"
+      ],
+      "reason": "Survival"
+    }
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen3:0.6b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "the main idea of the game"
+      ],
+      "fix": [
+        "the target audience of the game"
+      ],
+      "add": [
+        "the core gameplay mechanic of the game"
+      ],
+      "risks": [
+        "the main idea of the game"
+      ],
+      "evidence": [
+        "the target audience of the game"
+      ],
+      "questions": [
+        "the main idea of the game"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "game_seed_generation",
+        "game_seed_generation"
+      ],
+      "fix": [
+        "game_seed_generation"
+      ],
+      "add": [
+        "game_seed_style"
+      ],
+      "risks": [
+        "game_seed_risk"
+      ],
+      "evidence": [
+        "game_seed_evidence"
+      ],
+      "questions": [
+        "game_seed_question"
+      ]
+    },
+    "development": {
+      "keep": [
+        "gameId"
+      ],
+      "fix": [
+        "gameId"
+      ],
+      "add": [
+        "gameId"
+      ],
+      "risks": [
+        "gameId"
+      ],
+      "evidence": [
+        "gameId"
+      ],
+      "questions": [
+        "gameId"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "playerFantasy"
+      ],
+      "fix": [
+        "coreFun"
+      ],
+      "add": [
+        "signatureSystems"
+      ],
+      "risks": [
+        "validationQuestions"
+      ],
+      "evidence": [
+        "MARKET_EVIDENCE_SUMMARY"
+      ],
+      "questions": [
+        "progressionDirection"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "place or adjust defenders and spend limited resources on the highest-value counter.",
+        "place or adjust defenders and spend limited resources on the highest-value counter."
+      ],
+      "fix": [
+        "place or adjust defenders and spend limited resources on the highest-value counter.",
+        "place or adjust defenders and spend limited resources on the highest-value counter."
+      ],
+      "add": [
+        "place or adjust defenders and spend limited resources on the highest-value counter.",
+        "place or adjust defenders and spend limited resources on the highest-value counter."
+      ],
+      "risks": [
+        "survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.",
+        "survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+      ],
+      "evidence": [
+        "place or adjust defenders and spend limited resources on the highest-value counter.",
+        "place or adjust defenders and spend limited resources on the highest-value counter."
+      ],
+      "questions": [
+        "what is the core gameplay mechanic of the game?",
+        "what is the core gameplay mechanic of the game?"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "The main idea of the game is the core gameplay mechanic, and the target audience is the core gameplay mechanic. The risks are the core gameplay mechanic, and the evidence is the core gameplay mechanic. The questions are the core gameplay mechanic.",
+      "departments": [
+        "planning",
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 1,
+    "conflict": 0,
+    "hold": 0
+  }
+}

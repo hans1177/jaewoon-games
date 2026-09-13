@@ -1,0 +1,97 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "the main idea of the game",
+        "the target audience of the game",
+        "the core gameplay mechanic of the game"
+      ],
+      "challenge": [
+        "the main idea of the game",
+        "the target audience of the game",
+        "the core gameplay mechanic of the game"
+      ],
+      "revision": [
+        "the core gameplay mechanic of the game",
+        "the target audience of the game",
+        "the main idea of the game"
+      ],
+      "reason": "The main idea of the game is the core gameplay mechanic, and the target audience is the core gameplay mechanic. The risks are the core gameplay mechanic, and the evidence is the core gameplay mechanic."
+    },
+    "graphics": {
+      "accept": [
+        "OTHERS",
+        "game_seed_question"
+      ],
+      "challenge": [
+        "game_seed_risk",
+        "game_seed_evidence",
+        "game_seed_question"
+      ],
+      "revision": [
+        "game_seed_question",
+        "game_seed_evidence",
+        "game_seed_question"
+      ],
+      "reason": "The 'game_seed_question' suggests a potential risk to the core gameplay.  The 'game_seed_evidence' is a critical piece of information, and the 'game_seed_question' warrants a closer look.  We need to understand the underlying intent and potential impact of this question to ensure the game's core remains intact."
+    },
+    "development": {
+      "accept": [
+        "own"
+      ],
+      "challenge": [
+        "own"
+      ],
+      "revision": [
+        "own"
+      ],
+      "reason": "own"
+    },
+    "qa": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risk",
+        "evidence",
+        "question"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "reason": "QA 부서는 다른 네 부서의 의견을 수용하고 반박/수정을 하지 않습니다."
+    },
+    "balance": {
+      "accept": [
+        "place or adjust defenders and spend limited resources on the highest-value counter.",
+        "place or adjust defenders and spend limited resources on the highest-value counter."
+      ],
+      "challenge": [
+        "place or adjust defenders and spend limited resources on the highest-value counter.",
+        "place or adjust defenders and spend limited resources on the highest-value counter."
+      ],
+      "revision": [
+        "place or adjust defenders and spend limited resources on the highest-value counter.",
+        "place or adjust defenders and spend limited resources on the highest-value counter."
+      ],
+      "reason": "survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+    }
+  }
+}

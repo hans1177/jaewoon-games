@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "place or adjust defenders and spend limited resources on the highest-value counter."
+        ],
+        "fix": [
+          "place or adjust defenders and spend limited resources on the highest-value counter."
+        ],
+        "add": [
+          "place or adjust defenders and spend limited resources on the highest-value counter."
+        ],
+        "risks": [
+          "survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+        ],
+        "evidence": [
+          "place or adjust defenders and spend limited resources on the highest-value counter."
+        ],
+        "questions": [
+          "what is the core gameplay mechanic of the game?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "the main idea of the game"
+        ],
+        "fix": [
+          "the target audience of the game"
+        ],
+        "add": [
+          "the core gameplay mechanic of the game"
+        ],
+        "risks": [
+          "the main idea of the game"
+        ],
+        "evidence": [
+          "the target audience of the game"
+        ],
+        "questions": [
+          "the main idea of the game"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_seed_balance"
+        ],
+        "fix": [
+          "game_seed_balance"
+        ],
+        "add": [
+          "game_seed_core_loop"
+        ],
+        "risks": [
+          "game_seed_risk"
+        ],
+        "evidence": [
+          "game_seed_evidence"
+        ],
+        "questions": [
+          "game_seed_question"
+        ]
+      }
+    }
+  ]
+}
