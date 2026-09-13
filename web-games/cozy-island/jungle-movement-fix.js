@@ -23,12 +23,16 @@ function jungleUnlocked() {
   return Boolean(currentGame?.state?.southernJungle?.unlocked);
 }
 
+function northUnlocked() {
+  return Boolean(currentGame?.state?.northernRegion?.unlocked);
+}
+
 function eastUnlocked() {
   return Boolean(currentGame?.state?.expanded);
 }
 
 function blockedOnMainIsland(x, y) {
-  if (y > 1025) return false;
+  if (y > 1025 || y < 160) return false;
   const pond = Math.pow((x - 390) / 150, 2) + Math.pow((y - 370) / 112, 2) < 1;
   if (pond) return true;
   return x > 635 && x < 900 && y > 170 && y < 415;
@@ -47,8 +51,12 @@ function inJungle(x, y) {
   return jungleUnlocked() && x >= 1435 && x <= 2820 && y >= 980 && y <= 2025;
 }
 
+function inNorth(x, y) {
+  return northUnlocked() && x >= 1435 && x <= 2820 && y >= -820 && y <= 220;
+}
+
 function canStandAt(x, y) {
-  return inMainVillage(x, y) || inEast(x, y) || inJungle(x, y);
+  return inMainVillage(x, y) || inEast(x, y) || inJungle(x, y) || inNorth(x, y);
 }
 
 function baseCandidate(x, y) {
@@ -69,11 +77,16 @@ function jungleCandidate(x, y) {
   return { x: Math.max(1435, Math.min(2820, x)), y: Math.max(980, Math.min(2025, y)) };
 }
 
+function northCandidate(x, y) {
+  return { x: Math.max(1435, Math.min(2820, x)), y: Math.max(-820, Math.min(220, y)) };
+}
+
 function recoverInvalidPosition(player) {
   if (canStandAt(player.x, player.y)) return;
   const candidates = [baseCandidate(player.x, player.y)];
   if (eastUnlocked()) candidates.push(eastCandidate(player.x, player.y));
   if (jungleUnlocked()) candidates.push(jungleCandidate(player.x, player.y));
+  if (northUnlocked()) candidates.push(northCandidate(player.x, player.y));
 
   let best = candidates[0];
   let bestDistance = Infinity;
