@@ -1,0 +1,76 @@
+name: Company Roblox Runner PowerShell Bootstrap
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/company-roblox-runner-pwsh-bootstrap.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bootstrap:
+    name: bootstrap local Roblox runner PowerShell 7
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 12
+    steps:
+      - name: Install portable PowerShell 7 and expose pwsh on existing runner PATH
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+          $existing = Get-Command pwsh -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($existing) {
+            Write-Host "ROBLOX_RUNNER_PWSH_ALREADY_AVAILABLE=$($existing.Source)"
+            & $existing.Source -NoLogo -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'
+            exit 0
+          }
+
+          $headers = @{
+            Authorization = "Bearer $env:GH_TOKEN"
+            'User-Agent' = 'jaewoon-roblox-runner-bootstrap'
+            Accept = 'application/vnd.github+json'
+          }
+          $release = Invoke-RestMethod -Uri 'https://api.github.com/repos/PowerShell/PowerShell/releases/latest' -Headers $headers
+          $asset = @($release.assets | Where-Object { $_.name -match '^PowerShell-[0-9.]+-win-x64\.zip$' } | Select-Object -First 1)[0]
+          if (-not $asset) { throw 'Latest PowerShell win-x64 portable ZIP asset not found' }
+
+          $installRoot = Join-Path $env:LOCALAPPDATA 'JaewoonRunner\PowerShell7'
+          $zip = Join-Path $env:RUNNER_TEMP $asset.name
+          Remove-Item -Recurse -Force $installRoot -ErrorAction SilentlyContinue
+          Remove-Item -Force $zip -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path $installRoot | Out-Null
+          Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zip
+          Expand-Archive -Path $zip -DestinationPath $installRoot -Force
+          $pwsh = Join-Path $installRoot 'pwsh.exe'
+          if (-not (Test-Path $pwsh)) { throw "Portable pwsh missing after extraction: $pwsh" }
+
+          function Test-WritablePathDirectory([string]$dir) {
+            if (-not $dir -or -not (Test-Path $dir)) { return $false }
+            $probe = Join-Path $dir ".jaewoon-pwsh-probe-$PID.tmp"
+            try {
+              [IO.File]::WriteAllText($probe, 'ok')
+              Remove-Item -Force $probe -ErrorAction SilentlyContinue
+              return $true
+            } catch {
+              Remove-Item -Force $probe -ErrorAction SilentlyContinue
+              return $false
+            }
+          }
+
+          $pathDirs = @($env:Path -split ';' | Where-Object { $_ } | Select-Object -Unique)
+          $shimDir = $pathDirs | Where-Object { Test-WritablePathDirectory $_ } | Select-Object -First 1
+          if (-not $shimDir) { throw 'No writable directory already present on the live runner PATH' }
+          $shim = Join-Path $shimDir 'pwsh.cmd'
+          @('@echo off', ('"{0}" %*' -f $pwsh)) | Set-Content -Path $shim -Encoding Ascii
+
+          $resolved = Get-Command pwsh -ErrorAction Stop | Select-Object -First 1
+          Write-Host "ROBLOX_RUNNER_PWSH_BOOTSTRAP=PASS"
+          Write-Host "ROBLOX_RUNNER_PWSH_SHIM=$($resolved.Source)"
+          Write-Host "ROBLOX_RUNNER_PWSH_PORTABLE=$pwsh"
+          & $pwsh -NoLogo -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'
