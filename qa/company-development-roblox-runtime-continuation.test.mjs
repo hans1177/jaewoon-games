@@ -39,6 +39,11 @@ test('runtime uses the original package identity and an actual Roblox Studio mul
   assert.ok(workflow.includes('development-roblox-package-$env:GAME_ID'));
   assert.ok(workflow.includes('No retained package matches'));
   assert.ok(workflow.includes('RobloxStudioBeta.exe'));
+  assert.ok(workflow.includes("$packageId = 'Roblox.RobloxStudio'"));
+  assert.ok(workflow.includes('RobloxStudioInstaller.exe'));
+  assert.ok(workflow.includes("$deadline = (Get-Date).AddMinutes(8)"));
+  assert.ok(!workflow.includes('RobloxStudioLauncherBeta.exe'));
+  assert.ok(workflow.includes("item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed'"));
   assert.ok(workflow.includes('--task RunScript'));
   assert.ok(workflow.includes('--localPlaceFile'));
   assert.ok(workflow.includes('ROBLOX_ACTUAL_STUDIO_RUNTIME=PASS'));
