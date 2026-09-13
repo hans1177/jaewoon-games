@@ -1,7 +1,7 @@
 {
   "version": 4,
   "mode": "hierarchical-dag-sharded-work-stealing-queue",
-  "maxConcurrentTasks": 4,
+  "maxConcurrentTasks": 1,
   "ownerDirectivePreemptsAutonomy": true,
   "releaseStatePriority": [
     "release-confirmed",
@@ -909,6 +909,48 @@
       "speculativeEligible": false,
       "estimatedRisk": "medium",
       "shard": "web"
+    },
+    {
+      "id": "pwa-e38bd84e-4286-4f3c-bc6f-1cef11c8991e",
+      "gameId": "daechung-rpg",
+      "target": "unity",
+      "department": "development",
+      "type": "implementation",
+      "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 대충 RPG\n사용자 직접 지시: 포근섬 콘텐츠(벌목장, 광산, 늑대, 병영) 추가 및 유실된 웹게임 관련 정리·복구 작업 진행\n\n추가 지시:\n- 야\n- 편하게해\n- 로블록스 개발은?\n- 포근섬에 벌목징,광산 있어?\n- 늑대 있어?\n- 병영은\n- 야\n- 웹게임 다 왜 없어?\n- 빨리 만들어\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
+      "responsibleFiles": [],
+      "dependencies": [],
+      "priority": "owner-immediate",
+      "releaseState": "release-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": true,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "evidence": [
+        "pwa-task:e38bd84e-4286-4f3c-bc6f-1cef11c8991e",
+        "pwa-kind:directive",
+        "pwa-priority:normal",
+        "actual-release-state:release-confirmed",
+        "source-root:unity-games/daechung-rpg",
+        "owner-auto-deploy-authorization",
+        "verified-qa-required"
+      ],
+      "companyContext": {
+        "stageId": "owner-immediate",
+        "role": "director",
+        "assignmentAuthority": "owner-directive",
+        "sourceRef": "pwa-task:e38bd84e-4286-4f3c-bc6f-1cef11c8991e",
+        "reviewRequired": true
+      }
     }
-  ]
+  ],
+  "ingest": {
+    "added": true,
+    "taskId": "pwa-e38bd84e-4286-4f3c-bc6f-1cef11c8991e",
+    "gameId": "daechung-rpg",
+    "target": "unity",
+    "reason": "OWNER_IMMEDIATE_PWA"
+  }
 }
