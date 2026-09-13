@@ -37,6 +37,7 @@ on:
       - .github/workflows/vibe2-24h-runner.yml
       - .github/workflows/vibe2-candidate-release.yml
       - .github/workflows/vibe2-unity-release-result.yml
+      - .github/workflows/homepage-manager.yml
       - .github/workflows/company-evolution-qa.yml
   workflow_dispatch:
 
@@ -226,11 +227,26 @@ jobs:
           grep -Fq 'push:' .github/workflows/homepage-manager.yml
           grep -Fq 'pull_request:' .github/workflows/homepage-manager.yml
           grep -Fq 'workflow_dispatch:' .github/workflows/homepage-manager.yml
-          grep -Fq 'contents: read' .github/workflows/homepage-manager.yml
-          if grep -Eq '^[[:space:]]+schedule:|contents: write' .github/workflows/homepage-manager.yml; then
-            echo 'homepage manager must remain event-driven/read-only with one manager and one supervisor' >&2
-            exit 1
-          fi
+          node <<'NODE'
+          const fs=require('fs');
+          const text=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
+          if(/^\s+schedule:/m.test(text))throw new Error('homepage manager must remain event-driven');
+          if(!/\npermissions:\n  contents: read\n/.test(text))throw new Error('homepage workflow default permission must remain contents: read');
+          const manageStart=text.indexOf('\n  manage-and-self-qa:');
+          const directorStart=text.indexOf('\n  director-supervision:');
+          const publishStart=text.indexOf('\n  publish-after-director:');
+          if(manageStart<0||directorStart<=manageStart||publishStart<=directorStart)throw new Error('homepage job boundaries missing');
+          const manage=text.slice(manageStart,directorStart);
+          const director=text.slice(directorStart,publishStart);
+          const publish=text.slice(publishStart);
+          for(const [name,section] of [['manage-and-self-qa',manage],['director-supervision',director]]){
+            if(/contents:\s*write|pull-requests:\s*write/.test(section))throw new Error(`${name} must remain read-only`);
+          }
+          if(!/permissions:\n      contents: write\n      pull-requests: write\n/.test(publish))throw new Error('publish-after-director must own the only write/pull-request permission');
+          const beforePublish=text.slice(0,publishStart);
+          if(/contents:\s*write|pull-requests:\s*write/.test(beforePublish))throw new Error('homepage write permission leaked before publish job');
+          console.log('HOMEPAGE_JOB_PERMISSION_BOUNDARY=PASS');
+          NODE
           node tools/homepage-manager.mjs
           echo 'HOMEPAGE_MANAGER_CONTRACT=PASS'
 
