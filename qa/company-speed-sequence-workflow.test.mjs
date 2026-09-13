@@ -44,6 +44,14 @@ test('selected-platform router repairs legacy Web target paths to the platform s
   assert.doesNotMatch(router,/fetch-depth:\s*0/);
 });
 
+test('Web runtime pins the source revision and does not prepare an unused local model',()=>{
+  const exactRefs=router.match(/ref:\s*\$\{\{\s*github\.sha\s*\}\}/g)||[];
+  assert.ok(exactRefs.length>=4,`expected exact revision checkouts, got ${exactRefs.length}`);
+  assert.doesNotMatch(router,/Prepare free local Web generation model/);
+  assert.doesNotMatch(router,/AUTONOMOUS_LOCAL_MODEL/);
+  assert.match(router,/WEB_MODEL_SETUP=SKIPPED_UNUSED/);
+});
+
 test('Unity source reuse avoids the nested heredoc path that failed in the real canary run',()=>{
   assert.match(unity,/bind_catalog\(\)/);
   assert.doesNotMatch(unity,/node - "\$PROJECT" <<'NODE'[\s\S]{0,900}CHANGE_DETECTION=UNCHANGED_SOURCE_REUSED/);
