@@ -6,6 +6,7 @@ on:
     paths:
       - 'assets/vibe-v3-engine.js'
       - 'assets/vibe-development-ai.js'
+      - 'tools/company-learning-sanitize.mjs'
       - 'tools/vibe2-training-sample.mjs'
       - 'tools/vibe2-distillation-ingest.mjs'
       - 'tools/vibe2-distillation-status.mjs'
@@ -22,6 +23,7 @@ on:
       - 'qa/vibe2-weight-learning.test.mjs'
       - 'qa/vibe3-trajectory-ingest.test.mjs'
       - 'qa/vibe3-pump-index.test.mjs'
+      - 'company-learning/invalidated-learning-sources.json'
       - 'company-learning/vibe3-trajectories/**'
       - 'company-learning/external-game-playtest/**'
       - 'design/**/release-baseline.json'
@@ -91,6 +93,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          node --check tools/company-learning-sanitize.mjs
           node --check tools/vibe2-training-sample.mjs
           node --check tools/vibe2-distillation-ingest.mjs
           node --check tools/vibe2-distillation-status.mjs
@@ -120,6 +123,12 @@ jobs:
           node tools/vibe3-trajectory-ingest.mjs \
             --trajectory-dir=company-learning/vibe3-trajectories \
             --out-dir=company-learning/training-samples | tee /tmp/vibe3-trajectory-ingest.json
+          node tools/company-learning-sanitize.mjs \
+            --policy=company-learning/invalidated-learning-sources.json \
+            --evidence-dir=company-learning/evidence \
+            --sample-dir=company-learning/training-samples \
+            --dna=company-learning/company-dna.json \
+            --ledger=department-experience.json | tee /tmp/company-learning-sanitize.json
           node tools/vibe2-distillation-status.mjs \
             --evidence-dir=company-learning/evidence \
             --sample-dir=company-learning/training-samples \
@@ -138,11 +147,16 @@ jobs:
           const read=file=>JSON.parse(fs.readFileSync(file,'utf8').trim().split(/\r?\n/).at(-1));
           const ingest=read('/tmp/vibe2-distillation-ingest.json');
           const trajectory=read('/tmp/vibe3-trajectory-ingest.json');
+          const sanitized=read('/tmp/company-learning-sanitize.json');
           const status=read('/tmp/vibe2-distillation-status.json');
           const request=read('/tmp/vibe2-distillation-request.json');
           const pump=read('/tmp/vibe3-pump.json');
           console.log(`DISTILLATION_SAMPLES_WRITTEN=${ingest.written.length}`);
           console.log(`DISTILLATION_SAMPLES_REFRESHED=${ingest.refreshed?.length||0}`);
+          console.log(`LEGACY_LEARNING_INVALIDATED=${sanitized.invalidated||0}`);
+          console.log(`LEGACY_LEARNING_INVALIDATION_GAMES=${Object.keys(sanitized.byGame||{}).join(',')||'NONE'}`);
+          console.log('OWNER_EXISTING_GAMES_BLANKET_BLOCKED=NO');
+          console.log('FUTURE_REVISIONS_ALLOWED=YES');
           console.log(`UNITY_RELEASE_BASELINES_EXAMINED=${ingest.unityRelease?.examined||0}`);
           console.log(`EXTERNAL_BLACK_BOX_EXAMINED=${ingest.externalBlackBox?.examined||0}`);
           console.log(`VIBE3_TRAJECTORIES_EXAMINED=${trajectory.examined||0}`);
@@ -225,6 +239,9 @@ jobs:
           echo '### Vibe2/Vibe3 Canonical Distillation + Pump' >> "$GITHUB_STEP_SUMMARY"
           echo '- schedule: HOURLY_24H' >> "$GITHUB_STEP_SUMMARY"
           echo '- V3 Pump Mode: ON' >> "$GITHUB_STEP_SUMMARY"
+          echo '- legacy generated versions: invalidated from positive learning only; original Git records preserved' >> "$GITHUB_STEP_SUMMARY"
+          echo '- owner existing games: no blanket invalidation' >> "$GITHUB_STEP_SUMMARY"
+          echo '- future rebuilt revisions: eligible again after current gates' >> "$GITHUB_STEP_SUMMARY"
           echo '- durable state: vibe2-learning-runtime branch; direct main write: NO' >> "$GITHUB_STEP_SUMMARY"
           echo '- verified RAG memory: verified positive evidence only' >> "$GITHUB_STEP_SUMMARY"
           echo '- failure memory: warning/avoidance context only' >> "$GITHUB_STEP_SUMMARY"
