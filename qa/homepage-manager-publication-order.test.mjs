@@ -64,7 +64,7 @@ test('homepage primary game implementation is canonical Top30, not the legacy ca
   assert.ok(homepageCore.includes('const TOP30_LIMIT=30;'));
   assert.ok(homepageCore.includes('const TOP30_MIN_SCORE=80;'));
   assert.ok(homepageCore.includes("getJson('/test-game-candidates.json')"));
-  assert.ok(homepageCore.includes('id="homeTop30GameCenter"'));
+  assert.ok(homepageCore.includes("wrapper.id='homeTop30GameCenter'"));
   assert.ok(homepageCore.includes('class="foldGameCard top30GameCard"'));
   assert.ok(homepageCore.includes('data-homepage-game-source="CANONICAL_TOP30"'));
   assert.ok(homepageCore.includes("homePrimaryGameSource='CANONICAL_TOP30'"));
