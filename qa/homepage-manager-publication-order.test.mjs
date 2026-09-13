@@ -73,6 +73,17 @@ test('failed upstream events cannot cancel an in-flight supervised homepage cand
   assert.ok(!concurrency.includes('group: homepage-manager-${{ github.ref }}'));
 });
 
+test('PR creation failure is a blocking publication failure, not a green branch-ready result',()=>{
+  const publish=section('  publish-after-director:');
+  assert.ok(publish.includes('HOMEPAGE_PUBLICATION_BRANCH_READY=$branch'));
+  assert.ok(publish.includes('HOMEPAGE_PUBLICATION=BLOCKED_PR_PERMISSION_REQUIRED'));
+  assert.ok(publish.includes('exit 1'));
+  assert.ok(!publish.includes('HOMEPAGE_PUBLICATION=BRANCH_READY_PR_PERMISSION_REQUIRED'));
+  assert.ok(operations.includes('PR 생성/병합 권한이 없거나 PR 생성이 실패하면'));
+  assert.ok(operations.includes('workflow를 BLOCK/FAIL'));
+  assert.ok(operations.includes('`BRANCH_READY`는 완료 증거가 아니다.'));
+});
+
 test('workflow implements documented self-QA -> Director -> PR order',()=>{
   const selfQa=operations.indexOf('Homepage Manager self-QA');
   const director=operations.indexOf('기존 Director 1개가 사후 감독');
