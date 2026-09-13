@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/company-development-confirmed-runtime.yml'
+      - '.github/workflows/company-development-roblox-runtime.yml'
       - '.github/workflows/company-development-unity-runtime.yml'
       - '.github/workflows/unity-android-regression.yml'
       - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-development-web-bootstrap.mjs'
       - 'tools/company-development-web-gameplay-validation.mjs'
+      - 'tools/company-development-roblox-bootstrap.mjs'
       - 'tools/company-development-unity-platform.mjs'
       - 'tools/company-development-unity-bootstrap.mjs'
       - 'tools/company-development-unity-evidence.mjs'
@@ -17,6 +19,7 @@ on:
       - 'tools/design-only-promotion-sync.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
+      - 'qa/company-development-roblox-runtime.test.mjs'
       - 'qa/company-development-unity-runtime.test.mjs'
       - 'qa/design-only-promotion-sync.test.mjs'
       - 'qa/company-speed-sequence-workflow.test.mjs'
@@ -34,12 +37,13 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
+  AUTONOMOUS_LOCAL_MODEL: qwen3:1.7b
 
 jobs:
   web-gate:
     name: required Web gameplay and music gate
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     outputs:
       target_count: ${{ steps.targets.outputs.target_count }}
       pass_count: ${{ steps.validate.outputs.pass_count }}
@@ -92,6 +96,27 @@ jobs:
           console.log(`WEB_REQUIRED_QUEUE_COUNT=${rows.length}`);
           console.log(`WEB_REQUIRED_GAME_IDS=${rows.map(x=>x.gameId).join(',')}`);
           NODE
+
+      - name: Prepare free local Web generation model
+        if: steps.targets.outputs.target_count != '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          installed=0
+          for attempt in 1 2 3; do
+            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
+            sleep $((attempt * 4))
+          done
+          test "$installed" = 1
+          nohup ollama serve >/tmp/ollama-development-web.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
+            if [ "$i" = 30 ]; then cat /tmp/ollama-development-web.log || true; exit 1; fi
+            sleep 2
+          done
+          ollama pull "$AUTONOMOUS_LOCAL_MODEL"
+          echo 'WEB_PAID_AI=NO'
+          echo 'WEB_PAID_RUNNER=NO'
 
       - name: Install browser runtime only when Web validation is required
         if: steps.targets.outputs.target_count != '0'
@@ -386,8 +411,19 @@ jobs:
             fi
           fi
           if [[ "$DISPATCH_ROBLOX" == 'true' ]]; then
-            gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
-            echo 'IMMEDIATE_NEXT_STAGE_DISPATCH=ROBLOX_V3_PUMP'
+            existing=''
+            for attempt in 1 2 3; do
+              existing="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=30" | jq -r --arg sha "$GITHUB_SHA" '[.workflow_runs[] | select(.head_sha==$sha and (.status=="queued" or .status=="pending" or .status=="in_progress" or .status=="waiting" or .status=="requested")) | .id] | max // empty')"
+              [[ "$existing" =~ ^[0-9]+$ ]] && break
+              [[ '${{ github.event_name }}' != 'push' ]] && break
+              sleep 2
+            done
+            if [[ "$existing" =~ ^[0-9]+$ ]]; then
+              echo "ROBLOX_EXECUTOR_DISPATCH=DEDUPED_EXISTING_RUN:$existing"
+            else
+              gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+              echo 'IMMEDIATE_NEXT_STAGE_DISPATCH=ROBLOX_DEVELOPMENT_RUNTIME'
+            fi
           fi
           if [[ "$DISPATCH_UEFN" == 'true' ]]; then
             echo 'UNEXPECTED_UEFN_DISPATCH_WITHOUT_CONFIGURED_EXECUTOR' >&2

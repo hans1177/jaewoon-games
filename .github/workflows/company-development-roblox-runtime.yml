@@ -1,0 +1,220 @@
+name: Company DEVELOPMENT_CONFIRMED Roblox Runtime
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: company-development-roblox-runtime
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+  ROBLOX_DEV_MODEL: qwen3:1.7b
+
+jobs:
+  source-bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify Roblox development contracts
+        run: |
+          set -euo pipefail
+          node --check tools/company-development-roblox-bootstrap.mjs
+          node --check tools/vibe3-roblox-platform.mjs
+          node --test qa/company-development-roblox-runtime.test.mjs qa/company-selected-platform-router.test.mjs
+
+      - name: Fetch current company runtime
+        run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+
+      - name: Resolve up to two Web-validated Roblox source targets
+        id: targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const rows=[];
+          for(const item of q.items||[]){
+            if(rows.length>=2)break;
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
+            if(platform!=='ROBLOX')continue;
+            if(!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
+            if(String(item.canonicalState||'').toUpperCase()==='DEVELOPMENT_BLOCKED')continue;
+            const target=`roblox-games/${item.gameId}`;
+            if(fs.existsSync(target))continue;
+            rows.push({
+              gameId:item.gameId,
+              gameName:item.gameName||item.gameId,
+              baseline:item.designBaselineSource,
+              artbook:item.artbookSource||`artbook-submissions/${item.gameId}/current.json`,
+              target,
+            });
+          }
+          fs.writeFileSync('/tmp/roblox-targets.json',JSON.stringify(rows,null,2)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
+          console.log(`ROBLOX_SOURCE_TARGET_COUNT=${rows.length}`);
+          console.log(`ROBLOX_SOURCE_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
+          NODE
+
+      - name: Prepare free local Roblox generation model
+        if: steps.targets.outputs.count != '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          installed=0
+          for attempt in 1 2 3; do
+            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
+            sleep $((attempt * 4))
+          done
+          test "$installed" = 1
+          nohup ollama serve >/tmp/ollama-roblox-development.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
+            if [ "$i" = 30 ]; then cat /tmp/ollama-roblox-development.log || true; exit 1; fi
+            sleep 2
+          done
+          ollama pull "$ROBLOX_DEV_MODEL"
+          echo 'ROBLOX_PAID_AI=NO'
+          echo 'ROBLOX_PAID_RUNNER=NO'
+
+      - name: Generate isolated Roblox source candidates and merge validated source
+        if: steps.targets.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-roblox-development'
+          git config user.email 'actions@users.noreply.github.com'
+          echo '[]' > /tmp/roblox-results.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {execFileSync} from 'node:child_process';
+          import path from 'node:path';
+          const rows=JSON.parse(fs.readFileSync('/tmp/roblox-targets.json','utf8'));
+          const show=(file)=>execFileSync('git',['show',`origin/${process.env.COMPANY_RUNTIME_BRANCH}:${file}`],{maxBuffer:32*1024*1024});
+          for(const item of rows){
+            const root=path.join('/tmp/roblox-input',item.gameId);
+            fs.mkdirSync(root,{recursive:true});
+            const baseline=path.join(root,'baseline.json');
+            const artbook=path.join(root,'artbook.json');
+            fs.writeFileSync(baseline,show(item.baseline));
+            fs.writeFileSync(artbook,show(item.artbook));
+            item.localBaseline=baseline;
+            item.localArtbook=artbook;
+          }
+          fs.writeFileSync('/tmp/roblox-targets.json',JSON.stringify(rows,null,2)+'\n');
+          NODE
+
+          count="$(jq 'length' /tmp/roblox-targets.json)"
+          for index in $(seq 0 $((count-1))); do
+            game_id="$(jq -r ".[$index].gameId" /tmp/roblox-targets.json)"
+            game_name="$(jq -r ".[$index].gameName" /tmp/roblox-targets.json)"
+            baseline="$(jq -r ".[$index].localBaseline" /tmp/roblox-targets.json)"
+            artbook="$(jq -r ".[$index].localArtbook" /tmp/roblox-targets.json)"
+            target="$(jq -r ".[$index].target" /tmp/roblox-targets.json)"
+            safe="$(printf '%s' "$game_id" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-60)"
+            branch="development/roblox-${safe}-${GITHUB_RUN_ID}"
+            work="/tmp/roblox-${safe}-${GITHUB_RUN_ID}"
+            evidence="/tmp/roblox-source-bootstrap-${safe}.json"
+            git fetch origin main --quiet
+            git worktree add -b "$branch" "$work" origin/main >/dev/null
+            (
+              cd "$work"
+              node "$GITHUB_WORKSPACE/tools/company-development-roblox-bootstrap.mjs" \
+                --game-id="$game_id" \
+                --game-name="$game_name" \
+                --baseline="$baseline" \
+                --artbook="$artbook" \
+                --output-root="$target" \
+                --model="$ROBLOX_DEV_MODEL" \
+                --evidence="$evidence"
+              node --test "$GITHUB_WORKSPACE/qa/company-development-roblox-runtime.test.mjs"
+              git diff --check
+              git add "$target"
+              git diff --cached --quiet && { echo "no Roblox source change: $game_id" >&2; exit 1; }
+              git commit -m "development: bootstrap Roblox ${game_id}"
+              git push origin "HEAD:$branch"
+            )
+            pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "development: bootstrap Roblox ${game_id}" --body "DEVELOPMENT_CONFIRMED Roblox source candidate. Static source contract: PASS. Roblox runtime/independent QA/regression: NOT YET CLAIMED. Policy: COMPANY_FLOW.md.")"
+            gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+            git fetch origin main --quiet
+            jq --arg id "$game_id" --arg source "$target" --arg pr "$pr_url" '. + [{gameId:$id,sourcePath:$source,pr:$pr}]' /tmp/roblox-results.json > /tmp/roblox-results.next.json
+            mv /tmp/roblox-results.next.json /tmp/roblox-results.json
+            git worktree remove "$work" --force 2>/dev/null || true
+            echo "ROBLOX_SOURCE_MERGED=$game_id"
+          done
+
+      - name: Persist Roblox source-bind state to company runtime
+        if: steps.targets.outputs.count != '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git checkout -B roblox-runtime-persist "origin/$COMPANY_RUNTIME_BRANCH"
+          node <<'NODE'
+          const fs=require('fs');
+          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const results=JSON.parse(fs.readFileSync('/tmp/roblox-results.json','utf8'));
+          const stamp=new Date().toISOString();
+          for(const result of results){
+            const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
+            if(!item)throw new Error(`queue item missing: ${result.gameId}`);
+            Object.assign(item,{
+              status:'ACTIVE',
+              currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',
+              canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
+              selectedPlatform:'ROBLOX',
+              targetPlatform:'ROBLOX',
+              sourcePath:result.sourcePath,
+              targetSourcePath:result.sourcePath,
+              robloxProjectPath:result.sourcePath,
+              robloxSourceBootstrapPassedAt:stamp,
+              robloxRuntimePassed:false,
+              routingBlockers:['roblox-runtime-evidence-pending'],
+              updatedAt:stamp,
+            });
+          }
+          queue.updatedAt=stamp;
+          fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          NODE
+          git config user.name 'jaewoon-roblox-development'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'runtime: bind Roblox DEVELOPMENT source [skip ci]'
+            pushed=0
+            for attempt in 1 2 3; do
+              if git pull --rebase origin "$COMPANY_RUNTIME_BRANCH" && git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+              git rebase --abort 2>/dev/null || true
+              git fetch origin "$COMPANY_RUNTIME_BRANCH" --quiet
+              git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+              sleep $((attempt * 2))
+            done
+            test "$pushed" = 1
+          fi
+          echo 'ROBLOX_SOURCE_BIND_PERSIST=PASS'
+          echo 'ROBLOX_RUNTIME_PASS=NO'
+          echo 'ROBLOX_RELEASE_CLAIM=NO'
+
+      - name: Empty queue summary
+        if: steps.targets.outputs.count == '0'
+        run: echo 'ROBLOX_SOURCE_TARGETS=NONE'

@@ -13,6 +13,7 @@ const centralWorkflows=[
   '.github/workflows/company-seed-design-runtime.yml',
   '.github/workflows/company-design-promotion-sync.yml',
   '.github/workflows/company-development-confirmed-runtime.yml',
+  '.github/workflows/company-development-roblox-runtime.yml',
   '.github/workflows/company-development-unity-runtime.yml',
 ];
 
@@ -29,11 +30,12 @@ test('legacy autonomous top-level workflow namespace is removed',()=>{
   assert.deepEqual(legacy,[]);
 });
 
-test('central production runtime keeps one full-scope Web-first selected-platform chain and existing platform executors',()=>{
+test('central production runtime keeps one full-scope Web-first selected-platform chain and platform executors',()=>{
   for(const file of centralWorkflows)assert.equal(exists(file),true,`${file} must exist`);
   const directive=JSON.parse(read('company-directive.json'));
   const promotion=read('.github/workflows/company-design-promotion-sync.yml');
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
+  const roblox=read('.github/workflows/company-development-roblox-runtime.yml');
   const unity=read('.github/workflows/company-development-unity-runtime.yml');
   const webBootstrap=read('tools/company-development-web-bootstrap.mjs');
   const webValidation=read('tools/company-development-web-gameplay-validation.mjs');
@@ -60,7 +62,11 @@ test('central production runtime keeps one full-scope Web-first selected-platfor
   assert.match(development,/DEVELOPMENT_PIPELINE=ONE_CANONICAL_PIPELINE/);
   assert.match(development,/CRON_ROLE=WATCHDOG_AND_RECOVERY_ONLY/);
   assert.match(development,/company-development-unity-runtime\.yml/);
-  assert.match(development,/vibe2-24h-runner\.yml/);
+  assert.match(development,/company-development-roblox-runtime\.yml/);
+  assert.doesNotMatch(development,/gh workflow run vibe2-24h-runner\.yml/);
+  assert.match(roblox,/company-development-roblox-bootstrap\.mjs/);
+  assert.match(roblox,/ROBLOX_RUNTIME_PASS=NO/);
+  assert.match(roblox,/ROBLOX_RELEASE_CLAIM=NO/);
   assert.match(webBootstrap,/FULL_APPROVED_SCOPE_REQUIRED=YES/);
   assert.match(webBootstrap,/deriveApprovedScopeInventory/);
   assert.match(webValidation,/approvedScopeFullyImplemented/);
