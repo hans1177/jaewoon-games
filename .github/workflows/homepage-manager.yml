@@ -34,6 +34,7 @@ on:
       - '_headers'
       - 'tools/homepage-manager.mjs'
       - 'tools/homepage-test-candidate-sync.mjs'
+      - 'qa/homepage-manager-publication-order.test.mjs'
       - '.github/workflows/homepage-manager.yml'
   pull_request:
     branches: [main]
@@ -63,6 +64,7 @@ on:
       - '_headers'
       - 'tools/homepage-manager.mjs'
       - 'tools/homepage-test-candidate-sync.mjs'
+      - 'qa/homepage-manager-publication-order.test.mjs'
       - '.github/workflows/homepage-manager.yml'
   workflow_dispatch:
 
@@ -80,8 +82,13 @@ env:
 jobs:
   manage-and-self-qa:
     name: Homepage Manager Self-QA
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      base_sha: ${{ steps.capture.outputs.base_sha }}
+      candidate_changed: ${{ steps.capture.outputs.candidate_changed }}
+      patch_sha256: ${{ steps.capture.outputs.patch_sha256 }}
     steps:
       - name: Checkout tested revision
         uses: actions/checkout@v4
@@ -93,6 +100,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo 'HOMEPAGE_PUBLIC_STATUS_SYNC=NO' >> "$GITHUB_ENV"
           if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
             echo "HOMEPAGE_CATALOG_PATH=game-catalog.json" >> "$GITHUB_ENV"
             echo "HOMEPAGE_STATUS_PATH=company-status.json" >> "$GITHUB_ENV"
@@ -105,11 +113,31 @@ jobs:
             echo "HOMEPAGE_CATALOG_PATH=/tmp/homepage-runtime/game-catalog.json" >> "$GITHUB_ENV"
             echo "HOMEPAGE_STATUS_PATH=/tmp/homepage-runtime/company-status.json" >> "$GITHUB_ENV"
             echo 'HOMEPAGE_RUNTIME_SOURCE=COMPANY_RUNTIME'
+            if [[ "${{ github.event_name }}" == 'workflow_run' && "${{ github.event.workflow_run.name }}" == 'Company Status Sync' ]]; then
+              echo 'HOMEPAGE_PUBLIC_STATUS_SYNC=YES' >> "$GITHUB_ENV"
+              echo 'HOMEPAGE_STATUS_SYNC_TRIGGER=COMPANY_STATUS_SYNC_SUCCESS'
+            fi
           else
+            if [[ "${{ github.event_name }}" == 'workflow_run' && "${{ github.event.workflow_run.name }}" == 'Company Status Sync' ]]; then
+              echo 'Company Status Sync completed successfully but company-runtime could not be fetched.' >&2
+              exit 1
+            fi
             echo "HOMEPAGE_CATALOG_PATH=game-catalog.json" >> "$GITHUB_ENV"
             echo "HOMEPAGE_STATUS_PATH=company-status.json" >> "$GITHUB_ENV"
             echo 'HOMEPAGE_RUNTIME_SOURCE=MAIN_FALLBACK'
           fi
+
+      - name: Prepare verified runtime status/catalog candidate
+        if: env.HOMEPAGE_PUBLIC_STATUS_SYNC == 'YES'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp /tmp/homepage-runtime/game-catalog.json game-catalog.json
+          cp /tmp/homepage-runtime/company-status.json company-status.json
+          node -e "JSON.parse(require('fs').readFileSync('game-catalog.json','utf8'));JSON.parse(require('fs').readFileSync('company-status.json','utf8'))"
+          echo "HOMEPAGE_CATALOG_PATH=game-catalog.json" >> "$GITHUB_ENV"
+          echo "HOMEPAGE_STATUS_PATH=company-status.json" >> "$GITHUB_ENV"
+          echo 'HOMEPAGE_VERIFIED_PUBLIC_STATUS_CANDIDATE=READY'
 
       - name: Sync top rated validated test candidates
         if: github.event_name != 'pull_request'
@@ -142,6 +170,7 @@ jobs:
           node --check assets/artbook-viewer.js
           node --check tools/homepage-manager.mjs
           node --check tools/homepage-test-candidate-sync.mjs
+          node --test qa/homepage-manager-publication-order.test.mjs
           grep -Fq '/assets/homepage-enhancements.js' index.html
           grep -Fq 'const SYNC_INTERVAL_MS=5000;' assets/homepage-enhancements-core.js
           grep -Fq "const RAW_MAIN_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/main';" assets/homepage-enhancements-core.js
@@ -208,33 +237,47 @@ jobs:
           echo 'HOMEPAGE_LIVE_SYNC=PASS'
           echo 'HOMEPAGE_MANAGER_SELF_QA=PASS'
 
-      - name: Publish validated test shelf assets through PR
-        if: github.event_name != 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Capture exact self-QA candidate
+        id: capture
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-homepage-manager'
-          git config user.email 'homepage-manager@users.noreply.github.com'
-          git add -- test-game-candidates.json game-artbooks.json web-games artbook-submissions
-          if git diff --cached --quiet; then
-            echo 'HOMEPAGE_TEST_PUBLICATION=NO_CHANGES'
-            exit 0
-          fi
-          branch="homepage/test-shelf-${GITHUB_RUN_ID}"
-          git switch -c "$branch"
-          git commit -m 'homepage: publish validated top30 test shelf'
-          git push origin "HEAD:refs/heads/$branch"
-          if pr_url="$(gh pr create --base main --head "$branch" --title 'homepage: publish validated top30 test shelf' --body 'Homepage Manager self-QA passed. Publishes only Web strict 80+ / hard-gate-clear / post-Web-artbook candidates, score-descending, maximum 30. No pre-promotion official cards.' 2>/tmp/homepage-pr-error.log)"; then
-            echo "HOMEPAGE_TEST_PUBLICATION_PR=$pr_url"
-            gh pr merge "$pr_url" --squash --delete-branch
-            echo 'HOMEPAGE_TEST_PUBLICATION=PR_VALIDATED_AND_MERGED'
-          else
-            cat /tmp/homepage-pr-error.log >&2 || true
-            echo "HOMEPAGE_TEST_PUBLICATION_BRANCH_READY=$branch"
-            echo 'HOMEPAGE_TEST_PUBLICATION=BRANCH_READY_PR_PERMISSION_REQUIRED'
-          fi
+          candidate_dir='.homepage-candidate'
+          rm -rf "$candidate_dir"
+          mkdir -p "$candidate_dir"
+          published_paths=(company-status.json game-catalog.json test-game-candidates.json game-artbooks.json web-games artbook-submissions)
+          base_sha="$(git rev-parse HEAD)"
+          git add -- "${published_paths[@]}"
+          git diff --cached --binary HEAD -- "${published_paths[@]}" > "$candidate_dir/homepage-candidate.patch"
+          candidate_changed=false
+          if [[ -s "$candidate_dir/homepage-candidate.patch" ]]; then candidate_changed=true; fi
+          patch_sha256="$(sha256sum "$candidate_dir/homepage-candidate.patch" | awk '{print $1}')"
+          BASE_SHA="$base_sha" PATCH_SHA256="$patch_sha256" CANDIDATE_CHANGED="$candidate_changed" node <<'NODE'
+          const fs=require('fs');
+          fs.writeFileSync('.homepage-candidate/homepage-candidate.json',JSON.stringify({
+            version:1,
+            baseSha:process.env.BASE_SHA,
+            patchSha256:process.env.PATCH_SHA256,
+            changed:process.env.CANDIDATE_CHANGED==='true',
+            paths:['company-status.json','game-catalog.json','test-game-candidates.json','game-artbooks.json','web-games','artbook-submissions'],
+          },null,2)+'\n');
+          NODE
+          git reset --quiet
+          echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
+          echo "candidate_changed=$candidate_changed" >> "$GITHUB_OUTPUT"
+          echo "patch_sha256=$patch_sha256" >> "$GITHUB_OUTPUT"
+          echo "HOMEPAGE_CANDIDATE_BASE=$base_sha"
+          echo "HOMEPAGE_CANDIDATE_CHANGED=$candidate_changed"
+          echo "HOMEPAGE_CANDIDATE_PATCH_SHA256=$patch_sha256"
+
+      - name: Upload exact self-QA candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: homepage-candidate-${{ github.run_id }}
+          path: .homepage-candidate/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
 
   director-supervision:
     name: Director Single Post-Work Supervision
@@ -242,11 +285,39 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout supervised revision
+      - name: Checkout supervised base revision
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
+          ref: ${{ needs.manage-and-self-qa.outputs.base_sha }}
           fetch-depth: 1
+
+      - name: Download exact self-QA candidate
+        uses: actions/download-artifact@v4
+        with:
+          name: homepage-candidate-${{ github.run_id }}
+          path: .homepage-candidate
+
+      - name: Verify and apply exact self-QA candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          meta='.homepage-candidate/homepage-candidate.json'
+          patch='.homepage-candidate/homepage-candidate.patch'
+          test -f "$meta" && test -f "$patch"
+          base_sha="$(node -p "JSON.parse(require('fs').readFileSync('$meta','utf8')).baseSha")"
+          patch_sha="$(node -p "JSON.parse(require('fs').readFileSync('$meta','utf8')).patchSha256")"
+          changed="$(node -p "JSON.parse(require('fs').readFileSync('$meta','utf8')).changed")"
+          test "$base_sha" = "$(git rev-parse HEAD)"
+          test "$base_sha" = "${{ needs.manage-and-self-qa.outputs.base_sha }}"
+          test "$patch_sha" = "${{ needs.manage-and-self-qa.outputs.patch_sha256 }}"
+          test "$patch_sha" = "$(sha256sum "$patch" | awk '{print $1}')"
+          if [[ "$changed" == 'true' ]]; then
+            git apply --check --binary "$patch"
+            git apply --binary "$patch"
+          else
+            test ! -s "$patch"
+          fi
+          echo 'DIRECTOR_EXACT_HOMEPAGE_CANDIDATE=BOUND'
 
       - name: Verify single manager and supervisor policy
         run: |
@@ -281,3 +352,69 @@ jobs:
           echo 'DIRECTOR_HOMEPAGE_SUPERVISION=PASS'
           echo 'DIRECTOR_TEST_SHELF_SUPERVISION=PASS'
           echo 'OWNER_FIXED_PWA_CHAT_REGRESSION=PASS'
+
+  publish-after-director:
+    name: Publish Director-Approved Homepage Candidate
+    needs: [manage-and-self-qa, director-supervision]
+    if: github.event_name != 'pull_request' && needs.manage-and-self-qa.outputs.candidate_changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout candidate base revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.manage-and-self-qa.outputs.base_sha }}
+          fetch-depth: 0
+
+      - name: Download Director-approved candidate
+        uses: actions/download-artifact@v4
+        with:
+          name: homepage-candidate-${{ github.run_id }}
+          path: .homepage-candidate
+
+      - name: Verify and apply Director-approved candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          meta='.homepage-candidate/homepage-candidate.json'
+          patch='.homepage-candidate/homepage-candidate.patch'
+          test -f "$meta" && test -f "$patch"
+          base_sha="$(node -p "JSON.parse(require('fs').readFileSync('$meta','utf8')).baseSha")"
+          patch_sha="$(node -p "JSON.parse(require('fs').readFileSync('$meta','utf8')).patchSha256")"
+          changed="$(node -p "JSON.parse(require('fs').readFileSync('$meta','utf8')).changed")"
+          test "$changed" = 'true'
+          test "$base_sha" = "$(git rev-parse HEAD)"
+          test "$base_sha" = "${{ needs.manage-and-self-qa.outputs.base_sha }}"
+          test "$patch_sha" = "${{ needs.manage-and-self-qa.outputs.patch_sha256 }}"
+          test "$patch_sha" = "$(sha256sum "$patch" | awk '{print $1}')"
+          git apply --check --binary "$patch"
+          git apply --binary "$patch"
+          echo 'HOMEPAGE_PUBLICATION_CANDIDATE=EXACT_DIRECTOR_APPROVED_PATCH'
+
+      - name: Publish verified homepage mirror through PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-homepage-manager'
+          git config user.email 'homepage-manager@users.noreply.github.com'
+          published_paths=(company-status.json game-catalog.json test-game-candidates.json game-artbooks.json web-games artbook-submissions)
+          git add -- "${published_paths[@]}"
+          if git diff --cached --quiet; then
+            echo 'HOMEPAGE_PUBLICATION=NO_CHANGES_AFTER_DIRECTOR'
+            exit 0
+          fi
+          branch="automation/homepage-runtime-sync-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$branch"
+          git commit -m 'homepage: publish Director-approved runtime mirror'
+          git push origin "HEAD:refs/heads/$branch"
+          if pr_url="$(gh pr create --base main --head "$branch" --title 'homepage: publish Director-approved runtime mirror' --body 'Homepage Manager self-QA and Director supervision both passed on the exact same hashed candidate. Publishes verified company-status/game-catalog differences plus Web strict 80+ hard-gate-clear Top30 test-shelf assets. No pre-promotion official cards.' 2>/tmp/homepage-pr-error.log)"; then
+            echo "HOMEPAGE_PUBLICATION_PR=$pr_url"
+            gh pr merge "$pr_url" --squash --delete-branch
+            echo 'HOMEPAGE_PUBLICATION=PR_VALIDATED_AND_MERGED_AFTER_DIRECTOR'
+          else
+            cat /tmp/homepage-pr-error.log >&2 || true
+            echo "HOMEPAGE_PUBLICATION_BRANCH_READY=$branch"
+            echo 'HOMEPAGE_PUBLICATION=BRANCH_READY_PR_PERMISSION_REQUIRED'
+          fi
