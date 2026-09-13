@@ -215,9 +215,11 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:50:13.790Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-runtime:roblox-studio-runtime-timeout"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:38:48.968Z",
-      "updatedAt": "2026-09-13T11:24:01.534Z",
+      "updatedAt": "2026-09-13T11:24:51.829Z",
       "webValidationEvidencePath": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -311,12 +313,12 @@
         "blockers": [],
         "authority": "roblox-five-distinct-lead-build-preflight"
       },
-      "robloxRuntimeFailedAt": "2026-09-13T11:19:44.551Z",
+      "robloxRuntimeFailedAt": "2026-09-13T11:24:51.829Z",
       "robloxRuntimeEvidence": {
         "version": 3,
         "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
         "platform": "ROBLOX",
-        "checkedAt": "2026-09-13T11:19:31.6656246Z",
+        "checkedAt": "2026-09-13T11:24:36.1579883Z",
         "sourceRevision": "1ce32ac40c5d3fcecee11979c5ba531b12e99c49",
         "artifactIdentity": "sha256:c88871c7b79b8dac474d6581015bd63643a660cb3540df254c8a2d5bdcd452a9",
         "artifactRunId": 34738148167,
@@ -331,7 +333,7 @@
         "multiplayerApplicable": false,
         "multiplayerQaPassed": false,
         "studioPackageIdentifier": "Roblox.RobloxStudio",
-        "studioInstallerSha256": "sha256:14e3e506d5cccc03eeb3ae006f2d55611fb0af64ac8d176dd23d8a3966099b74",
+        "studioInstallerSha256": "sha256:653b5ff08c0c890e103e31f53fcf6b9cfbbf462fc4481a62ffc84cf4f0c562dd",
         "studioFileVersion": "0, 738, 0, 7381393",
         "runtimeOutputFileExists": false,
         "runtimeStdoutBytes": 0,
@@ -340,7 +342,7 @@
         "failure": "roblox-studio-runtime-timeout",
         "authority": "roblox-actual-studio-runtime-evidence"
       },
-      "robloxRuntimeRetryCount": 1,
+      "robloxRuntimeRetryCount": 2,
       "robloxRuntimeHarnessVersion": "3"
     },
     {
@@ -364,9 +366,11 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:50:27.545Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-runtime:roblox-studio-runtime-timeout"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:37:05.981Z",
-      "updatedAt": "2026-09-13T11:24:01.534Z",
+      "updatedAt": "2026-09-13T11:24:51.829Z",
       "webValidationEvidencePath": "design/seed-roblox-battleground-fight-welcome-to-bloxburg/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -458,12 +462,12 @@
         "blockers": [],
         "authority": "roblox-five-distinct-lead-build-preflight"
       },
-      "robloxRuntimeFailedAt": "2026-09-13T11:19:44.551Z",
+      "robloxRuntimeFailedAt": "2026-09-13T11:24:51.829Z",
       "robloxRuntimeEvidence": {
         "version": 3,
         "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
         "platform": "ROBLOX",
-        "checkedAt": "2026-09-13T11:19:29.2304409Z",
+        "checkedAt": "2026-09-13T11:24:25.3557590Z",
         "sourceRevision": "1ce32ac40c5d3fcecee11979c5ba531b12e99c49",
         "artifactIdentity": "sha256:97d89f3dcd07ef9433f96f7c7f5178ec0a9979105051d79a9447da4e7fe71691",
         "artifactRunId": 34738148167,
@@ -478,7 +482,7 @@
         "multiplayerApplicable": false,
         "multiplayerQaPassed": false,
         "studioPackageIdentifier": "Roblox.RobloxStudio",
-        "studioInstallerSha256": "sha256:14e3e506d5cccc03eeb3ae006f2d55611fb0af64ac8d176dd23d8a3966099b74",
+        "studioInstallerSha256": "sha256:653b5ff08c0c890e103e31f53fcf6b9cfbbf462fc4481a62ffc84cf4f0c562dd",
         "studioFileVersion": "0, 738, 0, 7381393",
         "runtimeOutputFileExists": false,
         "runtimeStdoutBytes": 0,
@@ -487,7 +491,7 @@
         "failure": "roblox-studio-runtime-timeout",
         "authority": "roblox-actual-studio-runtime-evidence"
       },
-      "robloxRuntimeRetryCount": 1,
+      "robloxRuntimeRetryCount": 2,
       "robloxRuntimeHarnessVersion": "3"
     },
     {
@@ -1114,7 +1118,7 @@
       "routeRevision": "c22be990056ccde9069fb09f732ddd91c416b29abd1a23022897630738762ded"
     }
   ],
-  "updatedAt": "2026-09-13T11:24:01.659Z",
+  "updatedAt": "2026-09-13T11:24:51.829Z",
   "routerContractVersion": 2,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
