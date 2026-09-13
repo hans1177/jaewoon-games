@@ -8,17 +8,12 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local StarterPlayer = game:GetService("StarterPlayer")
 
 local PROBE = "__JaewoonCompanyRuntimeProbe"
+local rootThread = coroutine.running()
 local completed = false
 
-local function closeStudio()
-    task.wait(0.5)
-    game:Shutdown()
-end
-
 -- Never let a broken StudioTestService teardown occupy the continuation queue
--- until the outer workflow timeout. RunScript has command-bar permissions, so
--- the edit DataModel can close Studio directly after recording a deterministic
--- failure sentinel.
+-- until the outer workflow timeout. If ExecuteMultiplayerTestAsync stays yielded,
+-- cancel this RunScript root coroutine so --quitAfterExecution can close Studio.
 task.delay(90, function()
     if completed then
         return
@@ -26,7 +21,8 @@ task.delay(90, function()
     completed = true
     print("ROBLOX_RUNTIME_SMOKE=FAIL")
     print("ROBLOX_RUNTIME_ERROR=EDIT_MODEL_WATCHDOG_TIMEOUT")
-    closeStudio()
+    task.wait(0.5)
+    task.cancel(rootThread)
 end)
 
 for _, container in ipairs({ReplicatedStorage, ServerScriptService, StarterPlayer.StarterPlayerScripts}) do
@@ -146,7 +142,7 @@ end
 clientProbe.Parent = StarterPlayer.StarterPlayerScripts
 
 local ok, result = pcall(function()
-    return StudioTestService:ExecuteMultiplayerTestAsync(1, "JAEWOON_COMPANY_RUNTIME_SMOKE_V3")
+    return StudioTestService:ExecuteMultiplayerTestAsync(1, "JAEWOON_COMPANY_RUNTIME_SMOKE_V4")
 end)
 
 if completed then
@@ -161,7 +157,6 @@ remote:Destroy()
 if not ok then
     print("ROBLOX_RUNTIME_SMOKE=FAIL")
     print("ROBLOX_RUNTIME_ERROR=" .. tostring(result))
-    closeStudio()
     return
 end
 
@@ -170,7 +165,6 @@ print("ROBLOX_RUNTIME_RESULT=" .. text)
 if string.sub(text, 1, 5) ~= "PASS:" then
     print("ROBLOX_RUNTIME_SMOKE=FAIL")
     print("ROBLOX_RUNTIME_ERROR=runtime smoke failed: " .. text)
-    closeStudio()
     return
 end
 
@@ -179,4 +173,3 @@ print("ROBLOX_RUNTIME_MULTIPLAYER_CLIENTS=1")
 print("ROBLOX_SERVER_CLIENT_BOUNDARY_PASS=YES")
 print("ROBLOX_PLAYER_CHARACTER_PASS=YES")
 print("ROBLOX_RUNTIME_SMOKE=PASS")
-closeStudio()
