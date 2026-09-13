@@ -19,12 +19,24 @@
       "model": "smollm2:1.7b",
       "memberRole": "LEAD",
       "review": {
-        "keep": [],
-        "fix": [],
-        "add": [],
-        "risks": [],
-        "evidence": [],
-        "questions": []
+        "keep": [
+          "wave defense readability"
+        ],
+        "fix": [
+          "enemy-type counterplay"
+        ],
+        "add": [
+          "meaningful placement choices"
+        ],
+        "risks": [
+          "enemy-type counterplay"
+        ],
+        "evidence": [
+          "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 처음부터 다시 설계한다."
+        ],
+        "questions": [
+          "어떤 상황에서 이 전문부서를 사용하는지 알지 못하는 부서를 제안하고 싶어요"
+        ]
       }
     },
     {
@@ -32,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "game-design-identity-1"
+          "game-seed-market-evidence.json"
         ],
         "fix": [
-          "game-design-identity-2"
+          "game-seed-market-evidence.json"
         ],
         "add": [
-          "game-design-identity-3"
+          "game-seed-market-evidence.json"
         ],
         "risks": [
-          "game-design-identity-4"
+          "game-seed-market-evidence.json"
         ],
         "evidence": [
-          "game-design-identity-5"
+          "game-seed-market-evidence.json"
         ],
         "questions": [
-          "game-design-identity-6"
+          "game-seed-market-evidence.json"
         ]
       }
     },
@@ -62,16 +74,16 @@
           "game_seed_market_evidence.json"
         ],
         "add": [
-          "game_seed_platform_profiles.json"
+          "game_seed_market_evidence.json"
         ],
         "risks": [
-          "game_seed_market_evidence.json"
+          "data_consistency"
         ],
         "evidence": [
           "game_seed_market_evidence.json"
         ],
         "questions": [
-          "game_seed_market_evidence.json"
+          "design_strategy_clarity"
         ]
       }
     }

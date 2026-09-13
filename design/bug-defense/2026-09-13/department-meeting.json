@@ -22,33 +22,34 @@
   "representatives": {
     "planning": {
       "keep": [
-        "game-design-identity-1"
+        "game-seed-market-evidence.json"
       ],
       "fix": [
-        "game-design-identity-2"
+        "game-seed-market-evidence.json"
       ],
       "add": [
-        "game-design-identity-3"
+        "game-seed-market-evidence.json"
       ],
       "risks": [
-        "game-design-identity-4"
+        "game-seed-market-evidence.json"
       ],
       "evidence": [
-        "game-design-identity-5"
+        "game-seed-market-evidence.json"
       ],
       "questions": [
-        "game-design-identity-6"
+        "game-seed-market-evidence.json"
       ]
     },
     "graphics": {
       "keep": [
-        "game_seed_platform_profiles.json"
+        "gemma3:1b",
+        "llama3.2:1b"
       ],
       "fix": [
-        "game_seed_market_evidence.json"
+        "gemma3:1b"
       ],
       "add": [
-        "game_seed_platform_profiles.json"
+        "llama3.2:1b"
       ],
       "risks": [
         "game_seed_market_evidence.json"
@@ -57,103 +58,113 @@
         "game_seed_market_evidence.json"
       ],
       "questions": [
-        "game_seed_market_evidence.json"
+        "design_strategy_clarity"
       ]
     },
     "development": {
       "keep": [
-        "game-seed-core-loop.json"
+        "game-seed"
       ],
       "fix": [
-        "game-seed-unique-id.json"
+        "game-seed"
       ],
       "add": [
-        "game-seed-game-category.json"
+        "game-seed"
       ],
       "risks": [
-        "game-seed-core-loop.json"
+        "game-seed"
       ],
       "evidence": [
-        "game-seed-market-evidence.json"
+        "game-seed"
       ],
       "questions": [
-        "game-seed-market-evidence.json"
+        "game-seed"
       ]
     },
     "qa": {
       "keep": [
-        "version: 1"
+        "qa"
       ],
       "fix": [
-        "seedId: OWNER-RESET-BUG-DEFENSE-20260913"
+        "qa"
       ],
       "add": [
-        "gameId: bug-defense"
+        "qa"
       ],
       "risks": [
-        "GAME_SEED"
+        "qa"
       ],
       "evidence": [
-        "GAME_SEED"
+        "qa"
       ],
       "questions": [
-        "ASSIGNED_DEPARTMENTS"
+        "qa"
       ]
     },
     "balance": {
       "keep": [
-        "game-design-identity-1"
+        "wave defense readability"
       ],
       "fix": [
-        "game-design-identity-2"
+        "enemy-type counterplay"
       ],
       "add": [
-        "game-design-identity-3"
+        "meaningful placement choices"
       ],
       "risks": [
-        "game-design-identity-4"
+        "enemy-type counterplay"
       ],
       "evidence": [
-        "game-design-identity-5"
+        "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 처음부터 다시 설계한다."
       ],
       "questions": [
-        "game-design-identity-6"
+        "어떤 상황에서 이 전문부서를 사용하는지 알지 못하는 부서를 제안하고 싶어요"
       ]
     }
   },
   "rebuttalRound": 1,
   "rebuttalAuthoredByDepartmentLeads": true,
-  "summary": "The current structure aligns with the standard planning framework, ensuring clarity and consistency across all elements.",
+  "summary": "CONSENSUS",
   "decisions": [
     {
       "topic": "planning",
       "status": "CONSENSUS",
-      "reason": "The current structure aligns with the standard planning framework, ensuring clarity and consistency across all elements.",
-      "departments": []
+      "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박하거나 수정할 필요가 있다.",
+      "departments": [
+        "planning"
+      ]
     },
     {
       "topic": "graphics",
       "status": "CONSENSUS",
-      "reason": "The risk assessment highlights a potential issue with the game seed market. While the evidence supports the need for monitoring, the proposed fix is too broad and lacks specific details. Therefore, I will challenge this fix and require further clarification and a more targeted solution.",
-      "departments": []
+      "reason": "The provided evidence suggests a specific design strategy that aligns with our goals. We will proceed with the proposed changes to Gemma 3.1b.",
+      "departments": [
+        "graphics"
+      ]
     },
     {
       "topic": "development",
       "status": "CONSENSUS",
-      "reason": "game-seed-core-loop.json",
-      "departments": []
+      "reason": "own",
+      "departments": [
+        "development"
+      ]
     },
     {
       "topic": "qa",
       "status": "CONSENSUS",
-      "reason": "Both sets of recommendations are based on the same set of criteria and objectives, ensuring a comprehensive approach to managing the QA process. The 'OWN' set focuses on maintaining the current state of the QA process, while the 'OTHERS' set addresses potential improvements and risks. Both sets of recommendations aim to enhance the overall quality and reliability of the QA process.",
-      "departments": []
+      "reason": "QA 부서의 의견을 수용하여 전문적인 설계와 테스트를 강화함으로써 게임의 질을 향상시킬 수 있습니다.",
+      "departments": [
+        "qa"
+      ]
     },
     {
       "topic": "balance",
       "status": "CONSENSUS",
-      "reason": "game-design-identity-4",
-      "departments": []
+      "reason": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 처음부터 다시 설계한다.",
+      "departments": [
+        "balance"
+      ]
     }
   ],
   "counts": {
