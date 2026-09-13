@@ -134,6 +134,14 @@ cont = replace_one(
     'persist helper contract check',
 )
 
+# The continuation contract test follows persistence into its extracted helper.
+cont_test = replace_one(
+    cont_test,
+    "const smoke=fs.readFileSync(new URL('../tools/company-development-roblox-runtime-smoke.luau',import.meta.url),'utf8');\n",
+    "const smoke=fs.readFileSync(new URL('../tools/company-development-roblox-runtime-smoke.luau',import.meta.url),'utf8');\nconst persistHelper=fs.readFileSync(new URL('../tools/company-development-roblox-runtime-persist.mjs',import.meta.url),'utf8');\n",
+    'persist helper test fixture',
+)
+
 new_test_assertions = """  assert.ok(smoke.includes('ROBLOX_SERVER_CLIENT_BOUNDARY_PASS" .. "=YES'));
   assert.ok(smoke.includes('PASS:PLAYER_CHARACTER_CLIENT_SERVER_ROUNDTRIP'));
   assert.ok(!smoke.includes('print("ROBLOX_RUNTIME_SMOKE=PASS")'));
@@ -146,6 +154,42 @@ cont_test = replace_one(
     new_test_assertions,
     'smoke fail-closed test',
 )
+
+old_persist_test = """test('runtime checkpoint persistence survives merged artifact directory layouts',()=>{
+  assert.ok(workflow.includes("const root='/tmp/roblox-runtime-batch'"));
+  assert.ok(workflow.includes("entry.name.endsWith('.runtime.json')"));
+  assert.ok(workflow.includes('ROBLOX_RUNTIME_CHECKPOINT_FILES='));
+  assert.ok(!workflow.includes("const dir='/tmp/roblox-runtime-batch/results';const results=[];"));
+});"""
+new_persist_test = """test('runtime checkpoint persistence survives merged artifact directory layouts',()=>{
+  assert.ok(workflow.includes('company-development-roblox-runtime-persist.mjs'));
+  assert.ok(persistHelper.includes("const root=process.argv[3]||'/tmp/roblox-runtime-batch'"));
+  assert.ok(persistHelper.includes("entry.name.endsWith('.runtime.json')"));
+  assert.ok(persistHelper.includes('walk(full)'));
+  assert.ok(persistHelper.includes('ROBLOX_RUNTIME_CHECKPOINT_FILES='));
+  assert.ok(!persistHelper.includes("const dir='/tmp/roblox-runtime-batch/results';const results=[];"));
+});"""
+cont_test = replace_one(cont_test, old_persist_test, new_persist_test, 'persist recursion test')
+
+old_downstream_test = """test('runtime success does not invent later QA, datastore, regression, final review, or release evidence',()=>{
+  assert.ok(workflow.includes("robloxLastSuccessfulStage:'TARGET_PLATFORM_RUNTIME'"));
+  assert.ok(workflow.includes("robloxFailureStage:'INDEPENDENT_QA'"));
+  assert.ok(workflow.includes('ROBLOX_INDEPENDENT_QA_PASS=NO'));
+  assert.ok(workflow.includes('ROBLOX_REGRESSION_PASS=NO'));
+  assert.ok(workflow.includes('ROBLOX_FINAL_REVIEW_PASS=NO'));
+  assert.ok(workflow.includes('ROBLOX_RELEASE_CLAIM=NO'));
+  assert.ok(workflow.includes("datastoreRejoinPassed=(-not $saveRequired)"));
+});"""
+new_downstream_test = """test('runtime success does not invent later QA, datastore, regression, final review, or release evidence',()=>{
+  assert.ok(persistHelper.includes("robloxLastSuccessfulStage:'TARGET_PLATFORM_RUNTIME'"));
+  assert.ok(persistHelper.includes("robloxFailureStage:'INDEPENDENT_QA'"));
+  assert.ok(persistHelper.includes('ROBLOX_INDEPENDENT_QA_PASS=NO'));
+  assert.ok(persistHelper.includes('ROBLOX_REGRESSION_PASS=NO'));
+  assert.ok(persistHelper.includes('ROBLOX_FINAL_REVIEW_PASS=NO'));
+  assert.ok(persistHelper.includes('ROBLOX_RELEASE_CLAIM=NO'));
+  assert.ok(persistHelper.includes('robloxDatastoreRejoinPassed:r.datastoreRejoinPassed===true'));
+});"""
+cont_test = replace_one(cont_test, old_downstream_test, new_downstream_test, 'downstream evidence test')
 
 persist_helper_path.write_text(r'''import fs from 'node:fs';
 import path from 'node:path';
@@ -210,6 +254,8 @@ console.log(`ROBLOX_ACTUAL_RUNTIME_PASS_COUNT=${pass}`);
 console.log(`ROBLOX_ACTUAL_RUNTIME_FAIL_COUNT=${fail}`);
 console.log('ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO');
 console.log('ROBLOX_INDEPENDENT_QA_PASS=NO');
+console.log('ROBLOX_REGRESSION_PASS=NO');
+console.log('ROBLOX_FINAL_REVIEW_PASS=NO');
 console.log('ROBLOX_RELEASE_CLAIM=NO');
 ''', encoding='utf-8')
 
