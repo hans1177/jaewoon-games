@@ -21,7 +21,21 @@ export function productionClassFromHomepageCategory(value){
   return null;
 }
 
+function ownerRedesignResetClass(entity={}){
+  const source=clean(entity?.productionClassSource).toUpperCase();
+  const productionClass=normalizeProductionClass(entity?.productionClass);
+  if(source.startsWith('OWNER_REDESIGN_RESET_')&&productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
+    return PRODUCTION_CLASSES.DESIGN_ONLY;
+  }
+  return null;
+}
+
 export function productionClassOf(project={},game={}){
+  // Latest owner-directed redesign reset outranks stale runtime/project evidence.
+  // The override naturally ends after the canonical design promotion replaces the
+  // catalog/source marker with DESIGN_BASELINE_READY and a higher production class.
+  const ownerReset=ownerRedesignResetClass(game)||ownerRedesignResetClass(project);
+  if(ownerReset)return ownerReset;
   const direct=[project?.productionClass,game?.productionClass,project?.profileStatus]
     .map(normalizeProductionClass)
     .find(Boolean);
