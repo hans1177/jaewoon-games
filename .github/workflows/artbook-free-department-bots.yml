@@ -16,6 +16,7 @@ on:
       - 'company-directive.json'
       - 'game-catalog.json'
       - 'game-seed-state.json'
+      - 'owner-design-reset-queue.json'
       - 'artbook-work-orders/**'
       - 'design/**/web-gameplay-validation.json'
       - 'design/**/unity-technical-validation.json'
@@ -26,12 +27,14 @@ on:
       - 'design/**/independent-release-qa.json'
       - 'unity-games/**'
       - 'tools/production-classification.mjs'
+      - 'tools/owner-design-reset.mjs'
       - 'tools/company-design-cycle.mjs'
       - 'tools/company-development-validation-cycle.mjs'
       - 'tools/company-release-production-cycle.mjs'
       - 'tools/company-baseline-gate.mjs'
       - 'tools/artbook-production-pipeline.mjs'
       - 'tools/artbook-fact-pack.mjs'
+      - 'qa/owner-design-reset.test.mjs'
       - '.github/workflows/artbook-free-department-bots.yml'
 
 permissions:
@@ -94,11 +97,30 @@ jobs:
             }));
           const games=[...catalogRows,...seedRows];
 
+          let ownerReset={requests:[]};
+          try{ownerReset=JSON.parse(fs.readFileSync('owner-design-reset-queue.json','utf8'));}catch{}
+          const activeOwnerResetIds=new Set((ownerReset.requests||[])
+            .filter(request=>String(request?.status||'').trim().toUpperCase()==='ACTIVE')
+            .map(request=>String(request?.gameId||'').trim())
+            .filter(Boolean));
+          const ownerResetTargets=games.filter(row=>(
+            row.productionClass===PRODUCTION_CLASSES.DESIGN_ONLY&&
+            activeOwnerResetIds.has(row.game.id)&&
+            !fs.existsSync(`artbook-submissions/${row.game.id}/current.json`)
+          ));
+          const genericDesignTargets=games.filter(row=>(
+            row.productionClass===PRODUCTION_CLASSES.DESIGN_ONLY&&
+            String(row.game?.designBaselineMigration||'').trim()!=='DO_NOT_REGENERATE_THROUGH_DESIGN_ONLY'
+          ));
+
           let selected=[];
           if(requested){
             const target=games.find(row=>row.game.id===requested);
             if(!target)throw new Error(`Unknown or unclassified game_id: ${requested}`);
             selected=[target];
+          }else if(ownerResetTargets.length){
+            selected=ownerResetTargets;
+            console.error(`OWNER_RESET_PRIORITY_TARGETS=${selected.map(row=>row.game.id).join(',')}`);
           }else if(eventName==='push'){
             let changed=[];
             try{changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);}catch{}
@@ -121,10 +143,10 @@ jobs:
                 releaseIds.has(row.game.id)&&row.productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED
               ));
             }else{
-              selected=games.filter(row=>row.productionClass===PRODUCTION_CLASSES.DESIGN_ONLY);
+              selected=genericDesignTargets;
             }
           }else{
-            selected=games.filter(row=>row.productionClass===PRODUCTION_CLASSES.DESIGN_ONLY);
+            selected=genericDesignTargets;
           }
 
           const now=new Date();
