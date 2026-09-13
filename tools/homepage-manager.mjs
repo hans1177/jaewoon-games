@@ -64,7 +64,7 @@ const checks={
   indexExists:exists('index.html'),
   homepageEnhancementLoaded:index.includes('/assets/homepage-enhancements.js')||index.includes('assets/homepage-enhancements.js'),
   activeRuntimeLayoutManager:includesAll(enhancement,['const SYNC_INTERVAL_MS=5000;','const RAW_MAIN_BASE=','const RAW_RUNTIME_BASE=', 'function buildFocus(', 'function buildGameCenter(', 'function buildTeam(', 'async function refreshHomepageData(', 'installRealtimeSync()']),
-  top30TestShelfManager:includesAll(enhancementEntry,['const TEST_SHELF_LIMIT=30;','RAW_RUNTIME_CATALOG','homepageTestCandidate===true','homepageOfficialCard===false','candidateScore(g)>=80','strictReviewHardFailures','renderCompactTestShelf','enforceOfficialCardVisibility']),
+  top30TestShelfManager:includesAll(enhancementEntry,['const TEST_SHELF_LIMIT=30;','const TEST_SHELF_MIN_SCORE=80;','RAW_RUNTIME_CATALOG','homepageTestCandidate===true','homepageOfficialCard===false','candidateScore(g)>=TEST_SHELF_MIN_SCORE','strictReviewHardFailures','renderCompactTestShelf','enforceOfficialCardVisibility']),
   activeCatalogNonEmpty:games.length>0,
   publishedBooksReferenceCatalogGames:brokenBookRefs.length===0,
   requiredArtbookRolesIntact:JSON.stringify(queue.requiredRoles||[])===JSON.stringify(roles),
