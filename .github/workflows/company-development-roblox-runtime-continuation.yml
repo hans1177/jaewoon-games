@@ -258,13 +258,15 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const maxRetryableFailures=3;
           const rows=[];
           for(const item of q.items||[]){
             if(rows.length>=2)break;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
-            const retryableInstallFailure=item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed';
-            const retryableMissingEvidence=item.robloxRuntimePassed!==true&&Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
+            const retryBudgetAvailable=Number(item.robloxRuntimeRetryCount||0)<maxRetryableFailures;
+            const retryableInstallFailure=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed';
+            const retryableMissingEvidence=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
             if(item.robloxBuildPreflightPassed!==true||item.robloxRuntimePassed===true||(item.robloxRuntimeFailedAt&&!retryableInstallFailure&&!retryableMissingEvidence))continue;
             const revision=String(item.robloxSourceCommit||'').trim();
             const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
@@ -510,12 +512,15 @@ jobs:
             const item=(queue.items||[]).find(x=>x.gameId===target.gameId);if(!item)throw new Error(`queue item missing: ${target.gameId}`);
             const r=byId.get(target.gameId);const exact=r?.sourceRevision===item.robloxSourceCommit&&r?.artifactIdentity===item.robloxBuildArtifactIdentity;
             if(r?.runtimePassed===true&&r?.actualStudioRuntime===true&&r?.serverClientBoundaryPassed===true&&exact){
-              Object.assign(item,{robloxRuntimePassed:true,robloxRuntimePassedAt:stamp,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:r,
+              Object.assign(item,{robloxRuntimePassed:true,robloxRuntimePassedAt:stamp,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:r,robloxRuntimeRetryCount:0,
                 robloxServerClientBoundaryPassed:true,robloxDatastoreRejoinPassed:r.datastoreRejoinPassed===true,robloxMobileControlUiPassed:r.mobileControlUiPassed===true,
                 robloxLastSuccessfulStage:'TARGET_PLATFORM_RUNTIME',robloxFailureStage:'INDEPENDENT_QA',robloxFailureSignature:'ROBLOX_INDEPENDENT_QA_PENDING',routingBlockers:['roblox-independent-qa-pending'],updatedAt:stamp});pass++;
             }else{
-              Object.assign(item,{robloxRuntimePassed:false,robloxRuntimeFailedAt:stamp,robloxRuntimeEvidence:r||null,
-                robloxFailureStage:'TARGET_PLATFORM_RUNTIME',robloxFailureSignature:r?.failure||'ROBLOX_RUNTIME_RESULT_MISSING',routingBlockers:[`roblox-runtime:${r?.failure||'result-missing'}`],updatedAt:stamp});fail++;
+              const failure=r?.failure||'ROBLOX_RUNTIME_RESULT_MISSING';
+              const retryableFailure=failure==='roblox-studio-install-failed'||failure==='ROBLOX_RUNTIME_RESULT_MISSING';
+              const retryCount=retryableFailure?Number(item.robloxRuntimeRetryCount||0)+1:0;
+              Object.assign(item,{robloxRuntimePassed:false,robloxRuntimeFailedAt:stamp,robloxRuntimeEvidence:r||null,robloxRuntimeRetryCount:retryCount,
+                robloxFailureStage:'TARGET_PLATFORM_RUNTIME',robloxFailureSignature:failure,routingBlockers:[`roblox-runtime:${r?.failure||'result-missing'}`],updatedAt:stamp});fail++;
             }
           }
           queue.updatedAt=stamp;fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
@@ -535,23 +540,23 @@ jobs:
               sleep $((attempt*2))
             done
           fi
-      - name: Dispatch next continuation slice only when unrelated eligible work remains
+      - name: Dispatch next continuation slice when eligible work remains
         if: needs.runtime-plan.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
-          CURRENT_TARGETS_JSON: ${{ needs.runtime-plan.outputs.targets_json }}
         shell: bash
         run: |
           set -euo pipefail
           git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-continuation-next.json
           remaining="$(node --input-type=module <<'NODE'
-          import fs from 'node:fs';const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-next.json','utf8'));const current=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').map(x=>x.gameId));let n=0;
-          for(const item of q.items||[]){if(current.has(item.gameId))continue;if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+          import fs from 'node:fs';const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-next.json','utf8'));const maxRetryableFailures=3;let n=0;
+          for(const item of q.items||[]){if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
             const rev=String(item.robloxSourceCommit||'');const exact=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===rev&&String(item.robloxBuildArtifactIdentity||'').startsWith('sha256:');
             const preflightPending=exact&&item.robloxBuildPreflightPassed!==true&&!item.robloxBuildPreflightFailedAt;
-            const retryableInstallFailure=item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed';
-            const retryableMissingEvidence=item.robloxRuntimePassed!==true&&Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
+            const retryBudgetAvailable=Number(item.robloxRuntimeRetryCount||0)<maxRetryableFailures;
+            const retryableInstallFailure=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed';
+            const retryableMissingEvidence=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
             const runtimePending=exact&&item.robloxBuildPreflightPassed===true&&item.robloxRuntimePassed!==true&&(!item.robloxRuntimeFailedAt||retryableInstallFailure||retryableMissingEvidence);
             if(preflightPending||runtimePending)n++;}
           process.stdout.write(String(n));
