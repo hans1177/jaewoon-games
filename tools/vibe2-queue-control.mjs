@@ -17,7 +17,7 @@ import {
 } from '../assets/vibe-continuous-queue.js';
 
 const clean = (value) => String(value ?? '').trim();
-const FULL_WEB_TRANSPORT_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-stream-http-v1';
+const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
 function parseArgs(argv = process.argv.slice(2)) {
@@ -47,7 +47,7 @@ function isRecoverableFullWebTransportFailure(task = {}) {
     && task.status === 'failed'
     && Number(task.retries || 0) > Number(task.maxRetries ?? 2)
     && ['source-candidate-generation-failed','parallel-candidate-generation-failed'].includes(blocker)
-    && !evidence.includes(FULL_WEB_TRANSPORT_REPAIR_EVIDENCE);
+    && !evidence.includes(FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE);
 }
 
 export function recoverFixedFullWebTransportFailures(queueInput) {
@@ -62,7 +62,7 @@ export function recoverFixedFullWebTransportFailures(queueInput) {
       retries: 0,
       blocker: null,
       lastOutcome: 'RETRY_AFTER_INFRA_REPAIR',
-      evidence: [...new Set([...(task.evidence || []), FULL_WEB_TRANSPORT_REPAIR_EVIDENCE])]
+      evidence: [...new Set([...(task.evidence || []), FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE])]
     };
   });
   return {
