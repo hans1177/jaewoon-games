@@ -1088,8 +1088,8 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 0,
+      "status": "queued",
+      "retries": 1,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -1103,9 +1103,11 @@
         "actual-release-state:development-confirmed",
         "source-root:web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
         "owner-auto-deploy-authorization",
-        "verified-qa-required"
+        "verified-qa-required",
+        "actions-run:34778530414",
+        "variant:primary"
       ],
-      "lastOutcome": null,
+      "lastOutcome": "FAIL",
       "companyContext": {
         "stageId": "owner-immediate",
         "role": "director",
