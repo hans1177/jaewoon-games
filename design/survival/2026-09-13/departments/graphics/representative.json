@@ -1,0 +1,37 @@
+{
+  "version": 4,
+  "gameId": "survival",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "representativeModel": "gemma3:1b",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [],
+    "fix": [
+      "llama3.2:1b",
+      "fix: 'Survival' - 'Survival' is required for this review."
+    ],
+    "add": [
+      "llama3.2:1b",
+      "add: 'Survival' - 'Survival' is required for this review."
+    ],
+    "risks": [
+      "llama3.2:1b",
+      "risks: 'Survival' - 'Survival' is required for this review."
+    ],
+    "evidence": [
+      "llama3.2:1b",
+      "evidence: 'Survival' - 'Survival' is required for this review."
+    ],
+    "questions": [
+      "llama3.2:1b",
+      "questions: 'Survival' - 'Survival' is required for this review."
+    ]
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "version": 4,
+  "gameId": "survival",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "OWNER-RESET-SURVIVAL-20260913",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "llama3.2:1b",
+  "sameModelAsDraft": true,
+  "appliedConsensusCount": 4,
+  "unresolvedConflictCount": 0,
+  "heldCount": 0,
+  "status": "DESIGN_BASELINE_CANDIDATE",
+  "content": {
+    "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다.",
+    "playerFantasy": "채집과 제작을 중심으로 혼자 생존 계획을 세우는 플레이를 선호하는 글로벌 플레이어",
+    "coreFun": "Explore for resources while reading immediate survival risks.",
+    "coreLoop": [
+      "Explore for resources while reading immediate survival risks.",
+      "Choose what to gather, craft or conserve before conditions worsen.",
+      "Use the crafted advantage to reach a new area or survive a stronger threat, then repeat with new constraints.",
+      "exploreForResourcesWhileReadingImmediateSurvivalRisks",
+      "gatherCraftConserveBeforeConditionsWorsen",
+      "craftedAdvantageToReachANewAreaOrSurviveStrongerThreat",
+      "repeatWithNewConstraints"
+    ],
+    "signatureSystems": [
+      {
+        "name": "Survival",
+        "purpose": "채집과 제작 중심 생존 게임",
+        "playerChoice": "chose what to gather, craft or conserve before conditions worsen."
+      }
+    ],
+    "progressionDirection": "Survival",
+    "visualDirection": "Survival",
+    "mobileUx": "Survival",
+    "marketTargetDirection": "Survival",
+    "steamExpansionDecision": "Survival",
+    "multiplayerExpansionDecision": "Survival",
+    "technicalAssumptions": [
+      "Unity",
+      "Survival"
+    ],
+    "validationQuestions": [
+      "Survival"
+    ],
+    "openQuestions": [
+      "Survival"
+    ]
+  }
+}
