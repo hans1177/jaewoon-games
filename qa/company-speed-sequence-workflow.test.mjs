@@ -52,6 +52,16 @@ test('Web runtime pins the source revision and does not prepare an unused local 
   assert.match(router,/WEB_MODEL_SETUP=SKIPPED_UNUSED/);
 });
 
+test('source-bind revalidation resumes the selected platform executor without skipping ahead',()=>{
+  assert.match(router,/retrySourceBind=status==='ACTIVE'&&step==='TARGET_PLATFORM_SOURCE_BIND'&&state==='WAITING_TARGET_PLATFORM_REVALIDATION'/);
+  assert.match(router,/if\(!pending&&!legacyActive&&!waiting&&!retrySourceBind\)continue/);
+  assert.match(router,/platforms\.add\(platform\);\s*if\(retrySourceBind\)\{\s*console\.log\(`DEVELOPMENT_ROUTE_RESUME_SOURCE_BIND=/s);
+  const retryPos=router.indexOf('if(retrySourceBind){');
+  const advancePos=router.indexOf('updates.push({gameId:item.gameId,status:\'ACTIVE\',selectedPlatform:platform,targetPlatform:platform,currentStep:canonicalTargetStep()',retryPos);
+  assert.ok(retryPos>=0&&advancePos>retryPos,'retry branch must continue before canonical technical-validation update');
+  assert.match(router,/gh workflow run company-development-roblox-runtime\.yml/);
+});
+
 test('Unity source reuse avoids the nested heredoc path that failed in the real canary run',()=>{
   assert.match(unity,/bind_catalog\(\)/);
   assert.doesNotMatch(unity,/node - "\$PROJECT" <<'NODE'[\s\S]{0,900}CHANGE_DETECTION=UNCHANGED_SOURCE_REUSED/);
