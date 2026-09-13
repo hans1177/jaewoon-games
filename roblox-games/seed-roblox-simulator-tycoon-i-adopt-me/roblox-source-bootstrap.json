@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
+  "gameName": "Pocket Foundry",
+  "platform": "ROBLOX",
+  "policyDocument": "COMPANY_FLOW.md",
+  "stage": "TARGET_PLATFORM_SOURCE_BIND",
+  "sourcePath": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me",
+  "sourceValidationPassed": true,
+  "runtimePassed": false,
+  "independentQaPassed": false,
+  "regressionPassed": false,
+  "releaseClaim": false,
+  "saveRequired": true,
+  "approvedScopeCount": 5,
+  "generatedFiles": [
+    "shared/GameConfig.luau",
+    "server/Game.server.luau",
+    "client/Game.client.luau",
+    "default.project.json"
+  ],
+  "generationMode": "DETERMINISTIC_FULL_SCOPE_IMPLEMENTATION",
+  "model": "none",
+  "modelUsed": false,
+  "modelAttempts": 0,
+  "modelContractFailures": [],
+  "implementationNotes": [
+    "approved scope count=5",
+    "each approved scope is compiled to a dedicated server-authoritative handler",
+    "one validated RemoteEvent transports scope ids across the client/server boundary",
+    "mobile-first ScreenGui exposes every approved scope action",
+    "persistent player state uses DataStoreService with safe fallback",
+    "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
+  ],
+  "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
+  "createdAt": "2026-09-13T03:34:33.053Z"
+}
