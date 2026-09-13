@@ -170,13 +170,17 @@ test('Roblox package completion has one canonical continuation into preflight an
   assert.ok(!continuation.includes('company-development-roblox-package.mjs'));
 });
 
-test('bot-dispatched Roblox package flow directly wakes continuation only after package queue drains',()=>{
+test('bot-dispatched Roblox package flow wakes harness v7 continuation and migrates the old unauthenticated Studio checkpoint once',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.ok(workflow.includes("ROBLOX_RUNTIME_HARNESS_VERSION: '7'"));
   assert.ok(workflow.includes("github.actor == 'github-actions[bot]'"));
   assert.ok(workflow.includes('ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION'));
   assert.ok(workflow.includes('ROBLOX_PREFLIGHT_READY_COUNT'));
   assert.ok(workflow.includes('ROBLOX_RUNTIME_READY_COUNT'));
-  assert.ok(workflow.includes("if [[ \"$package_pending\" == '0' && ( \"$preflight_ready\" =~ ^[1-9][0-9]*$ || \"$runtime_ready\" =~ ^[1-9][0-9]*$ ) ]]"));
+  assert.ok(workflow.includes("const retryableAuthMigration=!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-authentication-required'"));
+  assert.ok(workflow.includes('retryableMissingEvidence||retryableAuthMigration'));
+  assert.ok(workflow.includes('ROBLOX_ACTIVE_CONTINUATIONS='));
+  assert.ok(workflow.includes("&& \"$active_continuations\" == '0'"));
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'));
 });
