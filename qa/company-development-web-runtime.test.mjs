@@ -189,7 +189,7 @@ function frozenStrictFixture({cycleSeedId='SEED-ROBLOX-SIMULATOR_TYCOON_INCREMEN
   const identity='Pocket Foundry frozen implementation identity with collect resources upgrade production unlock tier progression';
   const baselinePath=path.join(designDir,'design-revised.json');
   fs.writeFileSync(baselinePath,JSON.stringify({gameId,gameSeedId:seedId,content:{identity,coreLoop:loops}},null,2));
-  fs.writeFileSync(path.join(designDir,'cycle-status.json'),JSON.stringify({gameId,selectedPlatform:'ROBLOX',gameSeed:{seedId:cycleSeedId,category:'SIMULATOR_TYCOON_INCREMENTAL'}},null,2));
+  fs.writeFileSync(path.join(designDir,'cycle-status.json'),JSON.stringify({gameId,gameSeed:{seedId:cycleSeedId,category:'SIMULATOR_TYCOON_INCREMENTAL'},baselineGate:{evidence:{targetPlatformProject:{platform:'ROBLOX'}}}},null,2));
   fs.writeFileSync(path.join(sourceDir,'index.html'),`<main data-session-minutes="30">${identity} ${loops.join(' ')} reward growth progress</main>`);
   const evidencePath=path.join(root,'runtime.json');
   fs.writeFileSync(evidencePath,JSON.stringify({pass:true,approvedScopeFullyImplemented:true,scopeCoverage:{pass:true},mobileViewport:{touch:true},sessionDepthMinutes:30,multiplayer:{participants:0,meaningfulLoopPassed:false}},null,2));
