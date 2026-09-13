@@ -2,19 +2,22 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
+import crypto from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {runtimeApprovedScopeCoverage} from './company-approved-scope-contract.mjs';
 
 const HOMEPAGE_TEST_THRESHOLD=80;
 const FORMAL_IMPLEMENTATION_THRESHOLD=90;
+const VALIDATION_SCHEMA_VERSION=10;
 const SESSION_MINUTES=30;
 const SESSION_STAGE_WINDOWS=[[0,5],[5,15],[15,25],[25,30]];
 const clean=value=>String(value??'').trim();
 const posix=value=>String(value??'').replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/g,'');
 const arg=(name,fallback='')=>process.argv.find(x=>x.startsWith(`--${name}=`))?.slice(name.length+3)??fallback;
 const MIME={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.ogg':'audio/ogg','.mp3':'audio/mpeg','.wav':'audio/wav'};
-const htmlEscape=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const htmlEscape=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
+function sha256File(file){return file&&fs.existsSync(file)&&fs.statSync(file).isFile()?crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex'):null;}
 
 function safeFile(root,urlPath){
   const pathname=decodeURIComponent(String(urlPath||'/').split('?')[0]);
@@ -166,12 +169,15 @@ function runStrictReview({gameId,source,output}){
   return{strictOutput,review,homepagePass,formalPass};
 }
 
-export async function runGameplayValidation({gameId,sourcePath,port=4181,output='',screenshot=''}={}){
+export async function runGameplayValidation({gameId,sourcePath,port=4181,output='',screenshot='',promotionRevalidationConfirmed=false}={}){
   const source=posix(sourcePath);
   if(!gameId)throw new Error('gameId required');
   if(!source.startsWith('web-games/'))throw new Error(`invalid source path: ${source}`);
   if(!fs.existsSync(source))throw new Error(`source path missing: ${source}`);
-  ensure30MinuteSessionContract({sourcePath:source,baselinePath:clean(process.env.DESIGN_BASELINE_SOURCE)});
+  const baselinePath=clean(process.env.DESIGN_BASELINE_SOURCE);
+  ensure30MinuteSessionContract({sourcePath:source,baselinePath});
+  const sourceIndexSha256=sha256File(path.join(source,'index.html'));
+  const designBaselineSha256=sha256File(baselinePath);
   const {chromium}=await import('playwright');
   const server=await startServer(process.cwd(),Number(port));
   const browser=await chromium.launch({headless:true});
@@ -224,19 +230,52 @@ export async function runGameplayValidation({gameId,sourcePath,port=4181,output=
     await page.waitForTimeout(500);
     const reloadVisible=await page.evaluate(()=>Boolean(document.body&&document.body.getBoundingClientRect().width>0&&document.body.getBoundingClientRect().height>0));
     const verdict=evaluateGameplayEvidence({before,after,interactionCount,consoleErrors,pageErrors,failedRequests,badResponses,reloadVisible,scopeCoverage,sessionContract});
-    const report={version:9,gameId,target:'web',status:verdict.pass?'PASS':'FAIL',pass:verdict.pass,validated:verdict.pass,realEvidenceExists:true,gameplayInteractionPerformed:interactionCount>0,interactionCount,stateChanged:verdict.stateChanged,musicRuntime:verdict.musicRuntime,approvedScopeFullyImplemented:scopeCoverage.pass,scopeCoverage,scopeInteractionResults,runtimeSmokePassed:consoleErrors.length===0&&pageErrors.length===0&&failedRequests.length===0&&badResponses.length===0&&reloadVisible,mobileViewport:{width:390,height:844,touch:true},sessionDepthMinutes:sessionContract.validatedMinutes,sessionContract,multiplayer:after.multiplayer||before.multiplayer||null,before,after,reloadVisible,blockers:verdict.blockers,consoleErrors,pageErrors,failedRequests,badResponses,evidence:[`interactionCount=${interactionCount}`,`stateChanged=${verdict.stateChanged}`,`reloadVisible=${reloadVisible}`,`mobileOverflow=${Number(after.scrollWidth||0)<=Number(after.viewportWidth||0)+2}`,`musicRuntime=${verdict.musicRuntime.pass}`,`approvedScope=${scopeCoverage.pass}`,`sessionDepthMinutes=${sessionContract.validatedMinutes}`,`sessionStages=${sessionContract.stageCount}`,`sessionStagesCompleted=${sessionContract.completedStages}`,`sessionStageGameplay=${sessionContract.stageGameplayPassed}`,`multiplayerParticipants=${Number(after.multiplayer?.participants||0)}`],checkedAt:new Date().toISOString(),sourcePath:source,url};
+    const report={version:VALIDATION_SCHEMA_VERSION,validationSchemaVersion:VALIDATION_SCHEMA_VERSION,gameId,target:'web',status:verdict.pass?'PASS':'FAIL',pass:verdict.pass,validated:verdict.pass,realEvidenceExists:true,gameplayInteractionPerformed:interactionCount>0,interactionCount,stateChanged:verdict.stateChanged,musicRuntime:verdict.musicRuntime,approvedScopeFullyImplemented:scopeCoverage.pass,scopeCoverage,scopeInteractionResults,runtimeSmokePassed:consoleErrors.length===0&&pageErrors.length===0&&failedRequests.length===0&&badResponses.length===0&&reloadVisible,mobileViewport:{width:390,height:844,touch:true},sessionDepthMinutes:sessionContract.validatedMinutes,sessionContract,multiplayer:after.multiplayer||before.multiplayer||null,before,after,reloadVisible,blockers:verdict.blockers,consoleErrors,pageErrors,failedRequests,badResponses,evidence:[`interactionCount=${interactionCount}`,`stateChanged=${verdict.stateChanged}`,`reloadVisible=${reloadVisible}`,`mobileOverflow=${Number(after.scrollWidth||0)<=Number(after.viewportWidth||0)+2}`,`musicRuntime=${verdict.musicRuntime.pass}`,`approvedScope=${scopeCoverage.pass}`,`sessionDepthMinutes=${sessionContract.validatedMinutes}`,`sessionStages=${sessionContract.stageCount}`,`sessionStagesCompleted=${sessionContract.completedStages}`,`sessionStageGameplay=${sessionContract.stageGameplayPassed}`,`multiplayerParticipants=${Number(after.multiplayer?.participants||0)}`],checkedAt:new Date().toISOString(),sourcePath:source,sourceIndexSha256,sourceRevision:clean(process.env.GITHUB_SHA)||null,designBaselineSha256,url};
     if(screenshot){fs.mkdirSync(path.dirname(screenshot),{recursive:true});await page.screenshot({path:screenshot,fullPage:true});report.screenshot=screenshot;}
     if(output){fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,JSON.stringify(report,null,2)+'\n');}
     console.log(JSON.stringify(report,null,2));
     if(!report.pass)throw new Error(`WEB_GAMEPLAY_VALIDATION_FAILED: ${report.blockers.join(' | ').slice(0,1800)}`);
     const {strictOutput,review,homepagePass,formalPass}=runStrictReview({gameId,source,output});
     report.strictReviewPath=strictOutput;
-    report.strictReview={verdict:review.verdict,totalScore:Number(review.totalScore),hardFailures:review.hardFailures||[],reviewedAt:review.reviewedAt||null,formalPassThreshold:FORMAL_IMPLEMENTATION_THRESHOLD,homepageTestThreshold:HOMEPAGE_TEST_THRESHOLD};
-    report.homepageTestEligible=homepagePass;report.homepageTestVerdict=homepagePass?'PASS':'REVISE';report.formalImplementationPassed=formalPass;report.formalImplementationVerdict=formalPass?'PASS':'REVISE';
+    report.strictReview={verdict:review.verdict,totalScore:Number(review.totalScore),hardFailures:review.hardFailures||[],improvementTargets:review.improvementTargets||[],reviewedAt:review.reviewedAt||null,formalPassThreshold:FORMAL_IMPLEMENTATION_THRESHOLD,homepageTestThreshold:HOMEPAGE_TEST_THRESHOLD};
+    report.webStrictScore=Number(review.totalScore);
+    report.improvementTargets=review.improvementTargets||[];
+    report.homepageTestEligible=homepagePass;
+    report.homepageTestVerdict=homepagePass?'PASS':'REVISE';
+    report.formalReviewPassed=formalPass;
+    report.formalImplementationPassed=formalPass&&promotionRevalidationConfirmed;
+    report.formalImplementationVerdict=report.formalImplementationPassed?'PASS':'REVISE';
     if(output)fs.writeFileSync(output,JSON.stringify(report,null,2)+'\n');
-    console.log(`WEB_STRICT_REVIEW_SCORE=${report.strictReview.totalScore}`);console.log(`WEB_STRICT_REVIEW_VERDICT=${report.strictReview.verdict}`);console.log(`HOMEPAGE_TEST_THRESHOLD=${HOMEPAGE_TEST_THRESHOLD}`);console.log(`HOMEPAGE_TEST_ELIGIBLE=${report.homepageTestEligible?'YES':'NO'}`);console.log(`FORMAL_IMPLEMENTATION_THRESHOLD=${FORMAL_IMPLEMENTATION_THRESHOLD}`);console.log(`FORMAL_IMPLEMENTATION_PASS=${report.formalImplementationPassed?'YES':'NO'}`);console.log(`WEB_30MIN_SESSION_VALIDATED_MINUTES=${sessionContract.validatedMinutes}`);console.log('WEB_30MIN_SESSION_QA=PASS');
+    console.log(`WEB_STRICT_REVIEW_SCORE=${report.strictReview.totalScore}`);console.log(`WEB_STRICT_REVIEW_VERDICT=${report.strictReview.verdict}`);console.log(`HOMEPAGE_TEST_THRESHOLD=${HOMEPAGE_TEST_THRESHOLD}`);console.log(`HOMEPAGE_TEST_ELIGIBLE=${report.homepageTestEligible?'YES':'NO'}`);console.log(`FORMAL_IMPLEMENTATION_THRESHOLD=${FORMAL_IMPLEMENTATION_THRESHOLD}`);console.log(`FORMAL_REVIEW_PASS=${report.formalReviewPassed?'YES':'NO'}`);console.log(`FORMAL_IMPLEMENTATION_PASS=${report.formalImplementationPassed?'YES':'NO'}`);console.log(`WEB_SOURCE_INDEX_SHA256=${sourceIndexSha256}`);console.log(`WEB_30MIN_SESSION_VALIDATED_MINUTES=${sessionContract.validatedMinutes}`);console.log('WEB_30MIN_SESSION_QA=PASS');
     return report;
   }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
 }
-async function main(){await runGameplayValidation({gameId:arg('game-id'),sourcePath:arg('source'),port:Number(arg('port','4181')),output:arg('output'),screenshot:arg('screenshot')});}
+
+async function main(){
+  const gameId=arg('game-id'),sourcePath=arg('source'),port=Number(arg('port','4181')),output=arg('output'),screenshot=arg('screenshot');
+  const first=await runGameplayValidation({gameId,sourcePath,port,output,screenshot,promotionRevalidationConfirmed:false});
+  const score=Number(first.strictReview?.totalScore),hard=Array.isArray(first.strictReview?.hardFailures)?first.strictReview.hardFailures:[];
+  if(first.formalReviewPassed===true&&Number.isFinite(score)&&score>=FORMAL_IMPLEMENTATION_THRESHOLD&&hard.length===0){
+    const secondaryOutput=output?path.join(path.dirname(output),'web-promotion-revalidation.json'):'';
+    let second=null,revalidationError=null;
+    try{second=await runGameplayValidation({gameId,sourcePath,port:port+1,output:secondaryOutput,screenshot:'',promotionRevalidationConfirmed:true});}
+    catch(error){revalidationError=clean(error?.message||error).slice(0,500);second=secondaryOutput?readJson(secondaryOutput,null):null;}
+    const secondScore=Number(second?.strictReview?.totalScore),secondHard=Array.isArray(second?.strictReview?.hardFailures)?second.strictReview.hardFailures:[];
+    const sourceHashMatch=Boolean(first.sourceIndexSha256&&second?.sourceIndexSha256&&first.sourceIndexSha256===second.sourceIndexSha256);
+    const baselineHashMatch=first.designBaselineSha256===second?.designBaselineSha256;
+    const promotionPass=second?.pass===true&&second?.musicRuntime?.pass===true&&second?.formalReviewPassed===true&&Number.isFinite(secondScore)&&secondScore>=FORMAL_IMPLEMENTATION_THRESHOLD&&secondHard.length===0&&Number(second?.validationSchemaVersion)>=VALIDATION_SCHEMA_VERSION&&second?.sessionContract?.pass===true&&sourceHashMatch&&baselineHashMatch;
+    first.promotionRevalidation={required:true,independentRun:true,pass:promotionPass,minimumScore:FORMAL_IMPLEMENTATION_THRESHOLD,firstScore:score,secondScore:Number.isFinite(secondScore)?secondScore:null,sourceHashMatch,baselineHashMatch,secondCheckedAt:second?.checkedAt||null,secondSessionPass:second?.sessionContract?.pass===true,error:revalidationError};
+    first.formalImplementationPassed=promotionPass;
+    first.formalImplementationVerdict=promotionPass?'PASS':'REVISE';
+    if(output)fs.writeFileSync(output,JSON.stringify(first,null,2)+'\n');
+    console.log(`WEB_PROMOTION_REVALIDATION=${promotionPass?'PASS':'FAIL'}`);
+    console.log(`WEB_PROMOTION_REVALIDATION_SOURCE_HASH_MATCH=${sourceHashMatch?'YES':'NO'}`);
+  }else{
+    first.promotionRevalidation={required:false,independentRun:false,pass:false,minimumScore:FORMAL_IMPLEMENTATION_THRESHOLD,reason:'WEB_SCORE_BELOW_90_OR_HARD_GATE'};
+    first.formalImplementationPassed=false;
+    first.formalImplementationVerdict='REVISE';
+    if(output)fs.writeFileSync(output,JSON.stringify(first,null,2)+'\n');
+    console.log('WEB_PROMOTION_REVALIDATION=NOT_REQUIRED_BELOW_90');
+  }
+}
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){main().catch(error=>{console.error(error.stack||error.message);process.exitCode=1;});}
