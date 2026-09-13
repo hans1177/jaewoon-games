@@ -61,7 +61,7 @@ jobs:
             if(platform!=='ROBLOX')continue;
             if(!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
             const state=String(item.canonicalState||'').toUpperCase();
-            if(state==='DEVELOPMENT_BLOCKED'||state==='WAITING_TARGET_PLATFORM_REVALIDATION')continue;
+            if(state==='DEVELOPMENT_BLOCKED')continue;
             const target=`roblox-games/${item.gameId}`;
             if(fs.existsSync(target))continue;
             rows.push({
@@ -306,7 +306,7 @@ jobs:
             if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
             if(!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))continue;
             const state=String(item.canonicalState||'').toUpperCase();
-            if(state==='DEVELOPMENT_BLOCKED'||state==='WAITING_TARGET_PLATFORM_REVALIDATION')continue;
+            if(state==='DEVELOPMENT_BLOCKED')continue;
             try{execFileSync('git',['cat-file','-e',`origin/main:roblox-games/${item.gameId}`],{stdio:'ignore'});continue;}catch{}
             count++;
           }
