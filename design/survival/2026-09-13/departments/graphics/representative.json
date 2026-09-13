@@ -13,22 +13,25 @@
   "representativeAuthoredByLead": true,
   "representative": {
     "keep": [
-      "visual_style_design"
+      "gemma3:1b",
+      "llama3.2:1b"
     ],
     "fix": [
-      "visual_style_design"
+      "gemma3:1b",
+      "llama3.2:1b"
     ],
     "add": [
-      "visual_style_design"
+      "gemma3:1b",
+      "llama3.2:1b"
     ],
     "risks": [
-      "visual_style_complexity"
+      "missingDataDoesNotRejectSeed"
     ],
     "evidence": [
-      "game_analytics_data"
+      "Vampire Survivors"
     ],
     "questions": [
-      "visual_style_impact_on_player_engagement"
+      "survival"
     ]
   }
 }

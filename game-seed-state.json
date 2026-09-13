@@ -9794,10 +9794,23 @@
         "materialFamilies": [],
         "validatedRealEvidence": false,
         "recordedAt": "2026-09-13T13:21:46.005Z"
+      },
+      {
+        "gameId": "survival",
+        "seedId": "OWNER-RESET-SURVIVAL-20260913",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "verdict": "REVISE",
+        "totalScore": 91,
+        "hardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "recordedAt": "2026-09-13T13:37:53.732Z"
       }
     ],
     "causeCounts": {
-      "CORE_FUN_WEAK": 5
+      "CORE_FUN_WEAK": 6
     },
     "preferSeedMaterialFamilies": [],
     "avoidSeedMaterialFamilies": [],
@@ -9808,6 +9821,6 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-13T13:21:46.006Z"
+    "updatedAt": "2026-09-13T13:37:53.733Z"
   }
 }
