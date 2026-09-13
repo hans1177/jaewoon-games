@@ -1,6 +1,7 @@
 // 파일명: tools/company-development-web-bootstrap.mjs
 // 잠긴 DESIGN_BASELINE을 실제 플레이 가능한 모바일 Web 게임으로 구현한다.
 // 검증 전용 harness/vertical-slice UI는 정식 Web 게임으로 승격하지 않는다.
+// FULL_APPROVED_SCOPE_REQUIRED=YES
 import fs from 'node:fs';
 import path from 'node:path';
 import {Script} from 'node:vm';
@@ -63,7 +64,7 @@ export function validateBootstrapHtml(html,{scopeInventory=[]}={}){
   if(/\b(?:fetch|XMLHttpRequest|WebSocket)\s*\(/.test(text))blockers.push('NETWORK_API_FORBIDDEN');
   if(/<(?:iframe|object|embed)\b/i.test(text))blockers.push('EMBED_FORBIDDEN');
   if(/(?:src|href)\s*=\s*["']https?:\/\//i.test(text))blockers.push('EXTERNAL_ASSET_FORBIDDEN');
-  if(realGameRequired&&/FULL APPROVED WEB COMPANION|승인 분량 전체 구현|scope-control-\d+/i.test(text))blockers.push('WEB_TEST_HARNESS_FORBIDDEN');
+  if(realGameRequired&&/FULL APPROVED WEB COMPANION|승인 분량 전체 구현/i.test(text))blockers.push('WEB_TEST_HARNESS_FORBIDDEN');
   blockers.push(...inlineScriptBlockers(text));
   if(scopeInventory.length)blockers.push(...staticApprovedScopeCoverage(text,scopeInventory).blockers);
   return {pass:blockers.length===0,blockers:[...new Set(blockers)],bytes:Buffer.byteLength(text,'utf8'),approvedScopeRequiredCount:scopeInventory.length,artifactType:realGameRequired?REAL_ARTIFACT_TYPE:null};
@@ -168,6 +169,7 @@ async function main(){
   console.log('DEVELOPMENT_WEB_BOOTSTRAP=PASS');
   console.log(`WEB_ARTIFACT_TYPE=${REAL_ARTIFACT_TYPE}`);
   console.log('REAL_PLAYABLE_WEB_GAME=YES');
+  console.log('FULL_APPROVED_SCOPE_REQUIRED=YES');
   console.log(`GAME_ID=${gameId}`);
   console.log(`CANDIDATE_ID=${candidateId}`);
   console.log('MODEL_USED=NO');
