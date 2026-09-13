@@ -1,7 +1,7 @@
 // 파일명: qa/company-development-web-runtime.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {validateBootstrapHtml,buildContractSafePlayable,inferDevelopmentGenre} from '../tools/company-development-web-bootstrap.mjs';
+import {validateBootstrapHtml,buildContractSafePlayable,inferDevelopmentGenre,buildApprovedScopeGenerationPrompt} from '../tools/company-development-web-bootstrap.mjs';
 import {evaluateGameplayEvidence,scopeInteractionChanged} from '../tools/company-development-web-gameplay-validation.mjs';
 import {deriveApprovedScopeInventory,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
 
@@ -102,6 +102,18 @@ test('deterministic recovery remains diagnostic only and cannot satisfy full app
     assert.equal(recovered.generationMode,'DETERMINISTIC_FULL_SCOPE_RECOVERY');
     assert.equal(contract.pass,false,`${genre}: deterministic proxy must not satisfy completion`);
     assert.ok(contract.blockers.some(x=>x.startsWith('GENERIC_SCOPE_PROXY_FORBIDDEN:')));
+  }
+});
+
+test('model generation prompt explicitly forbids generic scope proxy and assigns dedicated handlers',()=>{
+  const baseline={content:{coreFun:'combat',coreLoop:['engage','reposition'],mobileUx:'touch controls'}};
+  const inventory=deriveApprovedScopeInventory(baseline);
+  const prompt=buildApprovedScopeGenerationPrompt({gameId:'seed-test',gameName:'Test',baseline,artbook:{},inventory});
+  assert.ok(prompt.includes('data-action 속성을 절대 사용하지 마라'));
+  assert.ok(prompt.includes('GENERIC_SCOPE_PROXY_FORBIDDEN'));
+  for(let i=0;i<inventory.length;i++){
+    assert.ok(prompt.includes(inventory[i].id));
+    assert.ok(prompt.includes(`scopeHandler${i+1}`));
   }
 });
 
