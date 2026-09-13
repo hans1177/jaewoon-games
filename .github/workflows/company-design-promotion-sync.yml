@@ -11,6 +11,7 @@ on:
     paths:
       - '.github/workflows/company-design-promotion-sync.yml'
       - 'tools/design-only-promotion-sync.mjs'
+      - 'tools/company-design-artbook.mjs'
       - 'qa/design-only-promotion-sync.test.mjs'
 
 permissions:
@@ -23,12 +24,15 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
+  OLLAMA_HOST: 127.0.0.1:11434
+  OLLAMA_VERSION: '0.33.3'
+  ARTBOOK_MODEL_CALL_TIMEOUT_MS: '60000'
 
 jobs:
   promote:
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'push' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 22
     steps:
       - name: Checkout current engine source
         uses: actions/checkout@v4
@@ -50,79 +54,143 @@ jobs:
           test -f game-seed-state.json
           echo 'STRICT_DESIGN_EVIDENCE_OVERLAY=YES'
           echo 'DESIGN_PROMOTION_RUNTIME_OVERLAY=YES'
+          echo 'PREPROMOTION_ARTBOOK_REQUIRED=NO'
           echo 'PUBLIC_MAIN_WRITE=NO'
 
       - name: Validate promotion contract
         run: |
           node --check tools/design-only-promotion-sync.mjs
+          node --check tools/company-design-artbook.mjs
           node --test qa/design-only-promotion-sync.test.mjs
 
-      - name: Promote strict-ready design baselines into DEVELOPMENT_CONFIRMED
+      - name: Promote 80-point strict-ready design baselines into DEVELOPMENT_CONFIRMED
         run: node tools/design-only-promotion-sync.mjs
+
+      - name: Resolve post-promotion artbook targets
+        id: artbooks
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const rows=(q.items||[]).filter(item=>item.productionClass==='DEVELOPMENT_CONFIRMED'&&item.postPromotionArtbookRequired===true&&item.canonicalState==='WAITING_POST_PROMOTION_ARTBOOK');
+          fs.writeFileSync('/tmp/post-promotion-artbook-targets.tsv',rows.map(x=>`${x.gameId}\t${x.designDate||''}`).join('\n')+(rows.length?'\n':''));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
+          console.log(`POST_PROMOTION_ARTBOOK_TARGET_COUNT=${rows.length}`);
+          NODE
+
+      - name: Resolve one lightweight Artbook Editor model
+        if: steps.artbooks.outputs.count != '0'
+        id: editor
+        shell: bash
+        run: |
+          set -euo pipefail
+          model="$(node --input-type=module <<'NODE'
+          import fs from 'node:fs';const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));const banned=new Set((d.ai?.bannedModels||[]).map(String));const model=(d.ai?.modelPool||[]).map(String).find(x=>x&&!banned.has(x));if(!model)process.exit(2);process.stdout.write(model);
+          NODE
+          )"
+          test -n "$model"
+          echo "model=$model" >> "$GITHUB_OUTPUT"
+          echo "POST_PROMOTION_ARTBOOK_EDITOR_MODEL=$model"
+
+      - name: Restore Artbook Editor model cache
+        if: steps.artbooks.outputs.count != '0'
+        uses: actions/cache@v4
+        with:
+          path: ~/.ollama/models
+          key: ollama-post-promotion-artbook-${{ runner.os }}-${{ hashFiles('company-directive.json') }}
+          restore-keys: |
+            ollama-post-promotion-artbook-${{ runner.os }}-
+
+      - name: Prepare lightweight local Artbook Editor
+        if: steps.artbooks.outputs.count != '0'
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: ${{ steps.editor.outputs.model }}
+          version: ${{ env.OLLAMA_VERSION }}
+          pull-model: 'true'
+
+      - name: Generate Artbook only after promotion
+        if: steps.artbooks.outputs.count != '0'
+        env:
+          ARTBOOK_EDITOR_MODEL: ${{ steps.editor.outputs.model }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS=$'\t' read -r game_id design_date; do
+            [ -z "$game_id" ] && continue
+            test -n "$design_date"
+            echo "POST_PROMOTION_ARTBOOK_START=$game_id:$design_date"
+            ARTBOOK_GAME_ID="$game_id" ARTBOOK_DATE="$design_date" timeout 150s node tools/company-design-artbook.mjs
+            test -f "artbook-submissions/$game_id/current.json"
+            echo "POST_PROMOTION_ARTBOOK_PASS=$game_id"
+          done < /tmp/post-promotion-artbook-targets.tsv
+
+      - name: Advance Artbook-complete promotions to Web gate
+        if: steps.artbooks.outputs.count != '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';import path from 'node:path';
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const stamp=new Date().toISOString();
+          for(const item of q.items||[]){
+            if(item.productionClass!=='DEVELOPMENT_CONFIRMED'||item.postPromotionArtbookRequired!==true||item.canonicalState!=='WAITING_POST_PROMOTION_ARTBOOK')continue;
+            const artbook=`artbook-submissions/${item.gameId}/current.json`;
+            if(!fs.existsSync(artbook))throw new Error(`POST_PROMOTION_ARTBOOK_MISSING:${item.gameId}`);
+            item.artbookSource=artbook;item.postPromotionArtbookGeneratedAt=stamp;item.currentStep='WEB_PLAYABLE_BOOTSTRAP';item.canonicalState='WAITING_WEB_GAMEPLAY_VALIDATION';item.homepageTestVerdict='WAITING_WEB_STRICT_REVIEW';item.updatedAt=stamp;
+            const seed=(state.seeds||[]).find(x=>x.gameId===item.gameId&&String(x.status||'').toUpperCase()==='ACTIVE');
+            if(seed?.promotion){seed.promotion.artbookSource=artbook;seed.promotion.artbookGeneratedAt=stamp;seed.promotion.postPromotionArtbookRequired=true;}
+            const game=(catalog.games||[]).find(x=>x.id===item.gameId);
+            if(game){game.homepageArtbookPath=`/artbook-viewer.html?game=${encodeURIComponent(item.gameId)}`;game.homepageReviewState='WAITING_WEB_STRICT_REVIEW';game.homepageStage='개발확정 · Web 강심사 준비';game.homepageRecentWork=`Strict Design ${Number(item.strictDesignScore||0)}점 PASS · 승격 후 아트북 완료 · Web 제작 대기`;}
+          }
+          q.updatedAt=stamp;state.updatedAt=stamp;
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');fs.writeFileSync('game-seed-state.json',JSON.stringify(state,null,2)+'\n');fs.writeFileSync('game-catalog.json',JSON.stringify(catalog,null,2)+'\n');
+          console.log('POST_PROMOTION_ARTBOOK_WEB_HANDOFF=PASS');
+          NODE
 
       - name: Verify strict-ready-only promotion and ordered development handoff
         shell: bash
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import path from 'node:path';
+          import fs from 'node:fs';import path from 'node:path';
           const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
           const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
-          const strictPathFor=(gameId,artbook)=>{
-            const source=String(artbook?.sourceDesign||'').trim();
-            if(source)return path.join(path.dirname(source),'strict-design-review.json');
-            const date=String(artbook?.date||artbook?.createdAt||'').slice(0,10);
-            return date?path.join('design',gameId,date,'strict-design-review.json'):'';
+          const latestStrict=(gameId)=>{
+            const root=path.join('design',gameId);if(!fs.existsSync(root))return {pass:false,review:null,file:null};
+            const dates=fs.readdirSync(root,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
+            for(const date of dates){const file=path.join(root,date,'strict-design-review.json');const statusFile=path.join(root,date,'cycle-status.json');if(!fs.existsSync(file)||!fs.existsSync(statusFile))continue;const review=JSON.parse(fs.readFileSync(file,'utf8'));const status=JSON.parse(fs.readFileSync(statusFile,'utf8'));const ready=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true;return {pass:ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0,review,file};}return {pass:false,review:null,file:null};
           };
-          const strictPassFor=(gameId,artbook)=>{
-            const file=strictPathFor(gameId,artbook);
-            if(!file||!fs.existsSync(file))return {pass:false,file,review:null};
-            const review=JSON.parse(fs.readFileSync(file,'utf8'));
-            const pass=review.verdict==='PASS'&&Number(review.totalScore)>=90&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0;
-            return {pass,file,review};
-          };
-          const queueByGame=new Map((queue.items||[]).map(item=>[item.gameId,item]));
-          let strictReadyCount=0;
+          const queueByGame=new Map((queue.items||[]).map(item=>[item.gameId,item]));let strictReadyCount=0;
           for(const seed of state.seeds||[]){
             if(String(seed.status||'').toUpperCase()!=='ACTIVE')continue;
-            const current=path.join('artbook-submissions',seed.gameId,'current.json');
-            if(!fs.existsSync(current))continue;
-            const artbook=JSON.parse(fs.readFileSync(current,'utf8'));
-            const baselineReady=artbook.baselineGateState==='DESIGN_BASELINE_READY'&&artbook.publication?.baselineReady===true&&artbook.published===true&&artbook.vibe2Used!==true;
-            if(!baselineReady)continue;
-            const strict=strictPassFor(seed.gameId,artbook);
-            const item=queueByGame.get(seed.gameId);
-            if(!strict.pass){
-              const legacyDevelopment=seed.productionClass==='DEVELOPMENT_CONFIRMED'&&seed.productionClassSource!=='DESIGN_BASELINE_READY_STRICT_PASS';
-              if(seed.productionClass==='DEVELOPMENT_CONFIRMED'&&seed.productionClassSource==='DESIGN_BASELINE_READY_STRICT_PASS')throw new Error(`non-strict design promoted: ${seed.gameId}`);
-              if(item&&item.productionClass==='DEVELOPMENT_CONFIRMED'&&!legacyDevelopment&&Number(item.strictDesignScore||0)<90)throw new Error(`non-strict queue promotion: ${seed.gameId}`);
-              console.log(`STRICT_DESIGN_NOT_PROMOTED=${seed.gameId}:${strict.review?.verdict||'MISSING'}:${Number(strict.review?.totalScore||0)}`);
-              continue;
+            const strict=latestStrict(seed.gameId);const item=queueByGame.get(seed.gameId);
+            if(seed.productionClassSource==='DESIGN_BASELINE_READY_STRICT_PASS'){
+              if(!strict.pass)throw new Error(`non-strict design promoted: ${seed.gameId}`);
+              strictReadyCount++;
+              if(Number(seed.strictDesignReview?.totalScore||0)<80||seed.strictDesignReview?.verdict!=='PASS')throw new Error(`strict evidence not bound to seed: ${seed.gameId}`);
+              if(!item||item.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`strict-ready queue handoff missing: ${seed.gameId}`);
+              if(!fs.existsSync(`artbook-submissions/${seed.gameId}/current.json`))throw new Error(`post-promotion artbook missing: ${seed.gameId}`);
+              if(item.canonicalState==='WAITING_POST_PROMOTION_ARTBOOK')throw new Error(`post-promotion artbook did not advance: ${seed.gameId}`);
+              const project=(portfolio.projects||[]).find(x=>x.slug===seed.gameId);if(project?.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`portfolio promotion missing: ${seed.gameId}`);
             }
-            strictReadyCount++;
-            if(seed.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`strict-ready seed not promoted: ${seed.gameId}`);
-            if(Number(seed.strictDesignReview?.totalScore||0)<90||seed.strictDesignReview?.verdict!=='PASS')throw new Error(`strict evidence not bound to seed: ${seed.gameId}`);
-            if(!item||item.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`strict-ready queue handoff missing: ${seed.gameId}`);
-            if(!item.currentStep)throw new Error(`queue step missing: ${seed.gameId}`);
-            const project=(portfolio.projects||[]).find(x=>x.slug===seed.gameId);
-            if(project?.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`portfolio promotion missing: ${seed.gameId}`);
           }
           for(const item of queue.items||[]){
             if(item.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`queue class mismatch: ${item.gameId}`);
-            const current=path.join('artbook-submissions',item.gameId,'current.json');
-            if(!fs.existsSync(current))throw new Error(`promoted artbook missing: ${item.gameId}`);
-            const artbook=JSON.parse(fs.readFileSync(current,'utf8'));
-            if(artbook.baselineGateState!=='DESIGN_BASELINE_READY'||artbook.publication?.baselineReady!==true)throw new Error(`non-ready game promoted: ${item.gameId}`);
-            const strict=strictPassFor(item.gameId,artbook);
             const seed=(state.seeds||[]).find(x=>x.gameId===item.gameId);
-            const legacyDevelopment=seed?.productionClass==='DEVELOPMENT_CONFIRMED'&&seed?.productionClassSource!=='DESIGN_BASELINE_READY_STRICT_PASS';
-            if(!strict.pass&&!legacyDevelopment)throw new Error(`queue lacks strict design PASS: ${item.gameId}`);
             if(!seed||seed.status!=='ACTIVE')throw new Error(`normal promotion created seed vacancy: ${item.gameId}`);
+            if(seed.productionClassSource==='DESIGN_BASELINE_READY_STRICT_PASS'&&Number(item.strictDesignScore||0)<80)throw new Error(`non-strict queue promotion: ${item.gameId}`);
           }
           console.log(`STRICT_DESIGN_READY_COUNT=${strictReadyCount}`);
           console.log(`DEVELOPMENT_HANDOFF_COUNT=${(queue.items||[]).length}`);
+          console.log('DESIGN_PASS_THRESHOLD=80');
+          console.log('WEB_IMPLEMENTATION_PASS_THRESHOLD=90');
           console.log('DESIGN_ONLY_PROMOTION_CONTRACT=PASS');
           NODE
 
@@ -132,6 +200,13 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/design-promotion-runtime
           cp game-seed-state.json autonomous-portfolio.json game-catalog.json development-queue.json /tmp/design-promotion-runtime/
+          cp /tmp/post-promotion-artbook-targets.tsv /tmp/design-promotion-runtime/post-promotion-artbook-targets.tsv 2>/dev/null || :
+          while IFS=$'\t' read -r game_id design_date; do
+            [ -z "$game_id" ] && continue
+            mkdir -p "/tmp/design-promotion-runtime/artbook-submissions" "/tmp/design-promotion-runtime/design/$game_id"
+            cp -R "artbook-submissions/$game_id" "/tmp/design-promotion-runtime/artbook-submissions/"
+            cp -R "design/$game_id/$design_date" "/tmp/design-promotion-runtime/design/$game_id/"
+          done < /tmp/post-promotion-artbook-targets.tsv 2>/dev/null || true
 
       - name: Persist promoted state to company runtime branch
         shell: bash
@@ -148,10 +223,22 @@ jobs:
           cp /tmp/design-promotion-runtime/game-catalog.json game-catalog.json
           cp /tmp/design-promotion-runtime/development-queue.json development-queue.json
           git add -- game-seed-state.json autonomous-portfolio.json game-catalog.json development-queue.json
+          targets=/tmp/design-promotion-runtime/post-promotion-artbook-targets.tsv
+          if [ -f "$targets" ]; then
+            while IFS=$'\t' read -r game_id design_date; do
+              [ -z "$game_id" ] && continue
+              rm -rf "artbook-submissions/$game_id" "design/$game_id/$design_date"
+              mkdir -p artbook-submissions/$game_id design/$game_id
+              cp -R "/tmp/design-promotion-runtime/artbook-submissions/$game_id/." "artbook-submissions/$game_id/"
+              cp -R "/tmp/design-promotion-runtime/design/$game_id/$design_date" "design/$game_id/"
+              git add -- "artbook-submissions/$game_id" "design/$game_id/$design_date"
+            done < "$targets"
+          fi
+          git diff --cached --check
           if git diff --cached --quiet; then
             echo 'DESIGN_PROMOTION_RUNTIME_CHANGE=NO'
           else
-            git commit -m 'runtime: promote strict DESIGN_BASELINE_READY seeds to development [skip ci]'
+            git commit -m 'runtime: promote 80-point designs and generate post-promotion artbooks [skip ci]'
             git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"
             echo 'DESIGN_PROMOTION_RUNTIME_CHANGE=PERSISTED'
           fi

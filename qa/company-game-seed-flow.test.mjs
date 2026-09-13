@@ -45,6 +45,15 @@ test('central mirror preserves historical bootstrap while latest owner productio
   assert.match(flow,/fixedSixCategoryProductionQuotaForbidden: true/);
   assert.match(flow,/concurrentGameWipMax: 3/);
   assert.match(flow,/meaningfulMinutesRequired: 30/);
+  assert.match(flow,/passMinimum: 80/);
+  assert.match(flow,/implementationPassMinimum: 90/);
+  assert.match(flow,/excellentDesignMinimum: 90/);
+  assert.match(flow,/designOnlyArtbookBeforePromotionForbidden: true/);
+  assert.match(flow,/createOnlyAfterDesignPromotion: true/);
+  assert.match(flow,/blockingBudgetMinutes: 10/);
+  assert.equal(directive.strictReview.designPassMinimum,80);
+  assert.equal(directive.strictReview.implementationPassMinimum,90);
+  assert.equal(directive.productionThroughput.modelExecutionBudget.designWorkflowTimeoutMinutes,45);
 });
 
 test('five department scores drive expansion bands exactly as central policy defines',()=>{
@@ -149,7 +158,7 @@ test('quality gate applies material count only to material-composed seeds and le
   assert.match(qualityGate,/MULTIPLAYER_DESIGN_MODE/);
 });
 
-test('autonomous runtime remains on company-runtime and caps concurrent design workers at three',()=>{
+test('autonomous runtime remains on company-runtime caps WIP and bounds slow design model work',()=>{
   for(const text of [seedWorkflow,seedDesignWorkflow,statusWorkflow]){
     assert.match(text,/COMPANY_RUNTIME_BRANCH: company-runtime/);
     assert.doesNotMatch(text,/gh pr create/);
@@ -160,6 +169,9 @@ test('autonomous runtime remains on company-runtime and caps concurrent design w
   assert.match(seedDesignWorkflow,/game-seed-state\.json/);
   assert.match(seedDesignWorkflow,/max-parallel: 3/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_MAX=3/);
+  assert.match(seedDesignWorkflow,/timeout-minutes: 45/);
+  assert.match(seedDesignWorkflow,/COMPANY_MODEL_CALL_TIMEOUT_MS: '75000'/);
+  assert.match(design,/AbortSignal\.timeout\(modelCallTimeoutMs\)/);
 });
 
 test('DESIGN_ONLY requires seed same designer revision and repeated five-lead fatal review',()=>{
@@ -172,16 +184,18 @@ test('DESIGN_ONLY requires seed same designer revision and repeated five-lead fa
   assert.doesNotMatch(design,/vibe2-validator|VIBE2_VALIDATION_LEARNING/);
 });
 
-test('DESIGN_ONLY order is design then baseline then artbook never artbook before gate',()=>{
+test('DESIGN_ONLY stops at design baseline; artbook is post-promotion only',()=>{
   const designCall=pipeline.search(/await run(?:WithRetry)?\('tools\/company-design-cycle\.mjs'/);
   const gateCall=pipeline.indexOf("await run('tools/company-baseline-gate.mjs')",designCall);
   const artbookCall=pipeline.indexOf("await run('tools/company-design-artbook.mjs')",gateCall);
-  assert.ok(designCall>=0&&gateCall>designCall&&artbookCall>gateCall);
+  assert.ok(designCall>=0&&gateCall>designCall);
+  assert.equal(artbookCall,-1,'DESIGN_ONLY must not create artbook before promotion');
+  assert.match(pipeline,/DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO/);
+  assert.match(pipeline,/DESIGN_ONLY_ARTBOOK_SKIPPED=WAIT_FOR_PROMOTION/);
   assert.match(pipeline,/DESIGN_ONLY_VIBE2_USED=NO/);
-  assert.match(gate,/designArtbookOnlyAfterBaselineReady:true/);
   assert.match(gate,/designOnlyVibe2Forbidden:true/);
-  assert.match(artbook,/DESIGN_ARTBOOK_REQUIRES_DESIGN_BASELINE_READY/);
-  assert.match(artbook,/vibe2Used:false/);
+  assert.match(artbook,/postPromotion:true/);
+  assert.match(artbook,/ARTBOOK_MODEL_CALL_TIMEOUT_MS/);
 });
 
 test('development discard or demotion still requires real evidence fix revalidation and five-lead agreement',()=>{

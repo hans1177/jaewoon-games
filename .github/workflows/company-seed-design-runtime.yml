@@ -19,7 +19,8 @@ env:
   OLLAMA_VERSION: '0.33.3'
   OLLAMA_MAX_LOADED_MODELS: '3'
   COMPANY_MODEL_PHASE_CONCURRENCY: '3'
-  COMPANY_MODEL_KEEP_ALIVE: '2m'
+  COMPANY_MODEL_KEEP_ALIVE: '1m'
+  COMPANY_MODEL_CALL_TIMEOUT_MS: '75000'
 
 jobs:
   resolve-seed-targets:
@@ -41,13 +42,14 @@ jobs:
             exit 0
           fi
           git fetch origin "$COMPANY_RUNTIME_BRANCH"
-          for runtime_path in game-seed-state.json artbook-submissions design; do
+          for runtime_path in game-seed-state.json design; do
             if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" 2>/dev/null; then
               git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- "$runtime_path"
             fi
           done
-          git reset -- game-seed-state.json artbook-submissions design >/dev/null 2>&1 || true
+          git reset -- game-seed-state.json design >/dev/null 2>&1 || true
           echo 'COMPANY_RUNTIME_STATE_OVERLAY=YES'
+          echo 'DESIGN_ONLY_ARTBOOK_OVERLAY=NO'
           echo 'COMPANY_ENGINE_SOURCE=main'
       - name: Resolve at most three active incomplete GAME_SEED targets
         id: targets
@@ -60,18 +62,22 @@ jobs:
           const state=(()=>{try{return JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));}catch{return{seeds:[]};}})();
           const active=(state.seeds||[]).filter(seed=>String(seed.status||'').toUpperCase()==='ACTIVE');
           const strictPassFor=(seed)=>{
-            const current=path.join('artbook-submissions',String(seed.gameId),'current.json');
-            if(!fs.existsSync(current))return false;
+            const gameRoot=path.join('design',String(seed.gameId));
+            if(!fs.existsSync(gameRoot))return false;
             try{
-              const artbook=JSON.parse(fs.readFileSync(current,'utf8'));
-              if(artbook.baselineGateState!=='DESIGN_BASELINE_READY'||artbook?.publication?.baselineReady!==true)return false;
-              const source=String(artbook.sourceDesign||'').trim();
-              const date=String(artbook.date||artbook.createdAt||'').slice(0,10);
-              const strictPath=source?path.join(path.dirname(source),'strict-design-review.json'):(date?path.join('design',String(seed.gameId),date,'strict-design-review.json'):'');
-              if(!strictPath||!fs.existsSync(strictPath))return false;
-              const review=JSON.parse(fs.readFileSync(strictPath,'utf8'));
-              return review.verdict==='PASS'&&Number(review.totalScore)>=90&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0;
-            }catch{return false;}
+              const dates=fs.readdirSync(gameRoot,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
+              for(const date of dates){
+                const base=path.join(gameRoot,date);
+                const statusPath=path.join(base,'cycle-status.json');
+                const strictPath=path.join(base,'strict-design-review.json');
+                if(!fs.existsSync(statusPath)||!fs.existsSync(strictPath))continue;
+                const status=JSON.parse(fs.readFileSync(statusPath,'utf8'));
+                const review=JSON.parse(fs.readFileSync(strictPath,'utf8'));
+                const ready=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true;
+                if(ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0)return true;
+              }
+            }catch{}
+            return false;
           };
           const pending=active.filter(seed=>!strictPassFor(seed)).sort((a,b)=>String(a.createdAt||'').localeCompare(String(b.createdAt||''))).slice(0,3);
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
@@ -81,7 +87,9 @@ jobs:
           console.log(`targets=${JSON.stringify(targets)}`);
           console.error(`GAME_SEED_DESIGN_TARGET_COUNT=${targets.length}`);
           console.error('GAME_DESIGN_WIP_MAX=3');
-          console.error('STRICT_DESIGN_PASS_REQUIRED_FOR_COMPLETION=YES');
+          console.error('STRICT_DESIGN_PASS_THRESHOLD=80');
+          console.error('STRICT_DESIGN_EXCELLENT_THRESHOLD=90');
+          console.error('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
           NODE
 
   design-cycle:
@@ -93,7 +101,7 @@ jobs:
       matrix:
         target: ${{ fromJSON(needs.resolve-seed-targets.outputs.targets) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 80
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -105,14 +113,14 @@ jobs:
           set -euo pipefail
           git fetch origin "$COMPANY_RUNTIME_BRANCH"
           game_path="design/${{ matrix.target.game_id }}"
-          artbook_path="artbook-submissions/${{ matrix.target.game_id }}"
-          for runtime_path in game-seed-state.json "$game_path" "$artbook_path"; do
+          for runtime_path in game-seed-state.json "$game_path"; do
             if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" 2>/dev/null; then git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- "$runtime_path"; fi
           done
-          git reset -- game-seed-state.json "$game_path" "$artbook_path" >/dev/null 2>&1 || true
+          git reset -- game-seed-state.json "$game_path" >/dev/null 2>&1 || true
           test -f game-seed-state.json
           cp game-seed-state.json /tmp/company-runtime-seed-state-before.json
           echo 'COMPANY_RUNTIME_STATE_OVERLAY=TARGET_ONLY'
+          echo 'DESIGN_ONLY_ARTBOOK_OVERLAY=NO'
           echo 'PUBLIC_MAIN_WRITE=NO'
       - name: Revalidate current seed target
         id: target
@@ -125,9 +133,18 @@ jobs:
           import fs from 'node:fs';import path from 'node:path';
           const gameId=String(process.env.TARGET_GAME_ID||'').trim(),seedId=String(process.env.TARGET_SEED_ID||'').trim();
           const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));const seed=(state.seeds||[]).find(x=>String(x.gameId)===gameId&&String(x.status).toUpperCase()==='ACTIVE');
-          let strictPass=false;const current=path.join('artbook-submissions',gameId,'current.json');
-          if(seed&&String(seed.seedId)===seedId&&fs.existsSync(current)){
-            try{const artbook=JSON.parse(fs.readFileSync(current,'utf8'));const source=String(artbook.sourceDesign||'').trim();const date=String(artbook.date||artbook.createdAt||'').slice(0,10);const strictPath=source?path.join(path.dirname(source),'strict-design-review.json'):(date?path.join('design',gameId,date,'strict-design-review.json'):'');if(artbook.baselineGateState==='DESIGN_BASELINE_READY'&&artbook?.publication?.baselineReady===true&&strictPath&&fs.existsSync(strictPath)){const review=JSON.parse(fs.readFileSync(strictPath,'utf8'));strictPass=review.verdict==='PASS'&&Number(review.totalScore)>=90&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0;}}catch{}
+          let strictPass=false;
+          const gameRoot=path.join('design',gameId);
+          if(seed&&String(seed.seedId)===seedId&&fs.existsSync(gameRoot)){
+            try{
+              const dates=fs.readdirSync(gameRoot,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
+              for(const date of dates){
+                const base=path.join(gameRoot,date),statusPath=path.join(base,'cycle-status.json'),strictPath=path.join(base,'strict-design-review.json');
+                if(!fs.existsSync(statusPath)||!fs.existsSync(strictPath))continue;
+                const status=JSON.parse(fs.readFileSync(statusPath,'utf8')),review=JSON.parse(fs.readFileSync(strictPath,'utf8'));
+                if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){strictPass=true;break;}
+              }
+            }catch{}
           }
           console.log(`should_run=${seed&&String(seed.seedId)===seedId&&!strictPass?'true':'false'}`);
           NODE
@@ -137,6 +154,7 @@ jobs:
           node --check tools/game-seed-state.mjs
           node --check tools/company-game-seed-contract.mjs
           node --check tools/company-strict-production-review.mjs
+          node --check tools/company-design-cycle.mjs
       - name: Restore Ollama model cache
         if: steps.target.outputs.should_run == 'true'
         uses: actions/cache@v4
@@ -169,7 +187,7 @@ jobs:
           ollama list | awk 'NR>1 {print $1}' > /tmp/ollama-present-models.txt
           while IFS= read -r model; do [ -z "$model" ] && continue; grep -Fxq "$model" /tmp/ollama-present-models.txt || { ollama pull "$model"; printf '%s\n' "$model" >> /tmp/ollama-present-models.txt; }; done < /tmp/models.txt
           echo 'PAID_API=NO'
-      - name: Run seed-backed DESIGN_ONLY pipeline
+      - name: Run seed-backed DESIGN_ONLY pipeline without artbook
         if: steps.target.outputs.should_run == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
@@ -188,7 +206,7 @@ jobs:
           set -e
           if [ "$rc" -eq 0 ]; then echo 'STRICT_DESIGN_GATE=PASS'; else echo 'STRICT_DESIGN_GATE=REVISE_OR_REBUILD'; fi
           exit 0
-      - name: Verify baseline-before-artbook contract
+      - name: Verify baseline and strict review contract
         if: steps.target.outputs.should_run == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
@@ -196,7 +214,7 @@ jobs:
         shell: bash
         run: |
           node --input-type=module <<'NODE'
-          import fs from 'node:fs';import path from 'node:path';const gameId=process.env.ARTBOOK_GAME_ID,date=process.env.ARTBOOK_DATE,base=path.join('design',gameId,date);const status=JSON.parse(fs.readFileSync(path.join(base,'cycle-status.json'),'utf8'));if(status.productionClass!=='DESIGN_ONLY')throw new Error('DESIGN_ONLY required');if(status.departments?.count!==5||status.departments?.leadModelsDistinct!==true)throw new Error('five department lead contract failed');const strict=JSON.parse(fs.readFileSync(path.join(base,'strict-design-review.json'),'utf8'));if(!['PASS','REVISE','REBUILD'].includes(strict.verdict))throw new Error('strict verdict missing');console.log(`STRICT_DESIGN_SCORE=${strict.totalScore}`);console.log(`STRICT_DESIGN_VERDICT=${strict.verdict}`);console.log(`STRICT_DESIGN_READY_FOR_PROMOTION=${strict.verdict==='PASS'&&Number(strict.totalScore)>=90&&Array.isArray(strict.hardFailures)&&strict.hardFailures.length===0?'YES':'NO'}`);
+          import fs from 'node:fs';import path from 'node:path';const gameId=process.env.ARTBOOK_GAME_ID,date=process.env.ARTBOOK_DATE,base=path.join('design',gameId,date);const status=JSON.parse(fs.readFileSync(path.join(base,'cycle-status.json'),'utf8'));if(status.productionClass!=='DESIGN_ONLY')throw new Error('DESIGN_ONLY required');if(status.departments?.count!==5||status.departments?.leadModelsDistinct!==true)throw new Error('five department lead contract failed');const strict=JSON.parse(fs.readFileSync(path.join(base,'strict-design-review.json'),'utf8'));if(!['PASS','REVISE','REBUILD'].includes(strict.verdict))throw new Error('strict verdict missing');if(fs.existsSync(path.join('artbook-submissions',gameId,'current.json')))console.log('LEGACY_PREPROMOTION_ARTBOOK_IGNORED=YES');console.log(`STRICT_DESIGN_SCORE=${strict.totalScore}`);console.log(`STRICT_DESIGN_VERDICT=${strict.verdict}`);console.log(`STRICT_DESIGN_READY_FOR_PROMOTION=${strict.verdict==='PASS'&&Number(strict.totalScore)>=80&&Array.isArray(strict.hardFailures)&&strict.hardFailures.length===0?'YES':'NO'}`);console.log(`STRICT_DESIGN_EXCELLENT=${strict.verdict==='PASS'&&Number(strict.totalScore)>=90?'YES':'NO'}`);console.log('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
           NODE
       - name: Persist validated design evidence to company runtime branch
         if: steps.target.outputs.should_run == 'true'
@@ -204,13 +222,13 @@ jobs:
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-seed-design';git config user.email 'seed-design@users.noreply.github.com'
-          game_path="design/${{ matrix.target.game_id }}";artbook_path="artbook-submissions/${{ matrix.target.game_id }}";seed_changed=0
+          game_path="design/${{ matrix.target.game_id }}";seed_changed=0
           cmp -s game-seed-state.json /tmp/company-runtime-seed-state-before.json || seed_changed=1
-          git add -- "$game_path" "$artbook_path";[ "$seed_changed" = 1 ] && git add -- game-seed-state.json || true
+          git add -- "$game_path";[ "$seed_changed" = 1 ] && git add -- game-seed-state.json || true
           git diff --cached --quiet && { echo 'SEED_DESIGN_RUNTIME_CHANGE=NO'; exit 0; }
           git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}";generated_commit="$(git rev-parse HEAD)";[ "$seed_changed" = 0 ] && rm -f game-seed-state.json || true
           pushed=0
-          for attempt in 1 2 3 4; do git fetch origin "$COMPANY_RUNTIME_BRANCH";git checkout -B seed-design-persist "origin/$COMPANY_RUNTIME_BRANCH";git checkout "$generated_commit" -- "$game_path" "$artbook_path";[ "$seed_changed" = 1 ] && git checkout "$generated_commit" -- game-seed-state.json || true;git add -- "$game_path" "$artbook_path";[ "$seed_changed" = 1 ] && git add -- game-seed-state.json || true;if git diff --cached --quiet; then pushed=1;break;fi;git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}";if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1;break;fi;git reset --hard "$generated_commit";sleep $((attempt * 2));done
+          for attempt in 1 2 3 4; do git fetch origin "$COMPANY_RUNTIME_BRANCH";git checkout -B seed-design-persist "origin/$COMPANY_RUNTIME_BRANCH";git checkout "$generated_commit" -- "$game_path";[ "$seed_changed" = 1 ] && git checkout "$generated_commit" -- game-seed-state.json || true;git add -- "$game_path";[ "$seed_changed" = 1 ] && git add -- game-seed-state.json || true;if git diff --cached --quiet; then pushed=1;break;fi;git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}";if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1;break;fi;git reset --hard "$generated_commit";sleep $((attempt * 2));done
           test "$pushed" = 1
           echo 'SEED_DESIGN_RUNTIME_CHANGE=PERSISTED'
           echo 'PUBLIC_MAIN_WRITE=NO'
