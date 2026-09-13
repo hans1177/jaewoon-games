@@ -35,6 +35,15 @@
 - 히어로/대표 게임도 canonical Top30의 현재 1위 후보를 우선 사용한다.
 - 홈페이지는 5초 주기/포커스 복귀 시 Top30과 상태 메타데이터를 다시 읽어 실시간 미러한다.
 
+## APK 설치 배치
+
+owner 최신 지시에 따라 **재운컴퍼니 APK 설치 컨트롤은 홈페이지 대문 상단에 두지 않는다.** 기능은 삭제하지 않고 개발팀/회사 영역 하단으로 이동한다.
+
+- 다운로드 대상은 기존 `/downloads/jaewoon-company.apk`를 유지한다.
+- 홈페이지 상단의 대표 영역은 Top30 게임과 게임 정보에 집중한다.
+- PWA 설치 계약과 `/install.html`, `/command.html`, service worker는 그대로 보존한다.
+- APK 설치 컨트롤 이동은 표시 위치 변경이며 APK/PWA 기능 삭제가 아니다.
+
 ## Homepage Manager AI 자율 권한
 
 - 대문/히어로 구성
@@ -113,6 +122,7 @@
 - Top30 밖 게임을 홈페이지 주 게임 영역에 별도 카탈로그로 섞기
 - canonical Top30 순위를 홈페이지에서 임의 재정렬
 - 승격 전 Top30 후보를 공식 카드로 표시
+- APK 설치 컨트롤을 홈페이지 대문 상단에 다시 배치
 - 근거 없는 다운로드·플레이 링크 생성
 - 게임 본체/게임플레이 수정
 - 광고·과금·개인정보·유료 서비스 정책 자동 결정
@@ -134,17 +144,18 @@ Homepage Manager 작업 후 최소 다음을 검사한다.
 5. strict 점수 80 미만 또는 hard failure 후보가 표시되지 않는지 확인
 6. Top30 순서가 manifest 순서/strict 점수순과 일치하는지 확인
 7. Web 플레이/아트북 링크 동작 계약
-8. 상태 JSON 및 카탈로그 참조
-9. 서버 상태와 공개 상태의 차이 및 동기화 대상 제한
-10. 검증 없는 다운로드/플레이 표시 없음
-11. `manifest.webmanifest`, `install.html`, `sw.js`, `offline.html`, `command.html` 존재
-12. manifest `/command.html` start URL 보존
-13. install page의 service worker 등록 보존
-14. service worker 앱 셸과 command/offline fallback 보존
-15. command chat의 입력·첨부·전송·기기등록·service worker 등록 계약 보존
-16. 자동화가 `main`을 직접 쓰지 않고 브랜치/PR 경로만 사용하는지 확인
-17. PR 생성/병합 실패 시 게시 단계가 성공으로 종료되지 않는지 확인
-18. Top30/아트북 의미 상태가 같을 때 `updatedAt`만 달라지는 timestamp-only diff가 생성되지 않는지 확인
+8. APK 설치 컨트롤이 대문 상단이 아니라 개발팀/회사 영역 하단으로 이동하는지 확인
+9. 상태 JSON 및 카탈로그 참조
+10. 서버 상태와 공개 상태의 차이 및 동기화 대상 제한
+11. 검증 없는 다운로드/플레이 표시 없음
+12. `manifest.webmanifest`, `install.html`, `sw.js`, `offline.html`, `command.html` 존재
+13. manifest `/command.html` start URL 보존
+14. install page의 service worker 등록 보존
+15. service worker 앱 셸과 command/offline fallback 보존
+16. command chat의 입력·첨부·전송·기기등록·service worker 등록 계약 보존
+17. 자동화가 `main`을 직접 쓰지 않고 브랜치/PR 경로만 사용하는지 확인
+18. PR 생성/병합 실패 시 게시 단계가 성공으로 종료되지 않는지 확인
+19. Top30/아트북 의미 상태가 같을 때 `updatedAt`만 달라지는 timestamp-only diff가 생성되지 않는지 확인
 
 ## 사후 감독
 
@@ -154,6 +165,7 @@ Homepage Manager 작업 후 최소 다음을 검사한다.
 - 결과 파일 존재
 - self-QA PASS
 - 홈페이지 주 게임 구현이 canonical Top30과 일치
+- APK 설치 컨트롤이 대문 상단에 남아 있지 않음
 - 중앙정책/실제 상태와 표시 일치
 - 서버→홈페이지 동기화 후보가 검증된 파일만 포함
 - owner 고정 기능 회귀 없음
@@ -164,4 +176,4 @@ Director는 검증/차단/재작업 반환을 담당하며 Homepage Manager 결�
 
 ## 완료 정의
 
-`running`, `BRANCH_READY`, 후보 브랜치 생성은 완료 증거가 아니다. canonical Top30 → 홈페이지 주 게임 구현 실시간 미러 + self-QA + Director 사후 감독 + 필요 시 자동화 PR 생성/병합 결과가 있어야 완료로 본다. 의미 상태가 같은 timestamp-only 변경은 동기화 차이로 보지 않는다. PR 권한 또는 생성 실패로 main 반영이 끝나지 않았으면 명시적으로 BLOCK/FAIL 상태로 남긴다.
+`running`, `BRANCH_READY`, 후보 브랜치 생성은 완료 증거가 아니다. canonical Top30 → 홈페이지 주 게임 구현 실시간 미러 + APK 설치 컨트롤 비대문 배치 + self-QA + Director 사후 감독 + 필요 시 자동화 PR 생성/병합 결과가 있어야 완료로 본다. 의미 상태가 같은 timestamp-only 변경은 동기화 차이로 보지 않는다. PR 권한 또는 생성 실패로 main 반영이 끝나지 않았으면 명시적으로 BLOCK/FAIL 상태로 남긴다.
