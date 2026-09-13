@@ -1,5 +1,6 @@
 {
-  "version": 8,
+  "version": 10,
+  "validationSchemaVersion": 10,
   "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
   "target": "web",
   "status": "PASS",
@@ -75,6 +76,7 @@
   "sessionContract": {
     "pass": true,
     "minutes": 30,
+    "validatedMinutes": 30,
     "stageCount": 4,
     "completedStages": 4,
     "windows": [
@@ -97,7 +99,42 @@
     ],
     "shapePass": true,
     "depthPass": true,
-    "interactionPass": true
+    "interactionPass": true,
+    "stageGameplayPassed": true,
+    "stageResults": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      }
+    ]
   },
   "multiplayer": {
     "participants": 0,
@@ -285,26 +322,47 @@
     "sessionDepthMinutes=30",
     "sessionStages=4",
     "sessionStagesCompleted=4",
+    "sessionStageGameplay=true",
     "multiplayerParticipants=0"
   ],
-  "checkedAt": "2026-09-13T16:06:18.297Z",
+  "checkedAt": "2026-09-13T18:26:52.742Z",
   "sourcePath": "web-games/seed-roblox-story-rpg-adventur-blox-fruits",
-  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-story-rpg-adventur-blox-fruits-34767331143-1/",
+  "sourceIndexSha256": "52ea4223f0217b421385b64adffbe45e3f3c1c90d3c64098ef1c65fd9df623b9",
+  "sourceRevision": "d7c806dc30e498c1d6138a4a29d6f3c6d2ebd552",
+  "designBaselineSha256": "552c81d042dda3a3ce93ffe8147822267e60a0a66c8209122b3e6746f0e40ccc",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-story-rpg-adventur-blox-fruits-34774346570-1/",
   "screenshot": "/tmp/web-work/seed-roblox-story-rpg-adventur-blox-fruits/web-gameplay.png",
   "strictReviewPath": "/tmp/web-work/seed-roblox-story-rpg-adventur-blox-fruits/strict-implementation-review.json",
   "strictReview": {
     "verdict": "PASS",
     "totalScore": 100,
     "hardFailures": [],
-    "reviewedAt": "2026-09-13T16:06:18.438Z",
+    "improvementTargets": [],
+    "reviewedAt": "2026-09-13T18:26:52.909Z",
     "formalPassThreshold": 90,
     "homepageTestThreshold": 80
   },
+  "webStrictScore": 100,
+  "improvementTargets": [],
   "homepageTestEligible": true,
   "homepageTestVerdict": "PASS",
+  "formalReviewPassed": true,
   "formalImplementationPassed": true,
   "formalImplementationVerdict": "PASS",
-  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-story-rpg-adventur-blox-fruits-34767331143-1",
+  "promotionRevalidation": {
+    "required": true,
+    "independentRun": true,
+    "pass": true,
+    "minimumScore": 90,
+    "firstScore": 100,
+    "secondScore": 100,
+    "sourceHashMatch": true,
+    "baselineHashMatch": true,
+    "secondCheckedAt": "2026-09-13T18:26:56.302Z",
+    "secondSessionPass": true,
+    "error": null
+  },
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-story-rpg-adventur-blox-fruits-34774346570-1",
   "policyDocument": "COMPANY_FLOW.md",
   "requiredBeforeTargetPlatform": true
 }

@@ -4168,7 +4168,7 @@
     ],
     "actualGameCountUnlimited": true,
     "availableCount": 100,
-    "lastReplenishedAt": "2026-09-13T18:27:39.745Z"
+    "lastReplenishedAt": "2026-09-13T18:21:44.000Z"
   },
   "platformSets": {},
   "portfolioSeedRequests": [],
@@ -4197,6 +4197,25 @@
         "validatedRealEvidence": true,
         "reviewContextSource": "FROZEN_DESIGN_BASELINE",
         "recordedAt": "2026-09-13T16:06:56.350Z"
+      },
+      {
+        "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+        "seedId": "SEED-ROBLOX-STORY_RPG_ADVENTURE_RPG-001",
+        "reviewStage": "IMPLEMENTATION_STRICT_REVIEW",
+        "runtimeTarget": "web",
+        "verdict": "PASS",
+        "totalScore": 100,
+        "previousScore": null,
+        "scoreDelta": null,
+        "hardFailures": [],
+        "resolvedHardFailures": [],
+        "addedHardFailures": [],
+        "improvementTargets": [],
+        "learningSignal": "POSITIVE_SUCCESS",
+        "materialFamilies": [],
+        "validatedRealEvidence": true,
+        "reviewContextSource": "FROZEN_DESIGN_BASELINE",
+        "recordedAt": "2026-09-13T18:26:56.346Z"
       }
     ],
     "causeCounts": {},
@@ -4206,9 +4225,12 @@
       "designOpinionDoesNotBecomeTrainingSuccess": true,
       "validatedRuntimeRequiredForPreferenceSignals": true,
       "failuresAndFixesRetained": true,
+      "scoreDeltaAndFixOutcomeRetained": true,
+      "partial80To89IsImprovementSignalNotPositiveSuccess": true,
+      "positiveSuccessRequires90PlusAndHardGateClear": true,
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-13T16:06:56.351Z"
+    "updatedAt": "2026-09-13T18:26:56.346Z"
   }
 }

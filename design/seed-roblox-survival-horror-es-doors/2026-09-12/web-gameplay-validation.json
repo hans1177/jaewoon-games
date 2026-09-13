@@ -1,5 +1,6 @@
 {
-  "version": 8,
+  "version": 10,
+  "validationSchemaVersion": 10,
   "gameId": "seed-roblox-survival-horror-es-doors",
   "target": "web",
   "status": "PASS",
@@ -75,6 +76,7 @@
   "sessionContract": {
     "pass": true,
     "minutes": 30,
+    "validatedMinutes": 30,
     "stageCount": 4,
     "completedStages": 4,
     "windows": [
@@ -97,7 +99,42 @@
     ],
     "shapePass": true,
     "depthPass": true,
-    "interactionPass": true
+    "interactionPass": true,
+    "stageGameplayPassed": true,
+    "stageResults": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      }
+    ]
   },
   "multiplayer": {
     "participants": 0,
@@ -285,26 +322,47 @@
     "sessionDepthMinutes=30",
     "sessionStages=4",
     "sessionStagesCompleted=4",
+    "sessionStageGameplay=true",
     "multiplayerParticipants=0"
   ],
-  "checkedAt": "2026-09-13T16:05:41.793Z",
+  "checkedAt": "2026-09-13T18:25:20.698Z",
   "sourcePath": "web-games/seed-roblox-survival-horror-es-doors",
-  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-survival-horror-es-doors-34767331143-1/",
+  "sourceIndexSha256": "9f19f8b1b494b43895c964ac97e74da89a677aa9ba95c2149ca706eb3bb05e26",
+  "sourceRevision": "d7c806dc30e498c1d6138a4a29d6f3c6d2ebd552",
+  "designBaselineSha256": "8a063076804339906dbcc16c71436d52104b8c93ac15984c101f55b47c0fb747",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-survival-horror-es-doors-34774346570-1/",
   "screenshot": "/tmp/web-work/seed-roblox-survival-horror-es-doors/web-gameplay.png",
   "strictReviewPath": "/tmp/web-work/seed-roblox-survival-horror-es-doors/strict-implementation-review.json",
   "strictReview": {
     "verdict": "PASS",
     "totalScore": 100,
     "hardFailures": [],
-    "reviewedAt": "2026-09-13T16:05:41.951Z",
+    "improvementTargets": [],
+    "reviewedAt": "2026-09-13T18:25:20.821Z",
     "formalPassThreshold": 90,
     "homepageTestThreshold": 80
   },
+  "webStrictScore": 100,
+  "improvementTargets": [],
   "homepageTestEligible": true,
   "homepageTestVerdict": "PASS",
+  "formalReviewPassed": true,
   "formalImplementationPassed": true,
   "formalImplementationVerdict": "PASS",
-  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-survival-horror-es-doors-34767331143-1",
+  "promotionRevalidation": {
+    "required": true,
+    "independentRun": true,
+    "pass": true,
+    "minimumScore": 90,
+    "firstScore": 100,
+    "secondScore": 100,
+    "sourceHashMatch": true,
+    "baselineHashMatch": true,
+    "secondCheckedAt": "2026-09-13T18:25:24.080Z",
+    "secondSessionPass": true,
+    "error": null
+  },
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-survival-horror-es-doors-34774346570-1",
   "policyDocument": "COMPANY_FLOW.md",
   "requiredBeforeTargetPlatform": true
 }

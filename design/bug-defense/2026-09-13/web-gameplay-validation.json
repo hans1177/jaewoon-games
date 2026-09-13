@@ -1,5 +1,6 @@
 {
-  "version": 8,
+  "version": 10,
+  "validationSchemaVersion": 10,
   "gameId": "bug-defense",
   "target": "web",
   "status": "PASS",
@@ -75,6 +76,7 @@
   "sessionContract": {
     "pass": true,
     "minutes": 30,
+    "validatedMinutes": 30,
     "stageCount": 4,
     "completedStages": 4,
     "windows": [
@@ -97,7 +99,42 @@
     ],
     "shapePass": true,
     "depthPass": true,
-    "interactionPass": true
+    "interactionPass": true,
+    "stageGameplayPassed": true,
+    "stageResults": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      }
+    ]
   },
   "multiplayer": {
     "participants": 0,
@@ -285,26 +322,47 @@
     "sessionDepthMinutes=30",
     "sessionStages=4",
     "sessionStagesCompleted=4",
+    "sessionStageGameplay=true",
     "multiplayerParticipants=0"
   ],
-  "checkedAt": "2026-09-13T16:06:56.203Z",
+  "checkedAt": "2026-09-13T18:27:20.491Z",
   "sourcePath": "web-games/bug-defense",
-  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-bug-defense-34767331143-1/",
+  "sourceIndexSha256": "b9d200738484d8ffcd19fe56fd7f91a08c812c24eca4f4194de19f3f2236a779",
+  "sourceRevision": "d7c806dc30e498c1d6138a4a29d6f3c6d2ebd552",
+  "designBaselineSha256": "05f512584821d4771ffff8d25a75618cb18997cfbe8997f6e4aaa568b9f2156a",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-bug-defense-34774346570-1/",
   "screenshot": "/tmp/web-work/bug-defense/web-gameplay.png",
   "strictReviewPath": "/tmp/web-work/bug-defense/strict-implementation-review.json",
   "strictReview": {
     "verdict": "PASS",
     "totalScore": 100,
     "hardFailures": [],
-    "reviewedAt": "2026-09-13T16:06:56.350Z",
+    "improvementTargets": [],
+    "reviewedAt": "2026-09-13T18:27:20.640Z",
     "formalPassThreshold": 90,
     "homepageTestThreshold": 80
   },
+  "webStrictScore": 100,
+  "improvementTargets": [],
   "homepageTestEligible": true,
   "homepageTestVerdict": "PASS",
+  "formalReviewPassed": true,
   "formalImplementationPassed": true,
   "formalImplementationVerdict": "PASS",
-  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-bug-defense-34767331143-1",
+  "promotionRevalidation": {
+    "required": true,
+    "independentRun": true,
+    "pass": true,
+    "minimumScore": 90,
+    "firstScore": 100,
+    "secondScore": 100,
+    "sourceHashMatch": true,
+    "baselineHashMatch": true,
+    "secondCheckedAt": "2026-09-13T18:27:24.023Z",
+    "secondSessionPass": true,
+    "error": null
+  },
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-bug-defense-34774346570-1",
   "policyDocument": "COMPANY_FLOW.md",
   "requiredBeforeTargetPlatform": true
 }
