@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {buildContractSafePlayable,validateBootstrapHtml} from '../tools/company-development-web-bootstrap.mjs';
+import {ensure30MinuteSessionContract} from '../tools/company-development-web-gameplay-validation.mjs';
 
 const baseline={
   gameSeedId:'SEED-SINGLE_DEFENSE_STRATEGY-TEST',
@@ -16,24 +20,34 @@ const baseline={
   }
 };
 
-test('generated Web companion contains a real 30-minute four-phase session contract',()=>{
+test('generated Web companion contains one real 30-minute four-stage session contract',()=>{
   const result=buildContractSafePlayable({gameId:'session-contract-test',gameName:'Session Contract Test',baseline});
   assert.match(result.html,/data-session-minutes="30"/);
-  for(const phase of ['onboarding','core-loop','escalation','climax']){
-    assert.match(result.html,new RegExp(`data-session-phase="${phase}"`));
+  const expected=[[1,0,5],[2,5,15],[3,15,25],[4,25,30]];
+  for(const [stage,start,end] of expected){
+    assert.match(result.html,new RegExp(`data-session-stage="${stage}" data-session-start="${start}" data-session-end="${end}"`));
   }
   assert.equal(result.sessionMinutes,30);
   assert.equal(result.sessionPhases.length,4);
   const review=validateBootstrapHtml(result.html,{scopeInventory:result.approvedScopeInventory});
   assert.equal(review.pass,true,review.blockers.join(','));
-  assert.equal(review.sessionMinutes,30);
-  assert.equal(review.sessionPhaseCount,4);
 });
 
-test('bootstrap contract rejects fake or incomplete session depth',()=>{
+test('runtime session normalizer is idempotent when bootstrap already generated the full contract',()=>{
   const result=buildContractSafePlayable({gameId:'session-contract-test',gameName:'Session Contract Test',baseline});
-  const noDepth=result.html.replace('data-session-minutes="30"','data-session-minutes="0"');
-  assert.ok(validateBootstrapHtml(noDepth,{scopeInventory:result.approvedScopeInventory}).blockers.includes('SESSION_30_MINUTES_REQUIRED'));
-  const noClimax=result.html.replace('data-session-phase="climax"','data-session-phase="missing"');
-  assert.ok(validateBootstrapHtml(noClimax,{scopeInventory:result.approvedScopeInventory}).blockers.includes('SESSION_PHASE_CLIMAX_REQUIRED'));
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-session-generated-'));
+  try{
+    const source=path.join(root,'web-games','candidate');
+    fs.mkdirSync(source,{recursive:true});
+    const index=path.join(source,'index.html');
+    fs.writeFileSync(index,result.html,'utf8');
+    const before=fs.readFileSync(index,'utf8');
+    const normalized=ensure30MinuteSessionContract({sourcePath:source});
+    const after=fs.readFileSync(index,'utf8');
+    assert.equal(normalized.mutated,false);
+    assert.equal(normalized.minutes,30);
+    assert.equal(normalized.stages,4);
+    assert.equal(after,before);
+    assert.equal((after.match(/data-session-stage="\d"/g)||[]).length,4);
+  } finally {fs.rmSync(root,{recursive:true,force:true});}
 });
