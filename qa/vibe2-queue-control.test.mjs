@@ -119,11 +119,12 @@ test('retryable failure clears blocker and remains selectable until retry limit'
   assert.equal(failed.queue.tasks[0].status,'failed');
 });
 
-test('transport repair requeues only capped owner full-web rebuild failures once', () => {
+test('output-budget repair requeues capped owner full-web rebuild failures once even after v1 transport retry', () => {
   const queue=createVibeContinuousQueue({tasks:[
     {
       id:'full-web',gameId:'web',target:'web',sourceRoot:'web-games/web',goal:'FULL_WEB_GAME_REBUILD actual game',
-      ownerDirective:true,status:'failed',retries:3,maxRetries:2,blocker:'source-candidate-generation-failed',evidence:['old-failure']
+      ownerDirective:true,status:'failed',retries:3,maxRetries:2,blocker:'source-candidate-generation-failed',
+      evidence:['old-failure','repair-retry:vibe2-full-web-stream-http-v1']
     },
     {
       id:'normal-web',gameId:'normal',target:'web',sourceRoot:'web-games/normal',goal:'normal maintenance',
@@ -138,6 +139,7 @@ test('transport repair requeues only capped owner full-web rebuild failures once
   assert.equal(repaired.blocker,null);
   assert.equal(repaired.lastOutcome,'RETRY_AFTER_INFRA_REPAIR');
   assert.ok(repaired.evidence.includes('repair-retry:vibe2-full-web-stream-http-v1'));
+  assert.ok(repaired.evidence.includes('repair-retry:vibe2-full-web-output-budget-v2'));
   assert.equal(first.queue.tasks.find(t=>t.id==='normal-web').status,'failed');
   const second=recoverFixedFullWebTransportFailures(first.queue);
   assert.equal(second.recovered,0);
