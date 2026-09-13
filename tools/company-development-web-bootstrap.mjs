@@ -1,5 +1,5 @@
 // 파일명: tools/company-development-web-bootstrap.mjs
-// 잠긴 DESIGN_BASELINE의 승인 분량 전체를 모바일 Web companion으로 구현하고 검증 후보를 만든다.
+// 잠긴 DESIGN_BASELINE의 승인 분량 전체를 모바일 Web companion으로 구현하고 검증 후보를 만든다. 아트북은 Web 검증 이후 생성하므로 선행 입력으로 요구하지 않는다.
 import fs from 'node:fs';
 import path from 'node:path';
 import {Script} from 'node:vm';
@@ -141,8 +141,8 @@ export function buildContractSafePlayable({gameId='',gameName='',baseline={}}={}
   return {html,validationQuestion:`${identity||gameName||gameId}의 승인된 게임 분량 ${inventory.length}개가 각각 독립 동작으로 Web companion에 구현됐는가?`,implementationNotes:[`locked DESIGN_BASELINE genre=${genre}`,`full approved scope count=${inventory.length}`,'each approved scope compiled to a dedicated runtime handler','observable gameplay state changes per approved scope','first-user-gesture Web Audio synth music','no external assets, persistence, or network dependencies'],approvedScopeInventory:inventory,generationMode:'DETERMINISTIC_FULL_SCOPE_IMPLEMENTATION'};
 }
 
-export async function buildFirstPlayable({gameId,gameName,baseline,artbook,sourcePath,candidatePath,candidateId,sourceCommit,model}){
-  void artbook;void sourcePath;void sourceCommit;void model;
+export async function buildFirstPlayable({gameId,gameName,baseline,sourcePath,candidatePath,candidateId,sourceCommit,model}){
+  void sourcePath;void sourceCommit;void model;
   const inventory=deriveApprovedScopeInventory(baseline);
   const result=buildContractSafePlayable({gameId,gameName,baseline});
   const review=validateBootstrapHtml(result.html,{scopeInventory:inventory});
@@ -153,13 +153,13 @@ export async function buildFirstPlayable({gameId,gameName,baseline,artbook,sourc
 }
 
 async function main(){
-  const gameId=clean(arg('game-id')),gameName=clean(arg('game-name',gameId)),baselineFile=arg('baseline'),artbookFile=arg('artbook'),sourcePath=clean(arg('source-path')),candidateId=safeId(arg('candidate-id')),candidatePath=clean(arg('candidate-path')),sourceCommit=clean(arg('source-commit')),model=clean(arg('model',process.env.AUTONOMOUS_LOCAL_MODEL||'none')),evidenceFile=clean(arg('evidence'));
-  if(!gameId||!baselineFile||!artbookFile||!sourcePath||!candidateId||!candidatePath||!sourceCommit||!evidenceFile)throw new Error('required bootstrap argument missing');
+  const gameId=clean(arg('game-id')),gameName=clean(arg('game-name',gameId)),baselineFile=arg('baseline'),sourcePath=clean(arg('source-path')),candidateId=safeId(arg('candidate-id')),candidatePath=clean(arg('candidate-path')),sourceCommit=clean(arg('source-commit')),model=clean(arg('model',process.env.AUTONOMOUS_LOCAL_MODEL||'none')),evidenceFile=clean(arg('evidence'));
+  if(!gameId||!baselineFile||!sourcePath||!candidateId||!candidatePath||!sourceCommit||!evidenceFile)throw new Error('required bootstrap argument missing');
   if(!sourcePath.startsWith('web-games/')||!candidatePath.startsWith('web-games/.autonomous-candidates/'))throw new Error('invalid source/candidate path');
-  const baseline=readJson(baselineFile),artbook=readJson(artbookFile);
-  const {result,review,generation,approvedScopeInventory}=await buildFirstPlayable({gameId,gameName,baseline,artbook,sourcePath,candidatePath,candidateId,sourceCommit,model});
-  const evidence={version:5,candidateId,gameId,sourcePath,candidatePath,sourceCommit,candidateOnly:true,selfPromote:false,publicStableModified:false,paidApi:false,newProject:true,changedFiles:['index.html'],summary:`DEVELOPMENT_CONFIRMED mandatory full Web companion: ${result.validationQuestion}`,expectedEffect:'DESIGN_BASELINE 승인 분량 전체를 scope별 독립 게임 동작으로 구현하고 사용자 제스처 기반 음악과 함께 모바일 실제 상호작용으로 검증',tests:['company-development-web-bootstrap-contract','company-development-web-gameplay-validation','approved-scope-runtime-coverage','independent-candidate-browser-qa'],validationQuestion:result.validationQuestion,implementationNotes:result.implementationNotes,musicRuntimeRequired:true,fullApprovedScopeRequired:true,approvedScopeInventory,approvedScopeRequiredCount:approvedScopeInventory.length,model,modelUsed:generation.modelUsed,generationMode:generation.mode,modelAttempts:generation.modelAttempts,modelContractFailures:generation.modelContractFailures,bootstrapContract:review,createdAt:new Date().toISOString()};
+  const baseline=readJson(baselineFile);
+  const {result,review,generation,approvedScopeInventory}=await buildFirstPlayable({gameId,gameName,baseline,sourcePath,candidatePath,candidateId,sourceCommit,model});
+  const evidence={version:6,candidateId,gameId,sourcePath,candidatePath,sourceCommit,candidateOnly:true,selfPromote:false,publicStableModified:false,paidApi:false,newProject:true,changedFiles:['index.html'],summary:`DEVELOPMENT_CONFIRMED mandatory full Web companion: ${result.validationQuestion}`,expectedEffect:'DESIGN_BASELINE 승인 분량 전체를 scope별 독립 게임 동작으로 구현하고 사용자 제스처 기반 음악과 함께 모바일 실제 상호작용으로 검증',tests:['company-development-web-bootstrap-contract','company-development-web-gameplay-validation','approved-scope-runtime-coverage','independent-candidate-browser-qa'],validationQuestion:result.validationQuestion,implementationNotes:result.implementationNotes,musicRuntimeRequired:true,fullApprovedScopeRequired:true,approvedScopeInventory,approvedScopeRequiredCount:approvedScopeInventory.length,preWebArtbookRequired:false,model,modelUsed:generation.modelUsed,generationMode:generation.mode,modelAttempts:generation.modelAttempts,modelContractFailures:generation.modelContractFailures,bootstrapContract:review,createdAt:new Date().toISOString()};
   writeJson(evidenceFile,evidence);
-  console.log('DEVELOPMENT_WEB_BOOTSTRAP=PASS');console.log(`GAME_ID=${gameId}`);console.log(`CANDIDATE_ID=${candidateId}`);console.log(`BOOTSTRAP_GENERATION_MODE=${generation.mode}`);console.log(`APPROVED_SCOPE_REQUIRED=${approvedScopeInventory.length}`);console.log('FULL_APPROVED_SCOPE_REQUIRED=YES');console.log('MUSIC_RUNTIME_REQUIRED=YES');console.log('MODEL_USED=NO');console.log('PAID_API=NO');
+  console.log('DEVELOPMENT_WEB_BOOTSTRAP=PASS');console.log(`GAME_ID=${gameId}`);console.log(`CANDIDATE_ID=${candidateId}`);console.log(`BOOTSTRAP_GENERATION_MODE=${generation.mode}`);console.log(`APPROVED_SCOPE_REQUIRED=${approvedScopeInventory.length}`);console.log('FULL_APPROVED_SCOPE_REQUIRED=YES');console.log('PRE_WEB_ARTBOOK_REQUIRED=NO');console.log('MUSIC_RUNTIME_REQUIRED=YES');console.log('MODEL_USED=NO');console.log('PAID_API=NO');
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){main().catch(error=>{console.error(error.stack||error.message);process.exitCode=1;});}

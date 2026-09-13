@@ -24,7 +24,9 @@ test('COMPANY_FLOW remains the single machine-oriented production policy source'
   assert.match(flow,/ownerInstructionOverridesPolicy: true/);
   assert.match(flow,/passMinimum: 80/);
   assert.match(flow,/implementationPassMinimum: 90/);
-  assert.match(flow,/designOnlyArtbookBeforePromotionForbidden: true/);
+  assert.match(flow,/designOnlyArtbookForbidden: true/);
+  assert.match(flow,/preWebArtbookForbidden: true/);
+  assert.match(flow,/createOnlyAfterWebStrictReview: true/);
   assert.match(flow,/blockingBudgetMinutes: 10/);
   assert.match(agents,/제작 정책 원본은 \*\*`COMPANY_FLOW\.md` 하나\*\*/);
 });
@@ -62,8 +64,9 @@ test('GAME_SEED mirrors the current historical-bootstrap dynamic-portfolio and s
   assert.match(flow,/projectMaySelectAnyAllowedPlatform: true/);
 });
 
-test('DESIGN_ONLY stops at strict design baseline; artbook begins only after 80-point promotion',()=>{
+test('DESIGN_ONLY stops at strict design baseline; Web strict review precedes artbook and native dispatch',()=>{
   const design=directive.classes.DESIGN_ONLY;
+  const development=directive.classes.DEVELOPMENT_CONFIRMED;
   assert.deepEqual(design.requiredFlow,[
     'GAME_SEED','GAME_DESIGNER_DRAFT','FIVE_DISTINCT_DEPARTMENT_LEADS',
     'DEPARTMENT_LEAD_PLUS_ASSISTANT_MULTIMODEL_REVIEW','DEPARTMENT_LEAD_INTERNAL_CONSENSUS',
@@ -78,9 +81,18 @@ test('DESIGN_ONLY stops at strict design baseline; artbook begins only after 80-
   assert.equal(directive.strictReview.implementationPassMinimum,90);
   assert.equal(directive.strictReview.excellentDesignMinimum,90);
   assert.equal(directive.ai.artbookEditor.startsAfterDesignPromotion,true);
+  assert.equal(directive.ai.artbookEditor.startsAfterWebStrictReview,true);
+  assert.equal(directive.ai.artbookEditor.minimumWebStrictScore,80);
   assert.equal(directive.ai.artbookEditor.startsAtClass,'DEVELOPMENT_CONFIRMED');
-  assert.ok(directive.classes.DEVELOPMENT_CONFIRMED.requiredFlow.includes('POST_PROMOTION_ARTBOOK'));
-  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.postPromotionArtbookRequiredBeforeWeb,true);
+  assert.ok(development.requiredFlow.includes('WEB_STRICT_REVIEW'));
+  assert.ok(development.requiredFlow.includes('POST_WEB_ARTBOOK_IF_SCORE_80_OR_HIGHER'));
+  assert.ok(development.requiredFlow.includes('HOMEPAGE_TEST_CANDIDATE_IF_ARTBOOK_READY'));
+  assert.ok(development.requiredFlow.includes('TARGET_PLATFORM_90_POINT_GATE'));
+  assert.equal(development.preWebArtbookForbidden,true);
+  assert.equal(development.postWebArtbookRequiredForHomepage,true);
+  assert.equal(development.webStrictHomepageMinimum,80);
+  assert.equal(development.formalImplementationMinimumForTargetPlatformDispatch,90);
+  assert.equal(development.artbookFailureBlocksHomepageRegistrationOnly,true);
   assert.equal(directive.ai.vibe2.startsAtClass,'DEVELOPMENT_CONFIRMED');
   assert.equal(directive.ai.vibe2.designOnlyActive,false);
   assert.equal(Object.hasOwn(directive.ai.vibe2.roleByClass,'DESIGN_ONLY'),false);
@@ -155,7 +167,12 @@ test('every game requires a full approved-scope Web companion before selected ta
   assert.equal(development.approvedScopeCompletionRequired,true);
   assert.equal(development.musicValidationRequired,true);
   assert.equal(development.webCandidateMustPassBeforeTargetPlatformDispatch,true);
-  for(const token of ['FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP','MUSIC_RUNTIME_BIND','WEB_GAMEPLAY_MUSIC_AND_APPROVED_SCOPE_VALIDATION','TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_GAMEPLAY_VALIDATION','TARGET_PLATFORM_TECHNICAL_VALIDATION'])assert.ok(development.requiredFlow.includes(token),token);
+  assert.equal(development.webCandidateFormalImplementationPassRequiredBeforeTargetPlatformDispatch,true);
+  assert.equal(development.webStrictHomepageMinimum,80);
+  assert.equal(development.formalImplementationMinimumForTargetPlatformDispatch,90);
+  assert.equal(development.artbookAfterWebStrictReview,true);
+  assert.equal(development.artbookFailureBlocksHomepageRegistrationOnly,true);
+  for(const token of ['FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP','MUSIC_RUNTIME_BIND','WEB_GAMEPLAY_MUSIC_AND_APPROVED_SCOPE_VALIDATION','WEB_STRICT_REVIEW','POST_WEB_ARTBOOK_IF_SCORE_80_OR_HIGHER','TARGET_PLATFORM_90_POINT_GATE','TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_GAMEPLAY_VALIDATION','TARGET_PLATFORM_TECHNICAL_VALIDATION'])assert.ok(development.requiredFlow.includes(token),token);
   for(const token of ['REAL_WEB_GAMEPLAY_PASS','APPROVED_SCOPE_FULLY_IMPLEMENTED','MUSIC_RUNTIME_PASS','REAL_TARGET_PLATFORM_GAMEPLAY_PASS','REAL_TARGET_PLATFORM_TECHNICAL_PASS'])assert.ok(development.baselineReadyRequires.includes(token),token);
   assert.equal(development.developmentMusic.firstUserGestureUnlockRequired,true);
   assert.equal(development.developmentMusic.muteControlRequired,true);

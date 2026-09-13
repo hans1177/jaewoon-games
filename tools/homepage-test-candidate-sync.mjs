@@ -1,11 +1,11 @@
-// 단일 Homepage Manager가 company-runtime의 검증된 Web 후보 중 상위 20개만 main 테스트 선반 자산으로 동기화한다.
+// 단일 Homepage Manager가 company-runtime의 검증된 Web 후보 중 80점 이상 상위 30개만 main 테스트 선반 자산으로 동기화한다.
 import fs from 'node:fs';
-import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 
 const runtimeRef=String(process.env.COMPANY_RUNTIME_REF||'origin/company-runtime').trim();
 const manifestFile=String(process.env.HOMEPAGE_TEST_CANDIDATE_OUTPUT||'test-game-candidates.json').trim();
-const limit=20;
+const limit=30;
+const minimumScore=80;
 const clean=v=>String(v??'').trim();
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const showText=file=>execFileSync('git',['show',`${runtimeRef}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});
@@ -13,7 +13,7 @@ const showJson=(file,fallback=null)=>{try{return JSON.parse(showText(file));}cat
 const existsRuntime=file=>{try{execFileSync('git',['cat-file','-e',`${runtimeRef}:${file}`],{stdio:'ignore'});return true;}catch{return false;}};
 const checkoutRuntime=file=>execFileSync('git',['checkout',runtimeRef,'--',file],{stdio:'inherit'});
 const scoreOf=evidence=>Number(evidence?.strictReview?.totalScore);
-const strictPass=evidence=>evidence?.homepageTestEligible===true&&evidence?.strictReview?.verdict==='PASS'&&Number.isFinite(scoreOf(evidence))&&scoreOf(evidence)>=90&&Array.isArray(evidence?.strictReview?.hardFailures)&&evidence.strictReview.hardFailures.length===0;
+const homepagePass=evidence=>evidence?.homepageTestEligible===true&&Number.isFinite(scoreOf(evidence))&&scoreOf(evidence)>=minimumScore&&Array.isArray(evidence?.strictReview?.hardFailures)&&evidence.strictReview.hardFailures.length===0;
 
 const queue=showJson('development-queue.json',{items:[]});
 const runtimeCatalog=showJson('game-catalog.json',{games:[]});
@@ -27,7 +27,7 @@ for(const item of queue.items||[]){
   const artbookSource=clean(item.artbookSource||`artbook-submissions/${gameId}/current.json`);
   const evidencePath=clean(item.webValidationEvidencePath);
   if(!evidencePath||!existsRuntime(evidencePath)||!existsRuntime(`${webSourcePath}/index.html`)||!existsRuntime(artbookSource))continue;
-  const evidence=showJson(evidencePath,null);if(!strictPass(evidence))continue;
+  const evidence=showJson(evidencePath,null);if(!homepagePass(evidence))continue;
   const game=catalogById.get(gameId)||{};
   candidates.push({
     id:gameId,
@@ -46,7 +46,9 @@ for(const item of queue.items||[]){
     artbookPath:`/artbook-viewer.html?game=${encodeURIComponent(gameId)}`,
     artbookSource,
     evidencePath,
-    strictReviewVerdict:'PASS',
+    strictReviewVerdict:clean(evidence?.strictReview?.verdict||''),
+    homepageTestVerdict:'PASS',
+    formalImplementationPassed:evidence?.formalImplementationPassed===true,
     strictReviewHardFailures:[],
     validatedAt:evidence.checkedAt||item.webValidationPassedAt,
   });
@@ -74,13 +76,14 @@ registry.updatedAt=new Date().toISOString();
 fs.writeFileSync('game-artbooks.json',JSON.stringify(registry,null,2)+'\n');
 
 const manifest={
-  version:3,updatedAt:new Date().toISOString(),policyDocument:'COMPANY_FLOW.md',officialCardRegistrationRequiresPromotionPass:true,
-  homepageTestShelf:{limit,order:'STRICT_REVIEW_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresArtbook:true,requiresStrictPass:true,officialCard:false,promotionRequiredForOfficialCard:true},
+  version:4,updatedAt:new Date().toISOString(),policyDocument:'COMPANY_FLOW.md',officialCardRegistrationRequiresPromotionPass:true,
+  homepageTestShelf:{limit,minimumScore,order:'STRICT_IMPLEMENTATION_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresArtbook:true,hardGatesRequired:true,officialCard:false,promotionRequiredForOfficialCard:true},
   candidates:selected,
 };
 fs.writeFileSync(manifestFile,JSON.stringify(manifest,null,2)+'\n');
 console.log(`HOMEPAGE_TEST_CANDIDATE_COUNT=${selected.length}`);
 console.log(`HOMEPAGE_TEST_CANDIDATE_IDS=${selected.map(x=>x.gameId).join(',')}`);
-console.log('HOMEPAGE_TEST_CANDIDATE_LIMIT=20');
-console.log('HOMEPAGE_TEST_ORDER=STRICT_REVIEW_SCORE_DESC');
-console.log('HOMEPAGE_TEST_REQUIRES=WEB+ARTBOOK+STRICT_PASS');
+console.log('HOMEPAGE_TEST_CANDIDATE_LIMIT=30');
+console.log('HOMEPAGE_TEST_MINIMUM_SCORE=80');
+console.log('HOMEPAGE_TEST_ORDER=STRICT_IMPLEMENTATION_SCORE_DESC');
+console.log('HOMEPAGE_TEST_REQUIRES=WEB+POST_WEB_ARTBOOK+80_SCORE+NO_HARD_FAILURE');

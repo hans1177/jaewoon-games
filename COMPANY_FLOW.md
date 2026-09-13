@@ -115,16 +115,24 @@ ownerCurrentProductionContract:
       structural: REMOVE_TEST_CANDIDATE_AND_REBUILD_FROM_APPROVED_DESIGN
       automaticDropOnFirstFailureForbidden: true
   artbookLifecycle:
-    designOnlyArtbookBeforePromotionForbidden: true
-    createOnlyAfterDesignPromotion: true
-    requiredStage: DEVELOPMENT_CONFIRMED_PRE_WEB
-    postPromotionArtbookMustBindApprovedDesignBaseline: true
-    artbookFailureBlocksWebDevelopmentButMustNotUndoDesignPromotion: true
+    designOnlyArtbookForbidden: true
+    preWebArtbookForbidden: true
+    createOnlyAfterWebStrictReview: true
+    requiredStage: POST_WEB_STRICT_REVIEW_PRE_HOMEPAGE
+    webStrictReviewScoreMinimumForArtbook: 80
+    postWebArtbookMustBindApprovedDesignAndValidatedWebBuild: true
+    artbookFailureMustNotUndoDesignOrWebPass: true
+    artbookFailureBlocksHomepageRegistrationOnly: true
   homepageTesting:
     ownerMayTestBeforeFinalPromotion: true
     prePromotionDisplay: COMPACT_TEST_GAME_SHELF_ONLY
     prePromotionOfficialGameCardForbidden: true
     testCandidateMustBeClearlyMarkedNotPass: true
+    webStrictScoreMinimum: 80
+    hardGatesMustPass: true
+    maxVisibleTestCandidates: 30
+    ranking: STRICT_IMPLEMENTATION_SCORE_DESC
+    artbookRequiredForHomepageRegistration: true
     officialCardRegistrationRequiresStrictPassAndPromotion: true
     reviseCandidateReturnsToSameCompactTestShelfAfterFix: true
   productionThroughput:
@@ -261,7 +269,7 @@ production:
       - AUXILIARY_LEARNING_EVIDENCE
     featureParity: FULL_APPROVED_GAMEPLAY_SCOPE_EQUIVALENT_OR_DOCUMENTED_PLATFORM_ADAPTATION
     silentFeatureOmissionForbidden: true
-    webBuildIsNotNativePlatformSubstitute: true
+    webBuildIsNotNativeDevelopmentSubstitute: true
     nativePlatformReleaseStillRequiresNativeEvidence: true
   approvedScopeCompletion:
     mode: FULL_APPROVED_DESIGN_SCOPE_REQUIRED
@@ -1078,7 +1086,6 @@ flows:
       - ONE_LEAD_REBUTTAL_ROUND
       - GAME_DESIGNER_REVISION
       - DESIGN_BASELINE_GATE
-      - ARTBOOK_EDITOR_CORE_STRATEGY
     baselineReadyRequires:
       - GAME_SEED_COMPLETE
       - DISTINCT_GAME_IDENTITY
@@ -1106,6 +1113,11 @@ flows:
     approvedScopeCompletionRequired: true
     musicValidationRequired: true
     webCandidateMustPassBeforeTargetPlatformDispatch: true
+    webCandidateFormalImplementationPassRequiredBeforeTargetPlatformDispatch: true
+    webStrictHomepageMinimum: 80
+    formalImplementationMinimumForTargetPlatformDispatch: 90
+    artbookAfterWebStrictReview: true
+    artbookFailureBlocksHomepageRegistrationOnly: true
     webCandidatePublicPromotionRequiresValidationPass: true
     aiMayInventValidationPass: false
     webSmokeCountsAsGameplayValidation: false
@@ -1115,8 +1127,12 @@ flows:
       - FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP
       - MUSIC_RUNTIME_BIND
       - WEB_GAMEPLAY_MUSIC_AND_APPROVED_SCOPE_VALIDATION
+      - WEB_STRICT_REVIEW
+      - POST_WEB_ARTBOOK_IF_SCORE_80_OR_HIGHER
+      - HOMEPAGE_TEST_CANDIDATE_IF_ARTBOOK_READY
       - WEB_EVIDENCE_DEPARTMENT_MEETING
       - GAME_DESIGNER_WEB_REVISION
+      - TARGET_PLATFORM_90_POINT_GATE
       - TARGET_PLATFORM_SOURCE_BIND
       - TARGET_PLATFORM_GAMEPLAY_VALIDATION
       - TARGET_PLATFORM_TECHNICAL_VALIDATION
@@ -1160,6 +1176,8 @@ flows:
       - WAITING_WEB_PLAYABLE
       - WAITING_WEB_GAMEPLAY_VALIDATION
       - WAITING_WEB_GAMEPLAY_REVALIDATION
+      - WAITING_POST_WEB_ARTBOOK
+      - WAITING_WEB_STRICT_IMPROVEMENT
       - WAITING_TARGET_PLATFORM_VALIDATION
       - WAITING_TARGET_PLATFORM_REVALIDATION
       - WAITING_REVALIDATION
