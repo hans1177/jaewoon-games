@@ -1,5 +1,5 @@
 // 파일명: tools/design-only-promotion-sync.mjs
-// DESIGN_BASELINE_READY 게임을 DEVELOPMENT_CONFIRMED로 승격하고 필수 Web 플레이 검증 큐에 연결한다.
+// DESIGN_BASELINE_READY 게임을 DEVELOPMENT_CONFIRMED로 승격하고 필수 Web 플레이/음악 검증 큐에 연결한다.
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
@@ -71,7 +71,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     seed.promotion={
       from:'DESIGN_ONLY',to:'DEVELOPMENT_CONFIRMED',reason:'DESIGN_BASELINE_READY',
       selectedPlatform,targetSourcePath,webSourcePath,
-      requiredFirstValidation:'WEB_GAMEPLAY',
+      requiredFirstValidation:'WEB_GAMEPLAY_AND_MUSIC',
       designBaselineSource:artbook.sourceDesign||null,
       artbookSource:`artbook-submissions/${gameId}/current.json`,
       promotedAt:seed?.promotion?.promotedAt||stamp,
@@ -83,7 +83,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
         id:`SEED-${seed.seedId||gameId}`,slug:gameId,name:seed.gameName||gameId,
         sourcePath:webSourcePath,webArchivePath:webSourcePath,
         protectedValues:['core-loop','design-baseline','save-meaning'],
-        developmentFocus:{scores:{playability:0,distinctiveness:0,developmentEfficiency:0,scalability:0,lowBlockage:0},total:0,evidenceNote:'승격 직후. Web 플레이 및 선택 플랫폼 실검증 근거 수집 전.'},
+        developmentFocus:{scores:{playability:0,distinctiveness:0,developmentEfficiency:0,scalability:0,lowBlockage:0},total:0,evidenceNote:'승격 직후. Web 플레이/음악 검증 및 선택 플랫폼 실검증 근거 수집 전.'},
       };
       portfolio.projects.push(project);
     }
@@ -93,7 +93,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
       targetEngine:selectedPlatform,selectedPlatform,targetPlatform:selectedPlatform,targetSourcePath,
       sourcePath:project.webValidationPassedAt?targetSourcePath:webSourcePath,
       webArchivePath:project.webArchivePath||webSourcePath,
-      webValidationRequired:true,musicValidationRequired:false,
+      webValidationRequired:true,musicValidationRequired:true,
       designBaselineSource:artbook.sourceDesign||null,designArtbookSource:`artbook-submissions/${gameId}/current.json`,
     });
 
@@ -105,8 +105,8 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     Object.assign(game,{
       homepageCategory:'development-confirmed',productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'DESIGN_BASELINE_READY',
       productionTier:2,productionTierSource:'DISPLAY_ALIAS_FROM_PRODUCTION_CLASS',selectedPlatform,targetPlatform:selectedPlatform,targetSourcePath,productionTarget:selectedPlatform,
-      homepageStage:'2분류 개발확정 · Web 플레이 검증 준비',
-      homepageRecentWork:`DESIGN_BASELINE_READY 통과. Web 실제 플레이 검증 후 ${selectedPlatform} 검증으로 진행.`,
+      homepageStage:'2분류 개발확정 · Web 플레이/음악 검증 준비',
+      homepageRecentWork:`DESIGN_BASELINE_READY 통과. Web 실제 플레이와 음악 런타임 검증 후 ${selectedPlatform} 검증으로 진행.`,
       homepageWebPlayable:Boolean(game.hasWebArchive),homepageArtbookPath:game.homepageArtbookPath||`/artbook-viewer.html?game=${encodeURIComponent(gameId)}`,
     });
 
