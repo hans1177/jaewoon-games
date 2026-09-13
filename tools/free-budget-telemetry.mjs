@@ -15,19 +15,29 @@ const arg=(name,fallback=null)=>{
   return hit?hit.slice(prefix.length):fallback;
 };
 const finite=(value,fallback=0)=>Number.isFinite(Number(value))?Number(value):fallback;
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,Math.max(0,finite(ms,0))));
 
-export async function fetchRepositoryVisibility(repository,{fetchImpl=globalThis.fetch}={}){
+export async function fetchRepositoryVisibility(repository,{fetchImpl=globalThis.fetch,token=process.env.GITHUB_TOKEN||'',attempts=3,retryDelayMs=250}={}){
   if(typeof fetchImpl!=='function')return 'unknown';
-  try{
-    const response=await fetchImpl(`https://api.github.com/repos/${repository}`,{
-      headers:{'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2026-03-10'},
-    });
-    if(!response?.ok)return 'unknown';
-    const data=await response.json();
-    if(data?.visibility==='public'||data?.private===false)return 'public';
-    if(data?.visibility==='private'||data?.private===true)return 'private';
-    return 'unknown';
-  }catch{return 'unknown';}
+  const maxAttempts=Math.max(1,Math.floor(finite(attempts,3)));
+  for(let attempt=1;attempt<=maxAttempts;attempt+=1){
+    try{
+      const headers={
+        'Accept':'application/vnd.github+json',
+        'X-GitHub-Api-Version':'2026-03-10',
+        'User-Agent':'jaewoon-vibe2-free-budget-telemetry',
+      };
+      if(token)headers.Authorization=`Bearer ${token}`;
+      const response=await fetchImpl(`https://api.github.com/repos/${repository}`,{headers});
+      if(response?.ok){
+        const data=await response.json();
+        if(data?.visibility==='public'||data?.private===false)return 'public';
+        if(data?.visibility==='private'||data?.private===true)return 'private';
+      }
+    }catch{}
+    if(attempt<maxAttempts)await sleep(retryDelayMs*attempt);
+  }
+  return 'unknown';
 }
 
 export function buildOperationalFreeBudgetTelemetry({
@@ -131,7 +141,7 @@ async function main(){
   const portfolio=readJson('autonomous-portfolio.json',{});
   const repository=arg('repository',process.env.GITHUB_REPOSITORY||'hans1177/jaewoon-games');
   const verifyRepo=String(arg('verify-public-repo','false'))==='true';
-  const visibility=verifyRepo?await fetchRepositoryVisibility(repository):arg('visibility',process.env.JAEWOON_REPO_VISIBILITY||'unknown');
+  const visibility=verifyRepo?await fetchRepositoryVisibility(repository,{token:process.env.GITHUB_TOKEN||''}):arg('visibility',process.env.JAEWOON_REPO_VISIBILITY||'unknown');
   const visibilitySource=verifyRepo?'GITHUB_REPO_API':arg('visibility-source','UNVERIFIED');
   const telemetry=buildOperationalFreeBudgetTelemetry({
     repository,
