@@ -146,12 +146,12 @@
       "slug": "survival",
       "name": "나의 생존기",
       "sourcePath": "web-games/survival",
-      "productionClass": "RELEASE_CONFIRMED",
+      "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "RELEASE_CONFIRMED",
+      "profileStatus": "DESIGN_ONLY",
       "selectedPlatform": "UNITY",
-      "mode": "UNITY_NEXT",
-      "targetEngine": "unity-android",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "targetPlatformReady": false,
       "unityProjectReady": false,
       "developmentFocus": {
@@ -178,13 +178,13 @@
       "slug": "insect-survival",
       "name": "곤충 생존기",
       "sourcePath": "web-games/insect-survival",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "FULL_WEB_COMPANION_TARGET_PLATFORM_SELECTION_REQUIRED",
-      "targetEngine": "platform-selection-required",
+      "profileStatus": "DESIGN_ONLY",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "targetPlatformReady": false,
-      "webPurpose": "FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE",
+      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -199,12 +199,7 @@
       "protectedValues": [
         "save-meaning",
         "core-loop"
-      ],
-      "webCompanionRequired": true,
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "webEvidenceMayReplaceNativePlatformEvidence": false,
-      "webGameplayValidationRequired": true,
-      "musicValidationRequired": true
+      ]
     },
     {
       "id": "P0003",
@@ -238,13 +233,13 @@
       "slug": "bug-defense",
       "name": "곤충 디펜스",
       "sourcePath": "web-games/bug-defense",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "FULL_WEB_COMPANION_TARGET_PLATFORM_SELECTION_REQUIRED",
-      "targetEngine": "platform-selection-required",
+      "profileStatus": "DESIGN_ONLY",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "targetPlatformReady": false,
-      "webPurpose": "FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE",
+      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -259,12 +254,7 @@
       "protectedValues": [
         "save-meaning",
         "core-loop"
-      ],
-      "webCompanionRequired": true,
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "webEvidenceMayReplaceNativePlatformEvidence": false,
-      "webGameplayValidationRequired": true,
-      "musicValidationRequired": true
+      ]
     },
     {
       "id": "P0005",
@@ -458,27 +448,25 @@
       "membershipInfluence": false,
       "adjusted": false,
       "distinctFamilies": [
-        "SURVIVAL",
-        "DEFENSE",
         "RPG"
       ]
     },
     "counts": {
-      "releaseConfirmed": 2,
-      "developmentConfirmed": 3,
-      "designOnly": 7
+      "releaseConfirmed": 1,
+      "developmentConfirmed": 1,
+      "designOnly": 10
     },
     "releaseConfirmedGameIds": [
-      "P0001",
       "P0006"
     ],
     "developmentConfirmedGameIds": [
-      "P0002",
-      "P0004",
       "P0009"
     ],
     "designOnlyGameIds": [
+      "P0001",
+      "P0002",
       "P0003",
+      "P0004",
       "P0005",
       "P0007",
       "P0008",
