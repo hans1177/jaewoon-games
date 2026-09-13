@@ -1,8 +1,0 @@
-JUNGLE STABILITY CHECKS
-- East movement owns input after x >= 1360 and clears village/core held keys.
-- Jungle entry only allowed after southernJungle.unlocked.
-- Jungle bounds: x 1435..2820, y <= 2025.
-- Return to main island hands held keys back to core under x < 1350.
-- Empty army cannot command a boar.
-- Mobile rendering caps DPR at 1.5 and paints sea waves only around camera.
-- Render chain is capped near 30 FPS while simulation remains independent.
