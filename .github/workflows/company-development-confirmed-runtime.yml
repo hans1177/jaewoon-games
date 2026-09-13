@@ -307,20 +307,39 @@ jobs:
           git config user.name 'jaewoon-development-web-runtime'
           git config user.email 'actions@users.noreply.github.com'
           git checkout -B development-web-persist "origin/$COMPANY_RUNTIME_BRANCH"
-          cp -R /tmp/web-batch/persist/. . 2>/dev/null || true
+          while IFS= read -r -d '' persist_dir; do
+            cp -R "$persist_dir"/. .
+          done < <(find /tmp/web-batch -type d -name persist -print0)
           node <<'NODE'
           const fs=require('fs');
           const path=require('path');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
           const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
-          const resultDir='/tmp/web-batch/results';
-          const results=[];
-          if(fs.existsSync(resultDir))for(const name of fs.readdirSync(resultDir).filter(x=>x.endsWith('.json')).sort())results.push(JSON.parse(fs.readFileSync(path.join(resultDir,name),'utf8')));
-          const byId=new Map(results.map(x=>[x.gameId,x]));
+          const root='/tmp/web-batch';
+          const resultFiles=[];
+          const walk=dir=>{
+            for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+              const full=path.join(dir,entry.name);
+              if(entry.isDirectory()){walk(full);continue;}
+              if(!entry.isFile()||!entry.name.endsWith('.json'))continue;
+              try{
+                const parsed=JSON.parse(fs.readFileSync(full,'utf8').replace(/^\uFEFF/,''));
+                if(typeof parsed?.gameId==='string'&&typeof parsed?.pass==='boolean'&&parsed?.update&&typeof parsed.update==='object')resultFiles.push({file:full,result:parsed});
+              }catch{}
+            }
+          };
+          if(fs.existsSync(root))walk(root);
+          const byId=new Map();
+          for(const {result} of resultFiles)byId.set(result.gameId,result);
+          const results=[...byId.values()];
+          console.log(`WEB_WORKER_RESULT_FILES=${resultFiles.length}`);
+          console.log(`WEB_WORKER_RESULT_GAMES=${results.length}`);
           for(const target of expected){
             if(byId.has(target.gameId))continue;
             const stamp=new Date().toISOString();
-            results.push({gameId:target.gameId,pass:false,update:{status:'ACTIVE',currentStep:'WEB_GAMEPLAY_AND_MUSIC_VALIDATION',canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION',sourcePath:target.webSourcePath,webSourcePath:target.webSourcePath,webValidationRequired:true,musicValidationRequired:true,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,routingBlockers:['web-gameplay-music:web-worker-result-missing'],webValidationLastAttemptAt:stamp,updatedAt:stamp}});
+            const missing={gameId:target.gameId,pass:false,update:{status:'ACTIVE',currentStep:'WEB_GAMEPLAY_AND_MUSIC_VALIDATION',canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION',sourcePath:target.webSourcePath,webSourcePath:target.webSourcePath,webValidationRequired:true,musicValidationRequired:true,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,routingBlockers:['web-gameplay-music:web-worker-result-missing'],webValidationLastAttemptAt:stamp,updatedAt:stamp}};
+            results.push(missing);
+            byId.set(target.gameId,missing);
           }
           let passCount=0,failCount=0;
           for(const result of results){const item=(queue.items||[]).find(x=>x.gameId===result.gameId);if(!item)throw new Error(`queue item missing: ${result.gameId}`);Object.assign(item,result.update);if(result.pass===true)passCount++;else failCount++;}
