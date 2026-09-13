@@ -6,6 +6,8 @@ const workflow=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
 const operations=fs.readFileSync('HOMEPAGE_OPERATIONS.md','utf8');
 const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
 const testSync=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
+const homepageEntry=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+const homepageCore=fs.readFileSync('assets/homepage-enhancements-core.js','utf8');
 
 const section=(from,to)=>{
   const start=workflow.indexOf(from);
@@ -54,6 +56,34 @@ test('verified runtime status/catalog join the same supervised publication candi
   assert.ok(manage.includes("== 'Company Status Sync'"));
   assert.ok(manage.includes('HOMEPAGE_PUBLIC_STATUS_SYNC=YES'));
   assert.ok(manage.includes('Prepare verified runtime status/catalog candidate'));
+});
+
+test('homepage primary game implementation is canonical Top30, not the legacy catalog',()=>{
+  assert.ok(operations.includes('홈페이지 게임 구현 = Top30'));
+  assert.ok(operations.includes('홈페이지의 **주 게임 구현 영역은 canonical Web Top30 그 자체**'));
+  assert.ok(homepageCore.includes('const TOP30_LIMIT=30;'));
+  assert.ok(homepageCore.includes('const TOP30_MIN_SCORE=80;'));
+  assert.ok(homepageCore.includes("getJson('/test-game-candidates.json')"));
+  assert.ok(homepageCore.includes("wrapper.id='homeTop30GameCenter'"));
+  assert.ok(homepageCore.includes('class="foldGameCard top30GameCard"'));
+  assert.ok(homepageCore.includes('data-homepage-game-source="CANONICAL_TOP30"'));
+  assert.ok(homepageCore.includes("homePrimaryGameSource='CANONICAL_TOP30'"));
+  assert.ok(homepageEntry.includes("card.classList.contains('top30GameCard')"));
+  assert.ok(homepageEntry.includes("card.dataset?.homepageGameSource==='CANONICAL_TOP30'"));
+  assert.ok(!homepageEntry.includes('renderCompactTestShelf'));
+  assert.ok(manager.includes('HOMEPAGE_PRIMARY_GAME_SOURCE=CANONICAL_TOP30'));
+});
+
+test('APK install control is relocated away from the homepage top without deleting install contracts',()=>{
+  assert.ok(operations.includes('APK 설치 배치'));
+  assert.ok(operations.includes('홈페이지 대문 상단에 두지 않는다'));
+  assert.ok(homepageEntry.includes("document.getElementById('appInstallBar')"));
+  assert.ok(homepageEntry.includes("document.querySelector('.teamPanel .teamWrap')"));
+  assert.ok(homepageEntry.includes('teamWrap.appendChild(bar)'));
+  assert.ok(homepageEntry.includes("bar.dataset.placement='company-team-bottom'"));
+  assert.ok(homepageEntry.includes("window.location.href='/downloads/jaewoon-company.apk'"));
+  assert.ok(manager.includes('apkInstallRelocatedOffTop'));
+  assert.ok(manager.includes('HOMEPAGE_APK_INSTALL_PLACEMENT=COMPANY_TEAM_BOTTOM'));
 });
 
 test('Top30 test artbooks remain valid before catalog promotion',()=>{
