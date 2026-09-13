@@ -35,6 +35,23 @@ end
 local clientReady = false
 local characterReady = false
 local serverAckSent = false
+local clientLeft = false
+local finished = false
+
+local function finish(result)
+    if finished then
+        return
+    end
+    finished = true
+    StudioTestService:EndTest(result)
+end
+
+Players.PlayerRemoving:Connect(function()
+    clientLeft = true
+    if clientReady and characterReady and serverAckSent then
+        finish("PASS:PLAYER_CHARACTER_CLIENT_SERVER")
+    end
+end)
 
 remote.OnServerEvent:Connect(function(player, message)
     if message ~= "CLIENT_READY" then
@@ -42,25 +59,23 @@ remote.OnServerEvent:Connect(function(player, message)
     end
     clientReady = true
     local character = player.Character or player.CharacterAdded:Wait()
-    if character and character:FindFirstChildOfClass("Humanoid") then
-        characterReady = true
-    end
+    local humanoid = character and (character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid", 10))
+    characterReady = humanoid ~= nil
     remote:FireClient(player, "SERVER_ACK")
     serverAckSent = true
 end)
 
 task.spawn(function()
-    local deadline = os.clock() + 35
+    local deadline = os.clock() + 45
     while os.clock() < deadline do
-        if #Players:GetPlayers() >= 1 and clientReady and characterReady and serverAckSent then
-            task.wait(1)
-            StudioTestService:EndTest("PASS:PLAYER_CHARACTER_CLIENT_SERVER")
+        if clientLeft and clientReady and characterReady and serverAckSent then
+            finish("PASS:PLAYER_CHARACTER_CLIENT_SERVER")
             return
         end
         task.wait(0.1)
     end
-    StudioTestService:EndTest(("FAIL:TIMEOUT:players=%d:client=%s:character=%s:ack=%s"):format(
-        #Players:GetPlayers(), tostring(clientReady), tostring(characterReady), tostring(serverAckSent)
+    finish(("FAIL:TIMEOUT:players=%d:client=%s:character=%s:ack=%s:left=%s"):format(
+        #Players:GetPlayers(), tostring(clientReady), tostring(characterReady), tostring(serverAckSent), tostring(clientLeft)
     ))
 end)
 ]==]
@@ -70,28 +85,47 @@ local clientProbe = Instance.new("LocalScript")
 clientProbe.Name = PROBE
 clientProbe.Source = [==[
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local StudioTestService = game:GetService("StudioTestService")
+
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
 local remote = ReplicatedStorage:WaitForChild("__JaewoonCompanyRuntimeProbe", 10)
 if not remote then
     return
 end
+
 local ack = false
 remote.OnClientEvent:Connect(function(message)
     if message == "SERVER_ACK" then
         ack = true
     end
 end)
-for _ = 1, 30 do
+
+for _ = 1, 40 do
     remote:FireServer("CLIENT_READY")
     if ack then
         break
     end
     task.wait(0.25)
 end
+
+if ack then
+    local leaveDeadline = os.clock() + 10
+    while os.clock() < leaveDeadline do
+        if StudioTestService:CanLeaveTest() then
+            StudioTestService:LeaveTest()
+            return
+        end
+        task.wait(0.1)
+    end
+end
 ]==]
 clientProbe.Parent = StarterPlayer.StarterPlayerScripts
 
 local ok, result = pcall(function()
-    return StudioTestService:ExecuteMultiplayerTestAsync(1, "JAEWOON_COMPANY_RUNTIME_SMOKE_V1")
+    return StudioTestService:ExecuteMultiplayerTestAsync(1, "JAEWOON_COMPANY_RUNTIME_SMOKE_V2")
 end)
 
 serverProbe:Destroy()
