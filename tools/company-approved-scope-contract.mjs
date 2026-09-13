@@ -51,6 +51,7 @@ function scopeControlTag(text,id){
   const match=String(text??'').match(matcher);
   return match?{tag:match[1].toLowerCase(),attrs:match[2]}:null;
 }
+function attribute(attrs,name){return clean(String(attrs||'').match(new RegExp(`\\b${name}=["']([^"']+)["']`,'i'))?.[1]);}
 function interactiveScopeControl(control){
   if(!control)return false;
   if(['button','input','select','textarea'].includes(control.tag))return true;
@@ -62,22 +63,36 @@ export function staticApprovedScopeCoverage(html,inventory=[]){
   const blockers=[];
   const declared=Number(text.match(/data-approved-scope-count=["'](\d+)["']/i)?.[1]??-1);
   if(declared!==inventory.length)blockers.push(`APPROVED_SCOPE_COUNT_MISMATCH:${declared}:${inventory.length}`);
+  const mechanicIds=[];
   for(const item of inventory){
     const control=scopeControlTag(text,item.id);
     if(!control){blockers.push(`APPROVED_SCOPE_ITEM_MISSING:${item.id}`);continue;}
     if(!interactiveScopeControl(control))blockers.push(`APPROVED_SCOPE_CONTROL_NOT_INTERACTIVE:${item.id}`);
     if(/\bdata-action\s*=/i.test(control.attrs))blockers.push(`GENERIC_SCOPE_PROXY_FORBIDDEN:${item.id}`);
+    const mechanicId=attribute(control.attrs,'data-mechanic-id');
+    if(!mechanicId)blockers.push(`APPROVED_SCOPE_MECHANIC_BINDING_MISSING:${item.id}`);
+    else{
+      mechanicIds.push(mechanicId);
+      if(mechanicId===item.id||/^scope(?:-|$)/i.test(mechanicId))blockers.push(`APPROVED_SCOPE_GENERIC_MECHANIC_ID:${item.id}`);
+    }
+    if(/\bid=["']scope-control-\d+["']/i.test(control.attrs))blockers.push(`TEST_HARNESS_SCOPE_CONTROL_ID_FORBIDDEN:${item.id}`);
   }
-  return {pass:blockers.length===0,requiredCount:inventory.length,blockers};
+  const uniqueMechanics=[...new Set(mechanicIds)];
+  const minimumMechanics=Math.min(4,Math.max(1,inventory.length));
+  if(inventory.length&&uniqueMechanics.length<minimumMechanics)blockers.push(`APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:${uniqueMechanics.length}:${minimumMechanics}`);
+  return {pass:blockers.length===0,requiredCount:inventory.length,mechanicCount:uniqueMechanics.length,mechanicIds:uniqueMechanics,blockers};
 }
 
-export function runtimeApprovedScopeCoverage({declaredCount=0,visibleScopeIds=[],interactedScopeIds=[]}={}){
+export function runtimeApprovedScopeCoverage({declaredCount=0,visibleScopeIds=[],interactedScopeIds=[],mechanicBindings=[]}={}){
   const visible=[...new Set((visibleScopeIds||[]).map(clean).filter(Boolean))];
   const interacted=[...new Set((interactedScopeIds||[]).map(clean).filter(Boolean))];
+  const mechanics=[...new Set((mechanicBindings||[]).map(clean).filter(Boolean))];
   const blockers=[];
   if(Number(declaredCount)<=0)blockers.push('APPROVED_SCOPE_DECLARATION_REQUIRED');
   if(visible.length!==Number(declaredCount))blockers.push(`APPROVED_SCOPE_VISIBLE_COUNT_MISMATCH:${visible.length}:${declaredCount}`);
   const missingInteraction=visible.filter(id=>!interacted.includes(id));
   if(missingInteraction.length)blockers.push(`APPROVED_SCOPE_NOT_INTERACTED:${missingInteraction.join(',')}`);
-  return {pass:blockers.length===0,declaredCount:Number(declaredCount)||0,visibleScopeIds:visible,interactedScopeIds:interacted,blockers};
+  const minimumMechanics=Math.min(4,Math.max(1,Number(declaredCount)||0));
+  if(Number(declaredCount)>0&&mechanics.length<minimumMechanics)blockers.push(`APPROVED_SCOPE_RUNTIME_MECHANIC_DIVERSITY_TOO_LOW:${mechanics.length}:${minimumMechanics}`);
+  return {pass:blockers.length===0,declaredCount:Number(declaredCount)||0,visibleScopeIds:visible,interactedScopeIds:interacted,mechanicBindings:mechanics,blockers};
 }
