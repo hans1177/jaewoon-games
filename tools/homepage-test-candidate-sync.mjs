@@ -1,4 +1,4 @@
-// 단일 Homepage Manager가 company-runtime의 검증된 Web 후보 중 80점 이상 상위 30개만 main 테스트 선반 자산으로 동기화한다.
+// 단일 Homepage Manager가 company-runtime의 검증된 실제 플레이 Web 게임 중 80점 이상 상위 30개만 main Top30 자산으로 동기화한다.
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import {execFileSync} from 'node:child_process';
@@ -8,6 +8,7 @@ const manifestFile=String(process.env.HOMEPAGE_TEST_CANDIDATE_OUTPUT||'test-game
 const limit=30;
 const minimumScore=80;
 const minimumValidationSchema=10;
+const requiredArtifactType='REAL_PLAYABLE_GAME';
 const clean=v=>String(v??'').trim();
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const showText=file=>execFileSync('git',['show',`${runtimeRef}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});
@@ -17,6 +18,10 @@ const checkoutRuntime=file=>execFileSync('git',['checkout',runtimeRef,'--',file]
 const sha256Text=value=>crypto.createHash('sha256').update(String(value??'')).digest('hex');
 const scoreOf=evidence=>Number(evidence?.webStrictScore??evidence?.strictReview?.totalScore);
 const homepagePass=evidence=>evidence?.homepageTestEligible===true&&Number.isFinite(scoreOf(evidence))&&scoreOf(evidence)>=minimumScore&&Array.isArray(evidence?.strictReview?.hardFailures)&&evidence.strictReview.hardFailures.length===0;
+const realPlayableGamePass=html=>{
+  const text=String(html??'');
+  return new RegExp(`data-web-artifact-type=["']${requiredArtifactType}["']`,'i').test(text)&&/<canvas\b/i.test(text)&&/(victory|승리|목표 달성)/i.test(text)&&/(defeat|game over|패배|게임 오버)/i.test(text)&&!/FULL APPROVED WEB COMPANION/i.test(text)&&!/<h2[^>]*>\s*30분 플레이 구조\s*<\/h2>/i.test(text)&&!/<h2[^>]*>\s*승인 분량 전체 구현\s*<\/h2>/i.test(text);
+};
 const semanticJson=value=>{
   const copy=JSON.parse(JSON.stringify(value??{}));
   delete copy.updatedAt;
@@ -45,7 +50,7 @@ const queue=showJson('development-queue.json',{items:[]});
 const runtimeCatalog=showJson('game-catalog.json',{games:[]});
 const catalogById=new Map((runtimeCatalog.games||[]).map(game=>[clean(game.id),game]));
 const candidates=[];
-let staleEvidenceCount=0;
+let staleEvidenceCount=0,nonPlayableRejectedCount=0;
 for(const item of queue.items||[]){
   const gameId=clean(item.gameId);if(!gameId)continue;
   if(clean(item.productionClass).toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
@@ -56,7 +61,9 @@ for(const item of queue.items||[]){
   const baselineSource=clean(item.designBaselineSource);
   if(!evidencePath||!baselineSource||!existsRuntime(evidencePath)||!existsRuntime(`${webSourcePath}/index.html`)||!existsRuntime(baselineSource)||!existsRuntime(artbookSource))continue;
   const evidence=showJson(evidencePath,null);if(!homepagePass(evidence))continue;
-  const currentWebHash=sha256Text(showText(`${webSourcePath}/index.html`));
+  const webHtml=showText(`${webSourcePath}/index.html`);
+  if(!realPlayableGamePass(webHtml)){nonPlayableRejectedCount++;continue;}
+  const currentWebHash=sha256Text(webHtml);
   const currentBaselineHash=sha256Text(showText(baselineSource));
   const freshnessPass=structured30MinutePass(evidence)&&clean(evidence?.sourceIndexSha256)===currentWebHash&&clean(evidence?.designBaselineSha256)===currentBaselineHash;
   if(!freshnessPass){staleEvidenceCount++;continue;}
@@ -73,6 +80,8 @@ for(const item of queue.items||[]){
     homepageTestCandidate:true,
     homepageOfficialCard:false,
     productionClass:'DEVELOPMENT_CONFIRMED',
+    webArtifactType:requiredArtifactType,
+    realPlayableWebGame:true,
     testUrl:`/${webSourcePath.replace(/^\/+|\/+$/g,'')}/`,
     webPath:`/${webSourcePath.replace(/^\/+|\/+$/g,'')}/`,
     artbookUrl:`/artbook-viewer.html?game=${encodeURIComponent(gameId)}`,
@@ -91,7 +100,6 @@ for(const item of queue.items||[]){
   });
 }
 
-// 점수 우선. 동점에서는 기존 Top30을 먼저 유지해 같은 점수 신규 후보가 30위 자리를 불필요하게 흔들지 않는다.
 candidates.sort((a,b)=>{
   if(b.score!==a.score)return b.score-a.score;
   const ar=previousRank.has(a.gameId)?previousRank.get(a.gameId):Number.POSITIVE_INFINITY;
@@ -126,9 +134,9 @@ for(const candidate of selected){
 const registryChanged=writeJsonIfSemanticChanged('game-artbooks.json',previousRegistry,registry);
 
 const manifest={
-  version:5,policyDocument:'COMPANY_FLOW.md',officialCardRegistrationRequiresPromotionPass:true,
+  version:6,policyDocument:'COMPANY_FLOW.md',officialCardRegistrationRequiresPromotionPass:true,
   homepageTestShelf:{
-    limit,minimumScore,minimumValidationSchema,order:'STRICT_IMPLEMENTATION_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresArtbook:true,requiresFreshSourceHash:true,requiresFreshDesignBaselineHash:true,requiresStructured30MinuteEvidence:true,hardGatesRequired:true,officialCard:false,promotionRequiredForOfficialCard:true,
+    limit,minimumScore,minimumValidationSchema,order:'STRICT_IMPLEMENTATION_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresRealPlayableGame:true,requiredWebArtifactType:requiredArtifactType,requiresArtbook:true,requiresFreshSourceHash:true,requiresFreshDesignBaselineHash:true,requiresStructured30MinuteEvidence:true,hardGatesRequired:true,officialCard:false,promotionRequiredForOfficialCard:true,
     cutlineScore,replacementPolicy:'STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE;TIE_PRESERVES_VALID_INCUMBENT',tieBreak:['EXISTING_TOP30_RANK','PROMOTION_REVALIDATION_PASS','LATEST_VALIDATION','GAME_ID'],
   },
   candidates:selected,
@@ -138,11 +146,13 @@ const semanticChanged=registryChanged||manifestChanged;
 console.log(`HOMEPAGE_TEST_CANDIDATE_COUNT=${selected.length}`);
 console.log(`HOMEPAGE_TEST_CANDIDATE_IDS=${selected.map(x=>x.gameId).join(',')}`);
 console.log(`HOMEPAGE_TEST_STALE_EVIDENCE_REJECTED=${staleEvidenceCount}`);
+console.log(`HOMEPAGE_TEST_NON_PLAYABLE_REJECTED=${nonPlayableRejectedCount}`);
 console.log('HOMEPAGE_TEST_CANDIDATE_LIMIT=30');
 console.log('HOMEPAGE_TEST_MINIMUM_SCORE=80');
 console.log(`HOMEPAGE_TEST_MINIMUM_VALIDATION_SCHEMA=${minimumValidationSchema}`);
+console.log(`HOMEPAGE_TEST_REQUIRED_ARTIFACT_TYPE=${requiredArtifactType}`);
 console.log(`HOMEPAGE_TEST_CUTLINE_SCORE=${cutlineScore??'OPEN'}`);
 console.log('HOMEPAGE_TEST_REPLACEMENT=STRICTLY_HIGHER_SCORE;TIE_PRESERVES_INCUMBENT');
 console.log('HOMEPAGE_TEST_ORDER=STRICT_IMPLEMENTATION_SCORE_DESC');
-console.log('HOMEPAGE_TEST_REQUIRES=WEB+POST_WEB_ARTBOOK+80_SCORE+NO_HARD_FAILURE+FRESH_HASHES+STRUCTURED_30MIN');
+console.log('HOMEPAGE_TEST_REQUIRES=REAL_PLAYABLE_WEB_GAME+POST_WEB_ARTBOOK+80_SCORE+NO_HARD_FAILURE+FRESH_HASHES+STRUCTURED_30MIN');
 console.log(`HOMEPAGE_TEST_SYNC_CHANGED=${semanticChanged?'YES':'NO'}`);
