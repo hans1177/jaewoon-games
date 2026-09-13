@@ -1,4 +1,4 @@
-import './homepage-enhancements-core.js?v=20260913-layout-clean-1';
+import './homepage-enhancements-core.js?v=20260913-artbook-live-sync-1';
 
 function bindNativeApkInstall(){
   const bind=()=>{
