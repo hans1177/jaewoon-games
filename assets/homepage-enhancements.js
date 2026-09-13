@@ -12,7 +12,7 @@ function bindNativeApkInstall(){
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 }
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const TEST_SHELF_LIMIT=30;
 const TEST_SHELF_MIN_SCORE=80;
 const RAW_RUNTIME_CATALOG='https://raw.githubusercontent.com/hans1177/jaewoon-games/company-runtime/game-catalog.json';
