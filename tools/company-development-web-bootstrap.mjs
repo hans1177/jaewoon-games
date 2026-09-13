@@ -57,7 +57,7 @@ export function validateBootstrapHtml(html,{scopeInventory=[]}={}){
 
 const OUTPUT_SCHEMA={type:'object',required:['html','validationQuestion','implementationNotes'],additionalProperties:false,properties:{html:{type:'string'},validationQuestion:{type:'string'},implementationNotes:{type:'array',items:{type:'string'},maxItems:12}}};
 async function callModel({model,prompt,repair=''}){
-  const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,format:OUTPUT_SCHEMA,messages:[{role:'system',content:'너는 재운컴퍼니 DEVELOPMENT_CONFIRMED 개발 AI다. 잠긴 DESIGN_BASELINE을 재기획하거나 축소하지 않는다. 승인된 게임 분량 전체를 실제로 플레이 가능한 Web companion으로 구현한다. 플랫폼 전용 기능은 핵심 의미를 보존한 Web 동등 표현으로 구현하고 조용히 생략하지 않는다. 외부 네트워크/외부 에셋/저장소는 사용하지 않는다.'},{role:'user',content:`${prompt}${repair?`\n이전 출력 검증 실패를 반드시 수정하라: ${repair}`:''}`}],options:{temperature:repair?0:0.15,num_ctx:24576,num_predict:12000}})});
+  const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,format:OUTPUT_SCHEMA,messages:[{role:'system',content:'너는 재운컴퍼니 DEVELOPMENT_CONFIRMED 개발 AI다. 잠긴 DESIGN_BASELINE을 재기획하거나 축소하지 않는다. 승인된 게임 분량 전체를 실제로 플레이 가능한 Web companion으로 구현한다. 플랫폼 전용 기능은 핵심 의미를 보존한 Web 동등 표현으로 구현하고 조용히 생략하지 않는다. 외부 네트워크/외부 에셋/저장소는 사용하지 않는다. 승인 scope를 공통 data-action 프록시나 하나의 범용 동작으로 대체하지 말고 각 scope의 설계 의미에 맞는 독립 게임 동작으로 구현한다.'},{role:'user',content:`${prompt}${repair?`\n이전 출력 검증 실패를 반드시 수정하라: ${repair}`:''}`}],options:{temperature:repair?0:0.15,num_ctx:24576,num_predict:12000}})});
   if(!response.ok)throw new Error(`OLLAMA_${response.status}: ${await response.text()}`);
   const body=await response.json();
   const raw=clean(body?.message?.content);
@@ -103,10 +103,15 @@ export function buildContractSafePlayable({gameId='',gameName='',baseline={}}={}
   return {html,validationQuestion:`${identity||gameName||gameId}의 승인된 게임 분량 ${inventory.length}개가 모두 Web companion에서 실제 입력 가능한가?`,implementationNotes:[`locked DESIGN_BASELINE genre=${genre}`,`full approved scope count=${inventory.length}`,'all approved scope items exposed as runtime interactions','first-user-gesture Web Audio synth music','no external assets, persistence, or network dependencies'],approvedScopeInventory:inventory,generationMode:'DETERMINISTIC_FULL_SCOPE_RECOVERY'};
 }
 
+export function buildApprovedScopeGenerationPrompt({gameId='',gameName='',baseline={},artbook={},inventory=[]}={}){
+  const inventoryText=inventory.map((item,index)=>`${index+1}. ${item.id} :: ${item.path} :: ${item.label}`).join('\n');
+  const bindingText=inventory.map((item,index)=>`- ${item.id}: 전용 handler scopeHandler${index+1}을 만들고 이 control에 직접 addEventListener로 연결. 의미: ${item.label}`).join('\n');
+  return `게임 ID: ${gameId}\n게임명: ${gameName}\nDESIGN_BASELINE:\n${clip(baseline)}\nARTBOOK:\n${clip(artbook,12000)}\nAPPROVED_SCOPE_INVENTORY (${inventory.length}개):\n${inventoryText}\n각 승인 scope 전용 구현 계약:\n${bindingText}\n요구사항:\n- 축소 vertical slice가 아니라 승인된 설계 분량 전체를 담은 단일 index.html 플레이 가능한 Web companion.\n- body 또는 주 게임 루트에 data-approved-scope-count=\"${inventory.length}\" 지정.\n- 위 APPROVED_SCOPE_INVENTORY 모든 항목을 하나도 빼지 말고, 각 항목마다 정확한 data-scope-id를 가진 화면에 보이는 클릭 가능한 게임 컨트롤을 제공.\n- 승인 scope control에는 data-action 속성을 절대 사용하지 마라. data-action은 GENERIC_SCOPE_PROXY_FORBIDDEN 계약 위반이다.\n- 여러 scope를 하나의 범용 action 함수, index/modulo 분기, 공통 data-action 테이블로 대체하지 마라. 각 scope는 위에 지정한 서로 다른 전용 handler와 직접 이벤트 바인딩을 가져야 한다.\n- 각 전용 handler는 해당 scope의 설계 문장 의미를 실제 게임 규칙으로 표현하고 score/hp/resource/progress/wave/위치/쿨다운/목표 등 관찰 가능한 상태를 변화시켜야 한다. 단순 텍스트 토글이나 완료 표시만 하는 장식 구현 금지.\n- coreLoop 항목은 순서와 의미가 이어지는 실제 플레이 흐름으로 연결하고, coreFun/mobileUx 등 다른 승인 scope도 별도 입력과 상태 변화로 검증 가능하게 구현.\n- 플랫폼 전용 기능은 핵심 의미를 보존한 Web 동등 상호작용으로 구현하고 생략 금지.\n- DESIGN_BASELINE 핵심 루프, 진행, 전투/경제/콘텐츠 등 인벤토리에 잡힌 모든 승인 범위를 구현.\n- 첫 게임 입력 전 음악 재생 금지. 첫 사용자 입력에서 AudioContext를 생성/재개하고 data-audio-state를 locked에서 running 또는 muted로 변경.\n- data-audio-control=\"mute\" 버튼과 data-audio-control=\"volume\" 범위 입력 제공.\n- 외부 URL/CDN/fetch/iframe/localStorage/sessionStorage 금지. Web Audio synth 가능.\n- 390x844 모바일 화면에서 가로 넘침 금지.\n- inline JavaScript 문법 완전.\n- 기존 설계에 없는 대규모 시스템/세계관 추가 금지.\n- HTML 전체를 html 필드에 반환.`;
+}
+
 export async function buildFirstPlayable({gameId,gameName,baseline,artbook,sourcePath,candidatePath,candidateId,sourceCommit,model}){
   const inventory=deriveApprovedScopeInventory(baseline);
-  const inventoryText=inventory.map((item,index)=>`${index+1}. ${item.id} :: ${item.label}`).join('\n');
-  const prompt=`게임 ID: ${gameId}\n게임명: ${gameName}\nDESIGN_BASELINE:\n${clip(baseline)}\nARTBOOK:\n${clip(artbook,12000)}\nAPPROVED_SCOPE_INVENTORY (${inventory.length}개):\n${inventoryText}\n요구사항:\n- 축소 vertical slice가 아니라 승인된 설계 분량 전체를 담은 단일 index.html 플레이 가능한 Web companion.\n- body 또는 주 게임 루트에 data-approved-scope-count=\"${inventory.length}\" 지정.\n- 위 APPROVED_SCOPE_INVENTORY 모든 항목을 하나도 빼지 말고, 각 항목마다 정확한 data-scope-id를 가진 화면에 보이는 클릭 가능한 게임 컨트롤을 제공.\n- 각 scope 컨트롤 입력은 실제 게임 상태를 변화시켜야 하며 장식/숨김 마커로 대체 금지.\n- 플랫폼 전용 기능은 핵심 의미를 보존한 Web 동등 상호작용으로 구현하고 생략 금지.\n- DESIGN_BASELINE 핵심 루프, 진행, 전투/경제/콘텐츠 등 인벤토리에 잡힌 모든 승인 범위를 구현.\n- 첫 게임 입력 전 음악 재생 금지. 첫 사용자 입력에서 AudioContext를 생성/재개하고 data-audio-state를 locked에서 running 또는 muted로 변경.\n- data-audio-control=\"mute\" 버튼과 data-audio-control=\"volume\" 범위 입력 제공.\n- 외부 URL/CDN/fetch/iframe/localStorage/sessionStorage 금지. Web Audio synth 가능.\n- 390x844 모바일 화면에서 가로 넘침 금지.\n- inline JavaScript 문법 완전.\n- 기존 설계에 없는 대규모 시스템/세계관 추가 금지.\n- HTML 전체를 html 필드에 반환.`;
+  const prompt=buildApprovedScopeGenerationPrompt({gameId,gameName,baseline,artbook,inventory});
   let result=null,last=[],modelAttempts=0;const modelContractFailures=[];
   for(let attempt=1;attempt<=2;attempt++){
     modelAttempts=attempt;
@@ -119,7 +124,10 @@ export async function buildFirstPlayable({gameId,gameName,baseline,artbook,sourc
   }
   const fallback=buildContractSafePlayable({gameId,gameName,baseline});
   const review=validateBootstrapHtml(fallback.html,{scopeInventory:inventory});
-  if(!review.pass)throw new Error(`BOOTSTRAP_RECOVERY_CONTRACT_FAILED: ${review.blockers.join('|')}`);
+  if(!review.pass){
+    const modelFailures=modelContractFailures.map(entry=>entry.blockers?.length?`attempt${entry.attempt}:${entry.blockers.join(',')}`:`attempt${entry.attempt}:${entry.error||'MODEL_OUTPUT_ERROR'}`).join(';');
+    throw new Error(`BOOTSTRAP_MODEL_CONTRACT_FAILED: ${modelFailures||'UNKNOWN'} | DIAGNOSTIC_FALLBACK_BLOCKED: ${review.blockers.join('|')}`);
+  }
   fs.mkdirSync(candidatePath,{recursive:true});fs.writeFileSync(path.join(candidatePath,'index.html'),fallback.html.endsWith('\n')?fallback.html:`${fallback.html}\n`,'utf8');
   return {result:fallback,review,generation:{mode:fallback.generationMode,modelAttempts,modelContractFailures},approvedScopeInventory:inventory};
 }
