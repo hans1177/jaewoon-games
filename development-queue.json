@@ -215,9 +215,11 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:50:13.790Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-runtime:result-missing"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:38:48.968Z",
-      "updatedAt": "2026-09-13T09:45:18.349Z",
+      "updatedAt": "2026-09-13T09:47:15.024Z",
       "webValidationEvidencePath": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -311,8 +313,9 @@
         "blockers": [],
         "authority": "roblox-five-distinct-lead-build-preflight"
       },
-      "robloxRuntimeFailedAt": "2026-09-13T08:50:17.288Z",
-      "robloxRuntimeEvidence": null
+      "robloxRuntimeFailedAt": "2026-09-13T09:47:15.024Z",
+      "robloxRuntimeEvidence": null,
+      "robloxRuntimeRetryCount": 1
     },
     {
       "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
@@ -335,9 +338,11 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:50:27.545Z",
       "musicValidationPassed": true,
-      "routingBlockers": [],
+      "routingBlockers": [
+        "roblox-runtime:result-missing"
+      ],
       "webValidationLastAttemptAt": "2026-09-13T02:37:05.981Z",
-      "updatedAt": "2026-09-13T09:45:18.349Z",
+      "updatedAt": "2026-09-13T09:47:15.024Z",
       "webValidationEvidencePath": "design/seed-roblox-battleground-fight-welcome-to-bloxburg/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -429,8 +434,9 @@
         "blockers": [],
         "authority": "roblox-five-distinct-lead-build-preflight"
       },
-      "robloxRuntimeFailedAt": "2026-09-13T08:50:17.288Z",
-      "robloxRuntimeEvidence": null
+      "robloxRuntimeFailedAt": "2026-09-13T09:47:15.024Z",
+      "robloxRuntimeEvidence": null,
+      "robloxRuntimeRetryCount": 1
     },
     {
       "gameId": "seed-roblox-survival-horror-es-doors",
@@ -968,7 +974,7 @@
       "routeRevision": "c22be990056ccde9069fb09f732ddd91c416b29abd1a23022897630738762ded"
     }
   ],
-  "updatedAt": "2026-09-13T09:45:18.446Z",
+  "updatedAt": "2026-09-13T09:47:15.024Z",
   "routerContractVersion": 2,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
