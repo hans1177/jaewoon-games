@@ -48,6 +48,7 @@
 6. 자동화가 `main`에 직접 push하지 않는다.
 7. `company-runtime` 전체, 개발 큐, 내부 증거 파일을 홈페이지 공개 파일로 복사하지 않는다.
 8. 같은 상태가 이미 main과 같으면 PR을 만들지 않는다.
+9. 후보 브랜치 생성 뒤 PR 생성/병합 권한이 없거나 PR 생성이 실패하면 해당 브랜치를 복구 근거로 보존하되 **게시 완료로 처리하지 않고 workflow를 BLOCK/FAIL**한다. `BRANCH_READY`는 완료 증거가 아니다.
 
 이 흐름은 기존 `Company Status Sync → Homepage Manager → Director` 체인을 확장하는 것이며 별도 동기화 파이프라인을 만들지 않는다.
 
@@ -100,6 +101,7 @@
 - 실패한 런타임 상태를 main 공개 상태로 동기화
 - 자동화의 main 직접 push
 - 별도 홈페이지 관리자/별도 상태 동기화 관리자 신설
+- PR 생성/병합 실패를 성공 또는 게시 완료로 기록
 
 ## Self-QA
 
@@ -118,6 +120,7 @@ Homepage Manager 작업 후 최소 다음을 검사한다.
 11. service worker 앱 셸과 command/offline fallback 보존
 12. command chat의 입력·첨부·전송·기기등록·service worker 등록 계약 보존
 13. 자동화가 `main`을 직접 쓰지 않고 브랜치/PR 경로만 사용하는지 확인
+14. PR 생성/병합 실패 시 게시 단계가 성공으로 종료되지 않는지 확인
 
 ## 사후 감독
 
@@ -136,4 +139,4 @@ Director는 검증/차단/재작업 반환을 담당하며 Homepage Manager 결�
 
 ## 완료 정의
 
-`running` 문자열은 완료 증거가 아니다. 실제 동기화 차이 탐지 + self-QA + Director 사후 감독 + 필요 시 자동화 PR 결과가 있어야 완료로 본다.
+`running`, `BRANCH_READY`, 후보 브랜치 생성은 완료 증거가 아니다. 실제 동기화 차이 탐지 + self-QA + Director 사후 감독 + 필요 시 자동화 PR 생성/병합 결과가 있어야 완료로 본다. PR 권한 또는 생성 실패로 main 반영이 끝나지 않았으면 명시적으로 BLOCK/FAIL 상태로 남긴다.
