@@ -1,0 +1,190 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+  "target": "web",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 8,
+  "stateChanged": true,
+  "musicRuntime": {
+    "required": true,
+    "startsAfterUserGesture": true,
+    "muteControl": true,
+    "volumeControl": true,
+    "beforeState": "locked",
+    "afterState": "running",
+    "pass": true
+  },
+  "approvedScopeFullyImplemented": true,
+  "scopeCoverage": {
+    "pass": true,
+    "declaredCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-afb3aa364d",
+      "scope-coreloop-0-512fbeed03",
+      "scope-coreloop-1-fee638072f",
+      "scope-coreloop-2-d36d57e8a3",
+      "scope-mobileux-a6b8e71cfe"
+    ],
+    "interactedScopeIds": [
+      "scope-corefun-afb3aa364d",
+      "scope-coreloop-0-512fbeed03",
+      "scope-coreloop-1-fee638072f",
+      "scope-coreloop-2-d36d57e8a3",
+      "scope-mobileux-a6b8e71cfe"
+    ],
+    "blockers": []
+  },
+  "scopeInteractionResults": [
+    {
+      "scopeId": "scope-corefun-afb3aa364d",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-0-512fbeed03",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-1-fee638072f",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-2-d36d57e8a3",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-mobileux-a6b8e71cfe",
+      "clicked": true,
+      "stateChanged": true
+    }
+  ],
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "before": {
+    "text": "DEVELOPMENT_CONFIRMED · FULL APPROVED WEB COMPANION · 스토리 RPG Shardbound Odyssey quest,explore,combat,boss 0 SCORE 100 HP 1 WAVE 3 RESOURCE 1 LEVEL 100 ENEMY HP 0 POSITION 0 COOLDOWN 승인 분량 전체 구현 1 quest,explore,combat,boss COMBAT 2 Accept a quest or story objective, travel through a Roblox world area, and discover enemies, NPCs, resources, or events that advance the current adventure goal. MOVEMENT 3 Fight enemies or bosses using readable skills and equipment, gain experience and loot, and make a progression choice that changes the next combat approach. COMBAT 4 Complete the quest or major encounter, unlock a new area or story beat, and continue toward a larger adventure milestone while preserving persistent character growth. PROGRESSION 5 asciicase MOBILE 음악 켜짐 볼륨 STATUS: ready · TURN 0 · OBJECTIVE 0 · ENERGY 100",
+    "visibleButtons": 6,
+    "canvases": [],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "0SCORE100HP1WAVE3RESOURCE1LEVEL100ENEMY HP0POSITION0COOLDOWN",
+        "attrs": [
+          [
+            "data-state",
+            "turn-0"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "3"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "audioState": "locked",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-afb3aa364d",
+      "scope-coreloop-0-512fbeed03",
+      "scope-coreloop-1-fee638072f",
+      "scope-coreloop-2-d36d57e8a3",
+      "scope-mobileux-a6b8e71cfe"
+    ],
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "after": {
+    "text": "DEVELOPMENT_CONFIRMED · FULL APPROVED WEB COMPANION · 스토리 RPG Shardbound Odyssey quest,explore,combat,boss 71 SCORE 100 HP 1 WAVE 11 RESOURCE 2 LEVEL 52 ENEMY HP 6 POSITION 0 COOLDOWN 승인 분량 전체 구현 1 quest,explore,combat,boss COMBAT 2 Accept a quest or story objective, travel through a Roblox world area, and discover enemies, NPCs, resources, or events that advance the current adventure goal. MOVEMENT 3 Fight enemies or bosses using readable skills and equipment, gain experience and loot, and make a progression choice that changes the next combat approach. COMBAT 4 Complete the quest or major encounter, unlock a new area or story beat, and continue toward a larger adventure milestone while preserving persistent character growth. PROGRESSION 5 asciicase MOBILE 음악 켜짐 볼륨 STATUS: scope-mobileux-a6b8e71cfe · TURN 9 · OBJECTIVE 0 · ENERGY 100",
+    "visibleButtons": 6,
+    "canvases": [],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "71SCORE100HP1WAVE11RESOURCE2LEVEL52ENEMY HP6POSITION0COOLDOWN",
+        "attrs": [
+          [
+            "data-state",
+            "turn-9"
+          ],
+          [
+            "data-score",
+            "71"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "11"
+          ],
+          [
+            "data-progress",
+            "65"
+          ]
+        ]
+      }
+    ],
+    "audioState": "running",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-afb3aa364d",
+      "scope-coreloop-0-512fbeed03",
+      "scope-coreloop-1-fee638072f",
+      "scope-coreloop-2-d36d57e8a3",
+      "scope-mobileux-a6b8e71cfe"
+    ],
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "interactionCount=8",
+    "stateChanged=true",
+    "reloadVisible=true",
+    "mobileOverflow=true",
+    "musicRuntime=true",
+    "musicAfterGesture=true",
+    "approvedScope=true",
+    "approvedScopeCount=5",
+    "scopeStateChanged=5/5"
+  ],
+  "checkedAt": "2026-09-13T02:53:09.816Z",
+  "sourcePath": "web-games/seed-roblox-story-rpg-adventur-blox-fruits",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-story-rpg-adventur-blox-fruits-34733924193-1/",
+  "screenshot": "/tmp/web-work/seed-roblox-story-rpg-adventur-blox-fruits/web-gameplay.png",
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-story-rpg-adventur-blox-fruits-34733924193-1",
+  "policyDocument": "COMPANY_FLOW.md",
+  "requiredBeforeTargetPlatform": true
+}

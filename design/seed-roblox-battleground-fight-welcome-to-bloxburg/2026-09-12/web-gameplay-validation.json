@@ -1,0 +1,190 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+  "target": "web",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 8,
+  "stateChanged": true,
+  "musicRuntime": {
+    "required": true,
+    "startsAfterUserGesture": true,
+    "muteControl": true,
+    "volumeControl": true,
+    "beforeState": "locked",
+    "afterState": "running",
+    "pass": true
+  },
+  "approvedScopeFullyImplemented": true,
+  "scopeCoverage": {
+    "pass": true,
+    "declaredCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-ffd2fe2735",
+      "scope-coreloop-0-6f5fdb28ec",
+      "scope-coreloop-1-1f5252bf24",
+      "scope-coreloop-2-910337c938",
+      "scope-mobileux-055ea7b800"
+    ],
+    "interactedScopeIds": [
+      "scope-corefun-ffd2fe2735",
+      "scope-coreloop-0-6f5fdb28ec",
+      "scope-coreloop-1-1f5252bf24",
+      "scope-coreloop-2-910337c938",
+      "scope-mobileux-055ea7b800"
+    ],
+    "blockers": []
+  },
+  "scopeInteractionResults": [
+    {
+      "scopeId": "scope-corefun-ffd2fe2735",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-0-6f5fdb28ec",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-1-1f5252bf24",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-2-910337c938",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-mobileux-055ea7b800",
+      "clicked": true,
+      "stateChanged": true
+    }
+  ],
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "before": {
+    "text": "DEVELOPMENT_CONFIRMED · FULL APPROVED WEB COMPANION · 대전 전투 Vector Clash combat, opponent, skill, cooldown 0 SCORE 100 HP 1 WAVE 0 RESOURCE 1 LEVEL 100 ENEMY HP 0 POSITION 0 COOLDOWN 승인 분량 전체 구현 1 combat, opponent, skill, cooldown COMBAT 2 Enter a short competitive encounter, read opponent movement, and use movement, attacks, aim, abilities, or combos to create an advantage. COMBAT 3 Damage or eliminate opponents, receive clear hit and score feedback, then reposition around cooldowns, cover, objectives, or team pressure. COMBAT 4 Complete the round or score target, receive progression or loadout rewards, and re-enter a new match with a changed tactical choice or mastery goal. PROGRESSION 5 The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and engage with the game. MOVEMENT 음악 켜짐 볼륨 STATUS: ready · TURN 0 · OBJECTIVE 0 · ENERGY 100",
+    "visibleButtons": 6,
+    "canvases": [],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "0SCORE100HP1WAVE0RESOURCE1LEVEL100ENEMY HP0POSITION0COOLDOWN",
+        "attrs": [
+          [
+            "data-state",
+            "turn-0"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "0"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "audioState": "locked",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-ffd2fe2735",
+      "scope-coreloop-0-6f5fdb28ec",
+      "scope-coreloop-1-1f5252bf24",
+      "scope-coreloop-2-910337c938",
+      "scope-mobileux-055ea7b800"
+    ],
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "after": {
+    "text": "DEVELOPMENT_CONFIRMED · FULL APPROVED WEB COMPANION · 대전 전투 Vector Clash combat, opponent, skill, cooldown 83 SCORE 100 HP 1 WAVE 8 RESOURCE 2 LEVEL 28 ENEMY HP 4 POSITION 2 COOLDOWN 승인 분량 전체 구현 1 combat, opponent, skill, cooldown COMBAT 2 Enter a short competitive encounter, read opponent movement, and use movement, attacks, aim, abilities, or combos to create an advantage. COMBAT 3 Damage or eliminate opponents, receive clear hit and score feedback, then reposition around cooldowns, cover, objectives, or team pressure. COMBAT 4 Complete the round or score target, receive progression or loadout rewards, and re-enter a new match with a changed tactical choice or mastery goal. PROGRESSION 5 The game is designed to be played on mobile devices with a user-friendly interface that allows players to easily navigate and engage with the game. MOVEMENT 음악 켜짐 볼륨 STATUS: scope-mobileux-055ea7b800 · TURN 9 · OBJECTIVE 0 · ENERGY 98",
+    "visibleButtons": 6,
+    "canvases": [],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "83SCORE100HP1WAVE8RESOURCE2LEVEL28ENEMY HP4POSITION2COOLDOWN",
+        "attrs": [
+          [
+            "data-state",
+            "turn-9"
+          ],
+          [
+            "data-score",
+            "83"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "8"
+          ],
+          [
+            "data-progress",
+            "67"
+          ]
+        ]
+      }
+    ],
+    "audioState": "running",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-ffd2fe2735",
+      "scope-coreloop-0-6f5fdb28ec",
+      "scope-coreloop-1-1f5252bf24",
+      "scope-coreloop-2-910337c938",
+      "scope-mobileux-055ea7b800"
+    ],
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "interactionCount=8",
+    "stateChanged=true",
+    "reloadVisible=true",
+    "mobileOverflow=true",
+    "musicRuntime=true",
+    "musicAfterGesture=true",
+    "approvedScope=true",
+    "approvedScopeCount=5",
+    "scopeStateChanged=5/5"
+  ],
+  "checkedAt": "2026-09-13T02:50:31.460Z",
+  "sourcePath": "web-games/seed-roblox-battleground-fight-welcome-to-bloxburg",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-battleground-fight-welcome-to-bloxburg-34733924193-1/",
+  "screenshot": "/tmp/web-work/seed-roblox-battleground-fight-welcome-to-bloxburg/web-gameplay.png",
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-battleground-fight-welcome-to-bloxburg-34733924193-1",
+  "policyDocument": "COMPANY_FLOW.md",
+  "requiredBeforeTargetPlatform": true
+}

@@ -1,0 +1,190 @@
+{
+  "version": 4,
+  "gameId": "seed-roblox-survival-horror-es-doors",
+  "target": "web",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 8,
+  "stateChanged": true,
+  "musicRuntime": {
+    "required": true,
+    "startsAfterUserGesture": true,
+    "muteControl": true,
+    "volumeControl": true,
+    "beforeState": "locked",
+    "afterState": "running",
+    "pass": true
+  },
+  "approvedScopeFullyImplemented": true,
+  "scopeCoverage": {
+    "pass": true,
+    "declaredCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-39c5729957",
+      "scope-coreloop-0-aec334dee8",
+      "scope-coreloop-1-b019bdc099",
+      "scope-coreloop-2-fa285598a5",
+      "scope-mobileux-7cfa90daaa"
+    ],
+    "interactedScopeIds": [
+      "scope-corefun-39c5729957",
+      "scope-coreloop-0-aec334dee8",
+      "scope-coreloop-1-b019bdc099",
+      "scope-coreloop-2-fa285598a5",
+      "scope-mobileux-7cfa90daaa"
+    ],
+    "blockers": []
+  },
+  "scopeInteractionResults": [
+    {
+      "scopeId": "scope-corefun-39c5729957",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-0-aec334dee8",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-1-b019bdc099",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-2-fa285598a5",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-mobileux-7cfa90daaa",
+      "clicked": true,
+      "stateChanged": true
+    }
+  ],
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "before": {
+    "text": "DEVELOPMENT_CONFIRMED · FULL APPROVED WEB COMPANION · 생존 탈출 Last Lantern Survive and Threat while utilizing its own world, visual identity, progression, economy, content, and interaction design. 0 SCORE 100 HP 1 WAVE 1 RESOURCE 1 LEVEL 100 ENEMY HP 0 POSITION 0 COOLDOWN 승인 분량 전체 구현 1 Survive and Threat while utilizing its own world, visual identity, progression, economy, content, and interaction design. PROGRESSION 2 Enter a dangerous area with limited information, identify the current threat, and search for a route, key item, resource, or safe checkpoint. ECONOMY 3 Avoid, outplay, or temporarily resist the threat while managing resources and cooperating with nearby players when teamwork is available. ECONOMY 4 Reach a checkpoint or escape condition, convert survival progress into unlocks or knowledge, and attempt a harder segment with new threat patterns. PROGRESSION 5 The game will be designed with mobile play in mind, with a focus on touch-screen controls and responsive gameplay. The game will be playable on a wide range of mobile devices. The MOBILE 음악 켜짐 볼륨 STATUS: ready · TURN 0 · OBJECTIVE 0 · ENERGY 100",
+    "visibleButtons": 6,
+    "canvases": [],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "0SCORE100HP1WAVE1RESOURCE1LEVEL100ENEMY HP0POSITION0COOLDOWN",
+        "attrs": [
+          [
+            "data-state",
+            "turn-0"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "1"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "audioState": "locked",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-39c5729957",
+      "scope-coreloop-0-aec334dee8",
+      "scope-coreloop-1-b019bdc099",
+      "scope-coreloop-2-fa285598a5",
+      "scope-mobileux-7cfa90daaa"
+    ],
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "after": {
+    "text": "DEVELOPMENT_CONFIRMED · FULL APPROVED WEB COMPANION · 생존 탈출 Last Lantern Survive and Threat while utilizing its own world, visual identity, progression, economy, content, and interaction design. 57 SCORE 100 HP 1 WAVE 53 RESOURCE 4 LEVEL 100 ENEMY HP 2 POSITION 0 COOLDOWN 승인 분량 전체 구현 1 Survive and Threat while utilizing its own world, visual identity, progression, economy, content, and interaction design. PROGRESSION 2 Enter a dangerous area with limited information, identify the current threat, and search for a route, key item, resource, or safe checkpoint. ECONOMY 3 Avoid, outplay, or temporarily resist the threat while managing resources and cooperating with nearby players when teamwork is available. ECONOMY 4 Reach a checkpoint or escape condition, convert survival progress into unlocks or knowledge, and attempt a harder segment with new threat patterns. PROGRESSION 5 The game will be designed with mobile play in mind, with a focus on touch-screen controls and responsive gameplay. The game will be playable on a wide range of mobile devices. The MOBILE 음악 켜짐 볼륨 STATUS: scope-mobileux-7cfa90daaa · TURN 9 · OBJECTIVE 0 · ENERGY 100",
+    "visibleButtons": 6,
+    "canvases": [],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "57SCORE100HP1WAVE53RESOURCE4LEVEL100ENEMY HP2POSITION0COOLDOWN",
+        "attrs": [
+          [
+            "data-state",
+            "turn-9"
+          ],
+          [
+            "data-score",
+            "57"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "53"
+          ],
+          [
+            "data-progress",
+            "69"
+          ]
+        ]
+      }
+    ],
+    "audioState": "running",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-39c5729957",
+      "scope-coreloop-0-aec334dee8",
+      "scope-coreloop-1-b019bdc099",
+      "scope-coreloop-2-fa285598a5",
+      "scope-mobileux-7cfa90daaa"
+    ],
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "interactionCount=8",
+    "stateChanged=true",
+    "reloadVisible=true",
+    "mobileOverflow=true",
+    "musicRuntime=true",
+    "musicAfterGesture=true",
+    "approvedScope=true",
+    "approvedScopeCount=5",
+    "scopeStateChanged=5/5"
+  ],
+  "checkedAt": "2026-09-13T02:51:42.600Z",
+  "sourcePath": "web-games/seed-roblox-survival-horror-es-doors",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-survival-horror-es-doors-34733924193-1/",
+  "screenshot": "/tmp/web-work/seed-roblox-survival-horror-es-doors/web-gameplay.png",
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-survival-horror-es-doors-34733924193-1",
+  "policyDocument": "COMPANY_FLOW.md",
+  "requiredBeforeTargetPlatform": true
+}
