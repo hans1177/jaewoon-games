@@ -349,28 +349,31 @@
       "webValidationRequired": true,
       "musicValidationRequired": true,
       "status": "ACTIVE",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "WAITING_TARGET_PLATFORM_REVALIDATION",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "sourcePath": "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits",
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": "2026-09-13T02:53:06.341Z",
       "musicValidationPassed": true,
       "routingBlockers": [
-        "roblox-source-promotion-pending"
+        "roblox-runtime-evidence-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-13T02:48:20.438Z",
-      "updatedAt": "2026-09-13T03:59:31.128Z",
+      "updatedAt": "2026-09-13T04:18:02.290Z",
       "webValidationEvidencePath": "design/seed-roblox-story-rpg-adventur-blox-fruits/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "3add021567e95b3c56539e4b52ff13571ff9d7d2",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
       "routeRevision": "b5eede6996b22447479459d3fe6ca6eda9fad20ba0c4827910704c05a7627745",
       "robloxSourceBootstrapFailedAt": null,
       "robloxRuntimePassed": false,
-      "robloxSourceCandidateBranch": "development/roblox-seed-roblox-story-rpg-adventur-blox-fruits-34736790792-1",
-      "robloxSourceCandidateReadyAt": "2026-09-13T03:59:31.128Z"
+      "robloxSourceCandidateBranch": null,
+      "robloxSourceCandidateReadyAt": null,
+      "robloxProjectPath": "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits",
+      "robloxSourceCommit": "1413a7775d56902e1350909ba30cea49456b6a88",
+      "robloxSourceBootstrapPassedAt": "2026-09-13T04:18:02.290Z"
     }
   ],
-  "updatedAt": "2026-09-13T04:17:07.548Z",
+  "updatedAt": "2026-09-13T04:18:02.290Z",
   "routerContractVersion": 2,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
