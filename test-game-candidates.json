@@ -1,7 +1,16 @@
 {
-  "version": 1,
-  "updatedAt": null,
+  "version": 2,
+  "updatedAt": "2026-09-13",
   "policyDocument": "COMPANY_FLOW.md",
   "officialCardRegistrationRequiresPromotionPass": true,
+  "homepageTestShelf": {
+    "limit": 20,
+    "order": "STRICT_REVIEW_SCORE_DESC",
+    "requiresScore": true,
+    "requiresWebGame": true,
+    "requiresArtbook": true,
+    "officialCard": false,
+    "promotionRequiredForOfficialCard": true
+  },
   "candidates": []
 }
