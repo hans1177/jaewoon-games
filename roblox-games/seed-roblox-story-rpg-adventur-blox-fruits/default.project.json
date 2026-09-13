@@ -1,0 +1,23 @@
+{
+  "name": "seed-roblox-story-rpg-adventur-blox-fruits",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Shared": {
+        "$path": "shared"
+      }
+    },
+    "ServerScriptService": {
+      "GameServer": {
+        "$path": "server"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "GameClient": {
+          "$path": "client"
+        }
+      }
+    }
+  }
+}
