@@ -445,8 +445,8 @@
       "webValidationRequired": true,
       "musicValidationRequired": true,
       "status": "ACTIVE",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "WAITING_TARGET_PLATFORM_REVALIDATION",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "sourcePath": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp",
       "webValidationQueuedAt": "2026-09-13T04:30:39.364Z",
       "webValidationPassedAt": "2026-09-13T04:31:30.379Z",
@@ -454,15 +454,18 @@
       "webValidationEvidencePath": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-09-13/web-gameplay-validation.json",
       "webValidationSourceRevision": "be9e5bbf86498d269c15f179776ee0573123f4c0",
       "routingBlockers": [
-        "roblox-source-promotion-pending"
+        "roblox-runtime-evidence-pending"
       ],
-      "updatedAt": "2026-09-13T04:33:32.023Z",
+      "updatedAt": "2026-09-13T06:40:18.879Z",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
       "routeRevision": "e7ce5305dff6ef0fffdb16fb70d413bb76de4cbd162fb82c58e42490836647cc",
-      "robloxSourceCandidateBranch": "development/roblox-seed-roblox-roleplay-life-avat-brookhaven-rp-34738148167-1",
-      "robloxSourceCandidateReadyAt": "2026-09-13T04:33:32.023Z",
+      "robloxSourceCandidateBranch": null,
+      "robloxSourceCandidateReadyAt": null,
       "robloxSourceBootstrapFailedAt": null,
-      "robloxRuntimePassed": false
+      "robloxRuntimePassed": false,
+      "robloxProjectPath": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp",
+      "robloxSourceCommit": "f70c7513c9dcd1135fe2e929afb676dd8b4b3c0d",
+      "robloxSourceBootstrapPassedAt": "2026-09-13T06:40:18.879Z"
     },
     {
       "gameId": "bug-defense",
@@ -521,7 +524,7 @@
       "routeRevision": "c22be990056ccde9069fb09f732ddd91c416b29abd1a23022897630738762ded"
     }
   ],
-  "updatedAt": "2026-09-13T06:39:28.955Z",
+  "updatedAt": "2026-09-13T06:40:18.879Z",
   "routerContractVersion": 2,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
