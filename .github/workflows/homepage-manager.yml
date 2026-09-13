@@ -20,6 +20,8 @@ on:
       - 'company-status.json'
       - 'public-release-baselines.json'
       - 'game-artbooks.json'
+      - 'artbook-viewer.html'
+      - 'artbook-submissions/**'
       - 'web-games/**'
       - 'assets/**'
       - 'manifest.webmanifest'
@@ -45,6 +47,8 @@ on:
       - 'company-status.json'
       - 'public-release-baselines.json'
       - 'game-artbooks.json'
+      - 'artbook-viewer.html'
+      - 'artbook-submissions/**'
       - 'web-games/**'
       - 'assets/**'
       - 'manifest.webmanifest'
@@ -105,14 +109,15 @@ jobs:
           set -euo pipefail
           for file in \
             index.html company.html game-catalog.json company-status.json \
-            public-release-baselines.json game-artbooks.json \
-            assets/homepage-enhancements.js assets/homepage-enhancements-core.js manifest.webmanifest install.html sw.js offline.html command.html \
+            public-release-baselines.json game-artbooks.json artbook-viewer.html \
+            assets/homepage-enhancements.js assets/homepage-enhancements-core.js assets/artbook-viewer.js manifest.webmanifest install.html sw.js offline.html command.html \
             COMPANY_FLOW.md company-directive.json HOMEPAGE_OPERATIONS.md REMOTE_AUTOMATION.md _headers; do
             test -f "$file"
           done
           node -e "for (const file of ['game-catalog.json','company-status.json','public-release-baselines.json','game-artbooks.json','company-directive.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
           node --check assets/homepage-enhancements.js
           node --check assets/homepage-enhancements-core.js
+          node --check assets/artbook-viewer.js
           node --check tools/homepage-manager.mjs
           grep -Fq '/assets/homepage-enhancements.js' index.html
           grep -Fq 'const SYNC_INTERVAL_MS=5000;' assets/homepage-enhancements-core.js
@@ -131,6 +136,28 @@ jobs:
           }
           if(failures.length)throw new Error(`homepage Web route failures: ${failures.join(',')}`);
           console.log(`HOMEPAGE_WEB_ROUTE_QA=PASS COUNT=${(catalog.games||[]).filter(g=>g.homepageWebPlayable===true).length}`);
+          NODE
+          node <<'NODE'
+          const fs=require('fs');
+          const catalog=JSON.parse(fs.readFileSync(process.env.HOMEPAGE_CATALOG_PATH||'game-catalog.json','utf8'));
+          const registry=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
+          const games=new Set((catalog.games||[]).map(game=>game.id));
+          const visible=(registry.artbooks||[]).filter(book=>book.published===true||book.homepageVisible===true);
+          const failures=[];
+          for(const book of visible){
+            if(!games.has(book.gameId)){failures.push(`${book.id}:catalog`);continue;}
+            const source=String(book.sourceFile||'').replace(/^\/+/, '');
+            if(!source||!fs.existsSync(source)){failures.push(`${book.id}:source`);continue;}
+            if(source.endsWith('.json')){
+              try{JSON.parse(fs.readFileSync(source,'utf8'));}catch{failures.push(`${book.id}:json`);}
+            }
+          }
+          const core=fs.readFileSync('assets/homepage-enhancements-core.js','utf8');
+          const viewer=fs.readFileSync('assets/artbook-viewer.js','utf8');
+          if(!core.includes('getLatestArtbook(')||!core.includes('/artbook-viewer.html?game='))failures.push('homepage:artbook-link-contract');
+          if(!viewer.includes("loadJson('/game-artbooks.json'"))failures.push('viewer:registry-contract');
+          if(failures.length)throw new Error(`homepage artbook failures: ${failures.join(',')}`);
+          console.log(`HOMEPAGE_ARTBOOK_QA=PASS COUNT=${visible.length}`);
           NODE
           grep -Fq 'homepageOperations:' COMPANY_FLOW.md
           grep -Fq 'SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR' COMPANY_FLOW.md
