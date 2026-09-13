@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "insect-survival",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "representativeModel": "qwen2.5:1.5b",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "MARKET_EVIDENCE_SUMMARY"
+    ],
+    "fix": [
+      "TARGET_AUDIENCE"
+    ],
+    "add": [
+      "TARGET_SESSION_DIRECTION"
+    ],
+    "risks": [
+      "productionClassSource"
+    ],
+    "evidence": [
+      "lifecycleState"
+    ],
+    "questions": [
+      "productionClass"
+    ]
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "insect-survival",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "게임의 시각적 요소 검토"
+        ],
+        "fix": [
+          "게임의 시각적 요소 검토"
+        ],
+        "add": [
+          "게임의 시각적 요소 검토"
+        ],
+        "risks": [
+          "게임의 시각적 요소 검토"
+        ],
+        "evidence": [
+          "게임의 시각적 요소 검토"
+        ],
+        "questions": [
+          "게임의 시각적 요소 검토"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "gameId"
+        ],
+        "fix": [
+          "gameId"
+        ],
+        "add": [
+          "gameId"
+        ],
+        "risks": [
+          "gameId"
+        ],
+        "evidence": [
+          "gameId"
+        ],
+        "questions": [
+          "gameId"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "version"
+        ],
+        "fix": [
+          "seedId"
+        ],
+        "add": [
+          "gameId"
+        ],
+        "risks": [
+          "gameName"
+        ],
+        "evidence": [
+          "status"
+        ],
+        "questions": [
+          "generation"
+        ]
+      }
+    }
+  ]
+}

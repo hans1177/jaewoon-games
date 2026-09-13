@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "gameId": "insect-survival",
+  "date": "2026-09-13",
+  "state": "REDESIGN",
+  "sameDesignerRevisionAttempted": true,
+  "repeatedFiveDepartmentReview": true,
+  "allFiveLeadModelsReviewed": true,
+  "discardVotes": 1,
+  "commonFatalCriteria": [],
+  "unanimousFatalDiscard": false,
+  "fatalReviews": {
+    "planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "CONSENSUS"
+      ],
+      "reason": "CONSENSUS"
+    },
+    "graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "GAME_SEED={"
+      ],
+      "reason": "GAME_SEED"
+    },
+    "development": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "VALID_FATAL_CRITERIA",
+        "GAME_SEED",
+        "REVISED_DESIGN",
+        "INITIAL_MEETING"
+      ],
+      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라."
+    },
+    "qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "VALID_FATAL_CRITERIA",
+        "GAME_SEED",
+        "REVISED_DESIGN",
+        "INITIAL_MEETING"
+      ],
+      "reason": "The current design violates the fatal criteria and the evidence provided. A redesign is necessary to ensure the game's core functionality can be recovered and to maintain the distinct identity of the game."
+    },
+    "balance": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
+      ],
+      "reason": "DISCARD"
+    }
+  },
+  "marketMetricAloneUsedForDiscard": false
+}

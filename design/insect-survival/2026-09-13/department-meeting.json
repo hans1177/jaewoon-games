@@ -1,0 +1,174 @@
+{
+  "version": 4,
+  "gameId": "insect-survival",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen2.5:1.5b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "지정된 담당 부서만 검토하라."
+      ],
+      "fix": [
+        "지정된 담당 부서만 검토하라."
+      ],
+      "add": [
+        "지정된 담당 부서만 검토하라."
+      ],
+      "risks": [
+        "지정된 담당 부서만 검토하라."
+      ],
+      "evidence": [
+        "지정된 담당 부서만 검토하라."
+      ],
+      "questions": [
+        "지정된 담당 부서만 검토하라."
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "게임의 시각적 요소 검토"
+      ],
+      "fix": [
+        "게임의 시각적 요소 검토"
+      ],
+      "add": [
+        "게임의 시각적 요소 검토"
+      ],
+      "risks": [
+        "게임의 시각적 요소 검토"
+      ],
+      "evidence": [
+        "게임의 시각적 요소 검토"
+      ],
+      "questions": [
+        "게임의 시각적 요소 검토"
+      ]
+    },
+    "development": {
+      "keep": [
+        "gameId"
+      ],
+      "fix": [
+        "gameId"
+      ],
+      "add": [
+        "gameId"
+      ],
+      "risks": [
+        "gameId"
+      ],
+      "evidence": [
+        "gameId"
+      ],
+      "questions": [
+        "gameId"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "MARKET_EVIDENCE_SUMMARY"
+      ],
+      "fix": [
+        "TARGET_AUDIENCE"
+      ],
+      "add": [
+        "TARGET_SESSION_DIRECTION"
+      ],
+      "risks": [
+        "productionClassSource"
+      ],
+      "evidence": [
+        "lifecycleState"
+      ],
+      "questions": [
+        "productionClass"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "곤충 생존기"
+      ],
+      "fix": [
+        "곤충 생존기"
+      ],
+      "add": [
+        "곤충 생존기"
+      ],
+      "risks": [
+        "곤충 생존기"
+      ],
+      "evidence": [
+        "곤충 생존기"
+      ],
+      "questions": [
+        "곤충 생존기"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "CONSENSUS",
+      "departments": [
+        "planning"
+      ]
+    },
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "CONSENSUS",
+      "departments": [
+        "graphics"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "CONSENSUS",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "CONSENSUS",
+      "departments": [
+        "qa"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "CONSENSUS",
+      "departments": [
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 5,
+    "conflict": 0,
+    "hold": 0
+  }
+}

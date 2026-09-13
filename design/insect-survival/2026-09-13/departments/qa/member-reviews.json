@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "insect-survival",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "MARKET_EVIDENCE_SUMMARY"
+        ],
+        "fix": [
+          "TARGET_AUDIENCE"
+        ],
+        "add": [
+          "TARGET_SESSION_DIRECTION"
+        ],
+        "risks": [
+          "productionClassSource"
+        ],
+        "evidence": [
+          "lifecycleState"
+        ],
+        "questions": [
+          "productionClass"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "곤충 생존기"
+        ],
+        "fix": [
+          "곤충 생존기"
+        ],
+        "add": [
+          "곤충 생존기"
+        ],
+        "risks": [
+          "곤충 생존기"
+        ],
+        "evidence": [
+          "곤충 생존기"
+        ],
+        "questions": [
+          "곤충 생존기"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "지정된 담당 부서만 검토하라."
+        ],
+        "fix": [
+          "지정된 담당 부서만 검토하라."
+        ],
+        "add": [
+          "지정된 담당 부서만 검토하라."
+        ],
+        "risks": [
+          "지정된 담당 부서만 검토하라."
+        ],
+        "evidence": [
+          "지정된 담당 부서만 검토하라."
+        ],
+        "questions": [
+          "지정된 담당 부서만 검토하라."
+        ]
+      }
+    }
+  ]
+}
