@@ -1,0 +1,477 @@
+name: Company DEVELOPMENT_CONFIRMED Roblox Post-Runtime QA
+
+on:
+  workflow_run:
+    workflows: ["Company DEVELOPMENT_CONFIRMED Roblox Runtime Continuation"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: company-development-roblox-post-runtime-qa
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
+jobs:
+  qa-plan:
+    name: resolve Roblox mobile independent and regression work
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    outputs:
+      count: ${{ steps.targets.outputs.count }}
+      matrix: ${{ steps.targets.outputs.matrix }}
+      targets_json: ${{ steps.targets.outputs.targets_json }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify post-runtime QA contract
+        run: |
+          set -euo pipefail
+          node --test qa/company-development-roblox-post-runtime-qa.test.mjs
+      - name: Fetch canonical runtime queue
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
+      - name: Resolve exact-artifact post-runtime QA targets
+        id: targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const rows=[];
+          for(const item of q.items||[]){
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+            const revision=String(item.robloxSourceCommit||'').trim();
+            const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
+            const exact=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:');
+            const runtime=item.robloxRuntimePassed===true&&item.robloxServerClientBoundaryPassed===true;
+            const pending=item.robloxMobileControlUiPassed!==true||item.robloxIndependentQaPassed!==true||item.robloxRegressionPassed!==true;
+            if(!exact||!runtime||!pending)continue;
+            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,sourceRevision:revision,artifactIdentity:artifact});
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
+          console.log(`ROBLOX_POST_RUNTIME_QA_TARGET_COUNT=${rows.length}`);
+          console.log(`ROBLOX_POST_RUNTIME_QA_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
+          console.log('ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=1');
+          NODE
+
+  qa-worker:
+    name: Roblox native post-runtime QA ${{ matrix.gameId }}
+    needs: qa-plan
+    if: needs.qa-plan.outputs.count != '0'
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix: ${{ fromJSON(needs.qa-plan.outputs.matrix) }}
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Resolve original immutable Roblox package by SHA256
+        id: package
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.gameId }}
+          EXPECTED_ARTIFACT: ${{ matrix.artifactIdentity }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $name = "development-roblox-package-$env:GAME_ID"
+          $response = gh api "repos/$env:GITHUB_REPOSITORY/actions/artifacts?name=$name&per_page=100" | ConvertFrom-Json
+          $candidates = @($response.artifacts | Where-Object { -not $_.expired } | Sort-Object created_at -Descending)
+          if ($candidates.Count -eq 0) { throw "No retained package artifact: $name" }
+          $matched = $null
+          foreach ($artifact in $candidates) {
+            $root = Join-Path $env:RUNNER_TEMP "roblox-post-qa-package-$($artifact.id)"
+            Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue
+            New-Item -ItemType Directory -Force -Path $root | Out-Null
+            gh run download "$($artifact.workflow_run.id)" -n $name -D $root
+            $place = Get-ChildItem -Path $root -Recurse -File -Filter *.rbxlx | Select-Object -First 1
+            if (-not $place) { continue }
+            $hash = (Get-FileHash -Algorithm SHA256 $place.FullName).Hash.ToLowerInvariant()
+            if ("sha256:$hash" -eq $env:EXPECTED_ARTIFACT.ToLowerInvariant()) {
+              $matched = [PSCustomObject]@{ place=$place.FullName; root=$root; run=$artifact.workflow_run.id; id=$artifact.id; hash=$hash }
+              break
+            }
+          }
+          if (-not $matched) { throw "No retained package matches $env:EXPECTED_ARTIFACT" }
+          "place_file=$($matched.place)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "artifact_run=$($matched.run)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host 'ROBLOX_POST_RUNTIME_IMMUTABLE_ARTIFACT_BIND=PASS'
+          Write-Host "ROBLOX_POST_RUNTIME_PACKAGE_SHA256=$($matched.hash)"
+
+      - name: Resolve authenticated local Roblox Studio
+        id: studio
+        if: steps.package.outcome == 'success'
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $studio = $null
+          $roots = @(
+            "$env:LOCALAPPDATA\Roblox\Versions",
+            "$env:PROGRAMFILES\Roblox\Versions",
+            "${env:ProgramFiles(x86)}\Roblox\Versions"
+          ) | Where-Object { $_ -and (Test-Path $_) }
+          foreach ($root in $roots) {
+            $candidate = Get-ChildItem -Path $root -Recurse -File -Filter RobloxStudioBeta.exe -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+            if ($candidate) { $studio = $candidate; break }
+          }
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found in authenticated local profile' }
+          $running = @(Get-Process -Name RobloxStudioBeta -ErrorAction SilentlyContinue)
+          if ($running.Count -gt 0) { throw 'Roblox Studio is already running; authenticated runner requires an idle Studio profile' }
+          "studio_exe=$($studio.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host 'ROBLOX_POST_RUNTIME_STUDIO_PROFILE=PASS'
+
+      - name: Run real phone mobile independent QA session
+        id: independent
+        if: steps.package.outcome == 'success' && steps.studio.outcome == 'success'
+        continue-on-error: true
+        env:
+          STUDIO_EXE: ${{ steps.studio.outputs.studio_exe }}
+          PLACE_FILE: ${{ steps.package.outputs.place_file }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $script = (Resolve-Path 'tools/company-development-roblox-mobile-independent-qa.luau').Path
+          $out = Join-Path $env:RUNNER_TEMP 'roblox-mobile-independent-output.log'
+          $stdout = Join-Path $env:RUNNER_TEMP 'roblox-mobile-independent-stdout.log'
+          $stderr = Join-Path $env:RUNNER_TEMP 'roblox-mobile-independent-stderr.log'
+          Remove-Item -Force $out,$stdout,$stderr -ErrorAction SilentlyContinue
+          $argLine = "--task RunScript --localPlaceFile `"$env:PLACE_FILE`" --runScriptFile `"$script`" --outputFile `"$out`" --quitAfterExecution"
+          $p = Start-Process -FilePath $env:STUDIO_EXE -ArgumentList $argLine -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          if (-not $p.WaitForExit(210000)) {
+            Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+            throw 'Roblox mobile independent QA timeout'
+          }
+          $combined = ''
+          if (Test-Path $out) { $combined += (Get-Content $out -Raw) }
+          if (Test-Path $stdout) { $combined += "`n" + (Get-Content $stdout -Raw) }
+          if (Test-Path $stderr) { $combined += "`n" + (Get-Content $stderr -Raw) }
+          $combined | Set-Content -Encoding utf8 (Join-Path $env:RUNNER_TEMP 'roblox-mobile-independent-combined.log')
+          Write-Host $combined
+          if ($p.ExitCode -ne 0) { throw "Roblox Studio mobile QA exited $($p.ExitCode)" }
+          if ($combined -notmatch 'ROBLOX_MOBILE_DEVICE_SIMULATION_PASS=YES') { throw 'Phone simulation PASS sentinel missing' }
+          if ($combined -notmatch 'ROBLOX_MOBILE_TOUCH_INTERACTION_PASS=YES') { throw 'Mobile touch interaction PASS sentinel missing' }
+          if ($combined -notmatch 'ROBLOX_MOBILE_CONTROL_UI_PASS=YES') { throw 'Mobile UI PASS sentinel missing' }
+          if ($combined -notmatch 'ROBLOX_INDEPENDENT_QA_PASS=YES') { throw 'Independent QA PASS sentinel missing' }
+          Write-Host 'ROBLOX_MOBILE_CONTROL_UI_PASS=YES'
+          Write-Host 'ROBLOX_INDEPENDENT_QA_PASS=YES'
+
+      - name: Ensure fresh Studio process before regression
+        if: steps.independent.outcome == 'success'
+        shell: pwsh
+        run: |
+          $running = @(Get-Process -Name RobloxStudioBeta -ErrorAction SilentlyContinue)
+          if ($running.Count -gt 0) { throw 'Independent QA left a Roblox Studio process running; regression must use a fresh process' }
+          Write-Host 'ROBLOX_REGRESSION_FRESH_STUDIO_PROCESS=YES'
+
+      - name: Run exact-artifact fresh Studio regression
+        id: regression
+        if: steps.independent.outcome == 'success'
+        continue-on-error: true
+        env:
+          STUDIO_EXE: ${{ steps.studio.outputs.studio_exe }}
+          PLACE_FILE: ${{ steps.package.outputs.place_file }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $script = (Resolve-Path 'tools/company-development-roblox-runtime-smoke.luau').Path
+          $out = Join-Path $env:RUNNER_TEMP 'roblox-regression-output.log'
+          $stdout = Join-Path $env:RUNNER_TEMP 'roblox-regression-stdout.log'
+          $stderr = Join-Path $env:RUNNER_TEMP 'roblox-regression-stderr.log'
+          Remove-Item -Force $out,$stdout,$stderr -ErrorAction SilentlyContinue
+          $argLine = "--task RunScript --localPlaceFile `"$env:PLACE_FILE`" --runScriptFile `"$script`" --outputFile `"$out`" --quitAfterExecution"
+          $p = Start-Process -FilePath $env:STUDIO_EXE -ArgumentList $argLine -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          if (-not $p.WaitForExit(180000)) {
+            Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+            throw 'Roblox exact-artifact regression timeout'
+          }
+          $combined = ''
+          if (Test-Path $out) { $combined += (Get-Content $out -Raw) }
+          if (Test-Path $stdout) { $combined += "`n" + (Get-Content $stdout -Raw) }
+          if (Test-Path $stderr) { $combined += "`n" + (Get-Content $stderr -Raw) }
+          $combined | Set-Content -Encoding utf8 (Join-Path $env:RUNNER_TEMP 'roblox-regression-combined.log')
+          Write-Host $combined
+          if ($p.ExitCode -ne 0) { throw "Roblox Studio regression exited $($p.ExitCode)" }
+          if ($combined -notmatch 'ROBLOX_RUNTIME_SMOKE=PASS') { throw 'Regression runtime PASS sentinel missing' }
+          if ($combined -notmatch 'ROBLOX_SERVER_CLIENT_BOUNDARY_PASS=YES') { throw 'Regression boundary PASS sentinel missing' }
+          Write-Host 'ROBLOX_REGRESSION_PASS=YES'
+
+      - name: Record exact post-runtime QA evidence
+        if: always()
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+          ARTIFACT_IDENTITY: ${{ matrix.artifactIdentity }}
+          ARTIFACT_RUN: ${{ steps.package.outputs.artifact_run }}
+          PACKAGE_OUTCOME: ${{ steps.package.outcome }}
+          STUDIO_OUTCOME: ${{ steps.studio.outcome }}
+          INDEPENDENT_OUTCOME: ${{ steps.independent.outcome }}
+          REGRESSION_OUTCOME: ${{ steps.regression.outcome }}
+        shell: pwsh
+        run: |
+          $root = Join-Path $env:RUNNER_TEMP 'roblox-post-runtime-qa-evidence'
+          $results = Join-Path $root 'results'
+          New-Item -ItemType Directory -Force -Path $results | Out-Null
+          $independentPass = $env:PACKAGE_OUTCOME -eq 'success' -and $env:STUDIO_OUTCOME -eq 'success' -and $env:INDEPENDENT_OUTCOME -eq 'success'
+          $regressionPass = $independentPass -and $env:REGRESSION_OUTCOME -eq 'success'
+          $failure = if ($env:PACKAGE_OUTCOME -ne 'success') { 'immutable-package-unavailable' } elseif ($env:STUDIO_OUTCOME -ne 'success') { 'roblox-studio-local-profile-unavailable' } elseif (-not $independentPass) { 'mobile-independent-qa-failed' } elseif (-not $regressionPass) { 'exact-artifact-regression-failed' } else { $null }
+          $independentLog = Join-Path $env:RUNNER_TEMP 'roblox-mobile-independent-combined.log'
+          $regressionLog = Join-Path $env:RUNNER_TEMP 'roblox-regression-combined.log'
+          $independentSha = if (Test-Path $independentLog) { (Get-FileHash -Algorithm SHA256 $independentLog).Hash.ToLowerInvariant() } else { $null }
+          $regressionSha = if (Test-Path $regressionLog) { (Get-FileHash -Algorithm SHA256 $regressionLog).Hash.ToLowerInvariant() } else { $null }
+          $runId = 0
+          if ($env:ARTIFACT_RUN -match '^\d+$') { $runId = [int64]$env:ARTIFACT_RUN }
+          $evidence = [ordered]@{
+            version=1; gameId=$env:GAME_ID; platform='ROBLOX'; checkedAt=(Get-Date).ToUniversalTime().ToString('o');
+            sourceRevision=$env:SOURCE_REVISION; artifactIdentity=$env:ARTIFACT_IDENTITY; artifactRunId=$runId; exactRevision=$true;
+            actualStudioRuntime=$true; phoneDeviceSimulationPassed=$independentPass; mobileTouchInteractionPassed=$independentPass;
+            mobileControlUiPassed=$independentPass; independentQaPassed=$independentPass; regressionPassed=$regressionPass;
+            independentOutputSha256=$independentSha; regressionOutputSha256=$regressionSha; failure=$failure;
+            authority='roblox-real-studio-post-runtime-qa'
+          }
+          $safe = $env:GAME_ID -replace '[^a-zA-Z0-9._-]+','-'
+          $file = Join-Path $results "$safe.post-runtime.json"
+          $evidence | ConvertTo-Json -Depth 8 | Set-Content -Encoding utf8 $file
+          foreach ($name in @('roblox-mobile-independent-combined.log','roblox-regression-combined.log','roblox-mobile-independent-output.log','roblox-regression-output.log')) {
+            $path = Join-Path $env:RUNNER_TEMP $name
+            if (Test-Path $path) { Copy-Item $path (Join-Path $root $name) -Force }
+          }
+          Write-Host "ROBLOX_MOBILE_CONTROL_UI_PASS=$(if($independentPass){'YES'}else{'NO'})"
+          Write-Host "ROBLOX_INDEPENDENT_QA_PASS=$(if($independentPass){'YES'}else{'NO'})"
+          Write-Host "ROBLOX_REGRESSION_PASS=$(if($regressionPass){'YES'}else{'NO'})"
+          Write-Host "ROBLOX_POST_RUNTIME_QA_FAILURE=$(if($failure){$failure}else{'NONE'})"
+          Write-Host 'ROBLOX_RELEASE_CLAIM=NO'
+
+      - name: Upload post-runtime native QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: development-roblox-post-runtime-qa-${{ matrix.gameId }}
+          path: ${{ runner.temp }}/roblox-post-runtime-qa-evidence
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Enforce post-runtime QA after evidence capture
+        if: always()
+        env:
+          INDEPENDENT_OUTCOME: ${{ steps.independent.outcome }}
+          REGRESSION_OUTCOME: ${{ steps.regression.outcome }}
+        shell: pwsh
+        run: |
+          if ($env:INDEPENDENT_OUTCOME -ne 'success') { Write-Host 'ROBLOX_INDEPENDENT_QA_PASS=NO'; exit 1 }
+          if ($env:REGRESSION_OUTCOME -ne 'success') { Write-Host 'ROBLOX_REGRESSION_PASS=NO'; exit 1 }
+          Write-Host 'ROBLOX_MOBILE_CONTROL_UI_PASS=YES'
+          Write-Host 'ROBLOX_INDEPENDENT_QA_PASS=YES'
+          Write-Host 'ROBLOX_REGRESSION_PASS=YES'
+          Write-Host 'ROBLOX_RELEASE_CLAIM=NO'
+
+  qa-persist:
+    name: persist Roblox mobile independent and regression evidence
+    needs: [qa-plan, qa-worker]
+    if: always() && needs.qa-plan.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    concurrency:
+      group: company-runtime-writer
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          fetch-depth: 1
+          fetch-tags: false
+      - name: Download post-runtime QA checkpoints
+        if: needs.qa-plan.outputs.count != '0'
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: development-roblox-post-runtime-qa-*
+          path: /tmp/roblox-post-runtime-qa-batch
+          merge-multiple: true
+      - name: Persist exact post-runtime QA state
+        if: needs.qa-plan.outputs.count != '0'
+        env:
+          EXPECTED_TARGETS_JSON: ${{ needs.qa-plan.outputs.targets_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
+          const root='/tmp/roblox-post-runtime-qa-batch';
+          const files=[];
+          const walk=dir=>{for(const e of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,e.name);if(e.isDirectory())walk(p);else if(e.isFile()&&e.name.endsWith('.post-runtime.json'))files.push(p);}};
+          if(fs.existsSync(root))walk(root);
+          const results=files.sort().map(file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'')));
+          const byId=new Map(results.map(x=>[x.gameId,x]));
+          const stamp=new Date().toISOString();let pass=0,fail=0;
+          console.log(`ROBLOX_POST_RUNTIME_QA_CHECKPOINT_FILES=${files.length}`);
+          for(const target of expected){
+            const item=(queue.items||[]).find(x=>x.gameId===target.gameId);if(!item)throw new Error(`queue item missing: ${target.gameId}`);
+            const r=byId.get(target.gameId);
+            const exact=r?.sourceRevision===item.robloxSourceCommit&&r?.artifactIdentity===item.robloxBuildArtifactIdentity&&r?.exactRevision===true;
+            const independent=exact&&r?.mobileControlUiPassed===true&&r?.independentQaPassed===true;
+            const regression=independent&&r?.regressionPassed===true;
+            item.robloxPostRuntimeQaEvidence=r||null;
+            item.robloxMobileControlUiPassed=independent;
+            item.robloxIndependentQaPassed=independent;
+            item.robloxRegressionPassed=regression;
+            item.robloxExactRevisionPassed=exact;
+            item.robloxIndependentQaPassedAt=independent?stamp:null;
+            item.robloxRegressionPassedAt=regression?stamp:null;
+            item.executionEvidence={
+              version:1,platform:'ROBLOX',sourceRevision:item.robloxSourceCommit||null,sourceFingerprint:item.robloxSourceFingerprint||null,
+              buildOrPackagePassed:item.robloxBuildOrPackagePassed===true,artifactIdentity:item.robloxBuildArtifactIdentity||null,
+              runtimePassed:item.robloxRuntimePassed===true,independentQaPassed:independent,regressionPassed:regression,exactRevision:exact,
+              lastSuccessfulStage:regression?'REGRESSION':independent?'INDEPENDENT_QA':'TARGET_PLATFORM_RUNTIME',
+              failureStage:regression?'FINAL_REVIEW':independent?'REGRESSION':'INDEPENDENT_QA',
+              failureSignature:regression?'ROBLOX_FINAL_REVIEW_PENDING':independent?'ROBLOX_REGRESSION_FAILED':(r?.failure||'ROBLOX_INDEPENDENT_QA_FAILED')
+            };
+            if(regression){
+              item.robloxLastSuccessfulStage='REGRESSION';item.robloxFailureStage='FINAL_REVIEW';item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';item.routingBlockers=['roblox-final-review-pending'];pass++;
+            }else if(independent){
+              item.robloxLastSuccessfulStage='INDEPENDENT_QA';item.robloxFailureStage='REGRESSION';item.robloxFailureSignature='ROBLOX_REGRESSION_FAILED';item.routingBlockers=['roblox-regression-failed'];fail++;
+            }else{
+              item.robloxFailureStage='INDEPENDENT_QA';item.robloxFailureSignature=r?.failure||'ROBLOX_INDEPENDENT_QA_FAILED';item.routingBlockers=['roblox-independent-qa-failed'];fail++;
+            }
+            item.updatedAt=stamp;
+          }
+          queue.updatedAt=stamp;fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          console.log(`ROBLOX_POST_RUNTIME_QA_PASS_COUNT=${pass}`);console.log(`ROBLOX_POST_RUNTIME_QA_FAIL_COUNT=${fail}`);
+          console.log('ROBLOX_RELEASE_CLAIM=NO');
+          NODE
+          git config user.name 'jaewoon-roblox-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'runtime: persist Roblox mobile independent and regression QA [skip ci]'
+            for attempt in 1 2 3; do
+              if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then break; fi
+              git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+              git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
+              sleep $((attempt*2))
+            done
+          fi
+
+  final-review:
+    name: enforce Roblox final-review fail-closed gates
+    needs: qa-persist
+    if: always() && needs.qa-persist.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: company-runtime-writer
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          fetch-depth: 1
+          fetch-tags: false
+      - name: Evaluate final Roblox policy gates without claiming release
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const allowedModes=new Set(['SINGLE','COOP','COMPETITIVE','HYBRID']);
+          const findLatestDesign=(gameId)=>{
+            const root=path.join('design',gameId);if(!fs.existsSync(root))return null;
+            const files=[];const walk=dir=>{for(const e of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,e.name);if(e.isDirectory())walk(p);else if(e.isFile()&&e.name==='design-revised.json')files.push(p);}};walk(root);
+            files.sort().reverse();if(!files.length)return null;try{return JSON.parse(fs.readFileSync(files[0],'utf8'));}catch{return null;}
+          };
+          const stamp=new Date().toISOString();let ready=0,blocked=0;
+          for(const item of queue.items||[]){
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED'||String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
+            if(item.robloxRuntimePassed!==true||item.robloxIndependentQaPassed!==true||item.robloxRegressionPassed!==true)continue;
+            const design=findLatestDesign(item.gameId);
+            const rawMode=design?.content?.multiplayerMode??design?.content?.multiplayer?.mode??design?.multiplayerMode??'';
+            const mode=String(rawMode||'').trim().toUpperCase();
+            const saveRequired=item.robloxRuntimeEvidence?.saveExists===true;
+            const saveGate=!saveRequired||item.robloxDatastoreRejoinPassed===true;
+            const modeDefined=allowedModes.has(mode);
+            const multiplayerApplicable=modeDefined&&mode!=='SINGLE';
+            const multiplayerGate=modeDefined&&(mode==='SINGLE'||item.robloxMultiplayerQaPassed===true);
+            const exact=item.robloxExactRevisionPassed===true;
+            const core=item.robloxRuntimePassed===true&&item.robloxServerClientBoundaryPassed===true&&item.robloxMobileControlUiPassed===true&&item.robloxIndependentQaPassed===true&&item.robloxRegressionPassed===true&&exact&&saveGate;
+            const finalPass=core&&multiplayerGate;
+            item.robloxMultiplayerMode=modeDefined?mode:null;
+            item.robloxMultiplayerApplicable=multiplayerApplicable;
+            item.robloxFinalReviewPassed=finalPass;
+            item.robloxFinalReviewCheckedAt=stamp;
+            item.robloxReleaseClaim=false;
+            if(finalPass){
+              item.robloxLastSuccessfulStage='FINAL_REVIEW';item.robloxFailureStage='RELEASE_PROMOTION';item.robloxFailureSignature='ROBLOX_RELEASE_PROMOTION_PENDING';item.routingBlockers=['roblox-release-promotion-pending'];ready++;
+            }else if(!saveGate){
+              item.robloxFailureStage='FINAL_REVIEW';item.robloxFailureSignature='ROBLOX_DATASTORE_REJOIN_REQUIRED';item.routingBlockers=['roblox-datastore-rejoin-required'];blocked++;
+            }else if(!modeDefined){
+              item.robloxFailureStage='FINAL_REVIEW';item.robloxFailureSignature='ROBLOX_MULTIPLAYER_DESIGN_DECISION_MISSING';item.routingBlockers=['roblox-multiplayer-design-decision-missing'];blocked++;
+            }else if(multiplayerApplicable&&item.robloxMultiplayerQaPassed!==true){
+              item.robloxFailureStage='FINAL_REVIEW';item.robloxFailureSignature='ROBLOX_MULTIPLAYER_QA_REQUIRED';item.routingBlockers=['roblox-multiplayer-qa-required'];blocked++;
+            }else{
+              item.robloxFailureStage='FINAL_REVIEW';item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_BLOCKED';item.routingBlockers=['roblox-final-review-blocked'];blocked++;
+            }
+            if(item.executionEvidence){
+              item.executionEvidence.lastSuccessfulStage=finalPass?'FINAL_REVIEW':'REGRESSION';
+              item.executionEvidence.failureStage=finalPass?'RELEASE_PROMOTION':'FINAL_REVIEW';
+              item.executionEvidence.failureSignature=item.robloxFailureSignature;
+            }
+            item.updatedAt=stamp;
+          }
+          queue.updatedAt=stamp;fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          console.log(`ROBLOX_FINAL_REVIEW_READY_COUNT=${ready}`);console.log(`ROBLOX_FINAL_REVIEW_BLOCKED_COUNT=${blocked}`);
+          console.log('ROBLOX_RELEASE_CLAIM=NO');
+          NODE
+          git config user.name 'jaewoon-roblox-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'runtime: enforce Roblox final review gates [skip ci]'
+            for attempt in 1 2 3; do
+              if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then break; fi
+              git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+              git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
+              sleep $((attempt*2))
+            done
+          fi
+      - name: Final summary
+        run: |
+          echo 'ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES'
+          echo 'ROBLOX_MOBILE_CONTROL_UI_REAL_DEVICE_SIMULATION_REQUIRED=YES'
+          echo 'ROBLOX_INDEPENDENT_QA_REAL_STUDIO_REQUIRED=YES'
+          echo 'ROBLOX_REGRESSION_EXACT_ARTIFACT_REQUIRED=YES'
+          echo 'ROBLOX_MULTIPLAYER_DESIGN_DECISION_FAIL_CLOSED=YES'
+          echo 'ROBLOX_RELEASE_CLAIM=NO'
