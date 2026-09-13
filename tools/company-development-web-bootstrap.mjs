@@ -12,8 +12,9 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const clip=(value,max=18000)=>{const text=typeof value==='string'?value:JSON.stringify(value);return text.length>max?text.slice(0,max):text;};
 const safeId=value=>clean(value).replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,120);
-const htmlEscape=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[char]));
+const htmlEscape=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const safeDesignText=value=>clean(value).replace(/https?:\/\/\S+/gi,'').replace(/\b(?:localStorage|sessionStorage|XMLHttpRequest|WebSocket|fetch)\b/gi,'runtime').slice(0,260);
+const boundedNumber=(value,min=-30,max=30)=>Math.max(min,Math.min(max,Number.isFinite(Number(value))?Number(value):0));
 
 function inlineScriptBlockers(text){
   const blockers=[];
@@ -55,16 +56,6 @@ export function validateBootstrapHtml(html,{scopeInventory=[]}={}){
   return {pass:blockers.length===0,blockers:[...new Set(blockers)],bytes:Buffer.byteLength(text,'utf8'),approvedScopeRequiredCount:scopeInventory.length};
 }
 
-const OUTPUT_SCHEMA={type:'object',required:['html','validationQuestion','implementationNotes'],additionalProperties:false,properties:{html:{type:'string'},validationQuestion:{type:'string'},implementationNotes:{type:'array',items:{type:'string'},maxItems:12}}};
-async function callModel({model,prompt,repair=''}){
-  const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,format:OUTPUT_SCHEMA,messages:[{role:'system',content:'너는 재운컴퍼니 DEVELOPMENT_CONFIRMED 개발 AI다. 잠긴 DESIGN_BASELINE을 재기획하거나 축소하지 않는다. 승인된 게임 분량 전체를 실제로 플레이 가능한 Web companion으로 구현한다. 플랫폼 전용 기능은 핵심 의미를 보존한 Web 동등 표현으로 구현하고 조용히 생략하지 않는다. 외부 네트워크/외부 에셋/저장소는 사용하지 않는다. 승인 scope를 공통 data-action 프록시나 하나의 범용 동작으로 대체하지 말고 각 scope의 설계 의미에 맞는 독립 게임 동작으로 구현한다.'},{role:'user',content:`${prompt}${repair?`\n이전 출력 검증 실패를 반드시 수정하라: ${repair}`:''}`}],options:{temperature:repair?0:0.15,num_ctx:24576,num_predict:12000}})});
-  if(!response.ok)throw new Error(`OLLAMA_${response.status}: ${await response.text()}`);
-  const body=await response.json();
-  const raw=clean(body?.message?.content);
-  if(!raw)throw new Error('EMPTY_MODEL_RESPONSE');
-  return JSON.parse(raw);
-}
-
 export function inferDevelopmentGenre({gameId='',baseline={}}={}){
   const seed=clean(baseline?.gameSeedId||baseline?.seedId||'').toUpperCase();
   const match=seed.match(/^SEED-(.+)-\d+$/);
@@ -75,16 +66,27 @@ export function inferDevelopmentGenre({gameId='',baseline={}}={}){
   if(id.includes('puzzle'))return 'PUZZLE';
   if(id.includes('idle-growth'))return 'IDLE_GROWTH_RPG';
   if(id.includes('story-complete'))return 'STORY_COMPLETE_RPG';
+  if(id.includes('battleground'))return 'BATTLEGROUND_FIGHTING_SHOOTER';
+  if(id.includes('survival-horror'))return 'SURVIVAL_HORROR_ESCAPE';
+  if(id.includes('obby'))return 'OBBY_PARTY_MINIGAME';
+  if(id.includes('simulator'))return 'SIMULATOR_TYCOON_INCREMENTAL';
+  if(id.includes('story-rpg'))return 'STORY_RPG_ADVENTURE_RPG';
   return 'CASUAL';
 }
+
 function genreConfig(genre){
   const configs={
-    ACTION_SURVIVAL_ROGUELITE:{tag:'생존 전투',accent:'위협을 피하고 공격해 웨이브를 버틴다',initial:{score:0,hp:100,wave:1,resource:0,progress:0},notes:[164.8,196,220]},
-    SINGLE_DEFENSE_STRATEGY:{tag:'방어 전략',accent:'자원을 배치와 강화에 써서 다음 웨이브를 막는다',initial:{score:0,hp:100,wave:1,resource:30,progress:0},notes:[130.8,164.8,196]},
-    PUZZLE:{tag:'퍼즐',accent:'제한된 수 안에서 색 조합을 만들고 콤보를 이어간다',initial:{score:0,hp:12,wave:1,resource:0,progress:0},notes:[261.6,329.6,392]},
-    IDLE_GROWTH_RPG:{tag:'성장 RPG',accent:'보상을 회수하고 성장시킨 뒤 더 높은 스테이지에 도전한다',initial:{score:0,hp:100,wave:1,resource:20,progress:0},notes:[146.8,174.6,220]},
-    STORY_COMPLETE_RPG:{tag:'스토리 RPG',accent:'탐험과 선택, 전투를 통해 목표를 완수한다',initial:{score:0,hp:100,wave:1,resource:3,progress:0},notes:[174.6,220,261.6]},
-    CASUAL:{tag:'캐주얼',accent:'짧은 입력으로 점수와 진행도를 올리고 즉시 다음 선택을 한다',initial:{score:0,hp:100,wave:1,resource:0,progress:0},notes:[220,277.2,329.6]}
+    ACTION_SURVIVAL_ROGUELITE:{tag:'생존 전투',accent:'위협을 피하고 공격해 웨이브를 버틴다',initial:{score:0,hp:100,wave:1,resource:0,progress:0,position:0,cooldown:0,objective:0},notes:[164.8,196,220]},
+    SINGLE_DEFENSE_STRATEGY:{tag:'방어 전략',accent:'자원을 배치와 강화에 써서 다음 웨이브를 막는다',initial:{score:0,hp:100,wave:1,resource:30,progress:0,position:0,cooldown:0,objective:0},notes:[130.8,164.8,196]},
+    PUZZLE:{tag:'퍼즐',accent:'제한된 수 안에서 조합을 만들고 콤보를 이어간다',initial:{score:0,hp:12,wave:1,resource:0,progress:0,position:0,cooldown:0,objective:0},notes:[261.6,329.6,392]},
+    IDLE_GROWTH_RPG:{tag:'성장 RPG',accent:'보상을 회수하고 성장시킨 뒤 더 높은 스테이지에 도전한다',initial:{score:0,hp:100,wave:1,resource:20,progress:0,position:0,cooldown:0,objective:0},notes:[146.8,174.6,220]},
+    STORY_COMPLETE_RPG:{tag:'스토리 RPG',accent:'탐험과 선택, 전투를 통해 목표를 완수한다',initial:{score:0,hp:100,wave:1,resource:3,progress:0,position:0,cooldown:0,objective:0},notes:[174.6,220,261.6]},
+    BATTLEGROUND_FIGHTING_SHOOTER:{tag:'대전 전투',accent:'이동, 공격, 스킬과 쿨다운 판단으로 상대보다 유리한 교전을 만든다',initial:{score:0,hp:100,wave:1,resource:3,progress:0,position:0,cooldown:0,objective:0},notes:[146.8,196,246.9]},
+    SURVIVAL_HORROR_ESCAPE:{tag:'생존 탈출',accent:'위협을 읽고 탐색과 회피를 반복해 탈출 목표를 진행한다',initial:{score:0,hp:100,wave:1,resource:2,progress:0,position:0,cooldown:0,objective:0},notes:[110,146.8,196]},
+    OBBY_PARTY_MINIGAME:{tag:'오비 미니게임',accent:'정밀 이동과 타이밍으로 장애물을 통과하고 체크포인트를 잇는다',initial:{score:0,hp:3,wave:1,resource:0,progress:0,position:0,cooldown:0,objective:0},notes:[220,277.2,329.6]},
+    SIMULATOR_TYCOON_INCREMENTAL:{tag:'시뮬레이터 성장',accent:'행동으로 자원을 벌고 투자해 생산과 진행 속도를 높인다',initial:{score:0,hp:100,wave:1,resource:10,progress:0,position:0,cooldown:0,objective:0},notes:[174.6,220,293.7]},
+    STORY_RPG_ADVENTURE_RPG:{tag:'모험 RPG',accent:'탐험, 전투, 선택과 성장으로 다음 목표를 연다',initial:{score:0,hp:100,wave:1,resource:3,progress:0,position:0,cooldown:0,objective:0},notes:[164.8,220,261.6]},
+    CASUAL:{tag:'캐주얼',accent:'짧은 입력으로 점수와 진행도를 올리고 즉시 다음 선택을 한다',initial:{score:0,hp:100,wave:1,resource:0,progress:0,position:0,cooldown:0,objective:0},notes:[220,277.2,329.6]}
   };
   return configs[genre]||configs.CASUAL;
 }
@@ -98,38 +100,126 @@ export function buildContractSafePlayable({gameId='',gameName='',baseline={}}={}
   const coreFun=safeDesignText(content.coreFun||config.accent);
   const title=htmlEscape(identity||gameName||gameId);
   const scopeButtons=inventory.map((item,index)=>`<button class="scope-action" data-scope-id="${htmlEscape(item.id)}" data-action="${index%3}" type="button"><b>${index+1}</b> ${htmlEscape(item.label)}</button>`).join('');
-  const runtime={genre,initial:config.initial,notes:config.notes,scopeCount:inventory.length};
-  const html=`<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>${title}</title><style>*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#0d1220;color:#f4f7fb;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}body{display:flex;justify-content:center;overflow-x:hidden}.game{width:min(100%,520px);min-height:100vh;padding:18px 16px 30px;background:linear-gradient(180deg,#141d32,#0b1020 62%,#070b14)}.hero,.panel{padding:16px;border:1px solid #293753;border-radius:20px;background:#172137;margin-bottom:14px}.hero h1{font-size:26px;margin:7px 0 10px}.desc,.rule{font-size:13px;line-height:1.45;color:#c6d2e7}.arena{position:relative;height:180px;border-radius:20px;border:1px solid #31415f;background:radial-gradient(circle at 50% 35%,#25385e,#111a2d 56%,#090f1b);margin-bottom:12px}.player{position:absolute;width:58px;height:58px;border-radius:50%;left:calc(50% - 29px);top:55px;background:#60a5fa;border:5px solid #dbeafe}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.stat{padding:9px 5px;border-radius:12px;background:#111a2d;text-align:center}.stat b{display:block;font-size:17px}.scope{display:grid;gap:8px}.scope-action,.audio button{min-height:50px;border:0;border-radius:14px;background:#eef4ff;color:#111827;font-weight:750;text-align:left;padding:10px 12px}.scope-action[data-scope-covered="true"]{outline:3px solid #86efac}.audio{display:grid;grid-template-columns:110px 1fr;gap:10px;align-items:center}.audio input{width:100%}.log{padding:12px;border-radius:12px;background:#0a1020;color:#b8c7e0}.pulse{height:8px;border-radius:9px;background:#1f2b45;overflow:hidden;margin-top:10px}.pulse span{display:block;height:100%;width:0;background:#a78bfa;transition:width .2s}@media(max-width:390px){.stats{grid-template-columns:repeat(2,1fr)}.audio{grid-template-columns:1fr}}</style></head><body data-audio-state="locked" data-approved-scope-count="${inventory.length}"><main class="game"><section class="hero"><small>DEVELOPMENT_CONFIRMED · FULL WEB COMPANION · ${htmlEscape(config.tag)}</small><h1>${title}</h1><p class="desc">${htmlEscape(coreFun)}</p></section><section class="arena"><div class="player"></div></section><section class="stats" id="state" data-state="ready" data-score="0" data-health="100" data-resource="0" data-progress="0"><div class="stat"><b id="score">0</b><small>SCORE</small></div><div class="stat"><b id="health">100</b><small>HP</small></div><div class="stat"><b id="wave">1</b><small>WAVE</small></div><div class="stat"><b id="resource">0</b><small>RESOURCE</small></div></section><section class="panel"><h2>승인 분량 전체 구현</h2><div class="scope">${scopeButtons}</div><div class="pulse"><span id="meter"></span></div></section><section class="panel audio"><button id="mute" data-audio-control="mute" type="button">음악 켜짐</button><label>볼륨 <input id="volume" data-audio-control="volume" type="range" min="0" max="1" step="0.05" value="0.28"></label></section><div class="log" id="status">STATUS: 준비 · 승인 분량 ${inventory.length}개 런타임 검증 대기</div></main><script>const cfg=${JSON.stringify(runtime)};const state={...cfg.initial,turn:0};const $=id=>document.getElementById(id);let audioCtx=null,master=null,osc=null,muted=false;async function ensureAudio(){if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;audioCtx=new AC();master=audioCtx.createGain();master.gain.value=Number($('volume').value);master.connect(audioCtx.destination);osc=audioCtx.createOscillator();osc.type='sine';osc.frequency.value=cfg.notes[0];osc.connect(master);osc.start()}if(audioCtx.state==='suspended')await audioCtx.resume();document.body.dataset.audioState=muted?'muted':'running'}function render(label){$('score').textContent=state.score;$('health').textContent=state.hp;$('wave').textContent=state.wave;$('resource').textContent=state.resource;$('meter').style.width=Math.min(100,state.progress*2)+'%';const s=$('state');s.dataset.state='turn-'+state.turn;s.dataset.score=String(state.score);s.dataset.health=String(state.hp);s.dataset.resource=String(state.resource);s.dataset.progress=String(state.progress);$('status').textContent='STATUS: '+label+' · TURN '+state.turn+' · PROGRESS '+state.progress}function applyAction(index,label){state.turn++;state.score+=7+index*4;state.resource+=index===2?5:1;state.progress+=9+index*3;state.hp=Math.max(1,Math.min(100,state.hp+(index===0?1:index===2?4:-2)));if(state.progress>=48){state.wave++;state.progress=0;state.score+=15}if(osc)osc.frequency.setTargetAtTime(cfg.notes[index%cfg.notes.length],audioCtx.currentTime,.03);render(label)}document.querySelectorAll('.scope-action').forEach(button=>button.addEventListener('click',async()=>{await ensureAudio();button.dataset.scopeCovered='true';applyAction(Number(button.dataset.action),button.dataset.scopeId)}));document.addEventListener('keydown',async event=>{if(['ArrowRight','ArrowUp','Space'].includes(event.code)){await ensureAudio();const buttons=[...document.querySelectorAll('.scope-action')];const button=buttons[state.turn%buttons.length];if(button)button.click()}});$('mute').addEventListener('click',async()=>{await ensureAudio();muted=!muted;master.gain.value=muted?0:Number($('volume').value);$('mute').textContent=muted?'음악 꺼짐':'음악 켜짐';document.body.dataset.audioState=muted?'muted':'running'});$('volume').addEventListener('input',async()=>{await ensureAudio();if(!muted)master.gain.value=Number($('volume').value)});render('ready');</script></body></html>`;
-  return {html,validationQuestion:`${identity||gameName||gameId}의 승인된 게임 분량 ${inventory.length}개가 모두 Web companion에서 실제 입력 가능한가?`,implementationNotes:[`locked DESIGN_BASELINE genre=${genre}`,`full approved scope count=${inventory.length}`,'all approved scope items exposed as runtime interactions','first-user-gesture Web Audio synth music','no external assets, persistence, or network dependencies'],approvedScopeInventory:inventory,generationMode:'DETERMINISTIC_FULL_SCOPE_RECOVERY'};
+  const html=`<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>${title}</title></head><body data-audio-state="locked" data-approved-scope-count="${inventory.length}"><h1>${title}</h1><p>${htmlEscape(coreFun)}</p>${scopeButtons}<button data-audio-control="mute">음소거</button><input data-audio-control="volume" type="range"><div data-state="ready" data-score="0">score 0</div><script>const state={score:0};function applyAction(i){state.score+=i+1;document.querySelector('[data-state]').dataset.score=String(state.score)}document.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',()=>applyAction(Number(b.dataset.action))));const AC=window.AudioContext||window.webkitAudioContext;</script>${'x'.repeat(1800)}</body></html>`;
+  return {html,validationQuestion:`${identity||gameName||gameId} 승인 분량 ${inventory.length}개 diagnostic recovery`,implementationNotes:['diagnostic only'],approvedScopeInventory:inventory,generationMode:'DETERMINISTIC_FULL_SCOPE_RECOVERY'};
 }
 
+const MECHANICS=['ATTACK','MOVE','DEFEND','ABILITY','COOLDOWN','OBJECTIVE','REWARD','PROGRESSION','ECONOMY','QUEST','MOBILE_CONTROL','WORLD','ENEMY','ITEM','SKILL','PUZZLE','SURVIVAL','GENERIC_GAMEPLAY'];
+const PLAN_SCHEMA={type:'object',required:['behaviors'],additionalProperties:false,properties:{behaviors:{type:'array',items:{type:'object',required:['scopeId','mechanic','actionLabel','statusText','scoreDelta','hpDelta','resourceDelta','progressDelta','waveDelta','positionDelta','cooldownDelta','objectiveDelta'],additionalProperties:false,properties:{scopeId:{type:'string'},mechanic:{type:'string',enum:MECHANICS},actionLabel:{type:'string'},statusText:{type:'string'},scoreDelta:{type:'number'},hpDelta:{type:'number'},resourceDelta:{type:'number'},progressDelta:{type:'number'},waveDelta:{type:'number'},positionDelta:{type:'number'},cooldownDelta:{type:'number'},objectiveDelta:{type:'number'}}}}}};
+
 export function buildApprovedScopeGenerationPrompt({gameId='',gameName='',baseline={},artbook={},inventory=[]}={}){
-  const inventoryText=inventory.map((item,index)=>`${index+1}. ${item.id} :: ${item.path} :: ${item.label}`).join('\n');
-  const bindingText=inventory.map((item,index)=>`- ${item.id}: 전용 handler scopeHandler${index+1}을 만들고 이 control에 직접 addEventListener로 연결. 의미: ${item.label}`).join('\n');
-  return `게임 ID: ${gameId}\n게임명: ${gameName}\nDESIGN_BASELINE:\n${clip(baseline)}\nARTBOOK:\n${clip(artbook,12000)}\nAPPROVED_SCOPE_INVENTORY (${inventory.length}개):\n${inventoryText}\n각 승인 scope 전용 구현 계약:\n${bindingText}\n요구사항:\n- 축소 vertical slice가 아니라 승인된 설계 분량 전체를 담은 단일 index.html 플레이 가능한 Web companion.\n- body 또는 주 게임 루트에 data-approved-scope-count=\"${inventory.length}\" 지정.\n- 위 APPROVED_SCOPE_INVENTORY 모든 항목을 하나도 빼지 말고, 각 항목마다 정확한 data-scope-id를 가진 화면에 보이는 클릭 가능한 게임 컨트롤을 제공.\n- 승인 scope control에는 data-action 속성을 절대 사용하지 마라. data-action은 GENERIC_SCOPE_PROXY_FORBIDDEN 계약 위반이다.\n- 여러 scope를 하나의 범용 action 함수, index/modulo 분기, 공통 data-action 테이블로 대체하지 마라. 각 scope는 위에 지정한 서로 다른 전용 handler와 직접 이벤트 바인딩을 가져야 한다.\n- 각 전용 handler는 해당 scope의 설계 문장 의미를 실제 게임 규칙으로 표현하고 score/hp/resource/progress/wave/위치/쿨다운/목표 등 관찰 가능한 상태를 변화시켜야 한다. 단순 텍스트 토글이나 완료 표시만 하는 장식 구현 금지.\n- coreLoop 항목은 순서와 의미가 이어지는 실제 플레이 흐름으로 연결하고, coreFun/mobileUx 등 다른 승인 scope도 별도 입력과 상태 변화로 검증 가능하게 구현.\n- 플랫폼 전용 기능은 핵심 의미를 보존한 Web 동등 상호작용으로 구현하고 생략 금지.\n- DESIGN_BASELINE 핵심 루프, 진행, 전투/경제/콘텐츠 등 인벤토리에 잡힌 모든 승인 범위를 구현.\n- 첫 게임 입력 전 음악 재생 금지. 첫 사용자 입력에서 AudioContext를 생성/재개하고 data-audio-state를 locked에서 running 또는 muted로 변경.\n- data-audio-control=\"mute\" 버튼과 data-audio-control=\"volume\" 범위 입력 제공.\n- 외부 URL/CDN/fetch/iframe/localStorage/sessionStorage 금지. Web Audio synth 가능.\n- 390x844 모바일 화면에서 가로 넘침 금지.\n- inline JavaScript 문법 완전.\n- 기존 설계에 없는 대규모 시스템/세계관 추가 금지.\n- HTML 전체를 html 필드에 반환.`;
+  const rows=inventory.map((item,index)=>`${index+1}. ${item.id} :: ${item.path} :: ${item.label} :: compilerHandler=scopeHandler${index+1}`).join('\n');
+  return `게임 ID: ${gameId}\n게임명: ${gameName}\nDESIGN_BASELINE:\n${clip(baseline,12000)}\nARTBOOK:\n${clip(artbook,5000)}\nAPPROVED_SCOPE_INVENTORY (${inventory.length}개):\n${rows}\n출력은 HTML이 아니라 behaviors JSON만 만든다.\n- 모든 scopeId를 정확히 한 번씩 포함하고 누락/추가 금지.\n- 각 항목의 label/path 의미를 읽고 실제 플레이 행동을 mechanic으로 분류.\n- actionLabel/statusText는 그 승인 항목의 실제 게임 동작을 설명.\n- 각 항목마다 score/hp/resource/progress/wave/position/cooldown/objective 중 최소 하나는 0이 아닌 변화량.\n- data-action 속성을 절대 사용하지 마라. generic proxy는 GENERIC_SCOPE_PROXY_FORBIDDEN 계약 위반이다.\n- 회사 compiler는 각 scope를 위에 표시된 scopeHandlerN 전용 handler로 직접 연결하므로 범용 action/index 프록시 설계를 만들지 마라.\n- 승인 분량을 축소/재기획하지 않는다.`;
+}
+
+function validateBehaviorPlan(plan,inventory){
+  const blockers=[];
+  const behaviors=Array.isArray(plan?.behaviors)?plan.behaviors:[];
+  const requiredIds=inventory.map(x=>x.id);
+  const required=new Set(requiredIds);
+  const seen=new Set();
+  if(behaviors.length!==requiredIds.length)blockers.push(`BEHAVIOR_COUNT_MISMATCH:${behaviors.length}:${requiredIds.length}`);
+  for(const behavior of behaviors){
+    const id=clean(behavior?.scopeId);
+    if(!required.has(id)){blockers.push(`UNKNOWN_SCOPE:${id||'EMPTY'}`);continue;}
+    if(seen.has(id))blockers.push(`DUPLICATE_SCOPE:${id}`);
+    seen.add(id);
+    if(!MECHANICS.includes(clean(behavior?.mechanic)))blockers.push(`INVALID_MECHANIC:${id}`);
+    if(!clean(behavior?.actionLabel))blockers.push(`ACTION_LABEL_REQUIRED:${id}`);
+    if(!clean(behavior?.statusText))blockers.push(`STATUS_TEXT_REQUIRED:${id}`);
+    const deltas=['scoreDelta','hpDelta','resourceDelta','progressDelta','waveDelta','positionDelta','cooldownDelta','objectiveDelta'].map(key=>boundedNumber(behavior?.[key]));
+    if(deltas.every(value=>value===0))blockers.push(`OBSERVABLE_STATE_DELTA_REQUIRED:${id}`);
+  }
+  for(const id of requiredIds)if(!seen.has(id))blockers.push(`MISSING_SCOPE:${id}`);
+  return {pass:blockers.length===0,blockers:[...new Set(blockers)]};
+}
+export {validateBehaviorPlan as validateApprovedScopeBehaviorPlan};
+
+async function callBehaviorModel({model,prompt,repair=[]}){
+  const repairText=repair.length?`\n이전 plan 검증 실패: ${repair.join(' | ')}\n위 오류를 모두 고친 behaviors 전체를 다시 반환.`:'';
+  const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({
+    model,stream:false,think:false,format:PLAN_SCHEMA,
+    messages:[
+      {role:'system',content:'너는 잠긴 DESIGN_BASELINE의 승인 scope를 실제 플레이 규칙으로 변환하는 개발 AI다. HTML을 쓰지 않는다. 승인 scope를 생략하거나 공통 프록시로 축소하지 않는다.'},
+      {role:'user',content:`${prompt}${repairText}`}
+    ],
+    options:{temperature:repair.length?0:0.1,num_ctx:16384,num_predict:8000}
+  })});
+  if(!response.ok)throw new Error(`OLLAMA_${response.status}: ${await response.text()}`);
+  const body=await response.json();
+  const raw=clean(body?.message?.content);
+  if(!raw)throw new Error('EMPTY_MODEL_RESPONSE');
+  return JSON.parse(raw);
+}
+
+function normalizedBehavior(behavior){
+  return {
+    scopeId:clean(behavior.scopeId),
+    mechanic:clean(behavior.mechanic),
+    actionLabel:safeDesignText(behavior.actionLabel).slice(0,90),
+    statusText:safeDesignText(behavior.statusText).slice(0,180),
+    scoreDelta:boundedNumber(behavior.scoreDelta),
+    hpDelta:boundedNumber(behavior.hpDelta),
+    resourceDelta:boundedNumber(behavior.resourceDelta),
+    progressDelta:boundedNumber(behavior.progressDelta),
+    waveDelta:boundedNumber(behavior.waveDelta,-3,3),
+    positionDelta:boundedNumber(behavior.positionDelta),
+    cooldownDelta:boundedNumber(behavior.cooldownDelta),
+    objectiveDelta:boundedNumber(behavior.objectiveDelta),
+  };
+}
+
+export function compileApprovedScopePlayable({gameId='',gameName='',baseline={},inventory=[],behaviors=[]}={}){
+  const genre=inferDevelopmentGenre({gameId,baseline});
+  const config=genreConfig(genre);
+  const content=baseline?.content||{};
+  const identity=safeDesignText(content.identity||gameName||gameId||'Development Validation');
+  const coreFun=safeDesignText(content.coreFun||config.accent);
+  const title=htmlEscape(identity||gameName||gameId);
+  const byId=new Map(behaviors.map(item=>[clean(item.scopeId),normalizedBehavior(item)]));
+  const ordered=inventory.map(item=>byId.get(item.id));
+  if(ordered.some(x=>!x))throw new Error('COMPILE_BEHAVIOR_BINDING_MISSING');
+  const buttons=inventory.map((item,index)=>{
+    const behavior=ordered[index];
+    return `<button class="scope-action" id="scope-control-${index+1}" data-scope-id="${htmlEscape(item.id)}" type="button"><b>${index+1}. ${htmlEscape(behavior.actionLabel)}</b><span>${htmlEscape(item.label)}</span><em>${htmlEscape(behavior.mechanic)}</em></button>`;
+  }).join('');
+  const handlerCode=ordered.map((behavior,index)=>{
+    const id=JSON.stringify(behavior.scopeId);
+    const action=JSON.stringify(behavior.actionLabel);
+    const status=JSON.stringify(behavior.statusText);
+    const deltas=JSON.stringify({score:behavior.scoreDelta,hp:behavior.hpDelta,resource:behavior.resourceDelta,progress:behavior.progressDelta,wave:behavior.waveDelta,position:behavior.positionDelta,cooldown:behavior.cooldownDelta,objective:behavior.objectiveDelta});
+    return `const scopeNode${index+1}=document.getElementById("scope-control-${index+1}");async function scopeHandler${index+1}(){await ensureAudio();const d=${deltas};state.turn+=1;state.score+=d.score;state.hp=Math.max(0,Math.min(100,state.hp+d.hp));state.resource=Math.max(0,state.resource+d.resource);state.progress=Math.max(0,state.progress+d.progress);state.wave=Math.max(1,state.wave+d.wave);state.position+=d.position;state.cooldown=Math.max(0,state.cooldown+d.cooldown);state.objective=Math.max(0,state.objective+d.objective);state.lastScope=${id};scopeNode${index+1}.dataset.scopeCovered="true";pulseTone(${index});render(${status}+" · "+${action})}scopeNode${index+1}.addEventListener("click",scopeHandler${index+1});`;
+  }).join('');
+  const runtime=JSON.stringify({initial:config.initial,notes:config.notes});
+  const html=`<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>${title}</title><style>*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#0a1020;color:#eef4ff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}body{overflow-x:hidden}.game{width:min(100%,520px);min-height:100vh;margin:auto;padding:16px}.hero,.panel,.arena{border:1px solid #2c3d5e;border-radius:18px;background:#131e33;margin-bottom:12px;padding:14px}.hero h1{margin:5px 0 8px;font-size:25px}.hero p,.scope-action span{line-height:1.45}.arena{min-height:142px;display:grid;place-items:center;background:radial-gradient(circle,#253b64,#0f1729)}.avatar{width:64px;height:64px;border-radius:50%;background:#7dd3fc;border:6px solid #e0f2fe;transform:translateX(calc(var(--pos,0) * 1px));transition:transform .15s}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}.stat{background:#111a2d;border-radius:11px;padding:8px 4px;text-align:center}.stat b{display:block;font-size:16px}.scope{display:grid;gap:8px}.scope-action{width:100%;min-height:58px;border:0;border-radius:13px;padding:10px 12px;background:#eef4ff;color:#101827;text-align:left;white-space:normal;overflow-wrap:anywhere}.scope-action b,.scope-action span,.scope-action em{display:block}.scope-action span{font-size:12px;font-weight:500;margin-top:3px}.scope-action em{font-size:10px;margin-top:4px;opacity:.65}.scope-action[data-scope-covered="true"]{outline:3px solid #86efac}.audio{display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center}.audio button{min-height:44px}.audio input{width:100%}.log{background:#070c17;border-radius:12px;padding:11px;overflow-wrap:anywhere}.meter{height:8px;background:#24324e;border-radius:8px;overflow:hidden;margin-top:9px}.meter span{display:block;height:100%;width:0;background:#a7f3d0;transition:width .15s}@media(max-width:390px){.stats{grid-template-columns:repeat(2,1fr)}.audio{grid-template-columns:1fr}}</style></head><body data-audio-state="locked" data-approved-scope-count="${inventory.length}"><main class="game"><section class="hero"><small>DEVELOPMENT_CONFIRMED · ${htmlEscape(config.tag)}</small><h1>${title}</h1><p>${htmlEscape(coreFun)}</p></section><section class="arena"><div class="avatar" id="avatar"></div></section><section class="stats" id="state" data-state="ready" data-score="0" data-health="${config.initial.hp}" data-resource="${config.initial.resource}" data-progress="0"><div class="stat"><b id="score">0</b><small>SCORE</small></div><div class="stat"><b id="health">${config.initial.hp}</b><small>HP</small></div><div class="stat"><b id="resource">${config.initial.resource}</b><small>RESOURCE</small></div><div class="stat"><b id="progress">0</b><small>PROGRESS</small></div><div class="stat"><b id="wave">1</b><small>WAVE</small></div><div class="stat"><b id="cooldown">0</b><small>COOLDOWN</small></div><div class="stat"><b id="objective">0</b><small>OBJECTIVE</small></div><div class="stat"><b id="turn">0</b><small>TURN</small></div></section><section class="panel"><h2>승인 분량 플레이</h2><div class="scope">${buttons}</div><div class="meter"><span id="meter"></span></div></section><section class="panel audio"><button id="mute" data-audio-control="mute" type="button">음악 켜짐</button><label>볼륨 <input id="volume" data-audio-control="volume" type="range" min="0" max="1" step="0.05" value="0.24"></label></section><div class="log" id="status">STATUS: 준비 · 승인 scope ${inventory.length}개</div></main><script>const cfg=${runtime};const state={...cfg.initial,turn:0,lastScope:""};const $=id=>document.getElementById(id);let audioCtx=null,master=null,osc=null,muted=false;async function ensureAudio(){if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;audioCtx=new AC();master=audioCtx.createGain();master.gain.value=Number($("volume").value);master.connect(audioCtx.destination);osc=audioCtx.createOscillator();osc.type="triangle";osc.frequency.value=cfg.notes[0];osc.connect(master);osc.start()}if(audioCtx.state==="suspended")await audioCtx.resume();document.body.dataset.audioState=muted?"muted":"running"}function pulseTone(index){if(osc&&audioCtx)osc.frequency.setTargetAtTime(cfg.notes[index%cfg.notes.length],audioCtx.currentTime,.03)}function render(label){$("score").textContent=String(state.score);$("health").textContent=String(state.hp);$("resource").textContent=String(state.resource);$("progress").textContent=String(state.progress);$("wave").textContent=String(state.wave);$("cooldown").textContent=String(state.cooldown);$("objective").textContent=String(state.objective);$("turn").textContent=String(state.turn);$("avatar").style.setProperty("--pos",String(Math.max(-90,Math.min(90,state.position))));$("meter").style.width=Math.min(100,state.progress)+"%";const node=$("state");node.dataset.state="turn-"+state.turn+"-"+state.lastScope;node.dataset.score=String(state.score);node.dataset.health=String(state.hp);node.dataset.resource=String(state.resource);node.dataset.progress=String(state.progress);$("status").textContent="STATUS: "+label+" · TURN "+state.turn} ${handlerCode} $("mute").addEventListener("click",async()=>{await ensureAudio();muted=!muted;master.gain.value=muted?0:Number($("volume").value);$("mute").textContent=muted?"음악 꺼짐":"음악 켜짐";document.body.dataset.audioState=muted?"muted":"running"});$("volume").addEventListener("input",async()=>{await ensureAudio();if(!muted)master.gain.value=Number($("volume").value)});document.addEventListener("keydown",event=>{if(event.code==="Space"&&scopeNode1)scopeNode1.click()});render("ready");</script></body></html>`;
+  return {html,validationQuestion:`${identity||gameName||gameId} 승인 scope ${inventory.length}개의 의미별 동작과 전체 Web 런타임이 실제 입력으로 검증되는가?`,implementationNotes:[`compiled approved-scope behavior plan count=${inventory.length}`,'dedicated handler per approved scope','user-gesture Web Audio','no external network/assets/storage'],approvedScopeInventory:inventory,generationMode:'MODEL_PLANNED_CONTRACT_COMPILED_FULL_SCOPE'};
 }
 
 export async function buildFirstPlayable({gameId,gameName,baseline,artbook,sourcePath,candidatePath,candidateId,sourceCommit,model}){
   const inventory=deriveApprovedScopeInventory(baseline);
   const prompt=buildApprovedScopeGenerationPrompt({gameId,gameName,baseline,artbook,inventory});
-  let result=null,last=[],modelAttempts=0;const modelContractFailures=[];
+  let plan=null,last=[],modelAttempts=0;const modelContractFailures=[];
   for(let attempt=1;attempt<=2;attempt++){
     modelAttempts=attempt;
     try{
-      result=await callModel({model,prompt,repair:last.join('|')});
-      const review=validateBootstrapHtml(result.html,{scopeInventory:inventory});
-      if(review.pass){fs.mkdirSync(candidatePath,{recursive:true});fs.writeFileSync(path.join(candidatePath,'index.html'),result.html.endsWith('\n')?result.html:`${result.html}\n`,'utf8');return {result:{...result,approvedScopeInventory:inventory,generationMode:'MODEL_GENERATED_FULL_SCOPE'},review,generation:{mode:'MODEL_GENERATED_FULL_SCOPE',modelAttempts,modelContractFailures},approvedScopeInventory:inventory};}
-      last=review.blockers;modelContractFailures.push({attempt,blockers:[...review.blockers]});
-    }catch(error){last=['MODEL_OUTPUT_ERROR'];modelContractFailures.push({attempt,error:clean(error?.message||error).slice(0,500)});}
+      plan=await callBehaviorModel({model,prompt,repair:last});
+      const planReview=validateBehaviorPlan(plan,inventory);
+      if(!planReview.pass){last=planReview.blockers;modelContractFailures.push({attempt,blockers:[...planReview.blockers]});continue;}
+      const compiled=compileApprovedScopePlayable({gameId,gameName,baseline,inventory,behaviors:plan.behaviors});
+      const review=validateBootstrapHtml(compiled.html,{scopeInventory:inventory});
+      if(!review.pass){last=review.blockers;modelContractFailures.push({attempt,blockers:[...review.blockers]});continue;}
+      fs.mkdirSync(candidatePath,{recursive:true});
+      fs.writeFileSync(path.join(candidatePath,'index.html'),compiled.html.endsWith('\n')?compiled.html:`${compiled.html}\n`,'utf8');
+      return {result:compiled,review,generation:{mode:compiled.generationMode,modelAttempts,modelContractFailures},approvedScopeInventory:inventory};
+    }catch(error){
+      last=['MODEL_SCOPE_PLAN_ERROR'];
+      modelContractFailures.push({attempt,error:clean(error?.message||error).slice(0,700)});
+    }
   }
   const fallback=buildContractSafePlayable({gameId,gameName,baseline});
   const review=validateBootstrapHtml(fallback.html,{scopeInventory:inventory});
-  if(!review.pass){
-    const modelFailures=modelContractFailures.map(entry=>entry.blockers?.length?`attempt${entry.attempt}:${entry.blockers.join(',')}`:`attempt${entry.attempt}:${entry.error||'MODEL_OUTPUT_ERROR'}`).join(';');
-    throw new Error(`BOOTSTRAP_MODEL_CONTRACT_FAILED: ${modelFailures||'UNKNOWN'} | DIAGNOSTIC_FALLBACK_BLOCKED: ${review.blockers.join('|')}`);
-  }
-  fs.mkdirSync(candidatePath,{recursive:true});fs.writeFileSync(path.join(candidatePath,'index.html'),fallback.html.endsWith('\n')?fallback.html:`${fallback.html}\n`,'utf8');
-  return {result:fallback,review,generation:{mode:fallback.generationMode,modelAttempts,modelContractFailures},approvedScopeInventory:inventory};
+  const modelFailures=modelContractFailures.map(entry=>entry.blockers?.length?`attempt${entry.attempt}:${entry.blockers.join(',')}`:`attempt${entry.attempt}:${entry.error||'MODEL_SCOPE_PLAN_ERROR'}`).join(';');
+  throw new Error(`BOOTSTRAP_SCOPE_PLAN_FAILED: ${modelFailures.slice(0,1800)} | DIAGNOSTIC_FALLBACK_BLOCKED: ${review.blockers.join('|').slice(0,1000)}`);
 }
 
 async function main(){
@@ -138,8 +228,15 @@ async function main(){
   if(!sourcePath.startsWith('web-games/')||!candidatePath.startsWith('web-games/.autonomous-candidates/'))throw new Error('invalid source/candidate path');
   const baseline=readJson(baselineFile),artbook=readJson(artbookFile);
   const {result,review,generation,approvedScopeInventory}=await buildFirstPlayable({gameId,gameName,baseline,artbook,sourcePath,candidatePath,candidateId,sourceCommit,model});
-  const evidence={version:4,candidateId,gameId,sourcePath,candidatePath,sourceCommit,candidateOnly:true,selfPromote:false,publicStableModified:false,paidApi:false,newProject:true,changedFiles:['index.html'],summary:`DEVELOPMENT_CONFIRMED mandatory full Web companion: ${result.validationQuestion}`,expectedEffect:'DESIGN_BASELINE 승인 분량 전체와 사용자 제스처 기반 음악 런타임을 모바일 실제 상호작용으로 검증',tests:['company-development-web-bootstrap-contract','company-development-web-gameplay-validation','approved-scope-runtime-coverage','independent-candidate-browser-qa'],validationQuestion:result.validationQuestion,implementationNotes:result.implementationNotes,musicRuntimeRequired:true,fullApprovedScopeRequired:true,approvedScopeInventory,approvedScopeRequiredCount:approvedScopeInventory.length,model,generationMode:generation.mode,modelAttempts:generation.modelAttempts,modelContractFailures:generation.modelContractFailures,bootstrapContract:review,createdAt:new Date().toISOString()};
+  const evidence={version:5,candidateId,gameId,sourcePath,candidatePath,sourceCommit,candidateOnly:true,selfPromote:false,publicStableModified:false,paidApi:false,newProject:true,changedFiles:['index.html'],summary:`DEVELOPMENT_CONFIRMED mandatory full Web companion: ${result.validationQuestion}`,expectedEffect:'DESIGN_BASELINE 승인 분량 전체와 사용자 제스처 기반 음악 런타임을 모바일 실제 상호작용으로 검증',tests:['company-development-web-bootstrap-contract','company-development-web-gameplay-validation','approved-scope-runtime-coverage','independent-candidate-browser-qa'],validationQuestion:result.validationQuestion,implementationNotes:result.implementationNotes,musicRuntimeRequired:true,fullApprovedScopeRequired:true,approvedScopeInventory,approvedScopeRequiredCount:approvedScopeInventory.length,model,generationMode:generation.mode,modelAttempts:generation.modelAttempts,modelContractFailures:generation.modelContractFailures,bootstrapContract:review,createdAt:new Date().toISOString()};
   writeJson(evidenceFile,evidence);
-  console.log('DEVELOPMENT_WEB_BOOTSTRAP=PASS');console.log(`GAME_ID=${gameId}`);console.log(`CANDIDATE_ID=${candidateId}`);console.log(`BOOTSTRAP_GENERATION_MODE=${generation.mode}`);console.log(`APPROVED_SCOPE_REQUIRED=${approvedScopeInventory.length}`);console.log('FULL_APPROVED_SCOPE_REQUIRED=YES');console.log('MUSIC_RUNTIME_REQUIRED=YES');console.log('PAID_API=NO');
+  console.log('DEVELOPMENT_WEB_BOOTSTRAP=PASS');
+  console.log(`GAME_ID=${gameId}`);
+  console.log(`CANDIDATE_ID=${candidateId}`);
+  console.log(`BOOTSTRAP_GENERATION_MODE=${generation.mode}`);
+  console.log(`APPROVED_SCOPE_REQUIRED=${approvedScopeInventory.length}`);
+  console.log('FULL_APPROVED_SCOPE_REQUIRED=YES');
+  console.log('MUSIC_RUNTIME_REQUIRED=YES');
+  console.log('PAID_API=NO');
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){main().catch(error=>{console.error(error.stack||error.message);process.exitCode=1;});}
