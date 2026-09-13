@@ -177,6 +177,6 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`DESIGN_PROMOTION_COUNT=${result.promoted.length}`);
   console.log(`DESIGN_PROMOTED_GAME_IDS=${result.promoted.join(',')}`);
   console.log(`DEVELOPMENT_QUEUE_COUNT=${result.queueCount}`);
-  console.log(`OWNER_RESET_SEEDS_MATERIALIZED=${resetResult?.ownerResetSeedsMaterialized||result.ownerResetSeedsMaterialized.join(',')}`);
+  console.log(`OWNER_RESET_SEEDS_MATERIALIZED=${result.ownerResetSeedsMaterialized.join(',')}`);
   if(result.skipped.length)console.log(`DESIGN_PROMOTION_SKIPPED=${JSON.stringify(result.skipped)}`);
 }
