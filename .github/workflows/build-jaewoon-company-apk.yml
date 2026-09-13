@@ -28,7 +28,7 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Restore stable debug signing key
+      - name: Restore stable signing key
         uses: actions/cache@v4
         with:
           path: ~/.android/debug.keystore
@@ -55,21 +55,21 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build APK
+      - name: Build release APK
         working-directory: android-app
-        run: gradle :app:assembleDebug --stacktrace
+        run: gradle :app:assembleRelease --stacktrace
 
       - name: Publish APK into website downloads
         shell: bash
         run: |
           mkdir -p downloads
-          cp android-app/app/build/outputs/apk/debug/app-debug.apk downloads/jaewoon-company.apk
+          cp android-app/app/build/outputs/apk/release/app-release.apk downloads/jaewoon-company.apk
           sha256sum downloads/jaewoon-company.apk > downloads/jaewoon-company.apk.sha256
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: jaewoon-company-apk
+          name: jaewoon-company-release-apk
           path: downloads/jaewoon-company.apk
           if-no-files-found: error
 
@@ -83,6 +83,6 @@ jobs:
             echo "APK unchanged"
             exit 0
           fi
-          git commit -m "publish: 재운컴퍼니 APK"
+          git commit -m "publish: 재운컴퍼니 release APK"
           git pull --rebase origin main
           git push origin HEAD:main
