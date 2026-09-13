@@ -3,7 +3,7 @@ name: Company Seed DESIGN_ONLY Runtime
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 16 * * *' # 01:00 KST fallback; bootstrap normally dispatches immediately
+    - cron: '0 16 * * *' # 01:00 KST fallback; event chain remains primary
 
 permissions:
   contents: write
@@ -32,7 +32,6 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-
       - name: Load latest company runtime state
         shell: bash
         run: |
@@ -50,8 +49,7 @@ jobs:
           git reset -- game-seed-state.json artbook-submissions >/dev/null 2>&1 || true
           echo 'COMPANY_RUNTIME_STATE_OVERLAY=YES'
           echo 'COMPANY_ENGINE_SOURCE=main'
-
-      - name: Resolve active incomplete GAME_SEED targets
+      - name: Resolve at most three active incomplete GAME_SEED targets
         id: targets
         shell: bash
         run: |
@@ -64,15 +62,15 @@ jobs:
           const pending=active.filter(seed=>{
             const current=path.join('artbook-submissions',String(seed.gameId),'current.json');
             if(!fs.existsSync(current))return true;
-            try{const a=JSON.parse(fs.readFileSync(current,'utf8'));return a.baselineGateState!=='DESIGN_BASELINE_READY';}catch{return true;}
-          });
+            try{return JSON.parse(fs.readFileSync(current,'utf8')).baselineGateState!=='DESIGN_BASELINE_READY';}catch{return true;}
+          }).sort((a,b)=>String(a.createdAt||'').localeCompare(String(b.createdAt||''))).slice(0,3);
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
-          const get=t=>parts.find(x=>x.type===t)?.value||'';
-          const date=`${get('year')}-${get('month')}-${get('day')}`;
-          const targets=pending.map(seed=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,date}));
+          const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
+          const targets=pending.map(seed=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30)}));
           console.log(`run=${targets.length?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
           console.error(`GAME_SEED_DESIGN_TARGET_COUNT=${targets.length}`);
+          console.error('GAME_DESIGN_WIP_MAX=3');
           NODE
 
   design-cycle:
@@ -80,17 +78,16 @@ jobs:
     if: needs.resolve-seed-targets.outputs.run == 'true'
     strategy:
       fail-fast: false
-      max-parallel: 6
+      max-parallel: 3
       matrix:
         target: ${{ fromJSON(needs.resolve-seed-targets.outputs.targets) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 80
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0
-
       - name: Checkout isolated company runtime branch
         shell: bash
         run: |
@@ -99,17 +96,13 @@ jobs:
           game_path="design/${{ matrix.target.game_id }}"
           artbook_path="artbook-submissions/${{ matrix.target.game_id }}"
           for runtime_path in game-seed-state.json "$game_path" "$artbook_path"; do
-            if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" 2>/dev/null; then
-              git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- "$runtime_path"
-            fi
+            if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" 2>/dev/null; then git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- "$runtime_path"; fi
           done
           git reset -- game-seed-state.json "$game_path" "$artbook_path" >/dev/null 2>&1 || true
           test -f game-seed-state.json
           cp game-seed-state.json /tmp/company-runtime-seed-state-before.json
           echo 'COMPANY_RUNTIME_STATE_OVERLAY=TARGET_ONLY'
-          echo 'COMPANY_ENGINE_SOURCE=main'
           echo 'PUBLIC_MAIN_WRITE=NO'
-
       - name: Revalidate current seed target
         id: target
         env:
@@ -117,27 +110,19 @@ jobs:
           TARGET_SEED_ID: ${{ matrix.target.seed_id }}
         shell: bash
         run: |
-          set -euo pipefail
           node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
-          import fs from 'node:fs';
-          import path from 'node:path';
-          const gameId=String(process.env.TARGET_GAME_ID||'').trim();
-          const seedId=String(process.env.TARGET_SEED_ID||'').trim();
-          const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));
-          const seed=(state.seeds||[]).find(item=>String(item?.gameId||'').trim()===gameId&&String(item?.status||'').toUpperCase()==='ACTIVE');
-          const sameSeed=Boolean(seed&&String(seed.seedId||'').trim()===seedId);
-          let baselineReady=false;
-          if(sameSeed){
-            const current=path.join('artbook-submissions',gameId,'current.json');
-            if(fs.existsSync(current)){
-              try{baselineReady=JSON.parse(fs.readFileSync(current,'utf8')).baselineGateState==='DESIGN_BASELINE_READY';}catch{}
-            }
-          }
-          const shouldRun=sameSeed&&!baselineReady;
-          console.log(`should_run=${shouldRun?'true':'false'}`);
-          console.error(`${shouldRun?'CURRENT_SEED_TARGET':'STALE_SEED_TARGET_SKIP'}=${gameId}:${seedId}`);
+          import fs from 'node:fs';import path from 'node:path';
+          const gameId=String(process.env.TARGET_GAME_ID||'').trim(),seedId=String(process.env.TARGET_SEED_ID||'').trim();
+          const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));const seed=(state.seeds||[]).find(x=>String(x.gameId)===gameId&&String(x.status).toUpperCase()==='ACTIVE');
+          let ready=false;const current=path.join('artbook-submissions',gameId,'current.json');if(seed&&String(seed.seedId)===seedId&&fs.existsSync(current)){try{ready=JSON.parse(fs.readFileSync(current,'utf8')).baselineGateState==='DESIGN_BASELINE_READY';}catch{}}
+          console.log(`should_run=${seed&&String(seed.seedId)===seedId&&!ready?'true':'false'}`);
           NODE
-
+      - name: Static strict contracts
+        if: steps.target.outputs.should_run == 'true'
+        run: |
+          node --check tools/game-seed-state.mjs
+          node --check tools/company-game-seed-contract.mjs
+          node --check tools/company-strict-production-review.mjs
       - name: Restore Ollama model cache
         if: steps.target.outputs.should_run == 'true'
         uses: actions/cache@v4
@@ -146,29 +131,15 @@ jobs:
           key: ollama-seed-design-${{ runner.os }}-${{ hashFiles('company-directive.json') }}
           restore-keys: |
             ollama-seed-design-${{ runner.os }}-
-
       - name: Resolve configured free department models
         id: models
         if: steps.target.outputs.should_run == 'true'
         shell: bash
         run: |
-          set -euo pipefail
           node --input-type=module <<'NODE' > /tmp/models.txt
-          import fs from 'node:fs';
-          const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-          const roles=['planning','graphics','development','qa','balance'];
-          const pool=[...new Set((d.ai?.modelPool||[]).map(String).map(x=>x.trim()).filter(Boolean))];
-          const leads=roles.map(role=>String(d.ai?.departmentLeadModels?.[role]||'').trim());
-          if(pool.length<Number(d.ai?.minDistinctModelsPerDepartment||3))throw new Error('model pool too small');
-          if(new Set(leads).size<5)throw new Error('five distinct lead models required');
-          for(const lead of leads)if(!pool.includes(lead))throw new Error(`lead not in pool: ${lead}`);
-          for(const model of pool)console.log(model);
+          import fs from 'node:fs';const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));const roles=['planning','graphics','development','qa','balance'];const pool=[...new Set((d.ai?.modelPool||[]).map(String).map(x=>x.trim()).filter(Boolean))];const leads=roles.map(role=>String(d.ai?.departmentLeadModels?.[role]||'').trim());if(pool.length<Number(d.ai?.minDistinctModelsPerDepartment||3))throw new Error('model pool too small');if(new Set(leads).size<5)throw new Error('five distinct lead models required');for(const lead of leads)if(!pool.includes(lead))throw new Error(`lead not in pool: ${lead}`);for(const model of pool)console.log(model);
           NODE
-          primary="$(head -n 1 /tmp/models.txt)"
-          test -n "$primary"
-          echo "primary_model=$primary" >> "$GITHUB_OUTPUT"
-          echo "GAME_SEED_MODEL_COUNT=$(wc -l < /tmp/models.txt | tr -d ' ')"
-
+          primary="$(head -n 1 /tmp/models.txt)"; test -n "$primary"; echo "primary_model=$primary" >> "$GITHUB_OUTPUT"
       - name: Prepare cached local Ollama runtime
         if: steps.target.outputs.should_run == 'true'
         uses: ./.github/actions/prepare-ollama
@@ -176,43 +147,33 @@ jobs:
           model: ${{ steps.models.outputs.primary_model }}
           version: ${{ env.OLLAMA_VERSION }}
           pull-model: 'true'
-
       - name: Pull only missing configured free department models
         if: steps.target.outputs.should_run == 'true'
-        env:
-          PRIMARY_MODEL: ${{ steps.models.outputs.primary_model }}
         shell: bash
         run: |
           set -euo pipefail
           ollama list | awk 'NR>1 {print $1}' > /tmp/ollama-present-models.txt
-          cache_hits=0
-          cache_misses=0
-          pulls=0
-          while IFS= read -r model; do
-            [ -z "$model" ] && continue
-            if grep -Fxq "$model" /tmp/ollama-present-models.txt; then
-              cache_hits=$((cache_hits + 1))
-              echo "OLLAMA_MODEL_CACHE_HIT=$model"
-              continue
-            fi
-            cache_misses=$((cache_misses + 1))
-            echo "OLLAMA_MODEL_CACHE_MISS=$model"
-            ollama pull "$model"
-            printf '%s\n' "$model" >> /tmp/ollama-present-models.txt
-            pulls=$((pulls + 1))
-          done < /tmp/models.txt
-          echo "OLLAMA_MODEL_CACHE_HITS=$cache_hits"
-          echo "OLLAMA_MODEL_CACHE_MISSES=$cache_misses"
-          echo "OLLAMA_MODEL_PULL_COUNT=$pulls"
+          while IFS= read -r model; do [ -z "$model" ] && continue; grep -Fxq "$model" /tmp/ollama-present-models.txt || { ollama pull "$model"; printf '%s\n' "$model" >> /tmp/ollama-present-models.txt; }; done < /tmp/models.txt
           echo 'PAID_API=NO'
-
       - name: Run seed-backed DESIGN_ONLY pipeline
         if: steps.target.outputs.should_run == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
         run: node tools/artbook-production-pipeline.mjs
-
+      - name: Apply strict 30-minute design review
+        if: steps.target.outputs.should_run == 'true'
+        env:
+          GAME_ID: ${{ matrix.target.game_id }}
+          ARTBOOK_DATE: ${{ matrix.target.date }}
+        shell: bash
+        run: |
+          set +e
+          node tools/company-strict-production-review.mjs --mode=design --game-id="$GAME_ID" --date="$ARTBOOK_DATE"
+          rc=$?
+          set -e
+          if [ "$rc" -eq 0 ]; then echo 'STRICT_DESIGN_GATE=PASS'; else echo 'STRICT_DESIGN_GATE=REVISE_OR_REBUILD'; fi
+          exit 0
       - name: Verify baseline-before-artbook contract
         if: steps.target.outputs.should_run == 'true'
         env:
@@ -220,101 +181,29 @@ jobs:
           ARTBOOK_DATE: ${{ matrix.target.date }}
         shell: bash
         run: |
-          set -euo pipefail
           node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import path from 'node:path';
-          const gameId=process.env.ARTBOOK_GAME_ID,date=process.env.ARTBOOK_DATE;
-          const base=path.join('design',gameId,date);
-          const status=JSON.parse(fs.readFileSync(path.join(base,'cycle-status.json'),'utf8'));
-          if(status.productionClass!=='DESIGN_ONLY')throw new Error('seed runtime must remain DESIGN_ONLY');
-          if(status.status!=='COMPLETE')throw new Error('design cycle incomplete');
-          if(status.departments?.count!==5||status.departments?.leadModelsDistinct!==true)throw new Error('five department lead contract failed');
-          if(status.vibe2?.used===true||status.artbook?.vibe2Used===true)throw new Error('DESIGN_ONLY Vibe2 forbidden');
-          const ready=status.baselineGate?.state==='DESIGN_BASELINE_READY'&&status.baselineGate?.ready===true;
-          const artbookPath=path.join(base,'core-artbook.json');
-          if(ready){
-            if(!fs.existsSync(artbookPath))throw new Error('ready baseline missing post-baseline artbook');
-            const artbook=JSON.parse(fs.readFileSync(artbookPath,'utf8'));
-            if(artbook.baselineGateState!=='DESIGN_BASELINE_READY'||artbook.vibe2Used!==false)throw new Error('artbook provenance invalid');
-            if(status.artbook?.createdAfterBaselineReady!==true)throw new Error('artbook was not recorded after baseline');
-          }else if(fs.existsSync(artbookPath))throw new Error('artbook exists before DESIGN_BASELINE_READY');
-          console.log(`SEED_DESIGN_RESULT=${status.baselineGate?.state||status.disposition?.state||'UNKNOWN'}`);
-          console.log('DESIGN_ONLY_VIBE2_USED=NO');
+          import fs from 'node:fs';import path from 'node:path';const gameId=process.env.ARTBOOK_GAME_ID,date=process.env.ARTBOOK_DATE,base=path.join('design',gameId,date);const status=JSON.parse(fs.readFileSync(path.join(base,'cycle-status.json'),'utf8'));if(status.productionClass!=='DESIGN_ONLY')throw new Error('DESIGN_ONLY required');if(status.departments?.count!==5||status.departments?.leadModelsDistinct!==true)throw new Error('five department lead contract failed');const strict=JSON.parse(fs.readFileSync(path.join(base,'strict-design-review.json'),'utf8'));if(!['PASS','REVISE','REBUILD'].includes(strict.verdict))throw new Error('strict verdict missing');console.log(`STRICT_DESIGN_SCORE=${strict.totalScore}`);console.log(`STRICT_DESIGN_VERDICT=${strict.verdict}`);
           NODE
-
       - name: Persist validated design evidence to company runtime branch
         if: steps.target.outputs.should_run == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-seed-design'
-          git config user.email 'seed-design@users.noreply.github.com'
-          game_path="design/${{ matrix.target.game_id }}"
-          artbook_path="artbook-submissions/${{ matrix.target.game_id }}"
-          seed_changed=0
-          if ! cmp -s game-seed-state.json /tmp/company-runtime-seed-state-before.json; then
-            seed_changed=1
-          fi
-          git add -- "$game_path" "$artbook_path"
-          if [ "$seed_changed" = 1 ]; then
-            git add -- game-seed-state.json
-          fi
-          if git diff --cached --quiet; then
-            echo 'SEED_DESIGN_RUNTIME_CHANGE=NO'
-            exit 0
-          fi
-          git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}"
-          generated_commit="$(git rev-parse HEAD)"
-          if [ "$seed_changed" = 0 ]; then
-            rm -f game-seed-state.json
-          fi
+          git config user.name 'jaewoon-seed-design';git config user.email 'seed-design@users.noreply.github.com'
+          game_path="design/${{ matrix.target.game_id }}";artbook_path="artbook-submissions/${{ matrix.target.game_id }}";seed_changed=0
+          cmp -s game-seed-state.json /tmp/company-runtime-seed-state-before.json || seed_changed=1
+          git add -- "$game_path" "$artbook_path";[ "$seed_changed" = 1 ] && git add -- game-seed-state.json || true
+          git diff --cached --quiet && { echo 'SEED_DESIGN_RUNTIME_CHANGE=NO'; exit 0; }
+          git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}";generated_commit="$(git rev-parse HEAD)";[ "$seed_changed" = 0 ] && rm -f game-seed-state.json || true
           pushed=0
-          for attempt in 1 2 3 4; do
-            git fetch origin "$COMPANY_RUNTIME_BRANCH"
-            git checkout -B seed-design-persist "origin/$COMPANY_RUNTIME_BRANCH"
-            git checkout "$generated_commit" -- "$game_path" "$artbook_path"
-            if [ "$seed_changed" = 1 ]; then
-              git checkout "$generated_commit" -- game-seed-state.json
-            fi
-            git add -- "$game_path" "$artbook_path"
-            if [ "$seed_changed" = 1 ]; then
-              git add -- game-seed-state.json
-            fi
-            if git diff --cached --quiet; then
-              pushed=1
-              echo 'SEED_DESIGN_RUNTIME_CHANGE=ALREADY_PERSISTED'
-              break
-            fi
-            git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}"
-            if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
-              pushed=1
-              break
-            fi
-            git reset --hard "$generated_commit"
-            if [ "$seed_changed" = 0 ]; then
-              rm -f game-seed-state.json
-            fi
-            sleep $((attempt * 2))
-          done
+          for attempt in 1 2 3 4; do git fetch origin "$COMPANY_RUNTIME_BRANCH";git checkout -B seed-design-persist "origin/$COMPANY_RUNTIME_BRANCH";git checkout "$generated_commit" -- "$game_path" "$artbook_path";[ "$seed_changed" = 1 ] && git checkout "$generated_commit" -- game-seed-state.json || true;git add -- "$game_path" "$artbook_path";[ "$seed_changed" = 1 ] && git add -- game-seed-state.json || true;if git diff --cached --quiet; then pushed=1;break;fi;git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}";if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1;break;fi;git reset --hard "$generated_commit";sleep $((attempt * 2));done
           test "$pushed" = 1
           echo 'SEED_DESIGN_RUNTIME_CHANGE=PERSISTED'
           echo 'PUBLIC_MAIN_WRITE=NO'
-
-      - name: Replenish only if a discard created a vacancy
-        if: steps.target.outputs.should_run == 'true'
+      - name: Continue canonical seed supply evaluation
+        if: always() && steps.target.outputs.should_run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        shell: bash
         run: |
-          set -euo pipefail
-          if node --input-type=module <<'NODE'
-          import {loadSeedState,unfilledVacancies} from './tools/game-seed-state.mjs';
-          process.exit(unfilledVacancies(loadSeedState()).length>0?0:1);
-          NODE
-          then
-            gh workflow run company-game-seed-bootstrap.yml --ref main
-            echo 'GAME_SEED_VACANCY_REPLENISHMENT_DISPATCHED=YES'
-          else
-            echo 'GAME_SEED_VACANCY_REPLENISHMENT_DISPATCHED=NO'
-          fi
+          gh workflow run company-game-seed-bootstrap.yml --ref main || true
+          echo 'GAME_SEED_CONTINUATION_DISPATCHED=YES'
