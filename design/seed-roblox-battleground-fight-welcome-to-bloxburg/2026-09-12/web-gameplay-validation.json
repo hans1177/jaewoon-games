@@ -1,0 +1,372 @@
+{
+  "version": 10,
+  "validationSchemaVersion": 10,
+  "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+  "target": "web",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 13,
+  "stateChanged": true,
+  "musicRuntime": {
+    "required": true,
+    "startsAfterUserGesture": true,
+    "muteControl": true,
+    "volumeControl": true,
+    "beforeState": "locked",
+    "afterState": "running",
+    "pass": true
+  },
+  "approvedScopeFullyImplemented": true,
+  "scopeCoverage": {
+    "pass": true,
+    "declaredCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-ffd2fe2735",
+      "scope-coreloop-0-6f5fdb28ec",
+      "scope-coreloop-1-1f5252bf24",
+      "scope-coreloop-2-910337c938",
+      "scope-mobileux-055ea7b800"
+    ],
+    "interactedScopeIds": [
+      "scope-corefun-ffd2fe2735",
+      "scope-coreloop-0-6f5fdb28ec",
+      "scope-coreloop-1-1f5252bf24",
+      "scope-coreloop-2-910337c938",
+      "scope-mobileux-055ea7b800"
+    ],
+    "blockers": []
+  },
+  "scopeInteractionResults": [
+    {
+      "scopeId": "scope-corefun-ffd2fe2735",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-0-6f5fdb28ec",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-1-1f5252bf24",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-2-910337c938",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-mobileux-055ea7b800",
+      "clicked": true,
+      "stateChanged": true
+    }
+  ],
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "sessionDepthMinutes": 30,
+  "sessionContract": {
+    "pass": true,
+    "minutes": 30,
+    "validatedMinutes": 30,
+    "stageCount": 4,
+    "completedStages": 4,
+    "windows": [
+      [
+        0,
+        5
+      ],
+      [
+        5,
+        15
+      ],
+      [
+        15,
+        25
+      ],
+      [
+        25,
+        30
+      ]
+    ],
+    "shapePass": true,
+    "depthPass": true,
+    "interactionPass": true,
+    "stageGameplayPassed": true,
+    "stageResults": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      }
+    ]
+  },
+  "multiplayer": {
+    "participants": 0,
+    "meaningfulLoopPassed": false
+  },
+  "before": {
+    "text": "대전 전투 · 실제 플레이 Web 게임 Vector Clash combat, opponent, skill, cooldown 0 SCORE 100 HP 1 WAVE 40 RESOURCE 1 LEVEL 100 ENEMY 0 POSITION 0 OBJECTIVE 목표: 라운드 6승 combat, opponent, skill, cooldown COMBAT · 도입 Enter a short competitive encounter, read oppone COMBAT · 핵심 루프 Damage or eliminate opponents, receive clear hit COMBAT · 난도 상승 Complete the round or score target, receive prog PROGRESSION · 결전 The game is designed to be played on mobile devi MOVEMENT 음악 켜짐 볼륨 게임 시작 · 라운드 6승 · 진행 1/7",
+    "visibleButtons": 6,
+    "canvases": [
+      "560x260:jXV3BoHVgwlM5uAoH790TMn2Dl6A8anzoSAcdR1ggvlTBnkCQTiMj/2nyH4BHo14WpgfDTyMDwnBsFEgpOdfwtCJn3kBo+AKHqVs7LwwOYJNTdpOMtXwMD5NPMyPJh7mRxOPieJHN66V7vKbeFe4VNL4GB9NXxUfuuVs4sf/BwAA///Y9LHQAAAABklEQVQDAFJ9yB8FZAf3AAAAAElFTkSuQmCC"
+    ],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "0SCORE100HP1WAVE40RESOURCE1LEVEL100ENEMY0POSITION0OBJECTIVE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-0"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "40"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "audioState": "locked",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-ffd2fe2735",
+      "scope-coreloop-0-6f5fdb28ec",
+      "scope-coreloop-1-1f5252bf24",
+      "scope-coreloop-2-910337c938",
+      "scope-mobileux-055ea7b800"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": false,
+        "text": "combat, opponent, skill, cooldownCOMBAT · 도입"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": false,
+        "text": "Enter a short competitive encounter, read opponeCOMBAT · 핵심 루프"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": false,
+        "text": "Damage or eliminate opponents, receive clear hitCOMBAT · 난도 상승"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": false,
+        "text": "Complete the round or score target, receive progPROGRESSION · 결전"
+      }
+    ],
+    "sessionCurrentStage": 0,
+    "sessionCompletedStages": 0,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "after": {
+    "text": "대전 전투 · 실제 플레이 Web 게임 Vector Clash combat, opponent, skill, cooldown 243 SCORE 32 HP 2 WAVE 37 RESOURCE 3 LEVEL 38 ENEMY 4 POSITION 1 OBJECTIVE 목표: 라운드 6승 combat, opponent, skill, cooldown COMBAT · 도입 Enter a short competitive encounter, read oppone COMBAT · 핵심 루프 Damage or eliminate opponents, receive clear hit COMBAT · 난도 상승 Complete the round or score target, receive prog PROGRESSION · 결전 The game is designed to be played on mobile devi MOVEMENT 음악 켜짐 볼륨 Damage or eliminate opponents, receive clear hit · 라운드 6승 · 진행 2/7",
+    "visibleButtons": 6,
+    "canvases": [
+      "560x260:78Z7dxqBtwcTmMzG0Xn80jEl53d4AeZT10NBHHUfYIL1U3byBEEc5uP4KXJcgEujPy2sjwYP86Eg2G0UCOv3LzF0+s88gFHnCi6lbcy8MDk6m5p1PsVU42E+TR7WR5OH9dHkMVn66OZa+S6/ybviUlnzMR+9vio9dNuppI//DwAA//+9vNPMAAAABklEQVQDAHB02h94eiseAAAAAElFTkSuQmCC"
+    ],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "243SCORE32HP2WAVE37RESOURCE3LEVEL38ENEMY4POSITION1OBJECTIVE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-13"
+          ],
+          [
+            "data-score",
+            "243"
+          ],
+          [
+            "data-health",
+            "32"
+          ],
+          [
+            "data-resource",
+            "37"
+          ],
+          [
+            "data-progress",
+            "99"
+          ]
+        ]
+      }
+    ],
+    "audioState": "running",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-ffd2fe2735",
+      "scope-coreloop-0-6f5fdb28ec",
+      "scope-coreloop-1-1f5252bf24",
+      "scope-coreloop-2-910337c938",
+      "scope-mobileux-055ea7b800"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": true,
+        "text": "combat, opponent, skill, cooldownCOMBAT · 도입"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": true,
+        "text": "Enter a short competitive encounter, read opponeCOMBAT · 핵심 루프"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": true,
+        "text": "Damage or eliminate opponents, receive clear hitCOMBAT · 난도 상승"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": true,
+        "text": "Complete the round or score target, receive progPROGRESSION · 결전"
+      }
+    ],
+    "sessionCurrentStage": 3,
+    "sessionCompletedStages": 4,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "interactionCount=13",
+    "stateChanged=true",
+    "reloadVisible=true",
+    "mobileOverflow=true",
+    "musicRuntime=true",
+    "approvedScope=true",
+    "sessionDepthMinutes=30",
+    "sessionStages=4",
+    "sessionStagesCompleted=4",
+    "sessionStageGameplay=true",
+    "multiplayerParticipants=0"
+  ],
+  "checkedAt": "2026-09-13T20:59:55.666Z",
+  "sourcePath": "web-games/seed-roblox-battleground-fight-welcome-to-bloxburg",
+  "sourceIndexSha256": "83aab57e4b5346d1335b0e80e0229defc0cc53df451e8aac5789d5161c401dea",
+  "sourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
+  "designBaselineSha256": "c8e723359e4fd5f1775ddd1b6205374bdf62eb2650376e380521c5f89ae61493",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-battleground-fight-welcome-to-bloxburg-34782177769-2/",
+  "screenshot": "/tmp/web-work/seed-roblox-battleground-fight-welcome-to-bloxburg/web-gameplay.png",
+  "strictReviewPath": "/tmp/web-work/seed-roblox-battleground-fight-welcome-to-bloxburg/strict-implementation-review.json",
+  "strictReview": {
+    "verdict": "PASS",
+    "totalScore": 100,
+    "hardFailures": [],
+    "improvementTargets": [],
+    "reviewedAt": "2026-09-13T20:59:55.772Z",
+    "formalPassThreshold": 90,
+    "homepageTestThreshold": 80
+  },
+  "webStrictScore": 100,
+  "improvementTargets": [],
+  "homepageTestEligible": true,
+  "homepageTestVerdict": "PASS",
+  "formalReviewPassed": true,
+  "formalImplementationPassed": true,
+  "formalImplementationVerdict": "PASS",
+  "promotionRevalidation": {
+    "required": true,
+    "independentRun": true,
+    "pass": true,
+    "minimumScore": 90,
+    "firstScore": 100,
+    "secondScore": 100,
+    "sourceHashMatch": true,
+    "baselineHashMatch": true,
+    "secondCheckedAt": "2026-09-13T20:59:59.261Z",
+    "secondSessionPass": true,
+    "error": null
+  },
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-battleground-fight-welcome-to-bloxburg-34782177769-2",
+  "policyDocument": "COMPANY_FLOW.md",
+  "requiredBeforeTargetPlatform": true
+}

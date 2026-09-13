@@ -1,0 +1,372 @@
+{
+  "version": 10,
+  "validationSchemaVersion": 10,
+  "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+  "target": "web",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 13,
+  "stateChanged": true,
+  "musicRuntime": {
+    "required": true,
+    "startsAfterUserGesture": true,
+    "muteControl": true,
+    "volumeControl": true,
+    "beforeState": "locked",
+    "afterState": "running",
+    "pass": true
+  },
+  "approvedScopeFullyImplemented": true,
+  "scopeCoverage": {
+    "pass": true,
+    "declaredCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-351887f47a",
+      "scope-coreloop-0-e539e1b5ee",
+      "scope-coreloop-1-2dd38ea9a8",
+      "scope-coreloop-2-79f7ac8d9d",
+      "scope-mobileux-2a88f0b92e"
+    ],
+    "interactedScopeIds": [
+      "scope-corefun-351887f47a",
+      "scope-coreloop-0-e539e1b5ee",
+      "scope-coreloop-1-2dd38ea9a8",
+      "scope-coreloop-2-79f7ac8d9d",
+      "scope-mobileux-2a88f0b92e"
+    ],
+    "blockers": []
+  },
+  "scopeInteractionResults": [
+    {
+      "scopeId": "scope-corefun-351887f47a",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-0-e539e1b5ee",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-1-2dd38ea9a8",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-2-79f7ac8d9d",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-mobileux-2a88f0b92e",
+      "clicked": true,
+      "stateChanged": true
+    }
+  ],
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "sessionDepthMinutes": 30,
+  "sessionContract": {
+    "pass": true,
+    "minutes": 30,
+    "validatedMinutes": 30,
+    "stageCount": 4,
+    "completedStages": 4,
+    "windows": [
+      [
+        0,
+        5
+      ],
+      [
+        5,
+        15
+      ],
+      [
+        15,
+        25
+      ],
+      [
+        25,
+        30
+      ]
+    ],
+    "shapePass": true,
+    "depthPass": true,
+    "interactionPass": true,
+    "stageGameplayPassed": true,
+    "stageResults": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      }
+    ]
+  },
+  "multiplayer": {
+    "participants": 0,
+    "meaningfulLoopPassed": false
+  },
+  "before": {
+    "text": "생활 역할극 · 실제 플레이 Web 게임 Harbor Days roleplay, avatar, home, social 0 SCORE 100 HP 1 WAVE 20 RESOURCE 1 LEVEL 100 ENEMY 0 POSITION 0 OBJECTIVE 목표: 평판 120 roleplay, avatar, home, social OBJECTIVE · 도입 Enter a shared social space, choose an avatar id OBJECTIVE · 핵심 루프 Perform roleplay activities, jobs, collection, c PROGRESSION · 난도 상승 Use rewards to expand avatar, home, vehicle, or PROGRESSION · 결전 Designed for Android, with a focus on low-fricti MOBILE 음악 켜짐 볼륨 게임 시작 · 평판 120 · 진행 0/120",
+    "visibleButtons": 6,
+    "canvases": [
+      "560x260:WieweDCC0ewcpeOXjiG4vYYX4PgU+ZARjqIOMML5kw/yBIJwOD7uP1n0C/AojaeZ86OEh+NDQnDYyGDS51/CUBs/4wJGgyt45LK088JoG2wK0u0kUwEPx6eMh/OjjIfzo4xHf/GjHteke/5lvBMuSTo+jo+mr8SHejmc+PH/AQAA//+xStE9AAAABklEQVQDAG5HMS4CxXpmAAAAAElFTkSuQmCC"
+    ],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "0SCORE100HP1WAVE20RESOURCE1LEVEL100ENEMY0POSITION0OBJECTIVE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-0"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "20"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "audioState": "locked",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-351887f47a",
+      "scope-coreloop-0-e539e1b5ee",
+      "scope-coreloop-1-2dd38ea9a8",
+      "scope-coreloop-2-79f7ac8d9d",
+      "scope-mobileux-2a88f0b92e"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": false,
+        "text": "roleplay, avatar, home, socialOBJECTIVE · 도입"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": false,
+        "text": "Enter a shared social space, choose an avatar idOBJECTIVE · 핵심 루프"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": false,
+        "text": "Perform roleplay activities, jobs, collection, cPROGRESSION · 난도 상승"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": false,
+        "text": "Use rewards to expand avatar, home, vehicle, or PROGRESSION · 결전"
+      }
+    ],
+    "sessionCurrentStage": 0,
+    "sessionCompletedStages": 0,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "after": {
+    "text": "생활 역할극 · 실제 플레이 Web 게임 Harbor Days roleplay, avatar, home, social 123 SCORE 55 HP 1 WAVE 4 RESOURCE 5 LEVEL 100 ENEMY 1 POSITION 4 OBJECTIVE 목표: 평판 120 roleplay, avatar, home, social OBJECTIVE · 도입 Enter a shared social space, choose an avatar id OBJECTIVE · 핵심 루프 Perform roleplay activities, jobs, collection, c PROGRESSION · 난도 상승 Use rewards to expand avatar, home, vehicle, or PROGRESSION · 결전 Designed for Android, with a focus on low-fricti MOBILE 음악 켜짐 볼륨 목표 달성 · VICTORY · 다시 로드하면 새 판을 시작할 수 있습니다.",
+    "visibleButtons": 6,
+    "canvases": [
+      "560x260:IMBxAAqVdD3wHBjbrBHZcqckQAIkQAIkQAIkUCYBOjBlAmN2EiABEiABEqgEAqO9DXRgRvsIYP9JgARIgARIoAoJ0IGpwoPGJpMACZDAyBNgC0hgZAnQgRlZ/tw7CZAACZAACZBAPwjQgekHNBYhARIYeQJsAQmQwOgm8P8BAAD//8EwcQcAAAAGSURBVAMAXjoMiYydBzEAAAAASUVORK5CYII="
+    ],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "123SCORE55HP1WAVE4RESOURCE5LEVEL100ENEMY1POSITION4OBJECTIVE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-9"
+          ],
+          [
+            "data-score",
+            "123"
+          ],
+          [
+            "data-health",
+            "55"
+          ],
+          [
+            "data-resource",
+            "4"
+          ],
+          [
+            "data-progress",
+            "88"
+          ]
+        ]
+      }
+    ],
+    "audioState": "running",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-351887f47a",
+      "scope-coreloop-0-e539e1b5ee",
+      "scope-coreloop-1-2dd38ea9a8",
+      "scope-coreloop-2-79f7ac8d9d",
+      "scope-mobileux-2a88f0b92e"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": true,
+        "text": "roleplay, avatar, home, socialOBJECTIVE · 도입"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": true,
+        "text": "Enter a shared social space, choose an avatar idOBJECTIVE · 핵심 루프"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": true,
+        "text": "Perform roleplay activities, jobs, collection, cPROGRESSION · 난도 상승"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": true,
+        "text": "Use rewards to expand avatar, home, vehicle, or PROGRESSION · 결전"
+      }
+    ],
+    "sessionCurrentStage": 4,
+    "sessionCompletedStages": 4,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "interactionCount=13",
+    "stateChanged=true",
+    "reloadVisible=true",
+    "mobileOverflow=true",
+    "musicRuntime=true",
+    "approvedScope=true",
+    "sessionDepthMinutes=30",
+    "sessionStages=4",
+    "sessionStagesCompleted=4",
+    "sessionStageGameplay=true",
+    "multiplayerParticipants=0"
+  ],
+  "checkedAt": "2026-09-13T21:01:16.428Z",
+  "sourcePath": "web-games/seed-roblox-roleplay-life-avat-brookhaven-rp",
+  "sourceIndexSha256": "dcd0b12719186c6effa58137d16e80c0d08a34a0a5758aed8717ee8414b0f136",
+  "sourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
+  "designBaselineSha256": "d04d8e07ab364e3b2510aaa4694cbd8b82bc26437245afc6fc28e8da62976356",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-roleplay-life-avat-brookhaven-rp-34782177769-2/",
+  "screenshot": "/tmp/web-work/seed-roblox-roleplay-life-avat-brookhaven-rp/web-gameplay.png",
+  "strictReviewPath": "/tmp/web-work/seed-roblox-roleplay-life-avat-brookhaven-rp/strict-implementation-review.json",
+  "strictReview": {
+    "verdict": "PASS",
+    "totalScore": 100,
+    "hardFailures": [],
+    "improvementTargets": [],
+    "reviewedAt": "2026-09-13T21:01:16.535Z",
+    "formalPassThreshold": 90,
+    "homepageTestThreshold": 80
+  },
+  "webStrictScore": 100,
+  "improvementTargets": [],
+  "homepageTestEligible": true,
+  "homepageTestVerdict": "PASS",
+  "formalReviewPassed": true,
+  "formalImplementationPassed": true,
+  "formalImplementationVerdict": "PASS",
+  "promotionRevalidation": {
+    "required": true,
+    "independentRun": true,
+    "pass": true,
+    "minimumScore": 90,
+    "firstScore": 100,
+    "secondScore": 100,
+    "sourceHashMatch": true,
+    "baselineHashMatch": true,
+    "secondCheckedAt": "2026-09-13T21:01:20.125Z",
+    "secondSessionPass": true,
+    "error": null
+  },
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-roleplay-life-avat-brookhaven-rp-34782177769-2",
+  "policyDocument": "COMPANY_FLOW.md",
+  "requiredBeforeTargetPlatform": true
+}

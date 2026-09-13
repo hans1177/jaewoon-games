@@ -1,0 +1,372 @@
+{
+  "version": 10,
+  "validationSchemaVersion": 10,
+  "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+  "target": "web",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 13,
+  "stateChanged": true,
+  "musicRuntime": {
+    "required": true,
+    "startsAfterUserGesture": true,
+    "muteControl": true,
+    "volumeControl": true,
+    "beforeState": "locked",
+    "afterState": "running",
+    "pass": true
+  },
+  "approvedScopeFullyImplemented": true,
+  "scopeCoverage": {
+    "pass": true,
+    "declaredCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-afb3aa364d",
+      "scope-coreloop-0-512fbeed03",
+      "scope-coreloop-1-fee638072f",
+      "scope-coreloop-2-d36d57e8a3",
+      "scope-mobileux-a6b8e71cfe"
+    ],
+    "interactedScopeIds": [
+      "scope-corefun-afb3aa364d",
+      "scope-coreloop-0-512fbeed03",
+      "scope-coreloop-1-fee638072f",
+      "scope-coreloop-2-d36d57e8a3",
+      "scope-mobileux-a6b8e71cfe"
+    ],
+    "blockers": []
+  },
+  "scopeInteractionResults": [
+    {
+      "scopeId": "scope-corefun-afb3aa364d",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-0-512fbeed03",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-1-fee638072f",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-2-d36d57e8a3",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-mobileux-a6b8e71cfe",
+      "clicked": true,
+      "stateChanged": true
+    }
+  ],
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "sessionDepthMinutes": 30,
+  "sessionContract": {
+    "pass": true,
+    "minutes": 30,
+    "validatedMinutes": 30,
+    "stageCount": 4,
+    "completedStages": 4,
+    "windows": [
+      [
+        0,
+        5
+      ],
+      [
+        5,
+        15
+      ],
+      [
+        15,
+        25
+      ],
+      [
+        25,
+        30
+      ]
+    ],
+    "shapePass": true,
+    "depthPass": true,
+    "interactionPass": true,
+    "stageGameplayPassed": true,
+    "stageResults": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      }
+    ]
+  },
+  "multiplayer": {
+    "participants": 0,
+    "meaningfulLoopPassed": false
+  },
+  "before": {
+    "text": "스토리 RPG · 실제 플레이 Web 게임 Shardbound Odyssey quest,explore,combat,boss 0 SCORE 100 HP 1 WAVE 8 RESOURCE 1 LEVEL 100 ENEMY 0 POSITION 0 OBJECTIVE 목표: 챕터 6 quest,explore,combat,boss COMBAT · 도입 Accept a quest or story objective, travel throug MOVEMENT · 핵심 루프 Fight enemies or bosses using readable skills an COMBAT · 난도 상승 Complete the quest or major encounter, unlock a PROGRESSION · 결전 asciicase MOBILE 음악 켜짐 볼륨 게임 시작 · 챕터 6 · 진행 0/6",
+    "visibleButtons": 6,
+    "canvases": [
+      "560x260:sHgwgtHsHKXjS8cQ3F7DC3B8inzICEdRBxjh/MkHeQJBOBwf958s+gV4lMbTzPlRwsPxISE4bGQw6fMvYaiNn3EBo8EVPHJZ2nlhtA02Bel2kqmAh+NTxsP5UcbD+VHGo7f4UY9r0j3/Mt4JlyQdH8dH01fiQ70cTPz4/wAAAP//jZwc3gAAAAZJREFUAwDmO74fmgbxOAAAAABJRU5ErkJggg=="
+    ],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "0SCORE100HP1WAVE8RESOURCE1LEVEL100ENEMY0POSITION0OBJECTIVE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-0"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "8"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "audioState": "locked",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-afb3aa364d",
+      "scope-coreloop-0-512fbeed03",
+      "scope-coreloop-1-fee638072f",
+      "scope-coreloop-2-d36d57e8a3",
+      "scope-mobileux-a6b8e71cfe"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": false,
+        "text": "quest,explore,combat,bossCOMBAT · 도입"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": false,
+        "text": "Accept a quest or story objective, travel througMOVEMENT · 핵심 루프"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": false,
+        "text": "Fight enemies or bosses using readable skills anCOMBAT · 난도 상승"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": false,
+        "text": "Complete the quest or major encounter, unlock a PROGRESSION · 결전"
+      }
+    ],
+    "sessionCurrentStage": 0,
+    "sessionCompletedStages": 0,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "after": {
+    "text": "스토리 RPG · 실제 플레이 Web 게임 Shardbound Odyssey quest,explore,combat,boss 191 SCORE 35 HP 2 WAVE 5 RESOURCE 3 LEVEL 85 ENEMY 0 POSITION 1 OBJECTIVE 목표: 챕터 6 quest,explore,combat,boss COMBAT · 도입 Accept a quest or story objective, travel throug MOVEMENT · 핵심 루프 Fight enemies or bosses using readable skills an COMBAT · 난도 상승 Complete the quest or major encounter, unlock a PROGRESSION · 결전 asciicase MOBILE 음악 켜짐 볼륨 Fight enemies or bosses using readable skills an · 챕터 6 · 진행 1/6",
+    "visibleButtons": 6,
+    "canvases": [
+      "560x260:jc9uNAIfDyYwmY2j8/ilYwjOb/ACzKesh4w4yj7ABOsn7+QJgjjMx/GTpbgAl0p/mlkfFR7mQ0Gw28gQrd+/xNDoP9MARp0ruOS2MvPC5NjZlKzzKaYSD/Op8rA+qjysjyqP4dJHM9fC9/2rvAsuhTUf89Hrq9BDsx1N+vj/AAAA//8y0Qp1AAAABklEQVQDAMAyBS5GYU0cAAAAAElFTkSuQmCC"
+    ],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "191SCORE35HP2WAVE5RESOURCE3LEVEL85ENEMY0POSITION1OBJECTIVE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-13"
+          ],
+          [
+            "data-score",
+            "191"
+          ],
+          [
+            "data-health",
+            "35"
+          ],
+          [
+            "data-resource",
+            "5"
+          ],
+          [
+            "data-progress",
+            "92"
+          ]
+        ]
+      }
+    ],
+    "audioState": "running",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-afb3aa364d",
+      "scope-coreloop-0-512fbeed03",
+      "scope-coreloop-1-fee638072f",
+      "scope-coreloop-2-d36d57e8a3",
+      "scope-mobileux-a6b8e71cfe"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": true,
+        "text": "quest,explore,combat,bossCOMBAT · 도입"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": true,
+        "text": "Accept a quest or story objective, travel througMOVEMENT · 핵심 루프"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": true,
+        "text": "Fight enemies or bosses using readable skills anCOMBAT · 난도 상승"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": true,
+        "text": "Complete the quest or major encounter, unlock a PROGRESSION · 결전"
+      }
+    ],
+    "sessionCurrentStage": 3,
+    "sessionCompletedStages": 4,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "interactionCount=13",
+    "stateChanged=true",
+    "reloadVisible=true",
+    "mobileOverflow=true",
+    "musicRuntime=true",
+    "approvedScope=true",
+    "sessionDepthMinutes=30",
+    "sessionStages=4",
+    "sessionStagesCompleted=4",
+    "sessionStageGameplay=true",
+    "multiplayerParticipants=0"
+  ],
+  "checkedAt": "2026-09-13T21:01:18.280Z",
+  "sourcePath": "web-games/seed-roblox-story-rpg-adventur-blox-fruits",
+  "sourceIndexSha256": "a1c232ff22d777c1f3c24fc4484c776705a40a8f85101391a6ff0fb7c9c30bc1",
+  "sourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
+  "designBaselineSha256": "552c81d042dda3a3ce93ffe8147822267e60a0a66c8209122b3e6746f0e40ccc",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-story-rpg-adventur-blox-fruits-34782177769-2/",
+  "screenshot": "/tmp/web-work/seed-roblox-story-rpg-adventur-blox-fruits/web-gameplay.png",
+  "strictReviewPath": "/tmp/web-work/seed-roblox-story-rpg-adventur-blox-fruits/strict-implementation-review.json",
+  "strictReview": {
+    "verdict": "PASS",
+    "totalScore": 100,
+    "hardFailures": [],
+    "improvementTargets": [],
+    "reviewedAt": "2026-09-13T21:01:18.406Z",
+    "formalPassThreshold": 90,
+    "homepageTestThreshold": 80
+  },
+  "webStrictScore": 100,
+  "improvementTargets": [],
+  "homepageTestEligible": true,
+  "homepageTestVerdict": "PASS",
+  "formalReviewPassed": true,
+  "formalImplementationPassed": true,
+  "formalImplementationVerdict": "PASS",
+  "promotionRevalidation": {
+    "required": true,
+    "independentRun": true,
+    "pass": true,
+    "minimumScore": 90,
+    "firstScore": 100,
+    "secondScore": 100,
+    "sourceHashMatch": true,
+    "baselineHashMatch": true,
+    "secondCheckedAt": "2026-09-13T21:01:21.927Z",
+    "secondSessionPass": true,
+    "error": null
+  },
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-story-rpg-adventur-blox-fruits-34782177769-2",
+  "policyDocument": "COMPANY_FLOW.md",
+  "requiredBeforeTargetPlatform": true
+}

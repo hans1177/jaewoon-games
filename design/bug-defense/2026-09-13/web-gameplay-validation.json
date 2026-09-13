@@ -1,0 +1,372 @@
+{
+  "version": 10,
+  "validationSchemaVersion": 10,
+  "gameId": "bug-defense",
+  "target": "web",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 13,
+  "stateChanged": true,
+  "musicRuntime": {
+    "required": true,
+    "startsAfterUserGesture": true,
+    "muteControl": true,
+    "volumeControl": true,
+    "beforeState": "locked",
+    "afterState": "running",
+    "pass": true
+  },
+  "approvedScopeFullyImplemented": true,
+  "scopeCoverage": {
+    "pass": true,
+    "declaredCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-f9eac87035",
+      "scope-coreloop-0-f96e139c08",
+      "scope-coreloop-1-e0fc69d258",
+      "scope-coreloop-2-87f31deaff",
+      "scope-mobileux-bb5af6ed38"
+    ],
+    "interactedScopeIds": [
+      "scope-corefun-f9eac87035",
+      "scope-coreloop-0-f96e139c08",
+      "scope-coreloop-1-e0fc69d258",
+      "scope-coreloop-2-87f31deaff",
+      "scope-mobileux-bb5af6ed38"
+    ],
+    "blockers": []
+  },
+  "scopeInteractionResults": [
+    {
+      "scopeId": "scope-corefun-f9eac87035",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-0-f96e139c08",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-1-e0fc69d258",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-2-87f31deaff",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-mobileux-bb5af6ed38",
+      "clicked": true,
+      "stateChanged": true
+    }
+  ],
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "sessionDepthMinutes": 30,
+  "sessionContract": {
+    "pass": true,
+    "minutes": 30,
+    "validatedMinutes": 30,
+    "stageCount": 4,
+    "completedStages": 4,
+    "windows": [
+      [
+        0,
+        5
+      ],
+      [
+        5,
+        15
+      ],
+      [
+        15,
+        25
+      ],
+      [
+        25,
+        30
+      ]
+    ],
+    "shapePass": true,
+    "depthPass": true,
+    "interactionPass": true,
+    "stageGameplayPassed": true,
+    "stageResults": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      }
+    ]
+  },
+  "multiplayer": {
+    "participants": 0,
+    "meaningfulLoopPassed": false
+  },
+  "before": {
+    "text": "방어 전략 · 실제 플레이 Web 게임 곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 처음부터 다시 설계한다. wave defense readability 0 SCORE 100 HP 1 WAVE 30 RESOURCE 1 LEVEL 100 ENEMY 0 POSITION 0 OBJECTIVE 목표: 웨이브 15 wave defense readability OBJECTIVE · 도입 Read the incoming insect wave and its threat pat SURVIVAL · 핵심 루프 Place or adjust defenders and spend limited reso ECONOMY · 난도 상승 Survive the wave, learn from leaks or losses, an PROGRESSION · 결전 Yes MOBILE 음악 켜짐 볼륨 게임 시작 · 웨이브 15 · 진행 1/16",
+    "visibleButtons": 6,
+    "canvases": [
+      "560x260:LB6MYDQ7R+n40tEs7A28gMCnzIeMcJR1gBHBn3yQJxCEI/AJ/8mSX4BHZTzNgh8VPAIfEoLDRgaXMf8Shsb4mRYwGlzBI5eVnRdG+2BTkmEnmUp4BD5VPIIfVTyCH1U8BosfzbgWeuRfxbvApZCBT+Cj6avgQ7McTfz4fwAAAP//UsE1OQAAAAZJREFUAwCKyLEf2+xoxQAAAABJRU5ErkJggg=="
+    ],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "0SCORE100HP1WAVE30RESOURCE1LEVEL100ENEMY0POSITION0OBJECTIVE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-0"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "30"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "audioState": "locked",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-f9eac87035",
+      "scope-coreloop-0-f96e139c08",
+      "scope-coreloop-1-e0fc69d258",
+      "scope-coreloop-2-87f31deaff",
+      "scope-mobileux-bb5af6ed38"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": false,
+        "text": "wave defense readabilityOBJECTIVE · 도입"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": false,
+        "text": "Read the incoming insect wave and its threat patSURVIVAL · 핵심 루프"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": false,
+        "text": "Place or adjust defenders and spend limited resoECONOMY · 난도 상승"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": false,
+        "text": "Survive the wave, learn from leaks or losses, anPROGRESSION · 결전"
+      }
+    ],
+    "sessionCurrentStage": 0,
+    "sessionCompletedStages": 0,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "after": {
+    "text": "방어 전략 · 실제 플레이 Web 게임 곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 처음부터 다시 설계한다. wave defense readability 92 SCORE 64 HP 1 WAVE 46 RESOURCE 3 LEVEL 100 ENEMY 2 POSITION 3 OBJECTIVE 목표: 웨이브 15 wave defense readability OBJECTIVE · 도입 Read the incoming insect wave and its threat pat SURVIVAL · 핵심 루프 Place or adjust defenders and spend limited reso ECONOMY · 난도 상승 Survive the wave, learn from leaks or losses, an PROGRESSION · 결전 Yes MOBILE 음악 켜짐 볼륨 Place or adjust defenders and spend limited reso · 웨이브 15 · 진행 1/16",
+    "visibleButtons": 6,
+    "canvases": [
+      "560x260:jcDbgwlMZuPoPH7pGILnV3gBzievh4Q48j7ABNdP2skTBHE4H4+fJMYFuBT608T1UeDhfCgIdhsJzPr7lxgq/WccwKhzBZfUFmZemGydTc56PsWU4+F8ijxcH0Uero8ij77SRzXXzPfyi7wzLpl1Ps5Hr69MD9V2KOnj/wMAAP//n6MKwQAAAAZJREFUAwDG0qsfq7JTPQAAAABJRU5ErkJggg=="
+    ],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "92SCORE64HP1WAVE46RESOURCE3LEVEL100ENEMY2POSITION3OBJECTIVE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-13"
+          ],
+          [
+            "data-score",
+            "92"
+          ],
+          [
+            "data-health",
+            "64"
+          ],
+          [
+            "data-resource",
+            "46"
+          ],
+          [
+            "data-progress",
+            "74"
+          ]
+        ]
+      }
+    ],
+    "audioState": "running",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-f9eac87035",
+      "scope-coreloop-0-f96e139c08",
+      "scope-coreloop-1-e0fc69d258",
+      "scope-coreloop-2-87f31deaff",
+      "scope-mobileux-bb5af6ed38"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": true,
+        "text": "wave defense readabilityOBJECTIVE · 도입"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": true,
+        "text": "Read the incoming insect wave and its threat patSURVIVAL · 핵심 루프"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": true,
+        "text": "Place or adjust defenders and spend limited resoECONOMY · 난도 상승"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": true,
+        "text": "Survive the wave, learn from leaks or losses, anPROGRESSION · 결전"
+      }
+    ],
+    "sessionCurrentStage": 3,
+    "sessionCompletedStages": 4,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "interactionCount=13",
+    "stateChanged=true",
+    "reloadVisible=true",
+    "mobileOverflow=true",
+    "musicRuntime=true",
+    "approvedScope=true",
+    "sessionDepthMinutes=30",
+    "sessionStages=4",
+    "sessionStagesCompleted=4",
+    "sessionStageGameplay=true",
+    "multiplayerParticipants=0"
+  ],
+  "checkedAt": "2026-09-13T21:01:52.639Z",
+  "sourcePath": "web-games/bug-defense",
+  "sourceIndexSha256": "76ba49e178ded646c927980bb5bcb59dbd339e3cfd2f91f901ac00759aa64490",
+  "sourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
+  "designBaselineSha256": "05f512584821d4771ffff8d25a75618cb18997cfbe8997f6e4aaa568b9f2156a",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-bug-defense-34782177769-2/",
+  "screenshot": "/tmp/web-work/bug-defense/web-gameplay.png",
+  "strictReviewPath": "/tmp/web-work/bug-defense/strict-implementation-review.json",
+  "strictReview": {
+    "verdict": "PASS",
+    "totalScore": 100,
+    "hardFailures": [],
+    "improvementTargets": [],
+    "reviewedAt": "2026-09-13T21:01:52.747Z",
+    "formalPassThreshold": 90,
+    "homepageTestThreshold": 80
+  },
+  "webStrictScore": 100,
+  "improvementTargets": [],
+  "homepageTestEligible": true,
+  "homepageTestVerdict": "PASS",
+  "formalReviewPassed": true,
+  "formalImplementationPassed": true,
+  "formalImplementationVerdict": "PASS",
+  "promotionRevalidation": {
+    "required": true,
+    "independentRun": true,
+    "pass": true,
+    "minimumScore": 90,
+    "firstScore": 100,
+    "secondScore": 100,
+    "sourceHashMatch": true,
+    "baselineHashMatch": true,
+    "secondCheckedAt": "2026-09-13T21:01:56.218Z",
+    "secondSessionPass": true,
+    "error": null
+  },
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-bug-defense-34782177769-2",
+  "policyDocument": "COMPANY_FLOW.md",
+  "requiredBeforeTargetPlatform": true
+}

@@ -1,0 +1,372 @@
+{
+  "version": 10,
+  "validationSchemaVersion": 10,
+  "gameId": "survival",
+  "target": "web",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 13,
+  "stateChanged": true,
+  "musicRuntime": {
+    "required": true,
+    "startsAfterUserGesture": true,
+    "muteControl": true,
+    "volumeControl": true,
+    "beforeState": "locked",
+    "afterState": "running",
+    "pass": true
+  },
+  "approvedScopeFullyImplemented": true,
+  "scopeCoverage": {
+    "pass": true,
+    "declaredCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-3007361096",
+      "scope-coreloop-0-9b2d4dfbc6",
+      "scope-coreloop-1-6ebe58f496",
+      "scope-coreloop-2-6c927cfa40",
+      "scope-mobileux-d4b46ab266"
+    ],
+    "interactedScopeIds": [
+      "scope-corefun-3007361096",
+      "scope-coreloop-0-9b2d4dfbc6",
+      "scope-coreloop-1-6ebe58f496",
+      "scope-coreloop-2-6c927cfa40",
+      "scope-mobileux-d4b46ab266"
+    ],
+    "blockers": []
+  },
+  "scopeInteractionResults": [
+    {
+      "scopeId": "scope-corefun-3007361096",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-0-9b2d4dfbc6",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-1-6ebe58f496",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-2-6c927cfa40",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-mobileux-d4b46ab266",
+      "clicked": true,
+      "stateChanged": true
+    }
+  ],
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "sessionDepthMinutes": 30,
+  "sessionContract": {
+    "pass": true,
+    "minutes": 30,
+    "validatedMinutes": 30,
+    "stageCount": 4,
+    "completedStages": 4,
+    "windows": [
+      [
+        0,
+        5
+      ],
+      [
+        5,
+        15
+      ],
+      [
+        15,
+        25
+      ],
+      [
+        25,
+        30
+      ]
+    ],
+    "shapePass": true,
+    "depthPass": true,
+    "interactionPass": true,
+    "stageGameplayPassed": true,
+    "stageResults": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      }
+    ]
+  },
+  "multiplayer": {
+    "participants": 0,
+    "meaningfulLoopPassed": false
+  },
+  "before": {
+    "text": "생존 탈출 · 실제 플레이 Web 게임 개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다 readable survival needs 0 SCORE 100 HP 1 WAVE 3 RESOURCE 1 LEVEL 100 ENEMY 0 POSITION 0 OBJECTIVE 목표: 구역 12 탈출 readable survival needs OBJECTIVE · 도입 Fight through an escalating horde in a short rea COMBAT · 핵심 루프 Collect run rewards or experience and choose upg COMBAT · 난도 상승 Combine upgrades into a stronger build, survive PROGRESSION · 결전 mobile MOBILE 음악 켜짐 볼륨 게임 시작 · 구역 12 탈출 · 진행 0/12",
+    "visibleButtons": 6,
+    "canvases": [
+      "560x260:rjQCHw8mMJmNo/P4pWMInl/hBTifvB4S4sj7ABNcP2knTxDE4Xw8fpIYF+BS6E8T10eBh/OhINhtJDDr719iqPSfcQCjzhVcUluYeWGydTY56/kUU46H8ynycH0Uebg+ijx6Sx/VXDPf71/knXHJrPNxPnp9ZXqotoNJH/8fAAD//4lA8HcAAAAGSURBVAMAFTfUH5jdMjgAAAAASUVORK5CYII="
+    ],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "0SCORE100HP1WAVE3RESOURCE1LEVEL100ENEMY0POSITION0OBJECTIVE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-0"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "3"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "audioState": "locked",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-3007361096",
+      "scope-coreloop-0-9b2d4dfbc6",
+      "scope-coreloop-1-6ebe58f496",
+      "scope-coreloop-2-6c927cfa40",
+      "scope-mobileux-d4b46ab266"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": false,
+        "text": "readable survival needsOBJECTIVE · 도입"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": false,
+        "text": "Fight through an escalating horde in a short reaCOMBAT · 핵심 루프"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": false,
+        "text": "Collect run rewards or experience and choose upgCOMBAT · 난도 상승"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": false,
+        "text": "Combine upgrades into a stronger build, survive PROGRESSION · 결전"
+      }
+    ],
+    "sessionCurrentStage": 0,
+    "sessionCompletedStages": 0,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "after": {
+    "text": "생존 탈출 · 실제 플레이 Web 게임 개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다 readable survival needs 195 SCORE 32 HP 2 WAVE 6 RESOURCE 2 LEVEL 110 ENEMY 2 POSITION 4 OBJECTIVE 목표: 구역 12 탈출 readable survival needs OBJECTIVE · 도입 Fight through an escalating horde in a short rea COMBAT · 핵심 루프 Collect run rewards or experience and choose upg COMBAT · 난도 상승 Combine upgrades into a stronger build, survive PROGRESSION · 결전 mobile MOBILE 음악 켜짐 볼륨 Collect run rewards or experience and choose upg · 구역 12 탈출 · 진행 4/12",
+    "visibleButtons": 6,
+    "canvases": [
+      "560x260:NxqBtwcTmMzG0Xn80jEE5zd4AeZT1kNGHGUfYIL1k3fyBEEc5uP4yVJcgEulP82sjwoP86Eg2G1kiNbvX2Jo9J9pAKPOFVxyW5l5YXLsbErW+RRTiYf5VHlYH1Ue1keVx2Dpo5lr4bv8Ku+CS2HNx3z0+ir00GxHkj7+PwAAAP//1YBoagAAAAZJREFUAwAzO8UfR0cYrgAAAABJRU5ErkJggg=="
+    ],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "195SCORE32HP2WAVE6RESOURCE2LEVEL110ENEMY2POSITION4OBJECTIVE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-13"
+          ],
+          [
+            "data-score",
+            "195"
+          ],
+          [
+            "data-health",
+            "32"
+          ],
+          [
+            "data-resource",
+            "6"
+          ],
+          [
+            "data-progress",
+            "89"
+          ]
+        ]
+      }
+    ],
+    "audioState": "running",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-3007361096",
+      "scope-coreloop-0-9b2d4dfbc6",
+      "scope-coreloop-1-6ebe58f496",
+      "scope-coreloop-2-6c927cfa40",
+      "scope-mobileux-d4b46ab266"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": true,
+        "text": "readable survival needsOBJECTIVE · 도입"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": true,
+        "text": "Fight through an escalating horde in a short reaCOMBAT · 핵심 루프"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": true,
+        "text": "Collect run rewards or experience and choose upgCOMBAT · 난도 상승"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": true,
+        "text": "Combine upgrades into a stronger build, survive PROGRESSION · 결전"
+      }
+    ],
+    "sessionCurrentStage": 3,
+    "sessionCompletedStages": 4,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "interactionCount=13",
+    "stateChanged=true",
+    "reloadVisible=true",
+    "mobileOverflow=true",
+    "musicRuntime=true",
+    "approvedScope=true",
+    "sessionDepthMinutes=30",
+    "sessionStages=4",
+    "sessionStagesCompleted=4",
+    "sessionStageGameplay=true",
+    "multiplayerParticipants=0"
+  ],
+  "checkedAt": "2026-09-13T21:02:08.998Z",
+  "sourcePath": "web-games/survival",
+  "sourceIndexSha256": "7b248ebcfdaa834182e09afdd3318eae0bc6a7121613a1a7df55783f584051bb",
+  "sourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
+  "designBaselineSha256": "6de813c362f4472e2b1298c98dcafa2cfc2f01945233fb67088e0de694359099",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-survival-34782177769-2/",
+  "screenshot": "/tmp/web-work/survival/web-gameplay.png",
+  "strictReviewPath": "/tmp/web-work/survival/strict-implementation-review.json",
+  "strictReview": {
+    "verdict": "PASS",
+    "totalScore": 100,
+    "hardFailures": [],
+    "improvementTargets": [],
+    "reviewedAt": "2026-09-13T21:02:09.124Z",
+    "formalPassThreshold": 90,
+    "homepageTestThreshold": 80
+  },
+  "webStrictScore": 100,
+  "improvementTargets": [],
+  "homepageTestEligible": true,
+  "homepageTestVerdict": "PASS",
+  "formalReviewPassed": true,
+  "formalImplementationPassed": true,
+  "formalImplementationVerdict": "PASS",
+  "promotionRevalidation": {
+    "required": true,
+    "independentRun": true,
+    "pass": true,
+    "minimumScore": 90,
+    "firstScore": 100,
+    "secondScore": 100,
+    "sourceHashMatch": true,
+    "baselineHashMatch": true,
+    "secondCheckedAt": "2026-09-13T21:02:12.696Z",
+    "secondSessionPass": true,
+    "error": null
+  },
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-survival-34782177769-2",
+  "policyDocument": "COMPANY_FLOW.md",
+  "requiredBeforeTargetPlatform": true
+}

@@ -1,0 +1,372 @@
+{
+  "version": 10,
+  "validationSchemaVersion": 10,
+  "gameId": "seed-roblox-survival-horror-es-doors",
+  "target": "web",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 13,
+  "stateChanged": true,
+  "musicRuntime": {
+    "required": true,
+    "startsAfterUserGesture": true,
+    "muteControl": true,
+    "volumeControl": true,
+    "beforeState": "locked",
+    "afterState": "running",
+    "pass": true
+  },
+  "approvedScopeFullyImplemented": true,
+  "scopeCoverage": {
+    "pass": true,
+    "declaredCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-39c5729957",
+      "scope-coreloop-0-aec334dee8",
+      "scope-coreloop-1-b019bdc099",
+      "scope-coreloop-2-fa285598a5",
+      "scope-mobileux-7cfa90daaa"
+    ],
+    "interactedScopeIds": [
+      "scope-corefun-39c5729957",
+      "scope-coreloop-0-aec334dee8",
+      "scope-coreloop-1-b019bdc099",
+      "scope-coreloop-2-fa285598a5",
+      "scope-mobileux-7cfa90daaa"
+    ],
+    "blockers": []
+  },
+  "scopeInteractionResults": [
+    {
+      "scopeId": "scope-corefun-39c5729957",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-0-aec334dee8",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-1-b019bdc099",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-2-fa285598a5",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-mobileux-7cfa90daaa",
+      "clicked": true,
+      "stateChanged": true
+    }
+  ],
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "sessionDepthMinutes": 30,
+  "sessionContract": {
+    "pass": true,
+    "minutes": 30,
+    "validatedMinutes": 30,
+    "stageCount": 4,
+    "completedStages": 4,
+    "windows": [
+      [
+        0,
+        5
+      ],
+      [
+        5,
+        15
+      ],
+      [
+        15,
+        25
+      ],
+      [
+        25,
+        30
+      ]
+    ],
+    "shapePass": true,
+    "depthPass": true,
+    "interactionPass": true,
+    "stageGameplayPassed": true,
+    "stageResults": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      }
+    ]
+  },
+  "multiplayer": {
+    "participants": 0,
+    "meaningfulLoopPassed": false
+  },
+  "before": {
+    "text": "생존 탈출 · 실제 플레이 Web 게임 Last Lantern Survive and Threat while utilizing its own world, visual identity, progression, economy, content, and interaction design. 0 SCORE 100 HP 1 WAVE 3 RESOURCE 1 LEVEL 100 ENEMY 0 POSITION 0 OBJECTIVE 목표: 구역 12 탈출 Survive and Threat while utilizing its own world PROGRESSION · 도입 Enter a dangerous area with limited information, ECONOMY · 핵심 루프 Avoid, outplay, or temporarily resist the threat ECONOMY · 난도 상승 Reach a checkpoint or escape condition, convert PROGRESSION · 결전 The game will be designed with mobile play in mi MOBILE 음악 켜짐 볼륨 게임 시작 · 구역 12 탈출 · 진행 0/12",
+    "visibleButtons": 6,
+    "canvases": [
+      "560x260:rjQCHw8mMJmNo/P4pWMInl/hBTifvB4S4sj7ABNcP2knTxDE4Xw8fpIYF+BS6E8T10eBh/OhINhtJDDr719iqPSfcQCjzhVcUluYeWGydTY56/kUU46H8ynycH0Uebg+ijx6Sx/VXDPf71/knXHJrPNxPnp9ZXqotoNJH/8fAAD//4lA8HcAAAAGSURBVAMAFTfUH5jdMjgAAAAASUVORK5CYII="
+    ],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "0SCORE100HP1WAVE3RESOURCE1LEVEL100ENEMY0POSITION0OBJECTIVE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-0"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "3"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "audioState": "locked",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-39c5729957",
+      "scope-coreloop-0-aec334dee8",
+      "scope-coreloop-1-b019bdc099",
+      "scope-coreloop-2-fa285598a5",
+      "scope-mobileux-7cfa90daaa"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": false,
+        "text": "Survive and Threat while utilizing its own worldPROGRESSION · 도입"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": false,
+        "text": "Enter a dangerous area with limited information,ECONOMY · 핵심 루프"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": false,
+        "text": "Avoid, outplay, or temporarily resist the threatECONOMY · 난도 상승"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": false,
+        "text": "Reach a checkpoint or escape condition, convert PROGRESSION · 결전"
+      }
+    ],
+    "sessionCurrentStage": 0,
+    "sessionCompletedStages": 0,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "after": {
+    "text": "생존 탈출 · 실제 플레이 Web 게임 Last Lantern Survive and Threat while utilizing its own world, visual identity, progression, economy, content, and interaction design. 84 SCORE 37 HP 1 WAVE 49 RESOURCE 5 LEVEL 100 ENEMY 2 POSITION 0 OBJECTIVE 목표: 구역 12 탈출 Survive and Threat while utilizing its own world PROGRESSION · 도입 Enter a dangerous area with limited information, ECONOMY · 핵심 루프 Avoid, outplay, or temporarily resist the threat ECONOMY · 난도 상승 Reach a checkpoint or escape condition, convert PROGRESSION · 결전 The game will be designed with mobile play in mi MOBILE 음악 켜짐 볼륨 Avoid, outplay, or temporarily resist the threat · 구역 12 탈출 · 진행 0/12",
+    "visibleButtons": 6,
+    "canvases": [
+      "560x260:ezcagbcHE5jMxtF5/NIxBOc3eAHmU9ZDRhxlH2CC9ZN38gRBHObj+MlSXIBLpT/NrI8KD/OhINhtZIjW719iaPSfaQCjzhVccluZeWFy7GxK1vkUU4mH+VR5WB9VHtZHlcdA6aOZa+G7/Crvgkthzcd89Poq9NBsR5I+/j8AAAD//8Pin3oAAAAGSURBVAMAFHLUH1YwGnYAAAAASUVORK5CYII="
+    ],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "84SCORE37HP1WAVE49RESOURCE5LEVEL100ENEMY2POSITION0OBJECTIVE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-13"
+          ],
+          [
+            "data-score",
+            "84"
+          ],
+          [
+            "data-health",
+            "37"
+          ],
+          [
+            "data-resource",
+            "49"
+          ],
+          [
+            "data-progress",
+            "86"
+          ]
+        ]
+      }
+    ],
+    "audioState": "running",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-39c5729957",
+      "scope-coreloop-0-aec334dee8",
+      "scope-coreloop-1-b019bdc099",
+      "scope-coreloop-2-fa285598a5",
+      "scope-mobileux-7cfa90daaa"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": true,
+        "text": "Survive and Threat while utilizing its own worldPROGRESSION · 도입"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": true,
+        "text": "Enter a dangerous area with limited information,ECONOMY · 핵심 루프"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": true,
+        "text": "Avoid, outplay, or temporarily resist the threatECONOMY · 난도 상승"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": true,
+        "text": "Reach a checkpoint or escape condition, convert PROGRESSION · 결전"
+      }
+    ],
+    "sessionCurrentStage": 3,
+    "sessionCompletedStages": 4,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "interactionCount=13",
+    "stateChanged=true",
+    "reloadVisible=true",
+    "mobileOverflow=true",
+    "musicRuntime=true",
+    "approvedScope=true",
+    "sessionDepthMinutes=30",
+    "sessionStages=4",
+    "sessionStagesCompleted=4",
+    "sessionStageGameplay=true",
+    "multiplayerParticipants=0"
+  ],
+  "checkedAt": "2026-09-13T21:00:36.904Z",
+  "sourcePath": "web-games/seed-roblox-survival-horror-es-doors",
+  "sourceIndexSha256": "362f3c369d4729bfe4e6e083b96242db0a56b042b1f99c2b82cc6069612b2d2d",
+  "sourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
+  "designBaselineSha256": "8a063076804339906dbcc16c71436d52104b8c93ac15984c101f55b47c0fb747",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-survival-horror-es-doors-34782177769-2/",
+  "screenshot": "/tmp/web-work/seed-roblox-survival-horror-es-doors/web-gameplay.png",
+  "strictReviewPath": "/tmp/web-work/seed-roblox-survival-horror-es-doors/strict-implementation-review.json",
+  "strictReview": {
+    "verdict": "PASS",
+    "totalScore": 100,
+    "hardFailures": [],
+    "improvementTargets": [],
+    "reviewedAt": "2026-09-13T21:00:37.028Z",
+    "formalPassThreshold": 90,
+    "homepageTestThreshold": 80
+  },
+  "webStrictScore": 100,
+  "improvementTargets": [],
+  "homepageTestEligible": true,
+  "homepageTestVerdict": "PASS",
+  "formalReviewPassed": true,
+  "formalImplementationPassed": true,
+  "formalImplementationVerdict": "PASS",
+  "promotionRevalidation": {
+    "required": true,
+    "independentRun": true,
+    "pass": true,
+    "minimumScore": 90,
+    "firstScore": 100,
+    "secondScore": 100,
+    "sourceHashMatch": true,
+    "baselineHashMatch": true,
+    "secondCheckedAt": "2026-09-13T21:00:40.568Z",
+    "secondSessionPass": true,
+    "error": null
+  },
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-survival-horror-es-doors-34782177769-2",
+  "policyDocument": "COMPANY_FLOW.md",
+  "requiredBeforeTargetPlatform": true
+}

@@ -1,0 +1,372 @@
+{
+  "version": 10,
+  "validationSchemaVersion": 10,
+  "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
+  "target": "web",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 13,
+  "stateChanged": true,
+  "musicRuntime": {
+    "required": true,
+    "startsAfterUserGesture": true,
+    "muteControl": true,
+    "volumeControl": true,
+    "beforeState": "locked",
+    "afterState": "running",
+    "pass": true
+  },
+  "approvedScopeFullyImplemented": true,
+  "scopeCoverage": {
+    "pass": true,
+    "declaredCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-b56c774462",
+      "scope-coreloop-0-3574de4c31",
+      "scope-coreloop-1-886c0687be",
+      "scope-coreloop-2-4cc22b4bf7",
+      "scope-mobileux-daeb36567f"
+    ],
+    "interactedScopeIds": [
+      "scope-corefun-b56c774462",
+      "scope-coreloop-0-3574de4c31",
+      "scope-coreloop-1-886c0687be",
+      "scope-coreloop-2-4cc22b4bf7",
+      "scope-mobileux-daeb36567f"
+    ],
+    "blockers": []
+  },
+  "scopeInteractionResults": [
+    {
+      "scopeId": "scope-corefun-b56c774462",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-0-3574de4c31",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-1-886c0687be",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-2-4cc22b4bf7",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-mobileux-daeb36567f",
+      "clicked": true,
+      "stateChanged": true
+    }
+  ],
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "sessionDepthMinutes": 30,
+  "sessionContract": {
+    "pass": true,
+    "minutes": 30,
+    "validatedMinutes": 30,
+    "stageCount": 4,
+    "completedStages": 4,
+    "windows": [
+      [
+        0,
+        5
+      ],
+      [
+        5,
+        15
+      ],
+      [
+        15,
+        25
+      ],
+      [
+        25,
+        30
+      ]
+    ],
+    "shapePass": true,
+    "depthPass": true,
+    "interactionPass": true,
+    "stageGameplayPassed": true,
+    "stageResults": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      }
+    ]
+  },
+  "multiplayer": {
+    "participants": 0,
+    "meaningfulLoopPassed": false
+  },
+  "before": {
+    "text": "성장 시뮬레이터 · 실제 플레이 Web 게임 Pocket Foundry collect, upgrade, income, unlock 0 SCORE 100 HP 1 WAVE 12 RESOURCE 1 LEVEL 100 ENEMY 0 POSITION 0 OBJECTIVE 목표: 레벨 12 collect, upgrade, income, unlock PROGRESSION · 도입 Perform a simple repeatable action to collect re ECONOMY · 핵심 루프 Spend earned resources on upgrades, automation, PROGRESSION · 난도 상승 Unlock a new area, tier, collection target, or p PROGRESSION · 결전 None MOBILE 음악 켜짐 볼륨 게임 시작 · 레벨 12 · 진행 1/12",
+    "visibleButtons": 6,
+    "canvases": [
+      "560x260:AosHIxjNzlE6vnQMwe01vADHp8iHjHAUdYARzp98kCcQhMPxcf/Jol+AR2k8zZwfJTwcHxKCw0YGkz7/Eoba+BkXMBpcwSOXpZ0XRttgU5BuJ5kKeDg+ZTycH2U8nB9lPPqKH/W4Jt3zL+OdcEnS8XF8NH0lPtTLocSP/wcAAP//NxgI2wAAAAZJREFUAwAdbEQuHR9RpgAAAABJRU5ErkJggg=="
+    ],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "0SCORE100HP1WAVE12RESOURCE1LEVEL100ENEMY0POSITION0OBJECTIVE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-0"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "12"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "audioState": "locked",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-b56c774462",
+      "scope-coreloop-0-3574de4c31",
+      "scope-coreloop-1-886c0687be",
+      "scope-coreloop-2-4cc22b4bf7",
+      "scope-mobileux-daeb36567f"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": false,
+        "text": "collect, upgrade, income, unlockPROGRESSION · 도입"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": false,
+        "text": "Perform a simple repeatable action to collect reECONOMY · 핵심 루프"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": false,
+        "text": "Spend earned resources on upgrades, automation, PROGRESSION · 난도 상승"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": false,
+        "text": "Unlock a new area, tier, collection target, or pPROGRESSION · 결전"
+      }
+    ],
+    "sessionCurrentStage": 0,
+    "sessionCompletedStages": 0,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "after": {
+    "text": "성장 시뮬레이터 · 실제 플레이 Web 게임 Pocket Foundry collect, upgrade, income, unlock 104 SCORE 56 HP 1 WAVE 11 RESOURCE 11 LEVEL 100 ENEMY 2 POSITION 0 OBJECTIVE 목표: 레벨 12 collect, upgrade, income, unlock PROGRESSION · 도입 Perform a simple repeatable action to collect re ECONOMY · 핵심 루프 Spend earned resources on upgrades, automation, PROGRESSION · 난도 상승 Unlock a new area, tier, collection target, or p PROGRESSION · 결전 None MOBILE 음악 켜짐 볼륨 Spend earned resources on upgrades, automation, · 레벨 12 · 진행 11/12",
+    "visibleButtons": 6,
+    "canvases": [
+      "560x260:NQJvDyYwmY2j8/ihYwieX+MFOJ+iHjLiKPoAE1w/eSdPEMThfDx+shgX4FLqTzPXR4mH86Eg2G1kMOvvX2Ko9Z9xAKPOFVxyW5p5YbJ1NgXr+RRTgYfzKfNwfZR5uD7KPPpKH/Vck+/ll3knLsk6H+ej11fSQ70dSvr4fwAAAP//Z8L11wAAAAZJREFUAwAcp0QuOFlPYgAAAABJRU5ErkJggg=="
+    ],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "104SCORE56HP1WAVE11RESOURCE11LEVEL100ENEMY2POSITION0OBJECTIVE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-13"
+          ],
+          [
+            "data-score",
+            "104"
+          ],
+          [
+            "data-health",
+            "56"
+          ],
+          [
+            "data-resource",
+            "11"
+          ],
+          [
+            "data-progress",
+            "19"
+          ]
+        ]
+      }
+    ],
+    "audioState": "running",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-b56c774462",
+      "scope-coreloop-0-3574de4c31",
+      "scope-coreloop-1-886c0687be",
+      "scope-coreloop-2-4cc22b4bf7",
+      "scope-mobileux-daeb36567f"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": true,
+        "text": "collect, upgrade, income, unlockPROGRESSION · 도입"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": true,
+        "text": "Perform a simple repeatable action to collect reECONOMY · 핵심 루프"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": true,
+        "text": "Spend earned resources on upgrades, automation, PROGRESSION · 난도 상승"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": true,
+        "text": "Unlock a new area, tier, collection target, or pPROGRESSION · 결전"
+      }
+    ],
+    "sessionCurrentStage": 3,
+    "sessionCompletedStages": 4,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "interactionCount=13",
+    "stateChanged=true",
+    "reloadVisible=true",
+    "mobileOverflow=true",
+    "musicRuntime=true",
+    "approvedScope=true",
+    "sessionDepthMinutes=30",
+    "sessionStages=4",
+    "sessionStagesCompleted=4",
+    "sessionStageGameplay=true",
+    "multiplayerParticipants=0"
+  ],
+  "checkedAt": "2026-09-13T20:59:53.928Z",
+  "sourcePath": "web-games/seed-roblox-simulator-tycoon-i-adopt-me",
+  "sourceIndexSha256": "591866f4e4ab6233f225d3d55ae8729586c97dd47e5ecc632cfff83fb6bfaef1",
+  "sourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
+  "designBaselineSha256": "181ca99542231b3546e2943c8c1a5d722829434eceb2ad1f3164b84056112d7e",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-simulator-tycoon-i-adopt-me-34782177769-2/",
+  "screenshot": "/tmp/web-work/seed-roblox-simulator-tycoon-i-adopt-me/web-gameplay.png",
+  "strictReviewPath": "/tmp/web-work/seed-roblox-simulator-tycoon-i-adopt-me/strict-implementation-review.json",
+  "strictReview": {
+    "verdict": "PASS",
+    "totalScore": 100,
+    "hardFailures": [],
+    "improvementTargets": [],
+    "reviewedAt": "2026-09-13T20:59:54.034Z",
+    "formalPassThreshold": 90,
+    "homepageTestThreshold": 80
+  },
+  "webStrictScore": 100,
+  "improvementTargets": [],
+  "homepageTestEligible": true,
+  "homepageTestVerdict": "PASS",
+  "formalReviewPassed": true,
+  "formalImplementationPassed": true,
+  "formalImplementationVerdict": "PASS",
+  "promotionRevalidation": {
+    "required": true,
+    "independentRun": true,
+    "pass": true,
+    "minimumScore": 90,
+    "firstScore": 100,
+    "secondScore": 100,
+    "sourceHashMatch": true,
+    "baselineHashMatch": true,
+    "secondCheckedAt": "2026-09-13T20:59:57.592Z",
+    "secondSessionPass": true,
+    "error": null
+  },
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-simulator-tycoon-i-adopt-me-34782177769-2",
+  "policyDocument": "COMPANY_FLOW.md",
+  "requiredBeforeTargetPlatform": true
+}

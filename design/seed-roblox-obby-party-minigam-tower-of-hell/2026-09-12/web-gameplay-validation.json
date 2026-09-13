@@ -1,0 +1,372 @@
+{
+  "version": 10,
+  "validationSchemaVersion": 10,
+  "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+  "target": "web",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 13,
+  "stateChanged": true,
+  "musicRuntime": {
+    "required": true,
+    "startsAfterUserGesture": true,
+    "muteControl": true,
+    "volumeControl": true,
+    "beforeState": "locked",
+    "afterState": "running",
+    "pass": true
+  },
+  "approvedScopeFullyImplemented": true,
+  "scopeCoverage": {
+    "pass": true,
+    "declaredCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-5fe4e45e2f",
+      "scope-coreloop-0-a308868121",
+      "scope-coreloop-1-7a2dd10fe3",
+      "scope-coreloop-2-c23e57ccd6",
+      "scope-mobileux-d4b46ab266"
+    ],
+    "interactedScopeIds": [
+      "scope-corefun-5fe4e45e2f",
+      "scope-coreloop-0-a308868121",
+      "scope-coreloop-1-7a2dd10fe3",
+      "scope-coreloop-2-c23e57ccd6",
+      "scope-mobileux-d4b46ab266"
+    ],
+    "blockers": []
+  },
+  "scopeInteractionResults": [
+    {
+      "scopeId": "scope-corefun-5fe4e45e2f",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-0-a308868121",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-1-7a2dd10fe3",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-2-c23e57ccd6",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-mobileux-d4b46ab266",
+      "clicked": true,
+      "stateChanged": true
+    }
+  ],
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "sessionDepthMinutes": 30,
+  "sessionContract": {
+    "pass": true,
+    "minutes": 30,
+    "validatedMinutes": 30,
+    "stageCount": 4,
+    "completedStages": 4,
+    "windows": [
+      [
+        0,
+        5
+      ],
+      [
+        5,
+        15
+      ],
+      [
+        15,
+        25
+      ],
+      [
+        25,
+        30
+      ]
+    ],
+    "shapePass": true,
+    "depthPass": true,
+    "interactionPass": true,
+    "stageGameplayPassed": true,
+    "stageResults": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "clicked": true,
+        "completed": true,
+        "gameStateChanged": true
+      }
+    ]
+  },
+  "multiplayer": {
+    "participants": 0,
+    "meaningfulLoopPassed": false
+  },
+  "before": {
+    "text": "오비 미니게임 · 실제 플레이 Web 게임 seed-roblox-obby-party-minigam-tower-of-hell obstacle, round, checkpoint, timing 0 SCORE 100 HP 1 WAVE 20 RESOURCE 1 LEVEL 100 ENEMY 0 POSITION 0 OBJECTIVE 목표: 체크포인트 15 obstacle, round, checkpoint, timing MOVEMENT · 도입 Start a short timed round with a clear obstacle, MOVEMENT · 핵심 루프 Jump, dodge, race, collect, or react through haz MOVEMENT · 난도 상승 Finish or fail the round, receive score or cosme PROGRESSION · 결전 mobile MOBILE 음악 켜짐 볼륨 게임 시작 · 체크포인트 15 · 진행 0/15",
+    "visibleButtons": 6,
+    "canvases": [
+      "560x260:NzqBxYMRjGbnKB1fOpqFvYEXEPiU+ZARjrIOMCL4kw/yBIJwBD7hP1nyC/CojKdZ8KOCR+BDQnDYyOAy5l/C0Bg/0wJGgyt45LKy88JoH2xKMuwkUwmPwKeKR/Cjikfwo4rHcPGjGddCj/yreBe4FDLwCXw0fRV8aJbjiR//DwAA//8PtQs4AAAABklEQVQDAGQqMR98qcJLAAAAAElFTkSuQmCC"
+    ],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "0SCORE100HP1WAVE20RESOURCE1LEVEL100ENEMY0POSITION0OBJECTIVE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-0"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-health",
+            "100"
+          ],
+          [
+            "data-resource",
+            "20"
+          ],
+          [
+            "data-progress",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "audioState": "locked",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-5fe4e45e2f",
+      "scope-coreloop-0-a308868121",
+      "scope-coreloop-1-7a2dd10fe3",
+      "scope-coreloop-2-c23e57ccd6",
+      "scope-mobileux-d4b46ab266"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": false,
+        "text": "obstacle, round, checkpoint, timingMOVEMENT · 도입"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": false,
+        "text": "Start a short timed round with a clear obstacle,MOVEMENT · 핵심 루프"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": false,
+        "text": "Jump, dodge, race, collect, or react through hazMOVEMENT · 난도 상승"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": false,
+        "text": "Finish or fail the round, receive score or cosmePROGRESSION · 결전"
+      }
+    ],
+    "sessionCurrentStage": 0,
+    "sessionCompletedStages": 0,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "after": {
+    "text": "오비 미니게임 · 실제 플레이 Web 게임 seed-roblox-obby-party-minigam-tower-of-hell obstacle, round, checkpoint, timing 71 SCORE 32 HP 1 WAVE 12 RESOURCE 3 LEVEL 100 ENEMY 4 POSITION 9 OBJECTIVE 목표: 체크포인트 15 obstacle, round, checkpoint, timing MOVEMENT · 도입 Start a short timed round with a clear obstacle, MOVEMENT · 핵심 루프 Jump, dodge, race, collect, or react through haz MOVEMENT · 난도 상승 Finish or fail the round, receive score or cosme PROGRESSION · 결전 mobile MOBILE 음악 켜짐 볼륨 Jump, dodge, race, collect, or react through haz · 체크포인트 15 · 진행 9/15",
+    "visibleButtons": 6,
+    "canvases": [
+      "560x260:e3cagbcHE5jMxlE5fumYkvM7vADzqeuhII66DzDB+ik7eYIgDvNx/BQ5LsCl0Z8W1keDh/lQEOw2CoT1+5cYOv1nHsCocwWX0jZmXpgcnU3NOp9iqvEwnyYP66PJw/po8pgofXRzrXxfv8m74lJZ8zEfvb4qPXTbqaSP/w8AAP//zn4XwgAAAAZJREFUAwAHSyYfGay/JwAAAABJRU5ErkJggg=="
+    ],
+    "dataState": [
+      {
+        "tag": "SECTION",
+        "text": "71SCORE32HP1WAVE12RESOURCE3LEVEL100ENEMY4POSITION9OBJECTIVE",
+        "attrs": [
+          [
+            "data-state",
+            "turn-13"
+          ],
+          [
+            "data-score",
+            "71"
+          ],
+          [
+            "data-health",
+            "32"
+          ],
+          [
+            "data-resource",
+            "12"
+          ],
+          [
+            "data-progress",
+            "86"
+          ]
+        ]
+      }
+    ],
+    "audioState": "running",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-5fe4e45e2f",
+      "scope-coreloop-0-a308868121",
+      "scope-coreloop-1-7a2dd10fe3",
+      "scope-coreloop-2-c23e57ccd6",
+      "scope-mobileux-d4b46ab266"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": true,
+        "text": "obstacle, round, checkpoint, timingMOVEMENT · 도입"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": true,
+        "text": "Start a short timed round with a clear obstacle,MOVEMENT · 핵심 루프"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": true,
+        "text": "Jump, dodge, race, collect, or react through hazMOVEMENT · 난도 상승"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": true,
+        "text": "Finish or fail the round, receive score or cosmePROGRESSION · 결전"
+      }
+    ],
+    "sessionCurrentStage": 3,
+    "sessionCompletedStages": 4,
+    "multiplayer": {
+      "participants": 0,
+      "meaningfulLoopPassed": false
+    },
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "interactionCount=13",
+    "stateChanged=true",
+    "reloadVisible=true",
+    "mobileOverflow=true",
+    "musicRuntime=true",
+    "approvedScope=true",
+    "sessionDepthMinutes=30",
+    "sessionStages=4",
+    "sessionStagesCompleted=4",
+    "sessionStageGameplay=true",
+    "multiplayerParticipants=0"
+  ],
+  "checkedAt": "2026-09-13T21:00:35.555Z",
+  "sourcePath": "web-games/seed-roblox-obby-party-minigam-tower-of-hell",
+  "sourceIndexSha256": "dc808a8e904a48fe0d733ddd27f70a49ce8b06973039d00084074875a9d3cad0",
+  "sourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
+  "designBaselineSha256": "70272c2e93d029d02e42a8334c4dbbd18f851e9fcc80d0a1c5b28c5f2f40512a",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-roblox-obby-party-minigam-tower-of-hell-34782177769-2/",
+  "screenshot": "/tmp/web-work/seed-roblox-obby-party-minigam-tower-of-hell/web-gameplay.png",
+  "strictReviewPath": "/tmp/web-work/seed-roblox-obby-party-minigam-tower-of-hell/strict-implementation-review.json",
+  "strictReview": {
+    "verdict": "PASS",
+    "totalScore": 100,
+    "hardFailures": [],
+    "improvementTargets": [],
+    "reviewedAt": "2026-09-13T21:00:35.685Z",
+    "formalPassThreshold": 90,
+    "homepageTestThreshold": 80
+  },
+  "webStrictScore": 100,
+  "improvementTargets": [],
+  "homepageTestEligible": true,
+  "homepageTestVerdict": "PASS",
+  "formalReviewPassed": true,
+  "formalImplementationPassed": true,
+  "formalImplementationVerdict": "PASS",
+  "promotionRevalidation": {
+    "required": true,
+    "independentRun": true,
+    "pass": true,
+    "minimumScore": 90,
+    "firstScore": 100,
+    "secondScore": 100,
+    "sourceHashMatch": true,
+    "baselineHashMatch": true,
+    "secondCheckedAt": "2026-09-13T21:00:39.251Z",
+    "secondSessionPass": true,
+    "error": null
+  },
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-roblox-obby-party-minigam-tower-of-hell-34782177769-2",
+  "policyDocument": "COMPANY_FLOW.md",
+  "requiredBeforeTargetPlatform": true
+}
