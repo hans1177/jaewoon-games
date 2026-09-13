@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "state": "REDESIGN",
+  "sameDesignerRevisionAttempted": true,
+  "repeatedFiveDepartmentReview": true,
+  "allFiveLeadModelsReviewed": true,
+  "discardVotes": 1,
+  "commonFatalCriteria": [],
+  "unanimousFatalDiscard": false,
+  "fatalReviews": {
+    "planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "existingWebArchiveIsPreserved",
+        "designCycleEstablishesBaseline"
+      ],
+      "reason": "The existing playable Web archive is preserved while the canonical design cycle establishes the approved design baseline. The transformation mode is set to REINTERPRETATION, and the source code rule is set to OWN_IMPLEMENTATION_ONLY. The market evidence summary is set to TARGET_DESIGN_REFERENCE, and the market target direction is set to DESIGN_BASELINE."
+    },
+    "graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
+      ],
+      "evidence": [
+        "VALID_FATAL_CRITERIA"
+      ],
+      "reason": "The proposed design has significant flaws that jeopardize the core gameplay loop and potentially impact the game's long-term viability. The changes are not sufficiently aligned with the established design principles and could lead to a disjointed experience. The changes are not aligned with the core fun and the target audience. The changes are not a viable design and are not a good fit for the game's core concept."
+    },
+    "development": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "CORE_FUN_TO_LEARN",
+        "CORE_LOOP",
+        "DISTINCT_IDENTITY",
+        "MARKET_EVIDENCE_SUMMARY"
+      ],
+      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. VALID_FATAL_CRITERIA=["
+    },
+    "qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "The transformation mode is set to REINTERPRETATION, and the source code rule is set to OWN_IMPLEMENTATION_ONLY.",
+        "The market evidence summary is set to TARGET_DESIGN_REFERENCE, and the market target direction is set to DESIGN_BASELINE.",
+        "The questions are all set to the original plan."
+      ],
+      "reason": "The current design does not meet the required criteria for the game's core functionality and identity, as well as the target platform's ability to function as a product. The proposed redesign addresses these issues."
+    },
+    "balance": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "작은 포근섬에서 낚시·채집·생활 흔적이 섬의 모습과 다음 활동을 바꾸는 고유의 힐링 생활 게임으로 설계를 정식화한다.",
+        "섬에서 채집과 낚시를 즐기는 힐링 생활 게임으로 설계를 정식화한다.",
+        "섬에서 채집과 낚시를 즐기는 힐링 생활 게임으로 설계를 정식화한다.",
+        "섬에서 채집과 낚시를 즐기는 힐링 생활 게임으로 설계를 정식화한다."
+      ],
+      "reason": "중앙정책의 fatalCriteria 중 수정 후에도 남은 치명 조건이 실제 설계 근거로 확인될 때만 가능하다."
+    }
+  },
+  "marketMetricAloneUsedForDiscard": false
+}

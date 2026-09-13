@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "섬의 힐링 생활 게임의 시각적 요소 검토"
+        ],
+        "fix": [
+          "섬의 힐링 생활 게임의 시각적 요소 검토"
+        ],
+        "add": [
+          "섬의 힐링 생활 게임의 시각적 요소 검토"
+        ],
+        "risks": [
+          "섬의 힐링 생활 게임의 시각적 요소 검토"
+        ],
+        "evidence": [
+          "섬의 힐링 생활 게임의 시각적 요소 검토"
+        ],
+        "questions": [
+          "섬의 힐링 생활 게임의 시각적 요소 검토"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "fix"
+        ],
+        "fix": [
+          "keep"
+        ],
+        "add": [
+          "keep"
+        ],
+        "risks": [
+          "keep"
+        ],
+        "evidence": [
+          "keep"
+        ],
+        "questions": [
+          "keep"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "identity: cozy-island"
+        ],
+        "fix": [
+          "playerFantasy: 섬에서 채집과 낚시를 즐기는 힐링 생활 게임"
+        ],
+        "add": [
+          "coreFun: relaxing daily activity loop"
+        ],
+        "risks": [
+          "coreLoop: Choose a calm island activity such as gathering, fishing or tending the living space."
+        ],
+        "evidence": [
+          "MARKET_EVIDENCE_SUMMARY: 'Existing playable Web archive is preserved while the canonical design cycle establishes the approved de"
+        ],
+        "questions": [
+          "TARGET_AUDIENCE: 낚시·채집·꾸미기를 짧고 부담 없이 반복하는 힐링 생활 플레이를 선호하는 글로벌 플레이어"
+        ]
+      }
+    }
+  ]
+}

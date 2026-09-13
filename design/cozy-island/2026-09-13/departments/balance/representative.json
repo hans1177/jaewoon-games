@@ -1,0 +1,26 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "representativeModel": "smollm2:1.7b",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "cozy-island"
+    ],
+    "fix": [],
+    "add": [],
+    "risks": [],
+    "evidence": [],
+    "questions": [
+      "the design's mobile ux is set to ROBLOX"
+    ]
+  }
+}

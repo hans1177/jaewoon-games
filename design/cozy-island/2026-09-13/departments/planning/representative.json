@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "representativeModel": "qwen3:0.6b",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "the existing playable Web archive is preserved while the canonical design cycle establishes the approved design baseline."
+    ],
+    "fix": [
+      "the initial target platform is set to ROBLOX"
+    ],
+    "add": [
+      "the transformation mode is set to REINTERPRETATION"
+    ],
+    "risks": [
+      "the source code rule is set to OWN_IMPLEMENTATION_ONLY"
+    ],
+    "evidence": [
+      "the market evidence summary is set to TARGET_DESIGN_REFERENCE"
+    ],
+    "questions": [
+      "the market target direction is set to DESIGN_BASELINE"
+    ]
+  }
+}

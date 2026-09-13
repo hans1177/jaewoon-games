@@ -1,0 +1,81 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "validationQuestions: []"
+        ],
+        "fix": [
+          "openQuestions: []"
+        ],
+        "add": [
+          "technicalAssumptions: []"
+        ],
+        "risks": [
+          "productionClass: DESIGN_ONLY"
+        ],
+        "evidence": [
+          "MARKET_EVIDENCE_SUMMARY: 'Existing playable Web archive is preserved while the canonical design cycle establishes the approved de"
+        ],
+        "questions": [
+          "lifecycleState: DESIGN_ONLY"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "cozy-island"
+        ],
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [],
+        "questions": []
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "the design's identity is set to cozy-island"
+        ],
+        "fix": [
+          "the design's core fun is set to relaxing daily activity loop"
+        ],
+        "add": [
+          "the design's core loop is set to choosing an activity, turning it into a collection, and unlocking a new goal"
+        ],
+        "risks": [
+          "the design's visual direction is set to a unique identity"
+        ],
+        "evidence": [
+          "the market evidence summary is set to TARGET_DESIGN_REFERENCE"
+        ],
+        "questions": [
+          "the market target direction is set to DESIGN_BASELINE"
+        ]
+      }
+    }
+  ]
+}

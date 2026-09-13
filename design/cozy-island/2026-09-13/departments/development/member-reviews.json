@@ -1,0 +1,81 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "fix"
+        ],
+        "fix": [
+          "keep"
+        ],
+        "add": [
+          "keep"
+        ],
+        "risks": [
+          "keep"
+        ],
+        "evidence": [
+          "keep"
+        ],
+        "questions": [
+          "keep"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "coreFun: relaxing daily activity loop"
+        ],
+        "fix": [
+          "coreLoop: Choose a calm island activity such as gathering, fishing or tending the living space."
+        ],
+        "add": [
+          "visualDirection: 작teen 포근한 섬에서 낚시·채집·생활 흔적이 섬의 모습과 다음 활동을 바꾸는 고유의 힐링 생활 게임"
+        ],
+        "risks": [
+          "mobileUx: ROBLOX"
+        ],
+        "evidence": [
+          "MARKET_EVIDENCE_SUMMARY: 'Existing playable Web archive is preserved while the canonical design cycle establishes the approved de"
+        ],
+        "questions": [
+          "TARGET_SESSION_DIRECTION: 짧게 접속해 한 가지 생활 목표를 완료하고 다음 섬 변화가 남는 구조를 검토한다."
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "cozy-island"
+        ],
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [],
+        "questions": []
+      }
+    }
+  ]
+}

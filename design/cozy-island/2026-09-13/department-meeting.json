@@ -1,0 +1,141 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen3:0.6b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "the existing playable Web archive is preserved while the canonical design cycle establishes the approved design baseline."
+      ],
+      "fix": [
+        "the initial target platform is set to ROBLOX"
+      ],
+      "add": [
+        "the transformation mode is set to REINTERPRETATION"
+      ],
+      "risks": [
+        "the source code rule is set to OWN_IMPLEMENTATION_ONLY"
+      ],
+      "evidence": [
+        "the market evidence summary is set to TARGET_DESIGN_REFERENCE"
+      ],
+      "questions": [
+        "the market target direction is set to DESIGN_BASELINE"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "섬의 힐링 생활 게임의 시각적 요소 검토"
+      ],
+      "fix": [
+        "섬의 힐링 생활 게임의 시각적 요소 검토"
+      ],
+      "add": [
+        "섬의 힐링 생활 게임의 시각적 요소 검토"
+      ],
+      "risks": [
+        "섬의 힐링 생활 게임의 시각적 요소 검토"
+      ],
+      "evidence": [
+        "섬의 힐링 생활 게임의 시각적 요소 검토"
+      ],
+      "questions": [
+        "섬의 힐링 생활 게임의 시각적 요소 검토"
+      ]
+    },
+    "development": {
+      "keep": [
+        "fix",
+        "keep"
+      ],
+      "fix": [
+        "keep",
+        "keep"
+      ],
+      "add": [
+        "keep",
+        "keep"
+      ],
+      "risks": [
+        "keep"
+      ],
+      "evidence": [
+        "keep"
+      ],
+      "questions": [
+        "keep"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "validationQuestions: []"
+      ],
+      "fix": [
+        "openQuestions: []"
+      ],
+      "add": [
+        "technicalAssumptions: []"
+      ],
+      "risks": [
+        "productionClass: DESIGN_ONLY"
+      ],
+      "evidence": [
+        "MARKET_EVIDENCE_SUMMARY: 'Existing playable Web archive is preserved while the canonical design cycle establishes the approved design baseline.'"
+      ],
+      "questions": [
+        "lifecycleState: DESIGN_ONLY"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "cozy-island"
+      ],
+      "fix": [],
+      "add": [],
+      "risks": [],
+      "evidence": [],
+      "questions": [
+        "the design's mobile ux is set to ROBLOX"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "The existing playable Web archive is preserved while the canonical design cycle establishes the approved design baseline. The transformation mode is set to REINTERPRETATION, and the source code rule is set to OWN_IMPLEMENTATION_ONLY. The market evidence summary is set to TARGET_DESIGN_REFERENCE, and the market target direction is set to DESIGN_BASELINE. The questions are all set to the original plan.",
+      "departments": [
+        "planning",
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 1,
+    "conflict": 0,
+    "hold": 0
+  }
+}

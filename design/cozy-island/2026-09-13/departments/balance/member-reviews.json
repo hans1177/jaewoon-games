@@ -1,0 +1,81 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "cozy-island"
+        ],
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [],
+        "questions": []
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "the design's visual direction is set to a unique identity"
+        ],
+        "fix": [
+          "the design's mobile ux is set to ROBLOX"
+        ],
+        "add": [
+          "the design's market target direction is set to DESIGN_BASELINE"
+        ],
+        "risks": [
+          "the design's technical assumptions are kept"
+        ],
+        "evidence": [
+          "the market evidence summary is set to TARGET_DESIGN_REFERENCE"
+        ],
+        "questions": [
+          "the market target direction is set to DESIGN_BASELINE"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "섬의 힐링 생활 게임의 균형 요소 검토"
+        ],
+        "fix": [
+          "섬의 힐링 생활 게임의 균형 요소 검토"
+        ],
+        "add": [
+          "섬의 힐링 생활 게임의 균형 요소 검토"
+        ],
+        "risks": [
+          "섬의 힐링 생활 게임의 균형 요소 검토"
+        ],
+        "evidence": [
+          "섬의 힐링 생활 게임의 균형 요소 검토"
+        ],
+        "questions": [
+          "섬의 힐링 생활 게임의 균형 요소 검토"
+        ]
+      }
+    }
+  ]
+}
