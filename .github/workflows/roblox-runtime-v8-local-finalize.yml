@@ -1,0 +1,65 @@
+name: Finalize Roblox Runtime V8 From Local Runner
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/roblox-runtime-v8-local-finalize.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: roblox-runtime-v8-local-finalize
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify local GitHub CLI authentication
+        shell: pwsh
+        run: |
+          gh auth status
+          gh auth setup-git
+          Write-Host 'ROBLOX_LOCAL_GH_AUTH=PASS'
+      - name: Apply and verify canonical v8 migration
+        shell: pwsh
+        run: |
+          python tools/company-finalize-roblox-runtime-v8.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node --check tools/company-development-roblox-runtime-persist.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node --test qa/company-development-roblox-runtime-continuation.test.mjs qa/company-development-roblox-runtime.test.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Write-Host 'ROBLOX_RUNTIME_V8_LOCAL_TEST=PASS'
+      - name: Commit and push canonical v8
+        shell: pwsh
+        run: |
+          git config user.name 'jaewoon-roblox-runtime-local'
+          git config user.email 'actions@users.noreply.github.com'
+          git add .github/workflows/company-development-roblox-runtime.yml .github/workflows/company-development-roblox-runtime-continuation.yml qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-runtime-continuation.test.mjs tools/company-development-roblox-runtime-persist.mjs
+          git diff --cached --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not (git diff --cached --quiet)) {
+            git commit -m 'fix: finalize Roblox runtime harness v8'
+            git fetch --no-tags origin main
+            git rebase origin/main
+            git push origin HEAD:main
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          Write-Host 'ROBLOX_RUNTIME_V8_LOCAL_PUSH=PASS'
