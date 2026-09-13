@@ -56,10 +56,14 @@ function fixSoldierRecruitButton(game) {
   if (!panel?.open || document.querySelector('#panelTitle')?.textContent !== '병영') return;
   const button = document.querySelector('#panelBody [data-rec="soldier"]');
   if (!button) return;
+
   const count = livingSoldiers(game).length;
-  button.disabled = count >= SOLDIER_MAX;
+  const shouldDisable = count >= SOLDIER_MAX;
+  if (button.disabled !== shouldDisable) button.disabled = shouldDisable;
+
   const label = button.querySelector('span');
-  if (label) label.textContent = `⚔️ 병사 모집 (${count}/${SOLDIER_MAX})`;
+  const nextLabel = `⚔️ 병사 모집 (${count}/${SOLDIER_MAX})`;
+  if (label && label.textContent !== nextLabel) label.textContent = nextLabel;
 }
 
 function makeEnemy(kind, index = 0, overrides = {}) {
@@ -150,7 +154,9 @@ const observer = new MutationObserver(() => {
   addResetButton();
   if (currentGame) fixSoldierRecruitButton(currentGame);
 });
-observer.observe(document.documentElement, { subtree: true, childList: true, attributes: true });
+// 병영 버튼을 직접 수정하는 observer가 attributes/characterData까지 다시 감시하면
+// 자기 변경을 다시 감지하는 루프가 생길 수 있다. 패널 DOM 교체만 감시한다.
+observer.observe(document.documentElement, { subtree: true, childList: true });
 
 const rendererProto = IslandRendererV3.prototype;
 const originalDraw = rendererProto.draw;
