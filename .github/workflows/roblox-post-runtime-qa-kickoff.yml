@@ -1,0 +1,25 @@
+name: One-shot Roblox Post-Runtime QA Kickoff
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/roblox-post-runtime-qa-kickoff.yml'
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch canonical Roblox post-runtime QA
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'ROBLOX_POST_RUNTIME_QA_DISPATCH=YES'
