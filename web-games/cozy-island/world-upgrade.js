@@ -86,6 +86,12 @@ function distance(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
+function roundedRect(ctx, x, y, w, h, radius) {
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x, y, w, h, radius);
+  else ctx.rect(x, y, w, h);
+}
+
 function livingTroops() {
   return (currentGame?.allies || []).filter(unit =>
     unit && unit.hp > 0 && (unit.kind === 'soldier' || unit.kind === 'archer' || unit.kind === 'knight')
@@ -283,16 +289,15 @@ function useHospital() {
   if (livingSoldiers().length === 0) return showToast('🏥 살아있는 병사가 없어서 치료할 수 없어');
   const cool = hospitalCooldownSeconds();
   if (cool > 0) return showToast(`🏥 치료 쿨타임 ${cool}초 남음`);
+  const wounded = livingTroops().filter(unit => unit.hp < unit.maxHp);
+  if (wounded.length === 0) return showToast('🏥 이미 모든 병력이 풀피야');
   if ((Number(currentGame.state.coins) || 0) < HOSPITAL.cost) return showToast('🏥 치료 비용 50골드가 필요해');
 
   currentGame.state.coins -= HOSPITAL.cost;
-  let healed = 0;
-  for (const unit of livingTroops()) {
-    if (unit.hp < unit.maxHp) { unit.hp = unit.maxHp; healed++; }
-  }
+  for (const unit of wounded) unit.hp = unit.maxHp;
   currentGame.state.hospitalCooldownUntil = Date.now() + HOSPITAL.cooldownMs;
   saveState();
-  showToast(healed ? `🏥 병력 ${healed}명 풀피 회복 · 50골드` : '🏥 치료 완료 · 50골드');
+  showToast(`🏥 병력 ${wounded.length}명 풀피 회복 · 50골드`);
 }
 
 function handleDoubleAt(sx, sy) {
@@ -595,17 +600,17 @@ function drawLargerVillage(ctx) {
   ctx.strokeStyle = 'rgba(73,115,78,.48)';
   ctx.lineWidth = 3;
   ctx.setLineDash([12, 8]);
-  ctx.strokeRect(115, 720, 1230, 405);
+  ctx.strokeRect(95, 700, 1270, 430);
   ctx.setLineDash([]);
   ctx.fillStyle = 'rgba(230,211,166,.34)';
-  ctx.fillRect(180, 890, 1080, 62);
-  ctx.fillRect(620, 745, 70, 355);
+  ctx.fillRect(165, 885, 1110, 66);
+  ctx.fillRect(615, 730, 74, 380);
   ctx.fillStyle = '#315748';
   ctx.font = '800 13px system-ui';
-  ctx.fillText('넓어진 마을 구역', 150, 750);
-  drawSmallHouse(ctx, 250, 805);
-  drawSmallHouse(ctx, 470, 1010);
-  drawSmallHouse(ctx, 1280, 820);
+  ctx.fillText('넓어진 마을 구역', 135, 730);
+  drawSmallHouse(ctx, 240, 980);
+  drawSmallHouse(ctx, 505, 790);
+  drawSmallHouse(ctx, 1300, 930);
   ctx.restore();
 }
 
@@ -636,9 +641,9 @@ function drawJungleGround(ctx, game) {
     return;
   }
   ctx.fillStyle = '#e5cf92';
-  this.rr(ctx, 1390, 1060, 1450, 1020, 100); ctx.fill();
+  roundedRect(ctx, 1390, 1060, 1450, 1020, 100); ctx.fill();
   ctx.fillStyle = '#4f8451';
-  this.rr(ctx, 1435, 1120, 1360, 880, 78); ctx.fill();
+  roundedRect(ctx, 1435, 1120, 1360, 880, 78); ctx.fill();
   ctx.fillStyle = 'rgba(35,92,45,.28)';
   for (let y = 1180; y < 1960; y += 120) {
     for (let x = 1500 + ((y / 120) % 2) * 55; x < 2760; x += 180) {
