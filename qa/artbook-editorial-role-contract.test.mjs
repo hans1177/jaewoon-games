@@ -19,17 +19,28 @@ test('one central policy source owns class design meeting and release rules',()=
   assert.match(flow,/evidenceFilesCannotCreatePolicy: true/);
 });
 
-test('GAME_SEED mirrors the current selected-platform policy',()=>{
+test('GAME_SEED mirrors the current selected-platform policy while preserving legacy input compatibility',()=>{
   assert.equal(directive.gameSeed.initialTargetPlatform,'ROBLOX');
   assert.deepEqual(directive.gameSeed.allowedTargetPlatforms,['ROBLOX','UNITY','FORTNITE_UEFN']);
   assert.equal(directive.gameSeed.projectMaySelectAnyAllowedPlatform,true);
   assert.equal(directive.gameSeed.primaryPlatformIsDefaultNotLock,true);
   assert.equal(directive.gameSeed.initialPlayMode,'PROJECT_DEFINED');
-  assert.deepEqual(directive.gameSeed.requiredFields,GAME_SEED_REQUIRED_FIELDS);
+  const legacyRequired=directive.gameSeed.requiredFields||[];
+  assert.ok(legacyRequired.includes('REFERENCE_GAMES'));
+  for(const field of legacyRequired.filter(field=>field!=='REFERENCE_GAMES'))assert.ok(GAME_SEED_REQUIRED_FIELDS.includes(field),`current GAME_SEED contract missing compatible field: ${field}`);
+  for(const field of ['REFERENCE_INPUTS','TARGET_SESSION_MINUTES','MULTIPLAYER_DESIGN_MODE'])assert.ok(GAME_SEED_REQUIRED_FIELDS.includes(field),`current GAME_SEED contract missing owner-current field: ${field}`);
+  assert.equal(GAME_SEED_POLICY.seedMaterialPoolTarget,100);
+  assert.equal(GAME_SEED_POLICY.seedMaterialCombineMin,2);
+  assert.equal(GAME_SEED_POLICY.seedMaterialCombineMax,4);
+  assert.equal(GAME_SEED_POLICY.targetSessionMinutes,30);
   assert.equal(GAME_SEED_POLICY.initialTargetPlatform,'ROBLOX');
   assert.deepEqual([...GAME_SEED_POLICY.allowedTargetPlatforms],['ROBLOX','UNITY','FORTNITE_UEFN']);
   assert.match(flow,/initialTargetPlatform: ROBLOX/);
   assert.match(flow,/projectMaySelectAnyAllowedPlatform: true/);
+  assert.match(flow,/poolTarget: 100/);
+  assert.match(flow,/combinePerGameSeed:[\s\S]*?min: 2[\s\S]*?max: 4/);
+  assert.match(flow,/meaningfulMinutesRequired: 30/);
+  assert.match(flow,/decisionStage: GAME_DESIGN/);
 });
 
 test('GAME_SEED validator accepts any allowed selected platform and rejects unsupported targets',()=>{
@@ -120,7 +131,7 @@ test('DEVELOPMENT_CONFIRMED requires full approved-scope Web companion gameplay 
   assert.equal(dev.platformSpecificValidationRequired,true);
   assert.equal(dev.materialChangeRequiresTargetedRevalidation,true);
   assert.equal(dev.artbookRevisionOnlyAfterBaselineReady,true);
-  assert.deepEqual(dev.waitingStates,['WAITING_WEB_PLAYABLE','WAITING_WEB_GAMEPLAY_VALIDATION','WAITING_WEB_GAMEPLAY_REVALIDATION','WAITING_TARGET_PLATFORM_VALIDATION','WAITING_TARGET_PLATFORM_REVALIDATION','WAITING_REVALIDATION']);
+  assert.deepEqual(dev.waitingStates,['WAITING_WEB_PLAYABLE','WAITING_WEB_GAMEPLAY_VALIDATION','WAITING_WEB_GAMEPLAY_REVALIDATION','WAITING_POST_WEB_ARTBOOK','WAITING_WEB_STRICT_IMPROVEMENT','WAITING_TARGET_PLATFORM_VALIDATION','WAITING_TARGET_PLATFORM_REVALIDATION','WAITING_REVALIDATION']);
   for(const token of ['WEB_PLAYABLE_QUEUE','FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP','MUSIC_RUNTIME_BIND','WEB_GAMEPLAY_MUSIC_AND_APPROVED_SCOPE_VALIDATION','WEB_EVIDENCE_DEPARTMENT_MEETING','TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_GAMEPLAY_VALIDATION','TARGET_PLATFORM_TECHNICAL_VALIDATION','TARGET_PLATFORM_EVIDENCE_DEPARTMENT_MEETING'])assert.ok(dev.requiredFlow.includes(token));
   assert.match(flow,/webPurpose: MANDATORY_FULL_APPROVED_SCOPE_WEB_COMPANION_AND_MUSIC_VALIDATION/);
   assert.match(flow,/targetPlatformPurpose: TECHNICAL_AND_GAMEPLAY_VALIDATION/);
