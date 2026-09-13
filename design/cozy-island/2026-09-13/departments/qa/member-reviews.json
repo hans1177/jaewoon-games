@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "core"
+        ],
+        "fix": [
+          "coreLoop"
+        ],
+        "add": [
+          "core"
+        ],
+        "risks": [
+          "validationQuestions"
+        ],
+        "evidence": [
+          "mobileUx"
+        ],
+        "questions": [
+          "mobileUx"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "The game has a basic combat system."
+        ],
+        "fix": [
+          "The game has a basic persistence system."
+        ],
+        "add": [
+          "The game has basic UI elements."
+        ],
+        "risks": [
+          "The game has a basic combat system."
+        ],
+        "evidence": [
+          "The game is a single-player or social expansion game."
+        ],
+        "questions": [
+          "The game is a single-player or social expansion game."
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "The game is a single-player or social expansion game."
+        ],
+        "fix": [
+          "The game has a basic combat system."
+        ],
+        "add": [
+          "The game has a basic persistence system."
+        ],
+        "risks": [
+          "The game has a basic UI elements."
+        ],
+        "evidence": [
+          "The game has a basic UI elements."
+        ],
+        "questions": [
+          "The game has a basic UI elements."
+        ]
+      }
+    }
+  ]
+}

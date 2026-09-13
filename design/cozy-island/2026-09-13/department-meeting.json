@@ -1,0 +1,175 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen3:0.6b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "Existing playable Web archive is preserved while the canonical design cycle establishes the approved design baseline."
+      ],
+      "fix": [
+        "The game is a single-player or social expansion game."
+      ],
+      "add": [
+        "The game has a basic combat system."
+      ],
+      "risks": [
+        "The game has a basic persistence system."
+      ],
+      "evidence": [
+        "The game has a basic UI elements."
+      ],
+      "questions": [
+        "The game is a single-player or social expansion game."
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "game_name"
+      ],
+      "fix": [
+        "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+      ],
+      "add": [
+        "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+      ],
+      "risks": [
+        "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+      ],
+      "evidence": [
+        "game_seed_data"
+      ],
+      "questions": [
+        "game_seed_data_question"
+      ]
+    },
+    "development": {
+      "keep": [
+        "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+      ],
+      "fix": [
+        "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+      ],
+      "add": [
+        "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+      ],
+      "risks": [
+        "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+      ],
+      "evidence": [
+        "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+      ],
+      "questions": [
+        "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "core"
+      ],
+      "fix": [
+        "coreLoop"
+      ],
+      "add": [
+        "core"
+      ],
+      "risks": [
+        "validationQuestions"
+      ],
+      "evidence": [
+        "mobileUx"
+      ],
+      "questions": [
+        "mobileUx"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "The game has a simple, intuitive UI.",
+        "The game has a small island setting."
+      ],
+      "fix": [
+        "The game has a basic combat system."
+      ],
+      "add": [
+        "The game has a basic persistence system."
+      ],
+      "risks": [
+        "The game has a small island setting."
+      ],
+      "evidence": [
+        "The game is a single-player or social expansion game."
+      ],
+      "questions": [
+        "The game is a single-player or social expansion game."
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "The game has a basic UI and a small island setting, which aligns with its core and design elements. The proposed changes are consistent with the existing game's core functionality, which is a basic combat system. QA Lead AI ensures the project adheres to established standards.",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "The game is a single-player or social expansion game. The questions and risks are consistent with the game's core and design elements.",
+      "departments": [
+        "planning"
+      ]
+    },
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "The existing game has a basic combat system. The proposed changes are aligned with the existing game's core functionality, which is a basic combat system.",
+      "departments": [
+        "graphics"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "The project adheres to established standards and guidelines.",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "QA Lead AI ensures the project adheres to established standards.",
+      "departments": [
+        "qa"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "The game is a single-player or social expansion game.",
+      "departments": [
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 5,
+    "conflict": 0,
+    "hold": 0
+  }
+}

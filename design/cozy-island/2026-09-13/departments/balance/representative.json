@@ -1,0 +1,35 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "representativeModel": "smollm2:1.7b",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "The game has a simple, intuitive UI.",
+      "The game has a small island setting."
+    ],
+    "fix": [
+      "The game has a basic combat system."
+    ],
+    "add": [
+      "The game has a basic persistence system."
+    ],
+    "risks": [
+      "The game has a small island setting."
+    ],
+    "evidence": [
+      "The game is a single-player or social expansion game."
+    ],
+    "questions": [
+      "The game is a single-player or social expansion game."
+    ]
+  }
+}

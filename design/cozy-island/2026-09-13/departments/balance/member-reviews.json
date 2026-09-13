@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "The game has a simple, intuitive UI."
+        ],
+        "fix": [
+          "The game has a small island setting."
+        ],
+        "add": [
+          "The game has a basic combat system."
+        ],
+        "risks": [
+          "The game has a small island setting."
+        ],
+        "evidence": [
+          "The game is a single-player or social expansion game."
+        ],
+        "questions": [
+          "The game is a single-player or social expansion game."
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "The game is a single-player or social expansion game."
+        ],
+        "fix": [
+          "The game has a basic combat system."
+        ],
+        "add": [
+          "The game has a basic persistence system."
+        ],
+        "risks": [
+          "The game has a basic UI elements."
+        ],
+        "evidence": [
+          "The game has a basic UI elements."
+        ],
+        "questions": [
+          "The game has a basic UI elements."
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_name"
+        ],
+        "fix": [
+          "game_name_balance"
+        ],
+        "add": [
+          "game_name_balance_details"
+        ],
+        "risks": [
+          "game_name_balance_risk"
+        ],
+        "evidence": [
+          "game_seed_data"
+        ],
+        "questions": [
+          "game_seed_data_question"
+        ]
+      }
+    }
+  ]
+}

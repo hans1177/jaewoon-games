@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+        ],
+        "fix": [
+          "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+        ],
+        "add": [
+          "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+        ],
+        "risks": [
+          "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+        ],
+        "evidence": [
+          "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+        ],
+        "questions": [
+          "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "core"
+        ],
+        "fix": [
+          "coreLoop"
+        ],
+        "add": [
+          "core"
+        ],
+        "risks": [
+          "validationQuestions"
+        ],
+        "evidence": [
+          "mobileUx"
+        ],
+        "questions": [
+          "mobileUx"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Existing Web Archive is preserved."
+        ],
+        "fix": [
+          "The game is a single-player or social expansion game."
+        ],
+        "add": [
+          "The game has a simple, intuitive UI."
+        ],
+        "risks": [
+          "The game has a small island setting."
+        ],
+        "evidence": [
+          "The game is a single-player or social expansion game."
+        ],
+        "questions": [
+          "The game is a single-player or social expansion game."
+        ]
+      }
+    }
+  ]
+}

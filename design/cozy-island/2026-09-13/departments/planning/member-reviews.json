@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Existing playable Web archive is preserved while the canonical design cycle establishes the approved design baseline."
+        ],
+        "fix": [
+          "The game is a single-player or social expansion game."
+        ],
+        "add": [
+          "The game has a basic combat system."
+        ],
+        "risks": [
+          "The game has a basic persistence system."
+        ],
+        "evidence": [
+          "The game has a basic UI elements."
+        ],
+        "questions": [
+          "The game is a single-player or social expansion game."
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_seed_version"
+        ],
+        "fix": [
+          "game_seed_id"
+        ],
+        "add": [
+          "game_name"
+        ],
+        "risks": [
+          "game_name_risk"
+        ],
+        "evidence": [
+          "game_seed_data"
+        ],
+        "questions": [
+          "game_seed_data_question"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+        ],
+        "fix": [
+          "collection and fishing progression, small-island personalization"
+        ],
+        "add": [
+          "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+        ],
+        "risks": [
+          "collection and fishing progression, small-island personalization"
+        ],
+        "evidence": [
+          "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+        ],
+        "questions": [
+          "collection and fishing progression, small-island personalization"
+        ]
+      }
+    }
+  ]
+}

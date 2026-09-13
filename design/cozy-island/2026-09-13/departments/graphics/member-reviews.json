@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game_name"
+        ],
+        "fix": [
+          "game_name_style"
+        ],
+        "add": [
+          "game_name_style_details"
+        ],
+        "risks": [
+          "game_name_style_risk"
+        ],
+        "evidence": [
+          "game_seed_data"
+        ],
+        "questions": [
+          "game_seed_data_question"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+        ],
+        "fix": [
+          "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+        ],
+        "add": [
+          "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+        ],
+        "risks": [
+          "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+        ],
+        "evidence": [
+          "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+        ],
+        "questions": [
+          "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "gameplayLoop"
+        ],
+        "fix": [
+          "combat"
+        ],
+        "add": [
+          "persistence"
+        ],
+        "risks": [
+          "uiArt"
+        ],
+        "evidence": [
+          "preserveExistingWebArchive"
+        ],
+        "questions": [
+          "mobileUx"
+        ]
+      }
+    }
+  ]
+}

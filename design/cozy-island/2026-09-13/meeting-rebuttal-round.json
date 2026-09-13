@@ -1,0 +1,98 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "questions",
+        "risks"
+      ],
+      "revision": [
+        "questions",
+        "risks"
+      ],
+      "reason": "The game is a single-player or social expansion game. The questions and risks are consistent with the game's core and design elements."
+    },
+    "graphics": {
+      "accept": [
+        "fix",
+        "relaxing daily activity loop, collection and fishing progression, small-island personalization"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "The game has a basic combat system"
+      ],
+      "reason": "The existing game has a basic combat system. The proposed changes are aligned with the existing game's core functionality, which is a basic combat system."
+    },
+    "development": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "reason": "keep"
+    },
+    "qa": {
+      "accept": [
+        "core",
+        "coreLoop",
+        "mobileUx"
+      ],
+      "challenge": [
+        "validationQuestions",
+        "mobileUx"
+      ],
+      "revision": [
+        "core",
+        "coreLoop",
+        "mobileUx"
+      ],
+      "reason": "QA Lead AI is responsible for ensuring the project's overall quality and compliance with the established standards. In this case, the QA Lead AI will ensure that the project adheres to the established standards and guidelines."
+    },
+    "balance": {
+      "accept": [
+        "The game has a simple, intuitive UI.",
+        "The game has a small island setting."
+      ],
+      "challenge": [
+        "The game has a basic combat system.",
+        "The game has a basic persistence system."
+      ],
+      "revision": [
+        "The game has a basic UI elements.",
+        "The game is a single-player or social expansion game."
+      ],
+      "reason": "The game is a single-player or social expansion game."
+    }
+  }
+}

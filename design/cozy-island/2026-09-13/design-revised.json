@@ -1,0 +1,94 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "OWNER-ENROLL-COZY-ISLAND-20260913",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "gemma3:1b",
+  "sameModelAsDraft": true,
+  "appliedConsensusCount": 5,
+  "unresolvedConflictCount": 0,
+  "heldCount": 0,
+  "status": "DESIGN_BASELINE_CANDIDATE",
+  "content": {
+    "identity": "game",
+    "playerFantasy": "포근섬 힐링 생활 게임",
+    "coreFun": "Relaxing daily activity loop, collection and fishing progression, small-island personalization",
+    "coreLoop": [
+      "Choose a calm island activity such as gathering, fishing or tending the living space.",
+      "Turn the result into a useful collection, upgrade or island improvement.",
+      "Use the improvement to unlock a new activity, location or collection goal while preserving a low-pressure session rhythm."
+    ],
+    "signatureSystems": [
+      {
+        "name": "gameplayLoop",
+        "purpose": "Define the core gameplay loop.",
+        "playerChoice": "Existing playable Web archive is preserved while the canonical design cycle establishes the approved design baseline."
+      },
+      {
+        "name": "combat",
+        "purpose": "Implement combat mechanics.",
+        "playerChoice": "Existing playable Web archive is preserved while the canonical design cycle establishes the approved design baseline."
+      },
+      {
+        "name": "persistence",
+        "purpose": "Implement persistence features.",
+        "playerChoice": "Existing playable Web archive is preserved while the canonical design cycle establishes the approved design baseline."
+      },
+      {
+        "name": "uiArt",
+        "purpose": "Implement UI elements.",
+        "playerChoice": "Existing playable Web archive is preserved while the canonical design cycle establishes the approved design baseline."
+      },
+      {
+        "name": "network",
+        "purpose": "Implement network features.",
+        "playerChoice": "Existing playable Web archive is preserved while the canonical design cycle establishes the approved design baseline."
+      },
+      {
+        "name": "core",
+        "purpose": "Define the core game mechanics.",
+        "playerChoice": "Existing playable Web archive is preserved while the canonical design cycle establishes the approved design baseline."
+      }
+    ],
+    "progressionDirection": "낚시·채집·꾸미기를 짧고 부담 없이 반복하는 힐링 생활 플레이를 선호하는 글로벌 플레이어",
+    "visualDirection": "짧게 접속해 한 가지 생활 목표를 완료하고 다음 섬 변화가 남는 구조를 검토한다.",
+    "mobileUx": "ROBLOX",
+    "marketTargetDirection": "낚시·채집·꾸미기를 짧고 부담 없이 반복하는 힐링 생활 플레이를 선호하는 글로벌 플레이어",
+    "steamExpansionDecision": "WEB_ARCHIVE_READ_ONLY",
+    "multiplayerExpansionDecision": "WEB_ARCHIVE_READ_ONLY",
+    "technicalAssumptions": [
+      "Existing Web Archive is preserved.",
+      "The game is a single-player or social expansion game.",
+      "The game has a simple, intuitive UI.",
+      "The game has a basic, but enjoyable gameplay loop.",
+      "The game has a small island setting.",
+      "The game has a basic combat system.",
+      "The game has a basic persistence system.",
+      "The game has basic UI elements."
+    ],
+    "validationQuestions": [
+      "The game is a single-player or social expansion game.",
+      "The game has a basic combat system.",
+      "The game has a basic persistence system.",
+      "The game has basic UI elements.",
+      "The game is a single-player or social expansion game.",
+      "The game is a single-player or social expansion game.",
+      "The game has a simple, intuitive UI.",
+      "The game has a small island setting."
+    ],
+    "openQuestions": [
+      "The game has a simple, intuitive UI.",
+      "The game has a small island setting.",
+      "The game is a single-player or social expansion game.",
+      "The game has a basic combat system.",
+      "The game has a basic persistence system.",
+      "The game has basic UI elements.",
+      "The game is a 힐링 생활 게임.",
+      "The game is a 낚시·채집·꾸미기를 짧고 부담 없이 반복하는 힐링 생활 플레이를 선호하는 글로벌 플레이어."
+    ]
+  }
+}
