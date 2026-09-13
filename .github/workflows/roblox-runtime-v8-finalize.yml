@@ -68,17 +68,14 @@ jobs:
           cont=one(cont,"const runtimePending=exact&&item.robloxBuildPreflightPassed===true&&item.robloxRuntimePassed!==true&&(!item.robloxRuntimeFailedAt||retryableInstallFailure||retryableRuntimeFailure||retryableMissingEvidence||retryableAuthMigration);","const runtimePending=exact&&item.robloxBuildPreflightPassed===true&&(item.robloxRuntimePassed!==true||!sameHarness)&&(!item.robloxRuntimeFailedAt||retryableInstallFailure||retryableRuntimeFailure||retryableMissingEvidence||retryableAuthMigration);",'continuation remaining stale pass')
           cont=one(cont,"          if ($combined -notmatch 'ROBLOX_RUNTIME_SMOKE=PASS') { throw 'Runtime PASS sentinel missing' }\n          if ($combined -notmatch 'ROBLOX_SERVER_CLIENT_BOUNDARY_PASS=YES') { throw 'Server/client boundary sentinel missing' }","          if ($combined -notmatch '(?m)^ROBLOX_RUNTIME_RESULT=PASS:PLAYER_CHARACTER_CLIENT_SERVER_ROUNDTRIP\\r?$') { throw 'Runtime roundtrip PASS result missing' }\n          if ($combined -notmatch '(?m)^ROBLOX_RUNTIME_SMOKE=PASS\\r?$') { throw 'Runtime PASS sentinel missing' }\n          if ($combined -notmatch '(?m)^ROBLOX_SERVER_CLIENT_BOUNDARY_PASS=YES\\r?$') { throw 'Server/client boundary sentinel missing' }",'anchored runtime evidence')
 
-          persist_start="""      - name: Persist exact actual-runtime state
-        if: needs.runtime-plan.outputs.count != '0'
-        env:
-          EXPECTED_TARGETS_JSON: ${{ needs.runtime-plan.outputs.targets_json }}
-        shell: bash
-        run: |
-"""
+          persist_name="      - name: Persist exact actual-runtime state\n"
           dispatch="      - name: Dispatch next continuation slice when eligible work remains\n"
-          start=cont.find(persist_start); end=cont.find(dispatch,start)
+          start=cont.find(persist_name); end=cont.find(dispatch,start)
           if start<0 or end<0: raise SystemExit('runtime persist block not found')
-          safe=persist_start+"""          set -euo pipefail
+          run_at=cont.find("        run: |\n",start,end)
+          if run_at<0: raise SystemExit('runtime persist run marker not found')
+          prefix=cont[start:run_at+len("        run: |\n")]
+          safe=prefix+"""          set -euo pipefail
           git config user.name 'jaewoon-roblox-runtime'
           git config user.email 'actions@users.noreply.github.com'
           persisted=0
