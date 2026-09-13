@@ -1,7 +1,7 @@
 {
   "version": 4,
   "mode": "hierarchical-dag-sharded-work-stealing-queue",
-  "maxConcurrentTasks": 1,
+  "maxConcurrentTasks": 4,
   "ownerDirectivePreemptsAutonomy": true,
   "releaseStatePriority": [
     "release-confirmed",
@@ -1195,6 +1195,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
+      "blocker": null,
       "evidence": [
         "pwa-task:7e6ead38-0669-4727-9959-e8a4bf1bd2fa",
         "pwa-kind:directive",
@@ -1204,20 +1205,23 @@
         "owner-auto-deploy-authorization",
         "verified-qa-required"
       ],
+      "lastOutcome": null,
       "companyContext": {
         "stageId": "owner-immediate",
         "role": "director",
         "assignmentAuthority": "owner-directive",
         "sourceRef": "pwa-task:7e6ead38-0669-4727-9959-e8a4bf1bd2fa",
+        "artbookLocked": false,
+        "artbookRef": null,
+        "artbookStatus": null,
+        "artbookCutCount": 0,
+        "artbookPostprocessComplete": false,
         "reviewRequired": true
-      }
+      },
+      "sourceRoot": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "shard": "web"
     }
-  ],
-  "ingest": {
-    "added": true,
-    "taskId": "pwa-7e6ead38-0669-4727-9959-e8a4bf1bd2fa",
-    "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-    "target": "web",
-    "reason": "OWNER_IMMEDIATE_PWA"
-  }
+  ]
 }
