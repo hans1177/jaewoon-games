@@ -2,12 +2,22 @@ import './homepage-enhancements-core.js?v=20260914-top30-primary';
 
 function bindNativeApkInstall(){
   const bind=()=>{
-    const button=document.getElementById('appInstallBtn');
+    const bar=document.getElementById('appInstallBar');
+    const teamWrap=document.querySelector('.teamPanel .teamWrap');
+    if(bar&&teamWrap){
+      teamWrap.appendChild(bar);
+      bar.dataset.placement='company-team-bottom';
+      bar.style.width='100%';
+      bar.style.margin='12px 0 0';
+    }
+    const oldButton=document.getElementById('appInstallBtn');
     const state=document.getElementById('appInstallState');
-    if(!button)return;
+    if(!oldButton)return;
+    const button=oldButton.cloneNode(true);
+    oldButton.replaceWith(button);
     button.disabled=false;
     button.textContent='재운컴퍼니 APK 설치';
-    if(state)state.textContent='안드로이드 앱 설치 파일을 직접 내려받아.';
+    if(state)state.textContent='개발팀 영역에서 Android APK를 직접 설치할 수 있어.';
     button.addEventListener('click',event=>{event.preventDefault();event.stopImmediatePropagation();window.location.href='/downloads/jaewoon-company.apk';},true);
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
