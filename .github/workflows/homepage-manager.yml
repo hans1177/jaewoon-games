@@ -422,5 +422,6 @@ jobs:
           else
             cat /tmp/homepage-pr-error.log >&2 || true
             echo "HOMEPAGE_PUBLICATION_BRANCH_READY=$branch"
-            echo 'HOMEPAGE_PUBLICATION=BRANCH_READY_PR_PERMISSION_REQUIRED'
+            echo 'HOMEPAGE_PUBLICATION=BLOCKED_PR_PERMISSION_REQUIRED'
+            exit 1
           fi
