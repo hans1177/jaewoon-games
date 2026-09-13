@@ -7,10 +7,12 @@ const strictReview=fs.readFileSync('tools/company-strict-production-review.mjs',
 const homepageSync=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
 const validationCycle=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
 
-test('Web 90 promotion requires a second independent fresh validation',()=>{
-  assert.match(webValidation,/VALIDATION_SCHEMA_VERSION=10/);
+test('Web 90 promotion requires a second independent fresh real-game validation',()=>{
+  assert.match(webValidation,/VALIDATION_SCHEMA_VERSION=11/);
   assert.match(webValidation,/sourceIndexSha256/);
   assert.match(webValidation,/designBaselineSha256/);
+  assert.match(webValidation,/substanceGate/);
+  assert.match(webValidation,/secondSubstancePass/);
   assert.match(webValidation,/web-promotion-revalidation\.json/);
   assert.match(webValidation,/independentRun:true/);
   assert.match(webValidation,/sourceHashMatch/);
@@ -19,10 +21,12 @@ test('Web 90 promotion requires a second independent fresh validation',()=>{
   assert.match(webValidation,/FORMAL_IMPLEMENTATION_THRESHOLD=90/);
 });
 
-test('Top30 keeps 80 minimum, rejects stale evidence and preserves incumbent on a tie',()=>{
+test('Top30 keeps 80 minimum, rejects stale harness evidence and preserves incumbent on a tie',()=>{
   assert.match(homepageSync,/const minimumScore=80/);
   assert.match(homepageSync,/const limit=30/);
-  assert.match(homepageSync,/minimumValidationSchema=10/);
+  assert.match(homepageSync,/minimumValidationSchema=11/);
+  assert.match(homepageSync,/requiresRealGameSubstance:true/);
+  assert.match(homepageSync,/requiredSessionValidationMode:'GAMEPLAY_MILESTONE_DEPTH'/);
   assert.match(homepageSync,/requiresFreshSourceHash:true/);
   assert.match(homepageSync,/requiresFreshDesignBaselineHash:true/);
   assert.match(homepageSync,/requiresStructured30MinuteEvidence:true/);
