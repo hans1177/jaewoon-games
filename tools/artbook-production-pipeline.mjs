@@ -4,7 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {spawn} from 'node:child_process';
 import {PRODUCTION_CLASSES,productionClassOf} from './production-classification.mjs';
-import {loadSeedState,activeSeedForGame} from './game-seed-state.mjs';
+import {loadSeedState,activeSeedForGame,saveSeedState} from './game-seed-state.mjs';
+import {ensureOwnerDesignResetSeed} from './owner-design-reset.mjs';
 
 const gameId=String(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||'').trim();
 const date=String(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||'').trim();
@@ -12,7 +13,14 @@ if(!gameId)throw new Error('ARTBOOK_GAME_ID or GAME_ID is required');
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
 const game=(catalog.games||[]).find(x=>x.id===gameId)||null;
-const seed=activeSeedForGame(loadSeedState(),gameId);
+const seedState=loadSeedState();
+let seed=activeSeedForGame(seedState,gameId);
+if(!seed){
+  const reset=ensureOwnerDesignResetSeed(seedState,gameId);
+  if(reset.changed)saveSeedState(seedState);
+  seed=activeSeedForGame(seedState,gameId);
+  if(reset.seed)console.log(`OWNER_DESIGN_RESET_SEED=MATERIALIZED:${gameId}`);
+}
 if(!game&&!seed)throw new Error(`Unknown game or active GAME_SEED: ${gameId}`);
 const productionClass=game?productionClassOf({},game,{numericLabels:directive.production?.numericLabels||{}}):PRODUCTION_CLASSES.DESIGN_ONLY;
 

@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {resolveSelectedPlatform,adapterForPlatform} from './company-selected-platform-router.mjs';
+import {materializeOwnerDesignResetSeeds} from './owner-design-reset.mjs';
 
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');
@@ -35,6 +36,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   const catalogPath=p('game-catalog.json');
   const queuePath=p('development-queue.json');
   const state=readJson(seedPath,{version:1,seeds:[]});
+  const resetResult=materializeOwnerDesignResetSeeds(state,{file:p('owner-design-reset-queue.json')});
   const portfolio=readJson(portfolioPath,{version:1,projects:[]});
   const catalog=readJson(catalogPath,{version:1,games:[]});
   const queue=readJson(queuePath,{version:1,items:[]});
@@ -136,7 +138,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   writeJson(portfolioPath,portfolio);
   writeJson(catalogPath,catalog);
   writeJson(queuePath,queue);
-  return {promoted,skipped,queueCount:queue.items.length};
+  return {promoted,skipped,queueCount:queue.items.length,ownerResetSeedsMaterialized:resetResult.changed};
 }
 
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
@@ -144,5 +146,6 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`DESIGN_PROMOTION_COUNT=${result.promoted.length}`);
   console.log(`DESIGN_PROMOTED_GAME_IDS=${result.promoted.join(',')}`);
   console.log(`DEVELOPMENT_QUEUE_COUNT=${result.queueCount}`);
+  console.log(`OWNER_RESET_SEEDS_MATERIALIZED=${result.ownerResetSeedsMaterialized.join(',')}`);
   if(result.skipped.length)console.log(`DESIGN_PROMOTION_SKIPPED=${JSON.stringify(result.skipped)}`);
 }
