@@ -1,0 +1,88 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {loadSeedState,activeSeedForGame} from './game-seed-state.mjs';
+
+const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
+const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
+const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
+const arg=name=>{const p=process.argv.find(x=>x.startsWith(`--${name}=`));return p?clean(p.slice(name.length+3)):'';};
+const mode=(arg('mode')||'design').toLowerCase();
+const gameId=arg('game-id')||clean(process.env.GAME_ID||process.env.ARTBOOK_GAME_ID);
+const date=arg('date')||clean(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE);
+if(!gameId)throw new Error('STRICT_REVIEW_GAME_ID_REQUIRED');
+const state=loadSeedState();
+const seed=activeSeedForGame(state,gameId);
+if(!seed)throw new Error(`STRICT_REVIEW_ACTIVE_SEED_REQUIRED ${gameId}`);
+
+const HARD_CODES=Object.freeze([
+  'DESIGN_MISMATCH','STORY_INCOHERENT','CORE_FUN_WEAK','30MIN_CONTENT_FAIL','MULTIPLAYER_MISSING',
+  'CATEGORY_MISMATCH','IMPLEMENTATION_INCOMPLETE','ARTBOOK_MISMATCH','REPETITIVE_CONTENT','GENERIC_TEMPLATE',
+  'TARGET_PLATFORM_UX_FAIL','FATAL_RUNTIME_BUG','QA_EVIDENCE_MISSING'
+]);
+const weights={ideaDistinctness:15,categoryFit:10,platformFit:10,designFidelity:15,session30Quality:15,implementationCompleteness:15,storyCausality:10,progressionBalance:5,artDirectionFidelity:5};
+function scoreFlag(pass,weight,partial=0){return pass?weight:partial;}
+function significantTokens(value){return [...new Set(clean(value).toLowerCase().split(/[^a-z0-9가-힣]+/).filter(x=>x.length>=3))];}
+function sourceBundle(root){
+  if(!root||!fs.existsSync(root))return '';
+  const chunks=[];const walk=dir=>{for(const e of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,e.name);if(e.isDirectory()){if(!['node_modules','.git'].includes(e.name))walk(p);continue;}if(/\.(html|js|mjs|css|json|lua|luau|cs|verse)$/i.test(e.name)){try{chunks.push(fs.readFileSync(p,'utf8'));}catch{}}}};walk(root);return chunks.join('\n').slice(0,4_000_000);
+}
+function finalResult({scores,hardFailures,evidence,reviewStage}){
+  const total=Object.values(scores).reduce((a,b)=>a+b,0);
+  let verdict='PASS';
+  if(hardFailures.length||total<90)verdict=total<50?'REBUILD':'REVISE';
+  if(total>=50&&total<65)verdict='REBUILD';
+  if(total>=65&&total<90)verdict='REVISE';
+  return{version:1,gameId,reviewStage,scoreScale:100,passThreshold:90,totalScore:total,scores,weights,hardFailures:[...new Set(hardFailures)],verdict,evidence,policyDocument:'COMPANY_FLOW.md',rules:{scoreCannotOverrideHardGate:true,correctableRejectAction:'FIX_AND_REVALIDATE',structuralRejectAction:'REBUILD_CANDIDATE',officialCardBeforePassForbidden:true,testShelfBeforePassOnly:true,learningRecordRequired:true},reviewedAt:new Date().toISOString()};
+}
+
+function designReview(){
+  const hard=[];
+  const loops=Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[];
+  const identity=clean(seed.DISTINCT_IDENTITY);
+  const sessionOk=Number(seed.TARGET_SESSION_MINUTES)===30&&/0\s*[~\-]\s*5|30분|30\s*min/i.test(clean(seed.TARGET_SESSION_DIRECTION));
+  const multiplayer=['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(clean(seed.MULTIPLAYER_DESIGN_MODE).toUpperCase());
+  const materials=Array.isArray(seed.SEED_MATERIAL_IDS)?seed.SEED_MATERIAL_IDS:[];
+  const categoryOk=clean(seed.GAME_CATEGORY).length>0;
+  const platformOk=['ROBLOX','UNITY','FORTNITE_UEFN'].includes(clean(seed.INITIAL_TARGET_PLATFORM).toUpperCase());
+  const ideaOk=identity.length>=80&&loops.length>=3&&materials.length>=2&&materials.length<=4;
+  if(!sessionOk)hard.push('30MIN_CONTENT_FAIL');
+  if(!multiplayer)hard.push('MULTIPLAYER_MISSING');
+  if(!categoryOk)hard.push('CATEGORY_MISMATCH');
+  if(!ideaOk)hard.push('CORE_FUN_WEAK');
+  const designPath=date?path.join('design',gameId,date,'design-revised.json'):'';
+  const design=readJson(designPath,null);const designText=JSON.stringify(design||{});
+  const storyBearing=/STORY|RPG|ADVENTURE/i.test(clean(seed.GAME_CATEGORY));
+  const storyOk=!storyBearing||/(story|quest|goal|consequence|스토리|퀘스트|목표|결과)/i.test(designText);
+  if(!storyOk)hard.push('STORY_INCOHERENT');
+  const scores={
+    ideaDistinctness:scoreFlag(ideaOk,15,6),categoryFit:scoreFlag(categoryOk&&loops.length>=3,10,4),platformFit:scoreFlag(platformOk,10,0),
+    designFidelity:scoreFlag(Boolean(design),15,8),session30Quality:scoreFlag(sessionOk,15,0),implementationCompleteness:15,
+    storyCausality:scoreFlag(storyOk,10,3),progressionBalance:scoreFlag(/progress|growth|reward|econom|성장|보상|경제/i.test(designText),5,2),artDirectionFidelity:5,
+  };
+  return finalResult({scores,hardFailures:hard,evidence:{seedId:seed.seedId,materialIds:materials,designPath:designPath||null,multiplayerDesignMode:seed.MULTIPLAYER_DESIGN_MODE,targetSessionMinutes:seed.TARGET_SESSION_MINUTES},reviewStage:'DESIGN_STRICT_REVIEW'});
+}
+
+function implementationReview(){
+  const hard=[];const source=arg('source');const evidenceFile=arg('evidence');const runtime=readJson(evidenceFile,{});const text=sourceBundle(source);const lower=text.toLowerCase();
+  const baseline=arg('baseline')?readJson(arg('baseline'),{}):{};const artbook=arg('artbook')?readJson(arg('artbook'),{}):{};
+  const designText=JSON.stringify(baseline||{});const artText=JSON.stringify(artbook||{});
+  const coreTokens=significantTokens([...(seed.CORE_LOOP||[]),seed.DISTINCT_IDENTITY].join(' ')).slice(0,24);const matched=coreTokens.filter(t=>lower.includes(t.toLowerCase()));const fidelity=coreTokens.length?matched.length/coreTokens.length:0;
+  const scopeOk=runtime?.pass===true&&runtime?.approvedScope?.pass!==false;const runtimeOk=runtime?.pass===true;
+  const sessionMarker=/30\s*(minute|min|분)|data-session-minutes=["']30/i.test(text)||runtime?.sessionDepthMinutes>=30;
+  const generic=/contract-safe|generic shell|vibe2-final\.js/i.test(text);
+  const multiMode=clean(seed.MULTIPLAYER_DESIGN_MODE).toUpperCase();const multiRequired=multiMode!=='SINGLE';const multiplayerOk=!multiRequired||(runtime?.multiplayer?.participants>=2&&runtime?.multiplayer?.meaningfulLoopPassed===true);
+  const storyBearing=/STORY|RPG|ADVENTURE/i.test(clean(seed.GAME_CATEGORY));const storyTokens=significantTokens(designText).slice(0,20);const storyMatch=!storyBearing||storyTokens.filter(t=>lower.includes(t)).length>=Math.min(3,storyTokens.length);
+  const artTokens=significantTokens(artText).slice(0,20);const artMatch=!artTokens.length||artTokens.filter(t=>lower.includes(t)).length>=Math.min(2,artTokens.length);
+  if(!scopeOk)hard.push('IMPLEMENTATION_INCOMPLETE');if(!runtimeOk)hard.push('QA_EVIDENCE_MISSING');if(!sessionMarker)hard.push('30MIN_CONTENT_FAIL');if(generic)hard.push('GENERIC_TEMPLATE');if(!multiplayerOk)hard.push('MULTIPLAYER_MISSING');if(fidelity<0.2)hard.push('DESIGN_MISMATCH');if(!storyMatch)hard.push('STORY_INCOHERENT');if(!artMatch)hard.push('ARTBOOK_MISMATCH');
+  const scores={ideaDistinctness:scoreFlag(!generic,15,3),categoryFit:scoreFlag(fidelity>=0.2,10,4),platformFit:scoreFlag(runtime?.mobile?.pass!==false,10,5),designFidelity:Math.round(15*Math.min(1,fidelity*2)),session30Quality:scoreFlag(sessionMarker,15,0),implementationCompleteness:scoreFlag(scopeOk&&runtimeOk,15,4),storyCausality:scoreFlag(storyMatch,10,3),progressionBalance:scoreFlag(/progress|reward|econom|growth|wave|level|성장|보상|경제/i.test(lower),5,2),artDirectionFidelity:scoreFlag(artMatch,5,1)};
+  return finalResult({scores,hardFailures:hard,evidence:{source,evidenceFile,runtimePass:runtime?.pass===true,designTokenCoverage:fidelity,multiplayerDesignMode:multiMode,multiplayerEvidence:runtime?.multiplayer||null,sessionDepthMinutes:runtime?.sessionDepthMinutes||null},reviewStage:'IMPLEMENTATION_STRICT_REVIEW'});
+}
+
+const result=mode==='web'||mode==='implementation'?implementationReview():designReview();
+const output=arg('output')||(date?path.join('design',gameId,date,mode==='design'?'strict-design-review.json':'strict-implementation-review.json'):`strict-${mode}-review.json`);
+writeJson(output,result);
+console.log(`STRICT_REVIEW_STAGE=${result.reviewStage}`);
+console.log(`STRICT_REVIEW_SCORE=${result.totalScore}`);
+console.log(`STRICT_REVIEW_VERDICT=${result.verdict}`);
+console.log(`STRICT_REVIEW_HARD_FAILURES=${result.hardFailures.join(',')||'NONE'}`);
+if(result.verdict!=='PASS')process.exitCode=3;
