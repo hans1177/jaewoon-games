@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "gameId": "survival",
+  "reviewStage": "DESIGN_STRICT_REVIEW",
+  "scoreScale": 100,
+  "passThreshold": 90,
+  "totalScore": 91,
+  "scores": {
+    "ideaDistinctness": 6,
+    "categoryFit": 10,
+    "platformFit": 10,
+    "designFidelity": 15,
+    "session30Quality": 15,
+    "implementationCompleteness": 15,
+    "storyCausality": 10,
+    "progressionBalance": 5,
+    "artDirectionFidelity": 5
+  },
+  "weights": {
+    "ideaDistinctness": 15,
+    "categoryFit": 10,
+    "platformFit": 10,
+    "designFidelity": 15,
+    "session30Quality": 15,
+    "implementationCompleteness": 15,
+    "storyCausality": 10,
+    "progressionBalance": 5,
+    "artDirectionFidelity": 5
+  },
+  "hardFailures": [
+    "CORE_FUN_WEAK"
+  ],
+  "verdict": "REVISE",
+  "evidence": {
+    "seedId": "OWNER-RESET-SURVIVAL-20260913",
+    "seedGeneration": "OWNER_REDESIGN_RESET",
+    "materialContractApplied": false,
+    "materialIds": [],
+    "designPath": "design/survival/2026-09-13/design-revised.json",
+    "multiplayerDesignMode": "SINGLE",
+    "targetSessionMinutes": 30
+  },
+  "policyDocument": "COMPANY_FLOW.md",
+  "rules": {
+    "scoreCannotOverrideHardGate": true,
+    "correctableRejectAction": "FIX_AND_REVALIDATE",
+    "structuralRejectAction": "REBUILD_CANDIDATE",
+    "officialCardBeforePassForbidden": true,
+    "testShelfBeforePassOnly": true,
+    "learningRecordRequired": true
+  },
+  "reviewedAt": "2026-09-13T12:03:58.467Z"
+}

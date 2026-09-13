@@ -9,45 +9,40 @@
   "authorRole": "GAME_DESIGNER_AI",
   "authorModel": "llama3.2:1b",
   "sameModelAsDraft": true,
-  "appliedConsensusCount": 4,
+  "appliedConsensusCount": 5,
   "unresolvedConflictCount": 0,
   "heldCount": 0,
   "status": "DESIGN_BASELINE_CANDIDATE",
   "content": {
     "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다.",
-    "playerFantasy": "채집과 제작을 중심으로 혼자 생존 계획을 세우는 플레이를 선호하는 글로벌 플레이어",
-    "coreFun": "Explore for resources while reading immediate survival risks.",
+    "playerFantasy": "True",
+    "coreFun": "readable survival needs",
     "coreLoop": [
-      "Explore for resources while reading immediate survival risks.",
-      "Choose what to gather, craft or conserve before conditions worsen.",
-      "Use the crafted advantage to reach a new area or survive a stronger threat, then repeat with new constraints.",
-      "exploreForResourcesWhileReadingImmediateSurvivalRisks",
-      "gatherCraftConserveBeforeConditionsWorsen",
-      "craftedAdvantageToReachANewAreaOrSurviveStrongerThreat",
-      "repeatWithNewConstraints"
+      "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     ],
     "signatureSystems": [
       {
-        "name": "Survival",
-        "purpose": "채집과 제작 중심 생존 게임",
-        "playerChoice": "chose what to gather, craft or conserve before conditions worsen."
+        "name": "Survival Mode",
+        "purpose": "Survival Mode is a fundamental survival game where players must gather resources, craft items, and build shelter to survive against hostile creatures and harsh environments.",
+        "playerChoice": "Player choice is the core of Survival Mode, allowing players to customize their experience and playstyle to suit their preferences."
       }
     ],
-    "progressionDirection": "Survival",
-    "visualDirection": "Survival",
-    "mobileUx": "Survival",
-    "marketTargetDirection": "Survival",
-    "steamExpansionDecision": "Survival",
-    "multiplayerExpansionDecision": "Survival",
+    "progressionDirection": "Survival Mode",
+    "visualDirection": "Survival Mode",
+    "mobileUx": "Survival Mode",
+    "marketTargetDirection": "Survival Mode",
+    "steamExpansionDecision": "Survival Mode",
+    "multiplayerExpansionDecision": "Survival Mode",
     "technicalAssumptions": [
-      "Unity",
-      "Survival"
+      "Survival Mode"
     ],
     "validationQuestions": [
-      "Survival"
+      "Survival Mode"
     ],
     "openQuestions": [
-      "Survival"
+      "Survival Mode"
     ]
   }
 }

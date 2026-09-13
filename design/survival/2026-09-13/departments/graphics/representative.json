@@ -12,26 +12,27 @@
   ],
   "representativeAuthoredByLead": true,
   "representative": {
-    "keep": [],
+    "keep": [
+      "gemma3:1b",
+      "llama3.2:1b"
+    ],
     "fix": [
-      "llama3.2:1b",
-      "fix: 'Survival' - 'Survival' is required for this review."
+      "gemma3:1b",
+      "llama3.2:1b"
     ],
     "add": [
-      "llama3.2:1b",
-      "add: 'Survival' - 'Survival' is required for this review."
+      "gemma3:1b",
+      "llama3.2:1b"
     ],
     "risks": [
-      "llama3.2:1b",
-      "risks: 'Survival' - 'Survival' is required for this review."
+      "gemma3:1b",
+      "llama3.2:1b"
     ],
     "evidence": [
-      "llama3.2:1b",
-      "evidence: 'Survival' - 'Survival' is required for this review."
+      "game_seed_market_evidence.json"
     ],
     "questions": [
-      "llama3.2:1b",
-      "questions: 'Survival' - 'Survival' is required for this review."
+      "game_seed_market_evidence.json"
     ]
   }
 }

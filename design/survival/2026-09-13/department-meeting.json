@@ -22,65 +22,66 @@
   "representatives": {
     "planning": {
       "keep": [
-        "지정된 담당 부서만 검토하라."
+        "Survival Mode"
       ],
       "fix": [
-        "지정된 담당 부서만 검토하라."
+        "Survival Mode"
       ],
       "add": [
-        "지정된 담당 부서만 검토하라."
+        "Survival Mode"
       ],
       "risks": [
-        "지정된 담당 부서만 검토하라."
+        "Survival Mode"
       ],
       "evidence": [
-        "지정된 담당 부서만 검토하라."
+        "Survival Mode"
       ],
       "questions": [
-        "지정된 담당 부서만 검토하라."
+        "Survival Mode"
       ]
     },
     "graphics": {
-      "keep": [],
+      "keep": [
+        "gemma3:1b",
+        "llama3.2:1b"
+      ],
       "fix": [
-        "llama3.2:1b",
-        "fix: 'Survival' - 'Survival' is required for this review."
+        "gemma3:1b",
+        "llama3.2:1b"
       ],
       "add": [
-        "llama3.2:1b",
-        "add: 'Survival' - 'Survival' is required for this review."
+        "gemma3:1b",
+        "llama3.2:1b"
       ],
       "risks": [
-        "llama3.2:1b",
-        "risks: 'Survival' - 'Survival' is required for this review."
+        "gemma3:1b",
+        "llama3.2:1b"
       ],
       "evidence": [
-        "llama3.2:1b",
-        "evidence: 'Survival' - 'Survival' is required for this review."
+        "game_seed_market_evidence.json"
       ],
       "questions": [
-        "llama3.2:1b",
-        "questions: 'Survival' - 'Survival' is required for this review."
+        "game_seed_market_evidence.json"
       ]
     },
     "development": {
       "keep": [
-        "Survival"
+        "game-seed"
       ],
       "fix": [
-        "Survival"
+        "game-seed"
       ],
       "add": [
-        "Survival"
+        "game-seed"
       ],
       "risks": [
-        "Survival"
+        "game-seed"
       ],
       "evidence": [
-        "Survival"
+        "game-seed"
       ],
       "questions": [
-        "Survival"
+        "game-seed"
       ]
     },
     "qa": {
@@ -105,22 +106,22 @@
     },
     "balance": {
       "keep": [
-        "Survival"
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards, "
       ],
       "fix": [
-        "Survival"
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards, "
       ],
       "add": [
-        "Survival"
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards, "
       ],
       "risks": [
-        "Survival"
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards, "
       ],
       "evidence": [
-        "Survival"
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards, "
       ],
       "questions": [
-        "Survival"
+        "How do you want to play through the horde? Do you want to focus on survival, or do you want to focus on fighting? "
       ]
     }
   },
@@ -131,53 +132,46 @@
     {
       "topic": "planning",
       "status": "CONSENSUS",
-      "reason": "지정된 담당 부서만 검토하라.",
+      "reason": "The current structure aligns with the core principles of survival mode, ensuring consistency across all sections. This approach maintains clarity and coherence while supporting the core objectives of the project.",
       "departments": [
-        "keep: '지정된 담당 부서만 검토하라.'",
-        "fix: 'llama3.2:1b'",
-        "add: 'llama3.2:1b'",
-        "risks: 'llama3.2:1b'",
-        "evidence: 'llama3.2:1b'"
+        "planning"
       ]
     },
     {
       "topic": "graphics",
       "status": "CONSENSUS",
-      "reason": "The 'Survival' feature is critical for the functionality of the llama3.2 model. It is essential to prioritize this feature in the review process.",
+      "reason": "Based on the provided evidence and questions, the Gemma3.1b model appears to be a strong candidate for the initial development task. The 'Fight through an escalating horde' scenario aligns well with the current game-seed data and requires a focused, tactical approach. The risk assessment suggests a need for careful positioning and resource management. Therefore, I recommend accepting the initial development task for Gemma3.1b.",
       "departments": [
-        "keep: 'llama3.2:1b'",
-        "fix: 'Survival' - 'Survival' is required",
-        "add: 'Survival' - 'Survival' is required",
-        "risks: 'Survival' - 'Survival' is reque"
+        "graphics"
       ]
     },
     {
       "topic": "development",
       "status": "CONSENSUS",
-      "reason": "Survival",
+      "reason": "own",
       "departments": [
-        "keep: 'Survival'",
-        "fix: 'Survival'",
-        "add: 'Survival'",
-        "risks: 'Survival'",
-        "evidence: 'Survival'"
+        "development"
       ]
     },
     {
       "topic": "qa",
       "status": "CONSENSUS",
-      "reason": "qa 부서의 의견을 수용합니다.",
+      "reason": "The provided JSON object has a consistent structure and follows the specified format. It includes 'keep', 'fix', 'add', 'risks', 'evidence', and 'questions' keys, which are appropriate for the QA department's responsibilities.",
       "departments": [
-        "keep: 'qa'",
-        "fix: 'qa'",
-        "add: 'qa'",
-        "risks: 'qa'",
-        "evidence: 'qa'"
+        "qa"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "Survival Mode",
+      "departments": [
+        "balance"
       ]
     }
   ],
   "counts": {
-    "consensus": 4,
+    "consensus": 5,
     "conflict": 0,
     "hold": 0
   }
