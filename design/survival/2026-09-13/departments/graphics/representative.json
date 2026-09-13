@@ -13,26 +13,22 @@
   "representativeAuthoredByLead": true,
   "representative": {
     "keep": [
-      "gemma3:1b",
-      "llama3.2:1b"
+      "gemma3:1b"
     ],
     "fix": [
-      "gemma3:1b",
-      "llama3.2:1b"
+      "gemma3:1b"
     ],
     "add": [
-      "gemma3:1b",
-      "llama3.2:1b"
+      "gemma3:1b"
     ],
     "risks": [
-      "gemma3:1b",
-      "llama3.2:1b"
+      "missingDataDoesNotRejectSeed"
     ],
     "evidence": [
-      "game_seed_market_evidence.json"
+      "Vampire Survivors"
     ],
     "questions": [
-      "game_seed_market_evidence.json"
+      "What is the main goal of the game?"
     ]
   }
 }

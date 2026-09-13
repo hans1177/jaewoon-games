@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "game_seed_platform_profiles.json"
+          "game_seed_version"
         ],
         "fix": [
-          "game_seed_market_evidence.json"
+          "game_seed_id"
         ],
         "add": [
-          "game_seed_platform_profiles.json"
+          "game_seed_market_evidence.json"
         ],
         "risks": [
-          "data_integrity"
+          "missingDataDoesNotRejectSeed"
         ],
         "evidence": [
-          "game_seed_market_evidence.json"
+          "Vampire Survivors"
         ],
         "questions": [
-          "game_seed_market_evidence.json"
+          "What is the main goal of the game?"
         ]
       }
     },
