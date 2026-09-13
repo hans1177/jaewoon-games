@@ -988,14 +988,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 2,
+      "status": "failed",
+      "retries": 3,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "source-candidate-generation-failed",
       "evidence": [
         "pwa-task:77b3080a-599e-4077-9efa-109475f5ce9e",
         "pwa-kind:directive",
@@ -1006,7 +1006,8 @@
         "verified-qa-required",
         "actions-run:34762814655",
         "variant:primary",
-        "actions-run:34762996882"
+        "actions-run:34762996882",
+        "actions-run:34763180728"
       ],
       "lastOutcome": "FAIL",
       "companyContext": {
