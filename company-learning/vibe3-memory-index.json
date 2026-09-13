@@ -9,11 +9,11 @@
       "project": "block-blast",
       "request": "외부 상용 Android 게임을 black-box로 검증할 때 실행, 실제 게임 진입, 입력 반응, 프로세스 생존, 크래시 부재를 단계별 증거로 결속해 판정하고 코드·에셋·내부 알고리즘은 추출하거나 추론하지 않는다.",
       "instruction": "외부 상용 Android 게임을 black-box로 검증할 때 실행, 실제 게임 진입, 입력 반응, 프로세스 생존, 크래시 부재를 단계별 증거로 결속해 판정하고 코드·에셋·내부 알고리즘은 추출하거나 추론하지 않는다.",
-      "input": "",
-      "output": "검증된 관찰 원칙: 실행과 실제 게임 진입을 분리하고, 입력 전후 의미 있는 화면 변화와 프로세스 생존을 함께 확인하며, 성공 범위를 캡처된 검증 구간으로 제한한다.",
+      "input": "{\n  \"evidenceMode\": \"EXTERNAL_BLACK_BOX\",\n  \"stages\": [\n    \"APP_LAUNCH\",\n    \"GAME_ENTRY\",\n    \"INPUT_EXERCISE\",\n    \"VISUAL_STATE_CHANGE\",\n    \"PROCESS_SURVIVAL\",\n    \"NO_FATAL_CRASH_OR_ANR\"\n  ],\n  \"stableBoundary\": \"CAPTURED_BLACK_BOX_VALIDATION_WINDOW_ONLY\",\n  \"runId\": 34653320467,\n  \"runNumber\": 30,\n  \"artifactId\": 10284397608,\n  \"artifactDigest\": \"sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1\"\n}",
+      "output": "검증된 관찰 원칙:\n- 프로세스 실행과 실제 게임 진입을 같은 것으로 취급하지 않는다.\n- 입력 주입만으로 성공 처리하지 않고 입력 전후의 의미 있는 화면 변화와 대상 프로세스 생존을 함께 확인한다.\n- 시스템 오버레이·동의 화면·게임 진입·입력 반응을 서로 다른 증거 단계로 보존한다.\n- 성공 범위는 캡처된 검증 구간으로 제한하고 장시간 안정성이나 숨은 규칙을 추정하지 않는다.\n- 부분 성공 뒤 실패가 생기면 성공 경계와 실패 경계를 모두 기록한다.\n- 상용 게임의 소스 코드, 에셋, 고유 UI 표현, 내부 알고리즘, 숨은 점수·경제 규칙은 학습 데이터로 추출하거나 복제하지 않는다.",
       "sourcePaths": [],
       "sourceRevision": "sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1",
-      "tags": ["external-black-box", "runtime", "qa", "input-response"],
+      "tags": [],
       "authority": "verified-memory-entry"
     }
   ],
@@ -25,13 +25,23 @@
   },
   "authority": "verified-rag-memory-index",
   "sourceFiles": {
-    "trainingSamples": ["company-learning/training-samples/external-black-box-block-blast-run-30.json"],
+    "trainingSamples": [
+      "company-learning/training-samples/P0009-20260910-34407235062.json",
+      "company-learning/training-samples/P0009-20260910-34489285338.json",
+      "company-learning/training-samples/P0009-20260910-34491139194.json",
+      "company-learning/training-samples/P0009-20260910-34492075119.json",
+      "company-learning/training-samples/P0009-20260911-34492879802.json",
+      "company-learning/training-samples/P0009-20260911-34504879746.json",
+      "company-learning/training-samples/P0009-20260911-34506261742.json",
+      "company-learning/training-samples/P0009-20260911-34506968967.json",
+      "company-learning/training-samples/P0009-20260911-34507736635.json",
+      "company-learning/training-samples/external-black-box-block-blast-run-30.json"
+    ],
     "trajectories": []
   },
   "refresh": {
     "mode": "HOURLY_24H",
     "workflow": "Vibe2 Distillation Sample Ingest",
-    "localWeightTrainingRequired": false,
-    "bootstrap": "RUN30_VERIFIED_SAMPLE_ONLY_UNTIL_FIRST_CANONICAL_REFRESH"
+    "localWeightTrainingRequired": false
   }
 }
