@@ -25,7 +25,7 @@ if(!game&&!seed)throw new Error(`Unknown game or active GAME_SEED: ${gameId}`);
 const productionClass=game?productionClassOf({},game,{numericLabels:directive.production?.numericLabels||{}}):PRODUCTION_CLASSES.DESIGN_ONLY;
 
 function run(script){return new Promise((resolve,reject)=>{const child=spawn(process.execPath,[script],{stdio:'inherit',env:{...process.env,ARTBOOK_GAME_ID:gameId,GAME_ID:gameId,...(date?{ARTBOOK_DATE:date,DESIGN_DATE:date}:{})}});child.on('error',reject);child.on('close',code=>code===0?resolve():reject(new Error(`${script} exited ${code}`)));});}
-async function runWithRetry(script,{attempts=3,label='PIPELINE_STAGE'}={}){
+async function runWithRetry(script,{attempts=2,label='PIPELINE_STAGE'}={}){
   let lastError=null;
   for(let attempt=1;attempt<=attempts;attempt++){
     try{
@@ -37,7 +37,7 @@ async function runWithRetry(script,{attempts=3,label='PIPELINE_STAGE'}={}){
       console.log(`${label}_ATTEMPT_FAILED=${attempt}/${attempts}|reason=${String(error?.message||error).replace(/\s+/g,' ').trim()}`);
       if(attempt<attempts){
         console.log(`${label}_RETRY=YES|next_attempt=${attempt+1}/${attempts}`);
-        await new Promise(resolve=>setTimeout(resolve,attempt*2000));
+        await new Promise(resolve=>setTimeout(resolve,1000));
       }
     }
   }
@@ -62,18 +62,19 @@ if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
   await run('tools/company-development-validation-cycle.mjs');
   await run('tools/company-baseline-gate.mjs');
   await run('tools/company-development-disposition-gate.mjs');
-  console.log('DEVELOPMENT_EXECUTION_MODE=GATED_DIRECT');console.log('DEVELOPMENT_RESUME_FROM_LATEST_EVIDENCE=YES');console.log('DEVELOPMENT_DISPOSITION_GATE=ENABLED');console.log('DEVELOPMENT_ARTBOOK_ONLY_AFTER_BASELINE_READY=YES');
+  console.log('DEVELOPMENT_EXECUTION_MODE=GATED_DIRECT');console.log('DEVELOPMENT_RESUME_FROM_LATEST_EVIDENCE=YES');console.log('DEVELOPMENT_DISPOSITION_GATE=ENABLED');console.log('DEVELOPMENT_ARTBOOK_ONLY_AFTER_PROMOTION=YES');
 }else if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
   await run('tools/company-release-production-cycle.mjs');await run('tools/company-release-stale-artifact-guard.mjs');
   console.log('RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION');console.log('RELEASE_VIBE2_PRIMARY_DEVELOPER=YES');console.log('RELEASE_CURRENT_BUILD_EVIDENCE_BINDING=REQUIRED');console.log('RELEASE_STALE_FINAL_ARTIFACT_GUARD=ENABLED');console.log('RELEASE_FINAL_ARTBOOK_ONLY_AFTER_READY=YES');
 }else{
   const existingStatus=readCycleStatus();
   if(canReuseCompletedDesign(existingStatus))console.log('DESIGN_CYCLE_REUSED=YES');
-  else{await runWithRetry('tools/company-design-cycle.mjs',{attempts:3,label:'DESIGN_MODEL_SCHEMA'});console.log('DESIGN_CYCLE_REUSED=NO');}
+  else{await runWithRetry('tools/company-design-cycle.mjs',{attempts:2,label:'DESIGN_MODEL_SCHEMA'});console.log('DESIGN_CYCLE_REUSED=NO');}
   await run('tools/company-baseline-gate.mjs');
   const status=readCycleStatus();
-  if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true){await run('tools/company-design-artbook.mjs');console.log('DESIGN_ONLY_ARTBOOK_AFTER_BASELINE=YES');}
+  if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true)console.log('DESIGN_ONLY_ARTBOOK_SKIPPED=WAIT_FOR_PROMOTION');
   else console.log(`DESIGN_ONLY_ARTBOOK_SKIPPED=${status?.baselineGate?.state||'BASELINE_NOT_READY'}`);
+  console.log('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
   console.log('DESIGN_ONLY_VIBE2_USED=NO');
 }
-console.log('ARTBOOK_PIPELINE_COMPLETE=YES');console.log('DEPARTMENT_MODE=FIVE_DISTINCT_LEADS_PLUS_MULTIMODEL_ASSISTANTS');console.log('DEPARTMENT_REPRESENTATIVE_OWNER=DEPARTMENT_LEAD_MODEL');console.log('DEPARTMENT_REBUTTAL_OWNER=DEPARTMENT_LEAD_MODEL');console.log('ARTBOOK_AUTHOR=ONE_ARTBOOK_EDITOR_AI');console.log('DEPARTMENT_ARTBOOK_AUTHORSHIP=NO');console.log('BASELINE_APPROVAL=REAL_EVIDENCE_GATE_SEPARATE_FROM_AI_REVIEW');console.log('PAID_API=NO');
+console.log('ARTBOOK_PIPELINE_COMPLETE=YES');console.log('DEPARTMENT_MODE=FIVE_DISTINCT_LEADS_PLUS_MULTIMODEL_ASSISTANTS');console.log('DEPARTMENT_REPRESENTATIVE_OWNER=DEPARTMENT_LEAD_MODEL');console.log('DEPARTMENT_REBUTTAL_OWNER=DEPARTMENT_LEAD_MODEL');console.log('ARTBOOK_AUTHOR=ONE_ARTBOOK_EDITOR_AI_AFTER_PROMOTION');console.log('DEPARTMENT_ARTBOOK_AUTHORSHIP=NO');console.log('BASELINE_APPROVAL=REAL_EVIDENCE_GATE_SEPARATE_FROM_AI_REVIEW');console.log('PAID_API=NO');
