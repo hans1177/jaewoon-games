@@ -24,7 +24,7 @@ export const PLATFORM_EXECUTION_ADAPTERS=Object.freeze({
     adapterPath:'tools/vibe3-roblox-platform.mjs',
     evidenceFile:'roblox-technical-validation.json',
     projectField:'robloxProjectPath',
-    existingExecutionPath:'V3-PUMP',
+    existingExecutionPath:'.github/workflows/company-development-roblox-runtime.yml',
   }),
   UNITY:Object.freeze({
     platform:'UNITY',
