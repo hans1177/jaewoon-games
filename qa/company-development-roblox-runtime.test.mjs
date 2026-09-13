@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {projectJsonForGame,requiresPersistentSave,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope} from '../tools/company-development-roblox-bootstrap.mjs';
 import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-contract.mjs';
 
@@ -143,4 +144,14 @@ test('Rojo project maps shared server and client source roots',()=>{
   assert.equal(project.tree.ReplicatedStorage.Shared.$path,'shared');
   assert.equal(project.tree.ServerScriptService.GameServer.$path,'server');
   assert.equal(project.tree.StarterPlayer.StarterPlayerScripts.GameClient.$path,'client');
+});
+
+test('Roblox source workflow keeps compiled candidates pending when Actions cannot create PRs',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/Attempt validated Roblox source promotion through PR[\s\S]*continue-on-error: true/);
+  assert.ok(workflow.includes("failure=!generated?'source-generation-failed':!promoted?'source-promotion-pending':null"));
+  assert.ok(workflow.includes("routingBlockers:['roblox-source-promotion-pending']"));
+  assert.ok(workflow.includes("item.robloxSourceCandidateReadyAt"));
+  assert.ok(workflow.includes("item.robloxSourceCandidateBranch"));
+  assert.ok(workflow.includes('ROBLOX_SOURCE_PROMOTION_PENDING_COUNT'));
 });
