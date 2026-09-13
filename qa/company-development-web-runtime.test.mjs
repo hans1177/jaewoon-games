@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 import {validateBootstrapHtml,buildContractSafePlayable,inferDevelopmentGenre,classifyApprovedScope} from '../tools/company-development-web-bootstrap.mjs';
 import {evaluateGameplayEvidence,scopeInteractionChanged,ensure30MinuteSessionContract} from '../tools/company-development-web-gameplay-validation.mjs';
 import {deriveApprovedScopeInventory,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
@@ -175,4 +176,58 @@ test('gameplay evidence requires interaction, state change, music, approved scop
   const sessionFail=evaluateGameplayEvidence({before,after,interactionCount:7,reloadVisible:true,scopeCoverage,sessionContract:{pass:false}});
   assert.equal(sessionFail.pass,false);
   assert.ok(sessionFail.blockers.includes('SESSION:MEANINGFUL_30_MIN_CONTRACT_REQUIRED'));
+});
+
+function frozenStrictFixture({cycleSeedId='SEED-ROBLOX-SIMULATOR_TYCOON_INCREMENTAL-TEST'}={}){
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-frozen-strict-'));
+  const gameId='seed-roblox-frozen-context-test';
+  const seedId='SEED-ROBLOX-SIMULATOR_TYCOON_INCREMENTAL-TEST';
+  const designDir=path.join(root,'design',gameId,'2026-09-14');
+  const sourceDir=path.join(root,'web-games','candidate');
+  fs.mkdirSync(designDir,{recursive:true});fs.mkdirSync(sourceDir,{recursive:true});
+  const loops=['collect resources and increase production','spend resources to upgrade production','unlock a new tier and progress'];
+  const identity='Pocket Foundry frozen implementation identity with collect resources upgrade production unlock tier progression';
+  const baselinePath=path.join(designDir,'design-revised.json');
+  fs.writeFileSync(baselinePath,JSON.stringify({gameId,gameSeedId:seedId,content:{identity,coreLoop:loops}},null,2));
+  fs.writeFileSync(path.join(designDir,'cycle-status.json'),JSON.stringify({gameId,selectedPlatform:'ROBLOX',gameSeed:{seedId:cycleSeedId,category:'SIMULATOR_TYCOON_INCREMENTAL'}},null,2));
+  fs.writeFileSync(path.join(sourceDir,'index.html'),`<main data-session-minutes="30">${identity} ${loops.join(' ')} reward growth progress</main>`);
+  const evidencePath=path.join(root,'runtime.json');
+  fs.writeFileSync(evidencePath,JSON.stringify({pass:true,approvedScopeFullyImplemented:true,scopeCoverage:{pass:true},mobileViewport:{touch:true},sessionDepthMinutes:30,multiplayer:{participants:0,meaningfulLoopPassed:false}},null,2));
+  return {root,gameId,seedId,baselinePath,sourceDir,evidencePath,output:path.join(root,'strict.json')};
+}
+function runStrictFixture(fixture,mode='implementation'){
+  return spawnSync(process.execPath,[path.resolve('tools/company-strict-production-review.mjs'),`--mode=${mode}`,`--game-id=${fixture.gameId}`,`--source=${fixture.sourceDir}`,`--evidence=${fixture.evidencePath}`,`--output=${fixture.output}`,`--baseline=${fixture.baselinePath}`],{cwd:fixture.root,encoding:'utf8',env:{...process.env,COMPANY_RUNTIME_BRANCH:'',COMPANY_STRICT_STATE_OUTPUT:path.join(fixture.root,'strict-state.json')}});
+}
+
+test('implementation strict review can use matching frozen design context when live seed is absent',()=>{
+  const fixture=frozenStrictFixture();
+  try{
+    const run=runStrictFixture(fixture);
+    assert.equal(run.status,0,`${run.stdout}\n${run.stderr}`);
+    assert.doesNotMatch(`${run.stdout}\n${run.stderr}`,/STRICT_REVIEW_ACTIVE_SEED_REQUIRED/);
+    const report=JSON.parse(fs.readFileSync(fixture.output,'utf8'));
+    assert.equal(report.reviewStage,'IMPLEMENTATION_STRICT_REVIEW');
+    assert.equal(report.evidence.reviewContextSource,'FROZEN_DESIGN_BASELINE');
+    assert.equal(report.evidence.multiplayerDesignMode,'UNKNOWN');
+    assert.ok(!report.hardFailures.includes('MULTIPLAYER_MISSING'));
+  } finally {fs.rmSync(fixture.root,{recursive:true,force:true});}
+});
+
+test('frozen implementation context fails closed when cycle seed disagrees with baseline',()=>{
+  const fixture=frozenStrictFixture({cycleSeedId:'SEED-MISMATCH'});
+  try{
+    const run=runStrictFixture(fixture);
+    assert.notEqual(run.status,0);
+    assert.match(`${run.stdout}\n${run.stderr}`,/STRICT_REVIEW_FROZEN_CONTEXT_SEED_MISMATCH/);
+    assert.equal(fs.existsSync(fixture.output),false);
+  } finally {fs.rmSync(fixture.root,{recursive:true,force:true});}
+});
+
+test('design strict review still requires a live active seed',()=>{
+  const fixture=frozenStrictFixture();
+  try{
+    const run=runStrictFixture(fixture,'design');
+    assert.notEqual(run.status,0);
+    assert.match(`${run.stdout}\n${run.stderr}`,/STRICT_REVIEW_ACTIVE_SEED_REQUIRED/);
+  } finally {fs.rmSync(fixture.root,{recursive:true,force:true});}
 });
