@@ -1,0 +1,79 @@
+{
+  "version": 4,
+  "gameId": "insect-survival",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "playerFantasy"
+        ],
+        "fix": [
+          "coreFun"
+        ],
+        "add": [
+          "progressionDirection"
+        ],
+        "risks": [
+          "visualDirection"
+        ],
+        "evidence": [
+          "validationQuestions"
+        ],
+        "questions": [
+          "openQuestions"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [],
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [],
+        "questions": []
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "곤충 생태와 먹이사슬 체험"
+        ],
+        "fix": [
+          "곤충 생태와 먹이사슬 체험"
+        ],
+        "add": [
+          "곤충 생태와 먹이사슬 체험"
+        ],
+        "risks": [
+          "곤충 생태와 먹이사슬 체험"
+        ],
+        "evidence": [
+          "곤충 생태와 먹이사슬 체험"
+        ],
+        "questions": [
+          "곤충 생태와 먹이사슬 체험"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "version": 4,
+  "gameId": "insect-survival",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "reason": "the canonical design cycle must establish the new market direction without reusing the removed art"
+    },
+    "graphics": {
+      "accept": [
+        "fix",
+        "coreFun",
+        "progressionDirection"
+      ],
+      "challenge": [
+        "risks",
+        "validationQuestions"
+      ],
+      "revision": [
+        "evidence",
+        "questions"
+      ],
+      "reason": "The current design focuses heavily on a small-scale, isolated ecosystem. While the concept has potential, it lacks the broader strategic implications and player engagement needed for long-term success.  We need to emphasize the larger context of the game and how it contributes to a compelling progression system.  The current design prioritizes a simplified experience over a more dynamic and engaging one.  We need to address the risks of a game that lacks strategic depth and player agency."
+    },
+    "development": {
+      "accept": [
+        "own"
+      ],
+      "challenge": [
+        "own"
+      ],
+      "revision": [
+        "own"
+      ],
+      "reason": "own"
+    },
+    "qa": {
+      "accept": [
+        "곤충 생태와 먹이사슬 체험"
+      ],
+      "challenge": [
+        "작은 세계에서 곤충이 살아남는 생존 게임으로 처음부터 다시 설계한다."
+      ],
+      "revision": [
+        "coreFun"
+      ],
+      "reason": "The evidence suggests that the current design is not meeting the intended goals, and the redesign is necessary to ensure a better user experience."
+    },
+    "balance": {
+      "accept": [
+        "곤충 생태와 먹이사슬 체험",
+        "곤충 생태와 먹이사슬 체험"
+      ],
+      "challenge": [
+        "곤충 생태와 먹이사슬 체험",
+        "곤충 생태와 먹이사슬 체험"
+      ],
+      "revision": [
+        "곤충 생태와 먹이사슬 체험",
+        "곤충 생태와 먹이사슬 체험"
+      ],
+      "reason": "곤충 생태와 먹이사슬 체험"
+    }
+  }
+}

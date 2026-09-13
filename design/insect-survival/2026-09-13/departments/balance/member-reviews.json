@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "insect-survival",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "곤충 생태와 먹이사슬 체험"
+        ],
+        "fix": [
+          "곤충 생태와 먹이사슬 체험"
+        ],
+        "add": [
+          "곤충 생태와 먹이사슬 체험"
+        ],
+        "risks": [
+          "곤충 생태와 먹이사슬 체험"
+        ],
+        "evidence": [
+          "곤충 생태와 먹이사슬 체험"
+        ],
+        "questions": [
+          "곤충 생태와 먹이사슬 체험"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "작은 세계에서 곤충이 살아남는 생존 게임으로 처음부터 다시 설계한다."
+        ],
+        "fix": [
+          "작은 세계에서 곤충이 살아남는 생존"
+        ],
+        "add": [
+          "곤충 생태와 먹이사슬 체험"
+        ],
+        "risks": [
+          "곤충 생태와 먹이사슬 체험"
+        ],
+        "evidence": [
+          "Owner-directed redesign reset; the canonical design cycle must establish the new market direction without reusing the removed art"
+        ],
+        "questions": [
+          "작은 세계에서 곤충이 살아남는 생존"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "playerFantasy"
+        ],
+        "fix": [
+          "coreFun"
+        ],
+        "add": [
+          "progressionDirection"
+        ],
+        "risks": [
+          "visualDirection"
+        ],
+        "evidence": [
+          "validationQuestions"
+        ],
+        "questions": [
+          "openQuestions"
+        ]
+      }
+    }
+  ]
+}
