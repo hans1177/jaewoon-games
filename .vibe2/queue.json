@@ -796,8 +796,8 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 0,
+      "status": "queued",
+      "retries": 1,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -819,9 +819,10 @@
         "actions-run:34746644396",
         "actions-run:34751010705",
         "actions-run:34751539027",
-        "repair-retry:vibe2-full-web-output-budget-v2"
+        "repair-retry:vibe2-full-web-output-budget-v2",
+        "actions-run:34751773707"
       ],
-      "lastOutcome": "RETRY_AFTER_INFRA_REPAIR",
+      "lastOutcome": "FAIL",
       "companyContext": null,
       "sourceRoot": "web-games/seed-puzzle-chromatic-cascade",
       "speculativeEligible": false,
@@ -925,8 +926,8 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "release-confirmed",
-      "status": "running",
-      "retries": 0,
+      "status": "queued",
+      "retries": 1,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -940,9 +941,11 @@
         "actual-release-state:release-confirmed",
         "source-root:unity-games/daechung-rpg",
         "owner-auto-deploy-authorization",
-        "verified-qa-required"
+        "verified-qa-required",
+        "actions-run:34751773707",
+        "variant:primary"
       ],
-      "lastOutcome": null,
+      "lastOutcome": "FAIL",
       "companyContext": {
         "stageId": "owner-immediate",
         "role": "director",
