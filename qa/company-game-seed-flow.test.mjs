@@ -173,7 +173,7 @@ test('DESIGN_ONLY requires seed same designer revision and repeated five-lead fa
 });
 
 test('DESIGN_ONLY order is design then baseline then artbook never artbook before gate',()=>{
-  const designCall=pipeline.indexOf("await run('tools/company-design-cycle.mjs')");
+  const designCall=pipeline.search(/await run(?:WithRetry)?\('tools\/company-design-cycle\.mjs'/);
   const gateCall=pipeline.indexOf("await run('tools/company-baseline-gate.mjs')",designCall);
   const artbookCall=pipeline.indexOf("await run('tools/company-design-artbook.mjs')",gateCall);
   assert.ok(designCall>=0&&gateCall>designCall&&artbookCall>gateCall);
