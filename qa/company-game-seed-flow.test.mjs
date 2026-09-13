@@ -136,15 +136,17 @@ test('semantic normalization preserves platform choice multiplayer decision and 
   assert.match(semanticNormalize,/FORTNITE_UEFN/);
 });
 
-test('quality gate treats market evidence as reference and enforces the new production contract',()=>{
+test('quality gate applies material count only to material-composed seeds and leaves duplicate detection at creation time',()=>{
+  assert.match(qualityGate,/MATERIAL_COMPOSED_GENERATIONS/);
+  assert.match(qualityGate,/isMaterialComposed\(seed\)&&\(materialIds\.length<2\|\|materialIds\.length>4\)/);
+  assert.match(qualityGate,/LEGACY_SEED_MATERIAL_RETROACTIVE_GATE=NO/);
+  assert.match(qualityGate,/CONCEPT_DUPLICATE_GATE=CREATION_TIME_ONLY/);
+  assert.doesNotMatch(qualityGate,/concept-duplicate:/);
+  assert.match(bootstrap,/GAME_SEED_CONCEPT_DUPLICATE/);
   assert.match(qualityGate,/GAME_SEED_MARKET_EVIDENCE_HARD_GATE=NO/);
   assert.match(qualityGate,/GAME_SEED_FIXED_CATEGORY_SLOT_QUOTA=NO/);
   assert.match(qualityGate,/TARGET_SESSION_MINUTES/);
   assert.match(qualityGate,/MULTIPLAYER_DESIGN_MODE/);
-  assert.doesNotMatch(qualityGate,/GAME_SEED_QUALITY_ACTIVE_COUNT_TOO_SMALL/);
-  assert.doesNotMatch(qualityGate,/global-age-evidence-missing/);
-  assert.doesNotMatch(qualityGate,/global-revenue-evidence-missing/);
-  assert.doesNotMatch(qualityGate,/global-playtime-evidence-missing/);
 });
 
 test('autonomous runtime remains on company-runtime and caps concurrent design workers at three',()=>{
