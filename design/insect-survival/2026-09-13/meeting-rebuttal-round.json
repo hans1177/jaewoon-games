@@ -1,0 +1,86 @@
+{
+  "version": 4,
+  "gameId": "insect-survival",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "지정된 담당 부서만 검토하라."
+      ],
+      "challenge": [
+        "지정된 담당 부서만 검토하라."
+      ],
+      "revision": [
+        "지정된 담당 부서만 검토하라."
+      ],
+      "reason": "지정된 담당 부서만 검토하라."
+    },
+    "graphics": {
+      "accept": [
+        "Visual Style Review",
+        "Color Palette Review",
+        "UI Design Review"
+      ],
+      "challenge": [
+        "TARGET_AUDIENCE Review"
+      ],
+      "revision": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "reason": "TARGET_AUDIENCE Review는 사용자에게 가장 적합한 디자인을 결정하는 데 중요합니다.  UI Design Review는 사용자 경험을 향상시키고, TARGET_AUDIENCE Review는 목표 사용자층에 대한 이해를 높이는 데 도움이 됩니다.  이러한 요소들을 고려하여 디자인을 개선할 수 있습니다."
+    },
+    "development": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "own",
+        "others"
+      ],
+      "reason": "own"
+    },
+    "qa": {
+      "accept": [
+        "qa"
+      ],
+      "challenge": [
+        "qa"
+      ],
+      "revision": [
+        "qa"
+      ],
+      "reason": "QA 부서의 책임범위는 모든 요구사항을 검토하고 제안하는 역할을 수행하는 것을 의미합니다. 이는 다른 부서의 의견을 수용하거나 수정하는 역할을 포함하지 않습니다."
+    },
+    "balance": {
+      "accept": [
+        "곤충 생존기"
+      ],
+      "challenge": [
+        "곤충 생존기"
+      ],
+      "revision": [
+        "곤충 생존기"
+      ],
+      "reason": "곤충 생존기"
+    }
+  }
+}

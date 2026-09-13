@@ -1,0 +1,174 @@
+{
+  "version": 4,
+  "gameId": "insect-survival",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen2.5:1.5b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "지정된 담당 부서만 검토하라."
+      ],
+      "fix": [
+        "지정된 담당 부서만 검토하라."
+      ],
+      "add": [
+        "지정된 담당 부서만 검토하라."
+      ],
+      "risks": [
+        "지정된 담당 부서만 검토하라."
+      ],
+      "evidence": [
+        "지정된 담당 부서만 검토하라."
+      ],
+      "questions": [
+        "지정된 담당 부서만 검토하라."
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "Visual Style Review"
+      ],
+      "fix": [
+        "Color Palette Review"
+      ],
+      "add": [
+        "UI Design Review"
+      ],
+      "risks": [
+        "UI Risk Review"
+      ],
+      "evidence": [
+        "TARGET_AUDIENCE Review"
+      ],
+      "questions": [
+        "TARGET_AUDIENCE Review"
+      ]
+    },
+    "development": {
+      "keep": [
+        " Gonchung Survival Game"
+      ],
+      "fix": [
+        " Gonchung Survival Game"
+      ],
+      "add": [
+        " Gonchung Survival Game"
+      ],
+      "risks": [
+        " Gonchung Survival Game"
+      ],
+      "evidence": [
+        " Gonchung Survival Game"
+      ],
+      "questions": [
+        " Gonchung Survival Game"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "qa"
+      ],
+      "fix": [
+        "qa"
+      ],
+      "add": [
+        "qa"
+      ],
+      "risks": [
+        "qa"
+      ],
+      "evidence": [
+        "qa"
+      ],
+      "questions": [
+        "qa"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "곤충 생존기"
+      ],
+      "fix": [
+        "곤충 생존기"
+      ],
+      "add": [
+        "곤충 생존기"
+      ],
+      "risks": [
+        "곤충 생존기"
+      ],
+      "evidence": [
+        "곤충 생존기"
+      ],
+      "questions": [
+        "곤충 생존기"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "지정된 담당 부서만 검토하라.",
+      "departments": [
+        "planning"
+      ]
+    },
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "Visual Style Review, Color Palette Review, UI Design Review",
+      "departments": [
+        "graphics"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "keep, fix, add",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "qa",
+      "departments": [
+        "qa"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "곤충 생존기",
+      "departments": [
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 5,
+    "conflict": 0,
+    "hold": 0
+  }
+}
