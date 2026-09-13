@@ -796,14 +796,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 2,
+      "status": "failed",
+      "retries": 3,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "source-candidate-generation-failed",
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
@@ -817,7 +817,8 @@
         "actions-run:34744148874",
         "repair-retry:vibe2-full-web-stream-http-v1",
         "actions-run:34746644396",
-        "actions-run:34751010705"
+        "actions-run:34751010705",
+        "actions-run:34751539027"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
@@ -839,14 +840,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 2,
+      "status": "failed",
+      "retries": 3,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "source-candidate-generation-failed",
       "evidence": [
         "vibe2-auto-planner:game-catalog",
         "release-state:development-confirmed",
@@ -860,7 +861,8 @@
         "actions-run:34744148874",
         "repair-retry:vibe2-full-web-stream-http-v1",
         "actions-run:34746644396",
-        "actions-run:34751010705"
+        "actions-run:34751010705",
+        "actions-run:34751539027"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
@@ -928,6 +930,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
+      "blocker": null,
       "evidence": [
         "pwa-task:e38bd84e-4286-4f3c-bc6f-1cef11c8991e",
         "pwa-kind:directive",
@@ -937,20 +940,23 @@
         "owner-auto-deploy-authorization",
         "verified-qa-required"
       ],
+      "lastOutcome": null,
       "companyContext": {
         "stageId": "owner-immediate",
         "role": "director",
         "assignmentAuthority": "owner-directive",
         "sourceRef": "pwa-task:e38bd84e-4286-4f3c-bc6f-1cef11c8991e",
+        "artbookLocked": false,
+        "artbookRef": null,
+        "artbookStatus": null,
+        "artbookCutCount": 0,
+        "artbookPostprocessComplete": false,
         "reviewRequired": true
-      }
+      },
+      "sourceRoot": "unity-games/daechung-rpg",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "shard": "unity"
     }
-  ],
-  "ingest": {
-    "added": true,
-    "taskId": "pwa-e38bd84e-4286-4f3c-bc6f-1cef11c8991e",
-    "gameId": "daechung-rpg",
-    "target": "unity",
-    "reason": "OWNER_IMMEDIATE_PWA"
-  }
+  ]
 }
