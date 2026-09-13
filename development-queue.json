@@ -401,18 +401,24 @@
       "webValidationRequired": true,
       "musicValidationRequired": true,
       "status": "ACTIVE",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "WAITING_TARGET_PLATFORM_REVALIDATION",
       "sourcePath": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp",
       "webValidationQueuedAt": "2026-09-13T04:30:39.364Z",
       "webValidationPassedAt": "2026-09-13T04:31:30.379Z",
       "musicValidationPassed": true,
       "webValidationEvidencePath": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-09-13/web-gameplay-validation.json",
       "webValidationSourceRevision": "be9e5bbf86498d269c15f179776ee0573123f4c0",
-      "routingBlockers": [],
-      "updatedAt": "2026-09-13T04:32:43.090Z",
+      "routingBlockers": [
+        "roblox-source-promotion-pending"
+      ],
+      "updatedAt": "2026-09-13T04:33:32.023Z",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
-      "routeRevision": "e7ce5305dff6ef0fffdb16fb70d413bb76de4cbd162fb82c58e42490836647cc"
+      "routeRevision": "e7ce5305dff6ef0fffdb16fb70d413bb76de4cbd162fb82c58e42490836647cc",
+      "robloxSourceCandidateBranch": "development/roblox-seed-roblox-roleplay-life-avat-brookhaven-rp-34738148167-1",
+      "robloxSourceCandidateReadyAt": "2026-09-13T04:33:32.023Z",
+      "robloxSourceBootstrapFailedAt": null,
+      "robloxRuntimePassed": false
     },
     {
       "gameId": "bug-defense",
@@ -471,7 +477,7 @@
       "routeRevision": "c22be990056ccde9069fb09f732ddd91c416b29abd1a23022897630738762ded"
     }
   ],
-  "updatedAt": "2026-09-13T04:32:43.216Z",
+  "updatedAt": "2026-09-13T04:33:32.023Z",
   "routerContractVersion": 2,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
