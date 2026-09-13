@@ -68,6 +68,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: homepage-manager-${{ github.ref }}
@@ -204,8 +205,10 @@ jobs:
           echo 'HOMEPAGE_LIVE_SYNC=PASS'
           echo 'HOMEPAGE_MANAGER_SELF_QA=PASS'
 
-      - name: Publish validated test shelf assets to main
+      - name: Publish validated test shelf assets through PR
         if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -216,11 +219,14 @@ jobs:
             echo 'HOMEPAGE_TEST_PUBLICATION=NO_CHANGES'
             exit 0
           fi
-          git commit -m 'homepage: publish validated top20 test shelf [skip ci]'
-          git fetch origin main
-          git rebase origin/main
-          git push origin HEAD:main
-          echo 'HOMEPAGE_TEST_PUBLICATION=MAIN_SYNCED_AFTER_STRICT_PASS'
+          branch="homepage/test-shelf-${GITHUB_RUN_ID}"
+          git switch -c "$branch"
+          git commit -m 'homepage: publish validated top20 test shelf'
+          git push origin "HEAD:refs/heads/$branch"
+          pr_url="$(gh pr create --base main --head "$branch" --title 'homepage: publish validated top20 test shelf' --body 'Homepage Manager self-QA passed. Publishes only strict implementation PASS Web+artbook candidates, score-descending, maximum 20. No pre-promotion official cards.')"
+          echo "HOMEPAGE_TEST_PUBLICATION_PR=$pr_url"
+          gh pr merge "$pr_url" --squash --delete-branch
+          echo 'HOMEPAGE_TEST_PUBLICATION=PR_VALIDATED_AND_MERGED'
 
   director-supervision:
     name: Director Single Post-Work Supervision
