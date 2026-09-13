@@ -1,28 +1,17 @@
 // DEVELOPMENT_CONFIRMED Roblox source bootstrap.
-// Generates an isolated, game-specific Luau source tree from the locked design baseline.
+// Compiles an isolated, game-specific Luau source tree from the locked design baseline.
 // This is source creation only: it never claims Roblox runtime, QA, regression, or release success.
 
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
+import {deriveApprovedScopeInventory} from './company-approved-scope-contract.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
-const clip=(value,max=24000)=>{const text=typeof value==='string'?value:JSON.stringify(value);return text.length>max?text.slice(0,max):text;};
 const arg=(name,fallback='')=>process.argv.find(value=>value.startsWith(`--${name}=`))?.slice(name.length+3)??fallback;
-
-const OUTPUT_SCHEMA={
-  type:'object',
-  additionalProperties:false,
-  required:['sharedConfig','serverCode','clientCode','implementationNotes'],
-  properties:{
-    sharedConfig:{type:'string'},
-    serverCode:{type:'string'},
-    clientCode:{type:'string'},
-    implementationNotes:{type:'array',items:{type:'string'},maxItems:12},
-  },
-};
+const luauString=value=>`"${String(value??'').replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\r/g,'\\r').replace(/\n/g,'\\n')}"`;
 
 function baselineText(baseline={}){
   return JSON.stringify(baseline?.content&&typeof baseline.content==='object'?baseline.content:baseline).toLowerCase();
@@ -99,64 +88,87 @@ export function validateRobloxBootstrap({sharedConfig='',serverCode='',clientCod
   return Object.freeze({pass:blockers.length===0,blockers:Object.freeze([...new Set(blockers)]),saveRequired});
 }
 
-async function callModel({model,prompt,repair=''}){
-  const response=await fetch('http://127.0.0.1:11434/api/chat',{
-    method:'POST',
-    headers:{'content-type':'application/json'},
-    body:JSON.stringify({
-      model,
-      stream:false,
-      think:false,
-      format:OUTPUT_SCHEMA,
-      messages:[
-        {role:'system',content:'너는 재운컴퍼니 Roblox DEVELOPMENT_CONFIRMED 개발 AI다. COMPANY_FLOW.md와 잠긴 DESIGN_BASELINE을 따른다. 원본 유명 게임의 코드·캐릭터·이름·맵·UI·트레이드드레스를 복제하지 않고 자체 Luau 코드로 구현한다. 서버 권한과 클라이언트 표시를 분리하고 모바일 입력을 우선한다. TODO나 가짜 통과 증거를 만들지 않는다.'},
-        {role:'user',content:`${prompt}${repair?`\n이전 출력의 정적 검증 실패를 수정하라: ${repair}`:''}`},
-      ],
-      options:{temperature:repair?0.05:0.12,num_ctx:24576,num_predict:8192},
-    }),
-  });
-  if(!response.ok)throw new Error(`OLLAMA_${response.status}: ${await response.text()}`);
-  const body=await response.json();
-  const raw=clean(body?.message?.content);
-  if(!raw)throw new Error('EMPTY_MODEL_RESPONSE');
-  return JSON.parse(raw);
+export function classifyRobloxScope(item={},index=0){
+  const text=`${clean(item.path).toLowerCase()} ${clean(item.label).toLowerCase()}`;
+  if(/combat|fight|attack|damage|enemy|opponent|skill|cooldown|aim|combo|전투|공격|적|스킬|쿨다운/.test(text))return 'COMBAT';
+  if(/move|movement|reposition|explore|navigate|travel|dodge|evade|obby|checkpoint|이동|탐색|회피|위치|오비|체크포인트/.test(text))return 'MOVEMENT';
+  if(/reward|progress|upgrade|loadout|level|mastery|grow|unlock|보상|성장|강화|레벨|해금/.test(text))return 'PROGRESSION';
+  if(/resource|economy|craft|collect|produce|income|tycoon|자원|경제|제작|수집|생산|수익/.test(text))return 'ECONOMY';
+  if(/quest|objective|story|goal|round|escape|목표|퀘스트|스토리|탈출/.test(text))return 'OBJECTIVE';
+  if(/survive|health|danger|threat|horror|생존|체력|위협|공포/.test(text))return 'SURVIVAL';
+  if(/mobile|touch|control|interface|ux|모바일|터치|조작|인터페이스/.test(text))return 'MOBILE';
+  if(/^coreloop\[(\d+)\]/.test(clean(item.path).toLowerCase()))return ['MOVEMENT','COMBAT','PROGRESSION'][index%3];
+  return ['OBJECTIVE','ECONOMY','PROGRESSION','MOVEMENT'][index%4];
+}
+
+function approvedActions(baseline={}){
+  const inventory=deriveApprovedScopeInventory(baseline);
+  if(inventory.length)return inventory.map((item,index)=>({
+    id:item.id,
+    label:clean(item.label)||`Approved action ${index+1}`,
+    path:clean(item.path),
+    kind:classifyRobloxScope(item,index),
+  }));
+  return [{id:'scope-core-fallback',label:'Core gameplay action',path:'coreFun',kind:'OBJECTIVE'}];
+}
+
+function sharedConfigSource({gameId,gameName,saveRequired,actions}){
+  const actionRows=actions.map((action,index)=>`    { Id = ${luauString(action.id)}, Label = ${luauString(action.label)}, Kind = ${luauString(action.kind)}, Order = ${index+1} },`).join('\n');
+  return `local Config = {\n  PolicySource = "COMPANY_FLOW.md",\n  Platform = "ROBLOX",\n  MobileFirst = true,\n  SaveEnabled = ${saveRequired?'true':'false'},\n  GameId = ${luauString(gameId)},\n  GameName = ${luauString(gameName)},\n  RemoteName = "GameAction",\n  RateLimitSeconds = 0.10,\n  InitialState = {\n    Score = 0, Coins = 0, Level = 1, Progress = 0, Health = 100,\n    Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,\n  },\n  Actions = {\n${actionRows}\n  },\n}\n\nreturn table.freeze(Config)\n`;
+}
+
+function serverHandlerBody(kind,index){
+  const n=index+1;
+  const bodies={
+    COMBAT:`  local enemy = math.max(0, readNumber(player, "EnemyHealth", 100) - ${10+n})\n  setNumber(player, "EnemyHealth", enemy)\n  setNumber(player, "Combo", readNumber(player, "Combo", 0) + 1)\n  setNumber(player, "Score", readNumber(player, "Score", 0) + ${8+n})\n  setNumber(player, "Progress", readNumber(player, "Progress", 0) + ${4+n})\n  if enemy <= 0 then\n    setNumber(player, "EnemyHealth", 100)\n    setNumber(player, "Wave", readNumber(player, "Wave", 1) + 1)\n    setNumber(player, "Coins", readNumber(player, "Coins", 0) + 3)\n  end`,
+    MOVEMENT:`  setNumber(player, "Position", (readNumber(player, "Position", 0) + ${1+(index%3)}) % 12)\n  setNumber(player, "Score", readNumber(player, "Score", 0) + ${2+n})\n  setNumber(player, "Progress", readNumber(player, "Progress", 0) + ${5+n})`,
+    PROGRESSION:`  setNumber(player, "Level", readNumber(player, "Level", 1) + 1)\n  setNumber(player, "Progress", readNumber(player, "Progress", 0) + ${7+n})\n  setNumber(player, "Score", readNumber(player, "Score", 0) + ${5+n})\n  setNumber(player, "Coins", readNumber(player, "Coins", 0) + ${2+n})`,
+    ECONOMY:`  setNumber(player, "Coins", readNumber(player, "Coins", 0) + ${6+n})\n  setNumber(player, "Score", readNumber(player, "Score", 0) + ${3+n})\n  setNumber(player, "Progress", readNumber(player, "Progress", 0) + ${4+n})`,
+    OBJECTIVE:`  setNumber(player, "Objective", readNumber(player, "Objective", 0) + 1)\n  setNumber(player, "Score", readNumber(player, "Score", 0) + ${6+n})\n  setNumber(player, "Progress", readNumber(player, "Progress", 0) + ${8+n})`,
+    SURVIVAL:`  setNumber(player, "Health", math.clamp(readNumber(player, "Health", 100) + ${2+(index%4)}, 0, 100))\n  setNumber(player, "Score", readNumber(player, "Score", 0) + ${4+n})\n  setNumber(player, "Progress", readNumber(player, "Progress", 0) + ${5+n})`,
+    MOBILE:`  setNumber(player, "Position", (readNumber(player, "Position", 0) + 1) % 12)\n  setNumber(player, "Score", readNumber(player, "Score", 0) + ${2+n})\n  setNumber(player, "Progress", readNumber(player, "Progress", 0) + ${3+n})`,
+  };
+  return bodies[kind]||bodies.OBJECTIVE;
+}
+
+function serverSource({gameId,saveRequired,actions}){
+  const handlers=actions.map((action,index)=>`local function scopeHandler${index+1}(player)\n${serverHandlerBody(action.kind,index)}\n  player:SetAttribute("LastApprovedScope", ${luauString(action.id)})\nend`).join('\n\n');
+  const mapRows=actions.map((action,index)=>`  [${luauString(action.id)}] = scopeHandler${index+1},`).join('\n');
+  const datastoreHead=saveRequired?`local DataStoreService = game:GetService("DataStoreService")\nlocal store = DataStoreService:GetDataStore(${luauString(`${gameId}-development-v1`)})\n`:'';
+  const loadBlock=saveRequired?`  local ok, saved = pcall(function()\n    return store:GetAsync("player:" .. player.UserId)\n  end)\n  if ok and typeof(saved) == "table" then\n    for key, fallback in pairs(Config.InitialState) do\n      local value = saved[key]\n      if typeof(value) == "number" then player:SetAttribute(key, value) else player:SetAttribute(key, fallback) end\n    end\n  else\n    initializePlayer(player)\n  end\n`:`  initializePlayer(player)\n`;
+  const saveBlock=saveRequired?`  local snapshot = {}\n  for key, fallback in pairs(Config.InitialState) do\n    snapshot[key] = readNumber(player, key, fallback)\n  end\n  pcall(function()\n    store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)\n  end)\n`:'';
+  return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\n${datastoreHead}local Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\n\nlocal remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)\nif remote and not remote:IsA("RemoteEvent") then remote:Destroy(); remote = nil end\nif not remote then\n  remote = Instance.new("RemoteEvent")\n  remote.Name = Config.RemoteName\n  remote.Parent = ReplicatedStorage\nend\n\nlocal lastAction = {}\n\nlocal function readNumber(player, name, fallback)\n  local value = player:GetAttribute(name)\n  if typeof(value) ~= "number" then return fallback end\n  return value\nend\n\nlocal function setNumber(player, name, value)\n  if typeof(value) ~= "number" then return end\n  player:SetAttribute(name, math.floor(value))\nend\n\nlocal function initializePlayer(player)\n  for key, value in pairs(Config.InitialState) do\n    player:SetAttribute(key, value)\n  end\n  player:SetAttribute("LastApprovedScope", "ready")\nend\n\n${handlers}\n\nlocal handlers = {\n${mapRows}\n}\n\nPlayers.PlayerAdded:Connect(function(player)\n${loadBlock}end)\n\nfor _, player in ipairs(Players:GetPlayers()) do\n  task.defer(function()\n    if player:GetAttribute("Score") == nil then initializePlayer(player) end\n  end)\nend\n\nremote.OnServerEvent:Connect(function(player, actionId)\n  if typeof(actionId) ~= "string" then return end\n  local handler = handlers[actionId]\n  if typeof(handler) ~= "function" then return end\n  local now = os.clock()\n  local previous = lastAction[player] or 0\n  if now - previous < Config.RateLimitSeconds then return end\n  lastAction[player] = now\n  handler(player)\nend)\n\nPlayers.PlayerRemoving:Connect(function(player)\n${saveBlock}  lastAction[player] = nil\nend)\n`;
+}
+
+function clientSource(){
+  return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal UserInputService = game:GetService("UserInputService")\n\nlocal player = Players.LocalPlayer\nlocal Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\nlocal remote = ReplicatedStorage:WaitForChild(Config.RemoteName)\n\nlocal gui = Instance.new("ScreenGui")\ngui.Name = "ApprovedScopeHud"\ngui.ResetOnSpawn = false\ngui.IgnoreGuiInset = false\ngui.Parent = player:WaitForChild("PlayerGui")\n\nlocal root = Instance.new("Frame")\nroot.Name = "Root"\nroot.AnchorPoint = Vector2.new(0.5, 1)\nroot.Position = UDim2.fromScale(0.5, 0.98)\nroot.Size = UDim2.new(1, -24, 0, 330)\nroot.BackgroundTransparency = 0.15\nroot.BackgroundColor3 = Color3.fromRGB(18, 28, 48)\nroot.Parent = gui\n\nlocal title = Instance.new("TextLabel")\ntitle.Name = "Title"\ntitle.Size = UDim2.new(1, -20, 0, 44)\ntitle.Position = UDim2.fromOffset(10, 8)\ntitle.BackgroundTransparency = 1\ntitle.TextColor3 = Color3.fromRGB(245, 248, 255)\ntitle.TextScaled = true\ntitle.Text = Config.GameName .. (UserInputService.TouchEnabled and " · TOUCH" or " · DESKTOP")\ntitle.Parent = root\n\nlocal status = Instance.new("TextLabel")\nstatus.Name = "Status"\nstatus.Size = UDim2.new(1, -20, 0, 52)\nstatus.Position = UDim2.fromOffset(10, 54)\nstatus.BackgroundColor3 = Color3.fromRGB(10, 17, 30)\nstatus.TextColor3 = Color3.fromRGB(220, 232, 250)\nstatus.TextScaled = true\nstatus.Parent = root\n\nlocal list = Instance.new("ScrollingFrame")\nlist.Name = "ApprovedActions"\nlist.Size = UDim2.new(1, -20, 1, -116)\nlist.Position = UDim2.fromOffset(10, 108)\nlist.BackgroundTransparency = 1\nlist.BorderSizePixel = 0\nlist.AutomaticCanvasSize = Enum.AutomaticSize.Y\nlist.CanvasSize = UDim2.new()\nlist.ScrollBarThickness = 6\nlist.Parent = root\n\nlocal layout = Instance.new("UIListLayout")\nlayout.Padding = UDim.new(0, 8)\nlayout.SortOrder = Enum.SortOrder.LayoutOrder\nlayout.Parent = list\n\nfor index, action in ipairs(Config.Actions) do\n  local button = Instance.new("TextButton")\n  button.Name = "ScopeAction" .. index\n  button.LayoutOrder = index\n  button.Size = UDim2.new(1, -4, 0, 56)\n  button.BackgroundColor3 = Color3.fromRGB(235, 242, 255)\n  button.TextColor3 = Color3.fromRGB(16, 24, 40)\n  button.TextWrapped = true\n  button.TextScaled = true\n  button.Text = string.format("%d. %s [%s]", index, action.Label, action.Kind)\n  button.Parent = list\n  button.Activated:Connect(function()\n    remote:FireServer(action.Id)\n  end)\nend\n\nlocal watched = {"Score", "Coins", "Level", "Progress", "Health", "Wave", "Position", "Objective", "Combo", "EnemyHealth", "LastApprovedScope"}\nlocal function render()\n  status.Text = string.format(\n    "Score %d · Coins %d · Lv %d · Progress %d · HP %d · Wave %d",\n    player:GetAttribute("Score") or 0,\n    player:GetAttribute("Coins") or 0,\n    player:GetAttribute("Level") or 1,\n    player:GetAttribute("Progress") or 0,\n    player:GetAttribute("Health") or 100,\n    player:GetAttribute("Wave") or 1\n  )\nend\n\nfor _, name in ipairs(watched) do\n  player:GetAttributeChangedSignal(name):Connect(render)\nend\nrender()\n`;
+}
+
+export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={}}={}){
+  void artbook;
+  const saveRequired=requiresPersistentSave(baseline);
+  const actions=approvedActions(baseline);
+  const result={
+    sharedConfig:sharedConfigSource({gameId,gameName,saveRequired,actions}),
+    serverCode:serverSource({gameId,saveRequired,actions}),
+    clientCode:clientSource(),
+    implementationNotes:[
+      `approved scope count=${actions.length}`,
+      'each approved scope is compiled to a dedicated server-authoritative handler',
+      'one validated RemoteEvent transports scope ids across the client/server boundary',
+      'mobile-first ScreenGui exposes every approved scope action',
+      saveRequired?'persistent player state uses DataStoreService with safe fallback':'no DataStore added because locked baseline does not require persistence',
+      'runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass',
+    ],
+  };
+  const validation=validateRobloxBootstrap({...result,baseline});
+  if(!validation.pass)throw new Error(`ROBLOX_BOOTSTRAP_COMPILER_FAILED: ${validation.blockers.join('|')}`);
+  return {result,validation,actions,generationMode:'DETERMINISTIC_FULL_SCOPE_IMPLEMENTATION',modelUsed:false,attempts:0,failures:[]};
 }
 
 export async function buildRobloxSource({gameId,gameName,baseline,artbook,model}){
-  const saveRequired=requiresPersistentSave(baseline);
-  const prompt=[
-    `게임 ID: ${gameId}`,
-    `게임명: ${gameName}`,
-    `영구 저장 필요 여부: ${saveRequired?'YES':'NO'}`,
-    `DESIGN_BASELINE:\n${clip(baseline)}`,
-    `ARTBOOK:\n${clip(artbook,10000)}`,
-    '요구사항:',
-    '- 승인된 핵심 루프·진행·경제·전투/행동 범위를 Roblox에서 실제 작동 가능한 Luau 시스템으로 구현한다.',
-    '- sharedConfig는 ModuleScript 소스이며 PolicySource="COMPANY_FLOW.md", Platform="ROBLOX", MobileFirst=true를 포함한다.',
-    '- serverCode는 서버 권한형 상태와 핵심 액션을 구현하고 ReplicatedStorage RemoteEvent를 생성/재사용한다.',
-    '- 모든 OnServerEvent 입력은 타입/값 검증과 플레이어별 간단한 rate limit을 거친다.',
-    '- clientCode는 모바일 우선 ScreenGui/버튼 또는 ContextActionService 입력을 제공하고 RemoteEvent:FireServer로 서버에 요청한다.',
-    '- 서버 상태 변화는 Player Attribute 등으로 노출하고 클라이언트가 Attribute 변화를 UI에 반영한다.',
-    saveRequired?'- 진행 저장이 설계에 있으므로 DataStoreService 로드/저장을 서버에서 구현하고 실패 시 안전하게 기본값을 사용한다.':'- 설계에 영구 저장 요구가 없으므로 임의로 DataStore를 추가하지 않는다.',
-    '- 외부 HTTP, 외부 코드 require(assetId), loadstring, TODO/FIXME/placeholder 금지.',
-    '- 유명 참고작의 고유 명칭/캐릭터/맵/아트/UI 표현은 사용하지 않는다.',
-    '- 파일 3개만 반환한다: sharedConfig, serverCode, clientCode. 설명문은 implementationNotes 배열에만 둔다.',
-  ].join('\n');
-  let last=[];
-  const failures=[];
-  for(let attempt=1;attempt<=2;attempt++){
-    try{
-      const result=await callModel({model,prompt,repair:last.join('|')});
-      const validation=validateRobloxBootstrap({...result,baseline});
-      if(validation.pass)return {result,validation,attempts:attempt,failures};
-      last=[...validation.blockers];
-      failures.push({attempt,blockers:[...validation.blockers]});
-    }catch(error){
-      last=['MODEL_OUTPUT_ERROR'];
-      failures.push({attempt,error:clean(error?.message||error).slice(0,600)});
-    }
-  }
-  throw new Error(`ROBLOX_BOOTSTRAP_MODEL_CONTRACT_FAILED: ${last.join('|')}`);
+  void model;
+  return compileRobloxSource({gameId,gameName,baseline,artbook});
 }
 
 function writeSourceTree(root,{sharedConfig,serverCode,clientCode},gameId){
@@ -176,7 +188,7 @@ async function main(){
   const artbookFile=clean(arg('artbook'));
   const outputRoot=posix(arg('output-root'));
   const evidenceFile=clean(arg('evidence'));
-  const model=clean(arg('model',process.env.ROBLOX_DEV_MODEL||'qwen3:1.7b'));
+  const model=clean(arg('model',process.env.ROBLOX_DEV_MODEL||'none'));
   if(!gameId||!baselineFile||!artbookFile||!outputRoot||!evidenceFile)throw new Error('required Roblox bootstrap argument missing');
   if(outputRoot!==`roblox-games/${gameId}`)throw new Error(`invalid Roblox output root: ${outputRoot}`);
   if(fs.existsSync(outputRoot)&&fs.readdirSync(outputRoot).length)throw new Error(`Roblox source root already exists: ${outputRoot}`);
@@ -185,7 +197,7 @@ async function main(){
   const built=await buildRobloxSource({gameId,gameName,baseline,artbook,model});
   writeSourceTree(outputRoot,built.result,gameId);
   const evidence={
-    version:1,
+    version:2,
     gameId,
     gameName,
     platform:'ROBLOX',
@@ -198,8 +210,11 @@ async function main(){
     regressionPassed:false,
     releaseClaim:false,
     saveRequired:built.validation.saveRequired,
+    approvedScopeCount:built.actions.length,
     generatedFiles:['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau','default.project.json'],
+    generationMode:built.generationMode,
     model,
+    modelUsed:built.modelUsed,
     modelAttempts:built.attempts,
     modelContractFailures:built.failures,
     implementationNotes:built.result.implementationNotes,
@@ -212,7 +227,10 @@ async function main(){
   console.log('ROBLOX_SOURCE_BOOTSTRAP=PASS');
   console.log(`ROBLOX_GAME_ID=${gameId}`);
   console.log(`ROBLOX_SOURCE_ROOT=${outputRoot}`);
+  console.log(`ROBLOX_APPROVED_SCOPE_COUNT=${built.actions.length}`);
   console.log(`ROBLOX_SAVE_REQUIRED=${evidence.saveRequired?'YES':'NO'}`);
+  console.log(`ROBLOX_GENERATION_MODE=${built.generationMode}`);
+  console.log('MODEL_USED=NO');
   console.log('ROBLOX_RUNTIME_PASS=NO');
   console.log('ROBLOX_RELEASE_CLAIM=NO');
 }

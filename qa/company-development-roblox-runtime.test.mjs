@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {projectJsonForGame,requiresPersistentSave,validateRobloxBootstrap} from '../tools/company-development-roblox-bootstrap.mjs';
+import {projectJsonForGame,requiresPersistentSave,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope} from '../tools/company-development-roblox-bootstrap.mjs';
+import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-contract.mjs';
 
-const baseline={content:{identity:'Pocket Foundry',coreFun:'collect, upgrade, income, unlock',progressionDirection:'Persistent progression system'}};
+const baseline={content:{identity:'Pocket Foundry',coreFun:'collect, upgrade, income, unlock',coreLoop:['collect resources','upgrade production','unlock the next area'],mobileUx:'touch controls',progressionDirection:'Persistent progression system'}};
 const shared=`local Config = {
   PolicySource = "COMPANY_FLOW.md",
   Platform = "ROBLOX",
@@ -96,6 +97,44 @@ test('Roblox bootstrap static gate rejects placeholders and missing server bound
   assert.equal(bad.pass,false);
   assert.ok(bad.blockers.includes('SERVER_PLACEHOLDER_FORBIDDEN'));
   assert.ok(bad.blockers.includes('SERVER_REMOTE_BOUNDARY_REQUIRED'));
+});
+
+test('Roblox scope classifier maps approved gameplay meaning to native handler modes',()=>{
+  assert.equal(classifyRobloxScope({path:'combat',label:'attack enemy'},0),'COMBAT');
+  assert.equal(classifyRobloxScope({path:'movement',label:'explore and reposition'},0),'MOVEMENT');
+  assert.equal(classifyRobloxScope({path:'progression',label:'upgrade and unlock'},0),'PROGRESSION');
+  assert.equal(classifyRobloxScope({path:'economy',label:'collect resources and income'},0),'ECONOMY');
+  assert.equal(classifyRobloxScope({path:'objective',label:'complete quest goal'},0),'OBJECTIVE');
+  assert.equal(classifyRobloxScope({path:'mobileUx',label:'touch controls'},0),'MOBILE');
+});
+
+test('deterministic Roblox compiler implements every approved scope with dedicated server handlers',()=>{
+  const cases=[
+    ['seed-roblox-simulator-tycoon-test','collect resources, upgrade production, earn income, unlock areas'],
+    ['seed-roblox-battleground-fight-test','fight opponents, use skills and cooldowns, win rounds'],
+    ['seed-roblox-survival-horror-test','survive threats, find objectives, escape safely'],
+    ['seed-roblox-obby-party-test','move through checkpoints and complete obby rounds'],
+    ['seed-roblox-story-rpg-test','explore, fight, complete quests and progress the story'],
+  ];
+  for(const [gameId,coreFun] of cases){
+    const locked={content:{identity:`${gameId} identity`,coreFun,coreLoop:['explore or collect','perform the main challenge','receive reward and progress'],mobileUx:'touch controls',progressionDirection:'Persistent progression system'}};
+    const inventory=deriveApprovedScopeInventory(locked);
+    const compiled=compileRobloxSource({gameId,gameName:'Compiler Test',baseline:locked,artbook:{}});
+    assert.equal(compiled.generationMode,'DETERMINISTIC_FULL_SCOPE_IMPLEMENTATION');
+    assert.equal(compiled.modelUsed,false);
+    assert.equal(compiled.validation.pass,true,compiled.validation.blockers.join(','));
+    assert.equal(compiled.actions.length,inventory.length);
+    assert.ok(compiled.result.serverCode.includes('RemoteEvent'));
+    assert.ok(compiled.result.serverCode.includes('OnServerEvent'));
+    assert.ok(compiled.result.clientCode.includes('UserInputService'));
+    assert.ok(compiled.result.clientCode.includes('Activated'));
+    assert.ok(compiled.result.clientCode.includes('FireServer(action.Id)'));
+    assert.ok(compiled.result.serverCode.includes('DataStoreService'));
+    for(let i=0;i<inventory.length;i++){
+      assert.ok(compiled.result.sharedConfig.includes(inventory[i].id));
+      assert.ok(compiled.result.serverCode.includes(`scopeHandler${i+1}`));
+    }
+  }
 });
 
 test('Rojo project maps shared server and client source roots',()=>{
