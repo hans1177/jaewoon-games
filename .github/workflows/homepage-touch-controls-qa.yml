@@ -1,0 +1,61 @@
+name: Homepage Touch Controls QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'assets/homepage-enhancements.js'
+      - '_worker.js'
+      - 'web-games/_shared/touch-controls.js'
+      - '.github/workflows/homepage-touch-controls-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'assets/homepage-enhancements.js'
+      - '_worker.js'
+      - 'web-games/_shared/touch-controls.js'
+      - '.github/workflows/homepage-touch-controls-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  touch-first-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate touch-first homepage and universal Web controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f assets/homepage-enhancements.js
+          test -f web-games/_shared/touch-controls.js
+          node --check assets/homepage-enhancements.js
+          node --check web-games/_shared/touch-controls.js
+          node --check _worker.js
+
+          grep -Fq "data.touchLaunch='true'" assets/homepage-enhancements.js
+          grep -Fq "window.location.href=target" assets/homepage-enhancements.js
+          if grep -Fq "addEventListener('keydown'" assets/homepage-enhancements.js; then
+            echo 'HOMEPAGE_KEYBOARD_LAUNCH_FORBIDDEN'
+            exit 1
+          fi
+          if grep -Fq 'tabindex="0"' assets/homepage-enhancements.js; then
+            echo 'HOMEPAGE_KEYBOARD_FOCUS_LAUNCH_FORBIDDEN'
+            exit 1
+          fi
+
+          grep -Fq '/web-games/_shared/touch-controls.js' _worker.js
+          grep -Fq "url.pathname.startsWith('/web-games/')" _worker.js
+          grep -Fq "#joy" web-games/_shared/touch-controls.js
+          grep -Fq "#joystick" web-games/_shared/touch-controls.js
+          grep -Fq "jaewoon:joystick" web-games/_shared/touch-controls.js
+          grep -Fq "jg-action-a" web-games/_shared/touch-controls.js
+          grep -Fq "jg-action-b" web-games/_shared/touch-controls.js
+          grep -Fq "pointerdown" web-games/_shared/touch-controls.js
+          grep -Fq "pointermove" web-games/_shared/touch-controls.js
+          echo 'HOMEPAGE_TOUCH_DIRECT_LAUNCH=PASS'
+          echo 'WEB_GAME_UNIVERSAL_TOUCH_STICK=PASS'
+          echo 'NATIVE_JOYSTICK_DUPLICATE_GUARD=PASS'
