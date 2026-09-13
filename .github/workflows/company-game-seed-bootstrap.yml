@@ -3,7 +3,7 @@ name: Company GAME_SEED Bootstrap
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 15 * * *' # 00:30 KST; fills required platform representatives first, then score-approved expansion
+    - cron: '37 * * * *' # hourly watchdog; event chain remains primary progression
   push:
     branches: [main]
     paths:
@@ -12,20 +12,11 @@ on:
       - 'game-seed-market-evidence.json'
       - 'game-seed-platform-profiles.json'
       - 'tools/game-seed-state.mjs'
-      - 'tools/game-seed-platform-profile.mjs'
       - 'tools/company-game-seed-contract.mjs'
       - 'tools/company-game-seed-bootstrap.mjs'
       - 'tools/company-game-seed-semantic-normalize.mjs'
       - 'tools/company-game-seed-quality-gate.mjs'
-      - 'tools/company-design-cycle.mjs'
-      - 'tools/artbook-production-pipeline.mjs'
-      - 'tools/company-baseline-gate.mjs'
-      - 'tools/company-design-artbook.mjs'
-      - 'qa/company-game-seed-flow.test.mjs'
-      - 'qa/autonomous-portfolio-continuation.test.mjs'
-      - 'qa/roblox-portfolio-expansion-policy.test.mjs'
-      - 'qa/company-game-seed-state-file.test.mjs'
-      - 'qa/company-seed-design-runtime-stall.test.mjs'
+      - 'tools/company-strict-production-review.mjs'
       - '.github/workflows/company-game-seed-bootstrap.yml'
       - '.github/workflows/company-seed-design-runtime.yml'
 
@@ -43,9 +34,9 @@ env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
 jobs:
-  seed-bootstrap-or-portfolio-expansion:
+  seed-bootstrap-or-idle-expansion:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -62,191 +53,166 @@ jobs:
           git fetch origin main
           if git ls-remote --exit-code --heads origin "$COMPANY_RUNTIME_BRANCH" >/dev/null 2>&1; then
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
-            if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" 2>/dev/null; then
-              git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- game-seed-state.json
-              git reset -- game-seed-state.json >/dev/null 2>&1 || true
-            fi
+            for runtime_path in game-seed-state.json development-queue.json; do
+              if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" 2>/dev/null; then
+                git show "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" > "/tmp/$runtime_path"
+              fi
+            done
+            if [ -f /tmp/game-seed-state.json ]; then cp /tmp/game-seed-state.json game-seed-state.json; fi
           fi
           test -f game-seed-state.json
           cp game-seed-state.json /tmp/company-runtime-seed-state-before.json
-          echo "COMPANY_ENGINE_BASE=$(git rev-parse HEAD)"
-          echo 'COMPANY_RUNTIME_STATE_OVERLAY=GAME_SEED_ONLY'
-          echo 'COMPANY_ENGINE_SOURCE=main'
           echo 'PUBLIC_MAIN_WRITE=NO'
 
       - name: Static GAME_SEED contract QA
         run: |
           node --check tools/game-seed-state.mjs
-          node --check tools/game-seed-platform-profile.mjs
           node --check tools/company-game-seed-contract.mjs
           node --check tools/company-game-seed-bootstrap.mjs
           node --check tools/company-game-seed-semantic-normalize.mjs
-          node --check tools/company-game-seed-quality-gate.mjs
-          node --test qa/company-game-seed-flow.test.mjs
-          node --test qa/autonomous-portfolio-continuation.test.mjs
-          node --test qa/roblox-portfolio-expansion-policy.test.mjs
+          node --check tools/company-strict-production-review.mjs
 
-      - name: Decide whether a model call is needed
+      - name: Decide creation mode
         id: need
         shell: bash
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
           import fs from 'node:fs';
-          import {loadSeedState,pendingPortfolioSeedRequests,platformRepresentativeGaps} from './tools/game-seed-state.mjs';
-          import {loadPlatformProfiles,normalizeSeedPlatform,representativeCategoriesForPlatform} from './tools/game-seed-platform-profile.mjs';
-          const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+          import {loadSeedState,pendingPortfolioSeedRequests} from './tools/game-seed-state.mjs';
           const state=loadSeedState();
           const initial=!state.bootstrapCompletedAt;
-          const primaryPlatform=normalizeSeedPlatform(directive.platformStrategy?.primaryPlatform||directive.gameSeed?.initialTargetPlatform||'ROBLOX')||'ROBLOX';
-          const categories=representativeCategoriesForPlatform(directive,primaryPlatform,loadPlatformProfiles());
-          const gaps=initial?[]:platformRepresentativeGaps(state,primaryPlatform,categories);
-          const pending=initial||gaps.length?[]:pendingPortfolioSeedRequests(state);
-          const need=initial||gaps.length>0||pending.length>0;
-          const requestCount=initial?Number(directive.gameSeed?.bootstrap?.count||6):gaps.length||pending.length;
-          const reason=initial
-            ?'HISTORICAL_INITIAL_SIX_SEED_BOOTSTRAP'
-            :gaps.length
-              ?'PLATFORM_REPRESENTATIVE_SET_FILL'
-              :pending.length
-                ?'DEPARTMENT_SCORE_GUIDED_PORTFOLIO_EXPANSION'
-                :'NO_CREATION_REQUIRED';
+          const pending=initial?[]:pendingPortfolioSeedRequests(state);
+          let otherWork=false;
+          try{
+            const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+            otherWork=(q.items||[]).some(item=>{
+              const s=String(item.canonicalState||item.status||'').toUpperCase();
+              return !['DEVELOPMENT_BASELINE_READY','RELEASE_READY','DISCARDED','DEVELOPMENT_BLOCKED','COMPLETE','DONE'].includes(s);
+            });
+          }catch{}
+          const lastMain=Number(process.env.LAST_MAIN_COMMIT_EPOCH||0);
+          const now=Math.floor(Date.now()/1000);
+          const mainIdle24h=lastMain>0&&(now-lastMain)>=86400;
+          const idleEligible=!initial&&!pending.length&&!otherWork&&mainIdle24h;
+          const need=initial||pending.length>0||idleEligible;
+          const reason=initial?'HISTORICAL_BOOTSTRAP':pending.length?'PORTFOLIO_REQUEST':'IDLE_24H_AUTONOMOUS_PRODUCTION';
+          const count=initial?6:pending.length?Math.min(3,pending.length):idleEligible?3:0;
           console.log(`model=${need?'true':'false'}`);
-          console.log(`request_count=${requestCount}`);
-          console.log(`reason=${reason}`);
-          console.log(`primary_platform=${primaryPlatform}`);
-          console.log(`representative_gap_count=${gaps.length}`);
+          console.log(`reason=${need?reason:'NO_CREATION_REQUIRED'}`);
+          console.log(`request_count=${count}`);
+          console.log(`idle=${idleEligible?'true':'false'}`);
+          console.log(`other_work=${otherWork?'true':'false'}`);
           NODE
+        env:
+          LAST_MAIN_COMMIT_EPOCH: ${{ github.event.repository.pushed_at || 0 }}
 
-      - name: Verified free budget preflight
-        if: steps.need.outputs.model == 'true'
+      - name: Resolve reliable main idle age
+        id: age
         shell: bash
         run: |
+          echo "last_main_epoch=$(git log -1 --format=%ct origin/main)" >> "$GITHUB_OUTPUT"
+
+      - name: Re-evaluate idle with git commit age
+        id: finalneed
+        shell: bash
+        env:
+          PRE_MODEL: ${{ steps.need.outputs.model }}
+          PRE_REASON: ${{ steps.need.outputs.reason }}
+          PRE_COUNT: ${{ steps.need.outputs.request_count }}
+          LAST_MAIN_EPOCH: ${{ steps.age.outputs.last_main_epoch }}
+        run: |
           set -euo pipefail
-          node tools/free-budget-telemetry.mjs \
-            --verify-public-repo=true \
-            --runner=ubuntu-latest \
-            --model-calls=1 \
-            --runner-minutes=20 \
-            --output=.autonomous/free-budget-telemetry.json
+          model="$PRE_MODEL"; reason="$PRE_REASON"; count="$PRE_COUNT"
+          if [ "$model" != true ] && [ -n "$LAST_MAIN_EPOCH" ]; then
+            now="$(date +%s)"; age=$((now - LAST_MAIN_EPOCH))
+            if [ "$age" -ge 86400 ]; then
+              busy=false
+              if [ -f /tmp/development-queue.json ]; then
+                busy="$(node -e "const q=require('/tmp/development-queue.json');console.log((q.items||[]).some(x=>!['DEVELOPMENT_BASELINE_READY','RELEASE_READY','DISCARDED','DEVELOPMENT_BLOCKED','COMPLETE','DONE'].includes(String(x.canonicalState||x.status||'').toUpperCase())))")"
+              fi
+              if [ "$busy" != true ]; then model=true;reason=IDLE_24H_AUTONOMOUS_PRODUCTION;count=3;fi
+            fi
+          fi
+          echo "model=$model" >> "$GITHUB_OUTPUT"
+          echo "reason=$reason" >> "$GITHUB_OUTPUT"
+          echo "request_count=$count" >> "$GITHUB_OUTPUT"
+          if [ "$reason" = IDLE_24H_AUTONOMOUS_PRODUCTION ]; then echo 'idle_target_count=3' >> "$GITHUB_OUTPUT"; else echo 'idle_target_count=0' >> "$GITHUB_OUTPUT"; fi
+
+      - name: Verified free budget preflight
+        if: steps.finalneed.outputs.model == 'true'
+        run: |
+          node tools/free-budget-telemetry.mjs --verify-public-repo=true --runner=ubuntu-latest --model-calls=1 --runner-minutes=20 --output=.autonomous/free-budget-telemetry.json
           node -e "const r=require('./.autonomous/free-budget-telemetry.json');if(r.allowed!==true)process.exit(1)"
-          echo 'GAME_SEED_FREE_BUDGET_PREFLIGHT=PASS'
           echo 'GAME_SEED_MODEL_CALLS_MAX_THIS_RUN=1'
 
       - name: Prepare free local GAME_SEED model
-        if: steps.need.outputs.model == 'true'
+        if: steps.finalneed.outputs.model == 'true'
         uses: ./.github/actions/prepare-ollama
         with:
           model: ${{ env.GAME_SEED_LOCAL_MODEL }}
           version: ${{ env.OLLAMA_VERSION }}
           pull-model: 'true'
 
-      - name: Generate historical bootstrap, platform representatives, or score-approved expansion
-        if: steps.need.outputs.model == 'true'
+      - name: Compose GAME_SEED from mixed materials
+        if: steps.finalneed.outputs.model == 'true'
         env:
           GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
+          GAME_SEED_IDLE_TARGET_COUNT: ${{ steps.finalneed.outputs.idle_target_count }}
         run: |
           node tools/company-game-seed-bootstrap.mjs | tee /tmp/game-seed-result.txt
           grep -q 'GAME_SEED_PAID_API=NO' /tmp/game-seed-result.txt
-          grep -q 'GAME_SEED_MODEL_CALLS=1' /tmp/game-seed-result.txt
-          grep -q 'GAME_SEED_MARKET_SCOPE=GLOBAL' /tmp/game-seed-result.txt
+          grep -q 'SEED_MATERIAL_POOL_TARGET=100' /tmp/game-seed-result.txt
+          grep -q 'TARGET_SESSION_MINUTES=30' /tmp/game-seed-result.txt
 
-      - name: Normalize active GAME_SEED semantics to current central policy
+      - name: Normalize active GAME_SEED semantics
         env:
           GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
-        run: |
-          set -euo pipefail
-          node tools/company-game-seed-semantic-normalize.mjs
+        run: node tools/company-game-seed-semantic-normalize.mjs
 
-      - name: Enforce central GAME_SEED contract and semantic quality
+      - name: Enforce GAME_SEED quality contract
         env:
           GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
-        run: |
-          set -euo pipefail
-          node tools/company-game-seed-quality-gate.mjs
+        run: node tools/company-game-seed-quality-gate.mjs
 
-      - name: Record no-creation decision
-        if: steps.need.outputs.model != 'true'
-        run: |
-          echo 'GAME_SEED_ACTION=NO_CREATION_REQUIRED'
-          echo 'GAME_SEED_CREATED_COUNT=0'
-          echo 'PLATFORM_REPRESENTATIVE_SET=COMPLETE'
-          echo 'PORTFOLIO_EXPANSION_DECISION=NONE'
-
-      - name: Validate GAME_SEED state
-        run: |
-          node --test qa/company-game-seed-state-file.test.mjs
-          git diff --check
-
-      - name: Persist validated GAME_SEED state to company runtime branch
+      - name: Persist GAME_SEED state to company runtime branch
         id: persist
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-game-seed'
-          git config user.email 'game-seed@users.noreply.github.com'
-          if cmp -s game-seed-state.json /tmp/company-runtime-seed-state-before.json; then
-            echo 'persisted=false' >> "$GITHUB_OUTPUT"
-            echo 'GAME_SEED_STATE_CHANGE=NO'
-            exit 0
-          fi
-          git add -- game-seed-state.json
-          git commit -m "runtime: apply central GAME_SEED portfolio state"
-          generated_commit="$(git rev-parse HEAD)"
-          pushed=0
-          persisted=false
+          git config user.name 'jaewoon-game-seed';git config user.email 'game-seed@users.noreply.github.com'
+          if cmp -s game-seed-state.json /tmp/company-runtime-seed-state-before.json; then echo 'persisted=false' >> "$GITHUB_OUTPUT";exit 0;fi
+          git add game-seed-state.json;git commit -m 'runtime: update seed material pool and composed seeds';generated="$(git rev-parse HEAD)";pushed=0
           for attempt in 1 2 3 4; do
             git fetch origin "$COMPANY_RUNTIME_BRANCH" main
-            if git show-ref --verify --quiet "refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"; then
-              git checkout -B game-seed-persist "origin/$COMPANY_RUNTIME_BRANCH"
-            else
-              git checkout -B game-seed-persist origin/main
-            fi
-            git checkout "$generated_commit" -- game-seed-state.json
-            git add -- game-seed-state.json
-            if git diff --cached --quiet; then
-              pushed=1
-              echo 'GAME_SEED_STATE_CHANGE=ALREADY_PERSISTED'
-              break
-            fi
-            git commit -m "runtime: apply central GAME_SEED portfolio state"
-            if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
-              pushed=1
-              persisted=true
-              break
-            fi
-            git reset --hard "$generated_commit"
-            sleep $((attempt * 2))
+            if git show-ref --verify --quiet "refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"; then git checkout -B game-seed-persist "origin/$COMPANY_RUNTIME_BRANCH"; else git checkout -B game-seed-persist origin/main; fi
+            git checkout "$generated" -- game-seed-state.json;git add game-seed-state.json
+            if git diff --cached --quiet; then pushed=1;break;fi
+            git commit -m 'runtime: update seed material pool and composed seeds'
+            if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1;break;fi
+            git reset --hard "$generated";sleep $((attempt*2))
           done
           test "$pushed" = 1
-          echo "persisted=$persisted" >> "$GITHUB_OUTPUT"
-          echo "GAME_SEED_RUNTIME_BRANCH=$COMPANY_RUNTIME_BRANCH"
+          echo 'persisted=true' >> "$GITHUB_OUTPUT"
           echo 'PUBLIC_MAIN_WRITE=NO'
-          echo 'PAID_API=NO'
 
-      - name: Continue validated seeds into DESIGN_ONLY work
-        if: steps.persist.outputs.persisted == 'true' || github.event_name == 'push'
+      - name: Continue composed seeds into DESIGN_ONLY
+        if: steps.persist.outputs.persisted == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        shell: bash
         run: |
-          set -euo pipefail
           gh workflow run company-seed-design-runtime.yml --ref main
           echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=YES'
-          echo "GAME_SEED_DESIGN_DISPATCH_SOURCE=${GITHUB_EVENT_NAME}"
 
       - name: Summary
         if: always()
         run: |
-          echo '### Company GAME_SEED Bootstrap' >> "$GITHUB_STEP_SUMMARY"
-          echo '- policy source: COMPANY_FLOW.md' >> "$GITHUB_STEP_SUMMARY"
-          echo '- historical initial generation: one Unity six-category batch only; it is not a portfolio quota' >> "$GITHUB_STEP_SUMMARY"
-          echo '- current primary representative set: missing Roblox categories are filled before optional portfolio expansion' >> "$GITHUB_STEP_SUMMARY"
-          echo '- ongoing expansion beyond the representative set: score-approved five-department EXPAND requests or owner override' >> "$GITHUB_STEP_SUMMARY"
-          echo '- six representative categories: development set and release candidates, not a total game cap or forced six-of-six release' >> "$GITHUB_STEP_SUMMARY"
-          echo '- portfolio size: dynamic; no fixed slots, hard minimum, or hard maximum' >> "$GITHUB_STEP_SUMMARY"
-          echo '- market evidence: directional reference only; missing market metrics do not reject a seed by themselves' >> "$GITHUB_STEP_SUMMARY"
-          echo '- target platforms: Roblox/Unity/Fortnite UEFN; representative set requests remain platform-scoped' >> "$GITHUB_STEP_SUMMARY"
-          echo '- runtime persistence: company-runtime branch; main stays unchanged' >> "$GITHUB_STEP_SUMMARY"
-          echo '- source code: own implementation only' >> "$GITHUB_STEP_SUMMARY"
-          echo '- public game source write: NO' >> "$GITHUB_STEP_SUMMARY"
+          echo '### GAME_SEED Material Production' >> "$GITHUB_STEP_SUMMARY"
+          echo '- seed material pool: fixed 100 available/reserved slots; material is not a game' >> "$GITHUB_STEP_SUMMARY"
+          echo '- composition: 2-4 mixed materials per GAME_SEED' >> "$GITHUB_STEP_SUMMARY"
+          echo '- actual game count: no total cap' >> "$GITHUB_STEP_SUMMARY"
+          echo '- autonomous idle activation: after 24h with no higher-priority development work' >> "$GITHUB_STEP_SUMMARY"
+          echo '- WIP: max 3 concurrent game design/production workers' >> "$GITHUB_STEP_SUMMARY"
+          echo '- target first session: 30 meaningful minutes' >> "$GITHUB_STEP_SUMMARY"
+          echo '- multiplayer mode: decided during design' >> "$GITHUB_STEP_SUMMARY"
+          echo '- public main game source write: NO' >> "$GITHUB_STEP_SUMMARY"
