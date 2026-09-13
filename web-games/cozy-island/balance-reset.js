@@ -85,7 +85,11 @@ function balanceRaid(game) {
   if (raidCount === lastBalancedRaid) return;
   lastBalancedRaid = raidCount;
 
-  const phase = ((raidCount - 1) % 4) + 1;
+  const phase = ((raidCount - 1) % 5) + 1;
+  game.fourthRaid = phase === 4;
+  game.fifthRaid = phase === 5;
+  game.raidPhase = phase;
+
   const next = [];
   if (phase === 1) {
     for (let i = 0; i < 3; i++) next.push(makeEnemy('soldier', i));
@@ -98,14 +102,35 @@ function balanceRaid(game) {
       boss: true, hp: 600, maxHp: 600, attack: 22, speed: 70,
       x: 1510, y: 610
     }));
-    showToast('👹 3번째 습격 · 보스 체력/공격력 완화');
-  } else {
-    next.push(makeEnemy('cavalry', 0, {
+    showToast('👹 3번째 습격 · 보스 체력 600 · 공격력 22');
+  } else if (phase === 4) {
+    for (let i = 0; i < 2; i++) next.push(makeEnemy('cavalry', i, {
       hp: 600, maxHp: 600, attack: 30, range: 55, speed: 105,
-      x: 1510, y: 610
+      x: 1490 + i * 55, y: 500 + i * 150
     }));
-    game.fourthRaid = true;
-    showToast('🐎 4번째 습격 · 기마병 1마리');
+    for (let i = 0; i < 2; i++) next.push(makeEnemy('archer', i + 2, {
+      hp: 55, maxHp: 55, attack: 18, range: 220, speed: 64,
+      x: 1590 + i * 50, y: 540 + i * 130
+    }));
+    next.push(makeEnemy('soldier', 4, { x: 1535, y: 760 }));
+    showToast('🐎 4번째 습격 · 기마병 2 + 궁수 2 + 병사 1');
+  } else {
+    for (let i = 0; i < 3; i++) next.push(makeEnemy('archer', i, {
+      hp: 55, maxHp: 55, attack: 18, range: 220, speed: 64,
+      x: 1490 + i * 48, y: 490 + i * 105
+    }));
+    for (let i = 0; i < 2; i++) next.push(makeEnemy('soldier', i + 3, {
+      x: 1520 + i * 55, y: 770 + i * 75
+    }));
+    next.push(makeEnemy('cannon', 5, {
+      hp: 1800, maxHp: 1800,
+      // 기본 전투 엔진의 빠른 공격은 무력화하고 cannon-system.js에서 2.5초 포격을 처리한다.
+      attack: 0, range: 280, speed: 48,
+      cannonDamage: 75, cannonInterval: 2.5, stunMs: 3000,
+      cannonTimer: 1.4,
+      x: 1640, y: 625
+    }));
+    showToast('💣 5번째 습격 · 궁수 3 + 병사 2 + 대포병 1');
   }
 
   game.enemies.splice(0, game.enemies.length, ...next);
@@ -154,8 +179,6 @@ const observer = new MutationObserver(() => {
   addResetButton();
   if (currentGame) fixSoldierRecruitButton(currentGame);
 });
-// 병영 버튼을 직접 수정하는 observer가 attributes/characterData까지 다시 감시하면
-// 자기 변경을 다시 감지하는 루프가 생길 수 있다. 패널 DOM 교체만 감시한다.
 observer.observe(document.documentElement, { subtree: true, childList: true });
 
 const rendererProto = IslandRendererV3.prototype;
