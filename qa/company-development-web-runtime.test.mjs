@@ -76,6 +76,29 @@ test('Pocket Foundry compiler emits a real factory loop, footprint and non-click
   assert.match(compiled.html,/state\.zone/);
 });
 
+test('Vector Clash compiler emits a real arena combat loop with ranges, dodge, skill cooldown and rounds',()=>{
+  const baseline={gameSeedId:'SEED-ROBLOX-BATTLEGROUND_FIGHTING_SHOOTER-001',content:{identity:'Vector Clash',coreFun:'combat, opponent, skill, cooldown',coreLoop:['read opponent movement and create an attack opening','damage opponents and reposition around cooldowns','finish rounds and re-enter with a changed tactical choice'],mobileUx:'touch controls'}};
+  const inventory=deriveApprovedScopeInventory(baseline);
+  const compiled=buildContractSafePlayable({gameId:'seed-roblox-battleground-fight-welcome-to-bloxburg',gameName:'Vector Clash',baseline});
+  const contract=validateBootstrapHtml(compiled.html,{scopeInventory:inventory});
+  assert.equal(compiled.generationMode,'GENRE_SPECIFIC_REAL_IMPLEMENTATION');
+  assert.equal(contract.pass,true,contract.blockers.join(','));
+  assert.ok(contract.bytes>=12000);
+  assert.ok(contract.scriptBytes>=6000);
+  assert.ok(contract.mechanicCount>=5);
+  assert.match(compiled.html,/data-mechanic-id="basic-attack"/);
+  assert.match(compiled.html,/data-mechanic-id="timed-dodge"/);
+  assert.match(compiled.html,/data-mechanic-id="vector-burst"/);
+  assert.match(compiled.html,/data-mechanic-id="distance-control"/);
+  assert.match(compiled.html,/state\.distance/);
+  assert.match(compiled.html,/state\.skillCd/);
+  assert.match(compiled.html,/state\.wins/);
+  assert.match(compiled.html,/enemyPlan\(\)/);
+  assert.match(compiled.html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
+  assert.doesNotMatch(compiled.html,/<button\b[^>]*data-session-stage=/i);
+  assert.doesNotMatch(compiled.html,/scope-control-/i);
+});
+
 test('existing shared real game is preserved, inlined and rebound to approved scope before compiler fallback',async()=>{
   const baseline={gameSeedId:'SEED-SINGLE_DEFENSE_STRATEGY-001',content:{identity:'Celestial Bastion',coreFun:'defend the celestial core with tower placement and wave adaptation',coreLoop:['place towers against the threatened route','earn resources and upgrade the defense','adapt to enemy waves and clear the final threat'],mobileUx:'touch-first tower defense controls'}};
   const inventory=deriveApprovedScopeInventory(baseline);
@@ -101,6 +124,6 @@ test('existing shared real game is preserved, inlined and rebound to approved sc
 });
 
 test('unfinished genres fail closed instead of receiving the old generic game shell',()=>{
-  const baseline={gameSeedId:'SEED-ROBLOX-BATTLEGROUND_FIGHTING_SHOOTER-001',content:{identity:'Vector Clash',coreFun:'combat opponent skill cooldown',coreLoop:['move','fight','progress'],mobileUx:'touch controls'}};
-  assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-battleground-fight-welcome-to-bloxburg',gameName:'Vector Clash',baseline}),/GENRE_REAL_IMPLEMENTATION_NOT_READY:BATTLEGROUND_FIGHTING_SHOOTER/);
+  const baseline={gameSeedId:'SEED-ROBLOX-SURVIVAL_HORROR_ESCAPE-001',content:{identity:'Last Lantern',coreFun:'survive and escape',coreLoop:['explore','avoid threat','escape'],mobileUx:'touch controls'}};
+  assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-survival-horror-es-doors',gameName:'Last Lantern',baseline}),/GENRE_REAL_IMPLEMENTATION_NOT_READY:SURVIVAL_HORROR_ESCAPE/);
 });
