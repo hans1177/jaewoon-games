@@ -72,6 +72,7 @@ export function webGameplayMetrics(evidence={}){
   const scope=evidence?.scopeCoverage&&typeof evidence.scopeCoverage==='object'?evidence.scopeCoverage:{};
   const runtime=evidence?.runtimeFeatureEvidence&&typeof evidence.runtimeFeatureEvidence==='object'?evidence.runtimeFeatureEvidence:{};
   const depth=evidence?.contentDepthValidation&&typeof evidence.contentDepthValidation==='object'?evidence.contentDepthValidation:{};
+  const spatial=runtime?.spatialEvidence&&typeof runtime.spatialEvidence==='object'?runtime.spatialEvidence:{};
   const stateTransitions=Array.isArray(evidence?.scopeInteractionResults)?evidence.scopeInteractionResults.filter(row=>row?.stateChanged===true).length:0;
   const mechanicBindings=Array.isArray(scope?.mechanicBindings)?new Set(scope.mechanicBindings.filter(Boolean)).size:0;
   const terminal=upper(evidence?.terminalOutcome?.result);
@@ -99,6 +100,15 @@ export function webGameplayMetrics(evidence={}){
     placementResultCount:number(runtime.placementResultCount,metrics.placementResultCount),
     strategyChoiceCount:runtimeStrategyChoiceCount>0?runtimeStrategyChoiceCount:number(metrics.strategyChoiceCount),
     strategyCombatOutcomeCount:runtimeStrategyOutcomeCount>0?runtimeStrategyOutcomeCount:number(metrics.strategyCombatOutcomeCount,runtime.strategyCombatOutcomeCount),
+    interactionTargetCount:number(runtime.interactionTargetCount,metrics.interactionTargetCount,countUnique(runtime.interactionTargets)),
+    entityInteractionResultCount:number(runtime.entityInteractionResultCount,metrics.entityInteractionResultCount),
+    spatialOutcomeCount:number(runtime.spatialOutcomeCount,metrics.spatialOutcomeCount),
+    detected3D:spatial.detected3D===true||metrics.detected3D===true||footprint.detected3D===true,
+    xyzMoved:spatial.xyzMoved===true,
+    cameraObserved:spatial.cameraObserved===true,
+    collisionObserved:spatial.collisionObserved===true,
+    raycastOrRouteObserved:spatial.raycastOrRouteObserved===true,
+    spatialOutcomeObserved:spatial.spatialOutcomeObserved===true,
     newContentDimensionCount:number(runtime.newContentDimensionCount,metrics.newContentDimensionCount),
     repeatedActionExcludedCount:number(metrics.repeatedActionExcludedCount),
     meaningfulGameplayMilliseconds:number(depth.meaningfulGameplayMilliseconds),
@@ -122,18 +132,18 @@ function completePlayableCyclePass(evidence={}){
 }
 
 function categorySignals(profile,metrics){
-  const transitions=Number(metrics.meaningfulStateTransitionCount||0),states=Number(metrics.uniqueGameplayStateCount||0),mechanics=Number(metrics.uniqueInteractedMechanicCount||metrics.uniqueMechanicCount||0),deps=Number(metrics.systemDependencyCount||0),entities=Number(metrics.enemyOrWorldEntityCount||0),retry=Number(metrics.retryPathCount||0)>0;
+  const transitions=Number(metrics.meaningfulStateTransitionCount||0),states=Number(metrics.uniqueGameplayStateCount||0),mechanics=Number(metrics.uniqueInteractedMechanicCount||metrics.uniqueMechanicCount||0),deps=Number(metrics.systemDependencyCount||0),entities=Number(metrics.enemyOrWorldEntityCount||0),retry=Number(metrics.retryPathCount||0)>0,spatial=Number(metrics.spatialOutcomeCount||0)>0||Number(metrics.newAreaCount||0)>0,interaction=Number(metrics.entityInteractionResultCount||0)>0;
   const signals={
     SURVIVAL:{
-      WORLD_AND_MOVEMENT:states>=3||metrics.areaCount>=2,
+      WORLD_AND_MOVEMENT:spatial,
       RESOURCE_AND_GATHERING:metrics.stateVariableCount>=3&&transitions>=4,
       CRAFTING:mechanics>=3&&deps>=3,
       ENEMY_OR_THREAT:entities>0&&metrics.failPathCount>=1,
       SURVIVAL_PRESSURE:metrics.winPathCount>=1&&metrics.failPathCount>=1,
-      EXPLORATION_VARIETY:metrics.areaCount>=2||metrics.newAreaCount>=1,
+      EXPLORATION_VARIETY:metrics.newAreaCount>=1&&spatial,
     },
     TOWER_DEFENSE:{
-      PLACEMENT_AND_ROUTE:metrics.placementResultCount>=1,
+      PLACEMENT_AND_ROUTE:metrics.placementResultCount>=1&&(metrics.spatialOutcomeCount>=1||metrics.placementResultCount>=2),
       ENEMY_WAVES:metrics.enemyTypeCount>=1&&transitions>=4,
       TOWER_VARIETY:metrics.towerTypeCount>=2&&metrics.towerEffectProfileCount>=2,
       UPGRADES:mechanics>=3&&transitions>=5,
@@ -142,8 +152,8 @@ function categorySignals(profile,metrics){
     },
     RPG:{
       COMBAT:entities>0&&transitions>=4,
-      QUEST_AND_NPC:metrics.objectiveCount>=1,
-      EXPLORATION:metrics.areaCount>=2||metrics.newAreaCount>=1,
+      QUEST_AND_NPC:metrics.objectiveCount>=1&&(metrics.interactionTargetCount<1||interaction),
+      EXPLORATION:spatial,
       EQUIPMENT_AND_GROWTH:mechanics>=3&&transitions>=6,
       ENEMY_AND_BOSS:metrics.enemyTypeCount>=2||entities>=2,
       STORY_AND_WORLD_STATE:metrics.objectiveCount>=2||metrics.newObjectiveCount>=1,
@@ -153,7 +163,7 @@ function categorySignals(profile,metrics){
       UPGRADES:mechanics>=3&&transitions>=5,
       AUTOMATION:mechanics>=4&&states>=4,
       ECONOMY:metrics.stateVariableCount>=4&&deps>=3,
-      AREA_UNLOCK:metrics.areaCount>=2||metrics.newAreaCount>=1,
+      AREA_UNLOCK:metrics.newAreaCount>=1&&spatial,
       MANUAL_AUTOMATION_CHOICE:metrics.strategyChoiceCount>=2||mechanics>=5,
     },
     PUZZLE:{
@@ -165,15 +175,15 @@ function categorySignals(profile,metrics){
       FEEDBACK:metrics.uniqueFunctionalUiCount>=3&&transitions>=4,
     },
     OBBY_PLATFORMER:{
-      MOVEMENT_FEEL:transitions>=6&&states>=4,
-      LEVEL_DESIGN:metrics.areaCount>=2||metrics.newAreaCount>=1,
+      MOVEMENT_FEEL:transitions>=6&&states>=4&&spatial,
+      LEVEL_DESIGN:metrics.newAreaCount>=1||metrics.spatialOutcomeCount>=2,
       OBSTACLE_VARIETY:metrics.contentVariationCount>=2,
       FAILURE_AND_RETRY:retry&&metrics.failPathCount>=1,
       DIFFICULTY_CURVE:states>=5,
       CHECKPOINTS:metrics.objectiveCount>=2||states>=6,
     },
     BATTLE_SHOOTER:{
-      MOVEMENT:states>=3,
+      MOVEMENT:spatial,
       ATTACK_AND_HIT:entities>0&&transitions>=5,
       ENEMY_AI:metrics.enemyTypeCount>=1&&entities>0,
       SKILL_AND_COOLDOWN:mechanics>=3,
@@ -181,17 +191,17 @@ function categorySignals(profile,metrics){
       COMBAT_FEEDBACK:metrics.uniqueFunctionalUiCount>=3&&transitions>=4,
     },
     STORY_ADVENTURE:{
-      EXPLORATION:metrics.areaCount>=2||metrics.newAreaCount>=1,
+      EXPLORATION:spatial,
       QUEST:metrics.objectiveCount>=1,
-      NPC_AND_DIALOGUE:metrics.objectiveCount>=2||mechanics>=3,
+      NPC_AND_DIALOGUE:metrics.interactionTargetCount>=1&&interaction,
       EVENT_AND_STATE_CHANGE:states>=4&&transitions>=5,
       COMBAT_OR_PUZZLE:entities>0||states>=5,
       BRANCH_OR_OBJECTIVE:metrics.objectiveCount>=2||metrics.newObjectiveCount>=1,
     },
     LIFE_ROLEPLAY:{
-      WORLD_AND_SPACE:metrics.areaCount>=2||metrics.newAreaCount>=1,
-      INTERACTION:mechanics>=3&&transitions>=5,
-      NPC:entities>=2,
+      WORLD_AND_SPACE:spatial,
+      INTERACTION:interaction,
+      NPC:entities>=2&&metrics.interactionTargetCount>=1,
       LIFE_ACTIVITIES:mechanics>=4,
       CHARACTER_STATE:metrics.stateVariableCount>=4,
       FREEDOM_AND_CHOICE:mechanics>=5&&states>=4,
@@ -236,6 +246,11 @@ function harnessIndicators(sourceText,evidence,metrics){
   return Object.freeze({directStageButton,syntheticTimeProgress,scopeProxy,testPanel,repeatedProxy,excessiveTestUi,evidenceFakeProgress,proxyIncrementCount});
 }
 
+function spatial3DPass(metrics){
+  return metrics.detected3D!==true||(metrics.xyzMoved===true&&metrics.cameraObserved===true&&metrics.collisionObserved===true&&metrics.raycastOrRouteObserved===true&&metrics.spatialOutcomeObserved===true);
+}
+function entityInteractionPass(metrics){return Number(metrics.interactionTargetCount||0)<1||Number(metrics.entityInteractionResultCount||0)>=1;}
+
 export function scoreWebStrictImplementation({category='',sourceText='',evidence={}}={}){
   const metrics=webGameplayMetrics(evidence);
   const categoryResult=categoryMatch(category,metrics,evidence);
@@ -249,7 +264,8 @@ export function scoreWebStrictImplementation({category='',sourceText='',evidence
   const winAndFailPass=metrics.winPathCount>=1&&metrics.failPathCount>=1;
   const noTestProxy=!harness.directStageButton&&!harness.scopeProxy&&!harness.testPanel&&!harness.repeatedProxy&&!harness.excessiveTestUi;
   const noFakeProgress=!harness.syntheticTimeProgress&&!harness.evidenceFakeProgress;
-  const realPlayablePass=cyclePass&&noTestProxy&&noFakeProgress&&metrics.uniqueMechanicCount>=3&&metrics.uniqueFunctionalUiCount>=2&&metrics.gameplayActionCount>=5&&metrics.duplicateActionRatio<0.9;
+  const interactionPass=entityInteractionPass(metrics),threeDPass=spatial3DPass(metrics);
+  const realPlayablePass=cyclePass&&noTestProxy&&noFakeProgress&&interactionPass&&threeDPass&&metrics.uniqueMechanicCount>=3&&metrics.uniqueFunctionalUiCount>=2&&metrics.gameplayActionCount>=5&&metrics.duplicateActionRatio<0.9;
   const gates={
     REAL_PLAYABLE_GAME:realPlayablePass,
     COMPLETE_PLAYABLE_GAMEPLAY_CYCLE:cyclePass,
@@ -257,6 +273,8 @@ export function scoreWebStrictImplementation({category='',sourceText='',evidence
     REAL_GAMEPLAY_SURFACE:gameplaySurfacePass,
     MEANINGFUL_INTERCONNECTED_GAME_STATE:realStatePass,
     REAL_GOAL_OR_WIN_AND_REAL_FAILURE_PATH:winAndFailPass,
+    REAL_ENTITY_INTERACTION_WHEN_PRESENT:interactionPass,
+    REAL_3D_SPATIAL_GAMEPLAY_WHEN_PRESENT:threeDPass,
     NO_TEST_PROXY:noTestProxy,
     NO_FAKE_PROGRESS:noFakeProgress,
     MOBILE_PLAYABLE:mobilePass,
@@ -328,6 +346,8 @@ export function realGameSubstancePass(evidence={}){
     && Number(gate.directSessionControls||0)===0
     && Number(gate.proxyMarkers||0)===0
     && completePlayableCyclePass(evidence)
+    && entityInteractionPass(metrics)
+    && spatial3DPass(metrics)
     && metrics.uniqueFunctionalUiCount>=2
     && metrics.gameplayActionCount>=5
     && metrics.meaningfulStateTransitionCount>=3
@@ -358,6 +378,8 @@ export function finalContentDepthPass(evidence={}){
     && number(depth.targetMinutes,30)>=30
     && validatedMinutes>=30
     && meaningfulMs>=30*60*1000
+    && entityInteractionPass(metrics)
+    && spatial3DPass(metrics)
     && metrics.uniqueMechanicCount>=5
     && metrics.uniqueFunctionalUiCount>=4
     && metrics.meaningfulStateTransitionCount>=10
