@@ -41,6 +41,8 @@ on:
       - 'qa/company-web-evidence-freshness-contract.test.mjs'
       - 'qa/company-web-independent-promotion-contract.test.mjs'
       - 'qa/company-web-validation-evidence-contract.test.mjs'
+      - 'qa/company-web-real-game-regression.test.mjs'
+      - 'qa/company-web-production-six-game-regression.test.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
@@ -90,6 +92,8 @@ on:
       - 'qa/company-web-evidence-freshness-contract.test.mjs'
       - 'qa/company-web-independent-promotion-contract.test.mjs'
       - 'qa/company-web-validation-evidence-contract.test.mjs'
+      - 'qa/company-web-real-game-regression.test.mjs'
+      - 'qa/company-web-production-six-game-regression.test.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
@@ -148,4 +152,6 @@ jobs:
             qa/company-top30-platform-promotion-learning.test.mjs \
             qa/company-web-evidence-freshness-contract.test.mjs \
             qa/company-web-independent-promotion-contract.test.mjs \
-            qa/company-web-validation-evidence-contract.test.mjs
+            qa/company-web-validation-evidence-contract.test.mjs \
+            qa/company-web-real-game-regression.test.mjs \
+            qa/company-web-production-six-game-regression.test.mjs
