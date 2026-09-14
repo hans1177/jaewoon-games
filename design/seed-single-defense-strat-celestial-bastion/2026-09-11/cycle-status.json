@@ -38,7 +38,16 @@
     "unity": null
   },
   "finalDesign": "design/seed-single-defense-strat-celestial-bastion/2026-09-11/design-after-web.json",
-  "artbook": null,
+  "artbook": {
+    "singleEditor": true,
+    "editorModel": "qwen3:0.6b",
+    "sourceDesign": "design/seed-single-defense-strat-celestial-bastion/2026-09-11/design-revised.json",
+    "createdAfterWebStrictReview": true,
+    "webStrictScore": 100,
+    "webValidationEvidencePath": "design/seed-single-defense-strat-celestial-bastion/2026-09-11/web-gameplay-validation.json",
+    "vibe2Used": false,
+    "path": "design/seed-single-defense-strat-celestial-bastion/2026-09-11/core-artbook.json"
+  },
   "blockers": [
     "unity-project-required-for-technical-validation",
     "unity-technical-validation-required"
@@ -51,5 +60,17 @@
     "webSmokeDoesNotEqualGameplayValidation": true,
     "artbookOnlyAfterBaselineReady": true
   },
-  "updatedAt": "2026-09-11T14:42:24.103Z"
+  "updatedAt": "2026-09-11T14:42:24.103Z",
+  "artbookPublication": {
+    "published": true,
+    "path": "artbook-submissions/seed-single-defense-strat-celestial-bastion/current.json",
+    "baselineGateState": "POST_WEB_SCHEMA13_DESIGN_BOUND",
+    "postWebStrictReview": true,
+    "webStrictScore": 100
+  },
+  "artbookUi": {
+    "status": "COMPLETE",
+    "label": "완료",
+    "path": "artbook-submissions/seed-single-defense-strat-celestial-bastion/status.json"
+  }
 }
