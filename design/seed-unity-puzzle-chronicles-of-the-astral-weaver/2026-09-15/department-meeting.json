@@ -1,0 +1,179 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen2.5:1.5b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "keep"
+      ],
+      "fix": [
+        "fix"
+      ],
+      "add": [
+        "add"
+      ],
+      "risks": [
+        "risks"
+      ],
+      "evidence": [
+        "evidence"
+      ],
+      "questions": [
+        "questions"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "Visual Direction"
+      ],
+      "fix": [
+        "game-seed"
+      ],
+      "add": [
+        "graphics"
+      ],
+      "risks": [
+        "game-seed"
+      ],
+      "evidence": [
+        "game-seed"
+      ],
+      "questions": [
+        "game-seed"
+      ]
+    },
+    "development": {
+      "keep": [
+        "game-seed"
+      ],
+      "fix": [
+        "game-seed"
+      ],
+      "add": [
+        "game-seed"
+      ],
+      "risks": [
+        "game-seed"
+      ],
+      "evidence": [
+        "game-seed"
+      ],
+      "questions": [
+        "game-seed"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "qa"
+      ],
+      "fix": [
+        "qa"
+      ],
+      "add": [
+        "qa"
+      ],
+      "risks": [
+        "qa"
+      ],
+      "evidence": [
+        "qa"
+      ],
+      "questions": [
+        "qa"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "Unity"
+      ],
+      "fix": [
+        "Unity"
+      ],
+      "add": [
+        "Unity"
+      ],
+      "risks": [
+        "Unity"
+      ],
+      "evidence": [
+        "Unity"
+      ],
+      "questions": [
+        "What is the recommended play duration?"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "Planning",
+      "status": "CONSENSUS",
+      "reason": "The structure is already in a clear format, so no changes were made.",
+      "departments": [
+        "planning",
+        "graphics",
+        "development",
+        "qa"
+      ]
+    },
+    {
+      "topic": "Graphics",
+      "status": "CONSENSUS",
+      "reason": "The current game-seed is a significant risk. We need to reassess its stability and ensure it aligns with the overall vision. Let's prioritize stabilizing the game-seed and address the risks associated with it.",
+      "departments": [
+        "graphics",
+        "development",
+        "qa"
+      ]
+    },
+    {
+      "topic": "Development",
+      "status": "CONSENSUS",
+      "reason": "own",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "QA",
+      "status": "CONSENSUS",
+      "reason": "qa 부서의 의견을 수용합니다.",
+      "departments": [
+        "qa"
+      ]
+    },
+    {
+      "topic": "Balance",
+      "status": "CONSENSUS",
+      "reason": "Unity",
+      "departments": [
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 5,
+    "conflict": 0,
+    "hold": 0
+  }
+}

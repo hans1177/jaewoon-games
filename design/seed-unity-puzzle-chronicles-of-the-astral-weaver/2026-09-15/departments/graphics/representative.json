@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "representativeModel": "gemma3:1b",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "Visual Direction"
+    ],
+    "fix": [
+      "game-seed"
+    ],
+    "add": [
+      "graphics"
+    ],
+    "risks": [
+      "game-seed"
+    ],
+    "evidence": [
+      "game-seed"
+    ],
+    "questions": [
+      "game-seed"
+    ]
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "keep"
+        ],
+        "fix": [
+          "fix"
+        ],
+        "add": [
+          "add"
+        ],
+        "risks": [
+          "risks"
+        ],
+        "evidence": [
+          "evidence"
+        ],
+        "questions": [
+          "questions"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Puzzle Mechanics"
+        ],
+        "fix": [
+          "Unique Puzzle Mechanics"
+        ],
+        "add": [
+          "Core Loop"
+        ],
+        "risks": [
+          "Gameplay balance"
+        ],
+        "evidence": [
+          "Game Analytics 2025 Mobile Gaming Benchmarks"
+        ],
+        "questions": [
+          "What is the main gameplay mechanic?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    }
+  ]
+}

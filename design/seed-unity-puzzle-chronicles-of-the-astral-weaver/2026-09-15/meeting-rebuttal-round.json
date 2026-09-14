@@ -1,0 +1,95 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "graphics",
+        "development",
+        "qa"
+      ],
+      "reason": "The structure is already in a clear format, so I have not made any changes."
+    },
+    "graphics": {
+      "accept": [
+        "graphics",
+        "game-seed",
+        "add"
+      ],
+      "challenge": [
+        "keep",
+        "game-seed",
+        "risks"
+      ],
+      "revision": [
+        "game-seed",
+        "evidence",
+        "questions"
+      ],
+      "reason": "The current game-seed is a significant risk. We need to reassess its stability and ensure it aligns with the overall vision.  Let's prioritize stabilizing the game-seed and address the risks associated with it."
+    },
+    "development": {
+      "accept": [
+        "own",
+        "others",
+        "graphics"
+      ],
+      "challenge": [
+        "own",
+        "others",
+        "graphics"
+      ],
+      "revision": [
+        "own",
+        "others",
+        "graphics"
+      ],
+      "reason": "own"
+    },
+    "qa": {
+      "accept": [
+        "qa"
+      ],
+      "challenge": [
+        "qa"
+      ],
+      "revision": [
+        "qa"
+      ],
+      "reason": "qa 부서의 의견을 수용합니다."
+    },
+    "balance": {
+      "accept": [
+        "Unity"
+      ],
+      "challenge": [
+        "Unity"
+      ],
+      "revision": [
+        "Unity"
+      ],
+      "reason": "Unity"
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+  "date": "2026-09-15",
+  "state": "REDESIGN",
+  "sameDesignerRevisionAttempted": true,
+  "repeatedFiveDepartmentReview": true,
+  "allFiveLeadModelsReviewed": true,
+  "discardVotes": 2,
+  "commonFatalCriteria": [],
+  "unanimousFatalDiscard": false,
+  "fatalReviews": {
+    "planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "Royal Match",
+        "Candy Crush Saga"
+      ],
+      "reason": "The game-seed is currently in a stable state and aligns with the overall vision. It has a solid foundation and is well-positioned in the market. No major issues or risks are identified that would require modification."
+    },
+    "graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT"
+      ],
+      "evidence": [
+        "VALID_FATAL_CRITERIA",
+        "MARKET_EVIDENCE_SUMMARY",
+        "QUALITATIVE",
+        "OPEN_QUESTIONS"
+      ],
+      "reason": "The game-seed exhibits several critical issues that outweigh any potential benefits. The 'FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION' criteria indicates a significant risk of further instability and rework. The identified risks – core loop duplication, dependency on IP, platform limitations, and design blockers – are substantial.  The 'evidence' section highlights the key concerns.  The suggested DISCARD is a prudent course of action to mitigate these risks and ensure the game's long-term viability."
+    },
+    "development": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "VALID_FATAL_CRITERIA"
+      ],
+      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. VALID_FATAL_CRITERIA=["
+    },
+    "qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "Royal Match",
+        "Candy Crush Saga",
+        "Block Blast!",
+        "Global puzzle/session signal"
+      ],
+      "reason": "The current game-seed is not aligned with the overall vision and stability. It needs to be redesigned to ensure it can be successfully implemented and meets the core design criteria."
+    },
+    "balance": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [],
+      "reason": "중앙정책의 fatalCriteria 중 수정 후에도 남은 치명 조건이 실제 설계 근거로 확인될 때만 가능하다."
+    }
+  },
+  "marketMetricAloneUsedForDiscard": false
+}
