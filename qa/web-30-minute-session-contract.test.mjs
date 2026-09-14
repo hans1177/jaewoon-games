@@ -152,3 +152,21 @@ test('development and QA agent prompts mirror the staged real-game policy',()=>{
   assert.doesNotMatch(development,/최종 Web 게임을 만들지 않는다/);
   assert.doesNotMatch(qa,/`web-games\/`는 읽기 전용/);
 });
+
+test('planning graphics and balance prompts do not reintroduce pre-Web artbook or testbed-only policy',()=>{
+  const planning=read('.github/agents/planning.agent.md');
+  const graphics=read('.github/agents/graphics.agent.md');
+  const balance=read('.github/agents/balance.agent.md');
+
+  for(const text of [planning,graphics,balance]){
+    assert.match(text,/COMPANY_FLOW\.md/);
+    assert.match(text,/ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE/);
+    assert.match(text,/FINAL_CONTENT_DEPTH_VALIDATION_ONLY/);
+    assert.doesNotMatch(text,/현재 제작 정책은[^\n]*ARTBOOK FIRST/);
+  }
+
+  assert.doesNotMatch(planning,/`web-games\/`는 읽기 전용/);
+  assert.doesNotMatch(graphics,/최종 Web 게임을 만들지 않는다/);
+  assert.doesNotMatch(graphics,/테스트베드\/밑그림.*만 만든다/);
+  assert.doesNotMatch(balance,/기존 Web 게임은[^\n]*수정하지 않는다/);
+});
