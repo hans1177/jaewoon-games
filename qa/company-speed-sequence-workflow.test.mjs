@@ -92,3 +92,13 @@ test('Web gate persistence survives merged artifact directory layouts',()=>{
   assert.match(router,/find \/tmp\/web-batch -type d -name persist -print0/);
   assert.doesNotMatch(router,/const resultDir='\/tmp\/web-batch\/results'/);
 });
+
+test('canonical Web runtime permits up to six isolated workers and records the same parallelism in queue evidence',()=>{
+  assert.match(router,/WEB_PARALLEL_TARGET=6/);
+  assert.match(router,/WEB_PARALLEL_MAX=6/);
+  assert.match(router,/max-parallel:\s*6/);
+  assert.match(router,/queue\.webValidationParallelism=6/);
+  assert.match(router,/name: development-web-result-\$\{\{ matrix\.gameId \}\}/);
+  assert.match(router,/pattern: development-web-result-\*/);
+  assert.match(router,/WEB_PARALLEL_ACTIVE_MAX=6/);
+});
