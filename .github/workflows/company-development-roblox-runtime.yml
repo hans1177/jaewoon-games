@@ -43,6 +43,7 @@ jobs:
           node --check tools/company-development-roblox-bootstrap.mjs
           node --check tools/company-development-roblox-source-reconcile.mjs
           node --check tools/company-development-roblox-package.mjs
+          node --check tools/company-selected-platform-router.mjs
           node --check tools/vibe3-roblox-platform.mjs
           node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs qa/company-selected-platform-router.test.mjs
 
@@ -66,18 +67,22 @@ jobs:
             --source-revision="$SOURCE_REVISION" \
             --results=/tmp/roblox-source-reconciliation.json
 
-      - name: Resolve next Roblox source execution slice
+      - name: Resolve next Roblox source execution slice from global six-game window
         id: targets
         shell: bash
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
+          const windowIds=new Set(globalWindow.map(item=>item.gameId));
           const rows=[];
           const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxSourceBootstrapFailedAt))-Number(Boolean(b.robloxSourceBootstrapFailedAt)));
           for(const item of candidates){
-            if(rows.length>=2)break;
+            if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
+            if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
             if(platform!=='ROBLOX')continue;
@@ -98,11 +103,13 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
+          console.log(`DEVELOPMENT_GAME_WIP_MAX=${DEVELOPMENT_GAME_WIP_MAX}`);
+          console.log(`DEVELOPMENT_GAME_WIP_WINDOW_IDS=${globalWindow.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log(`ROBLOX_SOURCE_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_SOURCE_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
-          console.log('ROBLOX_EXECUTION_WIP_MAX=2');
+          console.log('ROBLOX_EXECUTION_WIP_MAX=6');
           NODE
 
   source-worker:
@@ -111,7 +118,7 @@ jobs:
     if: needs.source-plan.outputs.count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 6
       matrix: ${{ fromJSON(needs.source-plan.outputs.matrix) }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
@@ -312,7 +319,7 @@ jobs:
               Object.assign(item,{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
                 selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',sourcePath:result.sourcePath,targetSourcePath:result.sourcePath,
-                robloxProjectPath:result.sourcePath,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
+                robloxProjectPath:result.sourcePath,robloxSourceCommit:result.sourceRevision,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
                 robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
                 robloxRuntimePassed:false,routingBlockers:['roblox-runtime-evidence-pending'],updatedAt:stamp,
               });
@@ -334,7 +341,8 @@ jobs:
               failCount++;
             }
           }
-          queue.robloxSourceParallelism=2;
+          queue.robloxSourceParallelism=6;
+          queue.developmentGameWipMax=6;
           queue.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
           console.log(`ROBLOX_SOURCE_RECONCILIATION_PASS=${reconciliationPass}`);
@@ -342,6 +350,7 @@ jobs:
           console.log(`ROBLOX_SOURCE_PASS_COUNT=${passCount}`);
           console.log(`ROBLOX_SOURCE_PROMOTION_PENDING_COUNT=${candidateCount}`);
           console.log(`ROBLOX_SOURCE_FAIL_COUNT=${failCount}`);
+          console.log('DEVELOPMENT_GAME_WIP_MAX=6');
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
           NODE
@@ -410,7 +419,8 @@ jobs:
         run: |
           echo 'ROBLOX_SOURCE_TARGETS=NONE'
           echo "ROBLOX_SOURCE_RECONCILIATION_COUNT=$RECONCILIATION_COUNT"
-          echo 'ROBLOX_EXECUTION_WIP_MAX=2'
+          echo 'DEVELOPMENT_GAME_WIP_MAX=6'
+          echo 'ROBLOX_EXECUTION_WIP_MAX=6'
           echo 'ROBLOX_PER_GAME_PROMOTION=YES'
           echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
           echo 'ROBLOX_RUNTIME_PASS=NO'
@@ -437,19 +447,23 @@ jobs:
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
-      - name: Resolve next exact-source Roblox technical execution slice
+      - name: Resolve next exact-source Roblox technical execution slice from global six-game window
         id: targets
         shell: bash
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
+          const windowIds=new Set(globalWindow.map(item=>item.gameId));
           const rows=[];
           const isOrchestrationMissing=item=>String(item.robloxFailureSignature||'')==='roblox-package-result-missing';
           const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxBuildFailedAt)&&!isOrchestrationMissing(a))-Number(Boolean(b.robloxBuildFailedAt)&&!isOrchestrationMissing(b)));
           for(const item of candidates){
-            if(rows.length>=2)break;
+            if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
+            if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
@@ -465,11 +479,13 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
+          console.log(`DEVELOPMENT_GAME_WIP_MAX=${DEVELOPMENT_GAME_WIP_MAX}`);
+          console.log(`DEVELOPMENT_GAME_WIP_WINDOW_IDS=${globalWindow.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log(`ROBLOX_TECHNICAL_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_TECHNICAL_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
-          console.log('ROBLOX_EXECUTION_WIP_MAX=2');
+          console.log('ROBLOX_EXECUTION_WIP_MAX=6');
           NODE
 
   technical-worker:
@@ -478,7 +494,7 @@ jobs:
     if: always() && needs.technical-plan.result == 'success' && needs.technical-plan.outputs.count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 6
       matrix: ${{ fromJSON(needs.technical-plan.outputs.matrix) }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
@@ -665,11 +681,13 @@ jobs:
               failCount++;
             }
           }
-          queue.robloxTechnicalParallelism=2;
+          queue.robloxTechnicalParallelism=6;
+          queue.developmentGameWipMax=6;
           queue.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
           console.log(`ROBLOX_BUILD_PACKAGE_PASS_COUNT=${passCount}`);
           console.log(`ROBLOX_BUILD_PACKAGE_FAIL_COUNT=${failCount}`);
+          console.log('DEVELOPMENT_GAME_WIP_MAX=6');
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
           console.log('ROBLOX_BUILD_PREFLIGHT_PASS=NO');
@@ -736,6 +754,8 @@ jobs:
         if: needs.technical-plan.outputs.count == '0'
         run: |
           echo 'ROBLOX_TECHNICAL_TARGETS=NONE'
+          echo 'DEVELOPMENT_GAME_WIP_MAX=6'
+          echo 'ROBLOX_EXECUTION_WIP_MAX=6'
           echo 'ROBLOX_PER_GAME_PROMOTION=YES'
           echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
           echo 'ROBLOX_BUILD_PREFLIGHT_PASS=NO'
@@ -794,6 +814,7 @@ jobs:
           echo "ROBLOX_PREFLIGHT_READY_COUNT=$preflight_ready"
           echo "ROBLOX_RUNTIME_READY_COUNT=$runtime_ready"
           echo "ROBLOX_RUNTIME_HARNESS_VERSION=$ROBLOX_RUNTIME_HARNESS_VERSION"
+          echo 'ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=1'
           active_continuations="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime-continuation.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);const n=(j.workflow_runs||[]).filter(r=>['queued','in_progress','pending'].includes(r.status)).length;process.stdout.write(String(n));})")"
           echo "ROBLOX_ACTIVE_CONTINUATIONS=$active_continuations"
           if [[ "$package_pending" == '0' && ( "$preflight_ready" =~ ^[1-9][0-9]*$ || "$runtime_ready" =~ ^[1-9][0-9]*$ ) && "$active_continuations" == '0' ]]; then
