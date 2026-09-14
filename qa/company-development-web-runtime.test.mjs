@@ -138,11 +138,12 @@ test('canonical Web bootstrap keeps Vibe2 as primary developer while determinist
   assert.match(source,/GENRE_REAL_IMPLEMENTATION_NOT_READY/);
 });
 
-test('legacy frozen implementation context may recover only from the exact canonical game and seed record',()=>{
+test('legacy frozen implementation context requires an exact canonical game and seed binding',()=>{
   const source=fs.readFileSync('tools/company-strict-production-review.mjs','utf8');
   assert.match(source,/clean\(row\?\.gameId\)===gameId&&clean\(row\?\.seedId\)===seedId/);
-  assert.match(source,/historical\?\.GAME_CATEGORY/);
-  assert.match(source,/historical\?\.INITIAL_TARGET_PLATFORM/);
+  assert.match(source,/runtimeQueueRecord\(seedId\)/);
+  assert.match(source,/queued\?\.selectedPlatform\|\|queued\?\.targetPlatform/);
+  assert.match(source,/canonicalMatch=Boolean\(historical\|\|queued\)/);
   assert.match(source,/cycleSeedId!==seedId/);
-  assert.match(source,/FROZEN_DESIGN_BASELINE\+CANONICAL_SEED_RECORD/);
+  assert.match(source,/FROZEN_DESIGN_BASELINE\+CANONICAL_DEVELOPMENT_QUEUE/);
 });
