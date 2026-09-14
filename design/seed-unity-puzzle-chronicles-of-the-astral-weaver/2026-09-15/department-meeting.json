@@ -22,42 +22,42 @@
   "representatives": {
     "planning": {
       "keep": [
-        "gameId: seed-unity-puzzle-chronicles-of-the-astral-weaver"
+        "game design and development"
       ],
       "fix": [
-        "status: ACTIVE"
+        "game development and design"
       ],
       "add": [
-        "generation: HISTORICAL_INITIAL_BOOTSTRAP"
+        "game design and development"
       ],
       "risks": [
-        "SEED_MATERIAL_SELECTION_MODE: DYNAMIC_CONTEXTUAL_2_TO_4"
+        "game development and design"
       ],
       "evidence": [
-        "SEED_MATERIAL_SELECTION_SIGNALS: TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME"
+        "game design and development"
       ],
       "questions": [
-        "SEED_MATERIAL_SELECTION_SIGNALS"
+        "game design and development"
       ]
     },
     "graphics": {
       "keep": [
-        "The visual style should be clean and modern. The graphics should be visually appealing and easy to understand."
+        "graphics"
       ],
       "fix": [
-        "Use bright colors and clear fonts. Ensure the visuals are easy to read and understand."
+        "graphics"
       ],
       "add": [
-        "Consider adding subtle animations to enhance the gameplay experience."
+        "graphics"
       ],
       "risks": [
-        "The visuals should not distract from the gameplay."
+        "graphics"
       ],
       "evidence": [
-        "Refer to Graphics - The Visual Engine"
+        "graphics"
       ],
       "questions": [
-        "What is the visual style of the game?"
+        "graphics"
       ]
     },
     "development": {
@@ -88,7 +88,7 @@
         "qa"
       ],
       "add": [
-        "graphics"
+        "qa"
       ],
       "risks": [
         "qa"
@@ -102,85 +102,73 @@
     },
     "balance": {
       "keep": [
-        "Unity"
+        "Unity platform"
       ],
       "fix": [
-        "Unity"
+        "Single-player mode"
       ],
       "add": [
-        "Unity"
+        "Single-player design mode"
       ],
       "risks": [
-        "Unity"
+        "Unity platform"
       ],
       "evidence": [
-        "Unity"
+        "Unity platform"
       ],
       "questions": [
-        "What is the core mechanic of the game?\nHow does the gameplay loop work?\nWhat is the progression direction?\nHow does the visual des"
+        "What is the core loop for gameplay?"
       ]
     }
   },
   "rebuttalRound": 1,
   "rebuttalAuthoredByDepartmentLeads": true,
-  "summary": "CONSENSUS",
+  "summary": "The meeting has been successfully concluded with the following decisions:",
   "decisions": [
     {
       "topic": "Planning",
       "status": "CONSENSUS",
-      "reason": "The current structure aligns with the planning department's focus on core elements. The risks and evidence sections are well-defined, and the questions are clear. The revision adds clarity and ensures consistency across all sections.",
+      "reason": "The main focus of the current plan is on the core aspects of game design and development, which aligns with the priorities of the team. The revisions aim to refine and enhance the approach to ensure consistency and accuracy in the evidence provided.",
       "departments": [
-        "planning",
-        "graphics",
-        "development",
-        "qa"
+        "planning"
       ]
     },
     {
       "topic": "Graphics",
       "status": "CONSENSUS",
-      "reason": "The visuals should not distract from the gameplay.",
+      "reason": "graphics is the most important aspect of the game and needs to be prioritized.",
       "departments": [
-        "graphics",
-        "development",
-        "qa"
+        "graphics"
       ]
     },
     {
       "topic": "Development",
       "status": "CONSENSUS",
-      "reason": "다른 네 부서 대표 의견을 읽고 자기 책임범위에서 한 번만 수용/반박/수정합니다.",
+      "reason": "own",
       "departments": [
-        "planning",
-        "graphics",
-        "qa"
+        "development"
       ]
     },
     {
       "topic": "QA",
       "status": "CONSENSUS",
-      "reason": "The provided JSON object is structured correctly and follows the required format. It includes the 'accept', 'challenge', and 'revisiion' keys, each with an empty array as value. The 'reason' key is set to 'The provided JSON object is structured correctly and follows the required format.'",
+      "reason": "QA 부서의 요구사항을 충족시키기 위한 수정",
       "departments": [
-        "planning",
-        "graphics",
-        "development"
+        "qa"
       ]
     },
     {
       "topic": "Balance",
-      "status": "CONSENSUS",
-      "reason": "risks",
+      "status": "CONFLICT",
+      "reason": "game design and development",
       "departments": [
-        "planning",
-        "graphics",
-        "development",
-        "qa"
+        "balance"
       ]
     }
   ],
   "counts": {
-    "consensus": 5,
-    "conflict": 0,
+    "consensus": 4,
+    "conflict": 1,
     "hold": 0
   }
 }

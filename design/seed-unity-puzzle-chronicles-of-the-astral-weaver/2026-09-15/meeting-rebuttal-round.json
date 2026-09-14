@@ -15,39 +15,39 @@
   "rebuttals": {
     "planning": {
       "accept": [
-        "keep",
-        "fix",
-        "add"
+        "game design and development",
+        "game development and design",
+        "game design and development"
       ],
       "challenge": [
-        "risks",
-        "evidence",
-        "questions"
+        "game development and design",
+        "game design and development",
+        "game design and development"
       ],
       "revision": [
-        "keep",
-        "fix",
-        "add"
+        "game design and development",
+        "game development and design",
+        "game design and development"
       ],
-      "reason": "The current structure aligns with the planning department's focus on core elements. The risks and evidence sections are well-defined, and the questions are clear. The revision adds clarity and ensures consistency across all sections."
+      "reason": "The main focus of the current plan is on the core aspects of game design and development, which aligns with the priorities of the team. The revisions aim to refine and enhance the approach to ensure consistency and accuracy in the evidence provided."
     },
     "graphics": {
       "accept": [
-        "The visual style should be clean and modern. The graphics should be visually appealing and easy to understand."
+        "graphics"
       ],
       "challenge": [
-        "Use bright colors and clear fonts. Ensure the visuals are easy to read and understand."
+        "graphics"
       ],
       "revision": [
-        "Consider adding subtle animations to enhance the gameplay experience."
+        "graphics"
       ],
-      "reason": "The visuals should not distract from the gameplay."
+      "reason": "graphics is the most important aspect of the game and needs to be prioritized."
     },
     "development": {
       "accept": [
         "keep",
-        "add",
-        "questions"
+        "fix",
+        "add"
       ],
       "challenge": [
         "risks",
@@ -55,35 +55,37 @@
         "questions"
       ],
       "revision": [
-        "keep",
-        "add",
-        "questions"
+        "own",
+        "others",
+        "graphics"
       ],
-      "reason": "다른 네 부서 대표 의견을 읽고 자기 책임범위에서 한 번만 수용/반박/수정합니다."
+      "reason": "own"
     },
     "qa": {
       "accept": [
         "qa"
       ],
       "challenge": [
-        "graphics"
+        "qa"
       ],
       "revision": [
-        "development"
+        "qa"
       ],
-      "reason": "The provided JSON object is structured correctly and follows the required format. It includes the 'accept', 'challenge', and 'revisiion' keys, each with an empty array as value. The 'reason' key is set to 'The provided JSON object is structured correctly and follows the required format.'"
+      "reason": "QA 부서의 요구사항을 충족시키기 위한 수정"
     },
     "balance": {
       "accept": [
-        "keep"
+        "Unity platform",
+        "Single-player mode",
+        "Single-player design mode"
       ],
       "challenge": [
-        "fix"
+        "Unity platform"
       ],
       "revision": [
-        "add"
+        "game design and development"
       ],
-      "reason": "risks"
+      "reason": "game design and development"
     }
   }
 }
