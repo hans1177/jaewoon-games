@@ -31,7 +31,7 @@ Web은 단순 테스트 하네스나 밑그림이 아니라 모든 게임에 필
 
 초기 사이클 PASS는 중간 persistence checkpoint다. 이것만으로 Top30, 최종 Web 완료, native 플랫폼 PASS를 선언하지 않는다.
 
-초기 PASS 뒤 같은 canonical source/evidence/hash binding을 보존한 채 콘텐츠를 확장하고, 다음 canonical 단계에서 `FINAL_CONTENT_DEPTH_VALIDATION_ONLY`를 수행한다. 30분 요구는 이 최종 단계에만 적용하며 실제 경과 플레이 시간과 실제 콘텐츠 다양성으로 검증한다.
+초기 PASS 뒤 같은 canonical source/evidence/hash binding을 보존한 채 콘텐츠를 확장하고, 다음 canonical 단계에서 `FINAL_CONTENT_DEPTH_VALIDATION_ONLY`를 수행한다. 30분 요구는 이 최종 단계에만 적용하며 validation mode `REAL_ELAPSED_GAMEPLAY`, 실제 경과 플레이 시간과 실제 콘텐츠 다양성으로 검증한다.
 
 초기 제작에서 다음을 만들거나 요구하지 않는다.
 
