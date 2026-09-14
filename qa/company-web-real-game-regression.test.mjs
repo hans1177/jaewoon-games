@@ -23,6 +23,7 @@ const runtimeFeatureEvidence={
   towerTypes:['bolt','frost','burst'],newTowerTypes:['frost','burst'],towerTypeCount:3,
   towerEffectProfiles:['bolt:damage','frost:slow','burst:splash'],newTowerEffects:['frost:slow','burst:splash'],towerEffectProfileCount:3,
   strategyChoices:['place-bolt','place-frost'],strategyCombatOutcomes:[{choiceMechanic:'place-bolt',outcomeSignature:'hp:-8|wave:+1'},{choiceMechanic:'place-frost',outcomeSignature:'hp:-2|wave:+1'}],strategyCombatOutcomeCount:2,
+  independentStrategyEvidence:{required:true,pass:true,status:'PASS',independentContexts:2,choiceCount:2,outcomeCount:2},
   placementResultCount:2,newContentDimensionCount:5,
 };
 const baseMetrics={
@@ -126,12 +127,12 @@ assert.equal(towerScore.hardGates.NO_FAKE_PROGRESS,true);
 assert.equal(towerScore.hardGates.CATEGORY_PROFILE_MATCH,true);
 
 const keywordOnlyMetrics={...baseMetrics,towerTypeCount:1,towerEffectProfileCount:1,strategyChoiceCount:1,strategyCombatOutcomeCount:1,placementResultCount:0};
-const keywordOnlyRuntime={...runtimeFeatureEvidence,towerTypes:['fake-one'],towerTypeCount:1,towerEffectProfiles:['fake-one:damage'],towerEffectProfileCount:1,strategyChoices:['fake-choice'],strategyCombatOutcomes:[{choiceMechanic:'fake-choice',outcomeSignature:'same'}],strategyCombatOutcomeCount:1,placementResultCount:0};
+const keywordOnlyRuntime={...runtimeFeatureEvidence,towerTypes:['fake-one'],towerTypeCount:1,towerEffectProfiles:['fake-one:damage'],towerEffectProfileCount:1,strategyChoices:['fake-choice'],strategyCombatOutcomes:[{choiceMechanic:'fake-choice',outcomeSignature:'same'}],strategyCombatOutcomeCount:1,placementResultCount:0,independentStrategyEvidence:{required:true,pass:false,status:'INSUFFICIENT_DISTINCT_STRATEGY_CHOICES'}};
 const keywordOnlyScore=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:`${towerSource} tower tower turret slow range strategy choice strategic damage`,evidence:evidence({metrics:keywordOnlyMetrics,runtime:keywordOnlyRuntime})});
 assert.equal(keywordOnlyScore.scores.CATEGORY_PLACEMENT_AND_ROUTE,0,'placement words must not replace a real placement result');
 assert.equal(keywordOnlyScore.scores.CATEGORY_TOWER_VARIETY,0,'tower words must not replace distinct runtime tower types/effects');
 assert.equal(keywordOnlyScore.scores.CATEGORY_STRATEGIC_CHOICE,0,'strategy words must not replace choices with different combat outcomes');
-const sameOutcomeRuntime={...runtimeFeatureEvidence,strategyChoices:['left','right'],strategyCombatOutcomes:[{choiceMechanic:'left',outcomeSignature:'same-result'},{choiceMechanic:'right',outcomeSignature:'same-result'}]};
+const sameOutcomeRuntime={...runtimeFeatureEvidence,strategyChoices:['left','right'],strategyCombatOutcomes:[{choiceMechanic:'left',outcomeSignature:'same-result'},{choiceMechanic:'right',outcomeSignature:'same-result'}],independentStrategyEvidence:{required:true,pass:false,status:'STRATEGY_BRANCH_OUTCOMES_NOT_DIVERGENT',choiceCount:2,outcomeCount:1}};
 const sameOutcomeScore=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:towerSource,evidence:evidence({runtime:sameOutcomeRuntime})});
 assert.equal(sameOutcomeScore.scores.CATEGORY_STRATEGIC_CHOICE,0,'two named choices with the same combat result are not strategic diversity');
 
