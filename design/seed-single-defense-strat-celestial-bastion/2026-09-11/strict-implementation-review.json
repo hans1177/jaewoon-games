@@ -1,0 +1,146 @@
+{
+  "version": 3,
+  "gameId": "seed-single-defense-strat-celestial-bastion",
+  "reviewStage": "IMPLEMENTATION_STRICT_REVIEW",
+  "scoreScale": 100,
+  "passThreshold": 90,
+  "excellentThreshold": 90,
+  "excellent": false,
+  "totalScore": 100,
+  "scores": {
+    "ideaDistinctness": 15,
+    "categoryFit": 10,
+    "platformFit": 10,
+    "designFidelity": 15,
+    "session30Quality": 15,
+    "implementationCompleteness": 15,
+    "storyCausality": 10,
+    "progressionBalance": 5,
+    "artDirectionFidelity": 5
+  },
+  "weights": {
+    "ideaDistinctness": 15,
+    "categoryFit": 10,
+    "platformFit": 10,
+    "designFidelity": 15,
+    "session30Quality": 15,
+    "implementationCompleteness": 15,
+    "storyCausality": 10,
+    "progressionBalance": 5,
+    "artDirectionFidelity": 5
+  },
+  "improvementTargets": [],
+  "hardFailures": [],
+  "verdict": "PASS",
+  "evidence": {
+    "source": "web-games/.autonomous-candidates/development-web-seed-single-defense-strat-celestial-bastion-34792724231-1",
+    "evidenceFile": "/tmp/web-work/seed-single-defense-strat-celestial-bastion/web-promotion-revalidation.json",
+    "runtimePass": true,
+    "runtimeTarget": "web",
+    "designTokenCoverage": 1,
+    "multiplayerDesignMode": "UNKNOWN",
+    "multiplayerEvidence": null,
+    "sessionDepthMinutes": 30,
+    "structuredWebSessionRequired": true,
+    "structuredWebSessionPassed": true,
+    "sessionContract": {
+      "pass": true,
+      "validationMode": "GAMEPLAY_MILESTONE_DEPTH",
+      "minutes": 30,
+      "validatedMinutes": 30,
+      "stageCount": 4,
+      "completedStages": 4,
+      "windows": [
+        [
+          0,
+          5
+        ],
+        [
+          5,
+          15
+        ],
+        [
+          15,
+          25
+        ],
+        [
+          25,
+          30
+        ]
+      ],
+      "proofMode": "PROGRESSION_MILESTONES",
+      "directStageClick": false,
+      "shapePass": true,
+      "progressionProofPass": true,
+      "stageGameplayPassed": true,
+      "stageResults": [
+        {
+          "stage": 1,
+          "start": 0,
+          "end": 5,
+          "clicked": true,
+          "completed": true,
+          "trigger": "GAMEPLAY_MILESTONE",
+          "triggeredByGameplay": true,
+          "directStageClick": false,
+          "gameStateChanged": true,
+          "interactionIndex": 3,
+          "mechanicId": "action-tertiary"
+        },
+        {
+          "stage": 2,
+          "start": 5,
+          "end": 15,
+          "clicked": true,
+          "completed": true,
+          "trigger": "GAMEPLAY_MILESTONE",
+          "triggeredByGameplay": true,
+          "directStageClick": false,
+          "gameStateChanged": true,
+          "interactionIndex": 8,
+          "mechanicId": "action-tertiary"
+        },
+        {
+          "stage": 3,
+          "start": 15,
+          "end": 25,
+          "clicked": true,
+          "completed": true,
+          "trigger": "GAMEPLAY_MILESTONE",
+          "triggeredByGameplay": true,
+          "directStageClick": false,
+          "gameStateChanged": true,
+          "interactionIndex": 15,
+          "mechanicId": "action-accelerated"
+        },
+        {
+          "stage": 4,
+          "start": 25,
+          "end": 30,
+          "clicked": true,
+          "completed": true,
+          "trigger": "GAMEPLAY_MILESTONE",
+          "triggeredByGameplay": true,
+          "directStageClick": false,
+          "gameStateChanged": true,
+          "interactionIndex": 25,
+          "mechanicId": "action-accelerated"
+        }
+      ]
+    },
+    "reviewContextSource": "FROZEN_DESIGN_BASELINE+CANONICAL_DEVELOPMENT_QUEUE",
+    "reviewContextBaselinePath": "design/seed-single-defense-strat-celestial-bastion/2026-09-11/design-revised.json",
+    "reviewContextCyclePath": "design/seed-single-defense-strat-celestial-bastion/2026-09-11/cycle-status.json"
+  },
+  "policyDocument": "COMPANY_FLOW.md",
+  "rules": {
+    "scoreCannotOverrideHardGate": true,
+    "correctableRejectAction": "FIX_AND_REVALIDATE",
+    "structuralRejectAction": "REBUILD_CANDIDATE",
+    "officialCardBeforePassForbidden": true,
+    "testShelfBeforePassOnly": true,
+    "learningRecordRequired": true,
+    "improvementPriority": "TOP_3_SCORE_GAPS"
+  },
+  "reviewedAt": "2026-09-14T00:28:52.567Z"
+}

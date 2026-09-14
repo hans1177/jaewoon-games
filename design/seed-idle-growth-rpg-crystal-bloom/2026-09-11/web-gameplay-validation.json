@@ -1,5 +1,6 @@
 {
-  "version": 2,
+  "version": 11,
+  "validationSchemaVersion": 11,
   "gameId": "seed-idle-growth-rpg-crystal-bloom",
   "target": "web",
   "status": "PASS",
@@ -7,7 +8,7 @@
   "validated": true,
   "realEvidenceExists": true,
   "gameplayInteractionPerformed": true,
-  "interactionCount": 6,
+  "interactionCount": 40,
   "stateChanged": true,
   "musicRuntime": {
     "required": true,
@@ -18,32 +19,207 @@
     "afterState": "running",
     "pass": true
   },
+  "approvedScopeFullyImplemented": true,
+  "scopeCoverage": {
+    "pass": true,
+    "declaredCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-4b0e8f0b60",
+      "scope-coreloop-0-fbd7138d0e",
+      "scope-coreloop-1-b62d3c988f",
+      "scope-coreloop-2-f358e369f4",
+      "scope-mobileux-dcb3a94898"
+    ],
+    "interactedScopeIds": [
+      "scope-corefun-4b0e8f0b60",
+      "scope-coreloop-2-f358e369f4",
+      "scope-mobileux-dcb3a94898",
+      "scope-coreloop-0-fbd7138d0e",
+      "scope-coreloop-1-b62d3c988f"
+    ],
+    "mechanicBindings": [
+      "action-primary",
+      "action-secondary",
+      "action-tertiary",
+      "action-support",
+      "action-accelerated"
+    ],
+    "blockers": []
+  },
+  "scopeInteractionResults": [
+    {
+      "scopeId": "scope-corefun-4b0e8f0b60",
+      "mechanicId": "action-primary",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-2-f358e369f4",
+      "mechanicId": "action-support",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-mobileux-dcb3a94898",
+      "mechanicId": "action-accelerated",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-0-fbd7138d0e",
+      "mechanicId": "action-secondary",
+      "clicked": true,
+      "stateChanged": true
+    },
+    {
+      "scopeId": "scope-coreloop-1-b62d3c988f",
+      "mechanicId": "action-tertiary",
+      "clicked": true,
+      "stateChanged": true
+    }
+  ],
   "runtimeSmokePassed": true,
   "mobileViewport": {
     "width": 390,
     "height": 844,
     "touch": true
   },
+  "sourceFootprint": {
+    "pass": true,
+    "implementationClass": "DEDICATED",
+    "totalBytes": 23497,
+    "scriptBytes": 23199,
+    "mechanicIds": [
+      "action-primary",
+      "action-secondary",
+      "action-tertiary",
+      "action-support",
+      "action-accelerated"
+    ],
+    "mechanicCount": 5,
+    "systemCount": 7,
+    "proofMode": "PROGRESSION_MILESTONES",
+    "directStageControl": "false",
+    "stageButtons": false,
+    "proxyMarkers": 0,
+    "blockers": []
+  },
+  "substanceGate": {
+    "pass": true,
+    "implementationClass": "DEDICATED",
+    "totalBytes": 23497,
+    "executableBytes": 23199,
+    "mechanicCount": 5,
+    "directSessionControls": 0,
+    "proxyMarkers": 0
+  },
+  "sessionDepthMinutes": 30,
+  "sessionContract": {
+    "pass": true,
+    "validationMode": "GAMEPLAY_MILESTONE_DEPTH",
+    "minutes": 30,
+    "validatedMinutes": 30,
+    "stageCount": 4,
+    "completedStages": 4,
+    "windows": [
+      [
+        0,
+        5
+      ],
+      [
+        5,
+        15
+      ],
+      [
+        15,
+        25
+      ],
+      [
+        25,
+        30
+      ]
+    ],
+    "proofMode": "PROGRESSION_MILESTONES",
+    "directStageClick": false,
+    "shapePass": true,
+    "progressionProofPass": true,
+    "stageGameplayPassed": true,
+    "stageResults": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "clicked": true,
+        "completed": true,
+        "trigger": "GAMEPLAY_MILESTONE",
+        "triggeredByGameplay": true,
+        "directStageClick": false,
+        "gameStateChanged": true,
+        "interactionIndex": 6,
+        "mechanicId": "action-primary"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "clicked": true,
+        "completed": true,
+        "trigger": "GAMEPLAY_MILESTONE",
+        "triggeredByGameplay": true,
+        "directStageClick": false,
+        "gameStateChanged": true,
+        "interactionIndex": 19,
+        "mechanicId": "action-support"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "clicked": true,
+        "completed": true,
+        "trigger": "GAMEPLAY_MILESTONE",
+        "triggeredByGameplay": true,
+        "directStageClick": false,
+        "gameStateChanged": true,
+        "interactionIndex": 30,
+        "mechanicId": "action-accelerated"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "clicked": true,
+        "completed": true,
+        "trigger": "GAMEPLAY_MILESTONE",
+        "triggeredByGameplay": true,
+        "directStageClick": false,
+        "gameStateChanged": true,
+        "interactionIndex": 40,
+        "mechanicId": "action-accelerated"
+      }
+    ]
+  },
+  "terminalOutcome": {
+    "required": true,
+    "reached": true,
+    "result": "defeat"
+  },
+  "multiplayer": null,
   "before": {
-    "text": "DEVELOPMENT_CONFIRMED · 성장 RPG Crystal Bloom Idle Gameplay, Resource Management, Level Up 0 SCORE 100 HP 1 WAVE 20 RESOURCE 보상 회수 레벨 강화 스테이지 도전 음악 켜짐 볼륨 STATUS: 보상 회수 · TURN 0 · PROGRESS 0 검증 루프: Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
-    "visibleButtons": 4,
+    "text": "← 재운게임즈 정식 WEB PLAY 수정의 개화 전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG. 100 HP 1/10 STAGE 0 GOLD 1 POWER ⚔️ 💎 공격 회복 (8G) 강화 (20G) 자동 전투 ×5 자동 전투 ×2 게임 시작 · 진행은 자동 저장됩니다. 0–5분 핵심 조작과 첫 진행 5–15분 경제·전투 루프 확장 15–25분 중후반 진행 검증 25–30분 승패·목표 도달 음악 켜짐 볼륨 저장 새 게임",
     "canvases": [],
     "dataState": [
       {
         "tag": "SECTION",
-        "text": "0SCORE100HP1WAVE20RESOURCE",
+        "text": "100HP1/10STAGE0GOLD1POWER",
         "attrs": [
           [
             "data-state",
-            "turn-0"
+            "running"
           ],
           [
             "data-score",
             "0"
-          ],
-          [
-            "data-health",
-            "100"
           ],
           [
             "data-resource",
@@ -56,47 +232,156 @@
         ]
       }
     ],
+    "visibleButtons": 8,
     "audioState": "locked",
     "muteControls": 1,
     "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-4b0e8f0b60",
+      "scope-coreloop-0-fbd7138d0e",
+      "scope-coreloop-1-b62d3c988f",
+      "scope-coreloop-2-f358e369f4",
+      "scope-mobileux-dcb3a94898"
+    ],
+    "mechanicBindings": [
+      "action-primary",
+      "action-secondary",
+      "action-tertiary",
+      "action-support",
+      "action-accelerated"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionProofMode": "PROGRESSION_MILESTONES",
+    "sessionDirectControl": "false",
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": false,
+        "tag": "DIV",
+        "text": "0–5분핵심 조작과 첫 진행"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": false,
+        "tag": "DIV",
+        "text": "5–15분경제·전투 루프 확장"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": false,
+        "tag": "DIV",
+        "text": "15–25분중후반 진행 검증"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": false,
+        "tag": "DIV",
+        "text": "25–30분승패·목표 도달"
+      }
+    ],
+    "sessionCurrentStage": 0,
+    "sessionCompletedStages": 0,
+    "runResult": "running",
+    "values": {},
     "scrollWidth": 390,
     "viewportWidth": 390
   },
   "after": {
-    "text": "DEVELOPMENT_CONFIRMED · 성장 RPG Crystal Bloom Idle Gameplay, Resource Management, Level Up 45 SCORE 76 HP 4 WAVE 28 RESOURCE 보상 회수 레벨 강화 스테이지 도전 음악 켜짐 볼륨 STATUS: 스테이지 도전 · TURN 7 · PROGRESS 32 검증 루프: Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
-    "visibleButtons": 4,
+    "text": "← 재운게임즈 정식 WEB PLAY 수정의 개화 전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG. -2 HP 10/10 STAGE 152 GOLD 5 POWER ⚔️ 💎 공격 회복 (8G) 강화 (20G) 자동 전투 ×5 자동 전투 ×2 자동 전투 2회를 처리했다. 0–5분 핵심 조작과 첫 진행 5–15분 경제·전투 루프 확장 15–25분 중후반 진행 검증 25–30분 승패·목표 도달 음악 켜짐 볼륨 저장 새 게임",
     "canvases": [],
     "dataState": [
       {
         "tag": "SECTION",
-        "text": "45SCORE76HP4WAVE28RESOURCE",
+        "text": "-2HP10/10STAGE152GOLD5POWER",
         "attrs": [
           [
             "data-state",
-            "turn-7"
+            "defeat"
           ],
           [
             "data-score",
-            "45"
-          ],
-          [
-            "data-health",
-            "76"
+            "1072"
           ],
           [
             "data-resource",
-            "28"
+            "152"
           ],
           [
             "data-progress",
-            "32"
+            "100"
           ]
         ]
       }
     ],
+    "visibleButtons": 8,
     "audioState": "running",
     "muteControls": 1,
     "volumeControls": 1,
+    "approvedScopeCount": 5,
+    "visibleScopeIds": [
+      "scope-corefun-4b0e8f0b60",
+      "scope-coreloop-0-fbd7138d0e",
+      "scope-coreloop-1-b62d3c988f",
+      "scope-coreloop-2-f358e369f4",
+      "scope-mobileux-dcb3a94898"
+    ],
+    "mechanicBindings": [
+      "action-primary",
+      "action-secondary",
+      "action-tertiary",
+      "action-support",
+      "action-accelerated"
+    ],
+    "sessionDepthMinutes": 30,
+    "sessionProofMode": "PROGRESSION_MILESTONES",
+    "sessionDirectControl": "false",
+    "sessionStages": [
+      {
+        "stage": 1,
+        "start": 0,
+        "end": 5,
+        "complete": true,
+        "tag": "DIV",
+        "text": "0–5분핵심 조작과 첫 진행"
+      },
+      {
+        "stage": 2,
+        "start": 5,
+        "end": 15,
+        "complete": true,
+        "tag": "DIV",
+        "text": "5–15분경제·전투 루프 확장"
+      },
+      {
+        "stage": 3,
+        "start": 15,
+        "end": 25,
+        "complete": true,
+        "tag": "DIV",
+        "text": "15–25분중후반 진행 검증"
+      },
+      {
+        "stage": 4,
+        "start": 25,
+        "end": 30,
+        "complete": true,
+        "tag": "DIV",
+        "text": "25–30분승패·목표 도달"
+      }
+    ],
+    "sessionCurrentStage": 4,
+    "sessionCompletedStages": 4,
+    "runResult": "defeat",
+    "values": {},
     "scrollWidth": 390,
     "viewportWidth": 390
   },
@@ -107,18 +392,56 @@
   "failedRequests": [],
   "badResponses": [],
   "evidence": [
-    "interactionCount=6",
-    "stateChanged=true",
-    "reloadVisible=true",
-    "mobileOverflow=true",
-    "musicRuntime=true",
-    "musicAfterGesture=true"
+    "interactionCount=40",
+    "mechanics=5",
+    "sourceBytes=23497",
+    "scriptBytes=23199",
+    "approvedScope=true",
+    "sessionProofMode=PROGRESSION_MILESTONES",
+    "sessionDepthMinutes=30",
+    "terminalOutcome=defeat"
   ],
-  "checkedAt": "2026-09-12T13:33:59.542Z",
+  "checkedAt": "2026-09-14T00:30:59.170Z",
   "sourcePath": "web-games/seed-idle-growth-rpg-crystal-bloom",
-  "url": "http://127.0.0.1:4185/web-games/.autonomous-candidates/development-web-seed-idle-growth-rpg-crystal-bloom-34696738389/",
+  "sourceIndexSha256": "5ae9a505645d7f45d0a819c88c4c6479284abddf3305d38fc661cafc3ef8af77",
+  "sourceRevision": "7716c3e02810b7506ec96675457ef87caea47b37",
+  "designBaselineSha256": "5bd179fff7702f5ebfc93aac28a17ca869c1ccb2ef1c88fa1f7bed952e60d0bd",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-idle-growth-rpg-crystal-bloom-34792724231-1/",
   "screenshot": "/tmp/web-work/seed-idle-growth-rpg-crystal-bloom/web-gameplay.png",
-  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-idle-growth-rpg-crystal-bloom-34696738389",
+  "strictReviewPath": "/tmp/web-work/seed-idle-growth-rpg-crystal-bloom/strict-implementation-review.json",
+  "strictReview": {
+    "verdict": "PASS",
+    "totalScore": 100,
+    "hardFailures": [],
+    "improvementTargets": [],
+    "reviewedAt": "2026-09-14T00:30:59.299Z",
+    "formalPassThreshold": 90,
+    "homepageTestThreshold": 80
+  },
+  "webStrictScore": 100,
+  "improvementTargets": [],
+  "homepageTestEligible": true,
+  "homepageTestVerdict": "PASS",
+  "formalReviewPassed": true,
+  "formalImplementationPassed": true,
+  "formalImplementationVerdict": "PASS",
+  "promotionRevalidation": {
+    "required": true,
+    "independentRun": true,
+    "pass": true,
+    "minimumScore": 90,
+    "firstScore": 100,
+    "secondScore": 100,
+    "sourceHashMatch": true,
+    "baselineHashMatch": true,
+    "secondCheckedAt": "2026-09-14T00:31:04.101Z",
+    "secondSessionPass": true,
+    "secondFootprintPass": true,
+    "secondSubstancePass": true,
+    "secondTerminalReached": true,
+    "error": null
+  },
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-idle-growth-rpg-crystal-bloom-34792724231-1",
   "policyDocument": "COMPANY_FLOW.md",
   "requiredBeforeTargetPlatform": true
 }
