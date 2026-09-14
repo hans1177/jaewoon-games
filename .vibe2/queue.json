@@ -1,7 +1,7 @@
 {
   "version": 4,
   "mode": "hierarchical-dag-sharded-work-stealing-queue",
-  "maxConcurrentTasks": 4,
+  "maxConcurrentTasks": 1,
   "ownerDirectivePreemptsAutonomy": true,
   "releaseStatePriority": [
     "release-confirmed",
@@ -1226,6 +1226,48 @@
       "speculativeEligible": false,
       "estimatedRisk": "low",
       "shard": "web"
+    },
+    {
+      "id": "pwa-59113f6b-0e6c-49d5-af9c-cc344eefea81",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "target": "web",
+      "department": "development",
+      "type": "implementation",
+      "goal": "[OWNER_IMMEDIATE_PWA]\n게임: 잃어버린 별의 메아리\n사용자 직접 지시: 지시된 순서와 우선순위에 따라 중간 보고 없이 개발 및 시스템 구축 작업을 계속 진행함.\n\n추가 지시:\n- 개발하라고\n- 그순서데로 니가 하라고\n최신 main과 기존 구조를 먼저 확인하고 기존 책임 함수/파일을 직접 수정한다.\n기존 게임 규칙·밸런스·저장 의미를 지시 없이 바꾸지 말고 임시 wrapper/override/우회 패치를 만들지 않는다.\n모바일 우선으로 실제 실행·입력·화면 잘림·저장/불러오기·런타임 오류를 QA한 뒤 검증된 후보만 main 자동반영한다.",
+      "responsibleFiles": [],
+      "dependencies": [],
+      "priority": "owner-immediate",
+      "releaseState": "development-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": true,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "evidence": [
+        "pwa-task:59113f6b-0e6c-49d5-af9c-cc344eefea81",
+        "pwa-kind:directive",
+        "pwa-priority:normal",
+        "actual-release-state:development-confirmed",
+        "source-root:web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+        "owner-auto-deploy-authorization",
+        "verified-qa-required"
+      ],
+      "companyContext": {
+        "stageId": "owner-immediate",
+        "role": "director",
+        "assignmentAuthority": "owner-directive",
+        "sourceRef": "pwa-task:59113f6b-0e6c-49d5-af9c-cc344eefea81",
+        "reviewRequired": true
+      }
     }
-  ]
+  ],
+  "ingest": {
+    "added": true,
+    "taskId": "pwa-59113f6b-0e6c-49d5-af9c-cc344eefea81",
+    "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+    "target": "web",
+    "reason": "OWNER_IMMEDIATE_PWA"
+  }
 }
