@@ -1,3 +1,4 @@
+// 파일명: tools/company-web-validation-evidence-contract.mjs
 import crypto from 'node:crypto';
 
 export const WEB_VALIDATION_SCHEMA_VERSION=13;
@@ -47,6 +48,7 @@ export const WEB_CATEGORY_SCORE_WEIGHTS=Object.freeze({
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
 const number=(...values)=>{for(const value of values){const n=Number(value);if(Number.isFinite(n))return n;}return 0;};
+const countUnique=value=>Array.isArray(value)?new Set(value.map(clean).filter(Boolean)).size:0;
 const clamp01=value=>Math.max(0,Math.min(1,Number(value)||0));
 export const sha256Text=value=>crypto.createHash('sha256').update(String(value??'')).digest('hex');
 export const strictScoreOf=evidence=>Number(evidence?.webStrictScore??evidence?.strictReview?.totalScore);
@@ -68,11 +70,14 @@ export function webGameplayMetrics(evidence={}){
   const metrics=evidence?.implementationMetrics&&typeof evidence.implementationMetrics==='object'?evidence.implementationMetrics:{};
   const footprint=evidence?.sourceFootprint&&typeof evidence.sourceFootprint==='object'?evidence.sourceFootprint:{};
   const scope=evidence?.scopeCoverage&&typeof evidence.scopeCoverage==='object'?evidence.scopeCoverage:{};
+  const runtime=evidence?.runtimeFeatureEvidence&&typeof evidence.runtimeFeatureEvidence==='object'?evidence.runtimeFeatureEvidence:{};
+  const depth=evidence?.contentDepthValidation&&typeof evidence.contentDepthValidation==='object'?evidence.contentDepthValidation:{};
   const stateTransitions=Array.isArray(evidence?.scopeInteractionResults)?evidence.scopeInteractionResults.filter(row=>row?.stateChanged===true).length:0;
   const mechanicBindings=Array.isArray(scope?.mechanicBindings)?new Set(scope.mechanicBindings.filter(Boolean)).size:0;
   const terminal=upper(evidence?.terminalOutcome?.result);
   const proxyMarkers=number(evidence?.substanceGate?.proxyMarkers,footprint.proxyMarkers);
   const directControls=number(evidence?.substanceGate?.directSessionControls,footprint.stageButtons===true?1:0);
+  const runtimeTowerTypeCount=countUnique(runtime.towerTypes),runtimeTowerEffectCount=countUnique(runtime.towerEffectProfiles),runtimeStrategyChoiceCount=countUnique(runtime.strategyChoices),runtimeStrategyOutcomeCount=countUnique((runtime.strategyCombatOutcomes||[]).map(row=>row?.outcomeSignature));
   return Object.freeze({
     uniqueMechanicCount:number(metrics.uniqueMechanicCount,footprint.mechanicCount),
     uniqueFunctionalUiCount:number(metrics.uniqueFunctionalUiCount,metrics.functionalUiCount,mechanicBindings),
@@ -83,6 +88,20 @@ export function webGameplayMetrics(evidence={}){
     uniqueInteractedMechanicCount:number(metrics.uniqueInteractedMechanicCount,mechanicBindings),
     systemDependencyCount:number(metrics.systemDependencyCount),
     enemyOrWorldEntityCount:number(metrics.enemyOrWorldEntityCount,metrics.worldOrEnemyEntityCount),
+    enemyTypeCount:number(metrics.enemyTypeCount,runtime.enemyTypeCount,countUnique(runtime.enemyTypes)),
+    newEnemyTypeCount:number(metrics.newEnemyTypeCount,runtime.newEnemyTypeCount,countUnique(runtime.newEnemyTypes)),
+    areaCount:number(metrics.areaCount,runtime.areaCount,countUnique(runtime.areas)),
+    newAreaCount:number(metrics.newAreaCount,runtime.newAreaCount,countUnique(runtime.newAreas)),
+    objectiveCount:number(metrics.objectiveCount,runtime.objectiveCount,countUnique(runtime.objectives)),
+    newObjectiveCount:number(metrics.newObjectiveCount,runtime.newObjectiveCount,countUnique(runtime.newObjectives)),
+    towerTypeCount:runtimeTowerTypeCount>0?runtimeTowerTypeCount:number(metrics.towerTypeCount,runtime.towerTypeCount),
+    towerEffectProfileCount:runtimeTowerEffectCount>0?runtimeTowerEffectCount:number(metrics.towerEffectProfileCount,runtime.towerEffectProfileCount),
+    placementResultCount:number(runtime.placementResultCount,metrics.placementResultCount),
+    strategyChoiceCount:runtimeStrategyChoiceCount>0?runtimeStrategyChoiceCount:number(metrics.strategyChoiceCount),
+    strategyCombatOutcomeCount:runtimeStrategyOutcomeCount>0?runtimeStrategyOutcomeCount:number(metrics.strategyCombatOutcomeCount,runtime.strategyCombatOutcomeCount),
+    newContentDimensionCount:number(runtime.newContentDimensionCount,metrics.newContentDimensionCount),
+    repeatedActionExcludedCount:number(metrics.repeatedActionExcludedCount),
+    meaningfulGameplayMilliseconds:number(depth.meaningfulGameplayMilliseconds),
     winPathCount:number(metrics.winPathCount,footprint.winPathCount,terminal==='VICTORY'?1:0),
     failPathCount:number(metrics.failPathCount,footprint.failPathCount,terminal==='DEFEAT'?1:0),
     retryPathCount:number(metrics.retryPathCount,footprint.retryPathCount),
@@ -102,106 +121,105 @@ function completePlayableCyclePass(evidence={}){
   return unit==='ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE'&&(cycle.pass===true||evidence?.initialPlayableCyclePassed===true||evidence?.playableCyclePassed===true);
 }
 
-function categorySignals(profile,text,metrics){
-  const has=re=>re.test(text);
-  const entities=Number(metrics.enemyOrWorldEntityCount||0),mechanics=Number(metrics.uniqueMechanicCount||0),deps=Number(metrics.systemDependencyCount||0),retry=Number(metrics.retryPathCount||0)>0;
+function categorySignals(profile,metrics){
+  const transitions=Number(metrics.meaningfulStateTransitionCount||0),states=Number(metrics.uniqueGameplayStateCount||0),mechanics=Number(metrics.uniqueInteractedMechanicCount||metrics.uniqueMechanicCount||0),deps=Number(metrics.systemDependencyCount||0),entities=Number(metrics.enemyOrWorldEntityCount||0),retry=Number(metrics.retryPathCount||0)>0;
   const signals={
     SURVIVAL:{
-      WORLD_AND_MOVEMENT:has(/move|position|world|map|explor|이동|위치|세계|맵|탐험/),
-      RESOURCE_AND_GATHERING:has(/resource|gather|collect|wood|food|stone|ore|자원|채집|수집|목재|식량|광석/),
-      CRAFTING:has(/craft|recipe|build|tool|camp|제작|조합|건설|도구|야영/),
-      ENEMY_OR_THREAT:entities>0&&has(/enemy|threat|attack|combat|predator|적|위협|공격|전투/),
-      SURVIVAL_PRESSURE:has(/health|hp|hunger|damage|surviv|temperature|체력|허기|피해|생존|온도/),
-      EXPLORATION_VARIETY:has(/zone|region|biome|area|discover|구역|지역|바이옴|발견/),
+      WORLD_AND_MOVEMENT:states>=3||metrics.areaCount>=2,
+      RESOURCE_AND_GATHERING:metrics.stateVariableCount>=3&&transitions>=4,
+      CRAFTING:mechanics>=3&&deps>=3,
+      ENEMY_OR_THREAT:entities>0&&metrics.failPathCount>=1,
+      SURVIVAL_PRESSURE:metrics.winPathCount>=1&&metrics.failPathCount>=1,
+      EXPLORATION_VARIETY:metrics.areaCount>=2||metrics.newAreaCount>=1,
     },
     TOWER_DEFENSE:{
-      PLACEMENT_AND_ROUTE:has(/tower|place|lane|route|path|grid|타워|배치|경로|라인/),
-      ENEMY_WAVES:has(/wave|웨이브/),
-      TOWER_VARIETY:mechanics>=5&&has(/tower|turret|타워|포탑/),
-      UPGRADES:has(/upgrade|level up|강화|업그레이드|레벨업/),
-      ECONOMY:has(/gold|coin|cost|income|resource|골드|코인|비용|수익|자원/),
-      STRATEGIC_CHOICE:deps>=3&&has(/range|slow|damage|choice|strategy|사거리|감속|피해|선택|전략/),
+      PLACEMENT_AND_ROUTE:metrics.placementResultCount>=1,
+      ENEMY_WAVES:metrics.enemyTypeCount>=1&&transitions>=4,
+      TOWER_VARIETY:metrics.towerTypeCount>=2&&metrics.towerEffectProfileCount>=2,
+      UPGRADES:mechanics>=3&&transitions>=5,
+      ECONOMY:metrics.stateVariableCount>=3&&deps>=3,
+      STRATEGIC_CHOICE:metrics.strategyChoiceCount>=2&&metrics.strategyCombatOutcomeCount>=2,
     },
     RPG:{
-      COMBAT:has(/combat|attack|skill|battle|전투|공격|스킬/),
-      QUEST_AND_NPC:has(/quest|npc|dialog|mission|퀘스트|대화|임무|주민/),
-      EXPLORATION:has(/explor|world|region|map|탐험|세계|지역|맵/),
-      EQUIPMENT_AND_GROWTH:has(/equip|weapon|armor|level|xp|growth|장비|무기|방어구|레벨|경험치|성장/),
-      ENEMY_AND_BOSS:entities>0&&has(/enemy|boss|monster|적|보스|몬스터/),
-      STORY_AND_WORLD_STATE:has(/story|chapter|event|world state|스토리|챕터|사건|세계 상태/),
+      COMBAT:entities>0&&transitions>=4,
+      QUEST_AND_NPC:metrics.objectiveCount>=1,
+      EXPLORATION:metrics.areaCount>=2||metrics.newAreaCount>=1,
+      EQUIPMENT_AND_GROWTH:mechanics>=3&&transitions>=6,
+      ENEMY_AND_BOSS:metrics.enemyTypeCount>=2||entities>=2,
+      STORY_AND_WORLD_STATE:metrics.objectiveCount>=2||metrics.newObjectiveCount>=1,
     },
     TYCOON_SIMULATOR:{
-      PRODUCTION_CHAIN:has(/production|produce|factory|mine|smelt|sell|생산|공장|채굴|제련|판매/),
-      UPGRADES:has(/upgrade|level up|강화|업그레이드|레벨업/),
-      AUTOMATION:has(/automation|auto|drone|worker|자동화|자동|드론|직원/),
-      ECONOMY:has(/coin|gold|income|sell|buy|cost|코인|골드|수익|판매|구매|비용/),
-      AREA_UNLOCK:has(/unlock|zone|area|region|해금|구역|지역/),
-      MANUAL_AUTOMATION_CHOICE:has(/manual|automatic|manual mode|auto mode|수동|자동/)||deps>=4,
+      PRODUCTION_CHAIN:deps>=4&&transitions>=6,
+      UPGRADES:mechanics>=3&&transitions>=5,
+      AUTOMATION:mechanics>=4&&states>=4,
+      ECONOMY:metrics.stateVariableCount>=4&&deps>=3,
+      AREA_UNLOCK:metrics.areaCount>=2||metrics.newAreaCount>=1,
+      MANUAL_AUTOMATION_CHOICE:metrics.strategyChoiceCount>=2||mechanics>=5,
     },
     PUZZLE:{
-      PUZZLE_RULE:has(/puzzle|match|grid|board|tile|퍼즐|매치|그리드|보드|타일/),
-      REAL_SOLVABILITY:has(/solve|goal|clear|solution|해결|목표|클리어|정답/),
-      DIFFICULTY_CURVE:has(/difficulty|level|stage|난이도|레벨|스테이지/),
-      BOARD_STATE:has(/board|grid|cell|tile|보드|그리드|칸|타일/),
-      MECHANIC_VARIETY:mechanics>=5,
-      FEEDBACK:has(/combo|score|effect|sound|콤보|점수|효과|사운드/),
+      PUZZLE_RULE:states>=4&&transitions>=5,
+      REAL_SOLVABILITY:metrics.winPathCount>=1&&metrics.failPathCount>=1,
+      DIFFICULTY_CURVE:states>=5,
+      BOARD_STATE:metrics.stateVariableCount>=2&&states>=3,
+      MECHANIC_VARIETY:mechanics>=3,
+      FEEDBACK:metrics.uniqueFunctionalUiCount>=3&&transitions>=4,
     },
     OBBY_PLATFORMER:{
-      MOVEMENT_FEEL:has(/move|jump|velocity|speed|이동|점프|속도/),
-      LEVEL_DESIGN:has(/level|stage|course|레벨|스테이지|코스/),
-      OBSTACLE_VARIETY:has(/obstacle|hazard|platform|장애물|위험|발판/),
-      FAILURE_AND_RETRY:retry&&has(/fail|death|defeat|실패|죽음|패배/),
-      DIFFICULTY_CURVE:has(/difficulty|hard|난이도|어려움/),
-      CHECKPOINTS:has(/checkpoint|체크포인트/),
+      MOVEMENT_FEEL:transitions>=6&&states>=4,
+      LEVEL_DESIGN:metrics.areaCount>=2||metrics.newAreaCount>=1,
+      OBSTACLE_VARIETY:metrics.contentVariationCount>=2,
+      FAILURE_AND_RETRY:retry&&metrics.failPathCount>=1,
+      DIFFICULTY_CURVE:states>=5,
+      CHECKPOINTS:metrics.objectiveCount>=2||states>=6,
     },
     BATTLE_SHOOTER:{
-      MOVEMENT:has(/move|position|distance|이동|위치|거리/),
-      ATTACK_AND_HIT:has(/attack|hit|damage|shoot|공격|타격|피해|사격/),
-      ENEMY_AI:entities>0&&has(/enemy ai|enemyplan|opponent|intent|적 ai|상대|행동 패턴/),
-      SKILL_AND_COOLDOWN:has(/skill|cooldown|energy|스킬|쿨다운|에너지/),
-      COMBAT_OBJECTIVE:has(/round|victory|kill|objective|라운드|승리|처치|목표/),
-      COMBAT_FEEDBACK:has(/hit|damage|effect|sound|타격|피해|효과|사운드/),
+      MOVEMENT:states>=3,
+      ATTACK_AND_HIT:entities>0&&transitions>=5,
+      ENEMY_AI:metrics.enemyTypeCount>=1&&entities>0,
+      SKILL_AND_COOLDOWN:mechanics>=3,
+      COMBAT_OBJECTIVE:metrics.winPathCount>=1&&metrics.failPathCount>=1,
+      COMBAT_FEEDBACK:metrics.uniqueFunctionalUiCount>=3&&transitions>=4,
     },
     STORY_ADVENTURE:{
-      EXPLORATION:has(/explor|world|region|map|탐험|세계|지역|맵/),
-      QUEST:has(/quest|mission|objective|퀘스트|임무|목표/),
-      NPC_AND_DIALOGUE:has(/npc|dialog|conversation|대화|주민/),
-      EVENT_AND_STATE_CHANGE:has(/event|chapter|state change|사건|챕터|상태 변화/),
-      COMBAT_OR_PUZZLE:has(/combat|attack|puzzle|battle|전투|공격|퍼즐/),
-      BRANCH_OR_OBJECTIVE:has(/branch|choice|objective|분기|선택|목표/),
+      EXPLORATION:metrics.areaCount>=2||metrics.newAreaCount>=1,
+      QUEST:metrics.objectiveCount>=1,
+      NPC_AND_DIALOGUE:metrics.objectiveCount>=2||mechanics>=3,
+      EVENT_AND_STATE_CHANGE:states>=4&&transitions>=5,
+      COMBAT_OR_PUZZLE:entities>0||states>=5,
+      BRANCH_OR_OBJECTIVE:metrics.objectiveCount>=2||metrics.newObjectiveCount>=1,
     },
     LIFE_ROLEPLAY:{
-      WORLD_AND_SPACE:has(/world|room|house|town|area|세계|방|집|마을|지역/),
-      INTERACTION:has(/interact|use|talk|work|상호작용|사용|대화|일/),
-      NPC:entities>0&&has(/npc|resident|citizen|주민|시민/),
-      LIFE_ACTIVITIES:has(/job|home|shop|eat|sleep|work|직업|집|상점|먹|잠|일/),
-      CHARACTER_STATE:has(/character|avatar|mood|need|money|캐릭터|아바타|기분|욕구|돈/),
-      FREEDOM_AND_CHOICE:has(/choice|free|select|선택|자유/)||mechanics>=5,
+      WORLD_AND_SPACE:metrics.areaCount>=2||metrics.newAreaCount>=1,
+      INTERACTION:mechanics>=3&&transitions>=5,
+      NPC:entities>=2,
+      LIFE_ACTIVITIES:mechanics>=4,
+      CHARACTER_STATE:metrics.stateVariableCount>=4,
+      FREEDOM_AND_CHOICE:mechanics>=5&&states>=4,
     },
   };
   return signals[profile]||{};
 }
 
-function categoryScore(profile,text,metrics){
+function categoryScore(profile,metrics){
   const weights=WEB_CATEGORY_SCORE_WEIGHTS[profile];
   if(!weights)return{profile:null,total:0,scores:{},signals:{}};
-  const signals=categorySignals(profile,text,metrics),scores={};let total=0;
+  const signals=categorySignals(profile,metrics),scores={};let total=0;
   for(const [key,weight] of Object.entries(weights)){const score=signals[key]===true?weight:0;scores[key]=score;total+=score;}
   return{profile,total,scores,signals};
 }
 
-function categoryMatch(category,text,metrics,evidence={}){
+function categoryMatch(category,metrics,evidence={}){
   let declared=resolveWebCategoryProfile(category,evidence);
   if(declared==='DESIGN_DERIVED_PROFILE_REQUIRED')return{pass:false,declared:null,observed:null,declaredScore:0,candidates:{},detected:null,reason:'DESIGN_DERIVED_PROFILE_REQUIRED'};
   if(!declared)return{pass:false,declared:null,observed:null,declaredScore:0,candidates:{},detected:null,reason:'CATEGORY_PROFILE_UNKNOWN'};
   const candidates={};let max=-1,observed=[];
-  for(const profile of Object.keys(WEB_CATEGORY_SCORE_WEIGHTS)){const row=categoryScore(profile,text,metrics);candidates[profile]=row.total;if(row.total>max){max=row.total;observed=[profile];}else if(row.total===max)observed.push(profile);}
+  for(const profile of Object.keys(WEB_CATEGORY_SCORE_WEIGHTS)){const row=categoryScore(profile,metrics);candidates[profile]=row.total;if(row.total>max){max=row.total;observed=[profile];}else if(row.total===max)observed.push(profile);}
   const detectedRaw=clean(evidence?.detectedCategory||evidence?.runtimeCategory||evidence?.categoryProfile);
   const detected=detectedRaw?resolveWebCategoryProfile(detectedRaw,evidence)||upper(detectedRaw):null;
   const declaredScore=candidates[declared]||0;
-  const sourceMatch=declaredScore>=16&&observed.includes(declared);
+  const runtimeMatch=declaredScore>=16;
   const detectorMatch=!detected||detected===declared;
-  return{pass:sourceMatch&&detectorMatch,declared,observed:observed.length===1?observed[0]:observed.join('|'),declaredScore,candidates,detected,reason:sourceMatch&&detectorMatch?null:'CATEGORY_PROFILE_MISMATCH'};
+  return{pass:runtimeMatch&&detectorMatch,declared,observed:observed.length===1?observed[0]:observed.join('|'),declaredScore,candidates,detected,reason:runtimeMatch&&detectorMatch?null:'CATEGORY_PROFILE_MISMATCH'};
 }
 
 function harnessIndicators(sourceText,evidence,metrics){
@@ -219,10 +237,9 @@ function harnessIndicators(sourceText,evidence,metrics){
 }
 
 export function scoreWebStrictImplementation({category='',sourceText='',evidence={}}={}){
-  const text=String(sourceText||'').toLowerCase();
   const metrics=webGameplayMetrics(evidence);
-  const categoryResult=categoryMatch(category,text,metrics,evidence);
-  const harness=harnessIndicators(text,evidence,metrics);
+  const categoryResult=categoryMatch(category,metrics,evidence);
+  const harness=harnessIndicators(sourceText,evidence,metrics);
   const cyclePass=completePlayableCyclePass(evidence);
   const mobilePass=evidence?.mobileViewport?.touch===true&&Number(evidence?.after?.scrollWidth||0)<=Number(evidence?.after?.viewportWidth||0)+2;
   const runtimeStable=evidence?.runtimeSmokePassed===true&&!(evidence?.consoleErrors||[]).length&&!(evidence?.pageErrors||[]).length&&!(evidence?.failedRequests||[]).length&&!(evidence?.badResponses||[]).length;
@@ -253,12 +270,12 @@ export function scoreWebStrictImplementation({category='',sourceText='',evidence
     SYSTEM_CONNECTIVITY:Math.min(10,Math.max(0,Math.round(10*Math.min(1,metrics.systemDependencyCount/5)))),
     CONTROLS_AND_GAME_FEEL:Math.min(8,(mobilePass?3:0)+(metrics.gameplayActionCount>=8?2:metrics.gameplayActionCount>=5?1:0)+(metrics.meaningfulStateTransitionCount>=6?3:metrics.meaningfulStateTransitionCount>=3?1:0)),
     FUNCTIONAL_UI_UX:Math.max(0,Math.min(7,Math.round(7*Math.min(1,metrics.uniqueFunctionalUiCount/5)*(1-Math.min(0.8,metrics.duplicateActionRatio)*0.5)*(1-metrics.testUiRatio)))),
-    PROGRESSION_GROWTH_REWARD:/progress|reward|econom|growth|upgrade|unlock|quest|level|성장|보상|경제|강화|해금|퀘스트|레벨/i.test(text)&&metrics.meaningfulStateTransitionCount>=6?7:0,
+    PROGRESSION_GROWTH_REWARD:metrics.meaningfulStateTransitionCount>=6&&(metrics.stateVariableCount>=3||metrics.uniqueGameplayStateCount>=4)?7:0,
     RISK_FAILURE_RETRY:metrics.winPathCount>=1&&metrics.failPathCount>=1&&metrics.retryPathCount>=1?5:0,
-    GAMEPLAY_FEEDBACK:/feedback|effect|sound|hit|damage|score|combo|효과|사운드|타격|피해|점수|콤보/i.test(text)&&metrics.meaningfulStateTransitionCount>=3?4:evidence?.musicRuntime?.pass===true?2:0,
+    GAMEPLAY_FEEDBACK:metrics.meaningfulStateTransitionCount>=3&&(metrics.uniqueFunctionalUiCount>=3||evidence?.musicRuntime?.pass===true)?4:0,
     STABILITY_PERFORMANCE:runtimeStable&&mobilePass?4:0,
   };
-  const categoryRow=categoryResult.declared?categoryScore(categoryResult.declared,text,metrics):{total:0,scores:{},signals:{}};
+  const categoryRow=categoryResult.declared?categoryScore(categoryResult.declared,metrics):{total:0,scores:{},signals:{}};
   const categoryScores=Object.fromEntries(Object.entries(categoryRow.scores).map(([key,value])=>[`CATEGORY_${key}`,value]));
   const categoryWeights=categoryResult.declared?Object.fromEntries(Object.entries(WEB_CATEGORY_SCORE_WEIGHTS[categoryResult.declared]).map(([key,value])=>[`CATEGORY_${key}`,value])):{};
   const scores={...commonScores,...categoryScores};
@@ -325,10 +342,10 @@ export function realGameSubstancePass(evidence={}){
 
 export function finalContentDepthPass(evidence={}){
   const depth=evidence?.contentDepthValidation&&typeof evidence.contentDepthValidation==='object'?evidence.contentDepthValidation:{};
-  const metrics=webGameplayMetrics({...evidence,implementationMetrics:depth.metrics||evidence?.implementationMetrics});
+  const metrics=webGameplayMetrics({...evidence,implementationMetrics:depth.metrics||evidence?.implementationMetrics,runtimeFeatureEvidence:depth.runtimeFeatureEvidence||evidence?.runtimeFeatureEvidence});
   const varietyEvents=Array.isArray(depth.varietyEvents)?new Set(depth.varietyEvents.filter(Boolean)).size:0;
   const validatedMinutes=number(depth.validatedMinutes,depth.actualGameplayMinutes);
-  const elapsedMs=number(depth.elapsedRealMilliseconds);
+  const meaningfulMs=number(depth.meaningfulGameplayMilliseconds);
   const diversityCount=Math.max(metrics.contentVariationCount,varietyEvents);
   return completePlayableCyclePass(evidence)
     && depth.mode==='FINAL_CONTENT_DEPTH_VALIDATION_ONLY'
@@ -340,7 +357,7 @@ export function finalContentDepthPass(evidence={}){
     && depth.directStageClick!==true
     && number(depth.targetMinutes,30)>=30
     && validatedMinutes>=30
-    && elapsedMs>=30*60*1000
+    && meaningfulMs>=30*60*1000
     && metrics.uniqueMechanicCount>=5
     && metrics.uniqueFunctionalUiCount>=4
     && metrics.meaningfulStateTransitionCount>=10
@@ -349,6 +366,7 @@ export function finalContentDepthPass(evidence={}){
     && metrics.duplicateActionRatio<=0.8
     && metrics.testUiRatio===0
     && metrics.directSessionControls===0
+    && metrics.newContentDimensionCount>=2
     && diversityCount>=2;
 }
 

@@ -165,7 +165,7 @@ function writeState(state,{sourceDesign=null,web=null,targetPlatform=null,revali
     platformReview:platformReview?{path:path.join(base,'platform-development-review.json').replaceAll('\\','/'),score:platformReview.score,verdict:platformReview.verdict,improvementTargets:platformReview.improvementTargets}:null,
     learningFeedback:learningFeedback?{path:path.join(base,'development-learning-feedback.json').replaceAll('\\','/'),signal:learningFeedback.signal,scoreDelta:learningFeedback.platformScoreDelta}:null,
     finalDesign:finalDesign?.path||null,artbook:artbook?.path||null,blockers,nextAction,
-    contracts:{gatedDirect:true,resumeFromLatestEvidence:true,singlePlatformRouter:true,aiMayInventValidationPass:false,webSmokeDoesNotEqualGameplayValidation:true,webValidationRequired:true,musicValidationRequired:true,webValidationOptional:false,webFreshSchemaAndHashRequired:true,realPlayableWebGameRequired:true,initialImplementationUnit:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE',initialThirtyMinuteHardGate:false,finalThirtyMinuteContentDepthRequiredForTop30:true,web90PromotionRevalidationRequired:true,webAndPlatformScoresSeparated:true,platform80To89RequiresReevaluation:true,artbookOnlyAfterBaselineReady:true},
+    contracts:{gatedDirect:true,resumeFromLatestEvidence:true,singlePlatformRouter:true,aiMayInventValidationPass:false,webSmokeDoesNotEqualGameplayValidation:true,webValidationRequired:true,musicValidationRequired:true,webValidationOptional:false,webFreshSchemaAndHashRequired:true,realPlayableWebGameRequired:true,initialImplementationUnit:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE',initialThirtyMinuteHardGate:false,insufficientContentReturnsToDevelopment:true,finalDepthConsumesPostDevelopmentSource:true,finalThirtyMinuteContentDepthRequiredForTop30:true,web90PromotionRevalidationRequired:true,webAndPlatformScoresSeparated:true,platform80To89RequiresReevaluation:true,artbookOnlyAfterBaselineReady:true},
     updatedAt:new Date().toISOString()
   };
   writeJson(path.join(base,'development-validation-status.json'),status);
@@ -247,12 +247,12 @@ if(web.state!=='PASS'||!webContract.initialPass||!webContract.platformEligible){
   if(!webContract.substancePass)blockers.push('real-playable-web-game-substance-required');
   if(!webContract.fresh)blockers.push(`web-evidence-stale-or-schema-below-${WEB_VALIDATION_SCHEMA_VERSION}`);
   if(!webContract.initialPass)blockers.push(...(webContract.initialBlockers||[]));
-  if(webContract.initialPass&&!webContract.finalContentDepthPass)blockers.push('web-final-content-depth-required');
+  if(webContract.initialPass&&!webContract.finalContentDepthPass)blockers.push('web-final-content-depth-required-after-development');
   if(Number.isFinite(webContract.score)&&webContract.score<WEB_HOMEPAGE_MINIMUM)blockers.push(`web-strict-score-below-${WEB_HOMEPAGE_MINIMUM}`);
   else if(webContract.finalContentDepthPass&&Number.isFinite(webContract.score)&&webContract.score<WEB_PLATFORM_PROMOTION_MINIMUM)blockers.push(`web-strict-score-below-platform-${WEB_PLATFORM_PROMOTION_MINIMUM}`);
   if(webContract.finalContentDepthPass&&webContract.score>=WEB_PLATFORM_PROMOTION_MINIMUM&&web.data?.promotionRevalidation?.pass!==true)blockers.push('web-90-independent-promotion-revalidation-required');
-  const waitState=web.state==='MISSING'?'WAITING_WEB_GAMEPLAY_VALIDATION':webContract.initialPass&&!webContract.finalContentDepthPass?'WAITING_WEB_FINAL_CONTENT_DEPTH':webContract.top30Eligible&&!webContract.platformEligible?'WAITING_WEB_STRICT_IMPROVEMENT':'WAITING_WEB_GAMEPLAY_REVALIDATION';
-  const nextAction=waitState==='WAITING_WEB_FINAL_CONTENT_DEPTH'?'현재 실제 게임 source를 보존하고 콘텐츠를 확장한 뒤 실제 30분 FINAL_CONTENT_DEPTH_VALIDATION을 수행한다.':webContract.top30Eligible?'Web Top30 자격은 유지하되 선택 플랫폼 전진은 90점 이상과 독립 재검증 PASS까지 같은 Web source를 개선·재검증한다.':'완결된 실제 플레이 사이클 1개와 현재 canonical Web evidence를 기준으로 게임 본체를 다시 검증한다.';
+  const waitState=web.state==='MISSING'?'WAITING_WEB_GAMEPLAY_VALIDATION':webContract.initialPass&&!webContract.finalContentDepthPass?'RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION':webContract.top30Eligible&&!webContract.platformEligible?'WAITING_WEB_STRICT_IMPROVEMENT':'WAITING_WEB_GAMEPLAY_REVALIDATION';
+  const nextAction=waitState==='RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION'?'초기 플레이 사이클 근거는 보존한다. 현재 Web source를 기존 canonical Web 개발 단계의 Vibe2에 다시 넘겨 새 적·구역·목표·전략 선택 등 부족 콘텐츠를 실제 구현하고, 수정된 source로 모바일 초기 사이클 재검증을 통과한 뒤에만 FINAL_CONTENT_DEPTH_VALIDATION을 수행한다.':webContract.top30Eligible?'Web Top30 자격은 유지하되 선택 플랫폼 전진은 90점 이상과 독립 재검증 PASS까지 같은 Web source를 개선·재검증한다.':'완결된 실제 플레이 사이클 1개와 현재 canonical Web evidence를 기준으로 게임 본체를 다시 검증한다.';
   writeState(waitState,{sourceDesign:sourceBaseline,web,blockers:[...new Set(blockers)],nextAction});
   process.exit(0);
 }
