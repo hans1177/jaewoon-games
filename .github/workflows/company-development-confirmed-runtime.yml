@@ -45,7 +45,7 @@ permissions:
 
 concurrency:
   group: company-development-confirmed-runtime
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
@@ -81,8 +81,10 @@ jobs:
       - name: Fetch current company runtime
         run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
 
-      - name: Resolve every DEVELOPMENT_CONFIRMED game missing fresh Web 80-point evidence
+      - name: Resolve DEVELOPMENT_CONFIRMED games missing fresh schema13 Web 80-point evidence
         id: targets
+        env:
+          PUSH_HEAD_MESSAGE: ${{ github.event.head_commit.message || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -108,12 +110,17 @@ jobs:
               return evaluateWebValidationEvidence(evidence,{minimumScore:WEB_HOMEPAGE_MINIMUM,currentSourceSha256,currentBaselineSha256}).pass;
             }catch{return false;}
           };
-          const rows=(q.items||[]).filter(item=>{
+          const pilotMatch=String(process.env.PUSH_HEAD_MESSAGE||'').match(/\[web-pilot:([a-zA-Z0-9._-]+)\]/);
+          const requestedGameId=String(pilotMatch?.[1]||'').trim();
+          const stale=(q.items||[]).filter(item=>{
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
             const state=String(item.canonicalState||'').toUpperCase();
             if(state==='DEVELOPMENT_BLOCKED')return false;
             return !freshWeb80(item);
-          }).map(item=>({
+          });
+          const selected=requestedGameId?stale.filter(item=>item.gameId===requestedGameId):stale;
+          if(requestedGameId&&selected.length!==1)throw new Error(`WEB_PILOT_TARGET_NOT_ELIGIBLE:${requestedGameId}`);
+          const rows=selected.map(item=>({
             gameId:item.gameId,
             gameName:item.gameName||item.gameId,
             designBaselineSource:item.designBaselineSource,
@@ -128,12 +135,13 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`WEB_REQUIRED_QUEUE_COUNT=${rows.length}`);
           console.log(`WEB_REQUIRED_GAME_IDS=${rows.map(x=>x.gameId).join(',')}`);
+          console.log(`WEB_PILOT_TARGET=${requestedGameId||'NONE'}`);
           console.log('WEB_HOMEPAGE_THRESHOLD=80');
-          console.log('WEB_VALIDATION_SCHEMA_MINIMUM=10');
+          console.log('WEB_VALIDATION_SCHEMA_MINIMUM=13');
           console.log('WEB_STALE_SOURCE_OR_BASELINE_REQUEUED=YES');
           console.log('WEB_FORMAL_IMPLEMENTATION_THRESHOLD=90');
-          console.log('WEB_PARALLEL_TARGET=2');
-          console.log('WEB_PARALLEL_MAX=2');
+          console.log('WEB_PARALLEL_TARGET=1');
+          console.log('WEB_PARALLEL_MAX=1');
           NODE
 
   web-worker:
@@ -142,10 +150,10 @@ jobs:
     if: needs.web-plan.outputs.target_count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 1
       matrix: ${{ fromJSON(needs.web-plan.outputs.matrix) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 16
+    timeout-minutes: 85
     steps:
       - uses: actions/checkout@v4
         with:
@@ -228,11 +236,20 @@ jobs:
               `--evidence=${bootstrapEvidence}`],{stdio:'inherit',timeout:9*60*1000});
             execFileSync(process.execPath,['tools/company-development-web-gameplay-validation.mjs',
               `--game-id=${item.gameId}`,`--source=${candidatePath}`,`--port=4181`,
-              `--output=${gameplayEvidence}`,`--screenshot=${screenshot}`],{stdio:'inherit',timeout:8*60*1000});
+              `--output=${gameplayEvidence}`,`--screenshot=${screenshot}`,'--validation-stage=initial-cycle'],{stdio:'inherit',timeout:8*60*1000});
+            const initialReport=JSON.parse(fs.readFileSync(gameplayEvidence,'utf8'));
+            const initialScore=Number(initialReport.webStrictScore??initialReport.strictReview?.totalScore);
+            const initialHardFailures=Array.isArray(initialReport.strictReview?.hardFailures)?initialReport.strictReview.hardFailures:[];
+            if(Number(initialReport.validationSchemaVersion||initialReport.version)!==13||initialReport.pass!==true||initialReport.initialPlayableCycle?.pass!==true||initialReport.musicRuntime?.pass!==true||!Number.isFinite(initialScore)||initialScore<80||initialHardFailures.length)throw new Error('WEB_INITIAL_CYCLE_OR_80_POINT_GATE_NOT_PASS');
+            if(initialReport.contentDepthValidation?.pass===true||initialReport.homepageTestEligible===true)throw new Error('WEB_INITIAL_STAGE_MUST_NOT_CLAIM_FINAL_30MIN_PASS');
+            console.log(`WEB_INITIAL_PLAYABLE_CYCLE_PASS=${item.gameId}:${initialScore}`);
+            execFileSync(process.execPath,['tools/company-development-web-gameplay-validation.mjs',
+              `--game-id=${item.gameId}`,`--source=${candidatePath}`,`--port=4181`,
+              `--output=${gameplayEvidence}`,`--screenshot=${screenshot}`,'--validation-stage=final-content-depth'],{stdio:'inherit',timeout:70*60*1000});
             const report=JSON.parse(fs.readFileSync(gameplayEvidence,'utf8'));
             const strictScore=Number(report.webStrictScore??report.strictReview?.totalScore);
             const hardFailures=Array.isArray(report.strictReview?.hardFailures)?report.strictReview.hardFailures:[];
-            if(report.pass!==true||report.musicRuntime?.pass!==true||report.homepageTestEligible!==true||!Number.isFinite(strictScore)||strictScore<80||hardFailures.length)throw new Error('WEB_RUNTIME_OR_80_POINT_GATE_NOT_PASS');
+            if(Number(report.validationSchemaVersion||report.version)!==13||report.pass!==true||report.musicRuntime?.pass!==true||report.contentDepthValidation?.validationMode!=='REAL_ELAPSED_GAMEPLAY'||report.contentDepthValidation?.pass!==true||Number(report.contentDepthValidation?.elapsedRealMilliseconds)<1800000||report.homepageTestEligible!==true||!Number.isFinite(strictScore)||strictScore<80||hardFailures.length)throw new Error('WEB_FINAL_REAL_30MIN_OR_80_POINT_GATE_NOT_PASS');
             const formalPass=report.formalImplementationPassed===true&&report.promotionRevalidation?.pass===true&&strictScore>=90&&hardFailures.length===0;
             const stableSource=`web-games/${item.gameId}`;
             report.candidateSourcePath=candidatePath;
@@ -275,6 +292,8 @@ jobs:
             }};
             console.log(`WEB_GAMEPLAY_MUSIC_80_PASS=${item.gameId}:${strictScore}`);
             console.log(`WEB_VALIDATION_SCHEMA=${report.validationSchemaVersion||report.version||0}`);
+            console.log(`WEB_FINAL_30MIN_MODE=${report.contentDepthValidation?.validationMode||'NONE'}`);
+            console.log(`WEB_FINAL_30MIN_ELAPSED_MS=${report.contentDepthValidation?.elapsedRealMilliseconds||0}`);
             console.log(`WEB_PROMOTION_REVALIDATION=${report.promotionRevalidation?.pass===true?'PASS':'NO'}`);
             console.log(`FORMAL_IMPLEMENTATION_PASS=${formalPass?'YES':'NO'}`);
           }catch(error){
@@ -373,14 +392,14 @@ jobs:
           for(const result of results){const item=(queue.items||[]).find(x=>x.gameId===result.gameId);if(!item)throw new Error(`queue item missing: ${result.gameId}`);Object.assign(item,result.update);if(result.pass===true)passCount++;else failCount++;}
           queue.webValidationPolicy='WEB_80_FOR_HOMEPAGE_90_PLUS_INDEPENDENT_REVALIDATION_FOR_PLATFORM';
           queue.webValidationContractVersion=4;
-          queue.webValidationEvidenceSchemaMinimum=10;
+          queue.webValidationEvidenceSchemaMinimum=13;
           queue.webPromotionRevalidationRequired=true;
-          queue.webValidationParallelism=2;
+          queue.webValidationParallelism=1;
           queue.updatedAt=new Date().toISOString();
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
           console.log(`WEB_GAMEPLAY_MUSIC_PASS_COUNT=${passCount}`);
           console.log(`WEB_GAMEPLAY_MUSIC_FAIL_COUNT=${failCount}`);
-          console.log('WEB_PARALLEL_ACTIVE_MAX=2');
+          console.log('WEB_PARALLEL_ACTIVE_MAX=1');
           NODE
           git add development-queue.json web-games/ design/ game-seed-state.json 2>/dev/null || git add development-queue.json web-games/ design/
           git diff --cached --check
@@ -395,7 +414,7 @@ jobs:
         if: needs.web-plan.outputs.target_count == '0'
         run: |
           echo 'WEB_REQUIRED_QUEUE=EMPTY'
-          echo 'WEB_PARALLEL_ACTIVE_MAX=2'
+          echo 'WEB_PARALLEL_ACTIVE_MAX=1'
 
   post-web-artbook:
     name: post-Web artbook and homepage eligibility
@@ -430,7 +449,9 @@ jobs:
           for(const item of q.items||[]){
             const score=Number(item.webStrictScore??item.strictImplementationScore);
             const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
-            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED'||!item.webValidationPassedAt||item.musicValidationPassed!==true||item.homepageTestEligible!==true||!Number.isFinite(score)||score<80||hard.length)continue;
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED'||!item.webValidationPassedAt||item.musicValidationPassed!==true||item.homepageTestEligible!==true||Number(item.webValidationSchemaVersion)!==13||!Number.isFinite(score)||score<80||hard.length)continue;
+            const evidence=showJson(item.webValidationEvidencePath||'');
+            if(Number(evidence?.validationSchemaVersion||evidence?.version)!==13||evidence?.homepageTestEligible!==true||evidence?.contentDepthValidation?.validationMode!=='REAL_ELAPSED_GAMEPLAY'||evidence?.contentDepthValidation?.pass!==true)continue;
             const artbookSource=item.artbookSource||`artbook-submissions/${item.gameId}/current.json`;
             const artbook=exists(artbookSource)?showJson(artbookSource):null;
             const fresh=artbook?.postWebStrictReview===true&&Number(artbook.webStrictScore)===score&&String(artbook.webValidationEvidencePath||'')===String(item.webValidationEvidencePath||'');
@@ -625,7 +646,7 @@ jobs:
           console.log(`DEVELOPMENT_ROUTE_PLATFORMS=${[...platforms].join(',')}`);
           console.log(`WEB_PROMOTION_EVIDENCE_REJECTED_COUNT=${promotionRejected}`);
           console.log('WEB_GAMEPLAY_MUSIC_GATE=ENFORCED');
-          console.log('WEB_VALIDATION_SCHEMA_MINIMUM=10');
+          console.log('WEB_VALIDATION_SCHEMA_MINIMUM=13');
           console.log('WEB_INDEPENDENT_PROMOTION_REVALIDATION=REQUIRED');
           console.log('FORMAL_IMPLEMENTATION_GATE=90');
           console.log('CHANGE_DETECTION=PASS');
@@ -650,7 +671,7 @@ jobs:
           queue.webGateRequired=true;
           queue.homepageTestMinimum=80;
           queue.formalImplementationMinimum=90;
-          queue.webValidationEvidenceSchemaMinimum=10;
+          queue.webValidationEvidenceSchemaMinimum=13;
           queue.webPromotionRevalidationRequired=true;
           queue.cronRole='WATCHDOG_AND_RECOVERY_ONLY';
           queue.updatedAt=new Date().toISOString();
@@ -669,13 +690,13 @@ jobs:
         run: |
           echo 'DEVELOPMENT_PIPELINE=ONE_CANONICAL_PIPELINE'
           echo 'WEB_GAMEPLAY_MUSIC_GATE=REQUIRED'
-          echo 'WEB_VALIDATION_SCHEMA_MINIMUM=10'
+          echo 'WEB_VALIDATION_SCHEMA_MINIMUM=13'
           echo 'WEB_STALE_EVIDENCE_REJECTED=YES'
           echo 'WEB_INDEPENDENT_PROMOTION_REVALIDATION=REQUIRED'
           echo 'HOMEPAGE_TEST_GATE=80'
           echo 'FORMAL_IMPLEMENTATION_GATE=90'
           echo 'POST_WEB_ARTBOOK=YES'
-          echo 'WEB_PARALLEL_ACTIVE_MAX=2'
+          echo 'WEB_PARALLEL_ACTIVE_MAX=1'
           echo 'PLATFORM_ROUTER=tools/company-selected-platform-router.mjs'
           echo 'CRON_ROLE=WATCHDOG_AND_RECOVERY_ONLY'
           echo 'QUALITY_GATE_WEAKENING=NO'
