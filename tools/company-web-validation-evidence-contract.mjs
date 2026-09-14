@@ -26,7 +26,7 @@ export const WEB_CATEGORY_SCORE_WEIGHTS=Object.freeze({
   OBBY_PLATFORMER:Object.freeze({MOVEMENT:9,LEVEL_DESIGN:8,OBSTACLE_VARIETY:7,FAIL_RETRY:6,DIFFICULTY_CURVE:6,CHECKPOINT:4}),
   BATTLE_SHOOTER:Object.freeze({MOVEMENT:7,ATTACK_DAMAGE:8,ENEMY_AI:7,SKILL_COOLDOWN:6,COMBAT_OBJECTIVE:6,COMBAT_FEEDBACK:6}),
   STORY_ADVENTURE:Object.freeze({EXPLORATION:7,QUEST:7,NPC_DIALOGUE:6,EVENT_STATE_CHANGE:6,COMBAT_PUZZLE:6,BRANCH_OBJECTIVE:8}),
-  ROLEPLAY_LIFE:Object.freeze({WORLD_SPACE:7,INTERACTION:7,NPC:6,LIFE_ACTIVITY:7,CHARACTER_STATE:6,CHOICE_FREEDOM:7}),
+  LIFE_ROLEPLAY:Object.freeze({WORLD_SPACE:7,INTERACTION:7,NPC:6,LIFE_ACTIVITY:7,CHARACTER_STATE:6,CHOICE_FREEDOM:7}),
 });
 
 const clean=value=>String(value??'').trim();
@@ -48,7 +48,7 @@ export function resolveWebCategoryProfile(category=''){
   if(['OBBY_PARTY_MINIGAME','OBBY_PLATFORMER','PLATFORMER'].includes(c))return'OBBY_PLATFORMER';
   if(['BATTLEGROUND_FIGHTING_SHOOTER','BATTLE_SHOOTER','SHOOTER','FIGHTING_SHOOTER'].includes(c))return'BATTLE_SHOOTER';
   if(['STORY_RPG_ADVENTURE_RPG','STORY_COMPLETE_RPG','STORY_ADVENTURE'].includes(c))return'STORY_ADVENTURE';
-  if(['ROLEPLAY_LIFE_AVATAR','ROLEPLAY_LIFE','LIFE_AVATAR'].includes(c))return'ROLEPLAY_LIFE';
+  if(['ROLEPLAY_LIFE_AVATAR','ROLEPLAY_LIFE','LIFE_ROLEPLAY','LIFE_AVATAR'].includes(c))return'LIFE_ROLEPLAY';
   return null;
 }
 
@@ -104,7 +104,7 @@ function categorySignals(profile,text,metrics){
     OBBY_PLATFORMER:{MOVEMENT:has(/move|jump|velocity|speed|이동|점프|속도/),LEVEL_DESIGN:has(/level|stage|course|레벨|스테이지|코스/),OBSTACLE_VARIETY:has(/obstacle|hazard|platform|장애물|위험|발판/),FAIL_RETRY:retry&&has(/fail|death|defeat|실패|죽음|패배/),DIFFICULTY_CURVE:has(/difficulty|hard|난이도|어려움/),CHECKPOINT:has(/checkpoint|체크포인트/)},
     BATTLE_SHOOTER:{MOVEMENT:has(/move|position|distance|이동|위치|거리/),ATTACK_DAMAGE:has(/attack|hit|damage|shoot|공격|타격|피해|사격/),ENEMY_AI:entities>0&&has(/enemy ai|enemyplan|opponent|intent|적 ai|상대|행동 패턴/),SKILL_COOLDOWN:has(/skill|cooldown|energy|스킬|쿨다운|에너지/),COMBAT_OBJECTIVE:has(/round|victory|kill|objective|라운드|승리|처치|목표/),COMBAT_FEEDBACK:has(/hit|damage|effect|sound|타격|피해|효과|사운드/)},
     STORY_ADVENTURE:{EXPLORATION:has(/explor|world|region|map|탐험|세계|지역|맵/),QUEST:has(/quest|mission|objective|퀘스트|임무|목표/),NPC_DIALOGUE:has(/npc|dialog|conversation|대화|주민/),EVENT_STATE_CHANGE:has(/event|chapter|state change|사건|챕터|상태 변화/),COMBAT_PUZZLE:has(/combat|attack|puzzle|battle|전투|공격|퍼즐/),BRANCH_OBJECTIVE:has(/branch|choice|objective|분기|선택|목표/)},
-    ROLEPLAY_LIFE:{WORLD_SPACE:has(/world|room|house|town|area|세계|방|집|마을|지역/),INTERACTION:has(/interact|use|talk|work|상호작용|사용|대화|일/),NPC:entities>0&&has(/npc|resident|citizen|주민|시민/),LIFE_ACTIVITY:has(/job|home|shop|eat|sleep|work|직업|집|상점|먹|잠|일/),CHARACTER_STATE:has(/character|avatar|mood|need|money|캐릭터|아바타|기분|욕구|돈/),CHOICE_FREEDOM:has(/choice|free|select|선택|자유/)||mechanics>=5},
+    LIFE_ROLEPLAY:{WORLD_SPACE:has(/world|room|house|town|area|세계|방|집|마을|지역/),INTERACTION:has(/interact|use|talk|work|상호작용|사용|대화|일/),NPC:entities>0&&has(/npc|resident|citizen|주민|시민/),LIFE_ACTIVITY:has(/job|home|shop|eat|sleep|work|직업|집|상점|먹|잠|일/),CHARACTER_STATE:has(/character|avatar|mood|need|money|캐릭터|아바타|기분|욕구|돈/),CHOICE_FREEDOM:has(/choice|free|select|선택|자유/)||mechanics>=5},
   };
   return signals[profile]||{};
 }
@@ -135,7 +135,8 @@ function harnessIndicators(sourceText,evidence,metrics){
   const text=String(sourceText||'');
   const directStageButton=/<button\b[^>]*(?:data-session-stage|data-validation-stage|data-test-stage)/i.test(text)||Number(metrics.directSessionControls)>0;
   const timeStageLabels=(text.match(/(?:0\s*[~\-–]\s*5|5\s*[~\-–]\s*15|15\s*[~\-–]\s*25|25\s*[~\-–]\s*30)/gi)||[]).length;
-  const syntheticTimeProgress=timeStageLabels>=2&&/(stage|validation|test|단계|검증|테스트)/i.test(text);
+  const explicitValidationTimeControls=timeStageLabels>=2&&/(?:data-validation-stage|data-test-stage|validation\s*(?:stage|button|control)|test\s*(?:stage|button|control)|검증\s*(?:단계|버튼|컨트롤)|테스트\s*(?:단계|버튼|컨트롤))/i.test(text);
+  const syntheticTimeProgress=timeStageLabels>=2&&(directStageButton||explicitValidationTimeControls);
   const scopeProxy=/scope-control-|FULL APPROVED WEB COMPANION|승인 분량 전체 구현/i.test(text);
   const testPanel=/(?:validation|test)\s*(?:panel|checklist)|검증\s*(?:패널|체크리스트)|테스트\s*(?:패널|체크리스트)/i.test(text);
   const proxyIncrementCount=(text.match(/\b(?:questComplete|score|progress)\s*\+\+/g)||[]).length;

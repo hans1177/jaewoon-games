@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import './company-web-real-game-regression.test.mjs';
 import {
   WEB_COMMON_SCORE_WEIGHTS,
   WEB_CATEGORY_SCORE_WEIGHTS,
