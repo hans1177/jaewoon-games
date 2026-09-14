@@ -43,11 +43,12 @@ const queue=showJson('development-queue.json',{items:[]});
 const runtimeCatalog=showJson('game-catalog.json',{games:[]});
 const catalogById=new Map((runtimeCatalog.games||[]).map(game=>[clean(game.id),game]));
 const candidates=[];
-let staleEvidenceCount=0,nonPlayableRejectedCount=0,substanceRejectedCount=0;
+let staleEvidenceCount=0,nonPlayableRejectedCount=0,substanceRejectedCount=0,postWebArtbookRejectedCount=0;
 for(const item of queue.items||[]){
   const gameId=clean(item.gameId);if(!gameId)continue;
   if(clean(item.productionClass).toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
   if(!item.webValidationPassedAt||item.musicValidationPassed!==true)continue;
+  if(item.postWebArtbookPassed!==true||item.homepageTestCandidate!==true||clean(item.homepageTestVerdict).toUpperCase()!=='PASS'){postWebArtbookRejectedCount++;continue;}
   const webSourcePath=clean(item.webSourcePath||`web-games/${gameId}`);
   const artbookSource=clean(item.artbookSource||`artbook-submissions/${gameId}/current.json`);
   const evidencePath=clean(item.webValidationEvidencePath);
@@ -64,6 +65,8 @@ for(const item of queue.items||[]){
     if(evaluation.blockers.some(x=>['WEB_VALIDATION_SCHEMA_STALE','WEB_FINAL_CONTENT_DEPTH_NOT_PASS','WEB_EVIDENCE_HASH_MISSING','WEB_SOURCE_HASH_STALE','WEB_BASELINE_HASH_STALE'].includes(x)))staleEvidenceCount++;
     continue;
   }
+  const artbook=showJson(artbookSource,null);
+  if(artbook?.postWebStrictReview!==true||Number(artbook?.webStrictScore)!==scoreOf(evidence)||clean(artbook?.webValidationEvidencePath)!==evidencePath){postWebArtbookRejectedCount++;continue;}
   const game=catalogById.get(gameId)||{};
   candidates.push({
     id:gameId,
@@ -147,6 +150,7 @@ console.log(`HOMEPAGE_TEST_CANDIDATE_IDS=${selected.map(x=>x.gameId).join(',')}`
 console.log(`HOMEPAGE_TEST_STALE_EVIDENCE_REJECTED=${staleEvidenceCount}`);
 console.log(`HOMEPAGE_TEST_NON_PLAYABLE_REJECTED=${nonPlayableRejectedCount}`);
 console.log(`HOMEPAGE_TEST_SUBSTANCE_REJECTED=${substanceRejectedCount}`);
+console.log(`HOMEPAGE_TEST_POST_WEB_ARTBOOK_REJECTED=${postWebArtbookRejectedCount}`);
 console.log('HOMEPAGE_TEST_CANDIDATE_LIMIT=30');
 console.log(`HOMEPAGE_TEST_MINIMUM_SCORE=${minimumScore}`);
 console.log(`HOMEPAGE_TEST_MINIMUM_VALIDATION_SCHEMA=${minimumValidationSchema}`);

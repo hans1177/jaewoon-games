@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import {loadSeedState,seedForGame} from './game-seed-state.mjs';
 
 const HOMEPAGE_TEST_THRESHOLD=80;
@@ -8,6 +9,7 @@ const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true})
 const clean=v=>String(v??'').trim();
 const clip=(v,n=14000)=>{const s=typeof v==='string'?v:JSON.stringify(v);return s.length>n?s.slice(0,n):s;};
 const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
+const sha256Text=value=>crypto.createHash('sha256').update(String(value??'')).digest('hex');
 function kstDate(){const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const g=t=>p.find(x=>x.type===t)?.value||'';return`${g('year')}-${g('month')}-${g('day')}`;}
 function hash(value){let h=2166136261;for(const ch of String(value)){h^=ch.codePointAt(0);h=Math.imul(h,16777619);}return h>>>0;}
 
@@ -19,7 +21,6 @@ const statusPath=path.join(base,'cycle-status.json');
 const revisedPath=path.join(base,'design-revised.json');
 const status=readJson(statusPath,null);const revised=readJson(revisedPath,null);
 if(!status||!revised?.content)throw new Error('DESIGN_ARTBOOK_SOURCE_MISSING');
-if(status.baselineGate?.state!=='DESIGN_BASELINE_READY'||status.baselineGate?.ready!==true)throw new Error('DESIGN_ARTBOOK_REQUIRES_DESIGN_BASELINE_READY');
 const disposition=clean(status.disposition?.state).toUpperCase();
 if(disposition==='DISCARDED'||status.disposition?.unanimousFatalDiscard===true)throw new Error('DESIGN_ARTBOOK_DISCARDED');
 const promotedSeed=seedForGame(loadSeedState(),gameId);if(clean(promotedSeed?.productionClass)!=='DEVELOPMENT_CONFIRMED')throw new Error('POST_WEB_ARTBOOK_REQUIRES_DEVELOPMENT_CONFIRMED');
@@ -29,6 +30,16 @@ const webScore=Number(webEvidence?.strictReview?.totalScore);
 const webHardFailures=Array.isArray(webEvidence?.strictReview?.hardFailures)?webEvidence.strictReview.hardFailures:['MISSING_HARD_FAILURE_EVIDENCE'];
 if(webEvidence?.pass!==true||webEvidence?.musicRuntime?.pass!==true)throw new Error('POST_WEB_ARTBOOK_REQUIRES_REAL_WEB_GAMEPLAY_MUSIC_PASS');
 if(webEvidence?.homepageTestEligible!==true||!Number.isFinite(webScore)||webScore<HOMEPAGE_TEST_THRESHOLD||webHardFailures.length!==0)throw new Error(`POST_WEB_ARTBOOK_REQUIRES_WEB_STRICT_80_NO_HARD_FAILURE:${webScore}:${webHardFailures.join(',')}`);
+const legacyBaselineReady=status.baselineGate?.state==='DESIGN_BASELINE_READY'&&status.baselineGate?.ready===true;
+const canonicalRevisedPath=revisedPath.replaceAll('\\','/');
+const statusDesignPath=clean(status.sourceDesign?.path).replaceAll('\\','/');
+const postWebDesignBound=Number(webEvidence?.validationSchemaVersion||webEvidence?.version)===13
+  &&webEvidence?.contentDepthValidation?.validationMode==='REAL_ELAPSED_GAMEPLAY'
+  &&webEvidence?.contentDepthValidation?.pass===true
+  &&statusDesignPath===canonicalRevisedPath
+  &&clean(webEvidence?.designBaselineSha256)===sha256Text(fs.readFileSync(revisedPath,'utf8'));
+if(!legacyBaselineReady&&!postWebDesignBound)throw new Error('DESIGN_ARTBOOK_REQUIRES_APPROVED_DESIGN_BINDING');
+const designBindingState=legacyBaselineReady?'DESIGN_BASELINE_READY':'POST_WEB_SCHEMA13_DESIGN_BOUND';
 const directive=readJson('company-directive.json',{});const pool=uniq(directive.ai?.modelPool||[]);if(!pool.length)throw new Error('MODEL_POOL_EMPTY');
 const requestedEditorModel=clean(process.env.ARTBOOK_EDITOR_MODEL);const editorModel=requestedEditorModel&&pool.includes(requestedEditorModel)?requestedEditorModel:pool[hash(`${gameId}:post-web-artbook-editor`)%pool.length];const artbookCallTimeoutMs=Math.max(15000,Number(process.env.ARTBOOK_MODEL_CALL_TIMEOUT_MS||60000));
 const ARTBOOK={type:'object',required:['identity','playerFantasy','coreLoop','signatureSystems','progressionDirection','visualDirection'],properties:{identity:{type:'string',maxLength:800},playerFantasy:{type:'string',maxLength:800},coreLoop:{type:'array',maxItems:7,items:{type:'string',maxLength:320}},signatureSystems:{type:'array',maxItems:6,items:{type:'string',maxLength:420}},progressionDirection:{type:'string',maxLength:800},visualDirection:{type:'string',maxLength:800}},additionalProperties:false};
@@ -100,9 +111,9 @@ async function callModel(model,system,user,schema){
   throw new Error(`ARTBOOK_MODEL_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
 }
 const artbook=await callModel(editorModel,'너는 이 프로젝트의 단일 Artbook Editor AI다. 실제 Web 플레이 검증과 80점 이상 강심사를 통과한 게임만 다룬다. 승인된 수정 상세설계에서 핵심 전략만 압축하고 원문이나 검증 근거에 없는 설정·수치·시스템·스토리·시장주장을 추가하지 않는다.',`다음 수정 상세설계의 정체성, 플레이어 판타지, 핵심 루프, 시그니처 시스템, 성장 방향, 비주얼 방향만 압축하라.\nREVISED_DESIGN=${clip(revised.content,16000)}\nVALIDATED_WEB_EVIDENCE=${clip({score:webScore,sourcePath:webEvidence.sourcePath,checkedAt:webEvidence.checkedAt,formalImplementationPassed:webEvidence.formalImplementationPassed},3000)}`,ARTBOOK);
-const artbookPath=path.join(base,'core-artbook.json');const promotedClass=clean(seedForGame(loadSeedState(),gameId)?.productionClass)||'DEVELOPMENT_CONFIRMED';const output={version:7,gameId,date,productionClass:promotedClass,tierAlias:2,tier:2,postPromotion:true,postWebStrictReview:true,webStrictScore:webScore,webValidationEvidencePath:webEvidencePath.replaceAll('\\','/'),webSourcePath:clean(webEvidence.sourcePath),editorRole:'ARTBOOK_EDITOR_AI',editorModel,singleEditor:true,sourceDesign:revisedPath.replaceAll('\\','/'),baselineGateState:'DESIGN_BASELINE_READY',departmentPageAuthorship:false,newClaimsAdded:false,vibe2Used:false,content:artbook};writeJson(artbookPath,output);
+const artbookPath=path.join(base,'core-artbook.json');const promotedClass=clean(seedForGame(loadSeedState(),gameId)?.productionClass)||'DEVELOPMENT_CONFIRMED';const output={version:7,gameId,date,productionClass:promotedClass,tierAlias:2,tier:2,postPromotion:true,postWebStrictReview:true,webStrictScore:webScore,webValidationEvidencePath:webEvidencePath.replaceAll('\\','/'),webSourcePath:clean(webEvidence.sourcePath),editorRole:'ARTBOOK_EDITOR_AI',editorModel,singleEditor:true,sourceDesign:revisedPath.replaceAll('\\','/'),baselineGateState:designBindingState,departmentPageAuthorship:false,newClaimsAdded:false,vibe2Used:false,content:artbook};writeJson(artbookPath,output);
 const seed=promotedSeed;const catalog=readJson('game-catalog.json',{games:[]});const catalogGame=(catalog.games||[]).find(x=>x.id===gameId);const gameName=clean(catalogGame?.name||seed?.gameName||gameId);
-const publicPath=path.join('artbook-submissions',gameId,'current.json');writeJson(publicPath,{...output,gameName,createdAt:date,status:'completed-artbook',lifecycleState:'DEVELOPMENT_CONFIRMED',published:true,homepageVisible:true,format:'core-strategy',sourceFile:artbookPath.replaceAll('\\','/'),publication:{policyDocument:'COMPANY_FLOW.md',baselineGateState:'DESIGN_BASELINE_READY',baselineReady:true,postWebStrictReview:true,webStrictScore:webScore,webValidationEvidencePath:webEvidencePath.replaceAll('\\','/'),publishedAt:new Date().toISOString()}});
-const publicStatusPath=path.join('artbook-submissions',gameId,'status.json');writeJson(publicStatusPath,{version:5,gameId,gameName,date,productionClass:promotedClass,uiStatus:'COMPLETE',uiLabel:'완료',baselineGateState:'DESIGN_BASELINE_READY',baselineReady:true,postWebStrictReview:true,webStrictScore:webScore,artbookPublished:true,currentPublicationRetained:true,updatedAt:new Date().toISOString()});
-status.artbook={singleEditor:true,editorModel,sourceDesign:revisedPath.replaceAll('\\','/'),createdAfterWebStrictReview:true,webStrictScore:webScore,webValidationEvidencePath:webEvidencePath.replaceAll('\\','/'),vibe2Used:false,path:artbookPath.replaceAll('\\','/')};status.artbookPublication={published:true,path:publicPath.replaceAll('\\','/'),baselineGateState:'DESIGN_BASELINE_READY',postWebStrictReview:true,webStrictScore:webScore};status.artbookUi={status:'COMPLETE',label:'완료',path:publicStatusPath.replaceAll('\\','/')};writeJson(statusPath,status);
+const publicPath=path.join('artbook-submissions',gameId,'current.json');writeJson(publicPath,{...output,gameName,createdAt:date,status:'completed-artbook',lifecycleState:'DEVELOPMENT_CONFIRMED',published:true,homepageVisible:true,format:'core-strategy',sourceFile:artbookPath.replaceAll('\\','/'),publication:{policyDocument:'COMPANY_FLOW.md',baselineGateState:designBindingState,baselineReady:true,postWebStrictReview:true,webStrictScore:webScore,webValidationEvidencePath:webEvidencePath.replaceAll('\\','/'),publishedAt:new Date().toISOString()}});
+const publicStatusPath=path.join('artbook-submissions',gameId,'status.json');writeJson(publicStatusPath,{version:5,gameId,gameName,date,productionClass:promotedClass,uiStatus:'COMPLETE',uiLabel:'완료',baselineGateState:designBindingState,baselineReady:true,postWebStrictReview:true,webStrictScore:webScore,artbookPublished:true,currentPublicationRetained:true,updatedAt:new Date().toISOString()});
+status.artbook={singleEditor:true,editorModel,sourceDesign:revisedPath.replaceAll('\\','/'),createdAfterWebStrictReview:true,webStrictScore:webScore,webValidationEvidencePath:webEvidencePath.replaceAll('\\','/'),vibe2Used:false,path:artbookPath.replaceAll('\\','/')};status.artbookPublication={published:true,path:publicPath.replaceAll('\\','/'),baselineGateState:designBindingState,postWebStrictReview:true,webStrictScore:webScore};status.artbookUi={status:'COMPLETE',label:'완료',path:publicStatusPath.replaceAll('\\','/')};writeJson(statusPath,status);
 console.log('DESIGN_ARTBOOK=CREATED');console.log('POST_WEB_ARTBOOK=YES');console.log(`POST_WEB_ARTBOOK_STRICT_SCORE=${webScore}`);console.log('POST_WEB_ARTBOOK_HARD_FAILURES=NONE');console.log('DESIGN_ARTBOOK_VIBE2_USED=NO');console.log(`ARTBOOK_EDITOR_MODEL=${editorModel}`);

@@ -6,6 +6,7 @@ const workflow=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
 const operations=fs.readFileSync('HOMEPAGE_OPERATIONS.md','utf8');
 const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
 const testSync=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
+const artbookTool=fs.readFileSync('tools/company-design-artbook.mjs','utf8');
 const homepageEntry=fs.readFileSync('assets/homepage-enhancements.js','utf8');
 const homepageCore=fs.readFileSync('assets/homepage-enhancements-core.js','utf8');
 
@@ -93,6 +94,20 @@ test('Top30 test artbooks remain valid before catalog promotion',()=>{
   assert.ok(manage.includes("const tests=JSON.parse(fs.readFileSync('test-game-candidates.json','utf8'));"));
   assert.ok(manage.includes('const testGameIds=new Set('));
   assert.ok(manage.includes('book.homepageTestCandidate===true&&testGameIds.has('));
+});
+
+test('post-Web artbook and Top30 both require exact schema13 evidence binding',()=>{
+  assert.ok(artbookTool.includes("POST_WEB_SCHEMA13_DESIGN_BOUND"));
+  assert.ok(artbookTool.includes("Number(webEvidence?.validationSchemaVersion||webEvidence?.version)===13"));
+  assert.ok(artbookTool.includes("webEvidence?.contentDepthValidation?.validationMode==='REAL_ELAPSED_GAMEPLAY'"));
+  assert.ok(artbookTool.includes("clean(webEvidence?.designBaselineSha256)===sha256Text(fs.readFileSync(revisedPath,'utf8'))"));
+  assert.ok(artbookTool.includes("DESIGN_ARTBOOK_REQUIRES_APPROVED_DESIGN_BINDING"));
+  assert.ok(testSync.includes("item.postWebArtbookPassed!==true"));
+  assert.ok(testSync.includes("item.homepageTestCandidate!==true"));
+  assert.ok(testSync.includes("clean(item.homepageTestVerdict).toUpperCase()!=='PASS'"));
+  assert.ok(testSync.includes("artbook?.postWebStrictReview!==true"));
+  assert.ok(testSync.includes("Number(artbook?.webStrictScore)!==scoreOf(evidence)"));
+  assert.ok(testSync.includes("clean(artbook?.webValidationEvidencePath)!==evidencePath"));
 });
 
 test('Top30 mirror sync is semantic-idempotent and does not create timestamp-only churn',()=>{
