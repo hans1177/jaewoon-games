@@ -169,7 +169,7 @@ test('canonical DEVELOPMENT_CONFIRMED runtime persists initial PASS before a lat
   // A: initial PASS is persisted canonically before final depth and is not Top30/homepage eligible yet.
   assert.match(initialBlock,/--validation-stage=initial-cycle/);
   assert.doesNotMatch(initialBlock,/--validation-stage=final-content-depth/);
-  assert.match(initialBlock,/web-initial-cycle-validation\.json/);
+  assert.match(source,/web-initial-cycle-validation\.json/);
   assert.match(initialBlock,/canonicalState:'WAITING_WEB_FINAL_CONTENT_DEPTH'/);
   assert.match(initialBlock,/webInitialCyclePassed:true/);
   assert.match(initialBlock,/webInitialCycleEvidencePath:initialEvidenceRelative/);
