@@ -1,4 +1,5 @@
-// DESIGN_BASELINE -> 실제 Web 게임 생성/보존. 기존 실게임은 보존하고, 새 구현은 Vibe2 로컬 개발 AI가 우선 생성한다.
+// 파일명: tools/company-development-web-bootstrap.mjs
+// DESIGN_BASELINE -> 실제 Web 게임 생성/보존. 기존 실게임은 보존하고, 설계 구현이 부족한 기존 소스는 Vibe2가 직접 보완한다.
 import fs from 'node:fs';
 import path from 'node:path';
 import {Script} from 'node:vm';
@@ -34,8 +35,8 @@ function scriptBlockers(text){
   const out=[];let i=0;
   for(const m of scripts(text)){
     if(/\bsrc\s*=/i.test(m[1]||'')){out.push('SCRIPT_SRC_FORBIDDEN');continue;}
-    try{new Script(String(m[2]||''),{filename:`bootstrap-inline-${++i}.js`});}
-    catch{out.push('INLINE_SCRIPT_SYNTAX_INVALID');}
+    try{new Script(String(m[2]||''),{filename:`bootstrap-inline-${++i}.js`});
+    }catch{out.push('INLINE_SCRIPT_SYNTAX_INVALID');}
   }
   return out;
 }
@@ -104,8 +105,8 @@ async function ollamaReady(){
 async function ensureLocalVibeRuntime(model){
   if(!clean(model)||clean(model).toLowerCase()==='none')throw new Error('VIBE2_LOCAL_MODEL_REQUIRED');
   if(!await ollamaReady()){
-    try{execFileSync('ollama',['--version'],{stdio:'ignore'});}
-    catch{
+    try{execFileSync('ollama',['--version'],{stdio:'ignore'});
+    }catch{
       execFileSync('bash',['-lc','set -euo pipefail; curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh'],{stdio:'inherit',timeout:180000});
     }
     const child=spawn('ollama',['serve'],{detached:true,stdio:'ignore'});
@@ -144,7 +145,7 @@ async function callModel({model,prompt,repair=''}){
         think:false,
         format:OUTPUT_SCHEMA,
         messages:[
-          {role:'system',content:'너는 재운컴퍼니 Vibe2 PRIMARY DEVELOPER다. 잠긴 DESIGN_BASELINE을 재기획하거나 축소하지 말고 승인된 분량을 실제 플레이 가능한 모바일 Web 게임으로 구현한다. 초기 제작 최소단위는 ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE이며 고정 시간분량을 요구하지 않는다. 시작/월드진입, 실제 입력, 핵심 행동, 실제 상태변화, 성장·보상·의미있는 선택, 위험·실패·자원압박, 목표달성 또는 사이클 종료·재도전을 실제 게임 규칙으로 연결한다. 테스트 하네스, 시간 stage 버튼, 검증 패널, 체크리스트, 가짜 진행도는 금지한다. 외부 네트워크/외부 에셋/iframe/영구저장은 사용하지 않는다. 모바일 조작, Canvas 그래픽과 Web Audio를 구현한다. 30분 분량은 콘텐츠 확장 뒤 별도 최종 검증 단계에서만 다룬다.'},
+          {role:'system',content:'너는 재운컴퍼니 Vibe2 PRIMARY DEVELOPER다. 잠긴 DESIGN_BASELINE을 재기획하거나 축소하지 말고 승인된 분량을 실제 플레이 가능한 모바일 Web 게임으로 구현한다. 기존 실제 게임 소스가 주어지면 새 게임으로 갈아엎지 말고 기존 저장 키·저장 구조·규칙·진행을 보존하면서 검증에서 빠진 기능만 기존 책임 코드에 직접 구현한다. 초기 제작 최소단위는 ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE이며 고정 시간분량을 요구하지 않는다. 시작/월드진입, 실제 입력, 핵심 행동, 실제 상태변화, 성장·보상·의미있는 선택, 위험·실패·자원압박, 목표달성 또는 사이클 종료·재도전을 실제 게임 규칙으로 연결한다. 타워 배치 설계가 있으면 버튼 클릭만으로 설치하지 말고 실제 위치 선택 입력과 그 위치의 배치 결과를 구현한다. 전략 선택 설계가 있으면 서로 다른 선택이 실제 전투 결과 차이를 만들어야 한다. 테스트 하네스, 시간 stage 버튼, 검증 패널, 체크리스트, 가짜 진행도는 금지한다. 외부 네트워크/외부 에셋/iframe은 사용하지 않는다. 신규 생성에서 영구저장은 사용하지 않지만 기존 소스 보완에서는 기존 저장키와 저장 구조를 반드시 유지한다. 모바일 조작, 실제 게임 화면과 Web Audio를 구현한다. 30분 분량은 콘텐츠 확장 뒤 별도 최종 검증 단계에서만 다룬다.'},
           {role:'user',content:`${prompt}${repair?`\n\n이전 후보가 strict contract에서 실패했다. 아래 실패를 전부 실제 구현으로 수정하고 전체 HTML을 다시 생성하라:\n${repair}`:''}`}
         ],
         options:{temperature:repair?0.05:0.18,num_ctx:32768,num_predict:8500}
@@ -190,9 +191,8 @@ function preparePreservedStandaloneHtml(html,inventory){
 }
 function preservedResult({gameId,gameName,html,inventory,notes=[]}){
   const review=validatePreservedSourceHtml(html,{scopeInventory:inventory});
-  if(!review.pass)return null;
   return{
-    html,review,
+    html,review,preservationEligible:review.pass,
     validationQuestion:`${gameName||gameId} 기존 실제 Web 게임 보존 재검증`,
     implementationNotes:[...notes,'approved scopes rebound to current frozen DESIGN_BASELINE','obsolete initial time-stage validation UI removed without changing gameplay rules','one complete playable gameplay cycle required before final content-depth validation'],
     generationMode:'SOURCE_PRESERVED_REAL_GAME',
@@ -247,9 +247,10 @@ export function buildContractSafePlayable({gameId='',gameName='',baseline={}}={}
   throw new Error(`GENRE_REAL_IMPLEMENTATION_NOT_READY:${genre}`);
 }
 
-export function buildApprovedScopeGenerationPrompt({gameId='',gameName='',baseline={},inventory=[]}={}){
+export function buildApprovedScopeGenerationPrompt({gameId='',gameName='',baseline={},inventory=[],existingHtml='',preservationBlockers=[]}={}){
   const genre=inferDevelopmentGenre({gameId,baseline});
   const inventoryText=inventory.map((item,index)=>`${index+1}. id=${item.id} path=${item.path} meaning=${safeText(item.label)}`).join('\n');
+  const existing=clean(existingHtml)?`\n\n기존 실제 게임 소스가 있다. 아래 소스를 기준으로 직접 수정하고, 저장 키/저장 구조/기존 게임 규칙/이미 동작하는 기능은 유지한다. 전체 재작성이나 장르 템플릿 교체는 금지한다.\n기존 검증 실패 또는 재작업 사유: ${(preservationBlockers||[]).join(' | ')||'runtime rework requested'}\nEXISTING_HTML:\n${clip(existingHtml,24000)}`:'';
   return `게임 ID: ${gameId}
 게임 이름: ${gameName}
 잠긴 장르: ${genre}
@@ -265,43 +266,46 @@ ${inventoryText}
 - 실제 플레이 게임이어야 하며 테스트 하네스, 검증 패널, 체크리스트, 범용 scope 버튼 프록시, 시간 stage 버튼, 가짜 progress는 금지한다.
 - 초기 제작 최소단위는 ${INITIAL_PLAYABLE_MINIMUM}이고 고정 시간분량을 요구하지 않는다.
 - 시작/월드진입 → 실제 사용자 입력 → 핵심 게임행동 → 실제 상태변화 → 성장/보상/의미있는 선택 → 위험/실패/자원압박 → 목표달성 또는 사이클 종료/재도전을 하나의 실제 플레이 사이클로 연결한다.
-- <canvas>를 실제 게임 화면으로 사용하고 상태 변화에 따라 매 프레임 또는 이벤트마다 그래픽이 변해야 한다.
+- 타워/유닛 배치가 승인 설계에 있으면 설치 버튼만 눌러 수량을 증가시키는 구현은 금지한다. 플레이어가 실제 위치를 선택해야 하고 선택 위치에 실제 엔티티가 배치되어 전투 결과에 영향을 줘야 한다. DOM 배치면 data-placement-position/data-build-slot/data-tower-slot/data-grid-x/data-grid-y 중 적합한 실제 위치 표식을 사용하고, Canvas면 실제 포인터 좌표를 게임 좌표로 변환한다.
+- 전략 선택이 승인 설계에 있으면 선택지 이름만 다르게 두지 말고 서로 다른 선택이 피해·생존·처치·자원·진행 등 실제 전투 결과를 다르게 만들어야 한다.
+- 신규 게임은 <canvas> 또는 실제 상호작용 게임 surface를 사용하고 상태 변화에 따라 그래픽이 변해야 한다. 기존 실제 게임 보완은 현재 렌더링 방식을 보존해도 된다.
 - 모바일 터치 조작과 키보드 조작을 제공한다.
 - 최소 5개의 서로 다른 실제 gameplay mechanic에 data-mechanic-id를 부여한다.
 - 모든 승인 scope id를 실제 해당 mechanic control 또는 surface에 data-scope-id로 1회 이상 직접 바인딩한다.
 - 최상위 실제 게임 컨테이너에 data-web-artifact-type="${REAL_ARTIFACT_TYPE}", data-approved-scope-count="${inventory.length}", data-gameplay-system-count="5 이상", data-run-result="running", data-playable-cycle-contract="${INITIAL_PLAYABLE_MINIMUM}"를 넣는다.
-- 소스 전체 12KB 이상, inline JS 게임 로직 6KB 이상을 목표로 한다.
+- 소스 크기와 이름표는 보조 형식 조건일 뿐 구현 완료 근거가 아니다. 실제 입력→상태변화→월드 결과가 연결되어야 한다.
 - 실제 승리 조건과 실제 패배 조건을 구현하고 화면/코드에 victory 또는 목표 달성, defeat 또는 패배 상태가 존재해야 한다.
 - ${FINAL_CONTENT_DEPTH_MINUTES}분 실콘텐츠 검증은 초기 생성 계약에 넣지 않는다. 콘텐츠 확장 뒤 실제 gameplay로 별도 최종 검증한다.
 - AudioContext 또는 webkitAudioContext 기반 음악/효과음을 구현하고 data-audio-control="mute", data-audio-control="volume" 실제 조작을 제공한다.
-- 외부 URL asset, fetch/XMLHttpRequest/WebSocket, iframe/object/embed, localStorage/sessionStorage는 사용하지 않는다.
+- 외부 URL asset, fetch/XMLHttpRequest/WebSocket, iframe/object/embed는 사용하지 않는다. 신규 생성에서는 localStorage/sessionStorage를 사용하지 않는다. 기존 소스 보완이면 기존 저장 키와 저장 구조를 그대로 유지한다.
 - 승인 설계의 핵심 루프, 진행, 경제, 전투/탐험/상호작용 의미를 장르에 맞게 실제 상태와 규칙으로 구현한다.
 - 모든 텍스트는 사용자에게 게임 UI로 자연스럽게 보여야 하며 개발/검증 문구를 노출하지 않는다.
-- HTML 전체를 html 필드에 반환한다.`;
+- HTML 전체를 html 필드에 반환한다.${existing}`;
 }
 
-async function buildVibePlayable({gameId,gameName,baseline,inventory,model}){
-  const prompt=buildApprovedScopeGenerationPrompt({gameId,gameName,baseline,inventory});
+async function buildVibePlayable({gameId,gameName,baseline,inventory,model,existingHtml='',preservationBlockers=[]}){
+  const repairingExisting=Boolean(clean(existingHtml));
+  const prompt=buildApprovedScopeGenerationPrompt({gameId,gameName,baseline,inventory,existingHtml,preservationBlockers});
   const failures=[];
   for(let attempt=1;attempt<=MODEL_ATTEMPTS;attempt++){
     try{
       const candidate=await callModel({model,prompt,repair:failures.at(-1)||''});
       const html=bindInitialCycleContract(String(candidate?.html||''),inventory.length);
-      const review=validateBootstrapHtml(html,{scopeInventory:inventory});
+      const review=repairingExisting?validatePreservedSourceHtml(html,{scopeInventory:inventory}):validateBootstrapHtml(html,{scopeInventory:inventory});
       if(review.pass){
         return{
           result:{
             html,review,
             validationQuestion:clean(candidate.validationQuestion)||`${gameName||gameId} Vibe2 실제 Web 게임 구현 검증`,
             implementationNotes:Array.isArray(candidate.implementationNotes)?candidate.implementationNotes.slice(0,12):[],
-            generationMode:'VIBE2_PRIMARY_MODEL_IMPLEMENTATION',
+            generationMode:repairingExisting?'VIBE2_PRESERVED_SOURCE_REPAIR':'VIBE2_PRIMARY_MODEL_IMPLEMENTATION',
             approvedScopeInventory:inventory,
             initialPlayableMinimum:INITIAL_PLAYABLE_MINIMUM,
             finalContentDepth:{requiredMinutes:FINAL_CONTENT_DEPTH_MINUTES,status:'PENDING'},
             artifactType:REAL_ARTIFACT_TYPE
           },
           review,
-          generation:{mode:'VIBE2_PRIMARY_MODEL_IMPLEMENTATION',modelAttempts:attempt,modelContractFailures:failures,modelUsed:true,modelInvoked:true,sourcePreserved:false,model}
+          generation:{mode:repairingExisting?'VIBE2_PRESERVED_SOURCE_REPAIR':'VIBE2_PRIMARY_MODEL_IMPLEMENTATION',modelAttempts:attempt,modelContractFailures:failures,modelUsed:true,modelInvoked:true,sourcePreserved:repairingExisting,model}
         };
       }
       failures.push(review.blockers.join('|').slice(0,1800));
@@ -309,28 +313,32 @@ async function buildVibePlayable({gameId,gameName,baseline,inventory,model}){
       failures.push(String(error?.name==='AbortError'?'VIBE2_MODEL_TIMEOUT':error?.message||error).replace(/\s+/g,' ').slice(0,1800));
     }
   }
-  return{result:null,review:null,generation:{mode:'VIBE2_MODEL_NO_VALID_WINNER',modelAttempts:MODEL_ATTEMPTS,modelContractFailures:failures,modelUsed:false,modelInvoked:true,sourcePreserved:false,model}};
+  return{result:null,review:null,generation:{mode:repairingExisting?'VIBE2_PRESERVED_SOURCE_REPAIR_NO_VALID_WINNER':'VIBE2_MODEL_NO_VALID_WINNER',modelAttempts:MODEL_ATTEMPTS,modelContractFailures:failures,modelUsed:false,modelInvoked:true,sourcePreserved:repairingExisting,model}};
 }
 
-export async function buildFirstPlayable({gameId,gameName,baseline,sourcePath,candidatePath,candidateId,sourceCommit,model}){
+export async function buildFirstPlayable({gameId,gameName,baseline,sourcePath,candidatePath,candidateId,sourceCommit,model,forceRepair=false,repairReason=''}){
   void candidateId;void sourceCommit;
   const inventory=deriveApprovedScopeInventory(baseline);
   const preserved=buildPreservedSharedGame({gameId,gameName,sourcePath,inventory})||buildPreservedStandaloneGame({gameId,gameName,sourcePath,inventory});
   let result,review,generation;
-  if(preserved){
+  if(preserved?.preservationEligible&&!forceRepair){
     result=preserved;
     review=preserved.review;
-    generation={mode:preserved.generationMode,modelAttempts:0,modelContractFailures:[],modelUsed:false,modelInvoked:false,sourcePreserved:true,model:null};
+    generation={mode:preserved.generationMode,modelAttempts:0,modelContractFailures:[],modelUsed:false,modelInvoked:false,sourcePreserved:true,forcedRepair:false,model:null};
   }else{
     await ensureLocalVibeRuntime(model);
-    const vibe=await buildVibePlayable({gameId,gameName,baseline,inventory,model});
+    const preservationBlockers=[...(preserved?.review?.blockers||[])];
+    if(forceRepair)preservationBlockers.push(`RUNTIME_REWORK_REQUIRED:${clean(repairReason)||'CANONICAL_DEVELOPMENT_REWORK'}`);
+    const vibe=await buildVibePlayable({gameId,gameName,baseline,inventory,model,existingHtml:preserved?.html||'',preservationBlockers});
     ({result,review,generation}=vibe);
+    generation={...generation,forcedRepair:Boolean(forceRepair)};
     if(!result){
+      if(preserved)throw new Error(`VIBE2_PRESERVED_SOURCE_REPAIR_FAILED:${(generation.modelContractFailures||[]).join(' || ')||'no-valid-model-candidate'}`);
       try{
         const fallback=buildContractSafePlayable({gameId,gameName,baseline});
         result=fallback;
         review=fallback.review||validateBootstrapHtml(fallback.html,{scopeInventory:fallback.approvedScopeInventory});
-        generation={...generation,mode:'VIBE2_FAILED_SAFE_GENRE_FALLBACK',fallbackMode:fallback.generationMode};
+        generation={...generation,mode:'VIBE2_FAILED_SAFE_GENRE_FALLBACK',fallbackMode:fallback.generationMode,sourcePreserved:false};
       }catch(error){
         const modelFailure=(generation.modelContractFailures||[]).join(' || ');
         throw new Error(`VIBE2_PRIMARY_IMPLEMENTATION_FAILED:${modelFailure||'no-valid-model-candidate'};${String(error?.message||error)}`);
@@ -344,9 +352,9 @@ export async function buildFirstPlayable({gameId,gameName,baseline,sourcePath,ca
 }
 
 async function main(){
-  const gameId=clean(arg('game-id')),gameName=clean(arg('game-name',gameId)),baselineFile=arg('baseline'),sourcePath=clean(arg('source-path')),candidateId=safeId(arg('candidate-id')),candidatePath=clean(arg('candidate-path')),sourceCommit=clean(arg('source-commit')),model=clean(arg('model',process.env.AUTONOMOUS_LOCAL_MODEL||DEFAULT_MODEL)),evidenceFile=clean(arg('evidence'));
+  const gameId=clean(arg('game-id')),gameName=clean(arg('game-name',gameId)),baselineFile=arg('baseline'),sourcePath=clean(arg('source-path')),candidateId=safeId(arg('candidate-id')),candidatePath=clean(arg('candidate-path')),sourceCommit=clean(arg('source-commit')),model=clean(arg('model',process.env.AUTONOMOUS_LOCAL_MODEL||DEFAULT_MODEL)),evidenceFile=clean(arg('evidence')),forceRepair=clean(arg('force-repair')).toLowerCase()==='true',repairReason=clean(arg('repair-reason'));
   if(!gameId||!baselineFile||!sourcePath||!candidateId||!candidatePath||!sourceCommit||!evidenceFile)throw new Error('required bootstrap argument missing');
-  const baseline=readJson(baselineFile),{result,review,generation,approvedScopeInventory}=await buildFirstPlayable({gameId,gameName,baseline,sourcePath,candidatePath,candidateId,sourceCommit,model});
+  const baseline=readJson(baselineFile),{result,review,generation,approvedScopeInventory}=await buildFirstPlayable({gameId,gameName,baseline,sourcePath,candidatePath,candidateId,sourceCommit,model,forceRepair,repairReason});
   writeJson(evidenceFile,{version:11,candidateId,gameId,sourcePath,candidatePath,sourceCommit,candidateOnly:true,selfPromote:false,artifactType:REAL_ARTIFACT_TYPE,realPlayableGame:true,testHarness:false,sourcePreserved:generation.sourcePreserved,changedFiles:['index.html'],summary:result.validationQuestion,implementationNotes:result.implementationNotes,approvedScopeInventory,approvedScopeRequiredCount:approvedScopeInventory.length,initialPlayableMinimum:INITIAL_PLAYABLE_MINIMUM,initialThirtyMinuteHardRequirement:false,finalContentDepthValidation:{requiredMinutes:FINAL_CONTENT_DEPTH_MINUTES,status:'PENDING',stage:'FINAL_CONTENT_DEPTH_VALIDATION_ONLY'},generation,bootstrapContract:review,createdAt:new Date().toISOString()});
   void LEGACY_WORKFLOW_PROBE;
   console.log('DEVELOPMENT_WEB_BOOTSTRAP=PASS');
@@ -360,6 +368,7 @@ async function main(){
   console.log('VIBE2_PRIMARY_DEVELOPER=YES');
   console.log('MODEL_INVOKED='+(generation.modelInvoked?'YES':'NO'));
   console.log('MODEL_USED='+(generation.modelUsed?'YES':'NO'));
+  console.log('FORCED_REPAIR='+(generation.forcedRepair?'YES':'NO'));
   console.log('FULL_APPROVED_SCOPE_REQUIRED=YES');
   console.log('REAL_GAME_BYTES='+review.bytes);
   console.log('REAL_GAME_SCRIPT_BYTES='+review.scriptBytes);
