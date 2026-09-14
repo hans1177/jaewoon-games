@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-idle-growth-rpg-aethelgard-s-legacy",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "representativeModel": "qwen2.5:1.5b",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "RESOURCE_MANAGEMENT"
+    ],
+    "fix": [
+      "Ensure that the core loop and progression direction are clearly defined and aligned with the game's goals."
+    ],
+    "add": [
+      "Clarify the integration of the game's resource management and progression systems."
+    ],
+    "risks": [
+      "Legend of Slime"
+    ],
+    "evidence": [
+      "Legend of Slime"
+    ],
+    "questions": [
+      "How does the game handle resource management and progression?"
+    ]
+  }
+}

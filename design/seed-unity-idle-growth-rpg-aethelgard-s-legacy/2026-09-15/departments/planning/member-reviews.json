@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-idle-growth-rpg-aethelgard-s-legacy",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Ensure that the game's core features align with the planning goals of the Aethelgard's Legacy."
+        ],
+        "fix": [
+          "Clarify the integration of the seed material selection signals and their relevance to the game's progression."
+        ],
+        "add": [
+          "Identify and validate the reference sources for the game's materials and their alignment with the seed's context."
+        ],
+        "risks": [
+          "Assess the potential for resource optimization and progression systems to be overlooked in the planning phase."
+        ],
+        "evidence": [
+          "Provide evidence of the game's reference sources and their relevance to the seed's context."
+        ],
+        "questions": [
+          "What are the key features of the game's visual elements and character customization?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_seed_market_evidence.json"
+        ],
+        "fix": [
+          "game_seed_market_evidence.json"
+        ],
+        "add": [
+          "game_seed_market_evidence.json"
+        ],
+        "risks": [
+          "game_seed_market_evidence.json"
+        ],
+        "evidence": [
+          "game_seed_market_evidence.json"
+        ],
+        "questions": [
+          "game_seed_market_evidence.json"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game seed"
+        ],
+        "fix": [
+          "game seed"
+        ],
+        "add": [
+          "game seed"
+        ],
+        "risks": [
+          "game seed"
+        ],
+        "evidence": [
+          "game seed"
+        ],
+        "questions": [
+          "game seed"
+        ]
+      }
+    }
+  ]
+}

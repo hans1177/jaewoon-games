@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-idle-growth-rpg-aethelgard-s-legacy",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Idle Game Management, Resource Optimization"
+        ],
+        "fix": [
+          "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
+        ],
+        "add": [
+          "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idlereward"
+        ],
+        "risks": [
+          "Idle Heroes"
+        ],
+        "evidence": [
+          "Idle Heroes"
+        ],
+        "questions": [
+          "How does the game handle resource management and progression?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Ensure that the game's design is balanced and aligned with the planning goals of the Aethelgard's Legacy."
+        ],
+        "fix": [
+          "Clarify the integration of the game's resource management and progression systems."
+        ],
+        "add": [
+          "Identify and validate the reference sources for the game's materials and their relevance to the seed's context."
+        ],
+        "risks": [
+          "Assess the potential for resource optimization and progression systems to be overlooked in the balance phase."
+        ],
+        "evidence": [
+          "Provide evidence of the game's reference sources and their relevance to the seed's context."
+        ],
+        "questions": [
+          "What are the key features of the game's visual elements and character customization?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_seed_market_evidence.json"
+        ],
+        "fix": [
+          "game_seed_market_evidence.json"
+        ],
+        "add": [
+          "game_seed_market_evidence.json"
+        ],
+        "risks": [
+          "game_seed_market_evidence.json"
+        ],
+        "evidence": [
+          "game_seed_market_evidence.json"
+        ],
+        "questions": [
+          "game_seed_market_evidence.json"
+        ]
+      }
+    }
+  ]
+}

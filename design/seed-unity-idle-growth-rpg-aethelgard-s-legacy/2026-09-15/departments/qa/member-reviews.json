@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-idle-growth-rpg-aethelgard-s-legacy",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "CHARACTER_CUSTOMIZATION"
+        ],
+        "fix": [
+          "RESOURCE_MANAGEMENT"
+        ],
+        "add": [
+          "COMBAT_SYSTEM"
+        ],
+        "risks": [
+          "CHARACTER_CUSTOMIZATION"
+        ],
+        "evidence": [
+          "CHARACTER_CUSTOMIZATION"
+        ],
+        "questions": [
+          "CHARACTER_CUSTOMIZATION"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Idle Game Management, Resource Optimization"
+        ],
+        "fix": [
+          "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
+        ],
+        "add": [
+          "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idlereward"
+        ],
+        "risks": [
+          "Legend of Slime"
+        ],
+        "evidence": [
+          "Legend of Slime"
+        ],
+        "questions": [
+          "How does the game handle resource management and progression?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "What are the main gameplay progression systems in the game?"
+        ],
+        "fix": [
+          "Ensure that the core loop and progression direction are clearly defined and aligned with the game's goals."
+        ],
+        "add": [
+          "Clarify the integration of the game's resource management and progression systems."
+        ],
+        "risks": [
+          "Identify potential issues with the validation questions and their relevance to the game's features."
+        ],
+        "evidence": [
+          "Provide evidence of the game's reference sources and their relevance to the seed's context."
+        ],
+        "questions": [
+          "What are the key features of the game's visual elements and character customization?"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-idle-growth-rpg-aethelgard-s-legacy",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "SEED-UNITY-IDLE_GROWTH_RPG-001",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "qwen2.5:1.5b",
+  "sameModelAsDraft": true,
+  "appliedConsensusCount": 5,
+  "unresolvedConflictCount": 0,
+  "heldCount": 0,
+  "status": "DESIGN_BASELINE_CANDIDATE",
+  "content": {
+    "identity": "Aethelgard's Legacy",
+    "playerFantasy": "Idle Game Enthusiast",
+    "coreFun": "Idle Game Management, Resource Optimization",
+    "coreLoop": [
+      "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
+      "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
+      "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+    ],
+    "signatureSystems": [
+      {
+        "name": "Resource Management",
+        "purpose": "Manage and optimize resources to maximize idle progress and rewards.",
+        "playerChoice": "Selecting the best resources for each hero or stat path to maximize rewards and progress."
+      },
+      {
+        "name": "Game Progression",
+        "purpose": "Track and progress through different growth layers and stages.",
+        "playerChoice": "Choosing the right progression path to unlock new features and rewards."
+      },
+      {
+        "name": "Combat System",
+        "purpose": "Engage in battles with various enemies and bosses.",
+        "playerChoice": "Selecting the best heroes and strategies to defeat enemies and bosses."
+      },
+      {
+        "name": "Puzzle and Strategy",
+        "purpose": "Solve puzzles and strategize to progress through different levels.",
+        "playerChoice": "Using puzzle-solving skills and strategic thinking to unlock new levels and progress."
+      }
+    ],
+    "progressionDirection": "From simple idle game management to complex resource optimization and advanced gameplay progression.",
+    "visualDirection": "Unique Character Customization",
+    "mobileUx": "Android-based mobile game with a single player mode and cooperative multiplayer mode.",
+    "marketTargetDirection": "Global market with a focus on idle game enthusiasts and strategy game players.",
+    "steamExpansionDecision": "High expansion value but Steam expansion is not recommended.",
+    "multiplayerExpansionDecision": "Cooperative multiplayer mode is required but not recommended for Steam expansion.",
+    "technicalAssumptions": [
+      "Unity as the game engine",
+      "Android as the target platform",
+      "Resource management and progression systems",
+      "Combat and puzzle-solving systems",
+      "Character customization and visual elements"
+    ],
+    "validationQuestions": [
+      "How does the game handle resource management and progression?",
+      "What is the gameplay progression direction of the game?",
+      "How does the game handle the visual elements and character customization?",
+      "What is the multiplayer experience like in the game?",
+      "What is the game's market target and audience?"
+    ],
+    "openQuestions": [
+      "How does the game's resource management and progression systems compare to other idle games?",
+      "What are the key features of the game's visual elements and character customization?",
+      "How does the game handle the multiplayer experience and cooperative multiplayer mode?",
+      "What is the game's overall market target and audience?"
+    ]
+  }
+}
