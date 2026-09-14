@@ -151,17 +151,72 @@ test('legacy frozen implementation context requires an exact canonical game and 
   assert.match(source,/FROZEN_DESIGN_BASELINE\+CANONICAL_DEVELOPMENT_QUEUE/);
 });
 
-test('canonical DEVELOPMENT_CONFIRMED runtime separates schema13 initial cycle from final real elapsed depth',()=>{
+test('canonical DEVELOPMENT_CONFIRMED runtime persists initial PASS before a later final-depth execution',()=>{
   const source=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  const initialAt=source.indexOf('--validation-stage=initial-cycle');
-  const finalAt=source.indexOf('--validation-stage=final-content-depth');
+  const validator=fs.readFileSync('tools/company-development-web-gameplay-validation.mjs','utf8');
+  const initialAt=source.indexOf('if(!finalStage){');
+  const finalAt=source.indexOf('}else{',initialAt);
+  const catchAt=source.indexOf('}catch(error){',finalAt);
+  const resultWriteAt=source.indexOf('fs.writeFileSync(path.join(resultsRoot',catchAt);
   assert.ok(initialAt>0);
   assert.ok(finalAt>initialAt);
-  const initialGate=source.slice(initialAt,finalAt);
-  assert.doesNotMatch(initialGate,/homepageTestEligible!==true/);
-  assert.match(initialGate,/WEB_INITIAL_STAGE_MUST_NOT_CLAIM_FINAL_30MIN_PASS/);
-  assert.match(source,/contentDepthValidation\?\.validationMode!==\'REAL_ELAPSED_GAMEPLAY\'/);
-  assert.match(source,/elapsedRealMilliseconds\)<1800000/);
+  assert.ok(catchAt>finalAt);
+  assert.ok(resultWriteAt>catchAt);
+  const initialBlock=source.slice(initialAt,finalAt);
+  const finalBlock=source.slice(finalAt,catchAt);
+  const failureBlock=source.slice(catchAt,resultWriteAt);
+
+  // A: initial PASS is persisted canonically before final depth and is not Top30/homepage eligible yet.
+  assert.match(initialBlock,/--validation-stage=initial-cycle/);
+  assert.doesNotMatch(initialBlock,/--validation-stage=final-content-depth/);
+  assert.match(source,/web-initial-cycle-validation\.json/);
+  assert.match(initialBlock,/canonicalState:'WAITING_WEB_FINAL_CONTENT_DEPTH'/);
+  assert.match(initialBlock,/webInitialCyclePassed:true/);
+  assert.match(initialBlock,/webInitialCycleEvidencePath:initialEvidenceRelative/);
+  assert.match(initialBlock,/webInitialCycleSourcePath:stableSource/);
+  assert.match(initialBlock,/homepageTestEligible:false/);
+  assert.match(initialBlock,/WEB_INITIAL_CANONICAL_PERSIST/);
+  assert.match(initialBlock,/WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO/);
+
+  // B: an initial failure remains an initial revalidation failure and cannot execute final depth in that run.
+  assert.match(failureBlock,/canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION'/);
+  assert.match(failureBlock,/webInitialCyclePassed:false/);
+  assert.match(failureBlock,/WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO/);
+
+  // C: the next canonical final run consumes the exact persisted source/evidence and verifies both hashes.
+  assert.match(source,/canonicalState==='WAITING_WEB_FINAL_CONTENT_DEPTH'\?'final-content-depth':'initial-cycle'/);
+  assert.match(finalBlock,/materialize\(item\.webInitialCycleEvidencePath\)/);
+  assert.match(finalBlock,/materialize\(`\$\{item\.webInitialCycleSourcePath\}\/index\.html`\)/);
+  assert.match(finalBlock,/persistedInitial\.sourceIndexSha256!==item\.webInitialCycleSourceIndexSha256/);
+  assert.match(finalBlock,/persistedInitial\.designBaselineSha256!==item\.webInitialCycleDesignBaselineSha256/);
+  assert.match(finalBlock,/WEB_FINAL_CONTENT_DEPTH_RESUME/);
+
+  // D: only final PASS can become homepage/strict/promotion eligible.
+  assert.match(finalBlock,/--validation-stage=final-content-depth/);
+  assert.match(finalBlock,/contentDepthValidation\?\.validationMode!==\'REAL_ELAPSED_GAMEPLAY\'/);
+  assert.match(finalBlock,/elapsedRealMilliseconds\)<1800000/);
+  assert.match(finalBlock,/homepageTestEligible:true/);
+  assert.match(finalBlock,/PENDING_SELECTED_PLATFORM_BIND/);
+  assert.match(finalBlock,/WAITING_WEB_STRICT_IMPROVEMENT/);
+
+  // E: final failure/retry keeps initial binding and never calls bootstrap again.
+  assert.doesNotMatch(finalBlock,/company-development-web-bootstrap\.mjs/);
+  assert.match(failureBlock,/canonicalState:'WAITING_WEB_FINAL_CONTENT_DEPTH'/);
+  assert.match(failureBlock,/webInitialCycleEvidencePath:item\.webInitialCycleEvidencePath/);
+  assert.match(failureBlock,/webInitialCycleSourcePath:item\.webInitialCycleSourcePath/);
+  assert.match(failureBlock,/WEB_INITIAL_PASS_PRESERVED=YES/);
+  assert.match(source,/target\.runtimeStage==='final-content-depth'/);
+  assert.match(source,/web-final-content-depth:web-worker-result-missing/);
+
+  // F: direct time-stage/test-harness controls stay forbidden.
+  assert.match(validator,/DIRECT_TIME_STAGE_CONTROL_FORBIDDEN/);
+  assert.match(validator,/FAKE_TIME_PROGRESS_MARKERS_FORBIDDEN/);
+  assert.match(validator,/GENERIC_OR_TIME_PROXY_MARKERS_FORBIDDEN/);
+
+  // G: existing real-game preservation still feeds initial bootstrap, while final resumes the persisted source directly.
+  assert.match(initialBlock,/`--source-path=\$\{item\.webSourcePath\}`/);
+  assert.match(finalBlock,/`--source=\$\{item\.webInitialCycleSourcePath\}`/);
+
   assert.match(source,/WEB_VALIDATION_SCHEMA_MINIMUM=13/);
   assert.doesNotMatch(source,/WEB_VALIDATION_SCHEMA_MINIMUM=10/);
   assert.match(source,/webValidationEvidenceSchemaMinimum=13/);
