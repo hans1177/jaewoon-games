@@ -4551,6 +4551,40 @@
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
         "recordedAt": "2026-09-14T20:55:39.359Z"
+      },
+      {
+        "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+        "seedId": "SEED-UNITY-PUZZLE-001",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "runtimeTarget": null,
+        "verdict": "REVISE",
+        "totalScore": 91,
+        "previousScore": null,
+        "scoreDelta": null,
+        "hardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "resolvedHardFailures": [],
+        "addedHardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "improvementTargets": [
+          {
+            "dimension": "ideaDistinctness",
+            "current": 6,
+            "maxScore": 15,
+            "gap": 9
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [
+          "REAL_JOB_INDUSTRY_LIFE",
+          "SYSTEM_MECHANIC_EXPERIMENT",
+          "SPORT_BOARD_PLAY_RULE"
+        ],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "ACTIVE_SEED",
+        "recordedAt": "2026-09-14T21:16:03.966Z"
       }
     ],
     "causeCounts": {
@@ -4558,7 +4592,7 @@
       "COMPLETE_PLAYABLE_CYCLE_REQUIRED": 1,
       "FAIL_OR_LOSS_CONDITION_REQUIRED": 1,
       "CATEGORY_PROFILE_MATCH": 1,
-      "CORE_FUN_WEAK": 6
+      "CORE_FUN_WEAK": 7
     },
     "preferSeedMaterialFamilies": [],
     "avoidSeedMaterialFamilies": [],
@@ -4572,7 +4606,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-14T20:55:39.360Z"
+    "updatedAt": "2026-09-14T21:16:03.967Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,

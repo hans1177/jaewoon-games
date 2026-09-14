@@ -22,42 +22,42 @@
   "representatives": {
     "planning": {
       "keep": [
-        "keep"
+        "gameId: seed-unity-puzzle-chronicles-of-the-astral-weaver"
       ],
       "fix": [
-        "fix"
+        "status: ACTIVE"
       ],
       "add": [
-        "add"
+        "generation: HISTORICAL_INITIAL_BOOTSTRAP"
       ],
       "risks": [
-        "risks"
+        "SEED_MATERIAL_SELECTION_MODE: DYNAMIC_CONTEXTUAL_2_TO_4"
       ],
       "evidence": [
-        "evidence"
+        "SEED_MATERIAL_SELECTION_SIGNALS: TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME"
       ],
       "questions": [
-        "questions"
+        "SEED_MATERIAL_SELECTION_SIGNALS"
       ]
     },
     "graphics": {
       "keep": [
-        "Visual Direction"
+        "The visual style should be clean and modern. The graphics should be visually appealing and easy to understand."
       ],
       "fix": [
-        "game-seed"
+        "Use bright colors and clear fonts. Ensure the visuals are easy to read and understand."
       ],
       "add": [
-        "graphics"
+        "Consider adding subtle animations to enhance the gameplay experience."
       ],
       "risks": [
-        "game-seed"
+        "The visuals should not distract from the gameplay."
       ],
       "evidence": [
-        "game-seed"
+        "Refer to Graphics - The Visual Engine"
       ],
       "questions": [
-        "game-seed"
+        "What is the visual style of the game?"
       ]
     },
     "development": {
@@ -88,7 +88,7 @@
         "qa"
       ],
       "add": [
-        "qa"
+        "graphics"
       ],
       "risks": [
         "qa"
@@ -117,7 +117,7 @@
         "Unity"
       ],
       "questions": [
-        "What is the recommended play duration?"
+        "What is the core mechanic of the game?\nHow does the gameplay loop work?\nWhat is the progression direction?\nHow does the visual des"
       ]
     }
   },
@@ -128,7 +128,7 @@
     {
       "topic": "Planning",
       "status": "CONSENSUS",
-      "reason": "The structure is already in a clear format, so no changes were made.",
+      "reason": "The current structure aligns with the planning department's focus on core elements. The risks and evidence sections are well-defined, and the questions are clear. The revision adds clarity and ensures consistency across all sections.",
       "departments": [
         "planning",
         "graphics",
@@ -139,7 +139,7 @@
     {
       "topic": "Graphics",
       "status": "CONSENSUS",
-      "reason": "The current game-seed is a significant risk. We need to reassess its stability and ensure it aligns with the overall vision. Let's prioritize stabilizing the game-seed and address the risks associated with it.",
+      "reason": "The visuals should not distract from the gameplay.",
       "departments": [
         "graphics",
         "development",
@@ -149,25 +149,32 @@
     {
       "topic": "Development",
       "status": "CONSENSUS",
-      "reason": "own",
+      "reason": "다른 네 부서 대표 의견을 읽고 자기 책임범위에서 한 번만 수용/반박/수정합니다.",
       "departments": [
-        "development"
+        "planning",
+        "graphics",
+        "qa"
       ]
     },
     {
       "topic": "QA",
       "status": "CONSENSUS",
-      "reason": "qa 부서의 의견을 수용합니다.",
+      "reason": "The provided JSON object is structured correctly and follows the required format. It includes the 'accept', 'challenge', and 'revisiion' keys, each with an empty array as value. The 'reason' key is set to 'The provided JSON object is structured correctly and follows the required format.'",
       "departments": [
-        "qa"
+        "planning",
+        "graphics",
+        "development"
       ]
     },
     {
       "topic": "Balance",
       "status": "CONSENSUS",
-      "reason": "Unity",
+      "reason": "risks",
       "departments": [
-        "balance"
+        "planning",
+        "graphics",
+        "development",
+        "qa"
       ]
     }
   ],

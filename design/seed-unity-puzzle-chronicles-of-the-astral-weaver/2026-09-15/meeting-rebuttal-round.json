@@ -25,71 +25,65 @@
         "questions"
       ],
       "revision": [
-        "graphics",
-        "development",
-        "qa"
+        "keep",
+        "fix",
+        "add"
       ],
-      "reason": "The structure is already in a clear format, so I have not made any changes."
+      "reason": "The current structure aligns with the planning department's focus on core elements. The risks and evidence sections are well-defined, and the questions are clear. The revision adds clarity and ensures consistency across all sections."
     },
     "graphics": {
       "accept": [
-        "graphics",
-        "game-seed",
-        "add"
+        "The visual style should be clean and modern. The graphics should be visually appealing and easy to understand."
       ],
       "challenge": [
-        "keep",
-        "game-seed",
-        "risks"
+        "Use bright colors and clear fonts. Ensure the visuals are easy to read and understand."
       ],
       "revision": [
-        "game-seed",
-        "evidence",
-        "questions"
+        "Consider adding subtle animations to enhance the gameplay experience."
       ],
-      "reason": "The current game-seed is a significant risk. We need to reassess its stability and ensure it aligns with the overall vision.  Let's prioritize stabilizing the game-seed and address the risks associated with it."
+      "reason": "The visuals should not distract from the gameplay."
     },
     "development": {
       "accept": [
-        "own",
-        "others",
-        "graphics"
+        "keep",
+        "add",
+        "questions"
       ],
       "challenge": [
-        "own",
-        "others",
-        "graphics"
+        "risks",
+        "evidence",
+        "questions"
       ],
       "revision": [
-        "own",
-        "others",
-        "graphics"
+        "keep",
+        "add",
+        "questions"
       ],
-      "reason": "own"
+      "reason": "다른 네 부서 대표 의견을 읽고 자기 책임범위에서 한 번만 수용/반박/수정합니다."
     },
     "qa": {
       "accept": [
         "qa"
       ],
       "challenge": [
-        "qa"
+        "graphics"
       ],
       "revision": [
-        "qa"
+        "development"
       ],
-      "reason": "qa 부서의 의견을 수용합니다."
+      "reason": "The provided JSON object is structured correctly and follows the required format. It includes the 'accept', 'challenge', and 'revisiion' keys, each with an empty array as value. The 'reason' key is set to 'The provided JSON object is structured correctly and follows the required format.'"
     },
     "balance": {
       "accept": [
-        "Unity"
+        "keep"
       ],
       "challenge": [
-        "Unity"
+        "fix"
       ],
       "revision": [
-        "Unity"
+        "add"
       ],
-      "reason": "Unity"
+      "reason": "risks"
     }
   }
 }

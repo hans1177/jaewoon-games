@@ -35,7 +35,7 @@
           "Unity"
         ],
         "questions": [
-          "What is the recommended play duration?"
+          "What is the core mechanic of the game?\nHow does the gameplay loop work?\nWhat is the progression direction?\nHow does the visual des"
         ]
       }
     },
@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "keep"
+          "gameId: seed-unity-puzzle-chronicles-of-the-astral-weaver"
         ],
         "fix": [
-          "fix"
+          "status: ACTIVE"
         ],
         "add": [
-          "add"
+          "generation: HISTORICAL_INITIAL_BOOTSTRAP"
         ],
         "risks": [
-          "risks"
+          "SEED_MATERIAL_SELECTION_MODE: DYNAMIC_CONTEXTUAL_2_TO_4"
         ],
         "evidence": [
-          "evidence"
+          "SEED_MATERIAL_SELECTION_SIGNALS: TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME,"
         ],
         "questions": [
-          "questions"
+          "SEED_MATERIAL_SELECTION_SIGNALS"
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "Risks"
+          "The game should be balanced in terms of difficulty. The game should be challenging but not frustrating. "
         ],
         "fix": [
-          "Gameplay balance"
+          "Adjust the difficulty based on the player's skill level. Ensure the game is fair and challenging."
         ],
         "add": [
-          "Core Loop"
+          "Introduce a variety of puzzle types. Ensure the puzzle types are varied and engaging."
         ],
         "risks": [
-          "Gameplay balance"
+          "The game should be too easy or too difficult."
         ],
         "evidence": [
-          "Game Analytics 2025 Mobile Gaming Benchmarks"
+          "Refer to Balance - Game Balancing"
         ],
         "questions": [
-          "What is the main gameplay mechanic?"
+          "How does the game balance difficulty?"
         ]
       }
     }
