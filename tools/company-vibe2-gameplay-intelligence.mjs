@@ -63,6 +63,12 @@ function storageKeys(source){
   for(const match of String(source||'').matchAll(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)\s*\(\s*['"]([^'"]+)['"]/g))out.push(match[1]);
   return uniq(out).slice(0,40);
 }
+function storageKeyUsage(source,method){
+  const out=[];
+  const re=new RegExp(`(?:localStorage|sessionStorage)\\.${method}\\s*\\(\\s*['"]([^'"]+)['"]`,'g');
+  for(const match of String(source||'').matchAll(re))out.push(match[1]);
+  return uniq(out).slice(0,40);
+}
 function functionNames(source){
   const out=[];
   for(const match of String(source||'').matchAll(/(?:function\s+([A-Za-z_$][\w$]*)|(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>)/g))out.push(match[1]||match[2]);
@@ -93,6 +99,8 @@ export function analyzeExistingGameSource(source=''){
     bytes:Buffer.byteLength(raw,'utf8'),
     scriptBytes:scripts.reduce((n,s)=>n+Buffer.byteLength(s,'utf8'),0),
     storageKeys:storageKeys(raw),
+    storageReads:storageKeyUsage(raw,'getItem'),
+    storageWrites:storageKeyUsage(raw,'setItem'),
     functions,
     functionDependencies:functionDependencyGraph(scripts.join('\n'),functions),
     mechanicIds:dataValues(raw,'data-mechanic-id'),
@@ -106,9 +114,12 @@ export function analyzeExistingGameSource(source=''){
       collision:/collision|collider|data-collision/i.test(lower),
       raycastOrPath:/raycast|navmesh|pathfind|data-raycast|data-route|data-path/i.test(lower),
       realInput:/addEventListener\s*\(\s*['"](?:click|pointerdown|pointerup|touchstart|touchend|keydown|keyup)/i.test(raw),
+      touchInput:/touchstart|touchend|pointerdown|pointerup/i.test(lower),
       interactions:/data-interactable|data-interaction-target|data-npc|data-object-id/i.test(raw),
       saveState:/localStorage|sessionStorage/i.test(raw),
-      audio:/AudioContext|webkitAudioContext/i.test(raw),
+      economy:/coin|gold|currency|resource|price|cost|shop|buy|sell|econom/i.test(lower),
+      difficulty:/difficulty|level|wave|stage|enemyhp|enemydamage|scal/i.test(lower),
+      frameLoop:/requestAnimationFrame|setInterval|setTimeout/i.test(raw),
       winPath:/victory|win\b|목표 달성|선승/i.test(raw),
       failPath:/defeat|lose\b|gameover|패배|shutdown|destroyed/i.test(raw),
     }
@@ -135,7 +146,7 @@ export function buildVibePatchPlan({gameplaySketch={},sourceAnalysis={},inventor
     preserve:{storageKeys:sourceAnalysis.storageKeys||[],workingFunctions:(sourceAnalysis.functions||[]).slice(0,30),mechanicIds:sourceAnalysis.mechanicIds||[]},
     approvedScopeIds:inventory.map(x=>clean(x?.id)).filter(Boolean),
     tasks,
-    verificationOrder:['STATIC_CONTRACT','MOBILE_RUNTIME','REAL_INPUT_AND_STATE_CHANGE','APPROVED_SCOPE_BEHAVIOR','WIN_AND_FAIL','REGRESSION','FINAL_CONTENT_DEPTH_WHEN_APPLICABLE']
+    verificationOrder:['STATIC_CONTRACT','MOBILE_RUNTIME','REAL_INPUT_AND_STATE_CHANGE','APPROVED_SCOPE_BEHAVIOR','WIN_AND_FAIL','LONG_GOAL_PLAY','REPLAY_REGRESSION','SAVE_RESTORE','SOFTLOCK','ECONOMY','DIFFICULTY','PERFORMANCE','FINAL_CONTENT_DEPTH_WHEN_APPLICABLE']
   };
 }
 
@@ -152,21 +163,53 @@ export function buildDependencyAnalysis({sourceAnalysis={},patchPlan={}}={}){
   };
 }
 
+function classifyFailure(value){
+  const upper=clean(value).toUpperCase();
+  if(/SAVE|STORAGE|RESTORE|LOAD/.test(upper))return'SAVE_REGRESSION';
+  if(/REPLAY|DETERMIN|SAME_SEED|SAME_INPUT/.test(upper))return'REPLAY_REGRESSION';
+  if(/MOBILE|VIEWPORT|TOUCH|POINTER/.test(upper))return'MOBILE_RUNTIME';
+  if(/CONTENT|30MIN|DEPTH|REPET|LONG_GOAL/.test(upper))return'CONTENT_DEPTH';
+  if(/INTERACTION|NPC|OBJECT/.test(upper))return'ENTITY_INTERACTION';
+  if(/SPATIAL|3D|ROUTE|COLLISION|PLACEMENT|TOWER/.test(upper))return'SPATIAL_GAMEPLAY';
+  if(/STRATEG|OUTCOME|CHOICE/.test(upper))return'STRATEGY_OUTCOME';
+  if(/ECONOM|CURRENCY|PRICE|REWARD|RESOURCE/.test(upper))return'ECONOMY_BALANCE';
+  if(/DIFFICULT|DAMAGE|HEALTH|WAVE|SCAL/.test(upper))return'DIFFICULTY_CURVE';
+  if(/PERFORMANCE|FRAME|FPS|MEMORY|CPU|JANK/.test(upper))return'PERFORMANCE_RUNTIME';
+  if(/WIN|FAIL|SOFTLOCK|GOAL|PROGRESS|TERMINAL/.test(upper))return'STATE_MACHINE';
+  return'GENERAL_RUNTIME';
+}
+
 export function buildFailureDrivenRepairLoop({blockers=[],patchPlan={}}={}){
   const failures=uniq(blockers).slice(0,24);
-  const classifications=failures.map(value=>{
-    const upper=value.toUpperCase();
-    const type=/SAVE|STORAGE/.test(upper)?'SAVE_REGRESSION':/MOBILE|VIEWPORT|TOUCH/.test(upper)?'MOBILE_RUNTIME':/CONTENT|30MIN|DEPTH|REPET/.test(upper)?'CONTENT_DEPTH':/INTERACTION|NPC|OBJECT/.test(upper)?'ENTITY_INTERACTION':/SPATIAL|3D|ROUTE|COLLISION|PLACEMENT|TOWER/.test(upper)?'SPATIAL_GAMEPLAY':/STRATEG|OUTCOME/.test(upper)?'STRATEGY_OUTCOME':/WIN|FAIL|SOFTLOCK|GOAL/.test(upper)?'STATE_MACHINE':'GENERAL_RUNTIME';
-    return{failure:value,type};
-  });
+  const classifications=failures.map(value=>({failure:value,type:classifyFailure(value)}));
   const repairTaskIds=(patchPlan.tasks||[]).filter(task=>task.id.startsWith('FIX_')||['IMPLEMENT_PLAYABLE_SPACE','IMPLEMENT_ENTITY_INTERACTIONS','IMPLEMENT_POSITIONAL_PLACEMENT','IMPLEMENT_DIVERGENT_STRATEGY_RESULTS','CONNECT_PROGRESSION','EXPAND_MEANINGFUL_CONTENT'].includes(task.id)).map(task=>task.id);
   return{
-    version:1,
+    version:2,
     mode:'FAILURE_DRIVEN_TARGETED_REPAIR',
     failures:classifications,
     repairTaskIds:uniq(repairTaskIds),
-    retryContract:['READ_FAILURE_EVIDENCE','IDENTIFY_RESPONSIBLE_EXISTING_SYSTEM','PATCH_MINIMUM_COHERENT_RESPONSIBLE_BLOCK','RERUN_FAILED_VALIDATION','RUN_REPLAY_REGRESSION','PRESERVE_SAVE_AND_WORKING_BEHAVIOR'],
+    retryContract:['READ_FAILURE_EVIDENCE','IDENTIFY_RESPONSIBLE_EXISTING_SYSTEM','PATCH_MINIMUM_COHERENT_RESPONSIBLE_BLOCK','RERUN_FAILED_VALIDATION','RUN_LONG_GOAL_PLAY_WHEN_RELEVANT','RUN_REPLAY_REGRESSION','VERIFY_SAVE_RESTORE','VERIFY_SOFTLOCK_ECONOMY_DIFFICULTY_PERFORMANCE_MOBILE','PRESERVE_SAVE_AND_WORKING_BEHAVIOR'],
     stopCondition:'ALL_CURRENT_FAILURES_CLEARED_WITH_REGRESSION_GREEN'
+  };
+}
+
+export function buildRuntimeValidationPlan({gameplaySketch={},sourceAnalysis={}}={}){
+  const hasSave=Boolean(sourceAnalysis.capabilities?.saveState||sourceAnalysis.storageKeys?.length);
+  const needsEconomy=Boolean(gameplaySketch?.economyModel?.required||sourceAnalysis.capabilities?.economy);
+  const needsStrategy=Boolean(gameplaySketch?.combatModel?.strategicOutcomeDifferenceRequired);
+  return{
+    version:1,
+    mode:'INDEPENDENT_RUNTIME_EVIDENCE',
+    longGoal:{required:true,contract:'ADVANCE_REAL_OBJECTIVES_WITHOUT_TIME_SKIP_OR_VALIDATION_PROXY_AND_ACCUMULATE_NEW_GAMEPLAY_DIMENSIONS'},
+    replayRegression:{required:true,contract:'REPLAY_SAME_SEED_AND_INPUT_SEQUENCE_OR_EQUIVALENT_SCENARIO_AND_COMPARE_CRITICAL_STATE_TRANSITIONS'},
+    softlock:{required:true,contract:'NO_NON_TERMINAL_STATE_MAY_REMOVE_ALL_MEANINGFUL_PROGRESS_ACTIONS_WITHOUT_A_REAL_RETRY_OR_EXIT_PATH'},
+    saveRestore:{required:hasSave,protectedKeys:uniq(sourceAnalysis.storageKeys||[]),readKeys:uniq(sourceAnalysis.storageReads||[]),writeKeys:uniq(sourceAnalysis.storageWrites||[]),contract:'SAVE_THEN_RELOAD_OR_REENTER_MUST_RESTORE_MEANINGFUL_PROGRESS_WITHOUT_CHANGING_EXISTING_KEY_MEANING'},
+    economy:{required:needsEconomy,contract:'RESOURCE_SOURCES_SINKS_COSTS_AND_REWARDS_MUST_CHANGE_THROUGH_REAL_PLAY_WITHOUT_FREE_OR_NEGATIVE_EXPLOIT_LOOPS'},
+    difficulty:{required:true,contract:'PROGRESSION_MUST_NOT_CREATE_IMMEDIATE_UNAVOIDABLE_FAILURE_OR_ZERO_PRESSURE_STALL_ACROSS_OBSERVED_STAGES'},
+    performance:{required:true,contract:'MOBILE_RUNTIME_MUST_REMAIN_RESPONSIVE_DURING_ACTIVE_GAMEPLAY_WITH_BOUNDED_ERROR_AND_FRAME_STALL_EVIDENCE'},
+    mobile:{required:true,contract:'390X844_TOUCH_OR_POINTER_GAMEPLAY_INPUT_MUST_REACH_CORE_ACTIONS_WITHOUT_CLIPPED_REQUIRED_CONTROLS'},
+    strategyOutcomes:{required:needsStrategy,contract:'AT_LEAST_TWO_DISTINCT_STRATEGIC_CHOICES_MUST_PRODUCE_OBSERVABLY_DIFFERENT_COMBAT_OR_WORLD_OUTCOMES'},
+    contentDepth:{required:Boolean(gameplaySketch?.expansionPlan?.requiredForFinalDepth),contract:'RETRY_IDLE_AND_DUPLICATE_ACTION_TIME_EXCLUDED; NEW_ENEMY_AREA_OBJECTIVE_INTERACTION_OR_STRATEGY_RESULTS_REQUIRED'},
   };
 }
 
@@ -176,7 +219,8 @@ export function buildVibeDevelopmentContext({gameId='',genre='',baseline={},inve
   const patchPlan=buildVibePatchPlan({gameplaySketch,sourceAnalysis,inventory,blockers});
   const dependencyAnalysis=buildDependencyAnalysis({sourceAnalysis,patchPlan});
   const repairLoop=buildFailureDrivenRepairLoop({blockers,patchPlan});
-  return{version:2,gameplaySketch,sourceAnalysis,dependencyAnalysis,patchPlan,repairLoop};
+  const runtimeValidationPlan=buildRuntimeValidationPlan({gameplaySketch,sourceAnalysis});
+  return{version:3,gameplaySketch,sourceAnalysis,dependencyAnalysis,patchPlan,repairLoop,runtimeValidationPlan};
 }
 
 export function clipPreservedSourceForModel(source='',max=24000){
