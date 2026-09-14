@@ -21,31 +21,43 @@
   "distinctLeadModelCount": 5,
   "representatives": {
     "planning": {
-      "keep": [],
-      "fix": [],
-      "add": [],
-      "risks": [],
-      "evidence": [],
-      "questions": []
+      "keep": [
+        "SEED-UNITY-STORY_COMPLETE_RPG-001"
+      ],
+      "fix": [
+        "GAME_SEED"
+      ],
+      "add": [
+        "GAME_CATEGORY"
+      ],
+      "risks": [
+        "GAME_SEED"
+      ],
+      "evidence": [
+        "SEED_MATERIAL_IDS"
+      ],
+      "questions": [
+        "SEED_MATERIAL_SELECTION_MODE"
+      ]
     },
     "graphics": {
       "keep": [
-        "The Obsidian Covenant"
+        "graphics"
       ],
       "fix": [
-        "Visual Direction"
+        "graphics"
       ],
       "add": [
-        "The game should be visually appealing, with detailed environments and character models."
+        "graphics"
       ],
       "risks": [
-        "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life."
+        "graphics"
       ],
       "evidence": [
-        "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life."
+        "Final Fantasy VI"
       ],
       "questions": [
-        "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life"
+        "What is the visual style of the game?"
       ]
     },
     "development": {
@@ -70,42 +82,42 @@
     },
     "qa": {
       "keep": [
-        "Chrono Trigger, Final Fantasy VI, Dragon Quest VIII, The Obsidian Covenant"
+        "qa"
       ],
       "fix": [
-        "Chrono Trigger, Final Fantasy VI, Dragon Quest VIII, The Obsidian Covenant"
+        "qa"
       ],
       "add": [
-        "Chrono Trigger, Final Fantasy VI, Dragon Quest VIII, The Obsidian Covenant"
+        "qa"
       ],
       "risks": [
-        "Chrono Trigger, Final Fantasy VI, Dragon Quest VIII, The Obsidian Covenant"
+        "qa"
       ],
       "evidence": [
-        "Chrono Trigger, Final Fantasy VI, Dragon Quest VIII, The Obsidian Covenant"
+        "qa"
       ],
       "questions": [
-        "Chrono Trigger, Final Fantasy VI, Dragon Quest VIII, The Obsidian Covenant"
+        "qa"
       ]
     },
     "balance": {
       "keep": [
-        "keep"
+        "SOCIAL_COOP_COMPETITION"
       ],
       "fix": [
-        "fix"
+        "CATEGORY_OR_GENRE_FIT"
       ],
       "add": [
-        "add"
+        "TOP30_DIFFERENTIATION"
       ],
       "risks": [
-        "risks"
+        "VALIDATED_LEARNING_OUTCOME"
       ],
       "evidence": [
-        "evidence"
+        "CORE_FUN_TO_LEARN"
       ],
       "questions": [
-        "questions"
+        "DISTINCT_IDENTITY"
       ]
     }
   },
@@ -116,7 +128,7 @@
     {
       "topic": "graphics",
       "status": "CONSENSUS",
-      "reason": "The Obsidian Covenant is a unique and visually rich game, and a compelling visual experience is crucial for its success. Mobile optimization is a key consideration for this target audience.",
+      "reason": "Final Fantasy VI is a highly acclaimed and influential game, and its visual style is a key component of its success.  Therefore, we must prioritize its visual fidelity and maintain its artistic integrity.",
       "departments": [
         "graphics"
       ]
@@ -132,7 +144,7 @@
     {
       "topic": "qa",
       "status": "CONSENSUS",
-      "reason": "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life.",
+      "reason": "...",
       "departments": [
         "qa"
       ]
@@ -140,7 +152,7 @@
     {
       "topic": "balance",
       "status": "CONSENSUS",
-      "reason": "qa",
+      "reason": "planning",
       "departments": [
         "balance"
       ]

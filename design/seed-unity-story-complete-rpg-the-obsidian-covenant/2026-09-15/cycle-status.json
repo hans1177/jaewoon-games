@@ -170,10 +170,12 @@
         "recommendedState": "ACTIVE",
         "fatalCriteria": [],
         "evidence": [
-          "The Obsidian Covenant is a unique and visually rich game, and a compelling visual experience is crucial for its success.",
-          "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life."
+          "Chrono Trigger",
+          "FINAL FANTASY VI",
+          "Battle Chasers: Nightwar",
+          "Global RPG/session signal"
         ],
-        "reason": "The Obsidian Covenant is a unique and visually rich game, and a compelling visual experience is crucial for its success. Mobile optimization is a key consideration for this target audience."
+        "reason": "The design aligns with the core values of the game, including rich narrative and market relevance. The visual direction and design base are well-matched with the target market, and there is strong consensus across departments."
       },
       "graphics": {
         "recommendedState": "DISCARD",
@@ -184,9 +186,12 @@
           "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
         ],
         "evidence": [
-          "VALID_FATAL_CRITERIA"
+          "SEED_MATERIAL_SELECTION_SIGNALS",
+          "SEED_MATERIAL_SELECTION_REFERENCE_INPUTS",
+          "REFERENCE_GAMES",
+          "GAME_REFERENCE_DATA"
         ],
-        "reason": "The Obsidian Covenant's design presents significant challenges to its core gameplay loop and potential for long-term engagement. While the visual direction is promising, the core design elements, particularly the 'TARGET_PLATFORM_FIT' and 'GAME_REFERENCE' criteria, suggest a lack of clear focus and a potential for repetitive gameplay. The 'core loop' is too narrow, and the 'visual direction' is not sufficiently defined to ensure a compelling and engaging experience for a broad audience.  The game's design risks becoming a rehash of existing RPGs, lacking a unique identity and potentially failing to capture the attention of players seeking a fresh experience.  The 'target_platform_fit' is a '"
+        "reason": "The game is currently experiencing significant issues with the core gameplay loop, and the design is not aligned with the established core values of the game. The changes are not addressing the core issues, and the design is not viable. The design is not a viable option for the game."
       },
       "development": {
         "recommendedState": "REDESIGN",
@@ -197,12 +202,10 @@
           "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
         ],
         "evidence": [
-          "CORE_FUN_TO_LEARN",
-          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-          "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
-          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
+          "VALID_FATAL_CRITERIA",
+          "GAME_SEED"
         ],
-        "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. VALID_FATAL_CRITERIA=["
+        "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. VALID_FATAL_CRITERIA["
       },
       "qa": {
         "recommendedState": "REDESIGN",
@@ -215,10 +218,9 @@
         "evidence": [
           "Chrono Trigger",
           "FINAL FANTASY VI",
-          "DRAGON QUEST VIII",
-          "The Obsidian Covenant"
+          "DRAGON QUEST VIII"
         ],
-        "reason": "The current design does not meet the required criteria for the game's success, as it lacks the necessary elements to ensure a compelling narrative and engaging gameplay experience."
+        "reason": "The current design does not meet the criteria for active status, as it lacks distinct identity and fails to produce a unique product. The proposed redesign addresses these issues by incorporating rich lore and a complex story, which aligns with the market evidence and references provided."
       },
       "balance": {
         "recommendedState": "ACTIVE",
@@ -233,23 +235,23 @@
           "FINAL FANTASY VI",
           "DRAGON QUEST VIII"
         ],
-        "reason": "The Obsidian Covenant is a unique and visually rich game, and a compelling visual experience is crucial for its success. Mobile optimization is a key consideration for this target audience. The game should be designed for mobile devices, taking into account screen size, touch input, and battery life. The game should be designed for mobile devices, taking into account screen size, touch input, and battery life. The game should be designed for mobile devices, taking into account screen size, touch input, and battery life. The game should be designed for mobile devices, taking into account screen size, touch input, and battery life. The game should be designed for mobile devices, taking into ac"
+        "reason": "CONSENSUS"
       }
     },
     "marketMetricAloneUsedForDiscard": false
   },
   "runtimeMetrics": {
     "phaseMs": {
-      "designer_draft": 68347,
-      "independent_department_reviews": 323682,
-      "department_representatives": 34476,
-      "lead_rebuttals": 38913,
-      "cross_department_meeting": 16544,
-      "designer_revision": 51537,
-      "five_lead_fatal_review": 237288
+      "designer_draft": 31190,
+      "independent_department_reviews": 155489,
+      "department_representatives": 25214,
+      "lead_rebuttals": 24281,
+      "cross_department_meeting": 10329,
+      "designer_revision": 20245,
+      "five_lead_fatal_review": 122973
     },
     "totalModelCalls": 23,
-    "totalModelCallMs": 1579121,
+    "totalModelCallMs": 737896,
     "modelPhaseConcurrency": 3,
     "modelKeepAlive": "1m",
     "independentReviewOutputs": 15,
@@ -346,7 +348,7 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-14T17:49:19.650Z"
+    "checkedAt": "2026-09-14T19:11:47.655Z"
   },
   "artbookUi": {
     "status": "WRITING",

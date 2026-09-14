@@ -14,9 +14,9 @@
   "heldCount": 0,
   "status": "DESIGN_BASELINE_CANDIDATE",
   "content": {
-    "identity": "The Obsidian Covenant",
+    "identity": "SEED-UNITY-STORY_COMPLETE_RPG-001",
     "playerFantasy": "Rich Lore and Complex Story",
-    "coreFun": "Narrative Driven Gameplay",
+    "coreFun": "STORY_COMPLETE_RPG",
     "coreLoop": [
       "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
       "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
@@ -24,53 +24,24 @@
     ],
     "signatureSystems": [
       {
-        "name": "TARGET_PLATFORM_FIT",
-        "purpose": "Determine the most appropriate platform for the game's target audience.",
-        "playerChoice": "Social, Mobile, Console, PC.  Targeting 30 minutes session duration and 30 minutes session direction (30 minutes meaning significant time investment).  Requires a high level of engagement."
+        "name": "COMPANY_FLOW",
+        "purpose": "GAME_DESIGN_REFERENCE",
+        "playerChoice": "SECONDARY_CONTEXT_ONLY"
       },
       {
-        "name": "CATEGORY_OR_GENRE_FIT",
-        "purpose": "Ensure the game's genre and categories align with the target audience's preferences.",
-        "playerChoice": "RPG, Fantasy, Mystery, Adventure.  Requires a rich lore and complex story.  Needs to be a compelling and engaging experience."
-      },
-      {
-        "name": "SPACE_BUILDING_OPERATION",
-        "purpose": "Establish the game's world-building and setting.",
-        "playerChoice": "Space, Fantasy, Historical.  Requires a unique and immersive setting.  Needs to be visually appealing and offer a sense of scale."
-      },
-      {
-        "name": "GAME_REFERENCE",
-        "purpose": "Provide inspiration and context for the game's world and narrative.",
-        "playerChoice": "Chrono Trigger, Final Fantasy VI, Dragon Quest VIII,  The Obsidian Covenant.  Provides a framework for the story and world."
-      },
-      {
-        "name": "GAME_REFERENCE",
-        "purpose": "Establish the game's core mechanics and gameplay loop.",
-        "playerChoice": "Battle Chasers, Final Fantasy VI,  DRAGON QUEST VIII. Provides a foundation for the gameplay experience.  Needs to be engaging and require strategic thinking."
-      },
-      {
-        "name": "GAME_REFERENCE",
-        "purpose": "Establish the game's core mechanics and gameplay loop.",
-        "playerChoice": "RBLOX,  MONOPOLY GO!,  Candy Crush Saga. Provides a foundation for the gameplay experience.  Needs to be engaging and require strategic thinking."
+        "name": "GAME_DESIGN_REFERENCE",
+        "purpose": "TARGET_DESIGN_REFERENCE",
+        "playerChoice": "SECONDARY_CONTEXT_ONLY"
       }
     ],
-    "progressionDirection": "The player will progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion.",
-    "visualDirection": "The game should be visually appealing, with detailed environments and character models.",
-    "mobileUx": "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life.",
-    "marketTargetDirection": "The game should be designed to appeal to a broad audience, with a focus on engaging gameplay and a compelling story.",
-    "steamExpansionDecision": "The game should be designed to be monetizable, with a focus on providing a high-quality experience for the player.",
-    "multiplayerExpansionDecision": "The game should be designed for multi-player experiences.",
+    "progressionDirection": "HISTORICAL_INITIAL_BOOTSTRAP",
+    "visualDirection": "DESIGN_BASELINE",
+    "mobileUx": "DESIGN_BASELINE",
+    "marketTargetDirection": "DESIGN_BASELINE",
+    "steamExpansionDecision": "DESIGN_BASELINE",
+    "multiplayerExpansionDecision": "COOP",
     "technicalAssumptions": [],
     "validationQuestions": [],
-    "openQuestions": [
-      "The 'target_platform_fit' is a strong enough indicator of the game's success?",
-      "How can we ensure the game's narrative is engaging and avoids being repetitive?",
-      "What are the key gameplay loops that will keep players invested?",
-      "What is the optimal balance between challenging and accessible gameplay?",
-      "How will the game's visual style contribute to its overall appeal?",
-      "What is the best monetization strategy for this game?",
-      "How can we ensure the game is optimized for a wide range of mobile devices?",
-      "What are the potential challenges in creating a compelling mobile RPG experience?"
-    ]
+    "openQuestions": []
   }
 }

@@ -15,33 +15,31 @@
   "rebuttals": {
     "planning": {
       "accept": [
-        "keep",
-        "fix",
-        "add"
+        "SEED-UNITY-STORY_COMPLETE_RPG-001",
+        "GAME_SEED",
+        "GAME_CATEGORY"
       ],
       "challenge": [
-        "risks",
-        "evidence",
-        "questions"
+        "GAME_SEED",
+        "GAME_SEED"
       ],
       "revision": [
-        "graphics",
-        "development",
-        "qa"
+        "GAME_CATEGORY",
+        "TOP30_DIFFERENTIATION"
       ],
-      "reason": "The graphics, development, and qa sections are already well-reasoned. The risks, evidence, and questions sections have been carefully considered and are appropriate."
+      "reason": "This is a standard JSON structure for the given input, but I can add some additional information for clarity and completeness."
     },
     "graphics": {
       "accept": [
-        "Visual Direction"
+        "graphics"
       ],
       "challenge": [
-        "The game should be visually appealing, with detailed environments and character models."
+        "graphics"
       ],
       "revision": [
-        "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life."
+        "graphics"
       ],
-      "reason": "The Obsidian Covenant is a unique and visually rich game, and a compelling visual experience is crucial for its success. Mobile optimization is a key consideration for this target audience."
+      "reason": "Final Fantasy VI is a highly acclaimed and influential game, and its visual style is a key component of its success.  Therefore, we must prioritize its visual fidelity and maintain its artistic integrity."
     },
     "development": {
       "accept": [
@@ -62,15 +60,15 @@
     },
     "qa": {
       "accept": [
-        "Chrono Trigger, Final Fantasy VI, Dragon Quest VIII, The Obsidian Covenant"
+        "qa"
       ],
       "challenge": [
-        "The game should be visually appealing, with detailed environments and character models."
+        "qa"
       ],
       "revision": [
-        "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life."
+        "qa"
       ],
-      "reason": "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life."
+      "reason": "..."
     },
     "balance": {
       "accept": [
@@ -88,7 +86,7 @@
         "graphics",
         "development"
       ],
-      "reason": "qa"
+      "reason": "스키마에 맞는 JSON 객체만 반환한다."
     }
   }
 }
