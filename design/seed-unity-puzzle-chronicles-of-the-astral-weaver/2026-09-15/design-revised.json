@@ -20,35 +20,34 @@
     "coreLoop": [
       "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
       "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
-      "Clear the level goal to earn rewards or unlock the next board pattern or obstacle combination."
+      "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
     ],
     "signatureSystems": [
       {
         "name": "Unity",
-        "purpose": "Single-player",
-        "playerChoice": "SINGLE"
+        "purpose": "To provide a single-player experience with a clear goal and a sequence of actions that lead to progression.",
+        "playerChoice": "Select a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
       }
     ],
-    "progressionDirection": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기.",
-    "visualDirection": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기.",
-    "mobileUx": "Unity",
-    "marketTargetDirection": "Puzzle enthusiasts and casual gamers",
-    "steamExpansionDecision": "High",
-    "multiplayerExpansionDecision": "NOT_RECOMMENDED",
+    "progressionDirection": "From initial loop to progression, with rewards and new challenges.",
+    "visualDirection": "From starting the level to completing the goal, with feedback and new elements.",
+    "mobileUx": "Designed for Unity platform, with a focus on single-player gameplay.",
+    "marketTargetDirection": "Targeting puzzle enthusiasts and casual gamers, with emphasis on replayability and progression.",
+    "steamExpansionDecision": "Expanding on existing mechanics, with a focus on new challenges and progression.",
+    "multiplayerExpansionDecision": "Expanding on existing mechanics, with a focus on new challenges and progression.",
     "technicalAssumptions": [
-      "Unity platform",
-      "Single-player mode",
-      "SINGLE"
+      "The game is designed to be played on Unity platform.",
+      "The game is a single-player experience with a clear goal and progression."
     ],
     "validationQuestions": [
-      "What is the main gameplay mechanic of this game?",
-      "How does the game ensure player engagement and progression?",
-      "What is the target audience of this game?"
+      "Are there any issues with the game mechanics or design?",
+      "Is the game suitable for a target audience?",
+      "Are there any potential issues with the expansion plans?"
     ],
     "openQuestions": [
-      "What is the core fun of this game?",
-      "How does the game ensure player engagement and progression?",
-      "What is the target audience of this game?"
+      "What are the key features of the game?",
+      "Are there any new features or mechanics introduced?",
+      "What is the intended market for this game?"
     ]
   }
 }

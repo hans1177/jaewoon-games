@@ -13,22 +13,24 @@
   "representativeAuthoredByLead": true,
   "representative": {
     "keep": [
-      "Visual Direction"
+      "gemma3:1b",
+      "llama3.2:1b"
     ],
     "fix": [
-      "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기"
+      "qwen2.5:1.5b"
     ],
     "add": [
-      "Mobile Ux"
+      "gemma3:1b"
     ],
     "risks": [
-      "Player engagement and progression"
+      "game-seed"
     ],
     "evidence": [
-      "Player Fantasy"
+      "game-seed"
     ],
     "questions": [
-      "What is the main gameplay mechanic of this game?"
+      "Are there any issues with the game mechanics or design?",
+      "game-seed"
     ]
   }
 }

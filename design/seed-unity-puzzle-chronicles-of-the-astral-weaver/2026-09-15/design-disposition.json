@@ -17,23 +17,10 @@
         "Royal Match",
         "Candy Crush Saga"
       ],
-      "reason": "The evidence for the SEED_MATERIAL_SELECTION_MODE is not clear, so we revise it to be more specific."
+      "reason": "The current design is well-organized and aligns with the requirements. The key elements are clearly defined and the reasoning is consistent with the original data."
     },
     "graphics": {
       "recommendedState": "DISCARD",
-      "fatalCriteria": [
-        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
-        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION",
-        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY"
-      ],
-      "evidence": [
-        "VALID_FATAL_CRITERIA"
-      ],
-      "reason": "The SEED_MATERIAL_SELECTION_MODE is not clear. The current design does not fully satisfy the core gameplay loop requirements. The proposed changes are not sufficiently distinct from the existing game and do not offer a compelling reason to deviate from the current design.  The core loop is currently not well-defined, and the proposed changes could lead to a disjointed experience.  The design is not sufficiently unique and does not address the core gameplay loop requirements.  The proposed changes do not address the fundamental gameplay loop requirements. The proposed changes do not sufficiently differentiate the game from existing titles. The proposed changes do not adequately address the '3"
-    },
-    "development": {
-      "recommendedState": "REDESIGN",
       "fatalCriteria": [
         "CORE_FUN_CANNOT_BE_RECOVERED",
         "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
@@ -41,8 +28,22 @@
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
       "evidence": [
-        "VALID_FATAL_CRITERIA",
-        "GAME_SEED"
+        "GAME_SEED",
+        "VALID_FATAL_CRITERIA"
+      ],
+      "reason": "The game has several critical flaws that jeopardize its core functionality and potential for success. The identified fatal criteria highlight significant issues with the game's design, target audience, and overall viability.  The proposed changes, while aiming for improvement, are fundamentally incompatible with the core gameplay loop and the intended experience.  The suggested changes are not aligned with the game's intended purpose and could lead to a negative player experience.  The changes are not a viable solution to the identified problems and risk undermining the game's core mechanics.  The changes are not a significant improvement and do not address the core issues.  The changes are,"
+    },
+    "development": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json",
+        "game-seed-platform-profiles.json"
       ],
       "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라."
     },
@@ -60,7 +61,7 @@
         "Block Blast!",
         "Global puzzle/session signal"
       ],
-      "reason": "The current design does not meet the criteria for active status due to the presence of fatal design blockers. The proposed redesign addresses these issues and ensures that the game remains within the capabilities and scope of the seed material selection mode."
+      "reason": "The current design does not meet the required criteria for market evidence, as it lacks distinct identity and fails to produce a unique puzzle mechanic. The game's progression and visual elements are not aligned with the target audience and market trends."
     },
     "balance": {
       "recommendedState": "ACTIVE",
@@ -71,7 +72,7 @@
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
       "evidence": [],
-      "reason": "CONSENSUS"
+      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라."
     }
   },
   "marketMetricAloneUsedForDiscard": false

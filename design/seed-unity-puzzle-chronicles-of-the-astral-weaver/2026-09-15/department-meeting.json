@@ -22,62 +22,64 @@
   "representatives": {
     "planning": {
       "keep": [
-        "gameId: seed-unity-puzzle-chronicles-of-the-astral-weaver"
+        "keep the core features of the game"
       ],
       "fix": [
-        "status: ACTIVE"
+        "fix the evidence of market data"
       ],
       "add": [
-        "generation: HISTORICAL_INITIAL_BOOTSTRAP"
+        "add the reference games"
       ],
       "risks": [
-        "GAME_CATEGORY: PUZZLE"
+        "risks the market data evidence"
       ],
       "evidence": [
-        "SEED_MATERIAL_IDS: MAT-003, MAT-015, MAT-009"
+        "evidence of market data"
       ],
       "questions": [
-        "SEED_MATERIAL_SELECTION_MODE: DYNAMIC_CONTEXTUAL_2_TO_4"
+        "questions about the market target"
       ]
     },
     "graphics": {
       "keep": [
-        "Visual Direction"
+        "gemma3:1b",
+        "llama3.2:1b"
       ],
       "fix": [
-        "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기"
+        "qwen2.5:1.5b"
       ],
       "add": [
-        "Mobile Ux"
+        "gemma3:1b"
       ],
       "risks": [
-        "Player engagement and progression"
+        "game-seed"
       ],
       "evidence": [
-        "Player Fantasy"
+        "game-seed"
       ],
       "questions": [
-        "What is the main gameplay mechanic of this game?"
+        "Are there any issues with the game mechanics or design?",
+        "game-seed"
       ]
     },
     "development": {
       "keep": [
-        "gameId"
+        "game-seed"
       ],
       "fix": [
-        "gameId"
+        "game-seed"
       ],
       "add": [
-        "gameId"
+        "game-seed"
       ],
       "risks": [
-        "gameId"
+        "game-seed"
       ],
       "evidence": [
-        "gameId"
+        "game-seed"
       ],
       "questions": [
-        "gameId"
+        "game-seed"
       ]
     },
     "qa": {
@@ -102,23 +104,22 @@
     },
     "balance": {
       "keep": [
-        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or DEL",
-        "Clear the level goal to earn rewards or unlock the next board pattern or obstacle combination."
+        "Unity"
       ],
       "fix": [
-        "Clear the level goal to earn rewards or unlock the next board pattern or obstacle combination."
+        "React"
       ],
       "add": [
-        "Candy Crush Saga"
+        "React"
       ],
       "risks": [
-        "Royal Match"
+        "Unity"
       ],
       "evidence": [
-        "royal match"
+        "Unity"
       ],
       "questions": [
-        "What is the main gameplay mechanic of this game?"
+        "Unity"
       ]
     }
   },
@@ -127,41 +128,52 @@
   "summary": "CONSENSUS",
   "decisions": [
     {
-      "topic": "Planning",
+      "topic": "planning",
       "status": "CONSENSUS",
-      "reason": "The evidence for the SEED_MATERIAL_SELECTION_MODE is not clear, so we revise it to be more specific.",
+      "reason": "The current structure is well-organized and aligns with the requirements. The key elements are clearly defined and the reasoning is consistent with the original data.",
       "departments": [
-        "planning"
+        "planning",
+        "graphics",
+        "development",
+        "qa",
+        "balance"
       ]
     },
     {
-      "topic": "Graphics",
+      "topic": "graphics",
       "status": "CONSENSUS",
-      "reason": "Visual Direction - The core gameplay loop requires a clear and engaging progression path. Focusing on the initial phase will ensure a strong foundation for player experience.",
+      "reason": "game-seed is a critical factor for game success",
       "departments": [
-        "graphics"
+        "graphics",
+        "development",
+        "qa",
+        "balance"
       ]
     },
     {
-      "topic": "Development",
+      "topic": "development",
       "status": "CONSENSUS",
-      "reason": "own",
+      "reason": "game-seed",
       "departments": [
-        "development"
+        "graphics",
+        "development",
+        "qa",
+        "balance"
       ]
     },
     {
-      "topic": "QA",
+      "topic": "qa",
       "status": "CONSENSUS",
-      "reason": "QA 부서의 의견을 존중하고, 다른 부서의 의견을 반영하여 전체적인 프로세스를 개선하는 방향으로 수정합니다.",
+      "reason": "qa 부서의 의견을 수용합니다.",
       "departments": [
-        "qa"
+        "qa",
+        "balance"
       ]
     },
     {
-      "topic": "Balance",
+      "topic": "balance",
       "status": "CONSENSUS",
-      "reason": "OWN, OTHERS, graphics",
+      "reason": "Unity",
       "departments": [
         "balance"
       ]

@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or DEL"
+          "Unity"
         ],
         "fix": [
-          "Clear the level goal to earn rewards or unlock the next board pattern or obstacle combination."
+          "React"
         ],
         "add": [
-          "Candy Crush Saga"
+          "React"
         ],
         "risks": [
-          "Royal Match"
+          "Unity"
         ],
         "evidence": [
-          "royal match"
+          "Unity"
         ],
         "questions": [
-          "What is the main gameplay mechanic of this game?"
+          "Unity"
         ]
       }
     },
@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "DISTINCT_IDENTITY: Unique Puzzle Mechanics"
+          "keep the core features of the game"
         ],
         "fix": [
-          "MARKET_EVIDENCE_SUMMARY: [Royal Match, Candy Crush Saga]"
+          "fix the evidence of market data"
         ],
         "add": [
-          "REFERENCE_GAMES: [Royal Match, Candy Crush Saga]"
+          "add the reference games"
         ],
         "risks": [
-          "REFERENCE_GAMES: [Royal Match, Candy Crush Saga]"
+          "risks the market data evidence"
         ],
         "evidence": [
-          "REFERENCE_GAMES: [Royal Match, Candy Crush Saga]"
+          "evidence of market data"
         ],
         "questions": [
-          "REFERENCE_GAMES: [Royal Match, Candy Crush Saga]"
+          "questions about the market target"
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "Player Fantasy"
+          "game-seed-market-evidence.json"
         ],
         "fix": [
-          "Core Fun"
+          "SEED_MATERIAL_SELECTION_MODE"
         ],
         "add": [
-          "Visual Direction"
+          "SEED_MATERIAL_SELECTION_REFERENCE_GAMES"
         ],
         "risks": [
-          "Player engagement and progression"
+          "SEED_MATERIAL_SELECTION_SIGNALS"
         ],
         "evidence": [
-          "Player Fantasy"
+          "SEED_MATERIAL_SELECTION_REFERENCE_GAMES"
         ],
         "questions": [
-          "What is the main gameplay mechanic of this game?"
+          "Are there any issues with the game mechanics or design?"
         ]
       }
     }

@@ -15,47 +15,52 @@
   "rebuttals": {
     "planning": {
       "accept": [
-        "keep: gameId: seed-unity-puzzle-chronicles-of-the-astral-weaver",
-        "fix: status: ACTIVE",
-        "add: generation: HISTORICAL_INITIAL_BOOTSTRAP"
+        "keep the core features of the game",
+        "fix the evidence of market data",
+        "add the reference games"
       ],
       "challenge": [
-        "risks: GAME_CATEGORY: PUZZLE",
-        "evidence: SEED_MATERIAL_IDS: MAT-003, MAT-015, MAT-009"
+        "questions about the market target",
+        "risks the market data evidence",
+        "questions about the market mechanics or design"
       ],
       "revision": [
-        "questions: SEED_MATERIAL_SELECTION_MODE: DYNAMIC_CONTEXTUAL_2_TO_4",
-        "questions: SEED_MATERIAL_SELECTION_MODE: DYNAMIC_CONTEXTUAL_2_TO_4"
+        "add the reference games",
+        "fix the evidence of market data",
+        "keep the core features of the game"
       ],
-      "reason": "The evidence for the SEED_MATERIAL_SELECTION_MODE is not clear, so we revise it to be more specific."
+      "reason": "The current structure is well-organized and aligns with the requirements. The key elements are clearly defined and the reasoning is consistent with the original data."
     },
     "graphics": {
       "accept": [
-        "fix",
-        "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기"
+        "gemma3:1b",
+        "llama3.2:1b"
       ],
       "challenge": [
-        "Player engagement and progression"
+        "game-seed"
       ],
       "revision": [
-        "What is the main gameplay mechanic of this game?"
+        "game-seed"
       ],
-      "reason": "Visual Direction - The core gameplay loop requires a clear and engaging progression path.  Focusing on the initial phase will ensure a strong foundation for player experience."
+      "reason": "game-seed is a critical factor for game success"
     },
     "development": {
       "accept": [
-        "own",
-        "OTHERS"
+        "keep",
+        "add",
+        "questions"
       ],
       "challenge": [
-        "own",
-        "OTHERS"
+        "risks",
+        "evidence",
+        "questions"
       ],
       "revision": [
-        "own",
-        "OTHERS"
+        "fix",
+        "risks",
+        "evidence"
       ],
-      "reason": "own"
+      "reason": "game-seed"
     },
     "qa": {
       "accept": [
@@ -67,25 +72,19 @@
       "revision": [
         "qa"
       ],
-      "reason": "QA 부서의 의견을 존중하고, 다른 부서의 의견을 반영하여 전체적인 프로세스를 개선하는 방향으로 수정합니다."
+      "reason": "qa 부서의 의견을 수용합니다."
     },
     "balance": {
       "accept": [
-        "OWN",
-        "OTHERS",
-        "graphics"
+        "Unity"
       ],
       "challenge": [
-        "OWN",
-        "OTHERS",
-        "graphics"
+        "Unity"
       ],
       "revision": [
-        "OWN",
-        "OTHERS",
-        "graphics"
+        "Unity"
       ],
-      "reason": "OWN, OTHERS, graphics"
+      "reason": "Unity"
     }
   }
 }
