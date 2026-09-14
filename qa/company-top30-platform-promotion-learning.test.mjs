@@ -8,11 +8,12 @@ const homepageSync=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf
 const validationCycle=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
 
 test('Web 90 promotion requires a second independent fresh real-game validation',()=>{
-  assert.match(webValidation,/VALIDATION_SCHEMA_VERSION=11/);
+  assert.match(webValidation,/VALIDATION_SCHEMA_VERSION=12/);
   assert.match(webValidation,/sourceIndexSha256/);
   assert.match(webValidation,/designBaselineSha256/);
   assert.match(webValidation,/substanceGate/);
   assert.match(webValidation,/secondSubstancePass/);
+  assert.match(webValidation,/secondContentDepthPass/);
   assert.match(webValidation,/web-promotion-revalidation\.json/);
   assert.match(webValidation,/independentRun:true/);
   assert.match(webValidation,/sourceHashMatch/);
