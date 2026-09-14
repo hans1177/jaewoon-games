@@ -71,16 +71,30 @@ function functionNames(source){
 function dataValues(source,attribute){
   return uniq([...String(source||'').matchAll(new RegExp(`${attribute}=["']([^"']+)["']`,'gi'))].map(m=>m[1])).slice(0,60);
 }
+function functionDependencyGraph(source,names){
+  const raw=String(source||''),known=new Set(names||[]),edges=[];
+  for(const match of raw.matchAll(/function\s+([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*\{([\s\S]*?)\n?\}/g)){
+    const from=match[1],body=match[2]||'';
+    if(!known.has(from))continue;
+    for(const call of body.matchAll(/\b([A-Za-z_$][\w$]*)\s*\(/g)){
+      const to=call[1];
+      if(to!==from&&known.has(to))edges.push(`${from}->${to}`);
+    }
+  }
+  return uniq(edges).slice(0,120);
+}
 
 export function analyzeExistingGameSource(source=''){
   const raw=String(source||''),lower=raw.toLowerCase();
   const scripts=[...raw.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script\s*>/gi)].map(m=>m[1]||'');
+  const functions=functionNames(raw);
   return{
     present:Boolean(clean(raw)),
     bytes:Buffer.byteLength(raw,'utf8'),
     scriptBytes:scripts.reduce((n,s)=>n+Buffer.byteLength(s,'utf8'),0),
     storageKeys:storageKeys(raw),
-    functions:functionNames(raw),
+    functions,
+    functionDependencies:functionDependencyGraph(scripts.join('\n'),functions),
     mechanicIds:dataValues(raw,'data-mechanic-id'),
     scopeIds:dataValues(raw,'data-scope-id'),
     areaIds:uniq([...dataValues(raw,'data-area'),...dataValues(raw,'data-zone'),...dataValues(raw,'data-region')]),
@@ -125,11 +139,44 @@ export function buildVibePatchPlan({gameplaySketch={},sourceAnalysis={},inventor
   };
 }
 
+export function buildDependencyAnalysis({sourceAnalysis={},patchPlan={}}={}){
+  const taskEdges=[];
+  for(const task of patchPlan.tasks||[])for(const dependency of task.dependsOn||[])taskEdges.push(`${dependency}->${task.id}`);
+  return{
+    version:1,
+    sourceFunctionEdges:uniq(sourceAnalysis.functionDependencies||[]),
+    patchTaskEdges:uniq(taskEdges),
+    protectedSaveKeys:uniq(sourceAnalysis.storageKeys||[]),
+    protectedWorkingFunctions:uniq(sourceAnalysis.functions||[]).slice(0,40),
+    rule:'PATCH_DEPENDENCIES_BEFORE_DEPENDENTS_AND_REVALIDATE_AFFECTED_SYSTEMS'
+  };
+}
+
+export function buildFailureDrivenRepairLoop({blockers=[],patchPlan={}}={}){
+  const failures=uniq(blockers).slice(0,24);
+  const classifications=failures.map(value=>{
+    const upper=value.toUpperCase();
+    const type=/SAVE|STORAGE/.test(upper)?'SAVE_REGRESSION':/MOBILE|VIEWPORT|TOUCH/.test(upper)?'MOBILE_RUNTIME':/CONTENT|30MIN|DEPTH|REPET/.test(upper)?'CONTENT_DEPTH':/INTERACTION|NPC|OBJECT/.test(upper)?'ENTITY_INTERACTION':/SPATIAL|3D|ROUTE|COLLISION|PLACEMENT|TOWER/.test(upper)?'SPATIAL_GAMEPLAY':/STRATEG|OUTCOME/.test(upper)?'STRATEGY_OUTCOME':/WIN|FAIL|SOFTLOCK|GOAL/.test(upper)?'STATE_MACHINE':'GENERAL_RUNTIME';
+    return{failure:value,type};
+  });
+  const repairTaskIds=(patchPlan.tasks||[]).filter(task=>task.id.startsWith('FIX_')||['IMPLEMENT_PLAYABLE_SPACE','IMPLEMENT_ENTITY_INTERACTIONS','IMPLEMENT_POSITIONAL_PLACEMENT','IMPLEMENT_DIVERGENT_STRATEGY_RESULTS','CONNECT_PROGRESSION','EXPAND_MEANINGFUL_CONTENT'].includes(task.id)).map(task=>task.id);
+  return{
+    version:1,
+    mode:'FAILURE_DRIVEN_TARGETED_REPAIR',
+    failures:classifications,
+    repairTaskIds:uniq(repairTaskIds),
+    retryContract:['READ_FAILURE_EVIDENCE','IDENTIFY_RESPONSIBLE_EXISTING_SYSTEM','PATCH_MINIMUM_COHERENT_RESPONSIBLE_BLOCK','RERUN_FAILED_VALIDATION','RUN_REPLAY_REGRESSION','PRESERVE_SAVE_AND_WORKING_BEHAVIOR'],
+    stopCondition:'ALL_CURRENT_FAILURES_CLEARED_WITH_REGRESSION_GREEN'
+  };
+}
+
 export function buildVibeDevelopmentContext({gameId='',genre='',baseline={},inventory=[],existingHtml='',blockers=[]}={}){
   const gameplaySketch=deriveGameplaySketch({gameId,genre,baseline,inventory});
   const sourceAnalysis=analyzeExistingGameSource(existingHtml);
   const patchPlan=buildVibePatchPlan({gameplaySketch,sourceAnalysis,inventory,blockers});
-  return{version:1,gameplaySketch,sourceAnalysis,patchPlan};
+  const dependencyAnalysis=buildDependencyAnalysis({sourceAnalysis,patchPlan});
+  const repairLoop=buildFailureDrivenRepairLoop({blockers,patchPlan});
+  return{version:2,gameplaySketch,sourceAnalysis,dependencyAnalysis,patchPlan,repairLoop};
 }
 
 export function clipPreservedSourceForModel(source='',max=24000){
