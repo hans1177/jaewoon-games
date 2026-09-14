@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "reviewStage": "IMPLEMENTATION_STRICT_REVIEW",
   "scoreScale": 100,
@@ -8,126 +8,119 @@
   "excellent": false,
   "totalScore": 100,
   "scores": {
-    "ideaDistinctness": 15,
-    "categoryFit": 10,
-    "platformFit": 10,
-    "designFidelity": 15,
-    "session30Quality": 15,
-    "implementationCompleteness": 15,
-    "storyCausality": 10,
-    "progressionBalance": 5,
-    "artDirectionFidelity": 5
+    "CORE_GAME_LOOP": 15,
+    "SYSTEM_CONNECTIVITY": 10,
+    "CONTROLS_AND_GAME_FEEL": 8,
+    "FUNCTIONAL_UI_UX": 7,
+    "PROGRESSION_GROWTH_REWARD": 7,
+    "RISK_FAILURE_RETRY": 5,
+    "GAMEPLAY_FEEDBACK": 4,
+    "STABILITY_PERFORMANCE": 4,
+    "CATEGORY_PLACEMENT_AND_ROUTE": 8,
+    "CATEGORY_ENEMY_WAVES": 7,
+    "CATEGORY_TOWER_VARIETY": 7,
+    "CATEGORY_UPGRADES": 6,
+    "CATEGORY_ECONOMY": 6,
+    "CATEGORY_STRATEGIC_CHOICE": 6
   },
   "weights": {
-    "ideaDistinctness": 15,
-    "categoryFit": 10,
-    "platformFit": 10,
-    "designFidelity": 15,
-    "session30Quality": 15,
-    "implementationCompleteness": 15,
-    "storyCausality": 10,
-    "progressionBalance": 5,
-    "artDirectionFidelity": 5
+    "CORE_GAME_LOOP": 15,
+    "SYSTEM_CONNECTIVITY": 10,
+    "CONTROLS_AND_GAME_FEEL": 8,
+    "FUNCTIONAL_UI_UX": 7,
+    "PROGRESSION_GROWTH_REWARD": 7,
+    "RISK_FAILURE_RETRY": 5,
+    "GAMEPLAY_FEEDBACK": 4,
+    "STABILITY_PERFORMANCE": 4,
+    "CATEGORY_PLACEMENT_AND_ROUTE": 8,
+    "CATEGORY_ENEMY_WAVES": 7,
+    "CATEGORY_TOWER_VARIETY": 7,
+    "CATEGORY_UPGRADES": 6,
+    "CATEGORY_ECONOMY": 6,
+    "CATEGORY_STRATEGIC_CHOICE": 6
   },
   "improvementTargets": [],
   "hardFailures": [],
   "verdict": "PASS",
   "evidence": {
-    "source": "web-games/.autonomous-candidates/development-web-seed-single-defense-strat-celestial-bastion-34792724231-1",
+    "source": "web-games/.autonomous-candidates/development-web-seed-single-defense-strat-celestial-bastion-34812804740-1",
     "evidenceFile": "/tmp/web-work/seed-single-defense-strat-celestial-bastion/web-promotion-revalidation.json",
     "runtimePass": true,
     "runtimeTarget": "web",
     "designTokenCoverage": 1,
     "multiplayerDesignMode": "UNKNOWN",
     "multiplayerEvidence": null,
-    "sessionDepthMinutes": 30,
-    "structuredWebSessionRequired": true,
-    "structuredWebSessionPassed": true,
-    "sessionContract": {
-      "pass": true,
-      "validationMode": "GAMEPLAY_MILESTONE_DEPTH",
-      "minutes": 30,
-      "validatedMinutes": 30,
-      "stageCount": 4,
-      "completedStages": 4,
-      "windows": [
-        [
-          0,
-          5
-        ],
-        [
-          5,
-          15
-        ],
-        [
-          15,
-          25
-        ],
-        [
-          25,
-          30
-        ]
-      ],
-      "proofMode": "PROGRESSION_MILESTONES",
-      "directStageClick": false,
-      "shapePass": true,
-      "progressionProofPass": true,
-      "stageGameplayPassed": true,
-      "stageResults": [
-        {
-          "stage": 1,
-          "start": 0,
-          "end": 5,
-          "clicked": true,
-          "completed": true,
-          "trigger": "GAMEPLAY_MILESTONE",
-          "triggeredByGameplay": true,
-          "directStageClick": false,
-          "gameStateChanged": true,
-          "interactionIndex": 3,
-          "mechanicId": "action-tertiary"
-        },
-        {
-          "stage": 2,
-          "start": 5,
-          "end": 15,
-          "clicked": true,
-          "completed": true,
-          "trigger": "GAMEPLAY_MILESTONE",
-          "triggeredByGameplay": true,
-          "directStageClick": false,
-          "gameStateChanged": true,
-          "interactionIndex": 8,
-          "mechanicId": "action-tertiary"
-        },
-        {
-          "stage": 3,
-          "start": 15,
-          "end": 25,
-          "clicked": true,
-          "completed": true,
-          "trigger": "GAMEPLAY_MILESTONE",
-          "triggeredByGameplay": true,
-          "directStageClick": false,
-          "gameStateChanged": true,
-          "interactionIndex": 15,
-          "mechanicId": "action-accelerated"
-        },
-        {
-          "stage": 4,
-          "start": 25,
-          "end": 30,
-          "clicked": true,
-          "completed": true,
-          "trigger": "GAMEPLAY_MILESTONE",
-          "triggeredByGameplay": true,
-          "directStageClick": false,
-          "gameStateChanged": true,
-          "interactionIndex": 25,
-          "mechanicId": "action-accelerated"
-        }
-      ]
+    "realGameHardGates": {
+      "REAL_PLAYABLE_GAME": true,
+      "COMPLETE_PLAYABLE_GAMEPLAY_CYCLE": true,
+      "REAL_PLAYER_INPUT": true,
+      "REAL_GAMEPLAY_SURFACE": true,
+      "MEANINGFUL_INTERCONNECTED_GAME_STATE": true,
+      "REAL_GOAL_OR_WIN_AND_REAL_FAILURE_PATH": true,
+      "NO_TEST_PROXY": true,
+      "NO_FAKE_PROGRESS": true,
+      "MOBILE_PLAYABLE": true,
+      "RUNTIME_STABLE": true,
+      "CATEGORY_PROFILE_MATCH": true
     },
+    "initialPlayableCyclePassed": false,
+    "implementationMetrics": {
+      "uniqueMechanicCount": 5,
+      "uniqueFunctionalUiCount": 5,
+      "gameplayActionCount": 2360,
+      "stateVariableCount": 20,
+      "meaningfulStateTransitionCount": 2262,
+      "uniqueGameplayStateCount": 49,
+      "uniqueInteractedMechanicCount": 5,
+      "systemDependencyCount": 6,
+      "enemyOrWorldEntityCount": 32,
+      "winPathCount": 1,
+      "failPathCount": 1,
+      "retryPathCount": 1,
+      "duplicateActionRatio": 0,
+      "testUiRatio": 0,
+      "gameplayScreenRatio": 0.2859399684044234,
+      "contentVariationCount": 5,
+      "proxyMarkers": 0,
+      "directSessionControls": 0
+    },
+    "commonScore": 60,
+    "categoryScore": 40,
+    "categoryProfile": "TOWER_DEFENSE",
+    "observedCategoryProfile": "SURVIVAL|TOWER_DEFENSE|PUZZLE",
+    "categoryMatchPassed": true,
+    "categoryCandidates": {
+      "SURVIVAL": 40,
+      "TOWER_DEFENSE": 40,
+      "RPG": 33,
+      "TYCOON_SIMULATOR": 31,
+      "PUZZLE": 40,
+      "OBBY_PLATFORMER": 36,
+      "BATTLE_SHOOTER": 27,
+      "STORY_ADVENTURE": 34,
+      "LIFE_ROLEPLAY": 28
+    },
+    "categorySignals": {
+      "PLACEMENT_AND_ROUTE": true,
+      "ENEMY_WAVES": true,
+      "TOWER_VARIETY": true,
+      "UPGRADES": true,
+      "ECONOMY": true,
+      "STRATEGIC_CHOICE": true
+    },
+    "harnessIndicators": {
+      "directStageButton": false,
+      "syntheticTimeProgress": false,
+      "scopeProxy": false,
+      "testPanel": false,
+      "repeatedProxy": false,
+      "excessiveTestUi": false,
+      "evidenceFakeProgress": false,
+      "proxyIncrementCount": 1
+    },
+    "finalContentDepthRequiredAtTop30": true,
+    "finalContentDepthPassed": true,
+    "initialStrict30MinuteHardGate": false,
     "reviewContextSource": "FROZEN_DESIGN_BASELINE+CANONICAL_DEVELOPMENT_QUEUE",
     "reviewContextBaselinePath": "design/seed-single-defense-strat-celestial-bastion/2026-09-11/design-revised.json",
     "reviewContextCyclePath": "design/seed-single-defense-strat-celestial-bastion/2026-09-11/cycle-status.json"
@@ -140,7 +133,10 @@
     "officialCardBeforePassForbidden": true,
     "testShelfBeforePassOnly": true,
     "learningRecordRequired": true,
-    "improvementPriority": "TOP_3_SCORE_GAPS"
+    "improvementPriority": "TOP_3_SCORE_GAPS",
+    "implementationScoreComposition": "COMMON_60_PLUS_CATEGORY_40",
+    "initialWebStrictRequires30Minutes": false,
+    "final30MinuteContentDepthValidationOnly": true
   },
-  "reviewedAt": "2026-09-14T00:28:52.567Z"
+  "reviewedAt": "2026-09-14T07:19:37.444Z"
 }

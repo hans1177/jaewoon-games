@@ -1,15 +1,17 @@
 {
-  "version": 11,
-  "validationSchemaVersion": 11,
+  "version": 13,
+  "validationSchemaVersion": 13,
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "target": "web",
+  "validationStage": "final-content-depth",
   "status": "PASS",
   "pass": true,
   "validated": true,
   "realEvidenceExists": true,
   "gameplayInteractionPerformed": true,
-  "interactionCount": 25,
+  "interactionCount": 2360,
   "stateChanged": true,
+  "stateChangeCount": 2262,
   "musicRuntime": {
     "required": true,
     "startsAfterUserGesture": true,
@@ -86,9 +88,9 @@
   },
   "sourceFootprint": {
     "pass": true,
-    "implementationClass": "DEDICATED",
-    "totalBytes": 23591,
-    "scriptBytes": 23293,
+    "implementationClass": "DEDICATED_REAL_GAME",
+    "totalBytes": 21458,
+    "scriptBytes": 21160,
     "mechanicIds": [
       "action-primary",
       "action-secondary",
@@ -98,107 +100,105 @@
     ],
     "mechanicCount": 5,
     "systemCount": 7,
-    "proofMode": "PROGRESSION_MILESTONES",
-    "directStageControl": "false",
-    "stageButtons": false,
+    "cycleContract": "ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE",
     "proxyMarkers": 0,
+    "fakeTimeMarkers": 0,
+    "directStageButtons": false,
+    "stageButtons": false,
+    "winPathCount": 1,
+    "failPathCount": 1,
+    "retryPathCount": 1,
+    "growthRewardChoice": true,
+    "riskPressure": true,
+    "stateVariableCount": 20,
+    "systemDependencyCount": 6,
     "blockers": []
   },
   "substanceGate": {
     "pass": true,
-    "implementationClass": "DEDICATED",
-    "totalBytes": 23591,
-    "executableBytes": 23293,
+    "implementationClass": "DEDICATED_REAL_GAME",
+    "totalBytes": 21458,
+    "executableBytes": 21160,
     "mechanicCount": 5,
     "directSessionControls": 0,
-    "proxyMarkers": 0
+    "proxyMarkers": 0,
+    "initialImplementationUnit": "ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE"
   },
-  "sessionDepthMinutes": 30,
-  "sessionContract": {
+  "initialImplementationUnit": "ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE",
+  "initialPlayableCycle": {
+    "unit": "ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE",
     "pass": true,
-    "validationMode": "GAMEPLAY_MILESTONE_DEPTH",
-    "minutes": 30,
-    "validatedMinutes": 30,
-    "stageCount": 4,
-    "completedStages": 4,
-    "windows": [
-      [
-        0,
-        5
-      ],
-      [
-        5,
-        15
-      ],
-      [
-        15,
-        25
-      ],
-      [
-        25,
-        30
-      ]
-    ],
-    "proofMode": "PROGRESSION_MILESTONES",
+    "startWorldEntry": true,
+    "realPlayerInput": true,
+    "coreGameplayAction": true,
+    "actualStateChange": true,
+    "growthRewardOrMeaningfulChoice": true,
+    "riskFailureOrResourcePressure": true,
+    "goalOrCycleEnd": true,
+    "retryPath": true,
+    "interactionCount": 2360,
+    "stateTransitionCount": 2262,
+    "uniqueInteractedMechanics": 5
+  },
+  "initialPlayableCyclePassed": true,
+  "implementationMetrics": {
+    "uniqueMechanicCount": 5,
+    "uniqueFunctionalUiCount": 5,
+    "gameplayActionCount": 2360,
+    "stateVariableCount": 20,
+    "meaningfulStateTransitionCount": 2262,
+    "uniqueGameplayStateCount": 49,
+    "uniqueInteractedMechanicCount": 5,
+    "systemDependencyCount": 6,
+    "enemyOrWorldEntityCount": 32,
+    "winPathCount": 1,
+    "failPathCount": 1,
+    "retryPathCount": 1,
+    "gameplayScreenRatio": 0.2859399684044234,
+    "duplicateActionRatio": 0,
+    "testUiRatio": 0,
+    "contentVariationCount": 5
+  },
+  "contentDepthValidation": {
+    "mode": "FINAL_CONTENT_DEPTH_VALIDATION_ONLY",
+    "validationMode": "REAL_ELAPSED_GAMEPLAY",
+    "status": "COMPLETE",
+    "pass": true,
+    "targetMinutes": 30,
+    "validatedMinutes": 30.000883333333334,
+    "actualGameplayMinutes": 30.000883333333334,
+    "elapsedRealMilliseconds": 1800053,
+    "realContent": true,
+    "fakeProgress": false,
+    "testHarness": false,
     "directStageClick": false,
-    "shapePass": true,
-    "progressionProofPass": true,
-    "stageGameplayPassed": true,
-    "stageResults": [
-      {
-        "stage": 1,
-        "start": 0,
-        "end": 5,
-        "clicked": true,
-        "completed": true,
-        "trigger": "GAMEPLAY_MILESTONE",
-        "triggeredByGameplay": true,
-        "directStageClick": false,
-        "gameStateChanged": true,
-        "interactionIndex": 3,
-        "mechanicId": "action-tertiary"
-      },
-      {
-        "stage": 2,
-        "start": 5,
-        "end": 15,
-        "clicked": true,
-        "completed": true,
-        "trigger": "GAMEPLAY_MILESTONE",
-        "triggeredByGameplay": true,
-        "directStageClick": false,
-        "gameStateChanged": true,
-        "interactionIndex": 8,
-        "mechanicId": "action-tertiary"
-      },
-      {
-        "stage": 3,
-        "start": 15,
-        "end": 25,
-        "clicked": true,
-        "completed": true,
-        "trigger": "GAMEPLAY_MILESTONE",
-        "triggeredByGameplay": true,
-        "directStageClick": false,
-        "gameStateChanged": true,
-        "interactionIndex": 15,
-        "mechanicId": "action-accelerated"
-      },
-      {
-        "stage": 4,
-        "start": 25,
-        "end": 30,
-        "clicked": true,
-        "completed": true,
-        "trigger": "GAMEPLAY_MILESTONE",
-        "triggeredByGameplay": true,
-        "directStageClick": false,
-        "gameStateChanged": true,
-        "interactionIndex": 25,
-        "mechanicId": "action-accelerated"
-      }
+    "metrics": {
+      "uniqueMechanicCount": 5,
+      "uniqueFunctionalUiCount": 5,
+      "gameplayActionCount": 2360,
+      "stateVariableCount": 20,
+      "meaningfulStateTransitionCount": 2262,
+      "uniqueGameplayStateCount": 49,
+      "uniqueInteractedMechanicCount": 5,
+      "systemDependencyCount": 6,
+      "enemyOrWorldEntityCount": 32,
+      "winPathCount": 1,
+      "failPathCount": 1,
+      "retryPathCount": 1,
+      "gameplayScreenRatio": 0.2859399684044234,
+      "duplicateActionRatio": 0,
+      "testUiRatio": 0,
+      "contentVariationCount": 5
+    },
+    "varietyEvents": [
+      "타워 설치 (#)",
+      "타워 강화 (#)",
+      "웨이브 시작",
+      "긴급 수리 (#)",
+      "연속 웨이브 ×#"
     ]
   },
+  "sessionDepthMinutes": 30.000883333333334,
   "terminalOutcome": {
     "required": true,
     "reached": true,
@@ -206,9 +206,8 @@
   },
   "multiplayer": null,
   "before": {
-    "text": "← 재운게임즈 정식 WEB PLAY 천상의 보루 천상 코어를 지키기 위해 방어탑을 배치·강화하며 15개 전투 웨이브를 돌파하는 싱글 전략 디펜스. 100 CORE 1/15 WAVE 26 COIN 0 TOWER ✦ ◆ ✦ ◆ ✦ ◆ ✦ ◆ 타워 설치 (10) 타워 강화 (8) 웨이브 시작 긴급 수리 (12) 연속 웨이브 ×2 게임 시작 · 진행은 자동 저장됩니다. 0–5분 핵심 조작과 첫 진행 5–15분 경제·전투 루프 확장 15–25분 중후반 진행 검증 25–30분 승패·목표 도달 음악 켜짐 볼륨 저장 새 게임",
-    "canvases": [],
-    "dataState": [
+    "bodyText": "← 재운게임즈 정식 WEB PLAY 천상의 보루 천상 코어를 지키기 위해 방어탑을 배치·강화하며 15개 전투 웨이브를 돌파하는 싱글 전략 디펜스. 100 CORE 1/15 WAVE 26 COIN 0 TOWER ✦ ◆ ✦ ◆ ✦ ◆ ✦ ◆ 타워 설치 (10) 타워 강화 (8) 웨이브 시작 긴급 수리 (12) 연속 웨이브 ×2 게임 시작 · 진행은 자동 저장됩니다. 음악 켜짐 볼륨 저장 새 게임",
+    "stateNodes": [
       {
         "tag": "SECTION",
         "text": "100CORE1/15WAVE26COIN0TOWER",
@@ -224,15 +223,35 @@
           [
             "data-resource",
             "26"
-          ],
-          [
-            "data-progress",
-            "0"
           ]
         ]
       }
     ],
+    "values": {},
+    "canvasState": [],
     "visibleButtons": 8,
+    "gameplayControlCount": 5,
+    "functionalLabels": [
+      "타워 설치 (10)",
+      "타워 강화 (8)",
+      "웨이브 시작",
+      "긴급 수리 (12)",
+      "연속 웨이브 ×2"
+    ],
+    "mechanics": [
+      "action-primary",
+      "action-secondary",
+      "action-tertiary",
+      "action-support",
+      "action-accelerated"
+    ],
+    "uniqueFunctionalUiCount": 5,
+    "uniqueMechanicCount": 5,
+    "entityCount": 32,
+    "testUiCount": 0,
+    "testUiRatio": 0,
+    "duplicateActionRatio": 0,
+    "gameplayScreenRatio": 0.2859399684044234,
     "audioState": "locked",
     "muteControls": 1,
     "volumeControls": 1,
@@ -251,78 +270,58 @@
       "action-support",
       "action-accelerated"
     ],
-    "sessionDepthMinutes": 30,
-    "sessionProofMode": "PROGRESSION_MILESTONES",
-    "sessionDirectControl": "false",
-    "sessionStages": [
-      {
-        "stage": 1,
-        "start": 0,
-        "end": 5,
-        "complete": false,
-        "tag": "DIV",
-        "text": "0–5분핵심 조작과 첫 진행"
-      },
-      {
-        "stage": 2,
-        "start": 5,
-        "end": 15,
-        "complete": false,
-        "tag": "DIV",
-        "text": "5–15분경제·전투 루프 확장"
-      },
-      {
-        "stage": 3,
-        "start": 15,
-        "end": 25,
-        "complete": false,
-        "tag": "DIV",
-        "text": "15–25분중후반 진행 검증"
-      },
-      {
-        "stage": 4,
-        "start": 25,
-        "end": 30,
-        "complete": false,
-        "tag": "DIV",
-        "text": "25–30분승패·목표 도달"
-      }
-    ],
-    "sessionCurrentStage": 0,
-    "sessionCompletedStages": 0,
+    "cycleContract": "ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE",
     "runResult": "running",
-    "values": {},
     "scrollWidth": 390,
     "viewportWidth": 390
   },
   "after": {
-    "text": "← 재운게임즈 정식 WEB PLAY 천상의 보루 천상 코어를 지키기 위해 방어탑을 배치·강화하며 15개 전투 웨이브를 돌파하는 싱글 전략 디펜스. 100 CORE 16/15 WAVE 46 COIN 5 TOWER ✦ ◆ ✦ ◆ ✦ ◆ ✦ ◆ 타워 설치 (10) 타워 강화 (8) 웨이브 시작 긴급 수리 (12) 연속 웨이브 ×2 15웨이브 방어 성공! 0–5분 핵심 조작과 첫 진행 5–15분 경제·전투 루프 확장 15–25분 중후반 진행 검증 25–30분 승패·목표 도달 음악 켜짐 볼륨 저장 새 게임",
-    "canvases": [],
-    "dataState": [
+    "bodyText": "← 재운게임즈 정식 WEB PLAY 천상의 보루 천상 코어를 지키기 위해 방어탑을 배치·강화하며 15개 전투 웨이브를 돌파하는 싱글 전략 디펜스. 70 CORE 5/15 WAVE 34 COIN 1 TOWER ✦ ▲ ◆ ✦ ◆ ✦ ◆ ✦ ◆ 타워 설치 (10) 타워 강화 (8) 웨이브 시작 긴급 수리 (12) 연속 웨이브 ×2 웨이브 방어 완료 · 피해 6 음악 켜짐 볼륨 저장 새 게임",
+    "stateNodes": [
       {
         "tag": "SECTION",
-        "text": "100CORE16/15WAVE46COIN5TOWER",
+        "text": "70CORE5/15WAVE34COIN1TOWER",
         "attrs": [
           [
             "data-state",
-            "victory"
+            "running"
           ],
           [
             "data-score",
-            "429"
+            "42"
           ],
           [
             "data-resource",
-            "46"
-          ],
-          [
-            "data-progress",
-            "100"
+            "34"
           ]
         ]
       }
     ],
+    "values": {},
+    "canvasState": [],
     "visibleButtons": 8,
+    "gameplayControlCount": 5,
+    "functionalLabels": [
+      "타워 설치 (10)",
+      "타워 강화 (8)",
+      "웨이브 시작",
+      "긴급 수리 (12)",
+      "연속 웨이브 ×2"
+    ],
+    "mechanics": [
+      "action-primary",
+      "action-secondary",
+      "action-tertiary",
+      "action-support",
+      "action-accelerated"
+    ],
+    "uniqueFunctionalUiCount": 5,
+    "uniqueMechanicCount": 5,
+    "entityCount": 32,
+    "testUiCount": 0,
+    "testUiRatio": 0,
+    "duplicateActionRatio": 0,
+    "gameplayScreenRatio": 0.2859399684044234,
     "audioState": "running",
     "muteControls": 1,
     "volumeControls": 1,
@@ -341,47 +340,8 @@
       "action-support",
       "action-accelerated"
     ],
-    "sessionDepthMinutes": 30,
-    "sessionProofMode": "PROGRESSION_MILESTONES",
-    "sessionDirectControl": "false",
-    "sessionStages": [
-      {
-        "stage": 1,
-        "start": 0,
-        "end": 5,
-        "complete": true,
-        "tag": "DIV",
-        "text": "0–5분핵심 조작과 첫 진행"
-      },
-      {
-        "stage": 2,
-        "start": 5,
-        "end": 15,
-        "complete": true,
-        "tag": "DIV",
-        "text": "5–15분경제·전투 루프 확장"
-      },
-      {
-        "stage": 3,
-        "start": 15,
-        "end": 25,
-        "complete": true,
-        "tag": "DIV",
-        "text": "15–25분중후반 진행 검증"
-      },
-      {
-        "stage": 4,
-        "start": 25,
-        "end": 30,
-        "complete": true,
-        "tag": "DIV",
-        "text": "25–30분승패·목표 도달"
-      }
-    ],
-    "sessionCurrentStage": 4,
-    "sessionCompletedStages": 4,
-    "runResult": "victory",
-    "values": {},
+    "cycleContract": "ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE",
+    "runResult": "running",
     "scrollWidth": 390,
     "viewportWidth": 390
   },
@@ -392,21 +352,21 @@
   "failedRequests": [],
   "badResponses": [],
   "evidence": [
-    "interactionCount=25",
+    "validationStage=final-content-depth",
+    "interactionCount=2360",
+    "stateTransitions=2262",
     "mechanics=5",
-    "sourceBytes=23591",
-    "scriptBytes=23293",
     "approvedScope=true",
-    "sessionProofMode=PROGRESSION_MILESTONES",
-    "sessionDepthMinutes=30",
-    "terminalOutcome=victory"
+    "initialPlayableCycle=true",
+    "finalContentDepth=true",
+    "elapsedRealMilliseconds=1800053"
   ],
-  "checkedAt": "2026-09-14T00:28:49.085Z",
+  "checkedAt": "2026-09-14T06:49:36.363Z",
   "sourcePath": "web-games/seed-single-defense-strat-celestial-bastion",
-  "sourceIndexSha256": "bc60c52f540a66c6b8e1a5ba76ea9bb987576c428410cd512820afae305bac84",
-  "sourceRevision": "7716c3e02810b7506ec96675457ef87caea47b37",
+  "sourceIndexSha256": "3b082b7738748ec1596f196664dd77add920c27e48beaa10fb036c85a022bdc9",
+  "sourceRevision": "b976e6a6263bee1d458a2d5e43c17c18b12a6c8b",
   "designBaselineSha256": "dbadb2cc774fcc6e0f7389facc9272c37a215310705a74f493f53d5cf70f7444",
-  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-single-defense-strat-celestial-bastion-34792724231-1/",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-single-defense-strat-celestial-bastion-34812804740-1/",
   "screenshot": "/tmp/web-work/seed-single-defense-strat-celestial-bastion/web-gameplay.png",
   "strictReviewPath": "/tmp/web-work/seed-single-defense-strat-celestial-bastion/strict-implementation-review.json",
   "strictReview": {
@@ -414,7 +374,7 @@
     "totalScore": 100,
     "hardFailures": [],
     "improvementTargets": [],
-    "reviewedAt": "2026-09-14T00:28:49.218Z",
+    "reviewedAt": "2026-09-14T06:49:36.497Z",
     "formalPassThreshold": 90,
     "homepageTestThreshold": 80
   },
@@ -434,14 +394,14 @@
     "secondScore": 100,
     "sourceHashMatch": true,
     "baselineHashMatch": true,
-    "secondCheckedAt": "2026-09-14T00:28:52.520Z",
-    "secondSessionPass": true,
-    "secondFootprintPass": true,
+    "secondCheckedAt": "2026-09-14T07:19:37.387Z",
+    "secondContentDepthPass": true,
+    "secondFinalContentDepthPass": true,
     "secondSubstancePass": true,
     "secondTerminalReached": true,
     "error": null
   },
-  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-single-defense-strat-celestial-bastion-34792724231-1",
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-single-defense-strat-celestial-bastion-34812804740-1",
   "policyDocument": "COMPANY_FLOW.md",
   "requiredBeforeTargetPlatform": true
 }
