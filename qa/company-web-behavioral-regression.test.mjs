@@ -66,8 +66,15 @@ const bootstrap=fs.readFileSync('tools/company-development-web-bootstrap.mjs','u
 assert.match(bootstrap,/VIBE2_PRESERVED_SOURCE_REPAIR/,'preserved source must be repairable by Vibe');
 assert.match(bootstrap,/forceRepair/,'runtime must be able to force Vibe repair after failed validation');
 assert.match(bootstrap,/VIBE2_PRESERVED_SOURCE_REPAIR_FAILED/,'failed preserved-source repair must not silently replace the game');
+assert.match(bootstrap,/맵[·\/]월드[·\/]구역[·\/]경로/,'Vibe internal developer prompt must explicitly implement gameplay maps');
+assert.match(bootstrap,/배경 (?:이미지|그림).*구현/,'decorative backgrounds cannot satisfy the map requirement');
+assert.match(bootstrap,/실제 플레이 가능한 공간/,'Vibe must create an actual playable spatial surface');
+assert.match(bootstrap,/공간 선택.*실제 (?:게임 )?결과/,'map position or route choice must affect gameplay results');
 const validator=fs.readFileSync('tools/company-development-web-gameplay-validation.mjs','utf8');
 assert.match(validator,/selectPlacementPosition/,'validator must perform actual position input');
+assert.match(validator,/towerPositions/,'validator must observe materialized spatial placement positions');
+assert.match(validator,/areaIds/,'validator must observe actual world/area changes');
+assert.match(validator,/positionMarkerCount/,'validator must observe real map/build position markers');
 assert.match(validator,/meaningfulGameplayMilliseconds/);
 assert.match(validator,/excludedRepeatedActionMilliseconds/);
 assert.match(validator,/excludedRetryMilliseconds/);
