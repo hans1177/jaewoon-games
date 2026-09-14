@@ -7,6 +7,7 @@ import crypto from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {deriveApprovedScopeInventory,runtimeApprovedScopeCoverage} from './company-approved-scope-contract.mjs';
+import {runDeterministicReplay} from './company-web-deterministic-replay.mjs';
 
 const HOMEPAGE_TEST_THRESHOLD=80;
 const FORMAL_IMPLEMENTATION_THRESHOLD=90;
@@ -86,6 +87,8 @@ function sourceFootprint(source){
   const saveContract=/(?:localStorage\.(?:getItem|setItem)|sessionStorage\.(?:getItem|setItem)|indexedDB\b)/i.test(text);
   const economyContract=/(?:coin|gold|currency|resource|ore|wood|food|mana|cost|price|reward|코인|골드|화폐|자원|비용|보상)/i.test(text);
   const difficultyContract=/(?:difficulty|wave|stage|level|enemy|boss|damage|health|hp|난이도|웨이브|스테이지|레벨|적|보스|피해|체력)/i.test(text);
+  const usesRandomness=/(?:Math\.random\s*\(|crypto\.getRandomValues\s*\()/i.test(text);
+  const replaySeedContract=/(?:data-replay-seed|data-rng-seed|data-world-seed|replaySeed|__GAME_REPLAY_SEED__|__GAME_SEED__)/i.test(text);
   const blockers=[];
   if(totalBytes<MIN_SOURCE_BYTES)blockers.push(`SOURCE_FOOTPRINT_TOO_SMALL:${totalBytes}:${MIN_SOURCE_BYTES}`);
   if(scriptBytes<MIN_SCRIPT_BYTES)blockers.push(`SOURCE_GAME_LOGIC_TOO_SMALL:${scriptBytes}:${MIN_SCRIPT_BYTES}`);
@@ -99,7 +102,7 @@ function sourceFootprint(source){
   if(!retryPathCount)blockers.push('REAL_RETRY_PATH_REQUIRED');
   if(!growthRewardChoice)blockers.push('GROWTH_REWARD_OR_CHOICE_REQUIRED');
   if(!riskPressure)blockers.push('RISK_FAILURE_OR_RESOURCE_PRESSURE_REQUIRED');
-  return {pass:blockers.length===0,implementationClass:'DEDICATED_REAL_GAME',totalBytes,scriptBytes,mechanicIds,mechanicCount:mechanicIds.length,systemCount,cycleContract,proxyMarkers,fakeTimeMarkers,directStageButtons,stageButtons:directStageButtons,winPathCount,failPathCount,retryPathCount,growthRewardChoice,riskPressure,detected3D,interactionContract,saveContract,economyContract,difficultyContract,stateVariableCount:countStateVariables(text),systemDependencyCount:countSystemDependencies(text),blockers};
+  return {pass:blockers.length===0,implementationClass:'DEDICATED_REAL_GAME',totalBytes,scriptBytes,mechanicIds,mechanicCount:mechanicIds.length,systemCount,cycleContract,proxyMarkers,fakeTimeMarkers,directStageButtons,stageButtons:directStageButtons,winPathCount,failPathCount,retryPathCount,growthRewardChoice,riskPressure,detected3D,interactionContract,saveContract,economyContract,difficultyContract,usesRandomness,replaySeedContract,stateVariableCount:countStateVariables(text),systemDependencyCount:countSystemDependencies(text),blockers};
 }
 
 async function snapshot(page){
@@ -168,10 +171,7 @@ async function snapshot(page){
 }
 function gameplaySignature(view){return JSON.stringify({stateNodes:view?.stateNodes||[],values:view?.values||{},canvasState:view?.canvasState||[],runResult:view?.runResult||'',enemyTypes:view?.enemyTypes||[],towerTypes:view?.towerTypes||[],areas:view?.areaIds||[],objectives:view?.objectiveIds||[],interactionTargetStates:view?.interactionTargetStates||[],playerPosition:view?.playerPosition||{},routeId:view?.routeId||'',collisionCount:view?.collisionCount??null,raycastHit:view?.raycastHit||''});}
 function gameplayStateChanged(before,after){return gameplaySignature(before)!==gameplaySignature(after);}
-function positionChanged(before,after){
-  for(const key of ['x','y','z']){const a=Number(before?.playerPosition?.[key]),b=Number(after?.playerPosition?.[key]);if(Number.isFinite(a)&&Number.isFinite(b)&&Math.abs(a-b)>0.0001)return true;}
-  return false;
-}
+function positionChanged(before,after){for(const key of ['x','y','z']){const a=Number(before?.playerPosition?.[key]),b=Number(after?.playerPosition?.[key]);if(Number.isFinite(a)&&Number.isFinite(b)&&Math.abs(a-b)>0.0001)return true;}return false;}
 function interactionStateChanged(before,after){return JSON.stringify(before?.interactionTargetStates||[])!==JSON.stringify(after?.interactionTargetStates||[]);}
 function spatialStateChanged(before,after){return positionChanged(before,after)||clean(before?.routeId)!==clean(after?.routeId)||Number(before?.collisionCount??0)!==Number(after?.collisionCount??0)||clean(before?.raycastHit)!==clean(after?.raycastHit)||JSON.stringify(before?.areaIds||[])!==JSON.stringify(after?.areaIds||[]);}
 function meaningfulSpatialOutcome(before,after){
@@ -200,14 +200,9 @@ function choosePocketAction(view){
 async function selectPlacementPosition(page,index=0){
   const selectors='[data-placement-position],[data-build-slot],[data-tower-slot],[data-grid-x][data-grid-y]';
   const targets=page.locator(selectors),count=await targets.count();
-  for(let i=0;i<count;i++){
-    const target=targets.nth((Math.abs(Number(index)||0)+i)%count);
-    try{if(await target.isVisible()){await target.click({timeout:2500});await page.waitForTimeout(90);return true;}}catch{}
-  }
+  for(let i=0;i<count;i++){const target=targets.nth((Math.abs(Number(index)||0)+i)%count);try{if(await target.isVisible()){await target.click({timeout:2500});await page.waitForTimeout(90);return true;}}catch{}}
   const surface=page.locator('canvas,[data-gameplay-surface]').first();
-  if(await surface.count()){
-    try{const box=await surface.boundingBox();if(box){await surface.click({position:{x:Math.max(1,box.width*.35),y:Math.max(1,box.height*.55)},timeout:2500});await page.waitForTimeout(90);return true;}}catch{}
-  }
+  if(await surface.count()){try{const box=await surface.boundingBox();if(box){await surface.click({position:{x:Math.max(1,box.width*.35),y:Math.max(1,box.height*.55)},timeout:2500});await page.waitForTimeout(90);return true;}}catch{}}
   return false;
 }
 async function clickTarget(page,selector,index=0){
@@ -223,14 +218,11 @@ async function clickTarget(page,selector,index=0){
   const targetStateChanged=interactionStateChanged(before,after),targetSelected=interactionRequested&&(Boolean(targetFlags.interactionMarked)||Number(after.interactionTargetCount||0)>0),interactionResult=targetSelected&&targetStateChanged;
   const spatialInputObserved=Boolean(targetFlags.positionMarked)||/(move|walk|jump|dash|explore|reposition|route|path|이동|걷|점프|대시|탐험|경로|위치)/i.test(`${mechanicId} ${label}`);
   const didSpatialChange=spatialStateChanged(before,after),spatialOutcomeObserved=didSpatialChange&&meaningfulSpatialOutcome(before,after);
-  return {clicked:true,scopeId,mechanicId,label,before,after,stateChanged:gameplayStateChanged(before,after),outcomeSignature:deltaSignature(before,after),combatOutcomeSignature:combatDeltaSignature(before,after),positionSelected,towerEntityDelta,placementResult:positionSelected&&(towerEntityDelta>0||newTowerPosition),targetSelected,targetStateChanged,interactionResult,spatialInputObserved,spatialStateChanged:didSpatialChange,spatialOutcomeObserved,xyzMoved:positionChanged(before,after)};
+  return {clicked:true,scopeId,mechanicId,label,before,after,stateChanged:gameplayStateChanged(before,after),outcomeSignature:deltaSignature(before,after),combatOutcomeSignature:combatDeltaSignature(before,after),positionSelected,towerEntityDelta,placementResult:positionSelected&&(towerEntityDelta>0||newTowerPosition),placementFollowupRequired:placementRequested,placementIndex:index,targetSelected,targetStateChanged,interactionResult,spatialInputObserved,spatialStateChanged:didSpatialChange,spatialOutcomeObserved,xyzMoved:positionChanged(before,after)};
 }
 async function realRetry(page){
   const retry=page.locator('.reset,[data-retry],button').filter({hasText:/새 게임|다시|재도전|retry|restart|초기화/i}).first();
-  if(await retry.count()){
-    page.once('dialog',dialog=>dialog.accept().catch(()=>{}));
-    try{await retry.click({timeout:2500});await page.waitForTimeout(250);return true;}catch{}
-  }
+  if(await retry.count()){page.once('dialog',dialog=>dialog.accept().catch(()=>{}));try{await retry.click({timeout:2500});await page.waitForTimeout(250);return true;}catch{}}
   try{await page.evaluate(()=>localStorage.clear());await page.reload({waitUntil:'domcontentloaded',timeout:30000});await page.waitForTimeout(250);return true;}catch{return false;}
 }
 function evaluateInitialCycle({footprint,before,after,interactionCount,stateTransitionCount,uniqueInteractedMechanics,terminalReached,retryObserved,scopeCoverage}={}){
@@ -253,13 +245,7 @@ function evaluateRuntimeEvidence({before,after,interactionCount,stateTransitionC
   if(!startsAfterGesture)blockers.push('MUSIC_USER_GESTURE_RUNTIME_REQUIRED');
   if((footprint.interactionContract===true||Number(before?.interactionTargetCount||0)>0)&&Number(runtimeFeatureEvidence?.entityInteractionResultCount||0)<1)blockers.push('REAL_ENTITY_INTERACTION_RUNTIME_REQUIRED');
   const spatial=runtimeFeatureEvidence?.spatialEvidence||{};
-  if(spatial.detected3D===true){
-    if(spatial.xyzMoved!==true)blockers.push('REAL_3D_XYZ_MOVEMENT_REQUIRED');
-    if(spatial.cameraObserved!==true)blockers.push('REAL_3D_CAMERA_RUNTIME_REQUIRED');
-    if(spatial.collisionObserved!==true)blockers.push('REAL_3D_COLLISION_RUNTIME_REQUIRED');
-    if(spatial.raycastOrRouteObserved!==true)blockers.push('REAL_3D_RAYCAST_OR_ROUTE_RUNTIME_REQUIRED');
-    if(spatial.spatialOutcomeObserved!==true)blockers.push('REAL_3D_SPATIAL_OUTCOME_REQUIRED');
-  }
+  if(spatial.detected3D===true){if(spatial.xyzMoved!==true)blockers.push('REAL_3D_XYZ_MOVEMENT_REQUIRED');if(spatial.cameraObserved!==true)blockers.push('REAL_3D_CAMERA_RUNTIME_REQUIRED');if(spatial.collisionObserved!==true)blockers.push('REAL_3D_COLLISION_RUNTIME_REQUIRED');if(spatial.raycastOrRouteObserved!==true)blockers.push('REAL_3D_RAYCAST_OR_ROUTE_RUNTIME_REQUIRED');if(spatial.spatialOutcomeObserved!==true)blockers.push('REAL_3D_SPATIAL_OUTCOME_REQUIRED');}
   if(!scopeCoverage?.pass)for(const blocker of scopeCoverage?.blockers||['APPROVED_SCOPE_RUNTIME_COVERAGE_REQUIRED'])blockers.push(`SCOPE:${blocker}`);
   for(const item of consoleErrors)blockers.push(`CONSOLE:${item}`);for(const item of pageErrors)blockers.push(`PAGE:${item}`);for(const item of failedRequests)blockers.push(`REQUEST:${item}`);for(const item of badResponses)blockers.push(`RESPONSE:${item}`);
   const unique=[...new Set(blockers)];
@@ -279,20 +265,19 @@ function addNewContent(view,seen,added){
   for(const [key,prefix] of groups)for(const value of view?.[key]||[]){if(!seen[key].has(value)){seen[key].add(value);added.add(`${prefix}:${value}`);}}
 }
 function changedValueKeys(actionEvidence=[]){
-  const keys=new Set();
-  for(const row of actionEvidence){try{const parsed=JSON.parse(row?.outcomeSignature||'{}');for(const key of Object.keys(parsed?.values||{}))keys.add(key);}catch{}}
-  return keys;
+  const keys=new Set();for(const row of actionEvidence){try{const parsed=JSON.parse(row?.outcomeSignature||'{}');for(const key of Object.keys(parsed?.values||{}))keys.add(key);}catch{}}return keys;
 }
-export function buildRuntimeValidationEvidence({validationStage='initial-cycle',footprint={},before={},after={},reloadAfter={},saveBeforeReload={},saveAfterReload={},interactionCount=0,stateTransitionCount=0,terminalReached=false,retryObserved=false,runtimeFeatureEvidence={},contentDepthValidation={},actionEvidence=[],elapsedRealMilliseconds=0,consoleErrors=[],pageErrors=[],failedRequests=[],badResponses=[]}={}){
+export function buildRuntimeValidationEvidence({validationStage='initial-cycle',footprint={},before={},after={},reloadAfter={},saveBeforeReload={},saveAfterReload={},interactionCount=0,stateTransitionCount=0,terminalReached=false,retryObserved=false,runtimeFeatureEvidence={},contentDepthValidation={},actionEvidence=[],elapsedRealMilliseconds=0,consoleErrors=[],pageErrors=[],failedRequests=[],badResponses=[],replayEvidence=null}={}){
   const valueKeys=changedValueKeys(actionEvidence),economyKeys=['coins','gold','resource','res','ore','ingot','wood','food','mana','score'],difficultyKeys=['hp','health','core','wave','level','stage','power'];
   const economyObserved=economyKeys.some(key=>valueKeys.has(key)),difficultyObserved=difficultyKeys.some(key=>valueKeys.has(key))||terminalReached;
   const saveRequired=footprint.saveContract===true,saveStorageStable=JSON.stringify(saveBeforeReload||{})===JSON.stringify(saveAfterReload||{}),reloadStateChanged=gameplaySignature(after)!==gameplaySignature(reloadAfter);
   const mobileOverflow=Number(after?.scrollWidth||0)>Number(after?.viewportWidth||0)+2,performanceErrors=consoleErrors.length+pageErrors.length+failedRequests.length+badResponses.length,averageActionMilliseconds=interactionCount>0?elapsedRealMilliseconds/interactionCount:null;
-  const longGoalPass=terminalReached&&stateTransitionCount>=3,replayStatus='PENDING_DETERMINISTIC_REPLAY_INPUT_CAPTURE';
+  const longGoalPass=terminalReached&&stateTransitionCount>=3;
+  const replayRegression=replayEvidence&&typeof replayEvidence==='object'?replayEvidence:{required:true,pass:false,status:'PENDING_DETERMINISTIC_REPLAY_INPUT_CAPTURE',independentRun:false,sameSeed:false,sameInputTrace:false,criticalStateMatch:false};
   return {
     source:'CANONICAL_WEB_PLAYWRIGHT_VALIDATOR',
     longGoal:{required:true,pass:longGoalPass,terminalReached,stateTransitionCount},
-    replayRegression:{required:true,pass:false,status:replayStatus,independentRun:false,sameSeed:false,sameInputTrace:false},
+    replayRegression,
     softlock:{required:true,pass:terminalReached&&retryObserved,terminalReached,retryObserved,interactionCount},
     saveRestore:{required:saveRequired,pass:saveRequired?saveStorageStable:true,status:saveRequired?(saveStorageStable?'PASS':'FAIL'):'NOT_APPLICABLE_NO_SAVE_CONTRACT',storageKeyCount:Object.keys(saveBeforeReload||{}).length,storageStableAcrossReload:saveStorageStable,reloadStateChanged},
     economy:{required:footprint.economyContract===true,pass:footprint.economyContract===true?economyObserved:true,status:footprint.economyContract===true?(economyObserved?'PASS':'INCOMPLETE'):'NOT_APPLICABLE',changedKeys:[...valueKeys].filter(key=>economyKeys.includes(key))},
@@ -327,7 +312,7 @@ export async function runGameplayValidation({gameId,sourcePath,port=4181,output=
       }
       const pocketFoundry=Boolean(await page.locator('#mineOre').count());
       const selector=pocketFoundry?choosePocketAction(current):'[data-gameplay-action]:not([disabled])';
-      const actionStarted=Date.now(),result=await clickTarget(page,selector,pocketFoundry?0:step);step++;
+      const actionIndex=pocketFoundry?0:step,actionStarted=Date.now(),result=await clickTarget(page,selector,actionIndex);step++;
       if(!result.clicked){if(finalMode){await page.waitForTimeout(FINAL_ACTION_INTERVAL_MS);excludedRepeatedActionMilliseconds+=Date.now()-actionStarted;continue;}break;}
       interactionCount++;if(result.mechanicId)interactedMechanics.add(result.mechanicId);
       const changed=result.stateChanged===true;if(changed){stateTransitionCount++;stateSignatures.add(gameplaySignature(result.after));}
@@ -341,13 +326,22 @@ export async function runGameplayValidation({gameId,sourcePath,port=4181,output=
         if(changed&&!interactedScopeIds.includes(result.scopeId))interactedScopeIds.push(result.scopeId);
         scopeInteractionResults.push({scopeId:result.scopeId,mechanicId:result.mechanicId,clicked:true,stateChanged:changed,positionSelected:result.positionSelected===true,placementResult:result.placementResult===true,towerEntityDelta:result.towerEntityDelta,outcomeSignature:result.outcomeSignature,combatOutcomeSignature:result.combatOutcomeSignature,strategicOutcomeObserved:false,targetSelected:result.targetSelected===true,targetStateChanged:result.targetStateChanged===true,interactionResult:result.interactionResult===true,spatialInputObserved:result.spatialInputObserved===true,spatialStateChanged:result.spatialStateChanged===true,spatialOutcomeObserved:result.spatialOutcomeObserved===true,xyzMoved:result.xyzMoved===true});
       }
-      actionEvidence.push({mechanicId:result.mechanicId,label:result.label,stateChanged:changed,outcomeSignature:result.outcomeSignature,combatOutcomeSignature:result.combatOutcomeSignature,interactionResult:result.interactionResult===true,spatialOutcomeObserved:result.spatialOutcomeObserved===true,xyzMoved:result.xyzMoved===true,addedContent:[...addedContent]});
+      actionEvidence.push({scopeId:result.scopeId,mechanicId:result.mechanicId,label:result.label,stateChanged:changed,outcomeSignature:result.outcomeSignature,combatOutcomeSignature:result.combatOutcomeSignature,positionSelected:result.positionSelected===true,placementResult:result.placementResult===true,placementFollowupRequired:result.placementFollowupRequired===true,placementIndex:result.placementIndex,interactionResult:result.interactionResult===true,spatialOutcomeObserved:result.spatialOutcomeObserved===true,xyzMoved:result.xyzMoved===true,addedContent:[...addedContent]});
       const waveDelta=Number(result.after?.values?.wave||0)-Number(result.before?.values?.wave||0);
-      if(waveDelta>0&&lastDecisionMechanic)strategyCombatOutcomes.push({choiceMechanic:lastDecisionMechanic,outcomeSignature:result.combatOutcomeSignature});
-      else if(changed&&result.mechanicId)lastDecisionMechanic=result.mechanicId;
+      if(waveDelta>0&&lastDecisionMechanic)strategyCombatOutcomes.push({choiceMechanic:lastDecisionMechanic,outcomeSignature:result.combatOutcomeSignature});else if(changed&&result.mechanicId)lastDecisionMechanic=result.mechanicId;
       if(['victory','defeat'].includes(result.after?.runResult)){terminalReached=true;lastTerminalResult=result.after.runResult;if(!finalMode)break;}
     }
-    for(const scopeId of before.visibleScopeIds||[]){if(interactedScopeIds.includes(scopeId))continue;const result=await clickTarget(page,`[data-scope-id="${scopeId}"]`);if(result.clicked){interactionCount++;if(result.mechanicId)interactedMechanics.add(result.mechanicId);const changed=result.stateChanged===true;if(changed){stateTransitionCount++;stateSignatures.add(gameplaySignature(result.after));interactedScopeIds.push(scopeId);}const addedContent=new Set();addNewContent(result.after,seen,addedContent);for(const item of addedContent)varietyEvents.add(item);scopeInteractionResults.push({scopeId,mechanicId:result.mechanicId,clicked:true,stateChanged:changed,positionSelected:result.positionSelected===true,placementResult:result.placementResult===true,towerEntityDelta:result.towerEntityDelta,outcomeSignature:result.outcomeSignature,combatOutcomeSignature:result.combatOutcomeSignature,strategicOutcomeObserved:false,targetSelected:result.targetSelected===true,targetStateChanged:result.targetStateChanged===true,interactionResult:result.interactionResult===true,spatialInputObserved:result.spatialInputObserved===true,spatialStateChanged:result.spatialStateChanged===true,spatialOutcomeObserved:result.spatialOutcomeObserved===true,xyzMoved:result.xyzMoved===true});actionEvidence.push({mechanicId:result.mechanicId,label:result.label,stateChanged:changed,outcomeSignature:result.outcomeSignature,combatOutcomeSignature:result.combatOutcomeSignature,interactionResult:result.interactionResult===true,spatialOutcomeObserved:result.spatialOutcomeObserved===true,xyzMoved:result.xyzMoved===true,addedContent:[...addedContent]});}}
+    for(const scopeId of before.visibleScopeIds||[]){
+      if(interactedScopeIds.includes(scopeId))continue;
+      const result=await clickTarget(page,`[data-scope-id="${scopeId}"]`);
+      if(result.clicked){
+        interactionCount++;if(result.mechanicId)interactedMechanics.add(result.mechanicId);const changed=result.stateChanged===true;
+        if(changed){stateTransitionCount++;stateSignatures.add(gameplaySignature(result.after));interactedScopeIds.push(scopeId);}
+        const addedContent=new Set();addNewContent(result.after,seen,addedContent);for(const item of addedContent)varietyEvents.add(item);
+        scopeInteractionResults.push({scopeId,mechanicId:result.mechanicId,clicked:true,stateChanged:changed,positionSelected:result.positionSelected===true,placementResult:result.placementResult===true,towerEntityDelta:result.towerEntityDelta,outcomeSignature:result.outcomeSignature,combatOutcomeSignature:result.combatOutcomeSignature,strategicOutcomeObserved:false,targetSelected:result.targetSelected===true,targetStateChanged:result.targetStateChanged===true,interactionResult:result.interactionResult===true,spatialInputObserved:result.spatialInputObserved===true,spatialStateChanged:result.spatialStateChanged===true,spatialOutcomeObserved:result.spatialOutcomeObserved===true,xyzMoved:result.xyzMoved===true});
+        actionEvidence.push({scopeId,mechanicId:result.mechanicId,label:result.label,stateChanged:changed,outcomeSignature:result.outcomeSignature,combatOutcomeSignature:result.combatOutcomeSignature,positionSelected:result.positionSelected===true,placementResult:result.placementResult===true,placementFollowupRequired:result.placementFollowupRequired===true,placementIndex:result.placementIndex,interactionResult:result.interactionResult===true,spatialOutcomeObserved:result.spatialOutcomeObserved===true,xyzMoved:result.xyzMoved===true,addedContent:[...addedContent]});
+      }
+    }
     const strategyPairs=new Map();for(const row of strategyCombatOutcomes){if(!row.choiceMechanic)continue;if(!strategyPairs.has(row.choiceMechanic))strategyPairs.set(row.choiceMechanic,new Set());strategyPairs.get(row.choiceMechanic).add(row.outcomeSignature);}
     const strategyChoices=[...strategyPairs.keys()],strategyOutcomeSignatures=new Set(strategyCombatOutcomes.map(row=>clean(row.outcomeSignature)).filter(Boolean)),strategyCombatOutcomeCount=strategyOutcomeSignatures.size,strategicDiversityPass=strategyChoices.length>=2&&strategyCombatOutcomeCount>=2;
     for(const row of scopeInteractionResults){row.strategicOutcomeObserved=strategicDiversityPass&&strategyCombatOutcomes.some(other=>other.choiceMechanic===row.mechanicId);}
@@ -359,20 +353,21 @@ export async function runGameplayValidation({gameId,sourcePath,port=4181,output=
     const scopeCoverage=runtimeApprovedScopeCoverage({declaredCount:before.approvedScopeCount,visibleScopeIds:before.visibleScopeIds,interactedScopeIds,mechanicBindings:before.mechanicBindings,inventory:approvedScopeInventory,interactionResults:scopeInteractionResults,spatialEvidence});
     const initialPlayableCycle=evaluateInitialCycle({footprint,before,after,interactionCount,stateTransitionCount,uniqueInteractedMechanics:interactedMechanics.size,terminalReached,retryObserved,scopeCoverage});
     const metrics=implementationMetrics({footprint,before,after,interactionCount,stateTransitionCount,uniqueStateCount:stateSignatures.size,interactedMechanics,varietyEvents,runtimeFeatureEvidence,repeatedActionExcludedCount});
+    const replayRegression=await runDeterministicReplay({browser,url,referencePage:page,actionEvidence,usesRandomness:footprint.usesRandomness});
     const elapsedRealMilliseconds=Date.now()-startedAt,actualGameplayMinutes=meaningfulGameplayMilliseconds/60000,contentDepthTimePass=meaningfulGameplayMilliseconds>=FINAL_CONTENT_MINUTES*60*1000,realContentPass=newContentDimensionCount>=2&&varietyEvents.size>=2;
-    const contentDepthValidation=finalMode?{mode:'FINAL_CONTENT_DEPTH_VALIDATION_ONLY',validationMode:'REAL_ELAPSED_GAMEPLAY',status:contentDepthTimePass?'COMPLETE':'INCOMPLETE',pass:initialPlayableCycle.pass&&contentDepthTimePass&&realContentPass&&stateTransitionCount>=10&&metrics.testUiRatio===0&&metrics.duplicateActionRatio<=0.8,targetMinutes:FINAL_CONTENT_MINUTES,maxWallMinutes:FINAL_CONTENT_MAX_WALL_MINUTES,validatedMinutes:contentDepthTimePass?actualGameplayMinutes:0,actualGameplayMinutes,elapsedRealMilliseconds,meaningfulGameplayMilliseconds,excludedRepeatedActionMilliseconds,excludedRetryMilliseconds,realContent:realContentPass,fakeProgress:false,testHarness:false,directStageClick:false,metrics,varietyEvents:[...varietyEvents],runtimeFeatureEvidence}:pendingContentDepth();
+    const contentDepthValidation=finalMode?{mode:'FINAL_CONTENT_DEPTH_VALIDATION_ONLY',validationMode:'REAL_ELAPSED_GAMEPLAY',status:contentDepthTimePass&&replayRegression.pass?'COMPLETE':'INCOMPLETE',pass:initialPlayableCycle.pass&&contentDepthTimePass&&realContentPass&&stateTransitionCount>=10&&metrics.testUiRatio===0&&metrics.duplicateActionRatio<=0.8&&replayRegression.pass===true,targetMinutes:FINAL_CONTENT_MINUTES,maxWallMinutes:FINAL_CONTENT_MAX_WALL_MINUTES,validatedMinutes:contentDepthTimePass?actualGameplayMinutes:0,actualGameplayMinutes,elapsedRealMilliseconds,meaningfulGameplayMilliseconds,excludedRepeatedActionMilliseconds,excludedRetryMilliseconds,realContent:realContentPass,fakeProgress:false,testHarness:false,directStageClick:false,deterministicReplayPass:replayRegression.pass===true,metrics,varietyEvents:[...varietyEvents],runtimeFeatureEvidence}:pendingContentDepth();
     const saveBeforeReload=await page.evaluate(()=>Object.fromEntries(Array.from({length:localStorage.length},(_,i)=>{const key=localStorage.key(i);return [key,localStorage.getItem(key)];}).filter(([key])=>key!==null)));
     await page.reload({waitUntil:'domcontentloaded',timeout:30000});await page.waitForTimeout(250);const reloadAfter=await snapshot(page),reloadVisible=Boolean(Number(reloadAfter?.viewportWidth||0)>0),saveAfterReload=await page.evaluate(()=>Object.fromEntries(Array.from({length:localStorage.length},(_,i)=>{const key=localStorage.key(i);return [key,localStorage.getItem(key)];}).filter(([key])=>key!==null)));
-    const runtimeValidationEvidence=buildRuntimeValidationEvidence({validationStage,footprint,before,after,reloadAfter,saveBeforeReload,saveAfterReload,interactionCount,stateTransitionCount,terminalReached,retryObserved,runtimeFeatureEvidence,contentDepthValidation,actionEvidence,elapsedRealMilliseconds,consoleErrors,pageErrors,failedRequests,badResponses});
+    const runtimeValidationEvidence=buildRuntimeValidationEvidence({validationStage,footprint,before,after,reloadAfter,saveBeforeReload,saveAfterReload,interactionCount,stateTransitionCount,terminalReached,retryObserved,runtimeFeatureEvidence,contentDepthValidation,actionEvidence,elapsedRealMilliseconds,consoleErrors,pageErrors,failedRequests,badResponses,replayEvidence:replayRegression});
     const verdict=evaluateRuntimeEvidence({before,after,interactionCount,stateTransitionCount,consoleErrors,pageErrors,failedRequests,badResponses,reloadVisible,scopeCoverage,initialPlayableCycle,footprint,runtimeFeatureEvidence});
-    if(finalMode&&!contentDepthValidation.pass)verdict.blockers.push('FINAL_REAL_30MIN_CONTENT_DEPTH_REQUIRED');
+    if(finalMode&&!contentDepthValidation.pass)verdict.blockers.push(replayRegression.pass===true?'FINAL_REAL_30MIN_CONTENT_DEPTH_REQUIRED':`DETERMINISTIC_REPLAY_REQUIRED:${replayRegression.status}`);
     verdict.pass=verdict.blockers.length===0;
     const substanceGate={pass:footprint.pass===true&&initialPlayableCycle.pass,implementationClass:'DEDICATED_REAL_GAME',totalBytes:footprint.totalBytes,executableBytes:footprint.scriptBytes,mechanicCount:footprint.mechanicCount,directSessionControls:0,proxyMarkers:footprint.proxyMarkers,initialImplementationUnit:INITIAL_PLAYABLE_CYCLE};
     const report={version:VALIDATION_SCHEMA_VERSION,validationSchemaVersion:VALIDATION_SCHEMA_VERSION,gameId,target:'web',validationStage,status:verdict.pass?'PASS':'FAIL',pass:verdict.pass,validated:verdict.pass,realEvidenceExists:true,gameplayInteractionPerformed:interactionCount>0,interactionCount,stateChanged:verdict.stateChanged,stateChangeCount:stateTransitionCount,musicRuntime:verdict.musicRuntime,approvedScopeFullyImplemented:scopeCoverage.pass,scopeCoverage,scopeInteractionResults,runtimeFeatureEvidence,runtimeValidationEvidence,runtimeSmokePassed:consoleErrors.length===0&&pageErrors.length===0&&failedRequests.length===0&&badResponses.length===0&&reloadVisible,mobileViewport:{width:390,height:844,touch:true},sourceFootprint:footprint,substanceGate,initialImplementationUnit:INITIAL_PLAYABLE_CYCLE,initialPlayableCycle,initialPlayableCyclePassed:initialPlayableCycle.pass,implementationMetrics:metrics,contentDepthValidation,sessionDepthMinutes:contentDepthValidation.validatedMinutes,terminalOutcome:{required:true,reached:terminalReached,result:lastTerminalResult||after.runResult||null},multiplayer:null,before,after,reloadAfter,reloadVisible,blockers:[...new Set(verdict.blockers)],consoleErrors,pageErrors,failedRequests,badResponses,evidence:[`validationStage=${validationStage}`,`interactionCount=${interactionCount}`,`stateTransitions=${stateTransitionCount}`,`mechanics=${footprint.mechanicCount}`,`approvedScope=${scopeCoverage.pass}`,`entityInteractions=${runtimeFeatureEvidence.entityInteractionResultCount}`,`detected3D=${runtimeFeatureEvidence.spatialEvidence.detected3D}`,`xyzMoved=${runtimeFeatureEvidence.spatialEvidence.xyzMoved}`,`spatialOutcomes=${runtimeFeatureEvidence.spatialOutcomeCount}`,`initialPlayableCycle=${initialPlayableCycle.pass}`,`finalContentDepth=${contentDepthValidation.pass}`,`elapsedRealMilliseconds=${contentDepthValidation.elapsedRealMilliseconds}`,`meaningfulGameplayMilliseconds=${contentDepthValidation.meaningfulGameplayMilliseconds}`,`excludedRepeatedActionMilliseconds=${contentDepthValidation.excludedRepeatedActionMilliseconds}`,`excludedRetryMilliseconds=${contentDepthValidation.excludedRetryMilliseconds}`,`newContentDimensions=${runtimeFeatureEvidence.newContentDimensionCount}`,`runtimeEvidence.longGoal=${runtimeValidationEvidence.longGoal.pass}`,`runtimeEvidence.saveRestore=${runtimeValidationEvidence.saveRestore.status}`,`runtimeEvidence.performance=${runtimeValidationEvidence.performance.pass}`,`runtimeEvidence.mobile=${runtimeValidationEvidence.mobile.pass}`,`runtimeEvidence.replay=${runtimeValidationEvidence.replayRegression.status}`],checkedAt:new Date().toISOString(),sourcePath:source,sourceIndexSha256,sourceRevision:clean(process.env.GITHUB_SHA)||null,designBaselineSha256,url};
     if(screenshot){fs.mkdirSync(path.dirname(screenshot),{recursive:true});await page.screenshot({path:screenshot,fullPage:true});report.screenshot=screenshot;}if(output){fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,JSON.stringify(report,null,2)+'\n');}
     console.log(JSON.stringify(report,null,2));if(!report.pass)throw new Error(`WEB_GAMEPLAY_VALIDATION_FAILED:${report.blockers.join(' | ').slice(0,1800)}`);
     const {strictOutput,review,homepageScorePass,formalPass}=runStrictReview({gameId,source,output});report.strictReviewPath=strictOutput;report.strictReview={verdict:review.verdict,totalScore:Number(review.totalScore),hardFailures:review.hardFailures||[],improvementTargets:review.improvementTargets||[],reviewedAt:review.reviewedAt||null,formalPassThreshold:FORMAL_IMPLEMENTATION_THRESHOLD,homepageTestThreshold:HOMEPAGE_TEST_THRESHOLD};report.webStrictScore=Number(review.totalScore);report.improvementTargets=review.improvementTargets||[];report.homepageTestEligible=homepageScorePass&&contentDepthValidation.pass;report.homepageTestVerdict=report.homepageTestEligible?'PASS':'REVISE';report.formalReviewPassed=formalPass&&contentDepthValidation.pass;report.formalImplementationPassed=report.formalReviewPassed&&promotionRevalidationConfirmed;report.formalImplementationVerdict=report.formalImplementationPassed?'PASS':'REVISE';if(output)fs.writeFileSync(output,JSON.stringify(report,null,2)+'\n');
-    console.log(`WEB_VALIDATION_STAGE=${validationStage}`);console.log(`WEB_STRICT_REVIEW_SCORE=${report.webStrictScore}`);console.log(`INITIAL_PLAYABLE_CYCLE=${initialPlayableCycle.pass?'PASS':'FAIL'}`);console.log(`FINAL_30MIN_CONTENT_DEPTH=${contentDepthValidation.pass?'PASS':'PENDING_OR_FAIL'}`);console.log(`HOMEPAGE_TEST_ELIGIBLE=${report.homepageTestEligible?'YES':'NO'}`);console.log(`FORMAL_IMPLEMENTATION_PASS=${report.formalImplementationPassed?'YES':'NO'}`);return report;
+    console.log(`WEB_VALIDATION_STAGE=${validationStage}`);console.log(`WEB_STRICT_REVIEW_SCORE=${report.webStrictScore}`);console.log(`INITIAL_PLAYABLE_CYCLE=${initialPlayableCycle.pass?'PASS':'FAIL'}`);console.log(`DETERMINISTIC_REPLAY=${replayRegression.pass?'PASS':replayRegression.status}`);console.log(`FINAL_30MIN_CONTENT_DEPTH=${contentDepthValidation.pass?'PASS':'PENDING_OR_FAIL'}`);console.log(`HOMEPAGE_TEST_ELIGIBLE=${report.homepageTestEligible?'YES':'NO'}`);console.log(`FORMAL_IMPLEMENTATION_PASS=${report.formalImplementationPassed?'YES':'NO'}`);return report;
   }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
 }
 
@@ -384,8 +379,8 @@ async function main(){
     const secondaryOutput=output?path.join(path.dirname(output),'web-promotion-revalidation.json'):'';let second=null,revalidationError=null;
     try{second=await runGameplayValidation({gameId,sourcePath,port:port+1,output:secondaryOutput,screenshot:'',validationStage:'final-content-depth',promotionRevalidationConfirmed:true});}catch(error){revalidationError=clean(error?.message||error).slice(0,500);second=secondaryOutput?readJson(secondaryOutput,null):null;}
     const secondScore=Number(second?.strictReview?.totalScore),secondHard=Array.isArray(second?.strictReview?.hardFailures)?second.strictReview.hardFailures:[];const sourceHashMatch=Boolean(first.sourceIndexSha256&&second?.sourceIndexSha256&&first.sourceIndexSha256===second.sourceIndexSha256),baselineHashMatch=first.designBaselineSha256===second?.designBaselineSha256;const secondSubstancePass=second?.substanceGate?.pass===true;const secondContentDepthPass=second?.contentDepthValidation?.pass===true;
-    const promotionPass=second?.pass===true&&second?.formalReviewPassed===true&&Number.isFinite(secondScore)&&secondScore>=FORMAL_IMPLEMENTATION_THRESHOLD&&secondHard.length===0&&secondContentDepthPass&&secondSubstancePass&&second?.terminalOutcome?.reached===true&&sourceHashMatch&&baselineHashMatch;
-    first.promotionRevalidation={required:true,independentRun:true,pass:promotionPass,minimumScore:FORMAL_IMPLEMENTATION_THRESHOLD,firstScore:score,secondScore:Number.isFinite(secondScore)?secondScore:null,sourceHashMatch,baselineHashMatch,secondCheckedAt:second?.checkedAt||null,secondContentDepthPass,secondFinalContentDepthPass:secondContentDepthPass,secondSubstancePass,secondTerminalReached:second?.terminalOutcome?.reached===true,error:revalidationError};first.formalImplementationPassed=promotionPass;first.formalImplementationVerdict=promotionPass?'PASS':'REVISE';if(output)fs.writeFileSync(output,JSON.stringify(first,null,2)+'\n');console.log(`WEB_PROMOTION_REVALIDATION=${promotionPass?'PASS':'FAIL'}`);
+    const promotionPass=second?.pass===true&&second?.formalReviewPassed===true&&Number.isFinite(secondScore)&&secondScore>=FORMAL_IMPLEMENTATION_THRESHOLD&&secondHard.length===0&&secondContentDepthPass&&secondSubstancePass&&second?.terminalOutcome?.reached===true&&second?.runtimeValidationEvidence?.replayRegression?.pass===true&&sourceHashMatch&&baselineHashMatch;
+    first.promotionRevalidation={required:true,independentRun:true,pass:promotionPass,minimumScore:FORMAL_IMPLEMENTATION_THRESHOLD,firstScore:score,secondScore:Number.isFinite(secondScore)?secondScore:null,sourceHashMatch,baselineHashMatch,secondCheckedAt:second?.checkedAt||null,secondContentDepthPass,secondFinalContentDepthPass:secondContentDepthPass,secondSubstancePass,secondTerminalReached:second?.terminalOutcome?.reached===true,secondReplayPass:second?.runtimeValidationEvidence?.replayRegression?.pass===true,error:revalidationError};first.formalImplementationPassed=promotionPass;first.formalImplementationVerdict=promotionPass?'PASS':'REVISE';if(output)fs.writeFileSync(output,JSON.stringify(first,null,2)+'\n');console.log(`WEB_PROMOTION_REVALIDATION=${promotionPass?'PASS':'FAIL'}`);
   }else{first.promotionRevalidation={required:false,independentRun:false,pass:false,minimumScore:FORMAL_IMPLEMENTATION_THRESHOLD,reason:validationStage!=='final-content-depth'?'FINAL_CONTENT_DEPTH_NOT_RUN':first.webStrictScore<FORMAL_IMPLEMENTATION_THRESHOLD?'WEB_SCORE_BELOW_90':'FINAL_CONTENT_DEPTH_OR_HARD_GATE'};first.formalImplementationPassed=false;first.formalImplementationVerdict='REVISE';if(output)fs.writeFileSync(output,JSON.stringify(first,null,2)+'\n');console.log('WEB_PROMOTION_REVALIDATION=NOT_RUN');}
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){main().catch(error=>{console.error(error.stack||error.message);process.exitCode=1;});}
