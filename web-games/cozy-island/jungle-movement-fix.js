@@ -27,6 +27,10 @@ function northUnlocked() {
   return Boolean(currentGame?.state?.northernRegion?.unlocked);
 }
 
+function westUnlocked() {
+  return Boolean(currentGame?.state?.westernRegion?.unlocked);
+}
+
 function eastUnlocked() {
   return Boolean(currentGame?.state?.expanded);
 }
@@ -55,8 +59,12 @@ function inNorth(x, y) {
   return northUnlocked() && x >= 1435 && x <= 2820 && y >= -820 && y <= 220;
 }
 
+function inWest(x, y) {
+  return westUnlocked() && x >= -2650 && x <= 160 && y >= 160 && y <= 1100;
+}
+
 function canStandAt(x, y) {
-  return inMainVillage(x, y) || inEast(x, y) || inJungle(x, y) || inNorth(x, y);
+  return inMainVillage(x, y) || inEast(x, y) || inJungle(x, y) || inNorth(x, y) || inWest(x, y);
 }
 
 function baseCandidate(x, y) {
@@ -81,12 +89,17 @@ function northCandidate(x, y) {
   return { x: Math.max(1435, Math.min(2820, x)), y: Math.max(-820, Math.min(220, y)) };
 }
 
+function westCandidate(x, y) {
+  return { x: Math.max(-2650, Math.min(160, x)), y: Math.max(160, Math.min(1100, y)) };
+}
+
 function recoverInvalidPosition(player) {
   if (canStandAt(player.x, player.y)) return;
   const candidates = [baseCandidate(player.x, player.y)];
   if (eastUnlocked()) candidates.push(eastCandidate(player.x, player.y));
   if (jungleUnlocked()) candidates.push(jungleCandidate(player.x, player.y));
   if (northUnlocked()) candidates.push(northCandidate(player.x, player.y));
+  if (westUnlocked()) candidates.push(westCandidate(player.x, player.y));
 
   let best = candidates[0];
   let bestDistance = Infinity;
