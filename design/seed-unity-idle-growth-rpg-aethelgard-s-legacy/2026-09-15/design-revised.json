@@ -9,14 +9,14 @@
   "authorRole": "GAME_DESIGNER_AI",
   "authorModel": "qwen2.5:1.5b",
   "sameModelAsDraft": true,
-  "appliedConsensusCount": 5,
-  "unresolvedConflictCount": 0,
+  "appliedConsensusCount": 0,
+  "unresolvedConflictCount": 5,
   "heldCount": 0,
   "status": "DESIGN_BASELINE_CANDIDATE",
   "content": {
     "identity": "Aethelgard's Legacy",
     "playerFantasy": "Idle Game Enthusiast",
-    "coreFun": "Idle Game Management, Resource Optimization",
+    "coreFun": "Idle Game Management",
     "coreLoop": [
       "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
       "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
@@ -24,51 +24,29 @@
     ],
     "signatureSystems": [
       {
-        "name": "Resource Management",
-        "purpose": "Manage and optimize resources to maximize idle progress and rewards.",
-        "playerChoice": "Selecting the best resources for each hero or stat path to maximize rewards and progress."
-      },
-      {
-        "name": "Game Progression",
-        "purpose": "Track and progress through different growth layers and stages.",
-        "playerChoice": "Choosing the right progression path to unlock new features and rewards."
-      },
-      {
-        "name": "Combat System",
-        "purpose": "Engage in battles with various enemies and bosses.",
-        "playerChoice": "Selecting the best heroes and strategies to defeat enemies and bosses."
-      },
-      {
-        "name": "Puzzle and Strategy",
-        "purpose": "Solve puzzles and strategize to progress through different levels.",
-        "playerChoice": "Using puzzle-solving skills and strategic thinking to unlock new levels and progress."
+        "name": "Resource Optimization",
+        "purpose": "Utilize idle time effectively to maximize progress and efficiency.",
+        "playerChoice": "Player can choose between different resource optimization strategies to achieve the best results."
       }
     ],
-    "progressionDirection": "From simple idle game management to complex resource optimization and advanced gameplay progression.",
-    "visualDirection": "Unique Character Customization",
-    "mobileUx": "Android-based mobile game with a single player mode and cooperative multiplayer mode.",
-    "marketTargetDirection": "Global market with a focus on idle game enthusiasts and strategy game players.",
-    "steamExpansionDecision": "High expansion value but Steam expansion is not recommended.",
-    "multiplayerExpansionDecision": "Cooperative multiplayer mode is required but not recommended for Steam expansion.",
+    "progressionDirection": "From simple idle mechanics to more complex strategies and character customization.",
+    "visualDirection": "The game features unique character customization options that allow players to tailor their heroes to their preferences.",
+    "mobileUx": "The game is designed for mobile devices with intuitive controls and responsive UI elements.",
+    "marketTargetDirection": "Target audience: Idle game enthusiasts and strategy game players.",
+    "steamExpansionDecision": "Not recommended due to high cross-platform expansion value.",
+    "multiplayerExpansionDecision": "Co-op multiplayer mode is required at design level and QA is required for multiplayer functionality.",
     "technicalAssumptions": [
-      "Unity as the game engine",
-      "Android as the target platform",
-      "Resource management and progression systems",
-      "Combat and puzzle-solving systems",
-      "Character customization and visual elements"
+      "Unity engine is used for development.",
+      "The game is designed to be compatible with Android and iOS platforms.",
+      "The game features a progression system that rewards players for completing objectives and achieving milestones."
     ],
     "validationQuestions": [
-      "How does the game handle resource management and progression?",
-      "What is the gameplay progression direction of the game?",
-      "How does the game handle the visual elements and character customization?",
-      "What is the multiplayer experience like in the game?",
-      "What is the game's market target and audience?"
+      "Is the game compatible with Android and iOS platforms?",
+      "Does the game have a progression system that rewards players for completing objectives and achieving milestones?"
     ],
     "openQuestions": [
-      "How does the game's resource management and progression systems compare to other idle games?",
-      "What are the key features of the game's visual elements and character customization?",
-      "How does the game handle the multiplayer experience and cooperative multiplayer mode?",
-      "What is the game's overall market target and audience?"
+      "What are the core gameplay loops and progression directions of the game?",
+      "How does the game allow players to customize their heroes and characters?"
     ]
   }
 }
