@@ -73,6 +73,7 @@ test('initial Web contract is one complete playable cycle, not a 30-minute gener
   const flow=read('COMPANY_FLOW.md');
   const bootstrap=read('tools/company-development-web-bootstrap.mjs');
   const validator=read('tools/company-development-web-gameplay-validation.mjs');
+  const strictReview=read('tools/company-strict-production-review.mjs');
 
   assert.match(flow,/initialImplementationMinimumUnit: ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE/);
   assert.match(flow,/thirtyMinuteRequirementStage: FINAL_CONTENT_DEPTH_VALIDATION_ONLY/);
@@ -89,6 +90,10 @@ test('initial Web contract is one complete playable cycle, not a 30-minute gener
   assert.match(validator,/REAL_ELAPSED_GAMEPLAY/);
   assert.doesNotMatch(validator,/ensure30MinuteSessionContract/);
   assert.doesNotMatch(validator,/evaluateSessionContract/);
+
+  assert.match(strictReview,/const webScore=scoreWebStrictImplementation/);
+  assert.doesNotMatch(strictReview,/const\s+WEB_SESSION_WINDOWS\s*=/);
+  assert.doesNotMatch(strictReview,/function\s+structuredWebSession\s*\(/);
 });
 
 test('initial strict review can pass without final 30-minute content depth',()=>{
