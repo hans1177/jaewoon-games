@@ -4,6 +4,8 @@ import {
   deriveGameplaySketch,
   analyzeExistingGameSource,
   buildVibePatchPlan,
+  buildDependencyAnalysis,
+  buildFailureDrivenRepairLoop,
   buildVibeDevelopmentContext,
   clipPreservedSourceForModel,
 } from '../tools/company-vibe2-gameplay-intelligence.mjs';
@@ -34,12 +36,19 @@ test('derived GAMEPLAY_SKETCH turns approved scope into executable world contrac
   assert.match(sketch.stateMachine.contract,/ENTRY -> INPUT -> CORE_ACTION/);
 });
 
-test('source analysis records save, functions, space and interaction capabilities',()=>{
-  const html=`<!doctype html><main data-spatial-dimension="3d" data-npc="smith" data-interactable="true" data-area="yard" data-route-id="r1" data-player-z="0" data-camera-yaw="0"><script>function movePlayer(){} function talkToSmith(){} localStorage.setItem('save-v4','x'); addEventListener('pointerdown',()=>{}); let collisionCount=0; const raycastHit=true;</script></main>`;
+test('source analysis records save, functions, dependencies, space and interaction capabilities',()=>{
+  const html=`<!doctype html><main data-spatial-dimension="3d" data-npc="smith" data-interactable="true" data-area="yard" data-route-id="r1" data-player-z="0" data-camera-yaw="0"><script>
+function movePlayer(){ updateWorld(); }
+function updateWorld(){ return true; }
+function talkToSmith(){ updateWorld(); }
+localStorage.setItem('save-v4','x'); addEventListener('pointerdown',()=>{}); let collisionCount=0; const raycastHit=true;
+</script></main>`;
   const analysis=analyzeExistingGameSource(html);
   assert.equal(analysis.present,true);
   assert.deepEqual(analysis.storageKeys,['save-v4']);
   assert.ok(analysis.functions.includes('movePlayer'));
+  assert.ok(analysis.functionDependencies.includes('movePlayer->updateWorld'));
+  assert.ok(analysis.functionDependencies.includes('talkToSmith->updateWorld'));
   assert.equal(analysis.capabilities.threeDimensional,true);
   assert.equal(analysis.capabilities.interactions,true);
   assert.equal(analysis.capabilities.raycastOrPath,true);
@@ -60,6 +69,25 @@ test('patch plan preserves working source and orders missing real gameplay work'
   assert.deepEqual(plan.preserve.storageKeys,['save-key']);
 });
 
+test('dependency analysis and failure loop keep repairs targeted to responsible systems',()=>{
+  const sourceAnalysis={storageKeys:['save-v9'],functions:['placeTower','resolveWave'],functionDependencies:['placeTower->resolveWave']};
+  const patchPlan={tasks:[
+    {id:'IMPLEMENT_PLAYABLE_SPACE',dependsOn:['PRESERVE_EXISTING_BEHAVIOR']},
+    {id:'IMPLEMENT_POSITIONAL_PLACEMENT',dependsOn:['IMPLEMENT_PLAYABLE_SPACE']},
+    {id:'FIX_TOWER_PLACEMENT_RESULT_REQUIRED',dependsOn:[]},
+  ]};
+  const dependency=buildDependencyAnalysis({sourceAnalysis,patchPlan});
+  const repair=buildFailureDrivenRepairLoop({blockers:['TOWER_PLACEMENT_RESULT_REQUIRED','MOBILE_TOUCH_REQUIRED'],patchPlan});
+  assert.deepEqual(dependency.protectedSaveKeys,['save-v9']);
+  assert.ok(dependency.sourceFunctionEdges.includes('placeTower->resolveWave'));
+  assert.ok(dependency.patchTaskEdges.includes('IMPLEMENT_PLAYABLE_SPACE->IMPLEMENT_POSITIONAL_PLACEMENT'));
+  assert.equal(repair.mode,'FAILURE_DRIVEN_TARGETED_REPAIR');
+  assert.equal(repair.failures[0].type,'SPATIAL_GAMEPLAY');
+  assert.equal(repair.failures[1].type,'MOBILE_RUNTIME');
+  assert.ok(repair.repairTaskIds.includes('IMPLEMENT_POSITIONAL_PLACEMENT'));
+  assert.ok(repair.retryContract.includes('RUN_REPLAY_REGRESSION'));
+});
+
 test('long preserved source keeps both ends instead of silently losing tail systems',()=>{
   const source='HEAD_'+('a'.repeat(30000))+'_TAIL';
   const clipped=clipPreservedSourceForModel(source,4000);
@@ -73,9 +101,12 @@ test('Vibe bootstrap injects development context before coding',()=>{
   const existingHtml=`<main><script>function saveGame(){} localStorage.setItem('save-v5','1')</script></main>`;
   const context=buildVibeDevelopmentContext({gameId:'g',genre:'SINGLE_DEFENSE_STRATEGY',baseline,inventory,existingHtml,blockers:['RUNTIME_REWORK_REQUIRED:FINAL_CONTENT_DEPTH_REWORK_REQUIRED']});
   const prompt=buildApprovedScopeGenerationPrompt({gameId:'g',gameName:'Game',baseline,inventory,existingHtml,preservationBlockers:['RUNTIME_REWORK_REQUIRED:FINAL_CONTENT_DEPTH_REWORK_REQUIRED'],developmentContext:context});
+  assert.equal(context.version,2);
   assert.match(prompt,/VIBE_DEVELOPMENT_CONTEXT:/);
   assert.match(prompt,/DERIVED_FROM_LOCKED_DESIGN_BASELINE/);
   assert.match(prompt,/PATCH_EXISTING_RESPONSIBLE_SYSTEMS/);
+  assert.match(prompt,/FAILURE_DRIVEN_TARGETED_REPAIR/);
+  assert.match(prompt,/PATCH_DEPENDENCIES_BEFORE_DEPENDENTS/);
   assert.match(prompt,/save-v5/);
   assert.match(prompt,/IMPLEMENT_POSITIONAL_PLACEMENT/);
   assert.match(prompt,/IMPLEMENT_DIVERGENT_STRATEGY_RESULTS/);
