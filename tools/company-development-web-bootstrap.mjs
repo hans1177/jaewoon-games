@@ -18,6 +18,7 @@ const VECTOR_CLASH_TEMPLATE='web-games/seed-roblox-battleground-fight-welcome-to
 const DEFAULT_MODEL='qwen3:1.7b';
 const MODEL_TIMEOUT_MS=180000;
 const MODEL_ATTEMPTS=2;
+const FINAL_CONTENT_DEPTH_REWORK_REQUIRED='최종 콘텐츠 깊이 재작업에서는 반복 행동/재시작 시간으로 분량을 채우지 말고 새 적·구역·목표·상호작용·전략 결과를 실제 gameplay로 추가한다.';
 // Legacy workflow grep compatibility only; runtime evidence is the dynamic MODEL_USED line below.
 const LEGACY_WORKFLOW_PROBE='MODEL_USED=NO';
 const clean=v=>String(v??'').trim();
@@ -271,6 +272,7 @@ ${inventoryText}
 - 3D 게임이면 최상위 게임 컨테이너에 data-spatial-dimension="3d"를 두고 실제 X/Y/Z 이동, 카메라 yaw/pitch 또는 방향, 지형/사물 충돌, 레이캐스트 또는 경로 탐색을 구현한다. data-player-x/data-player-y/data-player-z, data-camera-yaw/data-camera-pitch, data-collision-count, data-raycast-hit 또는 data-route-id 같은 비표시 런타임 상태를 실제 게임 상태와 함께 갱신해 검증 가능하게 한다. 3D 화면만 렌더링하고 공간 규칙이 게임 결과에 영향을 주지 않는 구현은 금지한다.
 - 캐릭터·NPC·적·사물이 승인 설계에 있으면 장식 엔티티만 두지 않는다. data-interactable/data-interaction-target/data-npc/data-object-id/data-world-entity 등으로 실제 대상을 식별하고, 접근 또는 대상 선택 → 실제 상호작용 입력 → 대상 상태 변화 → 대화·아이템 획득·문/장치 작동·자원 변화·퀘스트 진행·전투 변화 중 하나 이상의 실제 게임 결과로 연결한다. 텍스트/모달/버튼만 나타나고 대상 상태가 변하지 않는 상호작용은 구현 완료로 인정하지 않는다.
 - 전략 선택이 승인 설계에 있으면 선택지 이름만 다르게 두지 말고 서로 다른 선택이 피해·생존·처치·자원·진행 등 실제 전투 결과를 다르게 만들어야 한다.
+- ${FINAL_CONTENT_DEPTH_REWORK_REQUIRED}
 - 신규 게임은 <canvas> 또는 실제 상호작용 게임 surface를 사용하고 상태 변화에 따라 그래픽이 변해야 한다. 기존 실제 게임 보완은 현재 렌더링 방식을 보존해도 된다.
 - 모바일 터치 조작과 키보드 조작을 제공한다.
 - 최소 5개의 서로 다른 실제 gameplay mechanic에 data-mechanic-id를 부여한다.
@@ -358,7 +360,8 @@ async function main(){
   const gameId=clean(arg('game-id')),gameName=clean(arg('game-name',gameId)),baselineFile=arg('baseline'),sourcePath=clean(arg('source-path')),candidateId=safeId(arg('candidate-id')),candidatePath=clean(arg('candidate-path')),sourceCommit=clean(arg('source-commit')),model=clean(arg('model',process.env.AUTONOMOUS_LOCAL_MODEL||DEFAULT_MODEL)),evidenceFile=clean(arg('evidence')),forceRepair=clean(arg('force-repair')).toLowerCase()==='true',repairReason=clean(arg('repair-reason'));
   if(!gameId||!baselineFile||!sourcePath||!candidateId||!candidatePath||!sourceCommit||!evidenceFile)throw new Error('required bootstrap argument missing');
   const baseline=readJson(baselineFile),{result,review,generation,approvedScopeInventory}=await buildFirstPlayable({gameId,gameName,baseline,sourcePath,candidatePath,candidateId,sourceCommit,model,forceRepair,repairReason});
-  writeJson(evidenceFile,{version:11,candidateId,gameId,sourcePath,candidatePath,sourceCommit,candidateOnly:true,selfPromote:false,artifactType:REAL_ARTIFACT_TYPE,realPlayableGame:true,testHarness:false,sourcePreserved:generation.sourcePreserved,changedFiles:['index.html'],summary:result.validationQuestion,implementationNotes:result.implementationNotes,approvedScopeInventory,approvedScopeRequiredCount:approvedScopeInventory.length,initialPlayableMinimum:INITIAL_PLAYABLE_MINIMUM,initialThirtyMinuteHardRequirement:false,finalContentDepthValidation:{requiredMinutes:FINAL_CONTENT_DEPTH_MINUTES,status:'PENDING',stage:'FINAL_CONTENT_DEPTH_VALIDATION_ONLY'},generation,bootstrapContract:review,createdAt:new Date().toISOString()});
+  const sourceRepaired=generation.mode==='VIBE2_PRESERVED_SOURCE_REPAIR'&&generation.modelUsed===true;
+  writeJson(evidenceFile,{version:11,candidateId,gameId,sourcePath,candidatePath,sourceCommit,candidateOnly:true,selfPromote:false,artifactType:REAL_ARTIFACT_TYPE,realPlayableGame:true,testHarness:false,sourcePreserved:generation.sourcePreserved,sourceRepaired,changedFiles:['index.html'],summary:result.validationQuestion,implementationNotes:result.implementationNotes,approvedScopeInventory,approvedScopeRequiredCount:approvedScopeInventory.length,initialPlayableMinimum:INITIAL_PLAYABLE_MINIMUM,initialThirtyMinuteHardRequirement:false,finalContentDepthValidation:{requiredMinutes:FINAL_CONTENT_DEPTH_MINUTES,status:'PENDING',stage:'FINAL_CONTENT_DEPTH_VALIDATION_ONLY'},generation,bootstrapContract:review,createdAt:new Date().toISOString()});
   void LEGACY_WORKFLOW_PROBE;
   console.log('DEVELOPMENT_WEB_BOOTSTRAP=PASS');
   console.log('WEB_ARTIFACT_TYPE='+REAL_ARTIFACT_TYPE);
@@ -368,6 +371,7 @@ async function main(){
   console.log('INITIAL_30MIN_HARD_GATE=NO');
   console.log('FINAL_CONTENT_DEPTH_MINUTES='+FINAL_CONTENT_DEPTH_MINUTES);
   console.log('SOURCE_PRESERVED='+(generation.sourcePreserved?'YES':'NO'));
+  console.log('SOURCE_REPAIRED='+(sourceRepaired?'YES':'NO'));
   console.log('VIBE2_PRIMARY_DEVELOPER=YES');
   console.log('MODEL_INVOKED='+(generation.modelInvoked?'YES':'NO'));
   console.log('MODEL_USED='+(generation.modelUsed?'YES':'NO'));
