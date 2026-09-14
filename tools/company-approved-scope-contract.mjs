@@ -1,3 +1,4 @@
+// 파일명: tools/company-approved-scope-contract.mjs
 import crypto from 'node:crypto';
 
 const clean=value=>String(value??'').trim().replace(/\s+/g,' ');
@@ -57,6 +58,18 @@ function interactiveScopeControl(control){
   if(['button','input','select','textarea'].includes(control.tag))return true;
   return /\brole=["']button["']/i.test(control.attrs)||/\btabindex=["']?0["']?/i.test(control.attrs);
 }
+function scopeRequirement(item={}){
+  const path=clean(item.path),text=`${path} ${clean(item.label)}`.toLowerCase();
+  if(!/^corefun$/i.test(path)&&/(place\s+(?:a\s+)?(?:tower|defender)|tower\s+placement|position\s+(?:a\s+)?tower|배치|설치\s*위치|타워\s*위치)/i.test(text))return'TOWER_PLACEMENT';
+  if(/adapt|tactical\s+change|strategic\s+choice|different\s+choice|선택에\s*따른|전략\s*선택|전술\s*변경|대응\s*선택/i.test(text))return'STRATEGIC_CHOICE';
+  return'STATE_CHANGE';
+}
+function realPlacementInputExists(text){
+  const source=String(text??'');
+  const explicitPosition=/(?:data-(?:placement-position|build-slot|tower-slot|grid-x|grid-y)|dataset\.(?:placementPosition|buildSlot|towerSlot|gridX|gridY))/i.test(source);
+  const coordinateInput=/(?:offsetX|offsetY|clientX|clientY|getBoundingClientRect\s*\()/i.test(source)&&/(?:pointerdown|pointerup|touchstart|touchend|addEventListener\s*\(\s*["']click|\.onclick\s*=)/i.test(source);
+  return explicitPosition||coordinateInput;
+}
 
 export function staticApprovedScopeCoverage(html,inventory=[]){
   const text=String(html??'');
@@ -76,6 +89,7 @@ export function staticApprovedScopeCoverage(html,inventory=[]){
       if(mechanicId===item.id||/^scope(?:-|$)/i.test(mechanicId))blockers.push(`APPROVED_SCOPE_GENERIC_MECHANIC_ID:${item.id}`);
     }
     if(/\bid=["']scope-control-\d+["']/i.test(control.attrs))blockers.push(`TEST_HARNESS_SCOPE_CONTROL_ID_FORBIDDEN:${item.id}`);
+    if(scopeRequirement(item)==='TOWER_PLACEMENT'&&!realPlacementInputExists(text))blockers.push(`APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:${item.id}`);
   }
   const uniqueMechanics=[...new Set(mechanicIds)];
   const minimumMechanics=Math.min(4,Math.max(1,inventory.length));
@@ -83,15 +97,27 @@ export function staticApprovedScopeCoverage(html,inventory=[]){
   return {pass:blockers.length===0,requiredCount:inventory.length,mechanicCount:uniqueMechanics.length,mechanicIds:uniqueMechanics,blockers};
 }
 
-export function runtimeApprovedScopeCoverage({declaredCount=0,visibleScopeIds=[],interactedScopeIds=[],mechanicBindings=[]}={}){
+export function runtimeApprovedScopeCoverage({declaredCount=0,visibleScopeIds=[],interactedScopeIds=[],mechanicBindings=[],inventory=[],interactionResults=[]}={}){
   const visible=[...new Set((visibleScopeIds||[]).map(clean).filter(Boolean))];
   const interacted=[...new Set((interactedScopeIds||[]).map(clean).filter(Boolean))];
   const mechanics=[...new Set((mechanicBindings||[]).map(clean).filter(Boolean))];
+  const results=Array.isArray(interactionResults)?interactionResults:[];
   const blockers=[];
   if(Number(declaredCount)<=0)blockers.push('APPROVED_SCOPE_DECLARATION_REQUIRED');
   if(visible.length!==Number(declaredCount))blockers.push(`APPROVED_SCOPE_VISIBLE_COUNT_MISMATCH:${visible.length}:${declaredCount}`);
   const missingInteraction=visible.filter(id=>!interacted.includes(id));
   if(missingInteraction.length)blockers.push(`APPROVED_SCOPE_NOT_INTERACTED:${missingInteraction.join(',')}`);
+  for(const scopeId of visible){
+    const rows=results.filter(row=>clean(row?.scopeId)===scopeId&&row?.clicked===true);
+    if(!rows.some(row=>row?.stateChanged===true))blockers.push(`APPROVED_SCOPE_NO_GAMEPLAY_RESULT:${scopeId}`);
+    const item=(inventory||[]).find(row=>clean(row?.id)===scopeId);
+    const requirement=scopeRequirement(item||{});
+    if(requirement==='TOWER_PLACEMENT'){
+      const placementPass=rows.some(row=>row?.positionSelected===true&&(row?.placementResult===true||Number(row?.towerEntityDelta||0)>0));
+      if(!placementPass)blockers.push(`APPROVED_SCOPE_TOWER_PLACEMENT_RESULT_REQUIRED:${scopeId}`);
+    }
+    if(requirement==='STRATEGIC_CHOICE'&&!rows.some(row=>row?.strategicOutcomeObserved===true))blockers.push(`APPROVED_SCOPE_STRATEGIC_OUTCOME_REQUIRED:${scopeId}`);
+  }
   const minimumMechanics=Math.min(4,Math.max(1,Number(declaredCount)||0));
   if(Number(declaredCount)>0&&mechanics.length<minimumMechanics)blockers.push(`APPROVED_SCOPE_RUNTIME_MECHANIC_DIVERSITY_TOO_LOW:${mechanics.length}:${minimumMechanics}`);
   return {pass:blockers.length===0,declaredCount:Number(declaredCount)||0,visibleScopeIds:visible,interactedScopeIds:interacted,mechanicBindings:mechanics,blockers};
