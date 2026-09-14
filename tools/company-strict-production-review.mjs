@@ -19,6 +19,23 @@ function runtimeState(){
   if(branch){try{const raw=execFileSync('git',['show',`origin/${branch}:game-seed-state.json`],{encoding:'utf8',maxBuffer:16*1024*1024});s=normalizeSeedState(JSON.parse(raw));}catch{}}
   return s;
 }
+function runtimeQueueRecord(seedId){
+  const match=q=>(Array.isArray(q?.items)?q.items:[]).find(row=>clean(row?.gameId)===gameId&&clean(row?.seedId)===seedId)||null;
+  const local=match(readJson('development-queue.json',null));
+  if(local)return local;
+  const branch=clean(process.env.COMPANY_RUNTIME_BRANCH);
+  if(branch){
+    try{
+      const raw=execFileSync('git',['show',`origin/${branch}:development-queue.json`],{encoding:'utf8',maxBuffer:32*1024*1024});
+      return match(JSON.parse(raw));
+    }catch{}
+  }
+  return null;
+}
+function categoryFromSeedId(seedId){
+  const m=clean(seedId).toUpperCase().match(/^SEED-(?:ROBLOX-)?(.+)-\d+$/);
+  return clean(m?.[1]||'');
+}
 function frozenImplementationContext(runtime){
   const baselinePath=arg('baseline');
   if(!baselinePath)throw new Error(`STRICT_REVIEW_ACTIVE_SEED_REQUIRED ${gameId}`);
@@ -33,16 +50,19 @@ function frozenImplementationContext(runtime){
   const cycle=readJson(cyclePath,null);
   if(!cycle||clean(cycle.gameId)!==gameId)throw new Error(`STRICT_REVIEW_FROZEN_CONTEXT_CYCLE_MISMATCH ${gameId}`);
   const historical=(Array.isArray(runtime?.seeds)?runtime.seeds:[]).find(row=>clean(row?.gameId)===gameId&&clean(row?.seedId)===seedId)||null;
-  const cycleSeedId=clean(cycle.gameSeed?.seedId||cycle.baselineGate?.evidence?.gameSeed?.seedId||historical?.seedId);
-  const category=clean(cycle.gameSeed?.category||historical?.GAME_CATEGORY);
-  const platform=clean(cycle.selectedPlatform||cycle.baselineGate?.evidence?.targetPlatformProject?.platform||cycle.baselineGate?.evidence?.targetPlatformTechnical?.platform||historical?.INITIAL_TARGET_PLATFORM).toUpperCase();
+  const queued=runtimeQueueRecord(seedId);
+  const cycleSeedId=clean(cycle.gameSeed?.seedId||cycle.baselineGate?.evidence?.gameSeed?.seedId||historical?.seedId||queued?.seedId);
+  const category=clean(cycle.gameSeed?.category||historical?.GAME_CATEGORY||categoryFromSeedId(seedId));
+  const platform=clean(cycle.selectedPlatform||cycle.baselineGate?.evidence?.targetPlatformProject?.platform||cycle.baselineGate?.evidence?.targetPlatformTechnical?.platform||historical?.INITIAL_TARGET_PLATFORM||queued?.selectedPlatform||queued?.targetPlatform).toUpperCase();
   const platformOk=['ROBLOX','UNITY','FORTNITE_UEFN'].includes(platform);
-  if(!cycleSeedId||cycleSeedId!==seedId||!category||!platformOk)throw new Error(`STRICT_REVIEW_FROZEN_CONTEXT_SEED_MISMATCH ${gameId}`);
+  const canonicalMatch=Boolean(historical||queued);
+  if(!canonicalMatch||!cycleSeedId||cycleSeedId!==seedId||!category||!platformOk)throw new Error(`STRICT_REVIEW_FROZEN_CONTEXT_SEED_MISMATCH ${gameId}`);
   const materialIds=Array.isArray(historical?.SEED_MATERIAL_IDS)?historical.SEED_MATERIAL_IDS.map(clean).filter(Boolean):[];
   const multiplayer=clean(historical?.MULTIPLAYER_DESIGN_MODE);
   const targetMinutes=Number(historical?.TARGET_SESSION_MINUTES);
   const targetDirection=clean(historical?.TARGET_SESSION_DIRECTION);
-  return {seed:{seedId,CORE_LOOP:loops,DISTINCT_IDENTITY:identity,GAME_CATEGORY:category,INITIAL_TARGET_PLATFORM:platform,SEED_MATERIAL_IDS:materialIds,generation:'FROZEN_DESIGN_CONTEXT',MULTIPLAYER_DESIGN_MODE:multiplayer,TARGET_SESSION_MINUTES:Number.isFinite(targetMinutes)?targetMinutes:null,TARGET_SESSION_DIRECTION:targetDirection},source:historical?'FROZEN_DESIGN_BASELINE+CANONICAL_SEED_RECORD':'FROZEN_DESIGN_BASELINE',baselinePath,cyclePath};
+  const source=historical?'FROZEN_DESIGN_BASELINE+CANONICAL_SEED_RECORD':'FROZEN_DESIGN_BASELINE+CANONICAL_DEVELOPMENT_QUEUE';
+  return {seed:{seedId,CORE_LOOP:loops,DISTINCT_IDENTITY:identity,GAME_CATEGORY:category,INITIAL_TARGET_PLATFORM:platform,SEED_MATERIAL_IDS:materialIds,generation:'FROZEN_DESIGN_CONTEXT',MULTIPLAYER_DESIGN_MODE:multiplayer,TARGET_SESSION_MINUTES:Number.isFinite(targetMinutes)?targetMinutes:null,TARGET_SESSION_DIRECTION:targetDirection},source,baselinePath,cyclePath};
 }
 
 const state=runtimeState();
