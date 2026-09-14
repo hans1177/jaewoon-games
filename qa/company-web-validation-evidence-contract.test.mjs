@@ -232,8 +232,10 @@ test('final 30-minute evidence excludes restart and repeated-action time',()=>{
 test('final 30-minute evidence requires multiple genuinely new content dimensions',()=>{
   const evidence=baseEvidence();
   const shallowMetrics=metrics({newContentDimensionCount:1,contentVariationCount:4});
+  const shallowRuntime={...evidence.runtimeFeatureEvidence,newContentDimensionCount:1};
   evidence.implementationMetrics=shallowMetrics;
-  evidence.contentDepthValidation={...evidence.contentDepthValidation,metrics:shallowMetrics,meaningfulGameplayMilliseconds:1800000,varietyEvents:['same-wave-variant','same-wave-variant-2','same-wave-variant-3']};
+  evidence.runtimeFeatureEvidence=shallowRuntime;
+  evidence.contentDepthValidation={...evidence.contentDepthValidation,metrics:shallowMetrics,runtimeFeatureEvidence:shallowRuntime,meaningfulGameplayMilliseconds:1800000,varietyEvents:['same-wave-variant','same-wave-variant-2','same-wave-variant-3']};
   const result=evaluateWebValidationEvidence(evidence,{minimumScore:80});
   assert.equal(result.pass,false);
   assert.ok(result.blockers.includes('WEB_FINAL_CONTENT_DEPTH_NOT_PASS'));
