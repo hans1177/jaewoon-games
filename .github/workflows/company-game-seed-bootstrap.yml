@@ -196,13 +196,27 @@ jobs:
           echo 'persisted=true' >> "$GITHUB_OUTPUT"
           echo 'PUBLIC_MAIN_WRITE=NO'
 
-      - name: Continue composed seeds into DESIGN_ONLY
+      - name: Continue composed seeds into DESIGN_ONLY without cancelling active batch
         if: steps.persist.outputs.persisted == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
-          gh workflow run company-seed-design-runtime.yml --ref main
-          echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=YES'
+          set -euo pipefail
+          active=0
+          for attempt in $(seq 1 12); do
+            active="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?branch=main&per_page=100" --jq '[.workflow_runs[] | select(.path==".github/workflows/company-seed-design-runtime.yml") | select(.status=="queued" or .status=="in_progress" or .status=="pending" or .status=="requested" or .status=="waiting")] | length')"
+            echo "ACTIVE_DESIGN_ONLY_RUNS=$active"
+            if [ "$active" -eq 0 ]; then
+              gh workflow run company-seed-design-runtime.yml --ref main
+              echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=YES'
+              echo 'GAME_SEED_DESIGN_CONTINUATION_SCOPE=ONE_AFTER_NO_ACTIVE_BATCH'
+              exit 0
+            fi
+            if [ "$attempt" -lt 12 ]; then sleep 5; fi
+          done
+          echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=NO'
+          echo 'GAME_SEED_DESIGN_CONTINUATION=SKIP_ACTIVE_BATCH'
 
       - name: Summary
         if: always()
@@ -212,7 +226,7 @@ jobs:
           echo '- composition: 2-4 mixed materials per GAME_SEED' >> "$GITHUB_STEP_SUMMARY"
           echo '- actual game count: no total cap' >> "$GITHUB_STEP_SUMMARY"
           echo '- autonomous idle activation: after 24h with no higher-priority development work' >> "$GITHUB_STEP_SUMMARY"
-          echo '- WIP: max 3 concurrent game design/production workers' >> "$GITHUB_STEP_SUMMARY"
-          echo '- target first session: 30 meaningful minutes' >> "$GITHUB_STEP_SUMMARY"
+          echo '- design WIP: max 6 concurrent games' >> "$GITHUB_STEP_SUMMARY"
+          echo '- initial implementation: one complete playable gameplay cycle; 30 minutes is final content-depth validation only' >> "$GITHUB_STEP_SUMMARY"
           echo '- multiplayer mode: decided during design' >> "$GITHUB_STEP_SUMMARY"
           echo '- public main game source write: NO' >> "$GITHUB_STEP_SUMMARY"
