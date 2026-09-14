@@ -3,8 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {validateBootstrapHtml,validatePreservedSourceHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope} from '../tools/company-development-web-bootstrap.mjs';
+import {validateBootstrapHtml,validatePreservedSourceHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope,buildApprovedScopeGenerationPrompt} from '../tools/company-development-web-bootstrap.mjs';
 import {deriveApprovedScopeInventory,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
+import {scoreWebImplementation,normalizeWebGameCategory} from '../tools/company-web-real-game-score.mjs';
 
 const basePlayable='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-audio-state="locked"><button id="act">Act</button><button data-audio-control="mute">Mute</button><input data-audio-control="volume" type="range"><script>let score=0;const AC=window.AudioContext||window.webkitAudioContext;document.querySelector("#act").addEventListener("click",()=>{score++});</script></body></html>';
 
@@ -53,7 +54,17 @@ test('scope classifier remains available for design inspection',()=>{
   assert.equal(classifyApprovedScope({path:'progression',label:'upgrade level'},0),'PROGRESSION');
 });
 
-test('Pocket Foundry compiler emits a real factory loop, footprint and non-clickable session milestones',()=>{
+test('initial Vibe contract requires one complete playable cycle and forbids direct time-stage UI',()=>{
+  const baseline={gameSeedId:'SEED-ROBLOX-SURVIVAL_HORROR_ESCAPE-001',content:{identity:'Last Lantern',coreFun:'survive and escape',coreLoop:['explore','avoid threat','escape'],mobileUx:'touch controls'}};
+  const inventory=deriveApprovedScopeInventory(baseline);
+  const prompt=buildApprovedScopeGenerationPrompt({gameId:'seed-roblox-survival-horror-es-doors',gameName:'Last Lantern',baseline,inventory});
+  assert.match(prompt,/ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE/);
+  assert.match(prompt,/30분 분량은 이후 실제 콘텐츠 깊이 QA/);
+  assert.match(prompt,/시간 구간 버튼/);
+  assert.doesNotMatch(prompt,/data-session-minutes="30"/);
+});
+
+test('Pocket Foundry compiler emits a real factory loop and no clickable session-stage control',()=>{
   const baseline={gameSeedId:'SEED-ROBLOX-SIMULATOR_TYCOON_INCREMENTAL-001',content:{identity:'Pocket Foundry',coreFun:'collect, upgrade, income, unlock',coreLoop:['collect ore and turn it into production resources','spend earnings on upgrades and automation','unlock a new area and repeat with larger goals'],mobileUx:'touch controls'}};
   const inventory=deriveApprovedScopeInventory(baseline);
   const compiled=buildContractSafePlayable({gameId:'seed-roblox-simulator-tycoon-i-adopt-me',gameName:'Pocket Foundry',baseline});
@@ -67,7 +78,6 @@ test('Pocket Foundry compiler emits a real factory loop, footprint and non-click
   assert.match(compiled.html,/data-mechanic-id="ore-smelting"/);
   assert.match(compiled.html,/data-mechanic-id="automation-drone"/);
   assert.match(compiled.html,/data-mechanic-id="zone-unlock"/);
-  assert.match(compiled.html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
   assert.doesNotMatch(compiled.html,/<button\b[^>]*data-session-stage=/i);
   assert.doesNotMatch(compiled.html,/scope-control-/i);
   assert.match(compiled.html,/state\.ore/);
@@ -94,12 +104,11 @@ test('Vector Clash compiler emits a real arena combat loop with ranges, dodge, s
   assert.match(compiled.html,/state\.skillCd/);
   assert.match(compiled.html,/state\.wins/);
   assert.match(compiled.html,/enemyPlan\(\)/);
-  assert.match(compiled.html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
   assert.doesNotMatch(compiled.html,/<button\b[^>]*data-session-stage=/i);
   assert.doesNotMatch(compiled.html,/scope-control-/i);
 });
 
-test('existing shared real game is preserved, inlined and rebound to approved scope before compiler fallback',async()=>{
+test('existing shared real game is preserved, inlined and rebound to approved scope before model fallback',async()=>{
   const baseline={gameSeedId:'SEED-SINGLE_DEFENSE_STRATEGY-001',content:{identity:'Celestial Bastion',coreFun:'defend the celestial core with tower placement and wave adaptation',coreLoop:['place towers against the threatened route','earn resources and upgrade the defense','adapt to enemy waves and clear the final threat'],mobileUx:'touch-first tower defense controls'}};
   const inventory=deriveApprovedScopeInventory(baseline);
   assert.equal(inventory.length,5);
@@ -114,7 +123,6 @@ test('existing shared real game is preserved, inlined and rebound to approved sc
     assert.equal(validatePreservedSourceHtml(html,{scopeInventory:inventory}).pass,true);
     assert.ok(Buffer.byteLength(html,'utf8')>=12000);
     assert.match(html,/localStorage/);
-    assert.match(html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
     assert.match(html,/data-audio-control="mute"/);
     assert.match(html,/data-audio-control="volume"/);
     assert.doesNotMatch(html,/src="\/web-games\/_shared\/vibe2-final\.js"/);
@@ -136,6 +144,16 @@ test('canonical Web bootstrap keeps Vibe2 as primary developer while determinist
   assert.match(source,/await buildVibePlayable\(/);
   assert.match(source,/MODEL_USED='\+\(generation\.modelUsed\?'YES':'NO'\)/);
   assert.match(source,/GENRE_REAL_IMPLEMENTATION_NOT_READY/);
+});
+
+test('Web implementation scoring is common 60 plus category 40 and UI count is not raw credit',()=>{
+  assert.equal(normalizeWebGameCategory('SINGLE_DEFENSE_STRATEGY'),'DEFENSE');
+  const runtime={playableCycle:{pass:true},mobileViewport:{touch:true},runtimeSmokePassed:true,musicRuntime:{pass:true},terminalOutcome:{reached:true},realGameMetrics:{meaningfulStateTransitionCount:18,uniqueStateSignatureCount:12,multiFieldTransitionCount:6,interactionSuccessRate:1,uniqueFunctionalUiCount:7,progressionSignalCount:4,canvasChangedTransitionCount:8,retryControlPresent:true,feedbackSignalPresent:true,mobileOverflow:false,interactedMechanicIds:['tower-place','wave-start','tower-upgrade','coin-spend','target-priority']}};
+  const result=scoreWebImplementation({category:'SINGLE_DEFENSE_STRATEGY',runtime,sourceText:'tower lane wave enemy upgrade coin strategy target range defense'});
+  assert.equal(Object.values(result.weights).reduce((a,b)=>a+b,0),100);
+  assert.equal(result.commonTotal,60);
+  assert.equal(result.categoryTotal,40);
+  assert.equal(result.total,100);
 });
 
 test('legacy frozen implementation context requires an exact canonical game and seed binding',()=>{
