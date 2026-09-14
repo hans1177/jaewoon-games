@@ -19,7 +19,7 @@ function runtimeState(){
   if(branch){try{const raw=execFileSync('git',['show',`origin/${branch}:game-seed-state.json`],{encoding:'utf8',maxBuffer:16*1024*1024});s=normalizeSeedState(JSON.parse(raw));}catch{}}
   return s;
 }
-function frozenImplementationContext(){
+function frozenImplementationContext(runtime){
   const baselinePath=arg('baseline');
   if(!baselinePath)throw new Error(`STRICT_REVIEW_ACTIVE_SEED_REQUIRED ${gameId}`);
   const baseline=readJson(baselinePath,null);
@@ -32,11 +32,17 @@ function frozenImplementationContext(){
   const cyclePath=path.join(path.dirname(baselinePath),'cycle-status.json');
   const cycle=readJson(cyclePath,null);
   if(!cycle||clean(cycle.gameId)!==gameId)throw new Error(`STRICT_REVIEW_FROZEN_CONTEXT_CYCLE_MISMATCH ${gameId}`);
-  const cycleSeedId=clean(cycle.gameSeed?.seedId||cycle.baselineGate?.evidence?.gameSeed?.seedId);
-  const category=clean(cycle.gameSeed?.category);
-  const platform=clean(cycle.selectedPlatform||cycle.baselineGate?.evidence?.targetPlatformProject?.platform||cycle.baselineGate?.evidence?.targetPlatformTechnical?.platform);
-  if(!cycleSeedId||cycleSeedId!==seedId||!category||!platform)throw new Error(`STRICT_REVIEW_FROZEN_CONTEXT_SEED_MISMATCH ${gameId}`);
-  return {seed:{seedId,CORE_LOOP:loops,DISTINCT_IDENTITY:identity,GAME_CATEGORY:category,INITIAL_TARGET_PLATFORM:platform,SEED_MATERIAL_IDS:[],generation:'FROZEN_DESIGN_CONTEXT',MULTIPLAYER_DESIGN_MODE:''},source:'FROZEN_DESIGN_BASELINE',baselinePath,cyclePath};
+  const historical=(Array.isArray(runtime?.seeds)?runtime.seeds:[]).find(row=>clean(row?.gameId)===gameId&&clean(row?.seedId)===seedId)||null;
+  const cycleSeedId=clean(cycle.gameSeed?.seedId||cycle.baselineGate?.evidence?.gameSeed?.seedId||historical?.seedId);
+  const category=clean(cycle.gameSeed?.category||historical?.GAME_CATEGORY);
+  const platform=clean(cycle.selectedPlatform||cycle.baselineGate?.evidence?.targetPlatformProject?.platform||cycle.baselineGate?.evidence?.targetPlatformTechnical?.platform||historical?.INITIAL_TARGET_PLATFORM).toUpperCase();
+  const platformOk=['ROBLOX','UNITY','FORTNITE_UEFN'].includes(platform);
+  if(!cycleSeedId||cycleSeedId!==seedId||!category||!platformOk)throw new Error(`STRICT_REVIEW_FROZEN_CONTEXT_SEED_MISMATCH ${gameId}`);
+  const materialIds=Array.isArray(historical?.SEED_MATERIAL_IDS)?historical.SEED_MATERIAL_IDS.map(clean).filter(Boolean):[];
+  const multiplayer=clean(historical?.MULTIPLAYER_DESIGN_MODE);
+  const targetMinutes=Number(historical?.TARGET_SESSION_MINUTES);
+  const targetDirection=clean(historical?.TARGET_SESSION_DIRECTION);
+  return {seed:{seedId,CORE_LOOP:loops,DISTINCT_IDENTITY:identity,GAME_CATEGORY:category,INITIAL_TARGET_PLATFORM:platform,SEED_MATERIAL_IDS:materialIds,generation:'FROZEN_DESIGN_CONTEXT',MULTIPLAYER_DESIGN_MODE:multiplayer,TARGET_SESSION_MINUTES:Number.isFinite(targetMinutes)?targetMinutes:null,TARGET_SESSION_DIRECTION:targetDirection},source:historical?'FROZEN_DESIGN_BASELINE+CANONICAL_SEED_RECORD':'FROZEN_DESIGN_BASELINE',baselinePath,cyclePath};
 }
 
 const state=runtimeState();
@@ -47,7 +53,7 @@ let reviewContextBaselinePath=null;
 let reviewContextCyclePath=null;
 if(!seed){
   if(mode!=='web'&&mode!=='implementation')throw new Error(`STRICT_REVIEW_ACTIVE_SEED_REQUIRED ${gameId}`);
-  const frozen=frozenImplementationContext();
+  const frozen=frozenImplementationContext(state);
   seed=frozen.seed;reviewContextSource=frozen.source;reviewContextBaselinePath=frozen.baselinePath;reviewContextCyclePath=frozen.cyclePath;
 }
 
