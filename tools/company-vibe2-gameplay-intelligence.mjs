@@ -1,7 +1,6 @@
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const strings=value=>Array.isArray(value)?value.map(clean).filter(Boolean):[];
-const text=value=>typeof value==='string'?value:JSON.stringify(value??{});
 
 function contentOf(baseline={}){return baseline?.content&&typeof baseline.content==='object'?baseline.content:{};}
 function suppliedSketch(baseline={}){
@@ -10,10 +9,7 @@ function suppliedSketch(baseline={}){
 }
 function baselineArray(baseline,keys){
   const c=contentOf(baseline);
-  for(const key of keys){
-    const value=c?.[key]??baseline?.[key];
-    if(Array.isArray(value)&&value.length)return value;
-  }
+  for(const key of keys){const value=c?.[key]??baseline?.[key];if(Array.isArray(value)&&value.length)return value;}
   return[];
 }
 function scopeGroups(inventory=[]){
@@ -39,96 +35,55 @@ export function deriveGameplaySketch({gameId='',genre='',baseline={},inventory=[
   const regions=baselineArray(baseline,['regions','areas','zones','mapRegions']).map(v=>typeof v==='string'?v:clean(v?.name||v?.id)).filter(Boolean).slice(0,12);
   const objectives=baselineArray(baseline,['objectives','quests','goals']).map(v=>typeof v==='string'?v:clean(v?.name||v?.id||v?.objective)).filter(Boolean).slice(0,12);
   return{
-    version:1,
-    source:'DERIVED_FROM_LOCKED_DESIGN_BASELINE',
-    gameId:clean(gameId),genre:clean(genre),
-    playerFantasy:clean(c.playerFantasy||baseline.playerFantasy||''),
-    coreFun:clean(c.coreFun||baseline.coreFun||''),
-    coreLoop,
+    version:1,source:'DERIVED_FROM_LOCKED_DESIGN_BASELINE',gameId:clean(gameId),genre:clean(genre),
+    playerFantasy:clean(c.playerFantasy||baseline.playerFantasy||''),coreFun:clean(c.coreFun||baseline.coreFun||''),coreLoop,
     worldModel:{regions,requiresPlayableSpace:groups.movement||groups.placement,requiresRouteOrCollision:groups.movement||groups.placement,requires3DSemantics:'CONDITIONAL_ON_RENDER_MODE'},
     actors:{playerRequired:true,npcOrObjectInteractionRequired:groups.interaction,enemyBehaviorRequired:groups.combat},
     interactionGraph:{required:groups.interaction,contract:'APPROACH_OR_SELECT -> REAL_INPUT -> TARGET_STATE_CHANGE -> GAME_RESULT_CHANGE'},
-    combatModel:{required:groups.combat,strategicOutcomeDifferenceRequired:groups.strategy},
-    economyModel:{required:groups.economy},
-    progressionModel:{required:groups.progression,objectives},
-    placementModel:{required:groups.placement,contract:'POSITION_SELECTION -> ENTITY_PLACEMENT -> COMBAT_OR_WORLD_EFFECT'},
+    combatModel:{required:groups.combat,strategicOutcomeDifferenceRequired:groups.strategy},economyModel:{required:groups.economy},
+    progressionModel:{required:groups.progression,objectives},placementModel:{required:groups.placement,contract:'POSITION_SELECTION -> ENTITY_PLACEMENT -> COMBAT_OR_WORLD_EFFECT'},
     stateMachine:{required:true,contract:'ENTRY -> INPUT -> CORE_ACTION -> STATE_CHANGE -> REWARD_OR_CHOICE -> RISK_OR_PRESSURE -> GOAL_OR_RETRY'},
-    expansionPlan:{requiredForFinalDepth:true,dimensions:['NEW_ENEMY_OR_THREAT','NEW_AREA_OR_ROUTE','NEW_OBJECTIVE','NEW_INTERACTION','NEW_STRATEGY_OUTCOME']},
-    systems,
+    expansionPlan:{requiredForFinalDepth:true,dimensions:['NEW_ENEMY_OR_THREAT','NEW_AREA_OR_ROUTE','NEW_OBJECTIVE','NEW_INTERACTION','NEW_STRATEGY_OUTCOME']},systems,
   };
 }
 
 function storageKeys(source){
-  const out=[];
-  for(const match of String(source||'').matchAll(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)\s*\(\s*['"]([^'"]+)['"]/g))out.push(match[1]);
+  const out=[];for(const match of String(source||'').matchAll(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)\s*\(\s*['"]([^'"]+)['"]/g))out.push(match[1]);
   return uniq(out).slice(0,40);
 }
 function storageKeyUsage(source,method){
-  const out=[];
-  const re=new RegExp(`(?:localStorage|sessionStorage)\\.${method}\\s*\\(\\s*['"]([^'"]+)['"]`,'g');
-  for(const match of String(source||'').matchAll(re))out.push(match[1]);
-  return uniq(out).slice(0,40);
+  const out=[],re=new RegExp(`(?:localStorage|sessionStorage)\\.${method}\\s*\\(\\s*['"]([^'"]+)['"]`,'g');
+  for(const match of String(source||'').matchAll(re))out.push(match[1]);return uniq(out).slice(0,40);
 }
 function functionNames(source){
-  const out=[];
-  for(const match of String(source||'').matchAll(/(?:function\s+([A-Za-z_$][\w$]*)|(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>)/g))out.push(match[1]||match[2]);
+  const out=[];for(const match of String(source||'').matchAll(/(?:function\s+([A-Za-z_$][\w$]*)|(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>)/g))out.push(match[1]||match[2]);
   return uniq(out).slice(0,80);
 }
-function dataValues(source,attribute){
-  return uniq([...String(source||'').matchAll(new RegExp(`${attribute}=["']([^"']+)["']`,'gi'))].map(m=>m[1])).slice(0,60);
-}
+function dataValues(source,attribute){return uniq([...String(source||'').matchAll(new RegExp(`${attribute}=["']([^"']+)["']`,'gi'))].map(m=>m[1])).slice(0,60);}
 function functionDependencyGraph(source,names){
   const raw=String(source||''),known=new Set(names||[]),edges=[];
   for(const match of raw.matchAll(/function\s+([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*\{([\s\S]*?)\n?\}/g)){
-    const from=match[1],body=match[2]||'';
-    if(!known.has(from))continue;
-    for(const call of body.matchAll(/\b([A-Za-z_$][\w$]*)\s*\(/g)){
-      const to=call[1];
-      if(to!==from&&known.has(to))edges.push(`${from}->${to}`);
-    }
+    const from=match[1],body=match[2]||'';if(!known.has(from))continue;
+    for(const call of body.matchAll(/\b([A-Za-z_$][\w$]*)\s*\(/g)){const to=call[1];if(to!==from&&known.has(to))edges.push(`${from}->${to}`);}
   }
   return uniq(edges).slice(0,120);
 }
 
 export function analyzeExistingGameSource(source=''){
-  const raw=String(source||''),lower=raw.toLowerCase();
-  const scripts=[...raw.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script\s*>/gi)].map(m=>m[1]||'');
-  const functions=functionNames(raw);
+  const raw=String(source||''),lower=raw.toLowerCase(),scripts=[...raw.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script\s*>/gi)].map(m=>m[1]||''),functions=functionNames(raw);
   return{
-    present:Boolean(clean(raw)),
-    bytes:Buffer.byteLength(raw,'utf8'),
-    scriptBytes:scripts.reduce((n,s)=>n+Buffer.byteLength(s,'utf8'),0),
-    storageKeys:storageKeys(raw),
-    storageReads:storageKeyUsage(raw,'getItem'),
-    storageWrites:storageKeyUsage(raw,'setItem'),
-    functions,
-    functionDependencies:functionDependencyGraph(scripts.join('\n'),functions),
-    mechanicIds:dataValues(raw,'data-mechanic-id'),
-    scopeIds:dataValues(raw,'data-scope-id'),
+    present:Boolean(clean(raw)),bytes:Buffer.byteLength(raw,'utf8'),scriptBytes:scripts.reduce((n,s)=>n+Buffer.byteLength(s,'utf8'),0),
+    storageKeys:storageKeys(raw),storageReads:storageKeyUsage(raw,'getItem'),storageWrites:storageKeyUsage(raw,'setItem'),functions,
+    functionDependencies:functionDependencyGraph(scripts.join('\n'),functions),mechanicIds:dataValues(raw,'data-mechanic-id'),scopeIds:dataValues(raw,'data-scope-id'),
     areaIds:uniq([...dataValues(raw,'data-area'),...dataValues(raw,'data-zone'),...dataValues(raw,'data-region')]),
     routeIds:uniq([...dataValues(raw,'data-route'),...dataValues(raw,'data-route-id'),...dataValues(raw,'data-path-id')]),
     interactionTargets:uniq([...dataValues(raw,'data-interaction-target'),...dataValues(raw,'data-object-id'),...dataValues(raw,'data-npc')]),
-    capabilities:{
-      canvas:/<canvas\b/i.test(raw),
-      threeDimensional:/data-spatial-dimension=["']3d["']|data-player-z=|data-camera-yaw=|data-camera-pitch=/i.test(raw),
-      collision:/collision|collider|data-collision/i.test(lower),
-      raycastOrPath:/raycast|navmesh|pathfind|data-raycast|data-route|data-path/i.test(lower),
-      realInput:/addEventListener\s*\(\s*['"](?:click|pointerdown|pointerup|touchstart|touchend|keydown|keyup)/i.test(raw),
-      touchInput:/touchstart|touchend|pointerdown|pointerup/i.test(lower),
-      interactions:/data-interactable|data-interaction-target|data-npc|data-object-id/i.test(raw),
-      saveState:/localStorage|sessionStorage/i.test(raw),
-      economy:/coin|gold|currency|resource|price|cost|shop|buy|sell|econom/i.test(lower),
-      difficulty:/difficulty|level|wave|stage|enemyhp|enemydamage|scal/i.test(lower),
-      frameLoop:/requestAnimationFrame|setInterval|setTimeout/i.test(raw),
-      winPath:/victory|win\b|목표 달성|선승/i.test(raw),
-      failPath:/defeat|lose\b|gameover|패배|shutdown|destroyed/i.test(raw),
-    }
+    capabilities:{canvas:/<canvas\b/i.test(raw),threeDimensional:/data-spatial-dimension=["']3d["']|data-player-z=|data-camera-yaw=|data-camera-pitch=/i.test(raw),collision:/collision|collider|data-collision/i.test(lower),raycastOrPath:/raycast|navmesh|pathfind|data-raycast|data-route|data-path/i.test(lower),realInput:/addEventListener\s*\(\s*['"](?:click|pointerdown|pointerup|touchstart|touchend|keydown|keyup)/i.test(raw),touchInput:/touchstart|touchend|pointerdown|pointerup/i.test(lower),interactions:/data-interactable|data-interaction-target|data-npc|data-object-id/i.test(raw),saveState:/localStorage|sessionStorage/i.test(raw),economy:/coin|gold|currency|resource|price|cost|shop|buy|sell|econom/i.test(lower),difficulty:/difficulty|level|wave|stage|enemyhp|enemydamage|scal/i.test(lower),frameLoop:/requestAnimationFrame|setInterval|setTimeout/i.test(raw),winPath:/victory|win\b|목표 달성|선승/i.test(raw),failPath:/defeat|lose\b|gameover|패배|shutdown|destroyed/i.test(raw)}
   };
 }
 
 export function buildVibePatchPlan({gameplaySketch={},sourceAnalysis={},inventory=[],blockers=[]}={}){
-  const tasks=[];
-  const add=(id,reason,dependsOn=[])=>{if(!tasks.some(t=>t.id===id))tasks.push({id,reason,dependsOn});};
+  const tasks=[],add=(id,reason,dependsOn=[])=>{if(!tasks.some(t=>t.id===id))tasks.push({id,reason,dependsOn});};
   if(!sourceAnalysis.present)add('IMPLEMENT_CORE_SOURCE','No preserved source is available; implement the locked gameplay sketch without inventing a different game.');
   else add('PRESERVE_EXISTING_BEHAVIOR','Patch the existing game in place; do not replace unrelated working systems.');
   if(sourceAnalysis.storageKeys?.length)add('PRESERVE_SAVE_CONTRACT',`Keep existing save keys and meanings: ${sourceAnalysis.storageKeys.join(', ')}`,['PRESERVE_EXISTING_BEHAVIOR']);
@@ -139,28 +94,12 @@ export function buildVibePatchPlan({gameplaySketch={},sourceAnalysis={},inventor
   if(gameplaySketch?.progressionModel?.required)add('CONNECT_PROGRESSION','Rewards, objectives and unlocks must connect back into the core loop.');
   if(gameplaySketch?.expansionPlan?.requiredForFinalDepth)add('EXPAND_MEANINGFUL_CONTENT','Final depth must add new enemy/area/objective/interaction/strategy dimensions; repetition and retry time do not count.');
   for(const blocker of uniq(blockers).slice(0,24))add(`FIX_${clean(blocker).replace(/[^A-Za-z0-9]+/g,'_').slice(0,64)}`,`Resolve validator/rework failure: ${clean(blocker)}`);
-  return{
-    version:1,
-    mode:'PATCH_EXISTING_RESPONSIBLE_SYSTEMS',
-    forbidden:['FULL_GAME_REWRITE_WHEN_SOURCE_EXISTS','SAVE_KEY_OR_MEANING_BREAK','TEMPLATE_SWAP_TO_HIDE_MISSING_FEATURES','STATIC_LABEL_AS_IMPLEMENTATION','VALIDATION_PROXY_AS_GAMEPLAY'],
-    preserve:{storageKeys:sourceAnalysis.storageKeys||[],workingFunctions:(sourceAnalysis.functions||[]).slice(0,30),mechanicIds:sourceAnalysis.mechanicIds||[]},
-    approvedScopeIds:inventory.map(x=>clean(x?.id)).filter(Boolean),
-    tasks,
-    verificationOrder:['STATIC_CONTRACT','MOBILE_RUNTIME','REAL_INPUT_AND_STATE_CHANGE','APPROVED_SCOPE_BEHAVIOR','WIN_AND_FAIL','LONG_GOAL_PLAY','REPLAY_REGRESSION','SAVE_RESTORE','SOFTLOCK','ECONOMY','DIFFICULTY','PERFORMANCE','FINAL_CONTENT_DEPTH_WHEN_APPLICABLE']
-  };
+  return{version:1,mode:'PATCH_EXISTING_RESPONSIBLE_SYSTEMS',forbidden:['FULL_GAME_REWRITE_WHEN_SOURCE_EXISTS','SAVE_KEY_OR_MEANING_BREAK','TEMPLATE_SWAP_TO_HIDE_MISSING_FEATURES','STATIC_LABEL_AS_IMPLEMENTATION','VALIDATION_PROXY_AS_GAMEPLAY'],preserve:{storageKeys:sourceAnalysis.storageKeys||[],workingFunctions:(sourceAnalysis.functions||[]).slice(0,30),mechanicIds:sourceAnalysis.mechanicIds||[]},approvedScopeIds:inventory.map(x=>clean(x?.id)).filter(Boolean),tasks,verificationOrder:['STATIC_CONTRACT','MOBILE_RUNTIME','REAL_INPUT_AND_STATE_CHANGE','APPROVED_SCOPE_BEHAVIOR','WIN_AND_FAIL','LONG_GOAL_PLAY','REPLAY_REGRESSION','SAVE_RESTORE','SOFTLOCK','ECONOMY','DIFFICULTY','PERFORMANCE','FINAL_CONTENT_DEPTH_WHEN_APPLICABLE']};
 }
 
 export function buildDependencyAnalysis({sourceAnalysis={},patchPlan={}}={}){
-  const taskEdges=[];
-  for(const task of patchPlan.tasks||[])for(const dependency of task.dependsOn||[])taskEdges.push(`${dependency}->${task.id}`);
-  return{
-    version:1,
-    sourceFunctionEdges:uniq(sourceAnalysis.functionDependencies||[]),
-    patchTaskEdges:uniq(taskEdges),
-    protectedSaveKeys:uniq(sourceAnalysis.storageKeys||[]),
-    protectedWorkingFunctions:uniq(sourceAnalysis.functions||[]).slice(0,40),
-    rule:'PATCH_DEPENDENCIES_BEFORE_DEPENDENTS_AND_REVALIDATE_AFFECTED_SYSTEMS'
-  };
+  const taskEdges=[];for(const task of patchPlan.tasks||[])for(const dependency of task.dependsOn||[])taskEdges.push(`${dependency}->${task.id}`);
+  return{version:1,sourceFunctionEdges:uniq(sourceAnalysis.functionDependencies||[]),patchTaskEdges:uniq(taskEdges),protectedSaveKeys:uniq(sourceAnalysis.storageKeys||[]),protectedWorkingFunctions:uniq(sourceAnalysis.functions||[]).slice(0,40),rule:'PATCH_DEPENDENCIES_BEFORE_DEPENDENTS_AND_REVALIDATE_AFFECTED_SYSTEMS'};
 }
 
 function classifyFailure(value){
@@ -179,27 +118,10 @@ function classifyFailure(value){
   return'GENERAL_RUNTIME';
 }
 
-export function buildFailureDrivenRepairLoop({blockers=[],patchPlan={}}={}){
-  const failures=uniq(blockers).slice(0,24);
-  const classifications=failures.map(value=>({failure:value,type:classifyFailure(value)}));
-  const repairTaskIds=(patchPlan.tasks||[]).filter(task=>task.id.startsWith('FIX_')||['IMPLEMENT_PLAYABLE_SPACE','IMPLEMENT_ENTITY_INTERACTIONS','IMPLEMENT_POSITIONAL_PLACEMENT','IMPLEMENT_DIVERGENT_STRATEGY_RESULTS','CONNECT_PROGRESSION','EXPAND_MEANINGFUL_CONTENT'].includes(task.id)).map(task=>task.id);
-  return{
-    version:2,
-    mode:'FAILURE_DRIVEN_TARGETED_REPAIR',
-    failures:classifications,
-    repairTaskIds:uniq(repairTaskIds),
-    retryContract:['READ_FAILURE_EVIDENCE','IDENTIFY_RESPONSIBLE_EXISTING_SYSTEM','PATCH_MINIMUM_COHERENT_RESPONSIBLE_BLOCK','RERUN_FAILED_VALIDATION','RUN_LONG_GOAL_PLAY_WHEN_RELEVANT','RUN_REPLAY_REGRESSION','VERIFY_SAVE_RESTORE','VERIFY_SOFTLOCK_ECONOMY_DIFFICULTY_PERFORMANCE_MOBILE','PRESERVE_SAVE_AND_WORKING_BEHAVIOR'],
-    stopCondition:'ALL_CURRENT_FAILURES_CLEARED_WITH_REGRESSION_GREEN'
-  };
-}
-
 export function buildRuntimeValidationPlan({gameplaySketch={},sourceAnalysis={}}={}){
-  const hasSave=Boolean(sourceAnalysis.capabilities?.saveState||sourceAnalysis.storageKeys?.length);
-  const needsEconomy=Boolean(gameplaySketch?.economyModel?.required||sourceAnalysis.capabilities?.economy);
-  const needsStrategy=Boolean(gameplaySketch?.combatModel?.strategicOutcomeDifferenceRequired);
+  const hasSave=Boolean(sourceAnalysis.capabilities?.saveState||sourceAnalysis.storageKeys?.length),needsEconomy=Boolean(gameplaySketch?.economyModel?.required||sourceAnalysis.capabilities?.economy),needsStrategy=Boolean(gameplaySketch?.combatModel?.strategicOutcomeDifferenceRequired);
   return{
-    version:1,
-    mode:'INDEPENDENT_RUNTIME_EVIDENCE',
+    version:1,mode:'INDEPENDENT_RUNTIME_EVIDENCE',
     longGoal:{required:true,contract:'ADVANCE_REAL_OBJECTIVES_WITHOUT_TIME_SKIP_OR_VALIDATION_PROXY_AND_ACCUMULATE_NEW_GAMEPLAY_DIMENSIONS'},
     replayRegression:{required:true,contract:'REPLAY_SAME_SEED_AND_INPUT_SEQUENCE_OR_EQUIVALENT_SCENARIO_AND_COMPARE_CRITICAL_STATE_TRANSITIONS'},
     softlock:{required:true,contract:'NO_NON_TERMINAL_STATE_MAY_REMOVE_ALL_MEANINGFUL_PROGRESS_ACTIONS_WITHOUT_A_REAL_RETRY_OR_EXIT_PATH'},
@@ -213,20 +135,36 @@ export function buildRuntimeValidationPlan({gameplaySketch={},sourceAnalysis={}}
   };
 }
 
-export function buildVibeDevelopmentContext({gameId='',genre='',baseline={},inventory=[],existingHtml='',blockers=[]}={}){
-  const gameplaySketch=deriveGameplaySketch({gameId,genre,baseline,inventory});
-  const sourceAnalysis=analyzeExistingGameSource(existingHtml);
-  const patchPlan=buildVibePatchPlan({gameplaySketch,sourceAnalysis,inventory,blockers});
-  const dependencyAnalysis=buildDependencyAnalysis({sourceAnalysis,patchPlan});
-  const repairLoop=buildFailureDrivenRepairLoop({blockers,patchPlan});
-  const runtimeValidationPlan=buildRuntimeValidationPlan({gameplaySketch,sourceAnalysis});
-  return{version:3,gameplaySketch,sourceAnalysis,dependencyAnalysis,patchPlan,repairLoop,runtimeValidationPlan};
+export function runtimeValidationBlockers({plan={},evidence={}}={}){
+  const blockers=[];
+  const checks=[
+    ['longGoal','LONG_GOAL_PLAY_FAILED'],['replayRegression','REPLAY_SAME_SEED_MISMATCH'],['softlock','SOFTLOCK_PROGRESS_PATH_FAILED'],
+    ['saveRestore','SAVE_RESTORE_FAILED'],['economy','ECONOMY_RUNTIME_FAILED'],['difficulty','DIFFICULTY_RUNTIME_FAILED'],
+    ['performance','PERFORMANCE_RUNTIME_FAILED'],['mobile','MOBILE_RUNTIME_FAILED'],['strategyOutcomes','STRATEGY_OUTCOME_DIVERGENCE_FAILED'],['contentDepth','FINAL_CONTENT_DEPTH_FAILED'],
+  ];
+  for(const [key,code] of checks){
+    const requirement=plan?.[key];if(requirement?.required!==true)continue;
+    const observed=evidence?.[key];
+    if(!observed||observed.pass!==true)blockers.push(code);
+  }
+  for(const item of strings(evidence?.blockers))blockers.push(item);
+  return uniq(blockers);
+}
+
+export function buildFailureDrivenRepairLoop({blockers=[],patchPlan={},runtimeValidationPlan=null,runtimeEvidence=null}={}){
+  const runtimeBlockers=runtimeValidationPlan&&runtimeEvidence?runtimeValidationBlockers({plan:runtimeValidationPlan,evidence:runtimeEvidence}):[];
+  const failures=uniq([...blockers,...runtimeBlockers]).slice(0,32),classifications=failures.map(value=>({failure:value,type:classifyFailure(value)}));
+  const repairTaskIds=(patchPlan.tasks||[]).filter(task=>task.id.startsWith('FIX_')||['IMPLEMENT_PLAYABLE_SPACE','IMPLEMENT_ENTITY_INTERACTIONS','IMPLEMENT_POSITIONAL_PLACEMENT','IMPLEMENT_DIVERGENT_STRATEGY_RESULTS','CONNECT_PROGRESSION','EXPAND_MEANINGFUL_CONTENT'].includes(task.id)).map(task=>task.id);
+  return{version:3,mode:'FAILURE_DRIVEN_TARGETED_REPAIR',failures:classifications,runtimeEvidenceBound:runtimeBlockers.length>0,repairTaskIds:uniq(repairTaskIds),retryContract:['READ_FAILURE_EVIDENCE','IDENTIFY_RESPONSIBLE_EXISTING_SYSTEM','PATCH_MINIMUM_COHERENT_RESPONSIBLE_BLOCK','RERUN_FAILED_VALIDATION','RUN_LONG_GOAL_PLAY_WHEN_RELEVANT','RUN_REPLAY_REGRESSION','VERIFY_SAVE_RESTORE','VERIFY_SOFTLOCK_ECONOMY_DIFFICULTY_PERFORMANCE_MOBILE','PRESERVE_SAVE_AND_WORKING_BEHAVIOR'],stopCondition:'ALL_CURRENT_FAILURES_CLEARED_WITH_REGRESSION_GREEN'};
+}
+
+export function buildVibeDevelopmentContext({gameId='',genre='',baseline={},inventory=[],existingHtml='',blockers=[],runtimeEvidence=null}={}){
+  const gameplaySketch=deriveGameplaySketch({gameId,genre,baseline,inventory}),sourceAnalysis=analyzeExistingGameSource(existingHtml),patchPlan=buildVibePatchPlan({gameplaySketch,sourceAnalysis,inventory,blockers}),dependencyAnalysis=buildDependencyAnalysis({sourceAnalysis,patchPlan}),runtimeValidationPlan=buildRuntimeValidationPlan({gameplaySketch,sourceAnalysis}),repairLoop=buildFailureDrivenRepairLoop({blockers,patchPlan,runtimeValidationPlan,runtimeEvidence});
+  return{version:4,gameplaySketch,sourceAnalysis,dependencyAnalysis,patchPlan,repairLoop,runtimeValidationPlan};
 }
 
 export function clipPreservedSourceForModel(source='',max=24000){
-  const raw=String(source||'');
-  if(raw.length<=max)return raw;
-  const marker='\n<!-- VIBE2_SOURCE_MIDDLE_OMITTED_FOR_CONTEXT; PATCH EXISTING SOURCE, DO NOT REPLACE GAME -->\n';
-  const budget=Math.max(2000,max-marker.length),head=Math.floor(budget*0.58),tail=budget-head;
+  const raw=String(source||'');if(raw.length<=max)return raw;
+  const marker='\n<!-- VIBE2_SOURCE_MIDDLE_OMITTED_FOR_CONTEXT; PATCH EXISTING SOURCE, DO NOT REPLACE GAME -->\n',budget=Math.max(2000,max-marker.length),head=Math.floor(budget*0.58),tail=budget-head;
   return raw.slice(0,head)+marker+raw.slice(-tail);
 }
