@@ -8,6 +8,7 @@ import {
   buildFailureDrivenRepairLoop,
   buildRuntimeValidationPlan,
   runtimeValidationBlockers,
+  runtimeEvidenceFromValidationReport,
   buildVibeDevelopmentContext,
   clipPreservedSourceForModel,
 } from '../tools/company-vibe2-gameplay-intelligence.mjs';
@@ -63,11 +64,22 @@ localStorage.getItem('save-v4'); localStorage.setItem('save-v4','x'); addEventLi
   assert.equal(analysis.capabilities.frameLoop,true);
 });
 
+test('randomized source without replay seed contract becomes a targeted repair task',()=>{
+  const gameplaySketch=deriveGameplaySketch({baseline:{content:{}},inventory});
+  const sourceAnalysis=analyzeExistingGameSource(`<main><script>const roll=Math.random();function attack(){return roll}</script></main>`);
+  assert.equal(sourceAnalysis.capabilities.randomness,true);
+  assert.equal(sourceAnalysis.capabilities.replaySeedContract,false);
+  const plan=buildVibePatchPlan({gameplaySketch,sourceAnalysis,inventory});
+  assert.equal(plan.version,2);
+  assert.ok(plan.tasks.some(row=>row.id==='IMPLEMENT_REPLAY_SEED_CONTRACT'));
+});
+
 test('patch plan preserves working source and orders missing real gameplay work',()=>{
   const gameplaySketch=deriveGameplaySketch({baseline:{content:{}},inventory});
   const sourceAnalysis=analyzeExistingGameSource(`<main><script>function saveGame(){} localStorage.setItem('save-key','1')</script></main>`);
   const plan=buildVibePatchPlan({gameplaySketch,sourceAnalysis,inventory,blockers:['ENTITY_INTERACTION_RESULT_REQUIRED']});
   const ids=plan.tasks.map(x=>x.id);
+  assert.equal(plan.version,2);
   assert.ok(ids.includes('PRESERVE_EXISTING_BEHAVIOR'));
   assert.ok(ids.includes('PRESERVE_SAVE_CONTRACT'));
   assert.ok(ids.includes('IMPLEMENT_PLAYABLE_SPACE'));
@@ -94,7 +106,7 @@ test('dependency analysis and failure loop keep repairs targeted to responsible 
   assert.ok(dependency.sourceFunctionEdges.includes('placeTower->resolveWave'));
   assert.ok(dependency.patchTaskEdges.includes('IMPLEMENT_PLAYABLE_SPACE->IMPLEMENT_POSITIONAL_PLACEMENT'));
   assert.equal(repair.mode,'FAILURE_DRIVEN_TARGETED_REPAIR');
-  assert.equal(repair.version,3);
+  assert.equal(repair.version,4);
   assert.equal(repair.failures[0].type,'SPATIAL_GAMEPLAY');
   assert.equal(repair.failures[1].type,'MOBILE_RUNTIME');
   assert.equal(repair.failures[2].type,'SAVE_REGRESSION');
@@ -112,6 +124,7 @@ test('runtime validation plan requires independent long-goal replay and safety e
   const gameplaySketch=deriveGameplaySketch({gameId:'g',genre:'SINGLE_DEFENSE_STRATEGY',baseline:{content:{}},inventory});
   const sourceAnalysis=analyzeExistingGameSource(`<main><script>localStorage.getItem('save-v2');localStorage.setItem('save-v2','{}');let gold=10;requestAnimationFrame(()=>{});</script></main>`);
   const plan=buildRuntimeValidationPlan({gameplaySketch,sourceAnalysis});
+  assert.equal(plan.version,2);
   assert.equal(plan.mode,'INDEPENDENT_RUNTIME_EVIDENCE');
   assert.equal(plan.longGoal.required,true);
   assert.equal(plan.replayRegression.required,true);
@@ -133,7 +146,7 @@ test('runtime failures are converted into existing targeted repair classificatio
   const sourceAnalysis=analyzeExistingGameSource(`<main><script>localStorage.getItem('save-v2');localStorage.setItem('save-v2','{}');let gold=10;requestAnimationFrame(()=>{});</script></main>`);
   const plan=buildRuntimeValidationPlan({gameplaySketch,sourceAnalysis});
   const evidence={
-    longGoal:{pass:true},replayRegression:{pass:false},softlock:{pass:true},saveRestore:{pass:false},economy:{pass:true},difficulty:{pass:false},performance:{pass:true},mobile:{pass:false},strategyOutcomes:{pass:false},contentDepth:{pass:true},
+    longGoal:{pass:true},replayRegression:{pass:false,status:'CRITICAL_STATE_DIVERGED'},softlock:{pass:true},saveRestore:{pass:false},economy:{pass:true},difficulty:{pass:false},performance:{pass:true},mobile:{pass:false},strategyOutcomes:{pass:false},contentDepth:{pass:true},
   };
   const blockers=runtimeValidationBlockers({plan,evidence});
   assert.ok(blockers.includes('REPLAY_SAME_SEED_MISMATCH'));
@@ -143,6 +156,7 @@ test('runtime failures are converted into existing targeted repair classificatio
   assert.ok(blockers.includes('STRATEGY_OUTCOME_DIVERGENCE_FAILED'));
   const repair=buildFailureDrivenRepairLoop({patchPlan:{tasks:[]},runtimeValidationPlan:plan,runtimeEvidence:evidence});
   assert.equal(repair.runtimeEvidenceBound,true);
+  assert.ok(repair.runtimeFailureCount>=5);
   assert.equal(repair.failures.find(x=>x.failure==='REPLAY_SAME_SEED_MISMATCH')?.type,'REPLAY_REGRESSION');
   assert.equal(repair.failures.find(x=>x.failure==='SAVE_RESTORE_FAILED')?.type,'SAVE_REGRESSION');
   assert.equal(repair.failures.find(x=>x.failure==='DIFFICULTY_RUNTIME_FAILED')?.type,'DIFFICULTY_CURVE');
@@ -172,6 +186,16 @@ test('deterministic replay requires same seed, full input trace and matching cri
   assert.equal(diverged.criticalStateMatch,false);
 });
 
+test('validation report runtime evidence binds into Vibe development context',()=>{
+  const runtimeEvidence={longGoal:{pass:true},replayRegression:{pass:false,status:'CRITICAL_STATE_DIVERGED'},softlock:{pass:true},saveRestore:{required:false,pass:true},economy:{required:false,pass:true},difficulty:{pass:true},performance:{pass:true},mobile:{pass:true},strategyOutcomes:{pass:false},contentDepth:{pass:false}};
+  assert.deepEqual(runtimeEvidenceFromValidationReport({runtimeValidationEvidence:runtimeEvidence}),runtimeEvidence);
+  const context=buildVibeDevelopmentContext({gameId:'g',genre:'SINGLE_DEFENSE_STRATEGY',baseline:{content:{}},inventory,existingHtml:'<main><script>let wave=1</script></main>',blockers:['RUNTIME_REWORK_REQUIRED'],runtimeEvidence});
+  assert.equal(context.version,5);
+  assert.deepEqual(context.runtimeEvidence,runtimeEvidence);
+  assert.equal(context.repairLoop.runtimeEvidenceBound,true);
+  assert.equal(context.repairLoop.failures.find(x=>x.failure==='REPLAY_SAME_SEED_MISMATCH')?.type,'REPLAY_REGRESSION');
+});
+
 test('long preserved source keeps both ends instead of silently losing tail systems',()=>{
   const source='HEAD_'+('a'.repeat(30000))+'_TAIL';
   const clipped=clipPreservedSourceForModel(source,4000);
@@ -182,10 +206,10 @@ test('long preserved source keeps both ends instead of silently losing tail syst
 
 test('Vibe bootstrap injects development context before coding',()=>{
   const baseline={content:{coreLoop:['enter','fight','reward']}};
-  const existingHtml=`<main><script>function saveGame(){} localStorage.setItem('save-v5','1')</script></main>`;
-  const context=buildVibeDevelopmentContext({gameId:'g',genre:'SINGLE_DEFENSE_STRATEGY',baseline,inventory,existingHtml,blockers:['RUNTIME_REWORK_REQUIRED:FINAL_CONTENT_DEPTH_REWORK_REQUIRED']});
+  const existingHtml=`<main><script>function saveGame(){} localStorage.setItem('save-v5','1');const roll=Math.random()</script></main>`;
+  const context=buildVibeDevelopmentContext({gameId:'g',genre:'SINGLE_DEFENSE_STRATEGY',baseline,inventory,existingHtml,blockers:['RUNTIME_REWORK_REQUIRED:FINAL_CONTENT_DEPTH_REWORK_REQUIRED'],runtimeEvidence:null});
   const prompt=buildApprovedScopeGenerationPrompt({gameId:'g',gameName:'Game',baseline,inventory,existingHtml,preservationBlockers:['RUNTIME_REWORK_REQUIRED:FINAL_CONTENT_DEPTH_REWORK_REQUIRED'],developmentContext:context});
-  assert.equal(context.version,4);
+  assert.equal(context.version,5);
   assert.match(prompt,/VIBE_DEVELOPMENT_CONTEXT:/);
   assert.match(prompt,/DERIVED_FROM_LOCKED_DESIGN_BASELINE/);
   assert.match(prompt,/PATCH_EXISTING_RESPONSIBLE_SYSTEMS/);
@@ -195,6 +219,7 @@ test('Vibe bootstrap injects development context before coding',()=>{
   assert.match(prompt,/save-v5/);
   assert.match(prompt,/IMPLEMENT_POSITIONAL_PLACEMENT/);
   assert.match(prompt,/IMPLEMENT_DIVERGENT_STRATEGY_RESULTS/);
+  assert.match(prompt,/IMPLEMENT_REPLAY_SEED_CONTRACT/);
   assert.match(prompt,/REPLAY_SAME_SEED_AND_INPUT_SEQUENCE/);
   assert.match(prompt,/EXISTING_HTML:/);
 });
