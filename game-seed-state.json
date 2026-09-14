@@ -9,8 +9,4167 @@
     "IDLE_GROWTH_RPG",
     "STORY_COMPLETE_RPG"
   ],
-  "seeds": [],
-  "seedMaterials": [],
+  "seeds": [
+    {
+      "version": 2,
+      "seedId": "SEED-UNITY-ACTION_SURVIVAL_ROGUELITE-001",
+      "gameId": "seed-unity-action-survival-ro-echoes-of-the-lost-empire",
+      "gameName": "Echoes of the Lost Empire",
+      "status": "ACTIVE",
+      "generation": "HISTORICAL_INITIAL_BOOTSTRAP",
+      "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
+      "SEED_MATERIAL_IDS": [
+        "MAT-001",
+        "MAT-013",
+        "MAT-025"
+      ],
+      "SEED_MATERIAL_COUNT": 3,
+      "SEED_MATERIAL_SELECTION_MODE": "DYNAMIC_CONTEXTUAL_2_TO_4",
+      "SEED_MATERIAL_SELECTION_SIGNALS": [
+        "TARGET_PLATFORM_FIT",
+        "CATEGORY_OR_GENRE_FIT",
+        "MATERIAL_COMPLEMENTARITY",
+        "VALIDATED_LEARNING_OUTCOME",
+        "TOP30_DIFFERENTIATION"
+      ],
+      "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT": 0,
+      "SEED_CATEGORY_SELECTION_ROLE": "HISTORICAL_BASELINE",
+      "REFERENCE_INPUTS": [
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-001",
+          "sourceFamily": "SUCCESSFUL_GAME_STRUCTURE",
+          "value": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 1"
+        },
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-013",
+          "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+          "value": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 13"
+        },
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-025",
+          "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+          "value": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 25"
+        },
+        {
+          "type": "GAME_REFERENCE",
+          "value": "Vampire Survivors"
+        },
+        {
+          "type": "GAME_REFERENCE",
+          "value": "Brotato"
+        }
+      ],
+      "REFERENCE_GAMES": [
+        "Vampire Survivors",
+        "Brotato"
+      ],
+      "CORE_FUN_TO_LEARN": [
+        "VALIDATED_LEARNING_OUTCOME",
+        "TOP30_DIFFERENTIATION"
+      ],
+      "CORE_LOOP": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "DISTINCT_IDENTITY": "Unique character customization and a dynamic world.",
+      "MARKET_EVIDENCE_SUMMARY": {
+        "role": "TARGET_DESIGN_REFERENCE",
+        "targetMarketScope": "GLOBAL",
+        "countrySpecificEvidenceRole": "SECONDARY_CONTEXT_ONLY",
+        "hardPassFailGate": false,
+        "missingDataDoesNotRejectSeed": true,
+        "marketDataAloneCannotDiscard": true,
+        "available": true,
+        "sourceFile": "game-seed-market-evidence.json",
+        "platformProfileFile": "game-seed-platform-profiles.json",
+        "references": [
+          {
+            "title": "Vampire Survivors",
+            "qualitative": "action-survival benchmark for horde pressure, simple attacks, upgrade choices and build combinations",
+            "metrics": []
+          },
+          {
+            "title": "Brotato",
+            "qualitative": "compact arena survival benchmark for short runs, item choices and build synergy",
+            "metrics": []
+          },
+          {
+            "title": "Survivor.io",
+            "qualitative": "mobile survival-roguelite benchmark for touch readability, wave pressure and upgrade selection",
+            "metrics": []
+          },
+          {
+            "title": "Global action/session signal",
+            "metrics": [
+              {
+                "metric": "actionSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobilePlayerSharePercent",
+                "value": 55,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ]
+          },
+          {
+            "title": "ESA Power of Play 2025 Global Report",
+            "metrics": [
+              {
+                "metric": "surveyedPlayersAge16Plus",
+                "value": 24216,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "surveyedCountries",
+                "value": 21,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalAveragePlayerAge",
+                "value": 41,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobilePlayerSharePercent",
+                "value": 55,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionAndPuzzleTopTwoGenresCountryCount",
+                "value": 20,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Newzoo 2025 Full-Year Games Market Review",
+            "metrics": [
+              {
+                "metric": "globalGamesRevenue2025UsdBillion",
+                "value": 201.6,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobileGamesRevenue2025UsdBillion",
+                "value": 113.3,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Sensor Tower State of Gaming 2026",
+            "metrics": [
+              {
+                "metric": "globalMobileGameIapRevenue2025UsdBillion",
+                "value": 82,
+                "source": "https://sensortower.com/press/press-release-sensor-tower-state-of-gaming-gaming-drove-52-billion-downloads-82b-iap-revenue-on-mobile-and-12b-premium-revenue-on-steam",
+                "observedAt": "2026-02-26",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "GameAnalytics 2025 Mobile Gaming Benchmarks",
+            "metrics": [
+              {
+                "metric": "globalMedianDailyPlaytimeMinutesApprox",
+                "value": 22,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionLengthMinutesLow",
+                "value": 5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionLengthMinutesHigh",
+                "value": 6,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionsPerDayApprox",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "casualSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "puzzleSessionMinutesLate2024",
+                "value": 5.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "rolePlayingSessionMinutesLate2024",
+                "value": 4.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "strategySessionMinutesLate2024",
+                "value": 5.5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Sensor Tower Worldwide Mobile Games December 2025",
+            "metrics": [
+              {
+                "metric": "globalTopGrossing1",
+                "value": "Last War: Survival",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing2",
+                "value": "Whiteout Survival",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing3",
+                "value": "Royal Match",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing4",
+                "value": "MONOPOLY GO!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing5",
+                "value": "Candy Crush Saga",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload1",
+                "value": "Block Blast!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload2",
+                "value": "ROBLOX",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload3",
+                "value": "Free Fire",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload4",
+                "value": "Pizza Ready!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload5",
+                "value": "Subway Surfers",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalMobileGameDownloadsDecember2025Billion",
+                "value": 3.75,
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          }
+        ]
+      },
+      "TARGET_AUDIENCE": "Fans of survival games, RPGs, and lore-driven stories.",
+      "TARGET_SESSION_MINUTES": 30,
+      "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
+      "INITIAL_TARGET_PLATFORM": "UNITY",
+      "INITIAL_PLAY_MODE": "SINGLE",
+      "MULTIPLAYER_DESIGN_MODE": "SINGLE",
+      "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
+      "MULTIPLAYER_QA_REQUIRED": false,
+      "CROSS_PLATFORM_EXPANSION_VALUE": "High",
+      "STEAM_EXPANSION_POSSIBLE": "NOT_RECOMMENDED",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
+      "COMMERCIAL_RULE": "INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_FOR_ITS_SELECTED_PLATFORM",
+      "portfolioSeedRequestId": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "semanticNormalization": {
+        "repaired": true,
+        "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
+        "previousGameName": null,
+        "profileFile": "game-seed-platform-profiles.json"
+      }
+    },
+    {
+      "version": 2,
+      "seedId": "SEED-UNITY-SINGLE_DEFENSE_STRATEGY-001",
+      "gameId": "seed-unity-single-defense-str-ancient-citadel",
+      "gameName": "Ancient Citadel",
+      "status": "ACTIVE",
+      "generation": "HISTORICAL_INITIAL_BOOTSTRAP",
+      "GAME_CATEGORY": "SINGLE_DEFENSE_STRATEGY",
+      "SEED_MATERIAL_IDS": [
+        "MAT-002",
+        "MAT-008",
+        "MAT-014"
+      ],
+      "SEED_MATERIAL_COUNT": 3,
+      "SEED_MATERIAL_SELECTION_MODE": "DYNAMIC_CONTEXTUAL_2_TO_4",
+      "SEED_MATERIAL_SELECTION_SIGNALS": [
+        "TARGET_PLATFORM_FIT",
+        "CATEGORY_OR_GENRE_FIT",
+        "MATERIAL_COMPLEMENTARITY",
+        "VALIDATED_LEARNING_OUTCOME",
+        "TOP30_DIFFERENTIATION"
+      ],
+      "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT": 0,
+      "SEED_CATEGORY_SELECTION_ROLE": "HISTORICAL_BASELINE",
+      "REFERENCE_INPUTS": [
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-002",
+          "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
+          "value": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 2"
+        },
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-008",
+          "sourceFamily": "SPACE_BUILDING_OPERATION",
+          "value": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 8"
+        },
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-014",
+          "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
+          "value": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 14"
+        },
+        {
+          "type": "GAME_REFERENCE",
+          "value": "Kingdom Rush"
+        },
+        {
+          "type": "GAME_REFERENCE",
+          "value": "Bloons TD 6"
+        }
+      ],
+      "REFERENCE_GAMES": [
+        "Kingdom Rush",
+        "Bloons TD 6"
+      ],
+      "CORE_FUN_TO_LEARN": [
+        "Strategic planning and resource management."
+      ],
+      "CORE_LOOP": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "DISTINCT_IDENTITY": "Unique unit types and a dynamic battlefield.",
+      "MARKET_EVIDENCE_SUMMARY": {
+        "role": "TARGET_DESIGN_REFERENCE",
+        "targetMarketScope": "GLOBAL",
+        "countrySpecificEvidenceRole": "SECONDARY_CONTEXT_ONLY",
+        "hardPassFailGate": false,
+        "missingDataDoesNotRejectSeed": true,
+        "marketDataAloneCannotDiscard": true,
+        "available": true,
+        "sourceFile": "game-seed-market-evidence.json",
+        "platformProfileFile": "game-seed-platform-profiles.json",
+        "references": [
+          {
+            "title": "Kingdom Rush",
+            "qualitative": "single-player tower-defense benchmark for wave pressure, placement, counters and upgrades",
+            "metrics": []
+          },
+          {
+            "title": "Bloons TD 6",
+            "qualitative": "tower placement and upgrade-path synergy benchmark",
+            "metrics": []
+          },
+          {
+            "title": "Plants vs. Zombies 2",
+            "qualitative": "lane-defense readability and counter-choice benchmark",
+            "metrics": []
+          },
+          {
+            "title": "Global strategy/session signal",
+            "metrics": [
+              {
+                "metric": "strategySessionMinutesLate2024",
+                "value": 5.5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobileGamesRevenue2025UsdBillion",
+                "value": 113.3,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ]
+          },
+          {
+            "title": "ESA Power of Play 2025 Global Report",
+            "metrics": [
+              {
+                "metric": "surveyedPlayersAge16Plus",
+                "value": 24216,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "surveyedCountries",
+                "value": 21,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalAveragePlayerAge",
+                "value": 41,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobilePlayerSharePercent",
+                "value": 55,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionAndPuzzleTopTwoGenresCountryCount",
+                "value": 20,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Newzoo 2025 Full-Year Games Market Review",
+            "metrics": [
+              {
+                "metric": "globalGamesRevenue2025UsdBillion",
+                "value": 201.6,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobileGamesRevenue2025UsdBillion",
+                "value": 113.3,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Sensor Tower State of Gaming 2026",
+            "metrics": [
+              {
+                "metric": "globalMobileGameIapRevenue2025UsdBillion",
+                "value": 82,
+                "source": "https://sensortower.com/press/press-release-sensor-tower-state-of-gaming-gaming-drove-52-billion-downloads-82b-iap-revenue-on-mobile-and-12b-premium-revenue-on-steam",
+                "observedAt": "2026-02-26",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "GameAnalytics 2025 Mobile Gaming Benchmarks",
+            "metrics": [
+              {
+                "metric": "globalMedianDailyPlaytimeMinutesApprox",
+                "value": 22,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionLengthMinutesLow",
+                "value": 5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionLengthMinutesHigh",
+                "value": 6,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionsPerDayApprox",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "casualSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "puzzleSessionMinutesLate2024",
+                "value": 5.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "rolePlayingSessionMinutesLate2024",
+                "value": 4.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "strategySessionMinutesLate2024",
+                "value": 5.5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Sensor Tower Worldwide Mobile Games December 2025",
+            "metrics": [
+              {
+                "metric": "globalTopGrossing1",
+                "value": "Last War: Survival",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing2",
+                "value": "Whiteout Survival",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing3",
+                "value": "Royal Match",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing4",
+                "value": "MONOPOLY GO!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing5",
+                "value": "Candy Crush Saga",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload1",
+                "value": "Block Blast!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload2",
+                "value": "ROBLOX",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload3",
+                "value": "Free Fire",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload4",
+                "value": "Pizza Ready!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload5",
+                "value": "Subway Surfers",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalMobileGameDownloadsDecember2025Billion",
+                "value": 3.75,
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          }
+        ]
+      },
+      "TARGET_AUDIENCE": "Players who enjoy strategic turn-based games.",
+      "TARGET_SESSION_MINUTES": 30,
+      "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
+      "INITIAL_TARGET_PLATFORM": "UNITY",
+      "INITIAL_PLAY_MODE": "COOP",
+      "MULTIPLAYER_DESIGN_MODE": "COOP",
+      "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
+      "MULTIPLAYER_QA_REQUIRED": true,
+      "CROSS_PLATFORM_EXPANSION_VALUE": "High",
+      "STEAM_EXPANSION_POSSIBLE": "NOT_RECOMMENDED",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
+      "COMMERCIAL_RULE": "INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_FOR_ITS_SELECTED_PLATFORM",
+      "portfolioSeedRequestId": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "semanticNormalization": {
+        "repaired": true,
+        "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
+        "previousGameName": null,
+        "profileFile": "game-seed-platform-profiles.json"
+      }
+    },
+    {
+      "version": 2,
+      "seedId": "SEED-UNITY-PUZZLE-001",
+      "gameId": "seed-unity-puzzle-lost-library-of-alexandria",
+      "gameName": "Lost Library of Alexandria",
+      "status": "ACTIVE",
+      "generation": "HISTORICAL_INITIAL_BOOTSTRAP",
+      "GAME_CATEGORY": "PUZZLE",
+      "SEED_MATERIAL_IDS": [
+        "MAT-003",
+        "MAT-015",
+        "MAT-009"
+      ],
+      "SEED_MATERIAL_COUNT": 3,
+      "SEED_MATERIAL_SELECTION_MODE": "DYNAMIC_CONTEXTUAL_2_TO_4",
+      "SEED_MATERIAL_SELECTION_SIGNALS": [
+        "TARGET_PLATFORM_FIT",
+        "CATEGORY_OR_GENRE_FIT",
+        "MATERIAL_COMPLEMENTARITY",
+        "VALIDATED_LEARNING_OUTCOME",
+        "TOP30_DIFFERENTIATION"
+      ],
+      "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT": 0,
+      "SEED_CATEGORY_SELECTION_ROLE": "HISTORICAL_BASELINE",
+      "REFERENCE_INPUTS": [
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-003",
+          "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+          "value": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 3"
+        },
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-015",
+          "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+          "value": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 15"
+        },
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-009",
+          "sourceFamily": "SYSTEM_MECHANIC_EXPERIMENT",
+          "value": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 9"
+        },
+        {
+          "type": "GAME_REFERENCE",
+          "value": "Royal Match"
+        },
+        {
+          "type": "GAME_REFERENCE",
+          "value": "Candy Crush Saga"
+        }
+      ],
+      "REFERENCE_GAMES": [
+        "Royal Match",
+        "Candy Crush Saga"
+      ],
+      "CORE_FUN_TO_LEARN": [
+        "Puzzle solving and pattern recognition."
+      ],
+      "CORE_LOOP": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ],
+      "DISTINCT_IDENTITY": "A complex puzzle game with a historical theme.",
+      "MARKET_EVIDENCE_SUMMARY": {
+        "role": "TARGET_DESIGN_REFERENCE",
+        "targetMarketScope": "GLOBAL",
+        "countrySpecificEvidenceRole": "SECONDARY_CONTEXT_ONLY",
+        "hardPassFailGate": false,
+        "missingDataDoesNotRejectSeed": true,
+        "marketDataAloneCannotDiscard": true,
+        "available": true,
+        "sourceFile": "game-seed-market-evidence.json",
+        "platformProfileFile": "game-seed-platform-profiles.json",
+        "references": [
+          {
+            "title": "Royal Match",
+            "metrics": [
+              {
+                "metric": "globalTopGrossingDecember2025Rank",
+                "value": 3,
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ]
+          },
+          {
+            "title": "Candy Crush Saga",
+            "metrics": [
+              {
+                "metric": "globalTopGrossingDecember2025Rank",
+                "value": 5,
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ]
+          },
+          {
+            "title": "Block Blast!",
+            "metrics": [
+              {
+                "metric": "globalTopDownloadsDecember2025Rank",
+                "value": 1,
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ]
+          },
+          {
+            "title": "Global puzzle/session signal",
+            "metrics": [
+              {
+                "metric": "puzzleSessionMinutesLate2024",
+                "value": 5.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionAndPuzzleTopTwoGenresCountryCount",
+                "value": 20,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ]
+          },
+          {
+            "title": "ESA Power of Play 2025 Global Report",
+            "metrics": [
+              {
+                "metric": "surveyedPlayersAge16Plus",
+                "value": 24216,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "surveyedCountries",
+                "value": 21,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalAveragePlayerAge",
+                "value": 41,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobilePlayerSharePercent",
+                "value": 55,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionAndPuzzleTopTwoGenresCountryCount",
+                "value": 20,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Newzoo 2025 Full-Year Games Market Review",
+            "metrics": [
+              {
+                "metric": "globalGamesRevenue2025UsdBillion",
+                "value": 201.6,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobileGamesRevenue2025UsdBillion",
+                "value": 113.3,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Sensor Tower State of Gaming 2026",
+            "metrics": [
+              {
+                "metric": "globalMobileGameIapRevenue2025UsdBillion",
+                "value": 82,
+                "source": "https://sensortower.com/press/press-release-sensor-tower-state-of-gaming-gaming-drove-52-billion-downloads-82b-iap-revenue-on-mobile-and-12b-premium-revenue-on-steam",
+                "observedAt": "2026-02-26",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "GameAnalytics 2025 Mobile Gaming Benchmarks",
+            "metrics": [
+              {
+                "metric": "globalMedianDailyPlaytimeMinutesApprox",
+                "value": 22,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionLengthMinutesLow",
+                "value": 5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionLengthMinutesHigh",
+                "value": 6,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionsPerDayApprox",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "casualSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "puzzleSessionMinutesLate2024",
+                "value": 5.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "rolePlayingSessionMinutesLate2024",
+                "value": 4.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "strategySessionMinutesLate2024",
+                "value": 5.5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Sensor Tower Worldwide Mobile Games December 2025",
+            "metrics": [
+              {
+                "metric": "globalTopGrossing1",
+                "value": "Last War: Survival",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing2",
+                "value": "Whiteout Survival",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing3",
+                "value": "Royal Match",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing4",
+                "value": "MONOPOLY GO!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing5",
+                "value": "Candy Crush Saga",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload1",
+                "value": "Block Blast!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload2",
+                "value": "ROBLOX",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload3",
+                "value": "Free Fire",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload4",
+                "value": "Pizza Ready!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload5",
+                "value": "Subway Surfers",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalMobileGameDownloadsDecember2025Billion",
+                "value": 3.75,
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          }
+        ]
+      },
+      "TARGET_AUDIENCE": "Players who enjoy puzzle games and historical settings.",
+      "TARGET_SESSION_MINUTES": 30,
+      "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
+      "INITIAL_TARGET_PLATFORM": "UNITY",
+      "INITIAL_PLAY_MODE": "SINGLE",
+      "MULTIPLAYER_DESIGN_MODE": "SINGLE",
+      "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
+      "MULTIPLAYER_QA_REQUIRED": false,
+      "CROSS_PLATFORM_EXPANSION_VALUE": "High",
+      "STEAM_EXPANSION_POSSIBLE": "NOT_RECOMMENDED",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
+      "COMMERCIAL_RULE": "INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_FOR_ITS_SELECTED_PLATFORM",
+      "portfolioSeedRequestId": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "semanticNormalization": {
+        "repaired": true,
+        "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
+        "previousGameName": null,
+        "profileFile": "game-seed-platform-profiles.json"
+      }
+    },
+    {
+      "version": 2,
+      "seedId": "SEED-UNITY-CASUAL-001",
+      "gameId": "seed-unity-casual-the-great-migration",
+      "gameName": "The Great Migration",
+      "status": "ACTIVE",
+      "generation": "HISTORICAL_INITIAL_BOOTSTRAP",
+      "GAME_CATEGORY": "CASUAL",
+      "SEED_MATERIAL_IDS": [
+        "MAT-004",
+        "MAT-100",
+        "MAT-016"
+      ],
+      "SEED_MATERIAL_COUNT": 3,
+      "SEED_MATERIAL_SELECTION_MODE": "DYNAMIC_CONTEXTUAL_2_TO_4",
+      "SEED_MATERIAL_SELECTION_SIGNALS": [
+        "TARGET_PLATFORM_FIT",
+        "CATEGORY_OR_GENRE_FIT",
+        "MATERIAL_COMPLEMENTARITY",
+        "VALIDATED_LEARNING_OUTCOME",
+        "TOP30_DIFFERENTIATION"
+      ],
+      "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT": 0,
+      "SEED_CATEGORY_SELECTION_ROLE": "HISTORICAL_BASELINE",
+      "REFERENCE_INPUTS": [
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-004",
+          "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
+          "value": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 4"
+        },
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-100",
+          "sourceFamily": "FREE_ORIGINAL_IDEA",
+          "value": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 100"
+        },
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-016",
+          "sourceFamily": "SOCIAL_COOP_COMPETITION",
+          "value": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 16"
+        },
+        {
+          "type": "GAME_REFERENCE",
+          "value": "Subway Surfers"
+        },
+        {
+          "type": "GAME_REFERENCE",
+          "value": "Angry Birds 2"
+        }
+      ],
+      "REFERENCE_GAMES": [
+        "Subway Surfers",
+        "Angry Birds 2"
+      ],
+      "CORE_FUN_TO_LEARN": [
+        "Simple gameplay mechanics and a focus on progression."
+      ],
+      "CORE_LOOP": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "DISTINCT_IDENTITY": "A relaxing and exploratory game with a focus on puzzle elements.",
+      "MARKET_EVIDENCE_SUMMARY": {
+        "role": "TARGET_DESIGN_REFERENCE",
+        "targetMarketScope": "GLOBAL",
+        "countrySpecificEvidenceRole": "SECONDARY_CONTEXT_ONLY",
+        "hardPassFailGate": false,
+        "missingDataDoesNotRejectSeed": true,
+        "marketDataAloneCannotDiscard": true,
+        "available": true,
+        "sourceFile": "game-seed-market-evidence.json",
+        "platformProfileFile": "game-seed-platform-profiles.json",
+        "references": [
+          {
+            "title": "Subway Surfers",
+            "metrics": [
+              {
+                "metric": "globalTopDownloadsDecember2025Rank",
+                "value": 5,
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ]
+          },
+          {
+            "title": "Crossy Road",
+            "qualitative": "simple one-thumb input, score chase and fast retry benchmark",
+            "metrics": []
+          },
+          {
+            "title": "MONOPOLY GO!",
+            "metrics": [
+              {
+                "metric": "globalTopGrossingDecember2025Rank",
+                "value": 4,
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ]
+          },
+          {
+            "title": "Global casual/session signal",
+            "metrics": [
+              {
+                "metric": "casualSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionsPerDayApprox",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ]
+          },
+          {
+            "title": "ESA Power of Play 2025 Global Report",
+            "metrics": [
+              {
+                "metric": "surveyedPlayersAge16Plus",
+                "value": 24216,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "surveyedCountries",
+                "value": 21,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalAveragePlayerAge",
+                "value": 41,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobilePlayerSharePercent",
+                "value": 55,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionAndPuzzleTopTwoGenresCountryCount",
+                "value": 20,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Newzoo 2025 Full-Year Games Market Review",
+            "metrics": [
+              {
+                "metric": "globalGamesRevenue2025UsdBillion",
+                "value": 201.6,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobileGamesRevenue2025UsdBillion",
+                "value": 113.3,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Sensor Tower State of Gaming 2026",
+            "metrics": [
+              {
+                "metric": "globalMobileGameIapRevenue2025UsdBillion",
+                "value": 82,
+                "source": "https://sensortower.com/press/press-release-sensor-tower-state-of-gaming-gaming-drove-52-billion-downloads-82b-iap-revenue-on-mobile-and-12b-premium-revenue-on-steam",
+                "observedAt": "2026-02-26",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "GameAnalytics 2025 Mobile Gaming Benchmarks",
+            "metrics": [
+              {
+                "metric": "globalMedianDailyPlaytimeMinutesApprox",
+                "value": 22,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionLengthMinutesLow",
+                "value": 5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionLengthMinutesHigh",
+                "value": 6,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionsPerDayApprox",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "casualSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "puzzleSessionMinutesLate2024",
+                "value": 5.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "rolePlayingSessionMinutesLate2024",
+                "value": 4.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "strategySessionMinutesLate2024",
+                "value": 5.5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Sensor Tower Worldwide Mobile Games December 2025",
+            "metrics": [
+              {
+                "metric": "globalTopGrossing1",
+                "value": "Last War: Survival",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing2",
+                "value": "Whiteout Survival",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing3",
+                "value": "Royal Match",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing4",
+                "value": "MONOPOLY GO!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing5",
+                "value": "Candy Crush Saga",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload1",
+                "value": "Block Blast!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload2",
+                "value": "ROBLOX",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload3",
+                "value": "Free Fire",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload4",
+                "value": "Pizza Ready!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload5",
+                "value": "Subway Surfers",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalMobileGameDownloadsDecember2025Billion",
+                "value": 3.75,
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          }
+        ]
+      },
+      "TARGET_AUDIENCE": "Players who enjoy casual gaming.",
+      "TARGET_SESSION_MINUTES": 30,
+      "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
+      "INITIAL_TARGET_PLATFORM": "UNITY",
+      "INITIAL_PLAY_MODE": "SINGLE",
+      "MULTIPLAYER_DESIGN_MODE": "SINGLE",
+      "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
+      "MULTIPLAYER_QA_REQUIRED": false,
+      "CROSS_PLATFORM_EXPANSION_VALUE": "High",
+      "STEAM_EXPANSION_POSSIBLE": "NOT_RECOMMENDED",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
+      "COMMERCIAL_RULE": "INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_FOR_ITS_SELECTED_PLATFORM",
+      "portfolioSeedRequestId": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "semanticNormalization": {
+        "repaired": true,
+        "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
+        "previousGameName": null,
+        "profileFile": "game-seed-platform-profiles.json"
+      }
+    },
+    {
+      "version": 2,
+      "seedId": "SEED-UNITY-IDLE_GROWTH_RPG-001",
+      "gameId": "seed-unity-idle-growth-rpg-renaissance-garden",
+      "gameName": "Renaissance Garden",
+      "status": "ACTIVE",
+      "generation": "HISTORICAL_INITIAL_BOOTSTRAP",
+      "GAME_CATEGORY": "IDLE_GROWTH_RPG",
+      "SEED_MATERIAL_IDS": [
+        "MAT-005",
+        "MAT-023",
+        "MAT-011"
+      ],
+      "SEED_MATERIAL_COUNT": 3,
+      "SEED_MATERIAL_SELECTION_MODE": "DYNAMIC_CONTEXTUAL_2_TO_4",
+      "SEED_MATERIAL_SELECTION_SIGNALS": [
+        "TARGET_PLATFORM_FIT",
+        "CATEGORY_OR_GENRE_FIT",
+        "MATERIAL_COMPLEMENTARITY",
+        "VALIDATED_LEARNING_OUTCOME",
+        "TOP30_DIFFERENTIATION"
+      ],
+      "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT": 0,
+      "SEED_CATEGORY_SELECTION_ROLE": "HISTORICAL_BASELINE",
+      "REFERENCE_INPUTS": [
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-005",
+          "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+          "value": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 5"
+        },
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-023",
+          "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+          "value": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 23"
+        },
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-011",
+          "sourceFamily": "SUCCESSFUL_GAME_STRUCTURE",
+          "value": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 11"
+        },
+        {
+          "type": "GAME_REFERENCE",
+          "value": "Tap Titans 2"
+        },
+        {
+          "type": "GAME_REFERENCE",
+          "value": "Idle Heroes"
+        }
+      ],
+      "REFERENCE_GAMES": [
+        "Tap Titans 2",
+        "Idle Heroes"
+      ],
+      "CORE_FUN_TO_LEARN": [
+        "Resource management and strategic planning."
+      ],
+      "CORE_LOOP": [
+        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
+        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
+        "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+      ],
+      "DISTINCT_IDENTITY": "A garden management game with a historical theme.",
+      "MARKET_EVIDENCE_SUMMARY": {
+        "role": "TARGET_DESIGN_REFERENCE",
+        "targetMarketScope": "GLOBAL",
+        "countrySpecificEvidenceRole": "SECONDARY_CONTEXT_ONLY",
+        "hardPassFailGate": false,
+        "missingDataDoesNotRejectSeed": true,
+        "marketDataAloneCannotDiscard": true,
+        "available": true,
+        "sourceFile": "game-seed-market-evidence.json",
+        "platformProfileFile": "game-seed-platform-profiles.json",
+        "references": [
+          {
+            "title": "AFK Arena",
+            "qualitative": "idle rewards, roster growth and periodic active decisions benchmark",
+            "metrics": []
+          },
+          {
+            "title": "Legend of Slime",
+            "qualitative": "mobile idle growth and layered upgrade benchmark",
+            "metrics": []
+          },
+          {
+            "title": "Idle Heroes",
+            "qualitative": "long-term idle roster and progression benchmark",
+            "metrics": []
+          },
+          {
+            "title": "Global RPG/session signal",
+            "metrics": [
+              {
+                "metric": "rolePlayingSessionMinutesLate2024",
+                "value": 4.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalAveragePlayerAge",
+                "value": 41,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ]
+          },
+          {
+            "title": "ESA Power of Play 2025 Global Report",
+            "metrics": [
+              {
+                "metric": "surveyedPlayersAge16Plus",
+                "value": 24216,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "surveyedCountries",
+                "value": 21,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalAveragePlayerAge",
+                "value": 41,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobilePlayerSharePercent",
+                "value": 55,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionAndPuzzleTopTwoGenresCountryCount",
+                "value": 20,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Newzoo 2025 Full-Year Games Market Review",
+            "metrics": [
+              {
+                "metric": "globalGamesRevenue2025UsdBillion",
+                "value": 201.6,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobileGamesRevenue2025UsdBillion",
+                "value": 113.3,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Sensor Tower State of Gaming 2026",
+            "metrics": [
+              {
+                "metric": "globalMobileGameIapRevenue2025UsdBillion",
+                "value": 82,
+                "source": "https://sensortower.com/press/press-release-sensor-tower-state-of-gaming-gaming-drove-52-billion-downloads-82b-iap-revenue-on-mobile-and-12b-premium-revenue-on-steam",
+                "observedAt": "2026-02-26",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "GameAnalytics 2025 Mobile Gaming Benchmarks",
+            "metrics": [
+              {
+                "metric": "globalMedianDailyPlaytimeMinutesApprox",
+                "value": 22,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionLengthMinutesLow",
+                "value": 5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionLengthMinutesHigh",
+                "value": 6,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionsPerDayApprox",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "casualSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "puzzleSessionMinutesLate2024",
+                "value": 5.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "rolePlayingSessionMinutesLate2024",
+                "value": 4.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "strategySessionMinutesLate2024",
+                "value": 5.5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Sensor Tower Worldwide Mobile Games December 2025",
+            "metrics": [
+              {
+                "metric": "globalTopGrossing1",
+                "value": "Last War: Survival",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing2",
+                "value": "Whiteout Survival",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing3",
+                "value": "Royal Match",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing4",
+                "value": "MONOPOLY GO!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing5",
+                "value": "Candy Crush Saga",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload1",
+                "value": "Block Blast!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload2",
+                "value": "ROBLOX",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload3",
+                "value": "Free Fire",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload4",
+                "value": "Pizza Ready!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload5",
+                "value": "Subway Surfers",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalMobileGameDownloadsDecember2025Billion",
+                "value": 3.75,
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          }
+        ]
+      },
+      "TARGET_AUDIENCE": "Players who enjoy idle games and resource management.",
+      "TARGET_SESSION_MINUTES": 30,
+      "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
+      "INITIAL_TARGET_PLATFORM": "UNITY",
+      "INITIAL_PLAY_MODE": "COOP",
+      "MULTIPLAYER_DESIGN_MODE": "COOP",
+      "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
+      "MULTIPLAYER_QA_REQUIRED": true,
+      "CROSS_PLATFORM_EXPANSION_VALUE": "High",
+      "STEAM_EXPANSION_POSSIBLE": "NOT_RECOMMENDED",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
+      "COMMERCIAL_RULE": "INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_FOR_ITS_SELECTED_PLATFORM",
+      "portfolioSeedRequestId": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "semanticNormalization": {
+        "repaired": true,
+        "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
+        "previousGameName": null,
+        "profileFile": "game-seed-platform-profiles.json"
+      }
+    },
+    {
+      "version": 2,
+      "seedId": "SEED-UNITY-STORY_COMPLETE_RPG-001",
+      "gameId": "seed-unity-story-complete-rpg-the-shadow-weaver",
+      "gameName": "The Shadow Weaver",
+      "status": "ACTIVE",
+      "generation": "HISTORICAL_INITIAL_BOOTSTRAP",
+      "GAME_CATEGORY": "STORY_COMPLETE_RPG",
+      "SEED_MATERIAL_IDS": [
+        "MAT-006",
+        "MAT-012",
+        "MAT-018"
+      ],
+      "SEED_MATERIAL_COUNT": 3,
+      "SEED_MATERIAL_SELECTION_MODE": "DYNAMIC_CONTEXTUAL_2_TO_4",
+      "SEED_MATERIAL_SELECTION_SIGNALS": [
+        "TARGET_PLATFORM_FIT",
+        "CATEGORY_OR_GENRE_FIT",
+        "MATERIAL_COMPLEMENTARITY",
+        "VALIDATED_LEARNING_OUTCOME",
+        "TOP30_DIFFERENTIATION"
+      ],
+      "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT": 0,
+      "SEED_CATEGORY_SELECTION_ROLE": "HISTORICAL_BASELINE",
+      "REFERENCE_INPUTS": [
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-006",
+          "sourceFamily": "SOCIAL_COOP_COMPETITION",
+          "value": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 6"
+        },
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-012",
+          "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
+          "value": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 12"
+        },
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-018",
+          "sourceFamily": "SPACE_BUILDING_OPERATION",
+          "value": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 18"
+        },
+        {
+          "type": "GAME_REFERENCE",
+          "value": "Chrono Trigger"
+        },
+        {
+          "type": "GAME_REFERENCE",
+          "value": "FINAL FANTASY VI"
+        }
+      ],
+      "REFERENCE_GAMES": [
+        "Chrono Trigger",
+        "FINAL FANTASY VI"
+      ],
+      "CORE_FUN_TO_LEARN": [
+        "Strategic combat and character progression."
+      ],
+      "CORE_LOOP": [
+        "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+        "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
+        "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
+      ],
+      "DISTINCT_IDENTITY": "A dark fantasy RPG with a complex narrative.",
+      "MARKET_EVIDENCE_SUMMARY": {
+        "role": "TARGET_DESIGN_REFERENCE",
+        "targetMarketScope": "GLOBAL",
+        "countrySpecificEvidenceRole": "SECONDARY_CONTEXT_ONLY",
+        "hardPassFailGate": false,
+        "missingDataDoesNotRejectSeed": true,
+        "marketDataAloneCannotDiscard": true,
+        "available": true,
+        "sourceFile": "game-seed-market-evidence.json",
+        "platformProfileFile": "game-seed-platform-profiles.json",
+        "references": [
+          {
+            "title": "Chrono Trigger",
+            "qualitative": "complete story arc, exploration, battles, boss progression and ending benchmark",
+            "metrics": []
+          },
+          {
+            "title": "FINAL FANTASY VI",
+            "qualitative": "party growth, story progression and final resolution benchmark",
+            "metrics": []
+          },
+          {
+            "title": "Battle Chasers: Nightwar",
+            "qualitative": "mobile-compatible complete RPG structure benchmark",
+            "metrics": []
+          },
+          {
+            "title": "Global RPG/session signal",
+            "metrics": [
+              {
+                "metric": "rolePlayingSessionMinutesLate2024",
+                "value": 4.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobilePlayerSharePercent",
+                "value": 55,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ]
+          },
+          {
+            "title": "ESA Power of Play 2025 Global Report",
+            "metrics": [
+              {
+                "metric": "surveyedPlayersAge16Plus",
+                "value": 24216,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "surveyedCountries",
+                "value": 21,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalAveragePlayerAge",
+                "value": 41,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobilePlayerSharePercent",
+                "value": 55,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionAndPuzzleTopTwoGenresCountryCount",
+                "value": 20,
+                "source": "https://www.theesa.com/resources/the-global-power-of-play-report/",
+                "observedAt": "2025-10-08",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Newzoo 2025 Full-Year Games Market Review",
+            "metrics": [
+              {
+                "metric": "globalGamesRevenue2025UsdBillion",
+                "value": 201.6,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMobileGamesRevenue2025UsdBillion",
+                "value": 113.3,
+                "source": "https://newzoo.com/articles/global-games-market-2025",
+                "observedAt": "2026-06-18",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Sensor Tower State of Gaming 2026",
+            "metrics": [
+              {
+                "metric": "globalMobileGameIapRevenue2025UsdBillion",
+                "value": 82,
+                "source": "https://sensortower.com/press/press-release-sensor-tower-state-of-gaming-gaming-drove-52-billion-downloads-82b-iap-revenue-on-mobile-and-12b-premium-revenue-on-steam",
+                "observedAt": "2026-02-26",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "GameAnalytics 2025 Mobile Gaming Benchmarks",
+            "metrics": [
+              {
+                "metric": "globalMedianDailyPlaytimeMinutesApprox",
+                "value": 22,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionLengthMinutesLow",
+                "value": 5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionLengthMinutesHigh",
+                "value": 6,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "globalMedianSessionsPerDayApprox",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "actionSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "casualSessionMinutesLate2024",
+                "value": 4,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "puzzleSessionMinutesLate2024",
+                "value": 5.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "rolePlayingSessionMinutesLate2024",
+                "value": 4.7,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              },
+              {
+                "metric": "strategySessionMinutesLate2024",
+                "value": 5.5,
+                "source": "https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+                "observedAt": "2026-08-24",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          },
+          {
+            "title": "Sensor Tower Worldwide Mobile Games December 2025",
+            "metrics": [
+              {
+                "metric": "globalTopGrossing1",
+                "value": "Last War: Survival",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing2",
+                "value": "Whiteout Survival",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing3",
+                "value": "Royal Match",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing4",
+                "value": "MONOPOLY GO!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopGrossing5",
+                "value": "Candy Crush Saga",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload1",
+                "value": "Block Blast!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload2",
+                "value": "ROBLOX",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload3",
+                "value": "Free Fire",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload4",
+                "value": "Pizza Ready!",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalTopDownload5",
+                "value": "Subway Surfers",
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": false
+              },
+              {
+                "metric": "globalMobileGameDownloadsDecember2025Billion",
+                "value": 3.75,
+                "source": "https://sensortower.com/blog/top-10-worldwide-mobile-games-by-revenue-and-downloads-in-december-2025",
+                "observedAt": "2025-12",
+                "note": null,
+                "numericClaimAccepted": true
+              }
+            ],
+            "qualitative": null
+          }
+        ]
+      },
+      "TARGET_AUDIENCE": "Players who enjoy RPGs and dark fantasy.",
+      "TARGET_SESSION_MINUTES": 30,
+      "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
+      "INITIAL_TARGET_PLATFORM": "UNITY",
+      "INITIAL_PLAY_MODE": "SINGLE",
+      "MULTIPLAYER_DESIGN_MODE": "COOP",
+      "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
+      "MULTIPLAYER_QA_REQUIRED": true,
+      "CROSS_PLATFORM_EXPANSION_VALUE": "High",
+      "STEAM_EXPANSION_POSSIBLE": "NOT_RECOMMENDED",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
+      "COMMERCIAL_RULE": "INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_FOR_ITS_SELECTED_PLATFORM",
+      "portfolioSeedRequestId": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "semanticNormalization": {
+        "repaired": true,
+        "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
+        "previousGameName": null,
+        "profileFile": "game-seed-platform-profiles.json"
+      }
+    }
+  ],
+  "seedMaterials": [
+    {
+      "materialId": "MAT-001",
+      "status": "CONSUMED",
+      "sourceFamily": "SUCCESSFUL_GAME_STRUCTURE",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 1",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-ACTION_SURVIVAL_ROGUELITE-001"
+    },
+    {
+      "materialId": "MAT-002",
+      "status": "CONSUMED",
+      "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 2",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-SINGLE_DEFENSE_STRATEGY-001"
+    },
+    {
+      "materialId": "MAT-003",
+      "status": "CONSUMED",
+      "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+      "categoryHint": "PUZZLE",
+      "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 3",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-PUZZLE-001"
+    },
+    {
+      "materialId": "MAT-004",
+      "status": "CONSUMED",
+      "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
+      "categoryHint": "CASUAL",
+      "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 4",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-CASUAL-001"
+    },
+    {
+      "materialId": "MAT-005",
+      "status": "CONSUMED",
+      "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 5",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-IDLE_GROWTH_RPG-001"
+    },
+    {
+      "materialId": "MAT-006",
+      "status": "CONSUMED",
+      "sourceFamily": "SOCIAL_COOP_COMPETITION",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 6",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-STORY_COMPLETE_RPG-001"
+    },
+    {
+      "materialId": "MAT-007",
+      "status": "AVAILABLE",
+      "sourceFamily": "SURVIVAL_ESCAPE_RISK",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 7",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-008",
+      "status": "CONSUMED",
+      "sourceFamily": "SPACE_BUILDING_OPERATION",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 8",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-SINGLE_DEFENSE_STRATEGY-001"
+    },
+    {
+      "materialId": "MAT-009",
+      "status": "CONSUMED",
+      "sourceFamily": "SYSTEM_MECHANIC_EXPERIMENT",
+      "categoryHint": "PUZZLE",
+      "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 9",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-PUZZLE-001"
+    },
+    {
+      "materialId": "MAT-010",
+      "status": "AVAILABLE",
+      "sourceFamily": "FREE_ORIGINAL_IDEA",
+      "categoryHint": "CASUAL",
+      "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 10",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-011",
+      "status": "CONSUMED",
+      "sourceFamily": "SUCCESSFUL_GAME_STRUCTURE",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 11",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-IDLE_GROWTH_RPG-001"
+    },
+    {
+      "materialId": "MAT-012",
+      "status": "CONSUMED",
+      "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 12",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-STORY_COMPLETE_RPG-001"
+    },
+    {
+      "materialId": "MAT-013",
+      "status": "CONSUMED",
+      "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 13",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-ACTION_SURVIVAL_ROGUELITE-001"
+    },
+    {
+      "materialId": "MAT-014",
+      "status": "CONSUMED",
+      "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 14",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-SINGLE_DEFENSE_STRATEGY-001"
+    },
+    {
+      "materialId": "MAT-015",
+      "status": "CONSUMED",
+      "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+      "categoryHint": "PUZZLE",
+      "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 15",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-PUZZLE-001"
+    },
+    {
+      "materialId": "MAT-016",
+      "status": "CONSUMED",
+      "sourceFamily": "SOCIAL_COOP_COMPETITION",
+      "categoryHint": "CASUAL",
+      "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 16",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-CASUAL-001"
+    },
+    {
+      "materialId": "MAT-017",
+      "status": "AVAILABLE",
+      "sourceFamily": "SURVIVAL_ESCAPE_RISK",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 17",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-018",
+      "status": "CONSUMED",
+      "sourceFamily": "SPACE_BUILDING_OPERATION",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 18",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-STORY_COMPLETE_RPG-001"
+    },
+    {
+      "materialId": "MAT-019",
+      "status": "AVAILABLE",
+      "sourceFamily": "SYSTEM_MECHANIC_EXPERIMENT",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 19",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-020",
+      "status": "AVAILABLE",
+      "sourceFamily": "FREE_ORIGINAL_IDEA",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 20",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-021",
+      "status": "AVAILABLE",
+      "sourceFamily": "SUCCESSFUL_GAME_STRUCTURE",
+      "categoryHint": "PUZZLE",
+      "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 21",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-022",
+      "status": "AVAILABLE",
+      "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
+      "categoryHint": "CASUAL",
+      "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 22",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-023",
+      "status": "CONSUMED",
+      "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 23",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-IDLE_GROWTH_RPG-001"
+    },
+    {
+      "materialId": "MAT-024",
+      "status": "AVAILABLE",
+      "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 24",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-025",
+      "status": "CONSUMED",
+      "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 25",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-ACTION_SURVIVAL_ROGUELITE-001"
+    },
+    {
+      "materialId": "MAT-026",
+      "status": "AVAILABLE",
+      "sourceFamily": "SOCIAL_COOP_COMPETITION",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 26",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-027",
+      "status": "AVAILABLE",
+      "sourceFamily": "SURVIVAL_ESCAPE_RISK",
+      "categoryHint": "PUZZLE",
+      "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 27",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-028",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPACE_BUILDING_OPERATION",
+      "categoryHint": "CASUAL",
+      "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 28",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-029",
+      "status": "AVAILABLE",
+      "sourceFamily": "SYSTEM_MECHANIC_EXPERIMENT",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 29",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-030",
+      "status": "AVAILABLE",
+      "sourceFamily": "FREE_ORIGINAL_IDEA",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 30",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-031",
+      "status": "AVAILABLE",
+      "sourceFamily": "SUCCESSFUL_GAME_STRUCTURE",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 31",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-032",
+      "status": "AVAILABLE",
+      "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 32",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-033",
+      "status": "AVAILABLE",
+      "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+      "categoryHint": "PUZZLE",
+      "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 33",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-034",
+      "status": "AVAILABLE",
+      "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
+      "categoryHint": "CASUAL",
+      "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 34",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-035",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 35",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-036",
+      "status": "AVAILABLE",
+      "sourceFamily": "SOCIAL_COOP_COMPETITION",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 36",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-037",
+      "status": "AVAILABLE",
+      "sourceFamily": "SURVIVAL_ESCAPE_RISK",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 37",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-038",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPACE_BUILDING_OPERATION",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 38",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-039",
+      "status": "AVAILABLE",
+      "sourceFamily": "SYSTEM_MECHANIC_EXPERIMENT",
+      "categoryHint": "PUZZLE",
+      "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 39",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-040",
+      "status": "AVAILABLE",
+      "sourceFamily": "FREE_ORIGINAL_IDEA",
+      "categoryHint": "CASUAL",
+      "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 40",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-041",
+      "status": "AVAILABLE",
+      "sourceFamily": "SUCCESSFUL_GAME_STRUCTURE",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 41",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-042",
+      "status": "AVAILABLE",
+      "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 42",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-043",
+      "status": "AVAILABLE",
+      "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 43",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-044",
+      "status": "AVAILABLE",
+      "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 44",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-045",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+      "categoryHint": "PUZZLE",
+      "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 45",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-046",
+      "status": "AVAILABLE",
+      "sourceFamily": "SOCIAL_COOP_COMPETITION",
+      "categoryHint": "CASUAL",
+      "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 46",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-047",
+      "status": "AVAILABLE",
+      "sourceFamily": "SURVIVAL_ESCAPE_RISK",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 47",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-048",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPACE_BUILDING_OPERATION",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 48",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-049",
+      "status": "AVAILABLE",
+      "sourceFamily": "SYSTEM_MECHANIC_EXPERIMENT",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 49",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-050",
+      "status": "AVAILABLE",
+      "sourceFamily": "FREE_ORIGINAL_IDEA",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 50",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-051",
+      "status": "AVAILABLE",
+      "sourceFamily": "SUCCESSFUL_GAME_STRUCTURE",
+      "categoryHint": "PUZZLE",
+      "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 51",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-052",
+      "status": "AVAILABLE",
+      "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
+      "categoryHint": "CASUAL",
+      "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 52",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-053",
+      "status": "AVAILABLE",
+      "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 53",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-054",
+      "status": "AVAILABLE",
+      "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 54",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-055",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 55",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-056",
+      "status": "AVAILABLE",
+      "sourceFamily": "SOCIAL_COOP_COMPETITION",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 56",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-057",
+      "status": "AVAILABLE",
+      "sourceFamily": "SURVIVAL_ESCAPE_RISK",
+      "categoryHint": "PUZZLE",
+      "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 57",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-058",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPACE_BUILDING_OPERATION",
+      "categoryHint": "CASUAL",
+      "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 58",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-059",
+      "status": "AVAILABLE",
+      "sourceFamily": "SYSTEM_MECHANIC_EXPERIMENT",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 59",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-060",
+      "status": "AVAILABLE",
+      "sourceFamily": "FREE_ORIGINAL_IDEA",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 60",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-061",
+      "status": "AVAILABLE",
+      "sourceFamily": "SUCCESSFUL_GAME_STRUCTURE",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 61",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-062",
+      "status": "AVAILABLE",
+      "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 62",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-063",
+      "status": "AVAILABLE",
+      "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+      "categoryHint": "PUZZLE",
+      "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 63",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-064",
+      "status": "AVAILABLE",
+      "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
+      "categoryHint": "CASUAL",
+      "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 64",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-065",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 65",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-066",
+      "status": "AVAILABLE",
+      "sourceFamily": "SOCIAL_COOP_COMPETITION",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 66",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-067",
+      "status": "AVAILABLE",
+      "sourceFamily": "SURVIVAL_ESCAPE_RISK",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 67",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-068",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPACE_BUILDING_OPERATION",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 68",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-069",
+      "status": "AVAILABLE",
+      "sourceFamily": "SYSTEM_MECHANIC_EXPERIMENT",
+      "categoryHint": "PUZZLE",
+      "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 69",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-070",
+      "status": "AVAILABLE",
+      "sourceFamily": "FREE_ORIGINAL_IDEA",
+      "categoryHint": "CASUAL",
+      "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 70",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-071",
+      "status": "AVAILABLE",
+      "sourceFamily": "SUCCESSFUL_GAME_STRUCTURE",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 71",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-072",
+      "status": "AVAILABLE",
+      "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 72",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-073",
+      "status": "AVAILABLE",
+      "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 73",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-074",
+      "status": "AVAILABLE",
+      "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 74",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-075",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+      "categoryHint": "PUZZLE",
+      "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 75",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-076",
+      "status": "AVAILABLE",
+      "sourceFamily": "SOCIAL_COOP_COMPETITION",
+      "categoryHint": "CASUAL",
+      "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 76",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-077",
+      "status": "AVAILABLE",
+      "sourceFamily": "SURVIVAL_ESCAPE_RISK",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 77",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-078",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPACE_BUILDING_OPERATION",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 78",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-079",
+      "status": "AVAILABLE",
+      "sourceFamily": "SYSTEM_MECHANIC_EXPERIMENT",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 79",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-080",
+      "status": "AVAILABLE",
+      "sourceFamily": "FREE_ORIGINAL_IDEA",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 80",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-081",
+      "status": "AVAILABLE",
+      "sourceFamily": "SUCCESSFUL_GAME_STRUCTURE",
+      "categoryHint": "PUZZLE",
+      "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 81",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-082",
+      "status": "AVAILABLE",
+      "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
+      "categoryHint": "CASUAL",
+      "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 82",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-083",
+      "status": "AVAILABLE",
+      "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 83",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-084",
+      "status": "AVAILABLE",
+      "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 84",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-085",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 85",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-086",
+      "status": "AVAILABLE",
+      "sourceFamily": "SOCIAL_COOP_COMPETITION",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 86",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-087",
+      "status": "AVAILABLE",
+      "sourceFamily": "SURVIVAL_ESCAPE_RISK",
+      "categoryHint": "PUZZLE",
+      "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 87",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-088",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPACE_BUILDING_OPERATION",
+      "categoryHint": "CASUAL",
+      "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 88",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-089",
+      "status": "AVAILABLE",
+      "sourceFamily": "SYSTEM_MECHANIC_EXPERIMENT",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 89",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-090",
+      "status": "AVAILABLE",
+      "sourceFamily": "FREE_ORIGINAL_IDEA",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 90",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-091",
+      "status": "AVAILABLE",
+      "sourceFamily": "SUCCESSFUL_GAME_STRUCTURE",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 91",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-092",
+      "status": "AVAILABLE",
+      "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 92",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-093",
+      "status": "AVAILABLE",
+      "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+      "categoryHint": "PUZZLE",
+      "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 93",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-094",
+      "status": "AVAILABLE",
+      "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
+      "categoryHint": "CASUAL",
+      "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 94",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-095",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 95",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-096",
+      "status": "AVAILABLE",
+      "sourceFamily": "SOCIAL_COOP_COMPETITION",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 96",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-097",
+      "status": "AVAILABLE",
+      "sourceFamily": "SURVIVAL_ESCAPE_RISK",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 97",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-098",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPACE_BUILDING_OPERATION",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 98",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-099",
+      "status": "AVAILABLE",
+      "sourceFamily": "SYSTEM_MECHANIC_EXPERIMENT",
+      "categoryHint": "PUZZLE",
+      "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 99",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.581Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-100",
+      "status": "CONSUMED",
+      "sourceFamily": "FREE_ORIGINAL_IDEA",
+      "categoryHint": "CASUAL",
+      "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 100",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.581Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": "2026-09-14T07:03:36.582Z",
+      "consumedBySeedId": "SEED-UNITY-CASUAL-001"
+    },
+    {
+      "materialId": "MAT-101",
+      "status": "AVAILABLE",
+      "sourceFamily": "SUCCESSFUL_GAME_STRUCTURE",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 101",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-102",
+      "status": "AVAILABLE",
+      "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 102",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-103",
+      "status": "AVAILABLE",
+      "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 103",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-104",
+      "status": "AVAILABLE",
+      "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 104",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-105",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+      "categoryHint": "PUZZLE",
+      "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 105",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-106",
+      "status": "AVAILABLE",
+      "sourceFamily": "SOCIAL_COOP_COMPETITION",
+      "categoryHint": "CASUAL",
+      "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 106",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-107",
+      "status": "AVAILABLE",
+      "sourceFamily": "SURVIVAL_ESCAPE_RISK",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 107",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-108",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPACE_BUILDING_OPERATION",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 108",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-109",
+      "status": "AVAILABLE",
+      "sourceFamily": "SYSTEM_MECHANIC_EXPERIMENT",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "SYSTEM_MECHANIC_EXPERIMENT에서 얻은 독립 게임 재료 109",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-110",
+      "status": "AVAILABLE",
+      "sourceFamily": "FREE_ORIGINAL_IDEA",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 110",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-111",
+      "status": "AVAILABLE",
+      "sourceFamily": "SUCCESSFUL_GAME_STRUCTURE",
+      "categoryHint": "PUZZLE",
+      "concept": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 111",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-112",
+      "status": "AVAILABLE",
+      "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
+      "categoryHint": "CASUAL",
+      "concept": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 112",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-113",
+      "status": "AVAILABLE",
+      "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+      "categoryHint": "IDLE_GROWTH_RPG",
+      "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 113",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-114",
+      "status": "AVAILABLE",
+      "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
+      "categoryHint": "STORY_COMPLETE_RPG",
+      "concept": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 114",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-115",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+      "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
+      "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 115",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-116",
+      "status": "AVAILABLE",
+      "sourceFamily": "SOCIAL_COOP_COMPETITION",
+      "categoryHint": "SINGLE_DEFENSE_STRATEGY",
+      "concept": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 116",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-117",
+      "status": "AVAILABLE",
+      "sourceFamily": "SURVIVAL_ESCAPE_RISK",
+      "categoryHint": "PUZZLE",
+      "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 117",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    },
+    {
+      "materialId": "MAT-118",
+      "status": "AVAILABLE",
+      "sourceFamily": "SPACE_BUILDING_OPERATION",
+      "categoryHint": "CASUAL",
+      "concept": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 118",
+      "mechanic": "설계 단계에서 다른 재료와 조합해 결정",
+      "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
+      "learningPreference": null,
+      "learningAvoid": null,
+      "createdAt": "2026-09-14T07:03:36.582Z",
+      "updatedAt": "2026-09-14T07:03:36.582Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
+    }
+  ],
   "seedMaterialPolicy": {
     "targetCount": 100,
     "materialIsGame": false,
@@ -37,7 +4196,42 @@
       "SYSTEM_MECHANIC_EXPERIMENT",
       "FREE_ORIGINAL_IDEA"
     ],
-    "actualGameCountUnlimited": true
+    "actualGameCountUnlimited": true,
+    "availableCount": 100,
+    "lastReplenishedAt": "2026-09-14T07:05:11.063Z",
+    "bootstrapCategories": [
+      "ACTION_SURVIVAL_ROGUELITE",
+      "SINGLE_DEFENSE_STRATEGY",
+      "PUZZLE",
+      "CASUAL",
+      "IDLE_GROWTH_RPG",
+      "STORY_COMPLETE_RPG"
+    ],
+    "bootstrapCategoryRole": "HISTORICAL_BASELINE_AND_FALLBACK_ONLY",
+    "lastComposition": {
+      "count": 3,
+      "platform": "UNITY",
+      "category": "STORY_COMPLETE_RPG",
+      "top30ReferenceCount": 0,
+      "signals": [
+        "TARGET_PLATFORM_FIT",
+        "CATEGORY_OR_GENRE_FIT",
+        "MATERIAL_COMPLEMENTARITY",
+        "VALIDATED_LEARNING_OUTCOME",
+        "TOP30_DIFFERENTIATION"
+      ],
+      "selectedMaterialIds": [
+        "MAT-006",
+        "MAT-012",
+        "MAT-018"
+      ],
+      "selectedFamilies": [
+        "SOCIAL_COOP_COMPETITION",
+        "STORY_OR_NARRATIVE_STRUCTURE",
+        "SPACE_BUILDING_OPERATION"
+      ],
+      "updatedAt": "2026-09-14T07:03:36.597Z"
+    }
   },
   "platformSets": {},
   "portfolioSeedRequests": [],
@@ -127,5 +4321,17 @@
       "signalsGuideSelectionButDoNotForceCopy": true
     },
     "updatedAt": "2026-09-14T05:40:40.647Z"
-  }
+  },
+  "bootstrapCompletedAt": "2026-09-14T07:03:36.582Z",
+  "initialBatchCount": 6,
+  "initialBatchCategories": [
+    "ACTION_SURVIVAL_ROGUELITE",
+    "SINGLE_DEFENSE_STRATEGY",
+    "PUZZLE",
+    "CASUAL",
+    "IDLE_GROWTH_RPG",
+    "STORY_COMPLETE_RPG"
+  ],
+  "lastRunAt": "2026-09-14T07:03:36.582Z",
+  "lastAction": "HISTORICAL_INITIAL_BOOTSTRAP"
 }
