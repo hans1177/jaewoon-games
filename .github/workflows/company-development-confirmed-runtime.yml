@@ -120,21 +120,40 @@ jobs:
           });
           const selected=requestedGameId?stale.filter(item=>item.gameId===requestedGameId):stale;
           if(requestedGameId&&selected.length!==1)throw new Error(`WEB_PILOT_TARGET_NOT_ELIGIBLE:${requestedGameId}`);
-          const rows=selected.map(item=>({
-            gameId:item.gameId,
-            gameName:item.gameName||item.gameId,
-            designBaselineSource:item.designBaselineSource,
-            designDate:item.designDate||'',
-            selectedPlatform:item.selectedPlatform||item.targetPlatform||'ROBLOX',
-            targetSourcePath:item.targetSourcePath||item.sourcePath||'',
-            webSourcePath:item.webSourcePath||item.optionalWebSourcePath||`web-games/${item.gameId}`,
-          }));
+          const rows=selected.map(item=>{
+            const canonicalState=String(item.canonicalState||'').toUpperCase();
+            const runtimeStage=canonicalState==='WAITING_WEB_FINAL_CONTENT_DEPTH'?'final-content-depth':'initial-cycle';
+            return {
+              gameId:item.gameId,
+              gameName:item.gameName||item.gameId,
+              designBaselineSource:item.designBaselineSource,
+              designDate:item.designDate||'',
+              selectedPlatform:item.selectedPlatform||item.targetPlatform||'ROBLOX',
+              targetSourcePath:item.targetSourcePath||item.sourcePath||'',
+              webSourcePath:item.webSourcePath||item.optionalWebSourcePath||`web-games/${item.gameId}`,
+              runtimeStage,
+              webInitialCyclePassed:item.webInitialCyclePassed===true,
+              webInitialCyclePassedAt:item.webInitialCyclePassedAt||'',
+              webInitialCycleEvidencePath:item.webInitialCycleEvidencePath||'',
+              webInitialCycleSourcePath:item.webInitialCycleSourcePath||'',
+              webInitialCycleSourceIndexSha256:item.webInitialCycleSourceIndexSha256||'',
+              webInitialCycleDesignBaselineSha256:item.webInitialCycleDesignBaselineSha256||'',
+              webInitialCycleValidationSchemaVersion:Number(item.webInitialCycleValidationSchemaVersion||0)||0,
+              webInitialCycleStrictScore:Number(item.webInitialCycleStrictScore||0)||0,
+              webInitialCycleStrictReviewPath:item.webInitialCycleStrictReviewPath||'',
+              webInitialCycleSourceRevision:item.webInitialCycleSourceRevision||'',
+              webInitialCycleMusicValidationPassed:item.webInitialCycleMusicValidationPassed===true,
+              webFinalContentDepthEvidencePath:item.webFinalContentDepthEvidencePath||'',
+            };
+          });
           const matrix={include:rows};
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`target_count=${rows.length}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify(matrix)}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`WEB_REQUIRED_QUEUE_COUNT=${rows.length}`);
           console.log(`WEB_REQUIRED_GAME_IDS=${rows.map(x=>x.gameId).join(',')}`);
+          console.log(`WEB_INITIAL_TARGET_COUNT=${rows.filter(x=>x.runtimeStage==='initial-cycle').length}`);
+          console.log(`WEB_FINAL_CONTENT_DEPTH_TARGET_COUNT=${rows.filter(x=>x.runtimeStage==='final-content-depth').length}`);
           console.log(`WEB_PILOT_TARGET=${requestedGameId||'NONE'}`);
           console.log('WEB_HOMEPAGE_THRESHOLD=80');
           console.log('WEB_VALIDATION_SCHEMA_MINIMUM=13');
@@ -190,12 +209,26 @@ jobs:
           DESIGN_DATE: ${{ matrix.designDate }}
           TARGET_SOURCE_PATH: ${{ matrix.targetSourcePath }}
           WEB_SOURCE_PATH: ${{ matrix.webSourcePath }}
+          WEB_RUNTIME_STAGE: ${{ matrix.runtimeStage }}
+          WEB_INITIAL_CYCLE_PASSED: ${{ matrix.webInitialCyclePassed }}
+          WEB_INITIAL_CYCLE_PASSED_AT: ${{ matrix.webInitialCyclePassedAt }}
+          WEB_INITIAL_CYCLE_EVIDENCE_PATH: ${{ matrix.webInitialCycleEvidencePath }}
+          WEB_INITIAL_CYCLE_SOURCE_PATH: ${{ matrix.webInitialCycleSourcePath }}
+          WEB_INITIAL_CYCLE_SOURCE_INDEX_SHA256: ${{ matrix.webInitialCycleSourceIndexSha256 }}
+          WEB_INITIAL_CYCLE_DESIGN_BASELINE_SHA256: ${{ matrix.webInitialCycleDesignBaselineSha256 }}
+          WEB_INITIAL_CYCLE_SCHEMA_VERSION: ${{ matrix.webInitialCycleValidationSchemaVersion }}
+          WEB_INITIAL_CYCLE_STRICT_SCORE: ${{ matrix.webInitialCycleStrictScore }}
+          WEB_INITIAL_CYCLE_STRICT_REVIEW_PATH: ${{ matrix.webInitialCycleStrictReviewPath }}
+          WEB_INITIAL_CYCLE_SOURCE_REVISION: ${{ matrix.webInitialCycleSourceRevision }}
+          WEB_INITIAL_CYCLE_MUSIC_PASSED: ${{ matrix.webInitialCycleMusicValidationPassed }}
+          WEB_FINAL_CONTENT_DEPTH_EVIDENCE_PATH: ${{ matrix.webFinalContentDepthEvidencePath }}
         shell: bash
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import path from 'node:path';
+          import crypto from 'node:crypto';
           import {execFileSync} from 'node:child_process';
           const item={
             gameId:process.env.GAME_ID,
@@ -204,6 +237,19 @@ jobs:
             designDate:process.env.DESIGN_DATE,
             targetSourcePath:process.env.TARGET_SOURCE_PATH,
             webSourcePath:process.env.WEB_SOURCE_PATH,
+            runtimeStage:process.env.WEB_RUNTIME_STAGE||'initial-cycle',
+            webInitialCyclePassed:String(process.env.WEB_INITIAL_CYCLE_PASSED||'').toLowerCase()==='true',
+            webInitialCyclePassedAt:process.env.WEB_INITIAL_CYCLE_PASSED_AT||'',
+            webInitialCycleEvidencePath:process.env.WEB_INITIAL_CYCLE_EVIDENCE_PATH||'',
+            webInitialCycleSourcePath:process.env.WEB_INITIAL_CYCLE_SOURCE_PATH||'',
+            webInitialCycleSourceIndexSha256:process.env.WEB_INITIAL_CYCLE_SOURCE_INDEX_SHA256||'',
+            webInitialCycleDesignBaselineSha256:process.env.WEB_INITIAL_CYCLE_DESIGN_BASELINE_SHA256||'',
+            webInitialCycleValidationSchemaVersion:Number(process.env.WEB_INITIAL_CYCLE_SCHEMA_VERSION||0)||0,
+            webInitialCycleStrictScore:Number(process.env.WEB_INITIAL_CYCLE_STRICT_SCORE||0)||0,
+            webInitialCycleStrictReviewPath:process.env.WEB_INITIAL_CYCLE_STRICT_REVIEW_PATH||'',
+            webInitialCycleSourceRevision:process.env.WEB_INITIAL_CYCLE_SOURCE_REVISION||'',
+            webInitialCycleMusicValidationPassed:String(process.env.WEB_INITIAL_CYCLE_MUSIC_PASSED||'').toLowerCase()==='true',
+            webFinalContentDepthEvidencePath:process.env.WEB_FINAL_CONTENT_DEPTH_EVIDENCE_PATH||'',
           };
           const safe=String(item.gameId).replace(/[^a-zA-Z0-9._-]+/g,'-');
           const root='/tmp/web-worker';
@@ -214,98 +260,182 @@ jobs:
           fs.mkdirSync(resultsRoot,{recursive:true});
           const show=file=>execFileSync('git',['show',`origin/${process.env.COMPANY_RUNTIME_BRANCH}:${file}`],{maxBuffer:32*1024*1024});
           const materialize=file=>{const out=path.resolve(file);fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,show(file));};
+          const sha256File=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
           const stamp=new Date().toISOString();
+          const finalStage=item.runtimeStage==='final-content-depth';
+          const stableSource=`web-games/${item.gameId}`;
+          const initialEvidenceRelative=item.designBaselineSource.replace(/[^/]+$/,'web-initial-cycle-validation.json');
+          const finalEvidenceRelative=item.designBaselineSource.replace(/[^/]+$/,'web-gameplay-validation.json');
+          const initialStrictRelative=item.designBaselineSource.replace(/[^/]+$/,'strict-initial-implementation-review.json');
+          const finalStrictRelative=item.designBaselineSource.replace(/[^/]+$/,'strict-implementation-review.json');
+          const workDir=path.join('/tmp/web-work',safe);
+          const bootstrapEvidence=path.join(workDir,'web-bootstrap-evidence.json');
+          const gameplayEvidence=path.join(workDir,'web-gameplay-validation.json');
+          const screenshot=path.join(workDir,'web-gameplay.png');
+          fs.mkdirSync(workDir,{recursive:true});
+          let finalEvidencePersisted=false;
           let result;
           try{
             if(!item.designBaselineSource)throw new Error('DESIGN_BASELINE_SOURCE_MISSING');
             materialize(item.designBaselineSource);
             const statusSource=item.designBaselineSource.replace(/design-revised\.json$/,'cycle-status.json');
             try{materialize(statusSource);}catch{}
-            const candidateId=`development-web-${item.gameId}-${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT}`;
-            const candidatePath=`web-games/.autonomous-candidates/${candidateId}`;
-            const workDir=path.join('/tmp/web-work',safe);
-            const bootstrapEvidence=path.join(workDir,'web-bootstrap-evidence.json');
-            const gameplayEvidence=path.join(workDir,'web-gameplay-validation.json');
-            const screenshot=path.join(workDir,'web-gameplay.png');
-            fs.mkdirSync(workDir,{recursive:true});
-            execFileSync(process.execPath,['tools/company-development-web-bootstrap.mjs',
-              `--game-id=${item.gameId}`,`--game-name=${item.gameName}`,
-              `--baseline=${item.designBaselineSource}`,
-              `--source-path=${item.webSourcePath}`,`--candidate-id=${candidateId}`,
-              `--candidate-path=${candidatePath}`,`--source-commit=${process.env.GITHUB_SHA}`,
-              `--evidence=${bootstrapEvidence}`],{stdio:'inherit',timeout:9*60*1000});
-            execFileSync(process.execPath,['tools/company-development-web-gameplay-validation.mjs',
-              `--game-id=${item.gameId}`,`--source=${candidatePath}`,`--port=4181`,
-              `--output=${gameplayEvidence}`,`--screenshot=${screenshot}`,'--validation-stage=initial-cycle'],{stdio:'inherit',timeout:8*60*1000});
-            const initialReport=JSON.parse(fs.readFileSync(gameplayEvidence,'utf8'));
-            const initialScore=Number(initialReport.webStrictScore??initialReport.strictReview?.totalScore);
-            const initialHardFailures=Array.isArray(initialReport.strictReview?.hardFailures)?initialReport.strictReview.hardFailures:[];
-            if(Number(initialReport.validationSchemaVersion||initialReport.version)!==13||initialReport.pass!==true||initialReport.initialPlayableCycle?.pass!==true||initialReport.musicRuntime?.pass!==true||!Number.isFinite(initialScore)||initialScore<80||initialHardFailures.length)throw new Error('WEB_INITIAL_CYCLE_OR_80_POINT_GATE_NOT_PASS');
-            if(initialReport.contentDepthValidation?.pass===true||initialReport.homepageTestEligible===true)throw new Error('WEB_INITIAL_STAGE_MUST_NOT_CLAIM_FINAL_30MIN_PASS');
-            console.log(`WEB_INITIAL_PLAYABLE_CYCLE_PASS=${item.gameId}:${initialScore}`);
-            execFileSync(process.execPath,['tools/company-development-web-gameplay-validation.mjs',
-              `--game-id=${item.gameId}`,`--source=${candidatePath}`,`--port=4181`,
-              `--output=${gameplayEvidence}`,`--screenshot=${screenshot}`,'--validation-stage=final-content-depth'],{stdio:'inherit',timeout:70*60*1000});
-            const report=JSON.parse(fs.readFileSync(gameplayEvidence,'utf8'));
-            const strictScore=Number(report.webStrictScore??report.strictReview?.totalScore);
-            const hardFailures=Array.isArray(report.strictReview?.hardFailures)?report.strictReview.hardFailures:[];
-            if(Number(report.validationSchemaVersion||report.version)!==13||report.pass!==true||report.musicRuntime?.pass!==true||report.contentDepthValidation?.validationMode!=='REAL_ELAPSED_GAMEPLAY'||report.contentDepthValidation?.pass!==true||Number(report.contentDepthValidation?.elapsedRealMilliseconds)<1800000||report.homepageTestEligible!==true||!Number.isFinite(strictScore)||strictScore<80||hardFailures.length)throw new Error('WEB_FINAL_REAL_30MIN_OR_80_POINT_GATE_NOT_PASS');
-            const formalPass=report.formalImplementationPassed===true&&report.promotionRevalidation?.pass===true&&strictScore>=90&&hardFailures.length===0;
-            const stableSource=`web-games/${item.gameId}`;
-            report.candidateSourcePath=candidatePath;
-            report.sourcePath=stableSource;
-            report.policyDocument='COMPANY_FLOW.md';
-            report.requiredBeforeTargetPlatform=true;
-            fs.writeFileSync(gameplayEvidence,JSON.stringify(report,null,2)+'\n');
-            const webOut=path.join(persistRoot,stableSource);
-            fs.mkdirSync(webOut,{recursive:true});
-            fs.copyFileSync(path.join(candidatePath,'index.html'),path.join(webOut,'index.html'));
-            const evidenceRelative=item.designBaselineSource.replace(/[^/]+$/,'web-gameplay-validation.json');
-            const evidenceOut=path.join(persistRoot,evidenceRelative);
-            fs.mkdirSync(path.dirname(evidenceOut),{recursive:true});
-            fs.copyFileSync(gameplayEvidence,evidenceOut);
-            const strictRelative=item.designBaselineSource.replace(/[^/]+$/,'strict-implementation-review.json');
-            const strictLocal=path.join(workDir,'strict-implementation-review.json');
-            if(fs.existsSync(strictLocal)){
-              const strictOut=path.join(persistRoot,strictRelative);
-              fs.mkdirSync(path.dirname(strictOut),{recursive:true});
-              fs.copyFileSync(strictLocal,strictOut);
+            if(!finalStage){
+              const candidateId=`development-web-${item.gameId}-${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT}`;
+              const candidatePath=`web-games/.autonomous-candidates/${candidateId}`;
+              execFileSync(process.execPath,['tools/company-development-web-bootstrap.mjs',
+                `--game-id=${item.gameId}`,`--game-name=${item.gameName}`,
+                `--baseline=${item.designBaselineSource}`,
+                `--source-path=${item.webSourcePath}`,`--candidate-id=${candidateId}`,
+                `--candidate-path=${candidatePath}`,`--source-commit=${process.env.GITHUB_SHA}`,
+                `--evidence=${bootstrapEvidence}`],{stdio:'inherit',timeout:9*60*1000});
+              execFileSync(process.execPath,['tools/company-development-web-gameplay-validation.mjs',
+                `--game-id=${item.gameId}`,`--source=${candidatePath}`,`--port=4181`,
+                `--output=${gameplayEvidence}`,`--screenshot=${screenshot}`,'--validation-stage=initial-cycle'],{stdio:'inherit',timeout:8*60*1000});
+              const initialReport=JSON.parse(fs.readFileSync(gameplayEvidence,'utf8'));
+              const initialScore=Number(initialReport.webStrictScore??initialReport.strictReview?.totalScore);
+              const initialHardFailures=Array.isArray(initialReport.strictReview?.hardFailures)?initialReport.strictReview.hardFailures:[];
+              if(Number(initialReport.validationSchemaVersion||initialReport.version)!==13||initialReport.pass!==true||initialReport.initialPlayableCycle?.pass!==true||initialReport.musicRuntime?.pass!==true||!Number.isFinite(initialScore)||initialScore<80||initialHardFailures.length)throw new Error('WEB_INITIAL_CYCLE_OR_80_POINT_GATE_NOT_PASS');
+              if(initialReport.contentDepthValidation?.pass===true||initialReport.homepageTestEligible===true)throw new Error('WEB_INITIAL_STAGE_MUST_NOT_CLAIM_FINAL_30MIN_PASS');
+              initialReport.candidateSourcePath=candidatePath;
+              initialReport.sourcePath=stableSource;
+              initialReport.policyDocument='COMPANY_FLOW.md';
+              initialReport.requiredBeforeFinalContentDepth=true;
+              fs.writeFileSync(gameplayEvidence,JSON.stringify(initialReport,null,2)+'\n');
+              const webOut=path.join(persistRoot,stableSource);
+              fs.mkdirSync(webOut,{recursive:true});
+              fs.copyFileSync(path.join(candidatePath,'index.html'),path.join(webOut,'index.html'));
+              const initialEvidenceOut=path.join(persistRoot,initialEvidenceRelative);
+              fs.mkdirSync(path.dirname(initialEvidenceOut),{recursive:true});
+              fs.copyFileSync(gameplayEvidence,initialEvidenceOut);
+              const strictLocal=path.join(workDir,'strict-implementation-review.json');
+              if(fs.existsSync(strictLocal)){
+                const initialStrictOut=path.join(persistRoot,initialStrictRelative);
+                fs.mkdirSync(path.dirname(initialStrictOut),{recursive:true});
+                fs.copyFileSync(strictLocal,initialStrictOut);
+              }
+              result={gameId:item.gameId,pass:true,update:{
+                status:'ACTIVE',currentStep:'WEB_FINAL_CONTENT_DEPTH_VALIDATION',canonicalState:'WAITING_WEB_FINAL_CONTENT_DEPTH',
+                sourcePath:stableSource,webSourcePath:stableSource,webValidationRequired:true,musicValidationRequired:true,
+                webInitialCyclePassed:true,webInitialCyclePassedAt:stamp,webInitialCycleEvidencePath:initialEvidenceRelative,
+                webInitialCycleSourcePath:stableSource,webInitialCycleSourceIndexSha256:initialReport.sourceIndexSha256||null,
+                webInitialCycleDesignBaselineSha256:initialReport.designBaselineSha256||null,
+                webInitialCycleValidationSchemaVersion:Number(initialReport.validationSchemaVersion||initialReport.version||0)||null,
+                webInitialCycleStrictScore:initialScore,webInitialCycleStrictReviewPath:initialStrictRelative,
+                webInitialCycleSourceRevision:process.env.GITHUB_SHA,webInitialCycleMusicValidationPassed:true,
+                webValidationPassedAt:null,musicValidationPassed:false,webValidationEvidencePath:null,
+                webFinalContentDepthEvidencePath:null,webFinalContentDepthPassedAt:null,
+                homepageTestEligible:false,homepageTestCandidate:false,homepageTestScore:null,homepageTestVerdict:'WAITING_FINAL_CONTENT_DEPTH',
+                formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,
+                routingBlockers:['web-final-content-depth-required'],webValidationLastAttemptAt:stamp,updatedAt:stamp,
+              }};
+              console.log(`WEB_INITIAL_PLAYABLE_CYCLE_PASS=${item.gameId}:${initialScore}`);
+              console.log(`WEB_INITIAL_CANONICAL_PERSIST=${item.gameId}:${stableSource}:${initialEvidenceRelative}`);
+              console.log('WEB_CANONICAL_STATE=WAITING_WEB_FINAL_CONTENT_DEPTH');
+              console.log('WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO');
+            }else{
+              if(item.webInitialCyclePassed!==true||!item.webInitialCyclePassedAt||!item.webInitialCycleEvidencePath||!item.webInitialCycleSourcePath)throw new Error('WEB_FINAL_REQUIRES_PERSISTED_INITIAL_PASS_BINDING');
+              if(item.webInitialCycleValidationSchemaVersion!==13||item.webInitialCycleMusicValidationPassed!==true)throw new Error('WEB_FINAL_REQUIRES_VALID_INITIAL_SCHEMA13_AND_MUSIC_PASS');
+              materialize(item.webInitialCycleEvidencePath);
+              materialize(`${item.webInitialCycleSourcePath}/index.html`);
+              const persistedInitial=JSON.parse(fs.readFileSync(item.webInitialCycleEvidencePath,'utf8'));
+              const currentSourceSha256=sha256File(path.join(item.webInitialCycleSourcePath,'index.html'));
+              const currentBaselineSha256=sha256File(item.designBaselineSource);
+              if(Number(persistedInitial.validationSchemaVersion||persistedInitial.version)!==13||persistedInitial.pass!==true||persistedInitial.initialPlayableCycle?.pass!==true||persistedInitial.contentDepthValidation?.pass===true||persistedInitial.homepageTestEligible===true)throw new Error('WEB_PERSISTED_INITIAL_EVIDENCE_INVALID');
+              if(String(persistedInitial.sourcePath||'')!==item.webInitialCycleSourcePath)throw new Error('WEB_PERSISTED_INITIAL_SOURCE_PATH_MISMATCH');
+              if(!item.webInitialCycleSourceIndexSha256||currentSourceSha256!==item.webInitialCycleSourceIndexSha256||persistedInitial.sourceIndexSha256!==item.webInitialCycleSourceIndexSha256)throw new Error('WEB_PERSISTED_INITIAL_SOURCE_HASH_MISMATCH');
+              if(!item.webInitialCycleDesignBaselineSha256||currentBaselineSha256!==item.webInitialCycleDesignBaselineSha256||persistedInitial.designBaselineSha256!==item.webInitialCycleDesignBaselineSha256)throw new Error('WEB_PERSISTED_INITIAL_BASELINE_HASH_MISMATCH');
+              console.log(`WEB_FINAL_CONTENT_DEPTH_RESUME=${item.gameId}:${item.webInitialCycleSourcePath}:${item.webInitialCycleEvidencePath}`);
+              execFileSync(process.execPath,['tools/company-development-web-gameplay-validation.mjs',
+                `--game-id=${item.gameId}`,`--source=${item.webInitialCycleSourcePath}`,`--port=4181`,
+                `--output=${gameplayEvidence}`,`--screenshot=${screenshot}`,'--validation-stage=final-content-depth'],{stdio:'inherit',timeout:70*60*1000});
+              const report=JSON.parse(fs.readFileSync(gameplayEvidence,'utf8'));
+              const strictScore=Number(report.webStrictScore??report.strictReview?.totalScore);
+              const hardFailures=Array.isArray(report.strictReview?.hardFailures)?report.strictReview.hardFailures:[];
+              if(Number(report.validationSchemaVersion||report.version)!==13||report.pass!==true||report.musicRuntime?.pass!==true||report.contentDepthValidation?.validationMode!=='REAL_ELAPSED_GAMEPLAY'||report.contentDepthValidation?.pass!==true||Number(report.contentDepthValidation?.elapsedRealMilliseconds)<1800000||report.homepageTestEligible!==true||!Number.isFinite(strictScore)||strictScore<80||hardFailures.length)throw new Error('WEB_FINAL_REAL_30MIN_OR_80_POINT_GATE_NOT_PASS');
+              const formalPass=report.formalImplementationPassed===true&&report.promotionRevalidation?.pass===true&&strictScore>=90&&hardFailures.length===0;
+              report.candidateSourcePath=item.webInitialCycleSourcePath;
+              report.sourcePath=item.webInitialCycleSourcePath;
+              report.initialCycleEvidencePath=item.webInitialCycleEvidencePath;
+              report.initialCycleSourceIndexSha256=item.webInitialCycleSourceIndexSha256;
+              report.policyDocument='COMPANY_FLOW.md';
+              report.requiredBeforeTargetPlatform=true;
+              fs.writeFileSync(gameplayEvidence,JSON.stringify(report,null,2)+'\n');
+              const evidenceOut=path.join(persistRoot,finalEvidenceRelative);
+              fs.mkdirSync(path.dirname(evidenceOut),{recursive:true});
+              fs.copyFileSync(gameplayEvidence,evidenceOut);
+              finalEvidencePersisted=true;
+              const strictLocal=path.join(workDir,'strict-implementation-review.json');
+              if(fs.existsSync(strictLocal)){
+                const strictOut=path.join(persistRoot,finalStrictRelative);
+                fs.mkdirSync(path.dirname(strictOut),{recursive:true});
+                fs.copyFileSync(strictLocal,strictOut);
+              }
+              const promotionBlocker=strictScore>=90?'web-90-independent-promotion-revalidation-required':'web-strict-score-below-formal-90';
+              result={gameId:item.gameId,pass:true,update:{
+                status:formalPass?'PENDING':'ACTIVE',
+                currentStep:formalPass?'TARGET_PLATFORM_SOURCE_BIND':'WEB_STRICT_IMPROVEMENT',
+                canonicalState:formalPass?'PENDING_SELECTED_PLATFORM_BIND':'WAITING_WEB_STRICT_IMPROVEMENT',
+                sourcePath:formalPass?item.targetSourcePath:item.webInitialCycleSourcePath,
+                webSourcePath:item.webInitialCycleSourcePath,webValidationRequired:true,musicValidationRequired:true,
+                webValidationPassedAt:stamp,musicValidationPassed:true,webValidationEvidencePath:finalEvidenceRelative,
+                webFinalContentDepthEvidencePath:finalEvidenceRelative,webFinalContentDepthPassedAt:stamp,
+                strictImplementationReviewPath:finalStrictRelative,strictImplementationScore:strictScore,webStrictScore:strictScore,
+                strictImplementationVerdict:String(report.strictReview?.verdict||''),strictImplementationHardFailures:hardFailures,
+                webValidationSchemaVersion:Number(report.validationSchemaVersion||report.version||0)||null,
+                webSourceIndexSha256:report.sourceIndexSha256||null,webDesignBaselineSha256:report.designBaselineSha256||null,
+                webPromotionRevalidationPassed:report.promotionRevalidation?.pass===true,
+                homepageTestEligible:true,homepageTestCandidate:false,homepageTestScore:strictScore,homepageTestVerdict:'WAITING_ARTBOOK',
+                formalImplementationPassed:formalPass,formalImplementationVerdict:formalPass?'PASS':'REVISE',
+                postPromotionArtbookRequired:false,postWebArtbookRequired:true,artbookTiming:'AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER',
+                webValidationSourceRevision:process.env.GITHUB_SHA,
+                routingBlockers:formalPass?[]:[promotionBlocker],webFinalContentDepthLastAttemptAt:stamp,updatedAt:stamp,
+              }};
+              console.log(`WEB_GAMEPLAY_MUSIC_80_PASS=${item.gameId}:${strictScore}`);
+              console.log(`WEB_VALIDATION_SCHEMA=${report.validationSchemaVersion||report.version||0}`);
+              console.log(`WEB_FINAL_30MIN_MODE=${report.contentDepthValidation?.validationMode||'NONE'}`);
+              console.log(`WEB_FINAL_30MIN_ELAPSED_MS=${report.contentDepthValidation?.elapsedRealMilliseconds||0}`);
+              console.log(`WEB_PROMOTION_REVALIDATION=${report.promotionRevalidation?.pass===true?'PASS':'NO'}`);
+              console.log(`FORMAL_IMPLEMENTATION_PASS=${formalPass?'YES':'NO'}`);
             }
-            const promotionBlocker=strictScore>=90?'web-90-independent-promotion-revalidation-required':'web-strict-score-below-formal-90';
-            result={gameId:item.gameId,pass:true,update:{
-              status:formalPass?'PENDING':'ACTIVE',
-              currentStep:formalPass?'TARGET_PLATFORM_SOURCE_BIND':'WEB_STRICT_IMPROVEMENT',
-              canonicalState:formalPass?'PENDING_SELECTED_PLATFORM_BIND':'WAITING_WEB_STRICT_IMPROVEMENT',
-              sourcePath:formalPass?item.targetSourcePath:stableSource,
-              webSourcePath:stableSource,webValidationRequired:true,musicValidationRequired:true,
-              webValidationPassedAt:stamp,musicValidationPassed:true,webValidationEvidencePath:evidenceRelative,
-              strictImplementationReviewPath:strictRelative,strictImplementationScore:strictScore,webStrictScore:strictScore,
-              strictImplementationVerdict:String(report.strictReview?.verdict||''),strictImplementationHardFailures:hardFailures,
-              webValidationSchemaVersion:Number(report.validationSchemaVersion||report.version||0)||null,
-              webSourceIndexSha256:report.sourceIndexSha256||null,webDesignBaselineSha256:report.designBaselineSha256||null,
-              webPromotionRevalidationPassed:report.promotionRevalidation?.pass===true,
-              homepageTestEligible:true,homepageTestCandidate:false,homepageTestScore:strictScore,homepageTestVerdict:'WAITING_ARTBOOK',
-              formalImplementationPassed:formalPass,formalImplementationVerdict:formalPass?'PASS':'REVISE',
-              postPromotionArtbookRequired:false,postWebArtbookRequired:true,artbookTiming:'AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER',
-              webValidationSourceRevision:process.env.GITHUB_SHA,
-              routingBlockers:formalPass?[]:[promotionBlocker],updatedAt:stamp,
-            }};
-            console.log(`WEB_GAMEPLAY_MUSIC_80_PASS=${item.gameId}:${strictScore}`);
-            console.log(`WEB_VALIDATION_SCHEMA=${report.validationSchemaVersion||report.version||0}`);
-            console.log(`WEB_FINAL_30MIN_MODE=${report.contentDepthValidation?.validationMode||'NONE'}`);
-            console.log(`WEB_FINAL_30MIN_ELAPSED_MS=${report.contentDepthValidation?.elapsedRealMilliseconds||0}`);
-            console.log(`WEB_PROMOTION_REVALIDATION=${report.promotionRevalidation?.pass===true?'PASS':'NO'}`);
-            console.log(`FORMAL_IMPLEMENTATION_PASS=${formalPass?'YES':'NO'}`);
           }catch(error){
             const signature=String(error?.message||error).replace(/\s+/g,' ').slice(0,240);
-            result={gameId:item.gameId,pass:false,update:{
-              status:'ACTIVE',currentStep:'WEB_GAMEPLAY_AND_MUSIC_VALIDATION',canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION',
-              sourcePath:item.webSourcePath,webSourcePath:item.webSourcePath,webValidationRequired:true,musicValidationRequired:true,
-              webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,
-              formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,
-              routingBlockers:[`web-gameplay-music:${signature}`],webValidationLastAttemptAt:stamp,updatedAt:stamp,
-            }};
-            console.log(`WEB_GAMEPLAY_MUSIC_FAIL=${item.gameId}:${signature}`);
+            if(finalStage){
+              if(fs.existsSync(gameplayEvidence)){
+                const evidenceOut=path.join(persistRoot,finalEvidenceRelative);
+                fs.mkdirSync(path.dirname(evidenceOut),{recursive:true});
+                fs.copyFileSync(gameplayEvidence,evidenceOut);
+                finalEvidencePersisted=true;
+              }
+              result={gameId:item.gameId,pass:false,update:{
+                status:'ACTIVE',currentStep:'WEB_FINAL_CONTENT_DEPTH_VALIDATION',canonicalState:'WAITING_WEB_FINAL_CONTENT_DEPTH',
+                sourcePath:item.webInitialCycleSourcePath||item.webSourcePath,webSourcePath:item.webInitialCycleSourcePath||item.webSourcePath,
+                webValidationRequired:true,musicValidationRequired:true,
+                webInitialCyclePassed:item.webInitialCyclePassed,webInitialCyclePassedAt:item.webInitialCyclePassedAt,
+                webInitialCycleEvidencePath:item.webInitialCycleEvidencePath,webInitialCycleSourcePath:item.webInitialCycleSourcePath,
+                webInitialCycleSourceIndexSha256:item.webInitialCycleSourceIndexSha256,webInitialCycleDesignBaselineSha256:item.webInitialCycleDesignBaselineSha256,
+                webInitialCycleValidationSchemaVersion:item.webInitialCycleValidationSchemaVersion,webInitialCycleStrictScore:item.webInitialCycleStrictScore,
+                webInitialCycleStrictReviewPath:item.webInitialCycleStrictReviewPath,webInitialCycleSourceRevision:item.webInitialCycleSourceRevision,
+                webInitialCycleMusicValidationPassed:item.webInitialCycleMusicValidationPassed,
+                webValidationPassedAt:null,musicValidationPassed:false,
+                webFinalContentDepthEvidencePath:finalEvidencePersisted?finalEvidenceRelative:(item.webFinalContentDepthEvidencePath||null),
+                homepageTestEligible:false,homepageTestCandidate:false,homepageTestVerdict:'WAITING_FINAL_CONTENT_DEPTH',
+                formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,
+                routingBlockers:[`web-final-content-depth:${signature}`],webFinalContentDepthLastAttemptAt:stamp,updatedAt:stamp,
+              }};
+              console.log(`WEB_FINAL_CONTENT_DEPTH_FAIL=${item.gameId}:${signature}`);
+              console.log('WEB_INITIAL_PASS_PRESERVED=YES');
+            }else{
+              result={gameId:item.gameId,pass:false,update:{
+                status:'ACTIVE',currentStep:'WEB_GAMEPLAY_AND_MUSIC_VALIDATION',canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION',
+                sourcePath:item.webSourcePath,webSourcePath:item.webSourcePath,webValidationRequired:true,musicValidationRequired:true,
+                webInitialCyclePassed:false,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,
+                formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,
+                routingBlockers:[`web-gameplay-music:${signature}`],webValidationLastAttemptAt:stamp,updatedAt:stamp,
+              }};
+              console.log(`WEB_GAMEPLAY_MUSIC_FAIL=${item.gameId}:${signature}`);
+              console.log('WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO');
+            }
           }
           fs.writeFileSync(path.join(resultsRoot,`${safe}.json`),JSON.stringify(result,null,2)+'\n');
           NODE
@@ -384,7 +514,10 @@ jobs:
           for(const target of expected){
             if(byId.has(target.gameId))continue;
             const stamp=new Date().toISOString();
-            const missing={gameId:target.gameId,pass:false,update:{status:'ACTIVE',currentStep:'WEB_GAMEPLAY_AND_MUSIC_VALIDATION',canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION',sourcePath:target.webSourcePath,webSourcePath:target.webSourcePath,webValidationRequired:true,musicValidationRequired:true,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,routingBlockers:['web-gameplay-music:web-worker-result-missing'],webValidationLastAttemptAt:stamp,updatedAt:stamp}};
+            const finalStage=target.runtimeStage==='final-content-depth';
+            const missing=finalStage
+              ?{gameId:target.gameId,pass:false,update:{status:'ACTIVE',currentStep:'WEB_FINAL_CONTENT_DEPTH_VALIDATION',canonicalState:'WAITING_WEB_FINAL_CONTENT_DEPTH',sourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webSourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webValidationRequired:true,musicValidationRequired:true,webInitialCyclePassed:target.webInitialCyclePassed===true,webInitialCyclePassedAt:target.webInitialCyclePassedAt||'',webInitialCycleEvidencePath:target.webInitialCycleEvidencePath||'',webInitialCycleSourcePath:target.webInitialCycleSourcePath||'',webInitialCycleSourceIndexSha256:target.webInitialCycleSourceIndexSha256||'',webInitialCycleDesignBaselineSha256:target.webInitialCycleDesignBaselineSha256||'',webInitialCycleValidationSchemaVersion:Number(target.webInitialCycleValidationSchemaVersion||0)||0,webInitialCycleStrictScore:Number(target.webInitialCycleStrictScore||0)||0,webInitialCycleStrictReviewPath:target.webInitialCycleStrictReviewPath||'',webInitialCycleSourceRevision:target.webInitialCycleSourceRevision||'',webInitialCycleMusicValidationPassed:target.webInitialCycleMusicValidationPassed===true,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,homepageTestVerdict:'WAITING_FINAL_CONTENT_DEPTH',formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,routingBlockers:['web-final-content-depth:web-worker-result-missing'],webFinalContentDepthLastAttemptAt:stamp,updatedAt:stamp}}
+              :{gameId:target.gameId,pass:false,update:{status:'ACTIVE',currentStep:'WEB_GAMEPLAY_AND_MUSIC_VALIDATION',canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION',sourcePath:target.webSourcePath,webSourcePath:target.webSourcePath,webValidationRequired:true,musicValidationRequired:true,webInitialCyclePassed:false,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,routingBlockers:['web-gameplay-music:web-worker-result-missing'],webValidationLastAttemptAt:stamp,updatedAt:stamp}};
             results.push(missing);
             byId.set(target.gameId,missing);
           }
