@@ -1,0 +1,79 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-single-defense-str-the-serpent-s-gambit",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "SEED-UNITY-SINGLE_DEFENSE_STRATEGY-001",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "smollm2:1.7b",
+  "sameModelAsDraft": true,
+  "appliedConsensusCount": 5,
+  "unresolvedConflictCount": 0,
+  "heldCount": 0,
+  "status": "DESIGN_BASELINE_CANDIDATE",
+  "content": {
+    "identity": "seed-unity-single-defense-str-the-serpent-s-gambit",
+    "playerFantasy": "SINGLE_DEFENSE_STRATEGY",
+    "coreFun": "Puzzle Solving",
+    "coreLoop": [
+      "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+      "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+    ],
+    "signatureSystems": [
+      {
+        "name": "DYNAMIC_CONTEXTUAL_2_TO_4",
+        "purpose": "DYNAMIC_CONTEXTUAL_2_TO_4",
+        "playerChoice": "DYNAMIC_CONTEXTUAL_2_TO_4"
+      },
+      {
+        "name": "TOP30_DIFFERENTIATION",
+        "purpose": "TOP30_DIFFERENTIATION",
+        "playerChoice": "TOP30_DIFFERENTIATION"
+      },
+      {
+        "name": "VALIDATED_LEARNING_OUTCOME",
+        "purpose": "VALIDATED_LEARNING_OUTCOME",
+        "playerChoice": "VALIDATED_LEARNING_OUTCOME"
+      }
+    ],
+    "progressionDirection": "DIFFUSION",
+    "visualDirection": "DIFFUSION",
+    "mobileUx": "DESIGN_ONLY",
+    "marketTargetDirection": "DIFFUSION",
+    "steamExpansionDecision": "HIGH",
+    "multiplayerExpansionDecision": "HIGH",
+    "technicalAssumptions": [
+      "UNITY",
+      "COOP",
+      "COOP",
+      "COOP",
+      "COOP",
+      "COOP",
+      "COOP",
+      "COOP"
+    ],
+    "validationQuestions": [
+      "What is the primary defense strategy? (SINGLE_DEFENSE_STRATEGY)",
+      "What types of puzzles are included in the game? (PUZZLE_SOLVING)",
+      "How does the game progression change based on enemy waves? (PROGRESSION_DIRECTION)",
+      "How does the game visual direction change based on enemy waves? (VISUAL_DIRECTION)",
+      "What mobile UX is included in the game? (MOBILE_UX)",
+      "What market target direction is included in the game? (MARKET_TARGET_DIRECTION)",
+      "Is the game expansion possible on Steam? (STEAM_EXPANSION_POSSIBLE)",
+      "What technical assumptions are made for the game? (TECHNICAL_ASSUMPTIONS)"
+    ],
+    "openQuestions": [
+      "What is the primary defense strategy? (SINGLE_DEFENSE_STRATEGY)",
+      "What types of puzzles are included in the game? (PUZZLE_SOLVING)",
+      "How does the game progression change based on enemy waves? (PROGRESSION_DIRECTION)",
+      "How does the game visual direction change based on enemy waves? (VISUAL_DIRECTION)",
+      "What mobile UX is included in the game? (MOBILE_UX)",
+      "What market target direction is included in the game? (MARKET_TARGET_DIRECTION)",
+      "Is the game expansion possible on Steam? (STEAM_EXPANSION_POSSIBLE)",
+      "What technical assumptions are made for the game? (TECHNICAL_ASSUMPTIONS)"
+    ]
+  }
+}

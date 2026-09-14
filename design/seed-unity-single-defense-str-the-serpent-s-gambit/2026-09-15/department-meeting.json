@@ -1,0 +1,164 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-single-defense-str-the-serpent-s-gambit",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen3:0.6b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "Ensure that the design aligns with the core strategy of the game, focusing on the puzzle-solving and progression mechanics."
+      ],
+      "fix": [
+        "Clarify the primary defense strategy and the types of puzzles included in the game."
+      ],
+      "add": [
+        "Integrate the progression direction and visual direction based on enemy wave patterns."
+      ],
+      "risks": [
+        "Address any potential issues with the mobile UX design."
+      ],
+      "evidence": [
+        "Provide evidence that supports the design's alignment with the game's objectives."
+      ],
+      "questions": [
+        "What is the primary defense strategy? (SINGLE_DEFENSE_STRATEGY)"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "SEED_MATERIAL_SELECTION_REFERENCE_COUNT"
+      ],
+      "fix": [],
+      "add": [],
+      "risks": [],
+      "evidence": [],
+      "questions": []
+    },
+    "development": {
+      "keep": [
+        "game-seed-market-evidence.json"
+      ],
+      "fix": [
+        "game-seed-platform-profiles.json"
+      ],
+      "add": [
+        "game-seed-market-evidence.json"
+      ],
+      "risks": [
+        "game-seed-market-evidence.json"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json"
+      ],
+      "questions": [
+        "game-seed-market-evidence.json"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "SEED_MATERIAL_SELECTION_MODE"
+      ],
+      "fix": [
+        "SEED_MATERIAL_SELECTION_SIGNALS"
+      ],
+      "add": [
+        "SEED_MATERIAL_SELECTION_MODE"
+      ],
+      "risks": [
+        "SEED_MATERIAL_SELECTION_MODE"
+      ],
+      "evidence": [
+        "REFERENCE_INPUTS"
+      ],
+      "questions": [
+        "SEED_MATERIAL_SELECTION_MODE"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "development"
+      ],
+      "fix": [
+        "qa"
+      ],
+      "add": [
+        "development"
+      ],
+      "risks": [
+        "GAME_SEED"
+      ],
+      "evidence": [
+        "REFERENCE_GAMES"
+      ],
+      "questions": [
+        "How does the game progression change based on enemy waves? (PROGRESSION_DIRECTION)"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "The design aligns with the core strategy of the game, focusing on puzzle-solving and progression mechanics. The primary defense strategy and puzzle types are clarified, and progression direction is integrated with enemy wave patterns. The mobile UX design is addressed, and evidence is provided to support the design's alignment with objectives. The graphics and development aspects are balanced and validated with market evidence.",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "The design should be aligned with the core strategy, with evidence supporting its alignment. The primary defense strategy and puzzle types should be clarified, and progression direction should be integrated with enemy wave patterns.",
+      "departments": [
+        "Ensure that the design aligns with the ["
+      ]
+    },
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "The proposed changes align with the core strategy of the game – puzzle-solving and progression.  Specifically, integrating progression direction based on enemy wave patterns is crucial for engaging gameplay.  The seed data is vital for ensuring the game's core mechanics are consistently implemented.",
+      "departments": [
+        "keep"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "game-seed-market-evidence.json",
+      "departments": [
+        "keep"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "The 'SEED_MATERIAL_SELECTION_MODE' option is essential for the game's material selection process, ensuring a balanced and effective gameplay experience.",
+      "departments": [
+        "keep"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "graphics",
+      "departments": [
+        "keep"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 5,
+    "conflict": 0,
+    "hold": 0
+  }
+}

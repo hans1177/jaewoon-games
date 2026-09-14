@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-single-defense-str-the-serpent-s-gambit",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game-seed-market-evidence.json"
+        ],
+        "fix": [
+          "game-seed-platform-profiles.json"
+        ],
+        "add": [
+          "game-seed-market-evidence.json"
+        ],
+        "risks": [
+          "game-seed-market-evidence.json"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "game-seed-market-evidence.json"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "SEED_MATERIAL_SELECTION_MODE"
+        ],
+        "fix": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "add": [
+          "SEED_MATERIAL_SELECTION_MODE"
+        ],
+        "risks": [
+          "SEED_MATERIAL_SELECTION_MODE"
+        ],
+        "evidence": [
+          "REFERENCE_INPUTS"
+        ],
+        "questions": [
+          "SEED_MATERIAL_SELECTION_MODE"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "development"
+        ],
+        "fix": [
+          "qa"
+        ],
+        "add": [
+          "balance"
+        ],
+        "risks": [
+          "GAME_SEED"
+        ],
+        "evidence": [
+          "REFERENCE_GAMES"
+        ],
+        "questions": [
+          "What is the primary defense strategy? (SINGLE_DEFENSE_STRATEGY)"
+        ]
+      }
+    }
+  ]
+}

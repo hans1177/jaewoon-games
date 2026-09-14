@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-single-defense-str-the-serpent-s-gambit",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "representativeModel": "qwen3:0.6b",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "Ensure that the design aligns with the core strategy of the game, focusing on the puzzle-solving and progression mechanics."
+    ],
+    "fix": [
+      "Clarify the primary defense strategy and the types of puzzles included in the game."
+    ],
+    "add": [
+      "Integrate the progression direction and visual direction based on enemy wave patterns."
+    ],
+    "risks": [
+      "Address any potential issues with the mobile UX design."
+    ],
+    "evidence": [
+      "Provide evidence that supports the design's alignment with the game's objectives."
+    ],
+    "questions": [
+      "What is the primary defense strategy? (SINGLE_DEFENSE_STRATEGY)"
+    ]
+  }
+}

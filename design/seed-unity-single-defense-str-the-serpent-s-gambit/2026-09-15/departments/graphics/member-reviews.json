@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-single-defense-str-the-serpent-s-gambit",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game-seed-market-evidence.json"
+        ],
+        "fix": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "add": [
+          "SEED_MATERIAL_SELECTION_REFERENCE_COUNT"
+        ],
+        "risks": [
+          "SEED_MATERIAL_SELECTION_REFERENCE_COUNT"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "What is the primary defense strategy? (SINGLE_DEFENSE_STRATEGY)"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed-platform-profiles.json"
+        ],
+        "fix": [
+          "game-seed-market-evidence.json"
+        ],
+        "add": [
+          "game-seed-market-evidence.json"
+        ],
+        "risks": [
+          "game-seed-market-evidence.json"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "game-seed-market-evidence.json"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "SEED_MATERIAL_SELECTION_MODE"
+        ],
+        "fix": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "add": [
+          "SEED_MATERIAL_SELECTION_MODE"
+        ],
+        "risks": [
+          "SEED_MATERIAL_SELECTION_MODE"
+        ],
+        "evidence": [
+          "REFERENCE_INPUTS"
+        ],
+        "questions": [
+          "SEED_MATERIAL_SELECTION_MODE"
+        ]
+      }
+    }
+  ]
+}

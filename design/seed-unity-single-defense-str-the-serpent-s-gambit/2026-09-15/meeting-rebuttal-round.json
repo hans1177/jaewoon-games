@@ -1,0 +1,89 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-single-defense-str-the-serpent-s-gambit",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "Ensure that the design aligns with the core strategy of the game, focusing on the puzzle-solving and progression mechanics.",
+        "Clarify the primary defense strategy and the types of puzzles included in the game.",
+        "Integrate the progression direction and visual direction based on enemy wave patterns."
+      ],
+      "challenge": [
+        "Address any potential issues with the mobile UX design.",
+        "Provide evidence that supports the design's alignment with the game's objectives."
+      ],
+      "revision": [
+        "Clarify the primary defense strategy and the types of puzzles included in the game.",
+        "Integrate the progression direction and visual direction based on enemy wave patterns."
+      ],
+      "reason": "The design should be aligned with the core strategy, with evidence supporting its alignment. The primary defense strategy and puzzle types should be clarified, and progression direction should be integrated with enemy wave patterns."
+    },
+    "graphics": {
+      "accept": [
+        "SEED_MATERIAL_SELECTION_REFERENCE_COUNT"
+      ],
+      "challenge": [
+        "fix",
+        "game-seed-platform-profiles.json",
+        "game-seed-market-evidence.json"
+      ],
+      "revision": [
+        "game-seed-market-evidence.json"
+      ],
+      "reason": "The proposed changes align with the core strategy of the game – puzzle-solving and progression.  Specifically, integrating progression direction based on enemy wave patterns is crucial for engaging gameplay.  The seed data is vital for ensuring the game's core mechanics are consistently implemented.  Addressing the game-seed-market-evidence.json is important for validating the proposed changes with the market."
+    },
+    "development": {
+      "accept": [
+        "game-seed-market-evidence.json"
+      ],
+      "challenge": [
+        "game-seed-market-evidence.json"
+      ],
+      "revision": [
+        "game-seed-market-evidence.json"
+      ],
+      "reason": "game-seed-market-evidence.json"
+    },
+    "qa": {
+      "accept": [
+        "SEED_MATERIAL_SELECTION_MODE"
+      ],
+      "challenge": [
+        "SEED_MATERIAL_SELECTION_SIGNALS"
+      ],
+      "revision": [
+        "SEED_MATERIAL_SELECTION_MODE"
+      ],
+      "reason": "The 'SEED_MATERIAL_SELECTION_MODE' option is essential for the game's material selection process, ensuring a balanced and effective gameplay experience."
+    },
+    "balance": {
+      "accept": [
+        "development",
+        "graphics",
+        "graphics"
+      ],
+      "challenge": [
+        "graphics",
+        "graphics",
+        "graphics"
+      ],
+      "revision": [
+        "graphics",
+        "graphics",
+        "graphics"
+      ],
+      "reason": "graphics"
+    }
+  }
+}
