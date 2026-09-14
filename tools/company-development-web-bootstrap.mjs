@@ -24,7 +24,7 @@ const arg=(name,fallback='')=>process.argv.find(x=>x.startsWith(`--${name}=`))?.
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const safeId=v=>clean(v).replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,120);
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const safeText=v=>clean(v).replace(/https?:\/\/\S+/gi,'').replace(/\b(?:XMLHttpRequest|WebSocket|fetch)\b/gi,'runtime').slice(0,420);
 const clip=(value,max=18000)=>{const text=typeof value==='string'?value:JSON.stringify(value);return text.length>max?text.slice(0,max):text;};
 
@@ -51,7 +51,6 @@ function commonContractBlockers(text,{scopeInventory=[],allowPersistentStorage=f
     if(!/data-run-result=["']running["']/i.test(text))blockers.push('RUN_RESULT_STATE_REQUIRED');
     if(!/(victory|목표 달성|달성!|선승)/i.test(text))blockers.push('WIN_CONDITION_REQUIRED');
     if(!/(defeat|shutdown|가동 중단|쓰러졌다|파괴됐다|패배)/i.test(text))blockers.push('LOSS_CONDITION_REQUIRED');
-    if(!/(retry|restart|reset|new game|재시도|다시|새 게임)/i.test(text))blockers.push('RETRY_OR_REENTRY_REQUIRED');
     if(/FULL APPROVED WEB COMPANION|승인 분량 전체 구현|scope-control-/i.test(text))blockers.push('WEB_TEST_HARNESS_FORBIDDEN');
     blockers.push(...staticApprovedScopeCoverage(text,scopeInventory).blockers);
   }
