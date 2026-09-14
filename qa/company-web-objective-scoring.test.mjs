@@ -29,9 +29,13 @@ test('objective scoring keeps quality, evidence confidence, stability and subjec
   assert.equal(result.subjectiveQuality.includedInAutomaticScore,false);
   assert.equal(result.axisAudit.pass,true);
   assert.equal(result.scoreCap,100);
+  assert.equal(result.measurementAudit.REPETITIVE_FATIGUE.status,'PASS');
+  assert.equal(result.measurementAudit.RECOVERABILITY.status,'PASS');
+  assert.equal(result.measurementAudit.DECISION_OUTCOME_QUALITY.status,'N/A');
+  assert.equal(result.measurementAudit.ECONOMY_HEALTH.status,'N/A');
 });
 
-test('weak critical axis caps total below homepage threshold instead of being averaged away',()=>{
+test('weak critical axis caps total below homepage threshold and becomes a canonical hard failure',()=>{
   const e=evidence();
   e.implementationMetrics.systemDependencyCount=1;
   const result=scoreWebStrictImplementation({category:'SIMULATOR_TYCOON_INCREMENTAL',evidence:e});
@@ -39,6 +43,7 @@ test('weak critical axis caps total below homepage threshold instead of being av
   assert.ok(result.axisAudit.commonMinimumFailures.includes('SYSTEM_CONNECTIVITY'));
   assert.equal(result.scoreCap,WEB_OBJECTIVE_SCORING_RULES.weakAxisScoreCap);
   assert.ok(result.totalScore<80,result.totalScore);
+  assert.ok(result.hardFailures.includes('REQUIRED_AXIS_MINIMUM'));
 });
 
 test('evidence confidence is not multiplied into game quality score',()=>{
@@ -46,6 +51,14 @@ test('evidence confidence is not multiplied into game quality score',()=>{
   const result=scoreWebStrictImplementation({category:'SIMULATOR_TYCOON_INCREMENTAL',evidence:e});
   assert.notEqual(result.totalScore,Math.round(result.rawScore*result.evidenceConfidence.score/100));
   assert.equal(result.totalScore,result.rawScore);
+});
+
+test('strategy evidence is only mandatory when genre or design marks it required',()=>{
+  const e=evidence();
+  e.runtimeFeatureEvidence.independentStrategyEvidence={required:true,pass:false};
+  const result=scoreWebStrictImplementation({category:'SIMULATOR_TYCOON_INCREMENTAL',evidence:e});
+  assert.equal(result.measurementAudit.DECISION_OUTCOME_QUALITY.applicable,true);
+  assert.equal(result.measurementAudit.DECISION_OUTCOME_QUALITY.status,'FAIL');
 });
 
 test('promotion blocks independently low confidence or regression stability',()=>{
