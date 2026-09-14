@@ -15,6 +15,7 @@ on:
       - 'tools/company-development-web-bootstrap.mjs'
       - 'tools/company-development-web-gameplay-validation.mjs'
       - 'tools/company-web-validation-evidence-contract.mjs'
+      - 'tools/company-web-real-game-score.mjs'
       - 'tools/company-design-artbook.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
       - 'tools/company-development-roblox-build-preflight.mjs'
@@ -74,6 +75,7 @@ jobs:
           node --check tools/company-development-web-bootstrap.mjs
           node --check tools/company-development-web-gameplay-validation.mjs
           node --check tools/company-web-validation-evidence-contract.mjs
+          node --check tools/company-web-real-game-score.mjs
           node --check tools/company-design-artbook.mjs
           node --check tools/design-only-promotion-sync.mjs
           node --test qa/company-development-web-runtime.test.mjs qa/company-web-validation-evidence-contract.test.mjs qa/company-development-validation-selected-platform.test.mjs qa/design-only-promotion-sync.test.mjs
@@ -129,7 +131,9 @@ jobs:
           console.log(`WEB_REQUIRED_QUEUE_COUNT=${rows.length}`);
           console.log(`WEB_REQUIRED_GAME_IDS=${rows.map(x=>x.gameId).join(',')}`);
           console.log('WEB_HOMEPAGE_THRESHOLD=80');
-          console.log('WEB_VALIDATION_SCHEMA_MINIMUM=10');
+          console.log('WEB_VALIDATION_SCHEMA_MINIMUM=12');
+          console.log('WEB_INITIAL_IMPLEMENTATION_UNIT=ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE');
+          console.log('WEB_FINAL_CONTENT_DEPTH_30=REQUIRED_FOR_HOMEPAGE_AND_PLATFORM');
           console.log('WEB_STALE_SOURCE_OR_BASELINE_REQUEUED=YES');
           console.log('WEB_FORMAL_IMPLEMENTATION_THRESHOLD=90');
           console.log('WEB_PARALLEL_TARGET=2');
@@ -159,12 +163,14 @@ jobs:
       - name: Fetch current company runtime
         run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
 
-      - name: Confirm deterministic Web compiler path
+      - name: Confirm Vibe2 primary Web developer path
         run: |
           set -euo pipefail
-          grep -q "MODEL_USED=NO" tools/company-development-web-bootstrap.mjs
+          grep -q "VIBE2_PRIMARY_DEVELOPER=YES" tools/company-development-web-bootstrap.mjs
+          grep -q "INITIAL_IMPLEMENTATION_UNIT" tools/company-development-web-bootstrap.mjs
           grep -q "PRE_WEB_ARTBOOK_REQUIRED=NO" tools/company-development-web-bootstrap.mjs
-          echo 'WEB_MODEL_SETUP=SKIPPED_UNUSED'
+          echo 'WEB_MODEL_SETUP=SELF_HOSTED_BOOTSTRAP'
+          echo 'WEB_INITIAL_IMPLEMENTATION=ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE'
           echo 'PRE_WEB_ARTBOOK_REQUIRED=NO'
           echo 'WEB_PAID_AI=NO'
           echo 'WEB_PAID_RUNNER=NO'
@@ -174,7 +180,7 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
-      - name: Build and validate one required Web companion
+      - name: Build or expand and validate one required real Web game
         env:
           GAME_ID: ${{ matrix.gameId }}
           GAME_NAME: ${{ matrix.gameName }}
@@ -213,6 +219,7 @@ jobs:
             materialize(item.designBaselineSource);
             const statusSource=item.designBaselineSource.replace(/design-revised\.json$/,'cycle-status.json');
             try{materialize(statusSource);}catch{}
+            try{materialize(`${String(item.webSourcePath).replace(/^\/+|\/+$/g,'')}/index.html`);console.log(`WEB_EXISTING_SOURCE_MATERIALIZED=${item.gameId}`);}catch{console.log(`WEB_EXISTING_SOURCE_MATERIALIZED=${item.gameId}:NO`);}
             const candidateId=`development-web-${item.gameId}-${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT}`;
             const candidatePath=`web-games/.autonomous-candidates/${candidateId}`;
             const workDir=path.join('/tmp/web-work',safe);
@@ -232,8 +239,11 @@ jobs:
             const report=JSON.parse(fs.readFileSync(gameplayEvidence,'utf8'));
             const strictScore=Number(report.webStrictScore??report.strictReview?.totalScore);
             const hardFailures=Array.isArray(report.strictReview?.hardFailures)?report.strictReview.hardFailures:[];
-            if(report.pass!==true||report.musicRuntime?.pass!==true||report.homepageTestEligible!==true||!Number.isFinite(strictScore)||strictScore<80||hardFailures.length)throw new Error('WEB_RUNTIME_OR_80_POINT_GATE_NOT_PASS');
-            const formalPass=report.formalImplementationPassed===true&&report.promotionRevalidation?.pass===true&&strictScore>=90&&hardFailures.length===0;
+            const playableCyclePass=report.playableCycle?.pass===true;
+            const finalDepthPass=report.contentDepth30?.pass===true;
+            if(report.pass!==true||report.musicRuntime?.pass!==true||!playableCyclePass||!Number.isFinite(strictScore)||strictScore<80||hardFailures.length)throw new Error('WEB_RUNTIME_PLAYABLE_CYCLE_OR_80_POINT_GATE_NOT_PASS');
+            const homepageEligible=report.homepageTestEligible===true&&finalDepthPass;
+            const formalPass=report.formalImplementationPassed===true&&report.promotionRevalidation?.pass===true&&finalDepthPass&&strictScore>=90&&hardFailures.length===0;
             const stableSource=`web-games/${item.gameId}`;
             report.candidateSourcePath=candidatePath;
             report.sourcePath=stableSource;
@@ -254,7 +264,7 @@ jobs:
               fs.mkdirSync(path.dirname(strictOut),{recursive:true});
               fs.copyFileSync(strictLocal,strictOut);
             }
-            const promotionBlocker=strictScore>=90?'web-90-independent-promotion-revalidation-required':'web-strict-score-below-formal-90';
+            const routingBlocker=!finalDepthPass?'web-final-content-depth-30-required':strictScore>=90?'web-90-independent-promotion-revalidation-required':'web-strict-score-below-formal-90';
             result={gameId:item.gameId,pass:true,update:{
               status:formalPass?'PENDING':'ACTIVE',
               currentStep:formalPass?'TARGET_PLATFORM_SOURCE_BIND':'WEB_STRICT_IMPROVEMENT',
@@ -266,14 +276,18 @@ jobs:
               strictImplementationVerdict:String(report.strictReview?.verdict||''),strictImplementationHardFailures:hardFailures,
               webValidationSchemaVersion:Number(report.validationSchemaVersion||report.version||0)||null,
               webSourceIndexSha256:report.sourceIndexSha256||null,webDesignBaselineSha256:report.designBaselineSha256||null,
+              webPlayableCyclePassed:playableCyclePass,webFinalContentDepth30Passed:finalDepthPass,
               webPromotionRevalidationPassed:report.promotionRevalidation?.pass===true,
-              homepageTestEligible:true,homepageTestCandidate:false,homepageTestScore:strictScore,homepageTestVerdict:'WAITING_ARTBOOK',
+              homepageTestEligible:homepageEligible,homepageTestCandidate:false,homepageTestScore:strictScore,homepageTestVerdict:homepageEligible?'WAITING_ARTBOOK':'WAITING_FINAL_CONTENT_DEPTH',
               formalImplementationPassed:formalPass,formalImplementationVerdict:formalPass?'PASS':'REVISE',
-              postPromotionArtbookRequired:false,postWebArtbookRequired:true,artbookTiming:'AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER',
+              postPromotionArtbookRequired:false,postWebArtbookRequired:homepageEligible,artbookTiming:'AFTER_WEB_STRICT_REVIEW_AND_FINAL_CONTENT_DEPTH_AT_80_OR_HIGHER',
               webValidationSourceRevision:process.env.GITHUB_SHA,
-              routingBlockers:formalPass?[]:[promotionBlocker],updatedAt:stamp,
+              routingBlockers:formalPass?[]:[routingBlocker],updatedAt:stamp,
             }};
             console.log(`WEB_GAMEPLAY_MUSIC_80_PASS=${item.gameId}:${strictScore}`);
+            console.log(`WEB_PLAYABLE_CYCLE=${playableCyclePass?'PASS':'FAIL'}`);
+            console.log(`WEB_FINAL_CONTENT_DEPTH_30=${finalDepthPass?'PASS':'WAITING'}`);
+            console.log(`WEB_HOMEPAGE_ELIGIBLE=${homepageEligible?'YES':'NO'}`);
             console.log(`WEB_VALIDATION_SCHEMA=${report.validationSchemaVersion||report.version||0}`);
             console.log(`WEB_PROMOTION_REVALIDATION=${report.promotionRevalidation?.pass===true?'PASS':'NO'}`);
             console.log(`FORMAL_IMPLEMENTATION_PASS=${formalPass?'YES':'NO'}`);
@@ -371,9 +385,11 @@ jobs:
           }
           let passCount=0,failCount=0;
           for(const result of results){const item=(queue.items||[]).find(x=>x.gameId===result.gameId);if(!item)throw new Error(`queue item missing: ${result.gameId}`);Object.assign(item,result.update);if(result.pass===true)passCount++;else failCount++;}
-          queue.webValidationPolicy='WEB_80_FOR_HOMEPAGE_90_PLUS_INDEPENDENT_REVALIDATION_FOR_PLATFORM';
-          queue.webValidationContractVersion=4;
-          queue.webValidationEvidenceSchemaMinimum=10;
+          queue.webValidationPolicy='REAL_PLAYABLE_CYCLE_THEN_FINAL_CONTENT_DEPTH_30;WEB_80_FOR_HOMEPAGE;90_PLUS_INDEPENDENT_REVALIDATION_FOR_PLATFORM';
+          queue.webValidationContractVersion=5;
+          queue.webValidationEvidenceSchemaMinimum=12;
+          queue.webInitialImplementationUnit='ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE';
+          queue.webFinalContentDepthMinutes=30;
           queue.webPromotionRevalidationRequired=true;
           queue.webValidationParallelism=2;
           queue.updatedAt=new Date().toISOString();
@@ -385,7 +401,7 @@ jobs:
           git add development-queue.json web-games/ design/ game-seed-state.json 2>/dev/null || git add development-queue.json web-games/ design/
           git diff --cached --check
           if ! git diff --cached --quiet; then
-            git commit -m 'runtime: persist fresh Web validation evidence [skip ci]'
+            git commit -m 'runtime: persist real Web gameplay and content-depth evidence [skip ci]'
             git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
           fi
           echo 'WEB_RUNTIME_PERSIST=PASS'
@@ -430,7 +446,7 @@ jobs:
           for(const item of q.items||[]){
             const score=Number(item.webStrictScore??item.strictImplementationScore);
             const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
-            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED'||!item.webValidationPassedAt||item.musicValidationPassed!==true||item.homepageTestEligible!==true||!Number.isFinite(score)||score<80||hard.length)continue;
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED'||!item.webValidationPassedAt||item.musicValidationPassed!==true||item.homepageTestEligible!==true||item.webPlayableCyclePassed!==true||item.webFinalContentDepth30Passed!==true||!Number.isFinite(score)||score<80||hard.length)continue;
             const artbookSource=item.artbookSource||`artbook-submissions/${item.gameId}/current.json`;
             const artbook=exists(artbookSource)?showJson(artbookSource):null;
             const fresh=artbook?.postWebStrictReview===true&&Number(artbook.webStrictScore)===score&&String(artbook.webValidationEvidencePath||'')===String(item.webValidationEvidencePath||'');
@@ -475,9 +491,9 @@ jobs:
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));const stamp=new Date().toISOString();
           for(const r of results){
             const item=(queue.items||[]).find(x=>x.gameId===r.gameId);const game=(catalog.games||[]).find(x=>x.id===r.gameId);if(!item)continue;
-            item.artbookTiming='AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER';item.postPromotionArtbookRequired=false;item.postWebArtbookRequired=true;item.homepageTestCandidate=r.success;item.homepageTestScore=r.score;item.homepageTestVerdict=r.success?'PASS':'WAITING_ARTBOOK';item.postWebArtbookPassed=r.success;item.artbookLastAttemptAt=stamp;
+            item.artbookTiming='AFTER_WEB_STRICT_REVIEW_AND_FINAL_CONTENT_DEPTH_AT_80_OR_HIGHER';item.postPromotionArtbookRequired=false;item.postWebArtbookRequired=true;item.homepageTestCandidate=r.success;item.homepageTestScore=r.score;item.homepageTestVerdict=r.success?'PASS':'WAITING_ARTBOOK';item.postWebArtbookPassed=r.success;item.artbookLastAttemptAt=stamp;
             if(r.success){item.postWebArtbookGeneratedAt=stamp;item.artbookFailure=null;}else item.artbookFailure=r.error||'ARTBOOK_GENERATION_DEFERRED';
-            if(game){game.homepageOfficialCard=false;game.homepageTestCandidate=r.success;game.homepageTestScore=r.score;game.homepageReviewState=r.success?'TEST':'WAITING_POST_WEB_ARTBOOK';game.homepageWebPlayable=true;game.webPath=`/${String(item.webSourcePath||`web-games/${r.gameId}`).replace(/^\/+|\/+$/g,'')}/`;if(r.success)game.homepageArtbookPath=`/artbook-viewer.html?game=${encodeURIComponent(r.gameId)}`;game.homepageStage=Number(item.webStrictScore??item.strictImplementationScore)>=90?'Web 90+ PASS · 플랫폼 개발 진행':'Web 80+ 테스트 · 90점 개선 대기';game.homepageRecentWork=`Web 강심사 ${r.score}점 · ${r.success?'아트북 완료':'아트북 대기'}`;}
+            if(game){game.homepageOfficialCard=false;game.homepageTestCandidate=r.success;game.homepageTestScore=r.score;game.homepageReviewState=r.success?'TEST':'WAITING_POST_WEB_ARTBOOK';game.homepageWebPlayable=true;game.webPath=`/${String(item.webSourcePath||`web-games/${r.gameId}`).replace(/^\/+|\/+$/g,'')}/`;if(r.success)game.homepageArtbookPath=`/artbook-viewer.html?game=${encodeURIComponent(r.gameId)}`;game.homepageStage=Number(item.webStrictScore??item.strictImplementationScore)>=90?'Web 90+ PASS · 플랫폼 개발 진행':'Web 80+ 테스트 · 90점 개선 대기';game.homepageRecentWork=`Web 강심사 ${r.score}점 · 실제 플레이/30분 콘텐츠 깊이 PASS · ${r.success?'아트북 완료':'아트북 대기'}`;}
             item.updatedAt=stamp;
           }
           queue.updatedAt=stamp;fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');fs.writeFileSync('game-catalog.json',JSON.stringify(catalog,null,2)+'\n');
@@ -508,6 +524,8 @@ jobs:
         if: always()
         run: |
           echo 'POST_WEB_ARTBOOK_MINIMUM_SCORE=80'
+          echo 'POST_WEB_ARTBOOK_REQUIRES_PLAYABLE_CYCLE=YES'
+          echo 'POST_WEB_ARTBOOK_REQUIRES_FINAL_CONTENT_DEPTH_30=YES'
           echo 'POST_WEB_ARTBOOK_FAILURE_NATIVE_BLOCK=NO'
 
   route:
@@ -578,7 +596,7 @@ jobs:
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
             const evidenceGate=promotionEvidence(item);
-            const formalPass=item.formalImplementationPassed===true&&String(item.formalImplementationVerdict||'').toUpperCase()==='PASS'&&Number(item.webStrictScore??item.strictImplementationScore)>=90&&hard.length===0&&evidenceGate.pass===true;
+            const formalPass=item.formalImplementationPassed===true&&item.webPlayableCyclePassed===true&&item.webFinalContentDepth30Passed===true&&String(item.formalImplementationVerdict||'').toUpperCase()==='PASS'&&Number(item.webStrictScore??item.strictImplementationScore)>=90&&hard.length===0&&evidenceGate.pass===true;
             if(!formalPass||!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true)){
               if(item.formalImplementationPassed===true&&!evidenceGate.pass){promotionRejected++;console.log(`WEB_PROMOTION_EVIDENCE_REJECTED=${item.gameId}:${(evidenceGate.blockers||[]).join('|')}`);}
               continue;
@@ -625,7 +643,9 @@ jobs:
           console.log(`DEVELOPMENT_ROUTE_PLATFORMS=${[...platforms].join(',')}`);
           console.log(`WEB_PROMOTION_EVIDENCE_REJECTED_COUNT=${promotionRejected}`);
           console.log('WEB_GAMEPLAY_MUSIC_GATE=ENFORCED');
-          console.log('WEB_VALIDATION_SCHEMA_MINIMUM=10');
+          console.log('WEB_VALIDATION_SCHEMA_MINIMUM=12');
+          console.log('WEB_PLAYABLE_CYCLE=REQUIRED');
+          console.log('WEB_FINAL_CONTENT_DEPTH_30=REQUIRED');
           console.log('WEB_INDEPENDENT_PROMOTION_REVALIDATION=REQUIRED');
           console.log('FORMAL_IMPLEMENTATION_GATE=90');
           console.log('CHANGE_DETECTION=PASS');
@@ -645,12 +665,14 @@ jobs:
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
           const updates=JSON.parse(fs.readFileSync('/tmp/development-route/updates.json','utf8'));
           for(const update of updates){const item=(queue.items||[]).find(x=>x.gameId===update.gameId);if(!item)throw new Error(`queue item missing: ${update.gameId}`);Object.assign(item,update);}
-          queue.routerContractVersion=4;
+          queue.routerContractVersion=5;
           queue.routerPolicy='COMPANY_FLOW.md';
           queue.webGateRequired=true;
           queue.homepageTestMinimum=80;
           queue.formalImplementationMinimum=90;
-          queue.webValidationEvidenceSchemaMinimum=10;
+          queue.webValidationEvidenceSchemaMinimum=12;
+          queue.webInitialImplementationUnit='ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE';
+          queue.webFinalContentDepthMinutes=30;
           queue.webPromotionRevalidationRequired=true;
           queue.cronRole='WATCHDOG_AND_RECOVERY_ONLY';
           queue.updatedAt=new Date().toISOString();
@@ -669,7 +691,9 @@ jobs:
         run: |
           echo 'DEVELOPMENT_PIPELINE=ONE_CANONICAL_PIPELINE'
           echo 'WEB_GAMEPLAY_MUSIC_GATE=REQUIRED'
-          echo 'WEB_VALIDATION_SCHEMA_MINIMUM=10'
+          echo 'WEB_VALIDATION_SCHEMA_MINIMUM=12'
+          echo 'WEB_PLAYABLE_CYCLE=REQUIRED'
+          echo 'WEB_FINAL_CONTENT_DEPTH_30=REQUIRED'
           echo 'WEB_STALE_EVIDENCE_REJECTED=YES'
           echo 'WEB_INDEPENDENT_PROMOTION_REVALIDATION=REQUIRED'
           echo 'HOMEPAGE_TEST_GATE=80'
