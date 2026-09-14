@@ -123,7 +123,26 @@ test('existing shared real game is preserved, inlined and rebound to approved sc
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
 
-test('unfinished genres fail closed instead of receiving the old generic game shell',()=>{
+test('unfinished deterministic genres fail closed instead of receiving the old generic game shell',()=>{
   const baseline={gameSeedId:'SEED-ROBLOX-SURVIVAL_HORROR_ESCAPE-001',content:{identity:'Last Lantern',coreFun:'survive and escape',coreLoop:['explore','avoid threat','escape'],mobileUx:'touch controls'}};
   assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-survival-horror-es-doors',gameName:'Last Lantern',baseline}),/GENRE_REAL_IMPLEMENTATION_NOT_READY:SURVIVAL_HORROR_ESCAPE/);
+});
+
+test('canonical Web bootstrap keeps Vibe2 as primary developer while deterministic fallbacks remain fail-closed',()=>{
+  const source=fs.readFileSync('tools/company-development-web-bootstrap.mjs','utf8');
+  assert.match(source,/VIBE2_PRIMARY_MODEL_IMPLEMENTATION/);
+  assert.match(source,/VIBE2_PRIMARY_DEVELOPER=YES/);
+  assert.match(source,/await ensureLocalVibeRuntime\(model\)/);
+  assert.match(source,/await buildVibePlayable\(/);
+  assert.match(source,/MODEL_USED='\+\(generation\.modelUsed\?'YES':'NO'\)/);
+  assert.match(source,/GENRE_REAL_IMPLEMENTATION_NOT_READY/);
+});
+
+test('legacy frozen implementation context may recover only from the exact canonical game and seed record',()=>{
+  const source=fs.readFileSync('tools/company-strict-production-review.mjs','utf8');
+  assert.match(source,/clean\(row\?\.gameId\)===gameId&&clean\(row\?\.seedId\)===seedId/);
+  assert.match(source,/historical\?\.GAME_CATEGORY/);
+  assert.match(source,/historical\?\.INITIAL_TARGET_PLATFORM/);
+  assert.match(source,/cycleSeedId!==seedId/);
+  assert.match(source,/FROZEN_DESIGN_BASELINE\+CANONICAL_SEED_RECORD/);
 });
