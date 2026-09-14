@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import './company-web-real-game-regression.test.mjs';
 import {
+  WEB_VALIDATION_SCHEMA_VERSION,
   WEB_COMMON_SCORE_WEIGHTS,
   WEB_CATEGORY_SCORE_WEIGHTS,
   evaluateWebValidationEvidence,
@@ -18,17 +19,18 @@ const metrics=(overrides={})=>({
   uniqueMechanicCount:7,
   uniqueFunctionalUiCount:6,
   gameplayActionCount:20,
+  stateVariableCount:9,
   meaningfulStateTransitionCount:12,
   uniqueGameplayStateCount:13,
   uniqueInteractedMechanicCount:5,
   systemDependencyCount:5,
-  worldOrEnemyEntityCount:3,
+  enemyOrWorldEntityCount:3,
   winPathCount:1,
   failPathCount:1,
   retryPathCount:1,
   duplicateActionRatio:0.25,
   testUiRatio:0,
-  gameplaySurfaceRatio:0.45,
+  gameplayScreenRatio:0.45,
   contentVariationCount:3,
   ...overrides,
 });
@@ -36,44 +38,56 @@ const metrics=(overrides={})=>({
 const baseEvidence=()=>{
   const implementationMetrics=metrics();
   return {
-    version:12,
-    validationSchemaVersion:12,
+    version:WEB_VALIDATION_SCHEMA_VERSION,
+    validationSchemaVersion:WEB_VALIDATION_SCHEMA_VERSION,
     pass:true,
     validated:true,
     target:'web',
+    gameplayInteractionPerformed:true,
     stateChanged:true,
+    stateChangeCount:12,
     runtimeSmokePassed:true,
     consoleErrors:[],
     pageErrors:[],
     failedRequests:[],
     badResponses:[],
     mobileViewport:{width:390,height:844,touch:true},
+    before:{scrollWidth:390,viewportWidth:390},
     after:{scrollWidth:390,viewportWidth:390},
     musicRuntime:{pass:true},
     approvedScopeFullyImplemented:true,
     scopeCoverage:{pass:true,mechanicBindings:['mine','smelt','sell','upgrade','auto']},
     interactionCount:20,
     initialImplementationMinuteHardGate:false,
+    initialImplementationUnit:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE',
     initialPlayableCycle:{pass:true,unit:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE',blockers:[]},
     initialPlayableCyclePassed:true,
     implementationMetrics,
     contentDepthValidation:{
+      mode:'FINAL_CONTENT_DEPTH_VALIDATION_ONLY',
+      validationMode:'REAL_ELAPSED_GAMEPLAY',
+      status:'COMPLETE',
       pass:true,
       targetMinutes:30,
       validatedMinutes:30,
-      validationMode:'REAL_GAMEPLAY_CONTENT_DEPTH',
+      actualGameplayMinutes:30,
+      elapsedRealMilliseconds:1800000,
+      realContent:true,
+      fakeProgress:false,
+      testHarness:false,
+      directStageClick:false,
       varietyEvents:['automation-unlocked','new-zone-unlocked','production-strategy-changed'],
       metrics:implementationMetrics,
     },
     sessionDepthMinutes:30,
-    sourceFootprint:{pass:true,totalBytes:16000,scriptBytes:8000,mechanicCount:7,cycleContract:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE',stageButtons:false,proxyMarkers:0},
+    sourceFootprint:{pass:true,implementationClass:'DEDICATED_REAL_GAME',totalBytes:16000,scriptBytes:8000,mechanicCount:7,cycleContract:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE',stageButtons:false,proxyMarkers:0,winPathCount:1,failPathCount:1,retryPathCount:1},
     substanceGate:{pass:true,implementationClass:'DEDICATED_REAL_GAME',totalBytes:16000,executableBytes:8000,mechanicCount:7,directSessionControls:0,proxyMarkers:0,initialImplementationUnit:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE'},
     webStrictScore:92,
     strictReview:{totalScore:92,hardFailures:[]},
     sourceIndexSha256:sha256Text('web'),
     designBaselineSha256:sha256Text('design'),
     formalImplementationPassed:true,
-    promotionRevalidation:{pass:true,independentRun:true,sourceHashMatch:true,baselineHashMatch:true,secondSubstancePass:true,secondContentDepthPass:true},
+    promotionRevalidation:{pass:true,independentRun:true,sourceHashMatch:true,baselineHashMatch:true,secondSubstancePass:true,secondContentDepthPass:true,secondTerminalReached:true},
   };
 };
 
@@ -96,11 +110,12 @@ test('real connected gameplay loop passes hard gates and receives common/categor
 
 test('test harness with 20 buttons cannot qualify as a real game',()=>{
   const evidence=baseEvidence();
-  evidence.implementationMetrics=metrics({uniqueFunctionalUiCount:1,systemDependencyCount:1,worldOrEnemyEntityCount:0,duplicateActionRatio:0.96,testUiRatio:0.75});
+  evidence.implementationMetrics=metrics({uniqueFunctionalUiCount:1,systemDependencyCount:1,enemyOrWorldEntityCount:0,duplicateActionRatio:0.96,testUiRatio:0.75});
   const buttons=Array.from({length:20},(_,index)=>`<button data-test-stage="${index}">score++</button>`).join('');
   const source=`<section>validation panel 0-5 5-15 15-25 25-30</section>${buttons}`;
   const result=scoreWebStrictImplementation({category:'SIMULATOR_TYCOON_INCREMENTAL',sourceText:source,evidence});
-  assert.ok(result.hardFailures.includes('REAL_PLAYABLE_GAME_REQUIRED'));
+  assert.ok(result.hardFailures.includes('REAL_PLAYABLE_GAME'));
+  assert.ok(result.hardFailures.includes('NO_TEST_PROXY'));
   assert.equal(result.harnessIndicators.testPanel,true);
   assert.equal(result.harnessIndicators.excessiveTestUi,true);
 });
@@ -117,7 +132,7 @@ test('many score++ controls backed by one function count as roughly one function
 test('category mismatch fails the hard gate regardless of numeric score',()=>{
   const result=scoreWebStrictImplementation({category:'BATTLEGROUND_FIGHTING_SHOOTER',sourceText:tycoonSource,evidence:baseEvidence()});
   assert.equal(result.categoryMatchPassed,false);
-  assert.ok(result.hardFailures.includes('CATEGORY_MATCH_REQUIRED'));
+  assert.ok(result.hardFailures.includes('CATEGORY_PROFILE_MATCH'));
 });
 
 test('complete initial cycle can be strict-reviewed before 30-minute content depth exists',()=>{
@@ -173,7 +188,7 @@ test('legacy schema10 or fake harness evidence cannot bypass the new contract',(
   const evidence=baseEvidence();
   evidence.version=10;evidence.validationSchemaVersion=10;
   evidence.initialPlayableCycle={pass:false,unit:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE'};
-  evidence.implementationMetrics=metrics({uniqueFunctionalUiCount:1,meaningfulStateTransitionCount:1,winPathCount:0,failPathCount:0,testUiRatio:1,duplicateActionRatio:1,gameplaySurfaceRatio:0});
+  evidence.implementationMetrics=metrics({uniqueFunctionalUiCount:1,meaningfulStateTransitionCount:1,winPathCount:0,failPathCount:0,testUiRatio:1,duplicateActionRatio:1,gameplayScreenRatio:0});
   evidence.substanceGate={pass:true,implementationClass:'DEDICATED',totalBytes:20000,executableBytes:12000,mechanicCount:20,directSessionControls:4,proxyMarkers:20};
   const result=evaluateWebValidationEvidence(evidence,{minimumScore:80});
   assert.equal(result.pass,false);
