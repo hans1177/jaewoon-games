@@ -6,6 +6,7 @@ import {
   buildVibePatchPlan,
   buildDependencyAnalysis,
   buildFailureDrivenRepairLoop,
+  buildRuntimeValidationPlan,
   buildVibeDevelopmentContext,
   clipPreservedSourceForModel,
 } from '../tools/company-vibe2-gameplay-intelligence.mjs';
@@ -41,17 +42,23 @@ test('source analysis records save, functions, dependencies, space and interacti
 function movePlayer(){ updateWorld(); }
 function updateWorld(){ return true; }
 function talkToSmith(){ updateWorld(); }
-localStorage.setItem('save-v4','x'); addEventListener('pointerdown',()=>{}); let collisionCount=0; const raycastHit=true;
+localStorage.getItem('save-v4'); localStorage.setItem('save-v4','x'); addEventListener('pointerdown',()=>{}); let collisionCount=0; const raycastHit=true; let gold=10; let wave=1; requestAnimationFrame(()=>{});
 </script></main>`;
   const analysis=analyzeExistingGameSource(html);
   assert.equal(analysis.present,true);
   assert.deepEqual(analysis.storageKeys,['save-v4']);
+  assert.deepEqual(analysis.storageReads,['save-v4']);
+  assert.deepEqual(analysis.storageWrites,['save-v4']);
   assert.ok(analysis.functions.includes('movePlayer'));
   assert.ok(analysis.functionDependencies.includes('movePlayer->updateWorld'));
   assert.ok(analysis.functionDependencies.includes('talkToSmith->updateWorld'));
   assert.equal(analysis.capabilities.threeDimensional,true);
   assert.equal(analysis.capabilities.interactions,true);
   assert.equal(analysis.capabilities.raycastOrPath,true);
+  assert.equal(analysis.capabilities.touchInput,true);
+  assert.equal(analysis.capabilities.economy,true);
+  assert.equal(analysis.capabilities.difficulty,true);
+  assert.equal(analysis.capabilities.frameLoop,true);
 });
 
 test('patch plan preserves working source and orders missing real gameplay work',()=>{
@@ -67,6 +74,9 @@ test('patch plan preserves working source and orders missing real gameplay work'
   assert.ok(ids.includes('IMPLEMENT_DIVERGENT_STRATEGY_RESULTS'));
   assert.ok(ids.some(x=>x.startsWith('FIX_ENTITY_INTERACTION_RESULT_REQUIRED')));
   assert.deepEqual(plan.preserve.storageKeys,['save-key']);
+  assert.ok(plan.verificationOrder.includes('LONG_GOAL_PLAY'));
+  assert.ok(plan.verificationOrder.includes('REPLAY_REGRESSION'));
+  assert.ok(plan.verificationOrder.includes('SAVE_RESTORE'));
 });
 
 test('dependency analysis and failure loop keep repairs targeted to responsible systems',()=>{
@@ -77,15 +87,43 @@ test('dependency analysis and failure loop keep repairs targeted to responsible 
     {id:'FIX_TOWER_PLACEMENT_RESULT_REQUIRED',dependsOn:[]},
   ]};
   const dependency=buildDependencyAnalysis({sourceAnalysis,patchPlan});
-  const repair=buildFailureDrivenRepairLoop({blockers:['TOWER_PLACEMENT_RESULT_REQUIRED','MOBILE_TOUCH_REQUIRED'],patchPlan});
+  const repair=buildFailureDrivenRepairLoop({blockers:['TOWER_PLACEMENT_RESULT_REQUIRED','MOBILE_TOUCH_REQUIRED','SAVE_RESTORE_FAILED','ECONOMY_FREE_LOOP','DIFFICULTY_SPIKE','PERFORMANCE_FRAME_STALL','REPLAY_SAME_SEED_MISMATCH'],patchPlan});
   assert.deepEqual(dependency.protectedSaveKeys,['save-v9']);
   assert.ok(dependency.sourceFunctionEdges.includes('placeTower->resolveWave'));
   assert.ok(dependency.patchTaskEdges.includes('IMPLEMENT_PLAYABLE_SPACE->IMPLEMENT_POSITIONAL_PLACEMENT'));
   assert.equal(repair.mode,'FAILURE_DRIVEN_TARGETED_REPAIR');
+  assert.equal(repair.version,2);
   assert.equal(repair.failures[0].type,'SPATIAL_GAMEPLAY');
   assert.equal(repair.failures[1].type,'MOBILE_RUNTIME');
+  assert.equal(repair.failures[2].type,'SAVE_REGRESSION');
+  assert.equal(repair.failures[3].type,'ECONOMY_BALANCE');
+  assert.equal(repair.failures[4].type,'DIFFICULTY_CURVE');
+  assert.equal(repair.failures[5].type,'PERFORMANCE_RUNTIME');
+  assert.equal(repair.failures[6].type,'REPLAY_REGRESSION');
   assert.ok(repair.repairTaskIds.includes('IMPLEMENT_POSITIONAL_PLACEMENT'));
   assert.ok(repair.retryContract.includes('RUN_REPLAY_REGRESSION'));
+  assert.ok(repair.retryContract.includes('VERIFY_SAVE_RESTORE'));
+  assert.ok(repair.retryContract.includes('VERIFY_SOFTLOCK_ECONOMY_DIFFICULTY_PERFORMANCE_MOBILE'));
+});
+
+test('runtime validation plan requires independent long-goal replay and safety evidence',()=>{
+  const gameplaySketch=deriveGameplaySketch({gameId:'g',genre:'SINGLE_DEFENSE_STRATEGY',baseline:{content:{}},inventory});
+  const sourceAnalysis=analyzeExistingGameSource(`<main><script>localStorage.getItem('save-v2');localStorage.setItem('save-v2','{}');let gold=10;requestAnimationFrame(()=>{});</script></main>`);
+  const plan=buildRuntimeValidationPlan({gameplaySketch,sourceAnalysis});
+  assert.equal(plan.mode,'INDEPENDENT_RUNTIME_EVIDENCE');
+  assert.equal(plan.longGoal.required,true);
+  assert.equal(plan.replayRegression.required,true);
+  assert.equal(plan.softlock.required,true);
+  assert.equal(plan.saveRestore.required,true);
+  assert.deepEqual(plan.saveRestore.protectedKeys,['save-v2']);
+  assert.deepEqual(plan.saveRestore.readKeys,['save-v2']);
+  assert.deepEqual(plan.saveRestore.writeKeys,['save-v2']);
+  assert.equal(plan.economy.required,true);
+  assert.equal(plan.difficulty.required,true);
+  assert.equal(plan.performance.required,true);
+  assert.equal(plan.mobile.required,true);
+  assert.equal(plan.strategyOutcomes.required,true);
+  assert.equal(plan.contentDepth.required,true);
 });
 
 test('long preserved source keeps both ends instead of silently losing tail systems',()=>{
@@ -101,14 +139,16 @@ test('Vibe bootstrap injects development context before coding',()=>{
   const existingHtml=`<main><script>function saveGame(){} localStorage.setItem('save-v5','1')</script></main>`;
   const context=buildVibeDevelopmentContext({gameId:'g',genre:'SINGLE_DEFENSE_STRATEGY',baseline,inventory,existingHtml,blockers:['RUNTIME_REWORK_REQUIRED:FINAL_CONTENT_DEPTH_REWORK_REQUIRED']});
   const prompt=buildApprovedScopeGenerationPrompt({gameId:'g',gameName:'Game',baseline,inventory,existingHtml,preservationBlockers:['RUNTIME_REWORK_REQUIRED:FINAL_CONTENT_DEPTH_REWORK_REQUIRED'],developmentContext:context});
-  assert.equal(context.version,2);
+  assert.equal(context.version,3);
   assert.match(prompt,/VIBE_DEVELOPMENT_CONTEXT:/);
   assert.match(prompt,/DERIVED_FROM_LOCKED_DESIGN_BASELINE/);
   assert.match(prompt,/PATCH_EXISTING_RESPONSIBLE_SYSTEMS/);
   assert.match(prompt,/FAILURE_DRIVEN_TARGETED_REPAIR/);
+  assert.match(prompt,/INDEPENDENT_RUNTIME_EVIDENCE/);
   assert.match(prompt,/PATCH_DEPENDENCIES_BEFORE_DEPENDENTS/);
   assert.match(prompt,/save-v5/);
   assert.match(prompt,/IMPLEMENT_POSITIONAL_PLACEMENT/);
   assert.match(prompt,/IMPLEMENT_DIVERGENT_STRATEGY_RESULTS/);
+  assert.match(prompt,/REPLAY_SAME_SEED_AND_INPUT_SEQUENCE/);
   assert.match(prompt,/EXISTING_HTML:/);
 });
