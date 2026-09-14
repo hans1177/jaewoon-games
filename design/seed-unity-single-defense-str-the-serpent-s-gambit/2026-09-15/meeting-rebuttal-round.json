@@ -15,75 +15,72 @@
   "rebuttals": {
     "planning": {
       "accept": [
-        "Ensure that the design aligns with the core strategy of the game, focusing on the puzzle-solving and progression mechanics.",
-        "Clarify the primary defense strategy and the types of puzzles included in the game.",
-        "Integrate the progression direction and visual direction based on enemy wave patterns."
+        "Ensure that the seed's core fun and core loop are aligned with the puzzle-solving mechanics and strategy elements.",
+        "Clarify the purpose of the seed and its reference games to ensure alignment with the intended gameplay.",
+        "Integrate the reference inputs and materials to ensure the seed's design is consistent with the provided materials."
       ],
       "challenge": [
-        "Address any potential issues with the mobile UX design.",
-        "Provide evidence that supports the design's alignment with the game's objectives."
+        "Validate the reference inputs and materials to ensure they are relevant and properly selected.",
+        "Ensure that the market evidence is relevant and supports the seed's design."
       ],
       "revision": [
-        "Clarify the primary defense strategy and the types of puzzles included in the game.",
-        "Integrate the progression direction and visual direction based on enemy wave patterns."
+        "Clarify the purpose of the seed and its reference games to ensure alignment with the intended gameplay.",
+        "Integrate the reference inputs and materials to ensure the seed's design is consistent with the provided materials."
       ],
-      "reason": "The design should be aligned with the core strategy, with evidence supporting its alignment. The primary defense strategy and puzzle types should be clarified, and progression direction should be integrated with enemy wave patterns."
+      "reason": "The seed's design should be aligned with the provided materials and the intended gameplay mechanics."
     },
     "graphics": {
       "accept": [
-        "SEED_MATERIAL_SELECTION_REFERENCE_COUNT"
+        "graphics"
       ],
       "challenge": [
-        "fix",
-        "game-seed-platform-profiles.json",
-        "game-seed-market-evidence.json"
+        "graphics"
       ],
       "revision": [
-        "game-seed-market-evidence.json"
+        "graphics"
       ],
-      "reason": "The proposed changes align with the core strategy of the game – puzzle-solving and progression.  Specifically, integrating progression direction based on enemy wave patterns is crucial for engaging gameplay.  The seed data is vital for ensuring the game's core mechanics are consistently implemented.  Addressing the game-seed-market-evidence.json is important for validating the proposed changes with the market."
+      "reason": "graphics is the most important aspect of this project."
     },
     "development": {
       "accept": [
-        "game-seed-market-evidence.json"
+        "keep",
+        "add",
+        "fix"
       ],
       "challenge": [
-        "game-seed-market-evidence.json"
+        "risks",
+        "evidence",
+        "questions"
       ],
       "revision": [
-        "game-seed-market-evidence.json"
+        "own",
+        "others"
       ],
-      "reason": "game-seed-market-evidence.json"
+      "reason": "own"
     },
     "qa": {
       "accept": [
-        "SEED_MATERIAL_SELECTION_MODE"
+        "qa"
       ],
       "challenge": [
-        "SEED_MATERIAL_SELECTION_SIGNALS"
+        "qa"
       ],
       "revision": [
-        "SEED_MATERIAL_SELECTION_MODE"
+        "qa"
       ],
-      "reason": "The 'SEED_MATERIAL_SELECTION_MODE' option is essential for the game's material selection process, ensuring a balanced and effective gameplay experience."
+      "reason": "QA 부서는 다양한 의견을 수용하고 수정하는 역할을 합니다. 다른 부서의 의견을 수용하고 수정하는 것은 부서의 책임범위를 벗어난 행동입니다. 따라서, 이는 QA 부서의 책임범위를 벗어난 행동입니다."
     },
     "balance": {
       "accept": [
-        "development",
-        "graphics",
-        "graphics"
+        "Balance"
       ],
       "challenge": [
-        "graphics",
-        "graphics",
-        "graphics"
+        "Ensure that the seed's core fun and core loop are aligned with the puzzle-solving mechanics and strategy elements."
       ],
       "revision": [
-        "graphics",
-        "graphics",
-        "graphics"
+        "Clarify the purpose of the seed and its reference games to ensure alignment with the intended gameplay."
       ],
-      "reason": "graphics"
+      "reason": "Validate the reference inputs and materials to ensure they are relevant and properly selected."
     }
   }
 }
