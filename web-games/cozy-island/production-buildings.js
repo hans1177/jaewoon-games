@@ -6,6 +6,8 @@ const PRODUCE_SECONDS = 5;
 const DELIVERY_SECONDS = 60;
 const FEED_SECONDS = 180;
 const FEED_COST = 10;
+const FACILITY_CAP = 25;
+const REBUILD_MULTIPLIER = 1.5;
 const LUMBER = { x: 245, y: 850, wood: 3, stone: 1, radius: 108 };
 const MINE = { x: 785, y: 965, wood: 2, stone: 3, radius: 108 };
 const FARM = { x1: 900, y1: 340, x2: 1180, y2: 555 };
@@ -41,6 +43,10 @@ function ensureProduction(progress) {
     assignedFeedTimer: Math.max(0, Number(source.assignedFeedTimer) || 0),
     bufferWood: Math.max(0, Math.floor(Number(source.bufferWood) || 0)),
     bufferStone: Math.max(0, Math.floor(Number(source.bufferStone) || 0)),
+    lumberProduced: Math.max(0, Math.min(FACILITY_CAP, Math.floor(Number(source.lumberProduced) || 0))),
+    mineProduced: Math.max(0, Math.min(FACILITY_CAP, Math.floor(Number(source.mineProduced) || 0))),
+    lumberRebuilds: Math.max(0, Math.floor(Number(source.lumberRebuilds) || 0)),
+    mineRebuilds: Math.max(0, Math.floor(Number(source.mineRebuilds) || 0)),
     legacyMigrated: Boolean(source.legacyMigrated)
   };
   progress.productionBuildings = production;
@@ -66,13 +72,13 @@ function ensureProduction(progress) {
 }
 
 function reconcileWorkers(progress) {
-  const production = ensureProduction(progress);
-  if (!production) return;
+  const p = ensureProduction(progress);
+  if (!p) return;
   let farm = workerNumber(progress.workers);
-  let assigned = production.lumberWorker + production.mineWorker;
+  let assigned = p.lumberWorker + p.mineWorker;
   if (assigned > WORKER_MAX) {
-    production.mineWorker = 0;
-    assigned = production.lumberWorker;
+    p.mineWorker = 0;
+    assigned = p.lumberWorker;
   }
   if (farm + assigned > WORKER_MAX) {
     farm = Math.max(0, WORKER_MAX - assigned);
@@ -117,6 +123,16 @@ function distance(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
+function buildCost(kind, p) {
+  const base = kind === 'lumber' ? LUMBER : MINE;
+  const rebuilds = kind === 'lumber' ? p.lumberRebuilds : p.mineRebuilds;
+  const factor = Math.pow(REBUILD_MULTIPLIER, rebuilds);
+  return {
+    wood: Math.ceil(base.wood * factor),
+    stone: Math.ceil(base.stone * factor)
+  };
+}
+
 function setupBuildButton() {
   if (document.querySelector('#productionBuildButton')) return;
   const button = document.createElement('button');
@@ -125,9 +141,8 @@ function setupBuildButton() {
   button.style.cssText = 'position:absolute;left:50%;bottom:205px;transform:translateX(-50%);z-index:9;border:0;border-radius:14px;padding:10px 14px;background:rgba(255,255,255,.95);box-shadow:0 4px 14px rgba(31,69,57,.22);font-weight:900;color:#25423a;display:none;touch-action:manipulation;';
   button.addEventListener('click', () => {
     if (!currentGame) return;
-    const kind = button.dataset.kind;
-    if (kind === 'lumber') buildLumberyard();
-    else if (kind === 'mine') buildMine();
+    if (button.dataset.kind === 'lumber') buildFacility('lumber');
+    else if (button.dataset.kind === 'mine') buildFacility('mine');
   });
   document.querySelector('#app')?.appendChild(button);
 }
@@ -147,45 +162,34 @@ function updateBuildButton() {
     button.dataset.kind = '';
     return;
   }
+  const cost = buildCost(kind, p);
   button.dataset.kind = kind;
   button.style.display = 'block';
   button.textContent = kind === 'lumber'
-    ? '🪓 벌목장 건설 · 나무3 돌1'
-    : '⛏️ 광산 건설 · 나무2 돌3';
+    ? `🪓 벌목장 ${p.lumberRebuilds ? '재설치' : '건설'} · 나무${cost.wood} 돌${cost.stone}`
+    : `⛏️ 광산 ${p.mineRebuilds ? '재설치' : '건설'} · 나무${cost.wood} 돌${cost.stone}`;
 }
 
-function buildLumberyard() {
+function buildFacility(kind) {
   const state = currentGame?.state;
   if (!state) return;
   const p = ensureProduction(state);
-  if (p.lumberBuilt) return;
-  if ((Number(state.inventory.wood) || 0) < LUMBER.wood || (Number(state.inventory.stone) || 0) < LUMBER.stone) {
-    toast('벌목장 재료 부족 · 나무3 돌1');
+  const builtKey = kind === 'lumber' ? 'lumberBuilt' : 'mineBuilt';
+  const producedKey = kind === 'lumber' ? 'lumberProduced' : 'mineProduced';
+  if (p[builtKey]) return;
+  const cost = buildCost(kind, p);
+  const inv = state.inventory;
+  if ((Number(inv.wood) || 0) < cost.wood || (Number(inv.stone) || 0) < cost.stone) {
+    toast(`${kind === 'lumber' ? '벌목장' : '광산'} 재료 부족 · 나무${cost.wood} 돌${cost.stone}`);
     return;
   }
-  state.inventory.wood -= LUMBER.wood;
-  state.inventory.stone -= LUMBER.stone;
-  p.lumberBuilt = true;
+  inv.wood -= cost.wood;
+  inv.stone -= cost.stone;
+  p[builtKey] = true;
+  p[producedKey] = 0;
   saveState(state);
   updateBuildButton();
-  toast('🪓 벌목장 완성 · 더블탭하면 노비 배치');
-}
-
-function buildMine() {
-  const state = currentGame?.state;
-  if (!state) return;
-  const p = ensureProduction(state);
-  if (p.mineBuilt) return;
-  if ((Number(state.inventory.wood) || 0) < MINE.wood || (Number(state.inventory.stone) || 0) < MINE.stone) {
-    toast('광산 재료 부족 · 나무2 돌3');
-    return;
-  }
-  state.inventory.wood -= MINE.wood;
-  state.inventory.stone -= MINE.stone;
-  p.mineBuilt = true;
-  saveState(state);
-  updateBuildButton();
-  toast('⛏️ 광산 완성 · 더블탭하면 노비 배치');
+  toast(`${kind === 'lumber' ? '🪓 벌목장' : '⛏️ 광산'} 완성 · 최대 ${FACILITY_CAP}개 생산`);
 }
 
 function assignWorker(kind) {
@@ -277,9 +281,8 @@ function feedAssignedWorkers(state, p) {
   let dead = 0;
   for (const key of ['lumberWorker', 'mineWorker']) {
     if (!p[key]) continue;
-    if ((Number(state.inventory.food) || 0) >= FEED_COST) {
-      state.inventory.food -= FEED_COST;
-    } else {
+    if ((Number(state.inventory.food) || 0) >= FEED_COST) state.inventory.food -= FEED_COST;
+    else {
       p[key] = 0;
       dead++;
     }
@@ -288,13 +291,56 @@ function feedAssignedWorkers(state, p) {
   if (dead > 0) toast(`⚠️ 식량 부족으로 작업장 노비 ${dead}명이 굶어 죽었어`);
 }
 
+function breakFacility(kind, state, p) {
+  const lumber = kind === 'lumber';
+  const builtKey = lumber ? 'lumberBuilt' : 'mineBuilt';
+  const workerKey = lumber ? 'lumberWorker' : 'mineWorker';
+  const timerKey = lumber ? 'lumberTimer' : 'mineTimer';
+  const playerTimerKey = lumber ? 'playerLumberTimer' : 'playerMineTimer';
+  const bufferKey = lumber ? 'bufferWood' : 'bufferStone';
+  const rebuildKey = lumber ? 'lumberRebuilds' : 'mineRebuilds';
+  const itemKey = lumber ? 'wood' : 'stone';
+  const buffered = Math.max(0, Math.floor(Number(p[bufferKey]) || 0));
+  if (buffered) {
+    state.inventory[itemKey] = (Number(state.inventory[itemKey]) || 0) + buffered;
+    p[bufferKey] = 0;
+  }
+  if (p[workerKey]) {
+    p[workerKey] = 0;
+    state.workers = Math.min(WORKER_MAX, workerNumber(state.workers) + 1);
+  }
+  p[builtKey] = false;
+  p[timerKey] = 0;
+  p[playerTimerKey] = 0;
+  p[rebuildKey] += 1;
+  const next = buildCost(kind, p);
+  toast(`${lumber ? '🪓 벌목장' : '⛏️ 광산'}이 ${FACILITY_CAP}개 생산 후 부서졌어 · 다음 비용 나무${next.wood} 돌${next.stone}`);
+}
+
+function addProduction(kind, state, p, destination) {
+  const lumber = kind === 'lumber';
+  const producedKey = lumber ? 'lumberProduced' : 'mineProduced';
+  const itemKey = lumber ? 'wood' : 'stone';
+  const bufferKey = lumber ? 'bufferWood' : 'bufferStone';
+  const builtKey = lumber ? 'lumberBuilt' : 'mineBuilt';
+  if (!p[builtKey]) return false;
+  if (p[producedKey] >= FACILITY_CAP) {
+    breakFacility(kind, state, p);
+    return false;
+  }
+  p[producedKey] += 1;
+  if (destination === 'buffer') p[bufferKey] += 1;
+  else state.inventory[itemKey] = (Number(state.inventory[itemKey]) || 0) + 1;
+  if (p[producedKey] >= FACILITY_CAP) breakFacility(kind, state, p);
+  return true;
+}
+
 function runProduction(dt) {
   if (!currentGame || document.hidden || activeRuntime?.paused) return;
   const state = currentGame.state;
   const p = ensureProduction(state);
   if (!p || !state.inventory) return;
 
-  // 예전 '농사 노비가 10초마다 나무+돌도 자동 채집' 규칙을 끈다.
   state.workerWorkTimer = 0;
   if (state.workerStorage) {
     state.workerStorage.wood = 0;
@@ -302,54 +348,50 @@ function runProduction(dt) {
   }
 
   const farmWorkers = workerNumber(state.workers);
-  const assigned = p.lumberWorker + p.mineWorker;
-  state.workerTotal = Math.min(WORKER_MAX, farmWorkers + assigned);
+  state.workerTotal = Math.min(WORKER_MAX, farmWorkers + p.lumberWorker + p.mineWorker);
+  let changed = false;
 
-  let produced = false;
   if (p.lumberBuilt) {
     if (p.lumberWorker) {
       p.lumberTimer += dt;
-      while (p.lumberTimer >= PRODUCE_SECONDS) {
+      while (p.lumberBuilt && p.lumberTimer >= PRODUCE_SECONDS) {
         p.lumberTimer -= PRODUCE_SECONDS;
-        p.bufferWood += 1;
-        produced = true;
+        changed = addProduction('lumber', state, p, 'buffer') || changed;
       }
       p.playerLumberTimer = 0;
     } else if (distance(currentGame.player, LUMBER) <= 92) {
       p.playerLumberTimer += dt;
-      while (p.playerLumberTimer >= PRODUCE_SECONDS) {
+      while (p.lumberBuilt && p.playerLumberTimer >= PRODUCE_SECONDS) {
         p.playerLumberTimer -= PRODUCE_SECONDS;
-        state.inventory.wood = (Number(state.inventory.wood) || 0) + 1;
-        produced = true;
-        toast('🪵 벌목장에서 직접 작업 · 나무 +1');
+        if (addProduction('lumber', state, p, 'inventory')) {
+          changed = true;
+          if (p.lumberBuilt) toast(`🪵 벌목장 직접 작업 · 나무 +1 · ${p.lumberProduced}/${FACILITY_CAP}`);
+        }
       }
-    } else {
-      p.playerLumberTimer = 0;
-    }
+    } else p.playerLumberTimer = 0;
   }
 
   if (p.mineBuilt) {
     if (p.mineWorker) {
       p.mineTimer += dt;
-      while (p.mineTimer >= PRODUCE_SECONDS) {
+      while (p.mineBuilt && p.mineTimer >= PRODUCE_SECONDS) {
         p.mineTimer -= PRODUCE_SECONDS;
-        p.bufferStone += 1;
-        produced = true;
+        changed = addProduction('mine', state, p, 'buffer') || changed;
       }
       p.playerMineTimer = 0;
     } else if (distance(currentGame.player, MINE) <= 92) {
       p.playerMineTimer += dt;
-      while (p.playerMineTimer >= PRODUCE_SECONDS) {
+      while (p.mineBuilt && p.playerMineTimer >= PRODUCE_SECONDS) {
         p.playerMineTimer -= PRODUCE_SECONDS;
-        state.inventory.stone = (Number(state.inventory.stone) || 0) + 1;
-        produced = true;
-        toast('🪨 광산에서 직접 작업 · 돌 +1');
+        if (addProduction('mine', state, p, 'inventory')) {
+          changed = true;
+          if (p.mineBuilt) toast(`🪨 광산 직접 작업 · 돌 +1 · ${p.mineProduced}/${FACILITY_CAP}`);
+        }
       }
-    } else {
-      p.playerMineTimer = 0;
-    }
+    } else p.playerMineTimer = 0;
   }
 
+  const assigned = p.lumberWorker + p.mineWorker;
   if (assigned > 0) {
     p.deliveryTimer += dt;
     p.assignedFeedTimer += dt;
@@ -362,7 +404,7 @@ function runProduction(dt) {
       p.bufferWood = 0;
       p.bufferStone = 0;
       if (wood + stone > 0) toast(`🧺 작업장 1분 지급 · 나무 ${wood} · 돌 ${stone}`);
-      produced = true;
+      changed = true;
     }
     if (p.assignedFeedTimer >= FEED_SECONDS) {
       p.assignedFeedTimer %= FEED_SECONDS;
@@ -374,7 +416,7 @@ function runProduction(dt) {
     p.assignedFeedTimer = 0;
   }
 
-  if (produced) saveState(state);
+  if (changed) saveState(state);
 }
 
 function productionTick() {
@@ -397,10 +439,9 @@ function patchPanels() {
 
   if (title === '가방') {
     for (const note of body.querySelectorAll('.panel-note')) {
-      if (note.textContent.includes('노비')) {
-        const next = note.textContent.replace(/노비\s+\d+\/3/, `노비 ${total}/3 (농사 ${workerNumber(state.workers)} · 벌목 ${p.lumberWorker} · 광산 ${p.mineWorker})`);
-        if (next !== note.textContent) note.textContent = next;
-      }
+      if (!note.textContent.includes('노비')) continue;
+      const next = note.textContent.replace(/노비\s+\d+\/3/, `노비 ${total}/3 (농사 ${workerNumber(state.workers)} · 벌목 ${p.lumberWorker} · 광산 ${p.mineWorker})`);
+      if (next !== note.textContent) note.textContent = next;
     }
   }
 
@@ -412,13 +453,12 @@ function patchPanels() {
       if (span) span.textContent = `🧑‍🌾 노비 구매 (${total}/${WORKER_MAX})`;
     }
     for (const card of body.querySelectorAll('.item-card')) {
-      if (card.textContent.includes('노비')) {
-        const span = card.querySelector('span');
-        if (span) span.textContent = `${total}명`;
-      }
+      if (!card.textContent.includes('노비')) continue;
+      const span = card.querySelector('span');
+      if (span) span.textContent = `${total}명`;
     }
     const firstNote = body.querySelector('.panel-note');
-    if (firstNote) firstNote.textContent = '농사 노비는 물주기·수확을 해. 벌목장/광산에 배치한 노비는 5초마다 자원을 모으고 1분마다 지급해.';
+    if (firstNote) firstNote.textContent = '농사 노비는 물주기·수확을 해. 벌목장/광산은 설치당 최대 25개를 생산하고 부서져.';
     let status = body.querySelector('[data-job-status]');
     if (!status) {
       status = document.createElement('p');
@@ -426,7 +466,7 @@ function patchPanels() {
       status.dataset.jobStatus = '1';
       body.appendChild(status);
     }
-    status.textContent = `작업 배치 · 농사 ${workerNumber(state.workers)}명 · 벌목 ${p.lumberWorker}명 · 광산 ${p.mineWorker}명 · 작업장 보관 나무 ${p.bufferWood} / 돌 ${p.bufferStone}`;
+    status.textContent = `배치 · 농사 ${workerNumber(state.workers)} · 벌목 ${p.lumberWorker} (${p.lumberProduced}/${FACILITY_CAP}) · 광산 ${p.mineWorker} (${p.mineProduced}/${FACILITY_CAP}) · 보관 나무 ${p.bufferWood} / 돌 ${p.bufferStone}`;
   }
 }
 
@@ -440,7 +480,7 @@ document.addEventListener('click', event => {
 }, true);
 
 const observer = new MutationObserver(patchPanels);
-observer.observe(document.documentElement, { subtree: true, childList: true, attributes: true });
+observer.observe(document.documentElement, { subtree: true, childList: true });
 
 const rendererProto = IslandRendererV3.prototype;
 const originalDraw = rendererProto.draw;
@@ -448,7 +488,6 @@ const originalDrawObjects = rendererProto.drawObjects;
 
 rendererProto.draw = function drawWithProduction(game) {
   currentGame = game;
-  activeRuntime = activeRuntime || null;
   reconcileWorkers(game.state);
   originalDraw.call(this, game);
   updateBuildButton();
@@ -469,6 +508,7 @@ rendererProto.drawObjects = function drawObjectsWithProduction(ctx, game) {
 };
 
 function drawLumberyard(ctx, p) {
+  const cost = buildCost('lumber', p);
   ctx.save();
   ctx.textAlign = 'center';
   if (!p.lumberBuilt) {
@@ -481,7 +521,7 @@ function drawLumberyard(ctx, p) {
     ctx.fillText('🪓', LUMBER.x, LUMBER.y + 8);
     ctx.fillStyle = '#315748';
     ctx.font = '700 11px system-ui';
-    ctx.fillText('벌목장 건설터 · 나무3 돌1', LUMBER.x, LUMBER.y + 58);
+    ctx.fillText(`벌목장 ${p.lumberRebuilds ? '재설치' : '건설'} · 나무${cost.wood} 돌${cost.stone}`, LUMBER.x, LUMBER.y + 58);
   } else {
     ctx.fillStyle = '#a97849';
     ctx.fillRect(LUMBER.x - 55, LUMBER.y - 32, 110, 70);
@@ -497,12 +537,13 @@ function drawLumberyard(ctx, p) {
     if (p.lumberWorker) ctx.fillText('🧑‍🌾', LUMBER.x + 48, LUMBER.y + 20);
     ctx.fillStyle = '#315748';
     ctx.font = '700 11px system-ui';
-    ctx.fillText(p.lumberWorker ? '벌목장 · 노비 작업중 · 5초 +1' : '벌목장 · 더블탭 노비 배치', LUMBER.x, LUMBER.y + 58);
+    ctx.fillText(`벌목장 ${p.lumberProduced}/${FACILITY_CAP} · ${p.lumberWorker ? '노비 작업중' : '더블탭 노비 배치'}`, LUMBER.x, LUMBER.y + 58);
   }
   ctx.restore();
 }
 
 function drawMine(ctx, p) {
+  const cost = buildCost('mine', p);
   ctx.save();
   ctx.textAlign = 'center';
   if (!p.mineBuilt) {
@@ -515,7 +556,7 @@ function drawMine(ctx, p) {
     ctx.fillText('⛏️', MINE.x, MINE.y + 8);
     ctx.fillStyle = '#315748';
     ctx.font = '700 11px system-ui';
-    ctx.fillText('광산 건설터 · 나무2 돌3', MINE.x, MINE.y + 58);
+    ctx.fillText(`광산 ${p.mineRebuilds ? '재설치' : '건설'} · 나무${cost.wood} 돌${cost.stone}`, MINE.x, MINE.y + 58);
   } else {
     ctx.fillStyle = '#77756f';
     ctx.beginPath();
@@ -533,7 +574,7 @@ function drawMine(ctx, p) {
     if (p.mineWorker) ctx.fillText('🧑‍🌾', MINE.x + 53, MINE.y + 20);
     ctx.fillStyle = '#315748';
     ctx.font = '700 11px system-ui';
-    ctx.fillText(p.mineWorker ? '광산 · 노비 작업중 · 5초 +1' : '광산 · 더블탭 노비 배치', MINE.x, MINE.y + 58);
+    ctx.fillText(`광산 ${p.mineProduced}/${FACILITY_CAP} · ${p.mineWorker ? '노비 작업중' : '더블탭 노비 배치'}`, MINE.x, MINE.y + 58);
   }
   ctx.restore();
 }
