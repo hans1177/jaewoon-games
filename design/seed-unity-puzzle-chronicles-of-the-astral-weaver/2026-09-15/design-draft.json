@@ -22,35 +22,30 @@
     "signatureSystems": [
       {
         "name": "Unity",
-        "purpose": "For game development and design",
+        "purpose": "Single-player mode",
         "playerChoice": "SINGLE"
       }
     ],
-    "progressionDirection": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기.",
-    "visualDirection": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기.",
-    "mobileUx": "Unity",
-    "marketTargetDirection": "Puzzle enthusiasts and casual gamers",
+    "progressionDirection": "30 minutes for initial session: 0-5 minutes for setup, 5-15 minutes for core loop, 15-25 minutes for progression, 25-30 minutes for progression.",
+    "visualDirection": "30 minutes for initial session: 0-5 minutes for setup, 5-15 minutes for core loop, 15-25 minutes for progression, 25-30 minutes for progression.",
+    "mobileUx": "Unity platform",
+    "marketTargetDirection": "Global, with secondary context",
     "steamExpansionDecision": "High",
-    "multiplayerExpansionDecision": "NOT_RECOMMENDED",
+    "multiplayerExpansionDecision": "Not recommended",
     "technicalAssumptions": [
       "Unity platform",
       "Single-player mode",
-      "Single-player design mode",
-      "Reinterpretation transformation mode"
+      "SINGLE"
     ],
     "validationQuestions": [
-      "What is the main focus of this game design?",
-      "How does it cater to the target audience?",
-      "What is the progression direction for gameplay?",
-      "What is the visual direction for gameplay?",
-      "What is the recommended expansion for the platform?"
+      "What is the core gameplay loop?",
+      "What is the progression direction?",
+      "What is the visual direction?"
     ],
     "openQuestions": [
-      "What is the core fun to learn?",
-      "What is the core loop for gameplay?",
-      "What is the persistence requirement?",
-      "What is the risk in the system?",
-      "What is the source code rule?"
+      "What is the core fun?",
+      "What is the core loop?",
+      "What is the progression direction?"
     ]
   }
 }

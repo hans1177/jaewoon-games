@@ -15,36 +15,6 @@
   "rebuttals": {
     "planning": {
       "accept": [
-        "game design and development",
-        "game development and design",
-        "game design and development"
-      ],
-      "challenge": [
-        "game development and design",
-        "game design and development",
-        "game design and development"
-      ],
-      "revision": [
-        "game design and development",
-        "game development and design",
-        "game design and development"
-      ],
-      "reason": "The main focus of the current plan is on the core aspects of game design and development, which aligns with the priorities of the team. The revisions aim to refine and enhance the approach to ensure consistency and accuracy in the evidence provided."
-    },
-    "graphics": {
-      "accept": [
-        "graphics"
-      ],
-      "challenge": [
-        "graphics"
-      ],
-      "revision": [
-        "graphics"
-      ],
-      "reason": "graphics is the most important aspect of the game and needs to be prioritized."
-    },
-    "development": {
-      "accept": [
         "keep",
         "fix",
         "add"
@@ -53,6 +23,35 @@
         "risks",
         "evidence",
         "questions"
+      ],
+      "revision": [
+        "graphics",
+        "development",
+        "qa"
+      ],
+      "reason": "The JSON object is already in a standard format. It contains the key-value pairs as specified, with each key representing a category and the values representing the specific elements within that category."
+    },
+    "graphics": {
+      "accept": [
+        "SEED_MATERIAL_SELECTION_SIGNALS",
+        "SEED_MATERIAL_SELECTION_MODE",
+        "REFERENCE_GAMES"
+      ],
+      "challenge": [
+        "TARGET_DESIGN_REFERENCE"
+      ],
+      "revision": [
+        "keep"
+      ],
+      "reason": "TARGET_DESIGN_REFERENCE is relevant to the game-seed and should be considered."
+    },
+    "development": {
+      "accept": [
+        "own"
+      ],
+      "challenge": [
+        "own",
+        "others"
       ],
       "revision": [
         "own",
@@ -71,21 +70,19 @@
       "revision": [
         "qa"
       ],
-      "reason": "QA 부서의 요구사항을 충족시키기 위한 수정"
+      "reason": "QA 부서의 의견을 수용합니다."
     },
     "balance": {
       "accept": [
-        "Unity platform",
-        "Single-player mode",
-        "Single-player design mode"
+        "Unity platform"
       ],
       "challenge": [
         "Unity platform"
       ],
       "revision": [
-        "game design and development"
+        "Unity platform"
       ],
-      "reason": "game design and development"
+      "reason": "Unity platform"
     }
   }
 }

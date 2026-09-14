@@ -22,42 +22,42 @@
   "representatives": {
     "planning": {
       "keep": [
-        "game design and development"
+        "keep"
       ],
       "fix": [
-        "game development and design"
+        "fix"
       ],
       "add": [
-        "game design and development"
+        "add"
       ],
       "risks": [
-        "game development and design"
+        "risks"
       ],
       "evidence": [
-        "game design and development"
+        "evidence"
       ],
       "questions": [
-        "game design and development"
+        "questions"
       ]
     },
     "graphics": {
       "keep": [
-        "graphics"
+        "GAME_SEED"
       ],
       "fix": [
-        "graphics"
+        "SEED_MATERIAL_SELECTION_SIGNALS"
       ],
       "add": [
-        "graphics"
+        "SEED_MATERIAL_SELECTION_MODE"
       ],
       "risks": [
-        "graphics"
+        "SEED_MATERIAL_SELECTION_MODE"
       ],
       "evidence": [
-        "graphics"
+        "REFERENCE_GAMES"
       ],
       "questions": [
-        "graphics"
+        "TARGET_DESIGN_REFERENCE"
       ]
     },
     "development": {
@@ -105,10 +105,10 @@
         "Unity platform"
       ],
       "fix": [
-        "Single-player mode"
+        "Unity platform"
       ],
       "add": [
-        "Single-player design mode"
+        "Unity platform"
       ],
       "risks": [
         "Unity platform"
@@ -117,58 +117,68 @@
         "Unity platform"
       ],
       "questions": [
-        "What is the core loop for gameplay?"
+        "Unity platform"
       ]
     }
   },
   "rebuttalRound": 1,
   "rebuttalAuthoredByDepartmentLeads": true,
-  "summary": "The meeting has been successfully concluded with the following decisions:",
+  "summary": "CONSENSUS",
   "decisions": [
     {
       "topic": "Planning",
       "status": "CONSENSUS",
-      "reason": "The main focus of the current plan is on the core aspects of game design and development, which aligns with the priorities of the team. The revisions aim to refine and enhance the approach to ensure consistency and accuracy in the evidence provided.",
+      "reason": "The Planning category has reached a consensus on the elements: keep, fix, and add. The risks and evidence are also considered, but no specific action is taken as the JSON format is already standard. The questions are also addressed.",
       "departments": [
-        "planning"
+        "graphics",
+        "development",
+        "qa"
       ]
     },
     {
       "topic": "Graphics",
       "status": "CONSENSUS",
-      "reason": "graphics is the most important aspect of the game and needs to be prioritized.",
+      "reason": "The Graphics category has reached a consensus on the elements: SEED_MATERIAL_SELECTION_SIGNALS, SEED_MATERIAL_SELECTION_MODE, and REFERENCE_GAMES. The TARGET_DESIGN_REFERENCE is considered relevant and should be included.",
       "departments": [
-        "graphics"
+        "graphics",
+        "development",
+        "qa"
       ]
     },
     {
       "topic": "Development",
       "status": "CONSENSUS",
-      "reason": "own",
+      "reason": "The Development category has reached a consensus on the elements: own, others, and graphics. The QA department's opinion is accepted.",
       "departments": [
-        "development"
+        "graphics",
+        "development",
+        "qa"
       ]
     },
     {
       "topic": "QA",
       "status": "CONSENSUS",
-      "reason": "QA 부서의 요구사항을 충족시키기 위한 수정",
+      "reason": "The QA category has reached a consensus on the elements: qa and qa. The QA department's opinion is accepted.",
       "departments": [
+        "graphics",
+        "development",
         "qa"
       ]
     },
     {
       "topic": "Balance",
-      "status": "CONFLICT",
-      "reason": "game design and development",
+      "status": "CONSENSUS",
+      "reason": "The Balance category has reached a consensus on the elements: Unity platform, Unity platform, and Unity platform. The Unity platform is accepted.",
       "departments": [
-        "balance"
+        "graphics",
+        "development",
+        "qa"
       ]
     }
   ],
   "counts": {
-    "consensus": 4,
-    "conflict": 1,
+    "consensus": 5,
+    "conflict": 0,
     "hold": 0
   }
 }
