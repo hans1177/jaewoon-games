@@ -141,6 +141,7 @@ assert.notEqual(sha256Text('same'),sha256Text('changed'));
 
 const bootstrap=read('tools/company-development-web-bootstrap.mjs');
 assert.match(bootstrap,/ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE/);
+assert.match(bootstrap,/SCRIPT_SRC_FORBIDDEN/,'canonical preserved-source bootstrap must keep external script src forbidden');
 assert.doesNotMatch(bootstrap,/const\s+SESSION_MINUTES\s*=\s*30/,'initial bootstrap must not restore a 30-minute requirement');
 assert.doesNotMatch(bootstrap,/data-session-minutes=\\?"30\\?"/,'initial generation prompt must not require session-minute metadata');
 
@@ -167,6 +168,8 @@ assert.match(shared,/C\.mode==='bug-defense'\?30:15/,'existing defense wave bala
 const celestial=read('web-games/seed-single-defense-strat-celestial-bastion/index.html');
 assert.match(celestial,/mode:'celestial-defense'/,'historical real game mode must be preserved');
 assert.match(celestial,/15개 전투 웨이브/,'historical real-game content must remain preserved');
-assert.match(celestial,/\/web-games\/_shared\/vibe2-final\.js/,'historical game must keep its existing shared real engine');
+assert.match(celestial,/data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE"/,'historical game must keep the preserved real engine after canonical inlining');
+assert.match(celestial,/const key='jg-final:'\+C\.id/,'historical game must keep the preserved shared-engine save identity');
+assert.doesNotMatch(celestial,/<script\b[^>]*src=/i,'published preserved game must not require the stale external shared-engine script path');
 
 console.log('COMPANY_WEB_REAL_GAME_REGRESSION=PASS');
