@@ -1,83 +1,154 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
-import {buildContractSafePlayable,validateBootstrapHtml} from '../tools/company-development-web-bootstrap.mjs';
-import {ensure30MinuteSessionContract,evaluateSessionContract,gameplayStateChanged} from '../tools/company-development-web-gameplay-validation.mjs';
+import {
+  WEB_VALIDATION_SCHEMA_VERSION,
+  finalContentDepthPass,
+  scoreWebStrictImplementation,
+} from '../tools/company-web-validation-evidence-contract.mjs';
 
-const baseline={
-  gameSeedId:'SEED-SINGLE_DEFENSE_STRATEGY-TEST',
-  content:{
-    identity:'Session Contract Test',
-    coreFun:'위협을 읽고 배치와 강화 선택으로 방어선을 유지한다.',
-    coreLoop:[
-      '첫 위협과 조작을 익히고 기본 방어를 배치한다.',
-      '보상으로 방어를 강화하고 다음 웨이브에 대응한다.',
-      '변형된 적과 압박에 맞춰 배치와 성장 선택을 바꾼다.'
-    ],
-    mobileUx:'Touch-first presentation'
+const read=file=>fs.readFileSync(file,'utf8');
+const metrics=(overrides={})=>({
+  uniqueMechanicCount:6,
+  uniqueFunctionalUiCount:5,
+  gameplayActionCount:20,
+  stateVariableCount:8,
+  meaningfulStateTransitionCount:14,
+  uniqueGameplayStateCount:12,
+  uniqueInteractedMechanicCount:5,
+  systemDependencyCount:5,
+  enemyOrWorldEntityCount:8,
+  winPathCount:1,
+  failPathCount:1,
+  retryPathCount:1,
+  duplicateActionRatio:0.1,
+  testUiRatio:0,
+  gameplayScreenRatio:0.4,
+  contentVariationCount:3,
+  ...overrides,
+});
+
+const initialEvidence=()=>({
+  version:WEB_VALIDATION_SCHEMA_VERSION,
+  validationSchemaVersion:WEB_VALIDATION_SCHEMA_VERSION,
+  target:'web',
+  pass:true,
+  validated:true,
+  gameplayInteractionPerformed:true,
+  interactionCount:20,
+  stateChanged:true,
+  stateChangeCount:14,
+  runtimeSmokePassed:true,
+  consoleErrors:[],pageErrors:[],failedRequests:[],badResponses:[],
+  mobileViewport:{width:390,height:844,touch:true},
+  before:{scrollWidth:390,viewportWidth:390},
+  after:{scrollWidth:390,viewportWidth:390},
+  initialImplementationUnit:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE',
+  initialPlayableCycle:{
+    unit:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE',pass:true,
+    startWorldEntry:true,realPlayerInput:true,coreGameplayAction:true,actualStateChange:true,
+    growthRewardOrMeaningfulChoice:true,riskFailureOrResourcePressure:true,goalOrCycleEnd:true,retryPath:true,
+  },
+  initialPlayableCyclePassed:true,
+  implementationMetrics:metrics(),
+  sourceFootprint:{
+    pass:true,implementationClass:'DEDICATED_REAL_GAME',totalBytes:18000,scriptBytes:9000,
+    mechanicCount:6,cycleContract:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE',proxyMarkers:0,stageButtons:false,
+    winPathCount:1,failPathCount:1,retryPathCount:1,
+  },
+  substanceGate:{
+    pass:true,implementationClass:'DEDICATED_REAL_GAME',totalBytes:18000,executableBytes:9000,
+    mechanicCount:6,directSessionControls:0,proxyMarkers:0,
+    initialImplementationUnit:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE',
+  },
+});
+
+const tycoonSource=`
+  production produce factory mine smelt sell income coin gold cost resource
+  upgrade level automation auto drone worker unlock zone area manual automatic choice
+  progression reward growth effect sound score feedback victory defeat retry
+`;
+
+test('initial Web contract is one complete playable cycle, not a 30-minute generation quota',()=>{
+  const flow=read('COMPANY_FLOW.md');
+  const bootstrap=read('tools/company-development-web-bootstrap.mjs');
+  const validator=read('tools/company-development-web-gameplay-validation.mjs');
+
+  assert.match(flow,/initialImplementationMinimumUnit: ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE/);
+  assert.match(flow,/thirtyMinuteRequirementStage: FINAL_CONTENT_DEPTH_VALIDATION_ONLY/);
+  assert.match(flow,/thirtyMinuteInitialGenerationHardGateForbidden: true/);
+
+  assert.match(bootstrap,/INITIAL_PLAYABLE_MINIMUM='ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE'/);
+  assert.match(bootstrap,/INITIAL_30_MINUTE_HARD_REQUIREMENT=NO/);
+  assert.match(bootstrap,/FINAL_CONTENT_DEPTH_MINUTES=30/);
+  assert.doesNotMatch(bootstrap,/const\s+SESSION_MINUTES\s*=\s*30/);
+  assert.doesNotMatch(bootstrap,/SESSION_MILESTONE_CONTRACT_REQUIRED/);
+
+  assert.match(validator,/validationStage='initial-cycle'/);
+  assert.match(validator,/validationStage==='final-content-depth'/);
+  assert.match(validator,/REAL_ELAPSED_GAMEPLAY/);
+  assert.doesNotMatch(validator,/ensure30MinuteSessionContract/);
+  assert.doesNotMatch(validator,/evaluateSessionContract/);
+});
+
+test('initial strict review can pass without final 30-minute content depth',()=>{
+  const evidence=initialEvidence();
+  const strict=scoreWebStrictImplementation({category:'SIMULATOR_TYCOON_INCREMENTAL',sourceText:tycoonSource,evidence});
+  assert.deepEqual(strict.hardFailures,[]);
+  assert.equal(strict.finalContentDepthRequiredHere,false);
+  assert.ok(strict.totalScore>=80,strict.totalScore);
+});
+
+test('final content depth requires real elapsed 30-minute gameplay and rejects stage-proxy proof',()=>{
+  const evidence=initialEvidence();
+  evidence.contentDepthValidation={
+    mode:'FINAL_CONTENT_DEPTH_VALIDATION_ONLY',
+    validationMode:'REAL_ELAPSED_GAMEPLAY',
+    status:'COMPLETE',
+    pass:true,
+    targetMinutes:30,
+    validatedMinutes:30,
+    actualGameplayMinutes:30,
+    elapsedRealMilliseconds:30*60*1000,
+    realContent:true,
+    fakeProgress:false,
+    testHarness:false,
+    directStageClick:false,
+    metrics:metrics(),
+    varietyEvents:['new-zone','new-enemy','upgrade-choice'],
+  };
+  assert.equal(finalContentDepthPass(evidence),true);
+
+  assert.equal(finalContentDepthPass({...evidence,contentDepthValidation:{...evidence.contentDepthValidation,elapsedRealMilliseconds:2*60*1000}}),false);
+  assert.equal(finalContentDepthPass({...evidence,contentDepthValidation:{...evidence.contentDepthValidation,fakeProgress:true}}),false);
+  assert.equal(finalContentDepthPass({...evidence,contentDepthValidation:{...evidence.contentDepthValidation,testHarness:true}}),false);
+  assert.equal(finalContentDepthPass({...evidence,contentDepthValidation:{...evidence.contentDepthValidation,directStageClick:true}}),false);
+});
+
+test('old four-window session metadata is not accepted as final depth evidence',()=>{
+  const evidence=initialEvidence();
+  evidence.sessionContract={
+    pass:true,stageGameplayPassed:true,stageCount:4,completedStages:4,validatedMinutes:30,
+    windows:[[0,5],[5,15],[15,25],[25,30]],
+    stageResults:[1,2,3,4].map((stage,index)=>({stage,start:[0,5,15,25][index],end:[5,15,25,30][index],clicked:true,completed:true,gameStateChanged:true})),
+  };
+  assert.equal(finalContentDepthPass(evidence),false);
+});
+
+test('development and QA agent prompts mirror the staged real-game policy',()=>{
+  const development=read('.github/agents/development.agent.md');
+  const qa=read('.github/agents/qa.agent.md');
+
+  for(const text of [development,qa]){
+    assert.match(text,/COMPANY_FLOW\.md/);
+    assert.match(text,/ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE/);
+    assert.match(text,/FINAL_CONTENT_DEPTH_VALIDATION_ONLY/);
+    assert.match(text,/REAL_ELAPSED_GAMEPLAY/);
+    assert.match(text,/Top30/);
+    assert.doesNotMatch(text,/현재 제작 정책은[^\n]*ARTBOOK FIRST/);
   }
-};
 
-const stages=(complete=false)=>[
-  {stage:1,start:0,end:5,complete,text:'0–5분 도입 조작과 첫 목표'},
-  {stage:2,start:5,end:15,complete,text:'5–15분 핵심 루프 반복과 성장'},
-  {stage:3,start:15,end:25,complete,text:'15–25분 난도 상승과 변형'},
-  {stage:4,start:25,end:30,complete,text:'25–30분 클라이맥스와 보상'}
-];
-
-test('generated Web companion contains one real 30-minute four-stage session contract',()=>{
-  const result=buildContractSafePlayable({gameId:'session-contract-test',gameName:'Session Contract Test',baseline});
-  assert.match(result.html,/data-session-minutes="30"/);
-  const expected=[[1,0,5],[2,5,15],[3,15,25],[4,25,30]];
-  for(const [stage,start,end] of expected)assert.match(result.html,new RegExp(`data-session-stage="${stage}" data-session-start="${start}" data-session-end="${end}"`));
-  assert.equal(result.sessionMinutes,30);
-  assert.equal(result.sessionPhases.length,4);
-  const review=validateBootstrapHtml(result.html,{scopeInventory:result.approvedScopeInventory});
-  assert.equal(review.pass,true,review.blockers.join(','));
-});
-
-test('runtime session normalizer is idempotent when bootstrap already generated the full contract',()=>{
-  const result=buildContractSafePlayable({gameId:'session-contract-test',gameName:'Session Contract Test',baseline});
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-session-generated-'));
-  try{
-    const source=path.join(root,'web-games','candidate');
-    fs.mkdirSync(source,{recursive:true});
-    const index=path.join(source,'index.html');
-    fs.writeFileSync(index,result.html,'utf8');
-    const before=fs.readFileSync(index,'utf8');
-    const normalized=ensure30MinuteSessionContract({sourcePath:source});
-    const after=fs.readFileSync(index,'utf8');
-    assert.equal(normalized.mutated,false);
-    assert.equal(normalized.minutes,30);
-    assert.equal(normalized.stages,4);
-    assert.equal(after,before);
-    assert.equal((after.match(/data-session-stage="\d"/g)||[]).length,4);
-  } finally {fs.rmSync(root,{recursive:true,force:true});}
-});
-
-test('30-minute marker and completed stage metadata alone do not count as meaningful gameplay',()=>{
-  const before={sessionDepthMinutes:30,sessionStages:stages(false),sessionCurrentStage:0,sessionCompletedStages:0,dataState:[{tag:'DIV',text:'0',attrs:[['data-score','0']]}],canvases:[]};
-  const after={...before,sessionStages:stages(true),sessionCurrentStage:4,sessionCompletedStages:4};
-  const stageResults=stages(true).map(row=>({stage:row.stage,start:row.start,end:row.end,clicked:true,completed:true,gameStateChanged:false}));
-  const verdict=evaluateSessionContract(before,after,stageResults);
-  assert.equal(verdict.pass,false);
-  assert.equal(verdict.validatedMinutes,0);
-  assert.equal(verdict.stageGameplayPassed,false);
-});
-
-test('all four stages require independent observable game-state changes before 30 minutes is validated',()=>{
-  const before={sessionDepthMinutes:30,sessionStages:stages(false),sessionCurrentStage:0,sessionCompletedStages:0,dataState:[{tag:'DIV',text:'0',attrs:[['data-score','0']]}],canvases:[]};
-  const after={...before,sessionStages:stages(true),sessionCurrentStage:4,sessionCompletedStages:4,dataState:[{tag:'DIV',text:'30',attrs:[['data-score','30']]}]};
-  assert.equal(gameplayStateChanged(before,after),true);
-  const stageResults=stages(true).map(row=>({stage:row.stage,start:row.start,end:row.end,clicked:true,completed:true,gameStateChanged:true}));
-  const pass=evaluateSessionContract(before,after,stageResults);
-  assert.equal(pass.pass,true);
-  assert.equal(pass.validatedMinutes,30);
-  assert.equal(pass.stageGameplayPassed,true);
-  const partial=stageResults.map((row,index)=>index===3?{...row,gameStateChanged:false}:row);
-  const fail=evaluateSessionContract(before,after,partial);
-  assert.equal(fail.pass,false);
-  assert.equal(fail.validatedMinutes,25);
+  assert.doesNotMatch(development,/테스트베드\/밑그림.*만 만든다/);
+  assert.doesNotMatch(development,/최종 Web 게임을 만들지 않는다/);
+  assert.doesNotMatch(qa,/`web-games\/`는 읽기 전용/);
 });

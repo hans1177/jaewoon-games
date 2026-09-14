@@ -7,6 +7,8 @@ on:
       - 'company-directive.json'
       - 'company-learning/platform-release-roadmap.json'
       - 'AGENTS.md'
+      - '.github/agents/development.agent.md'
+      - '.github/agents/qa.agent.md'
       - 'tools/production-classification.mjs'
       - 'tools/design-only-promotion-sync.mjs'
       - 'tools/company-selected-platform-router.mjs'
@@ -43,6 +45,7 @@ on:
       - 'qa/company-web-validation-evidence-contract.test.mjs'
       - 'qa/company-web-real-game-regression.test.mjs'
       - 'qa/company-web-production-six-game-regression.test.mjs'
+      - 'qa/web-30-minute-session-contract.test.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
@@ -58,6 +61,8 @@ on:
       - 'company-directive.json'
       - 'company-learning/platform-release-roadmap.json'
       - 'AGENTS.md'
+      - '.github/agents/development.agent.md'
+      - '.github/agents/qa.agent.md'
       - 'tools/production-classification.mjs'
       - 'tools/design-only-promotion-sync.mjs'
       - 'tools/company-selected-platform-router.mjs'
@@ -94,6 +99,7 @@ on:
       - 'qa/company-web-validation-evidence-contract.test.mjs'
       - 'qa/company-web-real-game-regression.test.mjs'
       - 'qa/company-web-production-six-game-regression.test.mjs'
+      - 'qa/web-30-minute-session-contract.test.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
       - '.github/workflows/company-design-promotion-sync.yml'
       - '.github/workflows/company-development-confirmed-runtime.yml'
@@ -154,4 +160,5 @@ jobs:
             qa/company-web-independent-promotion-contract.test.mjs \
             qa/company-web-validation-evidence-contract.test.mjs \
             qa/company-web-real-game-regression.test.mjs \
-            qa/company-web-production-six-game-regression.test.mjs
+            qa/company-web-production-six-game-regression.test.mjs \
+            qa/web-30-minute-session-contract.test.mjs
