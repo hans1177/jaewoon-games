@@ -1,6 +1,6 @@
 {
   "version": 16,
-  "updatedAt": "2026-09-14T05:39:49.192Z",
+  "updatedAt": "2026-09-14T08:16:43.956Z",
   "policy": {
     "purpose": "현재 유지 중인 게임 아트북의 공개 인덱스. 실제 본문은 artbook-submissions 원본을 읽는다.",
     "sourceOfTruth": "artbook-submissions/<gameId>/<date>/artbook.json",
@@ -191,6 +191,20 @@
       "createdAt": "2026-09-11",
       "format": "core-strategy",
       "sourceFile": "artbook-submissions/seed-story-complete-rpg-chronicles-of-eldoria/current.json"
+    },
+    {
+      "id": "seed-single-defense-strat-celestial-bastion-test-current",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "gameName": "천상의 보루",
+      "edition": 1,
+      "status": "completed-artbook",
+      "published": true,
+      "homepageVisible": true,
+      "productionApproval": false,
+      "homepageTestCandidate": true,
+      "createdAt": "2026-09-11",
+      "format": "core-strategy",
+      "sourceFile": "artbook-submissions/seed-single-defense-strat-celestial-bastion/current.json"
     }
   ]
 }
