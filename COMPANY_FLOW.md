@@ -10,7 +10,7 @@ policy:
   evidenceFilesCannotCreatePolicy: true
   separatePolicyDocumentsForbidden: true
   machineContractsMayMirrorPolicyButCannotCreatePolicy: true
-  latestOwnerDirectiveRecordedAt: 2026-09-13
+  latestOwnerDirectiveRecordedAt: 2026-09-14
 
 priority:
   - OWNER_LATEST_DIRECT_INSTRUCTION
@@ -20,7 +20,7 @@ priority:
   - STATUS_AUDIT_BUILD_HEALTH_EVIDENCE
 
 ownerCurrentProductionContract:
-  recordedAt: 2026-09-13
+  recordedAt: 2026-09-14
   authority: OWNER_LATEST_DIRECT_INSTRUCTION
   supersedesConflictingLegacySchedulingAndSeedRulesBelow: true
   seedMaterials:
@@ -67,7 +67,27 @@ ownerCurrentProductionContract:
     multiplayerQaRequiresTwoOrMoreRealParticipantsWhenApplicable: true
     meaningfulLoopRequired: MEET_TO_COOPERATE_OR_COMPETE_TO_RESULT_TO_REWARD_OR_PROGRESSION
   firstSession:
-    meaningfulMinutesRequired: 30
+    initialImplementationMinimumUnit: ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE
+    initialImplementationTimeQuotaMinutes: null
+    meaningfulMinutesRequiredAtInitialGeneration: null
+    finalContentDepthMinutesRequired: 30
+    thirtyMinuteRequirementStage: FINAL_CONTENT_DEPTH_VALIDATION_ONLY
+    thirtyMinuteInitialGenerationHardGateForbidden: true
+    completePlayableCycleRequires:
+      - START_OR_WORLD_ENTRY
+      - REAL_PLAYER_INPUT
+      - CORE_GAMEPLAY_ACTION
+      - OBSERVABLE_WORLD_OR_SYSTEM_STATE_CHANGE
+      - PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE
+      - RISK_FAILURE_OR_RESOURCE_PRESSURE
+      - CYCLE_END_GOAL_OR_RETRY
+    existingRealGameMustBePreservedAndRevalidatedBeforeRegeneration: true
+    testHarnessOrValidationPanelAsGameplayForbidden: true
+    directTimeStageControlForbidden: true
+    fakeProgressForValidationForbidden: true
+    finalContentDepthAppliedOnlyAfterCompleteCycleAndContentExpansion: true
+    finalContentDepthMustComeFromGameplayProgression: true
+    finalContentDepthDirectMinuteButtonsForbidden: true
     phases:
       - MINUTE_0_TO_5_CONTROL_OBJECTIVE_WORLD_ENTRY
       - MINUTE_5_TO_15_CORE_LOOP_REPETITION_AND_FIRST_PROGRESSION_OR_CHOICE
@@ -114,6 +134,134 @@ ownerCurrentProductionContract:
       correctable: FIX_EXISTING_CANDIDATE_AND_REVALIDATE
       structural: REMOVE_TEST_CANDIDATE_AND_REBUILD_FROM_APPROVED_DESIGN
       automaticDropOnFirstFailureForbidden: true
+  webImplementationReview:
+    appliesTo: WEB_REAL_PLAYABLE_IMPLEMENTATION
+    supersedesGenericStrictReviewWeightsForWebImplementation: true
+    scoreScale: 100
+    hardGateBeforeScoring: true
+    hardGateFailureForbidsTop30AndPlatformDispatch: true
+    hardGates:
+      - REAL_PLAYABLE_GAME
+      - COMPLETE_PLAYABLE_GAMEPLAY_CYCLE
+      - REAL_PLAYER_INPUT
+      - REAL_GAMEPLAY_SURFACE
+      - MEANINGFUL_INTERCONNECTED_GAME_STATE
+      - REAL_GOAL_OR_WIN_AND_REAL_FAILURE_PATH
+      - NO_TEST_PROXY
+      - NO_FAKE_PROGRESS
+      - MOBILE_PLAYABLE
+      - RUNTIME_STABLE
+      - CATEGORY_PROFILE_MATCH
+    commonScoreMax: 60
+    categoryScoreMax: 40
+    commonWeights:
+      CORE_GAME_LOOP: 15
+      SYSTEM_CONNECTIVITY: 10
+      CONTROLS_AND_GAME_FEEL: 8
+      FUNCTIONAL_UI_UX: 7
+      PROGRESSION_GROWTH_REWARD: 7
+      RISK_FAILURE_RETRY: 5
+      GAMEPLAY_FEEDBACK: 4
+      STABILITY_PERFORMANCE: 4
+    categoryProfileMapping:
+      ACTION_SURVIVAL_ROGUELITE: SURVIVAL
+      SINGLE_DEFENSE_STRATEGY: TOWER_DEFENSE
+      PUZZLE: PUZZLE
+      CASUAL: DESIGN_DERIVED_PROFILE_REQUIRED
+      IDLE_GROWTH_RPG: RPG
+      STORY_COMPLETE_RPG: STORY_ADVENTURE
+      ROLEPLAY_LIFE_AVATAR: LIFE_ROLEPLAY
+      SIMULATOR_TYCOON_INCREMENTAL: TYCOON_SIMULATOR
+      BATTLEGROUND_FIGHTING_SHOOTER: BATTLE_SHOOTER
+      SURVIVAL_HORROR_ESCAPE: SURVIVAL
+      OBBY_PARTY_MINIGAME: OBBY_PLATFORMER
+      STORY_RPG_ADVENTURE_RPG: STORY_ADVENTURE
+    categoryProfiles:
+      SURVIVAL:
+        WORLD_AND_MOVEMENT: 8
+        RESOURCE_AND_GATHERING: 7
+        CRAFTING: 7
+        ENEMY_OR_THREAT: 7
+        SURVIVAL_PRESSURE: 6
+        EXPLORATION_VARIETY: 5
+      TOWER_DEFENSE:
+        PLACEMENT_AND_ROUTE: 8
+        ENEMY_WAVES: 7
+        TOWER_VARIETY: 7
+        UPGRADES: 6
+        ECONOMY: 6
+        STRATEGIC_CHOICE: 6
+      RPG:
+        COMBAT: 8
+        QUEST_AND_NPC: 7
+        EXPLORATION: 6
+        EQUIPMENT_AND_GROWTH: 7
+        ENEMY_AND_BOSS: 6
+        STORY_AND_WORLD_STATE: 6
+      TYCOON_SIMULATOR:
+        PRODUCTION_CHAIN: 9
+        UPGRADES: 7
+        AUTOMATION: 7
+        ECONOMY: 7
+        AREA_UNLOCK: 5
+        MANUAL_AUTOMATION_CHOICE: 5
+      PUZZLE:
+        PUZZLE_RULE: 9
+        REAL_SOLVABILITY: 7
+        DIFFICULTY_CURVE: 7
+        BOARD_STATE: 6
+        MECHANIC_VARIETY: 6
+        FEEDBACK: 5
+      OBBY_PLATFORMER:
+        MOVEMENT_FEEL: 9
+        LEVEL_DESIGN: 8
+        OBSTACLE_VARIETY: 7
+        FAILURE_AND_RETRY: 6
+        DIFFICULTY_CURVE: 6
+        CHECKPOINTS: 4
+      BATTLE_SHOOTER:
+        MOVEMENT: 7
+        ATTACK_AND_HIT: 8
+        ENEMY_AI: 7
+        SKILL_AND_COOLDOWN: 6
+        COMBAT_OBJECTIVE: 6
+        COMBAT_FEEDBACK: 6
+      STORY_ADVENTURE:
+        EXPLORATION: 7
+        QUEST: 7
+        NPC_AND_DIALOGUE: 6
+        EVENT_AND_STATE_CHANGE: 6
+        COMBAT_OR_PUZZLE: 6
+        BRANCH_OR_OBJECTIVE: 8
+      LIFE_ROLEPLAY:
+        WORLD_AND_SPACE: 7
+        INTERACTION: 7
+        NPC: 6
+        LIFE_ACTIVITIES: 7
+        CHARACTER_STATE: 6
+        FREEDOM_AND_CHOICE: 7
+    automatedSignals:
+      - UNIQUE_MECHANIC_COUNT
+      - UNIQUE_FUNCTIONAL_UI_COUNT
+      - GAMEPLAY_ACTION_COUNT
+      - STATE_VARIABLE_COUNT
+      - MEANINGFUL_STATE_TRANSITION_COUNT
+      - SYSTEM_DEPENDENCY_COUNT
+      - ENEMY_OR_WORLD_ENTITY_COUNT
+      - WIN_PATH_COUNT
+      - FAIL_PATH_COUNT
+      - GAMEPLAY_SCREEN_RATIO
+      - DUPLICATE_ACTION_RATIO
+      - TEST_UI_RATIO
+    rawUiCountAuxiliaryOnly: true
+    equivalentButtonsChangingSameStateCountAsOneFunctionalUi: true
+    testAndValidationUiExcludedFromFunctionalUiCount: true
+    repeatedActionPaddingDoesNotIncreaseMechanicOrUiScore: true
+    categoryInferenceMismatchIsHardGate: true
+    initialImplementationScoreMustNotRequireThirtyMinuteDepth: true
+    finalThirtyMinuteContentDepthIsSeparateGate: true
+    homepageTop30RequiresFinalThirtyMinuteContentDepthPass: true
+    platform90DispatchKeepsIndependentWebRevalidationRequirement: true
   artbookLifecycle:
     designOnlyArtbookForbidden: true
     preWebArtbookForbidden: true
@@ -130,6 +278,7 @@ ownerCurrentProductionContract:
     testCandidateMustBeClearlyMarkedNotPass: true
     webStrictScoreMinimum: 80
     hardGatesMustPass: true
+    finalThirtyMinuteContentDepthPassRequired: true
     maxVisibleTestCandidates: 30
     ranking: STRICT_IMPLEMENTATION_SCORE_DESC
     artbookRequiredForHomepageRegistration: true
