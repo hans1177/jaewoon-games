@@ -75,9 +75,10 @@ function realPlacementInputExists(text){
 }
 function realEntityInteractionExists(text){
   const source=String(text??'');
-  const target=/(?:data-(?:interactable|interaction-target|npc|object-id|world-entity)|dataset\.(?:interactable|interactionTarget|npc|objectId|worldEntity))/i.test(source);
+  const explicitTarget=/(?:data-(?:interactable|interaction-target|npc|object-id)|dataset\.(?:interactable|interactionTarget|npc|objectId))/i.test(source);
+  const explicitlyInteractableWorldEntity=/<[a-z0-9-]+\b(?=[^>]*\bdata-world-entity\b)(?=[^>]*\bdata-interactable\b)[^>]*>/i.test(source);
   const action=/(?:interact|talk|pickup|open|activate|use|상호작용|대화|줍|열기|작동)/i.test(source)&&/(?:addEventListener|onclick|pointerdown|keydown|touchstart)/i.test(source);
-  return target&&action;
+  return (explicitTarget||explicitlyInteractableWorldEntity)&&action;
 }
 function realSpatialStateExists(text){
   const source=String(text??'');
