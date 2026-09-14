@@ -53,7 +53,7 @@ test('scope classifier remains available for design inspection',()=>{
   assert.equal(classifyApprovedScope({path:'progression',label:'upgrade level'},0),'PROGRESSION');
 });
 
-test('Pocket Foundry compiler emits a real factory loop, footprint and non-clickable session milestones',()=>{
+test('Pocket Foundry compiler emits a real factory loop and complete playable-cycle contract',()=>{
   const baseline={gameSeedId:'SEED-ROBLOX-SIMULATOR_TYCOON_INCREMENTAL-001',content:{identity:'Pocket Foundry',coreFun:'collect, upgrade, income, unlock',coreLoop:['collect ore and turn it into production resources','spend earnings on upgrades and automation','unlock a new area and repeat with larger goals'],mobileUx:'touch controls'}};
   const inventory=deriveApprovedScopeInventory(baseline);
   const compiled=buildContractSafePlayable({gameId:'seed-roblox-simulator-tycoon-i-adopt-me',gameName:'Pocket Foundry',baseline});
@@ -67,7 +67,7 @@ test('Pocket Foundry compiler emits a real factory loop, footprint and non-click
   assert.match(compiled.html,/data-mechanic-id="ore-smelting"/);
   assert.match(compiled.html,/data-mechanic-id="automation-drone"/);
   assert.match(compiled.html,/data-mechanic-id="zone-unlock"/);
-  assert.match(compiled.html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
+  assert.match(compiled.html,/data-play-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE"/);
   assert.doesNotMatch(compiled.html,/<button\b[^>]*data-session-stage=/i);
   assert.doesNotMatch(compiled.html,/scope-control-/i);
   assert.match(compiled.html,/state\.ore/);
@@ -94,7 +94,7 @@ test('Vector Clash compiler emits a real arena combat loop with ranges, dodge, s
   assert.match(compiled.html,/state\.skillCd/);
   assert.match(compiled.html,/state\.wins/);
   assert.match(compiled.html,/enemyPlan\(\)/);
-  assert.match(compiled.html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
+  assert.match(compiled.html,/data-play-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE"/);
   assert.doesNotMatch(compiled.html,/<button\b[^>]*data-session-stage=/i);
   assert.doesNotMatch(compiled.html,/scope-control-/i);
 });
@@ -114,7 +114,7 @@ test('existing shared real game is preserved, inlined and rebound to approved sc
     assert.equal(validatePreservedSourceHtml(html,{scopeInventory:inventory}).pass,true);
     assert.ok(Buffer.byteLength(html,'utf8')>=12000);
     assert.match(html,/localStorage/);
-    assert.match(html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
+    assert.match(html,/data-play-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE"/);
     assert.match(html,/data-audio-control="mute"/);
     assert.match(html,/data-audio-control="volume"/);
     assert.doesNotMatch(html,/src="\/web-games\/_shared\/vibe2-final\.js"/);
@@ -126,6 +126,28 @@ test('existing shared real game is preserved, inlined and rebound to approved sc
 test('unfinished deterministic genres fail closed instead of receiving the old generic game shell',()=>{
   const baseline={gameSeedId:'SEED-ROBLOX-SURVIVAL_HORROR_ESCAPE-001',content:{identity:'Last Lantern',coreFun:'survive and escape',coreLoop:['explore','avoid threat','escape'],mobileUx:'touch controls'}};
   assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-survival-horror-es-doors',gameName:'Last Lantern',baseline}),/GENRE_REAL_IMPLEMENTATION_NOT_READY:SURVIVAL_HORROR_ESCAPE/);
+});
+
+test('initial Web build uses a complete play cycle and defers 30-minute depth to final validation',()=>{
+  const source=fs.readFileSync('tools/company-development-web-bootstrap.mjs','utf8');
+  const policy=fs.readFileSync('COMPANY_FLOW.md','utf8');
+  assert.match(source,/INITIAL_IMPLEMENTATION_UNIT='ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE'/);
+  assert.match(source,/INITIAL_IMPLEMENTATION_MINUTE_HARD_GATE=NO/);
+  assert.match(source,/FINAL_CONTENT_DEPTH_TARGET_MINUTES/);
+  assert.match(policy,/minimumImplementationUnit: ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE/);
+  assert.match(policy,/initialImplementationMinuteHardGate: false/);
+  assert.match(policy,/final30MinuteContentDepthValidationMustPass: true/);
+});
+
+test('implementation strict review uses common 60 plus category 40 without changing the existing pipeline',()=>{
+  const source=fs.readFileSync('tools/company-strict-production-review.mjs','utf8');
+  assert.match(source,/implementationScoreComposition:'COMMON_60_PLUS_CATEGORY_40'/);
+  assert.match(source,/coreGameplayLoop:15/);
+  assert.match(source,/systemConnectivity:10/);
+  assert.match(source,/SURVIVAL:\{worldMovement:8/);
+  assert.match(source,/SIMULATOR_TYCOON:\{productionChain:9/);
+  assert.match(source,/BATTLE_SHOOTER:\{movement:7/);
+  assert.match(source,/categoryMismatchStopsScoring|CATEGORY_MISMATCH/);
 });
 
 test('canonical Web bootstrap keeps Vibe2 as primary developer while deterministic fallbacks remain fail-closed',()=>{
