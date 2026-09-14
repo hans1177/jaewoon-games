@@ -22,11 +22,10 @@ if(distinctLeadModels.length<ROLES.length)throw new Error(`DEPARTMENT_LEAD_GATE:
 for(const role of ROLES)if(!leadModels[role]||!pool.includes(leadModels[role]))throw new Error(`DEPARTMENT_LEAD_GATE: invalid ${role} lead`);
 function reviewModelsFor(role){const lead=leadModels[role];const start=Math.max(0,pool.indexOf(lead));const models=[lead];for(let i=1;models.length<reviewModelCount&&i<=pool.length*2;i++){const candidate=pool[(start+i)%pool.length];if(candidate&&!models.includes(candidate))models.push(candidate);}if(models.length<reviewModelCount)throw new Error(`${role} review model gate failed`);return models;}
 const departmentReviewModels=Object.fromEntries(ROLES.map(role=>[role,reviewModelsFor(role)]));
-const modelReviewRoles=Object.fromEntries(pool.map(model=>[model,ROLES.filter(role=>departmentReviewModels[role].includes(model))]));
-const activeReviewModels=pool.filter(model=>modelReviewRoles[model].length>0);
+const independentReviewTasks=Object.fromEntries(ROLES.flatMap(role=>departmentReviewModels[role].map(model=>{const key=`${role}::${model}`;return[key,{role,model}];})));
 const modelPhaseConcurrency=Math.max(1,Math.min(3,Number(process.env.COMPANY_MODEL_PHASE_CONCURRENCY||3)));
 const modelKeepAlive=clean(process.env.COMPANY_MODEL_KEEP_ALIVE||'2m');
-const modelCallTimeoutMs=Math.max(15000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||75000));
+const modelCallTimeoutMs=Math.min(75000,Math.max(15000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||75000)));
 
 const gameId=clean(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
 const date=clean(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||kstDate());
@@ -154,15 +153,15 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
   throw new Error(`MODEL_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
 }
 
-const designDraft=await runPhase('designer_draft',()=>callModel(designerModel,'너는 단일 Game Designer AI다. GAME_SEED를 설계 원점으로 사용하며 부서가 대신 초안을 작성하지 않는다. 유명 성공작의 구조는 오마주/재해석하되 보호되는 표현과 소스코드는 복제하지 않는다.',`DESIGN_ONLY 상세 설계 초안을 작성하라. GAME_SEED의 핵심 재미와 타겟 방향, Android 모바일 싱글 기본을 보존하라. 시장근거는 타겟 참고용이며 없는 수치를 발명하지 마라.\nEVIDENCE=${clip(evidence,17000)}`,DESIGN,{predict:1700,temperature:0.35}));
+const designDraft=await runPhase('designer_draft',()=>callModel(designerModel,'너는 단일 Game Designer AI다. GAME_SEED를 설계 원점으로 사용하며 부서가 대신 초안을 작성하지 않는다. 유명 성공작의 구조는 오마주/재해석하되 보호되는 표현과 소스코드는 복제하지 않는다.',`DESIGN_ONLY 상세 설계 초안을 작성하라. GAME_SEED의 핵심 재미와 타겟 방향, Android 모바일 싱글 기본을 보존하라. 시장근거는 타겟 참고용이며 없는 수치를 발명하지 마라.\nEVIDENCE=${clip(evidence,17000)}`,DESIGN,{predict:1300,temperature:0.35}));
 writeJson(path.join(base,'design-draft.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',authorModel:designerModel,singleAuthor:true,content:designDraft});
 
-const independentBatches=await runPhase('independent_department_reviews',()=>parallelObject(activeReviewModels,async model=>{
-  const roles=modelReviewRoles[model];
-  const predict=Math.max(900,Math.ceil(1400*roles.length/ROLES.length));
-  return callModel(model,`너는 독립 검토 모델이다. 같은 상세 설계를 지정된 전문부서 관점으로만 분리해 검토한다. 담당 부서는 ${roles.join(', ')} 이며 GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다.`,`지정된 담당 부서만 검토하라. 다른 부서 출력은 만들지 마라.\nASSIGNED_DEPARTMENTS=${roles.join(',')}\nGAME_SEED=${clip(seed,7000)}\nDESIGN=${clip(designDraft,13000)}`,reviewsSchemaFor(roles),{predict});
+const independentReviews=await runPhase('independent_department_reviews',()=>parallelObject(Object.keys(independentReviewTasks),async key=>{
+  const {role,model}=independentReviewTasks[key];
+  const result=await callModel(model,`너는 ${role} 부서 관점의 독립 검토 모델이다. 같은 상세 설계를 이 전문부서 관점으로만 검토하고 GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다.`,`지정된 ${role} 부서만 검토하라. 다른 부서 출력은 만들지 마라. 각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라.\nASSIGNED_DEPARTMENT=${role}\nGAME_SEED=${clip(seed,4500)}\nDESIGN=${clip(designDraft,9000)}`,reviewsSchemaFor([role]),{predict:420});
+  return result[role];
 }));
-const memberReviews=Object.fromEntries(ROLES.map(role=>[role,departmentReviewModels[role].map(model=>{const review=independentBatches[model]?.[role];if(!review)throw new Error(`DEPARTMENT_REVIEW_MISSING: ${role}:${model}`);return{model,memberRole:model===leadModels[role]?'LEAD':'ASSISTANT',review};})]));
+const memberReviews=Object.fromEntries(ROLES.map(role=>[role,departmentReviewModels[role].map(model=>{const review=independentReviews[`${role}::${model}`];if(!review)throw new Error(`DEPARTMENT_REVIEW_MISSING: ${role}:${model}`);return{model,memberRole:model===leadModels[role]?'LEAD':'ASSISTANT',review};})]));
 for(const role of ROLES){const models=uniq(memberReviews[role].map(x=>x.model));writeJson(path.join(base,'departments',role,'member-reviews.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',department:role,leadModel:leadModels[role],assistantModels:models.filter(m=>m!==leadModels[role]),models,reviews:memberReviews[role]});}
 
 const representatives=await runPhase('department_representatives',()=>parallelObject(ROLES,async role=>{
@@ -180,10 +179,10 @@ const meeting=await runPhase('cross_department_meeting',()=>callModel(coordinato
 const consensus=meeting.decisions.filter(x=>x.status==='CONSENSUS');const conflicts=meeting.decisions.filter(x=>x.status==='CONFLICT');const holds=meeting.decisions.filter(x=>x.status==='HOLD');
 writeJson(path.join(base,'department-meeting.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',coordinatorModel,departmentLeadModels:leadModels,distinctLeadModels,distinctLeadModelCount:distinctLeadModels.length,representatives,rebuttalRound:1,rebuttalAuthoredByDepartmentLeads:true,...meeting,counts:{consensus:consensus.length,conflict:conflicts.length,hold:holds.length}});
 
-const revisedDesign=await runPhase('designer_revision',()=>callModel(designerModel,'너는 초안을 작성한 동일 Game Designer AI다. CONSENSUS만 설계에 반영하고 CONFLICT/HOLD는 openQuestions에 남긴다. GAME_SEED의 정체성과 타겟 근거를 잃지 않는다.',`같은 설계자가 수정한다.\nGAME_SEED=${clip(seed,6500)}\nDRAFT=${clip(designDraft,12000)}\nCONSENSUS=${clip(consensus,6500)}\nCONFLICT=${clip(conflicts,3500)}\nHOLD=${clip(holds,3500)}`,DESIGN,{predict:1700,temperature:0.2}));
+const revisedDesign=await runPhase('designer_revision',()=>callModel(designerModel,'너는 초안을 작성한 동일 Game Designer AI다. CONSENSUS만 설계에 반영하고 CONFLICT/HOLD는 openQuestions에 남긴다. GAME_SEED의 정체성과 타겟 근거를 잃지 않는다.',`같은 설계자가 수정한다.\nGAME_SEED=${clip(seed,6500)}\nDRAFT=${clip(designDraft,12000)}\nCONSENSUS=${clip(consensus,6500)}\nCONFLICT=${clip(conflicts,3500)}\nHOLD=${clip(holds,3500)}`,DESIGN,{predict:1300,temperature:0.2}));
 writeJson(path.join(base,'design-revised.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,authorRole:'GAME_DESIGNER_AI',authorModel:designerModel,sameModelAsDraft:true,appliedConsensusCount:consensus.length,unresolvedConflictCount:conflicts.length,heldCount:holds.length,status:'DESIGN_BASELINE_CANDIDATE',content:revisedDesign});
 
-const fatalReviews=await runPhase('five_lead_fatal_review',()=>parallelObject(ROLES,role=>callModel(leadModels[role],`너는 ${role} 부서 Lead AI다. Game Designer 수정 이후 폐기 안전 재검토를 한다. 단순 불만·시장수치·수정가능 문제로 DISCARD를 선택하면 안 된다. DISCARD는 중앙정책의 fatalCriteria 중 수정 후에도 남은 치명 조건이 실제 설계 근거로 확인될 때만 가능하다.`,`수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라.\nVALID_FATAL_CRITERIA=${JSON.stringify(FATAL_CRITERIA)}\nGAME_SEED=${clip(seed,6000)}\nREVISED_DESIGN=${clip(revisedDesign,13000)}\nINITIAL_MEETING=${clip(meeting,5000)}`,FATAL_REVIEW,{predict:700,temperature:0.1})));
+const fatalReviews=await runPhase('five_lead_fatal_review',()=>parallelObject(ROLES,role=>callModel(leadModels[role],`너는 ${role} 부서 Lead AI다. Game Designer 수정 이후 폐기 안전 재검토를 한다. 단순 불만·시장수치·수정가능 문제로 DISCARD를 선택하면 안 된다. DISCARD는 중앙정책의 fatalCriteria 중 수정 후에도 남은 치명 조건이 실제 설계 근거로 확인될 때만 가능하다.`,`수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라.\nVALID_FATAL_CRITERIA=${JSON.stringify(FATAL_CRITERIA)}\nGAME_SEED=${clip(seed,6000)}\nREVISED_DESIGN=${clip(revisedDesign,13000)}\nINITIAL_MEETING=${clip(meeting,5000)}`,FATAL_REVIEW,{predict:450,temperature:0.1})));
 const discardVotes=ROLES.filter(role=>fatalReviews[role].recommendedState==='DISCARD');
 const commonFatal=FATAL_CRITERIA.filter(criterion=>ROLES.every(role=>(fatalReviews[role].fatalCriteria||[]).includes(criterion)));
 const unanimousFatalDiscard=discardVotes.length===ROLES.length&&commonFatal.length>0;

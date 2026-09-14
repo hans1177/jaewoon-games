@@ -54,6 +54,8 @@ test('central mirror preserves historical bootstrap while latest owner productio
   assert.match(flow,/preWebArtbookForbidden: true/);
   assert.match(flow,/createOnlyAfterWebStrictReview: true/);
   assert.match(flow,/blockingBudgetMinutes: 10/);
+  assert.match(flow,/singleModelCallTimeoutSeconds: 75/);
+  assert.match(flow,/designSchemaAttemptsMax: 2/);
   assert.equal(directive.productionThroughput.concurrentGameWipMax,6);
   assert.equal(directive.productionThroughput.webValidationParallelismControlledSeparately,true);
   assert.equal(directive.strictReview.designPassMinimum,80);
@@ -178,8 +180,15 @@ test('autonomous runtime remains on company-runtime caps WIP and bounds slow des
   assert.match(seedDesignWorkflow,/max-parallel: 6/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_MAX=6/);
   assert.match(seedDesignWorkflow,/timeout-minutes: 45/);
-  assert.match(seedDesignWorkflow,/COMPANY_MODEL_CALL_TIMEOUT_MS: '150000'/);
+  assert.match(seedDesignWorkflow,/COMPANY_MODEL_CALL_TIMEOUT_MS: '75000'/);
+  assert.match(design,/Math\.min\(75000,Math\.max\(15000,Number\(process\.env\.COMPANY_MODEL_CALL_TIMEOUT_MS\|\|75000\)\)\)/);
   assert.match(design,/AbortSignal\.timeout\(modelCallTimeoutMs\)/);
+  assert.match(design,/const independentReviewTasks=/);
+  assert.match(design,/reviewsSchemaFor\(\[role\]\)/);
+  assert.match(design,/\{predict:420\}/);
+  assert.match(design,/DESIGN,\{predict:1300/);
+  assert.match(design,/FATAL_REVIEW,\{predict:450/);
+  assert.doesNotMatch(design,/Math\.max\(900,Math\.ceil\(1400\*roles\.length\/ROLES\.length\)\)/);
 });
 
 test('DESIGN_ONLY requires seed same designer revision and repeated five-lead fatal review',()=>{
