@@ -76,7 +76,7 @@
       "enqueuedAt": "2026-09-11T08:20:07.333Z",
       "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "candidateBranch": "autonomous/candidate-seed-single-defense-strat-celestial-bastion-34608940401",
-      "updatedAt": "2026-09-14T09:29:49.826Z",
+      "updatedAt": "2026-09-14T15:32:36.473Z",
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
@@ -113,7 +113,32 @@
       "artbookLastAttemptAt": "2026-09-14T09:29:38.228Z",
       "artbookFailure": null,
       "webPromotionEvidenceFresh": true,
-      "postWebArtbookGeneratedAt": "2026-09-14T09:29:38.228Z"
+      "postWebArtbookGeneratedAt": "2026-09-14T09:29:38.228Z",
+      "unityProjectPath": "unity-games/seed-single-defense-strat-celestial-bastion",
+      "unityCandidateBranch": "development/unity-tech-seed-single-defense-strat-celestial-bastion-34694008000",
+      "unitySourceCommit": "14478c80754890f6950b79a1bf4c1f63094eb95b",
+      "unityBuildRunId": 34861225841,
+      "unityRuntimeSmokeRunId": null,
+      "unityIndependentQaRunId": null,
+      "unityRegressionRunId": null,
+      "executionEvidence": {
+        "version": 1,
+        "platform": "UNITY",
+        "sourceRevision": "14478c80754890f6950b79a1bf4c1f63094eb95b",
+        "sourceFingerprint": "85e5cc017d07d791db04b89fc78eef7e44871dff8fa97942447f9a316edbd6bb",
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:ef30bc979e7bfa5f6f4ef7835d07d58268e5af2b964bc3f4f7f117694a44b536",
+        "runtimePassed": false,
+        "independentQaPassed": false,
+        "regressionPassed": false,
+        "exactRevision": true,
+        "lastSuccessfulStage": "IMMUTABLE_ARTIFACT_BIND",
+        "failureStage": "TARGET_PLATFORM_RUNTIME",
+        "failureSignature": "121c30201e00f91a81c62501b4c7336c69d5da448424d4227edc60f33ee6bf7e"
+      },
+      "resumeStage": "TARGET_PLATFORM_RUNTIME",
+      "failureCount": 1,
+      "contractCanaryPassed": false
     },
     {
       "gameId": "seed-puzzle-chromatic-cascade",
@@ -1771,7 +1796,7 @@
       "webInitialCyclePassed": false
     }
   ],
-  "updatedAt": "2026-09-14T15:17:33.498Z",
+  "updatedAt": "2026-09-14T15:32:46.303Z",
   "routerContractVersion": 4,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -1785,5 +1810,6 @@
   "homepageTestMinimum": 80,
   "formalImplementationMinimum": 90,
   "webValidationEvidenceSchemaMinimum": 13,
-  "webPromotionRevalidationRequired": true
+  "webPromotionRevalidationRequired": true,
+  "developmentGameWipMax": 6
 }
