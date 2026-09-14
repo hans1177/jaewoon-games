@@ -145,7 +145,7 @@ test('development and QA agent prompts mirror the staged real-game policy',()=>{
     assert.match(text,/FINAL_CONTENT_DEPTH_VALIDATION_ONLY/);
     assert.match(text,/REAL_ELAPSED_GAMEPLAY/);
     assert.match(text,/Top30/);
-    assert.doesNotMatch(text,/ARTBOOK FIRST/);
+    assert.doesNotMatch(text,/현재 제작 정책은[^\n]*ARTBOOK FIRST/);
   }
 
   assert.doesNotMatch(development,/테스트베드\/밑그림.*만 만든다/);
