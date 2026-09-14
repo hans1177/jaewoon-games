@@ -10,7 +10,7 @@ policy:
   evidenceFilesCannotCreatePolicy: true
   separatePolicyDocumentsForbidden: true
   machineContractsMayMirrorPolicyButCannotCreatePolicy: true
-  latestOwnerDirectiveRecordedAt: 2026-09-14
+  latestOwnerDirectiveRecordedAt: 2026-09-15
 
 priority:
   - OWNER_LATEST_DIRECT_INSTRUCTION
@@ -20,7 +20,7 @@ priority:
   - STATUS_AUDIT_BUILD_HEALTH_EVIDENCE
 
 ownerCurrentProductionContract:
-  recordedAt: 2026-09-14
+  recordedAt: 2026-09-15
   authority: OWNER_LATEST_DIRECT_INSTRUCTION
   supersedesConflictingLegacySchedulingAndSeedRulesBelow: true
   seedMaterials:
@@ -161,6 +161,69 @@ ownerCurrentProductionContract:
       - MOBILE_PLAYABLE
       - RUNTIME_STABLE
       - CATEGORY_PROFILE_MATCH
+    objectiveScoring:
+      order:
+        - HARD_GATES
+        - OBJECTIVE_RUNTIME_OBSERVATIONS
+        - PREDECLARED_RULE_EVALUATION
+        - AXIS_SCORE
+        - REQUIRED_AXIS_MINIMUMS_AND_SCORE_CAP
+        - EVIDENCE_CONFIDENCE
+        - REGRESSION_STABILITY
+        - PROMOTION_DECISION
+      gameQualityScoreRemainsSeparate100PointScale: true
+      evidenceConfidenceSeparateFromGameQuality: true
+      regressionStabilitySeparateFromGameQuality: true
+      confidenceOrStabilityMultiplicationIntoGameQualityForbidden: true
+      subjectiveQualityExcludedFromAutomaticPromotionScore: true
+      subjectiveQualityReportedSeparately: true
+      runtimeOutcomeEvidenceRequiredForAutomaticGameplayScore: true
+      sourceKeywordDomLabelOrDeclaredFeatureAloneCannotGrantGameplayScore: true
+      sameBuildSeedInputShouldReproduceEquivalentScore: true
+      irrelevantGenreAxisStatus: N/A
+      strategyRequiredOnlyWhenGenreOrApprovedDesignRequiresIt: true
+      commonCriticalAxisMinimumPercent: 60
+      categoryAggregateMinimumPercent: 60
+      weakCriticalAxisCannotBeAveragedAway: true
+      weakCriticalAxisScoreCap: 79
+      weakCriticalAxisCreatesHardFailure: true
+      evidenceConfidenceMinimum:
+        HOMEPAGE_80_GATE: 70
+        PLATFORM_90_GATE: 85
+      regressionStabilityMinimum:
+        HOMEPAGE_80_GATE: 70
+        PLATFORM_90_GATE: 90
+      qualityBands:
+        EXCELLENT: 95_TO_100
+        STRONG: 90_TO_94
+        ACCEPTABLE: 80_TO_89
+        WEAK: 60_TO_79
+        BROKEN: 0_TO_59
+      measurements:
+        - CORE_LOOP_RUNTIME_OUTCOME
+        - SYSTEM_CONNECTIVITY_RUNTIME_OUTCOME
+        - CONTROLS_AND_INPUT_RUNTIME_OUTCOME
+        - PROGRESSION_AND_REWARD_RUNTIME_OUTCOME
+        - RISK_FAILURE_RETRY_RUNTIME_OUTCOME
+        - CONTENT_PACING_NOT_RAW_CONTENT_COUNT
+        - REPETITIVE_FATIGUE
+        - DECISION_OUTCOME_QUALITY
+        - FALSE_DIVERSITY
+        - ECONOMY_HEALTH_WHEN_APPLICABLE
+        - DIFFICULTY_CURVE_WHEN_APPLICABLE
+        - SAVE_RESTORE_WHEN_APPLICABLE
+        - RECOVERABILITY
+        - MOBILE_INPUT_QUALITY
+        - PEAK_RUNTIME_PERFORMANCE_WHEN_EVIDENCE_EXISTS
+        - EARLY_MID_LATE_CONTENT_COVERAGE_AT_FINAL_DEPTH
+        - REPEATED_REPAIR_FAILURE_WHEN_HISTORY_EXISTS
+      contentPacingRule: NEW_CONTENT_MUST_CHANGE_PLAY_NOT_ONLY_INCREASE_COUNT
+      repeatedActionsRestartAndRetryPaddingExcludedFromContentValue: true
+      falseDiversityRule: RENAMES_COLORS_OR_NUMERIC_ONLY_VARIANTS_WITHOUT_BEHAVIOR_DIFFERENCE_DO_NOT_COUNT_AS_DISTINCT
+      decisionQualityRule: CHOICE_VALUE_REQUIRES_OBSERVED_DIFFERENT_GAMEPLAY_OUTCOME
+      economyRule: EVALUATE_MEANINGFUL_RESOURCE_AND_PURCHASE_CHOICES_NOT_FIXED_CURRENCY_AMOUNT
+      difficultyRule: EVALUATE_CHALLENGE_GROWTH_RECOVERY_REWARD_AND_PLAYER_GROWTH_RELATION_NOT_MONOTONIC_INCREASE_ONLY
+      evidenceMissingForApplicableRequiredMeasurementCannotBeInvented: true
     commonScoreMax: 60
     categoryScoreMax: 40
     commonWeights:
