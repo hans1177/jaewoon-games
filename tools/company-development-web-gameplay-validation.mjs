@@ -13,6 +13,7 @@ const FORMAL_IMPLEMENTATION_THRESHOLD=90;
 const VALIDATION_SCHEMA_VERSION=13;
 const INITIAL_PLAYABLE_CYCLE='ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE';
 const FINAL_CONTENT_MINUTES=30;
+const FINAL_CONTENT_MAX_WALL_MINUTES=45;
 const MIN_SOURCE_BYTES=12000;
 const MIN_SCRIPT_BYTES=6000;
 const MIN_MECHANICS=5;
@@ -156,13 +157,29 @@ function choosePocketAction(view){
   const needCoins=target=>{if(coins>=target)return null;if(ingot>=1)return '#sellIngot';if(ore>=4)return '#smeltOre';return '#mineOre';};
   if(factory<2)return needCoins(15)||'#upgradeFactory';if(drones<1)return needCoins(15)||'#hireDrone';if(zone<2)return needCoins(20)||'#unlockZone';if(factory<3)return needCoins(20)||'#upgradeFactory';if(zone<3)return needCoins(35)||'#unlockZone';return '#mineOre';
 }
+async function selectPlacementPosition(page,index=0){
+  const selectors='[data-placement-position],[data-build-slot],[data-tower-slot],[data-grid-x][data-grid-y]';
+  const targets=page.locator(selectors),count=await targets.count();
+  for(let i=0;i<count;i++){
+    const target=targets.nth((Math.abs(Number(index)||0)+i)%count);
+    try{if(await target.isVisible()){await target.click({timeout:2500});await page.waitForTimeout(90);return true;}}catch{}
+  }
+  const surface=page.locator('canvas,[data-gameplay-surface]').first();
+  if(await surface.count()){
+    try{const box=await surface.boundingBox();if(box){await surface.click({position:{x:Math.max(1,box.width*.35),y:Math.max(1,box.height*.55)},timeout:2500});await page.waitForTimeout(90);return true;}}catch{}
+  }
+  return false;
+}
 async function clickTarget(page,selector,index=0){
   const targets=page.locator(selector),count=await targets.count();if(!count)return {clicked:false,scopeId:null,mechanicId:null,label:null,before:null,after:null};
   const target=targets.nth(Math.abs(Number(index)||0)%count),before=await snapshot(page),scopeId=clean(await target.getAttribute('data-scope-id')),mechanicId=clean(await target.getAttribute('data-mechanic-id')),label=clean(await target.innerText().catch(()=>''));
   const positionMarked=await target.evaluate(el=>el.matches('canvas,[data-placement-position],[data-build-slot],[data-tower-slot],[data-grid-x][data-grid-y]')).catch(()=>false);
   try{await target.click({timeout:3000});await page.waitForTimeout(70);}catch{return {clicked:false,scopeId,mechanicId,label,before,after:await snapshot(page)}}
-  const after=await snapshot(page),towerEntityDelta=Number(after.towerEntityCount||0)-Number(before.towerEntityCount||0),newTowerPosition=(after.towerPositions||[]).some(value=>!(before.towerPositions||[]).includes(value));
-  return {clicked:true,scopeId,mechanicId,label,before,after,stateChanged:gameplayStateChanged(before,after),outcomeSignature:deltaSignature(before,after),combatOutcomeSignature:combatDeltaSignature(before,after),positionSelected:Boolean(positionMarked),towerEntityDelta,placementResult:towerEntityDelta>0||newTowerPosition};
+  let after=await snapshot(page),positionSelected=Boolean(positionMarked);
+  const placementRequested=!positionSelected&&(after.placementModeActive===true||Number(after.positionMarkerCount||0)>Number(before.positionMarkerCount||0));
+  if(placementRequested){positionSelected=await selectPlacementPosition(page,index);if(positionSelected)after=await snapshot(page);}
+  const towerEntityDelta=Number(after.towerEntityCount||0)-Number(before.towerEntityCount||0),newTowerPosition=(after.towerPositions||[]).some(value=>!(before.towerPositions||[]).includes(value));
+  return {clicked:true,scopeId,mechanicId,label,before,after,stateChanged:gameplayStateChanged(before,after),outcomeSignature:deltaSignature(before,after),combatOutcomeSignature:combatDeltaSignature(before,after),positionSelected,towerEntityDelta,placementResult:positionSelected&&(towerEntityDelta>0||newTowerPosition)};
 }
 async function realRetry(page){
   const retry=page.locator('.reset,[data-retry],button').filter({hasText:/새 게임|다시|재도전|retry|restart|초기화/i}).first();
@@ -178,7 +195,7 @@ function evaluateInitialCycle({footprint,before,after,interactionCount,stateTran
 }
 function pendingContentDepth(){return {mode:'FINAL_CONTENT_DEPTH_VALIDATION_ONLY',validationMode:'REAL_ELAPSED_GAMEPLAY',status:'PENDING_AFTER_CONTENT_EXPANSION',pass:false,targetMinutes:FINAL_CONTENT_MINUTES,validatedMinutes:0,actualGameplayMinutes:0,elapsedRealMilliseconds:0,meaningfulGameplayMilliseconds:0,excludedRepeatedActionMilliseconds:0,excludedRetryMilliseconds:0,realContent:false,fakeProgress:false,testHarness:false,directStageClick:false,metrics:null,varietyEvents:[],runtimeFeatureEvidence:null};}
 function implementationMetrics({footprint,before,after,interactionCount,stateTransitionCount,uniqueStateCount,interactedMechanics,varietyEvents,runtimeFeatureEvidence={},repeatedActionExcludedCount=0}={}){
-  return {uniqueMechanicCount:Math.max(footprint.mechanicCount,before?.uniqueMechanicCount||0,after?.uniqueMechanicCount||0),uniqueFunctionalUiCount:Math.max(before?.uniqueFunctionalUiCount||0,after?.uniqueFunctionalUiCount||0),gameplayActionCount:interactionCount,stateVariableCount:footprint.stateVariableCount,meaningfulStateTransitionCount:stateTransitionCount,uniqueGameplayStateCount:uniqueStateCount,uniqueInteractedMechanicCount:interactedMechanics.size,systemDependencyCount:footprint.systemDependencyCount,enemyOrWorldEntityCount:Math.max(before?.entityCount||0,after?.entityCount||0),enemyTypeCount:Number(runtimeFeatureEvidence.enemyTypeCount||0),newEnemyTypeCount:Number(runtimeFeatureEvidence.newEnemyTypeCount||0),areaCount:Number(runtimeFeatureEvidence.areaCount||0),newAreaCount:Number(runtimeFeatureEvidence.newAreaCount||0),objectiveCount:Number(runtimeFeatureEvidence.objectiveCount||0),newObjectiveCount:Number(runtimeFeatureEvidence.newObjectiveCount||0),towerTypeCount:Number(runtimeFeatureEvidence.towerTypeCount||0),towerEffectProfileCount:Number(runtimeFeatureEvidence.towerEffectProfileCount||0),strategyCombatOutcomeCount:Number(runtimeFeatureEvidence.strategyCombatOutcomeCount||0),placementResultCount:Number(runtimeFeatureEvidence.placementResultCount||0),newContentDimensionCount:Number(runtimeFeatureEvidence.newContentDimensionCount||0),repeatedActionExcludedCount,winPathCount:footprint.winPathCount,failPathCount:footprint.failPathCount,retryPathCount:footprint.retryPathCount,gameplayScreenRatio:Math.max(before?.gameplayScreenRatio||0,after?.gameplayScreenRatio||0),duplicateActionRatio:Math.max(before?.duplicateActionRatio||0,after?.duplicateActionRatio||0),testUiRatio:Math.max(before?.testUiRatio||0,after?.testUiRatio||0),contentVariationCount:varietyEvents.size};
+  return {uniqueMechanicCount:Math.max(footprint.mechanicCount,before?.uniqueMechanicCount||0,after?.uniqueMechanicCount||0),uniqueFunctionalUiCount:Math.max(before?.uniqueFunctionalUiCount||0,after?.uniqueFunctionalUiCount||0),gameplayActionCount:interactionCount,stateVariableCount:footprint.stateVariableCount,meaningfulStateTransitionCount:stateTransitionCount,uniqueGameplayStateCount:uniqueStateCount,uniqueInteractedMechanicCount:interactedMechanics.size,systemDependencyCount:footprint.systemDependencyCount,enemyOrWorldEntityCount:Math.max(before?.entityCount||0,after?.entityCount||0),enemyTypeCount:Number(runtimeFeatureEvidence.enemyTypeCount||0),newEnemyTypeCount:Number(runtimeFeatureEvidence.newEnemyTypeCount||0),areaCount:Number(runtimeFeatureEvidence.areaCount||0),newAreaCount:Number(runtimeFeatureEvidence.newAreaCount||0),objectiveCount:Number(runtimeFeatureEvidence.objectiveCount||0),newObjectiveCount:Number(runtimeFeatureEvidence.newObjectiveCount||0),towerTypeCount:Number(runtimeFeatureEvidence.towerTypeCount||0),towerEffectProfileCount:Number(runtimeFeatureEvidence.towerEffectProfileCount||0),strategyChoiceCount:Array.isArray(runtimeFeatureEvidence.strategyChoices)?new Set(runtimeFeatureEvidence.strategyChoices).size:0,strategyCombatOutcomeCount:Number(runtimeFeatureEvidence.strategyCombatOutcomeCount||0),placementResultCount:Number(runtimeFeatureEvidence.placementResultCount||0),newContentDimensionCount:Number(runtimeFeatureEvidence.newContentDimensionCount||0),repeatedActionExcludedCount,winPathCount:footprint.winPathCount,failPathCount:footprint.failPathCount,retryPathCount:footprint.retryPathCount,gameplayScreenRatio:Math.max(before?.gameplayScreenRatio||0,after?.gameplayScreenRatio||0),duplicateActionRatio:Math.max(before?.duplicateActionRatio||0,after?.duplicateActionRatio||0),testUiRatio:Math.max(before?.testUiRatio||0,after?.testUiRatio||0),contentVariationCount:varietyEvents.size};
 }
 function evaluateRuntimeEvidence({before,after,interactionCount,stateTransitionCount,consoleErrors,pageErrors,failedRequests,badResponses,reloadVisible,scopeCoverage,initialPlayableCycle,footprint}={}){
   const blockers=[];
@@ -218,12 +235,12 @@ export async function runGameplayValidation({gameId,sourcePath,port=4181,output=
   const consoleErrors=[],pageErrors=[],failedRequests=[],badResponses=[];page.on('console',msg=>{if(msg.type()==='error')consoleErrors.push(clean(msg.text()).slice(0,500));});page.on('pageerror',e=>pageErrors.push(clean(e.message).slice(0,500)));page.on('requestfailed',r=>{if(r.url().startsWith(`http://127.0.0.1:${port}`))failedRequests.push(`${r.method()} ${r.url()} ${r.failure()?.errorText||''}`.slice(0,700));});page.on('response',r=>{if(r.url().startsWith(`http://127.0.0.1:${port}`)&&r.status()>=400)badResponses.push(`${r.status()} ${r.url()}`.slice(0,700));});
   try{
     const url=`http://127.0.0.1:${port}/${source}/`;await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});await page.waitForTimeout(400);
-    const before=await snapshot(page),startedAt=Date.now(),deadline=finalMode?startedAt+FINAL_CONTENT_MINUTES*60*1000:Number.POSITIVE_INFINITY;
+    const before=await snapshot(page),startedAt=Date.now(),deadline=finalMode?startedAt+FINAL_CONTENT_MAX_WALL_MINUTES*60*1000:Number.POSITIVE_INFINITY;
     let interactionCount=0,stateTransitionCount=0,terminalReached=false,retryObserved=footprint.retryPathCount>0,lastTerminalResult=null,step=0,meaningfulGameplayMilliseconds=0,excludedRepeatedActionMilliseconds=0,excludedRetryMilliseconds=0,repeatedActionExcludedCount=0,lastDecisionMechanic='';
     const interactedScopeIds=[],scopeInteractionResults=[],interactedMechanics=new Set(),stateSignatures=new Set([gameplaySignature(before)]),varietyEvents=new Set(),actionEvidence=[],seenActionOutcomes=new Set(),strategyCombatOutcomes=[];
     const seen={enemyTypes:new Set(before.enemyTypes||[]),areaIds:new Set(before.areaIds||[]),objectiveIds:new Set(before.objectiveIds||[]),towerTypes:new Set(before.towerTypes||[]),towerEffectProfiles:new Set(before.towerEffectProfiles||[])};
     const initialSeen={enemyTypes:new Set(seen.enemyTypes),areaIds:new Set(seen.areaIds),objectiveIds:new Set(seen.objectiveIds),towerTypes:new Set(seen.towerTypes),towerEffectProfiles:new Set(seen.towerEffectProfiles)};
-    while(finalMode?Date.now()<deadline:step<INITIAL_MAX_INTERACTIONS){
+    while(finalMode?(Date.now()<deadline&&meaningfulGameplayMilliseconds<FINAL_CONTENT_MINUTES*60*1000):step<INITIAL_MAX_INTERACTIONS){
       const current=await snapshot(page);
       if(['victory','defeat'].includes(current.runResult)){
         terminalReached=true;lastTerminalResult=current.runResult;
@@ -263,7 +280,7 @@ export async function runGameplayValidation({gameId,sourcePath,port=4181,output=
     const initialPlayableCycle=evaluateInitialCycle({footprint,before,after,interactionCount,stateTransitionCount,uniqueInteractedMechanics:interactedMechanics.size,terminalReached,retryObserved,scopeCoverage});
     const metrics=implementationMetrics({footprint,before,after,interactionCount,stateTransitionCount,uniqueStateCount:stateSignatures.size,interactedMechanics,varietyEvents,runtimeFeatureEvidence,repeatedActionExcludedCount});
     const elapsedRealMilliseconds=Date.now()-startedAt,actualGameplayMinutes=meaningfulGameplayMilliseconds/60000,contentDepthTimePass=meaningfulGameplayMilliseconds>=FINAL_CONTENT_MINUTES*60*1000,realContentPass=newContentDimensionCount>=2&&varietyEvents.size>=2;
-    const contentDepthValidation=finalMode?{mode:'FINAL_CONTENT_DEPTH_VALIDATION_ONLY',validationMode:'REAL_ELAPSED_GAMEPLAY',status:contentDepthTimePass?'COMPLETE':'INCOMPLETE',pass:initialPlayableCycle.pass&&contentDepthTimePass&&realContentPass&&stateTransitionCount>=10&&metrics.testUiRatio===0&&metrics.duplicateActionRatio<=0.8,targetMinutes:FINAL_CONTENT_MINUTES,validatedMinutes:contentDepthTimePass?actualGameplayMinutes:0,actualGameplayMinutes,elapsedRealMilliseconds,meaningfulGameplayMilliseconds,excludedRepeatedActionMilliseconds,excludedRetryMilliseconds,realContent:realContentPass,fakeProgress:false,testHarness:false,directStageClick:false,metrics,varietyEvents:[...varietyEvents],runtimeFeatureEvidence}:pendingContentDepth();
+    const contentDepthValidation=finalMode?{mode:'FINAL_CONTENT_DEPTH_VALIDATION_ONLY',validationMode:'REAL_ELAPSED_GAMEPLAY',status:contentDepthTimePass?'COMPLETE':'INCOMPLETE',pass:initialPlayableCycle.pass&&contentDepthTimePass&&realContentPass&&stateTransitionCount>=10&&metrics.testUiRatio===0&&metrics.duplicateActionRatio<=0.8,targetMinutes:FINAL_CONTENT_MINUTES,maxWallMinutes:FINAL_CONTENT_MAX_WALL_MINUTES,validatedMinutes:contentDepthTimePass?actualGameplayMinutes:0,actualGameplayMinutes,elapsedRealMilliseconds,meaningfulGameplayMilliseconds,excludedRepeatedActionMilliseconds,excludedRetryMilliseconds,realContent:realContentPass,fakeProgress:false,testHarness:false,directStageClick:false,metrics,varietyEvents:[...varietyEvents],runtimeFeatureEvidence}:pendingContentDepth();
     await page.reload({waitUntil:'domcontentloaded',timeout:30000});await page.waitForTimeout(250);const reloadVisible=await page.evaluate(()=>Boolean(document.body&&document.body.getBoundingClientRect().width>0&&document.body.getBoundingClientRect().height>0));
     const verdict=evaluateRuntimeEvidence({before,after,interactionCount,stateTransitionCount,consoleErrors,pageErrors,failedRequests,badResponses,reloadVisible,scopeCoverage,initialPlayableCycle,footprint});
     if(finalMode&&!contentDepthValidation.pass)verdict.blockers.push('FINAL_REAL_30MIN_CONTENT_DEPTH_REQUIRED');
