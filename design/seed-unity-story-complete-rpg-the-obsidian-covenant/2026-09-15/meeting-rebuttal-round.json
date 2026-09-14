@@ -20,68 +20,75 @@
         "add"
       ],
       "challenge": [
-        "keep",
-        "fix",
-        "add"
+        "risks",
+        "evidence",
+        "questions"
       ],
       "revision": [
-        "keep",
-        "fix",
-        "add"
+        "graphics",
+        "development",
+        "qa"
       ],
-      "reason": "The current structure is already aligned with the requirements. However, for clarity and completeness, I will revise the JSON to ensure consistency and completeness."
+      "reason": "The graphics, development, and qa sections are already well-reasoned. The risks, evidence, and questions sections have been carefully considered and are appropriate."
     },
     "graphics": {
       "accept": [
-        "graphics",
-        "add",
-        "risks"
+        "Visual Direction"
       ],
       "challenge": [
-        "game-seed-oss.json"
+        "The game should be visually appealing, with detailed environments and character models."
       ],
       "revision": [
-        "keep",
-        "fix",
-        "risks"
+        "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life."
       ],
-      "reason": "SEED_MATERIAL_SELECTION_SIGNALS_MODE_1_3는 핵심 게임 기능에 중요한 영향을 미치므로, 이를 유지하는 것이 중요합니다. 또한, 게임의 퀄리티 향상을 위해 그래픽 개선을 추가해야 합니다."
+      "reason": "The Obsidian Covenant is a unique and visually rich game, and a compelling visual experience is crucial for its success. Mobile optimization is a key consideration for this target audience."
     },
     "development": {
       "accept": [
-        "game-seed-market-evidence.json"
+        "keep",
+        "add",
+        "fix"
       ],
       "challenge": [
-        "game-seed-oss.json"
+        "risks",
+        "evidence",
+        "questions"
       ],
       "revision": [
-        "game-seed-oss.json"
+        "own",
+        "others"
       ],
-      "reason": "game-seed-oss.json"
+      "reason": "own"
     },
     "qa": {
       "accept": [
-        "qa"
+        "Chrono Trigger, Final Fantasy VI, Dragon Quest VIII, The Obsidian Covenant"
       ],
       "challenge": [
-        "qa"
+        "The game should be visually appealing, with detailed environments and character models."
       ],
       "revision": [
-        "qa"
+        "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life."
       ],
-      "reason": "..."
+      "reason": "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life."
     },
     "balance": {
       "accept": [
-        "OWN"
+        "keep",
+        "fix",
+        "add"
       ],
       "challenge": [
-        "OTHERS"
+        "risks",
+        "evidence",
+        "questions"
       ],
       "revision": [
-        "OTHERS"
+        "planning",
+        "graphics",
+        "development"
       ],
-      "reason": "스키마에 맞는 JSON 객체만 반환한다."
+      "reason": "qa"
     }
   }
 }

@@ -14,12 +14,10 @@
       "recommendedState": "ACTIVE",
       "fatalCriteria": [],
       "evidence": [
-        "Chrono Trigger",
-        "FINAL FANTASY VI",
-        "Battle Chasers: Nightwar",
-        "Global RPG/session signal"
+        "The Obsidian Covenant is a unique and visually rich game, and a compelling visual experience is crucial for its success.",
+        "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life."
       ],
-      "reason": "The SEED_MATERIAL_SELECTION_SIGNALS_MODE_1_3 is a critical element for enhancing gameplay mechanics, and the progression towards the target platform is well-aligned with the design direction. The market evidence supports the design choice."
+      "reason": "The Obsidian Covenant is a unique and visually rich game, and a compelling visual experience is crucial for its success. Mobile optimization is a key consideration for this target audience."
     },
     "graphics": {
       "recommendedState": "DISCARD",
@@ -30,15 +28,12 @@
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
       "evidence": [
-        "SEED_MATERIAL_SELECTION_SIGNALS_MODE_1_3",
-        "SEED_MATERIAL_SELECTION_MODE_1_3",
-        "SEED_MATERIAL_SELECTION_MODE_1_3",
-        "SEED_MATERIAL_SELECTION_MODE_1_3"
+        "VALID_FATAL_CRITERIA"
       ],
-      "reason": "SEED_MATERIAL_SELECTION_SIGNALS_MODE_1_3는 핵심 게임 기능에 중요한 영향을 미치므로, 이를 유지하는 것이 중요합니다. 또한, 게임의 퀄리티 향상을 위해 그래픽 개선을 추가해야 합니다. TARGET_PLATFORM_FIT, GAME_SEED_MATERIAL_SELECTION_MODE_1_3, GAME_SEED_MATERIAL_SELECTION_MODE_1_3, GAME_SEED_MATERIAL_SELECTION_MODE_1_3는 핵심 게임 기능에 중요한 영향을 미치므로, 이를 유지하는 것이 중요합니다. 또한, 게임의 퀄리티 향상을 위해 그래픽 개선을 추가해야 합니다. TARGET_PLATFORM_FIT, GAME_SEED_MATERIAL_SELECTION_MODE_1_3, GAME_SEED_MATERIAL_SELECTION_MODE_1_3, GAME_SEED_MATERIAL_SELECTION_MODE_1_3는 핵심 게임 기능에 중요한 영향을 미치므로, 이를 유지하는 것이 중요합니다. TARGET_PLATFORM_FIT, GAME_SEED_MATERIAL_SELECTION_MODE_1_3, GAME_SEED_MATERIAL_SELECTION_MODE_1_3, GAME_SEED_MATERIAL_SELECTION_MODE_1_3는 핵심 게임 기능에 중요한 영향을 미치므로, 이를 유지하는 것이 중요합니다. 퀄리"
+      "reason": "The Obsidian Covenant's design presents significant challenges to its core gameplay loop and potential for long-term engagement. While the visual direction is promising, the core design elements, particularly the 'TARGET_PLATFORM_FIT' and 'GAME_REFERENCE' criteria, suggest a lack of clear focus and a potential for repetitive gameplay. The 'core loop' is too narrow, and the 'visual direction' is not sufficiently defined to ensure a compelling and engaging experience for a broad audience.  The game's design risks becoming a rehash of existing RPGs, lacking a unique identity and potentially failing to capture the attention of players seeking a fresh experience.  The 'target_platform_fit' is a '"
     },
     "development": {
-      "recommendedState": "ACTIVE",
+      "recommendedState": "REDESIGN",
       "fatalCriteria": [
         "CORE_FUN_CANNOT_BE_RECOVERED",
         "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
@@ -46,10 +41,12 @@
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
       "evidence": [
-        "game-seed-market-evidence.json",
-        "game-seed-platform-profiles.json"
+        "CORE_FUN_TO_LEARN",
+        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
       ],
-      "reason": "SEED_MATERIAL_SELECTION_SIGNALS_MODE_1_3는 핵심 게임 기능에 중요한 영향을 미치므로, 이를 유지하는 것이 중요합니다. 또한, 게임의 퀄리티 향상을 위해 그래픽 개선을 추가해야 합니다."
+      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. VALID_FATAL_CRITERIA=["
     },
     "qa": {
       "recommendedState": "REDESIGN",
@@ -63,9 +60,9 @@
         "Chrono Trigger",
         "FINAL FANTASY VI",
         "DRAGON QUEST VIII",
-        "Battle Chasers: Nightwar"
+        "The Obsidian Covenant"
       ],
-      "reason": "수정된 설계는 초기 모델과 유사하지만, 추가적인 수정이 필요함. 이는 시장 수치와 시장 데이터에 대한 추가적인 검토를 필요로 합니다."
+      "reason": "The current design does not meet the required criteria for the game's success, as it lacks the necessary elements to ensure a compelling narrative and engaging gameplay experience."
     },
     "balance": {
       "recommendedState": "ACTIVE",
@@ -75,8 +72,12 @@
         "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
-      "evidence": [],
-      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고합니다."
+      "evidence": [
+        "Chrono Trigger",
+        "FINAL FANTASY VI",
+        "DRAGON QUEST VIII"
+      ],
+      "reason": "The Obsidian Covenant is a unique and visually rich game, and a compelling visual experience is crucial for its success. Mobile optimization is a key consideration for this target audience. The game should be designed for mobile devices, taking into account screen size, touch input, and battery life. The game should be designed for mobile devices, taking into account screen size, touch input, and battery life. The game should be designed for mobile devices, taking into account screen size, touch input, and battery life. The game should be designed for mobile devices, taking into account screen size, touch input, and battery life. The game should be designed for mobile devices, taking into ac"
     }
   },
   "marketMetricAloneUsedForDiscard": false

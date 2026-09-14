@@ -21,104 +21,91 @@
   "distinctLeadModelCount": 5,
   "representatives": {
     "planning": {
-      "keep": [
-        "SEED-UNITY-STORY_COMPLETE_RPG-001"
-      ],
-      "fix": [
-        "GAME_SEED"
-      ],
-      "add": [
-        "GAME_SEED_MATERIAL_IDS"
-      ],
-      "risks": [
-        "GAME_SEED_MATERIAL_SELECTION_SIGNALS"
-      ],
-      "evidence": [
-        "GAME_SEED_MATERIAL_SELECTION_SIGNALS"
-      ],
-      "questions": [
-        "GAME_SEED_MATERIAL_SELECTION_SIGNALS"
-      ]
+      "keep": [],
+      "fix": [],
+      "add": [],
+      "risks": [],
+      "evidence": [],
+      "questions": []
     },
     "graphics": {
       "keep": [
-        "Rich Lore and Complex Story",
-        "HISTORICAL_INITIAL_BOOTSTRAP"
+        "The Obsidian Covenant"
       ],
       "fix": [
-        "game-seed-market-evidence.json"
+        "Visual Direction"
       ],
       "add": [
-        "graphics"
+        "The game should be visually appealing, with detailed environments and character models."
       ],
       "risks": [
-        "game-seed-oss.json"
+        "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life."
       ],
       "evidence": [
-        "SEED_MATERIAL_SELECTION_MODE_1_3"
+        "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life."
       ],
       "questions": [
-        "SEED_MATERIAL_SELECTION_SIGNALS_MODE_1_3"
+        "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life"
       ]
     },
     "development": {
       "keep": [
-        "game-seed-market-evidence.json"
+        "game-seed"
       ],
       "fix": [
-        "game-seed-platform-profiles.json"
+        "game-seed"
       ],
       "add": [
-        "game-seed-oss.json"
+        "game-seed"
       ],
       "risks": [
-        "game-seed-oss.json"
+        "game-seed"
       ],
       "evidence": [
-        "game-seed-market-evidence.json"
+        "game-seed"
       ],
       "questions": [
-        "game-seed-market-evidence.json"
+        "game-seed"
       ]
     },
     "qa": {
       "keep": [
-        "qa"
+        "Chrono Trigger, Final Fantasy VI, Dragon Quest VIII, The Obsidian Covenant"
       ],
       "fix": [
-        "qa"
+        "Chrono Trigger, Final Fantasy VI, Dragon Quest VIII, The Obsidian Covenant"
       ],
       "add": [
-        "qa"
+        "Chrono Trigger, Final Fantasy VI, Dragon Quest VIII, The Obsidian Covenant"
       ],
       "risks": [
-        "qa"
+        "Chrono Trigger, Final Fantasy VI, Dragon Quest VIII, The Obsidian Covenant"
       ],
       "evidence": [
-        "qa"
+        "Chrono Trigger, Final Fantasy VI, Dragon Quest VIII, The Obsidian Covenant"
       ],
       "questions": [
-        "qa"
+        "Chrono Trigger, Final Fantasy VI, Dragon Quest VIII, The Obsidian Covenant"
       ]
     },
     "balance": {
       "keep": [
-        "SOCIAL_COOP_COMPETITION"
+        "keep"
       ],
       "fix": [
-        "STORY_OR_NARRATIVE_STRUCTURE"
+        "fix"
       ],
       "add": [
-        "SPACE_BUILDING_OPERATION"
+        "add"
       ],
       "risks": [
-        "MAT-006"
+        "risks"
       ],
       "evidence": [
-        "Chrono Trigger"
+        "evidence"
       ],
       "questions": [
-        "What is the role of Space Building in the game?"
+        "questions"
       ]
     }
   },
@@ -129,14 +116,38 @@
     {
       "topic": "graphics",
       "status": "CONSENSUS",
-      "reason": "SEED_MATERIAL_SELECTION_SIGNALS_MODE_1_3는 핵심 게임 기능에 중요한 영향을 미치므로, 이를 유지하는 것이 중요합니다. 또한, 게임의 퀄리티 향상을 위해 그래픽 개선을 추가해야 합니다.",
+      "reason": "The Obsidian Covenant is a unique and visually rich game, and a compelling visual experience is crucial for its success. Mobile optimization is a key consideration for this target audience.",
       "departments": [
         "graphics"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "own",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "The game should be designed for mobile devices, taking into account screen size, touch input, and battery life.",
+      "departments": [
+        "qa"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "qa",
+      "departments": [
+        "balance"
       ]
     }
   ],
   "counts": {
-    "consensus": 1,
+    "consensus": 4,
     "conflict": 0,
     "hold": 0
   }
