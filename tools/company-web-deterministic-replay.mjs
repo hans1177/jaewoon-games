@@ -1,11 +1,11 @@
 const clean=value=>String(value??'').trim();
-const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const TRACE_LIMIT=48;
 
 const esc=value=>String(value??'').replace(/\\/g,'\\\\').replace(/"/g,'\\"');
 
 async function criticalSnapshot(page){
   return page.evaluate(()=>{
+    const visible=el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return r.width>0&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden'&&Number(s.opacity||1)>0;};
     const clean=value=>String(value??'').replace(/\s+/g,' ').trim().toLowerCase();
     const uniq=values=>[...new Set(values.map(clean).filter(Boolean))];
     const attr=(el,names)=>{for(const name of names){const value=el?.getAttribute?.(name);if(value!==null&&value!==undefined&&String(value)!=='')return String(value);}return'';};
@@ -15,11 +15,11 @@ async function criticalSnapshot(page){
     for(const id of ['ore','ingot','coins','factory','drones','zone','heat','score','hp','health','core','gold','wave','level','stage','day','wood','food','mana','pop','power','chapter','towers']){
       const el=document.getElementById(id),n=Number(el?.textContent??NaN);if(Number.isFinite(n))values[id]=n;
     }
-    const enemyCount=[...document.querySelectorAll('.enemy,.foe,[data-enemy],[data-enemy-type]')].length;
-    const towerCount=[...document.querySelectorAll('.tower,[data-tower],[data-tower-type]')].length;
-    const areas=uniq([...document.querySelectorAll('[data-area],[data-zone],[data-region],[data-biome]')].map(el=>attr(el,['data-area','data-zone','data-region','data-biome'])));
-    const objectives=uniq([...document.querySelectorAll('[data-objective],[data-goal],[data-quest],[data-mission]')].map(el=>attr(el,['data-objective','data-goal','data-quest','data-mission'])));
-    const interactions=uniq([...document.querySelectorAll('[data-interactable],[data-interaction-target],[data-npc],[data-object-id],[data-world-entity]')].map(el=>{
+    const enemies=[...document.querySelectorAll('.enemy,.foe,[data-enemy],[data-enemy-type]')].filter(visible);
+    const towers=[...document.querySelectorAll('.tower,[data-tower],[data-tower-type]')].filter(visible);
+    const areas=uniq([...document.querySelectorAll('[data-area],[data-zone],[data-region],[data-biome]')].filter(visible).map(el=>attr(el,['data-area','data-zone','data-region','data-biome'])));
+    const objectives=uniq([...document.querySelectorAll('[data-objective],[data-goal],[data-quest],[data-mission]')].filter(visible).map(el=>attr(el,['data-objective','data-goal','data-quest','data-mission'])));
+    const interactions=uniq([...document.querySelectorAll('[data-interactable],[data-interaction-target],[data-npc],[data-object-id],[data-world-entity]')].filter(visible).map(el=>{
       const id=attr(el,['data-interaction-target','data-object-id','data-npc','data-world-entity','data-interactable']);
       const state=['data-state','data-interaction-state','data-open','data-collected','data-active','data-hp','data-dialogue-state','data-quest-state'].map(name=>`${name}:${clean(el.getAttribute(name))}`).filter(x=>!x.endsWith(':')).join('|');
       return `${id}|${state}`;
@@ -29,7 +29,7 @@ async function criticalSnapshot(page){
     const playerPosition={x:num('data-player-x')??num('data-world-x'),y:num('data-player-y')??num('data-world-y'),z:num('data-player-z')??num('data-world-z')};
     const routeId=attr(root,['data-route-id','data-path-node','data-path-id'])||attr(player,['data-route-id','data-path-node','data-path-id']);
     const runResult=clean(document.body?.getAttribute('data-run-result')||root?.getAttribute('data-run-result'));
-    return {seed:clean(seed),values,enemyCount,towerCount,areas,objectives,interactions,playerPosition,routeId:clean(routeId),runResult};
+    return {seed:clean(seed),values,enemyCount:enemies.length,towerCount:towers.length,areas,objectives,interactions,playerPosition,routeId:clean(routeId),runResult};
   });
 }
 
@@ -71,14 +71,16 @@ async function clickReplayAction(page,row,index){
   if(!target)return null;
   const before=await criticalSnapshot(page);
   try{await target.click({timeout:2500});await page.waitForTimeout(90);}catch{return null;}
-  const placements=page.locator('[data-placement-position],[data-build-slot],[data-tower-slot],[data-grid-x][data-grid-y]');
-  let placement=null;
-  for(let i=0;i<await placements.count();i++){const candidate=placements.nth(i);if(await candidate.isVisible().catch(()=>false)){placement=candidate;break;}}
-  if(placement){
-    try{await placement.click({timeout:1800});await page.waitForTimeout(90);}catch{}
-  }else{
-    const active=await page.locator('[data-placement-mode="active"],[data-build-mode="active"],body[data-placement-mode="active"]').count();
-    if(active){const surface=page.locator('canvas,[data-gameplay-surface]').first();try{const box=await surface.boundingBox();if(box){await surface.click({position:{x:Math.max(1,box.width*(.25+(.1*(index%4)))),y:Math.max(1,box.height*.55)},timeout:1800});await page.waitForTimeout(90);}}catch{}}
+  if(row?.positionSelected===true||row?.placementResult===true){
+    const placements=page.locator('[data-placement-position],[data-build-slot],[data-tower-slot],[data-grid-x][data-grid-y]');
+    let placement=null;
+    for(let i=0;i<await placements.count();i++){const candidate=placements.nth(i);if(await candidate.isVisible().catch(()=>false)){placement=candidate;break;}}
+    if(placement){
+      try{await placement.click({timeout:1800});await page.waitForTimeout(90);}catch{}
+    }else{
+      const active=await page.locator('[data-placement-mode="active"],[data-build-mode="active"],body[data-placement-mode="active"]').count();
+      if(active){const surface=page.locator('canvas,[data-gameplay-surface]').first();try{const box=await surface.boundingBox();if(box){await surface.click({position:{x:Math.max(1,box.width*(.25+(.1*(index%4)))),y:Math.max(1,box.height*.55)},timeout:1800});await page.waitForTimeout(90);}}catch{}}
+    }
   }
   const after=await criticalSnapshot(page);
   return {before,after,outcomeSignature:deltaSignature(before,after)};
