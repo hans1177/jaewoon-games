@@ -151,7 +151,8 @@ assert.match(validator,/final-content-depth/);
 assert.match(validator,/REAL_ELAPSED_GAMEPLAY/);
 assert.match(validator,/elapsedRealMilliseconds/);
 assert.doesNotMatch(validator,/FINAL_CONTENT_WINDOWS/,'final depth must not use old time-window proxy stages');
-assert.doesNotMatch(validator,/data-content-depth-stage/,'validator must not inject hidden time-stage controls');
+assert.match(validator,/data-content-depth-stage/,'validator must detect and reject hidden time-stage controls');
+assert.doesNotMatch(validator,/setAttribute\(\s*["']data-content-depth-stage|dataset\.contentDepthStage\s*=/,'validator must not inject hidden time-stage controls');
 assert.doesNotMatch(validator,/GAMEPLAY_MILESTONE_DEPTH/,'final 30-minute proof must be real elapsed gameplay, not milestone proxy metadata');
 
 const shared=read('web-games/_shared/vibe2-final.js');

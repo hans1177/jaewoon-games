@@ -53,7 +53,7 @@ test('scope classifier remains available for design inspection',()=>{
   assert.equal(classifyApprovedScope({path:'progression',label:'upgrade level'},0),'PROGRESSION');
 });
 
-test('Pocket Foundry compiler emits a real factory loop, footprint and non-clickable session milestones',()=>{
+test('Pocket Foundry compiler emits a real factory loop and initial playable-cycle contract',()=>{
   const baseline={gameSeedId:'SEED-ROBLOX-SIMULATOR_TYCOON_INCREMENTAL-001',content:{identity:'Pocket Foundry',coreFun:'collect, upgrade, income, unlock',coreLoop:['collect ore and turn it into production resources','spend earnings on upgrades and automation','unlock a new area and repeat with larger goals'],mobileUx:'touch controls'}};
   const inventory=deriveApprovedScopeInventory(baseline);
   const compiled=buildContractSafePlayable({gameId:'seed-roblox-simulator-tycoon-i-adopt-me',gameName:'Pocket Foundry',baseline});
@@ -67,7 +67,8 @@ test('Pocket Foundry compiler emits a real factory loop, footprint and non-click
   assert.match(compiled.html,/data-mechanic-id="ore-smelting"/);
   assert.match(compiled.html,/data-mechanic-id="automation-drone"/);
   assert.match(compiled.html,/data-mechanic-id="zone-unlock"/);
-  assert.match(compiled.html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
+  assert.match(compiled.html,/data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE"/);
+  assert.doesNotMatch(compiled.html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
   assert.doesNotMatch(compiled.html,/<button\b[^>]*data-session-stage=/i);
   assert.doesNotMatch(compiled.html,/scope-control-/i);
   assert.match(compiled.html,/state\.ore/);
@@ -94,7 +95,8 @@ test('Vector Clash compiler emits a real arena combat loop with ranges, dodge, s
   assert.match(compiled.html,/state\.skillCd/);
   assert.match(compiled.html,/state\.wins/);
   assert.match(compiled.html,/enemyPlan\(\)/);
-  assert.match(compiled.html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
+  assert.match(compiled.html,/data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE"/);
+  assert.doesNotMatch(compiled.html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
   assert.doesNotMatch(compiled.html,/<button\b[^>]*data-session-stage=/i);
   assert.doesNotMatch(compiled.html,/scope-control-/i);
 });
@@ -114,7 +116,8 @@ test('existing shared real game is preserved, inlined and rebound to approved sc
     assert.equal(validatePreservedSourceHtml(html,{scopeInventory:inventory}).pass,true);
     assert.ok(Buffer.byteLength(html,'utf8')>=12000);
     assert.match(html,/localStorage/);
-    assert.match(html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
+    assert.match(html,/data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE"/);
+    assert.doesNotMatch(html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
     assert.match(html,/data-audio-control="mute"/);
     assert.match(html,/data-audio-control="volume"/);
     assert.doesNotMatch(html,/src="\/web-games\/_shared\/vibe2-final\.js"/);

@@ -3,43 +3,47 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const validator=fs.readFileSync('tools/company-development-web-gameplay-validation.mjs','utf8');
+const contract=fs.readFileSync('tools/company-web-validation-evidence-contract.mjs','utf8');
 const cycle=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
 const homepage=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
 
-test('current Web validation evidence is schema 11, real-game-substance and source-bound',()=>{
-  assert.match(validator,/VALIDATION_SCHEMA_VERSION=11/);
+test('current Web validation evidence is schema13, real-game-substance and source-bound',()=>{
+  assert.match(validator,/VALIDATION_SCHEMA_VERSION=13/);
   assert.match(validator,/sourceIndexSha256/);
   assert.match(validator,/designBaselineSha256/);
   assert.match(validator,/validationSchemaVersion:VALIDATION_SCHEMA_VERSION/);
   assert.match(validator,/substanceGate/);
-  assert.match(validator,/GAMEPLAY_MILESTONE_DEPTH/);
+  assert.match(validator,/REAL_ELAPSED_GAMEPLAY/);
+  assert.match(validator,/elapsedRealMilliseconds/);
+  assert.doesNotMatch(validator,/GAMEPLAY_MILESTONE_DEPTH/);
+  assert.match(contract,/WEB_VALIDATION_SCHEMA_VERSION=13/);
 });
 
-test('native routing cannot accept schema10 harness, stale, non-substance or single-run Web 90 evidence',()=>{
-  assert.match(cycle,/WEB_VALIDATION_SCHEMA_VERSION=11/);
-  assert.match(cycle,/substancePass/);
-  assert.match(cycle,/implementationClass==='DEDICATED'/);
-  assert.match(cycle,/session\.validationMode==='GAMEPLAY_MILESTONE_DEPTH'/);
-  assert.match(cycle,/row\.trigger==='GAMEPLAY_MILESTONE'/);
-  assert.match(cycle,/row\.directStageClick===false/);
+test('native routing consumes the canonical evidence contract instead of a local 4-stage session parser',()=>{
+  assert.match(cycle,/company-web-validation-evidence-contract\.mjs/);
+  assert.match(cycle,/evaluateWebValidationEvidence/);
+  assert.match(cycle,/requireFinalContentDepth:true/);
+  assert.match(cycle,/requirePromotionRevalidation:true/);
   assert.match(cycle,/webContract\.fresh/);
   assert.match(cycle,/webContract\.platformEligible/);
-  assert.match(cycle,/promotion\.independentRun===true/);
-  assert.match(cycle,/promotion\.sourceHashMatch===true/);
-  assert.match(cycle,/promotion\.baselineHashMatch===true/);
-  assert.match(cycle,/promotion\.secondSessionPass===true/);
-  assert.match(cycle,/promotion\.secondSubstancePass===true/);
-  assert.match(cycle,/promotion\.secondTerminalReached===true/);
-  assert.match(cycle,/formalImplementationPassed===true/);
+  assert.doesNotMatch(cycle,/GAMEPLAY_MILESTONE_DEPTH/);
+  assert.doesNotMatch(cycle,/\[\[0,5\],\[5,15\],\[15,25\],\[25,30\]\]/);
+  assert.match(contract,/promotionRevalidation/);
+  assert.match(contract,/sourceHashMatch/);
+  assert.match(contract,/baselineHashMatch/);
+  assert.match(contract,/secondSubstancePass/);
+  assert.match(contract,/secondContentDepthPass|secondFinalContentDepthPass/);
 });
 
-test('homepage Top30 rejects schema10 harness and stale Web evidence instead of grandfathering it',()=>{
-  assert.match(homepage,/minimumValidationSchema=11/);
-  assert.match(homepage,/realGameSubstancePass/);
-  assert.match(homepage,/structured30MinutePass/);
-  assert.match(homepage,/GAMEPLAY_MILESTONE_DEPTH/);
-  assert.match(homepage,/currentWebHash/);
-  assert.match(homepage,/currentBaselineHash/);
+test('homepage Top30 uses the same schema13 contract and rejects stale Web evidence',()=>{
+  assert.match(homepage,/const minimumValidationSchema=WEB_VALIDATION_SCHEMA_VERSION/);
+  assert.match(homepage,/evaluateWebValidationEvidence/);
+  assert.match(homepage,/requireFinalContentDepth:true/);
+  assert.match(homepage,/currentSourceSha256:currentWebHash/);
+  assert.match(homepage,/currentBaselineSha256:currentBaselineHash/);
+  assert.match(homepage,/requiredContentDepthValidationMode:'REAL_ELAPSED_GAMEPLAY'/);
   assert.match(homepage,/staleEvidenceCount/);
   assert.match(homepage,/substanceRejectedCount/);
+  assert.doesNotMatch(homepage,/GAMEPLAY_MILESTONE_DEPTH/);
+  assert.doesNotMatch(homepage,/\[\[0,5\],\[5,15\],\[15,25\],\[25,30\]\]/);
 });

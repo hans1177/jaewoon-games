@@ -4,23 +4,22 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const source=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
+const contract=fs.readFileSync('tools/company-web-validation-evidence-contract.mjs','utf8');
 
-test('DEVELOPMENT_CONFIRMED requires fresh schema11 real-game 30-minute evidence and independent 90-point promotion revalidation',()=>{
+test('DEVELOPMENT_CONFIRMED consumes canonical schema13 Web evidence and independent 90-point promotion revalidation',()=>{
   assert.match(source,/web-gameplay-validation\.json/);
-  assert.match(source,/WEB_VALIDATION_SCHEMA_VERSION=11/);
-  assert.match(source,/structuredWebEvidence/);
-  assert.match(source,/substancePass/);
-  assert.match(source,/implementationClass==='DEDICATED'/);
-  assert.match(source,/session\.validationMode==='GAMEPLAY_MILESTONE_DEPTH'/);
-  assert.match(source,/session\.stageGameplayPassed===true/);
-  assert.match(source,/row\.trigger==='GAMEPLAY_MILESTONE'/);
-  assert.match(source,/sourceIndexSha256/);
-  assert.match(source,/designBaselineSha256/);
-  assert.match(source,/promotion\.pass===true/);
-  assert.match(source,/promotion\.secondSubstancePass===true/);
-  assert.match(source,/formalImplementationPassed===true/);
-  assert.match(source,/WEB_HOMEPAGE_MINIMUM=80/);
-  assert.match(source,/WEB_PLATFORM_PROMOTION_MINIMUM=90/);
+  assert.match(source,/company-web-validation-evidence-contract\.mjs/);
+  assert.match(source,/evaluateWebValidationEvidence/);
+  assert.match(source,/minimumScore:WEB_HOMEPAGE_MINIMUM,requireFinalContentDepth:true/);
+  assert.match(source,/minimumScore:WEB_PLATFORM_PROMOTION_MINIMUM,requireFinalContentDepth:true,requirePromotionRevalidation:true/);
+  assert.match(source,/homepage\.finalContentDepthPass===true/);
+  assert.doesNotMatch(source,/\[\[0,5\],\[5,15\],\[15,25\],\[25,30\]\]/);
+  assert.doesNotMatch(source,/GAMEPLAY_MILESTONE_DEPTH/);
+  assert.match(contract,/WEB_VALIDATION_SCHEMA_VERSION=13/);
+  assert.match(contract,/WEB_HOMEPAGE_MINIMUM=80/);
+  assert.match(contract,/WEB_PLATFORM_PROMOTION_MINIMUM=90/);
+  assert.match(contract,/REAL_ELAPSED_GAMEPLAY/);
+  assert.match(contract,/elapsedRealMilliseconds/);
   assert.match(source,/WAITING_WEB_GAMEPLAY_VALIDATION/);
   assert.match(source,/WAITING_WEB_GAMEPLAY_REVALIDATION/);
   assert.match(source,/WAITING_WEB_STRICT_IMPROVEMENT/);

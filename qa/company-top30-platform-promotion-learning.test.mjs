@@ -3,36 +3,43 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const webValidation=fs.readFileSync('tools/company-development-web-gameplay-validation.mjs','utf8');
+const evidenceContract=fs.readFileSync('tools/company-web-validation-evidence-contract.mjs','utf8');
 const strictReview=fs.readFileSync('tools/company-strict-production-review.mjs','utf8');
 const homepageSync=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
 const validationCycle=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
 
 test('Web 90 promotion requires a second independent fresh real-game validation',()=>{
-  assert.match(webValidation,/VALIDATION_SCHEMA_VERSION=11/);
+  assert.match(webValidation,/VALIDATION_SCHEMA_VERSION=13/);
   assert.match(webValidation,/sourceIndexSha256/);
   assert.match(webValidation,/designBaselineSha256/);
   assert.match(webValidation,/substanceGate/);
   assert.match(webValidation,/secondSubstancePass/);
+  assert.match(webValidation,/secondContentDepthPass/);
   assert.match(webValidation,/web-promotion-revalidation\.json/);
   assert.match(webValidation,/independentRun:true/);
   assert.match(webValidation,/sourceHashMatch/);
   assert.match(webValidation,/baselineHashMatch/);
   assert.match(webValidation,/formalImplementationPassed=promotionPass/);
   assert.match(webValidation,/FORMAL_IMPLEMENTATION_THRESHOLD=90/);
+  assert.match(evidenceContract,/WEB_PLATFORM_PROMOTION_MINIMUM=90/);
 });
 
-test('Top30 keeps 80 minimum, rejects stale harness evidence and preserves incumbent on a tie',()=>{
-  assert.match(homepageSync,/const minimumScore=80/);
+test('Top30 keeps 80 minimum, rejects stale/proxy evidence and preserves incumbent on a tie',()=>{
+  assert.match(homepageSync,/const minimumScore=WEB_HOMEPAGE_MINIMUM/);
   assert.match(homepageSync,/const limit=30/);
-  assert.match(homepageSync,/minimumValidationSchema=11/);
-  assert.match(homepageSync,/requiresRealGameSubstance:true/);
-  assert.match(homepageSync,/requiredSessionValidationMode:'GAMEPLAY_MILESTONE_DEPTH'/);
+  assert.match(homepageSync,/const minimumValidationSchema=WEB_VALIDATION_SCHEMA_VERSION/);
+  assert.match(homepageSync,/evaluateWebValidationEvidence/);
+  assert.match(homepageSync,/requireFinalContentDepth:true/);
+  assert.match(homepageSync,/requiredContentDepthValidationMode:'REAL_ELAPSED_GAMEPLAY'/);
   assert.match(homepageSync,/requiresFreshSourceHash:true/);
   assert.match(homepageSync,/requiresFreshDesignBaselineHash:true/);
-  assert.match(homepageSync,/requiresStructured30MinuteEvidence:true/);
+  assert.match(homepageSync,/requiresFinal30MinuteContentDepth:true/);
   assert.match(homepageSync,/STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE/);
   assert.match(homepageSync,/TIE_PRESERVES_VALID_INCUMBENT/);
   assert.match(homepageSync,/previousRank/);
+  assert.match(evidenceContract,/WEB_HOMEPAGE_MINIMUM=80/);
+  assert.doesNotMatch(homepageSync,/GAMEPLAY_MILESTONE_DEPTH/);
+  assert.doesNotMatch(homepageSync,/\[\[0,5\],\[5,15\],\[15,25\],\[25,30\]\]/);
 });
 
 test('Web and native platform scores and learning lanes remain separate',()=>{

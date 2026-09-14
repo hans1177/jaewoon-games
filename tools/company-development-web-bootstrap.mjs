@@ -41,15 +41,20 @@ function scriptBlockers(text){
 }
 function stripInitialTimeProxyContract(text){
   return String(text??'')
-    .replace(/\sdata-session-minutes=["']30["']/gi,'')
-    .replace(/\sdata-session-proof-mode=["']PROGRESSION_MILESTONES["']/gi,'')
-    .replace(/\sdata-session-stage-direct-control=["']false["']/gi,'');
+    .replace(/<section class=["']panel["']><div class=["']phases["']>[\s\S]*?<\/div><\/section>/gi,'')
+    .replace(/\sdata-session-(?:minutes|proof-mode|stage-direct-control|stage-count|current-stage|completed-stages|stage|start|end|stage-complete)=["'][^"']*["']/gi,'')
+    .replace(/data-session-stage-complete/gi,'data-game-progress-complete')
+    .replace(/data-session-stage/gi,'data-game-progress-stage')
+    .replace(/sessionCompletedStages/g,'gameProgressCompleted')
+    .replace(/sessionCurrentStage/g,'gameProgressCurrent');
 }
 function bindInitialCycleContract(text,approvedScopeCount){
   let out=stripInitialTimeProxyContract(text);
-  if(!/data-playable-cycle-contract=["']ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE["']/i.test(out)){
-    out=out.replace(/<main\b/i,`<main data-playable-cycle-contract="${INITIAL_PLAYABLE_MINIMUM}" data-approved-scope-count="${approvedScopeCount}"`);
-  }
+  const attrs=[];
+  if(!/data-playable-cycle-contract=["']ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE["']/i.test(out))attrs.push(`data-playable-cycle-contract="${INITIAL_PLAYABLE_MINIMUM}"`);
+  if(/data-approved-scope-count=["'][^"']*["']/i.test(out))out=out.replace(/data-approved-scope-count=["'][^"']*["']/i,`data-approved-scope-count="${approvedScopeCount}"`);
+  else attrs.push(`data-approved-scope-count="${approvedScopeCount}"`);
+  if(attrs.length)out=out.replace(/<main\b/i,`<main ${attrs.join(' ')}`);
   return out;
 }
 function commonContractBlockers(text,{scopeInventory=[],allowPersistentStorage=false,canvasRequired=false}={}){
