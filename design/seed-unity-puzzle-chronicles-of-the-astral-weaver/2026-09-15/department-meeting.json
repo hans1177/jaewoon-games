@@ -21,43 +21,25 @@
   "distinctLeadModelCount": 5,
   "representatives": {
     "planning": {
-      "keep": [
-        "keep"
-      ],
-      "fix": [
-        "fix"
-      ],
-      "add": [
-        "add"
-      ],
-      "risks": [
-        "risks"
-      ],
-      "evidence": [
-        "evidence"
-      ],
-      "questions": [
-        "questions"
-      ]
+      "keep": [],
+      "fix": [],
+      "add": [],
+      "risks": [],
+      "evidence": [],
+      "questions": []
     },
     "graphics": {
       "keep": [
-        "GAME_SEED"
+        "gemma3:1b"
       ],
-      "fix": [
-        "SEED_MATERIAL_SELECTION_SIGNALS"
-      ],
-      "add": [
-        "SEED_MATERIAL_SELECTION_MODE"
-      ],
-      "risks": [
-        "SEED_MATERIAL_SELECTION_MODE"
-      ],
+      "fix": [],
+      "add": [],
+      "risks": [],
       "evidence": [
-        "REFERENCE_GAMES"
+        "gemma3:1b"
       ],
       "questions": [
-        "TARGET_DESIGN_REFERENCE"
+        "What is the main gameplay loop of this game?"
       ]
     },
     "development": {
@@ -102,22 +84,22 @@
     },
     "balance": {
       "keep": [
-        "Unity platform"
+        "Unity"
       ],
       "fix": [
-        "Unity platform"
+        "Unity"
       ],
       "add": [
-        "Unity platform"
+        "Unity"
       ],
       "risks": [
-        "Unity platform"
+        "Unity"
       ],
       "evidence": [
-        "Unity platform"
+        "Unity"
       ],
       "questions": [
-        "Unity platform"
+        "What is the main gameplay loop of this game?"
       ]
     }
   },
@@ -128,51 +110,41 @@
     {
       "topic": "Planning",
       "status": "CONSENSUS",
-      "reason": "The Planning category has reached a consensus on the elements: keep, fix, and add. The risks and evidence are also considered, but no specific action is taken as the JSON format is already standard. The questions are also addressed.",
+      "reason": "CONSENSUS",
       "departments": [
-        "graphics",
-        "development",
-        "qa"
+        "planning"
       ]
     },
     {
       "topic": "Graphics",
       "status": "CONSENSUS",
-      "reason": "The Graphics category has reached a consensus on the elements: SEED_MATERIAL_SELECTION_SIGNALS, SEED_MATERIAL_SELECTION_MODE, and REFERENCE_GAMES. The TARGET_DESIGN_REFERENCE is considered relevant and should be included.",
+      "reason": "CONSENSUS",
       "departments": [
-        "graphics",
-        "development",
-        "qa"
+        "graphics"
       ]
     },
     {
       "topic": "Development",
       "status": "CONSENSUS",
-      "reason": "The Development category has reached a consensus on the elements: own, others, and graphics. The QA department's opinion is accepted.",
+      "reason": "CONSENSUS",
       "departments": [
-        "graphics",
-        "development",
-        "qa"
+        "development"
       ]
     },
     {
       "topic": "QA",
       "status": "CONSENSUS",
-      "reason": "The QA category has reached a consensus on the elements: qa and qa. The QA department's opinion is accepted.",
+      "reason": "CONSENSUS",
       "departments": [
-        "graphics",
-        "development",
         "qa"
       ]
     },
     {
       "topic": "Balance",
       "status": "CONSENSUS",
-      "reason": "The Balance category has reached a consensus on the elements: Unity platform, Unity platform, and Unity platform. The Unity platform is accepted.",
+      "reason": "CONSENSUS",
       "departments": [
-        "graphics",
-        "development",
-        "qa"
+        "balance"
       ]
     }
   ],

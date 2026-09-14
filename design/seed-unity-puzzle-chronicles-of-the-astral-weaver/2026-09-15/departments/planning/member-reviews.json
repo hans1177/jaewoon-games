@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "GAME_SEED"
+          "game_seed_market_evidence.json"
         ],
         "fix": [
-          "SEED_MATERIAL_IDS"
-        ],
-        "add": [
           "SEED_MATERIAL_SELECTION_SIGNALS"
         ],
+        "add": [
+          "SEED_MATERIAL_SELECTION_REFERENCE_INPUTS"
+        ],
         "risks": [
-          "SEED_MATERIAL_SELECTION_MODE"
+          "SEED_MATERIAL_SELECTION_SIGNALS"
         ],
         "evidence": [
-          "REFERENCE_GAMES"
+          "SEED_MATERIAL_SELECTION_REFERENCE_INPUTS"
         ],
         "questions": [
-          "TARGET_DESIGN_REFERENCE"
+          "What is the main gameplay loop of this game?"
         ]
       }
     },

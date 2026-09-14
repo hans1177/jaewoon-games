@@ -13,22 +13,16 @@
   "representativeAuthoredByLead": true,
   "representative": {
     "keep": [
-      "GAME_SEED"
+      "gemma3:1b"
     ],
-    "fix": [
-      "SEED_MATERIAL_SELECTION_SIGNALS"
-    ],
-    "add": [
-      "SEED_MATERIAL_SELECTION_MODE"
-    ],
-    "risks": [
-      "SEED_MATERIAL_SELECTION_MODE"
-    ],
+    "fix": [],
+    "add": [],
+    "risks": [],
     "evidence": [
-      "REFERENCE_GAMES"
+      "gemma3:1b"
     ],
     "questions": [
-      "TARGET_DESIGN_REFERENCE"
+      "What is the main gameplay loop of this game?"
     ]
   }
 }
