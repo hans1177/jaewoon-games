@@ -3,15 +3,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {PRODUCTION_CLASSES,productionClassOf,tierAliasForProductionClass} from './production-classification.mjs';
 import {resolveSelectedPlatform,adapterForPlatform,canonicalTargetWaitingState,canonicalTargetRevalidationState} from './company-selected-platform-router.mjs';
+import {WEB_VALIDATION_SCHEMA_VERSION,WEB_HOMEPAGE_MINIMUM,WEB_PLATFORM_PROMOTION_MINIMUM,evaluateWebValidationEvidence} from './company-web-validation-evidence-contract.mjs';
 
 const ROLES=['planning','graphics','development','qa','balance'];
-const WEB_VALIDATION_SCHEMA_VERSION=11;
-const WEB_HOMEPAGE_MINIMUM=80;
-const WEB_PLATFORM_PROMOTION_MINIMUM=90;
 const PLATFORM_DEVELOPMENT_PASS_MINIMUM=90;
-const WEB_REAL_GAME_MINIMUM_BYTES=12000;
-const WEB_REAL_GAME_MINIMUM_EXECUTABLE_BYTES=6000;
-const WEB_REAL_GAME_MINIMUM_MECHANICS=5;
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
@@ -130,28 +125,15 @@ function latestDesignBaseline(){
   return null;
 }
 function structuredWebEvidence(data={}){
-  const session=data?.sessionContract||{};
-  const expected=[[0,5],[5,15],[15,25],[25,30]];
-  const windows=Array.isArray(session.windows)?session.windows:[];
-  const stages=Array.isArray(session.stageResults)?session.stageResults:[];
-  const hard=Array.isArray(data?.strictReview?.hardFailures)?data.strictReview.hardFailures:[];
   const score=Number(data?.webStrictScore??data?.strictReview?.totalScore);
+  const hard=Array.isArray(data?.strictReview?.hardFailures)?data.strictReview.hardFailures:[];
   const schema=Number(data?.validationSchemaVersion||data?.version||0);
-  const substance=data?.substanceGate||{};
-  const footprint=data?.sourceFootprint||{};
-  const totalBytes=Number(substance.totalBytes??footprint.totalBytes??0);
-  const executableBytes=Number(substance.executableBytes??footprint.scriptBytes??0);
-  const mechanicCount=Number(substance.mechanicCount??footprint.mechanicCount??0);
-  const directSessionControls=Number(substance.directSessionControls??(footprint.stageButtons?1:0));
-  const proxyMarkers=Number(substance.proxyMarkers??footprint.proxyMarkers??0);
-  const implementationClass=clean(substance.implementationClass||footprint.implementationClass).toUpperCase();
-  const substancePass=(substance.pass===true||footprint.pass===true)&&implementationClass==='DEDICATED'&&totalBytes>=WEB_REAL_GAME_MINIMUM_BYTES&&executableBytes>=WEB_REAL_GAME_MINIMUM_EXECUTABLE_BYTES&&mechanicCount>=WEB_REAL_GAME_MINIMUM_MECHANICS&&directSessionControls===0&&proxyMarkers===0;
-  const sessionPass=Number(data?.sessionDepthMinutes)>=30&&session.pass===true&&session.validationMode==='GAMEPLAY_MILESTONE_DEPTH'&&session.directStageClick===false&&session.stageGameplayPassed===true&&Number(session.stageCount)===4&&Number(session.completedStages)===4&&windows.length===4&&windows.every((row,index)=>Array.isArray(row)&&Number(row[0])===expected[index][0]&&Number(row[1])===expected[index][1])&&stages.length===4&&stages.every((row,index)=>Number(row.stage)===index+1&&row.trigger==='GAMEPLAY_MILESTONE'&&row.clicked===true&&row.completed===true&&row.gameStateChanged===true&&row.directStageClick===false);
-  const fresh=schema>=WEB_VALIDATION_SCHEMA_VERSION&&substancePass&&sessionPass&&Boolean(clean(data?.sourceIndexSha256))&&Boolean(clean(data?.designBaselineSha256));
-  const homepageEligible=fresh&&data?.pass===true&&data?.musicRuntime?.pass===true&&Number.isFinite(score)&&score>=WEB_HOMEPAGE_MINIMUM&&hard.length===0;
-  const promotion=data?.promotionRevalidation||{};
-  const platformEligible=homepageEligible&&score>=WEB_PLATFORM_PROMOTION_MINIMUM&&data?.formalImplementationPassed===true&&promotion.pass===true&&promotion.independentRun===true&&promotion.sourceHashMatch===true&&promotion.baselineHashMatch===true&&promotion.secondSessionPass===true&&promotion.secondSubstancePass===true&&promotion.secondTerminalReached===true;
-  return {schema,score,hard,sessionPass,substancePass,fresh,homepageEligible,platformEligible};
+  const sourceHash=clean(data?.sourceIndexSha256),baselineHash=clean(data?.designBaselineSha256);
+  const initial=evaluateWebValidationEvidence(data,{minimumScore:WEB_HOMEPAGE_MINIMUM,requireFinalContentDepth:false});
+  const top30=evaluateWebValidationEvidence(data,{minimumScore:WEB_HOMEPAGE_MINIMUM,requireFinalContentDepth:true});
+  const promotion=evaluateWebValidationEvidence(data,{minimumScore:WEB_PLATFORM_PROMOTION_MINIMUM,requireFinalContentDepth:true,requirePromotionRevalidation:true});
+  const fresh=schema>=WEB_VALIDATION_SCHEMA_VERSION&&Boolean(sourceHash)&&Boolean(baselineHash);
+  return {schema,score,hard,substancePass:initial.realGameSubstancePass,fresh,initialPass:initial.pass,finalContentDepthPass:top30.finalContentDepthPass,top30Eligible:top30.pass,homepageEligible:top30.pass,platformEligible:promotion.pass,initialBlockers:initial.blockers,top30Blockers:top30.blockers,promotionBlockers:promotion.blockers};
 }
 function platformDevelopmentReview(targetMeeting,targetData={}){
   const decisions=Array.isArray(targetMeeting?.meeting?.decisions)?targetMeeting.meeting.decisions:[];
@@ -166,7 +148,7 @@ function platformDevelopmentReview(targetMeeting,targetData={}){
 function writeState(state,{sourceDesign=null,web=null,targetPlatform=null,revalidation=null,webMeeting=null,targetMeeting=null,finalDesign=null,artbook=null,platformReview=null,learningFeedback=null,blockers=[],nextAction=null}={}){
   const webContract=web?.data?structuredWebEvidence(web.data):null;
   const evidence={
-    web:web?{state:web.state,path:web.path,musicRuntimePass:web.data?.musicRuntime?.pass===true,webStrictScore:webContract?.score??null,validationSchemaVersion:webContract?.schema??null,realGameSubstancePass:webContract?.substancePass===true,fresh:webContract?.fresh===true,promotionRevalidationPass:web.data?.promotionRevalidation?.pass===true}:null,
+    web:web?{state:web.state,path:web.path,musicRuntimePass:web.data?.musicRuntime?.pass===true,webStrictScore:webContract?.score??null,validationSchemaVersion:webContract?.schema??null,realGameSubstancePass:webContract?.substancePass===true,initialRealGamePass:webContract?.initialPass===true,finalContentDepthPass:webContract?.finalContentDepthPass===true,top30Eligible:webContract?.top30Eligible===true,fresh:webContract?.fresh===true,promotionRevalidationPass:web.data?.promotionRevalidation?.pass===true}:null,
     targetPlatform:targetPlatform?{platform:selectedPlatform,state:targetPlatform.state,path:targetPlatform.path,platformImplementationScore:platformReview?.score??null}:null,
     revalidation:revalidation?{state:revalidation.state,path:revalidation.path}:null,
   };
@@ -183,12 +165,12 @@ function writeState(state,{sourceDesign=null,web=null,targetPlatform=null,revali
     platformReview:platformReview?{path:path.join(base,'platform-development-review.json').replaceAll('\\','/'),score:platformReview.score,verdict:platformReview.verdict,improvementTargets:platformReview.improvementTargets}:null,
     learningFeedback:learningFeedback?{path:path.join(base,'development-learning-feedback.json').replaceAll('\\','/'),signal:learningFeedback.signal,scoreDelta:learningFeedback.platformScoreDelta}:null,
     finalDesign:finalDesign?.path||null,artbook:artbook?.path||null,blockers,nextAction,
-    contracts:{gatedDirect:true,resumeFromLatestEvidence:true,singlePlatformRouter:true,aiMayInventValidationPass:false,webSmokeDoesNotEqualGameplayValidation:true,webValidationRequired:true,musicValidationRequired:true,webValidationOptional:false,webFreshSchemaAndHashRequired:true,realPlayableWebGameRequired:true,web90PromotionRevalidationRequired:true,webAndPlatformScoresSeparated:true,platform80To89RequiresReevaluation:true,artbookOnlyAfterBaselineReady:true},
+    contracts:{gatedDirect:true,resumeFromLatestEvidence:true,singlePlatformRouter:true,aiMayInventValidationPass:false,webSmokeDoesNotEqualGameplayValidation:true,webValidationRequired:true,musicValidationRequired:true,webValidationOptional:false,webFreshSchemaAndHashRequired:true,realPlayableWebGameRequired:true,initialImplementationUnit:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE',initialThirtyMinuteHardGate:false,finalThirtyMinuteContentDepthRequiredForTop30:true,web90PromotionRevalidationRequired:true,webAndPlatformScoresSeparated:true,platform80To89RequiresReevaluation:true,artbookOnlyAfterBaselineReady:true},
     updatedAt:new Date().toISOString()
   };
   writeJson(path.join(base,'development-validation-status.json'),status);
   writeJson(path.join(base,'cycle-status.json'),status);
-  const requiredEvidence=state.includes('WEB')?'web-gameplay-validation.json':state.includes('TARGET_PLATFORM')?platformAdapter.evidenceFile:state==='WAITING_REVALIDATION'?'development-revalidation.json':null;
+  const requiredEvidence=state.includes('WEB')||state==='PRODUCTION_ARTIFACT_FAILURE'?'web-gameplay-validation.json':state.includes('TARGET_PLATFORM')?platformAdapter.evidenceFile:state==='WAITING_REVALIDATION'?'development-revalidation.json':null;
   writeJson(path.join(base,'development-validation-request.json'),{version:4,gameId,date,state,selectedPlatform,platformAdapter:platformAdapter.adapterPath,webStrictScore:status.webStrictScore,platformImplementationScore:status.platformImplementationScore,nextAction,blockers,requiredEvidence,policyDocument:'COMPANY_FLOW.md'});
   console.log(`DEVELOPMENT_DIRECT_STATE=${state}`);
   console.log(`SELECTED_PLATFORM=${selectedPlatform}`);
@@ -253,18 +235,25 @@ if(!pool.includes(designerModel)){
 
 const web=latestFile('web-gameplay-validation.json');
 const webContract=structuredWebEvidence(web.data||{});
-if(web.state!=='PASS'||!webContract.homepageEligible||!webContract.platformEligible){
+if(web.data?.productionReturnRequired===true||web.data?.artifactQualification?.classification==='PRODUCTION_ARTIFACT_FAILURE'){
+  writeState('PRODUCTION_ARTIFACT_FAILURE',{sourceDesign:sourceBaseline,web,blockers:['PRODUCTION_ARTIFACT_FAILURE'],nextAction:'approved DESIGN_BASELINE은 유지하고 기존 harness를 보존하지 말고 Production 책임 지점에서 실제 Web 게임 본체를 다시 구현한다.'});
+  process.exit(0);
+}
+if(web.state!=='PASS'||!webContract.initialPass||!webContract.platformEligible){
   const blockers=[];
   if(web.state==='MISSING')blockers.push('web-gameplay-validation-required');
   else if(web.state==='FAIL')blockers.push('web-gameplay-validation-failed');
   if(web.data?.musicRuntime?.pass!==true)blockers.push('music-runtime-validation-required');
   if(!webContract.substancePass)blockers.push('real-playable-web-game-substance-required');
   if(!webContract.fresh)blockers.push(`web-evidence-stale-or-schema-below-${WEB_VALIDATION_SCHEMA_VERSION}`);
+  if(!webContract.initialPass)blockers.push(...(webContract.initialBlockers||[]));
+  if(webContract.initialPass&&!webContract.finalContentDepthPass)blockers.push('web-final-content-depth-required');
   if(Number.isFinite(webContract.score)&&webContract.score<WEB_HOMEPAGE_MINIMUM)blockers.push(`web-strict-score-below-${WEB_HOMEPAGE_MINIMUM}`);
-  else if(Number.isFinite(webContract.score)&&webContract.score<WEB_PLATFORM_PROMOTION_MINIMUM)blockers.push(`web-strict-score-below-platform-${WEB_PLATFORM_PROMOTION_MINIMUM}`);
-  if(webContract.score>=WEB_PLATFORM_PROMOTION_MINIMUM&&web.data?.promotionRevalidation?.pass!==true)blockers.push('web-90-independent-promotion-revalidation-required');
-  const waitState=web.state==='MISSING'?'WAITING_WEB_GAMEPLAY_VALIDATION':webContract.homepageEligible&&!webContract.platformEligible?'WAITING_WEB_STRICT_IMPROVEMENT':'WAITING_WEB_GAMEPLAY_REVALIDATION';
-  writeState(waitState,{sourceDesign:sourceBaseline,web,blockers,nextAction:webContract.homepageEligible?'Web Top30 후보는 유지하되 90점 이상과 독립 재검증 PASS가 될 때까지 개선·재검증한다.':'실제 플레이 가능한 Web 게임 본체를 기준으로 gameplay milestone 30분 깊이, 실체성, 음악, 소스/설계 해시를 다시 검증한다.'});
+  else if(webContract.finalContentDepthPass&&Number.isFinite(webContract.score)&&webContract.score<WEB_PLATFORM_PROMOTION_MINIMUM)blockers.push(`web-strict-score-below-platform-${WEB_PLATFORM_PROMOTION_MINIMUM}`);
+  if(webContract.finalContentDepthPass&&webContract.score>=WEB_PLATFORM_PROMOTION_MINIMUM&&web.data?.promotionRevalidation?.pass!==true)blockers.push('web-90-independent-promotion-revalidation-required');
+  const waitState=web.state==='MISSING'?'WAITING_WEB_GAMEPLAY_VALIDATION':webContract.initialPass&&!webContract.finalContentDepthPass?'WAITING_WEB_FINAL_CONTENT_DEPTH':webContract.top30Eligible&&!webContract.platformEligible?'WAITING_WEB_STRICT_IMPROVEMENT':'WAITING_WEB_GAMEPLAY_REVALIDATION';
+  const nextAction=waitState==='WAITING_WEB_FINAL_CONTENT_DEPTH'?'현재 실제 게임 source를 보존하고 콘텐츠를 확장한 뒤 실제 30분 FINAL_CONTENT_DEPTH_VALIDATION을 수행한다.':webContract.top30Eligible?'Web Top30 자격은 유지하되 선택 플랫폼 전진은 90점 이상과 독립 재검증 PASS까지 같은 Web source를 개선·재검증한다.':'완결된 실제 플레이 사이클 1개와 schema12 evidence를 기준으로 Web 게임 본체를 다시 검증한다.';
+  writeState(waitState,{sourceDesign:sourceBaseline,web,blockers:[...new Set(blockers)],nextAction});
   process.exit(0);
 }
 const webMeeting=await runMeeting('WEB',sourceBaseline.content,web.data);
