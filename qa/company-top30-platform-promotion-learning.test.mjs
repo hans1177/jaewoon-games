@@ -7,12 +7,13 @@ const strictReview=fs.readFileSync('tools/company-strict-production-review.mjs',
 const homepageSync=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
 const validationCycle=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
 
-test('Web 90 promotion requires a second independent fresh real-game validation',()=>{
-  assert.match(webValidation,/VALIDATION_SCHEMA_VERSION=11/);
+test('Web 90 promotion requires a second independent fresh real-game and content-depth validation',()=>{
+  assert.match(webValidation,/VALIDATION_SCHEMA_VERSION=12/);
   assert.match(webValidation,/sourceIndexSha256/);
   assert.match(webValidation,/designBaselineSha256/);
   assert.match(webValidation,/substanceGate/);
   assert.match(webValidation,/secondSubstancePass/);
+  assert.match(webValidation,/secondContentDepthPass/);
   assert.match(webValidation,/web-promotion-revalidation\.json/);
   assert.match(webValidation,/independentRun:true/);
   assert.match(webValidation,/sourceHashMatch/);
@@ -24,12 +25,13 @@ test('Web 90 promotion requires a second independent fresh real-game validation'
 test('Top30 keeps 80 minimum, rejects stale harness evidence and preserves incumbent on a tie',()=>{
   assert.match(homepageSync,/const minimumScore=80/);
   assert.match(homepageSync,/const limit=30/);
-  assert.match(homepageSync,/minimumValidationSchema=11/);
+  assert.match(homepageSync,/minimumValidationSchema=12/);
   assert.match(homepageSync,/requiresRealGameSubstance:true/);
-  assert.match(homepageSync,/requiredSessionValidationMode:'GAMEPLAY_MILESTONE_DEPTH'/);
+  assert.match(homepageSync,/requiresFinal30MinuteContentDepth:true/);
+  assert.match(homepageSync,/requiredContentDepthValidationMode:'REAL_GAMEPLAY_DIVERSITY_PROXY'/);
   assert.match(homepageSync,/requiresFreshSourceHash:true/);
   assert.match(homepageSync,/requiresFreshDesignBaselineHash:true/);
-  assert.match(homepageSync,/requiresStructured30MinuteEvidence:true/);
+  assert.match(homepageSync,/finalContentDepthPass/);
   assert.match(homepageSync,/STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE/);
   assert.match(homepageSync,/TIE_PRESERVES_VALID_INCUMBENT/);
   assert.match(homepageSync,/previousRank/);
