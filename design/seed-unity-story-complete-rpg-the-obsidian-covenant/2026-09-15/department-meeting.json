@@ -22,62 +22,63 @@
   "representatives": {
     "planning": {
       "keep": [
-        "SEED-UNITY-STORY_COMPLETE_RPG-001"
+        "keep"
       ],
       "fix": [
-        "GAME_SEED"
+        "fix"
       ],
       "add": [
-        "GAME_CATEGORY"
+        "add"
       ],
       "risks": [
-        "GAME_SEED"
+        "risks"
       ],
       "evidence": [
-        "SEED_MATERIAL_IDS"
+        "evidence"
+      ],
+      "questions": [
+        "questions"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "SEED_MATERIAL_SELECTION_SIGNALS",
+        "SEED_MATERIAL_COMPLEMENTARITY"
+      ],
+      "fix": [
+        "SEED_MATERIAL_COMPLEMENTARITY"
+      ],
+      "add": [
+        "GRAPHICS_STYLE_CONSISTENCY"
+      ],
+      "risks": [
+        "SEED_MATERIAL_SELECTION_MODE"
+      ],
+      "evidence": [
+        "SEED_MATERIAL_SELECTION_SIGNALS"
       ],
       "questions": [
         "SEED_MATERIAL_SELECTION_MODE"
       ]
     },
-    "graphics": {
-      "keep": [
-        "graphics"
-      ],
-      "fix": [
-        "graphics"
-      ],
-      "add": [
-        "graphics"
-      ],
-      "risks": [
-        "graphics"
-      ],
-      "evidence": [
-        "Final Fantasy VI"
-      ],
-      "questions": [
-        "What is the visual style of the game?"
-      ]
-    },
     "development": {
       "keep": [
-        "game-seed"
+        "The Obsidian Covenant"
       ],
       "fix": [
-        "game-seed"
+        "The Obsidian Covenant"
       ],
       "add": [
-        "game-seed"
+        "The Obsidian Covenant"
       ],
       "risks": [
-        "game-seed"
+        "The Obsidian Covenant"
       ],
       "evidence": [
-        "game-seed"
+        "The Obsidian Covenant"
       ],
       "questions": [
-        "game-seed"
+        "The Obsidian Covenant"
       ]
     },
     "qa": {
@@ -102,22 +103,22 @@
     },
     "balance": {
       "keep": [
-        "SOCIAL_COOP_COMPETITION"
+        "keep"
       ],
       "fix": [
-        "CATEGORY_OR_GENRE_FIT"
+        "fix"
       ],
       "add": [
-        "TOP30_DIFFERENTIATION"
+        "add"
       ],
       "risks": [
-        "VALIDATED_LEARNING_OUTCOME"
+        "risks"
       ],
       "evidence": [
-        "CORE_FUN_TO_LEARN"
+        "evidence"
       ],
       "questions": [
-        "DISTINCT_IDENTITY"
+        "questions"
       ]
     }
   },
@@ -126,9 +127,17 @@
   "summary": "CONSENSUS",
   "decisions": [
     {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "The structure of the JSON is already in a standard format, with appropriate keys and values. There are no errors in the syntax or content.",
+      "departments": [
+        "planning"
+      ]
+    },
+    {
       "topic": "graphics",
       "status": "CONSENSUS",
-      "reason": "Final Fantasy VI is a highly acclaimed and influential game, and its visual style is a key component of its success.  Therefore, we must prioritize its visual fidelity and maintain its artistic integrity.",
+      "reason": "The Obsidian Covenant is a crucial element for the overall aesthetic and should be maintained.  The current implementation introduces inconsistencies that detract from the established style.  It requires a more thorough review and potential adjustment to ensure consistency across all materials.",
       "departments": [
         "graphics"
       ]
@@ -136,7 +145,7 @@
     {
       "topic": "development",
       "status": "CONSENSUS",
-      "reason": "own",
+      "reason": "The Obsidian Covenant is a crucial element for the overall aesthetic and should be maintained.  The current implementation introduces inconsistencies that detract from the established style.  It requires a more thorough review and potential adjustment to ensure consistency across all materials.",
       "departments": [
         "development"
       ]
@@ -144,7 +153,7 @@
     {
       "topic": "qa",
       "status": "CONSENSUS",
-      "reason": "...",
+      "reason": "QA 부서는 모든 요청에 대해 수용, 수정, 반박, 추가, 수정, 또는 삭제를 수행할 수 있습니다.",
       "departments": [
         "qa"
       ]
@@ -152,14 +161,14 @@
     {
       "topic": "balance",
       "status": "CONSENSUS",
-      "reason": "planning",
+      "reason": "The Obsidian Covenant is a crucial element for the overall aesthetic and should be maintained.  The current implementation introduces inconsistencies that detract from the established style.  It requires a more thorough review and potential adjustment to ensure consistency across all materials.",
       "departments": [
         "balance"
       ]
     }
   ],
   "counts": {
-    "consensus": 4,
+    "consensus": 5,
     "conflict": 0,
     "hold": 0
   }

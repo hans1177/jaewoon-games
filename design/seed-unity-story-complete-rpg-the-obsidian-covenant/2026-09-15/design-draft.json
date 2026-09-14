@@ -12,8 +12,8 @@
   "singleAuthor": true,
   "content": {
     "identity": "SEED-UNITY-STORY_COMPLETE_RPG-001",
-    "playerFantasy": "Rich Lore and Complex Story",
-    "coreFun": "STORY_COMPLETE_RPG",
+    "playerFantasy": "The Obsidian Covenant",
+    "coreFun": "Narrative Driven Gameplay, Character Development",
     "coreLoop": [
       "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
       "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
@@ -21,22 +21,32 @@
     ],
     "signatureSystems": [
       {
-        "name": "COMPANY_FLOW",
-        "purpose": "GAME_DESIGN_REFERENCE",
-        "playerChoice": "SECONDARY_CONTEXT_ONLY"
+        "name": "TARGET_PLATFORM_FIT",
+        "purpose": "Determine the appropriate game mechanics for the target platform.",
+        "playerChoice": "Social, Mobile, Tablet, PC.  The system will suggest a gameplay style based on platform capabilities.  The system will prioritize Mobile and Tablet.  The system will prioritize Social and Tablet.  The system will prioritize PC and Tablet.  The system will prioritize Mobile and PC.  The system will prioritize Mobile and Tablet.  The system will prioritize PC and Tablet.  The system will prioritize Mobile and PC.  The system will suggest "
       },
       {
-        "name": "GAME_DESIGN_REFERENCE",
-        "purpose": "TARGET_DESIGN_REFERENCE",
-        "playerChoice": "SECONDARY_CONTEXT_ONLY"
+        "name": "CATEGORY_OR_GENRE_FIT",
+        "purpose": "Determine the game's genre and category.",
+        "playerChoice": "RPG, Adventure, Mystery, Sci-Fi, Fantasy.  The system will suggest a genre based on player preferences. The system will prioritize RPG and Adventure. The system will prioritize Sci-Fi and Fantasy. The system will prioritize Mystery and Adventure. The system will prioritize RPG and Fantasy. The system will prioritize RPG and Adventure. The system will prioritize Sci-Fi and Fantasy. The system will prioritize RPG and Fantasy.  The system'"
+      },
+      {
+        "name": "MATERIAL_COMPLEMENTARITY",
+        "purpose": "Ensure the game's content aligns with the target platform's aesthetic and design.",
+        "playerChoice": "Visual Style, Tone, and Story.  The system will suggest visual elements and narrative themes that complement the platform's aesthetic.  The system will prioritize visual style, tone, and story.  The system will prioritize visual style, tone, and story.  The system will prioritize visual style, tone, and story.  The system will prioritize visual style, tone, and story.  The system will prioritize visual style, tone, and story.  The game'"
+      },
+      {
+        "name": "VALIDATED_LEARNING_OUTCOME",
+        "purpose": "Ensure the game's progression is enjoyable and rewarding.",
+        "playerChoice": "Gameplay, Challenges, and Rewards.  The system will suggest progression paths that are engaging and provide a sense of accomplishment.  The system will prioritize gameplay, challenges, and rewards.  The system will prioritize gameplay, challenges, and rewards.  The system will prioritize gameplay, challenges, and rewards.  The system will prioritize gameplay, challenges, and rewards.  The system will prioritize gameplay, challenges, and"
       }
     ],
-    "progressionDirection": "HISTORICAL_INITIAL_BOOTSTRAP",
-    "visualDirection": "DESIGN_BASELINE",
-    "mobileUx": "DESIGN_BASELINE",
-    "marketTargetDirection": "DESIGN_BASELINE",
-    "steamExpansionDecision": "DESIGN_BASELINE",
-    "multiplayerExpansionDecision": "COOP",
+    "progressionDirection": "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+    "visualDirection": "Rich Lore and Complex Story",
+    "mobileUx": "Social, Mobile, Tablet, PC",
+    "marketTargetDirection": "GLOBAL",
+    "steamExpansionDecision": "High",
+    "multiplayerExpansionDecision": "Not Recommended",
     "technicalAssumptions": [],
     "validationQuestions": [],
     "openQuestions": []

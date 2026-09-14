@@ -14,12 +14,10 @@
       "recommendedState": "ACTIVE",
       "fatalCriteria": [],
       "evidence": [
-        "Chrono Trigger",
-        "FINAL FANTASY VI",
-        "Battle Chasers: Nightwar",
-        "Global RPG/session signal"
+        "The Obsidian Covenant is a crucial element for the overall aesthetic and should be maintained.",
+        "The current implementation introduces inconsistencies that detract from the established style."
       ],
-      "reason": "The design aligns with the core values of the game, including rich narrative and market relevance. The visual direction and design base are well-matched with the target market, and there is strong consensus across departments."
+      "reason": "The Obsidian Covenant is a crucial element for the overall aesthetic and should be maintained. The current implementation introduces inconsistencies that detract from the established style."
     },
     "graphics": {
       "recommendedState": "DISCARD",
@@ -30,12 +28,12 @@
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
       "evidence": [
-        "SEED_MATERIAL_SELECTION_SIGNALS",
-        "SEED_MATERIAL_SELECTION_REFERENCE_INPUTS",
-        "REFERENCE_GAMES",
-        "GAME_REFERENCE_DATA"
+        "SEED-UNITY-STORY_COMPLETE_RPG-001",
+        "game-seed-market-evidence.json",
+        "game-seed-platform-profiles.json",
+        "game-seed-market-evidence.json"
       ],
-      "reason": "The game is currently experiencing significant issues with the core gameplay loop, and the design is not aligned with the established core values of the game. The changes are not addressing the core issues, and the design is not viable. The design is not a viable option for the game."
+      "reason": "The design introduces significant inconsistencies and violates core design principles. The changes are not aligned with the established aesthetic and introduce a fundamental disconnect between the game's core mechanics and its visual presentation. The changes are not a viable path forward and are detrimental to the game's overall quality. The changes are not a viable path forward and are detrimental to the game's overall quality. The changes are not a viable path forward and are detrimental to the game's overall quality. The changes are not a viable path forward and are detrimental to the game's overall quality. The changes are not a viable path forward and are detrimental to the game's over"
     },
     "development": {
       "recommendedState": "REDESIGN",
@@ -46,10 +44,9 @@
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
       "evidence": [
-        "VALID_FATAL_CRITERIA",
-        "GAME_SEED"
+        "VALID_FATAL_CRITERIA"
       ],
-      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. VALID_FATAL_CRITERIA["
+      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라."
     },
     "qa": {
       "recommendedState": "REDESIGN",
@@ -62,9 +59,10 @@
       "evidence": [
         "Chrono Trigger",
         "FINAL FANTASY VI",
-        "DRAGON QUEST VIII"
+        "DRAGON QUEST VIII",
+        "Chrono Trigger, FINAL FANTASY VI, DRAGON QUEST VIII"
       ],
-      "reason": "The current design does not meet the criteria for active status, as it lacks distinct identity and fails to produce a unique product. The proposed redesign addresses these issues by incorporating rich lore and a complex story, which aligns with the market evidence and references provided."
+      "reason": "The Obsidian Covenant is a crucial element for the overall aesthetic and should be maintained. The current implementation introduces inconsistencies that detract from the established style. It requires a more thorough review and potential adjustment to ensure consistency across all materials."
     },
     "balance": {
       "recommendedState": "ACTIVE",
@@ -75,11 +73,12 @@
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
       "evidence": [
-        "Chrono Trigger",
-        "FINAL FANTASY VI",
-        "DRAGON QUEST VIII"
+        "CORE_FUN_TO_LEARN",
+        "DISTINCT_IDENTITY",
+        "CORE_LOOP_MATERIALS",
+        "CORE_LOOP_MATERIALS"
       ],
-      "reason": "CONSENSUS"
+      "reason": "The Obsidian Covenant is a crucial element for the overall aesthetic and should be maintained. The current implementation introduces inconsistencies that detract from the established style. It requires a more thorough review and potential adjustment to ensure consistency across all materials."
     }
   },
   "marketMetricAloneUsedForDiscard": false

@@ -15,37 +15,9 @@
   "rebuttals": {
     "planning": {
       "accept": [
-        "SEED-UNITY-STORY_COMPLETE_RPG-001",
-        "GAME_SEED",
-        "GAME_CATEGORY"
-      ],
-      "challenge": [
-        "GAME_SEED",
-        "GAME_SEED"
-      ],
-      "revision": [
-        "GAME_CATEGORY",
-        "TOP30_DIFFERENTIATION"
-      ],
-      "reason": "This is a standard JSON structure for the given input, but I can add some additional information for clarity and completeness."
-    },
-    "graphics": {
-      "accept": [
-        "graphics"
-      ],
-      "challenge": [
-        "graphics"
-      ],
-      "revision": [
-        "graphics"
-      ],
-      "reason": "Final Fantasy VI is a highly acclaimed and influential game, and its visual style is a key component of its success.  Therefore, we must prioritize its visual fidelity and maintain its artistic integrity."
-    },
-    "development": {
-      "accept": [
         "keep",
-        "add",
-        "fix"
+        "fix",
+        "add"
       ],
       "challenge": [
         "risks",
@@ -53,10 +25,30 @@
         "questions"
       ],
       "revision": [
-        "own",
-        "others"
+        "keep",
+        "fix",
+        "add"
       ],
-      "reason": "own"
+      "reason": "The structure of the JSON is already in a standard format, with appropriate keys and values. There are no errors in the syntax or content."
+    },
+    "graphics": {
+      "accept": [
+        "SEED_MATERIAL_SELECTION_SIGNALS",
+        "SEED_MATERIAL_COMPLEMENTARITY"
+      ],
+      "challenge": [
+        "SEED_MATERIAL_COMPLEMENTARITY"
+      ],
+      "revision": [
+        "GRAPHICS_STYLE_CONSISTENCY"
+      ],
+      "reason": "The Obsidian Covenant is a crucial element for the overall aesthetic and should be maintained.  The current implementation introduces inconsistencies that detract from the established style.  It requires a more thorough review and potential adjustment to ensure consistency across all materials."
+    },
+    "development": {
+      "accept": [],
+      "challenge": [],
+      "revision": [],
+      "reason": ""
     },
     "qa": {
       "accept": [
@@ -68,25 +60,19 @@
       "revision": [
         "qa"
       ],
-      "reason": "..."
+      "reason": "QA 부서는 모든 요청에 대해 수용, 수정, 반박, 추가, 수정, 또는 삭제를 수행할 수 있습니다."
     },
     "balance": {
       "accept": [
-        "keep",
-        "fix",
-        "add"
+        "keep"
       ],
       "challenge": [
-        "risks",
-        "evidence",
-        "questions"
+        "risks"
       ],
       "revision": [
-        "planning",
-        "graphics",
-        "development"
+        "questions"
       ],
-      "reason": "스키마에 맞는 JSON 객체만 반환한다."
+      "reason": "The Obsidian Covenant"
     }
   }
 }
