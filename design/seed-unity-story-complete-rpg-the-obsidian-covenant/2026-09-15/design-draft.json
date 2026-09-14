@@ -1,0 +1,64 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "SEED-UNITY-STORY_COMPLETE_RPG-001",
+  "gameSeedSource": "game-seed-state.json",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "gemma3:1b",
+  "singleAuthor": true,
+  "content": {
+    "identity": "SEED-UNITY-STORY_COMPLETE_RPG-001",
+    "playerFantasy": "Rich Lore and Complex Story",
+    "coreFun": "Narrative Driven Gameplay",
+    "coreLoop": [
+      "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+      "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
+      "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
+    ],
+    "signatureSystems": [
+      {
+        "name": "COMPANY_FLOW.md",
+        "purpose": "GAME_DESIGN_POLICY_ENFORCEMENT",
+        "playerChoice": "GAME_SEED_DESIGN_BASICS_REESSMENT_MODE_1_4"
+      },
+      {
+        "name": "TARGET_DESIGN_REFERENCE",
+        "purpose": "TARGET_DESIGN_REFERENCE_GENERATION",
+        "playerChoice": "TARGET_DESIGN_REFERENCE_GENERATION_MODE_2_4"
+      },
+      {
+        "name": "GAME_SEED_MARKET_evidence",
+        "purpose": "SEED_MATERIAL_SELECTION_AND_DATA_INTEGRATION",
+        "playerChoice": "SEED_MATERIAL_SELECTION_SIGNALS_MODE_1_3"
+      },
+      {
+        "name": "GAME_SEED_MATERIAL_SELECTION_SIGNALS",
+        "purpose": "SEED_MATERIAL_SELECTION_SIGNALS",
+        "playerChoice": "SEED_MATERIAL_SELECTION_SIGNALS_MODE_1_3"
+      },
+      {
+        "name": "SEED_MATERIAL_SELECTION_MODE",
+        "purpose": "SEED_MATERIAL_SELECTION_MODE",
+        "playerChoice": "SEED_MATERIAL_SELECTION_MODE_1_3"
+      },
+      {
+        "name": "SEED_MATERIAL_SELECTION_SIGNALS",
+        "purpose": "SEED_MATERIAL_SELECTION_SIGNALS",
+        "playerChoice": "SEED_MATERIAL_SELECTION_SIGNALS_MODE_1_3}}"
+      }
+    ],
+    "progressionDirection": "TARGET_PLATFORM_FIT",
+    "visualDirection": "HISTORICAL_INITIAL_BOOTSTRAP",
+    "mobileUx": "DESIGN_BASELINE",
+    "marketTargetDirection": "DESIGN_BASELINE",
+    "steamExpansionDecision": "HIGH",
+    "multiplayerExpansionDecision": "NOT_RECOMMENDED",
+    "technicalAssumptions": [],
+    "validationQuestions": [],
+    "openQuestions": []
+  }
+}

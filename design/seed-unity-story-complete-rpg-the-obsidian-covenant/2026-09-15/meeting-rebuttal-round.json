@@ -1,0 +1,87 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "reason": "The current structure is already aligned with the requirements. However, for clarity and completeness, I will revise the JSON to ensure consistency and completeness."
+    },
+    "graphics": {
+      "accept": [
+        "graphics",
+        "add",
+        "risks"
+      ],
+      "challenge": [
+        "game-seed-oss.json"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "risks"
+      ],
+      "reason": "SEED_MATERIAL_SELECTION_SIGNALS_MODE_1_3는 핵심 게임 기능에 중요한 영향을 미치므로, 이를 유지하는 것이 중요합니다. 또한, 게임의 퀄리티 향상을 위해 그래픽 개선을 추가해야 합니다."
+    },
+    "development": {
+      "accept": [
+        "game-seed-market-evidence.json"
+      ],
+      "challenge": [
+        "game-seed-oss.json"
+      ],
+      "revision": [
+        "game-seed-oss.json"
+      ],
+      "reason": "game-seed-oss.json"
+    },
+    "qa": {
+      "accept": [
+        "qa"
+      ],
+      "challenge": [
+        "qa"
+      ],
+      "revision": [
+        "qa"
+      ],
+      "reason": "..."
+    },
+    "balance": {
+      "accept": [
+        "OWN"
+      ],
+      "challenge": [
+        "OTHERS"
+      ],
+      "revision": [
+        "OTHERS"
+      ],
+      "reason": "스키마에 맞는 JSON 객체만 반환한다."
+    }
+  }
+}

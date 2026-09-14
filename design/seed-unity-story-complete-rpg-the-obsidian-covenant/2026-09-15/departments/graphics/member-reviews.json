@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Rich Lore and Complex Story"
+        ],
+        "fix": [
+          "Visual Direction"
+        ],
+        "add": [
+          "HISTORICAL_INITIAL_BOOTSTRAP"
+        ],
+        "risks": [
+          "GAME_SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "evidence": [
+          "SEED_MATERIAL_SELECTION_MODE_1_3"
+        ],
+        "questions": [
+          "SEED_MATERIAL_SELECTION_SIGNALS_MODE_1_3"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed-market-evidence.json"
+        ],
+        "fix": [
+          "game-seed-platform-profiles.json"
+        ],
+        "add": [
+          "game-seed-oss.json"
+        ],
+        "risks": [
+          "game-seed-oss.json"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "game-seed-market-evidence.json"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "graphics"
+        ],
+        "fix": [
+          "graphics"
+        ],
+        "add": [
+          "graphics"
+        ],
+        "risks": [
+          "graphics"
+        ],
+        "evidence": [
+          "graphics"
+        ],
+        "questions": [
+          "graphics"
+        ]
+      }
+    }
+  ]
+}

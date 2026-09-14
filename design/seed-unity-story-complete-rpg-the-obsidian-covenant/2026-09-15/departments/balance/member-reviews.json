@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "SOCIAL_COOP_COMPETITION"
+        ],
+        "fix": [
+          "STORY_OR_NARRATIVE_STRUCTURE"
+        ],
+        "add": [
+          "SPACE_BUILDING_OPERATION"
+        ],
+        "risks": [
+          "MAT-006"
+        ],
+        "evidence": [
+          "Chrono Trigger"
+        ],
+        "questions": [
+          "What is the role of Space Building in the game?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "SEED_MATERIAL_SELECTION_MODE"
+        ],
+        "fix": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "add": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "risks": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "evidence": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "questions": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Narrative Driven Gameplay"
+        ],
+        "fix": [
+          "Core Loop"
+        ],
+        "add": [
+          "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward."
+        ],
+        "risks": [
+          "GAME_SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "evidence": [
+          "SEED_MATERIAL_SELECTION_MODE_1_3"
+        ],
+        "questions": [
+          "SEED_MATERIAL_SELECTION_SIGNALS_MODE_1_3"
+        ]
+      }
+    }
+  ]
+}

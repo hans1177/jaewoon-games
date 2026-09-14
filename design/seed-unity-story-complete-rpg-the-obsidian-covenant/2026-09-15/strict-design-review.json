@@ -1,0 +1,72 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "reviewStage": "DESIGN_STRICT_REVIEW",
+  "scoreScale": 100,
+  "passThreshold": 80,
+  "excellentThreshold": 90,
+  "excellent": false,
+  "totalScore": 91,
+  "scores": {
+    "ideaDistinctness": 6,
+    "categoryFit": 10,
+    "platformFit": 10,
+    "designFidelity": 15,
+    "session30Quality": 15,
+    "implementationCompleteness": 15,
+    "storyCausality": 10,
+    "progressionBalance": 5,
+    "artDirectionFidelity": 5
+  },
+  "weights": {
+    "ideaDistinctness": 15,
+    "categoryFit": 10,
+    "platformFit": 10,
+    "designFidelity": 15,
+    "session30Quality": 15,
+    "implementationCompleteness": 15,
+    "storyCausality": 10,
+    "progressionBalance": 5,
+    "artDirectionFidelity": 5
+  },
+  "improvementTargets": [
+    {
+      "dimension": "ideaDistinctness",
+      "current": 6,
+      "maxScore": 15,
+      "gap": 9
+    }
+  ],
+  "hardFailures": [
+    "CORE_FUN_WEAK"
+  ],
+  "verdict": "REVISE",
+  "evidence": {
+    "seedId": "SEED-UNITY-STORY_COMPLETE_RPG-001",
+    "seedGeneration": "HISTORICAL_INITIAL_BOOTSTRAP",
+    "materialContractApplied": false,
+    "materialIds": [
+      "MAT-006",
+      "MAT-012",
+      "MAT-018"
+    ],
+    "designPath": "design/seed-unity-story-complete-rpg-the-obsidian-covenant/2026-09-15/design-revised.json",
+    "multiplayerDesignMode": "COOP",
+    "targetSessionMinutes": 30,
+    "reviewContextSource": "ACTIVE_SEED"
+  },
+  "policyDocument": "COMPANY_FLOW.md",
+  "rules": {
+    "scoreCannotOverrideHardGate": true,
+    "correctableRejectAction": "FIX_AND_REVALIDATE",
+    "structuralRejectAction": "REBUILD_CANDIDATE",
+    "officialCardBeforePassForbidden": true,
+    "testShelfBeforePassOnly": true,
+    "learningRecordRequired": true,
+    "improvementPriority": "TOP_3_SCORE_GAPS",
+    "implementationScoreComposition": "LEGACY_DESIGN_100",
+    "initialWebStrictRequires30Minutes": false,
+    "final30MinuteContentDepthValidationOnly": true
+  },
+  "reviewedAt": "2026-09-14T16:55:58.766Z"
+}

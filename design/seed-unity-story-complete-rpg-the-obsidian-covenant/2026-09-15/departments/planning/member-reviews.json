@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "SEED-UNITY-STORY_COMPLETE_RPG-001"
+        ],
+        "fix": [
+          "GAME_SEED"
+        ],
+        "add": [
+          "GAME_SEED_MATERIAL_IDS"
+        ],
+        "risks": [
+          "GAME_SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "evidence": [
+          "GAME_SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "questions": [
+          "GAME_SEED_MATERIAL_SELECTION_SIGNALS"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Narrative Driven Gameplay"
+        ],
+        "fix": [
+          "Character Development"
+        ],
+        "add": [
+          "Fight Enemies and Bosses"
+        ],
+        "risks": [
+          "GAME_SEED_DESIGN_BASICS_REESSMENT_MODE_1_4"
+        ],
+        "evidence": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "questions": [
+          "TARGET_DESIGN_REFERENCE_GENERATION_MODE_2_4"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed-market-evidence.json"
+        ],
+        "fix": [
+          "game-seed-platform-profiles.json"
+        ],
+        "add": [
+          "game-seed-oss.json"
+        ],
+        "risks": [
+          "game-seed-oss.json"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "game-seed-market-evidence.json"
+        ]
+      }
+    }
+  ]
+}

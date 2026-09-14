@@ -1,0 +1,35 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "representativeModel": "gemma3:1b",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "Rich Lore and Complex Story",
+      "HISTORICAL_INITIAL_BOOTSTRAP"
+    ],
+    "fix": [
+      "game-seed-market-evidence.json"
+    ],
+    "add": [
+      "graphics"
+    ],
+    "risks": [
+      "game-seed-oss.json"
+    ],
+    "evidence": [
+      "SEED_MATERIAL_SELECTION_MODE_1_3"
+    ],
+    "questions": [
+      "SEED_MATERIAL_SELECTION_SIGNALS_MODE_1_3"
+    ]
+  }
+}

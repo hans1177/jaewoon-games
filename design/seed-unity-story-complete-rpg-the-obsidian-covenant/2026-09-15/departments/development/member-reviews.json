@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game-seed-market-evidence.json"
+        ],
+        "fix": [
+          "game-seed-platform-profiles.json"
+        ],
+        "add": [
+          "game-seed-oss.json"
+        ],
+        "risks": [
+          "game-seed-oss.json"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "game-seed-market-evidence.json"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "development"
+        ],
+        "fix": [
+          "development"
+        ],
+        "add": [
+          "development"
+        ],
+        "risks": [
+          "development"
+        ],
+        "evidence": [
+          "development"
+        ],
+        "questions": [
+          "development"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "SOCIAL_COOP_COMPETITION"
+        ],
+        "fix": [
+          "STORY_OR_NARRATIVE_STRUCTURE"
+        ],
+        "add": [
+          "SPACE_BUILDING_OPERATION"
+        ],
+        "risks": [
+          "MAT-006"
+        ],
+        "evidence": [
+          "Chrono Trigger"
+        ],
+        "questions": [
+          "What is the role of Social Cooperation in the game?"
+        ]
+      }
+    }
+  ]
+}
