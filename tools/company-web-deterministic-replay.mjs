@@ -71,8 +71,10 @@ async function clickReplayAction(page,row,index){
   if(!target)return null;
   const before=await criticalSnapshot(page);
   try{await target.click({timeout:2500});await page.waitForTimeout(90);}catch{return null;}
-  const placement=page.locator('[data-placement-position],[data-build-slot],[data-tower-slot],[data-grid-x][data-grid-y]').filter({visible:true}).first();
-  if(await placement.count()){
+  const placements=page.locator('[data-placement-position],[data-build-slot],[data-tower-slot],[data-grid-x][data-grid-y]');
+  let placement=null;
+  for(let i=0;i<await placements.count();i++){const candidate=placements.nth(i);if(await candidate.isVisible().catch(()=>false)){placement=candidate;break;}}
+  if(placement){
     try{await placement.click({timeout:1800});await page.waitForTimeout(90);}catch{}
   }else{
     const active=await page.locator('[data-placement-mode="active"],[data-build-mode="active"],body[data-placement-mode="active"]').count();
