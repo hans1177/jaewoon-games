@@ -46,12 +46,35 @@ assert.ok(shallowRuntime.blockers.some(x=>x.startsWith('APPROVED_SCOPE_TOWER_PLA
 const realPlacement=runtimeApprovedScopeCoverage({declaredCount:1,visibleScopeIds:['scope-place'],interactedScopeIds:['scope-place'],mechanicBindings:['tower-place'],inventory:placementInventory,interactionResults:[{scopeId:'scope-place',mechanicId:'tower-place',clicked:true,stateChanged:true,positionSelected:true,placementResult:true,towerEntityDelta:1}]});
 assert.equal(realPlacement.pass,true,'position choice plus materialized tower must pass');
 
+const interactionInventory=[{id:'scope-talk',path:'characters.npc',label:'Talk to the gatekeeper and open the locked gate after the NPC interaction.'}];
+const shallowInteractionStatic=staticApprovedScopeCoverage('<main data-approved-scope-count="1"><button data-scope-id="scope-talk" data-mechanic-id="talk">대화</button></main>',interactionInventory);
+assert.equal(shallowInteractionStatic.pass,false,'interaction text/button alone must not count as real character-object interaction');
+assert.ok(shallowInteractionStatic.blockers.some(x=>x.startsWith('APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:')));
+const shallowInteractionRuntime=runtimeApprovedScopeCoverage({declaredCount:1,visibleScopeIds:['scope-talk'],interactedScopeIds:['scope-talk'],mechanicBindings:['talk'],inventory:interactionInventory,interactionResults:[{scopeId:'scope-talk',mechanicId:'talk',clicked:true,stateChanged:true,targetSelected:true,targetStateChanged:false,interactionResult:false}]});
+assert.equal(shallowInteractionRuntime.pass,false,'opening text without changing the target state must fail');
+assert.ok(shallowInteractionRuntime.blockers.some(x=>x.startsWith('APPROVED_SCOPE_ENTITY_INTERACTION_RESULT_REQUIRED:')));
+const realInteractionRuntime=runtimeApprovedScopeCoverage({declaredCount:1,visibleScopeIds:['scope-talk'],interactedScopeIds:['scope-talk'],mechanicBindings:['talk'],inventory:interactionInventory,interactionResults:[{scopeId:'scope-talk',mechanicId:'talk',clicked:true,stateChanged:true,targetSelected:true,targetStateChanged:true,interactionResult:true}]});
+assert.equal(realInteractionRuntime.pass,true,'selected target plus target state/result change must pass');
+
+const incomplete3D=runtimeApprovedScopeCoverage({declaredCount:1,visibleScopeIds:['scope-place'],interactedScopeIds:['scope-place'],mechanicBindings:['tower-place'],inventory:placementInventory,interactionResults:[{scopeId:'scope-place',mechanicId:'tower-place',clicked:true,stateChanged:true,positionSelected:true,placementResult:true,towerEntityDelta:1}],spatialEvidence:{detected3D:true,xyzMoved:false,cameraObserved:true,collisionObserved:true,raycastOrRouteObserved:true,spatialOutcomeObserved:true}});
+assert.equal(incomplete3D.pass,false,'3D rendering without actual XYZ movement must fail');
+assert.ok(incomplete3D.blockers.includes('REAL_3D_XYZ_MOVEMENT_REQUIRED'));
+const complete3D=runtimeApprovedScopeCoverage({declaredCount:1,visibleScopeIds:['scope-place'],interactedScopeIds:['scope-place'],mechanicBindings:['tower-place'],inventory:placementInventory,interactionResults:[{scopeId:'scope-place',mechanicId:'tower-place',clicked:true,stateChanged:true,positionSelected:true,placementResult:true,towerEntityDelta:1}],spatialEvidence:{detected3D:true,xyzMoved:true,cameraObserved:true,collisionObserved:true,raycastOrRouteObserved:true,spatialOutcomeObserved:true}});
+assert.equal(complete3D.pass,true,'real 3D spatial runtime evidence must pass');
+
 const keywordMetrics={...baseMetrics,towerTypeCount:1,towerEffectProfileCount:1,strategyChoiceCount:1,strategyCombatOutcomeCount:1,placementResultCount:0};
 const keywordRuntime={...runtimeFeatureEvidence,towerTypes:['fake-one'],towerTypeCount:1,towerEffectProfiles:['fake-one:damage'],towerEffectProfileCount:1,strategyChoices:['fake-choice'],strategyCombatOutcomes:[{choiceMechanic:'fake-choice',outcomeSignature:'same'}],strategyCombatOutcomeCount:1,placementResultCount:0};
 const keywordScore=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:'tower tower turret placement strategy choice slow range damage upgrade economy wave',evidence:evidence(keywordMetrics,keywordRuntime)});
 assert.equal(keywordScore.scores.CATEGORY_PLACEMENT_AND_ROUTE,0,'placement words cannot replace runtime placement');
 assert.equal(keywordScore.scores.CATEGORY_TOWER_VARIETY,0,'tower words cannot replace distinct runtime tower types/effects');
 assert.equal(keywordScore.scores.CATEGORY_STRATEGIC_CHOICE,0,'strategy words cannot replace divergent combat outcomes');
+
+const fakeInteractionEvidence=evidence({...baseMetrics,interactionTargetCount:1,entityInteractionResultCount:0},{...runtimeFeatureEvidence,interactionTargets:['gatekeeper'],interactionTargetCount:1,entityInteractionResultCount:0});
+const fakeInteractionScore=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:'',evidence:fakeInteractionEvidence});
+assert.equal(fakeInteractionScore.hardGates.REAL_ENTITY_INTERACTION_WHEN_PRESENT,false,'visible NPC/object targets must have actual target-state interaction results');
+const fake3DEvidence=evidence({...baseMetrics,detected3D:true,spatialOutcomeCount:1},{...runtimeFeatureEvidence,spatialOutcomeCount:1,spatialEvidence:{detected3D:true,xyzMoved:false,cameraObserved:true,collisionObserved:true,raycastOrRouteObserved:true,spatialOutcomeObserved:true}});
+const fake3DScore=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:'',evidence:fake3DEvidence});
+assert.equal(fake3DScore.hardGates.REAL_3D_SPATIAL_GAMEPLAY_WHEN_PRESENT,false,'3D visuals without real XYZ movement must hard fail');
 
 assert.equal(finalContentDepthPass(evidence()),true,'real meaningful content depth should pass');
 const repeatedOnly=evidence();
@@ -70,11 +93,20 @@ assert.match(bootstrap,/맵[·\/]월드[·\/]구역[·\/]경로/,'Vibe internal 
 assert.match(bootstrap,/배경 (?:이미지|그림).*구현/,'decorative backgrounds cannot satisfy the map requirement');
 assert.match(bootstrap,/실제 플레이 가능한 공간/,'Vibe must create an actual playable spatial surface');
 assert.match(bootstrap,/공간 선택.*실제 (?:게임 )?결과/,'map position or route choice must affect gameplay results');
+assert.match(bootstrap,/실제 X\/Y\/Z 이동/,'Vibe must implement actual 3D movement state');
+assert.match(bootstrap,/카메라.*충돌.*레이캐스트/,'3D maps must include camera, collision and raycast/path behavior');
+assert.match(bootstrap,/대상 상태 변화/,'character and object interaction must change the actual target state');
+assert.match(bootstrap,/data-interactable\/data-interaction-target/,'Vibe must expose actual interaction targets');
 const validator=fs.readFileSync('tools/company-development-web-gameplay-validation.mjs','utf8');
 assert.match(validator,/selectPlacementPosition/,'validator must perform actual position input');
 assert.match(validator,/towerPositions/,'validator must observe materialized spatial placement positions');
 assert.match(validator,/areaIds/,'validator must observe actual world/area changes');
 assert.match(validator,/positionMarkerCount/,'validator must observe real map/build position markers');
+assert.match(validator,/playerPosition/,'validator must observe runtime XYZ position');
+assert.match(validator,/collisionObserved/,'validator must verify collision runtime evidence');
+assert.match(validator,/raycastOrRouteObserved/,'validator must verify raycast or real route evidence');
+assert.match(validator,/interactionTargetStates/,'validator must observe NPC/object target states');
+assert.match(validator,/entityInteractionResultCount/,'validator must count actual target-state interaction results');
 assert.match(validator,/meaningfulGameplayMilliseconds/);
 assert.match(validator,/excludedRepeatedActionMilliseconds/);
 assert.match(validator,/excludedRetryMilliseconds/);
