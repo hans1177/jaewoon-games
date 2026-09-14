@@ -4206,7 +4206,7 @@
     ],
     "actualGameCountUnlimited": true,
     "availableCount": 100,
-    "lastReplenishedAt": "2026-09-14T02:02:51.011Z",
+    "lastReplenishedAt": "2026-09-14T01:29:45.562Z",
     "bootstrapCategories": [
       "ACTION_SURVIVAL_ROGUELITE",
       "SINGLE_DEFENSE_STRATEGY",
@@ -4254,5 +4254,42 @@
     "STORY_COMPLETE_RPG"
   ],
   "lastRunAt": "2026-09-14T01:05:05.774Z",
-  "lastAction": "HISTORICAL_INITIAL_BOOTSTRAP"
+  "lastAction": "HISTORICAL_INITIAL_BOOTSTRAP",
+  "seedMaterialLearning": {
+    "events": [
+      {
+        "gameId": "seed-puzzle-chromatic-cascade",
+        "seedId": "SEED-PUZZLE-001",
+        "reviewStage": "IMPLEMENTATION_STRICT_REVIEW",
+        "runtimeTarget": "web",
+        "verdict": "PASS",
+        "totalScore": 100,
+        "previousScore": null,
+        "scoreDelta": null,
+        "hardFailures": [],
+        "resolvedHardFailures": [],
+        "addedHardFailures": [],
+        "improvementTargets": [],
+        "learningSignal": "POSITIVE_SUCCESS",
+        "materialFamilies": [],
+        "validatedRealEvidence": true,
+        "reviewContextSource": "FROZEN_DESIGN_BASELINE+CANONICAL_DEVELOPMENT_QUEUE",
+        "recordedAt": "2026-09-14T01:34:10.435Z"
+      }
+    ],
+    "causeCounts": {},
+    "preferSeedMaterialFamilies": [],
+    "avoidSeedMaterialFamilies": [],
+    "rules": {
+      "designOpinionDoesNotBecomeTrainingSuccess": true,
+      "validatedRuntimeRequiredForPreferenceSignals": true,
+      "failuresAndFixesRetained": true,
+      "scoreDeltaAndFixOutcomeRetained": true,
+      "partial80To89IsImprovementSignalNotPositiveSuccess": true,
+      "positiveSuccessRequires90PlusAndHardGateClear": true,
+      "copyOriginalExpressionForbidden": true,
+      "signalsGuideSelectionButDoNotForceCopy": true
+    },
+    "updatedAt": "2026-09-14T01:34:10.436Z"
+  }
 }
