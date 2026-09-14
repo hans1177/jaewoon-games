@@ -10,7 +10,7 @@ policy:
   evidenceFilesCannotCreatePolicy: true
   separatePolicyDocumentsForbidden: true
   machineContractsMayMirrorPolicyButCannotCreatePolicy: true
-  latestOwnerDirectiveRecordedAt: 2026-09-13
+  latestOwnerDirectiveRecordedAt: 2026-09-14
 
 priority:
   - OWNER_LATEST_DIRECT_INSTRUCTION
@@ -20,9 +20,10 @@ priority:
   - STATUS_AUDIT_BUILD_HEALTH_EVIDENCE
 
 ownerCurrentProductionContract:
-  recordedAt: 2026-09-13
+  recordedAt: 2026-09-14
   authority: OWNER_LATEST_DIRECT_INSTRUCTION
   supersedesConflictingLegacySchedulingAndSeedRulesBelow: true
+  supersedesConflictingLegacyWebImplementationAndSessionRulesBelow: true
   seedMaterials:
     poolTarget: 100
     materialIsGame: false
@@ -68,12 +69,151 @@ ownerCurrentProductionContract:
     meaningfulLoopRequired: MEET_TO_COOPERATE_OR_COMPETE_TO_RESULT_TO_REWARD_OR_PROGRESSION
   firstSession:
     meaningfulMinutesRequired: 30
+    meaningfulMinutesMeaning: FINAL_CONTENT_DEPTH_TARGET_NOT_INITIAL_BUILD_GATE
+    initialImplementationMinuteHardGate: false
+    minimumImplementationUnit: ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE
+    minimumCycleRequires:
+      - GAME_START
+      - REAL_PLAYER_INPUT
+      - CORE_GAMEPLAY_ACTION
+      - OBSERVABLE_GAME_STATE_CHANGE
+      - PROGRESSION_OR_REWARD
+      - RISK_OR_FAILURE_PATH
+      - WIN_OR_GOAL_PATH
+      - TERMINAL_OR_CYCLE_END_STATE
+      - RETRY_OR_REENTRY
     phases:
       - MINUTE_0_TO_5_CONTROL_OBJECTIVE_WORLD_ENTRY
       - MINUTE_5_TO_15_CORE_LOOP_REPETITION_AND_FIRST_PROGRESSION_OR_CHOICE
       - MINUTE_15_TO_25_VARIATION_ESCALATION_STORY_OR_STRATEGY_CHANGE
       - MINUTE_25_TO_30_MID_GOAL_REWARD_AND_NEXT_PLAY_MOTIVATION
+    finalContentDepthValidation:
+      requiredBeforeHomepageTop30: true
+      targetMinutes: 30
+      performedAfterRealPlayableCycleExists: true
+      dedicatedTimeStageButtonsForbidden: true
+      fakeProgressCountersForbidden: true
+      pureElapsedTimerProofForbidden: true
+      mustUseRealGameplayProgressionAndContentDiversity: true
+      acceptableEvidenceIncludes:
+        - UNIQUE_GAMEPLAY_MECHANICS
+        - UNIQUE_FUNCTIONAL_UI
+        - MEANINGFUL_STATE_TRANSITIONS
+        - SYSTEM_DEPENDENCIES
+        - ENEMY_WORLD_OR_PUZZLE_VARIATION
+        - PROGRESSION_STATES
+        - REAL_WIN_AND_FAIL_PATHS
     paddingByHealthIdleWaitOrPureRepetitionForbidden: true
+  realWebGameQualification:
+    scoreRunsOnlyAfterHardGatesPass: true
+    hardGates:
+      - REAL_PLAYABLE_GAME
+      - ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE
+      - REAL_PLAYER_INPUT
+      - REAL_GAMEPLAY_SURFACE
+      - REAL_INTERCONNECTED_GAME_STATE
+      - REAL_WIN_OR_GOAL_PATH
+      - REAL_FAIL_PATH
+      - RETRY_OR_REENTRY
+      - MOBILE_PLAYABLE
+      - RUNTIME_STABLE
+      - CATEGORY_MATCH
+      - TEST_HARNESS_ABSENT
+      - FAKE_PROGRESS_ABSENT
+    rawUiCountIsHeuristicOnly: true
+    uniqueFunctionalUiCountRequiredOverRawUiCount: true
+    duplicateButtonsChangingSameSmallStateSetCountAsOneFunction: true
+    testOrValidationUiDoesNotCountAsGameplayUi: true
+  implementationScoring:
+    scoreScale: 100
+    composition: COMMON_60_PLUS_CATEGORY_40
+    commonWeights:
+      CORE_GAMEPLAY_LOOP: 15
+      SYSTEM_CONNECTIVITY: 10
+      CONTROLS_AND_GAME_FEEL: 8
+      FUNCTIONAL_UI_UX: 7
+      PROGRESSION_REWARD: 7
+      RISK_FAILURE_RETRY: 5
+      FEEDBACK: 4
+      STABILITY_PERFORMANCE: 4
+    categoryWeights:
+      SURVIVAL:
+        WORLD_AND_MOVEMENT: 8
+        RESOURCE_GATHERING: 7
+        CRAFTING_OR_PREPARATION: 7
+        THREAT_ENEMY_SYSTEM: 7
+        SURVIVAL_PRESSURE: 6
+        EXPLORATION_VARIETY: 5
+      TOWER_DEFENSE:
+        PLACEMENT_AND_ROUTE: 8
+        ENEMY_WAVES: 7
+        TOWER_VARIETY: 7
+        UPGRADES: 6
+        ECONOMY: 6
+        STRATEGIC_CHOICE: 6
+      RPG:
+        COMBAT: 8
+        QUEST_AND_NPC: 7
+        EXPLORATION: 6
+        EQUIPMENT_AND_GROWTH: 7
+        ENEMY_AND_BOSS: 6
+        STORY_AND_WORLD_STATE: 6
+      SIMULATOR_TYCOON:
+        PRODUCTION_CHAIN: 9
+        UPGRADES: 7
+        AUTOMATION: 7
+        ECONOMY: 7
+        AREA_UNLOCK: 5
+        MANUAL_AUTOMATIC_CHOICE: 5
+      PUZZLE:
+        PUZZLE_RULES: 9
+        SOLVABILITY: 7
+        DIFFICULTY_CURVE: 7
+        BOARD_STATE: 6
+        GIMMICK_VARIETY: 6
+        PUZZLE_FEEDBACK: 5
+      OBBY_PLATFORMER:
+        MOVEMENT_FEEL: 9
+        LEVEL_DESIGN: 8
+        OBSTACLE_VARIETY: 7
+        FAILURE_RETRY: 6
+        DIFFICULTY_CURVE: 6
+        CHECKPOINTS: 4
+      BATTLE_SHOOTER:
+        MOVEMENT: 7
+        ATTACK_AND_HIT: 8
+        ENEMY_AI: 7
+        SKILL_AND_COOLDOWN: 6
+        COMBAT_OBJECTIVE: 6
+        COMBAT_FEEDBACK: 6
+      STORY_ADVENTURE:
+        EXPLORATION: 7
+        QUEST: 7
+        NPC_DIALOGUE: 6
+        EVENT_WORLD_STATE: 6
+        COMBAT_OR_PUZZLE: 6
+        BRANCH_OR_OBJECTIVE: 8
+      ROLEPLAY_LIFE:
+        WORLD_SPACE: 7
+        INTERACTION: 7
+        NPC: 6
+        LIFE_ACTIVITIES: 7
+        CHARACTER_STATE: 6
+        FREEDOM_AND_CHOICE: 7
+    automaticMetrics:
+      - UNIQUE_MECHANIC_COUNT
+      - UNIQUE_FUNCTIONAL_UI_COUNT
+      - GAMEPLAY_ACTION_COUNT
+      - MEANINGFUL_STATE_TRANSITION_COUNT
+      - SYSTEM_DEPENDENCY_COUNT
+      - ENEMY_OR_WORLD_ENTITY_COUNT
+      - WIN_PATH_COUNT
+      - FAIL_PATH_COUNT
+      - GAMEPLAY_SCREEN_RATIO
+      - DUPLICATE_ACTION_RATIO
+      - TEST_UI_RATIO
+    categoryMismatchStopsScoring: true
+    repeatedTestControlsDoNotIncreaseScore: true
   strictReview:
     scoreScale: 100
     passMinimum: 80
@@ -130,6 +270,7 @@ ownerCurrentProductionContract:
     testCandidateMustBeClearlyMarkedNotPass: true
     webStrictScoreMinimum: 80
     hardGatesMustPass: true
+    final30MinuteContentDepthValidationMustPass: true
     maxVisibleTestCandidates: 30
     ranking: STRICT_IMPLEMENTATION_SCORE_DESC
     artbookRequiredForHomepageRegistration: true
