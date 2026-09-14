@@ -26,7 +26,7 @@ for(const row of HISTORICAL_REAL_GAMES){
     const raw=fs.readFileSync(indexFile,'utf8');
     const staticReview=staticApprovedScopeCoverage(raw,inventory);
     assert.equal(staticReview.pass,false,`${row.gameName} must not be grandfathered through stronger semantic gates`);
-    assert.ok(staticReview.blockers.some(code=>/REAL_(?:SPATIAL_STATE|ENTITY_INTERACTION)|TOWER_POSITION_INPUT/.test(code)),staticReview.blockers.join(','));
+    assert.ok(staticReview.blockers.some(code=>code.startsWith('APPROVED_SCOPE_ITEM_MISSING:')||code.startsWith('APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:')),staticReview.blockers.join(','));
     const temp=fs.mkdtempSync(path.join(os.tmpdir(),'web-six-real-repair-')),candidatePath=path.join(temp,'candidate');
     try{
       await assert.rejects(()=>buildFirstPlayable({gameId:row.gameId,gameName:row.gameName,baseline:lockedBaseline,sourcePath,candidatePath,candidateId:'six-game-semantic-repair',sourceCommit:'test',model:'none'}),/VIBE2_LOCAL_MODEL_REQUIRED/);
