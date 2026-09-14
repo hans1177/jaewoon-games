@@ -1,32 +1,35 @@
 {
-  "version": 5,
+  "version": 7,
   "gameId": "seed-puzzle-chromatic-cascade",
   "date": "2026-09-11",
-  "productionClass": "DESIGN_ONLY",
-  "tierAlias": 3,
-  "tier": 3,
+  "productionClass": "DEVELOPMENT_CONFIRMED",
+  "tierAlias": 2,
+  "tier": 2,
+  "postPromotion": true,
+  "postWebStrictReview": true,
+  "webStrictScore": 100,
+  "webValidationEvidencePath": "design/seed-puzzle-chromatic-cascade/2026-09-11/web-gameplay-validation.json",
+  "webSourcePath": "web-games/seed-puzzle-chromatic-cascade",
   "editorRole": "ARTBOOK_EDITOR_AI",
-  "editorModel": "qwen2.5:1.5b",
+  "editorModel": "qwen3:0.6b",
   "singleEditor": true,
   "sourceDesign": "design/seed-puzzle-chromatic-cascade/2026-09-11/design-revised.json",
-  "baselineGateState": "DESIGN_BASELINE_READY",
+  "baselineGateState": "POST_WEB_SCHEMA13_DESIGN_BOUND",
   "departmentPageAuthorship": false,
   "newClaimsAdded": false,
   "vibe2Used": false,
   "content": {
     "identity": "Chromatic Cascade",
-    "playerFantasy": "Global mobile players across age groups who are interested in puzzle gameplay.",
+    "playerFantasy": "Global mobile players across age groups interested in puzzle gameplay",
     "coreLoop": [
       "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
       "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
       "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
     ],
     "signatureSystems": [
-      "Visual Identity",
-      "Progression Mix",
-      "Touch-first Presentation"
+      "Visual Identity: Reinterpret Royal Match and Candy Crush design elements through a distinct setting, visual identity, and touch-first presentation."
     ],
-    "progressionDirection": "Reinterpret the successful structural lessons of Royal Match and Candy Crush Saga through a distinct setting, visual identity, progression mix, and touch-first presentation.",
-    "visualDirection": "Use sourced global mobile engagement and category-session evidence as a directional reference, while keeping the puzzle core loop readable in short touch sessions and preserving longer-term progression between sessions."
+    "progressionDirection": "Reinterpret successful structural lessons from Royal Match and Candy Crush through a distinct setting, visual identity, and touch-first presentation.",
+    "visualDirection": "Use global mobile engagement and category-session evidence as a directional reference, while keeping the core loop readable in short touch sessions and preserving longer-term progression between sessions."
   }
 }
