@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import {execFileSync} from 'node:child_process';
+
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const strings=value=>Array.isArray(value)?value.map(clean).filter(Boolean):[];
@@ -152,6 +155,20 @@ export function runtimeValidationBlockers({plan={},evidence={}}={}){
   return uniq(blockers);
 }
 
+export function runtimeEvidenceFromValidationReport(report={}){
+  const evidence=report?.runtimeValidationEvidence;
+  return evidence&&typeof evidence==='object'&&!Array.isArray(evidence)?evidence:null;
+}
+export function loadCanonicalRuntimeEvidence({evidencePath=process.env.WEB_FINAL_CONTENT_DEPTH_EVIDENCE_PATH||'',runtimeBranch=process.env.COMPANY_RUNTIME_BRANCH||'company-runtime'}={}){
+  const file=clean(evidencePath),branch=clean(runtimeBranch);if(!file)return null;
+  try{if(fs.existsSync(file))return runtimeEvidenceFromValidationReport(JSON.parse(fs.readFileSync(file,'utf8')));}catch{}
+  if(!branch)return null;
+  try{
+    const raw=execFileSync('git',['show',`origin/${branch}:${file}`],{encoding:'utf8',maxBuffer:8*1024*1024,stdio:['ignore','pipe','ignore']});
+    return runtimeEvidenceFromValidationReport(JSON.parse(raw));
+  }catch{return null;}
+}
+
 export function buildFailureDrivenRepairLoop({blockers=[],patchPlan={},runtimeValidationPlan=null,runtimeEvidence=null}={}){
   const runtimeBlockers=runtimeValidationPlan&&runtimeEvidence?runtimeValidationBlockers({plan:runtimeValidationPlan,evidence:runtimeEvidence}):[];
   const failures=uniq([...blockers,...runtimeBlockers]).slice(0,32),classifications=failures.map(value=>({failure:value,type:classifyFailure(value)}));
@@ -159,8 +176,9 @@ export function buildFailureDrivenRepairLoop({blockers=[],patchPlan={},runtimeVa
   return{version:4,mode:'FAILURE_DRIVEN_TARGETED_REPAIR',failures:classifications,runtimeEvidenceBound:Boolean(runtimeEvidence&&typeof runtimeEvidence==='object'),runtimeFailureCount:runtimeBlockers.length,repairTaskIds:uniq(repairTaskIds),retryContract:['READ_FAILURE_EVIDENCE','IDENTIFY_RESPONSIBLE_EXISTING_SYSTEM','PATCH_MINIMUM_COHERENT_RESPONSIBLE_BLOCK','RERUN_FAILED_VALIDATION','RUN_LONG_GOAL_PLAY_WHEN_RELEVANT','RUN_REPLAY_REGRESSION','VERIFY_SAVE_RESTORE','VERIFY_SOFTLOCK_ECONOMY_DIFFICULTY_PERFORMANCE_MOBILE','PRESERVE_SAVE_AND_WORKING_BEHAVIOR'],stopCondition:'ALL_CURRENT_FAILURES_CLEARED_WITH_REGRESSION_GREEN'};
 }
 
-export function buildVibeDevelopmentContext({gameId='',genre='',baseline={},inventory=[],existingHtml='',blockers=[],runtimeEvidence=null}={}){
-  const gameplaySketch=deriveGameplaySketch({gameId,genre,baseline,inventory}),sourceAnalysis=analyzeExistingGameSource(existingHtml),patchPlan=buildVibePatchPlan({gameplaySketch,sourceAnalysis,inventory,blockers}),dependencyAnalysis=buildDependencyAnalysis({sourceAnalysis,patchPlan}),runtimeValidationPlan=buildRuntimeValidationPlan({gameplaySketch,sourceAnalysis}),repairLoop=buildFailureDrivenRepairLoop({blockers,patchPlan,runtimeValidationPlan,runtimeEvidence}),boundRuntimeEvidence=runtimeEvidence&&typeof runtimeEvidence==='object'&&!Array.isArray(runtimeEvidence)?runtimeEvidence:null;
+export function buildVibeDevelopmentContext({gameId='',genre='',baseline={},inventory=[],existingHtml='',blockers=[],runtimeEvidence=undefined}={}){
+  const boundRuntimeEvidence=runtimeEvidence===undefined?loadCanonicalRuntimeEvidence():runtimeEvidence;
+  const gameplaySketch=deriveGameplaySketch({gameId,genre,baseline,inventory}),sourceAnalysis=analyzeExistingGameSource(existingHtml),patchPlan=buildVibePatchPlan({gameplaySketch,sourceAnalysis,inventory,blockers}),dependencyAnalysis=buildDependencyAnalysis({sourceAnalysis,patchPlan}),runtimeValidationPlan=buildRuntimeValidationPlan({gameplaySketch,sourceAnalysis}),repairLoop=buildFailureDrivenRepairLoop({blockers,patchPlan,runtimeValidationPlan,runtimeEvidence:boundRuntimeEvidence});
   return{version:5,gameplaySketch,sourceAnalysis,dependencyAnalysis,patchPlan,repairLoop,runtimeValidationPlan,runtimeEvidence:boundRuntimeEvidence};
 }
 
