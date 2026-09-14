@@ -51,7 +51,7 @@ jobs:
           echo 'COMPANY_RUNTIME_STATE_OVERLAY=YES'
           echo 'DESIGN_ONLY_ARTBOOK_OVERLAY=NO'
           echo 'COMPANY_ENGINE_SOURCE=main'
-      - name: Resolve at most three active incomplete GAME_SEED targets
+      - name: Resolve at most six active incomplete GAME_SEED targets
         id: targets
         shell: bash
         run: |
@@ -79,14 +79,14 @@ jobs:
             }catch{}
             return false;
           };
-          const pending=active.filter(seed=>!strictPassFor(seed)).sort((a,b)=>String(a.createdAt||'').localeCompare(String(b.createdAt||''))).slice(0,3);
+          const pending=active.filter(seed=>!strictPassFor(seed)).sort((a,b)=>String(a.createdAt||'').localeCompare(String(b.createdAt||''))).slice(0,6);
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
           const targets=pending.map(seed=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30)}));
           console.log(`run=${targets.length?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
           console.error(`GAME_SEED_DESIGN_TARGET_COUNT=${targets.length}`);
-          console.error('GAME_DESIGN_WIP_MAX=3');
+          console.error('GAME_DESIGN_WIP_MAX=6');
           console.error('STRICT_DESIGN_PASS_THRESHOLD=80');
           console.error('STRICT_DESIGN_EXCELLENT_THRESHOLD=90');
           console.error('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
@@ -97,7 +97,7 @@ jobs:
     if: needs.resolve-seed-targets.outputs.run == 'true'
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 6
       matrix:
         target: ${{ fromJSON(needs.resolve-seed-targets.outputs.targets) }}
     runs-on: ubuntu-latest
