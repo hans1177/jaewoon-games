@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-action-survival-ro-echoes-of-the-lost-empire",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "keep1"
+        ],
+        "fix": [
+          "fix1"
+        ],
+        "add": [
+          "add1"
+        ],
+        "risks": [
+          "risk1"
+        ],
+        "evidence": [
+          "evidence1"
+        ],
+        "questions": [
+          "question1"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "keep"
+        ],
+        "fix": [
+          "fix"
+        ],
+        "add": [
+          "add"
+        ],
+        "risks": [
+          "risks"
+        ],
+        "evidence": [
+          "evidence"
+        ],
+        "questions": [
+          "questions"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed-market-evidence.json"
+        ],
+        "fix": [
+          "game-seed-platform-profiles.json"
+        ],
+        "add": [
+          "game-seed-market-evidence.json"
+        ],
+        "risks": [
+          "VALIDATE_LEARNING_OUTERNAL_DATA"
+        ],
+        "evidence": [
+          "Vampire Survivors"
+        ],
+        "questions": [
+          "strategic resource management"
+        ]
+      }
+    }
+  ]
+}

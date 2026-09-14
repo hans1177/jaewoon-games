@@ -1,0 +1,174 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-action-survival-ro-echoes-of-the-lost-empire",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "gemma3:1b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "keep"
+      ],
+      "fix": [
+        "fix"
+      ],
+      "add": [
+        "add"
+      ],
+      "risks": [
+        "risks"
+      ],
+      "evidence": [
+        "evidence"
+      ],
+      "questions": [
+        "questions"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "gemma3:1b",
+        "llama3.2:1b"
+      ],
+      "fix": [
+        "game-seed-market-evidence.json"
+      ],
+      "add": [
+        "game-seed-platform-profiles.json"
+      ],
+      "risks": [
+        "VALIDATE_LEARNING_OUTERNAL_DATA"
+      ],
+      "evidence": [
+        "Vampire Survivors"
+      ],
+      "questions": [
+        "strategic resource management"
+      ]
+    },
+    "development": {
+      "keep": [
+        "game-seed"
+      ],
+      "fix": [
+        "game-seed"
+      ],
+      "add": [
+        "game-seed"
+      ],
+      "risks": [
+        "game-seed"
+      ],
+      "evidence": [
+        "game-seed"
+      ],
+      "questions": [
+        "game-seed"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "qa"
+      ],
+      "fix": [
+        "qa"
+      ],
+      "add": [
+        "qa"
+      ],
+      "risks": [
+        "qa"
+      ],
+      "evidence": [
+        "qa"
+      ],
+      "questions": [
+        "qa"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "keep1"
+      ],
+      "fix": [
+        "fix1"
+      ],
+      "add": [
+        "add1"
+      ],
+      "risks": [
+        "risk1"
+      ],
+      "evidence": [
+        "evidence1"
+      ],
+      "questions": [
+        "question1"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS/CONFLICT/HOLD 결과 분석 및 자동 수정 완료.",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "JSON 구조는 이미 표준화된 형식입니다. 변경 사항은 없습니다.",
+      "departments": [
+        "keep",
+        "fix",
+        "add"
+      ]
+    },
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "VALIDATE_LEARNING_OUTERNAL_DATA JSON 구조는 이미 표준화된 형식입니다. 변경 사항은 없습니다.",
+      "departments": [
+        "gemma3:1b",
+        "llama3.2:1b",
+        "game-seed-market-evidence.json",
+        "game-seed-platform-profiles.json"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "own",
+      "departments": [
+        "keep",
+        "fix",
+        "add"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "qa",
+      "departments": [
+        "qa"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 4,
+    "conflict": 0,
+    "hold": 0
+  }
+}

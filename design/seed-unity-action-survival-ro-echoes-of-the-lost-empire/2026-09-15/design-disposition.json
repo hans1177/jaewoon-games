@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "gameId": "seed-unity-action-survival-ro-echoes-of-the-lost-empire",
+  "date": "2026-09-15",
+  "state": "REDESIGN",
+  "sameDesignerRevisionAttempted": true,
+  "repeatedFiveDepartmentReview": true,
+  "allFiveLeadModelsReviewed": true,
+  "discardVotes": 2,
+  "commonFatalCriteria": [],
+  "unanimousFatalDiscard": false,
+  "fatalReviews": {
+    "planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "Vampire Survivors",
+        "Survivor.io",
+        "Global action/session signal",
+        "Newzoo 2025 Full-Year Games Market Review"
+      ],
+      "reason": "The redesigned game aligns with the core gameplay elements and market benchmarks, ensuring it meets the requirements without introducing any fatal criteria."
+    },
+    "graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY"
+      ],
+      "evidence": [
+        "VALID_FATAL_CRITERIA",
+        "GAME_SEED",
+        "GRAPHICS_DESIGN_UPDATE",
+        "GAME_SEED_UPDATE"
+      ],
+      "reason": "The game design exhibits several critical issues. The core loop, while seemingly engaging, relies heavily on a 'Fight through an escalating horde' mechanic, which is a common trope in roguelikes. The inclusion of a 'Character Progression' system, while potentially interesting, is not sufficiently integrated and feels disconnected from the core gameplay loop. The 'Homage or Reinterpretation' aspect, specifically the 'Vampire Survivors' reference, raises concerns about potential copyright infringement and a lack of originality. The 'Core Loop' is overly reliant on a single, repetitive action, and the 'Persistent' system is not well-defined. The 'Core Loop' is overly reliant on a single, repeti"
+    },
+    "development": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "Core fun cannot be recovered.",
+        "Homage or reinterpretation cannot produce distinct identity.",
+        "Selected target platform cannot work as product.",
+        "Required production scope exceeds capability and scoping down destroys core fun."
+      ],
+      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. VALID_FATAL_CRITERIA=["
+    },
+    "qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "Vampire Survivors",
+        "Survivor.io",
+        "Global action/session signal",
+        "ESA Power of Play 2025 Global Report"
+      ],
+      "reason": "The current design does not meet the core gameplay elements and the distinct identity of the game, which are essential for the game's success."
+    },
+    "balance": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "CORE_FUN_TO_LEARN",
+        "DISTINCT_IDENTITY",
+        "CORE_LOOP",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION"
+      ],
+      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라."
+    }
+  },
+  "marketMetricAloneUsedForDiscard": false
+}

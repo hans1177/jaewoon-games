@@ -1,0 +1,87 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-action-survival-ro-echoes-of-the-lost-empire",
+  "date": "2026-09-15",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "graphics",
+        "development",
+        "qa"
+      ],
+      "reason": "The JSON structure is already in a standard format. I will not make any changes to it."
+    },
+    "graphics": {
+      "accept": [
+        "gemma3:1b",
+        "llama3.2:1b"
+      ],
+      "challenge": [
+        "game-seed-market-evidence.json"
+      ],
+      "revision": [
+        "game-seed-platform-profiles.json"
+      ],
+      "reason": "VALIDATE_LEARNING_OUTERNAL_DATA"
+    },
+    "development": {
+      "accept": [
+        "own",
+        "others"
+      ],
+      "challenge": [
+        "own",
+        "others"
+      ],
+      "revision": [
+        "own",
+        "others"
+      ],
+      "reason": "own"
+    },
+    "qa": {
+      "accept": [
+        "qa"
+      ],
+      "challenge": [
+        "qa"
+      ],
+      "revision": [
+        "qa"
+      ],
+      "reason": "qa"
+    },
+    "balance": {
+      "accept": [
+        "keep1"
+      ],
+      "challenge": [
+        "risk1"
+      ],
+      "revision": [
+        "evidence1"
+      ],
+      "reason": "question1"
+    }
+  }
+}
