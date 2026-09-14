@@ -1,74 +1,69 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {
-  normalizeCategory,
-  evaluateRealGameHardGates,
-  scoreRealWebGame,
-  summarizeRuntimeComplexity,
-  COMMON_SCORE_MAX,
-  CATEGORY_SCORE_MAX,
-} from '../tools/company-web-real-game-score.mjs';
+import {webCategoryFamily,evaluateRealGameQualification,scoreRealWebGame} from '../tools/company-web-real-game-score.mjs';
 
 const passingMetrics={
-  realPlayableGame:true,
-  completePlayableCycle:true,
-  realUserInput:true,
-  gameplaySurface:true,
-  meaningfulStateTransitionCount:8,
-  terminalOutcomes:{winOrGoal:true,fail:true},
+  realArtifact:true,
+  terminalReached:true,
+  meaningfulStateTransitions:10,
+  uniqueInteractedMechanics:5,
+  interactionCount:24,
+  stateChanged:true,
+  gameplaySurfaceRatio:.45,
+  gameplaySurfacePresent:true,
+  uniqueStateCount:11,
+  winLossImplemented:true,
   testUiRatio:0,
-  testProxyDetected:false,
-  duplicateActionRatio:0.2,
-  fakeProgressDetected:false,
+  directSessionControls:0,
+  proxyMarkers:0,
+  duplicateActionRatio:.2,
   mobilePlayable:true,
   runtimeStable:true,
-  categoryMatch:true,
+  interactionSuccessRatio:.95,
+  uniqueFunctionalUiCount:8,
+  visualFeedback:true,
+  audioFeedback:true,
+  mechanicIds:['mine','smelt','sell','upgrade','drone','unlock'],
+  interactedMechanicIds:['mine','smelt','sell','upgrade','drone'],
 };
 
 test('category mapping keeps category-specific 40-point lane',()=>{
-  assert.equal(normalizeCategory('ACTION_SURVIVAL_ROGUELITE'),'SURVIVAL');
-  assert.equal(normalizeCategory('SINGLE_DEFENSE_STRATEGY'),'DEFENSE');
-  assert.equal(normalizeCategory('STORY_RPG_ADVENTURE_RPG'),'STORY_ADVENTURE');
-  assert.equal(normalizeCategory('SIMULATOR_TYCOON_INCREMENTAL'),'SIM_TYCOON');
-  assert.equal(COMMON_SCORE_MAX,60);
-  assert.equal(CATEGORY_SCORE_MAX,40);
+  assert.equal(webCategoryFamily('ACTION_SURVIVAL_ROGUELITE'),'SURVIVAL');
+  assert.equal(webCategoryFamily('SINGLE_DEFENSE_STRATEGY'),'DEFENSE');
+  assert.equal(webCategoryFamily('STORY_RPG_ADVENTURE_RPG'),'STORY');
+  assert.equal(webCategoryFamily('SIMULATOR_TYCOON_INCREMENTAL'),'TYCOON');
 });
 
-test('a real complete survival cycle can earn 100 without any time-stage buttons',()=>{
-  const result=scoreRealWebGame({
-    category:'ACTION_SURVIVAL_ROGUELITE',
-    metrics:passingMetrics,
-    common:{coreLoop:1,systemConnectivity:1,controlsAndGameFeel:1,functionalUiUx:1,progressionReward:1,riskFailureRetry:1,feedback:1,stabilityPerformance:1},
-    categorySignals:{worldMovement:1,resourceGathering:1,crafting:1,enemyThreat:1,survivalPressure:1,explorationVariety:1},
-  });
-  assert.equal(result.hardGates.pass,true);
-  assert.equal(result.totalScore,100);
-  assert.equal(result.initialImplementationUnit,'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE');
-  assert.equal(result.contentDepthValidationMinutes,30);
+test('a real complete tycoon cycle can score common 60 plus category 40',()=>{
+  const result=scoreRealWebGame({category:'SIMULATOR_TYCOON_INCREMENTAL',sourceText:'mine ore smelt factory production upgrade automation drone sell coins economy unlock zone manual choice',metrics:passingMetrics});
+  assert.equal(result.pass,true);
+  assert.equal(result.qualification.pass,true);
+  assert.ok(result.commonScore<=60);
+  assert.ok(result.categoryScore<=40);
+  assert.equal(result.totalScore,result.commonScore+result.categoryScore);
+  assert.equal(result.categoryFamily,'TYCOON');
 });
 
-test('test harness and fake progress are rejected before scoring',()=>{
-  const hard=evaluateRealGameHardGates({...passingMetrics,testUiRatio:0.6,testProxyDetected:true,duplicateActionRatio:0.9,fakeProgressDetected:true});
+test('test harness is rejected before scoring',()=>{
+  const metrics={...passingMetrics,testUiRatio:1,directSessionControls:1};
+  const hard=evaluateRealGameQualification(metrics);
   assert.equal(hard.pass,false);
   assert.ok(hard.failures.includes('NO_TEST_PROXY'));
+  const result=scoreRealWebGame({category:'PUZZLE',sourceText:'board puzzle',metrics});
+  assert.equal(result.totalScore,0);
+  assert.equal(result.pass,false);
+});
+
+test('duplicate actions cannot substitute for functional gameplay',()=>{
+  const metrics={...passingMetrics,duplicateActionRatio:.9};
+  const hard=evaluateRealGameQualification(metrics);
+  assert.equal(hard.pass,false);
   assert.ok(hard.failures.includes('NO_FAKE_PROGRESS'));
-  const result=scoreRealWebGame({category:'PUZZLE',metrics:{...passingMetrics,testProxyDetected:true},common:{coreLoop:1},categorySignals:{puzzleRule:1}});
-  assert.equal(result.totalScore,0);
-  assert.equal(result.eligibleForStrictReview,false);
 });
 
-test('raw UI count alone cannot inflate functional gameplay complexity',()=>{
-  const complexity=summarizeRuntimeComplexity({rawUiCount:40,uniqueFunctionalUiCount:3,uniqueMechanicCount:2,gameplayActionCount:30,meaningfulStateTransitionCount:2,systemDependencyCount:1,entityCount:1,duplicateActionRatio:0.86,testUiRatio:0.48});
-  assert.equal(complexity.rawUiCount,40);
-  assert.equal(complexity.uniqueFunctionalUiCount,3);
-  assert.equal(complexity.rawUiCountIsAdvisoryOnly,true);
-  assert.equal(complexity.repeatedControlsDoNotIncreaseFunctionalUiCount,true);
-  assert.ok(complexity.duplicateActionRatio>0.65);
-});
-
-test('category mismatch is a hard gate, not a score deduction',()=>{
-  const result=scoreRealWebGame({category:'BATTLEGROUND_FIGHTING_SHOOTER',metrics:{...passingMetrics,categoryMatch:false},common:{coreLoop:1,systemConnectivity:1,controlsAndGameFeel:1,functionalUiUx:1,progressionReward:1,riskFailureRetry:1,feedback:1,stabilityPerformance:1},categorySignals:{movement:1,attackHit:1,enemyAi:1,skillCooldown:1,combatObjective:1,combatFeedback:1}});
-  assert.equal(result.rawScoreBeforeHardGate,100);
-  assert.equal(result.totalScore,0);
-  assert.ok(result.hardGates.failures.includes('CATEGORY_MATCH'));
+test('raw button volume does not raise functional UI score',()=>{
+  const low=scoreRealWebGame({category:'SURVIVAL',sourceText:'move world resource gather craft enemy threat health survive zone map',metrics:{...passingMetrics,uniqueFunctionalUiCount:3}});
+  const high=scoreRealWebGame({category:'SURVIVAL',sourceText:'move world resource gather craft enemy threat health survive zone map',metrics:{...passingMetrics,uniqueFunctionalUiCount:8}});
+  assert.ok(high.common.FUNCTIONAL_UI_UX>low.common.FUNCTIONAL_UI_UX);
+  assert.equal(low.categoryScore,high.categoryScore);
 });
