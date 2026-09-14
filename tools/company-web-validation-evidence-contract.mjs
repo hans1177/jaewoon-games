@@ -1,3 +1,4 @@
+// 파일명: tools/company-web-validation-evidence-contract.mjs
 import crypto from 'node:crypto';
 
 export const WEB_VALIDATION_SCHEMA_VERSION=13;
@@ -47,6 +48,7 @@ export const WEB_CATEGORY_SCORE_WEIGHTS=Object.freeze({
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
 const number=(...values)=>{for(const value of values){const n=Number(value);if(Number.isFinite(n))return n;}return 0;};
+const countUnique=value=>Array.isArray(value)?new Set(value.map(clean).filter(Boolean)).size:0;
 const clamp01=value=>Math.max(0,Math.min(1,Number(value)||0));
 export const sha256Text=value=>crypto.createHash('sha256').update(String(value??'')).digest('hex');
 export const strictScoreOf=evidence=>Number(evidence?.webStrictScore??evidence?.strictReview?.totalScore);
@@ -68,6 +70,8 @@ export function webGameplayMetrics(evidence={}){
   const metrics=evidence?.implementationMetrics&&typeof evidence.implementationMetrics==='object'?evidence.implementationMetrics:{};
   const footprint=evidence?.sourceFootprint&&typeof evidence.sourceFootprint==='object'?evidence.sourceFootprint:{};
   const scope=evidence?.scopeCoverage&&typeof evidence.scopeCoverage==='object'?evidence.scopeCoverage:{};
+  const runtime=evidence?.runtimeFeatureEvidence&&typeof evidence.runtimeFeatureEvidence==='object'?evidence.runtimeFeatureEvidence:{};
+  const depth=evidence?.contentDepthValidation&&typeof evidence.contentDepthValidation==='object'?evidence.contentDepthValidation:{};
   const stateTransitions=Array.isArray(evidence?.scopeInteractionResults)?evidence.scopeInteractionResults.filter(row=>row?.stateChanged===true).length:0;
   const mechanicBindings=Array.isArray(scope?.mechanicBindings)?new Set(scope.mechanicBindings.filter(Boolean)).size:0;
   const terminal=upper(evidence?.terminalOutcome?.result);
@@ -83,6 +87,20 @@ export function webGameplayMetrics(evidence={}){
     uniqueInteractedMechanicCount:number(metrics.uniqueInteractedMechanicCount,mechanicBindings),
     systemDependencyCount:number(metrics.systemDependencyCount),
     enemyOrWorldEntityCount:number(metrics.enemyOrWorldEntityCount,metrics.worldOrEnemyEntityCount),
+    enemyTypeCount:number(metrics.enemyTypeCount,runtime.enemyTypeCount,countUnique(runtime.enemyTypes)),
+    newEnemyTypeCount:number(metrics.newEnemyTypeCount,runtime.newEnemyTypeCount,countUnique(runtime.newEnemyTypes)),
+    areaCount:number(metrics.areaCount,runtime.areaCount,countUnique(runtime.areas)),
+    newAreaCount:number(metrics.newAreaCount,runtime.newAreaCount,countUnique(runtime.newAreas)),
+    objectiveCount:number(metrics.objectiveCount,runtime.objectiveCount,countUnique(runtime.objectives)),
+    newObjectiveCount:number(metrics.newObjectiveCount,runtime.newObjectiveCount,countUnique(runtime.newObjectives)),
+    towerTypeCount:number(metrics.towerTypeCount,runtime.towerTypeCount,countUnique(runtime.towerTypes)),
+    towerEffectProfileCount:number(metrics.towerEffectProfileCount,runtime.towerEffectProfileCount,countUnique(runtime.towerEffectProfiles)),
+    placementResultCount:number(metrics.placementResultCount,runtime.placementResultCount),
+    strategyChoiceCount:number(metrics.strategyChoiceCount,countUnique(runtime.strategyChoices)),
+    strategyCombatOutcomeCount:number(metrics.strategyCombatOutcomeCount,runtime.strategyCombatOutcomeCount,countUnique((runtime.strategyCombatOutcomes||[]).map(row=>row?.outcomeSignature))),
+    newContentDimensionCount:number(metrics.newContentDimensionCount,runtime.newContentDimensionCount),
+    repeatedActionExcludedCount:number(metrics.repeatedActionExcludedCount),
+    meaningfulGameplayMilliseconds:number(depth.meaningfulGameplayMilliseconds),
     winPathCount:number(metrics.winPathCount,footprint.winPathCount,terminal==='VICTORY'?1:0),
     failPathCount:number(metrics.failPathCount,footprint.failPathCount,terminal==='DEFEAT'?1:0),
     retryPathCount:number(metrics.retryPathCount,footprint.retryPathCount),
@@ -115,12 +133,13 @@ function categorySignals(profile,text,metrics){
       EXPLORATION_VARIETY:has(/zone|region|biome|area|discover|구역|지역|바이옴|발견/),
     },
     TOWER_DEFENSE:{
-      PLACEMENT_AND_ROUTE:has(/tower|place|lane|route|path|grid|타워|배치|경로|라인/),
-      ENEMY_WAVES:has(/wave|웨이브/),
-      TOWER_VARIETY:mechanics>=5&&has(/tower|turret|타워|포탑/),
-      UPGRADES:has(/upgrade|level up|강화|업그레이드|레벨업/),
-      ECONOMY:has(/gold|coin|cost|income|resource|골드|코인|비용|수익|자원/),
-      STRATEGIC_CHOICE:deps>=3&&has(/range|slow|damage|choice|strategy|사거리|감속|피해|선택|전략/),
+      // 디펜스 점수는 단어 존재가 아니라 실제 런타임 결과로만 준다.
+      PLACEMENT_AND_ROUTE:metrics.placementResultCount>=1,
+      ENEMY_WAVES:metrics.meaningfulStateTransitionCount>=4&&metrics.enemyOrWorldEntityCount>0,
+      TOWER_VARIETY:metrics.towerTypeCount>=2&&metrics.towerEffectProfileCount>=2,
+      UPGRADES:metrics.systemDependencyCount>=3&&metrics.meaningfulStateTransitionCount>=5,
+      ECONOMY:metrics.systemDependencyCount>=3&&metrics.stateVariableCount>=3,
+      STRATEGIC_CHOICE:metrics.strategyChoiceCount>=2&&metrics.strategyCombatOutcomeCount>=2,
     },
     RPG:{
       COMBAT:has(/combat|attack|skill|battle|전투|공격|스킬/),
@@ -329,6 +348,7 @@ export function finalContentDepthPass(evidence={}){
   const varietyEvents=Array.isArray(depth.varietyEvents)?new Set(depth.varietyEvents.filter(Boolean)).size:0;
   const validatedMinutes=number(depth.validatedMinutes,depth.actualGameplayMinutes);
   const elapsedMs=number(depth.elapsedRealMilliseconds);
+  const meaningfulMs=number(depth.meaningfulGameplayMilliseconds,validatedMinutes*60*1000);
   const diversityCount=Math.max(metrics.contentVariationCount,varietyEvents);
   return completePlayableCyclePass(evidence)
     && depth.mode==='FINAL_CONTENT_DEPTH_VALIDATION_ONLY'
@@ -341,6 +361,7 @@ export function finalContentDepthPass(evidence={}){
     && number(depth.targetMinutes,30)>=30
     && validatedMinutes>=30
     && elapsedMs>=30*60*1000
+    && meaningfulMs>=30*60*1000
     && metrics.uniqueMechanicCount>=5
     && metrics.uniqueFunctionalUiCount>=4
     && metrics.meaningfulStateTransitionCount>=10
@@ -349,6 +370,7 @@ export function finalContentDepthPass(evidence={}){
     && metrics.duplicateActionRatio<=0.8
     && metrics.testUiRatio===0
     && metrics.directSessionControls===0
+    && metrics.newContentDimensionCount>=2
     && diversityCount>=2;
 }
 
