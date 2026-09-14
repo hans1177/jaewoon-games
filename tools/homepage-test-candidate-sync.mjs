@@ -2,16 +2,19 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import {execFileSync} from 'node:child_process';
+import {evaluateWebValidationEvidence,WEB_VALIDATION_SCHEMA_VERSION,WEB_HOMEPAGE_MINIMUM,WEB_FINAL_CONTENT_DEPTH_MINUTES} from './company-web-validation-evidence-contract.mjs';
 
 const runtimeRef=String(process.env.COMPANY_RUNTIME_REF||'origin/company-runtime').trim();
 const manifestFile=String(process.env.HOMEPAGE_TEST_CANDIDATE_OUTPUT||'test-game-candidates.json').trim();
 const limit=30;
-const minimumScore=80;
-const minimumValidationSchema=11;
+const minimumScore=WEB_HOMEPAGE_MINIMUM;
+const minimumValidationSchema=WEB_VALIDATION_SCHEMA_VERSION;
 const minimumRealGameBytes=12000;
 const minimumExecutableBytes=6000;
 const minimumMechanics=5;
 const requiredArtifactType='REAL_PLAYABLE_GAME';
+const requiredImplementationUnit='ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE';
+const requiredContentDepthMode='STRUCTURAL_REAL_GAME_CONTENT_DEPTH';
 const clean=v=>String(v??'').trim();
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const showText=file=>execFileSync('git',['show',`${runtimeRef}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});
@@ -20,21 +23,18 @@ const existsRuntime=file=>{try{execFileSync('git',['cat-file','-e',`${runtimeRef
 const checkoutRuntime=file=>execFileSync('git',['checkout',runtimeRef,'--',file],{stdio:'inherit'});
 const sha256Text=value=>crypto.createHash('sha256').update(String(value??'')).digest('hex');
 const scoreOf=evidence=>Number(evidence?.webStrictScore??evidence?.strictReview?.totalScore);
-const realGameSubstancePass=evidence=>{
-  const gate=evidence?.substanceGate||{};
-  const source=evidence?.sourceFootprint||{};
-  const totalBytes=Number(gate.totalBytes??source.totalBytes??0);
-  const executableBytes=Number(gate.executableBytes??source.scriptBytes??0);
-  const mechanicCount=Number(gate.mechanicCount??source.mechanicCount??0);
-  const directSessionControls=Number(gate.directSessionControls??(source.stageButtons?1:0));
-  const proxyMarkers=Number(gate.proxyMarkers??source.proxyMarkers??0);
-  const implementationClass=clean(gate.implementationClass||source.implementationClass).toUpperCase();
-  return (gate.pass===true||source.pass===true)&&implementationClass==='DEDICATED'&&totalBytes>=minimumRealGameBytes&&executableBytes>=minimumExecutableBytes&&mechanicCount>=minimumMechanics&&directSessionControls===0&&proxyMarkers===0;
-};
-const homepagePass=evidence=>evidence?.homepageTestEligible===true&&Number(evidence?.validationSchemaVersion||evidence?.version||0)>=minimumValidationSchema&&realGameSubstancePass(evidence)&&Number.isFinite(scoreOf(evidence))&&scoreOf(evidence)>=minimumScore&&Array.isArray(evidence?.strictReview?.hardFailures)&&evidence.strictReview.hardFailures.length===0;
 const realPlayableGamePass=html=>{
   const text=String(html??'');
-  return new RegExp(`data-web-artifact-type=["']${requiredArtifactType}["']`,'i').test(text)&&/<canvas\b/i.test(text)&&/(victory|승리|목표 달성)/i.test(text)&&/(defeat|game over|패배|게임 오버)/i.test(text)&&!/FULL APPROVED WEB COMPANION/i.test(text)&&!/<h2[^>]*>\s*30분 플레이 구조\s*<\/h2>/i.test(text)&&!/<h2[^>]*>\s*승인 분량 전체 구현\s*<\/h2>/i.test(text);
+  const hasSurface=/<canvas\b/i.test(text)||/data-gameplay-surface/i.test(text)||/class=["'][^"']*\bboard\b/i.test(text);
+  return new RegExp(`data-web-artifact-type=["']${requiredArtifactType}["']`,'i').test(text)
+    &&new RegExp(`data-implementation-unit=["']${requiredImplementationUnit}["']`,'i').test(text)
+    &&hasSurface
+    &&/(victory|승리|목표 달성|달성!|선승)/i.test(text)
+    &&/(defeat|shutdown|가동 중단|쓰러졌다|파괴됐다|패배|game over|게임 오버)/i.test(text)
+    &&!/FULL APPROVED WEB COMPANION/i.test(text)
+    &&!/<h2[^>]*>\s*30분 플레이 구조\s*<\/h2>/i.test(text)
+    &&!/<h2[^>]*>\s*승인 분량 전체 구현\s*<\/h2>/i.test(text)
+    &&!/<button\b[^>]*data-session-stage=/i.test(text);
 };
 const semanticJson=value=>{
   const copy=JSON.parse(JSON.stringify(value??{}));
@@ -50,13 +50,6 @@ const writeJsonIfSemanticChanged=(file,previous,next)=>{
   fs.writeFileSync(file,JSON.stringify(output,null,2)+'\n');
   return true;
 };
-const structured30MinutePass=evidence=>{
-  const session=evidence?.sessionContract||{};
-  const windows=Array.isArray(session.windows)?session.windows:[];
-  const expected=[[0,5],[5,15],[15,25],[25,30]];
-  const stages=Array.isArray(session.stageResults)?session.stageResults:[];
-  return Number(evidence?.validationSchemaVersion||evidence?.version||0)>=minimumValidationSchema&&Number(evidence?.sessionDepthMinutes)>=30&&session.pass===true&&session.validationMode==='GAMEPLAY_MILESTONE_DEPTH'&&session.stageGameplayPassed===true&&session.directStageClick===false&&Number(session.stageCount)===4&&Number(session.completedStages)===4&&windows.length===4&&windows.every((row,index)=>Array.isArray(row)&&Number(row[0])===expected[index][0]&&Number(row[1])===expected[index][1])&&stages.length===4&&stages.every((row,index)=>Number(row.stage)===index+1&&row.trigger==='GAMEPLAY_MILESTONE'&&row.clicked===true&&row.completed===true&&row.gameStateChanged===true&&row.directStageClick===false);
-};
 
 const previousManifest=readJson(manifestFile,{candidates:[]});
 const previousRank=new Map((previousManifest.candidates||[]).map((row,index)=>[clean(row.gameId||row.id),index]));
@@ -64,7 +57,7 @@ const queue=showJson('development-queue.json',{items:[]});
 const runtimeCatalog=showJson('game-catalog.json',{games:[]});
 const catalogById=new Map((runtimeCatalog.games||[]).map(game=>[clean(game.id),game]));
 const candidates=[];
-let staleEvidenceCount=0,nonPlayableRejectedCount=0,substanceRejectedCount=0;
+let staleEvidenceCount=0,nonPlayableRejectedCount=0,substanceRejectedCount=0,depthRejectedCount=0;
 for(const item of queue.items||[]){
   const gameId=clean(item.gameId);if(!gameId)continue;
   if(clean(item.productionClass).toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
@@ -74,15 +67,19 @@ for(const item of queue.items||[]){
   const evidencePath=clean(item.webValidationEvidencePath);
   const baselineSource=clean(item.designBaselineSource);
   if(!evidencePath||!baselineSource||!existsRuntime(evidencePath)||!existsRuntime(`${webSourcePath}/index.html`)||!existsRuntime(baselineSource)||!existsRuntime(artbookSource))continue;
-  const evidence=showJson(evidencePath,null);
-  if(!realGameSubstancePass(evidence)){substanceRejectedCount++;continue;}
-  if(!homepagePass(evidence))continue;
+  const evidence=showJson(evidencePath,null);if(!evidence)continue;
   const webHtml=showText(`${webSourcePath}/index.html`);
   if(!realPlayableGamePass(webHtml)){nonPlayableRejectedCount++;continue;}
   const currentWebHash=sha256Text(webHtml);
   const currentBaselineHash=sha256Text(showText(baselineSource));
-  const freshnessPass=structured30MinutePass(evidence)&&clean(evidence?.sourceIndexSha256)===currentWebHash&&clean(evidence?.designBaselineSha256)===currentBaselineHash;
-  if(!freshnessPass){staleEvidenceCount++;continue;}
+  const contract=evaluateWebValidationEvidence(evidence,{minimumScore,currentSourceSha256:currentWebHash,currentBaselineSha256:currentBaselineHash});
+  if(!contract.realGameSubstancePass){substanceRejectedCount++;continue;}
+  if(!contract.final30MinuteContentDepthPass){depthRejectedCount++;continue;}
+  if(!contract.pass){
+    if(contract.blockers.some(x=>/SCHEMA_STALE|HASH_STALE|HASH_MISSING/.test(x)))staleEvidenceCount++;
+    continue;
+  }
+  if(evidence?.homepageTestEligible!==true)continue;
   const game=catalogById.get(gameId)||{};
   candidates.push({
     id:gameId,
@@ -97,8 +94,12 @@ for(const item of queue.items||[]){
     homepageOfficialCard:false,
     productionClass:'DEVELOPMENT_CONFIRMED',
     webArtifactType:requiredArtifactType,
+    implementationUnit:requiredImplementationUnit,
     realPlayableWebGame:true,
     realGameSubstancePassed:true,
+    finalContentDepthPassed:true,
+    finalContentDepthMinutes:WEB_FINAL_CONTENT_DEPTH_MINUTES,
+    contentDepthValidationMode:requiredContentDepthMode,
     testUrl:`/${webSourcePath.replace(/^\/+|\/+$/g,'')}/`,
     webPath:`/${webSourcePath.replace(/^\/+|\/+$/g,'')}/`,
     artbookUrl:`/artbook-viewer.html?game=${encodeURIComponent(gameId)}`,
@@ -151,9 +152,9 @@ for(const candidate of selected){
 const registryChanged=writeJsonIfSemanticChanged('game-artbooks.json',previousRegistry,registry);
 
 const manifest={
-  version:7,policyDocument:'COMPANY_FLOW.md',officialCardRegistrationRequiresPromotionPass:true,
+  version:8,policyDocument:'COMPANY_FLOW.md',officialCardRegistrationRequiresPromotionPass:true,
   homepageTestShelf:{
-    limit,minimumScore,minimumValidationSchema,minimumRealGameBytes,minimumExecutableBytes,minimumMechanics,order:'STRICT_IMPLEMENTATION_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresRealPlayableGame:true,requiresRealGameSubstance:true,requiredWebArtifactType:requiredArtifactType,requiresArtbook:true,requiresFreshSourceHash:true,requiresFreshDesignBaselineHash:true,requiresStructured30MinuteEvidence:true,requiredSessionValidationMode:'GAMEPLAY_MILESTONE_DEPTH',hardGatesRequired:true,officialCard:false,promotionRequiredForOfficialCard:true,
+    limit,minimumScore,minimumValidationSchema,minimumRealGameBytes,minimumExecutableBytes,minimumMechanics,order:'STRICT_IMPLEMENTATION_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresRealPlayableGame:true,requiresRealGameSubstance:true,requiredWebArtifactType:requiredArtifactType,requiredImplementationUnit,requiresArtbook:true,requiresFreshSourceHash:true,requiresFreshDesignBaselineHash:true,requiresCompletePlayableCycle:true,requiresFinalContentDepthValidation:true,finalContentDepthMinutes:WEB_FINAL_CONTENT_DEPTH_MINUTES,requiredContentDepthValidationMode:requiredContentDepthMode,hardGatesRequired:true,officialCard:false,promotionRequiredForOfficialCard:true,
     cutlineScore,replacementPolicy:'STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE;TIE_PRESERVES_VALID_INCUMBENT',tieBreak:['EXISTING_TOP30_RANK','PROMOTION_REVALIDATION_PASS','LATEST_VALIDATION','GAME_ID'],
   },
   candidates:selected,
@@ -165,6 +166,7 @@ console.log(`HOMEPAGE_TEST_CANDIDATE_IDS=${selected.map(x=>x.gameId).join(',')}`
 console.log(`HOMEPAGE_TEST_STALE_EVIDENCE_REJECTED=${staleEvidenceCount}`);
 console.log(`HOMEPAGE_TEST_NON_PLAYABLE_REJECTED=${nonPlayableRejectedCount}`);
 console.log(`HOMEPAGE_TEST_SUBSTANCE_REJECTED=${substanceRejectedCount}`);
+console.log(`HOMEPAGE_TEST_CONTENT_DEPTH_REJECTED=${depthRejectedCount}`);
 console.log('HOMEPAGE_TEST_CANDIDATE_LIMIT=30');
 console.log('HOMEPAGE_TEST_MINIMUM_SCORE=80');
 console.log(`HOMEPAGE_TEST_MINIMUM_VALIDATION_SCHEMA=${minimumValidationSchema}`);
@@ -172,8 +174,10 @@ console.log(`HOMEPAGE_TEST_MINIMUM_REAL_GAME_BYTES=${minimumRealGameBytes}`);
 console.log(`HOMEPAGE_TEST_MINIMUM_EXECUTABLE_BYTES=${minimumExecutableBytes}`);
 console.log(`HOMEPAGE_TEST_MINIMUM_MECHANICS=${minimumMechanics}`);
 console.log(`HOMEPAGE_TEST_REQUIRED_ARTIFACT_TYPE=${requiredArtifactType}`);
+console.log(`HOMEPAGE_TEST_REQUIRED_IMPLEMENTATION_UNIT=${requiredImplementationUnit}`);
+console.log(`HOMEPAGE_TEST_REQUIRED_CONTENT_DEPTH_MODE=${requiredContentDepthMode}`);
 console.log(`HOMEPAGE_TEST_CUTLINE_SCORE=${cutlineScore??'OPEN'}`);
 console.log('HOMEPAGE_TEST_REPLACEMENT=STRICTLY_HIGHER_SCORE;TIE_PRESERVES_INCUMBENT');
 console.log('HOMEPAGE_TEST_ORDER=STRICT_IMPLEMENTATION_SCORE_DESC');
-console.log('HOMEPAGE_TEST_REQUIRES=REAL_PLAYABLE_WEB_GAME+REAL_GAME_SUBSTANCE+POST_WEB_ARTBOOK+80_SCORE+NO_HARD_FAILURE+FRESH_HASHES+GAMEPLAY_MILESTONE_30MIN');
+console.log('HOMEPAGE_TEST_REQUIRES=REAL_PLAYABLE_WEB_GAME+COMPLETE_PLAYABLE_CYCLE+REAL_GAME_SUBSTANCE+FINAL_CONTENT_DEPTH+POST_WEB_ARTBOOK+80_SCORE+NO_HARD_FAILURE+FRESH_HASHES');
 console.log(`HOMEPAGE_TEST_SYNC_CHANGED=${semanticChanged?'YES':'NO'}`);
