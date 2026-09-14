@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {validateBootstrapHtml,validatePreservedSourceHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope} from '../tools/company-development-web-bootstrap.mjs';
+import {validateBootstrapHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope} from '../tools/company-development-web-bootstrap.mjs';
 import {deriveApprovedScopeInventory,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
 
 const basePlayable='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-audio-state="locked"><button id="act">Act</button><button data-audio-control="mute">Mute</button><input data-audio-control="volume" type="range"><script>let score=0;const AC=window.AudioContext||window.webkitAudioContext;document.querySelector("#act").addEventListener("click",()=>{score++});</script></body></html>';
@@ -68,52 +68,14 @@ test('scope classifier remains available for design inspection',()=>{
   assert.equal(classifyApprovedScope({path:'progression',label:'upgrade level'},0),'PROGRESSION');
 });
 
-test('Pocket Foundry compiler emits a real factory loop and initial playable-cycle contract',()=>{
+test('Pocket Foundry deterministic template fails closed when semantic spatial scope is missing',()=>{
   const baseline={gameSeedId:'SEED-ROBLOX-SIMULATOR_TYCOON_INCREMENTAL-001',content:{identity:'Pocket Foundry',coreFun:'collect, upgrade, income, unlock',coreLoop:['collect ore and turn it into production resources','spend earnings on upgrades and automation','unlock a new area and repeat with larger goals'],mobileUx:'touch controls'}};
-  const inventory=deriveApprovedScopeInventory(baseline);
-  const compiled=buildContractSafePlayable({gameId:'seed-roblox-simulator-tycoon-i-adopt-me',gameName:'Pocket Foundry',baseline});
-  const contract=validateBootstrapHtml(compiled.html,{scopeInventory:inventory});
-  assert.equal(compiled.generationMode,'GENRE_SPECIFIC_REAL_IMPLEMENTATION');
-  assert.equal(contract.pass,true,contract.blockers.join(','));
-  assert.ok(contract.bytes>=12000);
-  assert.ok(contract.scriptBytes>=6000);
-  assert.ok(contract.mechanicCount>=5);
-  assert.match(compiled.html,/data-mechanic-id="ore-extraction"/);
-  assert.match(compiled.html,/data-mechanic-id="ore-smelting"/);
-  assert.match(compiled.html,/data-mechanic-id="automation-drone"/);
-  assert.match(compiled.html,/data-mechanic-id="zone-unlock"/);
-  assert.match(compiled.html,/data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE"/);
-  assert.doesNotMatch(compiled.html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
-  assert.doesNotMatch(compiled.html,/<button\b[^>]*data-session-stage=/i);
-  assert.doesNotMatch(compiled.html,/scope-control-/i);
-  assert.match(compiled.html,/state\.ore/);
-  assert.match(compiled.html,/state\.ingot/);
-  assert.match(compiled.html,/state\.drones/);
-  assert.match(compiled.html,/state\.zone/);
+  assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-simulator-tycoon-i-adopt-me',gameName:'Pocket Foundry',baseline}),/APPROVED_SCOPE_REAL_SPATIAL_STATE_REQUIRED/);
 });
 
-test('Vector Clash compiler emits a real arena combat loop with ranges, dodge, skill cooldown and rounds',()=>{
+test('Vector Clash deterministic template fails closed when semantic interaction or spatial scope is missing',()=>{
   const baseline={gameSeedId:'SEED-ROBLOX-BATTLEGROUND_FIGHTING_SHOOTER-001',content:{identity:'Vector Clash',coreFun:'combat, opponent, skill, cooldown',coreLoop:['read opponent movement and create an attack opening','damage opponents and reposition around cooldowns','finish rounds and re-enter with a changed tactical choice'],mobileUx:'touch controls'}};
-  const inventory=deriveApprovedScopeInventory(baseline);
-  const compiled=buildContractSafePlayable({gameId:'seed-roblox-battleground-fight-welcome-to-bloxburg',gameName:'Vector Clash',baseline});
-  const contract=validateBootstrapHtml(compiled.html,{scopeInventory:inventory});
-  assert.equal(compiled.generationMode,'GENRE_SPECIFIC_REAL_IMPLEMENTATION');
-  assert.equal(contract.pass,true,contract.blockers.join(','));
-  assert.ok(contract.bytes>=12000);
-  assert.ok(contract.scriptBytes>=6000);
-  assert.ok(contract.mechanicCount>=5);
-  assert.match(compiled.html,/data-mechanic-id="basic-attack"/);
-  assert.match(compiled.html,/data-mechanic-id="timed-dodge"/);
-  assert.match(compiled.html,/data-mechanic-id="vector-burst"/);
-  assert.match(compiled.html,/data-mechanic-id="distance-control"/);
-  assert.match(compiled.html,/state\.distance/);
-  assert.match(compiled.html,/state\.skillCd/);
-  assert.match(compiled.html,/state\.wins/);
-  assert.match(compiled.html,/enemyPlan\(\)/);
-  assert.match(compiled.html,/data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE"/);
-  assert.doesNotMatch(compiled.html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
-  assert.doesNotMatch(compiled.html,/<button\b[^>]*data-session-stage=/i);
-  assert.doesNotMatch(compiled.html,/scope-control-/i);
+  assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-battleground-fight-welcome-to-bloxburg',gameName:'Vector Clash',baseline}),/APPROVED_SCOPE_REAL_(?:ENTITY_INTERACTION|SPATIAL_STATE)_REQUIRED/);
 });
 
 test('Celestial Bastion shallow tower button is rejected and returns to Vibe instead of being preserved',async()=>{
@@ -141,6 +103,7 @@ test('canonical Web bootstrap keeps Vibe2 as primary developer and supports pres
   assert.match(source,/VIBE2_PRIMARY_DEVELOPER=YES/);
   assert.match(source,/await ensureLocalVibeRuntime\(model\)/);
   assert.match(source,/await buildVibePlayable\(/);
+  assert.match(source,/VIBE_DEVELOPMENT_CONTEXT/);
   assert.match(source,/repairReason/);
   assert.match(source,/FINAL_CONTENT_DEPTH_REWORK_REQUIRED|반복 행동\/재시작 시간/);
   assert.match(source,/SOURCE_REPAIRED=/);
@@ -179,9 +142,10 @@ test('canonical DEVELOPMENT_CONFIRMED runtime returns shallow final content to V
   assert.match(initialBlock,/WEB_INITIAL_CANONICAL_PERSIST/);
   assert.match(initialBlock,/WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO/);
 
-  // B: initial failures remain development/revalidation failures.
-  assert.match(failureBlock,/canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION'/);
-  assert.match(failureBlock,/webInitialCyclePassed:false/);
+  // B: first-time initial failures remain revalidation failures; rework failures preserve repair context.
+  assert.match(failureBlock,/canonicalState:rework\?'RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION':'WAITING_WEB_GAMEPLAY_REVALIDATION'/);
+  assert.match(failureBlock,/webInitialCyclePassed:rework/);
+  assert.match(failureBlock,/WEB_CONTENT_REWORK_RETRY_PRESERVED=YES/);
   assert.match(failureBlock,/WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO/);
 
   // C: final run consumes exact persisted source/evidence and verifies hashes.
@@ -202,10 +166,12 @@ test('canonical DEVELOPMENT_CONFIRMED runtime returns shallow final content to V
 
   // E: final depth failure returns to existing development, and next initial cycle forces Vibe source repair.
   assert.doesNotMatch(finalBlock,/company-development-web-bootstrap\.mjs/);
-  assert.match(failureBlock,/canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION'/);
+  assert.match(failureBlock,/canonicalState:'RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION'/);
+  assert.match(failureBlock,/currentStep:'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP'/);
   assert.match(failureBlock,/webInitialCycleEvidencePath:item\.webInitialCycleEvidencePath/);
   assert.match(failureBlock,/webInitialCycleSourcePath:item\.webInitialCycleSourcePath/);
   assert.match(failureBlock,/WEB_CONTENT_RETURN_TO_DEVELOPMENT=YES/);
+  assert.match(source,/--force-repair=true/);
   assert.match(source,/--repair-reason=FINAL_CONTENT_DEPTH_REWORK_REQUIRED/);
   assert.match(source,/web-content-development-rework:web-worker-result-missing/);
   assert.match(source,/Prepare local Vibe2 model for development cycles/);
