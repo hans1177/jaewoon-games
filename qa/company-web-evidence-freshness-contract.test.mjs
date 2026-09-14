@@ -6,16 +6,18 @@ const validator=fs.readFileSync('tools/company-development-web-gameplay-validati
 const cycle=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
 const homepage=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
 
-test('current Web validation evidence is schema 11, real-game-substance and source-bound',()=>{
-  assert.match(validator,/VALIDATION_SCHEMA_VERSION=11/);
+test('current Web validation evidence is schema12 complete-cycle, content-depth and source-bound',()=>{
+  assert.match(validator,/VALIDATION_SCHEMA_VERSION=12/);
   assert.match(validator,/sourceIndexSha256/);
   assert.match(validator,/designBaselineSha256/);
   assert.match(validator,/validationSchemaVersion:VALIDATION_SCHEMA_VERSION/);
   assert.match(validator,/substanceGate/);
-  assert.match(validator,/GAMEPLAY_MILESTONE_DEPTH/);
+  assert.match(validator,/realGameQualification/);
+  assert.match(validator,/STRUCTURAL_REAL_GAME_CONTENT_DEPTH/);
+  assert.match(validator,/secondContentDepthPass/);
 });
 
-test('native routing cannot accept schema10 harness, stale, non-substance or single-run Web 90 evidence',()=>{
+test('native routing still rejects old harness, stale, non-substance or single-run Web 90 evidence',()=>{
   assert.match(cycle,/WEB_VALIDATION_SCHEMA_VERSION=11/);
   assert.match(cycle,/substancePass/);
   assert.match(cycle,/implementationClass==='DEDICATED'/);
@@ -33,7 +35,7 @@ test('native routing cannot accept schema10 harness, stale, non-substance or sin
   assert.match(cycle,/formalImplementationPassed===true/);
 });
 
-test('homepage Top30 rejects schema10 harness and stale Web evidence instead of grandfathering it',()=>{
+test('homepage Top30 still rejects old harness and stale Web evidence during compatibility transition',()=>{
   assert.match(homepage,/minimumValidationSchema=11/);
   assert.match(homepage,/realGameSubstancePass/);
   assert.match(homepage,/structured30MinutePass/);
