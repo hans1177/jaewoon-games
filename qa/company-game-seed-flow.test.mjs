@@ -44,7 +44,10 @@ test('central mirror preserves historical bootstrap while latest owner productio
   assert.match(flow,/legacySixRepresentativeSetsAreHistoricalOnlyForScheduling: true/);
   assert.match(flow,/fixedSixCategoryProductionQuotaForbidden: true/);
   assert.match(flow,/concurrentGameWipMax: 3/);
-  assert.match(flow,/meaningfulMinutesRequired: 30/);
+  assert.match(flow,/minimumUnit: ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE/);
+  assert.match(flow,/minimumWallClockMinutes: null/);
+  assert.match(flow,/finalTargetMinutes: 30/);
+  assert.match(flow,/notAnInitialGenerationHardGate: true/);
   assert.match(flow,/passMinimum: 80/);
   assert.match(flow,/implementationPassMinimum: 90/);
   assert.match(flow,/excellentDesignMinimum: 90/);

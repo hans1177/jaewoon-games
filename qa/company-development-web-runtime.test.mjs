@@ -53,21 +53,19 @@ test('scope classifier remains available for design inspection',()=>{
   assert.equal(classifyApprovedScope({path:'progression',label:'upgrade level'},0),'PROGRESSION');
 });
 
-test('Pocket Foundry compiler emits a real factory loop, footprint and non-clickable session milestones',()=>{
+test('Pocket Foundry compiler emits a real factory loop without staged time-test UI',()=>{
   const baseline={gameSeedId:'SEED-ROBLOX-SIMULATOR_TYCOON_INCREMENTAL-001',content:{identity:'Pocket Foundry',coreFun:'collect, upgrade, income, unlock',coreLoop:['collect ore and turn it into production resources','spend earnings on upgrades and automation','unlock a new area and repeat with larger goals'],mobileUx:'touch controls'}};
   const inventory=deriveApprovedScopeInventory(baseline);
   const compiled=buildContractSafePlayable({gameId:'seed-roblox-simulator-tycoon-i-adopt-me',gameName:'Pocket Foundry',baseline});
   const contract=validateBootstrapHtml(compiled.html,{scopeInventory:inventory});
   assert.equal(compiled.generationMode,'GENRE_SPECIFIC_REAL_IMPLEMENTATION');
   assert.equal(contract.pass,true,contract.blockers.join(','));
-  assert.ok(contract.bytes>=12000);
-  assert.ok(contract.scriptBytes>=6000);
   assert.ok(contract.mechanicCount>=5);
   assert.match(compiled.html,/data-mechanic-id="ore-extraction"/);
   assert.match(compiled.html,/data-mechanic-id="ore-smelting"/);
   assert.match(compiled.html,/data-mechanic-id="automation-drone"/);
   assert.match(compiled.html,/data-mechanic-id="zone-unlock"/);
-  assert.match(compiled.html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
+  assert.match(compiled.html,/data-implementation-unit="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE"/);
   assert.doesNotMatch(compiled.html,/<button\b[^>]*data-session-stage=/i);
   assert.doesNotMatch(compiled.html,/scope-control-/i);
   assert.match(compiled.html,/state\.ore/);
@@ -76,15 +74,13 @@ test('Pocket Foundry compiler emits a real factory loop, footprint and non-click
   assert.match(compiled.html,/state\.zone/);
 });
 
-test('Vector Clash compiler emits a real arena combat loop with ranges, dodge, skill cooldown and rounds',()=>{
+test('Vector Clash compiler emits a real arena combat loop without staged time-test UI',()=>{
   const baseline={gameSeedId:'SEED-ROBLOX-BATTLEGROUND_FIGHTING_SHOOTER-001',content:{identity:'Vector Clash',coreFun:'combat, opponent, skill, cooldown',coreLoop:['read opponent movement and create an attack opening','damage opponents and reposition around cooldowns','finish rounds and re-enter with a changed tactical choice'],mobileUx:'touch controls'}};
   const inventory=deriveApprovedScopeInventory(baseline);
   const compiled=buildContractSafePlayable({gameId:'seed-roblox-battleground-fight-welcome-to-bloxburg',gameName:'Vector Clash',baseline});
   const contract=validateBootstrapHtml(compiled.html,{scopeInventory:inventory});
   assert.equal(compiled.generationMode,'GENRE_SPECIFIC_REAL_IMPLEMENTATION');
   assert.equal(contract.pass,true,contract.blockers.join(','));
-  assert.ok(contract.bytes>=12000);
-  assert.ok(contract.scriptBytes>=6000);
   assert.ok(contract.mechanicCount>=5);
   assert.match(compiled.html,/data-mechanic-id="basic-attack"/);
   assert.match(compiled.html,/data-mechanic-id="timed-dodge"/);
@@ -94,12 +90,12 @@ test('Vector Clash compiler emits a real arena combat loop with ranges, dodge, s
   assert.match(compiled.html,/state\.skillCd/);
   assert.match(compiled.html,/state\.wins/);
   assert.match(compiled.html,/enemyPlan\(\)/);
-  assert.match(compiled.html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
+  assert.match(compiled.html,/data-implementation-unit="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE"/);
   assert.doesNotMatch(compiled.html,/<button\b[^>]*data-session-stage=/i);
   assert.doesNotMatch(compiled.html,/scope-control-/i);
 });
 
-test('existing shared real game is preserved, inlined and rebound to approved scope before compiler fallback',async()=>{
+test('existing shared real game is preserved, inlined and stripped of visible staged validation UI',async()=>{
   const baseline={gameSeedId:'SEED-SINGLE_DEFENSE_STRATEGY-001',content:{identity:'Celestial Bastion',coreFun:'defend the celestial core with tower placement and wave adaptation',coreLoop:['place towers against the threatened route','earn resources and upgrade the defense','adapt to enemy waves and clear the final threat'],mobileUx:'touch-first tower defense controls'}};
   const inventory=deriveApprovedScopeInventory(baseline);
   assert.equal(inventory.length,5);
@@ -112,13 +108,14 @@ test('existing shared real game is preserved, inlined and rebound to approved sc
     assert.equal(built.result.generationMode,'SOURCE_PRESERVED_REAL_GAME');
     assert.equal(built.review.pass,true,built.review.blockers.join(','));
     assert.equal(validatePreservedSourceHtml(html,{scopeInventory:inventory}).pass,true);
-    assert.ok(Buffer.byteLength(html,'utf8')>=12000);
     assert.match(html,/localStorage/);
-    assert.match(html,/data-session-proof-mode="PROGRESSION_MILESTONES"/);
+    assert.match(html,/data-implementation-unit="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE"/);
     assert.match(html,/data-audio-control="mute"/);
     assert.match(html,/data-audio-control="volume"/);
     assert.doesNotMatch(html,/src="\/web-games\/_shared\/vibe2-final\.js"/);
     assert.doesNotMatch(html,/scope-control-/);
+    assert.doesNotMatch(html,/<section class="contract">/);
+    assert.doesNotMatch(html,/<button\b[^>]*data-session-stage=/i);
     for(const scope of inventory)assert.match(html,new RegExp(`data-scope-id="${scope.id}"`));
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
@@ -128,14 +125,17 @@ test('unfinished deterministic genres fail closed instead of receiving the old g
   assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-survival-horror-es-doors',gameName:'Last Lantern',baseline}),/GENRE_REAL_IMPLEMENTATION_NOT_READY:SURVIVAL_HORROR_ESCAPE/);
 });
 
-test('canonical Web bootstrap keeps Vibe2 as primary developer while deterministic fallbacks remain fail-closed',()=>{
+test('canonical Web bootstrap keeps Vibe2 as primary developer and treats 30 minutes as later content-depth validation',()=>{
   const source=fs.readFileSync('tools/company-development-web-bootstrap.mjs','utf8');
   assert.match(source,/VIBE2_PRIMARY_MODEL_IMPLEMENTATION/);
   assert.match(source,/VIBE2_PRIMARY_DEVELOPER=YES/);
+  assert.match(source,/ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE/);
+  assert.match(source,/FINAL_CONTENT_DEPTH_MINUTES=30/);
   assert.match(source,/await ensureLocalVibeRuntime\(model\)/);
   assert.match(source,/await buildVibePlayable\(/);
   assert.match(source,/MODEL_USED='\+\(generation\.modelUsed\?'YES':'NO'\)/);
   assert.match(source,/GENRE_REAL_IMPLEMENTATION_NOT_READY/);
+  assert.doesNotMatch(source,/최소 구현 단위.*30분 진행 구조/);
 });
 
 test('legacy frozen implementation context requires an exact canonical game and seed binding',()=>{

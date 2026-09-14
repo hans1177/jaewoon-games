@@ -10,7 +10,7 @@ policy:
   evidenceFilesCannotCreatePolicy: true
   separatePolicyDocumentsForbidden: true
   machineContractsMayMirrorPolicyButCannotCreatePolicy: true
-  latestOwnerDirectiveRecordedAt: 2026-09-13
+  latestOwnerDirectiveRecordedAt: 2026-09-14
 
 priority:
   - OWNER_LATEST_DIRECT_INSTRUCTION
@@ -20,7 +20,7 @@ priority:
   - STATUS_AUDIT_BUILD_HEALTH_EVIDENCE
 
 ownerCurrentProductionContract:
-  recordedAt: 2026-09-13
+  recordedAt: 2026-09-14
   authority: OWNER_LATEST_DIRECT_INSTRUCTION
   supersedesConflictingLegacySchedulingAndSeedRulesBelow: true
   seedMaterials:
@@ -66,21 +66,40 @@ ownerCurrentProductionContract:
     multiplayerDesignMustDefineParticipantsSessionJoinRulesRewardsExitReconnectAndCoreInteraction: true
     multiplayerQaRequiresTwoOrMoreRealParticipantsWhenApplicable: true
     meaningfulLoopRequired: MEET_TO_COOPERATE_OR_COMPETE_TO_RESULT_TO_REWARD_OR_PROGRESSION
-  firstSession:
-    meaningfulMinutesRequired: 30
-    phases:
-      - MINUTE_0_TO_5_CONTROL_OBJECTIVE_WORLD_ENTRY
-      - MINUTE_5_TO_15_CORE_LOOP_REPETITION_AND_FIRST_PROGRESSION_OR_CHOICE
-      - MINUTE_15_TO_25_VARIATION_ESCALATION_STORY_OR_STRATEGY_CHANGE
-      - MINUTE_25_TO_30_MID_GOAL_REWARD_AND_NEXT_PLAY_MOTIVATION
+  firstPlayableImplementation:
+    minimumUnit: ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE
+    minimumWallClockMinutes: null
+    completeCycleMustContain:
+      - START_OR_ENTRY
+      - REAL_USER_INPUT
+      - CATEGORY_CORE_LOOP
+      - MEANINGFUL_STATE_CHANGE
+      - PROGRESSION_OR_REWARD
+      - RISK_OR_FAIL_CONDITION
+      - WIN_OR_GOAL_CONDITION
+      - RETRY_OR_REENTRY
+    testHarnessDoesNotCountAsPlayableCycle: true
+    timeSegmentButtonsForbidden: true
+    validationChecklistUiForbidden: true
+    fakeProgressStateForbidden: true
+    rawUiCountCannotProveGameDepth: true
+    repeatedControlsCountAsOneFunctionalUiWhenBehaviorIsEquivalent: true
+  contentDepthValidation:
+    finalTargetMinutes: 30
+    appliesAfterRealPlayableCycleAndContentExpansion: true
+    notAnInitialGenerationHardGate: true
+    mustUseGameplayGeneratedProgression: true
+    directTimeStageControlForbidden: true
     paddingByHealthIdleWaitOrPureRepetitionForbidden: true
+    mustShowMeaningfulVariationAcrossSession: true
+    top30RequiresFinalDepthPass: true
   strictReview:
     scoreScale: 100
     passMinimum: 80
     implementationPassMinimum: 90
     excellentDesignMinimum: 90
     scoreCannotOverrideHardGate: true
-    weights:
+    legacyDesignWeights:
       IDEA_AND_DISTINCTNESS: 15
       CATEGORY_FIT: 10
       PLATFORM_FIT: 10
@@ -90,6 +109,113 @@ ownerCurrentProductionContract:
       STORY_AND_CAUSALITY: 10
       PROGRESSION_ECONOMY_BALANCE: 5
       ART_AND_DIRECTION_FIDELITY: 5
+    webImplementationScoring:
+      scoreMode: COMMON_60_PLUS_CATEGORY_40
+      qualificationBeforeScoringRequired: true
+      hardGates:
+        - REAL_PLAYABLE_GAME
+        - COMPLETE_PLAYABLE_CYCLE
+        - REAL_USER_INPUT
+        - GAMEPLAY_SURFACE
+        - MEANINGFUL_GAME_STATE
+        - WIN_OR_GOAL_AND_FAIL_PATH
+        - NO_TEST_PROXY
+        - NO_FAKE_PROGRESS
+        - MOBILE_PLAYABLE
+        - RUNTIME_STABLE
+        - CATEGORY_MATCH
+      common60:
+        CORE_GAME_LOOP: 15
+        SYSTEM_CONNECTIVITY: 10
+        CONTROLS_AND_GAME_FEEL: 8
+        FUNCTIONAL_UI_UX: 7
+        PROGRESSION_REWARD: 7
+        RISK_FAILURE_RETRY: 5
+        FEEDBACK: 4
+        STABILITY_PERFORMANCE: 4
+      category40:
+        SURVIVAL:
+          WORLD_MOVEMENT: 8
+          RESOURCE_GATHERING: 7
+          CRAFTING: 7
+          ENEMY_THREAT: 7
+          SURVIVAL_PRESSURE: 6
+          EXPLORATION_VARIETY: 5
+        DEFENSE:
+          PLACEMENT_PATHING: 8
+          WAVE_DESIGN: 7
+          DEFENSE_VARIETY: 7
+          UPGRADES: 6
+          ECONOMY: 6
+          STRATEGIC_CHOICE: 6
+        RPG:
+          COMBAT: 8
+          QUEST_NPC: 7
+          EXPLORATION: 6
+          EQUIPMENT_GROWTH: 7
+          ENEMY_BOSS: 6
+          STORY_WORLD_STATE: 6
+        SIMULATOR_TYCOON:
+          PRODUCTION_CHAIN: 9
+          UPGRADES: 7
+          AUTOMATION: 7
+          ECONOMY: 7
+          AREA_UNLOCK: 5
+          MANUAL_AUTOMATION_CHOICE: 5
+        PUZZLE:
+          PUZZLE_RULE: 9
+          SOLVABILITY: 7
+          DIFFICULTY_CURVE: 7
+          BOARD_STATE: 6
+          MECHANIC_VARIETY: 6
+          FEEDBACK: 5
+        OBBY_PLATFORMER:
+          MOVEMENT_FEEL: 9
+          LEVEL_DESIGN: 8
+          OBSTACLE_VARIETY: 7
+          RETRY_FLOW: 6
+          DIFFICULTY_CURVE: 6
+          CHECKPOINTING: 4
+        BATTLE_SHOOTER:
+          MOVEMENT: 7
+          ATTACK_HIT: 8
+          ENEMY_AI: 7
+          SKILL_COOLDOWN: 6
+          COMBAT_OBJECTIVE: 6
+          COMBAT_FEEDBACK: 6
+        STORY_ADVENTURE:
+          EXPLORATION: 7
+          QUEST_FLOW: 7
+          NPC_DIALOGUE: 6
+          EVENT_STATE_CHANGE: 6
+          COMBAT_PUZZLE: 6
+          BRANCH_GOAL: 8
+        LIFE_ROLEPLAY:
+          WORLD_SPACE: 7
+          INTERACTION: 7
+          NPC: 6
+          LIFE_ACTIVITIES: 7
+          CHARACTER_STATE: 6
+          FREEDOM_CHOICE: 7
+      runtimeComplexityEvidence:
+        requiredMetrics:
+          - UNIQUE_MECHANIC_COUNT
+          - UNIQUE_FUNCTIONAL_UI_COUNT
+          - GAMEPLAY_ACTION_COUNT
+          - MEANINGFUL_STATE_TRANSITION_COUNT
+          - SYSTEM_DEPENDENCY_COUNT
+          - ENEMY_OR_WORLD_ENTITY_COUNT
+          - WIN_PATH_COUNT
+          - FAIL_PATH_COUNT
+          - GAMEPLAY_SCREEN_RATIO
+          - DUPLICATE_ACTION_RATIO
+          - TEST_UI_RATIO
+        rawUiCountIsAdvisoryOnly: true
+        repeatedEquivalentButtonsDoNotIncreaseFunctionalUiCount: true
+        duplicateActionRatioHighIsFakeProgressRisk: true
+        testUiRatioMustNotBeUsedAsGameplayDepth: true
+      categoryMismatchIsHardGate: true
+      initialCycleScoreDoesNotReplaceFinalContentDepthValidation: true
     hardRejectCodes:
       - DESIGN_MISMATCH
       - STORY_INCOHERENT
@@ -104,6 +230,10 @@ ownerCurrentProductionContract:
       - TARGET_PLATFORM_UX_FAIL
       - FATAL_RUNTIME_BUG
       - QA_EVIDENCE_MISSING
+      - REAL_PLAYABLE_WEB_GAME_REQUIRED
+      - COMPLETE_PLAYABLE_CYCLE_REQUIRED
+      - TEST_PROXY_FORBIDDEN
+      - FAKE_PROGRESS_FORBIDDEN
     scoreBands:
       DESIGN_PASS: 80_TO_100_AND_ALL_HARD_GATES_PASS
       DESIGN_EXCELLENT: 90_TO_100_AND_ALL_HARD_GATES_PASS
@@ -130,6 +260,7 @@ ownerCurrentProductionContract:
     testCandidateMustBeClearlyMarkedNotPass: true
     webStrictScoreMinimum: 80
     hardGatesMustPass: true
+    finalContentDepthValidationRequired: true
     maxVisibleTestCandidates: 30
     ranking: STRICT_IMPLEMENTATION_SCORE_DESC
     artbookRequiredForHomepageRegistration: true
@@ -1124,10 +1255,12 @@ flows:
     requiredFlow:
       - LOAD_DESIGN_BASELINE
       - WEB_PLAYABLE_QUEUE
-      - FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP
+      - REAL_WEB_GAME_COMPLETE_CYCLE_BOOTSTRAP
       - MUSIC_RUNTIME_BIND
-      - WEB_GAMEPLAY_MUSIC_AND_APPROVED_SCOPE_VALIDATION
-      - WEB_STRICT_REVIEW
+      - REAL_WEB_GAMEPLAY_CYCLE_VALIDATION
+      - WEB_CONTENT_EXPANSION
+      - FINAL_30_MIN_CONTENT_DEPTH_VALIDATION
+      - WEB_STRICT_REVIEW_COMMON_60_PLUS_CATEGORY_40
       - POST_WEB_ARTBOOK_IF_SCORE_80_OR_HIGHER
       - HOMEPAGE_TEST_CANDIDATE_IF_ARTBOOK_READY
       - WEB_EVIDENCE_DEPARTMENT_MEETING
@@ -1142,9 +1275,19 @@ flows:
       - DEVELOPMENT_BASELINE_GATE
       - ARTBOOK_EDITOR_REVISION
     webValidationMustCover:
+      - REAL_PLAYABLE_GAME
+      - ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE
       - FULL_APPROVED_SCOPE_IMPLEMENTATION
       - PLATFORM_EXCLUSIVE_WEB_EQUIVALENT_ADAPTATION
       - CORE_LOOP
+      - CATEGORY_MATCH
+      - UNIQUE_FUNCTIONAL_UI
+      - UNIQUE_GAMEPLAY_MECHANICS
+      - MEANINGFUL_STATE_TRANSITIONS
+      - SYSTEM_DEPENDENCIES
+      - DUPLICATE_ACTION_RATIO
+      - TEST_UI_RATIO
+      - WIN_OR_GOAL_AND_FAIL_PATH
       - MOBILE_TOUCH_INPUT
       - OBSERVABLE_STATE_CHANGE
       - MOBILE_HORIZONTAL_OVERFLOW
@@ -1154,6 +1297,7 @@ flows:
       - MUSIC_MUTE_CONTROL
       - MUSIC_VOLUME_CONTROL
       - MUSIC_RUNTIME_STATE
+      - FINAL_30_MIN_CONTENT_DEPTH_AFTER_EXPANSION
     targetPlatformValidationMustCover:
       - CORE_LOOP
       - TEMPO
@@ -1176,6 +1320,8 @@ flows:
       - WAITING_WEB_PLAYABLE
       - WAITING_WEB_GAMEPLAY_VALIDATION
       - WAITING_WEB_GAMEPLAY_REVALIDATION
+      - WAITING_WEB_CONTENT_EXPANSION
+      - WAITING_WEB_CONTENT_DEPTH_VALIDATION
       - WAITING_POST_WEB_ARTBOOK
       - WAITING_WEB_STRICT_IMPROVEMENT
       - WAITING_TARGET_PLATFORM_VALIDATION
@@ -1187,6 +1333,8 @@ flows:
     baselineReadyRequires:
       - DESIGN_BASELINE_EXISTS
       - REAL_WEB_GAMEPLAY_PASS
+      - ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_PASS
+      - FINAL_30_MIN_CONTENT_DEPTH_PASS
       - APPROVED_SCOPE_FULLY_IMPLEMENTED
       - MUSIC_RUNTIME_PASS
       - REAL_TARGET_PLATFORM_GAMEPLAY_PASS
