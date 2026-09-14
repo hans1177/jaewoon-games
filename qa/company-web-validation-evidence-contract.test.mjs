@@ -65,6 +65,7 @@ const baseEvidence=()=>{
     pass:true,
     validated:true,
     target:'web',
+    categoryProfile:'TYCOON_SIMULATOR',
     gameplayInteractionPerformed:true,
     stateChanged:true,
     stateChangeCount:12,
@@ -144,6 +145,7 @@ test('tower-defense keywords do not earn placement, tower variety, or strategy p
   assert.equal(shallow.scores.CATEGORY_STRATEGIC_CHOICE,0);
 
   const rich=baseEvidence();
+  rich.categoryProfile='TOWER_DEFENSE';
   rich.implementationMetrics=metrics({placementResultCount:2,towerTypeCount:3,towerEffectProfileCount:3,strategyChoiceCount:3,strategyCombatOutcomeCount:3});
   const implemented=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:source,evidence:rich});
   assert.equal(implemented.scores.CATEGORY_PLACEMENT_AND_ROUTE,WEB_CATEGORY_SCORE_WEIGHTS.TOWER_DEFENSE.PLACEMENT_AND_ROUTE);
@@ -173,7 +175,9 @@ test('many score++ controls backed by one function count as roughly one function
 });
 
 test('category mismatch fails the hard gate regardless of numeric score',()=>{
-  const result=scoreWebStrictImplementation({category:'BATTLEGROUND_FIGHTING_SHOOTER',sourceText:tycoonSource,evidence:baseEvidence()});
+  const mismatch=baseEvidence();
+  mismatch.categoryProfile='TYCOON_SIMULATOR';
+  const result=scoreWebStrictImplementation({category:'BATTLEGROUND_FIGHTING_SHOOTER',sourceText:tycoonSource,evidence:mismatch});
   assert.equal(result.categoryMatchPassed,false);
   assert.ok(result.hardFailures.includes('CATEGORY_PROFILE_MATCH'));
 });
